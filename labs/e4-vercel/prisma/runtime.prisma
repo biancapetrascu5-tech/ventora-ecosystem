@@ -84,6 +84,18 @@ model QuotaReservation {
 
 // ─── lab_booking ──────────────────────────────────────────────────────────────
 
+model OutboxEvent {
+  id          String    @id
+  eventType   String
+  payload     Json
+  processedAt DateTime?
+  attempts    Int       @default(0)
+  createdAt   DateTime  @default(now())
+
+  @@map("outbox_events")
+  @@schema("lab_booking")
+}
+
 model Service {
   id              String   @id @default(cuid())
   organizationId  String
