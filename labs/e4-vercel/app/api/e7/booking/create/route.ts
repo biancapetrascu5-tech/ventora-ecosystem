@@ -25,7 +25,9 @@ export async function POST(request: Request) {
   const outboxEventId = `e7-out-${Date.now()}`;
 
   // 2. Create appointment + outbox entry in the same transaction
+  // RLS on lab_booking.appointments uses WITH CHECK — must set app.organization_id
   await db.$transaction(async (tx) => {
+    await tx.$executeRaw`SELECT set_config('app.organization_id', ${body.orgId}, true)`;
     await tx.appointment.create({
       data: {
         id: appointmentId,

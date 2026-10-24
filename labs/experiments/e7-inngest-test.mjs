@@ -20,6 +20,8 @@ import pg from 'pg';
 import { Inngest } from 'inngest';
 import { serve, createServer as createInngestServer } from 'inngest/node';
 
+process.env.INNGEST_DEV = '1'; // dev server local, fără cont
+
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const labsDir = path.resolve(__dirname, '..');
 const allEnv = dotenv.parse(fs.readFileSync(path.join(labsDir, '.env.local')));
@@ -98,14 +100,8 @@ console.log(`Handler HTTP: localhost:${HANDLER_PORT}/api/inngest`);
 
 // ── Pornire Inngest dev server ────────────────────────────────────────────────
 console.log('Pornire Inngest dev server...');
-const devProc = spawn(
-  'npx',
-  ['--yes', 'inngest-cli@1.49.0', 'dev',
-   '--port', String(INNGEST_PORT),
-   '--sdk-url', `http://127.0.0.1:${HANDLER_PORT}/api/inngest`,
-  ],
-  { stdio: 'pipe', shell: true }
-);
+const devCmd = `npx --yes inngest-cli@1.49.0 dev --port ${INNGEST_PORT} --sdk-url http://127.0.0.1:${HANDLER_PORT}/api/inngest`;
+const devProc = spawn(devCmd, { stdio: 'pipe', shell: true });
 devProc.stdout.on('data', (d) => {
   const s = String(d).trim();
   if (s.includes('started') || s.includes('ready') || s.includes('error')) console.log('[dev]', s.substring(0, 120));
@@ -130,22 +126,11 @@ const waitPort = (port, timeoutMs = 30000) => new Promise((resolve, reject) => {
   try_();
 });
 
-await waitPort(INNGEST_PORT);
+await waitPort(INNGEST_PORT, 90000);
 console.log('Inngest dev server activ.');
-
-// Sincronizare funcții cu dev server
-await new Promise((res) => setTimeout(res, 2000));
-try {
-  const syncResp = await fetch(`http://127.0.0.1:${INNGEST_PORT}/fn/register`, {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ url: `http://127.0.0.1:${HANDLER_PORT}/api/inngest` }),
-  });
-  console.log(`Sync: ${syncResp.status}`);
-} catch (e) {
-  console.log('Sync auto via dev server (manual PUT nu era necesar)');
-}
-await new Promise((res) => setTimeout(res, 1000));
+// Dev server auto-syncs cu SDK URL setat la pornire — așteptăm 4s
+await new Promise((res) => setTimeout(res, 4000));
+console.log('Funcții sincronizate cu dev server.');
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 const createOutboxEntry = async (id, eventType) => {
@@ -212,8 +197,8 @@ await inngest.send({
   name: 'lab-booking/appointment.created.v1.test-dlq',
   data: eventPayload(idDlq),
 });
-console.log('  Așteptare 3 încercări (cu backoff dev server)...');
-await sleep(35000);
+console.log('  Așteptare 3 încercări (backoff Inngest dev ~10s între retry-uri)...');
+await sleep(90000);
 const dlqAttempts = processed.get(idDlq)?.attempts ?? 0;
 const t3Pass = dlqAttempts >= 3;
 console.log(`  Încercări înregistrate: ${dlqAttempts} (așteptat ≥3)`);
