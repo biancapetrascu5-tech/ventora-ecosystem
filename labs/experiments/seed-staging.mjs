@@ -33,15 +33,23 @@ if (!urlFromFile) {
   process.exit(1);
 }
 let parsedUrl;
-try { parsedUrl = new URL(urlFromFile); } catch {
-  console.error(`\nEroare: DATABASE_URL_SUPERUSER nu este un URL valid`); process.exit(1);
+try {
+  parsedUrl = new URL(urlFromFile);
+} catch {
+  console.error(`\nEroare: DATABASE_URL_SUPERUSER nu este un URL valid`);
+  process.exit(1);
 }
 const h = parsedUrl.hostname.toLowerCase();
 if (h === 'localhost' || h === '127.0.0.1' || h === '::1' || h.endsWith('.local')) {
-  console.error(`\nEroare: DATABASE_URL_SUPERUSER pointeaza spre localhost — tinta este Supabase staging.`);
-  console.error(`Host detectat: ${parsedUrl.hostname}`); process.exit(1);
+  console.error(
+    `\nEroare: DATABASE_URL_SUPERUSER pointeaza spre localhost — tinta este Supabase staging.`,
+  );
+  console.error(`Host detectat: ${parsedUrl.hostname}`);
+  process.exit(1);
 }
-console.log(`\nSeed → ${parsedUrl.hostname}:${parsedUrl.port} / ${parsedUrl.pathname.replace('/', '') || 'postgres'}\n`);
+console.log(
+  `\nSeed → ${parsedUrl.hostname}:${parsedUrl.port} / ${parsedUrl.pathname.replace('/', '') || 'postgres'}\n`,
+);
 
 // Inlocuieste process.env.DATABASE_URL_SUPERUSER cu valoarea din .env.local
 process.env.DATABASE_URL_SUPERUSER = urlFromFile;

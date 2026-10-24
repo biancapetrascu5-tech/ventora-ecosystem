@@ -23,7 +23,9 @@ const envFile = path.join(labsDir, '.env.local');
 // ── 1. Parsează .env.local direct (fără a atinge process.env) ───────────────
 if (!fs.existsSync(envFile)) {
   console.error(`\nEroare: lipseste fisierul labs/.env.local`);
-  console.error(`Creaza-l cu: DATABASE_URL_SUPERUSER=postgres://postgres.<ref>:<PAROLA>@<POOLER-HOST>:5432/postgres`);
+  console.error(
+    `Creaza-l cu: DATABASE_URL_SUPERUSER=postgres://postgres.<ref>:<PAROLA>@<POOLER-HOST>:5432/postgres`,
+  );
   process.exit(1);
 }
 const parsedEnv = dotenv.parse(fs.readFileSync(envFile));
@@ -45,9 +47,13 @@ try {
 
 const host = parsed.hostname.toLowerCase();
 if (host === 'localhost' || host === '127.0.0.1' || host === '::1' || host.endsWith('.local')) {
-  console.error(`\nEroare: DATABASE_URL_SUPERUSER pointeaza spre un host local — nu Docker, ci Supabase staging este tinta.`);
+  console.error(
+    `\nEroare: DATABASE_URL_SUPERUSER pointeaza spre un host local — nu Docker, ci Supabase staging este tinta.`,
+  );
   console.error(`Host detectat: ${parsed.hostname}`);
-  console.error(`Verifica labs/.env.local si asigura-te ca folosesti session pooler-ul Supabase (port 5432).`);
+  console.error(
+    `Verifica labs/.env.local si asigura-te ca folosesti session pooler-ul Supabase (port 5432).`,
+  );
   process.exit(1);
 }
 
@@ -73,16 +79,12 @@ const prismaBin = path.join(labsDir, 'node_modules', 'prisma', 'build', 'index.j
 for (const { config, label } of schemas) {
   console.log(`\n─── Migrate: ${label} ───`);
   try {
-    execFileSync(
-      process.execPath,
-      [prismaBin, 'migrate', 'deploy', '--config', config],
-      {
-        cwd: labsDir,
-        // Pasam URL-ul explicit; suprascrie orice variabila din mediu sau .env
-        env: { ...process.env, DATABASE_URL_SUPERUSER: url },
-        stdio: 'inherit',
-      },
-    );
+    execFileSync(process.execPath, [prismaBin, 'migrate', 'deploy', '--config', config], {
+      cwd: labsDir,
+      // Pasam URL-ul explicit; suprascrie orice variabila din mediu sau .env
+      env: { ...process.env, DATABASE_URL_SUPERUSER: url },
+      stdio: 'inherit',
+    });
   } catch (err) {
     console.error(`\nEroare la migrate pentru ${label}. Verifica mesajul de mai sus.`);
     process.exit(1);
