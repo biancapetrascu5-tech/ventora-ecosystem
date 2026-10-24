@@ -13,11 +13,21 @@ export interface FormFieldProps {
   hint?: string;
   error?: string;
   required?: boolean;
+  id?: string;
   className?: string;
 }
 
-export function FormField({ label, children, hint, error, required, className }: FormFieldProps) {
-  const id = useId();
+export function FormField({
+  label,
+  children,
+  hint,
+  error,
+  required,
+  id: idProp,
+  className,
+}: FormFieldProps) {
+  const generatedId = useId();
+  const id = idProp ?? generatedId;
   const hintId = hint ? `${id}-hint` : undefined;
   const errorId = error ? `${id}-error` : undefined;
   const describedBy = [hintId, errorId].filter(Boolean).join(' ') || undefined;

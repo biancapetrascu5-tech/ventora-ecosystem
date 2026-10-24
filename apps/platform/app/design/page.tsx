@@ -488,27 +488,11 @@ export default function DesignPage() {
 
       <Section title="FormField">
         <div className={styles.componentStack}>
-          <FormField label="Email" required hint="Adresa ta de email de afaceri">
-            {({ id, isInvalid, 'aria-describedby': describedBy }) => (
-              <Input
-                id={id}
-                isInvalid={isInvalid}
-                aria-describedby={describedBy}
-                type="email"
-                placeholder="ana@firma.ro"
-              />
-            )}
+          <FormField id="design-email" label="Email" required hint="Adresa ta de email de afaceri">
+            <Input id="design-email" type="email" placeholder="ana@firma.ro" />
           </FormField>
-          <FormField label="Mesaj" error="Câmpul este obligatoriu">
-            {({ id, isInvalid, 'aria-describedby': describedBy }) => (
-              <Textarea
-                id={id}
-                isInvalid={isInvalid}
-                aria-describedby={describedBy}
-                rows={3}
-                placeholder="Scrie un mesaj..."
-              />
-            )}
+          <FormField id="design-mesaj" label="Mesaj" error="Câmpul este obligatoriu">
+            <Textarea id="design-mesaj" isInvalid rows={3} placeholder="Scrie un mesaj..." />
           </FormField>
         </div>
       </Section>
