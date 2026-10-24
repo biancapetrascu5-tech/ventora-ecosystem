@@ -3,3 +3,4 @@ packages:
   - 'packages/*'
   - 'core/*'
   - 'modules/*'
+  - 'labs/e4-vercel'

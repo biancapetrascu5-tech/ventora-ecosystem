@@ -13,5 +13,8 @@ generated/
 .env.local
 .env.*.local
 
+# npm lockfile — pachetul este gestionat de pnpm din workspace-ul monorepo
+package-lock.json
+
 # vercel
 .vercel

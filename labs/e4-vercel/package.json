@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev -p 3103",
-    "build": "npm run generate && next build",
+    "build": "pnpm run generate && next build",
     "start": "next start",
     "generate": "prisma generate --config prisma.config.core.ts && prisma generate --config prisma.config.booking.ts && prisma generate --config prisma.config.crm.ts && prisma generate --config prisma.config.multi.ts",
     "typecheck": "tsc --noEmit"

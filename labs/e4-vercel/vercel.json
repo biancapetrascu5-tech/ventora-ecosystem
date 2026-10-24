@@ -1,0 +1,8 @@
+{
+  "regions": ["fra1"],
+  "env": {
+    "ENABLE_EXPERIMENTAL_COREPACK": "1"
+  },
+  "installCommand": "corepack enable && pnpm install --frozen-lockfile",
+  "buildCommand": "pnpm run build"
+}
