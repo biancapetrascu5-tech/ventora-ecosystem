@@ -53,26 +53,35 @@ export async function POST(request: Request) {
     });
   });
 
-  // 3. Relay outbox event to Inngest (best-effort — outside main TX)
+  // 3. Relay outbox event to Inngest (best-effort — outside main TX; fails gracefully without dev server)
   const outboxWrittenAt = Date.now();
-  await inngest.send({
-    id: outboxEventId,
-    name: 'lab-booking/appointment.created.v1',
-    data: {
-      appointmentId,
-      organizationId: body.orgId,
-      contactId: body.contactId,
-      serviceId: body.serviceId,
-      scheduledAt: body.scheduledAt,
-      outboxEventId,
-    },
-  });
-  const inngestSentAt = Date.now();
+  let inngestSent = false;
+  let inngestError: string | null = null;
+  try {
+    await inngest.send({
+      id: outboxEventId,
+      name: 'lab-booking/appointment.created.v1',
+      data: {
+        appointmentId,
+        organizationId: body.orgId,
+        contactId: body.contactId,
+        serviceId: body.serviceId,
+        scheduledAt: body.scheduledAt,
+        outboxEventId,
+      },
+    });
+    inngestSent = true;
+  } catch (e) {
+    inngestError = e instanceof Error ? e.message : String(e);
+  }
+  const inngestSentMs = Date.now() - outboxWrittenAt;
 
   return Response.json({
     ok: true,
     appointmentId,
     outboxEventId,
-    outboxDelayMs: inngestSentAt - outboxWrittenAt,
+    inngestSent,
+    inngestError,
+    inngestSentMs,
   });
 }
