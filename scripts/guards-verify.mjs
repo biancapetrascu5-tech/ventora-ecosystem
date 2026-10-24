@@ -42,11 +42,13 @@ const VIOLATIONS = [
   {
     file: 'labs/violations/raw-db-query.ts',
     expectedRule: 'no-restricted-syntax',
+    expectedMessage: '[no-raw-db-query]',
     description: 'raw prisma.$queryRaw usage',
   },
   {
     file: 'labs/violations/system-context-in-request.ts',
     expectedRule: 'no-restricted-syntax',
+    expectedMessage: '[no-system-context-in-request]',
     description: 'withSystemContext in request handler',
   },
   {
@@ -57,17 +59,20 @@ const VIOLATIONS = [
   {
     file: 'labs/violations/native-select.tsx',
     expectedRule: 'no-restricted-syntax',
+    expectedMessage: '[no-native-select]',
     description: 'native <select> instead of @ventora/ui Select',
   },
   {
     file: 'labs/violations/wrong-ui-import.tsx',
     expectedRule: 'no-restricted-syntax',
+    expectedMessage: '[no-wrong-ui-import]',
     description: 'Button imported from wrong path (not @ventora/ui)',
   },
   {
     file: 'labs/violations/inline-color.tsx',
     expectedRule: 'no-restricted-syntax',
-    description: 'hardcoded hex/rgb color or Tailwind arbitrary value',
+    expectedMessages: ['[no-inline-color]', '[no-tailwind-arbitrary-color]'],
+    description: 'hardcoded hex/rgb color and Tailwind arbitrary value',
   },
 ];
 
@@ -82,7 +87,7 @@ let allPassed = true;
 
 // --- ESLint violation checks ---
 
-for (const { file, expectedRule, description } of VIOLATIONS) {
+for (const { file, expectedRule, expectedMessage, expectedMessages, description } of VIOLATIONS) {
   const result = spawnSync(
     process.execPath,
     [eslintBin, '--config', ESLINT_CONFIG, '--format', 'json', file],
@@ -102,15 +107,35 @@ for (const { file, expectedRule, description } of VIOLATIONS) {
   }
 
   const ruleIds = messages.map((m) => m.ruleId);
-  if (ruleIds.includes(expectedRule)) {
-    console.log(`[PASS] ${file}`);
-    console.log(`       rule "${expectedRule}" triggered — ${description}`);
-  } else {
+  if (!ruleIds.includes(expectedRule)) {
     console.error(`[FAIL] ${file}`);
     console.error(`       expected rule "${expectedRule}" but got: ${JSON.stringify(ruleIds)}`);
     console.error(`       description: ${description}`);
     allPassed = false;
+    continue;
   }
+
+  // For no-restricted-syntax: all 5 violations share the same ruleId.
+  // Verify the specific message substring(s) so each guard proves its own selector.
+  const messagesToVerify = expectedMessages ?? (expectedMessage ? [expectedMessage] : []);
+  if (messagesToVerify.length > 0) {
+    const actualTexts = messages
+      .filter((m) => m.ruleId === expectedRule)
+      .map((m) => m.message ?? '');
+    const missing = messagesToVerify.filter((exp) => !actualTexts.some((t) => t.includes(exp)));
+    if (missing.length > 0) {
+      console.error(`[FAIL] ${file}`);
+      console.error(
+        `       rule "${expectedRule}" triggered but expected message(s) not found: ${JSON.stringify(missing)}`,
+      );
+      console.error(`       actual messages: ${JSON.stringify(actualTexts)}`);
+      allPassed = false;
+      continue;
+    }
+  }
+
+  console.log(`[PASS] ${file}`);
+  console.log(`       rule "${expectedRule}" triggered — ${description}`);
 }
 
 // --- i18n:check violations ---
