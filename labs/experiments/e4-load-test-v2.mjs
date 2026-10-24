@@ -90,13 +90,16 @@ function startMonitor(client) {
   const samples = [];
   const interval = setInterval(async () => {
     try {
-      const res = await client.query(`
+      const res = await client.query(
+        `
         SELECT usename, count(*)::int AS cnt
         FROM pg_stat_activity
         WHERE datname = current_database()
           AND usename = ANY($1)
         GROUP BY usename
-      `, [ROLES]);
+      `,
+        [ROLES],
+      );
       const snapshot = {};
       for (const row of res.rows) snapshot[row.usename] = row.cnt;
       snapshot.__total = res.rows.reduce((s, r) => s + r.cnt, 0);
@@ -204,7 +207,9 @@ for (let i = 0; i < ENDPOINTS.length; i++) {
   );
   console.log(`    cereri:    ${entry.totalReqs} (acumulate: ${grandTotal})`);
   console.log(`    cold start: ${coldStartMs}ms`);
-  console.log(`    DB peak:   lab_core_user=${peak['lab_core_user'] ?? 0}  lab_booking_user=${peak['lab_booking_user'] ?? 0}  lab_multi_user=${peak['lab_multi_user'] ?? 0}  total=${peak['__total'] ?? 0}`);
+  console.log(
+    `    DB peak:   lab_core_user=${peak['lab_core_user'] ?? 0}  lab_booking_user=${peak['lab_booking_user'] ?? 0}  lab_multi_user=${peak['lab_multi_user'] ?? 0}  total=${peak['__total'] ?? 0}`,
+  );
 
   if (i < ENDPOINTS.length - 1) {
     console.log('\n  [pauză 60s — eliberare pooler...]\n');
