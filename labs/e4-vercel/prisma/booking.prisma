@@ -1,0 +1,35 @@
+generator client {
+  provider        = "prisma-client-js"
+  output          = "../generated/booking-client"
+  previewFeatures = ["multiSchema"]
+}
+
+datasource db {
+  provider = "postgresql"
+  schemas  = ["lab_booking"]
+}
+
+model Service {
+  id              String   @id @default(cuid())
+  organizationId  String
+  name            String
+  durationMinutes Int
+  createdAt       DateTime @default(now())
+
+  @@map("services")
+  @@schema("lab_booking")
+}
+
+model Appointment {
+  id             String   @id @default(cuid())
+  organizationId String
+  serviceId      String
+  contactId      String
+  staffMemberId  String?
+  scheduledAt    DateTime
+  status         String   @default("pending")
+  createdAt      DateTime @default(now())
+
+  @@map("appointments")
+  @@schema("lab_booking")
+}

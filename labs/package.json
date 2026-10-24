@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@prisma/client": "7.10.1",
+    "autocannon": "^7.0.0",
     "dotenv": "^16.0.0",
     "pg": "^8.0.0",
     "prisma": "7.10.1"
