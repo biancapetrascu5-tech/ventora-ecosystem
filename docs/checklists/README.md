@@ -5,7 +5,7 @@ Extrase fără modificări din `Ventora_Ecosystem_Specificatie_Completa_15_Aplic
 
 | Nr. | Aplicație | Funcționalități | Stare | Fișier |
 |---|---|---|---|---|
-| 01 | Ventora Booking | 59 | Not started | [01-booking.md](01-booking.md) |
+| 01 | Ventora Booking | 66 | Not started | [01-booking.md](01-booking.md) |
 | 02 | Ventora CRM | 66 | Not started | [02-crm.md](02-crm.md) |
 | 03 | Ventora Documents | 69 | Not started | [03-documents.md](03-documents.md) |
 | 04 | Ventora Contracts | 71 | Not started | [04-contracts.md](04-contracts.md) |
@@ -20,7 +20,7 @@ Extrase fără modificări din `Ventora_Ecosystem_Specificatie_Completa_15_Aplic
 | 13 | Ventora Finance | 109 | Not started | [13-finance.md](13-finance.md) |
 | 14 | Ventora Portal | 151 | Not started | [14-portal.md](14-portal.md) |
 | 15 | Ventora Network | 137 | Not started | [15-network.md](15-network.md) |
-| | **Total** | **1465** | | |
+| | **Total** | **1472** | | |
 
 Stări posibile: Not started → In development → Internal testing → Pilot → Production ready.
 
@@ -31,3 +31,9 @@ Stări posibile: Not started → In development → Internal testing → Pilot �
 - **Portal:** brief-ul spune 150; specificația conține 151.
 
 Conform ierarhiei, checklisturile au prioritate față de brief. Diferențele se corectează în brief.
+
+## Modificări aprobate după extragere
+
+| Data | Aplicație | Modificare | Decizie |
+|---|---|---|---|
+| 24.10.2026 | Booking | +7 funcționalități: SMS de pe numărul propriu (59 → 66), dependente de E-SMS-1 și de validarea juridică | D-SMS-9, `docs/SMS_NUMAR_PROPRIU.md` |

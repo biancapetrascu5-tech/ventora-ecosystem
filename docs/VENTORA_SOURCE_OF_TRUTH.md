@@ -9,7 +9,7 @@
 
 1. **Decizii aprobate ale fondatorilor + `docs/checklists/`** — CE construim. Prioritate maximă.
 2. **`docs/VENTORA_MASTER_BRIEF.md`** — viziunea și regulile de produs.
-3. **`docs/ARCHITECTURE.md`** v0.3.0 — CUM construim: structuri, principii, decizii tehnice.
+3. **`docs/ARCHITECTURE.md`** v0.3.1 — CUM construim: structuri, principii, decizii tehnice.
 4. **`docs/DESIGN_RULES.md`** + exportul din `docs/design/system/` — regulile vizuale.
 5. **Acest document** — indexul central.
 6. **`docs/adr/`** — deciziile arhitecturale individuale.
@@ -31,8 +31,9 @@
 
 | Document | Locație | Scop |
 |---|---|---|
-| Architecture v0.3.0 | `docs/ARCHITECTURE.md` | Structuri, principii, decizii, status CONFIRMAT/PROPUS/NECESITĂ DECIZIE |
+| Architecture v0.3.1 | `docs/ARCHITECTURE.md` | Structuri, principii, decizii, status CONFIRMAT/PROPUS/NECESITĂ DECIZIE |
 | Growth Engine | `docs/GROWTH_ENGINE.md` | Specificația completă a serviciului Core `core/growth` |
+| SMS de pe numărul propriu | `docs/SMS_NUMAR_PROPRIU.md` | `core/messaging`, adaptoarele SMS, experimentul E-SMS-1 — aprobat condiționat (D-SMS-1…9) |
 | Planul Faza 0 | `docs/plans/FAZA-0.md` | Pașii 0.1–0.4, experimente, criterii de ieșire |
 | Audit recoltare | `docs/audit-recoltare.md` | Inventarul `ventora_hub` (read-only) — sursa de lecții |
 
@@ -53,6 +54,7 @@
 | Iconuri aplicații | `docs/design/app-icons/` | 15 aplicații × 4 variante (default / dark / inactive / inactive-dark) |
 | Fișe review Product Experience | `docs/design/reviews/` | Decizii P1–P27 și D1–D14 aprobate |
 | Spec componente comerciale | `docs/design/SPEC_COMPONENTE_COMERCIALE.md` | GrowthSlot, RecommendationCard, UpgradeDialog etc. |
+| Spec ecrane SMS | `docs/design/SPEC_ECRANE_SMS.md` | Ecranele „SMS de pe numărul propriu" pentru Claude Design — sursa pentru Booking (9 secțiuni, toate stările) |
 | Șablon fișă review ecran | `docs/design/SCREEN_REVIEW_TEMPLATE.md` | Obligatoriu pentru fiecare ecran nou (DESIGN_RULES §15) |
 
 ---

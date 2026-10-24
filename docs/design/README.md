@@ -18,6 +18,7 @@
 | `app-icons/` | Cele 15 iconuri de aplicații, SVG standalone, câte 4 variante: `<app>`, `-dark`, `-inactive`, `-inactive-dark` | Pentru favicon-uri, manifeste, emailuri. În aplicații se folosește componenta `AppIcon`. Generate exact din glifele componentei `AppIcon` și din culorile documentate în `system/assets/App icons/README.md`. |
 | `reviews/` | Fișele Product Experience (Hub, Booking, Founder + Growth), rezumatul și revizuirea de microcopy | Deciziile P1–P27 și D1–D14 sunt aprobate; cele care ating arhitectura sunt în ARCHITECTURE §17.14. |
 | `SPEC_COMPONENTE_COMERCIALE.md` | Specificația componentelor Growth Engine dată lui Claude Design | Context pentru GrowthSlot, RecommendationCard, UpgradeDialog etc. |
+| `SPEC_ECRANE_SMS.md` | Cerințele pentru ecranele „SMS de pe numărul propriu” (Booking), de trimis la Claude Design | Neproiectate încă; specificația funcțională: `docs/SMS_NUMAR_PROPRIU.md`. |
 | `SCREEN_REVIEW_TEMPLATE.md` | Șablonul fișei de review (DESIGN_RULES §15) | Pentru fiecare ecran nou. |
 
 **Reguli:** nicio valoare vizuală inventată în cod; dacă lipsește ceva din export, se marchează „NECESITĂ DECIZIE FONDATORI” și se cere în Claude Design, nu se improvizează. Exporturile vechi („Ventora Hub”, launcher-ul, schițele de iconuri) au fost scoase și nu se mai folosesc.

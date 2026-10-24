@@ -1,12 +1,12 @@
 # 01 · Ventora Booking — checklist confirmat
 
 **Sursa:** Ventora_Ecosystem_Specificatie_Completa_15_Aplicatii_V1.docx
-**Funcționalități confirmate:** 59
+**Funcționalități confirmate:** 66 (59 din specificație + 7 adăugate pe 24.10.2026, D-SMS-9)
 **Stare aplicație:** Not started
 **Regulă:** lista e cerința de produs. Nu se elimină, nu se adaugă și nu se reformulează funcționalități fără decizia fondatorilor. Ordinea de livrare se stabilește separat.
 
 Bifează o funcționalitate doar când e implementată ȘI acoperită de teste.
-59 funcționalități selectate · 0 excluderi explicite · Sursă: Text
+59 funcționalități selectate · 0 excluderi explicite (în specificația sursă) · Sursă: Text
 lipit(6).txt
 
 ## Calendar & Programări (9)
@@ -45,7 +45,7 @@ lipit(6).txt
 - [ ] Politici de anulare și reprogramare
 - [ ] Lista neagră / restricții pentru abuzuri
 
-## Comunicare & Automatizări (8)
+## Comunicare & Automatizări (15)
 
 - [ ] Remindere email
 - [ ] Remindere SMS
@@ -55,6 +55,18 @@ lipit(6).txt
 - [ ] Automatizări predefinite activabile de organizație
 - [ ] Șabloane de mesaje controlate de Ventora
 - [ ] Notificări interne pentru personal
+
+### SMS de pe numărul propriu (adăugat 24.10.2026 · D-SMS-9 · specificație: `docs/SMS_NUMAR_PROPRIU.md`)
+
+> **Dependență:** aceste funcționalități depind de experimentul tehnic **E-SMS-1** și de validarea juridică (D-SMS-7). Nu se implementează înainte de raportul E-SMS-1 și de ADR-ul cu gateway-ul ales. Sunt obligatorii pentru lansarea comercială a Booking, cu condiția validărilor; dacă una pică, decizia revine fondatorilor. Rândul „Remindere SMS” de mai sus rămâne neschimbat.
+
+- [ ] Alegerea metodei de trimitere SMS la nivel de organizație: prin furnizorul Ventora sau de pe numărul propriu (telefon Android cu SIM)
+- [ ] Conectarea securizată a telefonului (cod QR de unică folosință), asociat cu organizația, cu revocare oricând
+- [ ] Trimiterea automată a mesajelor operaționale (remindere, confirmări, modificări, anulări) de pe SIM-ul propriu, fără duplicate și cu eșalonare
+- [ ] Starea fiecărui SMS vizibilă administratorului: în așteptare, predat telefonului, trimis, livrat (dacă există confirmare), eșuat (cu motiv), neconfirmat
+- [ ] Monitorizarea telefonului (conectat, baterie, semnal) și alertarea administratorului când trimiterea nu e disponibilă
+- [ ] Fără trimitere de rezervă cu cost fără acordul explicit al proprietarului (rezervă prin email opțională)
+- [ ] SMS de probă și ghid de configurare în setările Booking
 
 ## Billing & Payments (8)
 

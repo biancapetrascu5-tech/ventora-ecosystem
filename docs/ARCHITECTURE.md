@@ -1,6 +1,6 @@
 # VENTORA ECOSYSTEM — ARHITECTURĂ TEHNICĂ
 
-**Versiune:** 0.3.0
+**Versiune:** 0.3.1
 **Data:** 24 octombrie 2026
 **Stadiu:** Propunere. Nimic nu este implementat. Faza 0 nu începe fără aprobarea explicită a acestei versiuni.
 
@@ -20,6 +20,7 @@
 | 0.2.8 | 24.10.2026 | Growth Engine aprobat ca serviciu Core (D-GRW-1…11), cu clarificările fondatorilor; specificația completă în `GROWTH_ENGINE.md`. Neimplementat. Detalii: §17.12. |
 | 0.2.9 | 24.10.2026 | Standard nou: Global Product Experience & Behavioral Design (D-PX-1), review A–E pentru fiecare ecran (DESIGN_RULES §15). Adăugată nevoia de instrumentare a experienței de produs (§10.10, D-PX-2 deschisă). Detalii: §17.13. |
 | 0.3.0 | 24.10.2026 | Designul unificat aprobat (Claude Design, etapele 1–5, 52 de decizii) și exportat în `docs/design/system/`. Integrate deciziile din fișele de review care ating arhitectura: 2FA obligatoriu pentru Owner (P5), invitațiile expirate (P6), excepții cu termen (P17), anunțul la schimbarea versiunii de plan (P19), regulile Growth (P20–P25), termenul „plan” doar în Founder (D1). Detalii: §17.14. |
+| 0.3.1 | 24.10.2026 | Aprobat condiționat: SMS de pe numărul propriu al afacerii (D-SMS-1…9). Serviciu Core nou `messaging` cu adaptoarele `SMS_PROVIDER` și `ANDROID_SIM`, credențiale de dispozitiv, stări cu `UNKNOWN` separat de `FAILED`, experimentul E-SMS-1 după Faza 0. Booking: 59 → 66 de funcționalități. Specificația: `SMS_NUMAR_PROPRIU.md`. Detalii: §17.15. |
 
 ## Statusuri folosite în acest document
 
@@ -152,6 +153,7 @@ Core conține doar **servicii de business ale platformei**: lucruri pe care le d
 | `commercial` | Application registry, Plan, PlanVersion, Entitlement, Quota, Usage, AddOn, Override, Trial | CONFIRMAT (brief §12–14) |
 | `billing` | Subscription și facturarea serviciilor Ventora (separat de aplicația Finance) | CONFIRMAT (brief §43) |
 | `notifications` | Template, preferințe, livrare, istoric; fiecare notificare are categoria obligatorie `operational` sau `commercial`, cu preferințe separate | CONFIRMAT (brief §36; categoria: D-GRW-3) |
+| `messaging` | Canalele de trimitere folosite de `notifications`: interfața comună `SmsChannel`, adaptoarele `SMS_PROVIDER` și `ANDROID_SIM`, registrul dispozitivelor (telefoanele afacerilor), credențialele de dispozitiv, coada și eșalonarea pe dispozitiv, stările mesajelor, webhook-urile de stare, alertele de disponibilitate (§11.5). Specificația: `docs/SMS_NUMAR_PROPRIU.md`. | CONFIRMAT condiționat (D-SMS-1); implementarea după E-SMS-1 |
 | `growth` | Growth Engine: oferte, campanii, eligibilitate, sloturi, plafoane, tracking, experimente, oprire centrală (§8.7). Nu deține prețuri sau drepturi: le citește din `commercial` și `billing`. | CONFIRMAT (D-GRW-1) |
 | `audit` | Un singur AuditLog cu categorii | PROPUS (lecția L5 din audit) |
 | `support` | SupportTicket | CONFIRMAT (brief §39) |
@@ -459,6 +461,7 @@ export const manifest = {
 - `PlanVersion` e imuabilă după publicare. Abonamentul e legat de o versiune exactă. Migrarea clienților pe o versiune nouă e o acțiune explicită, cu regulă aleasă de Founder. Publicarea unei versiuni noi și migrarea clienților sunt **două acțiuni separate**.
 - **Anunțul la migrare (CONFIRMAT, P19):** când versiunea nouă e în **dezavantajul** clientului (preț mai mare sau mai puțin inclus), migrarea se programează cu **anunț cu cel puțin 30 de zile înainte**, fără excepție. Când e doar în **avantajul** clientului, se aplică imediat, cu anunț. Clasificarea (avantaj/dezavantaj) se calculează automat din diferențele dintre versiuni și se arată în editor; Founder nu o poate ocoli.
 - **Excepțiile au termen obligatoriu (CONFIRMAT, P17):** orice override are dată de expirare, **cel mult 12 luni**, prelungibilă explicit (prelungirea e auditată). Cu 7 zile înainte de expirare apare în „Prezentare” din Founder. Excepțiile nu se șterg: se încheie și rămân în istoric.
+- **SMS de pe numărul propriu (D-SMS-4):** funcționalitatea `booking.sms.ownNumber` în planurile Booking eligibile; numărul de telefoane conectate e o cotă de stoc (`booking.sms.devices`, 1 inclus), iar telefoanele suplimentare sunt add-on cumpărabil de Owner (D-COM-6). SMS-urile trimise de pe SIM-ul propriu **nu consumă** cota de SMS Ventora. Prețurile și planurile eligibile: NECESITĂ DECIZIE.
 - **Dreptul efectiv** = PlanVersion + add-on-uri active + excepții (override-uri) active, calculat de o singură funcție. Pattern-ul vine din `get-org-effective-limits.ts`, componenta recomandată de audit (L15). `null` înseamnă nelimitat.
 - Orice modificare făcută de Founder → `CommercialAuditEvent`.
 
@@ -777,6 +780,21 @@ packages/
 
 Implementare (PROPUS): chei API pe organizație (hash, scope-uri), rate limiting, webhooks semnate HMAC, log de livrare, versiune în URL (`/api/v1`). E un strat separat peste contractul modulului.
 
+### 11.5 Mesageria: canale și dispozitive
+
+**Status: CONFIRMAT condiționat (D-SMS-1…9); DE VALIDAT TEHNIC (E-SMS-1).** Specificația completă: `docs/SMS_NUMAR_PROPRIU.md`.
+
+- Aplicațiile trimit prin `notifications` (contract), niciodată direct printr-un canal. Canalul SMS e ales pe organizație: `messaging.sms.method = SMS_PROVIDER | ANDROID_SIM | DISABLED`.
+- Fluxul: outbox → Inngest → adaptor. Cheie de idempotență deterministă, cu constrângere unică, transmisă și gateway-ului.
+- **Retry doar înainte de predarea către dispozitiv.** După predare nu se retrimite automat; fără confirmare, mesajul devine `UNKNOWN`.
+- Stări comune: `QUEUED`, `DISPATCHED`, `SENT`, `DELIVERED`, `FAILED` (doar eșec confirmat, cu motiv tipizat), `UNKNOWN` (rezultat neconfirmat; nu se afișează niciodată ca „nu s-a trimis”), `CANCELLED`. Confirmările întârziate actualizează starea; cele în ordine greșită nu o dau înapoi.
+- `validUntil` pe fiecare mesaj; un mesaj expirat nu mai pleacă.
+- Eșalonare pe dispozitiv, cu plafon conservator și configurabil doar de Founder (limita sistemului Android nu e universală; se măsoară în E-SMS-1).
+- **În MVP, `ANDROID_SIM` acceptă doar mesaje operaționale** (reminder, confirmare, modificare, anulare), verificat pe server (D-SMS-6).
+- **Fără rezervă cu cost implicită** (D-SMS-5): rezerva prin furnizor doar bifată explicit de Owner; rezerva prin email opțională; mesajele `UNKNOWN` nu declanșează nicio rezervă.
+- Alertele de disponibilitate (telefon deconectat, eșecuri repetate, mesaje neconfirmate, baterie) sunt notificări `operational`.
+- Gateway-ul (SMS Gateway for Android, apoi textbee; aplicație proprie doar ca alternativă) se alege după E-SMS-1 și după verificarea licenței, securității, mentenanței și autentificării reale (D-SMS-2).
+
 ---
 
 ## 12. Securitate și izolare multi-tenant
@@ -828,6 +846,7 @@ Recomandare: **RLS activ din prima** pe tabelele organizațiilor, dacă experime
 **Status: CONFIRMAT (corecția #11)**
 
 - Sesiuni revocabile (§7.1).
+- **Credențiale de dispozitiv** pentru telefoanele care trimit SMS (§11.5): tip de identitate separat de sesiunile B2B, B2C și de token-urile clienților first-party; emise printr-un cod de împerechere de unică folosință (10 minute, hash); legate de o singură organizație, cu scopuri limitate (`sms:send`, `sms:status`); stocate doar ca hash; rotite periodic; revocabile individual, cu efect la următorul apel; webhook-urile dispozitivului sunt semnate și verificate; toate acțiunile auditate.
 - Separare B2B/B2C testată.
 - Acces Founder la date doar prin sesiune de suport auditată.
 - Secrete validate la pornire (minimum 32 de caractere unde e cazul) și detectate în repo (gitleaks).
@@ -1037,6 +1056,15 @@ Plus, la nivel de platformă: teste de webhook Stripe (semnătură, idempotenț�
 | D-GRW-16 | Plafoane: implicit 1/zi, 3/săptămână, 30 de zile; maxime permise 2/zi, 5/săptămână, minimum 14 zile (P25) | Da | CONFIRMAT | Nu |
 | D-UI-5 | Designul unificat aprobat; sursa unică = artefactul Claude Design exportat în `docs/design/system/` | Da | CONFIRMAT | Nu |
 | D-UX-3 | „Plan” doar în Founder; clienții văd „abonament” (D1) | Da | CONFIRMAT | Nu |
+| D-SMS-1 | Core Messaging cu adaptoarele `SMS_PROVIDER` și `ANDROID_SIM` (§11.5) | Da | CONFIRMAT condiționat | Nu |
+| D-SMS-2 | Ordinea: SMS Gateway for Android → textbee → aplicație proprie doar ca alternativă; alegerea după E-SMS-1 | Da | CONFIRMAT (ordinea); DE VALIDAT TEHNIC (alegerea) | După E-SMS-1 |
+| D-SMS-3 | APK ca distribuire inițială; Google Play de evaluat (excepțiile „Device automation” / „Connected device companion apps”) | Da | CONFIRMAT (APK); Play: DE VALIDAT | Da, Play |
+| D-SMS-4 | Un telefon inclus în planurile Booking eligibile, telefoanele suplimentare ca add-on | Da | CONFIRMAT (modelul); prețurile: NECESITĂ DECIZIE | Prețurile |
+| D-SMS-5 | Fără rezervă cu cost implicită; email opțional; furnizor doar cu acord explicit | Da | CONFIRMAT | Nu |
+| D-SMS-6 | În MVP, SIM-ul propriu doar pentru mesaje operaționale | Da | CONFIRMAT | Nu |
+| D-SMS-7 | Validarea juridică: condițiile operatorilor și baza legală pentru remindere | Obligatorie înainte de lansare | NECESITĂ DECIZIE | Da |
+| D-SMS-8 | Furnizorul SMS (SMSLink sau Twilio) | Înainte de F4 | NECESITĂ DECIZIE | Da |
+| D-SMS-9 | +7 funcționalități în checklistul Booking (59 → 66) | Da | CONFIRMAT | Nu |
 | D-ROAD-1 | Ordinea aplicațiilor după Booking | Propunerea din §15.3 | NECESITĂ DECIZIE | Da |
 | D-ROAD-2 | Booking prima aplicație | Da | CONFIRMAT | Nu |
 | D-ROAD-3 | Fluxuri verticale paralele, fără reducerea scope-ului | Da | CONFIRMAT | Nu |
@@ -1074,6 +1102,12 @@ Fiecare experiment produce un raport scurt și un ADR. Pentru toate se folosesc 
 | E8 | Rezervarea de cotă în concurență și la eșec de proces | Corectitudinea din §8.3 |
 | E9 | Sesiuni în DB (Better Auth), revocare, retrogradare; sesiune cu token pentru un client non-browser | Efectul imediat; aceeași revocare funcționează și pentru token |
 | E10 | Costul operațional | Timpul de setup pentru un modul nou, pașii manuali necesari |
+
+**După Faza 0, înainte de Booking (nu face parte din criteriile de ieșire din Faza 0):**
+
+| # | Experiment | Ce verifică |
+|---|---|---|
+| E-SMS-1 | SMS de pe numărul propriu prin gateway Android (§11.5) | Trimitere fără intervenție, zero duplicate, `UNKNOWN` vs `FAILED`, SMS lung / diacritice / multipart, restart, actualizări Android, pierderea conexiunii, confirmări întârziate, revocare, 72 de ore în fundal pe 2 mărci, plafonul real pe model, licența / securitatea / mentenanța / autentificarea gateway-ului, disponibilitatea în Google Play. Detalii: `docs/SMS_NUMAR_PROPRIU.md` §7. |
 
 ### 17.4 Informații lipsă din documentele existente
 
@@ -1162,6 +1196,17 @@ Fiecare experiment produce un raport scurt și un ADR. Pentru toate se folosesc 
    - D1 → D-UX-3 (§10.1).
 3. **Impact pe testare:** se adaugă la T5 (comercial) testele pentru termenul excepțiilor, clasificarea avantaj/dezavantaj și anunțul de 30 de zile; la testele Growth (F5): plafoanele maxime validate pe server, oprirea automată la 5%, audiența minimă și lipsa fallback-ului EN pentru oferte. Faza 0 nu se schimbă, în afară de tipurile din `packages/contracts` (2FA Owner și plafoanele intră ca tipuri, fără implementare).
 4. **Nicio decizie deschisă nu s-a închis prin această versiune** în afara celor de mai sus. D-COM-7, D-PX-2, D-PX-3, D-GRW-8 (validarea juridică), D-UX-2 rămân NECESITĂ DECIZIE.
+
+---
+
+### 17.15 Modificări în v0.3.1
+
+1. **SMS de pe numărul propriu al afacerii: aprobat condiționat** (D-SMS-1…9), cu cele 13 clarificări ale fondatorilor. Obligatoriu pentru lansarea comercială a Booking, cu condiția validării tehnice (E-SMS-1) și juridice (D-SMS-7). Specificația: `docs/SMS_NUMAR_PROPRIU.md`.
+2. Adăugate: `messaging` în §4, §11.5, credențialele de dispozitiv în §12.4, modelul comercial în §8.5, experimentul E-SMS-1 în §17.3.
+3. Checklistul Booking: +7 funcționalități (59 → 66; total ecosistem 1.472), cu dependența de E-SMS-1 documentată în checklist.
+4. Design: cerințele pentru ecranele noi în `docs/design/SPEC_ECRANE_SMS.md`, de trimis la Claude Design.
+5. Roadmap: E-SMS-1 după închiderea Fazei 0 și înainte de Booking; `messaging` se construiește în F4, odată cu `notifications`; adaptorul `ANDROID_SIM` înainte de lansarea comercială a Booking. **Faza 0 nu se schimbă.**
+6. Deschise: D-SMS-4 (prețurile, planurile eligibile), D-SMS-7 (validarea juridică), D-SMS-8 (furnizorul SMS = §17.4 punctul 6), alegerea gateway-ului după E-SMS-1, încadrarea în excepțiile Google Play.
 
 ---
 
