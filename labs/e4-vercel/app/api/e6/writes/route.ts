@@ -41,8 +41,7 @@ async function runRollback<T>(
     });
   } catch (e) {
     const msg = e instanceof Error ? e.message : String(e);
-    if (msg !== '__rb__')
-      return { result: null, rolledBack: false, error: msg };
+    if (msg !== '__rb__') return { result: null, rolledBack: false, error: msg };
   }
   return { result, rolledBack: true, error: null };
 }
@@ -90,8 +89,10 @@ export async function GET(request: Request) {
 
   // E6-9: UPDATE rândul altei organizații — USING face rândul invizibil → 0 rânduri actualizate
   {
-    const { result, error } = await runRollback('e4-org-alpha', (tx) =>
-      tx.$queryRaw<{ count: bigint }[]>`
+    const { result, error } = await runRollback(
+      'e4-org-alpha',
+      (tx) =>
+        tx.$queryRaw<{ count: bigint }[]>`
         UPDATE lab_booking.services SET name = 'hacked'
         WHERE "organizationId" = 'e4-org-beta'
         RETURNING id
@@ -110,8 +111,10 @@ export async function GET(request: Request) {
 
   // E6-10: DELETE rândul altei organizații — USING face rândul invizibil → 0 rânduri șterse
   {
-    const { result, error } = await runRollback('e4-org-alpha', (tx) =>
-      tx.$queryRaw<{ id: string }[]>`
+    const { result, error } = await runRollback(
+      'e4-org-alpha',
+      (tx) =>
+        tx.$queryRaw<{ id: string }[]>`
         DELETE FROM lab_booking.services
         WHERE "organizationId" = 'e4-org-beta'
         RETURNING id
@@ -133,7 +136,10 @@ export async function GET(request: Request) {
     const { result, error } = await runRollback('e4-org-alpha', (tx) =>
       tx.service.updateMany({ data: { name: 'rls-test-touched' } }),
     );
-    const count = result && typeof result === 'object' && 'count' in result ? (result as { count: number }).count : -1;
+    const count =
+      result && typeof result === 'object' && 'count' in result
+        ? (result as { count: number }).count
+        : -1;
     // alpha are 2 servicii; beta are 1; fără RLS ar fi 3
     const rlsCaught = count >= 0 && count <= 2;
     results['E6-11: updateMany fara filtru org (Prisma)'] = {
@@ -147,10 +153,11 @@ export async function GET(request: Request) {
 
   // E6-12: deleteMany fără filtru de org — RLS limitează la rândurile org-ului curent
   {
-    const { result, error } = await runRollback('e4-org-alpha', (tx) =>
-      tx.service.deleteMany({}),
-    );
-    const count = result && typeof result === 'object' && 'count' in result ? (result as { count: number }).count : -1;
+    const { result, error } = await runRollback('e4-org-alpha', (tx) => tx.service.deleteMany({}));
+    const count =
+      result && typeof result === 'object' && 'count' in result
+        ? (result as { count: number }).count
+        : -1;
     const rlsCaught = count >= 0 && count <= 2;
     results['E6-12: deleteMany fara filtru (Prisma)'] = {
       rlsCaught,
