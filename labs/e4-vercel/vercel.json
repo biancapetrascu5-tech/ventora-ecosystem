@@ -1,5 +1,5 @@
 {
   "regions": ["fra1"],
-  "installCommand": "corepack prepare pnpm@9.14.0 --activate && pnpm install --frozen-lockfile",
+  "installCommand": "corepack enable && corepack prepare pnpm@9.14.0 --activate && pnpm --version && pnpm install --frozen-lockfile",
   "buildCommand": "pnpm run build"
 }
