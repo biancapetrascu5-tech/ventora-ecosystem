@@ -7,7 +7,9 @@
     "setup-db": "node experiments/setup-db.mjs",
     "e2:check": "node experiments/e2-check.mjs",
     "e3:test": "node experiments/e3-test.mjs",
-    "e1:compare": "node experiments/e1/compare.mjs"
+    "e1:compare": "node experiments/e1/compare.mjs",
+    "lab:staging:migrate": "node experiments/staging-migrate.mjs",
+    "lab:staging:seed": "node experiments/seed-staging.mjs"
   },
   "dependencies": {
     "@prisma/client": "7.10.1",

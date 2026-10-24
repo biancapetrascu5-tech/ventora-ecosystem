@@ -1,25 +1,54 @@
 /**
  * seed-staging.mjs — date fictive pe Supabase staging pentru E4/E5
  *
- * Rulat LOCAL, o singură dată, după migrate deploy și setup-db-staging.sql.
- * Folosește DATABASE_URL_SUPERUSER (session pooler, port 5432).
- * Idempotent: ON CONFLICT DO NOTHING — poate fi rulat din nou fără efecte.
+ * Rulat LOCAL, o singura data, dupa migrate deploy si setup-db-staging.sql.
+ * Citeste DATABASE_URL_SUPERUSER NUMAI din labs/.env.local (nu din .env, nu din mediu).
+ * Refuza daca variabila lipseste sau daca hostul contine "localhost".
+ * Idempotent: ON CONFLICT DO NOTHING — poate fi rulat din nou fara efecte.
  *
  * Rulare:
  *   cd C:\Projects\ventora-ecosystem\labs
- *   node experiments/seed-staging.mjs
+ *   npm run lab:staging:seed
  */
 
-import 'dotenv/config';
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import dotenv from 'dotenv';
 import pg from 'pg';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const labsDir = path.resolve(__dirname, '..');
+const envFile = path.join(labsDir, '.env.local');
+
+if (!fs.existsSync(envFile)) {
+  console.error(`\nEroare: lipseste fisierul labs/.env.local`);
+  process.exit(1);
+}
+const parsedEnv = dotenv.parse(fs.readFileSync(envFile));
+const urlFromFile = parsedEnv['DATABASE_URL_SUPERUSER'];
+
+if (!urlFromFile) {
+  console.error(`\nEroare: DATABASE_URL_SUPERUSER lipseste din labs/.env.local`);
+  process.exit(1);
+}
+let parsedUrl;
+try { parsedUrl = new URL(urlFromFile); } catch {
+  console.error(`\nEroare: DATABASE_URL_SUPERUSER nu este un URL valid`); process.exit(1);
+}
+const h = parsedUrl.hostname.toLowerCase();
+if (h === 'localhost' || h === '127.0.0.1' || h === '::1' || h.endsWith('.local')) {
+  console.error(`\nEroare: DATABASE_URL_SUPERUSER pointeaza spre localhost — tinta este Supabase staging.`);
+  console.error(`Host detectat: ${parsedUrl.hostname}`); process.exit(1);
+}
+console.log(`\nSeed → ${parsedUrl.hostname}:${parsedUrl.port} / ${parsedUrl.pathname.replace('/', '') || 'postgres'}\n`);
+
+// Inlocuieste process.env.DATABASE_URL_SUPERUSER cu valoarea din .env.local
+process.env.DATABASE_URL_SUPERUSER = urlFromFile;
 
 const { Client } = pg;
 
-const url = process.env.DATABASE_URL_SUPERUSER;
-if (!url) {
-  console.error('Lipsă DATABASE_URL_SUPERUSER în .env.local');
-  process.exit(1);
-}
+const url = urlFromFile;
 
 const client = new Client({ connectionString: url });
 await client.connect();
