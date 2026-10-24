@@ -58,10 +58,14 @@ export async function GET(request: Request) {
         await tx.$executeRawUnsafe('SET LOCAL ROLE lab_booking_user');
         await tx.$executeRaw`SELECT set_config('app.organization_id', 'e4-org-alpha', true)`;
         // Încearcă INSERT cu orgId = beta (NU alpha — violează WITH CHECK)
-        await tx.$queryRaw`
-          INSERT INTO lab_booking.services (id, "organizationId", name, "durationMinutes", price, "createdAt", "updatedAt")
-          VALUES ('e6-test-insert-hack', 'e4-org-beta', 'CrossOrgHack', 30, 0, NOW(), NOW())
-        `;
+        // Folosim Prisma create() — știe schema exactă, evităm erori de coloană lipsă
+        await tx.service.create({
+          data: {
+            id: 'e6-test-insert-hack-' + Date.now(),
+            organizationId: 'e4-org-beta',
+            name: 'CrossOrgHack',
+          },
+        });
         // Dacă ajungem aici, RLS nu a blocat → rollback oricum
         throw new Error('__rb__');
       });
