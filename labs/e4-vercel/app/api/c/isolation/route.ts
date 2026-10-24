@@ -94,13 +94,33 @@ export async function GET(request: Request) {
     crmInaccessibleFromRuntime = true;
   }
 
+  // 5. ROLLBACK case: SET LOCAL ROLE must revert even on failed transaction
+  let roleAfterRollback: string | null = null;
+  let rollbackRoleRevertedCorrectly = false;
+
+  try {
+    await db.$transaction(async (tx) => {
+      await tx.$executeRawUnsafe('SET LOCAL ROLE lab_booking_user');
+      throw new Error('intentional rollback to test role revert');
+    });
+  } catch {
+    // expected — we caused the rollback deliberately
+  }
+
+  const [{ current_user: roleAfterRbk }] = await db.$queryRaw<[{ current_user: string }]>`
+    SELECT current_user
+  `;
+  roleAfterRollback = roleAfterRbk;
+  rollbackRoleRevertedCorrectly = roleAfterRbk === connectRole;
+
   const isolationOk =
     bookingRoleInsideTx === 'lab_booking_user' &&
     bookingAccessOk === true &&
     crmAccessDenied === true &&
     roleAfterTx === connectRole &&
     bookingInaccessibleFromRuntime === true &&
-    crmInaccessibleFromRuntime === true;
+    crmInaccessibleFromRuntime === true &&
+    rollbackRoleRevertedCorrectly === true;
 
   return Response.json({
     variant: 'C',
@@ -117,6 +137,8 @@ export async function GET(request: Request) {
       bookingInaccessibleFromRuntimeAfterTx: bookingInaccessibleFromRuntime,
       bookingAfterTxError,
       crmInaccessibleFromRuntime,
+      roleAfterRollback,
+      rollbackRoleRevertedCorrectly,
     },
     region: request.headers.get('x-vercel-id') ?? 'local',
     timestamp: new Date().toISOString(),
