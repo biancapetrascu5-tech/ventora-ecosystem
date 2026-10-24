@@ -6,11 +6,7 @@ import { Input } from '../src/Input/Input';
 
 describe('FormField', () => {
   it('renders label and input', () => {
-    render(
-      <FormField label="Email">
-        {({ id }) => <Input id={id} type="email" />}
-      </FormField>
-    );
+    render(<FormField label="Email">{({ id }) => <Input id={id} type="email" />}</FormField>);
     expect(screen.getByLabelText('Email')).toBeDefined();
   });
 
@@ -18,7 +14,7 @@ describe('FormField', () => {
     render(
       <FormField label="Cod poștal" hint="Format: 6 cifre">
         <Input />
-      </FormField>
+      </FormField>,
     );
     expect(screen.getByText('Format: 6 cifre')).toBeDefined();
   });
@@ -27,7 +23,7 @@ describe('FormField', () => {
     render(
       <FormField label="Email" error="Adresă invalidă">
         <Input />
-      </FormField>
+      </FormField>,
     );
     const error = screen.getByRole('alert');
     expect(error.textContent).toContain('Adresă invalidă');
@@ -37,7 +33,7 @@ describe('FormField', () => {
     render(
       <FormField label="Email" hint="Hint" error="Eroare">
         <Input />
-      </FormField>
+      </FormField>,
     );
     expect(screen.queryByText('Hint')).toBeNull();
   });
@@ -46,7 +42,7 @@ describe('FormField', () => {
     const { container } = render(
       <FormField label="Email" required>
         {({ id, isInvalid }) => <Input id={id} isInvalid={isInvalid} type="email" />}
-      </FormField>
+      </FormField>,
     );
     const results = await axe.run(container);
     expect(results.violations).toHaveLength(0);

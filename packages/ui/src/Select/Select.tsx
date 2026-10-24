@@ -62,7 +62,9 @@ export function Select({
       <RACButton className={styles.trigger}>
         <SelectValue className={styles.triggerValue}>
           {({ selectedItem }) =>
-            selectedItem ? (selectedItem as SelectOption).label : (
+            selectedItem ? (
+              (selectedItem as SelectOption).label
+            ) : (
               <span data-placeholder>{placeholder}</span>
             )
           }
@@ -70,10 +72,7 @@ export function Select({
         <Icon icon="chevron-down" size="sm" aria-hidden className={styles.triggerIcon} />
       </RACButton>
       <Popover className={styles.popover}>
-        <ListBox
-          items={options}
-          className={styles.listbox}
-        >
+        <ListBox items={options} className={styles.listbox}>
           {(item) => (
             <ListBoxItem
               key={item.value}

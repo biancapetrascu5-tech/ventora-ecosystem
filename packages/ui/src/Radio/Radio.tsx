@@ -16,10 +16,7 @@ export interface RadioProps extends Omit<RACRadioProps, 'className' | 'children'
 
 export function Radio({ children, className, ...props }: RadioProps) {
   return (
-    <RACRadio
-      {...props}
-      className={cn(styles.root, className)}
-    >
+    <RACRadio {...props} className={cn(styles.root, className)}>
       <div className={styles.dot}>
         <div className={styles.inner} aria-hidden />
       </div>
@@ -53,7 +50,7 @@ export function RadioGroup({
         styles.group,
         orientation === 'horizontal' && styles.groupHorizontal,
         isInvalid && styles.invalid,
-        className
+        className,
       )}
     >
       {label && <span className={styles.groupLabel}>{label}</span>}

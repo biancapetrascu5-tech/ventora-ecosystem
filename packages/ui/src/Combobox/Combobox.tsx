@@ -62,10 +62,7 @@ export function Combobox({
       className={cn(styles.root, isInvalid && styles.invalid, className)}
     >
       <div className={styles.inputWrapper}>
-        <Input
-          placeholder={placeholder}
-          className={styles.input}
-        />
+        <Input placeholder={placeholder} className={styles.input} />
         <RACButton className={styles.toggleButton}>
           <Icon icon="chevron-down" size="sm" aria-hidden />
         </RACButton>
@@ -74,9 +71,7 @@ export function Combobox({
         <ListBox
           items={options}
           className={styles.listbox}
-          renderEmptyState={() => (
-            <div className={styles.noResults}>{noResultsLabel}</div>
-          )}
+          renderEmptyState={() => <div className={styles.noResults}>{noResultsLabel}</div>}
         >
           {(item) => (
             <ListBoxItem

@@ -18,7 +18,15 @@ describe('Button', () => {
   it('calls onPress when clicked', async () => {
     const user = userEvent.setup();
     let called = false;
-    render(<Button onPress={() => { called = true; }}>Click</Button>);
+    render(
+      <Button
+        onPress={() => {
+          called = true;
+        }}
+      >
+        Click
+      </Button>,
+    );
     await user.click(screen.getByRole('button'));
     expect(called).toBe(true);
   });
@@ -30,7 +38,7 @@ describe('Button', () => {
         <Button variant="secondary">Secondary</Button>
         <Button variant="quiet">Quiet</Button>
         <Button variant="danger">Danger</Button>
-      </>
+      </>,
     );
     expect(screen.getAllByRole('button').length).toBe(4);
     unmount();

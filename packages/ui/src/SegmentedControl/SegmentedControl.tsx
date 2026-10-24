@@ -1,10 +1,6 @@
 'use client';
 
-import {
-  RadioGroup,
-  Radio,
-  type RadioGroupProps,
-} from 'react-aria-components';
+import { RadioGroup, Radio, type RadioGroupProps } from 'react-aria-components';
 import { cn } from '../lib/cn';
 import styles from './SegmentedControl.module.css';
 
@@ -14,7 +10,10 @@ export interface SegmentedControlOption {
   isDisabled?: boolean;
 }
 
-export interface SegmentedControlProps extends Omit<RadioGroupProps, 'children' | 'className' | 'orientation'> {
+export interface SegmentedControlProps extends Omit<
+  RadioGroupProps,
+  'children' | 'className' | 'orientation'
+> {
   options: SegmentedControlOption[];
   value?: string;
   defaultValue?: string;

@@ -24,20 +24,14 @@ const buttonVariants = cva(styles.root, {
 });
 
 export interface ButtonProps
-  extends Omit<RACButtonProps, 'className' | 'style' | 'children'>,
+  extends
+    Omit<RACButtonProps, 'className' | 'style' | 'children'>,
     VariantProps<typeof buttonVariants> {
   className?: string;
   children?: React.ReactNode;
 }
 
-export function Button({
-  variant,
-  size,
-  className,
-  children,
-  isPending,
-  ...props
-}: ButtonProps) {
+export function Button({ variant, size, className, children, isPending, ...props }: ButtonProps) {
   return (
     <RACButton
       {...props}

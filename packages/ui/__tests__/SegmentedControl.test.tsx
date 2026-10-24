@@ -24,17 +24,17 @@ describe('SegmentedControl', () => {
       <SegmentedControl
         aria-label="Vizualizare"
         options={options}
-        onChange={(v) => { selected = v; }}
-      />
+        onChange={(v) => {
+          selected = v;
+        }}
+      />,
     );
     await user.click(screen.getByRole('radio', { name: 'Grilă' }));
     expect(selected).toBe('grid');
   });
 
   it('has no axe violations', async () => {
-    const { container } = render(
-      <SegmentedControl aria-label="Vizualizare" options={options} />
-    );
+    const { container } = render(<SegmentedControl aria-label="Vizualizare" options={options} />);
     const results = await axe.run(container, {
       rules: {
         // RAC Tabs renders tablist without tabpanel in standalone use — by design

@@ -5,8 +5,7 @@ import { Icon, type IconName } from '../Icon/Icon';
 import { cn } from '../lib/cn';
 import styles from './Input.module.css';
 
-export interface InputProps
-  extends Omit<InputHTMLAttributes<HTMLInputElement>, 'size' | 'prefix'> {
+export interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'size' | 'prefix'> {
   isInvalid?: boolean;
   iconStart?: IconName;
   iconEnd?: IconName;

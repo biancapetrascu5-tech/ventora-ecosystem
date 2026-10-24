@@ -5,9 +5,7 @@ import { FileUpload } from '../src/FileUpload/FileUpload';
 
 describe('FileUpload', () => {
   it('renders title and hint', () => {
-    render(
-      <FileUpload title="Încarcă fișiere" hint="PDF, max 5MB" />
-    );
+    render(<FileUpload title="Încarcă fișiere" hint="PDF, max 5MB" />);
     expect(screen.getByText('Încarcă fișiere')).toBeDefined();
     expect(screen.getByText('PDF, max 5MB')).toBeDefined();
   });
@@ -19,7 +17,7 @@ describe('FileUpload', () => {
 
   it('has no axe violations', async () => {
     const { container } = render(
-      <FileUpload title="Încarcă documente" hint="PDF, DOCX — max 10MB" />
+      <FileUpload title="Încarcă documente" hint="PDF, DOCX — max 10MB" />,
     );
     const results = await axe.run(container);
     expect(results.violations).toHaveLength(0);

@@ -35,7 +35,9 @@ if (typeof window !== 'undefined') {
     if (typeof window.CSS.escape === 'undefined') {
       try {
         Object.defineProperty(window.CSS, 'escape', { value: cssEscape, writable: true });
-      } catch { /* read-only property in some envs */ }
+      } catch {
+        /* read-only property in some envs */
+      }
     }
   }
 }

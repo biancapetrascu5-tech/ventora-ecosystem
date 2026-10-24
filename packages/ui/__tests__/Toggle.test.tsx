@@ -13,7 +13,15 @@ describe('Toggle', () => {
   it('toggles when clicked', async () => {
     const user = userEvent.setup();
     let value = false;
-    render(<Toggle onChange={(v) => { value = v; }}>Toggle</Toggle>);
+    render(
+      <Toggle
+        onChange={(v) => {
+          value = v;
+        }}
+      >
+        Toggle
+      </Toggle>,
+    );
     await user.click(screen.getByRole('switch'));
     expect(value).toBe(true);
   });

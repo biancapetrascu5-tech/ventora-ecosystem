@@ -15,9 +15,7 @@ const eslintConfig = [
     files: ['**/*.{ts,tsx}'],
     plugins: { boundaries },
     settings: {
-      'boundaries/elements': [
-        { type: 'package', pattern: 'packages/*' },
-      ],
+      'boundaries/elements': [{ type: 'package', pattern: 'packages/*' }],
       'boundaries/root-path': '../../',
     },
     rules: {
@@ -30,7 +28,8 @@ const eslintConfig = [
         {
           selector:
             'Property[key.name=/^(color|background|backgroundColor|borderColor|fill|stroke)$/][value.type="Literal"][value.value=/^(#|rgb|hsl)/]',
-          message: '[no-inline-color] Use design tokens via var(--...) instead of hardcoded colors.',
+          message:
+            '[no-inline-color] Use design tokens via var(--...) instead of hardcoded colors.',
         },
       ],
     },

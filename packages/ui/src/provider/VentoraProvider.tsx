@@ -13,9 +13,8 @@ export function VentoraProvider({ children, defaultTheme = 'auto' }: VentoraProv
   const [resolvedTheme, setResolvedTheme] = useState<'light' | 'dark'>('light');
 
   useEffect(() => {
-    const stored = (typeof localStorage !== 'undefined' && localStorage.getItem('vt-theme')) as
-      | Theme
-      | null;
+    const stored = (typeof localStorage !== 'undefined' &&
+      localStorage.getItem('vt-theme')) as Theme | null;
     if (stored && ['light', 'dark', 'auto'].includes(stored)) {
       setThemeState(stored);
     }

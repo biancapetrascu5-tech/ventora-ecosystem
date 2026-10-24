@@ -25,7 +25,9 @@ describe('Input', () => {
 
   it('has no axe violations', async () => {
     const { container } = render(
-      <label>Email <Input type="email" /></label>
+      <label>
+        Email <Input type="email" />
+      </label>,
     );
     const results = await axe.run(container);
     expect(results.violations).toHaveLength(0);

@@ -1,6 +1,9 @@
 'use client';
 
-import { Checkbox as RACCheckbox, type CheckboxProps as RACCheckboxProps } from 'react-aria-components';
+import {
+  Checkbox as RACCheckbox,
+  type CheckboxProps as RACCheckboxProps,
+} from 'react-aria-components';
 import { Check, Minus } from 'lucide-react';
 import { cn } from '../lib/cn';
 import styles from './Checkbox.module.css';

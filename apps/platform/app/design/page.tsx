@@ -374,13 +374,23 @@ export default function DesignPage() {
           <Button variant="danger">Pericol</Button>
         </div>
         <div className={styles.componentRow}>
-          <Button variant="primary" size="sm">Mic</Button>
-          <Button variant="primary" size="md">Mediu</Button>
-          <Button variant="primary" size="lg">Mare</Button>
+          <Button variant="primary" size="sm">
+            Mic
+          </Button>
+          <Button variant="primary" size="md">
+            Mediu
+          </Button>
+          <Button variant="primary" size="lg">
+            Mare
+          </Button>
         </div>
         <div className={styles.componentRow}>
-          <Button variant="primary" isPending>Se salvează...</Button>
-          <Button variant="primary" isDisabled>Dezactivat</Button>
+          <Button variant="primary" isPending>
+            Se salvează...
+          </Button>
+          <Button variant="primary" isDisabled>
+            Dezactivat
+          </Button>
         </div>
       </Section>
 
@@ -432,11 +442,7 @@ export default function DesignPage() {
             ]}
             placeholder="Alege limba"
           />
-          <Select
-            options={[{ value: 'ro', label: 'Română' }]}
-            placeholder="Invalid"
-            isInvalid
-          />
+          <Select options={[{ value: 'ro', label: 'Română' }]} placeholder="Invalid" isInvalid />
           <Select
             options={[{ value: 'ro', label: 'Română' }]}
             placeholder="Dezactivat"
@@ -460,7 +466,9 @@ export default function DesignPage() {
           <RadioGroup label="Vertical (default)">
             <Radio value="a">Opțiunea A</Radio>
             <Radio value="b">Opțiunea B</Radio>
-            <Radio value="c" isDisabled>Dezactivat</Radio>
+            <Radio value="c" isDisabled>
+              Dezactivat
+            </Radio>
           </RadioGroup>
           <RadioGroup label="Orizontal" orientation="horizontal">
             <Radio value="x">X</Radio>
@@ -482,12 +490,24 @@ export default function DesignPage() {
         <div className={styles.componentStack}>
           <FormField label="Email" required hint="Adresa ta de email de afaceri">
             {({ id, isInvalid, 'aria-describedby': describedBy }) => (
-              <Input id={id} isInvalid={isInvalid} aria-describedby={describedBy} type="email" placeholder="ana@firma.ro" />
+              <Input
+                id={id}
+                isInvalid={isInvalid}
+                aria-describedby={describedBy}
+                type="email"
+                placeholder="ana@firma.ro"
+              />
             )}
           </FormField>
           <FormField label="Mesaj" error="Câmpul este obligatoriu">
             {({ id, isInvalid, 'aria-describedby': describedBy }) => (
-              <Textarea id={id} isInvalid={isInvalid} aria-describedby={describedBy} rows={3} placeholder="Scrie un mesaj..." />
+              <Textarea
+                id={id}
+                isInvalid={isInvalid}
+                aria-describedby={describedBy}
+                rows={3}
+                placeholder="Scrie un mesaj..."
+              />
             )}
           </FormField>
         </div>
@@ -550,15 +570,8 @@ export default function DesignPage() {
             multiple
             maxSize={10 * 1024 * 1024}
           />
-          <FileUpload
-            title="Stare invalid"
-            hint="Fișierul nu este acceptat"
-            isInvalid
-          />
-          <FileUpload
-            title="Dezactivat"
-            isDisabled
-          />
+          <FileUpload title="Stare invalid" hint="Fișierul nu este acceptat" isInvalid />
+          <FileUpload title="Dezactivat" isDisabled />
         </div>
       </Section>
     </div>

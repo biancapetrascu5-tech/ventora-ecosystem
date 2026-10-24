@@ -7,7 +7,9 @@ import styles from './FormField.module.css';
 
 export interface FormFieldProps {
   label: string;
-  children: React.ReactNode | ((props: { id: string; isInvalid: boolean; 'aria-describedby'?: string }) => React.ReactNode);
+  children:
+    | React.ReactNode
+    | ((props: { id: string; isInvalid: boolean; 'aria-describedby'?: string }) => React.ReactNode);
   hint?: string;
   error?: string;
   required?: boolean;
@@ -27,11 +29,17 @@ export function FormField({ label, children, hint, error, required, className }:
     <div className={cn(styles.root, className)}>
       <label htmlFor={id} className={styles.label}>
         {label}
-        {required && <span className={styles.required} aria-hidden>*</span>}
+        {required && (
+          <span className={styles.required} aria-hidden>
+            *
+          </span>
+        )}
       </label>
       {typeof children === 'function' ? children(childProps) : children}
       {hint && !error && (
-        <span id={hintId} className={styles.hint}>{hint}</span>
+        <span id={hintId} className={styles.hint}>
+          {hint}
+        </span>
       )}
       {error && (
         <span id={errorId} className={styles.error} role="alert">

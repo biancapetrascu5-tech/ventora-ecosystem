@@ -75,9 +75,12 @@ export function FileUpload({
           dragOver && styles.dragOver,
           focused && styles.focused,
           isDisabled && styles.disabled,
-          isInvalid && styles.invalid
+          isInvalid && styles.invalid,
         )}
-        onDragOver={(e) => { e.preventDefault(); if (!isDisabled) setDragOver(true); }}
+        onDragOver={(e) => {
+          e.preventDefault();
+          if (!isDisabled) setDragOver(true);
+        }}
         onDragLeave={() => setDragOver(false)}
         onDrop={handleDrop}
         onFocus={() => setFocused(true)}

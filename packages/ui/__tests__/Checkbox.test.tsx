@@ -13,7 +13,15 @@ describe('Checkbox', () => {
   it('toggles when clicked', async () => {
     const user = userEvent.setup();
     let value = false;
-    render(<Checkbox onChange={(v) => { value = v; }}>Check</Checkbox>);
+    render(
+      <Checkbox
+        onChange={(v) => {
+          value = v;
+        }}
+      >
+        Check
+      </Checkbox>,
+    );
     await user.click(screen.getByRole('checkbox'));
     expect(value).toBe(true);
   });

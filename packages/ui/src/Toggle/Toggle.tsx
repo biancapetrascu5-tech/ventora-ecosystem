@@ -12,10 +12,7 @@ export interface ToggleProps extends Omit<RACSwitchProps, 'className' | 'childre
 
 export function Toggle({ children, isInvalid, className, ...props }: ToggleProps) {
   return (
-    <RACSwitch
-      {...props}
-      className={cn(styles.root, isInvalid && styles.invalid, className)}
-    >
+    <RACSwitch {...props} className={cn(styles.root, isInvalid && styles.invalid, className)}>
       <div className={styles.track}>
         <div className={styles.thumb} aria-hidden />
       </div>

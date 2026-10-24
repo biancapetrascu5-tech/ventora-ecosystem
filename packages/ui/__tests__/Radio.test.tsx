@@ -10,7 +10,7 @@ describe('RadioGroup', () => {
       <RadioGroup label="Mărime">
         <Radio value="sm">Mic</Radio>
         <Radio value="md">Mediu</Radio>
-      </RadioGroup>
+      </RadioGroup>,
     );
     expect(screen.getByRole('radio', { name: 'Mic' })).toBeDefined();
     expect(screen.getByRole('radio', { name: 'Mediu' })).toBeDefined();
@@ -20,10 +20,15 @@ describe('RadioGroup', () => {
     const user = userEvent.setup();
     let selected = '';
     render(
-      <RadioGroup label="Mărime" onChange={(v) => { selected = v; }}>
+      <RadioGroup
+        label="Mărime"
+        onChange={(v) => {
+          selected = v;
+        }}
+      >
         <Radio value="sm">Mic</Radio>
         <Radio value="md">Mediu</Radio>
-      </RadioGroup>
+      </RadioGroup>,
     );
     await user.click(screen.getByRole('radio', { name: 'Mic' }));
     expect(selected).toBe('sm');
@@ -34,7 +39,7 @@ describe('RadioGroup', () => {
       <RadioGroup label="Mărime">
         <Radio value="sm">Mic</Radio>
         <Radio value="md">Mediu</Radio>
-      </RadioGroup>
+      </RadioGroup>,
     );
     const results = await axe.run(container);
     expect(results.violations).toHaveLength(0);

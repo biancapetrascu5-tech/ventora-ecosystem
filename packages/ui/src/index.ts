@@ -39,7 +39,10 @@ export { FormField } from './FormField/FormField';
 export type { FormFieldProps } from './FormField/FormField';
 
 export { SegmentedControl } from './SegmentedControl/SegmentedControl';
-export type { SegmentedControlProps, SegmentedControlOption } from './SegmentedControl/SegmentedControl';
+export type {
+  SegmentedControlProps,
+  SegmentedControlOption,
+} from './SegmentedControl/SegmentedControl';
 
 export { FileUpload } from './FileUpload/FileUpload';
 export type { FileUploadProps } from './FileUpload/FileUpload';
