@@ -1,0 +1,108 @@
+.group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.groupHorizontal {
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+}
+
+.root {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  cursor: pointer;
+  user-select: none;
+}
+
+.root[data-disabled] {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.dot {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  border: var(--border-width-control) solid var(--control-border);
+  border-radius: 50%;
+  background: var(--sheet);
+  transition:
+    border-color var(--duration-instant) var(--ease-standard),
+    background var(--duration-instant) var(--ease-standard);
+}
+
+.root[data-hovered]:not([data-disabled]) .dot {
+  border-color: var(--control-border-hover);
+  background: var(--state-hover);
+}
+
+.root[data-pressed]:not([data-disabled]) .dot {
+  background: var(--state-pressed);
+}
+
+.root[data-focus-visible] .dot {
+  outline: var(--focus-ring-width) solid var(--focus-ring);
+  outline-offset: var(--focus-ring-offset);
+}
+
+.root[data-selected] .dot {
+  border-color: var(--primary);
+  background: var(--sheet);
+}
+
+.root[data-selected][data-hovered]:not([data-disabled]) .dot {
+  border-color: var(--primary-hover);
+}
+
+.inner {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--primary);
+  transform: scale(0);
+  transition: transform var(--duration-instant) var(--ease-standard);
+}
+
+.root[data-selected] .inner {
+  transform: scale(1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .inner { transition: none; }
+}
+
+.label {
+  font-family: var(--font-sans);
+  font-size: var(--type-body-size);
+  font-weight: var(--type-body-weight);
+  line-height: var(--type-body-line);
+  color: var(--ink);
+}
+
+.groupLabel {
+  font-family: var(--font-sans);
+  font-size: var(--type-subheading-size);
+  font-weight: var(--type-subheading-weight);
+  color: var(--ink);
+  margin-block-end: var(--space-1);
+}
+
+.invalid .dot {
+  border-color: var(--danger);
+}
+
+.invalid .root[data-selected] .dot {
+  border-color: var(--danger);
+}
+
+.invalid .root[data-selected] .inner {
+  background: var(--danger);
+}

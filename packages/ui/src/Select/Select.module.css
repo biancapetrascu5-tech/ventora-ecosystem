@@ -1,0 +1,147 @@
+.root {
+  position: relative;
+  width: 100%;
+}
+
+.trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  width: 100%;
+  height: var(--control-md);
+  padding-inline: var(--space-3);
+  background: var(--sheet);
+  color: var(--ink);
+  border: var(--border-width-control) solid var(--control-border);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-sans);
+  font-size: var(--type-body-size);
+  font-weight: var(--type-body-weight);
+  line-height: 1;
+  cursor: pointer;
+  outline: none;
+  transition:
+    border-color var(--duration-instant) var(--ease-standard),
+    background var(--duration-instant) var(--ease-standard);
+  text-align: start;
+}
+
+.trigger[data-hovered]:not([data-disabled]) {
+  border-color: var(--control-border-hover);
+  background: var(--state-hover);
+}
+
+.trigger[data-focus-visible] {
+  border-color: var(--primary);
+  outline: var(--focus-ring-width) solid var(--focus-ring);
+  outline-offset: var(--focus-ring-offset);
+}
+
+.trigger[data-disabled] {
+  opacity: 0.4;
+  cursor: not-allowed;
+  background: var(--sunken);
+}
+
+.triggerValue {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.triggerValue[data-placeholder] {
+  color: var(--ink-muted);
+}
+
+.triggerIcon {
+  flex-shrink: 0;
+  color: var(--ink-muted);
+}
+
+.invalid .trigger {
+  border-color: var(--danger);
+}
+
+/* Popover */
+.popover {
+  min-width: var(--trigger-width, 100%);
+  max-height: var(--popover-max-height);
+  overflow-y: auto;
+  background: var(--raised);
+  border: var(--border-width) solid var(--line);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-2);
+  outline: none;
+  z-index: var(--z-popover);
+  padding: var(--space-1) 0;
+}
+
+.popover[data-entering] {
+  animation: vt-select-in var(--duration-fast) var(--ease-standard);
+}
+.popover[data-exiting] {
+  animation: vt-select-in var(--duration-fast) var(--ease-exit) reverse;
+}
+
+@keyframes vt-select-in {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .popover[data-entering],
+  .popover[data-exiting] { animation: none; }
+}
+
+/* ListBox */
+.listbox {
+  outline: none;
+}
+
+/* Item */
+.item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  font-family: var(--font-sans);
+  font-size: var(--type-body-size);
+  line-height: var(--type-body-line);
+  color: var(--ink);
+  cursor: pointer;
+  outline: none;
+  border-radius: 0;
+}
+
+.item[data-hovered],
+.item[data-focused] {
+  background: var(--state-hover);
+}
+
+.item[data-pressed] {
+  background: var(--state-pressed);
+}
+
+.item[data-selected] {
+  background: var(--selected);
+  font-weight: var(--type-body-strong-weight);
+}
+
+.item[data-disabled] {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.itemCheck {
+  width: var(--icon-sm);
+  color: var(--primary);
+  flex-shrink: 0;
+}
+
+.itemSeparator {
+  height: var(--border-width);
+  background: var(--line);
+  margin: var(--space-1) 0;
+}

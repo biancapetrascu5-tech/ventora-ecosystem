@@ -1,5 +1,19 @@
 /* eslint-disable i18next/no-literal-string */
 import { notFound } from 'next/navigation';
+import { Button } from '@ventora/ui';
+import { IconButton } from '@ventora/ui';
+import { Input } from '@ventora/ui';
+import { Textarea } from '@ventora/ui';
+import { Select } from '@ventora/ui';
+import { Checkbox } from '@ventora/ui';
+import { Radio, RadioGroup } from '@ventora/ui';
+import { Toggle } from '@ventora/ui';
+import { FormField } from '@ventora/ui';
+import { SegmentedControl } from '@ventora/ui';
+import { FileUpload } from '@ventora/ui';
+import { Combobox } from '@ventora/ui';
+import { Icon } from '@ventora/ui';
+import { Search, Plus, Trash2 } from 'lucide-react';
 import styles from './design.module.css';
 
 export const dynamic = 'force-dynamic';
@@ -56,7 +70,7 @@ export default function DesignPage() {
               d="M118.986 47L103.812 47L103.812 28.100L118.635 28.100L118.635 32.231L109.104 32.231L109.104 35.417L117.501 35.417L117.501 39.413L109.104 39.413L109.104 42.869L118.986 42.869L118.986 47M130.434 47L125.196 47L125.196 28.100L129.597 28.100L137.940 38.171L137.940 28.100L143.178 28.100L143.178 47L138.777 47L130.434 36.929L130.434 47M159.567 47L154.221 47L154.221 32.339L148.416 32.339L148.416 28.100L165.345 28.100L165.345 32.339L159.567 32.339L159.567 47M180.114 47.378Q177.846 47.378 175.929 46.649Q174.012 45.920 172.595 44.584Q171.177 43.247 170.394 41.465Q169.611 39.683 169.611 37.550Q169.611 35.417 170.394 33.635Q171.177 31.853 172.595 30.517Q174.012 29.180 175.929 28.451Q177.846 27.722 180.114 27.722Q182.409 27.722 184.313 28.451Q186.216 29.180 187.620 30.517Q189.024 31.853 189.821 33.635Q190.617 35.417 190.617 37.550Q190.617 39.683 189.821 41.478Q189.024 43.274 187.620 44.597Q186.216 45.920 184.313 46.649Q182.409 47.378 180.114 47.378M180.114 42.950Q181.194 42.950 182.126 42.572Q183.057 42.194 183.746 41.478Q184.434 40.763 184.826 39.764Q185.217 38.765 185.217 37.550Q185.217 36.308 184.826 35.322Q184.434 34.337 183.746 33.621Q183.057 32.906 182.126 32.528Q181.194 32.150 180.114 32.150Q179.034 32.150 178.103 32.528Q177.171 32.906 176.483 33.621Q175.794 34.337 175.403 35.322Q175.011 36.308 175.011 37.550Q175.011 38.765 175.403 39.764Q175.794 40.763 176.483 41.478Q177.171 42.194 178.103 42.572Q179.034 42.950 180.114 42.950M202.011 47L196.665 47L196.665 28.100L205.116 28.100Q209.247 28.100 211.475 29.977Q213.702 31.853 213.702 35.093Q213.702 37.226 212.676 38.765Q211.704 40.250 210.003 41.060L214.080 47L208.356 47L204.927 41.978L202.011 41.978L202.011 47M202.011 32.312L202.011 37.847L204.981 37.847Q206.655 37.847 207.479 37.118Q208.302 36.389 208.302 35.093Q208.302 33.770 207.479 33.041Q206.655 32.312 204.981 32.312L202.011 32.312M223.071 47L217.617 47L225.960 28.100L231.225 28.100L239.595 47L234.033 47L232.548 43.328L224.556 43.328L223.071 47M226.122 39.386L230.982 39.386L228.552 33.338"
             />
           </svg>
-          <span className={styles.badge}>Design System · Lot 1</span>
+          <span className={styles.badge}>Design System · Lot 1 + 2</span>
         </div>
         <p className={styles.subtitle}>
           Tokenuri, fonturi, logo — baza sistemului de design Ventora.
@@ -348,6 +362,204 @@ export default function DesignPage() {
               <MotionCard key={t} token={t} />
             ),
           )}
+        </div>
+      </Section>
+
+      {/* ── LOT 2 ───────────────────────────────────────────── */}
+
+      <Section title="Button">
+        <div className={styles.componentRow}>
+          <Button variant="primary">Primar</Button>
+          <Button variant="secondary">Secundar</Button>
+          <Button variant="quiet">Liniștit</Button>
+          <Button variant="danger">Pericol</Button>
+        </div>
+        <div className={styles.componentRow}>
+          <Button variant="primary" size="sm">Mic</Button>
+          <Button variant="primary" size="md">Mediu</Button>
+          <Button variant="primary" size="lg">Mare</Button>
+        </div>
+        <div className={styles.componentRow}>
+          <Button variant="primary" isPending>Se salvează...</Button>
+          <Button variant="primary" isDisabled>Dezactivat</Button>
+        </div>
+      </Section>
+
+      <Section title="IconButton">
+        <div className={styles.componentRow}>
+          <IconButton icon={Search} label="Caută" variant="secondary" />
+          <IconButton icon={Plus} label="Adaugă" variant="primary" />
+          <IconButton icon={Trash2} label="Șterge" variant="danger" />
+          <IconButton icon={Search} label="Caută" variant="secondary" isDisabled />
+        </div>
+      </Section>
+
+      <Section title="Icon">
+        <div className={styles.componentRow}>
+          <Icon icon={Search} size="sm" label="Căutare mică" />
+          <Icon icon={Search} size="md" label="Căutare medie" />
+          <Icon icon={Search} size="lg" label="Căutare mare" />
+        </div>
+      </Section>
+
+      <Section title="Input">
+        <div className={styles.componentStack}>
+          <Input placeholder="Default" />
+          <Input placeholder="Cu icon" iconStart={<Icon icon={Search} size="sm" aria-hidden />} />
+          <Input placeholder="Invalid" isInvalid />
+          <Input placeholder="Dezactivat" disabled />
+          <Input placeholder="Read-only" readOnly defaultValue="Valoare read-only" />
+        </div>
+      </Section>
+
+      <Section title="Textarea">
+        <div className={styles.componentStack}>
+          <Textarea placeholder="Descrie serviciul..." rows={3} />
+          <Textarea placeholder="Invalid" rows={3} isInvalid />
+          <Textarea placeholder="Dezactivat" rows={3} disabled />
+        </div>
+      </Section>
+
+      <Section title="Select">
+        <div className={styles.componentStack}>
+          <Select
+            options={[
+              { value: 'ro', label: 'Română' },
+              { value: 'en', label: 'English' },
+              { value: 'fr', label: 'Français' },
+              { value: 'es', label: 'Español' },
+              { value: 'de', label: 'Deutsch' },
+              { value: 'it', label: 'Italiano' },
+            ]}
+            placeholder="Alege limba"
+          />
+          <Select
+            options={[{ value: 'ro', label: 'Română' }]}
+            placeholder="Invalid"
+            isInvalid
+          />
+          <Select
+            options={[{ value: 'ro', label: 'Română' }]}
+            placeholder="Dezactivat"
+            isDisabled
+          />
+        </div>
+      </Section>
+
+      <Section title="Checkbox">
+        <div className={styles.componentStack}>
+          <Checkbox>Neselectat</Checkbox>
+          <Checkbox defaultSelected>Selectat</Checkbox>
+          <Checkbox isIndeterminate>Intermediar</Checkbox>
+          <Checkbox isDisabled>Dezactivat</Checkbox>
+          <Checkbox isInvalid>Invalid</Checkbox>
+        </div>
+      </Section>
+
+      <Section title="Radio / RadioGroup">
+        <div className={styles.componentRow}>
+          <RadioGroup label="Vertical (default)">
+            <Radio value="a">Opțiunea A</Radio>
+            <Radio value="b">Opțiunea B</Radio>
+            <Radio value="c" isDisabled>Dezactivat</Radio>
+          </RadioGroup>
+          <RadioGroup label="Orizontal" orientation="horizontal">
+            <Radio value="x">X</Radio>
+            <Radio value="y">Y</Radio>
+            <Radio value="z">Z</Radio>
+          </RadioGroup>
+        </div>
+      </Section>
+
+      <Section title="Toggle">
+        <div className={styles.componentStack}>
+          <Toggle>Notificări email</Toggle>
+          <Toggle defaultSelected>Mod întunecat (activ)</Toggle>
+          <Toggle isDisabled>Dezactivat</Toggle>
+        </div>
+      </Section>
+
+      <Section title="FormField">
+        <div className={styles.componentStack}>
+          <FormField label="Email" required hint="Adresa ta de email de afaceri">
+            {({ id, isInvalid, 'aria-describedby': describedBy }) => (
+              <Input id={id} isInvalid={isInvalid} aria-describedby={describedBy} type="email" placeholder="ana@firma.ro" />
+            )}
+          </FormField>
+          <FormField label="Mesaj" error="Câmpul este obligatoriu">
+            {({ id, isInvalid, 'aria-describedby': describedBy }) => (
+              <Textarea id={id} isInvalid={isInvalid} aria-describedby={describedBy} rows={3} placeholder="Scrie un mesaj..." />
+            )}
+          </FormField>
+        </div>
+      </Section>
+
+      <Section title="SegmentedControl">
+        <div className={styles.componentStack}>
+          <SegmentedControl
+            aria-label="Vizualizare"
+            options={[
+              { value: 'list', label: 'Listă' },
+              { value: 'grid', label: 'Grilă' },
+              { value: 'map', label: 'Hartă' },
+            ]}
+          />
+          <SegmentedControl
+            aria-label="Vizualizare lată"
+            fullWidth
+            options={[
+              { value: 'day', label: 'Zi' },
+              { value: 'week', label: 'Săptămână' },
+              { value: 'month', label: 'Lună' },
+            ]}
+          />
+        </div>
+      </Section>
+
+      <Section title="Combobox">
+        <div className={styles.componentStack}>
+          <Combobox
+            options={[
+              { value: 'buc', label: 'București' },
+              { value: 'clj', label: 'Cluj-Napoca' },
+              { value: 'tms', label: 'Timișoara' },
+              { value: 'iasi', label: 'Iași' },
+              { value: 'bv', label: 'Brașov' },
+            ]}
+            placeholder="Caută oraș..."
+            noResultsLabel="Niciun oraș găsit"
+          />
+          <Combobox
+            options={[{ value: 'buc', label: 'București' }]}
+            placeholder="Invalid"
+            isInvalid
+          />
+          <Combobox
+            options={[{ value: 'buc', label: 'București' }]}
+            placeholder="Dezactivat"
+            isDisabled
+          />
+        </div>
+      </Section>
+
+      <Section title="FileUpload">
+        <div className={styles.componentStack}>
+          <FileUpload
+            title="Încarcă documente"
+            hint="PDF, DOCX — max 10 MB"
+            accept=".pdf,.docx"
+            multiple
+            maxSize={10 * 1024 * 1024}
+          />
+          <FileUpload
+            title="Stare invalid"
+            hint="Fișierul nu este acceptat"
+            isInvalid
+          />
+          <FileUpload
+            title="Dezactivat"
+            isDisabled
+          />
         </div>
       </Section>
     </div>

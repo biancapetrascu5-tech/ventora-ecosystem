@@ -1,0 +1,95 @@
+.root {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  cursor: pointer;
+  user-select: none;
+}
+
+.root[data-disabled] {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.box {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  border: var(--border-width-control) solid var(--control-border);
+  border-radius: var(--radius-xs);
+  background: var(--sheet);
+  transition:
+    border-color var(--duration-instant) var(--ease-standard),
+    background var(--duration-instant) var(--ease-standard);
+}
+
+.root[data-hovered]:not([data-disabled]) .box {
+  border-color: var(--control-border-hover);
+  background: var(--state-hover);
+}
+
+.root[data-pressed]:not([data-disabled]) .box {
+  background: var(--state-pressed);
+}
+
+.root[data-focus-visible] .box {
+  outline: var(--focus-ring-width) solid var(--focus-ring);
+  outline-offset: var(--focus-ring-offset);
+}
+
+.root[data-selected] .box,
+.root[data-indeterminate] .box {
+  background: var(--primary);
+  border-color: var(--primary);
+}
+
+.root[data-selected][data-hovered]:not([data-disabled]) .box {
+  background: var(--primary-hover);
+  border-color: var(--primary-hover);
+}
+
+.root[data-selected][data-pressed]:not([data-disabled]) .box {
+  background: var(--primary-pressed);
+  border-color: var(--primary-pressed);
+}
+
+.checkIcon {
+  color: var(--on-primary);
+  opacity: 0;
+  transition: opacity var(--duration-instant) var(--ease-standard);
+}
+
+.root[data-selected] .checkIcon {
+  opacity: 1;
+}
+
+.indeterminateIcon {
+  color: var(--on-primary);
+  opacity: 0;
+  transition: opacity var(--duration-instant) var(--ease-standard);
+}
+
+.root[data-indeterminate] .indeterminateIcon {
+  opacity: 1;
+}
+
+.label {
+  font-family: var(--font-sans);
+  font-size: var(--type-body-size);
+  font-weight: var(--type-body-weight);
+  line-height: var(--type-body-line);
+  color: var(--ink);
+}
+
+.invalid .box {
+  border-color: var(--danger);
+}
+
+.invalid.root[data-selected] .box {
+  background: var(--danger);
+  border-color: var(--danger);
+}

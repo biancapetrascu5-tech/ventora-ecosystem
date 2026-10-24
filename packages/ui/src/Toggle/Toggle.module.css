@@ -1,0 +1,87 @@
+.root {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  cursor: pointer;
+  user-select: none;
+}
+
+.root[data-disabled] {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.track {
+  position: relative;
+  width: 36px;
+  height: 20px;
+  flex-shrink: 0;
+  border-radius: 10px;
+  background: var(--control-border);
+  border: var(--border-width-control) solid transparent;
+  transition:
+    background var(--duration-instant) var(--ease-standard),
+    border-color var(--duration-instant) var(--ease-standard);
+}
+
+.root[data-hovered]:not([data-disabled]) .track {
+  background: var(--control-border-hover);
+}
+
+.root[data-pressed]:not([data-disabled]) .track {
+  background: var(--ink-muted);
+}
+
+.root[data-focus-visible] .track {
+  outline: var(--focus-ring-width) solid var(--focus-ring);
+  outline-offset: var(--focus-ring-offset);
+}
+
+.root[data-selected] .track {
+  background: var(--primary);
+}
+
+.root[data-selected][data-hovered]:not([data-disabled]) .track {
+  background: var(--primary-hover);
+}
+
+.root[data-selected][data-pressed]:not([data-disabled]) .track {
+  background: var(--primary-pressed);
+}
+
+.thumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--on-primary);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  transition: transform var(--duration-instant) var(--ease-standard);
+}
+
+.root[data-selected] .thumb {
+  transform: translateX(16px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .thumb { transition: none; }
+}
+
+.label {
+  font-family: var(--font-sans);
+  font-size: var(--type-body-size);
+  font-weight: var(--type-body-weight);
+  line-height: var(--type-body-line);
+  color: var(--ink);
+}
+
+.invalid .track {
+  background: var(--danger);
+}
+
+.invalid.root[data-selected] .track {
+  background: var(--danger-hover);
+}
