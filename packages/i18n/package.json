@@ -14,10 +14,10 @@
     "i18n:check": "node scripts/check.mjs"
   },
   "dependencies": {
-    "next-intl": "^3.26.0"
+    "next-intl": "^4.0.0"
   },
   "devDependencies": {
-    "typescript": "^5.7.0",
+    "typescript": "^6.0.0",
     "vitest": "^2.1.0"
   }
 }

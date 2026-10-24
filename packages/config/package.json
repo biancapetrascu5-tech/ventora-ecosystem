@@ -12,11 +12,11 @@
     "test": "vitest run --passWithNoTests"
   },
   "dependencies": {
-    "zod": "^3.23.8"
+    "zod": "^4.0.0"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",
-    "typescript": "^5.7.0",
+    "typescript": "^6.0.0",
     "vitest": "^2.1.0"
   }
 }

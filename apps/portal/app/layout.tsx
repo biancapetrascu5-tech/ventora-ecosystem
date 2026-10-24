@@ -1,7 +1,5 @@
 import type { Metadata } from 'next';
 
-import '@ventora/config';
-
 export const metadata: Metadata = {
   title: 'Ventora Portal',
 };
