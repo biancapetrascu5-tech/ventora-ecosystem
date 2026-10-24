@@ -6,7 +6,21 @@ export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 export const preferredRegion = 'fra1';
 
-const pool = new Pool({ connectionString: process.env.DATABASE_URL_RUNTIME, max: 1 });
+function cleanUrl(url: string): string {
+  try {
+    const u = new URL(url);
+    u.searchParams.delete('pgbouncer');
+    u.searchParams.delete('connection_limit');
+    return u.toString();
+  } catch {
+    return url;
+  }
+}
+
+const pool = new Pool({
+  connectionString: cleanUrl(process.env.DATABASE_URL_RUNTIME ?? ''),
+  max: 1,
+});
 const adapter = new PrismaPg(pool);
 const db = new PrismaClient({ adapter });
 
@@ -54,13 +68,24 @@ export async function GET(request: Request) {
     }
   });
 
-  // 3. After transaction: role must have reverted to lab_runtime (NOINHERIT)
+  // 3. After transaction: role must have reverted to lab_runtime (NOINHERIT).
+  //    A subsequent request without SET LOCAL ROLE must NOT have module-role permissions.
   const [{ current_user: roleAfterTx }] = await db.$queryRaw<[{ current_user: string }]>`
     SELECT current_user
   `;
-  checks.roleAfterTx = roleAfterTx;
 
-  // 4. lab_crm is also inaccessible from lab_runtime directly (NOINHERIT)
+  // lab_booking inaccessible from lab_runtime without SET ROLE (NOINHERIT proves membership alone is not enough)
+  let bookingInaccessibleFromRuntime: boolean | null = null;
+  let bookingAfterTxError: string | null = null;
+  try {
+    await db.$queryRaw`SELECT COUNT(*) FROM lab_booking.services`;
+    bookingInaccessibleFromRuntime = false;
+  } catch (e: unknown) {
+    bookingInaccessibleFromRuntime = true;
+    bookingAfterTxError = e instanceof Error ? e.message : String(e);
+  }
+
+  // lab_crm inaccessible from lab_runtime directly (same check, different schema)
   let crmInaccessibleFromRuntime: boolean | null = null;
   try {
     await db.$queryRaw`SELECT COUNT(*) FROM lab_crm.contacts`;
@@ -74,6 +99,7 @@ export async function GET(request: Request) {
     bookingAccessOk === true &&
     crmAccessDenied === true &&
     roleAfterTx === connectRole &&
+    bookingInaccessibleFromRuntime === true &&
     crmInaccessibleFromRuntime === true;
 
   return Response.json({
@@ -87,8 +113,10 @@ export async function GET(request: Request) {
       crmAccessDeniedFromBookingRole: crmAccessDenied,
       crmErrorMessage: crmError,
       roleAfterTx,
-      crmInaccessibleFromRuntime,
       setLocalRoleRevertsCorrectly: roleAfterTx === connectRole,
+      bookingInaccessibleFromRuntimeAfterTx: bookingInaccessibleFromRuntime,
+      bookingAfterTxError,
+      crmInaccessibleFromRuntime,
     },
     region: request.headers.get('x-vercel-id') ?? 'local',
     timestamp: new Date().toISOString(),

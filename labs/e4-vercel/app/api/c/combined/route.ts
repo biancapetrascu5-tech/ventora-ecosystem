@@ -6,26 +6,44 @@ export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 export const preferredRegion = 'fra1';
 
-// Transaction pooler (port 6543): connections released after each transaction.
-// lab_runtime has NOINHERIT — it cannot access module schemas directly.
-// SET LOCAL ROLE grants module-role access for the current transaction only.
-const pool = new Pool({ connectionString: process.env.DATABASE_URL_RUNTIME, max: 1 });
+// Strip Prisma-specific URL params (pgbouncer, connection_limit) — not valid pg params.
+function cleanUrl(url: string): string {
+  try {
+    const u = new URL(url);
+    u.searchParams.delete('pgbouncer');
+    u.searchParams.delete('connection_limit');
+    return u.toString();
+  } catch {
+    return url;
+  }
+}
+
+// Transaction pooler (port 6543): connection released after each transaction.
+// lab_runtime NOINHERIT — cannot access module schemas without SET ROLE.
+const pool = new Pool({
+  connectionString: cleanUrl(process.env.DATABASE_URL_RUNTIME ?? ''),
+  max: 1,
+});
 const adapter = new PrismaPg(pool);
 const db = new PrismaClient({ adapter });
 
 export async function GET(request: Request) {
   const t0 = performance.now();
 
-  const { orgs, services, appointments } = await db.$transaction(async (tx) => {
-    // Activate booking + core access for this transaction only.
-    // SET LOCAL ROLE reverts automatically at transaction end.
+  // Two separate transactions — each module role has access to its own schema only.
+  // SET LOCAL ROLE reverts automatically at each transaction end.
+  const orgs = await db.$transaction(async (tx) => {
+    await tx.$executeRawUnsafe('SET LOCAL ROLE lab_core_user');
+    return tx.organization.findMany({ take: 10 });
+  });
+
+  const { services, appointments } = await db.$transaction(async (tx) => {
     await tx.$executeRawUnsafe('SET LOCAL ROLE lab_booking_user');
-    const [orgsResult, servicesResult, appointmentsResult] = await Promise.all([
-      tx.organization.findMany({ take: 10 }),
+    const [s, a] = await Promise.all([
       tx.service.findMany({ take: 10 }),
       tx.appointment.findMany({ take: 10 }),
     ]);
-    return { orgs: orgsResult, services: servicesResult, appointments: appointmentsResult };
+    return { services: s, appointments: a };
   });
 
   const latencyMs = Math.round(performance.now() - t0);
@@ -34,7 +52,7 @@ export async function GET(request: Request) {
     variant: 'C',
     module: 'combined',
     connectRole: 'lab_runtime (NOINHERIT)',
-    queryRole: 'lab_booking_user (SET LOCAL ROLE per transaction)',
+    queryRoles: 'lab_core_user + lab_booking_user (SET LOCAL ROLE, tranzactii separate)',
     pooler: 'transaction pooler port 6543',
     isolationNote:
       'SET LOCAL ROLE reverts at transaction end — lab_runtime cannot access module schemas directly',
