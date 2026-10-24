@@ -1,0 +1,7 @@
+{
+  "common": {
+    "ok": "OK",
+    "items": "{count, plural, one {# elemento} other {# elementi}}",
+    "probe": "Chiave sonda per la guardia"
+  }
+}

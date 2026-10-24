@@ -4,11 +4,15 @@
  * @see packages/i18n/src/index.ts (CANONICAL_LOCALE, SUPPORTED_LOCALES)
  */
 import { readFileSync } from 'fs';
-import { join, dirname } from 'path';
+import { join, dirname, resolve } from 'path';
 import { fileURLToPath } from 'url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const messagesDir = join(__dirname, '..', 'messages');
+
+const dirArg = process.argv.find((a) => a.startsWith('--dir='));
+const messagesDir = dirArg
+  ? resolve(process.cwd(), dirArg.slice(6))
+  : join(__dirname, '..', 'messages');
 
 const SUPPORTED_LOCALES = ['ro', 'en', 'fr', 'es', 'de', 'it'];
 const CANONICAL = 'ro';

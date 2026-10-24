@@ -56,6 +56,8 @@ Credențialele se pun doar în `.env.local` și în setările Vercel/GitHub. Nic
 
 **Acceptare:** CI verde pe `main`. Fiecare încălcare intenționată e prinsă de regula ei.
 
+> **Regulile DB-dependente** (accesul la datele altui modul din propria schemă, drift de schemă între module) nu pot fi implementate înainte ca schemele să existe. Acestea se adaugă la **pasul 0.3**, după ce experimentele E2–E3 definesc schemele și rolurile Postgres.
+
 ### Pasul 0.3 — Experimentele
 
 Două module de probă în `labs/`, cu date minimale, dar realiste:

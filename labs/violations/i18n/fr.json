@@ -1,0 +1,8 @@
+{
+  "common": {
+    "ok": "OK",
+    "items": "{count, plural, one {# élément} other {# éléments}}",
+    "probe": "Clé de sonde pour la garde",
+    "frOnly": "Clé en plus, absente din RO"
+  }
+}

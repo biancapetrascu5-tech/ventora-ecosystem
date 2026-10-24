@@ -49,6 +49,26 @@ const eslintConfig = [
           message:
             '[no-system-context-in-request] withSystemContext is forbidden in request handlers.',
         },
+        {
+          selector: 'JSXOpeningElement[name.name="select"]',
+          message: '[no-native-select] Use Select from @ventora/ui instead of native <select>.',
+        },
+        {
+          selector:
+            "ImportDeclaration:not([source.value='@ventora/ui']) > ImportSpecifier[imported.name=/^(Button|Dialog|Input|Select|Modal|Badge|Checkbox|Label|Spinner|Toast|Alert)$/]",
+          message: '[no-wrong-ui-import] Import common components from @ventora/ui only.',
+        },
+        {
+          selector:
+            'Property[key.name=/^(color|background|backgroundColor|borderColor|fill|stroke)$/][value.type="Literal"][value.value=/^(#|rgb|hsl)/]',
+          message:
+            '[no-inline-color] Use design tokens from @ventora/tokens instead of hardcoded colors.',
+        },
+        {
+          selector: 'JSXAttribute[name.name="className"] > Literal[value=/\\[#[0-9a-fA-F]/]',
+          message:
+            '[no-tailwind-arbitrary-color] Use design tokens instead of arbitrary Tailwind color values.',
+        },
       ],
     },
   },
