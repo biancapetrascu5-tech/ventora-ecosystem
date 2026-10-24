@@ -1,0 +1,19 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../../lab-crm/generated/client"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Contact {
+  id             String   @id @default(cuid())
+  organizationId String
+  name           String
+  email          String?
+  phone          String?
+  createdAt      DateTime @default(now())
+
+  @@map("contacts")
+}
