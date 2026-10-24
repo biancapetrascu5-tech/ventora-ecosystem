@@ -1,3 +1,5 @@
+import '@ventora/tokens/business/fonts.css';
+import '@ventora/tokens/business/tokens.css';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {

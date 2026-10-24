@@ -8,6 +8,7 @@
     "lint": "turbo run lint",
     "typecheck": "turbo run typecheck",
     "test": "turbo run test",
+    "tokens:generate": "node packages/tokens/scripts/generate.mjs",
     "i18n:check": "node packages/i18n/scripts/check.mjs",
     "guards:verify": "node scripts/guards-verify.mjs",
     "format": "prettier --write \"**/*.{ts,tsx,json,mjs}\" --ignore-path .prettierignore",
