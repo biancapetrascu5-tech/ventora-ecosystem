@@ -1,0 +1,22 @@
+{
+  "name": "ventora-ecosystem",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "lint": "turbo run lint",
+    "typecheck": "turbo run typecheck",
+    "test": "turbo run test",
+    "i18n:check": "node packages/i18n/scripts/check.mjs",
+    "guards:verify": "node scripts/guards-verify.mjs",
+    "format": "prettier --write \"**/*.{ts,tsx,json,mjs}\" --ignore-path .prettierignore",
+    "format:check": "prettier --check \"**/*.{ts,tsx,json,mjs}\" --ignore-path .prettierignore"
+  },
+  "devDependencies": {
+    "prettier": "^3.4.0",
+    "turbo": "^2.5.0",
+    "typescript": "^5.7.0"
+  },
+  "packageManager": "pnpm@9.14.0"
+}

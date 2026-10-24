@@ -1,0 +1,8 @@
+node_modules/
+.next/
+dist/
+pnpm-lock.yaml
+*.md
+.turbo/
+**/next-env.d.ts
+docs/design/
