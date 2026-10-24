@@ -1,5 +1,5 @@
 {
   "regions": ["fra1"],
-  "installCommand": "npm install -g pnpm@9.14.0 && pnpm install --frozen-lockfile",
-  "buildCommand": "pnpm run build"
+  "installCommand": "npx --yes pnpm@9.14.0 --version && npx --yes pnpm@9.14.0 install --frozen-lockfile",
+  "buildCommand": "npx --yes pnpm@9.14.0 run build"
 }
