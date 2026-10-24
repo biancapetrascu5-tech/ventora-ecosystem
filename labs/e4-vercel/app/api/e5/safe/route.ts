@@ -72,7 +72,10 @@ export async function GET(request: Request) {
   settingAfterTx = afterVal;
 
   const latencyMs = Math.round(performance.now() - t0);
-  const isolationOk = !crossOrgVisible && settingAfterTx === null && settingInsideTx === orgId;
+  // Postgres returns "" (empty string) for a custom GUC that reverted via set_config(local=true),
+  // not NULL — both mean "no org set" and are equally safe (the RLS policy matches nothing).
+  const settingReverted = settingAfterTx === null || settingAfterTx === '';
+  const isolationOk = !crossOrgVisible && settingReverted && settingInsideTx === orgId;
 
   return Response.json({
     experiment: 'E5-safe',
@@ -86,7 +89,7 @@ export async function GET(request: Request) {
     settingBeforeTx,
     settingInsideTx,
     settingAfterTx,
-    settingRevertsAfterTx: settingAfterTx === null,
+    settingRevertsAfterTx: settingAfterTx === null || settingAfterTx === '',
     latencyMs,
     region: request.headers.get('x-vercel-id') ?? 'local',
     timestamp: new Date().toISOString(),
