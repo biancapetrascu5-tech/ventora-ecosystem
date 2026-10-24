@@ -13,7 +13,6 @@ import { SegmentedControl } from '@ventora/ui';
 import { FileUpload } from '@ventora/ui';
 import { Combobox } from '@ventora/ui';
 import { Icon } from '@ventora/ui';
-import { Search, Plus, Trash2 } from 'lucide-react';
 import styles from './design.module.css';
 
 export const dynamic = 'force-dynamic';
@@ -387,25 +386,25 @@ export default function DesignPage() {
 
       <Section title="IconButton">
         <div className={styles.componentRow}>
-          <IconButton icon={Search} label="Caută" variant="secondary" />
-          <IconButton icon={Plus} label="Adaugă" variant="primary" />
-          <IconButton icon={Trash2} label="Șterge" variant="danger" />
-          <IconButton icon={Search} label="Caută" variant="secondary" isDisabled />
+          <IconButton icon="search" label="Caută" variant="secondary" />
+          <IconButton icon="plus" label="Adaugă" variant="primary" />
+          <IconButton icon="trash" label="Șterge" variant="danger" />
+          <IconButton icon="search" label="Caută" variant="secondary" isDisabled />
         </div>
       </Section>
 
       <Section title="Icon">
         <div className={styles.componentRow}>
-          <Icon icon={Search} size="sm" label="Căutare mică" />
-          <Icon icon={Search} size="md" label="Căutare medie" />
-          <Icon icon={Search} size="lg" label="Căutare mare" />
+          <Icon icon="search" size="sm" label="Căutare mică" />
+          <Icon icon="search" size="md" label="Căutare medie" />
+          <Icon icon="search" size="lg" label="Căutare mare" />
         </div>
       </Section>
 
       <Section title="Input">
         <div className={styles.componentStack}>
           <Input placeholder="Default" />
-          <Input placeholder="Cu icon" iconStart={<Icon icon={Search} size="sm" aria-hidden />} />
+          <Input placeholder="Cu icon" iconStart="search" />
           <Input placeholder="Invalid" isInvalid />
           <Input placeholder="Dezactivat" disabled />
           <Input placeholder="Read-only" readOnly defaultValue="Valoare read-only" />

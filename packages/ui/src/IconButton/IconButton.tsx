@@ -1,15 +1,14 @@
 'use client';
 
 import { Button as RACButton, Tooltip, TooltipTrigger } from 'react-aria-components';
-import type { LucideIcon } from 'lucide-react';
-import { Icon, type IconSize } from '../Icon/Icon';
+import { Icon, type IconSize, type IconName } from '../Icon/Icon';
 import { cn } from '../lib/cn';
 import styles from './IconButton.module.css';
 
 export type IconButtonVariant = 'primary' | 'secondary' | 'quiet' | 'danger';
 
 export interface IconButtonProps {
-  icon: LucideIcon;
+  icon: IconName;
   label: string;
   size?: IconSize;
   variant?: IconButtonVariant;

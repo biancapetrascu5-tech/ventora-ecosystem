@@ -1,19 +1,24 @@
-import type { LucideIcon, LucideProps } from 'lucide-react';
+'use client';
+
+import type { LucideProps } from 'lucide-react';
+import { ICON_REGISTRY, type IconName } from './icons';
 import styles from './Icon.module.css';
 import { cn } from '../lib/cn';
 
+export type { IconName };
 export type IconSize = 'sm' | 'md' | 'lg';
 
 const SIZE_PX: Record<IconSize, number> = { sm: 16, md: 20, lg: 24 };
 
 export interface IconProps extends Omit<LucideProps, 'size' | 'ref'> {
-  icon: LucideIcon;
+  icon: IconName;
   size?: IconSize;
   label?: string;
   className?: string;
 }
 
-export function Icon({ icon: LucideIconComp, size = 'md', label, className, ...props }: IconProps) {
+export function Icon({ icon, size = 'md', label, className, ...props }: IconProps) {
+  const LucideIconComp = ICON_REGISTRY[icon];
   return (
     <LucideIconComp
       size={SIZE_PX[size]}

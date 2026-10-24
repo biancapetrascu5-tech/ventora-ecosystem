@@ -9,7 +9,6 @@ import {
   ListBoxItem,
   type Key,
 } from 'react-aria-components';
-import { ChevronDown, Check } from 'lucide-react';
 import { Icon } from '../Icon/Icon';
 import { cn } from '../lib/cn';
 import styles from './Combobox.module.css';
@@ -68,7 +67,7 @@ export function Combobox({
           className={styles.input}
         />
         <RACButton className={styles.toggleButton}>
-          <Icon icon={ChevronDown} size="sm" aria-hidden />
+          <Icon icon="chevron-down" size="sm" aria-hidden />
         </RACButton>
       </div>
       <Popover className={styles.popover}>
@@ -90,7 +89,7 @@ export function Combobox({
               {({ isSelected }) => (
                 <>
                   <span className={styles.itemCheck}>
-                    {isSelected && <Icon icon={Check} size="sm" aria-hidden />}
+                    {isSelected && <Icon icon="check" size="sm" aria-hidden />}
                   </span>
                   {item.label}
                 </>

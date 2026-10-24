@@ -1,16 +1,15 @@
 'use client';
 
 import { useRef, type InputHTMLAttributes, type ReactNode } from 'react';
-import { X } from 'lucide-react';
-import { Icon } from '../Icon/Icon';
+import { Icon, type IconName } from '../Icon/Icon';
 import { cn } from '../lib/cn';
 import styles from './Input.module.css';
 
 export interface InputProps
   extends Omit<InputHTMLAttributes<HTMLInputElement>, 'size' | 'prefix'> {
   isInvalid?: boolean;
-  iconStart?: ReactNode;
-  iconEnd?: ReactNode;
+  iconStart?: IconName;
+  iconEnd?: IconName;
   prefix?: ReactNode;
   suffix?: ReactNode;
   clearLabel?: string;
@@ -45,7 +44,7 @@ export function Input({
 
       {iconStart && (
         <span className={styles.iconStart} aria-hidden>
-          {iconStart}
+          <Icon icon={iconStart} size="sm" />
         </span>
       )}
 
@@ -67,12 +66,12 @@ export function Input({
           }}
           tabIndex={-1}
         >
-          <Icon icon={X} size="sm" aria-hidden />
+          <Icon icon="x" size="sm" aria-hidden />
         </button>
       ) : (
         iconEnd && (
           <span className={styles.iconEnd} aria-hidden>
-            {iconEnd}
+            <Icon icon={iconEnd} size="sm" />
           </span>
         )
       )}

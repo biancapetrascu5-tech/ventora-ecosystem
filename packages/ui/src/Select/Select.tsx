@@ -9,7 +9,6 @@ import {
   ListBoxItem,
   type Key,
 } from 'react-aria-components';
-import { ChevronDown, Check } from 'lucide-react';
 import { Icon } from '../Icon/Icon';
 import { cn } from '../lib/cn';
 import styles from './Select.module.css';
@@ -68,7 +67,7 @@ export function Select({
             )
           }
         </SelectValue>
-        <Icon icon={ChevronDown} size="sm" aria-hidden className={styles.triggerIcon} />
+        <Icon icon="chevron-down" size="sm" aria-hidden className={styles.triggerIcon} />
       </RACButton>
       <Popover className={styles.popover}>
         <ListBox
@@ -86,7 +85,7 @@ export function Select({
               {({ isSelected }) => (
                 <>
                   <span className={styles.itemCheck}>
-                    {isSelected && <Icon icon={Check} size="sm" aria-hidden />}
+                    {isSelected && <Icon icon="check" size="sm" aria-hidden />}
                   </span>
                   {item.label}
                 </>

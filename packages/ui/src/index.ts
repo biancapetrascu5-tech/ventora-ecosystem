@@ -9,7 +9,7 @@ export { useToast } from './hooks/useToast';
 
 // Primitives
 export { Icon } from './Icon/Icon';
-export type { IconProps } from './Icon/Icon';
+export type { IconProps, IconName, IconSize } from './Icon/Icon';
 
 export { Button } from './Button/Button';
 export type { ButtonProps } from './Button/Button';
