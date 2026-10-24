@@ -1,6 +1,6 @@
 # VENTORA ECOSYSTEM — ARHITECTURĂ TEHNICĂ
 
-**Versiune:** 0.3.1
+**Versiune:** 0.3.2
 **Data:** 24 octombrie 2026
 **Stadiu:** Propunere. Nimic nu este implementat. Faza 0 nu începe fără aprobarea explicită a acestei versiuni.
 
@@ -21,6 +21,7 @@
 | 0.2.9 | 24.10.2026 | Standard nou: Global Product Experience & Behavioral Design (D-PX-1), review A–E pentru fiecare ecran (DESIGN_RULES §15). Adăugată nevoia de instrumentare a experienței de produs (§10.10, D-PX-2 deschisă). Detalii: §17.13. |
 | 0.3.0 | 24.10.2026 | Designul unificat aprobat (Claude Design, etapele 1–5, 52 de decizii) și exportat în `docs/design/system/`. Integrate deciziile din fișele de review care ating arhitectura: 2FA obligatoriu pentru Owner (P5), invitațiile expirate (P6), excepții cu termen (P17), anunțul la schimbarea versiunii de plan (P19), regulile Growth (P20–P25), termenul „plan” doar în Founder (D1). Detalii: §17.14. |
 | 0.3.1 | 24.10.2026 | Aprobat condiționat: SMS de pe numărul propriu al afacerii (D-SMS-1…9). Serviciu Core nou `messaging` cu adaptoarele `SMS_PROVIDER` și `ANDROID_SIM`, credențiale de dispozitiv, stări cu `UNKNOWN` separat de `FAILED`, experimentul E-SMS-1 după Faza 0. Booking: 59 → 66 de funcționalități. Specificația: `SMS_NUMAR_PROPRIU.md`. Detalii: §17.15. |
+| 0.3.2 | 24.10.2026 | Decizii pentru Portal și Network, luate în designul lor (Claude Design, etapele 1–3): D-NET-1, D-POR-1, D-PROF-1 închise; verificarea și categoria afacerii în Core; VeeCoin ca monedă unică; regulile Network (contact autorizat, acceptarea propunerilor, integrări într-un singur sens); eticheta „Sponsorizat”; avansul în programarea din Portal; rolurile de tokeni noi pentru Portal/Network. Detalii: §17.16. |
 
 ## Statusuri folosite în acest document
 
@@ -119,9 +120,9 @@ Tooling propus: pnpm workspaces + Turborepo, TypeScript strict.
 | `portal` — `portal.ventora-hub.com` | Portal: partea pentru consumatori (B2C) și partea de administrare pentru afaceri, descrisă în brief §30 „Business Management” | Altă identitate (B2C), alt public, nevoi de SEO |
 | `founder` — `founder.ventora-hub.com` | Founder Control Center | Alt nivel de risc, se poate restricționa separat (2FA obligatoriu, eventual restricție IP) |
 
-**Network:** e o aplicație B2B cu identitate Core, deci stă în `platform`. Dacă Network are pagini publice (profiluri de afacere vizibile fără cont, director public), acestea se servesc tot din `platform`, ca rute publice randate pe server și indexabile. **Nu se adaugă un al patrulea deployment.** Existența paginilor publice Network: **NECESITĂ DECIZIE** (D-NET-1).
+**Network:** e o aplicație B2B cu identitate Core, deci stă în `platform`. **Nu se adaugă un al patrulea deployment.** **Network e închis la lansare (CONFIRMAT, D-NET-1):** nu există pagini publice; un link distribuit către cineva fără cont duce la autentificare, fără nicio dată a afacerii. O previzualizare limitată a linkurilor distribuite rămâne propunere pentru mai târziu; dacă se aprobă, se servește tot din `platform`, ca rute publice randate pe server.
 
-**Partea business a Portal** (afacerile care își gestionează profilul, postările, ofertele): **NECESITĂ DECIZIE** (D-POR-1) dacă se servește în `portal` cu identitatea B2B sau ca segment `/portal` în `platform`. Recomandare: segment în `platform`. Utilizatorul B2B rămâne astfel pe un singur domeniu și nu avem două tipuri de sesiune în aceeași aplicație.
+**Partea business a Portal** (afacerile care își gestionează profilul, postările, ofertele): **CONFIRMAT (D-POR-1): segment în `platform`**, în designul business, cu „Vezi cum arată în Portal”. Utilizatorul B2B rămâne pe un singur domeniu și nu avem două tipuri de sesiune în aceeași aplicație. În launcher, „Portal” deschide pentru afacere această parte de gestionare.
 
 ### 3.2 Pregătirea pentru aplicația mobilă
 
@@ -189,14 +190,13 @@ Automatizările comune (brief §37): motorul e în Core (`integrations`), iar fi
 
 ### 5.1 Profilurile de afacere: fără modele duplicate
 
-**Status: PROPUS, cu D-PROF-1 (NECESITĂ DECIZIE)**
+**Status: CONFIRMAT (D-PROF-1, V-1, V-2), PROPUS (modelul de date)**
 
-- **Core `organizations`** deține identitatea de bază a afacerii: nume, logo, CUI, locații, categorii, date de contact. O singură sursă.
-- **Portal** deține doar extensia orientată spre consumatori: descriere publică, galerie, oferte, program afișat, setări de vizibilitate în Portal.
-- **Network** deține doar extensia profesională: industrii, specializări, servicii B2B, badge-uri de verificare, setări de vizibilitate în Network.
+- **Core `organizations`** deține identitatea de bază a afacerii, completată o singură dată pentru ambele produse: nume, logo, website, CUI, locații, **categoria de bază** (V-2) și **verificarea afacerii** (V-1, citită de Portal și de Network).
+- **Portal** deține extensia pentru consumatori: descriere, galerie, contacte, servicii afișate, oferte, program afișat, setări de vizibilitate în Portal. Recenziile din Portal rămân în Portal.
+- **Network** deține extensia profesională: descriere, galerie, contacte, servicii B2B, **industrii și specializări** (V-2), badge-uri profesionale, setări de vizibilitate în Network. Recenziile din Portal **nu** apar în Network.
 - Ambele extensii citesc identitatea de bază prin contractul Core. Nu o copiază.
-
-**NECESITĂ DECIZIE:** dacă o afacere vrea aceeași descriere sau galerie în Portal și în Network, se introduce sau nu un „profil public comun” în Core.
+- Nu există un „profil public comun” dincolo de identitatea de bază (D-PROF-1): descrierea, galeria, contactele și serviciile sunt separate pe produs.
 
 ### 5.2 Ciclul de viață al aplicațiilor
 
@@ -677,6 +677,8 @@ Portal (consumatori) și Network (rețea profesională) **nu** arată ca restul 
 - **primitivele de comportament**: dialog, meniu, tooltip, focus, tastatură, date picker, upload, paginare. Logica și accesibilitatea sunt comune; aspectul vine din tokens și stilurile familiei;
 - identitatea Core (pentru Network), autorizarea, notificările, fișierele.
 
+**Roluri de tokeni adăugate pentru Portal/Network (CONFIRMAT, 24.10.2026):** `photo-scrim` (text lizibil peste fotografii), culorile de categorie din Portal și rolurile `nav-*` (bara laterală Network). Designul business nu le folosește și rămâne neschimbat. Culorile de categorie apar mereu cu icon și text, se disting și pentru daltonism și au contrastul verificat în toate temele. Fără rol `accent` (D-PN-2); eticheta unică „Sponsorizat” (D-PN-1). Direcția vizuală și specimenele: artefactul Claude Design „Ventora — Portal & Network” (https://claude.ai/artifact/DLNndPpSbxbCNqBa6L1Sur), care va fi exportat în `docs/design/portal-network/` după aprobarea ecranelor.
+
 **Ce e propriu fiecărei familii:**
 
 - valorile tokens (paleta, tipografia, razele, umbrele, ritmul spațierii);
@@ -982,9 +984,9 @@ Plus, la nivel de platformă: teste de webhook Stripe (semnătură, idempotenț�
 | C7 | Organizațiile cu doar Portal sunt Organization în Core, create tot de Founder | Consecvent cu brief §10 și politica de invitație | PROPUS |
 | C8 | Purolite | Aplicație separată pentru Ecolab, **nu** intră în ecosistem | CONFIRMAT |
 | C9 | Două exporturi de design care se contrazic („Ventora Hub” vs „Ventora”-launcher) | Înlocuite de designul unificat în lucru | NECESITĂ DECIZIE (aprobarea designului unificat) |
-| C10 | Profilurile de afacere în Portal și Network | Risc de modele duplicate (§5.1) | NECESITĂ DECIZIE (D-PROF-1) |
-| C11 | Pagini publice Network | Brief-ul nu spune dacă există | NECESITĂ DECIZIE (D-NET-1) |
-| C12 | Partea business a Portal: în `portal` sau în `platform` | §3.1 | NECESITĂ DECIZIE (D-POR-1) |
+| C10 | Profilurile de afacere în Portal și Network | Risc de modele duplicate (§5.1) | CONFIRMAT (D-PROF-1, v0.3.2) |
+| C11 | Pagini publice Network | Brief-ul nu spune dacă există | CONFIRMAT: închis la lansare (D-NET-1, v0.3.2) |
+| C12 | Partea business a Portal: în `portal` sau în `platform` | §3.1 | CONFIRMAT: `platform` (D-POR-1, v0.3.2) |
 | C13 | Clienții reali din Hub-ul vechi | Nu există clienți reali activi; nu se migrează date. Hub-ul vechi rămâne doar sursă de cod și idei (auditul de recoltare, 24.10.2026). Repository-ul, datele și resursele lui nu se șterg fără aprobare explicită. | CONFIRMAT |
 
 ---
@@ -1041,9 +1043,9 @@ Plus, la nivel de platformă: teste de webhook Stripe (semnătură, idempotenț�
 | D-MIG-1 | Fără migrare de date din Hub-ul vechi; repo-ul vechi rămâne read-only, nimic nu se șterge fără aprobare | — | CONFIRMAT | Nu |
 | D-INF-2 | Inngest + outbox pentru job-uri și evenimente | Da | CONFIRMAT (specificație) | Nu |
 | D-API-1 | API extern pentru Booking, Documents, Events, HR | Nu sunt în checklisturi, deci nu se construiesc | CONFIRMAT (din checklisturi) | Nu |
-| D-NET-1 | Pagini publice Network | — | NECESITĂ DECIZIE | Da |
-| D-POR-1 | Partea business a Portal în `platform` | Da | NECESITĂ DECIZIE | Da |
-| D-PROF-1 | Profil public comun în Core | Doar identitatea de bază în Core; extensiile separate | NECESITĂ DECIZIE | Da |
+| D-NET-1 | Pagini publice Network | Închis la lansare | CONFIRMAT | Nu |
+| D-POR-1 | Partea business a Portal în `platform` | Da | CONFIRMAT | Nu |
+| D-PROF-1 | Profil public comun în Core | Doar identitatea de bază în Core (cu verificarea și categoria de bază); extensiile separate | CONFIRMAT | Nu |
 | D-MKT-1 | Definiția campaniei consumate | — | NECESITĂ DECIZIE | Da |
 | D-AUTH-3 | 2FA obligatoriu pentru Owner: grație 14 zile, coduri de recuperare, cod pe dispozitiv nou (P5, D10) | Da | CONFIRMAT | Nu |
 | D-ACC-3 | Invitațiile expirate ies din listă după 30 de zile, rămân în audit (P6) | Da | CONFIRMAT | Nu |
@@ -1065,6 +1067,13 @@ Plus, la nivel de platformă: teste de webhook Stripe (semnătură, idempotenț�
 | D-SMS-7 | Validarea juridică: condițiile operatorilor și baza legală pentru remindere | Obligatorie înainte de lansare | NECESITĂ DECIZIE | Da |
 | D-SMS-8 | Furnizorul SMS (SMSLink sau Twilio) | Înainte de F4 | NECESITĂ DECIZIE | Da |
 | D-SMS-9 | +7 funcționalități în checklistul Booking (59 → 66) | Da | CONFIRMAT | Nu |
+| D-PN-1 | O singură etichetă „Sponsorizat”, distinctă de „Recomandare” | Da | CONFIRMAT | Nu |
+| D-PN-2 | Fără rol de token `accent`; roluri noi `photo-scrim`, culori de categorie, `nav-*` | Da | CONFIRMAT | Nu |
+| D-PN-3 | VeeCoin moneda unică; Loialitatea e programul din jurul ei; fără cumpărare sau conversie în bani | Da | CONFIRMAT; validarea juridică: NECESITĂ DECIZIE | Juridic |
+| D-PN-4 | Network: contact autorizat ca desemnare; acceptarea propunerilor de Owner/Admin (+ manager Network, opțional) | Da | CONFIRMAT | Nu |
+| D-PN-5 | Integrările Network doar într-un sens, la acțiunea omului | Da | CONFIRMAT | Nu |
+| D-PN-6 | Pas de plată în programarea din Portal doar când afacerea cere avans | Da | CONFIRMAT | Nu |
+| D-PN-7 | Programul de afiliere, criteriile Founding 100 și „Verificat” | — | NECESITĂ DECIZIE | Da |
 | D-ROAD-1 | Ordinea aplicațiilor după Booking | Propunerea din §15.3 | NECESITĂ DECIZIE | Da |
 | D-ROAD-2 | Booking prima aplicație | Da | CONFIRMAT | Nu |
 | D-ROAD-3 | Fluxuri verticale paralele, fără reducerea scope-ului | Da | CONFIRMAT | Nu |
@@ -1198,6 +1207,23 @@ Fiecare experiment produce un raport scurt și un ADR. Pentru toate se folosesc 
 4. **Nicio decizie deschisă nu s-a închis prin această versiune** în afara celor de mai sus. D-COM-7, D-PX-2, D-PX-3, D-GRW-8 (validarea juridică), D-UX-2 rămân NECESITĂ DECIZIE.
 
 ---
+
+### 17.16 Modificări în v0.3.2
+
+Decizii luate de fondatoare în designul Portal și Network (Claude Design, etapele 1–3, 24.10.2026):
+
+1. **D-NET-1 → CONFIRMAT:** Network închis la lansare (§3.1). Previzualizarea limitată a linkurilor: propunere pentru mai târziu.
+2. **D-POR-1 → CONFIRMAT:** partea business a Portal în `platform`, în designul business (§3.1).
+3. **D-PROF-1 → CONFIRMAT:** identitatea de bază comună în Core, restul separat pe produs; recenziile Portal nu apar în Network (§5.1).
+4. **V-1:** verificarea afacerii în Core, citită de ambele produse. **V-2:** categoria de bază în Core (Portal); industriile și specializările în Network (§5.1).
+5. **VeeCoin = moneda unică a Portal.** VeeCoin e moneda (portofel, sold, istoric, magazin, misiuni, niveluri); „Loialitate” e programul din jurul ei (regulile Ventora, beneficiile oferite de afaceri, vouchere, campanii), cu recompense plătite în VeeCoin. „Punctele de loialitate” din checklist sunt VeeCoin; nu se elimină nimic din checklist. VeeCoin nu se cumpără cu bani și nu se convertește în bani. Rămâne „depinde de validarea juridică” (§17.4 punctul 10), împreună cu Spin Wheel, conturile de familie și recenziile verificate. (D-PN-3)
+6. **Network, roluri:** „contact autorizat” e o desemnare dată membrilor, nu un rol nou (rolurile din §7.5 rămân aceleași). Acceptarea unei propuneri de colaborare angajează organizația: Owner și Admin; organizația poate acorda dreptul și managerului aplicației Network. Network lucrează mereu pentru organizația activă (§7.4); organizația se schimbă doar din Hub. (D-PN-4)
+7. **Network, integrări:** datele circulă doar din Network spre aplicația privată (CRM, Documents, Contracts, Projects), la acțiunea omului. Nicio dată internă nu ajunge în Network. (D-PN-5)
+8. **„Sponsorizat”:** un singur mecanism și o singură etichetă pentru monetizarea proprie Portal/Network, distinctă de „Recomandare” (Growth Engine, D-GRW-9). (D-PN-1)
+9. **Avans în programarea din Portal:** pasul de plată apare doar când afacerea cere avans (checklistul Booking: „Avansuri și depozite”, „Plăți online prin furnizor integrat”); plata merge la afacere; fluxul `pending_payment` din §6 se aplică. (D-PN-6)
+10. **Tokeni:** fără rol `accent` (D-PN-2); rolurile noi `photo-scrim`, culorile de categorie, `nav-*` (§10.8). Dark-ul Network: bara laterală navy, restul gri închis.
+11. **Altele:** moderarea conținutului Portal/Network se face din Founder Control Center (de proiectat); mascota „Vee” nu se folosește deocamdată; trecerea de la propunerea acceptată la parteneriat e un pas de flux între două funcționalități existente, fără funcționalitate nouă.
+12. **Rămân deschise:** programul de afiliere pentru afaceri, criteriile Founding 100 (C5), criteriile pentru „Verificat”, validarea juridică pentru VeeCoin / Spin Wheel / familie / recenzii verificate.
 
 ### 17.15 Modificări în v0.3.1
 
