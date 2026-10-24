@@ -64,6 +64,7 @@ export async function GET(request: Request) {
             id: 'e6-test-insert-hack-' + Date.now(),
             organizationId: 'e4-org-beta',
             name: 'CrossOrgHack',
+            durationMinutes: 30,
           },
         });
         // Dacă ajungem aici, RLS nu a blocat → rollback oricum
