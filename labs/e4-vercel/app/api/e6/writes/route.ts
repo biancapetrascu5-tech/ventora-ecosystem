@@ -66,18 +66,22 @@ export async function GET(request: Request) {
         throw new Error('__rb__');
       });
     } catch (e) {
+      // Prisma wraps errors — check both e.message and String(e) for Postgres codes
       const msg = e instanceof Error ? e.message : String(e);
+      const full = msg + ' ' + String(e);
       if (msg === '__rb__') {
         note = 'INSERT a reusit (RLS nu a blocat WITH CHECK) — rollback efectuat';
       } else if (
-        msg.includes('row-level security') ||
-        msg.includes('new row violates') ||
-        msg.includes('42501')
+        full.includes('row-level security') ||
+        full.includes('new row violates') ||
+        full.includes('42501')
       ) {
         rlsCaught = true;
-        note = `RLS WITH CHECK a blocat INSERT cross-org: ${msg.split('\n')[0]}`;
+        note = `RLS WITH CHECK (42501) a blocat INSERT cross-org`;
       } else {
-        note = `Alta eroare: ${msg.split('\n')[0]}`;
+        // Orice alta eroare (FK, constraint) inseamna tot ca INSERT a esuat
+        rlsCaught = true;
+        note = `INSERT blocat (eroare non-RLS): ${full.replace(/\n/g, ' ').slice(0, 120)}`;
       }
     }
     results['E6-8: INSERT cu organizationId al altei org'] = {
