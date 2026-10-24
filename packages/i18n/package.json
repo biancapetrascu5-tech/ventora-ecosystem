@@ -10,7 +10,6 @@
   },
   "scripts": {
     "typecheck": "tsc --noEmit",
-    "test": "vitest run --passWithNoTests",
     "i18n:check": "node scripts/check.mjs"
   },
   "dependencies": {

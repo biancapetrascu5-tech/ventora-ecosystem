@@ -139,11 +139,17 @@ if (i18nResult.status !== 0) {
 // SKIP if gitleaks is not installed locally — CI handles this via gitleaks/gitleaks-action@v2.
 
 const gitleaksBin = findBinary('gitleaks');
+const isCI = Boolean(process.env.CI);
 
 if (!gitleaksBin) {
-  console.log(
-    '[SKIP] gitleaks not installed locally — CI job secrets-scan uses gitleaks/gitleaks-action@v2',
-  );
+  if (isCI) {
+    console.error(
+      '[FAIL] gitleaks — binary not found in CI; add the install-gitleaks step before pnpm guards:verify',
+    );
+    allPassed = false;
+  } else {
+    console.log('[SKIP] gitleaks not installed locally — install gitleaks or run in CI');
+  }
 } else {
   const tmpDir = path.join(tmpdir(), 'ventora-gitleaks-test');
   const tmpFile = path.join(tmpDir, 'fake-secret.env');
