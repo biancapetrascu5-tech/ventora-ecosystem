@@ -59,6 +59,8 @@ model UsageCounter {
   organizationId String
   metric         String
   count          Int      @default(0)
+  reserved       Int      @default(0)
+  limit          Int      @default(100)
   updatedAt      DateTime @updatedAt
 
   @@unique([organizationId, metric])
@@ -67,13 +69,14 @@ model UsageCounter {
 }
 
 model QuotaReservation {
-  id             String   @id @default(cuid())
+  id             String    @id @default(cuid())
   organizationId String
   metric         String
   amount         Int
-  operationId    String   @unique
-  status         String   @default("reserved")
-  createdAt      DateTime @default(now())
+  operationId    String    @unique
+  status         String    @default("reserved")
+  expiresAt      DateTime?
+  createdAt      DateTime  @default(now())
 
   @@map("quota_reservations")
   @@schema("lab_core")
