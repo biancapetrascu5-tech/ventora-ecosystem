@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="20 8 360 392" role="img" aria-label="Ventora">
+  <polygon points="200,150 352,262 200,330 48,262" fill="#3A4680"/>
+  <polygon points="126,96 196,132 192,344 158,230" fill="#f2ede3"/>
+  <polygon points="274,96 204,132 208,344 242,230" fill="#f2ede3"/>
+  <polygon points="28,16 120,80 188,352 200,392" fill="#FFAA75" stroke="#F1EFEA" stroke-width="6"/>
+  <polygon points="372,16 280,80 212,352 200,392" fill="#B1744F" stroke="#F1EFEA" stroke-width="6"/>
+  <polygon points="200,172 200,362 162,246" fill="#FFAA75" stroke="#F1EFEA" stroke-width="7"/>
+  <polygon points="200,172 238,246 200,362" fill="#B1744F" stroke="#F1EFEA" stroke-width="7"/>
+</svg>

@@ -1,0 +1,3 @@
+# AppStates
+
+The states that complete the Stage 4 screens, with the approved copy: CRM (empty pipeline, empty stage, moved, lost with an optional reason, stages chosen by the business), HR (leave approved, leave declined with a required reason, clock-out corrected, a week without entries, neutral lateness), Inventory (empty stock, order prepared, stock adjusted, the optional Booking integration), Projects (no tasks, launch at risk), Finance (no overdue invoices, marked paid, reminder sent, automatic reminders in settings), Analytics (too little data, error, empty period, "+3 pp"). Light and dark.
