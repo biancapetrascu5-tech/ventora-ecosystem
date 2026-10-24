@@ -7,7 +7,7 @@
     "dev": "next dev -p 3103",
     "build": "pnpm run generate && next build",
     "start": "next start",
-    "generate": "prisma generate --config prisma.config.core.ts && prisma generate --config prisma.config.booking.ts && prisma generate --config prisma.config.crm.ts && prisma generate --config prisma.config.multi.ts",
+    "generate": "prisma generate --config prisma.config.core.ts && prisma generate --config prisma.config.booking.ts && prisma generate --config prisma.config.crm.ts && prisma generate --config prisma.config.multi.ts && prisma generate --config prisma.config.runtime.ts",
     "typecheck": "tsc --noEmit",
     "postinstall": "pnpm run generate"
   },

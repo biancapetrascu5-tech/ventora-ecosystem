@@ -66,9 +66,10 @@ if (
 const ENDPOINTS = [
   { path: '/api/a/combined', label: 'A-combined (lab_core_user + lab_booking_user)' },
   { path: '/api/b/combined', label: 'B-combined (lab_multi_user)' },
+  { path: '/api/c/combined', label: 'C-combined (lab_runtime → SET LOCAL ROLE, tx pooler)' },
 ];
 
-const ROLES = ['lab_core_user', 'lab_booking_user', 'lab_multi_user'];
+const ROLES = ['lab_core_user', 'lab_booking_user', 'lab_multi_user', 'lab_runtime'];
 const MAX_TOTAL = 50_000;
 let grandTotal = 0;
 const report = [];
@@ -208,7 +209,7 @@ for (let i = 0; i < ENDPOINTS.length; i++) {
   console.log(`    cereri:    ${entry.totalReqs} (acumulate: ${grandTotal})`);
   console.log(`    cold start: ${coldStartMs}ms`);
   console.log(
-    `    DB peak:   lab_core_user=${peak['lab_core_user'] ?? 0}  lab_booking_user=${peak['lab_booking_user'] ?? 0}  lab_multi_user=${peak['lab_multi_user'] ?? 0}  total=${peak['__total'] ?? 0}`,
+    `    DB peak:   lab_core_user=${peak['lab_core_user'] ?? 0}  lab_booking_user=${peak['lab_booking_user'] ?? 0}  lab_multi_user=${peak['lab_multi_user'] ?? 0}  lab_runtime=${peak['lab_runtime'] ?? 0}  total=${peak['__total'] ?? 0}`,
   );
 
   if (i < ENDPOINTS.length - 1) {
@@ -229,7 +230,7 @@ for (const r of report) {
     `  req/s=${r.reqPerSec}  p50=${r.p50}ms  p95=${r.p95}ms  p99=${r.p99}ms  erori=${r.errors + r.non2xx}  cereri=${r.totalReqs}`,
   );
   console.log(
-    `  cold_start=${r.coldStartMs}ms  DB_peak: core=${r.peak['lab_core_user'] ?? 0} booking=${r.peak['lab_booking_user'] ?? 0} multi=${r.peak['lab_multi_user'] ?? 0} total=${r.peak['__total'] ?? 0}`,
+    `  cold_start=${r.coldStartMs}ms  DB_peak: core=${r.peak['lab_core_user'] ?? 0} booking=${r.peak['lab_booking_user'] ?? 0} multi=${r.peak['lab_multi_user'] ?? 0} runtime=${r.peak['lab_runtime'] ?? 0} total=${r.peak['__total'] ?? 0}`,
   );
 }
 console.log(`\nTotal cereri runda B (E4): ${grandTotal} / 50000`);

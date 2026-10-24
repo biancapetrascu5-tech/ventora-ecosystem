@@ -89,6 +89,24 @@ ALTER DEFAULT PRIVILEGES IN SCHEMA lab_core GRANT ALL ON SEQUENCES TO lab_multi_
 ALTER DEFAULT PRIVILEGES IN SCHEMA lab_booking GRANT ALL ON SEQUENCES TO lab_multi_user;
 ALTER DEFAULT PRIVILEGES IN SCHEMA lab_crm GRANT ALL ON SEQUENCES TO lab_multi_user;
 
+-- ─── lab_runtime (Varianta C) ────────────────────────────────────────────────
+-- Rol de conectare cu NOINHERIT: nu moștenește permisiunile rolurilor membre.
+-- Accesul la scheme se activează per-tranzacție cu SET LOCAL ROLE <modul>.
+-- Înlocuiește <PAROLA_RUNTIME> cu o parolă puternică.
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT FROM pg_roles WHERE rolname = 'lab_runtime') THEN
+    CREATE ROLE lab_runtime WITH LOGIN NOINHERIT PASSWORD '<PAROLA_RUNTIME>';
+  ELSE
+    ALTER ROLE lab_runtime WITH PASSWORD '<PAROLA_RUNTIME>';
+  END IF;
+END $$;
+GRANT CONNECT ON DATABASE postgres TO lab_runtime;
+-- Membership în rolurile modulelor (fără moștenire — necesită SET ROLE explicit)
+GRANT lab_core_user TO lab_runtime;
+GRANT lab_booking_user TO lab_runtime;
+GRANT lab_crm_user TO lab_runtime;
+
 -- ─── Verificare ───────────────────────────────────────────────────────────────
 -- Rulezi asta separat pentru a confirma că toate rolurile există:
 -- SELECT rolname FROM pg_roles WHERE rolname LIKE 'lab_%' ORDER BY rolname;
