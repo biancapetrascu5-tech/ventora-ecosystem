@@ -1,6 +1,22 @@
 {
   "common": {
     "ok": "OK",
-    "items": "{count, plural, one {# element} other {# elements}}"
+    "items": "{count, plural, one {# élément} other {# éléments}}"
+  },
+  "portal": {
+    "eyebrow": "Portail · pour vos clients",
+    "title": "Votre page professionnelle dans le Portail",
+    "description": "Les clients vous trouvent dans le Portail et y prennent rendez-vous. D'ici vous contrôlez ce qu'ils voient.",
+    "memberNote": "La page peut être modifiée par le propriétaire, les admins et le gestionnaire de l'application Portail.",
+    "manage": "Gérer la page",
+    "finish": "Terminer la page",
+    "preview": "Voir l'aperçu dans le Portail",
+    "previewTab": "(s'ouvre dans un nouvel onglet)",
+    "statusPublished": "Publiée",
+    "statusHidden": "Masquée",
+    "statusDraft": "Pas encore publiée"
+  },
+  "documents": {
+    "lastOpened": "Dernier ouvert : {document} · {quand}"
   }
 }

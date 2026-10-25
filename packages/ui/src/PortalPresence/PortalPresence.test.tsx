@@ -33,7 +33,11 @@ describe('PortalPresence', () => {
       <PortalPresence status="published" canManage={false} previewHref="https://example.com" />,
     );
     expect(screen.queryByText('Gestionează pagina')).toBeNull();
-    expect(screen.getByText('Doar proprietarul și adminii pot schimba pagina.')).toBeTruthy();
+    expect(
+      screen.getByText(
+        'Pagina o pot schimba proprietarul, adminii și managerul aplicației Portal.',
+      ),
+    ).toBeTruthy();
   });
 
   it('calls onManage when manage button is clicked', () => {

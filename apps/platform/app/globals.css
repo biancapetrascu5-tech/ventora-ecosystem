@@ -23,6 +23,21 @@ p, h1, h2, h3, h4, h5, h6 {
   letter-spacing: var(--type-display-xl-tracking, -0.02em);
 }
 
+.display-hub {
+  font-family: var(--type-display-hub-family);
+  font-size: var(--type-display-hub-size);
+  line-height: var(--type-display-hub-line);
+  font-weight: var(--type-display-hub-weight);
+  letter-spacing: var(--type-display-hub-tracking, -0.03em);
+}
+
+@media (max-width: 560px) {
+  .display-hub {
+    font-size: 32px;
+    line-height: 36px;
+  }
+}
+
 .display-l {
   font-family: var(--type-display-l-family);
   font-size: var(--type-display-l-size);
@@ -87,6 +102,21 @@ p, h1, h2, h3, h4, h5, h6 {
   font-size: var(--type-caption-size);
   line-height: var(--type-caption-line);
   font-weight: var(--type-caption-weight);
+}
+
+.lead {
+  font-family: var(--type-lead-family);
+  font-size: var(--type-lead-size);
+  line-height: var(--type-lead-line);
+  font-weight: var(--type-lead-weight);
+}
+
+.eyebrow {
+  font-family: var(--type-eyebrow-family);
+  font-size: var(--type-eyebrow-size);
+  line-height: var(--type-eyebrow-line);
+  font-weight: var(--type-eyebrow-weight);
+  letter-spacing: var(--type-eyebrow-tracking, 0.08em);
 }
 
 /* Modificatori */

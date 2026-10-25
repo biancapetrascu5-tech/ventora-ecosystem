@@ -158,7 +158,7 @@ export function DemoClient() {
     <div data-theme={theme} data-testid="demo-page" className={styles.page}>
       {/* ── Header pagină ── */}
       <header className={styles.pageHeader}>
-        <h1 className={styles.pageTitle}>Demo — HubSignIn + HubLauncher</h1>
+        <h1 className={styles.pageTitle}>Demo — HubSignIn + HubInvite + HubLauncher</h1>
         <p className={styles.pageSubtitle}>
           Date fictive · dev only · componente reale din @ventora/ui
         </p>
@@ -225,7 +225,7 @@ export function DemoClient() {
                   <main className={styles.signInFormMain}>
                     <div className={styles.signInCard}>
                       <div className={styles.authHead}>
-                        <h1 className="display-l">Bine ai revenit</h1>
+                        <h1 className="display-hub">Bine ai revenit</h1>
                         <p className="body muted">Intră în contul tău Ventora.</p>
                       </div>
                       <FormField label="E-mail">
@@ -264,6 +264,90 @@ export function DemoClient() {
                         <p className="body-small">
                           Nu ai cont? Conturile se fac doar prin invitație. Dacă ai primit una,
                           deschide linkul din e-mail și îți alegi parola.
+                        </p>
+                      </div>
+                    </div>
+                  </main>
+                  <footer className={styles.authFoot}>Termeni · Confidențialitate · Ajutor</footer>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ══ Secțiunea HubInvite ══════════════════════════════════════ */}
+      <section className={styles.section}>
+        <h2 className={styles.sectionTitle}>HubInvite</h2>
+        <div className={styles.compareRow}>
+          {/* Stânga: design aprobat */}
+          <div className={styles.compareCol}>
+            <span className={styles.colLabel}>Design aprobat (preview.html)</span>
+            <div className={styles.frameDesktop}>
+              <iframe
+                src="/preview/invite.html"
+                title="HubInvite — design aprobat"
+                className={styles.iframe}
+                sandbox="allow-scripts allow-same-origin"
+              />
+            </div>
+          </div>
+
+          {/* Dreapta: implementare React — aceeași BrandZone ca HubSignIn */}
+          <div className={styles.compareCol}>
+            <span className={styles.colLabel}>Implementare React (@ventora/ui)</span>
+            <div className={styles.frameDesktop}>
+              <div className={styles.signInSplit}>
+                <BrandZone as="aside" className={styles.signInBrand}>
+                  <div className={styles.signInBrandTop}>
+                    <VentoraLogoMark size={40} />
+                  </div>
+                  <p className={cn('display-xl', styles.signInStatement)}>
+                    Afacerea ta.
+                    <br />
+                    Într-un singur loc.
+                  </p>
+                  <Chevrons className={styles.signInChev} />
+                  <p className={cn('caption', styles.signInFoot)}>© 2026 Ventora Systems</p>
+                </BrandZone>
+
+                <div className={styles.signInFormSide}>
+                  <header className={cn(styles.authTop, styles.signInFormHeader)}>
+                    <button type="button" className={styles.langBtn}>
+                      RO
+                    </button>
+                  </header>
+                  <main className={styles.signInFormMain}>
+                    <div className={styles.signInCard}>
+                      <div className={styles.authHead}>
+                        <h1 className="display-hub">Bun venit în Ventora</h1>
+                        <p className="body muted">
+                          Ai primit o invitație la <strong>Salon Aurora</strong>. Îți setezi contul
+                          acum.
+                        </p>
+                      </div>
+                      <FormField label="Prenume și nume">
+                        <Input
+                          type="text"
+                          autoComplete="name"
+                          placeholder="Bianca Petrescu"
+                        />
+                      </FormField>
+                      <FormField label="Parolă nouă">
+                        <Input
+                          type="password"
+                          autoComplete="new-password"
+                          placeholder="Minim 10 caractere"
+                        />
+                      </FormField>
+                      <Button variant="primary" size="lg" className={styles.blockBtn}>
+                        Activează contul
+                      </Button>
+                      <div className={styles.authNote}>
+                        <Icon icon="mail" size="sm" />
+                        <p className="body-small">
+                          Invitația a fost trimisă de administratorul spațiului de lucru. Dacă nu
+                          recunoști această invitație, ignoră acest mesaj.
                         </p>
                       </div>
                     </div>
@@ -474,7 +558,7 @@ export function DemoClient() {
                         <p className={cn('eyebrow', styles.lbEyebrow)}>
                           DUMINICĂ, 25 OCTOMBRIE · SALON AURORA
                         </p>
-                        <h1 className="display-l">Bună dimineața, Bianca</h1>
+                        <h1 className="display-hub">Bună dimineața, Bianca</h1>
                         <p className={cn('lead', styles.lbDay)}>
                           {'Azi ai '}
                           <a className={styles.lbChip} href="#">

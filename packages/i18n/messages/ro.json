@@ -2,5 +2,21 @@
   "common": {
     "ok": "OK",
     "items": "{count, plural, one {# element} other {# elemente}}"
+  },
+  "portal": {
+    "eyebrow": "Portal · pentru clienții tăi",
+    "title": "Pagina afacerii în Portal",
+    "description": "Clienții te găsesc în Portal și își fac programări acolo. De aici schimbi ce văd ei.",
+    "memberNote": "Pagina o pot schimba proprietarul, adminii și managerul aplicației Portal.",
+    "manage": "Gestionează pagina",
+    "finish": "Termină pagina",
+    "preview": "Vezi cum arată în Portal",
+    "previewTab": "(se deschide într-un tab nou)",
+    "statusPublished": "Publicată",
+    "statusHidden": "Ascunsă",
+    "statusDraft": "Nu e publicată încă"
+  },
+  "documents": {
+    "lastOpened": "Ultimul deschis: {document} · {când}"
   }
 }

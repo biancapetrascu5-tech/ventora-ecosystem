@@ -2,5 +2,21 @@
   "common": {
     "ok": "OK",
     "items": "{count, plural, one {# elemento} other {# elementos}}"
+  },
+  "portal": {
+    "eyebrow": "Portal · para tus clientes",
+    "title": "Tu página de negocio en el Portal",
+    "description": "Los clientes te encuentran en el Portal y hacen citas allí. Desde aquí controlas lo que ellos ven.",
+    "memberNote": "La página puede ser modificada por el propietario, los admins y el gestor de la aplicación Portal.",
+    "manage": "Gestionar página",
+    "finish": "Terminar página",
+    "preview": "Ver cómo se ve en el Portal",
+    "previewTab": "(se abre en una nueva pestaña)",
+    "statusPublished": "Publicada",
+    "statusHidden": "Oculta",
+    "statusDraft": "Aún no publicada"
+  },
+  "documents": {
+    "lastOpened": "Último abierto: {document} · {cuándo}"
   }
 }

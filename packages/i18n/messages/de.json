@@ -2,5 +2,21 @@
   "common": {
     "ok": "OK",
     "items": "{count, plural, one {# Element} other {# Elemente}}"
+  },
+  "portal": {
+    "eyebrow": "Portal · für Ihre Kunden",
+    "title": "Ihre Unternehmensseite im Portal",
+    "description": "Kunden finden Sie im Portal und buchen dort Termine. Von hier aus steuern Sie, was sie sehen.",
+    "memberNote": "Die Seite kann vom Inhaber, den Admins und dem Manager der Portal-App geändert werden.",
+    "manage": "Seite verwalten",
+    "finish": "Seite fertigstellen",
+    "preview": "Im Portal ansehen",
+    "previewTab": "(öffnet sich in einem neuen Tab)",
+    "statusPublished": "Veröffentlicht",
+    "statusHidden": "Ausgeblendet",
+    "statusDraft": "Noch nicht veröffentlicht"
+  },
+  "documents": {
+    "lastOpened": "Zuletzt geöffnet: {document} · {wann}"
   }
 }

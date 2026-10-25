@@ -21,11 +21,10 @@ export interface AppDockProps {
     name: string,
     launch: { from: DOMRect; fromCard: DOMRect; iconEl: Element },
   ) => void;
-  label?: string; // TODO: i18n
+  label?: string;
 }
 
 const APP_LABELS: Record<AppName, string> = {
-  // TODO: i18n
   booking: 'Booking',
   crm: 'CRM',
   hr: 'HR',
@@ -44,25 +43,49 @@ const APP_LABELS: Record<AppName, string> = {
 };
 
 export function AppDock({ apps, onOpen, label = 'Aplicațiile tale' }: AppDockProps) {
-  // TODO: i18n label
   const [openIndex, setOpenIndex] = useState<number | null>(null);
   const dockRef = useRef<HTMLDivElement>(null);
+  // Timer ref for hover intent delay (duration-intent = 120ms)
+  const hoverTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const handleMouseEnter = useCallback((idx: number) => {
-    setOpenIndex(idx);
+  const clearHoverTimer = useCallback(() => {
+    if (hoverTimerRef.current !== null) {
+      clearTimeout(hoverTimerRef.current);
+      hoverTimerRef.current = null;
+    }
   }, []);
+
+  const handleMouseEnter = useCallback(
+    (idx: number) => {
+      clearHoverTimer();
+      // Open card only after 120ms hover intent (duration-intent token)
+      hoverTimerRef.current = setTimeout(() => {
+        setOpenIndex(idx);
+        hoverTimerRef.current = null;
+      }, 120);
+    },
+    [clearHoverTimer],
+  );
 
   const handleMouseLeave = useCallback(() => {
+    // Cancel pending open and close immediately
+    clearHoverTimer();
     setOpenIndex(null);
-  }, []);
+  }, [clearHoverTimer]);
 
-  const handleFocus = useCallback((idx: number) => {
-    setOpenIndex(idx);
-  }, []);
+  // Keyboard focus: instant, no delay
+  const handleFocus = useCallback(
+    (idx: number) => {
+      clearHoverTimer();
+      setOpenIndex(idx);
+    },
+    [clearHoverTimer],
+  );
 
   const handleBlur = useCallback(() => {
+    clearHoverTimer();
     setOpenIndex(null);
-  }, []);
+  }, [clearHoverTimer]);
 
   const handleClick = useCallback(
     (
@@ -131,7 +154,9 @@ export function AppDock({ apps, onOpen, label = 'Aplicațiile tale' }: AppDockPr
                 onKeyDown={(e) => {
                   if (e.key === 'Enter' || e.key === ' ') {
                     e.preventDefault();
-                    const slotEl = e.currentTarget.closest(`.${styles.slot}`) as HTMLElement | null;
+                    const slotEl = e.currentTarget.closest(
+                      `.${styles.slot}`,
+                    ) as HTMLElement | null;
                     const iconEl = e.currentTarget.querySelector('img') as HTMLElement | null;
                     handleClick(e, dockApp, slotEl, iconEl);
                   }

@@ -163,6 +163,7 @@ export type SizeToken =
 
 export type DurationToken =
   | 'duration-instant'
+  | 'duration-intent'
   | 'duration-fast'
   | 'duration-base'
   | 'duration-slow'
@@ -184,6 +185,7 @@ export type ZIndexToken =
 
 export type TypeToken =
   | 'display-xl'
+  | 'display-hub'
   | 'display-l'
   | 'display-m'
   | 'lead'

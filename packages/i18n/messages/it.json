@@ -2,5 +2,21 @@
   "common": {
     "ok": "OK",
     "items": "{count, plural, one {# elemento} other {# elementi}}"
+  },
+  "portal": {
+    "eyebrow": "Portale · per i tuoi clienti",
+    "title": "La tua pagina aziendale nel Portale",
+    "description": "I clienti ti trovano nel Portale e prenotano lì. Da qui controlli cosa vedono.",
+    "memberNote": "La pagina può essere modificata dal proprietario, dagli admin e dal gestore dell'app Portale.",
+    "manage": "Gestisci pagina",
+    "finish": "Completa pagina",
+    "preview": "Vedi come appare nel Portale",
+    "previewTab": "(si apre in una nuova scheda)",
+    "statusPublished": "Pubblicata",
+    "statusHidden": "Nascosta",
+    "statusDraft": "Non ancora pubblicata"
+  },
+  "documents": {
+    "lastOpened": "Ultimo aperto: {document} · {quando}"
   }
 }

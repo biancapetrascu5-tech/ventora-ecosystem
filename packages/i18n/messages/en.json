@@ -2,5 +2,21 @@
   "common": {
     "ok": "OK",
     "items": "{count, plural, one {# item} other {# items}}"
+  },
+  "portal": {
+    "eyebrow": "Portal · for your clients",
+    "title": "Your business page in Portal",
+    "description": "Clients find you in Portal and book appointments there. From here you control what they see.",
+    "memberNote": "The page can be changed by the owner, admins and the Portal app manager.",
+    "manage": "Manage page",
+    "finish": "Finish page",
+    "preview": "See how it looks in Portal",
+    "previewTab": "(opens in a new tab)",
+    "statusPublished": "Published",
+    "statusHidden": "Hidden",
+    "statusDraft": "Not published yet"
+  },
+  "documents": {
+    "lastOpened": "Last opened: {document} · {when}"
   }
 }

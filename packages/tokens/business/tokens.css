@@ -91,10 +91,15 @@
   --type-display-xl-weight: 700;
   --type-display-xl-tracking: -0.035em;
   --type-display-xl-family: var(--font-display);
-  --type-display-l-size: 40px;
-  --type-display-l-line: 46px;
+  --type-display-hub-size: 40px;
+  --type-display-hub-line: 46px;
+  --type-display-hub-weight: 700;
+  --type-display-hub-tracking: -0.03em;
+  --type-display-hub-family: var(--font-display);
+  --type-display-l-size: 30px;
+  --type-display-l-line: 36px;
   --type-display-l-weight: 700;
-  --type-display-l-tracking: -0.03em;
+  --type-display-l-tracking: -0.015em;
   --type-display-l-family: var(--font-display);
   --type-display-m-size: 22px;
   --type-display-m-line: 28px;
@@ -221,6 +226,7 @@
   --stat-value-size: 28px;
   /* duration */
   --duration-instant: 80ms;
+  --duration-intent: 120ms;
   --duration-fast: 140ms;
   --duration-base: 220ms;
   --duration-slow: 360ms;

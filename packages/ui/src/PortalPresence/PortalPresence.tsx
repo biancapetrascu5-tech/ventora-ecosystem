@@ -5,6 +5,36 @@ import styles from './PortalPresence.module.css';
 
 export type PortalStatus = 'published' | 'hidden' | 'draft';
 
+export interface PortalPresenceTranslations {
+  eyebrow: string;
+  title: string;
+  description: string;
+  memberNote: string;
+  manage: string;
+  finish: string;
+  preview: string;
+  previewTab: string;
+  statusPublished: string;
+  statusHidden: string;
+  statusDraft: string;
+}
+
+const DEFAULT_TRANSLATIONS: PortalPresenceTranslations = {
+  eyebrow: 'Portal · pentru clienții tăi',
+  title: 'Pagina afacerii în Portal',
+  description:
+    'Clienții te găsesc în Portal și își fac programări acolo. De aici schimbi ce văd ei.',
+  memberNote:
+    'Pagina o pot schimba proprietarul, adminii și managerul aplicației Portal.',
+  manage: 'Gestionează pagina',
+  finish: 'Termină pagina',
+  preview: 'Vezi cum arată în Portal',
+  previewTab: '(se deschide într-un tab nou)',
+  statusPublished: 'Publicată',
+  statusHidden: 'Ascunsă',
+  statusDraft: 'Nu e publicată încă',
+};
+
 export interface PortalPresenceProps {
   status: PortalStatus;
   canManage?: boolean;
@@ -12,14 +42,8 @@ export interface PortalPresenceProps {
   onPreview?: () => void;
   previewHref?: string;
   compact?: boolean;
+  translations?: Partial<PortalPresenceTranslations>;
 }
-
-// TODO: i18n — all strings below
-const STATUS_LABELS: Record<PortalStatus, string> = {
-  published: 'Publicată',
-  hidden: 'Ascunsă',
-  draft: 'Nu e publicată încă',
-};
 
 export function PortalPresence({
   status,
@@ -28,34 +52,32 @@ export function PortalPresence({
   onPreview,
   previewHref,
   compact = false,
+  translations,
 }: PortalPresenceProps) {
-  const manageLabel = status === 'draft' ? 'Termină pagina' : 'Gestionează pagina'; // TODO: i18n
+  const t: PortalPresenceTranslations = { ...DEFAULT_TRANSLATIONS, ...translations };
+
+  const statusLabel =
+    status === 'published'
+      ? t.statusPublished
+      : status === 'hidden'
+        ? t.statusHidden
+        : t.statusDraft;
+
+  const manageLabel = status === 'draft' ? t.finish : t.manage;
 
   return (
     <div className={cn(styles.card, 'v-portalcard', compact && styles.compact)}>
       <div className={styles.meta}>
         <p className={styles.eyebrow}>
-          {/* TODO: i18n */}
-          Portal · pentru clienții tăi
+          {t.eyebrow}
           <span className={cn(styles.pill, styles[status])}>
             <span className={styles.pillDot} aria-hidden />
-            {STATUS_LABELS[status]}
+            {statusLabel}
           </span>
         </p>
-        <h3 className={styles.title}>
-          {/* TODO: i18n */}
-          Pagina afacerii în Portal
-        </h3>
-        <p className={styles.description}>
-          {/* TODO: i18n */}
-          Clienții te găsesc și programează din Portal. Aici schimbi ce văd ei.
-        </p>
-        {!canManage && (
-          <p className={styles.memberNote}>
-            {/* TODO: i18n */}
-            Doar proprietarul și adminii pot schimba pagina.
-          </p>
-        )}
+        <h3 className={styles.title}>{t.title}</h3>
+        <p className={styles.description}>{t.description}</p>
+        {!canManage && <p className={styles.memberNote}>{t.memberNote}</p>}
       </div>
 
       <div className={styles.actions}>
@@ -74,10 +96,9 @@ export function PortalPresence({
               rel="noopener noreferrer"
               className={styles.externalLink}
             >
-              {/* TODO: i18n */}
-              Vezi cum arată în Portal
+              {t.preview}
               <svg
-                aria-label="(se deschide într-un tab nou)" // TODO: i18n
+                aria-label={t.previewTab}
                 width="14"
                 height="14"
                 viewBox="0 0 24 24"
@@ -94,8 +115,7 @@ export function PortalPresence({
             </a>
           ) : (
             <button type="button" className={styles.externalLink} onClick={onPreview}>
-              {/* TODO: i18n */}
-              Vezi cum arată în Portal
+              {t.preview}
               <svg
                 aria-hidden
                 width="14"
