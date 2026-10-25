@@ -1,7 +1,7 @@
 # CLAUDE.md — Reguli operaționale pentru Claude Code
 
 **Repo:** `C:\Projects\ventora-ecosystem`
-**Ultima actualizare:** 2026-10-24 (Faza 0, pasul 0.1)
+**Ultima actualizare:** 2026-10-25 (Faza 0, pasul 0.4 — COMPLET)
 **Sursa de adevăr:** `docs/VENTORA_SOURCE_OF_TRUTH.md`
 
 ---
@@ -32,7 +32,7 @@
 
 1. Decizii aprobate ale fondatorilor + `docs/checklists/` (cerințele funcționale)
 2. `docs/VENTORA_MASTER_BRIEF.md` (viziunea și regulile de produs)
-3. `docs/ARCHITECTURE.md` v0.3.0 (implementarea tehnică aprobată)
+3. `docs/ARCHITECTURE.md` v0.4.0 (implementarea tehnică aprobată — decizii Fazei 0 CONFIRMATE)
 4. `docs/DESIGN_RULES.md` + `docs/design/system/README.md` (regulile vizuale)
 5. `docs/VENTORA_SOURCE_OF_TRUTH.md` (indexul central)
 6. `docs/adr/` (deciziile arhitecturale individuale)
@@ -47,9 +47,11 @@ apps/platform/   -> Hub + aplicatii B2B + Network (port 3100, app.ventora-hub.co
 apps/portal/     -> Portal B2C (port 3101, portal.ventora-hub.com)
 apps/founder/    -> Founder Control Center (port 3102, founder.ventora-hub.com)
 modules/         -> logica de domeniu (cate un pachet pe aplicatie, 15 total)
-core/            -> servicii de platforma (identity, access, commercial, growth...)
-packages/        -> pachete tehnice si UI comune (config, contracts, i18n, ui...)
-labs/            -> experimente Faza 0 - NU devine cod de produs
+core/quota/      -> reserveQuota, confirmQuota, releaseQuota, reconcileExpiredReservations
+core/            -> alte servicii de platforma (identity, access, commercial, growth...)
+packages/db-kit/ -> withTenantContext, guardTenant, guardBulkOp, cleanUrl, writeOutboxEvent
+packages/        -> alte pachete tehnice si UI comune (config, contracts, i18n, ui...)
+labs/            -> experimente Faza 0 arhivate in branch archive/labs-faza-0
 docs/            -> documentatia aprobata (ARCHITECTURE, DESIGN_RULES, checkliste...)
 ```
 
@@ -61,6 +63,8 @@ docs/            -> documentatia aprobata (ARCHITECTURE, DESIGN_RULES, checklist
 
 - `prisma db push` în niciun mediu cu date reale (numai migrații versionate)
 - Query-uri Prisma raw în afara helper-ului aprobat din `packages/db-kit`
+- `withTenantContext` apelat fără `guardTenant` anterior (organizationId nevalidat)
+- `updateMany` / `deleteMany` fără filtru explicit — `guardBulkOp` din `packages/db-kit` blochează asta
 - `withSystemContext` în codul de request al utilizatorilor
 - Texte UI literale în componente — doar chei next-intl prin `useTranslations()`
 - Culori sau valori vizuale inventate în cod — doar token-uri din `packages/tokens`
@@ -75,5 +79,10 @@ docs/            -> documentatia aprobata (ARCHITECTURE, DESIGN_RULES, checklist
 
 → `docs/plans/FAZA-0.md`
 
-Pasul curent: **0.1** (scheletul) — în desfășurare.
-Pasul următor: **0.2** (CI și gardurile automate) — se începe după aprobarea fondatoarei.
+**Faza 0 COMPLETĂ** (25.10.2026). Decizii confirmate în ARCHITECTURE v0.4.0 §17.17:
+- **D-DB-1 varianta C:** Un rol de conectare NOINHERIT + roluri de modul NOLOGIN, accesate prin `SET LOCAL ROLE`
+- **D-SEC-1:** RLS din ziua 0 cu `current_setting('app.organization_id', true)` — eșec sigur (0 rânduri)
+- **D-SEC-3:** `guardBulkOp` înainte de orice `updateMany`/`deleteMany`
+- **D-UI-2:** next-intl pentru i18n, 6 limbi (ro/en/fr/es/de/it)
+
+Urmează **Faza 1** (design system + module de produs) — după aprobarea fondatoarei.

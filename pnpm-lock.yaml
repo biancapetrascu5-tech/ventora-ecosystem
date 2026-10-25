@@ -332,6 +332,15 @@ importers:
         specifier: ^2.1.0
         version: 2.1.9(@types/node@22.20.5)(lightningcss@1.33.0)(supports-color@8.1.1)
 
+  core/quota:
+    devDependencies:
+      typescript:
+        specifier: ^6.0.0
+        version: 6.0.3
+      vitest:
+        specifier: ^5.0.5
+        version: 5.0.5(@opentelemetry/api@1.10.0)(@types/node@22.20.5)(vite@8.3.5(@types/node@22.20.5)(jiti@2.7.0)(yaml@2.9.1))
+
   labs/e4-vercel:
     dependencies:
       '@prisma/adapter-pg':
@@ -405,6 +414,21 @@ importers:
       vite:
         specifier: ^8.0.0
         version: 8.3.5(@types/node@22.20.5)(jiti@2.7.0)(yaml@2.9.1)
+      vitest:
+        specifier: ^5.0.5
+        version: 5.0.5(@opentelemetry/api@1.10.0)(@types/node@22.20.5)(vite@8.3.5(@types/node@22.20.5)(jiti@2.7.0)(yaml@2.9.1))
+
+  packages/db-kit:
+    devDependencies:
+      '@types/pg':
+        specifier: ^8.11.0
+        version: 8.23.1
+      pg:
+        specifier: ^8.13.0
+        version: 8.23.1
+      typescript:
+        specifier: ^6.0.0
+        version: 6.0.3
       vitest:
         specifier: ^5.0.5
         version: 5.0.5(@opentelemetry/api@1.10.0)(@types/node@22.20.5)(vite@8.3.5(@types/node@22.20.5)(jiti@2.7.0)(yaml@2.9.1))
