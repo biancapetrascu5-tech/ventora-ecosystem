@@ -14,6 +14,7 @@
     "format:check": "prettier --check \"**/*.{ts,tsx,json,mjs}\" --ignore-path .prettierignore"
   },
   "devDependencies": {
+    "@typescript-eslint/parser": "^8.72.0",
     "eslint-plugin-boundaries": "^7.0.0",
     "eslint-plugin-i18next": "^6.1.0",
     "prettier": "^3.4.0",
