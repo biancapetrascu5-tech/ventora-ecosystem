@@ -73,8 +73,18 @@ function VentoraLogoMark({ size = 36 }: { size?: number }) {
       <polygon points="200,150 352,262 200,330 48,262" fill="#161e38" />
       <polygon points="126,96 196,132 192,344 158,230" fill="#f2ede3" />
       <polygon points="274,96 204,132 208,344 242,230" fill="#f2ede3" />
-      <polygon points="28,16 120,80 188,352 200,392" fill="#FFAA75" stroke="#0a1024" strokeWidth="12" />
-      <polygon points="372,16 280,80 212,352 200,392" fill="#B1744F" stroke="#0a1024" strokeWidth="12" />
+      <polygon
+        points="28,16 120,80 188,352 200,392"
+        fill="#FFAA75"
+        stroke="#0a1024"
+        strokeWidth="12"
+      />
+      <polygon
+        points="372,16 280,80 212,352 200,392"
+        fill="#B1744F"
+        stroke="#0a1024"
+        strokeWidth="12"
+      />
       <polygon points="200,172 200,362 162,246" fill="#FFAA75" stroke="#0a1024" strokeWidth="14" />
       <polygon points="200,172 238,246 200,362" fill="#B1744F" stroke="#0a1024" strokeWidth="14" />
     </svg>
@@ -82,7 +92,15 @@ function VentoraLogoMark({ size = 36 }: { size?: number }) {
 }
 
 /* ── AppTile demo — NECESITĂ DECIZIE FONDATORI (AppTile din @ventora/ui Lot 5) */
-function AppTileCard({ app, description, badge }: { app: AppName; description: string; badge?: number }) {
+function AppTileCard({
+  app,
+  description,
+  badge,
+}: {
+  app: AppName;
+  description: string;
+  badge?: number;
+}) {
   return (
     <button type="button" className={styles.appTileCard} aria-label={APP_LABELS[app]}>
       <div className={styles.appTileIconWrap}>
@@ -103,7 +121,9 @@ function AppTileRow({ app, access }: { app: AppName; access: string }) {
         <span className={styles.appTileRowLabel}>{APP_LABELS[app]}</span>
         <span className={styles.appTileRowAccess}>{ACCESS_LABELS[access] ?? access}</span>
       </div>
-      <Button variant="quiet" size="sm">Solicită acces</Button>
+      <Button variant="quiet" size="sm">
+        Solicită acces
+      </Button>
     </div>
   );
 }
@@ -121,7 +141,9 @@ export function DemoClient() {
       {/* ── Header pagină ── */}
       <header className={styles.pageHeader}>
         <h1 className={styles.pageTitle}>Demo — HubSignIn + HubLauncher</h1>
-        <p className={styles.pageSubtitle}>Date fictive · dev only · componente reale din @ventora/ui</p>
+        <p className={styles.pageSubtitle}>
+          Date fictive · dev only · componente reale din @ventora/ui
+        </p>
         <div className={styles.themeRow}>
           <Button
             variant={theme === 'light' ? 'primary' : 'secondary'}
@@ -169,7 +191,9 @@ export function DemoClient() {
                     <span className={styles.brandName}>Ventora</span>
                   </div>
                   {/* NECESITĂ DECIZIE FONDATORI: LanguageSwitcher din @ventora/ui */}
-                  <button type="button" className={styles.langBtn}>RO</button>
+                  <button type="button" className={styles.langBtn}>
+                    RO
+                  </button>
                 </div>
 
                 {/* Card autentificare */}
@@ -195,7 +219,9 @@ export function DemoClient() {
                     <div className={styles.passwordField}>
                       <div className={styles.passwordLabel}>
                         <span>Parolă</span>
-                        <a href="#" className={styles.forgotLink}>Ai uitat parola?</a>
+                        <a href="#" className={styles.forgotLink}>
+                          Ai uitat parola?
+                        </a>
                       </div>
                       <Input
                         type="password"
@@ -206,18 +232,11 @@ export function DemoClient() {
                       />
                     </div>
 
-                    <Checkbox
-                      isSelected={rememberMe}
-                      onChange={setRememberMe}
-                    >
+                    <Checkbox isSelected={rememberMe} onChange={setRememberMe}>
                       Ține-mă minte pe acest dispozitiv timp de 30 de zile
                     </Checkbox>
 
-                    <Button
-                      variant="primary"
-                      size="lg"
-                      className={styles.blockBtn}
-                    >
+                    <Button variant="primary" size="lg" className={styles.blockBtn}>
                       Intră în cont
                     </Button>
 
@@ -286,10 +305,17 @@ export function DemoClient() {
                     <h1 className="display-l">Bună dimineața, Bianca</h1>
                     <p className="body muted">
                       Azi ai{' '}
-                      <a href="#" className={styles.dayLink}>8 programări</a>,{' '}
-                      <a href="#" className={styles.dayLink}>2 facturi scadente</a>{' '}
+                      <a href="#" className={styles.dayLink}>
+                        8 programări
+                      </a>
+                      ,{' '}
+                      <a href="#" className={styles.dayLink}>
+                        2 facturi scadente
+                      </a>{' '}
                       și{' '}
-                      <a href="#" className={styles.dayLink}>o cerere de concediu</a>{' '}
+                      <a href="#" className={styles.dayLink}>
+                        o cerere de concediu
+                      </a>{' '}
                       de aprobat.
                     </p>
                   </div>
@@ -298,7 +324,9 @@ export function DemoClient() {
                   <section className={styles.appsSection}>
                     <div className={styles.secHead}>
                       <h2 className="display-m">Aplicațiile tale</h2>
-                      <Button size="sm" variant="quiet">Reordonează</Button>
+                      <Button size="sm" variant="quiet">
+                        Reordonează
+                      </Button>
                     </div>
                     {/* NECESITĂ DECIZIE FONDATORI: AppTile din @ventora/ui Lot 5 */}
                     <div className={styles.tiles4}>
