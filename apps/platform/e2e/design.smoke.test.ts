@@ -110,13 +110,13 @@ test.describe('/design/demo smoke', () => {
 
   test('renders HubLauncher — salut Bianca', async ({ page }) => {
     await page.goto('/design/demo');
-    const greeting = page.getByRole('heading', { name: /Bună dimineața, Bianca/i });
+    const greeting = page.getByRole('heading', { name: /Bună dimineața, Bianca/i }).first();
     await expect(greeting).toBeVisible();
   });
 
   test('renders HubLauncher — AppIcon CRM tile', async ({ page }) => {
     await page.goto('/design/demo');
-    const crmTile = page.getByRole('button', { name: 'CRM' });
+    const crmTile = page.getByRole('button', { name: 'CRM' }).first();
     await expect(crmTile).toBeVisible();
   });
 
@@ -130,7 +130,7 @@ test.describe('/design/demo smoke', () => {
     await page.goto('/design/demo');
     const darkBtn = page.getByRole('button', { name: /dark/i });
     await darkBtn.click();
-    const demoPage = page.locator('[data-theme="dark"]');
+    const demoPage = page.locator('[data-testid="demo-page"][data-theme="dark"]');
     await expect(demoPage).toBeVisible();
   });
 });

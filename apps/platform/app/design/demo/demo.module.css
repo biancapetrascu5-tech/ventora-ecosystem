@@ -328,8 +328,9 @@
   text-align: left;
   font: inherit;
   min-height: var(--app-tile-min-height, 156px);
-  transition: background var(--duration-fast) var(--ease-standard),
-              box-shadow var(--duration-fast) var(--ease-standard);
+  transition:
+    background var(--duration-fast) var(--ease-standard),
+    box-shadow var(--duration-fast) var(--ease-standard);
 }
 
 .appTileCard:hover {
@@ -418,4 +419,193 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+/* ── HubSignIn Direcția B (split layout) ── */
+
+.signInSplit {
+  display: flex;
+  flex-direction: row;
+  height: 100%;
+}
+
+.signInBrand {
+  position: relative;
+  flex: 0 0 46%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+  padding: var(--space-6) var(--space-8) var(--space-8);
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.signInBrandTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.signInStatement {
+  margin: auto 0 0;
+  position: relative;
+  z-index: 1;
+  color: var(--ink);
+}
+
+.signInChev {
+  position: absolute;
+  right: -56px;
+  top: 96px;
+  width: 340px;
+  height: 460px;
+  pointer-events: none;
+}
+
+.signInFoot {
+  margin: 0;
+  color: var(--ink-muted);
+}
+
+.signInFormSide {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  background: var(--sheet);
+}
+
+.signInFormHeader {
+  justify-content: flex-end;
+}
+
+.signInFormMain {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-6) var(--space-4);
+  overflow-y: auto;
+}
+
+.signInCard {
+  width: 380px;
+  max-width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  box-sizing: border-box;
+}
+
+/* ── HubLauncher Direcția B (bandă brand + AppDock) ── */
+
+.lbBand {
+  position: relative;
+  padding: var(--space-8) var(--space-6) 112px;
+}
+
+.lbHero {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-8);
+  min-width: 0;
+}
+
+.lbHeroText {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  min-width: 0;
+}
+
+.lbEyebrow {
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.lbDay {
+  margin: 0;
+  max-width: 780px;
+}
+
+.lbChip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  height: 32px;
+  margin: 2px 0;
+  padding: 0 var(--space-3) 0 var(--space-1);
+  border-radius: var(--radius-full);
+  background: var(--sheet);
+  box-shadow: inset 0 0 0 var(--border-width) var(--line);
+  color: var(--ink);
+  font-weight: 600;
+  text-decoration: none;
+  vertical-align: middle;
+  transition:
+    box-shadow var(--duration-fast) var(--ease-standard),
+    transform var(--duration-fast) var(--ease-standard);
+}
+
+.lbChip:hover {
+  box-shadow: inset 0 0 0 var(--border-width) var(--line-strong);
+  transform: translateY(-1px);
+  text-decoration: none;
+}
+
+.lbDot {
+  width: var(--dot-size);
+  height: var(--dot-size);
+  border-radius: var(--radius-full);
+  background: var(--attention);
+  margin-left: calc(var(--space-1) * -1);
+}
+
+.lbChev {
+  position: absolute;
+  right: var(--space-4);
+  top: calc(var(--space-2) * -1);
+  width: 150px;
+  height: 200px;
+  pointer-events: none;
+}
+
+.lbSechead {
+  margin-top: var(--space-8);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+
+.lbMine {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  margin-top: calc(-96px - var(--space-8));
+  position: relative;
+  z-index: 1;
+  padding: 0 var(--space-6);
+}
+
+.lbOther {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: 0 var(--space-6);
+}
+
+.lbOtherIntro {
+  margin: 0 0 var(--space-3);
+}
+
+.lbOtherRows {
+  display: flex;
+  flex-direction: column;
+  background: var(--sheet);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
 }

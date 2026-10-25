@@ -15,23 +15,13 @@ import {
   AppDock,
   PortalPresence,
   AppLaunch,
+  cn,
   type AppName,
   type DockApp,
 } from '@ventora/ui';
 import styles from './demo.module.css';
 
 /* ── Date aprobate din preview.html ─────────────────────────────────────── */
-
-const MINE: Array<[AppName, string, number?]> = [
-  ['booking', 'Programări, calendar și reamintiri', 3],
-  ['crm', 'Clienți, istoric și oportunități'],
-  ['hr', 'Echipă, prezență și concedii', 1],
-  ['finance', 'Facturi, scadențe și restanțe', 2],
-  ['projects', 'Proiecte, sarcini și termene'],
-  ['shifts', 'Ture și înlocuiri'],
-  ['documents', 'Documente și șabloane'],
-  ['portal', 'Pagina afacerii pentru clienți'],
-];
 
 const APP_LABELS: Record<AppName, string> = {
   booking: 'Booking',
@@ -96,28 +86,24 @@ function VentoraLogoMark({ size = 36 }: { size?: number }) {
   );
 }
 
-/* ── AppTile demo — NECESITĂ DECIZIE FONDATORI (AppTile din @ventora/ui Lot 5) */
-function AppTileCard({
-  app,
-  description,
-  badge,
-}: {
-  app: AppName;
-  description: string;
-  badge?: number;
-}) {
+/* Chevron-uri decorative — Direcția B (stroke folosește var(--line-strong) care în BrandZone → brand-line-strong) */
+function Chevrons({ className }: { className?: string }) {
   return (
-    <button type="button" className={styles.appTileCard} aria-label={APP_LABELS[app]}>
-      <div className={styles.appTileIconWrap}>
-        <AppIcon app={app} size={44} title={APP_LABELS[app]} />
-        {badge != null && badge > 0 && <span className={styles.appTileBadge}>{badge}</span>}
-      </div>
-      <span className={styles.appTileCardLabel}>{APP_LABELS[app]}</span>
-      <span className={styles.appTileCardDesc}>{description}</span>
-    </button>
+    <svg
+      className={className}
+      viewBox="0 0 176 240"
+      aria-hidden
+      style={{ fill: 'none', stroke: 'var(--line-strong)', strokeWidth: 1.5 }}
+    >
+      {[40, 72, 104].map((y) => (
+        <polyline key={y} points={`32,${y} 88,${y + 80} 144,${y}`} />
+      ))}
+      <polyline points="48,168 88,224 128,168" />
+    </svg>
   );
 }
 
+/* ── AppTile row (OTHER apps — NECESITĂ DECIZIE FONDATORI: Lot 5) */
 function AppTileRow({ app, access }: { app: AppName; access: string }) {
   return (
     <div className={styles.appTileRow}>
@@ -166,9 +152,10 @@ export function DemoClient() {
   const [password, setPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
   const [launch, setLaunch] = useState<LaunchState | null>(null);
+  const [launchLB, setLaunchLB] = useState<LaunchState | null>(null);
 
   return (
-    <div data-theme={theme} className={styles.page}>
+    <div data-theme={theme} data-testid="demo-page" className={styles.page}>
       {/* ── Header pagină ── */}
       <header className={styles.pageHeader}>
         <h1 className={styles.pageTitle}>Demo — HubSignIn + HubLauncher</h1>
@@ -200,7 +187,7 @@ export function DemoClient() {
           {/* Stânga: design aprobat */}
           <div className={styles.compareCol}>
             <span className={styles.colLabel}>Design aprobat (preview.html)</span>
-            <div className={styles.framePhone}>
+            <div className={styles.frameDesktop}>
               <iframe
                 src="/preview/signin.html"
                 title="HubSignIn — design aprobat"
@@ -210,80 +197,79 @@ export function DemoClient() {
             </div>
           </div>
 
-          {/* Dreapta: implementare React */}
+          {/* Dreapta: implementare React — Direcția B: panou brand 46% + formular */}
           <div className={styles.compareCol}>
             <span className={styles.colLabel}>Implementare React (@ventora/ui)</span>
-            <div className={styles.framePhone}>
-              <div className={styles.signIn}>
-                {/* Header logo + language */}
-                <div className={styles.authTop}>
-                  <div className={styles.authBrand}>
-                    <VentoraLogoMark size={36} />
-                    <span className={styles.brandName}>Ventora</span>
+            <div className={styles.frameDesktop}>
+              <div className={styles.signInSplit}>
+                <BrandZone as="aside" className={styles.signInBrand}>
+                  <div className={styles.signInBrandTop}>
+                    <VentoraLogoMark size={40} />
                   </div>
-                  {/* NECESITĂ DECIZIE FONDATORI: LanguageSwitcher din @ventora/ui */}
-                  <button type="button" className={styles.langBtn}>
-                    RO
-                  </button>
-                </div>
+                  <p className={cn('display-xl', styles.signInStatement)}>
+                    Afacerea ta.
+                    <br />
+                    Într-un singur loc.
+                  </p>
+                  <Chevrons className={styles.signInChev} />
+                  <p className={cn('caption', styles.signInFoot)}>© 2026 Ventora Systems</p>
+                </BrandZone>
 
-                {/* Card autentificare */}
-                <main className={styles.authMain}>
-                  <div className={styles.authCard}>
-                    <div className={styles.authHead}>
-                      <h1 className="display-l">Bine ai revenit</h1>
-                      <p className="body muted">Intră în contul tău Ventora.</p>
-                    </div>
-
-                    <FormField label="E-mail">
-                      <Input
-                        type="email"
-                        autoComplete="username"
-                        iconStart="mail"
-                        placeholder="bianca@salonaurora.ro"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                      />
-                    </FormField>
-
-                    {/* Câmp parolă cu link "Ai uitat parola?" pe linie separată */}
-                    <div className={styles.passwordField}>
-                      <div className={styles.passwordLabel}>
-                        <span>Parolă</span>
-                        <a href="#" className={styles.forgotLink}>
-                          Ai uitat parola?
-                        </a>
+                <div className={styles.signInFormSide}>
+                  <header className={cn(styles.authTop, styles.signInFormHeader)}>
+                    {/* NECESITĂ DECIZIE FONDATORI: LanguageSwitcher din @ventora/ui */}
+                    <button type="button" className={styles.langBtn}>
+                      RO
+                    </button>
+                  </header>
+                  <main className={styles.signInFormMain}>
+                    <div className={styles.signInCard}>
+                      <div className={styles.authHead}>
+                        <h1 className="display-l">Bine ai revenit</h1>
+                        <p className="body muted">Intră în contul tău Ventora.</p>
                       </div>
-                      <Input
-                        type="password"
-                        autoComplete="current-password"
-                        placeholder="••••••••"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                      />
+                      <FormField label="E-mail">
+                        <Input
+                          type="email"
+                          autoComplete="username"
+                          iconStart="mail"
+                          placeholder="bianca@salonaurora.ro"
+                          value={email}
+                          onChange={(e) => setEmail(e.target.value)}
+                        />
+                      </FormField>
+                      <div className={styles.passwordField}>
+                        <div className={styles.passwordLabel}>
+                          <span>Parolă</span>
+                          <a href="#" className={styles.forgotLink}>
+                            Ai uitat parola?
+                          </a>
+                        </div>
+                        <Input
+                          type="password"
+                          autoComplete="current-password"
+                          placeholder="••••••••"
+                          value={password}
+                          onChange={(e) => setPassword(e.target.value)}
+                        />
+                      </div>
+                      <Checkbox isSelected={rememberMe} onChange={setRememberMe}>
+                        Ține-mă minte pe acest dispozitiv timp de 30 de zile
+                      </Checkbox>
+                      <Button variant="primary" size="lg" className={styles.blockBtn}>
+                        Intră în cont
+                      </Button>
+                      <div className={styles.authNote}>
+                        <Icon icon="mail" size="sm" />
+                        <p className="body-small">
+                          Nu ai cont? Conturile se fac doar prin invitație. Dacă ai primit una,
+                          deschide linkul din e-mail și îți alegi parola.
+                        </p>
+                      </div>
                     </div>
-
-                    <Checkbox isSelected={rememberMe} onChange={setRememberMe}>
-                      Ține-mă minte pe acest dispozitiv timp de 30 de zile
-                    </Checkbox>
-
-                    <Button variant="primary" size="lg" className={styles.blockBtn}>
-                      Intră în cont
-                    </Button>
-
-                    <div className={styles.authNote}>
-                      <Icon icon="mail" size="sm" />
-                      <p className="body-small">
-                        Nu ai cont? Conturile se fac doar prin invitație. Dacă ai primit una,
-                        deschide linkul din e-mail și îți alegi parola.
-                      </p>
-                    </div>
-                  </div>
-                </main>
-
-                <footer className={styles.authFoot}>
-                  © 2026 Ventora Systems · Termeni · Confidențialitate · Ajutor
-                </footer>
+                  </main>
+                  <footer className={styles.authFoot}>Termeni · Confidențialitate · Ajutor</footer>
+                </div>
               </div>
             </div>
           </div>
@@ -455,79 +441,113 @@ export function DemoClient() {
             </div>
           </div>
 
-          {/* Dreapta: implementare React */}
+          {/* Dreapta: implementare React — Direcția B: bandă brand + AppDock */}
           <div className={styles.compareCol}>
             <span className={styles.colLabel}>Implementare React (@ventora/ui)</span>
             <div className={styles.frameDesktop}>
               <div className={styles.launcher}>
-                {/* ContextBar — NECESITĂ DECIZIE FONDATORI: OrgSwitcher, AccountMenu, NotificationsPanel */}
-                <ContextBar
-                  logo={
-                    <div className={styles.hubLogo}>
-                      <VentoraLogoMark size={28} />
-                    </div>
-                  }
-                  title="Ventora Hub"
-                  actions={
-                    <div className={styles.contextActions}>
-                      <IconButton icon="search" label="Caută" variant="quiet" />
-                      <IconButton icon="bell" label="Notificări" variant="quiet" />
-                      {/* NECESITĂ DECIZIE FONDATORI: OrgSwitcher, NotificationsPanel, AccountMenu */}
-                    </div>
-                  }
-                />
+                {/* ContextBar în BrandZone — background transparent pe navy */}
+                <BrandZone>
+                  <ContextBar
+                    logo={
+                      <div className={styles.hubLogo}>
+                        <VentoraLogoMark size={28} />
+                      </div>
+                    }
+                    title="Salon Aurora"
+                    actions={
+                      <div className={styles.contextActions}>
+                        <IconButton icon="search" label="Caută" variant="quiet" />
+                        <IconButton icon="bell" label="Notificări" variant="quiet" />
+                        {/* NECESITĂ DECIZIE FONDATORI: OrgSwitcher, NotificationsPanel, AccountMenu */}
+                      </div>
+                    }
+                  />
+                </BrandZone>
 
-                {/* Conținut launcher */}
+                {/* Conținut launcher cu scroll */}
                 <div className={styles.launcherContent}>
-                  {/* Salut */}
-                  <div className={styles.greet}>
-                    <h1 className="display-l">Bună dimineața, Bianca</h1>
-                    <p className="body muted">
-                      Azi ai{' '}
-                      <a href="#" className={styles.dayLink}>
-                        8 programări
-                      </a>
-                      ,{' '}
-                      <a href="#" className={styles.dayLink}>
-                        2 facturi scadente
-                      </a>{' '}
-                      și{' '}
-                      <a href="#" className={styles.dayLink}>
-                        o cerere de concediu
-                      </a>{' '}
-                      de aprobat.
-                    </p>
-                  </div>
-
-                  {/* Aplicațiile tale */}
-                  <section className={styles.appsSection}>
-                    <div className={styles.secHead}>
+                  {/* Bandă brand: eyebrow, salut, fraza zilei cu chips, secțiunea „Aplicațiile tale" */}
+                  <BrandZone className={styles.lbBand}>
+                    <div className={styles.lbHero}>
+                      <div className={styles.lbHeroText}>
+                        <p className={cn('eyebrow', styles.lbEyebrow)}>
+                          DUMINICĂ, 25 OCTOMBRIE · SALON AURORA
+                        </p>
+                        <h1 className="display-l">Bună dimineața, Bianca</h1>
+                        <p className={cn('lead', styles.lbDay)}>
+                          {'Azi ai '}
+                          <a className={styles.lbChip} href="#">
+                            <AppIcon app="booking" size={20} />
+                            {'8 programări'}
+                          </a>
+                          {', '}
+                          <a className={styles.lbChip} href="#">
+                            <AppIcon app="finance" size={20} />
+                            {'2 facturi scadente'}
+                            <span className={styles.lbDot} aria-hidden />
+                          </a>
+                          {' și '}
+                          <a className={styles.lbChip} href="#">
+                            <AppIcon app="hr" size={20} />
+                            {'o cerere de concediu'}
+                            <span className={styles.lbDot} aria-hidden />
+                          </a>
+                          {' de aprobat.'}
+                        </p>
+                      </div>
+                      <Chevrons className={styles.lbChev} />
+                    </div>
+                    <div className={styles.lbSechead}>
                       <h2 className="display-m">Aplicațiile tale</h2>
                       <Button size="sm" variant="quiet">
                         Reordonează
                       </Button>
                     </div>
-                    {/* NECESITĂ DECIZIE FONDATORI: AppTile din @ventora/ui Lot 5 */}
-                    <div className={styles.tiles4}>
-                      {MINE.map(([app, description, badge]) => (
-                        <AppTileCard key={app} app={app} description={description} badge={badge} />
-                      ))}
-                    </div>
-                  </section>
+                  </BrandZone>
 
-                  {/* Alte aplicații */}
-                  <section className={styles.appsSection}>
+                  {/* AppDock + PortalPresence trase peste marginea benzii */}
+                  <div className={styles.lbMine}>
+                    <AppDock
+                      apps={DOCK_APPS}
+                      onOpen={(_e, app, name, launchInfo) => {
+                        setLaunchLB({
+                          app,
+                          name,
+                          from: launchInfo.from,
+                          fromCard: launchInfo.fromCard,
+                        });
+                      }}
+                    />
+                    <PortalPresence status="published" onManage={() => {}} previewHref="#" />
+                  </div>
+
+                  {/* Alte aplicații Ventora */}
+                  <div className={styles.lbOther}>
                     <h2 className="display-m">Alte aplicații Ventora</h2>
-                    <p className="body-small muted" style={{ marginBottom: 'var(--space-3)' }}>
+                    <p className={cn('body', styles.lbOtherIntro)}>
                       Nu le poți deschide acum. La fiecare scrie de ce și ce poți face.
                     </p>
-                    {/* NECESITĂ DECIZIE FONDATORI: AppTile layout="row" din @ventora/ui Lot 5 */}
-                    <div className={styles.rows2}>
+                    <div className={styles.lbOtherRows}>
                       {OTHER.map(([app, access]) => (
                         <AppTileRow key={app} app={app} access={access} />
                       ))}
                     </div>
-                  </section>
+                    <div style={{ marginTop: 'var(--space-4)' }}>
+                      <Button variant="quiet">Vezi toate aplicațiile Ventora</Button>
+                    </div>
+                  </div>
+
+                  {launchLB && (
+                    <AppLaunch
+                      app={launchLB.app}
+                      name={launchLB.name}
+                      from={launchLB.from}
+                      fromCard={launchLB.fromCard}
+                      contained
+                      onDone={() => setTimeout(() => setLaunchLB(null), 300)}
+                    />
+                  )}
                 </div>
               </div>
             </div>
