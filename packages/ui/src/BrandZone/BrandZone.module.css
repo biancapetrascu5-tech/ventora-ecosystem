@@ -1,0 +1,13 @@
+.root {
+  /* Remap semantic tokens for the brand surface — Hub only */
+  --ink: var(--on-brand);
+  --ink-secondary: var(--on-brand-muted);
+  --ink-muted: var(--on-brand-muted);
+  --sheet: var(--brand-raised);
+  --line: var(--brand-line);
+  --line-strong: var(--brand-line-strong);
+  --control-border: var(--brand-control-border);
+
+  background: var(--brand-surface);
+  color: var(--on-brand);
+}

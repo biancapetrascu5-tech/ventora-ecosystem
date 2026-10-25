@@ -1,0 +1,53 @@
+/* AppLaunch v2 — animated full-screen transition from AppDock card to app */
+
+.overlay {
+  inset: 0;
+  z-index: var(--z-overlay);
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.overlay.contained {
+  position: absolute;
+}
+
+.overlay.fullscreen {
+  position: fixed;
+}
+
+/* App surface that grows out of the card */
+.surface {
+  position: absolute;
+  inset: 0;
+  background: var(--canvas);
+  transform-origin: center center;
+  will-change: transform, opacity;
+}
+
+/* Icon that swells then moves to app bar */
+.icon {
+  position: absolute;
+  pointer-events: none;
+  transform-origin: center center;
+  will-change: transform, opacity;
+}
+
+/* Static progress frames for docs */
+.frame {
+  position: relative;
+  overflow: hidden;
+  background: var(--canvas);
+}
+
+/* Reduced motion: instant fade */
+@media (prefers-reduced-motion: reduce) {
+  .surface {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .icon {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

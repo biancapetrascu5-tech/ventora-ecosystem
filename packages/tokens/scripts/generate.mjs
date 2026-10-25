@@ -25,7 +25,21 @@ const lightVars = [];
 const darkVars = [];
 const staticVars = [];
 
+function resolveRef(value) {
+  if (typeof value === 'string') {
+    const m = value.match(/^\{(.+)\}$/);
+    return m ? `var(--${m[1]})` : value;
+  }
+  return value;
+}
+
 function pushThemed(name, value) {
+  if (typeof value === 'string') {
+    const resolved = resolveRef(value);
+    lightVars.push(`  --${name}: ${resolved};`);
+    darkVars.push(`  --${name}: ${resolved};`);
+    return;
+  }
   lightVars.push(`  --${name}: ${value.light};`);
   darkVars.push(`  --${name}: ${value.dark};`);
 }

@@ -1,0 +1,192 @@
+/* PortalPresence — Portal card under AppDock in the Hub launcher */
+
+.card {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-4);
+  padding: var(--space-5);
+  background: var(--sheet);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-xl);
+  color: var(--ink);
+}
+
+.card.compact {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.meta {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.eyebrow {
+  margin: 0;
+  font-size: var(--type-eyebrow-size);
+  line-height: var(--type-eyebrow-line);
+  font-weight: var(--type-eyebrow-weight);
+  letter-spacing: var(--type-eyebrow-tracking, 0.08em);
+  text-transform: uppercase;
+  color: var(--ink-muted);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.title {
+  margin: 0;
+  font-size: var(--type-heading-size);
+  font-weight: var(--type-heading-weight);
+  line-height: var(--type-heading-line);
+  color: var(--ink);
+}
+
+.description {
+  margin: 0;
+  font-size: var(--type-body-small-size);
+  line-height: var(--type-body-small-line);
+  color: var(--ink-secondary);
+}
+
+.memberNote {
+  margin: 0;
+  font-size: var(--type-body-small-size);
+  color: var(--ink-muted);
+}
+
+/* Status pill */
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: 2px var(--space-2);
+  border-radius: var(--radius-full);
+  font-size: var(--type-caption-size);
+  font-weight: 500;
+  line-height: var(--type-caption-line);
+  flex: none;
+}
+
+.pill.published {
+  background: var(--done-soft);
+  color: var(--done-ink);
+}
+
+.pill.hidden {
+  background: var(--neutral-soft);
+  color: var(--ink-secondary);
+}
+
+.pill.draft {
+  background: var(--attention-soft);
+  color: var(--attention-ink);
+}
+
+.pillDot {
+  width: var(--dot-size);
+  height: var(--dot-size);
+  border-radius: var(--radius-full);
+  flex: none;
+}
+
+.pill.published .pillDot { background: var(--done-mark); }
+.pill.hidden .pillDot { background: var(--ink-secondary); }
+.pill.draft .pillDot { background: var(--attention-mark); }
+
+/* Actions column */
+.actions {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+  flex: none;
+}
+
+.card.compact .actions {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.card.compact .actions > * {
+  width: 100%;
+}
+
+/* Manage / Termină pagina button */
+.manageBtn {
+  appearance: none;
+  border: 0;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: var(--control-md);
+  padding: 0 var(--space-3);
+  border-radius: var(--radius-sm);
+  background: var(--primary);
+  color: var(--on-primary);
+  font: inherit;
+  font-size: var(--type-body-size);
+  font-weight: var(--type-body-strong-weight);
+  line-height: 1;
+  white-space: nowrap;
+  transition: background-color var(--duration-instant) var(--ease-standard);
+}
+
+.manageBtn:hover {
+  background: var(--primary-hover);
+}
+
+.manageBtn:focus-visible {
+  outline: var(--focus-ring-width) solid var(--focus-ring);
+  outline-offset: var(--focus-ring-offset);
+}
+
+.card.compact .manageBtn {
+  width: 100%;
+  height: var(--control-lg);
+}
+
+/* External link button */
+.externalLink {
+  appearance: none;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  font: inherit;
+  font-size: var(--type-body-size);
+  font-weight: 500;
+  color: var(--ink);
+  text-decoration: underline;
+  text-underline-offset: var(--marker-width);
+  text-decoration-thickness: 1px;
+  padding: 0;
+  border-radius: var(--radius-xs);
+  white-space: nowrap;
+}
+
+.externalLink:hover {
+  text-decoration-thickness: 2px;
+}
+
+.externalLink:focus-visible {
+  outline: var(--focus-ring-width) solid var(--focus-ring);
+  outline-offset: var(--focus-ring-offset);
+}
+
+.card.compact .externalLink {
+  justify-content: center;
+  padding: 0 var(--space-3);
+  height: var(--control-md);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  text-decoration: none;
+}

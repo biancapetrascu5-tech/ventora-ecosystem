@@ -91,5 +91,18 @@ export type { AppShellProps } from './AppShell/AppShell';
 export { AppIcon } from './AppIcon/AppIcon';
 export type { AppIconProps, AppName } from './AppIcon/AppIcon';
 
+// Hub components (Direcția B)
+export { BrandZone } from './BrandZone/BrandZone';
+export type { BrandZoneProps } from './BrandZone/BrandZone';
+
+export { AppDock } from './AppDock/AppDock';
+export type { AppDockProps, DockApp } from './AppDock/AppDock';
+
+export { PortalPresence } from './PortalPresence/PortalPresence';
+export type { PortalPresenceProps, PortalStatus } from './PortalPresence/PortalPresence';
+
+export { AppLaunch } from './AppLaunch/AppLaunch';
+export type { AppLaunchProps } from './AppLaunch/AppLaunch';
+
 // Utilities
 export { cn } from './lib/cn';

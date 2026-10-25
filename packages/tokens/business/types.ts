@@ -23,7 +23,15 @@ export type ColorToken =
   | 'on-primary'
   | 'brand-navy'
   | 'brand-offwhite'
+  | 'brand-surface'
+  | 'brand-raised'
+  | 'on-brand'
+  | 'on-brand-muted'
+  | 'brand-line'
+  | 'brand-line-strong'
+  | 'brand-control-border'
   | 'attention'
+  | 'hover-accent'
   | 'on-attention'
   | 'attention-soft'
   | 'attention-ink'
@@ -100,6 +108,7 @@ export type BorderToken =
 export type ShadowToken =
   | 'shadow-1'
   | 'shadow-2'
+  | 'shadow-tile-hover'
   | 'shadow-3';
 
 export type SizeToken =
@@ -131,6 +140,10 @@ export type SizeToken =
   | 'panel-max-height'
   | 'search-width'
   | 'app-tile-min-height'
+  | 'dock-icon'
+  | 'dock-icon-compact'
+  | 'dock-icon-phone'
+  | 'dock-card-w'
   | 'dot-size'
   | 'breakpoint-phone'
   | 'breakpoint-tablet'
@@ -152,11 +165,15 @@ export type DurationToken =
   | 'duration-instant'
   | 'duration-fast'
   | 'duration-base'
-  | 'duration-slow';
+  | 'duration-slow'
+  | 'duration-playful'
+  | 'duration-morph'
+  | 'duration-launch';
 
 export type EasingToken =
   | 'ease-standard'
-  | 'ease-exit';
+  | 'ease-exit'
+  | 'ease-spring';
 
 export type ZIndexToken =
   | 'z-sticky'
@@ -169,6 +186,8 @@ export type TypeToken =
   | 'display-xl'
   | 'display-l'
   | 'display-m'
+  | 'lead'
+  | 'eyebrow'
   | 'title'
   | 'heading'
   | 'subheading'
