@@ -8,11 +8,12 @@ afterEach(() => {
 // Web APIs absent from jsdom that react-aria-components needs
 if (typeof window !== 'undefined') {
   if (!window.ResizeObserver) {
-    window.ResizeObserver = vi.fn().mockImplementation(() => ({
-      observe: vi.fn(),
-      unobserve: vi.fn(),
-      disconnect: vi.fn(),
-    })) as unknown as typeof ResizeObserver;
+    class ResizeObserverMock {
+      observe = vi.fn();
+      unobserve = vi.fn();
+      disconnect = vi.fn();
+    }
+    window.ResizeObserver = ResizeObserverMock as unknown as typeof ResizeObserver;
   }
   if (!window.IntersectionObserver) {
     window.IntersectionObserver = vi.fn().mockImplementation(() => ({

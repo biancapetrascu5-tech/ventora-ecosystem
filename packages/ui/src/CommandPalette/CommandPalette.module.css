@@ -1,0 +1,100 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  background: var(--scrim);
+  z-index: var(--z-overlay);
+  padding-top: 15vh;
+  padding-inline: var(--space-4);
+}
+
+.modal {
+  width: 100%;
+  max-width: var(--dialog-width-wide);
+  background: var(--sheet);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-3);
+  overflow: hidden;
+  outline: none;
+}
+
+.dialog {
+  outline: none;
+}
+
+.search {
+  display: flex;
+  align-items: center;
+  padding: var(--space-3) var(--space-4);
+  border-bottom: var(--border-width-control) solid var(--line);
+}
+
+.searchInput {
+  width: 100%;
+  border: none;
+  background: transparent;
+  font-family: var(--font-sans);
+  font-size: var(--type-body-size);
+  color: var(--ink);
+  outline: none;
+  caret-color: var(--primary);
+}
+
+.searchInput::placeholder {
+  color: var(--ink-muted);
+}
+
+.listbox {
+  max-height: 400px;
+  overflow-y: auto;
+  padding-block: var(--space-1);
+}
+
+.group {
+  padding-block-end: var(--space-1);
+}
+
+.groupLabel {
+  padding-inline: var(--space-4);
+  padding-block: var(--space-1);
+  font-family: var(--font-sans);
+  font-size: var(--type-caption-size);
+  font-weight: var(--type-caption-weight);
+  color: var(--ink-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding-inline: var(--space-4);
+  height: var(--control-lg);
+  cursor: pointer;
+  font-family: var(--font-sans);
+  font-size: var(--type-body-size);
+  color: var(--ink);
+  transition: background var(--duration-instant) var(--ease-standard);
+}
+
+.item.active {
+  background: var(--state-hover);
+}
+
+.itemIcon {
+  display: flex;
+  align-items: center;
+  color: var(--ink-secondary);
+  flex-shrink: 0;
+}
+
+.empty {
+  padding: var(--space-6) var(--space-4);
+  text-align: center;
+  font-family: var(--font-sans);
+  font-size: var(--type-body-size);
+  color: var(--ink-muted);
+}

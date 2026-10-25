@@ -1,0 +1,16 @@
+.tooltip {
+  background: var(--tooltip-bg);
+  color: var(--tooltip-ink);
+  font-family: var(--font-sans);
+  font-size: var(--type-caption-size);
+  font-weight: var(--type-caption-weight);
+  line-height: var(--type-caption-line);
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-xs);
+  box-shadow: var(--shadow-2);
+  max-width: 240px;
+  pointer-events: none;
+  z-index: var(--z-popover);
+  white-space: normal;
+  word-break: break-word;
+}

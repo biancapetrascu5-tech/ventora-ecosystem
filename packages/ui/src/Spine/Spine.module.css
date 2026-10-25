@@ -1,0 +1,218 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  width: var(--spine-width);
+  height: 100%;
+  background: var(--canvas);
+  border-right: var(--border-width-control) solid var(--line);
+  z-index: var(--z-shell);
+  transition: width var(--duration-base) var(--ease-standard);
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.collapsed {
+  width: var(--spine-width-collapsed);
+}
+
+.nav {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-0-5);
+  padding: var(--space-2);
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  height: var(--control-lg);
+  padding-inline: var(--space-2);
+  border-radius: var(--radius-sm);
+  border: none;
+  background: transparent;
+  color: var(--ink-secondary);
+  cursor: pointer;
+  text-decoration: none;
+  white-space: nowrap;
+  outline: none;
+  transition:
+    background var(--duration-instant) var(--ease-standard),
+    color var(--duration-instant) var(--ease-standard);
+  width: 100%;
+  text-align: left;
+}
+
+.item:hover:not([aria-disabled]) {
+  background: var(--state-hover);
+  color: var(--ink);
+}
+
+.item:focus-visible {
+  outline: var(--focus-ring-width) solid var(--focus-ring);
+  outline-offset: var(--focus-ring-offset);
+}
+
+.item[aria-disabled] {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.itemActive {
+  background: var(--neutral-soft, var(--state-hover));
+  color: var(--primary);
+}
+
+.itemActive:hover {
+  background: var(--neutral-soft, var(--state-hover));
+  color: var(--primary);
+}
+
+.itemIcon {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.itemLabel {
+  font-family: var(--font-sans);
+  font-size: var(--type-body-size);
+  font-weight: var(--type-body-weight);
+  line-height: var(--type-body-line);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: 1;
+}
+
+.collapsed .itemLabel {
+  display: none;
+}
+
+.itemBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding-inline: var(--space-1);
+  background: var(--primary);
+  color: var(--on-primary);
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 600;
+  border-radius: 9px;
+  flex-shrink: 0;
+}
+
+.collapsed .itemBadge {
+  display: none;
+}
+
+.collapseBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: var(--control-md);
+  margin: var(--space-2);
+  border: none;
+  background: transparent;
+  color: var(--ink-secondary);
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  outline: none;
+  transition: background var(--duration-instant) var(--ease-standard);
+}
+
+.collapseBtn:hover {
+  background: var(--state-hover);
+  color: var(--ink);
+}
+
+.collapseBtn:focus-visible {
+  outline: var(--focus-ring-width) solid var(--focus-ring);
+  outline-offset: var(--focus-ring-offset);
+}
+
+.footer {
+  padding: var(--space-2);
+  border-top: var(--border-width-control) solid var(--line);
+}
+
+/* Bottom navigation — mobile only */
+.bottomNav {
+  display: none;
+}
+
+@media (max-width: 639px) {
+  .root {
+    width: 100%;
+    height: auto;
+    flex-direction: row;
+    border-right: none;
+    border-top: var(--border-width-control) solid var(--line);
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: var(--z-shell);
+  }
+
+  .nav,
+  .footer,
+  .collapseBtn {
+    display: none;
+  }
+
+  .bottomNav {
+    display: flex;
+    flex: 1;
+    flex-direction: row;
+    padding: var(--space-1);
+    gap: 0;
+  }
+
+  .bottomNavItem {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    height: 56px;
+    gap: var(--space-0-5);
+    border: none;
+    background: transparent;
+    color: var(--ink-secondary);
+    cursor: pointer;
+    text-decoration: none;
+    border-radius: var(--radius-sm);
+    outline: none;
+    transition:
+      background var(--duration-instant) var(--ease-standard),
+      color var(--duration-instant) var(--ease-standard);
+  }
+
+  .bottomNavItem:focus-visible {
+    outline: var(--focus-ring-width) solid var(--focus-ring);
+    outline-offset: var(--focus-ring-offset);
+  }
+
+  .bottomNavActive {
+    color: var(--primary);
+  }
+
+  .bottomNavLabel {
+    font-family: var(--font-sans);
+    font-size: 10px;
+    font-weight: 500;
+    line-height: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .root {
+    transition: none;
+  }
+}

@@ -50,5 +50,42 @@ export type { FileUploadProps } from './FileUpload/FileUpload';
 export { Combobox } from './Combobox/Combobox';
 export type { ComboboxProps, ComboboxOption } from './Combobox/Combobox';
 
+// Navigation & Overlay (Lot 3)
+export { Tabs } from './Tabs/Tabs';
+export type { TabsProps, TabItem } from './Tabs/Tabs';
+
+export { Pagination } from './Pagination/Pagination';
+export type { PaginationProps } from './Pagination/Pagination';
+
+export { Menu, MenuTrigger } from './Menu/Menu';
+export type { MenuProps, MenuItemDef, MenuSectionDef } from './Menu/Menu';
+
+export { Tooltip } from './Tooltip/Tooltip';
+export type { TooltipProps } from './Tooltip/Tooltip';
+
+export { Dialog, DialogTrigger, DialogHeader, DialogBody, DialogFooter } from './Dialog/Dialog';
+export type { DialogProps, DialogTone } from './Dialog/Dialog';
+
+export { Drawer, DrawerTrigger, DrawerHeader, DrawerBody, DrawerFooter } from './Drawer/Drawer';
+export type { DrawerProps } from './Drawer/Drawer';
+
+export { CommandPalette } from './CommandPalette/CommandPalette';
+export type { CommandPaletteProps, CommandDef } from './CommandPalette/CommandPalette';
+
+export { Sheet, SheetSection } from './Sheet/Sheet';
+export type { SheetProps, SheetSectionProps } from './Sheet/Sheet';
+
+export { PageHeader } from './PageHeader/PageHeader';
+export type { PageHeaderProps } from './PageHeader/PageHeader';
+
+export { ContextBar } from './ContextBar/ContextBar';
+export type { ContextBarProps } from './ContextBar/ContextBar';
+
+export { Spine } from './Spine/Spine';
+export type { SpineProps, NavItem } from './Spine/Spine';
+
+export { AppShell } from './AppShell/AppShell';
+export type { AppShellProps } from './AppShell/AppShell';
+
 // Utilities
 export { cn } from './lib/cn';

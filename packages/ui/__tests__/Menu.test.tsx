@@ -1,0 +1,56 @@
+import { describe, it, expect, vi } from 'vitest';
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import axe from 'axe-core';
+import { Menu } from '../src/Menu/Menu';
+import { Button } from '../src/Button/Button';
+
+const items = [
+  { id: 'edit', label: 'Editează' },
+  { id: 'delete', label: 'Șterge', isDanger: true },
+];
+
+describe('Menu', () => {
+  it('renders trigger button', () => {
+    render(
+      <Menu items={items} onAction={vi.fn()}>
+        <Button>Acțiuni</Button>
+      </Menu>,
+    );
+    expect(screen.getByRole('button', { name: 'Acțiuni' })).toBeDefined();
+  });
+
+  it('opens menu on click', async () => {
+    const user = userEvent.setup();
+    render(
+      <Menu items={items} onAction={vi.fn()}>
+        <Button>Acțiuni</Button>
+      </Menu>,
+    );
+    await user.click(screen.getByRole('button', { name: 'Acțiuni' }));
+    expect(screen.getByRole('menuitem', { name: 'Editează' })).toBeDefined();
+  });
+
+  it('calls onAction when item selected', async () => {
+    const user = userEvent.setup();
+    const onAction = vi.fn();
+    render(
+      <Menu items={items} onAction={onAction}>
+        <Button>Acțiuni</Button>
+      </Menu>,
+    );
+    await user.click(screen.getByRole('button', { name: 'Acțiuni' }));
+    await user.click(screen.getByRole('menuitem', { name: 'Editează' }));
+    expect(onAction).toHaveBeenCalledWith('edit');
+  });
+
+  it('has no axe violations on trigger', async () => {
+    const { container } = render(
+      <Menu items={items}>
+        <Button>Acțiuni</Button>
+      </Menu>,
+    );
+    const results = await axe.run(container);
+    expect(results.violations).toHaveLength(0);
+  });
+});
