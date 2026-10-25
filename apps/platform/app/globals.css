@@ -1,0 +1,108 @@
+/* Body reset — asigură că fontul DM Sans și culorile token sunt aplicate peste tot */
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: var(--type-body-size);
+  line-height: var(--type-body-line);
+  font-weight: var(--type-body-weight);
+  color: var(--ink);
+  background: var(--canvas);
+  -webkit-font-smoothing: antialiased;
+}
+
+p, h1, h2, h3, h4, h5, h6 {
+  margin: 0;
+}
+
+/* Clase utilitare de tipografie — folosite în preview.html cu className="display-l" etc. */
+.display-xl {
+  font-family: var(--type-display-xl-family);
+  font-size: var(--type-display-xl-size);
+  line-height: var(--type-display-xl-line);
+  font-weight: var(--type-display-xl-weight);
+  letter-spacing: var(--type-display-xl-tracking, -0.02em);
+}
+
+.display-l {
+  font-family: var(--type-display-l-family);
+  font-size: var(--type-display-l-size);
+  line-height: var(--type-display-l-line);
+  font-weight: var(--type-display-l-weight);
+  letter-spacing: var(--type-display-l-tracking, -0.015em);
+}
+
+.display-m {
+  font-family: var(--type-display-m-family);
+  font-size: var(--type-display-m-size);
+  line-height: var(--type-display-m-line);
+  font-weight: var(--type-display-m-weight);
+  letter-spacing: var(--type-display-m-tracking, -0.01em);
+}
+
+.title {
+  font-family: var(--type-title-family);
+  font-size: var(--type-title-size);
+  line-height: var(--type-title-line);
+  font-weight: var(--type-title-weight);
+  letter-spacing: var(--type-title-tracking, -0.005em);
+}
+
+.heading {
+  font-family: var(--type-heading-family);
+  font-size: var(--type-heading-size);
+  line-height: var(--type-heading-line);
+  font-weight: var(--type-heading-weight);
+}
+
+.subheading {
+  font-family: var(--type-subheading-family);
+  font-size: var(--type-subheading-size);
+  line-height: var(--type-subheading-line);
+  font-weight: var(--type-subheading-weight);
+}
+
+.body {
+  font-family: var(--type-body-family);
+  font-size: var(--type-body-size);
+  line-height: var(--type-body-line);
+  font-weight: var(--type-body-weight);
+}
+
+.body-strong {
+  font-family: var(--type-body-strong-family);
+  font-size: var(--type-body-strong-size);
+  line-height: var(--type-body-strong-line);
+  font-weight: var(--type-body-strong-weight);
+}
+
+.body-small {
+  font-family: var(--type-body-small-family);
+  font-size: var(--type-body-small-size);
+  line-height: var(--type-body-small-line);
+  font-weight: var(--type-body-small-weight);
+}
+
+.caption {
+  font-family: var(--type-caption-family);
+  font-size: var(--type-caption-size);
+  line-height: var(--type-caption-line);
+  font-weight: var(--type-caption-weight);
+}
+
+/* Modificatori */
+.muted { color: var(--ink-muted); }
+
+/* Link de bază */
+.v-link {
+  appearance: none;
+  background: none;
+  border: 0;
+  padding: 0;
+  font: inherit;
+  color: var(--ink);
+  text-decoration: underline;
+  text-underline-offset: var(--marker-width);
+  text-decoration-thickness: var(--border-width);
+  cursor: pointer;
+  border-radius: var(--radius-xs);
+}

@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="ro" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HubSignIn — Ventora (design aprobat)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300..700;1,9..40,300..700&family=Syne:wght@400..800&display=swap">
+<link rel="stylesheet" href="/preview/tokens.css">
+<link rel="stylesheet" href="/preview/bundle.css">
+<style>
+html,body{min-height:100%;background:var(--canvas);color:var(--ink)}
+.auth{min-height:100vh;display:flex;flex-direction:column;background:var(--canvas);color:var(--ink)}
+.auth-top{display:flex;justify-content:space-between;align-items:center;padding:var(--space-4) var(--space-6)}
+.auth-main{flex:1;display:flex;align-items:flex-start;justify-content:center;padding:var(--space-12) var(--space-4)}
+.auth-card{width:400px;background:var(--sheet);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg);padding:var(--space-10);display:flex;flex-direction:column;gap:var(--space-4);box-sizing:border-box}
+.auth-head{display:flex;flex-direction:column;gap:var(--space-1);margin-bottom:var(--space-2)}
+.auth-note{display:flex;gap:var(--space-2);padding-top:var(--space-4);border-top:var(--border-width) solid var(--line);color:var(--ink-muted)}
+.auth-note .v-icon{margin-top:var(--space-0-5)}
+.auth-foot{padding:var(--space-4) var(--space-6);color:var(--ink-muted);text-align:center}
+.display-l{font-family:var(--type-display-l-family);font-size:var(--type-display-l-size);line-height:var(--type-display-l-line);font-weight:var(--type-display-l-weight);letter-spacing:-0.015em}
+.body{font-family:var(--type-body-family);font-size:var(--type-body-size);line-height:var(--type-body-line);font-weight:var(--type-body-weight)}
+.body-small{font-family:var(--type-body-small-family);font-size:var(--type-body-small-size);line-height:var(--type-body-small-line);font-weight:var(--type-body-small-weight)}
+.caption{font-family:var(--type-caption-family);font-size:var(--type-caption-size);line-height:var(--type-caption-line);font-weight:var(--type-caption-weight)}
+.muted{color:var(--ink-muted)}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="/preview/bundle.js"></script>
+<script>
+const V = window.Ventora;
+const { useState } = React;
+const mount = (el) => ReactDOM.createRoot(document.getElementById("root")).render(
+  React.createElement(V.LocaleProvider, { locale: "ro" }, el)
+);
+function SignIn() {
+  return React.createElement("div", { className: "auth desktop" },
+    React.createElement("header", { className: "auth-top" },
+      React.createElement(V.Logo, { size: 36 }),
+      React.createElement(V.LanguageSwitcher, { value: "ro", onChange: () => {} })
+    ),
+    React.createElement("main", { className: "auth-main" },
+      React.createElement("div", { className: "auth-card" },
+        React.createElement("div", { className: "auth-head" },
+          React.createElement("h1", { className: "display-l" }, "Bine ai revenit"),
+          React.createElement("p", { className: "body muted" }, "Intră \xEEn contul tău Ventora.")
+        ),
+        React.createElement(V.FormField, { label: "E-mail" },
+          React.createElement(V.Input, { type: "email", autoComplete: "username", icon: "mail", defaultValue: "bianca@salonaurora.ro" })
+        ),
+        React.createElement(V.FormField, { label: "Parolă",
+          counter: React.createElement("a", { className: "v-link caption", href: "#" }, "Ai uitat parola?")
+        },
+          React.createElement(V.Input, { type: "password", autoComplete: "current-password", defaultValue: "ventora2026" })
+        ),
+        React.createElement(V.Checkbox, { label: "Ține-mă minte pe acest dispozitiv timp de 30 de zile" }),
+        React.createElement(V.Button, { variant: "primary", size: "lg", block: true }, "Intră \xEEn cont"),
+        React.createElement("div", { className: "auth-note" },
+          React.createElement(V.Icon, { name: "mail", size: 16 }),
+          React.createElement("p", { className: "body-small" }, "Nu ai cont? Conturile se fac doar prin invitație. Dacă ai primit una, deschide linkul din e-mail și \xEEți alegi parola.")
+        )
+      )
+    ),
+    React.createElement("footer", { className: "auth-foot caption" }, "\xA9 2026 Ventora Systems \xB7 Termeni \xB7 Confidențialitate \xB7 Ajutor")
+  );
+}
+mount(React.createElement(SignIn, null));
+</script>
+</body>
+</html>

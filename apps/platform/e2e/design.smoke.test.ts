@@ -88,18 +88,42 @@ test.describe('/design/demo smoke', () => {
     expect(rscErrors, `Console errors: ${JSON.stringify(rscErrors)}`).toHaveLength(0);
   });
 
-  test('renders HubSignIn section', async ({ page }) => {
+  test('renders HubSignIn — titlu aprobat "Bine ai revenit"', async ({ page }) => {
     await page.goto('/design/demo');
-    const emailInput = page.getByPlaceholder('ana@firma.ro');
-    await expect(emailInput).toBeVisible();
+    const title = page.getByRole('heading', { name: 'Bine ai revenit' });
+    await expect(title).toBeVisible();
+  });
+
+  test('renders HubSignIn — buton "Intră în cont"', async ({ page }) => {
+    await page.goto('/design/demo');
     const signInBtn = page.getByRole('button', { name: 'Intră în cont' });
     await expect(signInBtn).toBeVisible();
   });
 
-  test('renders HubLauncher app tiles', async ({ page }) => {
+  test('renders HubSignIn — Checkbox ține-mă minte', async ({ page }) => {
+    await page.goto('/design/demo');
+    const checkbox = page.getByRole('checkbox', {
+      name: /Ține-mă minte pe acest dispozitiv/i,
+    });
+    await expect(checkbox).toBeVisible();
+  });
+
+  test('renders HubLauncher — salut Bianca', async ({ page }) => {
+    await page.goto('/design/demo');
+    const greeting = page.getByRole('heading', { name: /Bună dimineața, Bianca/i });
+    await expect(greeting).toBeVisible();
+  });
+
+  test('renders HubLauncher — AppIcon CRM tile', async ({ page }) => {
     await page.goto('/design/demo');
     const crmTile = page.getByRole('button', { name: 'CRM' });
     await expect(crmTile).toBeVisible();
+  });
+
+  test('renders HubLauncher — secțiunea "Alte aplicații Ventora"', async ({ page }) => {
+    await page.goto('/design/demo');
+    const otherSection = page.getByRole('heading', { name: 'Alte aplicații Ventora' });
+    await expect(otherSection).toBeVisible();
   });
 
   test('theme toggle switches between light and dark', async ({ page }) => {

@@ -87,5 +87,9 @@ export type { SpineProps, NavItem } from './Spine/Spine';
 export { AppShell } from './AppShell/AppShell';
 export type { AppShellProps } from './AppShell/AppShell';
 
+// App icons (Lot 4 demo — Lot 7 va migra la inline SVG)
+export { AppIcon } from './AppIcon/AppIcon';
+export type { AppIconProps, AppName } from './AppIcon/AppIcon';
+
 // Utilities
 export { cn } from './lib/cn';
