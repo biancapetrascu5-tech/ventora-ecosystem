@@ -14,10 +14,14 @@ const envFile = path.join(labsDir, '.env.local');
 
 const allEnv = dotenv.parse(fs.readFileSync(envFile));
 const url = allEnv['DATABASE_URL_SUPERUSER'];
-if (!url) { console.error('Lipsă DATABASE_URL_SUPERUSER'); process.exit(1); }
+if (!url) {
+  console.error('Lipsă DATABASE_URL_SUPERUSER');
+  process.exit(1);
+}
 const host = new URL(url).hostname.toLowerCase();
 if (host === 'localhost' || host === '127.0.0.1' || host.endsWith('.local')) {
-  console.error('localhost — refuzat'); process.exit(1);
+  console.error('localhost — refuzat');
+  process.exit(1);
 }
 
 const client = new pg.Client({ connectionString: url });

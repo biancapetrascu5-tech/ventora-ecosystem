@@ -27,9 +27,15 @@ const labsDir = path.resolve(__dirname, '..');
 const allEnv = dotenv.parse(fs.readFileSync(path.join(labsDir, '.env.local')));
 
 const dbUrl = allEnv['DATABASE_URL_SUPERUSER'];
-if (!dbUrl) { console.error('DATABASE_URL_SUPERUSER lipsă'); process.exit(1); }
+if (!dbUrl) {
+  console.error('DATABASE_URL_SUPERUSER lipsă');
+  process.exit(1);
+}
 const dbHost = new URL(dbUrl).hostname.toLowerCase();
-if (dbHost === 'localhost' || dbHost === '127.0.0.1') { console.error('localhost — refuzat'); process.exit(1); }
+if (dbHost === 'localhost' || dbHost === '127.0.0.1') {
+  console.error('localhost — refuzat');
+  process.exit(1);
+}
 
 const dbClient = new pg.Client({ connectionString: dbUrl });
 await dbClient.connect();
@@ -63,10 +69,10 @@ const normalHandler = inngest.createFunction(
     processed.set(outboxEventId, rec);
     await dbClient.query(
       `UPDATE lab_booking.outbox_events SET "processedAt" = NOW(), attempts = $1 WHERE id = $2`,
-      [rec.attempts, outboxEventId]
+      [rec.attempts, outboxEventId],
     );
     return { ok: true };
-  }
+  },
 );
 
 const failingHandler = inngest.createFunction(
@@ -80,12 +86,12 @@ const failingHandler = inngest.createFunction(
     const rec = processed.get(outboxEventId) ?? { attempts: 0, firstAt: Date.now() };
     rec.attempts += 1;
     processed.set(outboxEventId, rec);
-    await dbClient.query(
-      `UPDATE lab_booking.outbox_events SET attempts = $1 WHERE id = $2`,
-      [rec.attempts, outboxEventId]
-    );
+    await dbClient.query(`UPDATE lab_booking.outbox_events SET attempts = $1 WHERE id = $2`, [
+      rec.attempts,
+      outboxEventId,
+    ]);
     throw new Error(`Simulated failure attempt ${rec.attempts}`);
-  }
+  },
 );
 
 // ── Handler HTTP ──────────────────────────────────────────────────────────────
@@ -104,7 +110,8 @@ const devCmd = `npx --yes inngest-cli@1.49.0 dev --port ${INNGEST_PORT} --sdk-ur
 const devProc = spawn(devCmd, { stdio: 'pipe', shell: true });
 devProc.stdout.on('data', (d) => {
   const s = String(d).trim();
-  if (s.includes('started') || s.includes('ready') || s.includes('error')) console.log('[dev]', s.substring(0, 120));
+  if (s.includes('started') || s.includes('ready') || s.includes('error'))
+    console.log('[dev]', s.substring(0, 120));
 });
 devProc.stderr.on('data', (d) => {
   const s = String(d).trim();
@@ -112,19 +119,23 @@ devProc.stderr.on('data', (d) => {
 });
 
 // Așteptare port TCP
-const waitPort = (port, timeoutMs = 30000) => new Promise((resolve, reject) => {
-  const deadline = Date.now() + timeoutMs;
-  const try_ = () => {
-    const sock = net.createConnection({ host: '127.0.0.1', port });
-    sock.once('connect', () => { sock.destroy(); resolve(); });
-    sock.once('error', () => {
-      sock.destroy();
-      if (Date.now() >= deadline) reject(new Error(`Port ${port} not ready in ${timeoutMs}ms`));
-      else setTimeout(try_, 400);
-    });
-  };
-  try_();
-});
+const waitPort = (port, timeoutMs = 30000) =>
+  new Promise((resolve, reject) => {
+    const deadline = Date.now() + timeoutMs;
+    const try_ = () => {
+      const sock = net.createConnection({ host: '127.0.0.1', port });
+      sock.once('connect', () => {
+        sock.destroy();
+        resolve();
+      });
+      sock.once('error', () => {
+        sock.destroy();
+        if (Date.now() >= deadline) reject(new Error(`Port ${port} not ready in ${timeoutMs}ms`));
+        else setTimeout(try_, 400);
+      });
+    };
+    try_();
+  });
 
 await waitPort(INNGEST_PORT, 90000);
 console.log('Inngest dev server activ.');
@@ -137,7 +148,7 @@ const createOutboxEntry = async (id, eventType) => {
   await dbClient.query(
     `INSERT INTO lab_booking.outbox_events (id, "eventType", payload) VALUES ($1, $2, $3::jsonb)
      ON CONFLICT (id) DO UPDATE SET attempts = 0, "processedAt" = NULL`,
-    [id, eventType, JSON.stringify({ outboxEventId: id })]
+    [id, eventType, JSON.stringify({ outboxEventId: id })],
   );
 };
 
@@ -168,9 +179,13 @@ console.log('\n─── Test 1: livrare normală ──────────
 const id1 = `e7-t1-${Date.now()}`;
 await createOutboxEntry(id1, 'lab-booking/appointment.created.v1');
 const t1Start = Date.now();
-await inngest.send({ id: id1, name: 'lab-booking/appointment.created.v1', data: eventPayload(id1) });
+await inngest.send({
+  id: id1,
+  name: 'lab-booking/appointment.created.v1',
+  data: eventPayload(id1),
+});
 const t1Delivered = await waitProcessed(id1);
-const t1Delay = t1Delivered ? (processed.get(id1).completedAt - t1Start) : -1;
+const t1Delay = t1Delivered ? processed.get(id1).completedAt - t1Start : -1;
 console.log(`  Livrat: ${t1Delivered ? 'DA' : 'NU'}`);
 console.log(`  Încercări: ${processed.get(id1)?.attempts ?? 0}`);
 console.log(`  Întârziere outbox→consumator: ${t1Delay}ms`);
@@ -179,7 +194,11 @@ console.log(`  Întârziere outbox→consumator: ${t1Delay}ms`);
 // Test 2: livrare dublă (idempotență)
 // ════════════════════════════════════════════════════════════════════════════
 console.log('\n─── Test 2: livrare dublă (idempotență) ─────────────────────────');
-await inngest.send({ id: id1, name: 'lab-booking/appointment.created.v1', data: eventPayload(id1) });
+await inngest.send({
+  id: id1,
+  name: 'lab-booking/appointment.created.v1',
+  data: eventPayload(id1),
+});
 await sleep(4000);
 const attemptsAfterDouble = processed.get(id1)?.attempts ?? 0;
 const t2Pass = attemptsAfterDouble === 1;

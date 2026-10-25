@@ -24,9 +24,15 @@ const labsDir = path.resolve(__dirname, '..');
 const allEnv = dotenv.parse(fs.readFileSync(path.join(labsDir, '.env.local')));
 
 const dbUrl = allEnv['DATABASE_URL_SUPERUSER'];
-if (!dbUrl) { console.error('DATABASE_URL_SUPERUSER lipsă'); process.exit(1); }
+if (!dbUrl) {
+  console.error('DATABASE_URL_SUPERUSER lipsă');
+  process.exit(1);
+}
 const dbHost = new URL(dbUrl).hostname.toLowerCase();
-if (dbHost === 'localhost' || dbHost === '127.0.0.1') { console.error('localhost — refuzat'); process.exit(1); }
+if (dbHost === 'localhost' || dbHost === '127.0.0.1') {
+  console.error('localhost — refuzat');
+  process.exit(1);
+}
 
 const dbClient = new pg.Client({ connectionString: dbUrl });
 await dbClient.connect();
@@ -60,10 +66,10 @@ const relayConsumer = inngest.createFunction(
     processed.set(outboxEventId, rec);
     await dbClient.query(
       `UPDATE lab_booking.outbox_events SET "processedAt" = NOW(), attempts = $1 WHERE id = $2`,
-      [rec.attempts, outboxEventId]
+      [rec.attempts, outboxEventId],
     );
     return { ok: true };
-  }
+  },
 );
 
 // ── Server HTTP handler ───────────────────────────────────────────────────────
@@ -82,26 +88,31 @@ const devCmd = `npx --yes inngest-cli@1.49.0 dev --port ${INNGEST_PORT} --sdk-ur
 const devProc = spawn(devCmd, { stdio: 'pipe', shell: true });
 devProc.stdout.on('data', (d) => {
   const s = String(d).trim();
-  if (s.includes('started') || s.includes('ready') || s.includes('error')) console.log('[dev]', s.substring(0, 120));
+  if (s.includes('started') || s.includes('ready') || s.includes('error'))
+    console.log('[dev]', s.substring(0, 120));
 });
 devProc.stderr.on('data', (d) => {
   const s = String(d).trim();
   if (s.includes('error') || s.includes('Error')) console.error('[dev-err]', s.substring(0, 120));
 });
 
-const waitPort = (port, timeoutMs = 30000) => new Promise((resolve, reject) => {
-  const deadline = Date.now() + timeoutMs;
-  const try_ = () => {
-    const sock = net.createConnection({ host: '127.0.0.1', port });
-    sock.once('connect', () => { sock.destroy(); resolve(); });
-    sock.once('error', () => {
-      sock.destroy();
-      if (Date.now() >= deadline) reject(new Error(`Port ${port} not ready in ${timeoutMs}ms`));
-      else setTimeout(try_, 400);
-    });
-  };
-  try_();
-});
+const waitPort = (port, timeoutMs = 30000) =>
+  new Promise((resolve, reject) => {
+    const deadline = Date.now() + timeoutMs;
+    const try_ = () => {
+      const sock = net.createConnection({ host: '127.0.0.1', port });
+      sock.once('connect', () => {
+        sock.destroy();
+        resolve();
+      });
+      sock.once('error', () => {
+        sock.destroy();
+        if (Date.now() >= deadline) reject(new Error(`Port ${port} not ready in ${timeoutMs}ms`));
+        else setTimeout(try_, 400);
+      });
+    };
+    try_();
+  });
 
 await waitPort(INNGEST_PORT, 90000);
 console.log('Inngest dev server activ.');
@@ -154,7 +165,7 @@ const waitProcessed = async (id, timeout = 12000) => {
 // Curățare outbox din testele anterioare
 // ════════════════════════════════════════════════════════════════════════════
 await dbClient.query(
-  `UPDATE lab_booking.outbox_events SET "processedAt" = NOW() WHERE "processedAt" IS NULL AND id LIKE 'e7-%'`
+  `UPDATE lab_booking.outbox_events SET "processedAt" = NOW() WHERE "processedAt" IS NULL AND id LIKE 'e7-%'`,
 );
 console.log('Outbox curatit (events precedente marcate processed).');
 
@@ -184,7 +195,7 @@ await dbClient.query(
       scheduledAt: new Date().toISOString(),
     }),
     createdAt.toISOString(),
-  ]
+  ],
 );
 console.log(`  Outbox entry creat: ${outboxId}`);
 console.log(`  processedAt: NULL (nelivrat)`);
@@ -192,9 +203,11 @@ console.log(`  processedAt: NULL (nelivrat)`);
 // PASUL 2: verificare outbox înainte de relay
 const { rows: beforeRows } = await dbClient.query(
   `SELECT id, "processedAt", attempts FROM lab_booking.outbox_events WHERE id = $1`,
-  [outboxId]
+  [outboxId],
 );
-console.log(`  Status înainte de relay: processedAt=${beforeRows[0]?.processedAt ?? 'NULL'}, attempts=${beforeRows[0]?.attempts}`);
+console.log(
+  `  Status înainte de relay: processedAt=${beforeRows[0]?.processedAt ?? 'NULL'}, attempts=${beforeRows[0]?.attempts}`,
+);
 
 // PASUL 3: rulare relay (Inngest e acum activ)
 console.log('\n─── Pas 2: rulare relay (Inngest activ acum) ────────────────────────────');
@@ -212,7 +225,7 @@ const timeInOutbox = deliveredAt.getTime() - createdAt.getTime();
 
 const { rows: afterRows } = await dbClient.query(
   `SELECT "processedAt", attempts FROM lab_booking.outbox_events WHERE id = $1`,
-  [outboxId]
+  [outboxId],
 );
 
 console.log(`  Livrat: ${delivered ? 'DA' : 'NU'}`);
@@ -226,7 +239,9 @@ await sleep(2000);
 const relay2Result = await relayPendingEvents();
 await sleep(3000);
 const attemptsAfterRelay2 = processed.get(outboxId)?.attempts ?? 0;
-console.log(`  Pending în outbox după procesare: ${relay2Result.pending} (așteptat: 0 pentru acest eveniment)`);
+console.log(
+  `  Pending în outbox după procesare: ${relay2Result.pending} (așteptat: 0 pentru acest eveniment)`,
+);
 console.log(`  Încercări total după al doilea relay: ${attemptsAfterRelay2} (așteptat: 1)`);
 const idempotent = attemptsAfterRelay2 === 1;
 console.log(`  Idempotent: ${idempotent ? 'DA ✓' : 'NU ✗'}`);
@@ -237,7 +252,9 @@ console.log(`  Idempotent: ${idempotent ? 'DA ✓' : 'NU ✗'}`);
 console.log('\n════════════════════════════════════════════════════════════════════════');
 console.log('RAPORT E7 — Relay outbox:');
 console.log(`  Pas 1 Eveniment în outbox (nelivrat):   OK`);
-console.log(`  Pas 2 Relay → Inngest:                  ${relayResult.sent > 0 ? 'PASS' : 'FAIL'} (${relayResult.sent} trimise)`);
+console.log(
+  `  Pas 2 Relay → Inngest:                  ${relayResult.sent > 0 ? 'PASS' : 'FAIL'} (${relayResult.sent} trimise)`,
+);
 console.log(`  Pas 3 Consumator procesează:            ${delivered ? 'PASS' : 'FAIL'}`);
 console.log(`  Pas 4 Al doilea relay → idempotent:     ${idempotent ? 'PASS' : 'FAIL'}`);
 console.log(`  Timp în outbox:                         ${timeInOutbox}ms`);
