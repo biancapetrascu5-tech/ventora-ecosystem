@@ -18,5 +18,24 @@
   },
   "documents": {
     "lastOpened": "Ultimul deschis: {document} · {când}"
+  },
+  "invite": {
+    "fromLabel": "Invitație de la {name}",
+    "title": "Intră în echipa {afacere}",
+    "roleDesc": "Rolul tău: {role}. Vei avea acces la:",
+    "nameField": "Nume complet",
+    "emailLabel": "E-mail",
+    "emailNote": "Pe această adresă ai primit invitația.",
+    "passwordField": "Parolă nouă",
+    "reqLength": "Cel puțin 10 caractere",
+    "reqDigit": "Cel puțin o cifră",
+    "reqUpper": "Cel puțin o literă mare",
+    "termsLabel": "Accept Termenii și Politica de confidențialitate",
+    "termsDesc": "Le poți citi oricând din Setări.",
+    "accept": "Acceptă invitația",
+    "expiry": "Invitația e valabilă până pe {data}.",
+    "expiredTitle": "Invitația a expirat",
+    "expiredBody": "Invitațiile sunt valabile 7 zile. Cere una nouă: trimitem cererea către {name}, iar linkul nou îl primești pe e-mail.",
+    "requestNew": "Cere o invitație nouă"
   }
 }

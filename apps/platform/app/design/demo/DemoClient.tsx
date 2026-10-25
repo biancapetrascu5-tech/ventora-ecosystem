@@ -21,6 +21,23 @@ import {
 } from '@ventora/ui';
 import styles from './demo.module.css';
 
+/* ── Traduceri componente (în producție vin din useTranslations) ─────── */
+
+const PORTAL_TRANSLATIONS = {
+  eyebrow: 'Portal · pentru clienții tăi',
+  title: 'Pagina afacerii în Portal',
+  description:
+    'Clienții te găsesc în Portal și își fac programări acolo. De aici schimbi ce văd ei.',
+  memberNote: 'Pagina o pot schimba proprietarul, adminii și managerul aplicației Portal.',
+  manage: 'Gestionează pagina',
+  finish: 'Termină pagina',
+  preview: 'Vezi cum arată în Portal',
+  previewTab: '(se deschide într-un tab nou)',
+  statusPublished: 'Publicată',
+  statusHidden: 'Ascunsă',
+  statusDraft: 'Nu e publicată încă',
+};
+
 /* ── Date aprobate din preview.html ─────────────────────────────────────── */
 
 const APP_LABELS: Record<AppName, string> = {
@@ -317,35 +334,67 @@ export function DemoClient() {
                       RO
                     </button>
                   </header>
-                  <main className={styles.signInFormMain}>
+                  <main className={cn(styles.signInFormMain, styles.signInFormMainTop)}>
                     <div className={styles.signInCard}>
-                      <div className={styles.authHead}>
-                        <h1 className="display-hub">Bun venit în Ventora</h1>
-                        <p className="body muted">
-                          Ai primit o invitație la <strong>Salon Aurora</strong>. Îți setezi contul
-                          acum.
-                        </p>
+                      {/* inv-head: inițiale + de la cine + titlu */}
+                      <div className={styles.invHead}>
+                        <span className={styles.invMark}>SA</span>
+                        <div>
+                          <p className="caption muted">Invitație de la Bianca Petrașcu</p>
+                          <h1 className="display-m">Intră în echipa Salon Aurora</h1>
+                        </div>
                       </div>
-                      <FormField label="Prenume și nume">
-                        <Input type="text" autoComplete="name" placeholder="Bianca Petrescu" />
+                      {/* rol + aplicații */}
+                      <div className={styles.invRole}>
+                        <p className="body">
+                          Rolul tău: <strong className="body-strong">Recepție</strong>. Vei avea
+                          acces la:
+                        </p>
+                        <div className={styles.invApps}>
+                          {(['booking', 'crm', 'shifts'] as AppName[]).map((a) => (
+                            <span key={a} className={styles.invApp}>
+                              <AppIcon app={a} size={24} />
+                              <span className="body-small">{APP_LABELS[a]}</span>
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                      <FormField label="Nume complet">
+                        <Input type="text" autoComplete="name" defaultValue="Ioana Pavel" />
                       </FormField>
+                      {/* email readonly */}
+                      <div className={styles.invEmail}>
+                        <span className="caption muted">E-mail</span>
+                        <span className="body-strong">ioana.pavel@salonaurora.ro</span>
+                        <span className="caption muted">
+                          Pe această adresă ai primit invitația.
+                        </span>
+                      </div>
                       <FormField label="Parolă nouă">
-                        <Input
-                          type="password"
-                          autoComplete="new-password"
-                          placeholder="Minim 10 caractere"
-                        />
+                        <Input type="password" autoComplete="new-password" />
                       </FormField>
+                      {/* cerințe parolă */}
+                      <ul className={styles.invReqs}>
+                        {[
+                          { ok: true, text: 'Cel puțin 10 caractere' },
+                          { ok: true, text: 'Cel puțin o cifră' },
+                          { ok: false, text: 'Cel puțin o literă mare' },
+                        ].map(({ ok, text }) => (
+                          <li key={text} className={cn(styles.invReq, ok && styles.invReqOk)}>
+                            <Icon icon={ok ? 'circle-check' : 'circle'} size="sm" />
+                            <span className="body-small">{text}</span>
+                          </li>
+                        ))}
+                      </ul>
+                      <Checkbox defaultSelected>
+                        Accept Termenii și Politica de confidențialitate
+                      </Checkbox>
                       <Button variant="primary" size="lg" className={styles.blockBtn}>
-                        Activează contul
+                        Acceptă invitația
                       </Button>
-                      <div className={styles.authNote}>
-                        <Icon icon="mail" size="sm" />
-                        <p className="body-small">
-                          Invitația a fost trimisă de administratorul spațiului de lucru. Dacă nu
-                          recunoști această invitație, ignoră acest mesaj.
-                        </p>
-                      </div>
+                      <p className="caption muted" style={{ textAlign: 'center' }}>
+                        Invitația e valabilă până pe 31 octombrie 2026.
+                      </p>
                     </div>
                   </main>
                   <footer className={styles.authFoot}>Termeni · Confidențialitate · Ajutor</footer>
@@ -422,11 +471,31 @@ export function DemoClient() {
           />
           <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
             <span className={styles.colLabel}>PortalPresence — toate stările</span>
-            <PortalPresence status="published" onManage={() => {}} previewHref="#" />
-            <PortalPresence status="hidden" onManage={() => {}} />
-            <PortalPresence status="draft" onManage={() => {}} />
-            <PortalPresence status="published" canManage={false} previewHref="#" />
-            <PortalPresence status="published" compact onManage={() => {}} previewHref="#" />
+            <PortalPresence
+              status="published"
+              onManage={() => {}}
+              previewHref="#"
+              translations={PORTAL_TRANSLATIONS}
+            />
+            <PortalPresence
+              status="hidden"
+              onManage={() => {}}
+              translations={PORTAL_TRANSLATIONS}
+            />
+            <PortalPresence status="draft" onManage={() => {}} translations={PORTAL_TRANSLATIONS} />
+            <PortalPresence
+              status="published"
+              canManage={false}
+              previewHref="#"
+              translations={PORTAL_TRANSLATIONS}
+            />
+            <PortalPresence
+              status="published"
+              compact
+              onManage={() => {}}
+              previewHref="#"
+              translations={PORTAL_TRANSLATIONS}
+            />
           </div>
           {launch && (
             <AppLaunch
@@ -599,7 +668,12 @@ export function DemoClient() {
                         });
                       }}
                     />
-                    <PortalPresence status="published" onManage={() => {}} previewHref="#" />
+                    <PortalPresence
+                      status="published"
+                      onManage={() => {}}
+                      previewHref="#"
+                      translations={PORTAL_TRANSLATIONS}
+                    />
                   </div>
 
                   {/* Alte aplicații Ventora */}

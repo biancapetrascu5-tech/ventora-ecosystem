@@ -65,6 +65,8 @@ import {
   UserPlus,
   CalendarPlus,
   HelpCircle,
+  Circle,
+  CircleCheck,
   type LucideIcon,
 } from 'lucide-react';
 
@@ -135,6 +137,8 @@ export const ICON_REGISTRY = {
   'user-plus': UserPlus,
   'calendar-plus': CalendarPlus,
   'help-circle': HelpCircle,
+  circle: Circle,
+  'circle-check': CircleCheck,
 } as const satisfies Record<string, LucideIcon>;
 
 export type IconName = keyof typeof ICON_REGISTRY;

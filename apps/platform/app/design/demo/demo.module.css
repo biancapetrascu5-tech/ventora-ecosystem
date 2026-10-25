@@ -609,3 +609,79 @@
   border-radius: var(--radius-lg);
   overflow: hidden;
 }
+
+/* ── HubInvite card ── */
+
+.invHead {
+  display: flex;
+  gap: var(--space-3);
+  align-items: center;
+}
+
+.invMark {
+  width: var(--space-12);
+  height: var(--space-12);
+  border-radius: var(--radius-md);
+  background: var(--selected);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: var(--type-heading-size);
+  color: var(--ink);
+  flex: none;
+  box-shadow: inset 0 0 0 var(--border-width) var(--line-strong);
+}
+
+.invRole {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  background: var(--sunken);
+  border-radius: var(--radius-sm);
+}
+
+.invApps {
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.invApp {
+  display: inline-flex;
+  gap: var(--space-1);
+  align-items: center;
+  color: var(--ink-secondary);
+}
+
+.invEmail {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.invReqs {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.invReq {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+  color: var(--ink-muted);
+}
+
+.invReqOk {
+  color: var(--done-ink);
+}
+
+.signInFormMainTop {
+  align-items: flex-start;
+}

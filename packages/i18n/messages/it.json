@@ -18,5 +18,24 @@
   },
   "documents": {
     "lastOpened": "Ultimo aperto: {document} · {quando}"
+  },
+  "invite": {
+    "fromLabel": "Invito da {name}",
+    "title": "Entra nel team di {afacere}",
+    "roleDesc": "Il tuo ruolo: {role}. Avrai accesso a:",
+    "nameField": "Nome completo",
+    "emailLabel": "E-mail",
+    "emailNote": "A questo indirizzo hai ricevuto l'invito.",
+    "passwordField": "Nuova password",
+    "reqLength": "Almeno 10 caratteri",
+    "reqDigit": "Almeno una cifra",
+    "reqUpper": "Almeno una lettera maiuscola",
+    "termsLabel": "Accetto i Termini e l'Informativa sulla privacy",
+    "termsDesc": "Puoi leggerli in qualsiasi momento nelle Impostazioni.",
+    "accept": "Accetta l'invito",
+    "expiry": "Invito valido fino al {data}.",
+    "expiredTitle": "Invito scaduto",
+    "expiredBody": "Gli inviti sono validi per 7 giorni. Richiedine uno nuovo: inoltreremo la richiesta a {name} e riceverai il nuovo link via e-mail.",
+    "requestNew": "Richiedi un nuovo invito"
   }
 }

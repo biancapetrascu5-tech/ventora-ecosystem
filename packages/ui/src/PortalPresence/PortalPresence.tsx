@@ -19,21 +19,6 @@ export interface PortalPresenceTranslations {
   statusDraft: string;
 }
 
-const DEFAULT_TRANSLATIONS: PortalPresenceTranslations = {
-  eyebrow: 'Portal · pentru clienții tăi',
-  title: 'Pagina afacerii în Portal',
-  description:
-    'Clienții te găsesc în Portal și își fac programări acolo. De aici schimbi ce văd ei.',
-  memberNote: 'Pagina o pot schimba proprietarul, adminii și managerul aplicației Portal.',
-  manage: 'Gestionează pagina',
-  finish: 'Termină pagina',
-  preview: 'Vezi cum arată în Portal',
-  previewTab: '(se deschide într-un tab nou)',
-  statusPublished: 'Publicată',
-  statusHidden: 'Ascunsă',
-  statusDraft: 'Nu e publicată încă',
-};
-
 export interface PortalPresenceProps {
   status: PortalStatus;
   canManage?: boolean;
@@ -41,7 +26,7 @@ export interface PortalPresenceProps {
   onPreview?: () => void;
   previewHref?: string;
   compact?: boolean;
-  translations?: Partial<PortalPresenceTranslations>;
+  translations: PortalPresenceTranslations;
 }
 
 export function PortalPresence({
@@ -51,10 +36,8 @@ export function PortalPresence({
   onPreview,
   previewHref,
   compact = false,
-  translations,
+  translations: t,
 }: PortalPresenceProps) {
-  const t: PortalPresenceTranslations = { ...DEFAULT_TRANSLATIONS, ...translations };
-
   const statusLabel =
     status === 'published'
       ? t.statusPublished

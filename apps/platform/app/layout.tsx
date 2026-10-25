@@ -1,5 +1,6 @@
 import '@ventora/tokens/business/fonts.css';
 import '@ventora/tokens/business/tokens.css';
+import '@ventora/tokens/business/typography.css';
 import './globals.css';
 import type { Metadata } from 'next';
 

@@ -18,5 +18,24 @@
   },
   "documents": {
     "lastOpened": "Zuletzt geöffnet: {document} · {wann}"
+  },
+  "invite": {
+    "fromLabel": "Einladung von {name}",
+    "title": "Dem Team von {afacere} beitreten",
+    "roleDesc": "Deine Rolle: {role}. Du erhältst Zugang zu:",
+    "nameField": "Vollständiger Name",
+    "emailLabel": "E-Mail",
+    "emailNote": "An diese Adresse wurde die Einladung gesendet.",
+    "passwordField": "Neues Passwort",
+    "reqLength": "Mindestens 10 Zeichen",
+    "reqDigit": "Mindestens eine Ziffer",
+    "reqUpper": "Mindestens ein Großbuchstabe",
+    "termsLabel": "Ich akzeptiere die Nutzungsbedingungen und Datenschutzrichtlinie",
+    "termsDesc": "Du kannst sie jederzeit in den Einstellungen lesen.",
+    "accept": "Einladung annehmen",
+    "expiry": "Einladung gültig bis {data}.",
+    "expiredTitle": "Einladung abgelaufen",
+    "expiredBody": "Einladungen sind 7 Tage gültig. Fordere eine neue an: Wir leiten die Anfrage an {name} weiter und du erhältst den neuen Link per E-Mail.",
+    "requestNew": "Neue Einladung anfordern"
   }
 }

@@ -18,5 +18,24 @@
   },
   "documents": {
     "lastOpened": "Last opened: {document} · {when}"
+  },
+  "invite": {
+    "fromLabel": "Invitation from {name}",
+    "title": "Join {afacere}'s team",
+    "roleDesc": "Your role: {role}. You'll have access to:",
+    "nameField": "Full name",
+    "emailLabel": "Email",
+    "emailNote": "This is the address your invitation was sent to.",
+    "passwordField": "New password",
+    "reqLength": "At least 10 characters",
+    "reqDigit": "At least one digit",
+    "reqUpper": "At least one uppercase letter",
+    "termsLabel": "I accept the Terms and Privacy Policy",
+    "termsDesc": "You can read them anytime in Settings.",
+    "accept": "Accept invitation",
+    "expiry": "Invitation valid until {data}.",
+    "expiredTitle": "Invitation expired",
+    "expiredBody": "Invitations are valid for 7 days. Request a new one: we'll forward the request to {name} and you'll receive the new link by email.",
+    "requestNew": "Request a new invitation"
   }
 }
