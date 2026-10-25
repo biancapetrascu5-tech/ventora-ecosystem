@@ -1,22 +1,41 @@
 /**
  * <MODULE>-migrate-staging.mjs — Schema <SCHEMA>, rol, tabele, RLS, date test
  *
- * Template validat prin E10 (2026-10-25).
+ * Template validat prin E10 (2026-10-25). Fix dotenv ESM aplicat după E10.
  * Înlocuiește <MODULE>, <SCHEMA>, <ROLE>, <TABLE> cu valorile modulului.
  *
  * Rulare: cd C:\Projects\ventora-ecosystem\labs && node experiments/<MODULE>-migrate-staging.mjs
+ *
+ * Notă: NU folosi `import dotenv` — pnpm symlinks pică în Node ESM.
+ * Folosește parseEnv() de mai jos (validat în E9 și E10).
  */
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import dotenv from 'dotenv';
 import pg from 'pg';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const labsDir = path.resolve(__dirname, '..');
 const envFile = path.join(labsDir, '.env.local');
 
-const allEnv = dotenv.parse(fs.readFileSync(envFile));
+function parseEnv(content) {
+  const result = {};
+  for (const line of content.split('\n')) {
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.startsWith('#')) continue;
+    const eq = trimmed.indexOf('=');
+    if (eq === -1) continue;
+    const key = trimmed.slice(0, eq).trim();
+    let val = trimmed.slice(eq + 1).trim();
+    if ((val.startsWith('"') && val.endsWith('"')) || (val.startsWith("'") && val.endsWith("'"))) {
+      val = val.slice(1, -1);
+    }
+    result[key] = val;
+  }
+  return result;
+}
+
+const allEnv = parseEnv(fs.readFileSync(envFile, 'utf8'));
 const url = allEnv['DATABASE_URL_SUPERUSER'];
 if (!url) {
   console.error('Lipsă DATABASE_URL_SUPERUSER în labs/.env.local');
@@ -114,6 +133,17 @@ await client.query(`
   $$
 `);
 console.log('✓ GRANT <ROLE> TO lab_runtime');
+
+// 6b. Grant rol → utilizatorul curent (necesar pentru teste T2 cu SET LOCAL ROLE local)
+// NOINHERIT rămâne — utilizatorul tot trebuie SET LOCAL ROLE explicit
+await client.query(`
+  DO $$
+  BEGIN
+    EXECUTE format('GRANT <ROLE> TO %I', current_user);
+  END
+  $$
+`);
+console.log('✓ GRANT <ROLE> TO current_user');
 
 // 7. RLS pe tabela principală
 await client.query(`ALTER TABLE <SCHEMA>.<TABLE> ENABLE ROW LEVEL SECURITY`);
