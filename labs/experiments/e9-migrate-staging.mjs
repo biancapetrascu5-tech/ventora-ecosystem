@@ -174,10 +174,7 @@ const { rows } = await client.query(`
   WHERE table_schema = 'lab_core' AND table_name LIKE 'ba_%'
   ORDER BY table_name
 `);
-console.log(
-  'Tabele existente:',
-  rows.map((r) => r.table_name).join(', '),
-);
+console.log('Tabele existente:', rows.map((r) => r.table_name).join(', '));
 
 await client.end();
 process.exit(0);
