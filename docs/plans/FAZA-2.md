@@ -180,9 +180,9 @@
 - **Sesiunea de suport Founder** (ARCHITECTURE §7.5):
   - Deschisă de un utilizator Founder cu: organizație țintă, motiv, durată (max 4h, implicită 1h).
   - Creează o sesiune cu `actor: 'support'` și `supportedOrganizationId`.
-  - Vizibilă organizației în panoul Securitate: „Sesiune de suport activă — [fondator], [durată]".
+  - Vizibilă organizației în panoul Securitate: „Sesiune de suport activă — [nume Founder], [durată]".
   - La expirare sau la închidere manuală: sesiunea invalidată automat.
-  - Toate acțiunile `actor: 'support'` sunt auditate cu `organizationId` al organizației suportate.
+  - Toate acțiunile `actor: 'support'` sunt auditate cu `organizationId` al organizației suportate și `founderId` în `metadata` — se știe exact cine a deschis sesiunea.
   - Utilizată pentru recuperarea accesului Owner care a pierdut dispozitivul 2FA și codurile (Lot 2.4).
 - Contract public `core/audit/src/contract`:
   - `listAuditLogs(ctx, filters): AuditLog[]`
@@ -201,20 +201,34 @@
 
 ### Autentificarea aplicației Founder
 
-**Scop:** `apps/founder` are propriul flux de autentificare, complet separat de rolurile din organizații. Un utilizator Founder nu are și nu are nevoie de un rol în nicio organizație.
+**Scop:** `apps/founder` are propriul flux de autentificare, complet separat de rolurile din organizații. Există mai mulți utilizatori Founder — fiecare cu cont individual și cu nume propriu. Niciun cont partajat.
+
+**Model de date `FounderUser`:**
+
+- `FounderUser { id, name, email, founderRole, isVentoraOwner, revokedAt, createdAt }`:
+  - `founderRole: 'full' | 'support' | 'commercial'` — schema pregătită acum; **în F2 se folosește doar `full`**. Celelalte roluri nu au permisiuni definite în F2 și nu se activează.
+  - `isVentoraOwner: Boolean` — un singur cont (proprietarul Ventora) cu drept exclusiv de a adăuga și elimina alți Founders. Contul proprietarului nu poate fi revocat de alți Founders.
+  - `revokedAt: DateTime?` — prezent → accesul blocat imediat; ceilalți Founders neafectați.
+- Sesiunile din `apps/founder` folosesc `FounderUser.id` ca subiect — distinct de `User.id` din Hub.
 
 **Livrabile:**
 
 - Better Auth configurat separat (config dedicat în `core/identity` sau `apps/founder`): rute de auth montate la `/auth/*`, cookie host-only pe `founder.ventora-hub.com` (URL Vercel pe staging, §9).
-- **2FA obligatoriu fără grație (restricție de platformă, D-AUTH-3):** la primul login după activarea contului → redirect la configurare 2FA; autentificarea nu se completează fără TOTP activ. Nu există perioadă de grație, spre deosebire de Owner (Lot 2.4).
-- Accesul restricționabil la IP (ARCHITECTURE §3.1): middleware în `apps/founder`, configurabil prin `FOUNDER_ALLOWED_IPS` (variabilă de mediu; absent = fără restricție).
-- Sesiunea de suport (Lot 2.5) e deschisă dintr-o sesiune Founder autentificată cu 2FA verificat — `twoFactorVerified: true` obligatoriu.
+- **Conturi individuale cu nume:** fiecare Founder se autentifică cu propriile credențiale; fiecare are 2FA propriu și lista proprie de sesiuni/dispozitive.
+- **2FA obligatoriu fără grație (restricție de platformă):** la primul login după activarea contului → redirect la configurare 2FA; autentificarea nu se completează fără TOTP activ. Nu există perioadă de grație, spre deosebire de Owner Hub (Lot 2.4).
+- **Revocare cu efect imediat:** `revokedAt` setat → toate sesiunile Founder-ului respectiv invalide la request următor; ceilalți Founders neafectați.
+- **Numai `isVentoraOwner: true` poate adăuga sau elimina un Founder** (`addFounderUser`, `revokeFounderUser` — verificare în contract).
+- **Audit per persoană Founder:** fiecare acțiune din `apps/founder` (inclusiv deschiderea sesiunilor de suport) înregistrează `founderId` în `AuditLog.metadata` — se știe exact cine a acționat.
+- Accesul restricționabil la IP (ARCHITECTURE §3.1): middleware în `apps/founder`, configurabil prin `FOUNDER_ALLOWED_IPS` (variabilă de mediu; **absent = fără restricție, dezactivat implicit**).
+- Sesiunea de suport (Lot 2.5) e deschisă dintr-o sesiune Founder autentificată cu 2FA verificat — `twoFactorVerified: true` obligatoriu. Sesiunea de suport înregistrează `founderId` al persoanei care a deschis-o.
 - Sesiunea Founder nu se amestecă cu sesiunea Hub: cookie-uri separate, fără shared state (D-INF-1, §7).
 
 **Criterii de acceptare:**
 
 - [ ] T1.8 (Lot 2.4) acoperă: Founder fără 2FA activ → login blocată (nu grație).
 - [ ] Founder autentificat fără 2FA activ nu poate deschide sesiune de suport → `TwoFactorRequired`.
+- [ ] T1.12 — Founder revocat (`revokedAt` setat): sesiunea existentă → `NotAuthenticated` la request următor; celelalte conturi Founder funcționează normal.
+- [ ] T1.13 — `addFounderUser` și `revokeFounderUser` apelabile doar de `isVentoraOwner: true` → `Forbidden` pentru orice alt cont Founder.
 
 ---
 
@@ -223,7 +237,7 @@
 Faza 2 se închide doar când:
 
 1. Migrațiile `core/identity` + `core/organizations` + `core/access` + `core/audit` se aplică pe bază curată fără erori.
-2. T1 (sesiuni): T1.1–T1.3, T1.4–T1.8, T1.9–T1.11 verzi în CI.
+2. T1 (sesiuni): T1.1–T1.3, T1.4–T1.8, T1.9–T1.11, T1.12–T1.13 verzi în CI.
 3. T2 (organizații): T2.1–T2.5 verzi în CI.
 4. T3 (autorizare + audit): T3.1–T3.10 verzi în CI.
 5. Revocare sesiune și retrogradare rol testate end-to-end (Lot 2.1).
@@ -267,6 +281,7 @@ Lot 2.1 (sesiuni) ──► Lot 2.2 (organizații) ──► Lot 2.3 (authorize)
 - `Membership` include `applicationAccess: string[]` — entitlements per utilizator, citit de F3.
 - `authorize()` acceptă `actor: 'system'` pentru job-urile interne (F4).
 - `AuditLog` include `metadata: jsonb` fără schemă fixă — F3 și F4 adaugă câmpuri fără migrație.
+- `FounderUser.founderRole` are deja valorile `full | support | commercial` în schemă; rolurile `support` și `commercial` primesc permisiuni definite într-o fază ulterioară (NECESITĂ DECIZIE).
 
 ---
 
