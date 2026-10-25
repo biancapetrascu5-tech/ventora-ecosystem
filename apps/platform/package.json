@@ -14,6 +14,7 @@
     "@ventora/config": "workspace:*",
     "@ventora/contracts": "workspace:*",
     "@ventora/i18n": "workspace:*",
+    "@ventora/identity": "workspace:*",
     "next": "^16.0.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
