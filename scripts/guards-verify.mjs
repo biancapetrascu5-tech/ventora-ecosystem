@@ -35,48 +35,48 @@ const root = path.resolve(__dirname, '..');
 
 const VIOLATIONS = [
   {
-    file: 'labs/violations/boundary-import.ts',
+    file: 'scripts/violations/boundary-import.ts',
     expectedRule: 'boundaries/dependencies',
-    description: 'lab imports directly from module (not via package)',
+    description: 'violation imports directly from module (not via package)',
   },
   {
-    file: 'labs/violations/raw-db-query.ts',
+    file: 'scripts/violations/raw-db-query.ts',
     expectedRule: 'no-restricted-syntax',
     expectedMessage: '[no-raw-db-query]',
     description: 'raw prisma.$queryRaw usage',
   },
   {
-    file: 'labs/violations/system-context-in-request.ts',
+    file: 'scripts/violations/system-context-in-request.ts',
     expectedRule: 'no-restricted-syntax',
     expectedMessage: '[no-system-context-in-request]',
     description: 'withSystemContext in request handler',
   },
   {
-    file: 'labs/violations/hardcoded-text.tsx',
+    file: 'scripts/violations/hardcoded-text.tsx',
     expectedRule: 'i18next/no-literal-string',
     description: 'hardcoded JSX literal string',
   },
   {
-    file: 'labs/violations/native-select.tsx',
+    file: 'scripts/violations/native-select.tsx',
     expectedRule: 'no-restricted-syntax',
     expectedMessage: '[no-native-select]',
     description: 'native <select> instead of @ventora/ui Select',
   },
   {
-    file: 'labs/violations/wrong-ui-import.tsx',
+    file: 'scripts/violations/wrong-ui-import.tsx',
     expectedRule: 'no-restricted-syntax',
     expectedMessage: '[no-wrong-ui-import]',
     description: 'Button imported from wrong path (not @ventora/ui)',
   },
   {
-    file: 'labs/violations/inline-color.tsx',
+    file: 'scripts/violations/inline-color.tsx',
     expectedRule: 'no-restricted-syntax',
     expectedMessages: ['[no-inline-color]', '[no-tailwind-arbitrary-color]'],
     description: 'hardcoded hex/rgb color and Tailwind arbitrary value',
   },
 ];
 
-const ESLINT_CONFIG = 'labs/violations/eslint.config.mjs';
+const ESLINT_CONFIG = 'scripts/violations/eslint.config.mjs';
 
 // Resolve eslint binary once — from an app dir where eslint is a direct dep.
 const { createRequire } = await import('node:module');
@@ -139,21 +139,21 @@ for (const { file, expectedRule, expectedMessage, expectedMessages, description 
 }
 
 // --- i18n:check violations ---
-// labs/violations/i18n/ has: EN missing a key (common.probe), FR with an extra key (common.frOnly).
+// scripts/violations/i18n/ has: EN missing a key (common.probe), FR with an extra key (common.frOnly).
 // i18n:check must exit non-zero on this catalog.
 
 const i18nResult = spawnSync(
   process.execPath,
-  ['packages/i18n/scripts/check.mjs', '--dir=labs/violations/i18n'],
+  ['packages/i18n/scripts/check.mjs', '--dir=scripts/violations/i18n'],
   { cwd: root, encoding: 'utf-8' },
 );
 
 if (i18nResult.status !== 0) {
-  console.log('[PASS] i18n:check — correctly detected violations in labs/violations/i18n');
+  console.log('[PASS] i18n:check — correctly detected violations in scripts/violations/i18n');
   console.log('       (EN missing common.probe; FR has extra common.frOnly)');
 } else {
   console.error(
-    '[FAIL] i18n:check — should have detected violations in labs/violations/i18n but passed',
+    '[FAIL] i18n:check — should have detected violations in scripts/violations/i18n but passed',
   );
   allPassed = false;
 }

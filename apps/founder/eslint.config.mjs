@@ -4,7 +4,7 @@ import i18next from 'eslint-plugin-i18next';
 
 const eslintConfig = [
   {
-    ignores: ['.next/**', 'node_modules/**', 'next-env.d.ts', '../../labs/violations/**'],
+    ignores: ['.next/**', 'node_modules/**', 'next-env.d.ts', '../../scripts/violations/**'],
   },
   ...coreWebVitals,
   {
