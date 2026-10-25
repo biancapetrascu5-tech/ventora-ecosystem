@@ -1,4 +1,4 @@
-<!-- @dsCard group="Hub" height=628 width=1200 -->
+<!-- @dsCard group="Hub" height=1230 width=1200 -->
 <!doctype html>
 <html lang="ro">
 <head><meta charset="utf-8"><title>AppLaunch — Ventora</title>
@@ -215,7 +215,7 @@ html,body{min-height:100%}
 .numeric-inline{font-weight:600;color:var(--ink)}
 .usage-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:var(--space-6)}
 .sup{display:grid;grid-template-columns:1.5fr 1fr;gap:var(--space-6);align-items:start}
-.lframes{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--space-4)}
+.lframes{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--space-4)}
 .lframe{position:relative;height:220px;border:var(--border-width) solid var(--line-strong);border-radius:var(--radius-lg);overflow:hidden;background:var(--canvas)}
 .lframe-tiles{display:flex;gap:var(--space-3);padding:var(--space-4)}
 .lstage{position:relative;height:240px;border:var(--border-width) solid var(--line-strong);border-radius:var(--radius-lg);overflow:hidden;background:var(--canvas);padding:var(--space-4)}
@@ -250,6 +250,7 @@ html,body{min-height:100%}
 .fxframe .caption{color:var(--ink-muted)}
 @container (max-width:420px){.fxlang{grid-template-columns:32px minmax(0,1fr) auto}.fxlang .v-iconbtn{display:none}}
 
+.lstage2{height:auto;position:relative;overflow:hidden;padding:var(--space-12) var(--space-6) var(--space-6);min-height:360px;box-sizing:border-box}
 </style>
 </head>
 <body>
@@ -263,17 +264,20 @@ const FR = ({ children }) => /* @__PURE__ */ React.createElement(V.LocaleProvide
 const IT = ({ children }) => /* @__PURE__ */ React.createElement(V.LocaleProvider, { locale: "it" }, children);
 const mount = (el) => ReactDOM.createRoot(document.getElementById("root")).render(/* @__PURE__ */ React.createElement(V.LocaleProvider, { locale: "ro" }, el));
 function Demo() {
+  const h = React.createElement;
   const [run, setRun] = useState(null);
-  const [n, setN] = useState(0);
-  const stage = React.useRef(null);
-  return /* @__PURE__ */ React.createElement("div", { className: "d" }, /* @__PURE__ */ React.createElement("p", { className: "caption", style: { color: "var(--ink-muted)" } }, "Cadre: 0 \xB7 30% \xB7 60% \xB7 100% (duration-slow 360ms, ease-standard)"), /* @__PURE__ */ React.createElement("div", { className: "lframes" }, [0, 0.3, 0.6, 1].map((p) => /* @__PURE__ */ React.createElement("div", { key: p, className: "lframe" }, /* @__PURE__ */ React.createElement("div", { className: "lframe-tiles" }, ["booking", "crm", "hr", "finance"].map((a) => /* @__PURE__ */ React.createElement(V.AppIcon, { key: a, app: a, size: 44 }))), /* @__PURE__ */ React.createElement(V.AppLaunch, { app: "booking", contained: true, progress: p, fromLocal: { left: 16, top: 16, width: 44, height: 44 } })))), /* @__PURE__ */ React.createElement("div", { className: "r" }, /* @__PURE__ */ React.createElement(V.Button, { icon: "rotate-ccw", onClick: () => {
-    setRun(null);
-    setTimeout(() => setRun(Date.now()), 30);
-    setN(n + 1);
-  } }, "Red\u0103 anima\u021Bia"), /* @__PURE__ */ React.createElement("span", { className: "body-small", style: { color: "var(--ink-muted)" } }, "Apas\u0103 pe o aplica\u021Bie din gril\u0103 sau pe buton.")), /* @__PURE__ */ React.createElement("div", { className: "lstage", ref: stage }, /* @__PURE__ */ React.createElement("div", { className: "lstage-grid" }, ["booking", "crm", "hr", "finance", "projects", "analytics"].map((a) => /* @__PURE__ */ React.createElement(V.AppTile, { key: a, app: a, layout: "icon", onOpen: (e) => {
-    const r = e.currentTarget.querySelector(".v-appicon").getBoundingClientRect();
-    setRun({ app: a, from: r });
-  } }))), run && /* @__PURE__ */ React.createElement(V.AppLaunch, { key: n + String(run.app), app: run.app || "booking", contained: true, from: run.from || stage.current.querySelector(".v-appicon").getBoundingClientRect(), onDone: () => setTimeout(() => setRun(null), 500) })));
+  const APPS = [["booking", "Programări, calendar și reamintiri", 3], ["crm", "Clienți, istoric și oportunități"], ["hr", "Echipă, prezență și concedii", 1], ["finance", "Facturi, scadențe și restanțe", 2], ["projects", "Proiecte, sarcini și termene"]].map(([a, d, b]) => ({ app: a, description: d, badge: b }));
+  const frames = [0, 0.15, 0.35, 0.55, 0.75, 1];
+  return h("div", { className: "d" },
+    h("p", { className: "caption", style: { color: "var(--ink-muted)" } }, "Cadre: 0 · 130 · 300 · 470 · 640 · 850 ms. Iconul crește la 112%, aplicația crește din card (duration-launch 420ms, ease-standard), iconul trece prin centru la 88px și se așază în bara aplicației; conținutul urcă și apare."),
+    h("div", { className: "lframes" }, frames.map((p) => h("div", { key: p, className: "lframe" },
+      h("div", { className: "lframe-tiles" }, ["booking", "crm", "hr", "finance"].map((a) => h(V.AppIcon, { key: a, app: a, size: 44 }))),
+      h(V.AppLaunch, { app: "booking", contained: true, progress: p, fromLocal: { left: 16, top: 16, width: 44, height: 44 }, fromCard: { left: 4, top: 4, width: 68, height: 76 } })))),
+    h("p", { className: "caption", style: { color: "var(--ink-muted)" } }, "Dacă aplicația se încarcă greu (waiting): iconul rămâne în centru cu numele dedesubt, ca în prima versiune."),
+    h("div", { className: "lframes" }, h("div", { className: "lframe" }, h(V.AppLaunch, { app: "booking", contained: true, progress: 1, waiting: true, fromLocal: { left: 16, top: 16, width: 44, height: 44 } }))),
+    h("div", { className: "r" }, h("span", { className: "body-small", style: { color: "var(--ink-muted)" } }, "Apasă pe o aplicație din rând.")),
+    h("div", { className: "lstage lstage2" }, h(V.AppDock, { apps: APPS, onOpen: (e, app, name, l) => setRun(Object.assign({ app, name, t: Date.now() }, l)) }),
+      run && h(V.AppLaunch, Object.assign({ key: run.t, contained: true, onDone: () => setTimeout(() => setRun(null), 600) }, run))));
 }
 mount(/* @__PURE__ */ React.createElement(Demo, null));
 </script>

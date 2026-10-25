@@ -1,0 +1,35 @@
+<!-- @dsCard group="Hub" height=1850 width=1200 -->
+<!doctype html>
+<html lang="ro">
+<head><meta charset="utf-8"><title>PortalPresence — Ventora</title>
+<style>
+html,body{margin:0}
+.d{display:flex;flex-direction:column;gap:var(--space-4);padding:var(--space-6);box-sizing:border-box;background:var(--canvas);color:var(--ink)}
+.lab{margin:var(--space-2) 0 0;color:var(--ink-muted)}
+.two{display:grid;grid-template-columns:minmax(0,1fr) 390px;gap:var(--space-6);align-items:start}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script>
+const V = window.Ventora;
+const h = React.createElement;
+const Lab = ({ children }) => h("p", { className: "caption lab" }, children);
+function Theme({ th }) {
+  return h("div", { "data-theme": th, className: "d" },
+    h("p", { className: "heading" }, th === "light" ? "Light" : "Dark"),
+    h(Lab, null, "Publicată · proprietar, admin sau managerul aplicației Portal"),
+    h(V.PortalPresence, { status: "published", onManage: () => {}, previewHref: "#" }),
+    h(Lab, null, "Ascunsă de afacere"),
+    h(V.PortalPresence, { status: "hidden", onManage: () => {}, previewHref: "#" }),
+    h(Lab, null, "Nu e publicată încă: acțiunea principală devine „Termină pagina”, fără link public"),
+    h(V.PortalPresence, { status: "draft", onManage: () => {} }),
+    h("div", { className: "two" },
+      h("div", null, h(Lab, null, "Membru: vede pagina, nu o poate schimba"), h(V.PortalPresence, { status: "published", canManage: false, previewHref: "#" })),
+      h("div", null, h(Lab, null, "Telefon și tabletă (compact)"), h(V.PortalPresence, { status: "published", compact: true, onManage: () => {}, previewHref: "#" }))));
+}
+mount(h("div", null, h(Theme, { th: "light" }), h(Theme, { th: "dark" }),
+  h("div", { className: "d", "data-theme": "light" }, h(Lab, null, "Test în germană"), h(V.LocaleProvider, { locale: "de" }, h(V.PortalPresence, { status: "published", onManage: () => {}, previewHref: "#" })))));
+</script>
+</body>
+</html>

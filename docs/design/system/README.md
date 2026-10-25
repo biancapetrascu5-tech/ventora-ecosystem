@@ -18,7 +18,7 @@ Acest README e sursa unică pentru Ventora: principiile, regulile vizuale, regul
 
 ## Principii
 
-1. **Culoarea are sens, nu decor.** Peach = acum / necesită atenția ta / ești aici. Lime = gata / confirmat. Navy = structură și acțiunea principală. Restul e neutru.
+1. **Culoarea are sens, nu decor.** Peach = acum / necesită atenția ta / ești aici. Lime = gata / confirmat. Navy = structură și acțiunea principală; ca suprafață, doar în zonele de brand ale Hub-ului (direcția B). Restul e neutru.
 2. **Un singur sistem.** Nicio componentă nu există în două variante. Dacă o aplicație are nevoie de ceva nou, se adaugă aici, apoi se folosește peste tot.
 3. **Totul din tokeni.** Culori, tipografie, spațiere, raze, borduri, umbre, dimensiuni, durate și z-index vin din `tokens.json`. Nimic hardcodat în aplicații.
 4. **Ambele teme, din prima.** Fiecare token de culoare are valoare light și dark; fiecare ecran se verifică în amândouă.
@@ -82,8 +82,9 @@ Interfața stă pe neutri; culorile de brand apar rar și au un singur sens.
 | Suprafețe | `canvas` → `sheet` → `raised`, `sunken`, `selected` | `canvas` e fundalul aplicației și al Spine; `sheet` e foaia de lucru; `raised` pentru meniuri, dialoguri, drawere; `sunken` pentru antet de tabel, câmpuri read-only; `selected` pentru rânduri și elemente selectate. |
 | Text | `ink`, `ink-secondary`, `ink-muted`, `ink-disabled` | `ink` pentru titluri și valori, `ink-secondary` pentru celule și descrieri, `ink-muted` pentru meta, helper, placeholder. Toate trei ≥4.5:1 pe orice suprafață, în ambele teme. |
 | Linii | `line`, `line-strong`, `control-border`, `control-border-hover` | `line` doar decorativ (separatoare, marginea Sheet); `control-border` delimitează controalele și are ≥3:1. |
+| Zonă de brand — doar în Hub | `brand-surface`, `brand-raised`, `on-brand`, `on-brand-muted`, `brand-line`, `brand-line-strong`, `brand-control-border` | Antetul și banda launcher-ului, panoul de autentificare, prin componenta `BrandZone`. Navy #000C3F în light, negru rece #1B1D23 în dark. Textul e `on-brand` (16,25:1 / 14,66:1), secundarul `on-brand-muted` (9,69:1 / 7,01:1), bordura controalelor `brand-control-border` (4,13:1 / 4,10:1). Niciodată în aplicații, setări, dialoguri sau carduri. |
 | Navy — structură și acțiunea principală | `primary`, `primary-hover`, `primary-pressed`, `on-primary`, `brand-navy` | În light: text, butonul principal (unul pe ecran), bife, toggle pornit, zi selectată. În dark, `primary` devine off-white cald cu text închis; navy-ul nu mai e suprafață și apare doar pe plăcuțele iconurilor de aplicații. |
-| Peach — acum / atenția ta / ești aici | `attention`, `on-attention`, `attention-soft`, `attention-ink`, `attention-mark` | Bara „ești aici” din Spine și bottom nav, ziua de azi și linia „acum” din calendar, programarea în desfășurare, contoare necitite, avertizarea de limită. `attention` e umplere cu text `on-attention`; `attention-ink` e text; `attention-mark` e linie fină (≥3:1). |
+| Peach — acum / atenția ta / ești aici | `attention`, `on-attention`, `attention-soft`, `attention-ink`, `attention-mark` | Bara „ești aici” din Spine și bottom nav, ziua de azi și linia „acum” din calendar, programarea în desfășurare, contoare necitite, avertizarea de limită, linia de sub fișa din AppDock la hover (`hover-accent`, niciodată în repaus). `attention` e umplere cu text `on-attention`; `attention-ink` e text; `attention-mark` e linie fină (≥3:1). |
 | Lime — gata / confirmat | `done`, `on-done`, `done-soft`, `done-ink`, `done-mark` | „Confirmată”, „Plătită”, progres terminat. Aceleași reguli de umplere / text / linie. |
 | Eroare și acțiuni distructive | `danger`, `danger-hover`, `on-danger`, `danger-soft`, `danger-ink` | Erori de câmp, „Epuizat”, „Absență”, butonul distructiv din dialogul de confirmare. Nu e culoare de brand; nu se folosește pentru avertizări (acelea sunt peach). |
 | Neutru pentru stări | `neutral-soft` | Pill-uri „Ciornă”, „Anulată”, cele patru stări de acces. |
@@ -93,26 +94,26 @@ Interfața stă pe neutri; culorile de brand apar rar și au un singur sens.
 
 **Nu face:** peach sau lime ca decor, fundaluri de secțiune sau accente „ca să fie mai vesel”; text peach (`attention`) pe alb — folosește `attention-ink`; verde/roșu doar prin nuanță — orice stare are și cuvânt sau icon; gradienturi; carduri cu bordură colorată pe stânga; ilustrații decorative; „AI sparkles”.
 
-**Tema luminoasă** stă pe off-white (`canvas` #EFF0EE), cu foaia de lucru albă (`sheet` #FFFFFF) delimitată de o linie fină (`line` #E4E5E2): structură prin linii, nu prin carduri și umbre. Textul e navy (`ink` #000C3F), secundarul și metadatele în gri-navy discret (`ink-secondary` #3D4566, `ink-muted` #5E6680). Hover și selecție sunt nuanțe neutre.
+**Tema luminoasă** stă pe off-white (`canvas` #F2F3F0, din direcția B; înainte #EFF0EE), cu foaia de lucru albă (`sheet` #FFFFFF) delimitată de o linie fină (`line` #E4E5E2): structură prin linii, nu prin carduri și umbre. Textul e navy (`ink` #000C3F), secundarul și metadatele în gri-navy discret (`ink-secondary` #3D4566, `ink-muted` #5E6680). Hover și selecție sunt nuanțe neutre.
 
-**Tema întunecată** e neutră, aproape neagră, fără tentă albastră: `canvas` #0E0F11, `sheet` #16171A, `raised` #1E2024 (meniuri, dialoguri, drawere), `sunken` #121315, linii #2A2C30. Textul principal e un off-white cald (`ink` #F1EFEA), secundarul și metadatele gri neutru (#C6C4BF, #9C9A95). Hover și selectat sunt gri neutru (`state-hover`, `selected` #2A2C31). Navy-ul nu e niciodată suprafață în dark: rămâne doar pe plăcuțele iconurilor de aplicații (`appicon-plate`). Butonul principal devine off-white cu text închis. Peach și lime își păstrează umplerile; textele lor (`attention-ink`, `done-ink`) se deschid ca să rămână lizibile.
+**Tema întunecată** e neutră, aproape neagră, fără tentă albastră: `canvas` #0E0F11, `sheet` #16171A, `raised` #1E2024 (meniuri, dialoguri, drawere), `sunken` #121315, linii #2A2C30. Textul principal e un off-white cald (`ink` #F1EFEA), secundarul și metadatele gri neutru (#C6C4BF, #9C9A95). Hover și selectat sunt gri neutru (`state-hover`, `selected` #2A2C31). Navy-ul nu e niciodată suprafață în dark: rămâne doar pe plăcuțele iconurilor de aplicații (`appicon-plate`). Zonele de brand ale Hub-ului devin în dark un negru rece (`brand-surface` #1B1D23), nu navy. Butonul principal devine off-white cu text închis. Peach și lime își păstrează umplerile; textele lor (`attention-ink`, `done-ink`) se deschid ca să rămână lizibile.
 
 ## Tipografie
 
-- **Syne** doar pentru momente de brand: `display-xl` (onboarding, autentificare), `display-l` (salutul din launcher și din „Azi”), `display-m` (titluri de secțiune din Hub, stări goale mari). Niciodată în tabele, formulare sau navigație.
-- **DM Sans** pentru tot restul, pe bază densă de 14px: `title` (20/28, titlul paginii, al dialogului și al drawerului), `heading` (16/24, secțiuni în Sheet), `subheading` (14/20 semibold, antete de coloană, grupuri), `body` (14/20), `body-strong` (14/20 medium, numele rândului, etichetele butoanelor), `body-small` (13/18, meta), `caption` (12/16 medium, etichete de câmp, helper, pill-uri), `numeric` (28/32, KPI-uri).
+- **Syne** doar pentru momente de brand: `display-xl` (56/58, afirmația din panoul de autentificare, onboarding), `display-l` (40/46, salutul din launcher și din „Azi”, titlul autentificării; 32/36 pe telefon), `display-m` (titluri de secțiune din Hub, stări goale mari). Niciodată în tabele, formulare sau navigație. Valorile mari vin din direcția B (înainte 40/44 și 30/36).
+- **DM Sans** pentru tot restul, pe bază densă de 14px: `title` (20/28, titlul paginii, al dialogului și al drawerului), `heading` (16/24, secțiuni în Sheet), `subheading` (14/20 semibold, antete de coloană, grupuri), `body` (14/20), `body-strong` (14/20 medium, numele rândului, etichetele butoanelor), `body-small` (13/18, meta), `caption` (12/16 medium, etichete de câmp, helper, pill-uri), `numeric` (28/32, KPI-uri). Doar pe banda launcher-ului: `eyebrow` (12/16 semibold, majuscule, +0,08em: data și afacerea deasupra salutului) și `lead` (18/34, fraza zilei; 15/30 pe telefon).
 - **Cifre tabulare** peste tot (`font-variant-numeric: tabular-nums` e pus pe `body`); coloanele numerice se aliniază la dreapta.
 - Fonturile sunt fișierele variabile din `fonts/` (DM Sans normal și italic, Syne), cu ș și ț corecte.
 
 ## Spațiu, forme, adâncime
 
 - **Spațiere pe 4px:** `space-1` (4) … `space-16` (64). Controale: padding orizontal `space-3`; câmp la câmp `space-4`; padding Sheet `space-6` pe desktop, `space-4` pe mobil; între secțiuni `space-8`.
-- **Raze:** `radius-xs` (4) bife, Kbd · `radius-sm` (6) butoane, câmpuri · `radius-md` (8) meniuri, toasturi, tabele · `radius-lg` (12) Sheet, Dialog, Drawer · `radius-xl` (16) AppTile și plăcuțele aplicațiilor · `radius-full` pill-uri, avatare, toggle.
+- **Raze:** `radius-xs` (4) bife, Kbd · `radius-sm` (6) butoane, câmpuri · `radius-md` (8) meniuri, toasturi, tabele · `radius-lg` (12) Sheet, Dialog, Drawer · `radius-xl` (18, din direcția B) AppTile, foaia și fișele din AppDock, cardul Portal, plăcuțele aplicațiilor · `radius-full` pill-uri, avatare, toggle.
 - **Borduri:** `border-width` (1px) pentru linii fine și câmpuri, `border-width-control` (1.5px) pentru bife, radio, toggle, `marker-width` (3px) pentru marcajele de locație.
-- **Umbre doar pentru ce plutește:** `shadow-1` (tile la hover), `shadow-2` (meniuri, popovere, toasturi), `shadow-3` (dialog, drawer, paletă de comenzi). Sheet-ul se separă de `canvas` printr-o linie, nu printr-o umbră.
+- **Umbre doar pentru ce plutește:** `shadow-1` (tile la hover), `shadow-2` (meniuri, popovere, toasturi și foaia AppDock ridicată peste banda de brand), `shadow-tile-hover` (fișa deschisă din AppDock), `shadow-3` (dialog, drawer, paletă de comenzi). Sheet-ul se separă de `canvas` printr-o linie, nu printr-o umbră.
 - **Dimensiuni:** controale `control-sm` 28 / `control-md` 36 / `control-lg` 44; pe mobil și pe ecrane tactile orice țintă are minimum `touch-target` (44px). Rânduri de tabel `row-height` 44 / `row-height-dense` 36. Spine `spine-width` 232 / `spine-width-collapsed` 64, ContextBar `contextbar-height` 56, bottom nav `bottomnav-height` 64, Drawer `drawer-width` 480.
 - **Puncte de rupere** (tokenii `breakpoint-*`): telefon 360–767px, tabletă portret 768–1023px (`breakpoint-tablet`), tabletă peisaj și laptop mic 1024–1279px (`breakpoint-laptop`), desktop 1280–1919px (`breakpoint-desktop`), ecrane late de la 1920px (`breakpoint-wide`), unde conținutul se oprește la `content-max-width` (1440px). Detaliile sunt în secțiunea Responsive de mai jos.
-- **Mișcare:** `duration-instant` 80ms (hover), `duration-fast` 140ms (meniuri, toggle), `duration-base` 220ms (drawer, dialog, toast), `duration-slow` 360ms (deschiderea unei aplicații), cu `ease-standard`. La `prefers-reduced-motion` totul devine instant.
+- **Mișcare:** `duration-instant` 80ms (hover), `duration-fast` 140ms (meniuri, toggle), `duration-base` 220ms (drawer, dialog, toast), `duration-slow` 360ms (intrarea iconurilor în AppDock), `duration-launch` 420ms (aplicația crește din card; deschiderea durează ~850ms), cu `ease-standard`. Doar în Hub: `duration-playful` 280ms și `duration-morph` 340ms pe `ease-spring` (un mic rebound: fișa din AppDock, iconul care crește la apăsare); niciodată în aplicații. La `prefers-reduced-motion` totul devine instant.
 - **Straturi:** `z-sticky` < `z-shell` < `z-overlay` < `z-popover` < `z-toast`.
 
 ## Iconografie
@@ -135,6 +136,7 @@ Fișierele oficiale sunt în `assets/Logos/` și se folosesc exact cum sunt: nu 
 | `favicon.svg` | Semnul; trece singur pe varianta B când sistemul e în dark | Favicon-ul Hub-ului |
 
 - **Wordmark-ul face parte din fișier.** Logo-ul complet se folosește întreg, cu „VENTORA” din fișier. Nu scrie „Ventora” în Syne (sau în alt font) lângă semn în locul lui.
+- **Pe zona de brand** (`BrandZone`: antetul și banda launcher-ului, panoul de autentificare) logo-ul folosește varianta B, ca pe orice fundal închis. E singura excepție de la „nu pe o plăcuță colorată” (V3).
 - **Dark = varianta B**, peste tot. Componenta `Logo` arată singură varianta potrivită după cel mai apropiat `data-theme`, deci și într-un panou închis dintr-o pagină deschisă.
 - Componenta `Logo`: `variant="full"` (logo complet) sau `"mark"` (doar semnul); `size` = înălțimea semnului în px; logo-ul complet păstrează proporțiile fișierului (250 × 68).
 - Minim 16px pentru semn și 21px înălțimea semnului pentru logo complet. Spațiu liber de jumătate din înălțimea semnului pe toate laturile.
@@ -245,6 +247,22 @@ Toate deciziile aprobate, pe scurt. Detaliile sunt aplicate în ecrane, componen
 
 **Brand:** logo-ul oficial SVG, folosit exact cum e; dark = varianta B; wordmark-ul „VENTORA” din fișier, nu text în Syne.
 
+**Ridicarea vizuală, direcția B „Navy de comandă” (V1–V11, 25 octombrie 2026)**
+
+| # | Decizie |
+| --- | --- |
+| V1 | Hub-ul primește zone de brand: antetul și banda launcher-ului (salutul, fraza zilei, „Aplicațiile tale”) și panoul de autentificare. Navy în light, negru rece în dark. Structura ecranelor, funcțiile și textele aprobate nu se schimbă. |
+| V2 | Navy e suprafață doar în zonele de brand ale Hub-ului (`BrandZone`). Niciodată în aplicații, în setările Hub-ului, în dialoguri sau carduri. |
+| V3 | Pe zona de brand logo-ul folosește varianta B. |
+| V4 | „Aplicațiile tale” e un rând de iconuri de 64px (`AppDock`) pe o foaie ridicată peste marginea benzii. La hover sau la focus, iconul se deschide deasupra rândului în fișa aplicației: icon de 48px, nume, descriere și linia de azi. Pe telefon, grilă de iconuri de 56px, fără fișă. |
+| V5 | Linia piersică de sub fișă înseamnă „ești aici”: apare doar la hover și focus, niciodată în repaus. |
+| V6 | Portal are cardul lui sub aplicații (`PortalPresence`), nu e un icon în rând. „Gestionează pagina” deschide gestionarea prezenței în platforma de business, în același tab; „Vezi cum arată în Portal” deschide pagina publică într-un tab nou. Proprietarul, adminul și managerul aplicației Portal gestionează; membrii doar văd; colaboratorii externi nu văd cardul. |
+| V7 | Deschiderea unei aplicații (`AppLaunch` v2): iconul crește la 112%, aplicația crește din cardul apăsat, iconul trece prin centru și se așază în bara aplicației (~850ms). Ecranul de până acum (icon și nume în centru) rămâne starea de încărcare. |
+| V8 | Mișcarea cu rebound (`ease-spring`) există doar în Hub. |
+| V9 | „Alte aplicații Ventora”: rânduri compacte, numele în față (16/24 semibold, lângă starea de acces), explicațiile la 14/20 în `ink-secondary`. |
+| V10 | Textele noi: „Duminică, 25 octombrie · Salon Aurora” deasupra salutului; „Afacerea ta. Într-un singur loc.” și „© 2026 Ventora Systems” în panoul de autentificare (subsolul păstrează „Termeni · Confidențialitate · Ajutor”); textele cardului Portal; liniile de azi din fișele aplicațiilor („Următoarea: 09:30 · Ana Popescu”, „1 cerere de aprobat”…). |
+| V11 | Tokeni schimbați: `canvas` light #F2F3F0, `radius-xl` 18px, `shadow-2` mai adâncă, `display-xl` 56/58, `display-l` 40/46. Roluri noi: `brand-surface`, `brand-raised`, `on-brand`, `on-brand-muted`, `brand-line`, `brand-line-strong`, `brand-control-border`, `hover-accent`, `shadow-tile-hover`, `dock-icon`, `dock-icon-compact`, `dock-icon-phone`, `dock-card-w`, `duration-playful`, `duration-morph`, `duration-launch`, `ease-spring`, stilurile `lead` și `eyebrow`. |
+
 ## Ce nu e încă aici
 
 - Interiorul aplicațiilor Portal și Network (identitate proprie, proiectată separat).
@@ -262,7 +280,7 @@ Toate deciziile aprobate, pe scurt. Detaliile sunt aplicate în ecrane, componen
 - **Straturi:** Tooltip, Dialog, Drawer
 - **Preferințe:** ThemeSwitcher, LanguageSwitcher
 - **Shell:** AppShell, Spine (cu bottom nav pe mobil), ContextBar, PageHeader, Sheet / SheetSection
-- **Hub:** Logo, AppIcon (+ grila de construcție și exemple în context), AppTile (tile, icon, rând), AppLaunch (animația de deschidere), AddonPurchase (cumpărarea pachetelor în plus cu cardul, PaymentCard, StripeSlot), AccessBadge, OrgSwitcher, NotificationsPanel, AccountMenu
+- **Hub:** Logo, BrandZone (zona de brand, doar în Hub), AppIcon (+ grila de construcție și exemple în context), AppTile (tile, icon, rând), AppDock (rândul de aplicații din launcher, cu fișa la hover), PortalPresence (pagina afacerii în Portal), AppLaunch (deschiderea unei aplicații, v2), AddonPurchase (cumpărarea pachetelor în plus cu cardul, PaymentCard, StripeSlot), AccessBadge, OrgSwitcher, NotificationsPanel, AccountMenu
 - **Ecrane Hub** (pagini, fiecare în telefon, tabletă și desktop, light și dark): HubSignIn, HubInvite, HubChooseBusiness, HubLauncher, HubEmpty, HubAccount, HubAdminTeam, HubAdminAccess, HubAdminPlan, HubAddonPurchase, HubSupport, HubStates (stările care completează ecranele)
 - **Ecrane Booking:** BookingToday, BookingCalendar, BookingList, BookingDetail, BookingNew, BookingSettings, BookingLimit, BookingStates
 - **Comercial** (recomandări discrete, grup separat): RecommendationLabel, GrowthSlot, RecommendationCard, UpgradeDialog, DiscoveryTooltip, HubRecommendation, CatalogRecommendation, CommercialPreferences, HubCatalog, HubCatalogApp, RuleBuilder, CommercialStates
