@@ -10,7 +10,7 @@ BEGIN
     CREATE ROLE identity_rw NOLOGIN NOINHERIT;
   END IF;
   IF NOT EXISTS (SELECT FROM pg_roles WHERE rolname = 'app_runtime') THEN
-    CREATE ROLE app_runtime NOLOGIN;
+    CREATE ROLE app_runtime LOGIN NOINHERIT;
   END IF;
 END $$;
 

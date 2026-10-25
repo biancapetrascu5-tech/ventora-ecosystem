@@ -10,7 +10,7 @@ BEGIN
     CREATE ROLE founder_identity_rw NOLOGIN NOINHERIT;
   END IF;
   IF NOT EXISTS (SELECT FROM pg_roles WHERE rolname = 'founder_runtime') THEN
-    CREATE ROLE founder_runtime NOLOGIN;
+    CREATE ROLE founder_runtime LOGIN NOINHERIT;
   END IF;
 END $$;
 

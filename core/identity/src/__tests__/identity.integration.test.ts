@@ -47,7 +47,7 @@ const founderAuthTest = betterAuth({
     updateAge: 60 * 60,
     cookieCache: { enabled: false },
   },
-  plugins: [bearer(), twoFactor({ issuer: 'TestFounder' })],
+  plugins: [twoFactor({ issuer: 'TestFounder' })],
   advanced: {
     crossSubDomainCookies: { enabled: false },
     defaultCookieAttributes: { sameSite: 'lax', secure: false, httpOnly: true },
@@ -405,12 +405,12 @@ describe('T1.12 — Founder revoked', () => {
     });
 
     const check1 = await founderAuthTest.api.getSession({
-      headers: new Headers({ Authorization: `Bearer ${token1}` }),
+      headers: new Headers({ Cookie: `better-auth.session_token=${token1}` }),
     });
     expect(check1?.session).toBeFalsy();
 
     const check2 = await founderAuthTest.api.getSession({
-      headers: new Headers({ Authorization: `Bearer ${token2}` }),
+      headers: new Headers({ Cookie: `better-auth.session_token=${token2}` }),
     });
     expect(check2?.session).toBeTruthy();
   });
