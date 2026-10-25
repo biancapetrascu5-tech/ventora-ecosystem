@@ -1,6 +1,0 @@
-{
-  "common": {
-    "ok": "OK",
-    "items": "{count, plural, one {# item} other {# items}}"
-  }
-}

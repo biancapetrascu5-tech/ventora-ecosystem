@@ -15,6 +15,7 @@ export interface TenantDb {
 export interface TenantTx {
   $executeRawUnsafe(query: string, ...values: unknown[]): Promise<number>;
   $executeRaw(strings: TemplateStringsArray, ...values: unknown[]): Promise<number>;
+  $queryRawUnsafe<T = unknown>(query: string, ...values: unknown[]): Promise<T[]>;
 }
 
 /**

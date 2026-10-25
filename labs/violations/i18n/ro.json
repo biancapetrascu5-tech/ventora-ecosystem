@@ -1,7 +1,0 @@
-{
-  "common": {
-    "ok": "OK",
-    "items": "{count, plural, one {# element} other {# elemente}}",
-    "probe": "Cheie de probă pentru gardă"
-  }
-}

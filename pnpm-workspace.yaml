@@ -3,7 +3,6 @@ packages:
   - 'packages/*'
   - 'core/*'
   - 'modules/*'
-  - 'labs/e4-vercel'
 allowBuilds:
   '@parcel/watcher': true
   '@prisma/engines': true

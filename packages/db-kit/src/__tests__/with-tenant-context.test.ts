@@ -15,6 +15,7 @@ function makeMockDb() {
       executedRaw.push('set_config');
       return 0;
     }),
+    $queryRawUnsafe: vi.fn(async () => []),
   };
 
   const db: TenantDb = {
