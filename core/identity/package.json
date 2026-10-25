@@ -13,8 +13,8 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:integration": "vitest run --config vitest.integration.config.ts",
-    "db:migrate:identity": "prisma migrate deploy --schema prisma/identity/schema.prisma",
-    "db:migrate:founder": "prisma migrate deploy --schema prisma/founder/schema.prisma"
+    "db:migrate:identity": "prisma migrate deploy --schema prisma/identity/schema.prisma --url $DATABASE_URL",
+    "db:migrate:founder": "prisma migrate deploy --schema prisma/founder/schema.prisma --url $DATABASE_URL"
   },
   "dependencies": {
     "better-auth": "1.7.12",

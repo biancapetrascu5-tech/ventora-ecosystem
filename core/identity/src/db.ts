@@ -28,10 +28,7 @@ let _founderDb: FounderClient | undefined;
 
 export function getIdentityDb(): IdentityClient {
   if (!_identityDb) {
-    const pool = new RoleAwarePool(
-      { connectionString: process.env.DATABASE_URL! },
-      'identity_rw',
-    );
+    const pool = new RoleAwarePool({ connectionString: process.env.DATABASE_URL! }, 'identity_rw');
     _identityDb = new IdentityClient({ adapter: new PrismaPg(pool) });
   }
   return _identityDb;

@@ -340,9 +340,9 @@ describe('DB isolation — role enforcement', () => {
     const rawPool = new Pool({ connectionString: appUrl });
     const client = await rawPool.connect();
     try {
-      await expect(
-        client.query('SELECT 1 FROM identity.users LIMIT 1'),
-      ).rejects.toThrow(/permission denied/i);
+      await expect(client.query('SELECT 1 FROM identity.users LIMIT 1')).rejects.toThrow(
+        /permission denied/i,
+      );
 
       await client.query('SET ROLE identity_rw');
       const result = await client.query('SELECT COUNT(*) FROM identity.users');
