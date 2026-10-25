@@ -3,7 +3,7 @@
 **Data:** 25.10.2026 · Bianca Petrascu
 **Sursa:** documentul „Ventora — fișe de review (Product Experience)”, tabul „Direcția B · Hub” — https://claude.ai/artifact/FF5kdhUWkp9i9tRjjFWFHt
 
-Direcția B e aplicată în design system: launcher-ul, autentificarea și starea goală, plus componentele noi BrandZone, AppDock, PortalPresence și AppLaunch v2. Fișele de mai jos le trec prin cele 10 întrebări și prin etapele A–E. Funcțiile aprobate nu se schimbă; ce propun în plus e marcat R-B și așteaptă decizia fondatorilor (§6).
+Direcția B e aplicată în design system: launcher-ul, autentificarea și starea goală, plus componentele noi BrandZone, AppDock, PortalPresence și AppLaunch v2. Fișele de mai jos le trec prin cele 10 întrebări și prin etapele A–E. Funcțiile aprobate nu se schimbă; ce s-a propus în plus e marcat R-B; decizia e în §6.
 
 ## 1. Launcher
 
@@ -112,14 +112,14 @@ Toate perechile de text trec de 4,5:1 în ambele teme, iar bordurile de control 
 
 ## 6. Ce ai de decis
 
-Șapte recomandări, niciuna aplicată încă în design system. Cele aprobate se aplică în Claude Design și intră în registrul deciziilor din `system/README.md`.
+Toate șapte aprobate de fondatoare pe 25.10.2026 și aplicate în design system ca V12–V18 (registrul deciziilor din `system/README.md`).
 
 | # | Recomandare | De ce | Decizia |
 |---|---|---|---|
-| R-B1 | Clicul deschide doar aplicația de sub cursor; zona fișei care trece peste vecini nu mai e clicabilă. | Un click pe marginea iconului vecin nu mai deschide aplicația greșită. | _în așteptare_ |
-| R-B2 | Fișa se deschide după 120 ms de oprire a cursorului și se închide imediat. | Fără fișe care clipesc când treci peste rând. | _în așteptare_ |
-| R-B3 | „Clienții te găsesc în Portal și își fac programări acolo. De aici schimbi ce văd ei.” | „Programează” e în glosar butonul afacerii; aici vorbim despre clienți. | _în așteptare_ |
-| R-B4 | „Pagina o pot schimba proprietarul, adminii și managerul aplicației Portal.” | Textul aprobat îl lasă pe dinafară pe managerul aplicației, care are acces (V6). | _în așteptare_ |
-| R-B5 | Linia din Documents devine „Ultimul deschis: Contract Salon Aurora · ieri”. | Singur, numele documentului nu spune de ce apare acolo. | _în așteptare_ |
-| R-B6 | Acceptarea invitației (HubInvite) primește panoul de brand al autentificării. | Omul nou vede întâi invitația; azi arată altfel decât autentificarea de a doua zi. | _în așteptare_ |
-| R-B7 | În aplicații, salutul din „Azi” rămâne la 30/36; 40/46 doar în launcher și la autentificare. | `display-l` mare apăsa ecranele dense (Booking · Azi); pe telefon e deja 32/36. | _în așteptare_ |
+| R-B1 | Clicul deschide doar aplicația de sub cursor; zona fișei care trece peste vecini nu mai e clicabilă. | Un click pe marginea iconului vecin nu mai deschide aplicația greșită. | **Da** · aplicat ca V12 (25.10.2026) |
+| R-B2 | Fișa se deschide după 120 ms de oprire a cursorului și se închide imediat. | Fără fișe care clipesc când treci peste rând. | **Da** · aplicat ca V13 (25.10.2026) |
+| R-B3 | „Clienții te găsesc în Portal și își fac programări acolo. De aici schimbi ce văd ei.” | „Programează” e în glosar butonul afacerii; aici vorbim despre clienți. | **Da** · aplicat ca V14 (25.10.2026) |
+| R-B4 | „Pagina o pot schimba proprietarul, adminii și managerul aplicației Portal.” | Textul aprobat îl lasă pe dinafară pe managerul aplicației, care are acces (V6). | **Da** · aplicat ca V15 (25.10.2026) |
+| R-B5 | Linia din Documents devine „Ultimul deschis: Contract Salon Aurora · ieri”. | Singur, numele documentului nu spune de ce apare acolo. | **Da** · aplicat ca V16 (25.10.2026) |
+| R-B6 | Acceptarea invitației (HubInvite) primește panoul de brand al autentificării. | Omul nou vede întâi invitația; azi arată altfel decât autentificarea de a doua zi. | **Da** · aplicat ca V17 (25.10.2026) |
+| R-B7 | În aplicații, salutul din „Azi” rămâne la 30/36; 40/46 doar în launcher și la autentificare. | `display-l` mare apăsa ecranele dense (Booking · Azi); pe telefon e deja 32/36. | **Da** · aplicat ca V18 (25.10.2026) |

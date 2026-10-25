@@ -1,4 +1,4 @@
-<!-- @dsCard group="Ecrane Hub" height=3680 width=2620 page -->
+<!-- @dsCard group="Ecrane Hub" height=3720 width=2620 page -->
 <!doctype html>
 <html lang="ro">
 <head><meta charset="utf-8"><title>HubLauncher — Ventora</title>
@@ -278,7 +278,7 @@ html,body{min-height:100%}
 .lb-empty{margin-top:calc(-64px - var(--space-8));position:relative;z-index:1}
 .lb.tablet .lb-chev{display:none}
 .lb.mobile .lb-band{padding:var(--space-6) 0 var(--space-8)}
-.lb.mobile .display-l{font-size:32px;line-height:36px}
+.lb.mobile .display-hub{font-size:32px;line-height:36px}
 .lb.mobile .lb-day{font-size:15px;line-height:30px}
 .lb.mobile .lb-chip{height:28px;font-size:13px;gap:var(--space-1);padding:0 var(--space-2) 0 var(--space-1)}
 .lb.mobile .lb-mine{margin-top:0}
@@ -304,7 +304,7 @@ html,body{min-height:100%}
 .sb.mobile .sb-formside{border-radius:var(--radius-xl) var(--radius-xl) 0 0;margin-top:calc(var(--space-6) * -1);position:relative}
 .sb.mobile .auth-main{padding:var(--space-6) var(--space-4);align-items:stretch}
 .sb.mobile .sb-card{width:100%}
-.sb.mobile .display-l{font-size:32px;line-height:36px}
+.sb.mobile .display-hub{font-size:32px;line-height:36px}
 @media (prefers-reduced-motion: reduce){.lb *,.sb *{transition:none!important}}
 
 </style>
@@ -435,7 +435,7 @@ const LIVE = {
   finance: ["2 facturi scadente · 2.480 lei", true],
   projects: ["3 termene săptămâna asta"],
   shifts: ["Azi lucrează 4 colegi"],
-  documents: ["Contract Salon Aurora · ieri"]
+  documents: ["Ultimul deschis: Contract Salon Aurora · ieri"]
 };
 function Chevrons({ cls }) {
   return React.createElement("svg", { className: "b-chev " + (cls || ""), viewBox: "0 0 176 240", "aria-hidden": true },
@@ -458,7 +458,7 @@ function Launcher({ mode, empty }) {
     h("div", { className: "lb-hero" },
       h("div", { className: "lb-hero__text" },
         h("p", { className: "eyebrow lb-eyebrow" }, "Duminică, 25 octombrie · Salon Aurora"),
-        h("h1", { className: "display-l" }, "Bună dimineața, Bianca"),
+        h("h1", { className: "display-hub" }, "Bună dimineața, Bianca"),
         empty
           ? h("p", { className: "lead lb-day" }, "Bine ai venit în Salon Aurora. Aplicațiile apar aici imediat ce primești acces.")
           : h("p", { className: "lead lb-day" }, "Azi ai ", chip("booking", "8 programări"), ", ", chip("finance", "2 facturi scadente", true), " și ", chip("hr", "o cerere de concediu", true), " de aprobat.")),
@@ -485,7 +485,7 @@ function Launcher({ mode, empty }) {
 function CommercialPrefs({ mode }) {
   return /* @__PURE__ */ React.createElement(V.SheetSection, { title: "Recomand\u0103ri Ventora", description: "Sugestii despre aplica\u021Bii \u0219i pachete \xEEn plus care se potrivesc cu ce faci deja." }, /* @__PURE__ */ React.createElement("div", { className: "d0", style: { gap: "var(--space-3)" } }, /* @__PURE__ */ React.createElement(V.Toggle, { label: "\xCEn aplica\u021Bie", description: "Le vezi \xEEn pagini \u0219i \xEEn notific\u0103ri, la sec\u021Biunea Recomand\u0103ri.", defaultChecked: true, labelPosition: mode === "mobile" ? "start" : "end" }), /* @__PURE__ */ React.createElement(V.Toggle, { label: "Pe e-mail", description: "Disponibil \xEEn cur\xE2nd", disabled: true, labelPosition: mode === "mobile" ? "start" : "end" }), /* @__PURE__ */ React.createElement(V.Notice, { tone: "neutral", icon: "info" }, "Mesajele despre limitele contului t\u0103u r\u0103m\xE2n active, pentru c\u0103 sunt informa\u021Bii despre cont, nu recomand\u0103ri.")));
 }
-mount(/* @__PURE__ */ React.createElement(Screens, { title: "Launcher — treci cu mouse-ul peste o aplicație ca să vezi fișa ei; apasă ca s-o deschizi", notes: ["Marketing e un slot comercial: doar pentru proprietar și admin, cel mult unul, cu „Nu mă interesează” și „Amintește-mi mai târziu”, sub plafoanele globale", "Portal are cardul lui: pagina afacerii pentru clienți, nu o aplicație în care lucrezi"], desktopH: 1200, tabletH: 1560, mobileH: 1740, render: (m) => /* @__PURE__ */ React.createElement(Launcher, { mode: m }) }));
+mount(/* @__PURE__ */ React.createElement(Screens, { title: "Launcher — treci cu mouse-ul peste o aplicație ca să vezi fișa ei; apasă ca s-o deschizi", notes: ["Marketing e un slot comercial: doar pentru proprietar și admin, cel mult unul, cu „Nu mă interesează” și „Amintește-mi mai târziu”, sub plafoanele globale", "Portal are cardul lui: pagina afacerii pentru clienți, nu o aplicație în care lucrezi"], desktopH: 1200, tabletH: 1560, mobileH: 1760, render: (m) => /* @__PURE__ */ React.createElement(Launcher, { mode: m }) }));
 </script>
 </body>
 </html>

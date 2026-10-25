@@ -1238,5 +1238,12 @@ button.v-agenda__item:hover { background: var(--state-hover); }
 .v-launch2.is-waiting .v-launch2__app, .v-launch2.is-waiting .v-launch2__title, .v-launch2.is-waiting .v-launch2__barsk { opacity: 0; }
 .v-launch2__icon { position: absolute; left: 0; top: 0; width: 72px; height: 72px; transform-origin: 0 0; }
 .v-launch2__icon svg { display: block; width: 72px; height: 72px; }
-/* display-l is 40/46 since direction B; on phone-sized shells the greeting steps down to 32/36 */
-@container shell (max-width: 767px) { .display-l { font-size: 32px; line-height: 36px; } }
+
+/* R-B1: a click opens only the app under the pointer; the part of the card that spills over the neighbours is not clickable */
+.v-dock__item { cursor: pointer; }
+.v-dock__card { pointer-events: none; }
+/* R-B2: hover intent — the card opens after the pointer rests 120ms, and closes at once */
+.v-dock__item:hover .v-dock__card, .v-dock__item:hover .v-apptile__iconwrap, .v-dock__item:hover svg.v-appicon, .v-dock__item:hover .v-apptile__name, .v-dock__item:hover .v-dock__card::after { transition-delay: var(--duration-intent); }
+.v-dock__item:hover :is(.v-dock__desc, .v-dock__live) { transition-delay: calc(var(--duration-intent) + 80ms), calc(var(--duration-intent) + 20ms), var(--duration-intent); }
+.v-dock__item:hover .v-dock__live { transition-delay: calc(var(--duration-intent) + 130ms), calc(var(--duration-intent) + 60ms), var(--duration-intent); }
+.v-dock__item:hover { transition: z-index 0s linear var(--duration-intent); }
