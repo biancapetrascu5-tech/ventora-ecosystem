@@ -13,9 +13,8 @@
 - Sistemul comercial (planuri, cote, entitlements) — Faza 3.
 - Notificări, suport, AI, fișiere — Faza 4.
 - Design system în cod (`packages/ui`, `packages/tokens`) — Faza 1, paralelă.
-- Self-service signup (Model B) — neactivat, nepregătit UI. Structura de date îl permite, dar ecranele nu se construiesc (D-COM-4 necesită decizie).
-- Identitatea B2C (Portal / consumatori, ARCHITECTURE §7.6) — separată, din Faza 5. Structurile din Faza 2 nu blochează adăugarea ei ulterior.
-- Ecranele de autentificare (HubSignIn, HubInvite, HubAccount) — se construiesc după ce Faza 1 livrează direcția vizuală. Faza 2 livrează infrastructura: contracte, migrații, API, teste.
+- Self-service signup (Model B) — neactivat, nepregătit UI. Structura de date îl permite (§7.2), dar ecranele nu se construiesc (D-COM-4 necesită decizie).
+- Identitatea B2C (Portal / consumatori, §7.6) — separată; tabele proprii, sesiune proprie, cookie propriu pe domeniul Portal. Nu intră în F2; rămâne planificată ulterior (după F5).
 
 ---
 
@@ -34,16 +33,14 @@
   - cache de sesiune din cookie **dezactivat** (CONFIRMAT, E9 — altfel revocare și retrogradare întârzie);
   - scrypt ca algoritm de parolă (CONFIRMAT, fără pachete compilate);
   - plugin token sessions pentru clienți non-browser (aplicația mobilă viitoare);
-  - rate limiting activ în producție (D-AUTH-5, validat în E9 pe Supabase staging), dezactivat în teste.
-- Cookie-uri de sesiune cu prefix `__Host-` (D-INF-1): valide doar pe subdomeniul exact, fără atribut `Domain`. Compatibil cu URL-urile Vercel actuale și cu subdomeniile proprii după configurarea DNS (D-INF-3).
+  - **rate limiting activ în producție (D-AUTH-5)**: N încercări eșuate consecutiv → 429 cu `Retry-After`; dezactivat în teste (`NODE_ENV=test`).
+- **„Ține-mă minte" 30 de zile (P1 CONFIRMAT):** opțiune la login → sesiune cu `rememberMe: true` și `Max-Age: 30 × 24 × 3600` în cookie. Revocabilă din lista de sesiuni.
+- **Lista sesiunilor/dispozitivelor** (`/settings/security`): sesiunea curentă marcată; fiecare intrare cu IP, user-agent, ultima activitate. Revocare individuală + „Revocă toate celelalte". Logică și API livrate în F2; **ecranul se construiește după direcția vizuală F1** (§8).
+- **2FA pe dispozitiv nou (D10 CONFIRMAT):** dacă utilizatorul are 2FA activ, codul e cerut la fiecare login pe dispozitiv necunoscut, indiferent de cookie-ul „ține-mă minte" de pe alt dispozitiv.
 - Contract public `core/identity/src/contract`:
   - `getSession(ctx): Session | null`
   - `revokeSession(ctx, sessionId): void`
-  - `revokeAllSessions(ctx, userId): void`
   - `getUserById(ctx, userId): User | null`
-  - `listActiveSessions(ctx): Session[]` — sesiunile active ale utilizatorului curent; include dispozitiv (user-agent), IP, data ultimei activități.
-- Lista sesiunilor/dispozitivelor active: vizibilă în pagina de Securitate a utilizatorului; fiecare sesiune are buton de revocare individuală. UI construit în Faza 2 dacă Faza 1 a livrat componentele de bază, altfel după Faza 1.
-- „Ține-mă minte 30 zile" (P1 CONFIRMAT): infrastructura în Lot 2.1 (sesiune cu durată extinsă per dispozitiv de încredere); fluxul complet și UI în Lot 2.4.
 - Rute Better Auth montate în `apps/platform` și `apps/founder`.
 
 **Criterii de acceptare:**
@@ -52,9 +49,9 @@
 - [ ] T1.1 — revocare sesiune: sesiunea revocată → request următor returnează 401 (fără să aștepte expirarea).
 - [ ] T1.2 — retrogradare rol: rol modificat în DB → request următor reflectă noul rol.
 - [ ] T1.3 — sesiune token (non-browser): autentificare cu token, request valid, revocare, request respins.
-- [ ] T1.9 — lista sesiunilor active returnează exact sesiunile deschise; nicio sesiune revocată nu apare.
-- [ ] T1.10 — revocare individuală: sesiunea revocată → 401 la request următor; celelalte sesiuni ale aceluiași utilizator rămân valide.
-- [ ] T1.11 — cookie-ul de sesiune are prefix `__Host-` și nu are atribut `Domain`.
+- [ ] T1.9 — rate limiting (D-AUTH-5): N încercări consecutive eșuate → 429 cu `Retry-After`; în teste (`NODE_ENV=test`) rate limiting dezactivat.
+- [ ] T1.10 — „ține-mă minte" 30 zile: sesiunea cu `rememberMe: true` rămâne validă la 29 de zile; sesiunea fără flag expiră la durata standard.
+- [ ] T1.11 — lista de sesiuni: sesiunea revocată individual dispare imediat; celelalte sesiuni ale utilizatorului rămân valide.
 - [ ] CI verde: migrație aplicată pe bază curată.
 
 ---
@@ -65,10 +62,12 @@
 
 **Livrabile:**
 
-- `core/organizations` cu schema Prisma: `Organization`, `Membership`, `Invitation`, `OrganizationSetting`, `PlatformSetting`.
+- `core/organizations` cu schema Prisma: `Organization`, `Membership`, `Invitation`, `OrganizationSetting`.
   - `Organization.createdVia`: `founder | self_service | import` (structura permite Model B fără schimbare de schemă).
-  - `PlatformSetting { key: String, value: Json }` — câmpuri utilizate în Faza 2:
-    - `signup.b2b`: `Boolean @default(false)` — activat de Founder din app-ul de administrare; dezactivat implicit (Model B neactivat).
+  - **`signup.b2b` în `OrganizationSetting` (setare globală de platformă, scrisă doar de Founder, ARCHITECTURE §7.2):**
+    - `signup.b2b = invite_only | self_service` — implicit `invite_only` în F2.
+    - `signup.b2b.checkout = disabled | enabled` — implicit `disabled` până la F3.
+    - Setarea neactivată în F2; structura suportă Model B fără migrație ulterioară.
   - `Membership.status`: `active | suspended | left`.
   - `Invitation`: token de unică folosință stocat ca **hash** (nu plain), expirare implicită 7 zile (configurabilă), stări `pending | accepted | expired | revoked`.
 - `createOrganization(ctx)` — apelabil doar din Founder (verificare `actor: 'founder'`).
@@ -77,6 +76,7 @@
   - Owner invită membri → rol + acces la aplicații setate la invitație.
   - Email existent în sistem → membership nou în organizație, **nu** cont nou.
   - Accept → parola setată (dacă cont nou) → redirect la aplicația principală a rolului.
+- **Trimiterea emailului de invitație — dependență externă (Resend, §11):** `inviteMember` apelează `core/notifications` (canal email, adaptor Resend EU, domeniu `mail.ventora-hub.com`). Dacă furnizorul nu e configurat, operația reușește, emailul nu se trimite, eveniment de avertisment în audit. Configurarea SPF/DKIM/DMARC pe `mail.ventora-hub.com` necesară înainte de deploy pe staging.
 - Invitațiile expirate dispar din lista echipei după 30 de zile (P6 CONFIRMAT), rămân în audit.
 - „Retrimite" vizibil pe invitațiile expirate.
 - Contract public `core/organizations/src/contract`:
@@ -91,15 +91,6 @@
 - Stocată în sesiunea Better Auth pe server — nu în URL, localStorage sau câmpuri din request (ARCHITECTURE §7.4).
 - `setActiveOrganization(ctx, orgId)` — acțiune server care verifică membership-ul activ înainte de schimbare.
 - Un `organizationId` trimis în body/query nu are niciun efect asupra contextului.
-
-**Dependență: furnizor email pentru invitații**
-
-Invitațiile se trimit prin emailul tranzacțional Ventora. Lot 2.2 depinde de:
-
-- `core/notifications` cu interfață `EmailAdapter` și implementare `ResendAdapter`.
-- Domeniu de trimitere: `mail.ventora-hub.com` (SPF, DKIM, DMARC — configurate la activarea domeniului în Resend).
-- Furnizor ales: **Resend**, regiunea `eu-west-1` (emailuri rutate din Irlanda).
-- **Notă de conformitate:** indiferent de regiunea de trimitere, datele contului și log-urile de email rămân stocate în SUA (stocare primară Resend în `us-east-1`). Transferul EU→SUA e acoperit de DPA Article 28 pre-semnat + SCCs (Module 2 pentru controller, Module 3 pentru processor) + EU-US Data Privacy Framework. Validarea juridică se face împreună cu D-SMS-7 și D-GRW-8 — invitațiile nu se trimit înainte ca domeniul și DPA să fie validate.
 
 **Criterii de acceptare:**
 
@@ -163,13 +154,8 @@ Invitațiile se trimit prin emailul tranzacțional Ventora. Lot 2.2 depinde de:
   - Până la expirare: Notice neutru persistent (fără blocare).
   - După expirare: acțiunile cu permisiuni de Owner cer `twoFactorVerified: true` în sesiune — altfel `TwoFactorRequired` (eroare tipizată).
   - Pierderea dispozitivului fără coduri: rezolvabilă **doar** prin sesiune de suport Founder (Lot 2.5), auditată.
-- Codul 2FA cerut pe dispozitiv nou (D10 CONFIRMAT): un dispozitiv care nu are „Ține-mă minte" activ trebuie să introducă codul 2FA la fiecare login.
-- „Ține-mă minte 30 zile" pe dispozitivul ales (P1 CONFIRMAT): infrastructura în Lot 2.1; UI în Lot 2.4 — vizibil în pagina de Securitate, revocabil individual din lista sesiunilor.
-- **Founder app — autentificare separată:**
-  - 2FA obligatoriu fără perioadă de grație (restricție de platformă, independentă de rolurile org).
-  - Sesiunile din `apps/founder` nu au `activeOrganizationId`; autorizarea nu trece prin `authorize()` din Lot 2.3.
-  - Rute Better Auth montate separat în `apps/founder` (endpoint diferit de `apps/platform`).
-  - Login blocat dacă 2FA nu e activat — fără redirect la organizație, fără grație.
+- Codul 2FA cerut pe dispozitiv nou (D10 CONFIRMAT) — implementat în Lot 2.1, testat și în Lot 2.4.
+- „Ține-mă minte 30 zile" pe dispozitivul ales (P1 CONFIRMAT) — implementat în Lot 2.1, revocabil din lista de sesiuni.
 
 **Criterii de acceptare:**
 
@@ -178,7 +164,6 @@ Invitațiile se trimit prin emailul tranzacțional Ventora. Lot 2.2 depinde de:
 - [ ] T1.6 — cod de recuperare folosit → marcat ca utilizat, inutilizabil din nou.
 - [ ] T1.7 — regenerare coduri → codurile vechi invalide, cele noi valide, eveniment în audit.
 - [ ] T1.8 — Founder fără 2FA: login blocată (nu grație).
-- [ ] T1.12 — dispozitiv nou fără „Ține-mă minte": cod 2FA cerut la fiecare login (D10).
 
 ---
 
@@ -214,12 +199,31 @@ Invitațiile se trimit prin emailul tranzacțional Ventora. Lot 2.2 depinde de:
 
 ---
 
+### Autentificarea aplicației Founder
+
+**Scop:** `apps/founder` are propriul flux de autentificare, complet separat de rolurile din organizații. Un utilizator Founder nu are și nu are nevoie de un rol în nicio organizație.
+
+**Livrabile:**
+
+- Better Auth configurat separat (config dedicat în `core/identity` sau `apps/founder`): rute de auth montate la `/auth/*`, cookie host-only pe `founder.ventora-hub.com` (URL Vercel pe staging, §9).
+- **2FA obligatoriu fără grație (restricție de platformă, D-AUTH-3):** la primul login după activarea contului → redirect la configurare 2FA; autentificarea nu se completează fără TOTP activ. Nu există perioadă de grație, spre deosebire de Owner (Lot 2.4).
+- Accesul restricționabil la IP (ARCHITECTURE §3.1): middleware în `apps/founder`, configurabil prin `FOUNDER_ALLOWED_IPS` (variabilă de mediu; absent = fără restricție).
+- Sesiunea de suport (Lot 2.5) e deschisă dintr-o sesiune Founder autentificată cu 2FA verificat — `twoFactorVerified: true` obligatoriu.
+- Sesiunea Founder nu se amestecă cu sesiunea Hub: cookie-uri separate, fără shared state (D-INF-1, §7).
+
+**Criterii de acceptare:**
+
+- [ ] T1.8 (Lot 2.4) acoperă: Founder fără 2FA activ → login blocată (nu grație).
+- [ ] Founder autentificat fără 2FA activ nu poate deschide sesiune de suport → `TwoFactorRequired`.
+
+---
+
 ## 3. Criteriile de ieșire din Faza 2
 
 Faza 2 se închide doar când:
 
 1. Migrațiile `core/identity` + `core/organizations` + `core/access` + `core/audit` se aplică pe bază curată fără erori.
-2. T1 (sesiuni): T1.1–T1.12 verzi în CI.
+2. T1 (sesiuni): T1.1–T1.3, T1.4–T1.8, T1.9–T1.11 verzi în CI.
 3. T2 (organizații): T2.1–T2.5 verzi în CI.
 4. T3 (autorizare + audit): T3.1–T3.10 verzi în CI.
 5. Revocare sesiune și retrogradare rol testate end-to-end (Lot 2.1).
@@ -237,7 +241,8 @@ Faza 2 se închide doar când:
 | Migrațiile `core/identity` intră în conflict cu schema Better Auth | Better Auth cu adapter Prisma folosește tabelele noastre: schema e a noastră, nu a librăriei. Conflictul apare dacă redenumim câmpuri pe care librăria le citește hardcodat — documentăm în CLAUDE.md |
 | Performanța `authorize()` per request | Permisiunile se citesc din DB cu cache pe durata request-ului (nu între request-uri). Dacă p95 > 20ms, se adaugă cache Redis cu TTL scurt (NECESITĂ DECIZIE) |
 | Sesiunea de suport creează o suprafață de atac | Audit complet + durată maximă + vizibilitate pentru organizație + acces strict la Founder cu 2FA activ |
-| Resend stochează date în SUA, nu în EU | Acoperit de DPA Article 28 pre-semnat + SCCs + EU-US DPF. Validare juridică înainte de prima trimitere, alături de D-SMS-7 și D-GRW-8. |
+| Resend indisponibil sau neconfigurat pe staging | `inviteMember` reușește; emailul nu se trimite; audit înregistrează avertisment. Testarea manuală a invitațiilor necesită Resend configurat. |
+| Resend stochează date de cont în SUA (`us-east-1`) | Acoperit de DPA Article 28 pre-semnat + SCCs + EU-US Data Privacy Framework. Validare juridică obligatorie înainte de prima trimitere, alături de D-SMS-7 și D-GRW-8. |
 
 ---
 
@@ -254,51 +259,109 @@ Lot 2.1 (sesiuni) ──► Lot 2.2 (organizații) ──► Lot 2.3 (authorize)
 - Lot 2.4 poate merge în paralel cu 2.3 după finalizarea 2.1.
 - Lot 2.5 (audit) poate începe în paralel cu orice lot dar se finalizează la urmă.
 
-**Principiul de ordine:** logică → API → teste, **apoi** ecrane. HubSignIn, HubInvite și HubAccount nu se construiesc în Faza 2 — depind de direcția vizuală din Faza 1 (`packages/ui`, `packages/tokens`). Faza 2 livrează numai infrastructura: contracte, migrații, rute API, teste.
-
 ---
 
 ## 6. Ce se pregătește acum pentru fazele ulterioare
 
 - Schema `Organization` include `createdVia` și `planId` (null până la F3) — Model B posibil fără migrație.
-- `PlatformSetting` include `signup.b2b` (dezactivat implicit) — Model B activabil fără migrație de schemă.
 - `Membership` include `applicationAccess: string[]` — entitlements per utilizator, citit de F3.
 - `authorize()` acceptă `actor: 'system'` pentru job-urile interne (F4).
 - `AuditLog` include `metadata: jsonb` fără schemă fixă — F3 și F4 adaugă câmpuri fără migrație.
 
 ---
 
-## 7. Staging: configurare și curățare
+## 7. Cookie-uri și sesiuni pe subdomenii (D-INF-1)
 
-### 7.1 URL-uri de acces
+Cookie-urile de sesiune sunt **host-only** — un cookie setat pe `app.ventora-hub.com` nu e trimis de browser la `portal.ventora-hub.com` sau `founder.ventora-hub.com`. Nu există cookie cross-domeniu.
 
-Staging pe Vercel (proiect `ventora-lab-e4`). URL-urile actuale sunt generate automat de Vercel. Subdomeniile proprii (`platform.ventora-hub.com`, `founder.ventora-hub.com`) se configurează după ce DNS-ul e pregătit — D-INF-3 (NECESITĂ DECIZIE).
+| Subdomeniu | Cookie sesiune | Note |
+|---|---|---|
+| `app.ventora-hub.com` | `__Host-session` (Better Auth) | Sesiunea Hub (B2B) |
+| `founder.ventora-hub.com` | `__Host-founder-session` | Sesiunea Founder — 2FA obligatoriu fără grație |
+| `portal.ventora-hub.com` | — | Portal (B2C, §7.6) nu intră în F2 |
 
-### 7.2 Curățare lab_* înainte de prima migrație
+Pe staging (URL-uri Vercel): cookie-urile `__Host-` necesită HTTPS pe domeniu propriu. Pe Vercel se configurează cu `cookiePrefix` și `sameSite: 'lax'`. Cookie-urile `__Host-` se activează la deploy pe subdomeniile proprii (D-INF-3, §9).
 
-Înainte de prima migrație a Fazei 2 pe Supabase staging, schemele și rolurile create de experimente (E2–E5) trebuie șterse. **Comenzile de mai jos sunt o propunere — nu se rulează fără acordul explicit al fondatoarelor.**
+---
+
+## 8. Ordinea implementării — logică înaintea ecranelor
+
+**Logica, API-ul și testele se implementează înaintea oricărui ecran.**
+
+- **Livrat în F2:** toate loturile 2.1–2.5 (logică, contracte, API, teste T1–T3).
+- **Livrat după direcția vizuală F1:** ecranele `HubSignIn`, `HubInvite`, `HubAccount` (cu lista de sesiuni și revocări), `SecuritySettings` (2FA + coduri de recuperare).
+
+Data de start pentru ecrane: după milestone-ul de design F1. Ecranele nu sunt criterii de ieșire din F2.
+
+---
+
+## 9. Staging
+
+Pe durata F2, aplicațiile rulează pe **URL-urile Vercel** generate automat (format `ventora-*.vercel.app`). Subdomeniile proprii de staging se configurează ulterior (D-INF-3).
+
+Implicații pentru F2:
+- Cookie-uri `__Host-` inactive pe Vercel; Better Auth configurat cu `sameSite: 'lax'` și flag HTTPS.
+- Testele de integrare (T1–T3) rulează pe baza de date de staging Supabase; secretele sunt în Vercel env (nu în repo).
+- 2FA pe dispozitiv nou (D10) se testează manual pe URL-urile Vercel înainte de F2 close.
+
+---
+
+## 10. Curățare staging Supabase — propunere (NECESITĂ APROBARE)
+
+**Nu se rulează fără aprobare explicită.** Înainte de primele migrații F2 pe staging, schemele și rolurile `lab_*` rămase din experimentele F0 trebuie șterse. Lista exactă de comenzi propuse:
 
 ```sql
--- Verificare înainte de ștergere (rulați mai întâi):
-SELECT schema_name FROM information_schema.schemata
-WHERE schema_name LIKE 'lab_%';
+-- 1. Verifică ce există (read-only, sigur de rulat oricând):
+SELECT schema_name FROM information_schema.schemata WHERE schema_name LIKE 'lab%';
+SELECT rolname FROM pg_roles WHERE rolname LIKE 'lab%';
 
-SELECT rolname FROM pg_roles
-WHERE rolname LIKE 'lab_%';
-
--- Ștergere scheme (CASCADE include toate tabelele, vederile, funcțiile):
-DROP SCHEMA IF EXISTS lab_core    CASCADE;
+-- 2. Șterge schemele (CASCADE șterge tabele, politici RLS, secvențe):
+DROP SCHEMA IF EXISTS lab_core CASCADE;
 DROP SCHEMA IF EXISTS lab_booking CASCADE;
-DROP SCHEMA IF EXISTS lab_crm     CASCADE;
+DROP SCHEMA IF EXISTS lab_crm CASCADE;
+DROP SCHEMA IF EXISTS lab_catalog CASCADE;
 
--- Ștergere roluri de conectare:
-DROP ROLE IF EXISTS lab_core_rw;
+-- 3. Șterge rolurile (în ordinea dependențelor — după ștergerea schemelor):
 DROP ROLE IF EXISTS lab_booking_rw;
 DROP ROLE IF EXISTS lab_crm_rw;
-
--- Verificare finală -- trebuie sa returneze 0 randuri:
-SELECT schema_name FROM information_schema.schemata
-WHERE schema_name LIKE 'lab_%';
+DROP ROLE IF EXISTS lab_core_rw;
+DROP ROLE IF EXISTS lab_catalog_rw;
+-- Adaugă orice alte roluri `lab_*` găsite la pasul 1.
 ```
 
-> Rulați mai întâi interogările de verificare și confirmați numele exacte înainte de DROP — rolurile pot diferi față de cele de mai sus dacă experimentele au folosit convenții diferite.
+> **Atenție:** `DROP SCHEMA ... CASCADE` e ireversibil pe staging. Rulează întâi SELECT-urile de la pasul 1, trimite-mi output-ul, și confirmă explicit fiecare DROP înainte de execuție.
+
+---
+
+## 11. Furnizorul de email — Resend
+
+**Decizie:** Resend, regiunea UE.
+
+| Parametru | Valoare |
+|---|---|
+| Furnizor | Resend (resend.com) |
+| Regiune | EU West (`eu-west-1`, Irlanda) |
+| Domeniu de expediere | `mail.ventora-hub.com` |
+| Autentificare domeniu | SPF, DKIM, DMARC — de configurat înainte de primul deploy pe staging |
+| Adaptor | `core/notifications`, canalul `email` — interfață generică; furnizorul se schimbă fără modificări în aplicații |
+
+**Arhitectura adaptorului:**
+
+- `core/notifications/src/channels/email.ts` exportă `sendEmail(to, template, data): Promise<void>`.
+- Implementarea Resend se injectează prin `NotificationsProvider` configurat în `apps/platform` și `apps/founder`.
+- F2 folosește două template-uri: `invitation-owner` (Founder invită Owner) și `invitation-member` (Owner invită membru).
+
+**Date și rezidență (Resend DPA — de verificat înaintea deployului în producție):**
+
+*Notă: informațiile de mai jos reflectă documentația publică Resend disponibilă la data planificării (octombrie 2026). DPA-ul Resend trebuie citit și semnat înainte de lansare; clauzele se pot modifica.*
+
+- **Conținut email și adrese destinatari:** procesarea și stocarea temporară se fac pe infrastructura EU West (Irlanda) când e selectată regiunea `eu-west-1`. Conținutul emailului nu e păstrat după livrare sau după perioada de retenție configurată.
+- **Log-uri și metadate tranzacționale** (timestamp trimitere, status livrare, bounce, adresă destinatar): stocate în regiunea selectată pe durata retenției configurate.
+- **Date de cont Resend** (informații utilizator platformă, facturare, log-uri de utilizare API): stocate pe infrastructura primară Resend în `us-east-1` (SUA), indiferent de regiunea de trimitere selectată. Transferul EU→SUA e acoperit de DPA Article 28 pre-semnat + SCCs (Module 2 pentru controller-to-processor, Module 3 pentru processor-to-processor) + EU-US Data Privacy Framework.
+- **GDPR:** Resend acționează ca procesor de date. DPA disponibil la `resend.com/legal/dpa`. Clauzele de retenție și ștergere a datelor se configurează în setările organizației Resend.
+
+**Validare juridică:**
+
+- [ ] DPA Resend citit și semnat înainte de primul email transacțional în producție.
+- [ ] Verificare specifică: datele de cont Resend stocate în US — bază legală (SCCs sau decizie de adecvare).
+- [ ] Adăugat la lista existentă de validări juridice alături de D-SMS-7 (SMS furnizor) și D-GRW-8 (Growth Engine date marketing).
