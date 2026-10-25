@@ -385,15 +385,21 @@ describe('T1.12 — Founder revoked', () => {
       body: { email: 'founder2@test.com', password: 'password123', name: 'Founder 2' },
     });
 
-    const s1 = await founderAuthTest.api.signInEmail({
+    // Use asResponse:true to get the real Set-Cookie header (bearer() not active on founderAuth)
+    const resp1 = await founderAuthTest.api.signInEmail({
       body: { email: 'founder1@test.com', password: 'password123' },
+      asResponse: true,
     });
-    const s2 = await founderAuthTest.api.signInEmail({
+    const resp2 = await founderAuthTest.api.signInEmail({
       body: { email: 'founder2@test.com', password: 'password123' },
+      asResponse: true,
     });
 
-    const token1 = s1?.token ?? '';
-    const token2 = s2?.token ?? '';
+    // Extract "name=value" from Set-Cookie (drop attributes like Path, HttpOnly, etc.)
+    const sessionCookie = (resp: Response): string =>
+      (resp.headers.get('set-cookie') ?? '').split(';')[0];
+    const cookie1 = sessionCookie(resp1);
+    const cookie2 = sessionCookie(resp2);
 
     await founderDb.user.update({
       where: { email: 'founder1@test.com' },
@@ -405,12 +411,12 @@ describe('T1.12 — Founder revoked', () => {
     });
 
     const check1 = await founderAuthTest.api.getSession({
-      headers: new Headers({ Cookie: `better-auth.session_token=${token1}` }),
+      headers: new Headers({ Cookie: cookie1 }),
     });
     expect(check1?.session).toBeFalsy();
 
     const check2 = await founderAuthTest.api.getSession({
-      headers: new Headers({ Cookie: `better-auth.session_token=${token2}` }),
+      headers: new Headers({ Cookie: cookie2 }),
     });
     expect(check2?.session).toBeTruthy();
   });
