@@ -191,9 +191,7 @@ async function withTx(client, fn) {
   const rows = await withTx(poolDirect, async (c) => {
     await c.query(`SELECT set_config('app.organization_id', 'e10-org-alpha', true)`);
     await c.query('SET LOCAL ROLE lab_catalog_rw');
-    const { rows } = await c.query(
-      `SELECT id, "organizationId" FROM lab_catalog.catalog_items`,
-    );
+    const { rows } = await c.query(`SELECT id, "organizationId" FROM lab_catalog.catalog_items`);
     return rows;
   });
   const orgIds = rows.map((r) => r.organizationId);
@@ -226,9 +224,7 @@ async function withTx(client, fn) {
   const rows = await withTx(poolDirect, async (c) => {
     await c.query(`SELECT set_config('app.organization_id', 'e10-org-beta', true)`);
     await c.query('SET LOCAL ROLE lab_catalog_rw');
-    const { rows } = await c.query(
-      `SELECT id, "organizationId" FROM lab_catalog.catalog_items`,
-    );
+    const { rows } = await c.query(`SELECT id, "organizationId" FROM lab_catalog.catalog_items`);
     return rows;
   });
   const orgIds = rows.map((r) => r.organizationId);
