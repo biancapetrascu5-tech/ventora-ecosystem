@@ -29,7 +29,9 @@ describe('PortalPresence', () => {
   });
 
   it('hides manage button when canManage is false', () => {
-    render(<PortalPresence status="published" canManage={false} previewHref="https://example.com" />);
+    render(
+      <PortalPresence status="published" canManage={false} previewHref="https://example.com" />,
+    );
     expect(screen.queryByText('Gestionează pagina')).toBeNull();
     expect(screen.getByText('Doar proprietarul și adminii pot schimba pagina.')).toBeTruthy();
   });
@@ -42,9 +44,7 @@ describe('PortalPresence', () => {
   });
 
   it('applies compact class', () => {
-    const { container } = render(
-      <PortalPresence status="published" compact onManage={() => {}} />,
-    );
+    const { container } = render(<PortalPresence status="published" compact onManage={() => {}} />);
     const card = container.querySelector('.v-portalcard');
     expect(card?.className).toContain('compact');
   });

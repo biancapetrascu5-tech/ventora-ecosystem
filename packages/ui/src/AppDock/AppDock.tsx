@@ -24,7 +24,8 @@ export interface AppDockProps {
   label?: string; // TODO: i18n
 }
 
-const APP_LABELS: Record<AppName, string> = { // TODO: i18n
+const APP_LABELS: Record<AppName, string> = {
+  // TODO: i18n
   booking: 'Booking',
   crm: 'CRM',
   hr: 'HR',
@@ -42,7 +43,8 @@ const APP_LABELS: Record<AppName, string> = { // TODO: i18n
   assets: 'Assets',
 };
 
-export function AppDock({ apps, onOpen, label = 'Aplicațiile tale' }: AppDockProps) { // TODO: i18n label
+export function AppDock({ apps, onOpen, label = 'Aplicațiile tale' }: AppDockProps) {
+  // TODO: i18n label
   const [openIndex, setOpenIndex] = useState<number | null>(null);
   const dockRef = useRef<HTMLDivElement>(null);
 
@@ -80,12 +82,7 @@ export function AppDock({ apps, onOpen, label = 'Aplicațiile tale' }: AppDockPr
 
   return (
     <div className={styles.wrapper}>
-      <div
-        ref={dockRef}
-        className={cn(styles.dock, 'v-dock')}
-        role="list"
-        aria-label={label}
-      >
+      <div ref={dockRef} className={cn(styles.dock, 'v-dock')} role="list" aria-label={label}>
         {apps.map((dockApp, idx) => {
           const name = dockApp.name ?? APP_LABELS[dockApp.app];
           const isOpen = openIndex === idx;

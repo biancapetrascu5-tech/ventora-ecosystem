@@ -20,12 +20,7 @@ export function BrandZone({
   ...rest
 }: BrandZoneProps) {
   return (
-    <Tag
-      data-brand
-      className={cn(styles.root, className)}
-      style={style}
-      {...rest}
-    >
+    <Tag data-brand className={cn(styles.root, className)} style={style} {...rest}>
       {children}
     </Tag>
   );

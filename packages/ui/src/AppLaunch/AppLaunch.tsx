@@ -152,7 +152,12 @@ export function AppLaunch({
   if (progress !== undefined) {
     const p = Math.max(0, Math.min(1, progress));
     const surfaceOpacity = p > 0.15 ? Math.min(1, (p - 0.15) / 0.4) : 0;
-    const iconScale = p < 0.15 ? 1 + 0.12 * (p / 0.15) : p < 0.55 ? 1.12 : Math.max(0, 1.12 - ((p - 0.55) / 0.45) * 1.12);
+    const iconScale =
+      p < 0.15
+        ? 1 + 0.12 * (p / 0.15)
+        : p < 0.55
+          ? 1.12
+          : Math.max(0, 1.12 - ((p - 0.55) / 0.45) * 1.12);
     const iconOpacity = p < 0.75 ? 1 : Math.max(0, 1 - (p - 0.75) / 0.25);
 
     return (
@@ -183,7 +188,11 @@ export function AppLaunch({
 
   return (
     <div
-      className={cn(styles.overlay, 'v-applaunch', contained ? styles.contained : styles.fullscreen)}
+      className={cn(
+        styles.overlay,
+        'v-applaunch',
+        contained ? styles.contained : styles.fullscreen,
+      )}
       role="status"
       aria-label={name ? `Se deschide ${name}` : 'Se deschide aplicația'} // TODO: i18n
     >

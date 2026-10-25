@@ -65,8 +65,9 @@ export function PortalPresence({
           </button>
         )}
 
-        {status === 'published' && (previewHref || onPreview) && (
-          previewHref ? (
+        {status === 'published' &&
+          (previewHref || onPreview) &&
+          (previewHref ? (
             <a
               href={previewHref}
               target="_blank"
@@ -92,11 +93,7 @@ export function PortalPresence({
               </svg>
             </a>
           ) : (
-            <button
-              type="button"
-              className={styles.externalLink}
-              onClick={onPreview}
-            >
+            <button type="button" className={styles.externalLink} onClick={onPreview}>
               {/* TODO: i18n */}
               Vezi cum arată în Portal
               <svg
@@ -115,8 +112,7 @@ export function PortalPresence({
                 <line x1="10" y1="14" x2="21" y2="3" />
               </svg>
             </button>
-          )
-        )}
+          ))}
       </div>
     </div>
   );
