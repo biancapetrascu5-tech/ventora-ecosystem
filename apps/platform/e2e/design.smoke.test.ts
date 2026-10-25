@@ -1,27 +1,35 @@
 import { test, expect } from '@playwright/test';
 
+// Errors emitted by the static /preview/*.html comparison iframes.
+// bundle.js reads window.React which React 19 no longer ships as UMD.
+// These are pre-existing issues in the preview files; they do NOT affect the
+// Next.js app. We filter them so tests only catch real main-app errors.
+const PREVIEW_NOISE = [
+  'React is not defined',
+  'ReactDOM is not defined',
+  "Cannot destructure property 'useState' of 'R'",
+  "Cannot destructure property 'useState' of 'RD'",
+];
+const isPreviewNoise = (text: string) => PREVIEW_NOISE.some((pat) => text.includes(pat));
+
 test.describe('/design smoke', () => {
   // NOTE: page.goto() in Playwright does not fail on HTTP 5xx — it follows the response and
   // renders whatever the server returns. Without an explicit status check the test can pass even
   // when Next.js returns 500 and renders an error overlay (which still has an <h1> element).
-  //
-  // NOTE on iframe errors: page.on('console') fires for ALL frames including iframes.
-  // The /preview/*.html comparison frames use bundle.js which requires window.React (a global
-  // that React 19 no longer ships as UMD). These are pre-existing issues in the static preview
-  // files — they do not affect the Next.js app. We filter them out so the test only catches
-  // errors from the main app frame.
   test('returns HTTP 200 and loads without console errors', async ({ page }) => {
     const consoleErrors: string[] = [];
 
     page.on('console', (msg) => {
       if (msg.type() === 'error') {
         const url = msg.location().url ?? '';
-        // Ignore errors originating from static preview comparison iframes
         if (url.includes('/preview/')) return;
+        if (isPreviewNoise(msg.text())) return;
         consoleErrors.push(msg.text());
       }
     });
-    page.on('pageerror', (err) => consoleErrors.push(err.message));
+    page.on('pageerror', (err) => {
+      if (!isPreviewNoise(err.message)) consoleErrors.push(err.message);
+    });
 
     const response = await page.goto('/design');
 
@@ -71,18 +79,21 @@ test.describe('/design smoke', () => {
 });
 
 test.describe('/design/demo smoke', () => {
+  // NOTE: page.goto() does not fail on HTTP 5xx — explicit status check is required.
   test('returns HTTP 200 and loads without console errors', async ({ page }) => {
     const consoleErrors: string[] = [];
 
     page.on('console', (msg) => {
       if (msg.type() === 'error') {
         const url = msg.location().url ?? '';
-        // Ignore errors from static preview comparison iframes (window.React not available in React 19)
         if (url.includes('/preview/')) return;
+        if (isPreviewNoise(msg.text())) return;
         consoleErrors.push(msg.text());
       }
     });
-    page.on('pageerror', (err) => consoleErrors.push(err.message));
+    page.on('pageerror', (err) => {
+      if (!isPreviewNoise(err.message)) consoleErrors.push(err.message);
+    });
 
     const response = await page.goto('/design/demo');
 
