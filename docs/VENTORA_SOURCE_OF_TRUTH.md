@@ -34,7 +34,8 @@
 | Architecture v0.3.1 | `docs/ARCHITECTURE.md` | Structuri, principii, decizii, status CONFIRMAT/PROPUS/NECESITĂ DECIZIE |
 | Growth Engine | `docs/GROWTH_ENGINE.md` | Specificația completă a serviciului Core `core/growth` |
 | SMS de pe numărul propriu | `docs/SMS_NUMAR_PROPRIU.md` | `core/messaging`, adaptoarele SMS, experimentul E-SMS-1 — aprobat condiționat (D-SMS-1…9) |
-| Planul Faza 0 | `docs/plans/FAZA-0.md` | Pașii 0.1–0.4, experimente, criterii de ieșire |
+| Planul Faza 0 ✅ ÎNCHIS 25.10.2026 | `docs/plans/FAZA-0.md` | Pașii 0.1–0.4, experimente, criterii de ieșire — toate bifate |
+| Planul Faza 2 | `docs/plans/FAZA-2.md` | Identitate și acces: Better Auth, organizații, membership, invitații, authorize(), 2FA, audit |
 | Audit recoltare | `docs/audit-recoltare.md` | Inventarul `ventora_hub` (read-only) — sursa de lecții |
 
 ---
