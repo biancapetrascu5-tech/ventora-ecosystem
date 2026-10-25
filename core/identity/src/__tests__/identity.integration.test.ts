@@ -66,7 +66,8 @@ async function setupSchema(): Promise<void> {
       email_verified BOOLEAN NOT NULL DEFAULT false,
       image TEXT,
       created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-      updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+      updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      two_factor_enabled BOOLEAN
     )
   `);
   await identityDb.$executeRawUnsafe(`
@@ -113,7 +114,10 @@ async function setupSchema(): Promise<void> {
       id TEXT PRIMARY KEY,
       secret TEXT NOT NULL,
       backup_codes TEXT NOT NULL,
-      user_id TEXT NOT NULL REFERENCES identity.users(id) ON DELETE CASCADE
+      user_id TEXT NOT NULL REFERENCES identity.users(id) ON DELETE CASCADE,
+      verified BOOLEAN DEFAULT false,
+      failed_verification_count INTEGER DEFAULT 0,
+      locked_until TIMESTAMPTZ
     )
   `);
   await identityDb.$executeRawUnsafe(`
@@ -136,7 +140,8 @@ async function setupSchema(): Promise<void> {
       updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
       revoked_at TIMESTAMPTZ,
       created_by_founder_id TEXT,
-      revoked_by_founder_id TEXT
+      revoked_by_founder_id TEXT,
+      two_factor_enabled BOOLEAN
     )
   `);
   await identityDb.$executeRawUnsafe(`
@@ -183,7 +188,10 @@ async function setupSchema(): Promise<void> {
       id TEXT PRIMARY KEY,
       secret TEXT NOT NULL,
       backup_codes TEXT NOT NULL,
-      user_id TEXT NOT NULL REFERENCES founder_identity.users(id) ON DELETE CASCADE
+      user_id TEXT NOT NULL REFERENCES founder_identity.users(id) ON DELETE CASCADE,
+      verified BOOLEAN DEFAULT false,
+      failed_verification_count INTEGER DEFAULT 0,
+      locked_until TIMESTAMPTZ
     )
   `);
 }
