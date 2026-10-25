@@ -14,7 +14,8 @@
 - Notificări, suport, AI, fișiere — Faza 4.
 - Design system în cod (`packages/ui`, `packages/tokens`) — Faza 1, paralelă.
 - Self-service signup (Model B) — neactivat, nepregătit UI. Structura de date îl permite, dar ecranele nu se construiesc (D-COM-4 necesită decizie).
-- Identitatea B2C (Portal / consumatori) — separată, după F5.
+- Identitatea B2C (Portal / consumatori, ARCHITECTURE §7.6) — separată, din Faza 5. Structurile din Faza 2 nu blochează adăugarea ei ulterior.
+- Ecranele de autentificare (HubSignIn, HubInvite, HubAccount) — se construiesc după ce Faza 1 livrează direcția vizuală. Faza 2 livrează infrastructura: contracte, migrații, API, teste.
 
 ---
 
@@ -33,11 +34,16 @@
   - cache de sesiune din cookie **dezactivat** (CONFIRMAT, E9 — altfel revocare și retrogradare întârzie);
   - scrypt ca algoritm de parolă (CONFIRMAT, fără pachete compilate);
   - plugin token sessions pentru clienți non-browser (aplicația mobilă viitoare);
-  - rate limiting activ în producție, dezactivat în teste.
+  - rate limiting activ în producție (D-AUTH-5, validat în E9 pe Supabase staging), dezactivat în teste.
+- Cookie-uri de sesiune cu prefix `__Host-` (D-INF-1): valide doar pe subdomeniul exact, fără atribut `Domain`. Compatibil cu URL-urile Vercel actuale și cu subdomeniile proprii după configurarea DNS (D-INF-3).
 - Contract public `core/identity/src/contract`:
   - `getSession(ctx): Session | null`
   - `revokeSession(ctx, sessionId): void`
+  - `revokeAllSessions(ctx, userId): void`
   - `getUserById(ctx, userId): User | null`
+  - `listActiveSessions(ctx): Session[]` — sesiunile active ale utilizatorului curent; include dispozitiv (user-agent), IP, data ultimei activități.
+- Lista sesiunilor/dispozitivelor active: vizibilă în pagina de Securitate a utilizatorului; fiecare sesiune are buton de revocare individuală. UI construit în Faza 2 dacă Faza 1 a livrat componentele de bază, altfel după Faza 1.
+- „Ține-mă minte 30 zile" (P1 CONFIRMAT): infrastructura în Lot 2.1 (sesiune cu durată extinsă per dispozitiv de încredere); fluxul complet și UI în Lot 2.4.
 - Rute Better Auth montate în `apps/platform` și `apps/founder`.
 
 **Criterii de acceptare:**
@@ -46,6 +52,9 @@
 - [ ] T1.1 — revocare sesiune: sesiunea revocată → request următor returnează 401 (fără să aștepte expirarea).
 - [ ] T1.2 — retrogradare rol: rol modificat în DB → request următor reflectă noul rol.
 - [ ] T1.3 — sesiune token (non-browser): autentificare cu token, request valid, revocare, request respins.
+- [ ] T1.9 — lista sesiunilor active returnează exact sesiunile deschise; nicio sesiune revocată nu apare.
+- [ ] T1.10 — revocare individuală: sesiunea revocată → 401 la request următor; celelalte sesiuni ale aceluiași utilizator rămân valide.
+- [ ] T1.11 — cookie-ul de sesiune are prefix `__Host-` și nu are atribut `Domain`.
 - [ ] CI verde: migrație aplicată pe bază curată.
 
 ---
@@ -56,8 +65,10 @@
 
 **Livrabile:**
 
-- `core/organizations` cu schema Prisma: `Organization`, `Membership`, `Invitation`, `OrganizationSetting`.
+- `core/organizations` cu schema Prisma: `Organization`, `Membership`, `Invitation`, `OrganizationSetting`, `PlatformSetting`.
   - `Organization.createdVia`: `founder | self_service | import` (structura permite Model B fără schimbare de schemă).
+  - `PlatformSetting { key: String, value: Json }` — câmpuri utilizate în Faza 2:
+    - `signup.b2b`: `Boolean @default(false)` — activat de Founder din app-ul de administrare; dezactivat implicit (Model B neactivat).
   - `Membership.status`: `active | suspended | left`.
   - `Invitation`: token de unică folosință stocat ca **hash** (nu plain), expirare implicită 7 zile (configurabilă), stări `pending | accepted | expired | revoked`.
 - `createOrganization(ctx)` — apelabil doar din Founder (verificare `actor: 'founder'`).
@@ -80,6 +91,15 @@
 - Stocată în sesiunea Better Auth pe server — nu în URL, localStorage sau câmpuri din request (ARCHITECTURE §7.4).
 - `setActiveOrganization(ctx, orgId)` — acțiune server care verifică membership-ul activ înainte de schimbare.
 - Un `organizationId` trimis în body/query nu are niciun efect asupra contextului.
+
+**Dependență: furnizor email pentru invitații**
+
+Invitațiile se trimit prin emailul tranzacțional Ventora. Lot 2.2 depinde de:
+
+- `core/notifications` cu interfață `EmailAdapter` și implementare `ResendAdapter`.
+- Domeniu de trimitere: `mail.ventora-hub.com` (SPF, DKIM, DMARC — configurate la activarea domeniului în Resend).
+- Furnizor ales: **Resend**, regiunea `eu-west-1` (emailuri rutate din Irlanda).
+- **Notă de conformitate:** indiferent de regiunea de trimitere, datele contului și log-urile de email rămân stocate în SUA (stocare primară Resend în `us-east-1`). Transferul EU→SUA e acoperit de DPA Article 28 pre-semnat + SCCs (Module 2 pentru controller, Module 3 pentru processor) + EU-US Data Privacy Framework. Validarea juridică se face împreună cu D-SMS-7 și D-GRW-8 — invitațiile nu se trimit înainte ca domeniul și DPA să fie validate.
 
 **Criterii de acceptare:**
 
@@ -143,9 +163,13 @@
   - Până la expirare: Notice neutru persistent (fără blocare).
   - După expirare: acțiunile cu permisiuni de Owner cer `twoFactorVerified: true` în sesiune — altfel `TwoFactorRequired` (eroare tipizată).
   - Pierderea dispozitivului fără coduri: rezolvabilă **doar** prin sesiune de suport Founder (Lot 2.5), auditată.
-- Codul 2FA cerut pe dispozitiv nou (D10 microcopy CONFIRMAT).
-- „Ține-mă minte 30 zile" pe dispozitivul ales (P1 CONFIRMAT), revocabil din Securitate.
-- Founder (aplicația): 2FA obligatoriu fără grație (restricție de platformă, nu de organizație).
+- Codul 2FA cerut pe dispozitiv nou (D10 CONFIRMAT): un dispozitiv care nu are „Ține-mă minte" activ trebuie să introducă codul 2FA la fiecare login.
+- „Ține-mă minte 30 zile" pe dispozitivul ales (P1 CONFIRMAT): infrastructura în Lot 2.1; UI în Lot 2.4 — vizibil în pagina de Securitate, revocabil individual din lista sesiunilor.
+- **Founder app — autentificare separată:**
+  - 2FA obligatoriu fără perioadă de grație (restricție de platformă, independentă de rolurile org).
+  - Sesiunile din `apps/founder` nu au `activeOrganizationId`; autorizarea nu trece prin `authorize()` din Lot 2.3.
+  - Rute Better Auth montate separat în `apps/founder` (endpoint diferit de `apps/platform`).
+  - Login blocat dacă 2FA nu e activat — fără redirect la organizație, fără grație.
 
 **Criterii de acceptare:**
 
@@ -154,6 +178,7 @@
 - [ ] T1.6 — cod de recuperare folosit → marcat ca utilizat, inutilizabil din nou.
 - [ ] T1.7 — regenerare coduri → codurile vechi invalide, cele noi valide, eveniment în audit.
 - [ ] T1.8 — Founder fără 2FA: login blocată (nu grație).
+- [ ] T1.12 — dispozitiv nou fără „Ține-mă minte": cod 2FA cerut la fiecare login (D10).
 
 ---
 
@@ -194,7 +219,7 @@
 Faza 2 se închide doar când:
 
 1. Migrațiile `core/identity` + `core/organizations` + `core/access` + `core/audit` se aplică pe bază curată fără erori.
-2. T1 (sesiuni): T1.1–T1.8 verzi în CI.
+2. T1 (sesiuni): T1.1–T1.12 verzi în CI.
 3. T2 (organizații): T2.1–T2.5 verzi în CI.
 4. T3 (autorizare + audit): T3.1–T3.10 verzi în CI.
 5. Revocare sesiune și retrogradare rol testate end-to-end (Lot 2.1).
@@ -212,6 +237,7 @@ Faza 2 se închide doar când:
 | Migrațiile `core/identity` intră în conflict cu schema Better Auth | Better Auth cu adapter Prisma folosește tabelele noastre: schema e a noastră, nu a librăriei. Conflictul apare dacă redenumim câmpuri pe care librăria le citește hardcodat — documentăm în CLAUDE.md |
 | Performanța `authorize()` per request | Permisiunile se citesc din DB cu cache pe durata request-ului (nu între request-uri). Dacă p95 > 20ms, se adaugă cache Redis cu TTL scurt (NECESITĂ DECIZIE) |
 | Sesiunea de suport creează o suprafață de atac | Audit complet + durată maximă + vizibilitate pentru organizație + acces strict la Founder cu 2FA activ |
+| Resend stochează date în SUA, nu în EU | Acoperit de DPA Article 28 pre-semnat + SCCs + EU-US DPF. Validare juridică înainte de prima trimitere, alături de D-SMS-7 și D-GRW-8. |
 
 ---
 
@@ -228,11 +254,51 @@ Lot 2.1 (sesiuni) ──► Lot 2.2 (organizații) ──► Lot 2.3 (authorize)
 - Lot 2.4 poate merge în paralel cu 2.3 după finalizarea 2.1.
 - Lot 2.5 (audit) poate începe în paralel cu orice lot dar se finalizează la urmă.
 
+**Principiul de ordine:** logică → API → teste, **apoi** ecrane. HubSignIn, HubInvite și HubAccount nu se construiesc în Faza 2 — depind de direcția vizuală din Faza 1 (`packages/ui`, `packages/tokens`). Faza 2 livrează numai infrastructura: contracte, migrații, rute API, teste.
+
 ---
 
 ## 6. Ce se pregătește acum pentru fazele ulterioare
 
 - Schema `Organization` include `createdVia` și `planId` (null până la F3) — Model B posibil fără migrație.
+- `PlatformSetting` include `signup.b2b` (dezactivat implicit) — Model B activabil fără migrație de schemă.
 - `Membership` include `applicationAccess: string[]` — entitlements per utilizator, citit de F3.
 - `authorize()` acceptă `actor: 'system'` pentru job-urile interne (F4).
 - `AuditLog` include `metadata: jsonb` fără schemă fixă — F3 și F4 adaugă câmpuri fără migrație.
+
+---
+
+## 7. Staging: configurare și curățare
+
+### 7.1 URL-uri de acces
+
+Staging pe Vercel (proiect `ventora-lab-e4`). URL-urile actuale sunt generate automat de Vercel. Subdomeniile proprii (`platform.ventora-hub.com`, `founder.ventora-hub.com`) se configurează după ce DNS-ul e pregătit — D-INF-3 (NECESITĂ DECIZIE).
+
+### 7.2 Curățare lab_* înainte de prima migrație
+
+Înainte de prima migrație a Fazei 2 pe Supabase staging, schemele și rolurile create de experimente (E2–E5) trebuie șterse. **Comenzile de mai jos sunt o propunere — nu se rulează fără acordul explicit al fondatoarelor.**
+
+```sql
+-- Verificare înainte de ștergere (rulați mai întâi):
+SELECT schema_name FROM information_schema.schemata
+WHERE schema_name LIKE 'lab_%';
+
+SELECT rolname FROM pg_roles
+WHERE rolname LIKE 'lab_%';
+
+-- Ștergere scheme (CASCADE include toate tabelele, vederile, funcțiile):
+DROP SCHEMA IF EXISTS lab_core    CASCADE;
+DROP SCHEMA IF EXISTS lab_booking CASCADE;
+DROP SCHEMA IF EXISTS lab_crm     CASCADE;
+
+-- Ștergere roluri de conectare:
+DROP ROLE IF EXISTS lab_core_rw;
+DROP ROLE IF EXISTS lab_booking_rw;
+DROP ROLE IF EXISTS lab_crm_rw;
+
+-- Verificare finală -- trebuie sa returneze 0 randuri:
+SELECT schema_name FROM information_schema.schemata
+WHERE schema_name LIKE 'lab_%';
+```
+
+> Rulați mai întâi interogările de verificare și confirmați numele exacte înainte de DROP — rolurile pot diferi față de cele de mai sus dacă experimentele au folosit convenții diferite.
