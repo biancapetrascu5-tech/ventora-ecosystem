@@ -154,9 +154,7 @@ export function AppDock({ apps, onOpen, label = 'Aplicațiile tale' }: AppDockPr
                 onKeyDown={(e) => {
                   if (e.key === 'Enter' || e.key === ' ') {
                     e.preventDefault();
-                    const slotEl = e.currentTarget.closest(
-                      `.${styles.slot}`,
-                    ) as HTMLElement | null;
+                    const slotEl = e.currentTarget.closest(`.${styles.slot}`) as HTMLElement | null;
                     const iconEl = e.currentTarget.querySelector('img') as HTMLElement | null;
                     handleClick(e, dockApp, slotEl, iconEl);
                   }

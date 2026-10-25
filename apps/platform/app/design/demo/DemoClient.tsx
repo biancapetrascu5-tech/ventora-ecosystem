@@ -327,11 +327,7 @@ export function DemoClient() {
                         </p>
                       </div>
                       <FormField label="Prenume și nume">
-                        <Input
-                          type="text"
-                          autoComplete="name"
-                          placeholder="Bianca Petrescu"
-                        />
+                        <Input type="text" autoComplete="name" placeholder="Bianca Petrescu" />
                       </FormField>
                       <FormField label="Parolă nouă">
                         <Input

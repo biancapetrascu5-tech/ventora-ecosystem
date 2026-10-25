@@ -24,8 +24,7 @@ const DEFAULT_TRANSLATIONS: PortalPresenceTranslations = {
   title: 'Pagina afacerii în Portal',
   description:
     'Clienții te găsesc în Portal și își fac programări acolo. De aici schimbi ce văd ei.',
-  memberNote:
-    'Pagina o pot schimba proprietarul, adminii și managerul aplicației Portal.',
+  memberNote: 'Pagina o pot schimba proprietarul, adminii și managerul aplicației Portal.',
   manage: 'Gestionează pagina',
   finish: 'Termină pagina',
   preview: 'Vezi cum arată în Portal',
