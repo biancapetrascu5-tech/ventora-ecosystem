@@ -27,6 +27,7 @@ const prisma = new PrismaClient({ adapter });
 
 export const auth = betterAuth({
   secret: process.env.BETTER_AUTH_SECRET,
+  basePath: '/api/e9/auth',
   database: prismaAdapter(prisma, { provider: 'postgresql' }),
   emailAndPassword: { enabled: true },
   session: {
