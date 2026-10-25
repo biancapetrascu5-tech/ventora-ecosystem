@@ -7,7 +7,7 @@
     "dev": "next dev -p 3103",
     "build": "pnpm run generate && next build",
     "start": "next start",
-    "generate": "prisma generate --config prisma.config.core.ts && prisma generate --config prisma.config.booking.ts && prisma generate --config prisma.config.crm.ts && prisma generate --config prisma.config.multi.ts && prisma generate --config prisma.config.runtime.ts",
+    "generate": "prisma generate --config prisma.config.core.ts && prisma generate --config prisma.config.booking.ts && prisma generate --config prisma.config.crm.ts && prisma generate --config prisma.config.multi.ts && prisma generate --config prisma.config.runtime.ts && prisma generate --config prisma.config.auth.ts",
     "typecheck": "tsc --noEmit",
     "postinstall": "pnpm run generate"
   },
@@ -15,6 +15,7 @@
     "@prisma/adapter-pg": "7.10.1",
     "@prisma/client": "7.10.1",
     "@prisma/client-runtime-utils": "7.10.1",
+    "better-auth": "1.7.12",
     "inngest": "4.26.0",
     "next": "16.4.3",
     "pg": "^8.0.0",

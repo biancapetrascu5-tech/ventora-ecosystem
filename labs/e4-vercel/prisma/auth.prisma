@@ -1,0 +1,119 @@
+generator client {
+  provider        = "prisma-client-js"
+  output          = "../generated/auth-client"
+  previewFeatures = ["multiSchema", "driverAdapters"]
+}
+
+datasource db {
+  provider = "postgresql"
+  schemas  = ["lab_core"]
+}
+
+// Better Auth core tables — toate in lab_core cu prefix ba_
+
+model User {
+  id            String    @id
+  name          String
+  email         String    @unique
+  emailVerified Boolean
+  image         String?
+  createdAt     DateTime
+  updatedAt     DateTime
+
+  @@map("ba_users")
+  @@schema("lab_core")
+}
+
+model Session {
+  id                   String   @id
+  expiresAt            DateTime
+  token                String   @unique
+  createdAt            DateTime
+  updatedAt            DateTime
+  ipAddress            String?
+  userAgent            String?
+  userId               String
+  activeOrganizationId String?
+
+  @@map("ba_sessions")
+  @@schema("lab_core")
+}
+
+model Account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime
+  updatedAt             DateTime
+
+  @@map("ba_accounts")
+  @@schema("lab_core")
+}
+
+model Verification {
+  id         String    @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime?
+  updatedAt  DateTime?
+
+  @@map("ba_verifications")
+  @@schema("lab_core")
+}
+
+// Organization plugin
+model Organization {
+  id        String   @id
+  name      String
+  slug      String?  @unique
+  logo      String?
+  createdAt DateTime
+  metadata  String?
+
+  @@map("ba_organizations")
+  @@schema("lab_core")
+}
+
+model Member {
+  id             String   @id
+  organizationId String
+  userId         String
+  role           String
+  createdAt      DateTime
+
+  @@map("ba_members")
+  @@schema("lab_core")
+}
+
+model Invitation {
+  id             String   @id
+  organizationId String
+  email          String
+  role           String?
+  status         String
+  expiresAt      DateTime
+  inviterId      String
+
+  @@map("ba_invitations")
+  @@schema("lab_core")
+}
+
+// Two-factor plugin
+model TwoFactor {
+  id          String @id
+  secret      String
+  backupCodes String
+  userId      String @unique
+
+  @@map("ba_two_factors")
+  @@schema("lab_core")
+}
