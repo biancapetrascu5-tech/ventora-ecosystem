@@ -1,6 +1,6 @@
 # VENTORA ECOSYSTEM — ARHITECTURĂ TEHNICĂ
 
-**Versiune:** 0.4.1
+**Versiune:** 0.4.2
 **Data:** 25 octombrie 2026
 **Stadiu:** Faza 0 închisă (tag `faza-0`). Deciziile marcate CONFIRMAT sunt baza implementării; cele PROPUS sau NECESITĂ DECIZIE nu se implementează fără aprobare.
 
@@ -24,6 +24,7 @@
 | 0.3.2 | 24.10.2026 | Decizii pentru Portal și Network, luate în designul lor (Claude Design, etapele 1–3): D-NET-1, D-POR-1, D-PROF-1 închise; verificarea și categoria afacerii în Core; VeeCoin ca monedă unică; regulile Network (contact autorizat, acceptarea propunerilor, integrări într-un singur sens); eticheta „Sponsorizat”; avansul în programarea din Portal; rolurile de tokeni noi pentru Portal/Network. Detalii: §17.16. |
 | 0.4.0 | 25.10.2026 | Deciziile Fazei 0, pe baza experimentelor E1–E10 (rapoartele în `docs/experiments/`): D-DB-1 → varianta C (rol de conectare `NOINHERIT` + `SET LOCAL ROLE` pe modul), D-SEC-1 → RLS din prima (USING + WITH CHECK), parolele cu scrypt, configurația Better Auth, outbox cu dispecer, cote cu rezervare și reconciliere, garda pentru operațiile în masă; D-UI-2 → React Aria Components; versiunile de bază ale stack-ului. Detalii: §17.17. |
 | 0.4.1 | 25.10.2026 | Echipa Founder: mai multe conturi Founder nominale, fiecare cu acces complet (D-ACC-4). Emailul tranzacțional prin Resend, regiunea UE, în spatele unui adaptor din `core/notifications` (D-NOT-1). Direcția vizuală B „Navy de comandă” aplicată în design system, doar pentru Hub (D-UI-6). Detalii: §17.18. |
+| 0.4.2 | 25.10.2026 | Numele afișate ale celor 13 module de business (D-UX-4): EasyBook, ClientDesk, TeamSpace, MoneyDesk, TaskBoard, ShiftPlan, DocSpace, StockDesk, DataView, CampaignKit, EventSpace, AssetDesk, ContractDesk. Identificatorii tehnici rămân neschimbați. Detalii: §17.19. |
 
 ## Statusuri folosite în acest document
 
@@ -582,6 +583,19 @@ export const manifest = {
 **Direcția vizuală B „Navy de comandă” (CONFIRMAT, 25.10.2026, D-UI-6):** aplicată în design system (deciziile V1–V18 din `docs/design/system/README.md`; rezumatul și diferența de tokeni în `docs/design/DIRECTIA-B.md`). Atinge **doar Hub-ul**: zonele de brand (`BrandZone`) din launcher și autentificare, rândul de aplicații `AppDock`, cardul `PortalPresence`, deschiderea animată `AppLaunch` v2. Navy ca suprafață există doar în zonele de brand ale Hub-ului, niciodată în aplicații; mișcarea cu rebound (`ease-spring`) doar în Hub. Valorile de token globale schimbate (`canvas`, `radius-xl`, `shadow-2`, `display-xl`) se aplică peste tot, prin regenerarea `packages/tokens`. Recomandările R-B1…R-B7 (`docs/design/reviews/directia-b-hub.md`) sunt aprobate și aplicate ca V12–V18; între ele, `display-l` rămâne 30/36 în aplicații, iar mărimea mare a Hub-ului e tokenul nou `display-hub`.
 
 - **Logo:** SVG-urile oficiale din `docs/design/logo/`; în dark se folosește varianta B (CONFIRMAT). Spine-ul din Founder arată semnul + „Founder” (P26); favicon-ul Hub folosește varianta B în dark (P27).
+- **Numele afișate ale modulelor (CONFIRMAT, 25.10.2026, D-UX-4).** Cele 13 module de business au nume afișate proprii, aceleași în toate cele 6 limbi. Sunt nume de module în Ventora, nu mărci separate; marca rămâne „Ventora”. Identificatorii tehnici (`booking`, `crm`… în cod, manifeste, baze de date, rute, chei i18n, documentație tehnică și checklisturi) **nu se schimbă**; numele afișat vine doar din i18n (`apps.<id>.name`). Portal și Network își păstrează numele.
+
+  | Identificator | Nume afișat | | Identificator | Nume afișat |
+  |---|---|---|---|---|
+  | `booking` | EasyBook | | `documents` | DocSpace |
+  | `crm` | ClientDesk | | `inventory` | StockDesk |
+  | `hr` | TeamSpace | | `analytics` | DataView |
+  | `finance` | MoneyDesk | | `marketing` | CampaignKit |
+  | `projects` | TaskBoard | | `events` | EventSpace |
+  | `shifts` | ShiftPlan | | `assets` | AssetDesk |
+  | | | | `contracts` | ContractDesk |
+
+  Reguli: niciun nume de modul nu folosește „Hub” (e numele platformei); un nume nou trece prin glosar și prin testul de lungime (eticheta din AppDock, germană).
 - **Terminologie (CONFIRMAT, D1):** clienții văd doar „abonament”. Cuvântul „plan” apare **doar în Founder Control Center** (unde e termenul tehnic corect). Cheile i18n și glosarul respectă regula.
 
 ### 10.2 Reguli
@@ -1127,6 +1141,7 @@ Plus, la nivel de platformă: teste de webhook Stripe (semnătură, idempotenț�
 | D-ACC-4 | Echipa Founder: mai multe conturi Founder nominale, toate cu acces complet (inclusiv Bibi); 2FA obligatoriu, audit pe persoană, restricția IP opțională și oprită implicit (§7.5) | Da | CONFIRMAT (25.10.2026) | Nu |
 | D-NOT-1 | Email tranzacțional prin Resend, regiunea UE, în spatele adaptorului `EmailChannel`; domeniul `ventora-hub.com`, deja verificat (§11.6) | Da | CONFIRMAT (25.10.2026); contul există, domeniul și cheile: de configurat | Nu |
 | D-UI-6 | Direcția vizuală B „Navy de comandă” (V1–V18, inclusiv R-B1…R-B7), doar pentru Hub (§10.1) | Da | CONFIRMAT (25.10.2026) | Nu |
+| D-UX-4 | Numele afișate ale celor 13 module (EasyBook, ClientDesk, TeamSpace, MoneyDesk, TaskBoard, ShiftPlan, DocSpace, StockDesk, DataView, CampaignKit, EventSpace, AssetDesk, ContractDesk); identificatorii tehnici neschimbați (§10.1) | Da | CONFIRMAT (25.10.2026) | Nu |
 | D-INF-5 | Compute-ul Supabase pentru producție (la 200 de cereri concurente, p99 ≈ 2,5 s pe instanța micro de staging) | Decis înainte de lansare, cu măsurători | NECESITĂ DECIZIE | Da, înainte de lansare |
 | D-ROAD-1 | Ordinea aplicațiilor după Booking | Propunerea din §15.3 | NECESITĂ DECIZIE | Da |
 | D-ROAD-2 | Booking prima aplicație | Da | CONFIRMAT | Nu |
@@ -1261,6 +1276,10 @@ Fiecare experiment produce un raport scurt și un ADR. Pentru toate se folosesc 
 4. **Nicio decizie deschisă nu s-a închis prin această versiune** în afara celor de mai sus. D-COM-7, D-PX-2, D-PX-3, D-GRW-8 (validarea juridică), D-UX-2 rămân NECESITĂ DECIZIE.
 
 ---
+
+### 17.19 Modificări în v0.4.2
+
+Aprobat de fondatoare pe 25.10.2026: **D-UX-4**, numele afișate ale modulelor (§10.1). Sunt etichete în interfață, nu mărci separate, deci nu cer înregistrare; verificarea de marcă rămâne doar pentru „Ventora”. Codul, rutele, cheile și documentația tehnică păstrează identificatorii (`booking`, `crm`…). De actualizat: glosarul și cataloagele i18n (`apps.<id>.name`), design system-ul (etichetele din launcher, ecrane, iconurile de aplicații rămân aceleași), textele care pomenesc numele modulelor.
 
 ### 17.18 Modificări în v0.4.1
 
