@@ -1,0 +1,37 @@
+<!-- @dsCard group="Hub" height=500 width=1200 -->
+<!doctype html>
+<html lang="ro">
+<head><meta charset="utf-8"><title>BrandZone — Ventora</title>
+<style>
+html,body{margin:0}
+.d{display:flex;flex-direction:column;gap:var(--space-4);padding:var(--space-6);box-sizing:border-box;background:var(--canvas);color:var(--ink)}
+.zone{border-radius:var(--radius-lg);padding:var(--space-6) var(--space-8);display:flex;flex-direction:column;gap:var(--space-3)}
+.zone p{margin:0}
+.eb{text-transform:uppercase;color:var(--ink-muted)}
+.sec{color:var(--ink-secondary)}
+.row{display:flex;gap:var(--space-3);align-items:center;flex-wrap:wrap}
+.chip{display:inline-flex;align-items:center;gap:var(--space-2);height:32px;padding:0 var(--space-3) 0 var(--space-1);border-radius:var(--radius-full);background:var(--sheet);box-shadow:inset 0 0 0 var(--border-width) var(--line);font-weight:600}
+.dot{width:var(--dot-size);height:var(--dot-size);border-radius:var(--radius-full);background:var(--attention)}
+.field{display:inline-flex;align-items:center;gap:var(--space-2);height:var(--control-md);padding:0 var(--space-3);min-width:220px;border:var(--border-width) solid var(--control-border);border-radius:var(--radius-sm);color:var(--ink-muted)}
+.lab{margin:0;color:var(--ink-muted)}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script>
+const V = window.Ventora;
+const h = React.createElement;
+function Theme({ th }) {
+  return h("div", { "data-theme": th, className: "d" },
+    h("p", { className: "caption lab" }, th === "light" ? "Light: navy #000C3F" : "Dark: negru rece #1B1D23 (navy nu e suprafață în dark)"),
+    h(V.BrandZone, { className: "zone" },
+      h("div", { className: "row", style: { justifyContent: "space-between" } }, h(V.Logo, { size: 32 }), h("span", { className: "field" }, h(V.Icon, { name: "search", size: 16 }), "Caută…")),
+      h("p", { className: "eyebrow eb" }, "Duminică, 25 octombrie · Salon Aurora"),
+      h("p", { className: "display-l" }, "Bună dimineața, Bianca"),
+      h("p", { className: "lead sec" }, "Text secundar pe zona de brand: on-brand-muted."),
+      h("div", { className: "row" }, h("span", { className: "chip" }, h(V.AppIcon, { app: "finance", size: 20 }), "2 facturi scadente", h("span", { className: "dot", "aria-hidden": true })), h(V.Button, { size: "sm", variant: "quiet", icon: "grip-vertical" }, "Reordonează"))));
+}
+mount(h("div", null, h(Theme, { th: "light" }), h(Theme, { th: "dark" })));
+</script>
+</body>
+</html>

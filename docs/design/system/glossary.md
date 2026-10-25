@@ -30,6 +30,10 @@ Un singur cuvânt pentru fiecare lucru, în toate ecranele și în toate cele 6 
 | invitație | invitation | invitation | invitación | Einladung | invito | Singura cale de intrare. Niciodată „Creează cont”. |
 | aplicație | app | application | aplicación | App | app | Numele aplicațiilor rămân în engleză în toate limbile (Booking, CRM, HR…). |
 | Hub | Hub | Hub | Hub | Hub | Hub | Nume propriu, nu se traduce. În texte: „aplicațiile tale”. |
+| pagina afacerii (în Portal) | business page (on Portal) | page de l’entreprise (sur Portal) | página del negocio (en Portal) | Unternehmensseite (auf Portal) | pagina dell’attività (su Portal) | Ce văd clienții în Portal. Titlul cardului din launcher: „Pagina afacerii în Portal”. Nu „profil”, nu „vitrină”. |
+| Gestionează pagina | Manage page | Gérer la page | Gestionar la página | Seite verwalten | Gestisci la pagina | Deschide gestionarea în platforma de business. Pagina nepublicată: „Termină pagina”. |
+| Vezi cum arată în Portal | See it on Portal | Voir sur Portal | Ver cómo se ve en Portal | So sieht es auf Portal aus | Guarda come appare su Portal | Deschide pagina publică într-un tab nou; iconul de link extern spune asta. |
+| Publicată / Ascunsă / Nu e publicată încă | Published / Hidden / Not published yet | Publiée / Masquée / Pas encore publiée | Publicada / Oculta / Aún no publicada | Veröffentlicht / Ausgeblendet / Noch nicht veröffentlicht | Pubblicata / Nascosta / Non ancora pubblicata | Starea paginii din Portal: lime, neutru, peach. |
 
 ## Abonament și plată
 

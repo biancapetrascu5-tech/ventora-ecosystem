@@ -1,4 +1,4 @@
-<!-- @dsCard group="Ecrane Hub" height=3140 width=2620 page -->
+<!-- @dsCard group="Ecrane Hub" height=3680 width=2620 page -->
 <!doctype html>
 <html lang="ro">
 <head><meta charset="utf-8"><title>HubLauncher — Ventora</title>
@@ -250,6 +250,63 @@ html,body{min-height:100%}
 .fxframe .caption{color:var(--ink-muted)}
 @container (max-width:420px){.fxlang{grid-template-columns:32px minmax(0,1fr) auto}.fxlang .v-iconbtn{display:none}}
 
+/* Direcția B — launcher */
+.lb .v-shell__content{padding-top:0}
+.lb .lb-wrap{padding-top:0;gap:var(--space-8)}
+.lb-band{position:relative;padding:var(--space-8) 0 112px;box-shadow:0 0 0 100vmax var(--brand-surface);clip-path:inset(0 -100vmax)}
+.lb-hero{position:relative;display:flex;justify-content:space-between;gap:var(--space-8);min-width:0}
+.lb-hero__text{display:flex;flex-direction:column;gap:var(--space-3);min-width:0}
+.lb-eyebrow{margin:0;text-transform:uppercase;color:var(--ink-muted)}
+.lb-day{margin:0;color:var(--ink-secondary);max-width:780px}
+.lb-chip{display:inline-flex;align-items:center;gap:var(--space-2);height:32px;margin:2px 0;padding:0 var(--space-3) 0 var(--space-1);border-radius:var(--radius-full);background:var(--sheet);box-shadow:inset 0 0 0 var(--border-width) var(--line);color:var(--ink);font-weight:600;text-decoration:none;vertical-align:middle;transition:box-shadow var(--duration-fast) var(--ease-standard),transform var(--duration-fast) var(--ease-standard)}
+.lb-chip:hover{box-shadow:inset 0 0 0 var(--border-width) var(--line-strong);transform:translateY(-1px);text-decoration:none}
+.lb-chip svg.v-appicon{border-radius:var(--radius-full);overflow:hidden}
+.lb-dot{width:var(--dot-size);height:var(--dot-size);border-radius:var(--radius-full);background:var(--attention);margin-left:calc(var(--space-1) * -1)}
+.b-chev{fill:none;stroke:var(--line-strong);stroke-width:1.5}
+.lb-chev{position:absolute;right:var(--space-4);top:calc(var(--space-2) * -1);width:150px;height:200px}
+.lb-sechead{margin-top:var(--space-8)}
+.lb-mine{display:flex;flex-direction:column;gap:var(--space-4);margin-top:calc(-96px - var(--space-8));position:relative;z-index:1}
+.lb-other .rows{background:var(--sheet)}
+.lb-other__intro{margin:0 0 var(--space-3);color:var(--ink-secondary)}
+.lb-other .v-apptile--row{gap:var(--space-3);padding:var(--space-3) var(--space-4);min-height:0}
+.lb-other .v-apptile--row > svg.v-appicon{width:36px;height:36px;flex:none;align-self:flex-start;margin-top:2px}
+.lb-other .v-apptile--row .v-apptile__text{flex-direction:row;flex-wrap:wrap;align-items:center;column-gap:var(--space-2);row-gap:2px}
+.lb-other .v-apptile--row .v-apptile__text > .body-strong{font-size:16px;line-height:24px;font-weight:600;color:var(--ink)}
+.lb-other .v-apptile--row .v-apptile__badges{display:inline-flex;gap:var(--space-1)}
+.lb-other .v-apptile__desc,.lb-other .v-apptile__cost{flex-basis:100%;font-size:14px;line-height:20px}
+.lb-other .v-apptile__desc{color:var(--ink-secondary)}
+.lb-empty{margin-top:calc(-64px - var(--space-8));position:relative;z-index:1}
+.lb.tablet .lb-chev{display:none}
+.lb.mobile .lb-band{padding:var(--space-6) 0 var(--space-8)}
+.lb.mobile .display-l{font-size:32px;line-height:36px}
+.lb.mobile .lb-day{font-size:15px;line-height:30px}
+.lb.mobile .lb-chip{height:28px;font-size:13px;gap:var(--space-1);padding:0 var(--space-2) 0 var(--space-1)}
+.lb.mobile .lb-mine{margin-top:0}
+.lb.mobile .lb-empty{margin-top:0}
+.lb.mobile .lb-other .v-apptile--row{flex-wrap:wrap;row-gap:var(--space-2)}
+.lb.mobile .lb-other .v-apptile--row .v-apptile__text{flex:1 1 calc(100% - 48px)}
+.lb.mobile .lb-other .v-apptile--row .v-apptile__act{margin-left:48px}
+/* Direcția B — sign-in */
+.sb{flex-direction:row}
+.sb-brand{position:relative;flex:0 0 46%;display:flex;flex-direction:column;gap:var(--space-8);padding:var(--space-6) var(--space-12) var(--space-8);overflow:hidden;box-sizing:border-box}
+.sb-brand__top{display:flex;justify-content:space-between;align-items:center}
+.sb-statement{margin:auto 0 0;position:relative;z-index:1;color:var(--ink)}
+.sb-chev{position:absolute;right:-56px;top:96px;width:340px;height:460px}
+.sb-foot{margin:0;color:var(--ink-muted)}
+.sb-formside{flex:1;display:flex;flex-direction:column;min-width:0;background:var(--sheet)}
+.sb-top{justify-content:flex-end}
+.sb .auth-main{align-items:center;padding:var(--space-8)}
+.sb .sb-card{width:400px;max-width:100%;border:0;background:transparent;padding:0;box-shadow:none}
+.sb.tablet .sb-brand{flex-basis:40%;padding:var(--space-6) var(--space-8) var(--space-8)}
+.sb.tablet .sb-statement{font-size:40px;line-height:44px}
+.sb.mobile{flex-direction:column}
+.sb.mobile .sb-brand{flex:none;padding:var(--space-4) var(--space-4) var(--space-10)}
+.sb.mobile .sb-formside{border-radius:var(--radius-xl) var(--radius-xl) 0 0;margin-top:calc(var(--space-6) * -1);position:relative}
+.sb.mobile .auth-main{padding:var(--space-6) var(--space-4);align-items:stretch}
+.sb.mobile .sb-card{width:100%}
+.sb.mobile .display-l{font-size:32px;line-height:36px}
+@media (prefers-reduced-motion: reduce){.lb *,.sb *{transition:none!important}}
+
 </style>
 </head>
 <body>
@@ -370,28 +427,65 @@ const RECO = { marketing: { reason: "Se potrive\u0219te cu Booking: trimite auto
 const VIEWER_ROLE = "owner";
 const RECO_FOR = (a) => (VIEWER_ROLE === "owner" || VIEWER_ROLE === "admin") && a === "marketing" ? RECO[a] : null;
 const OTHER = [["inventory", "unavailable"], ["analytics", "notInRole"], ["marketing", "notInPlan"], ["network", "notInPlan"]];
+/* Direcția B (25 oct. 2026): the launcher's brand band and AppDock, Portal as its own card, AppLaunch v2. */
+const LIVE = {
+  booking: ["Următoarea: 09:30 · Ana Popescu"],
+  crm: ["4 clienți noi săptămâna asta"],
+  hr: ["1 cerere de aprobat", true],
+  finance: ["2 facturi scadente · 2.480 lei", true],
+  projects: ["3 termene săptămâna asta"],
+  shifts: ["Azi lucrează 4 colegi"],
+  documents: ["Contract Salon Aurora · ieri"]
+};
+function Chevrons({ cls }) {
+  return React.createElement("svg", { className: "b-chev " + (cls || ""), viewBox: "0 0 176 240", "aria-hidden": true },
+    [40, 72, 104].map((y) => React.createElement("polyline", { key: y, points: `32,${y} 88,${y + 80} 144,${y}` })),
+    React.createElement("polyline", { points: "48,168 88,224 128,168" }));
+}
 function Launcher({ mode, empty }) {
+  const h = React.createElement;
   const [run, setRun] = useState(null);
   const mob = mode === "mobile";
-  const open = (a) => (e) => setRun({ app: a, from: e.currentTarget.querySelector(".v-appicon").getBoundingClientRect() });
-  return /* @__PURE__ */ React.createElement("div", { className: "frame-rel" }, /* @__PURE__ */ React.createElement(V.AppShell, { height: "100%", contextBar: /* @__PURE__ */ React.createElement(HubBar, null) }, /* @__PURE__ */ React.createElement("div", { className: "wrap " + mode }, /* @__PURE__ */ React.createElement("div", { className: "greet" }, /* @__PURE__ */ React.createElement("h1", { className: "display-l" }, "Bun\u0103 diminea\u021Ba, Bianca"), empty ? /* @__PURE__ */ React.createElement("p", { className: "body muted" }, "Bine ai venit \xEEn Salon Aurora. Aplica\u021Biile apar aici imediat ce prime\u0219ti acces.") : /* @__PURE__ */ React.createElement("p", { className: "body muted daylinks" }, "Azi ai ", /* @__PURE__ */ React.createElement("a", { className: "v-link", href: "#" }, "8 program\u0103ri"), ", ", /* @__PURE__ */ React.createElement("a", { className: "v-link", href: "#" }, "2 facturi scadente"), " \u0219i ", /* @__PURE__ */ React.createElement("a", { className: "v-link", href: "#" }, "o cerere de concediu"), " de aprobat.")), empty ? /* @__PURE__ */ React.createElement("div", { className: "sheetlike" }, /* @__PURE__ */ React.createElement(V.EmptyState, { icon: "layout-grid", title: "Nu ai \xEEnc\u0103 acces la nicio aplica\u021Bie", description: "Bianca Petra\u0219cu (proprietar) alege ce aplica\u021Bii folose\u0219te fiecare rol. Putem trimite noi cererea ta.", actions: /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(V.Button, { variant: "primary", icon: "send" }, "Cere acces"), /* @__PURE__ */ React.createElement(V.Button, { variant: "quiet" }, "Scrie-ne")) }), /* @__PURE__ */ React.createElement("p", { className: "body-small muted center", style: { paddingBottom: "var(--space-6)" } }, "\xCEntre timp, alege-\u021Bi fotografia \u0219i limba din ", /* @__PURE__ */ React.createElement("a", { className: "v-link", href: "#" }, "Contul t\u0103u"), ".")) : /* @__PURE__ */ React.createElement("section", null, /* @__PURE__ */ React.createElement("div", { className: "sechead" }, /* @__PURE__ */ React.createElement("h2", { className: "display-m" }, "Aplica\u021Biile tale"), /* @__PURE__ */ React.createElement(V.Button, { size: "sm", variant: "quiet", icon: "grip-vertical" }, "Reordoneaz\u0103")), mob ? /* @__PURE__ */ React.createElement("div", { className: "mgrid" }, MINE.map(([a, d, b]) => /* @__PURE__ */ React.createElement(V.AppTile, { key: a, app: a, layout: "icon", badge: b, onOpen: open(a) }))) : /* @__PURE__ */ React.createElement("div", { className: "tiles4" }, MINE.map(([a, d, b]) => /* @__PURE__ */ React.createElement(V.AppTile, { key: a, app: a, description: d, badge: b, onOpen: open(a) })))), /* @__PURE__ */ React.createElement("section", null, /* @__PURE__ */ React.createElement("h2", { className: "display-m sec" }, "Alte aplica\u021Bii Ventora"), /* @__PURE__ */ React.createElement("p", { className: "body-small muted", style: { marginBottom: "var(--space-3)" } }, "Nu le po\u021Bi deschide acum. La fiecare scrie de ce \u0219i ce po\u021Bi face."), true ? /* @__PURE__ */ React.createElement("div", { className: mob ? "rows" : "rows rows2" }, OTHER.map(([a, s]) => RECO_FOR(a) ? /* @__PURE__ */ React.createElement(V.GrowthSlot, { key: a, label: "Recomandare" }, /* @__PURE__ */ React.createElement(V.AppTile, { app: a, access: s, layout: "row", recommendation: RECO_FOR(a), onDetails: () => {
-  }, onDismiss: () => {
-  }, onRemindLater: () => {
-  } })) : /* @__PURE__ */ React.createElement(V.AppTile, { key: a, app: a, access: s, layout: "row", grantedBy: "Bianca Petra\u0219cu", onRequestAccess: () => {
-  }, onWriteUs: () => {
-  }, onSeeStatus: () => {
-  } }))) : /* @__PURE__ */ React.createElement("div", { className: "tiles4" }, OTHER.map(([a, s]) => RECO_FOR(a) ? /* @__PURE__ */ React.createElement(V.GrowthSlot, { key: a, label: "Recomandare" }, /* @__PURE__ */ React.createElement(V.AppTile, { app: a, access: s, recommendation: RECO_FOR(a), onDetails: () => {
-  }, onDismiss: () => {
-  }, onRemindLater: () => {
-  } })) : /* @__PURE__ */ React.createElement(V.AppTile, { key: a, app: a, access: s, grantedBy: "Bianca Petra\u0219cu", onRequestAccess: () => {
-  }, onWriteUs: () => {
-  }, onSeeStatus: () => {
-  } }))), /* @__PURE__ */ React.createElement("div", { style: { marginTop: "var(--space-4)" } }, /* @__PURE__ */ React.createElement(V.Button, { variant: "quiet", icon: "layout-grid", iconEnd: "arrow-right" }, "Vezi toate aplica\u021Biile Ventora"))))), run && /* @__PURE__ */ React.createElement(V.AppLaunch, { contained: true, app: run.app, from: run.from, onDone: () => setTimeout(() => setRun(null), 500) }));
+  const apps = MINE.filter(([a]) => a !== "portal").map(([a, d, b]) => ({ app: a, description: d, badge: b, live: LIVE[a] && { text: LIVE[a][0], attention: !!LIVE[a][1] } }));
+  const openDock = (e, app, name, launch) => setRun(Object.assign({ app, name }, launch));
+  const openPortal = (e) => {
+    const card = e.currentTarget.closest(".v-portalcard"), ic = card.querySelector(".v-appicon");
+    setRun({ app: "portal", name: "Pagina afacerii în Portal", from: ic.getBoundingClientRect(), fromCard: card.getBoundingClientRect(), iconEl: ic });
+  };
+  const chip = (app, label, attn) => h("a", { className: "v-link lb-chip", href: "#" }, h(V.AppIcon, { app, size: mob ? 18 : 20 }), h("span", null, label), attn ? h("span", { className: "lb-dot", "aria-hidden": true }) : null);
+  const sechead = h("div", { className: "sechead lb-sechead" }, h("h2", { className: "display-m" }, "Aplicațiile tale"), h(V.Button, { size: "sm", variant: "quiet", icon: "grip-vertical" }, "Reordonează"));
+  const band = h(V.BrandZone, { className: "lb-band" },
+    h("div", { className: "lb-hero" },
+      h("div", { className: "lb-hero__text" },
+        h("p", { className: "eyebrow lb-eyebrow" }, "Duminică, 25 octombrie · Salon Aurora"),
+        h("h1", { className: "display-l" }, "Bună dimineața, Bianca"),
+        empty
+          ? h("p", { className: "lead lb-day" }, "Bine ai venit în Salon Aurora. Aplicațiile apar aici imediat ce primești acces.")
+          : h("p", { className: "lead lb-day" }, "Azi ai ", chip("booking", "8 programări"), ", ", chip("finance", "2 facturi scadente", true), " și ", chip("hr", "o cerere de concediu", true), " de aprobat.")),
+      mob ? null : h(Chevrons, { cls: "lb-chev" })),
+    !empty && !mob ? sechead : null);
+  const other = h("section", { className: "lb-other" },
+    h("h2", { className: "display-m sec" }, "Alte aplicații Ventora"),
+    h("p", { className: "body lb-other__intro" }, "Nu le poți deschide acum. La fiecare scrie de ce și ce poți face."),
+    h("div", { className: "rows" }, OTHER.map(([a, s]) => RECO_FOR(a)
+      ? h(V.GrowthSlot, { key: a, label: "Recomandare" }, h(V.AppTile, { app: a, access: s, layout: "row", recommendation: RECO_FOR(a), onDetails: () => {}, onDismiss: () => {}, onRemindLater: () => {} }))
+      : h(V.AppTile, { key: a, app: a, access: s, layout: "row", grantedBy: "Bianca Petrașcu", onRequestAccess: () => {}, onWriteUs: () => {}, onSeeStatus: () => {} }))),
+    h("div", { style: { marginTop: "var(--space-4)" } }, h(V.Button, { variant: "quiet", icon: "layout-grid", iconEnd: "arrow-right" }, "Vezi toate aplicațiile Ventora")));
+  const body = empty
+    ? [h("div", { key: "e", className: "sheetlike lb-empty" }, h(V.EmptyState, { icon: "layout-grid", title: "Nu ai încă acces la nicio aplicație", description: "Bianca Petrașcu (proprietar) alege ce aplicații folosește fiecare rol. Putem trimite noi cererea ta.", actions: h(React.Fragment, null, h(V.Button, { variant: "primary", icon: "send" }, "Cere acces"), h(V.Button, { variant: "quiet" }, "Scrie-ne")) }), h("p", { className: "body-small muted center", style: { paddingBottom: "var(--space-6)" } }, "Între timp, alege-ți fotografia și limba din ", h("a", { className: "v-link", href: "#" }, "Contul tău"), "."))]
+    : [mob ? h("div", { key: "s" }, sechead) : null,
+       h("div", { key: "d", className: "lb-mine" }, h(V.AppDock, { apps, onOpen: openDock }), h(V.PortalPresence, { compact: mode !== "desktop", onManage: openPortal, previewHref: "#" })),
+       h(React.Fragment, { key: "o" }, other)];
+  return h("div", { className: "frame-rel lb " + mode },
+    h(V.AppShell, { height: "100%", contextBar: h(V.BrandZone, null, h(HubBar, null)) },
+      h("div", { className: "wrap lb-wrap " + mode }, band, body)),
+    run && h(V.AppLaunch, Object.assign({ key: run.app + (run.t || ""), contained: true, onDone: () => setTimeout(() => setRun(null), 500) }, run)));
 }
+
 function CommercialPrefs({ mode }) {
   return /* @__PURE__ */ React.createElement(V.SheetSection, { title: "Recomand\u0103ri Ventora", description: "Sugestii despre aplica\u021Bii \u0219i pachete \xEEn plus care se potrivesc cu ce faci deja." }, /* @__PURE__ */ React.createElement("div", { className: "d0", style: { gap: "var(--space-3)" } }, /* @__PURE__ */ React.createElement(V.Toggle, { label: "\xCEn aplica\u021Bie", description: "Le vezi \xEEn pagini \u0219i \xEEn notific\u0103ri, la sec\u021Biunea Recomand\u0103ri.", defaultChecked: true, labelPosition: mode === "mobile" ? "start" : "end" }), /* @__PURE__ */ React.createElement(V.Toggle, { label: "Pe e-mail", description: "Disponibil \xEEn cur\xE2nd", disabled: true, labelPosition: mode === "mobile" ? "start" : "end" }), /* @__PURE__ */ React.createElement(V.Notice, { tone: "neutral", icon: "info" }, "Mesajele despre limitele contului t\u0103u r\u0103m\xE2n active, pentru c\u0103 sunt informa\u021Bii despre cont, nu recomand\u0103ri.")));
 }
-mount(/* @__PURE__ */ React.createElement(Screens, { title: "Launcher \u2014 apas\u0103 pe o aplica\u021Bie ca s\u0103 vezi anima\u021Bia de deschidere", notes: ["Marketing e un slot comercial: doar pentru proprietar \u0219i admin, cel mult unul, cu \u201ENu m\u0103 intereseaz\u0103\u201D \u0219i \u201EAminte\u0219te-mi mai t\xE2rziu\u201D, sub plafoanele globale"], desktopH: 1180, tabletH: 1460, mobileH: 1300, render: (m) => /* @__PURE__ */ React.createElement(Launcher, { mode: m }) }));
+mount(/* @__PURE__ */ React.createElement(Screens, { title: "Launcher — treci cu mouse-ul peste o aplicație ca să vezi fișa ei; apasă ca s-o deschizi", notes: ["Marketing e un slot comercial: doar pentru proprietar și admin, cel mult unul, cu „Nu mă interesează” și „Amintește-mi mai târziu”, sub plafoanele globale", "Portal are cardul lui: pagina afacerii pentru clienți, nu o aplicație în care lucrezi"], desktopH: 1200, tabletH: 1560, mobileH: 1740, render: (m) => /* @__PURE__ */ React.createElement(Launcher, { mode: m }) }));
 </script>
 </body>
 </html>

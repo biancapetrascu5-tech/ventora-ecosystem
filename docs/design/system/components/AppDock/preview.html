@@ -1,0 +1,63 @@
+<!-- @dsCard group="Hub" height=2250 width=1200 -->
+<!doctype html>
+<html lang="ro">
+<head><meta charset="utf-8"><title>AppDock — Ventora</title>
+<style>
+html,body{margin:0;overflow-x:hidden}
+.d{display:flex;flex-direction:column;gap:var(--space-6);padding:var(--space-6);box-sizing:border-box;background:var(--canvas);color:var(--ink)}
+.lab{margin:0 0 var(--space-2);color:var(--ink-muted)}
+.stage{position:relative;padding:var(--space-10) var(--space-6) var(--space-12);border-radius:var(--radius-lg);background:var(--canvas)}
+.stage.band{background:linear-gradient(var(--brand-surface) 0 55%, var(--canvas) 55%)}
+.phone{width:358px;padding:var(--space-4);border:var(--border-width) solid var(--line-strong);border-radius:var(--radius-xl);background:var(--canvas)}
+.row{display:flex;flex-direction:column;gap:var(--space-6)}
+.note{margin:0;color:var(--ink-secondary)}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script>
+const V = window.Ventora;
+const h = React.createElement;
+const APPS = [
+  { app: "booking", description: "Programări, calendar și reamintiri", badge: 3, live: { text: "Următoarea: 09:30 · Ana Popescu" } },
+  { app: "crm", description: "Clienți, istoric și oportunități", live: { text: "4 clienți noi săptămâna asta" } },
+  { app: "hr", description: "Echipă, prezență și concedii", badge: 1, live: { text: "1 cerere de aprobat", attention: true } },
+  { app: "finance", description: "Facturi, scadențe și restanțe", badge: 2, live: { text: "2 facturi scadente · 2.480 lei", attention: true } },
+  { app: "projects", description: "Proiecte, sarcini și termene", live: { text: "3 termene săptămâna asta" } },
+  { app: "shifts", description: "Ture și înlocuiri", live: { text: "Azi lucrează 4 colegi" } },
+  { app: "documents", description: "Documente și șabloane", live: { text: "Contract Salon Aurora · ieri" } }
+];
+const DE = [
+  { app: "booking", name: "Terminbuchung", description: "Termine, Kalender und Erinnerungen an einem Ort verwalten", badge: 3, live: { text: "Nächster Termin: 09:30 · Ana Popescu" } },
+  { app: "crm", name: "Kundenbeziehungsmanagement", description: "Kunden, Verlauf und Verkaufschancen", live: { text: "4 neue Kunden diese Woche" } },
+  { app: "hr", description: "Team, Anwesenheit und Urlaub", badge: 1, live: { text: "1 Antrag wartet auf Freigabe", attention: true } },
+  { app: "finance", description: "Rechnungen, Fälligkeiten und Rückstände", live: { text: "2 fällige Rechnungen · 2.480 lei", attention: true } }
+];
+function Forced({ apps, hover, focus }) {
+  const ref = React.useRef(null);
+  React.useEffect(() => {
+    const it = ref.current.querySelectorAll(".v-dock__item")[hover];
+    if (it) it.classList.add("is-hover");
+    if (focus != null) ref.current.querySelectorAll(".v-dock__item .v-apptile")[focus].classList.add("is-focus");
+  }, []);
+  return h("div", { ref }, h(V.AppDock, { apps }));
+}
+function Theme({ th }) {
+  return h("div", { "data-theme": th, className: "d" },
+    h("p", { className: "heading" }, th === "light" ? "Light" : "Dark"),
+    h("div", null, h("p", { className: "caption lab" }, "Repaus, peste marginea benzii de brand · treci cu mouse-ul peste o aplicație"),
+      h("div", { className: "stage band" }, h(V.AppDock, { apps: APPS }))),
+    h("div", { className: "row" },
+      h("div", null, h("p", { className: "caption lab" }, "Hover sau focus de tastatură pe CRM: iconul se deschide în fișa aplicației"),
+        h("div", { className: "stage" }, h(Forced, { apps: APPS, hover: 1, focus: th === "dark" ? 1 : null }))),
+      h("div", null, h("p", { className: "caption lab" }, "Telefon: grilă de iconuri, fără fișă"),
+        h("div", { className: "phone" }, h(V.AppDock, { apps: APPS })))));
+}
+mount(h("div", null,
+  h(Theme, { th: "light" }), h(Theme, { th: "dark" }),
+  h("div", { className: "d", "data-theme": "light" },
+    h("p", { className: "caption lab" }, "Test cu etichete lungi în germană: numele lungi se taie cu „…”, descrierea se oprește la 2 rânduri, linia de azi la unul"),
+    h(V.LocaleProvider, { locale: "de" }, h("div", { className: "stage" }, h(Forced, { apps: DE, hover: 1 }))))));
+</script>
+</body>
+</html>
