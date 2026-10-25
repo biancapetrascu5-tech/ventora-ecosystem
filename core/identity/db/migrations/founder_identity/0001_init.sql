@@ -32,7 +32,8 @@ CREATE TABLE IF NOT EXISTS founder_identity.users (
   updated_at            TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   revoked_at            TIMESTAMPTZ,
   created_by_founder_id TEXT,
-  revoked_by_founder_id TEXT
+  revoked_by_founder_id TEXT,
+  two_factor_enabled    BOOLEAN
 );
 
 CREATE TABLE IF NOT EXISTS founder_identity.sessions (
@@ -72,10 +73,13 @@ CREATE TABLE IF NOT EXISTS founder_identity.verifications (
 );
 
 CREATE TABLE IF NOT EXISTS founder_identity.two_factors (
-  id          TEXT PRIMARY KEY,
-  secret      TEXT NOT NULL,
-  backup_codes TEXT NOT NULL,
-  user_id     TEXT NOT NULL REFERENCES founder_identity.users(id) ON DELETE CASCADE
+  id                        TEXT        PRIMARY KEY,
+  secret                    TEXT        NOT NULL,
+  backup_codes              TEXT        NOT NULL,
+  user_id                   TEXT        NOT NULL REFERENCES founder_identity.users(id) ON DELETE CASCADE,
+  verified                  BOOLEAN     DEFAULT false,
+  failed_verification_count INTEGER     DEFAULT 0,
+  locked_until              TIMESTAMPTZ
 );
 
 -- Grants

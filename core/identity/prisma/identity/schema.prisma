@@ -18,6 +18,8 @@ model User {
   createdAt DateTime @map("created_at")
   updatedAt DateTime @map("updated_at")
 
+  twoFactorEnabled Boolean? @map("two_factor_enabled")
+
   sessions   Session[]
   accounts   Account[]
   twoFactors TwoFactor[]
@@ -74,11 +76,14 @@ model Verification {
 }
 
 model TwoFactor {
-  id          String @id
-  secret      String
-  backupCodes String @map("backup_codes")
-  userId      String @map("user_id")
-  user        User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id                   String    @id
+  secret               String
+  backupCodes          String    @map("backup_codes")
+  userId               String    @map("user_id")
+  user                 User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  verified             Boolean?  @default(false)
+  failedVerificationCount Int?   @default(0) @map("failed_verification_count")
+  lockedUntil          DateTime? @map("locked_until")
 
   @@map("two_factors")
   @@schema("identity")

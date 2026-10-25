@@ -22,13 +22,14 @@ GRANT USAGE ON SCHEMA identity TO identity_rw;
 
 -- Tables
 CREATE TABLE IF NOT EXISTS identity.users (
-  id                TEXT        PRIMARY KEY,
-  name              TEXT        NOT NULL,
-  email             TEXT        NOT NULL UNIQUE,
-  email_verified    BOOLEAN     NOT NULL DEFAULT false,
-  image             TEXT,
-  created_at        TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  updated_at        TIMESTAMPTZ NOT NULL DEFAULT NOW()
+  id                   TEXT        PRIMARY KEY,
+  name                 TEXT        NOT NULL,
+  email                TEXT        NOT NULL UNIQUE,
+  email_verified       BOOLEAN     NOT NULL DEFAULT false,
+  image                TEXT,
+  created_at           TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at           TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  two_factor_enabled   BOOLEAN
 );
 
 CREATE TABLE IF NOT EXISTS identity.sessions (
@@ -68,10 +69,13 @@ CREATE TABLE IF NOT EXISTS identity.verifications (
 );
 
 CREATE TABLE IF NOT EXISTS identity.two_factors (
-  id          TEXT PRIMARY KEY,
-  secret      TEXT NOT NULL,
-  backup_codes TEXT NOT NULL,
-  user_id     TEXT NOT NULL REFERENCES identity.users(id) ON DELETE CASCADE
+  id                        TEXT        PRIMARY KEY,
+  secret                    TEXT        NOT NULL,
+  backup_codes              TEXT        NOT NULL,
+  user_id                   TEXT        NOT NULL REFERENCES identity.users(id) ON DELETE CASCADE,
+  verified                  BOOLEAN     DEFAULT false,
+  failed_verification_count INTEGER     DEFAULT 0,
+  locked_until              TIMESTAMPTZ
 );
 
 CREATE TABLE IF NOT EXISTS identity.rate_limits (
