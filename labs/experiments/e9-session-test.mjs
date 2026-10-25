@@ -4,9 +4,42 @@
  * Rulare: node experiments/e9-session-test.mjs
  * Necesita BASE_URL in labs/.env.local (ex: https://ventora-lab-e4.vercel.app)
  */
+import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+
+function base32Decode(input) {
+  const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
+  let bits = 0,
+    value = 0;
+  const bytes = [];
+  for (const ch of input.replace(/=/g, '').toUpperCase()) {
+    const idx = alphabet.indexOf(ch);
+    if (idx < 0) continue;
+    value = (value << 5) | idx;
+    bits += 5;
+    if (bits >= 8) {
+      bytes.push((value >>> (bits - 8)) & 0xff);
+      bits -= 8;
+    }
+  }
+  return Buffer.from(bytes);
+}
+
+function computeTotp(uri) {
+  const secret = new URL(uri).searchParams.get('secret') ?? '';
+  const key = base32Decode(secret);
+  const counter = Math.floor(Date.now() / 30000);
+  const msg = Buffer.alloc(8);
+  msg.writeBigInt64BE(BigInt(counter));
+  const mac = crypto.createHmac('sha1', key).update(msg).digest();
+  const off = mac[19] & 0x0f;
+  const code =
+    (((mac[off] & 0x7f) << 24) | (mac[off + 1] << 16) | (mac[off + 2] << 8) | mac[off + 3]) %
+    1_000_000;
+  return String(code).padStart(6, '0');
+}
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const labsDir = path.resolve(__dirname, '..');
@@ -257,12 +290,27 @@ assert(
   `codes=${backupCodes}`,
 );
 
+// Verify TOTP to activate 2FA (sets user.twoFactorEnabled = true).
+// Bearer plugin returns set-auth-token with the new session since
+// verify-totp replaces the session on first-time activation.
+const verifySetup = await post(
+  `${AUTH}/two-factor/verify-totp`,
+  { code: computeTotp(totpUri) },
+  t4Token,
+);
+assert(
+  'T4.3b verify-totp activa 2FA',
+  verifySetup.status === 200,
+  `status=${verifySetup.status} body=${JSON.stringify(verifySetup.json)}`,
+);
+const t4ActiveToken = verifySetup.headers.get('set-auth-token') ?? t4Token;
+
 // Use first backup code
 if (backupCodes?.length) {
   const useBackup = await post(
     `${AUTH}/two-factor/verify-backup-code`,
     { code: backupCodes[0] },
-    t4Token,
+    t4ActiveToken,
   );
   assert(
     'T4.4 backup code valid la prima folosire',
@@ -274,7 +322,7 @@ if (backupCodes?.length) {
   const useBackupAgain = await post(
     `${AUTH}/two-factor/verify-backup-code`,
     { code: backupCodes[0] },
-    t4Token,
+    t4ActiveToken,
   );
   assert(
     'T4.5 backup code invalid la refolosire (single-use)',
@@ -283,8 +331,12 @@ if (backupCodes?.length) {
   );
 }
 
-// Regenerate backup codes
-const regen = await post(`${AUTH}/two-factor/generate-backup-codes`, { password: t1Pass }, t4Token);
+// Regenerate backup codes (requires twoFactorEnabled = true, now set)
+const regen = await post(
+  `${AUTH}/two-factor/generate-backup-codes`,
+  { password: t1Pass },
+  t4ActiveToken,
+);
 assert('T4.6 regenerare backup codes 200', regen.status === 200, `status=${regen.status}`);
 const newCodes = regen.json?.backupCodes;
 assert(
