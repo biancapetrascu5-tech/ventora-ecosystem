@@ -1,0 +1,11 @@
+{
+  "catalog": {
+    "item": {
+      "label": "Articol catalog",
+      "labelPlural": "Articole catalog",
+      "empty": "Niciun articol în catalog",
+      "created": "Articol adăugat în catalog",
+      "archived": "Articol arhivat"
+    }
+  }
+}

@@ -1,0 +1,28 @@
+-- Template migrație Prisma: tabela principală + outbox_events
+-- Validat prin E10 (2026-10-25). Înlocuiește <TABLE> și adaugă câmpuri specifice.
+--
+-- Convenție: camelCase pentru numele coloanelor (consistenți cu lab_booking, lab_crm)
+-- RLS se adaugă în scriptul de migrate-deploy, nu în migration.sql
+
+-- CreateTable
+CREATE TABLE "<TABLE>" (
+    "id" TEXT NOT NULL,
+    "organizationId" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
+    -- ... câmpuri specifice modulului
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "<TABLE>_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "outbox_events" (
+    "id" TEXT NOT NULL,
+    "eventType" TEXT NOT NULL,
+    "payload" JSONB NOT NULL,
+    "processedAt" TIMESTAMPTZ,
+    "attempts" INTEGER NOT NULL DEFAULT 0,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "outbox_events_pkey" PRIMARY KEY ("id")
+);

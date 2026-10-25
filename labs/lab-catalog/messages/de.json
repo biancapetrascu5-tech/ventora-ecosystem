@@ -1,0 +1,11 @@
+{
+  "catalog": {
+    "item": {
+      "label": "Katalogartikel",
+      "labelPlural": "Katalogartikel",
+      "empty": "Keine Artikel im Katalog",
+      "created": "Artikel zum Katalog hinzugefügt",
+      "archived": "Artikel archiviert"
+    }
+  }
+}

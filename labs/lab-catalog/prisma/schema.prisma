@@ -1,0 +1,30 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../../lab-catalog/generated/client"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model CatalogItem {
+  id             String   @id @default(cuid())
+  organizationId String
+  name           String
+  description    String?
+  active         Boolean  @default(true)
+  createdAt      DateTime @default(now())
+
+  @@map("catalog_items")
+}
+
+model OutboxEvent {
+  id          String    @id
+  eventType   String
+  payload     Json
+  processedAt DateTime?
+  attempts    Int       @default(0)
+  createdAt   DateTime  @default(now())
+
+  @@map("outbox_events")
+}

@@ -6,7 +6,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  schemas  = ["lab_core", "lab_booking", "lab_crm"]
+  schemas  = ["lab_core", "lab_booking", "lab_crm", "lab_catalog"]
 }
 
 // ─── lab_core ─────────────────────────────────────────────────────────────────
@@ -133,4 +133,30 @@ model Contact {
 
   @@map("contacts")
   @@schema("lab_crm")
+}
+
+// ─── lab_catalog ──────────────────────────────────────────────────────────────
+
+model CatalogItem {
+  id             String   @id @default(cuid())
+  organizationId String
+  name           String
+  description    String?
+  active         Boolean  @default(true)
+  createdAt      DateTime @default(now())
+
+  @@map("catalog_items")
+  @@schema("lab_catalog")
+}
+
+model CatalogOutboxEvent {
+  id          String    @id
+  eventType   String
+  payload     Json
+  processedAt DateTime?
+  attempts    Int       @default(0)
+  createdAt   DateTime  @default(now())
+
+  @@map("outbox_events")
+  @@schema("lab_catalog")
 }
