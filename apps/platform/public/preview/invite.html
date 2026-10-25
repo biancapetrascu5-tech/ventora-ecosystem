@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="ro" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HubInvite — Ventora (design aprobat)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300..700;1,9..40,300..700&family=Syne:wght@400..800&display=swap">
+<link rel="stylesheet" href="/preview/tokens.css">
+<link rel="stylesheet" href="/preview/bundle.css">
+<style>
+html,body{min-height:100%;background:var(--canvas);color:var(--ink)}
+.auth{min-height:100vh;display:flex;flex-direction:row;background:var(--canvas);color:var(--ink)}
+.sb-brand{position:relative;flex:0 0 46%;display:flex;flex-direction:column;gap:var(--space-8);padding:var(--space-6) var(--space-12) var(--space-8);overflow:hidden;box-sizing:border-box}
+.sb-brand__top{display:flex;justify-content:space-between;align-items:center}
+.sb-statement{margin:auto 0 0;position:relative;z-index:1;color:var(--ink)}
+.sb-chev{position:absolute;right:-56px;top:96px;width:340px;height:460px}
+.b-chev{fill:none;stroke:var(--line-strong);stroke-width:1.5}
+.sb-foot{margin:0;color:var(--ink-muted)}
+.sb-formside{flex:1;display:flex;flex-direction:column;min-width:0;background:var(--sheet)}
+.auth-top{display:flex;justify-content:flex-end;align-items:center;padding:var(--space-4) var(--space-6)}
+.auth-main{flex:1;display:flex;align-items:flex-start;justify-content:center;padding:var(--space-8) var(--space-4);overflow-y:auto}
+.auth-card{width:460px;max-width:100%;display:flex;flex-direction:column;gap:var(--space-4);box-sizing:border-box}
+.inv-head{display:flex;gap:var(--space-3);align-items:center}
+.inv-mark{width:var(--space-12);height:var(--space-12);border-radius:var(--radius-md);background:var(--neutral-soft);display:inline-flex;align-items:center;justify-content:center;font-weight:700;color:var(--ink);flex:none;box-shadow:inset 0 0 0 var(--border-width) var(--line-strong);font-size:var(--type-heading-size)}
+.inv-role{display:flex;flex-direction:column;gap:var(--space-2);padding:var(--space-3) var(--space-4);background:var(--sunken);border-radius:var(--radius-sm)}
+.inv-app{display:inline-flex;gap:var(--space-1);align-items:center;color:var(--ink-secondary);margin-right:var(--space-2)}
+.inv-email{display:flex;flex-direction:column;gap:2px}
+.reqs{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:var(--space-1)}
+.req{display:flex;gap:var(--space-2);align-items:center;color:var(--ink-muted)}.req.ok{color:var(--done-ink)}
+.display-xl{font-family:var(--type-display-xl-family);font-size:var(--type-display-xl-size);line-height:var(--type-display-xl-line);font-weight:var(--type-display-xl-weight);letter-spacing:-0.02em}
+.display-m{font-family:var(--type-display-m-family);font-size:var(--type-display-m-size);line-height:var(--type-display-m-line);font-weight:var(--type-display-m-weight)}
+.body{font-family:var(--type-body-family);font-size:var(--type-body-size);line-height:var(--type-body-line);font-weight:var(--type-body-weight)}
+.body-strong{font-family:var(--type-body-strong-family);font-size:var(--type-body-strong-size);font-weight:var(--type-body-strong-weight)}
+.body-small{font-family:var(--type-body-small-family);font-size:var(--type-body-small-size);line-height:var(--type-body-small-line);font-weight:var(--type-body-small-weight)}
+.caption{font-family:var(--type-caption-family);font-size:var(--type-caption-size);line-height:var(--type-caption-line);font-weight:var(--type-caption-weight)}
+.muted{color:var(--ink-muted)}.center{text-align:center}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="/preview/bundle.js"></script>
+<script>
+const V = window.Ventora;
+const { useState } = React;
+const mount = (el) => ReactDOM.createRoot(document.getElementById("root")).render(
+  React.createElement(V.LocaleProvider, { locale: "ro" }, el)
+);
+function Chevrons() {
+  return React.createElement("svg", { className: "b-chev sb-chev", viewBox: "0 0 176 240", "aria-hidden": true },
+    [40, 72, 104].map((y) => React.createElement("polyline", { key: y, points: `32,${y} 88,${y + 80} 144,${y}` })),
+    React.createElement("polyline", { points: "48,168 88,224 128,168" }));
+}
+function Req({ ok, children }) {
+  return React.createElement("li", { className: ok ? "req ok" : "req" },
+    React.createElement(V.Icon, { name: ok ? "circle-check" : "circle", size: 16 }),
+    React.createElement("span", { className: "body-small" }, children));
+}
+function Invite() {
+  const card = React.createElement("div", { className: "auth-card" },
+    React.createElement("div", { className: "inv-head" },
+      React.createElement("span", { className: "inv-mark" }, "SA"),
+      React.createElement("div", null,
+        React.createElement("p", { className: "caption muted" }, "Invitație de la Bianca Petrașcu"),
+        React.createElement("h1", { className: "display-m" }, "Intră în echipa Salon Aurora"))),
+    React.createElement("div", { className: "inv-role" },
+      React.createElement("p", { className: "body" }, "Rolul tău: ", React.createElement("strong", { className: "body-strong" }, "Recepție"), ". Vei avea acces la:"),
+      React.createElement("div", { style: { display: "flex", gap: "var(--space-2)", flexWrap: "wrap" } },
+        ["booking", "crm", "shifts"].map(a => React.createElement("span", { key: a, className: "inv-app" },
+          React.createElement(V.AppIcon, { app: a, size: 24 }),
+          React.createElement("span", { className: "body-small" }, V.APPS[a].name))))),
+    React.createElement(V.FormField, { label: "Nume complet", required: true },
+      React.createElement(V.Input, { defaultValue: "Ioana Pavel" })),
+    React.createElement("div", { className: "inv-email" },
+      React.createElement("span", { className: "caption muted" }, "E-mail"),
+      React.createElement("span", { className: "body-strong" }, "ioana.pavel@salonaurora.ro"),
+      React.createElement("span", { className: "caption muted" }, "Pe această adresă ai primit invitația.")),
+    React.createElement(V.FormField, { label: "Parolă nouă", required: true },
+      React.createElement(V.Input, { type: "password", autoComplete: "new-password", defaultValue: "aurora2026" })),
+    React.createElement("ul", { className: "reqs" },
+      React.createElement(Req, { ok: true }, "Cel puțin 10 caractere"),
+      React.createElement(Req, { ok: true }, "Cel puțin o cifră"),
+      React.createElement(Req, null, "Cel puțin o literă mare")),
+    React.createElement(V.Checkbox, { label: "Accept Termenii și Politica de confidențialitate", description: "Le poți citi oricând din Setări.", defaultChecked: true }),
+    React.createElement(V.Button, { variant: "primary", size: "lg", block: true }, "Acceptă invitația"),
+    React.createElement("p", { className: "caption muted center" }, "Invitația e valabilă până pe 31 octombrie 2026."));
+  return React.createElement("div", { className: "auth" },
+    React.createElement(V.BrandZone, { as: "aside", className: "sb-brand" },
+      React.createElement("div", { className: "sb-brand__top" }, React.createElement(V.Logo, { size: 40 })),
+      React.createElement("p", { className: "display-xl sb-statement" }, "Afacerea ta.", React.createElement("br"), "Într-un singur loc."),
+      React.createElement(Chevrons),
+      React.createElement("p", { className: "caption sb-foot" }, "© 2026 Ventora Systems")),
+    React.createElement("div", { className: "sb-formside" },
+      React.createElement("header", { className: "auth-top" },
+        React.createElement(V.LanguageSwitcher, { value: "ro", onChange: () => {} })),
+      React.createElement("main", { className: "auth-main" }, card)));
+}
+mount(React.createElement(Invite, null));
+</script>
+</body>
+</html>

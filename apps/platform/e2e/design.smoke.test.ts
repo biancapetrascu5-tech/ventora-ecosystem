@@ -1,34 +1,29 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('/design smoke', () => {
-  test('opens without console errors', async ({ page }) => {
+  // NOTE: page.goto() in Playwright does not fail on HTTP 5xx — it follows the response and
+  // renders whatever the server returns. Without an explicit status check the test can pass even
+  // when Next.js returns 500 and renders an error overlay (which still has an <h1> element).
+  test('returns HTTP 200 and loads without console errors', async ({ page }) => {
     const consoleErrors: string[] = [];
 
     page.on('console', (msg) => {
-      if (msg.type() === 'error') {
-        consoleErrors.push(msg.text());
-      }
+      if (msg.type() === 'error') consoleErrors.push(msg.text());
     });
+    page.on('pageerror', (err) => consoleErrors.push(err.message));
 
-    page.on('pageerror', (err) => {
-      consoleErrors.push(err.message);
-    });
+    const response = await page.goto('/design');
 
-    await page.goto('/design');
+    // Must return HTTP 200 — catches Next.js 500 errors that otherwise pass the DOM checks
+    expect(response?.status(), `HTTP status for /design`).toBe(200);
 
     // Page must load (not 404, not error boundary)
     await expect(page).not.toHaveTitle(/Error/i);
     const h1 = page.locator('h1, [class*="badge"]').first();
     await expect(h1).toBeVisible();
 
-    // No RSC serialization errors or React errors in console
-    const rscErrors = consoleErrors.filter(
-      (e) =>
-        e.includes('Only plain objects') ||
-        e.includes('cannot be passed to Client Components') ||
-        e.includes('Unhandled Runtime Error'),
-    );
-    expect(rscErrors, `Console errors: ${JSON.stringify(rscErrors)}`).toHaveLength(0);
+    // No console errors at all (RSC serialisation, React, or runtime)
+    expect(consoleErrors, `Console errors: ${JSON.stringify(consoleErrors)}`).toHaveLength(0);
   });
 
   test('renders Button section', async ({ page }) => {
@@ -65,7 +60,7 @@ test.describe('/design smoke', () => {
 });
 
 test.describe('/design/demo smoke', () => {
-  test('opens without console errors', async ({ page }) => {
+  test('returns HTTP 200 and loads without console errors', async ({ page }) => {
     const consoleErrors: string[] = [];
 
     page.on('console', (msg) => {
@@ -73,19 +68,17 @@ test.describe('/design/demo smoke', () => {
     });
     page.on('pageerror', (err) => consoleErrors.push(err.message));
 
-    await page.goto('/design/demo');
+    const response = await page.goto('/design/demo');
+
+    // Must return HTTP 200
+    expect(response?.status(), `HTTP status for /design/demo`).toBe(200);
 
     await expect(page).not.toHaveTitle(/Error/i);
     const heading = page.getByRole('heading', { name: /HubSignIn|HubLauncher|Demo/i }).first();
     await expect(heading).toBeVisible();
 
-    const rscErrors = consoleErrors.filter(
-      (e) =>
-        e.includes('Only plain objects') ||
-        e.includes('cannot be passed to Client Components') ||
-        e.includes('Unhandled Runtime Error'),
-    );
-    expect(rscErrors, `Console errors: ${JSON.stringify(rscErrors)}`).toHaveLength(0);
+    // No console errors at all
+    expect(consoleErrors, `Console errors: ${JSON.stringify(consoleErrors)}`).toHaveLength(0);
   });
 
   test('renders HubSignIn — titlu aprobat "Bine ai revenit"', async ({ page }) => {
