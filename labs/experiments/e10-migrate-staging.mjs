@@ -132,6 +132,17 @@ await client.query(`
 `);
 console.log('✓ GRANT lab_catalog_rw TO lab_runtime');
 
+// 6b. Grant lab_catalog_rw și utilizatorului curent (necesar pentru teste T2 cu SET LOCAL ROLE)
+// NOINHERIT → nu moștenește automat permisiunile; SET LOCAL ROLE tot obligatoriu
+await client.query(`
+  DO $$
+  BEGIN
+    EXECUTE format('GRANT lab_catalog_rw TO %I', current_user);
+  END
+  $$
+`);
+console.log('✓ GRANT lab_catalog_rw TO current_user (user migrare)');
+
 // 7. RLS pe catalog_items (E5/E6 pattern: app.organization_id cu missing_ok=true)
 await client.query(`
   ALTER TABLE lab_catalog.catalog_items ENABLE ROW LEVEL SECURITY

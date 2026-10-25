@@ -3,7 +3,10 @@
  *
  * Rulare: node labs/experiments/e10-catalog-test.mjs
  * Necesită: BASE_URL setat sau implicit https://ventora-lab-e4.vercel.app
- *           DATABASE_URL_SUPERUSER în labs/.env.local (pentru T2 direct DB)
+ *           DATABASE_URL_SUPERUSER în labs/.env.local (T1.5 cleanup, T1.6 check, T2.5 NOLOGIN)
+ *           DATABASE_URL_RUNTIME în labs/.env.local (T2.1-T2.4 SET LOCAL ROLE)
+ * Notă T2: lab_catalog_rw e granted DOAR lui lab_runtime, nu superuserului Supabase.
+ *          SET LOCAL ROLE lab_catalog_rw necesită conexiune ca lab_runtime (DATABASE_URL_RUNTIME).
  */
 import fs from 'node:fs';
 import path from 'node:path';
@@ -34,6 +37,7 @@ function parseEnv(content) {
 const allEnv = parseEnv(fs.readFileSync(envFile, 'utf8'));
 const BASE = (allEnv['BASE_URL'] || 'https://ventora-lab-e4.vercel.app').replace(/\/$/, '');
 const SUPERUSER_URL = allEnv['DATABASE_URL_SUPERUSER'];
+const RUNTIME_URL = allEnv['DATABASE_URL_RUNTIME'];
 
 let passed = 0;
 let failed = 0;
@@ -170,6 +174,7 @@ console.log(`  ⏱ T1 total: ${t1Ms}ms\n`);
 console.log('T2 — RLS direct (baza de date)');
 
 const t2Start = Date.now();
+// Conexiune directă ca utilizatorul de migrare (are lab_catalog_rw granted prin migrate script)
 const poolDirect = new pg.Client({ connectionString: SUPERUSER_URL });
 await poolDirect.connect();
 
