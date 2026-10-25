@@ -54,7 +54,7 @@ function assert(name, cond, detail = '') {
 }
 
 async function post(url, body, token) {
-  const headers = { 'Content-Type': 'application/json' };
+  const headers = { 'Content-Type': 'application/json', Origin: BASE };
   if (token) headers['Authorization'] = `Bearer ${token}`;
   const r = await fetch(url, { method: 'POST', headers, body: JSON.stringify(body) });
   const text = await r.text();
@@ -127,48 +127,55 @@ console.log(`  INFO  password provider: ${JSON.stringify(t1Account?.session?.use
 // ────────────────────────────────────────────────────
 console.log('\nT2 — Retrogradare rol (admin → member), efect imediat');
 
+// Owner creates a fresh org (becomes owner automatically)
+const t2OwnerEmail = randomEmail();
+const t2Owner = await signUp(t2OwnerEmail, t1Pass, 'T2 Owner');
+const t2OwnerToken = t2Owner.token;
+
+const t2OrgResp = await post(
+  SETUP,
+  { action: 'create-org', name: 'T2 Test Org', slug: `t2-${Date.now()}` },
+  t2OwnerToken,
+);
+const t2OrgId = t2OrgResp.json?.id;
+assert('T2.0 create-org', t2OrgResp.status === 200 && !!t2OrgId, `status=${t2OrgResp.status}`);
+
 const t2Email = randomEmail();
 const t2SignUp = await signUp(t2Email, t1Pass, 'T2 User');
-const t2SignIn = await signIn(t2Email, t1Pass);
-const t2Token = t2SignIn.token;
+const t2Token = t2SignUp.token;
 
-// Add as admin to e9-org-alpha
+// Add T2 user as admin to the new org
 const addAdmin = await post(SETUP, {
   action: 'add-member',
-  organizationId: 'e9-org-alpha',
+  organizationId: t2OrgId,
   userId: t2SignUp.json?.user?.id,
   role: 'admin',
 });
 assert('T2.1 add-member admin', addAdmin.status === 200, `status=${addAdmin.status}`);
 
-// Activate org in t2 session
-const setOrg = await post(
-  SETUP,
-  { action: 'set-active-org', organizationId: 'e9-org-alpha' },
-  t2Token,
-);
+// T2 user sets active org
+const setOrg = await post(SETUP, { action: 'set-active-org', organizationId: t2OrgId }, t2Token);
 assert(
   'T2.2 set-active-org',
   setOrg.status === 200,
   `status=${setOrg.status} body=${JSON.stringify(setOrg.json)}`,
 );
 
-// Read session — should have activeOrganizationId
+// Session should have activeOrganizationId
 const t2SessionBefore = await get(SESSION_ME, t2Token);
 const activeBefore = t2SessionBefore.json?.session?.session?.activeOrganizationId;
-assert('T2.3 activeOrganizationId set', activeBefore === 'e9-org-alpha', `got=${activeBefore}`);
+assert('T2.3 activeOrganizationId set', activeBefore === t2OrgId, `got=${activeBefore}`);
 
-// Downgrade to member
-const memberId = addAdmin.json?.member?.id;
-const downgrade = await post(SETUP, {
-  action: 'update-member-role',
-  organizationId: 'e9-org-alpha',
-  memberId,
-  role: 'member',
-});
+// Owner downgrades T2 user from admin to member (only owner can demote admins)
+const memberId = addAdmin.json?.member?.id ?? addAdmin.json?.id;
+const downgrade = await post(
+  SETUP,
+  { action: 'update-member-role', organizationId: t2OrgId, memberId, role: 'member' },
+  t2OwnerToken,
+);
 assert('T2.4 downgrade la member', downgrade.status === 200, `status=${downgrade.status}`);
 
-// Same token — check session (Better Auth reads from DB every time with cookieCache disabled)
+// Same token — session still accessible (cookieCache=false: DB checked each time)
 const t2SessionAfter = await get(SESSION_ME, t2Token);
 assert('T2.5 session accesibila dupa retrogradare', t2SessionAfter.status === 200);
 

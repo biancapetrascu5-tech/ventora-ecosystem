@@ -30,6 +30,7 @@ export const auth = betterAuth({
   basePath: '/api/e9/auth',
   database: prismaAdapter(prisma, { provider: 'postgresql' }),
   emailAndPassword: { enabled: true },
+  rateLimit: { enabled: false },
   session: {
     cookieCache: { enabled: false },
   },

@@ -18,6 +18,17 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(result);
   }
 
+  if (action === 'create-org') {
+    const result = await auth.api.createOrganization({
+      headers: req.headers,
+      body: {
+        name: body.name as string,
+        slug: body.slug as string,
+      },
+    });
+    return NextResponse.json(result);
+  }
+
   if (action === 'add-member') {
     const result = await auth.api.addMember({
       body: {
