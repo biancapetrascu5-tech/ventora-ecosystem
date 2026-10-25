@@ -1,0 +1,33 @@
+// Manifest modul <MODULE> (ARCHITECTURE §8.4)
+// Validat prin E10 (2026-10-25).
+//
+// placements și growthSignals sunt GOALE pentru un modul nou.
+// Growth Engine nu este implementat; aplicațiile declară sloturi abia când
+// integrarea e proiectată (D-GRW-2). Nu adăuga placements fictive.
+
+export const manifest = {
+  id: '<module-id>',
+  permissions: [
+    '<module>.resource.read',
+    '<module>.resource.create',
+    '<module>.resource.update',
+    '<module>.resource.archive',
+  ],
+  features: ['<module>.resources'],
+  quotas: [
+    {
+      key: '<module>.resources',
+      kind: 'stock' as const,
+      unit: 'item',
+    },
+  ],
+  events: {
+    emits: ['<module>.resource.created.v1'],
+    consumes: [
+      // '<other-module>.event.v1',
+    ],
+  },
+  // GOALE pentru modul nou — Growth Engine completează mai târziu
+  placements: [],
+  growthSignals: [],
+} as const;

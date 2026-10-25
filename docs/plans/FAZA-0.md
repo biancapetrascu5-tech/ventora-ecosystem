@@ -1,8 +1,38 @@
 # FAZA 0 — Fundația repository-ului și experimentele tehnice
 
-**Status:** PROPUS — așteaptă aprobarea explicită. Nimic nu se implementează înainte de aprobare.
-**Referințe:** `ARCHITECTURE.md` v0.3.0 (§13, §15.1, §17.3, §17.14), `docs/checklists/`
+**Status:** ✅ ÎNCHIS — 25 octombrie 2026
+**Referințe:** `ARCHITECTURE.md` v0.4.0 (§6.2, §7.1, §12.3, §15.1, §17.17), `docs/experiments/`, `docs/plans/FAZA-2.md`
 **Scop:** un repository gol, dar complet echipat (structură, CI, garduri automate), plus răspunsuri măsurate la întrebările tehnice deschise, înainte de a scrie vreo funcționalitate.
+
+---
+
+## Raport de închidere — 25.10.2026
+
+### Criterii de ieșire
+
+| # | Criteriu | Rezultat | Referință |
+|---|---|---|---|
+| 1 | Repository, CI și garduri automate — fiecare regulă dovedită prin încălcarea ei | ✅ | `scripts/violations/`, `.github/workflows/ci.yml`, commit `87f452a` |
+| 2 | Toate cele 10 experimente au raport | ✅ | `docs/experiments/E1.md`–`E10.md` |
+| 3 | D-DB-1 și D-SEC-1 aprobate de fondatori | ✅ | `docs/ARCHITECTURE.md` §6.2, §17.17; commit `5cd80a0` |
+| 4 | `packages/db-kit` conține garda de tenant, contextul RLS, tranzacțiile și outbox-ul, cu teste care trec | ✅ | `packages/db-kit/src/` — varianta C, `guardTenant`, `guardBulkOp`, `withTenantContext`, `writeOutboxEvent`, `processOutboxEvents`; `core/quota/` — rezervare, confirmare, eliberare, reconciliere |
+| 5 | T1 (cross-tenant) și T2 (RLS direct) rulează în CI pe Postgres real și trec | ✅ | `packages/db-kit/src/__tests__/rls.integration.test.ts` — 5 cazuri T1 + 5 cazuri T2; job CI „Integration tests (T1 + T2)" cu `postgres:17` |
+| 6 | Documentul de adăugare a unui modul nou validat de E10 | ✅ | `docs/guides/HOW-TO-ADD-MODULE.md`, `docs/experiments/E10.md` |
+| 7 | Viteza reală de lucru măsurată, ca bază pentru estimarea fazelor | ✅ | `docs/experiments/E10.md` |
+
+### Decizii confirmate
+
+| Decizie | Conținut | Locație |
+|---|---|---|
+| D-DB-1 | Varianta C: rol de conectare `NOINHERIT` + `SET LOCAL ROLE` pe tranzacție | `ARCHITECTURE.md` §6.2 |
+| D-SEC-1 | RLS din prima zi — `USING` + `WITH CHECK` pe `current_setting('app.organization_id', true)` | `ARCHITECTURE.md` §12.3 |
+| D-SEC-3 | `guardBulkOp` obligatoriu înainte de `updateMany` / `deleteMany` | `ARCHITECTURE.md` §12.3 |
+| D-UI-2 | React Aria Components pentru accesibilitate | `ARCHITECTURE.md` §17.17 |
+| D-AUTH-scrypt | Parole cu scrypt (implicit Better Auth, fără pachete compilate) | `ARCHITECTURE.md` §7.1 |
+
+### Tag git
+
+`faza-0` pe commit `292d82d` (ultimul commit al fazei, CI verde).
 
 ---
 

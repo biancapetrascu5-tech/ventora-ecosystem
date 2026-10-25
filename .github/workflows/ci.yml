@@ -68,10 +68,38 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm test
 
+  integration-tests:
+    name: Integration tests (T1 + T2)
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_PASSWORD: test
+          POSTGRES_DB: ventora_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter @ventora/db-kit test:integration
+        env:
+          DATABASE_URL_TEST: postgresql://postgres:test@localhost:5432/ventora_test
+
   build:
     name: Build
     runs-on: ubuntu-latest
-    needs: [quality, test]
+    needs: [quality, test, integration-tests]
     steps:
       - uses: actions/checkout@v7
       - uses: pnpm/action-setup@v6

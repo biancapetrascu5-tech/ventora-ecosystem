@@ -1,7 +1,0 @@
-{
-  "common": {
-    "ok": "OK",
-    "items": "{count, plural, one {# Element} other {# Elemente}}",
-    "probe": "Prüfschlüssel für den Wächter"
-  }
-}

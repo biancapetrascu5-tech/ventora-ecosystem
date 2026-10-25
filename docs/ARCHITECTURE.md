@@ -1,6 +1,6 @@
 # VENTORA ECOSYSTEM — ARHITECTURĂ TEHNICĂ
 
-**Versiune:** 0.3.2
+**Versiune:** 0.4.0
 **Data:** 24 octombrie 2026
 **Stadiu:** Propunere. Nimic nu este implementat. Faza 0 nu începe fără aprobarea explicită a acestei versiuni.
 
@@ -22,6 +22,7 @@
 | 0.3.0 | 24.10.2026 | Designul unificat aprobat (Claude Design, etapele 1–5, 52 de decizii) și exportat în `docs/design/system/`. Integrate deciziile din fișele de review care ating arhitectura: 2FA obligatoriu pentru Owner (P5), invitațiile expirate (P6), excepții cu termen (P17), anunțul la schimbarea versiunii de plan (P19), regulile Growth (P20–P25), termenul „plan” doar în Founder (D1). Detalii: §17.14. |
 | 0.3.1 | 24.10.2026 | Aprobat condiționat: SMS de pe numărul propriu al afacerii (D-SMS-1…9). Serviciu Core nou `messaging` cu adaptoarele `SMS_PROVIDER` și `ANDROID_SIM`, credențiale de dispozitiv, stări cu `UNKNOWN` separat de `FAILED`, experimentul E-SMS-1 după Faza 0. Booking: 59 → 66 de funcționalități. Specificația: `SMS_NUMAR_PROPRIU.md`. Detalii: §17.15. |
 | 0.3.2 | 24.10.2026 | Decizii pentru Portal și Network, luate în designul lor (Claude Design, etapele 1–3): D-NET-1, D-POR-1, D-PROF-1 închise; verificarea și categoria afacerii în Core; VeeCoin ca monedă unică; regulile Network (contact autorizat, acceptarea propunerilor, integrări într-un singur sens); eticheta „Sponsorizat”; avansul în programarea din Portal; rolurile de tokeni noi pentru Portal/Network. Detalii: §17.16. |
+| 0.4.0 | 25.10.2026 | Deciziile Fazei 0, pe baza experimentelor E1–E10 (rapoartele în `docs/experiments/`): D-DB-1 → varianta C (rol de conectare `NOINHERIT` + `SET LOCAL ROLE` pe modul), D-SEC-1 → RLS din prima (USING + WITH CHECK), parolele cu scrypt, configurația Better Auth, outbox cu dispecer, cote cu rezervare și reconciliere, garda pentru operațiile în masă; D-UI-2 → React Aria Components; versiunile de bază ale stack-ului. Detalii: §17.17. |
 
 ## Statusuri folosite în acest document
 
@@ -223,11 +224,30 @@ Fiecare aplicație are o stare înregistrată în `docs/checklists/<app>.md` și
 - **Roluri Postgres** separate pe modul, cu drepturi doar pe schema proprie.
 - **Fără foreign key-uri între scheme.** Referințele către alte domenii sunt ID-uri, validate prin contracte (§6.4).
 
-### 6.2 Variante de comparat în Faza 0
+### 6.2 Organizarea accesului la date (D-DB-1)
 
-**Status: DE VALIDAT TEHNIC**
+**Status: CONFIRMAT (25.10.2026) — varianta C**, pe baza E1–E4 (`docs/experiments/E1.md`, `E4.md`).
 
-Nicio variantă nu e aprobată definitiv înainte de experimentul din Faza 0 (§14.3).
+**Varianta aleasă (C): un rol de conectare, roluri de modul accesate prin `SET LOCAL ROLE`.**
+
+- Schemă Postgres proprie și migrații proprii pentru fiecare modul (E2); client Prisma pe modul (izolarea la compilare din E1).
+- Fiecare modul are un rol Postgres **`NOLOGIN`**, fără parolă, cu drepturi doar pe schema proprie (E3).
+- Aplicația se conectează cu un **singur rol de conectare** (`app_runtime`), **`NOINHERIT`**, membru în rolurile modulelor. Singur nu are acces la nicio schemă de modul.
+- Fiecare operație rulează într-o tranzacție care începe cu `SET LOCAL ROLE <rolul modulului>` și `set_config('app.organization_id', <org>, true)`. La COMMIT sau ROLLBACK, rolul și contextul revin automat (validat în E4, inclusiv după o tranzacție eșuată).
+- Conexiunea trece prin pooler-ul Supabase în **transaction mode** (port 6543), cu `pgbouncer=true&connection_limit=1`. Conexiunile la baza de date rămân la nivelul unui singur pool, indiferent de numărul modulelor.
+- Migrațiile și seed-ul rulează cu un rol de migrare separat, prin **session pooler** (port 5432), niciodată din funcțiile aplicației.
+
+**De ce nu A și nu B** (măsurat în E4, 200 de conexiuni concurente):
+
+| Variantă | Rezultat | Motiv de respingere |
+|---|---|---|
+| A: rol cu login pe modul | 4,7% erori, conexiunile cresc cu numărul modulelor | Supavisor ține câte un pool pe rol: la 15 module, ~240 de conexiuni, peste limita de 60 a instanței |
+| B: un singur rol pentru toate modulele | 0 erori | Baza de date nu mai izolează modulele între ele; izolarea ar depinde doar de cod |
+| **C** | 0 erori, 16 conexiuni, izolare păstrată | Cost: ~23% mai puțin debit decât B, acceptat |
+
+Varianta istorică cu Drizzle nu a fost evaluată (contrazicea specificația).
+
+#### Variantele comparate în Faza 0 (istoric)
 
 | Variantă | Descriere | Pentru | Contra / risc |
 |---|---|---|---|
@@ -297,7 +317,8 @@ Exemplu, rezervare cu avans din Portal: Booking creează programarea `pending_pa
 
 - **Sesiuni stocate în baza de date**, cu ID opac în cookie. Rolul **nu** stă în token. Permisiunile se citesc din DB la fiecare request, cu cache doar pe durata request-ului. Asta rezolvă vulnerabilitatea S2 din audit.
 - Librăria propusă: **Better Auth** (self-hosted, adapter Prisma, invitații, 2FA). Versiunea stabilă se verifică la start. Alternative evaluate: Clerk/Auth0 (cost per utilizator, date la terți), Supabase Auth (organizațiile tot le construim noi).
-- Parole cu argon2id. 2FA TOTP opțional pentru utilizatori, **obligatoriu** pentru Founder.
+- Parole cu **scrypt**, algoritmul implicit al Better Auth (CONFIRMAT 25.10.2026, în locul argon2id propus inițial: sigur, inclus în Node.js, fără pachete compilate pe Vercel). 2FA TOTP opțional pentru utilizatori, **obligatoriu** pentru Founder.
+- **Configurația Better Auth validată în E9 (CONFIRMAT):** sesiuni în baza de date; **cache-ul de sesiune din cookie dezactivat** (altfel revocarea și retrogradarea întârzie; vezi și issue-ul Better Auth #11690); plugin-urile oficiale pentru organizații (organizația activă în sesiune, schimbată doar pe server, cu verificarea membership-ului), 2FA (TOTP + coduri de recuperare de unică folosință, stocate criptat) și sesiuni pe token pentru clienți fără browser (viitoarea aplicație mobilă); **limitarea încercărilor activă în producție** (dezactivată doar în teste).
 - **2FA obligatoriu pentru Owner (CONFIRMAT, P5):** proprietarul poate plăti și schimba accesul celorlalți, deci autentificarea în doi pași e obligatorie pentru el. La primirea rolului de Owner are o **perioadă de grație de 14 zile** (cu un Notice neutru, fără blocare); după ea, accesul la acțiunile de Owner cere 2FA activ. La activare primește **coduri de recuperare** de unică folosință (stocate ca hash, regenerabile, regenerarea auditată). Pierderea dispozitivului fără coduri se rezolvă doar prin sesiune de suport Founder, auditată.
 - **Codul 2FA se cere pe un dispozitiv nou** (CONFIRMAT, D10 microcopy); „Ține-mă minte” păstrează sesiunea 30 de zile pe dispozitivul ales (CONFIRMAT, P1), revocabilă din Securitate.
 
@@ -826,11 +847,19 @@ O extensie ORM care injectează `organizationId` **nu** acoperă sigur:
 - Operațiile în masă trec prin helpers care impun filtrul de organizație.
 - Aceste limite sunt **motivul pentru RLS**: baza de date refuză rândurile altei organizații chiar dacă aplicația greșește.
 
-### 12.3 RLS: decizie înainte de primul modul cu date reale
+### 12.3 RLS din prima zi (D-SEC-1)
 
-**Status: DE VALIDAT TEHNIC (Faza 0), apoi NECESITĂ DECIZIE (D-SEC-1)**
+**Status: CONFIRMAT (25.10.2026)**, pe baza E5 și E6 (`docs/experiments/E5.md`, `E6.md`).
 
-Recomandare: **RLS activ din prima** pe tabelele organizațiilor, dacă experimentul din Faza 0 confirmă că funcționează curat. De definit și testat:
+**Regulile validate:**
+- Pe fiecare tabel de organizație: politică cu **`USING` și `WITH CHECK`** pe `organization_id = current_setting('app.organization_id', true)`. Fără `WITH CHECK`, o aplicație ar putea scrie rânduri în altă organizație chiar dacă nu le poate citi (E6).
+- Contextul se setează **doar** cu `set_config('app.organization_id', ..., true)` (local tranzacției). Setarea la nivel de sesiune contaminează conexiunile refolosite din pool: demonstrat în E5, interzisă.
+- Fără context setat, politica întoarce 0 rânduri (eșec sigur), nu eroare.
+- Rolurile de modul nu au `BYPASSRLS`; tabelele aparțin rolului de migrare, nu rolurilor de modul.
+- Cost măsurat: ~24 ms la p50 pe cerere (E5).
+- **RLS nu înlocuiește garda din cod:** în propria organizație, `updateMany` / `deleteMany` fără filtru rămân distructive (E6). `db-kit` refuză operațiile în masă fără filtru explicit.
+
+**Detaliile inițiale (păstrate ca referință):**
 
 - **Politici pe categorii de tabele:**
   - date de organizație: `organization_id = current_setting('app.org_id')::uuid`;
@@ -1000,12 +1029,12 @@ Plus, la nivel de platformă: teste de webhook Stripe (semnătură, idempotenț�
 | D-ARCH-1 | Monolit modular într-un monorepo | Da | CONFIRMAT | Nu |
 | D-ARCH-2 | Trei deployment-uri: platform / portal / founder | Da; Network în platform | PROPUS | Da |
 | D-ARCH-3 | Structura `apps / modules / core / packages` | Da | PROPUS | Da |
-| D-DB-1 | Organizarea bazei de date: varianta A sau B (§6.2) | Decisă după experiment | Prisma + PostgreSQL/Supabase: CONFIRMAT (specificație); A vs B: DE VALIDAT TEHNIC; C (Drizzle) ar contrazice specificația, deci doar cu decizia fondatorilor | Da, după F0 |
+| D-DB-1 | Organizarea accesului la date (§6.2) | Varianta C: rol de conectare NOINHERIT + SET LOCAL ROLE pe modul | CONFIRMAT (25.10.2026, E1–E4) | Nu |
 | D-DB-2 | Scheme Postgres separate + roluri pe modul | Da | PROPUS | Da |
 | D-DB-3 | Migrații obligatorii, fără `db push` | Da | CONFIRMAT | Nu |
 | D-DB-4 | Integritatea între domenii (§6.4) | Ca în §6.4 | PROPUS | Da |
 | D-DB-5 | UUIDv7 | Da | PROPUS | Da |
-| D-SEC-1 | RLS din prima pe tabelele organizațiilor | Da, dacă experimentul confirmă | DE VALIDAT TEHNIC | Da, după F0 |
+| D-SEC-1 | RLS din prima pe tabelele organizațiilor (§12.3) | Da, USING + WITH CHECK, context local tranzacției | CONFIRMAT (25.10.2026, E5–E6) | Nu |
 | D-SEC-2 | Garda de tenant care aruncă eroare + interzicerea raw queries | Da | PROPUS | Da |
 | D-AUTH-1 | Sesiuni în DB, fără roluri în token | Da | CONFIRMAT (cerința de sesiuni revocabile) | Nu |
 | D-AUTH-2 | Librăria Better Auth | Da | CONFIRMAT (specificație) | Nu |
@@ -1020,7 +1049,7 @@ Plus, la nivel de platformă: teste de webhook Stripe (semnătură, idempotenț�
 | D-ACC-2 | Roluri personalizate pe organizație | Mai târziu; modelul le permite | NECESITĂ DECIZIE | Da |
 | D-B2C-1 | Înregistrare liberă pentru consumatori, identitate separată | Da | CONFIRMAT | Nu |
 | D-UI-1 | Un design system, check before create, contracte de componente | Da | CONFIRMAT | Nu |
-| D-UI-2 | Radix/shadcn ca bază pentru primitive | Da | PROPUS | Da |
+| D-UI-2 | Biblioteca de primitive headless | React Aria Components (comparat cu Radix și Base UI; ADR 0002); fără shadcn și Tailwind | CONFIRMAT (24.10.2026) | Nu |
 | D-GRW-1…5, 9 | Growth Engine: serviciu Core, sloturi + semnale, pregătiri în F0, v1 în F5, funcții avansate ulterior, separare de monetizarea Portal/Network | Da | CONFIRMAT | Nu |
 | D-GRW-6 | Plafoane: 1/zi, 3/săptămână, cooldown 30 de zile; exceptate cele solicitate și mesajele de limită | — | CONFIRMAT | Nu |
 | D-GRW-7 | Proactive doar Owner/Admin; membrii descoperă și transmit recomandări, fără cumpărare | — | CONFIRMAT | Nu |
@@ -1074,6 +1103,12 @@ Plus, la nivel de platformă: teste de webhook Stripe (semnătură, idempotenț�
 | D-PN-5 | Integrările Network doar într-un sens, la acțiunea omului | Da | CONFIRMAT | Nu |
 | D-PN-6 | Pas de plată în programarea din Portal doar când afacerea cere avans | Da | CONFIRMAT | Nu |
 | D-PN-7 | Programul de afiliere, criteriile Founding 100 și „Verificat” | — | NECESITĂ DECIZIE | Da |
+| D-AUTH-4 | Parolele cu scrypt (implicitul Better Auth), nu argon2id | Da | CONFIRMAT (25.10.2026, E9) | Nu |
+| D-AUTH-5 | Better Auth: cache-ul de sesiune oprit, limitarea încercărilor activă în producție, plugin-urile organizație / 2FA / token | Da | CONFIRMAT (25.10.2026, E9) | Nu |
+| D-INF-4 | Outbox cu dispecer periodic (Inngest cron), consumatori idempotenți, dead-letter după 3 eșecuri | Da | CONFIRMAT (25.10.2026, E7) | Nu |
+| D-COM-10 | Cote: rezervare atomică (UPDATE condiționat) + confirmare / eliberare + reconciliere periodică a rezervărilor expirate (Inngest cron) | Da | CONFIRMAT (25.10.2026, E8) | Nu |
+| D-SEC-3 | Garda din db-kit refuză updateMany / deleteMany fără filtru explicit | Da | CONFIRMAT (25.10.2026, E6) | Nu |
+| D-INF-5 | Compute-ul Supabase pentru producție (la 200 de cereri concurente, p99 ≈ 2,5 s pe instanța micro de staging) | Decis înainte de lansare, cu măsurători | NECESITĂ DECIZIE | Da, înainte de lansare |
 | D-ROAD-1 | Ordinea aplicațiilor după Booking | Propunerea din §15.3 | NECESITĂ DECIZIE | Da |
 | D-ROAD-2 | Booking prima aplicație | Da | CONFIRMAT | Nu |
 | D-ROAD-3 | Fluxuri verticale paralele, fără reducerea scope-ului | Da | CONFIRMAT | Nu |
@@ -1207,6 +1242,21 @@ Fiecare experiment produce un raport scurt și un ADR. Pentru toate se folosesc 
 4. **Nicio decizie deschisă nu s-a închis prin această versiune** în afara celor de mai sus. D-COM-7, D-PX-2, D-PX-3, D-GRW-8 (validarea juridică), D-UX-2 rămân NECESITĂ DECIZIE.
 
 ---
+
+### 17.17 Modificări în v0.4.0 — deciziile Fazei 0
+
+Aprobate de fondatoare pe 25.10.2026, pe baza experimentelor E1–E10 (`docs/experiments/`):
+
+1. **D-DB-1 → varianta C** (§6.2): rol de conectare `NOINHERIT`, roluri de modul `NOLOGIN`, `SET LOCAL ROLE` + `set_config(..., true)` în fiecare tranzacție, transaction pooler cu `connection_limit=1`. A respinsă (erori, conexiuni în creștere cu numărul modulelor), B respinsă (fără izolare între module în baza de date).
+2. **D-SEC-1 → RLS din prima** (§12.3), cu USING + WITH CHECK, eșec sigur fără context, cost ~24 ms p50.
+3. **D-SEC-3:** garda din `db-kit` pentru operațiile în masă.
+4. **D-AUTH-4 / D-AUTH-5:** scrypt; configurația Better Auth din §7.1.
+5. **D-INF-4:** outbox cu dispecer, idempotență, dead-letter (E7). **D-COM-10:** cote cu rezervare, confirmare, eliberare și reconciliere (E8).
+6. **D-UI-2 → React Aria Components** (ADR 0002), CSS Modules + variabile din tokeni, Lucide (iconurile după nume, serializabile).
+7. **Stack-ul de bază la închiderea F0** (verificat în registru, nu din memorie): Node 24, pnpm 12 cu `minimumReleaseAge` activ permanent (protecție supply-chain), Next.js 16, React 19, TypeScript 6 (TS 7 amânat până la suportul typescript-eslint, ADR 0001), Prisma 7, zod 4, next-intl 4, Vitest 5, Postgres 17 (Supabase, Frankfurt). Funcțiile Vercel în `fra1`; configurația Vercel în `vercel.json`, cu versiunea de pnpm fixată explicit.
+8. **Adăugarea unui modul nou:** ghidul `docs/guides/HOW-TO-ADD-MODULE.md` și șabloanele din `docs/guides/templates/`, validate prin E10.
+9. **Rămâne deschis:** D-INF-5 (compute-ul de producție).
+10. **Următorul pas (0.4):** rescrierea curată în `packages/db-kit` și `core/` a utilitarelor validate, cu testele lor; `labs/` arhivat într-un branch; `CLAUDE.md` actualizat; apoi închiderea Fazei 0 după criteriile din `docs/plans/FAZA-0.md` §4.
 
 ### 17.16 Modificări în v0.3.2
 

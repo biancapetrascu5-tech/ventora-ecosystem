@@ -1,0 +1,57 @@
+// Contract public al modulului <MODULE>
+// Singurul import permis din afara modulului (ARCHITECTURE §3, §11.1)
+// Validat prin E10 (2026-10-25).
+//
+// Reguli obligatorii:
+// 1. Funcțiile primesc TenantContext, nu orgId ca parametru brut
+// 2. Organizația vine din context (sesiune/authorize()), nu de la apelant
+// 3. Modulul destinatar verifică singur apartenența resursei
+
+export interface TenantContext {
+  organizationId: string;
+  userId?: string;
+  actor?: 'user' | 'system' | 'support';
+}
+
+export type Validate<NAME>Result =
+  | { ok: true }
+  | { ok: false; error: 'AppNotEnabled' }
+  | { ok: false; error: 'CrossOrg<NAME>'; itemOrgId: string };
+
+// Orgs fără modulul activat (simulare; în producție: citire din registrul comercial)
+const DISABLED_ORGS = new Set<string>([
+  // 'org-id-fara-modul',
+]);
+
+export async function validate<NAME>(
+  ctx: TenantContext,
+  resourceId: string,
+  db: {
+    // tipul minim necesar pentru contractul de bază
+    <modelName>: {
+      findUnique: (args: {
+        where: { id: string };
+        select: { organizationId: boolean };
+      }) => Promise<{ organizationId: string } | null>;
+    };
+  },
+): Promise<Validate<NAME>Result> {
+  if (DISABLED_ORGS.has(ctx.organizationId)) {
+    return { ok: false, error: 'AppNotEnabled' };
+  }
+
+  const resource = await db.<modelName>.findUnique({
+    where: { id: resourceId },
+    select: { organizationId: true },
+  });
+
+  if (!resource) {
+    return { ok: false, error: 'CrossOrg<NAME>', itemOrgId: 'not-found' };
+  }
+
+  if (resource.organizationId !== ctx.organizationId) {
+    return { ok: false, error: 'CrossOrg<NAME>', itemOrgId: resource.organizationId };
+  }
+
+  return { ok: true };
+}

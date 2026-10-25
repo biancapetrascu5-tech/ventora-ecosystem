@@ -3,4 +3,11 @@ packages:
   - 'packages/*'
   - 'core/*'
   - 'modules/*'
-  - 'labs/e4-vercel'
+allowBuilds:
+  '@parcel/watcher': true
+  '@prisma/engines': true
+  '@swc/core': true
+  esbuild: true
+  prisma: true
+  protobufjs: true
+  unrs-resolver: true

@@ -1,4 +1,13 @@
-# Ventora Labs
+# labs/ — Arhivat
+
+Experimentele Fazei 0 sunt arhivate în branch-ul **`archive/labs-faza-0`**.
+
+Rapoartele: `docs/experiments/E1.md` → `E10.md`  
+Ghid modul nou: `docs/guides/HOW-TO-ADD-MODULE.md`
+
+---
+
+_Conținut original (pentru referință istorică):_
 
 Mediu izolat pentru experimente cu baze de date. Nu face parte din workspace-ul pnpm.
 Rulat local cu Docker; nu intră în CI.
