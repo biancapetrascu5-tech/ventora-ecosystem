@@ -47,7 +47,7 @@ const founderAuthTest = betterAuth({
     updateAge: 60 * 60,
     cookieCache: { enabled: false },
   },
-  plugins: [twoFactor({ issuer: 'TestFounder' })],
+  plugins: [bearer(), twoFactor({ issuer: 'TestFounder' })],
   advanced: {
     crossSubDomainCookies: { enabled: false },
     defaultCookieAttributes: { sameSite: 'lax', secure: false, httpOnly: true },
