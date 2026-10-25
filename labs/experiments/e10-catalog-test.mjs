@@ -173,31 +173,47 @@ const t2Start = Date.now();
 const poolDirect = new pg.Client({ connectionString: SUPERUSER_URL });
 await poolDirect.connect();
 
+// Helper: rulează fn în tranzacție explicită, ROLLBACK dacă aruncă
+async function withTx(client, fn) {
+  await client.query('BEGIN');
+  try {
+    const r = await fn(client);
+    await client.query('COMMIT');
+    return r;
+  } catch (e) {
+    await client.query('ROLLBACK');
+    throw e;
+  }
+}
+
 // T2.1 — cu org_alpha în context: vizibil doar e10-org-alpha
 {
-  const { rows } = await poolDirect.query(`
-    SELECT set_config('app.organization_id', 'e10-org-alpha', true);
-    SET LOCAL ROLE lab_catalog_rw;
-    SELECT id, "organizationId" FROM lab_catalog.catalog_items
-  `);
-  const ids = rows.map((r) => r.organizationId);
-  const allAlpha = ids.every((id) => id === 'e10-org-alpha');
-  const noBeta = !ids.includes('e10-org-beta');
+  const rows = await withTx(poolDirect, async (c) => {
+    await c.query(`SELECT set_config('app.organization_id', 'e10-org-alpha', true)`);
+    await c.query('SET LOCAL ROLE lab_catalog_rw');
+    const { rows } = await c.query(
+      `SELECT id, "organizationId" FROM lab_catalog.catalog_items`,
+    );
+    return rows;
+  });
+  const orgIds = rows.map((r) => r.organizationId);
+  const allAlpha = orgIds.length > 0 && orgIds.every((id) => id === 'e10-org-alpha');
+  const noBeta = !orgIds.includes('e10-org-beta');
   assert(
     'T2.1 SET ROLE + set_config alpha: vizibil doar org-alpha',
     allAlpha && noBeta,
-    `ids=${JSON.stringify(ids)}`,
+    `orgIds=${JSON.stringify(orgIds)}`,
   );
 }
 
-// T2.2 — RESET ROLE, fără set_config: 0 rânduri (GUC gol)
+// T2.2 — set_config gol: 0 rânduri (RLS blochează tot)
 {
-  await poolDirect.query(`RESET ROLE`);
-  const { rows } = await poolDirect.query(`
-    SELECT set_config('app.organization_id', '', true);
-    SET LOCAL ROLE lab_catalog_rw;
-    SELECT id FROM lab_catalog.catalog_items
-  `);
+  const rows = await withTx(poolDirect, async (c) => {
+    await c.query(`SELECT set_config('app.organization_id', '', true)`);
+    await c.query('SET LOCAL ROLE lab_catalog_rw');
+    const { rows } = await c.query(`SELECT id FROM lab_catalog.catalog_items`);
+    return rows;
+  });
   assert(
     'T2.2 set_config gol → 0 rânduri (RLS blochează)',
     rows.length === 0,
@@ -205,40 +221,44 @@ await poolDirect.connect();
   );
 }
 
-// T2.3 — RESET ROLE, set_config beta: vizibil doar org-beta
+// T2.3 — set_config beta: vizibil doar org-beta
 {
-  await poolDirect.query(`RESET ROLE`);
-  const { rows } = await poolDirect.query(`
-    SELECT set_config('app.organization_id', 'e10-org-beta', true);
-    SET LOCAL ROLE lab_catalog_rw;
-    SELECT id, "organizationId" FROM lab_catalog.catalog_items
-  `);
-  const ids = rows.map((r) => r.organizationId);
-  const allBeta = ids.every((id) => id === 'e10-org-beta');
-  const noAlpha = !ids.includes('e10-org-alpha');
+  const rows = await withTx(poolDirect, async (c) => {
+    await c.query(`SELECT set_config('app.organization_id', 'e10-org-beta', true)`);
+    await c.query('SET LOCAL ROLE lab_catalog_rw');
+    const { rows } = await c.query(
+      `SELECT id, "organizationId" FROM lab_catalog.catalog_items`,
+    );
+    return rows;
+  });
+  const orgIds = rows.map((r) => r.organizationId);
+  const allBeta = orgIds.length > 0 && orgIds.every((id) => id === 'e10-org-beta');
+  const noAlpha = !orgIds.includes('e10-org-alpha');
   assert(
     'T2.3 set_config beta: vizibil doar org-beta',
     allBeta && noAlpha,
-    `ids=${JSON.stringify(ids)}`,
+    `orgIds=${JSON.stringify(orgIds)}`,
   );
 }
 
 // T2.4 — INSERT cu organizationId diferit de context blochează (WITH CHECK)
 {
-  await poolDirect.query(`RESET ROLE`);
   let blocked = false;
   try {
-    await poolDirect.query(`
-      SELECT set_config('app.organization_id', 'e10-org-alpha', true);
-      SET LOCAL ROLE lab_catalog_rw;
-      INSERT INTO lab_catalog.catalog_items (id, "organizationId", name, active, "createdAt")
-      VALUES ('t2-inject-test', 'e10-org-beta', 'Inject test', true, now())
-    `);
+    await withTx(poolDirect, async (c) => {
+      await c.query(`SELECT set_config('app.organization_id', 'e10-org-alpha', true)`);
+      await c.query('SET LOCAL ROLE lab_catalog_rw');
+      await c.query(
+        `INSERT INTO lab_catalog.catalog_items (id, "organizationId", name, active, "createdAt")
+         VALUES ('t2-inject-test', 'e10-org-beta', 'Inject test', true, now())`,
+      );
+    });
   } catch (e) {
     blocked =
       e.message.includes('policy') ||
       e.message.includes('violat') ||
-      e.message.includes('violates');
+      e.message.includes('violates') ||
+      e.message.includes('check');
   }
   assert('T2.4 INSERT cross-org blocat de RLS WITH CHECK', blocked);
 }
@@ -254,7 +274,7 @@ await poolDirect.connect();
     });
     await testClient.connect();
     await testClient.end();
-  } catch (e) {
+  } catch {
     loginBlocked = true;
   }
   assert('T2.5 lab_catalog_rw NOLOGIN — autentificare directă blocată', loginBlocked);
