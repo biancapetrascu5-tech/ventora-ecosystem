@@ -32,11 +32,7 @@ export const auth = betterAuth({
   session: {
     cookieCache: { enabled: false },
   },
-  plugins: [
-    bearer(),
-    organization(),
-    twoFactor({ issuer: 'Ventora Lab' }),
-  ],
+  plugins: [bearer(), organization(), twoFactor({ issuer: 'Ventora Lab' })],
 });
 
 export type Auth = typeof auth;
