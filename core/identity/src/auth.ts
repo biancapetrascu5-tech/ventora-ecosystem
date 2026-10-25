@@ -3,8 +3,9 @@ import { prismaAdapter } from 'better-auth/adapters/prisma';
 import { bearer, twoFactor } from 'better-auth/plugins';
 import { getIdentityDb } from './db';
 
+// Better Auth 1.7.12: expiresIn = session duration when rememberMe !== false.
+// rememberMe: false → Better Auth hardcodes 24h. No rememberMeExpiresIn option exists.
 const REMEMBER_ME_SECONDS = 30 * 24 * 60 * 60;
-const SESSION_SECONDS = 7 * 24 * 60 * 60;
 
 export const hubAuth = betterAuth({
   secret: process.env.BETTER_AUTH_SECRET!,
@@ -16,9 +17,8 @@ export const hubAuth = betterAuth({
     minPasswordLength: 8,
   },
   session: {
-    expiresIn: SESSION_SECONDS,
+    expiresIn: REMEMBER_ME_SECONDS,
     updateAge: 24 * 60 * 60,
-    rememberMeExpiresIn: REMEMBER_ME_SECONDS,
     cookieCache: {
       enabled: false,
     },

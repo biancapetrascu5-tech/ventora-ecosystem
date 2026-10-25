@@ -19,16 +19,16 @@ const founderPool = new Pool({ connectionString: DB_URL });
 const founderDb = new FounderClient({ adapter: new PrismaPg(founderPool) });
 
 const REMEMBER_ME_SECONDS = 30 * 24 * 60 * 60;
-const SESSION_SECONDS = 7 * 24 * 60 * 60;
+// Better Auth 1.7.12: expiresIn = rememberMe duration; rememberMe:false → 24h hardcoded
+const SHORT_SESSION_SECONDS = 24 * 60 * 60;
 
 const hubAuth = betterAuth({
   secret: 'test-hub-secret-must-be-32-chars-x',
   database: prismaAdapter(identityDb, { provider: 'postgresql' }),
   emailAndPassword: { enabled: true, minPasswordLength: 8 },
   session: {
-    expiresIn: SESSION_SECONDS,
+    expiresIn: REMEMBER_ME_SECONDS,
     updateAge: 24 * 60 * 60,
-    rememberMeExpiresIn: REMEMBER_ME_SECONDS,
     cookieCache: { enabled: false },
   },
   plugins: [bearer(), twoFactor({ issuer: 'Test' })],
@@ -333,7 +333,7 @@ describe('T1.10 — remember-me 30 days', () => {
     expect(diffMs).toBeLessThan(5000);
   });
 
-  it('session without rememberMe expires at standard duration (not 30 days)', async () => {
+  it('session without rememberMe expires in 24h (not 30 days)', async () => {
     await signUp('t1.10b@test.com', 'password123');
     const result = await signIn('t1.10b@test.com', 'password123', false);
     const token = result?.token ?? '';
@@ -342,13 +342,13 @@ describe('T1.10 — remember-me 30 days', () => {
     expect(session).toBeTruthy();
 
     const thirtyDaysMs = REMEMBER_ME_SECONDS * 1000;
-    const sevenDaysMs = SESSION_SECONDS * 1000;
+    const oneDayMs = SHORT_SESSION_SECONDS * 1000;
     const expiry = session!.expiresAt.getTime();
     const now = Date.now();
 
     expect(expiry - now).toBeLessThan(thirtyDaysMs);
-    const diffFromSeven = Math.abs(expiry - now - sevenDaysMs);
-    expect(diffFromSeven).toBeLessThan(5000);
+    const diffFromOneDay = Math.abs(expiry - now - oneDayMs);
+    expect(diffFromOneDay).toBeLessThan(5000);
   });
 });
 
