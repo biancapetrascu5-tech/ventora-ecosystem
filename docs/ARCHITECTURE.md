@@ -1,8 +1,8 @@
 # VENTORA ECOSYSTEM — ARHITECTURĂ TEHNICĂ
 
-**Versiune:** 0.4.0
-**Data:** 24 octombrie 2026
-**Stadiu:** Propunere. Nimic nu este implementat. Faza 0 nu începe fără aprobarea explicită a acestei versiuni.
+**Versiune:** 0.4.1
+**Data:** 25 octombrie 2026
+**Stadiu:** Faza 0 închisă (tag `faza-0`). Deciziile marcate CONFIRMAT sunt baza implementării; cele PROPUS sau NECESITĂ DECIZIE nu se implementează fără aprobare.
 
 ## Istoric
 
@@ -23,6 +23,7 @@
 | 0.3.1 | 24.10.2026 | Aprobat condiționat: SMS de pe numărul propriu al afacerii (D-SMS-1…9). Serviciu Core nou `messaging` cu adaptoarele `SMS_PROVIDER` și `ANDROID_SIM`, credențiale de dispozitiv, stări cu `UNKNOWN` separat de `FAILED`, experimentul E-SMS-1 după Faza 0. Booking: 59 → 66 de funcționalități. Specificația: `SMS_NUMAR_PROPRIU.md`. Detalii: §17.15. |
 | 0.3.2 | 24.10.2026 | Decizii pentru Portal și Network, luate în designul lor (Claude Design, etapele 1–3): D-NET-1, D-POR-1, D-PROF-1 închise; verificarea și categoria afacerii în Core; VeeCoin ca monedă unică; regulile Network (contact autorizat, acceptarea propunerilor, integrări într-un singur sens); eticheta „Sponsorizat”; avansul în programarea din Portal; rolurile de tokeni noi pentru Portal/Network. Detalii: §17.16. |
 | 0.4.0 | 25.10.2026 | Deciziile Fazei 0, pe baza experimentelor E1–E10 (rapoartele în `docs/experiments/`): D-DB-1 → varianta C (rol de conectare `NOINHERIT` + `SET LOCAL ROLE` pe modul), D-SEC-1 → RLS din prima (USING + WITH CHECK), parolele cu scrypt, configurația Better Auth, outbox cu dispecer, cote cu rezervare și reconciliere, garda pentru operațiile în masă; D-UI-2 → React Aria Components; versiunile de bază ale stack-ului. Detalii: §17.17. |
+| 0.4.1 | 25.10.2026 | Echipa Founder: mai multe conturi Founder nominale, fiecare cu acces complet (D-ACC-4). Emailul tranzacțional prin Resend, regiunea UE, în spatele unui adaptor din `core/notifications` (D-NOT-1). Direcția vizuală B „Navy de comandă” aplicată în design system, doar pentru Hub (D-UI-6). Detalii: §17.18. |
 
 ## Statusuri folosite în acest document
 
@@ -154,7 +155,7 @@ Core conține doar **servicii de business ale platformei**: lucruri pe care le d
 | `access` | Role, Permission, RoleAssignment, ApplicationAccess, ResourceAccessPolicy, `authorize()` | CONFIRMAT (brief §11) |
 | `commercial` | Application registry, Plan, PlanVersion, Entitlement, Quota, Usage, AddOn, Override, Trial | CONFIRMAT (brief §12–14) |
 | `billing` | Subscription și facturarea serviciilor Ventora (separat de aplicația Finance) | CONFIRMAT (brief §43) |
-| `notifications` | Template, preferințe, livrare, istoric; fiecare notificare are categoria obligatorie `operational` sau `commercial`, cu preferințe separate | CONFIRMAT (brief §36; categoria: D-GRW-3) |
+| `notifications` | Template, preferințe, livrare, istoric; fiecare notificare are categoria obligatorie `operational` sau `commercial`, cu preferințe separate. Emailul pleacă printr-un adaptor (`EmailChannel`), cu Resend ca furnizor (§11.6) | CONFIRMAT (brief §36; categoria: D-GRW-3; furnizorul: D-NOT-1) |
 | `messaging` | Canalele de trimitere folosite de `notifications`: interfața comună `SmsChannel`, adaptoarele `SMS_PROVIDER` și `ANDROID_SIM`, registrul dispozitivelor (telefoanele afacerilor), credențialele de dispozitiv, coada și eșalonarea pe dispozitiv, stările mesajelor, webhook-urile de stare, alertele de disponibilitate (§11.5). Specificația: `docs/SMS_NUMAR_PROPRIU.md`. | CONFIRMAT condiționat (D-SMS-1); implementarea după E-SMS-1 |
 | `growth` | Growth Engine: oferte, campanii, eligibilitate, sloturi, plafoane, tracking, experimente, oprire centrală (§8.7). Nu deține prețuri sau drepturi: le citește din `commercial` și `billing`. | CONFIRMAT (D-GRW-1) |
 | `audit` | Un singur AuditLog cu categorii | PROPUS (lecția L5 din audit) |
@@ -389,6 +390,8 @@ Rolurile personalizate pe organizație: **NECESITĂ DECIZIE** (D-ACC-2). Modelul
 
 **Founder:** administrarea comercială e separată de accesul la datele clienților. Accesul la date se face doar prin **sesiune de suport**: motiv, durată limitată, `actor: 'support'` în context, audit, vizibilă organizației. Status: CONFIRMAT (brief §41).
 
+**Echipa Founder (CONFIRMAT, 25.10.2026, D-ACC-4):** accesul Founder nu aparține unei singure persoane. Pot exista mai multe conturi Founder, **fiecare nominal** (un om, un cont; fără conturi partajate), toate cu acces Founder complet; primul cont suplimentar este al lui Bibi. Reguli: 2FA obligatoriu pentru fiecare cont Founder; acordarea și retragerea rolului Founder se fac doar de un alt Founder și se auditează; fiecare acțiune din Founder Control Center și fiecare sesiune de suport se auditează pe persoana care a făcut-o, nu pe „Founder” generic. Restricția pe IP (`FOUNDER_ALLOWED_IPS`) e opțională și **oprită implicit**. Rolul Founder e un rol de platformă, separat de rolurile pe organizație: un cont Founder nu devine membru al vreunei organizații și nu vede datele ei decât prin sesiune de suport.
+
 ### 7.6 Identitatea B2C (Portal)
 
 **Status: CONFIRMAT (separarea, brief §10), CONFIRMAT (înregistrarea liberă a consumatorilor, confirmare directă), PROPUS (implementarea)**
@@ -575,6 +578,8 @@ export const manifest = {
 | **Engineering Source of Truth** | `VENTORA_SOURCE_OF_TRUTH.md`, contractele componentelor, `packages/ui`, regulile de arhitectură, manifestele, regulile de reutilizare, testele automate |
 
 **Starea exportului de design: CONFIRMAT (24.10.2026).** Designul unificat al ecosistemului (Hub, Founder, cele 13 aplicații de business, componentele comerciale) e aprobat în Claude Design, etapele 1–5. Sursa unică este artefactul Claude Design „Ventora” (https://claude.ai/artifact/7cKaNW6635S7vQavjgY8zH), exportat în `docs/design/system/`: `README.md` (registrul celor 52 de decizii), `tokens.json`, `glossary.md`, `patterns.md`, componentele (README + previzualizare), fonturile și logo-urile oficiale. **Acest document nu definește tokens; valorile vin doar din export.** Exporturile anterioare („Ventora Hub” și launcher-ul) sunt înlocuite și nu se mai folosesc. Portal și Network se proiectează separat (§10.8).
+
+**Direcția vizuală B „Navy de comandă” (CONFIRMAT, 25.10.2026, D-UI-6):** aplicată în design system (deciziile V1–V18 din `docs/design/system/README.md`; rezumatul și diferența de tokeni în `docs/design/DIRECTIA-B.md`). Atinge **doar Hub-ul**: zonele de brand (`BrandZone`) din launcher și autentificare, rândul de aplicații `AppDock`, cardul `PortalPresence`, deschiderea animată `AppLaunch` v2. Navy ca suprafață există doar în zonele de brand ale Hub-ului, niciodată în aplicații; mișcarea cu rebound (`ease-spring`) doar în Hub. Valorile de token globale schimbate (`canvas`, `radius-xl`, `shadow-2`, `display-xl`) se aplică peste tot, prin regenerarea `packages/tokens`. Recomandările R-B1…R-B7 (`docs/design/reviews/directia-b-hub.md`) sunt aprobate și aplicate ca V12–V18; între ele, `display-l` rămâne 30/36 în aplicații, iar mărimea mare a Hub-ului e tokenul nou `display-hub`.
 
 - **Logo:** SVG-urile oficiale din `docs/design/logo/`; în dark se folosește varianta B (CONFIRMAT). Spine-ul din Founder arată semnul + „Founder” (P26); favicon-ul Hub folosește varianta B în dark (P27).
 - **Terminologie (CONFIRMAT, D1):** clienții văd doar „abonament”. Cuvântul „plan” apare **doar în Founder Control Center** (unde e termenul tehnic corect). Cheile i18n și glosarul respectă regula.
@@ -819,6 +824,17 @@ Implementare (PROPUS): chei API pe organizație (hash, scope-uri), rate limiting
 - Gateway-ul (SMS Gateway for Android, apoi textbee; aplicație proprie doar ca alternativă) se alege după E-SMS-1 și după verificarea licenței, securității, mentenanței și autentificării reale (D-SMS-2).
 
 ---
+
+### 11.6 Email tranzacțional
+
+**Status: CONFIRMAT (25.10.2026, D-NOT-1)**
+
+- **Furnizor: Resend**, cu trimiterea din **regiunea UE (Irlanda)**. Datele contului Resend sunt în SUA; transferul e acoperit de DPA, clauzele contractuale standard (SCC) și Data Privacy Framework. Se trece în registrul de subcontractori (GDPR).
+- **Doar prin adaptor:** `core/notifications` expune interfața `EmailChannel`; adaptorul Resend e singura implementare acum. Aplicațiile nu apelează niciodată Resend direct, deci furnizorul se poate schimba fără să atingem modulele.
+- **Domeniul de expediere:** `ventora-hub.com`, deja verificat în Resend (SPF și DKIM). Se adaugă DMARC dacă lipsește. Adresele de expediere (de ex. `noreply@ventora-hub.com`) se stabilesc la configurare. Un subdomeniu dedicat (`mail.`) rămâne o opțiune pentru mai târziu, dacă volumul o cere.
+- **Ce trimite:** invitații, resetarea parolei, 2FA și securitate, notificări operaționale. Emailul comercial rămâne dezactivat (D-GRW-8).
+- **Cheia API** stă doar în variabilele de mediu Vercel și în `.env.local`, niciodată în cod sau în chat. Staging și producție au chei separate.
+- **Contul Resend există** (al fondatoarei), cu `ventora-hub.com` verificat. Rămân: confirmarea regiunii domeniului (trebuie să fie UE; altfel se recreează domeniul în regiunea UE) și cheile API noi, separate pentru staging și producție, folosite doar de ecosistem, puse în Vercel. Până atunci, în dezvoltare, emailurile se scriu în log sau într-o cutie de test locală.
 
 ## 12. Securitate și izolare multi-tenant
 
@@ -1108,6 +1124,9 @@ Plus, la nivel de platformă: teste de webhook Stripe (semnătură, idempotenț�
 | D-INF-4 | Outbox cu dispecer periodic (Inngest cron), consumatori idempotenți, dead-letter după 3 eșecuri | Da | CONFIRMAT (25.10.2026, E7) | Nu |
 | D-COM-10 | Cote: rezervare atomică (UPDATE condiționat) + confirmare / eliberare + reconciliere periodică a rezervărilor expirate (Inngest cron) | Da | CONFIRMAT (25.10.2026, E8) | Nu |
 | D-SEC-3 | Garda din db-kit refuză updateMany / deleteMany fără filtru explicit | Da | CONFIRMAT (25.10.2026, E6) | Nu |
+| D-ACC-4 | Echipa Founder: mai multe conturi Founder nominale, toate cu acces complet (inclusiv Bibi); 2FA obligatoriu, audit pe persoană, restricția IP opțională și oprită implicit (§7.5) | Da | CONFIRMAT (25.10.2026) | Nu |
+| D-NOT-1 | Email tranzacțional prin Resend, regiunea UE, în spatele adaptorului `EmailChannel`; domeniul `ventora-hub.com`, deja verificat (§11.6) | Da | CONFIRMAT (25.10.2026); contul există, domeniul și cheile: de configurat | Nu |
+| D-UI-6 | Direcția vizuală B „Navy de comandă” (V1–V18, inclusiv R-B1…R-B7), doar pentru Hub (§10.1) | Da | CONFIRMAT (25.10.2026) | Nu |
 | D-INF-5 | Compute-ul Supabase pentru producție (la 200 de cereri concurente, p99 ≈ 2,5 s pe instanța micro de staging) | Decis înainte de lansare, cu măsurători | NECESITĂ DECIZIE | Da, înainte de lansare |
 | D-ROAD-1 | Ordinea aplicațiilor după Booking | Propunerea din §15.3 | NECESITĂ DECIZIE | Da |
 | D-ROAD-2 | Booking prima aplicație | Da | CONFIRMAT | Nu |
@@ -1161,7 +1180,7 @@ Fiecare experiment produce un raport scurt și un ADR. Pentru toate se folosesc 
 4. ~~Domeniile~~ — confirmate (v0.2.2).
 5. **Politica de prețuri și planurile inițiale** (pentru configurarea, nu pentru codul sistemului comercial).
 6. **Furnizorul SMS**: SMSLink sau Twilio. Hub-ul vechi le folosește pe amândouă.
-7. **Domeniul și identitatea de expediere pentru email.**
+7. ~~Domeniul și identitatea de expediere pentru email~~ — Resend, `ventora-hub.com` (v0.4.1, D-NOT-1); contul există; rămân domeniul verificat și cheile.
 8. **Politicile de retenție** a datelor pe tip de date (brief §42).
 9. ~~Clienții existenți din Hub-ul vechi~~ — nu există (v0.2.2).
 10. **Verificarea juridică** pentru VeeCoin, spin wheel, conturi de familie, recenzii verificate, acceptarea OTP și termenii de utilizare.
@@ -1243,6 +1262,15 @@ Fiecare experiment produce un raport scurt și un ADR. Pentru toate se folosesc 
 
 ---
 
+### 17.18 Modificări în v0.4.1
+
+Aprobate de fondatoare pe 25.10.2026:
+
+1. **D-ACC-4 — echipa Founder** (§7.5): mai multe conturi Founder nominale, toate cu acces complet; Bibi are acces Founder. 2FA obligatoriu, audit pe persoană, rolul acordat și retras doar de un alt Founder, restricția IP opțională și oprită.
+2. **D-NOT-1 — emailul prin Resend** (§11.6, §4): regiunea UE, adaptorul `EmailChannel` în `core/notifications`, domeniul `ventora-hub.com` (verificat în Resend). §17.4 punctul 7 închis.
+3. **D-UI-6 — direcția B „Navy de comandă”** (§10.1): aplicată în `docs/design/system/` (V1–V18, inclusiv R-B1…R-B7 aprobate), doar pentru Hub; componente noi `BrandZone`, `AppDock`, `PortalPresence`; `AppLaunch` v2; invitația cu panoul de brand; 21 tokeni noi, 4 valori schimbate.
+4. **Stadiul documentului:** Faza 0 e închisă; antetul și nota de final actualizate.
+
 ### 17.17 Modificări în v0.4.0 — deciziile Fazei 0
 
 Aprobate de fondatoare pe 25.10.2026, pe baza experimentelor E1–E10 (`docs/experiments/`):
@@ -1286,4 +1314,4 @@ Decizii luate de fondatoare în designul Portal și Network (Claude Design, etap
 
 ---
 
-**Nu se scrie cod, nu se instalează pachete, nu se modifică nicio bază de date. Faza 0 începe doar după aprobarea explicită a acestei versiuni.**
+**Faza 0 e închisă. Orice decizie nouă care atinge arhitectura intră aici, cu versiune, rând în §17.1 și secțiunea de modificări, înainte de implementare.**

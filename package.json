@@ -12,13 +12,15 @@
     "i18n:check": "node packages/i18n/scripts/check.mjs",
     "guards:verify": "node scripts/guards-verify.mjs",
     "format": "prettier --write \"**/*.{ts,tsx,json,mjs}\" --ignore-path .prettierignore",
-    "format:check": "prettier --check \"**/*.{ts,tsx,json,mjs}\" --ignore-path .prettierignore"
+    "format:check": "prettier --check \"**/*.{ts,tsx,json,mjs}\" --ignore-path .prettierignore",
+    "founder:bootstrap": "tsx core/identity/scripts/bootstrap-founder.ts"
   },
   "devDependencies": {
     "@typescript-eslint/parser": "^8.72.0",
     "eslint-plugin-boundaries": "^7.0.0",
     "eslint-plugin-i18next": "^6.1.0",
     "prettier": "^3.4.0",
+    "tsx": "^4.19.0",
     "turbo": "^2.5.0",
     "typescript": "^6.0.0"
   },

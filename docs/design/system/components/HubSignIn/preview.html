@@ -278,7 +278,7 @@ html,body{min-height:100%}
 .lb-empty{margin-top:calc(-64px - var(--space-8));position:relative;z-index:1}
 .lb.tablet .lb-chev{display:none}
 .lb.mobile .lb-band{padding:var(--space-6) 0 var(--space-8)}
-.lb.mobile .display-l{font-size:32px;line-height:36px}
+.lb.mobile .display-hub{font-size:32px;line-height:36px}
 .lb.mobile .lb-day{font-size:15px;line-height:30px}
 .lb.mobile .lb-chip{height:28px;font-size:13px;gap:var(--space-1);padding:0 var(--space-2) 0 var(--space-1)}
 .lb.mobile .lb-mine{margin-top:0}
@@ -304,7 +304,7 @@ html,body{min-height:100%}
 .sb.mobile .sb-formside{border-radius:var(--radius-xl) var(--radius-xl) 0 0;margin-top:calc(var(--space-6) * -1);position:relative}
 .sb.mobile .auth-main{padding:var(--space-6) var(--space-4);align-items:stretch}
 .sb.mobile .sb-card{width:100%}
-.sb.mobile .display-l{font-size:32px;line-height:36px}
+.sb.mobile .display-hub{font-size:32px;line-height:36px}
 @media (prefers-reduced-motion: reduce){.lb *,.sb *{transition:none!important}}
 
 </style>
@@ -465,7 +465,7 @@ function SignIn({ mode, th }) {
     mob ? null : h(Chevrons, { cls: "sb-chev" }),
     mob ? null : h("p", { className: "caption sb-foot" }, "© 2026 Ventora Systems"));
   const form = h("div", { className: "auth-card sb-card" },
-    h("div", { className: "auth-head" }, h("h1", { className: "display-l" }, "Bine ai revenit"), h("p", { className: "body muted" }, "Intră în contul tău Ventora.")),
+    h("div", { className: "auth-head" }, h("h1", { className: "display-hub" }, "Bine ai revenit"), h("p", { className: "body muted" }, "Intră în contul tău Ventora.")),
     err && h(V.Notice, { tone: "danger", title: "E-mailul sau parola nu sunt corecte", actions: h(V.Button, { size: "sm", variant: "quiet" }, "Ai uitat parola?") }, "Verifică-le și încearcă din nou."),
     h(V.FormField, { label: "E-mail" }, h(V.Input, { type: "email", autoComplete: "username", icon: "mail", defaultValue: "bianca@salonaurora.ro", size: mob ? "lg" : "md" })),
     h(V.FormField, { label: "Parolă", counter: h("a", { className: "v-link caption", href: "#" }, "Ai uitat parola?") }, h(V.Input, { type: "password", autoComplete: "current-password", defaultValue: "ventora2026", invalid: err, size: mob ? "lg" : "md" })),

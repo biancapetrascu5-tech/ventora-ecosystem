@@ -250,6 +250,65 @@ html,body{min-height:100%}
 .fxframe .caption{color:var(--ink-muted)}
 @container (max-width:420px){.fxlang{grid-template-columns:32px minmax(0,1fr) auto}.fxlang .v-iconbtn{display:none}}
 
+/* Direcția B — launcher */
+.lb .v-shell__content{padding-top:0}
+.lb .lb-wrap{padding-top:0;gap:var(--space-8)}
+.lb-band{position:relative;padding:var(--space-8) 0 112px;box-shadow:0 0 0 100vmax var(--brand-surface);clip-path:inset(0 -100vmax)}
+.lb-hero{position:relative;display:flex;justify-content:space-between;gap:var(--space-8);min-width:0}
+.lb-hero__text{display:flex;flex-direction:column;gap:var(--space-3);min-width:0}
+.lb-eyebrow{margin:0;text-transform:uppercase;color:var(--ink-muted)}
+.lb-day{margin:0;color:var(--ink-secondary);max-width:780px}
+.lb-chip{display:inline-flex;align-items:center;gap:var(--space-2);height:32px;margin:2px 0;padding:0 var(--space-3) 0 var(--space-1);border-radius:var(--radius-full);background:var(--sheet);box-shadow:inset 0 0 0 var(--border-width) var(--line);color:var(--ink);font-weight:600;text-decoration:none;vertical-align:middle;transition:box-shadow var(--duration-fast) var(--ease-standard),transform var(--duration-fast) var(--ease-standard)}
+.lb-chip:hover{box-shadow:inset 0 0 0 var(--border-width) var(--line-strong);transform:translateY(-1px);text-decoration:none}
+.lb-chip svg.v-appicon{border-radius:var(--radius-full);overflow:hidden}
+.lb-dot{width:var(--dot-size);height:var(--dot-size);border-radius:var(--radius-full);background:var(--attention);margin-left:calc(var(--space-1) * -1)}
+.b-chev{fill:none;stroke:var(--line-strong);stroke-width:1.5}
+.lb-chev{position:absolute;right:var(--space-4);top:calc(var(--space-2) * -1);width:150px;height:200px}
+.lb-sechead{margin-top:var(--space-8)}
+.lb-mine{display:flex;flex-direction:column;gap:var(--space-4);margin-top:calc(-96px - var(--space-8));position:relative;z-index:1}
+.lb-other .rows{background:var(--sheet)}
+.lb-other__intro{margin:0 0 var(--space-3);color:var(--ink-secondary)}
+.lb-other .v-apptile--row{gap:var(--space-3);padding:var(--space-3) var(--space-4);min-height:0}
+.lb-other .v-apptile--row > svg.v-appicon{width:36px;height:36px;flex:none;align-self:flex-start;margin-top:2px}
+.lb-other .v-apptile--row .v-apptile__text{flex-direction:row;flex-wrap:wrap;align-items:center;column-gap:var(--space-2);row-gap:2px}
+.lb-other .v-apptile--row .v-apptile__text > .body-strong{font-size:16px;line-height:24px;font-weight:600;color:var(--ink)}
+.lb-other .v-apptile--row .v-apptile__badges{display:inline-flex;gap:var(--space-1)}
+.lb-other .v-apptile__desc,.lb-other .v-apptile__cost{flex-basis:100%;font-size:14px;line-height:20px}
+.lb-other .v-apptile__desc{color:var(--ink-secondary)}
+.lb-empty{margin-top:calc(-64px - var(--space-8));position:relative;z-index:1}
+.lb.tablet .lb-chev{display:none}
+.lb.mobile .lb-band{padding:var(--space-6) 0 var(--space-8)}
+.lb.mobile .display-hub{font-size:32px;line-height:36px}
+.lb.mobile .lb-day{font-size:15px;line-height:30px}
+.lb.mobile .lb-chip{height:28px;font-size:13px;gap:var(--space-1);padding:0 var(--space-2) 0 var(--space-1)}
+.lb.mobile .lb-mine{margin-top:0}
+.lb.mobile .lb-empty{margin-top:0}
+.lb.mobile .lb-other .v-apptile--row{flex-wrap:wrap;row-gap:var(--space-2)}
+.lb.mobile .lb-other .v-apptile--row .v-apptile__text{flex:1 1 calc(100% - 48px)}
+.lb.mobile .lb-other .v-apptile--row .v-apptile__act{margin-left:48px}
+/* Direcția B — sign-in */
+.sb{flex-direction:row}
+.sb-brand{position:relative;flex:0 0 46%;display:flex;flex-direction:column;gap:var(--space-8);padding:var(--space-6) var(--space-12) var(--space-8);overflow:hidden;box-sizing:border-box}
+.sb-brand__top{display:flex;justify-content:space-between;align-items:center}
+.sb-statement{margin:auto 0 0;position:relative;z-index:1;color:var(--ink)}
+.sb-chev{position:absolute;right:-56px;top:96px;width:340px;height:460px}
+.sb-foot{margin:0;color:var(--ink-muted)}
+.sb-formside{flex:1;display:flex;flex-direction:column;min-width:0;background:var(--sheet)}
+.sb-top{justify-content:flex-end}
+.sb .auth-main{align-items:center;padding:var(--space-8)}
+.sb .sb-card{width:400px;max-width:100%;border:0;background:transparent;padding:0;box-shadow:none}
+.sb.tablet .sb-brand{flex-basis:40%;padding:var(--space-6) var(--space-8) var(--space-8)}
+.sb.tablet .sb-statement{font-size:40px;line-height:44px}
+.sb.mobile{flex-direction:column}
+.sb.mobile .sb-brand{flex:none;padding:var(--space-4) var(--space-4) var(--space-10)}
+.sb.mobile .sb-formside{border-radius:var(--radius-xl) var(--radius-xl) 0 0;margin-top:calc(var(--space-6) * -1);position:relative}
+.sb.mobile .auth-main{padding:var(--space-6) var(--space-4);align-items:stretch}
+.sb.mobile .sb-card{width:100%}
+.sb.mobile .display-hub{font-size:32px;line-height:36px}
+@media (prefers-reduced-motion: reduce){.lb *,.sb *{transition:none!important}}
+.sb .sb-card.wide{width:460px}
+.sb.mobile .sb-card.wide{width:100%}
+
 </style>
 </head>
 <body>
@@ -394,11 +453,27 @@ function CommercialPrefs({ mode }) {
 function Req({ ok, children }) {
   return /* @__PURE__ */ React.createElement("li", { className: ok ? "req ok" : "req" }, /* @__PURE__ */ React.createElement(V.Icon, { name: ok ? "circle-check" : "circle", size: 16 }), /* @__PURE__ */ React.createElement("span", { className: "body-small" }, children));
 }
-function Invite({ mode, th }) {
-  const expired = mode === "mobile" && th === "dark";
-  return /* @__PURE__ */ React.createElement("div", { className: "auth " + mode }, /* @__PURE__ */ React.createElement("header", { className: "auth-top" }, /* @__PURE__ */ React.createElement(V.Logo, { size: 36 }), /* @__PURE__ */ React.createElement(V.LanguageSwitcher, { value: "ro", onChange: () => {
-  } })), /* @__PURE__ */ React.createElement("main", { className: "auth-main" }, /* @__PURE__ */ React.createElement("div", { className: "auth-card wide" }, /* @__PURE__ */ React.createElement("div", { className: "inv-head" }, /* @__PURE__ */ React.createElement("span", { className: "inv-mark" }, "SA"), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("p", { className: "caption muted" }, "Invita\u021Bie de la Bianca Petra\u0219cu"), /* @__PURE__ */ React.createElement("h1", { className: "display-m" }, "Intr\u0103 \xEEn echipa Salon Aurora"))), expired ? /* @__PURE__ */ React.createElement(V.Notice, { tone: "attention", title: "Invita\u021Bia a expirat", actions: /* @__PURE__ */ React.createElement(V.Button, { variant: "primary", size: "sm", icon: "send" }, "Cere o invita\u021Bie nou\u0103") }, "Invita\u021Biile sunt valabile 7 zile. Cere una nou\u0103: trimitem cererea c\u0103tre Bianca Petra\u0219cu, iar linkul nou \xEEl prime\u0219ti pe e-mail.") : /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", { className: "inv-role" }, /* @__PURE__ */ React.createElement("p", { className: "body" }, "Rolul t\u0103u: ", /* @__PURE__ */ React.createElement("strong", { className: "body-strong" }, "Recep\u021Bie"), ". Vei avea acces la:"), /* @__PURE__ */ React.createElement("div", { className: "r", style: { gap: "var(--space-2)" } }, ["booking", "crm", "shifts"].map((a) => /* @__PURE__ */ React.createElement("span", { key: a, className: "inv-app" }, /* @__PURE__ */ React.createElement(V.AppIcon, { app: a, size: 24 }), /* @__PURE__ */ React.createElement("span", { className: "body-small" }, V.APPS[a].name))))), /* @__PURE__ */ React.createElement(V.FormField, { label: "Nume complet", required: true }, /* @__PURE__ */ React.createElement(V.Input, { defaultValue: "Ioana Pavel" })), /* @__PURE__ */ React.createElement("div", { className: "inv-email" }, /* @__PURE__ */ React.createElement("span", { className: "caption muted" }, "E-mail"), /* @__PURE__ */ React.createElement("span", { className: "body-strong" }, "ioana.pavel@salonaurora.ro"), /* @__PURE__ */ React.createElement("span", { className: "caption muted" }, "Pe aceast\u0103 adres\u0103 ai primit invita\u021Bia.")), /* @__PURE__ */ React.createElement(V.FormField, { label: "Parol\u0103 nou\u0103", required: true }, /* @__PURE__ */ React.createElement(V.Input, { type: "password", autoComplete: "new-password", defaultValue: "aurora2026" })), /* @__PURE__ */ React.createElement("ul", { className: "reqs" }, /* @__PURE__ */ React.createElement(Req, { ok: true }, "Cel pu\u021Bin 10 caractere"), /* @__PURE__ */ React.createElement(Req, { ok: true }, "Cel pu\u021Bin o cifr\u0103"), /* @__PURE__ */ React.createElement(Req, null, "Cel pu\u021Bin o liter\u0103 mare")), /* @__PURE__ */ React.createElement(V.Checkbox, { label: "Accept Termenii \u0219i Politica de confiden\u021Bialitate", description: "Le po\u021Bi citi oric\xE2nd din Set\u0103ri.", defaultChecked: true }), /* @__PURE__ */ React.createElement(V.Button, { variant: "primary", size: "lg", block: true }, "Accept\u0103 invita\u021Bia"), /* @__PURE__ */ React.createElement("p", { className: "caption muted center" }, "Invita\u021Bia e valabil\u0103 p\xE2n\u0103 pe 31 octombrie 2026.")))));
+function Chevrons({ cls }) {
+  return React.createElement("svg", { className: "b-chev " + (cls || ""), viewBox: "0 0 176 240", "aria-hidden": true },
+    [40, 72, 104].map((y) => React.createElement("polyline", { key: y, points: `32,${y} 88,${y + 80} 144,${y}` })),
+    React.createElement("polyline", { points: "48,168 88,224 128,168" }));
 }
+/* Direcția B (R-B6): the invitation uses the sign-in's brand panel. */
+function Invite({ mode, th }) {
+  const h = React.createElement;
+  const expired = mode === "mobile" && th === "dark";
+  const mob = mode === "mobile";
+  const lang = h(V.LanguageSwitcher, { value: "ro", onChange: () => {} });
+  const card = /* @__PURE__ */ React.createElement("div", { className: "auth-card wide sb-card" }, /* @__PURE__ */ React.createElement("div", { className: "inv-head" }, /* @__PURE__ */ React.createElement("span", { className: "inv-mark" }, "SA"), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("p", { className: "caption muted" }, "Invita\u021Bie de la Bianca Petra\u0219cu"), /* @__PURE__ */ React.createElement("h1", { className: "display-m" }, "Intr\u0103 \xEEn echipa Salon Aurora"))), expired ? /* @__PURE__ */ React.createElement(V.Notice, { tone: "attention", title: "Invita\u021Bia a expirat", actions: /* @__PURE__ */ React.createElement(V.Button, { variant: "primary", size: "sm", icon: "send" }, "Cere o invita\u021Bie nou\u0103") }, "Invita\u021Biile sunt valabile 7 zile. Cere una nou\u0103: trimitem cererea c\u0103tre Bianca Petra\u0219cu, iar linkul nou \xEEl prime\u0219ti pe e-mail.") : /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", { className: "inv-role" }, /* @__PURE__ */ React.createElement("p", { className: "body" }, "Rolul t\u0103u: ", /* @__PURE__ */ React.createElement("strong", { className: "body-strong" }, "Recep\u021Bie"), ". Vei avea acces la:"), /* @__PURE__ */ React.createElement("div", { className: "r", style: { gap: "var(--space-2)" } }, ["booking", "crm", "shifts"].map((a) => /* @__PURE__ */ React.createElement("span", { key: a, className: "inv-app" }, /* @__PURE__ */ React.createElement(V.AppIcon, { app: a, size: 24 }), /* @__PURE__ */ React.createElement("span", { className: "body-small" }, V.APPS[a].name))))), /* @__PURE__ */ React.createElement(V.FormField, { label: "Nume complet", required: true }, /* @__PURE__ */ React.createElement(V.Input, { defaultValue: "Ioana Pavel" })), /* @__PURE__ */ React.createElement("div", { className: "inv-email" }, /* @__PURE__ */ React.createElement("span", { className: "caption muted" }, "E-mail"), /* @__PURE__ */ React.createElement("span", { className: "body-strong" }, "ioana.pavel@salonaurora.ro"), /* @__PURE__ */ React.createElement("span", { className: "caption muted" }, "Pe aceast\u0103 adres\u0103 ai primit invita\u021Bia.")), /* @__PURE__ */ React.createElement(V.FormField, { label: "Parol\u0103 nou\u0103", required: true }, /* @__PURE__ */ React.createElement(V.Input, { type: "password", autoComplete: "new-password", defaultValue: "aurora2026" })), /* @__PURE__ */ React.createElement("ul", { className: "reqs" }, /* @__PURE__ */ React.createElement(Req, { ok: true }, "Cel pu\u021Bin 10 caractere"), /* @__PURE__ */ React.createElement(Req, { ok: true }, "Cel pu\u021Bin o cifr\u0103"), /* @__PURE__ */ React.createElement(Req, null, "Cel pu\u021Bin o liter\u0103 mare")), /* @__PURE__ */ React.createElement(V.Checkbox, { label: "Accept Termenii \u0219i Politica de confiden\u021Bialitate", description: "Le po\u021Bi citi oric\xE2nd din Set\u0103ri.", defaultChecked: true }), /* @__PURE__ */ React.createElement(V.Button, { variant: "primary", size: "lg", block: true }, "Accept\u0103 invita\u021Bia"), /* @__PURE__ */ React.createElement("p", { className: "caption muted center" }, "Invita\u021Bia e valabil\u0103 p\xE2n\u0103 pe 31 octombrie 2026.")));
+  const panel = h(V.BrandZone, { as: "aside", className: "sb-brand" },
+    h("div", { className: "sb-brand__top" }, h(V.Logo, { size: mob ? 32 : 40 }), mob ? lang : null),
+    mob ? null : h("p", { className: "display-xl sb-statement" }, "Afacerea ta.", h("br"), "Într-un singur loc."),
+    mob ? null : h(Chevrons, { cls: "sb-chev" }),
+    mob ? null : h("p", { className: "caption sb-foot" }, "© 2026 Ventora Systems"));
+  return h("div", { className: "auth sb " + mode }, panel,
+    h("div", { className: "sb-formside" }, mob ? null : h("header", { className: "auth-top sb-top" }, lang), h("main", { className: "auth-main" }, card)));
+}
+
 mount(/* @__PURE__ */ React.createElement(Screens, { title: "Acceptarea invita\u021Biei \u0219i setarea parolei", notes: ["Mobil \xB7 Dark: invita\u021Bie expirat\u0103"], render: (m, th) => /* @__PURE__ */ React.createElement(Invite, { mode: m, th }) }));
 </script>
 </body>

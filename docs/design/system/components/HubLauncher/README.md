@@ -4,7 +4,7 @@ The launcher (direction B "Navy de comandă"): a brand band with the date and bu
 
 Shown at 1280 (desktop), 820 (tablet portrait) and 390 (phone), in light and dark, built only from the system's components.
 
-**The band** (`BrandZone`, with the ContextBar): "DUMINICĂ, 25 OCTOMBRIE · SALON AURORA" in `eyebrow`, "Bună dimineața, Bianca" in `display-l`, the day's sentence in `lead` whose links are chips (app icon, text, the peach dot when something waits for you) and lead to the work (programări → Booking · Azi, facturi → Finance, concediu → HR), then "Aplicațiile tale" with "Reordonează". On phones the section title moves below the band.
+**The band** (`BrandZone`, with the ContextBar): "DUMINICĂ, 25 OCTOMBRIE · SALON AURORA" in `eyebrow`, "Bună dimineața, Bianca" in `display-hub`, the day's sentence in `lead` whose links are chips (app icon, text, the peach dot when something waits for you) and lead to the work (programări → Booking · Azi, facturi → Finance, concediu → HR), then "Aplicațiile tale" with "Reordonează". On phones the section title moves below the band.
 
 **Your apps** are an `AppDock`: icons with their names; hover or keyboard focus opens the app's card (description and today's line, e.g. "Următoarea: 09:30 · Ana Popescu"). Phones: a 4-column icon grid. Portal is never in the dock — it is the `PortalPresence` card right under it.
 

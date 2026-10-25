@@ -470,8 +470,8 @@
  },
  "lastChange": {
   "by": "Bianca Petrașcu",
-  "at": "2026-10-25T16:08:00Z",
+  "at": "2026-10-25T16:30:00Z",
   "via": "Claude",
-  "note": "Direcția B „Navy de comandă” aplicată (V1–V11): tokeni noi și valori schimbate, BrandZone, AppDock, PortalPresence, AppLaunch v2; HubLauncher, HubSignIn, HubEmpty refăcute"
+  "note": "Recomandările R-B1–R-B7 aprobate și aplicate (V12–V18): clic doar sub cursor și întârzierea de 120ms în AppDock, texte Portal și Documents, panoul de brand pe invitație, display-hub pentru Hub"
  }
 }

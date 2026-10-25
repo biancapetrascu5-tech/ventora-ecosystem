@@ -100,7 +100,7 @@ Interfața stă pe neutri; culorile de brand apar rar și au un singur sens.
 
 ## Tipografie
 
-- **Syne** doar pentru momente de brand: `display-xl` (56/58, afirmația din panoul de autentificare, onboarding), `display-l` (40/46, salutul din launcher și din „Azi”, titlul autentificării; 32/36 pe telefon), `display-m` (titluri de secțiune din Hub, stări goale mari). Niciodată în tabele, formulare sau navigație. Valorile mari vin din direcția B (înainte 40/44 și 30/36).
+- **Syne** doar pentru momente de brand: `display-xl` (56/58, afirmația din panoul de autentificare, onboarding), `display-hub` (40/46, doar în Hub: salutul din launcher și titlul autentificării; 32/36 pe telefon), `display-l` (30/36, salutul din „Azi” în aplicații), `display-m` (titluri de secțiune din Hub, stări goale mari). Niciodată în tabele, formulare sau navigație. `display-xl` și `display-hub` vin din direcția B (înainte afirmația avea 40/44, iar salutul din launcher 30/36).
 - **DM Sans** pentru tot restul, pe bază densă de 14px: `title` (20/28, titlul paginii, al dialogului și al drawerului), `heading` (16/24, secțiuni în Sheet), `subheading` (14/20 semibold, antete de coloană, grupuri), `body` (14/20), `body-strong` (14/20 medium, numele rândului, etichetele butoanelor), `body-small` (13/18, meta), `caption` (12/16 medium, etichete de câmp, helper, pill-uri), `numeric` (28/32, KPI-uri). Doar pe banda launcher-ului: `eyebrow` (12/16 semibold, majuscule, +0,08em: data și afacerea deasupra salutului) și `lead` (18/34, fraza zilei; 15/30 pe telefon).
 - **Cifre tabulare** peste tot (`font-variant-numeric: tabular-nums` e pus pe `body`); coloanele numerice se aliniază la dreapta.
 - Fonturile sunt fișierele variabile din `fonts/` (DM Sans normal și italic, Syne), cu ș și ț corecte.
@@ -113,7 +113,7 @@ Interfața stă pe neutri; culorile de brand apar rar și au un singur sens.
 - **Umbre doar pentru ce plutește:** `shadow-1` (tile la hover), `shadow-2` (meniuri, popovere, toasturi și foaia AppDock ridicată peste banda de brand), `shadow-tile-hover` (fișa deschisă din AppDock), `shadow-3` (dialog, drawer, paletă de comenzi). Sheet-ul se separă de `canvas` printr-o linie, nu printr-o umbră.
 - **Dimensiuni:** controale `control-sm` 28 / `control-md` 36 / `control-lg` 44; pe mobil și pe ecrane tactile orice țintă are minimum `touch-target` (44px). Rânduri de tabel `row-height` 44 / `row-height-dense` 36. Spine `spine-width` 232 / `spine-width-collapsed` 64, ContextBar `contextbar-height` 56, bottom nav `bottomnav-height` 64, Drawer `drawer-width` 480.
 - **Puncte de rupere** (tokenii `breakpoint-*`): telefon 360–767px, tabletă portret 768–1023px (`breakpoint-tablet`), tabletă peisaj și laptop mic 1024–1279px (`breakpoint-laptop`), desktop 1280–1919px (`breakpoint-desktop`), ecrane late de la 1920px (`breakpoint-wide`), unde conținutul se oprește la `content-max-width` (1440px). Detaliile sunt în secțiunea Responsive de mai jos.
-- **Mișcare:** `duration-instant` 80ms (hover), `duration-fast` 140ms (meniuri, toggle), `duration-base` 220ms (drawer, dialog, toast), `duration-slow` 360ms (intrarea iconurilor în AppDock), `duration-launch` 420ms (aplicația crește din card; deschiderea durează ~850ms), cu `ease-standard`. Doar în Hub: `duration-playful` 280ms și `duration-morph` 340ms pe `ease-spring` (un mic rebound: fișa din AppDock, iconul care crește la apăsare); niciodată în aplicații. La `prefers-reduced-motion` totul devine instant.
+- **Mișcare:** `duration-instant` 80ms (hover), `duration-intent` 120ms (cât stă cursorul pe un icon din AppDock până se deschide fișa), `duration-fast` 140ms (meniuri, toggle), `duration-base` 220ms (drawer, dialog, toast), `duration-slow` 360ms (intrarea iconurilor în AppDock), `duration-launch` 420ms (aplicația crește din card; deschiderea durează ~850ms), cu `ease-standard`. Doar în Hub: `duration-playful` 280ms și `duration-morph` 340ms pe `ease-spring` (un mic rebound: fișa din AppDock, iconul care crește la apăsare); niciodată în aplicații. La `prefers-reduced-motion` totul devine instant.
 - **Straturi:** `z-sticky` < `z-shell` < `z-overlay` < `z-popover` < `z-toast`.
 
 ## Iconografie
@@ -247,7 +247,7 @@ Toate deciziile aprobate, pe scurt. Detaliile sunt aplicate în ecrane, componen
 
 **Brand:** logo-ul oficial SVG, folosit exact cum e; dark = varianta B; wordmark-ul „VENTORA” din fișier, nu text în Syne.
 
-**Ridicarea vizuală, direcția B „Navy de comandă” (V1–V11, 25 octombrie 2026)**
+**Ridicarea vizuală, direcția B „Navy de comandă” (V1–V18, 25 octombrie 2026)**
 
 | # | Decizie |
 | --- | --- |
@@ -260,8 +260,15 @@ Toate deciziile aprobate, pe scurt. Detaliile sunt aplicate în ecrane, componen
 | V7 | Deschiderea unei aplicații (`AppLaunch` v2): iconul crește la 112%, aplicația crește din cardul apăsat, iconul trece prin centru și se așază în bara aplicației (~850ms). Ecranul de până acum (icon și nume în centru) rămâne starea de încărcare. |
 | V8 | Mișcarea cu rebound (`ease-spring`) există doar în Hub. |
 | V9 | „Alte aplicații Ventora”: rânduri compacte, numele în față (16/24 semibold, lângă starea de acces), explicațiile la 14/20 în `ink-secondary`. |
-| V10 | Textele noi: „Duminică, 25 octombrie · Salon Aurora” deasupra salutului; „Afacerea ta. Într-un singur loc.” și „© 2026 Ventora Systems” în panoul de autentificare (subsolul păstrează „Termeni · Confidențialitate · Ajutor”); textele cardului Portal; liniile de azi din fișele aplicațiilor („Următoarea: 09:30 · Ana Popescu”, „1 cerere de aprobat”…). |
-| V11 | Tokeni schimbați: `canvas` light #F2F3F0, `radius-xl` 18px, `shadow-2` mai adâncă, `display-xl` 56/58, `display-l` 40/46. Roluri noi: `brand-surface`, `brand-raised`, `on-brand`, `on-brand-muted`, `brand-line`, `brand-line-strong`, `brand-control-border`, `hover-accent`, `shadow-tile-hover`, `dock-icon`, `dock-icon-compact`, `dock-icon-phone`, `dock-card-w`, `duration-playful`, `duration-morph`, `duration-launch`, `ease-spring`, stilurile `lead` și `eyebrow`. |
+| V10 | Textele noi: „Duminică, 25 octombrie · Salon Aurora” deasupra salutului; „Afacerea ta. Într-un singur loc.” și „© 2026 Ventora Systems” în panoul de autentificare (subsolul păstrează „Termeni · Confidențialitate · Ajutor”); textele cardului Portal; liniile de azi din fișele aplicațiilor („Următoarea: 09:30 · Ana Popescu”, „1 cerere de aprobat”…), toate cu plural ICU. |
+| V11 | Tokeni schimbați: `canvas` light #F2F3F0, `radius-xl` 18px, `shadow-2` mai adâncă, `display-xl` 56/58. Roluri noi: `brand-surface`, `brand-raised`, `on-brand`, `on-brand-muted`, `brand-line`, `brand-line-strong`, `brand-control-border`, `hover-accent`, `shadow-tile-hover`, `dock-icon`, `dock-icon-compact`, `dock-icon-phone`, `dock-card-w`, `duration-intent`, `duration-playful`, `duration-morph`, `duration-launch`, `ease-spring`, stilurile `display-hub`, `lead` și `eyebrow`. |
+| V12 (R-B1) | În AppDock, un click deschide doar aplicația de sub cursor: partea fișei care trece peste vecini nu e clicabilă, iar mutarea mouse-ului pe vecin îl deschide pe el. |
+| V13 (R-B2) | Fișa din AppDock se deschide după 120ms de oprire a cursorului (`duration-intent`) și se închide imediat. |
+| V14 (R-B3) | Cardul Portal: „Clienții te găsesc în Portal și își fac programări acolo. De aici schimbi ce văd ei.” |
+| V15 (R-B4) | Pentru membri: „Pagina o pot schimba proprietarul, adminii și managerul aplicației Portal.” |
+| V16 (R-B5) | Linia de azi din Documents: „Ultimul deschis: {document} · {când}”. |
+| V17 (R-B6) | Acceptarea invitației (HubInvite) folosește panoul de brand al autentificării. |
+| V18 (R-B7) | În aplicații salutul din „Azi” rămâne `display-l` 30/36; mărimea nouă e `display-hub` 40/46, doar în launcher și la autentificare. |
 
 ## Ce nu e încă aici
 

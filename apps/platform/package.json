@@ -15,6 +15,7 @@
     "@ventora/config": "workspace:*",
     "@ventora/contracts": "workspace:*",
     "@ventora/i18n": "workspace:*",
+    "@ventora/identity": "workspace:*",
     "@ventora/tokens": "workspace:*",
     "@ventora/ui": "workspace:*",
     "lucide-react": "1.61.0",
