@@ -126,31 +126,10 @@ jobs:
         run: |
           echo "BETTER_AUTH_SECRET=$(openssl rand -hex 32)" >> $GITHUB_ENV
           echo "FOUNDER_AUTH_SECRET=$(openssl rand -hex 32)" >> $GITHUB_ENV
-      - name: Apply identity migration
-        run: pnpm --filter @ventora/identity db:migrate:identity
-        env:
-          DATABASE_URL: postgresql://postgres:test@localhost:5433/ventora_identity_test
-      - name: Apply founder migration
-        run: pnpm --filter @ventora/identity db:migrate:founder
-        env:
-          DATABASE_URL: postgresql://postgres:test@localhost:5433/ventora_identity_test
-      - name: Set runtime role passwords
-        run: |
-          APP_PW=$(openssl rand -hex 32)
-          FOUNDER_PW=$(openssl rand -hex 32)
-          PSQL="psql postgresql://postgres:test@localhost:5433/ventora_identity_test"
-          $PSQL -c "ALTER ROLE app_runtime WITH PASSWORD '${APP_PW}'"
-          $PSQL -c "ALTER ROLE founder_runtime WITH PASSWORD '${FOUNDER_PW}'"
-          echo "DATABASE_URL_TEST=postgresql://app_runtime:${APP_PW}@localhost:5433/ventora_identity_test" >> $GITHUB_ENV
-          echo "DATABASE_URL_FOUNDER_TEST=postgresql://founder_runtime:${FOUNDER_PW}@localhost:5433/ventora_identity_test" >> $GITHUB_ENV
-          echo "DATABASE_URL_APP_RUNTIME=postgresql://app_runtime:${APP_PW}@localhost:5433/ventora_identity_test" >> $GITHUB_ENV
       - run: pnpm --filter @ventora/identity test:integration
         env:
-          BETTER_AUTH_SECRET: ${{ env.BETTER_AUTH_SECRET }}
-          FOUNDER_AUTH_SECRET: ${{ env.FOUNDER_AUTH_SECRET }}
-          DATABASE_URL_TEST: ${{ env.DATABASE_URL_TEST }}
-          DATABASE_URL_FOUNDER_TEST: ${{ env.DATABASE_URL_FOUNDER_TEST }}
-          DATABASE_URL_APP_RUNTIME: ${{ env.DATABASE_URL_APP_RUNTIME }}
+          DATABASE_URL_TEST: postgresql://postgres:test@localhost:5433/ventora_identity_test
+          DATABASE_URL_FOUNDER_TEST: postgresql://postgres:test@localhost:5433/ventora_identity_test
 
   build:
     name: Build

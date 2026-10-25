@@ -15,38 +15,32 @@ export async function checkRateLimit(
   opts: { increment?: boolean } = { increment: true },
 ): Promise<RateLimitResult> {
   const db = getIdentityDb();
-  const now = Date.now();
-  const windowMs = windowSeconds * 1000;
+  const now = new Date();
+  const resetAt = new Date(now.getTime() + windowSeconds * 1000);
 
-  const existing = await db.rateLimit.findUnique({ where: { key } });
+  const record = await db.rateLimit.upsert({
+    where: { key },
+    update: {
+      attempts: opts.increment ? { increment: 1 } : undefined,
+    },
+    create: {
+      key,
+      attempts: 1,
+      resetAt,
+    },
+  });
 
-  if (!existing) {
-    await db.rateLimit.create({
-      data: { key, count: 1, lastRequest: new Date(now) },
-    });
-    return { allowed: true };
-  }
-
-  const lastRequestMs = Number(existing.lastRequest);
-
-  if (lastRequestMs + windowMs < now) {
+  if (record.resetAt < now) {
     await db.rateLimit.update({
       where: { key },
-      data: { count: 1, lastRequest: new Date(now) },
+      data: { attempts: 1, resetAt },
     });
     return { allowed: true };
   }
 
-  if (existing.count >= maxAttempts) {
-    const retryAfter = Math.ceil((lastRequestMs + windowMs - now) / 1000);
+  if (record.attempts > maxAttempts) {
+    const retryAfter = Math.ceil((record.resetAt.getTime() - now.getTime()) / 1000);
     return { allowed: false, retryAfter };
-  }
-
-  if (opts.increment !== false) {
-    await db.rateLimit.update({
-      where: { key },
-      data: { count: { increment: 1 }, lastRequest: new Date(now) },
-    });
   }
 
   return { allowed: true };

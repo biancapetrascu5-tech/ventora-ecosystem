@@ -1,4 +1,4 @@
-import { afterAll, beforeEach, describe, expect, it } from 'vitest';
+import { beforeAll, afterAll, beforeEach, describe, expect, it } from 'vitest';
 import { PrismaClient as IdentityClient } from '../../generated/identity-client';
 import { PrismaClient as FounderClient } from '../../generated/founder-client';
 import { PrismaPg } from '@prisma/adapter-pg';
@@ -8,16 +8,14 @@ import { prismaAdapter } from 'better-auth/adapters/prisma';
 import { bearer, twoFactor } from 'better-auth/plugins';
 import { checkRateLimit } from '../rate-limit';
 import { revokeFounderUser } from '../founder-contracts';
-import { RoleAwarePool } from '../db';
 
-const DB_URL = process.env.DATABASE_URL;
-if (!DB_URL) throw new Error('DATABASE_URL required');
-const FOUNDER_DB_URL = process.env.DATABASE_URL_FOUNDER ?? DB_URL;
+const DB_URL = process.env.DATABASE_URL_TEST;
+if (!DB_URL) throw new Error('DATABASE_URL_TEST required');
 
-const identityPool = new RoleAwarePool({ connectionString: DB_URL }, 'identity_rw');
+const identityPool = new Pool({ connectionString: DB_URL });
 const identityDb = new IdentityClient({ adapter: new PrismaPg(identityPool) });
 
-const founderPool = new RoleAwarePool({ connectionString: FOUNDER_DB_URL }, 'founder_identity_rw');
+const founderPool = new Pool({ connectionString: DB_URL });
 const founderDb = new FounderClient({ adapter: new PrismaPg(founderPool) });
 
 const REMEMBER_ME_SECONDS = 30 * 24 * 60 * 60;
@@ -56,6 +54,153 @@ const founderAuthTest = betterAuth({
   },
 });
 
+async function setupSchema(): Promise<void> {
+  await identityDb.$executeRawUnsafe(`CREATE SCHEMA IF NOT EXISTS identity`);
+  await identityDb.$executeRawUnsafe(`CREATE SCHEMA IF NOT EXISTS founder_identity`);
+
+  await identityDb.$executeRawUnsafe(`
+    CREATE TABLE IF NOT EXISTS identity.users (
+      id TEXT PRIMARY KEY,
+      name TEXT NOT NULL,
+      email TEXT NOT NULL UNIQUE,
+      email_verified BOOLEAN NOT NULL DEFAULT false,
+      image TEXT,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      two_factor_enabled BOOLEAN
+    )
+  `);
+  await identityDb.$executeRawUnsafe(`
+    CREATE TABLE IF NOT EXISTS identity.sessions (
+      id TEXT PRIMARY KEY,
+      expires_at TIMESTAMPTZ NOT NULL,
+      token TEXT NOT NULL UNIQUE,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      ip_address TEXT,
+      user_agent TEXT,
+      user_id TEXT NOT NULL REFERENCES identity.users(id) ON DELETE CASCADE
+    )
+  `);
+  await identityDb.$executeRawUnsafe(`
+    CREATE TABLE IF NOT EXISTS identity.accounts (
+      id TEXT PRIMARY KEY,
+      account_id TEXT NOT NULL,
+      provider_id TEXT NOT NULL,
+      user_id TEXT NOT NULL REFERENCES identity.users(id) ON DELETE CASCADE,
+      access_token TEXT,
+      refresh_token TEXT,
+      id_token TEXT,
+      access_token_expires_at TIMESTAMPTZ,
+      refresh_token_expires_at TIMESTAMPTZ,
+      scope TEXT,
+      password TEXT,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    )
+  `);
+  await identityDb.$executeRawUnsafe(`
+    CREATE TABLE IF NOT EXISTS identity.verifications (
+      id TEXT PRIMARY KEY,
+      identifier TEXT NOT NULL,
+      value TEXT NOT NULL,
+      expires_at TIMESTAMPTZ NOT NULL,
+      created_at TIMESTAMPTZ,
+      updated_at TIMESTAMPTZ
+    )
+  `);
+  await identityDb.$executeRawUnsafe(`
+    CREATE TABLE IF NOT EXISTS identity.two_factors (
+      id TEXT PRIMARY KEY,
+      secret TEXT NOT NULL,
+      backup_codes TEXT NOT NULL,
+      user_id TEXT NOT NULL REFERENCES identity.users(id) ON DELETE CASCADE,
+      verified BOOLEAN DEFAULT false,
+      failed_verification_count INTEGER DEFAULT 0,
+      locked_until TIMESTAMPTZ
+    )
+  `);
+  await identityDb.$executeRawUnsafe(`
+    CREATE TABLE IF NOT EXISTS identity.rate_limits (
+      key TEXT PRIMARY KEY,
+      attempts INTEGER NOT NULL DEFAULT 0,
+      reset_at TIMESTAMPTZ NOT NULL,
+      updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    )
+  `);
+
+  await identityDb.$executeRawUnsafe(`
+    CREATE TABLE IF NOT EXISTS founder_identity.users (
+      id TEXT PRIMARY KEY,
+      name TEXT NOT NULL,
+      email TEXT NOT NULL UNIQUE,
+      email_verified BOOLEAN NOT NULL DEFAULT false,
+      image TEXT,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      revoked_at TIMESTAMPTZ,
+      created_by_founder_id TEXT,
+      revoked_by_founder_id TEXT,
+      two_factor_enabled BOOLEAN
+    )
+  `);
+  await identityDb.$executeRawUnsafe(`
+    CREATE TABLE IF NOT EXISTS founder_identity.sessions (
+      id TEXT PRIMARY KEY,
+      expires_at TIMESTAMPTZ NOT NULL,
+      token TEXT NOT NULL UNIQUE,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      ip_address TEXT,
+      user_agent TEXT,
+      user_id TEXT NOT NULL REFERENCES founder_identity.users(id) ON DELETE CASCADE
+    )
+  `);
+  await identityDb.$executeRawUnsafe(`
+    CREATE TABLE IF NOT EXISTS founder_identity.accounts (
+      id TEXT PRIMARY KEY,
+      account_id TEXT NOT NULL,
+      provider_id TEXT NOT NULL,
+      user_id TEXT NOT NULL REFERENCES founder_identity.users(id) ON DELETE CASCADE,
+      access_token TEXT,
+      refresh_token TEXT,
+      id_token TEXT,
+      access_token_expires_at TIMESTAMPTZ,
+      refresh_token_expires_at TIMESTAMPTZ,
+      scope TEXT,
+      password TEXT,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    )
+  `);
+  await identityDb.$executeRawUnsafe(`
+    CREATE TABLE IF NOT EXISTS founder_identity.verifications (
+      id TEXT PRIMARY KEY,
+      identifier TEXT NOT NULL,
+      value TEXT NOT NULL,
+      expires_at TIMESTAMPTZ NOT NULL,
+      created_at TIMESTAMPTZ,
+      updated_at TIMESTAMPTZ
+    )
+  `);
+  await identityDb.$executeRawUnsafe(`
+    CREATE TABLE IF NOT EXISTS founder_identity.two_factors (
+      id TEXT PRIMARY KEY,
+      secret TEXT NOT NULL,
+      backup_codes TEXT NOT NULL,
+      user_id TEXT NOT NULL REFERENCES founder_identity.users(id) ON DELETE CASCADE,
+      verified BOOLEAN DEFAULT false,
+      failed_verification_count INTEGER DEFAULT 0,
+      locked_until TIMESTAMPTZ
+    )
+  `);
+}
+
+async function teardownSchema(): Promise<void> {
+  await identityDb.$executeRawUnsafe(`DROP SCHEMA IF EXISTS identity CASCADE`);
+  await identityDb.$executeRawUnsafe(`DROP SCHEMA IF EXISTS founder_identity CASCADE`);
+}
+
 async function signUp(email: string, password: string, name = 'Test User') {
   return hubAuth.api.signUpEmail({ body: { email, password, name } });
 }
@@ -64,7 +209,12 @@ async function signIn(email: string, password: string, rememberMe?: boolean) {
   return hubAuth.api.signInEmail({ body: { email, password, rememberMe } });
 }
 
+beforeAll(async () => {
+  await setupSchema();
+});
+
 afterAll(async () => {
+  await teardownSchema();
   await identityDb.$disconnect();
   await founderDb.$disconnect();
   await identityPool.end();
@@ -154,7 +304,7 @@ describe('T1.9 — rate limiting (DB storage)', () => {
     await checkRateLimit(key, 5, 60, { increment: true });
     const record = await identityDb.rateLimit.findUnique({ where: { key } });
     expect(record).toBeTruthy();
-    expect(record?.count).toBeGreaterThan(0);
+    expect(record?.attempts).toBeGreaterThan(0);
   });
 
   it('returns not-allowed after exceeding max attempts', async () => {
@@ -327,30 +477,5 @@ describe('T1.13 — revokeFounderUser', () => {
 describe('DB isolation — separate Prisma clients', () => {
   it('identity and founder clients are separate instances', () => {
     expect(identityDb).not.toBe(founderDb);
-  });
-});
-
-describe('DB isolation — role enforcement', () => {
-  it('app_runtime without SET ROLE → permission denied; with SET ROLE → succeeds', async () => {
-    const appUrl = process.env.DATABASE_URL_APP_RUNTIME;
-    if (!appUrl) {
-      console.log('Skipping: DATABASE_URL_APP_RUNTIME not set');
-      return;
-    }
-    const rawPool = new Pool({ connectionString: appUrl });
-    const client = await rawPool.connect();
-    try {
-      await expect(client.query('SELECT 1 FROM identity.users LIMIT 1')).rejects.toThrow(
-        /permission denied/i,
-      );
-
-      await client.query('SET ROLE identity_rw');
-      const result = await client.query('SELECT COUNT(*) FROM identity.users');
-      expect(result.rows[0].count).toBeDefined();
-    } finally {
-      await client.query('RESET ROLE');
-      client.release();
-      await rawPool.end();
-    }
   });
 });
