@@ -58,7 +58,8 @@ CREATE TABLE IF NOT EXISTS lab_core.ba_users (
   "emailVerified" BOOLEAN NOT NULL,
   image TEXT,
   "createdAt" TIMESTAMPTZ NOT NULL,
-  "updatedAt" TIMESTAMPTZ NOT NULL
+  "updatedAt" TIMESTAMPTZ NOT NULL,
+  "twoFactorEnabled" BOOLEAN
 );
 
 CREATE TABLE IF NOT EXISTS lab_core.ba_sessions (
@@ -123,7 +124,8 @@ CREATE TABLE IF NOT EXISTS lab_core.ba_invitations (
   role TEXT,
   status TEXT NOT NULL,
   "expiresAt" TIMESTAMPTZ NOT NULL,
-  "inviterId" TEXT NOT NULL
+  "inviterId" TEXT NOT NULL,
+  "createdAt" TIMESTAMPTZ
 );
 
 -- Two-factor plugin
@@ -131,8 +133,18 @@ CREATE TABLE IF NOT EXISTS lab_core.ba_two_factors (
   id TEXT NOT NULL PRIMARY KEY,
   secret TEXT NOT NULL,
   "backupCodes" TEXT NOT NULL,
-  "userId" TEXT NOT NULL UNIQUE
+  "userId" TEXT NOT NULL UNIQUE,
+  verified BOOLEAN,
+  "failedVerificationCount" INTEGER,
+  "lockedUntil" TIMESTAMPTZ
 );
+
+-- Add missing columns (idempotent via IF NOT EXISTS)
+ALTER TABLE lab_core.ba_users ADD COLUMN IF NOT EXISTS "twoFactorEnabled" BOOLEAN;
+ALTER TABLE lab_core.ba_invitations ADD COLUMN IF NOT EXISTS "createdAt" TIMESTAMPTZ;
+ALTER TABLE lab_core.ba_two_factors ADD COLUMN IF NOT EXISTS verified BOOLEAN;
+ALTER TABLE lab_core.ba_two_factors ADD COLUMN IF NOT EXISTS "failedVerificationCount" INTEGER;
+ALTER TABLE lab_core.ba_two_factors ADD COLUMN IF NOT EXISTS "lockedUntil" TIMESTAMPTZ;
 
 -- Grant la lab_multi_user (utilizat de Better Auth via DATABASE_URL_MULTI)
 GRANT SELECT, INSERT, UPDATE, DELETE ON

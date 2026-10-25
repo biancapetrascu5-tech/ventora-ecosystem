@@ -12,13 +12,14 @@ datasource db {
 // Better Auth core tables — toate in lab_core cu prefix ba_
 
 model User {
-  id            String    @id
-  name          String
-  email         String    @unique
-  emailVerified Boolean
-  image         String?
-  createdAt     DateTime
-  updatedAt     DateTime
+  id                String    @id
+  name              String
+  email             String    @unique
+  emailVerified     Boolean
+  image             String?
+  createdAt         DateTime
+  updatedAt         DateTime
+  twoFactorEnabled  Boolean?
 
   @@map("ba_users")
   @@schema("lab_core")
@@ -102,6 +103,7 @@ model Invitation {
   status         String
   expiresAt      DateTime
   inviterId      String
+  createdAt      DateTime?
 
   @@map("ba_invitations")
   @@schema("lab_core")
@@ -109,10 +111,13 @@ model Invitation {
 
 // Two-factor plugin
 model TwoFactor {
-  id          String @id
-  secret      String
-  backupCodes String
-  userId      String @unique
+  id                   String   @id
+  secret               String
+  backupCodes          String
+  userId               String   @unique
+  verified             Boolean?
+  failedVerificationCount Int?
+  lockedUntil          DateTime?
 
   @@map("ba_two_factors")
   @@schema("lab_core")
