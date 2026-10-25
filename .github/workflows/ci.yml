@@ -69,7 +69,7 @@ jobs:
       - run: pnpm test
 
   integration-tests:
-    name: Integration tests (T2 — RLS direct)
+    name: Integration tests (T1 + T2)
     runs-on: ubuntu-latest
     services:
       postgres:
