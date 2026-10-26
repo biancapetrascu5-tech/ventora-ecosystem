@@ -9,7 +9,6 @@ const eslintConfig = [
       'node_modules/**',
       'next-env.d.ts',
       '../../scripts/violations/**',
-      'public/preview/**',
       'public/preview-runtime/**',
     ],
   },
