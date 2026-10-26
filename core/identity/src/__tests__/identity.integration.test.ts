@@ -180,13 +180,13 @@ describe('T1.9 — rate limiting (Better Auth DB storage)', () => {
         body: JSON.stringify({ email: 't1.9@test.com', password: 'WrongPassword1' }),
       });
 
-    // First 5 attempts — rate limit not yet exceeded
-    for (let i = 0; i < 5; i++) {
+    // First 4 attempts — rate limit not yet exceeded (max:5 blocks on count==5)
+    for (let i = 0; i < 4; i++) {
       const resp = await hubAuth.handler(makeRequest());
       expect(resp.status).not.toBe(429);
     }
 
-    // 6th attempt from same IP — should be rate limited
+    // 5th attempt from same IP — should be rate limited (count reaches max)
     const blocked = await hubAuth.handler(makeRequest());
     expect(blocked.status).toBe(429);
   });
