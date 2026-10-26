@@ -180,13 +180,13 @@ describe('T1.9 — rate limiting (Better Auth DB storage)', () => {
         body: JSON.stringify({ email: 't1.9@test.com', password: 'WrongPassword1' }),
       });
 
-    // First 4 attempts — rate limit not yet exceeded (max:5 blocks on count==5)
-    for (let i = 0; i < 4; i++) {
+    // First 3 attempts — Better Auth default special rule: /sign-in* → max:3, window:10s
+    for (let i = 0; i < 3; i++) {
       const resp = await hubAuth.handler(makeRequest());
       expect(resp.status).not.toBe(429);
     }
 
-    // 5th attempt from same IP — should be rate limited (count reaches max)
+    // 4th attempt from same IP — should be rate limited (count reached max:3)
     const blocked = await hubAuth.handler(makeRequest());
     expect(blocked.status).toBe(429);
   });

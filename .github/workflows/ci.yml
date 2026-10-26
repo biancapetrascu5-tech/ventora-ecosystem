@@ -162,9 +162,8 @@ jobs:
           pidfile = /tmp/pgbouncer.pid
           PBEOF
 
-          # md5 userlist: "md5" prefix + md5(password || username)
-          APP_MD5=$(printf '%s' "${APP_PW}app_runtime" | md5sum | awk '{print $1}')
-          printf '"app_runtime" "md5%s"\n' "${APP_MD5}" > /tmp/pgbouncer_userlist.txt
+          # Plaintext userlist: PgBouncer needs plaintext to forward SCRAM-SHA-256 auth to PostgreSQL 17
+          printf '"app_runtime" "%s"\n' "${APP_PW}" > /tmp/pgbouncer_userlist.txt
 
           pgbouncer -d /tmp/pgbouncer.ini
           sleep 2
