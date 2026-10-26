@@ -145,17 +145,20 @@ jobs:
           # Install pgbouncer for transaction-pooler isolation test (T1.14)
           sudo apt-get install -y pgbouncer
 
-          # pgbouncer.ini: transaction pool mode
-          # auth_type=trust: no client auth (CI only); password in [databases] lets PgBouncer
-          # authenticate to PostgreSQL 17 (SCRAM-SHA-256) using the stored plaintext password.
+          # pgbouncer 1.22+ (ubuntu noble) requires auth_file even for auth_type=trust.
+          # List app_runtime with its plaintext password so pgbouncer can also use it
+          # for SCRAM-SHA-256 server-side auth (PostgreSQL 17 default).
+          printf '"app_runtime" "%s"\n' "${APP_PW}" > /tmp/pgbouncer_users.txt
+
           cat > /tmp/pgbouncer.ini << PBEOF
           [databases]
-          ventora_identity_test = host=127.0.0.1 port=5433 dbname=ventora_identity_test user=app_runtime password=${APP_PW}
+          ventora_identity_test = host=127.0.0.1 port=5433 dbname=ventora_identity_test user=app_runtime
 
           [pgbouncer]
           listen_addr = 127.0.0.1
           listen_port = 6432
           auth_type = trust
+          auth_file = /tmp/pgbouncer_users.txt
           pool_mode = transaction
           max_client_conn = 100
           default_pool_size = 10
@@ -164,6 +167,8 @@ jobs:
 
           pgbouncer -d /tmp/pgbouncer.ini
           sleep 2
+          # Fail fast if pgbouncer is not accepting connections
+          psql "postgresql://app_runtime:${APP_PW}@localhost:6432/ventora_identity_test" -c "SELECT 1" || { echo "pgbouncer health-check failed"; cat /tmp/pgbouncer.ini; exit 1; }
 
           echo "DATABASE_URL_TEST=postgresql://app_runtime:${APP_PW}@localhost:5433/ventora_identity_test" >> $GITHUB_ENV
           echo "DATABASE_URL_FOUNDER_TEST=postgresql://founder_runtime:${FOUNDER_PW}@localhost:5433/ventora_identity_test" >> $GITHUB_ENV
