@@ -110,6 +110,19 @@ ALTER TABLE "founder_identity"."accounts" ADD CONSTRAINT "accounts_user_id_fkey"
 -- AddForeignKey
 ALTER TABLE "founder_identity"."two_factors" ADD CONSTRAINT "two_factors_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "founder_identity"."users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
+-- CreateTable
+CREATE TABLE "founder_identity"."rate_limit" (
+    "id" TEXT NOT NULL,
+    "key" TEXT NOT NULL,
+    "count" INTEGER NOT NULL DEFAULT 0,
+    "last_request" DOUBLE PRECISION NOT NULL,
+
+    CONSTRAINT "rate_limit_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateIndex
+CREATE UNIQUE INDEX "rate_limit_key_key" ON "founder_identity"."rate_limit"("key");
+
 -- Grants
 GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA "founder_identity" TO founder_identity_rw;
 ALTER DEFAULT PRIVILEGES IN SCHEMA "founder_identity" GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO founder_identity_rw;

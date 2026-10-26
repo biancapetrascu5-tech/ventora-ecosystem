@@ -99,6 +99,7 @@ beforeEach(async () => {
   await founderDb.account.deleteMany({});
   await founderDb.twoFactor.deleteMany({});
   await founderDb.verification.deleteMany({});
+  await founderDb.rateLimit.deleteMany({});
   await founderDb.user.deleteMany({});
 });
 
@@ -475,7 +476,7 @@ describe('T1.15 — password policy enforcement', () => {
       hubAuth.api.signUpEmail({
         body: { email: 'pw1@test.com', password: 'password123', name: 'Test' },
       }),
-    ).rejects.toThrow(/uppercase|BAD_REQUEST/i);
+    ).rejects.toThrow(/mare|uppercase/i);
   });
 
   it('rejects password without digit', async () => {

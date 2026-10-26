@@ -97,7 +97,7 @@ CREATE TABLE "identity"."rate_limit" (
     "id" TEXT NOT NULL,
     "key" TEXT NOT NULL,
     "count" INTEGER NOT NULL DEFAULT 0,
-    "last_request" TIMESTAMPTZ NOT NULL,
+    "last_request" DOUBLE PRECISION NOT NULL,
 
     CONSTRAINT "rate_limit_pkey" PRIMARY KEY ("id")
 );

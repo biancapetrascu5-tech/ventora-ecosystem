@@ -90,10 +90,10 @@ model TwoFactor {
 }
 
 model RateLimit {
-  id          String   @id
-  key         String   @unique
-  count       Int      @default(0)
-  lastRequest DateTime @map("last_request") @db.Timestamptz
+  id          String @id
+  key         String @unique
+  count       Int    @default(0)
+  lastRequest Float  @map("last_request")
 
   @@map("rate_limit")
   @@schema("identity")
