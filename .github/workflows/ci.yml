@@ -159,6 +159,7 @@ jobs:
           max_client_conn = 100
           default_pool_size = 10
           server_reset_query = RESET ALL
+          pidfile = /tmp/pgbouncer.pid
           PBEOF
 
           # md5 userlist: "md5" prefix + md5(password || username)
