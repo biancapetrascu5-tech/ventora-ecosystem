@@ -1,23 +1,21 @@
 import { afterAll, beforeEach, describe, expect, it } from 'vitest';
 import { PrismaClient as IdentityClient } from '../../generated/identity-client';
 import { PrismaClient as FounderClient } from '../../generated/founder-client';
-import { PrismaPg } from '@prisma/adapter-pg';
 import { Pool } from 'pg';
 import { betterAuth } from 'better-auth';
 import { prismaAdapter } from 'better-auth/adapters/prisma';
 import { bearer, twoFactor } from 'better-auth/plugins';
 import { hashPassword, verifyPassword } from '../password-policy';
 import { revokeFounderUser } from '../founder-contracts';
-import { makeIdentityClient } from '../db';
+import { makeIdentityClient, makeFounderClient } from '../db';
 
 const DB_URL = process.env.DATABASE_URL;
 if (!DB_URL) throw new Error('DATABASE_URL required');
 const FOUNDER_DB_URL = process.env.DATABASE_URL_FOUNDER ?? DB_URL;
 
-// Use makeIdentityClient which wraps every op in SET LOCAL ROLE — safe for PgBouncer transaction pooler
+// Both clients wrap every op in SET LOCAL ROLE inside a transaction — safe for PgBouncer transaction pooler
 const identityDb = makeIdentityClient(DB_URL) as unknown as IdentityClient;
-const founderPool = new Pool({ connectionString: FOUNDER_DB_URL });
-const founderDb = new FounderClient({ adapter: new PrismaPg(founderPool) });
+const founderDb = makeFounderClient(FOUNDER_DB_URL) as unknown as FounderClient;
 
 const REMEMBER_ME_SECONDS = 30 * 24 * 60 * 60;
 // Better Auth 1.7.12: expiresIn = rememberMe duration; rememberMe:false → 24h hardcoded
@@ -86,8 +84,8 @@ async function signIn(email: string, password: string, rememberMe?: boolean) {
 afterAll(async () => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   await (identityDb as any).$disconnect?.();
-  await founderDb.$disconnect();
-  await founderPool.end();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  await (founderDb as any).$disconnect?.();
 });
 
 beforeEach(async () => {
