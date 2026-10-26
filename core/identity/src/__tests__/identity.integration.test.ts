@@ -24,7 +24,7 @@ const REMEMBER_ME_SECONDS = 30 * 24 * 60 * 60;
 const SHORT_SESSION_SECONDS = 24 * 60 * 60;
 
 const hubAuth = betterAuth({
-  secret: 'test-hub-secret-must-be-32-chars-x',
+  secret: 'test-hub-secret-must-be-32-chars-x', // gitleaks:allow
   database: prismaAdapter(identityDb, { provider: 'postgresql' }),
   emailAndPassword: {
     enabled: true,
@@ -50,7 +50,7 @@ const hubAuth = betterAuth({
 });
 
 const founderAuthTest = betterAuth({
-  secret: 'test-founder-secret-32-chars-abc1',
+  secret: 'test-founder-secret-32-chars-abc1', // gitleaks:allow
   database: prismaAdapter(founderDb, { provider: 'postgresql' }),
   emailAndPassword: {
     enabled: true,
@@ -431,7 +431,7 @@ describe('T1.14 — PgBouncer transaction pooler isolation', () => {
     // (a) Better Auth operations work through PgBouncer in transaction mode
     const bouncerDb = makeIdentityClient(pgbouncerUrl) as unknown as IdentityClient;
     const bouncerAuth = betterAuth({
-      secret: 'test-bouncer-secret-must-32-chars-xx',
+      secret: 'test-bouncer-secret-must-32-chars-xx', // gitleaks:allow
       database: prismaAdapter(bouncerDb, { provider: 'postgresql' }),
       emailAndPassword: {
         enabled: true,
