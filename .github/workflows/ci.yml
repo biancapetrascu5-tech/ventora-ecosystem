@@ -144,6 +144,9 @@ jobs:
 
           # Install pgbouncer for transaction-pooler isolation test (T1.14)
           sudo apt-get install -y pgbouncer
+          # apt starts the system pgbouncer service on port 6432 via systemd — stop it
+          # so our custom instance can bind the same port.
+          sudo systemctl stop pgbouncer || true
 
           # pgbouncer 1.22+ (ubuntu noble) requires auth_file even for auth_type=trust.
           # List app_runtime with its plaintext password so pgbouncer can also use it
