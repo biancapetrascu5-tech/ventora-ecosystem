@@ -134,16 +134,44 @@ jobs:
         run: pnpm --filter @ventora/identity db:migrate:founder
         env:
           DATABASE_URL: postgresql://postgres:test@localhost:5433/ventora_identity_test
-      - name: Set runtime role passwords
+      - name: Set runtime role passwords and start pgbouncer
         run: |
           APP_PW=$(openssl rand -hex 32)
           FOUNDER_PW=$(openssl rand -hex 32)
           PSQL="psql postgresql://postgres:test@localhost:5433/ventora_identity_test"
           $PSQL -c "ALTER ROLE app_runtime WITH PASSWORD '${APP_PW}'"
           $PSQL -c "ALTER ROLE founder_runtime WITH PASSWORD '${FOUNDER_PW}'"
+
+          # Install pgbouncer for transaction-pooler isolation test (T1.14)
+          sudo apt-get install -y pgbouncer
+
+          # pgbouncer.ini: transaction pool mode, forward app_runtime connections
+          cat > /tmp/pgbouncer.ini << PBEOF
+          [databases]
+          ventora_identity_test = host=127.0.0.1 port=5433 dbname=ventora_identity_test
+
+          [pgbouncer]
+          listen_addr = 127.0.0.1
+          listen_port = 6432
+          auth_type = md5
+          auth_file = /tmp/pgbouncer_userlist.txt
+          pool_mode = transaction
+          max_client_conn = 100
+          default_pool_size = 10
+          server_reset_query = RESET ALL
+          PBEOF
+
+          # md5 userlist: "md5" prefix + md5(password || username)
+          APP_MD5=$(printf '%s' "${APP_PW}app_runtime" | md5sum | awk '{print $1}')
+          printf '"app_runtime" "md5%s"\n' "${APP_MD5}" > /tmp/pgbouncer_userlist.txt
+
+          pgbouncer -d /tmp/pgbouncer.ini
+          sleep 2
+
           echo "DATABASE_URL_TEST=postgresql://app_runtime:${APP_PW}@localhost:5433/ventora_identity_test" >> $GITHUB_ENV
           echo "DATABASE_URL_FOUNDER_TEST=postgresql://founder_runtime:${FOUNDER_PW}@localhost:5433/ventora_identity_test" >> $GITHUB_ENV
           echo "DATABASE_URL_APP_RUNTIME=postgresql://app_runtime:${APP_PW}@localhost:5433/ventora_identity_test" >> $GITHUB_ENV
+          echo "DATABASE_URL_PGBOUNCER_TEST=postgresql://app_runtime:${APP_PW}@localhost:6432/ventora_identity_test" >> $GITHUB_ENV
       - run: pnpm --filter @ventora/identity test:integration
         env:
           BETTER_AUTH_SECRET: ${{ env.BETTER_AUTH_SECRET }}
@@ -151,6 +179,7 @@ jobs:
           DATABASE_URL_TEST: ${{ env.DATABASE_URL_TEST }}
           DATABASE_URL_FOUNDER_TEST: ${{ env.DATABASE_URL_FOUNDER_TEST }}
           DATABASE_URL_APP_RUNTIME: ${{ env.DATABASE_URL_APP_RUNTIME }}
+          DATABASE_URL_PGBOUNCER_TEST: ${{ env.DATABASE_URL_PGBOUNCER_TEST }}
 
   build:
     name: Build

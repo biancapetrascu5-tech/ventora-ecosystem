@@ -90,7 +90,8 @@ model TwoFactor {
 }
 
 model RateLimit {
-  key         String   @id
+  id          String   @id
+  key         String   @unique
   count       Int      @default(0)
   lastRequest DateTime @map("last_request") @db.Timestamptz
 

@@ -94,12 +94,16 @@ CREATE TABLE "identity"."two_factors" (
 
 -- CreateTable
 CREATE TABLE "identity"."rate_limit" (
+    "id" TEXT NOT NULL,
     "key" TEXT NOT NULL,
     "count" INTEGER NOT NULL DEFAULT 0,
     "last_request" TIMESTAMPTZ NOT NULL,
 
-    CONSTRAINT "rate_limit_pkey" PRIMARY KEY ("key")
+    CONSTRAINT "rate_limit_pkey" PRIMARY KEY ("id")
 );
+
+-- CreateIndex
+CREATE UNIQUE INDEX "rate_limit_key_key" ON "identity"."rate_limit"("key");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "users_email_key" ON "identity"."users"("email");

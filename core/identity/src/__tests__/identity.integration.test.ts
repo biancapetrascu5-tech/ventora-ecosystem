@@ -6,18 +6,17 @@ import { Pool } from 'pg';
 import { betterAuth } from 'better-auth';
 import { prismaAdapter } from 'better-auth/adapters/prisma';
 import { bearer, twoFactor } from 'better-auth/plugins';
-import { checkRateLimit } from '../rate-limit';
+import { hashPassword, verifyPassword } from '../password-policy';
 import { revokeFounderUser } from '../founder-contracts';
-import { RoleAwarePool } from '../db';
+import { makeIdentityClient } from '../db';
 
 const DB_URL = process.env.DATABASE_URL;
 if (!DB_URL) throw new Error('DATABASE_URL required');
 const FOUNDER_DB_URL = process.env.DATABASE_URL_FOUNDER ?? DB_URL;
 
-const identityPool = new RoleAwarePool({ connectionString: DB_URL }, 'identity_rw');
-const identityDb = new IdentityClient({ adapter: new PrismaPg(identityPool) });
-
-const founderPool = new RoleAwarePool({ connectionString: FOUNDER_DB_URL }, 'founder_identity_rw');
+// Use makeIdentityClient which wraps every op in SET LOCAL ROLE — safe for PgBouncer transaction pooler
+const identityDb = makeIdentityClient(DB_URL) as unknown as IdentityClient;
+const founderPool = new Pool({ connectionString: FOUNDER_DB_URL });
 const founderDb = new FounderClient({ adapter: new PrismaPg(founderPool) });
 
 const REMEMBER_ME_SECONDS = 30 * 24 * 60 * 60;
@@ -27,7 +26,17 @@ const SHORT_SESSION_SECONDS = 24 * 60 * 60;
 const hubAuth = betterAuth({
   secret: 'test-hub-secret-must-be-32-chars-x',
   database: prismaAdapter(identityDb, { provider: 'postgresql' }),
-  emailAndPassword: { enabled: true, minPasswordLength: 8 },
+  emailAndPassword: {
+    enabled: true,
+    minPasswordLength: 10,
+    password: { hash: hashPassword, verify: verifyPassword },
+  },
+  rateLimit: {
+    enabled: true,
+    storage: 'database',
+    window: 60 * 15,
+    max: 5,
+  },
   session: {
     expiresIn: REMEMBER_ME_SECONDS,
     updateAge: 24 * 60 * 60,
@@ -43,7 +52,17 @@ const hubAuth = betterAuth({
 const founderAuthTest = betterAuth({
   secret: 'test-founder-secret-32-chars-abc1',
   database: prismaAdapter(founderDb, { provider: 'postgresql' }),
-  emailAndPassword: { enabled: true, minPasswordLength: 8 },
+  emailAndPassword: {
+    enabled: true,
+    minPasswordLength: 12,
+    password: { hash: hashPassword, verify: verifyPassword },
+  },
+  rateLimit: {
+    enabled: true,
+    storage: 'database',
+    window: 60 * 15,
+    max: 5,
+  },
   session: {
     expiresIn: 8 * 60 * 60,
     updateAge: 60 * 60,
@@ -65,9 +84,9 @@ async function signIn(email: string, password: string, rememberMe?: boolean) {
 }
 
 afterAll(async () => {
-  await identityDb.$disconnect();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  await (identityDb as any).$disconnect?.();
   await founderDb.$disconnect();
-  await identityPool.end();
   await founderPool.end();
 });
 
@@ -87,8 +106,8 @@ beforeEach(async () => {
 
 describe('T1.1 — session revocation', () => {
   it('revoked session returns null from getSession', async () => {
-    await signUp('t1.1@test.com', 'password123');
-    const loginResult = await signIn('t1.1@test.com', 'password123');
+    await signUp('t1.1@test.com', 'Password123');
+    const loginResult = await signIn('t1.1@test.com', 'Password123');
     const token = loginResult?.token ?? '';
 
     const beforeRevoke = await hubAuth.api.getSession({
@@ -110,8 +129,8 @@ describe('T1.1 — session revocation', () => {
 
 describe('T1.2 — no stale data (cookieCache disabled)', () => {
   it('updated user data is reflected immediately in next session lookup', async () => {
-    await signUp('t1.2@test.com', 'password123');
-    const loginResult = await signIn('t1.2@test.com', 'password123');
+    await signUp('t1.2@test.com', 'Password123');
+    const loginResult = await signIn('t1.2@test.com', 'Password123');
     const token = loginResult?.token ?? '';
 
     await identityDb.user.update({
@@ -128,8 +147,8 @@ describe('T1.2 — no stale data (cookieCache disabled)', () => {
 
 describe('T1.3 — bearer token session', () => {
   it('auth with bearer token works and revocation rejects subsequent requests', async () => {
-    await signUp('t1.3@test.com', 'password123');
-    const loginResult = await signIn('t1.3@test.com', 'password123');
+    await signUp('t1.3@test.com', 'Password123');
+    const loginResult = await signIn('t1.3@test.com', 'Password123');
     const token = loginResult?.token ?? '';
     expect(token).toBeTruthy();
 
@@ -148,31 +167,77 @@ describe('T1.3 — bearer token session', () => {
   });
 });
 
-describe('T1.9 — rate limiting (DB storage)', () => {
-  it('stores attempts in DB (not memory)', async () => {
-    const key = `test:ratelimit:${Date.now()}`;
-    await checkRateLimit(key, 5, 60, { increment: true });
-    const record = await identityDb.rateLimit.findUnique({ where: { key } });
-    expect(record).toBeTruthy();
-    expect(record?.count).toBeGreaterThan(0);
+describe('T1.9 — rate limiting (Better Auth DB storage)', () => {
+  it('rate limit is enforced via HTTP handler after 5 failed sign-ins', async () => {
+    await signUp('t1.9@test.com', 'Password123');
+
+    const makeRequest = () =>
+      new Request('http://localhost/api/auth/sign-in/email', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-forwarded-for': '10.9.9.9',
+        },
+        body: JSON.stringify({ email: 't1.9@test.com', password: 'WrongPassword1' }),
+      });
+
+    // First 5 attempts — rate limit not yet exceeded
+    for (let i = 0; i < 5; i++) {
+      const resp = await hubAuth.handler(makeRequest());
+      expect(resp.status).not.toBe(429);
+    }
+
+    // 6th attempt from same IP — should be rate limited
+    const blocked = await hubAuth.handler(makeRequest());
+    expect(blocked.status).toBe(429);
   });
 
-  it('returns not-allowed after exceeding max attempts', async () => {
-    const key = `test:ratelimit:exceed:${Date.now()}`;
-    const maxAttempts = 3;
-    for (let i = 0; i <= maxAttempts; i++) {
-      await checkRateLimit(key, maxAttempts, 60, { increment: true });
-    }
-    const result = await checkRateLimit(key, maxAttempts, 60, { increment: true });
-    expect(result.allowed).toBe(false);
-    expect(result.retryAfter).toBeGreaterThan(0);
+  it('concurrent requests cannot bypass rate limit', async () => {
+    await signUp('concurrent.rl@test.com', 'Password123');
+
+    const makeRequest = () =>
+      new Request('http://localhost/api/auth/sign-in/email', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-forwarded-for': '10.9.9.8',
+        },
+        body: JSON.stringify({ email: 'concurrent.rl@test.com', password: 'WrongPassword1' }),
+      });
+
+    // Send 10 concurrent requests from same IP
+    const results = await Promise.all(
+      Array.from({ length: 10 }, () => hubAuth.handler(makeRequest())),
+    );
+
+    // After 5 requests the limit should kick in; at least some must be blocked
+    const blocked = results.filter((r) => r.status === 429);
+    expect(blocked.length).toBeGreaterThan(0);
+  });
+
+  it('rate limit records are stored in database', async () => {
+    await signUp('t1.9.db@test.com', 'Password123');
+
+    const makeRequest = () =>
+      new Request('http://localhost/api/auth/sign-in/email', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-forwarded-for': '10.9.9.7',
+        },
+        body: JSON.stringify({ email: 't1.9.db@test.com', password: 'WrongPassword1' }),
+      });
+
+    await hubAuth.handler(makeRequest());
+    const records = await identityDb.rateLimit.findMany({});
+    expect(records.length).toBeGreaterThan(0);
   });
 });
 
 describe('T1.10 — remember-me 30 days', () => {
   it('session with rememberMe has expiresAt near 30 days from now', async () => {
-    await signUp('t1.10@test.com', 'password123');
-    const result = await signIn('t1.10@test.com', 'password123', true);
+    await signUp('t1.10@test.com', 'Password123');
+    const result = await signIn('t1.10@test.com', 'Password123', true);
     const token = result?.token ?? '';
 
     const session = await identityDb.session.findFirst({ where: { token } });
@@ -184,8 +249,8 @@ describe('T1.10 — remember-me 30 days', () => {
   });
 
   it('session without rememberMe expires in 24h (not 30 days)', async () => {
-    await signUp('t1.10b@test.com', 'password123');
-    const result = await signIn('t1.10b@test.com', 'password123', false);
+    await signUp('t1.10b@test.com', 'Password123');
+    const result = await signIn('t1.10b@test.com', 'Password123', false);
     const token = result?.token ?? '';
 
     const session = await identityDb.session.findFirst({ where: { token } });
@@ -204,9 +269,9 @@ describe('T1.10 — remember-me 30 days', () => {
 
 describe('T1.11 — session list and individual revocation', () => {
   it('individually revoked session disappears; other sessions remain valid', async () => {
-    await signUp('t1.11@test.com', 'password123');
-    const s1 = await signIn('t1.11@test.com', 'password123');
-    const s2 = await signIn('t1.11@test.com', 'password123');
+    await signUp('t1.11@test.com', 'Password123');
+    const s1 = await signIn('t1.11@test.com', 'Password123');
+    const s2 = await signIn('t1.11@test.com', 'Password123');
 
     const token1 = s1?.token ?? '';
     const token2 = s2?.token ?? '';
@@ -229,19 +294,19 @@ describe('T1.11 — session list and individual revocation', () => {
 describe('T1.12 — Founder revoked', () => {
   it('revoked founder session is rejected; other founders unaffected', async () => {
     await founderAuthTest.api.signUpEmail({
-      body: { email: 'founder1@test.com', password: 'password123', name: 'Founder 1' },
+      body: { email: 'founder1@test.com', password: 'FounderPass1', name: 'Founder 1' },
     });
     await founderAuthTest.api.signUpEmail({
-      body: { email: 'founder2@test.com', password: 'password123', name: 'Founder 2' },
+      body: { email: 'founder2@test.com', password: 'FounderPass1', name: 'Founder 2' },
     });
 
     // Use asResponse:true to get the real Set-Cookie header (bearer() not active on founderAuth)
     const resp1 = await founderAuthTest.api.signInEmail({
-      body: { email: 'founder1@test.com', password: 'password123' },
+      body: { email: 'founder1@test.com', password: 'FounderPass1' },
       asResponse: true,
     });
     const resp2 = await founderAuthTest.api.signInEmail({
-      body: { email: 'founder2@test.com', password: 'password123' },
+      body: { email: 'founder2@test.com', password: 'FounderPass1' },
       asResponse: true,
     });
 
@@ -275,12 +340,12 @@ describe('T1.12 — Founder revoked', () => {
 describe('T1.13 — revokeFounderUser', () => {
   it('throws Forbidden on self-revoke', async () => {
     const signupResult = await founderAuthTest.api.signUpEmail({
-      body: { email: 'founder.self@test.com', password: 'password123', name: 'Founder Self' },
+      body: { email: 'founder.self@test.com', password: 'FounderPass1', name: 'Founder Self' },
     });
     const founderId = signupResult.user.id;
 
     await founderAuthTest.api.signUpEmail({
-      body: { email: 'founder.other@test.com', password: 'password123', name: 'Founder Other' },
+      body: { email: 'founder.other@test.com', password: 'FounderPass1', name: 'Founder Other' },
     });
 
     await expect(revokeFounderUser(founderId, founderId)).rejects.toMatchObject({
@@ -291,10 +356,10 @@ describe('T1.13 — revokeFounderUser', () => {
 
   it('throws Forbidden when only one active Founder remains', async () => {
     const r = await founderAuthTest.api.signUpEmail({
-      body: { email: 'founder.last@test.com', password: 'password123', name: 'Founder Last' },
+      body: { email: 'founder.last@test.com', password: 'FounderPass1', name: 'Founder Last' },
     });
     const r2 = await founderAuthTest.api.signUpEmail({
-      body: { email: 'founder.other2@test.com', password: 'password123', name: 'Founder Other2' },
+      body: { email: 'founder.other2@test.com', password: 'FounderPass1', name: 'Founder Other2' },
     });
 
     await founderDb.user.update({
@@ -310,10 +375,10 @@ describe('T1.13 — revokeFounderUser', () => {
 
   it('succeeds when multiple active founders exist', async () => {
     const actor = await founderAuthTest.api.signUpEmail({
-      body: { email: 'actor@test.com', password: 'password123', name: 'Actor' },
+      body: { email: 'actor@test.com', password: 'FounderPass1', name: 'Actor' },
     });
     const target = await founderAuthTest.api.signUpEmail({
-      body: { email: 'target@test.com', password: 'password123', name: 'Target' },
+      body: { email: 'target@test.com', password: 'FounderPass1', name: 'Target' },
     });
 
     await revokeFounderUser(actor.user.id, target.user.id);
@@ -352,5 +417,91 @@ describe('DB isolation — role enforcement', () => {
       client.release();
       await rawPool.end();
     }
+  });
+});
+
+describe('T1.14 — PgBouncer transaction pooler isolation', () => {
+  it('SET LOCAL ROLE does not leak across transactions (pgbouncer pool_mode=transaction)', async () => {
+    const pgbouncerUrl = process.env.DATABASE_URL_PGBOUNCER_TEST;
+    if (!pgbouncerUrl) {
+      console.log('Skipping T1.14: DATABASE_URL_PGBOUNCER_TEST not set');
+      return;
+    }
+
+    // (a) Better Auth operations work through PgBouncer in transaction mode
+    const bouncerDb = makeIdentityClient(pgbouncerUrl) as unknown as IdentityClient;
+    const bouncerAuth = betterAuth({
+      secret: 'test-bouncer-secret-must-32-chars-xx',
+      database: prismaAdapter(bouncerDb, { provider: 'postgresql' }),
+      emailAndPassword: {
+        enabled: true,
+        minPasswordLength: 10,
+        password: { hash: hashPassword, verify: verifyPassword },
+      },
+      plugins: [bearer()],
+      advanced: {
+        crossSubDomainCookies: { enabled: false },
+        defaultCookieAttributes: { sameSite: 'lax', secure: false, httpOnly: true },
+      },
+    });
+
+    await bouncerAuth.api.signUpEmail({
+      body: { email: 'pgbouncer@test.com', password: 'Password123', name: 'PG Test' },
+    });
+    const loginResult = await bouncerAuth.api.signInEmail({
+      body: { email: 'pgbouncer@test.com', password: 'Password123' },
+    });
+    expect(loginResult?.token).toBeTruthy();
+
+    // (b) After Better Auth ops, a raw connection on the same pgbouncer pool
+    //     should NOT have identity_rw role — SET LOCAL ROLE was scoped to the transaction
+    const rawPool = new Pool({ connectionString: pgbouncerUrl });
+    const rawClient = await rawPool.connect();
+    try {
+      await expect(rawClient.query('SELECT 1 FROM identity.users LIMIT 1')).rejects.toThrow(
+        /permission denied/i,
+      );
+    } finally {
+      rawClient.release();
+      await rawPool.end();
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    await (bouncerDb as any).$disconnect?.();
+  });
+});
+
+describe('T1.15 — password policy enforcement', () => {
+  it('rejects password without uppercase letter', async () => {
+    await expect(
+      hubAuth.api.signUpEmail({
+        body: { email: 'pw1@test.com', password: 'password123', name: 'Test' },
+      }),
+    ).rejects.toThrow(/uppercase|BAD_REQUEST/i);
+  });
+
+  it('rejects password without digit', async () => {
+    await expect(
+      hubAuth.api.signUpEmail({
+        body: { email: 'pw2@test.com', password: 'PasswordNoDigit', name: 'Test' },
+      }),
+    ).rejects.toThrow(/digit|cifr|BAD_REQUEST/i);
+  });
+
+  it('rejects password shorter than 10 chars', async () => {
+    await expect(
+      hubAuth.api.signUpEmail({ body: { email: 'pw3@test.com', password: 'Pass1', name: 'Test' } }),
+    ).rejects.toThrow();
+  });
+
+  it('accepts valid password and round-trip sign-in works', async () => {
+    const result = await hubAuth.api.signUpEmail({
+      body: { email: 'pw4@test.com', password: 'ValidPass1', name: 'Test' },
+    });
+    expect(result.user).toBeTruthy();
+
+    // Round-trip: sign-in with the same password must succeed
+    const loginResult = await signIn('pw4@test.com', 'ValidPass1');
+    expect(loginResult?.token).toBeTruthy();
   });
 });

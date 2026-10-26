@@ -1,77 +1,79 @@
-import { PrismaClient as IdentityClient } from '../generated/identity-client';
-import { PrismaClient as FounderClient } from '../generated/founder-client';
+import { AsyncLocalStorage } from 'node:async_hooks';
+import { PrismaClient as IdentityBaseClient } from '../generated/identity-client';
+import { PrismaClient as FounderBaseClient } from '../generated/founder-client';
 import { PrismaPg } from '@prisma/adapter-pg';
-import { Pool, PoolClient, PoolConfig } from 'pg';
+import { Pool } from 'pg';
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type DoneFn = (release?: any) => void;
-type ConnectCb = (err: Error | undefined, client: PoolClient | undefined, done: DoneFn) => void;
-
-export class RoleAwarePool extends Pool {
-  private readonly _role: string;
-
-  constructor(config: PoolConfig, role: string) {
-    super(config);
-    this._role = role;
+function validateRole(role: string): string {
+  if (!/^[a-z_][a-z0-9_]*$/.test(role)) {
+    throw new Error(`[identity] Invalid role: "${role}"`);
   }
-
-  connect(): Promise<PoolClient>;
-  connect(callback: ConnectCb): void;
-  connect(callback?: ConnectCb): Promise<PoolClient> | void {
-    const role = this._role;
-    if (callback) {
-      // pg.Pool.query() calls this.connect(cb) — must honour the callback contract
-      super.connect(function (
-        err: Error | undefined,
-        client: PoolClient | undefined,
-        done: DoneFn,
-      ) {
-        if (err || !client) {
-          callback(err, client, done);
-          return;
-        }
-        client.query(`SET ROLE ${role}`, function (roleErr) {
-          if (roleErr) {
-            client.release();
-            callback(roleErr as Error, undefined, done);
-            return;
-          }
-          callback(undefined, client, done);
-        });
-      });
-      return;
-    }
-    return (async () => {
-      const client = await super.connect();
-      try {
-        await client.query(`SET ROLE ${role}`);
-        return client;
-      } catch (err) {
-        client.release();
-        throw err;
-      }
-    })();
-  }
+  return role;
 }
 
-let _identityDb: IdentityClient | undefined;
-let _founderDb: FounderClient | undefined;
+// Prevents double-wrapping when we're already inside our own $transaction
+const _inRoleTx = new AsyncLocalStorage<boolean>();
 
-export function getIdentityDb(): IdentityClient {
+export function makeIdentityClient(connectionString: string): IdentityBaseClient {
+  const safeRole = validateRole('identity_rw');
+  const pool = new Pool({ connectionString });
+  const base = new IdentityBaseClient({ adapter: new PrismaPg(pool) });
+  return base.$extends({
+    query: {
+      $allModels: {
+        async $allOperations({ model, operation, args, query }) {
+          if (_inRoleTx.getStore()) return query(args);
+          return _inRoleTx.run(true, () =>
+            base.$transaction(async (tx) => {
+              // SET LOCAL ROLE scopes the role to this transaction only — safe for PgBouncer transaction pooler
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              await (tx as any).$executeRawUnsafe(`SET LOCAL ROLE ${safeRole}`);
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              return (tx as any)[model][operation](args);
+            }),
+          );
+        },
+      },
+    },
+  }) as unknown as IdentityBaseClient;
+}
+
+export function makeFounderClient(connectionString: string): FounderBaseClient {
+  const safeRole = validateRole('founder_identity_rw');
+  const pool = new Pool({ connectionString });
+  const base = new FounderBaseClient({ adapter: new PrismaPg(pool) });
+  return base.$extends({
+    query: {
+      $allModels: {
+        async $allOperations({ model, operation, args, query }) {
+          if (_inRoleTx.getStore()) return query(args);
+          return _inRoleTx.run(true, () =>
+            base.$transaction(async (tx) => {
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              await (tx as any).$executeRawUnsafe(`SET LOCAL ROLE ${safeRole}`);
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              return (tx as any)[model][operation](args);
+            }),
+          );
+        },
+      },
+    },
+  }) as unknown as FounderBaseClient;
+}
+
+let _identityDb: IdentityBaseClient | undefined;
+let _founderDb: FounderBaseClient | undefined;
+
+export function getIdentityDb(): IdentityBaseClient {
   if (!_identityDb) {
-    const pool = new RoleAwarePool({ connectionString: process.env.DATABASE_URL! }, 'identity_rw');
-    _identityDb = new IdentityClient({ adapter: new PrismaPg(pool) });
+    _identityDb = makeIdentityClient(process.env.DATABASE_URL!);
   }
   return _identityDb;
 }
 
-export function getFounderDb(): FounderClient {
+export function getFounderDb(): FounderBaseClient {
   if (!_founderDb) {
-    const pool = new RoleAwarePool(
-      { connectionString: process.env.DATABASE_URL_FOUNDER! },
-      'founder_identity_rw',
-    );
-    _founderDb = new FounderClient({ adapter: new PrismaPg(pool) });
+    _founderDb = makeFounderClient(process.env.DATABASE_URL_FOUNDER!);
   }
   return _founderDb;
 }
