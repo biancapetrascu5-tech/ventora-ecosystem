@@ -6,6 +6,8 @@ pnpm-lock.yaml
 .turbo/
 **/next-env.d.ts
 docs/design/
+**/public/preview/
+**/public/preview-runtime/
 labs/*/prisma/
 labs/*/generated/
 labs/experiments/e1/variant-b/prisma/

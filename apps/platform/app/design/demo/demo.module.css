@@ -757,6 +757,75 @@
   align-items: flex-start;
 }
 
+/* Toggle stare invitație (Activă / Expirată) */
+.stateToggle {
+  display: flex;
+  gap: var(--space-1);
+  margin-bottom: var(--space-3);
+}
+
+.stateBtn {
+  appearance: none;
+  border: var(--border-width) solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  background: var(--sheet);
+  color: var(--ink-secondary);
+  padding: var(--space-1) var(--space-3);
+  cursor: pointer;
+  font-size: var(--type-body-small-size);
+  font-family: inherit;
+  transition: background var(--duration-fast) var(--ease-standard);
+}
+
+.stateBtn:hover {
+  background: var(--selected);
+  color: var(--ink);
+}
+
+.stateBtnActive {
+  background: var(--ink);
+  color: var(--on-primary, #fff);
+  border-color: var(--ink);
+}
+
+/* Notice inline pentru starea expirată (temporar — înlocuit cu <Notice> la Lot 4) */
+.invExpiredNotice {
+  display: flex;
+  gap: var(--space-3);
+  align-items: flex-start;
+  padding: var(--space-3) var(--space-4);
+  background: var(--attention-soft);
+  border-radius: var(--radius-sm);
+  color: var(--attention-ink);
+}
+
+/* Heading "Aplicațiile tale" vizibil doar pe telefon (<560px) */
+.lbSecheadMobile {
+  display: none;
+}
+
+@media (max-width: 559px) {
+  .lbSecheadMobile {
+    display: block;
+    padding: var(--space-4) 0 var(--space-2);
+  }
+
+  /* Banda se termină după fraza zilei — fără 112px padding-bottom */
+  .lbBand {
+    padding-bottom: var(--space-8);
+  }
+
+  /* Sechead din interiorul benzii dispare pe telefon */
+  .lbSechead {
+    display: none;
+  }
+
+  /* AppDock nu mai trage negativ peste bandă pe telefon */
+  .lbMine {
+    margin-top: var(--space-4);
+  }
+}
+
 /* Buton text "Arată/Ascunde parola" — lângă eticheta câmpului */
 .showPassBtn {
   appearance: none;

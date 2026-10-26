@@ -213,6 +213,7 @@ export function DemoClient() {
   const [launchLB, setLaunchLB] = useState<LaunchState | null>(null);
   const [showInvitePassword, setShowInvitePassword] = useState(false);
   const [invitePassword, setInvitePassword] = useState('aurora2026');
+  const [inviteExpired, setInviteExpired] = useState(false);
 
   return (
     <div data-theme={theme} data-testid="demo-page" className={styles.page}>
@@ -249,7 +250,7 @@ export function DemoClient() {
             <span className={styles.colLabel}>Design aprobat (preview.html)</span>
             <div className={styles.frameDesktop}>
               <iframe
-                src="/preview/signin.html"
+                src="/design/preview/HubSignIn"
                 title="HubSignIn — design aprobat"
                 className={styles.iframe}
                 sandbox="allow-scripts allow-same-origin"
@@ -345,7 +346,7 @@ export function DemoClient() {
             <span className={styles.colLabel}>Design aprobat (preview.html)</span>
             <div className={styles.frameDesktop}>
               <iframe
-                src="/preview/invite.html"
+                src="/design/preview/HubInvite"
                 title="HubInvite — design aprobat"
                 className={styles.iframe}
                 sandbox="allow-scripts allow-same-origin"
@@ -356,6 +357,23 @@ export function DemoClient() {
           {/* Dreapta: implementare React — aceeași BrandZone ca HubSignIn */}
           <div className={styles.compareCol}>
             <span className={styles.colLabel}>Implementare React (@ventora/ui)</span>
+            {/* Toggle stare invitație */}
+            <div className={styles.stateToggle}>
+              <button
+                type="button"
+                className={cn(styles.stateBtn, !inviteExpired && styles.stateBtnActive)}
+                onClick={() => setInviteExpired(false)}
+              >
+                Activă
+              </button>
+              <button
+                type="button"
+                className={cn(styles.stateBtn, inviteExpired && styles.stateBtnActive)}
+                onClick={() => setInviteExpired(true)}
+              >
+                Expirată
+              </button>
+            </div>
             <div className={styles.frameDesktop}>
               <div className={styles.signInSplit}>
                 <BrandZone as="aside" className={styles.signInBrand}>
@@ -379,81 +397,111 @@ export function DemoClient() {
                   </header>
                   <main className={cn(styles.signInFormMain, styles.signInFormMainTop)}>
                     <div className={styles.signInCard}>
-                      {/* inv-head: inițiale + de la cine + titlu */}
-                      <div className={styles.invHead}>
-                        <span className={styles.invMark}>SA</span>
-                        <div>
-                          <p className="caption muted">Invitație de la Bianca Petrașcu</p>
-                          <h1 className="display-m">Intră în echipa Salon Aurora</h1>
-                        </div>
-                      </div>
-                      {/* rol + aplicații */}
-                      <div className={styles.invRole}>
-                        <p className="body">
-                          Rolul tău: <strong className="body-strong">Recepție</strong>. Vei avea
-                          acces la:
-                        </p>
-                        <div className={styles.invApps}>
-                          {(['booking', 'crm', 'shifts'] as AppName[]).map((a) => (
-                            <span key={a} className={styles.invApp}>
-                              <AppIcon app={a} size={24} />
-                              <span className="body-small">{APP_LABELS[a]}</span>
+                      {inviteExpired ? (
+                        /* ── Stare expirată ── */
+                        <>
+                          <div className={styles.invHead}>
+                            <span className={styles.invMark}>SA</span>
+                            <div>
+                              <p className="caption muted">Invitație de la Bianca Petrașcu</p>
+                              <h1 className="display-m">Invitație expirată</h1>
+                            </div>
+                          </div>
+                          {/* Notice inline — va fi înlocuit cu <Notice> după Lot 4 */}
+                          <div className={styles.invExpiredNotice} role="alert">
+                            <Icon icon="clock" size="sm" />
+                            <div>
+                              <p className="body-strong">Această invitație nu mai este valabilă</p>
+                              <p className="body-small">
+                                Invitațiile expiră după 7 zile. Cere proprietarului să trimită una
+                                nouă.
+                              </p>
+                            </div>
+                          </div>
+                          <Button variant="primary" size="lg" className={styles.blockBtn}>
+                            Cere o invitație nouă
+                          </Button>
+                        </>
+                      ) : (
+                        /* ── Stare activă ── */
+                        <>
+                          {/* inv-head: inițiale + de la cine + titlu */}
+                          <div className={styles.invHead}>
+                            <span className={styles.invMark}>SA</span>
+                            <div>
+                              <p className="caption muted">Invitație de la Bianca Petrașcu</p>
+                              <h1 className="display-m">Intră în echipa Salon Aurora</h1>
+                            </div>
+                          </div>
+                          {/* rol + aplicații */}
+                          <div className={styles.invRole}>
+                            <p className="body">
+                              Rolul tău: <strong className="body-strong">Recepție</strong>. Vei avea
+                              acces la:
+                            </p>
+                            <div className={styles.invApps}>
+                              {(['booking', 'crm', 'shifts'] as AppName[]).map((a) => (
+                                <span key={a} className={styles.invApp}>
+                                  <AppIcon app={a} size={24} />
+                                  <span className="body-small">{APP_LABELS[a]}</span>
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+                          <FormField label="Nume complet">
+                            <Input type="text" autoComplete="name" defaultValue="Ioana Pavel" />
+                          </FormField>
+                          {/* email readonly */}
+                          <div className={styles.invEmail}>
+                            <span className="caption muted">E-mail</span>
+                            <span className="body-strong">ioana.pavel@salonaurora.ro</span>
+                            <span className="caption muted">
+                              Pe această adresă ai primit invitația.
                             </span>
-                          ))}
-                        </div>
-                      </div>
-                      <FormField label="Nume complet">
-                        <Input type="text" autoComplete="name" defaultValue="Ioana Pavel" />
-                      </FormField>
-                      {/* email readonly */}
-                      <div className={styles.invEmail}>
-                        <span className="caption muted">E-mail</span>
-                        <span className="body-strong">ioana.pavel@salonaurora.ro</span>
-                        <span className="caption muted">
-                          Pe această adresă ai primit invitația.
-                        </span>
-                      </div>
-                      <div className={styles.passwordField}>
-                        <div className={styles.passwordLabel}>
-                          <span>Parolă nouă</span>
-                          <button
-                            type="button"
-                            className={styles.showPassBtn}
-                            onClick={() => setShowInvitePassword((v) => !v)}
-                            aria-pressed={showInvitePassword}
-                          >
-                            {showInvitePassword ? 'Ascunde parola' : 'Arată parola'}
-                          </button>
-                        </div>
-                        <Input
-                          type={showInvitePassword ? 'text' : 'password'}
-                          autoComplete="new-password"
-                          value={invitePassword}
-                          onChange={(e) => setInvitePassword(e.target.value)}
-                        />
-                      </div>
-                      {/* cerințe parolă live — lime când sunt îndeplinite */}
-                      <ul className={styles.invReqs}>
-                        {[
-                          { ok: invitePassword.length >= 10, text: 'Cel puțin 10 caractere' },
-                          { ok: /\d/.test(invitePassword), text: 'Cel puțin o cifră' },
-                          { ok: /[A-Z]/.test(invitePassword), text: 'Cel puțin o literă mare' },
-                        ].map(({ ok, text }) => (
-                          <li key={text} className={cn(styles.invReq, ok && styles.invReqOk)}>
-                            <Icon icon={ok ? 'circle-check' : 'circle'} size="sm" />
-                            <span className="body-small">{text}</span>
-                          </li>
-                        ))}
-                      </ul>
-                      <Checkbox defaultSelected>
-                        Accept Termenii și Politica de confidențialitate
-                      </Checkbox>
-                      <Button variant="primary" size="lg" className={styles.blockBtn}>
-                        Acceptă invitația
-                      </Button>
-                      <p className="caption muted" style={{ textAlign: 'center' }}>
-                        Invitația e valabilă până pe 31 octombrie 2026.
-                      </p>
+                          </div>
+                          <div className={styles.passwordField}>
+                            <div className={styles.passwordLabel}>
+                              <span>Parolă nouă</span>
+                              <button
+                                type="button"
+                                className={styles.showPassBtn}
+                                onClick={() => setShowInvitePassword((v) => !v)}
+                                aria-pressed={showInvitePassword}
+                              >
+                                {showInvitePassword ? 'Ascunde parola' : 'Arată parola'}
+                              </button>
+                            </div>
+                            <Input
+                              type={showInvitePassword ? 'text' : 'password'}
+                              autoComplete="new-password"
+                              value={invitePassword}
+                              onChange={(e) => setInvitePassword(e.target.value)}
+                            />
+                          </div>
+                          {/* cerințe parolă live — lime când sunt îndeplinite */}
+                          <ul className={styles.invReqs}>
+                            {[
+                              { ok: invitePassword.length >= 10, text: 'Cel puțin 10 caractere' },
+                              { ok: /\d/.test(invitePassword), text: 'Cel puțin o cifră' },
+                              { ok: /[A-Z]/.test(invitePassword), text: 'Cel puțin o literă mare' },
+                            ].map(({ ok, text }) => (
+                              <li key={text} className={cn(styles.invReq, ok && styles.invReqOk)}>
+                                <Icon icon={ok ? 'circle-check' : 'circle'} size="sm" />
+                                <span className="body-small">{text}</span>
+                              </li>
+                            ))}
+                          </ul>
+                          <Checkbox defaultSelected>
+                            Accept Termenii și Politica de confidențialitate
+                          </Checkbox>
+                          <Button variant="primary" size="lg" className={styles.blockBtn}>
+                            Acceptă invitația
+                          </Button>
+                          <p className="caption muted" style={{ textAlign: 'center' }}>
+                            Invitația e valabilă până pe 31 octombrie 2026.
+                          </p>
+                        </>
+                      )}
                     </div>
                   </main>
                   <footer className={styles.authFoot}>Termeni · Confidențialitate · Ajutor</footer>
@@ -641,7 +689,7 @@ export function DemoClient() {
             <span className={styles.colLabel}>Design aprobat (preview.html)</span>
             <div className={styles.frameDesktop}>
               <iframe
-                src="/preview/launcher.html"
+                src="/design/preview/HubLauncher"
                 title="HubLauncher — design aprobat"
                 className={styles.iframe}
                 sandbox="allow-scripts allow-same-origin"
@@ -714,6 +762,9 @@ export function DemoClient() {
                     </Button>
                   </div>
                 </BrandZone>
+
+                {/* Telefon <560px: titlul "Aplicațiile tale" apare pe canvas (banda se termină după fraza zilei) */}
+                <h2 className={cn('display-m', styles.lbSecheadMobile)}>Aplicațiile tale</h2>
 
                 {/* AppDock + PortalPresence — margin negativ trage peste marginea de jos a benzii */}
                 <div className={styles.lbMine}>
