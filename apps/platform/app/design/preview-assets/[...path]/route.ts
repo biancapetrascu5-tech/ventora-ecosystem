@@ -16,6 +16,10 @@ const ALLOWED: Record<string, string> = {
 const ALLOWED_FONT = /^[A-Za-z0-9._-]+\.woff2$/;
 
 export async function GET(_req: Request, { params }: { params: Promise<{ path: string[] }> }) {
+  if (process.env.NODE_ENV !== 'development') {
+    return new NextResponse('Not found', { status: 404 });
+  }
+
   const { path: segments } = await params;
 
   if (!segments || segments.length === 0 || segments.some((s) => s.includes('..'))) {

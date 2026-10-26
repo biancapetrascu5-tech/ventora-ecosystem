@@ -1,5 +1,18 @@
 import { defineConfig, devices } from '@playwright/test';
 
+// prod-guard project necesită: next build (anterior) + next start -p 3101
+// Rulat explicit cu CI_PROD_GUARD=1, altfel proiectul e omis
+const prodGuardWebServer = process.env.CI_PROD_GUARD
+  ? [
+      {
+        command: 'pnpm exec next start -p 3101',
+        url: 'http://localhost:3101',
+        reuseExistingServer: false,
+        timeout: 60_000,
+      },
+    ]
+  : [];
+
 export default defineConfig({
   testDir: './e2e',
   fullyParallel: false,
@@ -15,12 +28,21 @@ export default defineConfig({
     {
       name: 'chromium',
       use: { ...devices['Desktop Chrome'] },
+      testIgnore: '**/*.prod-guard.test.ts',
+    },
+    {
+      name: 'prod-guard',
+      use: { ...devices['Desktop Chrome'], baseURL: 'http://localhost:3101' },
+      testMatch: '**/*.prod-guard.test.ts',
     },
   ],
-  webServer: {
-    command: 'pnpm dev',
-    url: 'http://localhost:3100',
-    reuseExistingServer: !process.env.CI,
-    timeout: 120_000,
-  },
+  webServer: [
+    {
+      command: 'pnpm dev',
+      url: 'http://localhost:3100',
+      reuseExistingServer: !process.env.CI,
+      timeout: 120_000,
+    },
+    ...prodGuardWebServer,
+  ],
 });

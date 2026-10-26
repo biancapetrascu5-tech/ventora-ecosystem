@@ -11,13 +11,17 @@ const RUNTIME_HEAD = `\
 @font-face{font-family:'DM Sans';src:url('/design/preview-assets/fonts/DMSans-Italic-Variable.woff2') format('woff2');font-style:italic;font-weight:100 900;font-display:swap}
 @font-face{font-family:'Syne';src:url('/design/preview-assets/fonts/Syne-Variable.woff2') format('woff2');font-style:normal;font-weight:400 800;font-display:swap}
 </style>
-<link rel="stylesheet" href="/preview-runtime/tokens.css">
+<link rel="stylesheet" href="/design/preview-runtime/tokens.css">
 <link rel="stylesheet" href="/design/preview-assets/bundle.css">
-<script src="/preview-runtime/react.production.min.js"></script>
-<script src="/preview-runtime/react-dom.production.min.js"></script>
+<script src="/design/preview-runtime/react.production.min.js"></script>
+<script src="/design/preview-runtime/react-dom.production.min.js"></script>
 <script src="/design/preview-assets/bundle.js"></script>`;
 
 export async function GET(_req: Request, { params }: { params: Promise<{ component: string }> }) {
+  if (process.env.NODE_ENV !== 'development') {
+    return new NextResponse('Not found', { status: 404 });
+  }
+
   const { component } = await params;
 
   // Previne path traversal — doar litere și cifre

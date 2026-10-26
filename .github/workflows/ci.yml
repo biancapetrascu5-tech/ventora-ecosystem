@@ -164,9 +164,37 @@ jobs:
       - name: Install Playwright Chromium
         run: pnpm --filter @ventora/platform exec playwright install chromium --with-deps
       - name: Run smoke tests
-        run: pnpm --filter @ventora/platform test:e2e
+        run: pnpm --filter @ventora/platform test:e2e --project=chromium
         env:
           NODE_ENV: development
           NEXT_PUBLIC_PLATFORM_URL: http://localhost:3100
+          NEXT_PUBLIC_PORTAL_URL: http://localhost:3101
+          NEXT_PUBLIC_FOUNDER_URL: http://localhost:3102
+
+  smoke-test-prod-guard:
+    name: Smoke test prod guard (Playwright)
+    runs-on: ubuntu-latest
+    needs: [build]
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Install Playwright Chromium
+        run: pnpm --filter @ventora/platform exec playwright install chromium --with-deps
+      - name: Build platform (producție)
+        run: pnpm --filter @ventora/platform build
+        env:
+          NEXT_PUBLIC_PLATFORM_URL: http://localhost:3101
+          NEXT_PUBLIC_PORTAL_URL: http://localhost:3101
+          NEXT_PUBLIC_FOUNDER_URL: http://localhost:3102
+      - name: Run prod-guard smoke tests
+        run: pnpm --filter @ventora/platform test:e2e --project=prod-guard
+        env:
+          CI_PROD_GUARD: '1'
+          NEXT_PUBLIC_PLATFORM_URL: http://localhost:3101
           NEXT_PUBLIC_PORTAL_URL: http://localhost:3101
           NEXT_PUBLIC_FOUNDER_URL: http://localhost:3102
