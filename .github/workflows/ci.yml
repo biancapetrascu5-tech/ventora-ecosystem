@@ -3,8 +3,15 @@ name: CI
 on:
   push:
     branches: [main, develop]
+    paths-ignore: ['docs/**', '**/*.md', 'screenshots/**', 'reports/**']
   pull_request:
     branches: [main, develop]
+    paths-ignore: ['docs/**', '**/*.md', 'screenshots/**', 'reports/**']
+
+# Un push nou pe același branch / PR anulează rularea veche (economie de minute).
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 
 env:
   TURBO_TELEMETRY_DISABLED: 1
@@ -14,6 +21,7 @@ jobs:
   secrets-scan:
     name: Scan for secrets (gitleaks)
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v7
         with:
@@ -25,6 +33,7 @@ jobs:
   guards-verify:
     name: Verify architectural guards
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v7
       - uses: pnpm/action-setup@v6
@@ -43,6 +52,7 @@ jobs:
   quality:
     name: Lint · Typecheck · Format
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v7
       - uses: pnpm/action-setup@v6
@@ -60,6 +70,7 @@ jobs:
   test:
     name: Unit tests
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v7
       - uses: pnpm/action-setup@v6
@@ -73,6 +84,7 @@ jobs:
   integration-tests:
     name: Integration tests (T1 + T2)
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     services:
       postgres:
         image: postgres:17
@@ -101,6 +113,7 @@ jobs:
   integration-tests-identity:
     name: Integration tests (identity — T1)
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     services:
       postgres:
         image: postgres:17
@@ -211,6 +224,7 @@ jobs:
   integration-tests-organizations:
     name: Integration tests (organizations — T2)
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     services:
       postgres:
         image: postgres:17
@@ -268,6 +282,7 @@ jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     needs: [quality, test, integration-tests, integration-tests-identity, integration-tests-organizations]
     steps:
       - uses: actions/checkout@v7
