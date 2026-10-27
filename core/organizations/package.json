@@ -18,6 +18,7 @@
   "dependencies": {
     "@prisma/adapter-pg": "^7.0.0",
     "@prisma/client": "^7.0.0",
+    "@ventora/errors": "workspace:*",
     "@ventora/notifications": "workspace:*",
     "pg": "^8.0.0",
     "prisma": "^7.0.0"

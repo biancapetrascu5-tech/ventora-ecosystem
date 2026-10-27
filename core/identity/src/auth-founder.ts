@@ -33,6 +33,9 @@ export const founderAuth = betterAuth({
     cookieCache: { enabled: false },
   },
   advanced: {
+    database: {
+      generateId: () => crypto.randomUUID(),
+    },
     crossSubDomainCookies: { enabled: false },
     defaultCookieAttributes: {
       sameSite: 'lax' as const,

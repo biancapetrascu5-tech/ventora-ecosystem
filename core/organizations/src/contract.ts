@@ -1,6 +1,6 @@
 import crypto from 'node:crypto';
 import { Pool } from 'pg';
-import { getOrgDb } from './db.js';
+import { getOrgDb } from './db';
 import {
   NotMemberError,
   NotFoundError,
@@ -12,7 +12,7 @@ import {
   ReservedSlugError,
   InvalidNameError,
   InvalidEmailError,
-} from './errors.js';
+} from './errors';
 import type { MembershipRole } from '../generated/organizations-client';
 
 // Slug: 2–63 lowercase alphanumeric / hyphens, no leading/trailing hyphen
@@ -46,6 +46,15 @@ const RESERVED_SLUGS = new Set([
 // Basic RFC5322-style email check (full validation happens server-side)
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+function assertUuid(value: string, fieldName: string): void {
+  if (!UUID_RE.test(value)) {
+    throw new TypeError(
+      `[validation] ${fieldName} must be a UUID, got: ${JSON.stringify(value.slice(0, 32))}`,
+    );
+  }
+}
+
 function normalizeEmail(email: string): string {
   return email.trim().toLowerCase();
 }
@@ -67,6 +76,7 @@ export interface OrgContext {
   readonly [_orgContextBrand]: void;
   userId: string;
   organizationId: string;
+  membershipId: string;
   role: MembershipRole;
 }
 
@@ -89,13 +99,14 @@ export async function resolveOrgContext(params: {
           userId: params.userId,
         },
       },
-      select: { role: true, status: true },
+      select: { id: true, role: true, status: true },
     });
   });
   if (!membership || membership.status !== 'active') throw new NotMemberError();
   return {
     userId: params.userId,
     organizationId: params.organizationId,
+    membershipId: membership.id,
     role: membership.role,
   } as unknown as OrgContext;
 }
@@ -191,6 +202,7 @@ export async function inviteMember(
     role: MembershipRole;
     inviterName: string;
     organizationName: string;
+    applicationIds?: string[];
   },
 ): Promise<{ invitationToken: string }> {
   if (ctx.role !== 'owner' && ctx.role !== 'admin') throw new ForbiddenError();
@@ -202,6 +214,7 @@ export async function inviteMember(
   const token = crypto.randomBytes(32).toString('hex');
   const tokenHash = hashToken(token);
   const email = normalizeEmail(params.email);
+  const applicationIds = params.applicationIds ?? [];
 
   await db.$transaction(async (tx: any) => {
     await tx.$executeRaw`SELECT set_config('app.organization_id', ${ctx.organizationId}, true)`;
@@ -215,6 +228,7 @@ export async function inviteMember(
         role: params.role,
         tokenHash,
         expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+        applicationIds,
       },
     });
   });
@@ -225,14 +239,16 @@ export async function acceptInvitation(params: {
   token: string;
   userId: string;
   userEmail: string;
-}): Promise<{ organizationId: string; role: MembershipRole }> {
+}): Promise<{ organizationId: string; role: MembershipRole; applicationIds: string[] }> {
+  assertUuid(params.userId, 'userId');
   const db = getOrgDb();
   const tokenHash = hashToken(params.token);
   const userEmail = normalizeEmail(params.userEmail);
 
   // find_invitation_by_token_hash returns pending OR expired rows (SECURITY DEFINER, GRANT to org_rw)
+  // application_ids fetched via direct column read (added in migration 20261027000003)
   const rows = await db.$transaction(async (tx: any) => {
-    return tx.$queryRaw<
+    const inv = await tx.$queryRaw<
       Array<{
         id: string;
         organization_id: string;
@@ -243,6 +259,18 @@ export async function acceptInvitation(params: {
       }>
     >`SELECT id, organization_id, email, role, expires_at, status
       FROM organizations.find_invitation_by_token_hash(${tokenHash}::text)`;
+    if (!inv[0]) return inv;
+    // Set org context so RLS allows the application_ids read
+    await tx.$executeRaw`SELECT set_config('app.organization_id', ${inv[0].organization_id}, true)`;
+    const appIds = await tx.$queryRaw<Array<{ application_ids: string[] }>>`
+      SELECT application_ids
+      FROM organizations.invitation
+      WHERE id = ${inv[0].id}::uuid
+    `;
+    return inv.map((row: (typeof inv)[0]) => ({
+      ...row,
+      application_ids: appIds[0]?.application_ids ?? [],
+    }));
   });
 
   const inv = rows[0];
@@ -251,7 +279,7 @@ export async function acceptInvitation(params: {
     throw new TokenExpiredError();
   if (normalizeEmail(inv.email) !== userEmail) throw new EmailMismatchError();
 
-  return db.$transaction(async (tx: any) => {
+  const result = await db.$transaction(async (tx: any) => {
     await tx.$executeRaw`SELECT set_config('app.organization_id', ${inv.organization_id}, true)`;
 
     // Atomic UPDATE — 0 rows means token was already used (race condition guard)
@@ -272,8 +300,18 @@ export async function acceptInvitation(params: {
       },
     });
 
-    return { organizationId: inv.organization_id, role: inv.role };
+    return {
+      organizationId: inv.organization_id,
+      role: inv.role,
+      applicationIds: (inv as any).application_ids ?? [],
+    };
   });
+
+  return {
+    organizationId: result.organizationId,
+    role: result.role,
+    applicationIds: result.applicationIds,
+  };
 }
 
 export async function revokeInvitation(ctx: OrgContext, invitationId: string): Promise<void> {

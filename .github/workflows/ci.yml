@@ -63,6 +63,7 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm --filter @ventora/identity generate
       - run: pnpm --filter @ventora/organizations generate
+      - run: pnpm --filter @ventora/access generate
       - run: pnpm lint
       - run: pnpm typecheck
       - run: pnpm format:check
@@ -268,10 +269,11 @@ jobs:
           $PSQL -c "CREATE ROLE founder_runtime WITH LOGIN PASSWORD '${FOUNDER_PW}' NOINHERIT"
           echo "APP_PW=${APP_PW}" >> $GITHUB_ENV
           echo "FOUNDER_PW=${FOUNDER_PW}" >> $GITHUB_ENV
-      - name: Apply organizations migration
+      - name: Apply organizations migrations
         run: |
-          psql postgresql://postgres:test@localhost:5434/ventora_org_test \
-            -f core/organizations/prisma/migrations/20261027000001_organizations_init/migration.sql
+          PSQL="psql postgresql://postgres:test@localhost:5434/ventora_org_test"
+          $PSQL -f core/organizations/prisma/migrations/20261027000001_organizations_init/migration.sql
+          $PSQL -f core/organizations/prisma/migrations/20261027000003_invitation_application_ids/migration.sql
       - name: Run organizations integration tests
         env:
           DATABASE_URL_TEST: postgresql://postgres:test@localhost:5434/ventora_org_test
@@ -279,11 +281,23 @@ jobs:
           DATABASE_URL_ADMIN_TEST: postgresql://postgres:test@localhost:5434/ventora_org_test
         run: pnpm --filter @ventora/organizations test:integration
 
-  build:
-    name: Build
+  integration-tests-access:
+    name: Integration tests (access + booking — T3)
     runs-on: ubuntu-latest
     timeout-minutes: 20
-    needs: [quality, test, integration-tests, integration-tests-identity, integration-tests-organizations]
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_PASSWORD: test
+          POSTGRES_DB: ventora_access_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5435:5432
     steps:
       - uses: actions/checkout@v7
       - uses: pnpm/action-setup@v6
@@ -294,6 +308,73 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm --filter @ventora/identity generate
       - run: pnpm --filter @ventora/organizations generate
+      - run: pnpm --filter @ventora/access generate
+      - name: Create runtime roles
+        run: |
+          APP_PW=$(openssl rand -hex 32)
+          FOUNDER_PW=$(openssl rand -hex 32)
+          PSQL="psql postgresql://postgres:test@localhost:5435/ventora_access_test"
+          $PSQL -c "CREATE ROLE app_runtime WITH LOGIN PASSWORD '${APP_PW}' NOINHERIT"
+          $PSQL -c "CREATE ROLE founder_runtime WITH LOGIN PASSWORD '${FOUNDER_PW}' NOINHERIT"
+          echo "APP_PW=${APP_PW}" >> $GITHUB_ENV
+          echo "FOUNDER_PW=${FOUNDER_PW}" >> $GITHUB_ENV
+      - name: Apply identity migrations
+        run: |
+          PSQL="psql postgresql://postgres:test@localhost:5435/ventora_access_test"
+          for f in core/identity/prisma/identity/migrations/*/migration.sql; do
+            echo "Applying $f"
+            $PSQL -f "$f"
+          done
+          for f in core/identity/prisma/founder/migrations/*/migration.sql; do
+            echo "Applying $f"
+            $PSQL -f "$f"
+          done
+      - name: Apply organizations migrations
+        run: |
+          PSQL="psql postgresql://postgres:test@localhost:5435/ventora_access_test"
+          for f in core/organizations/prisma/migrations/*/migration.sql; do
+            echo "Applying $f"
+            $PSQL -f "$f"
+          done
+      - name: Apply access migration
+        run: |
+          psql postgresql://postgres:test@localhost:5435/ventora_access_test \
+            -f core/access/prisma/migrations/20261027000002_access_init/migration.sql
+      - name: Sync permissions
+        run: pnpm tsx scripts/sync-permissions.ts
+        env:
+          DIRECT_URL: postgresql://postgres:test@localhost:5435/ventora_access_test
+      - name: Generate test secrets
+        run: |
+          echo "BETTER_AUTH_SECRET=$(openssl rand -hex 32)" >> $GITHUB_ENV
+          echo "FOUNDER_AUTH_SECRET=$(openssl rand -hex 32)" >> $GITHUB_ENV
+      - name: Run access integration tests
+        env:
+          DATABASE_URL_TEST: postgresql://postgres:test@localhost:5435/ventora_access_test
+          DATABASE_URL_ADMIN_TEST: postgresql://postgres:test@localhost:5435/ventora_access_test
+          DATABASE_URL: postgresql://postgres:test@localhost:5435/ventora_access_test
+          BETTER_AUTH_SECRET: ${{ env.BETTER_AUTH_SECRET }}
+          FOUNDER_AUTH_SECRET: ${{ env.FOUNDER_AUTH_SECRET }}
+        run: |
+          pnpm --filter @ventora/access test:integration
+          pnpm --filter @ventora/booking test:integration
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    needs: [quality, test, integration-tests, integration-tests-identity, integration-tests-organizations, integration-tests-access]
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter @ventora/identity generate
+      - run: pnpm --filter @ventora/organizations generate
+      - run: pnpm --filter @ventora/access generate
       - run: pnpm build
         env:
           NEXT_PUBLIC_PLATFORM_URL: http://localhost:3100

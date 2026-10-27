@@ -1,0 +1,26 @@
+{
+  "name": "@ventora/booking",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "test:integration": "vitest run --config vitest.integration.config.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@ventora/access": "workspace:*",
+    "@ventora/contracts": "workspace:*",
+    "@ventora/errors": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/pg": "^8.0.0",
+    "pg": "^8.0.0",
+    "typescript": "^6.0.0",
+    "vitest": "^5.0.5"
+  }
+}
