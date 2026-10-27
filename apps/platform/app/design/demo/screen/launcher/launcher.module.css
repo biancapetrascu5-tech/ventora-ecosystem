@@ -16,38 +16,41 @@
   height: 220px;
   pointer-events: none;
   fill: none;
-  stroke: var(--on-brand-ink);
+  stroke: var(--on-brand);
   stroke-width: 1.5;
   opacity: 0.15;
 }
 
-/* Summary chips row in band */
-.chipsRow {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-2);
+/* Summary chips — sentence format */
+.chipsSentence {
   margin-top: var(--space-3);
+  font-size: 15px;
+  color: var(--on-brand);
+  line-height: 2;
+  margin-bottom: 0;
 }
 
 .chip {
   display: inline-flex;
   align-items: center;
   gap: var(--space-1-5);
-  padding: 3px var(--space-3) 3px var(--space-2);
+  padding: 2px var(--space-3) 2px var(--space-2);
   border-radius: var(--radius-full);
-  background: var(--on-brand-soft);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  color: var(--on-brand-ink);
+  background: var(--brand-line);
+  border: 1px solid var(--brand-line-strong);
+  color: var(--on-brand);
   text-decoration: none;
   font-size: 14px;
+  font-weight: 500;
   cursor: pointer;
+  vertical-align: middle;
 }
 
 .chipDot {
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: var(--attention-base, #f59e0b);
+  background: var(--attention);
   flex-shrink: 0;
 }
 
@@ -74,7 +77,22 @@
   justify-content: space-between;
   padding: 0 var(--space-5);
   margin-bottom: var(--space-2);
-  color: var(--on-brand-ink);
+  color: var(--on-brand);
+}
+
+/* Firm selector — hidden on mobile */
+.firmSelector {
+  display: inline-flex;
+}
+
+/* Alte aplicații — card wrapper */
+.otherCard {
+  background: var(--sheet);
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow-1);
+  padding: 0 var(--space-5);
+  margin-top: var(--space-3);
 }
 
 .dockWrap {
@@ -131,7 +149,8 @@
   }
 
   .searchText,
-  .searchKbd {
+  .searchKbd,
+  .firmSelector {
     display: none;
   }
 
@@ -145,5 +164,9 @@
     box-sizing: border-box;
     padding-left: calc(36px + var(--space-3));
     margin-top: var(--space-1);
+  }
+
+  .otherCard {
+    padding: 0 var(--space-4);
   }
 }

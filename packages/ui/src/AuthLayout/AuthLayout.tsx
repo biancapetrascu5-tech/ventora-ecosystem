@@ -12,7 +12,7 @@ export interface AuthLayoutProps {
   theme?: 'light' | 'dark';
 }
 
-function VentoraLogoFull({ height = 28 }: { height?: number }) {
+function VentoraLogoFull({ height = 40 }: { height?: number }) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"

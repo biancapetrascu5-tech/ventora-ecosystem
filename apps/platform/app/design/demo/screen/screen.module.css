@@ -52,7 +52,7 @@
   text-decoration: underline;
   text-underline-offset: var(--marker-width);
   text-decoration-thickness: 1px;
-  font-size: var(--type-caption-size);
+  font-size: var(--type-body-size);
   font-weight: 500;
 }
 

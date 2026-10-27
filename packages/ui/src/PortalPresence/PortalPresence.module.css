@@ -120,7 +120,7 @@
   width: 100%;
 }
 
-/* Store icon wrapper */
+/* Store icon wrapper — colored square as in planșă */
 .storeIconWrap {
   display: flex;
   align-items: center;
@@ -128,8 +128,8 @@
   width: 40px;
   height: 40px;
   border-radius: var(--radius-md);
-  background: var(--neutral-soft);
-  color: var(--ink-secondary);
+  background: var(--brand-surface);
+  color: var(--on-brand);
   flex: none;
   margin-bottom: var(--space-2);
 }

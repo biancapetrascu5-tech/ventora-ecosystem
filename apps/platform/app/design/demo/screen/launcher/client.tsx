@@ -83,16 +83,17 @@ type OtherConfig = {
   primaryAction: string;
   hasMenu?: boolean;
 };
+
 const OTHER_CONFIGS: OtherConfig[] = [
   {
     app: 'inventory',
-    pills: [{ label: 'Temporar indisponibilă' }],
-    body: 'Lucrăm la ea acum. Revine în curând.',
-    primaryAction: 'Vezi starea',
+    pills: [{ label: 'Rolul tău', icon: 'wrench' }],
+    body: 'Rolul tău nu include această aplicație. Bianca Petrașcu îți poate da acces.',
+    primaryAction: 'Cere acces',
   },
   {
     app: 'analytics',
-    pills: [{ label: 'Nu e în rolul tău', icon: 'key' }],
+    pills: [{ label: 'Fără acces', icon: 'lock' }],
     body: 'Rolul tău nu include această aplicație. Bianca Petrașcu îți poate da acces.',
     primaryAction: 'Cere acces',
   },
@@ -102,14 +103,14 @@ const OTHER_CONFIGS: OtherConfig[] = [
       { label: 'Recomandare', attention: true },
       { label: 'Nu e în abonament', icon: 'lock' },
     ],
-    body: '49 lei pe lună · fără cost de implementare',
-    primaryAction: 'Adaugă la abonament',
+    body: 'Se potrivește cu Booking: trimite automat reamintiri și campanii clienților tăi. · 49 lei pe lună',
+    primaryAction: 'Vezi detaliile',
     hasMenu: true,
   },
   {
     app: 'network',
-    pills: [{ label: 'Nu e în abonament', icon: 'link' }],
-    body: '',
+    pills: [{ label: 'Nu e în abonament', icon: 'globe' }],
+    body: 'Nu e inclusă în abonamentul afacerii. Scrie-ne și o activăm.',
     primaryAction: 'Scrie-ne',
   },
 ];
@@ -148,7 +149,7 @@ function VentoraLogoFull({ height = 28 }: { height?: number }) {
         d="M90.960 47L85.695 47L77.622 28.100L83.400 28.100L88.530 40.412L93.768 28.100L99.060 28.100L90.960 47"
       />
       <path
-        fill="var(--ink)"
+        fill="var(--on-brand)"
         d="M118.986 47L103.812 47L103.812 28.100L118.635 28.100L118.635 32.231L109.104 32.231L109.104 35.417L117.501 35.417L117.501 39.413L109.104 39.413L109.104 42.869L118.986 42.869L118.986 47M130.434 47L125.196 47L125.196 28.100L129.597 28.100L137.940 38.171L137.940 28.100L143.178 28.100L143.178 47L138.777 47L130.434 36.929L130.434 47M159.567 47L154.221 47L154.221 32.339L148.416 32.339L148.416 28.100L165.345 28.100L165.345 32.339L159.567 32.339L159.567 47M180.114 47.378Q177.846 47.378 175.929 46.649Q174.012 45.920 172.595 44.584Q171.177 43.247 170.394 41.465Q169.611 39.683 169.611 37.550Q169.611 35.417 170.394 33.635Q171.177 31.853 172.595 30.517Q174.012 29.180 175.929 28.451Q177.846 27.722 180.114 27.722Q182.409 27.722 184.313 28.451Q186.216 29.180 187.620 30.517Q189.024 31.853 189.821 33.635Q190.617 35.417 190.617 37.550Q190.617 39.683 189.821 41.478Q189.024 43.274 187.620 44.597Q186.216 45.920 184.313 46.649Q182.409 47.378 180.114 47.378M180.114 42.950Q181.194 42.950 182.126 42.572Q183.057 42.194 183.746 41.478Q184.434 40.763 184.826 39.764Q185.217 38.765 185.217 37.550Q185.217 36.308 184.826 35.322Q184.434 34.337 183.746 33.621Q183.057 32.906 182.126 32.528Q181.194 32.150 180.114 32.150Q179.034 32.150 178.103 32.528Q177.171 32.906 176.483 33.621Q175.794 34.337 175.403 35.322Q175.011 36.308 175.011 37.550Q175.011 38.765 175.403 39.764Q175.794 40.763 176.483 41.478Q177.171 42.194 178.103 42.572Q179.034 42.950 180.114 42.950M202.011 47L196.665 47L196.665 28.100L205.116 28.100Q209.247 28.100 211.475 29.977Q213.702 31.853 213.702 35.093Q213.702 37.226 212.676 38.765Q211.704 40.250 210.003 41.060L214.080 47L208.356 47L204.927 41.978L202.011 41.978L202.011 47M202.011 32.312L202.011 37.847L204.981 37.847Q206.655 37.847 207.479 37.118Q208.302 36.389 208.302 35.093Q208.302 33.770 207.479 33.041Q206.655 32.312 204.981 32.312L202.011 32.312M223.071 47L217.617 47L225.960 28.100L231.225 28.100L239.595 47L234.033 47L232.548 43.328L224.556 43.328L223.071 47M226.122 39.386L230.982 39.386L228.552 33.338"
       />
     </svg>
@@ -243,16 +244,17 @@ export function LauncherScreenClient({ theme }: { theme: 'light' | 'dark'; activ
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-4)' }}>
             <VentoraLogoFull height={24} />
+            {/* Firm selector — hidden on mobile */}
             <button
               type="button"
+              className={bandStyles.firmSelector}
               style={{
-                display: 'inline-flex',
                 alignItems: 'center',
                 gap: 'var(--space-2)',
                 background: 'transparent',
                 border: 'none',
                 cursor: 'pointer',
-                color: 'var(--on-brand-ink)',
+                color: 'var(--on-brand)',
                 padding: '4px 8px',
                 borderRadius: 'var(--radius-sm)',
               }}
@@ -262,8 +264,8 @@ export function LauncherScreenClient({ theme }: { theme: 'light' | 'dark'; activ
                   width: 28,
                   height: 28,
                   borderRadius: 'var(--radius-xs)',
-                  background: 'var(--on-brand-soft)',
-                  color: 'var(--on-brand-ink)',
+                  background: 'var(--brand-line-strong)',
+                  color: 'var(--on-brand)',
                   display: 'inline-flex',
                   alignItems: 'center',
                   justifyContent: 'center',
@@ -293,9 +295,9 @@ export function LauncherScreenClient({ theme }: { theme: 'light' | 'dark'; activ
                 height: 32,
                 padding: '0 var(--space-3)',
                 borderRadius: 'var(--radius-sm)',
-                border: '1px solid rgba(255,255,255,0.2)',
+                border: '1px solid var(--brand-line-strong)',
                 background: 'transparent',
-                color: 'var(--on-brand-ink)',
+                color: 'var(--on-brand)',
                 cursor: 'pointer',
                 font: 'inherit',
                 fontSize: 13,
@@ -310,13 +312,13 @@ export function LauncherScreenClient({ theme }: { theme: 'light' | 'dark'; activ
                   display: 'inline-flex',
                   alignItems: 'center',
                   gap: 2,
-                  background: 'var(--on-brand-soft)',
-                  border: '1px solid var(--on-brand-soft)',
+                  background: 'var(--brand-line)',
+                  border: '1px solid var(--brand-line-strong)',
                   borderRadius: 4,
                   padding: '1px 5px',
                   fontSize: 11,
                   fontWeight: 600,
-                  color: 'var(--on-brand-ink)',
+                  color: 'var(--on-brand)',
                   whiteSpace: 'nowrap',
                   opacity: 0.8,
                 }}
@@ -379,21 +381,26 @@ export function LauncherScreenClient({ theme }: { theme: 'light' | 'dark'; activ
             Duminică, 25 octombrie · Salon Aurora
           </p>
           <h1 className="display-hub">Bună dimineața, Bianca</h1>
-          <div className={bandStyles.chipsRow}>
+          {/* Summary as sentence with inline chips */}
+          <p className={bandStyles.chipsSentence}>
+            Azi ai{' '}
             <a href="#" className={bandStyles.chip}>
-              <AppIcon app="booking" size={16} />8 programări
+              <AppIcon app="booking" size={14} />8 programări
             </a>
+            ,{' '}
             <a href="#" className={bandStyles.chip}>
-              <AppIcon app="finance" size={16} />
+              <AppIcon app="finance" size={14} />
               2 facturi scadente
               <span className={bandStyles.chipDot} aria-hidden />
-            </a>
+            </a>{' '}
+            și{' '}
             <a href="#" className={bandStyles.chip}>
-              <AppIcon app="hr" size={16} />
+              <AppIcon app="hr" size={14} />
               o cerere de concediu
               <span className={bandStyles.chipDot} aria-hidden />
-            </a>
-          </div>
+            </a>{' '}
+            de aprobat.
+          </p>
           {/* Decorative chevrons */}
           <svg className={bandStyles.bandChev} viewBox="0 0 176 240" aria-hidden>
             {[40, 72, 104].map((y) => (
@@ -439,12 +446,11 @@ export function LauncherScreenClient({ theme }: { theme: 'light' | 'dark'; activ
             style={{
               color: 'var(--ink-secondary)',
               marginTop: 'var(--space-1)',
-              marginBottom: 'var(--space-4)',
             }}
           >
             Nu le poți deschide acum. La fiecare scrie de ce și ce poți face.
           </p>
-          <div>
+          <div className={bandStyles.otherCard}>
             {OTHER_CONFIGS.map((config) => (
               <AppTileRow key={config.app} config={config} />
             ))}
