@@ -277,6 +277,8 @@ jobs:
           node-version-file: .nvmrc
           cache: pnpm
       - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter @ventora/identity generate
+      - run: pnpm --filter @ventora/organizations generate
       - run: pnpm build
         env:
           NEXT_PUBLIC_PLATFORM_URL: http://localhost:3100
