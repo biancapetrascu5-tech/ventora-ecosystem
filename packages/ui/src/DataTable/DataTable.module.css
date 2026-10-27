@@ -1,0 +1,242 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  background: var(--sheet);
+  border: var(--border-width) solid var(--line);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  font-family: var(--font-sans);
+  color: var(--ink);
+}
+
+/* Toolbar */
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  border-bottom: var(--border-width) solid var(--line);
+  flex-wrap: wrap;
+}
+
+.bulkBar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  width: 100%;
+}
+
+.bulkCount {
+  font-size: var(--type-body-small-size, 13px);
+  font-weight: 500;
+  color: var(--ink-secondary);
+}
+
+.bulkActions {
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.bulkBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-md);
+  border: var(--border-width) solid var(--line);
+  background: var(--canvas);
+  color: var(--ink);
+  font-family: inherit;
+  font-size: var(--type-body-small-size, 13px);
+  cursor: pointer;
+  transition: background var(--duration-quick) var(--ease-default);
+}
+.bulkBtn:hover {
+  background: var(--raised);
+}
+
+.bulkBtnDestructive {
+  color: var(--danger-ink);
+  border-color: var(--danger-soft);
+}
+.bulkBtnDestructive:hover {
+  background: var(--danger-soft);
+}
+
+/* Table */
+.tableWrap {
+  overflow-x: auto;
+  min-width: 0;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--type-body-small-size, 13px);
+}
+
+.caption {
+  clip: rect(0, 0, 0, 0);
+  clip-path: inset(50%);
+  height: 1px;
+  overflow: hidden;
+  position: absolute;
+  white-space: nowrap;
+  width: 1px;
+}
+
+/* Header */
+.th {
+  padding: var(--space-2) var(--space-4);
+  text-align: start;
+  font-weight: 500;
+  color: var(--ink-secondary);
+  background: var(--sunken);
+  border-bottom: var(--border-width) solid var(--line-strong);
+  white-space: nowrap;
+  user-select: none;
+}
+
+.thSortable {
+  cursor: pointer;
+}
+.thSortable:hover {
+  color: var(--ink);
+}
+
+.thEnd {
+  text-align: end;
+}
+
+.thCenter {
+  text-align: center;
+}
+
+.thTrailing {
+  white-space: nowrap;
+}
+
+.thActions {
+  width: 44px;
+}
+
+.sortIcon {
+  display: inline-flex;
+  margin-left: var(--space-1);
+  color: var(--ink-muted);
+  vertical-align: middle;
+}
+
+.sortActive {
+  color: var(--primary);
+}
+
+/* Cells */
+.checkCell {
+  width: 44px;
+  text-align: center;
+}
+
+.checkbox {
+  cursor: pointer;
+  accent-color: var(--primary);
+  width: 16px;
+  height: 16px;
+}
+
+/* Rows */
+.tr {
+  border-bottom: var(--border-width) solid var(--line);
+  transition: background var(--duration-quick) var(--ease-default);
+}
+.tr:last-child {
+  border-bottom: 0;
+}
+.tr:hover {
+  background: var(--state-hover, color-mix(in srgb, var(--ink) 4%, transparent));
+}
+
+.trSelected {
+  background: color-mix(in srgb, var(--primary) 6%, transparent);
+}
+.trSelected:hover {
+  background: color-mix(in srgb, var(--primary) 10%, transparent);
+}
+
+.trActive {
+  background: color-mix(in srgb, var(--primary) 8%, transparent);
+}
+
+.td {
+  padding: var(--space-3) var(--space-4);
+  vertical-align: middle;
+  color: var(--ink-secondary);
+}
+
+.tdPrimary {
+  color: var(--ink);
+  font-weight: 500;
+}
+
+.tdEnd {
+  text-align: end;
+}
+
+.tdCenter {
+  text-align: center;
+}
+
+.tdTrailing {
+  white-space: nowrap;
+}
+
+.tdActions {
+  text-align: end;
+  padding: var(--space-1) var(--space-2);
+}
+
+.actionsBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: 0;
+  background: transparent;
+  border-radius: var(--radius-md);
+  color: var(--ink-muted);
+  cursor: pointer;
+  transition: background var(--duration-quick) var(--ease-default), color var(--duration-quick) var(--ease-default);
+}
+.actionsBtn:hover {
+  background: var(--selected, color-mix(in srgb, var(--ink) 8%, transparent));
+  color: var(--ink);
+}
+
+/* Loading */
+.loadingRow td {
+  padding: var(--space-3) var(--space-4);
+}
+
+/* Empty */
+.emptyCell {
+  padding: var(--space-8) var(--space-4);
+  text-align: center;
+}
+
+/* Pagination */
+.paginationBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: var(--space-3) var(--space-4);
+  border-top: var(--border-width) solid var(--line);
+  flex-wrap: wrap;
+}
+
+.paginationInfo {
+  font-size: var(--type-caption-size);
+  color: var(--ink-muted);
+}

@@ -151,5 +151,34 @@ export type { UsageMeterProps } from './UsageMeter/UsageMeter';
 export { Kbd } from './Kbd/Kbd';
 export type { KbdProps } from './Kbd/Kbd';
 
+// Lot 5 — Data & visualization
+export { DataTable } from './DataTable/DataTable';
+export type {
+  DataTableProps,
+  DataTableColumn,
+  DataTableRow,
+  DataTableSort,
+  DataTablePagination,
+  DataTableAction,
+  DataTableBulkAction,
+} from './DataTable/DataTable';
+
+export { Stat, StatGroup } from './Stat/Stat';
+export type { StatProps, StatTone, StatDelta } from './Stat/Stat';
+
+export { BarChart } from './BarChart/BarChart';
+export type { BarChartProps, BarChartDataItem } from './BarChart/BarChart';
+
+export { LineChart } from './LineChart/LineChart';
+export type { LineChartProps, LineSeries } from './LineChart/LineChart';
+
+export { Timeline } from './Timeline/Timeline';
+export type {
+  TimelineProps,
+  TimelinePeriod,
+  TimelineRow,
+  TimelineRowStatus,
+} from './Timeline/Timeline';
+
 // Utilities
 export { cn } from './lib/cn';

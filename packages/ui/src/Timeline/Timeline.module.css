@@ -1,0 +1,205 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  background: var(--sheet);
+  border: var(--border-width) solid var(--line);
+  border-radius: var(--radius-lg);
+  overflow-x: auto;
+  font-family: var(--font-sans);
+  color: var(--ink);
+  position: relative;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  border-bottom: var(--border-width) solid var(--line-strong);
+  background: var(--sunken);
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.headerText {
+  font-size: var(--type-caption-size);
+  font-weight: 600;
+  color: var(--ink-secondary);
+  padding: var(--space-2) var(--space-3);
+}
+
+.periods {
+  flex: 1;
+  display: flex;
+}
+
+.period {
+  flex: 1;
+  font-size: var(--type-caption-size);
+  color: var(--ink-muted);
+  padding: var(--space-2) var(--space-1);
+  text-align: center;
+  white-space: nowrap;
+  border-left: var(--border-width) solid var(--line);
+}
+
+.periodCurrent {
+  color: var(--primary);
+  font-weight: 600;
+}
+
+.labelCell {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: var(--space-2) var(--space-3);
+  border-right: var(--border-width) solid var(--line);
+}
+
+.statusCell {
+  flex: none;
+  padding: var(--space-2) var(--space-3);
+  border-left: var(--border-width) solid var(--line);
+  display: flex;
+  align-items: center;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  border-bottom: var(--border-width) solid var(--line);
+  min-height: 44px;
+}
+
+.row:last-child {
+  border-bottom: 0;
+}
+
+.rowLabel {
+  font-size: var(--type-body-small-size, 13px);
+  font-weight: 500;
+  color: var(--ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.rowSub {
+  font-size: var(--type-caption-size);
+  color: var(--ink-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.barArea {
+  flex: 1;
+  position: relative;
+  height: 100%;
+  min-height: 44px;
+}
+
+.bar {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 20px;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  background: var(--primary);
+  opacity: 0.8;
+}
+
+.bar-done {
+  background: var(--done);
+  opacity: 1;
+}
+
+.bar-active {
+  background: var(--primary);
+}
+
+.bar-late {
+  background: var(--attention);
+}
+
+.bar-planned {
+  background: var(--neutral-soft);
+  border: var(--border-width) solid var(--line-strong);
+}
+
+.barProgress {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  background: color-mix(in srgb, var(--primary) 50%, transparent);
+  border-right: 2px solid var(--primary);
+}
+
+.milestone {
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.milestoneDiamond {
+  width: 12px;
+  height: 12px;
+  background: var(--ink);
+  transform: rotate(45deg);
+  border-radius: 2px;
+  flex: none;
+}
+
+.milestoneLabel {
+  font-size: var(--type-caption-size);
+  color: var(--ink-secondary);
+  white-space: nowrap;
+  margin-top: var(--space-1);
+}
+
+.statusBadge {
+  font-size: var(--type-caption-size);
+  font-weight: 500;
+  white-space: nowrap;
+  color: var(--ink-secondary);
+}
+
+.status-done {
+  color: var(--done-ink);
+}
+
+.status-active {
+  color: var(--primary);
+}
+
+.status-late {
+  color: var(--attention-ink);
+}
+
+.status-planned {
+  color: var(--ink-muted);
+}
+
+/* Today line overlay */
+.todayLayer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.todayLine {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--primary);
+  opacity: 0.4;
+  transform: translateX(-50%);
+}
