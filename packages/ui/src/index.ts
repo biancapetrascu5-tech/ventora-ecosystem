@@ -209,5 +209,9 @@ export type {
   ScheduleEventStatus,
 } from './Schedule/Schedule';
 
+// Lot 7 — Agenda
+export { Agenda } from './Agenda/Agenda';
+export type { AgendaProps, AgendaItem, AgendaItemStatus } from './Agenda/Agenda';
+
 // Utilities
 export { cn } from './lib/cn';

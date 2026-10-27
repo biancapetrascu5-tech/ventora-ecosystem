@@ -1,0 +1,130 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  background: var(--sheet);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  border: 1px solid var(--line);
+}
+
+.nowLine {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 0 var(--space-3);
+  margin: var(--space-1) 0;
+  position: relative;
+}
+
+.nowTime {
+  font-size: var(--text-caption);
+  font-weight: 600;
+  color: var(--attention-mark);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.nowRule {
+  flex: 1;
+  height: 2px;
+  background: var(--attention-mark);
+  border-radius: 1px;
+}
+
+.item {
+  display: grid;
+  grid-template-columns: 56px 1fr auto;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--line);
+  cursor: default;
+  transition: background 0.12s;
+}
+
+.item:last-child {
+  border-bottom: none;
+}
+
+.item:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: -2px;
+}
+
+[data-theme='dark'] .item:focus-visible {
+  outline-color: var(--primary);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) .item:focus-visible {
+    outline-color: var(--primary);
+  }
+}
+
+.itemNow {
+  background: var(--attention-soft);
+}
+
+.itemPast {
+  opacity: 0.6;
+}
+
+.itemCancelled {
+  opacity: 0.5;
+  text-decoration: line-through;
+}
+
+.timeCol {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  flex-shrink: 0;
+}
+
+.startTime {
+  font-size: var(--text-body-sm);
+  font-weight: 600;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.endTime {
+  font-size: var(--text-caption);
+  color: var(--ink-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.title {
+  font-size: var(--text-body-sm);
+  font-weight: 500;
+  color: var(--ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.subtitle {
+  font-size: var(--text-caption);
+  color: var(--ink-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.staff {
+  font-size: var(--text-caption);
+  color: var(--ink-muted);
+}
+
+.status {
+  flex-shrink: 0;
+}

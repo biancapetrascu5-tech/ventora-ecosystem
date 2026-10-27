@@ -184,34 +184,36 @@ function AppTileRow({ config }: { config: AppRowConfig }) {
   );
 }
 
-/* ── Preview scalat — iframe la lățimea reală, scalat să încapă în coloană ── */
-
-const FRAME_WIDTH = 1280;
+/* ── Preview scalat — iframe la lățimea reală a planșei, scalat să încapă în coloană ── */
 
 function ScaledPreview({ src, title }: { src: string; title: string }) {
   const wrapRef = useRef<HTMLDivElement>(null);
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const [scale, setScale] = useState(1);
   const [contentH, setContentH] = useState(800);
+  const [frameW, setFrameW] = useState(2000); // lățimea reală a planșei, citită la load
 
   useLayoutEffect(() => {
     const wrap = wrapRef.current;
     if (!wrap) return;
-    setScale(wrap.clientWidth / FRAME_WIDTH);
+    setScale(wrap.clientWidth / frameW);
     const obs = new ResizeObserver(([e]) => {
-      setScale(e.contentRect.width / FRAME_WIDTH);
+      setScale(e.contentRect.width / frameW);
     });
     obs.observe(wrap);
     return () => obs.disconnect();
-  }, []);
+  }, [frameW]);
 
   const handleLoad = () => {
     const iframe = iframeRef.current;
     try {
-      const h = iframe?.contentDocument?.documentElement?.scrollHeight;
+      const doc = iframe?.contentDocument;
+      const h = doc?.documentElement?.scrollHeight;
+      const w = doc?.documentElement?.scrollWidth;
       if (h && h > 0) setContentH(h);
+      if (w && w > 0) setFrameW(w);
     } catch {
-      /* sandbox poate bloca — fallback la contentH inițial */
+      /* sandbox poate bloca — fallback la valorile inițiale */
     }
   };
 
@@ -235,7 +237,7 @@ function ScaledPreview({ src, title }: { src: string; title: string }) {
           onLoad={handleLoad}
           sandbox="allow-scripts allow-same-origin"
           style={{
-            width: FRAME_WIDTH,
+            width: frameW,
             height: contentH,
             border: 0,
             display: 'block',
