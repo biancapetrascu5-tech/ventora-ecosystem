@@ -37,5 +37,14 @@
     "expiredTitle": "Invitația a expirat",
     "expiredBody": "Invitațiile sunt valabile 7 zile. Cere una nouă: trimitem cererea către {name}, iar linkul nou îl primești pe e-mail.",
     "requestNew": "Cere o invitație nouă"
+  },
+  "usageMeter": {
+    "unlimited": "Nelimitat",
+    "usedOf": "{used}/{limit}{unit}",
+    "left": "Mai ai {n}",
+    "nearLimit": "Te apropii de limita planului",
+    "atLimit": "Ai atins limita planului",
+    "atLimitHint": "Ce ai deja rămâne neatins. Ca să adaugi altele, mărește planul.",
+    "upgrade": "Mărește planul"
   }
 }

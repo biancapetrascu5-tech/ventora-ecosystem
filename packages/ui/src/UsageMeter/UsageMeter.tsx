@@ -11,8 +11,15 @@ export interface UsageMeterProps {
   unit?: string;
   format?: (n: number) => string;
   compact?: boolean;
+  warnAt?: number;
   onUpgrade?: () => void;
   className?: string;
+  /** Override text for "n remaining" (receives formatted remaining count) */
+  remainingLabel?: (n: string) => string;
+  nearLimitLabel?: string;
+  atLimitLabel?: string;
+  atLimitHint?: string;
+  upgradeLabel?: string;
 }
 
 function fmt(n: number, format?: (n: number) => string): string {
@@ -32,15 +39,23 @@ export function UsageMeter({
   label,
   used,
   limit,
-  unit,
+  unit = '',
   format,
   compact,
+  warnAt = 0.8,
   onUpgrade,
   className,
+  remainingLabel = (n) => `Mai ai ${n}`,
+  nearLimitLabel = 'Te apropii de limita planului',
+  atLimitLabel = 'Ai atins limita planului',
+  atLimitHint = 'Ce ai deja rămâne neatins. Ca să adaugi altele, mărește planul.',
+  upgradeLabel = 'Mărește planul',
 }: UsageMeterProps) {
   const hasMeter = limit !== undefined && limit > 0;
   const pct = hasMeter ? Math.min(100, Math.round((used / limit!) * 100)) : 0;
   const isAtLimit = hasMeter && pct >= 100;
+  const isWarn = hasMeter && !isAtLimit && pct / 100 >= warnAt;
+  const remaining = hasMeter ? limit! - used : 0;
 
   if (compact) {
     return (
@@ -78,11 +93,21 @@ export function UsageMeter({
           <div className={cn(styles.fill, toneClass(pct))} style={{ width: `${pct}%` }} />
         </div>
       )}
-      {isAtLimit && onUpgrade && (
-        <button type="button" className={styles.upgrade} onClick={onUpgrade}>
-          <Icon icon="star" size="sm" aria-hidden />
-          Upgrade
-        </button>
+      {hasMeter && !isAtLimit && isWarn && <p className={styles.warnMsg}>{nearLimitLabel}</p>}
+      {hasMeter && !isAtLimit && !isWarn && remaining > 0 && (
+        <p className={styles.remaining}>{remainingLabel(fmt(remaining, format))}</p>
+      )}
+      {isAtLimit && (
+        <div className={styles.limitPanel}>
+          <p className={styles.limitTitle}>{atLimitLabel}</p>
+          <p className={styles.limitHint}>{atLimitHint}</p>
+          {onUpgrade && (
+            <button type="button" className={styles.upgrade} onClick={onUpgrade}>
+              <Icon icon="star" size="sm" aria-hidden />
+              {upgradeLabel}
+            </button>
+          )}
+        </div>
       )}
     </div>
   );

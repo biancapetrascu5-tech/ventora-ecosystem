@@ -1,3 +1,4 @@
+/* eslint-disable i18next/no-literal-string */
 'use client';
 import { notFound } from 'next/navigation';
 import { Toast } from '@ventora/ui';
@@ -7,51 +8,41 @@ export default function ToastGalleryPage() {
   if (process.env.NODE_ENV !== 'development') notFound();
   return (
     <GalleryShell title="Toast">
-      <GallerySection label="Tones — cu descriere" column>
+      <GallerySection label="RO" column>
         <Toast
           tone="neutral"
-          title="Modificarile au fost salvate"
-          description="Versiunea curenta a fost actualizata."
+          title="Am mutat programarea pe joi, 14:30."
+          onUndo={() => {}}
+          onDismiss={() => {}}
         />
         <Toast
           tone="done"
-          title="Operatia a reusit"
-          description="Toate campurile au fost procesate."
+          title="Am trimis reamintirea."
+          description="SMS-ul a ajuns la Ana Popescu la 09:12."
+          onDismiss={() => {}}
         />
         <Toast
           tone="attention"
-          title="Verifica setarile"
-          description="Un camp optional nu a fost completat."
+          title="Te apropii de limita de SMS-uri"
+          action={{ label: 'Vezi consumul' }}
+          onDismiss={() => {}}
         />
         <Toast
           tone="danger"
-          title="Eroare la salvare"
-          description="Conexiunea a fost intrerupta."
+          title="Nu am putut salva"
+          description="Verifică internetul și încearcă din nou."
+          action={{ label: 'Încearcă din nou' }}
+          onDismiss={() => {}}
         />
+        <Toast loading title="Exportăm 248 de programări…" />
       </GallerySection>
-      <GallerySection label="Fara descriere" column>
-        <Toast tone="neutral" title="Clipboard copiat" />
-        <Toast tone="done" title="Salvat cu succes" />
-        <Toast tone="attention" title="Verifica datele" />
-        <Toast tone="danger" title="Operatia a esuat" />
-      </GallerySection>
-      <GallerySection label="Cu actiune" column>
+      <GallerySection label="DE" column>
         <Toast
           tone="neutral"
-          title="Programarea a fost mutata"
-          description="De la 11:00 la 12:30."
-          action={{ label: 'Deschide' }}
+          title="Drei Termine wurden in den Papierkorb verschoben"
           onUndo={() => {}}
+          onDismiss={() => {}}
         />
-        <Toast
-          tone="danger"
-          title="3 programari anulate"
-          description="Bianca Marin, Oana Dinu, Dan Stoica."
-          action={{ label: 'Restaureaza' }}
-        />
-      </GallerySection>
-      <GallerySection label="Se incarca" column>
-        <Toast tone="neutral" title="Se exporta raportul..." loading />
       </GallerySection>
     </GalleryShell>
   );

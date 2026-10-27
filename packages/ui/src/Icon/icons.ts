@@ -70,6 +70,12 @@ import {
   Store,
   Wrench,
   Globe,
+  Wallet,
+  CircleAlert,
+  CircleX,
+  Inbox,
+  RotateCcw,
+  ChartColumn,
   type LucideIcon,
 } from 'lucide-react';
 
@@ -145,6 +151,12 @@ export const ICON_REGISTRY = {
   store: Store,
   wrench: Wrench,
   globe: Globe,
+  wallet: Wallet,
+  'circle-alert': CircleAlert,
+  'circle-x': CircleX,
+  inbox: Inbox,
+  'rotate-ccw': RotateCcw,
+  'chart-column': ChartColumn,
 } as const satisfies Record<string, LucideIcon>;
 
 export type IconName = keyof typeof ICON_REGISTRY;

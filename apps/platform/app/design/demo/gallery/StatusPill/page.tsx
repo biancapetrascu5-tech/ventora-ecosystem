@@ -8,47 +8,33 @@ export default function StatusPillGalleryPage() {
   if (process.env.NODE_ENV !== 'development') notFound();
   return (
     <GalleryShell title="StatusPill">
-      <GallerySection label="Tones">
-        <StatusPill tone="attention">In desfasurare</StatusPill>
-        <StatusPill tone="done">Finalizat</StatusPill>
-        <StatusPill tone="danger">Blocat</StatusPill>
-        <StatusPill tone="neutral">Planificat</StatusPill>
-      </GallerySection>
-      <GallerySection label="Size sm">
-        <StatusPill tone="attention" size="sm">
-          In desfasurare
-        </StatusPill>
-        <StatusPill tone="done" size="sm">
-          Finalizat
-        </StatusPill>
-        <StatusPill tone="danger" size="sm">
-          Blocat
-        </StatusPill>
-        <StatusPill tone="neutral" size="sm">
-          Planificat
-        </StatusPill>
-      </GallerySection>
-      <GallerySection label="Cu iconita">
+      <GallerySection label="Tonuri">
+        <StatusPill tone="attention">În desfășurare</StatusPill>
         <StatusPill tone="attention" icon="clock">
-          Neconfirmata
+          Necesită confirmare
         </StatusPill>
+        <StatusPill tone="done">Confirmată</StatusPill>
         <StatusPill tone="done" icon="check">
-          Confirmata
+          Plătită
         </StatusPill>
-        <StatusPill tone="danger" icon="x">
-          Anulata
-        </StatusPill>
-        <StatusPill tone="neutral" icon="circle">
-          Neutru
+        <StatusPill tone="danger">Restantă</StatusPill>
+        <StatusPill tone="neutral">Ciornă</StatusPill>
+        <StatusPill tone="neutral" icon={false}>
+          Anulată de client
         </StatusPill>
       </GallerySection>
-      <GallerySection label="Fara iconita (icon=false)">
-        <StatusPill tone="attention" icon={false}>
-          In asteptare
+      <GallerySection label="Mic">
+        <StatusPill size="sm" tone="done">
+          Confirmată
         </StatusPill>
-        <StatusPill tone="done" icon={false}>
-          Rezolvat
+        <StatusPill size="sm" tone="attention">
+          Acum
         </StatusPill>
+      </GallerySection>
+      <GallerySection label="DE">
+        <StatusPill tone="attention">Wird gerade durchgeführt</StatusPill>
+        <StatusPill tone="done">Bestätigt</StatusPill>
+        <StatusPill tone="danger">Überfällig</StatusPill>
       </GallerySection>
     </GalleryShell>
   );

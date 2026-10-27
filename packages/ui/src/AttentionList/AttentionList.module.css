@@ -20,18 +20,18 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 28px;
-  height: 28px;
-  border-radius: var(--radius-sm);
-  background: var(--sunken);
-  color: var(--ink-muted);
+  width: var(--space-8);
+  height: var(--space-8);
+  border-radius: var(--radius-full);
+  background: var(--attention-soft);
+  color: var(--attention-ink);
   flex: none;
   margin-top: 2px;
 }
 
 .tone-attention { background: var(--attention-soft); color: var(--attention-ink); }
 .tone-danger    { background: var(--danger-soft); color: var(--danger-ink); }
-.tone-neutral   { background: var(--sunken); color: var(--ink-muted); }
+.tone-neutral   { background: var(--neutral-soft); color: var(--ink-secondary); }
 
 .body {
   flex: 1;
@@ -70,7 +70,7 @@
   font-family: var(--font-sans);
   font-size: var(--type-body-small-size);
   line-height: var(--type-body-small-line);
-  color: var(--ink-secondary);
+  color: var(--ink-muted);
 }
 
 .actions {

@@ -37,5 +37,14 @@
     "expiredTitle": "Einladung abgelaufen",
     "expiredBody": "Einladungen sind 7 Tage gültig. Fordere eine neue an: Wir leiten die Anfrage an {name} weiter und du erhältst den neuen Link per E-Mail.",
     "requestNew": "Neue Einladung anfordern"
+  },
+  "usageMeter": {
+    "unlimited": "Unbegrenzt",
+    "usedOf": "{used}/{limit}{unit}",
+    "left": "Noch {n} übrig",
+    "nearLimit": "Planlimit fast erreicht",
+    "atLimit": "Planlimit erreicht",
+    "atLimitHint": "Was Sie bereits haben, bleibt erhalten. Um mehr hinzuzufügen, upgraden Sie Ihren Plan.",
+    "upgrade": "Plan upgraden"
   }
 }

@@ -8,33 +8,37 @@ export default function EmptyStateGalleryPage() {
   if (process.env.NODE_ENV !== 'development') notFound();
   return (
     <GalleryShell title="EmptyState">
-      <GallerySection label="Size md — cu iconita si actiuni" column>
+      <GallerySection label="RO" column>
         <EmptyState
           icon="calendar"
-          title="Nicio programare pentru azi"
-          description="Adauga prima programare sau activeaza rezervarile online."
-          size="md"
-          actions={[
-            <Button key="add">Adauga programare</Button>,
-            <Button key="online" variant="quiet">
-              Activeaza online
-            </Button>,
-          ]}
+          title="Nicio programare azi"
+          description="Când cineva rezervă, apare aici. Poți adăuga și tu una."
+          actions={<Button variant="primary">Creează programare</Button>}
+        />
+        <EmptyState
+          icon="search"
+          title={'Niciun rezultat pentru „Ionescu”'}
+          description="Verifică ortografia sau șterge filtrele."
+          actions={<Button>Șterge filtrele</Button>}
+        />
+        <EmptyState
+          icon="circle-alert"
+          title="Nu am putut încărca lista"
+          description="Încearcă din nou. Dacă se repetă, scrie-ne."
+          actions={
+            <>
+              <Button>Încearcă din nou</Button>
+              <Button variant="quiet">Scrie-ne</Button>
+            </>
+          }
         />
       </GallerySection>
-      <GallerySection label="Size sm" column>
+      <GallerySection label="DE" column>
         <EmptyState
-          icon="users"
-          title="Niciun client gasit"
-          description="Incearca un alt termen de cautare."
           size="sm"
-        />
-      </GallerySection>
-      <GallerySection label="Fara iconita" column>
-        <EmptyState
-          title="Nu exista date"
-          description="Datele vor aparea dupa prima sincronizare."
-          size="md"
+          icon="inbox"
+          title="Noch keine Rechnungen vorhanden"
+          description="Sobald Sie eine Rechnung erstellen, erscheint sie hier."
         />
       </GallerySection>
     </GalleryShell>

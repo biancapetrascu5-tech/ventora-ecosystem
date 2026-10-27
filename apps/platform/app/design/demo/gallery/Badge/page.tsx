@@ -8,31 +8,24 @@ export default function BadgeGalleryPage() {
   if (process.env.NODE_ENV !== 'development') notFound();
   return (
     <GalleryShell title="Badge">
-      <GallerySection label="Tones">
-        <Badge tone="attention">Atentie</Badge>
-        <Badge tone="primary">Primar</Badge>
-        <Badge tone="neutral">Neutru</Badge>
-        <Badge>Implicit</Badge>
+      <GallerySection label="Număr">
+        <Badge tone="attention" count={3} label="3 necitite" />
+        <Badge tone="attention" count={128} />
+        <Badge count={12} />
+        <Badge tone="primary" count={5} />
       </GallerySection>
-      <GallerySection label="Cu numar">
-        <Badge count={3}>Mesaje</Badge>
-        <Badge count={12}>Notificari</Badge>
-        <Badge count={99}>Multime</Badge>
-        <Badge count={0}>Zero</Badge>
+      <GallerySection label="Etichetă">
+        <Badge>Nou</Badge>
+        <Badge tone="primary">Pro</Badge>
+        <Badge>Beta</Badge>
       </GallerySection>
-      <GallerySection label="Cu punct">
-        <Badge dot>Noutati</Badge>
-        <Badge dot tone="attention">
-          Atentie
-        </Badge>
-        <Badge dot tone="primary">
-          Actualizare
-        </Badge>
+      <GallerySection label="Punct">
+        <Badge dot tone="attention" label="Necitit" />
+        <Badge dot tone="neutral" />
       </GallerySection>
-      <GallerySection label="Doar eticheta">
-        <Badge label="Beta" />
-        <Badge label="Nou" tone="attention" />
-        <Badge label="Pro" tone="primary" />
+      <GallerySection label="DE">
+        <Badge>Neu</Badge>
+        <Badge tone="attention" count={1284} />
       </GallerySection>
     </GalleryShell>
   );

@@ -37,5 +37,14 @@
     "expiredTitle": "Invitation expirée",
     "expiredBody": "Les invitations sont valables 7 jours. Demandez-en une nouvelle : nous transmettrons la demande à {name} et vous recevrez le nouveau lien par e-mail.",
     "requestNew": "Demander une nouvelle invitation"
+  },
+  "usageMeter": {
+    "unlimited": "Illimité",
+    "usedOf": "{used}/{limit}{unit}",
+    "left": "Il vous reste {n}",
+    "nearLimit": "Vous approchez de la limite du plan",
+    "atLimit": "Limite du plan atteinte",
+    "atLimitHint": "Ce que vous avez déjà reste intact. Pour en ajouter, passez au plan supérieur.",
+    "upgrade": "Améliorer le plan"
   }
 }

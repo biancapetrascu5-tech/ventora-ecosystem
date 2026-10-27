@@ -70,6 +70,45 @@
 
 .upgrade:hover { opacity: 0.8; }
 
+.warnMsg {
+  font-family: var(--font-sans);
+  font-size: var(--type-body-small-size);
+  line-height: var(--type-body-small-line);
+  color: var(--attention-ink);
+  margin: var(--space-1) 0 0;
+}
+
+.remaining {
+  font-family: var(--font-sans);
+  font-size: var(--type-body-small-size);
+  line-height: var(--type-body-small-line);
+  color: var(--ink-muted);
+  margin: var(--space-1) 0 0;
+}
+
+.limitPanel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding: var(--space-3) 0 var(--space-1);
+}
+
+.limitTitle {
+  font-family: var(--font-sans);
+  font-size: var(--type-body-size);
+  font-weight: 500;
+  color: var(--danger-ink);
+  margin: 0;
+}
+
+.limitHint {
+  font-family: var(--font-sans);
+  font-size: var(--type-body-small-size);
+  line-height: var(--type-body-small-line);
+  color: var(--ink-secondary);
+  margin: 0;
+}
+
 /* Compact */
 .compact {
   display: flex;

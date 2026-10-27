@@ -8,38 +8,31 @@ export default function NoticeGalleryPage() {
   if (process.env.NODE_ENV !== 'development') notFound();
   return (
     <GalleryShell title="Notice">
-      <GallerySection label="Tones — cu titlu si continut" column>
-        <Notice tone="danger" title="Eroare la procesare">
-          Campul telefon lipseste. Verifica datele si incearca din nou.
+      <GallerySection label="RO" column>
+        <Notice tone="danger" title="E-mailul sau parola nu sunt corecte">
+          Verifică-le și încearcă din nou. După 5 încercări îți trimitem un link de resetare.
         </Notice>
-        <Notice tone="attention" title="Nu a confirmat inca">
-          I-am trimis reamintirea ieri la 12:30. Poti suna sau retrimite.
-        </Notice>
-        <Notice tone="done" title="Export finalizat">
-          Fisierul a fost generat si trimis pe e-mail.
-        </Notice>
-        <Notice tone="neutral" title="Informatie">
-          Modificarile vor fi aplicate la urmatoarea sincronizare.
-        </Notice>
-      </GallerySection>
-      <GallerySection label="Fara titlu" column>
-        <Notice tone="attention">Abonamentul expira in 3 zile.</Notice>
-        <Notice tone="danger">Conexiunea la baza de date a fost pierduta.</Notice>
-      </GallerySection>
-      <GallerySection label="Cu actiuni" column>
         <Notice
           tone="attention"
-          title="Invitatie in asteptare"
-          actions={[
-            <Button key="accept" size="sm">
-              Accepta
-            </Button>,
-            <Button key="decline" size="sm" variant="quiet">
-              Refuza
-            </Button>,
-          ]}
+          title="Invitația a expirat"
+          actions={
+            <Button size="sm" variant="secondary">
+              Cere o invitație nouă
+            </Button>
+          }
         >
-          Ana Popescu te-a invitat sa te alaturezi echipei Salon Aurora.
+          Invitațiile sunt valabile 7 zile. Bianca Petrașcu îți poate trimite una nouă.
+        </Notice>
+        <Notice tone="done" title="Parola a fost schimbată">
+          Te-am deconectat de pe celelalte dispozitive.
+        </Notice>
+        <Notice title="Planul se reînnoiește pe 1 noiembrie">
+          Factura ajunge pe e-mail cu 3 zile înainte.
+        </Notice>
+      </GallerySection>
+      <GallerySection label="DE" column>
+        <Notice tone="attention" title="Die Einladung ist abgelaufen">
+          Einladungen sind 7 Tage gültig. Bitten Sie um eine neue.
         </Notice>
       </GallerySection>
     </GalleryShell>

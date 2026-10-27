@@ -1,3 +1,4 @@
+/* eslint-disable i18next/no-literal-string */
 'use client';
 import { notFound } from 'next/navigation';
 import { StatusDot } from '@ventora/ui';
@@ -7,19 +8,16 @@ export default function StatusDotGalleryPage() {
   if (process.env.NODE_ENV !== 'development') notFound();
   return (
     <GalleryShell title="StatusDot">
-      <GallerySection label="Tones — fara eticheta">
-        <StatusDot tone="attention" />
-        <StatusDot tone="done" />
-        <StatusDot tone="danger" />
-        <StatusDot tone="neutral" />
-        <StatusDot tone="offline" />
+      <GallerySection label="Tonuri" column>
+        <StatusDot tone="attention" label="Acum, în cabinetul 2" />
+        <StatusDot tone="done" label="Confirmat" />
+        <StatusDot tone="danger" label="Eșuat" />
+        <StatusDot tone="neutral" label="În pauză" />
+        <StatusDot tone="offline" label="Offline" />
       </GallerySection>
-      <GallerySection label="Cu eticheta" column>
-        <StatusDot tone="attention" label="Atentie necesara" />
-        <StatusDot tone="done" label="Activ" />
-        <StatusDot tone="danger" label="Eroare" />
-        <StatusDot tone="neutral" label="In asteptare" />
-        <StatusDot tone="offline" label="Deconectat" />
+      <GallerySection label="DE" column>
+        <StatusDot tone="attention" label="Gerade in Behandlung" />
+        <StatusDot tone="done" label="Bestätigt" />
       </GallerySection>
     </GalleryShell>
   );

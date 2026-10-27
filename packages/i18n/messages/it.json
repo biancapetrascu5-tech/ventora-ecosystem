@@ -37,5 +37,14 @@
     "expiredTitle": "Invito scaduto",
     "expiredBody": "Gli inviti sono validi per 7 giorni. Richiedine uno nuovo: inoltreremo la richiesta a {name} e riceverai il nuovo link via e-mail.",
     "requestNew": "Richiedi un nuovo invito"
+  },
+  "usageMeter": {
+    "unlimited": "Illimitato",
+    "usedOf": "{used}/{limit}{unit}",
+    "left": "Ne hai ancora {n}",
+    "nearLimit": "Vicino al limite del piano",
+    "atLimit": "Limite del piano raggiunto",
+    "atLimitHint": "Quello che hai già rimane intatto. Per aggiungerne altri, aggiorna il tuo piano.",
+    "upgrade": "Aggiorna piano"
   }
 }
