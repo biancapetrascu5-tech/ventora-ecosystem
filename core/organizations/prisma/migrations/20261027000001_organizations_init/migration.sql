@@ -79,16 +79,6 @@ CREATE TABLE "organizations"."membership" (
 );
 
 -- CreateTable
-CREATE TABLE "organizations"."application_access" (
-    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
-    "organization_id" UUID NOT NULL,
-    "application_id" VARCHAR(64) NOT NULL,
-    "created_at" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
-
-    CONSTRAINT "application_access_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
 CREATE TABLE "organizations"."invitation" (
     "id" UUID NOT NULL DEFAULT gen_random_uuid(),
     "organization_id" UUID NOT NULL,
@@ -121,9 +111,6 @@ CREATE UNIQUE INDEX "membership_organization_id_user_id_key" ON "organizations".
 CREATE INDEX "membership_user_id_idx" ON "organizations"."membership"("user_id");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "application_access_organization_id_application_id_key" ON "organizations"."application_access"("organization_id", "application_id");
-
--- CreateIndex
 CREATE UNIQUE INDEX "invitation_token_hash_key" ON "organizations"."invitation"("token_hash");
 
 -- CreateIndex
@@ -139,9 +126,6 @@ ALTER TABLE "organizations"."organization_setting" ADD CONSTRAINT "organization_
 ALTER TABLE "organizations"."membership" ADD CONSTRAINT "membership_organization_id_fkey" FOREIGN KEY ("organization_id") REFERENCES "organizations"."organization"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "organizations"."application_access" ADD CONSTRAINT "application_access_organization_id_fkey" FOREIGN KEY ("organization_id") REFERENCES "organizations"."organization"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
 ALTER TABLE "organizations"."invitation" ADD CONSTRAINT "invitation_organization_id_fkey" FOREIGN KEY ("organization_id") REFERENCES "organizations"."organization"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- Grants
@@ -155,7 +139,6 @@ REVOKE DELETE ON "organizations"."organization" FROM org_rw;
 ALTER TABLE "organizations"."organization" ENABLE ROW LEVEL SECURITY;
 ALTER TABLE "organizations"."organization_setting" ENABLE ROW LEVEL SECURITY;
 ALTER TABLE "organizations"."membership" ENABLE ROW LEVEL SECURITY;
-ALTER TABLE "organizations"."application_access" ENABLE ROW LEVEL SECURITY;
 ALTER TABLE "organizations"."invitation" ENABLE ROW LEVEL SECURITY;
 
 -- NULLIF guards against empty-string setting which would cause a cast error
@@ -170,11 +153,6 @@ CREATE POLICY org_rw_organization_setting ON "organizations"."organization_setti
   WITH CHECK (organization_id = NULLIF(current_setting('app.organization_id', true), '')::uuid);
 
 CREATE POLICY org_rw_membership ON "organizations"."membership"
-  TO org_rw
-  USING (organization_id = NULLIF(current_setting('app.organization_id', true), '')::uuid)
-  WITH CHECK (organization_id = NULLIF(current_setting('app.organization_id', true), '')::uuid);
-
-CREATE POLICY org_rw_application_access ON "organizations"."application_access"
   TO org_rw
   USING (organization_id = NULLIF(current_setting('app.organization_id', true), '')::uuid)
   WITH CHECK (organization_id = NULLIF(current_setting('app.organization_id', true), '')::uuid);
