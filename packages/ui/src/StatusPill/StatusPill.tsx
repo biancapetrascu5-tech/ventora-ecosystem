@@ -7,11 +7,11 @@ import styles from './StatusPill.module.css';
 
 export type StatusPillTone = 'attention' | 'done' | 'danger' | 'neutral';
 
-const DEFAULT_ICONS: Record<StatusPillTone, IconName> = {
-  attention: 'warning',
-  done: 'check',
-  danger: 'error',
-  neutral: 'minus',
+const DEFAULT_ICONS: Record<StatusPillTone, IconName | null> = {
+  attention: 'circle-dot',
+  done: 'circle-check',
+  danger: 'circle-alert',
+  neutral: null,
 };
 
 export interface StatusPillProps {
@@ -29,11 +29,20 @@ export function StatusPill({
   children,
   className,
 }: StatusPillProps) {
-  const resolvedIcon: IconName | false = icon === false ? false : (icon ?? DEFAULT_ICONS[tone]);
+  const resolvedIcon: IconName | null | false =
+    icon === false ? false : (icon ?? DEFAULT_ICONS[tone]);
   return (
     <span className={cn(styles.root, styles[tone], size === 'sm' && styles.sm, className)}>
-      {resolvedIcon !== false && (
-        <Icon icon={resolvedIcon} size="sm" aria-hidden className={styles.icon} />
+      {resolvedIcon === false ? null : resolvedIcon !== null ? (
+        <Icon
+          icon={resolvedIcon}
+          size={12}
+          strokeWidth={2.25}
+          aria-hidden
+          className={styles.icon}
+        />
+      ) : (
+        <span className={styles.dot} aria-hidden />
       )}
       {children}
     </span>

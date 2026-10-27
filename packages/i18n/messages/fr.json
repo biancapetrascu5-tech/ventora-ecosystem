@@ -40,11 +40,18 @@
   },
   "usageMeter": {
     "unlimited": "Illimité",
-    "usedOf": "{used}/{limit}{unit}",
+    "usedOf": "{used} sur {limit}",
     "left": "Il vous reste {n}",
-    "nearLimit": "Vous approchez de la limite du plan",
-    "atLimit": "Limite du plan atteinte",
-    "atLimitHint": "Ce que vous avez déjà reste intact. Pour en ajouter, passez au plan supérieur.",
-    "upgrade": "Améliorer le plan"
+    "nearLimit": "Vous approchez de la limite de votre abonnement",
+    "atLimit": "Limite d'abonnement atteinte",
+    "atLimitHint": "Ce que vous avez déjà ne sera pas perdu. Pour en ajouter, achetez un supplément ou demandez un autre abonnement.",
+    "upgrade": "Demander un autre abonnement",
+    "buyMore": "Acheter un supplément",
+    "notifyOwner": "Notifier le propriétaire",
+    "onlyOwnerBuys": "Les suppléments ne peuvent être achetés que par {who} (propriétaire)."
+  },
+  "toast": {
+    "undo": "Annuler",
+    "close": "Fermer"
   }
 }

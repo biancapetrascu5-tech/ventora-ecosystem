@@ -40,11 +40,18 @@
   },
   "usageMeter": {
     "unlimited": "Nelimitat",
-    "usedOf": "{used}/{limit}{unit}",
+    "usedOf": "{used} din {limit}",
     "left": "Mai ai {n}",
-    "nearLimit": "Te apropii de limita planului",
-    "atLimit": "Ai atins limita planului",
-    "atLimitHint": "Ce ai deja rămâne neatins. Ca să adaugi altele, mărește planul.",
-    "upgrade": "Mărește planul"
+    "nearLimit": "Te apropii de limita abonamentului",
+    "atLimit": "Ai atins limita abonamentului",
+    "atLimitHint": "Nu se pierde nimic din ce ai. Ca să adaugi altele, cumpără un pachet în plus sau cere alt abonament.",
+    "upgrade": "Cere alt abonament",
+    "buyMore": "Cumpără pachet",
+    "notifyOwner": "Anunță proprietarul",
+    "onlyOwnerBuys": "Pachetele în plus le poate cumpăra doar {who} (proprietar)."
+  },
+  "toast": {
+    "undo": "Anulează",
+    "close": "Închide"
   }
 }

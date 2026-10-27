@@ -20,7 +20,14 @@
 
 .icon {
   flex: none;
-  opacity: 0.8;
+}
+
+.dot {
+  width: var(--dot-size);
+  height: var(--dot-size);
+  border-radius: var(--radius-full);
+  background: currentColor;
+  flex: none;
 }
 
 /* Tones */

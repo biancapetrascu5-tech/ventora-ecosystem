@@ -10,13 +10,13 @@ export type ToastTone = 'neutral' | 'done' | 'attention' | 'danger';
 const TONE_ICONS: Record<ToastTone, IconName> = {
   neutral: 'info',
   done: 'circle-check',
-  attention: 'warning',
-  danger: 'error',
+  attention: 'triangle-alert',
+  danger: 'circle-alert',
 };
 
 export interface ToastAction {
   label: string;
-  onPress?: () => void;
+  onClick?: () => void;
 }
 
 export interface ToastProps {
@@ -26,7 +26,9 @@ export interface ToastProps {
   loading?: boolean;
   action?: ToastAction;
   onUndo?: () => void;
+  undoLabel?: string;
   onDismiss?: () => void;
+  dismissLabel?: string;
   className?: string;
 }
 
@@ -37,35 +39,48 @@ export function Toast({
   loading,
   action,
   onUndo,
+  undoLabel,
   onDismiss,
+  dismissLabel,
   className,
 }: ToastProps) {
   return (
-    <div role="status" aria-live="polite" className={cn(styles.root, styles[tone], className)}>
+    <div
+      role={tone === 'danger' ? 'alert' : 'status'}
+      className={cn(styles.root, styles[tone], className)}
+    >
       <span className={styles.iconWrap} aria-hidden>
-        {loading ? <span className={styles.spinner} /> : <Icon icon={TONE_ICONS[tone]} size="sm" />}
+        {loading ? (
+          <span className={styles.spinner}>
+            <Icon icon="loader-circle" size={16} aria-hidden />
+          </span>
+        ) : (
+          <Icon icon={TONE_ICONS[tone]} size={16} />
+        )}
       </span>
       <div className={styles.body}>
         <p className={styles.title}>{title}</p>
         {description && <p className={styles.desc}>{description}</p>}
-        {(action || onUndo) && (
-          <div className={styles.actions}>
-            {onUndo && (
-              <button type="button" className={styles.actionBtn} onClick={onUndo}>
-                Anulează
-              </button>
-            )}
-            {action && (
-              <button type="button" className={styles.actionBtn} onClick={action.onPress}>
-                {action.label}
-              </button>
-            )}
-          </div>
-        )}
       </div>
+      {onUndo && (
+        <button type="button" className={styles.action} onClick={onUndo}>
+          <Icon icon="undo-2" size={16} aria-hidden />
+          {undoLabel && <span>{undoLabel}</span>}
+        </button>
+      )}
+      {!onUndo && action && (
+        <button type="button" className={styles.action} onClick={action.onClick}>
+          <span>{action.label}</span>
+        </button>
+      )}
       {onDismiss && (
-        <button type="button" className={styles.dismiss} onClick={onDismiss} aria-label="Închide">
-          <Icon icon="x" size="sm" aria-hidden />
+        <button
+          type="button"
+          className={styles.dismiss}
+          onClick={onDismiss}
+          aria-label={dismissLabel ?? 'Închide'}
+        >
+          <Icon icon="x" size={14} aria-hidden />
         </button>
       )}
     </div>

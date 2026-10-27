@@ -4,7 +4,17 @@ import { notFound } from 'next/navigation';
 import { AttentionList } from '@ventora/ui';
 import { GalleryShell, GallerySection } from '../_shared/GalleryShell';
 
-const BK_ATTN = [
+const frame = {
+  border: 'var(--border-width) solid var(--line)',
+  borderRadius: 'var(--radius-md)',
+  background: 'var(--sheet)',
+  overflow: 'hidden',
+  flex: '1 1 360px',
+  minWidth: '280px',
+  maxWidth: '480px',
+} as const;
+
+const BOOKING_ATTN = [
   {
     id: 1,
     icon: 'clock' as const,
@@ -21,6 +31,9 @@ const BK_ATTN = [
     time: 'peste 4 h',
     actions: [{ label: 'Confirmă', primary: true }, { label: 'Sună' }],
   },
+];
+
+const PAYMENT_ATTN = [
   {
     id: 3,
     icon: 'wallet' as const,
@@ -53,11 +66,18 @@ export default function AttentionListGalleryPage() {
   if (process.env.NODE_ENV !== 'development') notFound();
   return (
     <GalleryShell title="AttentionList">
-      <GallerySection label="RO" column>
-        <AttentionList items={BK_ATTN} />
+      <GallerySection label="RO">
+        <div style={frame}>
+          <AttentionList items={BOOKING_ATTN} />
+        </div>
+        <div style={frame}>
+          <AttentionList items={PAYMENT_ATTN} />
+        </div>
       </GallerySection>
-      <GallerySection label="IT" column>
-        <AttentionList items={IT_ATTN} />
+      <GallerySection label="IT">
+        <div style={frame}>
+          <AttentionList items={IT_ATTN} />
+        </div>
       </GallerySection>
     </GalleryShell>
   );

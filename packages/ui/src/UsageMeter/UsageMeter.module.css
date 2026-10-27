@@ -2,146 +2,179 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-2);
-  width: 100%;
+  min-width: 0;
 }
 
-.row {
+/* top row: label + count */
+.top {
   display: flex;
   justify-content: space-between;
   align-items: baseline;
-  gap: var(--space-2);
+  gap: var(--space-3);
+  flex-wrap: wrap;
 }
 
 .label {
   font-family: var(--font-sans);
-  font-size: var(--type-body-size);
-  line-height: var(--type-body-line);
+  font-size: var(--type-subheading-size);
+  font-weight: var(--type-subheading-weight);
+  line-height: var(--type-subheading-line);
   color: var(--ink);
   flex: 1 1 0;
   min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
-.count {
-  font-family: var(--font-sans);
-  font-size: var(--type-caption-size);
-  font-weight: 600;
-  color: var(--ink-secondary);
-  flex: none;
-}
-
-.countFull {
-  color: var(--danger-ink);
-}
-
-.track {
-  height: 4px;
-  border-radius: var(--radius-full);
-  background: var(--neutral-soft);
-  overflow: hidden;
-}
-
-.fill {
-  height: 100%;
-  border-radius: inherit;
-  background: var(--primary);
-  transition: width 300ms var(--ease-standard);
-}
-
-.fillWarning { background: var(--attention-mark); }
-.fillFull    { background: var(--danger); }
-
-.upgrade {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-1);
-  padding: 0;
-  border: none;
-  background: none;
-  font-family: var(--font-sans);
-  font-size: var(--type-caption-size);
-  font-weight: 600;
-  color: var(--primary);
-  cursor: pointer;
-  align-self: flex-start;
-}
-
-.upgrade:hover { opacity: 0.8; }
-
-.warnMsg {
-  font-family: var(--font-sans);
-  font-size: var(--type-body-small-size);
-  line-height: var(--type-body-small-line);
-  color: var(--attention-ink);
-  margin: var(--space-1) 0 0;
-}
-
-.remaining {
-  font-family: var(--font-sans);
-  font-size: var(--type-body-small-size);
-  line-height: var(--type-body-small-line);
-  color: var(--ink-muted);
-  margin: var(--space-1) 0 0;
-}
-
-.limitPanel {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-1);
-  padding: var(--space-3);
-  background: var(--attention-soft);
-  border-radius: var(--radius-sm);
-  margin-top: var(--space-1);
-}
-
-.limitTitle {
-  font-family: var(--font-sans);
-  font-size: var(--type-body-size);
-  font-weight: 500;
-  color: var(--danger-ink);
-  margin: 0;
-}
-
-.limitHint {
-  font-family: var(--font-sans);
-  font-size: var(--type-body-small-size);
-  line-height: var(--type-body-small-line);
-  color: var(--ink-secondary);
-  margin: 0;
-}
-
-/* Compact */
-.compact {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-1-5);
-  width: 100%;
-}
-
-.compactRow {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  gap: var(--space-2);
-}
-
-.compactLabel {
+.captionLabel {
   font-family: var(--font-sans);
   font-size: var(--type-caption-size);
   color: var(--ink-secondary);
   flex: 1 1 0;
   min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
-.compactCount {
+.count {
+  flex: none;
   font-family: var(--font-sans);
-  font-size: 10px;
+  color: var(--ink-secondary);
+}
+
+.countBody {
+  font-size: var(--type-body-small-size);
+  line-height: var(--type-body-small-line);
+}
+
+.countCompact {
+  font-size: var(--type-caption-size);
   font-weight: 600;
   color: var(--ink-muted);
-  flex: none;
 }
+
+/* Progress track */
+.track {
+  position: relative;
+  height: var(--space-2);
+  border-radius: var(--radius-full);
+  background: var(--neutral-soft);
+  overflow: hidden;
+  box-shadow: inset 0 0 0 var(--border-width) var(--line);
+}
+
+.stateWarn .track {
+  box-shadow: inset 0 0 0 var(--border-width) var(--attention-mark);
+}
+
+.stateLimit .track {
+  box-shadow: inset 0 0 0 var(--border-width) var(--attention-mark);
+}
+
+.fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  border-radius: inherit;
+  background: var(--primary);
+  transition: width var(--duration-base) var(--ease-standard);
+}
+
+.stateWarn .fill { background: var(--attention); }
+.stateLimit .fill { background: var(--attention); }
+
+/* compact: thinner track */
+.compact .track { height: var(--space-1); }
+
+/* ok state remaining */
+.msg {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-1);
+  font-family: var(--font-sans);
+  font-size: var(--type-body-small-size);
+  line-height: var(--type-body-small-line);
+  color: var(--ink-muted);
+  margin: 0;
+}
+
+.msg .v-icon { margin-top: var(--space-0-5); }
+
+.msgWarn { color: var(--attention-ink); }
+
+.msgLimit { color: var(--ink); }
+.msgLimit svg { color: var(--attention-ink); }
+
+/* Limit panel */
+.limitPanel {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  border-radius: var(--radius-sm);
+  background: var(--attention-soft);
+}
+
+.compact .limitPanel { padding: var(--space-2); }
+
+.limitTitle {
+  font-weight: 600;
+}
+
+.who {
+  font-family: var(--font-sans);
+  font-size: var(--type-body-small-size);
+  line-height: var(--type-body-small-line);
+  color: var(--ink-secondary);
+  margin: 0;
+}
+
+/* Actions row */
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+/* Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  height: var(--control-md);
+  padding: 0 var(--space-3);
+  border-radius: var(--radius-sm);
+  border: var(--border-width) solid transparent;
+  font-family: var(--font-sans);
+  font-size: var(--type-body-size);
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background var(--duration-instant) var(--ease-standard);
+}
+
+.btnSm {
+  height: var(--control-sm);
+  padding: 0 var(--space-2);
+  font-size: var(--type-caption-size);
+}
+
+.btnPrimary {
+  background: var(--primary);
+  color: var(--on-primary);
+  border-color: transparent;
+}
+
+.btnPrimary:hover { background: var(--primary-hover); }
+
+.btnSecondary {
+  background: transparent;
+  color: var(--ink);
+  border-color: var(--control-border);
+}
+
+.btnSecondary:hover { background: var(--state-hover); }
+
+.btnQuiet {
+  background: transparent;
+  color: var(--ink);
+  border-color: transparent;
+}
+
+.btnQuiet:hover { background: var(--state-hover); }

@@ -40,11 +40,18 @@
   },
   "usageMeter": {
     "unlimited": "Unlimited",
-    "usedOf": "{used}/{limit}{unit}",
+    "usedOf": "{used} of {limit}",
     "left": "{n} remaining",
-    "nearLimit": "Approaching plan limit",
-    "atLimit": "Plan limit reached",
-    "atLimitHint": "What you already have stays. To add more, upgrade your plan.",
-    "upgrade": "Upgrade plan"
+    "nearLimit": "Approaching your subscription limit",
+    "atLimit": "You've reached your subscription limit",
+    "atLimitHint": "Nothing you already have will be lost. To add more, buy an add-on or request another subscription.",
+    "upgrade": "Request another subscription",
+    "buyMore": "Buy add-on",
+    "notifyOwner": "Notify owner",
+    "onlyOwnerBuys": "Add-ons can only be purchased by {who} (owner)."
+  },
+  "toast": {
+    "undo": "Undo",
+    "close": "Close"
   }
 }
