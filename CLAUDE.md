@@ -17,7 +17,7 @@
 **Înainte de ORICE push (fără excepție):**
 
 ```
-pnpm format:check && pnpm lint && pnpm typecheck
+pnpm format:check && pnpm lint && pnpm typecheck && pnpm test && pnpm build
 ```
 
 **Înainte de orice push care atinge `core/**`, `packages/**`, `modules/**` sau fișiere de migrație:**
@@ -50,6 +50,17 @@ Scriptul face automat: pornește postgres:17 + pgbouncer pe porturile 5433/6432,
 7. **Nu încep un pas nou din `docs/plans/FAZA-0.md` fără aprobarea explicită a fondatoarei.**
 
 8. **Raportez în română, scurt:** ce am făcut, comenzile rulate și rezultatul lor exact, ce a rămas deschis.
+
+9. **Raportul final se scrie și ca fișier** în `reports/YYYY-MM-DD_HHMM_<subiect>.md` (folder necommitat). Raportul conține:
+   - SHA-ul fiecărui commit și confirmarea că e **pushed** (`git status -sb` fără „ahead");
+   - **lista de bifat a planului aprobat**: fiecare punct și fiecare corectură cerută la aprobare sau la review, cu fișierul modificat și testul care o acoperă. Un punct neimplementat se marchează explicit „NEFĂCUT" cu motivul; nu se omite;
+   - abaterile de la plan, marcate ca atare.
+
+10. **Un singur agent per folder de lucru.** Un agent în paralel lucrează în worktree separat (`git worktree add`), pe branch-ul lui. Niciodată doi agenți în același director.
+
+11. **Staging:** migrările și scripturile pe Supabase staging se rulează **doar din `main` actualizat**, doar cu `prisma migrate deploy` (cu `DIRECT_URL`), niciodată cu `psql` direct și niciodată dintr-un branch de lucru. Planul se aprobă de fondatoare înainte de execuție. Nu se rulează teste de integrare pe staging.
+
+12. **UI:** o componentă e gata doar după perechea de capturi `_design` / `_impl` (390/1280 × light/dark), cu exemplele exacte din `preview.html` și diff vizual în raport. CI verde nu înseamnă că arată ca designul.
 
 ---
 
