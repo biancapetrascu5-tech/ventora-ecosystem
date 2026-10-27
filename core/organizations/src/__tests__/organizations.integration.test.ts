@@ -3,16 +3,26 @@ import { Pool } from 'pg';
 import crypto from 'node:crypto';
 import {
   createOrganizationAsFounder,
+  resolveOrgContext,
   listMyOrganizations,
+  listMembers,
   acceptInvitation,
   inviteMember,
   revokeInvitation,
   resendInvitation,
+  NotMemberError,
+  NotFoundError,
   TokenExpiredError,
   EmailMismatchError,
   ForbiddenError,
   InvalidInvitationStatusError,
 } from '../index.js';
+import type { OrgContext } from '../index.js';
+
+// Branded type enforcement: proves that only resolveOrgContext can produce OrgContext.
+function _assertOrgContext(_: OrgContext) {}
+// @ts-expect-error plain object does not satisfy branded OrgContext
+_assertOrgContext({ userId: '', organizationId: '', role: 'member' as const });
 
 const ADMIN_URL = process.env.DIRECT_URL ?? '';
 
@@ -206,7 +216,7 @@ describe('T2.7 inviteMember and revokeInvitation', () => {
     );
     await acceptInvitation({ token: invitationToken, userId: ownerId, userEmail: ownerEmail });
 
-    const ctx = { userId: ownerId, organizationId, role: 'owner' as const };
+    const ctx = await resolveOrgContext({ userId: ownerId, organizationId });
     const { invitationToken: newToken } = await inviteMember(ctx, {
       email: 'newmember@example.com',
       role: 'member',
@@ -248,7 +258,7 @@ describe('T2.8 ForbiddenError for member role', () => {
     );
     await acceptInvitation({ token: ownerToken, userId: ownerId, userEmail: ownerEmail });
 
-    const ownerCtx = { userId: ownerId, organizationId, role: 'owner' as const };
+    const ownerCtx = await resolveOrgContext({ userId: ownerId, organizationId });
     const { invitationToken: memberToken } = await inviteMember(ownerCtx, {
       email: memberEmail,
       role: 'member',
@@ -257,7 +267,7 @@ describe('T2.8 ForbiddenError for member role', () => {
     });
     await acceptInvitation({ token: memberToken, userId: memberId, userEmail: memberEmail });
 
-    const memberCtx = { userId: memberId, organizationId, role: 'member' as const };
+    const memberCtx = await resolveOrgContext({ userId: memberId, organizationId });
     await expect(
       inviteMember(memberCtx, {
         email: 'another@example.com',
@@ -287,7 +297,7 @@ describe('T2.9 admin escalation blocked (B4)', () => {
     );
     await acceptInvitation({ token: ownerToken, userId: ownerId, userEmail: ownerEmail });
 
-    const ownerCtx = { userId: ownerId, organizationId, role: 'owner' as const };
+    const ownerCtx = await resolveOrgContext({ userId: ownerId, organizationId });
     const { invitationToken: adminToken } = await inviteMember(ownerCtx, {
       email: adminEmail,
       role: 'admin',
@@ -296,7 +306,7 @@ describe('T2.9 admin escalation blocked (B4)', () => {
     });
     await acceptInvitation({ token: adminToken, userId: adminId, userEmail: adminEmail });
 
-    const adminCtx = { userId: adminId, organizationId, role: 'admin' as const };
+    const adminCtx = await resolveOrgContext({ userId: adminId, organizationId });
     await expect(
       inviteMember(adminCtx, {
         email: 'newowner@example.com',
@@ -339,7 +349,7 @@ describe('T2.10 resendInvitation status guard (S2)', () => {
     );
     expect(invRows).toHaveLength(1);
 
-    const ctx = { userId, organizationId, role: 'owner' as const };
+    const ctx = await resolveOrgContext({ userId, organizationId });
     await expect(resendInvitation(ctx, invRows[0].id)).rejects.toThrow(
       InvalidInvitationStatusError,
     );
@@ -360,7 +370,7 @@ describe('T2.10 resendInvitation status guard (S2)', () => {
     );
     await acceptInvitation({ token: ownerToken, userId: ownerId, userEmail: ownerEmail });
 
-    const ctx = { userId: ownerId, organizationId, role: 'owner' as const };
+    const ctx = await resolveOrgContext({ userId: ownerId, organizationId });
     await inviteMember(ctx, {
       email: invEmail,
       role: 'member',
@@ -379,5 +389,118 @@ describe('T2.10 resendInvitation status guard (S2)', () => {
     );
 
     await adminQuery(`DELETE FROM organizations.organization WHERE id = $1`, [organizationId]);
+  });
+});
+
+// T2.11 — cross-org isolation
+describe('T2.11 cross-org isolation', () => {
+  let orgIdA: string;
+  let orgIdB: string;
+  let userAId: string;
+  let ctxA: OrgContext;
+  let invBId: string;
+
+  beforeAll(async () => {
+    const ts = Date.now();
+    userAId = newUuid();
+    const emailA = `userA-t211-${ts}@example.com`;
+
+    const resultA = await createOrganizationAsFounder(
+      { founderId: newUuid(), founderEmail: 'founder-a@test.com' },
+      { name: 'Org A T211', slug: `org-a-t211-${ts}`, ownerEmail: emailA },
+    );
+    orgIdA = resultA.organizationId;
+    await acceptInvitation({ token: resultA.invitationToken, userId: userAId, userEmail: emailA });
+    ctxA = await resolveOrgContext({ userId: userAId, organizationId: orgIdA });
+
+    const resultB = await createOrganizationAsFounder(
+      { founderId: newUuid(), founderEmail: 'founder-b@test.com' },
+      {
+        name: 'Org B T211',
+        slug: `org-b-t211-${ts}`,
+        ownerEmail: `ownerB-t211-${ts}@example.com`,
+      },
+    );
+    orgIdB = resultB.organizationId;
+
+    const invRows = await adminQuery(
+      `SELECT id FROM organizations.invitation WHERE organization_id = $1`,
+      [orgIdB],
+    );
+    invBId = invRows[0].id;
+  });
+
+  afterAll(async () => {
+    if (orgIdA) await adminQuery(`DELETE FROM organizations.organization WHERE id = $1`, [orgIdA]);
+    if (orgIdB) await adminQuery(`DELETE FROM organizations.organization WHERE id = $1`, [orgIdB]);
+  });
+
+  it('resolveOrgContext cross-org → NotMemberError', async () => {
+    await expect(resolveOrgContext({ userId: userAId, organizationId: orgIdB })).rejects.toThrow(
+      NotMemberError,
+    );
+  });
+
+  it('revokeInvitation cross-org → NotFoundError, invitation B unchanged', async () => {
+    await expect(revokeInvitation(ctxA, invBId)).rejects.toThrow(NotFoundError);
+    const rows = await adminQuery(`SELECT status FROM organizations.invitation WHERE id = $1`, [
+      invBId,
+    ]);
+    expect(rows[0].status).toBe('pending');
+  });
+
+  it('resendInvitation cross-org → NotFoundError', async () => {
+    await expect(resendInvitation(ctxA, invBId)).rejects.toThrow(NotFoundError);
+  });
+
+  it('listMembers(ctxA) contains no members from B', async () => {
+    const members = await listMembers(ctxA);
+    expect(members.every((m: { organizationId: string }) => m.organizationId === orgIdA)).toBe(
+      true,
+    );
+  });
+
+  it('INSERT with app.organization_id=A and organization_id=B → rejected by RLS WITH CHECK', async () => {
+    const client = await adminPool.connect();
+    let threw = false;
+    try {
+      await client.query('BEGIN');
+      await client.query('SET LOCAL ROLE org_rw');
+      await client.query(`SELECT set_config('app.organization_id', $1, true)`, [orgIdA]);
+      try {
+        await client.query(
+          `INSERT INTO organizations.membership(organization_id, user_id, role, updated_at) VALUES ($1, $2, 'member', NOW())`,
+          [orgIdB, newUuid()],
+        );
+      } catch {
+        threw = true;
+      }
+    } finally {
+      try {
+        await client.query('ROLLBACK');
+      } catch {
+        /* already aborted */
+      }
+      client.release();
+    }
+    expect(threw).toBe(true);
+  });
+
+  it('suspended membership → resolveOrgContext → NotMemberError', async () => {
+    const suspendedId = newUuid();
+    await adminQuery(
+      `INSERT INTO organizations.membership(organization_id, user_id, role, status, updated_at) VALUES ($1, $2, 'member', 'suspended', NOW())`,
+      [orgIdA, suspendedId],
+    );
+    try {
+      await expect(
+        resolveOrgContext({ userId: suspendedId, organizationId: orgIdA }),
+      ).rejects.toThrow(NotMemberError);
+    } finally {
+      await adminQuery(
+        `DELETE FROM organizations.membership WHERE organization_id = $1 AND user_id = $2`,
+        [orgIdA, suspendedId],
+      );
+    }
   });
 });

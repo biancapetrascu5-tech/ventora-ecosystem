@@ -1,15 +1,10 @@
-import { hubAuth } from './auth.js';
+import { hubAuth } from './auth';
+import type { OrgContext } from '@ventora/organizations';
 
-/**
- * Updates the session's active organization.
- * Pass null to clear, or a verified OrgContext obtained from resolveOrgContext
- * (@ventora/organizations) to set. The OrgContext acts as proof that membership
- * was verified in the DB before this call — callers MUST NOT pass a self-constructed
- * object; always use resolveOrgContext.
- */
+// Pass null to clear, or a verified OrgContext from resolveOrgContext to set.
 export async function setSessionActiveOrganization(
   sessionToken: string,
-  orgContext: { userId: string; organizationId: string; role: string } | null,
+  orgContext: OrgContext | null,
 ): Promise<void> {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   await (hubAuth.api as any).updateSession({

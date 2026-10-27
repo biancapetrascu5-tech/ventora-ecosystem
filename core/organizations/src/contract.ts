@@ -34,6 +34,13 @@ const RESERVED_SLUGS = new Set([
   'app',
   'login',
   'signup',
+  'hub',
+  'founder',
+  'portal',
+  'design',
+  'static',
+  'assets',
+  'cdn',
 ]);
 
 // Basic RFC5322-style email check (full validation happens server-side)
@@ -52,7 +59,12 @@ export interface FounderContext {
   founderEmail: string;
 }
 
+declare const _orgContextBrand: unique symbol;
+
+// Opaque branded type — only resolveOrgContext can produce a valid OrgContext.
+// The brand property is phantom (never set at runtime); the cast in resolveOrgContext is the sole trusted site.
 export interface OrgContext {
+  readonly [_orgContextBrand]: void;
   userId: string;
   organizationId: string;
   role: MembershipRole;
@@ -81,7 +93,11 @@ export async function resolveOrgContext(params: {
     });
   });
   if (!membership || membership.status !== 'active') throw new NotMemberError();
-  return { userId: params.userId, organizationId: params.organizationId, role: membership.role };
+  return {
+    userId: params.userId,
+    organizationId: params.organizationId,
+    role: membership.role,
+  } as unknown as OrgContext;
 }
 
 // Uses DATABASE_URL_FOUNDER connection (founder_runtime role).
