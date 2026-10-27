@@ -1,17 +1,20 @@
 /**
  * screenshot-hub-v3.mjs
- * Capturi Hub: HubSignIn / HubInvite / HubLauncher
+ * Capturi Hub: HubSignIn / HubInvite / HubLauncher + Galerii Lot 4-6
  *
  * Rulare: node scripts/screenshot-hub-v3.mjs
  * Necesită: server dev pornit pe :3100 (pnpm --filter @ventora/platform dev)
  *
  * Output: screenshots/ (fișierele existente se suprascriu)
  *
- * Perechi generate:
+ * Hub (perechi):
  *   <screen>_1280_<theme>_impl.png   — implementare React (@ventora/ui)
  *   <screen>_390_<theme>_impl.png
  *   <screen>_1280_<theme>_design.png — design aprobat (Claude Design Bundle)
  *   <screen>_390_<theme>_design.png
+ *
+ * Galerii Lot 4-6 + Agenda:
+ *   gallery_<name>_<viewport>_<theme>_impl.png
  */
 
 import { createRequire } from 'module';
@@ -35,6 +38,47 @@ const { chromium } = _require(playwrightPkg);
 /* ── Configurare capturi ─────────────────────────────────────────────── */
 
 const SCREENS = ['signin', 'invite', 'launcher'];
+
+// Galerii Lot 4-6 + Agenda
+const GALLERY_NAMES = [
+  // Lot 4
+  'Toast',
+  'StatusPill',
+  'StatusDot',
+  'Badge',
+  'Avatar',
+  'Notice',
+  'AttentionList',
+  'EmptyState',
+  'Skeleton',
+  'ProgressBar',
+  'UsageMeter',
+  'Kbd',
+  // Lot 5
+  'DatePicker',
+  'SlotPicker',
+  'DataTable',
+  'Agenda',
+  'Schedule',
+  'Kanban',
+  'Timeline',
+  // Lot 6
+  'Stat',
+  'LineChart',
+  'BarChart',
+];
+
+// Componente cu min-width intrinsec (nu e bug de overflow)
+const OVERFLOW_EXEMPT = new Set(['DataTable', 'Schedule', 'Kanban', 'Timeline']);
+
+const GALLERY_VARIANTS = [];
+for (const name of GALLERY_NAMES) {
+  for (const viewport of [1280, 390]) {
+    for (const theme of ['light', 'dark']) {
+      GALLERY_VARIANTS.push({ name, viewport, theme, allowOverflow: OVERFLOW_EXEMPT.has(name) });
+    }
+  }
+}
 
 // _impl: rute izolate din /design/demo/screen/*
 const IMPL_VARIANTS = [
@@ -157,6 +201,33 @@ async function captureDesign(page, variant) {
   console.log(`  ✓ ${filename}`);
 }
 
+/* ── Captură galerie ─────────────────────────────────────────────────── */
+async function captureGallery(page, variant) {
+  const { name, viewport, theme, allowOverflow } = variant;
+  const height = viewport === 390 ? 844 : 900;
+  await page.setViewportSize({ width: viewport, height });
+
+  const url = `${BASE}/design/demo/gallery/${name}`;
+  await page.goto(url, { waitUntil: 'networkidle' });
+  await hideDevOverlay(page);
+  await page.evaluate((t) => document.documentElement.setAttribute('data-theme', t), theme);
+  await page.waitForTimeout(300);
+
+  // Verifică overflow orizontal (sărim pentru componente intrinsec late)
+  if (!allowOverflow) {
+    const scrollW = await page.evaluate(() => document.documentElement.scrollWidth);
+    if (scrollW > viewport) {
+      throw new Error(`overflow orizontal: scrollWidth=${scrollW} > viewport=${viewport}`);
+    }
+  }
+
+  const filename = `gallery_${name}_${viewport}_${theme}_impl.png`;
+  const outPath = path.join(OUT, filename);
+  await page.screenshot({ path: outPath, fullPage: true });
+  const suffix = allowOverflow ? ' (overflow așteptat)' : '';
+  console.log(`  ✓ ${filename}${suffix}`);
+}
+
 /* ── Main ─────────────────────────────────────────────────────────────── */
 async function main() {
   await mkdir(OUT, { recursive: true });
@@ -200,9 +271,20 @@ async function main() {
     }
   }
 
+  console.log('\n── Galerii Lot 4-6 + Agenda ──');
+  for (const variant of GALLERY_VARIANTS) {
+    try {
+      await captureGallery(page, variant);
+    } catch (err) {
+      console.error(
+        `  ✗ gallery_${variant.name}_${variant.viewport}_${variant.theme}_impl: ${err.message}`,
+      );
+    }
+  }
+
   await browser.close();
 
-  const total = IMPL_VARIANTS.length + DESIGN_VARIANTS.length;
+  const total = IMPL_VARIANTS.length + DESIGN_VARIANTS.length + GALLERY_VARIANTS.length;
   console.log(`\nGata: ${total} capturi în screenshots/\n`);
 }
 
