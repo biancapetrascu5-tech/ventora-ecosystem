@@ -1,0 +1,129 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/organizations-client"
+}
+
+datasource db {
+  provider = "postgresql"
+  schemas  = ["organizations"]
+}
+
+enum MembershipRole {
+  owner
+  admin
+  member
+  external_collaborator
+
+  @@schema("organizations")
+}
+
+enum MembershipStatus {
+  active
+  suspended
+
+  @@schema("organizations")
+}
+
+enum InvitationStatus {
+  pending
+  accepted
+  expired
+  revoked
+
+  @@schema("organizations")
+}
+
+enum InvitationEmailStatus {
+  pending
+  sent
+  failed
+
+  @@schema("organizations")
+}
+
+enum CreatedVia {
+  founder
+  self_service
+  import
+
+  @@schema("organizations")
+}
+
+model Organization {
+  id                 String     @id @default(uuid()) @db.Uuid
+  slug               String     @unique @db.VarChar(63)
+  name               String     @db.VarChar(255)
+  createdVia         CreatedVia
+  createdByFounderId String?    @db.Uuid
+  createdAt          DateTime   @default(now())
+  updatedAt          DateTime   @updatedAt
+
+  settings    OrganizationSetting[]
+  memberships Membership[]
+  invitations Invitation[]
+  accesses    ApplicationAccess[]
+
+  @@schema("organizations")
+}
+
+model OrganizationSetting {
+  id             String       @id @default(uuid()) @db.Uuid
+  organizationId String       @db.Uuid
+  key            String       @db.VarChar(128)
+  value          String
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@unique([organizationId, key])
+  @@schema("organizations")
+}
+
+model Membership {
+  id             String           @id @default(uuid()) @db.Uuid
+  organizationId String           @db.Uuid
+  userId         String           @db.Uuid
+  role           MembershipRole
+  status         MembershipStatus @default(active)
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@unique([organizationId, userId])
+  @@schema("organizations")
+}
+
+model ApplicationAccess {
+  id             String   @id @default(uuid()) @db.Uuid
+  organizationId String   @db.Uuid
+  applicationId  String   @db.VarChar(64)
+  createdAt      DateTime @default(now())
+
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@unique([organizationId, applicationId])
+  @@schema("organizations")
+}
+
+model Invitation {
+  id               String                @id @default(uuid()) @db.Uuid
+  organizationId   String                @db.Uuid
+  organizationName String                @db.VarChar(255)
+  invitedByUserId  String                @db.Uuid
+  invitedByName    String                @db.VarChar(255)
+  email            String                @db.VarChar(255)
+  role             MembershipRole
+  tokenHash        String                @unique @db.VarChar(64)
+  expiresAt        DateTime
+  status           InvitationStatus      @default(pending)
+  emailStatus      InvitationEmailStatus @default(pending)
+  acceptedByUserId String?               @db.Uuid
+  createdAt        DateTime              @default(now())
+  updatedAt        DateTime              @updatedAt
+
+  organization     Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@schema("organizations")
+}

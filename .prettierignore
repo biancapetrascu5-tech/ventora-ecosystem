@@ -11,3 +11,4 @@ labs/*/generated/
 labs/experiments/e1/variant-b/prisma/
 labs/experiments/e1/variant-b/generated/
 core/identity/generated/
+core/organizations/generated/
