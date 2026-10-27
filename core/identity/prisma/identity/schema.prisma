@@ -29,15 +29,16 @@ model User {
 }
 
 model Session {
-  id        String   @id
-  expiresAt DateTime @map("expires_at") @db.Timestamptz
-  token     String   @unique
-  createdAt DateTime @map("created_at") @db.Timestamptz
-  updatedAt DateTime @map("updated_at") @db.Timestamptz
-  ipAddress String?  @map("ip_address")
-  userAgent String?  @map("user_agent")
-  userId    String   @map("user_id")
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id                   String   @id
+  expiresAt            DateTime @map("expires_at") @db.Timestamptz
+  token                String   @unique
+  createdAt            DateTime @map("created_at") @db.Timestamptz
+  updatedAt            DateTime @map("updated_at") @db.Timestamptz
+  ipAddress            String?  @map("ip_address")
+  userAgent            String?  @map("user_agent")
+  userId               String   @map("user_id")
+  user                 User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  activeOrganizationId String?  @map("active_organization_id") @db.Uuid
 
   @@map("sessions")
   @@schema("identity")

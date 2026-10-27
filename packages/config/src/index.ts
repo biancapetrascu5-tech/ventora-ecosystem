@@ -36,6 +36,12 @@ const envSchema = z
       .string()
       .url('DATABASE_URL_FOUNDER trebuie să fie un URL PostgreSQL valid')
       .optional(),
+
+    /**
+     * Cheie API Resend pentru trimiterea email-urilor.
+     * Dacă lipsește, se folosește LogEmailAdapter (afișează în consolă).
+     */
+    RESEND_API_KEY: z.string().min(1).optional(),
   })
   .refine((data) => data.NODE_ENV !== 'production' || !!data.SENTRY_DSN, {
     message: 'SENTRY_DSN este obligatoriu în production. Setați-l în variabilele de mediu.',

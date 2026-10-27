@@ -4,6 +4,33 @@
 **Ultima actualizare:** 2026-10-25 (Faza 0, pasul 0.4 — COMPLET)
 **Sursa de adevăr:** `docs/VENTORA_SOURCE_OF_TRUTH.md`
 
+## Căi CLI externe
+
+- **GitHub CLI:** `C:\Program Files\GitHub CLI\gh.exe`
+- **Docker:** `C:\Program Files\Docker\Docker\resources\bin\docker.exe`
+  - Containerul `ventora-labs-db` (postgres:17) rulează pe `localhost:5432`
+  - Folosește o bază separată pentru teste; nu atinge alte baze existente
+- **Verificare CI:** o singură dată la câteva minute cu `gh run list`, nu în buclă
+
+## Regula pre-push (obligatorie)
+
+**Înainte de ORICE push (fără excepție):**
+
+```
+pnpm format:check && pnpm lint && pnpm typecheck
+```
+
+**Înainte de orice push care atinge `core/**`, `packages/**`, `modules/**` sau fișiere de migrație:**
+
+```
+pnpm test:integration
+```
+
+Dacă comanda reușește (exit 0) → poți face push.
+Dacă eșuează sau nu pot rula containerele Docker → mă opresc și raportez fondatoarei. **Nu fac push fără teste verzi.**
+
+Scriptul face automat: pornește postgres:17 + pgbouncer pe porturile 5433/6432, aplică toate migrațiile, verifică garda de drift pentru cele 3 scheme Prisma (identity, founder, organizations), rulează testele de integrare, și oprește containerele.
+
 ---
 
 ## Reguli obligatorii

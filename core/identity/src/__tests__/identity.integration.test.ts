@@ -46,6 +46,9 @@ const hubAuth = betterAuth({
     expiresIn: REMEMBER_ME_SECONDS,
     updateAge: 24 * 60 * 60,
     cookieCache: { enabled: false },
+    additionalFields: {
+      activeOrganizationId: { type: 'string', nullable: true, defaultValue: null },
+    },
   },
   plugins: [bearer(), twoFactor({ issuer: 'Test' })],
   advanced: {
@@ -665,7 +668,7 @@ describe('T1.17b — signUpEmail atomicity rollback (trigger-induced failure)', 
             name: 'Founder Rollback',
           },
         }),
-      ).rejects.toThrow();
+      ).rejects.toThrowError();
 
       const user = await founderDb.user.findUnique({ where: { email: 't1.17b@founder.com' } });
       expect(user).toBeNull();
@@ -676,5 +679,43 @@ describe('T1.17b — signUpEmail atomicity rollback (trigger-induced failure)', 
       `);
       await adminPool.end();
     }
+  });
+});
+
+// T1.18 — B3: activeOrganizationId persisted in session (additionalFields + migration 20261027000002)
+describe('T1.18 — activeOrganizationId in session (B3)', () => {
+  it('updateSession stores and getSession returns activeOrganizationId', async () => {
+    const email = 't1.18.activeorg@test.com';
+    await signUp(email, 'ActiveOrg12');
+    const loginResult = await signIn(email, 'ActiveOrg12');
+    const token = loginResult?.token ?? '';
+    expect(token).toBeTruthy();
+
+    const fakeOrgId = '00000000-0000-0000-0000-000000000001';
+
+    // Set active organization
+    await hubAuth.api.updateSession({
+      body: { activeOrganizationId: fakeOrgId },
+      headers: new Headers({ Authorization: `Bearer ${token}` }),
+    });
+
+    const afterSet = await hubAuth.api.getSession({
+      headers: new Headers({ Authorization: `Bearer ${token}` }),
+    });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    expect((afterSet?.session as any)?.activeOrganizationId).toBe(fakeOrgId);
+
+    // Clear active organization (pass null — undefined is ignored by Better Auth)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    await (hubAuth.api as any).updateSession({
+      body: { activeOrganizationId: null },
+      headers: new Headers({ Authorization: `Bearer ${token}` }),
+    });
+
+    const afterClear = await hubAuth.api.getSession({
+      headers: new Headers({ Authorization: `Bearer ${token}` }),
+    });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    expect((afterClear?.session as any)?.activeOrganizationId ?? null).toBeNull();
   });
 });

@@ -38,6 +38,9 @@ export const hubAuth = betterAuth({
     expiresIn: REMEMBER_ME_SECONDS,
     updateAge: 24 * 60 * 60,
     cookieCache: { enabled: false },
+    additionalFields: {
+      activeOrganizationId: { type: 'string', nullable: true, defaultValue: null },
+    },
   },
   advanced: {
     crossSubDomainCookies: { enabled: false },

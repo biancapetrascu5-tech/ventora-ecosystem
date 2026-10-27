@@ -10,3 +10,4 @@ useDefault = true
 [allowlist]
 description = "Test fixture secrets in commit 9b6f756c (annotation added later)"
 commits = ["9b6f756c1e01e7900cc037e560dff63a4e7f289a"]
+
