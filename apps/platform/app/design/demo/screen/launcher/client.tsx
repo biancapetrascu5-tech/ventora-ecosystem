@@ -87,13 +87,13 @@ type OtherConfig = {
 const OTHER_CONFIGS: OtherConfig[] = [
   {
     app: 'inventory',
-    pills: [{ label: 'Rolul tău', icon: 'wrench' }],
-    body: 'Rolul tău nu include această aplicație. Bianca Petrașcu îți poate da acces.',
-    primaryAction: 'Cere acces',
+    pills: [{ label: 'Temporar indisponibilă', icon: 'wrench' }],
+    body: 'Lucrăm la ea acum. Revine în curând.',
+    primaryAction: 'Vezi starea',
   },
   {
     app: 'analytics',
-    pills: [{ label: 'Fără acces', icon: 'lock' }],
+    pills: [{ label: 'Nu e în rolul tău', icon: 'lock' }],
     body: 'Rolul tău nu include această aplicație. Bianca Petrașcu îți poate da acces.',
     primaryAction: 'Cere acces',
   },
