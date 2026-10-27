@@ -1,4 +1,5 @@
-﻿'use client';
+/* eslint-disable i18next/no-literal-string */
+'use client';
 import { notFound } from 'next/navigation';
 import { StatusPill } from '@ventora/ui';
 import { GalleryShell, GallerySection } from '../_shared/GalleryShell';

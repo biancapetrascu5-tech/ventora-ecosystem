@@ -1,14 +1,64 @@
-﻿'use client';
+'use client';
 import { notFound } from 'next/navigation';
 import { DataTable, StatusPill } from '@ventora/ui';
 import { GalleryShell, GallerySection } from '../_shared/GalleryShell';
 
 const ROWS = [
-  { id: 1, client: 'Andrei Ionescu', phone: '0741 123 451', service: 'Vopsit', staff: 'Ioana', when: 'Azi, 11:00', dur: '60 min', price: 350, status: 'now' },
-  { id: 2, client: 'Cristina Dobre', phone: '0742 220 118', service: 'Tratament facial', staff: 'Ioana', when: 'Azi, 12:30', dur: '45 min', price: 220, status: 'unconfirmed' },
-  { id: 3, client: 'Dan Stoica', phone: '0744 551 900', service: 'Tuns', staff: 'Ioana', when: 'Azi, 14:30', dur: '45 min', price: 120, status: 'confirmed' },
-  { id: 4, client: 'Alina Murariu', phone: '0723 004 512', service: 'Manicura semi', staff: 'Mara', when: 'Azi, 14:00', dur: '50 min', price: 140, status: 'confirmed' },
-  { id: 5, client: 'Oana Dinu', phone: '0755 300 721', service: 'Manicura', staff: 'Mara', when: 'Azi, 15:00', dur: '50 min', price: 110, status: 'unconfirmed' },
+  {
+    id: 1,
+    client: 'Andrei Ionescu',
+    phone: '0741 123 451',
+    service: 'Vopsit',
+    staff: 'Ioana',
+    when: 'Azi, 11:00',
+    dur: '60 min',
+    price: 350,
+    status: 'now',
+  },
+  {
+    id: 2,
+    client: 'Cristina Dobre',
+    phone: '0742 220 118',
+    service: 'Tratament facial',
+    staff: 'Ioana',
+    when: 'Azi, 12:30',
+    dur: '45 min',
+    price: 220,
+    status: 'unconfirmed',
+  },
+  {
+    id: 3,
+    client: 'Dan Stoica',
+    phone: '0744 551 900',
+    service: 'Tuns',
+    staff: 'Ioana',
+    when: 'Azi, 14:30',
+    dur: '45 min',
+    price: 120,
+    status: 'confirmed',
+  },
+  {
+    id: 4,
+    client: 'Alina Murariu',
+    phone: '0723 004 512',
+    service: 'Manicura semi',
+    staff: 'Mara',
+    when: 'Azi, 14:00',
+    dur: '50 min',
+    price: 140,
+    status: 'confirmed',
+  },
+  {
+    id: 5,
+    client: 'Oana Dinu',
+    phone: '0755 300 721',
+    service: 'Manicura',
+    staff: 'Mara',
+    when: 'Azi, 15:00',
+    dur: '50 min',
+    price: 110,
+    status: 'unconfirmed',
+  },
 ];
 
 const STATUS_LABEL: Record<string, [string, string]> = {
@@ -45,14 +95,24 @@ const COLUMNS = [
       </span>
     ),
   },
-  { key: 'price', header: 'Pret', align: 'end' as const, sortable: true, render: (r: (typeof ROWS)[0]) => ${r.price} lei },
+  {
+    key: 'price',
+    header: 'Pret',
+    align: 'end' as const,
+    sortable: true,
+    render: (r: (typeof ROWS)[0]) => r.price + ' lei',
+  },
   {
     key: 'status',
     header: 'Stare',
     trailing: true,
     render: (r: (typeof ROWS)[0]) => {
       const [tone, label] = STATUS_LABEL[r.status] ?? ['neutral', r.status];
-      return <StatusPill tone={tone as 'attention' | 'done' | 'neutral' | 'danger'} size="sm">{label}</StatusPill>;
+      return (
+        <StatusPill tone={tone as 'attention' | 'done' | 'neutral' | 'danger'} size="sm">
+          {label}
+        </StatusPill>
+      );
     },
   },
 ];

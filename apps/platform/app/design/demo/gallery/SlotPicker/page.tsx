@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 import { notFound } from 'next/navigation';
 import { SlotPicker } from '@ventora/ui';
 import { GalleryShell, GallerySection } from '../_shared/GalleryShell';

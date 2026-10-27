@@ -92,12 +92,66 @@ const IMPL_SHOTS = [
 /* ── Capturi _design (element.screenshot pe frame-uri din /design/preview/*) ── */
 
 const DESIGN_SHOTS = [
-  { previewUrl: '/design/preview/HubSignIn', frameIndex: 0, name: 'signin_1280_light_design' },
-  { previewUrl: '/design/preview/HubSignIn', frameIndex: 1, name: 'signin_1280_dark_design' },
-  { previewUrl: '/design/preview/HubInvite', frameIndex: 0, name: 'invite_1280_light_design' },
-  { previewUrl: '/design/preview/HubInvite', frameIndex: 1, name: 'invite_1280_dark_design' },
-  { previewUrl: '/design/preview/HubLauncher', frameIndex: 0, name: 'launcher_1280_light_design' },
-  { previewUrl: '/design/preview/HubLauncher', frameIndex: 1, name: 'launcher_1280_dark_design' },
+  {
+    previewUrl: '/design/preview/HubSignIn',
+    selector: '.scr-d[data-theme="light"]',
+    name: 'signin_1280_light_design',
+  },
+  {
+    previewUrl: '/design/preview/HubSignIn',
+    selector: '.scr-d[data-theme="dark"]',
+    name: 'signin_1280_dark_design',
+  },
+  {
+    previewUrl: '/design/preview/HubSignIn',
+    selector: '.scr-m[data-theme="light"]',
+    name: 'signin_390_light_design',
+  },
+  {
+    previewUrl: '/design/preview/HubSignIn',
+    selector: '.scr-m[data-theme="dark"]',
+    name: 'signin_390_dark_design',
+  },
+  {
+    previewUrl: '/design/preview/HubInvite',
+    selector: '.scr-d[data-theme="light"]',
+    name: 'invite_1280_light_design',
+  },
+  {
+    previewUrl: '/design/preview/HubInvite',
+    selector: '.scr-d[data-theme="dark"]',
+    name: 'invite_1280_dark_design',
+  },
+  {
+    previewUrl: '/design/preview/HubInvite',
+    selector: '.scr-m[data-theme="light"]',
+    name: 'invite_390_light_design',
+  },
+  {
+    previewUrl: '/design/preview/HubInvite',
+    selector: '.scr-m[data-theme="dark"]',
+    name: 'invite_390_dark_design',
+  },
+  {
+    previewUrl: '/design/preview/HubLauncher',
+    selector: '.scr-d[data-theme="light"]',
+    name: 'launcher_1280_light_design',
+  },
+  {
+    previewUrl: '/design/preview/HubLauncher',
+    selector: '.scr-d[data-theme="dark"]',
+    name: 'launcher_1280_dark_design',
+  },
+  {
+    previewUrl: '/design/preview/HubLauncher',
+    selector: '.scr-m[data-theme="light"]',
+    name: 'launcher_390_light_design',
+  },
+  {
+    previewUrl: '/design/preview/HubLauncher',
+    selector: '.scr-m[data-theme="dark"]',
+    name: 'launcher_390_dark_design',
+  },
 ];
 
 /* ── Helpers ─────────────────────────────────────────────────────────────── */
@@ -138,7 +192,7 @@ for (const shot of IMPL_SHOTS) {
   const theme = shot.url.includes('theme=dark') ? 'dark' : 'light';
   await page.emulateMedia({ colorScheme: theme === 'dark' ? 'dark' : 'light' });
 
-  await page.goto(BASE + shot.url, { waitUntil: 'networkidle' });
+  await page.goto(BASE + shot.url, { waitUntil: 'load', timeout: 30000 });
 
   // Setăm explicit data-theme pe documentElement (în plus față de URL param)
   await page.evaluate((t) => {
@@ -179,25 +233,24 @@ console.log('\n── Capturi _design (' + DESIGN_SHOTS.length + ') ────
 for (const shot of DESIGN_SHOTS) {
   const ctx = await browser.newContext({ viewport: { width: 1600, height: 900 } });
   const page = await ctx.newPage();
-  await page.goto(BASE + shot.previewUrl, { waitUntil: 'networkidle' });
+  await page.goto(BASE + shot.previewUrl, { waitUntil: 'load', timeout: 30000 });
   await page.waitForTimeout(500);
 
-  // Găsim frame-urile (divuri cu clasa "frame" sau iframe-uri) din pagina de preview
-  const frames = await page.$$('.frame, [data-frame], iframe.preview-frame');
-  if (frames.length === 0) {
-    // Fallback: screenshot full page
-    const outPath = join(OUT, shot.name + '.png');
-    const buf = await page.screenshot({ path: outPath, fullPage: true });
-    const hash = createHash('sha256').update(buf).digest('hex');
-    hashes.set(shot.name, hash);
-    console.log(`  ✓ ${shot.name}.png (fallback full-page)`);
-  } else {
-    const el = frames[shot.frameIndex] ?? frames[0];
-    const outPath = join(OUT, shot.name + '.png');
+  // Găsim frame-ul prin selectoruul exact (data-theme + clasă dimensiune)
+  const el = await page.$(shot.selector);
+  const outPath = join(OUT, shot.name + '.png');
+  if (el) {
+    await el.scrollIntoViewIfNeeded();
     const buf = await el.screenshot({ path: outPath });
     const hash = createHash('sha256').update(buf).digest('hex');
     hashes.set(shot.name, hash);
-    console.log(`  ✓ ${shot.name}.png (frame ${shot.frameIndex})`);
+    console.log(`  ✓ ${shot.name}.png`);
+  } else {
+    // Fallback: screenshot full page dacă selectorul nu găsește nimic
+    const buf = await page.screenshot({ path: outPath, fullPage: true });
+    const hash = createHash('sha256').update(buf).digest('hex');
+    hashes.set(shot.name, hash);
+    console.log(`  ✓ ${shot.name}.png (fallback — selector '${shot.selector}' negăsit)`);
   }
 
   await ctx.close();
@@ -218,8 +271,11 @@ const pairs = [
   ['launcher_1280_light_impl', 'launcher_1280_dark_impl'],
   ['launcher_390_light_impl', 'launcher_390_dark_impl'],
   ['signin_1280_light_design', 'signin_1280_dark_design'],
+  ['signin_390_light_design', 'signin_390_dark_design'],
   ['invite_1280_light_design', 'invite_1280_dark_design'],
+  ['invite_390_light_design', 'invite_390_dark_design'],
   ['launcher_1280_light_design', 'launcher_1280_dark_design'],
+  ['launcher_390_light_design', 'launcher_390_dark_design'],
 ];
 
 for (const [a, b] of pairs) {
