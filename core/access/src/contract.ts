@@ -33,6 +33,12 @@ export function configureAccess(config: AccessConfig): void {
   _config = config;
 }
 
+/** Idempotent: sets the default provider only if not already configured.
+ *  Modules call this at load time; tests call configureAccess() explicitly to override. */
+export function ensureAccessConfigured(config: AccessConfig): void {
+  if (!_config) _config = config;
+}
+
 export type TenantContext = {
   userId: string;
   organizationId: string;

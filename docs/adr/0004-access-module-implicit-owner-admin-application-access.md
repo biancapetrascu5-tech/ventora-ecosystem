@@ -48,6 +48,24 @@ Verificarea explicită a tabelului `application_access` se aplică **doar** rolu
 - Rândurile orfane din `application_access` (utilizatori suspendați/eliminați) nu necesită curățare urgentă;
   `authorize()` le ignoră. Curățare via outbox F4.
 
+## Note tehnice — configurare la pornire (adăugat 2026-10-27)
+
+`authorize()` necesită un `EntitlementProvider` configurat o singură dată prin `configureAccess()`.
+Locul natural este `apps/platform/instrumentation.ts`, dar Next.js 16 Turbopack compilează
+`instrumentation.ts` pentru ambele runtimeuri (edge + nodejs) și nu poate bundla clienții Prisma
+generați local (CJS, cale locală) indiferent de `serverExternalPackages`.
+
+**Soluție actuală (varianta 1):** `ensureAccessConfigured()` (helper idempotent) apelat la nivelul
+modulului în `modules/booking/src/contract.ts`. Primul apel setează provider-ul; apelurile ulterioare
+nu fac nimic. Testele apelează explicit `configureAccess(...)` în `beforeAll` pentru a suprascrie.
+
+**Varianta 2 (viitoare):** Extrage `@ventora/access` ca pachet compilat (CJS + ESM dual, fără import
+direct din `src/`). Turbopack poate bundla pachete compilate; `instrumentation.ts` devine locul corect.
+
+**Varianta 3 (viitoare):** Adaugă un entry point Prisma-free în `@ventora/access` (ex.
+`@ventora/access/configure`) care exportă doar `configureAccess` și `ensureAccessConfigured` fără
+să importe `./db`. `instrumentation.ts` importă din acest entry point, evitând problema Turbopack.
+
 ## Referințe
 
 - `docs/ARCHITECTURE.md` §4, §7.5
