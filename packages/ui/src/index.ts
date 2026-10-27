@@ -180,5 +180,34 @@ export type {
   TimelineRowStatus,
 } from './Timeline/Timeline';
 
+// Lot 6 — Scheduling & Rules
+export { DatePicker, DatePickerField } from './DatePicker/DatePicker';
+export type { DatePickerProps, DatePickerMode } from './DatePicker/DatePicker';
+
+export { SlotPicker } from './SlotPicker/SlotPicker';
+export type { SlotPickerProps, SlotItem } from './SlotPicker/SlotPicker';
+
+export { RuleBuilder } from './RuleBuilder/RuleBuilder';
+export type { RuleBuilderProps, RuleCriterion, RuleRow } from './RuleBuilder/RuleBuilder';
+
+export { Kanban, KanbanCard } from './Kanban/Kanban';
+export type {
+  KanbanProps,
+  KanbanCardProps,
+  KanbanColumn,
+  KanbanCardData,
+  KanbanColumnTone,
+  KanbanCardDue,
+  KanbanContext,
+} from './Kanban/Kanban';
+
+export { Schedule } from './Schedule/Schedule';
+export type {
+  ScheduleProps,
+  ScheduleColumn,
+  ScheduleEvent,
+  ScheduleEventStatus,
+} from './Schedule/Schedule';
+
 // Utilities
 export { cn } from './lib/cn';
