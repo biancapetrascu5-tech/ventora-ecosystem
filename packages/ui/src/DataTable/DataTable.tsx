@@ -80,11 +80,7 @@ function SortIcon({ col, sort }: { col: DataTableColumn<DataTableRow>; sort?: Da
     <span className={cn(styles.sortIcon, active && styles.sortActive)} aria-hidden>
       <Icon
         icon={
-          active && sort?.dir === 'desc'
-            ? 'chevron-down'
-            : active
-              ? 'chevron-up'
-              : 'arrow-up-down'
+          active && sort?.dir === 'desc' ? 'chevron-down' : active ? 'chevron-up' : 'arrow-up-down'
         }
         size="sm"
       />
