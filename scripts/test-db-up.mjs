@@ -16,7 +16,7 @@ export const TEST_DB = {
   adminUrl: 'postgresql://postgres:test@localhost:5433',
   identityDb: 'ventora_identity_test',
   orgDb: 'ventora_org_test',
-  appPw: 'app_runtime_test_pw',       // gitleaks:allow
+  appPw: 'app_runtime_test_pw', // gitleaks:allow
   founderPw: 'founder_runtime_test_pw', // gitleaks:allow
   betterAuthSecret: 'ventora-test-better-auth-secret-00000001',
   founderAuthSecret: 'ventora-test-founder-auth-secret-0000001',
@@ -39,9 +39,7 @@ function findDocker() {
       return c;
     } catch {}
   }
-  throw new Error(
-    'Docker nu a fost găsit. Adaugă docker în PATH sau setează DOCKER_PATH.',
-  );
+  throw new Error('Docker nu a fost găsit. Adaugă docker în PATH sau setează DOCKER_PATH.');
 }
 
 export const DOCKER = findDocker();
@@ -82,8 +80,13 @@ console.log('[test:db:up] Aștept postgres să fie healthy...');
       const out = execSync(
         `"${DOCKER}" inspect --format "{{.State.Health.Status}}" ventora-test-postgres`,
         { stdio: ['ignore', 'pipe', 'ignore'] },
-      ).toString().trim();
-      if (out === 'healthy') { healthy = true; break; }
+      )
+        .toString()
+        .trim();
+      if (out === 'healthy') {
+        healthy = true;
+        break;
+      }
     } catch {}
     await new Promise((r) => setTimeout(r, 1000));
   }
@@ -104,19 +107,13 @@ for (const db of [
 console.log('[test:db:up] Aplic migrarea identity...');
 psqlFile(
   TEST_DB.identityDb,
-  join(
-    ROOT,
-    'core/identity/prisma/identity/migrations/20261025000001_identity_init/migration.sql',
-  ),
+  join(ROOT, 'core/identity/prisma/identity/migrations/20261025000001_identity_init/migration.sql'),
 );
 
 console.log('[test:db:up] Aplic migrarea founder...');
 psqlFile(
   TEST_DB.identityDb,
-  join(
-    ROOT,
-    'core/identity/prisma/founder/migrations/20261025000001_founder_init/migration.sql',
-  ),
+  join(ROOT, 'core/identity/prisma/founder/migrations/20261025000001_founder_init/migration.sql'),
 );
 
 console.log('[test:db:up] Setez parolele rolurilor identity...');
@@ -154,6 +151,10 @@ await new Promise((r) => setTimeout(r, 2000));
 
 console.log('[test:db:up] Gata. Conexiuni disponibile:');
 console.log(`  identity admin:    postgresql://postgres:test@localhost:5433/${TEST_DB.identityDb}`);
-console.log(`  identity runtime:  postgresql://app_runtime:${TEST_DB.appPw}@localhost:5433/${TEST_DB.identityDb}`);
-console.log(`  identity pgbouncer: postgresql://app_runtime:${TEST_DB.appPw}@localhost:6432/${TEST_DB.identityDb}`);
+console.log(
+  `  identity runtime:  postgresql://app_runtime:${TEST_DB.appPw}@localhost:5433/${TEST_DB.identityDb}`,
+);
+console.log(
+  `  identity pgbouncer: postgresql://app_runtime:${TEST_DB.appPw}@localhost:6432/${TEST_DB.identityDb}`,
+);
 console.log(`  organizations:     postgresql://postgres:test@localhost:5433/${TEST_DB.orgDb}`);
