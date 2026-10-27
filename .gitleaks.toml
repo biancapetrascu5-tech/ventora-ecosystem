@@ -1,0 +1,13 @@
+[extend]
+useDefault = true
+
+# Commit 9b6f756c introduced three Better Auth test-fixture secrets
+# (32-char ASCII strings used only in vitest against a local DB) without the
+# // gitleaks:allow annotation; a follow-up commit added the annotation in the
+# source file. All three strings are test-only placeholders — no real service
+# or credential is involved. The allowlist below prevents false-positive
+# alerts when gitleaks scans the diff of that commit in PR/branch CI runs.
+[allowlist]
+description = "Test fixture secrets in commit 9b6f756c (annotation added later)"
+commits = ["9b6f756c1e01e7900cc037e560dff63a4e7f289a"]
+

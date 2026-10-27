@@ -1,0 +1,80 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/access-client"
+}
+
+datasource db {
+  provider = "postgresql"
+  schemas  = ["access"]
+}
+
+model Role {
+  id             String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name           String    @db.VarChar(64)
+  organizationId String?   @map("organization_id") @db.Uuid
+  isSystem       Boolean   @default(false) @map("is_system")
+  description    String?   @db.Text
+  createdAt      DateTime  @default(now()) @map("created_at") @db.Timestamptz
+
+  rolePermissions RolePermission[]
+
+  // NULLS NOT DISTINCT: two system roles (org_id IS NULL) with same name are rejected,
+  // and two org-scoped roles in the same org with the same name are rejected.
+  @@unique([name, organizationId])
+  @@map("role")
+  @@schema("access")
+}
+
+model Permission {
+  id            String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  applicationId String   @map("application_id") @db.VarChar(64)
+  name          String   @db.VarChar(128)
+  description   String?  @db.Text
+  createdAt     DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  rolePermissions RolePermission[]
+
+  @@unique([applicationId, name])
+  @@map("permission")
+  @@schema("access")
+}
+
+model RolePermission {
+  id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  roleId       String   @map("role_id") @db.Uuid
+  permissionId String   @map("permission_id") @db.Uuid
+  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  role       Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@unique([roleId, permissionId])
+  @@map("role_permission")
+  @@schema("access")
+}
+
+model ApplicationAccess {
+  id             String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  organizationId String   @map("organization_id") @db.Uuid
+  userId         String   @map("user_id") @db.Uuid
+  applicationId  String   @map("application_id") @db.VarChar(64)
+  roleInApp      String?  @map("role_in_app") @db.VarChar(64)
+  createdAt      DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  @@unique([organizationId, userId, applicationId])
+  @@map("application_access")
+  @@schema("access")
+}
+
+model ResourceAccessPolicy {
+  id             String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  organizationId String   @map("organization_id") @db.Uuid
+  roleId         String   @map("role_id") @db.Uuid
+  resourceType   String   @map("resource_type") @db.VarChar(64)
+  resourceId     String?  @map("resource_id") @db.Uuid
+  createdAt      DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  @@index([organizationId, roleId])
+  @@map("resource_access_policy")
+  @@schema("access")
+}

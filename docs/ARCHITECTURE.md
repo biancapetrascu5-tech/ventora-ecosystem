@@ -1,7 +1,7 @@
 # VENTORA ECOSYSTEM — ARHITECTURĂ TEHNICĂ
 
-**Versiune:** 0.4.1
-**Data:** 25 octombrie 2026
+**Versiune:** 0.4.4
+**Data:** 27 octombrie 2026
 **Stadiu:** Faza 0 închisă (tag `faza-0`). Deciziile marcate CONFIRMAT sunt baza implementării; cele PROPUS sau NECESITĂ DECIZIE nu se implementează fără aprobare.
 
 ## Istoric
@@ -24,6 +24,9 @@
 | 0.3.2 | 24.10.2026 | Decizii pentru Portal și Network, luate în designul lor (Claude Design, etapele 1–3): D-NET-1, D-POR-1, D-PROF-1 închise; verificarea și categoria afacerii în Core; VeeCoin ca monedă unică; regulile Network (contact autorizat, acceptarea propunerilor, integrări într-un singur sens); eticheta „Sponsorizat”; avansul în programarea din Portal; rolurile de tokeni noi pentru Portal/Network. Detalii: §17.16. |
 | 0.4.0 | 25.10.2026 | Deciziile Fazei 0, pe baza experimentelor E1–E10 (rapoartele în `docs/experiments/`): D-DB-1 → varianta C (rol de conectare `NOINHERIT` + `SET LOCAL ROLE` pe modul), D-SEC-1 → RLS din prima (USING + WITH CHECK), parolele cu scrypt, configurația Better Auth, outbox cu dispecer, cote cu rezervare și reconciliere, garda pentru operațiile în masă; D-UI-2 → React Aria Components; versiunile de bază ale stack-ului. Detalii: §17.17. |
 | 0.4.1 | 25.10.2026 | Echipa Founder: mai multe conturi Founder nominale, fiecare cu acces complet (D-ACC-4). Emailul tranzacțional prin Resend, regiunea UE, în spatele unui adaptor din `core/notifications` (D-NOT-1). Direcția vizuală B „Navy de comandă” aplicată în design system, doar pentru Hub (D-UI-6). Detalii: §17.18. |
+| 0.4.2 | 25.10.2026 | Numele afișate ale celor 13 module de business (D-UX-4): EasyBook, ClientDesk, TeamSpace, MoneyDesk, TaskBoard, ShiftPlan, DocSpace, StockDesk, DataView, CampaignKit, EventSpace, AssetDesk, ContractDesk. Identificatorii tehnici rămân neschimbați. Detalii: §17.19. |
+| 0.4.3 | 27.10.2026 | Ecranele Hub pornesc în paralel cu F3 și F4, imediat după F1 și F2, pe contracte definite dinainte (D-ROAD-4). Regiunea Resend confirmată (eu-west-1). Regulile SMS: GSM-7 fără diacritice (D-SMS-10) și mai multe telefoane (D-SMS-11). Detalii: §17.20. |
+| 0.4.4 | 27.10.2026 | ADR 0003: organizațiile se implementează în modulul propriu `core/organizations`, nu prin plugin-ul Better Auth; organizația activă rămâne în sesiune, printr-un câmp propriu. D-AUTH-5 actualizat. Detalii: §17.21. |
 
 ## Statusuri folosite în acest document
 
@@ -238,6 +241,8 @@ Fiecare aplicație are o stare înregistrată în `docs/checklists/<app>.md` și
 - Conexiunea trece prin pooler-ul Supabase în **transaction mode** (port 6543), cu `pgbouncer=true&connection_limit=1`. Conexiunile la baza de date rămân la nivelul unui singur pool, indiferent de numărul modulelor.
 - Migrațiile și seed-ul rulează cu un rol de migrare separat, prin **session pooler** (port 5432), niciodată din funcțiile aplicației.
 
+> **Notă implementare — pool `pg` în serverless:** `connection_limit` din URL și `pgbouncer=true` controlează Supavisor, nu pool-ul intern al clientului `pg`. Pe Vercel, fiecare Function invocation rulează în propriul proces; `pg` folosește implicit `max: 10`. Cu `max: 1` setat explicit în `db.ts`, fiecare proces deține cel mult o conexiune spre Supavisor — potrivit pentru serverless și în limita instanței de staging (60 directe / 200 pooler).
+
 **De ce nu A și nu B** (măsurat în E4, 200 de conexiuni concurente):
 
 | Variantă | Rezultat | Motiv de respingere |
@@ -267,6 +272,13 @@ Varianta istorică cu Drizzle nu a fost evaluată (contrazicea specificația).
 - CI aplică migrațiile pe o bază curată și verifică lipsa drift-ului.
 - Schimbările distructive se fac în doi timpi: adaugi, migrezi datele, abia apoi ștergi.
 - Baza de producție trebuie să poată fi recreată integral din migrații.
+
+**Aplicare pe staging / producție (confirmat 27.10.2026):**
+
+- `prisma migrate deploy` se rulează cu `DATABASE_URL` setat la **DIRECT_URL** (conexiune directă PostgreSQL, port 5432, session mode), **nu** via pooler (port 6543, transaction mode). Rolul `app_runtime` (NOINHERIT) nu are drepturi de scriere pe `public._prisma_migrations`; pooler-ul transaction mode nu suportă advisory locks.
+- `_prisma_migrations` este în schema **`public`**, **comună tuturor modulelor** (identity, founder_identity, organizations, access). Nu există tabele de tracking separate per modul.
+- Migrațiile se aplică **din branch-ul `main` actualizat** (`git switch main && git pull`), niciodată dintr-un branch de lucru, pentru a evita aplicarea accidentală a migrărilor nefinalizate.
+- O migrare aplicată pe orice mediu persistent (staging, producție) este **imutabilă**. Dacă e nevoie de o corecție, se creează o migrare nouă.
 
 ### 6.4 Integritatea între domenii
 
@@ -319,7 +331,7 @@ Exemplu, rezervare cu avans din Portal: Booking creează programarea `pending_pa
 - **Sesiuni stocate în baza de date**, cu ID opac în cookie. Rolul **nu** stă în token. Permisiunile se citesc din DB la fiecare request, cu cache doar pe durata request-ului. Asta rezolvă vulnerabilitatea S2 din audit.
 - Librăria propusă: **Better Auth** (self-hosted, adapter Prisma, invitații, 2FA). Versiunea stabilă se verifică la start. Alternative evaluate: Clerk/Auth0 (cost per utilizator, date la terți), Supabase Auth (organizațiile tot le construim noi).
 - Parole cu **scrypt**, algoritmul implicit al Better Auth (CONFIRMAT 25.10.2026, în locul argon2id propus inițial: sigur, inclus în Node.js, fără pachete compilate pe Vercel). 2FA TOTP opțional pentru utilizatori, **obligatoriu** pentru Founder.
-- **Configurația Better Auth validată în E9 (CONFIRMAT):** sesiuni în baza de date; **cache-ul de sesiune din cookie dezactivat** (altfel revocarea și retrogradarea întârzie; vezi și issue-ul Better Auth #11690); plugin-urile oficiale pentru organizații (organizația activă în sesiune, schimbată doar pe server, cu verificarea membership-ului), 2FA (TOTP + coduri de recuperare de unică folosință, stocate criptat) și sesiuni pe token pentru clienți fără browser (viitoarea aplicație mobilă); **limitarea încercărilor activă în producție** (dezactivată doar în teste).
+- **Configurația Better Auth validată în E9 (CONFIRMAT):** sesiuni în baza de date; **cache-ul de sesiune din cookie dezactivat** (altfel revocarea și retrogradarea întârzie; vezi și issue-ul Better Auth #11690); organizația activă în sesiune, ca un câmp propriu (`activeOrganizationId`), schimbată doar pe server, după verificarea membership-ului în `core/organizations` (ADR 0003: modul propriu, nu plugin-ul Better Auth pentru organizații); plugin-urile oficiale 2FA (TOTP + coduri de recuperare de unică folosință, stocate criptat) și sesiuni pe token pentru clienți fără browser (viitoarea aplicație mobilă); **limitarea încercărilor activă în producție** (dezactivată doar în teste).
 - **2FA obligatoriu pentru Owner (CONFIRMAT, P5):** proprietarul poate plăti și schimba accesul celorlalți, deci autentificarea în doi pași e obligatorie pentru el. La primirea rolului de Owner are o **perioadă de grație de 14 zile** (cu un Notice neutru, fără blocare); după ea, accesul la acțiunile de Owner cere 2FA activ. La activare primește **coduri de recuperare** de unică folosință (stocate ca hash, regenerabile, regenerarea auditată). Pierderea dispozitivului fără coduri se rezolvă doar prin sesiune de suport Founder, auditată.
 - **Codul 2FA se cere pe un dispozitiv nou** (CONFIRMAT, D10 microcopy); „Ține-mă minte” păstrează sesiunea 30 de zile pe dispozitivul ales (CONFIRMAT, P1), revocabilă din Securitate.
 
@@ -582,6 +594,19 @@ export const manifest = {
 **Direcția vizuală B „Navy de comandă” (CONFIRMAT, 25.10.2026, D-UI-6):** aplicată în design system (deciziile V1–V18 din `docs/design/system/README.md`; rezumatul și diferența de tokeni în `docs/design/DIRECTIA-B.md`). Atinge **doar Hub-ul**: zonele de brand (`BrandZone`) din launcher și autentificare, rândul de aplicații `AppDock`, cardul `PortalPresence`, deschiderea animată `AppLaunch` v2. Navy ca suprafață există doar în zonele de brand ale Hub-ului, niciodată în aplicații; mișcarea cu rebound (`ease-spring`) doar în Hub. Valorile de token globale schimbate (`canvas`, `radius-xl`, `shadow-2`, `display-xl`) se aplică peste tot, prin regenerarea `packages/tokens`. Recomandările R-B1…R-B7 (`docs/design/reviews/directia-b-hub.md`) sunt aprobate și aplicate ca V12–V18; între ele, `display-l` rămâne 30/36 în aplicații, iar mărimea mare a Hub-ului e tokenul nou `display-hub`.
 
 - **Logo:** SVG-urile oficiale din `docs/design/logo/`; în dark se folosește varianta B (CONFIRMAT). Spine-ul din Founder arată semnul + „Founder” (P26); favicon-ul Hub folosește varianta B în dark (P27).
+- **Numele afișate ale modulelor (CONFIRMAT, 25.10.2026, D-UX-4).** Cele 13 module de business au nume afișate proprii, aceleași în toate cele 6 limbi. Sunt nume de module în Ventora, nu mărci separate; marca rămâne „Ventora”. Identificatorii tehnici (`booking`, `crm`… în cod, manifeste, baze de date, rute, chei i18n, documentație tehnică și checklisturi) **nu se schimbă**; numele afișat vine doar din i18n (`apps.<id>.name`). Portal și Network își păstrează numele.
+
+  | Identificator | Nume afișat | | Identificator | Nume afișat |
+  |---|---|---|---|---|
+  | `booking` | EasyBook | | `documents` | DocSpace |
+  | `crm` | ClientDesk | | `inventory` | StockDesk |
+  | `hr` | TeamSpace | | `analytics` | DataView |
+  | `finance` | MoneyDesk | | `marketing` | CampaignKit |
+  | `projects` | TaskBoard | | `events` | EventSpace |
+  | `shifts` | ShiftPlan | | `assets` | AssetDesk |
+  | | | | `contracts` | ContractDesk |
+
+  Reguli: niciun nume de modul nu folosește „Hub” (e numele platformei); un nume nou trece prin glosar și prin testul de lungime (eticheta din AppDock, germană).
 - **Terminologie (CONFIRMAT, D1):** clienții văd doar „abonament”. Cuvântul „plan” apare **doar în Founder Control Center** (unde e termenul tehnic corect). Cheile i18n și glosarul respectă regula.
 
 ### 10.2 Reguli
@@ -834,7 +859,7 @@ Implementare (PROPUS): chei API pe organizație (hash, scope-uri), rate limiting
 - **Domeniul de expediere:** `ventora-hub.com`, deja verificat în Resend (SPF și DKIM). Se adaugă DMARC dacă lipsește. Adresele de expediere (de ex. `noreply@ventora-hub.com`) se stabilesc la configurare. Un subdomeniu dedicat (`mail.`) rămâne o opțiune pentru mai târziu, dacă volumul o cere.
 - **Ce trimite:** invitații, resetarea parolei, 2FA și securitate, notificări operaționale. Emailul comercial rămâne dezactivat (D-GRW-8).
 - **Cheia API** stă doar în variabilele de mediu Vercel și în `.env.local`, niciodată în cod sau în chat. Staging și producție au chei separate.
-- **Contul Resend există** (al fondatoarei), cu `ventora-hub.com` verificat. Rămân: confirmarea regiunii domeniului (trebuie să fie UE; altfel se recreează domeniul în regiunea UE) și cheile API noi, separate pentru staging și producție, folosite doar de ecosistem, puse în Vercel. Până atunci, în dezvoltare, emailurile se scriu în log sau într-o cutie de test locală.
+- **Contul Resend există** (al fondatoarei), cu `ventora-hub.com` verificat. Regiunea domeniului confirmată: eu-west-1 (Irlanda). Rămân cheile API noi, separate pentru staging și producție, folosite doar de ecosistem, puse în Vercel. Până atunci, în dezvoltare, emailurile se scriu în log sau într-o cutie de test locală.
 
 ## 12. Securitate și izolare multi-tenant
 
@@ -985,6 +1010,11 @@ Plus, la nivel de platformă: teste de webhook Stripe (semnătură, idempotenț�
 
 - **F1** (design system) merge în paralel cu **F0** și **F2**, după ce exportul de design e aprobat.
 - **F3** și **F4** merg în paralel după F2.
+- **Ecranele Hub (F5) pornesc după F1 și F2, în paralel cu F3 și F4** (D-ROAD-4):
+  - pe date reale, imediat: autentificarea (eroare, resetare parolă, 2FA), acceptarea invitației, alegerea și schimbarea organizației, setările contului, administrarea echipei (membri, invitații, roluri);
+  - pe contract + sursă temporară, legate apoi la serviciul real fără schimbarea ecranului: launcher-ul cu cele 4 stări de acces și contorul de consum (F3), centrul de notificări (F4);
+  - după F3: Growth Engine v1, plăți și facturare;
+  - condiție: contractul (`packages/contracts`) se definește și se aprobă înaintea ecranului care îl folosește; criteriul de acceptare F5 rămâne neschimbat.
 - **Nu** încep înainte de stabilizare:
   - aplicațiile, înainte de F2 (acces) și de primele componente F1;
   - integrările între aplicații, înainte de F4 (outbox);
@@ -1111,6 +1141,8 @@ Plus, la nivel de platformă: teste de webhook Stripe (semnătură, idempotenț�
 | D-SMS-6 | În MVP, SIM-ul propriu doar pentru mesaje operaționale | Da | CONFIRMAT | Nu |
 | D-SMS-7 | Validarea juridică: condițiile operatorilor și baza legală pentru remindere | Obligatorie înainte de lansare | NECESITĂ DECIZIE | Da |
 | D-SMS-8 | Furnizorul SMS (SMSLink sau Twilio) | Înainte de F4 | NECESITĂ DECIZIE | Da |
+| D-SMS-10 | SMS-urile către clienți doar în GSM-7, fără diacritice, țintă 1 SMS (≤ 160 caractere); normalizare și contor pe server (`SMS_NUMAR_PROPRIU.md` §3.10) | Da | CONFIRMAT (26.10.2026) | Nu |
+| D-SMS-11 | Mai multe telefoane: același client pe același telefon; la deconectare, doar mesajele nepredate trec pe celelalte telefoane, cele predate nu se retrimit (`SMS_NUMAR_PROPRIU.md` §3.5) | Da | CONFIRMAT (26.10.2026) | Nu |
 | D-SMS-9 | +7 funcționalități în checklistul Booking (59 → 66) | Da | CONFIRMAT | Nu |
 | D-PN-1 | O singură etichetă „Sponsorizat”, distinctă de „Recomandare” | Da | CONFIRMAT | Nu |
 | D-PN-2 | Fără rol de token `accent`; roluri noi `photo-scrim`, culori de categorie, `nav-*` | Da | CONFIRMAT | Nu |
@@ -1120,17 +1152,19 @@ Plus, la nivel de platformă: teste de webhook Stripe (semnătură, idempotenț�
 | D-PN-6 | Pas de plată în programarea din Portal doar când afacerea cere avans | Da | CONFIRMAT | Nu |
 | D-PN-7 | Programul de afiliere, criteriile Founding 100 și „Verificat” | — | NECESITĂ DECIZIE | Da |
 | D-AUTH-4 | Parolele cu scrypt (implicitul Better Auth), nu argon2id | Da | CONFIRMAT (25.10.2026, E9) | Nu |
-| D-AUTH-5 | Better Auth: cache-ul de sesiune oprit, limitarea încercărilor activă în producție, plugin-urile organizație / 2FA / token | Da | CONFIRMAT (25.10.2026, E9) | Nu |
+| D-AUTH-5 | Better Auth: cache-ul de sesiune oprit, limitarea încercărilor activă în producție, plugin-urile 2FA / token; organizațiile în `core/organizations`, nu prin plugin (ADR 0003, 27.10.2026) | Da | CONFIRMAT (25.10.2026, E9; actualizat 27.10.2026) | Nu |
 | D-INF-4 | Outbox cu dispecer periodic (Inngest cron), consumatori idempotenți, dead-letter după 3 eșecuri | Da | CONFIRMAT (25.10.2026, E7) | Nu |
 | D-COM-10 | Cote: rezervare atomică (UPDATE condiționat) + confirmare / eliberare + reconciliere periodică a rezervărilor expirate (Inngest cron) | Da | CONFIRMAT (25.10.2026, E8) | Nu |
 | D-SEC-3 | Garda din db-kit refuză updateMany / deleteMany fără filtru explicit | Da | CONFIRMAT (25.10.2026, E6) | Nu |
 | D-ACC-4 | Echipa Founder: mai multe conturi Founder nominale, toate cu acces complet (inclusiv Bibi); 2FA obligatoriu, audit pe persoană, restricția IP opțională și oprită implicit (§7.5) | Da | CONFIRMAT (25.10.2026) | Nu |
 | D-NOT-1 | Email tranzacțional prin Resend, regiunea UE, în spatele adaptorului `EmailChannel`; domeniul `ventora-hub.com`, deja verificat (§11.6) | Da | CONFIRMAT (25.10.2026); contul există, domeniul și cheile: de configurat | Nu |
 | D-UI-6 | Direcția vizuală B „Navy de comandă” (V1–V18, inclusiv R-B1…R-B7), doar pentru Hub (§10.1) | Da | CONFIRMAT (25.10.2026) | Nu |
+| D-UX-4 | Numele afișate ale celor 13 module (EasyBook, ClientDesk, TeamSpace, MoneyDesk, TaskBoard, ShiftPlan, DocSpace, StockDesk, DataView, CampaignKit, EventSpace, AssetDesk, ContractDesk); identificatorii tehnici neschimbați (§10.1) | Da | CONFIRMAT (25.10.2026) | Nu |
 | D-INF-5 | Compute-ul Supabase pentru producție (la 200 de cereri concurente, p99 ≈ 2,5 s pe instanța micro de staging) | Decis înainte de lansare, cu măsurători | NECESITĂ DECIZIE | Da, înainte de lansare |
 | D-ROAD-1 | Ordinea aplicațiilor după Booking | Propunerea din §15.3 | NECESITĂ DECIZIE | Da |
 | D-ROAD-2 | Booking prima aplicație | Da | CONFIRMAT | Nu |
 | D-ROAD-3 | Fluxuri verticale paralele, fără reducerea scope-ului | Da | CONFIRMAT | Nu |
+| D-ROAD-4 | Ecranele Hub (F5) pornesc după F1 + F2, în paralel cu F3 și F4, pe contracte din `packages/contracts` și surse de date temporare pentru entitlements, cote și notificări (§15.2) | Da | CONFIRMAT (27.10.2026) | Nu |
 
 ### 17.2 Modificări față de v0.1
 
@@ -1261,6 +1295,26 @@ Fiecare experiment produce un raport scurt și un ADR. Pentru toate se folosesc 
 4. **Nicio decizie deschisă nu s-a închis prin această versiune** în afara celor de mai sus. D-COM-7, D-PX-2, D-PX-3, D-GRW-8 (validarea juridică), D-UX-2 rămân NECESITĂ DECIZIE.
 
 ---
+
+### 17.21 Modificări în v0.4.4
+
+**ADR 0003** (`docs/adr/0003-core-organizations-modul-propriu-fara-plugin-better-auth.md`), aprobat de fondatoare pe 27.10.2026, implementat în Lotul 2.2 (PR #4):
+
+1. Organizațiile, membership-urile și invitațiile sunt în `core/organizations`: schema Postgres `organizations`, rolul `org_rw`, RLS cu USING + WITH CHECK pe toate tabelele, funcții SECURITY DEFINER doar pentru listarea propriilor organizații, găsirea invitației după token și crearea organizației de către Founder.
+2. Plugin-ul Better Auth pentru organizații nu se folosește. Din Better Auth rămân sesiunile, email/parolă, 2FA, sesiunile pe token și limitarea încercărilor.
+3. Organizația activă e câmpul `active_organization_id` din sesiune, scris doar prin `setSessionActiveOrganization()`, care primește un context verificat în baza de date (`resolveOrgContext`). La fiecare cerere, `authorize()` (Lotul 2.3) reverifică membership-ul activ.
+
+### 17.20 Modificări în v0.4.3
+
+Aprobate de fondatoare:
+
+1. **D-ROAD-4 — ecranele Hub în paralel** (§15.2), 27.10.2026: după F1 și F2, ecranele Hub care depind doar de identitate și acces se construiesc pe date reale, în paralel cu F3 și F4; launcher-ul, contorul de consum și notificările se construiesc pe contracte și surse temporare. Ordinea de lucru: închiderea F1 (inclusiv verificarea vizuală design ↔ implementare), F2 complet, apoi trei fire paralele: F3, F4, ecranele Hub.
+2. **Resend** (§11.6): regiunea domeniului `ventora-hub.com` confirmată, eu-west-1.
+3. **D-SMS-10 și D-SMS-11** (26.10.2026): regulile textului SMS și ale funcționării cu mai multe telefoane, detaliate în `SMS_NUMAR_PROPRIU.md` v1.1.
+
+### 17.19 Modificări în v0.4.2
+
+Aprobat de fondatoare pe 25.10.2026: **D-UX-4**, numele afișate ale modulelor (§10.1). Sunt etichete în interfață, nu mărci separate, deci nu cer înregistrare; verificarea de marcă rămâne doar pentru „Ventora”. Codul, rutele, cheile și documentația tehnică păstrează identificatorii (`booking`, `crm`…). De actualizat: glosarul și cataloagele i18n (`apps.<id>.name`), design system-ul (etichetele din launcher, ecrane, iconurile de aplicații rămân aceleași), textele care pomenesc numele modulelor.
 
 ### 17.18 Modificări în v0.4.1
 

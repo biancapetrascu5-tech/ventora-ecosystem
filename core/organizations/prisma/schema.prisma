@@ -1,0 +1,124 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/organizations-client"
+}
+
+datasource db {
+  provider = "postgresql"
+  schemas  = ["organizations"]
+}
+
+enum MembershipRole {
+  owner
+  admin
+  member
+  external_collaborator
+
+  @@schema("organizations")
+}
+
+enum MembershipStatus {
+  active
+  suspended
+
+  @@schema("organizations")
+}
+
+enum InvitationStatus {
+  pending
+  accepted
+  expired
+  revoked
+
+  @@schema("organizations")
+}
+
+enum InvitationEmailStatus {
+  pending
+  sent
+  failed
+
+  @@schema("organizations")
+}
+
+enum CreatedVia {
+  founder
+  self_service
+  import
+
+  @@schema("organizations")
+}
+
+model Organization {
+  id                 String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  slug               String     @unique @db.VarChar(63)
+  name               String     @db.VarChar(255)
+  createdVia         CreatedVia @map("created_via")
+  createdByFounderId String?    @map("created_by_founder_id") @db.Uuid
+  createdAt          DateTime   @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt          DateTime   @updatedAt @map("updated_at") @db.Timestamptz
+
+  settings    OrganizationSetting[]
+  memberships Membership[]
+  invitations Invitation[]
+
+  @@map("organization")
+  @@schema("organizations")
+}
+
+model OrganizationSetting {
+  id             String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  organizationId String   @map("organization_id") @db.Uuid
+  key            String   @db.VarChar(128)
+  value          String
+  createdAt      DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt      DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@unique([organizationId, key])
+  @@map("organization_setting")
+  @@schema("organizations")
+}
+
+model Membership {
+  id             String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  organizationId String           @map("organization_id") @db.Uuid
+  userId         String           @map("user_id") @db.Uuid
+  role           MembershipRole
+  status         MembershipStatus @default(active)
+  createdAt      DateTime         @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt      DateTime         @updatedAt @map("updated_at") @db.Timestamptz
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@unique([organizationId, userId])
+  @@index([userId])
+  @@map("membership")
+  @@schema("organizations")
+}
+
+model Invitation {
+  id               String                @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  organizationId   String                @map("organization_id") @db.Uuid
+  organizationName String                @map("organization_name") @db.VarChar(255)
+  invitedByUserId  String                @map("invited_by_user_id") @db.Uuid
+  invitedByName    String                @map("invited_by_name") @db.VarChar(255)
+  email            String                @db.VarChar(255)
+  role             MembershipRole
+  tokenHash        String                @unique @map("token_hash") @db.VarChar(64)
+  expiresAt        DateTime              @map("expires_at") @db.Timestamptz
+  status           InvitationStatus      @default(pending)
+  emailStatus      InvitationEmailStatus @default(pending) @map("email_status")
+  acceptedByUserId String?               @map("accepted_by_user_id") @db.Uuid
+  applicationIds   String[]              @default([]) @map("application_ids") @db.VarChar(64)
+  createdAt        DateTime              @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt        DateTime              @updatedAt @map("updated_at") @db.Timestamptz
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@index([email])
+  @@index([organizationId, status])
+  @@map("invitation")
+  @@schema("organizations")
+}

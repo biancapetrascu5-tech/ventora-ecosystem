@@ -8,6 +8,7 @@ export type HubSession = {
   token: string;
   ipAddress: string | null;
   userAgent: string | null;
+  activeOrganizationId: string | null;
 };
 
 export type HubUser = {
@@ -27,6 +28,7 @@ export async function getSession(headers: Headers): Promise<HubSession | null> {
     token: result.session.token,
     ipAddress: result.session.ipAddress ?? null,
     userAgent: result.session.userAgent ?? null,
+    activeOrganizationId: (result.session as any).activeOrganizationId ?? null,
   };
 }
 
@@ -57,5 +59,6 @@ export async function listSessions(userId: string): Promise<HubSession[]> {
     token: s.token,
     ipAddress: s.ipAddress ?? null,
     userAgent: s.userAgent ?? null,
+    activeOrganizationId: (s as any).activeOrganizationId ?? null,
   }));
 }
