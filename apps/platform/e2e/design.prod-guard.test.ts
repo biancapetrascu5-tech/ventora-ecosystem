@@ -8,6 +8,7 @@ const DEV_ONLY_ROUTES = [
   '/design/demo',
   '/design/preview/HubSignIn',
   '/design/preview-assets/bundle.js',
+  '/design/preview-assets/tokens.css',
   '/design/preview-runtime/react.production.min.js',
 ];
 

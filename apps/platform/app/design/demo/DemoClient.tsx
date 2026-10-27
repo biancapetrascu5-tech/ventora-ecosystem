@@ -1,7 +1,7 @@
 /* eslint-disable i18next/no-literal-string */
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import {
   Button,
   Input,
@@ -177,6 +177,69 @@ function AppTileRow({ app, access }: { app: AppName; access: string }) {
   );
 }
 
+/* ── Preview scalat — iframe la lățimea reală, scalat să încapă în coloană ── */
+
+const FRAME_WIDTH = 1280;
+
+function ScaledPreview({ src, title }: { src: string; title: string }) {
+  const wrapRef = useRef<HTMLDivElement>(null);
+  const iframeRef = useRef<HTMLIFrameElement>(null);
+  const [scale, setScale] = useState(1);
+  const [contentH, setContentH] = useState(800);
+
+  useEffect(() => {
+    const wrap = wrapRef.current;
+    if (!wrap) return;
+    const obs = new ResizeObserver(([e]) => {
+      setScale(e.contentRect.width / FRAME_WIDTH);
+    });
+    obs.observe(wrap);
+    return () => obs.disconnect();
+  }, []);
+
+  const handleLoad = () => {
+    const iframe = iframeRef.current;
+    try {
+      const h = iframe?.contentDocument?.documentElement?.scrollHeight;
+      if (h && h > 0) setContentH(h);
+    } catch {
+      /* sandbox poate bloca — fallback la contentH inițial */
+    }
+  };
+
+  return (
+    <div
+      ref={wrapRef}
+      style={{
+        width: '100%',
+        overflow: 'hidden',
+        borderRadius: 'var(--radius-lg)',
+        border: '1px solid var(--line-strong)',
+        boxShadow: 'var(--shadow-3)',
+        background: 'var(--canvas)',
+      }}
+    >
+      <div style={{ height: contentH * scale }}>
+        <iframe
+          ref={iframeRef}
+          src={src}
+          title={title}
+          onLoad={handleLoad}
+          sandbox="allow-scripts allow-same-origin"
+          style={{
+            width: FRAME_WIDTH,
+            height: contentH,
+            border: 0,
+            display: 'block',
+            transform: `scale(${scale})`,
+            transformOrigin: 'top left',
+          }}
+        />
+      </div>
+    </div>
+  );
+}
+
 /* ── Componenta principală ───────────────────────────────────────────────── */
 
 const DOCK_APPS: DockApp[] = [
@@ -248,14 +311,7 @@ export function DemoClient() {
           {/* Stânga: design aprobat */}
           <div className={styles.compareCol}>
             <span className={styles.colLabel}>Design aprobat (preview.html)</span>
-            <div className={styles.frameDesktop}>
-              <iframe
-                src="/design/preview/HubSignIn"
-                title="HubSignIn — design aprobat"
-                className={styles.iframe}
-                sandbox="allow-scripts allow-same-origin"
-              />
-            </div>
+            <ScaledPreview src="/design/preview/HubSignIn" title="HubSignIn — design aprobat" />
           </div>
 
           {/* Dreapta: implementare React — Direcția B: panou brand 46% + formular */}
@@ -344,14 +400,7 @@ export function DemoClient() {
           {/* Stânga: design aprobat */}
           <div className={styles.compareCol}>
             <span className={styles.colLabel}>Design aprobat (preview.html)</span>
-            <div className={styles.frameDesktop}>
-              <iframe
-                src="/design/preview/HubInvite"
-                title="HubInvite — design aprobat"
-                className={styles.iframe}
-                sandbox="allow-scripts allow-same-origin"
-              />
-            </div>
+            <ScaledPreview src="/design/preview/HubInvite" title="HubInvite — design aprobat" />
           </div>
 
           {/* Dreapta: implementare React — aceeași BrandZone ca HubSignIn */}
@@ -687,14 +736,7 @@ export function DemoClient() {
           {/* Stânga: design aprobat */}
           <div className={styles.compareCol}>
             <span className={styles.colLabel}>Design aprobat (preview.html)</span>
-            <div className={styles.frameDesktop}>
-              <iframe
-                src="/design/preview/HubLauncher"
-                title="HubLauncher — design aprobat"
-                className={styles.iframe}
-                sandbox="allow-scripts allow-same-origin"
-              />
-            </div>
+            <ScaledPreview src="/design/preview/HubLauncher" title="HubLauncher — design aprobat" />
           </div>
 
           {/* Dreapta: implementare React — Direcția B

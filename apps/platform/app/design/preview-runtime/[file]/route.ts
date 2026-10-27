@@ -5,7 +5,6 @@ import path from 'path';
 const ALLOWED: Record<string, string> = {
   'react.production.min.js': 'application/javascript; charset=utf-8',
   'react-dom.production.min.js': 'application/javascript; charset=utf-8',
-  'tokens.css': 'text/css; charset=utf-8',
 };
 
 export async function GET(_req: Request, { params }: { params: Promise<{ file: string }> }) {

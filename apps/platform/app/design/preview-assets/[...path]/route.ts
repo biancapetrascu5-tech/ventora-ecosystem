@@ -12,6 +12,7 @@ const MIME: Record<string, string> = {
 const ALLOWED: Record<string, string> = {
   'bundle.js': 'components/bundle.js',
   'bundle.css': 'components/bundle.css',
+  'tokens.css': 'tokens.css',
 };
 const ALLOWED_FONT = /^[A-Za-z0-9._-]+\.woff2$/;
 
