@@ -1,7 +1,7 @@
 # SMS DE PE NUMĂRUL PROPRIU AL AFACERII — Core Messaging + Ventora Booking
 
-**Versiune:** 1.0
-**Data:** 24 octombrie 2026
+**Versiune:** 1.1
+**Data:** 26 octombrie 2026
 **Status:** APROBAT CONDIȚIONAT de fondatori (D-SMS-1…9). Condiția: validarea tehnică (experimentul E-SMS-1) și validarea juridică (D-SMS-7).
 **Implementare:** NU începe înainte de E-SMS-1. Faza 0 nu se întrerupe.
 **Legături:** `ARCHITECTURE.md` v0.3.1 (§4, §8.5, §11.5, §12, §15, §17.15) · `checklists/01-booking.md` (secțiunea „Comunicare & Automatizări”) · `design/SPEC_ECRANE_SMS.md`
@@ -12,6 +12,7 @@
 |---|---|---|
 | 0.1 | 24.10.2026 | Propunere (`proposals/PROPUNERE_SMS_NUMAR_PROPRIU.md`, înlocuită de acest document) |
 | 1.0 | 24.10.2026 | Aprobare condiționată, cu cele 13 clarificări ale fondatorilor (§0). Corectate: politica Google Play (verificată pe text), limita Android (nu e universală), stările (`UNKNOWN` separat de `FAILED`). Extins E-SMS-1. Adăugată verificarea gateway-ului înainte de integrare. |
+| 1.1 | 26.10.2026 | Regula textului SMS (§3.10, D-SMS-10): fără diacritice românești, cel mult 160 de caractere GSM-7 (1 SMS), contor afișat. Mai multe telefoane (§3.5, D-SMS-11): același client pe același telefon, preluarea mesajelor nepredate la deconectare. Decizii din designul ecranelor (S1–S41). |
 
 ---
 
@@ -138,6 +139,8 @@ Mecanismul exact depinde de gateway: dacă autentificarea lui nativă nu atinge 
 - Ore de liniște implicite 09:00–20:00, în fusul organizației.
 - Dacă volumul estimat al unei zile depășește capacitatea dispozitivelor conectate, administratorul vede avertismentul **înainte**, în setări și în Booking · Azi.
 - Cu mai multe dispozitive (add-on), coada le împarte; un mesaj e legat de un singur dispozitiv după predare.
+- **Același client, același telefon (D-SMS-11):** când e posibil, mesajele unui client pleacă mereu de pe același telefon (de exemplu, telefonul de pe care a primit primul mesaj), ca să nu primească de pe numere diferite și ca răspunsurile lui să ajungă în același loc. Dacă telefonul acela e deconectat, se aplică regula de mai jos.
+- **Un telefon se deconectează (D-SMS-11):** mesajele încă nepredate lui (în coada noastră) trec automat pe celelalte telefoane conectate, în limita capacității lor. Mesajele deja predate lui rămân ale lui: pleacă dacă revine înainte de termen, altfel devin `FAILED` sau `UNKNOWN` după regulile din §3.3–3.4. Nu se retrimit automat pe alt telefon, ca să nu existe duplicate. Capacitatea afișată scade corespunzător și apare alerta obișnuită.
 
 ### 3.6 Monitorizarea și alertele
 
@@ -172,6 +175,14 @@ Mecanismul exact depinde de gateway: dacă autentificarea lui nativă nu atinge 
 ### 3.9 Configurarea în Booking
 
 Fluxul și ecranele: `design/SPEC_ECRANE_SMS.md`. Pe scurt: alegerea metodei → ce îți trebuie → instalarea aplicației → codul QR → SMS de probă → starea permanentă a telefonului și a fiecărui mesaj.
+
+### 3.10 Textul SMS-urilor (D-SMS-10, CONFIRMAT 26.10.2026)
+
+- **SMS-urile către clienți folosesc doar alfabetul GSM-7:** fără diacritice românești (ă, â, î, ș, ț), fără ghilimele „” și apostrof ’. Un singur caracter din afara GSM-7 trece mesajul pe UCS-2, unde un SMS are 70 de caractere în loc de 160, deci costul și timpul de trimitere cresc de până la 3 ori.
+- **Ținta: un SMS (≤ 160 de caractere GSM-7).** Șabloanele se scriu sub această limită, cu variabilele la lungime realistă.
+- Germana și italiana își păstrează literele care sunt în GSM-7 (ä, ö, ü, ì, ò…); franceza și spaniola la fel pentru literele din GSM-7. Ce nu e în GSM-7 se transliterează.
+- **Pe server:** textul final trece printr-o normalizare GSM-7 (transliterare, înlocuirea ghilimelelor), apoi se calculează segmentele; dacă depășește 1 SMS, se loghează un avertisment (nu se blochează trimiterea). Interfața arată „1 SMS · {n} caractere”.
+- E-mailurile și interfața rămân cu diacritice.
 
 ---
 
@@ -276,6 +287,7 @@ Orientativ; se recalibrează cu viteza măsurată în Faza 0.
 - `UNKNOWN` nu e afișat niciodată ca „nu s-a trimis”; o confirmare întârziată îl actualizează;
 - adaptorul `ANDROID_SIM` respinge mesajele non-operaționale (test pe server);
 - SMS lung cu diacritice: estimarea segmentelor corectă;
+- normalizarea GSM-7: un șablon românesc cu diacritice iese fără diacritice, în 1 SMS, cu contorul corect (inclusiv caracterele duble GSM-7: €, [, ], {, }, ~, |, ^);
 - nicio rezervă prin furnizor fără opțiunea bifată de Owner.
 
 ---

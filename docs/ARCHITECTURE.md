@@ -1,7 +1,7 @@
 # VENTORA ECOSYSTEM — ARHITECTURĂ TEHNICĂ
 
-**Versiune:** 0.4.2
-**Data:** 25 octombrie 2026
+**Versiune:** 0.4.3
+**Data:** 27 octombrie 2026
 **Stadiu:** Faza 0 închisă (tag `faza-0`). Deciziile marcate CONFIRMAT sunt baza implementării; cele PROPUS sau NECESITĂ DECIZIE nu se implementează fără aprobare.
 
 ## Istoric
@@ -25,6 +25,7 @@
 | 0.4.0 | 25.10.2026 | Deciziile Fazei 0, pe baza experimentelor E1–E10 (rapoartele în `docs/experiments/`): D-DB-1 → varianta C (rol de conectare `NOINHERIT` + `SET LOCAL ROLE` pe modul), D-SEC-1 → RLS din prima (USING + WITH CHECK), parolele cu scrypt, configurația Better Auth, outbox cu dispecer, cote cu rezervare și reconciliere, garda pentru operațiile în masă; D-UI-2 → React Aria Components; versiunile de bază ale stack-ului. Detalii: §17.17. |
 | 0.4.1 | 25.10.2026 | Echipa Founder: mai multe conturi Founder nominale, fiecare cu acces complet (D-ACC-4). Emailul tranzacțional prin Resend, regiunea UE, în spatele unui adaptor din `core/notifications` (D-NOT-1). Direcția vizuală B „Navy de comandă” aplicată în design system, doar pentru Hub (D-UI-6). Detalii: §17.18. |
 | 0.4.2 | 25.10.2026 | Numele afișate ale celor 13 module de business (D-UX-4): EasyBook, ClientDesk, TeamSpace, MoneyDesk, TaskBoard, ShiftPlan, DocSpace, StockDesk, DataView, CampaignKit, EventSpace, AssetDesk, ContractDesk. Identificatorii tehnici rămân neschimbați. Detalii: §17.19. |
+| 0.4.3 | 27.10.2026 | Ecranele Hub pornesc în paralel cu F3 și F4, imediat după F1 și F2, pe contracte definite dinainte (D-ROAD-4). Regiunea Resend confirmată (eu-west-1). Regulile SMS: GSM-7 fără diacritice (D-SMS-10) și mai multe telefoane (D-SMS-11). Detalii: §17.20. |
 
 ## Statusuri folosite în acest document
 
@@ -850,7 +851,7 @@ Implementare (PROPUS): chei API pe organizație (hash, scope-uri), rate limiting
 - **Domeniul de expediere:** `ventora-hub.com`, deja verificat în Resend (SPF și DKIM). Se adaugă DMARC dacă lipsește. Adresele de expediere (de ex. `noreply@ventora-hub.com`) se stabilesc la configurare. Un subdomeniu dedicat (`mail.`) rămâne o opțiune pentru mai târziu, dacă volumul o cere.
 - **Ce trimite:** invitații, resetarea parolei, 2FA și securitate, notificări operaționale. Emailul comercial rămâne dezactivat (D-GRW-8).
 - **Cheia API** stă doar în variabilele de mediu Vercel și în `.env.local`, niciodată în cod sau în chat. Staging și producție au chei separate.
-- **Contul Resend există** (al fondatoarei), cu `ventora-hub.com` verificat. Rămân: confirmarea regiunii domeniului (trebuie să fie UE; altfel se recreează domeniul în regiunea UE) și cheile API noi, separate pentru staging și producție, folosite doar de ecosistem, puse în Vercel. Până atunci, în dezvoltare, emailurile se scriu în log sau într-o cutie de test locală.
+- **Contul Resend există** (al fondatoarei), cu `ventora-hub.com` verificat. Regiunea domeniului confirmată: eu-west-1 (Irlanda). Rămân cheile API noi, separate pentru staging și producție, folosite doar de ecosistem, puse în Vercel. Până atunci, în dezvoltare, emailurile se scriu în log sau într-o cutie de test locală.
 
 ## 12. Securitate și izolare multi-tenant
 
@@ -1001,6 +1002,11 @@ Plus, la nivel de platformă: teste de webhook Stripe (semnătură, idempotenț�
 
 - **F1** (design system) merge în paralel cu **F0** și **F2**, după ce exportul de design e aprobat.
 - **F3** și **F4** merg în paralel după F2.
+- **Ecranele Hub (F5) pornesc după F1 și F2, în paralel cu F3 și F4** (D-ROAD-4):
+  - pe date reale, imediat: autentificarea (eroare, resetare parolă, 2FA), acceptarea invitației, alegerea și schimbarea organizației, setările contului, administrarea echipei (membri, invitații, roluri);
+  - pe contract + sursă temporară, legate apoi la serviciul real fără schimbarea ecranului: launcher-ul cu cele 4 stări de acces și contorul de consum (F3), centrul de notificări (F4);
+  - după F3: Growth Engine v1, plăți și facturare;
+  - condiție: contractul (`packages/contracts`) se definește și se aprobă înaintea ecranului care îl folosește; criteriul de acceptare F5 rămâne neschimbat.
 - **Nu** încep înainte de stabilizare:
   - aplicațiile, înainte de F2 (acces) și de primele componente F1;
   - integrările între aplicații, înainte de F4 (outbox);
@@ -1127,6 +1133,8 @@ Plus, la nivel de platformă: teste de webhook Stripe (semnătură, idempotenț�
 | D-SMS-6 | În MVP, SIM-ul propriu doar pentru mesaje operaționale | Da | CONFIRMAT | Nu |
 | D-SMS-7 | Validarea juridică: condițiile operatorilor și baza legală pentru remindere | Obligatorie înainte de lansare | NECESITĂ DECIZIE | Da |
 | D-SMS-8 | Furnizorul SMS (SMSLink sau Twilio) | Înainte de F4 | NECESITĂ DECIZIE | Da |
+| D-SMS-10 | SMS-urile către clienți doar în GSM-7, fără diacritice, țintă 1 SMS (≤ 160 caractere); normalizare și contor pe server (`SMS_NUMAR_PROPRIU.md` §3.10) | Da | CONFIRMAT (26.10.2026) | Nu |
+| D-SMS-11 | Mai multe telefoane: același client pe același telefon; la deconectare, doar mesajele nepredate trec pe celelalte telefoane, cele predate nu se retrimit (`SMS_NUMAR_PROPRIU.md` §3.5) | Da | CONFIRMAT (26.10.2026) | Nu |
 | D-SMS-9 | +7 funcționalități în checklistul Booking (59 → 66) | Da | CONFIRMAT | Nu |
 | D-PN-1 | O singură etichetă „Sponsorizat”, distinctă de „Recomandare” | Da | CONFIRMAT | Nu |
 | D-PN-2 | Fără rol de token `accent`; roluri noi `photo-scrim`, culori de categorie, `nav-*` | Da | CONFIRMAT | Nu |
@@ -1148,6 +1156,7 @@ Plus, la nivel de platformă: teste de webhook Stripe (semnătură, idempotenț�
 | D-ROAD-1 | Ordinea aplicațiilor după Booking | Propunerea din §15.3 | NECESITĂ DECIZIE | Da |
 | D-ROAD-2 | Booking prima aplicație | Da | CONFIRMAT | Nu |
 | D-ROAD-3 | Fluxuri verticale paralele, fără reducerea scope-ului | Da | CONFIRMAT | Nu |
+| D-ROAD-4 | Ecranele Hub (F5) pornesc după F1 + F2, în paralel cu F3 și F4, pe contracte din `packages/contracts` și surse de date temporare pentru entitlements, cote și notificări (§15.2) | Da | CONFIRMAT (27.10.2026) | Nu |
 
 ### 17.2 Modificări față de v0.1
 
@@ -1278,6 +1287,14 @@ Fiecare experiment produce un raport scurt și un ADR. Pentru toate se folosesc 
 4. **Nicio decizie deschisă nu s-a închis prin această versiune** în afara celor de mai sus. D-COM-7, D-PX-2, D-PX-3, D-GRW-8 (validarea juridică), D-UX-2 rămân NECESITĂ DECIZIE.
 
 ---
+
+### 17.20 Modificări în v0.4.3
+
+Aprobate de fondatoare:
+
+1. **D-ROAD-4 — ecranele Hub în paralel** (§15.2), 27.10.2026: după F1 și F2, ecranele Hub care depind doar de identitate și acces se construiesc pe date reale, în paralel cu F3 și F4; launcher-ul, contorul de consum și notificările se construiesc pe contracte și surse temporare. Ordinea de lucru: închiderea F1 (inclusiv verificarea vizuală design ↔ implementare), F2 complet, apoi trei fire paralele: F3, F4, ecranele Hub.
+2. **Resend** (§11.6): regiunea domeniului `ventora-hub.com` confirmată, eu-west-1.
+3. **D-SMS-10 și D-SMS-11** (26.10.2026): regulile textului SMS și ale funcționării cu mai multe telefoane, detaliate în `SMS_NUMAR_PROPRIU.md` v1.1.
 
 ### 17.19 Modificări în v0.4.2
 
