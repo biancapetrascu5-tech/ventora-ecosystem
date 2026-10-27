@@ -1,6 +1,7 @@
 generator client {
-  provider = "prisma-client-js"
-  output   = "../generated/organizations-client"
+  provider        = "prisma-client-js"
+  output          = "../generated/organizations-client"
+  previewFeatures = ["multiSchema", "driverAdapters"]
 }
 
 datasource db {
@@ -63,6 +64,7 @@ model Organization {
   invitations Invitation[]
   accesses    ApplicationAccess[]
 
+  @@map("organization")
   @@schema("organizations")
 }
 
@@ -77,6 +79,7 @@ model OrganizationSetting {
   organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
 
   @@unique([organizationId, key])
+  @@map("organization_setting")
   @@schema("organizations")
 }
 
@@ -92,6 +95,7 @@ model Membership {
   organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
 
   @@unique([organizationId, userId])
+  @@map("membership")
   @@schema("organizations")
 }
 
@@ -104,6 +108,7 @@ model ApplicationAccess {
   organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
 
   @@unique([organizationId, applicationId])
+  @@map("application_access")
   @@schema("organizations")
 }
 
@@ -125,5 +130,6 @@ model Invitation {
 
   organization     Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
 
+  @@map("invitation")
   @@schema("organizations")
 }
