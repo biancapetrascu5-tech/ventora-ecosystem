@@ -10,7 +10,7 @@ const REMEMBER_ME_SECONDS = 30 * 24 * 60 * 60;
 
 export const hubAuth = betterAuth({
   secret: process.env.BETTER_AUTH_SECRET!,
-  database: prismaAdapter(getIdentityDb(), { provider: 'postgresql' }),
+  database: prismaAdapter(getIdentityDb(), { provider: 'postgresql', transaction: true }),
   emailAndPassword: {
     enabled: true,
     minPasswordLength: 10,
@@ -21,8 +21,18 @@ export const hubAuth = betterAuth({
   rateLimit: {
     enabled: true,
     storage: 'database',
-    window: 60 * 15,
-    max: 5,
+    // Global rule: generous to avoid blocking authenticated endpoints (get-session, list-sessions, etc.)
+    window: 60,
+    max: 100,
+    // Strict rules for sensitive auth paths — customRules have highest priority in Better Auth 1.7.x
+    customRules: {
+      '/sign-in/email': { window: 60 * 15, max: 5 },
+      '/two-factor/verify-totp': { window: 60 * 15, max: 5 },
+      '/two-factor/verify-backup-code': { window: 60 * 15, max: 5 },
+      // Better Auth API path for "forget password" flow is /request-password-reset (not /forget-password)
+      '/request-password-reset': { window: 60 * 15, max: 5 },
+      '/reset-password': { window: 60 * 15, max: 5 },
+    },
   },
   session: {
     expiresIn: REMEMBER_ME_SECONDS,

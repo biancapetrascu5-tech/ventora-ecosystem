@@ -23,7 +23,7 @@ const SHORT_SESSION_SECONDS = 24 * 60 * 60;
 
 const hubAuth = betterAuth({
   secret: 'test-hub-secret-must-be-32-chars-x', // gitleaks:allow
-  database: prismaAdapter(identityDb, { provider: 'postgresql' }),
+  database: prismaAdapter(identityDb, { provider: 'postgresql', transaction: true }),
   emailAndPassword: {
     enabled: true,
     minPasswordLength: 10,
@@ -32,8 +32,15 @@ const hubAuth = betterAuth({
   rateLimit: {
     enabled: true,
     storage: 'database',
-    window: 60 * 15,
-    max: 5,
+    window: 60,
+    max: 100,
+    customRules: {
+      '/sign-in/email': { window: 60 * 15, max: 5 },
+      '/two-factor/verify-totp': { window: 60 * 15, max: 5 },
+      '/two-factor/verify-backup-code': { window: 60 * 15, max: 5 },
+      '/request-password-reset': { window: 60 * 15, max: 5 },
+      '/reset-password': { window: 60 * 15, max: 5 },
+    },
   },
   session: {
     expiresIn: REMEMBER_ME_SECONDS,
@@ -49,7 +56,7 @@ const hubAuth = betterAuth({
 
 const founderAuthTest = betterAuth({
   secret: 'test-founder-secret-32-chars-abc1', // gitleaks:allow
-  database: prismaAdapter(founderDb, { provider: 'postgresql' }),
+  database: prismaAdapter(founderDb, { provider: 'postgresql', transaction: true }),
   emailAndPassword: {
     enabled: true,
     minPasswordLength: 12,
@@ -58,8 +65,15 @@ const founderAuthTest = betterAuth({
   rateLimit: {
     enabled: true,
     storage: 'database',
-    window: 60 * 15,
-    max: 5,
+    window: 60,
+    max: 100,
+    customRules: {
+      '/sign-in/email': { window: 60 * 15, max: 5 },
+      '/two-factor/verify-totp': { window: 60 * 15, max: 5 },
+      '/two-factor/verify-backup-code': { window: 60 * 15, max: 5 },
+      '/request-password-reset': { window: 60 * 15, max: 5 },
+      '/reset-password': { window: 60 * 15, max: 5 },
+    },
   },
   session: {
     expiresIn: 8 * 60 * 60,
@@ -180,13 +194,13 @@ describe('T1.9 — rate limiting (Better Auth DB storage)', () => {
         body: JSON.stringify({ email: 't1.9@test.com', password: 'WrongPassword1' }),
       });
 
-    // First 3 attempts — Better Auth default special rule: /sign-in* → max:3, window:10s
-    for (let i = 0; i < 3; i++) {
+    // First 5 attempts — customRule: /sign-in/email → max:5, window:900s
+    for (let i = 0; i < 5; i++) {
       const resp = await hubAuth.handler(makeRequest());
       expect(resp.status).not.toBe(429);
     }
 
-    // 4th attempt from same IP — should be rate limited (count reached max:3)
+    // 6th attempt from same IP — should be rate limited (count reached max:5)
     const blocked = await hubAuth.handler(makeRequest());
     expect(blocked.status).toBe(429);
   });
@@ -502,5 +516,80 @@ describe('T1.15 — password policy enforcement', () => {
     // Round-trip: sign-in with the same password must succeed
     const loginResult = await signIn('pw4@test.com', 'ValidPass1');
     expect(loginResult?.token).toBeTruthy();
+  });
+});
+
+describe('T1.16 — rate limit fine-grained rules', () => {
+  it('30 get-session requests from same IP all return 200 (global rule is generous)', async () => {
+    await signUp('t1.16.gs@test.com', 'GetSession1');
+    const loginResult = await signIn('t1.16.gs@test.com', 'GetSession1');
+    const token = loginResult?.token ?? '';
+    expect(token).toBeTruthy();
+
+    for (let i = 0; i < 30; i++) {
+      const resp = await hubAuth.handler(
+        new Request('http://localhost/api/auth/get-session', {
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'x-forwarded-for': '10.9.9.20',
+          },
+        }),
+      );
+      expect(resp.status).toBe(200);
+    }
+  });
+
+  it('6th TOTP verification attempt from same IP returns 429', async () => {
+    // Rate limit applies before auth — no valid TOTP setup required.
+    // First 5 requests hit /two-factor/verify-totp → customRule max:5/window:900s
+    for (let i = 0; i < 5; i++) {
+      const resp = await hubAuth.handler(
+        new Request('http://localhost/api/auth/two-factor/verify-totp', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-forwarded-for': '10.9.9.21',
+          },
+          body: JSON.stringify({ totpCode: '000000' }),
+        }),
+      );
+      expect(resp.status).not.toBe(429);
+    }
+
+    const blocked = await hubAuth.handler(
+      new Request('http://localhost/api/auth/two-factor/verify-totp', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-forwarded-for': '10.9.9.21',
+        },
+        body: JSON.stringify({ totpCode: '000000' }),
+      }),
+    );
+    expect(blocked.status).toBe(429);
+  });
+});
+
+describe('T1.17 — signUpEmail atomicity (user + account in one transaction)', () => {
+  it('signUpEmail creates both user and account records atomically', async () => {
+    const email = 't1.17.atomic@test.com';
+
+    const result = await hubAuth.api.signUpEmail({
+      body: { email, password: 'Atomic1234', name: 'Atomic Test' },
+    });
+    expect(result.user).toBeTruthy();
+
+    // With transaction:true + Proxy, user+account are created inside one DB transaction.
+    // Both records must be present together; if they were separate transactions and
+    // account creation failed, user would be orphaned.
+    const user = await identityDb.user.findUnique({ where: { email } });
+    expect(user).not.toBeNull();
+
+    const account = await identityDb.account.findFirst({
+      where: { userId: user!.id, providerId: 'credential' },
+    });
+    expect(account).not.toBeNull();
+    expect(account!.password).not.toBeNull();
   });
 });

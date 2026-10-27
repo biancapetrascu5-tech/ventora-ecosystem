@@ -18,7 +18,7 @@ export function makeIdentityClient(connectionString: string): IdentityBaseClient
   const safeRole = validateRole('identity_rw');
   const pool = new Pool({ connectionString });
   const base = new IdentityBaseClient({ adapter: new PrismaPg(pool) });
-  return base.$extends({
+  const extended = base.$extends({
     query: {
       $allModels: {
         async $allOperations({ model, operation, args, query }) {
@@ -35,6 +35,30 @@ export function makeIdentityClient(connectionString: string): IdentityBaseClient
         },
       },
     },
+  });
+  // Proxy intercepts $transaction so Better Auth's multi-step writes (user+account)
+  // run with SET LOCAL ROLE inside one atomic transaction instead of separate ones.
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return new Proxy(extended as any, {
+    get(target: any, prop: PropertyKey) {
+      if (prop === '$transaction') {
+        return function (fn: unknown, opts?: unknown) {
+          if (typeof fn !== 'function') {
+            return target.$transaction(fn, opts);
+          }
+          return target.$transaction(
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            (tx: any) =>
+              _inRoleTx.run(true, async () => {
+                await tx.$executeRawUnsafe(`SET LOCAL ROLE ${safeRole}`);
+                return (fn as (tx: unknown) => unknown)(tx);
+              }),
+            opts,
+          );
+        };
+      }
+      return target[prop];
+    },
   }) as unknown as IdentityBaseClient;
 }
 
@@ -42,7 +66,7 @@ export function makeFounderClient(connectionString: string): FounderBaseClient {
   const safeRole = validateRole('founder_identity_rw');
   const pool = new Pool({ connectionString });
   const base = new FounderBaseClient({ adapter: new PrismaPg(pool) });
-  return base.$extends({
+  const extended = base.$extends({
     query: {
       $allModels: {
         async $allOperations({ model, operation, args, query }) {
@@ -57,6 +81,28 @@ export function makeFounderClient(connectionString: string): FounderBaseClient {
           );
         },
       },
+    },
+  });
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return new Proxy(extended as any, {
+    get(target: any, prop: PropertyKey) {
+      if (prop === '$transaction') {
+        return function (fn: unknown, opts?: unknown) {
+          if (typeof fn !== 'function') {
+            return target.$transaction(fn, opts);
+          }
+          return target.$transaction(
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            (tx: any) =>
+              _inRoleTx.run(true, async () => {
+                await tx.$executeRawUnsafe(`SET LOCAL ROLE ${safeRole}`);
+                return (fn as (tx: unknown) => unknown)(tx);
+              }),
+            opts,
+          );
+        };
+      }
+      return target[prop];
     },
   }) as unknown as FounderBaseClient;
 }

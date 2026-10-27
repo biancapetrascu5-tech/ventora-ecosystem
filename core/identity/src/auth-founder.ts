@@ -8,7 +8,7 @@ const SESSION_SECONDS = 8 * 60 * 60;
 
 export const founderAuth = betterAuth({
   secret: process.env.FOUNDER_AUTH_SECRET!,
-  database: prismaAdapter(getFounderDb(), { provider: 'postgresql' }),
+  database: prismaAdapter(getFounderDb(), { provider: 'postgresql', transaction: true }),
   emailAndPassword: {
     enabled: true,
     minPasswordLength: 12,
@@ -17,8 +17,15 @@ export const founderAuth = betterAuth({
   rateLimit: {
     enabled: true,
     storage: 'database',
-    window: 60 * 15,
-    max: 5,
+    window: 60,
+    max: 100,
+    customRules: {
+      '/sign-in/email': { window: 60 * 15, max: 5 },
+      '/two-factor/verify-totp': { window: 60 * 15, max: 5 },
+      '/two-factor/verify-backup-code': { window: 60 * 15, max: 5 },
+      '/request-password-reset': { window: 60 * 15, max: 5 },
+      '/reset-password': { window: 60 * 15, max: 5 },
+    },
   },
   session: {
     expiresIn: SESSION_SECONDS,
