@@ -61,7 +61,6 @@ model Organization {
   settings    OrganizationSetting[]
   memberships Membership[]
   invitations Invitation[]
-  accesses    ApplicationAccess[]
 
   @@map("organization")
   @@schema("organizations")
@@ -96,19 +95,6 @@ model Membership {
   @@unique([organizationId, userId])
   @@index([userId])
   @@map("membership")
-  @@schema("organizations")
-}
-
-model ApplicationAccess {
-  id             String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  organizationId String   @map("organization_id") @db.Uuid
-  applicationId  String   @map("application_id") @db.VarChar(64)
-  createdAt      DateTime @default(now()) @map("created_at") @db.Timestamptz
-
-  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-
-  @@unique([organizationId, applicationId])
-  @@map("application_access")
   @@schema("organizations")
 }
 
