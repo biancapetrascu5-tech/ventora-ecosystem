@@ -182,7 +182,7 @@ function AppTileRow({ config }: { config: OtherConfig }) {
           </span>
         )}
         <div style={{ display: 'flex', gap: 'var(--space-1)', marginTop: 'var(--space-1)' }}>
-          <Button variant="secondary" size="sm">
+          <Button variant="outline" size="sm">
             {config.primaryAction}
           </Button>
           {config.hasMenu && (
@@ -326,9 +326,9 @@ export function LauncherScreenClient({ theme }: { theme: 'light' | 'dark'; activ
                   justifyContent: 'center',
                   lineHeight: 1,
                 }}
-                aria-label="3 notificări"
+                aria-label="2 notificări"
               >
-                3
+                2
               </span>
             </div>
             <span

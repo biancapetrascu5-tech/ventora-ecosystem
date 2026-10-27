@@ -104,6 +104,19 @@
   background: var(--state-pressed);
 }
 
+/* outline — border primary, background transparent */
+.outline {
+  background: transparent;
+  color: var(--primary);
+  box-shadow: inset 0 0 0 var(--border-width-control) var(--primary);
+}
+.outline[data-hovered]:not([data-disabled]):not([data-pending]) {
+  background: var(--primary-soft, color-mix(in srgb, var(--primary) 8%, transparent));
+}
+.outline[data-pressed]:not([data-disabled]):not([data-pending]) {
+  background: var(--primary-soft, color-mix(in srgb, var(--primary) 14%, transparent));
+}
+
 /* danger */
 .danger {
   background: var(--danger);

@@ -9,10 +9,17 @@ export interface FormFieldProps {
   label: string;
   children:
     | React.ReactNode
-    | ((props: { id: string; isInvalid: boolean; 'aria-describedby'?: string }) => React.ReactNode);
+    | ((props: {
+        id: string;
+        isInvalid: boolean;
+        'aria-describedby'?: string;
+        'aria-required'?: boolean;
+      }) => React.ReactNode);
   hint?: string;
   error?: string;
+  /** @deprecated use isRequired */
   required?: boolean;
+  isRequired?: boolean;
   id?: string;
   className?: string;
 }
@@ -23,6 +30,7 @@ export function FormField({
   hint,
   error,
   required,
+  isRequired,
   id: idProp,
   className,
 }: FormFieldProps) {
@@ -32,14 +40,20 @@ export function FormField({
   const errorId = error ? `${id}-error` : undefined;
   const describedBy = [hintId, errorId].filter(Boolean).join(' ') || undefined;
   const isInvalid = Boolean(error);
+  const showRequired = required || isRequired;
 
-  const childProps = { id, isInvalid, 'aria-describedby': describedBy };
+  const childProps = {
+    id,
+    isInvalid,
+    'aria-describedby': describedBy,
+    'aria-required': showRequired || undefined,
+  };
 
   return (
     <div className={cn(styles.root, className)}>
       <label htmlFor={id} className={styles.label}>
         {label}
-        {required && (
+        {showRequired && (
           <span className={styles.required} aria-hidden>
             *
           </span>

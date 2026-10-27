@@ -92,6 +92,9 @@ export { AppIcon } from './AppIcon/AppIcon';
 export type { AppIconProps, AppName } from './AppIcon/AppIcon';
 
 // Hub components (Direcția B)
+export { AuthLayout } from './AuthLayout/AuthLayout';
+export type { AuthLayoutProps } from './AuthLayout/AuthLayout';
+
 export { BrandZone } from './BrandZone/BrandZone';
 export type { BrandZoneProps } from './BrandZone/BrandZone';
 
