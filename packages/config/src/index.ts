@@ -24,6 +24,18 @@ const envSchema = z
     NEXT_PUBLIC_PLATFORM_URL: z.string().url().default('http://localhost:3100'),
     NEXT_PUBLIC_PORTAL_URL: z.string().url().default('http://localhost:3101'),
     NEXT_PUBLIC_FOUNDER_URL: z.string().url().default('http://localhost:3102'),
+
+    /**
+     * Conexiuni runtime la Supabase prin transaction pooler (port 6543, pgbouncer=true).
+     * Obligatorii în production și în orice mediu care pornește core/identity.
+     * NU sunt folosite la migrări — migrările folosesc DIRECT_URL (session pooler 5432).
+     * @see docs/ARCHITECTURE.md §6.2
+     */
+    DATABASE_URL: z.string().url('DATABASE_URL trebuie să fie un URL PostgreSQL valid').optional(),
+    DATABASE_URL_FOUNDER: z
+      .string()
+      .url('DATABASE_URL_FOUNDER trebuie să fie un URL PostgreSQL valid')
+      .optional(),
   })
   .refine((data) => data.NODE_ENV !== 'production' || !!data.SENTRY_DSN, {
     message: 'SENTRY_DSN este obligatoriu în production. Setați-l în variabilele de mediu.',

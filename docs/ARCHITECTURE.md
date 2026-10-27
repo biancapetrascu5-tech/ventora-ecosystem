@@ -239,6 +239,8 @@ Fiecare aplicație are o stare înregistrată în `docs/checklists/<app>.md` și
 - Conexiunea trece prin pooler-ul Supabase în **transaction mode** (port 6543), cu `pgbouncer=true&connection_limit=1`. Conexiunile la baza de date rămân la nivelul unui singur pool, indiferent de numărul modulelor.
 - Migrațiile și seed-ul rulează cu un rol de migrare separat, prin **session pooler** (port 5432), niciodată din funcțiile aplicației.
 
+> **Notă implementare — pool `pg` în serverless:** `connection_limit` din URL și `pgbouncer=true` controlează Supavisor, nu pool-ul intern al clientului `pg`. Pe Vercel, fiecare Function invocation rulează în propriul proces; `pg` folosește implicit `max: 10`. Cu `max: 1` setat explicit în `db.ts`, fiecare proces deține cel mult o conexiune spre Supavisor — potrivit pentru serverless și în limita instanței de staging (60 directe / 200 pooler).
+
 **De ce nu A și nu B** (măsurat în E4, 200 de conexiuni concurente):
 
 | Variantă | Rezultat | Motiv de respingere |

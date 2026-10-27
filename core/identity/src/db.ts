@@ -16,7 +16,10 @@ const _inRoleTx = new AsyncLocalStorage<boolean>();
 
 export function makeIdentityClient(connectionString: string): IdentityBaseClient {
   const safeRole = validateRole('identity_rw');
-  const pool = new Pool({ connectionString });
+  // max: 1 because connection_limit in the URL controls pgbouncer, not this pool.
+  // On Vercel each function invocation is its own process; a small cap keeps
+  // concurrent connections within Supabase staging limits (60 direct / 200 pooler).
+  const pool = new Pool({ connectionString, max: 1 });
   const base = new IdentityBaseClient({ adapter: new PrismaPg(pool) });
   const extended = base.$extends({
     query: {
@@ -64,7 +67,7 @@ export function makeIdentityClient(connectionString: string): IdentityBaseClient
 
 export function makeFounderClient(connectionString: string): FounderBaseClient {
   const safeRole = validateRole('founder_identity_rw');
-  const pool = new Pool({ connectionString });
+  const pool = new Pool({ connectionString, max: 1 });
   const base = new FounderBaseClient({ adapter: new PrismaPg(pool) });
   const extended = base.$extends({
     query: {
