@@ -14,6 +14,7 @@ import {
   type AppName,
   type DockApp,
 } from '@ventora/ui';
+import bandStyles from './launcher.module.css';
 
 const APP_LABELS: Partial<Record<AppName, string>> = {
   booking: 'Booking',
@@ -21,6 +22,8 @@ const APP_LABELS: Partial<Record<AppName, string>> = {
   hr: 'HR',
   finance: 'Finance',
   projects: 'Projects',
+  shifts: 'Shifts',
+  documents: 'Documents',
   inventory: 'Inventory',
   analytics: 'Analytics',
   marketing: 'Marketing',
@@ -63,6 +66,8 @@ const DOCK_APPS: DockApp[] = [
     live: { text: '2 facturi scadente · 2.480 lei', attention: true },
   },
   { app: 'projects', description: 'Proiecte, sarcini și termene' },
+  { app: 'shifts', description: 'Ture, disponibilitate și schimburi' },
+  { app: 'documents', description: 'Documente, contracte și template-uri' },
 ];
 
 type OtherConfig = {
@@ -143,7 +148,7 @@ function AppTileRow({ config }: { config: OtherConfig }) {
     <div
       style={{
         display: 'flex',
-        alignItems: 'center',
+        alignItems: 'flex-start',
         gap: 'var(--space-3)',
         padding: 'var(--space-3) 0',
         borderBottom: '1px solid var(--line)',
@@ -176,14 +181,19 @@ function AppTileRow({ config }: { config: OtherConfig }) {
             {config.body}
           </span>
         )}
-      </div>
-      <div style={{ display: 'flex', gap: 'var(--space-1)', alignItems: 'center', flexShrink: 0 }}>
-        <Button variant="quiet" size="sm">
-          {config.primaryAction}
-        </Button>
-        {config.hasMenu && (
-          <IconButton icon="more-horizontal" label="Mai multe opțiuni" variant="quiet" size="sm" />
-        )}
+        <div style={{ display: 'flex', gap: 'var(--space-1)', marginTop: 'var(--space-1)' }}>
+          <Button variant="secondary" size="sm">
+            {config.primaryAction}
+          </Button>
+          {config.hasMenu && (
+            <IconButton
+              icon="more-horizontal"
+              label="Mai multe opțiuni"
+              variant="quiet"
+              size="sm"
+            />
+          )}
+        </div>
       </div>
     </div>
   );
@@ -230,6 +240,24 @@ export function LauncherScreenClient({ theme }: { theme: 'light' | 'dark'; activ
                 borderRadius: 'var(--radius-sm)',
               }}
             >
+              <span
+                style={{
+                  width: 28,
+                  height: 28,
+                  borderRadius: 'var(--radius-xs)',
+                  background: 'var(--on-brand-soft)',
+                  color: 'var(--on-brand-ink)',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: 11,
+                  fontWeight: 700,
+                  flexShrink: 0,
+                }}
+                aria-hidden
+              >
+                SA
+              </span>
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
                 <span style={{ fontSize: 14, fontWeight: 600 }}>Salon Aurora</span>
                 <span style={{ fontSize: 12, opacity: 0.7 }}>Proprietar</span>
@@ -238,8 +266,71 @@ export function LauncherScreenClient({ theme }: { theme: 'light' | 'dark'; activ
             </button>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
-            <IconButton icon="search" label="Caută" variant="quiet" />
-            <IconButton icon="bell" label="Notificări" variant="quiet" />
+            <button
+              type="button"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 'var(--space-2)',
+                height: 32,
+                padding: '0 var(--space-3)',
+                borderRadius: 'var(--radius-sm)',
+                border: '1px solid rgba(255,255,255,0.2)',
+                background: 'transparent',
+                color: 'var(--on-brand-ink)',
+                cursor: 'pointer',
+                font: 'inherit',
+                fontSize: 13,
+                minWidth: 160,
+              }}
+            >
+              <Icon icon="search" size="sm" aria-hidden />
+              <span>Caută…</span>
+              <span
+                style={{
+                  marginLeft: 'auto',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 2,
+                  background: 'var(--on-brand-soft)',
+                  border: '1px solid var(--on-brand-soft)',
+                  borderRadius: 4,
+                  padding: '1px 5px',
+                  fontSize: 11,
+                  fontWeight: 600,
+                  color: 'var(--on-brand-ink)',
+                  whiteSpace: 'nowrap',
+                  opacity: 0.8,
+                }}
+              >
+                Ctrl K
+              </span>
+            </button>
+            <div style={{ position: 'relative', display: 'inline-flex' }}>
+              <IconButton icon="bell" label="Notificări" variant="quiet" />
+              <span
+                style={{
+                  position: 'absolute',
+                  top: -2,
+                  right: -2,
+                  minWidth: 16,
+                  height: 16,
+                  padding: '0 4px',
+                  background: 'var(--attention)',
+                  color: 'var(--on-attention)',
+                  borderRadius: 999,
+                  fontSize: 10,
+                  fontWeight: 700,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  lineHeight: 1,
+                }}
+                aria-label="3 notificări"
+              >
+                3
+              </span>
+            </div>
             <span
               style={{
                 width: 32,
@@ -264,15 +355,8 @@ export function LauncherScreenClient({ theme }: { theme: 'light' | 'dark'; activ
 
       {/* Content wrap */}
       <div style={{ maxWidth: 1120, margin: '0 auto', padding: '0 var(--space-6)' }}>
-        {/* Brand band */}
-        <BrandZone
-          style={{
-            margin: '0 calc(-1 * var(--space-6))',
-            padding: 'var(--space-8) var(--space-6) var(--space-6)',
-            position: 'relative',
-            overflow: 'hidden',
-          }}
-        >
+        {/* Brand band — full-bleed */}
+        <BrandZone className={bandStyles.band}>
           <p className="eyebrow" style={{ marginBottom: 'var(--space-2)', opacity: 0.75 }}>
             Duminică, 25 octombrie · Salon Aurora
           </p>
@@ -366,25 +450,12 @@ export function LauncherScreenClient({ theme }: { theme: 'light' | 'dark'; activ
           >
             <h2 className="display-m">Aplicațiile tale</h2>
             <Button size="sm" variant="quiet">
+              <Icon icon="list" size="sm" aria-hidden style={{ marginRight: 4 }} />
               Reordonează
             </Button>
           </div>
           {/* Decorative chevrons */}
-          <svg
-            viewBox="0 0 176 240"
-            aria-hidden
-            style={{
-              fill: 'none',
-              stroke: 'var(--on-brand-ink)',
-              strokeWidth: 1.5,
-              position: 'absolute',
-              right: 0,
-              bottom: 0,
-              width: 176,
-              height: 240,
-              opacity: 0.15,
-            }}
-          >
+          <svg className={bandStyles.bandChev} viewBox="0 0 176 240" aria-hidden>
             {[40, 72, 104].map((y) => (
               <polyline key={y} points={`32,${y} 88,${y + 80} 144,${y}`} />
             ))}
@@ -394,12 +465,8 @@ export function LauncherScreenClient({ theme }: { theme: 'light' | 'dark'; activ
 
         {/* AppDock + PortalPresence */}
         <div
-          style={{
-            marginTop: 'var(--space-4)',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: 'var(--space-4)',
-          }}
+          className={bandStyles.dockWrap}
+          style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}
         >
           <AppDock
             apps={DOCK_APPS}
@@ -412,6 +479,7 @@ export function LauncherScreenClient({ theme }: { theme: 'light' | 'dark'; activ
             onManage={() => {}}
             previewHref="#"
             translations={PORTAL_TRANSLATIONS}
+            compact
           />
         </div>
 

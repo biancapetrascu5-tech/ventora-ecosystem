@@ -120,10 +120,23 @@
   width: 100%;
 }
 
+/* Store icon wrapper */
+.storeIconWrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-md);
+  background: var(--neutral-soft);
+  color: var(--ink-secondary);
+  flex: none;
+  margin-bottom: var(--space-2);
+}
+
 /* Manage / Termină pagina button */
 .manageBtn {
   appearance: none;
-  border: 0;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
@@ -131,8 +144,9 @@
   height: var(--control-md);
   padding: 0 var(--space-3);
   border-radius: var(--radius-sm);
-  background: var(--primary);
-  color: var(--on-primary);
+  background: transparent;
+  border: 1px solid var(--primary);
+  color: var(--primary);
   font: inherit;
   font-size: var(--type-body-size);
   font-weight: var(--type-body-strong-weight);
@@ -142,7 +156,7 @@
 }
 
 .manageBtn:hover {
-  background: var(--primary-hover);
+  background: color-mix(in srgb, var(--primary) 10%, transparent);
 }
 
 .manageBtn:focus-visible {

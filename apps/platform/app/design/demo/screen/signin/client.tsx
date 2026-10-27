@@ -2,7 +2,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { BrandZone, Button, Checkbox, FormField, Icon, Input, cn } from '@ventora/ui';
+import { BrandZone, Button, Checkbox, FormField, Icon, Input } from '@ventora/ui';
+import styles from '../screen.module.css';
 
 function VentoraLogoFull({ height = 28 }: { height?: number }) {
   return (
@@ -45,151 +46,25 @@ function VentoraLogoFull({ height = 28 }: { height?: number }) {
   );
 }
 
-function Chevrons() {
+function GlobeSVG() {
   return (
     <svg
-      viewBox="0 0 176 240"
       aria-hidden
-      style={{
-        fill: 'none',
-        stroke: 'var(--line-strong)',
-        strokeWidth: 1.5,
-        position: 'absolute',
-        right: 0,
-        bottom: 0,
-        width: 176,
-        height: 240,
-        opacity: 0.4,
-      }}
+      width="14"
+      height="14"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
     >
-      {[40, 72, 104].map((y) => (
-        <polyline key={y} points={`32,${y} 88,${y + 80} 144,${y}`} />
-      ))}
-      <polyline points="48,168 88,224 128,168" />
+      <circle cx="12" cy="12" r="10" />
+      <line x1="2" y1="12" x2="22" y2="12" />
+      <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
     </svg>
   );
 }
-
-const s: Record<string, React.CSSProperties> = {
-  root: {
-    minHeight: '100vh',
-    display: 'flex',
-    flexDirection: 'column',
-    background: 'var(--canvas)',
-    color: 'var(--ink)',
-  },
-  split: {
-    flex: 1,
-    display: 'flex',
-    minHeight: '100vh',
-  },
-  brand: {
-    width: '46%',
-    flexShrink: 0,
-    display: 'flex',
-    flexDirection: 'column',
-    padding: 'var(--space-8) var(--space-10)',
-    position: 'relative',
-    overflow: 'hidden',
-    gap: 'var(--space-4)',
-  },
-  brandTop: {
-    display: 'flex',
-    alignItems: 'center',
-  },
-  statement: {
-    marginTop: 'auto',
-    paddingBottom: 'var(--space-6)',
-  },
-  foot: {
-    marginTop: 'auto',
-    color: 'var(--on-brand-muted)',
-  },
-  formSide: {
-    flex: 1,
-    display: 'flex',
-    flexDirection: 'column',
-    background: 'var(--canvas)',
-    color: 'var(--ink)',
-  },
-  authTop: {
-    display: 'flex',
-    justifyContent: 'flex-end',
-    padding: 'var(--space-4) var(--space-6)',
-  },
-  langBtn: {
-    display: 'inline-flex',
-    alignItems: 'center',
-    gap: 'var(--space-1)',
-    padding: 'var(--space-1) var(--space-2)',
-    borderRadius: 'var(--radius-sm)',
-    border: '1px solid var(--line)',
-    background: 'transparent',
-    color: 'var(--ink-secondary)',
-    cursor: 'pointer',
-    font: 'inherit',
-    fontSize: 13,
-  },
-  formMain: {
-    flex: 1,
-    display: 'flex',
-    alignItems: 'flex-start',
-    justifyContent: 'center',
-    padding: 'var(--space-12) var(--space-4)',
-  },
-  card: {
-    width: 400,
-    background: 'var(--sheet)',
-    border: '1px solid var(--line)',
-    borderRadius: 'var(--radius-lg)',
-    padding: 'var(--space-10)',
-    display: 'flex',
-    flexDirection: 'column',
-    gap: 'var(--space-4)',
-    boxSizing: 'border-box' as const,
-  },
-  authHead: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: 'var(--space-1)',
-    marginBottom: 'var(--space-2)',
-  },
-  passField: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: 'var(--space-1)',
-  },
-  passLabel: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  forgotLink: {
-    color: 'var(--primary)',
-    textDecoration: 'none',
-    fontSize: 13,
-  },
-  blockBtn: {
-    width: '100%',
-  },
-  authNote: {
-    display: 'flex',
-    gap: 'var(--space-2)',
-    paddingTop: 'var(--space-4)',
-    borderTop: '1px solid var(--line)',
-    color: 'var(--ink-muted)',
-  },
-  errorBanner: {
-    display: 'flex',
-    gap: 'var(--space-2)',
-    alignItems: 'flex-start',
-    padding: 'var(--space-3) var(--space-4)',
-    borderRadius: 'var(--radius-md)',
-    background: 'var(--danger-soft)',
-    color: 'var(--danger-ink)',
-    border: '1px solid var(--danger-line)',
-  },
-};
 
 export function SigninScreenClient({
   theme,
@@ -200,6 +75,7 @@ export function SigninScreenClient({
 }) {
   const [email, setEmail] = useState('bianca@salonaurora.ro');
   const [password, setPassword] = useState('');
+  const [showPass, setShowPass] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
 
   useEffect(() => {
@@ -207,53 +83,76 @@ export function SigninScreenClient({
   }, [theme]);
 
   return (
-    <div style={s.root} data-theme={theme}>
-      <div style={s.split}>
-        <BrandZone as="aside" style={s.brand}>
-          <div style={s.brandTop}>
+    <div
+      data-theme={theme}
+      style={{ minHeight: '100vh', background: 'var(--canvas)', color: 'var(--ink)' }}
+    >
+      <div className={styles.authSplit}>
+        {/* Brand panel — top bar on mobile, left panel on desktop */}
+        <BrandZone as="aside" className={styles.authBrand}>
+          <div className={styles.authBrandTop}>
             <VentoraLogoFull height={28} />
+            {/* Lang button visible only on mobile in brand bar */}
+            <button
+              type="button"
+              className={`${styles.langBtn} ${styles.authLangMobile}`}
+              aria-label="Schimbă limba"
+            >
+              <GlobeSVG />
+              Română
+              <Icon icon="chevron-down" size="sm" aria-hidden />
+            </button>
           </div>
-          <p className={cn('display-xl')} style={s.statement}>
+          <p className="display-xl" style={{ marginTop: 'auto', paddingBottom: 'var(--space-6)' }}>
             Afacerea ta.
             <br />
             Într-un singur loc.
           </p>
-          <p className="caption" style={s.foot}>
+          <p className="caption" style={{ color: 'var(--on-brand-muted)' }}>
             © 2026 Ventora Systems
           </p>
-          <Chevrons />
+          <svg
+            className={styles.authChev}
+            viewBox="0 0 176 240"
+            aria-hidden
+            style={{ fill: 'none', stroke: 'var(--line-strong)', strokeWidth: 1.5 }}
+          >
+            {[40, 72, 104].map((y) => (
+              <polyline key={y} points={`32,${y} 88,${y + 80} 144,${y}`} />
+            ))}
+            <polyline points="48,168 88,224 128,168" />
+          </svg>
         </BrandZone>
 
-        <div style={s.formSide}>
-          <header style={s.authTop}>
-            <button type="button" style={s.langBtn}>
-              <svg
-                aria-hidden
-                width="14"
-                height="14"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <circle cx="12" cy="12" r="10" />
-                <line x1="2" y1="12" x2="22" y2="12" />
-                <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
-              </svg>
+        {/* Form side */}
+        <div className={styles.authFormSide}>
+          <header className={styles.authFormHeader}>
+            <button type="button" className={styles.langBtn}>
+              <GlobeSVG />
               Română
               <Icon icon="chevron-down" size="sm" aria-hidden />
             </button>
           </header>
-          <main style={s.formMain}>
-            <div style={s.card}>
-              <div style={s.authHead}>
+          <main className={styles.authFormMain}>
+            <div className={styles.authForm}>
+              <div className={styles.authHead}>
                 <h1 className="display-hub">Bine ai revenit</h1>
                 <p className="body muted">Intră în contul tău Ventora.</p>
               </div>
               {state === 'error' && (
-                <div style={s.errorBanner} role="alert">
+                <div
+                  role="alert"
+                  style={{
+                    display: 'flex',
+                    gap: 'var(--space-2)',
+                    alignItems: 'flex-start',
+                    padding: 'var(--space-3) var(--space-4)',
+                    borderRadius: 'var(--radius-md)',
+                    background: 'var(--danger-soft)',
+                    color: 'var(--danger-ink)',
+                    border: '1px solid var(--danger-line)',
+                  }}
+                >
                   <Icon icon="error" size="sm" style={{ marginTop: 2, flexShrink: 0 }} />
                   <p className="body-small">
                     E-mail sau parolă greșite. Verifică și încearcă din nou.
@@ -271,31 +170,41 @@ export function SigninScreenClient({
                   isInvalid={state === 'error'}
                 />
               </FormField>
-              <div style={s.passField}>
-                <div style={s.passLabel}>
+              <div className={styles.passwordRow}>
+                <div className={styles.passwordLabel}>
                   <span className="body-small">Parolă</span>
-                  <a href="#" style={s.forgotLink} className="body-small">
+                  <a href="#" className={`body-small ${styles.forgotLink}`}>
                     Ai uitat parola?
                   </a>
                 </div>
-                <Input
-                  type="password"
-                  autoComplete="current-password"
-                  placeholder="••••••••"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  isInvalid={state === 'error'}
-                />
+                <div className={styles.passWrap}>
+                  <Input
+                    type={showPass ? 'text' : 'password'}
+                    autoComplete="current-password"
+                    placeholder="••••••••"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    isInvalid={state === 'error'}
+                  />
+                  <button
+                    type="button"
+                    className={styles.passToggle}
+                    onClick={() => setShowPass((v) => !v)}
+                    aria-label={showPass ? 'Ascunde parola' : 'Arată parola'}
+                  >
+                    <Icon icon={showPass ? 'eye-off' : 'eye'} size="sm" aria-hidden />
+                  </button>
+                </div>
               </div>
               <Checkbox isSelected={rememberMe} onChange={setRememberMe}>
                 Ține-mă minte pe acest dispozitiv timp de 30 de zile
               </Checkbox>
-              <div style={{ display: 'grid' }}>
+              <div className={styles.blockBtn}>
                 <Button variant="primary" size="lg">
                   Intră în cont
                 </Button>
               </div>
-              <div style={s.authNote}>
+              <div className={styles.authNote}>
                 <Icon icon="mail" size="sm" style={{ marginTop: 2, flexShrink: 0 }} />
                 <p className="body-small">
                   Nu ai cont? Conturile se fac doar prin invitație. Dacă ai primit una, deschide
@@ -304,6 +213,7 @@ export function SigninScreenClient({
               </div>
             </div>
           </main>
+          <footer className={styles.authFooter}>Termeni · Confidențialitate · Ajutor</footer>
         </div>
       </div>
     </div>

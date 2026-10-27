@@ -2,16 +2,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import {
-  AppIcon,
-  BrandZone,
-  Button,
-  Checkbox,
-  FormField,
-  Icon,
-  Input,
-  type AppName,
-} from '@ventora/ui';
+import { AppIcon, BrandZone, Button, Checkbox, Icon, Input, type AppName } from '@ventora/ui';
+import styles from '../screen.module.css';
 
 const APP_LABELS: Partial<Record<AppName, string>> = {
   booking: 'Booking',
@@ -60,168 +52,25 @@ function VentoraLogoFull({ height = 28 }: { height?: number }) {
   );
 }
 
-function Chevrons() {
+function GlobeSVG() {
   return (
     <svg
-      viewBox="0 0 176 240"
       aria-hidden
-      style={{
-        fill: 'none',
-        stroke: 'var(--line-strong)',
-        strokeWidth: 1.5,
-        position: 'absolute',
-        right: 0,
-        bottom: 0,
-        width: 176,
-        height: 240,
-        opacity: 0.4,
-      }}
+      width="14"
+      height="14"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
     >
-      {[40, 72, 104].map((y) => (
-        <polyline key={y} points={`32,${y} 88,${y + 80} 144,${y}`} />
-      ))}
-      <polyline points="48,168 88,224 128,168" />
+      <circle cx="12" cy="12" r="10" />
+      <line x1="2" y1="12" x2="22" y2="12" />
+      <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
     </svg>
   );
 }
-
-const s: Record<string, React.CSSProperties> = {
-  root: {
-    minHeight: '100vh',
-    display: 'flex',
-    flexDirection: 'column',
-    background: 'var(--canvas)',
-    color: 'var(--ink)',
-  },
-  split: { flex: 1, display: 'flex', minHeight: '100vh' },
-  brand: {
-    width: '46%',
-    flexShrink: 0,
-    display: 'flex',
-    flexDirection: 'column',
-    padding: 'var(--space-8) var(--space-10)',
-    position: 'relative',
-    overflow: 'hidden',
-    gap: 'var(--space-4)',
-  },
-  brandTop: { display: 'flex', alignItems: 'center' },
-  statement: { marginTop: 'auto', paddingBottom: 'var(--space-6)' },
-  foot: { marginTop: 'auto', color: 'var(--on-brand-muted)' },
-  formSide: {
-    flex: 1,
-    display: 'flex',
-    flexDirection: 'column',
-    background: 'var(--canvas)',
-    color: 'var(--ink)',
-  },
-  authTop: {
-    display: 'flex',
-    justifyContent: 'flex-end',
-    padding: 'var(--space-4) var(--space-6)',
-  },
-  langBtn: {
-    display: 'inline-flex',
-    alignItems: 'center',
-    gap: 'var(--space-1)',
-    padding: 'var(--space-1) var(--space-2)',
-    borderRadius: 'var(--radius-sm)',
-    border: '1px solid var(--line)',
-    background: 'transparent',
-    color: 'var(--ink-secondary)',
-    cursor: 'pointer',
-    font: 'inherit',
-    fontSize: 13,
-  },
-  formMain: {
-    flex: 1,
-    display: 'flex',
-    alignItems: 'flex-start',
-    justifyContent: 'center',
-    padding: 'var(--space-8) var(--space-4)',
-  },
-  card: {
-    width: 440,
-    background: 'var(--sheet)',
-    border: '1px solid var(--line)',
-    borderRadius: 'var(--radius-lg)',
-    padding: 'var(--space-8)',
-    display: 'flex',
-    flexDirection: 'column',
-    gap: 'var(--space-4)',
-    boxSizing: 'border-box' as const,
-  },
-  invHead: { display: 'flex', gap: 'var(--space-3)', alignItems: 'center' },
-  invMark: {
-    width: 48,
-    height: 48,
-    borderRadius: 'var(--radius-md)',
-    background: 'var(--neutral-soft)',
-    display: 'inline-flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    fontWeight: 700,
-    color: 'var(--ink)',
-    flexShrink: 0,
-    boxShadow: 'inset 0 0 0 1px var(--line-strong)',
-    fontSize: 14,
-  },
-  invRole: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: 'var(--space-2)',
-    padding: 'var(--space-3) var(--space-4)',
-    background: 'var(--sunken)',
-    borderRadius: 'var(--radius-sm)',
-  },
-  invApps: {
-    display: 'flex',
-    gap: 'var(--space-3)',
-    flexWrap: 'wrap' as const,
-    marginTop: 'var(--space-1)',
-  },
-  invApp: {
-    display: 'inline-flex',
-    gap: 'var(--space-1)',
-    alignItems: 'center',
-    color: 'var(--ink-secondary)',
-  },
-  invEmail: { display: 'flex', flexDirection: 'column', gap: 2 },
-  passWrap: { position: 'relative' as const },
-  passToggle: {
-    position: 'absolute' as const,
-    right: 10,
-    top: '50%',
-    transform: 'translateY(-50%)',
-    background: 'none',
-    border: 'none',
-    cursor: 'pointer',
-    color: 'var(--ink-secondary)',
-    display: 'flex',
-    alignItems: 'center',
-    padding: 4,
-  },
-  reqs: {
-    listStyle: 'none',
-    margin: 0,
-    padding: 0,
-    display: 'flex',
-    flexDirection: 'column',
-    gap: 'var(--space-1)',
-  },
-  req: { display: 'flex', gap: 'var(--space-2)', alignItems: 'center', color: 'var(--ink-muted)' },
-  reqOk: { color: 'var(--done-ink)' },
-  blockBtn: { width: '100%' },
-  expiredNotice: {
-    display: 'flex',
-    gap: 'var(--space-2)',
-    alignItems: 'flex-start',
-    padding: 'var(--space-3) var(--space-4)',
-    borderRadius: 'var(--radius-md)',
-    background: 'var(--attention-soft)',
-    color: 'var(--attention-ink)',
-    border: '1px solid var(--attention-line)',
-  },
-};
 
 export function InviteScreenClient({
   theme,
@@ -238,56 +87,67 @@ export function InviteScreenClient({
   }, [theme]);
 
   return (
-    <div style={s.root} data-theme={theme}>
-      <div style={s.split}>
-        <BrandZone as="aside" style={s.brand}>
-          <div style={s.brandTop}>
+    <div
+      data-theme={theme}
+      style={{ minHeight: '100vh', background: 'var(--canvas)', color: 'var(--ink)' }}
+    >
+      <div className={styles.authSplit}>
+        {/* Brand panel */}
+        <BrandZone as="aside" className={styles.authBrand}>
+          <div className={styles.authBrandTop}>
             <VentoraLogoFull height={28} />
+            <button
+              type="button"
+              className={`${styles.langBtn} ${styles.authLangMobile}`}
+              aria-label="Schimbă limba"
+            >
+              <GlobeSVG />
+              Română
+              <Icon icon="chevron-down" size="sm" aria-hidden />
+            </button>
           </div>
-          <p className="display-xl" style={s.statement}>
+          <p className="display-xl" style={{ marginTop: 'auto', paddingBottom: 'var(--space-6)' }}>
             Afacerea ta.
             <br />
             Într-un singur loc.
           </p>
-          <p className="caption" style={s.foot}>
+          <p className="caption" style={{ color: 'var(--on-brand-muted)' }}>
             © 2026 Ventora Systems
           </p>
-          <Chevrons />
+          <svg
+            className={styles.authChev}
+            viewBox="0 0 176 240"
+            aria-hidden
+            style={{ fill: 'none', stroke: 'var(--line-strong)', strokeWidth: 1.5 }}
+          >
+            {[40, 72, 104].map((y) => (
+              <polyline key={y} points={`32,${y} 88,${y + 80} 144,${y}`} />
+            ))}
+            <polyline points="48,168 88,224 128,168" />
+          </svg>
         </BrandZone>
 
-        <div style={s.formSide}>
-          <header style={s.authTop}>
-            <button type="button" style={s.langBtn}>
-              <svg
-                aria-hidden
-                width="14"
-                height="14"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <circle cx="12" cy="12" r="10" />
-                <line x1="2" y1="12" x2="22" y2="12" />
-                <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
-              </svg>
-              Română <Icon icon="chevron-down" size="sm" aria-hidden />
+        {/* Form side */}
+        <div className={styles.authFormSide}>
+          <header className={styles.authFormHeader}>
+            <button type="button" className={styles.langBtn}>
+              <GlobeSVG />
+              Română
+              <Icon icon="chevron-down" size="sm" aria-hidden />
             </button>
           </header>
-          <main style={s.formMain}>
-            <div style={s.card}>
+          <main className={styles.authFormMain}>
+            <div className={styles.authForm} style={{ width: 440, maxWidth: '100%' }}>
               {state === 'expired' ? (
                 <>
-                  <div style={s.invHead}>
-                    <span style={s.invMark as React.CSSProperties}>SA</span>
+                  <div className={styles.invHead}>
+                    <span className={styles.invMark}>SA</span>
                     <div>
                       <p className="caption muted">Invitație de la Bianca Petrașcu</p>
                       <h1 className="display-m">Invitație expirată</h1>
                     </div>
                   </div>
-                  <div style={s.expiredNotice} role="alert">
+                  <div className={styles.expiredNotice} role="alert">
                     <Icon icon="clock" size="sm" style={{ marginTop: 2, flexShrink: 0 }} />
                     <div>
                       <p className="body-strong">Această invitație nu mai este valabilă</p>
@@ -296,7 +156,7 @@ export function InviteScreenClient({
                       </p>
                     </div>
                   </div>
-                  <div style={{ display: 'grid' }}>
+                  <div className={styles.blockBtn}>
                     <Button variant="primary" size="lg">
                       Cere o invitație nouă
                     </Button>
@@ -304,37 +164,49 @@ export function InviteScreenClient({
                 </>
               ) : (
                 <>
-                  <div style={s.invHead}>
-                    <span style={s.invMark as React.CSSProperties}>SA</span>
+                  <div className={styles.invHead}>
+                    <span className={styles.invMark}>SA</span>
                     <div>
                       <p className="caption muted">Invitație de la Bianca Petrașcu</p>
                       <h1 className="display-m">Intră în echipa Salon Aurora</h1>
                     </div>
                   </div>
-                  <div style={s.invRole}>
+                  <div className={styles.invRole}>
                     <p className="body">
                       Rolul tău: <strong className="body-strong">Recepție</strong>. Vei avea acces
                       la:
                     </p>
-                    <div style={s.invApps}>
+                    <div className={styles.invApps}>
                       {(['booking', 'crm', 'shifts'] as AppName[]).map((a) => (
-                        <span key={a} style={s.invApp}>
+                        <span key={a} className={styles.invApp}>
                           <AppIcon app={a} size={24} />
                           <span className="body-small">{APP_LABELS[a]}</span>
                         </span>
                       ))}
                     </div>
                   </div>
-                  <FormField label="Nume complet">
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-1)' }}>
+                    <span className="body-small">
+                      Nume complet
+                      <span className={styles.required} aria-hidden>
+                        *
+                      </span>
+                    </span>
                     <Input type="text" autoComplete="name" defaultValue="Ioana Pavel" />
-                  </FormField>
-                  <div style={s.invEmail}>
+                  </div>
+                  <div className={styles.invEmail}>
                     <span className="caption muted">E-mail</span>
                     <span className="body-strong">ioana.pavel@salonaurora.ro</span>
                     <span className="caption muted">Pe această adresă ai primit invitația.</span>
                   </div>
-                  <FormField label="Parolă nouă">
-                    <div style={s.passWrap}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-1)' }}>
+                    <span className="body-small">
+                      Parolă nouă
+                      <span className={styles.required} aria-hidden>
+                        *
+                      </span>
+                    </span>
+                    <div className={styles.passWrap}>
                       <Input
                         type={showPass ? 'text' : 'password'}
                         autoComplete="new-password"
@@ -343,21 +215,24 @@ export function InviteScreenClient({
                       />
                       <button
                         type="button"
-                        style={s.passToggle}
+                        className={styles.passToggle}
                         onClick={() => setShowPass((v) => !v)}
                         aria-label={showPass ? 'Ascunde parola' : 'Arată parola'}
                       >
                         <Icon icon={showPass ? 'eye-off' : 'eye'} size="sm" aria-hidden />
                       </button>
                     </div>
-                  </FormField>
-                  <ul style={s.reqs}>
+                  </div>
+                  <ul className={styles.invReqs}>
                     {[
                       { ok: pass.length >= 10, text: 'Cel puțin 10 caractere' },
                       { ok: /\d/.test(pass), text: 'Cel puțin o cifră' },
                       { ok: /[A-Z]/.test(pass), text: 'Cel puțin o literă mare' },
                     ].map(({ ok, text }) => (
-                      <li key={text} style={ok ? { ...s.req, ...s.reqOk } : s.req}>
+                      <li
+                        key={text}
+                        className={ok ? `${styles.invReq} ${styles.invReqOk}` : styles.invReq}
+                      >
                         <Icon icon={ok ? 'circle-check' : 'circle'} size="sm" />
                         <span className="body-small">{text}</span>
                       </li>
@@ -366,21 +241,17 @@ export function InviteScreenClient({
                   <Checkbox defaultSelected>
                     Accept Termenii și Politica de confidențialitate
                   </Checkbox>
-                  <div style={{ display: 'grid' }}>
+                  <p className={styles.checkboxSub}>Le poți citi oricând din Setări.</p>
+                  <div className={styles.blockBtn}>
                     <Button variant="primary" size="lg">
                       Acceptă invitația
                     </Button>
                   </div>
-                  <p className="caption muted" style={{ textAlign: 'center' }}>
-                    Invitația e valabilă până pe 31 octombrie 2026.
-                  </p>
-                  <p className="caption muted" style={{ textAlign: 'center' }}>
-                    Le poți citi oricând din Setări.
-                  </p>
                 </>
               )}
             </div>
           </main>
+          <footer className={styles.authFooter}>Termeni · Confidențialitate · Ajutor</footer>
         </div>
       </div>
     </div>

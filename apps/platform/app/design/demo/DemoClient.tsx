@@ -1,7 +1,7 @@
 /* eslint-disable i18next/no-literal-string */
 'use client';
 
-import { useState, useLayoutEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import {
   Button,
   Input,
@@ -193,7 +193,7 @@ function ScaledPreview({ src, title }: { src: string; title: string }) {
   const [contentH, setContentH] = useState(800);
   const [frameW, setFrameW] = useState(2000); // lățimea reală a planșei, citită la load
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     const wrap = wrapRef.current;
     if (!wrap) return;
     setScale(wrap.clientWidth / frameW);

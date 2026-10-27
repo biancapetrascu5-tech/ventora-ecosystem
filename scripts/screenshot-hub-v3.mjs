@@ -1,0 +1,193 @@
+/**
+ * screenshot-hub-v3.mjs
+ * Capturi Hub: HubSignIn / HubInvite / HubLauncher
+ *
+ * Rulare: node scripts/screenshot-hub-v3.mjs
+ * Necesită: server dev pornit pe :3100 (pnpm --filter @ventora/platform dev)
+ *
+ * Output: screenshots/ (fișierele existente se suprascriu)
+ *
+ * Perechi generate:
+ *   <screen>_1280_<theme>_impl.png   — implementare React (@ventora/ui)
+ *   <screen>_390_<theme>_impl.png
+ *   <screen>_1280_<theme>_design.png — design aprobat (Claude Design Bundle)
+ *   <screen>_390_<theme>_design.png
+ */
+
+import { chromium } from 'playwright';
+import { mkdir } from 'fs/promises';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const ROOT = path.join(__dirname, '..');
+const OUT = path.join(ROOT, 'screenshots');
+const BASE = 'http://localhost:3100';
+
+/* ── Configurare capturi ─────────────────────────────────────────────── */
+
+const SCREENS = ['signin', 'invite', 'launcher'];
+
+// _impl: rute izolate din /design/demo/screen/*
+const IMPL_VARIANTS = [
+  { name: 'signin', viewport: 1280, theme: 'light', state: 'default' },
+  { name: 'signin', viewport: 1280, theme: 'dark', state: 'default' },
+  { name: 'signin', viewport: 390, theme: 'light', state: 'default' },
+  { name: 'signin', viewport: 390, theme: 'dark', state: 'default' },
+  { name: 'signin', viewport: 1280, theme: 'light', state: 'error' },
+  { name: 'invite', viewport: 1280, theme: 'light', state: 'default' },
+  { name: 'invite', viewport: 1280, theme: 'dark', state: 'default' },
+  { name: 'invite', viewport: 390, theme: 'light', state: 'default' },
+  { name: 'invite', viewport: 390, theme: 'dark', state: 'default' },
+  { name: 'invite', viewport: 1280, theme: 'light', state: 'expired' },
+  { name: 'launcher', viewport: 1280, theme: 'light', state: 'default' },
+  { name: 'launcher', viewport: 1280, theme: 'dark', state: 'default' },
+  { name: 'launcher', viewport: 390, theme: 'light', state: 'default' },
+  { name: 'launcher', viewport: 390, theme: 'dark', state: 'default' },
+];
+
+// _design: din /design/preview/<ComponentName>
+// Componente din docs/design/system/components/
+const COMPONENT_MAP = {
+  signin: 'HubSignIn',
+  invite: 'HubInvite',
+  launcher: 'HubLauncher',
+};
+
+const DESIGN_VARIANTS = [];
+for (const screen of SCREENS) {
+  for (const theme of ['light', 'dark']) {
+    DESIGN_VARIANTS.push({ name: screen, viewport: 1280, theme });
+    DESIGN_VARIANTS.push({ name: screen, viewport: 390, theme });
+  }
+}
+
+/* ── Helper: ascunde overlay-ul Next.js dev ──────────────────────────── */
+async function hideDevOverlay(page) {
+  await page.addStyleTag({
+    content: `
+      body > nextjs-portal,
+      #__next-build-watcher,
+      [data-nextjs-dialog],
+      [data-nextjs-toast],
+      [data-nextjs-errors],
+      [data-nextjs-dev-overlay] {
+        display: none !important;
+        visibility: hidden !important;
+        pointer-events: none !important;
+        opacity: 0 !important;
+      }
+    `,
+  });
+}
+
+/* ── Captură _impl ────────────────────────────────────────────────────── */
+async function captureImpl(page, variant) {
+  const { name, viewport, theme, state } = variant;
+  const height = viewport === 390 ? 844 : 900;
+  await page.setViewportSize({ width: viewport, height });
+
+  const params = new URLSearchParams({ theme });
+  if (state && state !== 'default') params.set('state', state);
+
+  const url = `${BASE}/design/demo/screen/${name}?${params}`;
+  await page.goto(url, { waitUntil: 'networkidle' });
+  await hideDevOverlay(page);
+  // Așteptăm să se stabilizeze după ascunderea overlay-ului
+  await page.waitForTimeout(300);
+
+  const stateSuffix = state && state !== 'default' ? `_${state}` : '';
+  const filename = `${name}_${viewport}_${theme}${stateSuffix}_impl.png`;
+  const outPath = path.join(OUT, filename);
+
+  await page.screenshot({ path: outPath, fullPage: true });
+  console.log(`  ✓ ${filename}`);
+}
+
+/* ── Captură _design ─────────────────────────────────────────────────── */
+async function captureDesign(page, variant) {
+  const { name, viewport, theme } = variant;
+
+  // Viewport mai mare pentru a încăpea frame-ul complet + context
+  await page.setViewportSize({ width: 2000, height: 2400 });
+
+  const component = COMPONENT_MAP[name];
+  const url = `${BASE}/design/preview/${component}`;
+  await page.goto(url, { waitUntil: 'networkidle' });
+
+  // Așteptăm React bundle să randeze complet
+  const frameClass = viewport === 390 ? '.scr-m' : '.scr-d';
+  const selector = `${frameClass}[data-theme="${theme}"]`;
+
+  try {
+    await page.waitForSelector(selector, { timeout: 15_000 });
+  } catch {
+    console.warn(`  ⚠ Selector "${selector}" not found in ${component}`);
+    return;
+  }
+
+  // Scroll la element pentru a-l face vizibil înainte de screenshot
+  const el = page.locator(selector).first();
+  await el.scrollIntoViewIfNeeded();
+  await page.waitForTimeout(200);
+
+  const filename = `${name}_${viewport}_${theme}_design.png`;
+  const outPath = path.join(OUT, filename);
+
+  await el.screenshot({ path: outPath });
+  console.log(`  ✓ ${filename}`);
+}
+
+/* ── Main ─────────────────────────────────────────────────────────────── */
+async function main() {
+  await mkdir(OUT, { recursive: true });
+
+  const browser = await chromium.launch({ headless: true });
+  const context = await browser.newContext();
+  const page = await context.newPage();
+
+  // Disable CSS animations/transitions pentru capturi stabile
+  await page.addInitScript(() => {
+    const style = document.createElement('style');
+    style.textContent = `
+      *, *::before, *::after {
+        animation-duration: 0.001ms !important;
+        transition-duration: 0.001ms !important;
+        animation-delay: 0.001ms !important;
+      }
+    `;
+    document.head?.appendChild(style);
+  });
+
+  console.log('\n── _impl (implementare @ventora/ui) ──');
+  for (const variant of IMPL_VARIANTS) {
+    try {
+      await captureImpl(page, variant);
+    } catch (err) {
+      console.error(
+        `  ✗ ${variant.name}_${variant.viewport}_${variant.theme}_impl: ${err.message}`,
+      );
+    }
+  }
+
+  console.log('\n── _design (Claude Design Bundle) ──');
+  for (const variant of DESIGN_VARIANTS) {
+    try {
+      await captureDesign(page, variant);
+    } catch (err) {
+      console.error(
+        `  ✗ ${variant.name}_${variant.viewport}_${variant.theme}_design: ${err.message}`,
+      );
+    }
+  }
+
+  await browser.close();
+
+  const total = IMPL_VARIANTS.length + DESIGN_VARIANTS.length;
+  console.log(`\nGata: ${total} capturi în screenshots/\n`);
+}
+
+main().catch((err) => {
+  console.error(err);
+  process.exit(1);
+});

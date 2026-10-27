@@ -1,6 +1,7 @@
 'use client';
 
 import { cn } from '../lib/cn';
+import { Icon } from '../Icon/Icon';
 import styles from './PortalPresence.module.css';
 
 export type PortalStatus = 'published' | 'hidden' | 'draft';
@@ -50,6 +51,9 @@ export function PortalPresence({
   return (
     <div className={cn(styles.card, 'v-portalcard', compact && styles.compact)}>
       <div className={styles.meta}>
+        <div className={styles.storeIconWrap} aria-hidden>
+          <Icon icon="store" size="md" />
+        </div>
         <p className={styles.eyebrow}>
           {t.eyebrow}
           <span className={cn(styles.pill, styles[status])}>

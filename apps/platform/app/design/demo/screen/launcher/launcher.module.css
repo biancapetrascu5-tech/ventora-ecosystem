@@ -1,0 +1,38 @@
+.band {
+  position: relative;
+  margin: 0 calc(-1 * var(--space-6));
+  padding: var(--space-8) var(--space-6) 80px;
+  box-shadow: 0 0 0 100vmax var(--brand-surface);
+  clip-path: inset(0 -100vmax);
+  overflow: hidden;
+}
+
+.bandChev {
+  position: absolute;
+  right: var(--space-8);
+  top: 50%;
+  transform: translateY(-50%);
+  width: 160px;
+  height: 220px;
+  pointer-events: none;
+  fill: none;
+  stroke: var(--on-brand-ink);
+  stroke-width: 1.5;
+  opacity: 0.15;
+}
+
+.dockWrap {
+  margin-top: -60px;
+  position: relative;
+  z-index: 1;
+}
+
+@media (max-width: 599px) {
+  .band {
+    padding-bottom: var(--space-6);
+  }
+
+  .dockWrap {
+    margin-top: var(--space-4);
+  }
+}

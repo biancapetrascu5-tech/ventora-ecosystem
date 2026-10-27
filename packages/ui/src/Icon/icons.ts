@@ -67,6 +67,7 @@ import {
   HelpCircle,
   Circle,
   CircleCheck,
+  Store,
   type LucideIcon,
 } from 'lucide-react';
 
@@ -139,6 +140,7 @@ export const ICON_REGISTRY = {
   'help-circle': HelpCircle,
   circle: Circle,
   'circle-check': CircleCheck,
+  store: Store,
 } as const satisfies Record<string, LucideIcon>;
 
 export type IconName = keyof typeof ICON_REGISTRY;

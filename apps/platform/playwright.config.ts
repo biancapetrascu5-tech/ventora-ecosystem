@@ -20,9 +20,12 @@ export default defineConfig({
   retries: process.env.CI ? 1 : 0,
   workers: 1,
   reporter: process.env.CI ? 'github' : 'list',
+  timeout: 30_000,
   use: {
     baseURL: 'http://localhost:3100',
     trace: 'on-first-retry',
+    navigationTimeout: 25_000,
+    actionTimeout: 10_000,
   },
   projects: [
     {
