@@ -15,6 +15,14 @@ END $$;
 
 CREATE SCHEMA IF NOT EXISTS organizations;
 
+GRANT USAGE ON SCHEMA organizations TO org_rw;
+
+DO $$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'founder_runtime') THEN
+    EXECUTE 'GRANT USAGE ON SCHEMA organizations TO founder_runtime';
+  END IF;
+END $$;
+
 CREATE TYPE organizations.membership_role AS ENUM (
   'owner', 'admin', 'member', 'external_collaborator'
 );
