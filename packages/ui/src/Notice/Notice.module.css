@@ -1,0 +1,70 @@
+.root {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  border-left: 3px solid transparent;
+}
+
+.icon {
+  flex: none;
+  margin-top: 1px;
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-width: 0;
+}
+
+.title {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: var(--type-body-size);
+  font-weight: 600;
+  color: inherit;
+  line-height: var(--type-body-line);
+}
+
+.desc {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: var(--type-body-size);
+  line-height: var(--type-body-line);
+  color: inherit;
+  opacity: 0.85;
+}
+
+.actions {
+  margin-top: var(--space-2);
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+/* Tones */
+.danger {
+  background: var(--danger-soft);
+  color: var(--danger-ink);
+  border-left-color: var(--danger);
+}
+
+.attention {
+  background: var(--attention-soft);
+  color: var(--attention-ink);
+  border-left-color: var(--attention-mark);
+}
+
+.done {
+  background: var(--done-soft);
+  color: var(--done-ink);
+  border-left-color: var(--done);
+}
+
+.neutral {
+  background: var(--sunken);
+  color: var(--ink);
+  border-left-color: var(--line-strong);
+}

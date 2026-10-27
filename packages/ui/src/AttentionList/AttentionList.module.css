@@ -1,0 +1,112 @@
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.item {
+  display: flex;
+  gap: var(--space-3);
+  align-items: flex-start;
+  padding: var(--space-3) var(--space-4);
+  border-bottom: var(--border-width) solid var(--line);
+}
+
+.item:last-child { border-bottom: 0; }
+
+.iconWrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-sm);
+  background: var(--sunken);
+  color: var(--ink-muted);
+  flex: none;
+  margin-top: 2px;
+}
+
+.tone-attention { background: var(--attention-soft); color: var(--attention-ink); }
+.tone-danger    { background: var(--danger-soft); color: var(--danger-ink); }
+.tone-neutral   { background: var(--sunken); color: var(--ink-muted); }
+
+.body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--space-2);
+}
+
+.title {
+  font-family: var(--font-sans);
+  font-size: var(--type-body-size);
+  font-weight: 500;
+  line-height: var(--type-body-line);
+  color: var(--ink);
+  flex: 1;
+  min-width: 0;
+}
+
+.time {
+  font-family: var(--font-sans);
+  font-size: var(--type-caption-size);
+  color: var(--ink-muted);
+  flex: none;
+  white-space: nowrap;
+}
+
+.meta {
+  font-family: var(--font-sans);
+  font-size: var(--type-body-small-size);
+  line-height: var(--type-body-small-line);
+  color: var(--ink-secondary);
+}
+
+.actions {
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+  margin-top: var(--space-1);
+}
+
+.actionBtn {
+  display: inline-flex;
+  align-items: center;
+  height: var(--control-sm);
+  padding: 0 var(--space-2);
+  border-radius: var(--radius-sm);
+  border: var(--border-width) solid var(--control-border);
+  background: transparent;
+  font-family: var(--font-sans);
+  font-size: var(--type-caption-size);
+  font-weight: var(--type-subheading-weight);
+  color: var(--ink);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background var(--duration-instant) var(--ease-standard);
+}
+
+.actionBtn:hover { background: var(--state-hover); }
+
+.actionPrimary {
+  background: var(--primary);
+  color: var(--on-primary);
+  border-color: transparent;
+}
+
+.actionPrimary:hover { background: var(--primary-hover); }
+
+.actionQuiet {
+  border-color: transparent;
+}

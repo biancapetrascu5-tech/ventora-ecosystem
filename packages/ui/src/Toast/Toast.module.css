@@ -1,0 +1,109 @@
+.root {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-lg);
+  background: var(--raised);
+  border: var(--border-width) solid var(--line-strong);
+  box-shadow: var(--shadow-3);
+  width: 100%;
+  box-sizing: border-box;
+  color: var(--ink);
+}
+
+.iconWrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  margin-top: 1px;
+}
+
+.body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.title {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: var(--type-body-size);
+  font-weight: 500;
+  line-height: var(--type-body-line);
+  color: var(--ink);
+}
+
+.desc {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: var(--type-body-small-size);
+  line-height: var(--type-body-small-line);
+  color: var(--ink-secondary);
+}
+
+.actions {
+  display: flex;
+  gap: var(--space-2);
+  margin-top: var(--space-1);
+}
+
+.actionBtn {
+  appearance: none;
+  padding: 0;
+  border: none;
+  background: none;
+  font-family: var(--font-sans);
+  font-size: var(--type-caption-size);
+  font-weight: 600;
+  color: var(--primary);
+  cursor: pointer;
+}
+
+.actionBtn:hover { opacity: 0.8; }
+
+.dismiss {
+  appearance: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  width: 24px;
+  height: 24px;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: none;
+  color: var(--ink-muted);
+  cursor: pointer;
+  flex: none;
+}
+
+.dismiss:hover { background: var(--state-hover); color: var(--ink); }
+
+/* Tones */
+.done .iconWrap    { color: var(--done); }
+.attention .iconWrap { color: var(--attention-mark); }
+.danger .iconWrap  { color: var(--danger); }
+.neutral .iconWrap { color: var(--ink-muted); }
+
+/* Spinner */
+.spinner {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border-radius: var(--radius-full);
+  border: 2px solid var(--neutral-soft);
+  border-top-color: var(--primary);
+  animation: vt-toast-spin 0.7s linear infinite;
+}
+
+@keyframes vt-toast-spin {
+  to { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spinner { animation: none; border-top-color: var(--primary); }
+}

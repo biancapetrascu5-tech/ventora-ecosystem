@@ -1,0 +1,45 @@
+.root {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: 2px var(--space-2);
+  border-radius: var(--radius-full);
+  font-family: var(--font-sans);
+  font-size: var(--type-caption-size);
+  font-weight: var(--type-caption-weight);
+  line-height: var(--type-caption-line);
+  white-space: nowrap;
+  user-select: none;
+}
+
+.sm {
+  font-size: 11px;
+  padding: 1px var(--space-1-5);
+  gap: 3px;
+}
+
+.icon {
+  flex: none;
+  opacity: 0.8;
+}
+
+/* Tones */
+.attention {
+  background: var(--attention-soft);
+  color: var(--attention-ink);
+}
+
+.done {
+  background: var(--done-soft);
+  color: var(--done-ink);
+}
+
+.danger {
+  background: var(--danger-soft);
+  color: var(--danger-ink);
+}
+
+.neutral {
+  background: var(--neutral-soft);
+  color: var(--ink-secondary);
+}

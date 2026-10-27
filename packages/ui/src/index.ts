@@ -104,5 +104,52 @@ export type { PortalPresenceProps, PortalStatus } from './PortalPresence/PortalP
 export { AppLaunch } from './AppLaunch/AppLaunch';
 export type { AppLaunchProps } from './AppLaunch/AppLaunch';
 
+// Lot 4 — Feedback & Status
+export { Toast } from './Toast/Toast';
+export type { ToastProps, ToastTone, ToastAction } from './Toast/Toast';
+
+export { StatusPill } from './StatusPill/StatusPill';
+export type { StatusPillProps, StatusPillTone } from './StatusPill/StatusPill';
+
+export { StatusDot } from './StatusDot/StatusDot';
+export type { StatusDotProps, StatusDotTone } from './StatusDot/StatusDot';
+
+export { Badge } from './Badge/Badge';
+export type { BadgeProps, BadgeTone } from './Badge/Badge';
+
+export { Avatar, AvatarGroup } from './Avatar/Avatar';
+export type {
+  AvatarProps,
+  AvatarGroupProps,
+  AvatarGroupPerson,
+  AvatarSize,
+  AvatarStatus,
+} from './Avatar/Avatar';
+
+export { Notice } from './Notice/Notice';
+export type { NoticeProps, NoticeTone } from './Notice/Notice';
+
+export { AttentionList } from './AttentionList/AttentionList';
+export type {
+  AttentionListProps,
+  AttentionItem,
+  AttentionAction,
+} from './AttentionList/AttentionList';
+
+export { EmptyState } from './EmptyState/EmptyState';
+export type { EmptyStateProps } from './EmptyState/EmptyState';
+
+export { Skeleton, SkeletonText } from './Skeleton/Skeleton';
+export type { SkeletonProps, SkeletonTextProps } from './Skeleton/Skeleton';
+
+export { ProgressBar } from './ProgressBar/ProgressBar';
+export type { ProgressBarProps } from './ProgressBar/ProgressBar';
+
+export { UsageMeter } from './UsageMeter/UsageMeter';
+export type { UsageMeterProps } from './UsageMeter/UsageMeter';
+
+export { Kbd } from './Kbd/Kbd';
+export type { KbdProps } from './Kbd/Kbd';
+
 // Utilities
 export { cn } from './lib/cn';
