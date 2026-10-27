@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    branches: [main, develop, lot-2.1-migrations]
+    branches: [main, develop]
   pull_request:
     branches: [main, develop]
 
