@@ -13,7 +13,8 @@ import type { EntitlementProvider } from '@ventora/contracts';
 type MembershipRole =
   'owner' | 'admin' | 'member' | 'external_collaborator' | 'application_manager';
 
-// Per-invocation permission cache (module-level Map, re-created on cold start, never cross-request)
+// In-process permission cache — module-level, reset on cold start.
+// Permissions change only at deploy (sync-permissions.ts), so a long-lived cache is safe.
 const _permCache = new Map<string, boolean>();
 
 export type TenantContext = {
