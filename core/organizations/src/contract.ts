@@ -67,6 +67,7 @@ export interface OrgContext {
   readonly [_orgContextBrand]: void;
   userId: string;
   organizationId: string;
+  membershipId: string;
   role: MembershipRole;
 }
 
@@ -89,13 +90,14 @@ export async function resolveOrgContext(params: {
           userId: params.userId,
         },
       },
-      select: { role: true, status: true },
+      select: { id: true, role: true, status: true },
     });
   });
   if (!membership || membership.status !== 'active') throw new NotMemberError();
   return {
     userId: params.userId,
     organizationId: params.organizationId,
+    membershipId: membership.id,
     role: membership.role,
   } as unknown as OrgContext;
 }
@@ -228,7 +230,7 @@ export async function acceptInvitation(params: {
   token: string;
   userId: string;
   userEmail: string;
-}): Promise<{ organizationId: string; role: MembershipRole }> {
+}): Promise<{ organizationId: string; role: MembershipRole; applicationIds: string[] }> {
   const db = getOrgDb();
   const tokenHash = hashToken(params.token);
   const userEmail = normalizeEmail(params.userEmail);
@@ -295,23 +297,11 @@ export async function acceptInvitation(params: {
     };
   });
 
-  // Grant application access for non-owner/admin roles (ADR-0004).
-  // Done outside the transaction — idempotent, non-fatal on failure.
-  // Dynamic import avoids a compile-time circular dependency (organizations ↔ access).
-  if (result.role !== 'owner' && result.role !== 'admin' && result.applicationIds.length > 0) {
-    try {
-      type AccessMod = {
-        grantApplicationAccess: (org: string, user: string, apps: string[]) => Promise<void>;
-      };
-      const accessPkg: string = '@ventora/access';
-      const mod = (await import(accessPkg)) as AccessMod;
-      await mod.grantApplicationAccess(result.organizationId, params.userId, result.applicationIds);
-    } catch (err) {
-      console.warn('[organizations] grantApplicationAccess failed after acceptInvitation:', err);
-    }
-  }
-
-  return { organizationId: result.organizationId, role: result.role };
+  return {
+    organizationId: result.organizationId,
+    role: result.role,
+    applicationIds: result.applicationIds,
+  };
 }
 
 export async function revokeInvitation(ctx: OrgContext, invitationId: string): Promise<void> {

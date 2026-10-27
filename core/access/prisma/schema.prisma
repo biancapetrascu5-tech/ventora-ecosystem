@@ -56,10 +56,12 @@ model RolePermission {
 model ApplicationAccess {
   id             String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   organizationId String   @map("organization_id") @db.Uuid
+  userId         String   @map("user_id") @db.Uuid
   applicationId  String   @map("application_id") @db.VarChar(64)
+  roleInApp      String?  @map("role_in_app") @db.VarChar(64)
   createdAt      DateTime @default(now()) @map("created_at") @db.Timestamptz
 
-  @@unique([organizationId, applicationId])
+  @@unique([organizationId, userId, applicationId])
   @@map("application_access")
   @@schema("access")
 }

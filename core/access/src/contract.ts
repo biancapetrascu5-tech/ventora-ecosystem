@@ -7,15 +7,22 @@ import {
   ResourceNotFound,
 } from '@ventora/errors';
 import type { EntitlementProvider } from '@ventora/contracts';
+import { getSession } from '@ventora/identity';
+import { resolveOrgContext } from '@ventora/organizations';
 
 // System role names matching organizations.MembershipRole enum.
-// Defined locally to avoid a compile-time dependency on @ventora/organizations.
 type MembershipRole =
   'owner' | 'admin' | 'member' | 'external_collaborator' | 'application_manager';
 
-// In-process permission cache — module-level, reset on cold start.
-// Permissions change only at deploy (sync-permissions.ts), so a long-lived cache is safe.
-const _permCache = new Map<string, boolean>();
+type AccessConfig = {
+  entitlementProvider: EntitlementProvider;
+};
+
+let _config: AccessConfig | undefined;
+
+export function configureAccess(config: AccessConfig): void {
+  _config = config;
+}
 
 export type TenantContext = {
   userId: string;
@@ -24,15 +31,18 @@ export type TenantContext = {
   role: MembershipRole;
   applicationId: string;
   actor: 'user' | 'system' | 'support';
+  roleInApp?: string | null;
 };
 
 export type AuthorizeParams = {
   sessionToken: string;
   applicationId: string;
   permission?: string;
-  resourceType?: string;
-  resourceId?: string;
-  entitlementProvider?: EntitlementProvider;
+  resource?: {
+    type: string;
+    id: string;
+    exists: (ctx: TenantContext) => Promise<boolean>;
+  };
   actor?: 'user' | 'system' | 'support';
 };
 
@@ -43,7 +53,6 @@ export async function authorize(params: AuthorizeParams): Promise<TenantContext>
   const actor = params.actor ?? 'user';
 
   // Step 1: validate session
-  const { getSession } = await import('@ventora/identity');
   const headers = new Headers({ authorization: `Bearer ${params.sessionToken}` });
   const session = await getSession(headers);
   if (!session?.userId) throw new NotAuthenticated();
@@ -52,74 +61,86 @@ export async function authorize(params: AuthorizeParams): Promise<TenantContext>
   if (!organizationId) throw new NotMember();
 
   // Step 2: verify active membership (re-checked on every request, never cached)
-  const { resolveOrgContext } = await import('@ventora/organizations');
   let orgCtx: Awaited<ReturnType<typeof resolveOrgContext>>;
   try {
     orgCtx = await resolveOrgContext({ userId: session.userId, organizationId });
   } catch {
-    // resolveOrgContext throws NotMemberError when membership is missing/suspended.
-    // Translate to the canonical error from @ventora/errors.
     throw new NotMember();
   }
 
-  const role = orgCtx.role;
+  const role = orgCtx.role as MembershipRole;
+  const membershipId = orgCtx.membershipId;
 
-  // Step 3: application enabled (entitlement check)
-  const provider = params.entitlementProvider;
-  if (provider) {
-    const enabled = await provider.isEnabled(organizationId, params.applicationId);
-    if (!enabled) throw new AppNotEnabled();
-  }
+  // Step 3: application enabled (entitlement check — provider mandatory)
+  if (!_config) throw new Error('[access] configureAccess() must be called before authorize()');
+  const enabled = await _config.entitlementProvider.isEnabled(organizationId, params.applicationId);
+  if (!enabled) throw new AppNotEnabled();
 
   // Step 4: application access (skip for owner/admin — ADR-0004)
+  let effectiveRole: MembershipRole = role;
+  let roleInApp: string | null = null;
+
   if (!IMPLICIT_ACCESS_ROLES.has(role)) {
-    const hasAccess = await _checkApplicationAccess(organizationId, params.applicationId);
-    if (!hasAccess) throw new Forbidden();
+    const result = await _checkApplicationAccess(
+      organizationId,
+      session.userId,
+      params.applicationId,
+    );
+    if (!result.hasAccess) throw new Forbidden();
+    roleInApp = result.roleInApp;
+    // application_manager without role_in_app = 'manager' → downgrade to member permissions
+    effectiveRole = role === 'application_manager' && roleInApp !== 'manager' ? 'member' : role;
   }
 
   // Step 5: permission check
   if (params.permission) {
-    const allowed = await _checkRolePermission(role, params.applicationId, params.permission);
+    const allowed = await _checkRolePermission(
+      effectiveRole,
+      params.applicationId,
+      params.permission,
+    );
     if (!allowed) throw new Forbidden();
   }
 
-  // Step 6: resource ownership (if resourceType + resourceId given)
-  if (params.resourceType && params.resourceId) {
-    const owns = await _checkResourcePolicy(
-      organizationId,
-      role,
-      params.resourceType,
-      params.resourceId,
-    );
-    if (!owns) throw new ResourceNotFound();
-  }
-
-  // membershipId not stored in orgCtx; pass organizationId+userId combo as membershipId placeholder
-  // Real membershipId lookup is deferred to Lot 2.5 (audit)
-  const membershipId = `${organizationId}:${session.userId}`;
-
-  return {
+  const ctx: TenantContext = {
     userId: session.userId,
     organizationId,
     membershipId,
     role,
     applicationId: params.applicationId,
     actor,
+    roleInApp,
   };
+
+  // Step 6: resource existence + optional policy restrictions
+  if (params.resource) {
+    const exists = await params.resource.exists(ctx);
+    if (!exists) throw new ResourceNotFound();
+    const restricted = await _checkResourcePolicyRestriction(
+      organizationId,
+      effectiveRole,
+      params.resource.type,
+      params.resource.id,
+    );
+    if (restricted === false) throw new ResourceNotFound();
+  }
+
+  return ctx;
 }
 
 async function _checkApplicationAccess(
   organizationId: string,
+  userId: string,
   applicationId: string,
-): Promise<boolean> {
+): Promise<{ hasAccess: boolean; roleInApp: string | null }> {
   const db = getAccessDb();
   return db.$transaction(async (tx: any) => {
     await tx.$executeRaw`SELECT set_config('app.organization_id', ${organizationId}, true)`;
     const row = await tx.applicationAccess.findUnique({
-      where: { organizationId_applicationId: { organizationId, applicationId } },
-      select: { id: true },
+      where: { organizationId_userId_applicationId: { organizationId, userId, applicationId } },
+      select: { id: true, roleInApp: true },
     });
-    return row !== null;
+    return { hasAccess: row !== null, roleInApp: row?.roleInApp ?? null };
   });
 }
 
@@ -128,13 +149,15 @@ async function _checkRolePermission(
   applicationId: string,
   permissionName: string,
 ): Promise<boolean> {
+  // Per-call permission cache — scoped to this invocation only.
+  const _permCache = new Map<string, boolean>();
+
   const cacheKey = `${role}:${applicationId}:${permissionName}`;
   const cached = _permCache.get(cacheKey);
   if (cached !== undefined) return cached;
 
   const db = getAccessDb();
   const result = await db.$transaction(async (tx: any) => {
-    // system roles have NULL organization_id — SET LOCAL ROLE is still needed for access_rw
     await tx.$executeRaw`SELECT set_config('app.organization_id', '', true)`;
     const row = await tx.rolePermission.findFirst({
       where: {
@@ -150,22 +173,26 @@ async function _checkRolePermission(
   return result;
 }
 
-async function _checkResourcePolicy(
+async function _checkResourcePolicyRestriction(
   organizationId: string,
   role: MembershipRole,
   resourceType: string,
   resourceId: string,
-): Promise<boolean> {
+): Promise<boolean | null> {
   const db = getAccessDb();
   return db.$transaction(async (tx: any) => {
     await tx.$executeRaw`SELECT set_config('app.organization_id', ${organizationId}, true)`;
-    // Resolve system role id (organization_id IS NULL) before querying policy
     const roleRow = await tx.role.findFirst({
       where: { name: role, organizationId: null },
       select: { id: true },
     });
-    if (!roleRow) return false;
-    const row = await tx.resourceAccessPolicy.findFirst({
+    if (!roleRow) return null;
+    const anyPolicy = await tx.resourceAccessPolicy.findFirst({
+      where: { organizationId, roleId: roleRow.id, resourceType },
+      select: { id: true },
+    });
+    if (!anyPolicy) return null; // no policies → no restriction
+    const specific = await tx.resourceAccessPolicy.findFirst({
       where: {
         organizationId,
         roleId: roleRow.id,
@@ -174,19 +201,15 @@ async function _checkResourcePolicy(
       },
       select: { id: true },
     });
-    return row !== null;
+    return specific !== null;
   });
 }
 
-/**
- * Grant application access to a user's organization.
- * Called from acceptInvitation in core/organizations — idempotent (ON CONFLICT DO NOTHING).
- * Only called for member/external_collaborator/application_manager roles (ADR-0004).
- */
 export async function grantApplicationAccess(
   organizationId: string,
-  _userId: string,
+  userId: string,
   applicationIds: string[],
+  roleInApp?: string,
 ): Promise<void> {
   if (applicationIds.length === 0) return;
   const db = getAccessDb();
@@ -194,9 +217,9 @@ export async function grantApplicationAccess(
     await tx.$executeRaw`SELECT set_config('app.organization_id', ${organizationId}, true)`;
     for (const applicationId of applicationIds) {
       await tx.$executeRaw`
-        INSERT INTO access.application_access (organization_id, application_id)
-        VALUES (${organizationId}::uuid, ${applicationId})
-        ON CONFLICT DO NOTHING
+        INSERT INTO access.application_access (organization_id, user_id, application_id, role_in_app)
+        VALUES (${organizationId}::uuid, ${userId}::uuid, ${applicationId}, ${roleInApp ?? null})
+        ON CONFLICT (organization_id, user_id, application_id) DO NOTHING
       `;
     }
   });
@@ -212,4 +235,35 @@ export async function checkRolePermission(
   permissionName: string,
 ): Promise<boolean> {
   return _checkRolePermission(role as MembershipRole, applicationId, permissionName);
+}
+
+/**
+ * Orchestrates invitation acceptance + application access grant.
+ * organizations.acceptInvitation returns { organizationId, role, applicationIds } without side-effects.
+ * access module handles the grant here.
+ * If grant fails, membership is still created — the operation can be retried idempotently.
+ */
+export async function acceptInvitationWithAccess(params: {
+  token: string;
+  userId: string;
+  userEmail: string;
+}): Promise<{ organizationId: string; role: string }> {
+  // Dynamic import to avoid compile-time circular dependency: organizations imports access
+  // (for other things), so access cannot statically import organizations at the top level.
+  // acceptInvitationWithAccess is the only function here that needs organizations.
+  const { acceptInvitation } = (await import('@ventora/organizations')) as {
+    acceptInvitation: (p: {
+      token: string;
+      userId: string;
+      userEmail: string;
+    }) => Promise<{ organizationId: string; role: string; applicationIds: string[] }>;
+  };
+  const result = await acceptInvitation(params);
+  const { organizationId, role, applicationIds } = result;
+
+  if (role !== 'owner' && role !== 'admin' && applicationIds.length > 0) {
+    await grantApplicationAccess(organizationId, params.userId, applicationIds);
+  }
+
+  return { organizationId, role };
 }

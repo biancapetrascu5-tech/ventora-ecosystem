@@ -63,18 +63,20 @@ CREATE TABLE "access"."role_permission" (
 CREATE UNIQUE INDEX "role_permission_role_id_permission_id_key"
   ON "access"."role_permission"("role_id", "permission_id");
 
--- CreateTable: application_access
+-- CreateTable: application_access (per-member: organization_id + user_id + application_id)
 CREATE TABLE "access"."application_access" (
     "id"              UUID        NOT NULL DEFAULT gen_random_uuid(),
     "organization_id" UUID        NOT NULL,
+    "user_id"         UUID        NOT NULL,
     "application_id"  VARCHAR(64) NOT NULL,
+    "role_in_app"     VARCHAR(64),
     "created_at"      TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "application_access_pkey" PRIMARY KEY ("id")
 );
 
-CREATE UNIQUE INDEX "application_access_organization_id_application_id_key"
-  ON "access"."application_access"("organization_id", "application_id");
+CREATE UNIQUE INDEX "application_access_organization_id_user_id_application_id_key"
+  ON "access"."application_access"("organization_id", "user_id", "application_id");
 
 -- CreateTable: resource_access_policy
 CREATE TABLE "access"."resource_access_policy" (

@@ -358,6 +358,12 @@ importers:
       '@ventora/errors':
         specifier: workspace:*
         version: link:../../packages/errors
+      '@ventora/identity':
+        specifier: workspace:*
+        version: link:../identity
+      '@ventora/organizations':
+        specifier: workspace:*
+        version: link:../organizations
       pg:
         specifier: ^8.0.0
         version: 8.23.1
@@ -368,12 +374,6 @@ importers:
       '@types/pg':
         specifier: ^8.0.0
         version: 8.23.1
-      '@ventora/identity':
-        specifier: workspace:*
-        version: link:../identity
-      '@ventora/organizations':
-        specifier: workspace:*
-        version: link:../organizations
       typescript:
         specifier: ^6.0.0
         version: 6.0.3

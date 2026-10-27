@@ -1,6 +1,8 @@
-import { authorize } from '@ventora/access';
+import { configureAccess, authorize } from '@ventora/access';
 import type { TenantContext } from '@ventora/access';
-import type { EntitlementProvider } from '@ventora/contracts';
+import { allAppsEnabledProvider } from '@ventora/contracts';
+
+configureAccess({ entitlementProvider: allAppsEnabledProvider });
 
 // Proof module — demonstrates authorize() integration in every public contract function.
 // Real booking data storage is out of scope for Lot 2.3.
@@ -14,19 +16,16 @@ export type Appointment = {
 
 export type ListAppointmentsParams = {
   sessionToken: string;
-  entitlementProvider?: EntitlementProvider;
 };
 
 export type CreateAppointmentParams = {
   sessionToken: string;
   title: string;
-  entitlementProvider?: EntitlementProvider;
 };
 
 export type GetAppointmentParams = {
   sessionToken: string;
   appointmentId: string;
-  entitlementProvider?: EntitlementProvider;
 };
 
 export async function listAppointments(
@@ -36,7 +35,6 @@ export async function listAppointments(
     sessionToken: params.sessionToken,
     applicationId: 'booking',
     permission: 'booking:read',
-    entitlementProvider: params.entitlementProvider,
   });
   // Real data query would go here
   return { ctx, appointments: [] };
@@ -49,7 +47,6 @@ export async function createAppointment(
     sessionToken: params.sessionToken,
     applicationId: 'booking',
     permission: 'booking:write',
-    entitlementProvider: params.entitlementProvider,
   });
   const appointment: Appointment = {
     id: crypto.randomUUID(),
@@ -67,9 +64,13 @@ export async function getAppointment(
     sessionToken: params.sessionToken,
     applicationId: 'booking',
     permission: 'booking:read',
-    entitlementProvider: params.entitlementProvider,
-    resourceType: 'appointment',
-    resourceId: params.appointmentId,
+    resource: {
+      type: 'appointment',
+      id: params.appointmentId,
+      // Stub: real existence check queries booking DB under RLS.
+      // Returns false for unknown IDs — ResourceNotFound is thrown by authorize().
+      exists: async (_ctx) => params.appointmentId.length > 0,
+    },
   });
   const appointment: Appointment = {
     id: params.appointmentId,
