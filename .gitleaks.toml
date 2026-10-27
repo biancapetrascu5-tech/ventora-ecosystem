@@ -11,13 +11,3 @@ useDefault = true
 description = "Test fixture secrets in commit 9b6f756c (annotation added later)"
 commits = ["9b6f756c1e01e7900cc037e560dff63a4e7f289a"]
 
-[[rules]]
-id = "test-container-passwords"
-description = "Passwords used only in docker-compose.test.yml for the local test container"
-regex = '''app_runtime_test_pw|founder_runtime_test_pw'''
-paths = [
-  "docker-compose.test.yml",
-  "scripts/test-db-up.mjs",
-  "scripts/test-integration.mjs",
-]
-tags = ["test", "local-only"]

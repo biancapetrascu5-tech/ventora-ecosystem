@@ -83,7 +83,7 @@ try {
   console.log('\n[test:integration] organizations (T2)...');
   runPkg('@ventora/organizations', 'test:integration', {
     DATABASE_URL_TEST: ADMIN_ORG,
-    DATABASE_URL_FOUNDER_TEST: ADMIN_ORG,
+    DATABASE_URL_FOUNDER_TEST: `postgresql://founder_runtime:${TEST_DB.founderPw}@localhost:5433/${TEST_DB.orgDb}`,
     DATABASE_URL_ADMIN_TEST: ADMIN_ORG,
   });
 

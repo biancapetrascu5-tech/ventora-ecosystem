@@ -110,6 +110,15 @@ psqlFile(
   join(ROOT, 'core/identity/prisma/identity/migrations/20261025000001_identity_init/migration.sql'),
 );
 
+console.log('[test:db:up] Aplic migrarea identity #2 (session active org)...');
+psqlFile(
+  TEST_DB.identityDb,
+  join(
+    ROOT,
+    'core/identity/prisma/identity/migrations/20261027000002_session_active_org/migration.sql',
+  ),
+);
+
 console.log('[test:db:up] Aplic migrarea founder...');
 psqlFile(
   TEST_DB.identityDb,
@@ -132,7 +141,7 @@ psqlFile(
   ),
 );
 
-console.log('[test:db:up] Creez rolul app_runtime în organizations DB...');
+console.log('[test:db:up] Creez rolurile app_runtime și founder_runtime în organizations DB...');
 psql(
   TEST_DB.orgDb,
   `DO $$ BEGIN
@@ -140,7 +149,13 @@ psql(
       CREATE ROLE app_runtime LOGIN NOINHERIT;
     END IF;
    END $$;
-   ALTER ROLE app_runtime WITH PASSWORD '${TEST_DB.appPw}';`,
+   ALTER ROLE app_runtime WITH PASSWORD '${TEST_DB.appPw}';
+   DO $$ BEGIN
+    IF NOT EXISTS (SELECT FROM pg_roles WHERE rolname = 'founder_runtime') THEN
+      CREATE ROLE founder_runtime LOGIN NOINHERIT;
+    END IF;
+   END $$;
+   ALTER ROLE founder_runtime WITH PASSWORD '${TEST_DB.founderPw}';`,
 );
 
 console.log('[test:db:up] Pornesc pgbouncer-test...');

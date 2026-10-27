@@ -15,7 +15,7 @@ const _inRoleTx = new AsyncLocalStorage<boolean>();
 
 export function makeOrgClient(connectionString: string): OrgBaseClient {
   const safeRole = validateRole('org_rw');
-  const pool = new Pool({ connectionString, max: 1 });
+  const pool = new Pool({ connectionString, max: 1, connectionTimeoutMillis: 10_000 });
   const base = new OrgBaseClient({ adapter: new PrismaPg(pool) });
   const extended = base.$extends({
     query: {

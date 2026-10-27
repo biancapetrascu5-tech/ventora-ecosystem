@@ -245,12 +245,15 @@ jobs:
             --config prisma7.config.ts
         env:
           DATABASE_URL: postgresql://postgres:test@localhost:5434/ventora_org_test
-      - name: Create app_runtime login role
+      - name: Create runtime roles
         run: |
           APP_PW=$(openssl rand -hex 32)
+          FOUNDER_PW=$(openssl rand -hex 32)
           PSQL="psql postgresql://postgres:test@localhost:5434/ventora_org_test"
           $PSQL -c "CREATE ROLE app_runtime WITH LOGIN PASSWORD '${APP_PW}' NOINHERIT"
+          $PSQL -c "CREATE ROLE founder_runtime WITH LOGIN PASSWORD '${FOUNDER_PW}' NOINHERIT"
           echo "APP_PW=${APP_PW}" >> $GITHUB_ENV
+          echo "FOUNDER_PW=${FOUNDER_PW}" >> $GITHUB_ENV
       - name: Apply organizations migration
         run: |
           psql postgresql://postgres:test@localhost:5434/ventora_org_test \
@@ -258,7 +261,7 @@ jobs:
       - name: Run organizations integration tests
         env:
           DATABASE_URL_TEST: postgresql://postgres:test@localhost:5434/ventora_org_test
-          DATABASE_URL_FOUNDER_TEST: postgresql://postgres:test@localhost:5434/ventora_org_test
+          DATABASE_URL_FOUNDER_TEST: postgresql://founder_runtime:${{ env.FOUNDER_PW }}@localhost:5434/ventora_org_test
           DATABASE_URL_ADMIN_TEST: postgresql://postgres:test@localhost:5434/ventora_org_test
         run: pnpm --filter @ventora/organizations test:integration
 

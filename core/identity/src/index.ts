@@ -5,3 +5,4 @@ export { getSession, revokeSession, getUserById, listSessions } from './contract
 export type { HubSession, HubUser } from './contracts';
 export { getFounderSession, addFounderUser, revokeFounderUser } from './founder-contracts';
 export type { FounderSession, FounderUserRecord } from './founder-contracts';
+export { setSessionActiveOrganization } from './contract';

@@ -13,3 +13,4 @@ labs/experiments/e1/variant-b/generated/
 core/identity/generated/
 core/organizations/generated/
 *.tsbuildinfo
+reports/

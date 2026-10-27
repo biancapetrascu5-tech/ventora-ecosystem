@@ -7,9 +7,11 @@ import {
   acceptInvitation,
   inviteMember,
   revokeInvitation,
+  resendInvitation,
   TokenExpiredError,
   EmailMismatchError,
   ForbiddenError,
+  InvalidInvitationStatusError,
 } from '../index.js';
 
 const ADMIN_URL = process.env.DIRECT_URL ?? '';
@@ -264,6 +266,117 @@ describe('T2.8 ForbiddenError for member role', () => {
         organizationName: 'Forbidden Org',
       }),
     ).rejects.toThrow(ForbiddenError);
+
+    await adminQuery(`DELETE FROM organizations.organization WHERE id = $1`, [organizationId]);
+  });
+});
+
+// T2.9 — B4: admin cannot invite owner or admin
+describe('T2.9 admin escalation blocked (B4)', () => {
+  it('throws ForbiddenError when admin tries to invite owner', async () => {
+    const founderId = newUuid();
+    const ownerId = newUuid();
+    const adminId = newUuid();
+    const ownerEmail = `owner-b4-${Date.now()}@example.com`;
+    const adminEmail = `admin-b4-${Date.now()}@example.com`;
+    const slug = `b4-${Date.now()}`;
+
+    const { organizationId, invitationToken: ownerToken } = await createOrganizationAsFounder(
+      { founderId, founderEmail: 'founder@test.com' },
+      { name: 'B4 Org', slug, ownerEmail },
+    );
+    await acceptInvitation({ token: ownerToken, userId: ownerId, userEmail: ownerEmail });
+
+    const ownerCtx = { userId: ownerId, organizationId, role: 'owner' as const };
+    const { invitationToken: adminToken } = await inviteMember(ownerCtx, {
+      email: adminEmail,
+      role: 'admin',
+      inviterName: 'Owner',
+      organizationName: 'B4 Org',
+    });
+    await acceptInvitation({ token: adminToken, userId: adminId, userEmail: adminEmail });
+
+    const adminCtx = { userId: adminId, organizationId, role: 'admin' as const };
+    await expect(
+      inviteMember(adminCtx, {
+        email: 'newowner@example.com',
+        role: 'owner',
+        inviterName: 'Admin',
+        organizationName: 'B4 Org',
+      }),
+    ).rejects.toThrow(ForbiddenError);
+
+    await expect(
+      inviteMember(adminCtx, {
+        email: 'newadmin@example.com',
+        role: 'admin',
+        inviterName: 'Admin',
+        organizationName: 'B4 Org',
+      }),
+    ).rejects.toThrow(ForbiddenError);
+
+    await adminQuery(`DELETE FROM organizations.organization WHERE id = $1`, [organizationId]);
+  });
+});
+
+// T2.10 — S2: resendInvitation blocked for accepted/revoked status
+describe('T2.10 resendInvitation status guard (S2)', () => {
+  it('throws InvalidInvitationStatusError when invitation is accepted', async () => {
+    const founderId = newUuid();
+    const userId = newUuid();
+    const email = `resend-s2-${Date.now()}@example.com`;
+    const slug = `resend-s2-${Date.now()}`;
+
+    const { organizationId, invitationToken } = await createOrganizationAsFounder(
+      { founderId, founderEmail: 'founder@test.com' },
+      { name: 'Resend Org', slug, ownerEmail: email },
+    );
+    await acceptInvitation({ token: invitationToken, userId, userEmail: email });
+
+    const invRows = await adminQuery(
+      `SELECT id FROM organizations.invitation WHERE organization_id = $1 AND status = 'accepted'`,
+      [organizationId],
+    );
+    expect(invRows).toHaveLength(1);
+
+    const ctx = { userId, organizationId, role: 'owner' as const };
+    await expect(resendInvitation(ctx, invRows[0].id)).rejects.toThrow(
+      InvalidInvitationStatusError,
+    );
+
+    await adminQuery(`DELETE FROM organizations.organization WHERE id = $1`, [organizationId]);
+  });
+
+  it('throws InvalidInvitationStatusError when invitation is revoked', async () => {
+    const founderId = newUuid();
+    const ownerId = newUuid();
+    const ownerEmail = `owner-s2r-${Date.now()}@example.com`;
+    const invEmail = `inv-s2r-${Date.now()}@example.com`;
+    const slug = `s2r-${Date.now()}`;
+
+    const { organizationId, invitationToken: ownerToken } = await createOrganizationAsFounder(
+      { founderId, founderEmail: 'founder@test.com' },
+      { name: 'Revoke Resend Org', slug, ownerEmail },
+    );
+    await acceptInvitation({ token: ownerToken, userId: ownerId, userEmail: ownerEmail });
+
+    const ctx = { userId: ownerId, organizationId, role: 'owner' as const };
+    await inviteMember(ctx, {
+      email: invEmail,
+      role: 'member',
+      inviterName: 'Owner',
+      organizationName: 'Revoke Resend Org',
+    });
+
+    const invRows = await adminQuery(
+      `SELECT id FROM organizations.invitation WHERE organization_id = $1 AND email = $2`,
+      [organizationId, invEmail],
+    );
+    await revokeInvitation(ctx, invRows[0].id);
+
+    await expect(resendInvitation(ctx, invRows[0].id)).rejects.toThrow(
+      InvalidInvitationStatusError,
+    );
 
     await adminQuery(`DELETE FROM organizations.organization WHERE id = $1`, [organizationId]);
   });

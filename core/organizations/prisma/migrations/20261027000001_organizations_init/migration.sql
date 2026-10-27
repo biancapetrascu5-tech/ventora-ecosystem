@@ -148,6 +148,9 @@ ALTER TABLE "organizations"."invitation" ADD CONSTRAINT "invitation_organization
 GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA "organizations" TO org_rw;
 ALTER DEFAULT PRIVILEGES IN SCHEMA "organizations" GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO org_rw;
 
+-- Orgs are never deleted through the application layer
+REVOKE DELETE ON "organizations"."organization" FROM org_rw;
+
 -- RLS
 ALTER TABLE "organizations"."organization" ENABLE ROW LEVEL SECURITY;
 ALTER TABLE "organizations"."organization_setting" ENABLE ROW LEVEL SECURITY;
@@ -155,34 +158,37 @@ ALTER TABLE "organizations"."membership" ENABLE ROW LEVEL SECURITY;
 ALTER TABLE "organizations"."application_access" ENABLE ROW LEVEL SECURITY;
 ALTER TABLE "organizations"."invitation" ENABLE ROW LEVEL SECURITY;
 
+-- NULLIF guards against empty-string setting which would cause a cast error
 CREATE POLICY org_rw_organization ON "organizations"."organization"
   TO org_rw
-  USING (id = current_setting('app.organization_id', true)::uuid)
-  WITH CHECK (id = current_setting('app.organization_id', true)::uuid);
+  USING (id = NULLIF(current_setting('app.organization_id', true), '')::uuid)
+  WITH CHECK (id = NULLIF(current_setting('app.organization_id', true), '')::uuid);
 
 CREATE POLICY org_rw_organization_setting ON "organizations"."organization_setting"
   TO org_rw
-  USING (organization_id = current_setting('app.organization_id', true)::uuid)
-  WITH CHECK (organization_id = current_setting('app.organization_id', true)::uuid);
+  USING (organization_id = NULLIF(current_setting('app.organization_id', true), '')::uuid)
+  WITH CHECK (organization_id = NULLIF(current_setting('app.organization_id', true), '')::uuid);
 
 CREATE POLICY org_rw_membership ON "organizations"."membership"
   TO org_rw
-  USING (organization_id = current_setting('app.organization_id', true)::uuid)
-  WITH CHECK (organization_id = current_setting('app.organization_id', true)::uuid);
+  USING (organization_id = NULLIF(current_setting('app.organization_id', true), '')::uuid)
+  WITH CHECK (organization_id = NULLIF(current_setting('app.organization_id', true), '')::uuid);
 
 CREATE POLICY org_rw_application_access ON "organizations"."application_access"
   TO org_rw
-  USING (organization_id = current_setting('app.organization_id', true)::uuid)
-  WITH CHECK (organization_id = current_setting('app.organization_id', true)::uuid);
+  USING (organization_id = NULLIF(current_setting('app.organization_id', true), '')::uuid)
+  WITH CHECK (organization_id = NULLIF(current_setting('app.organization_id', true), '')::uuid);
 
 CREATE POLICY org_rw_invitation ON "organizations"."invitation"
   TO org_rw
-  USING (organization_id = current_setting('app.organization_id', true)::uuid)
-  WITH CHECK (organization_id = current_setting('app.organization_id', true)::uuid);
+  USING (organization_id = NULLIF(current_setting('app.organization_id', true), '')::uuid)
+  WITH CHECK (organization_id = NULLIF(current_setting('app.organization_id', true), '')::uuid);
 
 -- SECURITY DEFINER functions (owner = postgres, fixed search_path, REVOKE FROM PUBLIC then GRANT)
 
-CREATE OR REPLACE FUNCTION organizations.list_my_memberships(p_user_id UUID)
+-- S1: reads app.user_id from session config instead of taking a parameter,
+-- so the caller cannot supply an arbitrary user_id from client input.
+CREATE OR REPLACE FUNCTION organizations.list_my_memberships()
 RETURNS TABLE (
   organization_id   UUID,
   organization_name VARCHAR(255),
@@ -202,13 +208,13 @@ AS $$
     m.status
   FROM "organizations"."membership" m
   JOIN "organizations"."organization" o ON o.id = m.organization_id
-  WHERE m.user_id = p_user_id
+  WHERE m.user_id = NULLIF(current_setting('app.user_id', true), '')::uuid
     AND m.status = 'active'
   ORDER BY o.name;
 $$;
 
-REVOKE ALL ON FUNCTION organizations.list_my_memberships(UUID) FROM PUBLIC;
-GRANT EXECUTE ON FUNCTION organizations.list_my_memberships(UUID) TO org_rw;
+REVOKE ALL ON FUNCTION organizations.list_my_memberships() FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION organizations.list_my_memberships() TO org_rw;
 
 CREATE OR REPLACE FUNCTION organizations.find_invitation_by_token_hash(p_token_hash TEXT)
 RETURNS TABLE (
@@ -271,7 +277,7 @@ AS $$
       (SELECT id FROM new_org),
       (SELECT name FROM new_org),
       p_created_by_founder_id,
-      'Founder',
+      'Ventora',
       p_owner_email,
       'owner',
       p_invitation_token_hash,

@@ -1,8 +1,43 @@
 import crypto from 'node:crypto';
 import { Pool } from 'pg';
 import { getOrgDb } from './db.js';
-import { NotMemberError, TokenExpiredError, EmailMismatchError, ForbiddenError } from './errors.js';
+import {
+  NotMemberError,
+  NotFoundError,
+  TokenExpiredError,
+  EmailMismatchError,
+  ForbiddenError,
+  InvalidInvitationStatusError,
+  InvalidSlugError,
+  ReservedSlugError,
+  InvalidNameError,
+  InvalidEmailError,
+} from './errors.js';
 import type { MembershipRole } from '../generated/organizations-client';
+
+// Slug: 2–63 lowercase alphanumeric / hyphens, no leading/trailing hyphen
+const SLUG_RE = /^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$/;
+
+const RESERVED_SLUGS = new Set([
+  'ventora',
+  'admin',
+  'api',
+  'www',
+  'mail',
+  'support',
+  'help',
+  'billing',
+  'status',
+  'docs',
+  'blog',
+  'about',
+  'app',
+  'login',
+  'signup',
+]);
+
+// Basic RFC5322-style email check (full validation happens server-side)
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 function normalizeEmail(email: string): string {
   return email.trim().toLowerCase();
@@ -23,22 +58,60 @@ export interface OrgContext {
   role: MembershipRole;
 }
 
+/**
+ * Verifies that userId holds an active membership in organizationId (under RLS),
+ * then returns an OrgContext with the DB-sourced role.
+ * userId MUST come from the authenticated session — never from client input.
+ */
+export async function resolveOrgContext(params: {
+  userId: string;
+  organizationId: string;
+}): Promise<OrgContext> {
+  const db = getOrgDb();
+  const membership = await db.$transaction(async (tx: any) => {
+    await tx.$executeRaw`SELECT set_config('app.organization_id', ${params.organizationId}, true)`;
+    return tx.membership.findUnique({
+      where: {
+        organizationId_userId: {
+          organizationId: params.organizationId,
+          userId: params.userId,
+        },
+      },
+      select: { role: true, status: true },
+    });
+  });
+  if (!membership || membership.status !== 'active') throw new NotMemberError();
+  return { userId: params.userId, organizationId: params.organizationId, role: membership.role };
+}
+
 // Uses DATABASE_URL_FOUNDER connection (founder_runtime role).
 // founder_create_organization is SECURITY DEFINER — caller needs EXECUTE, not org_rw.
 export async function createOrganizationAsFounder(
   ctx: FounderContext,
   params: { name: string; slug: string; ownerEmail: string },
 ): Promise<{ organizationId: string; invitationToken: string }> {
+  const name = params.name.trim();
+  if (!name || name.length > 255) throw new InvalidNameError();
+
+  if (!SLUG_RE.test(params.slug)) throw new InvalidSlugError();
+  if (RESERVED_SLUGS.has(params.slug)) throw new ReservedSlugError();
+
+  const ownerEmail = normalizeEmail(params.ownerEmail);
+  if (!EMAIL_RE.test(ownerEmail)) throw new InvalidEmailError();
+
   const token = crypto.randomBytes(32).toString('hex');
   const tokenHash = hashToken(token);
-  const ownerEmail = normalizeEmail(params.ownerEmail);
 
-  const pool = new Pool({ connectionString: process.env.DATABASE_URL_FOUNDER!, max: 1 });
+  const pool = new Pool({
+    connectionString: process.env.DATABASE_URL_FOUNDER!,
+    max: 1,
+    connectionTimeoutMillis: 10_000,
+  });
   try {
     const { rows } = await pool.query<{ organization_id: string; invitation_id: string }>(
       `SELECT organization_id, invitation_id
        FROM organizations.founder_create_organization($1, $2, $3, $4, $5::uuid)`,
-      [params.name, params.slug, ownerEmail, tokenHash, ctx.founderId],
+      [name, params.slug, ownerEmail, tokenHash, ctx.founderId],
     );
     if (!rows[0]) throw new Error('[organizations] founder_create_organization returned no rows');
     return { organizationId: rows[0].organization_id, invitationToken: token };
@@ -47,9 +120,11 @@ export async function createOrganizationAsFounder(
   }
 }
 
+// S1: sets app.user_id from the authenticated session — never from client input.
 export async function listMyOrganizations(userId: string) {
   const db = getOrgDb();
   return db.$transaction(async (tx: any) => {
+    await tx.$executeRaw`SELECT set_config('app.user_id', ${userId}, true)`;
     return tx.$queryRaw<
       Array<{
         organization_id: string;
@@ -59,26 +134,28 @@ export async function listMyOrganizations(userId: string) {
         status: string;
       }>
     >`SELECT organization_id, organization_name, organization_slug, role, status
-      FROM organizations.list_my_memberships(${userId}::uuid)`;
+      FROM organizations.list_my_memberships()`;
   });
 }
 
-export async function getOrganization(_ctx: OrgContext, id: string) {
+// B1: uses ctx.organizationId exclusively — id param removed to prevent context confusion.
+export async function getOrganization(ctx: OrgContext) {
   const db = getOrgDb();
   const result = await db.$transaction(async (tx: any) => {
-    await tx.$executeRaw`SELECT set_config('app.organization_id', ${id}, true)`;
-    return tx.organization.findUnique({ where: { id } });
+    await tx.$executeRaw`SELECT set_config('app.organization_id', ${ctx.organizationId}, true)`;
+    return tx.organization.findUnique({ where: { id: ctx.organizationId } });
   });
   if (!result) throw new NotMemberError();
   return result;
 }
 
-export async function getMembership(_ctx: OrgContext, userId: string, orgId: string) {
+// B1: uses ctx.organizationId exclusively — orgId param removed.
+export async function getMembership(ctx: OrgContext, userId: string) {
   const db = getOrgDb();
   return db.$transaction(async (tx: any) => {
-    await tx.$executeRaw`SELECT set_config('app.organization_id', ${orgId}, true)`;
+    await tx.$executeRaw`SELECT set_config('app.organization_id', ${ctx.organizationId}, true)`;
     return tx.membership.findUnique({
-      where: { organizationId_userId: { organizationId: orgId, userId } },
+      where: { organizationId_userId: { organizationId: ctx.organizationId, userId } },
     });
   });
 }
@@ -101,6 +178,10 @@ export async function inviteMember(
   },
 ): Promise<{ invitationToken: string }> {
   if (ctx.role !== 'owner' && ctx.role !== 'admin') throw new ForbiddenError();
+  // B4: admins cannot invite owners or other admins
+  if (ctx.role === 'admin' && (params.role === 'owner' || params.role === 'admin')) {
+    throw new ForbiddenError('Admins cannot invite owners or other admins');
+  }
   const db = getOrgDb();
   const token = crypto.randomBytes(32).toString('hex');
   const tokenHash = hashToken(token);
@@ -184,10 +265,15 @@ export async function revokeInvitation(ctx: OrgContext, invitationId: string): P
   const db = getOrgDb();
   await db.$transaction(async (tx: any) => {
     await tx.$executeRaw`SELECT set_config('app.organization_id', ${ctx.organizationId}, true)`;
-    await tx.invitation.update({
-      where: { id: invitationId },
-      data: { status: 'revoked', updatedAt: new Date() },
-    });
+    try {
+      await tx.invitation.update({
+        where: { id: invitationId },
+        data: { status: 'revoked', updatedAt: new Date() },
+      });
+    } catch (err: any) {
+      if (err?.code === 'P2025') throw new NotFoundError('Invitation not found');
+      throw err;
+    }
   });
 }
 
@@ -202,10 +288,22 @@ export async function resendInvitation(
 
   await db.$transaction(async (tx: any) => {
     await tx.$executeRaw`SELECT set_config('app.organization_id', ${ctx.organizationId}, true)`;
+
+    // S2: fetch current status before updating
+    const inv = await tx.invitation.findUnique({
+      where: { id: invitationId },
+      select: { status: true },
+    });
+    if (!inv) throw new NotFoundError('Invitation not found');
+    if (inv.status === 'accepted' || inv.status === 'revoked') {
+      throw new InvalidInvitationStatusError();
+    }
+
     await tx.invitation.update({
       where: { id: invitationId },
       data: {
         tokenHash,
+        status: 'pending',
         expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
         emailStatus: 'pending',
         updatedAt: new Date(),
