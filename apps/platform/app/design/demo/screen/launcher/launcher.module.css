@@ -141,7 +141,8 @@
 
   .tileRowAction {
     order: 3;
-    flex-basis: 100%;
+    width: 100%;
+    box-sizing: border-box;
     padding-left: calc(36px + var(--space-3));
     margin-top: var(--space-1);
   }

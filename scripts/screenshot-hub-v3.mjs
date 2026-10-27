@@ -101,7 +101,8 @@ async function captureImpl(page, variant) {
   const url = `${BASE}/design/demo/screen/${name}?${params}`;
   await page.goto(url, { waitUntil: 'networkidle' });
   await hideDevOverlay(page);
-  // Așteptăm să se stabilizeze după ascunderea overlay-ului
+  // Setăm tema explicit pe <html> (tokenii :root[data-theme] necesită atribut pe element rădăcină)
+  await page.evaluate((t) => document.documentElement.setAttribute('data-theme', t), theme);
   await page.waitForTimeout(300);
 
   const stateSuffix = state && state !== 'default' ? `_${state}` : '';

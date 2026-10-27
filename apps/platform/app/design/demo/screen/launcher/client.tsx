@@ -108,7 +108,7 @@ const OTHER_CONFIGS: OtherConfig[] = [
   },
   {
     app: 'network',
-    pills: [{ label: 'Nu e în abonament', icon: 'globe' }],
+    pills: [{ label: 'Nu e în abonament', icon: 'link' }],
     body: '',
     primaryAction: 'Scrie-ne',
   },
