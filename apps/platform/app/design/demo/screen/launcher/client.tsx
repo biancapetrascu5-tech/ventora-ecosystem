@@ -70,10 +70,15 @@ const DOCK_APPS: DockApp[] = [
   { app: 'documents', description: 'Documente, contracte și template-uri' },
 ];
 
+type PillConfig = {
+  label: string;
+  attention?: boolean;
+  icon?: string;
+};
+
 type OtherConfig = {
   app: AppName;
-  pillLabel: string;
-  pillAttention?: boolean;
+  pills: PillConfig[];
   body: string;
   primaryAction: string;
   hasMenu?: boolean;
@@ -81,25 +86,32 @@ type OtherConfig = {
 const OTHER_CONFIGS: OtherConfig[] = [
   {
     app: 'inventory',
-    pillLabel: 'Temporar indisponibilă',
+    pills: [{ label: 'Temporar indisponibilă' }],
     body: 'Lucrăm la ea acum. Revine în curând.',
     primaryAction: 'Vezi starea',
   },
   {
     app: 'analytics',
-    pillLabel: 'Nu e în rolul tău',
-    body: 'Aplicația e disponibilă doar pentru anumite roluri.',
+    pills: [{ label: 'Nu e în rolul tău', icon: 'key' }],
+    body: 'Rolul tău nu include această aplicație. Bianca Petrașcu îți poate da acces.',
     primaryAction: 'Cere acces',
   },
   {
     app: 'marketing',
-    pillLabel: 'Recomandare',
-    pillAttention: true,
-    body: 'Nu e în abonamentul tău.',
-    primaryAction: 'Vezi detaliile',
+    pills: [
+      { label: 'Recomandare', attention: true },
+      { label: 'Nu e în abonament', icon: 'lock' },
+    ],
+    body: '49 lei pe lună · fără cost de implementare',
+    primaryAction: 'Adaugă la abonament',
     hasMenu: true,
   },
-  { app: 'network', pillLabel: 'Nu e în abonament', body: '', primaryAction: 'Scrie-ne' },
+  {
+    app: 'network',
+    pills: [{ label: 'Nu e în abonament', icon: 'globe' }],
+    body: '',
+    primaryAction: 'Scrie-ne',
+  },
 ];
 
 function VentoraLogoFull({ height = 28 }: { height?: number }) {
@@ -145,55 +157,58 @@ function VentoraLogoFull({ height = 28 }: { height?: number }) {
 
 function AppTileRow({ config }: { config: OtherConfig }) {
   return (
-    <div
-      style={{
-        display: 'flex',
-        alignItems: 'flex-start',
-        gap: 'var(--space-3)',
-        padding: 'var(--space-3) 0',
-        borderBottom: '1px solid var(--line)',
-      }}
-    >
+    <div className={bandStyles.tileRow}>
       <AppIcon app={config.app} size={36} muted title={APP_LABELS[config.app]} />
-      <div style={{ flex: 1, minWidth: 0 }}>
+      <div className={bandStyles.tileRowBody}>
         <div
-          style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)', flexWrap: 'wrap' }}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 'var(--space-2)',
+            flexWrap: 'wrap',
+            marginBottom: config.body ? 'var(--space-0-5)' : undefined,
+          }}
         >
           <span className="body-strong">{APP_LABELS[config.app]}</span>
-          <span
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              padding: '1px 8px',
-              borderRadius: 999,
-              fontSize: 12,
-              fontWeight: 500,
-              background: config.pillAttention ? 'var(--attention-soft)' : 'var(--neutral-soft)',
-              color: config.pillAttention ? 'var(--attention-ink)' : 'var(--ink-secondary)',
-              border: `1px solid ${config.pillAttention ? 'var(--attention-line)' : 'var(--line)'}`,
-            }}
-          >
-            {config.pillLabel}
-          </span>
+          {config.pills.map((pill) => (
+            <span
+              key={pill.label}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 4,
+                padding: '1px 8px',
+                borderRadius: 999,
+                fontSize: 12,
+                fontWeight: 500,
+                background: pill.attention ? 'var(--attention-soft)' : 'var(--neutral-soft)',
+                color: pill.attention ? 'var(--attention-ink)' : 'var(--ink-secondary)',
+                border: `1px solid ${pill.attention ? 'var(--attention-line)' : 'var(--line)'}`,
+              }}
+            >
+              {pill.icon && <Icon icon={pill.icon as any} size="sm" aria-hidden style={{ width: 12, height: 12 }} />}
+              {pill.label}
+            </span>
+          ))}
         </div>
         {config.body && (
           <span className="body-small" style={{ color: 'var(--ink-secondary)' }}>
             {config.body}
           </span>
         )}
-        <div style={{ display: 'flex', gap: 'var(--space-1)', marginTop: 'var(--space-1)' }}>
-          <Button variant="outline" size="sm">
-            {config.primaryAction}
-          </Button>
-          {config.hasMenu && (
-            <IconButton
-              icon="more-horizontal"
-              label="Mai multe opțiuni"
-              variant="quiet"
-              size="sm"
-            />
-          )}
-        </div>
+      </div>
+      <div className={bandStyles.tileRowAction}>
+        <Button variant="outline" size="sm">
+          {config.primaryAction}
+        </Button>
+        {config.hasMenu && (
+          <IconButton
+            icon="more-horizontal"
+            label="Mai multe opțiuni"
+            variant="quiet"
+            size="sm"
+          />
+        )}
       </div>
     </div>
   );
@@ -268,6 +283,7 @@ export function LauncherScreenClient({ theme }: { theme: 'light' | 'dark'; activ
           <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
             <button
               type="button"
+              className={bandStyles.searchBar}
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
@@ -281,12 +297,12 @@ export function LauncherScreenClient({ theme }: { theme: 'light' | 'dark'; activ
                 cursor: 'pointer',
                 font: 'inherit',
                 fontSize: 13,
-                minWidth: 160,
               }}
             >
               <Icon icon="search" size="sm" aria-hidden />
-              <span>Caută…</span>
+              <span className={bandStyles.searchText}>Caută…</span>
               <span
+                className={bandStyles.searchKbd}
                 style={{
                   marginLeft: 'auto',
                   display: 'inline-flex',
@@ -361,98 +377,21 @@ export function LauncherScreenClient({ theme }: { theme: 'light' | 'dark'; activ
             Duminică, 25 octombrie · Salon Aurora
           </p>
           <h1 className="display-hub">Bună dimineața, Bianca</h1>
-          <p className="lead" style={{ marginTop: 'var(--space-2)', maxWidth: 560 }}>
-            {'Azi ai '}
-            <a
-              href="#"
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 4,
-                padding: '1px 8px',
-                borderRadius: 999,
-                background: 'var(--on-brand-soft)',
-                color: 'var(--on-brand-ink)',
-                textDecoration: 'none',
-                fontSize: 14,
-              }}
-            >
+          <div className={bandStyles.chipsRow}>
+            <a href="#" className={bandStyles.chip}>
               <AppIcon app="booking" size={16} />
-              {' 8 programări'}
+              8 programări
             </a>
-            {', '}
-            <a
-              href="#"
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 4,
-                padding: '1px 8px',
-                borderRadius: 999,
-                background: 'var(--on-brand-soft)',
-                color: 'var(--on-brand-ink)',
-                textDecoration: 'none',
-                fontSize: 14,
-              }}
-            >
+            <a href="#" className={bandStyles.chip}>
               <AppIcon app="finance" size={16} />
-              {' 2 facturi scadente'}
-              <span
-                style={{
-                  width: 6,
-                  height: 6,
-                  borderRadius: '50%',
-                  background: 'var(--attention-base)',
-                  display: 'inline-block',
-                  marginLeft: 2,
-                }}
-                aria-hidden
-              />
+              2 facturi scadente
+              <span className={bandStyles.chipDot} aria-hidden />
             </a>
-            {' și '}
-            <a
-              href="#"
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 4,
-                padding: '1px 8px',
-                borderRadius: 999,
-                background: 'var(--on-brand-soft)',
-                color: 'var(--on-brand-ink)',
-                textDecoration: 'none',
-                fontSize: 14,
-              }}
-            >
+            <a href="#" className={bandStyles.chip}>
               <AppIcon app="hr" size={16} />
-              {' o cerere de concediu'}
-              <span
-                style={{
-                  width: 6,
-                  height: 6,
-                  borderRadius: '50%',
-                  background: 'var(--attention-base)',
-                  display: 'inline-block',
-                  marginLeft: 2,
-                }}
-                aria-hidden
-              />
+              o cerere de concediu
+              <span className={bandStyles.chipDot} aria-hidden />
             </a>
-            {' de aprobat.'}
-          </p>
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              marginTop: 'var(--space-6)',
-            }}
-          >
-            <h2 className="display-m">Aplicațiile tale</h2>
-            <Button size="sm" variant="quiet">
-              <Icon icon="list" size="sm" aria-hidden style={{ marginRight: 4 }} />
-              Reordonează
-            </Button>
           </div>
           {/* Decorative chevrons */}
           <svg className={bandStyles.bandChev} viewBox="0 0 176 240" aria-hidden>
@@ -463,24 +402,32 @@ export function LauncherScreenClient({ theme }: { theme: 'light' | 'dark'; activ
           </svg>
         </BrandZone>
 
-        {/* AppDock + PortalPresence */}
-        <div
-          className={bandStyles.dockWrap}
-          style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}
-        >
-          <AppDock
-            apps={DOCK_APPS}
-            onOpen={(_e, app, name, launchInfo) => {
-              setLaunch({ app, name, from: launchInfo.from, fromCard: launchInfo.fromCard });
-            }}
-          />
-          <PortalPresence
-            status="published"
-            onManage={() => {}}
-            previewHref="#"
-            translations={PORTAL_TRANSLATIONS}
-            compact
-          />
+        {/* AppDock section — outside band, on canvas */}
+        <div className={bandStyles.dockSection}>
+          <div className={bandStyles.dockHeader}>
+            <h2 className="display-m">Aplicațiile tale</h2>
+            <Button size="sm" variant="quiet">
+              <Icon icon="list" size="sm" aria-hidden style={{ marginRight: 4 }} />
+              Reordonează
+            </Button>
+          </div>
+          <div
+            className={bandStyles.dockWrap}
+            style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}
+          >
+            <AppDock
+              apps={DOCK_APPS}
+              onOpen={(_e, app, name, launchInfo) => {
+                setLaunch({ app, name, from: launchInfo.from, fromCard: launchInfo.fromCard });
+              }}
+            />
+            <PortalPresence
+              status="published"
+              onManage={() => {}}
+              previewHref="#"
+              translations={PORTAL_TRANSLATIONS}
+            />
+          </div>
         </div>
 
         {/* Alte aplicații */}
@@ -502,7 +449,11 @@ export function LauncherScreenClient({ theme }: { theme: 'light' | 'dark'; activ
             ))}
           </div>
           <div style={{ marginTop: 'var(--space-4)' }}>
-            <Button variant="quiet">Vezi toate aplicațiile Ventora</Button>
+            <Button variant="quiet">
+              <Icon icon="grid" size="sm" aria-hidden style={{ marginRight: 4 }} />
+              Vezi toate aplicațiile Ventora
+              <Icon icon="arrow-right" size="sm" aria-hidden style={{ marginLeft: 4 }} />
+            </Button>
           </div>
         </div>
       </div>

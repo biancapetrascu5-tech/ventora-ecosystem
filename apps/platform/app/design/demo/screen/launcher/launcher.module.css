@@ -21,18 +21,128 @@
   opacity: 0.15;
 }
 
-.dockWrap {
-  margin-top: -60px;
+/* Summary chips row in band */
+.chipsRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-top: var(--space-3);
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1-5);
+  padding: 3px var(--space-3) 3px var(--space-2);
+  border-radius: var(--radius-full);
+  background: var(--on-brand-soft);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: var(--on-brand-ink);
+  text-decoration: none;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.chipDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--attention-base, #f59e0b);
+  flex-shrink: 0;
+}
+
+/* Search bar in top bar */
+.searchBar {
+  min-width: 160px;
+}
+
+.searchText,
+.searchKbd {
+  /* visible on desktop, hidden on mobile */
+}
+
+/* AppDock section — outside band, on canvas */
+.dockSection {
+  margin-top: calc(-60px + var(--space-2));
   position: relative;
   z-index: 1;
 }
 
+.dockHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--space-5);
+  margin-bottom: var(--space-2);
+  color: var(--on-brand-ink);
+}
+
+.dockWrap {
+  position: relative;
+  z-index: 1;
+}
+
+/* App tile row — "Alte aplicații" */
+.tileRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) 0;
+  border-bottom: 1px solid var(--line);
+  flex-wrap: wrap;
+}
+
+.tileRowBody {
+  flex: 1;
+  min-width: 0;
+}
+
+.tileRowAction {
+  display: flex;
+  gap: var(--space-1);
+  align-items: center;
+  flex-shrink: 0;
+}
+
+/* Mobile ≤599px */
 @media (max-width: 599px) {
   .band {
-    padding-bottom: var(--space-6);
+    padding-bottom: var(--space-5);
   }
 
-  .dockWrap {
+  .bandChev {
+    display: none;
+  }
+
+  .dockSection {
     margin-top: var(--space-4);
+  }
+
+  .dockHeader {
+    padding: 0;
+    color: var(--ink);
+  }
+
+  .searchBar {
+    min-width: unset !important;
+    width: 32px;
+    padding: 0 !important;
+    justify-content: center;
+  }
+
+  .searchText,
+  .searchKbd {
+    display: none;
+  }
+
+  .tileRow {
+    align-items: flex-start;
+  }
+
+  .tileRowAction {
+    order: 3;
+    flex-basis: 100%;
+    padding-left: calc(36px + var(--space-3));
+    margin-top: var(--space-1);
   }
 }

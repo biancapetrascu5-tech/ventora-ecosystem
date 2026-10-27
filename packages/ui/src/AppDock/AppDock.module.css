@@ -39,6 +39,7 @@
   padding: var(--space-2);
   border-radius: var(--radius-md);
   position: relative;
+  font-family: var(--font-sans);
   transition: background-color var(--duration-instant) var(--ease-standard);
   /* Keep focus ring for keyboard */
 }

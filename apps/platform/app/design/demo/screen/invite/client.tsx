@@ -174,7 +174,7 @@ export function InviteScreenClient({
               </Button>
             </div>
             <p className="caption muted" style={{ textAlign: 'center' }}>
-              Invitația e valabilă până pe <strong>3 noiembrie 2026</strong>.
+              Invitația e valabilă până pe <strong>31 octombrie 2026</strong>.
             </p>
           </>
         )}

@@ -108,6 +108,12 @@ async function captureImpl(page, variant) {
   const filename = `${name}_${viewport}_${theme}${stateSuffix}_impl.png`;
   const outPath = path.join(OUT, filename);
 
+  // Verifică overflow orizontal
+  const scrollW = await page.evaluate(() => document.documentElement.scrollWidth);
+  if (scrollW > viewport) {
+    throw new Error(`overflow orizontal: scrollWidth=${scrollW} > viewport=${viewport}`);
+  }
+
   await page.screenshot({ path: outPath, fullPage: true });
   console.log(`  ✓ ${filename}`);
 }
@@ -133,6 +139,10 @@ async function captureDesign(page, variant) {
     console.warn(`  ⚠ Selector "${selector}" not found in ${component}`);
     return;
   }
+
+  // Setăm tema pe <html> astfel încât tokenii CSS :root[data-theme] să se activeze corect
+  await page.evaluate((t) => document.documentElement.setAttribute('data-theme', t), theme);
+  await page.waitForTimeout(150);
 
   // Scroll la element pentru a-l face vizibil înainte de screenshot
   const el = page.locator(selector).first();

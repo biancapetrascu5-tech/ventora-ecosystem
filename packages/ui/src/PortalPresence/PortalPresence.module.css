@@ -207,3 +207,35 @@
   border-radius: var(--radius-sm);
   text-decoration: none;
 }
+
+/* Responsive: column on mobile, row on desktop */
+@media (max-width: 767px) {
+  .card {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .actions > * {
+    width: 100%;
+  }
+
+  .manageBtn {
+    width: 100%;
+    height: var(--control-lg);
+  }
+}
+
+@media (min-width: 768px) {
+  .storeIconWrap {
+    margin-bottom: 0;
+  }
+
+  .meta {
+    flex: 1;
+  }
+}
