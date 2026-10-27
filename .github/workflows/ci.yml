@@ -128,16 +128,16 @@ jobs:
           PSQL="psql postgresql://postgres:test@localhost:5433/ventora_identity_test"
           $PSQL -c "CREATE DATABASE shadow_identity_diff"
           $PSQL -c "CREATE DATABASE shadow_founder_diff"
+          SHADOW_DATABASE_URL="postgresql://postgres:test@localhost:5433/shadow_identity_diff" \
           pnpm --filter @ventora/identity exec prisma migrate diff \
             --from-migrations ./prisma/identity/migrations \
-            --to-schema-datamodel ./prisma/identity/schema.prisma \
-            --shadow-database-url "postgresql://postgres:test@localhost:5433/shadow_identity_diff" \
+            --to-schema ./prisma/identity/schema.prisma \
             --exit-code \
             --config prisma7.config.ts
+          SHADOW_DATABASE_URL="postgresql://postgres:test@localhost:5433/shadow_founder_diff" \
           pnpm --filter @ventora/identity exec prisma migrate diff \
             --from-migrations ./prisma/founder/migrations \
-            --to-schema-datamodel ./prisma/founder/schema.prisma \
-            --shadow-database-url "postgresql://postgres:test@localhost:5433/shadow_founder_diff" \
+            --to-schema ./prisma/founder/schema.prisma \
             --exit-code \
             --config prisma7.config.ts
         env:
@@ -237,10 +237,10 @@ jobs:
         run: |
           PSQL="psql postgresql://postgres:test@localhost:5434/ventora_org_test"
           $PSQL -c "CREATE DATABASE shadow_org_diff"
+          SHADOW_DATABASE_URL="postgresql://postgres:test@localhost:5434/shadow_org_diff" \
           pnpm --filter @ventora/organizations exec prisma migrate diff \
             --from-migrations ./prisma/migrations \
-            --to-schema-datamodel ./prisma/schema.prisma \
-            --shadow-database-url "postgresql://postgres:test@localhost:5434/shadow_org_diff" \
+            --to-schema ./prisma/schema.prisma \
             --exit-code \
             --config prisma7.config.ts
         env:

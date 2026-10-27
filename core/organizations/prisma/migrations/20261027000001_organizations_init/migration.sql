@@ -26,26 +26,26 @@ BEGIN
 END $$;
 
 -- CreateEnum
-CREATE TYPE "organizations"."membership_role" AS ENUM ('owner', 'admin', 'member', 'external_collaborator');
+CREATE TYPE "organizations"."MembershipRole" AS ENUM ('owner', 'admin', 'member', 'external_collaborator');
 
 -- CreateEnum
-CREATE TYPE "organizations"."membership_status" AS ENUM ('active', 'suspended');
+CREATE TYPE "organizations"."MembershipStatus" AS ENUM ('active', 'suspended');
 
 -- CreateEnum
-CREATE TYPE "organizations"."invitation_status" AS ENUM ('pending', 'accepted', 'expired', 'revoked');
+CREATE TYPE "organizations"."InvitationStatus" AS ENUM ('pending', 'accepted', 'expired', 'revoked');
 
 -- CreateEnum
-CREATE TYPE "organizations"."invitation_email_status" AS ENUM ('pending', 'sent', 'failed');
+CREATE TYPE "organizations"."InvitationEmailStatus" AS ENUM ('pending', 'sent', 'failed');
 
 -- CreateEnum
-CREATE TYPE "organizations"."created_via" AS ENUM ('founder', 'self_service', 'import');
+CREATE TYPE "organizations"."CreatedVia" AS ENUM ('founder', 'self_service', 'import');
 
 -- CreateTable
 CREATE TABLE "organizations"."organization" (
     "id" UUID NOT NULL DEFAULT gen_random_uuid(),
     "slug" VARCHAR(63) NOT NULL,
     "name" VARCHAR(255) NOT NULL,
-    "created_via" "organizations"."created_via" NOT NULL,
+    "created_via" "organizations"."CreatedVia" NOT NULL,
     "created_by_founder_id" UUID,
     "created_at" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMPTZ NOT NULL,
@@ -70,8 +70,8 @@ CREATE TABLE "organizations"."membership" (
     "id" UUID NOT NULL DEFAULT gen_random_uuid(),
     "organization_id" UUID NOT NULL,
     "user_id" UUID NOT NULL,
-    "role" "organizations"."membership_role" NOT NULL,
-    "status" "organizations"."membership_status" NOT NULL DEFAULT 'active',
+    "role" "organizations"."MembershipRole" NOT NULL,
+    "status" "organizations"."MembershipStatus" NOT NULL DEFAULT 'active',
     "created_at" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMPTZ NOT NULL,
 
@@ -96,11 +96,11 @@ CREATE TABLE "organizations"."invitation" (
     "invited_by_user_id" UUID NOT NULL,
     "invited_by_name" VARCHAR(255) NOT NULL,
     "email" VARCHAR(255) NOT NULL,
-    "role" "organizations"."membership_role" NOT NULL,
+    "role" "organizations"."MembershipRole" NOT NULL,
     "token_hash" VARCHAR(64) NOT NULL,
     "expires_at" TIMESTAMPTZ NOT NULL,
-    "status" "organizations"."invitation_status" NOT NULL DEFAULT 'pending',
-    "email_status" "organizations"."invitation_email_status" NOT NULL DEFAULT 'pending',
+    "status" "organizations"."InvitationStatus" NOT NULL DEFAULT 'pending',
+    "email_status" "organizations"."InvitationEmailStatus" NOT NULL DEFAULT 'pending',
     "accepted_by_user_id" UUID,
     "created_at" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMPTZ NOT NULL,
@@ -187,8 +187,8 @@ RETURNS TABLE (
   organization_id   UUID,
   organization_name VARCHAR(255),
   organization_slug VARCHAR(63),
-  role              "organizations"."membership_role",
-  status            "organizations"."membership_status"
+  role              "organizations"."MembershipRole",
+  status            "organizations"."MembershipStatus"
 )
 LANGUAGE sql
 SECURITY DEFINER
@@ -217,9 +217,9 @@ RETURNS TABLE (
   organization_name   VARCHAR(255),
   invited_by_name     VARCHAR(255),
   email               VARCHAR(255),
-  role                "organizations"."membership_role",
+  role                "organizations"."MembershipRole",
   expires_at          TIMESTAMPTZ,
-  status              "organizations"."invitation_status"
+  status              "organizations"."InvitationStatus"
 )
 LANGUAGE sql
 SECURITY DEFINER
@@ -258,14 +258,14 @@ SECURITY DEFINER
 SET search_path = organizations, pg_catalog
 AS $$
   WITH new_org AS (
-    INSERT INTO "organizations"."organization" (name, slug, created_via, created_by_founder_id)
-    VALUES (p_name, p_slug, 'founder', p_created_by_founder_id)
+    INSERT INTO "organizations"."organization" (name, slug, created_via, created_by_founder_id, updated_at)
+    VALUES (p_name, p_slug, 'founder', p_created_by_founder_id, NOW())
     RETURNING id, name
   ),
   new_inv AS (
     INSERT INTO "organizations"."invitation" (
       organization_id, organization_name, invited_by_user_id, invited_by_name,
-      email, role, token_hash, expires_at
+      email, role, token_hash, expires_at, updated_at
     )
     VALUES (
       (SELECT id FROM new_org),
@@ -275,7 +275,8 @@ AS $$
       p_owner_email,
       'owner',
       p_invitation_token_hash,
-      NOW() + INTERVAL '30 days'
+      NOW() + INTERVAL '30 days',
+      NOW()
     )
     RETURNING id
   )

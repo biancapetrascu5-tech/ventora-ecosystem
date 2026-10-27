@@ -50,7 +50,7 @@ enum CreatedVia {
 }
 
 model Organization {
-  id                 String     @id @default(uuid()) @db.Uuid
+  id                 String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   slug               String     @unique @db.VarChar(63)
   name               String     @db.VarChar(255)
   createdVia         CreatedVia @map("created_via")
@@ -68,7 +68,7 @@ model Organization {
 }
 
 model OrganizationSetting {
-  id             String   @id @default(uuid()) @db.Uuid
+  id             String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   organizationId String   @map("organization_id") @db.Uuid
   key            String   @db.VarChar(128)
   value          String
@@ -83,7 +83,7 @@ model OrganizationSetting {
 }
 
 model Membership {
-  id             String           @id @default(uuid()) @db.Uuid
+  id             String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   organizationId String           @map("organization_id") @db.Uuid
   userId         String           @map("user_id") @db.Uuid
   role           MembershipRole
@@ -100,7 +100,7 @@ model Membership {
 }
 
 model ApplicationAccess {
-  id             String   @id @default(uuid()) @db.Uuid
+  id             String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   organizationId String   @map("organization_id") @db.Uuid
   applicationId  String   @map("application_id") @db.VarChar(64)
   createdAt      DateTime @default(now()) @map("created_at") @db.Timestamptz
@@ -113,7 +113,7 @@ model ApplicationAccess {
 }
 
 model Invitation {
-  id               String                @id @default(uuid()) @db.Uuid
+  id               String                @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   organizationId   String                @map("organization_id") @db.Uuid
   organizationName String                @map("organization_name") @db.VarChar(255)
   invitedByUserId  String                @map("invited_by_user_id") @db.Uuid

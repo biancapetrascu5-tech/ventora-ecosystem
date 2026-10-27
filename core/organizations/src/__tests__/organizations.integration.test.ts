@@ -38,11 +38,11 @@ describe('T2.1 RLS isolation', () => {
   it('blocks SELECT on membership without org context', async () => {
     const orgId = newUuid();
     await adminQuery(
-      `INSERT INTO organizations.organization(id, slug, name, created_via) VALUES($1, $2, $3, 'founder')`,
+      `INSERT INTO organizations.organization(id, slug, name, created_via, updated_at) VALUES($1, $2, $3, 'founder', NOW())`,
       [orgId, `rls-${orgId.slice(0, 8)}`, 'RLS Test Org'],
     );
     await adminQuery(
-      `INSERT INTO organizations.membership(organization_id, user_id, role) VALUES($1, $2, 'member')`,
+      `INSERT INTO organizations.membership(organization_id, user_id, role, updated_at) VALUES($1, $2, 'member', NOW())`,
       [orgId, newUuid()],
     );
 

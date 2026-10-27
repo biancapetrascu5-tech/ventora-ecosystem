@@ -12,6 +12,19 @@
   - Folosește o bază separată pentru teste; nu atinge alte baze existente
 - **Verificare CI:** o singură dată la câteva minute cu `gh run list`, nu în buclă
 
+## Regula pre-push (obligatorie)
+
+**Înainte de orice push care atinge `core/**`, `packages/**`, `modules/**` sau fișiere de migrație:**
+
+```
+pnpm test:integration
+```
+
+Dacă comanda reușește (exit 0) → poți face push.
+Dacă eșuează sau nu pot rula containerele Docker → mă opresc și raportez fondatoarei. **Nu fac push fără teste verzi.**
+
+Scriptul face automat: pornește postgres:17 + pgbouncer pe porturile 5433/6432, aplică toate migrațiile, verifică garda de drift pentru cele 3 scheme Prisma (identity, founder, organizations), rulează testele de integrare, și oprește containerele.
+
 ---
 
 ## Reguli obligatorii

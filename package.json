@@ -12,7 +12,10 @@
     "guards:verify": "node scripts/guards-verify.mjs",
     "format": "prettier --write \"**/*.{ts,tsx,json,mjs}\" --ignore-path .prettierignore",
     "format:check": "prettier --check \"**/*.{ts,tsx,json,mjs}\" --ignore-path .prettierignore",
-    "founder:bootstrap": "tsx core/identity/scripts/bootstrap-founder.ts"
+    "founder:bootstrap": "tsx core/identity/scripts/bootstrap-founder.ts",
+    "test:db:up": "node scripts/test-db-up.mjs",
+    "test:db:down": "node scripts/test-db-down.mjs",
+    "test:integration": "node scripts/test-integration.mjs"
   },
   "devDependencies": {
     "@typescript-eslint/parser": "^8.72.0",
