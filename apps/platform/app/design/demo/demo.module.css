@@ -826,20 +826,104 @@
   }
 }
 
-/* Buton text "Arată/Ascunde parola" — lângă eticheta câmpului */
-.showPassBtn {
+/* Toggle parolă — iconiță ochi ÎN câmp (poziție absolută în raport cu wrapper-ul Input) */
+.passWrap {
+  position: relative;
+}
+
+.passToggleBtn {
+  position: absolute;
+  right: var(--space-2);
+  top: 50%;
+  transform: translateY(-50%);
   appearance: none;
   border: 0;
   background: none;
-  padding: 0;
+  padding: var(--space-1);
+  border-radius: var(--radius-sm);
   cursor: pointer;
-  font-size: var(--type-body-small-size);
-  line-height: var(--type-body-small-line);
-  color: var(--ink-secondary);
-  text-decoration: underline;
-  text-underline-offset: 2px;
+  color: var(--ink-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
 }
 
-.showPassBtn:hover {
+.passToggleBtn:hover {
   color: var(--ink);
+  background: var(--state-hover);
+}
+
+/* Butoane org din contextBar (org + rol + chevron) */
+.hubOrgBtn {
+  appearance: none;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--ink);
+  font: inherit;
+}
+
+.hubOrgBtn:hover {
+  background: var(--state-hover);
+}
+
+.hubOrgInfo {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0;
+}
+
+.hubOrgRole {
+  font-size: var(--type-caption-size);
+  font-weight: 400;
+  color: var(--ink-secondary);
+  line-height: 1.2;
+}
+
+/* Selector limbă — glob + text + chevron */
+.langBtnFull {
+  appearance: none;
+  border: 1px solid var(--line-strong);
+  background: transparent;
+  color: var(--ink-secondary);
+  font: inherit;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 4px 8px 4px 6px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+}
+
+.langBtnFull:hover {
+  background: var(--state-hover);
+}
+
+/* Pill stare per-app în rândurile AppTileRow */
+.appRowPill {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px var(--space-2);
+  border-radius: var(--radius-full);
+  font-size: var(--type-caption-size);
+  font-weight: 500;
+  background: var(--neutral-soft);
+  color: var(--ink-secondary);
+  white-space: nowrap;
+  flex: none;
+}
+
+.appRowPillAttention {
+  background: var(--attention-soft);
+  color: var(--attention-ink);
 }

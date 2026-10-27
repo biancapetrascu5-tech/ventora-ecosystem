@@ -29,8 +29,6 @@
   font-size: var(--type-eyebrow-size);
   line-height: var(--type-eyebrow-line);
   font-weight: var(--type-eyebrow-weight);
-  letter-spacing: var(--type-eyebrow-tracking, 0.08em);
-  text-transform: uppercase;
   color: var(--ink-muted);
   display: flex;
   align-items: center;
@@ -91,6 +89,11 @@
   width: var(--dot-size);
   height: var(--dot-size);
   border-radius: var(--radius-full);
+  flex: none;
+}
+
+.pillCheck {
+  display: block;
   flex: none;
 }
 

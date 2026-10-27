@@ -1,7 +1,7 @@
 /* eslint-disable i18next/no-literal-string */
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useLayoutEffect, useRef } from 'react';
 import {
   Button,
   Input,
@@ -56,51 +56,6 @@ const APP_LABELS: Record<AppName, string> = {
   events: 'Events',
   assets: 'Assets',
 };
-
-const ACCESS_LABELS: Record<string, string> = {
-  unavailable: 'Indisponibilă',
-  notInRole: 'Rolul tău nu include această aplicație',
-  notInPlan: 'Nu e în planul tău',
-};
-
-const OTHER: Array<[AppName, string]> = [
-  ['inventory', 'unavailable'],
-  ['analytics', 'notInRole'],
-  ['marketing', 'notInPlan'],
-  ['network', 'notInPlan'],
-];
-
-/* ── Logo Ventora inline — NECESITĂ DECIZIE FONDATORI (Logo din @ventora/ui) */
-function VentoraLogoMark({ size = 36 }: { size?: number }) {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 400 400"
-      width={size}
-      height={size}
-      aria-hidden
-      style={{ display: 'block', flexShrink: 0 }}
-    >
-      <polygon points="200,150 352,262 200,330 48,262" fill="#161e38" />
-      <polygon points="126,96 196,132 192,344 158,230" fill="#f2ede3" />
-      <polygon points="274,96 204,132 208,344 242,230" fill="#f2ede3" />
-      <polygon
-        points="28,16 120,80 188,352 200,392"
-        fill="#FFAA75"
-        stroke="#0a1024"
-        strokeWidth="12"
-      />
-      <polygon
-        points="372,16 280,80 212,352 200,392"
-        fill="#B1744F"
-        stroke="#0a1024"
-        strokeWidth="12"
-      />
-      <polygon points="200,172 200,362 162,246" fill="#FFAA75" stroke="#0a1024" strokeWidth="14" />
-      <polygon points="200,172 238,246 200,362" fill="#B1744F" stroke="#0a1024" strokeWidth="14" />
-    </svg>
-  );
-}
 
 /* Logo complet — varianta B: gem + wordmark VENTORA (în BrandZone var(--ink) → brand-ink = crem) */
 function VentoraLogoFull({ height = 28 }: { height?: number }) {
@@ -161,18 +116,70 @@ function Chevrons({ className }: { className?: string }) {
   );
 }
 
-/* ── AppTile row (OTHER apps — NECESITĂ DECIZIE FONDATORI: Lot 5) */
-function AppTileRow({ app, access }: { app: AppName; access: string }) {
+type AppRowConfig = {
+  app: AppName;
+  pillLabel: string;
+  pillAttention?: boolean;
+  body: string;
+  primaryAction: string;
+  hasMenu?: boolean;
+};
+
+const OTHER_CONFIGS: AppRowConfig[] = [
+  {
+    app: 'inventory',
+    pillLabel: 'Temporar indisponibilă',
+    body: 'Lucrăm la ea acum. Revine în curând.',
+    primaryAction: 'Vezi starea',
+  },
+  {
+    app: 'analytics',
+    pillLabel: 'Nu e în rolul tău',
+    body: 'Aplicația e disponibilă doar pentru anumite roluri.',
+    primaryAction: 'Cere acces',
+  },
+  {
+    app: 'marketing',
+    pillLabel: 'Recomandare',
+    pillAttention: true,
+    body: 'Nu e în abonamentul tău.',
+    primaryAction: 'Vezi detaliile',
+    hasMenu: true,
+  },
+  {
+    app: 'network',
+    pillLabel: 'Nu e în abonament',
+    body: '',
+    primaryAction: 'Scrie-ne',
+  },
+];
+
+/* ── AppTile row — stări per aplicație */
+function AppTileRow({ config }: { config: AppRowConfig }) {
   return (
     <div className={styles.appTileRow}>
-      <AppIcon app={app} size={36} muted title={APP_LABELS[app]} />
+      <AppIcon app={config.app} size={36} muted title={APP_LABELS[config.app]} />
       <div className={styles.appTileRowText}>
-        <span className={styles.appTileRowLabel}>{APP_LABELS[app]}</span>
-        <span className={styles.appTileRowAccess}>{ACCESS_LABELS[access] ?? access}</span>
+        <div
+          style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)', flexWrap: 'wrap' }}
+        >
+          <span className={styles.appTileRowLabel}>{APP_LABELS[config.app]}</span>
+          <span
+            className={cn(styles.appRowPill, config.pillAttention && styles.appRowPillAttention)}
+          >
+            {config.pillLabel}
+          </span>
+        </div>
+        {config.body && <span className={styles.appTileRowAccess}>{config.body}</span>}
       </div>
-      <Button variant="quiet" size="sm">
-        Solicită acces
-      </Button>
+      <div style={{ display: 'flex', gap: 'var(--space-1)', alignItems: 'center', flexShrink: 0 }}>
+        <Button variant="quiet" size="sm">
+          {config.primaryAction}
+        </Button>
+        {config.hasMenu && (
+          <IconButton icon="more-horizontal" label="Mai multe opțiuni" variant="quiet" size="sm" />
+        )}
+      </div>
     </div>
   );
 }
@@ -187,9 +194,10 @@ function ScaledPreview({ src, title }: { src: string; title: string }) {
   const [scale, setScale] = useState(1);
   const [contentH, setContentH] = useState(800);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const wrap = wrapRef.current;
     if (!wrap) return;
+    setScale(wrap.clientWidth / FRAME_WIDTH);
     const obs = new ResizeObserver(([e]) => {
       setScale(e.contentRect.width / FRAME_WIDTH);
     });
@@ -321,7 +329,7 @@ export function DemoClient() {
               <div className={styles.signInSplit}>
                 <BrandZone as="aside" className={styles.signInBrand}>
                   <div className={styles.signInBrandTop}>
-                    <VentoraLogoMark size={40} />
+                    <VentoraLogoFull height={28} />
                   </div>
                   <p className={cn('display-xl', styles.signInStatement)}>
                     Afacerea ta.
@@ -334,9 +342,24 @@ export function DemoClient() {
 
                 <div className={styles.signInFormSide}>
                   <header className={cn(styles.authTop, styles.signInFormHeader)}>
-                    {/* NECESITĂ DECIZIE FONDATORI: LanguageSwitcher din @ventora/ui */}
-                    <button type="button" className={styles.langBtn}>
-                      RO
+                    <button type="button" className={styles.langBtnFull}>
+                      <svg
+                        aria-hidden
+                        width="14"
+                        height="14"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <circle cx="12" cy="12" r="10" />
+                        <line x1="2" y1="12" x2="22" y2="12" />
+                        <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+                      </svg>
+                      Română
+                      <Icon icon="chevron-down" size="sm" aria-hidden />
                     </button>
                   </header>
                   <main className={styles.signInFormMain}>
@@ -427,7 +450,7 @@ export function DemoClient() {
               <div className={styles.signInSplit}>
                 <BrandZone as="aside" className={styles.signInBrand}>
                   <div className={styles.signInBrandTop}>
-                    <VentoraLogoMark size={40} />
+                    <VentoraLogoFull height={28} />
                   </div>
                   <p className={cn('display-xl', styles.signInStatement)}>
                     Afacerea ta.
@@ -440,8 +463,24 @@ export function DemoClient() {
 
                 <div className={styles.signInFormSide}>
                   <header className={cn(styles.authTop, styles.signInFormHeader)}>
-                    <button type="button" className={styles.langBtn}>
-                      RO
+                    <button type="button" className={styles.langBtnFull}>
+                      <svg
+                        aria-hidden
+                        width="14"
+                        height="14"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <circle cx="12" cy="12" r="10" />
+                        <line x1="2" y1="12" x2="22" y2="12" />
+                        <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+                      </svg>
+                      Română
+                      <Icon icon="chevron-down" size="sm" aria-hidden />
                     </button>
                   </header>
                   <main className={cn(styles.signInFormMain, styles.signInFormMainTop)}>
@@ -511,21 +550,28 @@ export function DemoClient() {
                           <div className={styles.passwordField}>
                             <div className={styles.passwordLabel}>
                               <span>Parolă nouă</span>
+                            </div>
+                            <div className={styles.passWrap}>
+                              <Input
+                                type={showInvitePassword ? 'text' : 'password'}
+                                autoComplete="new-password"
+                                value={invitePassword}
+                                onChange={(e) => setInvitePassword(e.target.value)}
+                              />
                               <button
                                 type="button"
-                                className={styles.showPassBtn}
+                                className={styles.passToggleBtn}
                                 onClick={() => setShowInvitePassword((v) => !v)}
+                                aria-label={showInvitePassword ? 'Ascunde parola' : 'Arată parola'}
                                 aria-pressed={showInvitePassword}
                               >
-                                {showInvitePassword ? 'Ascunde parola' : 'Arată parola'}
+                                <Icon
+                                  icon={showInvitePassword ? 'eye-off' : 'eye'}
+                                  size="sm"
+                                  aria-hidden
+                                />
                               </button>
                             </div>
-                            <Input
-                              type={showInvitePassword ? 'text' : 'password'}
-                              autoComplete="new-password"
-                              value={invitePassword}
-                              onChange={(e) => setInvitePassword(e.target.value)}
-                            />
                           </div>
                           {/* cerințe parolă live — lime când sunt îndeplinite */}
                           <ul className={styles.invReqs}>
@@ -553,7 +599,6 @@ export function DemoClient() {
                       )}
                     </div>
                   </main>
-                  <footer className={styles.authFoot}>Termeni · Confidențialitate · Ajutor</footer>
                 </div>
               </div>
             </div>
@@ -750,7 +795,13 @@ export function DemoClient() {
                 <div className={styles.hubContextBar}>
                   <div className={styles.hubBarLeft}>
                     <VentoraLogoFull />
-                    <span className={styles.hubOrgName}>Salon Aurora</span>
+                    <button type="button" className={styles.hubOrgBtn}>
+                      <div className={styles.hubOrgInfo}>
+                        <span className={styles.hubOrgName}>Salon Aurora</span>
+                        <span className={styles.hubOrgRole}>Proprietar</span>
+                      </div>
+                      <Icon icon="chevron-down" size="sm" aria-hidden />
+                    </button>
                   </div>
                   <div className={styles.hubBarRight}>
                     <IconButton icon="search" label="Caută" variant="quiet" />
@@ -837,8 +888,8 @@ export function DemoClient() {
                     Nu le poți deschide acum. La fiecare scrie de ce și ce poți face.
                   </p>
                   <div className={styles.lbOtherRows}>
-                    {OTHER.map(([app, access]) => (
-                      <AppTileRow key={app} app={app} access={access} />
+                    {OTHER_CONFIGS.map((config) => (
+                      <AppTileRow key={config.app} config={config} />
                     ))}
                   </div>
                   <div style={{ marginTop: 'var(--space-4)' }}>

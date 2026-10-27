@@ -53,7 +53,24 @@ export function PortalPresence({
         <p className={styles.eyebrow}>
           {t.eyebrow}
           <span className={cn(styles.pill, styles[status])}>
-            <span className={styles.pillDot} aria-hidden />
+            {status === 'published' ? (
+              <svg
+                className={styles.pillCheck}
+                aria-hidden
+                width="10"
+                height="10"
+                viewBox="0 0 12 12"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <polyline points="2,6 5,9 10,3" />
+              </svg>
+            ) : (
+              <span className={styles.pillDot} aria-hidden />
+            )}
             {statusLabel}
           </span>
         </p>
