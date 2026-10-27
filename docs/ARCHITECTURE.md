@@ -1,6 +1,6 @@
 # VENTORA ECOSYSTEM — ARHITECTURĂ TEHNICĂ
 
-**Versiune:** 0.4.3
+**Versiune:** 0.4.4
 **Data:** 27 octombrie 2026
 **Stadiu:** Faza 0 închisă (tag `faza-0`). Deciziile marcate CONFIRMAT sunt baza implementării; cele PROPUS sau NECESITĂ DECIZIE nu se implementează fără aprobare.
 
@@ -26,6 +26,7 @@
 | 0.4.1 | 25.10.2026 | Echipa Founder: mai multe conturi Founder nominale, fiecare cu acces complet (D-ACC-4). Emailul tranzacțional prin Resend, regiunea UE, în spatele unui adaptor din `core/notifications` (D-NOT-1). Direcția vizuală B „Navy de comandă” aplicată în design system, doar pentru Hub (D-UI-6). Detalii: §17.18. |
 | 0.4.2 | 25.10.2026 | Numele afișate ale celor 13 module de business (D-UX-4): EasyBook, ClientDesk, TeamSpace, MoneyDesk, TaskBoard, ShiftPlan, DocSpace, StockDesk, DataView, CampaignKit, EventSpace, AssetDesk, ContractDesk. Identificatorii tehnici rămân neschimbați. Detalii: §17.19. |
 | 0.4.3 | 27.10.2026 | Ecranele Hub pornesc în paralel cu F3 și F4, imediat după F1 și F2, pe contracte definite dinainte (D-ROAD-4). Regiunea Resend confirmată (eu-west-1). Regulile SMS: GSM-7 fără diacritice (D-SMS-10) și mai multe telefoane (D-SMS-11). Detalii: §17.20. |
+| 0.4.4 | 27.10.2026 | ADR 0003: organizațiile se implementează în modulul propriu `core/organizations`, nu prin plugin-ul Better Auth; organizația activă rămâne în sesiune, printr-un câmp propriu. D-AUTH-5 actualizat. Detalii: §17.21. |
 
 ## Statusuri folosite în acest document
 
@@ -323,7 +324,7 @@ Exemplu, rezervare cu avans din Portal: Booking creează programarea `pending_pa
 - **Sesiuni stocate în baza de date**, cu ID opac în cookie. Rolul **nu** stă în token. Permisiunile se citesc din DB la fiecare request, cu cache doar pe durata request-ului. Asta rezolvă vulnerabilitatea S2 din audit.
 - Librăria propusă: **Better Auth** (self-hosted, adapter Prisma, invitații, 2FA). Versiunea stabilă se verifică la start. Alternative evaluate: Clerk/Auth0 (cost per utilizator, date la terți), Supabase Auth (organizațiile tot le construim noi).
 - Parole cu **scrypt**, algoritmul implicit al Better Auth (CONFIRMAT 25.10.2026, în locul argon2id propus inițial: sigur, inclus în Node.js, fără pachete compilate pe Vercel). 2FA TOTP opțional pentru utilizatori, **obligatoriu** pentru Founder.
-- **Configurația Better Auth validată în E9 (CONFIRMAT):** sesiuni în baza de date; **cache-ul de sesiune din cookie dezactivat** (altfel revocarea și retrogradarea întârzie; vezi și issue-ul Better Auth #11690); plugin-urile oficiale pentru organizații (organizația activă în sesiune, schimbată doar pe server, cu verificarea membership-ului), 2FA (TOTP + coduri de recuperare de unică folosință, stocate criptat) și sesiuni pe token pentru clienți fără browser (viitoarea aplicație mobilă); **limitarea încercărilor activă în producție** (dezactivată doar în teste).
+- **Configurația Better Auth validată în E9 (CONFIRMAT):** sesiuni în baza de date; **cache-ul de sesiune din cookie dezactivat** (altfel revocarea și retrogradarea întârzie; vezi și issue-ul Better Auth #11690); organizația activă în sesiune, ca un câmp propriu (`activeOrganizationId`), schimbată doar pe server, după verificarea membership-ului în `core/organizations` (ADR 0003: modul propriu, nu plugin-ul Better Auth pentru organizații); plugin-urile oficiale 2FA (TOTP + coduri de recuperare de unică folosință, stocate criptat) și sesiuni pe token pentru clienți fără browser (viitoarea aplicație mobilă); **limitarea încercărilor activă în producție** (dezactivată doar în teste).
 - **2FA obligatoriu pentru Owner (CONFIRMAT, P5):** proprietarul poate plăti și schimba accesul celorlalți, deci autentificarea în doi pași e obligatorie pentru el. La primirea rolului de Owner are o **perioadă de grație de 14 zile** (cu un Notice neutru, fără blocare); după ea, accesul la acțiunile de Owner cere 2FA activ. La activare primește **coduri de recuperare** de unică folosință (stocate ca hash, regenerabile, regenerarea auditată). Pierderea dispozitivului fără coduri se rezolvă doar prin sesiune de suport Founder, auditată.
 - **Codul 2FA se cere pe un dispozitiv nou** (CONFIRMAT, D10 microcopy); „Ține-mă minte” păstrează sesiunea 30 de zile pe dispozitivul ales (CONFIRMAT, P1), revocabilă din Securitate.
 
@@ -1144,7 +1145,7 @@ Plus, la nivel de platformă: teste de webhook Stripe (semnătură, idempotenț�
 | D-PN-6 | Pas de plată în programarea din Portal doar când afacerea cere avans | Da | CONFIRMAT | Nu |
 | D-PN-7 | Programul de afiliere, criteriile Founding 100 și „Verificat” | — | NECESITĂ DECIZIE | Da |
 | D-AUTH-4 | Parolele cu scrypt (implicitul Better Auth), nu argon2id | Da | CONFIRMAT (25.10.2026, E9) | Nu |
-| D-AUTH-5 | Better Auth: cache-ul de sesiune oprit, limitarea încercărilor activă în producție, plugin-urile organizație / 2FA / token | Da | CONFIRMAT (25.10.2026, E9) | Nu |
+| D-AUTH-5 | Better Auth: cache-ul de sesiune oprit, limitarea încercărilor activă în producție, plugin-urile 2FA / token; organizațiile în `core/organizations`, nu prin plugin (ADR 0003, 27.10.2026) | Da | CONFIRMAT (25.10.2026, E9; actualizat 27.10.2026) | Nu |
 | D-INF-4 | Outbox cu dispecer periodic (Inngest cron), consumatori idempotenți, dead-letter după 3 eșecuri | Da | CONFIRMAT (25.10.2026, E7) | Nu |
 | D-COM-10 | Cote: rezervare atomică (UPDATE condiționat) + confirmare / eliberare + reconciliere periodică a rezervărilor expirate (Inngest cron) | Da | CONFIRMAT (25.10.2026, E8) | Nu |
 | D-SEC-3 | Garda din db-kit refuză updateMany / deleteMany fără filtru explicit | Da | CONFIRMAT (25.10.2026, E6) | Nu |
@@ -1287,6 +1288,14 @@ Fiecare experiment produce un raport scurt și un ADR. Pentru toate se folosesc 
 4. **Nicio decizie deschisă nu s-a închis prin această versiune** în afara celor de mai sus. D-COM-7, D-PX-2, D-PX-3, D-GRW-8 (validarea juridică), D-UX-2 rămân NECESITĂ DECIZIE.
 
 ---
+
+### 17.21 Modificări în v0.4.4
+
+**ADR 0003** (`docs/adr/0003-core-organizations-modul-propriu-fara-plugin-better-auth.md`), aprobat de fondatoare pe 27.10.2026, implementat în Lotul 2.2 (PR #4):
+
+1. Organizațiile, membership-urile și invitațiile sunt în `core/organizations`: schema Postgres `organizations`, rolul `org_rw`, RLS cu USING + WITH CHECK pe toate tabelele, funcții SECURITY DEFINER doar pentru listarea propriilor organizații, găsirea invitației după token și crearea organizației de către Founder.
+2. Plugin-ul Better Auth pentru organizații nu se folosește. Din Better Auth rămân sesiunile, email/parolă, 2FA, sesiunile pe token și limitarea încercărilor.
+3. Organizația activă e câmpul `active_organization_id` din sesiune, scris doar prin `setSessionActiveOrganization()`, care primește un context verificat în baza de date (`resolveOrgContext`). La fiecare cerere, `authorize()` (Lotul 2.3) reverifică membership-ul activ.
 
 ### 17.20 Modificări în v0.4.3
 
