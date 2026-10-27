@@ -1,7 +1,6 @@
 generator client {
-  provider        = "prisma-client-js"
-  output          = "../generated/organizations-client"
-  previewFeatures = ["multiSchema", "driverAdapters"]
+  provider = "prisma-client-js"
+  output   = "../generated/organizations-client"
 }
 
 datasource db {
@@ -54,10 +53,10 @@ model Organization {
   id                 String     @id @default(uuid()) @db.Uuid
   slug               String     @unique @db.VarChar(63)
   name               String     @db.VarChar(255)
-  createdVia         CreatedVia
-  createdByFounderId String?    @db.Uuid
-  createdAt          DateTime   @default(now())
-  updatedAt          DateTime   @updatedAt
+  createdVia         CreatedVia @map("created_via")
+  createdByFounderId String?    @map("created_by_founder_id") @db.Uuid
+  createdAt          DateTime   @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt          DateTime   @updatedAt @map("updated_at") @db.Timestamptz
 
   settings    OrganizationSetting[]
   memberships Membership[]
@@ -69,14 +68,14 @@ model Organization {
 }
 
 model OrganizationSetting {
-  id             String       @id @default(uuid()) @db.Uuid
-  organizationId String       @db.Uuid
-  key            String       @db.VarChar(128)
+  id             String   @id @default(uuid()) @db.Uuid
+  organizationId String   @map("organization_id") @db.Uuid
+  key            String   @db.VarChar(128)
   value          String
-  createdAt      DateTime     @default(now())
-  updatedAt      DateTime     @updatedAt
+  createdAt      DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt      DateTime @updatedAt @map("updated_at") @db.Timestamptz
 
-  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
 
   @@unique([organizationId, key])
   @@map("organization_setting")
@@ -85,27 +84,28 @@ model OrganizationSetting {
 
 model Membership {
   id             String           @id @default(uuid()) @db.Uuid
-  organizationId String           @db.Uuid
-  userId         String           @db.Uuid
+  organizationId String           @map("organization_id") @db.Uuid
+  userId         String           @map("user_id") @db.Uuid
   role           MembershipRole
   status         MembershipStatus @default(active)
-  createdAt      DateTime         @default(now())
-  updatedAt      DateTime         @updatedAt
+  createdAt      DateTime         @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt      DateTime         @updatedAt @map("updated_at") @db.Timestamptz
 
-  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
 
   @@unique([organizationId, userId])
+  @@index([userId])
   @@map("membership")
   @@schema("organizations")
 }
 
 model ApplicationAccess {
   id             String   @id @default(uuid()) @db.Uuid
-  organizationId String   @db.Uuid
-  applicationId  String   @db.VarChar(64)
-  createdAt      DateTime @default(now())
+  organizationId String   @map("organization_id") @db.Uuid
+  applicationId  String   @map("application_id") @db.VarChar(64)
+  createdAt      DateTime @default(now()) @map("created_at") @db.Timestamptz
 
-  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
 
   @@unique([organizationId, applicationId])
   @@map("application_access")
@@ -114,22 +114,24 @@ model ApplicationAccess {
 
 model Invitation {
   id               String                @id @default(uuid()) @db.Uuid
-  organizationId   String                @db.Uuid
-  organizationName String                @db.VarChar(255)
-  invitedByUserId  String                @db.Uuid
-  invitedByName    String                @db.VarChar(255)
+  organizationId   String                @map("organization_id") @db.Uuid
+  organizationName String                @map("organization_name") @db.VarChar(255)
+  invitedByUserId  String                @map("invited_by_user_id") @db.Uuid
+  invitedByName    String                @map("invited_by_name") @db.VarChar(255)
   email            String                @db.VarChar(255)
   role             MembershipRole
-  tokenHash        String                @unique @db.VarChar(64)
-  expiresAt        DateTime
+  tokenHash        String                @unique @map("token_hash") @db.VarChar(64)
+  expiresAt        DateTime              @map("expires_at") @db.Timestamptz
   status           InvitationStatus      @default(pending)
-  emailStatus      InvitationEmailStatus @default(pending)
-  acceptedByUserId String?               @db.Uuid
-  createdAt        DateTime              @default(now())
-  updatedAt        DateTime              @updatedAt
+  emailStatus      InvitationEmailStatus @default(pending) @map("email_status")
+  acceptedByUserId String?               @map("accepted_by_user_id") @db.Uuid
+  createdAt        DateTime              @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt        DateTime              @updatedAt @map("updated_at") @db.Timestamptz
 
-  organization     Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
 
+  @@index([email])
+  @@index([organizationId, status])
   @@map("invitation")
   @@schema("organizations")
 }

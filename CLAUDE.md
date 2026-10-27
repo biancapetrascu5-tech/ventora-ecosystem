@@ -4,6 +4,14 @@
 **Ultima actualizare:** 2026-10-25 (Faza 0, pasul 0.4 — COMPLET)
 **Sursa de adevăr:** `docs/VENTORA_SOURCE_OF_TRUTH.md`
 
+## Căi CLI externe
+
+- **GitHub CLI:** `C:\Program Files\GitHub CLI\gh.exe`
+- **Docker:** `C:\Program Files\Docker\Docker\resources\bin\docker.exe`
+  - Containerul `ventora-labs-db` (postgres:17) rulează pe `localhost:5432`
+  - Folosește o bază separată pentru teste; nu atinge alte baze existente
+- **Verificare CI:** o singură dată la câteva minute cu `gh run list`, nu în buclă
+
 ---
 
 ## Reguli obligatorii

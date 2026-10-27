@@ -123,6 +123,25 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm --filter @ventora/identity generate
+      - name: Verify identity + founder schemas match migrations
+        run: |
+          PSQL="psql postgresql://postgres:test@localhost:5433/ventora_identity_test"
+          $PSQL -c "CREATE DATABASE shadow_identity_diff"
+          $PSQL -c "CREATE DATABASE shadow_founder_diff"
+          pnpm --filter @ventora/identity exec prisma migrate diff \
+            --from-migrations ./prisma/identity/migrations \
+            --to-schema-datamodel ./prisma/identity/schema.prisma \
+            --shadow-database-url "postgresql://postgres:test@localhost:5433/shadow_identity_diff" \
+            --exit-code \
+            --config prisma7.config.ts
+          pnpm --filter @ventora/identity exec prisma migrate diff \
+            --from-migrations ./prisma/founder/migrations \
+            --to-schema-datamodel ./prisma/founder/schema.prisma \
+            --shadow-database-url "postgresql://postgres:test@localhost:5433/shadow_founder_diff" \
+            --exit-code \
+            --config prisma7.config.ts
+        env:
+          DATABASE_URL: postgresql://postgres:test@localhost:5433/ventora_identity_test
       - name: Generate test secrets
         run: |
           echo "BETTER_AUTH_SECRET=$(openssl rand -hex 32)" >> $GITHUB_ENV
@@ -214,6 +233,18 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm --filter @ventora/organizations generate
+      - name: Verify organizations schema matches migrations
+        run: |
+          PSQL="psql postgresql://postgres:test@localhost:5434/ventora_org_test"
+          $PSQL -c "CREATE DATABASE shadow_org_diff"
+          pnpm --filter @ventora/organizations exec prisma migrate diff \
+            --from-migrations ./prisma/migrations \
+            --to-schema-datamodel ./prisma/schema.prisma \
+            --shadow-database-url "postgresql://postgres:test@localhost:5434/shadow_org_diff" \
+            --exit-code \
+            --config prisma7.config.ts
+        env:
+          DATABASE_URL: postgresql://postgres:test@localhost:5434/ventora_org_test
       - name: Create app_runtime login role
         run: |
           APP_PW=$(openssl rand -hex 32)
