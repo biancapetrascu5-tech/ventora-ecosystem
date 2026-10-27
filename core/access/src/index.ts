@@ -4,6 +4,6 @@ export {
   checkRolePermission,
   configureAccess,
   acceptInvitationWithAccess,
-} from './contract.js';
-export type { TenantContext, AuthorizeParams } from './contract.js';
-export { getAccessDb, makeAccessClient } from './db.js';
+} from './contract';
+export type { TenantContext, AuthorizeParams } from './contract';
+export { getAccessDb, makeAccessClient } from './db';

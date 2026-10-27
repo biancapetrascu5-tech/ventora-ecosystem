@@ -1,4 +1,4 @@
-import { getAccessDb } from './db.js';
+import { getAccessDb } from './db';
 import {
   NotAuthenticated,
   NotMember,
@@ -8,7 +8,16 @@ import {
 } from '@ventora/errors';
 import type { EntitlementProvider } from '@ventora/contracts';
 import { getSession } from '@ventora/identity';
-import { resolveOrgContext } from '@ventora/organizations';
+import { resolveOrgContext, acceptInvitation } from '@ventora/organizations';
+
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+function assertUuid(value: string, fieldName: string): void {
+  if (!UUID_RE.test(value)) {
+    throw new TypeError(
+      `[validation] ${fieldName} must be a UUID, got: ${JSON.stringify(value.slice(0, 32))}`,
+    );
+  }
+}
 
 // System role names matching organizations.MembershipRole enum.
 type MembershipRole =
@@ -56,6 +65,7 @@ export async function authorize(params: AuthorizeParams): Promise<TenantContext>
   const headers = new Headers({ authorization: `Bearer ${params.sessionToken}` });
   const session = await getSession(headers);
   if (!session?.userId) throw new NotAuthenticated();
+  assertUuid(session.userId, 'session.userId');
 
   const organizationId = session.activeOrganizationId;
   if (!organizationId) throw new NotMember();
@@ -211,6 +221,7 @@ export async function grantApplicationAccess(
   applicationIds: string[],
   roleInApp?: string,
 ): Promise<void> {
+  assertUuid(userId, 'userId');
   if (applicationIds.length === 0) return;
   const db = getAccessDb();
   await db.$transaction(async (tx: any) => {
@@ -248,16 +259,7 @@ export async function acceptInvitationWithAccess(params: {
   userId: string;
   userEmail: string;
 }): Promise<{ organizationId: string; role: string }> {
-  // Dynamic import to avoid compile-time circular dependency: organizations imports access
-  // (for other things), so access cannot statically import organizations at the top level.
-  // acceptInvitationWithAccess is the only function here that needs organizations.
-  const { acceptInvitation } = (await import('@ventora/organizations')) as {
-    acceptInvitation: (p: {
-      token: string;
-      userId: string;
-      userEmail: string;
-    }) => Promise<{ organizationId: string; role: string; applicationIds: string[] }>;
-  };
+  assertUuid(params.userId, 'userId');
   const result = await acceptInvitation(params);
   const { organizationId, role, applicationIds } = result;
 

@@ -1,6 +1,6 @@
-export { makeOrgClient, getOrgDb } from './db.js';
-export * from './errors.js';
-export type { FounderContext, OrgContext } from './contract.js';
+export { makeOrgClient, getOrgDb } from './db';
+export * from './errors';
+export type { FounderContext, OrgContext } from './contract';
 export {
   resolveOrgContext,
   createOrganizationAsFounder,
@@ -12,4 +12,4 @@ export {
   acceptInvitation,
   revokeInvitation,
   resendInvitation,
-} from './contract.js';
+} from './contract';

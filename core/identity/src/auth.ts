@@ -43,6 +43,9 @@ export const hubAuth = betterAuth({
     },
   },
   advanced: {
+    database: {
+      generateId: () => crypto.randomUUID(),
+    },
     crossSubDomainCookies: { enabled: false },
     defaultCookieAttributes: {
       sameSite: 'lax' as const,

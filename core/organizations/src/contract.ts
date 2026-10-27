@@ -1,6 +1,6 @@
 import crypto from 'node:crypto';
 import { Pool } from 'pg';
-import { getOrgDb } from './db.js';
+import { getOrgDb } from './db';
 import {
   NotMemberError,
   NotFoundError,
@@ -12,7 +12,7 @@ import {
   ReservedSlugError,
   InvalidNameError,
   InvalidEmailError,
-} from './errors.js';
+} from './errors';
 import type { MembershipRole } from '../generated/organizations-client';
 
 // Slug: 2–63 lowercase alphanumeric / hyphens, no leading/trailing hyphen
@@ -45,6 +45,15 @@ const RESERVED_SLUGS = new Set([
 
 // Basic RFC5322-style email check (full validation happens server-side)
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+function assertUuid(value: string, fieldName: string): void {
+  if (!UUID_RE.test(value)) {
+    throw new TypeError(
+      `[validation] ${fieldName} must be a UUID, got: ${JSON.stringify(value.slice(0, 32))}`,
+    );
+  }
+}
 
 function normalizeEmail(email: string): string {
   return email.trim().toLowerCase();
@@ -231,6 +240,7 @@ export async function acceptInvitation(params: {
   userId: string;
   userEmail: string;
 }): Promise<{ organizationId: string; role: MembershipRole; applicationIds: string[] }> {
+  assertUuid(params.userId, 'userId');
   const db = getOrgDb();
   const tokenHash = hashToken(params.token);
   const userEmail = normalizeEmail(params.userEmail);
