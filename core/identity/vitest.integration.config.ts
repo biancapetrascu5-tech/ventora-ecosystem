@@ -14,6 +14,8 @@ export default defineConfig({
     env: {
       DATABASE_URL: testDbUrl,
       DATABASE_URL_FOUNDER: founderDbUrl,
+      DATABASE_URL_APP_RUNTIME: process.env.DATABASE_URL_APP_RUNTIME ?? '',
+      DATABASE_URL_ADMIN_TEST: process.env.DATABASE_URL_ADMIN_TEST ?? '',
     },
   },
 });

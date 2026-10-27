@@ -12,7 +12,9 @@
     "postinstall": "prisma generate --schema=prisma/identity/schema.prisma && prisma generate --schema=prisma/founder/schema.prisma",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "test:integration": "vitest run --config vitest.integration.config.ts"
+    "test:integration": "vitest run --config vitest.integration.config.ts",
+    "db:migrate:identity": "prisma migrate deploy --schema prisma/identity/schema.prisma",
+    "db:migrate:founder": "prisma migrate deploy --schema prisma/founder/schema.prisma"
   },
   "dependencies": {
     "better-auth": "1.7.12",
