@@ -1,19 +1,11 @@
-export class NotMemberError extends Error {
-  readonly code = 'NOT_MEMBER';
-  constructor(message = 'User is not a member of this organization') {
-    super(message);
-    this.name = 'NotMemberError';
-  }
-}
+// Canonical platform errors re-exported from @ventora/errors
+export {
+  NotMember as NotMemberError,
+  Forbidden as ForbiddenError,
+  ResourceNotFound as NotFoundError,
+} from '@ventora/errors';
 
-export class NotFoundError extends Error {
-  readonly code = 'NOT_FOUND';
-  constructor(message = 'Resource not found') {
-    super(message);
-    this.name = 'NotFoundError';
-  }
-}
-
+// Organization-specific errors (not in @ventora/errors)
 export class TokenExpiredError extends Error {
   readonly code = 'TOKEN_EXPIRED';
   constructor(message = 'Invitation token has expired or was already used') {
@@ -27,14 +19,6 @@ export class EmailMismatchError extends Error {
   constructor(message = 'Account email does not match invitation email') {
     super(message);
     this.name = 'EmailMismatchError';
-  }
-}
-
-export class ForbiddenError extends Error {
-  readonly code = 'FORBIDDEN';
-  constructor(message = 'Insufficient permissions for this operation') {
-    super(message);
-    this.name = 'ForbiddenError';
   }
 }
 

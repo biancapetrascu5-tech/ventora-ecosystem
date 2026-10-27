@@ -191,6 +191,7 @@ export async function inviteMember(
     role: MembershipRole;
     inviterName: string;
     organizationName: string;
+    applicationIds?: string[];
   },
 ): Promise<{ invitationToken: string }> {
   if (ctx.role !== 'owner' && ctx.role !== 'admin') throw new ForbiddenError();
@@ -202,6 +203,7 @@ export async function inviteMember(
   const token = crypto.randomBytes(32).toString('hex');
   const tokenHash = hashToken(token);
   const email = normalizeEmail(params.email);
+  const applicationIds = params.applicationIds ?? [];
 
   await db.$transaction(async (tx: any) => {
     await tx.$executeRaw`SELECT set_config('app.organization_id', ${ctx.organizationId}, true)`;
@@ -215,6 +217,7 @@ export async function inviteMember(
         role: params.role,
         tokenHash,
         expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+        applicationIds,
       },
     });
   });
@@ -231,8 +234,9 @@ export async function acceptInvitation(params: {
   const userEmail = normalizeEmail(params.userEmail);
 
   // find_invitation_by_token_hash returns pending OR expired rows (SECURITY DEFINER, GRANT to org_rw)
+  // application_ids fetched via direct column read (added in migration 20261027000003)
   const rows = await db.$transaction(async (tx: any) => {
-    return tx.$queryRaw<
+    const inv = await tx.$queryRaw<
       Array<{
         id: string;
         organization_id: string;
@@ -243,6 +247,18 @@ export async function acceptInvitation(params: {
       }>
     >`SELECT id, organization_id, email, role, expires_at, status
       FROM organizations.find_invitation_by_token_hash(${tokenHash}::text)`;
+    if (!inv[0]) return inv;
+    // Set org context so RLS allows the application_ids read
+    await tx.$executeRaw`SELECT set_config('app.organization_id', ${inv[0].organization_id}, true)`;
+    const appIds = await tx.$queryRaw<Array<{ application_ids: string[] }>>`
+      SELECT application_ids
+      FROM organizations.invitation
+      WHERE id = ${inv[0].id}::uuid
+    `;
+    return inv.map((row: (typeof inv)[0]) => ({
+      ...row,
+      application_ids: appIds[0]?.application_ids ?? [],
+    }));
   });
 
   const inv = rows[0];
@@ -251,7 +267,7 @@ export async function acceptInvitation(params: {
     throw new TokenExpiredError();
   if (normalizeEmail(inv.email) !== userEmail) throw new EmailMismatchError();
 
-  return db.$transaction(async (tx: any) => {
+  const result = await db.$transaction(async (tx: any) => {
     await tx.$executeRaw`SELECT set_config('app.organization_id', ${inv.organization_id}, true)`;
 
     // Atomic UPDATE — 0 rows means token was already used (race condition guard)
@@ -272,8 +288,30 @@ export async function acceptInvitation(params: {
       },
     });
 
-    return { organizationId: inv.organization_id, role: inv.role };
+    return {
+      organizationId: inv.organization_id,
+      role: inv.role,
+      applicationIds: (inv as any).application_ids ?? [],
+    };
   });
+
+  // Grant application access for non-owner/admin roles (ADR-0004).
+  // Done outside the transaction — idempotent, non-fatal on failure.
+  // Dynamic import avoids a compile-time circular dependency (organizations ↔ access).
+  if (result.role !== 'owner' && result.role !== 'admin' && result.applicationIds.length > 0) {
+    try {
+      type AccessMod = {
+        grantApplicationAccess: (org: string, user: string, apps: string[]) => Promise<void>;
+      };
+      const accessPkg: string = '@ventora/access';
+      const mod = (await import(accessPkg)) as AccessMod;
+      await mod.grantApplicationAccess(result.organizationId, params.userId, result.applicationIds);
+    } catch (err) {
+      console.warn('[organizations] grantApplicationAccess failed after acceptInvitation:', err);
+    }
+  }
+
+  return { organizationId: result.organizationId, role: result.role };
 }
 
 export async function revokeInvitation(ctx: OrgContext, invitationId: string): Promise<void> {

@@ -111,6 +111,7 @@ model Invitation {
   status           InvitationStatus      @default(pending)
   emailStatus      InvitationEmailStatus @default(pending) @map("email_status")
   acceptedByUserId String?               @map("accepted_by_user_id") @db.Uuid
+  applicationIds   String[]              @default([]) @map("application_ids") @db.VarChar(64)
   createdAt        DateTime              @default(now()) @map("created_at") @db.Timestamptz
   updatedAt        DateTime              @updatedAt @map("updated_at") @db.Timestamptz
 

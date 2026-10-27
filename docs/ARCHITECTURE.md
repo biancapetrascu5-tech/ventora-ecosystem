@@ -273,6 +273,13 @@ Varianta istorică cu Drizzle nu a fost evaluată (contrazicea specificația).
 - Schimbările distructive se fac în doi timpi: adaugi, migrezi datele, abia apoi ștergi.
 - Baza de producție trebuie să poată fi recreată integral din migrații.
 
+**Aplicare pe staging / producție (confirmat 27.10.2026):**
+
+- `prisma migrate deploy` se rulează cu `DATABASE_URL` setat la **DIRECT_URL** (conexiune directă PostgreSQL, port 5432, session mode), **nu** via pooler (port 6543, transaction mode). Rolul `app_runtime` (NOINHERIT) nu are drepturi de scriere pe `public._prisma_migrations`; pooler-ul transaction mode nu suportă advisory locks.
+- `_prisma_migrations` este în schema **`public`**, **comună tuturor modulelor** (identity, founder_identity, organizations, access). Nu există tabele de tracking separate per modul.
+- Migrațiile se aplică **din branch-ul `main` actualizat** (`git switch main && git pull`), niciodată dintr-un branch de lucru, pentru a evita aplicarea accidentală a migrărilor nefinalizate.
+- O migrare aplicată pe orice mediu persistent (staging, producție) este **imutabilă**. Dacă e nevoie de o corecție, se creează o migrare nouă.
+
 ### 6.4 Integritatea între domenii
 
 **Status: PROPUS**

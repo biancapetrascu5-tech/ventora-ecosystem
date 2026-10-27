@@ -16,6 +16,7 @@ export const TEST_DB = {
   adminUrl: 'postgresql://postgres:test@localhost:5433',
   identityDb: 'ventora_identity_test',
   orgDb: 'ventora_org_test',
+  accessDb: 'ventora_access_test',
   appPw: 'app_runtime_test_pw', // gitleaks:allow
   founderPw: 'founder_runtime_test_pw', // gitleaks:allow
   betterAuthSecret: 'ventora-test-better-auth-secret-00000001',
@@ -97,9 +98,11 @@ console.log('[test:db:up] Creez bazele de date de test...');
 for (const db of [
   TEST_DB.identityDb,
   TEST_DB.orgDb,
+  TEST_DB.accessDb,
   'shadow_identity_diff',
   'shadow_founder_diff',
   'shadow_org_diff',
+  'shadow_access_diff',
 ]) {
   psql('postgres', `DROP DATABASE IF EXISTS ${db}; CREATE DATABASE ${db};`);
 }
@@ -141,9 +144,72 @@ psqlFile(
   ),
 );
 
+console.log('[test:db:up] Aplic migrarea organizations #2 (invitation application_ids)...');
+psqlFile(
+  TEST_DB.orgDb,
+  join(
+    ROOT,
+    'core/organizations/prisma/migrations/20261027000003_invitation_application_ids/migration.sql',
+  ),
+);
+
 console.log('[test:db:up] Creez rolurile app_runtime și founder_runtime în organizations DB...');
 psql(
   TEST_DB.orgDb,
+  `DO $$ BEGIN
+    IF NOT EXISTS (SELECT FROM pg_roles WHERE rolname = 'app_runtime') THEN
+      CREATE ROLE app_runtime LOGIN NOINHERIT;
+    END IF;
+   END $$;
+   ALTER ROLE app_runtime WITH PASSWORD '${TEST_DB.appPw}';
+   DO $$ BEGIN
+    IF NOT EXISTS (SELECT FROM pg_roles WHERE rolname = 'founder_runtime') THEN
+      CREATE ROLE founder_runtime LOGIN NOINHERIT;
+    END IF;
+   END $$;
+   ALTER ROLE founder_runtime WITH PASSWORD '${TEST_DB.founderPw}';`,
+);
+
+console.log('[test:db:up] Configurez access DB (identity + org + access schemas)...');
+// Apply identity migrations to access DB (for session/user tables)
+psqlFile(
+  TEST_DB.accessDb,
+  join(ROOT, 'core/identity/prisma/identity/migrations/20261025000001_identity_init/migration.sql'),
+);
+psqlFile(
+  TEST_DB.accessDb,
+  join(
+    ROOT,
+    'core/identity/prisma/identity/migrations/20261027000002_session_active_org/migration.sql',
+  ),
+);
+psqlFile(
+  TEST_DB.accessDb,
+  join(ROOT, 'core/identity/prisma/founder/migrations/20261025000001_founder_init/migration.sql'),
+);
+// Apply organizations migrations to access DB (for membership/organization tables)
+psqlFile(
+  TEST_DB.accessDb,
+  join(
+    ROOT,
+    'core/organizations/prisma/migrations/20261027000001_organizations_init/migration.sql',
+  ),
+);
+psqlFile(
+  TEST_DB.accessDb,
+  join(
+    ROOT,
+    'core/organizations/prisma/migrations/20261027000003_invitation_application_ids/migration.sql',
+  ),
+);
+// Apply access migration
+psqlFile(
+  TEST_DB.accessDb,
+  join(ROOT, 'core/access/prisma/migrations/20261027000002_access_init/migration.sql'),
+);
+// Create runtime roles in access DB
+psql(
+  TEST_DB.accessDb,
   `DO $$ BEGIN
     IF NOT EXISTS (SELECT FROM pg_roles WHERE rolname = 'app_runtime') THEN
       CREATE ROLE app_runtime LOGIN NOINHERIT;
@@ -173,3 +239,4 @@ console.log(
   `  identity pgbouncer: postgresql://app_runtime:${TEST_DB.appPw}@localhost:6432/${TEST_DB.identityDb}`,
 );
 console.log(`  organizations:     postgresql://postgres:test@localhost:5433/${TEST_DB.orgDb}`);
+console.log(`  access:            postgresql://postgres:test@localhost:5433/${TEST_DB.accessDb}`);

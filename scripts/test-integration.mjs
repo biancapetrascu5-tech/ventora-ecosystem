@@ -31,9 +31,11 @@ function runPkg(filter, script, env = {}) {
 
 const ADMIN_IDENTITY = `postgresql://postgres:test@localhost:5433/${TEST_DB.identityDb}`;
 const ADMIN_ORG = `postgresql://postgres:test@localhost:5433/${TEST_DB.orgDb}`;
+const ADMIN_ACCESS = `postgresql://postgres:test@localhost:5433/${TEST_DB.accessDb}`;
 const SHADOW_IDENTITY = 'postgresql://postgres:test@localhost:5433/shadow_identity_diff';
 const SHADOW_FOUNDER = 'postgresql://postgres:test@localhost:5433/shadow_founder_diff';
 const SHADOW_ORG = 'postgresql://postgres:test@localhost:5433/shadow_org_diff';
+const SHADOW_ACCESS = 'postgresql://postgres:test@localhost:5433/shadow_access_diff';
 
 let exitCode = 0;
 
@@ -85,6 +87,39 @@ try {
     DATABASE_URL_TEST: ADMIN_ORG,
     DATABASE_URL_FOUNDER_TEST: `postgresql://founder_runtime:${TEST_DB.founderPw}@localhost:5433/${TEST_DB.orgDb}`,
     DATABASE_URL_ADMIN_TEST: ADMIN_ORG,
+  });
+
+  // --- Access drift check ---
+  console.log('[test:integration] Verificare drift access schema...');
+  runPkg(
+    '@ventora/access',
+    `exec prisma migrate diff --from-migrations ./prisma/migrations --to-schema ./prisma/schema.prisma --exit-code --config prisma7.config.ts`,
+    { DATABASE_URL: ADMIN_ACCESS, SHADOW_DATABASE_URL: SHADOW_ACCESS },
+  );
+
+  // --- Sync permissions (needed for T3 permission checks) ---
+  // Uses tsx (root devDep) which resolves .js→.ts and finds pg from root node_modules.
+  console.log('\n[test:integration] Sincronizare permisiuni...');
+  run('pnpm tsx scripts/sync-permissions.ts', { DIRECT_URL: ADMIN_ACCESS });
+
+  // --- Access integration tests (T3) ---
+  console.log('\n[test:integration] access (T3)...');
+  runPkg('@ventora/access', 'test:integration', {
+    DATABASE_URL_TEST: ADMIN_ACCESS,
+    DATABASE_URL_ADMIN_TEST: ADMIN_ACCESS,
+    DATABASE_URL: ADMIN_ACCESS,
+    BETTER_AUTH_SECRET: TEST_DB.betterAuthSecret,
+    FOUNDER_AUTH_SECRET: TEST_DB.founderAuthSecret,
+  });
+
+  // --- Booking integration tests ---
+  console.log('\n[test:integration] booking...');
+  runPkg('@ventora/booking', 'test:integration', {
+    DATABASE_URL_TEST: ADMIN_ACCESS,
+    DATABASE_URL_ADMIN_TEST: ADMIN_ACCESS,
+    DATABASE_URL: ADMIN_ACCESS,
+    BETTER_AUTH_SECRET: TEST_DB.betterAuthSecret,
+    FOUNDER_AUTH_SECRET: TEST_DB.founderAuthSecret,
   });
 
   console.log('\n[test:integration] Toate testele au trecut.');

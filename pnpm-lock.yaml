@@ -175,6 +175,9 @@ importers:
       eslint-plugin-i18next:
         specifier: ^6.1.0
         version: 6.1.5
+      pg:
+        specifier: ^8.0.0
+        version: 8.23.1
       prettier:
         specifier: ^3.4.0
         version: 3.9.10
@@ -341,6 +344,43 @@ importers:
         specifier: ^2.1.0
         version: 2.1.9(@types/node@22.20.5)(lightningcss@1.33.0)(supports-color@8.1.1)
 
+  core/access:
+    dependencies:
+      '@prisma/adapter-pg':
+        specifier: ^7.0.0
+        version: 7.10.1
+      '@prisma/client':
+        specifier: ^7.0.0
+        version: 7.10.1(prisma@7.10.1(@types/node@22.20.5)(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(typescript@6.0.3))(typescript@6.0.3)
+      '@ventora/contracts':
+        specifier: workspace:*
+        version: link:../../packages/contracts
+      '@ventora/errors':
+        specifier: workspace:*
+        version: link:../../packages/errors
+      pg:
+        specifier: ^8.0.0
+        version: 8.23.1
+      prisma:
+        specifier: ^7.0.0
+        version: 7.10.1(@types/node@22.20.5)(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(typescript@6.0.3)
+    devDependencies:
+      '@types/pg':
+        specifier: ^8.0.0
+        version: 8.23.1
+      '@ventora/identity':
+        specifier: workspace:*
+        version: link:../identity
+      '@ventora/organizations':
+        specifier: workspace:*
+        version: link:../organizations
+      typescript:
+        specifier: ^6.0.0
+        version: 6.0.3
+      vitest:
+        specifier: ^5.0.5
+        version: 5.0.5(@opentelemetry/api@1.10.0)(@types/node@22.20.5)(vite@8.3.5(@types/node@22.20.5)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))
+
   core/identity:
     dependencies:
       '@prisma/adapter-pg':
@@ -399,6 +439,9 @@ importers:
       '@prisma/client':
         specifier: ^7.0.0
         version: 7.10.1(prisma@7.10.1(@types/node@22.20.5)(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(typescript@6.0.3))(typescript@6.0.3)
+      '@ventora/errors':
+        specifier: workspace:*
+        version: link:../../packages/errors
       '@ventora/notifications':
         specifier: workspace:*
         version: link:../notifications
@@ -421,6 +464,31 @@ importers:
 
   core/quota:
     devDependencies:
+      typescript:
+        specifier: ^6.0.0
+        version: 6.0.3
+      vitest:
+        specifier: ^5.0.5
+        version: 5.0.5(@opentelemetry/api@1.10.0)(@types/node@22.20.5)(vite@8.3.5(@types/node@22.20.5)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))
+
+  modules/booking:
+    dependencies:
+      '@ventora/access':
+        specifier: workspace:*
+        version: link:../../core/access
+      '@ventora/contracts':
+        specifier: workspace:*
+        version: link:../../packages/contracts
+      '@ventora/errors':
+        specifier: workspace:*
+        version: link:../../packages/errors
+    devDependencies:
+      '@types/pg':
+        specifier: ^8.0.0
+        version: 8.23.1
+      pg:
+        specifier: ^8.0.0
+        version: 8.23.1
       typescript:
         specifier: ^6.0.0
         version: 6.0.3
@@ -470,6 +538,12 @@ importers:
       vitest:
         specifier: ^5.0.5
         version: 5.0.5(@opentelemetry/api@1.10.0)(@types/node@22.20.5)(vite@8.3.5(@types/node@22.20.5)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))
+
+  packages/errors:
+    devDependencies:
+      typescript:
+        specifier: ^6.0.0
+        version: 6.0.3
 
   packages/i18n:
     dependencies:
