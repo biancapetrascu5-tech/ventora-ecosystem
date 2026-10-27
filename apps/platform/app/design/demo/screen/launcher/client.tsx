@@ -186,7 +186,14 @@ function AppTileRow({ config }: { config: OtherConfig }) {
                 border: `1px solid ${pill.attention ? 'var(--attention-line)' : 'var(--line)'}`,
               }}
             >
-              {pill.icon && <Icon icon={pill.icon as any} size="sm" aria-hidden style={{ width: 12, height: 12 }} />}
+              {pill.icon && (
+                <Icon
+                  icon={pill.icon as any}
+                  size="sm"
+                  aria-hidden
+                  style={{ width: 12, height: 12 }}
+                />
+              )}
               {pill.label}
             </span>
           ))}
@@ -202,12 +209,7 @@ function AppTileRow({ config }: { config: OtherConfig }) {
           {config.primaryAction}
         </Button>
         {config.hasMenu && (
-          <IconButton
-            icon="more-horizontal"
-            label="Mai multe opțiuni"
-            variant="quiet"
-            size="sm"
-          />
+          <IconButton icon="more-horizontal" label="Mai multe opțiuni" variant="quiet" size="sm" />
         )}
       </div>
     </div>
@@ -379,8 +381,7 @@ export function LauncherScreenClient({ theme }: { theme: 'light' | 'dark'; activ
           <h1 className="display-hub">Bună dimineața, Bianca</h1>
           <div className={bandStyles.chipsRow}>
             <a href="#" className={bandStyles.chip}>
-              <AppIcon app="booking" size={16} />
-              8 programări
+              <AppIcon app="booking" size={16} />8 programări
             </a>
             <a href="#" className={bandStyles.chip}>
               <AppIcon app="finance" size={16} />
