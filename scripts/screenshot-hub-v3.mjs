@@ -14,7 +14,7 @@
  *   <screen>_390_<theme>_design.png
  */
 
-import { chromium } from 'playwright';
+import { createRequire } from 'module';
 import { mkdir } from 'fs/promises';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -23,6 +23,14 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.join(__dirname, '..');
 const OUT = path.join(ROOT, 'screenshots');
 const BASE = 'http://localhost:3100';
+
+// playwright e în pnpm store — îl încărcăm explicit din store
+const _require = createRequire(import.meta.url);
+const playwrightPkg = path.resolve(
+  __dirname,
+  '../node_modules/.pnpm/playwright@1.64.1/node_modules/playwright/index.js',
+);
+const { chromium } = _require(playwrightPkg);
 
 /* ── Configurare capturi ─────────────────────────────────────────────── */
 
