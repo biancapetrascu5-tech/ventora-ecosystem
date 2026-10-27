@@ -14,6 +14,12 @@
 
 ## Regula pre-push (obligatorie)
 
+**Înainte de ORICE push (fără excepție):**
+
+```
+pnpm format:check && pnpm lint && pnpm typecheck
+```
+
 **Înainte de orice push care atinge `core/**`, `packages/**`, `modules/**` sau fișiere de migrație:**
 
 ```
