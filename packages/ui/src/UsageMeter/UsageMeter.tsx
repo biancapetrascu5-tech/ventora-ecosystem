@@ -29,9 +29,9 @@ function fmt(n: number, format?: (n: number) => string): string {
   return String(n);
 }
 
-function toneClass(pct: number): string {
+function toneClass(pct: number, warnAt: number): string {
   if (pct >= 100) return styles.fillFull;
-  if (pct >= 85) return styles.fillWarning;
+  if (pct / 100 >= warnAt) return styles.fillWarning;
   return '';
 }
 
@@ -71,7 +71,7 @@ export function UsageMeter({
         </div>
         {hasMeter && (
           <div className={styles.track}>
-            <div className={cn(styles.fill, toneClass(pct))} style={{ width: `${pct}%` }} />
+            <div className={cn(styles.fill, toneClass(pct, warnAt))} style={{ width: `${pct}%` }} />
           </div>
         )}
       </div>
@@ -90,10 +90,15 @@ export function UsageMeter({
       </div>
       {hasMeter && (
         <div className={styles.track}>
-          <div className={cn(styles.fill, toneClass(pct))} style={{ width: `${pct}%` }} />
+          <div className={cn(styles.fill, toneClass(pct, warnAt))} style={{ width: `${pct}%` }} />
         </div>
       )}
-      {hasMeter && !isAtLimit && isWarn && <p className={styles.warnMsg}>{nearLimitLabel}</p>}
+      {hasMeter && !isAtLimit && isWarn && (
+        <p className={styles.warnMsg}>
+          {nearLimitLabel}
+          {remaining > 0 && ` · ${remainingLabel(fmt(remaining, format))}`}
+        </p>
+      )}
       {hasMeter && !isAtLimit && !isWarn && remaining > 0 && (
         <p className={styles.remaining}>{remainingLabel(fmt(remaining, format))}</p>
       )}
