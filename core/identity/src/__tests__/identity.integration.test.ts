@@ -593,3 +593,88 @@ describe('T1.17 — signUpEmail atomicity (user + account in one transaction)', 
     expect(account!.password).not.toBeNull();
   });
 });
+
+describe('T1.17b — signUpEmail atomicity rollback (trigger-induced failure)', () => {
+  it('rolls back user when account creation fails (identity)', async () => {
+    const DB_ADMIN = process.env.DATABASE_URL_ADMIN_TEST;
+    if (!DB_ADMIN) {
+      console.log('Skipping T1.17b identity: DATABASE_URL_ADMIN_TEST not set');
+      return;
+    }
+
+    const adminPool = new Pool({ connectionString: DB_ADMIN });
+    try {
+      // Temporary trigger: makes every INSERT into identity.accounts raise an exception
+      await adminPool.query(`
+        CREATE OR REPLACE FUNCTION identity._atomicity_test_fail_insert()
+          RETURNS trigger LANGUAGE plpgsql AS $$
+        BEGIN
+          RAISE EXCEPTION 'atomicity_test: forced account-creation failure';
+        END $$;
+        CREATE TRIGGER _atomicity_test_accounts_trigger
+          BEFORE INSERT ON identity.accounts
+          FOR EACH ROW EXECUTE FUNCTION identity._atomicity_test_fail_insert();
+      `);
+
+      // signUpEmail must fail — Prisma rolls back the transaction when the trigger fires.
+      // dispatch.mjs rethrows non-APIError exceptions from the endpoint, so this rejects.
+      await expect(
+        hubAuth.api.signUpEmail({
+          body: { email: 't1.17b@test.com', password: 'Atomic1234X', name: 'Rollback Test' },
+        }),
+      ).rejects.toThrow();
+
+      // With transaction:true + Proxy, user.create and account.create run in one transaction.
+      // The trigger-induced rollback removes the user too — atomicity proven.
+      const user = await identityDb.user.findUnique({ where: { email: 't1.17b@test.com' } });
+      expect(user).toBeNull();
+    } finally {
+      await adminPool.query(`
+        DROP TRIGGER IF EXISTS _atomicity_test_accounts_trigger ON identity.accounts;
+        DROP FUNCTION IF EXISTS identity._atomicity_test_fail_insert();
+      `);
+      await adminPool.end();
+    }
+  });
+
+  it('rolls back user when account creation fails (founder)', async () => {
+    const DB_ADMIN = process.env.DATABASE_URL_ADMIN_TEST;
+    if (!DB_ADMIN) {
+      console.log('Skipping T1.17b founder: DATABASE_URL_ADMIN_TEST not set');
+      return;
+    }
+
+    const adminPool = new Pool({ connectionString: DB_ADMIN });
+    try {
+      await adminPool.query(`
+        CREATE OR REPLACE FUNCTION founder_identity._atomicity_test_fail_insert()
+          RETURNS trigger LANGUAGE plpgsql AS $$
+        BEGIN
+          RAISE EXCEPTION 'atomicity_test: forced account-creation failure';
+        END $$;
+        CREATE TRIGGER _atomicity_test_accounts_trigger
+          BEFORE INSERT ON founder_identity.accounts
+          FOR EACH ROW EXECUTE FUNCTION founder_identity._atomicity_test_fail_insert();
+      `);
+
+      await expect(
+        founderAuthTest.api.signUpEmail({
+          body: {
+            email: 't1.17b@founder.com',
+            password: 'FounderAtomic12',
+            name: 'Founder Rollback',
+          },
+        }),
+      ).rejects.toThrow();
+
+      const user = await founderDb.user.findUnique({ where: { email: 't1.17b@founder.com' } });
+      expect(user).toBeNull();
+    } finally {
+      await adminPool.query(`
+        DROP TRIGGER IF EXISTS _atomicity_test_accounts_trigger ON founder_identity.accounts;
+        DROP FUNCTION IF EXISTS founder_identity._atomicity_test_fail_insert();
+      `);
+      await adminPool.end();
+    }
+  });
+});

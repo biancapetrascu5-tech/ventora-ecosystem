@@ -177,6 +177,7 @@ jobs:
           echo "DATABASE_URL_FOUNDER_TEST=postgresql://founder_runtime:${FOUNDER_PW}@localhost:5433/ventora_identity_test" >> $GITHUB_ENV
           echo "DATABASE_URL_APP_RUNTIME=postgresql://app_runtime:${APP_PW}@localhost:5433/ventora_identity_test" >> $GITHUB_ENV
           echo "DATABASE_URL_PGBOUNCER_TEST=postgresql://app_runtime:${APP_PW}@localhost:6432/ventora_identity_test" >> $GITHUB_ENV
+          echo "DATABASE_URL_ADMIN_TEST=postgresql://postgres:test@localhost:5433/ventora_identity_test" >> $GITHUB_ENV
       - run: pnpm --filter @ventora/identity test:integration
         env:
           BETTER_AUTH_SECRET: ${{ env.BETTER_AUTH_SECRET }}
@@ -185,6 +186,7 @@ jobs:
           DATABASE_URL_FOUNDER_TEST: ${{ env.DATABASE_URL_FOUNDER_TEST }}
           DATABASE_URL_APP_RUNTIME: ${{ env.DATABASE_URL_APP_RUNTIME }}
           DATABASE_URL_PGBOUNCER_TEST: ${{ env.DATABASE_URL_PGBOUNCER_TEST }}
+          DATABASE_URL_ADMIN_TEST: ${{ env.DATABASE_URL_ADMIN_TEST }}
 
   build:
     name: Build
