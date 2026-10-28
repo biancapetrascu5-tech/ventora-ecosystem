@@ -23,7 +23,14 @@ export interface NoticeProps {
   className?: string;
 }
 
-export function Notice({ tone = 'neutral', icon: iconProp, title, actions, children, className }: NoticeProps) {
+export function Notice({
+  tone = 'neutral',
+  icon: iconProp,
+  title,
+  actions,
+  children,
+  className,
+}: NoticeProps) {
   return (
     <div role="note" className={cn(styles.root, styles[tone], className)}>
       <Icon icon={iconProp ?? TONE_ICONS[tone]} size="sm" aria-hidden className={styles.icon} />

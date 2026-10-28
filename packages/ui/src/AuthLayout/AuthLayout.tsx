@@ -29,8 +29,18 @@ function VentoraMarkOnly({ size = 28 }: { size?: number }) {
       <polygon points="200,150 352,262 200,330 48,262" fill="#161e38" />
       <polygon points="126,96 196,132 192,344 158,230" fill="#f2ede3" />
       <polygon points="274,96 204,132 208,344 242,230" fill="#f2ede3" />
-      <polygon points="28,16 120,80 188,352 200,392" fill="#FFAA75" stroke="#0a1024" strokeWidth="6" />
-      <polygon points="372,16 280,80 212,352 200,392" fill="#B1744F" stroke="#0a1024" strokeWidth="6" />
+      <polygon
+        points="28,16 120,80 188,352 200,392"
+        fill="#FFAA75"
+        stroke="#0a1024"
+        strokeWidth="6"
+      />
+      <polygon
+        points="372,16 280,80 212,352 200,392"
+        fill="#B1744F"
+        stroke="#0a1024"
+        strokeWidth="6"
+      />
       <polygon points="200,172 200,362 162,246" fill="#FFAA75" stroke="#0a1024" strokeWidth="7" />
       <polygon points="200,172 238,246 200,362" fill="#B1744F" stroke="#0a1024" strokeWidth="7" />
     </svg>
@@ -94,7 +104,15 @@ function AuthChevrons() {
   );
 }
 
-export function AuthLayout({ children, languageSelector, footer, theme, brand, statement, wide }: AuthLayoutProps) {
+export function AuthLayout({
+  children,
+  languageSelector,
+  footer,
+  theme,
+  brand,
+  statement,
+  wide,
+}: AuthLayoutProps) {
   const isFounder = brand === 'founder';
   return (
     <div data-theme={theme} className={styles.shell}>
@@ -113,9 +131,7 @@ export function AuthLayout({ children, languageSelector, footer, theme, brand, s
           </div>
           {isFounder ? (
             <>
-              <p className={`display-xl ${styles.statement}`}>
-                {statement ?? 'Control Center'}
-              </p>
+              <p className={`display-xl ${styles.statement}`}>{statement ?? 'Control Center'}</p>
               <p className={`caption ${styles.foot}`}>Instrumentul intern al echipei Ventora</p>
             </>
           ) : (
@@ -138,9 +154,7 @@ export function AuthLayout({ children, languageSelector, footer, theme, brand, s
         <div className={styles.formSide}>
           <header className={styles.formHeader}>{languageSelector}</header>
           <main className={styles.formMain}>
-            <div style={{ width: '100%', maxWidth: wide ? 480 : 400 }}>
-              {children}
-            </div>
+            <div style={{ width: '100%', maxWidth: wide ? 480 : 400 }}>{children}</div>
           </main>
           {footer && <footer className={styles.formFooter}>{footer}</footer>}
         </div>

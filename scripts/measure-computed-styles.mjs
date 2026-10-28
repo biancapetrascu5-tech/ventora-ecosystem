@@ -21,9 +21,16 @@ const { chromium } = _require(playwrightPkg);
 const BASE = 'http://localhost:3100';
 
 const PROPS = [
-  'fontSize', 'fontWeight', 'lineHeight',
-  'paddingTop', 'paddingRight', 'paddingBottom', 'paddingLeft',
-  'height', 'gap', 'minHeight',
+  'fontSize',
+  'fontWeight',
+  'lineHeight',
+  'paddingTop',
+  'paddingRight',
+  'paddingBottom',
+  'paddingLeft',
+  'height',
+  'gap',
+  'minHeight',
 ];
 
 async function measureSelector(page, url, selector, theme = 'light') {
@@ -68,7 +75,9 @@ async function compareComponent(page, name, selectors) {
       }
 
       console.log(`\n  [${theme}] ${label} — ${selector}`);
-      console.log(`  ${'Proprietate'.padEnd(18)} ${'Design'.padEnd(22)} ${'Galerie'.padEnd(22)} Diff`);
+      console.log(
+        `  ${'Proprietate'.padEnd(18)} ${'Design'.padEnd(22)} ${'Galerie'.padEnd(22)} Diff`,
+      );
       console.log(`  ${'─'.repeat(72)}`);
 
       for (const prop of PROPS) {
@@ -76,9 +85,7 @@ async function compareComponent(page, name, selectors) {
         const gv = gallery?.[prop] ?? '(lipsă)';
         const diff = dv !== gv ? '⚠ DIFERIT' : '';
         if (diff || dv !== '0px') {
-          console.log(
-            `  ${prop.padEnd(18)} ${dv.padEnd(22)} ${gv.padEnd(22)} ${diff}`,
-          );
+          console.log(`  ${prop.padEnd(18)} ${dv.padEnd(22)} ${gv.padEnd(22)} ${diff}`);
         }
       }
     }
@@ -93,7 +100,8 @@ async function main() {
   // Disable animations
   await page.addInitScript(() => {
     const s = document.createElement('style');
-    s.textContent = '*, *::before, *::after { animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }';
+    s.textContent =
+      '*, *::before, *::after { animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }';
     document.head?.appendChild(s);
   });
 
@@ -113,7 +121,8 @@ async function main() {
   await compareComponent(page, 'AttentionList', {
     'AttentionList item': '.v-attention-item, [class*="AttentionList_item"]',
     'AttentionList actions': '.v-attention-item__actions, [class*="AttentionList_actions"]',
-    'Buton sm în AttentionList': '.v-attention-item .v-btn--sm, [class*="AttentionList"] [class*="Button_sm"]',
+    'Buton sm în AttentionList':
+      '.v-attention-item .v-btn--sm, [class*="AttentionList"] [class*="Button_sm"]',
   });
 
   await compareComponent(page, 'Toast', {
@@ -124,7 +133,8 @@ async function main() {
 
   await compareComponent(page, 'UsageMeter', {
     'UsageMeter root': '.v-usage-meter, [class*="UsageMeter_root"]',
-    'Buton sm în UsageMeter': '.v-usage-meter .v-btn--sm, [class*="UsageMeter"] [class*="Button_sm"]',
+    'Buton sm în UsageMeter':
+      '.v-usage-meter .v-btn--sm, [class*="UsageMeter"] [class*="Button_sm"]',
   });
 
   await browser.close();
