@@ -8,6 +8,7 @@ import styles from './AttentionList.module.css';
 
 export interface AttentionAction {
   label: string;
+  icon?: IconName;
   primary?: boolean;
   quiet?: boolean;
   onPress?: () => void;
@@ -16,47 +17,57 @@ export interface AttentionAction {
 export interface AttentionItem {
   id: string | number;
   icon?: IconName;
+  /** neutral by default; attention only for "needs you now", danger for error or loss. */
   tone?: 'attention' | 'danger' | 'neutral';
-  title: string;
-  meta?: string;
-  time?: string;
+  title: React.ReactNode;
+  meta?: React.ReactNode;
+  time?: React.ReactNode;
   actions?: AttentionAction[];
 }
 
 export interface AttentionListProps {
   items: AttentionItem[];
+  /** Rendered instead of the list when there are no items. */
+  empty?: React.ReactNode;
   className?: string;
 }
 
-export function AttentionList({ items, className }: AttentionListProps) {
+export function AttentionList({ items, empty, className }: AttentionListProps) {
+  if (!items.length) return <>{empty ?? null}</>;
   return (
-    <ul className={cn(styles.list, className)} role="list">
-      {items.map((item) => (
-        <li key={item.id} className={styles.item}>
-          <span className={cn(styles.iconWrap, item.tone && styles[`tone-${item.tone}`])}>
-            <Icon icon={item.icon ?? 'error'} size="sm" aria-hidden />
+    <ul className={cn(styles.list, className)}>
+      {items.map((it) => (
+        <li key={it.id} className={styles.item}>
+          <span
+            className={cn(
+              styles.icon,
+              it.tone === 'danger' && styles.danger,
+              it.tone === 'attention' && styles.attention,
+            )}
+            aria-hidden="true"
+          >
+            <Icon icon={it.icon ?? 'circle-dot'} size={16} />
           </span>
-          <div className={styles.body}>
-            <div className={styles.top}>
-              <span className={styles.title}>{item.title}</span>
-              {item.time && <span className={styles.time}>{item.time}</span>}
-            </div>
-            {item.meta && <span className={styles.meta}>{item.meta}</span>}
-            {item.actions && item.actions.length > 0 && (
-              <div className={styles.actions}>
-                {item.actions.map((a, i) => (
+          <span className={styles.main}>
+            <span className="body-strong">{it.title}</span>
+            {it.meta && <span className={cn('body-small', styles.meta)}>{it.meta}</span>}
+            {it.actions && it.actions.length > 0 && (
+              <span className={styles.actions}>
+                {it.actions.map((a) => (
                   <Button
-                    key={i}
+                    key={a.label}
                     size="sm"
+                    icon={a.icon}
                     variant={a.primary ? 'primary' : a.quiet ? 'quiet' : 'secondary'}
-                    onPress={a.onPress ? () => a.onPress!() : undefined}
+                    onPress={a.onPress}
                   >
                     {a.label}
                   </Button>
                 ))}
-              </div>
+              </span>
             )}
-          </div>
+          </span>
+          {it.time && <span className={cn('caption v-num', styles.time)}>{it.time}</span>}
         </li>
       ))}
     </ul>

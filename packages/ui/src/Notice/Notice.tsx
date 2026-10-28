@@ -7,17 +7,17 @@ import styles from './Notice.module.css';
 
 export type NoticeTone = 'danger' | 'attention' | 'done' | 'neutral';
 
-const TONE_ICONS: Record<NoticeTone, IconName> = {
-  danger: 'circle-alert',
+const NOTICE_ICON: Record<NoticeTone, IconName> = {
+  neutral: 'info',
   attention: 'triangle-alert',
   done: 'circle-check',
-  neutral: 'info',
+  danger: 'circle-alert',
 };
 
 export interface NoticeProps {
   tone?: NoticeTone;
   icon?: IconName;
-  title?: string;
+  title?: React.ReactNode;
   actions?: React.ReactNode;
   children?: React.ReactNode;
   className?: string;
@@ -25,18 +25,21 @@ export interface NoticeProps {
 
 export function Notice({
   tone = 'neutral',
-  icon: iconProp,
+  icon,
   title,
   actions,
   children,
   className,
 }: NoticeProps) {
   return (
-    <div role="note" className={cn(styles.root, styles[tone], className)}>
-      <Icon icon={iconProp ?? TONE_ICONS[tone]} size="sm" aria-hidden className={styles.icon} />
-      <div className={styles.body}>
-        {title && <p className={styles.title}>{title}</p>}
-        {children && <p className={styles.desc}>{children}</p>}
+    <div
+      className={cn(styles.root, styles[tone], className)}
+      role={tone === 'danger' ? 'alert' : 'status'}
+    >
+      <Icon icon={icon ?? NOTICE_ICON[tone]} size={16} className={styles.icon} />
+      <div className={styles.text}>
+        {title && <p className="body-strong">{title}</p>}
+        {children && <div className={cn('body-small', styles.body)}>{children}</div>}
         {actions && <div className={styles.actions}>{actions}</div>}
       </div>
     </div>

@@ -7,30 +7,28 @@ import styles from './EmptyState.module.css';
 
 export interface EmptyStateProps {
   icon?: IconName;
-  title: string;
-  description?: string;
+  title?: React.ReactNode;
+  description?: React.ReactNode;
   size?: 'sm' | 'md';
   actions?: React.ReactNode;
   className?: string;
 }
 
 export function EmptyState({
-  icon,
+  icon = 'inbox',
   title,
   description,
-  size = 'md',
   actions,
+  size = 'md',
   className,
 }: EmptyStateProps) {
   return (
-    <div className={cn(styles.root, size === 'sm' && styles.sm, className)} role="status">
-      {icon && (
-        <span className={styles.iconWrap} aria-hidden>
-          <Icon icon={icon} size={size === 'sm' ? 'md' : 'lg'} className={styles.icon} />
-        </span>
-      )}
-      <p className={styles.title}>{title}</p>
-      {description && <p className={styles.desc}>{description}</p>}
+    <div className={cn(styles.root, size === 'sm' && styles.sm, className)}>
+      <span className={styles.mark} aria-hidden="true">
+        <Icon icon={icon} size={size === 'sm' ? 20 : 24} />
+      </span>
+      {title && <p className={size === 'sm' ? 'subheading' : 'heading'}>{title}</p>}
+      {description && <p className={cn(styles.desc, 'body')}>{description}</p>}
       {actions && <div className={styles.actions}>{actions}</div>}
     </div>
   );

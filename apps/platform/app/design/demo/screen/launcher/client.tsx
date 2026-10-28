@@ -414,8 +414,7 @@ export function LauncherScreenClient({ theme }: { theme: 'light' | 'dark'; activ
         <div className={bandStyles.dockSection}>
           <div className={bandStyles.dockHeader}>
             <h2 className="display-m">Aplicațiile tale</h2>
-            <Button size="sm" variant="quiet">
-              <Icon icon="list" size="sm" aria-hidden style={{ marginRight: 4 }} />
+            <Button size="sm" variant="quiet" icon="list">
               Reordonează
             </Button>
           </div>
@@ -456,10 +455,8 @@ export function LauncherScreenClient({ theme }: { theme: 'light' | 'dark'; activ
             ))}
           </div>
           <div style={{ marginTop: 'var(--space-4)' }}>
-            <Button variant="quiet">
-              <Icon icon="grid" size="sm" aria-hidden style={{ marginRight: 4 }} />
+            <Button variant="quiet" icon="grid" iconEnd="arrow-right">
               Vezi toate aplicațiile Ventora
-              <Icon icon="arrow-right" size="sm" aria-hidden style={{ marginLeft: 4 }} />
             </Button>
           </div>
         </div>

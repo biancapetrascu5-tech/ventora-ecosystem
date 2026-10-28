@@ -1,17 +1,23 @@
 .root {
+  appearance: none;
+  position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  flex-shrink: 0;
-  border: none;
+  flex: none;
+  width: var(--control-md);
+  height: var(--control-md);
+  padding: 0;
   border-radius: var(--radius-sm);
+  border: var(--border-width) solid transparent;
   background: transparent;
   color: var(--ink);
   cursor: pointer;
-  outline: none;
   transition:
-    background var(--duration-instant) var(--ease-standard),
-    color var(--duration-instant) var(--ease-standard);
+    background-color var(--duration-instant) var(--ease-standard),
+    border-color var(--duration-instant) var(--ease-standard),
+    color var(--duration-instant) var(--ease-standard),
+    box-shadow var(--duration-fast) var(--ease-standard);
   -webkit-tap-highlight-color: transparent;
 }
 
@@ -20,21 +26,10 @@
   outline-offset: var(--focus-ring-offset);
 }
 
-.root[data-hovered]:not([data-disabled]) {
-  background: var(--state-hover);
+.root:focus:not([data-focus-visible]) {
+  outline: none;
 }
 
-.root[data-pressed]:not([data-disabled]) {
-  background: var(--state-pressed);
-}
-
-.root[data-disabled] {
-  opacity: 0.4;
-  cursor: not-allowed;
-  pointer-events: none;
-}
-
-/* Sizes — ensure 44px touch target on mobile via min dimensions */
 .sm {
   width: var(--control-sm);
   height: var(--control-sm);
@@ -50,7 +45,8 @@
   height: var(--control-lg);
 }
 
-@media (max-width: 768px) {
+@media (pointer: coarse), (max-width: 767px) {
+  .root,
   .sm,
   .md {
     min-width: var(--touch-target);
@@ -58,39 +54,60 @@
   }
 }
 
-/* Variants */
-.primary {
-  background: var(--primary);
-  color: var(--on-primary);
-  border: none;
+/* Variants (v-btn--*) */
+.quiet {
+  color: var(--ink);
 }
-.primary[data-hovered]:not([data-disabled]) {
-  background: var(--primary-hover);
+.quiet[data-hovered] {
+  background: var(--state-hover);
 }
-.primary[data-pressed]:not([data-disabled]) {
-  background: var(--primary-pressed);
+.quiet[data-pressed] {
+  background: var(--state-pressed);
 }
 
 .secondary {
-  background: transparent;
+  background: var(--sheet);
+  border-color: var(--control-border);
   color: var(--ink);
-  box-shadow: inset 0 0 0 var(--border-width-control) var(--control-border);
 }
-.secondary[data-hovered]:not([data-disabled]) {
-  box-shadow: inset 0 0 0 var(--border-width-control) var(--control-border-hover);
+.secondary[data-hovered] {
+  border-color: var(--control-border-hover);
+  background-image: linear-gradient(var(--state-hover), var(--state-hover));
+}
+.secondary[data-pressed] {
+  background-image: linear-gradient(var(--state-pressed), var(--state-pressed));
 }
 
-.quiet {
-  background: transparent;
-  color: var(--ink);
+.primary {
+  background: var(--primary);
+  color: var(--on-primary);
+}
+.primary[data-hovered] {
+  background: var(--primary-hover);
+}
+.primary[data-pressed] {
+  background: var(--primary-pressed);
 }
 
 .danger {
-  background: transparent;
-  color: var(--danger);
+  background: var(--danger);
+  color: var(--on-danger);
 }
-.danger[data-hovered]:not([data-disabled]) {
-  background: var(--danger-soft, rgba(179, 38, 30, 0.08));
+.danger[data-hovered] {
+  background: var(--danger-hover);
+}
+
+.root[data-disabled] {
+  cursor: not-allowed;
+  color: var(--ink-disabled);
+  background: var(--sunken);
+  border-color: var(--line);
+  background-image: none;
+  box-shadow: none;
+}
+.quiet[data-disabled] {
+  background: transparent;
+  border-color: transparent;
 }
 
 .tooltip {

@@ -3,72 +3,85 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border-radius: var(--radius-full);
-  overflow: hidden;
   flex: none;
+  background: var(--avatar-bg);
+  color: var(--ink);
+  overflow: visible;
+  box-sizing: border-box;
 }
 
-.square { border-radius: var(--radius-sm); }
+.circle,
+.circle img {
+  border-radius: var(--radius-full);
+}
 
-/* Sizes */
-.xs { width: 20px; height: 20px; font-size: 9px; }
-.sm { width: 28px; height: 28px; font-size: 11px; }
-.md { width: 36px; height: 36px; font-size: 13px; }
-.lg { width: 44px; height: 44px; font-size: 16px; }
-.xl { width: 56px; height: 56px; font-size: 20px; }
+.square,
+.square img {
+  border-radius: var(--radius-sm);
+}
 
-.img {
+.root img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  display: block;
 }
 
-.initials {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  height: 100%;
-  color: #fff;
-  font-family: var(--font-sans);
+.ini {
   font-weight: 600;
-  letter-spacing: -0.01em;
+  letter-spacing: 0.01em;
+  line-height: 1;
+  font-size: var(--avatar-font);
 }
 
 .status {
   position: absolute;
-  bottom: 0;
-  right: 0;
-  width: 9px;
-  height: 9px;
+  right: calc(var(--border-width) * -1);
+  bottom: calc(var(--border-width) * -1);
+  display: inline-flex;
+  padding: var(--space-0-5);
   border-radius: var(--radius-full);
-  border: 2px solid var(--sheet);
-  box-sizing: border-box;
+  background: var(--sheet);
 }
 
-/* Group */
+.dot {
+  width: var(--dot-size);
+  height: var(--dot-size);
+  border-radius: var(--radius-full);
+  background: var(--ink-muted);
+  flex: none;
+}
+
+.attention .dot {
+  background: var(--attention-mark);
+}
+
+.done .dot {
+  background: var(--done-mark);
+}
+
+.danger .dot {
+  background: var(--danger);
+}
+
+.offline .dot {
+  background: transparent;
+}
+
 .group {
   display: inline-flex;
-  flex-direction: row-reverse;
   align-items: center;
 }
 
-.groupItem {
-  margin-left: -6px;
-  box-shadow: 0 0 0 2px var(--sheet);
+.group .root {
+  box-shadow: 0 0 0 var(--focus-ring-width) var(--sheet);
 }
 
-.group .groupItem:first-child { margin-left: 0; }
+.group .root + .root {
+  margin-left: calc(var(--space-1) * -1);
+}
 
-.overflow {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: var(--radius-full);
+.more {
   background: var(--neutral-soft);
   color: var(--ink-secondary);
-  font-family: var(--font-sans);
-  font-weight: 600;
-  box-shadow: 0 0 0 2px var(--sheet);
-  margin-left: -6px;
 }

@@ -1,41 +1,47 @@
 .root {
-  display: inline-block;
-  background: var(--neutral-soft);
-  border-radius: var(--radius-sm);
-  animation: vt-shimmer 1.4s ease-in-out infinite;
+  display: block;
+  border-radius: var(--radius-xs);
+  background: linear-gradient(
+    90deg,
+    var(--skeleton) 0%,
+    var(--skeleton-highlight) 50%,
+    var(--skeleton) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.4s linear infinite;
 }
 
-.block {
-  display: block;
-  width: 100%;
-  height: 16px;
-  border-radius: var(--radius-sm);
+.line {
+  border-radius: var(--radius-xs);
 }
 
 .circle {
   border-radius: var(--radius-full);
-  flex: none;
+}
+
+.block {
+  border-radius: var(--radius-md);
 }
 
 .text {
-  display: block;
-  height: 14px;
-  border-radius: var(--radius-sm);
-}
-
-.textBlock {
   display: flex;
   flex-direction: column;
   gap: var(--space-2);
   width: 100%;
 }
 
-@keyframes vt-shimmer {
-  0%   { opacity: 1; }
-  50%  { opacity: 0.5; }
-  100% { opacity: 1; }
+@keyframes shimmer {
+  from {
+    background-position: 100% 0;
+  }
+  to {
+    background-position: -100% 0;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .root { animation: none; }
+  .root {
+    animation-duration: 0.01ms;
+    animation-iteration-count: 1;
+  }
 }

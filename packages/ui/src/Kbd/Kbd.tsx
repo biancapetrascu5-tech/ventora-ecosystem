@@ -1,59 +1,45 @@
 'use client';
 
+import { useEffect, useState } from 'react';
+import { Icon } from '../Icon/Icon';
 import { cn } from '../lib/cn';
 import styles from './Kbd.module.css';
 
-const MAC_LABELS: Record<string, string> = {
-  mod: '⌘',
-  shift: '⇧',
-  alt: '⌥',
-  ctrl: '⌃',
-  enter: '↵',
-  up: '↑',
-  down: '↓',
-  left: '←',
-  right: '→',
-  esc: 'Esc',
-  backspace: '⌫',
-  delete: '⌦',
-  tab: '⇥',
-};
-
-const WIN_LABELS: Record<string, string> = {
-  mod: 'Ctrl',
-  shift: 'Shift',
-  alt: 'Alt',
-  ctrl: 'Ctrl',
-  enter: 'Enter',
-  esc: 'Esc',
-  backspace: '⌫',
-  delete: 'Del',
-  tab: 'Tab',
-  up: '↑',
-  down: '↓',
-  left: '←',
-  right: '→',
-};
-
-function resolveKey(key: string): string {
-  const lower = key.toLowerCase();
-  if (typeof navigator !== 'undefined' && /Mac|iPhone|iPad/.test(navigator.platform ?? '')) {
-    return MAC_LABELS[lower] ?? key;
+/* eslint-disable i18next/no-literal-string -- key names are not translated */
+function renderKey(k: string, mac: boolean) {
+  switch (k) {
+    case 'mod':
+      return mac ? <Icon icon="command" size={12} label="Command" /> : 'Ctrl';
+    case 'shift':
+      return 'Shift';
+    case 'enter':
+      return <Icon icon="corner-down-left" size={12} label="Enter" />;
+    case 'up':
+      return <Icon icon="arrow-up" size={12} label="Up" />;
+    case 'down':
+      return <Icon icon="arrow-down" size={12} label="Down" />;
+    default:
+      return k;
   }
-  return WIN_LABELS[lower] ?? key;
 }
+/* eslint-enable i18next/no-literal-string */
 
 export interface KbdProps {
+  /** Strings plus the tokens `mod`, `shift`, `enter`, `up`, `down`. */
   keys: string[];
   className?: string;
 }
 
 export function Kbd({ keys, className }: KbdProps) {
+  const [mac, setMac] = useState(false);
+  useEffect(() => {
+    setMac(/Mac|iPhone|iPad/.test(navigator.platform ?? ''));
+  }, []);
   return (
-    <span className={cn(styles.combo, className)} aria-label={keys.join('+')}>
+    <span className={cn(styles.root, className)}>
       {keys.map((k, i) => (
-        <kbd key={i} className={styles.key}>
-          {resolveKey(k)}
+        <kbd key={i} className={cn(styles.key, 'caption')}>
+          {renderKey(k, mac)}
         </kbd>
       ))}
     </span>

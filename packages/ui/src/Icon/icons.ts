@@ -86,6 +86,9 @@ import {
   BatteryCharging,
   Signal,
   QrCode,
+  Command,
+  CornerDownLeft,
+  Smartphone,
   type LucideIcon,
 } from 'lucide-react';
 
@@ -178,6 +181,9 @@ export const ICON_REGISTRY = {
   'battery-charging': BatteryCharging,
   signal: Signal,
   'qr-code': QrCode,
+  command: Command,
+  'corner-down-left': CornerDownLeft,
+  smartphone: Smartphone,
 } as const satisfies Record<string, LucideIcon>;
 
 export type IconName = keyof typeof ICON_REGISTRY;

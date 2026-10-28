@@ -1,80 +1,78 @@
 /* eslint-disable i18next/no-literal-string */
 'use client';
-import type React from 'react';
 import { notFound } from 'next/navigation';
 import { Avatar, AvatarGroup } from '@ventora/ui';
-import { GalleryShell } from '../_shared/GalleryShell';
+import type { AvatarSize, AvatarStatus } from '@ventora/ui';
+import { Row, ThPair } from '../_shared/QPair';
+import f from '../_shared/frames.module.css';
 
-const C3WRAP: React.CSSProperties = {
-  display: 'flex',
-  flexDirection: 'column',
-  gap: 'var(--space-4)',
-  padding: 'var(--space-4)',
-  boxSizing: 'border-box',
+// preview.html → Demo → primul thgrid → Set({ L: T.ro })
+const L = {
+  lbl: ['Mărimi', 'Stare', 'Formă', 'Grup', 'În context'],
+  me: 'Bianca Petrașcu',
+  st: [
+    ['Ștefan Țăranu', 'done', 'Disponibil'],
+    ['Mara Enache', 'attention', 'Te așteaptă'],
+    ['Ilinca Ștefănescu', 'danger', 'Absentă'],
+    ['Radu Matei', 'neutral', 'În pauză'],
+    ['Ioana Pavel', 'offline', 'Deconectată'],
+  ] as [string, AvatarStatus, string][],
+  biz: ['Salon Aurora', 'Clinica Dentis Sibiu'],
+  people: [
+    'Ana Popescu',
+    'Andrei Ionescu',
+    'Bianca Marin',
+    'Cristina Dobre',
+    'Dan Stoica',
+    'Elena Georgescu',
+    'Ioana Pavel',
+  ],
+  ctx: ['Ștefan Țăranu', 'Coafor · lucrează azi 09:00–17:00'],
 };
-const C3PAIR: React.CSSProperties = {
-  display: 'grid',
-  gridTemplateColumns: 'repeat(auto-fit, minmax(min(360px, 100%), 1fr))',
-  gap: 'var(--space-4)',
-  alignItems: 'start',
-};
-const C3F: React.CSSProperties = {
-  display: 'flex',
-  flexDirection: 'column',
-  gap: 'var(--space-3)',
-  padding: 'var(--space-4)',
-  border: 'var(--border-width) solid var(--line)',
-  borderRadius: 'var(--radius-md)',
-  background: 'var(--canvas)',
-  color: 'var(--ink)',
-  minWidth: 0,
-  boxSizing: 'border-box',
-};
-const C3LAB: React.CSSProperties = { color: 'var(--ink-muted)', margin: 0 };
+const SIZES: AvatarSize[] = ['xs', 'sm', 'md', 'lg', 'xl'];
+const NOWRAP2 = { gap: 'var(--space-2)', flexWrap: 'nowrap' } as const;
 
-const Row = ({ label, children }: { label: string; children: React.ReactNode }) => (
-  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--space-3)', alignItems: 'center' }}>
-    <span
-      style={{
-        color: 'var(--ink-muted)',
-        width: 'calc(var(--space-16) + var(--space-6))',
-        flex: 'none',
-        fontSize: 'var(--type-caption-size)',
-      }}
-    >
-      {label}
-    </span>
-    {children}
-  </div>
-);
-
-const PEOPLE = [
-  'Ana Popescu',
-  'Andrei Ionescu',
-  'Bianca Marin',
-  'Cristina Dobre',
-  'Dan Stoica',
-  'Elena Georgescu',
-  'Ioana Pavel',
-].map((name) => ({ name }));
-
-function AvatarSet({ lang }: { lang: 'ro' | 'de' }) {
+function AvatarSet() {
+  const people = L.people.map((name) => ({ name }));
   return (
     <>
-      <Row label={lang === 'de' ? 'Größen' : 'Mărimi'}>
-        {(['xs', 'sm', 'md', 'lg', 'xl'] as const).map((s) => (
-          <Avatar key={s} size={s} name="Bianca Petrașcu" />
+      <Row label={L.lbl[0]}>
+        {SIZES.map((s) => (
+          <Avatar key={s} size={s} name={L.me} />
         ))}
       </Row>
-      <Row label={lang === 'de' ? 'Status' : 'Stare'}>
-        <Avatar name="Ioana Pavel" status="done" />
-        <Avatar name="Mara Enache" status="attention" />
-        <Avatar name="Radu Matei" status="offline" />
-        <Avatar name="Salon Aurora" shape="square" />
+      <Row label={L.lbl[1]}>
+        {L.st.map(([n, s, t]) => (
+          <span key={n} className={f.r} style={NOWRAP2}>
+            <Avatar name={n} status={s} />
+            <span className="body-small">{t}</span>
+          </span>
+        ))}
       </Row>
-      <Row label={lang === 'de' ? 'Gruppe' : 'Grup'}>
-        <AvatarGroup people={PEOPLE} max={4} />
-        <AvatarGroup people={PEOPLE.slice(0, 3)} size="md" />
+      <Row label={L.lbl[2]}>
+        <Avatar name={L.st[0][0]} />
+        {L.biz.map((b) => (
+          <span key={b} className={f.r} style={NOWRAP2}>
+            <Avatar name={b} shape="square" />
+            <span className="body">{b}</span>
+          </span>
+        ))}
+      </Row>
+      <Row label={L.lbl[3]}>
+        <AvatarGroup people={people} max={4} locale="ro" />
+        <AvatarGroup people={people.slice(0, 3)} size="md" locale="ro" />
+        <AvatarGroup people={people} max={3} size="lg" locale="ro" />
+      </Row>
+      <Row label={L.lbl[4]}>
+        <span className={f.r} style={{ gap: 'var(--space-3)', flexWrap: 'nowrap' }}>
+          <Avatar name={L.ctx[0]} size="lg" status="done" />
+          <span style={{ display: 'flex', flexDirection: 'column' }}>
+            <span className="body-strong">{L.ctx[0]}</span>
+            <span className="body-small" style={{ color: 'var(--ink-secondary)' }}>
+              {L.ctx[1]}
+            </span>
+          </span>
+        </span>
       </Row>
     </>
   );
@@ -82,38 +80,5 @@ function AvatarSet({ lang }: { lang: 'ro' | 'de' }) {
 
 export default function AvatarGalleryPage() {
   if (process.env.NODE_ENV !== 'development') notFound();
-  return (
-    <GalleryShell>
-      <div style={C3WRAP}>
-        <div style={C3PAIR}>
-          <div data-gallery-frame data-theme="light" style={C3F}>
-            <p className="caption" style={C3LAB}>
-              Light
-            </p>
-            <AvatarSet lang="ro" />
-          </div>
-          <div data-gallery-frame data-theme="dark" style={C3F}>
-            <p className="caption" style={C3LAB}>
-              Dark
-            </p>
-            <AvatarSet lang="ro" />
-          </div>
-        </div>
-        <div style={C3PAIR}>
-          <div data-theme="light" style={C3F}>
-            <p className="caption" style={C3LAB}>
-              Deutsch (de)
-            </p>
-            <AvatarSet lang="de" />
-          </div>
-          <div data-theme="dark" style={C3F}>
-            <p className="caption" style={C3LAB}>
-              Deutsch · Dark
-            </p>
-            <AvatarSet lang="de" />
-          </div>
-        </div>
-      </div>
-    </GalleryShell>
-  );
+  return <ThPair render={() => <AvatarSet />} />;
 }

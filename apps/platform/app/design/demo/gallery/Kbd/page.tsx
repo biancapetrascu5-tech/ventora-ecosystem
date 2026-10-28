@@ -1,85 +1,35 @@
 /* eslint-disable i18next/no-literal-string */
 'use client';
-import type React from 'react';
+import { Fragment } from 'react';
 import { notFound } from 'next/navigation';
 import { Kbd } from '@ventora/ui';
-import { GalleryShell } from '../_shared/GalleryShell';
+import { C3Pair } from '../_shared/QPair';
+import f from '../_shared/frames.module.css';
 
-const C3WRAP: React.CSSProperties = {
-  display: 'flex',
-  flexDirection: 'column',
-  gap: 'var(--space-4)',
-  padding: 'var(--space-4)',
-  boxSizing: 'border-box',
-};
-const C3PAIR: React.CSSProperties = {
-  display: 'grid',
-  gridTemplateColumns: 'repeat(auto-fit, minmax(min(360px, 100%), 1fr))',
-  gap: 'var(--space-4)',
-  alignItems: 'start',
-};
-const C3F: React.CSSProperties = {
-  display: 'flex',
-  flexDirection: 'column',
-  gap: 'var(--space-3)',
-  padding: 'var(--space-4)',
-  border: 'var(--border-width) solid var(--line)',
-  borderRadius: 'var(--radius-md)',
-  background: 'var(--canvas)',
-  color: 'var(--ink)',
-  minWidth: 0,
-  boxSizing: 'border-box',
-};
-const C3LAB: React.CSSProperties = { color: 'var(--ink-muted)', margin: 0 };
+// preview.html → C3Themes → KSet(KBT.ro)
+const RO = [
+  'Caută oriunde în Hub',
+  'Creează o programare',
+  'Închide fereastra',
+  'Mergi prin listă',
+  'Confirmă alegerea',
+];
+const KEYS = [['mod', 'K'], ['shift', 'N'], ['Esc'], ['up', 'down'], ['enter']];
 
-const Row = ({ label, children }: { label: string; children: React.ReactNode }) => (
-  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--space-3)', alignItems: 'center' }}>
-    <span
-      style={{
-        color: 'var(--ink-muted)',
-        width: 'calc(var(--space-16) + var(--space-6))',
-        flex: 'none',
-        fontSize: 'var(--type-caption-size)',
-      }}
-    >
-      {label}
-    </span>
-    {children}
-  </div>
-);
-
-function KbdSet() {
+function KSet({ t }: { t: string[] }) {
   return (
-    <Row label="Taste">
-      <Kbd keys={['mod', 'K']} />
-      <Kbd keys={['shift', 'N']} />
-      <Kbd keys={['Esc']} />
-      <Kbd keys={['up', 'down']} />
-      <Kbd keys={['enter']} />
-    </Row>
+    <div className={f.c3kv}>
+      {KEYS.map((k, i) => (
+        <Fragment key={i}>
+          <span className="body-small">{t[i]}</span>
+          <Kbd keys={k} />
+        </Fragment>
+      ))}
+    </div>
   );
 }
 
 export default function KbdGalleryPage() {
   if (process.env.NODE_ENV !== 'development') notFound();
-  return (
-    <GalleryShell>
-      <div style={C3WRAP}>
-        <div style={C3PAIR}>
-          <div data-gallery-frame data-theme="light" style={C3F}>
-            <p className="caption" style={C3LAB}>
-              Light
-            </p>
-            <KbdSet />
-          </div>
-          <div data-gallery-frame data-theme="dark" style={C3F}>
-            <p className="caption" style={C3LAB}>
-              Dark
-            </p>
-            <KbdSet />
-          </div>
-        </div>
-      </div>
-    </GalleryShell>
-  );
+  return <C3Pair render={() => <KSet t={RO} />} />;
 }

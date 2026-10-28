@@ -1,63 +1,52 @@
 'use client';
 
-import {
-  ProgressBar as RACProgressBar,
-  type ProgressBarProps as RACProgressBarProps,
-} from 'react-aria-components';
 import { cn } from '../lib/cn';
 import styles from './ProgressBar.module.css';
 
-export interface ProgressBarProps extends Omit<RACProgressBarProps, 'className' | 'style'> {
-  label?: string;
+export interface ProgressBarProps {
+  /** Omit for an indeterminate bar. */
   value?: number;
+  label?: string;
   showValue?: boolean;
-  size?: 'sm' | 'md';
+  size?: 'sm' | 'md' | 'lg';
+  tone?: 'default' | 'done';
   className?: string;
 }
 
 export function ProgressBar({
-  label,
   value,
-  showValue,
+  label,
+  showValue = false,
   size = 'md',
+  tone = 'default',
   className,
-  ...props
 }: ProgressBarProps) {
-  const isIndeterminate = value === undefined;
-  const pct = isIndeterminate ? undefined : Math.min(100, Math.max(0, value));
-
+  const indeterminate = value == null;
+  const v = Math.max(0, Math.min(100, value ?? 0));
+  const done = tone === 'done' || v >= 100;
   return (
-    <RACProgressBar
-      {...props}
-      value={pct}
-      minValue={0}
-      maxValue={100}
-      isIndeterminate={isIndeterminate}
-      aria-label={label ?? 'progress'}
-      className={cn(styles.root, className)}
-    >
-      {() => (
-        <>
-          {(label || showValue) && (
-            <div className={styles.header}>
-              {label && <span className={styles.label}>{label}</span>}
-              {showValue && pct !== undefined && (
-                <span className={styles.value}>{Math.round(pct)}%</span>
-              )}
-            </div>
-          )}
-          <div className={cn(styles.track, size === 'sm' && styles.trackSm)}>
-            <div
-              className={cn(
-                styles.fill,
-                isIndeterminate && styles.indeterminate,
-                pct === 100 && styles.complete,
-              )}
-              style={isIndeterminate ? undefined : { width: `${pct}%` }}
-            />
-          </div>
-        </>
+    <div className={cn(styles.wrap, className)}>
+      {(label || showValue) && (
+        <div className={styles.top}>
+          {label && <span className="caption">{label}</span>}
+          {showValue && !indeterminate && <span className="caption v-num">{Math.round(v)}%</span>}
+        </div>
       )}
-    </RACProgressBar>
+      <div
+        className={cn(
+          styles.bar,
+          styles[size],
+          indeterminate && styles.indeterminate,
+          done && styles.done,
+        )}
+        role="progressbar"
+        aria-label={label}
+        aria-valuemin={0}
+        aria-valuemax={100}
+        aria-valuenow={indeterminate ? undefined : Math.round(v)}
+      >
+        <span className={styles.fill} style={indeterminate ? undefined : { width: `${v}%` }} />
+      </div>
+    </div>
   );
 }

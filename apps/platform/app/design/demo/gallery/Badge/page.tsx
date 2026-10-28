@@ -1,91 +1,54 @@
 /* eslint-disable i18next/no-literal-string */
 'use client';
-import type React from 'react';
 import { notFound } from 'next/navigation';
-import { Badge } from '@ventora/ui';
-import { GalleryShell } from '../_shared/GalleryShell';
+import { Badge, Icon } from '@ventora/ui';
+import { Row, ThPair } from '../_shared/QPair';
+import f from '../_shared/frames.module.css';
 
-const C3WRAP: React.CSSProperties = {
-  display: 'flex',
-  flexDirection: 'column',
-  gap: 'var(--space-4)',
-  padding: 'var(--space-4)',
-  boxSizing: 'border-box',
+// preview.html → Demo → primul thgrid → Set({ L: T.ro })
+const RO = {
+  lbl: ['Număr', 'Etichetă', 'Punct', 'În context'],
+  unread: '3 necitite',
+  dotL: 'Necitit',
+  ctx: [
+    ['Programări', 3, 'attention', '3 programări neconfirmate'],
+    ['Notificări', 12, 'attention', '12 notificări necitite'],
+    ['Clienți activi', 248, 'neutral', '248 de clienți activi'],
+  ] as const,
+  tags: ['Nou', 'Pro', 'Beta', 'Încercare gratuită'],
 };
-const C3PAIR: React.CSSProperties = {
-  display: 'grid',
-  gridTemplateColumns: 'repeat(auto-fit, minmax(min(360px, 100%), 1fr))',
-  gap: 'var(--space-4)',
-  alignItems: 'start',
-};
-const C3F: React.CSSProperties = {
-  display: 'flex',
-  flexDirection: 'column',
-  gap: 'var(--space-3)',
-  padding: 'var(--space-4)',
-  border: 'var(--border-width) solid var(--line)',
-  borderRadius: 'var(--radius-md)',
-  background: 'var(--canvas)',
-  color: 'var(--ink)',
-  minWidth: 0,
-  boxSizing: 'border-box',
-};
-const C3LAB: React.CSSProperties = { color: 'var(--ink-muted)', margin: 0 };
 
-const Row = ({ label, children }: { label: string; children: React.ReactNode }) => (
-  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--space-3)', alignItems: 'center' }}>
-    <span
-      style={{
-        color: 'var(--ink-muted)',
-        width: 'calc(var(--space-16) + var(--space-6))',
-        flex: 'none',
-        fontSize: 'var(--type-caption-size)',
-      }}
-    >
-      {label}
-    </span>
-    {children}
-  </div>
-);
-
-function BadgeSet({ lang }: { lang: 'ro' | 'de' }) {
-  if (lang === 'de') {
-    return (
-      <>
-        <Row label="Zahl">
-          <Badge tone="attention" count={3} label="3 ungelesen" />
-          <Badge tone="attention" count={1284} />
-          <Badge count={12} />
-          <Badge tone="primary" count={5} />
-        </Row>
-        <Row label="Etikett">
-          <Badge>Neu</Badge>
-          <Badge tone="primary">Pro</Badge>
-          <Badge>Beta</Badge>
-        </Row>
-        <Row label="Punkt">
-          <Badge dot tone="attention" label="Ungelesen" />
-          <Badge dot tone="neutral" />
-        </Row>
-      </>
-    );
-  }
+function BadgeSet() {
+  const L = RO;
   return (
     <>
-      <Row label="Număr">
-        <Badge tone="attention" count={3} label="3 necitite" />
-        <Badge tone="attention" count={1284} />
-        <Badge count={12} />
-        <Badge tone="primary" count={5} />
+      <Row label={L.lbl[0]}>
+        <Badge tone="attention" count={3} label={L.unread} locale="ro" />
+        <Badge tone="attention" count={128} locale="ro" />
+        <Badge count={12} locale="ro" />
+        <Badge tone="primary" count={5} locale="ro" />
+        <Badge count={1284} max={999} locale="ro" />
       </Row>
-      <Row label="Etichetă">
-        <Badge>Nou</Badge>
-        <Badge tone="primary">Pro</Badge>
-        <Badge>Beta</Badge>
+      <Row label={L.lbl[1]}>
+        {L.tags.map((t, i) => (
+          <Badge key={t} tone={i === 1 ? 'primary' : 'neutral'}>
+            {t}
+          </Badge>
+        ))}
       </Row>
-      <Row label="Punct">
-        <Badge dot tone="attention" label="Necitit" />
+      <Row label={L.lbl[2]}>
+        <Badge dot tone="attention" label={L.dotL} />
         <Badge dot tone="neutral" />
+        <Badge dot tone="primary" />
+      </Row>
+      <Row label={L.lbl[3]}>
+        {L.ctx.map(([t, n, tone, a]) => (
+          <span key={t} className={f.r} style={{ gap: 'var(--space-2)', flexWrap: 'nowrap' }}>
+            <Icon icon={tone === 'attention' ? 'bell' : 'users'} size={16} />
+            <span className="body">{t}</span>
+            <Badge tone={tone} count={n} max={999} label={a} locale="ro" />
+          </span>
+        ))}
       </Row>
     </>
   );
@@ -93,38 +56,5 @@ function BadgeSet({ lang }: { lang: 'ro' | 'de' }) {
 
 export default function BadgeGalleryPage() {
   if (process.env.NODE_ENV !== 'development') notFound();
-  return (
-    <GalleryShell>
-      <div style={C3WRAP}>
-        <div style={C3PAIR}>
-          <div data-gallery-frame data-theme="light" style={C3F}>
-            <p className="caption" style={C3LAB}>
-              Light
-            </p>
-            <BadgeSet lang="ro" />
-          </div>
-          <div data-gallery-frame data-theme="dark" style={C3F}>
-            <p className="caption" style={C3LAB}>
-              Dark
-            </p>
-            <BadgeSet lang="ro" />
-          </div>
-        </div>
-        <div style={C3PAIR}>
-          <div data-theme="light" style={C3F}>
-            <p className="caption" style={C3LAB}>
-              Deutsch (de)
-            </p>
-            <BadgeSet lang="de" />
-          </div>
-          <div data-theme="dark" style={C3F}>
-            <p className="caption" style={C3LAB}>
-              Deutsch · Dark
-            </p>
-            <BadgeSet lang="de" />
-          </div>
-        </div>
-      </div>
-    </GalleryShell>
-  );
+  return <ThPair render={() => <BadgeSet />} />;
 }

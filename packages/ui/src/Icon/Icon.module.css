@@ -1,6 +1,5 @@
 .root {
-  display: inline-block;
-  flex-shrink: 0;
-  vertical-align: middle;
+  display: block;
+  flex: none;
   color: inherit;
 }

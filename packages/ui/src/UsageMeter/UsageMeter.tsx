@@ -34,11 +34,6 @@ export interface UsageMeterProps {
   onlyOwnerBuysLabel?: (args: { who: string }) => string;
 }
 
-function fmt(n: number, format?: (n: number) => string, locale?: string): string {
-  if (format) return format(n);
-  return fmtNumber(n, locale);
-}
-
 export function UsageMeter({
   label,
   used = 0,
@@ -46,7 +41,7 @@ export function UsageMeter({
   unit,
   locale,
   format,
-  compact,
+  compact = false,
   warnAt = 0.8,
   onUpgrade,
   onBuy,
@@ -65,24 +60,15 @@ export function UsageMeter({
   notifyOwnerLabel,
   onlyOwnerBuysLabel,
 }: UsageMeterProps) {
-  const unlimited = limit === undefined || limit === null;
-  const ratio = unlimited ? 0 : used / limit!;
-  const state: 'ok' | 'warn' | 'limit' = unlimited
-    ? 'ok'
-    : ratio >= 1
-      ? 'limit'
-      : ratio >= warnAt
-        ? 'warn'
-        : 'ok';
-  const remaining = unlimited ? null : Math.max(0, limit! - used);
+  const f = format ?? ((n: number) => fmtNumber(n, locale));
+  const unlimited = limit == null;
+  const ratio = unlimited ? 0 : used / limit;
+  const state = unlimited ? 'ok' : ratio >= 1 ? 'limit' : ratio >= warnAt ? 'warn' : 'ok';
+  const remaining = unlimited ? null : Math.max(0, limit - used);
   const u = unit ? ` ${unit}` : '';
-  const f = (n: number) => fmt(n, format, locale);
-
-  const countText = unlimited
-    ? (unlimitedLabel ?? '')
-    : (usedOfLabel?.({ used: f(used), limit: f(limit!) + u }) ?? `${f(used)}/${f(limit!)}${u}`);
-
-  const pct = Math.min(100, ratio * 100);
+  const usedOf = unlimited ? '' : (usedOfLabel?.({ used: f(used), limit: f(limit) + u }) ?? '');
+  const left = remaining == null ? '' : (leftLabel?.({ n: f(remaining) + u }) ?? '');
+  const btnSize = compact ? 'sm' : 'md';
 
   return (
     <div
@@ -95,85 +81,82 @@ export function UsageMeter({
       )}
     >
       <div className={styles.top}>
-        <span className={cn(compact ? styles.captionLabel : styles.label)}>{label}</span>
-        <span className={cn(styles.count, compact ? styles.countCompact : styles.countBody)}>
-          {countText}
+        <span className={compact ? 'caption' : 'subheading'}>{label}</span>
+        <span className={cn(compact ? 'caption' : 'body-small', styles.nums)}>
+          {unlimited ? unlimitedLabel : usedOf}
         </span>
       </div>
       {!unlimited && (
         <div
-          className={styles.track}
+          className={styles.bar}
           role="meter"
           aria-label={label}
           aria-valuemin={0}
           aria-valuemax={limit}
-          aria-valuenow={Math.min(used, limit!)}
+          aria-valuenow={Math.min(used, limit)}
+          aria-valuetext={usedOf}
         >
-          <span className={styles.fill} style={{ width: `${pct}%` }} />
+          <span className={styles.fill} style={{ width: `${Math.min(100, ratio * 100)}%` }} />
         </div>
       )}
-      {!compact && !unlimited && state === 'ok' && remaining !== null && remaining > 0 && (
-        <p className={styles.msg}>{leftLabel?.({ n: f(remaining) + u })}</p>
+      {!compact && !unlimited && state === 'ok' && (
+        <p className={cn(styles.msg, 'body-small')}>{left}</p>
       )}
       {!unlimited && state === 'warn' && (
-        <p className={cn(styles.msg, styles.msgWarn)}>
-          <Icon icon="triangle-alert" size={14} aria-hidden />
+        <p className={cn(styles.msg, styles.msgWarn, 'body-small')}>
+          <Icon icon="triangle-alert" size={14} />
           <span>
-            {nearLimitLabel}
-            {remaining !== null && leftLabel && ` · ${leftLabel({ n: f(remaining) + u })}`}
+            {nearLimitLabel} · {left}
           </span>
         </p>
       )}
       {!unlimited && state === 'limit' && (
-        <div className={styles.limitPanel}>
-          <p className={cn(styles.msg, styles.msgLimit)}>
-            <Icon icon="lock" size={14} aria-hidden />
+        <div className={styles.panel}>
+          <p className={cn(styles.msg, styles.msgLimit, 'body-small')}>
+            <Icon icon="lock" size={14} />
             <span>
-              {atLimitLabel && <strong className={styles.limitTitle}>{atLimitLabel}.</strong>}
-              {!compact && (onBuy ?? onUpgrade) && atLimitHint && ` ${atLimitHint}`}
+              <strong className="body-strong">{atLimitLabel}.</strong>{' '}
+              {!compact && (onBuy || onUpgrade) ? atLimitHint : null}
             </span>
           </p>
-          {owner && !onBuy && onlyOwnerBuysLabel && (
-            <p className={styles.who}>{onlyOwnerBuysLabel({ who: owner })}</p>
+          {owner && !onBuy && (
+            <p className={cn('body-small', styles.who)}>{onlyOwnerBuysLabel?.({ who: owner })}</p>
           )}
           <div className={styles.actions}>
             {onBuy && (
-              <Button variant="primary" size={compact ? 'sm' : 'md'} onPress={onBuy}>
-                <Icon icon="plus" size={16} aria-hidden />
-                <span>{buyLabel ?? buyMoreLabel}</span>
+              <Button variant="primary" size={btnSize} icon="plus" onPress={onBuy}>
+                {buyLabel ?? buyMoreLabel}
               </Button>
             )}
-            {owner && !onBuy && onNotifyOwner && notifyOwnerLabel && (
-              <Button variant="secondary" size={compact ? 'sm' : 'md'} onPress={onNotifyOwner}>
-                <Icon icon="send" size={16} aria-hidden />
-                <span>{notifyOwnerLabel}</span>
+            {owner && !onBuy && onNotifyOwner && (
+              <Button variant="secondary" size={btnSize} icon="send" onPress={onNotifyOwner}>
+                {notifyOwnerLabel}
               </Button>
             )}
             {onUpgrade && !compact && (
-              <Button variant={onBuy ? 'quiet' : 'primary'} onPress={onUpgrade}>
-                <span>{upgradeLabel}</span>
+              <Button variant={onBuy ? 'quiet' : 'primary'} size="md" onPress={onUpgrade}>
+                {upgradeLabel}
               </Button>
             )}
           </div>
         </div>
       )}
-      {!compact && !unlimited && state === 'warn' && (onBuy ?? onUpgrade) && (
+      {!compact && !unlimited && state === 'warn' && (onBuy || onUpgrade) && (
         <div className={styles.actions}>
           {onBuy && (
-            <Button variant="secondary" size="sm" onPress={onBuy}>
-              <Icon icon="plus" size={16} aria-hidden />
-              <span>{buyLabel ?? buyMoreLabel}</span>
+            <Button variant="secondary" size="sm" icon="plus" onPress={onBuy}>
+              {buyLabel ?? buyMoreLabel}
             </Button>
           )}
-          {!onBuy && onUpgrade && upgradeLabel && (
+          {!onBuy && onUpgrade && (
             <Button variant="secondary" size="sm" onPress={onUpgrade}>
-              <span>{upgradeLabel}</span>
+              {upgradeLabel}
             </Button>
           )}
         </div>
       )}
-      {!compact && !unlimited && state === 'warn' && owner && !onBuy && onlyOwnerBuysLabel && (
-        <p className={styles.who}>{onlyOwnerBuysLabel({ who: owner })}</p>
+      {!compact && !unlimited && state === 'warn' && owner && !onBuy && (
+        <p className={cn('body-small', styles.who)}>{onlyOwnerBuysLabel?.({ who: owner })}</p>
       )}
     </div>
   );

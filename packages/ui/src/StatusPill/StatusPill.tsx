@@ -5,18 +5,20 @@ import { Icon } from '../Icon/Icon';
 import type { IconName } from '../Icon/Icon';
 import styles from './StatusPill.module.css';
 
-export type StatusPillTone = 'attention' | 'done' | 'danger' | 'neutral';
+export type StatusPillTone = 'attention' | 'done' | 'danger' | 'neutral' | 'progress';
 
-const DEFAULT_ICONS: Record<StatusPillTone, IconName | null> = {
+const TONE_ICON: Record<StatusPillTone, IconName | null> = {
   attention: 'circle-dot',
   done: 'circle-check',
   danger: 'circle-alert',
   neutral: null,
+  progress: null,
 };
 
 export interface StatusPillProps {
   tone?: StatusPillTone;
   size?: 'sm' | 'md';
+  /** `false` drops the icon and shows the dot. */
   icon?: IconName | false;
   children?: React.ReactNode;
   className?: string;
@@ -29,22 +31,17 @@ export function StatusPill({
   children,
   className,
 }: StatusPillProps) {
-  const resolvedIcon: IconName | null | false =
-    icon === false ? false : (icon ?? DEFAULT_ICONS[tone]);
+  const ic = icon === false ? null : (icon ?? TONE_ICON[tone]);
   return (
-    <span className={cn(styles.root, styles[tone], size === 'sm' && styles.sm, className)}>
-      {resolvedIcon === false ? null : resolvedIcon !== null ? (
-        <Icon
-          icon={resolvedIcon}
-          size={12}
-          strokeWidth={2.25}
-          aria-hidden
-          className={styles.icon}
-        />
+    <span
+      className={cn(styles.root, styles[tone], size === 'sm' && styles.sm, 'caption', className)}
+    >
+      {ic ? (
+        <Icon icon={ic} size={12} strokeWidth={2.25} />
       ) : (
-        <span className={styles.dot} aria-hidden />
+        <span className={styles.dot} aria-hidden="true" />
       )}
-      {children}
+      <span>{children}</span>
     </span>
   );
 }

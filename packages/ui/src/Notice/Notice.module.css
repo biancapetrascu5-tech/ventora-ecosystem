@@ -9,12 +9,11 @@
 }
 
 .icon {
-  flex: none;
   margin-top: var(--space-0-5);
   color: var(--ink-secondary);
 }
 
-.body {
+.text {
   flex: 1;
   min-width: 0;
   display: flex;
@@ -22,35 +21,15 @@
   gap: var(--space-0-5);
 }
 
-.title {
-  margin: 0;
-  font-family: var(--font-sans);
-  font-size: var(--type-body-size);
-  line-height: var(--type-body-line);
-  color: var(--ink);
-}
-
-.desc {
-  margin: 0;
-  font-family: var(--font-sans);
-  font-size: var(--type-body-size);
-  line-height: var(--type-body-line);
+.body {
   color: var(--ink-secondary);
 }
 
 .actions {
-  margin-top: var(--space-2);
   display: flex;
-  gap: var(--space-2);
   flex-wrap: wrap;
-}
-
-/* Tones: background + icon color only */
-.danger {
-  background: var(--danger-soft);
-}
-.danger .icon {
-  color: var(--danger-ink);
+  gap: var(--space-2);
+  margin-top: var(--space-2);
 }
 
 .attention {
@@ -65,4 +44,11 @@
 }
 .done .icon {
   color: var(--done-ink);
+}
+
+.danger {
+  background: var(--danger-soft);
+}
+.danger .icon {
+  color: var(--danger-ink);
 }

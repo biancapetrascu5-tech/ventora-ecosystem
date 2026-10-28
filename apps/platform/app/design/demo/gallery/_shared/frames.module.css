@@ -1,0 +1,254 @@
+/* Cadrele din preview.html (docs/design/system/components/<Name>/preview.html), reproduse 1:1.
+   .base imită contextul body din bundle.css: fără font-size/line-height pe body, cifre tabulare. */
+.base {
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: normal;
+  font-weight: 400;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+  background: var(--sheet);
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+/* c5 (qwrap / qfr / qf) */
+.qwrap {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  padding: var(--space-4);
+  box-sizing: border-box;
+  background: var(--canvas);
+  color: var(--ink);
+}
+.qfr {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-4);
+  align-items: start;
+}
+.qfr1 {
+  grid-template-columns: minmax(0, 1fr);
+}
+.qf {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: var(--space-4);
+  border: var(--border-width) solid var(--line);
+  border-radius: var(--radius-lg);
+  min-width: 0;
+  box-sizing: border-box;
+  background: var(--canvas);
+  color: var(--ink);
+}
+.qft {
+  margin: 0;
+  color: var(--ink-muted);
+}
+
+/* c3 (c3wrap > .d > c3sec > c3pair|c3stack > c3f) */
+.d {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: var(--space-4);
+  box-sizing: border-box;
+}
+.c3wrap {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.c3pair {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(360px, 100%), 1fr));
+  gap: var(--space-4);
+  align-items: start;
+}
+.c3stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  min-width: 0;
+}
+.c3f {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border: var(--border-width) solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--canvas);
+  color: var(--ink);
+  min-width: 0;
+  box-sizing: border-box;
+}
+.c3lab {
+  color: var(--ink-muted);
+  margin: 0;
+}
+.c3kv {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: var(--space-2) var(--space-4);
+  align-items: center;
+}
+
+/* th (.d > thgrid > thf) */
+.thgrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(520px, 100%), 1fr));
+  gap: var(--space-4);
+  align-items: start;
+}
+.thf {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: var(--space-5);
+  background: var(--canvas);
+  color: var(--ink);
+  border: var(--border-width) solid var(--line);
+  border-radius: var(--radius-lg);
+  min-width: 0;
+  box-sizing: border-box;
+}
+.thl {
+  margin: 0;
+  color: var(--ink-muted);
+  font-weight: 600;
+}
+
+/* c2 (.pv > section.pv-frame), cadre pe toată lățimea */
+.pv {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: var(--space-4);
+}
+.pvFrame {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: var(--space-6);
+  background: var(--canvas);
+  color: var(--ink);
+  border: var(--border-width) solid var(--line);
+  border-radius: var(--radius-lg);
+  min-width: 0;
+}
+.pvGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: var(--space-5) var(--space-4);
+  align-items: start;
+}
+.pvGrid3 {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-5) var(--space-4);
+  align-items: start;
+}
+.pvCell {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-width: 0;
+}
+.pvLab {
+  margin: 0;
+  color: var(--ink-muted);
+}
+
+/* AttentionList (.al > section.al-frame > .al-row > .al-col) */
+.al {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: var(--space-4);
+}
+.alFrame {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: var(--space-6);
+  background: var(--canvas);
+  color: var(--ink);
+  border: var(--border-width) solid var(--line);
+  border-radius: var(--radius-lg);
+}
+.alRow {
+  display: flex;
+  gap: var(--space-6);
+  align-items: flex-start;
+}
+.alCol {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+.alLab {
+  margin: 0;
+  color: var(--ink-muted);
+}
+.alCard {
+  padding: var(--space-2) var(--space-4);
+  background: var(--sheet);
+  border: var(--border-width) solid var(--line);
+  border-radius: var(--radius-md);
+}
+.alEmpty {
+  padding: var(--space-4);
+}
+
+/* UsageMeter (.um > section.um-frame > .um-grid > .um-cell) */
+.umGrid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--space-4);
+  align-items: start;
+}
+.umCell {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-width: 0;
+}
+.umBody {
+  padding: var(--space-4);
+  background: var(--sheet);
+  border: var(--border-width) solid var(--line);
+  border-radius: var(--radius-md);
+}
+
+/* Utilitare comune din preview.html */
+.d0 {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  min-width: 0;
+}
+.r {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  align-items: center;
+}
+.l {
+  color: var(--ink-muted);
+  width: calc(var(--space-16) + var(--space-6));
+  flex: none;
+}
+.frame {
+  border: var(--border-width) solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--sheet);
+  box-sizing: border-box;
+}
+.muted {
+  color: var(--ink-muted);
+}

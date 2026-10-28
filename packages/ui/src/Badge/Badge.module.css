@@ -1,43 +1,43 @@
-.count,
-.label {
+.root {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-family: var(--font-sans);
-  font-weight: 600;
-  line-height: 1;
+  box-sizing: border-box;
+  height: var(--space-5);
+  padding: 0 var(--space-2);
+  border-radius: var(--radius-xs);
   white-space: nowrap;
-  user-select: none;
 }
 
 .count {
-  min-width: 18px;
-  height: 18px;
+  min-width: var(--space-5);
   padding: 0 var(--space-1);
   border-radius: var(--radius-full);
-  font-size: 11px;
 }
 
-.label {
-  padding: 2px calc(var(--space-1) + var(--space-0-5));
-  border-radius: var(--radius-sm);
-  font-size: 11px;
+.neutral {
+  background: var(--neutral-soft);
+  color: var(--ink-secondary);
+}
+
+.attention {
+  background: var(--attention);
+  color: var(--on-attention);
+}
+
+.primary {
+  background: var(--primary);
+  color: var(--on-primary);
 }
 
 .dot {
-  display: inline-block;
-  width: 8px;
-  height: 8px;
+  width: var(--space-2);
+  height: var(--space-2);
+  min-width: 0;
+  padding: 0;
   border-radius: var(--radius-full);
-  flex: none;
 }
 
-/* Tones — count/label */
-.attention    { background: var(--attention-mark); color: #fff; }
-.primary      { background: var(--primary); color: var(--on-primary); }
-.neutral      { background: var(--neutral-soft); color: var(--ink-secondary); }
-
-/* Tones — dot */
-.dot-attention { background: var(--attention-mark); }
-.dot-primary   { background: var(--primary); }
-.dot-neutral   { background: var(--ink-muted); }
+.dot.neutral {
+  background: var(--ink-muted);
+}
