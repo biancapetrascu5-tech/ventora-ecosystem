@@ -1,5 +1,5 @@
 import { APIError } from 'better-auth';
-import { createAuthMiddleware } from 'better-auth/api';
+import { createAuthMiddleware, isAPIError } from 'better-auth/api';
 import { prismaAdapter } from 'better-auth/adapters/prisma';
 import { bearer, twoFactor } from 'better-auth/plugins';
 import type { UserWithTwoFactor } from 'better-auth/plugins/two-factor';
@@ -23,7 +23,6 @@ const HUB_RATE_LIMIT = {
 
 const FOUNDER_RATE_LIMIT = { ...HUB_RATE_LIMIT };
 
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export function createHubAuthOptions(db: IdentityBaseClient, secret: string) {
   const REMEMBER_ME_SECONDS = 30 * 24 * 60 * 60;
 
@@ -44,6 +43,7 @@ export function createHubAuthOptions(db: IdentityBaseClient, secret: string) {
     const sessionUser = ctx.context.session?.user as UserWithTwoFactor | undefined;
     if (
       ctx.path === '/two-factor/verify-totp' &&
+      !isAPIError(ctx.context.returned) &&
       ctx.context.session?.session?.userId &&
       sessionUser?.twoFactorEnabled !== true
     ) {
@@ -98,7 +98,6 @@ export function createHubAuthOptions(db: IdentityBaseClient, secret: string) {
   };
 }
 
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export function createFounderAuthOptions(db: FounderBaseClient, secret: string) {
   const SESSION_SECONDS = 8 * 60 * 60;
 
@@ -115,6 +114,7 @@ export function createFounderAuthOptions(db: FounderBaseClient, secret: string) 
     const sessionUser = ctx.context.session?.user as UserWithTwoFactor | undefined;
     if (
       ctx.path === '/two-factor/verify-totp' &&
+      !isAPIError(ctx.context.returned) &&
       ctx.context.session?.session?.userId &&
       sessionUser?.twoFactorEnabled !== true
     ) {

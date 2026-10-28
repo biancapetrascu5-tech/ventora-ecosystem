@@ -49,6 +49,37 @@ async function signUp(email: string, password: string, name = 'Test User') {
   return hubAuth.api.signUpEmail({ body: { email, password, name } });
 }
 
+// Generate a TOTP code from a base32-encoded secret (as returned in TOTP URIs).
+// Better Auth stores the raw secret pre-base32 and uses TextEncoder to convert it to
+// the HMAC key in verify-totp. Passing the URI's base32 string directly to generateTOTP()
+// would UTF-8 encode the base32 characters instead — a different HMAC key → wrong code.
+// This helper base32-decodes first, recovering the original UTF-8 bytes, then calls HMAC-SHA1
+// the same way createOTP(rawBytes).totp() inside Better Auth does.
+async function generateTotpFromUri(base32Secret: string): Promise<string> {
+  const alpha = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
+  const s = base32Secret.toUpperCase().replace(/=+$/, '');
+  let bits = '';
+  for (const c of s) {
+    const v = alpha.indexOf(c);
+    if (v >= 0) bits += v.toString(2).padStart(5, '0');
+  }
+  const raw = new Uint8Array(Math.floor(bits.length / 8));
+  for (let i = 0; i < raw.length; i++) raw[i] = parseInt(bits.slice(i * 8, i * 8 + 8), 2);
+  const counter = BigInt(Math.floor(Date.now() / 30_000));
+  const counterBuf = new Uint8Array(8);
+  new DataView(counterBuf.buffer).setBigUint64(0, counter, false);
+  const key = await crypto.subtle.importKey('raw', raw, { name: 'HMAC', hash: 'SHA-1' }, false, ['sign']);
+  const sig = new Uint8Array(await crypto.subtle.sign('HMAC', key, counterBuf));
+  const offset = sig[sig.length - 1] & 0x0f;
+  const code =
+    ((sig[offset] & 0x7f) << 24 |
+      (sig[offset + 1] & 0xff) << 16 |
+      (sig[offset + 2] & 0xff) << 8 |
+      (sig[offset + 3] & 0xff)) %
+    1_000_000;
+  return code.toString().padStart(6, '0');
+}
+
 async function signIn(email: string, password: string, rememberMe?: boolean) {
   return hubAuth.api.signInEmail({ body: { email, password, rememberMe } });
 }
@@ -745,6 +776,33 @@ describe('T2FA — 2FA plugin config and hooks', () => {
     expect(expiresAt).toBeLessThan(expectedMax);
   });
 
+  it('T2FA.D2 — resetPassword with expired token is rejected', async () => {
+    await signUp('t2fa.reset.exp@test.com', 'Password123');
+    await hubAuth.api.requestPasswordReset({ body: { email: 't2fa.reset.exp@test.com' } });
+
+    const verification = await identityDb.verification.findFirst({
+      where: { identifier: { startsWith: 'reset-password:' } },
+      orderBy: { createdAt: 'desc' },
+    });
+    expect(verification).toBeTruthy();
+    const token = verification!.identifier.replace('reset-password:', '');
+
+    // Move expiresAt into the past to simulate an expired token
+    await identityDb.verification.update({
+      where: { id: verification!.id },
+      data: { expiresAt: new Date(Date.now() - 1000) },
+    });
+
+    const resetResp = await hubAuth.handler(
+      new Request('http://localhost/api/auth/reset-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token, newPassword: 'NewPassword123' }),
+      }),
+    );
+    expect(resetResp.status).not.toBe(200);
+  });
+
   it('T2FA.E — account lockout after 5 failed TOTP verifications (R-2F5)', async () => {
     // Same config as production except rateLimit disabled (to test lockout, not IP rate-limit)
     const noRlAuth = betterAuth({
@@ -773,10 +831,7 @@ describe('T2FA — 2FA plugin config and hooks', () => {
     );
     const loginBody = (await loginResp.json()) as { token?: string };
     const bearerToken = loginBody?.token ?? '';
-    if (!bearerToken) {
-      console.log('T2FA.E: skipping — sign-in did not return token');
-      return;
-    }
+    expect(bearerToken).toBeTruthy();
 
     // Step 2: enable 2FA — returns TOTP URI containing the plaintext secret
     const enableResp = await noRlAuth.handler(
@@ -786,31 +841,27 @@ describe('T2FA — 2FA plugin config and hooks', () => {
         body: JSON.stringify({ password }),
       }),
     );
-    if (enableResp.status !== 200) {
-      console.log('T2FA.E: skipping — enableTwoFactor failed:', enableResp.status);
-      return;
-    }
+    expect(enableResp.status).toBe(200);
     const enableBody = (await enableResp.json()) as { totpURI?: string };
     const totpURI = enableBody?.totpURI ?? '';
     // Parse plaintext base32 secret from otpauth URI (?secret=<base32>)
     const secretMatch = totpURI.match(/[?&]secret=([A-Z2-7=]+)/i);
     const totpSecret = secretMatch?.[1] ?? '';
-    if (!totpSecret) {
-      console.log('T2FA.E: skipping — could not parse TOTP secret from URI');
-      return;
-    }
+    expect(totpSecret).toBeTruthy();
 
-    // Step 3: generate a valid TOTP code (server-only API — safe for tests)
-    const { code: validCode } = await noRlAuth.api.generateTOTP({ body: { secret: totpSecret } });
+    // Step 3: generate a valid TOTP code — must base32-decode the URI secret first because
+    // verify-totp uses the raw stored string as the HMAC key (via TextEncoder), not the base32 form.
+    const validCode = await generateTotpFromUri(totpSecret);
 
     // Step 4: verify with valid code to complete 2FA setup → twoFactorEnabled=true, verified=true
-    await noRlAuth.handler(
+    const enrollResp = await noRlAuth.handler(
       new Request('http://localhost/api/auth/two-factor/verify-totp', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${bearerToken}` },
         body: JSON.stringify({ code: validCode }),
       }),
     );
+    expect(enrollResp.status).toBe(200);
 
     // Step 5: sign in fresh — now twoFactorEnabled=true, so response has twoFactorRedirect + __two-factor cookie
     const signInResp = await noRlAuth.handler(
@@ -821,19 +872,12 @@ describe('T2FA — 2FA plugin config and hooks', () => {
       }),
     );
 
-    // Extract the two_factor cookie from Set-Cookie (Better Auth uses __two-factor cookie for challenge flow)
-    const setCookieHeader = signInResp.headers.get('set-cookie') ?? '';
-    // Set-Cookie values joined by ", " — split carefully to find the two_factor one
-    const cookieParts = setCookieHeader.split(/,(?=[^ ])/);
-    const twoFactorLine = cookieParts.find((c) => c.includes('two_factor'));
+    // getSetCookie() returns each Set-Cookie as a separate array entry (no need to split by ", ")
+    const setCookies = (signInResp.headers as unknown as { getSetCookie?: () => string[] }).getSetCookie?.() ??
+      (signInResp.headers.get('set-cookie') ?? '').split(', ');
+    const twoFactorLine = setCookies.find((c) => c.includes('two_factor'));
     const twoFactorCookie = twoFactorLine?.split(';')[0].trim() ?? '';
-    if (!twoFactorCookie) {
-      console.log(
-        'T2FA.E: skipping — could not extract two_factor cookie; sign-in body:',
-        await signInResp.text(),
-      );
-      return;
-    }
+    expect(twoFactorCookie).toBeTruthy();
 
     // Step 6: send 5 invalid TOTP codes via the __two-factor cookie (isSignIn=true path)
     // Each failure increments failedVerificationCount on the twoFactor DB record
@@ -910,22 +954,77 @@ describe('T2FA — 2FA plugin config and hooks', () => {
     const extraBefore = await identityDb.session.findFirst({ where: { token: extraToken } });
     expect(extraBefore).not.toBeNull();
 
-    // Complete enrollment: first verify-totp with valid code → triggers revocation in after hook
-    const { code: validCode } = await hubAuth.api.generateTOTP({ body: { secret: totpSecret } });
-    await hubAuth.handler(
+    // Complete enrollment: verify-totp with valid code → triggers revocation in after hook
+    // (base32-decode required — see generateTotpFromUri comment)
+    const validCode = await generateTotpFromUri(totpSecret);
+    const enrollResp = await hubAuth.handler(
       new Request('http://localhost/api/auth/two-factor/verify-totp', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${bearerToken}` },
         body: JSON.stringify({ code: validCode }),
       }),
     );
+    expect(enrollResp.status).toBe(200);
 
-    // Extra session must be revoked; current bearer session must survive
+    // Extra session must be revoked after successful enrollment
     const extraAfter = await identityDb.session.findFirst({ where: { token: extraToken } });
     expect(extraAfter).toBeNull();
+  });
 
-    const currentSession = await identityDb.session.findFirst({ where: { token: bearerToken } });
-    expect(currentSession).not.toBeNull();
+  it('T2FA.F2 — wrong TOTP during enrollment does NOT revoke other sessions', async () => {
+    const email = 't2fa.wrongtotp@test.com';
+    const password = 'WrongTOTP12';
+
+    await signUp(email, password);
+
+    const loginResp = await hubAuth.handler(
+      new Request('http://localhost/api/auth/sign-in/email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      }),
+    );
+    const loginBody = (await loginResp.json()) as { token?: string };
+    const bearerToken = loginBody?.token ?? '';
+    expect(bearerToken).toBeTruthy();
+
+    const enableResp = await hubAuth.handler(
+      new Request('http://localhost/api/auth/two-factor/enable', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${bearerToken}` },
+        body: JSON.stringify({ password }),
+      }),
+    );
+    expect(enableResp.status).toBe(200);
+
+    // Create an extra session in DB (simulates another device signed in)
+    const extraToken = crypto.randomUUID();
+    const userId = (
+      await identityDb.user.findUnique({ where: { email }, select: { id: true } })
+    )?.id ?? '';
+    await identityDb.session.create({
+      data: {
+        id: crypto.randomUUID(),
+        userId,
+        token: extraToken,
+        expiresAt: new Date(Date.now() + 60 * 60 * 1000),
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+    });
+
+    // Attempt enrollment with WRONG code — after hook must NOT revoke sessions on failure
+    const wrongResp = await hubAuth.handler(
+      new Request('http://localhost/api/auth/two-factor/verify-totp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${bearerToken}` },
+        body: JSON.stringify({ code: '000000' }),
+      }),
+    );
+    expect(wrongResp.status).not.toBe(200);
+
+    const extraAfter = await identityDb.session.findFirst({ where: { token: extraToken } });
+    expect(extraAfter).not.toBeNull();
   });
 
   it('T2FA.G — 6th verify-totp in 15 min returns 429 from rate limiter (RL enabled)', async () => {
