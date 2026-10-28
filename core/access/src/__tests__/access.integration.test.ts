@@ -7,6 +7,7 @@ import {
   AppNotEnabled,
   Forbidden,
   ResourceNotFound,
+  TwoFactorRequired,
 } from '@ventora/errors';
 
 // adminPool uses DIRECT_URL (bypasses RLS) for test data setup
@@ -42,13 +43,13 @@ async function createTestSession(
   return token;
 }
 
-async function createTestUser(email: string): Promise<string> {
+async function createTestUser(email: string, twoFactorEnabled = false): Promise<string> {
   const userId = newUuid();
   await adminQuery(
-    `INSERT INTO identity.users (id, name, email, email_verified, created_at, updated_at)
-     VALUES ($1, $2, $3, true, NOW(), NOW())
+    `INSERT INTO identity.users (id, name, email, email_verified, two_factor_enabled, created_at, updated_at)
+     VALUES ($1, $2, $3, true, $4, NOW(), NOW())
      ON CONFLICT DO NOTHING`,
-    [userId, email.split('@')[0], email],
+    [userId, email.split('@')[0], email, twoFactorEnabled],
   );
   return userId;
 }
@@ -94,7 +95,8 @@ beforeAll(async () => {
   configureAccess({ entitlementProvider: { isEnabled: async () => true } });
 
   orgId = await createTestOrg();
-  const ownerUserId = await createTestUser(`owner-${newUuid()}@test.local`);
+  // Owner must have two_factor_enabled = true (R-2F1: owner must have 2FA)
+  const ownerUserId = await createTestUser(`owner-${newUuid()}@test.local`, true);
   memberUserId = await createTestUser(`member-${newUuid()}@test.local`);
   const noOrgUserId = await createTestUser(`noordg-${newUuid()}@test.local`);
 
@@ -185,9 +187,9 @@ describe('T3.5 — resource checks', () => {
 
 // T3.6 — owner has implicit access (no application_access row needed)
 describe('T3.6 — owner implicit access', () => {
-  it('owner succeeds without explicit application_access row', async () => {
+  it('owner with 2FA succeeds without explicit application_access row', async () => {
     const isolatedOrgId = await createTestOrg();
-    const isolatedUserId = await createTestUser(`owner-isolated-${newUuid()}@test.local`);
+    const isolatedUserId = await createTestUser(`owner-isolated-${newUuid()}@test.local`, true);
     await createMembership(isolatedOrgId, isolatedUserId, 'owner');
     const token = await createTestSession(isolatedUserId, isolatedOrgId);
 
@@ -267,5 +269,56 @@ describe('grantApplicationAccess', () => {
       grantApplicationAccess(testOrgId, testUserId, ['crm', 'crm']),
     ).resolves.not.toThrow();
     await adminQuery(`DELETE FROM organizations.organization WHERE id = $1`, [testOrgId]);
+  });
+});
+
+// T2FA — 2FA enforcement in authorize() (R-2F1)
+describe('T2FA.1 — owner without 2FA → TwoFactorRequired', () => {
+  it('throws TwoFactorRequired when owner has twoFactorEnabled = false', async () => {
+    const localOrgId = await createTestOrg();
+    // Owner explicitly without 2FA
+    const ownerNo2FA = await createTestUser(`owner-no2fa-${newUuid()}@test.local`, false);
+    await createMembership(localOrgId, ownerNo2FA, 'owner');
+    const token = await createTestSession(ownerNo2FA, localOrgId);
+
+    try {
+      await expect(authorize({ sessionToken: token, applicationId: APP_ID })).rejects.toThrow(
+        TwoFactorRequired,
+      );
+    } finally {
+      await adminQuery(`DELETE FROM organizations.organization WHERE id = $1`, [localOrgId]);
+    }
+  });
+});
+
+describe('T2FA.2 — owner with 2FA → authorize succeeds', () => {
+  it('owner with twoFactorEnabled = true can authorize', async () => {
+    const localOrgId = await createTestOrg();
+    const ownerWith2FA = await createTestUser(`owner-with2fa-${newUuid()}@test.local`, true);
+    await createMembership(localOrgId, ownerWith2FA, 'owner');
+    const token = await createTestSession(ownerWith2FA, localOrgId);
+
+    try {
+      const ctx = await authorize({ sessionToken: token, applicationId: APP_ID });
+      expect(ctx.role).toBe('owner');
+    } finally {
+      await adminQuery(`DELETE FROM organizations.organization WHERE id = $1`, [localOrgId]);
+    }
+  });
+});
+
+describe('T2FA.3 — admin without 2FA → no TwoFactorRequired (only owner enforced)', () => {
+  it('admin without 2FA can still authorize (2FA only required for owner)', async () => {
+    const localOrgId = await createTestOrg();
+    const adminNo2FA = await createTestUser(`admin-no2fa-${newUuid()}@test.local`, false);
+    await createMembership(localOrgId, adminNo2FA, 'admin');
+    const token = await createTestSession(adminNo2FA, localOrgId);
+
+    try {
+      const ctx = await authorize({ sessionToken: token, applicationId: APP_ID });
+      expect(ctx.role).toBe('admin');
+    } finally {
+      await adminQuery(`DELETE FROM organizations.organization WHERE id = $1`, [localOrgId]);
+    }
   });
 });

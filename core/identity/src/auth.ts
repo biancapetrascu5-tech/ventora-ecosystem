@@ -1,4 +1,4 @@
-import { betterAuth } from 'better-auth';
+import { betterAuth, APIError } from 'better-auth';
 import { prismaAdapter } from 'better-auth/adapters/prisma';
 import { bearer, twoFactor } from 'better-auth/plugins';
 import { getIdentityDb } from './db';
@@ -17,6 +17,7 @@ export const hubAuth = betterAuth({
     // Server-side policy: min 10 chars (enforced above) + 1 uppercase + 1 digit.
     // hashPassword validates before hashing; verifyPassword uses the matching scrypt format.
     password: { hash: hashPassword, verify: verifyPassword },
+    resetPasswordTokenExpiresIn: 3600,
   },
   rateLimit: {
     enabled: true,
@@ -58,7 +59,40 @@ export const hubAuth = betterAuth({
       ipAddressHeaders: ['x-forwarded-for'],
     },
   },
-  plugins: [bearer(), twoFactor({ issuer: 'Ventora Hub' })],
+  plugins: [
+    bearer(),
+    twoFactor({
+      issuer: 'Ventora Hub',
+      backupCodeOptions: { storeBackupCodes: 'encrypted' },
+      accountLockout: { enabled: true, maxFailedAttempts: 5, durationSeconds: 900 },
+    }),
+  ],
+  disabledPaths: ['/two-factor/disable'],
+  hooks: {
+    before: async (ctx: any) => {
+      if (
+        (ctx.path === '/two-factor/verify-totp' || ctx.path === '/two-factor/verify-backup-code') &&
+        ctx.body?.trustDevice === true
+      ) {
+        throw new APIError('FORBIDDEN', { message: 'trustDevice is not permitted' });
+      }
+    },
+    after: async (ctx: any) => {
+      if (
+        ctx.path === '/two-factor/enable' &&
+        ctx.session?.session?.userId &&
+        ctx.session?.session?.id
+      ) {
+        const userId: string = ctx.session.session.userId;
+        const currentSessionId: string = ctx.session.session.id;
+        await getIdentityDb().session.deleteMany({
+          where: { userId, id: { not: currentSessionId } },
+        });
+      }
+      // Must return non-undefined: some Better Auth resolutions crash on void return in after hooks
+      return {};
+    },
+  },
 });
 
 export type HubAuth = typeof hubAuth;

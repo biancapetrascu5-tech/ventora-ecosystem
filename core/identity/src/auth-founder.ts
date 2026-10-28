@@ -1,4 +1,4 @@
-import { betterAuth } from 'better-auth';
+import { betterAuth, APIError } from 'better-auth';
 import { prismaAdapter } from 'better-auth/adapters/prisma';
 import { twoFactor } from 'better-auth/plugins';
 import { getFounderDb } from './db';
@@ -13,6 +13,7 @@ export const founderAuth = betterAuth({
     enabled: true,
     minPasswordLength: 12,
     password: { hash: hashPassword, verify: verifyPassword },
+    resetPasswordTokenExpiresIn: 3600,
   },
   rateLimit: {
     enabled: true,
@@ -48,7 +49,39 @@ export const founderAuth = betterAuth({
       ipAddressHeaders: ['x-forwarded-for'],
     },
   },
-  plugins: [twoFactor({ issuer: 'Ventora Founder' })],
+  plugins: [
+    twoFactor({
+      issuer: 'Ventora Founder',
+      backupCodeOptions: { storeBackupCodes: 'encrypted' },
+      accountLockout: { enabled: true, maxFailedAttempts: 5, durationSeconds: 900 },
+    }),
+  ],
+  disabledPaths: ['/two-factor/disable'],
+  hooks: {
+    before: async (ctx: any) => {
+      if (
+        (ctx.path === '/two-factor/verify-totp' || ctx.path === '/two-factor/verify-backup-code') &&
+        ctx.body?.trustDevice === true
+      ) {
+        throw new APIError('FORBIDDEN', { message: 'trustDevice is not permitted' });
+      }
+    },
+    after: async (ctx: any) => {
+      if (
+        ctx.path === '/two-factor/enable' &&
+        ctx.session?.session?.userId &&
+        ctx.session?.session?.id
+      ) {
+        const userId: string = ctx.session.session.userId;
+        const currentSessionId: string = ctx.session.session.id;
+        await getFounderDb().session.deleteMany({
+          where: { userId, id: { not: currentSessionId } },
+        });
+      }
+      // Must return non-undefined: some Better Auth resolutions crash on void return in after hooks
+      return {};
+    },
+  },
 });
 
 export type FounderAuth = typeof founderAuth;

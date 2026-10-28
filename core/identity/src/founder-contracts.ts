@@ -1,3 +1,5 @@
+import type { UserWithTwoFactor } from 'better-auth/plugins/two-factor';
+import { TwoFactorRequired } from '@ventora/errors';
 import { founderAuth } from './auth-founder';
 import { getFounderDb } from './db';
 
@@ -6,6 +8,7 @@ export type FounderSession = {
   userId: string;
   expiresAt: Date;
   token: string;
+  twoFactorEnabled: boolean;
 };
 
 export type FounderUserRecord = {
@@ -31,7 +34,16 @@ export async function getFounderSession(headers: Headers): Promise<FounderSessio
     userId: result.session.userId,
     expiresAt: result.session.expiresAt,
     token: result.session.token,
+    twoFactorEnabled: (result.user as UserWithTwoFactor).twoFactorEnabled === true,
   };
+}
+
+/** Requires a valid founder session with 2FA already verified. Throws otherwise. */
+export async function requireFounderSession(headers: Headers): Promise<FounderSession> {
+  const session = await getFounderSession(headers);
+  if (!session) throw Object.assign(new Error('NotAuthenticated'), { code: 'NOT_AUTHENTICATED' });
+  if (!session.twoFactorEnabled) throw new TwoFactorRequired();
+  return session;
 }
 
 export async function addFounderUser(
@@ -40,11 +52,12 @@ export async function addFounderUser(
 ): Promise<FounderUserRecord> {
   const actor = await getFounderDb().user.findUnique({
     where: { id: actingFounderId },
-    select: { revokedAt: true },
+    select: { revokedAt: true, twoFactorEnabled: true },
   });
   if (!actor || actor.revokedAt) {
     throw Object.assign(new Error('NotAuthenticated'), { code: 'NOT_AUTHENTICATED' });
   }
+  if (!(actor as any).twoFactorEnabled) throw new TwoFactorRequired();
 
   const result = await founderAuth.api.signUpEmail({
     body: {
@@ -75,6 +88,15 @@ export async function revokeFounderUser(
   if (actingFounderId === targetFounderId) {
     throw Object.assign(new Error('Forbidden'), { code: 'FORBIDDEN', reason: 'self-revoke' });
   }
+
+  const actorForRevoke = await getFounderDb().user.findUnique({
+    where: { id: actingFounderId },
+    select: { revokedAt: true, twoFactorEnabled: true },
+  });
+  if (!actorForRevoke || actorForRevoke.revokedAt) {
+    throw Object.assign(new Error('NotAuthenticated'), { code: 'NOT_AUTHENTICATED' });
+  }
+  if (!(actorForRevoke as any).twoFactorEnabled) throw new TwoFactorRequired();
 
   const activeCount = await getFounderDb().user.count({
     where: { revokedAt: null },

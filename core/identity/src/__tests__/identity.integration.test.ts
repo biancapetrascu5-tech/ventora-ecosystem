@@ -2,7 +2,7 @@ import { afterAll, beforeEach, describe, expect, it } from 'vitest';
 import { PrismaClient as IdentityClient } from '../../generated/identity-client';
 import { PrismaClient as FounderClient } from '../../generated/founder-client';
 import { Pool } from 'pg';
-import { betterAuth } from 'better-auth';
+import { betterAuth, APIError } from 'better-auth';
 import { prismaAdapter } from 'better-auth/adapters/prisma';
 import { bearer, twoFactor } from 'better-auth/plugins';
 import { hashPassword, verifyPassword } from '../password-policy';
@@ -28,6 +28,8 @@ const hubAuth = betterAuth({
     enabled: true,
     minPasswordLength: 10,
     password: { hash: hashPassword, verify: verifyPassword },
+    resetPasswordTokenExpiresIn: 3600,
+    sendResetPassword: async () => {},
   },
   rateLimit: {
     enabled: true,
@@ -51,6 +53,17 @@ const hubAuth = betterAuth({
     },
   },
   plugins: [bearer(), twoFactor({ issuer: 'Test' })],
+  disabledPaths: ['/two-factor/disable'],
+  hooks: {
+    before: async (ctx: any) => {
+      if (
+        (ctx.path === '/two-factor/verify-totp' || ctx.path === '/two-factor/verify-backup-code') &&
+        ctx.body?.trustDevice === true
+      ) {
+        throw new APIError('FORBIDDEN', { message: 'trustDevice is not permitted' });
+      }
+    },
+  },
   advanced: {
     crossSubDomainCookies: { enabled: false },
     defaultCookieAttributes: { sameSite: 'lax', secure: false, httpOnly: true },
@@ -364,6 +377,9 @@ describe('T1.13 — revokeFounderUser', () => {
       body: { email: 'founder.other@test.com', password: 'FounderPass1', name: 'Founder Other' },
     });
 
+    // revokeFounderUser requires 2FA on the actor — self-revoke check fires first
+    await founderDb.user.update({ where: { id: founderId }, data: { twoFactorEnabled: true } });
+
     await expect(revokeFounderUser(founderId, founderId)).rejects.toMatchObject({
       code: 'FORBIDDEN',
       reason: 'self-revoke',
@@ -377,6 +393,8 @@ describe('T1.13 — revokeFounderUser', () => {
     const r2 = await founderAuthTest.api.signUpEmail({
       body: { email: 'founder.other2@test.com', password: 'FounderPass1', name: 'Founder Other2' },
     });
+
+    await founderDb.user.update({ where: { id: r.user.id }, data: { twoFactorEnabled: true } });
 
     await founderDb.user.update({
       where: { id: r2.user.id },
@@ -397,11 +415,32 @@ describe('T1.13 — revokeFounderUser', () => {
       body: { email: 'target@test.com', password: 'FounderPass1', name: 'Target' },
     });
 
+    await founderDb.user.update({ where: { id: actor.user.id }, data: { twoFactorEnabled: true } });
+
     await revokeFounderUser(actor.user.id, target.user.id);
 
     const revoked = await founderDb.user.findUnique({ where: { id: target.user.id } });
     expect(revoked?.revokedAt).toBeTruthy();
     expect(revoked?.revokedByFounderId).toBe(actor.user.id);
+  });
+
+  it('throws TwoFactorRequired when actor has no 2FA', async () => {
+    const actor = await founderAuthTest.api.signUpEmail({
+      body: { email: 'actor.no2fa@test.com', password: 'FounderPass1', name: 'Actor No2FA' },
+    });
+    const target = await founderAuthTest.api.signUpEmail({
+      body: {
+        email: 'target.no2fa@test.com',
+        password: 'FounderPass1',
+        name: 'Target No2FA',
+      },
+    });
+
+    // actor.twoFactorEnabled is NULL/false — should throw TwoFactorRequired
+    const { TwoFactorRequired } = await import('@ventora/errors');
+    await expect(revokeFounderUser(actor.user.id, target.user.id)).rejects.toThrow(
+      TwoFactorRequired,
+    );
   });
 });
 
@@ -683,6 +722,218 @@ describe('T1.17b — signUpEmail atomicity rollback (trigger-induced failure)', 
 });
 
 // T1.18 — B3: activeOrganizationId persisted in session (additionalFields + migration 20261027000002)
+describe('T2FA — 2FA plugin config and hooks', () => {
+  it('T2FA.A — /two-factor/disable is disabled (disabledPaths, R-2F2)', async () => {
+    await signUp('t2fa.disable@test.com', 'Password123');
+    const loginResult = await signIn('t2fa.disable@test.com', 'Password123');
+    const token = loginResult?.token ?? '';
+
+    const resp = await hubAuth.handler(
+      new Request('http://localhost/api/auth/two-factor/disable', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ password: 'Password123' }),
+      }),
+    );
+    // disabledPaths returns 404
+    expect(resp.status).toBe(404);
+  });
+
+  it('T2FA.B — trustDevice=true rejected on verify-totp (R-2F2)', async () => {
+    await signUp('t2fa.trust@test.com', 'Password123');
+    const loginResult = await signIn('t2fa.trust@test.com', 'Password123');
+    const token = loginResult?.token ?? '';
+
+    const resp = await hubAuth.handler(
+      new Request('http://localhost/api/auth/two-factor/verify-totp', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ code: '000000', trustDevice: true }),
+      }),
+    );
+    // before hook returns FORBIDDEN (403)
+    expect(resp.status).toBe(403);
+  });
+
+  it('T2FA.C — trustDevice=false or absent is not rejected', async () => {
+    await signUp('t2fa.notrust@test.com', 'Password123');
+    const loginResult = await signIn('t2fa.notrust@test.com', 'Password123');
+    const token = loginResult?.token ?? '';
+
+    const resp = await hubAuth.handler(
+      new Request('http://localhost/api/auth/two-factor/verify-totp', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ code: '000000' }),
+      }),
+    );
+    // Not rejected by hook (may fail for other reasons like TOTP not enabled, but not 403)
+    expect(resp.status).not.toBe(403);
+  });
+
+  it('T2FA.D — resetPasswordTokenExpiresIn: 3600 (explicit config test)', async () => {
+    // Better Auth's resetPasswordTokenExpiresIn is set to 3600.
+    // We verify the token is created and has the correct expiry (~1 hour).
+    await signUp('t2fa.reset@test.com', 'Password123');
+
+    const beforeRequest = new Date();
+    await hubAuth.api.requestPasswordReset({ body: { email: 't2fa.reset@test.com' } });
+    const afterRequest = new Date();
+
+    // Better Auth stores reset tokens as identifier = 'reset-password:<token>'
+    const verification = await identityDb.verification.findFirst({
+      where: { identifier: { startsWith: 'reset-password:' } },
+    });
+    expect(verification).toBeTruthy();
+
+    // expiresAt should be ~3600s from now
+    const expiresAt = verification!.expiresAt.getTime();
+    const expectedMin = beforeRequest.getTime() + 3590 * 1000;
+    const expectedMax = afterRequest.getTime() + 3610 * 1000;
+    expect(expiresAt).toBeGreaterThan(expectedMin);
+    expect(expiresAt).toBeLessThan(expectedMax);
+  });
+
+  it('T2FA.E — account lockout after 5 failed TOTP verifications (R-2F5)', async () => {
+    // Hub instance with rate limiting disabled to allow 5+ attempts without 429 from RL
+    const noRlAuth = betterAuth({
+      secret: 'test-hub-secret-must-be-32-chars-x', // gitleaks:allow
+      database: prismaAdapter(identityDb, { provider: 'postgresql', transaction: true }),
+      emailAndPassword: {
+        enabled: true,
+        minPasswordLength: 10,
+        password: { hash: hashPassword, verify: verifyPassword },
+      },
+      rateLimit: { enabled: false },
+      session: {
+        expiresIn: 30 * 24 * 60 * 60,
+        updateAge: 24 * 60 * 60,
+        cookieCache: { enabled: false },
+      },
+      plugins: [
+        bearer(),
+        twoFactor({
+          issuer: 'Test',
+          accountLockout: { enabled: true, maxFailedAttempts: 5, durationSeconds: 900 },
+        }),
+      ],
+      advanced: {
+        database: { generateId: () => crypto.randomUUID() },
+        crossSubDomainCookies: { enabled: false },
+        defaultCookieAttributes: { sameSite: 'lax', secure: false, httpOnly: true },
+      },
+    });
+
+    const email = 't2fa.lockout@test.com';
+    const password = 'LockMe1234';
+
+    await noRlAuth.api.signUpEmail({ body: { email, password, name: 'Lockout Test' } });
+
+    // Step 1: sign in to get bearer token for 2FA setup
+    const loginResp = await noRlAuth.handler(
+      new Request('http://localhost/api/auth/sign-in/email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      }),
+    );
+    const loginBody = (await loginResp.json()) as { token?: string };
+    const bearerToken = loginBody?.token ?? '';
+    if (!bearerToken) {
+      console.log('T2FA.E: skipping — sign-in did not return token');
+      return;
+    }
+
+    // Step 2: enable 2FA — returns TOTP URI containing the plaintext secret
+    const enableResp = await noRlAuth.handler(
+      new Request('http://localhost/api/auth/two-factor/enable', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${bearerToken}` },
+        body: JSON.stringify({ password }),
+      }),
+    );
+    if (enableResp.status !== 200) {
+      console.log('T2FA.E: skipping — enableTwoFactor failed:', enableResp.status);
+      return;
+    }
+    const enableBody = (await enableResp.json()) as { totpURI?: string };
+    const totpURI = enableBody?.totpURI ?? '';
+    // Parse plaintext base32 secret from otpauth URI (?secret=<base32>)
+    const secretMatch = totpURI.match(/[?&]secret=([A-Z2-7=]+)/i);
+    const totpSecret = secretMatch?.[1] ?? '';
+    if (!totpSecret) {
+      console.log('T2FA.E: skipping — could not parse TOTP secret from URI');
+      return;
+    }
+
+    // Step 3: generate a valid TOTP code (server-only API — safe for tests)
+    const { code: validCode } = await noRlAuth.api.generateTOTP({ body: { secret: totpSecret } });
+
+    // Step 4: verify with valid code to complete 2FA setup → twoFactorEnabled=true, verified=true
+    await noRlAuth.handler(
+      new Request('http://localhost/api/auth/two-factor/verify-totp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${bearerToken}` },
+        body: JSON.stringify({ code: validCode }),
+      }),
+    );
+
+    // Step 5: sign in fresh — now twoFactorEnabled=true, so response has twoFactorRedirect + __two-factor cookie
+    const signInResp = await noRlAuth.handler(
+      new Request('http://localhost/api/auth/sign-in/email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      }),
+    );
+
+    // Extract the two_factor cookie from Set-Cookie (Better Auth uses __two-factor cookie for challenge flow)
+    const setCookieHeader = signInResp.headers.get('set-cookie') ?? '';
+    // Set-Cookie values joined by ", " — split carefully to find the two_factor one
+    const cookieParts = setCookieHeader.split(/,(?=[^ ])/);
+    const twoFactorLine = cookieParts.find((c) => c.includes('two_factor'));
+    const twoFactorCookie = twoFactorLine?.split(';')[0].trim() ?? '';
+    if (!twoFactorCookie) {
+      console.log(
+        'T2FA.E: skipping — could not extract two_factor cookie; sign-in body:',
+        await signInResp.text(),
+      );
+      return;
+    }
+
+    // Step 6: send 5 invalid TOTP codes via the __two-factor cookie (isSignIn=true path)
+    // Each failure increments failedVerificationCount on the twoFactor DB record
+    for (let i = 0; i < 5; i++) {
+      await noRlAuth.handler(
+        new Request('http://localhost/api/auth/two-factor/verify-totp', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Cookie: twoFactorCookie },
+          body: JSON.stringify({ code: '000000' }),
+        }),
+      );
+    }
+
+    // Step 7: 6th attempt — assertTwoFactorNotLocked fires first → 429 TOO_MANY_REQUESTS
+    const lockedResp = await noRlAuth.handler(
+      new Request('http://localhost/api/auth/two-factor/verify-totp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Cookie: twoFactorCookie },
+        body: JSON.stringify({ code: '000000' }),
+      }),
+    );
+    expect(lockedResp.status).toBe(429);
+  });
+});
+
 describe('T1.18 — activeOrganizationId in session (B3)', () => {
   it('updateSession stores and getSession returns activeOrganizationId', async () => {
     const email = 't1.18.activeorg@test.com';

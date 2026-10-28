@@ -1,3 +1,4 @@
+import type { UserWithTwoFactor } from 'better-auth/plugins/two-factor';
 import { hubAuth } from './auth';
 import { getIdentityDb } from './db';
 
@@ -9,6 +10,7 @@ export type HubSession = {
   ipAddress: string | null;
   userAgent: string | null;
   activeOrganizationId: string | null;
+  twoFactorEnabled: boolean;
 };
 
 export type HubUser = {
@@ -29,6 +31,7 @@ export async function getSession(headers: Headers): Promise<HubSession | null> {
     ipAddress: result.session.ipAddress ?? null,
     userAgent: result.session.userAgent ?? null,
     activeOrganizationId: (result.session as any).activeOrganizationId ?? null,
+    twoFactorEnabled: (result.user as UserWithTwoFactor).twoFactorEnabled === true,
   };
 }
 
@@ -48,10 +51,17 @@ export async function getUserById(userId: string): Promise<HubUser | null> {
 }
 
 export async function listSessions(userId: string): Promise<HubSession[]> {
-  const sessions = await getIdentityDb().session.findMany({
-    where: { userId, expiresAt: { gt: new Date() } },
-    orderBy: { updatedAt: 'desc' },
-  });
+  const [sessions, user] = await Promise.all([
+    getIdentityDb().session.findMany({
+      where: { userId, expiresAt: { gt: new Date() } },
+      orderBy: { updatedAt: 'desc' },
+    }),
+    getIdentityDb().user.findUnique({
+      where: { id: userId },
+      select: { twoFactorEnabled: true },
+    }),
+  ]);
+  const twoFactorEnabled = (user as any)?.twoFactorEnabled === true;
   return sessions.map((s) => ({
     id: s.id,
     userId: s.userId,
@@ -60,5 +70,6 @@ export async function listSessions(userId: string): Promise<HubSession[]> {
     ipAddress: s.ipAddress ?? null,
     userAgent: s.userAgent ?? null,
     activeOrganizationId: (s as any).activeOrganizationId ?? null,
+    twoFactorEnabled,
   }));
 }
