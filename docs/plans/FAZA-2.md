@@ -34,9 +34,9 @@
   - scrypt ca algoritm de parolă (CONFIRMAT, fără pachete compilate);
   - plugin token sessions pentru clienți non-browser (aplicația mobilă viitoare);
   - **rate limiting activ în producție (D-AUTH-5)**: N încercări eșuate consecutiv → 429 cu `Retry-After`; dezactivat în teste (`NODE_ENV=test`).
-- **„Ține-mă minte" 30 de zile (P1 CONFIRMAT):** opțiune la login → sesiune cu `rememberMe: true` și `Max-Age: 30 × 24 × 3600` în cookie. Revocabilă din lista de sesiuni.
+- **„Ține-mă minte" 30 de zile (P1 CONFIRMAT):** opțiune la login → sesiune cu `rememberMe: true` și `Max-Age: 30 × 24 × 3600` în cookie. Revocabilă din lista de sesiuni. E doar durata sesiunii deja deschise: o intrare nouă cu parola cere în continuare codul 2FA (R-2F2).
 - **Lista sesiunilor/dispozitivelor** (`/settings/security`): sesiunea curentă marcată; fiecare intrare cu IP, user-agent, ultima activitate. Revocare individuală + „Revocă toate celelalte". Logică și API livrate în F2; **ecranul se construiește după direcția vizuală F1** (§8).
-- **2FA pe dispozitiv nou (D10 CONFIRMAT):** dacă utilizatorul are 2FA activ, codul e cerut la fiecare login pe dispozitiv necunoscut, indiferent de cookie-ul „ține-mă minte" de pe alt dispozitiv.
+- **Cod 2FA la fiecare intrare cu parola (R-2F2, 28.10.2026; înlocuiește D10):** dacă utilizatorul are 2FA activ, codul e cerut la fiecare login cu parola, pe orice dispozitiv. Fără „ține minte dispozitivul”: `trustDevice` e refuzat pe server.
 - Contract public `core/identity/src/contract`:
   - `getSession(ctx): Session | null`
   - `revokeSession(ctx, sessionId): void`
@@ -69,7 +69,7 @@
     - `signup.b2b.checkout = disabled | enabled` — implicit `disabled` până la F3.
     - Setarea neactivată în F2; structura suportă Model B fără migrație ulterioară.
   - `Membership.status`: `active | suspended | left`.
-  - `Invitation`: token de unică folosință stocat ca **hash** (nu plain), expirare implicită 7 zile (configurabilă), stări `pending | accepted | expired | revoked`.
+  - `Invitation`: token de unică folosință stocat ca **hash** (nu plain), stări `pending | accepted | expired | revoked`. Valabilitate (S55, 28.10.2026): invitația unui membru 7 zile; invitația owner-ului creată din Founder 30 de zile, inclusiv la retrimitere.
 - `createOrganization(ctx)` — apelabil doar din Founder (verificare `actor: 'founder'`).
 - Fluxul de invitare:
   - Founder invită Owner-ul → email cu link semnat.
@@ -140,54 +140,69 @@
 
 ---
 
-### Lot 2.4 — 2FA obligatoriu pentru Owner (D-AUTH-3)
+### Lot 2.4 — 2FA obligatoriu pentru Owner (D-AUTH-3, R-2F1…R-2F9)
 
-**Scop:** 2FA TOTP opțional pentru utilizatori, obligatoriu pentru Owner, cu grație 14 zile și coduri de recuperare.
+Împărțit pe 28.10.2026: **2.4a** = logica + testele; **2.4b** = ecranele 2FA (după exportul de design, cu AuthLayout ca componentă comună, R-2F9).
 
-**Livrabile:**
+**Scop:** 2FA TOTP opțional pentru utilizatori, obligatoriu pentru Owner **fără perioadă de grație** (R-2F1), cu coduri de rezervă.
 
-- Plugin 2FA Better Auth activat: TOTP + coduri de recuperare de unică folosință.
-  - Coduri de recuperare stocate ca **hash** (nu plain), regenerabile.
+**Livrabile (2.4a):**
+
+- Plugin 2FA Better Auth activat: TOTP + **coduri de rezervă** de unică folosință (R-2F3).
+  - Coduri de rezervă stocate criptat (configurația Better Auth), regenerabile.
   - Regenerarea codurilor → eveniment audit.
-- **Grație 14 zile pentru Owner** (P5 CONFIRMAT):
-  - La primirea rolului de Owner: `twoFactorGracePeriodEndsAt = now() + 14 zile`.
-  - Până la expirare: Notice neutru persistent (fără blocare).
-  - După expirare: acțiunile cu permisiuni de Owner cer `twoFactorVerified: true` în sesiune — altfel `TwoFactorRequired` (eroare tipizată).
-  - Pierderea dispozitivului fără coduri: rezolvabilă **doar** prin sesiune de suport Founder (Lot 2.5), auditată.
-- Codul 2FA cerut pe dispozitiv nou (D10 CONFIRMAT) — implementat în Lot 2.1, testat și în Lot 2.4.
-- „Ține-mă minte 30 zile" pe dispozitivul ales (P1 CONFIRMAT) — implementat în Lot 2.1, revocabil din lista de sesiuni.
+- **Owner fără grație (R-2F1, înlocuiește P5):** owner-ul activează 2FA la prima intrare. Până atunci, `authorize()` refuză orice acțiune ca Owner cu `TwoFactorRequired` (eroare tipizată). Nu există comutator de oprire (`/two-factor/disable` dezactivat).
+- **Cod la fiecare intrare cu parola (R-2F2, înlocuiește D10):** fără `trustDevice`.
+- **Blocare (R-2F5):** 5 coduri greșite consecutive → cont blocat 15 minute.
+- **Pierderea dispozitivului fără coduri (R-2F7):** fără resetare automată. Owner-ul scrie la `support@ventorasystems.com`, iar recuperarea se face din Founder (Lot 2.5c), separat de sesiunea de suport, după `docs/ops/PROCEDURA-RECUPERARE-OWNER.md`.
+- „Ține-mă minte 30 zile" (P1 CONFIRMAT): doar durata sesiunii, implementată în Lot 2.1 și revocabilă din lista de sesiuni.
 
 **Criterii de acceptare:**
 
-- [ ] T1.4 — Owner în grație: acțiunile Owner funcționează, Notice vizibil.
-- [ ] T1.5 — Owner după grație fără 2FA activ: acțiunile Owner → `TwoFactorRequired`.
-- [ ] T1.6 — cod de recuperare folosit → marcat ca utilizat, inutilizabil din nou.
+- [ ] T1.4 — Owner fără 2FA activ: acțiunile Owner → `TwoFactorRequired` imediat (fără grație).
+- [ ] T1.5 — Owner cu 2FA activ: login cu parola cere codul de fiecare dată; `trustDevice` refuzat.
+- [ ] T1.6 — cod de rezervă folosit → marcat ca utilizat, inutilizabil din nou.
 - [ ] T1.7 — regenerare coduri → codurile vechi invalide, cele noi valide, eveniment în audit.
 - [ ] T1.8 — Founder fără 2FA: login blocată (nu grație).
+- [ ] T1.8b — 5 coduri greșite → blocare 15 minute; a 6-a încercare → 429.
 
 ---
 
-### Lot 2.5 — Audit + sesiunea de suport Founder
+### Lot 2.5 — Audit + sesiunea de suport Founder + recuperarea owner-ului
 
-**Scop:** `core/audit` cu jurnalul unic, sesiunea de suport cu `actor: 'support'` și vizibilitate pentru organizație.
+Împărțit pe 28.10.2026: **2.5a** = jurnalul de audit; **2.5b** = corectura E6 + e-mailurile tranzacționale; **2.5c** = sesiunea de suport + recuperarea owner-ului. Deciziile: L2.5-D0…D18 (ARCHITECTURE §17.22); planul: `reports/2026-10-28_1205_plan-lot2-5.md`.
+
+**Scop:** `core/audit` cu jurnalul unic, sesiunea de suport cu `actor: 'support'` și vizibilitate pentru organizație, recuperarea owner-ului fără resetare automată.
 
 **Livrabile:**
 
-- `core/audit` cu schema: `AuditLog { id, organizationId, userId, actor, action, resourceType, resourceId, metadata, createdAt }`.
-  - Categorii: `identity | access | organization | support | commercial`.
-  - Toate acțiunile din Loturi 2.1–2.4 auditabile: login, logout, revocare sesiune, schimbare organizație activă, accept invitație, revocare invitație, schimbare rol, activare/dezactivare 2FA, regenerare coduri, deschidere/închidere sesiune suport.
-- `writeAuditLog(ctx, params): void` — apelat din fiecare contract care modifică stare. Eșecul auditului nu blochează operația principală (best-effort), dar îl înregistrează în logger.
-- **Sesiunea de suport Founder** (ARCHITECTURE §7.5):
-  - Deschisă de un utilizator Founder cu: organizație țintă, motiv, durată (max 4h, implicită 1h).
-  - Creează o sesiune cu `actor: 'support'` și `supportedOrganizationId`.
-  - Vizibilă organizației în panoul Securitate: „Sesiune de suport activă — [nume Founder], [durată]".
-  - La expirare sau la închidere manuală: sesiunea invalidată automat.
-  - Toate acțiunile `actor: 'support'` sunt auditate cu `organizationId` al organizației suportate și `founderId` în `metadata` — se știe exact cine a deschis sesiunea.
-  - Utilizată pentru recuperarea accesului Owner care a pierdut dispozitivul 2FA și codurile (Lot 2.4).
-- Contract public `core/audit/src/contract`:
-  - `listAuditLogs(ctx, filters): AuditLog[]`
-  - `openSupportSession(ctx, params): SupportSession`
-  - `closeSupportSession(ctx, sessionId): void`
+- `core/audit` (L2.5-D1), schema `audit`, un singur tabel `audit_log`:
+  - **coloane:** `category`, `action`, `outcome`, `actor_type`, `actor_id`, `founder_id`, `support_session_id`, `organization_id`, `target_*`, `ip`, `user_agent`, `request_id`, `metadata`;
+  - **`created_at`** e ora bazei de date;
+  - **imutabil:** fără UPDATE / DELETE / TRUNCATE pentru vreun rol, plus trigger-e;
+  - **scriere:** doar prin `audit.append_event`.
+  - Categorii: `identity | access | organization | support | founder | commercial` (`founder` adăugată prin L2.5-D3).
+  - Toate acțiunile din Loturile 2.1–2.4 sunt auditabile. Excepție: schimbarea rolului unui membru, amânată prin L2.5-D8 (b).
+- `writeAuditEvent(event, { mode })` (L2.5-D2):
+  - `required` pentru suport, recuperare și acțiunile Founder: fără rândul de audit, operația eșuează;
+  - `best_effort` pentru autentificare și pentru celelalte contracte: eșecul se loghează și nu blochează operația.
+- **Sesiunea de suport Founder** (ARCHITECTURE §7.5, L2.5-D9…D12), în schema `access` (`access.support_session`):
+  - Deschisă de un Founder cu 2FA activ, pentru: organizația țintă, motiv (minimum 10 caractere), referința cererii, durată (maximum 240 de minute, implicit 60).
+  - Fără acord prealabil (L2.5-D10): activă imediat, vizibilă organizației, iar owner-ii primesc e-mail.
+  - Contextul are `actor: 'support'`, organizația suportată, `founderId` și `supportSessionId`, fără impersonare. Se verifică la fiecare apel (`authorizeSupport`).
+  - Doar citire (L2.5-D12): o listă explicită de permisiuni; orice altă permisiune → `Forbidden`, auditat.
+  - Bannerul din Hub, pentru toți membrii: „Sesiune de suport activă — [nume Founder], până la [ora]”.
+  - Owner-ul o poate închide (L2.5-D11). Mai poate fi închisă de Founder, se închide singură la expirare sau la revocarea Founder-ului. Accesul încetează la cererea următoare.
+  - Toate acțiunile `actor: 'support'` sunt auditate cu `organization_id` al organizației suportate și cu `founder_id` și `support_session_id` în coloane proprii.
+- **Recuperarea owner-ului** (R-2F7, L2.5-D13…D16), **separată** de sesiunea de suport (L2.5-D16):
+  - cod TOTP proaspăt al Founder-ului (L2.5-D14);
+  - implicit 2FA + parolă, cu linkul de resetare în e-mailul către owner (L2.5-D15);
+  - o singură tranzacție: verificarea owner-ului, resetarea și rândul de audit;
+  - verificarea identității după `docs/ops/PROCEDURA-RECUPERARE-OWNER.md` (L2.5-D13).
+- Contracte publice:
+  - `core/audit`: `writeAuditEvent`, `readOrganizationAuditLog`, `readAuditLogAsFounder`;
+  - `core/access`: `listAuditLogs`, `openSupportSession`, `closeSupportSession`, `authorizeSupport`, `listActiveSupportSessions`, `getSupportSessionBanner`, `closeSupportSessionAsOwner`, `recoverOwnerAccess`.
+- Ecranele (bannerele, formularul de recuperare) vin după F1; în 2.5 se livrează doar contractele și cheile i18n (L2.5-D18).
 
 **Criterii de acceptare:**
 
@@ -215,10 +230,10 @@
 
 - Better Auth configurat separat (config dedicat în `core/identity` sau `apps/founder`): rute de auth montate la `/auth/*`, cookie host-only pe `founder.ventora-hub.com` (URL Vercel pe staging, §9).
 - **Conturi individuale cu nume:** fiecare Founder se autentifică cu propriile credențiale; fiecare are 2FA propriu și lista proprie de sesiuni/dispozitive.
-- **2FA obligatoriu fără grație (restricție de platformă):** la primul login după activarea contului → redirect la configurare 2FA; autentificarea nu se completează fără TOTP activ. Nu există perioadă de grație, spre deosebire de Owner Hub (Lot 2.4).
+- **2FA obligatoriu fără grație (restricție de platformă):** la primul login după activarea contului → redirect la configurare 2FA; autentificarea nu se completează fără TOTP activ. Nu există perioadă de grație, la fel ca pentru Owner-ul Hub (R-2F1).
 - **Revocare cu efect imediat:** `revokedAt` setat → toate sesiunile Founder-ului respectiv invalide la request următor; ceilalți Founders neafectați.
 - **Numai `isVentoraOwner: true` poate adăuga sau elimina un Founder** (`addFounderUser`, `revokeFounderUser` — verificare în contract).
-- **Audit per persoană Founder:** fiecare acțiune din `apps/founder` (inclusiv deschiderea sesiunilor de suport) înregistrează `founderId` în `AuditLog.metadata` — se știe exact cine a acționat.
+- **Audit per persoană Founder:** fiecare acțiune din `apps/founder` (inclusiv deschiderea sesiunilor de suport) înregistrează id-ul Founder-ului în coloana `audit_log.founder_id`, ca să se știe exact cine a acționat.
 - Accesul restricționabil la IP (ARCHITECTURE §3.1): middleware în `apps/founder`, configurabil prin `FOUNDER_ALLOWED_IPS` (variabilă de mediu; **absent = fără restricție, dezactivat implicit**).
 - Sesiunea de suport (Lot 2.5) e deschisă dintr-o sesiune Founder autentificată cu 2FA verificat — `twoFactorVerified: true` obligatoriu. Sesiunea de suport înregistrează `founderId` al persoanei care a deschis-o.
 - Sesiunea Founder nu se amestecă cu sesiunea Hub: cookie-uri separate, fără shared state (D-INF-1, §7).
@@ -251,7 +266,7 @@ Faza 2 se închide doar când:
 
 | Risc | Ce facem dacă se întâmplă |
 |---|---|
-| Better Auth nu suportă un comportament necesar (ex. grația 2FA per rol) | Extindem prin middleware propriu deasupra Better Auth; nu înlocuim librăria fără aprobare fondatori |
+| Better Auth nu suportă un comportament necesar (ex. 2FA obligatoriu doar pentru un rol) | Extindem prin middleware propriu deasupra Better Auth; nu înlocuim librăria fără aprobare fondatori |
 | Migrațiile `core/identity` intră în conflict cu schema Better Auth | Better Auth cu adapter Prisma folosește tabelele noastre: schema e a noastră, nu a librăriei. Conflictul apare dacă redenumim câmpuri pe care librăria le citește hardcodat — documentăm în CLAUDE.md |
 | Performanța `authorize()` per request | Permisiunile se citesc din DB cu cache pe durata request-ului (nu între request-uri). Dacă p95 > 20ms, se adaugă cache Redis cu TTL scurt (NECESITĂ DECIZIE) |
 | Sesiunea de suport creează o suprafață de atac | Audit complet + durată maximă + vizibilitate pentru organizație + acces strict la Founder cu 2FA activ |
@@ -295,7 +310,7 @@ Cookie-urile de sesiune sunt **host-only** — un cookie setat pe `app.ventora-h
 | `founder.ventora-hub.com` | `__Host-founder-session` | Sesiunea Founder — 2FA obligatoriu fără grație |
 | `portal.ventora-hub.com` | — | Portal (B2C, §7.6) nu intră în F2 |
 
-Pe staging (URL-uri Vercel): cookie-urile `__Host-` necesită HTTPS pe domeniu propriu. Pe Vercel se configurează cu `cookiePrefix` și `sameSite: 'lax'`. Cookie-urile `__Host-` se activează la deploy pe subdomeniile proprii (D-INF-3, §9).
+Pe staging (URL-urile stabile Vercel, fără subdomenii proprii, D-INF-3): cookie-urile se configurează cu `cookiePrefix` și `sameSite: 'lax'`. Prefixul `__Host-` se activează doar în producție, pe domeniile `ventora-hub.com` (§9).
 
 ---
 
@@ -304,7 +319,7 @@ Pe staging (URL-uri Vercel): cookie-urile `__Host-` necesită HTTPS pe domeniu p
 **Logica, API-ul și testele se implementează înaintea oricărui ecran.**
 
 - **Livrat în F2:** toate loturile 2.1–2.5 (logică, contracte, API, teste T1–T3).
-- **Livrat după direcția vizuală F1:** ecranele `HubSignIn`, `HubInvite`, `HubAccount` (cu lista de sesiuni și revocări), `SecuritySettings` (2FA + coduri de recuperare).
+- **Livrat după direcția vizuală F1:** ecranele `HubSignIn`, `HubInvite`, `HubAccount` (cu lista de sesiuni și revocări), `SecuritySettings` (2FA + coduri de rezervă), toate pe AuthLayout (R-2F9). Ecranele 2FA formează Lotul 2.4b.
 
 Data de start pentru ecrane: după milestone-ul de design F1. Ecranele nu sunt criterii de ieșire din F2.
 
@@ -312,12 +327,15 @@ Data de start pentru ecrane: după milestone-ul de design F1. Ecranele nu sunt c
 
 ## 9. Staging
 
-Pe durata F2, aplicațiile rulează pe **URL-urile Vercel** generate automat (format `ventora-*.vercel.app`). Subdomeniile proprii de staging se configurează ulterior (D-INF-3).
+**D-INF-3 (CONFIRMAT, 28.10.2026):**
+- staging-ul rulează pe **URL-urile stabile Vercel** ale celor trei proiecte, fără subdomenii proprii de staging;
+- **azi nu există niciun proiect Vercel**, deci staging-ul înseamnă baza Supabase de staging;
+- pe ea se aplică migrările doar din `main`, cu `DIRECT_URL` (ARCHITECTURE §6.3).
 
 Implicații pentru F2:
 - Cookie-uri `__Host-` inactive pe Vercel; Better Auth configurat cu `sameSite: 'lax'` și flag HTTPS.
-- Testele de integrare (T1–T3) rulează pe baza de date de staging Supabase; secretele sunt în Vercel env (nu în repo).
-- 2FA pe dispozitiv nou (D10) se testează manual pe URL-urile Vercel înainte de F2 close.
+- Testele de integrare (T1–T3) rulează în CI și local, pe baze de test dedicate, **nu** pe baza de staging. Secretele de staging stau în Vercel env și în `.env.local`, niciodată în repo.
+- Când există proiectele Vercel: codul 2FA la fiecare intrare cu parola (R-2F2) și refuzul `trustDevice` se verifică manual pe URL-urile Vercel, înainte de închiderea F2.
 
 ---
 
