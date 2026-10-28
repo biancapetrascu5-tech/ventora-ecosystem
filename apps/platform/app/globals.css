@@ -17,10 +17,8 @@ p, h1, h2, h3, h4, h5, h6 {
 /* Modificatori */
 .muted { color: var(--ink-muted); }
 
-/* Portal theme — marchează elementele portalizate să moștenească tema locului sursă */
+/* Portal theme — marker de clasă; tema se aplică prin data-theme setat în JS pe containerul de portal */
 .v-portal-theme {
-  background: var(--canvas);
-  color: var(--ink);
 }
 
 /* Link de bază */

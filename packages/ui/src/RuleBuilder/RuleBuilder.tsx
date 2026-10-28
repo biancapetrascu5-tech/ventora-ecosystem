@@ -3,6 +3,7 @@
 import { useState, useId } from 'react';
 import { cn } from '../lib/cn';
 import { Icon } from '../Icon/Icon';
+import { fmtNumber } from '../lib/fmt';
 import styles from './RuleBuilder.module.css';
 
 export interface RuleCriterion {
@@ -27,6 +28,7 @@ export interface RuleBuilderProps {
   estimate?: number;
   estimateLabel?: string;
   addLabel?: string;
+  locale?: string;
   className?: string;
 }
 
@@ -47,6 +49,7 @@ export function RuleBuilder({
   estimate,
   estimateLabel = 'organizații estimate',
   addLabel = 'Adaugă regulă',
+  locale,
   className,
 }: RuleBuilderProps) {
   const controlled = onChange !== undefined;
@@ -180,7 +183,7 @@ export function RuleBuilder({
         </button>
         {estimate !== undefined && (
           <span className={styles.estimate}>
-            <span className={styles.estimateNum}>{estimate.toLocaleString('ro-RO')}</span>{' '}
+            <span className={styles.estimateNum}>{fmtNumber(estimate, locale)}</span>{' '}
             {estimateLabel}
           </span>
         )}

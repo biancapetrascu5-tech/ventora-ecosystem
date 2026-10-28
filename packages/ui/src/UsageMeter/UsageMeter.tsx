@@ -3,6 +3,7 @@
 import { cn } from '../lib/cn';
 import { Icon } from '../Icon/Icon';
 import { Button } from '../Button/Button';
+import { fmtNumber } from '../lib/fmt';
 import styles from './UsageMeter.module.css';
 
 export interface UsageMeterProps {
@@ -35,7 +36,7 @@ export interface UsageMeterProps {
 
 function fmt(n: number, format?: (n: number) => string, locale?: string): string {
   if (format) return format(n);
-  return new Intl.NumberFormat(locale ?? undefined, { useGrouping: true }).format(n);
+  return fmtNumber(n, locale);
 }
 
 export function UsageMeter({

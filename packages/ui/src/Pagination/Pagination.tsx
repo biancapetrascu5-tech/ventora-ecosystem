@@ -1,6 +1,7 @@
 'use client';
 
 import { cn } from '../lib/cn';
+import { fmtNumber } from '../lib/fmt';
 import styles from './Pagination.module.css';
 
 export interface PaginationProps {
@@ -8,6 +9,7 @@ export interface PaginationProps {
   totalPages: number;
   onPageChange: (page: number) => void;
   siblingCount?: number;
+  locale?: string;
   className?: string;
 }
 
@@ -35,6 +37,7 @@ export function Pagination({
   totalPages,
   onPageChange,
   siblingCount = 1,
+  locale,
   className,
 }: PaginationProps) {
   const pages = getPages(page, totalPages, siblingCount);
@@ -65,7 +68,7 @@ export function Pagination({
             aria-label={`Pagina ${p}`}
             aria-current={p === page ? 'page' : undefined}
           >
-            {p}
+            {fmtNumber(p, locale)}
           </button>
         ),
       )}

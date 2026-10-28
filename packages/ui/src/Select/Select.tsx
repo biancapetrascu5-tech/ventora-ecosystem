@@ -1,5 +1,6 @@
 'use client';
 
+import { useRef, useState } from 'react';
 import {
   Select as RACSelect,
   SelectValue,
@@ -44,55 +45,71 @@ export function Select({
   id,
   className,
 }: SelectProps) {
+  const rootRef = useRef<HTMLDivElement>(null);
+  const [portalTheme, setPortalTheme] = useState<string | undefined>(undefined);
+
   const handleChange = (key: Key | null) => {
     if (key !== null) onChange?.(String(key));
   };
 
+  const handleOpenChange = (isOpen: boolean) => {
+    if (isOpen && rootRef.current) {
+      const ancestor = rootRef.current.closest('[data-theme]');
+      setPortalTheme(ancestor?.getAttribute('data-theme') ?? undefined);
+    }
+  };
+
   return (
-    <RACSelect
-      selectedKey={value}
-      defaultSelectedKey={defaultValue}
-      onSelectionChange={handleChange}
-      isDisabled={isDisabled}
-      name={name}
-      id={id}
-      aria-invalid={isInvalid || undefined}
-      className={cn(styles.root, isInvalid && styles.invalid, className)}
-    >
-      <RACButton className={styles.trigger}>
-        <SelectValue className={styles.triggerValue}>
-          {({ selectedItem }) =>
-            selectedItem ? (
-              (selectedItem as SelectOption).label
-            ) : (
-              <span data-placeholder>{placeholder}</span>
-            )
-          }
-        </SelectValue>
-        <Icon icon="chevron-down" size="sm" aria-hidden className={styles.triggerIcon} />
-      </RACButton>
-      <Popover className={styles.popover}>
-        <ListBox items={options} className={styles.listbox}>
-          {(item) => (
-            <ListBoxItem
-              key={item.value}
-              id={item.value}
-              textValue={item.label}
-              isDisabled={item.isDisabled}
-              className={styles.item}
-            >
-              {({ isSelected }) => (
-                <>
-                  <span className={styles.itemCheck}>
-                    {isSelected && <Icon icon="check" size="sm" aria-hidden />}
-                  </span>
-                  {item.label}
-                </>
-              )}
-            </ListBoxItem>
-          )}
-        </ListBox>
-      </Popover>
-    </RACSelect>
+    <div ref={rootRef} style={{ display: 'contents' }}>
+      <RACSelect
+        selectedKey={value}
+        defaultSelectedKey={defaultValue}
+        onSelectionChange={handleChange}
+        onOpenChange={handleOpenChange}
+        isDisabled={isDisabled}
+        name={name}
+        id={id}
+        aria-invalid={isInvalid || undefined}
+        className={cn(styles.root, isInvalid && styles.invalid, className)}
+      >
+        <RACButton className={styles.trigger}>
+          <SelectValue className={styles.triggerValue}>
+            {({ selectedItem }) =>
+              selectedItem ? (
+                (selectedItem as SelectOption).label
+              ) : (
+                <span data-placeholder>{placeholder}</span>
+              )
+            }
+          </SelectValue>
+          <Icon icon="chevron-down" size="sm" aria-hidden className={styles.triggerIcon} />
+        </RACButton>
+        <Popover
+          className={cn(styles.popover, 'v-portal-theme')}
+          {...(portalTheme !== undefined ? { 'data-theme': portalTheme } : {})}
+        >
+          <ListBox items={options} className={styles.listbox}>
+            {(item) => (
+              <ListBoxItem
+                key={item.value}
+                id={item.value}
+                textValue={item.label}
+                isDisabled={item.isDisabled}
+                className={styles.item}
+              >
+                {({ isSelected }) => (
+                  <>
+                    <span className={styles.itemCheck}>
+                      {isSelected && <Icon icon="check" size="sm" aria-hidden />}
+                    </span>
+                    {item.label}
+                  </>
+                )}
+              </ListBoxItem>
+            )}
+          </ListBox>
+        </Popover>
+      </RACSelect>
+    </div>
   );
 }

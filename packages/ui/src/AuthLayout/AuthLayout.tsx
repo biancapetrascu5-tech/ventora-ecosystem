@@ -1,4 +1,3 @@
-/* eslint-disable i18next/no-literal-string */
 'use client';
 
 import type { ReactNode } from 'react';
@@ -11,7 +10,10 @@ export interface AuthLayoutProps {
   footer?: ReactNode;
   theme?: 'light' | 'dark';
   brand?: 'hub' | 'founder';
+  /** Hub: auth_line1/auth_line2 — Founder: auth_founder_product */
   statement?: ReactNode;
+  /** Founder only: auth_founder_tagline */
+  tagline?: ReactNode;
   wide?: boolean;
 }
 
@@ -111,6 +113,7 @@ export function AuthLayout({
   theme,
   brand,
   statement,
+  tagline,
   wide,
 }: AuthLayoutProps) {
   const isFounder = brand === 'founder';
@@ -122,6 +125,7 @@ export function AuthLayout({
             {isFounder ? (
               <div className={styles.founderBrand}>
                 <VentoraMarkOnly size={28} />
+                {/* eslint-disable-next-line i18next/no-literal-string */}
                 <span className={styles.founderLabel}>Founder</span>
               </div>
             ) : (
@@ -131,21 +135,14 @@ export function AuthLayout({
           </div>
           {isFounder ? (
             <>
-              <p className={`display-xl ${styles.statement}`}>{statement ?? 'Control Center'}</p>
-              <p className={`caption ${styles.foot}`}>Instrumentul intern al echipei Ventora</p>
+              {statement && <p className={`display-xl ${styles.statement}`}>{statement}</p>}
+              {tagline && <p className={`caption ${styles.foot}`}>{tagline}</p>}
             </>
           ) : (
             <>
-              <p className={`display-xl ${styles.statement}`}>
-                {statement ?? (
-                  <>
-                    Afacerea ta.
-                    <br />
-                    Într-un singur loc.
-                  </>
-                )}
-              </p>
+              {statement && <p className={`display-xl ${styles.statement}`}>{statement}</p>}
               <AuthChevrons />
+              {/* eslint-disable-next-line i18next/no-literal-string */}
               <p className={`caption ${styles.foot}`}>© 2026 Ventora Systems</p>
             </>
           )}

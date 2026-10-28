@@ -2,6 +2,7 @@
 
 import { cn } from '../lib/cn';
 import { Icon } from '../Icon/Icon';
+import { fmtNumber } from '../lib/fmt';
 import styles from './Stat.module.css';
 
 export type StatTone = 'attention' | 'done' | 'danger';
@@ -16,6 +17,7 @@ export interface StatDelta {
 export interface StatProps {
   label: string;
   value: string | number;
+  locale?: string;
   unit?: string;
   hint?: string;
   tone?: StatTone;
@@ -36,7 +38,17 @@ function DeltaIcon({ direction }: { direction?: 'up' | 'down' }) {
   );
 }
 
-function StatBody({ label, value, unit, hint, tone, delta, onClick, className }: StatProps) {
+function StatBody({
+  label,
+  value,
+  locale,
+  unit,
+  hint,
+  tone,
+  delta,
+  onClick,
+  className,
+}: StatProps) {
   const isPositiveDelta =
     delta?.good !== undefined
       ? delta.good
@@ -46,7 +58,9 @@ function StatBody({ label, value, unit, hint, tone, delta, onClick, className }:
     <>
       <span className={styles.label}>{label}</span>
       <span className={styles.valueRow}>
-        <span className={styles.value}>{value}</span>
+        <span className={styles.value}>
+          {typeof value === 'number' ? fmtNumber(value, locale) : value}
+        </span>
         {unit && <span className={styles.unit}>{unit}</span>}
       </span>
       {hint && <span className={styles.hint}>{hint}</span>}
