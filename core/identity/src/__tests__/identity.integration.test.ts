@@ -68,13 +68,15 @@ async function generateTotpFromUri(base32Secret: string): Promise<string> {
   const counter = BigInt(Math.floor(Date.now() / 30_000));
   const counterBuf = new Uint8Array(8);
   new DataView(counterBuf.buffer).setBigUint64(0, counter, false);
-  const key = await crypto.subtle.importKey('raw', raw, { name: 'HMAC', hash: 'SHA-1' }, false, ['sign']);
+  const key = await crypto.subtle.importKey('raw', raw, { name: 'HMAC', hash: 'SHA-1' }, false, [
+    'sign',
+  ]);
   const sig = new Uint8Array(await crypto.subtle.sign('HMAC', key, counterBuf));
   const offset = sig[sig.length - 1] & 0x0f;
   const code =
-    ((sig[offset] & 0x7f) << 24 |
-      (sig[offset + 1] & 0xff) << 16 |
-      (sig[offset + 2] & 0xff) << 8 |
+    (((sig[offset] & 0x7f) << 24) |
+      ((sig[offset + 1] & 0xff) << 16) |
+      ((sig[offset + 2] & 0xff) << 8) |
       (sig[offset + 3] & 0xff)) %
     1_000_000;
   return code.toString().padStart(6, '0');
@@ -873,7 +875,8 @@ describe('T2FA — 2FA plugin config and hooks', () => {
     );
 
     // getSetCookie() returns each Set-Cookie as a separate array entry (no need to split by ", ")
-    const setCookies = (signInResp.headers as unknown as { getSetCookie?: () => string[] }).getSetCookie?.() ??
+    const setCookies =
+      (signInResp.headers as unknown as { getSetCookie?: () => string[] }).getSetCookie?.() ??
       (signInResp.headers.get('set-cookie') ?? '').split(', ');
     const twoFactorLine = setCookies.find((c) => c.includes('two_factor'));
     const twoFactorCookie = twoFactorLine?.split(';')[0].trim() ?? '';
@@ -936,9 +939,8 @@ describe('T2FA — 2FA plugin config and hooks', () => {
 
     // Create an extra session directly in DB (simulates a session opened between enable and verify)
     const extraToken = crypto.randomUUID();
-    const userId = (
-      await identityDb.user.findUnique({ where: { email }, select: { id: true } })
-    )?.id ?? '';
+    const userId =
+      (await identityDb.user.findUnique({ where: { email }, select: { id: true } }))?.id ?? '';
     await identityDb.session.create({
       data: {
         id: crypto.randomUUID(),
@@ -999,9 +1001,8 @@ describe('T2FA — 2FA plugin config and hooks', () => {
 
     // Create an extra session in DB (simulates another device signed in)
     const extraToken = crypto.randomUUID();
-    const userId = (
-      await identityDb.user.findUnique({ where: { email }, select: { id: true } })
-    )?.id ?? '';
+    const userId =
+      (await identityDb.user.findUnique({ where: { email }, select: { id: true } }))?.id ?? '';
     await identityDb.session.create({
       data: {
         id: crypto.randomUUID(),
@@ -1078,9 +1079,9 @@ describe('T2FA.H — exported founder functions reject actor without 2FA', () =>
     const cookie = (loginResp.headers.get('set-cookie') ?? '').split(';')[0];
 
     const { TwoFactorRequired } = await import('@ventora/errors');
-    await expect(
-      requireFounderSession(new Headers({ Cookie: cookie })),
-    ).rejects.toThrow(TwoFactorRequired);
+    await expect(requireFounderSession(new Headers({ Cookie: cookie }))).rejects.toThrow(
+      TwoFactorRequired,
+    );
   });
 
   it('addFounderUser: actor without 2FA → TwoFactorRequired', async () => {
