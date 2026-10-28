@@ -9,7 +9,8 @@
       "greetingNoName": "Bună,",
       "signature": "Echipa Ventora",
       "footerAccount": "Ai primit acest e-mail pentru că adresa {email} e folosită pentru un cont Ventora.",
-      "footerInvitation": "Ai primit acest e-mail pentru că cineva a invitat adresa {email} în Ventora."
+      "footerInvitation": "Ai primit acest e-mail pentru că cineva a invitat adresa {email} în Ventora.",
+      "company": "Ventora Systems SRL · Sibiu, România"
     },
     "roles": {
       "owner": "proprietar",
@@ -47,7 +48,7 @@
         "subject": "{businessName} e gata pe Ventora",
         "intro": "Am pregătit spațiul {businessName} pe Ventora. Tu vei fi proprietarul lui: îl configurezi, inviți echipa și alegi aplicațiile.",
         "button": "Intră în {businessName}",
-        "validity": "Linkul e valabil 7 zile, până pe {expiresDate}.",
+        "validity": "Linkul e valabil 30 de zile, până pe {expiresDate}.",
         "firstLogin": "La prima intrare îți alegi parola și pornești autentificarea în doi pași, ca afacerea ta să fie protejată de la început.",
         "questions": "Ai întrebări? Răspunde la acest e-mail și te ajutăm."
       }

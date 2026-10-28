@@ -15,6 +15,7 @@ export interface EmailMessages {
     signature: string;
     footerAccount: string;
     footerInvitation: string;
+    company: string;
   };
   roles: Record<'owner' | 'admin' | 'member' | 'external_collaborator', string>;
   passwordReset: Record<

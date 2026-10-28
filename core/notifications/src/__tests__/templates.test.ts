@@ -20,6 +20,63 @@ function expectComplete(r: { subject: string; html: string; text: string }) {
   expect(r.html.startsWith('<!doctype html><html lang="ro">')).toBe(true);
 }
 
+describe('S3 / S54 — one operational layout for every email', () => {
+  const expiresAt = new Date('2026-11-04T10:00:00Z');
+  const all = [
+    renderPasswordReset({ app: 'hub', email: 'a@x.ro', link: 'https://l/1' }),
+    renderPasswordReset({ app: 'founder', email: 'a@x.ro', link: 'https://l/2' }),
+    renderMemberInvitation({
+      email: 'a@x.ro',
+      inviterName: 'B',
+      businessName: 'Salon Aurora',
+      role: 'member',
+      expiresAt,
+      link: 'https://l/3',
+    }),
+    renderOwnerInvitation({
+      email: 'a@x.ro',
+      businessName: 'Salon Aurora',
+      expiresAt,
+      link: 'https://l/4',
+    }),
+    renderOwnerRecovery({ email: 'a@x.ro', businessName: 'Salon Aurora', ticketRef: 'T-1' }),
+  ];
+
+  it('same skeleton: preheader, logo, eyebrow, title, footer with company; light only, 600px', () => {
+    // strip the variable text: what remains is the shared structure
+    const skeleton = (html: string) =>
+      html
+        .replace(/<strong[^>]*>|<\/strong>/g, '')
+        .replace(/>[^<]*</g, '><')
+        .replace(/href="[^"]*"/g, 'href=""')
+        .replace(/<p style="[^"]*"><\/p>/g, '')
+        .replace(/<p style="[^"]*"><a [^>]*><\/a><\/p>/g, '');
+    const first = skeleton(all[0]!.html);
+    for (const r of all) {
+      expect(skeleton(r.html)).toBe(first);
+      expect(r.html).toContain('<meta name="color-scheme" content="light">');
+      expect(r.html).toContain('max-width:600px');
+      expect(r.html).toContain('display:none;max-height:0'); // preheader
+      expect(r.html).toContain('>Ventora</span>'); // logo (wordmark)
+      expect(r.html).toContain('text-transform:uppercase'); // eyebrow
+      expect(r.html).toMatch(/<h1 [^>]*>[^<]+<\/h1>/); // title
+      expect(r.text).toContain('Ventora Systems SRL · Sibiu, România');
+    }
+  });
+
+  it('the eyebrow names the business when there is one, else the product', () => {
+    expect(all[0]!.html).toMatch(/uppercase[^>]*>Ventora<\/p>/);
+    expect(all[1]!.html).toMatch(/uppercase[^>]*>Ventora Founder<\/p>/);
+    for (const r of all.slice(2)) expect(r.html).toMatch(/uppercase[^>]*>Salon Aurora<\/p>/);
+  });
+
+  it('phones: the button takes the full width', () => {
+    expect(all[0]!.html).toContain('@media (max-width:480px)');
+    expect(all[0]!.html).toContain('.v-btn{display:block!important');
+    expect(all[0]!.html).toContain('class="v-btn"');
+  });
+});
+
 describe('N.3 — links (B-4)', () => {
   it('use the configured base URLs and language-neutral paths', () => {
     process.env.NEXT_PUBLIC_PLATFORM_URL = 'https://app.ventora-hub.com/';
@@ -52,7 +109,8 @@ describe('N.3 — password reset (E-1, E-2)', () => {
   it('Hub, without a real name → plain greeting', () => {
     for (const name of [null, '', '  ', 'ana@x.ro']) {
       const r = renderPasswordReset({ app: 'hub', email: 'ana@x.ro', name, link: 'https://l' });
-      expect(r.text.startsWith('Bună,\n')).toBe(true);
+      expect(r.text).toContain('\n\nBună,\n\n');
+      expect(r.text).not.toContain('Bună, ');
     }
   });
 
@@ -130,6 +188,8 @@ describe('N.3 — invitations (E-3, E-3b, E-4)', () => {
     expectComplete(r);
     expect(r.subject).toBe('Salon Aurora e gata pe Ventora');
     expect(r.text).toContain('Intră în Salon Aurora: https://app/invite/o');
+    // S55: the owner's invitation from Founder lasts 30 days
+    expect(r.text).toContain('Linkul e valabil 30 de zile, până pe 4 noiembrie 2026.');
     expect(r.text).toContain(
       'La prima intrare îți alegi parola și pornești autentificarea în doi pași, ca afacerea ta să fie protejată de la început.',
     );

@@ -1,6 +1,6 @@
 import { CANONICAL_LOCALE, type Locale } from '@ventora/i18n';
 import { supportEmail } from '../email.js';
-import { renderLayout, type Block, type RenderedEmail } from './layout.js';
+import { renderOperationalEmail, type RenderedEmail } from './layout.js';
 import { emailMessages, fill, type EmailMessages } from './messages.js';
 
 export type { RenderedEmail } from './layout.js';
@@ -10,6 +10,9 @@ export type MembershipRoleName = keyof EmailMessages['roles'];
 const DEFAULT_EMAIL_LOCALE: Locale = CANONICAL_LOCALE;
 // Expiry dates are shown in the platform's home time zone until organizations store their own.
 const DISPLAY_TIME_ZONE = 'Europe/Bucharest';
+// Product names used as the eyebrow when no business is involved (not translated).
+const HUB_PRODUCT = 'Ventora';
+const FOUNDER_PRODUCT = 'Ventora Founder';
 
 function formatDate(date: Date, locale: Locale): string {
   return new Intl.DateTimeFormat(locale, {
@@ -38,16 +41,19 @@ export function renderPasswordReset(params: {
   const locale = params.locale ?? DEFAULT_EMAIL_LOCALE;
   const m = emailMessages(locale);
   const t = m.passwordReset[params.app];
-  const blocks: Block[] = [
-    { kind: 'text', text: greeting(m, params.name, params.email) },
-    { kind: 'text', text: t.intro },
-    { kind: 'button', label: t.button, href: params.link },
-    { kind: 'text', text: t.validity },
-    { kind: 'text', text: fill(t.notRequested, { supportEmail: supportEmail() }) },
-    { kind: 'text', text: m.common.signature },
-    { kind: 'footer', text: fill(m.common.footerAccount, { email: params.email }) },
-  ];
-  return renderLayout(locale, t.subject, blocks);
+  return renderOperationalEmail({
+    lang: locale,
+    subject: t.subject,
+    preheader: t.validity,
+    eyebrow: params.app === 'founder' ? FOUNDER_PRODUCT : HUB_PRODUCT,
+    title: t.subject,
+    lead: [greeting(m, params.name, params.email), t.intro],
+    button: { label: t.button, href: params.link },
+    after: [t.validity, fill(t.notRequested, { supportEmail: supportEmail() })],
+    signature: m.common.signature,
+    why: fill(m.common.footerAccount, { email: params.email }),
+    company: m.common.company,
+  });
 }
 
 export function renderMemberInvitation(params: {
@@ -69,18 +75,24 @@ export function renderMemberInvitation(params: {
     roleName: m.roles[params.role],
     expiresDate: formatDate(params.expiresAt, locale),
   };
-  const blocks: Block[] = [
-    { kind: 'text', text: m.common.greetingNoName },
-    { kind: 'text', text: fill(t.intro, vars) },
-    { kind: 'button', label: t.button, href: params.link },
-    ...(params.resent ? [{ kind: 'text' as const, text: t.resentNotice }] : []),
-    { kind: 'text', text: fill(t.validity, vars) },
-    { kind: 'text', text: fill(t.existingAccount, vars) },
-    { kind: 'text', text: t.notExpected },
-    { kind: 'text', text: m.common.signature },
-    { kind: 'footer', text: fill(m.common.footerInvitation, { email: params.email }) },
-  ];
-  return renderLayout(locale, fill(t.subject, vars), blocks);
+  const subject = fill(t.subject, vars);
+  return renderOperationalEmail({
+    lang: locale,
+    subject,
+    preheader: fill(t.validity, vars),
+    eyebrow: params.businessName,
+    title: subject,
+    lead: [
+      m.common.greetingNoName,
+      fill(t.intro, vars),
+      ...(params.resent ? [t.resentNotice] : []),
+    ],
+    button: { label: t.button, href: params.link },
+    after: [fill(t.validity, vars), fill(t.existingAccount, vars), t.notExpected],
+    signature: m.common.signature,
+    why: fill(m.common.footerInvitation, { email: params.email }),
+    company: m.common.company,
+  });
 }
 
 export function renderOwnerInvitation(params: {
@@ -97,17 +109,20 @@ export function renderOwnerInvitation(params: {
     businessName: params.businessName,
     expiresDate: formatDate(params.expiresAt, locale),
   };
-  const blocks: Block[] = [
-    { kind: 'text', text: m.common.greetingNoName },
-    { kind: 'text', text: fill(t.intro, vars) },
-    { kind: 'button', label: fill(t.button, vars), href: params.link },
-    { kind: 'text', text: fill(t.validity, vars) },
-    { kind: 'text', text: t.firstLogin },
-    { kind: 'text', text: t.questions },
-    { kind: 'text', text: m.common.signature },
-    { kind: 'footer', text: fill(m.common.footerInvitation, { email: params.email }) },
-  ];
-  return renderLayout(locale, fill(t.subject, vars), blocks);
+  const subject = fill(t.subject, vars);
+  return renderOperationalEmail({
+    lang: locale,
+    subject,
+    preheader: fill(t.validity, vars),
+    eyebrow: params.businessName,
+    title: subject,
+    lead: [m.common.greetingNoName, fill(t.intro, vars)],
+    button: { label: fill(t.button, vars), href: params.link },
+    after: [fill(t.validity, vars), t.firstLogin, t.questions],
+    signature: m.common.signature,
+    why: fill(m.common.footerInvitation, { email: params.email }),
+    company: m.common.company,
+  });
 }
 
 /**
@@ -125,19 +140,27 @@ export function renderOwnerRecovery(params: {
   const locale = params.locale ?? DEFAULT_EMAIL_LOCALE;
   const m = emailMessages(locale);
   const t = m.ownerRecovery;
-  const blocks: Block[] = [
-    { kind: 'text', text: greeting(m, params.name, params.email) },
-    { kind: 'text', text: fill(t.intro, { ticketRef: params.ticketRef }) },
-    ...(params.passwordResetLink
-      ? [
-          { kind: 'text' as const, text: t.passwordReset },
-          { kind: 'button' as const, label: t.button, href: params.passwordResetLink },
-        ]
-      : []),
-    { kind: 'text', text: fill(t.nextSteps, { businessName: params.businessName }) },
-    { kind: 'text', text: fill(t.notRequested, { supportEmail: supportEmail() }), strong: true },
-    { kind: 'text', text: m.common.signature },
-    { kind: 'footer', text: fill(m.common.footerAccount, { email: params.email }) },
-  ];
-  return renderLayout(locale, t.subject, blocks);
+  const intro = fill(t.intro, { ticketRef: params.ticketRef });
+  return renderOperationalEmail({
+    lang: locale,
+    subject: t.subject,
+    preheader: intro,
+    eyebrow: params.businessName,
+    title: t.subject,
+    lead: [
+      greeting(m, params.name, params.email),
+      intro,
+      ...(params.passwordResetLink ? [t.passwordReset] : []),
+    ],
+    button: params.passwordResetLink
+      ? { label: t.button, href: params.passwordResetLink }
+      : undefined,
+    after: [
+      fill(t.nextSteps, { businessName: params.businessName }),
+      { text: fill(t.notRequested, { supportEmail: supportEmail() }), strong: true },
+    ],
+    signature: m.common.signature,
+    why: fill(m.common.footerAccount, { email: params.email }),
+    company: m.common.company,
+  });
 }
