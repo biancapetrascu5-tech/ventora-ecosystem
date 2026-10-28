@@ -84,6 +84,7 @@
     grid-column: 2 / 4;
     grid-row: 2;
     justify-self: start;
+    margin-left: calc(var(--space-2) * -1);
   }
 }
 
