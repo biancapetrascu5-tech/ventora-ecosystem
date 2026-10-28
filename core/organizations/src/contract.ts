@@ -1,5 +1,5 @@
 import crypto from 'node:crypto';
-import { Pool } from 'pg';
+import { Pool, type PoolClient } from 'pg';
 import { getOrgDb } from './db';
 import {
   NotMemberError,
@@ -21,6 +21,7 @@ import {
   pgExecutor,
   writeAuditEvent,
   type AuditEvent,
+  type AuditSqlExecutor,
 } from '@ventora/audit';
 import {
   deliverEmail,
@@ -227,8 +228,8 @@ export async function createOrganizationAsFounder(
   });
 
   // E-4, after the commit: an email that cannot leave never undoes the organization.
-  // founder_runtime has no UPDATE on organizations.invitation, so email_status stays
-  // 'pending' here; a failure is recorded as E26 only.
+  // founder_runtime has no UPDATE on organizations.invitation; email_status is written through
+  // founder_set_owner_invitation_email_status (migration 20261028000003, 2.5b §5.3).
   const rendered = renderOwnerInvitation({
     email: ownerEmail,
     businessName: name,
@@ -241,6 +242,10 @@ export async function createOrganizationAsFounder(
     html: rendered.html,
     text: rendered.text,
   });
+  await setOwnerInvitationEmailStatus(
+    created.invitationId,
+    result.status === 'sent' ? 'sent' : 'failed',
+  );
   if (result.status === 'failed') {
     await writeAuditEvent(
       invitationEmailFailedEvent(created.organizationId, created.invitationId, result.reason, {
@@ -254,11 +259,7 @@ export async function createOrganizationAsFounder(
   return { organizationId: created.organizationId, invitationToken: token };
 }
 
-async function createOrganizationTx(
-  ctx: FounderContext,
-  params: { name: string; slug: string; ownerEmail: string; tokenHash: string },
-): Promise<{ organizationId: string; invitationId: string }> {
-  const { name, ownerEmail, tokenHash } = params;
+async function withFounderClient<T>(fn: (client: PoolClient) => Promise<T>): Promise<T> {
   const pool = new Pool({
     connectionString: process.env.DATABASE_URL_FOUNDER!,
     max: 1,
@@ -266,39 +267,119 @@ async function createOrganizationTx(
   });
   const client = await pool.connect();
   try {
-    // E20 (mode required, D2): organization + invitation + audit row in one transaction
-    await client.query('BEGIN');
-    const { rows } = await client.query<{ organization_id: string; invitation_id: string }>(
-      `SELECT organization_id, invitation_id
-       FROM organizations.founder_create_organization($1, $2, $3, $4, $5::uuid)`,
-      [name, params.slug, ownerEmail, tokenHash, ctx.founderId],
-    );
-    if (!rows[0]) throw new Error('[organizations] founder_create_organization returned no rows');
-    await appendAuditEventInTx(pgExecutor(client), {
-      category: 'organization',
-      action: AuditActions.organizationCreated,
-      outcome: 'success',
-      actorType: 'founder',
-      actorId: ctx.founderId,
-      founderId: ctx.founderId,
-      organizationId: rows[0].organization_id,
-      targetType: 'organization',
-      targetId: rows[0].organization_id,
-      metadata: {
-        slug: params.slug,
-        ownerEmailHash: hashEmail(ownerEmail),
-        invitationId: rows[0].invitation_id,
-      },
-    });
-    await client.query('COMMIT');
-    return { organizationId: rows[0].organization_id, invitationId: rows[0].invitation_id };
-  } catch (err) {
-    await client.query('ROLLBACK').catch(() => {});
-    throw err;
+    return await fn(client);
   } finally {
     client.release();
     await pool.end();
   }
+}
+
+/** Never throws: the invitation and its email are fine, only the status column would be stale. */
+async function setOwnerInvitationEmailStatus(
+  invitationId: string,
+  status: 'sent' | 'failed',
+): Promise<void> {
+  try {
+    await withFounderClient(async (client) => {
+      const { rows } = await client.query<{ updated: boolean }>(
+        `SELECT organizations.founder_set_owner_invitation_email_status($1::uuid, $2) AS updated`,
+        [invitationId, status],
+      );
+      if (!rows[0]?.updated) throw new Error('no owner invitation from Founder with this id');
+    });
+  } catch (err) {
+    console.error('[organizations] owner invitation email_status not updated', {
+      invitationId,
+      error: err instanceof Error ? err.message : String(err),
+    });
+  }
+}
+
+/**
+ * M3, on a founder_runtime transaction owned by the caller: the active owner membership of
+ * `userId` in `organizationId`, with the organization's name; null when the user is not an
+ * active owner there (admin, member, suspended, another organization).
+ */
+export async function getOwnerMembershipInTx(
+  exec: AuditSqlExecutor,
+  organizationId: string,
+  userId: string,
+): Promise<{ membershipId: string; organizationName: string } | null> {
+  assertUuid(organizationId, 'organizationId');
+  assertUuid(userId, 'userId');
+  const rows = await exec.query(
+    `SELECT membership_id::text AS membership_id, organization_name
+       FROM organizations.founder_get_owner_membership($1::uuid, $2::uuid)`,
+    [organizationId, userId],
+  );
+  const row = rows[0];
+  return row
+    ? {
+        membershipId: row.membership_id as string,
+        organizationName: row.organization_name as string,
+      }
+    : null;
+}
+
+/**
+ * M3: the organization's name and its active owners (user ids); null when the organization
+ * does not exist. An organization whose owner has not accepted yet has no owners.
+ */
+export async function listOrganizationOwnersInTx(
+  exec: AuditSqlExecutor,
+  organizationId: string,
+): Promise<{ organizationName: string; ownerUserIds: string[] } | null> {
+  assertUuid(organizationId, 'organizationId');
+  const rows = await exec.query(
+    `SELECT organization_name, user_id::text AS user_id
+       FROM organizations.founder_list_organization_owners($1::uuid)`,
+    [organizationId],
+  );
+  if (rows.length === 0) return null;
+  return {
+    organizationName: rows[0]!.organization_name as string,
+    ownerUserIds: rows.map((r) => r.user_id as string | null).filter((id): id is string => !!id),
+  };
+}
+
+async function createOrganizationTx(
+  ctx: FounderContext,
+  params: { name: string; slug: string; ownerEmail: string; tokenHash: string },
+): Promise<{ organizationId: string; invitationId: string }> {
+  const { name, ownerEmail, tokenHash } = params;
+  return withFounderClient(async (client) => {
+    try {
+      // E20 (mode required, D2): organization + invitation + audit row in one transaction
+      await client.query('BEGIN');
+      const { rows } = await client.query<{ organization_id: string; invitation_id: string }>(
+        `SELECT organization_id, invitation_id
+       FROM organizations.founder_create_organization($1, $2, $3, $4, $5::uuid)`,
+        [name, params.slug, ownerEmail, tokenHash, ctx.founderId],
+      );
+      if (!rows[0]) throw new Error('[organizations] founder_create_organization returned no rows');
+      await appendAuditEventInTx(pgExecutor(client), {
+        category: 'organization',
+        action: AuditActions.organizationCreated,
+        outcome: 'success',
+        actorType: 'founder',
+        actorId: ctx.founderId,
+        founderId: ctx.founderId,
+        organizationId: rows[0].organization_id,
+        targetType: 'organization',
+        targetId: rows[0].organization_id,
+        metadata: {
+          slug: params.slug,
+          ownerEmailHash: hashEmail(ownerEmail),
+          invitationId: rows[0].invitation_id,
+        },
+      });
+      await client.query('COMMIT');
+      return { organizationId: rows[0].organization_id, invitationId: rows[0].invitation_id };
+    } catch (err) {
+      await client.query('ROLLBACK').catch(() => {});
+      throw err;
+    }
+  });
 }
 
 // S1: sets app.user_id from the authenticated session — never from client input.

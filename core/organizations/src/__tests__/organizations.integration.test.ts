@@ -878,6 +878,55 @@ describe('INV — invitation emails', () => {
     expect(e26[0].metadata).toEqual({ reason: 'provider_error', kind: 'owner', resent: false });
   });
 
+  it('INV.5c (2.5b §5.3) — owner invitation from Founder: email_status sent / failed through the M3 function', async () => {
+    const sentOrg = await newOrg('Inv Five Sent');
+    expect(
+      (await invitationRow(`organization_id = $1`, [sentOrg.organizationId])).email_status,
+    ).toBe('sent');
+
+    mailbox.failWith = new Error('[notifications] Resend error: application_error');
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    const failedOrg = await newOrg('Inv Five Failed');
+    expect(
+      (await invitationRow(`organization_id = $1`, [failedOrg.organizationId])).email_status,
+    ).toBe('failed');
+  });
+
+  it('INV.5d — founder_set_owner_invitation_email_status: only the owner invitation from Founder, only founder_runtime', async () => {
+    const { organizationId } = await newOrg('Inv Five Guard');
+    const ctx = await ownerContext(organizationId);
+    const memberEmail = `member-${newUuid()}@example.com`;
+    await inviteMember(ctx, {
+      email: memberEmail,
+      role: 'member',
+      inviterName: 'Owner',
+      organizationName: 'Inv Five Guard',
+    });
+    const memberInvitation = await invitationRow(`organization_id = $1 AND email = $2`, [
+      organizationId,
+      memberEmail,
+    ]);
+
+    // A member invitation (written by org_rw from the Hub) is not touched
+    const [{ updated }] = await adminQuery(
+      `SELECT organizations.founder_set_owner_invitation_email_status($1::uuid, 'failed') AS updated`,
+      [memberInvitation.id],
+    );
+    expect(updated).toBe(false);
+    expect((await invitationRow(`id = $1`, [memberInvitation.id])).email_status).toBe('sent');
+
+    const [privileges] = await adminQuery(
+      `SELECT
+         has_function_privilege('founder_runtime',
+           'organizations.founder_set_owner_invitation_email_status(uuid, text)', 'EXECUTE') AS founder,
+         has_function_privilege('app_runtime',
+           'organizations.founder_set_owner_invitation_email_status(uuid, text)', 'EXECUTE') AS app,
+         has_function_privilege('org_rw',
+           'organizations.founder_set_owner_invitation_email_status(uuid, text)', 'EXECUTE') AS org_rw`,
+    );
+    expect(privileges).toEqual({ founder: true, app: false, org_rw: false });
+  });
+
   it('INV.7 — resending the owner invitation from Founder: 30 days again and E-4, not E-3b', async () => {
     const ownerEmail = `owner-resend-${newUuid()}@example.com`;
     const { organizationId } = await newOrg('Salon Aurora', ownerEmail);
