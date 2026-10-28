@@ -37,8 +37,9 @@ export const AuditActions = {
   founderUserAdded: 'founder.user_added', // E31
   founderUserRevoked: 'founder.user_revoked', // E32
   founderAuditViewed: 'founder.audit_viewed', // E33
-  // §2.5 Support and recovery (category support) — Lot 2.5b
+  // §2.5 Support and recovery (category support) — Lot 2.5c
   supportSessionOpened: 'support.session_opened', // E34
+  supportSessionNoticeFailed: 'support.session_notice_failed', // E34 follow-up: E-6 to an owner not delivered
   supportSessionClosed: 'support.session_closed', // E35
   supportSessionRevokedByOrg: 'support.session_revoked_by_org', // E36
   supportSessionExpired: 'support.session_expired', // E37

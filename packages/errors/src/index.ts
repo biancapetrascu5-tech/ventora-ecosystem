@@ -51,3 +51,25 @@ export class TwoFactorRequired extends Error {
     this.name = 'TwoFactorRequired';
   }
 }
+
+/** A required field is missing or out of range. `field` names it for the form. */
+export class InvalidInput extends Error {
+  readonly status = 400;
+  readonly code = 'INVALID_INPUT';
+  readonly field: string;
+  constructor(field: string, message = `Invalid value for ${field}`) {
+    super(message);
+    this.name = 'InvalidInput';
+    this.field = field;
+  }
+}
+
+/** The operation clashes with the current state (e.g. a support session already open). */
+export class Conflict extends Error {
+  readonly status = 409;
+  readonly code = 'CONFLICT';
+  constructor(message = 'The operation conflicts with the current state') {
+    super(message);
+    this.name = 'Conflict';
+  }
+}

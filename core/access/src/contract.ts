@@ -48,14 +48,26 @@ export function ensureAccessConfigured(config: AccessConfig): void {
   if (!_config) _config = config;
 }
 
+/** Internal: the configured provider, for authorizeSupport() (same step 3 as authorize()). */
+export function getEntitlementProvider(): EntitlementProvider {
+  if (!_config) throw new Error('[access] configureAccess() must be called before authorize()');
+  return _config.entitlementProvider;
+}
+
 export type TenantContext = {
+  /** The acting person: the Hub user, or the Founder for actor 'support'. */
   userId: string;
   organizationId: string;
-  membershipId: string;
-  role: MembershipRole;
+  /** null for actor 'support': a Founder has no membership in the supported organization. */
+  membershipId: string | null;
+  /** 'support' is a system role without membership, produced only by authorizeSupport(). */
+  role: MembershipRole | 'support';
   applicationId: string;
   actor: 'user' | 'system' | 'support';
   roleInApp?: string | null;
+  /** Set only for actor 'support' (Lot 2.5c). */
+  founderId?: string;
+  supportSessionId?: string;
 };
 
 export type AuthorizeParams = {
@@ -118,12 +130,9 @@ export async function authorize(params: AuthorizeParams): Promise<TenantContext>
 
   // Step 3: application enabled (entitlement check — provider mandatory).
   // The platform pseudo-application (Hub-level permissions) is always enabled.
-  if (!_config) throw new Error('[access] configureAccess() must be called before authorize()');
+  const entitlementProvider = getEntitlementProvider();
   if (params.applicationId !== PLATFORM_APPLICATION_ID) {
-    const enabled = await _config.entitlementProvider.isEnabled(
-      organizationId,
-      params.applicationId,
-    );
+    const enabled = await entitlementProvider.isEnabled(organizationId, params.applicationId);
     if (!enabled) throw new AppNotEnabled();
   }
 
