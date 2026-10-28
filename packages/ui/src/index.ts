@@ -221,7 +221,7 @@ export type {
   KanbanCardProps,
   KanbanColumn,
   KanbanCardData,
-  KanbanColumnTone,
+  KanbanLabels,
   KanbanCardDue,
   KanbanContext,
 } from './Kanban/Kanban';
@@ -232,6 +232,7 @@ export type {
   ScheduleColumn,
   ScheduleEvent,
   ScheduleEventStatus,
+  ScheduleStatusLabels,
 } from './Schedule/Schedule';
 
 // Lot 7 — Agenda

@@ -1,8 +1,11 @@
 import type {
   ChartLabels,
   DataTableLabels,
+  DatePickerLabels,
   FileUploadLabels,
+  KanbanLabels,
   PaginationLabels,
+  ScheduleStatusLabels,
   SpineLabels,
 } from '@ventora/ui';
 import ro from '@ventora/i18n/messages/ro.json';
@@ -76,4 +79,33 @@ export const SPINE_RO: SpineLabels = {
   more: 'Mai multe',
   close: 'Închide',
   back: 'Înapoi',
+};
+
+// S.chooseDate, S.chooseTime, S.chooseRange, S.prevMonth, S.nextMonth, S.today, S.clearChoice (ro)
+export const DATEPICKER_RO: DatePickerLabels = {
+  chooseDate: 'Alege data',
+  chooseTime: 'Alege ora',
+  chooseRange: 'Alege intervalul',
+  prevMonth: 'Luna anterioară',
+  nextMonth: 'Luna următoare',
+  today: 'Azi',
+  clearChoice: 'Șterge alegerea',
+};
+
+// S.moveTo, S.moreActionsFor, S.rowActions (ro)
+export const KANBAN_RO: KanbanLabels = {
+  moveTo: (col) => `Mută în „${col}”`,
+  moreActionsFor: (name) => `Acțiuni pentru ${name}`,
+  rowActions: 'Acțiuni',
+};
+
+// S.ev_* (ro) — stările programărilor (Schedule, Agenda)
+export const EVENT_STATUS_RO: ScheduleStatusLabels = {
+  done: 'Încheiată',
+  now: 'În desfășurare',
+  confirmed: 'Confirmată',
+  unconfirmed: 'Neconfirmată',
+  noshow: 'Nu a venit',
+  cancelled: 'Anulată',
+  blocked: 'Blocat',
 };

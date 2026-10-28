@@ -332,3 +332,15 @@
   background: var(--canvas);
   color: var(--ink);
 }
+.pvBox {
+  padding: var(--space-4);
+  background: var(--sheet);
+  border: var(--border-width) solid var(--line);
+  border-radius: var(--radius-md);
+  min-width: 0;
+  color: var(--ink);
+}
+.lab {
+  color: var(--ink-muted);
+  margin: var(--space-2) 0 0;
+}

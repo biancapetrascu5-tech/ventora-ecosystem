@@ -1,139 +1,170 @@
+/* eslint-disable i18next/no-literal-string */
 'use client';
 import { notFound } from 'next/navigation';
-import { Schedule } from '@ventora/ui';
-import { GalleryShell, GallerySection } from '../_shared/GalleryShell';
+import { Schedule, type ScheduleColumn, type ScheduleEvent } from '@ventora/ui';
+import { ThStack } from '../_shared/QPair';
+import f from '../_shared/frames.module.css';
 
-const STAFF_COLS = [
-  { id: 'ioana', label: 'Ioana Pavel', sub: 'Coafor', person: 'Ioana Pavel', today: true },
-  { id: 'mara', label: 'Mara Enache', sub: 'Manicura', person: 'Mara Enache', today: true },
-  { id: 'radu', label: 'Radu Matei', sub: 'Frizerie', person: 'Radu Matei', today: true },
+// preview.html → Extra({ stack: true }) → ThemeFrame light → States() → SC(SC_RO, "a4")
+const C = [
+  ['Ioana Pavel', 'Coafor'],
+  ['Mara Enache', 'Manichiură'],
+  ['Radu Matei', 'Frizerie'],
+  ['Ștefan Țurcanu', 'Masaj', 'În concediu'],
 ];
-
-const EVENTS = [
+const N = [
+  'Ana Popescu',
+  'Elena Georgescu',
+  'Andrei Ionescu',
+  'Cristina Dobre',
+  'Ioana Rădulescu',
+  'Sorina Vlad',
+  'Alina Mureșan',
+  'Mihai Tudose',
+  'Vlad Cristea',
+  'Sergiu Pop',
+  'Paul Ștefănescu',
+];
+const S = [
+  'Tuns',
+  'Vopsit rădăcini',
+  'Vopsit',
+  'Tratament facial',
+  'Manichiură',
+  'Pedichiură',
+  'Manichiură semipermanentă',
+  'Pauză de prânz',
+  'Tuns bărbați',
+  'Tuns + barbă',
+];
+const COLS: ScheduleColumn[] = ['a', 'b', 'c', 'd'].map((id, i) => ({
+  id,
+  label: C[i]![0]!,
+  sub: C[i]![1],
+  person: C[i]![0],
+  closed: C[i]![2],
+}));
+const EVENTS: ScheduleEvent[] = [
   {
-    id: 'e1',
-    col: 'ioana',
+    id: 'a1',
+    col: 'a',
     start: '09:00',
     end: '09:45',
-    title: 'Ana Popescu',
-    subtitle: 'Tuns',
-    status: 'done' as const,
+    title: N[0]!,
+    subtitle: S[0],
+    status: 'done',
   },
   {
-    id: 'e2',
-    col: 'ioana',
+    id: 'a2',
+    col: 'a',
     start: '10:00',
     end: '11:00',
-    title: 'Elena Georgescu',
-    subtitle: 'Vopsit radacini',
-    status: 'done' as const,
+    title: N[1]!,
+    subtitle: S[1],
+    status: 'done',
   },
+  { id: 'a3', col: 'a', start: '11:00', end: '12:00', title: N[2]!, subtitle: S[2], status: 'now' },
   {
-    id: 'e3',
-    col: 'ioana',
-    start: '11:00',
-    end: '12:00',
-    title: 'Andrei Ionescu',
-    subtitle: 'Vopsit',
-    status: 'now' as const,
-  },
-  {
-    id: 'e4',
-    col: 'ioana',
+    id: 'a4',
+    col: 'a',
     start: '12:30',
     end: '13:15',
-    title: 'Cristina Dobre',
-    subtitle: 'Tratament facial',
-    status: 'unconfirmed' as const,
+    title: N[3]!,
+    subtitle: S[3],
+    status: 'unconfirmed',
   },
   {
-    id: 'e5',
-    col: 'ioana',
-    start: '14:30',
-    end: '15:15',
-    title: 'Dan Stoica',
-    subtitle: 'Tuns',
-    status: 'confirmed' as const,
-  },
-  {
-    id: 'm1',
-    col: 'mara',
+    id: 'b1',
+    col: 'b',
     start: '09:30',
     end: '10:20',
-    title: 'Ioana Radu',
-    subtitle: 'Manicura',
-    status: 'done' as const,
+    title: N[4]!,
+    subtitle: S[4],
+    status: 'noshow',
   },
   {
-    id: 'm2',
-    col: 'mara',
-    start: '10:45',
+    id: 'b2',
+    col: 'b',
+    start: '11:00',
     end: '11:45',
-    title: 'Sorina Vlad',
-    subtitle: 'Pedicura',
-    status: 'now' as const,
+    title: N[5]!,
+    subtitle: S[5],
+    status: 'confirmed',
   },
   {
-    id: 'm3',
-    col: 'mara',
-    start: '13:00',
-    end: '14:00',
-    title: 'Pauza de pranz',
-    status: 'blocked' as const,
+    id: 'b3',
+    col: 'b',
+    start: '11:15',
+    end: '12:15',
+    title: N[6]!,
+    subtitle: S[6],
+    status: 'confirmed',
   },
+  { id: 'b4', col: 'b', start: '13:00', end: '14:00', title: S[7]!, status: 'blocked' },
   {
-    id: 'm4',
-    col: 'mara',
-    start: '14:00',
-    end: '14:50',
-    title: 'Alina Murariu',
-    subtitle: 'Manicura semi',
-    status: 'confirmed' as const,
-  },
-  {
-    id: 'r1',
-    col: 'radu',
+    id: 'c1',
+    col: 'c',
     start: '09:00',
     end: '09:30',
-    title: 'Mihai Tudose',
-    subtitle: 'Tuns barbati',
-    status: 'done' as const,
+    title: N[7]!,
+    subtitle: S[8],
+    status: 'done',
   },
   {
-    id: 'r2',
-    col: 'radu',
+    id: 'c2',
+    col: 'c',
     start: '10:00',
     end: '10:30',
-    title: 'Vlad Cristea',
-    subtitle: 'Tuns barbati',
-    status: 'cancelled' as const,
+    title: N[8]!,
+    subtitle: S[8],
+    status: 'cancelled',
   },
   {
-    id: 'r3',
-    col: 'radu',
+    id: 'c3',
+    col: 'c',
     start: '11:30',
     end: '12:00',
-    title: 'Sergiu Pop',
-    subtitle: 'Tuns + barba',
-    status: 'confirmed' as const,
+    title: N[9]!,
+    subtitle: S[9],
+    status: 'confirmed',
+  },
+  {
+    id: 'c4',
+    col: 'c',
+    start: '12:15',
+    end: '13:00',
+    title: N[10]!,
+    subtitle: S[8],
+    status: 'unconfirmed',
   },
 ];
+const noop = () => {};
+
+function States() {
+  return (
+    <div className={f.d0}>
+      <p className={`caption ${f.muted}`}>
+        Toate stările: încheiată (✓), în desfășurare (peach, singurul peach), confirmată,
+        neconfirmată (contur punctat), neprezentare, anulată, pauză (hașurat) · suprapunere ·
+        coloană închisă · programare selectată
+      </p>
+      <Schedule
+        columns={COLS}
+        events={EVENTS}
+        from={9}
+        to={14}
+        now="11:20"
+        height={400}
+        activeId="a4"
+        onEventClick={noop}
+        onSlotClick={noop}
+        minColumnWidth={140}
+      />
+    </div>
+  );
+}
 
 export default function ScheduleGalleryPage() {
   if (process.env.NODE_ENV !== 'development') notFound();
-  return (
-    <GalleryShell title="Schedule">
-      <GallerySection label="Zi — vizualizare personal" column>
-        <Schedule
-          columns={STAFF_COLS}
-          events={EVENTS}
-          from={8}
-          to={18}
-          now="11:20"
-          nowColumn="ioana"
-          height={480}
-        />
-      </GallerySection>
-    </GalleryShell>
-  );
+  return <ThStack render={() => <States />} />;
 }

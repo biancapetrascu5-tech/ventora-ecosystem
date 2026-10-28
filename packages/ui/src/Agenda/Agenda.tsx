@@ -1,125 +1,127 @@
 'use client';
 
+import { StatusPill, type StatusPillTone } from '../StatusPill/StatusPill';
+import type { IconName } from '../Icon/Icon';
 import { cn } from '../lib/cn';
-import { StatusPill } from '../StatusPill/StatusPill';
+import { toMin, type ScheduleEventStatus, type ScheduleStatusLabels } from '../Schedule/Schedule';
 import styles from './Agenda.module.css';
 
-export type AgendaItemStatus = 'confirmed' | 'unconfirmed' | 'done' | 'cancelled';
+export type AgendaItemStatus = ScheduleEventStatus;
 
 export interface AgendaItem {
   id: string | number;
-  col: string;
   start: string;
   end: string;
   title: string;
   subtitle?: string;
-  status: AgendaItemStatus;
   staff?: string;
+  status?: AgendaItemStatus;
 }
 
 export interface AgendaProps {
   items: AgendaItem[];
+  /** Ora curentă: linia „acum” și evenimentul în curs (peach, cu progres). */
   now?: string;
   onSelect?: (item: AgendaItem) => void;
+  activeId?: string | number;
+  /** Angajatul după serviciu, despărțit cu „·”. */
+  showStaff?: boolean;
+  /** Textele stărilor (S.ev_*). */
+  statusLabels: ScheduleStatusLabels;
+  /** S.now — eticheta liniei și a progresului. */
+  nowLabel?: string;
   className?: string;
 }
 
-function parseTime(t: string): number {
-  const [h, m] = t.split(':').map(Number);
-  return (h ?? 0) * 60 + (m ?? 0);
-}
-
-const STATUS_LABEL: Record<AgendaItemStatus, string> = {
-  confirmed: 'Confirmată',
-  unconfirmed: 'Neconfirmată',
-  done: 'Încheiată',
-  cancelled: 'Anulată',
+const TONE: Record<AgendaItemStatus, StatusPillTone> = {
+  confirmed: 'neutral',
+  unconfirmed: 'neutral',
+  now: 'attention',
+  done: 'done',
+  cancelled: 'neutral',
+  noshow: 'danger',
+  blocked: 'neutral',
 };
 
-type PillTone = 'attention' | 'done' | 'neutral' | 'danger';
-
-function statusTone(status: AgendaItemStatus, isNow: boolean): PillTone {
-  if (isNow) return 'attention';
-  if (status === 'done') return 'done';
-  return 'neutral';
-}
-
-export function Agenda({ items, now, onSelect, className }: AgendaProps) {
-  const nowMinutes = now ? parseTime(now) : null;
-
-  const sorted = [...items].sort((a, b) => parseTime(a.start) - parseTime(b.start));
-
-  let nowInserted = false;
-
-  return (
-    <div className={cn(styles.root, className)} role="list" aria-label="Program zi">
-      {sorted.map((item) => {
-        const startMin = parseTime(item.start);
-        const endMin = parseTime(item.end);
-        const isNow = nowMinutes !== null && nowMinutes >= startMin && nowMinutes < endMin;
-        const isPast = nowMinutes !== null && endMin <= nowMinutes;
-
-        let showNowLine = false;
-        if (!nowInserted && nowMinutes !== null && startMin > nowMinutes) {
-          showNowLine = true;
-          nowInserted = true;
-        }
-
-        return (
-          <div key={item.id}>
-            {showNowLine && (
-              <div className={styles.nowLine} role="separator" aria-label={`Acum ${now}`}>
-                <span className={styles.nowTime}>{now}</span>
-                <div className={styles.nowRule} />
-              </div>
-            )}
-            <div
-              role="listitem"
-              className={cn(
-                styles.item,
-                isNow && styles.itemNow,
-                isPast && styles.itemPast,
-                item.status === 'cancelled' && styles.itemCancelled,
-              )}
-              onClick={() => onSelect?.(item)}
-              tabIndex={onSelect ? 0 : undefined}
-              onKeyDown={
-                onSelect
-                  ? (e) => {
-                      if (e.key === 'Enter' || e.key === ' ') onSelect(item);
-                    }
-                  : undefined
-              }
-              aria-label={`${item.start} ${item.title}${item.subtitle ? ` · ${item.subtitle}` : ''}`}
-            >
-              <div className={styles.timeCol}>
-                <span className={styles.startTime}>{item.start}</span>
-                <span className={styles.endTime}>{item.end}</span>
-              </div>
-              <div className={styles.content}>
-                <span className={styles.title}>{item.title}</span>
-                {item.subtitle && <span className={styles.subtitle}>{item.subtitle}</span>}
-                {item.staff && <span className={styles.staff}>{item.staff}</span>}
-              </div>
-              <div className={styles.status}>
-                <StatusPill
-                  tone={statusTone(item.status, isNow)}
-                  size="sm"
-                  icon={item.status === 'unconfirmed' ? 'clock' : undefined}
-                >
-                  {isNow ? 'În desfășurare' : STATUS_LABEL[item.status]}
-                </StatusPill>
-              </div>
-            </div>
-          </div>
-        );
-      })}
-      {!nowInserted && nowMinutes !== null && sorted.length > 0 && (
-        <div className={styles.nowLine} role="separator" aria-label={`Acum ${now}`}>
-          <span className={styles.nowTime}>{now}</span>
-          <div className={styles.nowRule} />
-        </div>
-      )}
-    </div>
+/* Agenda din bundle.js: lista zilei, cu linia „acum” peach între evenimente. */
+export function Agenda({
+  items,
+  now,
+  onSelect,
+  activeId,
+  showStaff = true,
+  statusLabels,
+  nowLabel,
+  className,
+}: AgendaProps) {
+  const nowM = now != null ? toMin(now) : null;
+  const sorted = [...items].sort((a, b) => toMin(a.start) - toMin(b.start));
+  let placed = false;
+  const rows: React.ReactNode[] = [];
+  const nowLine = (
+    <li key="now" className={styles.nowline} aria-label={nowLabel}>
+      <span className="caption v-num">{now}</span>
+    </li>
   );
+  sorted.forEach((it) => {
+    const s = toMin(it.start);
+    const e = toMin(it.end);
+    if (!placed && nowM != null && s > nowM) {
+      rows.push(nowLine);
+      placed = true;
+    }
+    const current = nowM != null && s <= nowM && nowM < e && it.status !== 'cancelled';
+    const st: AgendaItemStatus = current ? 'now' : (it.status ?? 'confirmed');
+    const pctDone = current && nowM != null ? Math.round(((nowM - s) / (e - s)) * 100) : 0;
+    const icon: IconName | undefined =
+      st === 'now' ? 'circle-dot' : st === 'unconfirmed' ? 'clock' : undefined;
+    const cls = cn(
+      styles.item,
+      styles[`item-${st}`],
+      activeId === it.id && styles.isActive,
+      onSelect && styles.button,
+    );
+    const content = (
+      <>
+        <span className={cn(styles.time, 'v-num')}>
+          <span className="body-strong">{it.start}</span>
+          <span className="caption">{it.end}</span>
+        </span>
+        <span className={styles.main}>
+          <span className={cn('body-strong', styles.title)}>{it.title}</span>
+          <span className={cn('body-small', styles.sub)}>
+            {[it.subtitle, showStaff && it.staff].filter(Boolean).join(' · ')}
+          </span>
+          {current && (
+            <span
+              className={styles.progress}
+              role="progressbar"
+              aria-valuemin={0}
+              aria-valuemax={100}
+              aria-valuenow={pctDone}
+              aria-label={nowLabel}
+            >
+              <span style={{ width: `${pctDone}%` }} />
+            </span>
+          )}
+        </span>
+        <StatusPill tone={TONE[st]} size="sm" {...(icon ? { icon } : {})}>
+          {statusLabels[st]}
+        </StatusPill>
+      </>
+    );
+    rows.push(
+      <li key={it.id}>
+        {onSelect ? (
+          <button type="button" className={cls} onClick={() => onSelect(it)}>
+            {content}
+          </button>
+        ) : (
+          <div className={cls}>{content}</div>
+        )}
+      </li>,
+    );
+  });
+  if (!placed && nowM != null) rows.push(nowLine);
+  return <ul className={cn(styles.agenda, className)}>{rows}</ul>;
 }

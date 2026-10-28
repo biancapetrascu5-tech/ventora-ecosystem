@@ -1,18 +1,21 @@
 'use client';
 
-import { useRef } from 'react';
+import { Avatar } from '../Avatar/Avatar';
+import { Icon } from '../Icon/Icon';
 import { cn } from '../lib/cn';
 import styles from './Schedule.module.css';
 
 export type ScheduleEventStatus =
-  'done' | 'now' | 'confirmed' | 'unconfirmed' | 'cancelled' | 'blocked';
+  'done' | 'now' | 'confirmed' | 'unconfirmed' | 'cancelled' | 'noshow' | 'blocked';
 
 export interface ScheduleColumn {
   id: string;
   label: string;
   sub?: string;
+  /** Numele pentru Avatar din antet. */
   person?: string;
   today?: boolean;
+  /** Textul coloanei închise (ex. „În concediu”); coloana devine hașurată. */
   closed?: string;
 }
 
@@ -26,181 +29,245 @@ export interface ScheduleEvent {
   status?: ScheduleEventStatus;
 }
 
+/** Textele stărilor pentru cititorul de ecran (S.ev_*). */
+export type ScheduleStatusLabels = Record<ScheduleEventStatus, string>;
+
 export interface ScheduleProps {
   columns: ScheduleColumn[];
   events: ScheduleEvent[];
   from?: number;
   to?: number;
+  /** Ora curentă („11:20”): linia peach și eticheta din coloana orelor. */
   now?: string;
+  /** Linia plină doar în această coloană; în rest, punctată. */
   nowColumn?: string;
-  height?: number;
+  height?: number | string;
   minColumnWidth?: number;
   activeId?: string;
   onEventClick?: (event: ScheduleEvent) => void;
   onSlotClick?: (colId: string, time: string) => void;
+  statusLabels?: Partial<ScheduleStatusLabels>;
   className?: string;
 }
 
-function parseTime(t: string): number {
-  const [h, m] = t.split(':').map(Number);
-  return (h ?? 0) + (m ?? 0) / 60;
+export const toMin = (s: string | number) => {
+  if (typeof s === 'number') return s;
+  const [h, m] = String(s).split(':').map(Number);
+  return (h ?? 0) * 60 + (m ?? 0);
+};
+export const fmtTime = (m: number) =>
+  `${String(Math.floor(m / 60)).padStart(2, '0')}:${String(m % 60).padStart(2, '0')}`;
+
+type Laned = ScheduleEvent & { lane: number; lanes: number };
+
+/* lanes din bundle.js: evenimentele care se suprapun stau unul lângă altul. */
+function lanes(events: ScheduleEvent[]): Laned[] {
+  const sorted = [...events].sort((a, b) => toMin(a.start) - toMin(b.start));
+  const out: Laned[] = [];
+  let group: ScheduleEvent[] = [];
+  let groupEnd = -1;
+  const flush = () => {
+    const cols: number[] = [];
+    group.forEach((e) => {
+      let i = cols.findIndex((end) => end <= toMin(e.start));
+      if (i < 0) {
+        i = cols.length;
+        cols.push(0);
+      }
+      cols[i] = toMin(e.end);
+      out.push({ ...e, lane: i, lanes: 0 });
+    });
+    const n = cols.length;
+    out.slice(-group.length).forEach((e) => (e.lanes = n));
+    group = [];
+  };
+  sorted.forEach((e) => {
+    if (toMin(e.start) >= groupEnd && group.length) flush();
+    group.push(e);
+    groupEnd = Math.max(groupEnd, toMin(e.end));
+  });
+  if (group.length) flush();
+  return out;
 }
 
-function formatHour(h: number): string {
-  return `${String(Math.floor(h)).padStart(2, '0')}:00`;
-}
-
-const LABEL_COL_W = 44; // px for the hour labels column
-
+/* Schedule din bundle.js: antet lipit cu Avatar, coloana orelor lipită la stânga, grilă cu
+   jumătăți de oră punctate, evenimente pe stări, linia „acum” peach. */
 export function Schedule({
   columns,
   events,
   from = 8,
-  to = 18,
+  to = 20,
   now,
   nowColumn,
-  height = 480,
-  minColumnWidth = 140,
-  activeId,
   onEventClick,
   onSlotClick,
+  height,
+  minColumnWidth = 120,
+  activeId,
+  statusLabels,
   className,
 }: ScheduleProps) {
-  const scrollRef = useRef<HTMLDivElement>(null);
-  const hours = to - from;
-  const pxPerHour = height / hours;
-
-  function timeToPx(t: string): number {
-    return (parseTime(t) - from) * pxPerHour;
-  }
-
-  function durationPx(start: string, end: string): number {
-    return Math.max((parseTime(end) - parseTime(start)) * pxPerHour, 20);
-  }
-
-  const nowPos = now ? timeToPx(now) : null;
-
-  const hourTicks = Array.from({ length: hours + 1 }, (_, i) => from + i);
+  const hours: number[] = [];
+  for (let h = from; h <= to; h++) hours.push(h);
+  const startM = from * 60;
+  const endM = to * 60;
+  const nowM = now != null ? toMin(now) : null;
+  const showNow = nowM != null && nowM >= startM && nowM <= endM;
+  const pct = (m: number) => ((m - startM) / (endM - startM)) * 100;
 
   return (
-    <div className={cn(styles.root, className)} aria-label="Program">
-      {/* Column headers */}
-      <div className={styles.headerRow}>
-        <div className={styles.cornerCell} style={{ width: LABEL_COL_W }} />
-        <div className={styles.headers} style={{ minWidth: `calc(100% - ${LABEL_COL_W}px)` }}>
-          {columns.map((col) => (
-            <div
-              key={col.id}
-              className={cn(styles.colHeader, col.today && styles.colHeaderToday)}
-              style={{ minWidth: minColumnWidth }}
-            >
-              <span className={styles.colLabel}>{col.label}</span>
-              {col.sub && <span className={styles.colSub}>{col.sub}</span>}
-              {col.closed && <span className={styles.colClosed}>{col.closed}</span>}
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Body */}
-      <div className={styles.body} ref={scrollRef}>
-        {/* Hour ticks */}
-        <div className={styles.hourAxis} style={{ width: LABEL_COL_W, height }}>
-          {hourTicks.map((h) => (
-            <div key={h} className={styles.hourTick} style={{ top: (h - from) * pxPerHour }}>
-              <span className={styles.hourLabel}>{formatHour(h)}</span>
-            </div>
-          ))}
-        </div>
-
-        {/* Grid + events */}
-        <div className={styles.grid} style={{ height, minWidth: `calc(100% - ${LABEL_COL_W}px)` }}>
-          {/* Hour grid lines */}
-          {hourTicks.map((h) => (
-            <div
-              key={h}
-              className={styles.gridLine}
-              style={{ top: (h - from) * pxPerHour }}
-              aria-hidden
-            />
-          ))}
-
-          {/* Now indicator */}
-          {nowPos !== null && nowPos >= 0 && nowPos <= height && (
-            <div className={styles.nowLine} style={{ top: nowPos }} aria-hidden />
-          )}
-
-          {/* Columns */}
-          {columns.map((col) => {
-            const colEvents = events.filter((e) => e.col === col.id);
-            const isNowCol = nowColumn === col.id || (!nowColumn && col.today);
-
-            return (
-              <div
-                key={col.id}
-                className={cn(styles.column, col.closed && styles.columnClosed)}
-                style={{ minWidth: minColumnWidth, height }}
-                onClick={(e) => {
-                  if (!onSlotClick) return;
-                  const rect = e.currentTarget.getBoundingClientRect();
-                  const y = e.clientY - rect.top;
-                  const h = from + y / pxPerHour;
-                  const hFloor = Math.floor(h);
-                  const m = Math.round((h - hFloor) * 4) * 15;
-                  onSlotClick(
-                    col.id,
-                    `${String(hFloor).padStart(2, '0')}:${String(m).padStart(2, '0')}`,
-                  );
-                }}
-              >
-                {col.closed && (
-                  <div className={styles.closedOverlay} aria-label={col.closed}>
-                    <span className={styles.closedLabel}>{col.closed}</span>
-                  </div>
-                )}
-
-                {/* Now line per column */}
-                {isNowCol && nowPos !== null && nowPos >= 0 && nowPos <= height && (
-                  <div className={styles.nowLineCol} style={{ top: nowPos }} aria-hidden />
-                )}
-
-                {colEvents.map((ev) => {
-                  const top = timeToPx(ev.start);
-                  const h = durationPx(ev.start, ev.end);
-                  const isActive = ev.id === activeId;
-
-                  return (
-                    <button
-                      key={ev.id}
-                      type="button"
-                      role="button"
-                      aria-label={`${ev.title}${ev.subtitle ? ` — ${ev.subtitle}` : ''}, ${ev.start}–${ev.end}`}
-                      className={cn(
-                        styles.event,
-                        ev.status && styles[`status-${ev.status}`],
-                        isActive && styles.eventActive,
-                      )}
-                      style={{ top, height: h }}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onEventClick?.(ev);
-                      }}
-                    >
-                      <span className={styles.eventTitle}>{ev.title}</span>
-                      {ev.subtitle && h > 40 && (
-                        <span className={styles.eventSub}>{ev.subtitle}</span>
-                      )}
-                      {h > 52 && (
-                        <span className={styles.eventTime}>
-                          {ev.start}–{ev.end}
-                        </span>
-                      )}
-                    </button>
-                  );
-                })}
+    <div
+      className={cn(styles.sched, className)}
+      style={
+        {
+          height,
+          '--sched-cols': columns.length,
+          '--sched-col-min': `${minColumnWidth}px`,
+          '--sched-hours': to - from,
+        } as React.CSSProperties
+      }
+    >
+      <div className={styles.scroll}>
+        <div className={styles.inner}>
+          <div className={styles.head}>
+            <div className={styles.gutter} />
+            {columns.map((c) => (
+              <div key={c.id} className={cn(styles.colhead, c.today && styles.isToday)}>
+                {c.person && <Avatar name={c.person} size="sm" />}
+                <span className={styles.collabel}>
+                  <span className={c.today ? 'body-strong' : 'body'}>{c.label}</span>
+                  {c.sub && <span className={cn('caption', styles.colsub)}>{c.sub}</span>}
+                </span>
               </div>
-            );
-          })}
+            ))}
+          </div>
+          <div className={styles.body}>
+            <div className={cn(styles.gutter, styles.times)}>
+              {hours.slice(0, -1).map((h) => (
+                <span
+                  key={h}
+                  className={cn('caption', styles.time)}
+                  style={{ top: `${pct(h * 60)}%` }}
+                >
+                  {String(h).padStart(2, '0')}:00
+                </span>
+              ))}
+              {showNow && (
+                <span
+                  className={cn(styles.nowlabel, 'caption', 'v-num')}
+                  style={{ top: `${pct(nowM)}%` }}
+                >
+                  {fmtTime(nowM)}
+                </span>
+              )}
+            </div>
+            <div className={styles.grid}>
+              {hours.slice(0, -1).map((h) => (
+                <span
+                  key={h}
+                  className={styles.hour}
+                  style={{ top: `${pct(h * 60)}%`, height: `${100 / (to - from)}%` }}
+                />
+              ))}
+              {columns.map((c) => {
+                const evs = lanes(events.filter((e) => e.col === c.id));
+                return (
+                  <div
+                    key={c.id}
+                    className={cn(styles.col, c.closed && styles.isClosed)}
+                    onClick={
+                      onSlotClick
+                        ? (e) => {
+                            if (e.target !== e.currentTarget) return;
+                            const r = e.currentTarget.getBoundingClientRect();
+                            const m =
+                              startM +
+                              Math.round(
+                                (((e.clientY - r.top) / r.height) * (endM - startM)) / 15,
+                              ) *
+                                15;
+                            onSlotClick(c.id, fmtTime(m));
+                          }
+                        : undefined
+                    }
+                  >
+                    {c.closed && <span className={cn(styles.closed, 'caption')}>{c.closed}</span>}
+                    {evs.map((e) => {
+                      const s = toMin(e.start);
+                      const en = toMin(e.end);
+                      const st = e.status ?? 'confirmed';
+                      const isButton = !!onEventClick && st !== 'blocked';
+                      const cls = cn(
+                        styles.ev,
+                        styles[`ev-${st}`],
+                        en - s <= 30 && styles.isShort,
+                        en - s > 30 && en - s < 60 && styles.isMedium,
+                        activeId === e.id && styles.isActive,
+                        isButton && styles.evButton,
+                      );
+                      const style = {
+                        top: `${pct(s)}%`,
+                        height: `calc(${pct(en) - pct(s)}% - 2px)`,
+                        left: `calc(${(e.lane / e.lanes) * 100}% + 2px)`,
+                        width: `calc(${100 / e.lanes}% - 4px)`,
+                      };
+                      const content = (
+                        <>
+                          <span className={cn(styles.evTime, 'caption', 'v-num')}>
+                            {e.start}–{e.end}
+                            {st === 'done' && (
+                              <Icon
+                                icon="check"
+                                size={12}
+                                strokeWidth={2.5}
+                                className={styles.evCheck}
+                              />
+                            )}
+                          </span>
+                          <span className={cn(styles.evTitle, 'body-small')}>{e.title}</span>
+                          {e.subtitle && (
+                            <span className={cn(styles.evSub, 'caption')}>{e.subtitle}</span>
+                          )}
+                        </>
+                      );
+                      return isButton ? (
+                        <button
+                          key={e.id}
+                          type="button"
+                          className={cls}
+                          style={style}
+                          onClick={() => onEventClick?.(e)}
+                          aria-label={[`${e.title}, ${e.start}–${e.end}`, statusLabels?.[st]]
+                            .filter(Boolean)
+                            .join(', ')}
+                        >
+                          {content}
+                        </button>
+                      ) : (
+                        <div key={e.id} className={cls} style={style}>
+                          {content}
+                        </div>
+                      );
+                    })}
+                    {showNow && (nowColumn == null || nowColumn === c.id) && (
+                      <span
+                        className={styles.now}
+                        style={{ top: `${pct(nowM)}%` }}
+                        aria-hidden="true"
+                      />
+                    )}
+                  </div>
+                );
+              })}
+              {showNow && nowColumn != null && (
+                <span
+                  className={styles.nowfaint}
+                  style={{ top: `${pct(nowM)}%` }}
+                  aria-hidden="true"
+                />
+              )}
+            </div>
+          </div>
         </div>
       </div>
     </div>

@@ -1,130 +1,134 @@
-.root {
+/* .v-agenda din bundle.css */
+.agenda {
+  list-style: none;
+  margin: 0;
+  padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 0;
-  background: var(--sheet);
-  border-radius: var(--radius-md);
-  overflow: hidden;
-  border: 1px solid var(--line);
 }
 
-.nowLine {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-  padding: 0 var(--space-3);
-  margin: var(--space-1) 0;
-  position: relative;
+.agenda > li {
+  border-bottom: var(--border-width) solid var(--line);
 }
 
-.nowTime {
-  font-size: var(--text-caption);
-  font-weight: 600;
-  color: var(--attention-mark);
-  white-space: nowrap;
-  flex-shrink: 0;
-}
-
-.nowRule {
-  flex: 1;
-  height: 2px;
-  background: var(--attention-mark);
-  border-radius: 1px;
+.agenda > li:last-child {
+  border-bottom: 0;
 }
 
 .item {
-  display: grid;
-  grid-template-columns: 56px 1fr auto;
+  appearance: none;
+  display: flex;
   align-items: center;
-  gap: var(--space-3);
+  gap: var(--space-4);
+  width: 100%;
   padding: var(--space-3) var(--space-4);
-  border-bottom: 1px solid var(--line);
-  cursor: default;
-  transition: background 0.12s;
-}
-
-.item:last-child {
-  border-bottom: none;
-}
-
-.item:focus-visible {
-  outline: 2px solid var(--primary);
-  outline-offset: -2px;
-}
-
-[data-theme='dark'] .item:focus-visible {
-  outline-color: var(--primary);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme='light']) .item:focus-visible {
-    outline-color: var(--primary);
-  }
-}
-
-.itemNow {
-  background: var(--attention-soft);
-}
-
-.itemPast {
-  opacity: 0.6;
-}
-
-.itemCancelled {
-  opacity: 0.5;
-  text-decoration: line-through;
-}
-
-.timeCol {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 2px;
-  flex-shrink: 0;
-}
-
-.startTime {
-  font-size: var(--text-body-sm);
-  font-weight: 600;
+  min-height: var(--touch-target);
+  border: 0;
+  background: transparent;
   color: var(--ink);
-  font-variant-numeric: tabular-nums;
+  text-align: start;
+  font-family: inherit;
+  box-sizing: border-box;
 }
 
-.endTime {
-  font-size: var(--text-caption);
-  color: var(--ink-muted);
-  font-variant-numeric: tabular-nums;
+.button {
+  cursor: pointer;
 }
 
-.content {
+.button:hover {
+  background: var(--state-hover);
+}
+
+.button:focus-visible {
+  outline: var(--focus-ring-width) solid var(--focus-ring);
+  outline-offset: calc(var(--focus-ring-width) * -1);
+}
+
+.item.isActive {
+  background: var(--selected);
+}
+
+.time {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  width: var(--schedule-gutter);
+  flex: none;
+  color: var(--ink);
+}
+
+.time :global(.caption) {
+  color: var(--ink-muted);
+}
+
+.main {
+  flex: 1;
   min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-0-5);
 }
 
 .title {
-  font-size: var(--text-body-sm);
-  font-weight: 500;
-  color: var(--ink);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.subtitle {
-  font-size: var(--text-caption);
+.sub {
+  color: var(--ink-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.item-now {
+  background: var(--attention-soft);
+}
+
+.item-done .title,
+.item-done .time :global(.body-strong) {
   color: var(--ink-secondary);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  font-weight: 500;
 }
 
-.staff {
-  font-size: var(--text-caption);
+.item-cancelled .title {
+  text-decoration: line-through;
   color: var(--ink-muted);
 }
 
-.status {
-  flex-shrink: 0;
+.progress {
+  display: block;
+  height: var(--space-1);
+  margin-top: var(--space-1);
+  border-radius: var(--radius-full);
+  background: var(--sheet);
+  overflow: hidden;
+  max-width: var(--search-width);
+}
+
+.progress > span {
+  display: block;
+  height: 100%;
+  background: var(--attention-mark);
+  border-radius: inherit;
+}
+
+.nowline {
+  position: relative;
+  height: 0;
+  border-bottom: 0 !important;
+  border-top: var(--focus-ring-width) solid var(--attention-mark);
+  margin: var(--space-2) 0;
+}
+
+.nowline > span {
+  position: absolute;
+  left: var(--space-4);
+  top: 0;
+  transform: translateY(-50%);
+  padding: 0 var(--space-1);
+  border-radius: var(--radius-xs);
+  background: var(--attention);
+  color: var(--on-attention);
+  font-weight: 600;
 }

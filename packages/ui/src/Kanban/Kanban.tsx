@@ -1,22 +1,31 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, type ReactNode } from 'react';
+import { AvatarGroup } from '../Avatar/Avatar';
+import { Icon, type IconName } from '../Icon/Icon';
+import { IconButton } from '../IconButton/IconButton';
+import { Menu } from '../Menu/Menu';
+import { StatusPill, type StatusPillTone } from '../StatusPill/StatusPill';
 import { cn } from '../lib/cn';
-import { Icon } from '../Icon/Icon';
 import styles from './Kanban.module.css';
-
-export type KanbanColumnTone = 'default' | 'done' | 'blocked' | 'active';
 
 export interface KanbanColumn {
   id: string;
   label: string;
-  tone?: KanbanColumnTone;
-  limit?: number;
+  /** `done` = bifa lime în antet. */
+  tone?: 'done';
+  /** Suma coloanei (ex. „7.900 €”). */
+  summary?: string;
+  /** Numărul afișat; implicit numărul de carduri. */
+  count?: number;
+  /** Textul coloanei goale. */
+  empty?: string;
 }
 
 export interface KanbanCardDue {
   label: string;
-  overdue?: boolean;
+  tone?: StatusPillTone;
+  icon?: IconName;
 }
 
 export interface KanbanCardData {
@@ -24,25 +33,41 @@ export interface KanbanCardData {
   col: string;
   tag?: string;
   title: string;
-  sub?: string;
+  subtitle?: string;
+  amount?: string;
   people?: string[];
   due?: KanbanCardDue;
-  priority?: 'low' | 'medium' | 'high';
-  count?: number;
+  meta?: string[];
+  progress?: { done: number; total: number };
+  /** Cardul deschis (bordură ink). */
+  active?: boolean;
+}
+
+export interface KanbanLabels {
+  /** S.moveTo, ex. (col) => `Mută în „${col}”`. */
+  moveTo: (col: string) => string;
+  /** S.moreActionsFor, ex. (name) => `Acțiuni pentru ${name}`. */
+  moreActionsFor: (name: string) => string;
+  /** S.rowActions — eticheta meniului. */
+  rowActions: string;
 }
 
 export interface KanbanContext {
   columns: KanbanColumn[];
+  onMove?: (cardId: string, toColumnId: string) => void;
 }
 
 export interface KanbanProps {
   label?: string;
   columns: KanbanColumn[];
   cards: KanbanCardData[];
+  /** Coloana arătată pe ecranele înguste. */
   defaultColumn?: string;
   onMove?: (cardId: string, toColumnId: string) => void;
   onOpen?: (cardId: string) => void;
-  renderCard?: (card: KanbanCardData, ctx: KanbanContext) => React.ReactNode;
+  renderCard?: (card: KanbanCardData, ctx: KanbanContext) => ReactNode;
+  labels: KanbanLabels;
+  locale?: string;
   className?: string;
 }
 
@@ -50,198 +75,172 @@ export interface KanbanCardProps extends KanbanCardData {
   columns?: KanbanColumn[];
   onMove?: (cardId: string, toColumnId: string) => void;
   onOpen?: (cardId: string) => void;
+  labels: KanbanLabels;
+  locale?: string;
   className?: string;
 }
 
-function initials(name: string) {
-  return name
-    .split(' ')
-    .slice(0, 2)
-    .map((p) => p[0]?.toUpperCase() ?? '')
-    .join('');
-}
-
+/* KanbanCard din bundle.js: .v-kcard cu zona principală apăsabilă și subsolul cu termen, oameni și meniu. */
 export function KanbanCard({
   id,
   col,
-  tag,
   title,
-  sub,
-  people,
+  subtitle,
+  amount,
+  people = [],
   due,
-  priority,
-  count,
-  columns,
-  onMove,
+  meta = [],
+  progress,
+  tag,
   onOpen,
+  onMove,
+  columns = [],
+  active,
+  labels,
+  locale,
   className,
 }: KanbanCardProps) {
-  const [menuOpen, setMenuOpen] = useState(false);
-
+  const moveItems = onMove
+    ? columns
+        .filter((c) => c.id !== col)
+        .map((c) => ({ id: c.id, label: labels.moveTo(c.label), icon: 'arrow-right' as const }))
+    : null;
   return (
-    <div
-      className={cn(styles.card, className)}
-      tabIndex={0}
-      role="article"
-      aria-label={title}
-      onKeyDown={(e) => {
-        if (e.key === 'Enter') onOpen?.(id);
-      }}
-    >
-      <div className={styles.cardHeader}>
-        {tag && <span className={styles.cardTag}>{tag}</span>}
-        {onMove && columns && columns.length > 1 && (
-          <div className={styles.cardMenu}>
-            <button
-              type="button"
-              className={styles.cardMenuBtn}
-              aria-label="Mută cardul"
-              aria-expanded={menuOpen}
-              onClick={(e) => {
-                e.stopPropagation();
-                setMenuOpen((o) => !o);
-              }}
-            >
-              <Icon icon="more-horizontal" size="sm" aria-hidden />
-            </button>
-            {menuOpen && (
-              <div className={styles.cardMenuPopover} role="menu">
-                {columns
-                  .filter((c) => c.id !== col)
-                  .map((c) => (
-                    <button
-                      key={c.id}
-                      type="button"
-                      role="menuitem"
-                      className={styles.cardMenuItem}
-                      onClick={() => {
-                        onMove(id, c.id);
-                        setMenuOpen(false);
-                      }}
-                    >
-                      Mută în {c.label}
-                    </button>
-                  ))}
-              </div>
-            )}
-          </div>
+    <article className={cn(styles.card, active && styles.isActive, className)}>
+      <button type="button" className={styles.main} onClick={() => onOpen?.(id)}>
+        {tag && <span className={cn('caption', styles.tag)}>{tag}</span>}
+        <span className={cn('body-strong', styles.title)}>{title}</span>
+        {subtitle && <span className={cn('body-small', styles.sub)}>{subtitle}</span>}
+        {amount && <span className={cn('body-strong', 'v-num', styles.amount)}>{amount}</span>}
+        {progress && (
+          <span className={cn(styles.prog, 'caption', 'v-num')}>
+            <span className={styles.progbar} aria-hidden="true">
+              <span style={{ width: `${Math.round((progress.done / progress.total) * 100)}%` }} />
+            </span>
+            {progress.done}/{progress.total}
+          </span>
         )}
-      </div>
-
-      <button type="button" className={styles.cardTitle} onClick={() => onOpen?.(id)}>
-        {title}
       </button>
-
-      {sub && <p className={styles.cardSub}>{sub}</p>}
-
-      <div className={styles.cardFooter}>
-        {people && people.length > 0 && (
-          <div className={styles.cardPeople} aria-label="Persoane">
-            {people.slice(0, 3).map((p) => (
-              <span key={p} className={styles.cardAvatar} title={p} aria-label={p}>
-                {initials(p)}
-              </span>
-            ))}
-          </div>
+      <footer className={styles.foot}>
+        {due && (
+          <StatusPill
+            size="sm"
+            tone={due.tone ?? 'neutral'}
+            icon={due.icon ?? (due.tone === 'attention' ? 'clock' : 'calendar')}
+          >
+            {due.label}
+          </StatusPill>
         )}
-        <div className={styles.cardMeta}>
-          {priority && (
-            <span
-              className={cn(
-                styles.cardPriority,
-                priority === 'high' && styles.priorityHigh,
-                priority === 'medium' && styles.priorityMedium,
-              )}
-              aria-label={`Prioritate: ${priority}`}
-            >
-              <Icon icon="arrow-up" size="sm" aria-hidden />
-            </span>
+        {meta.map((m) => (
+          <span key={m} className={cn('caption', styles.meta)}>
+            {m}
+          </span>
+        ))}
+        <span className={styles.end}>
+          {people.length > 0 && (
+            <AvatarGroup
+              people={people.map((p) => ({ name: p }))}
+              size="sm"
+              max={3}
+              locale={locale}
+            />
           )}
-          {count !== undefined && <span className={styles.cardCount}>{count}</span>}
-          {due && (
-            <span className={cn(styles.cardDue, due.overdue && styles.dueOverdue)}>
-              <Icon icon="calendar" size="sm" aria-hidden />
-              {due.label}
-            </span>
+          {moveItems && (
+            <Menu label={labels.rowActions} items={moveItems} onAction={(to) => onMove?.(id, to)}>
+              <IconButton
+                icon="ellipsis"
+                label={labels.moreActionsFor(title)}
+                size="sm"
+                variant="quiet"
+                className={styles.more}
+              />
+            </Menu>
           )}
-        </div>
-      </div>
-    </div>
+        </span>
+      </footer>
+    </article>
   );
 }
 
+/* Kanban din bundle.js: coloane pe sunken, antet cu număr și sumă; sub 640px (container)
+   o singură coloană, aleasă din rândul de chip-uri. */
 export function Kanban({
-  label = 'Kanban',
+  label,
   columns,
   cards,
   defaultColumn,
   onMove,
   onOpen,
   renderCard,
+  labels,
+  locale,
   className,
 }: KanbanProps) {
-  const [activeCol, setActiveCol] = useState<string>(defaultColumn ?? columns[0]?.id ?? '');
-  const ctx: KanbanContext = { columns };
-
-  const defaultRender = (card: KanbanCardData) => (
-    <KanbanCard key={card.id} {...card} columns={columns} onMove={onMove} onOpen={onOpen} />
-  );
-
-  // Mobile: one column at a time; Desktop: all columns
+  const [active, setActive] = useState(defaultColumn ?? columns[0]?.id);
   return (
-    <div className={cn(styles.root, className)} aria-label={label}>
-      {/* Mobile tab bar */}
-      <div className={styles.tabBar} role="tablist" aria-label={label}>
-        {columns.map((col) => (
-          <button
-            key={col.id}
-            type="button"
-            role="tab"
-            aria-selected={col.id === activeCol}
-            className={cn(styles.tab, col.id === activeCol && styles.tabActive)}
-            onClick={() => setActiveCol(col.id)}
-          >
-            <span
-              className={cn(styles.tabDot, col.tone && styles[`dot-${col.tone}`])}
-              aria-hidden
-            />
-            {col.label}
-            <span className={styles.tabCount}>{cards.filter((c) => c.col === col.id).length}</span>
-          </button>
-        ))}
-      </div>
-
-      {/* Board */}
-      <div className={styles.board} role="list">
-        {columns.map((col) => {
-          const colCards = cards.filter((c) => c.col === col.id);
-          const overLimit = col.limit !== undefined && colCards.length > col.limit;
+    <div className={cn(styles.kanban, className)}>
+      <div className={styles.switch} role="tablist" aria-label={label}>
+        {columns.map((c) => {
+          const n = c.count ?? cards.filter((k) => k.col === c.id).length;
           return (
-            <div
-              key={col.id}
-              className={cn(styles.column, col.id !== activeCol && styles.columnHidden)}
-              role="listitem"
-              aria-label={col.label}
-              data-col-id={col.id}
+            <button
+              key={c.id}
+              type="button"
+              role="tab"
+              aria-selected={active === c.id}
+              className={cn(styles.chip, active === c.id && styles.chipOn)}
+              onClick={() => setActive(c.id)}
             >
-              <div className={styles.colHeader}>
-                <span
-                  className={cn(styles.colDot, col.tone && styles[`dot-${col.tone}`])}
-                  aria-hidden
-                />
-                <span className={styles.colLabel}>{col.label}</span>
-                <span
-                  className={cn(styles.colCount, overLimit && styles.colCountOver)}
-                  aria-label={`${colCards.length} carduri${col.limit !== undefined ? ` din ${col.limit}` : ''}`}
-                >
-                  {colCards.length}
-                  {col.limit !== undefined && `/${col.limit}`}
+              <span className="body-strong">{c.label}</span>
+              <span className="caption v-num">{n}</span>
+            </button>
+          );
+        })}
+      </div>
+      <div className={styles.cols}>
+        {columns.map((c) => {
+          const list = cards.filter((k) => k.col === c.id);
+          const n = c.count ?? list.length;
+          return (
+            <section
+              key={c.id}
+              className={cn(styles.col, active === c.id && styles.colActive)}
+              aria-label={c.label}
+            >
+              <header className={styles.head}>
+                <span className={styles.ctitle}>
+                  {c.tone === 'done' && (
+                    <Icon icon="circle-check" size={16} className={styles.done} />
+                  )}
+                  <span className="body-strong">{c.label}</span>
+                  <span className={cn('caption', 'v-num', styles.count)}>{n}</span>
                 </span>
-              </div>
-              <div className={styles.cards}>
-                {colCards.map((card) => (renderCard ? renderCard(card, ctx) : defaultRender(card)))}
-              </div>
-            </div>
+                {c.summary && (
+                  <span className={cn('body-small', 'v-num', styles.sum)}>{c.summary}</span>
+                )}
+              </header>
+              <ul className={styles.list}>
+                {list.map((k) => (
+                  <li key={k.id}>
+                    {renderCard ? (
+                      renderCard(k, { columns, onMove })
+                    ) : (
+                      <KanbanCard
+                        {...k}
+                        columns={columns}
+                        onMove={onMove}
+                        onOpen={onOpen}
+                        labels={labels}
+                        locale={locale}
+                      />
+                    )}
+                  </li>
+                ))}
+                {list.length === 0 && (
+                  <li className={cn(styles.empty, 'body-small')}>{c.empty ?? '—'}</li>
+                )}
+              </ul>
+            </section>
           );
         })}
       </div>

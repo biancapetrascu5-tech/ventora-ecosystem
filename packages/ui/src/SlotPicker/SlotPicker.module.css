@@ -1,51 +1,50 @@
-.root {
-  display: flex;
-  flex-wrap: wrap;
+/* .v-slots din bundle.css */
+.slots {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(calc(var(--control-lg) * 2), 1fr));
   gap: var(--space-2);
 }
 
 .slot {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: calc(var(--space-12) + var(--space-2));
+  appearance: none;
   height: var(--control-md);
-  padding: 0 var(--space-3);
-  border-radius: var(--radius-md);
-  border: var(--border-width) solid var(--line);
+  border-radius: var(--radius-sm);
+  border: var(--border-width) solid var(--control-border);
   background: var(--sheet);
   color: var(--ink);
-  font-family: var(--font-sans);
-  font-size: var(--type-body-size);
-  line-height: var(--type-body-line);
-  font-weight: 500;
   cursor: pointer;
-  transition: background-color 120ms ease, border-color 120ms ease;
+  font-family: inherit;
+  transition:
+    background-color var(--duration-instant) var(--ease-standard),
+    border-color var(--duration-instant) var(--ease-standard);
 }
 
-.slot:hover:not(:disabled) {
-  background: var(--state-hover);
-  border-color: var(--line-strong);
+.slot:hover {
+  border-color: var(--control-border-hover);
+  background-image: linear-gradient(var(--state-hover), var(--state-hover));
 }
 
 .slot:focus-visible {
-  outline: 2px solid var(--focus-ring);
-  outline-offset: 1px;
+  outline: var(--focus-ring-width) solid var(--focus-ring);
+  outline-offset: var(--focus-ring-offset);
 }
 
-.selected {
+.isOn {
   background: var(--primary);
   border-color: var(--primary);
   color: var(--on-primary);
 }
 
-.selected:hover:not(:disabled) {
-  background: var(--primary-hover, var(--primary));
-  border-color: var(--primary-hover, var(--primary));
+.slot:disabled {
+  background: var(--sunken);
+  border-color: var(--line);
+  color: var(--ink-disabled);
+  text-decoration: line-through;
+  cursor: not-allowed;
 }
 
-.unavailable {
-  opacity: 0.4;
-  cursor: not-allowed;
-  text-decoration: line-through;
+@media (pointer: coarse), (max-width: 767px) {
+  .slot {
+    height: var(--touch-target);
+  }
 }

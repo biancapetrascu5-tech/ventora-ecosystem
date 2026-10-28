@@ -16,27 +16,23 @@ export interface SlotPickerProps {
   className?: string;
 }
 
-export function SlotPicker({ label, slots, value, onChange, className }: SlotPickerProps) {
+/* SlotPicker din bundle.js: grilă de ore (.v-slots), ora aleasă pe primary, cele ocupate tăiate. */
+export function SlotPicker({ slots, value, onChange, label, className }: SlotPickerProps) {
   return (
-    <div className={cn(styles.root, className)} role="listbox" aria-label={label}>
-      {slots.map((slot) => {
-        const selected = slot.time === value;
+    <div className={cn(styles.slots, className)} role="radiogroup" aria-label={label}>
+      {slots.map((s) => {
+        const on = s.time === value;
         return (
           <button
-            key={slot.time}
+            key={s.time}
             type="button"
-            role="option"
-            aria-selected={selected}
-            aria-disabled={!slot.available}
-            disabled={!slot.available}
-            className={cn(
-              styles.slot,
-              selected && styles.selected,
-              !slot.available && styles.unavailable,
-            )}
-            onClick={() => slot.available && onChange?.(slot.time)}
+            role="radio"
+            aria-checked={on}
+            disabled={!s.available}
+            className={cn(styles.slot, 'v-num', on && styles.isOn)}
+            onClick={() => onChange?.(s.time)}
           >
-            {slot.time}
+            <span className="body-strong">{s.time}</span>
           </button>
         );
       })}

@@ -1,90 +1,84 @@
+/* eslint-disable i18next/no-literal-string */
 'use client';
+import { useState } from 'react';
 import { notFound } from 'next/navigation';
-import { Kanban } from '@ventora/ui';
-import { GalleryShell, GallerySection } from '../_shared/GalleryShell';
+import { Kanban, KanbanCard, type KanbanCardData, type KanbanColumn } from '@ventora/ui';
+import { C3Pair } from '../_shared/QPair';
+import { KANBAN_RO } from '../_shared/labels';
+import f from '../_shared/frames.module.css';
 
-const COLUMNS = [
-  { id: 'backlog', label: 'Backlog' },
-  { id: 'todo', label: 'De facut', tone: 'active' as const },
-  { id: 'progress', label: 'In lucru', tone: 'active' as const, limit: 3 },
-  { id: 'review', label: 'Review' },
-  { id: 'done', label: 'Finalizat', tone: 'done' as const },
+// preview.html → C3Themes({ stack: true }) → c3stack(legenda, KB(KB_RO_COLS, KB_RO_CARDS, "Etape"))
+const COLS: KanbanColumn[] = [
+  { id: 'todo', label: 'De făcut' },
+  { id: 'doing', label: 'În lucru' },
+  { id: 'blocked', label: 'Blocate', empty: 'Nicio sarcină blocată acum.' },
+  { id: 'done', label: 'Gata', tone: 'done' },
 ];
-
-const CARDS = [
+const CARDS: KanbanCardData[] = [
   {
-    id: 'c1',
+    id: 'a1',
     col: 'todo',
-    tag: 'Design',
-    title: 'Redesign panou control',
-    sub: 'Actualizeaza layout-ul principal',
-    priority: 'high' as const,
-    people: ['Ana P.'],
-    due: { label: '30 oct', overdue: false },
+    tag: 'Conținut',
+    title: 'Texte pentru pagina de prețuri',
+    people: ['Bianca Petrașcu'],
+    due: { label: 'Vin, 30 oct.' },
   },
   {
-    id: 'c2',
-    col: 'progress',
-    tag: 'Dev',
-    title: 'API rezervari v2',
-    sub: 'Migrare la noul endpoint',
-    priority: 'high' as const,
-    people: ['Radu M.', 'Ioana P.'],
-    count: 3,
+    id: 'a2',
+    col: 'doing',
+    tag: 'Fotografii',
+    title: 'Ședință foto în salon',
+    people: ['Ioana Pavel', 'Mara Enache'],
+    due: { label: 'Întârziată 2 zile', tone: 'attention', icon: 'clock' },
+    progress: { done: 2, total: 5 },
+    active: true,
   },
   {
-    id: 'c3',
-    col: 'progress',
-    tag: 'Dev',
-    title: 'Notificari SMS',
-    sub: 'Integrare Twilio',
-    priority: 'medium' as const,
-    people: ['Mara E.'],
-  },
-  {
-    id: 'c4',
-    col: 'review',
-    tag: 'QA',
-    title: 'Testare flux programare',
-    sub: 'Scenarii end-to-end',
-    priority: 'medium' as const,
-    people: ['Dan S.'],
-    due: { label: '28 oct', overdue: true },
-  },
-  {
-    id: 'c5',
+    id: 'a3',
     col: 'done',
     tag: 'Design',
-    title: 'Componente Lot 4',
-    priority: 'low' as const,
-    people: ['Ana P.'],
-  },
-  {
-    id: 'c6',
-    col: 'backlog',
-    tag: 'Feature',
-    title: 'Export PDF rapoarte',
-    sub: 'Generare documente',
-    priority: 'low' as const,
-  },
-  {
-    id: 'c7',
-    col: 'backlog',
-    tag: 'Bug',
-    title: 'Fix filtru data',
-    sub: 'Timezone incorect in Safari',
-    priority: 'high' as const,
-    due: { label: '25 oct', overdue: true },
+    title: 'Paleta și fonturile site-ului',
+    people: ['Bianca Petrașcu'],
+    meta: ['Gata pe 16 oct.'],
   },
 ];
+
+function KB() {
+  const [cs, setCs] = useState(CARDS);
+  const move = (id: string, col: string) => setCs(cs.map((c) => (c.id === id ? { ...c, col } : c)));
+  return (
+    <Kanban
+      label="Etape"
+      columns={COLS}
+      cards={cs}
+      onMove={move}
+      labels={KANBAN_RO}
+      renderCard={(k, ctx) => (
+        <KanbanCard
+          {...k}
+          columns={ctx.columns}
+          onMove={move}
+          onOpen={() => {}}
+          labels={KANBAN_RO}
+        />
+      )}
+    />
+  );
+}
 
 export default function KanbanGalleryPage() {
   if (process.env.NODE_ENV !== 'development') notFound();
   return (
-    <GalleryShell title="Kanban">
-      <GallerySection label="Board complet" column>
-        <Kanban label="Board proiect" columns={COLUMNS} cards={CARDS} />
-      </GallerySection>
-    </GalleryShell>
+    <C3Pair
+      stack
+      render={() => (
+        <div className={f.c3stack}>
+          <p className={`caption ${f.c3lab}`}>
+            Card activ · termen depășit (peach + ceas) · coloană goală · coloană „Gata” cu bifa lime
+          </p>
+          <KB />
+        </div>
+      )}
+    />
   );
 }
