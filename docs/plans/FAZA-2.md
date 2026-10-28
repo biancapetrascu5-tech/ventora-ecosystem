@@ -76,7 +76,7 @@
   - Owner invită membri → rol + acces la aplicații setate la invitație.
   - Email existent în sistem → membership nou în organizație, **nu** cont nou.
   - Accept → parola setată (dacă cont nou) → redirect la aplicația principală a rolului.
-- **Trimiterea emailului de invitație — dependență externă (Resend, §11):** `inviteMember` apelează `core/notifications` (canal email, adaptor Resend EU, domeniu `mail.ventora-hub.com`). Dacă furnizorul nu e configurat, operația reușește, emailul nu se trimite, eveniment de avertisment în audit. Configurarea SPF/DKIM/DMARC pe `mail.ventora-hub.com` necesară înainte de deploy pe staging.
+- **Trimiterea emailului de invitație — dependență externă (Resend, §11):** `inviteMember` apelează `core/notifications` (canal email, adaptor Resend EU, domeniu `ventora-hub.com`, decizia B-1 din 28.10.2026). Dacă furnizorul nu e configurat, operația reușește, emailul nu se trimite, eveniment de avertisment în audit (E26). SPF și DKIM sunt verificate pe `ventora-hub.com`; DMARC trebuie adăugat înainte de primul e-mail real.
 - Invitațiile expirate dispar din lista echipei după 30 de zile (P6 CONFIRMAT), rămân în audit.
 - „Retrimite" vizibil pe invitațiile expirate.
 - Contract public `core/organizations/src/contract`:
@@ -356,7 +356,7 @@ DROP ROLE IF EXISTS lab_catalog_rw;
 |---|---|
 | Furnizor | Resend (resend.com) |
 | Regiune | EU West (`eu-west-1`, Irlanda) |
-| Domeniu de expediere | `mail.ventora-hub.com` |
+| Domeniu de expediere | `ventora-hub.com` (decizia B-1, 28.10.2026, ca ARCHITECTURE §11.6; `mail.` rămâne opțiune pentru volum mare). Expeditor `Ventora <noreply@ventora-hub.com>`, Reply-To `support@ventorasystems.com` (B-2, B-3) |
 | Autentificare domeniu | SPF, DKIM, DMARC — de configurat înainte de primul deploy pe staging |
 | Adaptor | `core/notifications`, canalul `email` — interfață generică; furnizorul se schimbă fără modificări în aplicații |
 

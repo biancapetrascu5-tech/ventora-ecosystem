@@ -6,7 +6,14 @@ import type { UserWithTwoFactor } from 'better-auth/plugins/two-factor';
 import type { PrismaClient as IdentityBaseClient } from '../generated/identity-client';
 import type { PrismaClient as FounderBaseClient } from '../generated/founder-client';
 import { hashPassword, verifyPassword } from './password-policy';
+import {
+  deliverEmail,
+  passwordResetLink,
+  renderPasswordReset,
+  type AuthApp,
+} from '@ventora/notifications';
 import { createAuthAuditHooks } from './audit-hooks';
+import { runAuthBackgroundTask } from './background';
 
 const HUB_RATE_LIMIT = {
   enabled: true,
@@ -23,6 +30,86 @@ const HUB_RATE_LIMIT = {
 };
 
 const FOUNDER_RATE_LIMIT = { ...HUB_RATE_LIMIT };
+
+type AuthAudit = ReturnType<typeof createAuthAuditHooks>;
+type SessionDb = {
+  session: { deleteMany(args: unknown): Promise<{ count: number }> };
+};
+
+/**
+ * Revoke all other sessions when 2FA enrollment completes (after hook).
+ * Detection: a session whose user had twoFactorEnabled=false calling verify-totp — this
+ * combination only occurs during enrollment (the sign-in challenge has no session).
+ * Better Auth (two-factor/totp) rotates the session on enrollment: it creates a new one,
+ * exposes it as ctx.context.newSession, and deletes the old one. The new session is the
+ * one the user keeps; without it we revoke nothing rather than log the user out (E6-a).
+ */
+export async function revokeOtherSessionsOn2faEnroll(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  ctx: any,
+  db: SessionDb,
+  audit: AuthAudit,
+): Promise<void> {
+  const sessionUser = ctx.context.session?.user as UserWithTwoFactor | undefined;
+  const userId: string | undefined = ctx.context.session?.session?.userId;
+  if (
+    ctx.path !== '/two-factor/verify-totp' ||
+    isAPIError(ctx.context.returned) ||
+    !userId ||
+    sessionUser?.twoFactorEnabled === true
+  ) {
+    return;
+  }
+  const newSession = ctx.context.newSession;
+  const keepId: string | undefined =
+    newSession?.user?.id === userId ? newSession?.session?.id : undefined;
+  if (!keepId) {
+    console.error('[identity] 2FA enrollment without a new session; other sessions kept', {
+      userId,
+    });
+    await audit.sessionsRevokedOn2faEnroll(ctx, userId, 0, 'no_new_session');
+    return;
+  }
+  const revoked = await db.session.deleteMany({ where: { userId, id: { not: keepId } } });
+  await audit.sessionsRevokedOn2faEnroll(ctx, userId, revoked.count);
+}
+
+/**
+ * emailAndPassword.sendResetPassword: E-1 (Hub) / E-2 (Founder) through core/notifications.
+ * Better Auth calls it only for an existing account. The link is built from the token and the
+ * app's public URL (B-4), not from Better Auth's `url` (no baseURL is configured). Never throws:
+ * a failed delivery is logged and audited, the reset request itself has already succeeded.
+ */
+export function createSendResetPassword(app: AuthApp, audit: AuthAudit) {
+  return async (
+    data: { user: { id: string; email: string; name?: string | null }; token: string },
+    request?: Request,
+  ): Promise<void> => {
+    const { user, token } = data;
+    const rendered = renderPasswordReset({
+      app,
+      email: user.email,
+      name: user.name,
+      link: passwordResetLink(app, token),
+    });
+    const result = await deliverEmail({
+      to: user.email,
+      subject: rendered.subject,
+      html: rendered.html,
+      text: rendered.text,
+    });
+    if (result.status === 'failed') {
+      await audit.passwordResetEmailFailed(
+        { headers: request?.headers },
+        user.id,
+        user.email,
+        result.reason,
+      );
+    }
+  };
+}
+
+const BACKGROUND_TASKS = { handler: runAuthBackgroundTask };
 
 export function createHubAuthOptions(db: IdentityBaseClient, secret: string) {
   const REMEMBER_ME_SECONDS = 30 * 24 * 60 * 60;
@@ -41,24 +128,7 @@ export function createHubAuthOptions(db: IdentityBaseClient, secret: string) {
   });
 
   const after = createAuthMiddleware(async (ctx) => {
-    // Revoke all other sessions when 2FA enrollment completes.
-    // Detection: bearer session whose cached user had twoFactorEnabled=false at sign-in time,
-    // calling verify-totp — this combination only occurs during enrollment (not sign-in challenge,
-    // which uses __two-factor cookie with no bearer session).
-    const sessionUser = ctx.context.session?.user as UserWithTwoFactor | undefined;
-    if (
-      ctx.path === '/two-factor/verify-totp' &&
-      !isAPIError(ctx.context.returned) &&
-      ctx.context.session?.session?.userId &&
-      sessionUser?.twoFactorEnabled !== true
-    ) {
-      const userId = ctx.context.session.session.userId;
-      const currentSessionId = ctx.context.session.session.id;
-      const revoked = await db.session.deleteMany({
-        where: { userId, id: { not: currentSessionId } },
-      });
-      await audit.sessionsRevokedOn2faEnroll(ctx, userId, revoked.count);
-    }
+    await revokeOtherSessionsOn2faEnroll(ctx, db, audit);
     await audit.after(ctx);
   });
 
@@ -72,8 +142,7 @@ export function createHubAuthOptions(db: IdentityBaseClient, secret: string) {
       resetPasswordTokenExpiresIn: 3600,
       // D17: a completed password reset closes every open session of the user
       revokeSessionsOnPasswordReset: true,
-      // no-op: password reset emails are sent by a separate service watching the verification table
-      sendResetPassword: async () => {},
+      sendResetPassword: createSendResetPassword('hub', audit),
     },
     rateLimit: HUB_RATE_LIMIT,
     session: {
@@ -103,6 +172,8 @@ export function createHubAuthOptions(db: IdentityBaseClient, secret: string) {
         httpOnly: true,
       },
       ipAddress: { ipAddressHeaders: ['x-forwarded-for'] },
+      // the reset email leaves after the response (timing, B-6)
+      backgroundTasks: BACKGROUND_TASKS,
     },
   };
 }
@@ -124,20 +195,7 @@ export function createFounderAuthOptions(db: FounderBaseClient, secret: string) 
   });
 
   const after = createAuthMiddleware(async (ctx) => {
-    const sessionUser = ctx.context.session?.user as UserWithTwoFactor | undefined;
-    if (
-      ctx.path === '/two-factor/verify-totp' &&
-      !isAPIError(ctx.context.returned) &&
-      ctx.context.session?.session?.userId &&
-      sessionUser?.twoFactorEnabled !== true
-    ) {
-      const userId = ctx.context.session.session.userId;
-      const currentSessionId = ctx.context.session.session.id;
-      const revoked = await db.session.deleteMany({
-        where: { userId, id: { not: currentSessionId } },
-      });
-      await audit.sessionsRevokedOn2faEnroll(ctx, userId, revoked.count);
-    }
+    await revokeOtherSessionsOn2faEnroll(ctx, db, audit);
     await audit.after(ctx);
   });
 
@@ -151,7 +209,7 @@ export function createFounderAuthOptions(db: FounderBaseClient, secret: string) 
       resetPasswordTokenExpiresIn: 3600,
       // D17: a completed password reset closes every open session of the user
       revokeSessionsOnPasswordReset: true,
-      sendResetPassword: async () => {},
+      sendResetPassword: createSendResetPassword('founder', audit),
     },
     rateLimit: FOUNDER_RATE_LIMIT,
     session: {
@@ -177,6 +235,7 @@ export function createFounderAuthOptions(db: FounderBaseClient, secret: string) 
         httpOnly: true,
       },
       ipAddress: { ipAddressHeaders: ['x-forwarded-for'] },
+      backgroundTasks: BACKGROUND_TASKS,
     },
   };
 }

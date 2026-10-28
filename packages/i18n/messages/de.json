@@ -2,5 +2,64 @@
   "common": {
     "ok": "OK",
     "items": "{count, plural, one {# Element} other {# Elemente}}"
+  },
+  "email": {
+    "common": {
+      "greeting": "Hallo {name},",
+      "greetingNoName": "Hallo,",
+      "signature": "Ihr Ventora-Team",
+      "footerAccount": "Sie erhalten diese E-Mail, weil die Adresse {email} für ein Ventora-Konto verwendet wird.",
+      "footerInvitation": "Sie erhalten diese E-Mail, weil jemand die Adresse {email} zu Ventora eingeladen hat.",
+      "company": "Ventora Systems SRL · Sibiu, Rumänien"
+    },
+    "roles": {
+      "owner": "Inhaber",
+      "admin": "Administrator",
+      "member": "Mitglied",
+      "external_collaborator": "Externe Mitarbeit"
+    },
+    "passwordReset": {
+      "hub": {
+        "subject": "Neues Passwort für Ihr Ventora-Konto festlegen",
+        "intro": "Wir haben eine Anfrage erhalten, das Passwort Ihres Ventora-Kontos zurückzusetzen.",
+        "button": "Neues Passwort festlegen",
+        "validity": "Der Link ist eine Stunde gültig und funktioniert nur einmal. Sobald Sie Ihr Passwort ändern, melden wir Sie auf allen Geräten ab, damit nur Sie Zugriff auf Ihr Konto haben.",
+        "notRequested": "Wenn Sie das nicht angefordert haben, können Sie diese E-Mail ignorieren. Ihr Passwort bleibt unverändert."
+      },
+      "founder": {
+        "subject": "Passwort für Ventora Founder zurücksetzen",
+        "intro": "Wir haben eine Anfrage erhalten, das Passwort Ihres Ventora-Founder-Kontos zurückzusetzen.",
+        "button": "Neues Passwort festlegen",
+        "validity": "Der Link ist eine Stunde gültig und funktioniert nur einmal. Alle offenen Sitzungen werden beendet, und bei der Anmeldung fragen wir weiterhin nach Ihrem Code für die Zwei-Faktor-Authentifizierung.",
+        "notRequested": "Wenn Sie das nicht angefordert haben, schreiben Sie bitte sofort an {supportEmail}. Möglicherweise versucht jemand, auf Ihr Konto zuzugreifen."
+      }
+    },
+    "invitation": {
+      "member": {
+        "subject": "{inviterName} hat Sie zu {businessName} auf Ventora eingeladen",
+        "intro": "{inviterName} hat Sie eingeladen, dem Team von {businessName} auf Ventora beizutreten – mit der Rolle {roleName}.",
+        "button": "Einladung annehmen",
+        "resentNotice": "Dies ist ein neuer Link. Der zuvor erhaltene funktioniert nicht mehr.",
+        "validity": "Die Einladung ist 7 Tage gültig, bis zum {expiresDate}.",
+        "existingAccount": "Wenn Sie bereits ein Ventora-Konto haben, melden Sie sich mit Ihrer E-Mail-Adresse und Ihrem Passwort an. {businessName} erscheint dann neben Ihren anderen Unternehmen. Andernfalls legen Sie Ihr Passwort fest, wenn Sie den Link öffnen.",
+        "notExpected": "Sie haben diese Einladung nicht erwartet? Dann können Sie diese E-Mail ignorieren. Ohne Ihre Zustimmung wird kein Konto erstellt."
+      },
+      "owner": {
+        "subject": "{businessName} ist auf Ventora startklar",
+        "intro": "Wir haben den Bereich für {businessName} auf Ventora eingerichtet. Sie erhalten die Rolle „Inhaber“: Sie richten ihn ein, laden Ihr Team ein und wählen die Apps aus.",
+        "button": "{businessName} öffnen",
+        "validity": "Der Link ist 30 Tage gültig, bis zum {expiresDate}.",
+        "firstLogin": "Bei der ersten Anmeldung legen Sie Ihr Passwort fest und aktivieren die Zwei-Faktor-Authentifizierung, damit Ihr Unternehmen von Anfang an geschützt ist.",
+        "questions": "Fragen? Antworten Sie einfach auf diese E-Mail, wir helfen Ihnen gern."
+      }
+    },
+    "ownerRecovery": {
+      "subject": "Die Zwei-Faktor-Authentifizierung Ihres Kontos wurde zurückgesetzt",
+      "intro": "Auf Ihre Anfrage ({ticketRef}) hat das Ventora-Team die Zwei-Faktor-Authentifizierung Ihres Kontos zurückgesetzt. Außerdem haben wir alle offenen Sitzungen beendet.",
+      "passwordReset": "Auch Ihr Passwort wurde zurückgesetzt. Legen Sie über den folgenden Link ein neues fest, er ist eine Stunde gültig:",
+      "button": "Neues Passwort festlegen",
+      "nextSteps": "So geht es weiter: Bei der nächsten Anmeldung aktivieren Sie die Zwei-Faktor-Authentifizierung erneut mit einer Authentifizierungs-App. Bis dahin können Sie in {businessName} keine Änderungen mit der Rolle „Inhaber“ vornehmen. Bewahren Sie Ihre neuen Backup-Codes an einem sicheren Ort auf.",
+      "notRequested": "Wenn Sie das nicht angefordert haben, schreiben Sie uns bitte sofort an {supportEmail}. Wir prüfen umgehend, was passiert ist."
+    }
   }
 }

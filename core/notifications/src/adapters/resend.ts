@@ -1,7 +1,5 @@
 import { Resend } from 'resend';
-import type { EmailChannel, SendEmailParams } from '../email.js';
-
-const DEFAULT_FROM = 'noreply@ventora-hub.com';
+import { emailFrom, emailReplyTo, type EmailChannel, type SendEmailParams } from '../email';
 
 export class ResendEmailAdapter implements EmailChannel {
   private client: Resend;
@@ -12,11 +10,14 @@ export class ResendEmailAdapter implements EmailChannel {
 
   async send(params: SendEmailParams): Promise<void> {
     const { error } = await this.client.emails.send({
-      from: params.from ?? DEFAULT_FROM,
+      from: params.from ?? emailFrom(),
       to: params.to,
+      replyTo: params.replyTo ?? emailReplyTo(),
       subject: params.subject,
       html: params.html,
+      ...(params.text ? { text: params.text } : {}),
     });
-    if (error) throw new Error(`[notifications] Resend error: ${error.message}`);
+    // The provider message can echo the recipient; only the error name leaves this adapter.
+    if (error) throw new Error(`[notifications] Resend error: ${error.name ?? 'unknown'}`);
   }
 }

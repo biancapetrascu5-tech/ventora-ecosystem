@@ -20,6 +20,13 @@ import { makeIdentityClient, makeFounderClient } from '../db';
 import { hashPassword, verifyPassword } from '../password-policy';
 import { createHubAuthOptions, createFounderAuthOptions } from '../auth-options';
 import { requireTestEnv, shouldSkipForEnv } from './env-guard';
+import { CaptureEmailAdapter, passwordResetLink, setEmailChannel } from '@ventora/notifications';
+
+// Every email sent by Better Auth (password reset) lands here instead of a provider.
+// The test instances override `advanced`, so there are no background tasks: the send is
+// awaited inside the request and the message is readable as soon as the response is.
+const mailbox = new CaptureEmailAdapter();
+setEmailChannel(mailbox);
 
 const DB_URL = process.env.DATABASE_URL;
 if (!DB_URL) throw new Error('DATABASE_URL required');
@@ -104,6 +111,7 @@ afterAll(async () => {
 });
 
 beforeEach(async () => {
+  mailbox.clear();
   await identityDb.session.deleteMany({});
   await identityDb.account.deleteMany({});
   await identityDb.twoFactor.deleteMany({});
@@ -1296,11 +1304,18 @@ async function enrollTwoFactor(
     sessionAuth,
   );
   expect(verify.resp.status).toBe(200);
+  // Better Auth rotates the session on enrollment: the new one comes back as set-auth-token
+  // (bearer plugin, Hub) or as a new session cookie (Founder).
+  const newSessionAuth: Record<string, string> =
+    mode === 'bearer'
+      ? bearerHeader(verify.resp.headers.get('set-auth-token') ?? '')
+      : { Cookie: cookieFrom(verify.resp, 'session_token') };
 
   const user = await db.user.findUnique({ where: { email }, select: { id: true } });
   return {
     userId: user.id as string,
     sessionAuth,
+    newSessionAuth,
     backupCodes: enableBody.backupCodes,
     loginRequestId: login.requestId,
     enableRequestId: enable.requestId,
@@ -1456,8 +1471,10 @@ describe.skipIf(shouldSkipForEnv('DATABASE_URL_ADMIN_TEST'))(
       const actions = verifyRows.map((r) => r.action).sort();
       expect(actions).toEqual(['2fa.enabled', 'session.bulk_revoked_on_2fa_enroll']);
       const bulk = verifyRows.find((r) => r.action === 'session.bulk_revoked_on_2fa_enroll');
-      expect(bulk).toMatchObject({ actor_id: userId, target_id: userId });
-      expect(bulk.metadata.count).toBeGreaterThanOrEqual(1);
+      expect(bulk).toMatchObject({ actor_id: userId, target_id: userId, outcome: 'success' });
+      // only the signUp session is "other": the enrollment session was rotated by Better Auth
+      // and the new one is kept (2.5b E6 fix)
+      expect(bulk.metadata.count).toBe(1);
       expect(verifyRows.find((r) => r.action === '2fa.enabled')).toMatchObject({
         outcome: 'success',
         actor_type: 'user',
@@ -1563,24 +1580,12 @@ describe.skipIf(shouldSkipForEnv('DATABASE_URL_ADMIN_TEST'))(
         'Password123',
         'bearer',
       );
-      // The enrollment session does not survive enrollment (see report: 2.4a hook keeps the
-      // pre-rotation session id), so get a fresh 2FA session through the sign-in challenge.
-      const login = await post(hubAuth, '/sign-in/email', {
-        email: 'audit.e14@test.com',
-        password: 'Password123',
-      });
-      const challenge = await post(
-        hubAuth,
-        '/two-factor/verify-backup-code',
-        { code: enrolled.backupCodes[0] },
-        { Cookie: cookieFrom(login.resp, 'two_factor') },
-      );
-      const { token } = (await challenge.resp.json()) as { token: string };
+      // The session from enrollment stays valid (2.5b E6 fix): no sign-in challenge needed.
       const regen = await post(
         hubAuth,
         '/two-factor/generate-backup-codes',
         { password: 'Password123' },
-        bearerHeader(token),
+        enrolled.newSessionAuth,
       );
       expect(regen.resp.status).toBe(200);
       const [row] = await byRequest(regen.requestId);
@@ -1753,6 +1758,216 @@ describe.skipIf(shouldSkipForEnv('DATABASE_URL_ADMIN_TEST'))(
     });
   },
 );
+
+// ---------------------------------------------------------------------------
+// Lot 2.5b — E6 fix: the user stays signed in after enabling 2FA
+// ---------------------------------------------------------------------------
+describe.skipIf(shouldSkipForEnv('DATABASE_URL_ADMIN_TEST'))(
+  'E6 — 2FA enrollment keeps the new session',
+  () => {
+    it('E6.K1 + E6.K3 — Hub: new session valid, old and other sessions closed, count = others', async () => {
+      const email = 'e6.k1@test.com';
+      const password = 'Password123';
+      await signUp(email, password); // S0 (auto sign-in)
+      const deviceB = await signIn(email, password); // second device
+      const login = await post(hubAuth, '/sign-in/email', { email, password }); // S_A
+      const oldAuth = bearerHeader(((await login.resp.json()) as { token: string }).token);
+      const userId = (await identityDb.user.findUnique({ where: { email } }))!.id;
+
+      const enable = await post(hubAuth, '/two-factor/enable', { password }, oldAuth);
+      const secret =
+        ((await enable.resp.json()) as { totpURI: string }).totpURI.match(
+          /[?&]secret=([A-Z2-7=]+)/i,
+        )?.[1] ?? '';
+      const sessionsBefore = await identityDb.session.count({ where: { userId } });
+      expect(sessionsBefore).toBe(3);
+
+      const verify = await post(
+        hubAuth,
+        '/two-factor/verify-totp',
+        { code: await generateTotpFromUri(secret) },
+        oldAuth,
+      );
+      expect(verify.resp.status).toBe(200);
+      const newToken = verify.resp.headers.get('set-auth-token');
+      expect(newToken).toBeTruthy();
+
+      const fresh = await hubAuth.api.getSession({
+        headers: new Headers(bearerHeader(newToken!)),
+      });
+      expect(fresh?.user.id).toBe(userId);
+      expect((fresh?.user as { twoFactorEnabled?: boolean }).twoFactorEnabled).toBe(true);
+
+      for (const stale of [oldAuth, bearerHeader(deviceB.token)]) {
+        const check = await hubAuth.api.getSession({ headers: new Headers(stale) });
+        expect(check?.session).toBeFalsy();
+      }
+      const remaining = await identityDb.session.findMany({ where: { userId } });
+      expect(remaining).toHaveLength(1);
+      expect(remaining[0].id).toBe(fresh!.session.id);
+
+      // E6.K3: the count is the other sessions only (S0 + device B), not the kept one
+      const [bulk] = (await byRequest(verify.requestId)).filter(
+        (r) => r.action === 'session.bulk_revoked_on_2fa_enroll',
+      );
+      expect(bulk).toMatchObject({ outcome: 'success', actor_id: userId });
+      expect(bulk.metadata).toEqual({ count: sessionsBefore - 1 });
+    });
+
+    it('E6.K2 — Hub: the enrollment session calls a protected endpoint without a new challenge', async () => {
+      const enrolled = await enrollTwoFactor(
+        hubAuth,
+        identityDb,
+        'e6.k2@test.com',
+        'Password123',
+        'bearer',
+      );
+      const regen = await post(
+        hubAuth,
+        '/two-factor/generate-backup-codes',
+        { password: 'Password123' },
+        enrolled.newSessionAuth,
+      );
+      expect(regen.resp.status).toBe(200);
+      expect(((await regen.resp.json()) as { backupCodes?: string[] }).backupCodes).toHaveLength(
+        10,
+      );
+    });
+
+    it('E6.K4 — Founder: the new session cookie is valid, the old one is not', async () => {
+      const email = 'e6.k4@founder.com';
+      const enrolled = await enrollTwoFactor(
+        founderAuthTest,
+        founderDb,
+        email,
+        'FounderPass12', // gitleaks:allow
+        'cookie',
+      );
+      expect(enrolled.newSessionAuth.Cookie).toBeTruthy();
+      expect(enrolled.newSessionAuth).not.toEqual(enrolled.sessionAuth);
+
+      const fresh = await founderAuthTest.api.getSession({
+        headers: new Headers(enrolled.newSessionAuth),
+      });
+      expect(fresh?.user.id).toBe(enrolled.userId);
+      const stale = await founderAuthTest.api.getSession({
+        headers: new Headers(enrolled.sessionAuth),
+      });
+      expect(stale?.session).toBeFalsy();
+      expect(await founderDb.session.count({ where: { userId: enrolled.userId } })).toBe(1);
+    });
+
+    it('E6.K5 — a later password sign-in still asks for the 2FA code', async () => {
+      const email = 'e6.k5@test.com';
+      await enrollTwoFactor(hubAuth, identityDb, email, 'Password123', 'bearer');
+      const login = await post(hubAuth, '/sign-in/email', { email, password: 'Password123' });
+      expect(login.resp.status).toBe(200);
+      const body = (await login.resp.json()) as { twoFactorRedirect?: boolean; token?: string };
+      expect(body.twoFactorRedirect).toBe(true);
+      expect(body.token).toBeUndefined();
+    });
+  },
+);
+
+// ---------------------------------------------------------------------------
+// Lot 2.5b — password reset email (E-1 Hub, E-2 Founder)
+// ---------------------------------------------------------------------------
+function tokenFromMail(text: string): string {
+  const token = text.match(/reset-password\?token=([^\s&]+)/)?.[1];
+  expect(token).toBeTruthy();
+  return decodeURIComponent(token!);
+}
+
+describe.skipIf(shouldSkipForEnv('DATABASE_URL_ADMIN_TEST'))('PR — password reset email', () => {
+  it('PR.1 — existing Hub account: exactly one email whose link carries the stored token', async () => {
+    const email = 'pr1@test.com';
+    const { user } = await signUp(email, 'Password123', 'Ana Pop');
+    const { resp } = await post(hubAuth, '/request-password-reset', { email });
+    expect(resp.status).toBe(200);
+
+    const mails = mailbox.to(email);
+    expect(mails).toHaveLength(1);
+    expect(mails[0]!.subject).toBe('Alege o parolă nouă pentru contul Ventora');
+    expect(mails[0]!.text).toContain('Bună, Ana Pop,');
+    const token = tokenFromMail(mails[0]!.text!);
+    expect(mails[0]!.text).toContain(passwordResetLink('hub', token));
+    expect(mails[0]!.html).toContain('Ventora Systems SRL');
+
+    const row = await identityDb.verification.findFirst({
+      where: { identifier: `reset-password:${token}` },
+    });
+    expect(row?.value).toBe(user.id);
+  });
+
+  it('PR.2 — unknown email: no email, same 200 answer', async () => {
+    const { resp } = await post(hubAuth, '/request-password-reset', {
+      email: 'nobody.pr2@test.com',
+    });
+    expect(resp.status).toBe(200);
+    expect(mailbox.sent).toHaveLength(0);
+  });
+
+  it('PR.3 — the link from the email resets the password', async () => {
+    const email = 'pr3@test.com';
+    await signUp(email, 'Password123');
+    await post(hubAuth, '/request-password-reset', { email });
+    const token = tokenFromMail(mailbox.to(email)[0]!.text!);
+
+    const reset = await post(hubAuth, '/reset-password', { token, newPassword: 'NewPassword123' });
+    expect(reset.resp.status).toBe(200);
+    expect((await signIn(email, 'NewPassword123'))?.token).toBeTruthy();
+    await expect(signIn(email, 'Password123')).rejects.toThrow();
+  });
+
+  it('PR.4 — delivery fails: still 200, password.reset_email_failed audited without the address', async () => {
+    const email = 'pr4@test.com';
+    const { user } = await signUp(email, 'Password123');
+    mailbox.failWith = new Error('[notifications] Resend error: rate_limit_exceeded');
+    const errors = vi.spyOn(console, 'error').mockImplementation(() => {});
+    try {
+      const { resp, requestId } = await post(hubAuth, '/request-password-reset', { email });
+      expect(resp.status).toBe(200);
+      const rows = await byRequest(requestId);
+      const failed = rows.find((r) => r.action === 'password.reset_email_failed');
+      expect(failed).toMatchObject({
+        category: 'identity',
+        outcome: 'failure',
+        actor_type: 'system',
+        actor_id: null,
+        target_type: 'user',
+        target_id: user.id,
+        metadata: { reason: 'provider_error', emailHash: hashEmail(email) },
+      });
+      expect(JSON.stringify(failed)).not.toContain(email);
+      // E16 is still there: the request itself succeeded
+      expect(rows.some((r) => r.action === 'password.reset_requested')).toBe(true);
+    } finally {
+      errors.mockRestore();
+    }
+  });
+
+  it('PR.5 — Founder: email with the Founder link; the link resets the password', async () => {
+    const email = 'pr5@founder.com';
+    await founderAuthTest.api.signUpEmail({
+      body: { email, password: 'FounderPass12', name: 'Founder PR5' }, // gitleaks:allow
+    });
+    const { resp } = await post(founderAuthTest, '/request-password-reset', { email });
+    expect(resp.status).toBe(200);
+
+    const mails = mailbox.to(email);
+    expect(mails).toHaveLength(1);
+    expect(mails[0]!.subject).toBe('Resetarea parolei pentru Ventora Founder');
+    expect(mails[0]!.text).toContain('support@ventorasystems.com');
+    const token = tokenFromMail(mails[0]!.text!);
+    expect(mails[0]!.text).toContain(passwordResetLink('founder', token));
+
+    const reset = await post(founderAuthTest, '/reset-password', {
+      token,
+      newPassword: 'FounderNewPass12', // gitleaks:allow
+    });
+    expect(reset.resp.status).toBe(200);
+  });
+});
 
 describe.skipIf(shouldSkipForEnv('DATABASE_URL_ADMIN_TEST'))('T3.7 — Founder audit', () => {
   it('E30 — Founder login succeeded / failed, 2FA enrollment, 2FA required', async () => {

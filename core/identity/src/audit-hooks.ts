@@ -131,19 +131,43 @@ export function createAuthAuditHooks(kind: AuthKind, db: AuthDb) {
     });
   }
 
-  /** E6 — called by the after hook once the other sessions are deleted. */
+  /**
+   * E6 — called by the after hook once the other sessions are deleted.
+   * `failureReason` set → nothing was revoked (outcome failure, decision E6-a).
+   */
   async function sessionsRevokedOn2faEnroll(
     ctx: HookCtx,
     userId: string,
     count: number,
+    failureReason?: string,
   ): Promise<void> {
     await write(ctx, {
       action: AuditActions.sessionsRevokedOn2faEnroll,
-      outcome: 'success',
+      outcome: failureReason ? 'failure' : 'success',
       actorId: userId,
       targetType,
       targetId: userId,
-      metadata: { count },
+      metadata: failureReason ? { count, reason: failureReason } : { count },
+    });
+  }
+
+  /**
+   * The password reset email was not delivered (Lot 2.5b). Actor `system`: the request itself
+   * succeeded and is already audited as E16. Never the address in clear, only its hash.
+   */
+  async function passwordResetEmailFailed(
+    ctx: HookCtx,
+    userId: string,
+    email: string,
+    reason: string,
+  ): Promise<void> {
+    await write(ctx, {
+      action: AuditActions.passwordResetEmailFailed,
+      outcome: 'failure',
+      system: true,
+      targetType,
+      targetId: userId,
+      metadata: { reason, emailHash: hashEmail(email) },
     });
   }
 
@@ -394,7 +418,13 @@ export function createAuthAuditHooks(kind: AuthKind, db: AuthDb) {
     });
   }
 
-  return { before, after, trustDeviceRejected, sessionsRevokedOn2faEnroll };
+  return {
+    before,
+    after,
+    trustDeviceRejected,
+    sessionsRevokedOn2faEnroll,
+    passwordResetEmailFailed,
+  };
 }
 
 function errorCode(err: unknown): string | null {

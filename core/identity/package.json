@@ -19,6 +19,7 @@
   "dependencies": {
     "@ventora/audit": "workspace:*",
     "@ventora/errors": "workspace:*",
+    "@ventora/notifications": "workspace:*",
     "better-auth": "1.7.12",
     "@prisma/client": "^7.0.0",
     "@prisma/client-runtime-utils": "^7.0.0",

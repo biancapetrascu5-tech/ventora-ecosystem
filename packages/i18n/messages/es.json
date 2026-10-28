@@ -2,5 +2,64 @@
   "common": {
     "ok": "OK",
     "items": "{count, plural, one {# elemento} other {# elementos}}"
+  },
+  "email": {
+    "common": {
+      "greeting": "Hola, {name}:",
+      "greetingNoName": "Hola:",
+      "signature": "El equipo de Ventora",
+      "footerAccount": "Recibes este correo porque la dirección {email} está asociada a una cuenta de Ventora.",
+      "footerInvitation": "Recibes este correo porque alguien invitó a la dirección {email} a Ventora.",
+      "company": "Ventora Systems SRL · Sibiu, Rumanía"
+    },
+    "roles": {
+      "owner": "propietario",
+      "admin": "administrador",
+      "member": "miembro",
+      "external_collaborator": "colaborador externo"
+    },
+    "passwordReset": {
+      "hub": {
+        "subject": "Elige una contraseña nueva para tu cuenta de Ventora",
+        "intro": "Hemos recibido una solicitud para restablecer la contraseña de tu cuenta de Ventora.",
+        "button": "Elegir una contraseña nueva",
+        "validity": "El enlace es válido durante una hora y solo funciona una vez. Cuando cambies la contraseña, cerraremos tu sesión en todos los dispositivos para que solo tú tengas acceso a la cuenta.",
+        "notRequested": "Si no lo has pedido tú, ignora este correo. Tu contraseña no cambia."
+      },
+      "founder": {
+        "subject": "Restablecer la contraseña de Ventora Founder",
+        "intro": "Hemos recibido una solicitud para restablecer la contraseña de tu cuenta de Ventora Founder.",
+        "button": "Elegir una contraseña nueva",
+        "validity": "El enlace es válido durante una hora y solo funciona una vez. Se cerrarán todas las sesiones abiertas y, al entrar, te seguiremos pidiendo el código de verificación en dos pasos.",
+        "notRequested": "Si no lo has pedido tú, escribe de inmediato a {supportEmail}. Puede tratarse de un intento de acceso a tu cuenta."
+      }
+    },
+    "invitation": {
+      "member": {
+        "subject": "{inviterName} te ha invitado a {businessName} en Ventora",
+        "intro": "{inviterName} te ha invitado a unirte al equipo de {businessName} en Ventora, con el rol de {roleName}.",
+        "button": "Aceptar la invitación",
+        "resentNotice": "Este es un enlace nuevo. El que recibiste antes ya no funciona.",
+        "validity": "La invitación es válida durante 7 días, hasta el {expiresDate}.",
+        "existingAccount": "Si ya tienes una cuenta de Ventora, entra con tu correo y tu contraseña, y {businessName} aparecerá junto a tus otros negocios. Si no, elegirás tu contraseña al abrir el enlace.",
+        "notExpected": "¿No esperabas esta invitación? Puedes ignorar este correo. Si no la aceptas, no se crea ninguna cuenta."
+      },
+      "owner": {
+        "subject": "{businessName} ya está en Ventora",
+        "intro": "Hemos preparado el espacio de {businessName} en Ventora. Tendrás el rol de propietario: lo configuras, invitas a tu equipo y eliges las aplicaciones.",
+        "button": "Entrar en {businessName}",
+        "validity": "El enlace es válido durante 30 días, hasta el {expiresDate}.",
+        "firstLogin": "La primera vez que entres, elegirás tu contraseña y activarás la verificación en dos pasos, para que tu negocio esté protegido desde el principio.",
+        "questions": "¿Tienes preguntas? Responde a este correo y te ayudamos."
+      }
+    },
+    "ownerRecovery": {
+      "subject": "Hemos restablecido la verificación en dos pasos de tu cuenta",
+      "intro": "A petición tuya ({ticketRef}), el equipo de Ventora ha restablecido la verificación en dos pasos de tu cuenta. También hemos cerrado todas las sesiones abiertas.",
+      "passwordReset": "También hemos restablecido tu contraseña. Elige una nueva con el enlace de abajo, válido durante una hora:",
+      "button": "Elegir una contraseña nueva",
+      "nextSteps": "Qué pasa ahora: la próxima vez que entres, volverás a activar la verificación en dos pasos con una aplicación de autenticación. Hasta entonces, no podrás hacer cambios con el rol de propietario en {businessName}. Guarda los nuevos códigos de respaldo en un lugar seguro.",
+      "notRequested": "Si no lo has pedido tú, escríbenos de inmediato a {supportEmail}. Revisamos enseguida lo que ha pasado."
+    }
   }
 }
