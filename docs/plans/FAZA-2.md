@@ -203,6 +203,13 @@
   - `core/audit`: `writeAuditEvent`, `readOrganizationAuditLog`, `readAuditLogAsFounder`;
   - `core/access`: `listAuditLogs`, `openSupportSession`, `closeSupportSession`, `authorizeSupport`, `listActiveSupportSessions`, `getSupportSessionBanner`, `closeSupportSessionAsOwner`, `recoverOwnerAccess`.
 - Ecranele (bannerele, formularul de recuperare) vin după F1; în 2.5 se livrează doar contractele și cheile i18n (L2.5-D18).
+- **Cerință pentru ecranul de recuperare din Founder (28.10.2026):** odată cu ecranul, `recoverOwnerAccess` primește câmpul `verifications: ('a' | 'b' | 'c')[]`, validat pe server:
+  - minimum două verificări;
+  - (b) și (c) obligatorii când adresa contului e marcată compromisă;
+  - lista se scrie în rândul de audit E40;
+  - criteriu de acceptare pentru ecran: refuzul fiecărei combinații invalide, fără nicio schimbare în baza de date.
+
+  Verificările sunt definite în `docs/ops/PROCEDURA-RECUPERARE-OWNER.md` §2.
 
 **Criterii de acceptare:**
 

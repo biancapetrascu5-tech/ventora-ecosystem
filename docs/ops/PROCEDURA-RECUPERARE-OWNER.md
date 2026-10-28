@@ -55,13 +55,20 @@ Pe ecranul „Recuperare acces owner” al organizației. Ecranul vine după F1 
 
 Toate câmpurile sunt obligatorii. Acțiunea se scrie în jurnalul de audit, pe numele Founder-ului care a făcut-o.
 
+**Cerință pentru ecran (decisă pe 28.10.2026, de implementat odată cu ecranele, fără cod acum):** verificările făcute devin un câmp separat al contractului `recoverOwnerAccess`, `verifications: ('a' | 'b' | 'c')[]`. Pe ecran apar ca trei bife, (a), (b) și (c), iar contractul le validează pe server:
+- cel puțin două verificări;
+- dacă adresa contului e marcată compromisă (câmp separat pe ecran), (b) și (c) sunt obligatorii, iar (a) nu contează;
+- dacă regulile nu sunt respectate, recuperarea e refuzată și nu se schimbă nimic.
+
+Lista intră în rândul de audit al recuperării. Până atunci, verificările se scriu în câmpul „Motiv”, ca în exemplul de mai sus.
+
 **Nu se notează nimic altceva:** fără copii după acte, fără capturi de ecran și fără conținutul e-mailurilor primite.
 
-## 5. Când nu se face recuperarea în aceeași zi
+## 5. Recuperarea așteaptă verificările complete
 
-Dacă cererea vine **în afara programului** și verificarea (b) (apelul la telefonul afacerii) **nu se poate face**, recuperarea nu se face în aceeași zi. Se face după ce reușește apelul (b), în programul următor, chiar dacă (a) și (c) au reușit deja.
+Suportul e disponibil 24/7 (decizie din 28.10.2026). Recuperarea se face **doar după ce verificările cerute sunt complete**.
 
-**NECESITĂ DECIZIE:** programul de suport (zilele și orele) nu e încă stabilit.
+Dacă verificarea (b) (apelul la numărul din datele de facturare) **nu se poate face pe loc**, recuperarea **așteaptă până se poate**. Verificarea (b) nu se înlocuiește cu una mai slabă.
 
 ## 6. După recuperare
 
