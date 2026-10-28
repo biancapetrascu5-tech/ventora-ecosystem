@@ -22,6 +22,11 @@ export interface EmailMessages {
     'hub' | 'founder',
     { subject: string; intro: string; button: string; validity: string; notRequested: string }
   >;
+  // TODO-COPY: provisional texts (Lot 2.4b, R-PR7) until Claude Design sends the approved ones.
+  passwordChanged: { todoCopy: string } & Record<
+    'hub' | 'founder',
+    { subject: string; intro: string; notYou: string }
+  >;
   invitation: {
     member: {
       subject: string;

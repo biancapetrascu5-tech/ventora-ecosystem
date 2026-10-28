@@ -67,6 +67,36 @@ export function renderPasswordReset(params: {
   });
 }
 
+/**
+ * R-PR7 (Lot 2.4b): the password was changed, after a reset or from the account settings.
+ * No button: the notice only informs; the "not you" line points to the recovery path.
+ * TODO-COPY: the texts under `email.passwordChanged` are provisional.
+ */
+export function renderPasswordChanged(params: {
+  app: 'hub' | 'founder';
+  email: string;
+  name?: string | null;
+  changedAt: Date;
+  locale?: Locale;
+}): RenderedEmail {
+  const locale = params.locale ?? DEFAULT_EMAIL_LOCALE;
+  const m = emailMessages(locale);
+  const t = m.passwordChanged[params.app];
+  const intro = fill(t.intro, { changedAt: formatDateTime(params.changedAt, locale) });
+  return renderOperationalEmail({
+    lang: locale,
+    subject: t.subject,
+    preheader: intro,
+    eyebrow: params.app === 'founder' ? FOUNDER_PRODUCT : HUB_PRODUCT,
+    title: t.subject,
+    lead: [greeting(m, params.name, params.email), intro],
+    after: [{ text: fill(t.notYou, { supportEmail: supportEmail() }), strong: true }],
+    signature: m.common.signature,
+    why: fill(m.common.footerAccount, { email: params.email }),
+    company: m.common.company,
+  });
+}
+
 export function renderMemberInvitation(params: {
   email: string;
   inviterName: string;

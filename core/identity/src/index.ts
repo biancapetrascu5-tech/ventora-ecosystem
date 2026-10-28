@@ -17,3 +17,5 @@ export { resetOwnerAccessInTx, getUserContactInTx } from './founder-owner-recove
 export type { OwnerAccessReset } from './founder-owner-recovery';
 export { setSessionActiveOrganization } from './contract';
 export { setAuthBackgroundTaskHandler } from './background';
+export { RENEW_RESET_LINK_PATH, RESET_EMAIL_LIMIT } from './password-reset';
+export type { ResetLinkRenewalResult, PasswordResetRateLimitedBody } from './password-reset';

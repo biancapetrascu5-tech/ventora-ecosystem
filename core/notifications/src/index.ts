@@ -17,6 +17,7 @@ export { passwordResetLink, invitationLink } from './links';
 export type { AuthApp } from './links';
 export {
   renderPasswordReset,
+  renderPasswordChanged,
   renderMemberInvitation,
   renderOwnerInvitation,
   renderOwnerRecovery,

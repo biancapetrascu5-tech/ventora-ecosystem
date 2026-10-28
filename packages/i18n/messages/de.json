@@ -34,6 +34,19 @@
         "notRequested": "Wenn Sie das nicht angefordert haben, schreiben Sie bitte sofort an {supportEmail}. Möglicherweise versucht jemand, auf Ihr Konto zuzugreifen."
       }
     },
+    "passwordChanged": {
+      "todoCopy": "TODO-COPY: vorläufige Texte, werden durch die von Claude Design freigegebenen ersetzt.",
+      "hub": {
+        "subject": "Das Passwort deines Kontos wurde geändert",
+        "intro": "Das Passwort deines Ventora-Kontos wurde am {changedAt} geändert.",
+        "notYou": "Wenn du es nicht selbst geändert hast, wähle sofort über „Passwort vergessen?“ ein neues Passwort und schreib uns an {supportEmail}."
+      },
+      "founder": {
+        "subject": "Das Passwort deines Kontos wurde geändert",
+        "intro": "Das Passwort deines Ventora-Founder-Kontos wurde am {changedAt} geändert.",
+        "notYou": "Wenn du es nicht selbst geändert hast, schreib sofort an {supportEmail}. Möglicherweise versucht jemand, auf dein Konto zuzugreifen."
+      }
+    },
     "invitation": {
       "member": {
         "subject": "{inviterName} hat Sie zu {businessName} auf Ventora eingeladen",

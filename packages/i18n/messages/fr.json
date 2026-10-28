@@ -34,6 +34,19 @@
         "notRequested": "Si vous n’êtes pas à l’origine de cette demande, écrivez immédiatement à {supportEmail}. Il peut s’agir d’une tentative d’accès à votre compte."
       }
     },
+    "passwordChanged": {
+      "todoCopy": "TODO-COPY : textes provisoires, à remplacer par ceux approuvés par Claude Design.",
+      "hub": {
+        "subject": "Le mot de passe de votre compte a été modifié",
+        "intro": "Le mot de passe de votre compte Ventora a été modifié le {changedAt}.",
+        "notYou": "Si ce n’est pas vous, choisissez tout de suite un nouveau mot de passe via « Mot de passe oublié ? » et écrivez-nous à {supportEmail}."
+      },
+      "founder": {
+        "subject": "Le mot de passe de votre compte a été modifié",
+        "intro": "Le mot de passe de votre compte Ventora Founder a été modifié le {changedAt}.",
+        "notYou": "Si ce n’est pas vous, écrivez immédiatement à {supportEmail}. Quelqu’un essaie peut-être d’accéder à votre compte."
+      }
+    },
     "invitation": {
       "member": {
         "subject": "{inviterName} vous invite à rejoindre {businessName} sur Ventora",

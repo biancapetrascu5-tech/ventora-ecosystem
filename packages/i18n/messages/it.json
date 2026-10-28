@@ -34,6 +34,19 @@
         "notRequested": "Se non ha richiesto Lei la reimpostazione, scriva subito a {supportEmail}. Potrebbe trattarsi di un tentativo di accesso al Suo account."
       }
     },
+    "passwordChanged": {
+      "todoCopy": "TODO-COPY: testi provvisori, da sostituire con quelli approvati da Claude Design.",
+      "hub": {
+        "subject": "La password del tuo account è stata cambiata",
+        "intro": "La password del tuo account Ventora è stata cambiata il {changedAt}.",
+        "notYou": "Se non l’hai cambiata tu, scegli subito una nuova password da «Password dimenticata?» e scrivici a {supportEmail}."
+      },
+      "founder": {
+        "subject": "La password del tuo account è stata cambiata",
+        "intro": "La password del tuo account Ventora Founder è stata cambiata il {changedAt}.",
+        "notYou": "Se non l’hai cambiata tu, scrivi subito a {supportEmail}. Qualcuno potrebbe cercare di accedere al tuo account."
+      }
+    },
     "invitation": {
       "member": {
         "subject": "Invito da {inviterName}: {businessName} su Ventora",

@@ -14,6 +14,12 @@ import {
 } from '@ventora/notifications';
 import { createAuthAuditHooks } from './audit-hooks';
 import { runAuthBackgroundTask } from './background';
+import {
+  afterPasswordHooks,
+  beforeRequestPasswordReset,
+  passwordResetRenewal,
+  RENEW_RESET_LINK_PATH,
+} from './password-reset';
 
 const HUB_RATE_LIMIT = {
   enabled: true,
@@ -26,6 +32,7 @@ const HUB_RATE_LIMIT = {
     '/two-factor/verify-backup-code': { window: 60 * 15, max: 5 },
     '/request-password-reset': { window: 60 * 15, max: 5 },
     '/reset-password': { window: 60 * 15, max: 5 },
+    [RENEW_RESET_LINK_PATH]: { window: 60 * 15, max: 5 },
   },
 };
 
@@ -124,17 +131,21 @@ export function createHubAuthOptions(db: IdentityBaseClient, secret: string) {
       await audit.trustDeviceRejected(ctx);
       throw new APIError('FORBIDDEN', { message: 'trustDevice is not permitted' });
     }
+    await beforeRequestPasswordReset(ctx, db, audit);
     await audit.before(ctx);
   });
 
   const after = createAuthMiddleware(async (ctx) => {
     await revokeOtherSessionsOn2faEnroll(ctx, db, audit);
     await audit.after(ctx);
+    await afterPasswordHooks(ctx, 'hub', db, audit);
   });
 
   return {
     secret,
     database: prismaAdapter(db, { provider: 'postgresql', transaction: true }),
+    // R-PR5: expired reset rows must survive; cleanupExpiredVerifications() does the cleanup
+    verification: { disableCleanup: true },
     emailAndPassword: {
       enabled: true,
       minPasswordLength: 10,
@@ -155,6 +166,7 @@ export function createHubAuthOptions(db: IdentityBaseClient, secret: string) {
     },
     plugins: [
       bearer(),
+      passwordResetRenewal({ db, audit }),
       twoFactor({
         issuer: 'Ventora Hub',
         backupCodeOptions: { storeBackupCodes: 'encrypted' as const },
@@ -191,17 +203,20 @@ export function createFounderAuthOptions(db: FounderBaseClient, secret: string) 
       await audit.trustDeviceRejected(ctx);
       throw new APIError('FORBIDDEN', { message: 'trustDevice is not permitted' });
     }
+    await beforeRequestPasswordReset(ctx, db, audit);
     await audit.before(ctx);
   });
 
   const after = createAuthMiddleware(async (ctx) => {
     await revokeOtherSessionsOn2faEnroll(ctx, db, audit);
     await audit.after(ctx);
+    await afterPasswordHooks(ctx, 'founder', db, audit);
   });
 
   return {
     secret,
     database: prismaAdapter(db, { provider: 'postgresql', transaction: true }),
+    verification: { disableCleanup: true },
     emailAndPassword: {
       enabled: true,
       minPasswordLength: 12,
@@ -218,6 +233,7 @@ export function createFounderAuthOptions(db: FounderBaseClient, secret: string) 
       cookieCache: { enabled: false },
     },
     plugins: [
+      passwordResetRenewal({ db, audit }),
       twoFactor({
         issuer: 'Ventora Founder',
         backupCodeOptions: { storeBackupCodes: 'encrypted' as const },

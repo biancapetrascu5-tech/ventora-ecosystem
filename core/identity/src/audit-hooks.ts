@@ -171,6 +171,56 @@ export function createAuthAuditHooks(kind: AuthKind, db: AuthDb) {
     });
   }
 
+  /**
+   * R-PR4 (Lot 2.4b): the per-address reset limit refused a request. Same row whether the
+   * address has an account or not (no target), hashed address only.
+   */
+  async function passwordResetRateLimited(
+    ctx: HookCtx,
+    email: string,
+    retryAt: Date,
+  ): Promise<void> {
+    await write(ctx, {
+      action: AuditActions.passwordResetRateLimited,
+      outcome: 'denied',
+      metadata: { emailHash: hashEmail(email), retryAt: retryAt.toISOString(), path: ctx.path },
+    });
+  }
+
+  /** R-PR5: a new reset link was sent from an expired one (E16 with `via`). */
+  async function passwordResetRenewed(ctx: HookCtx, userId: string, email: string): Promise<void> {
+    await write(ctx, {
+      action: AuditActions.passwordResetRequested,
+      outcome: 'success',
+      targetType,
+      targetId: userId,
+      metadata: { emailHash: hashEmail(email), via: 'expired_link' },
+    });
+  }
+
+  /** R-PR7: the "password changed" notice was not delivered. Actor `system`, hashed address. */
+  async function passwordChangedEmailFailed(
+    ctx: HookCtx,
+    userId: string,
+    email: string,
+    reason: string,
+    trigger: 'reset' | 'change',
+  ): Promise<void> {
+    await write(ctx, {
+      action: AuditActions.passwordChangedEmailFailed,
+      outcome: 'failure',
+      system: true,
+      targetType,
+      targetId: userId,
+      metadata: { reason, trigger, emailHash: hashEmail(email) },
+    });
+  }
+
+  /** Owner of the reset token consumed by this /reset-password request (captured in `before`). */
+  function resetUserId(ctx: HookCtx): string | null {
+    return pre.get(ctx.context)?.userId ?? null;
+  }
+
   async function after(ctx: HookCtx): Promise<void> {
     const path: string = ctx.path;
     const returned = ctx.context.returned;
@@ -424,6 +474,10 @@ export function createAuthAuditHooks(kind: AuthKind, db: AuthDb) {
     trustDeviceRejected,
     sessionsRevokedOn2faEnroll,
     passwordResetEmailFailed,
+    passwordResetRateLimited,
+    passwordResetRenewed,
+    passwordChangedEmailFailed,
+    resetUserId,
   };
 }
 

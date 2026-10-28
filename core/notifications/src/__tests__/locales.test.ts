@@ -5,6 +5,7 @@ import {
   renderMemberInvitation,
   renderOwnerInvitation,
   renderOwnerRecovery,
+  renderPasswordChanged,
   renderPasswordReset,
   renderSupportSessionOpened,
 } from '../index';
@@ -34,6 +35,14 @@ describe('email catalogs in all 6 languages', () => {
       const all = [
         renderPasswordReset({ app: 'hub', email: 'a@x.io', name: 'A', link: 'https://l', locale }),
         renderPasswordReset({ app: 'founder', email: 'a@x.io', link: 'https://l', locale }),
+        renderPasswordChanged({
+          app: 'hub',
+          email: 'a@x.io',
+          name: 'A',
+          changedAt: expiresAt,
+          locale,
+        }),
+        renderPasswordChanged({ app: 'founder', email: 'a@x.io', changedAt: expiresAt, locale }),
         renderMemberInvitation({
           email: 'a@x.io',
           inviterName: 'B',

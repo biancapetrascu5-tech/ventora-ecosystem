@@ -5,6 +5,7 @@ import {
   renderMemberInvitation,
   renderOwnerInvitation,
   renderOwnerRecovery,
+  renderPasswordChanged,
   renderPasswordReset,
 } from '../index';
 
@@ -40,6 +41,8 @@ describe('S3 / S54 — one operational layout for every email', () => {
       link: 'https://l/4',
     }),
     renderOwnerRecovery({ email: 'a@x.ro', businessName: 'Salon Aurora', ticketRef: 'T-1' }),
+    renderPasswordChanged({ app: 'hub', email: 'a@x.ro', changedAt: expiresAt }),
+    renderPasswordChanged({ app: 'founder', email: 'a@x.ro', changedAt: expiresAt }),
   ];
 
   it('same skeleton: preheader, logo, eyebrow, title, footer with company; light only, 600px', () => {
@@ -67,7 +70,9 @@ describe('S3 / S54 — one operational layout for every email', () => {
   it('the eyebrow names the business when there is one, else the product', () => {
     expect(all[0]!.html).toMatch(/uppercase[^>]*>Ventora<\/p>/);
     expect(all[1]!.html).toMatch(/uppercase[^>]*>Ventora Founder<\/p>/);
-    for (const r of all.slice(2)) expect(r.html).toMatch(/uppercase[^>]*>Salon Aurora<\/p>/);
+    for (const r of all.slice(2, 5)) expect(r.html).toMatch(/uppercase[^>]*>Salon Aurora<\/p>/);
+    expect(all[5]!.html).toMatch(/uppercase[^>]*>Ventora<\/p>/);
+    expect(all[6]!.html).toMatch(/uppercase[^>]*>Ventora Founder<\/p>/);
   });
 
   it('phones: the button takes the full width', () => {
@@ -138,6 +143,30 @@ describe('N.3 — password reset (E-1, E-2)', () => {
     expect(r.html).not.toContain('<script>');
     expect(r.html).toContain('&lt;script&gt;');
     expect(r.html).toContain('href="https://l?a=1&amp;b=2"');
+  });
+});
+
+describe('R-PR7 — password changed (provisional copy, TODO-COPY)', () => {
+  const changedAt = new Date('2026-10-28T12:05:00Z');
+
+  it('Hub: subject, time of the change, no button, recovery path', () => {
+    const r = renderPasswordChanged({ app: 'hub', email: 'ana@x.ro', name: 'Ana', changedAt });
+    expectComplete(r);
+    expect(r.subject).toBe('Parola contului tău a fost schimbată');
+    expect(r.text).toContain('Bună, Ana,');
+    expect(r.text).toContain('Parola contului tău Ventora a fost schimbată pe 28 octombrie');
+    expect(r.text).toContain('14:05');
+    expect(r.text).toContain('support@ventorasystems.com');
+    expect(r.html).not.toContain('class="v-btn"');
+    expect(r.text).not.toContain('TODO-COPY');
+  });
+
+  it('Founder: Founder product name and the urgent warning', () => {
+    const r = renderPasswordChanged({ app: 'founder', email: 'f@x.ro', changedAt });
+    expectComplete(r);
+    expect(r.subject).toBe('Parola contului tău a fost schimbată');
+    expect(r.text).toContain('Parola contului tău Ventora Founder a fost schimbată');
+    expect(r.text).toContain('scrie imediat la support@ventorasystems.com');
   });
 });
 
