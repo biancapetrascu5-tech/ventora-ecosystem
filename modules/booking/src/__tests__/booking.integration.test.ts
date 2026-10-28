@@ -22,12 +22,12 @@ function newUuid() {
   return crypto.randomUUID();
 }
 
-async function createUser(email: string) {
+async function createUser(email: string, twoFactorEnabled = false) {
   const id = newUuid();
   await adminQuery(
-    `INSERT INTO identity.users (id, name, email, email_verified, created_at, updated_at)
-     VALUES ($1, $2, $3, true, NOW(), NOW())`,
-    [id, email.split('@')[0], email],
+    `INSERT INTO identity.users (id, name, email, email_verified, two_factor_enabled, created_at, updated_at)
+     VALUES ($1, $2, $3, true, $4, NOW(), NOW())`,
+    [id, email.split('@')[0], email, twoFactorEnabled],
   );
   return id;
 }
@@ -80,7 +80,7 @@ beforeAll(async () => {
   configureAccess({ entitlementProvider: { isEnabled: async () => true } });
 
   orgId = await createOrg();
-  const ownerUser = await createUser(`booking-owner-${newUuid()}@test.local`);
+  const ownerUser = await createUser(`booking-owner-${newUuid()}@test.local`, true);
   const adminUser = await createUser(`booking-admin-${newUuid()}@test.local`);
   const memberUser = await createUser(`booking-member-${newUuid()}@test.local`);
   const noOrgUser = await createUser(`booking-noordg-${newUuid()}@test.local`);

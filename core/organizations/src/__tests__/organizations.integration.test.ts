@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeAll, afterAll } from 'vitest';
+import { describe, it, expect, beforeAll, afterAll, beforeEach, afterEach, vi } from 'vitest';
 import { Pool } from 'pg';
 import crypto from 'node:crypto';
 import {
@@ -18,6 +18,11 @@ import {
   InvalidInvitationStatusError,
 } from '../index.js';
 import type { OrgContext } from '../index.js';
+import { closeAuditPools } from '@ventora/audit';
+import { CaptureEmailAdapter, invitationLink, setEmailChannel } from '@ventora/notifications';
+
+// Outside the INV block, invitation emails go to an in-memory mailbox, not to the console.
+setEmailChannel(new CaptureEmailAdapter());
 
 // Branded type enforcement: proves that only resolveOrgContext can produce OrgContext.
 function _assertOrgContext(_: OrgContext) {}
@@ -34,6 +39,7 @@ beforeAll(async () => {
 
 afterAll(async () => {
   await adminPool.end();
+  await closeAuditPools();
 });
 
 async function adminQuery(sql: string, params: unknown[] = []) {
@@ -502,5 +508,439 @@ describe('T2.11 cross-org isolation', () => {
         [orgIdA, suspendedId],
       );
     }
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Lot 2.5a — audit (T3.7: E20–E25)
+// ---------------------------------------------------------------------------
+
+const APPEND_EVENT_SIGNATURE =
+  'audit.append_event(text, text, text, text, text, text, uuid, uuid, text, text, inet, text, text, jsonb)';
+
+async function auditRows(where: string, params: unknown[]) {
+  return adminQuery(`SELECT * FROM audit.audit_log WHERE ${where} ORDER BY created_at, id`, params);
+}
+
+async function ownerContext(organizationId: string): Promise<OrgContext> {
+  const ownerId = newUuid();
+  await adminQuery(
+    `INSERT INTO organizations.membership(organization_id, user_id, role, status, updated_at)
+     VALUES($1, $2, 'owner', 'active', NOW())`,
+    [organizationId, ownerId],
+  );
+  return resolveOrgContext({ userId: ownerId, organizationId });
+}
+
+describe('T3.7 — organization audit events', () => {
+  it('E20 — createOrganizationAsFounder writes org.created (founder actor, same transaction)', async () => {
+    const founderId = newUuid();
+    const slug = `audit-e20-${Date.now()}`;
+    const { organizationId } = await createOrganizationAsFounder(
+      { founderId, founderEmail: 'founder@test.com' },
+      { name: 'Audit E20', slug, ownerEmail: 'Owner.E20@Test.com' },
+    );
+
+    const rows = await auditRows(`action = 'org.created' AND organization_id = $1::uuid`, [
+      organizationId,
+    ]);
+    expect(rows).toHaveLength(1);
+    expect(rows[0].category).toBe('organization');
+    expect(rows[0].outcome).toBe('success');
+    expect(rows[0].actor_type).toBe('founder');
+    expect(rows[0].actor_id).toBe(founderId);
+    expect(rows[0].founder_id).toBe(founderId);
+    expect(rows[0].target_type).toBe('organization');
+    expect(rows[0].target_id).toBe(organizationId);
+    expect(rows[0].metadata.slug).toBe(slug);
+    expect(rows[0].metadata.ownerEmailHash).toMatch(/^[0-9a-f]{64}$/);
+    expect(JSON.stringify(rows[0].metadata)).not.toContain('owner.e20@test.com');
+
+    await adminQuery(`DELETE FROM organizations.organization WHERE id = $1`, [organizationId]);
+  });
+
+  it('E20 required — audit write fails → organization is not created', async () => {
+    const slug = `audit-e20-fail-${Date.now()}`;
+    await adminQuery(`ALTER FUNCTION ${APPEND_EVENT_SIGNATURE} RENAME TO append_event_disabled`);
+    try {
+      await expect(
+        createOrganizationAsFounder(
+          { founderId: newUuid(), founderEmail: 'founder@test.com' },
+          { name: 'Audit E20 fail', slug, ownerEmail: 'owner@test.com' },
+        ),
+      ).rejects.toThrow(/append_event/);
+    } finally {
+      await adminQuery(
+        `ALTER FUNCTION audit.append_event_disabled(text, text, text, text, text, text, uuid, uuid, text, text, inet, text, text, jsonb) RENAME TO append_event`,
+      );
+    }
+    const orgs = await adminQuery(`SELECT id FROM organizations.organization WHERE slug = $1`, [
+      slug,
+    ]);
+    expect(orgs).toHaveLength(0);
+  });
+
+  it('E21 / E22 / E23 — invite, resend, revoke', async () => {
+    const { organizationId } = await createOrganizationAsFounder(
+      { founderId: newUuid(), founderEmail: 'founder@test.com' },
+      { name: 'Audit E21', slug: `audit-e21-${Date.now()}`, ownerEmail: 'owner@test.com' },
+    );
+    const ctx = await ownerContext(organizationId);
+    const inviteEmail = `Invitee-${Date.now()}@Example.com`;
+
+    await inviteMember(ctx, {
+      email: inviteEmail,
+      role: 'member',
+      inviterName: 'Owner',
+      organizationName: 'Audit E21',
+      applicationIds: ['booking'],
+    });
+    const created = await auditRows(
+      `action = 'invitation.created' AND organization_id = $1::uuid`,
+      [organizationId],
+    );
+    expect(created).toHaveLength(1);
+    expect(created[0].actor_type).toBe('user');
+    expect(created[0].actor_id).toBe(ctx.userId);
+    expect(created[0].target_type).toBe('invitation');
+    expect(created[0].metadata.role).toBe('member');
+    expect(created[0].metadata.applicationIds).toEqual(['booking']);
+    expect(created[0].metadata.emailHash).toMatch(/^[0-9a-f]{64}$/);
+    expect(JSON.stringify(created[0].metadata)).not.toContain('example.com');
+    const invitationId = created[0].target_id as string;
+
+    await resendInvitation(ctx, invitationId);
+    const resent = await auditRows(`action = 'invitation.resent' AND target_id = $1`, [
+      invitationId,
+    ]);
+    expect(resent).toHaveLength(1);
+    expect(resent[0].organization_id).toBe(organizationId);
+    expect(resent[0].actor_id).toBe(ctx.userId);
+
+    await revokeInvitation(ctx, invitationId);
+    const revoked = await auditRows(`action = 'invitation.revoked' AND target_id = $1`, [
+      invitationId,
+    ]);
+    expect(revoked).toHaveLength(1);
+    expect(revoked[0].organization_id).toBe(organizationId);
+    expect(revoked[0].outcome).toBe('success');
+
+    await adminQuery(`DELETE FROM organizations.organization WHERE id = $1`, [organizationId]);
+  });
+
+  it('E24 / E25 — accept, then reuse and wrong email are audited as accept_failed', async () => {
+    const email = `accept-audit-${Date.now()}@example.com`;
+    const { organizationId, invitationToken } = await createOrganizationAsFounder(
+      { founderId: newUuid(), founderEmail: 'founder@test.com' },
+      { name: 'Audit E24', slug: `audit-e24-${Date.now()}`, ownerEmail: email },
+    );
+
+    // E25: wrong email
+    const wrongUser = newUuid();
+    await expect(
+      acceptInvitation({
+        token: invitationToken,
+        userId: wrongUser,
+        userEmail: 'other@example.com',
+      }),
+    ).rejects.toThrow(EmailMismatchError);
+    const mismatch = await auditRows(`action = 'invitation.accept_failed' AND actor_id = $1`, [
+      wrongUser,
+    ]);
+    expect(mismatch).toHaveLength(1);
+    expect(mismatch[0].outcome).toBe('failure');
+    expect(mismatch[0].organization_id).toBe(organizationId);
+    expect(mismatch[0].metadata).toEqual({ reason: 'EMAIL_MISMATCH' });
+
+    // E24: accepted
+    const userId = newUuid();
+    await acceptInvitation({ token: invitationToken, userId, userEmail: email });
+    const accepted = await auditRows(`action = 'invitation.accepted' AND actor_id = $1`, [userId]);
+    expect(accepted).toHaveLength(1);
+    expect(accepted[0].organization_id).toBe(organizationId);
+    expect(accepted[0].target_type).toBe('membership');
+    expect(accepted[0].metadata.role).toBe('owner');
+    const membership = await adminQuery(
+      `SELECT id FROM organizations.membership WHERE organization_id = $1 AND user_id = $2`,
+      [organizationId, userId],
+    );
+    expect(accepted[0].target_id).toBe(membership[0].id);
+
+    // E25: token already used
+    const secondUser = newUuid();
+    await expect(
+      acceptInvitation({ token: invitationToken, userId: secondUser, userEmail: email }),
+    ).rejects.toThrow(TokenExpiredError);
+    const reused = await auditRows(`action = 'invitation.accept_failed' AND actor_id = $1`, [
+      secondUser,
+    ]);
+    expect(reused).toHaveLength(1);
+    expect(reused[0].metadata).toEqual({ reason: 'TOKEN_EXPIRED' });
+
+    // E25: unknown token → no organization known
+    const thirdUser = newUuid();
+    await expect(
+      acceptInvitation({ token: 'f'.repeat(64), userId: thirdUser, userEmail: email }),
+    ).rejects.toThrow(TokenExpiredError);
+    const unknown = await auditRows(`action = 'invitation.accept_failed' AND actor_id = $1`, [
+      thirdUser,
+    ]);
+    expect(unknown).toHaveLength(1);
+    expect(unknown[0].organization_id).toBeNull();
+
+    await adminQuery(`DELETE FROM organizations.organization WHERE id = $1`, [organizationId]);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Lot 2.5b — invitation emails (E-3, E-3b, E-4) and E26
+// ---------------------------------------------------------------------------
+
+describe('INV — invitation emails', () => {
+  const mailbox = new CaptureEmailAdapter();
+  const createdOrgs: string[] = [];
+
+  beforeEach(() => {
+    mailbox.clear();
+    setEmailChannel(mailbox);
+  });
+  afterEach(() => {
+    setEmailChannel(null);
+    vi.unstubAllEnvs();
+    vi.restoreAllMocks();
+  });
+  afterAll(async () => {
+    for (const id of createdOrgs) {
+      await adminQuery(`DELETE FROM organizations.organization WHERE id = $1`, [id]);
+    }
+  });
+
+  async function newOrg(name: string, ownerEmail = `owner-${newUuid()}@example.com`) {
+    const created = await createOrganizationAsFounder(
+      { founderId: newUuid(), founderEmail: 'founder@test.com' },
+      { name, slug: `inv-${newUuid().slice(0, 12)}`, ownerEmail },
+    );
+    createdOrgs.push(created.organizationId);
+    return created;
+  }
+
+  async function invitationRow(where: string, params: unknown[]) {
+    const rows = await adminQuery(
+      `SELECT id, email_status, expires_at FROM organizations.invitation WHERE ${where}`,
+      params,
+    );
+    return rows[0];
+  }
+
+  const tokenFrom = (text: string) => text.match(/\/invite\/([0-9a-f]{64})/)?.[1];
+
+  it('INV.1 — inviteMember: one email with the returned token, email_status = sent', async () => {
+    const { organizationId } = await newOrg('Salon Aurora');
+    const ctx = await ownerContext(organizationId);
+    mailbox.clear();
+    const email = `ion-${newUuid()}@example.com`;
+
+    const { invitationToken } = await inviteMember(ctx, {
+      email,
+      role: 'admin',
+      inviterName: 'Bianca Petrașcu',
+      organizationName: 'Salon Aurora',
+    });
+
+    const mails = mailbox.to(email);
+    expect(mails).toHaveLength(1);
+    expect(mails[0]!.subject).toBe('Bianca Petrașcu te-a invitat în Salon Aurora pe Ventora');
+    expect(mails[0]!.text).toContain('ca administrator.');
+    expect(mails[0]!.text).toContain('Invitația e valabilă 7 zile');
+    expect(tokenFrom(mails[0]!.text!)).toBe(invitationToken);
+    expect(mails[0]!.text).toContain(invitationLink(invitationToken));
+
+    const row = await invitationRow(`organization_id = $1 AND email = $2`, [organizationId, email]);
+    expect(row.email_status).toBe('sent');
+  });
+
+  it('INV.2 — provider error: inviteMember succeeds, email_status = failed, E26 without the address', async () => {
+    const { organizationId } = await newOrg('Inv Two');
+    const ctx = await ownerContext(organizationId);
+    const email = `fail-${newUuid()}@example.com`;
+    mailbox.failWith = new Error('[notifications] Resend error: application_error');
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+
+    const { invitationToken } = await inviteMember(ctx, {
+      email,
+      role: 'member',
+      inviterName: 'Owner',
+      organizationName: 'Inv Two',
+    });
+    expect(invitationToken).toHaveLength(64);
+
+    const row = await invitationRow(`organization_id = $1 AND email = $2`, [organizationId, email]);
+    expect(row.email_status).toBe('failed');
+    const e26 = await auditRows(`action = 'invitation.email_failed' AND target_id = $1`, [row.id]);
+    expect(e26).toHaveLength(1);
+    expect(e26[0]).toMatchObject({
+      category: 'organization',
+      outcome: 'failure',
+      actor_type: 'system',
+      organization_id: organizationId,
+      target_type: 'invitation',
+      metadata: { reason: 'provider_error', kind: 'member', resent: false },
+    });
+    expect(JSON.stringify(e26[0])).not.toContain(email);
+  });
+
+  it('INV.3 — production without RESEND_API_KEY (B-7 b): failed + E26 not_configured', async () => {
+    const { organizationId } = await newOrg('Inv Three');
+    const ctx = await ownerContext(organizationId);
+    const email = `noconf-${newUuid()}@example.com`;
+    setEmailChannel(null);
+    vi.stubEnv('NODE_ENV', 'production');
+    vi.stubEnv('RESEND_API_KEY', '');
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+
+    await inviteMember(ctx, {
+      email,
+      role: 'member',
+      inviterName: 'Owner',
+      organizationName: 'Inv Three',
+    });
+
+    const row = await invitationRow(`organization_id = $1 AND email = $2`, [organizationId, email]);
+    expect(row.email_status).toBe('failed');
+    const e26 = await auditRows(`action = 'invitation.email_failed' AND target_id = $1`, [row.id]);
+    expect(e26[0]?.metadata).toEqual({ reason: 'not_configured', kind: 'member', resent: false });
+  });
+
+  it('INV.4 — resendInvitation: new email with a new token and the new-link line; the old token no longer works', async () => {
+    const { organizationId } = await newOrg('Inv Four');
+    const ctx = await ownerContext(organizationId);
+    const email = `resend-${newUuid()}@example.com`;
+    const first = await inviteMember(ctx, {
+      email,
+      role: 'member',
+      inviterName: 'Ana Pop',
+      organizationName: 'Inv Four',
+    });
+    const row = await invitationRow(`organization_id = $1 AND email = $2`, [organizationId, email]);
+    mailbox.clear();
+
+    const second = await resendInvitation(ctx, row.id);
+    expect(second.invitationToken).not.toBe(first.invitationToken);
+    const mails = mailbox.to(email);
+    expect(mails).toHaveLength(1);
+    expect(mails[0]!.subject).toBe('Ana Pop te-a invitat în Inv Four pe Ventora');
+    expect(mails[0]!.text).toContain('Ăsta e un link nou. Cel primit înainte nu mai funcționează.');
+    expect(tokenFrom(mails[0]!.text!)).toBe(second.invitationToken);
+    expect((await invitationRow(`id = $1`, [row.id])).email_status).toBe('sent');
+
+    await expect(
+      acceptInvitation({ token: first.invitationToken, userId: newUuid(), userEmail: email }),
+    ).rejects.toThrow(TokenExpiredError);
+  });
+
+  it('INV.5 + S55 — createOrganizationAsFounder: owner email E-4, invitation valid 30 days', async () => {
+    const ownerEmail = `owner-${newUuid()}@example.com`;
+    const before = Date.now();
+    const { organizationId, invitationToken } = await newOrg('Salon Aurora', ownerEmail);
+
+    const row = await invitationRow(`organization_id = $1`, [organizationId]);
+    const days = (new Date(row.expires_at).getTime() - before) / (24 * 60 * 60 * 1000);
+    expect(days).toBeGreaterThan(29.99);
+    expect(days).toBeLessThan(30.01);
+
+    const mails = mailbox.to(ownerEmail);
+    expect(mails).toHaveLength(1);
+    expect(mails[0]!.subject).toBe('Salon Aurora e gata pe Ventora');
+    expect(mails[0]!.text).toContain('Linkul e valabil 30 de zile, până pe');
+    const shown = new Intl.DateTimeFormat('ro', {
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+      timeZone: 'Europe/Bucharest',
+    }).format(new Date(row.expires_at));
+    expect(mails[0]!.text).toContain(`până pe ${shown}.`);
+    expect(tokenFrom(mails[0]!.text!)).toBe(invitationToken);
+  });
+
+  it('INV.5b — owner email fails: the organization exists, E26 kind owner', async () => {
+    mailbox.failWith = new Error('[notifications] Resend error: application_error');
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    const { organizationId } = await newOrg('Inv Five');
+
+    expect(
+      await adminQuery(`SELECT id FROM organizations.organization WHERE id = $1`, [organizationId]),
+    ).toHaveLength(1);
+    const e26 = await auditRows(
+      `action = 'invitation.email_failed' AND organization_id = $1::uuid`,
+      [organizationId],
+    );
+    expect(e26).toHaveLength(1);
+    expect(e26[0].metadata).toEqual({ reason: 'provider_error', kind: 'owner', resent: false });
+  });
+
+  it('INV.7 — resending the owner invitation from Founder: 30 days again and E-4, not E-3b', async () => {
+    const ownerEmail = `owner-resend-${newUuid()}@example.com`;
+    const { organizationId } = await newOrg('Salon Aurora', ownerEmail);
+    const ctx = await ownerContext(organizationId); // a co-owner resends it from the Hub
+    const row = await invitationRow(`organization_id = $1 AND email = $2`, [
+      organizationId,
+      ownerEmail,
+    ]);
+    mailbox.clear();
+
+    const before = Date.now();
+    const { invitationToken } = await resendInvitation(ctx, row.id);
+
+    const after = await invitationRow(`id = $1`, [row.id]);
+    const days = (new Date(after.expires_at).getTime() - before) / (24 * 60 * 60 * 1000);
+    expect(days).toBeGreaterThan(29.99);
+    expect(days).toBeLessThan(30.01);
+    expect(after.email_status).toBe('sent');
+
+    const mails = mailbox.to(ownerEmail);
+    expect(mails).toHaveLength(1);
+    expect(mails[0]!.subject).toBe('Salon Aurora e gata pe Ventora');
+    expect(mails[0]!.text).toContain('Linkul e valabil 30 de zile');
+    expect(mails[0]!.text).not.toContain('Ăsta e un link nou');
+    expect(mails[0]!.text).not.toContain('te-a invitat');
+    expect(tokenFrom(mails[0]!.text!)).toBe(invitationToken);
+  });
+
+  it('INV.7b — an owner invited by another owner is resent as E-3b with 7 days', async () => {
+    const { organizationId } = await newOrg('Inv Seven');
+    const ctx = await ownerContext(organizationId);
+    const email = `coowner-${newUuid()}@example.com`;
+    await inviteMember(ctx, {
+      email,
+      role: 'owner',
+      inviterName: 'Ana Pop',
+      organizationName: 'Inv Seven',
+    });
+    const row = await invitationRow(`organization_id = $1 AND email = $2`, [organizationId, email]);
+    mailbox.clear();
+
+    const before = Date.now();
+    await resendInvitation(ctx, row.id);
+    const after = await invitationRow(`id = $1`, [row.id]);
+    const days = (new Date(after.expires_at).getTime() - before) / (24 * 60 * 60 * 1000);
+    expect(days).toBeGreaterThan(6.99);
+    expect(days).toBeLessThan(7.01);
+    expect(mailbox.to(email)[0]!.text).toContain('Ăsta e un link nou.');
+  });
+
+  it('INV.6 — the invitation transaction fails → no email', async () => {
+    const { organizationId } = await newOrg('Inv Six');
+    const ctx = await ownerContext(organizationId);
+    mailbox.clear();
+    const email = `rollback-${newUuid()}@example.com`;
+    await expect(
+      inviteMember(ctx, {
+        email,
+        role: 'not_a_role' as never,
+        inviterName: 'Owner',
+        organizationName: 'Inv Six',
+      }),
+    ).rejects.toThrow();
+    expect(mailbox.sent).toHaveLength(0);
   });
 });

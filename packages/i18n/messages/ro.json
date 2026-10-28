@@ -53,5 +53,64 @@
   "toast": {
     "undo": "Anulează",
     "close": "Închide"
+  },
+  "email": {
+    "common": {
+      "greeting": "Bună, {name},",
+      "greetingNoName": "Bună,",
+      "signature": "Echipa Ventora",
+      "footerAccount": "Ai primit acest e-mail pentru că adresa {email} e folosită pentru un cont Ventora.",
+      "footerInvitation": "Ai primit acest e-mail pentru că cineva a invitat adresa {email} în Ventora.",
+      "company": "Ventora Systems SRL · Sibiu, România"
+    },
+    "roles": {
+      "owner": "proprietar",
+      "admin": "administrator",
+      "member": "membru",
+      "external_collaborator": "colaborator extern"
+    },
+    "passwordReset": {
+      "hub": {
+        "subject": "Alege o parolă nouă pentru contul Ventora",
+        "intro": "Am primit o cerere de resetare a parolei pentru contul tău Ventora.",
+        "button": "Alege o parolă nouă",
+        "validity": "Linkul e valabil o oră și merge o singură dată. După ce schimbi parola, te deconectăm de pe toate dispozitivele, ca doar tu să ai acces la cont.",
+        "notRequested": "Dacă nu ai cerut tu resetarea, ignoră acest e-mail. Parola ta rămâne aceeași."
+      },
+      "founder": {
+        "subject": "Resetarea parolei pentru Ventora Founder",
+        "intro": "Am primit o cerere de resetare a parolei pentru contul tău Ventora Founder.",
+        "button": "Alege o parolă nouă",
+        "validity": "Linkul e valabil o oră și merge o singură dată. Toate sesiunile deschise se închid, iar la intrare îți cerem în continuare codul de autentificare în doi pași.",
+        "notRequested": "Dacă nu ai cerut tu resetarea, scrie imediat la {supportEmail}. Poate fi o încercare de acces la contul tău."
+      }
+    },
+    "invitation": {
+      "member": {
+        "subject": "{inviterName} te-a invitat în {businessName} pe Ventora",
+        "intro": "{inviterName} te-a invitat în echipa {businessName} pe Ventora, ca {roleName}.",
+        "button": "Acceptă invitația",
+        "resentNotice": "Ăsta e un link nou. Cel primit înainte nu mai funcționează.",
+        "validity": "Invitația e valabilă 7 zile, până pe {expiresDate}.",
+        "existingAccount": "Dacă ai deja cont Ventora, intri cu e-mailul și parola ta, iar {businessName} apare lângă celelalte afaceri. Dacă nu ai, îți alegi parola când deschizi linkul.",
+        "notExpected": "Nu te așteptai la această invitație? Poți ignora acest e-mail. Fără să accepți, nu se creează niciun cont."
+      },
+      "owner": {
+        "subject": "{businessName} e gata pe Ventora",
+        "intro": "Am pregătit spațiul {businessName} pe Ventora. Tu vei fi proprietarul lui: îl configurezi, inviți echipa și alegi aplicațiile.",
+        "button": "Intră în {businessName}",
+        "validity": "Linkul e valabil 30 de zile, până pe {expiresDate}.",
+        "firstLogin": "La prima intrare îți alegi parola și pornești autentificarea în doi pași, ca afacerea ta să fie protejată de la început.",
+        "questions": "Ai întrebări? Răspunde la acest e-mail și te ajutăm."
+      }
+    },
+    "ownerRecovery": {
+      "subject": "Autentificarea în doi pași a contului tău a fost resetată",
+      "intro": "La cererea ta ({ticketRef}), echipa Ventora a resetat autentificarea în doi pași pentru contul tău. Am închis și toate sesiunile deschise.",
+      "passwordReset": "Am resetat și parola. Alege una nouă din linkul de mai jos, valabil o oră:",
+      "button": "Alege o parolă nouă",
+      "nextSteps": "Ce urmează: la următoarea intrare în cont pornești din nou autentificarea în doi pași, cu o aplicație de autentificare. Până atunci nu poți face modificări ca proprietar în {businessName}. Păstrează noile coduri de rezervă într-un loc sigur.",
+      "notRequested": "Dacă nu ai cerut tu asta, scrie-ne imediat la {supportEmail}. Verificăm imediat ce s-a întâmplat."
+    }
   }
 }

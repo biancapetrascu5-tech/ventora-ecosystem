@@ -1,12 +1,21 @@
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { Pool } from 'pg';
-import { authorize, grantApplicationAccess, configureAccess } from '../index.js';
+import {
+  authorize,
+  grantApplicationAccess,
+  configureAccess,
+  listAuditLogs,
+  checkRolePermission,
+  PLATFORM_APPLICATION_ID,
+} from '../index.js';
+import { writeAuditEvent, closeAuditPools } from '@ventora/audit';
 import {
   NotAuthenticated,
   NotMember,
   AppNotEnabled,
   Forbidden,
   ResourceNotFound,
+  TwoFactorRequired,
 } from '@ventora/errors';
 
 // adminPool uses DIRECT_URL (bypasses RLS) for test data setup
@@ -42,13 +51,13 @@ async function createTestSession(
   return token;
 }
 
-async function createTestUser(email: string): Promise<string> {
+async function createTestUser(email: string, twoFactorEnabled = false): Promise<string> {
   const userId = newUuid();
   await adminQuery(
-    `INSERT INTO identity.users (id, name, email, email_verified, created_at, updated_at)
-     VALUES ($1, $2, $3, true, NOW(), NOW())
+    `INSERT INTO identity.users (id, name, email, email_verified, two_factor_enabled, created_at, updated_at)
+     VALUES ($1, $2, $3, true, $4, NOW(), NOW())
      ON CONFLICT DO NOTHING`,
-    [userId, email.split('@')[0], email],
+    [userId, email.split('@')[0], email, twoFactorEnabled],
   );
   return userId;
 }
@@ -94,7 +103,8 @@ beforeAll(async () => {
   configureAccess({ entitlementProvider: { isEnabled: async () => true } });
 
   orgId = await createTestOrg();
-  const ownerUserId = await createTestUser(`owner-${newUuid()}@test.local`);
+  // Owner must have two_factor_enabled = true (R-2F1: owner must have 2FA)
+  const ownerUserId = await createTestUser(`owner-${newUuid()}@test.local`, true);
   memberUserId = await createTestUser(`member-${newUuid()}@test.local`);
   const noOrgUserId = await createTestUser(`noordg-${newUuid()}@test.local`);
 
@@ -112,6 +122,7 @@ beforeAll(async () => {
 afterAll(async () => {
   await adminQuery(`DELETE FROM organizations.organization WHERE id = $1`, [orgId]);
   await adminPool.end();
+  await closeAuditPools();
 });
 
 // T3.1 — request fără sesiune → NotAuthenticated
@@ -185,9 +196,9 @@ describe('T3.5 — resource checks', () => {
 
 // T3.6 — owner has implicit access (no application_access row needed)
 describe('T3.6 — owner implicit access', () => {
-  it('owner succeeds without explicit application_access row', async () => {
+  it('owner with 2FA succeeds without explicit application_access row', async () => {
     const isolatedOrgId = await createTestOrg();
-    const isolatedUserId = await createTestUser(`owner-isolated-${newUuid()}@test.local`);
+    const isolatedUserId = await createTestUser(`owner-isolated-${newUuid()}@test.local`, true);
     await createMembership(isolatedOrgId, isolatedUserId, 'owner');
     const token = await createTestSession(isolatedUserId, isolatedOrgId);
 
@@ -267,5 +278,238 @@ describe('grantApplicationAccess', () => {
       grantApplicationAccess(testOrgId, testUserId, ['crm', 'crm']),
     ).resolves.not.toThrow();
     await adminQuery(`DELETE FROM organizations.organization WHERE id = $1`, [testOrgId]);
+  });
+});
+
+// T2FA — 2FA enforcement in authorize() (R-2F1)
+describe('T2FA.1 — owner without 2FA → TwoFactorRequired', () => {
+  it('throws TwoFactorRequired when owner has twoFactorEnabled = false', async () => {
+    const localOrgId = await createTestOrg();
+    // Owner explicitly without 2FA
+    const ownerNo2FA = await createTestUser(`owner-no2fa-${newUuid()}@test.local`, false);
+    await createMembership(localOrgId, ownerNo2FA, 'owner');
+    const token = await createTestSession(ownerNo2FA, localOrgId);
+
+    try {
+      await expect(authorize({ sessionToken: token, applicationId: APP_ID })).rejects.toThrow(
+        TwoFactorRequired,
+      );
+    } finally {
+      await adminQuery(`DELETE FROM organizations.organization WHERE id = $1`, [localOrgId]);
+    }
+  });
+});
+
+describe('T2FA.2 — owner with 2FA → authorize succeeds', () => {
+  it('owner with twoFactorEnabled = true can authorize', async () => {
+    const localOrgId = await createTestOrg();
+    const ownerWith2FA = await createTestUser(`owner-with2fa-${newUuid()}@test.local`, true);
+    await createMembership(localOrgId, ownerWith2FA, 'owner');
+    const token = await createTestSession(ownerWith2FA, localOrgId);
+
+    try {
+      const ctx = await authorize({ sessionToken: token, applicationId: APP_ID });
+      expect(ctx.role).toBe('owner');
+    } finally {
+      await adminQuery(`DELETE FROM organizations.organization WHERE id = $1`, [localOrgId]);
+    }
+  });
+});
+
+describe('T2FA.3 — admin without 2FA → no TwoFactorRequired (only owner enforced)', () => {
+  it('admin without 2FA can still authorize (2FA only required for owner)', async () => {
+    const localOrgId = await createTestOrg();
+    const adminNo2FA = await createTestUser(`admin-no2fa-${newUuid()}@test.local`, false);
+    await createMembership(localOrgId, adminNo2FA, 'admin');
+    const token = await createTestSession(adminNo2FA, localOrgId);
+
+    try {
+      const ctx = await authorize({ sessionToken: token, applicationId: APP_ID });
+      expect(ctx.role).toBe('admin');
+    } finally {
+      await adminQuery(`DELETE FROM organizations.organization WHERE id = $1`, [localOrgId]);
+    }
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Lot 2.5a — audit (T3.7: E27, E29; TA.9: listAuditLogs)
+// ---------------------------------------------------------------------------
+
+async function auditRows(where: string, params: unknown[]) {
+  const { rows } = await adminQuery(
+    `SELECT * FROM audit.audit_log WHERE ${where} ORDER BY created_at, id`,
+    params,
+  );
+  return rows;
+}
+
+describe('T3.7 / E27 — grantApplicationAccess writes application_access.granted', () => {
+  it('one row for the new grants, none for an idempotent re-grant', async () => {
+    const testOrgId = await createTestOrg();
+    const testUserId = newUuid();
+    const actorId = newUuid();
+    try {
+      await grantApplicationAccess(testOrgId, testUserId, ['crm', 'booking'], 'manager', {
+        type: 'user',
+        id: actorId,
+      });
+      await grantApplicationAccess(testOrgId, testUserId, ['crm']);
+
+      const rows = await auditRows(
+        `action = 'application_access.granted' AND organization_id = $1::uuid`,
+        [testOrgId],
+      );
+      expect(rows).toHaveLength(1);
+      expect(rows[0].category).toBe('access');
+      expect(rows[0].outcome).toBe('success');
+      expect(rows[0].actor_type).toBe('user');
+      expect(rows[0].actor_id).toBe(actorId);
+      expect(rows[0].target_type).toBe('user');
+      expect(rows[0].target_id).toBe(testUserId);
+      expect(rows[0].metadata).toEqual({
+        applicationIds: ['crm', 'booking'],
+        roleInApp: 'manager',
+      });
+    } finally {
+      await adminQuery(`DELETE FROM organizations.organization WHERE id = $1`, [testOrgId]);
+    }
+  });
+
+  it('without an actor the grant is attributed to system', async () => {
+    const testOrgId = await createTestOrg();
+    const testUserId = newUuid();
+    try {
+      await grantApplicationAccess(testOrgId, testUserId, ['crm']);
+      const rows = await auditRows(
+        `action = 'application_access.granted' AND organization_id = $1::uuid`,
+        [testOrgId],
+      );
+      expect(rows).toHaveLength(1);
+      expect(rows[0].actor_type).toBe('system');
+      expect(rows[0].actor_id).toBeNull();
+    } finally {
+      await adminQuery(`DELETE FROM organizations.organization WHERE id = $1`, [testOrgId]);
+    }
+  });
+});
+
+describe('T3.7 / E29 — authorize() owner without 2FA writes authorize.two_factor_required', () => {
+  it('one denied row with the user and the organization', async () => {
+    const localOrgId = await createTestOrg();
+    const ownerNo2FA = await createTestUser(`owner-e29-${newUuid()}@test.local`, false);
+    await createMembership(localOrgId, ownerNo2FA, 'owner');
+    const token = await createTestSession(ownerNo2FA, localOrgId);
+    try {
+      await expect(
+        authorize({ sessionToken: token, applicationId: APP_ID, permission: 'booking:read' }),
+      ).rejects.toThrow(TwoFactorRequired);
+
+      const rows = await auditRows(`action = 'authorize.two_factor_required' AND actor_id = $1`, [
+        ownerNo2FA,
+      ]);
+      expect(rows).toHaveLength(1);
+      expect(rows[0].category).toBe('access');
+      expect(rows[0].outcome).toBe('denied');
+      expect(rows[0].actor_type).toBe('user');
+      expect(rows[0].organization_id).toBe(localOrgId);
+      expect(rows[0].target_id).toBe(ownerNo2FA);
+      expect(rows[0].metadata).toEqual({ applicationId: APP_ID, permission: 'booking:read' });
+    } finally {
+      await adminQuery(`DELETE FROM organizations.organization WHERE id = $1`, [localOrgId]);
+    }
+  });
+
+  it('other authorize() refusals are not audited (Forbidden for a member)', async () => {
+    await expect(
+      authorize({ sessionToken: memberToken, applicationId: APP_ID, permission: 'booking:admin' }),
+    ).rejects.toThrow(Forbidden);
+    const rows = await auditRows(`actor_id = $1`, [memberUserId]);
+    expect(rows).toHaveLength(0);
+  });
+});
+
+describe('TA.9 — listAuditLogs: owner/admin of the active org only', () => {
+  let orgA: string;
+  let orgB: string;
+  let ownerA: string;
+  let adminA: string;
+  let memberA: string;
+  let ownerAToken: string;
+  let adminAToken: string;
+  let memberAToken: string;
+
+  beforeAll(async () => {
+    orgA = await createTestOrg();
+    orgB = await createTestOrg();
+    ownerA = await createTestUser(`ta9-owner-${newUuid()}@test.local`, true);
+    adminA = await createTestUser(`ta9-admin-${newUuid()}@test.local`);
+    memberA = await createTestUser(`ta9-member-${newUuid()}@test.local`);
+    await createMembership(orgA, ownerA, 'owner');
+    await createMembership(orgA, adminA, 'admin');
+    await createMembership(orgA, memberA, 'member');
+    ownerAToken = await createTestSession(ownerA, orgA);
+    adminAToken = await createTestSession(adminA, orgA);
+    memberAToken = await createTestSession(memberA, orgA);
+
+    // org A: one row; org B: one row; no org: one row
+    for (const organizationId of [orgA, orgB, null]) {
+      await writeAuditEvent(
+        {
+          category: 'organization',
+          action: 'invitation.created',
+          outcome: 'success',
+          actorType: 'user',
+          actorId: newUuid(),
+          organizationId,
+        },
+        { mode: 'required' },
+      );
+    }
+  });
+
+  afterAll(async () => {
+    await adminQuery(`DELETE FROM organizations.organization WHERE id = ANY($1::uuid[])`, [
+      [orgA, orgB],
+    ]);
+  });
+
+  it('member → Forbidden', async () => {
+    await expect(listAuditLogs({ sessionToken: memberAToken })).rejects.toThrow(Forbidden);
+  });
+
+  it('owner → only rows of the active organization', async () => {
+    const entries = await listAuditLogs({ sessionToken: ownerAToken });
+    expect(entries.length).toBeGreaterThan(0);
+    expect(entries.every((e) => e.organizationId === orgA)).toBe(true);
+  });
+
+  it('admin → only rows of the active organization', async () => {
+    const entries = await listAuditLogs({ sessionToken: adminAToken });
+    expect(entries.length).toBeGreaterThan(0);
+    expect(entries.every((e) => e.organizationId === orgA)).toBe(true);
+    expect(entries.some((e) => e.organizationId === orgB)).toBe(false);
+  });
+
+  it('platform permission audit.log.read is granted to owner and admin only', async () => {
+    expect(await checkRolePermission('owner', PLATFORM_APPLICATION_ID, 'audit.log.read')).toBe(
+      true,
+    );
+    expect(await checkRolePermission('admin', PLATFORM_APPLICATION_ID, 'audit.log.read')).toBe(
+      true,
+    );
+    expect(await checkRolePermission('member', PLATFORM_APPLICATION_ID, 'audit.log.read')).toBe(
+      false,
+    );
+  });
+
+  it('platform application ignores the entitlement provider (Hub always enabled)', async () => {
+    configureAccess({ entitlementProvider: { isEnabled: async () => false } });
+    try {
+      const entries = await listAuditLogs({ sessionToken: ownerAToken });
+      expect(entries.every((e) => e.organizationId === orgA)).toBe(true);
+    } finally {
+      configureAccess({ entitlementProvider: { isEnabled: async () => true } });
+    }
   });
 });

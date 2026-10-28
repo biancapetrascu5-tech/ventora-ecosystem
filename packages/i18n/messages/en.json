@@ -53,5 +53,64 @@
   "toast": {
     "undo": "Undo",
     "close": "Close"
+  },
+  "email": {
+    "common": {
+      "greeting": "Hi {name},",
+      "greetingNoName": "Hi,",
+      "signature": "The Ventora team",
+      "footerAccount": "You received this email because {email} is used for a Ventora account.",
+      "footerInvitation": "You received this email because someone invited {email} to Ventora.",
+      "company": "Ventora Systems SRL · Sibiu, Romania"
+    },
+    "roles": {
+      "owner": "owner",
+      "admin": "administrator",
+      "member": "member",
+      "external_collaborator": "external collaborator"
+    },
+    "passwordReset": {
+      "hub": {
+        "subject": "Choose a new password for your Ventora account",
+        "intro": "We received a request to reset the password for your Ventora account.",
+        "button": "Choose a new password",
+        "validity": "The link is valid for one hour and works only once. Once you change your password, we sign you out on every device, so only you have access to your account.",
+        "notRequested": "If you didn't ask for this, you can ignore this email. Your password stays the same."
+      },
+      "founder": {
+        "subject": "Reset your Ventora Founder password",
+        "intro": "We received a request to reset the password for your Ventora Founder account.",
+        "button": "Choose a new password",
+        "validity": "The link is valid for one hour and works only once. All open sessions will be closed, and you'll still be asked for your two-step authentication code when you sign in.",
+        "notRequested": "If you didn't ask for this, write to {supportEmail} right away. Someone may be trying to access your account."
+      }
+    },
+    "invitation": {
+      "member": {
+        "subject": "{inviterName} invited you to {businessName} on Ventora",
+        "intro": "{inviterName} invited you to join the {businessName} team on Ventora, with the {roleName} role.",
+        "button": "Accept the invitation",
+        "resentNotice": "This is a new link. The one you received earlier no longer works.",
+        "validity": "The invitation is valid for 7 days, until {expiresDate}.",
+        "existingAccount": "If you already have a Ventora account, sign in with your email and password, and {businessName} will appear next to your other businesses. If not, you'll choose a password when you open the link.",
+        "notExpected": "Weren't expecting this invitation? You can ignore this email. No account is created unless you accept."
+      },
+      "owner": {
+        "subject": "{businessName} is ready on Ventora",
+        "intro": "We've set up {businessName} on Ventora. You'll be its owner: you set it up, invite your team and choose the apps.",
+        "button": "Open {businessName}",
+        "validity": "The link is valid for 30 days, until {expiresDate}.",
+        "firstLogin": "The first time you sign in, you'll choose a password and turn on two-step authentication, so your business is protected from the start.",
+        "questions": "Any questions? Just reply to this email and we'll help."
+      }
+    },
+    "ownerRecovery": {
+      "subject": "Two-step authentication on your account has been reset",
+      "intro": "At your request ({ticketRef}), the Ventora team reset two-step authentication on your account. We also closed all open sessions.",
+      "passwordReset": "We also reset your password. Choose a new one using the link below, valid for one hour:",
+      "button": "Choose a new password",
+      "nextSteps": "What happens next: the next time you sign in, you'll turn on two-step authentication again with an authenticator app. Until then, you can't make changes as owner of {businessName}. Keep your new backup codes somewhere safe.",
+      "notRequested": "If you didn't ask for this, write to us right away at {supportEmail}. We'll look into what happened immediately."
+    }
   }
 }

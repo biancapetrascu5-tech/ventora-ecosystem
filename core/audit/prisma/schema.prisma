@@ -1,0 +1,37 @@
+// Schema "audit" — folosită pentru garda de drift (prisma migrate diff) și prisma migrate deploy.
+// Codul nu folosește un client Prisma generat: scrierea trece obligatoriu prin funcția
+// audit.append_event (SECURITY DEFINER), iar citirea prin roluri dedicate cu RLS (src/db.ts).
+// CHECK-urile, trigger-ele de imutabilitate, funcțiile și politicile RLS sunt doar în migrare.
+
+datasource db {
+  provider = "postgresql"
+  schemas  = ["audit"]
+}
+
+model AuditLog {
+  id               String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  createdAt        DateTime @default(now()) @map("created_at") @db.Timestamptz
+  category         String   @db.VarChar(16)
+  action           String   @db.VarChar(64)
+  outcome          String   @db.VarChar(8)
+  actorType        String   @map("actor_type") @db.VarChar(12)
+  actorId          String?  @map("actor_id")
+  founderId        String?  @map("founder_id")
+  supportSessionId String?  @map("support_session_id") @db.Uuid
+  organizationId   String?  @map("organization_id") @db.Uuid
+  targetType       String?  @map("target_type") @db.VarChar(32)
+  targetId         String?  @map("target_id")
+  ip               String?  @db.Inet
+  userAgent        String?  @map("user_agent") @db.VarChar(512)
+  requestId        String?  @map("request_id") @db.VarChar(64)
+  metadata         Json     @default("{}")
+
+  @@index([organizationId, createdAt(sort: Desc)], map: "audit_log_organization_id_created_at_idx")
+  @@index([actorId, createdAt(sort: Desc)], map: "audit_log_actor_id_created_at_idx")
+  @@index([founderId, createdAt(sort: Desc)], map: "audit_log_founder_id_created_at_idx")
+  @@index([action, createdAt(sort: Desc)], map: "audit_log_action_created_at_idx")
+  @@index([supportSessionId], map: "audit_log_support_session_id_idx")
+  @@index([category, createdAt], map: "audit_log_category_created_at_idx")
+  @@map("audit_log")
+  @@schema("audit")
+}

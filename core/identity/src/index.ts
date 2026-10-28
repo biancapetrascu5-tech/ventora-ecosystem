@@ -3,6 +3,13 @@ export { founderAuth } from './auth-founder';
 export { getIdentityDb, getFounderDb } from './db';
 export { getSession, revokeSession, getUserById, listSessions } from './contracts';
 export type { HubSession, HubUser } from './contracts';
-export { getFounderSession, addFounderUser, revokeFounderUser } from './founder-contracts';
+export {
+  getFounderSession,
+  requireFounderSession,
+  addFounderUser,
+  revokeFounderUser,
+  listAuditLogsAsFounder,
+} from './founder-contracts';
 export type { FounderSession, FounderUserRecord } from './founder-contracts';
 export { setSessionActiveOrganization } from './contract';
+export { setAuthBackgroundTaskHandler } from './background';

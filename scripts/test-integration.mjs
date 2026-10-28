@@ -2,8 +2,8 @@
 /**
  * Rulează toate testele de integrare local, identic cu CI:
  *   1. Pornește DB-ul de test
- *   2. Verifică garda de drift (prisma migrate diff --exit-code) pentru toate 3 scheme
- *   3. Rulează testele de integrare (db-kit, identity, organizations)
+ *   2. Verifică garda de drift (prisma migrate diff --exit-code): identity, founder, organizations, audit, access
+ *   3. Rulează testele de integrare (db-kit, audit, identity, organizations, access, booking)
  *   4. Oprește DB-ul (indiferent de rezultat)
  *
  * Folosit de `pnpm test:integration`.
@@ -36,11 +36,12 @@ const SHADOW_IDENTITY = 'postgresql://postgres:test@localhost:5433/shadow_identi
 const SHADOW_FOUNDER = 'postgresql://postgres:test@localhost:5433/shadow_founder_diff';
 const SHADOW_ORG = 'postgresql://postgres:test@localhost:5433/shadow_org_diff';
 const SHADOW_ACCESS = 'postgresql://postgres:test@localhost:5433/shadow_access_diff';
+const SHADOW_AUDIT = 'postgresql://postgres:test@localhost:5433/shadow_audit_diff';
 
 let exitCode = 0;
 
 try {
-  // --- Gardă drift: toate 3 scheme ---
+  // --- Gardă drift: identity, founder, organizations, audit (access mai jos) ---
   // Prisma 7: shadowDatabaseUrl din config (via SHADOW_DATABASE_URL); DATABASE_URL = baza principală
   console.log('\n[test:integration] Verificare drift identity schema...');
   runPkg(
@@ -63,10 +64,25 @@ try {
     { DATABASE_URL: ADMIN_ORG, SHADOW_DATABASE_URL: SHADOW_ORG },
   );
 
+  console.log('[test:integration] Verificare drift audit schema...');
+  runPkg(
+    '@ventora/audit',
+    `exec prisma migrate diff --from-migrations ./prisma/migrations --to-schema ./prisma/schema.prisma --exit-code --config prisma7.config.ts`,
+    { DATABASE_URL: ADMIN_IDENTITY, SHADOW_DATABASE_URL: SHADOW_AUDIT },
+  );
+
   // --- db-kit integration tests ---
   console.log('\n[test:integration] db-kit...');
   runPkg('@ventora/db-kit', 'test:integration', {
     DATABASE_URL_TEST: ADMIN_IDENTITY,
+  });
+
+  // --- Audit integration tests (TA) — pe baza identity (app_runtime + founder_runtime) ---
+  console.log('\n[test:integration] audit (TA)...');
+  runPkg('@ventora/audit', 'test:integration', {
+    DATABASE_URL_TEST: `postgresql://app_runtime:${TEST_DB.appPw}@localhost:5433/${TEST_DB.identityDb}`,
+    DATABASE_URL_FOUNDER_TEST: `postgresql://founder_runtime:${TEST_DB.founderPw}@localhost:5433/${TEST_DB.identityDb}`,
+    DATABASE_URL_ADMIN_TEST: ADMIN_IDENTITY,
   });
 
   // --- Identity integration tests ---

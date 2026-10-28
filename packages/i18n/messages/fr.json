@@ -53,5 +53,64 @@
   "toast": {
     "undo": "Annuler",
     "close": "Fermer"
+  },
+  "email": {
+    "common": {
+      "greeting": "Bonjour {name},",
+      "greetingNoName": "Bonjour,",
+      "signature": "L’équipe Ventora",
+      "footerAccount": "Vous recevez cet e-mail car l’adresse {email} est associée à un compte Ventora.",
+      "footerInvitation": "Vous recevez cet e-mail car quelqu’un a invité l’adresse {email} sur Ventora.",
+      "company": "Ventora Systems SRL · Sibiu, Roumanie"
+    },
+    "roles": {
+      "owner": "propriétaire",
+      "admin": "administrateur",
+      "member": "membre",
+      "external_collaborator": "collaborateur externe"
+    },
+    "passwordReset": {
+      "hub": {
+        "subject": "Choisissez un nouveau mot de passe pour votre compte Ventora",
+        "intro": "Nous avons reçu une demande de réinitialisation du mot de passe de votre compte Ventora.",
+        "button": "Choisir un nouveau mot de passe",
+        "validity": "Le lien est valable une heure et ne fonctionne qu’une seule fois. Dès que vous changez votre mot de passe, nous vous déconnectons de tous vos appareils, pour que vous soyez la seule personne à accéder au compte.",
+        "notRequested": "Si vous n’êtes pas à l’origine de cette demande, ignorez cet e-mail. Votre mot de passe reste inchangé."
+      },
+      "founder": {
+        "subject": "Réinitialisation de votre mot de passe Ventora Founder",
+        "intro": "Nous avons reçu une demande de réinitialisation du mot de passe de votre compte Ventora Founder.",
+        "button": "Choisir un nouveau mot de passe",
+        "validity": "Le lien est valable une heure et ne fonctionne qu’une seule fois. Toutes les sessions ouvertes seront fermées, et le code d’authentification en deux étapes vous sera toujours demandé à la connexion.",
+        "notRequested": "Si vous n’êtes pas à l’origine de cette demande, écrivez immédiatement à {supportEmail}. Il peut s’agir d’une tentative d’accès à votre compte."
+      }
+    },
+    "invitation": {
+      "member": {
+        "subject": "{inviterName} vous invite à rejoindre {businessName} sur Ventora",
+        "intro": "{inviterName} vous invite à rejoindre l’équipe {businessName} sur Ventora, avec le rôle {roleName}.",
+        "button": "Accepter l’invitation",
+        "resentNotice": "Ceci est un nouveau lien. Celui que vous avez reçu précédemment ne fonctionne plus.",
+        "validity": "L’invitation est valable 7 jours, jusqu’au {expiresDate}.",
+        "existingAccount": "Si vous avez déjà un compte Ventora, connectez-vous avec votre e-mail et votre mot de passe : {businessName} apparaîtra à côté de vos autres entreprises. Sinon, vous choisirez votre mot de passe en ouvrant le lien.",
+        "notExpected": "Vous ne vous attendiez pas à cette invitation ? Vous pouvez ignorer cet e-mail. Aucun compte n’est créé sans votre accord."
+      },
+      "owner": {
+        "subject": "{businessName} vous attend sur Ventora",
+        "intro": "Nous avons préparé l’espace {businessName} sur Ventora. Vous en aurez le rôle de propriétaire : vous le configurez, invitez votre équipe et choisissez les applications.",
+        "button": "Accéder à {businessName}",
+        "validity": "Le lien est valable 30 jours, jusqu’au {expiresDate}.",
+        "firstLogin": "À votre première connexion, vous choisirez votre mot de passe et activerez l’authentification en deux étapes, pour que votre entreprise soit protégée dès le départ.",
+        "questions": "Des questions ? Répondez simplement à cet e-mail, nous vous aiderons."
+      }
+    },
+    "ownerRecovery": {
+      "subject": "L’authentification en deux étapes de votre compte a été réinitialisée",
+      "intro": "À votre demande ({ticketRef}), l’équipe Ventora a réinitialisé l’authentification en deux étapes de votre compte. Nous avons également fermé toutes les sessions ouvertes.",
+      "passwordReset": "Nous avons aussi réinitialisé votre mot de passe. Choisissez-en un nouveau avec le lien ci-dessous, valable une heure :",
+      "button": "Choisir un nouveau mot de passe",
+      "nextSteps": "Et ensuite : à votre prochaine connexion, vous réactiverez l’authentification en deux étapes avec une application d’authentification. D’ici là, vous ne pourrez pas effectuer de modifications en tant que propriétaire de {businessName}. Conservez vos nouveaux codes de secours en lieu sûr.",
+      "notRequested": "Si vous n’êtes pas à l’origine de cette demande, écrivez-nous immédiatement à {supportEmail}. Nous vérifions tout de suite ce qui s’est passé."
+    }
   }
 }

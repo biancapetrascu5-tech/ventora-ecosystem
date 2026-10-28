@@ -14,6 +14,96 @@ import {
   InvalidEmailError,
 } from './errors';
 import type { MembershipRole } from '../generated/organizations-client';
+import {
+  AuditActions,
+  appendAuditEventInTx,
+  hashEmail,
+  pgExecutor,
+  writeAuditEvent,
+  type AuditEvent,
+} from '@ventora/audit';
+import {
+  deliverEmail,
+  invitationLink,
+  renderMemberInvitation,
+  renderOwnerInvitation,
+  type EmailFailureReason,
+  type RenderedEmail,
+} from '@ventora/notifications';
+
+// E21–E25 are best_effort (D2): the organization operation never fails because of the audit write.
+async function auditBestEffort(event: AuditEvent): Promise<void> {
+  await writeAuditEvent(event, { mode: 'best_effort' });
+}
+
+// Link lifetimes (design system S55): a member's invitation 7 days, the owner's invitation
+// created from Founder 30 days. The owner's expiry is set in SQL by
+// organizations.founder_create_organization (NOW() + 30 days); this constant is only used for
+// the date shown in the email and must stay equal to it.
+const MEMBER_INVITATION_TTL_MS = 7 * 24 * 60 * 60 * 1000;
+const OWNER_INVITATION_TTL_MS = 30 * 24 * 60 * 60 * 1000;
+
+/**
+ * E26: the invitation exists, its email did not leave (provider error, or no provider in
+ * production). The operation still succeeds (FAZA-2 §2.2); the UI can offer "send again".
+ */
+function invitationEmailFailedEvent(
+  organizationId: string,
+  invitationId: string,
+  reason: EmailFailureReason,
+  extra: Record<string, unknown>,
+): AuditEvent {
+  return {
+    category: 'organization',
+    action: AuditActions.invitationEmailFailed,
+    outcome: 'failure',
+    actorType: 'system',
+    organizationId,
+    targetType: 'invitation',
+    targetId: invitationId,
+    metadata: { reason, ...extra },
+  };
+}
+
+/**
+ * Sends an invitation email from inside the organization (E-3, E-3b, or E-4 when the owner's
+ * Founder invitation is resent) and records the result on the invitation (org_rw).
+ */
+async function sendInvitationEmail(
+  organizationId: string,
+  invitationId: string,
+  email: string,
+  rendered: RenderedEmail,
+  meta: { kind: 'member' | 'owner'; resent: boolean },
+): Promise<void> {
+  const result = await deliverEmail({
+    to: email,
+    subject: rendered.subject,
+    html: rendered.html,
+    text: rendered.text,
+  });
+  try {
+    const db = getOrgDb();
+    await db.$transaction(async (tx: any) => {
+      await tx.$executeRaw`SELECT set_config('app.organization_id', ${organizationId}, true)`;
+      await tx.invitation.update({
+        where: { id: invitationId },
+        data: { emailStatus: result.status === 'sent' ? 'sent' : 'failed', updatedAt: new Date() },
+      });
+    });
+  } catch (err) {
+    // The invitation and its email are fine; only the status column is stale.
+    console.error('[organizations] invitation email_status not updated', {
+      invitationId,
+      error: err instanceof Error ? err.message : String(err),
+    });
+  }
+  if (result.status === 'failed') {
+    await auditBestEffort(
+      invitationEmailFailedEvent(organizationId, invitationId, result.reason, meta),
+    );
+  }
+}
 
 // Slug: 2–63 lowercase alphanumeric / hyphens, no leading/trailing hyphen
 const SLUG_RE = /^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$/;
@@ -129,20 +219,84 @@ export async function createOrganizationAsFounder(
   const token = crypto.randomBytes(32).toString('hex');
   const tokenHash = hashToken(token);
 
+  const created = await createOrganizationTx(ctx, {
+    name,
+    slug: params.slug,
+    ownerEmail,
+    tokenHash,
+  });
+
+  // E-4, after the commit: an email that cannot leave never undoes the organization.
+  // founder_runtime has no UPDATE on organizations.invitation, so email_status stays
+  // 'pending' here; a failure is recorded as E26 only.
+  const rendered = renderOwnerInvitation({
+    email: ownerEmail,
+    businessName: name,
+    expiresAt: new Date(Date.now() + OWNER_INVITATION_TTL_MS),
+    link: invitationLink(token),
+  });
+  const result = await deliverEmail({
+    to: ownerEmail,
+    subject: rendered.subject,
+    html: rendered.html,
+    text: rendered.text,
+  });
+  if (result.status === 'failed') {
+    await writeAuditEvent(
+      invitationEmailFailedEvent(created.organizationId, created.invitationId, result.reason, {
+        kind: 'owner',
+        resent: false,
+      }),
+      { mode: 'best_effort', connection: 'founder' },
+    );
+  }
+
+  return { organizationId: created.organizationId, invitationToken: token };
+}
+
+async function createOrganizationTx(
+  ctx: FounderContext,
+  params: { name: string; slug: string; ownerEmail: string; tokenHash: string },
+): Promise<{ organizationId: string; invitationId: string }> {
+  const { name, ownerEmail, tokenHash } = params;
   const pool = new Pool({
     connectionString: process.env.DATABASE_URL_FOUNDER!,
     max: 1,
     connectionTimeoutMillis: 10_000,
   });
+  const client = await pool.connect();
   try {
-    const { rows } = await pool.query<{ organization_id: string; invitation_id: string }>(
+    // E20 (mode required, D2): organization + invitation + audit row in one transaction
+    await client.query('BEGIN');
+    const { rows } = await client.query<{ organization_id: string; invitation_id: string }>(
       `SELECT organization_id, invitation_id
        FROM organizations.founder_create_organization($1, $2, $3, $4, $5::uuid)`,
       [name, params.slug, ownerEmail, tokenHash, ctx.founderId],
     );
     if (!rows[0]) throw new Error('[organizations] founder_create_organization returned no rows');
-    return { organizationId: rows[0].organization_id, invitationToken: token };
+    await appendAuditEventInTx(pgExecutor(client), {
+      category: 'organization',
+      action: AuditActions.organizationCreated,
+      outcome: 'success',
+      actorType: 'founder',
+      actorId: ctx.founderId,
+      founderId: ctx.founderId,
+      organizationId: rows[0].organization_id,
+      targetType: 'organization',
+      targetId: rows[0].organization_id,
+      metadata: {
+        slug: params.slug,
+        ownerEmailHash: hashEmail(ownerEmail),
+        invitationId: rows[0].invitation_id,
+      },
+    });
+    await client.query('COMMIT');
+    return { organizationId: rows[0].organization_id, invitationId: rows[0].invitation_id };
+  } catch (err) {
+    await client.query('ROLLBACK').catch(() => {});
+    throw err;
   } finally {
+    client.release();
     await pool.end();
   }
 }
@@ -215,10 +369,11 @@ export async function inviteMember(
   const tokenHash = hashToken(token);
   const email = normalizeEmail(params.email);
   const applicationIds = params.applicationIds ?? [];
+  const expiresAt = new Date(Date.now() + MEMBER_INVITATION_TTL_MS);
 
-  await db.$transaction(async (tx: any) => {
+  const invitation = await db.$transaction(async (tx: any) => {
     await tx.$executeRaw`SELECT set_config('app.organization_id', ${ctx.organizationId}, true)`;
-    await tx.invitation.create({
+    return tx.invitation.create({
       data: {
         organizationId: ctx.organizationId,
         organizationName: params.organizationName,
@@ -227,11 +382,38 @@ export async function inviteMember(
         email,
         role: params.role,
         tokenHash,
-        expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+        expiresAt,
         applicationIds,
       },
+      select: { id: true },
     });
   });
+  await auditBestEffort({
+    category: 'organization',
+    action: AuditActions.invitationCreated,
+    outcome: 'success',
+    actorType: 'user',
+    actorId: ctx.userId,
+    organizationId: ctx.organizationId,
+    targetType: 'invitation',
+    targetId: invitation.id,
+    metadata: { role: params.role, applicationIds, emailHash: hashEmail(email) },
+  });
+  // E-3, after the commit: a rolled-back invitation never sends an email.
+  await sendInvitationEmail(
+    ctx.organizationId,
+    invitation.id,
+    email,
+    renderMemberInvitation({
+      email,
+      inviterName: params.inviterName,
+      businessName: params.organizationName,
+      role: params.role,
+      expiresAt,
+      link: invitationLink(token),
+    }),
+    { kind: 'member', resent: false },
+  );
   return { invitationToken: token };
 }
 
@@ -274,37 +456,70 @@ export async function acceptInvitation(params: {
   });
 
   const inv = rows[0];
-  if (!inv) throw new TokenExpiredError();
+  // E25: rejected acceptance (expired / already used token, another account's email)
+  const rejectAcceptance = async (err: TokenExpiredError | EmailMismatchError): Promise<never> => {
+    await auditBestEffort({
+      category: 'organization',
+      action: AuditActions.invitationAcceptFailed,
+      outcome: 'failure',
+      actorType: 'user',
+      actorId: params.userId,
+      organizationId: inv?.organization_id ?? null,
+      targetType: inv ? 'invitation' : null,
+      targetId: inv?.id ?? null,
+      metadata: { reason: err.code },
+    });
+    throw err;
+  };
+  if (!inv) return rejectAcceptance(new TokenExpiredError());
   if (inv.status === 'expired' || new Date(inv.expires_at) < new Date())
-    throw new TokenExpiredError();
-  if (normalizeEmail(inv.email) !== userEmail) throw new EmailMismatchError();
+    return rejectAcceptance(new TokenExpiredError());
+  if (normalizeEmail(inv.email) !== userEmail) return rejectAcceptance(new EmailMismatchError());
 
-  const result = await db.$transaction(async (tx: any) => {
-    await tx.$executeRaw`SELECT set_config('app.organization_id', ${inv.organization_id}, true)`;
+  const result = await db
+    .$transaction(async (tx: any) => {
+      await tx.$executeRaw`SELECT set_config('app.organization_id', ${inv.organization_id}, true)`;
 
-    // Atomic UPDATE — 0 rows means token was already used (race condition guard)
-    const updated = await tx.$executeRaw`
+      // Atomic UPDATE — 0 rows means token was already used (race condition guard)
+      const updated = await tx.$executeRaw`
       UPDATE organizations.invitation
       SET status = 'accepted', accepted_by_user_id = ${params.userId}::uuid, updated_at = NOW()
       WHERE id = ${inv.id}::uuid AND status = 'pending'
     `;
 
-    if (Number(updated) === 0) throw new TokenExpiredError();
+      if (Number(updated) === 0) throw new TokenExpiredError();
 
-    await tx.membership.create({
-      data: {
+      const membership = await tx.membership.create({
+        data: {
+          organizationId: inv.organization_id,
+          userId: params.userId,
+          role: inv.role,
+          status: 'active',
+        },
+        select: { id: true },
+      });
+
+      return {
         organizationId: inv.organization_id,
-        userId: params.userId,
         role: inv.role,
-        status: 'active',
-      },
-    });
+        applicationIds: (inv as any).application_ids ?? [],
+        membershipId: membership.id as string,
+      };
+    })
+    .catch((err: unknown) =>
+      err instanceof TokenExpiredError ? rejectAcceptance(err) : Promise.reject(err),
+    );
 
-    return {
-      organizationId: inv.organization_id,
-      role: inv.role,
-      applicationIds: (inv as any).application_ids ?? [],
-    };
+  await auditBestEffort({
+    category: 'organization',
+    action: AuditActions.invitationAccepted,
+    outcome: 'success',
+    actorType: 'user',
+    actorId: params.userId,
+    organizationId: result.organizationId,
+    targetType: 'membership',
+    targetId: result.membershipId,
+    metadata: { role: result.role, invitationId: inv.id },
   });
 
   return {
@@ -329,6 +544,16 @@ export async function revokeInvitation(ctx: OrgContext, invitationId: string): P
       throw err;
     }
   });
+  await auditBestEffort({
+    category: 'organization',
+    action: AuditActions.invitationRevoked,
+    outcome: 'success',
+    actorType: 'user',
+    actorId: ctx.userId,
+    organizationId: ctx.organizationId,
+    targetType: 'invitation',
+    targetId: invitationId,
+  });
 }
 
 export async function resendInvitation(
@@ -340,29 +565,82 @@ export async function resendInvitation(
   const token = crypto.randomBytes(32).toString('hex');
   const tokenHash = hashToken(token);
 
-  await db.$transaction(async (tx: any) => {
+  const inv = await db.$transaction(async (tx: any) => {
     await tx.$executeRaw`SELECT set_config('app.organization_id', ${ctx.organizationId}, true)`;
 
     // S2: fetch current status before updating
-    const inv = await tx.invitation.findUnique({
+    const current = await tx.invitation.findUnique({
       where: { id: invitationId },
-      select: { status: true },
+      select: {
+        status: true,
+        email: true,
+        role: true,
+        organizationName: true,
+        invitedByName: true,
+        invitedByUserId: true,
+        organization: { select: { createdByFounderId: true } },
+      },
     });
-    if (!inv) throw new NotFoundError('Invitation not found');
-    if (inv.status === 'accepted' || inv.status === 'revoked') {
+    if (!current) throw new NotFoundError('Invitation not found');
+    if (current.status === 'accepted' || current.status === 'revoked') {
       throw new InvalidInvitationStatusError();
     }
+
+    // The owner's invitation created from Founder (founder_create_organization sets
+    // invited_by_user_id = created_by_founder_id) keeps its 30 days and its own email (E-4)
+    // when resent; every other invitation gets a member's 7 days and E-3b (S55).
+    const fromFounder =
+      current.role === 'owner' &&
+      !!current.organization?.createdByFounderId &&
+      current.invitedByUserId === current.organization.createdByFounderId;
+    const expiresAt = new Date(
+      Date.now() + (fromFounder ? OWNER_INVITATION_TTL_MS : MEMBER_INVITATION_TTL_MS),
+    );
 
     await tx.invitation.update({
       where: { id: invitationId },
       data: {
         tokenHash,
         status: 'pending',
-        expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+        expiresAt,
         emailStatus: 'pending',
         updatedAt: new Date(),
       },
     });
+    return { ...current, fromFounder, expiresAt };
   });
+  await auditBestEffort({
+    category: 'organization',
+    action: AuditActions.invitationResent,
+    outcome: 'success',
+    actorType: 'user',
+    actorId: ctx.userId,
+    organizationId: ctx.organizationId,
+    targetType: 'invitation',
+    targetId: invitationId,
+  });
+  // E-4 again for the owner's Founder invitation; otherwise E-3b (first email + "new link")
+  await sendInvitationEmail(
+    ctx.organizationId,
+    invitationId,
+    inv.email,
+    inv.fromFounder
+      ? renderOwnerInvitation({
+          email: inv.email,
+          businessName: inv.organizationName,
+          expiresAt: inv.expiresAt,
+          link: invitationLink(token),
+        })
+      : renderMemberInvitation({
+          email: inv.email,
+          inviterName: inv.invitedByName,
+          businessName: inv.organizationName,
+          role: inv.role,
+          expiresAt: inv.expiresAt,
+          link: invitationLink(token),
+          resent: true,
+        }),
+    { kind: inv.fromFounder ? 'owner' : 'member', resent: true },
+  );
   return { invitationToken: token };
 }
