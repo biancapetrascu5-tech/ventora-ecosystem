@@ -1,4 +1,4 @@
-export type { EmailChannel, SendEmailParams } from './email.js';
+export type { EmailChannel, SendEmailParams } from './email';
 export {
   EmailNotConfiguredError,
   DEFAULT_FROM,
@@ -6,20 +6,20 @@ export {
   emailFrom,
   emailReplyTo,
   supportEmail,
-} from './email.js';
-export { ResendEmailAdapter } from './adapters/resend.js';
-export { LogEmailAdapter } from './adapters/log.js';
-export { UnconfiguredEmailChannel } from './adapters/unconfigured.js';
-export { CaptureEmailAdapter } from './adapters/capture.js';
-export { makeEmailChannel, setEmailChannel, getEmailChannel, deliverEmail } from './channel.js';
-export type { DeliveryResult, EmailFailureReason } from './channel.js';
-export { passwordResetLink, invitationLink } from './links.js';
-export type { AuthApp } from './links.js';
+} from './email';
+export { ResendEmailAdapter } from './adapters/resend';
+export { LogEmailAdapter } from './adapters/log';
+export { UnconfiguredEmailChannel } from './adapters/unconfigured';
+export { CaptureEmailAdapter } from './adapters/capture';
+export { makeEmailChannel, setEmailChannel, getEmailChannel, deliverEmail } from './channel';
+export type { DeliveryResult, EmailFailureReason } from './channel';
+export { passwordResetLink, invitationLink } from './links';
+export type { AuthApp } from './links';
 export {
   renderPasswordReset,
   renderMemberInvitation,
   renderOwnerInvitation,
   renderOwnerRecovery,
-} from './templates/index.js';
-export type { RenderedEmail, MembershipRoleName } from './templates/index.js';
-export { sendOwnerRecoveryNotice } from './owner-recovery.js';
+} from './templates/index';
+export type { RenderedEmail, MembershipRoleName } from './templates/index';
+export { sendOwnerRecoveryNotice } from './owner-recovery';

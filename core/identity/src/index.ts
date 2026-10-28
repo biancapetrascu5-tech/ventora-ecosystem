@@ -12,3 +12,4 @@ export {
 } from './founder-contracts';
 export type { FounderSession, FounderUserRecord } from './founder-contracts';
 export { setSessionActiveOrganization } from './contract';
+export { setAuthBackgroundTaskHandler } from './background';

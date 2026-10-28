@@ -21,6 +21,7 @@ export const AuditActions = {
   passwordResetCompleted: 'password.reset_completed', // E17
   passwordResetFailed: 'password.reset_failed', // E18
   passwordChanged: 'password.changed', // E19
+  passwordResetEmailFailed: 'password.reset_email_failed', // Lot 2.5b — reset email not delivered
   // §2.3 Organizations and access
   organizationCreated: 'org.created', // E20
   invitationCreated: 'invitation.created', // E21

@@ -17,7 +17,7 @@ const {
   deliverEmail,
   makeEmailChannel,
   setEmailChannel,
-} = await import('../index.js');
+} = await import('../index');
 
 const TOKEN = 'tok_0123456789abcdef';
 const message = {
@@ -130,7 +130,7 @@ describe('deliverEmail', () => {
   });
 
   it('sendOwnerRecoveryNotice (2.5c) goes through the channel', async () => {
-    const { sendOwnerRecoveryNotice } = await import('../index.js');
+    const { sendOwnerRecoveryNotice } = await import('../index');
     const capture = new CaptureEmailAdapter();
     setEmailChannel(capture);
     const result = await sendOwnerRecoveryNotice({

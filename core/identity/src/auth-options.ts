@@ -6,7 +6,14 @@ import type { UserWithTwoFactor } from 'better-auth/plugins/two-factor';
 import type { PrismaClient as IdentityBaseClient } from '../generated/identity-client';
 import type { PrismaClient as FounderBaseClient } from '../generated/founder-client';
 import { hashPassword, verifyPassword } from './password-policy';
+import {
+  deliverEmail,
+  passwordResetLink,
+  renderPasswordReset,
+  type AuthApp,
+} from '@ventora/notifications';
 import { createAuthAuditHooks } from './audit-hooks';
+import { runAuthBackgroundTask } from './background';
 
 const HUB_RATE_LIMIT = {
   enabled: true,
@@ -67,6 +74,43 @@ export async function revokeOtherSessionsOn2faEnroll(
   await audit.sessionsRevokedOn2faEnroll(ctx, userId, revoked.count);
 }
 
+/**
+ * emailAndPassword.sendResetPassword: E-1 (Hub) / E-2 (Founder) through core/notifications.
+ * Better Auth calls it only for an existing account. The link is built from the token and the
+ * app's public URL (B-4), not from Better Auth's `url` (no baseURL is configured). Never throws:
+ * a failed delivery is logged and audited, the reset request itself has already succeeded.
+ */
+export function createSendResetPassword(app: AuthApp, audit: AuthAudit) {
+  return async (
+    data: { user: { id: string; email: string; name?: string | null }; token: string },
+    request?: Request,
+  ): Promise<void> => {
+    const { user, token } = data;
+    const rendered = renderPasswordReset({
+      app,
+      email: user.email,
+      name: user.name,
+      link: passwordResetLink(app, token),
+    });
+    const result = await deliverEmail({
+      to: user.email,
+      subject: rendered.subject,
+      html: rendered.html,
+      text: rendered.text,
+    });
+    if (result.status === 'failed') {
+      await audit.passwordResetEmailFailed(
+        { headers: request?.headers },
+        user.id,
+        user.email,
+        result.reason,
+      );
+    }
+  };
+}
+
+const BACKGROUND_TASKS = { handler: runAuthBackgroundTask };
+
 export function createHubAuthOptions(db: IdentityBaseClient, secret: string) {
   const REMEMBER_ME_SECONDS = 30 * 24 * 60 * 60;
 
@@ -98,8 +142,7 @@ export function createHubAuthOptions(db: IdentityBaseClient, secret: string) {
       resetPasswordTokenExpiresIn: 3600,
       // D17: a completed password reset closes every open session of the user
       revokeSessionsOnPasswordReset: true,
-      // no-op: password reset emails are sent by a separate service watching the verification table
-      sendResetPassword: async () => {},
+      sendResetPassword: createSendResetPassword('hub', audit),
     },
     rateLimit: HUB_RATE_LIMIT,
     session: {
@@ -129,6 +172,8 @@ export function createHubAuthOptions(db: IdentityBaseClient, secret: string) {
         httpOnly: true,
       },
       ipAddress: { ipAddressHeaders: ['x-forwarded-for'] },
+      // the reset email leaves after the response (timing, B-6)
+      backgroundTasks: BACKGROUND_TASKS,
     },
   };
 }
@@ -164,7 +209,7 @@ export function createFounderAuthOptions(db: FounderBaseClient, secret: string) 
       resetPasswordTokenExpiresIn: 3600,
       // D17: a completed password reset closes every open session of the user
       revokeSessionsOnPasswordReset: true,
-      sendResetPassword: async () => {},
+      sendResetPassword: createSendResetPassword('founder', audit),
     },
     rateLimit: FOUNDER_RATE_LIMIT,
     session: {
@@ -190,6 +235,7 @@ export function createFounderAuthOptions(db: FounderBaseClient, secret: string) 
         httpOnly: true,
       },
       ipAddress: { ipAddressHeaders: ['x-forwarded-for'] },
+      backgroundTasks: BACKGROUND_TASKS,
     },
   };
 }

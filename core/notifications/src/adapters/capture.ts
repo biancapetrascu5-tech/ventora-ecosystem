@@ -1,4 +1,4 @@
-import type { EmailChannel, SendEmailParams } from '../email.js';
+import type { EmailChannel, SendEmailParams } from '../email';
 
 // Test double: keeps every message in memory so tests can read the link instead of
 // reading tokens from the database. `failWith` makes the next sends throw.

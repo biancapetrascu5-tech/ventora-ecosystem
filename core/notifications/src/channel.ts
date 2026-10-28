@@ -1,7 +1,7 @@
-import { ResendEmailAdapter } from './adapters/resend.js';
-import { LogEmailAdapter } from './adapters/log.js';
-import { UnconfiguredEmailChannel } from './adapters/unconfigured.js';
-import { EmailNotConfiguredError, type EmailChannel, type SendEmailParams } from './email.js';
+import { ResendEmailAdapter } from './adapters/resend';
+import { LogEmailAdapter } from './adapters/log';
+import { UnconfiguredEmailChannel } from './adapters/unconfigured';
+import { EmailNotConfiguredError, type EmailChannel, type SendEmailParams } from './email';
 
 /**
  * - RESEND_API_KEY set → Resend.
