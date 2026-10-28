@@ -124,6 +124,8 @@ try {
     DATABASE_URL_TEST: ADMIN_ACCESS,
     DATABASE_URL_ADMIN_TEST: ADMIN_ACCESS,
     DATABASE_URL: ADMIN_ACCESS,
+    // Lot 2.5c: sesiunea de suport și recuperarea owner-ului rulează pe founder_runtime
+    DATABASE_URL_FOUNDER_TEST: `postgresql://founder_runtime:${TEST_DB.founderPw}@localhost:5433/${TEST_DB.accessDb}`,
     BETTER_AUTH_SECRET: TEST_DB.betterAuthSecret,
     FOUNDER_AUTH_SECRET: TEST_DB.founderAuthSecret,
   });
