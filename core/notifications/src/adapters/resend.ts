@@ -1,5 +1,5 @@
 import { Resend } from 'resend';
-import { emailFrom, emailReplyTo, type EmailChannel, type SendEmailParams } from '../email.js';
+import { emailFrom, emailReplyTo, type EmailChannel, type SendEmailParams } from '../email';
 
 export class ResendEmailAdapter implements EmailChannel {
   private client: Resend;

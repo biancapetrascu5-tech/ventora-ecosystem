@@ -1,12 +1,12 @@
 import { describe, expect, it } from 'vitest';
 import { SUPPORTED_LOCALES, CANONICAL_LOCALE } from '@ventora/i18n';
-import { emailMessages } from '../templates/messages.js';
+import { emailMessages } from '../templates/messages';
 import {
   renderMemberInvitation,
   renderOwnerInvitation,
   renderOwnerRecovery,
   renderPasswordReset,
-} from '../index.js';
+} from '../index';
 
 // i18n:check guarantees the same keys; this guarantees the same placeholders, so a
 // translation can never drop {link data} or ask for a value the code does not pass.

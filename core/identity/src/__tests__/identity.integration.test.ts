@@ -20,6 +20,13 @@ import { makeIdentityClient, makeFounderClient } from '../db';
 import { hashPassword, verifyPassword } from '../password-policy';
 import { createHubAuthOptions, createFounderAuthOptions } from '../auth-options';
 import { requireTestEnv, shouldSkipForEnv } from './env-guard';
+import { CaptureEmailAdapter, passwordResetLink, setEmailChannel } from '@ventora/notifications';
+
+// Every email sent by Better Auth (password reset) lands here instead of a provider.
+// The test instances override `advanced`, so there are no background tasks: the send is
+// awaited inside the request and the message is readable as soon as the response is.
+const mailbox = new CaptureEmailAdapter();
+setEmailChannel(mailbox);
 
 const DB_URL = process.env.DATABASE_URL;
 if (!DB_URL) throw new Error('DATABASE_URL required');
@@ -104,6 +111,7 @@ afterAll(async () => {
 });
 
 beforeEach(async () => {
+  mailbox.clear();
   await identityDb.session.deleteMany({});
   await identityDb.account.deleteMany({});
   await identityDb.twoFactor.deleteMany({});
@@ -1860,6 +1868,106 @@ describe.skipIf(shouldSkipForEnv('DATABASE_URL_ADMIN_TEST'))(
     });
   },
 );
+
+// ---------------------------------------------------------------------------
+// Lot 2.5b — password reset email (E-1 Hub, E-2 Founder)
+// ---------------------------------------------------------------------------
+function tokenFromMail(text: string): string {
+  const token = text.match(/reset-password\?token=([^\s&]+)/)?.[1];
+  expect(token).toBeTruthy();
+  return decodeURIComponent(token!);
+}
+
+describe.skipIf(shouldSkipForEnv('DATABASE_URL_ADMIN_TEST'))('PR — password reset email', () => {
+  it('PR.1 — existing Hub account: exactly one email whose link carries the stored token', async () => {
+    const email = 'pr1@test.com';
+    const { user } = await signUp(email, 'Password123', 'Ana Pop');
+    const { resp } = await post(hubAuth, '/request-password-reset', { email });
+    expect(resp.status).toBe(200);
+
+    const mails = mailbox.to(email);
+    expect(mails).toHaveLength(1);
+    expect(mails[0]!.subject).toBe('Alege o parolă nouă pentru contul Ventora');
+    expect(mails[0]!.text).toContain('Bună, Ana Pop,');
+    const token = tokenFromMail(mails[0]!.text!);
+    expect(mails[0]!.text).toContain(passwordResetLink('hub', token));
+    expect(mails[0]!.html).toContain('Ventora Systems SRL');
+
+    const row = await identityDb.verification.findFirst({
+      where: { identifier: `reset-password:${token}` },
+    });
+    expect(row?.value).toBe(user.id);
+  });
+
+  it('PR.2 — unknown email: no email, same 200 answer', async () => {
+    const { resp } = await post(hubAuth, '/request-password-reset', {
+      email: 'nobody.pr2@test.com',
+    });
+    expect(resp.status).toBe(200);
+    expect(mailbox.sent).toHaveLength(0);
+  });
+
+  it('PR.3 — the link from the email resets the password', async () => {
+    const email = 'pr3@test.com';
+    await signUp(email, 'Password123');
+    await post(hubAuth, '/request-password-reset', { email });
+    const token = tokenFromMail(mailbox.to(email)[0]!.text!);
+
+    const reset = await post(hubAuth, '/reset-password', { token, newPassword: 'NewPassword123' });
+    expect(reset.resp.status).toBe(200);
+    expect((await signIn(email, 'NewPassword123'))?.token).toBeTruthy();
+    await expect(signIn(email, 'Password123')).rejects.toThrow();
+  });
+
+  it('PR.4 — delivery fails: still 200, password.reset_email_failed audited without the address', async () => {
+    const email = 'pr4@test.com';
+    const { user } = await signUp(email, 'Password123');
+    mailbox.failWith = new Error('[notifications] Resend error: rate_limit_exceeded');
+    const errors = vi.spyOn(console, 'error').mockImplementation(() => {});
+    try {
+      const { resp, requestId } = await post(hubAuth, '/request-password-reset', { email });
+      expect(resp.status).toBe(200);
+      const rows = await byRequest(requestId);
+      const failed = rows.find((r) => r.action === 'password.reset_email_failed');
+      expect(failed).toMatchObject({
+        category: 'identity',
+        outcome: 'failure',
+        actor_type: 'system',
+        actor_id: null,
+        target_type: 'user',
+        target_id: user.id,
+        metadata: { reason: 'provider_error', emailHash: hashEmail(email) },
+      });
+      expect(JSON.stringify(failed)).not.toContain(email);
+      // E16 is still there: the request itself succeeded
+      expect(rows.some((r) => r.action === 'password.reset_requested')).toBe(true);
+    } finally {
+      errors.mockRestore();
+    }
+  });
+
+  it('PR.5 — Founder: email with the Founder link; the link resets the password', async () => {
+    const email = 'pr5@founder.com';
+    await founderAuthTest.api.signUpEmail({
+      body: { email, password: 'FounderPass12', name: 'Founder PR5' }, // gitleaks:allow
+    });
+    const { resp } = await post(founderAuthTest, '/request-password-reset', { email });
+    expect(resp.status).toBe(200);
+
+    const mails = mailbox.to(email);
+    expect(mails).toHaveLength(1);
+    expect(mails[0]!.subject).toBe('Resetarea parolei pentru Ventora Founder');
+    expect(mails[0]!.text).toContain('support@ventorasystems.com');
+    const token = tokenFromMail(mails[0]!.text!);
+    expect(mails[0]!.text).toContain(passwordResetLink('founder', token));
+
+    const reset = await post(founderAuthTest, '/reset-password', {
+      token,
+      newPassword: 'FounderNewPass12', // gitleaks:allow
+    });
+    expect(reset.resp.status).toBe(200);
+  });
+});
 
 describe.skipIf(shouldSkipForEnv('DATABASE_URL_ADMIN_TEST'))('T3.7 — Founder audit', () => {
   it('E30 — Founder login succeeded / failed, 2FA enrollment, 2FA required', async () => {

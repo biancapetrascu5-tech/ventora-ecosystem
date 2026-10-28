@@ -151,6 +151,26 @@ export function createAuthAuditHooks(kind: AuthKind, db: AuthDb) {
     });
   }
 
+  /**
+   * The password reset email was not delivered (Lot 2.5b). Actor `system`: the request itself
+   * succeeded and is already audited as E16. Never the address in clear, only its hash.
+   */
+  async function passwordResetEmailFailed(
+    ctx: HookCtx,
+    userId: string,
+    email: string,
+    reason: string,
+  ): Promise<void> {
+    await write(ctx, {
+      action: AuditActions.passwordResetEmailFailed,
+      outcome: 'failure',
+      system: true,
+      targetType,
+      targetId: userId,
+      metadata: { reason, emailHash: hashEmail(email) },
+    });
+  }
+
   async function after(ctx: HookCtx): Promise<void> {
     const path: string = ctx.path;
     const returned = ctx.context.returned;
@@ -398,7 +418,13 @@ export function createAuthAuditHooks(kind: AuthKind, db: AuthDb) {
     });
   }
 
-  return { before, after, trustDeviceRejected, sessionsRevokedOn2faEnroll };
+  return {
+    before,
+    after,
+    trustDeviceRejected,
+    sessionsRevokedOn2faEnroll,
+    passwordResetEmailFailed,
+  };
 }
 
 function errorCode(err: unknown): string | null {

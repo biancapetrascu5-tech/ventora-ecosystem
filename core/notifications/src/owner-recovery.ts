@@ -1,5 +1,5 @@
-import { deliverEmail, type DeliveryResult } from './channel.js';
-import { renderOwnerRecovery } from './templates/index.js';
+import { deliverEmail, type DeliveryResult } from './channel';
+import { renderOwnerRecovery } from './templates/index';
 
 /**
  * E-5: tells the owner that the Ventora team reset their two-step authentication.

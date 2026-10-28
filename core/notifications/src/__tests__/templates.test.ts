@@ -6,7 +6,7 @@ import {
   renderOwnerInvitation,
   renderOwnerRecovery,
   renderPasswordReset,
-} from '../index.js';
+} from '../index';
 
 const saved = { ...process.env };
 afterEach(() => {

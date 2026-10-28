@@ -1,9 +1,9 @@
 import { CANONICAL_LOCALE, type Locale } from '@ventora/i18n';
-import { supportEmail } from '../email.js';
-import { renderOperationalEmail, type RenderedEmail } from './layout.js';
-import { emailMessages, fill, type EmailMessages } from './messages.js';
+import { supportEmail } from '../email';
+import { renderOperationalEmail, type RenderedEmail } from './layout';
+import { emailMessages, fill, type EmailMessages } from './messages';
 
-export type { RenderedEmail } from './layout.js';
+export type { RenderedEmail } from './layout';
 export type MembershipRoleName = keyof EmailMessages['roles'];
 
 // B-5: Romanian until the recipient's language is stored with the account.
