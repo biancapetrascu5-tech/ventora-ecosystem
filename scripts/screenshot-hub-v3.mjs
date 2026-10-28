@@ -18,9 +18,12 @@
  */
 
 import { createRequire } from 'module';
-import { mkdir } from 'fs/promises';
+import { mkdir, readFile, writeFile } from 'fs/promises';
+import { existsSync } from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import pixelmatch from 'pixelmatch';
+import { PNG } from 'pngjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.join(__dirname, '..');
@@ -228,6 +231,77 @@ async function captureGallery(page, variant) {
   console.log(`  ✓ ${filename}${suffix}`);
 }
 
+/* ── Captură galerie _design (/design/preview/<Name>) ────────────────── */
+async function captureGalleryDesign(page, variant) {
+  const { name, viewport, theme } = variant;
+  const height = viewport === 390 ? 844 : 900;
+  await page.setViewportSize({ width: viewport, height });
+
+  const url = `${BASE}/design/preview/${name}`;
+  await page.goto(url, { waitUntil: 'networkidle' });
+  await hideDevOverlay(page);
+  await page.evaluate((t) => document.documentElement.setAttribute('data-theme', t), theme);
+  await page.waitForTimeout(400);
+
+  const filename = `gallery_${name}_${viewport}_${theme}_design.png`;
+  const outPath = path.join(OUT, filename);
+  await page.screenshot({ path: outPath, fullPage: true });
+  console.log(`  ✓ ${filename}`);
+}
+
+/* ── Diff pixelmatch ─────────────────────────────────────────────────── */
+async function computeDiff(name, viewport, theme) {
+  const implPath = path.join(OUT, `gallery_${name}_${viewport}_${theme}_impl.png`);
+  const designPath = path.join(OUT, `gallery_${name}_${viewport}_${theme}_design.png`);
+  const diffPath = path.join(OUT, `gallery_${name}_${viewport}_${theme}_diff.png`);
+
+  if (!existsSync(implPath) || !existsSync(designPath)) {
+    return { name, viewport, theme, pct: null, note: 'lipsă captură' };
+  }
+
+  const [implBuf, designBuf] = await Promise.all([readFile(implPath), readFile(designPath)]);
+  const impl = PNG.sync.read(implBuf);
+  const design = PNG.sync.read(designBuf);
+
+  // Crop la dimensiunile minime pentru comparație corectă
+  const w = Math.min(impl.width, design.width);
+  const h = Math.min(impl.height, design.height);
+
+  // Extrage regiunile cropped
+  function cropPNG(src, cw, ch) {
+    const dst = new PNG({ width: cw, height: ch });
+    for (let y = 0; y < ch; y++) {
+      for (let x = 0; x < cw; x++) {
+        const si = (y * src.width + x) * 4;
+        const di = (y * cw + x) * 4;
+        dst.data[di] = src.data[si];
+        dst.data[di + 1] = src.data[si + 1];
+        dst.data[di + 2] = src.data[si + 2];
+        dst.data[di + 3] = src.data[si + 3];
+      }
+    }
+    return dst;
+  }
+
+  const implCrop = cropPNG(impl, w, h);
+  const designCrop = cropPNG(design, w, h);
+  const diffPNG = new PNG({ width: w, height: h });
+
+  const numDiff = pixelmatch(implCrop.data, designCrop.data, diffPNG.data, w, h, {
+    threshold: 0.1,
+  });
+
+  await writeFile(diffPath, PNG.sync.write(diffPNG));
+
+  const pct = ((numDiff / (w * h)) * 100).toFixed(2);
+  const sizeMismatch =
+    impl.width !== design.width || impl.height !== design.height
+      ? ` (impl ${impl.width}×${impl.height} vs design ${design.width}×${design.height})`
+      : '';
+  console.log(`  diff ${name} ${viewport} ${theme}: ${pct}%${sizeMismatch}`);
+  return { name, viewport, theme, pct: parseFloat(pct), sizeMismatch: sizeMismatch || null };
+}
+
 /* ── Main ─────────────────────────────────────────────────────────────── */
 async function main() {
   await mkdir(OUT, { recursive: true });
@@ -271,7 +345,7 @@ async function main() {
     }
   }
 
-  console.log('\n── Galerii Lot 4-6 + Agenda ──');
+  console.log('\n── Galerii Lot 4-6 + Agenda (_impl) ──');
   for (const variant of GALLERY_VARIANTS) {
     try {
       await captureGallery(page, variant);
@@ -282,9 +356,69 @@ async function main() {
     }
   }
 
+  // Capturi _design pentru galerii (regula 12)
+  const LOT4_NAMES = [
+    'Toast',
+    'StatusPill',
+    'StatusDot',
+    'Badge',
+    'Avatar',
+    'Notice',
+    'AttentionList',
+    'EmptyState',
+    'Skeleton',
+    'ProgressBar',
+    'UsageMeter',
+    'Kbd',
+  ];
+  const GALLERY_DESIGN_VARIANTS = [];
+  for (const name of LOT4_NAMES) {
+    for (const viewport of [1280, 390]) {
+      for (const theme of ['light', 'dark']) {
+        GALLERY_DESIGN_VARIANTS.push({ name, viewport, theme });
+      }
+    }
+  }
+
+  console.log('\n── Galerii Lot 4 (_design — /design/preview/<Name>) ──');
+  for (const variant of GALLERY_DESIGN_VARIANTS) {
+    try {
+      await captureGalleryDesign(page, variant);
+    } catch (err) {
+      console.error(
+        `  ✗ gallery_${variant.name}_${variant.viewport}_${variant.theme}_design: ${err.message}`,
+      );
+    }
+  }
+
   await browser.close();
 
-  const total = IMPL_VARIANTS.length + DESIGN_VARIANTS.length + GALLERY_VARIANTS.length;
+  // Calculează diff-urile pixelmatch
+  console.log('\n── Diff pixelmatch Lot 4 ──');
+  const diffResults = [];
+  for (const variant of GALLERY_DESIGN_VARIANTS) {
+    const result = await computeDiff(variant.name, variant.viewport, variant.theme);
+    diffResults.push(result);
+  }
+
+  // Tabel sumar diff
+  console.log('\n── Sumar diff ──');
+  console.log('Component         | 1280 light | 1280 dark | 390 light | 390 dark');
+  console.log('------------------|------------|-----------|-----------|----------');
+  for (const name of LOT4_NAMES) {
+    const get = (vp, th) => {
+      const r = diffResults.find((d) => d.name === name && d.viewport === vp && d.theme === th);
+      return r ? (r.pct !== null ? `${r.pct}%` : r.note) : '—';
+    };
+    const row = `${name.padEnd(17)} | ${get(1280, 'light').padStart(10)} | ${get(1280, 'dark').padStart(9)} | ${get(390, 'light').padStart(9)} | ${get(390, 'dark').padStart(8)}`;
+    console.log(row);
+  }
+
+  const total =
+    IMPL_VARIANTS.length +
+    DESIGN_VARIANTS.length +
+    GALLERY_VARIANTS.length +
+    GALLERY_DESIGN_VARIANTS.length;
   console.log(`\nGata: ${total} capturi în screenshots/\n`);
 }
 

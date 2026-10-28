@@ -1,17 +1,19 @@
 /* eslint-disable i18next/no-literal-string */
 'use client';
+import type React from 'react';
 import { notFound } from 'next/navigation';
 import { EmptyState, Button, Icon } from '@ventora/ui';
 import { GalleryShell, GallerySection } from '../_shared/GalleryShell';
 
-const frame = {
+const frame: React.CSSProperties = {
   border: 'var(--border-width) solid var(--line)',
   borderRadius: 'var(--radius-md)',
   background: 'var(--sheet)',
   padding: 'var(--space-4)',
-  width: '360px',
-  maxWidth: '100%',
-} as const;
+  boxSizing: 'border-box',
+  width: '100%',
+  maxWidth: '360px',
+};
 
 export default function EmptyStateGalleryPage() {
   if (process.env.NODE_ENV !== 'development') notFound();
