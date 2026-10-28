@@ -1,20 +1,27 @@
 /* eslint-disable i18next/no-literal-string */
 'use client';
+import type React from 'react';
 import { notFound } from 'next/navigation';
 import { AttentionList } from '@ventora/ui';
-import { GalleryShell, GallerySection } from '../_shared/GalleryShell';
+import { GalleryShell } from '../_shared/GalleryShell';
 
-const frame = {
+const DG2: React.CSSProperties = {
+  display: 'grid',
+  gridTemplateColumns: 'repeat(auto-fit, minmax(var(--search-width), 1fr))',
+  gap: 'var(--space-4) var(--space-6)',
+  alignItems: 'start',
+  padding: 'var(--space-4)',
+  boxSizing: 'border-box',
+};
+
+const frame: React.CSSProperties = {
   border: 'var(--border-width) solid var(--line)',
   borderRadius: 'var(--radius-md)',
   background: 'var(--sheet)',
-  overflow: 'hidden',
-  flex: '1 1 360px',
-  minWidth: '280px',
-  maxWidth: '480px',
-} as const;
+  boxSizing: 'border-box',
+};
 
-const BOOKING_ATTN = [
+const BK_ATTN = [
   {
     id: 1,
     icon: 'clock' as const,
@@ -31,9 +38,6 @@ const BOOKING_ATTN = [
     time: 'peste 4 h',
     actions: [{ label: 'Confirmă', primary: true }, { label: 'Sună' }],
   },
-];
-
-const PAYMENT_ATTN = [
   {
     id: 3,
     icon: 'wallet' as const,
@@ -65,20 +69,15 @@ const IT_ATTN = [
 export default function AttentionListGalleryPage() {
   if (process.env.NODE_ENV !== 'development') notFound();
   return (
-    <GalleryShell title="AttentionList">
-      <GallerySection label="RO">
+    <GalleryShell>
+      <div style={DG2}>
         <div style={frame}>
-          <AttentionList items={BOOKING_ATTN} />
+          <AttentionList items={BK_ATTN} />
         </div>
-        <div style={frame}>
-          <AttentionList items={PAYMENT_ATTN} />
-        </div>
-      </GallerySection>
-      <GallerySection label="IT">
         <div style={frame}>
           <AttentionList items={IT_ATTN} />
         </div>
-      </GallerySection>
+      </div>
     </GalleryShell>
   );
 }

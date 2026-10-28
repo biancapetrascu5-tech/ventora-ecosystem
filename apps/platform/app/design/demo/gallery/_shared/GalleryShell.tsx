@@ -1,27 +1,14 @@
 'use client';
 
 interface ShellProps {
-  title: string;
+  title?: string;
   children: React.ReactNode;
 }
 
-export function GalleryShell({ title, children }: ShellProps) {
+export function GalleryShell({ children }: ShellProps) {
   return (
-    <div
-      style={{
-        minHeight: '100vh',
-        background: 'var(--canvas)',
-        color: 'var(--ink)',
-        padding: '2rem',
-        fontFamily: 'var(--font-body, sans-serif)',
-      }}
-    >
-      <h1
-        style={{ fontSize: '1.25rem', fontWeight: 600, marginBottom: '2rem', color: 'var(--ink)' }}
-      >
-        {title}
-      </h1>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '2.5rem' }}>{children}</div>
+    <div style={{ minHeight: '100vh', background: 'var(--sheet)', color: 'var(--ink)' }}>
+      {children}
     </div>
   );
 }

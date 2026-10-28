@@ -1,8 +1,9 @@
 /* eslint-disable i18next/no-literal-string */
 'use client';
+import type React from 'react';
 import { notFound } from 'next/navigation';
 import { UsageMeter } from '@ventora/ui';
-import { GalleryShell, GallerySection } from '../_shared/GalleryShell';
+import { GalleryShell } from '../_shared/GalleryShell';
 import ro from '@ventora/i18n/messages/ro.json';
 import de from '@ventora/i18n/messages/de.json';
 
@@ -10,14 +11,31 @@ function tpl(str: string, args: Record<string, string>) {
   return Object.entries(args).reduce((s, [k, v]) => s.replace(`{${k}}`, v), str);
 }
 
-const frame = {
+const DG2: React.CSSProperties = {
+  display: 'grid',
+  gridTemplateColumns: 'repeat(auto-fit, minmax(var(--search-width), 1fr))',
+  gap: 'var(--space-4) var(--space-6)',
+  alignItems: 'start',
   padding: 'var(--space-4)',
+  boxSizing: 'border-box',
+};
+
+const frame: React.CSSProperties = {
   border: 'var(--border-width) solid var(--line)',
   borderRadius: 'var(--radius-md)',
   background: 'var(--sheet)',
-} as const;
+  boxSizing: 'border-box',
+  padding: 'var(--space-4)',
+};
+
+const frameCompact: React.CSSProperties = {
+  ...frame,
+  padding: 'var(--space-3)',
+  maxWidth: 'var(--spine-width)',
+};
 
 const roProps = {
+  locale: 'ro' as const,
   unlimitedLabel: ro.usageMeter.unlimited,
   usedOfLabel: ({ used, limit }: { used: string; limit: string }) =>
     tpl(ro.usageMeter.usedOf, { used, limit }),
@@ -32,6 +50,7 @@ const roProps = {
 };
 
 const deProps = {
+  locale: 'de' as const,
   unlimitedLabel: de.usageMeter.unlimited,
   usedOfLabel: ({ used, limit }: { used: string; limit: string }) =>
     tpl(de.usageMeter.usedOf, { used, limit }),
@@ -48,10 +67,22 @@ const deProps = {
 export default function UsageMeterGalleryPage() {
   if (process.env.NODE_ENV !== 'development') notFound();
   return (
-    <GalleryShell title="UsageMeter">
-      <GallerySection label="RO — stare ok" column>
+    <GalleryShell>
+      <div style={DG2}>
         <div style={frame}>
-          <UsageMeter {...roProps} label="Programări luna aceasta" used={312} limit={1000} />
+          <UsageMeter
+            {...roProps}
+            label="Programări luna aceasta"
+            used={312}
+            limit={1000}
+            onUpgrade={() => {}}
+          />
+        </div>
+        <div style={frame}>
+          <UsageMeter {...roProps} label="SMS-uri" used={862} limit={1000} onUpgrade={() => {}} />
+        </div>
+        <div style={frame}>
+          <UsageMeter {...roProps} label="Angajați" used={10} limit={10} onUpgrade={() => {}} />
         </div>
         <div style={frame}>
           <UsageMeter
@@ -62,40 +93,10 @@ export default function UsageMeterGalleryPage() {
             unit="GB"
             format={(n) => n.toLocaleString('ro-RO')}
           />
-        </div>
-        <div style={frame}>
+          <br />
           <UsageMeter {...roProps} label="Clienți" used={4210} />
         </div>
-      </GallerySection>
-      <GallerySection label="RO — stare warn" column>
-        <div style={frame}>
-          <UsageMeter {...roProps} label="SMS-uri" used={862} limit={1000} onUpgrade={() => {}} />
-        </div>
-      </GallerySection>
-      <GallerySection label="RO — stare limită (owner)" column>
-        <div style={frame}>
-          <UsageMeter
-            {...roProps}
-            label="Angajați"
-            used={10}
-            limit={10}
-            onBuy={() => {}}
-            buyLabel={`${ro.usageMeter.buyMore} · 9,99 €`}
-          />
-        </div>
-        <div style={frame}>
-          <UsageMeter
-            {...roProps}
-            label="Angajați"
-            used={10}
-            limit={10}
-            owner="Maria Constantin"
-            onNotifyOwner={() => {}}
-          />
-        </div>
-      </GallerySection>
-      <GallerySection label="Compact">
-        <div style={{ ...frame, width: '280px' }}>
+        <div style={frameCompact}>
           <UsageMeter
             {...roProps}
             compact
@@ -105,19 +106,6 @@ export default function UsageMeterGalleryPage() {
             onUpgrade={() => {}}
           />
         </div>
-        <div style={{ ...frame, width: '280px' }}>
-          <UsageMeter
-            {...roProps}
-            compact
-            label="Programări"
-            used={1000}
-            limit={1000}
-            onBuy={() => {}}
-            buyLabel={ro.usageMeter.buyMore}
-          />
-        </div>
-      </GallerySection>
-      <GallerySection label="DE — stare limită" column>
         <div style={frame}>
           <UsageMeter
             {...deProps}
@@ -127,7 +115,7 @@ export default function UsageMeterGalleryPage() {
             onUpgrade={() => {}}
           />
         </div>
-      </GallerySection>
+      </div>
     </GalleryShell>
   );
 }

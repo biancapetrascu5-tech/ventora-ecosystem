@@ -8,8 +8,8 @@ import styles from './Notice.module.css';
 export type NoticeTone = 'danger' | 'attention' | 'done' | 'neutral';
 
 const TONE_ICONS: Record<NoticeTone, IconName> = {
-  danger: 'error',
-  attention: 'warning',
+  danger: 'circle-alert',
+  attention: 'triangle-alert',
   done: 'circle-check',
   neutral: 'info',
 };

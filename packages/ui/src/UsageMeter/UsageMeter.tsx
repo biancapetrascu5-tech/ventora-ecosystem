@@ -9,6 +9,7 @@ export interface UsageMeterProps {
   used: number;
   limit?: number;
   unit?: string;
+  locale?: string;
   format?: (n: number) => string;
   compact?: boolean;
   warnAt?: number;
@@ -31,9 +32,9 @@ export interface UsageMeterProps {
   onlyOwnerBuysLabel?: (args: { who: string }) => string;
 }
 
-function fmt(n: number, format?: (n: number) => string): string {
+function fmt(n: number, format?: (n: number) => string, locale?: string): string {
   if (format) return format(n);
-  return n.toLocaleString();
+  return n.toLocaleString(locale);
 }
 
 export function UsageMeter({
@@ -41,6 +42,7 @@ export function UsageMeter({
   used = 0,
   limit,
   unit,
+  locale,
   format,
   compact,
   warnAt = 0.8,
@@ -72,7 +74,7 @@ export function UsageMeter({
         : 'ok';
   const remaining = unlimited ? null : Math.max(0, limit! - used);
   const u = unit ? ` ${unit}` : '';
-  const f = (n: number) => fmt(n, format);
+  const f = (n: number) => fmt(n, format, locale);
 
   const countText = unlimited
     ? (unlimitedLabel ?? '')

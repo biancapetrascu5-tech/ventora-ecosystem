@@ -3,23 +3,29 @@
 import type React from 'react';
 import { notFound } from 'next/navigation';
 import { EmptyState, Button, Icon } from '@ventora/ui';
-import { GalleryShell, GallerySection } from '../_shared/GalleryShell';
+import { GalleryShell } from '../_shared/GalleryShell';
+
+const DG2: React.CSSProperties = {
+  display: 'grid',
+  gridTemplateColumns: 'repeat(auto-fit, minmax(var(--search-width), 1fr))',
+  gap: 'var(--space-4) var(--space-6)',
+  alignItems: 'start',
+  padding: 'var(--space-4)',
+  boxSizing: 'border-box',
+};
 
 const frame: React.CSSProperties = {
   border: 'var(--border-width) solid var(--line)',
   borderRadius: 'var(--radius-md)',
   background: 'var(--sheet)',
-  padding: 'var(--space-4)',
   boxSizing: 'border-box',
-  width: '100%',
-  maxWidth: '360px',
 };
 
 export default function EmptyStateGalleryPage() {
   if (process.env.NODE_ENV !== 'development') notFound();
   return (
-    <GalleryShell title="EmptyState">
-      <GallerySection label="RO" column>
+    <GalleryShell>
+      <div style={DG2}>
         <div style={frame}>
           <EmptyState
             icon="calendar"
@@ -57,8 +63,6 @@ export default function EmptyStateGalleryPage() {
             }
           />
         </div>
-      </GallerySection>
-      <GallerySection label="DE" column>
         <div style={frame}>
           <EmptyState
             size="sm"
@@ -67,7 +71,7 @@ export default function EmptyStateGalleryPage() {
             description="Sobald Sie eine Rechnung erstellen, erscheint sie hier."
           />
         </div>
-      </GallerySection>
+      </div>
     </GalleryShell>
   );
 }
