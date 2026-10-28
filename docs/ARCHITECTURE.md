@@ -1,6 +1,6 @@
 # VENTORA ECOSYSTEM — ARHITECTURĂ TEHNICĂ
 
-**Versiune:** 0.4.5
+**Versiune:** 0.4.6
 **Data:** 28 octombrie 2026
 **Stadiu:** Faza 0 închisă (tag `faza-0`). Deciziile marcate CONFIRMAT sunt baza implementării; cele PROPUS sau NECESITĂ DECIZIE nu se implementează fără aprobare.
 
@@ -28,6 +28,7 @@
 | 0.4.3 | 27.10.2026 | Ecranele Hub pornesc în paralel cu F3 și F4, imediat după F1 și F2, pe contracte definite dinainte (D-ROAD-4). Regiunea Resend confirmată (eu-west-1). Regulile SMS: GSM-7 fără diacritice (D-SMS-10) și mai multe telefoane (D-SMS-11). Detalii: §17.20. |
 | 0.4.4 | 27.10.2026 | ADR 0003: organizațiile se implementează în modulul propriu `core/organizations`, nu prin plugin-ul Better Auth; organizația activă rămâne în sesiune, printr-un câmp propriu. D-AUTH-5 actualizat. Detalii: §17.21. |
 | 0.4.5 | 28.10.2026 | Deciziile din 27–28.10: 2FA (R-2F1, R-2F2, R-2F3, R-2F5, R-2F7, R-2F9; înlocuiesc P5 și D10 din fișele de review), loturile 2.4a/b și 2.5a/b/c, separatorul de mii și AttentionList 2.0.0, staging (D-INF-3), e-mailul tranzacțional (expeditor, Reply-To, șablon unic, valabilități), deciziile L2.5-D0…D18 (jurnal de audit, sesiune de suport, recuperarea owner-ului). Detalii: §17.22. |
+| 0.4.6 | 28.10.2026 | Decizii ale fondatoarei: workflow engine în Core, construit în F4, automatizările construite și pornite doar din Founder (D-WF-1…5); funnel builder doar în Founder, cu publicare pe domeniul afacerii sau pe un domeniu Ventora (D-FUN-1…6); asistentul AI în Core, prin `authorize()`, cu confirmare înainte de scriere și audit (D-AI-1…5); cele trei marcate obligatorii pentru produs în planul fazelor (D-ROAD-5). Contradicțiile cu brief-ul și checklisturile sunt în registru (C14–C16), nerezolvate. Detalii: §17.23. |
 
 ## Statusuri folosite în acest document
 
@@ -170,6 +171,11 @@ Core conține doar **servicii de business ale platformei**: lucruri pe care le d
 
 Automatizările comune (brief §37): motorul e în Core (`integrations`), iar fiecare automatizare predefinită aparține modulului care o folosește. Status: PROPUS.
 
+**Decizii din 28.10.2026 (§17.23):**
+
+- **Workflow engine (D-WF-1…5, CONFIRMAT):** motorul care rulează automatizările e un serviciu comun în Core, proiectat și construit în F4, după outbox și evenimente. Constructorul de automatizări, pornirea și oprirea există doar în Founder Control Center: echipa Ventora construiește automatizările pentru o afacere. În Hub, owner-ul și adminul văd lista automatizărilor active, doar pentru citire, fără buton de pornit sau oprit. Serviciul Core exact (`integrations` sau unul propriu) se stabilește la proiectarea din F4. Fraza de mai sus („fiecare automatizare predefinită aparține modulului”) rămâne până la reconcilierea C14 (§16).
+- **Asistentul AI (D-AI-1…5, CONFIRMAT):** stă în `ai` și e disponibil în aplicațiile afacerilor. Trece prin `authorize()`, cu identitatea persoanei care îl folosește; cere un card de confirmare înainte de orice scriere; fiecare acțiune intră în jurnalul de audit pe numele persoanei, marcată ca făcută prin asistent. Faza: după F4, de stabilit.
+
 ---
 
 ## 5. Responsabilitățile celor 15 aplicații
@@ -214,6 +220,17 @@ Fiecare aplicație are o stare înregistrată în `docs/checklists/<app>.md` și
 
 - Doar aplicațiile `Pilot` (pentru organizațiile din pilot) și `Production ready` pot fi activate pentru clienți.
 - Starea `Production ready` cere **toate** funcționalitățile confirmate din checklist, bifate și testate, plus criteriile din brief §56. Un flux principal funcțional nu e suficient.
+
+### 5.3 Funnel builder
+
+**Status: CONFIRMAT (D-FUN-1…6, 28.10.2026); faza: NECESITĂ DECIZIE.** Contradicția cu C3c și cu checklistul Marketing: C15 (§16).
+
+- Constructorul de pagini există **doar în Founder Control Center**: echipa Ventora construiește și publică paginile pentru o afacere.
+- Publicarea se face pe domeniul afacerii sau pe un domeniu Ventora. Domeniile proprii (DNS, verificare) se fac odată cu proiectul Vercel, care azi nu există (D-INF-3).
+- În Hub, afacerea vede lista paginilor publicate, doar pentru citire.
+- Numărul de pagini e o cotă a abonamentului (§8.5), cu pachet cumpărabil la limită.
+- Tehnic stă lângă CampaignKit (Marketing).
+- Referință de idei: funnel builder-ul din Hub 1.0 (blocuri, previzualizare, `/f/[slug]`, domenii proprii). Nu se migrează cod (D-MIG-1).
 
 ---
 
@@ -514,6 +531,7 @@ export const manifest = {
 - **Anunțul la migrare (CONFIRMAT, P19):** când versiunea nouă e în **dezavantajul** clientului (preț mai mare sau mai puțin inclus), migrarea se programează cu **anunț cu cel puțin 30 de zile înainte**, fără excepție. Când e doar în **avantajul** clientului, se aplică imediat, cu anunț. Clasificarea (avantaj/dezavantaj) se calculează automat din diferențele dintre versiuni și se arată în editor; Founder nu o poate ocoli.
 - **Excepțiile au termen obligatoriu (CONFIRMAT, P17):** orice override are dată de expirare, **cel mult 12 luni**, prelungibilă explicit (prelungirea e auditată). Cu 7 zile înainte de expirare apare în „Prezentare” din Founder. Excepțiile nu se șterg: se încheie și rămân în istoric.
 - **SMS de pe numărul propriu (D-SMS-4):** funcționalitatea `booking.sms.ownNumber` în planurile Booking eligibile; numărul de telefoane conectate e o cotă de stoc (`booking.sms.devices`, 1 inclus), iar telefoanele suplimentare sunt add-on cumpărabil de Owner (D-COM-6). SMS-urile trimise de pe SIM-ul propriu **nu consumă** cota de SMS Ventora. Prețurile și planurile eligibile: NECESITĂ DECIZIE.
+- **Automatizări active și pagini publicate (CONFIRMAT, D-WF-4, D-FUN-4, 28.10.2026):** numărul de automatizări active simultan și numărul de pagini publicate sunt cote de stoc ale abonamentului, construite în F3 odată cu modelul comercial (planuri, drepturi, cote). Owner-ul le vede ca `UsageMeter` în Administrare, pe ecranul de abonament și consum (`HubAdminPlan`). La limită cumpără singur un pachet în plus cu cardul (`AddonPurchase`, D-COM-6) sau cere alt abonament (D-COM-7). Cheile cotelor și pachetele: NECESITĂ DECIZIE la proiectarea F3.
 - **Dreptul efectiv** = PlanVersion + add-on-uri active + excepții (override-uri) active, calculat de o singură funcție. Pattern-ul vine din `get-org-effective-limits.ts`, componenta recomandată de audit (L15). `null` înseamnă nelimitat.
 - Orice modificare făcută de Founder → `CommercialAuditEvent`.
 
@@ -1003,7 +1021,7 @@ Plus, la nivel de platformă: teste de webhook Stripe (semnătură, idempotenț�
 **Status: PROPUS; domeniile CONFIRMAT (D-INF-1)**
 
 - **Medii:** `local` (Supabase local), `staging`, `production`, fiecare cu proiect Supabase separat. Fără date de producție în dezvoltare.
-- **Domenii (CONFIRMAT):** ecosistemul folosește `ventora-hub.com`: `app.ventora-hub.com` (platform), `portal.ventora-hub.com` (portal), `founder.ventora-hub.com` (founder). Website-ul corporate e `ventorasystems.com`, separat de ecosistem. Nu se introduc alte domenii fără aprobare.
+- **Domenii (CONFIRMAT):** ecosistemul folosește `ventora-hub.com`: `app.ventora-hub.com` (platform), `portal.ventora-hub.com` (portal), `founder.ventora-hub.com` (founder). Website-ul corporate e `ventorasystems.com`, separat de ecosistem. Nu se introduc alte domenii fără aprobare. **Excepție aprobată (D-FUN-2, 28.10.2026):** paginile făcute cu funnel builder-ul (§5.3) se pot publica pe domeniul afacerii sau pe un domeniu Ventora; care domeniu Ventora: NECESITĂ DECIZIE, odată cu proiectul Vercel.
 - **Cookie-uri:** sesiunea B2B e emisă doar pentru `app.ventora-hub.com` (host-only, nu pe `.ventora-hub.com`), sesiunea B2C doar pentru `portal.ventora-hub.com`, sesiunea Founder doar pentru `founder.ventora-hub.com`. Nicio sesiune nu se partajează între subdomenii.
 - **Vercel:** trei proiecte (§3.1), cu preview pe PR legat de staging.
 - **Staging (CONFIRMAT, D-INF-3, 28.10.2026):** pe URL-urile stabile Vercel ale celor trei proiecte, fără subdomenii proprii de staging. **Azi nu există niciun proiect Vercel**, deci „staging” înseamnă baza Supabase de staging. Migrările se aplică pe ea doar din `main`, cu `DIRECT_URL` (§6.3), iar testele nu rulează pe ea.
@@ -1026,7 +1044,7 @@ Plus, la nivel de platformă: teste de webhook Stripe (semnătură, idempotenț�
 | **F1 — Design system** | `packages/tokens`, `packages/ui` cu contracte, `packages/i18n`, `/design` | Exportul Claude Design aprobat (cel puțin etapa 1) | Fiecare componentă aprobată pe `/design` în Light/Dark × 6 limbi |
 | **F2 — Identitate și acces** | Identitate, sesiuni, invitații, organizații, membership, organizația activă, `authorize()`, `db-kit` cu gardă și RLS, audit | F0 | T1, T2, T3 verzi pe un modul de probă; revocare și retrogradare testate |
 | **F3 — Comercial** | Registru aplicații, planuri și versiuni, entitlements, cote cu rezervare, add-on-uri, excepții, billing Stripe + SmartBill, aplicația `founder` | F2 | T5 verde; schimbarea unei limite fără deploy; plata → factura; audit pe acțiunile Founder |
-| **F4 — Servicii de platformă** | Outbox + job-uri, notificări (6 limbi), suport, cadrul AI, fișiere, `pdf` | F2 | T6 verde; notificare în limba destinatarului; tichet din orice aplicație |
+| **F4 — Servicii de platformă** | Outbox + job-uri, notificări (6 limbi), suport, cadrul AI, fișiere, `pdf`; **workflow engine** (D-WF-1), după outbox și evenimente | F2 | T6 verde; notificare în limba destinatarului; tichet din orice aplicație |
 | **F5 — Hub** | Autentificare, alegerea organizației, launcher (4 stări de acces), setări cont, administrarea organizației, suport; **Growth Engine v1** (§8.7) cu componentele comerciale și secțiunea Growth & Campaigns din Founder | F1, F2, F3 (parțial: entitlements), F4 (parțial: notificări) | Fluxurile Hub testate end-to-end în Light/Dark × 6 limbi; testele Growth: produsele deținute nu apar, plafoanele și opt-out-ul se respectă, oprirea are efect imediat, aplicațiile funcționează identic cu Growth oprit, nicio activare plătită fără confirmare |
 
 ### 15.2 Ce se poate face în paralel
@@ -1054,7 +1072,17 @@ Plus, la nivel de platformă: teste de webhook Stripe (semnătură, idempotenț�
 - **Condiția paralelismului:** fluxurile paralele nu modifică simultan pachetele comune. O schimbare în `packages/ui` sau `core/*` se face într-un PR separat, cu review și testele tuturor modulelor afectate.
 - Ordinea aplicațiilor după Booking: **NECESITĂ DECIZIE** (D-ROAD-1), pe baza priorităților comerciale. Propunere de pornire: CRM → Marketing → Finance → HR → Shifts → Documents → Contracts → Projects → Inventory → Assets → Events → Analytics → Network → Portal.
 
-### 15.4 Riscuri
+### 15.4 Obligatorii pentru produs (D-ROAD-5)
+
+**Status: CONFIRMAT (decizia fondatoarei, 28.10.2026).** Cele trei elemente sunt obligatorii pentru produs. Nu se scot din plan și nu se amână fără o decizie nouă a fondatoarei.
+
+| Element | Unde | Faza | Depinde de |
+|---|---|---|---|
+| Workflow engine (D-WF-1…5) | Motorul în Core; constructorul, pornirea și oprirea în Founder; lista doar pentru citire în Hub | F4 | Outbox și evenimente (F4, §11.2); cota de automatizări active (F3); Founder Control Center |
+| Funnel builder (D-FUN-1…6) | Constructorul în Founder, lângă CampaignKit; lista doar pentru citire în Hub | NECESITĂ DECIZIE | Cota de pagini (F3); proiectul Vercel și domeniile proprii (§14); Founder Control Center |
+| Asistentul AI (D-AI-1…5) | Core (`ai`), în aplicațiile afacerilor | După F4, NECESITĂ DECIZIE | `authorize()` (F2); jurnalul de audit (F2); cadrul AI (F4) |
+
+### 15.5 Riscuri
 
 | Risc | Atenuare |
 |---|---|
@@ -1086,6 +1114,9 @@ Plus, la nivel de platformă: teste de webhook Stripe (semnătură, idempotenț�
 | C11 | Pagini publice Network | Brief-ul nu spune dacă există | CONFIRMAT: închis la lansare (D-NET-1, v0.3.2) |
 | C12 | Partea business a Portal: în `portal` sau în `platform` | §3.1 | CONFIRMAT: `platform` (D-POR-1, v0.3.2) |
 | C13 | Clienții reali din Hub-ul vechi | Nu există clienți reali activi; nu se migrează date. Hub-ul vechi rămâne doar sursă de cod și idei (auditul de recoltare, 24.10.2026). Repository-ul, datele și resursele lui nu se șterg fără aprobare explicită. | CONFIRMAT |
+| C14 | Cine pornește și oprește automatizările | D-WF-2/D-WF-3 (28.10.2026): pornirea și oprirea doar în Founder, Hub-ul doar citește. Contrazic: brief §37 (clienții pot activa, dezactiva, configura parametrii permiși), checklisturile Booking („Automatizări predefinite activabile de organizație”), Marketing („Activarea și dezactivarea automatizărilor”, „Configurarea intervalelor și condițiilor permise”), Projects („Configurarea automatizărilor permise”) și §4 („fiecare automatizare predefinită aparține modulului”). Sursele vechi nu s-au modificat. | NECESITĂ DECIZIE |
+| C15 | Cine construiește landing pages | D-FUN-1 (28.10.2026): funnel builder-ul doar în Founder, echipa Ventora construiește paginile. Checklistul Marketing („Lead Capture & Landing Pages”: editor de formulare, landing pages, șabloane) și C3c („landing pages aparțin Marketing”) nu spun cine le construiește; dacă afacerea își face singură paginile în CampaignKit, contrazic D-FUN-1. De lămurit și dacă formularele de lead (Marketing, CRM) urmează aceeași regulă. | NECESITĂ DECIZIE |
+| C16 | AI: „cadrul AI” în F4 vs. asistentul „după F4”; asistentul pentru consumatori | D-AI-5: asistentul vine după F4; F4 (§15.1) conține „cadrul AI”. De lămurit ce rămâne în F4. D-AI-1 acoperă aplicațiile afacerilor; checklistul Portal cere și „AI Assistant pentru consumatori”, neacoperit de decizie. | NECESITĂ DECIZIE |
 
 ---
 
@@ -1198,6 +1229,10 @@ Plus, la nivel de platformă: teste de webhook Stripe (semnătură, idempotenț�
 | D-ROAD-2 | Booking prima aplicație | Da | CONFIRMAT | Nu |
 | D-ROAD-3 | Fluxuri verticale paralele, fără reducerea scope-ului | Da | CONFIRMAT | Nu |
 | D-ROAD-4 | Ecranele Hub (F5) pornesc după F1 + F2, în paralel cu F3 și F4, pe contracte din `packages/contracts` și surse de date temporare pentru entitlements, cote și notificări (§15.2) | Da | CONFIRMAT (27.10.2026) | Nu |
+| D-WF-1…5 | Workflow engine în Core (F4, după outbox); constructorul, pornirea și oprirea doar în Founder; Hub doar citire; cota de automatizări active cu pachet cumpărabil; Hub 1.0 doar referință de idei (§4, §8.5, §17.23) | Da | CONFIRMAT (28.10.2026); contradicția C14: NECESITĂ DECIZIE | C14 |
+| D-FUN-1…6 | Funnel builder doar în Founder; publicare pe domeniul afacerii sau Ventora; Hub doar citire; cota de pagini cu pachet cumpărabil; lângă CampaignKit; Hub 1.0 doar referință de idei (§5.3, §17.23) | Da | CONFIRMAT (28.10.2026); faza și C15: NECESITĂ DECIZIE | Faza, C15 |
+| D-AI-1…5 | Asistentul AI în Core, în aplicațiile afacerilor; prin `authorize()`; confirmare înainte de scriere; audit pe numele persoanei, marcat „prin asistent”; după F4 (§4, §17.23) | Da | CONFIRMAT (28.10.2026); faza și C16: NECESITĂ DECIZIE | Faza, C16 |
+| D-ROAD-5 | Workflow engine, funnel builder și asistentul AI obligatorii pentru produs (§15.4) | Da | CONFIRMAT (28.10.2026) | Nu |
 
 ### 17.2 Modificări față de v0.1
 
@@ -1328,6 +1363,49 @@ Fiecare experiment produce un raport scurt și un ADR. Pentru toate se folosesc 
 4. **Nicio decizie deschisă nu s-a închis prin această versiune** în afara celor de mai sus. D-COM-7, D-PX-2, D-PX-3, D-GRW-8 (validarea juridică), D-UX-2 rămân NECESITĂ DECIZIE.
 
 ---
+
+### 17.23 Modificări în v0.4.6
+
+Decizii ale fondatoarei din 28.10.2026. Doar documentație; nimic nu e implementat. Contradicțiile găsite cu surse existente sunt în registru (C14–C16, §16); sursele vechi nu s-au modificat.
+
+**1. Workflow engine** (§4, §8.5, §15.1, §15.4):
+
+| ID | Data | Decizie |
+|---|---|---|
+| D-WF-1 | 28.10.2026 | Motorul care rulează automatizările stă în Core, ca serviciu comun. Se proiectează și se construiește în F4, după outbox și evenimente, de care depinde. |
+| D-WF-2 | 28.10.2026 | Constructorul de automatizări, pornirea și oprirea există doar în Founder Control Center. Echipa Ventora construiește automatizările pentru o afacere. |
+| D-WF-3 | 28.10.2026 | În Hub, owner-ul și adminul văd lista automatizărilor active ale afacerii, doar pentru citire, fără buton de pornit sau oprit. |
+| D-WF-4 | 28.10.2026 | Numărul de automatizări active simultan e o cotă a abonamentului (F3). Owner-ul o vede ca `UsageMeter` în Administrare (ecranul de abonament și consum). La limită cumpără singur un pachet în plus cu cardul (`AddonPurchase`, ca la SMS-uri) sau cere alt abonament. |
+| D-WF-5 | 28.10.2026 | Referință de idei: workflow engine-ul din Hub 1.0 (nodurile Delay, Send SMS, Database Action; triggere pe modele dintr-un whitelist). Nu se migrează cod; se reproiectează pe Core. |
+
+**2. Funnel builder** (§5.3, §8.5, §14, §15.4):
+
+| ID | Data | Decizie |
+|---|---|---|
+| D-FUN-1 | 28.10.2026 | Constructorul există doar în Founder Control Center: echipa Ventora construiește și publică paginile pentru o afacere. |
+| D-FUN-2 | 28.10.2026 | Publicarea se face pe domeniul afacerii sau pe un domeniu Ventora. Domeniile proprii (DNS, verificare) se fac odată cu proiectul Vercel, care azi nu există. |
+| D-FUN-3 | 28.10.2026 | În Hub, afacerea vede lista paginilor publicate, doar pentru citire. |
+| D-FUN-4 | 28.10.2026 | Numărul de pagini e o cotă a abonamentului (F3), cu pachet cumpărabil la limită. |
+| D-FUN-5 | 28.10.2026 | Tehnic stă lângă CampaignKit (Marketing). Faza exactă rămâne de stabilit. |
+| D-FUN-6 | 28.10.2026 | Referință de idei: funnel builder-ul din Hub 1.0 (blocuri, previzualizare, `/f/[slug]`, domenii proprii). Nu se migrează cod. |
+
+**3. Asistentul AI** (§4, §15.4):
+
+| ID | Data | Decizie |
+|---|---|---|
+| D-AI-1 | 28.10.2026 | Asistentul stă în Core și e disponibil în aplicațiile afacerilor. |
+| D-AI-2 | 28.10.2026 | Trece prin `authorize()`: vede și face doar ce poate persoana care îl folosește. |
+| D-AI-3 | 28.10.2026 | Card de confirmare obligatoriu înainte de orice scriere (ca în Hub 1.0). |
+| D-AI-4 | 28.10.2026 | Fiecare acțiune a asistentului intră în jurnalul de audit, pe numele persoanei, marcată ca făcută prin asistent. |
+| D-AI-5 | 28.10.2026 | Faza: de stabilit, după F4. |
+
+**4. Planul fazelor** (§15.1, §15.4):
+
+| ID | Data | Decizie |
+|---|---|---|
+| D-ROAD-5 | 28.10.2026 | Workflow engine, funnel builder și asistentul AI sunt obligatorii pentru produs, cu dependențele de mai sus. Workflow engine-ul intră în livrabilele F4. |
+
+**5. Schimbări de numerotare:** „Riscuri” devine §15.5 (§15.4 e acum „Obligatorii pentru produs”).
 
 ### 17.22 Modificări în v0.4.5
 
