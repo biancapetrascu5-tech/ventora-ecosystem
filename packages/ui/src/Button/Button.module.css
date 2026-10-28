@@ -25,7 +25,8 @@
   -webkit-tap-highlight-color: transparent;
 }
 
-.root[data-focus-visible] {
+.root[data-focus-visible],
+.isFocus {
   outline: var(--focus-ring-width) solid var(--focus-ring);
   outline-offset: var(--focus-ring-offset);
 }
@@ -64,10 +65,12 @@
   background: var(--primary);
   color: var(--on-primary);
 }
-.primary[data-hovered] {
+.primary[data-hovered],
+.primary.isHover {
   background: var(--primary-hover);
 }
-.primary[data-pressed] {
+.primary[data-pressed],
+.primary.isPressed {
   background: var(--primary-pressed);
 }
 
@@ -76,21 +79,25 @@
   border-color: var(--control-border);
   color: var(--ink);
 }
-.secondary[data-hovered] {
+.secondary[data-hovered],
+.secondary.isHover {
   border-color: var(--control-border-hover);
   background-image: linear-gradient(var(--state-hover), var(--state-hover));
 }
-.secondary[data-pressed] {
+.secondary[data-pressed],
+.secondary.isPressed {
   background-image: linear-gradient(var(--state-pressed), var(--state-pressed));
 }
 
 .quiet {
   color: var(--ink);
 }
-.quiet[data-hovered] {
+.quiet[data-hovered],
+.quiet.isHover {
   background: var(--state-hover);
 }
-.quiet[data-pressed] {
+.quiet[data-pressed],
+.quiet.isPressed {
   background: var(--state-pressed);
 }
 
@@ -98,10 +105,12 @@
   background: var(--danger);
   color: var(--on-danger);
 }
-.danger[data-hovered] {
+.danger[data-hovered],
+.danger.isHover {
   background: var(--danger-hover);
 }
-.danger[data-pressed] {
+.danger[data-pressed],
+.danger.isPressed {
   background: var(--danger-hover);
   background-image: linear-gradient(var(--state-pressed), var(--state-pressed));
 }

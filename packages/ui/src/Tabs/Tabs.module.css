@@ -1,17 +1,14 @@
+/* .v-tabs din bundle.css */
 .root {
-  display: flex;
-  flex-direction: column;
-  gap: 0;
+  min-width: 0;
 }
 
 .tablist {
   display: flex;
-  flex-direction: row;
-  gap: 0;
-  border-bottom: var(--border-width-control) solid var(--line);
+  gap: var(--space-4);
+  border-bottom: var(--border-width) solid var(--line);
   overflow-x: auto;
   scrollbar-width: none;
-  -webkit-overflow-scrolling: touch;
 }
 
 .tablist::-webkit-scrollbar {
@@ -20,52 +17,75 @@
 
 .full .tab {
   flex: 1;
+  justify-content: center;
 }
 
 .tab {
+  position: relative;
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  padding-inline: var(--space-4);
+  gap: var(--space-2);
   height: var(--control-lg);
-  font-family: var(--font-sans);
-  font-size: var(--type-subheading-size);
-  font-weight: var(--type-subheading-weight);
-  line-height: var(--type-subheading-line);
-  color: var(--ink-secondary);
-  border: none;
-  border-bottom: 2px solid transparent;
+  padding: 0 var(--space-1);
+  border: 0;
   background: transparent;
+  color: var(--ink-muted);
   cursor: pointer;
-  outline: none;
+  font-family: inherit;
   white-space: nowrap;
+  flex: none;
+  border-radius: var(--radius-xs) var(--radius-xs) 0 0;
+  outline: none;
   transition:
-    color var(--duration-fast) var(--ease-standard),
-    border-color var(--duration-fast) var(--ease-standard);
-  margin-bottom: calc(-1 * var(--border-width-control));
+    background-color var(--duration-instant) var(--ease-standard),
+    color var(--duration-instant) var(--ease-standard);
+}
+
+.sm .tab {
+  height: var(--control-md);
+}
+
+.tab[data-hovered] {
+  color: var(--ink);
 }
 
 .tab[data-selected] {
-  color: var(--primary);
-  border-bottom-color: var(--primary);
+  color: var(--ink);
 }
 
-.tab[data-hovered]:not([data-disabled]) {
-  color: var(--ink);
-  background: var(--state-hover);
+.tab[data-selected]::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: calc(var(--border-width) * -1);
+  height: var(--focus-ring-width);
+  border-radius: var(--focus-ring-width) var(--focus-ring-width) 0 0;
+  background: var(--primary);
+}
+
+.tab[data-disabled] {
+  color: var(--ink-disabled);
+  cursor: not-allowed;
 }
 
 .tab[data-focus-visible] {
   outline: var(--focus-ring-width) solid var(--focus-ring);
-  outline-offset: var(--focus-ring-offset);
-  border-radius: var(--radius-xs);
-}
-
-.tab[data-disabled] {
-  opacity: 0.4;
-  cursor: not-allowed;
+  outline-offset: calc(var(--focus-ring-offset) * -1);
 }
 
 .panel {
-  padding-block: var(--space-4);
+  padding-top: var(--space-4);
+  outline: none;
+}
+
+.panel[data-focus-visible] {
+  outline: var(--focus-ring-width) solid var(--focus-ring);
+  outline-offset: var(--focus-ring-offset);
+}
+
+@media (pointer: coarse), (max-width: 767px) {
+  .tab {
+    min-height: var(--touch-target);
+  }
 }

@@ -61,30 +61,6 @@
   color: var(--ink);
 }
 
-.passWrap {
-  position: relative;
-}
-
-.passToggle {
-  position: absolute;
-  right: 10px;
-  top: 50%;
-  transform: translateY(-50%);
-  background: none;
-  border: none;
-  cursor: pointer;
-  color: var(--ink-muted);
-  display: flex;
-  align-items: center;
-  padding: 4px;
-  border-radius: var(--radius-xs);
-  z-index: 1;
-}
-
-.passToggle:hover {
-  color: var(--ink);
-}
-
 .blockBtn {
   width: 100%;
   display: grid;

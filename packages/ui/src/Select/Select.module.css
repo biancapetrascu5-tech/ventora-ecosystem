@@ -37,22 +37,41 @@
   height: var(--control-lg);
 }
 
-.trigger[data-hovered]:not([data-disabled]) {
+.trigger[data-hovered]:not([data-disabled]),
+.trigger.isHover {
   border-color: var(--control-border-hover);
 }
 
 .trigger[data-focus-visible],
-.trigger[data-pressed] {
+.trigger[aria-expanded='true'],
+.trigger.isFocus {
   outline: var(--focus-ring-width) solid var(--focus-ring);
   outline-offset: var(--focus-ring-offset);
   border-color: var(--control-border-hover);
 }
 
-.trigger[data-disabled] {
+.isError {
+  border-color: var(--danger);
+  box-shadow: inset 0 0 0 var(--border-width) var(--danger);
+}
+
+.trigger[data-disabled],
+.isDisabled {
   background: var(--sunken);
   border-color: var(--line);
   color: var(--ink-disabled);
   cursor: not-allowed;
+}
+
+.valueWrap {
+  display: contents;
+}
+
+.triggerLead {
+  color: var(--ink-muted);
+}
+.isDisabled .triggerLead {
+  color: var(--ink-disabled);
 }
 
 .triggerValue {
@@ -63,8 +82,12 @@
   white-space: nowrap;
 }
 
-.triggerValue [data-placeholder] {
+.isPlaceholder {
   color: var(--ink-muted);
+}
+
+.isDisabled .triggerValue {
+  color: var(--ink-disabled);
 }
 
 .triggerIcon {
@@ -77,94 +100,135 @@
   transform: rotate(180deg);
 }
 
+.spinner {
+  display: inline-flex;
+  flex: none;
+  color: currentColor;
+  animation: spin 0.9s linear infinite;
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spinner {
+    animation-duration: 0.01ms;
+    animation-iteration-count: 1;
+  }
+}
+
 @media (pointer: coarse), (max-width: 767px) {
   .trigger {
     min-height: var(--touch-target);
   }
 }
 
-.invalid .trigger {
-  border-color: var(--danger);
-}
-
-/* Popover */
+/* Popover + listbox (.v-popover.v-listbox) */
 .popover {
   min-width: var(--trigger-width, 100%);
-  max-height: var(--popover-max-height);
-  overflow-y: auto;
+  box-sizing: border-box;
   background: var(--raised);
+  color: var(--ink);
   border: var(--border-width) solid var(--line);
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-2);
   outline: none;
   z-index: var(--z-popover);
-  padding: var(--space-1) 0;
 }
 
 .popover[data-entering] {
   animation: vt-select-in var(--duration-fast) var(--ease-standard);
 }
-.popover[data-exiting] {
-  animation: vt-select-in var(--duration-fast) var(--ease-exit) reverse;
-}
 
 @keyframes vt-select-in {
-  from { opacity: 0; transform: translateY(-4px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(calc(var(--space-1) * -1));
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .popover[data-entering],
-  .popover[data-exiting] { animation: none; }
+  .popover[data-entering] {
+    animation: none;
+  }
 }
 
-/* ListBox */
 .listbox {
+  padding: var(--space-1);
+  max-height: var(--popover-max-height);
+  overflow-y: auto;
   outline: none;
 }
 
-/* Item */
-.item {
+.empty {
+  padding: var(--space-3);
+  color: var(--ink-muted);
+}
+
+.group {
+  padding: var(--space-2) var(--space-2) var(--space-1);
+  color: var(--ink-muted);
+}
+
+/* .v-option */
+.option {
   display: flex;
   align-items: center;
   gap: var(--space-2);
-  padding: var(--space-2) var(--space-3);
-  font-family: var(--font-sans);
-  font-size: var(--type-body-size);
-  line-height: var(--type-body-line);
-  color: var(--ink);
+  width: 100%;
+  box-sizing: border-box;
+  min-height: var(--control-md);
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-sm);
   cursor: pointer;
+  color: var(--ink);
+  text-align: start;
   outline: none;
-  border-radius: 0;
 }
 
-.item[data-hovered],
-.item[data-focused] {
+.option[data-hovered],
+.option[data-focused],
+.optionActive {
   background: var(--state-hover);
 }
 
-.item[data-pressed] {
-  background: var(--state-pressed);
-}
-
-.item[data-selected] {
+.option[data-selected],
+.optionSelected {
   background: var(--selected);
-  font-weight: var(--type-body-strong-weight);
 }
 
-.item[data-disabled] {
-  opacity: 0.4;
+.option[data-disabled],
+.option[data-disabled] .optionDesc,
+.optionDisabled,
+.optionDisabled .optionDesc {
+  color: var(--ink-disabled);
   cursor: not-allowed;
+  background: transparent;
 }
 
-.itemCheck {
-  width: var(--icon-sm);
-  color: var(--primary);
-  flex-shrink: 0;
+.optionText {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
 }
 
-.itemSeparator {
-  height: var(--border-width);
-  background: var(--line);
-  margin: var(--space-1) 0;
+.optionDesc {
+  color: var(--ink-muted);
+}
+
+.optionIcon {
+  color: var(--ink-secondary);
+}
+
+.optionTick {
+  color: var(--ink);
+}
+
+@media (pointer: coarse), (max-width: 767px) {
+  .option {
+    min-height: var(--touch-target);
+  }
 }

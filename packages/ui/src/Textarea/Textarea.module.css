@@ -1,59 +1,23 @@
-.root {
-  width: 100%;
-  min-height: calc(var(--control-md) * 2.5);
+/* .v-control--area din bundle.css (restul vine din Input.module.css → .v-control) */
+/* Clasa dublată: trebuie să bată .control din Input.module.css indiferent de ordinea fișierelor. */
+.area.area {
+  height: auto;
+  align-items: stretch;
+  flex-direction: column;
   padding: var(--space-2) var(--space-3);
-  background: var(--sheet);
-  color: var(--ink);
-  border: var(--border-width-control) solid var(--control-border);
-  border-radius: var(--radius-sm);
-  font-family: var(--font-sans);
-  font-size: var(--type-body-size);
-  font-weight: var(--type-body-weight);
-  line-height: var(--type-body-line);
+  gap: var(--space-1);
+}
+
+.input.input {
   resize: vertical;
-  outline: none;
-  transition:
-    border-color var(--duration-instant) var(--ease-standard),
-    background var(--duration-instant) var(--ease-standard);
-  -webkit-appearance: none;
-  appearance: none;
+  min-height: var(--control-lg);
 }
 
-.root::placeholder {
+.input.input.noResize {
+  resize: none;
+}
+
+.count {
+  align-self: flex-end;
   color: var(--ink-muted);
-}
-
-.root:hover:not(:disabled):not([readonly]) {
-  border-color: var(--control-border-hover);
-}
-
-.root:focus-visible {
-  border-color: var(--primary);
-  outline: var(--focus-ring-width) solid var(--focus-ring);
-  outline-offset: var(--focus-ring-offset);
-}
-
-.root:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-  background: var(--sunken);
-  resize: none;
-}
-
-.root[readonly] {
-  background: var(--sunken);
-  cursor: default;
-  border-color: var(--line);
-  resize: none;
-}
-
-.invalid .root {
-  border-color: var(--danger);
-}
-.invalid .root:focus-visible {
-  outline-color: var(--danger);
-}
-
-.noResize .root {
-  resize: none;
 }

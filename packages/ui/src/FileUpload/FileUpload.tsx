@@ -1,119 +1,226 @@
 'use client';
 
-import { useRef, useState, type DragEvent, type ChangeEvent } from 'react';
-import { UploadCloud, File, X } from 'lucide-react';
+import { useRef, useState } from 'react';
+import { Icon } from '../Icon/Icon';
 import { cn } from '../lib/cn';
+import { forced, type ForcedState } from '../lib/forced';
 import styles from './FileUpload.module.css';
 
-function formatBytes(bytes: number): string {
-  if (bytes < 1024) return `${bytes} B`;
-  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
-  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+export interface UploadFile {
+  id?: string | number;
+  name: string;
+  size?: number;
+  status: 'done' | 'uploading' | 'error';
+  /** 0–100, la `uploading`. */
+  progress?: number;
+  /** Mesajul afișat la `error`. */
+  error?: string;
+}
+
+export interface FileUploadLabels {
+  /** S.dropFiles, ex. „Trage fișierele aici sau”. */
+  dropFiles: string;
+  /** S.dropNow, ex. „Dă drumul ca să încarci”. */
+  dropNow: string;
+  /** S.browse, ex. „alege-le de pe dispozitiv”. */
+  browse: string;
+  /** S.maxSize, ex. (size) => `Până la ${size} de fiecare fișier`. */
+  maxSize: (size: string) => string;
+  /** S.uploaded, ex. „Încărcat”. */
+  uploaded: string;
+  /** S.retry, ex. „Încearcă din nou”. */
+  retry: string;
+  /** S.remove, ex. „Elimină”. */
+  remove: string;
 }
 
 export interface FileUploadProps {
-  title?: string;
-  hint?: string;
+  files?: UploadFile[];
+  onSelect?: (files: File[]) => void;
+  onRemove?: (file: UploadFile) => void;
+  onRetry?: (file: UploadFile) => void;
   accept?: string;
   multiple?: boolean;
+  /** În octeți; apare în textul de ajutor. */
   maxSize?: number;
+  hint?: string;
   isDisabled?: boolean;
   isInvalid?: boolean;
-  onChange?: (files: File[]) => void;
-  removeLabel?: string;
+  /** Stare vizuală forțată; `drag` = zona în care se trage un fișier. */
+  state?: ForcedState | 'drag';
+  labels: FileUploadLabels;
+  /** Limba pentru mărimea fișierelor (ro, en, …). */
+  locale?: string;
+  id?: string;
+  'aria-describedby'?: string;
   className?: string;
 }
 
+/* fmtSize din bundle.js */
+export function fmtSize(b: number | undefined, locale = 'ro'): string {
+  if (b == null) return '';
+  const u = ['B', 'KB', 'MB', 'GB'];
+  let i = 0;
+  let n = b;
+  while (n >= 1024 && i < u.length - 1) {
+    n /= 1024;
+    i++;
+  }
+  return `${new Intl.NumberFormat(locale === 'en' ? 'en-GB' : locale, { maximumFractionDigits: i ? 1 : 0 }).format(n)} ${u[i]}`;
+}
+
+/* FileUpload din bundle.js: .v-upload > zona punctată + lista .v-upload__file. */
 export function FileUpload({
-  title,
-  hint,
+  files = [],
+  onSelect,
+  onRemove,
+  onRetry,
   accept,
-  multiple = false,
+  multiple = true,
   maxSize,
+  hint,
   isDisabled,
   isInvalid,
-  onChange,
-  removeLabel = 'Elimină',
+  state,
+  labels,
+  locale = 'ro',
+  id,
+  'aria-describedby': describedBy,
   className,
 }: FileUploadProps) {
-  const [files, setFiles] = useState<File[]>([]);
-  const [dragOver, setDragOver] = useState(false);
-  const [focused, setFocused] = useState(false);
-  const inputRef = useRef<HTMLInputElement>(null);
-
-  const addFiles = (incoming: FileList | null) => {
-    if (!incoming) return;
-    const arr = Array.from(incoming);
-    const filtered = maxSize ? arr.filter((f) => f.size <= maxSize) : arr;
-    const next = multiple ? [...files, ...filtered] : filtered.slice(0, 1);
-    setFiles(next);
-    onChange?.(next);
+  const [drag, setDrag] = useState(false);
+  const input = useRef<HTMLInputElement>(null);
+  const isDrag = drag || state === 'drag';
+  const take = (list: FileList | null) => {
+    if (!isDisabled && list && list.length) onSelect?.(Array.from(list));
   };
-
-  const removeFile = (index: number) => {
-    const next = files.filter((_, i) => i !== index);
-    setFiles(next);
-    onChange?.(next);
-  };
-
-  const handleDrop = (e: DragEvent) => {
-    e.preventDefault();
-    setDragOver(false);
-    if (!isDisabled) addFiles(e.dataTransfer.files);
-  };
-
-  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    addFiles(e.target.files);
-    e.target.value = '';
-  };
+  const hintText = [hint, maxSize ? labels.maxSize(fmtSize(maxSize, locale)) : null]
+    .filter(Boolean)
+    .join(' · ');
 
   return (
     <div className={cn(styles.root, className)}>
-      <label
+      <div
         className={cn(
-          styles.dropzone,
-          dragOver && styles.dragOver,
-          focused && styles.focused,
-          isDisabled && styles.disabled,
-          isInvalid && styles.invalid,
+          styles.zone,
+          isDrag && styles.isDrag,
+          isDisabled && styles.isDisabled,
+          isInvalid && styles.isError,
+          state !== 'drag' && forced(styles, state),
         )}
         onDragOver={(e) => {
           e.preventDefault();
-          if (!isDisabled) setDragOver(true);
+          if (!isDisabled) setDrag(true);
         }}
-        onDragLeave={() => setDragOver(false)}
-        onDrop={handleDrop}
-        onFocus={() => setFocused(true)}
-        onBlur={() => setFocused(false)}
+        onDragLeave={() => setDrag(false)}
+        onDrop={(e) => {
+          e.preventDefault();
+          setDrag(false);
+          take(e.dataTransfer.files);
+        }}
       >
-        <UploadCloud size={24} strokeWidth={1.5} className={styles.icon} aria-hidden />
-        {title && <span className={styles.title}>{title}</span>}
-        {hint && <span className={styles.hint}>{hint}</span>}
-        <input
-          ref={inputRef}
-          type="file"
-          accept={accept}
-          multiple={multiple}
-          disabled={isDisabled}
-          onChange={handleChange}
-          className={styles.input}
-        />
-      </label>
-      {files.length > 0 && (
-        <ul className={styles.fileList} aria-label="Fișiere selectate">
-          {files.map((file, i) => (
-            <li key={`${file.name}-${i}`} className={styles.fileItem}>
-              <File size={14} aria-hidden className={styles.icon} />
-              <span className={styles.fileName}>{file.name}</span>
-              <span className={styles.fileSize}>{formatBytes(file.size)}</span>
+        <Icon icon="upload" size={20} className={styles.icon} />
+        <p className="body">
+          {isDrag ? (
+            labels.dropNow
+          ) : (
+            <>
+              {labels.dropFiles}{' '}
               <button
                 type="button"
-                className={styles.removeButton}
-                onClick={() => removeFile(i)}
-                aria-label={`${removeLabel} ${file.name}`}
+                id={id}
+                className={styles.link}
+                onClick={() => input.current?.click()}
+                disabled={isDisabled}
+                aria-describedby={describedBy}
               >
-                <X size={14} aria-hidden />
+                {labels.browse}
               </button>
+            </>
+          )}
+        </p>
+        {hintText && <p className={cn(styles.hint, 'body-small')}>{hintText}</p>}
+        <input
+          ref={input}
+          type="file"
+          hidden
+          accept={accept}
+          multiple={multiple}
+          onChange={(e) => {
+            take(e.target.files);
+            e.target.value = '';
+          }}
+        />
+      </div>
+      {files.length > 0 && (
+        <ul className={styles.list}>
+          {files.map((f) => (
+            <li
+              key={f.id ?? f.name}
+              className={cn(styles.file, f.status === 'error' && styles.fileError)}
+            >
+              <Icon
+                icon={
+                  f.status === 'done'
+                    ? 'circle-check'
+                    : f.status === 'error'
+                      ? 'circle-alert'
+                      : 'file'
+                }
+                size={16}
+                className={styles.ficon}
+              />
+              <div className={styles.fmain}>
+                <div className={styles.frow}>
+                  <span className={cn('body-strong', styles.truncate)}>{f.name}</span>
+                  <span className={cn('body-small', styles.fmeta)}>
+                    {f.status === 'done'
+                      ? labels.uploaded
+                      : f.status === 'uploading'
+                        ? `${Math.round(f.progress ?? 0)}%`
+                        : fmtSize(f.size, locale)}
+                  </span>
+                </div>
+                {f.status === 'uploading' && (
+                  <div
+                    className={styles.progress}
+                    role="progressbar"
+                    aria-valuemin={0}
+                    aria-valuemax={100}
+                    aria-valuenow={Math.round(f.progress ?? 0)}
+                    aria-label={f.name}
+                  >
+                    <span className={styles.fill} style={{ width: `${f.progress ?? 0}%` }} />
+                  </div>
+                )}
+                {f.status === 'error' && (
+                  <p className={cn(styles.ferror, 'caption')}>
+                    <span>{f.error}</span>
+                  </p>
+                )}
+              </div>
+              {f.status === 'error' && onRetry && (
+                <button
+                  type="button"
+                  className={styles.btn}
+                  aria-label={labels.retry}
+                  title={labels.retry}
+                  onClick={() => onRetry(f)}
+                >
+                  <Icon icon="rotate-ccw" size={14} />
+                </button>
+              )}
+              {onRemove && (
+                <button
+                  type="button"
+                  className={styles.btn}
+                  aria-label={`${labels.remove} ${f.name}`}
+                  title={labels.remove}
+                  onClick={() => onRemove(f)}
+                >
+                  <Icon icon="x" size={14} />
+                </button>
+              )}
             </li>
           ))}
         </ul>

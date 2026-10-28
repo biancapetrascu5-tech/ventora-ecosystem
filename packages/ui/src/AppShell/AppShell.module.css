@@ -1,4 +1,7 @@
 .root {
+  /* Containerul `shell` din bundle.css: Spine și ContextBar răspund la lățimea lui, nu a ecranului. */
+  container: shell / inline-size;
+  position: relative;
   display: flex;
   flex-direction: column;
   height: 100%;

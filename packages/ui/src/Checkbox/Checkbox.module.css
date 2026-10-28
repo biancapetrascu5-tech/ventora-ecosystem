@@ -1,15 +1,11 @@
+/* .v-check din bundle.css */
 .root {
   position: relative;
   display: inline-flex;
   align-items: flex-start;
   gap: var(--space-2);
+  color: var(--ink);
   cursor: pointer;
-  user-select: none;
-}
-
-.root[data-disabled] {
-  opacity: 0.4;
-  cursor: not-allowed;
 }
 
 .boxWrap {
@@ -23,88 +19,80 @@
 }
 
 .box {
-  position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   box-sizing: border-box;
   width: var(--space-4);
   height: var(--space-4);
-  flex-shrink: 0;
-  border: var(--border-width-control) solid var(--control-border);
   border-radius: var(--radius-xs);
+  border: var(--border-width-control) solid var(--control-border);
   background: var(--sheet);
+  color: transparent;
+  pointer-events: none;
   transition:
+    background-color var(--duration-instant) var(--ease-standard),
     border-color var(--duration-instant) var(--ease-standard),
-    background var(--duration-instant) var(--ease-standard);
+    color var(--duration-instant) var(--ease-standard),
+    box-shadow var(--duration-fast) var(--ease-standard);
 }
 
-.root[data-hovered]:not([data-disabled]) .box {
+.root[data-hovered] .box,
+.isHover .box {
   border-color: var(--control-border-hover);
-  background: var(--state-hover);
 }
 
-.root[data-pressed]:not([data-disabled]) .box {
-  background: var(--state-pressed);
-}
-
-.root[data-focus-visible] .box {
+.root[data-focus-visible] .box,
+.isFocus .box {
   outline: var(--focus-ring-width) solid var(--focus-ring);
   outline-offset: var(--focus-ring-offset);
 }
 
+.root[data-pressed] .box,
+.isPressed .box {
+  background-image: linear-gradient(var(--state-pressed), var(--state-pressed));
+}
+
 .root[data-selected] .box,
 .root[data-indeterminate] .box {
-  background: var(--primary);
+  background-color: var(--primary);
   border-color: var(--primary);
-}
-
-.root[data-selected][data-hovered]:not([data-disabled]) .box {
-  background: var(--primary-hover);
-  border-color: var(--primary-hover);
-}
-
-.root[data-selected][data-pressed]:not([data-disabled]) .box {
-  background: var(--primary-pressed);
-  border-color: var(--primary-pressed);
-}
-
-.checkIcon {
   color: var(--on-primary);
-  opacity: 0;
-  transition: opacity var(--duration-instant) var(--ease-standard);
 }
 
-.root[data-selected] .checkIcon {
-  opacity: 1;
+.root.isError .box {
+  border-color: var(--danger);
 }
 
-.indeterminateIcon {
-  color: var(--on-primary);
-  opacity: 0;
-  transition: opacity var(--duration-instant) var(--ease-standard);
+.root[data-disabled] {
+  color: var(--ink-disabled);
+  cursor: not-allowed;
 }
 
-.root[data-indeterminate] .indeterminateIcon {
-  opacity: 1;
+.root[data-disabled] .box {
+  border-color: var(--line-strong);
+  background: var(--sunken);
 }
 
-.label {
+.root[data-disabled][data-selected] .box {
+  background: var(--ink-disabled);
+  border-color: var(--ink-disabled);
+  color: var(--sheet);
+}
+
+.text {
+  display: flex;
+  flex-direction: column;
   padding-top: var(--space-0-5);
-  font-family: var(--font-sans);
-  font-size: var(--type-body-size);
-  font-weight: var(--type-body-weight);
-  line-height: var(--type-body-line);
-  color: var(--ink);
+  min-width: 0;
 }
 
-.invalid .box {
-  border-color: var(--danger);
+.desc {
+  color: var(--ink-muted);
 }
 
-.invalid.root[data-selected] .box {
-  background: var(--danger);
-  border-color: var(--danger);
+.root[data-disabled] .desc {
+  color: var(--ink-disabled);
 }
 
 @media (pointer: coarse), (max-width: 767px) {

@@ -69,3 +69,39 @@ describe('Menu', () => {
     expect(menu.closest('.v-portal-theme')).not.toBeNull();
   });
 });
+
+describe('Menu — ca în bundle', () => {
+  it('defaultOpen, titlu, bifă (menuitemcheckbox), separator, element dezactivat', () => {
+    render(
+      <Menu
+        label="Acțiuni programare"
+        defaultOpen
+        items={[
+          { heading: 'Programare' },
+          { id: 'edit', label: 'Editează', icon: 'pencil', shortcut: ['E'] },
+          { id: 'cancelled', label: 'Arată și anulate', checked: true },
+          { id: 'export', label: 'Exportă', isDisabled: true },
+          { separator: true },
+          { id: 'del', label: 'Anulează', isDanger: true },
+        ]}
+      >
+        <Button>Acțiuni</Button>
+      </Menu>,
+    );
+    const menu = screen.getByRole('menu', { name: 'Acțiuni programare' });
+    expect(menu).toBeDefined();
+    expect(screen.getByText('Programare')).toBeDefined();
+    expect(
+      screen
+        .getByRole('menuitemcheckbox', { name: 'Arată și anulate' })
+        .getAttribute('aria-checked'),
+    ).toBe('true');
+    expect(screen.getByRole('menuitem', { name: 'Exportă' }).getAttribute('aria-disabled')).toBe(
+      'true',
+    );
+    expect(screen.getAllByRole('separator')).toHaveLength(1);
+    expect(screen.getByRole('button', { name: 'Acțiuni' }).getAttribute('aria-expanded')).toBe(
+      'true',
+    );
+  });
+});

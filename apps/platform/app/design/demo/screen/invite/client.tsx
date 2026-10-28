@@ -13,6 +13,7 @@ import {
   type AppName,
 } from '@ventora/ui';
 import { AuthStatement } from '../AuthStatement';
+import { PASSWORD_LABELS } from '../passwordLabels';
 import styles from '../screen.module.css';
 
 const APP_LABELS: Partial<Record<AppName, string>> = {
@@ -58,7 +59,6 @@ export function InviteScreenClient({
   theme: 'light' | 'dark';
   state: 'default' | 'expired';
 }) {
-  const [showPass, setShowPass] = useState(false);
   const [pass, setPass] = useState('aurora2026');
 
   useEffect(() => {
@@ -132,24 +132,15 @@ export function InviteScreenClient({
             </div>
             <FormField label="Parolă nouă" isRequired>
               {({ id, 'aria-required': ar }) => (
-                <div className={styles.passWrap}>
-                  <Input
-                    id={id}
-                    type={showPass ? 'text' : 'password'}
-                    autoComplete="new-password"
-                    value={pass}
-                    onChange={(e) => setPass(e.target.value)}
-                    aria-required={ar}
-                  />
-                  <button
-                    type="button"
-                    className={styles.passToggle}
-                    onClick={() => setShowPass((v) => !v)}
-                    aria-label={showPass ? 'Ascunde parola' : 'Arată parola'}
-                  >
-                    <Icon icon={showPass ? 'eye-off' : 'eye'} size="sm" aria-hidden />
-                  </button>
-                </div>
+                <Input
+                  id={id}
+                  type="password"
+                  autoComplete="new-password"
+                  value={pass}
+                  onChange={(e) => setPass(e.target.value)}
+                  aria-required={ar}
+                  labels={PASSWORD_LABELS}
+                />
               )}
             </FormField>
             <ul className={styles.invReqs}>

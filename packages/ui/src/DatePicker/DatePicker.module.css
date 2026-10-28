@@ -1,260 +1,212 @@
-.root {
-  position: relative;
-  display: inline-block;
-}
-
-/* Trigger button */
+/* .v-datepicker + .v-cal din bundle.css (butonul folosește .v-control din Input.module.css) */
 .trigger {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-2);
-  height: var(--control-md);
-  padding: 0 var(--space-3);
-  border-radius: var(--radius-md);
-  border: var(--border-width) solid var(--line);
-  background: var(--sheet);
-  color: var(--ink);
-  font-family: var(--font-sans);
-  font-size: var(--type-body-size);
   cursor: pointer;
-  min-width: 200px;
-  transition: border-color 120ms ease;
+  font-family: inherit;
 }
 
-.trigger:hover:not(:disabled) {
-  border-color: var(--line-strong);
+.isOpen {
+  outline: var(--focus-ring-width) solid var(--focus-ring);
+  outline-offset: var(--focus-ring-offset);
+  border-color: var(--control-border-hover);
 }
 
-.trigger:focus-visible {
-  outline: 2px solid var(--focus-ring);
-  outline-offset: 1px;
+.trigger:focus:not(:focus-visible):not(.isOpen) {
+  outline: none;
 }
 
-.trigger:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
+.chevOpen {
+  transform: rotate(180deg);
 }
 
-.trigger.sm {
-  height: var(--control-sm);
-  font-size: var(--type-sm-size);
-  min-width: 160px;
-}
-
-.triggerText {
-  flex: 1;
-  text-align: start;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.placeholder {
-  color: var(--ink-quiet);
-}
-
-.triggerIcon {
-  flex-shrink: 0;
-  color: var(--ink-quiet);
-}
-
-/* Popover */
-.popover {
-  position: absolute;
-  top: calc(100% + var(--space-1));
-  left: 0;
-  z-index: 50;
-  background: var(--surface);
+.pop {
+  position: fixed;
+  z-index: var(--z-popover);
+  box-sizing: border-box;
+  background: var(--raised);
+  color: var(--ink);
   border: var(--border-width) solid var(--line);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-md, 0 4px 16px rgb(0 0 0 / 0.12));
-  padding: var(--space-4);
-  min-width: 280px;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-2);
+  outline: none;
+  padding: var(--space-3);
+  width: var(--datepicker-width);
+  animation: pop var(--duration-fast) var(--ease-standard);
 }
 
-/* Calendar navigation */
-.calNav {
+.popTime {
+  width: var(--timepicker-width);
+  padding: var(--space-1);
+}
+
+@keyframes pop {
+  from {
+    opacity: 0;
+    transform: translateY(calc(var(--space-1) * -1));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pop {
+    animation: none;
+  }
+}
+
+.timelist {
+  max-height: var(--popover-max-height);
+  overflow-y: auto;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.timelist button {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  font-family: inherit;
+}
+
+.head {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: var(--space-3);
+  margin-bottom: var(--space-2);
 }
 
-.calTitle {
-  font-family: var(--font-sans);
-  font-size: var(--type-body-size);
-  font-weight: 600;
-  color: var(--ink);
-}
-
-.navBtn {
+/* .v-iconbtn.v-btn--quiet.v-iconbtn--sm */
+.nav {
+  appearance: none;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 28px;
-  height: 28px;
+  flex: none;
+  width: var(--control-sm);
+  height: var(--control-sm);
+  padding: 0;
   border-radius: var(--radius-sm);
-  border: none;
+  border: var(--border-width) solid transparent;
   background: transparent;
-  color: var(--ink-quiet);
+  color: var(--ink);
   cursor: pointer;
 }
 
-.navBtn:hover {
+.nav:hover {
   background: var(--state-hover);
+}
+
+.title {
   color: var(--ink);
 }
 
-.navBtn:focus-visible {
-  outline: 2px solid var(--focus-ring);
-  outline-offset: 1px;
-}
-
-/* Grid */
 .grid {
-  width: 100%;
-}
-
-.weekdays {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  margin-bottom: var(--space-1);
-}
-
-.weekday {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 28px;
-  font-family: var(--font-sans);
-  font-size: var(--type-sm-size, 12px);
-  font-weight: 600;
-  color: var(--ink-quiet);
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
+  flex-direction: column;
+  gap: var(--space-0-5);
 }
 
-.week {
+.row {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
+  gap: var(--space-0-5);
+}
+
+.wd {
+  text-align: center;
+  color: var(--ink-muted);
+  padding: var(--space-1) 0;
 }
 
 .day {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  aspect-ratio: 1;
-  border: none;
+  appearance: none;
+  height: var(--control-md);
+  border: 0;
+  border-radius: var(--radius-sm);
   background: transparent;
   color: var(--ink);
-  font-family: var(--font-sans);
-  font-size: var(--type-body-size);
-  border-radius: var(--radius-sm);
   cursor: pointer;
-  transition: background 100ms ease;
+  font-family: inherit;
+  position: relative;
+  transition:
+    background-color var(--duration-instant) var(--ease-standard),
+    color var(--duration-instant) var(--ease-standard),
+    box-shadow var(--duration-fast) var(--ease-standard);
 }
 
-.day:hover:not(:disabled) {
+.day:hover {
   background: var(--state-hover);
 }
 
-.day:focus-visible {
-  outline: 2px solid var(--focus-ring);
-  outline-offset: 1px;
+.isOutside {
+  color: var(--ink-muted);
 }
 
-.day:disabled {
-  opacity: 0.35;
-  cursor: not-allowed;
+.isToday {
+  box-shadow: inset 0 0 0 var(--border-width-control) var(--attention-mark);
+  font-weight: 600;
 }
 
-.dayEmpty {
-  width: 100%;
-  aspect-ratio: 1;
-}
-
-.today {
-  font-weight: 700;
-  color: var(--primary);
-}
-
-.selected {
-  background: var(--primary) !important;
-  color: var(--on-primary) !important;
-  border-radius: var(--radius-sm);
-}
-
-.inRange {
-  background: var(--primary-subtle, color-mix(in srgb, var(--primary) 15%, transparent));
+.isInrange {
+  background: var(--selected);
   border-radius: 0;
 }
 
-/* Footer */
-.calFooter {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-top: var(--space-3);
-  padding-top: var(--space-3);
-  border-top: var(--border-width) solid var(--line);
-}
-
-.todayBtn,
-.closeBtn {
-  display: inline-flex;
-  align-items: center;
-  height: var(--control-sm);
-  padding: 0 var(--space-3);
-  border-radius: var(--radius-sm);
-  border: none;
-  font-family: var(--font-sans);
-  font-size: var(--type-sm-size, 13px);
-  cursor: pointer;
-}
-
-.todayBtn {
+.isSelected {
   background: var(--primary);
   color: var(--on-primary);
 }
 
-.todayBtn:hover {
-  opacity: 0.9;
+.isSelected.isToday {
+  box-shadow:
+    inset 0 0 0 var(--border-width-control) var(--primary),
+    inset 0 0 0 var(--marker-width) var(--attention);
 }
 
-.closeBtn {
-  background: transparent;
-  color: var(--ink-quiet);
-}
-
-.closeBtn:hover {
-  background: var(--state-hover);
-  color: var(--ink);
-}
-
-/* Time input */
-.timeInput {
-  height: var(--control-md);
-  padding: 0 var(--space-3);
-  border-radius: var(--radius-md);
-  border: var(--border-width) solid var(--line);
-  background: var(--sheet);
-  color: var(--ink);
-  font-family: var(--font-sans);
-  font-size: var(--type-body-size);
-}
-
-.timeInput.sm {
-  height: var(--control-sm);
-  font-size: var(--type-sm-size);
-}
-
-.timeInput:disabled {
-  opacity: 0.5;
+.isDisabled {
+  color: var(--ink-disabled);
   cursor: not-allowed;
+  background: transparent;
+  text-decoration: line-through;
 }
 
-.timeInput:focus-visible {
-  outline: 2px solid var(--focus-ring);
-  outline-offset: 1px;
+.foot {
+  display: flex;
+  justify-content: space-between;
+  margin-top: var(--space-2);
+  padding-top: var(--space-2);
+  border-top: var(--border-width) solid var(--line);
+}
+
+/* .v-btn.v-btn--quiet.v-btn--sm */
+.footBtn {
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-1);
+  height: var(--control-sm);
+  padding: 0 var(--space-2);
+  border-radius: var(--radius-sm);
+  border: var(--border-width) solid transparent;
+  background: transparent;
+  color: var(--ink);
+  font-family: inherit;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.footBtn:hover {
+  background: var(--state-hover);
+}
+
+@media (pointer: coarse), (max-width: 767px) {
+  .day {
+    min-height: var(--touch-target);
+  }
+  .footBtn {
+    min-height: var(--touch-target);
+  }
+  .nav {
+    min-width: var(--touch-target);
+    min-height: var(--touch-target);
+  }
 }

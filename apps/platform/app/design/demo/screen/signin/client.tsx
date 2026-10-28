@@ -4,6 +4,7 @@
 import { useEffect, useState } from 'react';
 import { AuthLayout, Button, Checkbox, FormField, Icon, Input } from '@ventora/ui';
 import { AuthStatement } from '../AuthStatement';
+import { PASSWORD_LABELS } from '../passwordLabels';
 import styles from '../screen.module.css';
 
 function GlobeSVG() {
@@ -45,7 +46,6 @@ export function SigninScreenClient({
 }) {
   const [email, setEmail] = useState('bianca@salonaurora.ro');
   const [password, setPassword] = useState('');
-  const [showPass, setShowPass] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
 
   useEffect(() => {
@@ -100,24 +100,16 @@ export function SigninScreenClient({
               Ai uitat parola?
             </a>
           </div>
-          <div className={styles.passWrap}>
-            <Input
-              type={showPass ? 'text' : 'password'}
-              autoComplete="current-password"
-              placeholder="••••••••"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              isInvalid={state === 'error'}
-            />
-            <button
-              type="button"
-              className={styles.passToggle}
-              onClick={() => setShowPass((v) => !v)}
-              aria-label={showPass ? 'Ascunde parola' : 'Arată parola'}
-            >
-              <Icon icon={showPass ? 'eye-off' : 'eye'} size="sm" aria-hidden />
-            </button>
-          </div>
+          {/* Comutatorul de parolă e al lui Input (ca în bundle). */}
+          <Input
+            type="password"
+            autoComplete="current-password"
+            placeholder="••••••••"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            isInvalid={state === 'error'}
+            labels={PASSWORD_LABELS}
+          />
         </div>
         <Checkbox isSelected={rememberMe} onChange={setRememberMe}>
           Ține-mă minte pe acest dispozitiv timp de 30 de zile

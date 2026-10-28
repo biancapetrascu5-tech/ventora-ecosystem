@@ -21,7 +21,8 @@
   -webkit-tap-highlight-color: transparent;
 }
 
-.root[data-focus-visible] {
+.root[data-focus-visible],
+.isFocus {
   outline: var(--focus-ring-width) solid var(--focus-ring);
   outline-offset: var(--focus-ring-offset);
 }
@@ -58,10 +59,13 @@
 .quiet {
   color: var(--ink);
 }
-.quiet[data-hovered] {
+.quiet[data-hovered],
+.quiet.isHover {
   background: var(--state-hover);
 }
-.quiet[data-pressed] {
+.quiet[data-pressed],
+.quiet.isPressed,
+.quiet.isOn {
   background: var(--state-pressed);
 }
 
@@ -70,11 +74,14 @@
   border-color: var(--control-border);
   color: var(--ink);
 }
-.secondary[data-hovered] {
-  border-color: var(--control-border-hover);
+.secondary[data-hovered],
+.secondary.isHover {
+  /* Ca în bundle.css: .v-iconbtn.v-btn--secondary (mai târziu, aceeași specificitate) păstrează
+     bordura implicită la hover. */
   background-image: linear-gradient(var(--state-hover), var(--state-hover));
 }
-.secondary[data-pressed] {
+.secondary[data-pressed],
+.secondary.isPressed {
   background-image: linear-gradient(var(--state-pressed), var(--state-pressed));
 }
 
@@ -82,19 +89,21 @@
   background: var(--primary);
   color: var(--on-primary);
 }
-.primary[data-hovered] {
-  background: var(--primary-hover);
-}
-.primary[data-pressed] {
-  background: var(--primary-pressed);
-}
+/* Ca în bundle.css: .v-iconbtn.v-btn--primary (mai târziu, aceeași specificitate) păstrează
+   fundalul primary la hover și apăsat. */
 
 .danger {
   background: var(--danger);
   color: var(--on-danger);
 }
-.danger[data-hovered] {
+.danger[data-hovered],
+.danger.isHover {
   background: var(--danger-hover);
+}
+.danger[data-pressed],
+.danger.isPressed {
+  background: var(--danger-hover);
+  background-image: linear-gradient(var(--state-pressed), var(--state-pressed));
 }
 
 .root[data-disabled] {
@@ -108,6 +117,76 @@
 .quiet[data-disabled] {
   background: transparent;
   border-color: transparent;
+}
+
+/* Se încarcă (is-loading): culorile variantei, fără stările de hover */
+.root[data-pending] {
+  cursor: progress;
+}
+.primary[data-pending] {
+  background: var(--primary);
+  color: var(--on-primary);
+  border-color: transparent;
+}
+.secondary[data-pending] {
+  background: var(--sheet);
+  color: var(--ink);
+  border-color: var(--control-border);
+}
+.danger[data-pending] {
+  background: var(--danger);
+  color: var(--on-danger);
+  border-color: transparent;
+}
+.quiet[data-pending] {
+  background: transparent;
+  color: var(--ink);
+  border-color: transparent;
+}
+
+.spinner {
+  display: inline-flex;
+  flex: none;
+  color: currentColor;
+  animation: spin 0.9s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spinner {
+    animation-duration: 0.01ms;
+    animation-iteration-count: 1;
+  }
+}
+
+.badge {
+  position: absolute;
+  top: var(--space-0-5);
+  right: var(--space-0-5);
+  min-width: var(--space-4);
+  height: var(--space-4);
+  padding: 0 var(--space-1);
+  box-sizing: border-box;
+  border-radius: var(--radius-full);
+  background: var(--attention);
+  color: var(--on-attention);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 0 var(--focus-ring-width) var(--sheet);
+}
+.badge:empty {
+  min-width: var(--space-2);
+  width: var(--space-2);
+  height: var(--space-2);
+  padding: 0;
+  top: var(--space-1);
+  right: var(--space-1);
 }
 
 .tooltip {

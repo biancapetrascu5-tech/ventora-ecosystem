@@ -24,7 +24,7 @@ import {
   type CommandDef,
 } from '@ventora/ui';
 import styles from './design.module.css';
-import { PAGINATION_RO } from './demo/gallery/_shared/labels';
+import { PAGINATION_RO, SPINE_RO } from './demo/gallery/_shared/labels';
 
 export function DesignLot3Client() {
   const [paginaActiva, setPaginaActiva] = useState(1);
@@ -252,7 +252,6 @@ export function DesignLot3Client() {
           <PageHeader
             title="Setări cont"
             subtitle="Configurează preferințele aplicației"
-            backHref="#"
             actions={
               <div className={styles.componentRow}>
                 <Button variant="secondary">Anulează</Button>
@@ -281,12 +280,13 @@ export function DesignLot3Client() {
       <Section title="Spine">
         <div style={{ height: 360, display: 'flex', gap: 24 }}>
           <Spine
+            labels={SPINE_RO}
             items={navItems}
             activeId={activeNav}
             onCollapsedChange={setSpineCollapsed}
             isCollapsed={spineCollapsed}
           />
-          <Spine items={navItems} activeId="clients" isCollapsed />
+          <Spine labels={SPINE_RO} items={navItems} activeId="clients" isCollapsed />
         </div>
       </Section>
 
@@ -303,6 +303,7 @@ export function DesignLot3Client() {
             contextBar={<ContextBar title="Demo AppShell" />}
             spine={
               <Spine
+                labels={SPINE_RO}
                 items={navItems}
                 activeId={activeNav}
                 onCollapsedChange={(v) => setActiveNav(v ? activeNav : activeNav)}

@@ -4,6 +4,7 @@ import { Button as RACButton, type ButtonProps as RACButtonProps } from 'react-a
 import { cva, type VariantProps } from 'class-variance-authority';
 import { Icon, type IconName } from '../Icon/Icon';
 import { cn } from '../lib/cn';
+import { forced, type ForcedState } from '../lib/forced';
 import styles from './Button.module.css';
 
 const buttonVariants = cva(styles.root, {
@@ -33,6 +34,8 @@ export interface ButtonProps
   icon?: IconName;
   /** 16px icon after the label. */
   iconEnd?: IconName;
+  /** Forced visual state (galleries, docs). */
+  state?: ForcedState;
   className?: string;
   children?: React.ReactNode;
 }
@@ -43,6 +46,7 @@ export function Button({
   block,
   icon,
   iconEnd,
+  state,
   className,
   children,
   isPending,
@@ -52,7 +56,7 @@ export function Button({
     <RACButton
       {...props}
       isPending={isPending}
-      className={cn(buttonVariants({ variant, size, block }), className)}
+      className={cn(buttonVariants({ variant, size, block }), forced(styles, state), className)}
     >
       {isPending ? (
         <span className={styles.spinner} style={{ width: 16, height: 16 }}>

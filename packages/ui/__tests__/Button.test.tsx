@@ -50,3 +50,19 @@ describe('Button', () => {
     expect(results.violations).toHaveLength(0);
   });
 });
+
+describe('Button — stări forțate (state)', () => {
+  it('adaugă clasa stării, fără să schimbe comportamentul', () => {
+    render(
+      <>
+        <Button variant="primary" state="hover">
+          H
+        </Button>
+        <Button variant="primary">N</Button>
+      </>,
+    );
+    const [h, n] = screen.getAllByRole('button');
+    expect(h!.className).not.toBe(n!.className);
+    expect(h!.className).toMatch(/isHover/);
+  });
+});

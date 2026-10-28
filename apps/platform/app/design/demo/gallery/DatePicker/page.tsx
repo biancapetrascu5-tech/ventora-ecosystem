@@ -11,7 +11,7 @@ export default function DatePickerGalleryPage() {
         <DatePicker mode="date" placeholder="Selecteaza data" />
       </GallerySection>
       <GallerySection label="Mod data — cu valoare" column>
-        <DatePicker mode="date" value="2026-10-27" placeholder="Selecteaza data" />
+        <DatePicker mode="date" value={new Date(2026, 9, 27)} placeholder="Selecteaza data" />
       </GallerySection>
       <GallerySection label="Mod interval" column>
         <DatePicker mode="range" placeholder="Selecteaza intervalul" />

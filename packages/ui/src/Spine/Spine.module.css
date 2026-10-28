@@ -1,54 +1,109 @@
-.root {
+/* .v-spine + .v-bottomnav din bundle.css. Comportamentul responsiv vine din containerul `shell`
+   (AppShell): sub 1024px Spine pe iconuri, sub 768px bara de jos. */
+.spine {
+  width: var(--spine-width);
+  flex: none;
   display: flex;
   flex-direction: column;
-  width: var(--spine-width);
-  height: 100%;
   background: var(--canvas);
-  border-right: var(--border-width-control) solid var(--line);
-  z-index: var(--z-shell);
-  transition: width var(--duration-base) var(--ease-standard);
+  position: relative;
+  box-sizing: border-box;
+  min-width: 0;
+}
+
+.head {
+  padding: var(--space-3) var(--space-3) var(--space-2);
+}
+
+.app {
+  appearance: none;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  width: 100%;
+  padding: var(--space-1);
+  border: 0;
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: var(--ink);
+  cursor: pointer;
+  text-align: start;
+  font-family: inherit;
+}
+
+.app:hover {
+  background: var(--state-hover);
+}
+
+.appname {
+  flex: 1;
   overflow: hidden;
-  flex-shrink: 0;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
 }
 
-.collapsed {
-  width: var(--spine-width-collapsed);
+.hub {
+  color: var(--ink-muted);
 }
 
-.nav {
+.scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--space-2) var(--space-3);
+}
+
+.section + .section {
+  margin-top: var(--space-4);
+}
+
+.seclabel {
+  padding: 0 var(--space-2) var(--space-1);
+  color: var(--ink-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.spine ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
   display: flex;
   flex-direction: column;
   gap: var(--space-0-5);
-  padding: var(--space-2);
-  flex: 1;
-  overflow-y: auto;
-  overflow-x: hidden;
 }
 
 .item {
+  appearance: none;
+  position: relative;
   display: flex;
   align-items: center;
   gap: var(--space-3);
-  height: var(--control-lg);
-  padding-inline: var(--space-2);
+  width: 100%;
+  box-sizing: border-box;
+  height: var(--control-md);
+  padding: 0 var(--space-2);
+  border: 0;
   border-radius: var(--radius-sm);
-  border: none;
   background: transparent;
   color: var(--ink-secondary);
   cursor: pointer;
   text-decoration: none;
-  white-space: nowrap;
-  outline: none;
+  font-family: inherit;
+  text-align: start;
   transition:
-    background var(--duration-instant) var(--ease-standard),
+    background-color var(--duration-instant) var(--ease-standard),
     color var(--duration-instant) var(--ease-standard);
-  width: 100%;
-  text-align: left;
 }
 
-.item:hover:not([aria-disabled]) {
+.item:hover {
   background: var(--state-hover);
   color: var(--ink);
+}
+
+.item:active {
+  background: var(--state-pressed);
 }
 
 .item:focus-visible {
@@ -56,163 +111,261 @@
   outline-offset: var(--focus-ring-offset);
 }
 
-.item[aria-disabled] {
-  opacity: 0.4;
-  cursor: not-allowed;
-}
-
-.itemActive {
-  background: var(--neutral-soft, var(--state-hover));
-  color: var(--primary);
-}
-
-.itemActive:hover {
-  background: var(--neutral-soft, var(--state-hover));
-  color: var(--primary);
-}
-
-.itemIcon {
-  display: flex;
-  align-items: center;
-  flex-shrink: 0;
-}
-
-.itemLabel {
-  font-family: var(--font-sans);
-  font-size: var(--type-body-size);
-  font-weight: var(--type-body-weight);
-  line-height: var(--type-body-line);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  flex: 1;
-}
-
-.collapsed .itemLabel {
-  display: none;
-}
-
-.itemBadge {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 18px;
-  height: 18px;
-  padding-inline: var(--space-1);
-  background: var(--primary);
-  color: var(--on-primary);
-  font-family: var(--font-sans);
-  font-size: 11px;
-  font-weight: 600;
-  border-radius: 9px;
-  flex-shrink: 0;
-}
-
-.collapsed .itemBadge {
-  display: none;
-}
-
-.collapseBtn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: var(--control-md);
-  margin: var(--space-2);
-  border: none;
-  background: transparent;
-  color: var(--ink-secondary);
-  cursor: pointer;
-  border-radius: var(--radius-sm);
-  outline: none;
-  transition: background var(--duration-instant) var(--ease-standard);
-}
-
-.collapseBtn:hover {
-  background: var(--state-hover);
+.isActive {
+  background: var(--selected);
   color: var(--ink);
 }
 
-.collapseBtn:focus-visible {
-  outline: var(--focus-ring-width) solid var(--focus-ring);
-  outline-offset: var(--focus-ring-offset);
+.isActive::before {
+  content: '';
+  position: absolute;
+  left: calc(var(--space-3) * -1);
+  top: var(--space-2);
+  bottom: var(--space-2);
+  width: var(--marker-width);
+  border-radius: 0 var(--marker-width) var(--marker-width) 0;
+  background: var(--attention-mark);
 }
 
-.footer {
-  padding: var(--space-2);
-  border-top: var(--border-width-control) solid var(--line);
+.isDisabled {
+  color: var(--ink-disabled);
+  cursor: not-allowed;
 }
 
-/* Bottom navigation — mobile only */
-.bottomNav {
+.label {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* .v-badge.v-badge--count */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  height: var(--space-5);
+  min-width: var(--space-5);
+  padding: 0 var(--space-1);
+  border-radius: var(--radius-full);
+  white-space: nowrap;
+}
+
+.badgeAttention {
+  background: var(--attention);
+  color: var(--on-attention);
+}
+
+.badgeNeutral {
+  background: var(--neutral-soft);
+  color: var(--ink-secondary);
+}
+
+.foot {
+  padding: var(--space-3) 0;
+  border-top: var(--border-width) solid var(--line);
+  margin: 0 var(--space-3);
+}
+
+.collapse {
+  appearance: none;
+  position: absolute;
+  top: var(--space-4);
+  right: calc(var(--space-3) * -1);
+  z-index: 2;
+  width: var(--space-6);
+  height: var(--space-6);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border-radius: var(--radius-full);
+  border: var(--border-width) solid var(--line-strong);
+  background: var(--sheet);
+  color: var(--ink-secondary);
+  cursor: pointer;
+}
+
+.collapse::after {
+  content: '';
+  position: absolute;
+  inset: calc((var(--touch-target) - var(--space-6)) / -2);
+}
+
+.collapse:hover {
+  color: var(--ink);
+  border-color: var(--control-border);
+}
+
+.isCollapsed {
+  width: var(--spine-width-collapsed);
+}
+
+.isCollapsed .label,
+.isCollapsed .appname,
+.isCollapsed .hub,
+.isCollapsed .seclabel,
+.isCollapsed .foot,
+.isCollapsed .item .badge {
   display: none;
 }
 
-@media (max-width: 639px) {
-  .root {
-    width: 100%;
-    height: auto;
-    flex-direction: row;
-    border-right: none;
-    border-top: var(--border-width-control) solid var(--line);
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    z-index: var(--z-shell);
-  }
+.isCollapsed .item,
+.isCollapsed .app {
+  justify-content: center;
+  padding: 0;
+}
 
-  .nav,
-  .footer,
-  .collapseBtn {
+.isCollapsed .section + .section {
+  margin-top: var(--space-2);
+  padding-top: var(--space-2);
+  border-top: var(--border-width) solid var(--line);
+}
+
+/* În panoul „Mai multe” (.v-spine--sheet) */
+.sheet {
+  width: auto;
+  background: transparent;
+}
+
+.sheet .item {
+  height: var(--control-lg);
+}
+
+.sheet .isActive::before {
+  left: calc(var(--space-4) * -1);
+}
+
+.sheet .section {
+  margin-top: var(--space-4);
+}
+
+.sheet .foot {
+  margin: var(--space-4) 0 0;
+}
+
+/* Bara de jos (.v-bottomnav) — doar în AppShell, sub 768px */
+.bottomnav {
+  display: none;
+}
+
+.bitem {
+  appearance: none;
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-0-5);
+  border: 0;
+  background: transparent;
+  color: var(--ink-muted);
+  cursor: pointer;
+  font-family: inherit;
+  position: relative;
+  padding: 0 var(--space-1);
+}
+
+.bitemActive {
+  color: var(--ink);
+}
+
+.bitemActive::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 30%;
+  right: 30%;
+  height: var(--marker-width);
+  border-radius: 0 0 var(--marker-width) var(--marker-width);
+  background: var(--attention-mark);
+}
+
+.bitemActive .blabel {
+  font-weight: 600;
+}
+
+.bicon {
+  position: relative;
+  display: inline-flex;
+}
+
+.bbadge {
+  position: absolute;
+  top: calc(var(--space-1) * -1);
+  right: calc(var(--space-2) * -1);
+  min-width: var(--space-4);
+  height: var(--space-4);
+  padding: 0 var(--space-1);
+  box-sizing: border-box;
+  border-radius: var(--radius-full);
+  background: var(--attention);
+  color: var(--on-attention);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.blabel {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@container shell (max-width: 1023px) {
+  .spine:not(.sheet) .scroll,
+  .spine:not(.sheet) .head {
+    padding-left: var(--space-2);
+    padding-right: var(--space-2);
+  }
+  .spine:not(.sheet) .isActive::before {
+    left: calc(var(--space-2) * -1);
+  }
+  .spine:not(.sheet) {
+    width: var(--spine-width-collapsed);
+  }
+  .spine:not(.sheet) .label,
+  .spine:not(.sheet) .appname,
+  .spine:not(.sheet) .hub,
+  .spine:not(.sheet) .seclabel,
+  .spine:not(.sheet) .foot,
+  .spine:not(.sheet) .item .badge,
+  .spine:not(.sheet) .collapse {
     display: none;
   }
-
-  .bottomNav {
-    display: flex;
-    flex: 1;
-    flex-direction: row;
-    padding: var(--space-1);
-    gap: 0;
-  }
-
-  .bottomNavItem {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+  .spine:not(.sheet) .item,
+  .spine:not(.sheet) .app {
     justify-content: center;
-    flex: 1;
-    height: 56px;
-    gap: var(--space-0-5);
-    border: none;
-    background: transparent;
-    color: var(--ink-secondary);
-    cursor: pointer;
-    text-decoration: none;
-    border-radius: var(--radius-sm);
-    outline: none;
-    transition:
-      background var(--duration-instant) var(--ease-standard),
-      color var(--duration-instant) var(--ease-standard);
-  }
-
-  .bottomNavItem:focus-visible {
-    outline: var(--focus-ring-width) solid var(--focus-ring);
-    outline-offset: var(--focus-ring-offset);
-  }
-
-  .bottomNavActive {
-    color: var(--primary);
-  }
-
-  .bottomNavLabel {
-    font-family: var(--font-sans);
-    font-size: 10px;
-    font-weight: 500;
-    line-height: 1;
+    padding: 0;
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .root {
-    transition: none;
+@container shell (max-width: 767px) {
+  .spine:not(.sheet) {
+    display: none;
+  }
+  .bottomnav {
+    display: flex;
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: var(--z-shell);
+    height: var(--bottomnav-height);
+    padding-bottom: env(safe-area-inset-bottom);
+    background: var(--sheet);
+    border-top: var(--border-width) solid var(--line);
+    box-sizing: content-box;
+  }
+}
+
+@media (pointer: coarse), (max-width: 767px) {
+  .app,
+  .item {
+    min-height: var(--touch-target);
   }
 }
