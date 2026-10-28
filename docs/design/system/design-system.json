@@ -460,9 +460,9 @@
     "App~20icons"
   ],
   "lastChange": {
-    "at": "2026-10-28T12:00:00Z",
+    "at": "2026-10-28T08:45:00Z",
     "by": "Bianca Petrașcu",
-    "note": "2FA aprobat (S58–S63, P5 și D10 înlocuite), AuthLayout componentă; PASUL 2: AttentionList neutru implicit, UsageMeter la limită pentru proprietar și ceilalți, antetul Hub pe telefon, iconița grid, toate preview-urile cu stări, diacritice, DE/IT și frame-uri Light/Dark",
+    "note": "S70 completat cu EN (Bookings, Plan); S71: P-1 titlul pe telefon (ContextBar) și P-2 ziua de azi în Timeline, aplicate în componente și preview-uri",
     "via": "Claude"
   },
   "layout": "files",

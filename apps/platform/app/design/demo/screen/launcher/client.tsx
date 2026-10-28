@@ -206,7 +206,7 @@ function AppTileRow({ config }: { config: OtherConfig }) {
         )}
       </div>
       <div className={bandStyles.tileRowAction}>
-        <Button variant="outline" size="sm">
+        <Button variant="secondary" size="sm">
           {config.primaryAction}
         </Button>
         {config.hasMenu && (

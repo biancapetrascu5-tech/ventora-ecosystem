@@ -1309,3 +1309,10 @@ a.v-btn { box-sizing: border-box; }
 /* PASUL 2 f finding: long "mark all as read" labels (DE) wrap under the title instead of pushing the settings button out */
 .v-notifs__head { flex-wrap: wrap; }
 .v-notifs__headact { margin-left: auto; flex-wrap: wrap; justify-content: flex-end; }
+
+/* P-1 (28 oct. 2026): on phones, when the bar has a title, the title takes all the free space up to the icons (the spacer goes); what does not fit ends in "…" */
+@container shell (max-width: 767px) {
+  .v-shell:has(.v-spine) .v-contextbar:has(.v-contextbar__title > *) .v-contextbar__spacer { display: none; }
+  .v-contextbar__title > .v-truncate, .v-contextbar__title .heading { min-width: 0; }
+}
+/* P-2 (28 oct. 2026): the "today" label stays on screen — centred on the line when it fits, otherwise moved inwards (the Timeline sets the offset) */

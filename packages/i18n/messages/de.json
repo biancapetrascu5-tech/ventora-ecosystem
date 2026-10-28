@@ -112,5 +112,11 @@
       "nextSteps": "So geht es weiter: Bei der nächsten Anmeldung aktivieren Sie die Zwei-Faktor-Authentifizierung erneut mit einer Authentifizierungs-App. Bis dahin können Sie in {businessName} keine Änderungen mit der Rolle „Inhaber“ vornehmen. Bewahren Sie Ihre neuen Backup-Codes an einem sicheren Ort auf.",
       "notRequested": "Wenn Sie das nicht angefordert haben, schreiben Sie uns bitte sofort an {supportEmail}. Wir prüfen umgehend, was passiert ist."
     }
+  },
+  "auth": {
+    "line1": "Ihr Unternehmen.",
+    "line2": "An einem Ort.",
+    "founderProduct": "Control Center",
+    "founderTagline": "Das interne Werkzeug des Ventora-Teams"
   }
 }

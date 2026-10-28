@@ -15,7 +15,7 @@ export function ContextBar({ logo, title, actions, className }: ContextBarProps)
     <header className={cn(styles.root, className)} role="banner">
       <div className={styles.inner}>
         {(logo || title) && (
-          <div className={styles.brand}>
+          <div className={cn(styles.brand, title && styles.hasTitle)}>
             {logo && <div className={styles.logo}>{logo}</div>}
             {title && <span className={styles.title}>{title}</span>}
           </div>

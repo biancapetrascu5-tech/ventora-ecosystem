@@ -1,4 +1,4 @@
-<!-- @dsCard group="Shell" height=2456 width=1200 -->
+<!-- @dsCard group="Shell" height=3090 width=1200 -->
 <!doctype html>
 <html lang="ro">
 <head><meta charset="utf-8"><title>ContextBar — Ventora</title>
@@ -262,6 +262,11 @@ html,body{min-height:100%}
 .pv-box{padding:var(--space-4);background:var(--sheet);border:var(--border-width) solid var(--line);border-radius:var(--radius-md);min-width:0;color:var(--ink)}
 .pv-stage{position:relative;overflow:hidden;border:var(--border-width) solid var(--line-strong);border-radius:var(--radius-lg);background:var(--canvas);color:var(--ink)}
 .pv-note{margin:0;color:var(--ink-muted)}
+.p1{display:flex;flex-direction:column;gap:var(--space-3);padding:var(--space-6);background:var(--canvas);color:var(--ink)}
+.p1-row{display:flex;gap:var(--space-4);flex-wrap:wrap}
+.p1-col{display:flex;flex-direction:column;gap:var(--space-2)}
+.p1-lab{margin:0;color:var(--ink-muted)}
+.p1-frame{width:390px;height:240px;border:var(--border-width) solid var(--line-strong);border-radius:var(--radius-xl);overflow:hidden;background:var(--canvas);color:var(--ink)}
 </style>
 </head>
 <body>
@@ -385,7 +390,25 @@ function Board({ lang }) {
       h(Cell, { label: L[2], style: { width: 390 } }, h("div", { className: "phone", style: { height: "calc(var(--contextbar-height) + var(--bottomnav-height) + var(--space-8))" } }, h(V.AppShell, { height: "100%", spine: h(V.Spine, { app: "booking", sections: T.sections, activeId: T.sections[0].items[0].id }), contextBar: h(LBar, { lang, title: T.app }) })))),
     h(Cell, { label: L[3] }, h(V.BrandZone, { style: { borderRadius: "var(--radius-md)", overflow: "hidden" } }, h(LBar, { lang, hub: true }))));
 }
-mount(h(Frames, { Board }));
+/* P-1 (28 oct. 2026): on phones, when the bar has a title, the title takes all the free space up to the icons; what does not fit ends in "…" */
+const P1_NAV = [{ items: [{ id: "azi", label: "Azi", icon: "house" }, { id: "cal", label: "Calendar", icon: "calendar" }, { id: "cli", label: "Clienți", icon: "users" }, { id: "set", label: "Setări", icon: "settings" }] }];
+function P1Phone({ th, title, lang, label }) {
+  return h("div", { className: "p1-col" }, h("p", { className: "caption p1-lab" }, label),
+    h("div", { className: "p1-frame", "data-theme": th }, h(V.LocaleProvider, { locale: lang || "ro" },
+      h(V.AppShell, { height: "100%", spine: h(V.Spine, { app: "booking", sections: P1_NAV, activeId: "set" }),
+        contextBar: h(V.ContextBar, { title, onSearch: () => {}, notifications: h(V.NotificationsPanel, { items: [] }), account: h(V.AccountMenu, { user: { name: "Bianca Petrașcu", email: "bianca@salonaurora.ro" } }) }) },
+        h("div", { style: { padding: 16 } }, h("p", { className: "body muted", style: { margin: 0 } }, "…"))))));
+}
+function P1() {
+  return h("div", { className: "p1", "data-theme": "light" },
+    h("p", { className: "heading", style: { margin: 0 } }, "Telefon · 390: titlul ia tot locul până la iconițe (P-1)"),
+    h("div", { className: "p1-row" },
+      h(P1Phone, { th: "light", lang: "it", title: "Impostazioni", label: "Italiano · Light" }),
+      h(P1Phone, { th: "dark", lang: "de", title: "Einstellungen", label: "Deutsch · Dark" }),
+      h(P1Phone, { th: "light", title: "Setări · Trimitere SMS de pe telefonul afacerii", label: "Titlu foarte lung: se termină cu „…”" }),
+      h(P1Phone, { th: "dark", title: "Setări", label: "Română · Dark" })));
+}
+mount(h("div", null, h(Frames, { Board }), h(P1)));
 
 </script>
 </body>

@@ -112,5 +112,11 @@
       "nextSteps": "Qué pasa ahora: la próxima vez que entres, volverás a activar la verificación en dos pasos con una aplicación de autenticación. Hasta entonces, no podrás hacer cambios con el rol de propietario en {businessName}. Guarda los nuevos códigos de respaldo en un lugar seguro.",
       "notRequested": "Si no lo has pedido tú, escríbenos de inmediato a {supportEmail}. Revisamos enseguida lo que ha pasado."
     }
+  },
+  "auth": {
+    "line1": "Tu negocio.",
+    "line2": "Todo en un solo lugar.",
+    "founderProduct": "Control Center",
+    "founderTagline": "La herramienta interna del equipo Ventora"
   }
 }

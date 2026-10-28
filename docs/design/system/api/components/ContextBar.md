@@ -1,6 +1,6 @@
 # ContextBar
 
-`component` · Shell · versiunea 1.1.0
+`component` · Shell · versiunea 1.2.0
 
 The top bar of an app: business switcher, search (opens the CommandPalette, shows ⌘K), "Creează", notifications, account.
 

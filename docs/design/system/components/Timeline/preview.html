@@ -1,4 +1,4 @@
-<!-- @dsCard group="Data" height=1918 width=1200 -->
+<!-- @dsCard group="Data" height=2890 width=1200 -->
 <!doctype html>
 <html lang="ro">
 <head><meta charset="utf-8"><title>Timeline — Ventora</title>
@@ -259,6 +259,11 @@ html,body{min-height:100%}
 .qf-t{margin:0;color:var(--ink-muted)}
 .qh{margin:0;color:var(--ink)}
 .qsec{display:flex;flex-direction:column;gap:var(--space-3)}
+.p2{display:flex;flex-direction:column;gap:var(--space-3);padding:var(--space-6);background:var(--canvas);color:var(--ink)}
+.p2-row{display:flex;gap:var(--space-4);flex-wrap:wrap}
+.p2-col{display:flex;flex-direction:column;gap:var(--space-2);width:360px}
+.p2-lab{margin:0;color:var(--ink-muted)}
+.p2-frame{width:360px;padding:var(--space-3);box-sizing:border-box;border:var(--border-width) solid var(--line-strong);border-radius:var(--radius-xl);background:var(--canvas);color:var(--ink)}
 </style>
 </head>
 <body>
@@ -502,7 +507,19 @@ function Q_Extra() {
       it: Qh(V.Timeline, { label: "Fase", periods: Q_P_IT, rows: Q_ROWS(Q_TL_IT), today: 2.6 }) })));
 }
 
-mount(Qh("div", null, /* @__PURE__ */ React.createElement("div", { className: "d" }, /* @__PURE__ */ React.createElement(V.Timeline, { label: "Etap\u0103", periods: AX_PRJ_PERIODS, rows: AX_PRJ_ROWS, today: 2.6 })), Qh(Q_Extra, null)));
+/* P-2 (28 oct. 2026): Timeline opens with today at about a third of the visible width; the "today" label always stays on screen */
+function P2() {
+  const fr = (th, lang, today, label) => Qh("div", { className: "p2-col" }, Qh("p", { className: "caption p2-lab" }, label),
+    Qh("div", { className: "p2-frame", "data-theme": th }, Qh(V.LocaleProvider, { locale: lang || "ro" }, Qh(V.Timeline, { label: lang === "it" ? "Fase" : lang === "de" ? "Phase" : "Etapă", periods: AX_PRJ_PERIODS, rows: AX_PRJ_ROWS, today }))));
+  return Qh("div", { className: "p2", "data-theme": "light" },
+    Qh("p", { className: "heading", style: { margin: 0 } }, "Telefon · 360: la deschidere, azi stă la o treime din lățime; eticheta rămâne pe ecran (P-2)"),
+    Qh("div", { className: "p2-row" },
+      fr("light", "ro", 2.6, "Română · Light · se deschide derulat la azi"),
+      fr("dark", "it", 2.6, "Italiano · Dark · „Oggi” întreg"),
+      fr("light", "de", AX_PRJ_PERIODS.length - 0.15, "Deutsch · azi în ultima perioadă: eticheta se mută spre interior"),
+      fr("dark", "ro", 0.1, "Azi în prima perioadă: eticheta se mută spre interior")));
+}
+mount(Qh("div", null, /* @__PURE__ */ React.createElement("div", { className: "d" }, /* @__PURE__ */ React.createElement(V.Timeline, { label: "Etap\u0103", periods: AX_PRJ_PERIODS, rows: AX_PRJ_ROWS, today: 2.6 })), Qh(Q_Extra, null), Qh(P2, null)));
 </script>
 </body>
 </html>

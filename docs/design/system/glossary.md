@@ -155,6 +155,15 @@ Un singur cuvânt pentru fiecare lucru, în toate ecranele și în toate cele 6 
 | cont blocat temporar | account locked for now | compte bloqué temporairement | cuenta bloqueada temporalmente | Konto vorübergehend gesperrt | account bloccato temporaneamente | După 5 coduri greșite, 15 minute; spunem ora (S61). Roșu, ca eroare. |
 | Ține-mă minte | Keep me signed in | Rester connecté | Mantener la sesión | Angemeldet bleiben | Resta connesso | Spune cât ține: „… timp de 30 de zile”. Păstrează doar sesiunea; codul se cere la fiecare intrare cu parola (S59). |
 
+## Etichete scurte în bara de jos pe telefon
+
+Bara de jos lasă cel mult 70px pentru o etichetă (DM Sans 12px, 500, la 390px). Când eticheta lungă nu încape, elementul de navigare primește o formă scurtă (`short`). Forma scurtă apare doar în bara de jos pe telefon; meniul din stânga, titlurile și restul textelor folosesc forma lungă. Româna păstrează peste tot forma lungă.
+
+| RO | EN | FR | ES | DE | IT | Regulă |
+| --- | --- | --- | --- | --- | --- | --- |
+| Programări (meniu) · scurt: — | Bookings | Agenda | — (Citas încape) | — (Termine încape) | Agenda | Forma scurtă (`short`) doar în bara de jos pe telefon; în rest „Appointments” / „Rendez-vous” / „Appuntamenti”. EN „Bookings” (52px), nu „Agenda”, care în engleză e ordinea de zi a unei ședințe. S70. |
+| Abonament și consum · scurt: — | Plan | Usage | — (Suscripción încape) | Abo | Utilizzo | Forma scurtă (`short`) doar în bara de jos pe telefon; în rest forma lungă (Abonnement / Abbonamento, „Abonnement und Verbrauch”). „Abo” e prescurtarea uzuală în germană. EN „Plan”: în engleză e chiar cuvântul din glosar pentru abonament (D1 interzice „plan” doar în română). S70. |
+
 ## Verbe
 
 | RO | EN | FR | ES | DE | IT | Regulă |

@@ -112,5 +112,11 @@
       "nextSteps": "Et ensuite : à votre prochaine connexion, vous réactiverez l’authentification en deux étapes avec une application d’authentification. D’ici là, vous ne pourrez pas effectuer de modifications en tant que propriétaire de {businessName}. Conservez vos nouveaux codes de secours en lieu sûr.",
       "notRequested": "Si vous n’êtes pas à l’origine de cette demande, écrivez-nous immédiatement à {supportEmail}. Nous vérifions tout de suite ce qui s’est passé."
     }
+  },
+  "auth": {
+    "line1": "Votre entreprise.",
+    "line2": "En un seul endroit.",
+    "founderProduct": "Control Center",
+    "founderTagline": "L’outil interne de l’équipe Ventora"
   }
 }

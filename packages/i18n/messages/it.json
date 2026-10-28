@@ -112,5 +112,11 @@
       "nextSteps": "Cosa succede ora: al prossimo accesso riattiverà l’autenticazione a due fattori con un’app di autenticazione. Fino ad allora non potrà apportare modifiche con il ruolo di titolare in {businessName}. Conservi i nuovi codici di backup in un luogo sicuro.",
       "notRequested": "Se non l’ha richiesto Lei, ci scriva subito a {supportEmail}. Verifichiamo immediatamente cosa è successo."
     }
+  },
+  "auth": {
+    "line1": "La Sua attività.",
+    "line2": "In un unico posto.",
+    "founderProduct": "Control Center",
+    "founderTagline": "Lo strumento interno del team Ventora"
   }
 }

@@ -47,6 +47,14 @@
   flex-shrink: 0;
 }
 
+/* P-1 (S71): pe telefon, când bara are titlu, titlul ia tot locul liber până la iconițe;
+   ce nu încape se termină cu „…”. */
+@media (max-width: 767px) {
+  .hasTitle {
+    flex: 1 1 auto;
+  }
+}
+
 /* Inside BrandZone (Hub launcher — Direcția B): transparent bg, brand line border */
 :global([data-brand]) .root {
   background: transparent;

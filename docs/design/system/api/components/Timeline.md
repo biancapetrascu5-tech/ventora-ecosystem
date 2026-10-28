@@ -1,6 +1,6 @@
 # Timeline
 
-`component` · Data · versiunea 1.0.1
+`component` · Data · versiunea 1.1.0
 
 Stages of a project as bars across weeks, with the peach "Azi" line and milestones. The TaskBoard "Cronologie" view.
 

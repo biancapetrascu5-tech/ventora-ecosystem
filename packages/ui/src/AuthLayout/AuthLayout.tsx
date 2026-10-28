@@ -2,6 +2,7 @@
 
 import type { ReactNode } from 'react';
 import { BrandZone } from '../BrandZone/BrandZone';
+import { cn } from '../lib/cn';
 import styles from './AuthLayout.module.css';
 
 export interface AuthLayoutProps {
@@ -124,28 +125,27 @@ export function AuthLayout({
           <div className={styles.brandTop}>
             {isFounder ? (
               <div className={styles.founderBrand}>
-                <VentoraMarkOnly size={28} />
+                <VentoraMarkOnly size={32} />
                 {/* eslint-disable-next-line i18next/no-literal-string */}
-                <span className={styles.founderLabel}>Founder</span>
+                <span className="heading">Founder</span>
               </div>
             ) : (
               <VentoraLogoFull height={28} />
             )}
             <div className={styles.langMobile}>{languageSelector}</div>
           </div>
-          {isFounder ? (
-            <>
-              {statement && <p className={`display-xl ${styles.statement}`}>{statement}</p>}
-              {tagline && <p className={`caption ${styles.foot}`}>{tagline}</p>}
-            </>
-          ) : (
-            <>
-              {statement && <p className={`display-xl ${styles.statement}`}>{statement}</p>}
-              <AuthChevrons />
-              {/* eslint-disable-next-line i18next/no-literal-string */}
-              <p className={`caption ${styles.foot}`}>© 2026 Ventora Systems</p>
-            </>
+          {/* Ca în bundle: Hub = auth_line1 <br/> auth_line2; Founder = auth_founder_product + auth_founder_tagline. */}
+          {(statement || tagline) && (
+            <div className={styles.statement}>
+              {statement && (
+                <span className={cn('display-xl', isFounder && styles.product)}>{statement}</span>
+              )}
+              {isFounder && tagline && <span className={cn('body', styles.tag)}>{tagline}</span>}
+            </div>
           )}
+          <AuthChevrons />
+          {/* eslint-disable-next-line i18next/no-literal-string */}
+          <p className={`caption ${styles.foot}`}>© 2026 Ventora Systems</p>
         </BrandZone>
 
         <div className={styles.formSide}>

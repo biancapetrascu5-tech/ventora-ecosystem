@@ -11,7 +11,6 @@ const buttonVariants = cva(styles.root, {
     variant: {
       primary: styles.primary,
       secondary: styles.secondary,
-      outline: styles.outline,
       quiet: styles.quiet,
       danger: styles.danger,
       'danger-quiet': styles.dangerQuiet,

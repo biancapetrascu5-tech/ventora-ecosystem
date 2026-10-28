@@ -12,6 +12,7 @@ import {
   Input,
   type AppName,
 } from '@ventora/ui';
+import { AuthStatement } from '../AuthStatement';
 import styles from '../screen.module.css';
 
 const APP_LABELS: Partial<Record<AppName, string>> = {
@@ -65,7 +66,7 @@ export function InviteScreenClient({
   }, [theme]);
 
   return (
-    <AuthLayout theme={theme} languageSelector={<LangBtn />}>
+    <AuthLayout theme={theme} languageSelector={<LangBtn />} statement={<AuthStatement />}>
       <div className={styles.authForm} style={{ width: 440, maxWidth: '100%' }}>
         {state === 'expired' ? (
           <>

@@ -112,5 +112,11 @@
       "nextSteps": "Ce urmează: la următoarea intrare în cont pornești din nou autentificarea în doi pași, cu o aplicație de autentificare. Până atunci nu poți face modificări ca proprietar în {businessName}. Păstrează noile coduri de rezervă într-un loc sigur.",
       "notRequested": "Dacă nu ai cerut tu asta, scrie-ne imediat la {supportEmail}. Verificăm imediat ce s-a întâmplat."
     }
+  },
+  "auth": {
+    "line1": "Afacerea ta.",
+    "line2": "Într-un singur loc.",
+    "founderProduct": "Control Center",
+    "founderTagline": "Instrumentul intern al echipei Ventora"
   }
 }

@@ -1,6 +1,6 @@
 # HubTwoFactorVerify
 
-`page` · Ecrane Hub · versiunea 1.0.0 · nouă
+`page` · Ecrane Hub · versiunea 1.0.1 · nouă
 
 Two-step check at sign-in, after the password. The page is AuthLayout (S63), like HubSignIn. The code is asked at every sign-in with the password (S59); locked after 5 wrong codes, for 15 minutes (S61). Shown at 1280 and 390, in light and dark; texts from `i18n/two-factor.json`.
 

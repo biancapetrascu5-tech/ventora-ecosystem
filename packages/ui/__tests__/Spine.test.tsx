@@ -15,6 +15,18 @@ describe('Spine', () => {
     expect(screen.getAllByText('Setări').length).toBeGreaterThan(0);
   });
 
+  it('uses the short label only in the bottom nav (S70)', () => {
+    render(
+      <Spine
+        items={[{ id: 'bookings', label: 'Appuntamenti', short: 'Agenda', icon: 'calendar' }]}
+      />,
+    );
+    const bottom = screen.getByRole('navigation', { name: 'Navigare mobilă' });
+    expect(bottom.textContent).toBe('Agenda');
+    const main = screen.getByRole('complementary').querySelector('nav')!;
+    expect(main.textContent).toBe('Appuntamenti');
+  });
+
   it('calls onCollapsedChange when toggle clicked', async () => {
     const onCollapsedChange = vi.fn();
     render(

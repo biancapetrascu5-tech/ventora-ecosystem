@@ -7,6 +7,8 @@ import styles from './Spine.module.css';
 export interface NavItem {
   id: string;
   label: string;
+  /** Forma scurtă din glosar (S70), doar în bara de jos pe telefon; altfel `label`. */
+  short?: string;
   icon: IconName;
   href?: string;
   badge?: number;
@@ -88,7 +90,7 @@ export function Spine({
               aria-current={isActive ? 'page' : undefined}
             >
               <Icon icon={item.icon} size="md" />
-              <span className={styles.bottomNavLabel}>{item.label}</span>
+              <span className={styles.bottomNavLabel}>{item.short || item.label}</span>
             </Tag>
           );
         })}

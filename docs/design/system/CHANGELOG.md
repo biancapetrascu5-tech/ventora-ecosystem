@@ -457,3 +457,37 @@ Fiecare intrare spune ce s-a schimbat pe componentă (structură, tokeni, texte,
 - În meniul din stânga, la 1280, „Abonnement und Verbrauch” (DE) se termină cu „…”.
 - Pe barele de servicii din DataView, pe telefon, numele lungi în germană se termină cu „…” (așa e făcută componenta).
 - Tastatura nu poate fi arătată într-o imagine statică: mutarea cu săgețile în grila HubAdminAccess și în calendar e descrisă în README și în `api/`.
+
+## 2026-10-28 · al doilea export (design system v56) — față de primul export din 28.10 (v49)
+
+### HubTwoFactorVerify — 1.0.1 · FounderTwoFactor — 1.0.1
+- Texte: adresa pentru recuperarea accesului e **support@ventorasystems.com** (R-2F7, S62), în locul exemplului ajutor@ventora-hub.com, pe ecranul „Nu mai am acces la telefon și nici la coduri”, în Hub și în Founder. Butonul „Scrie-ne pe e-mail” deschide aceeași adresă.
+- i18n/two-factor.json: cheie nouă `auth.2fa.recovery.email` = support@ventorasystems.com; `auth.2fa.recovery.address` conține adresa direct, în toate cele 6 limbi (fără variabila `{email}`).
+
+### Glosar — 1.0.2 · etichete scurte în bara de jos (aprobat, S70)
+- Texte: secțiune nouă în glosar, „Etichete scurte în bara de jos pe telefon”. Forma scurtă (`short`) apare doar în bara de jos pe telefon; în rest se folosește forma lungă. Bara de jos lasă cel mult 70px pentru o etichetă (DM Sans 12px, 500, la 390px).
+
+| Element | Formă lungă | Formă scurtă (`short`) | Lățime |
+| --- | --- | --- | --- |
+| Programări | IT „Appuntamenti” (82px) | **„Agenda”** | 44px |
+| Programări | FR „Rendez-vous” (75px) | **„Agenda”** | 44px |
+| Abonament | IT „Abbonamento” (82px) | **„Utilizzo”** | 41px |
+| Abonament | FR „Abonnement” (74px) | **„Usage”** | 35px |
+| Abonament | DE „Abonnement” (74px) | **„Abo”** | 23px |
+
+- Ecranele care folosesc bara de jos (EasyBook și setările Hub) primesc `short` cu aceste valori, odată cu Lotul 2.4b.
+
+### Glosar — EN în etichetele scurte (aprobat, S70)
+- EN „Appointments” (82px) → **„Bookings”** (52px). Nu „Agenda”, care în engleză înseamnă ordinea de zi a unei ședințe.
+- EN „Subscription” (73px) → **„Plan”** (24px). În glosar, EN pentru „abonament” e chiar „plan”; D1 interzice „plan” doar în română.
+
+### ContextBar — 1.2.0 (P-1, S71, aprobat)
+- Structură (stil): pe telefon, când bara are titlu, titlul ia tot locul liber până la iconițe; spațiul gol dinaintea iconițelor dispare. Ce nu încape se termină cu „…”, iar titlul întreg rămâne în PageHeader. Titlul are acum vreo 184px în loc de 90px, așa că „Impostazioni” (98px) și „Einstellungen” încap.
+- Preview: secțiune nouă la 390px: italiană Light, germană Dark, un titlu foarte lung care se termină cu „…”, română Dark.
+- Texte: README.
+
+### Timeline — 1.1.0 (P-2, S71, aprobat)
+- Structură: când perioadele nu încap toate, Timeline se deschide derulat astfel încât ziua de azi să stea la aproximativ o treime din lățimea vizibilă. Eticheta „azi” rămâne mereu pe ecran: centrată pe linie când încape, altfel mutată spre interior, inclusiv când linia iese din zona vizibilă la derulare. Eticheta se repoziționează la derulare și la redimensionare.
+- Preview: secțiune nouă la 360px: română Light (se deschide derulat la azi), italiană Dark („Oggi” întreg), germană cu azi în ultima perioadă și română cu azi în prima perioadă (eticheta mutată spre interior).
+- Texte: README.
+- Folosită și în ProjectsTimeline, care primește comportamentul fără nicio schimbare în ecran.

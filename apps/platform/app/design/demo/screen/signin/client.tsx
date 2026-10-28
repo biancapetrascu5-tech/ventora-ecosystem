@@ -3,6 +3,7 @@
 
 import { useEffect, useState } from 'react';
 import { AuthLayout, Button, Checkbox, FormField, Icon, Input } from '@ventora/ui';
+import { AuthStatement } from '../AuthStatement';
 import styles from '../screen.module.css';
 
 function GlobeSVG() {
@@ -55,6 +56,7 @@ export function SigninScreenClient({
     <AuthLayout
       theme={theme}
       languageSelector={<LangBtn />}
+      statement={<AuthStatement />}
       footer="Termeni · Confidențialitate · Ajutor"
     >
       <div className={styles.authForm}>

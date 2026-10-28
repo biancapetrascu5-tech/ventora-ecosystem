@@ -1,5 +1,6 @@
 'use client';
 
+import { useLayoutEffect, useRef, useState } from 'react';
 import { cn } from '../lib/cn';
 import { Icon } from '../Icon/Icon';
 import styles from './Timeline.module.css';
@@ -42,7 +43,8 @@ export interface TimelineProps {
   className?: string;
 }
 
-/* Timeline din bundle.js. „Azi la o treime” (P-2/S71) nu e încă în bundle — vine cu exportul următor. */
+/* Timeline din bundle.js (1.1.0). P-2/S71: când perioadele nu încap, se deschide derulat cu
+   ziua de azi la o treime din lățimea vizibilă; eticheta „azi” rămâne mereu pe ecran. */
 export function Timeline({
   periods,
   rows,
@@ -54,6 +56,43 @@ export function Timeline({
 }: TimelineProps) {
   const n = periods.length;
   const pct = (x: number) => (x / n) * 100;
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const todayRef = useRef<HTMLSpanElement>(null);
+  const [offset, setOffset] = useState<number | null>(null);
+
+  useLayoutEffect(() => {
+    const s = scrollRef.current;
+    if (!s || today == null || !n) return;
+    const geo = () => {
+      const lab = s.querySelector<HTMLElement>(`.${styles.label}`);
+      const lw = lab ? lab.offsetWidth : 0;
+      const tw = (s.firstElementChild as HTMLElement).scrollWidth - lw;
+      return { lw, x: lw + (today / n) * tw };
+    };
+    const g = geo();
+    if (s.scrollWidth > s.clientWidth) {
+      s.scrollLeft = Math.max(
+        0,
+        Math.min(s.scrollWidth - s.clientWidth, g.x - g.lw - (s.clientWidth - g.lw) / 3),
+      );
+    }
+    const place = () => {
+      const l = todayRef.current;
+      if (!l) return;
+      const { lw, x } = geo();
+      const w = l.offsetWidth;
+      const lo = s.scrollLeft + lw;
+      const hi = s.scrollLeft + s.clientWidth;
+      setOffset(Math.round(Math.max(lo + 4, Math.min(hi - w - 4, x - w / 2)) - x));
+    };
+    place();
+    s.addEventListener('scroll', place, { passive: true });
+    window.addEventListener('resize', place);
+    return () => {
+      s.removeEventListener('scroll', place);
+      window.removeEventListener('resize', place);
+    };
+  }, [today, n]);
 
   return (
     <div
@@ -62,7 +101,7 @@ export function Timeline({
       role="table"
       aria-label={label}
     >
-      <div className={styles.scroll}>
+      <div ref={scrollRef} className={styles.scroll}>
         <div className={styles.inner}>
           <div className={cn(styles.row, styles.head)} role="row">
             <div className={cn(styles.label, 'caption')} role="columnheader">
@@ -146,7 +185,15 @@ export function Timeline({
           {today != null && (
             <div className={styles.todaywrap} aria-hidden="true">
               <span className={styles.today} style={{ left: `${pct(today)}%` }}>
-                {todayLabel && <span className="caption">{todayLabel}</span>}
+                {todayLabel && (
+                  <span
+                    ref={todayRef}
+                    className="caption"
+                    style={offset == null ? undefined : { transform: `translateX(${offset}px)` }}
+                  >
+                    {todayLabel}
+                  </span>
+                )}
               </span>
             </div>
           )}

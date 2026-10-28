@@ -360,13 +360,16 @@ Pornesc din `SPEC_ECRANE_SMS.md` și `SMS_NUMAR_PROPRIU.md` (D-SMS-1…9). Func�
 | S59 | Codul din aplicația de autentificare se cere la fiecare intrare cu parola; „Ține-mă minte pe acest dispozitiv timp de 30 de zile” păstrează doar sesiunea. Fără „Ține minte acest dispozitiv” la verificare. Înlocuiește D10 (R-2F2). |
 | S60 | „Coduri de rezervă” peste tot (nu „coduri de recuperare”), în glosar în cele 6 limbi (R-2F3). 10 coduri de 8 cifre, văzute o singură dată, cu „Descarcă” și „Copiază” și bifa obligatorie „Le-am salvat într-un loc sigur”. |
 | S61 | Blocare după 5 coduri greșite, 15 minute, la activare și la intrare; mesajul spune ora („Poți intra din nou după ora {time}.”). Sesiunea de verificare ține 10 minute, apoi înapoi la autentificare (R-2F5). |
-| S62 | Recuperarea accesului: „Scrie-ne de pe adresa contului…”, fără resetare automată. Adresa e de completat de Bianca (R-2F7); până atunci ecranele arată ajutor@ventora-hub.com ca exemplu. |
+| S62 | Recuperarea accesului: „Scrie-ne de pe adresa contului…”, fără resetare automată. Adresa e support@ventorasystems.com (R-2F7, 28 oct. 2026), în Hub și în Founder, în cheile `auth.2fa.recovery.email` și `auth.2fa.recovery.address` din cele 6 limbi. |
 | S63 | AuthLayout e componentă (R-2F9), cu același nume și aceleași zone ca în packages/ui: panoul de brand, foaia cu formularul, banda cu logo pe telefon. În plus: `brand="founder"`, `statement`, `wide`. Fraza panoului e tradusă în cele 6 limbi. |
 | S64 | AttentionList (PASUL 2 b): tonul implicit e neutru; peach (`tone: "attention"`) doar pentru „are nevoie de tine acum”; roșu (`tone: "danger"`) doar pentru eroare sau pierdere. Înlocuiește regula veche din S1 (implicit peach). |
 | S65 | UsageMeter la limită (PASUL 2 c): proprietarul vede „Cumpără pachet · {preț}” (principal) și „Cere alt abonament” (secundar); ceilalți văd „Pachetele în plus le poate cumpăra doar {nume} (proprietar).” și „Anunță proprietarul”. Textul de deasupra rămâne „Ai atins limita abonamentului. Nu se pierde nimic din ce ai…”. |
 | S66 | Antetul Hub pe telefon (sub 600px, PASUL 2 d): doar logo, căutare (iconiță), clopoțel și avatar. Selectorul de afacere e în AccountMenu („Afacerile tale”, `orgsInMenu`). Shell-ul trece pe varianta de telefon sub 768px, deci regula acoperă tot ce e sub 600px. |
 | S67 | Iconițele din launcher sunt în registrul Icon: wrench, lock, globe, store, grid, arrow-right (PASUL 2 e; „grid” adăugată, Lucide grid-3x3). |
 | S68 | §9 SmsAppDownload aprobat, cu R-D1…R-D7. |
+| S69 | PASUL 2 aprobat (28 oct. 2026). Exportul îl integrează agentul UI pe branch-ul lui. Etichetele scurte pentru bara de jos sunt în S70. |
+| S70 | Etichete scurte în bara de jos pe telefon (`short`), doar acolo; în rest forma lungă: programări → „Bookings” (EN), „Agenda” (FR, IT); abonament → „Plan” (EN), „Usage” (FR), „Abo” (DE), „Utilizzo” (IT). În glosar, secțiunea „Etichete scurte în bara de jos pe telefon”. |
+| S71 | P-1: pe telefon, când bara de sus are titlu, titlul ia tot locul până la iconițe; ce nu încape se termină cu „…” (ContextBar). P-2: Timeline se deschide cu ziua de azi la aproximativ o treime din lățimea vizibilă, iar eticheta „azi” rămâne mereu pe ecran: centrată pe linie când încape, altfel mutată spre interior (Timeline). |
 
 ## Ce nu e încă aici
 

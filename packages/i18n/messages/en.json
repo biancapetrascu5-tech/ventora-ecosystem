@@ -112,5 +112,11 @@
       "nextSteps": "What happens next: the next time you sign in, you'll turn on two-step authentication again with an authenticator app. Until then, you can't make changes as owner of {businessName}. Keep your new backup codes somewhere safe.",
       "notRequested": "If you didn't ask for this, write to us right away at {supportEmail}. We'll look into what happened immediately."
     }
+  },
+  "auth": {
+    "line1": "Your business.",
+    "line2": "All in one place.",
+    "founderProduct": "Control Center",
+    "founderTagline": "The Ventora team's internal tool"
   }
 }

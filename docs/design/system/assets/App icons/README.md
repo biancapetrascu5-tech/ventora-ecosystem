@@ -9,4 +9,4 @@ The fifteen Ventora app icons as standalone SVG files (48 × 48 viewBox, colours
 
 Apps: booking, crm, documents, contracts, events, hr, inventory, shifts, marketing, analytics, assets, projects, finance, portal, network. Never recolour them, never add a second peach part, never place the glyph without its plate.
 
-In exportul din repo, cele 60 de fișiere sunt lângă acest README. Le-am generat din componenta AppIcon, cu culorile puse direct în fișier. Titlul din fiecare SVG e numele afișat al aplicației (D-UX-4, de exemplu „EasyBook”); numele fișierului rămâne cheia (`booking.svg`).
+În exportul din repo, cele 60 de fișiere sunt lângă acest README. Le-am generat din componenta AppIcon, cu culorile puse direct în fișier. Titlul din fiecare SVG e numele afișat al aplicației (D-UX-4, de exemplu „EasyBook”); numele fișierului rămâne cheia (`booking.svg`).
