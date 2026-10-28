@@ -17,6 +17,7 @@ import {
 } from '@ventora/audit';
 import {
   getSession,
+  getUserById,
   getUserContactInTx,
   registerFounderRevocationHook,
   requireFounderSession,
@@ -208,6 +209,7 @@ export async function openSupportSession(params: {
       name: owner.name,
       businessName: opened.organizationName,
       founderName: founder.name,
+      reason: input.reason,
       ticketRef: input.ticketRef,
       expiresAt: opened.session.expiresAt,
     });
@@ -420,6 +422,145 @@ export async function listActiveSupportSessions(params: {
     permission: 'support.session.read',
   });
   return readOpenSessions(ctx.organizationId);
+}
+
+export type SupportSessionStatus = 'active' | 'closed' | 'expired';
+
+export type SupportSessionHistoryItem = {
+  id: string;
+  founderName: string;
+  reason: string;
+  ticketRef: string;
+  openedAt: Date;
+  /** Expires (active) or expired (closed / expired) at. */
+  expiresAt: Date;
+  closedAt: Date | null;
+  status: SupportSessionStatus;
+  /**
+   * Who closed it: the Founder, a member of the business (by name), or the system (Founder
+   * revoked). null while active and for an expired session.
+   */
+  closedBy:
+    | { type: 'founder'; id: string; name: string }
+    | { type: 'member'; id: string; name: string | null }
+    | { type: 'system' }
+    | null;
+};
+
+export type SupportSessionHistoryPage = {
+  items: SupportSessionHistoryItem[];
+  page: number;
+  pageSize: number;
+  total: number;
+};
+
+export const SUPPORT_HISTORY_DEFAULT_PAGE_SIZE = 20;
+export const SUPPORT_HISTORY_MAX_PAGE_SIZE = 100;
+
+type HistoryRow = {
+  id: string;
+  founderName: string;
+  reason: string;
+  ticketRef: string;
+  openedAt: Date;
+  expiresAt: Date;
+  closedAt: Date | null;
+  closedByType: string | null;
+  closedById: string | null;
+};
+
+function historyStatus(row: HistoryRow, now: Date): SupportSessionStatus {
+  if (!row.closedAt) return row.expiresAt > now ? 'active' : 'expired';
+  // closed by the system at or after the expiry (open / authorize found it expired)
+  if (row.closedByType === 'system' && row.closedAt >= row.expiresAt) return 'expired';
+  return 'closed';
+}
+
+/**
+ * Owner / admin (R-SS1, same permission as listActiveSupportSessions): every support session
+ * of the active organization, active and past, newest first, one page at a time.
+ */
+export async function listSupportSessions(params: {
+  sessionToken: string;
+  page?: number;
+  pageSize?: number;
+}): Promise<SupportSessionHistoryPage> {
+  const ctx = await authorize({
+    sessionToken: params.sessionToken,
+    applicationId: PLATFORM_APPLICATION_ID,
+    permission: 'support.session.read',
+  });
+  const page = params.page ?? 1;
+  const pageSize = params.pageSize ?? SUPPORT_HISTORY_DEFAULT_PAGE_SIZE;
+  if (!Number.isInteger(page) || page < 1) throw new InvalidInput('page');
+  if (!Number.isInteger(pageSize) || pageSize < 1 || pageSize > SUPPORT_HISTORY_MAX_PAGE_SIZE) {
+    throw new InvalidInput('pageSize');
+  }
+
+  const db = getAccessDb();
+  const { rows, total } = await db.$transaction(async (tx: any) => {
+    await tx.$executeRaw`SELECT set_config('app.organization_id', ${ctx.organizationId}, true)`;
+    const where = { organizationId: ctx.organizationId };
+    const [rows, total] = await Promise.all([
+      tx.supportSession.findMany({
+        where,
+        orderBy: [{ openedAt: 'desc' }, { id: 'desc' }],
+        skip: (page - 1) * pageSize,
+        take: pageSize,
+        select: {
+          id: true,
+          founderName: true,
+          reason: true,
+          ticketRef: true,
+          openedAt: true,
+          expiresAt: true,
+          closedAt: true,
+          closedByType: true,
+          closedById: true,
+        },
+      }) as Promise<HistoryRow[]>,
+      tx.supportSession.count({ where }) as Promise<number>,
+    ]);
+    return { rows, total };
+  });
+
+  // names of the members who closed a session, read once each from identity
+  const memberIds = [
+    ...new Set(
+      rows.filter((r) => r.closedByType === 'owner' && r.closedById).map((r) => r.closedById!),
+    ),
+  ];
+  const names = new Map<string, string | null>();
+  for (const id of memberIds) names.set(id, (await getUserById(id))?.name ?? null);
+
+  const now = new Date();
+  const items = rows.map((row): SupportSessionHistoryItem => {
+    const status = historyStatus(row, now);
+    let closedBy: SupportSessionHistoryItem['closedBy'] = null;
+    if (status === 'closed') {
+      if (row.closedByType === 'founder' && row.closedById) {
+        // only the Founder who opened a session can close it (founder_close_support_session)
+        closedBy = { type: 'founder', id: row.closedById, name: row.founderName };
+      } else if (row.closedByType === 'owner' && row.closedById) {
+        closedBy = { type: 'member', id: row.closedById, name: names.get(row.closedById) ?? null };
+      } else {
+        closedBy = { type: 'system' };
+      }
+    }
+    return {
+      id: row.id,
+      founderName: row.founderName,
+      reason: row.reason,
+      ticketRef: row.ticketRef,
+      openedAt: row.openedAt,
+      expiresAt: row.expiresAt,
+      closedAt: row.closedAt,
+      status,
+      closedBy,
+    };
+  });
+
+  return { items, page, pageSize, total };
 }
 
 /**

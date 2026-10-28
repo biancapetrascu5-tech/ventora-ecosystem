@@ -12,7 +12,12 @@ export {
   revokeFounderUser,
   listAuditLogsAsFounder,
 } from './founder-contracts';
-export type { FounderSession, FounderUserRecord, FounderRevocationHook } from './founder-contracts';
+export type {
+  FounderSession,
+  FounderUserRecord,
+  FounderRevocationHook,
+  FounderTotpCheck,
+} from './founder-contracts';
 export { resetOwnerAccessInTx, getUserContactInTx } from './founder-owner-recovery';
 export type { OwnerAccessReset } from './founder-owner-recovery';
 export { setSessionActiveOrganization } from './contract';

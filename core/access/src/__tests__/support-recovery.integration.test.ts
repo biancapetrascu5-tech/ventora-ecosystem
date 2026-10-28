@@ -10,8 +10,10 @@ import {
   getSupportSessionBanner,
   listActiveSupportSessions,
   listAuditLogs,
+  listSupportSessions,
   openSupportSession,
   recoverOwnerAccess,
+  type RecoveryVerification,
 } from '../index.js';
 import { closeAuditPools } from '@ventora/audit';
 import { founderAuth, hubAuth, revokeFounderUser } from '@ventora/identity';
@@ -22,6 +24,8 @@ import {
   Forbidden,
   InvalidInput,
   NotAuthenticated,
+  RecoveryVerificationsInvalid,
+  TwoFactorLocked,
   TwoFactorRequired,
 } from '@ventora/errors';
 
@@ -407,6 +411,14 @@ describe('E34 + TS.6 — opening: audit row, owner notice, one open session per 
     expect(mails[0]!.subject).toBe('Echipa Ventora are acces de suport la Salon Aurora');
     expect(mails[0]!.text).toContain('Bianca Ventora din echipa Ventora a deschis o sesiune');
     expect(mails[0]!.text).toContain(TICKET);
+    // S99: the reason, the expiry as "pe {date}, la {time}" and the owner footer
+    expect(mails[0]!.text).toContain(`Motivul: ${REASON}`);
+    expect(mails[0]!.text).toMatch(
+      /Sesiunea se închide automat pe \d{1,2} \p{L}+ \d{4}, la \d{2}:\d{2} EES?T\./u,
+    );
+    expect(mails[0]!.text).toContain(
+      'Primești acest e-mail pentru că ești proprietarul afacerii Salon Aurora în Ventora.',
+    );
     expect(mailbox.sent).toHaveLength(1); // the member gets no email
   });
 
@@ -750,6 +762,129 @@ describe('T3.10a / T3.10b — what the organization sees', () => {
   });
 });
 
+describe('Lot 2.5d — support session history (owner and admin, R-SS1)', () => {
+  let orgId: string;
+  let owner: Awaited<ReturnType<typeof createMember>>;
+  let admin: Awaited<ReturnType<typeof createMember>>;
+  let member: Awaited<ReturnType<typeof createMember>>;
+  let otherOwner: Awaited<ReturnType<typeof createMember>>;
+  const ids: Record<'byFounder' | 'byMember' | 'expired' | 'revoked' | 'active', string> = {
+    byFounder: '',
+    byMember: '',
+    expired: '',
+    revoked: '',
+    active: '',
+  };
+
+  beforeAll(async () => {
+    orgId = await newOrg();
+    owner = await createMember(orgId, 'owner');
+    admin = await createMember(orgId, 'admin');
+    member = await createMember(orgId, 'member');
+    otherOwner = await createMember(await newOrg(), 'owner');
+
+    // closed by the Founder who opened it
+    ids.byFounder = (await open(orgId)).id;
+    await closeSupportSession({
+      founderHeaders: founder.headers(),
+      supportSessionId: ids.byFounder,
+    });
+    // closed by the owner (a member of the business)
+    ids.byMember = (await open(orgId, otherFounder)).id;
+    await closeSupportSessionAsOwner({ sessionToken: owner.token, supportSessionId: ids.byMember });
+    // expired: moved into the past, then closed by the system when the Founder opens again
+    ids.expired = (await open(orgId)).id;
+    await adminQuery(
+      `UPDATE access.support_session
+          SET opened_at = now() - INTERVAL '2 hours', expires_at = now() - INTERVAL '1 hour'
+        WHERE id = $1::uuid`,
+      [ids.expired],
+    );
+    ids.active = (await open(orgId)).id;
+    // closed by the system because its Founder was revoked
+    const leaving = await createFounder('Plecat Istoric');
+    ids.revoked = (await open(orgId, leaving)).id;
+    await revokeFounderUser(founder.id, leaving.id);
+  });
+
+  it('owner and admin: every session, newest first, with status and who closed it', async () => {
+    const expectedOrder = (
+      await adminQuery(
+        `SELECT id::text AS id FROM access.support_session
+          WHERE organization_id = $1::uuid ORDER BY opened_at DESC, id DESC`,
+        [orgId],
+      )
+    ).map((r) => r.id as string);
+
+    for (const who of [owner, admin]) {
+      const page = await listSupportSessions({ sessionToken: who.token });
+      expect(page.total).toBe(5);
+      expect(page.items.map((s) => s.id)).toEqual(expectedOrder);
+      const byId = Object.fromEntries(page.items.map((s) => [s.id, s]));
+
+      expect(byId[ids.byFounder]).toMatchObject({
+        founderName: 'Bianca Ventora',
+        reason: REASON,
+        ticketRef: TICKET,
+        status: 'closed',
+        closedBy: { type: 'founder', id: founder.id, name: 'Bianca Ventora' },
+      });
+      expect(byId[ids.byMember]).toMatchObject({
+        founderName: 'Radu Ventora',
+        status: 'closed',
+        closedBy: { type: 'member', id: owner.userId, name: 'Ana owner' },
+      });
+      expect(byId[ids.expired]).toMatchObject({ status: 'expired', closedBy: null });
+      expect(byId[ids.expired]!.closedAt).not.toBeNull(); // closed by the system at the next open
+      expect(byId[ids.revoked]).toMatchObject({
+        founderName: 'Plecat Istoric',
+        status: 'closed',
+        closedBy: { type: 'system' },
+      });
+      expect(byId[ids.active]).toMatchObject({ status: 'active', closedBy: null, closedAt: null });
+      expect(byId[ids.active]!.expiresAt.getTime()).toBeGreaterThan(Date.now());
+      for (const s of page.items) {
+        expect(s.openedAt).toBeInstanceOf(Date);
+        expect(s.expiresAt).toBeInstanceOf(Date);
+      }
+    }
+  });
+
+  it('paginated: pages of 2 cover every session once', async () => {
+    const pages = [];
+    for (const n of [1, 2, 3]) {
+      pages.push(await listSupportSessions({ sessionToken: owner.token, page: n, pageSize: 2 }));
+    }
+    expect(pages.map((p) => p.items.length)).toEqual([2, 2, 1]);
+    expect(pages.every((p) => p.total === 5 && p.pageSize === 2)).toBe(true);
+    const all = pages.flatMap((p) => p.items.map((s) => s.id));
+    expect(new Set(all).size).toBe(5);
+    const full = await listSupportSessions({ sessionToken: owner.token });
+    expect(all).toEqual(full.items.map((s) => s.id));
+    const beyond = await listSupportSessions({ sessionToken: owner.token, page: 4, pageSize: 2 });
+    expect(beyond).toMatchObject({ items: [], total: 5 });
+  });
+
+  it('page and pageSize out of range → InvalidInput', async () => {
+    for (const bad of [{ page: 0 }, { page: 1.5 }, { pageSize: 0 }, { pageSize: 101 }]) {
+      await expect(listSupportSessions({ sessionToken: owner.token, ...bad })).rejects.toThrow(
+        InvalidInput,
+      );
+    }
+  });
+
+  it('R-SS1 — a member without owner/admin role → Forbidden', async () => {
+    await expect(listSupportSessions({ sessionToken: member.token })).rejects.toThrow(Forbidden);
+  });
+
+  it('another organization sees none of these sessions', async () => {
+    expect(await listSupportSessions({ sessionToken: otherOwner.token })).toMatchObject({
+      items: [],
+      total: 0,
+    });
+  });
+});
+
 // ---------------------------------------------------------------------------
 // §4 Recuperarea owner-ului
 // ---------------------------------------------------------------------------
@@ -784,6 +919,8 @@ async function recover(
     userId,
     ticketRef: 'REC-2026-007',
     reason: 'Owner-ul a pierdut telefonul cu aplicația de autentificare',
+    verifications: ['a', 'b'],
+    emailCompromised: false,
     identityVerified: true,
     founderTotpCode: await founder.totp(),
     ...overrides,
@@ -826,6 +963,8 @@ describe('TR.1 / TR.2 / TR.11 — recovery, variant B by default', () => {
     expect(e40[0].organization_id).toBe(orgId);
     expect(e40[0].metadata).toMatchObject({
       ticketRef: 'REC-2026-007',
+      verifications: ['a', 'b'],
+      emailCompromised: false,
       identityVerified: true,
       resetPassword: true,
       twoFactorRemoved: true,
@@ -1035,6 +1174,202 @@ describe('TR.5 / TR.6 / TR.7 / TR.8 — refusals change nothing', () => {
     }
     await expectUntouched();
     expect(mailbox.to(owner.email)).toHaveLength(0);
+  });
+});
+
+describe('Lot 2.5d — recovery checks (PROCEDURA-RECUPERARE-OWNER §4)', () => {
+  let orgId: string;
+  let owner: Awaited<ReturnType<typeof createRealOwner>>;
+
+  beforeAll(async () => {
+    orgId = await newOrg();
+    owner = await createRealOwner(orgId);
+  });
+
+  async function founderFailedCount(): Promise<number> {
+    const [row] = await adminQuery(
+      `SELECT failed_verification_count AS n FROM founder_identity.two_factors WHERE user_id = $1`,
+      [founder.id],
+    );
+    return row?.n ?? 0;
+  }
+
+  const REFUSED: [RecoveryVerification[] | unknown, boolean, string][] = [
+    [[], false, 'min_two'],
+    [['a'], false, 'min_two'],
+    [['b'], false, 'min_two'],
+    [['c'], false, 'min_two'],
+    [['a', 'a'], false, 'invalid_value'],
+    [['b', 'b', 'c'], false, 'invalid_value'],
+    [['a', 'd'], false, 'invalid_value'],
+    [[], true, 'min_two'],
+    [['a'], true, 'min_two'],
+    [['b'], true, 'min_two'],
+    [['a', 'b'], true, 'compromised_requires_b_and_c'],
+    [['a', 'c'], true, 'compromised_requires_b_and_c'],
+  ];
+
+  it.each(REFUSED)(
+    'refused: %j, compromised %s → RECOVERY_VERIFICATIONS_INVALID (%s), nothing changes',
+    async (verifications, emailCompromised, rule) => {
+      const before = await founderFailedCount();
+      const err = await recover(orgId, owner.userId, {
+        verifications: verifications as RecoveryVerification[],
+        emailCompromised,
+      }).catch((e: unknown) => e);
+      expect(err).toBeInstanceOf(RecoveryVerificationsInvalid);
+      expect(err).toMatchObject({ code: 'RECOVERY_VERIFICATIONS_INVALID', status: 400, rule });
+
+      const state = await ownerState(owner.userId);
+      expect(state).toMatchObject({ twoFactorEnabled: true, two_factors: 1, null_passwords: 0 });
+      expect(
+        await auditRows(`action = 'support.owner_recovery_performed' AND target_id = $1`, [
+          owner.userId,
+        ]),
+      ).toHaveLength(0);
+      expect(await founderFailedCount()).toBe(before); // checked before the code: no attempt spent
+    },
+  );
+
+  it('missing or malformed fields → InvalidInput', async () => {
+    await expect(
+      recover(orgId, owner.userId, { emailCompromised: undefined as unknown as boolean }),
+    ).rejects.toMatchObject({ name: 'InvalidInput', field: 'emailCompromised' });
+    await expect(
+      recover(orgId, owner.userId, { verifications: 'a,b' as unknown as RecoveryVerification[] }),
+    ).rejects.toMatchObject({ name: 'InvalidInput', field: 'verifications' });
+    expect((await ownerState(owner.userId)).two_factors).toBe(1);
+  });
+
+  const ACCEPTED: [RecoveryVerification[], boolean, RecoveryVerification[]][] = [
+    [['a', 'b'], false, ['a', 'b']],
+    [['c', 'a'], false, ['a', 'c']],
+    [['b', 'c'], false, ['b', 'c']],
+    [['a', 'b', 'c'], false, ['a', 'b', 'c']],
+    [['b', 'c'], true, ['b', 'c']],
+    [['c', 'b', 'a'], true, ['a', 'b', 'c']],
+  ];
+
+  it.each(ACCEPTED)(
+    'accepted: %j, compromised %s → recovery done, E40 has the checks %j',
+    async (verifications, emailCompromised, recorded) => {
+      const acceptedOrg = await newOrg();
+      const target = await createRealOwner(acceptedOrg);
+      const result = await recover(acceptedOrg, target.userId, {
+        verifications,
+        emailCompromised,
+        resetPassword: false,
+      });
+      expect(result.notice).toBe('sent');
+      expect((await ownerState(target.userId)).two_factors).toBe(0);
+      const e40 = await auditRows(
+        `action = 'support.owner_recovery_performed' AND target_id = $1`,
+        [target.userId],
+      );
+      expect(e40).toHaveLength(1);
+      expect(e40[0].metadata).toMatchObject({ verifications: recorded, emailCompromised });
+    },
+  );
+});
+
+describe('Lot 2.5d — recovery: 5 wrong Founder codes lock for 15 minutes (R-2F5 / S61)', () => {
+  it('the 5th wrong code locks, the 6th is refused even with a good code, after 15 minutes it works', async () => {
+    const locker = await createFounder('Blocat Recuperare');
+    const orgId = await newOrg();
+    const owner = await createRealOwner(orgId);
+    const asLocker = async (code: string) =>
+      recover(orgId, owner.userId, { founderHeaders: locker.headers(), founderTotpCode: code });
+    const twoFactorRow = async () =>
+      (
+        await adminQuery(
+          `SELECT failed_verification_count, locked_until FROM founder_identity.two_factors
+            WHERE user_id = $1`,
+          [locker.id],
+        )
+      )[0];
+    const lockerRows = async (action: string) =>
+      auditRows(`action = $1 AND target_id = $2`, [action, locker.id]);
+
+    // 1–4: wrong, refused, not locked
+    for (let i = 1; i <= 4; i++) {
+      await expect(asLocker(await locker.wrongTotp())).rejects.toThrow(Forbidden);
+    }
+    expect(await twoFactorRow()).toMatchObject({
+      failed_verification_count: 4,
+      locked_until: null,
+    });
+
+    // 5: wrong → locked, with lockedUntil for the screen
+    const before = Date.now();
+    const fifth = await asLocker(await locker.wrongTotp()).catch((e: unknown) => e);
+    expect(fifth).toBeInstanceOf(TwoFactorLocked);
+    const lockedUntil = (fifth as TwoFactorLocked).lockedUntil;
+    expect(lockedUntil).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/);
+    const minutes = (new Date(lockedUntil).getTime() - before) / 60_000;
+    expect(minutes).toBeGreaterThan(14.9);
+    expect(minutes).toBeLessThanOrEqual(15.1);
+    expect(new Date((await twoFactorRow()).locked_until).toISOString()).toBe(lockedUntil);
+
+    // audit: every wrong code (Better Auth's hook) and the lock, once
+    expect(await lockerRows('founder.2fa_verify_failed')).toHaveLength(5);
+    const locked = await lockerRows('founder.2fa_account_locked');
+    expect(locked).toHaveLength(1);
+    expect(locked[0].actor_type).toBe('system');
+    expect(locked[0].metadata).toMatchObject({
+      lockedUntil,
+      failedAttempts: 5,
+      purpose: 'owner_recovery',
+    });
+
+    // 6: a good code is refused while locked; same lockedUntil; nothing changes
+    const sixth = await asLocker(await locker.totp()).catch((e: unknown) => e);
+    expect(sixth).toBeInstanceOf(TwoFactorLocked);
+    expect(sixth).toMatchObject({ code: 'TWO_FACTOR_LOCKED', status: 429, lockedUntil });
+    const whileLocked = await lockerRows('founder.2fa_attempt_while_locked');
+    expect(whileLocked).toHaveLength(1);
+    expect(whileLocked[0].outcome).toBe('denied');
+    expect((await ownerState(owner.userId)).two_factors).toBe(1);
+    expect(
+      await auditRows(`action = 'support.owner_recovery_performed' AND target_id = $1`, [
+        owner.userId,
+      ]),
+    ).toHaveLength(0);
+
+    // 15 minutes later (the lock moved into the past): the good code works, the budget restarts
+    await adminQuery(
+      `UPDATE founder_identity.two_factors SET locked_until = now() - INTERVAL '1 second'
+        WHERE user_id = $1`,
+      [locker.id],
+    );
+    await expect(asLocker(await locker.totp())).resolves.toMatchObject({ notice: 'sent' });
+    expect(await twoFactorRow()).toMatchObject({
+      failed_verification_count: 0,
+      locked_until: null,
+    });
+  });
+
+  it('only consecutive failures count: a good code resets the budget', async () => {
+    const counter = await createFounder('Numarat Recuperare');
+    const orgId = await newOrg();
+    const first = await createRealOwner(orgId);
+    const second = await createRealOwner(orgId);
+    const as = async (userId: string, code: string) =>
+      recover(orgId, userId, { founderHeaders: counter.headers(), founderTotpCode: code });
+
+    for (let i = 0; i < 4; i++) {
+      await expect(as(first.userId, await counter.wrongTotp())).rejects.toThrow(Forbidden);
+    }
+    await expect(as(first.userId, await counter.totp())).resolves.toMatchObject({ notice: 'sent' });
+    // 4 more wrong codes do not lock: the count started again at 0
+    for (let i = 0; i < 4; i++) {
+      await expect(as(second.userId, await counter.wrongTotp())).rejects.toThrow(Forbidden);
+    }
+    const [row] = await adminQuery(
+      `SELECT failed_verification_count, locked_until FROM founder_identity.two_factors
+        WHERE user_id = $1`,
+      [counter.id],
+    );
+    expect(row).toMatchObject({ failed_verification_count: 4, locked_until: null });
   });
 });
 

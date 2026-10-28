@@ -73,3 +73,30 @@ export class Conflict extends Error {
     this.name = 'Conflict';
   }
 }
+
+/**
+ * Owner recovery (PROCEDURA-RECUPERARE-OWNER §4): the identity checks do not meet the rule —
+ * at least two, and (b) + (c) when the account address is compromised. Nothing was changed.
+ */
+export class RecoveryVerificationsInvalid extends Error {
+  readonly status = 400;
+  readonly code = 'RECOVERY_VERIFICATIONS_INVALID';
+  readonly rule: 'invalid_value' | 'min_two' | 'compromised_requires_b_and_c';
+  constructor(rule: RecoveryVerificationsInvalid['rule'], message = `Recovery checks: ${rule}`) {
+    super(message);
+    this.name = 'RecoveryVerificationsInvalid';
+    this.rule = rule;
+  }
+}
+
+/** Too many wrong two-factor codes (R-2F5): locked until `lockedUntil` (ISO), for the screen. */
+export class TwoFactorLocked extends Error {
+  readonly status = 429;
+  readonly code = 'TWO_FACTOR_LOCKED';
+  readonly lockedUntil: string;
+  constructor(lockedUntil: Date, message = 'Too many wrong codes, try again later') {
+    super(message);
+    this.name = 'TwoFactorLocked';
+    this.lockedUntil = lockedUntil.toISOString();
+  }
+}

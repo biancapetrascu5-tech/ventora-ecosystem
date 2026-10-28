@@ -66,6 +66,7 @@ describe('email catalogs in all 6 languages', () => {
           name: 'A',
           businessName: 'C',
           founderName: 'D',
+          reason: 'Programările de ieri lipsesc',
           ticketRef: 'T-2',
           expiresAt,
           locale,
@@ -101,6 +102,23 @@ describe('email catalogs in all 6 languages', () => {
       expect(reset.text).toContain(`${m.cta}: mailto:support@ventorasystems.com`);
       expect(reset.text).not.toBe(change.text);
       expect(reset.text).not.toContain('TODO-COPY');
+    });
+
+    it(`${locale}: E-6 — expiry with the zone abbreviation, the reason, the owner footer (S99)`, () => {
+      const m = emailMessages(locale).supportSession;
+      const r = renderSupportSessionOpened({
+        email: 'a@x.io',
+        businessName: 'Salon C',
+        founderName: 'D',
+        reason: 'Programările de ieri lipsesc',
+        ticketRef: 'T-2',
+        expiresAt: new Date('2026-10-28T16:30:00Z'),
+        locale,
+      });
+      expect(r.text).toContain('18:30 EET');
+      expect(r.text).toContain(m.reason.replace('{reason}', 'Programările de ieri lipsesc'));
+      expect(r.text).toContain(m.footer.replace('{businessName}', 'Salon C'));
+      expect(r.text).not.toContain('a@x.io'); // the account footer is replaced
     });
   }
 });

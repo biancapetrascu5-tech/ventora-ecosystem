@@ -65,10 +65,12 @@ export interface EmailMessages {
   supportSession: {
     subject: string;
     intro: string;
+    reason: string;
     scope: string;
     until: string;
     close: string;
     notRequested: string;
+    footer: string;
   };
 }
 

@@ -38,6 +38,10 @@ const HUB_RATE_LIMIT = {
 
 const FOUNDER_RATE_LIMIT = { ...HUB_RATE_LIMIT };
 
+// R-2F5 / S61: 5 consecutive wrong codes lock the account for 15 minutes (Hub and Founder).
+// Also applied by verifyFounderTotp() to the Founder's re-authentication (D14), on the same row.
+export const TWO_FACTOR_LOCKOUT = { enabled: true, maxFailedAttempts: 5, durationSeconds: 900 };
+
 type AuthAudit = ReturnType<typeof createAuthAuditHooks>;
 type SessionDb = {
   session: { deleteMany(args: unknown): Promise<{ count: number }> };
@@ -170,7 +174,7 @@ export function createHubAuthOptions(db: IdentityBaseClient, secret: string) {
       twoFactor({
         issuer: 'Ventora Hub',
         backupCodeOptions: { storeBackupCodes: 'encrypted' as const },
-        accountLockout: { enabled: true, maxFailedAttempts: 5, durationSeconds: 900 },
+        accountLockout: TWO_FACTOR_LOCKOUT,
       }),
     ],
     disabledPaths: ['/two-factor/disable'],
@@ -237,7 +241,7 @@ export function createFounderAuthOptions(db: FounderBaseClient, secret: string) 
       twoFactor({
         issuer: 'Ventora Founder',
         backupCodeOptions: { storeBackupCodes: 'encrypted' as const },
-        accountLockout: { enabled: true, maxFailedAttempts: 5, durationSeconds: 900 },
+        accountLockout: TWO_FACTOR_LOCKOUT,
       }),
     ],
     disabledPaths: ['/two-factor/disable'],

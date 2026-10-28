@@ -23,17 +23,6 @@ function formatDate(date: Date, locale: Locale): string {
   }).format(date);
 }
 
-function formatDateTime(date: Date, locale: Locale): string {
-  return new Intl.DateTimeFormat(locale, {
-    day: 'numeric',
-    month: 'long',
-    hour: '2-digit',
-    minute: '2-digit',
-    timeZone: DISPLAY_TIME_ZONE,
-    timeZoneName: 'short',
-  }).format(date);
-}
-
 /** T-1: greet by name when there is a real one, otherwise the plain greeting. */
 function greeting(m: EmailMessages, name: string | null | undefined, email: string): string {
   const clean = name?.trim();
@@ -234,14 +223,16 @@ export function renderOwnerRecovery(params: {
 }
 
 /**
- * E-6 (Lot 2.5c, D10 variant A): tells an owner that a Founder opened a read-only support
- * session for the business. No button: the Hub screens come with F1 (D18).
+ * E-6 (Lot 2.5c, D10 variant A; S99): tells an owner that a Founder opened a read-only support
+ * session for the business, with the reason. No button: the Hub screens come with F1 (D18).
+ * The expiry uses the date and time format of the "password changed" email.
  */
 export function renderSupportSessionOpened(params: {
   email: string;
   name?: string | null;
   businessName: string;
   founderName: string;
+  reason: string;
   ticketRef: string;
   expiresAt: Date;
   locale?: Locale;
@@ -253,7 +244,9 @@ export function renderSupportSessionOpened(params: {
     businessName: params.businessName,
     founderName: params.founderName,
     ticketRef: params.ticketRef,
-    expiresAt: formatDateTime(params.expiresAt, locale),
+    reason: params.reason,
+    date: formatDate(params.expiresAt, locale),
+    time: formatTimeWithZone(params.expiresAt, locale),
   };
   const subject = fill(t.subject, vars);
   return renderOperationalEmail({
@@ -262,14 +255,19 @@ export function renderSupportSessionOpened(params: {
     preheader: fill(t.intro, vars),
     eyebrow: params.businessName,
     title: subject,
-    lead: [greeting(m, params.name, params.email), fill(t.intro, vars), t.scope],
+    lead: [
+      greeting(m, params.name, params.email),
+      fill(t.intro, vars),
+      fill(t.reason, vars),
+      t.scope,
+    ],
     after: [
       fill(t.until, vars),
       t.close,
       { text: fill(t.notRequested, { supportEmail: supportEmail() }), strong: true },
     ],
     signature: m.common.signature,
-    why: fill(m.common.footerAccount, { email: params.email }),
+    why: fill(t.footer, vars),
     company: m.common.company,
   });
 }

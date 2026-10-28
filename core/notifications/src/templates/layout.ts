@@ -4,6 +4,8 @@
 // company. One column, 600px, light only; on phones the button takes the full width.
 // Every transactional email renders through renderOperationalEmail — no per-email HTML.
 // Colours: light-theme tokens from docs/design/system/tokens.json (no dark mode, S3).
+import { emailLogoUrl } from '../links';
+
 const COLOR = {
   canvas: '#F2F3F0',
   raised: '#FFFFFF',
@@ -58,6 +60,20 @@ function afterHtml(item: OperationalEmail['after'][number]): string {
   return `<p style="${P_SMALL}"><strong style="color:${COLOR.ink}">${escapeHtml(item.text)}</strong></p>`;
 }
 
+function logo(): string {
+  const src = emailLogoUrl();
+  if (!src) {
+    return (
+      `<span style="font-family:'Syne',${FONT};font-size:20px;line-height:24px;font-weight:700;` +
+      `color:${COLOR.ink}">Ventora</span>`
+    );
+  }
+  return (
+    `<img src="${escapeHtml(src)}" width="160" height="44" alt="Ventora" ` +
+    `style="display:block;width:160px;height:44px;border:0;outline:none;text-decoration:none">`
+  );
+}
+
 export function renderOperationalEmail(e: OperationalEmail): RenderedEmail {
   const button = e.button
     ? `<p style="margin:8px 0 20px"><a class="v-btn" href="${escapeHtml(e.button.href)}" ` +
@@ -82,10 +98,10 @@ export function renderOperationalEmail(e: OperationalEmail): RenderedEmail {
     `<table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" ` +
     `style="width:100%;max-width:600px"><tr><td style="background:${COLOR.raised};` +
     `border:1px solid ${COLOR.line};border-radius:12px">` +
-    // head: the Ventora logo (wordmark until a hosted PNG of the logo exists)
+    // head: the Ventora logo (2x PNG shown at 160×44), or the wordmark without a platform URL
     `<div class="v-pad" style="padding:20px 24px;border-bottom:1px solid ${COLOR.line}">` +
-    `<span style="font-family:'Syne',${FONT};font-size:20px;line-height:24px;font-weight:700;` +
-    `color:${COLOR.ink}">Ventora</span></div>` +
+    logo() +
+    `</div>` +
     // body
     `<div class="v-pad" style="padding:24px">` +
     `<p style="${P_CAPTION};text-transform:uppercase;letter-spacing:.06em">${escapeHtml(e.eyebrow)}</p>` +

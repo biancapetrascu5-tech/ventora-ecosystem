@@ -7,6 +7,7 @@ export async function sendSupportSessionNotice(params: {
   name?: string | null;
   businessName: string;
   founderName: string;
+  reason: string;
   ticketRef: string;
   expiresAt: Date;
 }): Promise<DeliveryResult> {
