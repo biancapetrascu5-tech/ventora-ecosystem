@@ -1,6 +1,7 @@
 import type { UserWithTwoFactor } from 'better-auth/plugins/two-factor';
 import { hubAuth } from './auth';
 import { getIdentityDb } from './db';
+import { AuditActions, writeAuditEvent } from '@ventora/audit';
 
 export type HubSession = {
   id: string;
@@ -36,7 +37,21 @@ export async function getSession(headers: Headers): Promise<HubSession | null> {
 }
 
 export async function revokeSession(sessionId: string): Promise<void> {
-  await getIdentityDb().session.delete({ where: { id: sessionId } });
+  const deleted = await getIdentityDb().session.delete({ where: { id: sessionId } });
+  // E5 (best_effort, D2)
+  await writeAuditEvent(
+    {
+      category: 'identity',
+      action: AuditActions.sessionRevoked,
+      outcome: 'success',
+      actorType: 'user',
+      actorId: deleted.userId,
+      targetType: 'session',
+      targetId: sessionId,
+      metadata: { scope: 'one' },
+    },
+    { mode: 'best_effort' },
+  );
 }
 
 export async function getUserById(userId: string): Promise<HubUser | null> {

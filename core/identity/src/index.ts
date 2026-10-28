@@ -8,6 +8,7 @@ export {
   requireFounderSession,
   addFounderUser,
   revokeFounderUser,
+  listAuditLogsAsFounder,
 } from './founder-contracts';
 export type { FounderSession, FounderUserRecord } from './founder-contracts';
 export { setSessionActiveOrganization } from './contract';

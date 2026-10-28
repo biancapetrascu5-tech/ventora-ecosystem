@@ -2,6 +2,15 @@ import type { UserWithTwoFactor } from 'better-auth/plugins/two-factor';
 import { NotAuthenticated, TwoFactorRequired, Forbidden } from '@ventora/errors';
 import { founderAuth } from './auth-founder';
 import { getFounderDb } from './db';
+import {
+  AuditActions,
+  appendAuditEventInTx,
+  hashEmail,
+  prismaTxExecutor,
+  readAuditLogAsFounder,
+  type AuditLogEntry,
+  type FounderAuditLogFilters,
+} from '@ventora/audit';
 
 export type FounderSession = {
   id: string;
@@ -70,10 +79,41 @@ export async function addFounderUser(
     },
   });
 
-  const newUser = await getFounderDb().user.update({
-    where: { id: result.user.id },
-    data: { createdByFounderId: actingFounderId },
-  });
+  // E31 (mode required, D2): the audit row is written in the same transaction as the
+  // createdByFounderId update. If either fails, the account created by signUpEmail
+  // (its own transaction) is deleted — no Founder account exists without its audit row.
+  let newUser;
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    newUser = await getFounderDb().$transaction(async (tx: any) => {
+      const updated = await tx.user.update({
+        where: { id: result.user.id },
+        data: { createdByFounderId: actingFounderId },
+      });
+      await appendAuditEventInTx(prismaTxExecutor(tx), {
+        category: 'founder',
+        action: AuditActions.founderUserAdded,
+        outcome: 'success',
+        actorType: 'founder',
+        actorId: actingFounderId,
+        founderId: actingFounderId,
+        targetType: 'founder_user',
+        targetId: updated.id,
+        metadata: { emailHash: hashEmail(params.email) },
+      });
+      return updated;
+    });
+  } catch (err) {
+    await getFounderDb()
+      .user.delete({ where: { id: result.user.id } })
+      .catch((cleanupErr: unknown) => {
+        console.error('[identity] addFounderUser: rollback of the new account failed', {
+          userId: result.user.id,
+          error: cleanupErr instanceof Error ? cleanupErr.message : String(cleanupErr),
+        });
+      });
+    throw err;
+  }
 
   return {
     id: newUser.id,
@@ -103,15 +143,43 @@ export async function revokeFounderUser(
     });
   }
 
-  await getFounderDb().user.update({
-    where: { id: targetFounderId },
-    data: {
-      revokedAt: new Date(),
-      revokedByFounderId: actingFounderId,
-    },
-  });
+  // E32 (mode required, D2): revocation, session deletion and the audit row are one transaction.
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  await getFounderDb().$transaction(async (tx: any) => {
+    await tx.user.update({
+      where: { id: targetFounderId },
+      data: {
+        revokedAt: new Date(),
+        revokedByFounderId: actingFounderId,
+      },
+    });
 
-  await getFounderDb().session.deleteMany({
-    where: { userId: targetFounderId },
+    const sessions = await tx.session.deleteMany({
+      where: { userId: targetFounderId },
+    });
+
+    await appendAuditEventInTx(prismaTxExecutor(tx), {
+      category: 'founder',
+      action: AuditActions.founderUserRevoked,
+      outcome: 'success',
+      actorType: 'founder',
+      actorId: actingFounderId,
+      founderId: actingFounderId,
+      targetType: 'founder_user',
+      targetId: targetFounderId,
+      metadata: { sessionsDeleted: sessions.count },
+    });
   });
+}
+
+/**
+ * Full audit log for the Founder application. The read is itself audited (E33, same
+ * transaction as the SELECT): when the audit write fails, nothing is returned.
+ */
+export async function listAuditLogsAsFounder(
+  actingFounderId: string,
+  filters: FounderAuditLogFilters = {},
+): Promise<AuditLogEntry[]> {
+  await requireFounderActor(actingFounderId);
+  return readAuditLogAsFounder(actingFounderId, filters);
 }

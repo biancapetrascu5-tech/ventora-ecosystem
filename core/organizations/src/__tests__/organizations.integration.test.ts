@@ -18,6 +18,7 @@ import {
   InvalidInvitationStatusError,
 } from '../index.js';
 import type { OrgContext } from '../index.js';
+import { closeAuditPools } from '@ventora/audit';
 
 // Branded type enforcement: proves that only resolveOrgContext can produce OrgContext.
 function _assertOrgContext(_: OrgContext) {}
@@ -34,6 +35,7 @@ beforeAll(async () => {
 
 afterAll(async () => {
   await adminPool.end();
+  await closeAuditPools();
 });
 
 async function adminQuery(sql: string, params: unknown[] = []) {
@@ -502,5 +504,186 @@ describe('T2.11 cross-org isolation', () => {
         [orgIdA, suspendedId],
       );
     }
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Lot 2.5a — audit (T3.7: E20–E25)
+// ---------------------------------------------------------------------------
+
+const APPEND_EVENT_SIGNATURE =
+  'audit.append_event(text, text, text, text, text, text, uuid, uuid, text, text, inet, text, text, jsonb)';
+
+async function auditRows(where: string, params: unknown[]) {
+  return adminQuery(`SELECT * FROM audit.audit_log WHERE ${where} ORDER BY created_at, id`, params);
+}
+
+async function ownerContext(organizationId: string): Promise<OrgContext> {
+  const ownerId = newUuid();
+  await adminQuery(
+    `INSERT INTO organizations.membership(organization_id, user_id, role, status, updated_at)
+     VALUES($1, $2, 'owner', 'active', NOW())`,
+    [organizationId, ownerId],
+  );
+  return resolveOrgContext({ userId: ownerId, organizationId });
+}
+
+describe('T3.7 — organization audit events', () => {
+  it('E20 — createOrganizationAsFounder writes org.created (founder actor, same transaction)', async () => {
+    const founderId = newUuid();
+    const slug = `audit-e20-${Date.now()}`;
+    const { organizationId } = await createOrganizationAsFounder(
+      { founderId, founderEmail: 'founder@test.com' },
+      { name: 'Audit E20', slug, ownerEmail: 'Owner.E20@Test.com' },
+    );
+
+    const rows = await auditRows(`action = 'org.created' AND organization_id = $1::uuid`, [
+      organizationId,
+    ]);
+    expect(rows).toHaveLength(1);
+    expect(rows[0].category).toBe('organization');
+    expect(rows[0].outcome).toBe('success');
+    expect(rows[0].actor_type).toBe('founder');
+    expect(rows[0].actor_id).toBe(founderId);
+    expect(rows[0].founder_id).toBe(founderId);
+    expect(rows[0].target_type).toBe('organization');
+    expect(rows[0].target_id).toBe(organizationId);
+    expect(rows[0].metadata.slug).toBe(slug);
+    expect(rows[0].metadata.ownerEmailHash).toMatch(/^[0-9a-f]{64}$/);
+    expect(JSON.stringify(rows[0].metadata)).not.toContain('owner.e20@test.com');
+
+    await adminQuery(`DELETE FROM organizations.organization WHERE id = $1`, [organizationId]);
+  });
+
+  it('E20 required — audit write fails → organization is not created', async () => {
+    const slug = `audit-e20-fail-${Date.now()}`;
+    await adminQuery(`ALTER FUNCTION ${APPEND_EVENT_SIGNATURE} RENAME TO append_event_disabled`);
+    try {
+      await expect(
+        createOrganizationAsFounder(
+          { founderId: newUuid(), founderEmail: 'founder@test.com' },
+          { name: 'Audit E20 fail', slug, ownerEmail: 'owner@test.com' },
+        ),
+      ).rejects.toThrow(/append_event/);
+    } finally {
+      await adminQuery(
+        `ALTER FUNCTION audit.append_event_disabled(text, text, text, text, text, text, uuid, uuid, text, text, inet, text, text, jsonb) RENAME TO append_event`,
+      );
+    }
+    const orgs = await adminQuery(`SELECT id FROM organizations.organization WHERE slug = $1`, [
+      slug,
+    ]);
+    expect(orgs).toHaveLength(0);
+  });
+
+  it('E21 / E22 / E23 — invite, resend, revoke', async () => {
+    const { organizationId } = await createOrganizationAsFounder(
+      { founderId: newUuid(), founderEmail: 'founder@test.com' },
+      { name: 'Audit E21', slug: `audit-e21-${Date.now()}`, ownerEmail: 'owner@test.com' },
+    );
+    const ctx = await ownerContext(organizationId);
+    const inviteEmail = `Invitee-${Date.now()}@Example.com`;
+
+    await inviteMember(ctx, {
+      email: inviteEmail,
+      role: 'member',
+      inviterName: 'Owner',
+      organizationName: 'Audit E21',
+      applicationIds: ['booking'],
+    });
+    const created = await auditRows(
+      `action = 'invitation.created' AND organization_id = $1::uuid`,
+      [organizationId],
+    );
+    expect(created).toHaveLength(1);
+    expect(created[0].actor_type).toBe('user');
+    expect(created[0].actor_id).toBe(ctx.userId);
+    expect(created[0].target_type).toBe('invitation');
+    expect(created[0].metadata.role).toBe('member');
+    expect(created[0].metadata.applicationIds).toEqual(['booking']);
+    expect(created[0].metadata.emailHash).toMatch(/^[0-9a-f]{64}$/);
+    expect(JSON.stringify(created[0].metadata)).not.toContain('example.com');
+    const invitationId = created[0].target_id as string;
+
+    await resendInvitation(ctx, invitationId);
+    const resent = await auditRows(`action = 'invitation.resent' AND target_id = $1`, [
+      invitationId,
+    ]);
+    expect(resent).toHaveLength(1);
+    expect(resent[0].organization_id).toBe(organizationId);
+    expect(resent[0].actor_id).toBe(ctx.userId);
+
+    await revokeInvitation(ctx, invitationId);
+    const revoked = await auditRows(`action = 'invitation.revoked' AND target_id = $1`, [
+      invitationId,
+    ]);
+    expect(revoked).toHaveLength(1);
+    expect(revoked[0].organization_id).toBe(organizationId);
+    expect(revoked[0].outcome).toBe('success');
+
+    await adminQuery(`DELETE FROM organizations.organization WHERE id = $1`, [organizationId]);
+  });
+
+  it('E24 / E25 — accept, then reuse and wrong email are audited as accept_failed', async () => {
+    const email = `accept-audit-${Date.now()}@example.com`;
+    const { organizationId, invitationToken } = await createOrganizationAsFounder(
+      { founderId: newUuid(), founderEmail: 'founder@test.com' },
+      { name: 'Audit E24', slug: `audit-e24-${Date.now()}`, ownerEmail: email },
+    );
+
+    // E25: wrong email
+    const wrongUser = newUuid();
+    await expect(
+      acceptInvitation({
+        token: invitationToken,
+        userId: wrongUser,
+        userEmail: 'other@example.com',
+      }),
+    ).rejects.toThrow(EmailMismatchError);
+    const mismatch = await auditRows(`action = 'invitation.accept_failed' AND actor_id = $1`, [
+      wrongUser,
+    ]);
+    expect(mismatch).toHaveLength(1);
+    expect(mismatch[0].outcome).toBe('failure');
+    expect(mismatch[0].organization_id).toBe(organizationId);
+    expect(mismatch[0].metadata).toEqual({ reason: 'EMAIL_MISMATCH' });
+
+    // E24: accepted
+    const userId = newUuid();
+    await acceptInvitation({ token: invitationToken, userId, userEmail: email });
+    const accepted = await auditRows(`action = 'invitation.accepted' AND actor_id = $1`, [userId]);
+    expect(accepted).toHaveLength(1);
+    expect(accepted[0].organization_id).toBe(organizationId);
+    expect(accepted[0].target_type).toBe('membership');
+    expect(accepted[0].metadata.role).toBe('owner');
+    const membership = await adminQuery(
+      `SELECT id FROM organizations.membership WHERE organization_id = $1 AND user_id = $2`,
+      [organizationId, userId],
+    );
+    expect(accepted[0].target_id).toBe(membership[0].id);
+
+    // E25: token already used
+    const secondUser = newUuid();
+    await expect(
+      acceptInvitation({ token: invitationToken, userId: secondUser, userEmail: email }),
+    ).rejects.toThrow(TokenExpiredError);
+    const reused = await auditRows(`action = 'invitation.accept_failed' AND actor_id = $1`, [
+      secondUser,
+    ]);
+    expect(reused).toHaveLength(1);
+    expect(reused[0].metadata).toEqual({ reason: 'TOKEN_EXPIRED' });
+
+    // E25: unknown token → no organization known
+    const thirdUser = newUuid();
+    await expect(
+      acceptInvitation({ token: 'f'.repeat(64), userId: thirdUser, userEmail: email }),
+    ).rejects.toThrow(TokenExpiredError);
+    const unknown = await auditRows(`action = 'invitation.accept_failed' AND actor_id = $1`, [
+      thirdUser,
+    ]);
+    expect(unknown).toHaveLength(1);
+    expect(unknown[0].organization_id).toBeNull();
+
+    await adminQuery(`DELETE FROM organizations.organization WHERE id = $1`, [organizationId]);
   });
 });
