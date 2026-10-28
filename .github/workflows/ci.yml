@@ -168,6 +168,12 @@ jobs:
         run: pnpm --filter @ventora/identity db:migrate:founder
         env:
           DATABASE_URL: postgresql://postgres:test@localhost:5433/ventora_identity_test
+      # Hooks and founder contracts write audit rows (app_runtime / founder_runtime → audit_writer)
+      - name: Apply audit migration
+        run: |
+          psql postgresql://postgres:test@localhost:5433/ventora_identity_test \
+            -v ON_ERROR_STOP=1 \
+            -f core/audit/prisma/migrations/20261028000001_audit_init/migration.sql
       - name: Set runtime role passwords and start pgbouncer
         run: |
           APP_PW=$(openssl rand -hex 32)
@@ -274,6 +280,11 @@ jobs:
           PSQL="psql postgresql://postgres:test@localhost:5434/ventora_org_test"
           $PSQL -f core/organizations/prisma/migrations/20261027000001_organizations_init/migration.sql
           $PSQL -f core/organizations/prisma/migrations/20261027000003_invitation_application_ids/migration.sql
+      - name: Apply audit migration
+        run: |
+          psql postgresql://postgres:test@localhost:5434/ventora_org_test \
+            -v ON_ERROR_STOP=1 \
+            -f core/audit/prisma/migrations/20261028000001_audit_init/migration.sql
       - name: Run organizations integration tests
         env:
           DATABASE_URL_TEST: postgresql://postgres:test@localhost:5434/ventora_org_test
@@ -309,6 +320,17 @@ jobs:
       - run: pnpm --filter @ventora/identity generate
       - run: pnpm --filter @ventora/organizations generate
       - run: pnpm --filter @ventora/access generate
+      - name: Verify access schema matches migrations
+        run: |
+          psql postgresql://postgres:test@localhost:5435/ventora_access_test -c "CREATE DATABASE shadow_access_diff"
+          SHADOW_DATABASE_URL="postgresql://postgres:test@localhost:5435/shadow_access_diff" \
+          pnpm --filter @ventora/access exec prisma migrate diff \
+            --from-migrations ./prisma/migrations \
+            --to-schema ./prisma/schema.prisma \
+            --exit-code \
+            --config prisma7.config.ts
+        env:
+          DATABASE_URL: postgresql://postgres:test@localhost:5435/ventora_access_test
       - name: Create runtime roles
         run: |
           APP_PW=$(openssl rand -hex 32)
@@ -340,6 +362,11 @@ jobs:
         run: |
           psql postgresql://postgres:test@localhost:5435/ventora_access_test \
             -f core/access/prisma/migrations/20261027000002_access_init/migration.sql
+      - name: Apply audit migration
+        run: |
+          psql postgresql://postgres:test@localhost:5435/ventora_access_test \
+            -v ON_ERROR_STOP=1 \
+            -f core/audit/prisma/migrations/20261028000001_audit_init/migration.sql
       - name: Sync permissions
         run: pnpm tsx scripts/sync-permissions.ts
         env:
@@ -359,11 +386,69 @@ jobs:
           pnpm --filter @ventora/access test:integration
           pnpm --filter @ventora/booking test:integration
 
+  integration-tests-audit:
+    name: Integration tests (audit — TA)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_PASSWORD: test
+          POSTGRES_DB: ventora_audit_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5436:5432
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Verify audit schema matches migrations
+        run: |
+          psql postgresql://postgres:test@localhost:5436/ventora_audit_test -c "CREATE DATABASE shadow_audit_diff"
+          SHADOW_DATABASE_URL="postgresql://postgres:test@localhost:5436/shadow_audit_diff" \
+          pnpm --filter @ventora/audit exec prisma migrate diff \
+            --from-migrations ./prisma/migrations \
+            --to-schema ./prisma/schema.prisma \
+            --exit-code \
+            --config prisma7.config.ts
+        env:
+          DATABASE_URL: postgresql://postgres:test@localhost:5436/ventora_audit_test
+      # Roles first: M1 grants audit_writer / audit_*_reader only to runtime roles that exist
+      - name: Create runtime roles
+        run: |
+          APP_PW=$(openssl rand -hex 32)
+          FOUNDER_PW=$(openssl rand -hex 32)
+          PSQL="psql postgresql://postgres:test@localhost:5436/ventora_audit_test"
+          $PSQL -c "CREATE ROLE app_runtime WITH LOGIN PASSWORD '${APP_PW}' NOINHERIT"
+          $PSQL -c "CREATE ROLE founder_runtime WITH LOGIN PASSWORD '${FOUNDER_PW}' NOINHERIT"
+          echo "APP_PW=${APP_PW}" >> $GITHUB_ENV
+          echo "FOUNDER_PW=${FOUNDER_PW}" >> $GITHUB_ENV
+      - name: Apply audit migration
+        run: |
+          psql postgresql://postgres:test@localhost:5436/ventora_audit_test \
+            -v ON_ERROR_STOP=1 \
+            -f core/audit/prisma/migrations/20261028000001_audit_init/migration.sql
+      - name: Run audit integration tests
+        env:
+          DATABASE_URL_TEST: postgresql://app_runtime:${{ env.APP_PW }}@localhost:5436/ventora_audit_test
+          DATABASE_URL_FOUNDER_TEST: postgresql://founder_runtime:${{ env.FOUNDER_PW }}@localhost:5436/ventora_audit_test
+          DATABASE_URL_ADMIN_TEST: postgresql://postgres:test@localhost:5436/ventora_audit_test
+        run: pnpm --filter @ventora/audit test:integration
+
   build:
     name: Build
     runs-on: ubuntu-latest
     timeout-minutes: 20
-    needs: [quality, test, integration-tests, integration-tests-identity, integration-tests-organizations, integration-tests-access]
+    needs: [quality, test, integration-tests, integration-tests-identity, integration-tests-organizations, integration-tests-access, integration-tests-audit]
     steps:
       - uses: actions/checkout@v7
       - uses: pnpm/action-setup@v6

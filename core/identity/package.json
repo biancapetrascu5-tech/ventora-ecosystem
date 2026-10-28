@@ -17,6 +17,7 @@
     "db:migrate:founder": "prisma migrate deploy --schema prisma/founder/schema.prisma"
   },
   "dependencies": {
+    "@ventora/audit": "workspace:*",
     "@ventora/errors": "workspace:*",
     "better-auth": "1.7.12",
     "@prisma/client": "^7.0.0",

@@ -14,6 +14,19 @@ import {
   InvalidEmailError,
 } from './errors';
 import type { MembershipRole } from '../generated/organizations-client';
+import {
+  AuditActions,
+  appendAuditEventInTx,
+  hashEmail,
+  pgExecutor,
+  writeAuditEvent,
+  type AuditEvent,
+} from '@ventora/audit';
+
+// E21–E25 are best_effort (D2): the organization operation never fails because of the audit write.
+async function auditBestEffort(event: AuditEvent): Promise<void> {
+  await writeAuditEvent(event, { mode: 'best_effort' });
+}
 
 // Slug: 2–63 lowercase alphanumeric / hyphens, no leading/trailing hyphen
 const SLUG_RE = /^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$/;
@@ -134,15 +147,39 @@ export async function createOrganizationAsFounder(
     max: 1,
     connectionTimeoutMillis: 10_000,
   });
+  const client = await pool.connect();
   try {
-    const { rows } = await pool.query<{ organization_id: string; invitation_id: string }>(
+    // E20 (mode required, D2): organization + invitation + audit row in one transaction
+    await client.query('BEGIN');
+    const { rows } = await client.query<{ organization_id: string; invitation_id: string }>(
       `SELECT organization_id, invitation_id
        FROM organizations.founder_create_organization($1, $2, $3, $4, $5::uuid)`,
       [name, params.slug, ownerEmail, tokenHash, ctx.founderId],
     );
     if (!rows[0]) throw new Error('[organizations] founder_create_organization returned no rows');
+    await appendAuditEventInTx(pgExecutor(client), {
+      category: 'organization',
+      action: AuditActions.organizationCreated,
+      outcome: 'success',
+      actorType: 'founder',
+      actorId: ctx.founderId,
+      founderId: ctx.founderId,
+      organizationId: rows[0].organization_id,
+      targetType: 'organization',
+      targetId: rows[0].organization_id,
+      metadata: {
+        slug: params.slug,
+        ownerEmailHash: hashEmail(ownerEmail),
+        invitationId: rows[0].invitation_id,
+      },
+    });
+    await client.query('COMMIT');
     return { organizationId: rows[0].organization_id, invitationToken: token };
+  } catch (err) {
+    await client.query('ROLLBACK').catch(() => {});
+    throw err;
   } finally {
+    client.release();
     await pool.end();
   }
 }
@@ -216,9 +253,9 @@ export async function inviteMember(
   const email = normalizeEmail(params.email);
   const applicationIds = params.applicationIds ?? [];
 
-  await db.$transaction(async (tx: any) => {
+  const invitation = await db.$transaction(async (tx: any) => {
     await tx.$executeRaw`SELECT set_config('app.organization_id', ${ctx.organizationId}, true)`;
-    await tx.invitation.create({
+    return tx.invitation.create({
       data: {
         organizationId: ctx.organizationId,
         organizationName: params.organizationName,
@@ -230,7 +267,19 @@ export async function inviteMember(
         expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
         applicationIds,
       },
+      select: { id: true },
     });
+  });
+  await auditBestEffort({
+    category: 'organization',
+    action: AuditActions.invitationCreated,
+    outcome: 'success',
+    actorType: 'user',
+    actorId: ctx.userId,
+    organizationId: ctx.organizationId,
+    targetType: 'invitation',
+    targetId: invitation.id,
+    metadata: { role: params.role, applicationIds, emailHash: hashEmail(email) },
   });
   return { invitationToken: token };
 }
@@ -274,37 +323,70 @@ export async function acceptInvitation(params: {
   });
 
   const inv = rows[0];
-  if (!inv) throw new TokenExpiredError();
+  // E25: rejected acceptance (expired / already used token, another account's email)
+  const rejectAcceptance = async (err: TokenExpiredError | EmailMismatchError): Promise<never> => {
+    await auditBestEffort({
+      category: 'organization',
+      action: AuditActions.invitationAcceptFailed,
+      outcome: 'failure',
+      actorType: 'user',
+      actorId: params.userId,
+      organizationId: inv?.organization_id ?? null,
+      targetType: inv ? 'invitation' : null,
+      targetId: inv?.id ?? null,
+      metadata: { reason: err.code },
+    });
+    throw err;
+  };
+  if (!inv) return rejectAcceptance(new TokenExpiredError());
   if (inv.status === 'expired' || new Date(inv.expires_at) < new Date())
-    throw new TokenExpiredError();
-  if (normalizeEmail(inv.email) !== userEmail) throw new EmailMismatchError();
+    return rejectAcceptance(new TokenExpiredError());
+  if (normalizeEmail(inv.email) !== userEmail) return rejectAcceptance(new EmailMismatchError());
 
-  const result = await db.$transaction(async (tx: any) => {
-    await tx.$executeRaw`SELECT set_config('app.organization_id', ${inv.organization_id}, true)`;
+  const result = await db
+    .$transaction(async (tx: any) => {
+      await tx.$executeRaw`SELECT set_config('app.organization_id', ${inv.organization_id}, true)`;
 
-    // Atomic UPDATE — 0 rows means token was already used (race condition guard)
-    const updated = await tx.$executeRaw`
+      // Atomic UPDATE — 0 rows means token was already used (race condition guard)
+      const updated = await tx.$executeRaw`
       UPDATE organizations.invitation
       SET status = 'accepted', accepted_by_user_id = ${params.userId}::uuid, updated_at = NOW()
       WHERE id = ${inv.id}::uuid AND status = 'pending'
     `;
 
-    if (Number(updated) === 0) throw new TokenExpiredError();
+      if (Number(updated) === 0) throw new TokenExpiredError();
 
-    await tx.membership.create({
-      data: {
+      const membership = await tx.membership.create({
+        data: {
+          organizationId: inv.organization_id,
+          userId: params.userId,
+          role: inv.role,
+          status: 'active',
+        },
+        select: { id: true },
+      });
+
+      return {
         organizationId: inv.organization_id,
-        userId: params.userId,
         role: inv.role,
-        status: 'active',
-      },
-    });
+        applicationIds: (inv as any).application_ids ?? [],
+        membershipId: membership.id as string,
+      };
+    })
+    .catch((err: unknown) =>
+      err instanceof TokenExpiredError ? rejectAcceptance(err) : Promise.reject(err),
+    );
 
-    return {
-      organizationId: inv.organization_id,
-      role: inv.role,
-      applicationIds: (inv as any).application_ids ?? [],
-    };
+  await auditBestEffort({
+    category: 'organization',
+    action: AuditActions.invitationAccepted,
+    outcome: 'success',
+    actorType: 'user',
+    actorId: params.userId,
+    organizationId: result.organizationId,
+    targetType: 'membership',
+    targetId: result.membershipId,
+    metadata: { role: result.role, invitationId: inv.id },
   });
 
   return {
@@ -328,6 +410,16 @@ export async function revokeInvitation(ctx: OrgContext, invitationId: string): P
       if (err?.code === 'P2025') throw new NotFoundError('Invitation not found');
       throw err;
     }
+  });
+  await auditBestEffort({
+    category: 'organization',
+    action: AuditActions.invitationRevoked,
+    outcome: 'success',
+    actorType: 'user',
+    actorId: ctx.userId,
+    organizationId: ctx.organizationId,
+    targetType: 'invitation',
+    targetId: invitationId,
   });
 }
 
@@ -363,6 +455,16 @@ export async function resendInvitation(
         updatedAt: new Date(),
       },
     });
+  });
+  await auditBestEffort({
+    category: 'organization',
+    action: AuditActions.invitationResent,
+    outcome: 'success',
+    actorType: 'user',
+    actorId: ctx.userId,
+    organizationId: ctx.organizationId,
+    targetType: 'invitation',
+    targetId: invitationId,
   });
   return { invitationToken: token };
 }

@@ -10,6 +10,14 @@ import {
 import type { EntitlementProvider } from '@ventora/contracts';
 import { getSession } from '@ventora/identity';
 import { resolveOrgContext, acceptInvitation } from '@ventora/organizations';
+import {
+  AuditActions,
+  readOrganizationAuditLog,
+  writeAuditEvent,
+  type AuditLogEntry,
+  type AuditLogFilters,
+} from '@ventora/audit';
+import { PLATFORM_APPLICATION_ID } from './platform-manifest';
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 function assertUuid(value: string, fieldName: string): void {
@@ -90,13 +98,34 @@ export async function authorize(params: AuthorizeParams): Promise<TenantContext>
 
   // Step 2b: owner must have 2FA enabled
   if (role === 'owner' && !session.twoFactorEnabled) {
+    // E29 (best_effort): useful for owner recovery. Other authorize() refusals are not audited (volume).
+    await writeAuditEvent(
+      {
+        category: 'access',
+        action: AuditActions.authorizeTwoFactorRequired,
+        outcome: 'denied',
+        actorType: 'user',
+        actorId: session.userId,
+        organizationId,
+        targetType: 'user',
+        targetId: session.userId,
+        metadata: { applicationId: params.applicationId, permission: params.permission ?? null },
+      },
+      { mode: 'best_effort' },
+    );
     throw new TwoFactorRequired();
   }
 
-  // Step 3: application enabled (entitlement check — provider mandatory)
+  // Step 3: application enabled (entitlement check — provider mandatory).
+  // The platform pseudo-application (Hub-level permissions) is always enabled.
   if (!_config) throw new Error('[access] configureAccess() must be called before authorize()');
-  const enabled = await _config.entitlementProvider.isEnabled(organizationId, params.applicationId);
-  if (!enabled) throw new AppNotEnabled();
+  if (params.applicationId !== PLATFORM_APPLICATION_ID) {
+    const enabled = await _config.entitlementProvider.isEnabled(
+      organizationId,
+      params.applicationId,
+    );
+    if (!enabled) throw new AppNotEnabled();
+  }
 
   // Step 4: application access (skip for owner/admin — ADR-0004)
   let effectiveRole: MembershipRole = role;
@@ -232,20 +261,42 @@ export async function grantApplicationAccess(
   userId: string,
   applicationIds: string[],
   roleInApp?: string,
+  actor: { type: 'user' | 'system'; id?: string | null } = { type: 'system' },
 ): Promise<void> {
   assertUuid(userId, 'userId');
   if (applicationIds.length === 0) return;
   const db = getAccessDb();
-  await db.$transaction(async (tx: any) => {
+  const granted = await db.$transaction(async (tx: any) => {
     await tx.$executeRaw`SELECT set_config('app.organization_id', ${organizationId}, true)`;
+    const inserted: string[] = [];
     for (const applicationId of applicationIds) {
-      await tx.$executeRaw`
+      const count = await tx.$executeRaw`
         INSERT INTO access.application_access (organization_id, user_id, application_id, role_in_app)
         VALUES (${organizationId}::uuid, ${userId}::uuid, ${applicationId}, ${roleInApp ?? null})
         ON CONFLICT (organization_id, user_id, application_id) DO NOTHING
       `;
+      if (Number(count) > 0) inserted.push(applicationId);
     }
+    return inserted;
   });
+
+  // E27 (best_effort): only rows actually created — an idempotent re-grant writes nothing
+  if (granted.length > 0) {
+    await writeAuditEvent(
+      {
+        category: 'access',
+        action: AuditActions.applicationAccessGranted,
+        outcome: 'success',
+        actorType: actor.type,
+        actorId: actor.type === 'user' ? (actor.id ?? null) : null,
+        organizationId,
+        targetType: 'user',
+        targetId: userId,
+        metadata: { applicationIds: granted, roleInApp: roleInApp ?? null },
+      },
+      { mode: 'best_effort' },
+    );
+  }
 }
 
 /**
@@ -276,8 +327,28 @@ export async function acceptInvitationWithAccess(params: {
   const { organizationId, role, applicationIds } = result;
 
   if (role !== 'owner' && role !== 'admin' && applicationIds.length > 0) {
-    await grantApplicationAccess(organizationId, params.userId, applicationIds);
+    await grantApplicationAccess(organizationId, params.userId, applicationIds, undefined, {
+      type: 'user',
+      id: params.userId,
+    });
   }
 
   return { organizationId, role };
+}
+
+/**
+ * Audit log of the session's active organization (TA.9). Requires `audit.log.read` on the
+ * platform application — granted to owner and admin only (D4). Rows are filtered by RLS
+ * (audit_org_reader + app.organization_id) and by an explicit organization_id predicate.
+ */
+export async function listAuditLogs(params: {
+  sessionToken: string;
+  filters?: AuditLogFilters;
+}): Promise<AuditLogEntry[]> {
+  const ctx = await authorize({
+    sessionToken: params.sessionToken,
+    applicationId: PLATFORM_APPLICATION_ID,
+    permission: 'audit.log.read',
+  });
+  return readOrganizationAuditLog(ctx.organizationId, params.filters);
 }

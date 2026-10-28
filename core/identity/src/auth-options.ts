@@ -6,6 +6,7 @@ import type { UserWithTwoFactor } from 'better-auth/plugins/two-factor';
 import type { PrismaClient as IdentityBaseClient } from '../generated/identity-client';
 import type { PrismaClient as FounderBaseClient } from '../generated/founder-client';
 import { hashPassword, verifyPassword } from './password-policy';
+import { createAuthAuditHooks } from './audit-hooks';
 
 const HUB_RATE_LIMIT = {
   enabled: true,
@@ -26,13 +27,17 @@ const FOUNDER_RATE_LIMIT = { ...HUB_RATE_LIMIT };
 export function createHubAuthOptions(db: IdentityBaseClient, secret: string) {
   const REMEMBER_ME_SECONDS = 30 * 24 * 60 * 60;
 
+  const audit = createAuthAuditHooks('hub', db);
+
   const before = createAuthMiddleware(async (ctx) => {
     if (
       (ctx.path === '/two-factor/verify-totp' || ctx.path === '/two-factor/verify-backup-code') &&
       ctx.body?.trustDevice === true
     ) {
+      await audit.trustDeviceRejected(ctx);
       throw new APIError('FORBIDDEN', { message: 'trustDevice is not permitted' });
     }
+    await audit.before(ctx);
   });
 
   const after = createAuthMiddleware(async (ctx) => {
@@ -49,10 +54,12 @@ export function createHubAuthOptions(db: IdentityBaseClient, secret: string) {
     ) {
       const userId = ctx.context.session.session.userId;
       const currentSessionId = ctx.context.session.session.id;
-      await db.session.deleteMany({
+      const revoked = await db.session.deleteMany({
         where: { userId, id: { not: currentSessionId } },
       });
+      await audit.sessionsRevokedOn2faEnroll(ctx, userId, revoked.count);
     }
+    await audit.after(ctx);
   });
 
   return {
@@ -63,6 +70,8 @@ export function createHubAuthOptions(db: IdentityBaseClient, secret: string) {
       minPasswordLength: 10,
       password: { hash: hashPassword, verify: verifyPassword },
       resetPasswordTokenExpiresIn: 3600,
+      // D17: a completed password reset closes every open session of the user
+      revokeSessionsOnPasswordReset: true,
       // no-op: password reset emails are sent by a separate service watching the verification table
       sendResetPassword: async () => {},
     },
@@ -101,13 +110,17 @@ export function createHubAuthOptions(db: IdentityBaseClient, secret: string) {
 export function createFounderAuthOptions(db: FounderBaseClient, secret: string) {
   const SESSION_SECONDS = 8 * 60 * 60;
 
+  const audit = createAuthAuditHooks('founder', db);
+
   const before = createAuthMiddleware(async (ctx) => {
     if (
       (ctx.path === '/two-factor/verify-totp' || ctx.path === '/two-factor/verify-backup-code') &&
       ctx.body?.trustDevice === true
     ) {
+      await audit.trustDeviceRejected(ctx);
       throw new APIError('FORBIDDEN', { message: 'trustDevice is not permitted' });
     }
+    await audit.before(ctx);
   });
 
   const after = createAuthMiddleware(async (ctx) => {
@@ -120,10 +133,12 @@ export function createFounderAuthOptions(db: FounderBaseClient, secret: string) 
     ) {
       const userId = ctx.context.session.session.userId;
       const currentSessionId = ctx.context.session.session.id;
-      await db.session.deleteMany({
+      const revoked = await db.session.deleteMany({
         where: { userId, id: { not: currentSessionId } },
       });
+      await audit.sessionsRevokedOn2faEnroll(ctx, userId, revoked.count);
     }
+    await audit.after(ctx);
   });
 
   return {
@@ -134,6 +149,8 @@ export function createFounderAuthOptions(db: FounderBaseClient, secret: string) 
       minPasswordLength: 12,
       password: { hash: hashPassword, verify: verifyPassword },
       resetPasswordTokenExpiresIn: 3600,
+      // D17: a completed password reset closes every open session of the user
+      revokeSessionsOnPasswordReset: true,
       sendResetPassword: async () => {},
     },
     rateLimit: FOUNDER_RATE_LIMIT,

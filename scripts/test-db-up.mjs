@@ -103,6 +103,7 @@ for (const db of [
   'shadow_founder_diff',
   'shadow_org_diff',
   'shadow_access_diff',
+  'shadow_audit_diff',
 ]) {
   psql('postgres', `DROP DATABASE IF EXISTS ${db}; CREATE DATABASE ${db};`);
 }
@@ -128,6 +129,13 @@ psqlFile(
   join(ROOT, 'core/identity/prisma/founder/migrations/20261025000001_founder_init/migration.sql'),
 );
 
+// audit (M1) după identity + founder: app_runtime și founder_runtime există deja
+console.log('[test:db:up] Aplic migrarea audit (identity DB)...');
+psqlFile(
+  TEST_DB.identityDb,
+  join(ROOT, 'core/audit/prisma/migrations/20261028000001_audit_init/migration.sql'),
+);
+
 console.log('[test:db:up] Setez parolele rolurilor identity...');
 psql(
   TEST_DB.identityDb,
@@ -151,6 +159,13 @@ psqlFile(
     ROOT,
     'core/organizations/prisma/migrations/20261027000003_invitation_application_ids/migration.sql',
   ),
+);
+
+// Rolurile sunt la nivel de cluster (create de migrarea identity), deci grant-urile din M1 se aplică
+console.log('[test:db:up] Aplic migrarea audit (organizations DB)...');
+psqlFile(
+  TEST_DB.orgDb,
+  join(ROOT, 'core/audit/prisma/migrations/20261028000001_audit_init/migration.sql'),
 );
 
 console.log('[test:db:up] Creez rolurile app_runtime și founder_runtime în organizations DB...');
@@ -206,6 +221,11 @@ psqlFile(
 psqlFile(
   TEST_DB.accessDb,
   join(ROOT, 'core/access/prisma/migrations/20261027000002_access_init/migration.sql'),
+);
+// Apply audit migration (authorize / grantApplicationAccess write audit rows)
+psqlFile(
+  TEST_DB.accessDb,
+  join(ROOT, 'core/audit/prisma/migrations/20261028000001_audit_init/migration.sql'),
 );
 // Create runtime roles in access DB
 psql(
