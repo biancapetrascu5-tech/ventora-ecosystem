@@ -3,6 +3,7 @@
 import { cn } from '../lib/cn';
 import { Icon } from '../Icon/Icon';
 import type { IconName } from '../Icon/Icon';
+import { Button } from '../Button/Button';
 import styles from './AttentionList.module.css';
 
 export interface AttentionAction {
@@ -44,18 +45,14 @@ export function AttentionList({ items, className }: AttentionListProps) {
             {item.actions && item.actions.length > 0 && (
               <div className={styles.actions}>
                 {item.actions.map((a, i) => (
-                  <button
+                  <Button
                     key={i}
-                    type="button"
-                    className={cn(
-                      styles.actionBtn,
-                      a.primary && styles.actionPrimary,
-                      a.quiet && styles.actionQuiet,
-                    )}
-                    onClick={a.onPress}
+                    size="sm"
+                    variant={a.primary ? 'primary' : a.quiet ? 'quiet' : 'secondary'}
+                    onPress={a.onPress ? () => a.onPress!() : undefined}
                   >
                     {a.label}
-                  </button>
+                  </Button>
                 ))}
               </div>
             )}

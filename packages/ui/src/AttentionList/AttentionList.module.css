@@ -79,34 +79,3 @@
   flex-wrap: wrap;
   margin-top: var(--space-1);
 }
-
-.actionBtn {
-  display: inline-flex;
-  align-items: center;
-  height: var(--control-sm);
-  padding: 0 var(--space-2);
-  border-radius: var(--radius-sm);
-  border: var(--border-width) solid var(--control-border);
-  background: transparent;
-  font-family: var(--font-sans);
-  font-size: var(--type-caption-size);
-  font-weight: var(--type-subheading-weight);
-  color: var(--ink);
-  cursor: pointer;
-  white-space: nowrap;
-  transition: background var(--duration-instant) var(--ease-standard);
-}
-
-.actionBtn:hover { background: var(--state-hover); }
-
-.actionPrimary {
-  background: var(--primary);
-  color: var(--on-primary);
-  border-color: transparent;
-}
-
-.actionPrimary:hover { background: var(--primary-hover); }
-
-.actionQuiet {
-  border-color: transparent;
-}

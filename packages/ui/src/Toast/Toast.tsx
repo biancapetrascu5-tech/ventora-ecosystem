@@ -3,6 +3,7 @@
 import { cn } from '../lib/cn';
 import { Icon } from '../Icon/Icon';
 import type { IconName } from '../Icon/Icon';
+import { Button } from '../Button/Button';
 import styles from './Toast.module.css';
 
 export type ToastTone = 'neutral' | 'done' | 'attention' | 'danger';
@@ -63,15 +64,15 @@ export function Toast({
         {description && <p className={styles.desc}>{description}</p>}
       </div>
       {onUndo && (
-        <button type="button" className={styles.action} onClick={onUndo}>
+        <Button variant="quiet" size="sm" className={styles.action} onPress={onUndo}>
           <Icon icon="undo-2" size={16} aria-hidden />
           {undoLabel && <span>{undoLabel}</span>}
-        </button>
+        </Button>
       )}
       {!onUndo && action && (
-        <button type="button" className={styles.action} onClick={action.onClick}>
+        <Button variant="quiet" size="sm" className={styles.action} onClick={action.onClick}>
           <span>{action.label}</span>
-        </button>
+        </Button>
       )}
       {onDismiss && (
         <button

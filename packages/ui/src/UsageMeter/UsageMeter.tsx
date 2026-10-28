@@ -2,6 +2,7 @@
 
 import { cn } from '../lib/cn';
 import { Icon } from '../Icon/Icon';
+import { Button } from '../Button/Button';
 import styles from './UsageMeter.module.css';
 
 export interface UsageMeterProps {
@@ -136,33 +137,21 @@ export function UsageMeter({
           )}
           <div className={styles.actions}>
             {onBuy && (
-              <button
-                type="button"
-                className={cn(styles.btn, styles.btnPrimary, compact && styles.btnSm)}
-                onClick={onBuy}
-              >
+              <Button variant="primary" size={compact ? 'sm' : 'md'} onPress={onBuy}>
                 <Icon icon="plus" size={16} aria-hidden />
                 <span>{buyLabel ?? buyMoreLabel}</span>
-              </button>
+              </Button>
             )}
             {owner && !onBuy && onNotifyOwner && notifyOwnerLabel && (
-              <button
-                type="button"
-                className={cn(styles.btn, styles.btnSecondary, compact && styles.btnSm)}
-                onClick={onNotifyOwner}
-              >
+              <Button variant="secondary" size={compact ? 'sm' : 'md'} onPress={onNotifyOwner}>
                 <Icon icon="send" size={16} aria-hidden />
                 <span>{notifyOwnerLabel}</span>
-              </button>
+              </Button>
             )}
             {onUpgrade && !compact && (
-              <button
-                type="button"
-                className={cn(styles.btn, onBuy ? styles.btnQuiet : styles.btnPrimary)}
-                onClick={onUpgrade}
-              >
+              <Button variant={onBuy ? 'quiet' : 'primary'} onPress={onUpgrade}>
                 <span>{upgradeLabel}</span>
-              </button>
+              </Button>
             )}
           </div>
         </div>
@@ -170,23 +159,15 @@ export function UsageMeter({
       {!compact && !unlimited && state === 'warn' && (onBuy ?? onUpgrade) && (
         <div className={styles.actions}>
           {onBuy && (
-            <button
-              type="button"
-              className={cn(styles.btn, styles.btnSecondary, styles.btnSm)}
-              onClick={onBuy}
-            >
+            <Button variant="secondary" size="sm" onPress={onBuy}>
               <Icon icon="plus" size={16} aria-hidden />
               <span>{buyLabel ?? buyMoreLabel}</span>
-            </button>
+            </Button>
           )}
           {!onBuy && onUpgrade && upgradeLabel && (
-            <button
-              type="button"
-              className={cn(styles.btn, styles.btnSecondary, styles.btnSm)}
-              onClick={onUpgrade}
-            >
+            <Button variant="secondary" size="sm" onPress={onUpgrade}>
               <span>{upgradeLabel}</span>
-            </button>
+            </Button>
           )}
         </div>
       )}
