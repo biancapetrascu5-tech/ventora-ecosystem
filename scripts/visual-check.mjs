@@ -45,6 +45,27 @@ const config = JSON.parse(
 );
 const fill = (tpl, vars) => tpl.replace(/\{(\w+)\}/g, (_, k) => vars[k]);
 
+/* Listele plutitoare (portal, position: fixed) deschise din ALTE cadre ale paginii rămân în
+   fereastră la derulare și ajung peste cadrul capturat. Le ascundem, la design și la galerie
+   deopotrivă: o listă ([role=menu], [role=listbox], .v-popover, [data-popover]) din afara cadrului
+   se ascunde dacă butonul care o controlează (aria-controls = id-ul ei sau al unui element din ea)
+   nu e în cadru. Listele fără buton cunoscut rămân neatinse. (Decizia fondatoarei, 28.10.2026.) */
+function hideForeignPopovers(frame) {
+  const floating = document.querySelectorAll(
+    '[role="menu"], [role="listbox"], .v-popover, [data-popover]',
+  );
+  for (const el of floating) {
+    if (frame.contains(el)) continue;
+    const box = el.closest('.v-popover, [data-popover]') ?? el;
+    const ids = [box, ...box.querySelectorAll('[id]')].map((n) => n.id).filter(Boolean);
+    const triggers = ids.flatMap((id) => [
+      ...document.querySelectorAll(`[aria-controls="${CSS.escape(id)}"]`),
+    ]);
+    if (triggers.length && !triggers.some((t) => frame.contains(t)))
+      box.style.visibility = 'hidden';
+  }
+}
+
 async function captureFrame(page, url, selector, outPath) {
   const res = await page.goto(BASE + url, { waitUntil: 'networkidle' });
   if (!res || !res.ok()) throw new Error(`${url} → HTTP ${res?.status() ?? 'fără răspuns'}`);
@@ -53,6 +74,7 @@ async function captureFrame(page, url, selector, outPath) {
   if ((await frame.count()) === 0) throw new Error(`${url}: cadrul ${selector} lipsește`);
   await frame.scrollIntoViewIfNeeded();
   await page.waitForTimeout(150);
+  await frame.evaluate(hideForeignPopovers);
   await frame.screenshot({ path: outPath, animations: 'disabled' });
   return PNG.sync.read(await readFile(outPath));
 }
