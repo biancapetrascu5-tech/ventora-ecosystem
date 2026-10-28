@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeAll, afterAll } from 'vitest';
+import { describe, it, expect, beforeAll, afterAll, beforeEach, afterEach, vi } from 'vitest';
 import { Pool } from 'pg';
 import crypto from 'node:crypto';
 import {
@@ -19,6 +19,10 @@ import {
 } from '../index.js';
 import type { OrgContext } from '../index.js';
 import { closeAuditPools } from '@ventora/audit';
+import { CaptureEmailAdapter, invitationLink, setEmailChannel } from '@ventora/notifications';
+
+// Outside the INV block, invitation emails go to an in-memory mailbox, not to the console.
+setEmailChannel(new CaptureEmailAdapter());
 
 // Branded type enforcement: proves that only resolveOrgContext can produce OrgContext.
 function _assertOrgContext(_: OrgContext) {}
@@ -685,5 +689,208 @@ describe('T3.7 — organization audit events', () => {
     expect(unknown[0].organization_id).toBeNull();
 
     await adminQuery(`DELETE FROM organizations.organization WHERE id = $1`, [organizationId]);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Lot 2.5b — invitation emails (E-3, E-3b, E-4) and E26
+// ---------------------------------------------------------------------------
+
+describe('INV — invitation emails', () => {
+  const mailbox = new CaptureEmailAdapter();
+  const createdOrgs: string[] = [];
+
+  beforeEach(() => {
+    mailbox.clear();
+    setEmailChannel(mailbox);
+  });
+  afterEach(() => {
+    setEmailChannel(null);
+    vi.unstubAllEnvs();
+    vi.restoreAllMocks();
+  });
+  afterAll(async () => {
+    for (const id of createdOrgs) {
+      await adminQuery(`DELETE FROM organizations.organization WHERE id = $1`, [id]);
+    }
+  });
+
+  async function newOrg(name: string, ownerEmail = `owner-${newUuid()}@example.com`) {
+    const created = await createOrganizationAsFounder(
+      { founderId: newUuid(), founderEmail: 'founder@test.com' },
+      { name, slug: `inv-${newUuid().slice(0, 12)}`, ownerEmail },
+    );
+    createdOrgs.push(created.organizationId);
+    return created;
+  }
+
+  async function invitationRow(where: string, params: unknown[]) {
+    const rows = await adminQuery(
+      `SELECT id, email_status, expires_at FROM organizations.invitation WHERE ${where}`,
+      params,
+    );
+    return rows[0];
+  }
+
+  const tokenFrom = (text: string) => text.match(/\/invite\/([0-9a-f]{64})/)?.[1];
+
+  it('INV.1 — inviteMember: one email with the returned token, email_status = sent', async () => {
+    const { organizationId } = await newOrg('Salon Aurora');
+    const ctx = await ownerContext(organizationId);
+    mailbox.clear();
+    const email = `ion-${newUuid()}@example.com`;
+
+    const { invitationToken } = await inviteMember(ctx, {
+      email,
+      role: 'admin',
+      inviterName: 'Bianca Petrașcu',
+      organizationName: 'Salon Aurora',
+    });
+
+    const mails = mailbox.to(email);
+    expect(mails).toHaveLength(1);
+    expect(mails[0]!.subject).toBe('Bianca Petrașcu te-a invitat în Salon Aurora pe Ventora');
+    expect(mails[0]!.text).toContain('ca administrator.');
+    expect(mails[0]!.text).toContain('Invitația e valabilă 7 zile');
+    expect(tokenFrom(mails[0]!.text!)).toBe(invitationToken);
+    expect(mails[0]!.text).toContain(invitationLink(invitationToken));
+
+    const row = await invitationRow(`organization_id = $1 AND email = $2`, [organizationId, email]);
+    expect(row.email_status).toBe('sent');
+  });
+
+  it('INV.2 — provider error: inviteMember succeeds, email_status = failed, E26 without the address', async () => {
+    const { organizationId } = await newOrg('Inv Two');
+    const ctx = await ownerContext(organizationId);
+    const email = `fail-${newUuid()}@example.com`;
+    mailbox.failWith = new Error('[notifications] Resend error: application_error');
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+
+    const { invitationToken } = await inviteMember(ctx, {
+      email,
+      role: 'member',
+      inviterName: 'Owner',
+      organizationName: 'Inv Two',
+    });
+    expect(invitationToken).toHaveLength(64);
+
+    const row = await invitationRow(`organization_id = $1 AND email = $2`, [organizationId, email]);
+    expect(row.email_status).toBe('failed');
+    const e26 = await auditRows(`action = 'invitation.email_failed' AND target_id = $1`, [row.id]);
+    expect(e26).toHaveLength(1);
+    expect(e26[0]).toMatchObject({
+      category: 'organization',
+      outcome: 'failure',
+      actor_type: 'system',
+      organization_id: organizationId,
+      target_type: 'invitation',
+      metadata: { reason: 'provider_error', kind: 'member', resent: false },
+    });
+    expect(JSON.stringify(e26[0])).not.toContain(email);
+  });
+
+  it('INV.3 — production without RESEND_API_KEY (B-7 b): failed + E26 not_configured', async () => {
+    const { organizationId } = await newOrg('Inv Three');
+    const ctx = await ownerContext(organizationId);
+    const email = `noconf-${newUuid()}@example.com`;
+    setEmailChannel(null);
+    vi.stubEnv('NODE_ENV', 'production');
+    vi.stubEnv('RESEND_API_KEY', '');
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+
+    await inviteMember(ctx, {
+      email,
+      role: 'member',
+      inviterName: 'Owner',
+      organizationName: 'Inv Three',
+    });
+
+    const row = await invitationRow(`organization_id = $1 AND email = $2`, [organizationId, email]);
+    expect(row.email_status).toBe('failed');
+    const e26 = await auditRows(`action = 'invitation.email_failed' AND target_id = $1`, [row.id]);
+    expect(e26[0]?.metadata).toEqual({ reason: 'not_configured', kind: 'member', resent: false });
+  });
+
+  it('INV.4 — resendInvitation: new email with a new token and the new-link line; the old token no longer works', async () => {
+    const { organizationId } = await newOrg('Inv Four');
+    const ctx = await ownerContext(organizationId);
+    const email = `resend-${newUuid()}@example.com`;
+    const first = await inviteMember(ctx, {
+      email,
+      role: 'member',
+      inviterName: 'Ana Pop',
+      organizationName: 'Inv Four',
+    });
+    const row = await invitationRow(`organization_id = $1 AND email = $2`, [organizationId, email]);
+    mailbox.clear();
+
+    const second = await resendInvitation(ctx, row.id);
+    expect(second.invitationToken).not.toBe(first.invitationToken);
+    const mails = mailbox.to(email);
+    expect(mails).toHaveLength(1);
+    expect(mails[0]!.subject).toBe('Ana Pop te-a invitat în Inv Four pe Ventora');
+    expect(mails[0]!.text).toContain('Ăsta e un link nou. Cel primit înainte nu mai funcționează.');
+    expect(tokenFrom(mails[0]!.text!)).toBe(second.invitationToken);
+    expect((await invitationRow(`id = $1`, [row.id])).email_status).toBe('sent');
+
+    await expect(
+      acceptInvitation({ token: first.invitationToken, userId: newUuid(), userEmail: email }),
+    ).rejects.toThrow(TokenExpiredError);
+  });
+
+  it('INV.5 + S55 — createOrganizationAsFounder: owner email E-4, invitation valid 30 days', async () => {
+    const ownerEmail = `owner-${newUuid()}@example.com`;
+    const before = Date.now();
+    const { organizationId, invitationToken } = await newOrg('Salon Aurora', ownerEmail);
+
+    const row = await invitationRow(`organization_id = $1`, [organizationId]);
+    const days = (new Date(row.expires_at).getTime() - before) / (24 * 60 * 60 * 1000);
+    expect(days).toBeGreaterThan(29.99);
+    expect(days).toBeLessThan(30.01);
+
+    const mails = mailbox.to(ownerEmail);
+    expect(mails).toHaveLength(1);
+    expect(mails[0]!.subject).toBe('Salon Aurora e gata pe Ventora');
+    expect(mails[0]!.text).toContain('Linkul e valabil 30 de zile, până pe');
+    const shown = new Intl.DateTimeFormat('ro', {
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+      timeZone: 'Europe/Bucharest',
+    }).format(new Date(row.expires_at));
+    expect(mails[0]!.text).toContain(`până pe ${shown}.`);
+    expect(tokenFrom(mails[0]!.text!)).toBe(invitationToken);
+  });
+
+  it('INV.5b — owner email fails: the organization exists, E26 kind owner', async () => {
+    mailbox.failWith = new Error('[notifications] Resend error: application_error');
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    const { organizationId } = await newOrg('Inv Five');
+
+    expect(
+      await adminQuery(`SELECT id FROM organizations.organization WHERE id = $1`, [organizationId]),
+    ).toHaveLength(1);
+    const e26 = await auditRows(
+      `action = 'invitation.email_failed' AND organization_id = $1::uuid`,
+      [organizationId],
+    );
+    expect(e26).toHaveLength(1);
+    expect(e26[0].metadata).toEqual({ reason: 'provider_error', kind: 'owner', resent: false });
+  });
+
+  it('INV.6 — the invitation transaction fails → no email', async () => {
+    const { organizationId } = await newOrg('Inv Six');
+    const ctx = await ownerContext(organizationId);
+    mailbox.clear();
+    const email = `rollback-${newUuid()}@example.com`;
+    await expect(
+      inviteMember(ctx, {
+        email,
+        role: 'not_a_role' as never,
+        inviterName: 'Owner',
+        organizationName: 'Inv Six',
+      }),
+    ).rejects.toThrow();
+    expect(mailbox.sent).toHaveLength(0);
   });
 });
