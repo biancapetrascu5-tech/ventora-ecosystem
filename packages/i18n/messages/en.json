@@ -60,6 +60,28 @@
       "button": "Choose a new password",
       "nextSteps": "What happens next: the next time you sign in, you'll turn on two-step authentication again with an authenticator app. Until then, you can't make changes as owner of {businessName}. Keep your new backup codes somewhere safe.",
       "notRequested": "If you didn't ask for this, write to us right away at {supportEmail}. We'll look into what happened immediately."
+    },
+    "supportSession": {
+      "subject": "The Ventora team has support access to {businessName}",
+      "intro": "{founderName} from the Ventora team opened a support session for {businessName}, for request {ticketRef}.",
+      "scope": "During the session, the Ventora team can only view your business data to resolve the request. They can't change data, can't see passwords and don't change anything about your team or subscription.",
+      "until": "The session closes automatically on {expiresAt}.",
+      "close": "You can close it at any time in Ventora, from the support session banner.",
+      "notRequested": "If you didn't ask for help, close the session and write to us at {supportEmail}."
+    }
+  },
+  "support": {
+    "session": {
+      "banner": {
+        "title": "Support session active",
+        "message": "{founderName} from the Ventora team can view your business data until {expiresAt}.",
+        "readOnly": "Read only: they can't change data, members, passwords or the subscription.",
+        "reason": "Reason: {reason}",
+        "ticketRef": "Request: {ticketRef}",
+        "close": "Close session",
+        "closeConfirm": "Close the support session? The Ventora team loses access immediately.",
+        "closed": "The support session is closed."
+      }
     }
   }
 }

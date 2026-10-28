@@ -6,6 +6,7 @@ import {
   renderOwnerInvitation,
   renderOwnerRecovery,
   renderPasswordReset,
+  renderSupportSessionOpened,
 } from '../index';
 
 // i18n:check guarantees the same keys; this guarantees the same placeholders, so a
@@ -55,6 +56,15 @@ describe('email catalogs in all 6 languages', () => {
           businessName: 'C',
           ticketRef: 'T-1',
           passwordResetLink: 'https://l',
+          locale,
+        }),
+        renderSupportSessionOpened({
+          email: 'a@x.io',
+          name: 'A',
+          businessName: 'C',
+          founderName: 'D',
+          ticketRef: 'T-2',
+          expiresAt,
           locale,
         }),
       ];

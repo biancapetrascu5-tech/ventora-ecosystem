@@ -60,6 +60,28 @@
       "button": "Alege o parolă nouă",
       "nextSteps": "Ce urmează: la următoarea intrare în cont pornești din nou autentificarea în doi pași, cu o aplicație de autentificare. Până atunci nu poți face modificări ca proprietar în {businessName}. Păstrează noile coduri de rezervă într-un loc sigur.",
       "notRequested": "Dacă nu ai cerut tu asta, scrie-ne imediat la {supportEmail}. Verificăm imediat ce s-a întâmplat."
+    },
+    "supportSession": {
+      "subject": "Echipa Ventora are acces de suport la {businessName}",
+      "intro": "{founderName} din echipa Ventora a deschis o sesiune de suport pentru {businessName}, pentru cererea {ticketRef}.",
+      "scope": "În timpul sesiunii, echipa Ventora poate doar să vadă datele afacerii, ca să rezolve cererea. Nu poate modifica date, nu vede parole și nu schimbă nimic în echipă sau în abonament.",
+      "until": "Sesiunea se închide automat pe {expiresAt}.",
+      "close": "O poți închide oricând din Ventora, din bannerul sesiunii de suport.",
+      "notRequested": "Dacă nu ai cerut ajutor, închide sesiunea și scrie-ne la {supportEmail}."
+    }
+  },
+  "support": {
+    "session": {
+      "banner": {
+        "title": "Sesiune de suport activă",
+        "message": "{founderName} din echipa Ventora poate vedea datele afacerii până la {expiresAt}.",
+        "readOnly": "Doar citire: nu poate modifica date, membri, parole sau abonamentul.",
+        "reason": "Motiv: {reason}",
+        "ticketRef": "Cerere: {ticketRef}",
+        "close": "Închide sesiunea",
+        "closeConfirm": "Închizi sesiunea de suport? Echipa Ventora pierde accesul imediat.",
+        "closed": "Sesiunea de suport s-a închis."
+      }
     }
   }
 }

@@ -1,3 +1,4 @@
+import { isAPIError } from 'better-auth/api';
 import type { UserWithTwoFactor } from 'better-auth/plugins/two-factor';
 import { NotAuthenticated, TwoFactorRequired, Forbidden } from '@ventora/errors';
 import { founderAuth } from './auth-founder';
@@ -9,16 +10,36 @@ import {
   prismaTxExecutor,
   readAuditLogAsFounder,
   type AuditLogEntry,
+  type AuditSqlExecutor,
   type FounderAuditLogFilters,
 } from '@ventora/audit';
 
 export type FounderSession = {
   id: string;
   userId: string;
+  name: string;
   expiresAt: Date;
   token: string;
   twoFactorEnabled: boolean;
 };
+
+/**
+ * Runs inside revokeFounderUser's transaction, after the revocation (same commit or rollback).
+ * core/access registers one to close the revoked Founder's support sessions; identity cannot
+ * depend on access, so the dependency is inverted. Security does not rely on it: a revoked
+ * Founder has no session left and authorizeSupport() rejects them anyway.
+ */
+export type FounderRevocationHook = (
+  exec: AuditSqlExecutor,
+  revoked: { founderId: string; revokedBy: string },
+) => Promise<void>;
+
+const _revocationHooks: FounderRevocationHook[] = [];
+
+/** Idempotent per function reference. */
+export function registerFounderRevocationHook(hook: FounderRevocationHook): void {
+  if (!_revocationHooks.includes(hook)) _revocationHooks.push(hook);
+}
 
 export type FounderUserRecord = {
   id: string;
@@ -41,6 +62,7 @@ export async function getFounderSession(headers: Headers): Promise<FounderSessio
   return {
     id: result.session.id,
     userId: result.session.userId,
+    name: result.user.name,
     expiresAt: result.session.expiresAt,
     token: result.session.token,
     twoFactorEnabled: (result.user as UserWithTwoFactor).twoFactorEnabled === true,
@@ -53,6 +75,22 @@ export async function requireFounderSession(headers: Headers): Promise<FounderSe
   if (!session) throw new NotAuthenticated();
   if (!session.twoFactorEnabled) throw new TwoFactorRequired();
   return session;
+}
+
+/**
+ * Re-authentication for a sensitive action (D14): checks a fresh TOTP code of the Founder who
+ * owns the session in `headers`. Goes through Better Auth's verify-totp, so a wrong code is
+ * audited like any other (founder.2fa_verify_failed). Returns false for a wrong code.
+ */
+export async function verifyFounderTotp(headers: Headers, code: string): Promise<boolean> {
+  if (!/^\d{6}$/.test(code)) return false;
+  try {
+    await founderAuth.api.verifyTOTP({ headers, body: { code } });
+    return true;
+  } catch (err) {
+    if (isAPIError(err)) return false;
+    throw err;
+  }
 }
 
 /** Shared guard: actor must exist, not be revoked, and have 2FA enabled. */
@@ -158,7 +196,8 @@ export async function revokeFounderUser(
       where: { userId: targetFounderId },
     });
 
-    await appendAuditEventInTx(prismaTxExecutor(tx), {
+    const exec = prismaTxExecutor(tx);
+    await appendAuditEventInTx(exec, {
       category: 'founder',
       action: AuditActions.founderUserRevoked,
       outcome: 'success',
@@ -169,6 +208,10 @@ export async function revokeFounderUser(
       targetId: targetFounderId,
       metadata: { sessionsDeleted: sessions.count },
     });
+
+    for (const hook of _revocationHooks) {
+      await hook(exec, { founderId: targetFounderId, revokedBy: actingFounderId });
+    }
   });
 }
 

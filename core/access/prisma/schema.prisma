@@ -78,3 +78,24 @@ model ResourceAccessPolicy {
   @@map("resource_access_policy")
   @@schema("access")
 }
+
+// Lot 2.5c (D9). Written only through SECURITY DEFINER functions (migration 20261028000002).
+// The partial unique index support_session_one_open_key (founder_id, organization_id
+// WHERE closed_at IS NULL) and the CHECK constraints live in the migration only.
+model SupportSession {
+  id             String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  organizationId String    @map("organization_id") @db.Uuid
+  founderId      String    @map("founder_id")
+  founderName    String    @map("founder_name") @db.VarChar(255)
+  reason         String    @db.VarChar(1000)
+  ticketRef      String    @map("ticket_ref") @db.VarChar(255)
+  openedAt       DateTime  @default(now()) @map("opened_at") @db.Timestamptz
+  expiresAt      DateTime  @map("expires_at") @db.Timestamptz
+  closedAt       DateTime? @map("closed_at") @db.Timestamptz
+  closedByType   String?   @map("closed_by_type") @db.VarChar(8)
+  closedById     String?   @map("closed_by_id")
+
+  @@index([organizationId, closedAt])
+  @@map("support_session")
+  @@schema("access")
+}

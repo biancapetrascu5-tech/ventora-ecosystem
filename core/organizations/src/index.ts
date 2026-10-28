@@ -12,4 +12,6 @@ export {
   acceptInvitation,
   revokeInvitation,
   resendInvitation,
+  getOwnerMembershipInTx,
+  listOrganizationOwnersInTx,
 } from './contract';

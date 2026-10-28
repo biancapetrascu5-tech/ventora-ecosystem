@@ -364,6 +364,9 @@ importers:
       '@ventora/identity':
         specifier: workspace:*
         version: link:../identity
+      '@ventora/notifications':
+        specifier: workspace:*
+        version: link:../notifications
       '@ventora/organizations':
         specifier: workspace:*
         version: link:../organizations

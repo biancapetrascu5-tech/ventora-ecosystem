@@ -280,6 +280,7 @@ jobs:
           PSQL="psql postgresql://postgres:test@localhost:5434/ventora_org_test"
           $PSQL -f core/organizations/prisma/migrations/20261027000001_organizations_init/migration.sql
           $PSQL -f core/organizations/prisma/migrations/20261027000003_invitation_application_ids/migration.sql
+          $PSQL -v ON_ERROR_STOP=1 -f core/organizations/prisma/migrations/20261028000003_founder_owner_lookup/migration.sql
       - name: Apply audit migration
         run: |
           psql postgresql://postgres:test@localhost:5434/ventora_org_test \
@@ -358,10 +359,11 @@ jobs:
             echo "Applying $f"
             $PSQL -f "$f"
           done
-      - name: Apply access migration
+      - name: Apply access migrations
         run: |
-          psql postgresql://postgres:test@localhost:5435/ventora_access_test \
-            -f core/access/prisma/migrations/20261027000002_access_init/migration.sql
+          PSQL="psql postgresql://postgres:test@localhost:5435/ventora_access_test -v ON_ERROR_STOP=1"
+          $PSQL -f core/access/prisma/migrations/20261027000002_access_init/migration.sql
+          $PSQL -f core/access/prisma/migrations/20261028000002_support_session/migration.sql
       - name: Apply audit migration
         run: |
           psql postgresql://postgres:test@localhost:5435/ventora_access_test \
@@ -380,6 +382,8 @@ jobs:
           DATABASE_URL_TEST: postgresql://postgres:test@localhost:5435/ventora_access_test
           DATABASE_URL_ADMIN_TEST: postgresql://postgres:test@localhost:5435/ventora_access_test
           DATABASE_URL: postgresql://postgres:test@localhost:5435/ventora_access_test
+          # Lot 2.5c: support sessions and owner recovery run on founder_runtime
+          DATABASE_URL_FOUNDER_TEST: postgresql://founder_runtime:${{ env.FOUNDER_PW }}@localhost:5435/ventora_access_test
           BETTER_AUTH_SECRET: ${{ env.BETTER_AUTH_SECRET }}
           FOUNDER_AUTH_SECRET: ${{ env.FOUNDER_AUTH_SECRET }}
         run: |

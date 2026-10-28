@@ -60,6 +60,28 @@
       "button": "Neues Passwort festlegen",
       "nextSteps": "So geht es weiter: Bei der nächsten Anmeldung aktivieren Sie die Zwei-Faktor-Authentifizierung erneut mit einer Authentifizierungs-App. Bis dahin können Sie in {businessName} keine Änderungen mit der Rolle „Inhaber“ vornehmen. Bewahren Sie Ihre neuen Backup-Codes an einem sicheren Ort auf.",
       "notRequested": "Wenn Sie das nicht angefordert haben, schreiben Sie uns bitte sofort an {supportEmail}. Wir prüfen umgehend, was passiert ist."
+    },
+    "supportSession": {
+      "subject": "Das Ventora-Team hat Support-Zugriff auf {businessName}",
+      "intro": "{founderName} aus dem Ventora-Team hat eine Support-Sitzung für {businessName} geöffnet, zur Anfrage {ticketRef}.",
+      "scope": "Während der Sitzung kann das Ventora-Team die Daten Ihres Unternehmens nur einsehen, um die Anfrage zu bearbeiten. Es kann keine Daten ändern, sieht keine Passwörter und ändert nichts an Ihrem Team oder Abonnement.",
+      "until": "Die Sitzung endet automatisch am {expiresAt}.",
+      "close": "Sie können sie jederzeit in Ventora über den Hinweis zur Support-Sitzung beenden.",
+      "notRequested": "Wenn Sie keine Hilfe angefordert haben, beenden Sie die Sitzung und schreiben Sie uns an {supportEmail}."
+    }
+  },
+  "support": {
+    "session": {
+      "banner": {
+        "title": "Support-Sitzung aktiv",
+        "message": "{founderName} aus dem Ventora-Team kann die Daten Ihres Unternehmens bis {expiresAt} einsehen.",
+        "readOnly": "Nur Lesezugriff: keine Änderungen an Daten, Mitgliedern, Passwörtern oder dem Abonnement.",
+        "reason": "Grund: {reason}",
+        "ticketRef": "Anfrage: {ticketRef}",
+        "close": "Sitzung beenden",
+        "closeConfirm": "Support-Sitzung beenden? Das Ventora-Team verliert sofort den Zugriff.",
+        "closed": "Die Support-Sitzung wurde beendet."
+      }
     }
   }
 }
