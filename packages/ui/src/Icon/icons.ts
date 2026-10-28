@@ -60,6 +60,7 @@ import {
   ZoomOut,
   SlidersHorizontal,
   Grid,
+  Grid3x3,
   List,
   Map,
   UserPlus,
@@ -80,6 +81,11 @@ import {
   LoaderCircle,
   Undo2,
   Send,
+  Battery,
+  BatteryLow,
+  BatteryCharging,
+  Signal,
+  QrCode,
   type LucideIcon,
 } from 'lucide-react';
 
@@ -145,6 +151,7 @@ export const ICON_REGISTRY = {
   'zoom-out': ZoomOut,
   sliders: SlidersHorizontal,
   grid: Grid,
+  'grid-3x3': Grid3x3,
   list: List,
   map: Map,
   'user-plus': UserPlus,
@@ -166,6 +173,11 @@ export const ICON_REGISTRY = {
   inbox: Inbox,
   'rotate-ccw': RotateCcw,
   'chart-column': ChartColumn,
+  battery: Battery,
+  'battery-low': BatteryLow,
+  'battery-charging': BatteryCharging,
+  signal: Signal,
+  'qr-code': QrCode,
 } as const satisfies Record<string, LucideIcon>;
 
 export type IconName = keyof typeof ICON_REGISTRY;

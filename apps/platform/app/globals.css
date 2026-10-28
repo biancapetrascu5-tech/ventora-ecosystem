@@ -17,6 +17,12 @@ p, h1, h2, h3, h4, h5, h6 {
 /* Modificatori */
 .muted { color: var(--ink-muted); }
 
+/* Portal theme — marchează elementele portalizate să moștenească tema locului sursă */
+.v-portal-theme {
+  background: var(--canvas);
+  color: var(--ink);
+}
+
 /* Link de bază */
 .v-link {
   appearance: none;

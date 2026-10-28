@@ -23,8 +23,8 @@
   width: var(--space-8);
   height: var(--space-8);
   border-radius: var(--radius-full);
-  background: var(--attention-soft);
-  color: var(--attention-ink);
+  background: var(--neutral-soft);
+  color: var(--ink-secondary);
   flex: none;
 }
 

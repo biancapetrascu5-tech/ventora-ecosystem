@@ -35,7 +35,7 @@ export interface UsageMeterProps {
 
 function fmt(n: number, format?: (n: number) => string, locale?: string): string {
   if (format) return format(n);
-  return n.toLocaleString(locale);
+  return new Intl.NumberFormat(locale ?? undefined, { useGrouping: true }).format(n);
 }
 
 export function UsageMeter({

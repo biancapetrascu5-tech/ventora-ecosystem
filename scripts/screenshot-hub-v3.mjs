@@ -213,20 +213,32 @@ async function captureGallery(page, variant) {
   const url = `${BASE}/design/demo/gallery/${name}`;
   await page.goto(url, { waitUntil: 'networkidle' });
   await hideDevOverlay(page);
-  await page.evaluate((t) => document.documentElement.setAttribute('data-theme', t), theme);
   await page.waitForTimeout(300);
-
-  // Verifică overflow orizontal (sărim pentru componente intrinsec late)
-  if (!allowOverflow) {
-    const scrollW = await page.evaluate(() => document.documentElement.scrollWidth);
-    if (scrollW > viewport) {
-      throw new Error(`overflow orizontal: scrollWidth=${scrollW} > viewport=${viewport}`);
-    }
-  }
 
   const filename = `gallery_${name}_${viewport}_${theme}_impl.png`;
   const outPath = path.join(OUT, filename);
-  await page.screenshot({ path: outPath, fullPage: true });
+
+  // Caută frame-ul marcat cu data-gallery-frame și data-theme
+  const selector = `[data-gallery-frame][data-theme="${theme}"]`;
+  const el = page.locator(selector).first();
+  const count = await el.count();
+
+  if (count > 0) {
+    await el.scrollIntoViewIfNeeded();
+    await page.waitForTimeout(100);
+    await el.screenshot({ path: outPath });
+  } else {
+    // Fallback: full-page cu tema aplicată global
+    await page.evaluate((t) => document.documentElement.setAttribute('data-theme', t), theme);
+    if (!allowOverflow) {
+      const scrollW = await page.evaluate(() => document.documentElement.scrollWidth);
+      if (scrollW > viewport) {
+        throw new Error(`overflow orizontal: scrollWidth=${scrollW} > viewport=${viewport}`);
+      }
+    }
+    await page.screenshot({ path: outPath, fullPage: true });
+  }
+
   const suffix = allowOverflow ? ' (overflow așteptat)' : '';
   console.log(`  ✓ ${filename}${suffix}`);
 }
@@ -240,12 +252,28 @@ async function captureGalleryDesign(page, variant) {
   const url = `${BASE}/design/preview/${name}`;
   await page.goto(url, { waitUntil: 'networkidle' });
   await hideDevOverlay(page);
-  await page.evaluate((t) => document.documentElement.setAttribute('data-theme', t), theme);
   await page.waitForTimeout(400);
 
   const filename = `gallery_${name}_${viewport}_${theme}_design.png`;
   const outPath = path.join(OUT, filename);
-  await page.screenshot({ path: outPath, fullPage: true });
+
+  // Caută frame-ul cu clasa .c3f și data-theme (element-level theming din noul tokens.css)
+  const selector = `.c3f[data-theme="${theme}"]`;
+  const el = page.locator(selector).first();
+  const count = await el.count();
+
+  if (count > 0) {
+    await el.scrollIntoViewIfNeeded();
+    await page.waitForTimeout(200);
+    await el.screenshot({ path: outPath });
+  } else {
+    // Fallback: full-page cu tema globală
+    await page.evaluate((t) => document.documentElement.setAttribute('data-theme', t), theme);
+    await page.waitForTimeout(200);
+    await page.screenshot({ path: outPath, fullPage: true });
+    console.warn(`  ⚠ "${selector}" negăsit în preview/${name} — full-page fallback`);
+  }
+
   console.log(`  ✓ ${filename}`);
 }
 
