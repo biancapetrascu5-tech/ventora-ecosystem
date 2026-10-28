@@ -45,7 +45,6 @@
 .sm {
   height: var(--control-sm);
   padding-inline: var(--space-2);
-  font-size: var(--type-caption-size);
   gap: var(--space-1);
 }
 
