@@ -35,17 +35,16 @@
       }
     },
     "passwordChanged": {
-      "todoCopy": "TODO-COPY: textos provisionales, se sustituyen por los aprobados por Claude Design.",
-      "hub": {
-        "subject": "Se ha cambiado la contraseña de tu cuenta",
-        "intro": "La contraseña de tu cuenta de Ventora se cambió el {changedAt}.",
-        "notYou": "Si no la has cambiado tú, elige ya una contraseña nueva desde «¿Has olvidado tu contraseña?» y escríbenos a {supportEmail}."
-      },
-      "founder": {
-        "subject": "Se ha cambiado la contraseña de tu cuenta",
-        "intro": "La contraseña de tu cuenta de Ventora Founder se cambió el {changedAt}.",
-        "notYou": "Si no la has cambiado tú, escribe de inmediato a {supportEmail}. Puede que alguien esté intentando acceder a tu cuenta."
-      }
+      "subject": "Se ha cambiado la contraseña de tu cuenta de Ventora",
+      "pre": "El cambio se hizo el {date}, a las {time}. Si no fuiste tú, lee este correo.",
+      "eyebrow": "Tu cuenta de Ventora",
+      "title": "Se ha cambiado la contraseña de tu cuenta",
+      "leadReset": "La contraseña de la cuenta {email} se cambió el {date}, a las {time}. Hemos cerrado tu sesión en todos los dispositivos.",
+      "leadAccount": "La contraseña de la cuenta {email} se cambió el {date}, a las {time}. Hemos cerrado tu sesión en los demás dispositivos.",
+      "ifYou": "Si fuiste tú, no tienes que hacer nada.",
+      "notYou": "¿No fuiste tú? Elige ahora mismo una contraseña nueva desde «¿Has olvidado la contraseña?» y escríbenos a {supportEmail}.",
+      "cta": "Escribir a soporte",
+      "why": "Recibes este correo porque la contraseña de tu cuenta de Ventora ha cambiado. Es un correo de seguridad: lo enviamos con cada cambio de contraseña y no se puede desactivar."
     },
     "invitation": {
       "member": {

@@ -35,17 +35,16 @@
       }
     },
     "passwordChanged": {
-      "todoCopy": "TODO-COPY: provisional texts, to be replaced with the ones approved by Claude Design.",
-      "hub": {
-        "subject": "Your account password was changed",
-        "intro": "The password for your Ventora account was changed on {changedAt}.",
-        "notYou": "If you didn't change it, choose a new password right away from “Forgot your password?” and write to us at {supportEmail}."
-      },
-      "founder": {
-        "subject": "Your account password was changed",
-        "intro": "The password for your Ventora Founder account was changed on {changedAt}.",
-        "notYou": "If you didn't change it, write to {supportEmail} right away. Someone may be trying to access your account."
-      }
+      "subject": "Your Ventora password was changed",
+      "pre": "The change was made on {date}, at {time}. If it wasn't you, read this email.",
+      "eyebrow": "Your Ventora account",
+      "title": "Your account password was changed",
+      "leadReset": "The password for {email} was changed on {date}, at {time}. We've signed you out on all devices.",
+      "leadAccount": "The password for {email} was changed on {date}, at {time}. We've signed you out on your other devices.",
+      "ifYou": "If it was you, you don't need to do anything.",
+      "notYou": "Wasn't you? Choose a new password right away from \"Forgot your password?\" and write to us at {supportEmail}.",
+      "cta": "Write to support",
+      "why": "You're receiving this email because your Ventora account password changed. It's a security email: we send it for every password change and it can't be turned off."
     },
     "invitation": {
       "member": {

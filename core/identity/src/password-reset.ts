@@ -1,6 +1,6 @@
 import { APIError, type BetterAuthPlugin } from 'better-auth';
 import { createAuthEndpoint, isAPIError } from 'better-auth/api';
-import { deliverEmail, renderPasswordChanged, type AuthApp } from '@ventora/notifications';
+import { deliverEmail, renderPasswordChanged } from '@ventora/notifications';
 import { hashEmail } from '@ventora/audit';
 import type { createAuthAuditHooks } from './audit-hooks';
 
@@ -24,7 +24,7 @@ type AuthAudit = ReturnType<typeof createAuthAuditHooks>;
 export const RESET_IDENTIFIER_PREFIX = 'reset-password:';
 export const RENEW_RESET_LINK_PATH = '/request-new-reset-link';
 export const RESET_EMAIL_LIMIT = { windowMs: 60 * 60 * 1000, max: 5 };
-// PROPUS: how long an expired reset link can still ask for a new one (R-PR5).
+// CONFIRMAT (7 days): how long an expired reset link can still ask for a new one (R-PR5).
 export const EXPIRED_RESET_RETENTION_MS = 7 * 24 * 60 * 60 * 1000;
 const RATE_LIMIT_KEY_PREFIX = 'password-reset-email:';
 const TOKEN_SHAPE = /^[A-Za-z0-9_-]{8,128}$/;
@@ -156,19 +156,13 @@ export async function beforeRequestPasswordReset(
 
 /** R-PR7: renders and sends the notice. Never throws; a failed delivery is audited. */
 export async function sendPasswordChangedNotice(
-  app: AuthApp,
   audit: AuthAudit,
   ctx: HookCtx,
   user: { id: string; email: string; name?: string | null },
   trigger: 'reset' | 'change',
 ): Promise<void> {
   try {
-    const rendered = renderPasswordChanged({
-      app,
-      email: user.email,
-      name: user.name,
-      changedAt: new Date(),
-    });
+    const rendered = renderPasswordChanged({ email: user.email, trigger, changedAt: new Date() });
     const result = await deliverEmail({
       to: user.email,
       subject: rendered.subject,
@@ -189,7 +183,6 @@ export async function sendPasswordChangedNotice(
 /** After hook: R-PR7 notice, then the replacement for Better Auth's verification cleanup. */
 export async function afterPasswordHooks(
   ctx: HookCtx,
-  app: AuthApp,
   db: ResetDb,
   audit: AuthAudit,
 ): Promise<void> {
@@ -210,7 +203,7 @@ export async function afterPasswordHooks(
     if (user) {
       const trigger = path === '/reset-password' ? 'reset' : 'change';
       await ctx.context.runInBackgroundOrAwait(
-        sendPasswordChangedNotice(app, audit, ctx, user, trigger),
+        sendPasswordChangedNotice(audit, ctx, user, trigger),
       );
     }
   }
