@@ -17,3 +17,4 @@ core/access/generated/
 *.tsbuildinfo
 screenshots/
 docs/design/_incoming/
+visual-check/

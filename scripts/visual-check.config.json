@@ -1,0 +1,36 @@
+{
+  "$comment": "Verificarea vizuală design ↔ implementare (regula 12 din CLAUDE.md). O componentă din `enforced` trebuie să fie sub `maxDiffPercent` la fiecare viewport × temă, altfel CI pică. O componentă intră aici când lotul ei începe alinierea; nu se scoate ca să treacă CI-ul — doar fondatoarea poate aproba o excepție, notată în `exceptions` cu motiv.",
+  "maxDiffPercent": 2,
+  "pixelThreshold": 0.1,
+  "viewports": [
+    {
+      "width": 1280,
+      "height": 900
+    },
+    {
+      "width": 390,
+      "height": 844
+    }
+  ],
+  "themes": ["light", "dark"],
+  "designUrl": "/design/preview/{name}",
+  "designSelector": "body [data-theme=\"{theme}\"]",
+  "implUrl": "/design/demo/gallery/{name}",
+  "implSelector": "[data-gallery-frame][data-theme=\"{theme}\"]",
+  "enforced": [
+    "Toast",
+    "StatusPill",
+    "StatusDot",
+    "Badge",
+    "Avatar",
+    "Notice",
+    "AttentionList",
+    "EmptyState",
+    "Skeleton",
+    "ProgressBar",
+    "UsageMeter",
+    "Kbd"
+  ],
+  "exceptions": {},
+  "$comment_selectors": "designSelector: primul cadru cu data-theme din preview.html (clasele cadrelor diferă de la o componentă la alta: c3f, qf, al-frame…). implSelector: cadrul galeriei marcat cu data-gallery-frame. Ambele cadre trebuie să conțină exact aceleași exemple."
+}
