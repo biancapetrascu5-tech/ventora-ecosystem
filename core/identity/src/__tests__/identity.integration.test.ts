@@ -10,6 +10,7 @@ import { founderAuth } from '../auth-founder';
 import { makeIdentityClient, makeFounderClient } from '../db';
 import { hashPassword, verifyPassword } from '../password-policy';
 import { createHubAuthOptions, createFounderAuthOptions } from '../auth-options';
+import { requireTestEnv, shouldSkipForEnv } from './env-guard';
 
 const DB_URL = process.env.DATABASE_URL;
 if (!DB_URL) throw new Error('DATABASE_URL required');
@@ -426,79 +427,77 @@ describe('DB isolation — separate Prisma clients', () => {
 });
 
 describe('DB isolation — role enforcement', () => {
-  it('app_runtime without SET ROLE → permission denied; with SET ROLE → succeeds', async () => {
-    const appUrl = process.env.DATABASE_URL_APP_RUNTIME;
-    if (!appUrl) {
-      console.log('Skipping: DATABASE_URL_APP_RUNTIME not set');
-      return;
-    }
-    const rawPool = new Pool({ connectionString: appUrl });
-    const client = await rawPool.connect();
-    try {
-      await expect(client.query('SELECT 1 FROM identity.users LIMIT 1')).rejects.toThrow(
-        /permission denied/i,
-      );
+  it.skipIf(shouldSkipForEnv('DATABASE_URL_APP_RUNTIME'))(
+    'app_runtime without SET ROLE → permission denied; with SET ROLE → succeeds',
+    async () => {
+      const appUrl = requireTestEnv('DATABASE_URL_APP_RUNTIME');
+      const rawPool = new Pool({ connectionString: appUrl });
+      const client = await rawPool.connect();
+      try {
+        await expect(client.query('SELECT 1 FROM identity.users LIMIT 1')).rejects.toThrow(
+          /permission denied/i,
+        );
 
-      await client.query('SET ROLE identity_rw');
-      const result = await client.query('SELECT COUNT(*) FROM identity.users');
-      expect(result.rows[0].count).toBeDefined();
-    } finally {
-      await client.query('RESET ROLE');
-      client.release();
-      await rawPool.end();
-    }
-  });
+        await client.query('SET ROLE identity_rw');
+        const result = await client.query('SELECT COUNT(*) FROM identity.users');
+        expect(result.rows[0].count).toBeDefined();
+      } finally {
+        await client.query('RESET ROLE');
+        client.release();
+        await rawPool.end();
+      }
+    },
+  );
 });
 
 describe('T1.14 — PgBouncer transaction pooler isolation', () => {
-  it('SET LOCAL ROLE does not leak across transactions (pgbouncer pool_mode=transaction)', async () => {
-    const pgbouncerUrl = process.env.DATABASE_URL_PGBOUNCER_TEST;
-    if (!pgbouncerUrl) {
-      console.log('Skipping T1.14: DATABASE_URL_PGBOUNCER_TEST not set');
-      return;
-    }
+  it.skipIf(shouldSkipForEnv('DATABASE_URL_PGBOUNCER_TEST'))(
+    'SET LOCAL ROLE does not leak across transactions (pgbouncer pool_mode=transaction)',
+    async () => {
+      const pgbouncerUrl = requireTestEnv('DATABASE_URL_PGBOUNCER_TEST');
 
-    // (a) Better Auth operations work through PgBouncer in transaction mode
-    const bouncerDb = makeIdentityClient(pgbouncerUrl) as unknown as IdentityClient;
-    const bouncerAuth = betterAuth({
-      secret: 'test-bouncer-secret-must-32-chars-xx', // gitleaks:allow
-      database: prismaAdapter(bouncerDb, { provider: 'postgresql' }),
-      emailAndPassword: {
-        enabled: true,
-        minPasswordLength: 10,
-        password: { hash: hashPassword, verify: verifyPassword },
-      },
-      plugins: [bearer()],
-      advanced: {
-        crossSubDomainCookies: { enabled: false },
-        defaultCookieAttributes: { sameSite: 'lax', secure: false, httpOnly: true },
-      },
-    });
+      // (a) Better Auth operations work through PgBouncer in transaction mode
+      const bouncerDb = makeIdentityClient(pgbouncerUrl) as unknown as IdentityClient;
+      const bouncerAuth = betterAuth({
+        secret: 'test-bouncer-secret-must-32-chars-xx', // gitleaks:allow
+        database: prismaAdapter(bouncerDb, { provider: 'postgresql' }),
+        emailAndPassword: {
+          enabled: true,
+          minPasswordLength: 10,
+          password: { hash: hashPassword, verify: verifyPassword },
+        },
+        plugins: [bearer()],
+        advanced: {
+          crossSubDomainCookies: { enabled: false },
+          defaultCookieAttributes: { sameSite: 'lax', secure: false, httpOnly: true },
+        },
+      });
 
-    await bouncerAuth.api.signUpEmail({
-      body: { email: 'pgbouncer@test.com', password: 'Password123', name: 'PG Test' },
-    });
-    const loginResult = await bouncerAuth.api.signInEmail({
-      body: { email: 'pgbouncer@test.com', password: 'Password123' },
-    });
-    expect(loginResult?.token).toBeTruthy();
+      await bouncerAuth.api.signUpEmail({
+        body: { email: 'pgbouncer@test.com', password: 'Password123', name: 'PG Test' },
+      });
+      const loginResult = await bouncerAuth.api.signInEmail({
+        body: { email: 'pgbouncer@test.com', password: 'Password123' },
+      });
+      expect(loginResult?.token).toBeTruthy();
 
-    // (b) After Better Auth ops, a raw connection on the same pgbouncer pool
-    //     should NOT have identity_rw role — SET LOCAL ROLE was scoped to the transaction
-    const rawPool = new Pool({ connectionString: pgbouncerUrl });
-    const rawClient = await rawPool.connect();
-    try {
-      await expect(rawClient.query('SELECT 1 FROM identity.users LIMIT 1')).rejects.toThrow(
-        /permission denied/i,
-      );
-    } finally {
-      rawClient.release();
-      await rawPool.end();
-    }
+      // (b) After Better Auth ops, a raw connection on the same pgbouncer pool
+      //     should NOT have identity_rw role — SET LOCAL ROLE was scoped to the transaction
+      const rawPool = new Pool({ connectionString: pgbouncerUrl });
+      const rawClient = await rawPool.connect();
+      try {
+        await expect(rawClient.query('SELECT 1 FROM identity.users LIMIT 1')).rejects.toThrow(
+          /permission denied/i,
+        );
+      } finally {
+        rawClient.release();
+        await rawPool.end();
+      }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    await (bouncerDb as any).$disconnect?.();
-  });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      await (bouncerDb as any).$disconnect?.();
+    },
+  );
 });
 
 describe('T1.15 — password policy enforcement', () => {
@@ -612,17 +611,15 @@ describe('T1.17 — signUpEmail atomicity (user + account in one transaction)', 
 });
 
 describe('T1.17b — signUpEmail atomicity rollback (trigger-induced failure)', () => {
-  it('rolls back user when account creation fails (identity)', async () => {
-    const DB_ADMIN = process.env.DATABASE_URL_ADMIN_TEST;
-    if (!DB_ADMIN) {
-      console.log('Skipping T1.17b identity: DATABASE_URL_ADMIN_TEST not set');
-      return;
-    }
+  it.skipIf(shouldSkipForEnv('DATABASE_URL_ADMIN_TEST'))(
+    'rolls back user when account creation fails (identity)',
+    async () => {
+      const DB_ADMIN = requireTestEnv('DATABASE_URL_ADMIN_TEST');
 
-    const adminPool = new Pool({ connectionString: DB_ADMIN });
-    try {
-      // Temporary trigger: makes every INSERT into identity.accounts raise an exception
-      await adminPool.query(`
+      const adminPool = new Pool({ connectionString: DB_ADMIN });
+      try {
+        // Temporary trigger: makes every INSERT into identity.accounts raise an exception
+        await adminPool.query(`
         CREATE OR REPLACE FUNCTION identity._atomicity_test_fail_insert()
           RETURNS trigger LANGUAGE plpgsql AS $$
         BEGIN
@@ -633,37 +630,36 @@ describe('T1.17b — signUpEmail atomicity rollback (trigger-induced failure)', 
           FOR EACH ROW EXECUTE FUNCTION identity._atomicity_test_fail_insert();
       `);
 
-      // signUpEmail must fail — Prisma rolls back the transaction when the trigger fires.
-      // dispatch.mjs rethrows non-APIError exceptions from the endpoint, so this rejects.
-      await expect(
-        hubAuth.api.signUpEmail({
-          body: { email: 't1.17b@test.com', password: 'Atomic1234X', name: 'Rollback Test' },
-        }),
-      ).rejects.toThrow();
+        // signUpEmail must fail — Prisma rolls back the transaction when the trigger fires.
+        // dispatch.mjs rethrows non-APIError exceptions from the endpoint, so this rejects.
+        await expect(
+          hubAuth.api.signUpEmail({
+            body: { email: 't1.17b@test.com', password: 'Atomic1234X', name: 'Rollback Test' },
+          }),
+        ).rejects.toThrow();
 
-      // With transaction:true + Proxy, user.create and account.create run in one transaction.
-      // The trigger-induced rollback removes the user too — atomicity proven.
-      const user = await identityDb.user.findUnique({ where: { email: 't1.17b@test.com' } });
-      expect(user).toBeNull();
-    } finally {
-      await adminPool.query(`
+        // With transaction:true + Proxy, user.create and account.create run in one transaction.
+        // The trigger-induced rollback removes the user too — atomicity proven.
+        const user = await identityDb.user.findUnique({ where: { email: 't1.17b@test.com' } });
+        expect(user).toBeNull();
+      } finally {
+        await adminPool.query(`
         DROP TRIGGER IF EXISTS _atomicity_test_accounts_trigger ON identity.accounts;
         DROP FUNCTION IF EXISTS identity._atomicity_test_fail_insert();
       `);
-      await adminPool.end();
-    }
-  });
+        await adminPool.end();
+      }
+    },
+  );
 
-  it('rolls back user when account creation fails (founder)', async () => {
-    const DB_ADMIN = process.env.DATABASE_URL_ADMIN_TEST;
-    if (!DB_ADMIN) {
-      console.log('Skipping T1.17b founder: DATABASE_URL_ADMIN_TEST not set');
-      return;
-    }
+  it.skipIf(shouldSkipForEnv('DATABASE_URL_ADMIN_TEST'))(
+    'rolls back user when account creation fails (founder)',
+    async () => {
+      const DB_ADMIN = requireTestEnv('DATABASE_URL_ADMIN_TEST');
 
-    const adminPool = new Pool({ connectionString: DB_ADMIN });
-    try {
-      await adminPool.query(`
+      const adminPool = new Pool({ connectionString: DB_ADMIN });
+      try {
+        await adminPool.query(`
         CREATE OR REPLACE FUNCTION founder_identity._atomicity_test_fail_insert()
           RETURNS trigger LANGUAGE plpgsql AS $$
         BEGIN
@@ -674,26 +670,27 @@ describe('T1.17b — signUpEmail atomicity rollback (trigger-induced failure)', 
           FOR EACH ROW EXECUTE FUNCTION founder_identity._atomicity_test_fail_insert();
       `);
 
-      await expect(
-        founderAuthTest.api.signUpEmail({
-          body: {
-            email: 't1.17b@founder.com',
-            password: 'FounderAtomic12',
-            name: 'Founder Rollback',
-          },
-        }),
-      ).rejects.toThrowError();
+        await expect(
+          founderAuthTest.api.signUpEmail({
+            body: {
+              email: 't1.17b@founder.com',
+              password: 'FounderAtomic12',
+              name: 'Founder Rollback',
+            },
+          }),
+        ).rejects.toThrowError();
 
-      const user = await founderDb.user.findUnique({ where: { email: 't1.17b@founder.com' } });
-      expect(user).toBeNull();
-    } finally {
-      await adminPool.query(`
+        const user = await founderDb.user.findUnique({ where: { email: 't1.17b@founder.com' } });
+        expect(user).toBeNull();
+      } finally {
+        await adminPool.query(`
         DROP TRIGGER IF EXISTS _atomicity_test_accounts_trigger ON founder_identity.accounts;
         DROP FUNCTION IF EXISTS founder_identity._atomicity_test_fail_insert();
       `);
-      await adminPool.end();
-    }
-  });
+        await adminPool.end();
+      }
+    },
+  );
 });
 
 // T1.18 — B3: activeOrganizationId persisted in session (additionalFields + migration 20261027000002)
@@ -779,12 +776,14 @@ describe('T2FA — 2FA plugin config and hooks', () => {
   });
 
   it('T2FA.D2 — resetPassword with expired token is rejected', async () => {
-    await signUp('t2fa.reset.exp@test.com', 'Password123');
-    await hubAuth.api.requestPasswordReset({ body: { email: 't2fa.reset.exp@test.com' } });
+    const email = 't2fa.reset.exp@test.com';
+    const signup = await signUp(email, 'Password123');
+    const userId = signup.user.id;
+    await hubAuth.api.requestPasswordReset({ body: { email } });
 
+    // Token looked up by user (verification.value = userId), not "latest row in the table"
     const verification = await identityDb.verification.findFirst({
-      where: { identifier: { startsWith: 'reset-password:' } },
-      orderBy: { createdAt: 'desc' },
+      where: { value: userId, identifier: { startsWith: 'reset-password:' } },
     });
     expect(verification).toBeTruthy();
     const token = verification!.identifier.replace('reset-password:', '');
@@ -802,7 +801,15 @@ describe('T2FA — 2FA plugin config and hooks', () => {
         body: JSON.stringify({ token, newPassword: 'NewPassword123' }),
       }),
     );
-    expect(resetResp.status).not.toBe(200);
+    // Better Auth password.mjs: APIError.from("BAD_REQUEST", BASE_ERROR_CODES.INVALID_TOKEN)
+    expect(resetResp.status).toBe(400);
+    const resetBody = (await resetResp.json()) as { code?: string };
+    expect(resetBody.code).toBe('INVALID_TOKEN');
+
+    // Password unchanged: old password still works, new one does not
+    const oldLogin = await signIn(email, 'Password123');
+    expect(oldLogin?.token).toBeTruthy();
+    await expect(signIn(email, 'NewPassword123')).rejects.toThrow();
   });
 
   it('T2FA.E — account lockout after 5 failed TOTP verifications (R-2F5)', async () => {
@@ -883,16 +890,31 @@ describe('T2FA — 2FA plugin config and hooks', () => {
     expect(twoFactorCookie).toBeTruthy();
 
     // Step 6: send 5 invalid TOTP codes via the __two-factor cookie (isSignIn=true path)
-    // Each failure increments failedVerificationCount on the twoFactor DB record
+    // Each failure increments failedVerificationCount on the twoFactor DB record.
+    // Every one of the 5 must be a plain wrong-code answer (401 INVALID_CODE), not 429:
+    // verify-two-factor.mjs invalid() → APIError.from("UNAUTHORIZED", ...).
     for (let i = 0; i < 5; i++) {
-      await noRlAuth.handler(
+      const resp = await noRlAuth.handler(
         new Request('http://localhost/api/auth/two-factor/verify-totp', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', Cookie: twoFactorCookie },
           body: JSON.stringify({ code: '000000' }),
         }),
       );
+      expect(resp.status).toBe(401);
+      const body = (await resp.json()) as { code?: string };
+      expect(body.code).toBe('INVALID_CODE');
     }
+
+    // After the 5th failure: counter = 5 and the account is locked
+    const userRow = await identityDb.user.findUnique({ where: { email }, select: { id: true } });
+    const twoFactorRow = await identityDb.twoFactor.findFirst({
+      where: { userId: userRow!.id },
+      select: { failedVerificationCount: true, lockedUntil: true },
+    });
+    expect(twoFactorRow?.failedVerificationCount).toBe(5);
+    expect(twoFactorRow?.lockedUntil).toBeTruthy();
+    expect(twoFactorRow!.lockedUntil!.getTime()).toBeGreaterThan(Date.now());
 
     // Step 7: 6th attempt — assertTwoFactorNotLocked fires first → 429 TOO_MANY_REQUESTS
     const lockedResp = await noRlAuth.handler(
