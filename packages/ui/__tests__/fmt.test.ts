@@ -11,6 +11,15 @@ describe('fmtNumber', () => {
     expect(fmtNumber(4310, 'fr')).toMatch(/^4\s310$/u);
   });
 
+  it('1284 → „1.284” cu separatorul limbii, în toate cele 6 limbi (useGrouping: always)', () => {
+    expect(fmtNumber(1284, 'ro')).toBe('1.284');
+    expect(fmtNumber(1284, 'en')).toBe('1,284');
+    expect(fmtNumber(1284, 'fr')).toMatch(/^1\s284$/u);
+    expect(fmtNumber(1284, 'es')).toBe('1.284');
+    expect(fmtNumber(1284, 'de')).toBe('1.284');
+    expect(fmtNumber(1284, 'it')).toBe('1.284');
+  });
+
   it('nu grupează sub 1000', () => {
     expect(fmtNumber(248, 'ro')).toBe('248');
   });
