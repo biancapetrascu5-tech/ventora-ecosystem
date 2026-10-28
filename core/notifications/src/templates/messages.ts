@@ -49,6 +49,14 @@ export interface EmailMessages {
     nextSteps: string;
     notRequested: string;
   };
+  supportSession: {
+    subject: string;
+    intro: string;
+    scope: string;
+    until: string;
+    close: string;
+    notRequested: string;
+  };
 }
 
 type Catalog = { email?: EmailMessages };

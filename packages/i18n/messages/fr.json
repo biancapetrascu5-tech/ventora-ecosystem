@@ -60,6 +60,28 @@
       "button": "Choisir un nouveau mot de passe",
       "nextSteps": "Et ensuite : à votre prochaine connexion, vous réactiverez l’authentification en deux étapes avec une application d’authentification. D’ici là, vous ne pourrez pas effectuer de modifications en tant que propriétaire de {businessName}. Conservez vos nouveaux codes de secours en lieu sûr.",
       "notRequested": "Si vous n’êtes pas à l’origine de cette demande, écrivez-nous immédiatement à {supportEmail}. Nous vérifions tout de suite ce qui s’est passé."
+    },
+    "supportSession": {
+      "subject": "L’équipe Ventora a un accès de support à {businessName}",
+      "intro": "{founderName}, de l’équipe Ventora, a ouvert une session de support pour {businessName}, suite à la demande {ticketRef}.",
+      "scope": "Pendant la session, l’équipe Ventora peut uniquement consulter les données de votre entreprise pour traiter la demande. Elle ne peut pas modifier de données, ne voit pas les mots de passe et ne change rien à votre équipe ni à votre abonnement.",
+      "until": "La session se ferme automatiquement le {expiresAt}.",
+      "close": "Vous pouvez la fermer à tout moment dans Ventora, depuis le bandeau de la session de support.",
+      "notRequested": "Si vous n’avez pas demandé d’aide, fermez la session et écrivez-nous à {supportEmail}."
+    }
+  },
+  "support": {
+    "session": {
+      "banner": {
+        "title": "Session de support active",
+        "message": "{founderName}, de l’équipe Ventora, peut consulter les données de votre entreprise jusqu’à {expiresAt}.",
+        "readOnly": "Lecture seule : impossible de modifier les données, les membres, les mots de passe ou l’abonnement.",
+        "reason": "Motif : {reason}",
+        "ticketRef": "Demande : {ticketRef}",
+        "close": "Fermer la session",
+        "closeConfirm": "Fermer la session de support ? L’équipe Ventora perd l’accès immédiatement.",
+        "closed": "La session de support est fermée."
+      }
     }
   }
 }

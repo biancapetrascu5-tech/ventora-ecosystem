@@ -60,6 +60,28 @@
       "button": "Scegli una nuova password",
       "nextSteps": "Cosa succede ora: al prossimo accesso riattiverà l’autenticazione a due fattori con un’app di autenticazione. Fino ad allora non potrà apportare modifiche con il ruolo di titolare in {businessName}. Conservi i nuovi codici di backup in un luogo sicuro.",
       "notRequested": "Se non l’ha richiesto Lei, ci scriva subito a {supportEmail}. Verifichiamo immediatamente cosa è successo."
+    },
+    "supportSession": {
+      "subject": "Il team Ventora ha un accesso di supporto a {businessName}",
+      "intro": "{founderName} del team Ventora ha aperto una sessione di supporto per {businessName}, per la richiesta {ticketRef}.",
+      "scope": "Durante la sessione il team Ventora può solo consultare i dati della Sua attività per risolvere la richiesta. Non può modificare dati, non vede le password e non cambia nulla nel Suo team o nell’abbonamento.",
+      "until": "La sessione si chiude automaticamente il {expiresAt}.",
+      "close": "Può chiuderla in qualsiasi momento in Ventora, dal banner della sessione di supporto.",
+      "notRequested": "Se non ha chiesto assistenza, chiuda la sessione e ci scriva a {supportEmail}."
+    }
+  },
+  "support": {
+    "session": {
+      "banner": {
+        "title": "Sessione di supporto attiva",
+        "message": "{founderName} del team Ventora può consultare i dati della Sua attività fino alle {expiresAt}.",
+        "readOnly": "Sola lettura: non può modificare dati, membri, password o l’abbonamento.",
+        "reason": "Motivo: {reason}",
+        "ticketRef": "Richiesta: {ticketRef}",
+        "close": "Chiudi la sessione",
+        "closeConfirm": "Chiudere la sessione di supporto? Il team Ventora perde subito l’accesso.",
+        "closed": "La sessione di supporto è stata chiusa."
+      }
     }
   }
 }

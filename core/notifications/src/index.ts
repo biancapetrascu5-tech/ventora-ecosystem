@@ -20,6 +20,8 @@ export {
   renderMemberInvitation,
   renderOwnerInvitation,
   renderOwnerRecovery,
+  renderSupportSessionOpened,
 } from './templates/index';
 export type { RenderedEmail, MembershipRoleName } from './templates/index';
 export { sendOwnerRecoveryNotice } from './owner-recovery';
+export { sendSupportSessionNotice } from './support-session';
