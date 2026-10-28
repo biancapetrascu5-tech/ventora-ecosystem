@@ -37,3 +37,5 @@ Conform ierarhiei, checklisturile au prioritate față de brief. Diferențele se
 | Data | Aplicație | Modificare | Decizie |
 |---|---|---|---|
 | 24.10.2026 | Booking | +7 funcționalități: SMS de pe numărul propriu (59 → 66), dependente de E-SMS-1 și de validarea juridică | D-SMS-9, `docs/SMS_NUMAR_PROPRIU.md` |
+| 28.10.2026 | Booking, Marketing, Projects | Precizări, fără funcționalități noi sau scoase (numărătorile rămân): automatizările predefinite ale modulului sunt setări ale afacerii, distincte de automatizările construite în workflow engine (doar Founder) | D-WF-6, ARCHITECTURE.md §17.23 |
+| 28.10.2026 | Marketing | Precizări, fără funcționalități noi sau scoase: landing pages și funnel-urile le construiește doar echipa Ventora, din Founder; formularele simple de lead le configurează afacerea | D-FUN-1, D-FUN-7, ARCHITECTURE.md §17.23 |

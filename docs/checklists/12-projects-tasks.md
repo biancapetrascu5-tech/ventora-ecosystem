@@ -108,7 +108,7 @@ lipit(4).txt
 - [ ] Crearea automată a taskurilor recurente
 - [ ] Reguli predefinite pentru schimbarea statusurilor
 - [ ] Duplicarea proiectelor cu structură completă
-- [ ] Configurarea automatizărilor permise
+- [ ] Configurarea automatizărilor permise (automatizările predefinite ale modulului, setări ale afacerii; nu țin de workflow engine — D-WF-6)
 - [ ] Istoric de execuție a automatizărilor
 
 ## Clients & External Collaboration (9)
