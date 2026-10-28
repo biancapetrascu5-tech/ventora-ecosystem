@@ -67,32 +67,59 @@ export function renderPasswordReset(params: {
   });
 }
 
+/** Time with the abbreviation of the display zone, e.g. "10:32 EET" (S78). */
+function formatTimeWithZone(date: Date, locale: Locale): string {
+  const time = new Intl.DateTimeFormat(locale, {
+    hour: '2-digit',
+    minute: '2-digit',
+    hourCycle: 'h23',
+    timeZone: DISPLAY_TIME_ZONE,
+  }).format(date);
+  // EET / EEST in every language: some locales only offer "GMT+2" or a translated name
+  const zone = new Intl.DateTimeFormat(CANONICAL_LOCALE, {
+    timeZone: DISPLAY_TIME_ZONE,
+    timeZoneName: 'short',
+  })
+    .formatToParts(date)
+    .find((p) => p.type === 'timeZoneName')?.value;
+  return zone ? `${time} ${zone}` : time;
+}
+
 /**
- * R-PR7 (Lot 2.4b): the password was changed, after a reset or from the account settings.
- * No button: the notice only informs; the "not you" line points to the recovery path.
- * TODO-COPY: the texts under `email.passwordChanged` are provisional.
+ * R-PR7 (Lot 2.4b, S78): the password was changed. `reset` = from the reset link, every
+ * session is closed; `change` = from the account settings, the other sessions are closed.
+ * Same texts for Hub and Founder; the button writes to support.
  */
 export function renderPasswordChanged(params: {
-  app: 'hub' | 'founder';
   email: string;
-  name?: string | null;
+  trigger: 'reset' | 'change';
   changedAt: Date;
   locale?: Locale;
 }): RenderedEmail {
   const locale = params.locale ?? DEFAULT_EMAIL_LOCALE;
   const m = emailMessages(locale);
-  const t = m.passwordChanged[params.app];
-  const intro = fill(t.intro, { changedAt: formatDateTime(params.changedAt, locale) });
+  const t = m.passwordChanged;
+  const vars = {
+    email: params.email,
+    date: formatDate(params.changedAt, locale),
+    time: formatTimeWithZone(params.changedAt, locale),
+  };
+  const support = supportEmail();
   return renderOperationalEmail({
     lang: locale,
     subject: t.subject,
-    preheader: intro,
-    eyebrow: params.app === 'founder' ? FOUNDER_PRODUCT : HUB_PRODUCT,
-    title: t.subject,
-    lead: [greeting(m, params.name, params.email), intro],
-    after: [{ text: fill(t.notYou, { supportEmail: supportEmail() }), strong: true }],
+    preheader: fill(t.pre, vars),
+    eyebrow: t.eyebrow,
+    title: t.title,
+    lead: [
+      fill(params.trigger === 'reset' ? t.leadReset : t.leadAccount, vars),
+      t.ifYou,
+      fill(t.notYou, { supportEmail: support }),
+    ],
+    button: { label: t.cta, href: `mailto:${support}` },
+    after: [],
     signature: m.common.signature,
-    why: fill(m.common.footerAccount, { email: params.email }),
+    why: t.why,
     company: m.common.company,
   });
 }

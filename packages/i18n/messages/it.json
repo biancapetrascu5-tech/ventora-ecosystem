@@ -35,17 +35,16 @@
       }
     },
     "passwordChanged": {
-      "todoCopy": "TODO-COPY: testi provvisori, da sostituire con quelli approvati da Claude Design.",
-      "hub": {
-        "subject": "La password del tuo account è stata cambiata",
-        "intro": "La password del tuo account Ventora è stata cambiata il {changedAt}.",
-        "notYou": "Se non l’hai cambiata tu, scegli subito una nuova password da «Password dimenticata?» e scrivici a {supportEmail}."
-      },
-      "founder": {
-        "subject": "La password del tuo account è stata cambiata",
-        "intro": "La password del tuo account Ventora Founder è stata cambiata il {changedAt}.",
-        "notYou": "Se non l’hai cambiata tu, scrivi subito a {supportEmail}. Qualcuno potrebbe cercare di accedere al tuo account."
-      }
+      "subject": "La password del Suo account Ventora è stata cambiata",
+      "pre": "La modifica è avvenuta il {date} alle {time}. Se non è stato Lei, legga questa e-mail.",
+      "eyebrow": "Il Suo account Ventora",
+      "title": "La password del Suo account è stata cambiata",
+      "leadReset": "La password dell’account {email} è stata cambiata il {date} alle {time}. Abbiamo chiuso la Sua sessione su tutti i dispositivi.",
+      "leadAccount": "La password dell’account {email} è stata cambiata il {date} alle {time}. Abbiamo chiuso la Sua sessione sugli altri dispositivi.",
+      "ifYou": "Se è stato Lei, non deve fare nulla.",
+      "notYou": "Non è stato Lei? Scelga subito una nuova password da «Ha dimenticato la password?» e ci scriva a {supportEmail}.",
+      "cta": "Scrivi al supporto",
+      "why": "Riceve questa e-mail perché la password del Suo account Ventora è cambiata. È un’e-mail di sicurezza: la inviamo a ogni cambio di password e non si può disattivare."
     },
     "invitation": {
       "member": {

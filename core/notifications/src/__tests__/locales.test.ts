@@ -35,14 +35,8 @@ describe('email catalogs in all 6 languages', () => {
       const all = [
         renderPasswordReset({ app: 'hub', email: 'a@x.io', name: 'A', link: 'https://l', locale }),
         renderPasswordReset({ app: 'founder', email: 'a@x.io', link: 'https://l', locale }),
-        renderPasswordChanged({
-          app: 'hub',
-          email: 'a@x.io',
-          name: 'A',
-          changedAt: expiresAt,
-          locale,
-        }),
-        renderPasswordChanged({ app: 'founder', email: 'a@x.io', changedAt: expiresAt, locale }),
+        renderPasswordChanged({ email: 'a@x.io', trigger: 'reset', changedAt: expiresAt, locale }),
+        renderPasswordChanged({ email: 'a@x.io', trigger: 'change', changedAt: expiresAt, locale }),
         renderMemberInvitation({
           email: 'a@x.io',
           inviterName: 'B',
@@ -81,6 +75,32 @@ describe('email catalogs in all 6 languages', () => {
         expect(r.html).toContain(`<html lang="${locale}">`);
         for (const part of [r.subject, r.text]) expect(part).not.toMatch(/\{\w+\}/);
       }
+    });
+
+    it(`${locale}: password changed — two leads, time with the zone abbreviation (R-PR7)`, () => {
+      const m = emailMessages(locale).passwordChanged;
+      expect(m.leadReset).not.toBe(m.leadAccount);
+      const at = new Date('2026-10-28T08:32:00Z');
+      const reset = renderPasswordChanged({
+        email: 'a@x.io',
+        trigger: 'reset',
+        changedAt: at,
+        locale,
+      });
+      const change = renderPasswordChanged({
+        email: 'a@x.io',
+        trigger: 'change',
+        changedAt: at,
+        locale,
+      });
+      expect(reset.subject).toBe(m.subject);
+      expect(reset.text).toContain('10:32 EET');
+      expect(reset.text).toContain('a@x.io');
+      expect(reset.text).toContain(m.ifYou);
+      expect(reset.text).toContain(m.why);
+      expect(reset.text).toContain(`${m.cta}: mailto:support@ventorasystems.com`);
+      expect(reset.text).not.toBe(change.text);
+      expect(reset.text).not.toContain('TODO-COPY');
     });
   }
 });

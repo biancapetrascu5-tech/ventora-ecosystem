@@ -35,17 +35,16 @@
       }
     },
     "passwordChanged": {
-      "todoCopy": "TODO-COPY: texte provizorii, se înlocuiesc cu cele aprobate de Claude Design.",
-      "hub": {
-        "subject": "Parola contului tău a fost schimbată",
-        "intro": "Parola contului tău Ventora a fost schimbată pe {changedAt}.",
-        "notYou": "Dacă nu ai schimbat-o tu, alege imediat o parolă nouă din „Ai uitat parola?” și scrie-ne la {supportEmail}."
-      },
-      "founder": {
-        "subject": "Parola contului tău a fost schimbată",
-        "intro": "Parola contului tău Ventora Founder a fost schimbată pe {changedAt}.",
-        "notYou": "Dacă nu ai schimbat-o tu, scrie imediat la {supportEmail}. Poate fi o încercare de acces la contul tău."
-      }
+      "subject": "Parola contului tău Ventora a fost schimbată",
+      "pre": "Schimbarea s-a făcut pe {date}, la {time}. Dacă nu ai fost tu, citește e-mailul.",
+      "eyebrow": "Contul tău Ventora",
+      "title": "Parola contului tău a fost schimbată",
+      "leadReset": "Parola contului {email} a fost schimbată pe {date}, la {time}. Te-am scos din cont pe toate dispozitivele.",
+      "leadAccount": "Parola contului {email} a fost schimbată pe {date}, la {time}. Te-am scos din cont pe celelalte dispozitive.",
+      "ifYou": "Dacă ai fost tu, nu trebuie să faci nimic.",
+      "notYou": "Nu ai fost tu? Alege imediat o parolă nouă din „Ai uitat parola?” și scrie-ne la {supportEmail}.",
+      "cta": "Scrie-ne la suport",
+      "why": "Primești acest e-mail pentru că parola contului tău Ventora s-a schimbat. E un e-mail de securitate: îl trimitem la fiecare schimbare de parolă și nu se poate opri."
     },
     "invitation": {
       "member": {

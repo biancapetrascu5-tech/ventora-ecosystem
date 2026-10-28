@@ -35,17 +35,16 @@
       }
     },
     "passwordChanged": {
-      "todoCopy": "TODO-COPY : textes provisoires, à remplacer par ceux approuvés par Claude Design.",
-      "hub": {
-        "subject": "Le mot de passe de votre compte a été modifié",
-        "intro": "Le mot de passe de votre compte Ventora a été modifié le {changedAt}.",
-        "notYou": "Si ce n’est pas vous, choisissez tout de suite un nouveau mot de passe via « Mot de passe oublié ? » et écrivez-nous à {supportEmail}."
-      },
-      "founder": {
-        "subject": "Le mot de passe de votre compte a été modifié",
-        "intro": "Le mot de passe de votre compte Ventora Founder a été modifié le {changedAt}.",
-        "notYou": "Si ce n’est pas vous, écrivez immédiatement à {supportEmail}. Quelqu’un essaie peut-être d’accéder à votre compte."
-      }
+      "subject": "Le mot de passe de votre compte Ventora a été modifié",
+      "pre": "La modification a eu lieu le {date}, à {time}. Si ce n’était pas vous, lisez cet e-mail.",
+      "eyebrow": "Votre compte Ventora",
+      "title": "Le mot de passe de votre compte a été modifié",
+      "leadReset": "Le mot de passe du compte {email} a été modifié le {date}, à {time}. Nous vous avons déconnecté de tous vos appareils.",
+      "leadAccount": "Le mot de passe du compte {email} a été modifié le {date}, à {time}. Nous vous avons déconnecté de vos autres appareils.",
+      "ifYou": "Si c’était vous, vous n’avez rien à faire.",
+      "notYou": "Ce n’était pas vous ? Choisissez immédiatement un nouveau mot de passe via « Mot de passe oublié ? » et écrivez-nous à {supportEmail}.",
+      "cta": "Écrire au support",
+      "why": "Vous recevez cet e-mail parce que le mot de passe de votre compte Ventora a changé. C’est un e-mail de sécurité : nous l’envoyons à chaque changement de mot de passe et il ne peut pas être désactivé."
     },
     "invitation": {
       "member": {

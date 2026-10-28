@@ -138,7 +138,7 @@ export function createHubAuthOptions(db: IdentityBaseClient, secret: string) {
   const after = createAuthMiddleware(async (ctx) => {
     await revokeOtherSessionsOn2faEnroll(ctx, db, audit);
     await audit.after(ctx);
-    await afterPasswordHooks(ctx, 'hub', db, audit);
+    await afterPasswordHooks(ctx, db, audit);
   });
 
   return {
@@ -210,7 +210,7 @@ export function createFounderAuthOptions(db: FounderBaseClient, secret: string) 
   const after = createAuthMiddleware(async (ctx) => {
     await revokeOtherSessionsOn2faEnroll(ctx, db, audit);
     await audit.after(ctx);
-    await afterPasswordHooks(ctx, 'founder', db, audit);
+    await afterPasswordHooks(ctx, db, audit);
   });
 
   return {

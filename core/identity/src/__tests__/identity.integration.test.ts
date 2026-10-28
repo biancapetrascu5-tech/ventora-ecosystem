@@ -1972,7 +1972,7 @@ describe.skipIf(shouldSkipForEnv('DATABASE_URL_ADMIN_TEST'))('PR — password re
 // ---------------------------------------------------------------------------
 // Lot 2.4b-backend — password reset rules (R-PR3, R-PR4, R-PR5, R-PR7)
 // ---------------------------------------------------------------------------
-const CHANGED_SUBJECT = 'Parola contului tău a fost schimbată';
+const CHANGED_SUBJECT = 'Parola contului tău Ventora a fost schimbată';
 
 async function requestReset(auth: AuthInstance, email: string, ip?: string) {
   return post(auth, '/request-password-reset', { email }, ip ? { 'x-forwarded-for': ip } : {});
@@ -2261,8 +2261,8 @@ describe.skipIf(shouldSkipForEnv('DATABASE_URL_ADMIN_TEST'))(
       await post(hubAuth, '/reset-password', { token, newPassword: 'NewPassword123' });
       const changed = mailbox.to(email).filter((m) => m.subject === CHANGED_SUBJECT);
       expect(changed).toHaveLength(1);
-      expect(changed[0]!.text).toContain('Bună, Ana Pop,');
-      expect(changed[0]!.text).toContain('Parola contului tău Ventora a fost schimbată pe');
+      expect(changed[0]!.text).toContain(`Parola contului ${email} a fost schimbată pe`);
+      expect(changed[0]!.text).toContain('Te-am scos din cont pe toate dispozitivele.');
     });
 
     it('Hub: after change-password; a failed change sends nothing', async () => {
@@ -2285,7 +2285,9 @@ describe.skipIf(shouldSkipForEnv('DATABASE_URL_ADMIN_TEST'))(
         bearerHeader(login.token),
       );
       expect(ok.resp.status).toBe(200);
-      expect(mailbox.to(email).map((m) => m.subject)).toEqual([CHANGED_SUBJECT]);
+      const changed = mailbox.to(email);
+      expect(changed.map((m) => m.subject)).toEqual([CHANGED_SUBJECT]);
+      expect(changed[0]!.text).toContain('Te-am scos din cont pe celelalte dispozitive.');
     });
 
     it('Founder: after a successful reset', async () => {
@@ -2301,7 +2303,10 @@ describe.skipIf(shouldSkipForEnv('DATABASE_URL_ADMIN_TEST'))(
       });
       const changed = mailbox.to(email).filter((m) => m.subject === CHANGED_SUBJECT);
       expect(changed).toHaveLength(1);
-      expect(changed[0]!.text).toContain('Ventora Founder a fost schimbată');
+      expect(changed[0]!.text).toContain(
+        `Parola contului ${email} a fost schimbată pe`, // same texts as Hub
+      );
+      expect(changed[0]!.text).toContain('Te-am scos din cont pe toate dispozitivele.');
     });
 
     it('best_effort: delivery fails → reset still 200, password.changed_email_failed without the address', async () => {
