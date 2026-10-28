@@ -878,6 +878,56 @@ describe('INV — invitation emails', () => {
     expect(e26[0].metadata).toEqual({ reason: 'provider_error', kind: 'owner', resent: false });
   });
 
+  it('INV.7 — resending the owner invitation from Founder: 30 days again and E-4, not E-3b', async () => {
+    const ownerEmail = `owner-resend-${newUuid()}@example.com`;
+    const { organizationId } = await newOrg('Salon Aurora', ownerEmail);
+    const ctx = await ownerContext(organizationId); // a co-owner resends it from the Hub
+    const row = await invitationRow(`organization_id = $1 AND email = $2`, [
+      organizationId,
+      ownerEmail,
+    ]);
+    mailbox.clear();
+
+    const before = Date.now();
+    const { invitationToken } = await resendInvitation(ctx, row.id);
+
+    const after = await invitationRow(`id = $1`, [row.id]);
+    const days = (new Date(after.expires_at).getTime() - before) / (24 * 60 * 60 * 1000);
+    expect(days).toBeGreaterThan(29.99);
+    expect(days).toBeLessThan(30.01);
+    expect(after.email_status).toBe('sent');
+
+    const mails = mailbox.to(ownerEmail);
+    expect(mails).toHaveLength(1);
+    expect(mails[0]!.subject).toBe('Salon Aurora e gata pe Ventora');
+    expect(mails[0]!.text).toContain('Linkul e valabil 30 de zile');
+    expect(mails[0]!.text).not.toContain('Ăsta e un link nou');
+    expect(mails[0]!.text).not.toContain('te-a invitat');
+    expect(tokenFrom(mails[0]!.text!)).toBe(invitationToken);
+  });
+
+  it('INV.7b — an owner invited by another owner is resent as E-3b with 7 days', async () => {
+    const { organizationId } = await newOrg('Inv Seven');
+    const ctx = await ownerContext(organizationId);
+    const email = `coowner-${newUuid()}@example.com`;
+    await inviteMember(ctx, {
+      email,
+      role: 'owner',
+      inviterName: 'Ana Pop',
+      organizationName: 'Inv Seven',
+    });
+    const row = await invitationRow(`organization_id = $1 AND email = $2`, [organizationId, email]);
+    mailbox.clear();
+
+    const before = Date.now();
+    await resendInvitation(ctx, row.id);
+    const after = await invitationRow(`id = $1`, [row.id]);
+    const days = (new Date(after.expires_at).getTime() - before) / (24 * 60 * 60 * 1000);
+    expect(days).toBeGreaterThan(6.99);
+    expect(days).toBeLessThan(7.01);
+    expect(mailbox.to(email)[0]!.text).toContain('Ăsta e un link nou.');
+  });
+
   it('INV.6 — the invitation transaction fails → no email', async () => {
     const { organizationId } = await newOrg('Inv Six');
     const ctx = await ownerContext(organizationId);

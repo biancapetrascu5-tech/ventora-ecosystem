@@ -65,13 +65,16 @@ function invitationEmailFailedEvent(
   };
 }
 
-/** Sends a member invitation email (E-3 / E-3b) and records the result on the invitation. */
-async function sendMemberInvitationEmail(
+/**
+ * Sends an invitation email from inside the organization (E-3, E-3b, or E-4 when the owner's
+ * Founder invitation is resent) and records the result on the invitation (org_rw).
+ */
+async function sendInvitationEmail(
   organizationId: string,
   invitationId: string,
   email: string,
   rendered: RenderedEmail,
-  resent: boolean,
+  meta: { kind: 'member' | 'owner'; resent: boolean },
 ): Promise<void> {
   const result = await deliverEmail({
     to: email,
@@ -97,10 +100,7 @@ async function sendMemberInvitationEmail(
   }
   if (result.status === 'failed') {
     await auditBestEffort(
-      invitationEmailFailedEvent(organizationId, invitationId, result.reason, {
-        kind: 'member',
-        resent,
-      }),
+      invitationEmailFailedEvent(organizationId, invitationId, result.reason, meta),
     );
   }
 }
@@ -400,7 +400,7 @@ export async function inviteMember(
     metadata: { role: params.role, applicationIds, emailHash: hashEmail(email) },
   });
   // E-3, after the commit: a rolled-back invitation never sends an email.
-  await sendMemberInvitationEmail(
+  await sendInvitationEmail(
     ctx.organizationId,
     invitation.id,
     email,
@@ -412,7 +412,7 @@ export async function inviteMember(
       expiresAt,
       link: invitationLink(token),
     }),
-    false,
+    { kind: 'member', resent: false },
   );
   return { invitationToken: token };
 }
@@ -564,9 +564,6 @@ export async function resendInvitation(
   const db = getOrgDb();
   const token = crypto.randomBytes(32).toString('hex');
   const tokenHash = hashToken(token);
-  // A resent invitation gets a member's lifetime (7 days), owner invitations included:
-  // resending is an owner/admin action inside the organization, not the Founder flow.
-  const expiresAt = new Date(Date.now() + MEMBER_INVITATION_TTL_MS);
 
   const inv = await db.$transaction(async (tx: any) => {
     await tx.$executeRaw`SELECT set_config('app.organization_id', ${ctx.organizationId}, true)`;
@@ -580,12 +577,25 @@ export async function resendInvitation(
         role: true,
         organizationName: true,
         invitedByName: true,
+        invitedByUserId: true,
+        organization: { select: { createdByFounderId: true } },
       },
     });
     if (!current) throw new NotFoundError('Invitation not found');
     if (current.status === 'accepted' || current.status === 'revoked') {
       throw new InvalidInvitationStatusError();
     }
+
+    // The owner's invitation created from Founder (founder_create_organization sets
+    // invited_by_user_id = created_by_founder_id) keeps its 30 days and its own email (E-4)
+    // when resent; every other invitation gets a member's 7 days and E-3b (S55).
+    const fromFounder =
+      current.role === 'owner' &&
+      !!current.organization?.createdByFounderId &&
+      current.invitedByUserId === current.organization.createdByFounderId;
+    const expiresAt = new Date(
+      Date.now() + (fromFounder ? OWNER_INVITATION_TTL_MS : MEMBER_INVITATION_TTL_MS),
+    );
 
     await tx.invitation.update({
       where: { id: invitationId },
@@ -597,7 +607,7 @@ export async function resendInvitation(
         updatedAt: new Date(),
       },
     });
-    return current;
+    return { ...current, fromFounder, expiresAt };
   });
   await auditBestEffort({
     category: 'organization',
@@ -609,21 +619,28 @@ export async function resendInvitation(
     targetType: 'invitation',
     targetId: invitationId,
   });
-  // E-3b: same email as the first one, plus "this is a new link"
-  await sendMemberInvitationEmail(
+  // E-4 again for the owner's Founder invitation; otherwise E-3b (first email + "new link")
+  await sendInvitationEmail(
     ctx.organizationId,
     invitationId,
     inv.email,
-    renderMemberInvitation({
-      email: inv.email,
-      inviterName: inv.invitedByName,
-      businessName: inv.organizationName,
-      role: inv.role,
-      expiresAt,
-      link: invitationLink(token),
-      resent: true,
-    }),
-    true,
+    inv.fromFounder
+      ? renderOwnerInvitation({
+          email: inv.email,
+          businessName: inv.organizationName,
+          expiresAt: inv.expiresAt,
+          link: invitationLink(token),
+        })
+      : renderMemberInvitation({
+          email: inv.email,
+          inviterName: inv.invitedByName,
+          businessName: inv.organizationName,
+          role: inv.role,
+          expiresAt: inv.expiresAt,
+          link: invitationLink(token),
+          resent: true,
+        }),
+    { kind: inv.fromFounder ? 'owner' : 'member', resent: true },
   );
   return { invitationToken: token };
 }
