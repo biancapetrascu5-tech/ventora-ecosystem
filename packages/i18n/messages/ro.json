@@ -76,10 +76,12 @@
     "supportSession": {
       "subject": "Echipa Ventora are acces de suport la {businessName}",
       "intro": "{founderName} din echipa Ventora a deschis o sesiune de suport pentru {businessName}, pentru cererea {ticketRef}.",
+      "reason": "Motivul: {reason}",
       "scope": "În timpul sesiunii, echipa Ventora poate doar să vadă datele afacerii, ca să rezolve cererea. Nu poate modifica date, nu vede parole și nu schimbă nimic în echipă sau în abonament.",
-      "until": "Sesiunea se închide automat pe {expiresAt}.",
+      "until": "Sesiunea se închide automat pe {date}, la {time}.",
       "close": "O poți închide oricând din Ventora, din bannerul sesiunii de suport.",
-      "notRequested": "Dacă nu ai cerut ajutor, închide sesiunea și scrie-ne la {supportEmail}."
+      "notRequested": "Dacă nu ai cerut ajutor, închide sesiunea și scrie-ne la {supportEmail}.",
+      "footer": "Primești acest e-mail pentru că ești proprietarul afacerii {businessName} în Ventora."
     }
   },
   "support": {

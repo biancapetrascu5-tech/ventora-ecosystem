@@ -7,6 +7,7 @@ import {
   renderOwnerRecovery,
   renderPasswordChanged,
   renderPasswordReset,
+  renderSupportSessionOpened,
 } from '../index';
 
 const saved = { ...process.env };
@@ -197,6 +198,65 @@ describe('R-PR7 — password changed (S78, approved copy)', () => {
     expect(r.html.match(/<a /g)).toHaveLength(1); // no link to "Ai uitat parola?"
     expect(r.html).not.toContain('forgot');
     expect(r.html).not.toContain('reset-password');
+  });
+});
+
+describe('E-6 — support session opened (S99)', () => {
+  const base = {
+    email: 'owner@x.ro',
+    name: 'Ana',
+    businessName: 'Salon Aurora',
+    founderName: 'Bianca Ventora',
+    reason: 'Clientul nu vede programările de ieri',
+    ticketRef: 'SUP-2026-001',
+    expiresAt: new Date('2026-10-28T16:30:00Z'), // 18:30 in Bucharest (EET)
+  };
+
+  it('expiry as "pe {date}, la {time}", the reason right after the intro, the owner footer', () => {
+    const r = renderSupportSessionOpened(base);
+    expectComplete(r);
+    expect(r.text).toContain('Sesiunea se închide automat pe 28 octombrie 2026, la 18:30 EET.');
+    expect(r.text).toContain(
+      'Bianca Ventora din echipa Ventora a deschis o sesiune de suport pentru Salon Aurora, pentru cererea SUP-2026-001.\n\nMotivul: Clientul nu vede programările de ieri\n\nÎn timpul sesiunii',
+    );
+    expect(r.text).toContain(
+      'Primești acest e-mail pentru că ești proprietarul afacerii Salon Aurora în Ventora.',
+    );
+    expect(r.text).not.toContain('e folosită pentru un cont Ventora');
+  });
+
+  it('summer time shows EEST', () => {
+    const r = renderSupportSessionOpened({ ...base, expiresAt: new Date('2026-07-01T07:32:00Z') });
+    expect(r.text).toContain('pe 1 iulie 2026, la 10:32 EEST.');
+  });
+
+  it('escapes HTML in the reason written by the Founder', () => {
+    const r = renderSupportSessionOpened({ ...base, reason: 'Eroare <b>la</b> programări' });
+    expect(r.html).toContain('Motivul: Eroare &lt;b&gt;la&lt;/b&gt; programări');
+  });
+});
+
+describe('Header logo (S99)', () => {
+  const render = () =>
+    renderPasswordReset({ app: 'hub', email: 'a@x.ro', link: 'https://l/1' }).html;
+
+  it('with NEXT_PUBLIC_PLATFORM_URL: the hosted 2x PNG at 160×44, alt "Ventora"', () => {
+    process.env.NEXT_PUBLIC_PLATFORM_URL = 'https://app.ventora-hub.com/';
+    const html = render();
+    expect(html).toContain(
+      '<img src="https://app.ventora-hub.com/email/ventora-logo-email-2x.png" width="160" height="44" alt="Ventora"',
+    );
+    expect(html).toContain('width:160px;height:44px');
+    expect(html).not.toContain('>Ventora</span>');
+  });
+
+  it('without it (local, tests): the wordmark, as before, no image', () => {
+    delete process.env.NEXT_PUBLIC_PLATFORM_URL;
+    const html = render();
+    expect(html).toContain('>Ventora</span>');
+    expect(html).not.toContain('<img');
+    process.env.NEXT_PUBLIC_PLATFORM_URL = '  ';
+    expect(render()).not.toContain('<img');
   });
 });
 

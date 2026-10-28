@@ -3,12 +3,15 @@ import type { UserWithTwoFactor } from 'better-auth/plugins/two-factor';
 import { NotAuthenticated, TwoFactorRequired, Forbidden } from '@ventora/errors';
 import { founderAuth } from './auth-founder';
 import { getFounderDb } from './db';
+import { TWO_FACTOR_LOCKOUT } from './auth-options';
 import {
   AuditActions,
   appendAuditEventInTx,
+  founderAction,
   hashEmail,
   prismaTxExecutor,
   readAuditLogAsFounder,
+  writeAuditEvent,
   type AuditLogEntry,
   type AuditSqlExecutor,
   type FounderAuditLogFilters,
@@ -77,20 +80,130 @@ export async function requireFounderSession(headers: Headers): Promise<FounderSe
   return session;
 }
 
+export type FounderTotpCheck =
+  { status: 'valid' } | { status: 'invalid' } | { status: 'locked'; lockedUntil: Date };
+
+/** Founder 2FA audit rows written outside a Better Auth request (best_effort, like the hooks). */
+async function writeFounderTwoFactorAudit(
+  founderId: string,
+  e: { action: string; outcome: 'failure' | 'denied' | 'success'; system?: boolean },
+  metadata: Record<string, unknown>,
+): Promise<void> {
+  await writeAuditEvent(
+    {
+      category: 'founder',
+      action: founderAction(e.action),
+      outcome: e.outcome,
+      actorType: e.system ? 'system' : 'founder',
+      actorId: e.system ? null : founderId,
+      founderId: e.system ? null : founderId,
+      targetType: 'founder_user',
+      targetId: founderId,
+      metadata,
+    },
+    { mode: 'best_effort', connection: 'founder' },
+  );
+}
+
 /**
  * Re-authentication for a sensitive action (D14): checks a fresh TOTP code of the Founder who
  * owns the session in `headers`. Goes through Better Auth's verify-totp, so a wrong code is
- * audited like any other (founder.2fa_verify_failed). Returns false for a wrong code.
+ * audited like any other (founder.2fa_verify_failed).
+ *
+ * R-2F5 / S61 applies here too: Better Auth's accountLockout only counts the sign-in challenge,
+ * not a call made with a session, so the same counter and lock of the Founder's two_factors
+ * row (failed_verification_count, locked_until) are kept here, with TWO_FACTOR_LOCKOUT. One
+ * budget for the account: a lock from sign-in blocks re-authentication and the other way round.
  */
-export async function verifyFounderTotp(headers: Headers, code: string): Promise<boolean> {
-  if (!/^\d{6}$/.test(code)) return false;
-  try {
-    await founderAuth.api.verifyTOTP({ headers, body: { code } });
-    return true;
-  } catch (err) {
-    if (isAPIError(err)) return false;
-    throw err;
+export async function verifyFounderTotp(params: {
+  headers: Headers;
+  founderId: string;
+  code: string;
+  purpose: string;
+}): Promise<FounderTotpCheck> {
+  const { maxFailedAttempts, durationSeconds } = TWO_FACTOR_LOCKOUT;
+  const db = getFounderDb();
+  const row = await db.twoFactor.findFirst({
+    where: { userId: params.founderId },
+    select: { id: true, lockedUntil: true },
+  });
+  if (!row) return { status: 'invalid' }; // requireFounderSession() already demands 2FA
+
+  const now = new Date();
+  if (row.lockedUntil && row.lockedUntil > now) {
+    await writeFounderTwoFactorAudit(
+      params.founderId,
+      { action: AuditActions.twoFactorAttemptWhileLocked, outcome: 'denied' },
+      { method: 'totp', purpose: params.purpose },
+    );
+    return { status: 'locked', lockedUntil: row.lockedUntil };
   }
+  if (row.lockedUntil) {
+    // the lock is over: a new budget, unless a concurrent request already started one
+    await db.twoFactor.updateMany({
+      where: { id: row.id, lockedUntil: { lte: now } },
+      data: { failedVerificationCount: 0, lockedUntil: null },
+    });
+  }
+
+  let valid = false;
+  if (/^\d{6}$/.test(params.code)) {
+    try {
+      await founderAuth.api.verifyTOTP({ headers: params.headers, body: { code: params.code } });
+      valid = true;
+    } catch (err) {
+      if (!isAPIError(err)) throw err;
+    }
+  } else {
+    // never reaches Better Auth, so its hook does not audit it
+    await writeFounderTwoFactorAudit(
+      params.founderId,
+      { action: AuditActions.twoFactorVerifyFailed, outcome: 'failure' },
+      { method: 'totp', errorCode: 'INVALID_CODE_FORMAT', purpose: params.purpose },
+    );
+  }
+
+  if (valid) {
+    await db.twoFactor.update({
+      where: { id: row.id },
+      data: { failedVerificationCount: 0, lockedUntil: null },
+    });
+    return { status: 'valid' };
+  }
+
+  const counted = await db.twoFactor.update({
+    where: { id: row.id },
+    data: { failedVerificationCount: { increment: 1 } },
+    select: { failedVerificationCount: true },
+  });
+  const failedAttempts = counted.failedVerificationCount ?? 0;
+  if (failedAttempts < maxFailedAttempts) return { status: 'invalid' };
+
+  const lockedUntil = new Date(Date.now() + durationSeconds * 1000);
+  const locked = await db.twoFactor.updateMany({
+    where: {
+      id: row.id,
+      failedVerificationCount: { gte: maxFailedAttempts },
+      OR: [{ lockedUntil: null }, { lockedUntil: { lte: new Date() } }],
+    },
+    data: { lockedUntil },
+  });
+  if (locked.count === 1) {
+    // E11, as on the sign-in path
+    await writeFounderTwoFactorAudit(
+      params.founderId,
+      { action: AuditActions.twoFactorAccountLocked, outcome: 'success', system: true },
+      { lockedUntil: lockedUntil.toISOString(), failedAttempts, purpose: params.purpose },
+    );
+    return { status: 'locked', lockedUntil };
+  }
+  const current = await db.twoFactor.findFirst({
+    where: { id: row.id },
+    select: { lockedUntil: true },
+  });
+  return current?.lockedUntil
+    ? { status: 'locked', lockedUntil: current.lockedUntil }
+    : { status: 'invalid' };
 }
 
 /** Shared guard: actor must exist, not be revoked, and have 2FA enabled. */
