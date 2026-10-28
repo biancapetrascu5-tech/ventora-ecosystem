@@ -24,6 +24,49 @@ const HUB_RATE_LIMIT = {
 
 const FOUNDER_RATE_LIMIT = { ...HUB_RATE_LIMIT };
 
+type AuthAudit = ReturnType<typeof createAuthAuditHooks>;
+type SessionDb = {
+  session: { deleteMany(args: unknown): Promise<{ count: number }> };
+};
+
+/**
+ * Revoke all other sessions when 2FA enrollment completes (after hook).
+ * Detection: a session whose user had twoFactorEnabled=false calling verify-totp — this
+ * combination only occurs during enrollment (the sign-in challenge has no session).
+ * Better Auth (two-factor/totp) rotates the session on enrollment: it creates a new one,
+ * exposes it as ctx.context.newSession, and deletes the old one. The new session is the
+ * one the user keeps; without it we revoke nothing rather than log the user out (E6-a).
+ */
+export async function revokeOtherSessionsOn2faEnroll(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  ctx: any,
+  db: SessionDb,
+  audit: AuthAudit,
+): Promise<void> {
+  const sessionUser = ctx.context.session?.user as UserWithTwoFactor | undefined;
+  const userId: string | undefined = ctx.context.session?.session?.userId;
+  if (
+    ctx.path !== '/two-factor/verify-totp' ||
+    isAPIError(ctx.context.returned) ||
+    !userId ||
+    sessionUser?.twoFactorEnabled === true
+  ) {
+    return;
+  }
+  const newSession = ctx.context.newSession;
+  const keepId: string | undefined =
+    newSession?.user?.id === userId ? newSession?.session?.id : undefined;
+  if (!keepId) {
+    console.error('[identity] 2FA enrollment without a new session; other sessions kept', {
+      userId,
+    });
+    await audit.sessionsRevokedOn2faEnroll(ctx, userId, 0, 'no_new_session');
+    return;
+  }
+  const revoked = await db.session.deleteMany({ where: { userId, id: { not: keepId } } });
+  await audit.sessionsRevokedOn2faEnroll(ctx, userId, revoked.count);
+}
+
 export function createHubAuthOptions(db: IdentityBaseClient, secret: string) {
   const REMEMBER_ME_SECONDS = 30 * 24 * 60 * 60;
 
@@ -41,24 +84,7 @@ export function createHubAuthOptions(db: IdentityBaseClient, secret: string) {
   });
 
   const after = createAuthMiddleware(async (ctx) => {
-    // Revoke all other sessions when 2FA enrollment completes.
-    // Detection: bearer session whose cached user had twoFactorEnabled=false at sign-in time,
-    // calling verify-totp — this combination only occurs during enrollment (not sign-in challenge,
-    // which uses __two-factor cookie with no bearer session).
-    const sessionUser = ctx.context.session?.user as UserWithTwoFactor | undefined;
-    if (
-      ctx.path === '/two-factor/verify-totp' &&
-      !isAPIError(ctx.context.returned) &&
-      ctx.context.session?.session?.userId &&
-      sessionUser?.twoFactorEnabled !== true
-    ) {
-      const userId = ctx.context.session.session.userId;
-      const currentSessionId = ctx.context.session.session.id;
-      const revoked = await db.session.deleteMany({
-        where: { userId, id: { not: currentSessionId } },
-      });
-      await audit.sessionsRevokedOn2faEnroll(ctx, userId, revoked.count);
-    }
+    await revokeOtherSessionsOn2faEnroll(ctx, db, audit);
     await audit.after(ctx);
   });
 
@@ -124,20 +150,7 @@ export function createFounderAuthOptions(db: FounderBaseClient, secret: string) 
   });
 
   const after = createAuthMiddleware(async (ctx) => {
-    const sessionUser = ctx.context.session?.user as UserWithTwoFactor | undefined;
-    if (
-      ctx.path === '/two-factor/verify-totp' &&
-      !isAPIError(ctx.context.returned) &&
-      ctx.context.session?.session?.userId &&
-      sessionUser?.twoFactorEnabled !== true
-    ) {
-      const userId = ctx.context.session.session.userId;
-      const currentSessionId = ctx.context.session.session.id;
-      const revoked = await db.session.deleteMany({
-        where: { userId, id: { not: currentSessionId } },
-      });
-      await audit.sessionsRevokedOn2faEnroll(ctx, userId, revoked.count);
-    }
+    await revokeOtherSessionsOn2faEnroll(ctx, db, audit);
     await audit.after(ctx);
   });
 

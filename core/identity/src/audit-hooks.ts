@@ -131,19 +131,23 @@ export function createAuthAuditHooks(kind: AuthKind, db: AuthDb) {
     });
   }
 
-  /** E6 — called by the after hook once the other sessions are deleted. */
+  /**
+   * E6 — called by the after hook once the other sessions are deleted.
+   * `failureReason` set → nothing was revoked (outcome failure, decision E6-a).
+   */
   async function sessionsRevokedOn2faEnroll(
     ctx: HookCtx,
     userId: string,
     count: number,
+    failureReason?: string,
   ): Promise<void> {
     await write(ctx, {
       action: AuditActions.sessionsRevokedOn2faEnroll,
-      outcome: 'success',
+      outcome: failureReason ? 'failure' : 'success',
       actorId: userId,
       targetType,
       targetId: userId,
-      metadata: { count },
+      metadata: failureReason ? { count, reason: failureReason } : { count },
     });
   }
 
