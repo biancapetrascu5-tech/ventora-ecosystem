@@ -1,0 +1,244 @@
+/* Grafice — 1:1 cu .v-chart / .v-hbars din bundle.css */
+.chart {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  min-width: 0;
+  padding: var(--space-4) var(--space-4) var(--space-3);
+  background: var(--sheet);
+  border: var(--border-width) solid var(--line);
+  border-radius: var(--radius-lg);
+  color: var(--ink);
+  box-sizing: border-box;
+}
+
+.head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-2) var(--space-4);
+}
+
+.titles {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-0-5);
+  min-width: 0;
+}
+
+.title {
+  color: var(--ink);
+}
+
+.desc {
+  color: var(--ink-muted);
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-left: auto;
+}
+
+.legend {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1) var(--space-4);
+  color: var(--ink-secondary);
+}
+
+.legend li {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.key {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  flex: none;
+}
+
+.keyLine {
+  width: 16px;
+  height: 2px;
+  border-radius: 1px;
+}
+
+.plot {
+  position: relative;
+  width: 100%;
+  min-width: 0;
+}
+
+.plot svg {
+  display: block;
+  overflow: visible;
+}
+
+.tick {
+  fill: var(--chart-label);
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
+.tickNow {
+  fill: var(--attention-ink);
+  font-weight: 600;
+}
+
+.bandHover path {
+  filter: brightness(1.08);
+}
+
+.tip {
+  position: absolute;
+  transform: translate(-50%, -100%);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-0-5);
+  padding: var(--space-2) var(--space-3);
+  background: var(--raised);
+  color: var(--ink);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-2);
+  pointer-events: none;
+  white-space: nowrap;
+  z-index: var(--z-popover);
+}
+
+.tip :global(.caption) {
+  color: var(--ink-muted);
+}
+
+.tipRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--ink-secondary);
+}
+
+.tipRow :global(.body-strong) {
+  margin-left: auto;
+  padding-left: var(--space-3);
+  color: var(--ink);
+}
+
+.num {
+  font-variant-numeric: tabular-nums;
+}
+
+.table {
+  overflow-x: auto;
+}
+
+.table table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table th {
+  text-align: left;
+  color: var(--ink-muted);
+  padding: var(--space-2) var(--space-3);
+  border-bottom: var(--border-width) solid var(--line-strong);
+  background: var(--sunken);
+}
+
+.table td {
+  padding: var(--space-2) var(--space-3);
+  border-bottom: var(--border-width) solid var(--line);
+  color: var(--ink);
+}
+
+.table .end {
+  text-align: right;
+}
+
+/* Bare orizontale */
+.hbars {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.hrow {
+  display: grid;
+  grid-template-columns: minmax(96px, 30%) 1fr auto;
+  align-items: center;
+  gap: var(--space-3);
+  min-height: var(--control-md);
+  border-radius: var(--radius-sm);
+  padding: 0 var(--space-1);
+}
+
+.hrow:focus-visible {
+  outline: var(--focus-ring-width) solid var(--focus-ring);
+  outline-offset: 0;
+}
+
+.hrow:hover {
+  background: var(--state-hover);
+}
+
+.hlabel {
+  color: var(--ink-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.htrack {
+  position: relative;
+  height: var(--chart-bar-max);
+}
+
+.hbar {
+  position: absolute;
+  left: 0;
+  top: 4px;
+  bottom: 4px;
+  border-radius: 0 4px 4px 0;
+  min-width: 2px;
+}
+
+.hvalue {
+  color: var(--ink);
+  text-align: right;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.hshare {
+  color: var(--ink-muted);
+  font-weight: 400;
+}
+
+@media (max-width: 767px) {
+  .hrow {
+    grid-template-columns: 1fr auto;
+    row-gap: 0;
+    padding: var(--space-1);
+  }
+  .htrack {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    height: 16px;
+  }
+  .hbar {
+    top: 2px;
+    bottom: 2px;
+  }
+}

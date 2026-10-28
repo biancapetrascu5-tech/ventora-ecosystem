@@ -1,140 +1,157 @@
+/* Timeline — 1:1 cu .v-tl din bundle.css */
 .root {
-  display: flex;
-  flex-direction: column;
+  position: relative;
+  min-width: 0;
   background: var(--sheet);
   border: var(--border-width) solid var(--line);
   border-radius: var(--radius-lg);
-  overflow-x: auto;
-  font-family: var(--font-sans);
   color: var(--ink);
+}
+
+.scroll {
+  overflow-x: auto;
+}
+
+.inner {
   position: relative;
-}
-
-.header {
-  display: flex;
-  align-items: center;
-  border-bottom: var(--border-width) solid var(--line-strong);
-  background: var(--sunken);
-  position: sticky;
-  top: 0;
-  z-index: 1;
-}
-
-.headerText {
-  font-size: var(--type-caption-size);
-  font-weight: 600;
-  color: var(--ink-secondary);
-  padding: var(--space-2) var(--space-3);
-}
-
-.periods {
-  flex: 1;
-  display: flex;
-}
-
-.period {
-  flex: 1;
-  font-size: var(--type-caption-size);
-  color: var(--ink-muted);
-  padding: var(--space-2) var(--space-1);
-  text-align: center;
-  white-space: nowrap;
-  border-left: var(--border-width) solid var(--line);
-}
-
-.periodCurrent {
-  color: var(--primary);
-  font-weight: 600;
-}
-
-.labelCell {
-  flex: none;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  padding: var(--space-2) var(--space-3);
-  border-right: var(--border-width) solid var(--line);
-}
-
-.statusCell {
-  flex: none;
-  padding: var(--space-2) var(--space-3);
-  border-left: var(--border-width) solid var(--line);
-  display: flex;
-  align-items: center;
+  padding-bottom: var(--space-6);
+  min-width: calc(220px + var(--tl-periods) * var(--tl-period-min));
 }
 
 .row {
-  display: flex;
-  align-items: center;
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  min-height: var(--row-height);
   border-bottom: var(--border-width) solid var(--line);
-  min-height: 44px;
 }
 
-.row:last-child {
+.row:last-of-type {
   border-bottom: 0;
 }
 
-.rowLabel {
-  font-size: var(--type-body-small-size, 13px);
-  font-weight: 500;
-  color: var(--ink);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+.head {
+  min-height: var(--control-md);
+  background: var(--sunken);
+  border-bottom-color: var(--line-strong);
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
 }
 
-.rowSub {
-  font-size: var(--type-caption-size);
+.label {
+  position: sticky;
+  left: 0;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0;
+  padding: var(--space-2) var(--space-3);
+  background: inherit;
+  background-color: var(--sheet);
+  border-right: var(--border-width) solid var(--line);
+  min-width: 0;
+}
+
+.head .label {
+  background-color: var(--sunken);
+  color: var(--ink-muted);
+  border-radius: var(--radius-lg) 0 0 0;
+}
+
+.sub {
+  color: var(--ink-muted);
+}
+
+.track {
+  position: relative;
+  min-width: 0;
+}
+
+.period {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  padding-left: var(--space-2);
   color: var(--ink-muted);
   white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  box-sizing: border-box;
 }
 
-.barArea {
-  flex: 1;
-  position: relative;
-  height: 100%;
-  min-height: 44px;
+.current {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.grid {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 0;
+  border-left: var(--border-width) solid var(--line);
 }
 
 .bar {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  height: 20px;
+  margin-left: 2px;
+  height: var(--control-sm);
   border-radius: var(--radius-sm);
+  background: var(--neutral-soft);
+  border: var(--border-width) solid var(--line-strong);
   overflow: hidden;
-  background: var(--primary);
-  opacity: 0.8;
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+  min-width: var(--space-6);
 }
 
-.bar-done {
-  background: var(--done);
-  opacity: 1;
+.fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  background: var(--selected);
+  border-right: var(--border-width) solid var(--control-border);
+}
+
+.barlabel {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: 0 var(--space-1);
+  white-space: nowrap;
+  color: var(--ink-secondary);
+  font-variant-numeric: tabular-nums;
 }
 
 .bar-active {
-  background: var(--primary);
+  border-color: var(--control-border);
+}
+
+.label-active {
+  color: var(--ink);
+}
+
+.bar-done {
+  background: var(--done-soft);
+  border-color: var(--done-mark);
+}
+
+.label-done {
+  color: var(--done-ink);
 }
 
 .bar-late {
-  background: var(--attention);
+  background: var(--attention-soft);
+  border-color: var(--attention-mark);
 }
 
-.bar-planned {
-  background: var(--neutral-soft);
-  border: var(--border-width) solid var(--line-strong);
-}
-
-.barProgress {
-  position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  background: color-mix(in srgb, var(--primary) 50%, transparent);
-  border-right: 2px solid var(--primary);
+.label-late {
+  color: var(--attention-ink);
+  font-weight: 600;
 }
 
 .milestone {
@@ -142,12 +159,11 @@
   top: 50%;
   transform: translate(-50%, -50%);
   display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: var(--space-1);
+  gap: var(--space-2);
 }
 
-.milestoneDiamond {
+.diamond {
   width: 12px;
   height: 12px;
   background: var(--ink);
@@ -156,50 +172,49 @@
   flex: none;
 }
 
-.milestoneLabel {
-  font-size: var(--type-caption-size);
-  color: var(--ink-secondary);
+.mlabel {
+  color: var(--ink);
   white-space: nowrap;
-  margin-top: var(--space-1);
+  font-weight: 600;
 }
 
-.statusBadge {
-  font-size: var(--type-caption-size);
-  font-weight: 500;
-  white-space: nowrap;
-  color: var(--ink-secondary);
-}
-
-.status-done {
-  color: var(--done-ink);
-}
-
-.status-active {
-  color: var(--primary);
-}
-
-.status-late {
-  color: var(--attention-ink);
-}
-
-.status-planned {
-  color: var(--ink-muted);
-}
-
-/* Today line overlay */
-.todayLayer {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  z-index: 0;
-}
-
-.todayLine {
+.todaywrap {
   position: absolute;
   top: 0;
   bottom: 0;
-  width: 2px;
-  background: var(--primary);
-  opacity: 0.4;
+  left: 220px;
+  right: 0;
+  pointer-events: none;
+}
+
+.today {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 0;
+  border-left: 2px solid var(--attention-mark);
+}
+
+.today > span {
+  position: absolute;
+  bottom: var(--space-1);
+  left: 0;
   transform: translateX(-50%);
+  padding: 0 var(--space-1);
+  border-radius: var(--radius-xs);
+  background: var(--attention);
+  color: var(--on-attention);
+  white-space: nowrap;
+}
+
+@media (max-width: 767px) {
+  .row {
+    grid-template-columns: 148px 1fr;
+  }
+  .inner {
+    min-width: calc(148px + var(--tl-periods) * var(--tl-period-min));
+  }
+  .todaywrap {
+    left: 148px;
+  }
 }

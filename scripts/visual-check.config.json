@@ -29,7 +29,13 @@
     "Skeleton",
     "ProgressBar",
     "UsageMeter",
-    "Kbd"
+    "Kbd",
+    "DataTable",
+    "BarChart",
+    "LineChart",
+    "Stat",
+    "Timeline",
+    "Pagination"
   ],
   "exceptions": {},
   "$comment_selectors": "designSelector: primul cadru cu data-theme din preview.html (clasele cadrelor diferă de la o componentă la alta: c3f, qf, al-frame…). implSelector: cadrul galeriei marcat cu data-gallery-frame. Ambele cadre trebuie să conțină exact aceleași exemple."

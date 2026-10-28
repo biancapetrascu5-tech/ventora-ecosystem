@@ -53,4 +53,19 @@ describe('Menu', () => {
     const results = await axe.run(container);
     expect(results.violations).toHaveLength(0);
   });
+
+  it('popover-ul preia data-theme al strămoșului (ca Select)', async () => {
+    const user = userEvent.setup();
+    render(
+      <div data-theme="dark">
+        <Menu items={items} onAction={vi.fn()}>
+          <Button>Acțiuni</Button>
+        </Menu>
+      </div>,
+    );
+    await user.click(screen.getByRole('button', { name: 'Acțiuni' }));
+    const menu = screen.getByRole('menu');
+    expect(menu.closest('[data-theme]')?.getAttribute('data-theme')).toBe('dark');
+    expect(menu.closest('.v-portal-theme')).not.toBeNull();
+  });
 });

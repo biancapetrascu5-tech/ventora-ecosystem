@@ -6,6 +6,8 @@ import { cn } from '../lib/cn';
 import styles from './Input.module.css';
 
 export interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'size' | 'prefix'> {
+  /** sm = 28px (.v-control--sm), md = 36px, lg = 44px. */
+  size?: 'sm' | 'md' | 'lg';
   isInvalid?: boolean;
   iconStart?: IconName;
   iconEnd?: IconName;
@@ -16,6 +18,7 @@ export interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 
 }
 
 export function Input({
+  size = 'md',
   isInvalid,
   iconStart,
   iconEnd,
@@ -30,6 +33,7 @@ export function Input({
 
   const wrapperClass = cn(
     styles.wrapper,
+    size !== 'md' && styles[size],
     isInvalid && styles.invalid,
     iconStart && styles.hasIconStart,
     (iconEnd || onClear) && styles.hasIconEnd,

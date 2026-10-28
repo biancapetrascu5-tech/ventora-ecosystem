@@ -55,7 +55,8 @@ export { Tabs } from './Tabs/Tabs';
 export type { TabsProps, TabItem } from './Tabs/Tabs';
 
 export { Pagination } from './Pagination/Pagination';
-export type { PaginationProps } from './Pagination/Pagination';
+export { pageList } from './Pagination/Pagination';
+export type { PaginationProps, PaginationLabels } from './Pagination/Pagination';
 
 export { Menu, MenuTrigger } from './Menu/Menu';
 export type { MenuProps, MenuItemDef, MenuSectionDef } from './Menu/Menu';
@@ -163,7 +164,8 @@ export type {
   DataTableSort,
   DataTablePagination,
   DataTableAction,
-  DataTableBulkAction,
+  DataTableLabels,
+  DataTableKey,
 } from './DataTable/DataTable';
 
 export { Stat, StatGroup } from './Stat/Stat';
@@ -171,6 +173,8 @@ export type { StatProps, StatTone, StatDelta } from './Stat/Stat';
 
 export { BarChart } from './BarChart/BarChart';
 export type { BarChartProps, BarChartDataItem } from './BarChart/BarChart';
+export type { ChartLabels } from './Chart/ChartFrame';
+export type { ChartColor } from './Chart/chart';
 
 export { LineChart } from './LineChart/LineChart';
 export type { LineChartProps, LineSeries } from './LineChart/LineChart';
@@ -180,7 +184,7 @@ export type {
   TimelineProps,
   TimelinePeriod,
   TimelineRow,
-  TimelineRowStatus,
+  TimelineStatus,
 } from './Timeline/Timeline';
 
 // Lot 6 — Scheduling & Rules

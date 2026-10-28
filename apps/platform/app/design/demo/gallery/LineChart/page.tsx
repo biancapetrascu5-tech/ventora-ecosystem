@@ -1,49 +1,49 @@
+/* eslint-disable i18next/no-literal-string */
 'use client';
 import { notFound } from 'next/navigation';
 import { LineChart } from '@ventora/ui';
-import { GalleryShell, GallerySection } from '../_shared/GalleryShell';
+import { C3Pair } from '../_shared/QPair';
+import { CHART_RO } from '../_shared/labels';
 
-const LABELS_MONTH = ['1 oct', '8 oct', '15 oct', '22 oct', '29 oct'];
-const SERIES_SINGLE = [{ label: 'Programari', values: [42, 58, 55, 71, 68], color: 0 as const }];
-const SERIES_MULTI = [
-  { label: 'Venituri 2026', values: [12400, 15800, 14200, 18600, 17900], color: 0 as const },
-  {
-    label: 'Venituri 2025',
-    values: [10200, 13100, 12800, 15200, 14600],
-    color: 'compare' as const,
-  },
+// preview.html → C3Themes → LCRo({ height: 220 }); datele AX_AN_* din preview
+const MONTHS = [
+  'nov.',
+  'dec.',
+  'ian.',
+  'feb.',
+  'mar.',
+  'apr.',
+  'mai',
+  'iun.',
+  'iul.',
+  'aug.',
+  'sep.',
+  'oct.',
 ];
-const LABELS_WEEK = ['Lun', 'Mar', 'Mie', 'Joi', 'Vin', 'Sam', 'Dum'];
-const SERIES_WEEK = [
-  { label: 'Programari azi', values: [8, 12, 10, 15, 14, 9, 5], color: 0 as const },
-];
+const REV = [36400, 44100, 33800, 35200, 39600, 41800, 43900, 45200, 38700, 34900, 43100, 48250];
+const REV_LY = [32100, 39800, 30500, 31900, 35400, 37900, 39100, 41000, 36200, 33100, 39800, 43080];
+
+function LCRo() {
+  return (
+    <LineChart
+      title="Venituri pe lună"
+      description="Ultimele 12 luni · octombrie e încă în curs"
+      labels={MONTHS}
+      nowIndex={11}
+      nowLabel="în curs"
+      series={[
+        { label: 'Venituri 2025–2026', values: REV, color: 1 },
+        { label: 'Cu un an înainte', values: REV_LY, color: 'compare' },
+      ]}
+      unit="lei"
+      height={220}
+      chartLabels={CHART_RO}
+      locale="ro"
+    />
+  );
+}
 
 export default function LineChartGalleryPage() {
   if (process.env.NODE_ENV !== 'development') notFound();
-  return (
-    <GalleryShell title="LineChart">
-      <GallerySection label="Serie singulara" column>
-        <LineChart
-          title="Programari in octombrie"
-          labels={LABELS_MONTH}
-          series={SERIES_SINGLE}
-          nowIndex={3}
-          nowLabel="azi"
-        />
-      </GallerySection>
-      <GallerySection label="Multi-serie cu comparare" column>
-        <LineChart
-          title="Venituri comparate"
-          description="2026 fata de 2025"
-          labels={LABELS_MONTH}
-          series={SERIES_MULTI}
-          unit="lei"
-          nowIndex={3}
-        />
-      </GallerySection>
-      <GallerySection label="Saptamanal" column>
-        <LineChart title="Programari pe zile" labels={LABELS_WEEK} series={SERIES_WEEK} />
-      </GallerySection>
-    </GalleryShell>
-  );
+  return <C3Pair render={() => <LCRo />} />;
 }

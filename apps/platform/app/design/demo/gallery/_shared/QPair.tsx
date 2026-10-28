@@ -1,6 +1,7 @@
 'use client';
 
 import type React from 'react';
+import { cn } from '@ventora/ui';
 import f from './frames.module.css';
 
 type Theme = 'light' | 'dark';
@@ -98,6 +99,34 @@ export function ThPair({
   );
 }
 
+/* Cadre thf unul sub altul: Frames({ stack: true }) (.d > thstack, titlu „heading”)
+   sau Frame direct în .d (titlu „caption thl”, ex. BarChart). */
+export function ThStack({
+  render,
+  titleClass = 'heading',
+  bare,
+}: {
+  render: (theme: Theme) => React.ReactNode;
+  titleClass?: 'heading' | 'caption';
+  /** Cadrele stau direct în .d, fără .thstack. */
+  bare?: boolean;
+}) {
+  const frames = (['light', 'dark'] as const).map((th) => (
+    <section key={th} className={f.thf} data-gallery-frame data-theme={th}>
+      {/* eslint-disable-next-line i18next/no-literal-string */}
+      <p className={titleClass === 'heading' ? 'heading' : `caption ${f.thl}`}>
+        {th === 'dark' ? 'Dark' : 'Light'}
+      </p>
+      {render(th)}
+    </section>
+  ));
+  return (
+    <div className={f.base}>
+      <div className={f.d}>{bare ? frames : <div className={f.thstack}>{frames}</div>}</div>
+    </div>
+  );
+}
+
 /* Frames din preview.html (c2): .pv > section.pv-frame, cadrele unul sub altul.
    Reproducem doar Light și Dark — primele cadre cu data-theme. */
 export function PvFrames({ render }: { render: (theme: Theme) => React.ReactNode }) {
@@ -133,14 +162,30 @@ export function PvCell({
   );
 }
 
+/* OffsetNote: în preview.html cadrul vine după alte exemple și poate începe la o poziție
+   fracționară (ex. y = 624,75). Captura pe element rotunjește marginile la pixeli întregi, deci
+   aceeași înălțime (300,375px) iese 302px acolo și 301px la y = 16. offsetY mută cadrul cu
+   aceeași fracțiune (desktop = 1280, phone = 390); conținutul cadrului nu se schimbă. */
+export type OffsetY = { desktop: number; phone: number };
+
+export function offsetStyle(o: OffsetY): React.CSSProperties {
+  return {
+    '--offset-desktop': `${o.desktop}px`,
+    '--offset-phone': `${o.phone}px`,
+  } as React.CSSProperties;
+}
+
 /* Q_Pair din preview.html: două coloane egale (și la 390px), Light apoi Dark */
 export function QPair({
   cols,
   light,
   dark,
   children,
+  offsetY,
 }: {
   cols?: 1;
+  /** Partea fracționară a poziției cadrului în preview.html (vezi OffsetNote). */
+  offsetY?: OffsetY;
   light?: React.ReactNode;
   dark?: React.ReactNode;
   children?: React.ReactNode;
@@ -148,7 +193,10 @@ export function QPair({
   return (
     <div className={f.base}>
       <div className={f.qwrap}>
-        <div className={cols === 1 ? `${f.qfr} ${f.qfr1}` : f.qfr}>
+        <div
+          className={cn(f.qfr, cols === 1 && f.qfr1, offsetY && f.offset)}
+          style={offsetY ? offsetStyle(offsetY) : undefined}
+        >
           {/* eslint-disable-next-line i18next/no-literal-string */}
           <QFrame theme="light" title="Light">
             {light ?? children}

@@ -1,5 +1,6 @@
 'use client';
 
+import { useRef, useState } from 'react';
 import {
   Menu as RACMenu,
   MenuItem as RACMenuItem,
@@ -44,10 +45,26 @@ export function Menu({ children, sections, items, onAction, className }: MenuPro
 
   const flatItems = items ? [{ items }] : (sections ?? []);
 
+  // Ca la Select: popover-ul e în portal, deci preia data-theme al celui mai apropiat strămoș.
+  const rootRef = useRef<HTMLSpanElement>(null);
+  const [portalTheme, setPortalTheme] = useState<string | undefined>(undefined);
+  const handleOpenChange = (isOpen: boolean) => {
+    if (isOpen && rootRef.current) {
+      const ancestor = rootRef.current.closest('[data-theme]');
+      setPortalTheme(ancestor?.getAttribute('data-theme') ?? undefined);
+    }
+  };
+
   return (
-    <RACMenuTrigger>
-      {children}
-      <Popover placement="bottom start">
+    <RACMenuTrigger onOpenChange={handleOpenChange}>
+      <span ref={rootRef} style={{ display: 'contents' }}>
+        {children}
+      </span>
+      <Popover
+        placement="bottom start"
+        className="v-portal-theme"
+        {...(portalTheme !== undefined ? { 'data-theme': portalTheme } : {})}
+      >
         <RACMenu onAction={handleAction} className={cn(styles.menu, className)}>
           {flatItems.map((section, si) => (
             <RACSection key={si}>

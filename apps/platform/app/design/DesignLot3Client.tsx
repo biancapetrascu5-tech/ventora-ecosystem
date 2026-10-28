@@ -24,6 +24,7 @@ import {
   type CommandDef,
 } from '@ventora/ui';
 import styles from './design.module.css';
+import { PAGINATION_RO } from './demo/gallery/_shared/labels';
 
 export function DesignLot3Client() {
   const [paginaActiva, setPaginaActiva] = useState(1);
@@ -80,9 +81,27 @@ export function DesignLot3Client() {
       </Section>
 
       <Section title="Pagination">
-        <Pagination page={paginaActiva} totalPages={5} onPageChange={setPaginaActiva} />
-        <Pagination page={5} totalPages={20} onPageChange={() => {}} />
-        <Pagination page={1} totalPages={1} onPageChange={() => {}} />
+        <Pagination
+          page={paginaActiva}
+          pageSize={20}
+          total={100}
+          onPageChange={setPaginaActiva}
+          labels={PAGINATION_RO}
+        />
+        <Pagination
+          page={5}
+          pageSize={20}
+          total={400}
+          onPageChange={() => {}}
+          labels={PAGINATION_RO}
+        />
+        <Pagination
+          page={1}
+          pageSize={20}
+          total={12}
+          onPageChange={() => {}}
+          labels={PAGINATION_RO}
+        />
       </Section>
 
       <Section title="Menu">

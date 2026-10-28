@@ -1,63 +1,42 @@
+/* eslint-disable i18next/no-literal-string */
 'use client';
 import { notFound } from 'next/navigation';
 import { Stat, StatGroup } from '@ventora/ui';
-import { GalleryShell, GallerySection } from '../_shared/GalleryShell';
+import { QPair } from '../_shared/QPair';
+
+// preview.html → Q_Extra → „Light / Dark” → Q_Pair(Q_Stats(Q_RO))
+const RO = {
+  rev: 'Venituri',
+  cli: 'Clienți noi',
+  per: 'față de oct. 2025',
+  over: 'Facturi restante',
+  overH: '4 facturi, cea mai veche de 14 zile',
+  work: 'La lucru acum',
+  of6: 'din 6',
+  workH: 'Sorin începe la 11:00',
+};
+
+function Stats() {
+  return (
+    <StatGroup>
+      <Stat
+        label={RO.rev}
+        value="48.250 lei"
+        icon="banknote"
+        delta={{ value: '+12%', period: RO.per }}
+      />
+      <Stat label={RO.cli} value="64" delta={{ value: '−8%', period: RO.per }} />
+      <Stat label={RO.over} value="4.310 lei" tone="attention" hint={RO.overH} onClick={() => {}} />
+      <Stat label={RO.work} value="4" unit={RO.of6} hint={RO.workH} />
+    </StatGroup>
+  );
+}
 
 export default function StatGalleryPage() {
   if (process.env.NODE_ENV !== 'development') notFound();
   return (
-    <GalleryShell title="Stat">
-      <GallerySection label="Simple — fara delta" column>
-        <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
-          <Stat label="Programari azi" value={12} />
-          <Stat label="Clienti activi" value={248} />
-          <Stat label="Venituri octombrie" value="18.420" unit="lei" />
-        </div>
-      </GallerySection>
-      <GallerySection label="Cu delta" column>
-        <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
-          <Stat
-            label="Programari luna aceasta"
-            value={862}
-            delta={{ value: '+12%', period: 'fata de luna trecuta', direction: 'up', good: true }}
-          />
-          <Stat
-            label="Clienti noi"
-            value={34}
-            delta={{ value: '-8%', period: 'fata de luna trecuta', direction: 'down', good: false }}
-          />
-          <Stat
-            label="Venituri"
-            value="18.420"
-            unit="lei"
-            delta={{ value: '+5.2%', period: 'fata de oct 2025', direction: 'up', good: true }}
-          />
-        </div>
-      </GallerySection>
-      <GallerySection label="Cu tone" column>
-        <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
-          <Stat label="Rezervari online" value={7} tone="attention" hint="De confirmat" />
-          <Stat label="Locuri libere azi" value={3} tone="done" />
-          <Stat label="Programari anulate" value={2} tone="danger" />
-        </div>
-      </GallerySection>
-      <GallerySection label="StatGroup" column>
-        <StatGroup>
-          <Stat
-            label="Programari azi"
-            value={12}
-            delta={{ value: '+2', direction: 'up', good: true }}
-          />
-          <Stat
-            label="Venituri azi"
-            value="2.840"
-            unit="lei"
-            delta={{ value: '+420 lei', direction: 'up', good: true }}
-          />
-          <Stat label="Clienti noi" value={4} />
-          <Stat label="Anulate" value={1} tone="danger" />
-        </StatGroup>
-      </GallerySection>
-    </GalleryShell>
+    <QPair offsetY={{ desktop: 0.75, phone: 0.0625 }}>
+      <Stats />
+    </QPair>
   );
 }

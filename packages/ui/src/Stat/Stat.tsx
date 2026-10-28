@@ -1,17 +1,21 @@
 'use client';
 
 import { cn } from '../lib/cn';
-import { Icon } from '../Icon/Icon';
+import { Icon, type IconName } from '../Icon/Icon';
 import { fmtNumber } from '../lib/fmt';
 import styles from './Stat.module.css';
 
-export type StatTone = 'attention' | 'done' | 'danger';
+export type StatTone = 'neutral' | 'attention';
 
 export interface StatDelta {
   value: string;
   period?: string;
+  /** Implicit: „down” dacă valoarea începe cu − sau -, altfel „up”. */
   direction?: 'up' | 'down';
+  /** Implicit: creșterea e bună. */
   good?: boolean;
+  /** Textul citit de cititoarele de ecran în locul valorii. */
+  srValue?: string;
 }
 
 export interface StatProps {
@@ -20,76 +24,78 @@ export interface StatProps {
   locale?: string;
   unit?: string;
   hint?: string;
+  icon?: IconName;
   tone?: StatTone;
   onClick?: () => void;
   delta?: StatDelta;
   className?: string;
 }
 
-function DeltaIcon({ direction }: { direction?: 'up' | 'down' }) {
-  if (!direction) return null;
-  return (
-    <Icon
-      icon={direction === 'up' ? 'arrow-up' : 'arrow-down'}
-      size="sm"
-      aria-hidden
-      className={styles.deltaIcon}
-    />
-  );
-}
-
-function StatBody({
+export function Stat({
   label,
   value,
   locale,
   unit,
   hint,
-  tone,
+  icon,
+  tone = 'neutral',
   delta,
   onClick,
   className,
 }: StatProps) {
-  const isPositiveDelta =
-    delta?.good !== undefined
-      ? delta.good
-      : delta?.direction === 'up' || (delta?.value.startsWith('+') && delta?.direction !== 'down');
+  const dir =
+    delta &&
+    (delta.direction ??
+      (/^[−-]/.test(String(delta.value).trim()) ? ('down' as const) : ('up' as const)));
+  const good = delta && (delta.good ?? dir === 'up');
+  const foot = [delta?.period, hint].filter(Boolean).join(' · ');
 
   const inner = (
     <>
-      <span className={styles.label}>{label}</span>
-      <span className={styles.valueRow}>
-        <span className={styles.value}>
-          {typeof value === 'number' ? fmtNumber(value, locale) : value}
-        </span>
-        {unit && <span className={styles.unit}>{unit}</span>}
+      <span className={cn(styles.label, 'body-small')}>
+        {tone === 'attention' && <span className={styles.mark} aria-hidden="true" />}
+        {icon && <Icon icon={icon} size="sm" aria-hidden />}
+        {label}
       </span>
-      {hint && <span className={styles.hint}>{hint}</span>}
-      {delta && (
-        <span className={cn(styles.delta, isPositiveDelta ? styles.deltaUp : styles.deltaDown)}>
-          <DeltaIcon direction={delta.direction} />
-          <span>{delta.value}</span>
-          {delta.period && <span className={styles.deltaPeriod}>{delta.period}</span>}
+      <span className={styles.value}>
+        {typeof value === 'number' ? fmtNumber(value, locale) : value}
+        {unit && <span className={cn(styles.unit, 'body')}>{unit}</span>}
+      </span>
+      {(delta || hint) && (
+        <span className={cn(styles.foot, 'body-small')}>
+          {delta && (
+            <span className={cn(styles.delta, good ? styles.good : styles.bad)}>
+              <Icon
+                icon={dir === 'down' ? 'arrow-down-right' : 'arrow-up-right'}
+                size={14}
+                strokeWidth={2}
+                aria-hidden
+              />
+              <span className="body-strong" aria-hidden={delta.srValue ? true : undefined}>
+                {delta.value}
+              </span>
+              {delta.srValue && <span className={styles.sr}>{delta.srValue}</span>}
+            </span>
+          )}
+          {foot && <span>{foot}</span>}
         </span>
       )}
     </>
   );
 
-  const baseClass = cn(styles.root, tone && styles[tone], onClick && styles.clickable, className);
+  const rootClass = cn(styles.root, styles[tone], onClick && styles.clickable, className);
 
   if (onClick) {
     return (
-      <button type="button" className={baseClass} onClick={onClick}>
+      <button type="button" className={rootClass} onClick={onClick}>
         {inner}
       </button>
     );
   }
-  return <div className={baseClass}>{inner}</div>;
+  return <div className={rootClass}>{inner}</div>;
 }
 
-export function Stat(props: StatProps) {
-  return <StatBody {...props} />;
-}
-
+/* .v-stats din bundle.css */
 export function StatGroup({
   children,
   className,

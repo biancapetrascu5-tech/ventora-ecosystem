@@ -22,13 +22,16 @@ export function Checkbox({ children, isInvalid, className, ...props }: CheckboxP
     >
       {({ isIndeterminate }) => (
         <>
-          <div className={styles.box}>
-            {isIndeterminate ? (
-              <Minus size={12} strokeWidth={2.5} className={styles.indeterminateIcon} aria-hidden />
-            ) : (
-              <Check size={12} strokeWidth={2.5} className={styles.checkIcon} aria-hidden />
-            )}
-          </div>
+          {/* .v-check__box-wrap (20px; 44px pe mobil) > .v-check__box (16px) */}
+          <span className={styles.boxWrap}>
+            <span className={styles.box}>
+              {isIndeterminate ? (
+                <Minus size={12} strokeWidth={3} className={styles.indeterminateIcon} aria-hidden />
+              ) : (
+                <Check size={12} strokeWidth={3} className={styles.checkIcon} aria-hidden />
+              )}
+            </span>
+          </span>
           {children && <span className={styles.label}>{children}</span>}
         </>
       )}

@@ -30,6 +30,8 @@ export interface SelectProps {
   isInvalid?: boolean;
   name?: string;
   id?: string;
+  size?: 'sm' | 'md' | 'lg';
+  'aria-label'?: string;
   className?: string;
 }
 
@@ -43,6 +45,8 @@ export function Select({
   isInvalid,
   name,
   id,
+  size = 'md',
+  'aria-label': ariaLabel,
   className,
 }: SelectProps) {
   const rootRef = useRef<HTMLDivElement>(null);
@@ -69,11 +73,12 @@ export function Select({
         isDisabled={isDisabled}
         name={name}
         id={id}
+        aria-label={ariaLabel}
         aria-invalid={isInvalid || undefined}
         className={cn(styles.root, isInvalid && styles.invalid, className)}
       >
-        <RACButton className={styles.trigger}>
-          <SelectValue className={styles.triggerValue}>
+        <RACButton className={cn(styles.trigger, styles[size])}>
+          <SelectValue className={cn(styles.triggerValue, 'body')}>
             {({ selectedItem }) =>
               selectedItem ? (
                 (selectedItem as SelectOption).label

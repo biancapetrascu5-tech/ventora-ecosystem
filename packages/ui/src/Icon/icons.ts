@@ -89,6 +89,13 @@ import {
   Command,
   CornerDownLeft,
   Smartphone,
+  ArrowUpRight,
+  ArrowDownRight,
+  Banknote,
+  CalendarCheck,
+  ListFilter,
+  Table,
+  EllipsisVertical,
   type LucideIcon,
 } from 'lucide-react';
 
@@ -184,6 +191,14 @@ export const ICON_REGISTRY = {
   command: Command,
   'corner-down-left': CornerDownLeft,
   smartphone: Smartphone,
+  'arrow-up-right': ArrowUpRight,
+  'arrow-down-right': ArrowDownRight,
+  banknote: Banknote,
+  'calendar-check': CalendarCheck,
+  'list-filter': ListFilter,
+  table: Table,
+  'ellipsis-vertical': EllipsisVertical,
+  'trash-2': Trash2,
 } as const satisfies Record<string, LucideIcon>;
 
 export type IconName = keyof typeof ICON_REGISTRY;
