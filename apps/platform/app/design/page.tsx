@@ -10,8 +10,7 @@ import { Radio, RadioGroup } from '@ventora/ui';
 import { Toggle } from '@ventora/ui';
 import { FormField } from '@ventora/ui';
 import { SegmentedControl } from '@ventora/ui';
-import { FileUpload } from '@ventora/ui';
-import { UPLOAD_RO as UPLOAD_LABELS } from './demo/gallery/_shared/labels';
+import { DesignFileUploads } from './DesignFileUploads';
 import { Combobox } from '@ventora/ui';
 import { Icon } from '@ventora/ui';
 import { DesignLot3Client } from './DesignLot3Client';
@@ -549,15 +548,7 @@ export default function DesignPage() {
 
       <Section title="FileUpload">
         <div className={styles.componentStack}>
-          <FileUpload
-            labels={UPLOAD_LABELS}
-            hint="PDF, DOCX"
-            accept=".pdf,.docx"
-            multiple
-            maxSize={10 * 1024 * 1024}
-          />
-          <FileUpload labels={UPLOAD_LABELS} hint="Fișierul nu este acceptat" isInvalid />
-          <FileUpload labels={UPLOAD_LABELS} isDisabled />
+          <DesignFileUploads />
         </div>
       </Section>
 
