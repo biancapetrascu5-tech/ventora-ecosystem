@@ -1181,7 +1181,7 @@ describe('T1.18 — activeOrganizationId in session (B3)', () => {
 });
 
 // ---------------------------------------------------------------------------
-// Lot 2.5a — audit (T3.7: E1–E19, E30–E33; TA.12, TA.13, TA.15)
+// Lot 2.5a — audit (T3.7: E1–E19, E30–E33; TA.12, TA.13, TA.15; D17)
 // Rows are immutable and accumulate across tests: every assertion selects by a unique
 // x-request-id, user id or email hash, never "the latest row".
 // ---------------------------------------------------------------------------
@@ -1631,9 +1631,11 @@ describe.skipIf(shouldSkipForEnv('DATABASE_URL_ADMIN_TEST'))(
       expect(u).toMatchObject({ action: 'password.reset_requested', target_id: null });
     });
 
-    it('E17 — password reset completed', async () => {
+    it('E17 + D17 — password reset completed, every open session revoked', async () => {
       const email = 'audit.e17@test.com';
       const { user } = await signUp(email, 'Password123');
+      const s1 = await signIn(email, 'Password123');
+      const s2 = await signIn(email, 'Password123');
       await hubAuth.api.requestPasswordReset({ body: { email } });
       const verification = await identityDb.verification.findFirst({
         where: { value: user.id, identifier: { startsWith: 'reset-password:' } },
@@ -1645,6 +1647,13 @@ describe.skipIf(shouldSkipForEnv('DATABASE_URL_ADMIN_TEST'))(
         newPassword: 'NewPassword123',
       });
       expect(reset.resp.status).toBe(200);
+
+      // D17: revokeSessionsOnPasswordReset: true
+      for (const s of [s1, s2]) {
+        const check = await hubAuth.api.getSession({ headers: new Headers(bearerHeader(s.token)) });
+        expect(check?.session).toBeFalsy();
+      }
+      expect(await identityDb.session.count({ where: { userId: user.id } })).toBe(0);
 
       const [row] = await byRequest(reset.requestId);
       expect(row).toMatchObject({

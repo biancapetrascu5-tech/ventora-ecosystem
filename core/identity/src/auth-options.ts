@@ -70,6 +70,8 @@ export function createHubAuthOptions(db: IdentityBaseClient, secret: string) {
       minPasswordLength: 10,
       password: { hash: hashPassword, verify: verifyPassword },
       resetPasswordTokenExpiresIn: 3600,
+      // D17: a completed password reset closes every open session of the user
+      revokeSessionsOnPasswordReset: true,
       // no-op: password reset emails are sent by a separate service watching the verification table
       sendResetPassword: async () => {},
     },
@@ -147,6 +149,8 @@ export function createFounderAuthOptions(db: FounderBaseClient, secret: string) 
       minPasswordLength: 12,
       password: { hash: hashPassword, verify: verifyPassword },
       resetPasswordTokenExpiresIn: 3600,
+      // D17: a completed password reset closes every open session of the user
+      revokeSessionsOnPasswordReset: true,
       sendResetPassword: async () => {},
     },
     rateLimit: FOUNDER_RATE_LIMIT,
