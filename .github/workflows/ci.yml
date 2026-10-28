@@ -363,7 +363,15 @@ jobs:
     name: Build
     runs-on: ubuntu-latest
     timeout-minutes: 20
-    needs: [quality, test, integration-tests, integration-tests-identity, integration-tests-organizations, integration-tests-access]
+    needs:
+      [
+        quality,
+        test,
+        integration-tests,
+        integration-tests-identity,
+        integration-tests-organizations,
+        integration-tests-access,
+      ]
     steps:
       - uses: actions/checkout@v7
       - uses: pnpm/action-setup@v6
@@ -403,6 +411,45 @@ jobs:
           NEXT_PUBLIC_PLATFORM_URL: http://localhost:3100
           NEXT_PUBLIC_PORTAL_URL: http://localhost:3101
           NEXT_PUBLIC_FOUNDER_URL: http://localhost:3102
+
+  visual-check:
+    name: Verificare vizuală design ↔ implementare
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    needs: [build]
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Install Playwright Chromium
+        run: pnpm --filter @ventora/platform exec playwright install chromium --with-deps
+      - name: Pornește serverul de dev (platform)
+        run: |
+          pnpm --filter @ventora/platform dev > dev-server.log 2>&1 &
+          for i in $(seq 1 90); do
+            curl -sf -o /dev/null http://localhost:3100/design/preview/Button && exit 0
+            sleep 2
+          done
+          cat dev-server.log
+          exit 1
+        env:
+          NODE_ENV: development
+          NEXT_PUBLIC_PLATFORM_URL: http://localhost:3100
+          NEXT_PUBLIC_PORTAL_URL: http://localhost:3101
+          NEXT_PUBLIC_FOUNDER_URL: http://localhost:3102
+      - name: Diff design ↔ implementare (pragul din scripts/visual-check.config.json)
+        run: node scripts/visual-check.mjs
+      - name: Capturi și diff-uri
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: visual-check
+          path: visual-check/
+          retention-days: 14
 
   smoke-test-prod-guard:
     name: Smoke test prod guard (Playwright)
