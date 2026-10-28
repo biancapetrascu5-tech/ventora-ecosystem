@@ -1762,7 +1762,7 @@ describe.skipIf(shouldSkipForEnv('DATABASE_URL_ADMIN_TEST'))('T3.7 — Founder a
     });
     const founder = await founderDb.user.findUnique({ where: { email } });
 
-    const ok = await post(founderAuthTest, '/sign-in/email', { email, password: 'FounderPass12' });
+    const ok = await post(founderAuthTest, '/sign-in/email', { email, password: 'FounderPass12' }); // gitleaks:allow
     expect(ok.resp.status).toBe(200);
     const [okRow] = await byRequest(ok.requestId);
     expect(okRow).toMatchObject({
@@ -1773,7 +1773,7 @@ describe.skipIf(shouldSkipForEnv('DATABASE_URL_ADMIN_TEST'))('T3.7 — Founder a
       founder_id: founder!.id,
     });
 
-    const bad = await post(founderAuthTest, '/sign-in/email', { email, password: 'WrongPass1234' });
+    const bad = await post(founderAuthTest, '/sign-in/email', { email, password: 'WrongPass1234' }); // gitleaks:allow
     expect(bad.resp.status).toBe(401);
     const [badRow] = await byRequest(bad.requestId);
     expect(badRow).toMatchObject({
