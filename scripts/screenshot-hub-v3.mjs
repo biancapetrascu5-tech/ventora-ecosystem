@@ -257,8 +257,9 @@ async function captureGalleryDesign(page, variant) {
   const filename = `gallery_${name}_${viewport}_${theme}_design.png`;
   const outPath = path.join(OUT, filename);
 
-  // Caută frame-ul cu clasa .c3f și data-theme (element-level theming din noul tokens.css)
-  const selector = `.c3f[data-theme="${theme}"]`;
+  // Caută primul frame cu data-theme — designul folosește class diferite (c3f, qf, al-frame etc.)
+  // dar toate au data-theme ca atribut DOM
+  const selector = `[data-theme="${theme}"]`;
   const el = page.locator(selector).first();
   const count = await el.count();
 
@@ -267,7 +268,7 @@ async function captureGalleryDesign(page, variant) {
     await page.waitForTimeout(200);
     await el.screenshot({ path: outPath });
   } else {
-    // Fallback: full-page cu tema globală
+    // Fallback: full-page cu tema globală (nu ar trebui să ajungă aici dacă preview.html are frames)
     await page.evaluate((t) => document.documentElement.setAttribute('data-theme', t), theme);
     await page.waitForTimeout(200);
     await page.screenshot({ path: outPath, fullPage: true });

@@ -20,3 +20,5 @@ packages/tokens/network/tokens.css
 core/identity/generated/
 core/organizations/generated/
 core/access/generated/
+visual-check/
+screenshots/
