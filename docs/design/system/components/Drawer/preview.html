@@ -1,4 +1,4 @@
-<!-- @dsCard group="Overlays" height=520 -->
+<!-- @dsCard group="Overlays" height=2890 width=1200 -->
 <!doctype html>
 <html lang="ro">
 <head><meta charset="utf-8"><title>Drawer — Ventora</title>
@@ -250,6 +250,18 @@ html,body{min-height:100%}
 .fxframe .caption{color:var(--ink-muted)}
 @container (max-width:420px){.fxlang{grid-template-columns:32px minmax(0,1fr) auto}.fxlang .v-iconbtn{display:none}}
 
+/* c2: theme + locale frames */
+.pv{display:flex;flex-direction:column;gap:var(--space-4);padding:var(--space-4)}
+.pv-frame{display:flex;flex-direction:column;gap:var(--space-4);padding:var(--space-6);background:var(--canvas);color:var(--ink);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg);min-width:0}
+.pv-frame>.heading{margin:0}
+.pv-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:var(--space-5) var(--space-4);align-items:start}
+.pv-grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--space-5) var(--space-4);align-items:start}
+.pv-grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--space-5) var(--space-4);align-items:start}
+.pv-cell{display:flex;flex-direction:column;gap:var(--space-2);min-width:0}
+.pv-lab{margin:0;color:var(--ink-muted)}
+.pv-box{padding:var(--space-4);background:var(--sheet);border:var(--border-width) solid var(--line);border-radius:var(--radius-md);min-width:0;color:var(--ink)}
+.pv-stage{position:relative;overflow:hidden;border:var(--border-width) solid var(--line-strong);border-radius:var(--radius-lg);background:var(--canvas);color:var(--ink)}
+.pv-note{margin:0;color:var(--ink-muted)}
 </style>
 </head>
 <body>
@@ -262,22 +274,57 @@ const DE = ({ children }) => /* @__PURE__ */ React.createElement(V.LocaleProvide
 const FR = ({ children }) => /* @__PURE__ */ React.createElement(V.LocaleProvider, { locale: "fr" }, children);
 const IT = ({ children }) => /* @__PURE__ */ React.createElement(V.LocaleProvider, { locale: "it" }, children);
 const mount = (el) => ReactDOM.createRoot(document.getElementById("root")).render(/* @__PURE__ */ React.createElement(V.LocaleProvider, { locale: "ro" }, el));
-function Demo() {
-  const [open, setOpen] = useState(true);
-  return /* @__PURE__ */ React.createElement("div", { className: "d" }, /* @__PURE__ */ React.createElement(Row, { label: "Deschide" }, /* @__PURE__ */ React.createElement(V.Button, { onClick: () => setOpen(true) }, "Deschide detaliul")), /* @__PURE__ */ React.createElement(
-    V.Drawer,
-    {
-      open,
-      onOpenChange: setOpen,
-      title: "Ana Popescu",
-      subtitle: "Tuns \xB7 Joi, 29 oct., 14:30",
-      actions: /* @__PURE__ */ React.createElement(V.IconButton, { icon: "pencil", label: "Editeaz\u0103" }),
-      footer: /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(V.Button, null, "Mut\u0103"), /* @__PURE__ */ React.createElement(V.Button, { variant: "primary", icon: "check" }, "Confirm\u0103"))
-    },
-    /* @__PURE__ */ React.createElement("div", { className: "d0" }, /* @__PURE__ */ React.createElement(V.StatusPill, { tone: "attention" }, "Necesit\u0103 confirmare"), /* @__PURE__ */ React.createElement(V.FormField, { label: "Angajat" }, /* @__PURE__ */ React.createElement(V.Select, { defaultValue: "i", options: [{ value: "i", label: "Ioana Pavel" }] })), /* @__PURE__ */ React.createElement(V.FormField, { label: "Note" }, /* @__PURE__ */ React.createElement(V.Textarea, { rows: 3, defaultValue: "Prefer\u0103 o camer\u0103 lini\u0219tit\u0103." })))
-  ));
+/* c2: every README state, Light/Dark frames (data-theme on the frame), DE/IT with translated texts. */
+const h = React.createElement;
+const noop = () => {};
+const Cell = ({ label, children, style }) => h("div", { className: "pv-cell", style }, h("p", { className: "caption pv-lab" }, label), children);
+const FRAMES = [["light", "ro", "Light"], ["dark", "ro", "Dark"], ["light", "de", "Deutsch \u00b7 Light"], ["dark", "it", "Italiano \u00b7 Dark"]];
+const Frames = ({ Board, top }) => h("div", { className: "pv" }, top, FRAMES.map(([th, lang, lab], i) => h("section", { key: lab, className: "pv-frame", "data-theme": th }, h("p", { className: "heading" }, lab), h(V.LocaleProvider, { locale: lang }, h(Board, { lang, theme: th, first: i === 0 })))));
+const DR_T = {
+  ro: { l: ["Panou lateral peste listă · rândul deschis marcat cu margine peach", "Ecran întreg sub 640px · săgeată înapoi"],
+    rows: [["Ana Popescu", "Tuns", "Joi, 14:30", "attention", "Necesită confirmare"], ["Ștefan Țăranu", "Vopsit", "Joi, 16:00", "neutral", "Neconfirmată"], ["Elena Georgescu", "Manichiură", "Vineri, 10:00", "neutral", "Neconfirmată"]],
+    cols: ["Client", "Serviciu", "Când", "Stare"], cap: "Programări",
+    sub: "Tuns · Joi, 29 oct., 14:30", edit: "Editează", move: "Mută", confirm: "Confirmă", staff: "Angajat", who: "Ioana Pavel", notes: "Note", noteV: "Preferă o cameră liniștită; plătește cu cardul.", open: "Deschide", trig: "Deschide detaliul" },
+  de: { l: ["Seitenpanel über der Liste · geöffnete Zeile mit Pfirsich-Rand markiert", "Vollbild unter 640px · Zurück-Pfeil"],
+    rows: [["Anna Müller", "Haarschnitt", "Do., 14:30", "attention", "Bestätigung nötig"], ["Jürgen Köhler", "Färben", "Do., 16:00", "neutral", "Unbestätigt"], ["Elena Groß", "Maniküre", "Fr., 10:00", "neutral", "Unbestätigt"]],
+    cols: ["Kunde", "Leistung", "Wann", "Status"], cap: "Termine",
+    sub: "Haarschnitt · Do., 29. Okt., 14:30", edit: "Bearbeiten", move: "Verschieben", confirm: "Bestätigen", staff: "Mitarbeiter", who: "Johanna Pfeiffer", notes: "Notizen", noteV: "Bevorzugt einen ruhigen Raum; zahlt mit Karte." },
+  it: { l: ["Pannello laterale sopra l’elenco · riga aperta segnata con bordo pesca", "Schermo intero sotto 640px · freccia indietro"],
+    rows: [["Anna Rossi", "Taglio", "Gio, 14:30", "attention", "Da confermare"], ["Niccolò Lucà", "Colore", "Gio, 16:00", "neutral", "Non confermato"], ["Elena Ferrari", "Manicure", "Ven, 10:00", "neutral", "Non confermato"]],
+    cols: ["Cliente", "Servizio", "Quando", "Stato"], cap: "Appuntamenti",
+    sub: "Taglio · Gio 29 ott, 14:30", edit: "Modifica", move: "Sposta", confirm: "Conferma", staff: "Dipendente", who: "Giovanna Conti", notes: "Note", noteV: "Preferisce una stanza tranquilla; paga con carta." }
+};
+function Detail({ T, layout }) {
+  const r = T.rows[0];
+  return h(V.Drawer, { contained: true, layout, open: true, onOpenChange: noop, title: r[0], subtitle: T.sub,
+    actions: h(V.IconButton, { icon: "pencil", label: T.edit }),
+    footer: h(React.Fragment, null, h(V.Button, null, T.move), h(V.Button, { variant: "primary", icon: "check" }, T.confirm)) },
+    h("div", { className: "d0" },
+      h("div", null, h(V.StatusPill, { tone: r[3] }, r[4])),
+      h(V.FormField, { label: T.staff }, h(V.Select, { defaultValue: "i", options: [{ value: "i", label: T.who }] })),
+      h(V.FormField, { label: T.notes }, h(V.Textarea, { rows: 3, defaultValue: T.noteV }))));
 }
-mount(/* @__PURE__ */ React.createElement(Demo, null));
+function Board({ lang }) {
+  const T = DR_T[lang], L = T.l, C = T.cols;
+  const rows = T.rows.map((r, i) => ({ id: i + 1, client: r[0], service: r[1], when: r[2], status: [r[3], r[4]] }));
+  const cols = [{ key: "client", header: C[0], primary: true }, { key: "service", header: C[1], secondary: true }, { key: "when", header: C[2], secondary: true }, { key: "status", header: C[3], trailing: true, render: (r) => h(V.StatusPill, { tone: r.status[0] }, r.status[1]) }];
+  return h("div", { style: { display: "grid", gridTemplateColumns: "minmax(0,1fr) 390px", gap: "var(--space-5)", alignItems: "start" } },
+    h(Cell, { label: L[0] }, h("div", { className: "pv-stage", style: { height: 540, padding: "var(--space-4)" } },
+      h(V.DataTable, { caption: T.cap, columns: cols, rows, layout: "table", activeRow: 1, onRowClick: noop }),
+      h("div", { style: { position: "absolute", top: 0, right: 0, bottom: 0, display: "flex", width: "var(--drawer-width)", maxWidth: "75%" } }, h(Detail, { T, layout: "side" })))),
+    h(Cell, { label: L[1] }, h("div", { className: "pv-stage", style: { height: 540, borderRadius: "var(--radius-xl)" } }, h(Detail, { T, layout: "full" }))));
+}
+function Top() {
+  const [open, setOpen] = useState(false);
+  const T = DR_T.ro;
+  return h("div", { className: "d", style: { padding: "0 var(--space-2)" } },
+    h(Row, { label: T.open }, h(V.Button, { onClick: () => setOpen(true) }, T.trig)),
+    h(V.Drawer, { open, onOpenChange: setOpen, title: T.rows[0][0], subtitle: T.sub, actions: h(V.IconButton, { icon: "pencil", label: T.edit }),
+      footer: h(React.Fragment, null, h(V.Button, null, T.move), h(V.Button, { variant: "primary", icon: "check", onClick: () => setOpen(false) }, T.confirm)) },
+      h("div", { className: "d0" }, h("div", null, h(V.StatusPill, { tone: "attention" }, T.rows[0][4])), h(V.FormField, { label: T.staff }, h(V.Select, { defaultValue: "i", options: [{ value: "i", label: T.who }] })), h(V.FormField, { label: T.notes }, h(V.Textarea, { rows: 3, defaultValue: T.noteV })))));
+}
+mount(h(Frames, { Board, top: h(Top) }));
+
 </script>
 </body>
 </html>

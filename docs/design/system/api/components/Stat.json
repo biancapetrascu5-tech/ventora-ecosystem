@@ -1,0 +1,77 @@
+{
+ "name": "Stat",
+ "version": "1.0.1",
+ "kind": "component",
+ "group": "Data",
+ "status": "changed",
+ "description": "One number with its label, an optional change against a named period and a short hint. The top row of TeamSpace, MoneyDesk and DataView.",
+ "exports": [
+  "Stat"
+ ],
+ "props": [
+  {
+   "name": "label",
+   "type": "string",
+   "required": true,
+   "note": ""
+  },
+  {
+   "name": "value",
+   "type": "ReactNode",
+   "required": true,
+   "note": ""
+  },
+  {
+   "name": "unit",
+   "type": "string",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "delta",
+   "type": "{ value: string; period?: string; direction?: \"up\" | \"down\"; good?: boolean; }",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "hint",
+   "type": "string",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "icon",
+   "type": "string",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "tone",
+   "type": "\"neutral\" | \"attention\"",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "onClick",
+   "type": "() => void",
+   "required": false,
+   "note": ""
+  }
+ ],
+ "events": [
+  "onClick"
+ ],
+ "states": [
+  "default",
+  "delta-good",
+  "delta-bad",
+  "attention",
+  "clickable",
+  "unit",
+  "hint",
+  "icon"
+ ],
+ "notes": "",
+ "readme": "components/Stat/README.md",
+ "preview": "components/Stat/preview.html"
+}

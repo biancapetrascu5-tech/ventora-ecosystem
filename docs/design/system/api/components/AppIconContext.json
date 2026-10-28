@@ -1,0 +1,30 @@
+{
+ "name": "AppIconContext",
+ "version": "1.0.1",
+ "kind": "page",
+ "group": "Hub",
+ "status": "changed",
+ "description": "The app icons where they live, in light and dark: browser tabs (favicon at 16px), the Hub launcher with \"Aplicațiile tale\" and \"Alte aplicații Ventora\", the Spine header inside an app, and the mobile launcher grid.",
+ "exports": [],
+ "props": [],
+ "events": [],
+ "states": [
+  "browser-tab-favicon",
+  "launcher-mine",
+  "launcher-other",
+  "unavailable",
+  "not-in-plan",
+  "not-in-role",
+  "badge",
+  "spine-header",
+  "mobile-grid",
+  "muted",
+  "light",
+  "dark",
+  "de",
+  "it"
+ ],
+ "notes": "",
+ "readme": "components/AppIconContext/README.md",
+ "preview": "components/AppIconContext/preview.html"
+}

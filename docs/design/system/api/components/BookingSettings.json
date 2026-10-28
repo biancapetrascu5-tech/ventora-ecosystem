@@ -1,0 +1,31 @@
+{
+ "name": "BookingSettings",
+ "version": "1.0.1",
+ "kind": "page",
+ "group": "Ecrane Booking",
+ "status": "changed",
+ "description": "EasyBook — app settings: opening hours per day (toggle + time range), booking rules (notice, free cancellation, buffer, confirmation mode), automatic reminders with their SMS usage and the owner's \"Cumpără SMS-uri în plus\".",
+ "exports": [],
+ "props": [],
+ "events": [],
+ "states": [
+  "default",
+  "unsaved-changes",
+  "day-closed",
+  "toggle-on",
+  "toggle-off",
+  "fee-off",
+  "sms-estimate",
+  "usage-near-limit",
+  "de",
+  "it",
+  "light",
+  "dark",
+  "desktop",
+  "tablet",
+  "mobile"
+ ],
+ "notes": "",
+ "readme": "components/BookingSettings/README.md",
+ "preview": "components/BookingSettings/preview.html"
+}

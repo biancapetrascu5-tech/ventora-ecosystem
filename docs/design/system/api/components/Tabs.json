@@ -1,0 +1,71 @@
+{
+ "name": "Tabs",
+ "version": "1.0.1",
+ "kind": "component",
+ "group": "Navigation",
+ "status": "changed",
+ "description": "Switch between sibling sections of one record or page; the active tab has an ink label and a 2px `primary` underline.",
+ "exports": [
+  "Tabs"
+ ],
+ "props": [
+  {
+   "name": "items",
+   "type": "TabItem[]",
+   "required": true,
+   "note": ""
+  },
+  {
+   "name": "value",
+   "type": "string",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "defaultValue",
+   "type": "string",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "onChange",
+   "type": "(v: string) => void",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "label",
+   "type": "string",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "size",
+   "type": "\"sm\" | \"md\"",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "children",
+   "type": "ReactNode | ((value: string) => ReactNode)",
+   "required": false,
+   "note": ""
+  }
+ ],
+ "events": [
+  "onChange"
+ ],
+ "states": [
+  "default",
+  "active",
+  "count",
+  "count-attention",
+  "disabled",
+  "icon",
+  "small",
+  "overflow-scroll"
+ ],
+ "notes": "",
+ "readme": "components/Tabs/README.md",
+ "preview": "components/Tabs/preview.html"
+}

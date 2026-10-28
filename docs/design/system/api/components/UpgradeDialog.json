@@ -1,0 +1,207 @@
+{
+ "name": "UpgradeDialog",
+ "version": "1.1.0",
+ "kind": "component",
+ "group": "Comercial",
+ "status": "changed",
+ "description": "The pack / plan / trial dialog. It opens only after the person acts: a locked feature, the limit, or \"Vezi opțiunile\". It extends the limit dialog (UsageMeter) and shares its payment states with AddonPurchase (`PayProcessing`, `PaySuccess`, `PayError` in billing), so both read the same.",
+ "exports": [
+  "UpgradeDialog"
+ ],
+ "props": [
+  {
+   "name": "open",
+   "type": "boolean",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "onOpenChange",
+   "type": "(o: boolean) => void",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "inline",
+   "type": "boolean",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "sheet",
+   "type": "boolean",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "title",
+   "type": "string",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "description",
+   "type": "string",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "usage",
+   "type": "{ label: string; used: number; limit: number; unit?: string; }",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "options",
+   "type": "UpgradeOption[]",
+   "required": true,
+   "note": ""
+  },
+  {
+   "name": "value",
+   "type": "string",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "onChange",
+   "type": "(id: string) => void",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "role",
+   "type": "\"owner\" | \"member\"",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "decider",
+   "type": "string",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "onRecommend",
+   "type": "() => void",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "recommended",
+   "type": "boolean",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "step",
+   "type": "\"options\" | \"confirm\" | \"processing\" | \"success\" | \"error\" | \"trial\"",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "summary",
+   "type": "{ what?: string; when?: string; price?: string; setup?: string; total?: string; }",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "card",
+   "type": "{ brand: string; last4: string; expiry?: string; }",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "cardSlot",
+   "type": "ReactNode",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "error",
+   "type": "{ title?: string; message?: string; }",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "success",
+   "type": "{ title?: string; hint?: string; usage?: { label: string; used: number; limitBefore: number; limitAfter: number; }; invoice?: { number: string; onOpen?(): void; }; }",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "trial",
+   "type": "{ text: string; reminder?: string; }",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "onContinue",
+   "type": "(id: string) => void",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "onBack",
+   "type": "() => void",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "onPay",
+   "type": "() => void",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "onRetry",
+   "type": "() => void",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "onUseOtherCard",
+   "type": "() => void",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "onDone",
+   "type": "() => void",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "doneLabel",
+   "type": "string",
+   "required": false,
+   "note": ""
+  }
+ ],
+ "events": [
+  "onBack",
+  "onChange",
+  "onContinue",
+  "onDone",
+  "onOpenChange",
+  "onPay",
+  "onRecommend",
+  "onRetry",
+  "onUseOtherCard"
+ ],
+ "states": [
+  "options",
+  "options-member",
+  "confirm-pack",
+  "confirm-plan",
+  "confirm-trial",
+  "processing",
+  "success",
+  "error",
+  "trial",
+  "sheet"
+ ],
+ "notes": "",
+ "readme": "components/UpgradeDialog/README.md",
+ "preview": "components/UpgradeDialog/preview.html"
+}

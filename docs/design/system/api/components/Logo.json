@@ -1,0 +1,48 @@
+{
+ "name": "Logo",
+ "version": "1.0.1",
+ "kind": "component",
+ "group": "Hub",
+ "status": "changed",
+ "description": "The official Ventora logo files, embedded exactly as supplied: the mark, and the full logo with its own \"VENTORA\" wordmark. Never redrawn, recoloured or retyped in Syne.",
+ "exports": [
+  "Logo"
+ ],
+ "props": [
+  {
+   "name": "variant",
+   "type": "\"full\" | \"mark\"",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "size",
+   "type": "number",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "title",
+   "type": "string",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "className",
+   "type": "string",
+   "required": false,
+   "note": ""
+  }
+ ],
+ "events": [],
+ "states": [
+  "full",
+  "mark",
+  "favicon",
+  "light",
+  "dark"
+ ],
+ "notes": "",
+ "readme": "components/Logo/README.md",
+ "preview": "components/Logo/preview.html"
+}

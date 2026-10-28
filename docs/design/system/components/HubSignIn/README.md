@@ -1,6 +1,6 @@
 # HubSignIn
 
-Sign-in, invitation only (direction B): a brand panel on 46% of the width (logo, "Afacerea ta. Într-un singur loc." in `display-xl`; the title "Bine ai revenit" in `display-hub`, the chevron pattern, "© 2026 Ventora Systems") and the form on the sheet, without a card: e-mail, password with "Ai uitat parola?", remember me, language selector, and the note that accounts are created by invitation. No "Creează cont". The phone/dark frame shows the error state (Notice + invalid field).
+Sign-in, invitation only (direction B). The page is the AuthLayout component (S63): a brand panel on 46% of the width (logo, "Afacerea ta. Într-un singur loc." in `display-xl`; the title "Bine ai revenit" in `display-hub`, the chevron pattern, "© 2026 Ventora Systems") and the form on the sheet, without a card: e-mail, password with "Ai uitat parola?", remember me, language selector, and the note that accounts are created by invitation. No "Creează cont". The phone/dark frame shows the error state (Notice + invalid field).
 
 Shown at 1280 (desktop), 820 (tablet portrait) and 390 (phone), in light and dark, built only from the system's components. On phones the panel becomes a band with the logo and language, and the form rises over it; the footer keeps "© 2026 Ventora Systems · Termeni · Confidențialitate · Ajutor" there, while on desktop the © sits in the panel and the footer keeps the links.
 

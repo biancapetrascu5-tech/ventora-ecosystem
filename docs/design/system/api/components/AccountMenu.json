@@ -1,0 +1,120 @@
+{
+ "name": "AccountMenu",
+ "version": "1.1.0",
+ "kind": "component",
+ "group": "Hub",
+ "status": "changed",
+ "description": "The avatar in the ContextBar: who is signed in, account, theme, language, support, sign out.",
+ "exports": [
+  "AccountMenu"
+ ],
+ "props": [
+  {
+   "name": "user",
+   "type": "{ name: string; email?: string; avatar?: string; }",
+   "required": true,
+   "note": ""
+  },
+  {
+   "name": "onProfile",
+   "type": "() => void",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "onSupport",
+   "type": "() => void",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "onCatalog",
+   "type": "() => void",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "onSignOut",
+   "type": "() => void",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "theme",
+   "type": "\"light\" | \"dark\" | \"system\"",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "onThemeChange",
+   "type": "(v: \"light\" | \"dark\" | \"system\") => void",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "locale",
+   "type": "Locale",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "onLocaleChange",
+   "type": "(c: Locale) => void",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "orgs",
+   "type": "Org[]",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "currentOrgId",
+   "type": "string | number",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "onOrgChange",
+   "type": "(id: string | number) => void",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "orgsInMenu",
+   "type": "boolean",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "placement",
+   "type": "string",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "defaultOpen",
+   "type": "boolean",
+   "required": false,
+   "note": ""
+  }
+ ],
+ "events": [
+  "onCatalog",
+  "onLocaleChange",
+  "onOrgChange",
+  "onProfile",
+  "onSignOut",
+  "onSupport",
+  "onThemeChange"
+ ],
+ "states": [
+  "closed",
+  "open-desktop",
+  "open-phone-with-businesses"
+ ],
+ "notes": "",
+ "readme": "components/AccountMenu/README.md",
+ "preview": "components/AccountMenu/preview.html"
+}

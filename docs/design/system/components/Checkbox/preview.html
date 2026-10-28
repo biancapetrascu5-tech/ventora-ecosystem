@@ -1,4 +1,4 @@
-<!-- @dsCard group="Forms" height=280 -->
+<!-- @dsCard group="Forms" height=1390 width=1200 -->
 <!doctype html>
 <html lang="ro">
 <head><meta charset="utf-8"><title>Checkbox — Ventora</title>
@@ -250,6 +250,18 @@ html,body{min-height:100%}
 .fxframe .caption{color:var(--ink-muted)}
 @container (max-width:420px){.fxlang{grid-template-columns:32px minmax(0,1fr) auto}.fxlang .v-iconbtn{display:none}}
 
+/* c2: theme + locale frames */
+.pv{display:flex;flex-direction:column;gap:var(--space-4);padding:var(--space-4)}
+.pv-frame{display:flex;flex-direction:column;gap:var(--space-4);padding:var(--space-6);background:var(--canvas);color:var(--ink);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg);min-width:0}
+.pv-frame>.heading{margin:0}
+.pv-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:var(--space-5) var(--space-4);align-items:start}
+.pv-grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--space-5) var(--space-4);align-items:start}
+.pv-grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--space-5) var(--space-4);align-items:start}
+.pv-cell{display:flex;flex-direction:column;gap:var(--space-2);min-width:0}
+.pv-lab{margin:0;color:var(--ink-muted)}
+.pv-box{padding:var(--space-4);background:var(--sheet);border:var(--border-width) solid var(--line);border-radius:var(--radius-md);min-width:0;color:var(--ink)}
+.pv-stage{position:relative;overflow:hidden;border:var(--border-width) solid var(--line-strong);border-radius:var(--radius-lg);background:var(--canvas);color:var(--ink)}
+.pv-note{margin:0;color:var(--ink-muted)}
 </style>
 </head>
 <body>
@@ -262,10 +274,35 @@ const DE = ({ children }) => /* @__PURE__ */ React.createElement(V.LocaleProvide
 const FR = ({ children }) => /* @__PURE__ */ React.createElement(V.LocaleProvider, { locale: "fr" }, children);
 const IT = ({ children }) => /* @__PURE__ */ React.createElement(V.LocaleProvider, { locale: "it" }, children);
 const mount = (el) => ReactDOM.createRoot(document.getElementById("root")).render(/* @__PURE__ */ React.createElement(V.LocaleProvider, { locale: "ro" }, el));
-function Demo() {
-  return /* @__PURE__ */ React.createElement("div", { className: "d g2" }, /* @__PURE__ */ React.createElement("div", { className: "d0" }, /* @__PURE__ */ React.createElement(V.Checkbox, { label: "Trimite reamintire cu 24 de ore \xEEnainte", defaultChecked: true }), /* @__PURE__ */ React.createElement(V.Checkbox, { label: "Hover", state: "hover" }), /* @__PURE__ */ React.createElement(V.Checkbox, { label: "Focus", state: "focus", defaultChecked: true }), /* @__PURE__ */ React.createElement(V.Checkbox, { label: "Ap\u0103sat", state: "pressed" }), /* @__PURE__ */ React.createElement(V.Checkbox, { label: "Selec\u021Bie par\u021Bial\u0103", indeterminate: true })), /* @__PURE__ */ React.createElement("div", { className: "d0" }, /* @__PURE__ */ React.createElement(V.Checkbox, { label: "Accept termenii", invalid: true, description: "Bifeaz\u0103 ca s\u0103 continui." }), /* @__PURE__ */ React.createElement(V.Checkbox, { label: "Dezactivat", disabled: true }), /* @__PURE__ */ React.createElement(V.Checkbox, { label: "Dezactivat, bifat", disabled: true, defaultChecked: true }), /* @__PURE__ */ React.createElement(DE, null, /* @__PURE__ */ React.createElement(V.Checkbox, { label: "Erinnerung 24 Stunden vorher senden", description: "Per SMS und E-Mail an die Kundin.", defaultChecked: true }))));
+/* c2: every README state, Light/Dark frames (data-theme on the frame), DE/IT with translated texts. */
+const h = React.createElement;
+const noop = () => {};
+const Cell = ({ label, children, style }) => h("div", { className: "pv-cell", style }, h("p", { className: "caption pv-lab" }, label), children);
+const FRAMES = [["light", "ro", "Light"], ["dark", "ro", "Dark"], ["light", "de", "Deutsch \u00b7 Light"], ["dark", "it", "Italiano \u00b7 Dark"]];
+const Frames = ({ Board, top }) => h("div", { className: "pv" }, top, FRAMES.map(([th, lang, lab], i) => h("section", { key: lab, className: "pv-frame", "data-theme": th }, h("p", { className: "heading" }, lab), h(V.LocaleProvider, { locale: lang }, h(Board, { lang, theme: th, first: i === 0 })))));
+const CB_T = {
+  ro: { l: ["Implicit · nebifat", "Bifat · cu descriere", "Hover", "Focus", "Apăsat", "Selecție parțială (antet „Selectează tot”)", "Eroare", "Dezactivat", "Dezactivat · bifat"],
+    off: "Cere confirmarea programării", on: "Trimite reamintire cu 24 de ore înainte", onD: "Prin SMS și e-mail, către client.", hover: "Afișează prețurile în pagina afacerii", focus: "Mesaje despre facturile restante", pressed: "Notificări pentru proprietar", ind: "Toată echipa", err: "Accept termenii și condițiile", errD: "Bifează ca să continui.", dis: "Exportă și fișele de prezență", disOn: "Păstrează istoricul clientului" },
+  de: { l: ["Standard · nicht ausgewählt", "Ausgewählt · mit Beschreibung", "Hover", "Fokus", "Gedrückt", "Teilweise ausgewählt („Alle auswählen“)", "Fehler", "Deaktiviert", "Deaktiviert · ausgewählt"],
+    off: "Terminbestätigung anfordern", on: "Erinnerung 24 Stunden vorher senden", onD: "Per SMS und E-Mail an den Kunden.", hover: "Preise auf der Unternehmensseite anzeigen", focus: "Nachrichten zu überfälligen Rechnungen", pressed: "Benachrichtigungen für den Inhaber", ind: "Gesamtes Team", err: "Ich akzeptiere die Geschäftsbedingungen", errD: "Bitte bestätigen Sie, um fortzufahren.", dis: "Auch Anwesenheitslisten exportieren", disOn: "Kundenverlauf aufbewahren" },
+  it: { l: ["Predefinito · non selezionato", "Selezionato · con descrizione", "Hover", "Focus", "Premuto", "Selezione parziale („Seleziona tutto”)", "Errore", "Disattivato", "Disattivato · selezionato"],
+    off: "Richiedi la conferma dell’appuntamento", on: "Invia un promemoria 24 ore prima", onD: "Via SMS ed e-mail al cliente.", hover: "Mostra i prezzi sulla pagina dell’attività", focus: "Messaggi sulle fatture scadute", pressed: "Notifiche per il titolare", ind: "Tutto il team", err: "Accetto i termini e le condizioni", errD: "Selezioni la casella per continuare.", dis: "Esporta anche i fogli presenze", disOn: "Conserva lo storico del cliente" }
+};
+function Board({ lang }) {
+  const T = CB_T[lang], L = T.l;
+  return h("div", { className: "pv-grid" },
+    h(Cell, { label: L[0] }, h(V.Checkbox, { label: T.off })),
+    h(Cell, { label: L[1] }, h(V.Checkbox, { label: T.on, description: T.onD, defaultChecked: true })),
+    h(Cell, { label: L[2] }, h(V.Checkbox, { label: T.hover, state: "hover" })),
+    h(Cell, { label: L[3] }, h(V.Checkbox, { label: T.focus, state: "focus", defaultChecked: true })),
+    h(Cell, { label: L[4] }, h(V.Checkbox, { label: T.pressed, state: "pressed" })),
+    h(Cell, { label: L[5] }, h(V.Checkbox, { label: T.ind, indeterminate: true })),
+    h(Cell, { label: L[6] }, h(V.Checkbox, { label: T.err, invalid: true, description: T.errD })),
+    h(Cell, { label: L[7] }, h(V.Checkbox, { label: T.dis, disabled: true })),
+    h(Cell, { label: L[8] }, h(V.Checkbox, { label: T.disOn, disabled: true, defaultChecked: true })));
 }
-mount(/* @__PURE__ */ React.createElement(Demo, null));
+mount(h(Frames, { Board }));
+
 </script>
 </body>
 </html>

@@ -16,3 +16,4 @@ core/organizations/generated/
 core/access/generated/
 *.tsbuildinfo
 screenshots/
+docs/design/_incoming/

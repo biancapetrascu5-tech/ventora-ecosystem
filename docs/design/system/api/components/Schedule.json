@@ -1,0 +1,101 @@
+{
+ "name": "Schedule",
+ "version": "1.0.1",
+ "kind": "component",
+ "group": "Data",
+ "status": "changed",
+ "description": "The calendar grid behind every time-based view: day (one column), week (seven day columns) and resources (one column per person, room or chair), with the peach \"now\" line.",
+ "exports": [
+  "Schedule"
+ ],
+ "props": [
+  {
+   "name": "columns",
+   "type": "{ id: string; label: string; sub?: string; person?: string; today?: boolean; closed?: string; }[]",
+   "required": true,
+   "note": ""
+  },
+  {
+   "name": "events",
+   "type": "ScheduleEvent[]",
+   "required": true,
+   "note": ""
+  },
+  {
+   "name": "from",
+   "type": "number",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "to",
+   "type": "number",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "now",
+   "type": "string",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "nowColumn",
+   "type": "string",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "onEventClick",
+   "type": "(e: ScheduleEvent) => void",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "onSlotClick",
+   "type": "(columnId: string, time: string) => void",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "height",
+   "type": "string | number",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "minColumnWidth",
+   "type": "number",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "activeId",
+   "type": "string",
+   "required": false,
+   "note": ""
+  }
+ ],
+ "events": [
+  "onEventClick",
+  "onSlotClick"
+ ],
+ "states": [
+  "confirmed",
+  "unconfirmed",
+  "now",
+  "done",
+  "cancelled",
+  "noshow",
+  "blocked",
+  "overlap",
+  "closed-column",
+  "today-column",
+  "active",
+  "resources-view",
+  "week-view"
+ ],
+ "notes": "",
+ "readme": "components/Schedule/README.md",
+ "preview": "components/Schedule/preview.html"
+}

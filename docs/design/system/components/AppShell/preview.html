@@ -1,4 +1,4 @@
-<!-- @dsCard group="Shell" height=640 width=1280 -->
+<!-- @dsCard group="Shell" height=6604 width=1280 -->
 <!doctype html>
 <html lang="ro">
 <head><meta charset="utf-8"><title>AppShell — Ventora</title>
@@ -250,6 +250,9 @@ html,body{min-height:100%}
 .fxframe .caption{color:var(--ink-muted)}
 @container (max-width:420px){.fxlang{grid-template-columns:32px minmax(0,1fr) auto}.fxlang .v-iconbtn{display:none}}
 
+.thgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(520px,100%),1fr));gap:var(--space-4);align-items:start}
+.thf{display:flex;flex-direction:column;gap:var(--space-4);padding:var(--space-5);background:var(--canvas);color:var(--ink);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg);min-width:0;box-sizing:border-box}
+.thf .thl{margin:0;color:var(--ink-muted);font-weight:600}
 </style>
 </head>
 <body>
@@ -278,10 +281,10 @@ const ORGS = [
   { id: "nord", name: "Agen\u021Bia Nord Studio", role: "Manager de proiect" }
 ];
 const NOTIFS = [
-  { id: 1, title: "Programare nou\u0103 de la Ana Popescu", body: "Joi, 29 oct., 14:30 \xB7 Tuns", app: "Booking", time: "acum 5 min", person: "Ana Popescu" },
-  { id: 2, title: "Factura #2026-114 e restant\u0103 de 3 zile", body: "Clinica Dentis \xB7 1.250 lei", app: "Finance", time: "acum 2 ore", icon: "receipt" },
-  { id: 3, title: "Ioana a cerut concediu pe 2\u20136 noiembrie", app: "HR", time: "ieri", person: "Ioana Pavel", read: true },
-  { id: 4, title: "Exportul clien\u021Bilor e gata", app: "CRM", time: "ieri", icon: "download", read: true }
+  { id: 1, title: "Programare nou\u0103 de la Ana Popescu", body: "Joi, 29 oct., 14:30 \xB7 Tuns", app: "EasyBook", time: "acum 5 min", person: "Ana Popescu" },
+  { id: 2, title: "Factura #2026-114 e restant\u0103 de 3 zile", body: "Clinica Dentis \xB7 1.250 lei", app: "MoneyDesk", time: "acum 2 ore", icon: "receipt" },
+  { id: 3, title: "Ioana a cerut concediu pe 2\u20136 noiembrie", app: "TeamSpace", time: "ieri", person: "Ioana Pavel", read: true },
+  { id: 4, title: "Exportul clien\u021Bilor e gata", app: "ClientDesk", time: "ieri", icon: "download", read: true }
 ];
 const USER = { name: "Bianca Petra\u0219cu", email: "bianca@ventora-hub.com" };
 function Bar({ title, de }) {
@@ -312,7 +315,7 @@ function BookingShell({ height, active, mobile }) {
       height,
       spine: /* @__PURE__ */ React.createElement(V.Spine, { app: "booking", sections: SECTIONS, activeId: active, onBackToHub: () => {
       }, footer: /* @__PURE__ */ React.createElement(V.UsageMeter, { compact: true, label: "Program\u0103ri", used: 312, limit: 1e3 }) }),
-      contextBar: /* @__PURE__ */ React.createElement(Bar, { title: "Booking" })
+      contextBar: /* @__PURE__ */ React.createElement(Bar, { title: "EasyBook" })
     },
     /* @__PURE__ */ React.createElement(V.PageHeader, { title: "Program\u0103ri", description: mobile ? void 0 : "Toate program\u0103rile afacerii, de azi \xEEnainte.", actions: mobile ? void 0 : /* @__PURE__ */ React.createElement(V.SegmentedControl, { label: "Vizualizare", size: "md", defaultValue: "list", options: [{ value: "list", label: "List\u0103", icon: "list" }, { value: "cal", label: "Calendar", icon: "calendar" }] }) }),
     /* @__PURE__ */ React.createElement(V.DataTable, { columns: [
@@ -324,10 +327,68 @@ function BookingShell({ height, active, mobile }) {
     } } })
   );
 }
-function Demo() {
-  return /* @__PURE__ */ React.createElement("div", { style: { height: 640 } }, /* @__PURE__ */ React.createElement(BookingShell, { height: 640, active: "programari" }));
+const h = React.createElement;
+const Frame = ({ th, label, children, style }) => h("section", { "data-theme": th, className: "thf", style }, h("p", { className: "caption thl" }, (th === "dark" ? "Dark" : "Light") + (label ? " · " + label : "")), children);
+const noop = () => {
+};
+const SECTIONS_IT = [
+  { items: [{ id: "oggi", label: "Oggi", icon: "house" }, { id: "calendario", label: "Calendario", icon: "calendar" }, { id: "appuntamenti", label: "Appuntamenti", icon: "list", badge: 3 }] },
+  { label: "Gestione", items: [{ id: "clienti", label: "Clienti", icon: "users" }, { id: "servizi", label: "Servizi", icon: "boxes" }, { id: "dipendenti", label: "Dipendenti", icon: "contact" }] },
+  { label: "Attività", items: [{ id: "report", label: "Report", icon: "chart-column" }, { id: "impostazioni", label: "Impostazioni", icon: "settings" }] }
+];
+const SL = {
+  ro: { sections: SECTIONS, active: "programari", bottom: ["azi", "calendar", "programari", "clienti"], orgs: ORGS, org: "aurora", create: ["Programare", "Client"], notifs: NOTIFS, user: USER, usage: "Programări", title: "Programări", desc: "Toate programările afacerii, de azi înainte.", view: ["Vizualizare", "Listă", "Calendar"], cols: ["Client", "Serviciu", "Ora", "Stare"], rows: SHELL_ROWS, open: "Deschide" },
+  de: { sections: SECTIONS_DE, active: "termine", bottom: ["heute", "kalender", "termine", "kunden"], orgs: [{ id: 1, name: "Zahnarztpraxis Dr. Müller", role: "Empfang" }, { id: 2, name: "Friseursalon Schönhaar", role: "Inhaber" }], org: 1, create: ["Termin", "Kunde"], notifs: [
+    { id: 1, title: "Neuer Termin von Jürgen Weiß", body: "Donnerstag, 29. Okt., 14:30 · Haarschnitt", app: "EasyBook", time: "vor 5 Min.", person: "Jürgen Weiß" },
+    { id: 2, title: "Rechnung #2026-114 ist seit 3 Tagen überfällig", body: "Zahnarztpraxis Dr. Müller · 1.250 lei", app: "MoneyDesk", time: "vor 2 Std.", icon: "receipt" }
+  ], user: { name: "Jürgen Weiß", email: "juergen@schoenhaar.de" }, usage: "Termine", title: "Terminübersicht", desc: "Alle Termine Ihres Unternehmens, ab heute.", view: ["Ansicht", "Liste", "Kalender"], cols: ["Kunde", "Leistung", "Uhrzeit", "Status"], rows: [
+    { id: 1, client: "Anna Müller", service: "Haarschnitt", when: "09:30", status: ["done", "Bestätigt"] },
+    { id: 2, client: "Sören Kühn", service: "Ansatzfärbung", when: "11:00", status: ["attention", "Läuft gerade"] },
+    { id: 3, client: "Käthe Vogel", service: "Gesichtsbehandlung", when: "13:15", status: ["neutral", "Unbestätigt"] },
+    { id: 4, client: "Björn Mäder", service: "Herrenhaarschnitt", when: "15:00", status: ["done", "Bestätigt"] }
+  ], open: "Öffnen" },
+  it: { sections: SECTIONS_IT, active: "appuntamenti", bottom: ["oggi", "calendario", "appuntamenti", "clienti"], orgs: [{ id: 1, name: "Studio dentistico Bianchi", role: "Reception" }, { id: 2, name: "Salone Bellezza", role: "Titolare" }], org: 2, create: ["Appuntamento", "Cliente"], notifs: [
+    { id: 1, title: "Nuovo appuntamento da Niccolò Lucà", body: "Giovedì 29 ott., 14:30 · Taglio", app: "EasyBook", time: "5 min fa", person: "Niccolò Lucà" },
+    { id: 2, title: "La fattura #2026-114 è scaduta da 3 giorni", body: "Studio dentistico Bianchi · 1.250 lei", app: "MoneyDesk", time: "2 ore fa", icon: "receipt" }
+  ], user: { name: "Niccolò Lucà", email: "niccolo@salonebellezza.it" }, usage: "Appuntamenti", title: "Appuntamenti", desc: "Tutti gli appuntamenti della Sua attività, da oggi in poi.", view: ["Vista", "Elenco", "Calendario"], cols: ["Cliente", "Servizio", "Ora", "Stato"], rows: [
+    { id: 1, client: "Giulia Ferrara", service: "Taglio", when: "09:30", status: ["done", "Confermato"] },
+    { id: 2, client: "Fabrizio Nicolò", service: "Colore alla radice", when: "11:00", status: ["attention", "In corso"] },
+    { id: 3, client: "Chiara Mancini", service: "Trattamento viso", when: "13:15", status: ["neutral", "Non confermato"] },
+    { id: 4, client: "Matteo Rossi", service: "Taglio uomo", when: "15:00", status: ["done", "Confermato"] }
+  ], open: "Apri" }
+};
+function Shell({ L, mobile }) {
+  return h(V.AppShell, {
+    height: 640,
+    spine: h(V.Spine, { app: "booking", sections: L.sections, activeId: L.active, bottomItems: L.bottom, onBackToHub: noop, footer: h(V.UsageMeter, { compact: true, label: L.usage, used: 312, limit: 1e3 }) }),
+    contextBar: h(V.ContextBar, { title: "EasyBook", org: h(V.OrgSwitcher, { orgs: L.orgs, currentId: L.org }), onSearch: noop, createItems: [{ label: L.create[0], icon: "calendar-check", shortcut: ["N"] }, { label: L.create[1], icon: "user-plus" }], notifications: h(V.NotificationsPanel, { items: L.notifs }), account: h(V.AccountMenu, { user: L.user, orgs: L.orgs, currentOrgId: L.org, onCatalog: noop }) })
+  },
+    h(V.PageHeader, { title: L.title, description: mobile ? void 0 : L.desc, actions: mobile ? void 0 : h(V.SegmentedControl, { label: L.view[0], size: "md", defaultValue: "list", options: [{ value: "list", label: L.view[1], icon: "list" }, { value: "cal", label: L.view[2], icon: "calendar" }] }) }),
+    h(V.DataTable, { columns: [
+      { key: "client", header: L.cols[0], primary: true, sortable: true },
+      { key: "service", header: L.cols[1], secondary: true },
+      { key: "when", header: L.cols[2], secondary: true },
+      { key: "status", header: L.cols[3], trailing: true, render: (r) => h(V.StatusPill, { tone: r.status[0] }, r.status[1]) }
+    ], rows: L.rows, rowActions: () => [{ label: L.open, icon: "external-link" }], pagination: { page: 1, pageSize: 20, total: 4, onPageChange: noop } }));
 }
-mount(/* @__PURE__ */ React.createElement(Demo, null));
+const Box = ({ w, children }) => h("div", { style: { width: w, maxWidth: "100%", height: 640, overflow: "hidden", border: "var(--border-width) solid var(--line-strong)", borderRadius: "var(--radius-lg)" } }, children);
+const Pair = ({ children }) => h("div", { style: { display: "flex", gap: "var(--space-4)", alignItems: "flex-start", flexWrap: "wrap" } }, children);
+function Demo() {
+  return h("div", { className: "d" },
+    h(Frame, { th: "light", label: "peste 1024px: Spine întins" }, h(Box, { w: "100%" }, h(Shell, { L: SL.ro }))),
+    h(Frame, { th: "dark", label: "peste 1024px: Spine întins" }, h(Box, { w: "100%" }, h(Shell, { L: SL.ro }))),
+    h(Pair, null,
+      h(Frame, { th: "light", label: "768–1023px: Spine pe iconuri" }, h(Box, { w: 820 }, h(Shell, { L: SL.ro }))),
+      h(Frame, { th: "dark", label: "sub 768px: bara de jos" }, h(Box, { w: 390 }, h(Shell, { L: SL.ro, mobile: true })))),
+    h(Frame, { th: "light", label: "Deutsch · 1280px" }, h(DE, null, h(Box, { w: "100%" }, h(Shell, { L: SL.de })))),
+    h(Pair, null,
+      h(Frame, { th: "dark", label: "Deutsch · Tablet" }, h(DE, null, h(Box, { w: 820 }, h(Shell, { L: SL.de })))),
+      h(Frame, { th: "light", label: "Italiano · 390px" }, h(IT, null, h(Box, { w: 390 }, h(Shell, { L: SL.it, mobile: true }))))),
+    h(Pair, null,
+      h(Frame, { th: "light", label: "Italiano · Tablet" }, h(IT, null, h(Box, { w: 820 }, h(Shell, { L: SL.it })))),
+      h(Frame, { th: "dark", label: "Deutsch · 390px" }, h(DE, null, h(Box, { w: 390 }, h(Shell, { L: SL.de, mobile: true }))))));
+}
+mount(h(Demo, null));
 </script>
 </body>
 </html>

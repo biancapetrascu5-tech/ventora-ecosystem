@@ -1,4 +1,4 @@
-<!-- @dsCard group="Overlays" height=420 -->
+<!-- @dsCard group="Overlays" height=4410 width=1200 -->
 <!doctype html>
 <html lang="ro">
 <head><meta charset="utf-8"><title>Dialog — Ventora</title>
@@ -250,6 +250,18 @@ html,body{min-height:100%}
 .fxframe .caption{color:var(--ink-muted)}
 @container (max-width:420px){.fxlang{grid-template-columns:32px minmax(0,1fr) auto}.fxlang .v-iconbtn{display:none}}
 
+/* c2: theme + locale frames */
+.pv{display:flex;flex-direction:column;gap:var(--space-4);padding:var(--space-4)}
+.pv-frame{display:flex;flex-direction:column;gap:var(--space-4);padding:var(--space-6);background:var(--canvas);color:var(--ink);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg);min-width:0}
+.pv-frame>.heading{margin:0}
+.pv-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:var(--space-5) var(--space-4);align-items:start}
+.pv-grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--space-5) var(--space-4);align-items:start}
+.pv-grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--space-5) var(--space-4);align-items:start}
+.pv-cell{display:flex;flex-direction:column;gap:var(--space-2);min-width:0}
+.pv-lab{margin:0;color:var(--ink-muted)}
+.pv-box{padding:var(--space-4);background:var(--sheet);border:var(--border-width) solid var(--line);border-radius:var(--radius-md);min-width:0;color:var(--ink)}
+.pv-stage{position:relative;overflow:hidden;border:var(--border-width) solid var(--line-strong);border-radius:var(--radius-lg);background:var(--canvas);color:var(--ink)}
+.pv-note{margin:0;color:var(--ink-muted)}
 </style>
 </head>
 <body>
@@ -262,23 +274,59 @@ const DE = ({ children }) => /* @__PURE__ */ React.createElement(V.LocaleProvide
 const FR = ({ children }) => /* @__PURE__ */ React.createElement(V.LocaleProvider, { locale: "fr" }, children);
 const IT = ({ children }) => /* @__PURE__ */ React.createElement(V.LocaleProvider, { locale: "it" }, children);
 const mount = (el) => ReactDOM.createRoot(document.getElementById("root")).render(/* @__PURE__ */ React.createElement(V.LocaleProvider, { locale: "ro" }, el));
-function Demo() {
-  const [open, setOpen] = useState(true);
-  return /* @__PURE__ */ React.createElement("div", { className: "d" }, /* @__PURE__ */ React.createElement(Row, { label: "Deschide" }, /* @__PURE__ */ React.createElement(V.Button, { variant: "danger", onClick: () => setOpen(true) }, "Anuleaz\u0103 programarea")), /* @__PURE__ */ React.createElement(
-    V.Dialog,
-    {
-      open,
-      onOpenChange: setOpen,
-      tone: "danger",
-      icon: "triangle-alert",
-      title: "Anulezi programarea?",
-      description: "Ana Popescu \xB7 joi, 29 octombrie, 14:30 \xB7 Tuns. \xCEi trimitem automat un SMS c\u0103 programarea s-a anulat.",
-      footer: /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(V.Button, { onClick: () => setOpen(false) }, "P\u0103streaz\u0103 programarea"), /* @__PURE__ */ React.createElement(V.Button, { variant: "danger", onClick: () => setOpen(false) }, "Anuleaz\u0103 programarea"))
-    },
-    /* @__PURE__ */ React.createElement(V.FormField, { label: "Motiv (op\u021Bional)" }, /* @__PURE__ */ React.createElement(V.Textarea, { rows: 2, placeholder: "\xCEl trimitem \u0219i clientului" }))
-  ));
+/* c2: every README state, Light/Dark frames (data-theme on the frame), DE/IT with translated texts. */
+const h = React.createElement;
+const noop = () => {};
+const Cell = ({ label, children, style }) => h("div", { className: "pv-cell", style }, h("p", { className: "caption pv-lab" }, label), children);
+const FRAMES = [["light", "ro", "Light"], ["dark", "ro", "Dark"], ["light", "de", "Deutsch \u00b7 Light"], ["dark", "it", "Italiano \u00b7 Dark"]];
+const Frames = ({ Board, top }) => h("div", { className: "pv" }, top, FRAMES.map(([th, lang, lab], i) => h("section", { key: lab, className: "pv-frame", "data-theme": th }, h("p", { className: "heading" }, lab), h(V.LocaleProvider, { locale: lang }, h(Board, { lang, theme: th, first: i === 0 })))));
+const DG_T = {
+  ro: { l: ["Distructiv (danger · alertdialog)", "Implicit · formular scurt", "Atenție · „au nevoie de tine”", "Lat (wide) · fără închidere la Esc/scrim"],
+    t1: "Anulezi programarea?", d1: "Ana Popescu · joi, 29 octombrie, 14:30 · Tuns. Îi trimitem automat un SMS că programarea s-a anulat.", keep: "Păstrează programarea", cancel: "Anulează programarea", reason: "Motiv (opțional)", reasonPh: "Îl trimitem și clientului",
+    t2: "Muți programarea lui Ștefan?", d2: "Tuns · aceeași oră, 14:30. Ștefan Țăranu primește o reamintire nouă.", who: "Ioana Pavel", when: "Data nouă", staff: "Angajat", back: "Renunță", move: "Mută programarea",
+    t3: "Telefonul afacerii e deconectat", d3: "3 reamintiri așteaptă să plece. Deschide aplicația Ventora pe telefon ca să le trimiți.", later: "Mai târziu", fix: "Vezi telefonul",
+    t4: "Cere alt abonament", d4: "Bianca Petrașcu (proprietar) primește cererea ta și alege abonamentul. Până atunci, totul rămâne cum e.", plan: "Abonament dorit", note: "Mesaj pentru proprietar", notePh: "De ce ai nevoie de mai multe programări pe lună", send: "Trimite cererea",
+    open: "Deschide (modal)", trig: "Anulează programarea" },
+  de: { l: ["Destruktiv (danger · alertdialog)", "Standard · kurzes Formular", "Achtung · „wartet auf Sie“", "Breit (wide) · ohne Schließen per Esc/Hintergrund"],
+    t1: "Termin absagen?", d1: "Anna Müller · Donnerstag, 29. Oktober, 14:30 · Haarschnitt. Wir senden automatisch eine SMS, dass der Termin abgesagt wurde.", keep: "Termin behalten", cancel: "Termin absagen", reason: "Grund (optional)", reasonPh: "Wir senden ihn auch an den Kunden",
+    t2: "Termin von Jürgen verschieben?", d2: "Haarschnitt · gleiche Uhrzeit, 14:30. Jürgen Köhler erhält eine neue Erinnerung.", who: "Johanna Pfeiffer", when: "Neues Datum", staff: "Mitarbeiter", back: "Abbrechen", move: "Termin verschieben",
+    t3: "Das Geschäftstelefon ist getrennt", d3: "3 Erinnerungen warten auf den Versand. Öffnen Sie die Ventora-App auf dem Telefon, um sie zu senden.", later: "Später", fix: "Telefon ansehen",
+    t4: "Anderes Abonnement anfragen", d4: "Bianca Petrașcu (Inhaber) erhält Ihre Anfrage und wählt das Abonnement. Bis dahin bleibt alles, wie es ist.", plan: "Gewünschtes Abonnement", note: "Nachricht an den Inhaber", notePh: "Warum Sie mehr Termine pro Monat brauchen", send: "Anfrage senden" },
+  it: { l: ["Distruttivo (danger · alertdialog)", "Predefinito · modulo breve", "Attenzione · „in attesa di Lei”", "Largo (wide) · senza chiusura con Esc/sfondo"],
+    t1: "Annullare l’appuntamento?", d1: "Anna Rossi · giovedì 29 ottobre, 14:30 · Taglio. Inviamo automaticamente un SMS per avvisare che l’appuntamento è annullato.", keep: "Mantieni l’appuntamento", cancel: "Annulla l’appuntamento", reason: "Motivo (facoltativo)", reasonPh: "Lo inviamo anche al cliente",
+    t2: "Spostare l’appuntamento di Niccolò?", d2: "Taglio · stesso orario, 14:30. Niccolò Lucà riceve un nuovo promemoria.", who: "Giovanna Conti", when: "Nuova data", staff: "Dipendente", back: "Annulla", move: "Sposta l’appuntamento",
+    t3: "Il telefono dell’attività è scollegato", d3: "3 promemoria sono in attesa di invio. Apra l’app Ventora sul telefono per inviarli.", later: "Più tardi", fix: "Vedi il telefono",
+    t4: "Richiedi un altro abbonamento", d4: "Bianca Petrașcu (titolare) riceve la Sua richiesta e sceglie l’abbonamento. Fino ad allora tutto resta com’è.", plan: "Abbonamento desiderato", note: "Messaggio per il titolare", notePh: "Perché Le servono più appuntamenti al mese", send: "Invia la richiesta" }
+};
+function Board({ lang }) {
+  const T = DG_T[lang], L = T.l, D = new Date(2026, 9, 24);
+  return h("div", { className: "pv-cell", style: { gap: "var(--space-5)" } },
+    h("div", { className: "pv-grid2" },
+      h(Cell, { label: L[0] }, h(V.Dialog, { inline: true, open: true, onOpenChange: noop, tone: "danger", icon: "triangle-alert", title: T.t1, description: T.d1,
+        footer: h(React.Fragment, null, h(V.Button, null, T.keep), h(V.Button, { variant: "danger" }, T.cancel)) },
+        h(V.FormField, { label: T.reason }, h(V.Textarea, { rows: 2, placeholder: T.reasonPh })))),
+      h(Cell, { label: L[1] }, h(V.Dialog, { inline: true, open: true, onOpenChange: noop, icon: "calendar", title: T.t2, description: T.d2,
+        footer: h(React.Fragment, null, h(V.Button, null, T.back), h(V.Button, { variant: "primary" }, T.move)) },
+        h(V.FormField, { label: T.when }, h(V.DatePicker, { today: D, defaultValue: new Date(2026, 9, 30) })),
+        h(V.FormField, { label: T.staff }, h(V.Select, { defaultValue: "i", options: [{ value: "i", label: T.who }] })))),
+      h(Cell, { label: L[2] }, h(V.Dialog, { inline: true, open: true, onOpenChange: noop, tone: "attention", icon: "smartphone", title: T.t3, description: T.d3,
+        footer: h(React.Fragment, null, h(V.Button, null, T.later), h(V.Button, { variant: "primary" }, T.fix)) }))),
+    h(Cell, { label: L[3] }, h(V.Dialog, { inline: true, open: true, onOpenChange: noop, size: "wide", dismissible: false, icon: "credit-card", title: T.t4, description: T.d4,
+      footer: h(React.Fragment, null, h(V.Button, null, T.back), h(V.Button, { variant: "primary", icon: "send" }, T.send)) },
+      h(V.FormField, { label: T.plan }, h(V.Select, { defaultValue: "b", options: [{ value: "b", label: "Business" }] })),
+      h(V.FormField, { label: T.note }, h(V.Textarea, { rows: 2, placeholder: T.notePh })))));
 }
-mount(/* @__PURE__ */ React.createElement(Demo, null));
+function Top() {
+  const [open, setOpen] = useState(false);
+  const T = DG_T.ro;
+  return h("div", { className: "d", style: { padding: "0 var(--space-2)" } },
+    h(Row, { label: T.open }, h(V.Button, { variant: "danger", onClick: () => setOpen(true) }, T.trig)),
+    h(V.Dialog, { open, onOpenChange: setOpen, tone: "danger", icon: "triangle-alert", title: T.t1, description: T.d1,
+      footer: h(React.Fragment, null, h(V.Button, { onClick: () => setOpen(false) }, T.keep), h(V.Button, { variant: "danger", onClick: () => setOpen(false) }, T.cancel)) },
+      h(V.FormField, { label: T.reason }, h(V.Textarea, { rows: 2, placeholder: T.reasonPh }))));
+}
+mount(h(Frames, { Board, top: h(Top) }));
+
 </script>
 </body>
 </html>

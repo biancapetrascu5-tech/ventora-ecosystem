@@ -1,0 +1,92 @@
+{
+ "name": "Toast",
+ "version": "1.0.1",
+ "kind": "component",
+ "group": "Overlays",
+ "status": "changed",
+ "description": "A brief confirmation after an action, with \"Anulează\" (undo) whenever the action can be reversed.",
+ "exports": [
+  "Toast",
+  "ToastProvider"
+ ],
+ "props": [
+  {
+   "name": "title",
+   "type": "ReactNode",
+   "required": true,
+   "note": ""
+  },
+  {
+   "name": "description",
+   "type": "ReactNode",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "tone",
+   "type": "Tone",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "onUndo",
+   "type": "() => void",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "action",
+   "type": "{ label: string; onClick?(): void; }",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "duration",
+   "type": "number",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "loading",
+   "type": "boolean",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "onDismiss",
+   "type": "() => void",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "children",
+   "type": "ReactNode",
+   "required": false,
+   "note": "",
+   "of": "ToastProvider"
+  },
+  {
+   "name": "duration",
+   "type": "number",
+   "required": false,
+   "note": "",
+   "of": "ToastProvider"
+  }
+ ],
+ "events": [
+  "onDismiss",
+  "onUndo"
+ ],
+ "states": [
+  "neutral",
+  "undo",
+  "done",
+  "attention",
+  "action",
+  "danger",
+  "loading"
+ ],
+ "notes": "",
+ "readme": "components/Toast/README.md",
+ "preview": "components/Toast/preview.html"
+}

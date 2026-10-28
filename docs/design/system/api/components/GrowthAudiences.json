@@ -1,0 +1,25 @@
+{
+ "name": "GrowthAudiences",
+ "version": "1.0.1",
+ "kind": "page",
+ "group": "Founder",
+ "status": "changed",
+ "description": "Saved audiences: name, rules in short, estimated count only, where they are used. Under 5 businesses the count is not shown.",
+ "exports": [],
+ "props": [],
+ "events": [],
+ "states": [
+  "Growth — Audiențe: segmente salvate, doar cu numărul estimat",
+  "Model comercial",
+  "Growth",
+  "Sistem",
+  "Afaceri",
+  "Consum",
+  "Campanii",
+  "Control",
+  "Mai multe"
+ ],
+ "notes": "States are the labelled boards and frames of the preview (Light and Dark; desktop/tablet/phone).",
+ "readme": "components/GrowthAudiences/README.md",
+ "preview": "components/GrowthAudiences/preview.html"
+}

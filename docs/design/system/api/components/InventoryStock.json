@@ -1,0 +1,30 @@
+{
+ "name": "InventoryStock",
+ "version": "1.0.1",
+ "kind": "page",
+ "group": "Ecrane aplicații",
+ "status": "changed",
+ "description": "StockDesk — Stock with alerts: a peach Notice that names what ran out and what depends on it, with \"Pregătește comanda\"; each product's stock as a number and a small bar with the minimum marked; \"Sub minim\" peach, \"Epuizat\" red, \"Comandat\" neutral; \"Doar ce trebuie comandat\" filters the list.",
+ "exports": [],
+ "props": [],
+ "events": [],
+ "states": [
+  "default",
+  "out-of-stock",
+  "below-minimum",
+  "ordered",
+  "in-stock",
+  "alert-notice",
+  "only-to-order-filter",
+  "de",
+  "it",
+  "light",
+  "dark",
+  "desktop",
+  "tablet",
+  "mobile"
+ ],
+ "notes": "",
+ "readme": "components/InventoryStock/README.md",
+ "preview": "components/InventoryStock/preview.html"
+}

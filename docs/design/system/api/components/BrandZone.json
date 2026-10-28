@@ -1,0 +1,45 @@
+{
+ "name": "BrandZone",
+ "version": "1.0.1",
+ "kind": "component",
+ "group": "Hub",
+ "status": "changed",
+ "description": "A brand zone: the only place navy is a surface. Navy (`brand-surface` #000C3F) in light, a cool near-black (#1B1D23) in dark, because navy is never a surface in the dark theme.",
+ "exports": [
+  "BrandZone"
+ ],
+ "props": [
+  {
+   "name": "as",
+   "type": "string | number",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "className",
+   "type": "string",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "style",
+   "type": "any",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "children",
+   "type": "ReactNode",
+   "required": false,
+   "note": ""
+  }
+ ],
+ "events": [],
+ "states": [
+  "light",
+  "dark"
+ ],
+ "notes": "",
+ "readme": "components/BrandZone/README.md",
+ "preview": "components/BrandZone/preview.html"
+}

@@ -1,0 +1,97 @@
+{
+ "name": "Toggle",
+ "version": "1.0.1",
+ "kind": "component",
+ "group": "Forms",
+ "status": "changed",
+ "description": "An on/off setting that takes effect immediately (no Save button); role `switch`.",
+ "exports": [
+  "Toggle"
+ ],
+ "props": [
+  {
+   "name": "label",
+   "type": "ReactNode",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "description",
+   "type": "ReactNode",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "checked",
+   "type": "boolean",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "defaultChecked",
+   "type": "boolean",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "onChange",
+   "type": "(on: boolean) => void",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "disabled",
+   "type": "boolean",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "loading",
+   "type": "boolean",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "invalid",
+   "type": "boolean",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "labelPosition",
+   "type": "\"start\" | \"end\"",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "id",
+   "type": "string",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "state",
+   "type": "ForcedState",
+   "required": false,
+   "note": ""
+  }
+ ],
+ "events": [
+  "onChange"
+ ],
+ "states": [
+  "on",
+  "off",
+  "hover",
+  "focus",
+  "pressed",
+  "label-start",
+  "loading",
+  "invalid",
+  "disabled-on",
+  "disabled-off"
+ ],
+ "notes": "",
+ "readme": "components/Toggle/README.md",
+ "preview": "components/Toggle/preview.html"
+}

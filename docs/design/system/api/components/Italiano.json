@@ -1,0 +1,22 @@
+{
+ "name": "Italiano",
+ "version": "1.0.0",
+ "kind": "foundation",
+ "group": "Foundations",
+ "status": "same",
+ "description": "The sixth language checked on the components that carry built-in text — field errors, password toggle, date range with Monday-first calendar, character counter, pagination, access states, plan limits, locked app tiles, toast with undo, theme switcher, tabs — with Italian labels about 30% longer than Romanian. Italian uses the polite form (Lei).",
+ "exports": [],
+ "props": [],
+ "events": [],
+ "states": [
+  "Indirizzo e-mail della persona di contatto * (obbligatorio)",
+  "Password",
+  "Periodo del rapporto",
+  "Note interne per il team (facoltativo)",
+  "Disponibile",
+  "Temporaneamente non disponibile"
+ ],
+ "notes": "",
+ "readme": "components/Italiano/README.md",
+ "preview": "components/Italiano/preview.html"
+}

@@ -1,4 +1,4 @@
-<!-- @dsCard group="Actions" height=232 -->
+<!-- @dsCard group="Actions" height=1600 width=1200 -->
 <!doctype html>
 <html lang="ro">
 <head><meta charset="utf-8"><title>IconButton — Ventora</title>
@@ -250,6 +250,16 @@ html,body{min-height:100%}
 .fxframe .caption{color:var(--ink-muted)}
 @container (max-width:420px){.fxlang{grid-template-columns:32px minmax(0,1fr) auto}.fxlang .v-iconbtn{display:none}}
 
+/* c3: Light/Dark and DE/IT frames */
+.c3wrap{display:flex;flex-direction:column;min-width:0}
+.c3sec{display:flex;flex-direction:column;gap:var(--space-3);min-width:0}
+.c3h{margin:0;color:var(--ink)}
+.c3pair{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(360px,100%),1fr));gap:var(--space-4);align-items:start}
+.c3stack{display:flex;flex-direction:column;gap:var(--space-4);min-width:0}
+.c3f{display:flex;flex-direction:column;gap:var(--space-3);padding:var(--space-4);border:var(--border-width) solid var(--line);border-radius:var(--radius-md);background:var(--canvas);color:var(--ink);min-width:0;box-sizing:border-box}
+.c3lab{color:var(--ink-muted);margin:0}
+.c3kv{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:var(--space-2) var(--space-4);align-items:center}
+.c3ib{display:flex;align-items:center;gap:var(--space-3);min-width:0}
 </style>
 </head>
 <body>
@@ -265,7 +275,34 @@ const mount = (el) => ReactDOM.createRoot(document.getElementById("root")).rende
 function Demo() {
   return /* @__PURE__ */ React.createElement("div", { className: "d" }, ["quiet", "secondary", "primary"].map((v) => /* @__PURE__ */ React.createElement(Row, { key: v, label: v }, /* @__PURE__ */ React.createElement(V.IconButton, { variant: v, icon: "pencil", label: "Editeaz\u0103" }), /* @__PURE__ */ React.createElement(V.IconButton, { variant: v, icon: "pencil", label: "Editeaz\u0103", state: "hover" }), /* @__PURE__ */ React.createElement(V.IconButton, { variant: v, icon: "pencil", label: "Editeaz\u0103", state: "focus" }), /* @__PURE__ */ React.createElement(V.IconButton, { variant: v, icon: "pencil", label: "Editeaz\u0103", state: "pressed" }), /* @__PURE__ */ React.createElement(V.IconButton, { variant: v, icon: "pencil", label: "Editeaz\u0103", disabled: true }), /* @__PURE__ */ React.createElement(V.IconButton, { variant: v, icon: "pencil", label: "Editeaz\u0103", loading: true }))), /* @__PURE__ */ React.createElement(Row, { label: "Cu badge" }, /* @__PURE__ */ React.createElement(V.IconButton, { icon: "bell", label: "Notific\u0103ri, 3 necitite", badge: 3 }), /* @__PURE__ */ React.createElement(V.IconButton, { icon: "bell", label: "Notific\u0103ri noi", badge: true }), /* @__PURE__ */ React.createElement(V.IconButton, { icon: "ellipsis-vertical", label: "Ac\u021Biuni", size: "sm" }), /* @__PURE__ */ React.createElement(V.IconButton, { icon: "ellipsis-vertical", label: "Ac\u021Biuni", size: "lg" })));
 }
-mount(/* @__PURE__ */ React.createElement(Demo, null));
+const C3_ORIG = /* @__PURE__ */ React.createElement(Demo, null);
+const h = React.createElement;
+const C3Frame = ({ th, label, children, style }) => h("div", { className: "c3f", "data-theme": th, style }, h("p", { className: "caption c3lab" }, label), children);
+const C3Sec = ({ title, stack, children }) => h("div", { className: "c3sec" }, h("p", { className: "subheading c3h" }, title), h("div", { className: stack ? "c3stack" : "c3pair" }, children));
+const C3Themes = ({ render, stack, style }) => h(C3Sec, { title: "Light și Dark", stack }, h(C3Frame, { th: "light", label: "Light", style }, render("light")), h(C3Frame, { th: "dark", label: "Dark", style }, render("dark")));
+const C3Langs = ({ de, it, stack, style, itTheme }) => h(C3Sec, { title: "Germană și italiană — etichete mai lungi", stack }, h(V.LocaleProvider, { locale: "de" }, h(C3Frame, { th: "light", label: "Deutsch (de)", style }, de)), h(V.LocaleProvider, { locale: "it" }, h(C3Frame, { th: itTheme || "light", label: itTheme === "dark" ? "Italiano (it) \xB7 Dark" : "Italiano (it)", style }, it)));
+const IBStates = (variant, l) => h("div", { className: "r" }, h("span", { className: "l caption" }, variant),
+  h(V.IconButton, { variant, icon: "pencil", label: l }), h(V.IconButton, { variant, icon: "pencil", label: l, state: "hover" }), h(V.IconButton, { variant, icon: "pencil", label: l, state: "focus" }), h(V.IconButton, { variant, icon: "pencil", label: l, state: "pressed" }), h(V.IconButton, { variant, icon: "pencil", label: l, pressed: true }), h(V.IconButton, { variant, icon: "pencil", label: l, disabled: true }), h(V.IconButton, { variant, icon: "pencil", label: l, loading: true }));
+const IBT = {
+  ro: ["Editează", "Notificări, 3 necitite", "Notificări noi", "Acțiuni", "\xCEnchide", "Arată filtrele (activ)"],
+  de: ["Bearbeiten", "Benachrichtigungen, 3 ungelesen", "Neue Benachrichtigungen", "Aktionen", "Schlie\xDFen", "Filter anzeigen (aktiv)"],
+  it: ["Modifica", "Notifiche, 3 non lette", "Nuove notifiche", "Azioni", "Chiudi", "Mostra i filtri (attivo)"]
+};
+const IBNamed = (t) => h("div", { className: "c3stack" },
+  h("div", { className: "c3ib" }, h(V.IconButton, { icon: "pencil", label: t[0], variant: "secondary" }), h("span", { className: "body-small" }, t[0])),
+  h("div", { className: "c3ib" }, h(V.IconButton, { icon: "bell", label: t[1], badge: 3 }), h("span", { className: "body-small" }, t[1])),
+  h("div", { className: "c3ib" }, h(V.IconButton, { icon: "bell", label: t[2], badge: true }), h("span", { className: "body-small" }, t[2])),
+  h("div", { className: "c3ib" }, h(V.IconButton, { icon: "ellipsis-vertical", label: t[3], size: "sm" }), h("span", { className: "body-small" }, t[3] + " \xB7 sm")),
+  h("div", { className: "c3ib" }, h(V.IconButton, { icon: "x", label: t[4], size: "lg" }), h("span", { className: "body-small" }, t[4] + " \xB7 lg")),
+  h("div", { className: "c3ib" }, h(V.IconButton, { icon: "list-filter", label: t[5], variant: "secondary", pressed: true }), h("span", { className: "body-small" }, t[5]))
+);
+const C3_SECTIONS = [
+  h(C3Sec, { key: "s", title: "Comutat (pressed) și etichete vizibile" }, h("div", { className: "c3stack" }, IBNamed(IBT.ro))),
+  h(C3Themes, { key: "t", render: () => h("div", { className: "c3stack" }, h("p", { className: "caption c3lab" }, "Coloanele: implicit \xB7 hover \xB7 focus \xB7 apăsat \xB7 comutat \xB7 dezactivat \xB7 se \xEEncarcă"), IBStates("quiet", IBT.ro[0]), IBStates("secondary", IBT.ro[0]), IBStates("primary", IBT.ro[0]), IBNamed(IBT.ro)) }),
+  h(C3Langs, { key: "l", de: IBNamed(IBT.de), it: IBNamed(IBT.it) })
+];
+
+mount(h("div", { className: "c3wrap" }, C3_ORIG, h("div", { className: "d" }, ...C3_SECTIONS)));
 </script>
 </body>
 </html>

@@ -1,4 +1,4 @@
-<!-- @dsCard group="Forms" height=300 -->
+<!-- @dsCard group="Forms" height=1360 width=1200 -->
 <!doctype html>
 <html lang="ro">
 <head><meta charset="utf-8"><title>Radio — Ventora</title>
@@ -250,6 +250,9 @@ html,body{min-height:100%}
 .fxframe .caption{color:var(--ink-muted)}
 @container (max-width:420px){.fxlang{grid-template-columns:32px minmax(0,1fr) auto}.fxlang .v-iconbtn{display:none}}
 
+.thf{display:flex;flex-direction:column;gap:var(--space-4);padding:var(--space-5);background:var(--canvas);color:var(--ink);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg);min-width:0;box-sizing:border-box}
+.thg{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(420px,100%),1fr));gap:var(--space-4);align-items:start}
+.thstack{display:flex;flex-direction:column;gap:var(--space-4)}
 </style>
 </head>
 <body>
@@ -271,7 +274,42 @@ function Demo() {
   ] }), /* @__PURE__ */ React.createElement("div", { className: "d0" }, /* @__PURE__ */ React.createElement(V.RadioGroup, { legend: "Durata", orientation: "horizontal", error: "Alege o durat\u0103.", options: [{ value: 30, label: "30 min" }, { value: 60, label: "60 min" }] }), /* @__PURE__ */ React.createElement("div", { className: "r" }, /* @__PURE__ */ React.createElement(V.Radio, { label: "Hover", state: "hover", name: "x" }), /* @__PURE__ */ React.createElement(V.Radio, { label: "Focus", state: "focus", name: "x", checked: true, onChange: () => {
   } }), /* @__PURE__ */ React.createElement(V.Radio, { label: "Dezactivat", disabled: true, name: "x" })), /* @__PURE__ */ React.createElement(DE, null, /* @__PURE__ */ React.createElement(V.RadioGroup, { legend: "Wie best\xE4tigen wir den Termin?", defaultValue: "e", options: [{ value: "s", label: "Per SMS" }, { value: "e", label: "Per E-Mail" }] }))));
 }
-mount(/* @__PURE__ */ React.createElement(Demo, null));
+const ORIG = (/* @__PURE__ */ React.createElement(Demo, null));
+/* Light/Dark frames, DE/IT label test */
+const E = React.createElement;
+const noop = () => {
+};
+const Cap = ({ children }) => E("p", { className: "caption muted" }, children);
+const ThemeFrame = ({ th, children }) => E("div", { className: "thf", "data-theme": th }, E("p", { className: "heading" }, th === "light" ? "Light" : "Dark"), children);
+const LocFrame = ({ loc, label, children }) => E("div", { className: "thf", "data-theme": "light" }, E("p", { className: "heading" }, label), E(V.LocaleProvider, { locale: loc }, children));
+const Frames = ({ States, stack }) => E("div", { className: stack ? "thstack" : "thg" }, E(ThemeFrame, { th: "light" }, E(States, { th: "light" })), E(ThemeFrame, { th: "dark" }, E(States, { th: "dark" })));
+const Locales = ({ De, It, stack }) => E("div", { className: stack ? "thstack" : "thg" }, E(LocFrame, { loc: "de", label: "Deutsch (DE)" }, E(De)), E(LocFrame, { loc: "it", label: "Italiano (IT)" }, E(It)));
+const Extra = ({ States, De, It, stack, stackLoc }) => E("div", { className: "d" }, E("p", { className: "heading" }, "Stări · Light și Dark"), E(Frames, { States, stack }), E("p", { className: "heading" }, "Test de lungime: germană și italiană"), E(Locales, { De, It, stack: stackLoc }));
+const RG = (t, nm) => E("div", { className: "d0" },
+  E(V.RadioGroup, { legend: t.legend, required: true, defaultValue: "sms", helper: t.helper, options: [
+    { value: "sms", label: "SMS", description: t.smsD },
+    { value: "email", label: t.email },
+    { value: "none", label: t.none },
+    { value: "wa", label: "WhatsApp", disabled: true, description: t.waD }
+  ] }),
+  E(V.RadioGroup, { legend: t.dur, orientation: "horizontal", invalid: true, error: t.durE, options: [{ value: 30, label: "30 min" }, { value: 60, label: "60 min" }, { value: 90, label: "90 min" }] }),
+  E(V.RadioGroup, { legend: t.loc, disabled: true, defaultValue: "c", options: [{ value: "c", label: t.loc1 }, { value: "b", label: t.loc2 }] }),
+  E("div", { className: "r" },
+    E(V.Radio, { label: t.s[0], name: nm, onChange: noop }),
+    E(V.Radio, { label: t.s[1], name: nm + "c", checked: true, onChange: noop }),
+    E(V.Radio, { label: "Hover", state: "hover", name: nm, onChange: noop }),
+    E(V.Radio, { label: "Focus", state: "focus", name: nm + "f", checked: true, onChange: noop }),
+    E(V.Radio, { label: t.s[2], state: "pressed", name: nm, onChange: noop }),
+    E(V.Radio, { label: t.s[3], disabled: true, name: nm, onChange: noop }),
+    E(V.Radio, { label: t.s[4], disabled: true, checked: true, name: nm + "d", onChange: noop }),
+    E(V.Radio, { label: t.s[5], invalid: true, name: nm, onChange: noop })));
+const R_RO = { legend: "Cum confirmăm programarea?", helper: "Clientul primește confirmarea imediat după ce salvezi.", smsD: "Ajunge în câteva secunde.", email: "Email", none: "Nu trimite confirmare", waD: "Nu e în abonament.", dur: "Durata ședinței", durE: "Alege o durată.", loc: "Locația", loc1: "Sibiu, Piața Mică", loc2: "Brașov, Str. Mureșenilor", s: ["Neselectat", "Selectat", "Apăsat", "Dezactivat", "Dezactivat, selectat", "Cu eroare"] };
+const R_DE = { legend: "Wie bestätigen wir den Termin?", helper: "Ihre Kundin erhält die Bestätigung sofort nach dem Speichern.", smsD: "Kommt in wenigen Sekunden an.", email: "Per E-Mail", none: "Keine Bestätigung senden", waD: "Nicht in Ihrem Abonnement enthalten.", dur: "Dauer der Sitzung", durE: "Bitte wählen Sie eine Dauer.", loc: "Standort", loc1: "Sibiu, Kleiner Ring", loc2: "Kronstadt, Mureșenilor-Straße", s: ["Nicht ausgewählt", "Ausgewählt", "Gedrückt", "Deaktiviert", "Deaktiviert, ausgewählt", "Fehlerhaft"] };
+const R_IT = { legend: "Come confermiamo l’appuntamento?", helper: "La cliente riceve la conferma subito dopo il salvataggio.", smsD: "Arriva in pochi secondi.", email: "Via e-mail", none: "Non inviare la conferma", waD: "Non incluso nel Suo abbonamento.", dur: "Durata della seduta", durE: "Scelga una durata.", loc: "Sede", loc1: "Sibiu, Piața Mică", loc2: "Brașov, via Mureșenilor", s: ["Non selezionato", "Selezionato", "Premuto", "Disattivato", "Disattivato, selezionato", "Con errore"] };
+const States = ({ th }) => RG(R_RO, "st-" + th);
+const De = () => RG(R_DE, "st-de");
+const It = () => RG(R_IT, "st-it");
+mount(E("div", null, ORIG, E(Extra, { States, De, It })));
 </script>
 </body>
 </html>

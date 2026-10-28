@@ -1,4 +1,4 @@
-<!-- @dsCard group="Forms" height=468 -->
+<!-- @dsCard group="Forms" height=2260 width=1200 -->
 <!doctype html>
 <html lang="ro">
 <head><meta charset="utf-8"><title>Select — Ventora</title>
@@ -250,6 +250,9 @@ html,body{min-height:100%}
 .fxframe .caption{color:var(--ink-muted)}
 @container (max-width:420px){.fxlang{grid-template-columns:32px minmax(0,1fr) auto}.fxlang .v-iconbtn{display:none}}
 
+.thf{display:flex;flex-direction:column;gap:var(--space-4);padding:var(--space-5);background:var(--canvas);color:var(--ink);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg);min-width:0;box-sizing:border-box}
+.thg{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(420px,100%),1fr));gap:var(--space-4);align-items:start}
+.thstack{display:flex;flex-direction:column;gap:var(--space-4)}
 </style>
 </head>
 <body>
@@ -269,7 +272,47 @@ const SERVICES = [
 function Demo() {
   return /* @__PURE__ */ React.createElement("div", { className: "d g2" }, /* @__PURE__ */ React.createElement(V.FormField, { label: "Serviciu", helper: "Durata se completeaz\u0103 singur\u0103." }, /* @__PURE__ */ React.createElement(V.Select, { options: SERVICES, defaultValue: "tuns", defaultOpen: true })), /* @__PURE__ */ React.createElement("div", { className: "d0" }, /* @__PURE__ */ React.createElement(V.FormField, { label: "Angajat" }, /* @__PURE__ */ React.createElement(V.Select, { placeholder: "Alege angajatul", options: [{ value: "a", label: "Ana Popescu" }] })), /* @__PURE__ */ React.createElement(V.FormField, { label: "Hover" }, /* @__PURE__ */ React.createElement(V.Select, { defaultValue: "a", state: "hover", options: [{ value: "a", label: "Ana Popescu" }] })), /* @__PURE__ */ React.createElement(V.FormField, { label: "Sal\u0103", required: true, error: "Alege o sal\u0103." }, /* @__PURE__ */ React.createElement(V.Select, { options: [{ value: 1, label: "Sala 1" }] })), /* @__PURE__ */ React.createElement(V.FormField, { label: "Loca\u021Bie" }, /* @__PURE__ */ React.createElement(V.Select, { disabled: true, defaultValue: "s", options: [{ value: "s", label: "Sibiu, Centru" }] })), /* @__PURE__ */ React.createElement(V.FormField, { label: "Se \xEEncarc\u0103" }, /* @__PURE__ */ React.createElement(V.Select, { loading: true, placeholder: "Se \xEEncarc\u0103\u2026", options: [] })), /* @__PURE__ */ React.createElement(DE, null, /* @__PURE__ */ React.createElement(V.FormField, { label: "Verantwortliche Mitarbeiterin" }, /* @__PURE__ */ React.createElement(V.Select, { defaultValue: "a", options: [{ value: "a", label: "Anna Schmidt-Bergmann (Rezeption)" }] })))));
 }
-mount(/* @__PURE__ */ React.createElement(Demo, null));
+const ORIG = (/* @__PURE__ */ React.createElement(Demo, null));
+/* Light/Dark frames, DE/IT label test */
+const E = React.createElement;
+const noop = () => {
+};
+const Cap = ({ children }) => E("p", { className: "caption muted" }, children);
+const ThemeFrame = ({ th, children }) => E("div", { className: "thf", "data-theme": th }, E("p", { className: "heading" }, th === "light" ? "Light" : "Dark"), children);
+const LocFrame = ({ loc, label, children }) => E("div", { className: "thf", "data-theme": "light" }, E("p", { className: "heading" }, label), E(V.LocaleProvider, { locale: loc }, children));
+const Frames = ({ States, stack }) => E("div", { className: stack ? "thstack" : "thg" }, E(ThemeFrame, { th: "light" }, E(States, { th: "light" })), E(ThemeFrame, { th: "dark" }, E(States, { th: "dark" })));
+const Locales = ({ De, It, stack }) => E("div", { className: stack ? "thstack" : "thg" }, E(LocFrame, { loc: "de", label: "Deutsch (DE)" }, E(De)), E(LocFrame, { loc: "it", label: "Italiano (IT)" }, E(It)));
+const Extra = ({ States, De, It, stack, stackLoc }) => E("div", { className: "d" }, E("p", { className: "heading" }, "Stări · Light și Dark"), E(Frames, { States, stack }), E("p", { className: "heading" }, "Test de lungime: germană și italiană"), E(Locales, { De, It, stack: stackLoc }));
+const SL = (t) => E("div", { className: "g2f" },
+  E(V.FormField, { label: t.f[0], helper: t.help }, E(V.Select, { options: t.svc, defaultValue: "facial" })),
+  E(V.FormField, { label: t.f[1] }, E(V.Select, { placeholder: t.ph, options: [{ value: "a", label: t.person }] })),
+  E(V.FormField, { label: "Hover" }, E(V.Select, { defaultValue: "a", state: "hover", options: [{ value: "a", label: t.person }] })),
+  E(V.FormField, { label: "Focus" }, E(V.Select, { defaultValue: "a", state: "focus", options: [{ value: "a", label: t.person }] })),
+  E(V.FormField, { label: t.f[2] }, E(V.Select, { defaultValue: "a", state: "pressed", options: [{ value: "a", label: t.person }] })),
+  E(V.FormField, { label: t.f[3], required: true, error: t.err }, E(V.Select, { invalid: true, placeholder: t.ph2, options: [{ value: 1, label: "1" }] })),
+  E(V.FormField, { label: t.f[4] }, E(V.Select, { disabled: true, defaultValue: "s", icon: "map-pin", options: [{ value: "s", label: t.loc }] })),
+  E(V.FormField, { label: t.f[5] }, E(V.Select, { loading: true, placeholder: t.load, options: [] })),
+  E(V.FormField, { label: t.f[6] }, E(V.Select, { size: "sm", defaultValue: "a", options: [{ value: "a", label: t.person }] })),
+  E(V.FormField, { label: t.f[7] }, E(V.Select, { size: "lg", defaultValue: "a", options: [{ value: "a", label: t.person }] })));
+const SL_RO = {
+  f: ["Serviciu", "Angajat", "Apăsat", "Sală", "Locație (dezactivat)", "Se încarcă", "Mic", "Mare"],
+  help: "Durata se completează singură.", ph: "Alege angajatul", ph2: "Alege sala", err: "Alege o sală.", person: "Ștefania Mureșan", loc: "Sibiu, Piața Mare", load: "Se încarcă…",
+  svc: [{ label: "Coafor", options: [{ value: "tuns", label: "Tuns", description: "45 min · 120 lei" }, { value: "vopsit", label: "Vopsit rădăcini", description: "120 min · 350 lei" }] }, { label: "Cosmetică", options: [{ value: "facial", label: "Tratament facial", description: "60 min · 220 lei" }, { value: "man", label: "Manichiură", description: "50 min · 110 lei", disabled: true }] }]
+};
+const SL_DE = {
+  f: ["Dienstleistung", "Verantwortliche Mitarbeiterin", "Gedrückt", "Behandlungsraum", "Standort (deaktiviert)", "Wird geladen", "Klein", "Groß"],
+  help: "Die Dauer wird automatisch ausgefüllt.", ph: "Mitarbeiterin auswählen", ph2: "Raum auswählen", err: "Bitte wählen Sie einen Behandlungsraum.", person: "Anna Schmidt-Bergmann (Rezeption)", loc: "Sibiu, Großer Ring", load: "Wird geladen…",
+  svc: [{ label: "Friseur", options: [{ value: "tuns", label: "Haarschnitt", description: "45 Min. · 120 lei" }, { value: "vopsit", label: "Ansatzfärbung", description: "120 Min. · 350 lei" }] }, { label: "Kosmetik", options: [{ value: "facial", label: "Gesichtsbehandlung", description: "60 Min. · 220 lei" }, { value: "man", label: "Maniküre", description: "50 Min. · 110 lei", disabled: true }] }]
+};
+const SL_IT = {
+  f: ["Servizio", "Dipendente responsabile", "Premuto", "Sala trattamenti", "Sede (disattivata)", "Caricamento", "Piccolo", "Grande"],
+  help: "La durata si compila da sola.", ph: "Scelga il dipendente", ph2: "Scelga la sala", err: "Scelga una sala trattamenti.", person: "Francesca Russo (accoglienza)", loc: "Sibiu, Piazza Grande", load: "Caricamento…",
+  svc: [{ label: "Parrucchiere", options: [{ value: "tuns", label: "Taglio", description: "45 min · 120 lei" }, { value: "vopsit", label: "Colore alla radice", description: "120 min · 350 lei" }] }, { label: "Estetica", options: [{ value: "facial", label: "Trattamento viso", description: "60 min · 220 lei" }, { value: "man", label: "Manicure", description: "50 min · 110 lei", disabled: true }] }]
+};
+const States = () => SL(SL_RO);
+const De = () => SL(SL_DE);
+const It = () => SL(SL_IT);
+mount(E("div", null, ORIG, E(Extra, { States, De, It })));
 </script>
 </body>
 </html>

@@ -1,0 +1,86 @@
+{
+ "name": "Menu",
+ "version": "1.0.1",
+ "kind": "component",
+ "group": "Overlays",
+ "status": "changed",
+ "description": "A list of actions opened from a trigger — the kebab on rows, \"Creează\", account menus.",
+ "exports": [
+  "Menu"
+ ],
+ "props": [
+  {
+   "name": "trigger",
+   "type": "ReactElement",
+   "required": true,
+   "note": ""
+  },
+  {
+   "name": "items",
+   "type": "MenuItem[]",
+   "required": true,
+   "note": ""
+  },
+  {
+   "name": "placement",
+   "type": "string",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "open",
+   "type": "boolean",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "defaultOpen",
+   "type": "boolean",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "onOpenChange",
+   "type": "(o: boolean) => void",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "label",
+   "type": "string",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "header",
+   "type": "ReactNode",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "width",
+   "type": "string | number",
+   "required": false,
+   "note": ""
+  }
+ ],
+ "events": [
+  "onOpenChange",
+  "onSelect"
+ ],
+ "states": [
+  "open",
+  "heading",
+  "shortcut",
+  "description",
+  "checked",
+  "disabled",
+  "custom-row",
+  "separator",
+  "destructive",
+  "active-item"
+ ],
+ "notes": "",
+ "readme": "components/Menu/README.md",
+ "preview": "components/Menu/preview.html"
+}

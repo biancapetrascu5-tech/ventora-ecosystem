@@ -1,6 +1,6 @@
 # Stat
 
-One number with its label, an optional change against a named period and a short hint. The top row of HR, Finance and Analytics.
+One number with its label, an optional change against a named period and a short hint. The top row of TeamSpace, MoneyDesk and DataView.
 
 **Props.** `label`, `value` (already formatted, e.g. "48.250 lei"), `unit` (small text after the value: "din 6"), `delta` `{ value: '+12%', period: 'față de oct. 2025', direction?: 'up'|'down', good?: boolean }`, `hint`, `icon`, `tone` (`neutral` | `attention`), `onClick` (the whole tile becomes a button that opens the list behind the number).
 

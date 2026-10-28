@@ -1,0 +1,186 @@
+{
+ "name": "Input",
+ "version": "1.0.1",
+ "kind": "component",
+ "group": "Forms",
+ "status": "changed",
+ "description": "Single-line text entry; wrap it in FormField for the label, helper and error.",
+ "exports": [
+  "Input"
+ ],
+ "props": [
+  {
+   "name": "size",
+   "type": "\"sm\" | \"md\" | \"lg\"",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "icon",
+   "type": "string",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "prefix",
+   "type": "ReactNode",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "suffix",
+   "type": "ReactNode",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "invalid",
+   "type": "boolean",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "loading",
+   "type": "boolean",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "clearable",
+   "type": "boolean",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "onClear",
+   "type": "() => void",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "state",
+   "type": "ForcedState",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "value",
+   "type": "any",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "defaultValue",
+   "type": "any",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "placeholder",
+   "type": "string",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "disabled",
+   "type": "boolean",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "readOnly",
+   "type": "boolean",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "name",
+   "type": "string",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "type",
+   "type": "string",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "onChange",
+   "type": "(e: any) => void",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "autoComplete",
+   "type": "string",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "inputMode",
+   "type": "string",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "maxLength",
+   "type": "number",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "className",
+   "type": "string",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "id",
+   "type": "string",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "style",
+   "type": "any",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "title",
+   "type": "string",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "role",
+   "type": "string",
+   "required": false,
+   "note": ""
+  }
+ ],
+ "events": [
+  "onChange",
+  "onClear"
+ ],
+ "states": [
+  "default",
+  "placeholder",
+  "hover",
+  "focus",
+  "error",
+  "disabled",
+  "read-only",
+  "loading",
+  "clearable",
+  "prefix",
+  "suffix",
+  "password",
+  "size-sm",
+  "size-lg"
+ ],
+ "notes": "",
+ "readme": "components/Input/README.md",
+ "preview": "components/Input/preview.html"
+}

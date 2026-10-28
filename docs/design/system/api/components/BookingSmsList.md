@@ -1,0 +1,40 @@
+# BookingSmsList
+
+`page` · Ecrane Booking · versiunea 1.0.0 · nouă
+
+EasyBook — the list of messages sent to clients (SPEC_ECRANE_SMS §5): Settings · Trimitere SMS · "Vezi toate mesajele", also opened from the four numbers in Settings and from the alerts in Azi, with the matching filter already set. Built only from DataTable, PageHeader, Input, SegmentedControl, Select, StatusPill, EmptyState, Notice, Button and Toast.
+
+## Evenimente
+
+—
+
+## Stări
+
+- EasyBook — Mesaje către clienți (Setări · Trimitere SMS · „Vezi toate mesajele”)
+- Gestionare
+- Afacere
+- Azi
+- Calendar
+- Programări
+- Clienți
+- Mai multe
+- Stările listei
+- 1 · Venit din cifra „Fără confirmare” din Setări: filtrul e deja pus (desktop)
+- 2 · Se încarcă (desktop)
+- 3 · Gol: niciun mesaj încă
+- 4 · Fără rezultate în perioada filtrată, dar există în alte zile (P12)
+- 5 · Gol cu filtre
+- 6 · Eroare la încărcare
+- 7 · Exportul, cu perioada și filtrele în confirmare
+- 8 · Membru: lista fără numerele de telefon și fără export (PROPUNERE)
+- 9 · Telefon: lista de carduri, cu filtrul „Fără confirmare”
+- Deutsch · 820
+- Mehr
+- Italiano · 390
+- Altro
+
+## Note
+
+States are the labelled boards and frames of the preview (Light and Dark; desktop/tablet/phone).
+
+Mai mult: `components/BookingSmsList/README.md`, exemplele: `components/BookingSmsList/preview.html`.

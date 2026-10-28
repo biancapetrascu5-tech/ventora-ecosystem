@@ -1,4 +1,4 @@
-<!-- @dsCard group="Comercial" height=760 width=1200 -->
+<!-- @dsCard group="Comercial" height=1210 width=1200 -->
 <!doctype html>
 <html lang="ro">
 <head><meta charset="utf-8"><title>GrowthSlot — Ventora</title>
@@ -250,6 +250,16 @@ html,body{min-height:100%}
 .fxframe .caption{color:var(--ink-muted)}
 @container (max-width:420px){.fxlang{grid-template-columns:32px minmax(0,1fr) auto}.fxlang .v-iconbtn{display:none}}
 
+/* c3: Light/Dark and DE/IT frames */
+.c3wrap{display:flex;flex-direction:column;min-width:0}
+.c3sec{display:flex;flex-direction:column;gap:var(--space-3);min-width:0}
+.c3h{margin:0;color:var(--ink)}
+.c3pair{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(360px,100%),1fr));gap:var(--space-4);align-items:start}
+.c3stack{display:flex;flex-direction:column;gap:var(--space-4);min-width:0}
+.c3f{display:flex;flex-direction:column;gap:var(--space-3);padding:var(--space-4);border:var(--border-width) solid var(--line);border-radius:var(--radius-md);background:var(--canvas);color:var(--ink);min-width:0;box-sizing:border-box}
+.c3lab{color:var(--ink-muted);margin:0}
+.c3kv{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:var(--space-2) var(--space-4);align-items:center}
+.c3ib{display:flex;align-items:center;gap:var(--space-3);min-width:0}
 </style>
 </head>
 <body>
@@ -264,11 +274,28 @@ const IT = ({ children }) => /* @__PURE__ */ React.createElement(V.LocaleProvide
 const mount = (el) => ReactDOM.createRoot(document.getElementById("root")).render(/* @__PURE__ */ React.createElement(V.LocaleProvider, { locale: "ro" }, el));
 function SlotDemo() {
   const [on, setOn] = useState(true);
-  const card = /* @__PURE__ */ React.createElement(V.RecommendationCard, { app: "crm", title: "\u021Aine istoricul clien\u021Bilor \xEEn CRM", benefit: "Clien\u021Bii t\u0103i din program\u0103ri pot avea istoric, note \u0219i follow-up \xEEn CRM.", cost: "69 lei pe lun\u0103 \xB7 f\u0103r\u0103 cost de implementare", actionLabel: "Vezi op\u021Biunile", onAction: () => {
+  const card = /* @__PURE__ */ React.createElement(V.RecommendationCard, { app: "crm", title: "\u021Aine istoricul clien\u021Bilor \xEEn ClientDesk", benefit: "Clien\u021Bii t\u0103i din program\u0103ri pot avea istoric, note \u0219i follow-up \xEEn ClientDesk.", cost: "69 lei pe lun\u0103 \xB7 f\u0103r\u0103 cost de implementare", actionLabel: "Vezi op\u021Biunile", onAction: () => {
   }, onDismiss: () => setOn(false), onRemindLater: () => setOn(false) });
-  return /* @__PURE__ */ React.createElement("div", { className: "d" }, /* @__PURE__ */ React.createElement("div", { className: "g2" }, /* @__PURE__ */ React.createElement("div", { className: "d0" }, /* @__PURE__ */ React.createElement("p", { className: "caption muted" }, "Gol: slotul nu exist\u0103 \xEEn pagin\u0103 (f\u0103r\u0103 spa\u021Biu rezervat, f\u0103r\u0103 skeleton)"), /* @__PURE__ */ React.createElement("div", { className: "slotcol" }, /* @__PURE__ */ React.createElement("p", { className: "heading" }, "Au nevoie de tine"), /* @__PURE__ */ React.createElement("div", { className: "sheetlike" }, /* @__PURE__ */ React.createElement(V.AttentionList, { items: [{ id: 1, icon: "clock", title: "Cristina Dobre nu a confirmat", meta: "Azi la 12:30 \xB7 Tratament facial", actions: [{ label: "Confirm\u0103", primary: true }] }] })), /* @__PURE__ */ React.createElement(V.GrowthSlot, null, null), /* @__PURE__ */ React.createElement("p", { className: "body-small muted" }, "Urm\u0103torul bloc din pagin\u0103 urmeaz\u0103 direct."))), /* @__PURE__ */ React.createElement("div", { className: "d0" }, /* @__PURE__ */ React.createElement("p", { className: "caption muted" }, "Cu con\u021Binut: apare lin (\xEEn\u0103l\u021Bime \u0219i opacitate), f\u0103r\u0103 s\u0103 \xEEmping\u0103 brusc restul"), /* @__PURE__ */ React.createElement("div", { className: "slotcol" }, /* @__PURE__ */ React.createElement("p", { className: "heading" }, "Au nevoie de tine"), /* @__PURE__ */ React.createElement("div", { className: "sheetlike" }, /* @__PURE__ */ React.createElement(V.AttentionList, { items: [{ id: 1, icon: "clock", title: "Cristina Dobre nu a confirmat", meta: "Azi la 12:30 \xB7 Tratament facial", actions: [{ label: "Confirm\u0103", primary: true }] }] })), /* @__PURE__ */ React.createElement(V.GrowthSlot, { label: "Recomandare" }, on ? card : null), !on && /* @__PURE__ */ React.createElement(V.Button, { size: "sm", variant: "quiet", onClick: () => setOn(true) }, "Arat\u0103 din nou (demo)")))), /* @__PURE__ */ React.createElement("div", { className: "sheetlike", style: { padding: "var(--space-4)" } }, /* @__PURE__ */ React.createElement("p", { className: "subheading" }, "Unde nu apare niciodat\u0103"), /* @__PURE__ */ React.createElement("p", { className: "body-small muted" }, "Formulare \xEEn lucru \xB7 pl\u0103\u021Bi \xB7 erori \xB7 confirm\u0103ri \xB7 autentificare \xB7 ac\u021Biunile sensibile din Finance, HR \u0219i Contracts.")));
+  return /* @__PURE__ */ React.createElement("div", { className: "d" }, /* @__PURE__ */ React.createElement("div", { className: "g2" }, /* @__PURE__ */ React.createElement("div", { className: "d0" }, /* @__PURE__ */ React.createElement("p", { className: "caption muted" }, "Gol: slotul nu exist\u0103 \xEEn pagin\u0103 (f\u0103r\u0103 spa\u021Biu rezervat, f\u0103r\u0103 skeleton)"), /* @__PURE__ */ React.createElement("div", { className: "slotcol" }, /* @__PURE__ */ React.createElement("p", { className: "heading" }, "Au nevoie de tine"), /* @__PURE__ */ React.createElement("div", { className: "sheetlike" }, /* @__PURE__ */ React.createElement(V.AttentionList, { items: [{ id: 1, icon: "clock", title: "Cristina Dobre nu a confirmat", meta: "Azi la 12:30 \xB7 Tratament facial", actions: [{ label: "Confirm\u0103", primary: true }] }] })), /* @__PURE__ */ React.createElement(V.GrowthSlot, null, null), /* @__PURE__ */ React.createElement("p", { className: "body-small muted" }, "Urm\u0103torul bloc din pagin\u0103 urmeaz\u0103 direct."))), /* @__PURE__ */ React.createElement("div", { className: "d0" }, /* @__PURE__ */ React.createElement("p", { className: "caption muted" }, "Cu con\u021Binut: apare lin (\xEEn\u0103l\u021Bime \u0219i opacitate), f\u0103r\u0103 s\u0103 \xEEmping\u0103 brusc restul"), /* @__PURE__ */ React.createElement("div", { className: "slotcol" }, /* @__PURE__ */ React.createElement("p", { className: "heading" }, "Au nevoie de tine"), /* @__PURE__ */ React.createElement("div", { className: "sheetlike" }, /* @__PURE__ */ React.createElement(V.AttentionList, { items: [{ id: 1, icon: "clock", title: "Cristina Dobre nu a confirmat", meta: "Azi la 12:30 \xB7 Tratament facial", actions: [{ label: "Confirm\u0103", primary: true }] }] })), /* @__PURE__ */ React.createElement(V.GrowthSlot, { label: "Recomandare" }, on ? card : null), !on && /* @__PURE__ */ React.createElement(V.Button, { size: "sm", variant: "quiet", onClick: () => setOn(true) }, "Arat\u0103 din nou (demo)")))), /* @__PURE__ */ React.createElement("div", { className: "sheetlike", style: { padding: "var(--space-4)" } }, /* @__PURE__ */ React.createElement("p", { className: "subheading" }, "Unde nu apare niciodat\u0103"), /* @__PURE__ */ React.createElement("p", { className: "body-small muted" }, "Formulare \xEEn lucru \xB7 pl\u0103\u021Bi \xB7 erori \xB7 confirm\u0103ri \xB7 autentificare \xB7 ac\u021Biunile sensibile din MoneyDesk, TeamSpace \u0219i ContractDesk.")));
 }
-mount(/* @__PURE__ */ React.createElement(SlotDemo, null));
+const C3_ORIG = /* @__PURE__ */ React.createElement(SlotDemo, null);
+const h = React.createElement;
+const C3Frame = ({ th, label, children, style }) => h("div", { className: "c3f", "data-theme": th, style }, h("p", { className: "caption c3lab" }, label), children);
+const C3Sec = ({ title, stack, children }) => h("div", { className: "c3sec" }, h("p", { className: "subheading c3h" }, title), h("div", { className: stack ? "c3stack" : "c3pair" }, children));
+const C3Themes = ({ render, stack, style }) => h(C3Sec, { title: "Light și Dark", stack }, h(C3Frame, { th: "light", label: "Light", style }, render("light")), h(C3Frame, { th: "dark", label: "Dark", style }, render("dark")));
+const C3Langs = ({ de, it, stack, style, itTheme }) => h(C3Sec, { title: "Germană și italiană — etichete mai lungi", stack }, h(V.LocaleProvider, { locale: "de" }, h(C3Frame, { th: "light", label: "Deutsch (de)", style }, de)), h(V.LocaleProvider, { locale: "it" }, h(C3Frame, { th: itTheme || "light", label: itTheme === "dark" ? "Italiano (it) \xB7 Dark" : "Italiano (it)", style }, it)));
+const GST = {
+  ro: { title: "Ține istoricul clienților \xEEn ClientDesk", benefit: "Clienții tăi din programări pot avea istoric, note și follow-up \xEEn ClientDesk.", cost: "69 lei pe lună \xB7 fără cost de implementare", actionLabel: "Vezi opțiunile", label: "Recomandare" },
+  de: { title: "Kundenhistorie in ClientDesk f\xFChren", benefit: "Ihre Kundinnen und Kunden aus den Terminen erhalten in ClientDesk einen Verlauf, Notizen und Nachfassaktionen.", cost: "14 € pro Monat \xB7 keine Einrichtungsgeb\xFChr", actionLabel: "Optionen ansehen", label: "Empfehlung" },
+  it: { title: "Tenga lo storico dei clienti in ClientDesk", benefit: "I clienti dei Suoi appuntamenti possono avere storico, note e follow-up in ClientDesk.", cost: "14 € al mese \xB7 nessun costo di attivazione", actionLabel: "Veda le opzioni", label: "Raccomandazione" }
+};
+const GSCard = (t, extra) => h(V.GrowthSlot, { label: t.label }, h(V.RecommendationCard, { app: "crm", title: t.title, benefit: t.benefit, cost: t.cost, actionLabel: t.actionLabel, onAction: () => {}, onDismiss: () => {}, onRemindLater: () => {}, ...extra }));
+const C3_SECTIONS = [
+  h(C3Themes, { key: "t", render: () => h("div", { className: "c3stack" }, h("p", { className: "caption c3lab" }, "Cu conținut"), GSCard(GST.ro), h("p", { className: "caption c3lab" }, "Gol sau \xEEn \xEEncărcare: slotul nu afișează nimic, textul următor vine direct"), h(V.GrowthSlot, null, null), h("p", { className: "body-small" }, "Următorul bloc din pagină.")) }),
+  h(C3Langs, { key: "l", de: GSCard(GST.de), it: GSCard(GST.it) })
+];
+
+mount(h("div", { className: "c3wrap" }, C3_ORIG, h("div", { className: "d" }, ...C3_SECTIONS)));
 </script>
 </body>
 </html>

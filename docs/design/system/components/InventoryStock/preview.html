@@ -1,4 +1,4 @@
-<!-- @dsCard group="Ecrane aplicații" height=2820 width=2620 page -->
+<!-- @dsCard group="Ecrane aplicații" height=4244 width=2620 page -->
 <!doctype html>
 <html lang="ro">
 <head><meta charset="utf-8"><title>InventoryStock — Ventora</title>
@@ -278,10 +278,10 @@ const ORGS = [
   { id: "nord", name: "Agen\u021Bia Nord Studio", role: "Manager de proiect" }
 ];
 const NOTIFS = [
-  { id: 1, title: "Programare nou\u0103 de la Ana Popescu", body: "Joi, 29 oct., 14:30 \xB7 Tuns", app: "Booking", time: "acum 5 min", person: "Ana Popescu" },
-  { id: 2, title: "Factura #2026-114 e restant\u0103 de 3 zile", body: "Clinica Dentis \xB7 1.250 lei", app: "Finance", time: "acum 2 ore", icon: "receipt" },
-  { id: 3, title: "Ioana a cerut concediu pe 2\u20136 noiembrie", app: "HR", time: "ieri", person: "Ioana Pavel", read: true },
-  { id: 4, title: "Exportul clien\u021Bilor e gata", app: "CRM", time: "ieri", icon: "download", read: true }
+  { id: 1, title: "Programare nou\u0103 de la Ana Popescu", body: "Joi, 29 oct., 14:30 \xB7 Tuns", app: "EasyBook", time: "acum 5 min", person: "Ana Popescu" },
+  { id: 2, title: "Factura #2026-114 e restant\u0103 de 3 zile", body: "Clinica Dentis \xB7 1.250 lei", app: "MoneyDesk", time: "acum 2 ore", icon: "receipt" },
+  { id: 3, title: "Ioana a cerut concediu pe 2\u20136 noiembrie", app: "TeamSpace", time: "ieri", person: "Ioana Pavel", read: true },
+  { id: 4, title: "Exportul clien\u021Bilor e gata", app: "ClientDesk", time: "ieri", icon: "download", read: true }
 ];
 const USER = { name: "Bianca Petra\u0219cu", email: "bianca@ventora-hub.com" };
 function Bar({ title, de }) {
@@ -312,7 +312,7 @@ function BookingShell({ height, active, mobile }) {
       height,
       spine: /* @__PURE__ */ React.createElement(V.Spine, { app: "booking", sections: SECTIONS, activeId: active, onBackToHub: () => {
       }, footer: /* @__PURE__ */ React.createElement(V.UsageMeter, { compact: true, label: "Program\u0103ri", used: 312, limit: 1e3 }) }),
-      contextBar: /* @__PURE__ */ React.createElement(Bar, { title: "Booking" })
+      contextBar: /* @__PURE__ */ React.createElement(Bar, { title: "EasyBook" })
     },
     /* @__PURE__ */ React.createElement(V.PageHeader, { title: "Program\u0103ri", description: mobile ? void 0 : "Toate program\u0103rile afacerii, de azi \xEEnainte.", actions: mobile ? void 0 : /* @__PURE__ */ React.createElement(V.SegmentedControl, { label: "Vizualizare", size: "md", defaultValue: "list", options: [{ value: "list", label: "List\u0103", icon: "list" }, { value: "cal", label: "Calendar", icon: "calendar" }] }) }),
     /* @__PURE__ */ React.createElement(V.DataTable, { columns: [
@@ -333,7 +333,7 @@ function HubBar({ title, inApp }) {
   return /* @__PURE__ */ React.createElement(
     V.ContextBar,
     {
-      leading: inApp ? null : /* @__PURE__ */ React.createElement("span", { style: { padding: "0 var(--space-2)" } }, /* @__PURE__ */ React.createElement(V.Logo, { size: 32 })),
+      leading: inApp ? null : /* @__PURE__ */ React.createElement("span", { style: { padding: "0 var(--space-2)", display: "inline-flex" } }, /* @__PURE__ */ React.createElement(V.Logo, { size: 32, className: "v-cb-logo--full" }), /* @__PURE__ */ React.createElement(V.Logo, { variant: "mark", size: 32, className: "v-cb-logo--mark" })),
       title,
       org: /* @__PURE__ */ React.createElement(V.OrgSwitcher, { orgs: ORGS, currentId: "aurora" }),
       onSearch: () => {
@@ -366,7 +366,7 @@ function Screens({ title, notes, render, desktopH = 860, tabletH = 1100, mobileH
   return /* @__PURE__ */ React.createElement("div", { className: "scr" }, /* @__PURE__ */ React.createElement("p", { className: "heading" }, title), notes && /* @__PURE__ */ React.createElement("p", { className: "caption muted" }, notes.join(" \xB7 ")), ["light", "dark"].map((th) => /* @__PURE__ */ React.createElement("div", { className: "scr-row", key: th }, sizes.map(([m, lab, cls, h]) => /* @__PURE__ */ React.createElement("div", { key: m }, /* @__PURE__ */ React.createElement("p", { className: "caption scr-lab" }, lab, " \xB7 ", th === "light" ? "Light" : "Dark"), /* @__PURE__ */ React.createElement("div", { className: cls, "data-theme": th, style: { height: h } }, render(m, th)))))));
 }
 const MINE = [["booking", "Program\u0103ri, calendar \u0219i reamintiri", 3], ["crm", "Clien\u021Bi, istoric \u0219i oportunit\u0103\u021Bi"], ["hr", "Echip\u0103, prezen\u021B\u0103 \u0219i concedii", 1], ["finance", "Facturi, scaden\u021Be \u0219i restan\u021Be", 2], ["projects", "Proiecte, sarcini \u0219i termene"], ["shifts", "Ture \u0219i \xEEnlocuiri"], ["documents", "Documente \u0219i \u0219abloane"], ["portal", "Pagina afacerii pentru clien\u021Bi"]];
-const RECO = { marketing: { reason: "Se potrive\u0219te cu Booking: trimite automat reamintiri \u0219i campanii clien\u021Bilor t\u0103i.", cost: "49 lei pe lun\u0103 \xB7 f\u0103r\u0103 cost de implementare" } };
+const RECO = { marketing: { reason: "Se potrive\u0219te cu EasyBook: trimite automat reamintiri \u0219i campanii clien\u021Bilor t\u0103i.", cost: "49 lei pe lun\u0103 \xB7 f\u0103r\u0103 cost de implementare" } };
 const VIEWER_ROLE = "owner";
 const RECO_FOR = (a) => (VIEWER_ROLE === "owner" || VIEWER_ROLE === "admin") && a === "marketing" ? RECO[a] : null;
 const OTHER = [["inventory", "unavailable"], ["analytics", "notInRole"], ["marketing", "notInPlan"], ["network", "notInPlan"]];
@@ -568,7 +568,172 @@ function Inv({ mode }) {
     }
   )));
 }
-mount(/* @__PURE__ */ React.createElement(Screens, { title: "Inventory \u2014 Stoc cu alerte: ce s-a terminat, ce e sub minim, ce e deja comandat", notes: ["Bara de stoc: linia din mijloc e minimul", "Peach = sub minim (de f\u0103cut ceva); ro\u0219u = epuizat"], desktopH: 980, tabletH: 1200, mobileH: 1300, render: (m) => /* @__PURE__ */ React.createElement(Inv, { mode: m }) }));
+
+/* p2 · DE/IT label test: translated copies of this screen (data and labels), rendered inside V.LocaleProvider */
+const __p2 = {
+  tx: (s, d) => typeof s !== "string" ? s : Object.prototype.hasOwnProperty.call(d, s) ? d[s] : s === " lei" ? " €" : s.replace(/(\d) lei\b/g, "$1 €"),
+  trd: (v, d) => typeof v === "string" ? __p2.tx(v, d) : Array.isArray(v) ? v.map((x) => __p2.trd(x, d)) : v && typeof v === "object" && Object.getPrototypeOf(v) === Object.prototype && !v.$$typeof ? Object.fromEntries(Object.entries(v).map(([k, x]) => [k, __p2.trd(x, d)])) : v
+};
+
+const D__de = {"Proprietar": "Inhaber", "Clinica Dentis Sibiu": "Zahnklinik Dentis Sibiu", "Recep\u021bie": "Empfang", "Agen\u021bia Nord Studio": "Agentur Nord Studio", "Manager de proiect": "Projektleitung", "Programare nou\u0103 de la Ana Popescu": "Neuer Termin von Ana Popescu", "Joi, 29 oct., 14:30 \u00b7 Tuns": "Do., 29. Okt., 14:30 \u00b7 Haarschnitt", "acum 5 min": "vor 5 Min.", "Factura #2026-114 e restant\u0103 de 3 zile": "Rechnung #2026-114 ist seit 3 Tagen \u00fcberf\u00e4llig", "Clinica Dentis \u00b7 1.250 lei": "Zahnklinik Dentis \u00b7 1.250 \u20ac", "acum 2 ore": "vor 2 Std.", "Ioana a cerut concediu pe 2\u20136 noiembrie": "Ioana hat Urlaub vom 2. bis 6. November beantragt", "Exportul clien\u021bilor e gata": "Der Kundenexport ist fertig", "Programare": "Termin", "Client": "Kunde", "Stoc": "Bestand", "Mi\u0219c\u0103ri": "Bewegungen", "Comenzi": "Bestellungen", "Furnizori": "Lieferanten", "Afacere": "Unternehmen", "Rapoarte": "Berichte", "Set\u0103ri": "Einstellungen", "Vopsea Majirel 7.1": "Haarfarbe Majirel 7.1", "Vopsele": "Haarfarben", "tuburi": "Tuben", "ieri, 16:40": "gestern, 16:40", "flacoane": "Flaschen", "azi, 10:15": "heute, 10:15", "Oj\u0103 semipermanent\u0103 \u00b7 Nude 04": "Gel-Lack \u00b7 Nude 04", "Manichiur\u0103": "Manik\u00fcre", "buc.": "Stk.", "azi, 09:30": "heute, 09:30", "\u0218ampon reparator \u00b7 1 l": "Reparatur-Shampoo \u00b7 1 l", "\u00cengrijire": "Pflege", "Kerastase Rom\u00e2nia": "Kerastase Deutschland", "21 oct.": "21. Okt.", "M\u0103nu\u0219i nitril M": "Nitrilhandschuhe M", "Consumabile": "Verbrauchsmaterial", "20 oct.": "20. Okt.", "Folie aluminiu \u00b7 100 m": "Alufolie \u00b7 100 m", "role": "Rollen", "19 oct.": "19. Okt.", "Masc\u0103 de p\u0103r hidratant\u0103": "Feuchtigkeits-Haarmaske", "borcane": "Tiegel", "18 oct.": "18. Okt.", "Pile unghii 180/240": "Nagelfeilen 180/240", "16 oct.": "16. Okt.", "Epuizat": "Ausverkauft", "Sub minim": "Unter Mindestbestand", "Comandat": "Bestellt", "\u00cen stoc": "Auf Lager", "minim ": "Minimum ", "Produs": "Produkt", "Categorie": "Kategorie", " \u00b7 minim ": " \u00b7 Minimum ", "Furnizor": "Lieferant", "Ultima mi\u0219care": "Letzte Bewegung", "Stare": "Status", "128 de produse, \u00een valoare de 18.420 lei.": "128 Produkte im Wert von 18.420 \u20ac.", "\u00cenregistreaz\u0103 o mi\u0219care": "Bewegung erfassen", "Export\u0103": "Exportieren", "4 produse sub minim, unul epuizat": "4 Produkte unter Mindestbestand, eines ausverkauft", "Preg\u0103te\u0219te comanda": "Bestellung vorbereiten", "Vopseaua Majirel 7.1 s-a terminat ieri; ai 2 program\u0103ri de vopsit m\u00e2ine care o folosesc.": "Die Farbe Majirel 7.1 ist seit gestern aufgebraucht; morgen haben Sie 2 F\u00e4rbetermine, die sie ben\u00f6tigen.", "Ajusteaz\u0103 stocul": "Bestand anpassen", "Comand\u0103 de la furnizor": "Beim Lieferanten bestellen", "Istoricul mi\u0219c\u0103rilor": "Bewegungsverlauf", "Caut\u0103 produs sau cod": "Produkt oder Code suchen", "Caut\u0103": "Suchen", "Toate categoriile": "Alle Kategorien", "Doar ce trebuie comandat": "Nur was bestellt werden muss"};
+const t__de = (s) => __p2.tx(s, D__de);
+const ORGS__de = __p2.trd(ORGS, D__de);
+const NOTIFS__de = __p2.trd(NOTIFS, D__de);
+const USER__de = __p2.trd(USER, D__de);
+function Bar__de({ title, de }) {
+  return /* @__PURE__ */ React.createElement(
+    V.ContextBar,
+    {
+      title,
+      org: /* @__PURE__ */ React.createElement(V.OrgSwitcher, { orgs: de ? [{ id: 1, name: t__de("Zahnarztpraxis Dr. M\xFCller"), role: t__de("Empfang") }, { id: 2, name: t__de("Salon Aurora"), role: t__de("Inhaberin") }] : ORGS__de, currentId: de ? 1 : t__de("aurora") }),
+      onSearch: () => {
+      },
+      createItems: [{ label: de ? t__de("Termin") : t__de("Programare"), icon: t__de("calendar-check"), shortcut: [t__de("N")] }, { label: de ? t__de("Kunde") : t__de("Client"), icon: t__de("user-plus") }],
+      notifications: /* @__PURE__ */ React.createElement(V.NotificationsPanel, { items: NOTIFS__de }),
+      account: /* @__PURE__ */ React.createElement(V.AccountMenu, { user: USER__de, orgs: ORGS__de, currentOrgId: t__de("aurora"), onCatalog: () => {
+      } })
+    }
+  );
+}
+function AX_App__de({ app, sections, active, title, bottom, footer, children }) {
+  return /* @__PURE__ */ React.createElement(
+    V.AppShell,
+    {
+      height: t__de("100%"),
+      spine: /* @__PURE__ */ React.createElement(V.Spine, { app, sections, activeId: active, onBackToHub: () => {
+      }, bottomItems: bottom, footer }),
+      contextBar: /* @__PURE__ */ React.createElement(Bar__de, { title })
+    },
+    children
+  );
+}
+const AX_Body__de = ({ mode, children }) => /* @__PURE__ */ React.createElement(t__de("div"), { className: t__de("axb ") + mode }, children);
+const AX_INV_NAV__de = __p2.trd(AX_INV_NAV, D__de);
+const AX_INV_ROWS__de = __p2.trd(AX_INV_ROWS, D__de);
+const AX_INV_STATUS__de = __p2.trd(AX_INV_STATUS, D__de);
+function StockCell__de({ r }) {
+  const pct = Math.min(100, Math.round(r.qty / (r.min * 2) * 100));
+  const tone = r.status === t__de("out") ? t__de("danger") : r.status === t__de("low") ? t__de("attention") : t__de("ok");
+  return /* @__PURE__ */ React.createElement(t__de("span"), { className: t__de("stockcell") }, /* @__PURE__ */ React.createElement(t__de("span"), { className: t__de("body-strong v-num") }, r.qty, t__de(" "), /* @__PURE__ */ React.createElement(t__de("span"), { className: t__de("body-small muted") }, r.unit)), /* @__PURE__ */ React.createElement(t__de("span"), { className: t__de("stockbar is-") + tone, "aria-hidden": t__de("true") }, /* @__PURE__ */ React.createElement(t__de("span"), { style: { width: pct + t__de("%") } }), /* @__PURE__ */ React.createElement(t__de("i"), { style: { left: t__de("50%") } })), /* @__PURE__ */ React.createElement(t__de("span"), { className: t__de("caption muted v-num") }, t__de("minim "), r.min));
+}
+function Inv__de({ mode }) {
+  const [only, setOnly] = useState(false);
+  const rows = only ? AX_INV_ROWS__de.filter((r) => r.status === t__de("low") || r.status === t__de("out")) : AX_INV_ROWS__de;
+  const cols = [
+    { key: t__de("name"), header: t__de("Produs"), primary: true, sortable: true, render: (r) => /* @__PURE__ */ React.createElement(t__de("span"), { style: { display: t__de("flex"), flexDirection: t__de("column") } }, /* @__PURE__ */ React.createElement(t__de("span"), null, r.name), mode !== t__de("mobile") && /* @__PURE__ */ React.createElement(t__de("span"), { className: t__de("body-small muted v-num") }, r.sku)) },
+    { key: t__de("cat"), header: t__de("Categorie"), optional: true },
+    { key: t__de("qty"), header: t__de("Stoc"), sortable: true, secondary: true, render: (r) => mode === t__de("mobile") ? /* @__PURE__ */ React.createElement(t__de("span"), { className: t__de("v-num") }, r.qty, t__de(" "), r.unit, t__de(" \xB7 minim "), r.min) : /* @__PURE__ */ React.createElement(StockCell__de, { r }) },
+    { key: t__de("supplier"), header: t__de("Furnizor"), optional: true },
+    { key: t__de("last"), header: t__de("Ultima mi\u0219care"), optional: true, muted: true },
+    { key: t__de("status"), header: t__de("Stare"), trailing: true, render: (r) => /* @__PURE__ */ React.createElement(V.StatusPill, { tone: AX_INV_STATUS__de[r.status][0], icon: AX_INV_STATUS__de[r.status][2] }, AX_INV_STATUS__de[r.status][1]) }
+  ];
+  return /* @__PURE__ */ React.createElement(AX_App__de, { app: t__de("inventory"), sections: AX_INV_NAV__de, active: t__de("stoc"), title: t__de("Stoc"), bottom: [t__de("stoc"), t__de("miscari"), t__de("comenzi"), t__de("furnizori")] }, /* @__PURE__ */ React.createElement(
+    V.PageHeader,
+    {
+      title: t__de("Stoc"),
+      description: mode === t__de("mobile") ? void 0 : t__de("128 de produse, \xEEn valoare de 18.420 lei."),
+      actions: mode === t__de("mobile") ? null : /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(V.Button, { icon: t__de("arrow-right-left") }, t__de("\xCEnregistreaz\u0103 o mi\u0219care")), /* @__PURE__ */ React.createElement(V.Button, { icon: t__de("download") }, t__de("Export\u0103")))
+    }
+  ), /* @__PURE__ */ React.createElement(AX_Body__de, { mode }, /* @__PURE__ */ React.createElement(V.Notice, { tone: t__de("attention"), title: t__de("4 produse sub minim, unul epuizat"), actions: /* @__PURE__ */ React.createElement(V.Button, { size: t__de("sm"), variant: t__de("secondary"), icon: t__de("truck") }, t__de("Preg\u0103te\u0219te comanda")) }, t__de("Vopseaua Majirel 7.1 s-a terminat ieri; ai 2 program\u0103ri de vopsit m\xE2ine care o folosesc.")), /* @__PURE__ */ React.createElement(
+    V.DataTable,
+    {
+      caption: t__de("Stoc"),
+      columns: cols,
+      rows,
+      rowActions: (r) => [{ label: t__de("Ajusteaz\u0103 stocul"), icon: t__de("pencil") }, { label: t__de("Comand\u0103 de la furnizor"), icon: t__de("truck") }, { label: t__de("Istoricul mi\u0219c\u0103rilor"), icon: t__de("history") }],
+      onRowClick: () => {
+      },
+      toolbar: /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(t__de("div"), { style: { flex: t__de("1 1 220px"), minWidth: 0, maxWidth: mode === t__de("mobile") ? t__de("none") : t__de("var(--search-width)") } }, /* @__PURE__ */ React.createElement(V.Input, { icon: t__de("search"), size: t__de("sm"), placeholder: t__de("Caut\u0103 produs sau cod"), "aria-label": t__de("Caut\u0103") })), mode !== t__de("mobile") && /* @__PURE__ */ React.createElement(t__de("div"), { style: { width: 168 } }, /* @__PURE__ */ React.createElement(V.Select, { size: t__de("sm"), defaultValue: t__de("all"), options: [{ value: t__de("all"), label: t__de("Toate categoriile") }, { value: t__de("v"), label: t__de("Vopsele") }, { value: t__de("m"), label: t__de("Manichiur\u0103") }, { value: t__de("i"), label: t__de("\xCEngrijire") }, { value: t__de("c"), label: t__de("Consumabile") }] })), /* @__PURE__ */ React.createElement(V.Toggle, { label: t__de("Doar ce trebuie comandat"), checked: only, onChange: setOnly })),
+      pagination: { page: 1, pageSize: 20, total: 128, onPageChange: () => {
+      }, onPageSizeChange: () => {
+      } }
+    }
+  )));
+}
+const D__it = {"Proprietar": "Titolare", "Recep\u021bie": "Reception", "Agen\u021bia Nord Studio": "Agenzia Nord Studio", "Manager de proiect": "Responsabile di progetto", "Programare nou\u0103 de la Ana Popescu": "Nuovo appuntamento da Ana Popescu", "Joi, 29 oct., 14:30 \u00b7 Tuns": "Gio 29 ott., 14:30 \u00b7 Taglio", "acum 5 min": "5 min fa", "Factura #2026-114 e restant\u0103 de 3 zile": "La fattura #2026-114 \u00e8 scaduta da 3 giorni", "Clinica Dentis \u00b7 1.250 lei": "Clinica Dentis \u00b7 1.250 \u20ac", "acum 2 ore": "2 ore fa", "Ioana a cerut concediu pe 2\u20136 noiembrie": "Ioana ha chiesto ferie dal 2 al 6 novembre", "Exportul clien\u021bilor e gata": "L\u2019esportazione dei clienti \u00e8 pronta", "Programare": "Appuntamento", "Client": "Cliente", "Stoc": "Magazzino", "Mi\u0219c\u0103ri": "Movimenti", "Comenzi": "Ordini", "Furnizori": "Fornitori", "Afacere": "Attivit\u00e0", "Rapoarte": "Report", "Set\u0103ri": "Impostazioni", "Vopsea Majirel 7.1": "Tinta Majirel 7.1", "Vopsele": "Tinte", "tuburi": "tubetti", "flacoane": "flaconi", "azi, 10:15": "oggi, 10:15", "Oj\u0103 semipermanent\u0103 \u00b7 Nude 04": "Smalto semipermanente \u00b7 Nude 04", "Manichiur\u0103": "Manicure", "buc.": "pz.", "azi, 09:30": "oggi, 09:30", "\u0218ampon reparator \u00b7 1 l": "Shampoo riparatore \u00b7 1 l", "\u00cengrijire": "Cura", "Kerastase Rom\u00e2nia": "Kerastase Italia", "21 oct.": "21 ott.", "M\u0103nu\u0219i nitril M": "Guanti in nitrile M", "Consumabile": "Materiali di consumo", "20 oct.": "20 ott.", "Folie aluminiu \u00b7 100 m": "Carta stagnola \u00b7 100 m", "role": "rotoli", "19 oct.": "19 ott.", "Masc\u0103 de p\u0103r hidratant\u0103": "Maschera idratante per capelli", "borcane": "vasetti", "18 oct.": "18 ott.", "Pile unghii 180/240": "Lime per unghie 180/240", "16 oct.": "16 ott.", "Epuizat": "Esaurito", "Sub minim": "Sotto il minimo", "Comandat": "Ordinato", "\u00cen stoc": "Disponibile", "minim ": "minimo ", "Produs": "Prodotto", "Categorie": "Categoria", " \u00b7 minim ": " \u00b7 minimo ", "Furnizor": "Fornitore", "Ultima mi\u0219care": "Ultimo movimento", "Stare": "Stato", "128 de produse, \u00een valoare de 18.420 lei.": "128 prodotti, per un valore di 18.420 \u20ac.", "\u00cenregistreaz\u0103 o mi\u0219care": "Registra un movimento", "Export\u0103": "Esporta", "4 produse sub minim, unul epuizat": "4 prodotti sotto il minimo, uno esaurito", "Preg\u0103te\u0219te comanda": "Prepara l\u2019ordine", "Vopseaua Majirel 7.1 s-a terminat ieri; ai 2 program\u0103ri de vopsit m\u00e2ine care o folosesc.": "La tinta Majirel 7.1 \u00e8 finita ieri; domani ha 2 appuntamenti di colore che la usano.", "Ajusteaz\u0103 stocul": "Rettifica la giacenza", "Comand\u0103 de la furnizor": "Ordina dal fornitore", "Istoricul mi\u0219c\u0103rilor": "Storico dei movimenti", "Caut\u0103 produs sau cod": "Cerca prodotto o codice", "Caut\u0103": "Cerca", "Toate categoriile": "Tutte le categorie", "Doar ce trebuie comandat": "Solo ci\u00f2 che va ordinato"};
+const t__it = (s) => __p2.tx(s, D__it);
+const ORGS__it = __p2.trd(ORGS, D__it);
+const NOTIFS__it = __p2.trd(NOTIFS, D__it);
+const USER__it = __p2.trd(USER, D__it);
+function Bar__it({ title, de }) {
+  return /* @__PURE__ */ React.createElement(
+    V.ContextBar,
+    {
+      title,
+      org: /* @__PURE__ */ React.createElement(V.OrgSwitcher, { orgs: de ? [{ id: 1, name: t__it("Zahnarztpraxis Dr. M\xFCller"), role: t__it("Empfang") }, { id: 2, name: t__it("Salon Aurora"), role: t__it("Inhaberin") }] : ORGS__it, currentId: de ? 1 : t__it("aurora") }),
+      onSearch: () => {
+      },
+      createItems: [{ label: de ? t__it("Termin") : t__it("Programare"), icon: t__it("calendar-check"), shortcut: [t__it("N")] }, { label: de ? t__it("Kunde") : t__it("Client"), icon: t__it("user-plus") }],
+      notifications: /* @__PURE__ */ React.createElement(V.NotificationsPanel, { items: NOTIFS__it }),
+      account: /* @__PURE__ */ React.createElement(V.AccountMenu, { user: USER__it, orgs: ORGS__it, currentOrgId: t__it("aurora"), onCatalog: () => {
+      } })
+    }
+  );
+}
+function AX_App__it({ app, sections, active, title, bottom, footer, children }) {
+  return /* @__PURE__ */ React.createElement(
+    V.AppShell,
+    {
+      height: t__it("100%"),
+      spine: /* @__PURE__ */ React.createElement(V.Spine, { app, sections, activeId: active, onBackToHub: () => {
+      }, bottomItems: bottom, footer }),
+      contextBar: /* @__PURE__ */ React.createElement(Bar__it, { title })
+    },
+    children
+  );
+}
+const AX_Body__it = ({ mode, children }) => /* @__PURE__ */ React.createElement(t__it("div"), { className: t__it("axb ") + mode }, children);
+const AX_INV_NAV__it = __p2.trd(AX_INV_NAV, D__it);
+const AX_INV_ROWS__it = __p2.trd(AX_INV_ROWS, D__it);
+const AX_INV_STATUS__it = __p2.trd(AX_INV_STATUS, D__it);
+function StockCell__it({ r }) {
+  const pct = Math.min(100, Math.round(r.qty / (r.min * 2) * 100));
+  const tone = r.status === t__it("out") ? t__it("danger") : r.status === t__it("low") ? t__it("attention") : t__it("ok");
+  return /* @__PURE__ */ React.createElement(t__it("span"), { className: t__it("stockcell") }, /* @__PURE__ */ React.createElement(t__it("span"), { className: t__it("body-strong v-num") }, r.qty, t__it(" "), /* @__PURE__ */ React.createElement(t__it("span"), { className: t__it("body-small muted") }, r.unit)), /* @__PURE__ */ React.createElement(t__it("span"), { className: t__it("stockbar is-") + tone, "aria-hidden": t__it("true") }, /* @__PURE__ */ React.createElement(t__it("span"), { style: { width: pct + t__it("%") } }), /* @__PURE__ */ React.createElement(t__it("i"), { style: { left: t__it("50%") } })), /* @__PURE__ */ React.createElement(t__it("span"), { className: t__it("caption muted v-num") }, t__it("minim "), r.min));
+}
+function Inv__it({ mode }) {
+  const [only, setOnly] = useState(false);
+  const rows = only ? AX_INV_ROWS__it.filter((r) => r.status === t__it("low") || r.status === t__it("out")) : AX_INV_ROWS__it;
+  const cols = [
+    { key: t__it("name"), header: t__it("Produs"), primary: true, sortable: true, render: (r) => /* @__PURE__ */ React.createElement(t__it("span"), { style: { display: t__it("flex"), flexDirection: t__it("column") } }, /* @__PURE__ */ React.createElement(t__it("span"), null, r.name), mode !== t__it("mobile") && /* @__PURE__ */ React.createElement(t__it("span"), { className: t__it("body-small muted v-num") }, r.sku)) },
+    { key: t__it("cat"), header: t__it("Categorie"), optional: true },
+    { key: t__it("qty"), header: t__it("Stoc"), sortable: true, secondary: true, render: (r) => mode === t__it("mobile") ? /* @__PURE__ */ React.createElement(t__it("span"), { className: t__it("v-num") }, r.qty, t__it(" "), r.unit, t__it(" \xB7 minim "), r.min) : /* @__PURE__ */ React.createElement(StockCell__it, { r }) },
+    { key: t__it("supplier"), header: t__it("Furnizor"), optional: true },
+    { key: t__it("last"), header: t__it("Ultima mi\u0219care"), optional: true, muted: true },
+    { key: t__it("status"), header: t__it("Stare"), trailing: true, render: (r) => /* @__PURE__ */ React.createElement(V.StatusPill, { tone: AX_INV_STATUS__it[r.status][0], icon: AX_INV_STATUS__it[r.status][2] }, AX_INV_STATUS__it[r.status][1]) }
+  ];
+  return /* @__PURE__ */ React.createElement(AX_App__it, { app: t__it("inventory"), sections: AX_INV_NAV__it, active: t__it("stoc"), title: t__it("Stoc"), bottom: [t__it("stoc"), t__it("miscari"), t__it("comenzi"), t__it("furnizori")] }, /* @__PURE__ */ React.createElement(
+    V.PageHeader,
+    {
+      title: t__it("Stoc"),
+      description: mode === t__it("mobile") ? void 0 : t__it("128 de produse, \xEEn valoare de 18.420 lei."),
+      actions: mode === t__it("mobile") ? null : /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(V.Button, { icon: t__it("arrow-right-left") }, t__it("\xCEnregistreaz\u0103 o mi\u0219care")), /* @__PURE__ */ React.createElement(V.Button, { icon: t__it("download") }, t__it("Export\u0103")))
+    }
+  ), /* @__PURE__ */ React.createElement(AX_Body__it, { mode }, /* @__PURE__ */ React.createElement(V.Notice, { tone: t__it("attention"), title: t__it("4 produse sub minim, unul epuizat"), actions: /* @__PURE__ */ React.createElement(V.Button, { size: t__it("sm"), variant: t__it("secondary"), icon: t__it("truck") }, t__it("Preg\u0103te\u0219te comanda")) }, t__it("Vopseaua Majirel 7.1 s-a terminat ieri; ai 2 program\u0103ri de vopsit m\xE2ine care o folosesc.")), /* @__PURE__ */ React.createElement(
+    V.DataTable,
+    {
+      caption: t__it("Stoc"),
+      columns: cols,
+      rows,
+      rowActions: (r) => [{ label: t__it("Ajusteaz\u0103 stocul"), icon: t__it("pencil") }, { label: t__it("Comand\u0103 de la furnizor"), icon: t__it("truck") }, { label: t__it("Istoricul mi\u0219c\u0103rilor"), icon: t__it("history") }],
+      onRowClick: () => {
+      },
+      toolbar: /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(t__it("div"), { style: { flex: t__it("1 1 220px"), minWidth: 0, maxWidth: mode === t__it("mobile") ? t__it("none") : t__it("var(--search-width)") } }, /* @__PURE__ */ React.createElement(V.Input, { icon: t__it("search"), size: t__it("sm"), placeholder: t__it("Caut\u0103 produs sau cod"), "aria-label": t__it("Caut\u0103") })), mode !== t__it("mobile") && /* @__PURE__ */ React.createElement(t__it("div"), { style: { width: 168 } }, /* @__PURE__ */ React.createElement(V.Select, { size: t__it("sm"), defaultValue: t__it("all"), options: [{ value: t__it("all"), label: t__it("Toate categoriile") }, { value: t__it("v"), label: t__it("Vopsele") }, { value: t__it("m"), label: t__it("Manichiur\u0103") }, { value: t__it("i"), label: t__it("\xCEngrijire") }, { value: t__it("c"), label: t__it("Consumabile") }] })), /* @__PURE__ */ React.createElement(V.Toggle, { label: t__it("Doar ce trebuie comandat"), checked: only, onChange: setOnly })),
+      pagination: { page: 1, pageSize: 20, total: 128, onPageChange: () => {
+      }, onPageSizeChange: () => {
+      } }
+    }
+  )));
+}
+
+function __p2Locale({ title, desktopH, mobileH, de, it }) {
+  if (window.__SOLO) return null;
+  const h = React.createElement;
+  const fr = (lab, cls, th, hgt, loc, el) => h("div", null, h("p", { className: "caption scr-lab" }, lab), h("div", { className: cls, "data-theme": th, style: { height: hgt } }, h(V.LocaleProvider, { locale: loc }, el)));
+  return h("div", { className: "scr" }, h("p", { className: "heading" }, title), h("p", { className: "caption muted" }, "Textele ecranului traduse (germana cu „Sie”, italiana cu „Lei”), ca să verificăm că etichetele mai lungi \xEEncap \xB7 numele aplicațiilor răm\xE2n neschimbate"), h("div", { className: "scr-row" }, fr("Deutsch \xB7 Desktop \xB7 1280 \xB7 Light", "scr-d", "light", desktopH, "de", de("desktop")), fr("Italiano \xB7 Telefon \xB7 390 \xB7 Light", "scr-m", "light", mobileH, "it", it("mobile")), fr("Italiano \xB7 Telefon \xB7 390 \xB7 Dark", "scr-m", "dark", mobileH, "it", it("mobile"))));
+}
+
+mount(React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(Screens, { title: "StockDesk \u2014 Stoc cu alerte: ce s-a terminat, ce e sub minim, ce e deja comandat", notes: ["Bara de stoc: linia din mijloc e minimul", "Peach = sub minim (de f\u0103cut ceva); ro\u0219u = epuizat"], desktopH: 980, tabletH: 1200, mobileH: 1300, render: (m) => /* @__PURE__ */ React.createElement(Inv, { mode: m }) }), React.createElement(__p2Locale, { title: "Test de lungime \u2014 german\u0103 (1280) \u0219i italian\u0103 (390)", desktopH: 980, mobileH: 1300, de: (m) => React.createElement(Inv__de, { mode: m }), it: (m) => React.createElement(Inv__it, { mode: m }) })));
 </script>
 </body>
 </html>

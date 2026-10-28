@@ -1,0 +1,49 @@
+{
+ "name": "Skeleton",
+ "version": "1.0.1",
+ "kind": "component",
+ "group": "Feedback",
+ "status": "changed",
+ "description": "Placeholder shapes while content loads; match the layout that is coming so nothing jumps.",
+ "exports": [
+  "Skeleton",
+  "SkeletonText"
+ ],
+ "props": [
+  {
+   "name": "width",
+   "type": "string | number",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "height",
+   "type": "string | number",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "shape",
+   "type": "\"circle\" | \"line\" | \"block\"",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "lines",
+   "type": "number",
+   "required": false,
+   "note": "",
+   "of": "SkeletonText"
+  }
+ ],
+ "events": [],
+ "states": [
+  "line",
+  "block",
+  "circle",
+  "text"
+ ],
+ "notes": "Reduced-motion (shimmer stopped) is automatic and not shown separately.",
+ "readme": "components/Skeleton/README.md",
+ "preview": "components/Skeleton/preview.html"
+}

@@ -1,4 +1,4 @@
-<!-- @dsCard group="Forms" height=320 -->
+<!-- @dsCard group="Forms" height=1270 width=1200 -->
 <!doctype html>
 <html lang="ro">
 <head><meta charset="utf-8"><title>FormField — Ventora</title>
@@ -250,6 +250,16 @@ html,body{min-height:100%}
 .fxframe .caption{color:var(--ink-muted)}
 @container (max-width:420px){.fxlang{grid-template-columns:32px minmax(0,1fr) auto}.fxlang .v-iconbtn{display:none}}
 
+/* c3: Light/Dark and DE/IT frames */
+.c3wrap{display:flex;flex-direction:column;min-width:0}
+.c3sec{display:flex;flex-direction:column;gap:var(--space-3);min-width:0}
+.c3h{margin:0;color:var(--ink)}
+.c3pair{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(360px,100%),1fr));gap:var(--space-4);align-items:start}
+.c3stack{display:flex;flex-direction:column;gap:var(--space-4);min-width:0}
+.c3f{display:flex;flex-direction:column;gap:var(--space-3);padding:var(--space-4);border:var(--border-width) solid var(--line);border-radius:var(--radius-md);background:var(--canvas);color:var(--ink);min-width:0;box-sizing:border-box}
+.c3lab{color:var(--ink-muted);margin:0}
+.c3kv{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:var(--space-2) var(--space-4);align-items:center}
+.c3ib{display:flex;align-items:center;gap:var(--space-3);min-width:0}
 </style>
 </head>
 <body>
@@ -265,7 +275,30 @@ const mount = (el) => ReactDOM.createRoot(document.getElementById("root")).rende
 function Demo() {
   return /* @__PURE__ */ React.createElement("div", { className: "d g2" }, /* @__PURE__ */ React.createElement(V.FormField, { label: "Nume afacere", required: true, helper: "Apare pe facturi \u0219i \xEEn Portal." }, /* @__PURE__ */ React.createElement(V.Input, { defaultValue: "Salon Aurora" })), /* @__PURE__ */ React.createElement(V.FormField, { label: "Website", optional: true }, /* @__PURE__ */ React.createElement(V.Input, { placeholder: "https://" })), /* @__PURE__ */ React.createElement(V.FormField, { label: "CUI", required: true, error: "CUI-ul are \xEEntre 2 \u0219i 10 cifre." }, /* @__PURE__ */ React.createElement(V.Input, { defaultValue: "RO12" })), /* @__PURE__ */ React.createElement(V.FormField, { label: "Etichet\u0103 ascuns\u0103 vizual", labelHidden: true }, /* @__PURE__ */ React.createElement(V.Input, { icon: "search", placeholder: "Caut\u0103 \xEEn program\u0103ri" })), /* @__PURE__ */ React.createElement(DE, null, /* @__PURE__ */ React.createElement(V.FormField, { label: "Steuer-Identifikationsnummer des Unternehmens", required: true, helper: "Erscheint auf allen Rechnungen." }, /* @__PURE__ */ React.createElement(V.Input, { defaultValue: "DE123456789" }))), /* @__PURE__ */ React.createElement(DE, null, /* @__PURE__ */ React.createElement(V.FormField, { label: "Postleitzahl", required: true, error: "Die Postleitzahl muss f\xFCnf Ziffern haben." }, /* @__PURE__ */ React.createElement(V.Input, { defaultValue: "101" }))));
 }
-mount(/* @__PURE__ */ React.createElement(Demo, null));
+const C3_ORIG = /* @__PURE__ */ React.createElement(Demo, null);
+const h = React.createElement;
+const C3Frame = ({ th, label, children, style }) => h("div", { className: "c3f", "data-theme": th, style }, h("p", { className: "caption c3lab" }, label), children);
+const C3Sec = ({ title, stack, children }) => h("div", { className: "c3sec" }, h("p", { className: "subheading c3h" }, title), h("div", { className: stack ? "c3stack" : "c3pair" }, children));
+const C3Themes = ({ render, stack, style }) => h(C3Sec, { title: "Light și Dark", stack }, h(C3Frame, { th: "light", label: "Light", style }, render("light")), h(C3Frame, { th: "dark", label: "Dark", style }, render("dark")));
+const C3Langs = ({ de, it, stack, style, itTheme }) => h(C3Sec, { title: "Germană și italiană — etichete mai lungi", stack }, h(V.LocaleProvider, { locale: "de" }, h(C3Frame, { th: "light", label: "Deutsch (de)", style }, de)), h(V.LocaleProvider, { locale: "it" }, h(C3Frame, { th: itTheme || "light", label: itTheme === "dark" ? "Italiano (it) \xB7 Dark" : "Italiano (it)", style }, it)));
+const FFT = {
+  ro: { l1: "Nume afacere", h1: "Apare pe facturi și \xEEn Portal.", v1: "Salon Aurora", l2: "Pagină de prezentare", p2: "Ex.: https://salonaurora.ro", l3: "Adresă de e-mail", e3: "Adresa nu pare completă. Verifică după @.", v3: "ana.popescu@", l4: "Descriere scurtă", v4: "Coafură, vopsit și tratamente \xEEn centrul Sibiului.", l5: "Oraș (din abonament, nu se schimbă aici)", v5: "T\xE2rgu Mureș" },
+  de: { l1: "Name des Unternehmens", h1: "Erscheint auf Rechnungen und im Portal.", v1: "Friseursalon M\xFCller", l2: "Website des Unternehmens", p2: "Z. B. https://salon-mueller.de", l3: "E-Mail-Adresse", e3: "Die Adresse scheint unvollst\xE4ndig. Bitte pr\xFCfen Sie den Teil nach dem @.", v3: "anna.mueller@", l4: "Kurzbeschreibung Ihres Unternehmens", v4: "Haarschnitte, F\xE4rben und Pflege im Zentrum von Leipzig.", l5: "Stadt (aus dem Abonnement, hier nicht \xE4nderbar)", v5: "Leipzig" },
+  it: { l1: "Nome dell’attivit\xE0", h1: "Compare sulle fatture e nel Portal.", v1: "Salone Bianchi", l2: "Sito web dell’attivit\xE0", p2: "Es.: https://salonebianchi.it", l3: "Indirizzo e-mail", e3: "L’indirizzo non sembra completo. Controlli la parte dopo la @.", v3: "giulia.bianchi@", l4: "Breve descrizione della Sua attivit\xE0", v4: "Taglio, colore e trattamenti nel centro di Bologna.", l5: "Citt\xE0 (dall’abbonamento, non modificabile qui)", v5: "Bologna" }
+};
+const FFSet = (t) => h("div", { className: "c3stack" },
+  h(V.FormField, { label: t.l1, required: true, helper: t.h1 }, h(V.Input, { defaultValue: t.v1 })),
+  h(V.FormField, { label: t.l2, optional: true }, h(V.Input, { placeholder: t.p2 })),
+  h(V.FormField, { label: t.l3, required: true, error: t.e3 }, h(V.Input, { type: "email", defaultValue: t.v3 })),
+  h(V.FormField, { label: t.l4, counter: h("span", { className: "caption v-num c3lab" }, t.v4.length + " / 160") }, h(V.Textarea, { defaultValue: t.v4, rows: 2 })),
+  h(V.FormField, { label: t.l5 }, h(V.Input, { defaultValue: t.v5, disabled: true }))
+);
+const C3_SECTIONS = [
+  h(C3Themes, { key: "t", render: () => FFSet(FFT.ro) }),
+  h(C3Langs, { key: "l", de: FFSet(FFT.de), it: FFSet(FFT.it) })
+];
+
+mount(h("div", { className: "c3wrap" }, C3_ORIG, h("div", { className: "d" }, ...C3_SECTIONS)));
 </script>
 </body>
 </html>

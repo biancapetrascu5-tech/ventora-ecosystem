@@ -1,4 +1,4 @@
-<!-- @dsCard group="Data" height=560 -->
+<!-- @dsCard group="Data" height=3250 width=1200 -->
 <!doctype html>
 <html lang="ro">
 <head><meta charset="utf-8"><title>Agenda — Ventora</title>
@@ -250,6 +250,9 @@ html,body{min-height:100%}
 .fxframe .caption{color:var(--ink-muted)}
 @container (max-width:420px){.fxlang{grid-template-columns:32px minmax(0,1fr) auto}.fxlang .v-iconbtn{display:none}}
 
+.thgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(520px,100%),1fr));gap:var(--space-4);align-items:start}
+.thf{display:flex;flex-direction:column;gap:var(--space-4);padding:var(--space-5);background:var(--canvas);color:var(--ink);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg);min-width:0;box-sizing:border-box}
+.thf .thl{margin:0;color:var(--ink-muted);font-weight:600}
 </style>
 </head>
 <body>
@@ -278,10 +281,10 @@ const ORGS = [
   { id: "nord", name: "Agen\u021Bia Nord Studio", role: "Manager de proiect" }
 ];
 const NOTIFS = [
-  { id: 1, title: "Programare nou\u0103 de la Ana Popescu", body: "Joi, 29 oct., 14:30 \xB7 Tuns", app: "Booking", time: "acum 5 min", person: "Ana Popescu" },
-  { id: 2, title: "Factura #2026-114 e restant\u0103 de 3 zile", body: "Clinica Dentis \xB7 1.250 lei", app: "Finance", time: "acum 2 ore", icon: "receipt" },
-  { id: 3, title: "Ioana a cerut concediu pe 2\u20136 noiembrie", app: "HR", time: "ieri", person: "Ioana Pavel", read: true },
-  { id: 4, title: "Exportul clien\u021Bilor e gata", app: "CRM", time: "ieri", icon: "download", read: true }
+  { id: 1, title: "Programare nou\u0103 de la Ana Popescu", body: "Joi, 29 oct., 14:30 \xB7 Tuns", app: "EasyBook", time: "acum 5 min", person: "Ana Popescu" },
+  { id: 2, title: "Factura #2026-114 e restant\u0103 de 3 zile", body: "Clinica Dentis \xB7 1.250 lei", app: "MoneyDesk", time: "acum 2 ore", icon: "receipt" },
+  { id: 3, title: "Ioana a cerut concediu pe 2\u20136 noiembrie", app: "TeamSpace", time: "ieri", person: "Ioana Pavel", read: true },
+  { id: 4, title: "Exportul clien\u021Bilor e gata", app: "ClientDesk", time: "ieri", icon: "download", read: true }
 ];
 const USER = { name: "Bianca Petra\u0219cu", email: "bianca@ventora-hub.com" };
 function Bar({ title, de }) {
@@ -312,7 +315,7 @@ function BookingShell({ height, active, mobile }) {
       height,
       spine: /* @__PURE__ */ React.createElement(V.Spine, { app: "booking", sections: SECTIONS, activeId: active, onBackToHub: () => {
       }, footer: /* @__PURE__ */ React.createElement(V.UsageMeter, { compact: true, label: "Program\u0103ri", used: 312, limit: 1e3 }) }),
-      contextBar: /* @__PURE__ */ React.createElement(Bar, { title: "Booking" })
+      contextBar: /* @__PURE__ */ React.createElement(Bar, { title: "EasyBook" })
     },
     /* @__PURE__ */ React.createElement(V.PageHeader, { title: "Program\u0103ri", description: mobile ? void 0 : "Toate program\u0103rile afacerii, de azi \xEEnainte.", actions: mobile ? void 0 : /* @__PURE__ */ React.createElement(V.SegmentedControl, { label: "Vizualizare", size: "md", defaultValue: "list", options: [{ value: "list", label: "List\u0103", icon: "list" }, { value: "cal", label: "Calendar", icon: "calendar" }] }) }),
     /* @__PURE__ */ React.createElement(V.DataTable, { columns: [
@@ -375,7 +378,7 @@ function BookingApp({ active, title, children, footer }) {
       height: "100%",
       spine: /* @__PURE__ */ React.createElement(V.Spine, { app: "booking", sections: SECTIONS, activeId: active, onBackToHub: () => {
       }, bottomItems: ["azi", "calendar", "programari", "clienti"], footer: footer === false ? null : /* @__PURE__ */ React.createElement(V.UsageMeter, { compact: true, label: "Program\u0103ri \xEEn octombrie", used: 862, limit: 1e3 }) }),
-      contextBar: /* @__PURE__ */ React.createElement(Bar, { title: title || "Booking" })
+      contextBar: /* @__PURE__ */ React.createElement(Bar, { title: title || "EasyBook" })
     },
     children
   );
@@ -408,12 +411,59 @@ const BK_ATTN = [
   { id: 3, icon: "wallet", tone: "danger", title: "Dan Stoica mai are de pl\u0103tit 120 lei", meta: "De la vizita din 16 octombrie", actions: [{ label: "\xCEncaseaz\u0103" }, { label: "Trimite link de plat\u0103", quiet: true }] },
   { id: 4, icon: "calendar", title: "Elena Georgescu vrea s\u0103 mute programarea", meta: "De m\xE2ine, 10:00, pe s\xE2mb\u0103t\u0103, 11:00 \xB7 cerere online", actions: [{ label: "Accept\u0103", primary: true }, { label: "Propune alt\u0103 or\u0103" }] }
 ];
-function Demo() {
-  return /* @__PURE__ */ React.createElement("div", { className: "d g2" }, /* @__PURE__ */ React.createElement("div", { className: "frame" }, /* @__PURE__ */ React.createElement(V.Agenda, { items: BK_AGENDA.filter((e) => e.col === "ioana"), now: BK_NOW, onSelect: () => {
-  } })), /* @__PURE__ */ React.createElement(DE, null, /* @__PURE__ */ React.createElement("div", { className: "frame" }, /* @__PURE__ */ React.createElement(V.Agenda, { items: BK_AGENDA.filter((e) => e.col === "mara").map((e) => ({ ...e, title: e.title, subtitle: "Manik\xFCre mit Gel" })), now: BK_NOW, onSelect: () => {
-  } }))));
+const h = React.createElement;
+const Frame = ({ th, label, children }) => h("section", { "data-theme": th, className: "thf" }, h("p", { className: "caption thl" }, (th === "dark" ? "Dark" : "Light") + (label ? " · " + label : "")), children);
+const AG = {
+  ro: { lbl: ["Toate stările · „acum” la 11:20, rândul selectat e Cristina Dobre", "Fără coloana de angajat (showStaff: false)"], items: [
+    { id: "a1", start: "09:00", end: "09:45", title: "Ana Popescu", subtitle: "Tuns", staff: "Ioana", status: "done" },
+    { id: "a2", start: "09:45", end: "10:15", title: "Ștefan Țăranu", subtitle: "Tuns bărbați", staff: "Radu", status: "noshow" },
+    { id: "a3", start: "10:00", end: "10:30", title: "Vlad Cristea", subtitle: "Tuns bărbați", staff: "Radu", status: "cancelled" },
+    { id: "a4", start: "11:00", end: "12:00", title: "Andrei Ionescu", subtitle: "Vopsit rădăcini", staff: "Ioana", status: "confirmed" },
+    { id: "a5", start: "12:30", end: "13:15", title: "Cristina Dobre", subtitle: "Tratament facial", staff: "Ioana", status: "unconfirmed" },
+    { id: "a6", start: "13:15", end: "14:00", title: "Pauză de prânz", staff: "Mara", status: "blocked" },
+    { id: "a7", start: "14:30", end: "15:15", title: "Alina Murariu", subtitle: "Manichiură semipermanentă", staff: "Mara", status: "confirmed" }] },
+  de: { lbl: ["Alle Zustände · „jetzt“ um 11:20, ausgewählt ist Käthe Vogel", "Ohne Mitarbeiterspalte"], items: [
+    { id: "a1", start: "09:00", end: "09:45", title: "Anna Müller", subtitle: "Haarschnitt", staff: "Lena", status: "done" },
+    { id: "a2", start: "09:45", end: "10:15", title: "Jürgen Weiß", subtitle: "Herrenhaarschnitt", staff: "Björn", status: "noshow" },
+    { id: "a3", start: "10:00", end: "10:30", title: "Sören Kühn", subtitle: "Herrenhaarschnitt", staff: "Björn", status: "cancelled" },
+    { id: "a4", start: "11:00", end: "12:00", title: "Lena Größer", subtitle: "Ansatzfärbung mit Pflegebehandlung", staff: "Lena", status: "confirmed" },
+    { id: "a5", start: "12:30", end: "13:15", title: "Käthe Vogel", subtitle: "Gesichtsbehandlung", staff: "Lena", status: "unconfirmed" },
+    { id: "a6", start: "13:15", end: "14:00", title: "Mittagspause", staff: "Anja", status: "blocked" },
+    { id: "a7", start: "14:30", end: "15:15", title: "Anja Brückner", subtitle: "Maniküre mit Gel", staff: "Anja", status: "confirmed" }] },
+  it: { lbl: ["Tutti gli stati · «adesso» alle 11:20, selezionata Sofia Gallo", "Senza colonna del dipendente"], items: [
+    { id: "a1", start: "09:00", end: "09:45", title: "Giulia Ferrara", subtitle: "Taglio", staff: "Chiara", status: "done" },
+    { id: "a2", start: "09:45", end: "10:15", title: "Niccolò Lucà", subtitle: "Taglio uomo", staff: "Matteo", status: "noshow" },
+    { id: "a3", start: "10:00", end: "10:30", title: "Fabrizio Nicolò", subtitle: "Taglio uomo", staff: "Matteo", status: "cancelled" },
+    { id: "a4", start: "11:00", end: "12:00", title: "Chiara Mancini", subtitle: "Colore alla radice con trattamento", staff: "Chiara", status: "confirmed" },
+    { id: "a5", start: "12:30", end: "13:15", title: "Sofia Gallo", subtitle: "Trattamento viso", staff: "Chiara", status: "unconfirmed" },
+    { id: "a6", start: "13:15", end: "14:00", title: "Pausa pranzo", staff: "Giulia", status: "blocked" },
+    { id: "a7", start: "14:30", end: "15:15", title: "Matteo Rossi", subtitle: "Manicure semipermanente", staff: "Giulia", status: "confirmed" }] }
+};
+function Set({ L }) {
+  return h(React.Fragment, null,
+    h("p", { className: "caption lab" }, L.lbl[0]),
+    h("div", { className: "frame" }, h(V.Agenda, { items: L.items, now: "11:20", activeId: "a5", onSelect: () => {
+    } })),
+    h("p", { className: "caption lab" }, L.lbl[1]),
+    h("div", { className: "frame" }, h(V.Agenda, { items: L.items.slice(3, 6), now: "11:20", showStaff: false })));
 }
-mount(/* @__PURE__ */ React.createElement(Demo, null));
+function Demo() {
+  return h("div", { className: "d" },
+    h("div", { className: "thgrid" },
+      h(Frame, { th: "light" }, h(Set, { L: AG.ro })),
+      h(Frame, { th: "dark" }, h(Set, { L: AG.ro })),
+      h(Frame, { th: "light", label: "Deutsch" }, h(DE, null, h(Set, { L: AG.de }))),
+      h(Frame, { th: "light", label: "Italiano" }, h(IT, null, h(Set, { L: AG.it }))),
+      h(Frame, { th: "dark", label: "Deutsch" }, h(DE, null, h(Set, { L: AG.de }))),
+      h(Frame, { th: "dark", label: "Italiano" }, h(IT, null, h(Set, { L: AG.it })))),
+    h("p", { className: "caption lab" }, "Agenda de pe telefon (390px), din EasyBook"),
+    h("div", { className: "thgrid", style: { gridTemplateColumns: "repeat(auto-fill, 390px)" } },
+      h(Frame, { th: "light" }, h("div", { className: "frame" }, h(V.Agenda, { items: BK_AGENDA.filter((e) => e.col === "ioana"), now: BK_NOW, onSelect: () => {
+      } }))),
+      h(Frame, { th: "dark", label: "Deutsch" }, h(DE, null, h("div", { className: "frame" }, h(V.Agenda, { items: BK_AGENDA.filter((e) => e.col === "mara").map((e) => ({ ...e, subtitle: e.status === "blocked" ? void 0 : "Maniküre mit Gel" })), now: BK_NOW, onSelect: () => {
+      } }))))));
+}
+mount(h(Demo, null));
 </script>
 </body>
 </html>

@@ -1,0 +1,25 @@
+{
+ "name": "FounderPlans",
+ "version": "1.0.1",
+ "kind": "page",
+ "group": "Founder",
+ "status": "changed",
+ "description": "Plans with versions: price, limits, apps, and how many businesses sit on each version. Any change to price or limits creates a new version; businesses stay on theirs until moved.",
+ "exports": [],
+ "props": [],
+ "events": [],
+ "states": [
+  "Founder — Planuri cu versiuni",
+  "Model comercial",
+  "Growth",
+  "Sistem",
+  "Afaceri",
+  "Consum",
+  "Campanii",
+  "Control",
+  "Mai multe"
+ ],
+ "notes": "States are the labelled boards and frames of the preview (Light and Dark; desktop/tablet/phone).",
+ "readme": "components/FounderPlans/README.md",
+ "preview": "components/FounderPlans/preview.html"
+}

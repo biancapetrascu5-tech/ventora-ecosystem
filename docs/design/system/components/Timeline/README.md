@@ -1,6 +1,6 @@
 # Timeline
 
-Stages of a project as bars across weeks, with the peach "Azi" line and milestones. The Projects "Cronologie" view.
+Stages of a project as bars across weeks, with the peach "Azi" line and milestones. The TaskBoard "Cronologie" view.
 
 **Props.** `periods` `[{ label, current? }]`, `rows` `[{ id, label, sub?, start, end, status: 'planned'|'active'|'late'|'done', progress?, statusLabel? }]` or a milestone row `{ id, label, milestone, milestoneLabel }` (positions in period units, fractions allowed), `today` (period units), `label`, `minPeriodWidth`.
 

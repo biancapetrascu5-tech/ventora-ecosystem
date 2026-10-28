@@ -1,4 +1,4 @@
-<!-- @dsCard group="Status" height=160 -->
+<!-- @dsCard group="Status" height=730 width=1200 -->
 <!doctype html>
 <html lang="ro">
 <head><meta charset="utf-8"><title>Badge — Ventora</title>
@@ -250,6 +250,9 @@ html,body{min-height:100%}
 .fxframe .caption{color:var(--ink-muted)}
 @container (max-width:420px){.fxlang{grid-template-columns:32px minmax(0,1fr) auto}.fxlang .v-iconbtn{display:none}}
 
+.thgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(520px,100%),1fr));gap:var(--space-4);align-items:start}
+.thf{display:flex;flex-direction:column;gap:var(--space-4);padding:var(--space-5);background:var(--canvas);color:var(--ink);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg);min-width:0;box-sizing:border-box}
+.thf .thl{margin:0;color:var(--ink-muted);font-weight:600}
 </style>
 </head>
 <body>
@@ -262,10 +265,30 @@ const DE = ({ children }) => /* @__PURE__ */ React.createElement(V.LocaleProvide
 const FR = ({ children }) => /* @__PURE__ */ React.createElement(V.LocaleProvider, { locale: "fr" }, children);
 const IT = ({ children }) => /* @__PURE__ */ React.createElement(V.LocaleProvider, { locale: "it" }, children);
 const mount = (el) => ReactDOM.createRoot(document.getElementById("root")).render(/* @__PURE__ */ React.createElement(V.LocaleProvider, { locale: "ro" }, el));
-function Demo() {
-  return /* @__PURE__ */ React.createElement("div", { className: "d" }, /* @__PURE__ */ React.createElement(Row, { label: "Num\u0103r" }, /* @__PURE__ */ React.createElement(V.Badge, { tone: "attention", count: 3, label: "3 necitite" }), /* @__PURE__ */ React.createElement(V.Badge, { tone: "attention", count: 128 }), /* @__PURE__ */ React.createElement(V.Badge, { count: 12 }), /* @__PURE__ */ React.createElement(V.Badge, { tone: "primary", count: 5 })), /* @__PURE__ */ React.createElement(Row, { label: "Etichet\u0103" }, /* @__PURE__ */ React.createElement(V.Badge, null, "Nou"), /* @__PURE__ */ React.createElement(V.Badge, { tone: "primary" }, "Pro"), /* @__PURE__ */ React.createElement(V.Badge, null, "Beta")), /* @__PURE__ */ React.createElement(Row, { label: "Punct" }, /* @__PURE__ */ React.createElement(V.Badge, { dot: true, tone: "attention", label: "Necitit" }), /* @__PURE__ */ React.createElement(V.Badge, { dot: true, tone: "neutral" })), /* @__PURE__ */ React.createElement(DE, null, /* @__PURE__ */ React.createElement(Row, { label: "DE" }, /* @__PURE__ */ React.createElement(V.Badge, null, "Neu"), /* @__PURE__ */ React.createElement(V.Badge, { tone: "attention", count: 1284 }))));
+const h = React.createElement;
+const Frame = ({ th, label, children }) => h("section", { "data-theme": th, className: "thf" }, h("p", { className: "caption thl" }, (th === "dark" ? "Dark" : "Light") + (label ? " · " + label : "")), children);
+const T = {
+  ro: { lbl: ["Număr", "Etichetă", "Punct", "În context"], unread: "3 necitite", news: "Nou", dotL: "Necitit", ctx: [["Programări", 3, "attention", "3 programări neconfirmate"], ["Notificări", 12, "attention", "12 notificări necitite"], ["Clienți activi", 248, "neutral", "248 de clienți activi"]], tags: ["Nou", "Pro", "Beta", "Încercare gratuită"] },
+  de: { lbl: ["Anzahl", "Etikett", "Punkt", "Im Kontext"], unread: "3 ungelesen", news: "Neu", dotL: "Ungelesen", ctx: [["Termine", 3, "attention", "3 unbestätigte Termine"], ["Benachrichtigungen", 12, "attention", "12 ungelesene Benachrichtigungen"], ["Aktive Kunden", 248, "neutral", "248 aktive Kunden"]], tags: ["Neu", "Pro", "Beta", "Kostenloser Testzeitraum"] },
+  it: { lbl: ["Numero", "Etichetta", "Punto", "Nel contesto"], unread: "3 non letti", news: "Nuovo", dotL: "Non letto", ctx: [["Appuntamenti", 3, "attention", "3 appuntamenti non confermati"], ["Notifiche", 12, "attention", "12 notifiche non lette"], ["Clienti attivi", 248, "neutral", "248 clienti attivi"]], tags: ["Nuovo", "Pro", "Beta", "Prova gratuita"] }
+};
+function Set({ L }) {
+  return h(React.Fragment, null,
+    h(Row, { label: L.lbl[0] }, h(V.Badge, { tone: "attention", count: 3, label: L.unread }), h(V.Badge, { tone: "attention", count: 128 }), h(V.Badge, { count: 12 }), h(V.Badge, { tone: "primary", count: 5 }), h(V.Badge, { count: 1284, max: 999 })),
+    h(Row, { label: L.lbl[1] }, L.tags.map((t, i) => h(V.Badge, { key: t, tone: i === 1 ? "primary" : "neutral" }, t))),
+    h(Row, { label: L.lbl[2] }, h(V.Badge, { dot: true, tone: "attention", label: L.dotL }), h(V.Badge, { dot: true, tone: "neutral" }), h(V.Badge, { dot: true, tone: "primary" })),
+    h(Row, { label: L.lbl[3] }, L.ctx.map(([t, n, tone, a]) => h("span", { key: t, className: "r", style: { gap: "var(--space-2)", flexWrap: "nowrap" } }, h(V.Icon, { name: tone === "attention" ? "bell" : "users", size: 16 }), h("span", { className: "body" }, t), h(V.Badge, { tone, count: n, max: 999, label: a })))));
 }
-mount(/* @__PURE__ */ React.createElement(Demo, null));
+function Demo() {
+  return h("div", { className: "d" },
+    h("div", { className: "thgrid" }, h(Frame, { th: "light" }, h(Set, { L: T.ro })), h(Frame, { th: "dark" }, h(Set, { L: T.ro }))),
+    h("div", { className: "thgrid" },
+      h(Frame, { th: "light", label: "Deutsch" }, h(DE, null, h(Set, { L: T.de }))),
+      h(Frame, { th: "light", label: "Italiano" }, h(IT, null, h(Set, { L: T.it }))),
+      h(Frame, { th: "dark", label: "Deutsch" }, h(DE, null, h(Set, { L: T.de }))),
+      h(Frame, { th: "dark", label: "Italiano" }, h(IT, null, h(Set, { L: T.it })))));
+}
+mount(h(Demo, null));
 </script>
 </body>
 </html>

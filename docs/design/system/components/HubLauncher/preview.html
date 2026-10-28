@@ -1,4 +1,4 @@
-<!-- @dsCard group="Ecrane Hub" height=3720 width=2620 page -->
+<!-- @dsCard group="Ecrane Hub" height=4480 width=2620 page -->
 <!doctype html>
 <html lang="ro">
 <head><meta charset="utf-8"><title>HubLauncher — Ventora</title>
@@ -307,6 +307,9 @@ html,body{min-height:100%}
 .sb.mobile .display-hub{font-size:32px;line-height:36px}
 @media (prefers-reduced-motion: reduce){.lb *,.sb *{transition:none!important}}
 
+.ph-frame{height:640px}
+.ph-band{display:block}
+.ph-col{display:flex;flex-direction:column}
 </style>
 </head>
 <body>
@@ -335,10 +338,10 @@ const ORGS = [
   { id: "nord", name: "Agen\u021Bia Nord Studio", role: "Manager de proiect" }
 ];
 const NOTIFS = [
-  { id: 1, title: "Programare nou\u0103 de la Ana Popescu", body: "Joi, 29 oct., 14:30 \xB7 Tuns", app: "Booking", time: "acum 5 min", person: "Ana Popescu" },
-  { id: 2, title: "Factura #2026-114 e restant\u0103 de 3 zile", body: "Clinica Dentis \xB7 1.250 lei", app: "Finance", time: "acum 2 ore", icon: "receipt" },
-  { id: 3, title: "Ioana a cerut concediu pe 2\u20136 noiembrie", app: "HR", time: "ieri", person: "Ioana Pavel", read: true },
-  { id: 4, title: "Exportul clien\u021Bilor e gata", app: "CRM", time: "ieri", icon: "download", read: true }
+  { id: 1, title: "Programare nou\u0103 de la Ana Popescu", body: "Joi, 29 oct., 14:30 \xB7 Tuns", app: "EasyBook", time: "acum 5 min", person: "Ana Popescu" },
+  { id: 2, title: "Factura #2026-114 e restant\u0103 de 3 zile", body: "Clinica Dentis \xB7 1.250 lei", app: "MoneyDesk", time: "acum 2 ore", icon: "receipt" },
+  { id: 3, title: "Ioana a cerut concediu pe 2\u20136 noiembrie", app: "TeamSpace", time: "ieri", person: "Ioana Pavel", read: true },
+  { id: 4, title: "Exportul clien\u021Bilor e gata", app: "ClientDesk", time: "ieri", icon: "download", read: true }
 ];
 const USER = { name: "Bianca Petra\u0219cu", email: "bianca@ventora-hub.com" };
 function Bar({ title, de }) {
@@ -369,7 +372,7 @@ function BookingShell({ height, active, mobile }) {
       height,
       spine: /* @__PURE__ */ React.createElement(V.Spine, { app: "booking", sections: SECTIONS, activeId: active, onBackToHub: () => {
       }, footer: /* @__PURE__ */ React.createElement(V.UsageMeter, { compact: true, label: "Program\u0103ri", used: 312, limit: 1e3 }) }),
-      contextBar: /* @__PURE__ */ React.createElement(Bar, { title: "Booking" })
+      contextBar: /* @__PURE__ */ React.createElement(Bar, { title: "EasyBook" })
     },
     /* @__PURE__ */ React.createElement(V.PageHeader, { title: "Program\u0103ri", description: mobile ? void 0 : "Toate program\u0103rile afacerii, de azi \xEEnainte.", actions: mobile ? void 0 : /* @__PURE__ */ React.createElement(V.SegmentedControl, { label: "Vizualizare", size: "md", defaultValue: "list", options: [{ value: "list", label: "List\u0103", icon: "list" }, { value: "cal", label: "Calendar", icon: "calendar" }] }) }),
     /* @__PURE__ */ React.createElement(V.DataTable, { columns: [
@@ -390,7 +393,7 @@ function HubBar({ title, inApp }) {
   return /* @__PURE__ */ React.createElement(
     V.ContextBar,
     {
-      leading: inApp ? null : /* @__PURE__ */ React.createElement("span", { style: { padding: "0 var(--space-2)" } }, /* @__PURE__ */ React.createElement(V.Logo, { size: 32 })),
+      leading: inApp ? null : /* @__PURE__ */ React.createElement("span", { style: { padding: "0 var(--space-2)", display: "inline-flex" } }, /* @__PURE__ */ React.createElement(V.Logo, { size: 32, className: "v-cb-logo--full" }), /* @__PURE__ */ React.createElement(V.Logo, { variant: "mark", size: 32, className: "v-cb-logo--mark" })),
       title,
       org: /* @__PURE__ */ React.createElement(V.OrgSwitcher, { orgs: ORGS, currentId: "aurora" }),
       onSearch: () => {
@@ -423,7 +426,7 @@ function Screens({ title, notes, render, desktopH = 860, tabletH = 1100, mobileH
   return /* @__PURE__ */ React.createElement("div", { className: "scr" }, /* @__PURE__ */ React.createElement("p", { className: "heading" }, title), notes && /* @__PURE__ */ React.createElement("p", { className: "caption muted" }, notes.join(" \xB7 ")), ["light", "dark"].map((th) => /* @__PURE__ */ React.createElement("div", { className: "scr-row", key: th }, sizes.map(([m, lab, cls, h]) => /* @__PURE__ */ React.createElement("div", { key: m }, /* @__PURE__ */ React.createElement("p", { className: "caption scr-lab" }, lab, " \xB7 ", th === "light" ? "Light" : "Dark"), /* @__PURE__ */ React.createElement("div", { className: cls, "data-theme": th, style: { height: h } }, render(m, th)))))));
 }
 const MINE = [["booking", "Program\u0103ri, calendar \u0219i reamintiri", 3], ["crm", "Clien\u021Bi, istoric \u0219i oportunit\u0103\u021Bi"], ["hr", "Echip\u0103, prezen\u021B\u0103 \u0219i concedii", 1], ["finance", "Facturi, scaden\u021Be \u0219i restan\u021Be", 2], ["projects", "Proiecte, sarcini \u0219i termene"], ["shifts", "Ture \u0219i \xEEnlocuiri"], ["documents", "Documente \u0219i \u0219abloane"], ["portal", "Pagina afacerii pentru clien\u021Bi"]];
-const RECO = { marketing: { reason: "Se potrive\u0219te cu Booking: trimite automat reamintiri \u0219i campanii clien\u021Bilor t\u0103i.", cost: "49 lei pe lun\u0103 \xB7 f\u0103r\u0103 cost de implementare" } };
+const RECO = { marketing: { reason: "Se potrive\u0219te cu EasyBook: trimite automat reamintiri \u0219i campanii clien\u021Bilor t\u0103i.", cost: "49 lei pe lun\u0103 \xB7 f\u0103r\u0103 cost de implementare" } };
 const VIEWER_ROLE = "owner";
 const RECO_FOR = (a) => (VIEWER_ROLE === "owner" || VIEWER_ROLE === "admin") && a === "marketing" ? RECO[a] : null;
 const OTHER = [["inventory", "unavailable"], ["analytics", "notInRole"], ["marketing", "notInPlan"], ["network", "notInPlan"]];
@@ -485,7 +488,26 @@ function Launcher({ mode, empty }) {
 function CommercialPrefs({ mode }) {
   return /* @__PURE__ */ React.createElement(V.SheetSection, { title: "Recomand\u0103ri Ventora", description: "Sugestii despre aplica\u021Bii \u0219i pachete \xEEn plus care se potrivesc cu ce faci deja." }, /* @__PURE__ */ React.createElement("div", { className: "d0", style: { gap: "var(--space-3)" } }, /* @__PURE__ */ React.createElement(V.Toggle, { label: "\xCEn aplica\u021Bie", description: "Le vezi \xEEn pagini \u0219i \xEEn notific\u0103ri, la sec\u021Biunea Recomand\u0103ri.", defaultChecked: true, labelPosition: mode === "mobile" ? "start" : "end" }), /* @__PURE__ */ React.createElement(V.Toggle, { label: "Pe e-mail", description: "Disponibil \xEEn cur\xE2nd", disabled: true, labelPosition: mode === "mobile" ? "start" : "end" }), /* @__PURE__ */ React.createElement(V.Notice, { tone: "neutral", icon: "info" }, "Mesajele despre limitele contului t\u0103u r\u0103m\xE2n active, pentru c\u0103 sunt informa\u021Bii despre cont, nu recomand\u0103ri.")));
 }
-mount(/* @__PURE__ */ React.createElement(Screens, { title: "Launcher — treci cu mouse-ul peste o aplicație ca să vezi fișa ei; apasă ca s-o deschizi", notes: ["Marketing e un slot comercial: doar pentru proprietar și admin, cel mult unul, cu „Nu mă interesează” și „Amintește-mi mai târziu”, sub plafoanele globale", "Portal are cardul lui: pagina afacerii pentru clienți, nu o aplicație în care lucrezi"], desktopH: 1200, tabletH: 1560, mobileH: 1760, render: (m) => /* @__PURE__ */ React.createElement(Launcher, { mode: m }) }));
+/* PASUL 2 d (S66): under 600px the Hub header keeps only the logo, search (icon), the bell and the avatar; the business switcher moves into AccountMenu. */
+function PhoneHeader({ th, lang }) {
+  const h = React.createElement;
+  const de = lang === "de";
+  return h("div", { className: "ph-col" },
+    h("p", { className: "caption scr-lab" }, (de ? "Deutsch · " : "") + "Telefon · 390 · " + (th === "light" ? "Light" : "Dark") + " · meniul contului deschis"),
+    h("div", { className: "scr-m ph-frame", "data-theme": th, style: { containerType: "inline-size", containerName: "shell" } },
+      h(V.LocaleProvider, { locale: lang || "ro" },
+        h(V.BrandZone, { className: "ph-band" },
+          h(V.ContextBar, {
+            leading: h("span", { style: { padding: "0 var(--space-2)", display: "inline-flex" } }, h(V.Logo, { variant: "mark", size: 32 })),
+            onSearch: () => {}, searchLabel: de ? "Suchen" : "Caută",
+            notifications: h(V.NotificationsPanel, { items: NOTIFS }),
+            account: h(V.AccountMenu, { defaultOpen: true, orgsInMenu: true, user: USER, orgs: de ? [{ id: 1, name: "Zahnarztpraxis Dr. M\u00fcller", role: "Empfang" }, { id: 2, name: "Salon Aurora", role: "Inhaberin" }] : ORGS, currentOrgId: de ? 1 : "aurora", onCatalog: () => {} })
+          })))));
+}
+mount(React.createElement("div", null, /* @__PURE__ */ React.createElement(Screens, { title: "Launcher — treci cu mouse-ul peste o aplicație ca să vezi fișa ei; apasă ca s-o deschizi", notes: ["CampaignKit e un slot comercial: doar pentru proprietar și admin, cel mult unul, cu „Nu mă interesează” și „Amintește-mi mai târziu”, sub plafoanele globale", "Portal are cardul lui: pagina afacerii pentru clienți, nu o aplicație în care lucrezi"], desktopH: 1200, tabletH: 1560, mobileH: 1760, render: (m) => /* @__PURE__ */ React.createElement(Launcher, { mode: m }) }),
+  React.createElement("div", { className: "scr" },
+    React.createElement("p", { className: "heading" }, "Antetul pe telefon (sub 600px): logo, căutare, clopoțel, avatar; selectorul de afacere e în meniul contului"),
+    React.createElement("div", { className: "scr-row" }, React.createElement(PhoneHeader, { th: "light" }), React.createElement(PhoneHeader, { th: "dark" }), React.createElement(PhoneHeader, { th: "light", lang: "de" })))));
 </script>
 </body>
 </html>

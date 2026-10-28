@@ -1,6 +1,6 @@
 # BookingCalendar
 
-Booking — Calendar with Schedule: resources (one column per person), week (today marked, Sunday closed) and day (pick the person). Date navigation, "Azi" and the view switch sit above the grid; the grid scrolls inside itself.
+EasyBook — Calendar with Schedule: resources (one column per person), week (today marked, Sunday closed) and day (pick the person). Date navigation, "Azi" and the view switch sit above the grid; the grid scrolls inside itself.
 
 Shown at 1280 (desktop), 820 (tablet portrait) and 390 (phone), in light and dark, built only from the system's components.
 

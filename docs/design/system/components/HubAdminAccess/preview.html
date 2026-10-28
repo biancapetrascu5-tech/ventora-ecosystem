@@ -1,4 +1,4 @@
-<!-- @dsCard group="Ecrane Hub" height=2368 width=2620 page -->
+<!-- @dsCard group="Ecrane Hub" height=3644 width=2620 page -->
 <!doctype html>
 <html lang="ro">
 <head><meta charset="utf-8"><title>HubAdminAccess — Ventora</title>
@@ -278,10 +278,10 @@ const ORGS = [
   { id: "nord", name: "Agen\u021Bia Nord Studio", role: "Manager de proiect" }
 ];
 const NOTIFS = [
-  { id: 1, title: "Programare nou\u0103 de la Ana Popescu", body: "Joi, 29 oct., 14:30 \xB7 Tuns", app: "Booking", time: "acum 5 min", person: "Ana Popescu" },
-  { id: 2, title: "Factura #2026-114 e restant\u0103 de 3 zile", body: "Clinica Dentis \xB7 1.250 lei", app: "Finance", time: "acum 2 ore", icon: "receipt" },
-  { id: 3, title: "Ioana a cerut concediu pe 2\u20136 noiembrie", app: "HR", time: "ieri", person: "Ioana Pavel", read: true },
-  { id: 4, title: "Exportul clien\u021Bilor e gata", app: "CRM", time: "ieri", icon: "download", read: true }
+  { id: 1, title: "Programare nou\u0103 de la Ana Popescu", body: "Joi, 29 oct., 14:30 \xB7 Tuns", app: "EasyBook", time: "acum 5 min", person: "Ana Popescu" },
+  { id: 2, title: "Factura #2026-114 e restant\u0103 de 3 zile", body: "Clinica Dentis \xB7 1.250 lei", app: "MoneyDesk", time: "acum 2 ore", icon: "receipt" },
+  { id: 3, title: "Ioana a cerut concediu pe 2\u20136 noiembrie", app: "TeamSpace", time: "ieri", person: "Ioana Pavel", read: true },
+  { id: 4, title: "Exportul clien\u021Bilor e gata", app: "ClientDesk", time: "ieri", icon: "download", read: true }
 ];
 const USER = { name: "Bianca Petra\u0219cu", email: "bianca@ventora-hub.com" };
 function Bar({ title, de }) {
@@ -312,7 +312,7 @@ function BookingShell({ height, active, mobile }) {
       height,
       spine: /* @__PURE__ */ React.createElement(V.Spine, { app: "booking", sections: SECTIONS, activeId: active, onBackToHub: () => {
       }, footer: /* @__PURE__ */ React.createElement(V.UsageMeter, { compact: true, label: "Program\u0103ri", used: 312, limit: 1e3 }) }),
-      contextBar: /* @__PURE__ */ React.createElement(Bar, { title: "Booking" })
+      contextBar: /* @__PURE__ */ React.createElement(Bar, { title: "EasyBook" })
     },
     /* @__PURE__ */ React.createElement(V.PageHeader, { title: "Program\u0103ri", description: mobile ? void 0 : "Toate program\u0103rile afacerii, de azi \xEEnainte.", actions: mobile ? void 0 : /* @__PURE__ */ React.createElement(V.SegmentedControl, { label: "Vizualizare", size: "md", defaultValue: "list", options: [{ value: "list", label: "List\u0103", icon: "list" }, { value: "cal", label: "Calendar", icon: "calendar" }] }) }),
     /* @__PURE__ */ React.createElement(V.DataTable, { columns: [
@@ -329,32 +329,74 @@ const HUB_SECTIONS = [
   { label: "Afacerea", items: [{ id: "echipa", label: "Echip\u0103 \u0219i invita\u021Bii", short: "Echip\u0103", icon: "users" }, { id: "roluri", label: "Roluri \u0219i acces", icon: "key-round" }, { id: "abonament", label: "Abonament \u0219i consum", short: "Abonament", icon: "credit-card" }] },
   { label: "Ajutor", items: [{ id: "suport", label: "Suport", icon: "life-buoy", badge: 1 }] }
 ];
-function HubBar({ title, inApp }) {
+/* DE / IT: the same Hub chrome with German and Italian texts (label-length test). */
+const HUB_SECTIONS_L = {
+  de: [
+    { label: "Ihr Konto", items: [{ id: "profil", label: "Profil und Einstellungen", short: "Profil", icon: "circle-user" }, { id: "securitate", label: "Sicherheit", icon: "shield" }] },
+    { label: "Unternehmen", items: [{ id: "echipa", label: "Team und Einladungen", short: "Team", icon: "users" }, { id: "roluri", label: "Rollen und Zugriff", short: "Rollen", icon: "key-round" }, { id: "abonament", label: "Abonnement und Verbrauch", short: "Abonnement", icon: "credit-card" }] },
+    { label: "Hilfe", items: [{ id: "suport", label: "Support", icon: "life-buoy", badge: 1 }] }
+  ],
+  it: [
+    { label: "Il Suo account", items: [{ id: "profil", label: "Profilo e preferenze", short: "Profilo", icon: "circle-user" }, { id: "securitate", label: "Sicurezza", icon: "shield" }] },
+    { label: "Attività", items: [{ id: "echipa", label: "Team e inviti", short: "Team", icon: "users" }, { id: "roluri", label: "Ruoli e accesso", short: "Ruoli", icon: "key-round" }, { id: "abonament", label: "Abbonamento e utilizzo", short: "Abbonamento", icon: "credit-card" }] },
+    { label: "Aiuto", items: [{ id: "suport", label: "Assistenza", icon: "life-buoy", badge: 1 }] }
+  ]
+};
+const ORGS_L = {
+  de: [{ id: "aurora", name: "Salon Aurora", role: "Inhaber" }, { id: "dentis", name: "Clinica Dentis Sibiu", role: "Empfang" }, { id: "nord", name: "Agenția Nord Studio", role: "Projektmanager" }],
+  it: [{ id: "aurora", name: "Salon Aurora", role: "Titolare" }, { id: "dentis", name: "Clinica Dentis Sibiu", role: "Reception" }, { id: "nord", name: "Agenția Nord Studio", role: "Project manager" }]
+};
+const NOTIFS_L = {
+  de: [
+    { id: 1, title: "Neuer Termin von Ana Popescu", body: "Do., 29. Okt., 14:30 · Haarschnitt", app: "EasyBook", time: "vor 5 Min.", person: "Ana Popescu" },
+    { id: 2, title: "Rechnung #2026-114 ist seit 3 Tagen überfällig", body: "Clinica Dentis · 1.250 lei", app: "MoneyDesk", time: "vor 2 Std.", icon: "receipt" },
+    { id: 3, title: "Ioana hat Urlaub vom 2. bis 6. November beantragt", app: "TeamSpace", time: "gestern", person: "Ioana Pavel", read: true }
+  ],
+  it: [
+    { id: 1, title: "Nuovo appuntamento di Ana Popescu", body: "Gio 29 ott, 14:30 · Taglio", app: "EasyBook", time: "5 min fa", person: "Ana Popescu" },
+    { id: 2, title: "La fattura #2026-114 è scaduta da 3 giorni", body: "Clinica Dentis · 1.250 lei", app: "MoneyDesk", time: "2 ore fa", icon: "receipt" },
+    { id: 3, title: "Ioana ha chiesto ferie dal 2 al 6 novembre", app: "TeamSpace", time: "ieri", person: "Ioana Pavel", read: true }
+  ]
+};
+const isL = (lang) => lang === "de" || lang === "it";
+function HubBar({ title, inApp, lang }) {
+  const orgs = isL(lang) ? ORGS_L[lang] : ORGS;
   return /* @__PURE__ */ React.createElement(
     V.ContextBar,
     {
-      leading: inApp ? null : /* @__PURE__ */ React.createElement("span", { style: { padding: "0 var(--space-2)" } }, /* @__PURE__ */ React.createElement(V.Logo, { size: 32 })),
+      leading: inApp ? null : /* @__PURE__ */ React.createElement("span", { style: { padding: "0 var(--space-2)", display: "inline-flex" } }, /* @__PURE__ */ React.createElement(V.Logo, { size: 32, className: "v-cb-logo--full" }), /* @__PURE__ */ React.createElement(V.Logo, { variant: "mark", size: 32, className: "v-cb-logo--mark" })),
       title,
-      org: /* @__PURE__ */ React.createElement(V.OrgSwitcher, { orgs: ORGS, currentId: "aurora" }),
+      org: /* @__PURE__ */ React.createElement(V.OrgSwitcher, { orgs, currentId: "aurora" }),
       onSearch: () => {
       },
-      notifications: /* @__PURE__ */ React.createElement(V.NotificationsPanel, { items: NOTIFS }),
-      account: /* @__PURE__ */ React.createElement(V.AccountMenu, { user: USER, orgs: ORGS, currentOrgId: "aurora", onCatalog: () => {
+      notifications: /* @__PURE__ */ React.createElement(V.NotificationsPanel, { items: isL(lang) ? NOTIFS_L[lang] : NOTIFS }),
+      account: /* @__PURE__ */ React.createElement(V.AccountMenu, { user: USER, orgs, currentOrgId: "aurora", onCatalog: () => {
       } })
     }
   );
 }
-function HubSettings({ active, title, children }) {
+function HubSettings({ active, title, children, lang }) {
   return /* @__PURE__ */ React.createElement(
     V.AppShell,
     {
       height: "100%",
-      spine: /* @__PURE__ */ React.createElement(V.Spine, { hub: true, sections: HUB_SECTIONS, activeId: active, onBackToHub: () => {
+      spine: /* @__PURE__ */ React.createElement(V.Spine, { hub: true, sections: isL(lang) ? HUB_SECTIONS_L[lang] : HUB_SECTIONS, activeId: active, onBackToHub: () => {
       }, bottomItems: ["profil", "echipa", "abonament", "suport"] }),
-      contextBar: /* @__PURE__ */ React.createElement(HubBar, { title, inApp: true })
+      contextBar: /* @__PURE__ */ React.createElement(HubBar, { title, inApp: true, lang })
     },
     children
   );
+}
+/* The DE / IT label test: the main view at 1280 in German and at 390 in Italian, each frame with its own theme. */
+function LocTest({ items, note }) {
+  if (window.__SOLO) return null;
+  const h = React.createElement;
+  return h("div", { className: "scr" },
+    h("p", { className: "heading" }, "Test cu etichete în germană și italiană"),
+    h("p", { className: "caption muted" }, note || "Același ecran, cu textele traduse, ca să vedem că etichetele mai lungi încap."),
+    h("div", { className: "scr-row" }, items.map(([lab, lang, mode, th, H, el]) => h("div", { key: lab },
+      h("p", { className: "caption scr-lab" }, lab),
+      h("div", { className: mode === "mobile" ? "scr-m" : mode === "tablet" ? "scr-t" : "scr-d", "data-theme": th, style: { height: H } }, h(V.LocaleProvider, { locale: lang }, el))))));
 }
 function Screens({ title, notes, render, desktopH = 860, tabletH = 1100, mobileH = 844 }) {
   if (window.__SOLO) {
@@ -366,7 +408,7 @@ function Screens({ title, notes, render, desktopH = 860, tabletH = 1100, mobileH
   return /* @__PURE__ */ React.createElement("div", { className: "scr" }, /* @__PURE__ */ React.createElement("p", { className: "heading" }, title), notes && /* @__PURE__ */ React.createElement("p", { className: "caption muted" }, notes.join(" \xB7 ")), ["light", "dark"].map((th) => /* @__PURE__ */ React.createElement("div", { className: "scr-row", key: th }, sizes.map(([m, lab, cls, h]) => /* @__PURE__ */ React.createElement("div", { key: m }, /* @__PURE__ */ React.createElement("p", { className: "caption scr-lab" }, lab, " \xB7 ", th === "light" ? "Light" : "Dark"), /* @__PURE__ */ React.createElement("div", { className: cls, "data-theme": th, style: { height: h } }, render(m, th)))))));
 }
 const MINE = [["booking", "Program\u0103ri, calendar \u0219i reamintiri", 3], ["crm", "Clien\u021Bi, istoric \u0219i oportunit\u0103\u021Bi"], ["hr", "Echip\u0103, prezen\u021B\u0103 \u0219i concedii", 1], ["finance", "Facturi, scaden\u021Be \u0219i restan\u021Be", 2], ["projects", "Proiecte, sarcini \u0219i termene"], ["shifts", "Ture \u0219i \xEEnlocuiri"], ["documents", "Documente \u0219i \u0219abloane"], ["portal", "Pagina afacerii pentru clien\u021Bi"]];
-const RECO = { marketing: { reason: "Se potrive\u0219te cu Booking: trimite automat reamintiri \u0219i campanii clien\u021Bilor t\u0103i.", cost: "49 lei pe lun\u0103 \xB7 f\u0103r\u0103 cost de implementare" } };
+const RECO = { marketing: { reason: "Se potrive\u0219te cu EasyBook: trimite automat reamintiri \u0219i campanii clien\u021Bilor t\u0103i.", cost: "49 lei pe lun\u0103 \xB7 f\u0103r\u0103 cost de implementare" } };
 const VIEWER_ROLE = "owner";
 const RECO_FOR = (a) => (VIEWER_ROLE === "owner" || VIEWER_ROLE === "admin") && a === "marketing" ? RECO[a] : null;
 const OTHER = [["inventory", "unavailable"], ["analytics", "notInRole"], ["marketing", "notInPlan"], ["network", "notInPlan"]];
@@ -404,12 +446,28 @@ const MATRIX = [
   ["marketing", "notInPlan", [0, 0, 0, 0]],
   ["analytics", "notInPlan", [0, 0, 0, 0]]
 ];
-function Access({ mode }) {
+const ACC_TX = {
+  ro: { roles: ROLES, people: (c) => c + " " + (c === 1 ? "persoan\u0103" : "persoane"), bar: "Roluri \u0219i acces", title: "Roluri \u0219i acces la aplica\u021Bii", desc: "Alege ce aplica\u021Bii vede fiecare rol. Ce schimbi aici se aplic\u0103 imediat tuturor celor cu acest rol.", viewAs: "Vezi ca", viewAsBtn: "Vezi ca\u2026", newRole: "Rol nou", app: "Aplica\u021Bie", foot: "Proprietarul are mereu acces la toate aplica\u021Biile din abonament. Aplica\u021Biile care nu sunt \xEEn abonament le activ\u0103m noi: folose\u0219te \u201EScrie-ne\u201D.", role: "Rol", toast: "Am dat acces la TeamSpace pentru Recep\u021Bie." },
+  de: { roles: [["owner", "Inhaber", 1], ["manager", "Manager", 1], ["front", "Empfang", 2], ["staff", "Mitarbeiter", 3]], people: (c) => c + " " + (c === 1 ? "Person" : "Personen"), bar: "Rollen und Zugriff", title: "Rollen und Zugriff auf Apps", desc: "Legen Sie fest, welche Apps jede Rolle sieht. \xC4nderungen gelten sofort f\xFCr alle mit dieser Rolle.", viewAs: "Ansicht als", viewAsBtn: "Ansicht als\u2026", newRole: "Neue Rolle", app: "App", foot: "Der Inhaber hat immer Zugriff auf alle Apps im Abonnement. Apps au\xDFerhalb des Abonnements aktivieren wir f\xFCr Sie: Nutzen Sie \u201ESchreiben Sie uns\u201C.", role: "Rolle", toast: "Zugriff auf TeamSpace f\xFCr Empfang freigegeben." },
+  it: { roles: [["owner", "Titolare", 1], ["manager", "Manager", 1], ["front", "Reception", 2], ["staff", "Dipendente", 3]], people: (c) => c + " " + (c === 1 ? "persona" : "persone"), bar: "Ruoli e accesso", title: "Ruoli e accesso alle app", desc: "Scelga quali app vede ogni ruolo. Le modifiche valgono subito per tutte le persone con questo ruolo.", viewAs: "Visualizza come", viewAsBtn: "Visualizza come\u2026", newRole: "Nuovo ruolo", app: "App", foot: "Il titolare ha sempre accesso a tutte le app dell\u2019abbonamento. Le app fuori dall\u2019abbonamento le attiviamo noi: usi \u201ECi scriva\u201D.", role: "Ruolo", toast: "Accesso a TeamSpace dato al ruolo Reception." }
+};
+function Access({ mode, lang, toast }) {
+  const T = ACC_TX[isL(lang) ? lang : "ro"];
+  const ROLES = T.roles;
   const [role, setRole] = useState("front");
   const ri = ROLES.findIndex((r) => r[0] === role);
-  return /* @__PURE__ */ React.createElement(HubSettings, { active: "roluri", title: "Roluri \u0219i acces" }, /* @__PURE__ */ React.createElement(V.PageHeader, { title: "Roluri \u0219i acces la aplica\u021Bii", description: "Alege ce aplica\u021Bii vede fiecare rol. Ce schimbi aici se aplic\u0103 imediat tuturor celor cu acest rol.", actions: /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(V.Menu, { label: "Vezi ca", items: ROLES.slice(1).map(([k, n]) => ({ label: "Vezi ca " + n, icon: "eye" })), trigger: /* @__PURE__ */ React.createElement(V.Button, { icon: "eye", iconEnd: "chevron-down" }, "Vezi ca\u2026") }), /* @__PURE__ */ React.createElement(V.Button, { icon: "plus" }, "Rol nou")) }), mode !== "mobile" ? /* @__PURE__ */ React.createElement(V.Sheet, { padded: false }, /* @__PURE__ */ React.createElement("div", { className: "mx" }, /* @__PURE__ */ React.createElement("div", { className: "mx-row mx-head" }, /* @__PURE__ */ React.createElement("span", { className: "subheading" }, "Aplica\u021Bie"), ROLES.map(([k, n, c]) => /* @__PURE__ */ React.createElement("span", { key: k, className: "mx-c" }, /* @__PURE__ */ React.createElement("span", { className: "subheading" }, n), /* @__PURE__ */ React.createElement("span", { className: "caption muted" }, c, " ", c === 1 ? "persoan\u0103" : "persoane")))), MATRIX.map(([a, s, v]) => /* @__PURE__ */ React.createElement("div", { key: a, className: "mx-row" }, /* @__PURE__ */ React.createElement("span", { className: "mx-app" }, /* @__PURE__ */ React.createElement(V.AppIcon, { app: a, size: 28, muted: s !== "available" }), /* @__PURE__ */ React.createElement("span", { className: "body-strong" }, V.APPS[a].name), s !== "available" && /* @__PURE__ */ React.createElement(V.AccessBadge, { state: s })), v.map((on, i) => /* @__PURE__ */ React.createElement("span", { key: i, className: "mx-c" }, /* @__PURE__ */ React.createElement(V.Checkbox, { defaultChecked: !!on, disabled: s !== "available" || i === 0, "aria-label": V.APPS[a].name + " \u2014 " + ROLES[i][1] })))))), /* @__PURE__ */ React.createElement("p", { className: "body-small muted mx-foot" }, "Proprietarul are mereu acces la toate aplica\u021Biile din abonament. Aplica\u021Biile care nu sunt \xEEn abonament le activ\u0103m noi: folose\u0219te \u201EScrie-ne\u201D.")) : /* @__PURE__ */ React.createElement(V.Sheet, null, /* @__PURE__ */ React.createElement(V.FormField, { label: "Rol" }, /* @__PURE__ */ React.createElement(V.Select, { value: role, onChange: setRole, options: ROLES.map(([k, n, c]) => ({ value: k, label: n, description: c + (c === 1 ? " persoan\u0103" : " persoane") })) })), /* @__PURE__ */ React.createElement("div", { className: "rows", style: { marginTop: "var(--space-4)" } }, MATRIX.map(([a, s, v]) => /* @__PURE__ */ React.createElement("div", { key: a, className: "mrow" }, /* @__PURE__ */ React.createElement(V.AppIcon, { app: a, size: 32, muted: s !== "available" }), /* @__PURE__ */ React.createElement("span", { className: "biz-text" }, /* @__PURE__ */ React.createElement("span", { className: "body-strong" }, V.APPS[a].name), s !== "available" && /* @__PURE__ */ React.createElement(V.AccessBadge, { state: s })), /* @__PURE__ */ React.createElement(V.Toggle, { defaultChecked: !!v[ri], disabled: s !== "available" || ri === 0, label: /* @__PURE__ */ React.createElement("span", { className: "v-sr" }, V.APPS[a].name) }))))));
+  /* After a change: TeamSpace is now on for the front desk, and a Toast offers undo. */
+  const on = (a, v, i) => toast && a === "hr" && i === 2 ? 1 : v[i];
+  return /* @__PURE__ */ React.createElement("div", { className: "frame-rel" }, /* @__PURE__ */ React.createElement(HubSettings, { active: "roluri", title: T.bar, lang }, /* @__PURE__ */ React.createElement(V.PageHeader, { title: T.title, description: T.desc, actions: /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(V.Menu, { label: T.viewAs, items: ROLES.slice(1).map(([k, n]) => ({ label: T.viewAs + " " + n, icon: "eye" })), trigger: /* @__PURE__ */ React.createElement(V.Button, { icon: "eye", iconEnd: "chevron-down" }, T.viewAsBtn) }), /* @__PURE__ */ React.createElement(V.Button, { icon: "plus" }, T.newRole)) }), mode !== "mobile" ? /* @__PURE__ */ React.createElement(V.Sheet, { padded: false }, /* @__PURE__ */ React.createElement("div", { className: "mx" }, /* @__PURE__ */ React.createElement("div", { className: "mx-row mx-head" }, /* @__PURE__ */ React.createElement("span", { className: "subheading" }, T.app), ROLES.map(([k, n, c]) => /* @__PURE__ */ React.createElement("span", { key: k, className: "mx-c" }, /* @__PURE__ */ React.createElement("span", { className: "subheading" }, n), /* @__PURE__ */ React.createElement("span", { className: "caption muted" }, T.people(c))))), MATRIX.map(([a, s, v]) => /* @__PURE__ */ React.createElement("div", { key: a, className: "mx-row" }, /* @__PURE__ */ React.createElement("span", { className: "mx-app" }, /* @__PURE__ */ React.createElement(V.AppIcon, { app: a, size: 28, muted: s !== "available" }), /* @__PURE__ */ React.createElement("span", { className: "body-strong" }, V.APPS[a].name), s !== "available" && /* @__PURE__ */ React.createElement(V.AccessBadge, { state: s })), v.map((x, i) => /* @__PURE__ */ React.createElement("span", { key: i, className: "mx-c" }, /* @__PURE__ */ React.createElement(V.Checkbox, { defaultChecked: !!on(a, v, i), disabled: s !== "available" || i === 0, "aria-label": V.APPS[a].name + " \u2014 " + ROLES[i][1] })))))), /* @__PURE__ */ React.createElement("p", { className: "body-small muted mx-foot" }, T.foot)) : /* @__PURE__ */ React.createElement(V.Sheet, null, /* @__PURE__ */ React.createElement(V.FormField, { label: T.role }, /* @__PURE__ */ React.createElement(V.Select, { value: role, onChange: setRole, options: ROLES.map(([k, n, c]) => ({ value: k, label: n, description: T.people(c) })) })), /* @__PURE__ */ React.createElement("div", { className: "rows", style: { marginTop: "var(--space-4)" } }, MATRIX.map(([a, s, v]) => /* @__PURE__ */ React.createElement("div", { key: a, className: "mrow" }, /* @__PURE__ */ React.createElement(V.AppIcon, { app: a, size: 32, muted: s !== "available" }), /* @__PURE__ */ React.createElement("span", { className: "biz-text" }, /* @__PURE__ */ React.createElement("span", { className: "body-strong" }, V.APPS[a].name), s !== "available" && /* @__PURE__ */ React.createElement(V.AccessBadge, { state: s })), /* @__PURE__ */ React.createElement(V.Toggle, { defaultChecked: !!on(a, v, ri), disabled: s !== "available" || ri === 0, label: /* @__PURE__ */ React.createElement("span", { className: "v-sr" }, V.APPS[a].name) })))))), toast && /* @__PURE__ */ React.createElement("div", { style: { position: "absolute", right: "var(--space-6)", left: mode === "mobile" ? "var(--space-4)" : "auto", bottom: mode === "mobile" ? "calc(var(--bottomnav-height) + var(--space-3))" : "var(--space-6)", width: mode === "mobile" ? "auto" : "var(--panel-width)", zIndex: "var(--z-toast)" } }, /* @__PURE__ */ React.createElement(V.Toast, { title: T.toast, icon: "check", onUndo: () => {
+  }, onDismiss: () => {
+  }, duration: 0 })));
 }
-mount(/* @__PURE__ */ React.createElement(Screens, { title: "Administrarea afacerii \u2014 roluri \u0219i acces la aplica\u021Bii", desktopH: 980, mobileH: 1100, render: (m) => /* @__PURE__ */ React.createElement(Access, { mode: m }) }));
+mount(React.createElement("div", null,
+  React.createElement(Screens, { title: "Administrarea afacerii \u2014 roluri \u0219i acces la aplica\u021Bii", notes: ["Dark: dup\u0103 o schimbare apare un Toast cu \u201EAnuleaz\u0103\u201D", "\u201EVezi ca\u2026\u201D arat\u0103 launcherul unui rol"], desktopH: 980, mobileH: 1100, render: (m, th) => /* @__PURE__ */ React.createElement(Access, { mode: m, toast: th === "dark" }) }),
+  React.createElement(LocTest, { items: [
+    ["Deutsch \xB7 1280 \xB7 Light \xB7 nach einer \xC4nderung", "de", "desktop", "light", 980, React.createElement(Access, { mode: "desktop", lang: "de", toast: true })],
+    ["Italiano \xB7 390 \xB7 Dark", "it", "mobile", "dark", 1100, React.createElement(Access, { mode: "mobile", lang: "it" })]
+  ] })));
 </script>
 </body>
 </html>

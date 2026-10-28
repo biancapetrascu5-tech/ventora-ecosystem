@@ -1,0 +1,30 @@
+{
+ "name": "ProjectsTimeline",
+ "version": "1.0.1",
+ "kind": "page",
+ "group": "Ecrane aplicații",
+ "status": "changed",
+ "description": "TaskBoard — Timeline: the project's stages across weeks with the peach today line, a late stage in peach, the launch as a milestone, and one sentence under it saying what the delay means for the launch.",
+ "exports": [],
+ "props": [],
+ "events": [],
+ "states": [
+  "default",
+  "today-line",
+  "late-stage",
+  "done",
+  "active",
+  "planned",
+  "milestone",
+  "de",
+  "it",
+  "light",
+  "dark",
+  "desktop",
+  "tablet",
+  "mobile"
+ ],
+ "notes": "",
+ "readme": "components/ProjectsTimeline/README.md",
+ "preview": "components/ProjectsTimeline/preview.html"
+}

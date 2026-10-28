@@ -1,0 +1,57 @@
+{
+ "name": "ThemeSwitcher",
+ "version": "1.0.1",
+ "kind": "component",
+ "group": "Preferences",
+ "status": "changed",
+ "description": "Light / Dark / System — the three options every Ventora surface offers.",
+ "exports": [
+  "ThemeSwitcher"
+ ],
+ "props": [
+  {
+   "name": "value",
+   "type": "\"light\" | \"dark\" | \"system\"",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "onChange",
+   "type": "(v: \"light\" | \"dark\" | \"system\") => void",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "iconOnly",
+   "type": "boolean",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "size",
+   "type": "\"sm\" | \"md\"",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "block",
+   "type": "boolean",
+   "required": false,
+   "note": ""
+  }
+ ],
+ "events": [
+  "onChange"
+ ],
+ "states": [
+  "light",
+  "dark",
+  "system",
+  "icon-only",
+  "small",
+  "block"
+ ],
+ "notes": "",
+ "readme": "components/ThemeSwitcher/README.md",
+ "preview": "components/ThemeSwitcher/preview.html"
+}

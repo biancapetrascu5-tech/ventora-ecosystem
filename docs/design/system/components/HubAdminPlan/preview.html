@@ -1,4 +1,4 @@
-<!-- @dsCard group="Ecrane Hub" height=2836 width=2620 page -->
+<!-- @dsCard group="Ecrane Hub" height=4304 width=2620 page -->
 <!doctype html>
 <html lang="ro">
 <head><meta charset="utf-8"><title>HubAdminPlan — Ventora</title>
@@ -278,10 +278,10 @@ const ORGS = [
   { id: "nord", name: "Agen\u021Bia Nord Studio", role: "Manager de proiect" }
 ];
 const NOTIFS = [
-  { id: 1, title: "Programare nou\u0103 de la Ana Popescu", body: "Joi, 29 oct., 14:30 \xB7 Tuns", app: "Booking", time: "acum 5 min", person: "Ana Popescu" },
-  { id: 2, title: "Factura #2026-114 e restant\u0103 de 3 zile", body: "Clinica Dentis \xB7 1.250 lei", app: "Finance", time: "acum 2 ore", icon: "receipt" },
-  { id: 3, title: "Ioana a cerut concediu pe 2\u20136 noiembrie", app: "HR", time: "ieri", person: "Ioana Pavel", read: true },
-  { id: 4, title: "Exportul clien\u021Bilor e gata", app: "CRM", time: "ieri", icon: "download", read: true }
+  { id: 1, title: "Programare nou\u0103 de la Ana Popescu", body: "Joi, 29 oct., 14:30 \xB7 Tuns", app: "EasyBook", time: "acum 5 min", person: "Ana Popescu" },
+  { id: 2, title: "Factura #2026-114 e restant\u0103 de 3 zile", body: "Clinica Dentis \xB7 1.250 lei", app: "MoneyDesk", time: "acum 2 ore", icon: "receipt" },
+  { id: 3, title: "Ioana a cerut concediu pe 2\u20136 noiembrie", app: "TeamSpace", time: "ieri", person: "Ioana Pavel", read: true },
+  { id: 4, title: "Exportul clien\u021Bilor e gata", app: "ClientDesk", time: "ieri", icon: "download", read: true }
 ];
 const USER = { name: "Bianca Petra\u0219cu", email: "bianca@ventora-hub.com" };
 function Bar({ title, de }) {
@@ -312,7 +312,7 @@ function BookingShell({ height, active, mobile }) {
       height,
       spine: /* @__PURE__ */ React.createElement(V.Spine, { app: "booking", sections: SECTIONS, activeId: active, onBackToHub: () => {
       }, footer: /* @__PURE__ */ React.createElement(V.UsageMeter, { compact: true, label: "Program\u0103ri", used: 312, limit: 1e3 }) }),
-      contextBar: /* @__PURE__ */ React.createElement(Bar, { title: "Booking" })
+      contextBar: /* @__PURE__ */ React.createElement(Bar, { title: "EasyBook" })
     },
     /* @__PURE__ */ React.createElement(V.PageHeader, { title: "Program\u0103ri", description: mobile ? void 0 : "Toate program\u0103rile afacerii, de azi \xEEnainte.", actions: mobile ? void 0 : /* @__PURE__ */ React.createElement(V.SegmentedControl, { label: "Vizualizare", size: "md", defaultValue: "list", options: [{ value: "list", label: "List\u0103", icon: "list" }, { value: "cal", label: "Calendar", icon: "calendar" }] }) }),
     /* @__PURE__ */ React.createElement(V.DataTable, { columns: [
@@ -329,32 +329,74 @@ const HUB_SECTIONS = [
   { label: "Afacerea", items: [{ id: "echipa", label: "Echip\u0103 \u0219i invita\u021Bii", short: "Echip\u0103", icon: "users" }, { id: "roluri", label: "Roluri \u0219i acces", icon: "key-round" }, { id: "abonament", label: "Abonament \u0219i consum", short: "Abonament", icon: "credit-card" }] },
   { label: "Ajutor", items: [{ id: "suport", label: "Suport", icon: "life-buoy", badge: 1 }] }
 ];
-function HubBar({ title, inApp }) {
+/* DE / IT: the same Hub chrome with German and Italian texts (label-length test). */
+const HUB_SECTIONS_L = {
+  de: [
+    { label: "Ihr Konto", items: [{ id: "profil", label: "Profil und Einstellungen", short: "Profil", icon: "circle-user" }, { id: "securitate", label: "Sicherheit", icon: "shield" }] },
+    { label: "Unternehmen", items: [{ id: "echipa", label: "Team und Einladungen", short: "Team", icon: "users" }, { id: "roluri", label: "Rollen und Zugriff", short: "Rollen", icon: "key-round" }, { id: "abonament", label: "Abonnement und Verbrauch", short: "Abonnement", icon: "credit-card" }] },
+    { label: "Hilfe", items: [{ id: "suport", label: "Support", icon: "life-buoy", badge: 1 }] }
+  ],
+  it: [
+    { label: "Il Suo account", items: [{ id: "profil", label: "Profilo e preferenze", short: "Profilo", icon: "circle-user" }, { id: "securitate", label: "Sicurezza", icon: "shield" }] },
+    { label: "Attività", items: [{ id: "echipa", label: "Team e inviti", short: "Team", icon: "users" }, { id: "roluri", label: "Ruoli e accesso", short: "Ruoli", icon: "key-round" }, { id: "abonament", label: "Abbonamento e utilizzo", short: "Abbonamento", icon: "credit-card" }] },
+    { label: "Aiuto", items: [{ id: "suport", label: "Assistenza", icon: "life-buoy", badge: 1 }] }
+  ]
+};
+const ORGS_L = {
+  de: [{ id: "aurora", name: "Salon Aurora", role: "Inhaber" }, { id: "dentis", name: "Clinica Dentis Sibiu", role: "Empfang" }, { id: "nord", name: "Agenția Nord Studio", role: "Projektmanager" }],
+  it: [{ id: "aurora", name: "Salon Aurora", role: "Titolare" }, { id: "dentis", name: "Clinica Dentis Sibiu", role: "Reception" }, { id: "nord", name: "Agenția Nord Studio", role: "Project manager" }]
+};
+const NOTIFS_L = {
+  de: [
+    { id: 1, title: "Neuer Termin von Ana Popescu", body: "Do., 29. Okt., 14:30 · Haarschnitt", app: "EasyBook", time: "vor 5 Min.", person: "Ana Popescu" },
+    { id: 2, title: "Rechnung #2026-114 ist seit 3 Tagen überfällig", body: "Clinica Dentis · 1.250 lei", app: "MoneyDesk", time: "vor 2 Std.", icon: "receipt" },
+    { id: 3, title: "Ioana hat Urlaub vom 2. bis 6. November beantragt", app: "TeamSpace", time: "gestern", person: "Ioana Pavel", read: true }
+  ],
+  it: [
+    { id: 1, title: "Nuovo appuntamento di Ana Popescu", body: "Gio 29 ott, 14:30 · Taglio", app: "EasyBook", time: "5 min fa", person: "Ana Popescu" },
+    { id: 2, title: "La fattura #2026-114 è scaduta da 3 giorni", body: "Clinica Dentis · 1.250 lei", app: "MoneyDesk", time: "2 ore fa", icon: "receipt" },
+    { id: 3, title: "Ioana ha chiesto ferie dal 2 al 6 novembre", app: "TeamSpace", time: "ieri", person: "Ioana Pavel", read: true }
+  ]
+};
+const isL = (lang) => lang === "de" || lang === "it";
+function HubBar({ title, inApp, lang }) {
+  const orgs = isL(lang) ? ORGS_L[lang] : ORGS;
   return /* @__PURE__ */ React.createElement(
     V.ContextBar,
     {
-      leading: inApp ? null : /* @__PURE__ */ React.createElement("span", { style: { padding: "0 var(--space-2)" } }, /* @__PURE__ */ React.createElement(V.Logo, { size: 32 })),
+      leading: inApp ? null : /* @__PURE__ */ React.createElement("span", { style: { padding: "0 var(--space-2)", display: "inline-flex" } }, /* @__PURE__ */ React.createElement(V.Logo, { size: 32, className: "v-cb-logo--full" }), /* @__PURE__ */ React.createElement(V.Logo, { variant: "mark", size: 32, className: "v-cb-logo--mark" })),
       title,
-      org: /* @__PURE__ */ React.createElement(V.OrgSwitcher, { orgs: ORGS, currentId: "aurora" }),
+      org: /* @__PURE__ */ React.createElement(V.OrgSwitcher, { orgs, currentId: "aurora" }),
       onSearch: () => {
       },
-      notifications: /* @__PURE__ */ React.createElement(V.NotificationsPanel, { items: NOTIFS }),
-      account: /* @__PURE__ */ React.createElement(V.AccountMenu, { user: USER, orgs: ORGS, currentOrgId: "aurora", onCatalog: () => {
+      notifications: /* @__PURE__ */ React.createElement(V.NotificationsPanel, { items: isL(lang) ? NOTIFS_L[lang] : NOTIFS }),
+      account: /* @__PURE__ */ React.createElement(V.AccountMenu, { user: USER, orgs, currentOrgId: "aurora", onCatalog: () => {
       } })
     }
   );
 }
-function HubSettings({ active, title, children }) {
+function HubSettings({ active, title, children, lang }) {
   return /* @__PURE__ */ React.createElement(
     V.AppShell,
     {
       height: "100%",
-      spine: /* @__PURE__ */ React.createElement(V.Spine, { hub: true, sections: HUB_SECTIONS, activeId: active, onBackToHub: () => {
+      spine: /* @__PURE__ */ React.createElement(V.Spine, { hub: true, sections: isL(lang) ? HUB_SECTIONS_L[lang] : HUB_SECTIONS, activeId: active, onBackToHub: () => {
       }, bottomItems: ["profil", "echipa", "abonament", "suport"] }),
-      contextBar: /* @__PURE__ */ React.createElement(HubBar, { title, inApp: true })
+      contextBar: /* @__PURE__ */ React.createElement(HubBar, { title, inApp: true, lang })
     },
     children
   );
+}
+/* The DE / IT label test: the main view at 1280 in German and at 390 in Italian, each frame with its own theme. */
+function LocTest({ items, note }) {
+  if (window.__SOLO) return null;
+  const h = React.createElement;
+  return h("div", { className: "scr" },
+    h("p", { className: "heading" }, "Test cu etichete în germană și italiană"),
+    h("p", { className: "caption muted" }, note || "Același ecran, cu textele traduse, ca să vedem că etichetele mai lungi încap."),
+    h("div", { className: "scr-row" }, items.map(([lab, lang, mode, th, H, el]) => h("div", { key: lab },
+      h("p", { className: "caption scr-lab" }, lab),
+      h("div", { className: mode === "mobile" ? "scr-m" : mode === "tablet" ? "scr-t" : "scr-d", "data-theme": th, style: { height: H } }, h(V.LocaleProvider, { locale: lang }, el))))));
 }
 function Screens({ title, notes, render, desktopH = 860, tabletH = 1100, mobileH = 844 }) {
   if (window.__SOLO) {
@@ -366,7 +408,7 @@ function Screens({ title, notes, render, desktopH = 860, tabletH = 1100, mobileH
   return /* @__PURE__ */ React.createElement("div", { className: "scr" }, /* @__PURE__ */ React.createElement("p", { className: "heading" }, title), notes && /* @__PURE__ */ React.createElement("p", { className: "caption muted" }, notes.join(" \xB7 ")), ["light", "dark"].map((th) => /* @__PURE__ */ React.createElement("div", { className: "scr-row", key: th }, sizes.map(([m, lab, cls, h]) => /* @__PURE__ */ React.createElement("div", { key: m }, /* @__PURE__ */ React.createElement("p", { className: "caption scr-lab" }, lab, " \xB7 ", th === "light" ? "Light" : "Dark"), /* @__PURE__ */ React.createElement("div", { className: cls, "data-theme": th, style: { height: h } }, render(m, th)))))));
 }
 const MINE = [["booking", "Program\u0103ri, calendar \u0219i reamintiri", 3], ["crm", "Clien\u021Bi, istoric \u0219i oportunit\u0103\u021Bi"], ["hr", "Echip\u0103, prezen\u021B\u0103 \u0219i concedii", 1], ["finance", "Facturi, scaden\u021Be \u0219i restan\u021Be", 2], ["projects", "Proiecte, sarcini \u0219i termene"], ["shifts", "Ture \u0219i \xEEnlocuiri"], ["documents", "Documente \u0219i \u0219abloane"], ["portal", "Pagina afacerii pentru clien\u021Bi"]];
-const RECO = { marketing: { reason: "Se potrive\u0219te cu Booking: trimite automat reamintiri \u0219i campanii clien\u021Bilor t\u0103i.", cost: "49 lei pe lun\u0103 \xB7 f\u0103r\u0103 cost de implementare" } };
+const RECO = { marketing: { reason: "Se potrive\u0219te cu EasyBook: trimite automat reamintiri \u0219i campanii clien\u021Bilor t\u0103i.", cost: "49 lei pe lun\u0103 \xB7 f\u0103r\u0103 cost de implementare" } };
 const VIEWER_ROLE = "owner";
 const RECO_FOR = (a) => (VIEWER_ROLE === "owner" || VIEWER_ROLE === "admin") && a === "marketing" ? RECO[a] : null;
 const OTHER = [["inventory", "unavailable"], ["analytics", "notInRole"], ["marketing", "notInPlan"], ["network", "notInPlan"]];
@@ -398,27 +440,63 @@ const ADDONS = [
   { id: "staff", icon: "users", name: "5 angaja\u021Bi \xEEn plus", price: 60, per: "pe lun\u0103, pl\u0103tit odat\u0103 cu abonamentul", buy: true },
   { id: "domain", icon: "globe", name: "Domeniu propriu pentru pagina de rezerv\u0103ri", price: 25, per: "pe lun\u0103", buy: false }
 ];
-function Plan({ mode, th }) {
+const PLAN_TX = {
+  ro: { addons: ADDONS, bar: "Abonament", title: "Abonament \u0219i consum", desc: "Ce include abonamentul afacerii, c\xE2t ai folosit luna aceasta, ce po\u021Bi cump\u0103ra \xEEn plus \u0219i facturile tale.", yours: "Abonamentul t\u0103u", other: "Cere alt abonament", active: "Activ", perMonth: " pe lun\u0103 \xB7 se re\xEEnnoie\u0219te pe 1 noiembrie 2026", cardFor: "Cardul pentru cump\u0103r\u0103turi", noCard: "Nu ai \xEEnc\u0103 un card salvat. P\xE2n\u0103 adaugi unul, pachetele \xEEn plus le activ\u0103m la cerere.", addCard: "Adaug\u0103 card", usage: "Consum luna aceasta", usageDesc: "De la 1 noiembrie, pornim de la zero.", uStaff: "Angaja\u021Bi", buySeats: "Cump\u0103r\u0103 locuri \xEEn plus", uSms: "SMS-uri", buySms: "Cump\u0103r\u0103 SMS-uri \xEEn plus", estimate: "La ritmul de acum, ajungi la limit\u0103 pe 27 octombrie.", uAppt: "Program\u0103ri", uDocs: "Spa\u021Biu documente", fmt: "ro-RO", packs: "Pachete \xEEn plus", packsDesc: "Le cumperi direct, cu cardul afacerii. Cele marcate \u201EDoar la cerere\u201D le activ\u0103m noi.", reco: "Recomandare", recoTitle: "500 SMS \xEEn plus pentru octombrie", recoBenefit: "Ai folosit 862 din 1.000 de SMS-uri, iar reamintirile pentru s\u0103pt\u0103m\xE2na viitoare mai au nevoie de aproximativ 300.", recoCost: "49 lei \xB7 valabil luna aceasta", buy: (p) => "Cump\u0103r\u0103 \xB7 " + p + " lei", onlyReq: "Doar la cerere", reqAct: "Cere activare", inv: "Facturi", invDesc: "Abonamentul \u0219i fiecare cump\u0103r\u0103tur\u0103 au factura lor.", hNr: "Factura", hFor: "Pentru", hDate: "Data", hSum: "Sum\u0103", hSt: "Stare", paid: "Pl\u0103tit\u0103", dl: "Descarc\u0103", dlPdf: "Descarc\u0103 PDF",
+    rows: [
+      { id: 4, nr: "VNT-2026-0203", what: "Pachet \xEEn plus \xB7 500 SMS \xEEn plus", date: "24 oct. 2026", sum: "49 lei" },
+      { id: 1, nr: "VNT-2026-0198", what: "Abonament Business \xB7 octombrie", date: "1 oct. 2026", sum: "349 lei" },
+      { id: 5, nr: "VNT-2026-0171", what: "Pachet \xEEn plus \xB7 10 campanii \xEEn plus", date: "18 sep. 2026", sum: "39 lei" },
+      { id: 2, nr: "VNT-2026-0154", what: "Abonament Business \xB7 septembrie", date: "1 sep. 2026", sum: "349 lei" }
+    ] },
+  de: { addons: [
+      { id: "sms", icon: "message-square", name: "500 zus\xE4tzliche SMS", price: 49, per: "g\xFCltig in diesem Monat", buy: true },
+      { id: "camp", icon: "megaphone", name: "10 zus\xE4tzliche Kampagnen", price: 39, per: "g\xFCltig in diesem Monat", buy: true },
+      { id: "staff", icon: "users", name: "5 zus\xE4tzliche Mitarbeiter", price: 60, per: "pro Monat, zusammen mit dem Abonnement bezahlt", buy: true },
+      { id: "domain", icon: "globe", name: "Eigene Domain f\xFCr die Buchungsseite", price: 25, per: "pro Monat", buy: false }
+    ], bar: "Abonnement", title: "Abonnement und Verbrauch", desc: "Was das Abonnement des Unternehmens umfasst, wie viel Sie diesen Monat verbraucht haben, was Sie dazukaufen k\xF6nnen und Ihre Rechnungen.", yours: "Ihr Abonnement", other: "Anderes Abonnement anfragen", active: "Aktiv", perMonth: " pro Monat \xB7 verl\xE4ngert sich am 1. November 2026", cardFor: "Karte f\xFCr Eink\xE4ufe", noCard: "Sie haben noch keine Karte gespeichert. Bis Sie eine hinzuf\xFCgen, aktivieren wir Zusatzpakete auf Anfrage.", addCard: "Karte hinzuf\xFCgen", usage: "Verbrauch in diesem Monat", usageDesc: "Ab 1. November beginnen wir wieder bei null.", uStaff: "Mitarbeiter", buySeats: "Zus\xE4tzliche Pl\xE4tze kaufen", uSms: "SMS", buySms: "Zus\xE4tzliche SMS kaufen", estimate: "Beim jetzigen Tempo erreichen Sie das Limit am 27. Oktober.", uAppt: "Termine", uDocs: "Speicher f\xFCr Dokumente", fmt: "de-DE", packs: "Zusatzpakete", packsDesc: "Sie kaufen sie direkt mit der Karte des Unternehmens. Pakete mit \u201ENur auf Anfrage\u201C aktivieren wir f\xFCr Sie.", reco: "Empfehlung", recoTitle: "500 zus\xE4tzliche SMS f\xFCr Oktober", recoBenefit: "Sie haben 862 von 1.000 SMS verbraucht, und die Erinnerungen f\xFCr n\xE4chste Woche brauchen noch etwa 300.", recoCost: "49 lei \xB7 g\xFCltig in diesem Monat", buy: (p) => "Kaufen \xB7 " + p + " lei", onlyReq: "Nur auf Anfrage", reqAct: "Aktivierung anfragen", inv: "Rechnungen", invDesc: "Das Abonnement und jeder Kauf haben eine eigene Rechnung.", hNr: "Rechnung", hFor: "F\xFCr", hDate: "Datum", hSum: "Betrag", hSt: "Status", paid: "Bezahlt", dl: "Herunterladen", dlPdf: "PDF herunterladen",
+    rows: [
+      { id: 4, nr: "VNT-2026-0203", what: "Zusatzpaket \xB7 500 zus\xE4tzliche SMS", date: "24. Okt. 2026", sum: "49 lei" },
+      { id: 1, nr: "VNT-2026-0198", what: "Abonnement Business \xB7 Oktober", date: "1. Okt. 2026", sum: "349 lei" },
+      { id: 5, nr: "VNT-2026-0171", what: "Zusatzpaket \xB7 10 zus\xE4tzliche Kampagnen", date: "18. Sept. 2026", sum: "39 lei" },
+      { id: 2, nr: "VNT-2026-0154", what: "Abonnement Business \xB7 September", date: "1. Sept. 2026", sum: "349 lei" }
+    ] },
+  it: { addons: [
+      { id: "sms", icon: "message-square", name: "500 SMS extra", price: 49, per: "valido questo mese", buy: true },
+      { id: "camp", icon: "megaphone", name: "10 campagne extra", price: 39, per: "valido questo mese", buy: true },
+      { id: "staff", icon: "users", name: "5 dipendenti extra", price: 60, per: "al mese, pagato insieme all\u2019abbonamento", buy: true },
+      { id: "domain", icon: "globe", name: "Dominio proprio per la pagina delle prenotazioni", price: 25, per: "al mese", buy: false }
+    ], bar: "Abbonamento", title: "Abbonamento e utilizzo", desc: "Che cosa include l\u2019abbonamento dell\u2019attivit\xE0, quanto ha usato questo mese, che cosa pu\xF2 acquistare in pi\xF9 e le Sue fatture.", yours: "Il Suo abbonamento", other: "Richiedi un altro abbonamento", active: "Attivo", perMonth: " al mese \xB7 si rinnova il 1\xBA novembre 2026", cardFor: "Carta per gli acquisti", noCard: "Non ha ancora salvato una carta. Finch\xE9 non ne aggiunge una, attiviamo i pacchetti extra su richiesta.", addCard: "Aggiungi carta", usage: "Utilizzo di questo mese", usageDesc: "Dal 1\xBA novembre si riparte da zero.", uStaff: "Dipendenti", buySeats: "Acquista posti extra", uSms: "SMS", buySms: "Acquista SMS extra", estimate: "Al ritmo attuale, raggiunger\xE0 il limite il 27 ottobre.", uAppt: "Appuntamenti", uDocs: "Spazio documenti", fmt: "it-IT", packs: "Pacchetti extra", packsDesc: "Li acquista direttamente con la carta dell\u2019attivit\xE0. Quelli segnati \u201ESolo su richiesta\u201D li attiviamo noi.", reco: "Raccomandazione", recoTitle: "500 SMS extra per ottobre", recoBenefit: "Ha usato 862 SMS su 1.000 e i promemoria della prossima settimana ne richiedono ancora circa 300.", recoCost: "49 lei \xB7 valido questo mese", buy: (p) => "Acquista \xB7 " + p + " lei", onlyReq: "Solo su richiesta", reqAct: "Richiedi attivazione", inv: "Fatture", invDesc: "L\u2019abbonamento e ogni acquisto hanno la propria fattura.", hNr: "Fattura", hFor: "Per", hDate: "Data", hSum: "Importo", hSt: "Stato", paid: "Pagata", dl: "Scarica", dlPdf: "Scarica il PDF",
+    rows: [
+      { id: 4, nr: "VNT-2026-0203", what: "Pacchetto extra \xB7 500 SMS extra", date: "24 ott. 2026", sum: "49 lei" },
+      { id: 1, nr: "VNT-2026-0198", what: "Abbonamento Business \xB7 ottobre", date: "1 ott. 2026", sum: "349 lei" },
+      { id: 5, nr: "VNT-2026-0171", what: "Pacchetto extra \xB7 10 campagne extra", date: "18 set. 2026", sum: "39 lei" },
+      { id: 2, nr: "VNT-2026-0154", what: "Abbonamento Business \xB7 settembre", date: "1 set. 2026", sum: "349 lei" }
+    ] }
+};
+function Plan({ mode, th, lang }) {
+  const T = PLAN_TX[isL(lang) ? lang : "ro"];
+  const ADDONS = T.addons;
   const [buying, setBuying] = useState(null);
   const noCard = mode === "tablet" && th === "dark";
-  return /* @__PURE__ */ React.createElement("div", { className: "frame-rel" }, /* @__PURE__ */ React.createElement(HubSettings, { active: "abonament", title: "Abonament" }, /* @__PURE__ */ React.createElement(V.PageHeader, { title: "Abonament \u0219i consum", description: "Ce include abonamentul afacerii, c\xE2t ai folosit luna aceasta, ce po\u021Bi cump\u0103ra \xEEn plus \u0219i facturile tale." }), /* @__PURE__ */ React.createElement(V.Sheet, null, /* @__PURE__ */ React.createElement(V.SheetSection, { title: "Abonamentul t\u0103u", actions: mode !== "mobile" ? /* @__PURE__ */ React.createElement(V.Button, null, "Cere alt abonament") : null }, /* @__PURE__ */ React.createElement("div", { className: "plan" }, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { className: "r", style: { gap: "var(--space-2)" } }, /* @__PURE__ */ React.createElement("span", { className: "display-m" }, "Business"), /* @__PURE__ */ React.createElement(V.StatusPill, { tone: "done" }, "Activ")), /* @__PURE__ */ React.createElement("p", { className: "body muted" }, /* @__PURE__ */ React.createElement("span", { className: "numeric-inline" }, "349 lei"), " pe lun\u0103 \xB7 se re\xEEnnoie\u0219te pe 1 noiembrie 2026")), /* @__PURE__ */ React.createElement("div", { className: "appsrow" }, ["booking", "crm", "hr", "finance", "projects", "shifts", "documents"].map((a) => /* @__PURE__ */ React.createElement(V.AppIcon, { key: a, app: a, size: 28, title: V.APPS[a].name })))), /* @__PURE__ */ React.createElement("div", { className: "paymethod" }, /* @__PURE__ */ React.createElement("p", { className: "caption muted" }, "Cardul pentru cump\u0103r\u0103turi"), noCard ? /* @__PURE__ */ React.createElement("div", { className: "r", style: { justifyContent: "space-between" } }, /* @__PURE__ */ React.createElement("span", { className: "body-small muted" }, "Nu ai \xEEnc\u0103 un card salvat. P\xE2n\u0103 adaugi unul, pachetele \xEEn plus le activ\u0103m la cerere."), /* @__PURE__ */ React.createElement(V.Button, { size: "sm", icon: "credit-card" }, "Adaug\u0103 card")) : /* @__PURE__ */ React.createElement(V.PaymentCard, { card: CARD, onChange: () => {
-  } })), mode === "mobile" && /* @__PURE__ */ React.createElement("div", { className: "r", style: { marginTop: "var(--space-4)" } }, /* @__PURE__ */ React.createElement(V.Button, { block: true }, "Cere alt abonament"))), /* @__PURE__ */ React.createElement(V.SheetSection, { title: "Consum luna aceasta", description: "De la 1 noiembrie, pornim de la zero." }, /* @__PURE__ */ React.createElement("div", { className: "usage-grid" }, /* @__PURE__ */ React.createElement(V.UsageMeter, { label: "Angaja\u021Bi", used: 10, limit: 10, onBuy: () => setBuying(ADDONS[2]), buyLabel: "Cump\u0103r\u0103 locuri \xEEn plus", onUpgrade: () => {
-  } }), /* @__PURE__ */ React.createElement("div", { className: "d0", style: { gap: "var(--space-2)" } }, /* @__PURE__ */ React.createElement(V.UsageMeter, { label: "SMS-uri", used: 862, limit: 1e3, onBuy: () => setBuying(ADDONS[0]), buyLabel: "Cump\u0103r\u0103 SMS-uri \xEEn plus" }), /* @__PURE__ */ React.createElement("p", { className: "body-small muted" }, "La ritmul de acum, ajungi la limit\u0103 pe 27 octombrie.")), /* @__PURE__ */ React.createElement(V.UsageMeter, { label: "Program\u0103ri", used: 312, limit: 1e3 }), /* @__PURE__ */ React.createElement(V.UsageMeter, { label: "Spa\u021Biu documente", used: 2.4, limit: 5, unit: "GB", format: (n) => n.toLocaleString("ro-RO") }))), /* @__PURE__ */ React.createElement(V.SheetSection, { title: "Pachete \xEEn plus", description: "Le cumperi direct, cu cardul afacerii. Cele marcate \u201EDoar la cerere\u201D le activ\u0103m noi." }, !noCard && /* @__PURE__ */ React.createElement("div", { style: { marginBottom: "var(--space-4)", maxWidth: 560 } }, /* @__PURE__ */ React.createElement(V.GrowthSlot, { label: "Recomandare" }, /* @__PURE__ */ React.createElement(V.RecommendationCard, { icon: "message-square", title: "500 SMS \xEEn plus pentru octombrie", benefit: "Ai folosit 862 din 1.000 de SMS-uri, iar reamintirile pentru s\u0103pt\u0103m\xE2na viitoare mai au nevoie de aproximativ 300.", cost: "49 lei \xB7 valabil luna aceasta", actionLabel: "Cump\u0103r\u0103 \xB7 49 lei", onAction: () => setBuying(ADDONS[0]), onDismiss: () => {
+  return /* @__PURE__ */ React.createElement("div", { className: "frame-rel" }, /* @__PURE__ */ React.createElement(HubSettings, { active: "abonament", title: T.bar, lang }, /* @__PURE__ */ React.createElement(V.PageHeader, { title: T.title, description: T.desc }), /* @__PURE__ */ React.createElement(V.Sheet, null, /* @__PURE__ */ React.createElement(V.SheetSection, { title: T.yours, actions: mode !== "mobile" ? /* @__PURE__ */ React.createElement(V.Button, null, T.other) : null }, /* @__PURE__ */ React.createElement("div", { className: "plan" }, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { className: "r", style: { gap: "var(--space-2)" } }, /* @__PURE__ */ React.createElement("span", { className: "display-m" }, "Business"), /* @__PURE__ */ React.createElement(V.StatusPill, { tone: "done" }, T.active)), /* @__PURE__ */ React.createElement("p", { className: "body muted" }, /* @__PURE__ */ React.createElement("span", { className: "numeric-inline" }, "349 lei"), T.perMonth)), /* @__PURE__ */ React.createElement("div", { className: "appsrow" }, ["booking", "crm", "hr", "finance", "projects", "shifts", "documents"].map((a) => /* @__PURE__ */ React.createElement(V.AppIcon, { key: a, app: a, size: 28, title: V.APPS[a].name })))), /* @__PURE__ */ React.createElement("div", { className: "paymethod" }, /* @__PURE__ */ React.createElement("p", { className: "caption muted" }, T.cardFor), noCard ? /* @__PURE__ */ React.createElement("div", { className: "r", style: { justifyContent: "space-between" } }, /* @__PURE__ */ React.createElement("span", { className: "body-small muted" }, T.noCard), /* @__PURE__ */ React.createElement(V.Button, { size: "sm", icon: "credit-card" }, T.addCard)) : /* @__PURE__ */ React.createElement(V.PaymentCard, { card: CARD, onChange: () => {
+  } })), mode === "mobile" && /* @__PURE__ */ React.createElement("div", { className: "r", style: { marginTop: "var(--space-4)" } }, /* @__PURE__ */ React.createElement(V.Button, { block: true }, T.other))), /* @__PURE__ */ React.createElement(V.SheetSection, { title: T.usage, description: T.usageDesc }, /* @__PURE__ */ React.createElement("div", { className: "usage-grid" }, /* @__PURE__ */ React.createElement(V.UsageMeter, { label: T.uStaff, used: 10, limit: 10, onBuy: () => setBuying(ADDONS[2]), buyLabel: T.buySeats, onUpgrade: () => {
+  } }), /* @__PURE__ */ React.createElement("div", { className: "d0", style: { gap: "var(--space-2)" } }, /* @__PURE__ */ React.createElement(V.UsageMeter, { label: T.uSms, used: 862, limit: 1e3, onBuy: () => setBuying(ADDONS[0]), buyLabel: T.buySms }), /* @__PURE__ */ React.createElement("p", { className: "body-small muted" }, T.estimate)), /* @__PURE__ */ React.createElement(V.UsageMeter, { label: T.uAppt, used: 312, limit: 1e3 }), /* @__PURE__ */ React.createElement(V.UsageMeter, { label: T.uDocs, used: 2.4, limit: 5, unit: "GB", format: (n) => n.toLocaleString(T.fmt) }))), /* @__PURE__ */ React.createElement(V.SheetSection, { title: T.packs, description: T.packsDesc }, !noCard && /* @__PURE__ */ React.createElement("div", { style: { marginBottom: "var(--space-4)", maxWidth: 560 } }, /* @__PURE__ */ React.createElement(V.GrowthSlot, { label: T.reco }, /* @__PURE__ */ React.createElement(V.RecommendationCard, { icon: "message-square", title: T.recoTitle, benefit: T.recoBenefit, cost: T.recoCost, actionLabel: T.buy(49), onAction: () => setBuying(ADDONS[0]), onDismiss: () => {
   }, onRemindLater: () => {
-  } }))), /* @__PURE__ */ React.createElement("div", { className: "rows bordered" }, ADDONS.map((a) => /* @__PURE__ */ React.createElement("div", { key: a.id, className: "mrow" }, /* @__PURE__ */ React.createElement(V.Icon, { name: a.icon, size: 20 }), /* @__PURE__ */ React.createElement("span", { className: "biz-text" }, /* @__PURE__ */ React.createElement("span", { className: "body-strong" }, a.name), /* @__PURE__ */ React.createElement("span", { className: "body-small muted" }, a.price, " lei \xB7 ", a.per), !a.buy && /* @__PURE__ */ React.createElement(V.Badge, null, "Doar la cerere")), a.buy && !noCard ? /* @__PURE__ */ React.createElement(V.Button, { size: "sm", variant: "secondary", onClick: () => setBuying(a) }, "Cump\u0103r\u0103 \xB7 " + a.price + " lei") : /* @__PURE__ */ React.createElement(V.Button, { size: "sm", variant: "quiet" }, "Cere activare"))))), /* @__PURE__ */ React.createElement(V.SheetSection, { title: "Facturi", description: "Abonamentul \u0219i fiecare cump\u0103r\u0103tur\u0103 au factura lor." }, /* @__PURE__ */ React.createElement(V.DataTable, { columns: [
-    { key: "nr", header: "Factura", primary: true },
-    { key: "what", header: "Pentru", secondary: true },
-    { key: "date", header: "Data", secondary: true },
-    { key: "sum", header: "Sum\u0103", align: "end", secondary: true },
-    { key: "st", header: "Stare", trailing: true, render: () => /* @__PURE__ */ React.createElement("span", { className: "r", style: { gap: "var(--space-2)", flexWrap: "nowrap" } }, /* @__PURE__ */ React.createElement(V.StatusPill, { tone: "done" }, "Pl\u0103tit\u0103"), /* @__PURE__ */ React.createElement(V.IconButton, { icon: "download", label: "Descarc\u0103", variant: "quiet", size: "sm" })) }
-  ], rows: [
-    { id: 4, nr: "VNT-2026-0203", what: "Pachet \xEEn plus \xB7 500 SMS \xEEn plus", date: "24 oct. 2026", sum: "49 lei" },
-    { id: 1, nr: "VNT-2026-0198", what: "Abonament Business \xB7 octombrie", date: "1 oct. 2026", sum: "349 lei" },
-    { id: 5, nr: "VNT-2026-0171", what: "Pachet \xEEn plus \xB7 10 campanii \xEEn plus", date: "18 sep. 2026", sum: "39 lei" },
-    { id: 2, nr: "VNT-2026-0154", what: "Abonament Business \xB7 septembrie", date: "1 sep. 2026", sum: "349 lei" }
-  ], rowActions: () => [{ label: "Descarc\u0103 PDF", icon: "download" }] })))), buying && /* @__PURE__ */ React.createElement("div", { className: "modal-demo " + mode }, /* @__PURE__ */ React.createElement(V.AddonPurchase, { inline: true, sheet: mode === "mobile", onOpenChange: () => setBuying(null), addon: { ...buying, description: buying.per }, card: CARD, onPay: () => setBuying(null) })));
+  } }))), /* @__PURE__ */ React.createElement("div", { className: "rows bordered" }, ADDONS.map((a) => /* @__PURE__ */ React.createElement("div", { key: a.id, className: "mrow" }, /* @__PURE__ */ React.createElement(V.Icon, { name: a.icon, size: 20 }), /* @__PURE__ */ React.createElement("span", { className: "biz-text" }, /* @__PURE__ */ React.createElement("span", { className: "body-strong" }, a.name), /* @__PURE__ */ React.createElement("span", { className: "body-small muted" }, a.price, " lei \xB7 ", a.per), !a.buy && /* @__PURE__ */ React.createElement(V.Badge, null, T.onlyReq)), a.buy && !noCard ? /* @__PURE__ */ React.createElement(V.Button, { size: "sm", variant: "secondary", onClick: () => setBuying(a) }, T.buy(a.price)) : /* @__PURE__ */ React.createElement(V.Button, { size: "sm", variant: "quiet" }, T.reqAct))))), /* @__PURE__ */ React.createElement(V.SheetSection, { title: T.inv, description: T.invDesc }, /* @__PURE__ */ React.createElement(V.DataTable, { columns: [
+    { key: "nr", header: T.hNr, primary: true },
+    { key: "what", header: T.hFor, secondary: true },
+    { key: "date", header: T.hDate, secondary: true },
+    { key: "sum", header: T.hSum, align: "end", secondary: true },
+    { key: "st", header: T.hSt, trailing: true, render: () => /* @__PURE__ */ React.createElement("span", { className: "r", style: { gap: "var(--space-2)", flexWrap: "nowrap" } }, /* @__PURE__ */ React.createElement(V.StatusPill, { tone: "done" }, T.paid), /* @__PURE__ */ React.createElement(V.IconButton, { icon: "download", label: T.dl, variant: "quiet", size: "sm" })) }
+  ], rows: T.rows, rowActions: () => [{ label: T.dlPdf, icon: "download" }] })))), buying && /* @__PURE__ */ React.createElement("div", { className: "modal-demo " + mode }, /* @__PURE__ */ React.createElement(V.AddonPurchase, { inline: true, sheet: mode === "mobile", onOpenChange: () => setBuying(null), addon: { ...buying, description: buying.per }, card: CARD, onPay: () => setBuying(null) })));
 }
-mount(/* @__PURE__ */ React.createElement(Screens, { title: "Administrarea afacerii \u2014 abonament, consum, pachete \xEEn plus cump\u0103rate cu cardul, facturi", notes: ["Ce cere ac\u021Biune urc\u0103 primul; estimarea apare doar c\xE2nd e sigur\u0103", "Tablet\u0103 \xB7 Dark: f\u0103r\u0103 card salvat, pachetele r\u0103m\xE2n \u201ECere activare\u201D", "Apas\u0103 \u201ECump\u0103r\u0103\u201D ca s\u0103 deschizi fluxul"], desktopH: 1320, tabletH: 1320, mobileH: 1320, render: (m, th) => /* @__PURE__ */ React.createElement(Plan, { mode: m, th }) }));
+mount(React.createElement("div", null,
+  React.createElement(Screens, { title: "Administrarea afacerii \u2014 abonament, consum, pachete \xEEn plus cump\u0103rate cu cardul, facturi", notes: ["Ce cere ac\u021Biune urc\u0103 primul; estimarea apare doar c\xE2nd e sigur\u0103", "Tablet\u0103 \xB7 Dark: f\u0103r\u0103 card salvat, pachetele r\u0103m\xE2n \u201ECere activare\u201D", "Apas\u0103 \u201ECump\u0103r\u0103\u201D ca s\u0103 deschizi fluxul"], desktopH: 1320, tabletH: 1320, mobileH: 1320, render: (m, th) => /* @__PURE__ */ React.createElement(Plan, { mode: m, th }) }),
+  React.createElement(LocTest, { items: [
+    ["Deutsch \xB7 1280 \xB7 Light", "de", "desktop", "light", 1320, React.createElement(Plan, { mode: "desktop", th: "light", lang: "de" })],
+    ["Italiano \xB7 390 \xB7 Dark", "it", "mobile", "dark", 1320, React.createElement(Plan, { mode: "mobile", th: "dark", lang: "it" })],
+    ["Deutsch \xB7 820 \xB7 Dark \xB7 ohne gespeicherte Karte", "de", "tablet", "dark", 1320, React.createElement(Plan, { mode: "tablet", th: "dark", lang: "de" })]
+  ] })));
 </script>
 </body>
 </html>

@@ -1,0 +1,131 @@
+{
+ "name": "RecommendationCard",
+ "version": "1.0.1",
+ "kind": "component",
+ "group": "Comercial",
+ "status": "changed",
+ "description": "One recommendation in a page, tied to what the business already does. Anatomy: the \"Recomandare\" label and a menu with \"Amintește-mi mai târziu\" (in a week / in a month) · the app icon (AppIcon) or a Lucide icon for a pack or a plan · a short title · one sentence about the benefit, in the business's context · the cost line (price and period, or \"Gratuit 14 zile. Apoi 79 lei pe lună, doar dacă alegi să continui.\") · the main action · \"Nu mă interesează\".",
+ "exports": [
+  "RecommendationCard"
+ ],
+ "props": [
+  {
+   "name": "app",
+   "type": "AppKey",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "icon",
+   "type": "string",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "title",
+   "type": "string",
+   "required": true,
+   "note": ""
+  },
+  {
+   "name": "benefit",
+   "type": "string",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "cost",
+   "type": "string",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "role",
+   "type": "\"owner\" | \"member\"",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "actionLabel",
+   "type": "string",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "actionIcon",
+   "type": "string",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "onAction",
+   "type": "() => void",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "decider",
+   "type": "string",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "onRecommend",
+   "type": "() => void",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "recommended",
+   "type": "boolean",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "status",
+   "type": "\"pending\" | \"activated\" | \"declined\"",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "onDismiss",
+   "type": "() => void",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "onRemindLater",
+   "type": "(period: \"week\" | \"month\") => void",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "proactive",
+   "type": "boolean",
+   "required": false,
+   "note": ""
+  }
+ ],
+ "events": [
+  "onAction",
+  "onDismiss",
+  "onRecommend",
+  "onRemindLater"
+ ],
+ "states": [
+  "owner",
+  "trial",
+  "extra-pack",
+  "member",
+  "member-pending",
+  "member-activated",
+  "member-declined",
+  "not-proactive",
+  "narrow",
+  "after-dismiss-toast",
+  "after-remind-toast"
+ ],
+ "notes": "",
+ "readme": "components/RecommendationCard/README.md",
+ "preview": "components/RecommendationCard/preview.html"
+}

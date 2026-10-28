@@ -278,10 +278,10 @@ const ORGS = [
   { id: "nord", name: "Agen\u021Bia Nord Studio", role: "Manager de proiect" }
 ];
 const NOTIFS = [
-  { id: 1, title: "Programare nou\u0103 de la Ana Popescu", body: "Joi, 29 oct., 14:30 \xB7 Tuns", app: "Booking", time: "acum 5 min", person: "Ana Popescu" },
-  { id: 2, title: "Factura #2026-114 e restant\u0103 de 3 zile", body: "Clinica Dentis \xB7 1.250 lei", app: "Finance", time: "acum 2 ore", icon: "receipt" },
-  { id: 3, title: "Ioana a cerut concediu pe 2\u20136 noiembrie", app: "HR", time: "ieri", person: "Ioana Pavel", read: true },
-  { id: 4, title: "Exportul clien\u021Bilor e gata", app: "CRM", time: "ieri", icon: "download", read: true }
+  { id: 1, title: "Programare nou\u0103 de la Ana Popescu", body: "Joi, 29 oct., 14:30 \xB7 Tuns", app: "EasyBook", time: "acum 5 min", person: "Ana Popescu" },
+  { id: 2, title: "Factura #2026-114 e restant\u0103 de 3 zile", body: "Clinica Dentis \xB7 1.250 lei", app: "MoneyDesk", time: "acum 2 ore", icon: "receipt" },
+  { id: 3, title: "Ioana a cerut concediu pe 2\u20136 noiembrie", app: "TeamSpace", time: "ieri", person: "Ioana Pavel", read: true },
+  { id: 4, title: "Exportul clien\u021Bilor e gata", app: "ClientDesk", time: "ieri", icon: "download", read: true }
 ];
 const USER = { name: "Bianca Petra\u0219cu", email: "bianca@ventora-hub.com" };
 function Bar({ title, de }) {
@@ -312,7 +312,7 @@ function BookingShell({ height, active, mobile }) {
       height,
       spine: /* @__PURE__ */ React.createElement(V.Spine, { app: "booking", sections: SECTIONS, activeId: active, onBackToHub: () => {
       }, footer: /* @__PURE__ */ React.createElement(V.UsageMeter, { compact: true, label: "Program\u0103ri", used: 312, limit: 1e3 }) }),
-      contextBar: /* @__PURE__ */ React.createElement(Bar, { title: "Booking" })
+      contextBar: /* @__PURE__ */ React.createElement(Bar, { title: "EasyBook" })
     },
     /* @__PURE__ */ React.createElement(V.PageHeader, { title: "Program\u0103ri", description: mobile ? void 0 : "Toate program\u0103rile afacerii, de azi \xEEnainte.", actions: mobile ? void 0 : /* @__PURE__ */ React.createElement(V.SegmentedControl, { label: "Vizualizare", size: "md", defaultValue: "list", options: [{ value: "list", label: "List\u0103", icon: "list" }, { value: "cal", label: "Calendar", icon: "calendar" }] }) }),
     /* @__PURE__ */ React.createElement(V.DataTable, { columns: [
@@ -333,7 +333,7 @@ function HubBar({ title, inApp }) {
   return /* @__PURE__ */ React.createElement(
     V.ContextBar,
     {
-      leading: inApp ? null : /* @__PURE__ */ React.createElement("span", { style: { padding: "0 var(--space-2)" } }, /* @__PURE__ */ React.createElement(V.Logo, { size: 32 })),
+      leading: inApp ? null : /* @__PURE__ */ React.createElement("span", { style: { padding: "0 var(--space-2)", display: "inline-flex" } }, /* @__PURE__ */ React.createElement(V.Logo, { size: 32, className: "v-cb-logo--full" }), /* @__PURE__ */ React.createElement(V.Logo, { variant: "mark", size: 32, className: "v-cb-logo--mark" })),
       title,
       org: /* @__PURE__ */ React.createElement(V.OrgSwitcher, { orgs: ORGS, currentId: "aurora" }),
       onSearch: () => {
@@ -366,7 +366,7 @@ function Screens({ title, notes, render, desktopH = 860, tabletH = 1100, mobileH
   return /* @__PURE__ */ React.createElement("div", { className: "scr" }, /* @__PURE__ */ React.createElement("p", { className: "heading" }, title), notes && /* @__PURE__ */ React.createElement("p", { className: "caption muted" }, notes.join(" \xB7 ")), ["light", "dark"].map((th) => /* @__PURE__ */ React.createElement("div", { className: "scr-row", key: th }, sizes.map(([m, lab, cls, h]) => /* @__PURE__ */ React.createElement("div", { key: m }, /* @__PURE__ */ React.createElement("p", { className: "caption scr-lab" }, lab, " \xB7 ", th === "light" ? "Light" : "Dark"), /* @__PURE__ */ React.createElement("div", { className: cls, "data-theme": th, style: { height: h } }, render(m, th)))))));
 }
 const MINE = [["booking", "Program\u0103ri, calendar \u0219i reamintiri", 3], ["crm", "Clien\u021Bi, istoric \u0219i oportunit\u0103\u021Bi"], ["hr", "Echip\u0103, prezen\u021B\u0103 \u0219i concedii", 1], ["finance", "Facturi, scaden\u021Be \u0219i restan\u021Be", 2], ["projects", "Proiecte, sarcini \u0219i termene"], ["shifts", "Ture \u0219i \xEEnlocuiri"], ["documents", "Documente \u0219i \u0219abloane"], ["portal", "Pagina afacerii pentru clien\u021Bi"]];
-const RECO = { marketing: { reason: "Se potrive\u0219te cu Booking: trimite automat reamintiri \u0219i campanii clien\u021Bilor t\u0103i.", cost: "49 lei pe lun\u0103 \xB7 f\u0103r\u0103 cost de implementare" } };
+const RECO = { marketing: { reason: "Se potrive\u0219te cu EasyBook: trimite automat reamintiri \u0219i campanii clien\u021Bilor t\u0103i.", cost: "49 lei pe lun\u0103 \xB7 f\u0103r\u0103 cost de implementare" } };
 const VIEWER_ROLE = "owner";
 const RECO_FOR = (a) => (VIEWER_ROLE === "owner" || VIEWER_ROLE === "admin") && a === "marketing" ? RECO[a] : null;
 const OTHER = [["inventory", "unavailable"], ["analytics", "notInRole"], ["marketing", "notInPlan"], ["network", "notInPlan"]];
@@ -587,10 +587,10 @@ const FX_CRITERIA = [
 const FX_RULES = [{ id: "a", criterion: "apps_on", operator: "include", value: "booking" }, { id: "b", criterion: "apps_on", operator: "nu include", value: "crm" }, { id: "c", criterion: "role", operator: "este", value: "Proprietar" }, { id: "d", criterion: "age", operator: "peste", value: "30" }];
 const FX_LANGS = [["Rom\xE2n\u0103", "RO", "done", "Aprobat"], ["English", "EN", "done", "Aprobat"], ["Fran\xE7ais", "FR", "neutral", "\xCEn revizuire"], ["Espa\xF1ol", "ES", "neutral", "\xCEn revizuire"], ["Deutsch", "DE", "done", "Aprobat"], ["Italiano", "IT", "attention", "Lipse\u0219te"]];
 const FX_CAMPAIGNS = [
-  { id: 1, name: "Booking f\u0103r\u0103 CRM", mode: "Automat \xB7 integrare lips\u0103", offer: "CRM \xB7 69 lei pe lun\u0103", slots: "Booking \xB7 Azi, Launcher", prio: 1, status: ["done", "Activ\u0103", "check"], annoy: 2.1 },
-  { id: 2, name: "SMS peste 80%", mode: "Automat \xB7 consum", offer: "500 SMS \xEEn plus", slots: "Abonament, Booking \xB7 Set\u0103ri", prio: 2, status: ["done", "Activ\u0103", "check"], annoy: 1.4 },
-  { id: 3, name: "Analytics de Black Friday", mode: "Programat \xB7 20\u201330 nov.", offer: "Analytics, 14 zile gratuit", slots: "Launcher, Notific\u0103ri", prio: 3, status: ["neutral", "Programat\u0103", "clock"], annoy: null },
-  { id: 4, name: "Marketing pentru saloane", mode: "Automat \xB7 vechime", offer: "Marketing \xB7 49 lei pe lun\u0103", slots: "Booking \xB7 Azi", prio: 4, status: ["attention", "Oprit\u0103: deranj peste prag", "triangle-alert"], annoy: 6.2 }
+  { id: 1, name: "EasyBook f\u0103r\u0103 ClientDesk", mode: "Automat \xB7 integrare lips\u0103", offer: "ClientDesk \xB7 69 lei pe lun\u0103", slots: "EasyBook \xB7 Azi, Launcher", prio: 1, status: ["done", "Activ\u0103", "check"], annoy: 2.1 },
+  { id: 2, name: "SMS peste 80%", mode: "Automat \xB7 consum", offer: "500 SMS \xEEn plus", slots: "Abonament, EasyBook \xB7 Set\u0103ri", prio: 2, status: ["done", "Activ\u0103", "check"], annoy: 1.4 },
+  { id: 3, name: "DataView de Black Friday", mode: "Programat \xB7 20\u201330 nov.", offer: "DataView, 14 zile gratuit", slots: "Launcher, Notific\u0103ri", prio: 3, status: ["neutral", "Programat\u0103", "clock"], annoy: null },
+  { id: 4, name: "CampaignKit pentru saloane", mode: "Automat \xB7 vechime", offer: "CampaignKit \xB7 49 lei pe lun\u0103", slots: "EasyBook \xB7 Azi", prio: 4, status: ["attention", "Oprit\u0103: deranj peste prag", "triangle-alert"], annoy: 6.2 }
 ];
 function FX_Frame({ th, label, children }) {
   return /* @__PURE__ */ React.createElement("div", { className: "fxframe", "data-theme": th }, /* @__PURE__ */ React.createElement("p", { className: "caption muted" }, label), /* @__PURE__ */ React.createElement("div", { className: "fxframe-in" }, children));
@@ -603,9 +603,9 @@ function GOffers({ mode }) {
     { key: "tx", header: "Texte aprobate", optional: true, render: (r) => /* @__PURE__ */ React.createElement("span", { className: "v-num" }, r.tx) },
     { key: "s", header: "Stare", trailing: true, render: (r) => /* @__PURE__ */ React.createElement(V.StatusPill, { tone: r.s[0], icon: r.s[2] }, r.s[1]) }
   ], rows: [
-    { id: 1, n: "CRM pentru clien\u021Bii din Booking", t: "Aplica\u021Bie", a: "Vezi op\u021Biunile", tx: "6 din 6", s: ["done", "Activ\u0103", "check"] },
+    { id: 1, n: "ClientDesk pentru clien\u021Bii din EasyBook", t: "Aplica\u021Bie", a: "Vezi op\u021Biunile", tx: "6 din 6", s: ["done", "Activ\u0103", "check"] },
     { id: 2, n: "500 SMS \xEEn plus", t: "Pachet \xEEn plus", a: "Cump\u0103r\u0103", tx: "6 din 6", s: ["done", "Activ\u0103", "check"] },
-    { id: 3, n: "Analytics, 14 zile gratuit", t: "Perioad\u0103 de prob\u0103", a: "\xCEncearc\u0103 gratuit", tx: "3 din 6", s: ["neutral", "\xCEn revizuire", "clock"] },
+    { id: 3, n: "DataView, 14 zile gratuit", t: "Perioad\u0103 de prob\u0103", a: "\xCEncearc\u0103 gratuit", tx: "3 din 6", s: ["neutral", "\xCEn revizuire", "clock"] },
     { id: 4, n: "Business Plus pentru afacerile la limit\u0103", t: "Abonament", a: "Cere alt abonament", tx: "1 din 6", s: ["neutral", "Ciorn\u0103", "pencil"] }
   ], onRowClick: () => {
   }, rowActions: () => [{ label: "Editeaz\u0103", icon: "pencil" }, { label: "Duplic\u0103", icon: "copy" }, { separator: true }, { label: "Opre\u0219te oferta", icon: "lock", destructive: true }] }));

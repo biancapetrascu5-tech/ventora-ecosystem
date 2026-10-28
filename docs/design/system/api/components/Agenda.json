@@ -1,0 +1,61 @@
+{
+ "name": "Agenda",
+ "version": "1.0.1",
+ "kind": "component",
+ "group": "Data",
+ "status": "changed",
+ "description": "The day as a list — for the Today screen and for phones — with the peach \"now\" line between what's done and what's next, and the appointment in progress highlighted with its elapsed time.",
+ "exports": [
+  "Agenda"
+ ],
+ "props": [
+  {
+   "name": "items",
+   "type": "{ id: string; start: string; end: string; title: string; subtitle?: string; staff?: string; status?: EventStatus; }[]",
+   "required": true,
+   "note": ""
+  },
+  {
+   "name": "now",
+   "type": "string",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "onSelect",
+   "type": "(item: any) => void",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "activeId",
+   "type": "string",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "showStaff",
+   "type": "boolean",
+   "required": false,
+   "note": ""
+  }
+ ],
+ "events": [
+  "onSelect"
+ ],
+ "states": [
+  "done",
+  "noshow",
+  "cancelled",
+  "now",
+  "unconfirmed",
+  "blocked",
+  "confirmed",
+  "active",
+  "nowLine",
+  "noStaff"
+ ],
+ "notes": "",
+ "readme": "components/Agenda/README.md",
+ "preview": "components/Agenda/preview.html"
+}

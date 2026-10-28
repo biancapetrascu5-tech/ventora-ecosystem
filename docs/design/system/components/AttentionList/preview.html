@@ -1,4 +1,4 @@
-<!-- @dsCard group="Feedback" height=445 -->
+<!-- @dsCard group="Feedback" height=1750 width=1400 -->
 <!doctype html>
 <html lang="ro">
 <head><meta charset="utf-8"><title>AttentionList — Ventora</title>
@@ -250,6 +250,15 @@ html,body{min-height:100%}
 .fxframe .caption{color:var(--ink-muted)}
 @container (max-width:420px){.fxlang{grid-template-columns:32px minmax(0,1fr) auto}.fxlang .v-iconbtn{display:none}}
 
+.al{display:flex;flex-direction:column;gap:var(--space-4);padding:var(--space-4)}
+.al-frame{display:flex;flex-direction:column;gap:var(--space-4);padding:var(--space-6);background:var(--canvas);color:var(--ink);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg)}
+.al-frame .heading{margin:0}
+.al-row{display:flex;gap:var(--space-6);align-items:flex-start}
+.al-col{flex:1;min-width:0;display:flex;flex-direction:column;gap:var(--space-2)}
+.al-narrow{flex:0 0 390px}
+.al-lab{margin:0;color:var(--ink-muted)}
+.al-card{padding:var(--space-2) var(--space-4);background:var(--sheet);border:var(--border-width) solid var(--line);border-radius:var(--radius-md)}
+.al-empty{padding:var(--space-4)}
 </style>
 </head>
 <body>
@@ -408,10 +417,43 @@ const BK_ATTN = [
   { id: 3, icon: "wallet", tone: "danger", title: "Dan Stoica mai are de pl\u0103tit 120 lei", meta: "De la vizita din 16 octombrie", actions: [{ label: "\xCEncaseaz\u0103" }, { label: "Trimite link de plat\u0103", quiet: true }] },
   { id: 4, icon: "calendar", title: "Elena Georgescu vrea s\u0103 mute programarea", meta: "De m\xE2ine, 10:00, pe s\xE2mb\u0103t\u0103, 11:00 \xB7 cerere online", actions: [{ label: "Accept\u0103", primary: true }, { label: "Propune alt\u0103 or\u0103" }] }
 ];
-function Demo() {
-  return /* @__PURE__ */ React.createElement("div", { className: "d g2" }, /* @__PURE__ */ React.createElement("div", { className: "frame" }, /* @__PURE__ */ React.createElement(V.AttentionList, { items: BK_ATTN })), /* @__PURE__ */ React.createElement(IT, null, /* @__PURE__ */ React.createElement("div", { className: "frame" }, /* @__PURE__ */ React.createElement(V.AttentionList, { items: [{ id: 1, icon: "clock", title: "Cristina Dobre non ha ancora confermato", meta: "Oggi alle 12:30 \xB7 Trattamento viso \xB7 Ioana", time: "tra 1 h", actions: [{ label: "Conferma", primary: true }, { label: "Invia promemoria" }] }] }))));
-}
-mount(/* @__PURE__ */ React.createElement(Demo, null));
+/* AttentionList — the three tones (PASUL 2 b): neutral by default, peach only for "are nevoie de tine acum", red for error or loss. Light/Dark frames, DE/IT. */
+const h = React.createElement;
+const ITEMS = {
+  ro: [
+    { id: 1, icon: "smartphone", tone: "attention", title: "Telefonul afacerii e deconectat. 6 reamintiri trebuie să plece până la 18:00.", meta: "Deconectat de la 14:20 · Telefon recepție", time: "acum", actions: [{ label: "Vezi ce poți face", primary: true }] },
+    { id: 2, icon: "clock", title: "Cristina Dobre nu a confirmat", meta: "Azi la 12:30 · Tratament facial · Ioana", time: "peste 1 h", actions: [{ label: "Confirmă", primary: true }, { label: "Retrimite reamintirea" }] },
+    { id: 3, icon: "wallet", tone: "danger", title: "Dan Stoica mai are de plătit 120 lei", meta: "De la vizita din 16 octombrie", actions: [{ label: "Încasează" }, { label: "Trimite link de plată", quiet: true }] },
+    { id: 4, icon: "calendar", title: "Elena Georgescu vrea să mute programarea", meta: "De mâine, 10:00, pe sâmbătă, 11:00 · cerere online", actions: [{ label: "Acceptă", primary: true }, { label: "Propune altă oră" }] }
+  ],
+  de: [
+    { id: 1, icon: "smartphone", tone: "attention", title: "Das Geschäftstelefon ist getrennt. 6 Erinnerungen müssen bis 18:00 Uhr raus.", meta: "Getrennt seit 14:20 · Telefon Empfang", time: "jetzt", actions: [{ label: "Was Sie tun können", primary: true }] },
+    { id: 2, icon: "clock", title: "Cristina Dobre hat nicht bestätigt", meta: "Heute um 12:30 · Gesichtsbehandlung · Ioana", time: "in 1 Std.", actions: [{ label: "Bestätigen", primary: true }, { label: "Erinnerung erneut senden" }] },
+    { id: 3, icon: "wallet", tone: "danger", title: "Dan Stoica muss noch 120 lei bezahlen", meta: "Vom Besuch am 16. Oktober", actions: [{ label: "Kassieren" }, { label: "Zahlungslink senden", quiet: true }] }
+  ],
+  it: [
+    { id: 1, icon: "smartphone", tone: "attention", title: "Il telefono dell’attività è scollegato. 6 promemoria devono partire entro le 18:00.", meta: "Scollegato dalle 14:20 · Telefono reception", time: "ora", actions: [{ label: "Cosa può fare", primary: true }] },
+    { id: 2, icon: "clock", title: "Cristina Dobre non ha confermato", meta: "Oggi alle 12:30 · Trattamento viso · Ioana", time: "tra 1 h", actions: [{ label: "Conferma", primary: true }, { label: "Invia di nuovo il promemoria" }] },
+    { id: 3, icon: "wallet", tone: "danger", title: "Dan Stoica deve ancora pagare 120 lei", meta: "Dalla visita del 16 ottobre", actions: [{ label: "Incassa" }, { label: "Invia link di pagamento", quiet: true }] }
+  ]
+};
+const TONES = [
+  { id: "n", icon: "clock", title: "Implicit (fără tone): neutru", meta: "Ce are nevoie de tine, dar nu acum: confirmări, cereri, telefon vechi" },
+  { id: "a", icon: "smartphone", tone: "attention", title: "tone: \"attention\": peach", meta: "Doar „are nevoie de tine acum”: telefonul deconectat cu mesaje care așteaptă" },
+  { id: "d", icon: "circle-x", tone: "danger", title: "tone: \"danger\": roșu", meta: "Eroare sau pierdere: mesaje care nu au plecat, bani restanți" }
+];
+const Frame = ({ th, title, children }) => h("section", { className: "al-frame", "data-theme": th }, h("p", { className: "heading" }, title), children);
+mount(h("div", { className: "al" },
+  ["light", "dark"].map((th) => h(Frame, { key: th, th, title: th === "light" ? "Light" : "Dark" },
+    h("div", { className: "al-row" },
+      h("div", { className: "al-col" }, h("p", { className: "caption al-lab" }, "Cele trei tonuri"), h("div", { className: "al-card" }, h(V.AttentionList, { items: TONES }))),
+      h("div", { className: "al-col" }, h("p", { className: "caption al-lab" }, "Au nevoie de tine · EasyBook · Azi"), h("div", { className: "al-card" }, h(V.AttentionList, { items: ITEMS.ro }))),
+      h("div", { className: "al-col" }, h("p", { className: "caption al-lab" }, "Gol: ce pui în empty (de obicei nimic)"), h("div", { className: "al-card al-empty" }, h(V.AttentionList, { items: [], empty: h("p", { className: "body-small muted" }, "Nimic de făcut acum.") })))))),
+  h(Frame, { th: "light", title: "Deutsch · Italiano" },
+    h("div", { className: "al-row" },
+      h("div", { className: "al-col" }, h("p", { className: "caption al-lab" }, "Deutsch"), h("div", { className: "al-card" }, h(V.LocaleProvider, { locale: "de" }, h(V.AttentionList, { items: ITEMS.de })))),
+      h("div", { className: "al-col al-narrow" }, h("p", { className: "caption al-lab" }, "Italiano · 390"), h("div", { className: "al-card" }, h(V.LocaleProvider, { locale: "it" }, h(V.AttentionList, { items: ITEMS.it }))))))));
+
 </script>
 </body>
 </html>

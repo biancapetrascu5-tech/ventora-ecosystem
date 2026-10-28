@@ -1,0 +1,26 @@
+{
+ "name": "RecommendationLabel",
+ "version": "1.0.1",
+ "kind": "component",
+ "group": "Comercial",
+ "status": "changed",
+ "description": "The small neutral Badge \"Recomandare\" on anything commercial — RecommendationCard, a commercial DiscoveryTooltip, HubRecommendation, a recommended AppTile. Always the same, never peach (now / your attention), never lime (done). No props besides `className`.",
+ "exports": [
+  "RecommendationLabel"
+ ],
+ "props": [
+  {
+   "name": "className",
+   "type": "string",
+   "required": false,
+   "note": ""
+  }
+ ],
+ "events": [],
+ "states": [
+  "default"
+ ],
+ "notes": "",
+ "readme": "components/RecommendationLabel/README.md",
+ "preview": "components/RecommendationLabel/preview.html"
+}

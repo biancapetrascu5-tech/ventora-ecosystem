@@ -1,0 +1,30 @@
+{
+ "name": "BookingCalendar",
+ "version": "1.0.1",
+ "kind": "page",
+ "group": "Ecrane Booking",
+ "status": "changed",
+ "description": "EasyBook — Calendar with Schedule: resources (one column per person), week (today marked, Sunday closed) and day (pick the person). Date navigation, \"Azi\" and the view switch sit above the grid; the grid scrolls inside itself.",
+ "exports": [],
+ "props": [],
+ "events": [],
+ "states": [
+  "resources",
+  "week",
+  "day",
+  "today-marked",
+  "closed-day",
+  "now-line",
+  "first-free-slot-found",
+  "desktop",
+  "tablet",
+  "mobile",
+  "light",
+  "dark",
+  "de",
+  "it"
+ ],
+ "notes": "Keyboard navigation of the grid and moving from the detail on touch screens are behaviours, described in the notes, not separate visual states",
+ "readme": "components/BookingCalendar/README.md",
+ "preview": "components/BookingCalendar/preview.html"
+}

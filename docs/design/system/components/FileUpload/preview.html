@@ -1,4 +1,4 @@
-<!-- @dsCard group="Forms" height=440 -->
+<!-- @dsCard group="Forms" height=3360 width=1200 -->
 <!doctype html>
 <html lang="ro">
 <head><meta charset="utf-8"><title>FileUpload — Ventora</title>
@@ -250,6 +250,18 @@ html,body{min-height:100%}
 .fxframe .caption{color:var(--ink-muted)}
 @container (max-width:420px){.fxlang{grid-template-columns:32px minmax(0,1fr) auto}.fxlang .v-iconbtn{display:none}}
 
+/* c2: theme + locale frames */
+.pv{display:flex;flex-direction:column;gap:var(--space-4);padding:var(--space-4)}
+.pv-frame{display:flex;flex-direction:column;gap:var(--space-4);padding:var(--space-6);background:var(--canvas);color:var(--ink);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg);min-width:0}
+.pv-frame>.heading{margin:0}
+.pv-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:var(--space-5) var(--space-4);align-items:start}
+.pv-grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--space-5) var(--space-4);align-items:start}
+.pv-grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--space-5) var(--space-4);align-items:start}
+.pv-cell{display:flex;flex-direction:column;gap:var(--space-2);min-width:0}
+.pv-lab{margin:0;color:var(--ink-muted)}
+.pv-box{padding:var(--space-4);background:var(--sheet);border:var(--border-width) solid var(--line);border-radius:var(--radius-md);min-width:0;color:var(--ink)}
+.pv-stage{position:relative;overflow:hidden;border:var(--border-width) solid var(--line-strong);border-radius:var(--radius-lg);background:var(--canvas);color:var(--ink)}
+.pv-note{margin:0;color:var(--ink-muted)}
 </style>
 </head>
 <body>
@@ -262,16 +274,40 @@ const DE = ({ children }) => /* @__PURE__ */ React.createElement(V.LocaleProvide
 const FR = ({ children }) => /* @__PURE__ */ React.createElement(V.LocaleProvider, { locale: "fr" }, children);
 const IT = ({ children }) => /* @__PURE__ */ React.createElement(V.LocaleProvider, { locale: "it" }, children);
 const mount = (el) => ReactDOM.createRoot(document.getElementById("root")).render(/* @__PURE__ */ React.createElement(V.LocaleProvider, { locale: "ro" }, el));
-function Demo() {
+/* c2: every README state, Light/Dark frames (data-theme on the frame), DE/IT with translated texts. */
+const h = React.createElement;
+const noop = () => {};
+const Cell = ({ label, children, style }) => h("div", { className: "pv-cell", style }, h("p", { className: "caption pv-lab" }, label), children);
+const FRAMES = [["light", "ro", "Light"], ["dark", "ro", "Dark"], ["light", "de", "Deutsch \u00b7 Light"], ["dark", "it", "Italiano \u00b7 Dark"]];
+const Frames = ({ Board, top }) => h("div", { className: "pv" }, top, FRAMES.map(([th, lang, lab], i) => h("section", { key: lab, className: "pv-frame", "data-theme": th }, h("p", { className: "heading" }, lab), h(V.LocaleProvider, { locale: lang }, h(Board, { lang, theme: th, first: i === 0 })))));
+const FU_T = {
+  ro: { l: ["Listă: încărcat, se încarcă (64%), eroare pe un fișier cu „Încearcă din nou”", "Gol · implicit", "Hover", "", "Trage aici (drag-over)", "Eroare pe zonă (FormField)", "Dezactivat"],
+    docs: "Documente", hint: "PDF, JPG sau PNG", files: [["contract-salon-aurora.pdf", 482e3], ["fotografii-lucrări-octombrie.zip", 184e5], ["buletin-scanat-Ștefan-Țăranu.heic", 32e5]], badFmt: "Format neacceptat. Folosește PDF, JPG sau PNG.",
+    contract: "Contractul semnat", zoneErr: "Adaugă contractul semnat ca să trimiți cererea.", locked: "Documente (blocat până la confirmare)" },
+  de: { l: ["Liste: hochgeladen, wird hochgeladen (64 %), Fehler bei einer Datei mit „Erneut versuchen“", "Leer · Standard", "Hover", "", "Hierher ziehen (Drag-over)", "Fehler an der Zone (FormField)", "Deaktiviert"],
+    docs: "Vertragsunterlagen", hint: "PDF, JPG oder PNG", files: [["vertrag-salon-aurora.pdf", 482e3], ["fotos-arbeiten-oktober.zip", 184e5], ["ausweis-gescannt-jürgen-köhler.heic", 32e5]], badFmt: "Format nicht unterstützt. Verwenden Sie PDF, JPG oder PNG.",
+    contract: "Unterschriebener Vertrag", zoneErr: "Fügen Sie den unterschriebenen Vertrag hinzu, um die Anfrage zu senden.", locked: "Dokumente (gesperrt bis zur Bestätigung)" },
+  it: { l: ["Elenco: caricato, in caricamento (64%), errore su un file con „Riprova”", "Vuoto · predefinito", "Hover", "", "Trascini qui (drag-over)", "Errore sulla zona (FormField)", "Disattivato"],
+    docs: "Documenti", hint: "PDF, JPG o PNG", files: [["contratto-salone-aurora.pdf", 482e3], ["foto-lavori-ottobre.zip", 184e5], ["documento-scansionato-niccolò-lucà.heic", 32e5]], badFmt: "Formato non supportato. Usi PDF, JPG o PNG.",
+    contract: "Contratto firmato", zoneErr: "Aggiunga il contratto firmato per inviare la richiesta.", locked: "Documenti (bloccato fino alla conferma)" }
+};
+function Board({ lang }) {
+  const T = FU_T[lang], L = T.l, F = T.files;
   const [files, setFiles] = useState([
-    { id: 1, name: "contract-salon-aurora.pdf", size: 482e3, status: "done" },
-    { id: 2, name: "fotografii-lucrari-octombrie.zip", size: 184e5, status: "uploading", progress: 64 },
-    { id: 3, name: "buletin-scanat.heic", size: 32e5, status: "error", error: "Format neacceptat. Folose\u0219te PDF, JPG sau PNG." }
-  ]);
-  return /* @__PURE__ */ React.createElement("div", { className: "d g2" }, /* @__PURE__ */ React.createElement(V.FormField, { label: "Documente" }, /* @__PURE__ */ React.createElement(V.FileUpload, { accept: ".pdf,.jpg,.png", maxSize: 10485760, hint: "PDF, JPG sau PNG", files, onRemove: (f) => setFiles(files.filter((x) => x.id !== f.id)), onRetry: () => {
-  } })), /* @__PURE__ */ React.createElement("div", { className: "d0" }, /* @__PURE__ */ React.createElement(V.FormField, { label: "Trage aici (stare)" }, /* @__PURE__ */ React.createElement(V.FileUpload, { state: "drag" })), /* @__PURE__ */ React.createElement(V.FormField, { label: "Dezactivat" }, /* @__PURE__ */ React.createElement(V.FileUpload, { disabled: true })), /* @__PURE__ */ React.createElement(DE, null, /* @__PURE__ */ React.createElement(V.FormField, { label: "Vertragsunterlagen" }, /* @__PURE__ */ React.createElement(V.FileUpload, { maxSize: 5242880 })))));
+    { id: 1, name: F[0][0], size: F[0][1], status: "done" },
+    { id: 2, name: F[1][0], size: F[1][1], status: "uploading", progress: 64 },
+    { id: 3, name: F[2][0], size: F[2][1], status: "error", error: T.badFmt }]);
+  return h("div", { className: "pv-cell", style: { gap: "var(--space-5)" } },
+    h(Cell, { label: L[0], style: { maxWidth: 640 } }, h(V.FormField, { label: T.docs }, h(V.FileUpload, { accept: ".pdf,.jpg,.png", maxSize: 10485760, hint: T.hint, files, onSelect: noop, onRemove: (f) => setFiles(files.filter((x) => x.id !== f.id)), onRetry: noop }))),
+    h("div", { className: "pv-grid3" },
+      h(Cell, { label: L[1] }, h(V.FormField, { label: T.docs }, h(V.FileUpload, { maxSize: 10485760, hint: T.hint, onSelect: noop }))),
+      h(Cell, { label: L[2] }, h(V.FormField, { label: T.docs }, h(V.FileUpload, { state: "hover", maxSize: 10485760, hint: T.hint }))),
+      h(Cell, { label: L[4] }, h(V.FormField, { label: T.docs }, h(V.FileUpload, { state: "drag" }))),
+      h(Cell, { label: L[5] }, h(V.FormField, { label: T.contract, required: true, error: T.zoneErr }, h(V.FileUpload, { invalid: true, maxSize: 5242880, accept: ".pdf", multiple: false }))),
+      h(Cell, { label: L[6] }, h(V.FormField, { label: T.locked }, h(V.FileUpload, { disabled: true, maxSize: 5242880 })))));
 }
-mount(/* @__PURE__ */ React.createElement(Demo, null));
+mount(h(Frames, { Board }));
+
 </script>
 </body>
 </html>

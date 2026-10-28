@@ -1,0 +1,50 @@
+{
+ "name": "SlotPicker",
+ "version": "1.0.1",
+ "kind": "component",
+ "group": "Forms",
+ "status": "changed",
+ "description": "Free start times for a service and a person, as a grid of buttons; taken times stay visible, disabled and struck through, so people understand the day.",
+ "exports": [
+  "SlotPicker"
+ ],
+ "props": [
+  {
+   "name": "slots",
+   "type": "{ time: string; available?: boolean; }[]",
+   "required": true,
+   "note": ""
+  },
+  {
+   "name": "value",
+   "type": "string",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "onChange",
+   "type": "(time: string) => void",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "label",
+   "type": "string",
+   "required": false,
+   "note": ""
+  }
+ ],
+ "events": [
+  "onChange"
+ ],
+ "states": [
+  "available",
+  "taken",
+  "selected",
+  "none-selected",
+  "fully-booked"
+ ],
+ "notes": "",
+ "readme": "components/SlotPicker/README.md",
+ "preview": "components/SlotPicker/preview.html"
+}

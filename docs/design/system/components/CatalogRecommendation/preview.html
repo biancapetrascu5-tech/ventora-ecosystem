@@ -1,4 +1,4 @@
-<!-- @dsCard group="Comercial" height=620 width=1200 -->
+<!-- @dsCard group="Comercial" height=3280 width=1200 -->
 <!doctype html>
 <html lang="ro">
 <head><meta charset="utf-8"><title>CatalogRecommendation — Ventora</title>
@@ -250,6 +250,18 @@ html,body{min-height:100%}
 .fxframe .caption{color:var(--ink-muted)}
 @container (max-width:420px){.fxlang{grid-template-columns:32px minmax(0,1fr) auto}.fxlang .v-iconbtn{display:none}}
 
+/* c2: theme + locale frames */
+.pv{display:flex;flex-direction:column;gap:var(--space-4);padding:var(--space-4)}
+.pv-frame{display:flex;flex-direction:column;gap:var(--space-4);padding:var(--space-6);background:var(--canvas);color:var(--ink);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg);min-width:0}
+.pv-frame>.heading{margin:0}
+.pv-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:var(--space-5) var(--space-4);align-items:start}
+.pv-grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--space-5) var(--space-4);align-items:start}
+.pv-grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--space-5) var(--space-4);align-items:start}
+.pv-cell{display:flex;flex-direction:column;gap:var(--space-2);min-width:0}
+.pv-lab{margin:0;color:var(--ink-muted)}
+.pv-box{padding:var(--space-4);background:var(--sheet);border:var(--border-width) solid var(--line);border-radius:var(--radius-md);min-width:0;color:var(--ink)}
+.pv-stage{position:relative;overflow:hidden;border:var(--border-width) solid var(--line-strong);border-radius:var(--radius-lg);background:var(--canvas);color:var(--ink)}
+.pv-note{margin:0;color:var(--ink-muted)}
 </style>
 </head>
 <body>
@@ -262,14 +274,44 @@ const DE = ({ children }) => /* @__PURE__ */ React.createElement(V.LocaleProvide
 const FR = ({ children }) => /* @__PURE__ */ React.createElement(V.LocaleProvider, { locale: "fr" }, children);
 const IT = ({ children }) => /* @__PURE__ */ React.createElement(V.LocaleProvider, { locale: "it" }, children);
 const mount = (el) => ReactDOM.createRoot(document.getElementById("root")).render(/* @__PURE__ */ React.createElement(V.LocaleProvider, { locale: "ro" }, el));
-mount(
-  /* @__PURE__ */ React.createElement("div", { className: "d" }, /* @__PURE__ */ React.createElement("div", { className: "tiles" }, /* @__PURE__ */ React.createElement(V.AppTile, { app: "marketing", access: "notInPlan", recommendation: { reason: "Se potrive\u0219te cu Booking: trimite automat reamintiri \u0219i campanii clien\u021Bilor t\u0103i.", cost: "49 lei pe lun\u0103 \xB7 f\u0103r\u0103 cost de implementare" }, onDetails: () => {
-  } }), /* @__PURE__ */ React.createElement(V.AppTile, { app: "contracts", access: "notInPlan", recommendation: { reason: "Se potrive\u0219te cu CRM: contractele cu firmele din pipeline, cu semn\u0103tur\u0103 \u0219i reamintire \xEEnainte de expirare.", cost: "59 lei pe lun\u0103 \xB7 300 lei implementare" }, onDetails: () => {
-  } }), /* @__PURE__ */ React.createElement(V.AppTile, { app: "events", access: "notInPlan", onWriteUs: () => {
-  } }), /* @__PURE__ */ React.createElement(V.AppTile, { app: "booking", description: "Program\u0103ri, calendar \u0219i reamintiri.", onOpen: () => {
-  }, recommendation: { reason: "Nu apare: o aplica\u021Bie de\u021Binut\u0103 nu e niciodat\u0103 recomandare." } })), /* @__PURE__ */ React.createElement("div", { style: { maxWidth: 420 } }, /* @__PURE__ */ React.createElement(V.AppTile, { layout: "row", app: "marketing", access: "notInPlan", recommendation: { reason: "Se potrive\u0219te cu Booking: trimite automat reamintiri \u0219i campanii clien\u021Bilor t\u0103i.", cost: "49 lei pe lun\u0103" }, onDetails: () => {
-  } })), /* @__PURE__ */ React.createElement("p", { className: "body-small muted" }, "Al patrulea tile (Booking) prime\u0219te acelea\u0219i date de recomandare, dar fiind de\u021Binut le ignor\u0103."))
-);
+/* c2: every README state, Light/Dark frames (data-theme on the frame), DE/IT with translated texts. */
+const h = React.createElement;
+const noop = () => {};
+const Cell = ({ label, children, style }) => h("div", { className: "pv-cell", style }, h("p", { className: "caption pv-lab" }, label), children);
+const FRAMES = [["light", "ro", "Light"], ["dark", "ro", "Dark"], ["light", "de", "Deutsch \u00b7 Light"], ["dark", "it", "Italiano \u00b7 Dark"]];
+const Frames = ({ Board, top }) => h("div", { className: "pv" }, top, FRAMES.map(([th, lang, lab], i) => h("section", { key: lab, className: "pv-frame", "data-theme": th }, h("p", { className: "heading" }, lab), h(V.LocaleProvider, { locale: lang }, h(Board, { lang, theme: th, first: i === 0 })))));
+const CR_T = {
+  ro: { l: ["Recomandare · fără cost de implementare", "Recomandare · cu cost de implementare", "Nu e în abonament, fără recomandare", "Aplicație deținută: recomandarea e ignorată", "Recomandare · rând (launcher, „Alte aplicații Ventora”)", "Recomandare · rând, cu cost de implementare"],
+    r1: "Se potrivește cu EasyBook: trimite automat reamintiri și campanii clienților tăi.", c1: "49 lei pe lună · fără cost de implementare",
+    r2: "Se potrivește cu ClientDesk: contractele cu firmele din pipeline, cu semnătură și reamintire înainte de expirare.", c2: "59 lei pe lună · 300 lei implementare",
+    own: "Programări, calendar și reamintiri.", ignored: "Nu apare: o aplicație deținută nu e niciodată recomandare.", c1s: "49 lei pe lună",
+    note: "Al patrulea tile (EasyBook) primește aceleași date de recomandare, dar fiind deținut le ignoră." },
+  de: { l: ["Empfehlung · keine Einrichtungsgebühr", "Empfehlung · mit Einrichtungsgebühr", "Nicht im Abonnement, ohne Empfehlung", "Eigene App: Empfehlung wird ignoriert", "Empfehlung · Zeile (Launcher, „Weitere Ventora-Apps“)", "Empfehlung · Zeile, mit Einrichtungsgebühr"],
+    r1: "Passt zu EasyBook: sendet Ihren Kunden automatisch Erinnerungen und Kampagnen.", c1: "49 lei pro Monat · keine Einrichtungsgebühr",
+    r2: "Passt zu ClientDesk: Verträge mit den Firmen aus Ihrer Pipeline, mit Unterschrift und Erinnerung vor Ablauf.", c2: "59 lei pro Monat · 300 lei Einrichtungsgebühr",
+    own: "Termine, Kalender und Erinnerungen.", ignored: "Erscheint nicht: Eine eigene App ist nie eine Empfehlung.", c1s: "49 lei pro Monat",
+    note: "Die vierte Kachel (EasyBook) erhält dieselben Empfehlungsdaten, ignoriert sie aber, weil die App bereits genutzt wird." },
+  it: { l: ["Raccomandazione · nessun costo di attivazione", "Raccomandazione · con costo di attivazione", "Non incluso nell’abbonamento, senza raccomandazione", "App già attiva: la raccomandazione viene ignorata", "Raccomandazione · riga (launcher, „Altre app Ventora”)", "Raccomandazione · riga, con costo di attivazione"],
+    r1: "Si adatta a EasyBook: invia automaticamente promemoria e campagne ai Suoi clienti.", c1: "49 lei al mese · nessun costo di attivazione",
+    r2: "Si adatta a ClientDesk: i contratti con le aziende della Sua pipeline, con firma e promemoria prima della scadenza.", c2: "59 lei al mese · 300 lei di costo di attivazione",
+    own: "Appuntamenti, calendario e promemoria.", ignored: "Non appare: un’app già attiva non è mai una raccomandazione.", c1s: "49 lei al mese",
+    note: "Il quarto riquadro (EasyBook) riceve gli stessi dati di raccomandazione, ma li ignora perché l’app è già attiva." }
+};
+function Board({ lang }) {
+  const T = CR_T[lang], L = T.l;
+  return h("div", { className: "pv-cell", style: { gap: "var(--space-5)" } },
+    h("div", { className: "tiles" },
+      h(Cell, { label: L[0] }, h(V.AppTile, { app: "marketing", access: "notInPlan", recommendation: { reason: T.r1, cost: T.c1 }, onDetails: noop })),
+      h(Cell, { label: L[1] }, h(V.AppTile, { app: "contracts", access: "notInPlan", recommendation: { reason: T.r2, cost: T.c2 }, onDetails: noop })),
+      h(Cell, { label: L[2] }, h(V.AppTile, { app: "events", access: "notInPlan", onWriteUs: noop })),
+      h(Cell, { label: L[3] }, h(V.AppTile, { app: "booking", description: T.own, onOpen: noop, recommendation: { reason: T.ignored } }))),
+    h("div", { className: "pv-grid2" },
+      h(Cell, { label: L[4], style: { maxWidth: 420 } }, h(V.AppTile, { layout: "row", app: "marketing", access: "notInPlan", recommendation: { reason: T.r1, cost: T.c1s }, onDetails: noop, onDismiss: noop, onRemindLater: noop })),
+      h(Cell, { label: L[5], style: { maxWidth: 420 } }, h(V.AppTile, { layout: "row", app: "contracts", access: "notInPlan", recommendation: { reason: T.r2, cost: T.c2 }, onDetails: noop }))),
+    h("p", { className: "body-small pv-note" }, T.note));
+}
+mount(h(Frames, { Board }));
+
 </script>
 </body>
 </html>

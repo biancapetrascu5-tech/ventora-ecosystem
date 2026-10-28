@@ -1,4 +1,4 @@
-<!-- @dsCard group="Hub" height=500 width=1200 -->
+<!-- @dsCard group="Hub" height=2164 width=1200 -->
 <!doctype html>
 <html lang="ro">
 <head><meta charset="utf-8"><title>BrandZone — Ventora</title>
@@ -14,6 +14,9 @@ html,body{margin:0}
 .dot{width:var(--dot-size);height:var(--dot-size);border-radius:var(--radius-full);background:var(--attention)}
 .field{display:inline-flex;align-items:center;gap:var(--space-2);height:var(--control-md);padding:0 var(--space-3);min-width:220px;border:var(--border-width) solid var(--control-border);border-radius:var(--radius-sm);color:var(--ink-muted)}
 .lab{margin:0;color:var(--ink-muted)}
+.thgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(520px,100%),1fr));gap:var(--space-4);align-items:start}
+.thf{display:flex;flex-direction:column;gap:var(--space-4);padding:var(--space-5);background:var(--canvas);color:var(--ink);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg);min-width:0;box-sizing:border-box}
+.thf .thl{margin:0;color:var(--ink-muted);font-weight:600}
 </style>
 </head>
 <body>
@@ -21,17 +24,29 @@ html,body{margin:0}
 <script>
 const V = window.Ventora;
 const h = React.createElement;
-function Theme({ th }) {
-  return h("div", { "data-theme": th, className: "d" },
-    h("p", { className: "caption lab" }, th === "light" ? "Light: navy #000C3F" : "Dark: negru rece #1B1D23 (navy nu e suprafață în dark)"),
-    h(V.BrandZone, { className: "zone" },
-      h("div", { className: "row", style: { justifyContent: "space-between" } }, h(V.Logo, { size: 32 }), h("span", { className: "field" }, h(V.Icon, { name: "search", size: 16 }), "Caută…")),
-      h("p", { className: "eyebrow eb" }, "Duminică, 25 octombrie · Salon Aurora"),
-      h("p", { className: "display-hub" }, "Bună dimineața, Bianca"),
-      h("p", { className: "lead sec" }, "Text secundar pe zona de brand: on-brand-muted."),
-      h("div", { className: "row" }, h("span", { className: "chip" }, h(V.AppIcon, { app: "finance", size: 20 }), "2 facturi scadente", h("span", { className: "dot", "aria-hidden": true })), h(V.Button, { size: "sm", variant: "quiet", icon: "grip-vertical" }, "Reordonează"))));
+const BZ = {
+  ro: { search: "Caută…", eb: "Duminică, 25 octombrie · Salon Aurora", hi: "Bună dimineața, Bianca", sec: "Text secundar pe zona de brand: on-brand-muted.", chip: "2 facturi scadente", btn: "Reordonează" },
+  de: { search: "Suchen…", eb: "Sonntag, 25. Oktober · Zahnarztpraxis Dr. Müller", hi: "Guten Morgen, Jürgen", sec: "Drei Dinge warten heute auf Sie: zwei fällige Rechnungen und ein Urlaubsantrag.", chip: "2 fällige Rechnungen", btn: "Neu anordnen" },
+  it: { search: "Cerca…", eb: "Domenica 25 ottobre · Studio dentistico Bianchi", hi: "Buongiorno, Niccolò", sec: "Oggi La aspettano tre cose: due fatture in scadenza e una richiesta di ferie.", chip: "2 fatture in scadenza", btn: "Riordina" }
+};
+function Zone({ L }) {
+  return h(V.BrandZone, { className: "zone" },
+    h("div", { className: "row", style: { justifyContent: "space-between" } }, h(V.Logo, { size: 32 }), h("span", { className: "field" }, h(V.Icon, { name: "search", size: 16 }), L.search)),
+    h("p", { className: "eyebrow eb" }, L.eb),
+    h("p", { className: "display-hub" }, L.hi),
+    h("p", { className: "lead sec" }, L.sec),
+    h("div", { className: "row" }, h("span", { className: "chip" }, h(V.AppIcon, { app: "finance", size: 20 }), L.chip, h("span", { className: "dot", "aria-hidden": true })), h(V.Button, { size: "sm", variant: "quiet", icon: "grip-vertical" }, L.btn)));
 }
-mount(h("div", null, h(Theme, { th: "light" }), h(Theme, { th: "dark" })));
+function Theme({ th, loc }) {
+  const L = BZ[loc || "ro"];
+  const label = (th === "light" ? "Light" : "Dark") + (loc === "de" ? " · Deutsch" : loc === "it" ? " · Italiano" : "");
+  const z = h(Zone, { L });
+  return h("div", { "data-theme": th, className: "d" },
+    h("p", { className: "heading" }, label),
+    !loc && h("p", { className: "caption lab" }, th === "light" ? "Navy #000C3F" : "Negru rece #1B1D23 (navy nu e suprafață în dark)"),
+    loc ? h(V.LocaleProvider, { locale: loc }, z) : z);
+}
+mount(h("div", null, h(Theme, { th: "light" }), h(Theme, { th: "dark" }), h(Theme, { th: "light", loc: "de" }), h(Theme, { th: "dark", loc: "de" }), h(Theme, { th: "light", loc: "it" }), h(Theme, { th: "dark", loc: "it" })));
 </script>
 </body>
 </html>

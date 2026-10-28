@@ -1,0 +1,1022 @@
+<!-- @dsCard group="Ecrane Booking" height=24240 width=2620 page -->
+<!doctype html>
+<html lang="ro">
+<head><meta charset="utf-8"><title>BookingSmsConnect — Ventora</title>
+<style>
+html,body{min-height:100%}
+.d{display:flex;flex-direction:column;gap:var(--space-4);padding:var(--space-4);box-sizing:border-box}
+.d0{display:flex;flex-direction:column;gap:var(--space-4);min-width:0}
+.r{display:flex;flex-wrap:wrap;gap:var(--space-3);align-items:center}
+.l{color:var(--ink-muted);width:calc(var(--space-16) + var(--space-6));flex:none}
+.g2{display:grid;grid-template-columns:repeat(auto-fit,minmax(var(--search-width),1fr));gap:var(--space-4) var(--space-6);align-items:start}
+.frame{border:var(--border-width) solid var(--line);border-radius:var(--radius-md);background:var(--sheet);box-sizing:border-box}
+.phone{width:390px;height:600px;flex:none;border:var(--border-width) solid var(--line-strong);border-radius:var(--radius-xl);overflow:hidden;box-sizing:border-box}
+.tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(var(--app-tile-width),1fr));gap:var(--space-4)}
+.icons{display:grid;grid-template-columns:repeat(auto-fill,minmax(calc(var(--app-tile-width) - var(--space-12)),1fr));gap:var(--space-2)}
+.ic{display:flex;align-items:center;gap:var(--space-2);color:var(--ink);padding:var(--space-1);min-width:0}
+.ic .caption{color:var(--ink-muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:0}
+.panel{display:flex;flex-direction:column;gap:var(--space-3);padding:var(--space-6);background:var(--sheet);color:var(--ink)}
+.lab{color:var(--ink-muted);margin-top:var(--space-2)}
+.fam{display:grid;grid-template-columns:repeat(5,1fr);gap:var(--space-4) var(--space-2)}
+.famcell,.sz,.papp{display:flex;flex-direction:column;align-items:center;gap:var(--space-1);color:var(--ink-secondary)}
+.gcell{display:flex;flex-direction:column;align-items:center;gap:var(--space-2);color:var(--ink-secondary)}
+.gwrap{position:relative;width:240px;height:240px}
+.gover{position:absolute;inset:0}
+.gwrap--sm{width:64px;height:64px;display:inline-block}
+.gwrap--sm .key{stroke-width:.5}
+.gl{stroke:var(--attention);stroke-width:.06;opacity:.55}
+.gl--major{stroke-width:.12;opacity:.9}
+.key{fill:none;stroke:var(--done);stroke-width:.18}
+.key--plate{stroke:var(--attention);stroke-dasharray:.6 .4}
+.key--diag{stroke-dasharray:.5 .5}
+.rules{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--space-6);color:var(--ink)}
+.rules .body-small{color:var(--ink-muted);margin-top:var(--space-1)}
+.ctx{display:flex;flex-direction:column;background:var(--canvas);color:var(--ink);padding:var(--space-4);gap:var(--space-4)}
+.ctxrow{display:flex;gap:var(--space-4);align-items:flex-start}
+.launch{flex:1;min-width:0;background:var(--canvas);padding:var(--space-4) var(--space-6);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg)}
+.tiles3{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--space-3)}
+.spinebox{height:250px;display:flex;border:var(--border-width) solid var(--line);border-radius:var(--radius-lg);overflow:hidden;background:var(--canvas)}
+.phone2{width:300px;border:var(--border-width) solid var(--line-strong);border-radius:var(--radius-xl);background:var(--canvas);padding-bottom:var(--space-4)}
+.pgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--space-4) var(--space-1);padding:0 var(--space-3)}
+.browser{display:flex;gap:var(--space-1);background:var(--sunken);padding:var(--space-2) var(--space-2) 0;border-radius:var(--radius-md) var(--radius-md) 0 0;border:var(--border-width) solid var(--line)}
+.btab{display:inline-flex;align-items:center;gap:var(--space-2);padding:var(--space-2) var(--space-3);border-radius:var(--radius-sm) var(--radius-sm) 0 0;color:var(--ink-secondary);min-width:160px}
+.btab.on{background:var(--sheet);color:var(--ink)}
+.muted{color:var(--ink-muted)}.center{text-align:center}
+.scr{display:flex;flex-direction:column;gap:var(--space-3);padding:var(--space-6);background:var(--sheet);color:var(--ink)}
+.scr-row{display:flex;gap:var(--space-6);align-items:flex-start;margin-top:var(--space-3)}
+.scr-lab{color:var(--ink-muted);margin-bottom:var(--space-2)}
+.scr-d,.scr-t,.scr-m{position:relative;overflow:hidden;border:var(--border-width) solid var(--line-strong);background:var(--canvas);color:var(--ink);box-sizing:border-box}
+.scr-d{width:1280px;border-radius:var(--radius-lg)}
+.scr-m{width:390px;border-radius:var(--radius-xl)}
+.scr-t{width:820px;border-radius:var(--radius-xl)}
+.wrap.tablet .tiles4{grid-template-columns:repeat(3,1fr)}
+.wrap.tablet{padding:var(--space-6) var(--space-5)}
+.sup.tablet{grid-template-columns:1fr}
+.paymethod{display:flex;flex-direction:column;gap:var(--space-2);margin-top:var(--space-4);padding-top:var(--space-4);border-top:var(--border-width) solid var(--line);max-width:480px}
+.modal-demo{position:absolute;inset:0;background:var(--scrim);display:flex;align-items:center;justify-content:center;padding:var(--space-6);z-index:var(--z-overlay)}
+.modal-demo.mobile{align-items:flex-end;padding:0}
+.modal-demo .v-dialog{max-height:none}
+.dlggrid{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--space-6);align-items:start}
+.dlggrid .v-dialog{width:auto}
+.today{display:flex;flex-direction:column;gap:var(--space-6)}
+.today.mobile{gap:var(--space-4)}.today.mobile .greet{padding:0 var(--space-4)}
+.today-grid{display:grid;grid-template-columns:minmax(0,2fr) minmax(320px,1fr);gap:var(--space-6);align-items:start}
+.today.tablet .today-grid,.today.mobile .today-grid{grid-template-columns:1fr}
+.today.tablet .today-side,.today.mobile .today-side{order:-1}
+.today-main{display:flex;flex-direction:column;gap:var(--space-6);min-width:0}
+.today.mobile .sec,.today.mobile .sechead{padding:0 var(--space-4)}
+.today.mobile .sheetlike,.today.mobile .nowcard{border-radius:0;border-left:0;border-right:0}
+.nowcards{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:var(--space-3)}
+.nowcard{display:flex;flex-direction:column;gap:var(--space-3);padding:var(--space-4);background:var(--sheet);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg)}
+.sechead{display:flex;justify-content:space-between;align-items:center;gap:var(--space-3);margin-bottom:var(--space-3);flex-wrap:wrap}
+.sec .v-badge{vertical-align:middle;margin-left:var(--space-1)}
+.reslist{list-style:none;margin:0 0 var(--space-3);padding:0;display:flex;flex-direction:column}
+.reslist li{display:flex;flex-direction:column;gap:2px;padding:var(--space-3) 0;border-bottom:var(--border-width) solid var(--line)}
+.reslist li:last-child{border-bottom:0}
+.stth{background:var(--canvas);color:var(--ink);padding:var(--space-6);border-radius:var(--radius-lg)}
+.stgrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--space-5) var(--space-4);align-items:start}
+@media (max-width:1100px){.stgrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:640px){.stgrid{grid-template-columns:minmax(0,1fr)}.stgrid>.stc{grid-column:auto!important}}
+.stc{display:flex;flex-direction:column;gap:var(--space-2);min-width:0}
+.stc-box{background:var(--sheet);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg);padding:var(--space-4);min-width:0}
+.stc-box .v-dialog{width:100%;box-shadow:none}
+.stc-box .v-toast{width:100%;box-sizing:border-box}
+.slotcol{display:flex;flex-direction:column;gap:var(--space-3);padding:var(--space-4);background:var(--canvas);border-radius:var(--radius-lg);color:var(--ink)}
+.recogrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--space-5);align-items:start}
+.toastdemo{position:fixed;right:var(--space-6);bottom:var(--space-6);width:var(--panel-width);z-index:var(--z-toast)}
+.appdet{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:var(--space-6);align-items:start}
+.wrap.tablet .appdet,.wrap.mobile .appdet{grid-template-columns:1fr}
+.appdet-main,.appdet-side{display:flex;flex-direction:column;gap:var(--space-5);padding:var(--space-6)}
+.wrap.mobile .appdet-main,.wrap.mobile .appdet-side{padding:var(--space-4)}
+.appdet-side{gap:var(--space-3)}
+.appdet-why{padding:var(--space-4);background:var(--sunken);border-radius:var(--radius-md)}
+.appdet-why .body{margin-top:var(--space-1)}
+.appdet-list{list-style:none;margin:var(--space-2) 0 0;padding:0;display:flex;flex-direction:column;gap:var(--space-2)}
+.appdet-list li{display:flex;gap:var(--space-2);align-items:flex-start}
+.appdet-list svg{flex:none;margin-top:2px;color:var(--ink-muted)}
+.seclist{display:flex;flex-direction:column;background:var(--sheet);border-top:var(--border-width) solid var(--line);border-bottom:var(--border-width) solid var(--line)}
+.secitem{display:flex;align-items:center;gap:var(--space-3);min-height:var(--touch-target);padding:var(--space-3) var(--space-4);background:none;border:0;border-top:var(--border-width) solid var(--line);color:var(--ink);text-align:left;font:inherit;cursor:pointer}
+.secitem .biz-text{flex:1}
+.inv-email{display:flex;flex-direction:column;gap:2px}
+.daylinks .v-link{font-weight:500}
+.rows2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--space-2)}
+.wrap.tablet .rows2{grid-template-columns:1fr}
+.unsaved{position:absolute;left:0;right:0;bottom:0;display:flex;align-items:center;justify-content:space-between;gap:var(--space-3);padding:var(--space-3) var(--space-6);background:var(--raised);border-top:var(--border-width) solid var(--line-strong);box-shadow:var(--shadow-2);z-index:var(--z-sticky);flex-wrap:wrap}
+.scr-d .unsaved{left:var(--spine-width)}
+.scr-t .unsaved{left:var(--spine-width-collapsed)}
+.scr-m .unsaved{bottom:var(--bottomnav-height);padding:var(--space-3) var(--space-4)}
+.axb{display:flex;flex-direction:column;gap:var(--space-6);min-width:0}
+.axb.mobile{gap:var(--space-4)}
+.axsplit{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:var(--space-6);align-items:start}
+.axb.tablet .axsplit,.axb.mobile .axsplit{grid-template-columns:1fr}
+.axb.tablet .axside,.axb.mobile .axside{order:-1}
+.axstack{display:flex;flex-direction:column;gap:var(--space-6);min-width:0}
+.axstack .axside{order:-1}
+.axb .axside.axafter{order:0}
+.logosets{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(420px,100%),1fr));gap:var(--space-4)}
+.logoset{display:flex;flex-direction:column;gap:var(--space-4);padding:var(--space-6);min-width:0;background:var(--sheet);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg);color:var(--ink)}
+.favtab{display:inline-flex;align-items:center;gap:var(--space-2);padding:var(--space-2) var(--space-3);border-radius:var(--radius-sm) var(--radius-sm) 0 0;background:var(--canvas);color:var(--ink-secondary);border:var(--border-width) solid var(--line);border-bottom:0}
+.axb.mobile .axside.axafter{padding:0 var(--space-4)}
+.axb.mobile .sechead,.axb.mobile>div>h2.heading{padding:0 var(--space-4)}
+.axb.mobile .fxplans{padding:0 var(--space-4)}
+.axb.mobile>.v-notice{margin:0 var(--space-4)}
+.axside{display:flex;flex-direction:column;gap:var(--space-3);min-width:0}
+.axside .v-badge{vertical-align:middle;margin-left:var(--space-1)}
+.axb.mobile .axside .heading{padding:0}
+.axcharts{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:var(--space-4)}
+.axb.mobile .axcharts{grid-template-columns:1fr}
+.axb.mobile .v-stats{grid-template-columns:1fr 1fr}
+.stockcell{display:grid;grid-template-columns:auto;gap:2px;min-width:120px}
+.stockbar{position:relative;display:block;height:4px;border-radius:var(--radius-full);background:var(--selected);max-width:140px}
+.stockbar>span{position:absolute;left:0;top:0;bottom:0;border-radius:inherit;background:var(--ink-secondary)}
+.stockbar.is-attention>span{background:var(--attention-mark)}
+.stockbar.is-danger>span{background:var(--danger)}
+.stockbar>i{position:absolute;top:-3px;bottom:-3px;width:2px;margin-left:-1px;background:var(--ink-muted);border-radius:1px}
+.glo{background:var(--sheet);color:var(--ink);gap:var(--space-6);padding:var(--space-6)}
+.glo-lead{max-width:760px;margin-top:var(--space-2)}
+.glo-rules{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:var(--space-4) var(--space-6)}
+.glo-rules .body-small{margin-top:var(--space-1)}
+.glo-sec{display:flex;flex-direction:column;gap:var(--space-2)}
+.glo-t{width:100%;border-collapse:collapse;table-layout:fixed}
+.glo-t th{text-align:left;color:var(--ink-muted);padding:var(--space-2) var(--space-3);border-bottom:var(--border-width) solid var(--line-strong)}
+.glo-t th:last-child{width:30%}
+.glo-t td{padding:var(--space-2) var(--space-3);border-bottom:var(--border-width) solid var(--line);vertical-align:top;overflow-wrap:anywhere}
+.glo-dec{display:inline-flex;align-items:center;gap:var(--space-1);margin-left:var(--space-2);padding:0 var(--space-2);border-radius:var(--radius-full);background:var(--attention-soft);color:var(--attention-ink);white-space:nowrap}
+.calbar{display:flex;justify-content:space-between;align-items:center;gap:var(--space-3);flex-wrap:wrap;margin-bottom:var(--space-3)}
+.calbar-date{margin-left:var(--space-2);white-space:nowrap}
+.calwrap.mobile{padding:0 var(--space-4)}
+.staffpick{margin-bottom:var(--space-3);max-width:var(--search-width)}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:var(--space-2) var(--space-4);margin:0}
+.kv dt{color:var(--ink-muted);padding-top:var(--space-0-5)}.kv dd{margin:0;color:var(--ink)}
+.hist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:var(--space-2);color:var(--ink-secondary)}
+.hist .muted{margin-right:var(--space-2)}
+.newgrid{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:var(--space-6);align-items:start}
+.newgrid.tablet,.newgrid.mobile{grid-template-columns:1fr}
+.newgrid.mobile{padding-bottom:var(--space-16)}
+.sumcard{position:sticky;top:0;display:flex;flex-direction:column;gap:var(--space-3);padding:var(--space-5);background:var(--sheet);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg)}
+.newgrid.mobile .sumcard{border-radius:0;border-left:0;border-right:0}
+.sumtotal{display:flex;justify-content:space-between;align-items:baseline;padding-top:var(--space-3);border-top:var(--border-width) solid var(--line)}
+.stickybar{position:absolute;left:0;right:0;bottom:var(--bottomnav-height);display:flex;gap:var(--space-2);justify-content:flex-end;padding:var(--space-3) var(--space-4);background:var(--sheet);border-top:var(--border-width) solid var(--line);z-index:var(--z-sticky)}
+.stickybar .v-btn--primary{flex:1}
+.hours{display:flex;flex-direction:column}
+.hrow{display:flex;align-items:center;justify-content:space-between;gap:var(--space-4);padding:var(--space-2) 0;border-bottom:var(--border-width) solid var(--line);min-height:var(--touch-target);flex-wrap:wrap}
+.hrow .v-toggle{min-width:160px}
+.hrange{display:inline-flex;align-items:center;gap:var(--space-2)}
+.hrange .v-datepicker{width:120px}
+.auth{min-height:100%;display:flex;flex-direction:column;background:var(--canvas);color:var(--ink)}
+.auth-top{display:flex;justify-content:space-between;align-items:center;padding:var(--space-4) var(--space-6)}
+.auth.mobile .auth-top{padding:var(--space-3) var(--space-4)}
+.auth-main{flex:1;display:flex;align-items:flex-start;justify-content:center;padding:var(--space-12) var(--space-4)}
+.auth.mobile .auth-main{padding:var(--space-2) 0 0;align-items:stretch}
+.auth-card{width:400px;background:var(--sheet);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg);padding:var(--space-10);display:flex;flex-direction:column;gap:var(--space-4);box-sizing:border-box}
+.auth-card.wide{width:480px}
+.auth.mobile .auth-card{width:100%;border-radius:0;border-left:0;border-right:0;border-bottom:0;padding:var(--space-6) var(--space-4)}
+.auth-head{display:flex;flex-direction:column;gap:var(--space-1);margin-bottom:var(--space-2)}
+.auth-note{display:flex;gap:var(--space-2);padding-top:var(--space-4);border-top:var(--border-width) solid var(--line);color:var(--ink-muted)}
+.auth-note .v-icon{margin-top:var(--space-0-5)}
+.auth-foot{padding:var(--space-4) var(--space-6);color:var(--ink-muted);text-align:center}
+.auth.mobile .auth-foot{display:none}
+.inv-head{display:flex;gap:var(--space-3);align-items:center}
+.inv-mark{width:var(--space-12);height:var(--space-12);border-radius:var(--radius-md);background:var(--neutral-soft);display:inline-flex;align-items:center;justify-content:center;font-weight:700;color:var(--ink);flex:none;box-shadow:inset 0 0 0 var(--border-width) var(--line-strong)}
+.inv-mark.sm{width:var(--space-10);height:var(--space-10)}
+.inv-role{display:flex;flex-direction:column;gap:var(--space-2);padding:var(--space-3) var(--space-4);background:var(--sunken);border-radius:var(--radius-sm)}
+.inv-app{display:inline-flex;gap:var(--space-1);align-items:center;color:var(--ink-secondary);margin-right:var(--space-2)}
+.reqs{list-style:none;margin:calc(var(--space-2) * -1) 0 0;padding:0;display:flex;flex-direction:column;gap:var(--space-1)}
+.req{display:flex;gap:var(--space-2);align-items:center;color:var(--ink-muted)}.req.ok{color:var(--done-ink)}
+.choose{width:560px;display:flex;flex-direction:column;gap:var(--space-4)}
+.auth.mobile .choose{width:auto;padding:var(--space-4)}
+.biz-list{display:flex;flex-direction:column;background:var(--sheet);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg);overflow:hidden}
+.biz{appearance:none;display:flex;align-items:center;gap:var(--space-3);padding:var(--space-4);border:0;border-bottom:var(--border-width) solid var(--line);background:transparent;color:var(--ink);text-align:start;font-family:inherit;cursor:pointer;min-height:var(--touch-target)}
+.biz:last-child{border-bottom:0}.biz:hover{background:var(--state-hover)}
+.biz-text{flex:1;min-width:0;display:flex;flex-direction:column;gap:var(--space-0-5);align-items:flex-start}
+.frame-rel{position:relative;height:100%}
+.wrap{max-width:1120px;width:100%;margin:0 auto;padding:var(--space-6) var(--space-6) var(--space-10);display:flex;flex-direction:column;gap:var(--space-8);box-sizing:border-box}
+.wrap.mobile{padding:var(--space-4);gap:var(--space-6)}
+.greet{display:flex;flex-direction:column;gap:var(--space-2)}
+.sec{margin-bottom:var(--space-3)}
+.tiles4{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--space-4)}
+.mgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--space-3) var(--space-1)}
+.rows{display:flex;flex-direction:column;background:var(--sheet);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg);overflow:hidden}
+.sheetlike{background:var(--sheet);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg)}
+.g2f{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(260px,100%),1fr));gap:var(--space-4) var(--space-6)}
+.nrow{display:grid;grid-template-columns:1fr repeat(3,var(--control-lg));align-items:center;padding:var(--space-2) 0;border-bottom:var(--border-width) solid var(--line);gap:var(--space-4)}
+.nrow>span:not(:first-child){display:flex;justify-content:center;text-align:center}
+.nhead{color:var(--ink-muted)}
+.secrow{display:flex;align-items:center;justify-content:space-between;gap:var(--space-4);padding:var(--space-3) 0;border-bottom:var(--border-width) solid var(--line);flex-wrap:wrap}
+.appsrow{display:inline-flex;gap:var(--space-1);align-items:center;flex-wrap:wrap}
+.mx-row{display:grid;grid-template-columns:minmax(320px,1.8fr) repeat(4,1fr);align-items:center;padding:var(--space-3) var(--space-6);border-bottom:var(--border-width) solid var(--line);gap:var(--space-2)}
+.mx-head{background:var(--sunken);color:var(--ink-secondary);border-radius:var(--radius-lg) var(--radius-lg) 0 0}
+.mx-c{display:flex;flex-direction:column;align-items:center;text-align:center}
+.mx-app{display:flex;align-items:center;gap:var(--space-3);flex-wrap:wrap}
+.mx-foot{padding:var(--space-4) var(--space-6)}
+.mrow{display:flex;align-items:center;gap:var(--space-3);padding:var(--space-3) var(--space-4);border-bottom:var(--border-width) solid var(--line);color:var(--ink-secondary)}.mrow:last-child{border-bottom:0}
+.plan{display:flex;justify-content:space-between;align-items:center;gap:var(--space-4);flex-wrap:wrap}
+.numeric-inline{font-weight:600;color:var(--ink)}
+.usage-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:var(--space-6)}
+.sup{display:grid;grid-template-columns:1.5fr 1fr;gap:var(--space-6);align-items:start}
+.lframes{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--space-4)}
+.lframe{position:relative;height:220px;border:var(--border-width) solid var(--line-strong);border-radius:var(--radius-lg);overflow:hidden;background:var(--canvas)}
+.lframe-tiles{display:flex;gap:var(--space-3);padding:var(--space-4)}
+.lstage{position:relative;height:240px;border:var(--border-width) solid var(--line-strong);border-radius:var(--radius-lg);overflow:hidden;background:var(--canvas);padding:var(--space-4)}
+.lstage-grid{display:grid;grid-template-columns:repeat(6,96px);gap:var(--space-2)}
+.fxcard{display:flex;flex-direction:column;gap:var(--space-2);padding:var(--space-5)}
+.fxapps{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:var(--space-3) var(--space-4)}
+.fxmail{display:flex;flex-direction:column;gap:var(--space-3);padding:var(--space-5);border:var(--border-width) solid var(--line);border-radius:var(--radius-md);background:var(--canvas);color:var(--ink)}
+.fxmail-btn{align-self:flex-start;padding:var(--space-2) var(--space-4);border-radius:var(--radius-md);background:var(--primary);color:var(--on-primary);font-weight:600}
+.fxplans{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:var(--space-4)}
+.fxplan{display:flex;flex-direction:column;gap:var(--space-3);padding:var(--space-5)}
+.fxlim{margin:0;padding-left:var(--space-5);color:var(--ink-secondary);display:flex;flex-direction:column;gap:var(--space-1)}
+.fxver{width:100%;border-collapse:collapse}
+.fxver th{text-align:left;color:var(--ink-muted);font-weight:500;padding:var(--space-1) 0;border-bottom:var(--border-width) solid var(--line)}
+.fxver td{padding:var(--space-2) 0;border-bottom:var(--border-width) solid var(--line);color:var(--ink)}
+.fxver td .v-pill{margin-left:var(--space-2);vertical-align:middle}
+.fxlimits{display:flex;flex-direction:column}
+.fxlimits-row{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(60px,.6fr) minmax(120px,1fr);gap:var(--space-3);align-items:center;padding:var(--space-2) 0;border-bottom:var(--border-width) solid var(--line);color:var(--ink)}
+.fxlimits-row .v-icon{color:var(--done-ink,var(--ink-secondary));flex:none}
+.fxlimits-head{padding-top:0}
+.fxlink{color:var(--ink);text-decoration:underline;text-underline-offset:2px;font-weight:600;display:inline-flex;align-items:center;min-height:24px;min-width:24px}
+@media (pointer:coarse),(max-width:767px){.fxlink{min-height:44px;min-width:44px}}
+.fxlim-new{display:flex;align-items:center;gap:var(--space-2);min-width:0}
+.fxlim-new .v-control{flex:1 1 80px;min-width:0}
+.fxdelta{display:inline-flex;align-items:center;gap:var(--space-1);color:var(--done-ink);flex:none}
+.fxdelta--down{color:var(--attention-ink)}
+.fxplan .v-btn{align-self:flex-start}
+.fxcost{margin-top:var(--space-4);display:flex;flex-direction:column;gap:var(--space-1);padding:var(--space-4);border-radius:var(--radius-md);background:var(--sunken);color:var(--ink)}
+.fxlangs{display:flex;flex-direction:column}
+.fxlang{display:grid;grid-template-columns:32px minmax(0,1fr) auto auto;gap:var(--space-3);align-items:center;padding:var(--space-2) 0;border-bottom:var(--border-width) solid var(--line);color:var(--ink)}
+.fxlang-text{color:var(--ink-secondary);overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.fxframe{display:flex;flex-direction:column;gap:var(--space-2);padding:var(--space-3);border:var(--border-width) solid var(--line);border-radius:var(--radius-md);background:var(--canvas);color:var(--ink)}
+.fxframe .caption{color:var(--ink-muted)}
+@container (max-width:420px){.fxlang{grid-template-columns:32px minmax(0,1fr) auto}.fxlang .v-iconbtn{display:none}}
+
+/* SMS · Setări */
+.sms-sec{color:var(--ink-secondary);margin:0}
+.sms-np{display:flex;flex-wrap:wrap;align-items:center;gap:var(--space-2) var(--space-3);margin-top:var(--space-3)}
+.sms-np .body-small{flex:1 1 280px}
+.sms-phone{display:flex;gap:var(--space-3);align-items:flex-start;padding-bottom:var(--space-4);border-bottom:var(--border-width) solid var(--line);margin-bottom:var(--space-4)}
+.sms-phone__ic{display:inline-flex;align-items:center;justify-content:center;flex:none;width:var(--control-lg);height:var(--control-lg);border-radius:var(--radius-md);background:var(--neutral-soft);color:var(--ink-secondary)}
+.sms-phone__text{display:flex;flex-direction:column;gap:var(--space-1);min-width:0;flex:1}
+.sms-phone__text p{margin:0}
+.sms-phone__name{display:flex;align-items:center;gap:var(--space-1)}
+.sms-meta{display:flex;flex-wrap:wrap;gap:var(--space-1) var(--space-4);color:var(--ink-secondary)}
+.sms-meta>span{display:inline-flex;align-items:center;gap:var(--space-1)}
+.sms-stats{margin:var(--space-4) 0;grid-template-columns:repeat(4,minmax(0,1fr))}
+.sms-cap p{margin:0}
+.sms-cap{display:flex;flex-direction:column;gap:var(--space-1)}
+.sms-actions{display:flex;flex-wrap:wrap;gap:var(--space-2);margin-top:var(--space-4)}
+.sms-actions.is-col{flex-direction:column}
+.sms-pad{padding:0 var(--space-6) var(--space-6)}
+.v-sheet-section + .sms-pad,.sms-pad{margin-top:var(--space-2)}
+.v-notice{margin-bottom:var(--space-2)}
+.sms-states{display:flex;flex-direction:column;gap:var(--space-4);padding:var(--space-6);background:var(--canvas);color:var(--ink)}
+.sms-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--space-6);align-items:start}
+.sms-grid.mobile{grid-template-columns:repeat(4,390px)}
+.sms-box{display:flex;flex-direction:column;gap:var(--space-2);min-width:0}
+.sms-boxlab{margin:0;color:var(--ink-muted)}
+.sms-boxbody{border:var(--border-width) solid var(--line-strong);border-radius:var(--radius-lg);overflow:hidden;background:var(--canvas)}
+.sms-boxbody > .v-dialog{margin:var(--space-6) auto}
+.sms-langs{display:flex;flex-direction:column;gap:var(--space-4);padding:var(--space-6);background:var(--canvas);color:var(--ink)}
+.sms-langrow{display:flex;gap:var(--space-6);align-items:flex-start}
+.sms-lang{display:flex;flex-direction:column;gap:var(--space-2)}
+.sms-langframe{border:var(--border-width) solid var(--line-strong);border-radius:var(--radius-lg);overflow:hidden;background:var(--canvas)}
+.sms-langframe.t{width:820px}.sms-langframe.m{width:390px}
+.sms-stats.is-mob{grid-template-columns:1fr 1fr}
+.sms-grid.mobile{grid-template-columns:repeat(4,390px)}
+.sms-reco{display:flex;flex-wrap:wrap;align-items:center;gap:var(--space-2) var(--space-3);margin-top:var(--space-3)}
+.sms-check{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:var(--space-3)}
+.sms-check li{display:flex;gap:var(--space-3);align-items:flex-start;color:var(--ink-secondary)}
+.sms-check li>svg,.sms-check li>.v-icon{flex:none;color:var(--ink);margin-top:2px}
+.sms-check .body-strong{color:var(--ink)}
+/* SMS · Conectarea telefonului */
+.sms-check.is-num li{color:var(--ink)}
+.sms-num{display:inline-flex;align-items:center;justify-content:center;flex:none;width:var(--space-6);height:var(--space-6);border-radius:var(--radius-full);background:var(--neutral-soft);color:var(--ink)}
+.sms-note{display:flex;gap:var(--space-2);align-items:flex-start;color:var(--ink-secondary)}
+.sms-note p{margin:0}.sms-note>svg{flex:none;margin-top:2px}
+.sms-ext{display:inline-flex;align-items:center;gap:var(--space-1);align-self:flex-start}
+.sms-split{display:flex;gap:var(--space-6);align-items:flex-start}
+.sms-split.is-col{flex-direction:column;align-items:stretch;gap:var(--space-4)}
+.sms-split.is-col .sms-qrcol{align-self:center}
+.sms-split__main{display:flex;flex-direction:column;gap:var(--space-3);min-width:0;flex:1}
+.sms-split__main p{margin:0}
+.sms-qrcol{display:flex;flex-direction:column;align-items:center;gap:var(--space-2);flex:none}
+.sms-qrcol p{margin:0}
+.sms-qr{padding:var(--space-3);background:var(--raised);border-radius:var(--radius-md);border:var(--border-width) solid var(--line);line-height:0;position:relative}
+.sms-qr.is-expired svg{opacity:.12}
+.sms-timer,.sms-wait{display:inline-flex;align-items:center;gap:var(--space-1)}
+.sms-code{display:inline-flex;align-items:center;gap:var(--space-2);align-self:flex-start;padding:var(--space-2) var(--space-2) var(--space-2) var(--space-4);border-radius:var(--radius-md);background:var(--neutral-soft)}
+.sms-code__v{font-size:var(--text-display-m-size,24px);line-height:1.2;font-weight:600;letter-spacing:.08em;color:var(--ink)}
+.sms-guide{display:flex;gap:var(--space-3);align-items:flex-start;padding:var(--space-3) 0;border-top:var(--border-width) solid var(--line)}
+.sms-guide>svg{flex:none;margin-top:2px;color:var(--ink)}
+.sms-guide__text{flex:1;min-width:0}.sms-guide__text p{margin:0}
+.sms-guide .v-check,.sms-guide label{flex:none}
+.sms-decl{padding:var(--space-4);border-radius:var(--radius-md);border:var(--border-width) solid var(--line-strong)}
+.sms-inline{display:flex;gap:var(--space-2);align-items:flex-start}
+.sms-inline>:first-child{flex:1;min-width:0}
+.sms-inline.is-col{flex-direction:column;align-items:stretch}
+.sms-stages{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:var(--space-2)}
+.sms-stages li{display:flex;align-items:center;justify-content:space-between;gap:var(--space-3);padding-bottom:var(--space-2);border-bottom:var(--border-width) solid var(--line)}
+.sms-stages li:last-child{border-bottom:0}
+.sms-stages__next{display:inline-flex;align-items:center;gap:var(--space-2)}
+.sms-scrim{position:absolute;inset:0;background:var(--scrim);display:flex;align-items:center;justify-content:center;padding:var(--space-4);z-index:var(--z-overlay)}
+.sms-scrim.mobile{align-items:flex-end;padding:0}
+.sms-scrim .v-dialog{max-height:calc(100% - var(--space-8))}
+.sms-scrim.mobile .v-dialog{max-height:92%}
+.sms-cgrid .sms-boxbody{display:flex;justify-content:center;align-items:flex-start;padding:var(--space-6) var(--space-4)}
+.sms-cgrid .sms-boxbody > .v-dialog{margin:0}
+.sms-grid.mobile.sms-cgrid .sms-boxbody{padding:var(--space-10) 0 0;align-items:flex-end;min-height:100%}
+.sms-langframe.dlg{width:820px;display:flex;justify-content:center;padding:var(--space-6) 0;margin-bottom:var(--space-4)}
+.sms-langframe.m{margin-bottom:var(--space-4);padding-top:var(--space-10)}
+.center{text-align:center}
+.sms-inline.is-col>:first-child{flex:none}
+.sms-guide.is-mob{flex-wrap:wrap}
+.sms-guide.is-mob .sms-guide__text{flex:1 1 calc(100% - var(--space-8))}
+.sms-guide.is-mob>:last-child{margin-left:calc(20px + var(--space-3))}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script>
+const V = window.Ventora;
+const { useState } = React;
+const Row = ({ label, children }) => /* @__PURE__ */ React.createElement("div", { className: "r" }, /* @__PURE__ */ React.createElement("span", { className: "l caption" }, label), children);
+const DE = ({ children }) => /* @__PURE__ */ React.createElement(V.LocaleProvider, { locale: "de" }, children);
+const FR = ({ children }) => /* @__PURE__ */ React.createElement(V.LocaleProvider, { locale: "fr" }, children);
+const IT = ({ children }) => /* @__PURE__ */ React.createElement(V.LocaleProvider, { locale: "it" }, children);
+const mount = (el) => ReactDOM.createRoot(document.getElementById("root")).render(/* @__PURE__ */ React.createElement(V.LocaleProvider, { locale: "ro" }, el));
+const SECTIONS = [
+  { items: [{ id: "azi", label: "Azi", icon: "house" }, { id: "calendar", label: "Calendar", icon: "calendar" }, { id: "programari", label: "Program\u0103ri", icon: "list", badge: 3 }] },
+  { label: "Gestionare", items: [{ id: "clienti", label: "Clien\u021Bi", icon: "users" }, { id: "servicii", label: "Servicii", icon: "boxes" }, { id: "angajati", label: "Angaja\u021Bi", icon: "contact" }] },
+  { label: "Afacere", items: [{ id: "rapoarte", label: "Rapoarte", icon: "chart-column" }, { id: "setari", label: "Set\u0103ri", icon: "settings" }] }
+];
+const SECTIONS_DE = [
+  { items: [{ id: "heute", label: "Heute", icon: "house" }, { id: "kalender", label: "Kalender", icon: "calendar" }, { id: "termine", label: "Termin\xFCbersicht", icon: "list", badge: 3 }] },
+  { label: "Verwaltung", items: [{ id: "kunden", label: "Kundenverwaltung", icon: "users" }, { id: "leistungen", label: "Dienstleistungen", icon: "boxes" }, { id: "mitarbeiter", label: "Mitarbeiterinnen", icon: "contact" }] },
+  { label: "Unternehmen", items: [{ id: "berichte", label: "Auswertungen", icon: "chart-column" }, { id: "einst", label: "Einstellungen", icon: "settings" }] }
+];
+const ORGS = [
+  { id: "aurora", name: "Salon Aurora", role: "Proprietar" },
+  { id: "dentis", name: "Clinica Dentis Sibiu", role: "Recep\u021Bie" },
+  { id: "nord", name: "Agen\u021Bia Nord Studio", role: "Manager de proiect" }
+];
+const NOTIFS = [
+  { id: 1, title: "Programare nou\u0103 de la Ana Popescu", body: "Joi, 29 oct., 14:30 \xB7 Tuns", app: "EasyBook", time: "acum 5 min", person: "Ana Popescu" },
+  { id: 2, title: "Factura #2026-114 e restant\u0103 de 3 zile", body: "Clinica Dentis \xB7 1.250 lei", app: "MoneyDesk", time: "acum 2 ore", icon: "receipt" },
+  { id: 3, title: "Ioana a cerut concediu pe 2\u20136 noiembrie", app: "TeamSpace", time: "ieri", person: "Ioana Pavel", read: true },
+  { id: 4, title: "Exportul clien\u021Bilor e gata", app: "ClientDesk", time: "ieri", icon: "download", read: true }
+];
+const USER = { name: "Bianca Petra\u0219cu", email: "bianca@ventora-hub.com" };
+function Bar({ title, de }) {
+  return /* @__PURE__ */ React.createElement(
+    V.ContextBar,
+    {
+      title,
+      org: /* @__PURE__ */ React.createElement(V.OrgSwitcher, { orgs: de ? [{ id: 1, name: "Zahnarztpraxis Dr. M\xFCller", role: "Empfang" }, { id: 2, name: "Salon Aurora", role: "Inhaberin" }] : ORGS, currentId: de ? 1 : "aurora" }),
+      onSearch: () => {
+      },
+      createItems: [{ label: de ? "Termin" : "Programare", icon: "calendar-check", shortcut: ["N"] }, { label: de ? "Kunde" : "Client", icon: "user-plus" }],
+      notifications: /* @__PURE__ */ React.createElement(V.NotificationsPanel, { items: NOTIFS }),
+      account: /* @__PURE__ */ React.createElement(V.AccountMenu, { user: USER, orgs: ORGS, currentOrgId: "aurora", onCatalog: () => {
+      } })
+    }
+  );
+}
+const SHELL_ROWS = [
+  { id: 1, client: "Ana Popescu", service: "Tuns", when: "09:30", status: ["done", "Confirmat\u0103"] },
+  { id: 2, client: "Andrei Ionescu", service: "Vopsit", when: "11:00", status: ["attention", "\xCEn desf\u0103\u0219urare"] },
+  { id: 3, client: "Cristina Dobre", service: "Tratament facial", when: "13:15", status: ["neutral", "Neconfirmat\u0103"] },
+  { id: 4, client: "Dan Stoica", service: "Tuns", when: "15:00", status: ["done", "Confirmat\u0103"] }
+];
+function BookingShell({ height, active, mobile }) {
+  return /* @__PURE__ */ React.createElement(
+    V.AppShell,
+    {
+      height,
+      spine: /* @__PURE__ */ React.createElement(V.Spine, { app: "booking", sections: SECTIONS, activeId: active, onBackToHub: () => {
+      }, footer: /* @__PURE__ */ React.createElement(V.UsageMeter, { compact: true, label: "Program\u0103ri", used: 312, limit: 1e3 }) }),
+      contextBar: /* @__PURE__ */ React.createElement(Bar, { title: "EasyBook" })
+    },
+    /* @__PURE__ */ React.createElement(V.PageHeader, { title: "Program\u0103ri", description: mobile ? void 0 : "Toate program\u0103rile afacerii, de azi \xEEnainte.", actions: mobile ? void 0 : /* @__PURE__ */ React.createElement(V.SegmentedControl, { label: "Vizualizare", size: "md", defaultValue: "list", options: [{ value: "list", label: "List\u0103", icon: "list" }, { value: "cal", label: "Calendar", icon: "calendar" }] }) }),
+    /* @__PURE__ */ React.createElement(V.DataTable, { columns: [
+      { key: "client", header: "Client", primary: true, sortable: true },
+      { key: "service", header: "Serviciu", secondary: true },
+      { key: "when", header: "Ora", secondary: true },
+      { key: "status", header: "Stare", trailing: true, render: (r) => /* @__PURE__ */ React.createElement(V.StatusPill, { tone: r.status[0] }, r.status[1]) }
+    ], rows: SHELL_ROWS, rowActions: () => [{ label: "Deschide", icon: "external-link" }], pagination: { page: 1, pageSize: 20, total: 4, onPageChange: () => {
+    } } })
+  );
+}
+const HUB_SECTIONS = [
+  { label: "Contul t\u0103u", items: [{ id: "profil", label: "Profil \u0219i preferin\u021Be", short: "Profil", icon: "circle-user" }, { id: "securitate", label: "Securitate", icon: "shield" }] },
+  { label: "Afacerea", items: [{ id: "echipa", label: "Echip\u0103 \u0219i invita\u021Bii", short: "Echip\u0103", icon: "users" }, { id: "roluri", label: "Roluri \u0219i acces", icon: "key-round" }, { id: "abonament", label: "Abonament \u0219i consum", short: "Abonament", icon: "credit-card" }] },
+  { label: "Ajutor", items: [{ id: "suport", label: "Suport", icon: "life-buoy", badge: 1 }] }
+];
+function HubBar({ title, inApp }) {
+  return /* @__PURE__ */ React.createElement(
+    V.ContextBar,
+    {
+      leading: inApp ? null : /* @__PURE__ */ React.createElement("span", { style: { padding: "0 var(--space-2)", display: "inline-flex" } }, /* @__PURE__ */ React.createElement(V.Logo, { size: 32, className: "v-cb-logo--full" }), /* @__PURE__ */ React.createElement(V.Logo, { variant: "mark", size: 32, className: "v-cb-logo--mark" })),
+      title,
+      org: /* @__PURE__ */ React.createElement(V.OrgSwitcher, { orgs: ORGS, currentId: "aurora" }),
+      onSearch: () => {
+      },
+      notifications: /* @__PURE__ */ React.createElement(V.NotificationsPanel, { items: NOTIFS }),
+      account: /* @__PURE__ */ React.createElement(V.AccountMenu, { user: USER, orgs: ORGS, currentOrgId: "aurora", onCatalog: () => {
+      } })
+    }
+  );
+}
+function HubSettings({ active, title, children }) {
+  return /* @__PURE__ */ React.createElement(
+    V.AppShell,
+    {
+      height: "100%",
+      spine: /* @__PURE__ */ React.createElement(V.Spine, { hub: true, sections: HUB_SECTIONS, activeId: active, onBackToHub: () => {
+      }, bottomItems: ["profil", "echipa", "abonament", "suport"] }),
+      contextBar: /* @__PURE__ */ React.createElement(HubBar, { title, inApp: true })
+    },
+    children
+  );
+}
+function Screens({ title, notes, render, desktopH = 860, tabletH = 1100, mobileH = 844 }) {
+  if (window.__SOLO) {
+    const w = window.innerWidth;
+    const m = w < 768 ? "mobile" : w < 1024 ? "tablet" : "desktop";
+    return /* @__PURE__ */ React.createElement("div", { style: { height: "100vh", position: "relative", background: "var(--canvas)" } }, render(m, "light"));
+  }
+  const sizes = [["desktop", "Desktop \xB7 1280", "scr-d", desktopH], ["tablet", "Tablet\u0103 portret \xB7 820", "scr-t", tabletH], ["mobile", "Telefon \xB7 390", "scr-m", mobileH]];
+  return /* @__PURE__ */ React.createElement("div", { className: "scr" }, /* @__PURE__ */ React.createElement("p", { className: "heading" }, title), notes && /* @__PURE__ */ React.createElement("p", { className: "caption muted" }, notes.join(" \xB7 ")), ["light", "dark"].map((th) => /* @__PURE__ */ React.createElement("div", { className: "scr-row", key: th }, sizes.map(([m, lab, cls, h]) => /* @__PURE__ */ React.createElement("div", { key: m }, /* @__PURE__ */ React.createElement("p", { className: "caption scr-lab" }, lab, " \xB7 ", th === "light" ? "Light" : "Dark"), /* @__PURE__ */ React.createElement("div", { className: cls, "data-theme": th, style: { height: h } }, render(m, th)))))));
+}
+const MINE = [["booking", "Program\u0103ri, calendar \u0219i reamintiri", 3], ["crm", "Clien\u021Bi, istoric \u0219i oportunit\u0103\u021Bi"], ["hr", "Echip\u0103, prezen\u021B\u0103 \u0219i concedii", 1], ["finance", "Facturi, scaden\u021Be \u0219i restan\u021Be", 2], ["projects", "Proiecte, sarcini \u0219i termene"], ["shifts", "Ture \u0219i \xEEnlocuiri"], ["documents", "Documente \u0219i \u0219abloane"], ["portal", "Pagina afacerii pentru clien\u021Bi"]];
+const RECO = { marketing: { reason: "Se potrive\u0219te cu EasyBook: trimite automat reamintiri \u0219i campanii clien\u021Bilor t\u0103i.", cost: "49 lei pe lun\u0103 \xB7 f\u0103r\u0103 cost de implementare" } };
+const VIEWER_ROLE = "owner";
+const RECO_FOR = (a) => (VIEWER_ROLE === "owner" || VIEWER_ROLE === "admin") && a === "marketing" ? RECO[a] : null;
+const OTHER = [["inventory", "unavailable"], ["analytics", "notInRole"], ["marketing", "notInPlan"], ["network", "notInPlan"]];
+function Launcher({ mode, empty }) {
+  const [run, setRun] = useState(null);
+  const mob = mode === "mobile";
+  const open = (a) => (e) => setRun({ app: a, from: e.currentTarget.querySelector(".v-appicon").getBoundingClientRect() });
+  return /* @__PURE__ */ React.createElement("div", { className: "frame-rel" }, /* @__PURE__ */ React.createElement(V.AppShell, { height: "100%", contextBar: /* @__PURE__ */ React.createElement(HubBar, null) }, /* @__PURE__ */ React.createElement("div", { className: "wrap " + mode }, /* @__PURE__ */ React.createElement("div", { className: "greet" }, /* @__PURE__ */ React.createElement("h1", { className: "display-l" }, "Bun\u0103 diminea\u021Ba, Bianca"), empty ? /* @__PURE__ */ React.createElement("p", { className: "body muted" }, "Bine ai venit \xEEn Salon Aurora. Aplica\u021Biile apar aici imediat ce prime\u0219ti acces.") : /* @__PURE__ */ React.createElement("p", { className: "body muted daylinks" }, "Azi ai ", /* @__PURE__ */ React.createElement("a", { className: "v-link", href: "#" }, "8 program\u0103ri"), ", ", /* @__PURE__ */ React.createElement("a", { className: "v-link", href: "#" }, "2 facturi scadente"), " \u0219i ", /* @__PURE__ */ React.createElement("a", { className: "v-link", href: "#" }, "o cerere de concediu"), " de aprobat.")), empty ? /* @__PURE__ */ React.createElement("div", { className: "sheetlike" }, /* @__PURE__ */ React.createElement(V.EmptyState, { icon: "layout-grid", title: "Nu ai \xEEnc\u0103 acces la nicio aplica\u021Bie", description: "Bianca Petra\u0219cu (proprietar) alege ce aplica\u021Bii folose\u0219te fiecare rol. Putem trimite noi cererea ta.", actions: /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(V.Button, { variant: "primary", icon: "send" }, "Cere acces"), /* @__PURE__ */ React.createElement(V.Button, { variant: "quiet" }, "Scrie-ne")) }), /* @__PURE__ */ React.createElement("p", { className: "body-small muted center", style: { paddingBottom: "var(--space-6)" } }, "\xCEntre timp, alege-\u021Bi fotografia \u0219i limba din ", /* @__PURE__ */ React.createElement("a", { className: "v-link", href: "#" }, "Contul t\u0103u"), ".")) : /* @__PURE__ */ React.createElement("section", null, /* @__PURE__ */ React.createElement("div", { className: "sechead" }, /* @__PURE__ */ React.createElement("h2", { className: "display-m" }, "Aplica\u021Biile tale"), /* @__PURE__ */ React.createElement(V.Button, { size: "sm", variant: "quiet", icon: "grip-vertical" }, "Reordoneaz\u0103")), mob ? /* @__PURE__ */ React.createElement("div", { className: "mgrid" }, MINE.map(([a, d, b]) => /* @__PURE__ */ React.createElement(V.AppTile, { key: a, app: a, layout: "icon", badge: b, onOpen: open(a) }))) : /* @__PURE__ */ React.createElement("div", { className: "tiles4" }, MINE.map(([a, d, b]) => /* @__PURE__ */ React.createElement(V.AppTile, { key: a, app: a, description: d, badge: b, onOpen: open(a) })))), /* @__PURE__ */ React.createElement("section", null, /* @__PURE__ */ React.createElement("h2", { className: "display-m sec" }, "Alte aplica\u021Bii Ventora"), /* @__PURE__ */ React.createElement("p", { className: "body-small muted", style: { marginBottom: "var(--space-3)" } }, "Nu le po\u021Bi deschide acum. La fiecare scrie de ce \u0219i ce po\u021Bi face."), true ? /* @__PURE__ */ React.createElement("div", { className: mob ? "rows" : "rows rows2" }, OTHER.map(([a, s]) => RECO_FOR(a) ? /* @__PURE__ */ React.createElement(V.GrowthSlot, { key: a, label: "Recomandare" }, /* @__PURE__ */ React.createElement(V.AppTile, { app: a, access: s, layout: "row", recommendation: RECO_FOR(a), onDetails: () => {
+  }, onDismiss: () => {
+  }, onRemindLater: () => {
+  } })) : /* @__PURE__ */ React.createElement(V.AppTile, { key: a, app: a, access: s, layout: "row", grantedBy: "Bianca Petra\u0219cu", onRequestAccess: () => {
+  }, onWriteUs: () => {
+  }, onSeeStatus: () => {
+  } }))) : /* @__PURE__ */ React.createElement("div", { className: "tiles4" }, OTHER.map(([a, s]) => RECO_FOR(a) ? /* @__PURE__ */ React.createElement(V.GrowthSlot, { key: a, label: "Recomandare" }, /* @__PURE__ */ React.createElement(V.AppTile, { app: a, access: s, recommendation: RECO_FOR(a), onDetails: () => {
+  }, onDismiss: () => {
+  }, onRemindLater: () => {
+  } })) : /* @__PURE__ */ React.createElement(V.AppTile, { key: a, app: a, access: s, grantedBy: "Bianca Petra\u0219cu", onRequestAccess: () => {
+  }, onWriteUs: () => {
+  }, onSeeStatus: () => {
+  } }))), /* @__PURE__ */ React.createElement("div", { style: { marginTop: "var(--space-4)" } }, /* @__PURE__ */ React.createElement(V.Button, { variant: "quiet", icon: "layout-grid", iconEnd: "arrow-right" }, "Vezi toate aplica\u021Biile Ventora"))))), run && /* @__PURE__ */ React.createElement(V.AppLaunch, { contained: true, app: run.app, from: run.from, onDone: () => setTimeout(() => setRun(null), 500) }));
+}
+function CommercialPrefs({ mode }) {
+  return /* @__PURE__ */ React.createElement(V.SheetSection, { title: "Recomand\u0103ri Ventora", description: "Sugestii despre aplica\u021Bii \u0219i pachete \xEEn plus care se potrivesc cu ce faci deja." }, /* @__PURE__ */ React.createElement("div", { className: "d0", style: { gap: "var(--space-3)" } }, /* @__PURE__ */ React.createElement(V.Toggle, { label: "\xCEn aplica\u021Bie", description: "Le vezi \xEEn pagini \u0219i \xEEn notific\u0103ri, la sec\u021Biunea Recomand\u0103ri.", defaultChecked: true, labelPosition: mode === "mobile" ? "start" : "end" }), /* @__PURE__ */ React.createElement(V.Toggle, { label: "Pe e-mail", description: "Disponibil \xEEn cur\xE2nd", disabled: true, labelPosition: mode === "mobile" ? "start" : "end" }), /* @__PURE__ */ React.createElement(V.Notice, { tone: "neutral", icon: "info" }, "Mesajele despre limitele contului t\u0103u r\u0103m\xE2n active, pentru c\u0103 sunt informa\u021Bii despre cont, nu recomand\u0103ri.")));
+}
+const BK_NOW = "11:20";
+const BK_STAFF = [{ id: "ioana", label: "Ioana Pavel", sub: "Coafor", person: "Ioana Pavel" }, { id: "mara", label: "Mara Enache", sub: "Manichiur\u0103", person: "Mara Enache" }, { id: "radu", label: "Radu Matei", sub: "Frizerie", person: "Radu Matei" }];
+const BK_EVENTS = [
+  { id: "e1", col: "ioana", start: "09:00", end: "09:45", title: "Ana Popescu", subtitle: "Tuns", status: "done" },
+  { id: "e2", col: "ioana", start: "10:00", end: "11:00", title: "Elena Georgescu", subtitle: "Vopsit r\u0103d\u0103cini", status: "done" },
+  { id: "e3", col: "ioana", start: "11:00", end: "12:00", title: "Andrei Ionescu", subtitle: "Vopsit", status: "now" },
+  { id: "e4", col: "ioana", start: "12:30", end: "13:15", title: "Cristina Dobre", subtitle: "Tratament facial", status: "unconfirmed" },
+  { id: "e5", col: "ioana", start: "14:30", end: "15:15", title: "Dan Stoica", subtitle: "Tuns", status: "confirmed" },
+  { id: "e6", col: "ioana", start: "16:00", end: "17:00", title: "Bianca Marin", subtitle: "Coafat eveniment", status: "confirmed" },
+  { id: "m1", col: "mara", start: "09:30", end: "10:20", title: "Ioana Radu", subtitle: "Manichiur\u0103", status: "done" },
+  { id: "m2", col: "mara", start: "10:45", end: "11:45", title: "Sorina Vlad", subtitle: "Pedichiur\u0103", status: "now" },
+  { id: "m3", col: "mara", start: "13:00", end: "14:00", title: "Pauz\u0103 de pr\xE2nz", status: "blocked" },
+  { id: "m4", col: "mara", start: "14:00", end: "14:50", title: "Alina Murariu", subtitle: "Manichiur\u0103 semipermanent\u0103", status: "confirmed" },
+  { id: "m5", col: "mara", start: "15:00", end: "15:50", title: "Oana Dinu", subtitle: "Manichiur\u0103", status: "unconfirmed" },
+  { id: "r1", col: "radu", start: "09:00", end: "09:30", title: "Mihai Tudose", subtitle: "Tuns b\u0103rba\u021Bi", status: "done" },
+  { id: "r2", col: "radu", start: "10:00", end: "10:30", title: "Vlad Cristea", subtitle: "Tuns b\u0103rba\u021Bi", status: "cancelled" },
+  { id: "r3", col: "radu", start: "11:30", end: "12:00", title: "Sergiu Pop", subtitle: "Tuns + barb\u0103", status: "confirmed" },
+  { id: "r4", col: "radu", start: "17:00", end: "17:30", title: "Paul Stan", subtitle: "Tuns b\u0103rba\u021Bi", status: "confirmed" }
+];
+const BK_STAFFNAME = { ioana: "Ioana", mara: "Mara", radu: "Radu" };
+const BK_AGENDA = BK_EVENTS.filter((e) => e.status !== "blocked").map((e) => ({ ...e, staff: BK_STAFFNAME[e.col], status: e.status === "now" ? "confirmed" : e.status }));
+const BK_DAYS = [["mon", "Lun 19"], ["tue", "Mar 20"], ["wed", "Mie 21"], ["thu", "Joi 22"], ["fri", "Vin 23"], ["sat", "S\xE2m 24"], ["sun", "Dum 25"]].map(([id, l]) => ({ id, label: l, today: id === "fri", closed: id === "sun" ? "\xCEnchis" : void 0 }));
+const BK_WEEK = (() => {
+  const base = [["09:00", "09:45", "done"], ["10:00", "11:00", "done"], ["11:30", "12:15", "confirmed"], ["13:00", "14:00", "confirmed"], ["14:30", "15:15", "confirmed"], ["16:00", "17:00", "unconfirmed"]];
+  const names = ["Ana P.", "Elena G.", "Andrei I.", "Cristina D.", "Dan S.", "Bianca M.", "Sorina V.", "Oana D.", "Paul S.", "Mihai T."];
+  const out = [];
+  let k = 0;
+  ["mon", "tue", "wed", "thu", "fri", "sat"].forEach((d, di) => base.forEach(([s, e, st], i) => {
+    if ((i + di) % 3 === 2 && d !== "fri") return;
+    out.push({ id: d + i, col: d, start: s, end: e, title: names[k++ % names.length], subtitle: ["Tuns", "Vopsit", "Manichiur\u0103", "Tratament facial"][(i + di) % 4], status: d === "fri" ? i < 2 ? "done" : i === 2 ? "now" : st : di < 4 ? "done" : st });
+  }));
+  return out;
+})();
+const BK_ROWS = [
+  { id: 1, client: "Andrei Ionescu", phone: "0741 123 451", service: "Vopsit", staff: "Ioana", when: "Azi, 11:00", dur: "60 min", price: 350, status: "now" },
+  { id: 2, client: "Cristina Dobre", phone: "0742 220 118", service: "Tratament facial", staff: "Ioana", when: "Azi, 12:30", dur: "45 min", price: 220, status: "unconfirmed" },
+  { id: 3, client: "Dan Stoica", phone: "0744 551 900", service: "Tuns", staff: "Ioana", when: "Azi, 14:30", dur: "45 min", price: 120, status: "confirmed" },
+  { id: 4, client: "Alina Murariu", phone: "0723 004 512", service: "Manichiur\u0103 semipermanent\u0103", staff: "Mara", when: "Azi, 14:00", dur: "50 min", price: 140, status: "confirmed" },
+  { id: 5, client: "Oana Dinu", phone: "0755 300 721", service: "Manichiur\u0103", staff: "Mara", when: "Azi, 15:00", dur: "50 min", price: 110, status: "unconfirmed" },
+  { id: 6, client: "Bianca Marin", phone: "0740 777 213", service: "Coafat eveniment", staff: "Ioana", when: "Azi, 16:00", dur: "60 min", price: 260, status: "confirmed" },
+  { id: 7, client: "Vlad Cristea", phone: "0733 120 004", service: "Tuns b\u0103rba\u021Bi", staff: "Radu", when: "Azi, 10:00", dur: "30 min", price: 70, status: "cancelled" },
+  { id: 8, client: "Elena Georgescu", phone: "0746 412 980", service: "Vopsit r\u0103d\u0103cini", staff: "Ioana", when: "Azi, 10:00", dur: "60 min", price: 280, status: "done" }
+];
+const BK_STATUS = { now: ["attention", "\xCEn desf\u0103\u0219urare"], unconfirmed: ["neutral", "Neconfirmat\u0103"], confirmed: ["neutral", "Confirmat\u0103"], done: ["done", "\xCEncheiat\u0103"], cancelled: ["neutral", "Anulat\u0103"] };
+function BookingApp({ active, title, children, footer }) {
+  return /* @__PURE__ */ React.createElement(
+    V.AppShell,
+    {
+      height: "100%",
+      spine: /* @__PURE__ */ React.createElement(V.Spine, { app: "booking", sections: SECTIONS, activeId: active, onBackToHub: () => {
+      }, bottomItems: ["azi", "calendar", "programari", "clienti"], footer: footer === false ? null : /* @__PURE__ */ React.createElement(V.UsageMeter, { compact: true, label: "Program\u0103ri \xEEn octombrie", used: 862, limit: 1e3 }) }),
+      contextBar: /* @__PURE__ */ React.createElement(Bar, { title: title || "EasyBook" })
+    },
+    children
+  );
+}
+const BK_COLS = (mode) => [
+  { key: "client", header: "Client", sortable: true, primary: true, render: (r) => /* @__PURE__ */ React.createElement("span", { style: { display: "flex", flexDirection: "column" } }, /* @__PURE__ */ React.createElement("span", null, r.client), mode !== "mobile" && /* @__PURE__ */ React.createElement("span", { className: "body-small muted" }, r.phone)) },
+  { key: "service", header: "Serviciu", secondary: true },
+  { key: "staff", header: "Angajat", sortable: true, optional: true },
+  { key: "when", header: "C\xE2nd", sortable: true, secondary: true, render: (r) => /* @__PURE__ */ React.createElement("span", null, r.when, /* @__PURE__ */ React.createElement("span", { className: "muted" }, " \xB7 ", r.dur)) },
+  { key: "price", header: "Pre\u021B", align: "end", sortable: true, optional: true, render: (r) => r.price + " lei" },
+  { key: "status", header: "Stare", trailing: true, render: (r) => /* @__PURE__ */ React.createElement(V.StatusPill, { tone: BK_STATUS[r.status][0], icon: r.status === "unconfirmed" ? "clock" : void 0 }, BK_STATUS[r.status][1]) }
+];
+const BK_ACTIONS = (r) => [
+  { label: "Deschide", icon: "external-link" },
+  r.status === "unconfirmed" ? { label: "Confirm\u0103", icon: "check" } : { label: "Trimite reamintire", icon: "send" },
+  { label: "Mut\u0103 programarea", icon: "calendar" },
+  { label: "Marcheaz\u0103: nu a venit", icon: "circle-x" },
+  { separator: true },
+  { label: "Anuleaz\u0103 programarea", icon: "trash-2", destructive: true }
+];
+function BookingFilters({ mode }) {
+  return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", { style: { flex: "1 1 220px", minWidth: 0, maxWidth: mode === "mobile" ? "none" : "var(--search-width)" } }, /* @__PURE__ */ React.createElement(V.Input, { icon: "search", placeholder: "Caut\u0103 client, telefon sau serviciu", size: "sm", "aria-label": "Caut\u0103" })), mode === "mobile" ? /* @__PURE__ */ React.createElement(V.Button, { size: "sm", icon: "list-filter" }, "Filtre \xB7 2") : /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(V.SegmentedControl, { size: "sm", label: "Perioad\u0103", defaultValue: "azi", options: [{ value: "azi", label: "Azi" }, { value: "sapt", label: "S\u0103pt\u0103m\xE2na" }, { value: "luna", label: "Luna" }] }), /* @__PURE__ */ React.createElement("div", { style: { width: 160 } }, /* @__PURE__ */ React.createElement(V.Select, { size: "sm", defaultValue: "all", options: [{ value: "all", label: "Toat\u0103 echipa" }, { value: "ioana", label: "Ioana Pavel" }, { value: "mara", label: "Mara Enache" }, { value: "radu", label: "Radu Matei" }] })), /* @__PURE__ */ React.createElement("div", { style: { width: 160 } }, /* @__PURE__ */ React.createElement(V.Select, { size: "sm", defaultValue: "active", options: [{ value: "active", label: "Active" }, { value: "unconfirmed", label: "Neconfirmate" }, { value: "cancelled", label: "Anulate" }] }))));
+}
+function BookingDetailBody() {
+  return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", { className: "r", style: { gap: "var(--space-2)" } }, /* @__PURE__ */ React.createElement(V.StatusPill, { tone: "neutral", icon: "clock" }, "Neconfirmat\u0103"), /* @__PURE__ */ React.createElement(V.Badge, null, "Rezervat\u0103 online")), /* @__PURE__ */ React.createElement("dl", { className: "kv" }, /* @__PURE__ */ React.createElement("dt", { className: "caption" }, "C\xE2nd"), /* @__PURE__ */ React.createElement("dd", { className: "body" }, "Vineri, 23 octombrie \xB7 12:30\u201313:15"), /* @__PURE__ */ React.createElement("dt", { className: "caption" }, "Serviciu"), /* @__PURE__ */ React.createElement("dd", { className: "body" }, "Tratament facial \xB7 45 min \xB7 220 lei"), /* @__PURE__ */ React.createElement("dt", { className: "caption" }, "Angajat"), /* @__PURE__ */ React.createElement("dd", { className: "body" }, "Ioana Pavel"), /* @__PURE__ */ React.createElement("dt", { className: "caption" }, "Client"), /* @__PURE__ */ React.createElement("dd", { className: "body" }, "Cristina Dobre \xB7 0742 220 118 \xB7 a 6-a vizit\u0103")), /* @__PURE__ */ React.createElement(V.Notice, { tone: "attention", title: "Nu a confirmat \xEEnc\u0103" }, "I-am trimis reamintirea ieri la 12:30. Po\u021Bi suna sau retrimite."), /* @__PURE__ */ React.createElement("div", { className: "r", style: { gap: "var(--space-2)" } }, /* @__PURE__ */ React.createElement(V.Button, { size: "sm", icon: "send" }, "Retrimite reamintirea"), /* @__PURE__ */ React.createElement(V.Button, { size: "sm", variant: "quiet", icon: "phone" }, "Sun\u0103")), /* @__PURE__ */ React.createElement(V.FormField, { label: "Note pentru echip\u0103" }, /* @__PURE__ */ React.createElement(V.Textarea, { rows: 3, defaultValue: "Ten sensibil \u2014 f\u0103r\u0103 produse cu parfum." })), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("p", { className: "subheading", style: { marginBottom: "var(--space-2)" } }, "Istoric"), /* @__PURE__ */ React.createElement("ul", { className: "hist body-small" }, /* @__PURE__ */ React.createElement("li", null, /* @__PURE__ */ React.createElement("span", { className: "muted" }, "22 oct., 12:30"), " Reamintire trimis\u0103 prin SMS"), /* @__PURE__ */ React.createElement("li", null, /* @__PURE__ */ React.createElement("span", { className: "muted" }, "16 oct., 09:12"), " Ioana Pavel a mutat-o de la 11:00 la 12:30"), /* @__PURE__ */ React.createElement("li", null, /* @__PURE__ */ React.createElement("span", { className: "muted" }, "15 oct., 18:04"), " Rezervat\u0103 din pagina de rezerv\u0103ri")), /* @__PURE__ */ React.createElement("button", { type: "button", className: "v-link body-small", style: { marginTop: "var(--space-2)" } }, "Vezi tot istoricul")));
+}
+const BK_ATTN = [
+  { id: 1, icon: "clock", title: "Cristina Dobre nu a confirmat", meta: "Azi la 12:30 \xB7 Tratament facial \xB7 Ioana", time: "peste 1 h", actions: [{ label: "Confirm\u0103", primary: true }, { label: "Retrimite reamintirea" }] },
+  { id: 2, icon: "clock", title: "Oana Dinu nu a confirmat", meta: "Azi la 15:00 \xB7 Manichiur\u0103 \xB7 Mara", time: "peste 4 h", actions: [{ label: "Confirm\u0103", primary: true }, { label: "Sun\u0103" }] },
+  { id: 3, icon: "wallet", tone: "danger", title: "Dan Stoica mai are de pl\u0103tit 120 lei", meta: "De la vizita din 16 octombrie", actions: [{ label: "\xCEncaseaz\u0103" }, { label: "Trimite link de plat\u0103", quiet: true }] },
+  { id: 4, icon: "calendar", title: "Elena Georgescu vrea s\u0103 mute programarea", meta: "De m\xE2ine, 10:00, pe s\xE2mb\u0103t\u0103, 11:00 \xB7 cerere online", actions: [{ label: "Accept\u0103", primary: true }, { label: "Propune alt\u0103 or\u0103" }] }
+];
+const DAYS = [["Luni", "09:00", "19:00", true], ["Mar\u021Bi", "09:00", "19:00", true], ["Miercuri", "09:00", "19:00", true], ["Joi", "09:00", "20:00", true], ["Vineri", "09:00", "20:00", true], ["S\xE2mb\u0103t\u0103", "10:00", "16:00", true], ["Duminic\u0103", "", "", false]];
+/* SMS de pe numărul propriu — §1 EasyBook · Setări · Trimitere SMS (S1–S19). Only existing components. */
+const h = React.createElement;
+const TX = {
+  ro: {
+    tabs: ["General", "Servicii", "Resurse", "Reamintiri", "Trimitere SMS", "Rezervări online"],
+    page: "Setările EasyBook", pageDesc: "Programul afacerii, regulile de rezervare, reamintirile și pagina de rezervări online.",
+    m: "Cum pleacă SMS-urile", mDesc: "Reamintirile, confirmările, modificările și anulările programărilor.",
+    via: "Prin Ventora", viaD: "Pleacă de la expeditorul Ventora și consumă din SMS-urile abonamentului.",
+    ph: "De pe telefonul afacerii", phD: "Pleacă de pe numărul tău și nu consumă din SMS-urile abonamentului. Ai nevoie de un telefon Android conectat.",
+    off: "Dezactivat", offD: "Nu trimitem SMS-uri.",
+    t: "Telefonul afacerii", test: "Trimite un SMS de probă", rename: "Redenumește telefonul",
+    name: "Telefon recepție", num: "+40 722 123 456", conn: "Conectat", connAgo: "acum 2 minute",
+    batt: "78% · se încarcă", sig: "Semnal bun", app: "Aplicația Ventora 1.4.2",
+    s1: "Trimise azi", s2: "În așteptare", s3: "Fără confirmare", s4: "Nu au plecat",
+    cap: "Poți trimite aproximativ 40 de mesaje pe oră de pe acest telefon.", capTom: "Mâine pleacă 64 de reamintiri între 10:00 și 19:00. Telefonul le poate trimite pe toate.",
+    another: "Conectează alt telefon", disc: "Deconectează telefonul", all: "Vezi toate mesajele",
+    fb: "Dacă telefonul nu e disponibil", fbDesc: "Implicit nu trimitem pe altă cale: te anunțăm, iar mesajul nu pleacă.",
+    fbMail: "Trimite reamintirea pe e-mail, dacă clientul are e-mail", fbMailD: "Gratuit.",
+    fbV: "Trimite prin Ventora, din SMS-urile abonamentului", fbVD: "Consumă din SMS-urile abonamentului · îți mai rămân 138 luna asta. Îți cerem confirmarea când o pornești.",
+    hrs: "Ore de trimitere", hrsDesc: "În afara acestor ore nu pleacă niciun SMS.",
+    h1: "SMS-urile pleacă între", h2: "Reamintirile cu o zi înainte pleacă între", h2H: "Le împărțim pe tot intervalul, ca să nu plece toate odată."
+  },
+  de: {
+    tabs: ["Allgemein", "Leistungen", "Ressourcen", "Erinnerungen", "SMS-Versand", "Online-Buchung"],
+    page: "EasyBook-Einstellungen", pageDesc: "Öffnungszeiten, Buchungsregeln, Erinnerungen und die Online-Buchungsseite.",
+    m: "So werden SMS gesendet", mDesc: "Erinnerungen, Bestätigungen, Änderungen und Absagen von Terminen.",
+    via: "Über Ventora", viaD: "Absender ist Ventora; die SMS werden vom Kontingent Ihres Abonnements abgezogen.",
+    ph: "Vom Geschäftstelefon", phD: "Absender ist Ihre Nummer; Ihr SMS-Kontingent bleibt unberührt. Sie brauchen ein verbundenes Android-Telefon.",
+    off: "Deaktiviert", offD: "Wir senden keine SMS.",
+    t: "Geschäftstelefon", test: "Test-SMS senden", rename: "Telefon umbenennen",
+    name: "Telefon Empfang", num: "+49 151 2345 6789", conn: "Verbunden", connAgo: "vor 2 Minuten",
+    batt: "78 % · wird geladen", sig: "Guter Empfang", app: "Ventora-App 1.4.2",
+    s1: "Heute gesendet", s2: "Wartet", s3: "Keine Bestätigung", s4: "Nicht gesendet",
+    cap: "Von diesem Telefon können Sie etwa 40 Nachrichten pro Stunde senden.", capTom: "Morgen gehen 64 Erinnerungen zwischen 10:00 und 19:00 Uhr raus. Das Telefon schafft alle.",
+    another: "Weiteres Telefon verbinden", disc: "Telefon trennen", all: "Alle Nachrichten ansehen",
+    fb: "Wenn das Telefon nicht erreichbar ist", fbDesc: "Standardmäßig senden wir nicht auf anderem Weg: Wir benachrichtigen Sie, und die Nachricht geht nicht raus.",
+    fbMail: "Erinnerung per E-Mail senden, wenn der Kunde eine E-Mail-Adresse hat", fbMailD: "Kostenlos.",
+    fbV: "Über Ventora senden, aus dem SMS-Kontingent des Abonnements", fbVD: "Wird vom SMS-Kontingent abgezogen · diesen Monat bleiben 138. Wir fragen beim Einschalten nach.",
+    hrs: "Sendezeiten", hrsDesc: "Außerhalb dieser Zeiten geht keine SMS raus.",
+    h1: "SMS werden gesendet zwischen", h2: "Erinnerungen für den Folgetag gehen raus zwischen", h2H: "Wir verteilen sie über den ganzen Zeitraum, damit nicht alle gleichzeitig rausgehen."
+  },
+  it: {
+    tabs: ["Generale", "Servizi", "Risorse", "Promemoria", "Invio SMS", "Prenotazioni online"],
+    page: "Impostazioni di EasyBook", pageDesc: "Orari, regole di prenotazione, promemoria e pagina di prenotazione online.",
+    m: "Come partono gli SMS", mDesc: "Promemoria, conferme, modifiche e annullamenti degli appuntamenti.",
+    via: "Tramite Ventora", viaD: "Partono dal mittente Ventora e consumano gli SMS dell’abbonamento.",
+    ph: "Dal telefono dell’attività", phD: "Partono dal Suo numero e non consumano gli SMS dell’abbonamento. Serve un telefono Android collegato.",
+    off: "Disattivato", offD: "Non inviamo SMS.",
+    t: "Telefono dell’attività", test: "Invia un SMS di prova", rename: "Rinomina il telefono",
+    name: "Telefono reception", num: "+39 347 123 4567", conn: "Collegato", connAgo: "2 minuti fa",
+    batt: "78% · in carica", sig: "Segnale buono", app: "App Ventora 1.4.2",
+    s1: "Inviati oggi", s2: "In attesa", s3: "Senza conferma", s4: "Non inviati",
+    cap: "Da questo telefono può inviare circa 40 messaggi all’ora.", capTom: "Domani partono 64 promemoria tra le 10:00 e le 19:00. Il telefono riesce a inviarli tutti.",
+    another: "Collega un altro telefono", disc: "Scollega il telefono", all: "Vedi tutti i messaggi",
+    fb: "Se il telefono non è disponibile", fbDesc: "Di norma non inviamo in altro modo: La avvisiamo e il messaggio non parte.",
+    fbMail: "Invia il promemoria via e-mail, se il cliente ha un indirizzo", fbMailD: "Gratuito.",
+    fbV: "Invia tramite Ventora, dagli SMS dell’abbonamento", fbVD: "Consuma gli SMS dell’abbonamento · questo mese ne restano 138. Chiediamo conferma all’attivazione.",
+    hrs: "Orari di invio", hrsDesc: "Fuori da questi orari non parte nessun SMS.",
+    h1: "Gli SMS partono tra le", h2: "I promemoria del giorno prima partono tra le", h2H: "Li distribuiamo su tutto l’intervallo, così non partono tutti insieme."
+  }
+};
+const lp = (mode) => (mode === "mobile" ? "start" : "end");
+const range = (a, b) => h("span", { className: "hrange" }, h(V.DatePicker, { mode: "time", defaultValue: a, size: "sm" }), h("span", { className: "muted" }, "–"), h(V.DatePicker, { mode: "time", defaultValue: b, size: "sm" }));
+
+function MethodSection({ T, value, role, notInPlan }) {
+  const ro = role === "member" || role === "manager";
+  const opts = [
+    { value: "via", label: T.via, description: T.viaD },
+    { value: "phone", label: T.ph, description: T.phD, disabled: notInPlan },
+    { value: "off", label: T.off, description: T.offD }
+  ];
+  return h(V.SheetSection, { title: T.m, description: T.mDesc },
+    h(V.RadioGroup, { name: "smsm-" + Math.random().toString(36).slice(2), options: opts, defaultValue: value, disabled: ro }),
+    notInPlan && h("div", { className: "sms-np" }, h(V.AccessBadge, { state: "notInPlan" }), h("p", { className: "body-small sms-sec" }, role === "owner" ? "„De pe telefonul afacerii” nu e inclusă în abonamentul afacerii." : "„De pe telefonul afacerii” nu e inclusă în abonamentul afacerii. Bianca Petrașcu (proprietar) poate cere alt abonament."), role === "owner" && h(V.Button, { size: "sm" }, "Cere alt abonament")));
+}
+function PhoneRow({ T, state, role = "owner" }) {
+  const dot = state === "disconnected" ? h(V.StatusDot, { tone: "attention", label: "Deconectat · din 14:20" })
+    : state === "none" ? h(V.StatusDot, { tone: "offline", label: "Niciun telefon conectat" })
+    : h(V.StatusDot, { tone: "neutral", label: T.conn + " · " + T.connAgo });
+  const meta = state === "battery" ? [["battery-low", "12% · nu se încarcă"], ["signal", T.sig], ["info", T.app]]
+    : state === "oldApp" ? [["battery-charging", T.batt], ["signal", T.sig], ["info", "Aplicația Ventora 1.2.0"]]
+    : state === "disconnected" ? [["battery", "Ultima dată: 41%"], ["info", T.app]]
+    : [["battery-charging", T.batt], ["signal", T.sig], ["info", T.app]];
+  return h("div", { className: "sms-phone" },
+    h("span", { className: "sms-phone__ic", "aria-hidden": true }, h(V.Icon, { name: "smartphone", size: 20 })),
+    h("div", { className: "sms-phone__text" },
+      h("div", { className: "sms-phone__name" }, h("span", { className: "body-strong" }, T.name), role !== "member" ? h(V.IconButton, { icon: "pencil", label: T.rename, size: "sm", variant: "quiet" }) : null),
+      h("span", { className: "body-small sms-sec" }, T.num),
+      dot,
+      h("span", { className: "sms-meta body-small" }, meta.map(([ic, t]) => h("span", { key: t }, h(V.Icon, { name: ic, size: 16 }), t)))));
+}
+function Stats({ T, pending, unknown, mob }) {
+  return h("div", { className: "v-stats sms-stats" + (mob ? " is-mob" : "") },
+    h(V.Stat, { label: T.s1, value: "18", icon: "send", onClick: () => {} }),
+    h(V.Stat, { label: T.s2, value: String(pending == null ? 6 : pending), icon: "clock", onClick: () => {} }),
+    h(V.Stat, { label: T.s3, value: String(unknown == null ? 1 : unknown), icon: "circle-help", onClick: () => {} }),
+    h(V.Stat, { label: T.s4, value: "0", icon: "circle-x", onClick: () => {} }));
+}
+function PhoneSection({ T, mode, state = "ok", role = "owner", notice, compact }) {
+  const admin = role === "owner" || role === "admin";
+  const canTest = role !== "member";
+  if (state === "none") return h(V.SheetSection, { title: T.t },
+    h(PhoneRowEmpty, null),
+    admin ? h("div", { className: "sms-actions" }, h(V.Button, { variant: "primary", icon: "smartphone", block: mode === "mobile" }, "Conectează telefonul")) : null);
+  if (compact) return h(V.SheetSection, { title: T.t },
+    h(PhoneRow, { T, state }), notice || null,
+    state === "capacity" ? h("div", { className: "sms-cap" }, h("p", { className: "body" }, T.cap)) : null);
+  return h(V.SheetSection, { title: T.t, actions: mode !== "mobile" && canTest ? h(V.Button, { icon: "send" }, T.test) : null },
+    h(PhoneRow, { T, state, role }),
+    notice || null,
+    h(Stats, { T, mob: mode === "mobile", pending: state === "disconnected" ? 6 : undefined }),
+    h("div", { className: "sms-cap" }, h("p", { className: "body" }, T.cap), state !== "capacity" && h("p", { className: "body-small sms-sec" }, T.capTom)),
+    h("div", { className: "sms-actions" + (mode === "mobile" ? " is-col" : "") },
+      mode === "mobile" && canTest ? h(V.Button, { icon: "send", block: true }, T.test) : null,
+      admin ? h(V.Button, { icon: "plus", block: mode === "mobile" }, T.another) : null,
+      admin ? h(V.Button, { variant: "quiet", icon: "log-out", block: mode === "mobile" }, T.disc) : null,
+      h(V.Button, { variant: "quiet", iconEnd: "arrow-right", block: mode === "mobile" }, T.all)),
+    role === "member" && h(V.Notice, { tone: "neutral", icon: "lock", title: "Doar proprietarul și adminii schimbă cum pleacă SMS-urile." }, "Vezi starea telefonului și a mesajelor."),
+    role === "manager" && h(V.Notice, { tone: "neutral", icon: "lock", title: "Metoda, telefoanele și rezerva prin Ventora le schimbă proprietarul sau un admin." }, "Poți trimite un SMS de probă, redenumi telefonul și schimba orele de trimitere."));
+}
+function PhoneRowEmpty() {
+  return h("div", { className: "sms-phone" },
+    h("span", { className: "sms-phone__ic", "aria-hidden": true }, h(V.Icon, { name: "smartphone", size: 20 })),
+    h("div", { className: "sms-phone__text" },
+      h(V.StatusDot, { tone: "offline", label: "Niciun telefon conectat" }),
+      h("p", { className: "body" }, "Conectează telefonul afacerii ca să pornească trimiterea. Durează cam 10 minute."),
+      h("p", { className: "body-small sms-sec" }, "Până îl conectezi, SMS-urile nu pleacă.")));
+}
+function Fallback({ T, mode, role = "owner" }) {
+  const admin = role === "owner" || role === "admin";
+  return h(V.SheetSection, { title: T.fb, description: T.fbDesc },
+    h("div", { className: "d0", style: { gap: "var(--space-3)" } },
+      h(V.Toggle, { label: T.fbMail, description: T.fbMailD, labelPosition: lp(mode), disabled: !admin }),
+      h(V.Toggle, { label: T.fbV, description: T.fbVD, labelPosition: lp(mode), disabled: !admin })));
+}
+function Hours({ T, mode, role = "owner" }) {
+  return h(V.SheetSection, { title: T.hrs, description: T.hrsDesc },
+    h("div", { className: "g2f" },
+      h(V.FormField, { label: T.h1 }, range("09:00", "20:00")),
+      h(V.FormField, { label: T.h2, helper: T.h2H }, range("10:00", "19:00"))));
+}
+function SmsBody({ T, mode, method = "phone", state = "ok", role = "owner", notInPlan, notice, extra }) {
+  return h(V.Sheet, null,
+    h(MethodSection, { T, value: method, role, notInPlan }),
+    method === "phone" && !notInPlan ? h(PhoneSection, { T, mode, state, role, notice }) : null,
+    extra || null,
+    method === "phone" && !notInPlan && state !== "none" ? h(Fallback, { T, mode, role }) : null,
+    method !== "off" && !notInPlan ? h(Hours, { T, mode, role }) : null);
+}
+function SmsSettings({ mode, lang = "ro" }) {
+  const T = TX[lang];
+  return h("div", { className: "frame-rel" }, h(BookingApp, { active: "setari", title: "Setări" },
+    h(V.PageHeader, { title: T.page, description: mode === "mobile" ? undefined : T.pageDesc,
+      tabs: h(V.Tabs, { label: "Setări", defaultValue: "sms", items: T.tabs.map((l, i) => ({ value: ["general", "servicii", "resurse", "notif", "sms", "online"][i], label: l })) }) }),
+    h(SmsBody, { T, mode })));
+}
+
+/* ---- the states, each as the part of the screen that changes ---- */
+const Box = ({ label, children, wide }) => h("div", { className: "sms-box" + (wide ? " is-wide" : "") }, h("p", { className: "caption sms-boxlab" }, label), h("div", { className: "sms-boxbody" }, children));
+function States({ th, mode }) {
+  const T = TX.ro, m = mode;
+  const N = (props, body) => h(V.Notice, props, body);
+  return h("div", { className: "sms-states", "data-theme": th },
+    h("p", { className: "heading" }, (th === "light" ? "Light" : "Dark") + (m === "mobile" ? " · telefon" : " · desktop și tabletă")),
+    h("div", { className: "sms-grid " + m },
+      h(Box, { label: "1 · Nicio metodă aleasă" }, h(V.Sheet, null, h(MethodSection, { T, value: undefined, role: "owner" }), h("div", { className: "sms-pad" }, N({ tone: "neutral", icon: "info", title: "Alege cum pleacă SMS-urile." }, "Până alegi, nu trimitem SMS-uri. Reamintirile pe e-mail rămân cum le-ai setat în Reamintiri.")))),
+      h(Box, { label: "2 · Prin Ventora" }, h(V.Sheet, null, h(MethodSection, { T, value: "via", role: "owner" }), h(V.SheetSection, { title: "SMS-urile abonamentului" }, h(V.UsageMeter, { label: "SMS-uri în octombrie", used: 862, limit: 1000, onBuy: () => {}, buyLabel: "Cumpără un pachet în plus · {preț}" })))),
+      h(Box, { label: "2b · Prin Ventora · admin sau manager (membrul nu vede nimic)" }, h(V.Sheet, null, h(MethodSection, { T, value: "via", role: "admin" }), h(V.SheetSection, { title: "SMS-urile abonamentului" }, h(V.UsageMeter, { label: "SMS-uri în octombrie", used: 862, limit: 1000 }), h("div", { className: "sms-reco" }, h(V.Button, { size: "sm", icon: "send" }, "Recomandă un pachet în plus"), h("p", { className: "body-small sms-sec" }, "Ajunge la Bianca Petrașcu (proprietar)."))))),
+      h(Box, { label: "3 · Telefonul nu e conectat încă" }, h(V.Sheet, null, h(PhoneSection, { T, mode: m, state: "none" }))),
+      h(Box, { label: "4 · Deconectat, cu mesaje în așteptare (singurul caz peach)" }, h(V.Sheet, null, h(PhoneSection, { T, mode: m, compact: true, state: "disconnected", notice: N({ tone: "attention", icon: "triangle-alert", title: "Telefonul afacerii e deconectat. 6 reamintiri trebuie să plece până la 18:00.", actions: h(V.Button, { size: "sm", variant: "primary" }, "Vezi ce poți face") }, "Verifică dacă telefonul e pornit, are internet și aplicația Ventora e pornită.") }))),
+      h(Box, { label: "4b · „Vezi ce poți face” (dialog, R-S2)" }, h(V.Dialog, { open: true, inline: true, tone: "attention", icon: "smartphone", title: "Telefonul afacerii e deconectat", description: "6 reamintiri trebuie să plece până la 18:00.", footer: h(React.Fragment, null, h(V.Button, null, "Închide"), h(V.Button, { icon: "plus" }, "Conectează alt telefon"), h(V.Button, { variant: "primary", icon: "send" }, "Trimite un SMS de probă")) },
+        h("p", { className: "body" }, "Verifică pe telefon, în ordinea asta:"),
+        h("ol", { className: "sms-check" },
+          h("li", null, h(V.Icon, { name: "battery-charging", size: 20 }), h("span", null, h("span", { className: "body-strong" }, "E pornit."), " Dacă s-a oprit, pune-l la încărcat și pornește-l.")),
+          h("li", null, h(V.Icon, { name: "signal", size: 20 }), h("span", null, h("span", { className: "body-strong" }, "Are internet."), " Wi-Fi sau date mobile.")),
+          h("li", null, h(V.Icon, { name: "smartphone", size: 20 }), h("span", null, h("span", { className: "body-strong" }, "Aplicația Ventora e pornită."), " Merge și în fundal, cu ecranul stins.")),
+          h("li", null, h(V.Icon, { name: "battery-low", size: 20 }), h("span", null, h("span", { className: "body-strong" }, "Economisirea bateriei e oprită pentru Ventora."), " Altfel telefonul o poate închide singur."))),
+        h("p", { className: "body-small sms-sec" }, "Când telefonul revine, starea devine „Conectat” și mesajele în așteptare pleacă. Ce nu pleacă până la ora lor nu mai pleacă, și te anunțăm."))),
+      h(Box, { label: "5 · Baterie scăzută" }, h(V.Sheet, null, h(PhoneSection, { T, mode: m, compact: true, state: "battery", notice: N({ tone: "neutral", icon: "battery-low", title: "Bateria telefonului: 12%, nu se încarcă." }, "Pune-l la încărcat. Dacă se oprește, SMS-urile nu mai pleacă.") }))),
+      h(Box, { label: "6 · Aplicația de pe telefon e veche" }, h(V.Sheet, null, h(PhoneSection, { T, mode: m, compact: true, state: "oldApp", notice: N({ tone: "neutral", icon: "download", title: "Aplicația Ventora de pe telefon trebuie actualizată.", actions: h(V.Button, { size: "sm", iconEnd: "external-link" }, "Vezi cum o actualizezi") }, "Pe telefon e versiunea 1.2.0, iar cea nouă e 1.4.2. Până o actualizezi, SMS-urile pot să nu plece.") }))),
+      h(Box, { label: "7 · Mâine ai mai multe reamintiri decât poate trimite telefonul" }, h(V.Sheet, null, h(PhoneSection, { T, mode: m, compact: true, state: "capacity", notice: N({ tone: "neutral", icon: "info", title: "Mâine ai mai multe reamintiri decât poate trimite telefonul.", actions: h(React.Fragment, null, h(V.Button, { size: "sm" }, "Schimbă orele"), h(V.Button, { size: "sm", variant: "quiet" }, "Conectează alt telefon")) }, "Sunt 420 de reamintiri, iar telefonul poate trimite aproximativ 360 între 10:00 și 19:00 (cam 40 pe oră). Poți lărgi intervalul, conecta alt telefon sau porni rezerva prin Ventora.") }))),
+      h(Box, { label: "8 · Membru: vede starea, nu poate schimba" }, h(V.Sheet, null, h(MethodSection, { T, value: "phone", role: "member" }), h(PhoneSection, { T, mode: m, role: "member" }))),
+      h(Box, { label: "9 · Managerul aplicației EasyBook (S12)" }, h(V.Sheet, null, h(PhoneSection, { T, mode: m, role: "manager" }), h(Hours, { T, mode: m, role: "manager" }))),
+      h(Box, { label: "10 · Nu e în abonament (proprietar)" }, h(V.Sheet, null, h(MethodSection, { T, value: "via", role: "owner", notInPlan: true }))),
+      h(Box, { label: "11 · Dezactivat (S13)" }, h(V.Sheet, null, h(MethodSection, { T, value: "off", role: "owner" }), h("div", { className: "sms-pad" }, N({ tone: "neutral", icon: "info" }, h(React.Fragment, null, "Nu trimitem SMS-uri. Reamintirile pe e-mail rămân cum le-ai setat în ", h("a", { className: "v-link", href: "#" }, "Reamintiri"), "."))))),
+      h(Box, { label: "12 · Pornești rezerva prin Ventora (confirmare)" }, h(V.Dialog, { open: true, inline: true, title: "Pornești rezerva prin Ventora?", footer: h(React.Fragment, null, h(V.Button, null, "Las-o oprită"), h(V.Button, { variant: "primary" }, "Pornește rezerva")) }, h("p", { className: "body" }, "Când telefonul afacerii nu e disponibil, reamintirile pleacă prin Ventora și consumă din SMS-urile abonamentului. Îți mai rămân 138 luna asta."), h("p", { className: "body-small sms-sec" }, "Mesajele „Fără confirmare” nu pleacă din nou prin Ventora, ca un client să nu primească același mesaj de două ori."))),
+      h(Box, { label: "13 · Deconectezi telefonul (confirmare)" }, h(V.Dialog, { open: true, inline: true, tone: "danger", title: "Deconectezi Telefon recepție?", footer: h(React.Fragment, null, h(V.Button, null, "Păstrează telefonul"), h(V.Button, { variant: "danger" }, "Deconectează")) }, h("p", { className: "body" }, "De pe el nu mai pleacă niciun SMS. Cele 6 mesaje în așteptare pleacă doar dacă conectezi alt telefon sau alegi altă metodă înainte de ora lor. Altfel nu mai pleacă și te anunțăm."), h("p", { className: "body-small sms-sec" }, "Pe telefon, aplicația Ventora se deconectează singură."))),
+      h(Box, { label: "14 · SMS de probă trimis (Toast)" }, h("div", { className: "sms-pad" }, h(V.Toast, { inline: true, tone: "done", title: "Am trimis SMS-ul de probă pe +40 722 123 456.", description: "Verifică telefonul în câteva secunde." })))));
+}
+function Langs() {
+  return h("div", { className: "sms-langs", "data-theme": "light" },
+    h("p", { className: "heading" }, "Test cu etichete în germană și italiană · desktop și telefon"),
+    h("div", { className: "sms-langrow" },
+      h("div", { className: "sms-lang" }, h("p", { className: "caption sms-boxlab" }, "Deutsch · 820"), h("div", { className: "sms-langframe t" }, h(SmsBody, { T: TX.de, mode: "tablet" }))),
+      h("div", { className: "sms-lang" }, h("p", { className: "caption sms-boxlab" }, "Italiano · 390"), h("div", { className: "sms-langframe m" }, h(SmsBody, { T: TX.it, mode: "mobile" })))));
+}
+/* SMS de pe numărul propriu — §2 Conectarea telefonului. Dialog (wide) on desktop and tablet, Dialog as sheet on phone. Only existing components. */
+const CX = {
+  ro: {
+    flow: "Conectezi telefonul afacerii", stepOf: (n) => `Pasul ${n} din 7`,
+    names: ["Ce îți trebuie", "Instalează aplicația pe telefon", "Scanează codul", "Setările telefonului", "Declarația ta", "Trimite un SMS de probă", "Telefonul e conectat"],
+    back: "Înapoi", next: "Continuă", cancel: "Anulează", close: "Închide",
+    s1intro: "Durează cam 10 minute. Ține telefonul afacerii lângă tine.",
+    need: [
+      ["smartphone", "Un telefon Android", "Recomandăm un telefon doar pentru afacere, nu pe cel personal. SMS-urile trimise rămân și în istoricul telefonului, de aceea îl vrem dedicat și cu PIN."],
+      ["phone", "SIM-ul afacerii, cu credit", "SMS-urile pleacă de pe numărul acestui SIM și le plătești la operatorul tău, ca pe orice SMS."],
+      ["battery-charging", "Un încărcător", "Telefonul stă la încărcat, de exemplu la recepție."],
+      ["signal", "Internet", "Wi-Fi sau date mobile."]],
+    iphone: "Pe iPhone nu se poate: Apple nu permite trimiterea automată de SMS-uri.",
+    phones: "Vezi telefoanele recomandate",
+    s3a: "Pe telefonul afacerii, deschide aplicația Ventora și apasă „Conectează telefonul”. Apoi scanează codul.",
+    s3code: "Nu poți scana? Scrie în aplicație codul:", copy: "Copiază codul",
+    s3exp: "Codul expiră în 9:41", s3new: "Generează alt cod", s3wait: "Așteptăm telefonul…",
+    s4ok: "Conectat: Samsung Galaxy A15 · +40 722 123 456",
+    s4intro: "Fără aceste două setări, telefonul poate opri aplicația Ventora când nu o folosești, iar SMS-urile nu mai pleacă.",
+    s4rows: [["battery-low", "Economisirea bateriei nu oprește Ventora", "Setări → Baterie → Limite de utilizare în fundal → Aplicații care nu intră niciodată în repaus → adaugă Ventora."],
+             ["refresh-cw", "Ventora pornește singură după o repornire", "Setări → Aplicații → Ventora → Baterie → alege „Fără restricții”."]],
+    did: "Am făcut asta", guide: "Ghidul complet pentru telefonul tău", brand: "Marca telefonului", other: "Altă marcă",
+    s6field: "Trimite proba pe numărul", s6help: "E numărul tău. Proba pleacă de pe telefonul afacerii și ajunge la tine.", s6send: "Trimite proba",
+    st: { handed: "Predat telefonului", sent: "Trimis", deliv: "Livrat", waitD: "Așteptăm confirmarea de livrare…" },
+    s6deliv: "Proba a ajuns. Telefonul afacerii trimite corect."
+  },
+  de: {
+    flow: "Geschäftstelefon verbinden", stepOf: (n) => `Schritt ${n} von 7`,
+    names: ["Was Sie brauchen", "App auf dem Telefon installieren", "Code scannen", "Telefoneinstellungen", "Ihre Erklärung", "Test-SMS senden", "Das Telefon ist verbunden"],
+    back: "Zurück", next: "Weiter", cancel: "Abbrechen", close: "Schließen",
+    s1intro: "Dauert etwa 10 Minuten. Halten Sie das Geschäftstelefon bereit.",
+    need: [
+      ["smartphone", "Ein Android-Telefon", "Wir empfehlen ein Telefon nur für das Geschäft, nicht Ihr privates. Gesendete SMS bleiben auch im Verlauf des Telefons, deshalb sollte es eigens dafür da sein und eine PIN haben."],
+      ["phone", "Die Geschäfts-SIM mit Guthaben", "Die SMS gehen von der Nummer dieser SIM raus. Sie bezahlen sie wie jede SMS bei Ihrem Mobilfunkanbieter."],
+      ["battery-charging", "Ein Ladegerät", "Das Telefon bleibt am Ladegerät, zum Beispiel am Empfang."],
+      ["signal", "Internet", "WLAN oder mobile Daten."]],
+    iphone: "Mit einem iPhone geht es nicht: Apple erlaubt kein automatisches Senden von SMS.",
+    phones: "Empfohlene Telefone ansehen",
+    s3a: "Öffnen Sie auf dem Geschäftstelefon die Ventora-App und tippen Sie auf „Telefon verbinden“. Scannen Sie dann den Code.",
+    s3code: "Scannen klappt nicht? Geben Sie in der App diesen Code ein:", copy: "Code kopieren",
+    s3exp: "Der Code läuft in 9:41 ab", s3new: "Neuen Code erstellen", s3wait: "Wir warten auf das Telefon…",
+    s4ok: "Verbunden: Samsung Galaxy A15 · +49 151 2345 6789",
+    s4intro: "Ohne diese zwei Einstellungen kann das Telefon die Ventora-App beenden, wenn Sie sie nicht nutzen. Dann gehen keine SMS mehr raus.",
+    s4rows: [["battery-low", "Der Energiesparmodus beendet Ventora nicht", "Einstellungen → Akku → Hintergrundnutzungslimits → Apps, die nie in den Standby wechseln → Ventora hinzufügen."],
+             ["refresh-cw", "Ventora startet nach einem Neustart von selbst", "Einstellungen → Apps → Ventora → Akku → „Nicht eingeschränkt“ wählen."]],
+    did: "Erledigt", guide: "Vollständige Anleitung für Ihr Telefon", brand: "Marke des Telefons", other: "Andere Marke",
+    s6field: "Test-SMS senden an", s6help: "Ihre Nummer. Die Test-SMS geht vom Geschäftstelefon an Sie.", s6send: "Test-SMS senden",
+    st: { handed: "An das Telefon übergeben", sent: "Gesendet", deliv: "Zugestellt", waitD: "Wir warten auf die Zustellbestätigung…" },
+    s6deliv: "Die Test-SMS ist angekommen. Das Geschäftstelefon sendet richtig."
+  },
+  it: {
+    flow: "Collegamento del telefono dell’attività", stepOf: (n) => `Passo ${n} di 7`,
+    names: ["Cosa Le serve", "Installa l’app sul telefono", "Scansiona il codice", "Impostazioni del telefono", "La Sua dichiarazione", "Invia un SMS di prova", "Il telefono è collegato"],
+    back: "Indietro", next: "Continua", cancel: "Annulla", close: "Chiudi",
+    s1intro: "Ci vogliono circa 10 minuti. Tenga vicino il telefono dell’attività.",
+    need: [
+      ["smartphone", "Un telefono Android", "Consigliamo un telefono solo per l’attività, non quello personale. Gli SMS inviati restano anche nella cronologia del telefono: per questo deve essere dedicato e con PIN."],
+      ["phone", "La SIM dell’attività, con credito", "Gli SMS partono dal numero di questa SIM e li paga al Suo operatore, come qualsiasi SMS."],
+      ["battery-charging", "Un caricabatterie", "Il telefono resta in carica, per esempio alla reception."],
+      ["signal", "Internet", "Wi-Fi o dati mobili."]],
+    iphone: "Con l’iPhone non si può: Apple non permette l’invio automatico di SMS.",
+    phones: "Vedi i telefoni consigliati",
+    s3a: "Sul telefono dell’attività apra l’app Ventora e tocchi „Collega il telefono”. Poi scansioni il codice.",
+    s3code: "Non riesce a scansionare? Scriva nell’app il codice:", copy: "Copia il codice",
+    s3exp: "Il codice scade tra 9:41", s3new: "Genera un altro codice", s3wait: "Aspettiamo il telefono…",
+    s4ok: "Collegato: Samsung Galaxy A15 · +39 347 123 4567",
+    s4intro: "Senza queste due impostazioni il telefono può chiudere l’app Ventora quando non la usa, e gli SMS non partono più.",
+    s4rows: [["battery-low", "Il risparmio energetico non chiude Ventora", "Impostazioni → Batteria → Limiti di utilizzo in background → App mai in sospensione → aggiungi Ventora."],
+             ["refresh-cw", "Ventora si avvia da sola dopo un riavvio", "Impostazioni → App → Ventora → Batteria → scegli „Senza restrizioni”."]],
+    did: "Fatto", guide: "La guida completa per il Suo telefono", brand: "Marca del telefono", other: "Altra marca",
+    s6field: "Invia la prova al numero", s6help: "È il Suo numero. La prova parte dal telefono dell’attività e arriva a Lei.", s6send: "Invia la prova",
+    st: { handed: "Passato al telefono", sent: "Inviato", deliv: "Consegnato", waitD: "Aspettiamo la conferma di consegna…" },
+    s6deliv: "La prova è arrivata. Il telefono dell’attività invia correttamente."
+  }
+};
+const BRANDS = (T) => [{ value: "samsung", label: "Samsung" }, { value: "xiaomi", label: "Xiaomi" }, { value: "motorola", label: "Motorola" }, { value: "pixel", label: "Google Pixel" }, { value: "other", label: T.other }];
+const INSTALL = {
+  samsung: ["Pe telefonul afacerii, deschide pagina de descărcare și apasă „Descarcă aplicația”.", "Telefonul întreabă dacă permiți instalarea din browser. Apasă „Setări”, apoi pornește „Permite din această sursă”.", "Revino și apasă „Instalează”, apoi „Deschide”.", "Aplicația Ventora îți arată butonul „Conectează telefonul”. Apasă „Continuă” aici."],
+  xiaomi: ["Pe telefonul afacerii, deschide pagina de descărcare și apasă „Descarcă aplicația”.", "Deschide fișierul descărcat. Telefonul te trimite la setări: pornește „Permite din această sursă”.", "Apasă „Instalează”. Dacă telefonul verifică aplicația, așteaptă să termine, apoi apasă „Deschide”.", "Aplicația Ventora îți arată butonul „Conectează telefonul”. Apasă „Continuă” aici."]
+};
+const S4X = [["battery-low", "Economisirea bateriei nu oprește Ventora", "Setări → Aplicații → Gestionează aplicațiile → Ventora → Economisire baterie → „Fără restricții”."],
+             ["refresh-cw", "Ventora pornește singură după o repornire", "Setări → Aplicații → Permisiuni → Pornire automată → pornește Ventora."]];
+
+/* a decorative QR placeholder: the real code is generated by the server */
+function QrPlaceholder({ size = 184, expired, label }) {
+  const n = 29, c = size / n, cells = [];
+  let s = 7;
+  const rnd = () => (s = (s * 9301 + 49297) % 233280) / 233280;
+  const finder = (x, y) => (x < 7 && y < 7) || (x >= n - 7 && y < 7) || (x < 7 && y >= n - 7);
+  for (let y = 0; y < n; y++) for (let x = 0; x < n; x++) {
+    if (finder(x, y)) continue;
+    if (rnd() > 0.52) cells.push(h("rect", { key: x + "-" + y, x: x * c, y: y * c, width: c, height: c }));
+  }
+  const fp = (x, y) => h("g", { key: "f" + x + y }, h("rect", { x: x * c, y: y * c, width: 7 * c, height: 7 * c }), h("rect", { x: (x + 1) * c, y: (y + 1) * c, width: 5 * c, height: 5 * c, fill: "var(--raised)" }), h("rect", { x: (x + 2) * c, y: (y + 2) * c, width: 3 * c, height: 3 * c }));
+  return h("div", { className: "sms-qr" + (expired ? " is-expired" : ""), "data-theme": "light" },
+    h("svg", { width: size, height: size, viewBox: `0 0 ${size} ${size}`, role: "img", "aria-label": label || "Cod QR pentru conectare" }, h("g", { fill: "var(--ink)" }, cells, fp(0, 0), fp(n - 7, 0), fp(0, n - 7))));
+}
+function IconList({ items, numbered }) {
+  return h(numbered ? "ol" : "ul", { className: "sms-check" + (numbered ? " is-num" : "") },
+    items.map(([ic, t, d], i) => h("li", { key: i },
+      numbered ? h("span", { className: "sms-num body-strong", "aria-hidden": true }, i + 1) : h(V.Icon, { name: ic, size: 20 }),
+      h("span", { className: "body" }, t ? h("span", { className: "body-strong" }, t) : null, t && d ? h("br") : null, d ? h("span", null, d) : null))));
+}
+function CheckRow({ ic, t, d, did, checked, mob }) {
+  return h("div", { className: "sms-guide" + (mob ? " is-mob" : "") },
+    h(V.Icon, { name: ic, size: 20 }),
+    h("div", { className: "sms-guide__text" }, h("p", { className: "body-strong" }, t), h("p", { className: "body-small sms-sec" }, d)),
+    h(V.Checkbox, { label: did, defaultChecked: checked }));
+}
+function MsgStage({ T, upto, fail, unknown }) {
+  /* the live states of the test SMS: handed → sent → delivered (S19 colours, icon + text) */
+  const rows = [["handed", "send", "neutral", "14:02:05"], ["sent", "check", "done", "14:02:07"], ["deliv", "check-check", "done", "14:02:11"]];
+  const idx = { handed: 0, sent: 1, deliv: 2 }[upto];
+  return h("ol", { className: "sms-stages" },
+    rows.map(([k, ic, tone, time], i) => {
+      if (fail && i > 0) return null;
+      if (unknown && i > 0) return null;
+      const done = i <= idx;
+      if (!done && idx === 1 && i === 2) return h("li", { key: k, className: "is-next" }, h("span", { className: "body-small sms-sec sms-stages__next" }, h(V.Spinner, { size: 16 }), T.st.waitD));
+      return h("li", { key: k, className: done ? "is-done" : "is-next" },
+        done ? h(V.StatusPill, { tone: i === 0 ? "neutral" : tone, icon: ic }, T.st[k]) : h("span", { className: "body-small sms-sec sms-stages__next" }, h(V.Icon, { name: ic, size: 16 }), T.st[k]),
+        done ? h("span", { className: "caption sms-sec v-num" }, time) : null);
+    }),
+    fail ? h("li", { className: "is-done" }, h(V.StatusPill, { tone: "danger", icon: "circle-x" }, "Nu s-a trimis"), h("span", { className: "caption sms-sec v-num" }, "14:02:09")) : null,
+    unknown ? h("li", { className: "is-done" }, h(V.StatusPill, { tone: "neutral", icon: "circle-help" }, "Fără confirmare"), h("span", { className: "caption sms-sec v-num" }, "14:04:05")) : null,
+    null);
+}
+
+/* ---- the steps ---- */
+function StepBody({ T, n, mode, v = {} }) {
+  const mob = mode === "mobile";
+  switch (n) {
+    case 1: return h(React.Fragment, null,
+      h("p", { className: "body" }, T.s1intro),
+      h(IconList, { items: T.need }),
+      h("div", { className: "sms-note" }, h(V.Icon, { name: "info", size: 16 }), h("p", { className: "body-small" }, T.iphone)),
+      h("a", { className: "v-link body-strong sms-ext", href: "#" }, T.phones, h(V.Icon, { name: "external-link", size: 16 })));
+    case 2: return h(React.Fragment, null,
+      h("div", { className: "sms-split" + (mob ? " is-col" : "") },
+        mob ? null : h("div", { className: "sms-qrcol" }, h(QrPlaceholder, { size: 136, label: "Cod QR către app.ventora-hub.com/telefon" }), h("p", { className: "caption sms-sec center" }, "Scanează cu telefonul afacerii")),
+        h("div", { className: "sms-split__main" },
+          h("p", { className: "body" }, mob ? "Deschide pagina de descărcare chiar pe telefonul afacerii." : "Scanează codul cu telefonul afacerii ca să deschizi pagina de descărcare."),
+          mob ? h(V.Button, { icon: "download", block: true }, "Deschide pagina de descărcare") : h("p", { className: "body-small sms-sec" }, "Sau scrie în browserul telefonului: app.ventora-hub.com/telefon"))),
+      h(V.FormField, { label: T.brand }, (mob ? h(V.Select, { options: BRANDS(T), defaultValue: v.brand || "samsung", icon: "smartphone" }) : h(V.SegmentedControl, { label: T.brand, options: BRANDS(T), defaultValue: v.brand || "samsung", size: "sm" }))),
+      h(IconList, { numbered: true, items: (INSTALL[v.brand] || INSTALL.samsung).map((d) => [null, null, d]) }),
+      h("div", { className: "sms-note" }, h(V.Icon, { name: "info", size: 16 }), h("p", { className: "body-small" }, "Descarcă aplicația doar de pe pagina Ventora. Când aplicația va fi în Magazin Play, o vei putea instala de acolo.")));
+    case 3: return h(React.Fragment, null,
+      h("div", { className: "sms-split" + (mob ? " is-col" : "") },
+        h("div", { className: "sms-qrcol" }, h(QrPlaceholder, { size: mob ? 200 : 184, expired: v.expired }), v.expired ? null : h("p", { className: "caption sms-sec sms-timer" }, h(V.Icon, { name: "timer", size: 14 }), T.s3exp)),
+        h("div", { className: "sms-split__main" },
+          h("p", { className: "body" }, T.s3a),
+          h("p", { className: "body-small sms-sec" }, T.s3code),
+          h("div", { className: "sms-code" }, h("span", { className: "sms-code__v v-num", "aria-label": "K 7 P 4 2 Q" }, "K7P-42Q"), h(V.IconButton, { icon: "copy", label: T.copy, size: "sm", variant: "quiet" })),
+          v.notice || null,
+          v.expired || v.notice ? null : h("p", { className: "body-small sms-sec sms-wait" }, h(V.Spinner, { size: 16 }), T.s3wait),
+          h("div", null, h(V.Button, { variant: v.expired ? "primary" : "quiet", size: "sm", icon: "refresh-cw" }, T.s3new)))));
+    case 4: return h(React.Fragment, null,
+      h(V.StatusDot, { tone: "neutral", label: T.s4ok }),
+      h("p", { className: "body" }, T.s4intro),
+      h(V.FormField, { label: T.brand }, (mob ? h(V.Select, { options: BRANDS(T), defaultValue: v.brand || "samsung", icon: "smartphone" }) : h(V.SegmentedControl, { label: T.brand, options: BRANDS(T), defaultValue: v.brand || "samsung", size: "sm" }))),
+      (v.brand === "xiaomi" ? S4X : T.s4rows).map(([ic, t, d], i) => h(CheckRow, { key: i, ic, t, d, did: T.did, mob, checked: v.checked && v.checked[i] })),
+      h("a", { className: "v-link body-small sms-ext", href: "#" }, T.guide, h(V.Icon, { name: "external-link", size: 14 })));
+    case 5: return h(React.Fragment, null,
+      h("p", { className: "body" }, "SMS-urile pleacă de pe numărul afacerii tale, prin rețeaua operatorului tău. De aceea îți cerem să confirmi:"),
+      h("div", { className: "sms-decl" }, h(V.Checkbox, { label: "Folosesc un SIM al afacerii și respect condițiile operatorului meu de telefonie.", defaultChecked: !!v.checked })),
+      h("p", { className: "body-small sms-sec" }, "De pe telefonul afacerii pleacă doar mesaje despre programări: reamintiri, confirmări, modificări și anulări. Nu și reclame."),
+      h("a", { className: "v-link body-small sms-ext", href: "#" }, "Ce înseamnă asta", h(V.Icon, { name: "external-link", size: 14 })));
+    case 6: return h(React.Fragment, null,
+      h(V.FormField, { label: T.s6field, helper: T.s6help },
+        h("div", { className: "sms-inline" + (mob ? " is-col" : "") }, h(V.Input, { defaultValue: v.num || "+40 744 555 018", icon: "phone", disabled: !!v.upto }), h(V.Button, { variant: v.upto ? "secondary" : "primary", icon: "send", disabled: !!v.upto && !v.fail && !v.unknown, block: mob }, v.fail || v.unknown ? "Trimite din nou" : T.s6send))),
+      v.upto || v.fail || v.unknown ? h(MsgStage, { T, upto: v.upto || "handed", fail: v.fail, unknown: v.unknown }) : null,
+      v.upto === "deliv" ? h("p", { className: "body" }, T.s6deliv) : null,
+      v.after || null);
+    case 7: return h(React.Fragment, null,
+      h(V.FormField, { label: "Numele telefonului", helper: "Îl vezi în setări, pe mesaje și în alerte." }, h(V.Input, { defaultValue: "Telefon recepție" })),
+      h(IconList, { items: [
+        ["send", "Ce pleacă de pe el", "Reamintirile, confirmările, modificările și anulările programărilor, între 09:00 și 20:00."],
+        ["settings", "Unde vezi starea", "În Setări → Trimitere SMS și pe fiecare programare."],
+        ["bell", "Dacă se deconectează", "Te anunțăm în EasyBook și pe e-mail, mai ales când are mesaje în așteptare."]] }),
+      h("p", { className: "body-small sms-sec" }, "Lasă telefonul la încărcat, cu aplicația Ventora pornită."));
+  }
+}
+function StepFoot({ T, n, mode, v = {} }) {
+  const mob = mode === "mobile";
+  const B = (p, t) => h(V.Button, Object.assign({ block: mob }, p), t);
+  if (v.foot) return v.foot;
+  if (n === 7) return B({ variant: "primary" }, "Gata");
+  const nextDisabled = (n === 3) || (n === 5 && !v.checked) || (n === 6 && v.upto !== "deliv" && v.upto !== "sent");
+  return h(React.Fragment, null,
+    B({ variant: "quiet" }, n === 1 ? T.cancel : T.back),
+    n === 3 ? null : B({ variant: "primary", iconEnd: "arrow-right", disabled: nextDisabled }, T.next));
+}
+function ConnectDialog({ n, mode, lang = "ro", v = {} }) {
+  const T = CX[lang], mob = mode === "mobile";
+  return h(V.Dialog, {
+    open: true, inline: true, size: mob ? "md" : "wide", className: mob ? "v-dialog--sheet" : undefined,
+    title: v.title || T.names[n - 1], tone: n === 7 ? "done" : v.tone, icon: n === 7 ? "check" : v.icon,
+    footer: h(StepFoot, { T, n, mode, v })
+  },
+    n < 7 && !v.body ? h(V.ProgressBar, { value: n / 7 * 100, label: T.flow + " · " + T.stepOf(n), size: "sm" }) : null,
+    v.body || h(StepBody, { T, n, mode, v }));
+}
+
+/* the full screen: Settings with no phone yet, the flow open on step 3 */
+function ConnectScreen({ mode }) {
+  const T = TX.ro;
+  return h("div", { className: "frame-rel" },
+    h(BookingApp, { active: "setari", title: "Setări" },
+      h(V.PageHeader, { title: T.page, description: mode === "mobile" ? undefined : T.pageDesc,
+        tabs: h(V.Tabs, { label: "Setări", defaultValue: "sms", items: T.tabs.map((l, i) => ({ value: ["general", "servicii", "resurse", "notif", "sms", "online"][i], label: l })) }) }),
+      h(SmsBody, { T, mode, state: "none" })),
+    h("div", { className: "sms-scrim " + mode }, h(ConnectDialog, { n: 3, mode })));
+}
+
+/* ---- boards ---- */
+function Steps({ th, mode }) {
+  return h("div", { className: "sms-states", "data-theme": th },
+    h("p", { className: "heading" }, "Pașii 1–7 · " + (th === "light" ? "Light" : "Dark") + (mode === "mobile" ? " · telefon (Dialog ca sheet)" : " · desktop și tabletă (Dialog lat, 720)")),
+    h("div", { className: "sms-grid " + mode + " sms-cgrid" },
+      [1, 2, 3, 4, 5, 6, 7].map((n) => h(Box, { key: n, label: n + " · " + CX.ro.names[n - 1] + (n === 5 ? " · TEXT JURIDIC DE VALIDAT (D-SMS-7)" : "") }, h(ConnectDialog, { n, mode })))));
+}
+function CStates({ th, mode }) {
+  const T = CX.ro, mob = mode === "mobile";
+  const N = (p, b) => h(V.Notice, p, b);
+  const B = (p, t) => h(V.Button, Object.assign({ block: mob }, p), t);
+  const items = [
+    ["3a · Codul a expirat", 3, { expired: true, notice: N({ tone: "neutral", icon: "timer", title: "Codul a expirat." }, "Generează alt cod și scanează-l în 10 minute.") }],
+    ["3b · Telefonul nu se conectează în timpul așteptat (după 3 minute)", 3, { notice: N({ tone: "neutral", icon: "circle-help", title: "Telefonul nu s-a conectat încă." }, h(IconList, { items: [["signal", null, "Telefonul are internet (Wi-Fi sau date mobile)."], ["smartphone", null, "Ai scanat codul din aplicația Ventora, nu din camera telefonului."], ["timer", null, "Codul nu a expirat. Dacă da, generează altul."]] })) }],
+    ["3c · Telefonul e conectat deja la altă afacere", 3, { notice: N({ tone: "neutral", icon: "circle-alert", title: "Telefonul e conectat deja la altă afacere.", actions: h(V.Button, { size: "sm", variant: "quiet", icon: "message-square" }, "Scrie-ne") }, "Un telefon trimite SMS-uri pentru o singură afacere. Pe telefon, în aplicația Ventora, apasă „Deconectează”, apoi scanează din nou codul.") }],
+    ["2 · Altă marcă de telefon (Xiaomi)", 2, { brand: "xiaomi" }],
+    ["4 · Bifele făcute", 4, { checked: [true, true] }],
+    ["5 · Declarația bifată (abia acum merge „Continuă”) · TEXT JURIDIC DE VALIDAT (D-SMS-7)", 5, { checked: true }],
+    ["6a · Proba: predată telefonului", 6, { upto: "handed" }],
+    ["6b · Proba: trimisă, așteptăm livrarea", 6, { upto: "sent" }],
+    ["6c · Proba: livrată", 6, { upto: "deliv" }],
+    ["6d · Proba nu s-a trimis (motivul)", 6, { fail: true, after: N({ tone: "danger", icon: "circle-x", title: "Proba nu s-a trimis: SIM-ul nu are credit." }, "Încarcă SIM-ul afacerii, apoi trimite din nou. Alte motive posibile: telefonul nu are semnal sau operatorul a blocat mesajul.") }],
+    ["6e · Proba fără confirmare (după 2 minute)", 6, { unknown: true, after: N({ tone: "neutral", icon: "circle-help", title: "Nu am primit confirmarea de la telefon." }, "Verifică dacă SMS-ul a ajuns pe +40 744 555 018. Dacă nu a ajuns, trimite din nou."),
+      foot: h(React.Fragment, null, B({ variant: "quiet" }, T.back), B({ variant: "primary", iconEnd: "arrow-right" }, "A ajuns, continuă")) }],
+    ["Ieși înainte de final · PROPUNERE P-C2", 4, { title: "Te oprești aici?", icon: "log-out", body: h(React.Fragment, null,
+      h("p", { className: "body" }, "Telefonul rămâne conectat, dar SMS-urile nu pleacă de pe el până nu termini pașii."),
+      h("p", { className: "body-small sms-sec" }, "Reiei de la pasul 4 din Setări → Trimitere SMS → „Continuă conectarea”.")),
+      foot: h(React.Fragment, null, B({ variant: "quiet" }, "Ies acum"), B({ variant: "primary" }, "Continui conectarea")) }]
+  ];
+  return h("div", { className: "sms-states", "data-theme": th },
+    h("p", { className: "heading" }, "Stări · " + (th === "light" ? "Light" : "Dark") + (mob ? " · telefon" : " · desktop și tabletă")),
+    h("div", { className: "sms-grid " + mode + " sms-cgrid" },
+      items.map(([label, n, v]) => h(Box, { key: label, label }, h(ConnectDialog, { n, mode, v })))));
+}
+function CLangs() {
+  return h("div", { className: "sms-langs", "data-theme": "light" },
+    h("p", { className: "heading" }, "Test cu etichete în germană și italiană · pașii cu cel mai mult text"),
+    h("div", { className: "sms-langrow" },
+      h("div", { className: "sms-lang" }, h("p", { className: "caption sms-boxlab" }, "Deutsch · desktop · pașii 1 și 3"), h("div", { className: "sms-langframe dlg" }, h(ConnectDialog, { n: 1, mode: "desktop", lang: "de" })), h("div", { className: "sms-langframe dlg" }, h(ConnectDialog, { n: 3, mode: "desktop", lang: "de" }))),
+      h("div", { className: "sms-lang" }, h("p", { className: "caption sms-boxlab" }, "Italiano · 390 · pașii 4 și 6"), h("div", { className: "sms-langframe m" }, h(ConnectDialog, { n: 4, mode: "mobile", lang: "it" })), h("div", { className: "sms-langframe m" }, h(ConnectDialog, { n: 6, mode: "mobile", lang: "it", v: { upto: "deliv", num: "+39 333 555 0182" } })))));
+}
+mount(h("div", null,
+  h(Screens, { title: "EasyBook — Conectarea telefonului (pasul 3, peste Setări · Trimitere SMS)", notes: ["Dialog lat pe desktop și tabletă, sheet pe telefon", "Toți pașii și stările sunt mai jos"], desktopH: 900, tabletH: 1100, mobileH: 844, render: (m) => h(ConnectScreen, { mode: m }) }),
+  h(Steps, { th: "light", mode: "desktop" }), h(Steps, { th: "dark", mode: "desktop" }),
+  h(Steps, { th: "light", mode: "mobile" }), h(Steps, { th: "dark", mode: "mobile" }),
+  h(CStates, { th: "light", mode: "desktop" }), h(CStates, { th: "dark", mode: "desktop" }),
+  h(CStates, { th: "light", mode: "mobile" }), h(CStates, { th: "dark", mode: "mobile" }),
+  h(CLangs, null)));
+
+</script>
+</body>
+</html>

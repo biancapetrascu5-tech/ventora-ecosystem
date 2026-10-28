@@ -1,0 +1,131 @@
+{
+ "name": "Combobox",
+ "version": "1.0.1",
+ "kind": "component",
+ "group": "Forms",
+ "status": "changed",
+ "description": "Type to filter and pick one or many values — the search field for long lists (clients, services, staff).",
+ "exports": [
+  "Combobox"
+ ],
+ "props": [
+  {
+   "name": "options",
+   "type": "(Option<V> | OptionGroup<V>)[]",
+   "required": true,
+   "note": ""
+  },
+  {
+   "name": "value",
+   "type": "V | V[]",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "defaultValue",
+   "type": "V | V[]",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "onChange",
+   "type": "(v: V | V[]) => void",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "multiple",
+   "type": "boolean",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "placeholder",
+   "type": "string",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "invalid",
+   "type": "boolean",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "disabled",
+   "type": "boolean",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "loading",
+   "type": "boolean",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "onQueryChange",
+   "type": "(q: string) => void",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "filter",
+   "type": "boolean",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "icon",
+   "type": "string",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "emptyText",
+   "type": "string",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "size",
+   "type": "\"sm\" | \"md\" | \"lg\"",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "defaultOpen",
+   "type": "boolean",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "defaultQuery",
+   "type": "string",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "id",
+   "type": "string",
+   "required": false,
+   "note": ""
+  }
+ ],
+ "events": [
+  "onChange",
+  "onQueryChange"
+ ],
+ "states": [
+  "open-filtered",
+  "no-results",
+  "multiple",
+  "selected",
+  "invalid",
+  "disabled",
+  "loading"
+ ],
+ "notes": "Open list (portaled popover) and its no-results state are shown open only in the Light frame; Dark/DE/IT show the same fields closed.",
+ "readme": "components/Combobox/README.md",
+ "preview": "components/Combobox/preview.html"
+}

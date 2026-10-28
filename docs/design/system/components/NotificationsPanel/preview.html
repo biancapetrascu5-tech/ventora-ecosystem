@@ -1,4 +1,4 @@
-<!-- @dsCard group="Hub" height=600 width=1000 -->
+<!-- @dsCard group="Hub" height=2629 width=1000 -->
 <!doctype html>
 <html lang="ro">
 <head><meta charset="utf-8"><title>NotificationsPanel — Ventora</title>
@@ -250,6 +250,9 @@ html,body{min-height:100%}
 .fxframe .caption{color:var(--ink-muted)}
 @container (max-width:420px){.fxlang{grid-template-columns:32px minmax(0,1fr) auto}.fxlang .v-iconbtn{display:none}}
 
+.thf{display:flex;flex-direction:column;gap:var(--space-4);padding:var(--space-5);background:var(--canvas);color:var(--ink);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg);min-width:0;box-sizing:border-box}
+.thg{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(420px,100%),1fr));gap:var(--space-4);align-items:start}
+.thstack{display:flex;flex-direction:column;gap:var(--space-4)}
 </style>
 </head>
 <body>
@@ -278,10 +281,10 @@ const ORGS = [
   { id: "nord", name: "Agen\u021Bia Nord Studio", role: "Manager de proiect" }
 ];
 const NOTIFS = [
-  { id: 1, title: "Programare nou\u0103 de la Ana Popescu", body: "Joi, 29 oct., 14:30 \xB7 Tuns", app: "Booking", time: "acum 5 min", person: "Ana Popescu" },
-  { id: 2, title: "Factura #2026-114 e restant\u0103 de 3 zile", body: "Clinica Dentis \xB7 1.250 lei", app: "Finance", time: "acum 2 ore", icon: "receipt" },
-  { id: 3, title: "Ioana a cerut concediu pe 2\u20136 noiembrie", app: "HR", time: "ieri", person: "Ioana Pavel", read: true },
-  { id: 4, title: "Exportul clien\u021Bilor e gata", app: "CRM", time: "ieri", icon: "download", read: true }
+  { id: 1, title: "Programare nou\u0103 de la Ana Popescu", body: "Joi, 29 oct., 14:30 \xB7 Tuns", app: "EasyBook", time: "acum 5 min", person: "Ana Popescu" },
+  { id: 2, title: "Factura #2026-114 e restant\u0103 de 3 zile", body: "Clinica Dentis \xB7 1.250 lei", app: "MoneyDesk", time: "acum 2 ore", icon: "receipt" },
+  { id: 3, title: "Ioana a cerut concediu pe 2\u20136 noiembrie", app: "TeamSpace", time: "ieri", person: "Ioana Pavel", read: true },
+  { id: 4, title: "Exportul clien\u021Bilor e gata", app: "ClientDesk", time: "ieri", icon: "download", read: true }
 ];
 const USER = { name: "Bianca Petra\u0219cu", email: "bianca@ventora-hub.com" };
 function Bar({ title, de }) {
@@ -312,7 +315,7 @@ function BookingShell({ height, active, mobile }) {
       height,
       spine: /* @__PURE__ */ React.createElement(V.Spine, { app: "booking", sections: SECTIONS, activeId: active, onBackToHub: () => {
       }, footer: /* @__PURE__ */ React.createElement(V.UsageMeter, { compact: true, label: "Program\u0103ri", used: 312, limit: 1e3 }) }),
-      contextBar: /* @__PURE__ */ React.createElement(Bar, { title: "Booking" })
+      contextBar: /* @__PURE__ */ React.createElement(Bar, { title: "EasyBook" })
     },
     /* @__PURE__ */ React.createElement(V.PageHeader, { title: "Program\u0103ri", description: mobile ? void 0 : "Toate program\u0103rile afacerii, de azi \xEEnainte.", actions: mobile ? void 0 : /* @__PURE__ */ React.createElement(V.SegmentedControl, { label: "Vizualizare", size: "md", defaultValue: "list", options: [{ value: "list", label: "List\u0103", icon: "list" }, { value: "cal", label: "Calendar", icon: "calendar" }] }) }),
     /* @__PURE__ */ React.createElement(V.DataTable, { columns: [
@@ -330,7 +333,57 @@ function Demo() {
   } }), /* @__PURE__ */ React.createElement(V.NotificationsPanel, { inline: true, items: [], onSettings: () => {
   } }), /* @__PURE__ */ React.createElement(Row, { label: "Buton" }, /* @__PURE__ */ React.createElement(V.NotificationsPanel, { items: NOTIFS })));
 }
-mount(/* @__PURE__ */ React.createElement(Demo, null));
+const ORIG = (/* @__PURE__ */ React.createElement(Demo, null));
+/* Light/Dark frames, DE/IT label test */
+const E = React.createElement;
+const noop = () => {
+};
+const Cap = ({ children }) => E("p", { className: "caption muted" }, children);
+const ThemeFrame = ({ th, children }) => E("div", { className: "thf", "data-theme": th }, E("p", { className: "heading" }, th === "light" ? "Light" : "Dark"), children);
+const LocFrame = ({ loc, label, children }) => E("div", { className: "thf", "data-theme": "light" }, E("p", { className: "heading" }, label), E(V.LocaleProvider, { locale: loc }, children));
+const Frames = ({ States, stack }) => E("div", { className: stack ? "thstack" : "thg" }, E(ThemeFrame, { th: "light" }, E(States, { th: "light" })), E(ThemeFrame, { th: "dark" }, E(States, { th: "dark" })));
+const Locales = ({ De, It, stack }) => E("div", { className: stack ? "thstack" : "thg" }, E(LocFrame, { loc: "de", label: "Deutsch (DE)" }, E(De)), E(LocFrame, { loc: "it", label: "Italiano (IT)" }, E(It)));
+const Extra = ({ States, De, It, stack, stackLoc }) => E("div", { className: "d" }, E("p", { className: "heading" }, "Stări · Light și Dark"), E(Frames, { States, stack }), E("p", { className: "heading" }, "Test de lungime: germană și italiană"), E(Locales, { De, It, stack: stackLoc }));
+const NP_RO = [
+  { id: "o1", title: "Telefonul pentru SMS s-a deconectat", body: "Reamintirile nu pleacă până nu îl conectezi din nou.", icon: "smartphone", time: "acum 10 min", category: "operational" },
+  { id: "o2", title: "Abonamentul Business se reînnoiește pe 1 noiembrie", icon: "credit-card", time: "azi", category: "operational", read: true },
+  { id: 1, title: "Programare nouă de la Ștefan Țăranu", body: "Joi, 29 oct., 14:30 · Tuns bărbați", app: "EasyBook", time: "acum 5 min", person: "Ștefan Țăranu" },
+  { id: 2, title: "Factura #2026-114 e restantă de 3 zile", body: "Clinica Dentis · 1.250 lei", app: "MoneyDesk", time: "acum 2 ore", icon: "receipt" },
+  { id: 3, title: "Ioana a cerut concediu pe 2–6 noiembrie", app: "TeamSpace", time: "ieri", person: "Ioana Pavel", read: true }
+];
+const NP_RECO_RO = [{ id: "rc1", app: "analytics", title: "Vezi ce aduce fiecare serviciu", body: "DataView îți arată venitul pe servicii, din programările pe care le ai deja." }];
+const NP_DE = [
+  { id: "o1", title: "Das Telefon für SMS ist nicht mehr verbunden", body: "Erinnerungen werden erst wieder versendet, wenn Sie es neu verbinden.", icon: "smartphone", time: "vor 10 Min.", category: "operational" },
+  { id: 1, title: "Neuer Termin von Anna Schmidt-Bergmann", body: "Donnerstag, 29. Okt., 14:30 · Haarschnitt", app: "EasyBook", time: "vor 5 Min.", person: "Anna Schmidt-Bergmann" },
+  { id: 2, title: "Rechnung #2026-114 ist seit 3 Tagen überfällig", body: "Zahnarztpraxis Dr. Müller · 1.250 lei", app: "MoneyDesk", time: "vor 2 Std.", icon: "receipt" },
+  { id: 3, title: "Jonas Becker hat Urlaub vom 2. bis 6. November beantragt", app: "TeamSpace", time: "gestern", person: "Jonas Becker", read: true },
+  { id: 4, title: "Der Export Ihrer Kundendaten ist fertig", app: "ClientDesk", time: "gestern", icon: "download", read: true }
+];
+const NP_RECO_DE = [{ id: "rc1", app: "analytics", title: "Sehen Sie, was jede Dienstleistung einbringt", body: "DataView zeigt Ihnen den Umsatz pro Dienstleistung – aus den Terminen, die Sie bereits haben." }];
+const NP_IT = [
+  { id: "o1", title: "Il telefono per gli SMS si è disconnesso", body: "I promemoria non partono finché non lo ricollega.", icon: "smartphone", time: "10 min fa", category: "operational" },
+  { id: 1, title: "Nuovo appuntamento da Giulia Bianchi", body: "Giovedì 29 ott., 14:30 · Taglio", app: "EasyBook", time: "5 min fa", person: "Giulia Bianchi" },
+  { id: 2, title: "La fattura #2026-114 è scaduta da 3 giorni", body: "Studio dentistico Rossi · 1.250 lei", app: "MoneyDesk", time: "2 ore fa", icon: "receipt" },
+  { id: 3, title: "Marco Ricci ha chiesto le ferie dal 2 al 6 novembre", app: "TeamSpace", time: "ieri", person: "Marco Ricci", read: true },
+  { id: 4, title: "L’esportazione dei clienti è pronta", app: "ClientDesk", time: "ieri", icon: "download", read: true }
+];
+const NP_RECO_IT = [{ id: "rc1", app: "analytics", title: "Scopra quanto rende ogni servizio", body: "DataView Le mostra il fatturato per servizio, dagli appuntamenti che ha già." }];
+function States() {
+  return E("div", { className: "d0" },
+    E(Cap, null, "Necitite (titlu îngroșat, punct peach) și citite · grupul „Despre cont și funcționare” sus · recomandări la final"),
+    E(V.NotificationsPanel, { inline: true, items: NP_RO, recommendations: NP_RECO_RO, onMarkAllRead: noop, onSettings: noop }),
+    E(Cap, null, "Gol: nicio notificare nouă"),
+    E(V.NotificationsPanel, { inline: true, items: [], onSettings: noop }),
+    E(Cap, null, "Clopoțelul: cu necitite / toate citite"),
+    E("div", { className: "r" }, E(V.NotificationsPanel, { items: NP_RO }), E(V.NotificationsPanel, { items: NP_RO.map((n) => ({ ...n, read: true })) })));
+}
+const NPLoc = ({ items, recos }) => E("div", { className: "d0" },
+  E(V.NotificationsPanel, { inline: true, items, recommendations: recos, onMarkAllRead: noop, onSettings: noop }),
+  E(V.NotificationsPanel, { inline: true, items: [], onSettings: noop }),
+  E("div", { className: "r" }, E(V.NotificationsPanel, { items })));
+const De = () => E(NPLoc, { items: NP_DE, recos: NP_RECO_DE });
+const It = () => E(NPLoc, { items: NP_IT, recos: NP_RECO_IT });
+mount(E("div", null, ORIG, E(Extra, { States, De, It })));
 </script>
 </body>
 </html>

@@ -1,4 +1,4 @@
-<!-- @dsCard group="Actions" height=480 -->
+<!-- @dsCard group="Actions" height=2590 width=1200 -->
 <!doctype html>
 <html lang="ro">
 <head><meta charset="utf-8"><title>Button — Ventora</title>
@@ -250,6 +250,9 @@ html,body{min-height:100%}
 .fxframe .caption{color:var(--ink-muted)}
 @container (max-width:420px){.fxlang{grid-template-columns:32px minmax(0,1fr) auto}.fxlang .v-iconbtn{display:none}}
 
+.thgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(520px,100%),1fr));gap:var(--space-4);align-items:start}
+.thf{display:flex;flex-direction:column;gap:var(--space-4);padding:var(--space-5);background:var(--canvas);color:var(--ink);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg);min-width:0;box-sizing:border-box}
+.thf .thl{margin:0;color:var(--ink-muted);font-weight:600}
 </style>
 </head>
 <body>
@@ -262,11 +265,36 @@ const DE = ({ children }) => /* @__PURE__ */ React.createElement(V.LocaleProvide
 const FR = ({ children }) => /* @__PURE__ */ React.createElement(V.LocaleProvider, { locale: "fr" }, children);
 const IT = ({ children }) => /* @__PURE__ */ React.createElement(V.LocaleProvider, { locale: "it" }, children);
 const mount = (el) => ReactDOM.createRoot(document.getElementById("root")).render(/* @__PURE__ */ React.createElement(V.LocaleProvider, { locale: "ro" }, el));
-function Demo() {
-  const states = [["Implicit", null], ["Hover", "hover"], ["Focus", "focus"], ["Ap\u0103sat", "pressed"]];
-  return /* @__PURE__ */ React.createElement("div", { className: "d" }, ["primary", "secondary", "quiet", "danger"].map((v) => /* @__PURE__ */ React.createElement(Row, { key: v, label: v }, states.map(([l, s]) => /* @__PURE__ */ React.createElement(V.Button, { key: l, variant: v, state: s, icon: v === "danger" ? "trash-2" : v === "primary" ? "check" : void 0 }, v === "danger" ? "\u0218terge programarea" : v === "primary" ? "Confirm\u0103" : "Trimite reamintire")), /* @__PURE__ */ React.createElement(V.Button, { variant: v, disabled: true }, "Dezactivat"), /* @__PURE__ */ React.createElement(V.Button, { variant: v, loading: true }, "Se salveaz\u0103"))), /* @__PURE__ */ React.createElement(Row, { label: "M\u0103rimi" }, /* @__PURE__ */ React.createElement(V.Button, { variant: "primary", size: "sm" }, "Mic"), /* @__PURE__ */ React.createElement(V.Button, { variant: "primary" }, "Mediu"), /* @__PURE__ */ React.createElement(V.Button, { variant: "primary", size: "lg" }, "Mare (tactil)")), /* @__PURE__ */ React.createElement(DE, null, /* @__PURE__ */ React.createElement(Row, { label: "DE" }, /* @__PURE__ */ React.createElement(V.Button, { variant: "primary", icon: "check" }, "Best\xE4tigen"), /* @__PURE__ */ React.createElement(V.Button, { variant: "secondary", icon: "send" }, "Erinnerung senden"), /* @__PURE__ */ React.createElement(V.Button, { variant: "danger", icon: "trash-2" }, "Termin endg\xFCltig l\xF6schen"))));
+const h = React.createElement;
+const Frame = ({ th, label, children }) => h("section", { "data-theme": th, className: "thf" }, h("p", { className: "caption thl" }, (th === "dark" ? "Dark" : "Light") + (label ? " · " + label : "")), children);
+const T = {
+  ro: { st: ["Implicit", "Hover", "Focus", "Apăsat"], dis: "Dezactivat", load: "Se salvează", lbl: { primary: "Confirmă", secondary: "Trimite reamintire", quiet: "Trimite reamintire", danger: "Șterge programarea" }, sizes: ["Mărimi", "Mic", "Mediu", "Mare (tactil)"], more: ["Iconuri și link", "Programează", "Deschide în Portal", "Vezi factura"], blk: ["Lățime întreagă și text lung", "Salvează programarea", "Trimite link de plată către Ștefan Țăranu"] },
+  de: { st: ["Standard", "Hover", "Fokus", "Gedrückt"], dis: "Deaktiviert", load: "Wird gespeichert", lbl: { primary: "Termin bestätigen", secondary: "Erinnerung senden", quiet: "Erinnerung senden", danger: "Termin endgültig löschen" }, sizes: ["Größen", "Klein", "Mittel", "Groß (Touch)"], more: ["Symbole und Link", "Termin vereinbaren", "Auf Portal öffnen", "Rechnung ansehen"], blk: ["Volle Breite und langer Text", "Termin speichern", "Zahlungslink an Jürgen Weiß senden"] },
+  it: { st: ["Predefinito", "Hover", "Focus", "Premuto"], dis: "Disattivato", load: "Salvataggio in corso", lbl: { primary: "Conferma l’appuntamento", secondary: "Invia promemoria", quiet: "Invia promemoria", danger: "Elimina definitivamente l’appuntamento" }, sizes: ["Dimensioni", "Piccolo", "Medio", "Grande (touch)"], more: ["Icone e link", "Prenota", "Apri su Portal", "Vedi la fattura"], blk: ["Larghezza piena e testo lungo", "Salva l’appuntamento", "Invia il link di pagamento a Niccolò Lucà"] }
+};
+const ICON = { primary: "check", secondary: "send", quiet: "send", danger: "trash-2" };
+function Set({ L }) {
+  return h(React.Fragment, null,
+    ["primary", "secondary", "quiet", "danger"].map((v) => h(Row, { key: v, label: v },
+      [null, "hover", "focus", "pressed"].map((s, i) => h(V.Button, { key: i, variant: v, state: s || void 0, icon: ICON[v], title: L.st[i] }, L.lbl[v])),
+      h(V.Button, { variant: v, icon: ICON[v], disabled: true }, L.dis),
+      h(V.Button, { variant: v, icon: ICON[v], loading: true }, L.load))),
+    h("div", { className: "r caption", style: { color: "var(--ink-muted)", marginLeft: "calc(var(--space-16) + var(--space-6) + var(--space-3))" } }, L.st.concat([L.dis, L.load]).join(" · ")),
+    h(Row, { label: L.sizes[0] }, h(V.Button, { variant: "primary", size: "sm" }, L.sizes[1]), h(V.Button, { variant: "primary" }, L.sizes[2]), h(V.Button, { variant: "primary", size: "lg" }, L.sizes[3])),
+    h(Row, { label: L.more[0] }, h(V.Button, { variant: "secondary", icon: "calendar-plus" }, L.more[1]), h(V.Button, { variant: "secondary", iconEnd: "external-link" }, L.more[2]), h(V.Button, { variant: "quiet", href: "#", icon: "receipt" }, L.more[3])),
+    h(Row, { label: L.blk[0] }, h("div", { style: { width: 220 } }, h(V.Button, { variant: "primary", block: true }, L.blk[1])), h("div", { style: { width: 220 } }, h(V.Button, { variant: "secondary", block: true, icon: "send" }, L.blk[2]))));
 }
-mount(/* @__PURE__ */ React.createElement(Demo, null));
+function Demo() {
+  return h("div", { className: "d" },
+    h(Frame, { th: "light" }, h(Set, { L: T.ro })),
+    h(Frame, { th: "dark" }, h(Set, { L: T.ro })),
+    h(Frame, { th: "light", label: "Deutsch" }, h(DE, null, h(Set, { L: T.de }))),
+    h(Frame, { th: "light", label: "Italiano" }, h(IT, null, h(Set, { L: T.it }))),
+    h("div", { className: "thgrid" },
+      h(Frame, { th: "dark", label: "Deutsch" }, h(DE, null, ["primary", "secondary", "danger"].map((v) => h(Row, { key: v, label: v }, h(V.Button, { variant: v, icon: ICON[v] }, T.de.lbl[v]), h(V.Button, { variant: v, loading: true }, T.de.load))))),
+      h(Frame, { th: "dark", label: "Italiano" }, h(IT, null, ["primary", "secondary", "danger"].map((v) => h(Row, { key: v, label: v }, h(V.Button, { variant: v, icon: ICON[v] }, T.it.lbl[v]), h(V.Button, { variant: v, loading: true }, T.it.load)))))));
+}
+mount(h(Demo, null));
 </script>
 </body>
 </html>

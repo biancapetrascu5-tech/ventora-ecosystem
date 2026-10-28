@@ -1,6 +1,6 @@
 # Kanban
 
-Cards in stages — the CRM pipeline, the Projects board. Each column shows its name, the number of cards and an optional summary (the stage's value); a `tone: 'done'` column ("Gata", "Câștigate") gets the lime check.
+Cards in stages — the ClientDesk pipeline, the TaskBoard board. Each column shows its name, the number of cards and an optional summary (the stage's value); a `tone: 'done'` column ("Gata", "Câștigate") gets the lime check.
 
 **Props.** `columns` `[{ id, label, summary?, count?, tone?, empty? }]`, `cards` `[{ id, col, … }]`, `renderCard(card, { columns, onMove })` (default: `KanbanCard`), `onMove(cardId, columnId)`, `defaultColumn`, `label`.
 

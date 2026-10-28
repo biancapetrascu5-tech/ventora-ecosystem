@@ -1,4 +1,4 @@
-<!-- @dsCard group="Shell" height=420 -->
+<!-- @dsCard group="Shell" height=1560 width=1200 -->
 <!doctype html>
 <html lang="ro">
 <head><meta charset="utf-8"><title>Sheet — Ventora</title>
@@ -250,6 +250,15 @@ html,body{min-height:100%}
 .fxframe .caption{color:var(--ink-muted)}
 @container (max-width:420px){.fxlang{grid-template-columns:32px minmax(0,1fr) auto}.fxlang .v-iconbtn{display:none}}
 
+
+/* c5: light/dark frames and DE/IT sections */
+.qwrap{display:flex;flex-direction:column;gap:var(--space-6);padding:var(--space-4);box-sizing:border-box;background:var(--canvas);color:var(--ink)}
+.qfr{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--space-4);align-items:start}
+.qfr1{grid-template-columns:minmax(0,1fr)}
+.qf{display:flex;flex-direction:column;gap:var(--space-4);padding:var(--space-4);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg);min-width:0;box-sizing:border-box}
+.qf-t{margin:0;color:var(--ink-muted)}
+.qh{margin:0;color:var(--ink)}
+.qsec{display:flex;flex-direction:column;gap:var(--space-3)}
 </style>
 </head>
 <body>
@@ -265,7 +274,34 @@ const mount = (el) => ReactDOM.createRoot(document.getElementById("root")).rende
 function Demo() {
   return /* @__PURE__ */ React.createElement("div", { className: "d", style: { background: "var(--canvas)" } }, /* @__PURE__ */ React.createElement(V.Sheet, null, /* @__PURE__ */ React.createElement(V.SheetSection, { title: "Program de lucru", description: "Clien\u021Bii pot rezerva doar \xEEn aceste intervale.", actions: /* @__PURE__ */ React.createElement(V.Button, { size: "sm", icon: "pencil" }, "Editeaz\u0103") }, /* @__PURE__ */ React.createElement("div", { className: "g2" }, /* @__PURE__ */ React.createElement(V.FormField, { label: "Deschidere" }, /* @__PURE__ */ React.createElement(V.DatePicker, { mode: "time", defaultValue: "09:00" })), /* @__PURE__ */ React.createElement(V.FormField, { label: "\xCEnchidere" }, /* @__PURE__ */ React.createElement(V.DatePicker, { mode: "time", defaultValue: "18:00" })))), /* @__PURE__ */ React.createElement(V.SheetSection, { title: "Rezerv\u0103ri online" }, /* @__PURE__ */ React.createElement(V.Toggle, { label: "Permite rezerv\u0103ri din Portal", description: "Apari \xEEn c\u0103ut\u0103rile clien\u021Bilor din zona ta.", defaultChecked: true }))));
 }
-mount(/* @__PURE__ */ React.createElement(Demo, null));
+
+const Qh = React.createElement;
+const Q_Fr = ({ theme, title, children, style }) => Qh("section", { className: "qf", "data-theme": theme, style: Object.assign({ background: "var(--canvas)", color: "var(--ink)" }, style || {}) }, Qh("p", { className: "caption qf-t" }, title || (theme === "dark" ? "Dark" : "Light")), children);
+const Q_Pair = ({ children, cols, light, dark }) => Qh("div", { className: cols === 1 ? "qfr qfr1" : "qfr" }, Qh(Q_Fr, { theme: "light" }, light || children), Qh(Q_Fr, { theme: "dark" }, dark || children));
+const Q_Loc = ({ de, it, cols, theme }) => Qh("div", { className: cols === 1 ? "qfr qfr1" : "qfr" }, Qh(Q_Fr, { theme: theme || "light", title: "DE · Deutsch" }, Qh(V.LocaleProvider, { locale: "de" }, de)), Qh(Q_Fr, { theme: theme || "light", title: "IT · Italiano" }, Qh(V.LocaleProvider, { locale: "it" }, it)));
+const Q_Sec = ({ title, children }) => Qh("div", { className: "qsec" }, Qh("h2", { className: "heading qh" }, title), children);
+const Q_Row = ({ label, children }) => Qh("div", { className: "r" }, Qh("span", { className: "l caption" }, label), children);
+const Q_SheetDemo = ({ t }) => Qh(V.Sheet, null,
+  Qh(V.SheetSection, { title: t.s1, description: t.s1d, actions: Qh(V.Button, { size: "sm", icon: "pencil" }, t.edit) },
+    Qh("div", { className: "g2" },
+      Qh(V.FormField, { label: t.open }, Qh(V.DatePicker, { mode: "time", defaultValue: "09:00" })),
+      Qh(V.FormField, { label: t.close }, Qh(V.DatePicker, { mode: "time", defaultValue: "18:00" })))),
+  Qh(V.SheetSection, { title: t.s2 },
+    Qh(V.Toggle, { label: t.tg, description: t.tgd, defaultChecked: true })));
+const Q_RO = { s1: "Program de lucru", s1d: "Clienții pot rezerva doar în aceste intervale.", edit: "Editează", open: "Deschidere", close: "Închidere", s2: "Rezervări online", tg: "Permite rezervări din Portal", tgd: "Apari în căutările clienților din zona ta." };
+const Q_DE = { s1: "Arbeitszeiten", s1d: "Kunden können nur in diesen Zeiträumen einen Termin buchen.", edit: "Bearbeiten", open: "Öffnung", close: "Schließung", s2: "Online-Terminbuchung", tg: "Buchungen über Portal erlauben", tgd: "Sie erscheinen in den Suchergebnissen von Kunden in Ihrer Nähe." };
+const Q_IT = { s1: "Orario di lavoro", s1d: "I clienti possono prenotare un appuntamento solo in queste fasce orarie.", edit: "Modifica", open: "Apertura", close: "Chiusura", s2: "Prenotazioni online", tg: "Consenti le prenotazioni da Portal", tgd: "Lei appare nelle ricerche dei clienti della Sua zona." };
+function Q_Extra() {
+  return Qh("div", { className: "qwrap" },
+    Qh(Q_Sec, { title: "Stări: cu spațiu interior (implicit) · fără spațiu interior · secțiune fără butoane" },
+      Qh("div", { className: "qfr" },
+        Qh(V.Sheet, { padded: false }, Qh("div", { style: { padding: "var(--space-4)" } }, Qh("p", { className: "body", style: { margin: 0 } }, "Foaie fără margini: conținutul își alege singur spațiul (de ex. un tabel cu toată lățimea)."))),
+        Qh(V.Sheet, null, Qh(V.SheetSection, { title: "Notă pentru echipă", description: "Secțiune doar cu titlu și descriere, fără butoane." }, Qh("p", { className: "body", style: { margin: 0 } }, "Ședințele de vineri încep la 9:30, în sala mică."))))),
+    Qh(Q_Sec, { title: "Light / Dark" }, Qh(Q_Pair, null, Qh(Q_SheetDemo, { t: Q_RO }))),
+    Qh(Q_Sec, { title: "DE / IT" }, Qh(Q_Loc, { de: Qh(Q_SheetDemo, { t: Q_DE }), it: Qh(Q_SheetDemo, { t: Q_IT }) })));
+}
+
+mount(Qh("div", null, /* @__PURE__ */ React.createElement(Demo, null), Qh(Q_Extra, null)));
 </script>
 </body>
 </html>

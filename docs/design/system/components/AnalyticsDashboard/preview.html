@@ -1,4 +1,4 @@
-<!-- @dsCard group="Ecrane aplicații" height=4320 width=2620 page -->
+<!-- @dsCard group="Ecrane aplicații" height=8592 width=2620 page -->
 <!doctype html>
 <html lang="ro">
 <head><meta charset="utf-8"><title>AnalyticsDashboard — Ventora</title>
@@ -278,10 +278,10 @@ const ORGS = [
   { id: "nord", name: "Agen\u021Bia Nord Studio", role: "Manager de proiect" }
 ];
 const NOTIFS = [
-  { id: 1, title: "Programare nou\u0103 de la Ana Popescu", body: "Joi, 29 oct., 14:30 \xB7 Tuns", app: "Booking", time: "acum 5 min", person: "Ana Popescu" },
-  { id: 2, title: "Factura #2026-114 e restant\u0103 de 3 zile", body: "Clinica Dentis \xB7 1.250 lei", app: "Finance", time: "acum 2 ore", icon: "receipt" },
-  { id: 3, title: "Ioana a cerut concediu pe 2\u20136 noiembrie", app: "HR", time: "ieri", person: "Ioana Pavel", read: true },
-  { id: 4, title: "Exportul clien\u021Bilor e gata", app: "CRM", time: "ieri", icon: "download", read: true }
+  { id: 1, title: "Programare nou\u0103 de la Ana Popescu", body: "Joi, 29 oct., 14:30 \xB7 Tuns", app: "EasyBook", time: "acum 5 min", person: "Ana Popescu" },
+  { id: 2, title: "Factura #2026-114 e restant\u0103 de 3 zile", body: "Clinica Dentis \xB7 1.250 lei", app: "MoneyDesk", time: "acum 2 ore", icon: "receipt" },
+  { id: 3, title: "Ioana a cerut concediu pe 2\u20136 noiembrie", app: "TeamSpace", time: "ieri", person: "Ioana Pavel", read: true },
+  { id: 4, title: "Exportul clien\u021Bilor e gata", app: "ClientDesk", time: "ieri", icon: "download", read: true }
 ];
 const USER = { name: "Bianca Petra\u0219cu", email: "bianca@ventora-hub.com" };
 function Bar({ title, de }) {
@@ -312,7 +312,7 @@ function BookingShell({ height, active, mobile }) {
       height,
       spine: /* @__PURE__ */ React.createElement(V.Spine, { app: "booking", sections: SECTIONS, activeId: active, onBackToHub: () => {
       }, footer: /* @__PURE__ */ React.createElement(V.UsageMeter, { compact: true, label: "Program\u0103ri", used: 312, limit: 1e3 }) }),
-      contextBar: /* @__PURE__ */ React.createElement(Bar, { title: "Booking" })
+      contextBar: /* @__PURE__ */ React.createElement(Bar, { title: "EasyBook" })
     },
     /* @__PURE__ */ React.createElement(V.PageHeader, { title: "Program\u0103ri", description: mobile ? void 0 : "Toate program\u0103rile afacerii, de azi \xEEnainte.", actions: mobile ? void 0 : /* @__PURE__ */ React.createElement(V.SegmentedControl, { label: "Vizualizare", size: "md", defaultValue: "list", options: [{ value: "list", label: "List\u0103", icon: "list" }, { value: "cal", label: "Calendar", icon: "calendar" }] }) }),
     /* @__PURE__ */ React.createElement(V.DataTable, { columns: [
@@ -333,7 +333,7 @@ function HubBar({ title, inApp }) {
   return /* @__PURE__ */ React.createElement(
     V.ContextBar,
     {
-      leading: inApp ? null : /* @__PURE__ */ React.createElement("span", { style: { padding: "0 var(--space-2)" } }, /* @__PURE__ */ React.createElement(V.Logo, { size: 32 })),
+      leading: inApp ? null : /* @__PURE__ */ React.createElement("span", { style: { padding: "0 var(--space-2)", display: "inline-flex" } }, /* @__PURE__ */ React.createElement(V.Logo, { size: 32, className: "v-cb-logo--full" }), /* @__PURE__ */ React.createElement(V.Logo, { variant: "mark", size: 32, className: "v-cb-logo--mark" })),
       title,
       org: /* @__PURE__ */ React.createElement(V.OrgSwitcher, { orgs: ORGS, currentId: "aurora" }),
       onSearch: () => {
@@ -366,7 +366,7 @@ function Screens({ title, notes, render, desktopH = 860, tabletH = 1100, mobileH
   return /* @__PURE__ */ React.createElement("div", { className: "scr" }, /* @__PURE__ */ React.createElement("p", { className: "heading" }, title), notes && /* @__PURE__ */ React.createElement("p", { className: "caption muted" }, notes.join(" \xB7 ")), ["light", "dark"].map((th) => /* @__PURE__ */ React.createElement("div", { className: "scr-row", key: th }, sizes.map(([m, lab, cls, h]) => /* @__PURE__ */ React.createElement("div", { key: m }, /* @__PURE__ */ React.createElement("p", { className: "caption scr-lab" }, lab, " \xB7 ", th === "light" ? "Light" : "Dark"), /* @__PURE__ */ React.createElement("div", { className: cls, "data-theme": th, style: { height: h } }, render(m, th)))))));
 }
 const MINE = [["booking", "Program\u0103ri, calendar \u0219i reamintiri", 3], ["crm", "Clien\u021Bi, istoric \u0219i oportunit\u0103\u021Bi"], ["hr", "Echip\u0103, prezen\u021B\u0103 \u0219i concedii", 1], ["finance", "Facturi, scaden\u021Be \u0219i restan\u021Be", 2], ["projects", "Proiecte, sarcini \u0219i termene"], ["shifts", "Ture \u0219i \xEEnlocuiri"], ["documents", "Documente \u0219i \u0219abloane"], ["portal", "Pagina afacerii pentru clien\u021Bi"]];
-const RECO = { marketing: { reason: "Se potrive\u0219te cu Booking: trimite automat reamintiri \u0219i campanii clien\u021Bilor t\u0103i.", cost: "49 lei pe lun\u0103 \xB7 f\u0103r\u0103 cost de implementare" } };
+const RECO = { marketing: { reason: "Se potrive\u0219te cu EasyBook: trimite automat reamintiri \u0219i campanii clien\u021Bilor t\u0103i.", cost: "49 lei pe lun\u0103 \xB7 f\u0103r\u0103 cost de implementare" } };
 const VIEWER_ROLE = "owner";
 const RECO_FOR = (a) => (VIEWER_ROLE === "owner" || VIEWER_ROLE === "admin") && a === "marketing" ? RECO[a] : null;
 const OTHER = [["inventory", "unavailable"], ["analytics", "notInRole"], ["marketing", "notInPlan"], ["network", "notInPlan"]];
@@ -530,7 +530,7 @@ function AX_PrjHead({ mode, view }) {
   );
 }
 function An({ mode }) {
-  return /* @__PURE__ */ React.createElement(AX_App, { app: "analytics", sections: AX_AN_NAV, active: "prezentare", title: "Analytics", bottom: ["prezentare", "venituri", "clienti", "echipa"] }, /* @__PURE__ */ React.createElement(
+  return /* @__PURE__ */ React.createElement(AX_App, { app: "analytics", sections: AX_AN_NAV, active: "prezentare", title: "DataView", bottom: ["prezentare", "venituri", "clienti", "echipa"] }, /* @__PURE__ */ React.createElement(
     V.PageHeader,
     {
       title: "Prezentare general\u0103",
@@ -551,7 +551,91 @@ function An({ mode }) {
     }
   ), /* @__PURE__ */ React.createElement("div", { className: "axcharts" }, /* @__PURE__ */ React.createElement(V.BarChart, { orientation: "horizontal", title: "Venituri pe serviciu", description: "Octombrie, p\xE2n\u0103 azi", data: AX_AN_SERV, unit: "lei" }), /* @__PURE__ */ React.createElement(V.BarChart, { title: "Program\u0103ri pe zi a s\u0103pt\u0103m\xE2nii", description: "Media pe ultimele 4 s\u0103pt\u0103m\xE2ni", data: AX_AN_DAYS, compareLabel: "Cu un an \xEEnainte", height: mode === "mobile" ? 200 : 240 }))));
 }
-mount(/* @__PURE__ */ React.createElement(Screens, { title: "Analytics \u2014 Prezentare general\u0103: patru cifre, venitul pe 12 luni \u0219i dou\u0103 compara\u021Bii", notes: ["O singur\u0103 culoare de serie (chart-1); compara\u021Bia e mereu gri (chart-compare)", "Luna \xEEn curs: punct peach \u0219i linie punctat\u0103", "Fiecare grafic are \u201EVezi ca tabel\u201D"], desktopH: 1260, tabletH: 1700, mobileH: 2050, render: (m) => /* @__PURE__ */ React.createElement(An, { mode: m }) }));
+/* ---- DE / IT label test + extra states (p1) ---- */
+const ce = React.createElement;
+function LX_Bar({ t, title }) {
+  return ce(V.ContextBar, {
+    title,
+    org: ce(V.OrgSwitcher, { orgs: t.orgs, currentId: "aurora" }),
+    onSearch: () => {},
+    createItems: [{ label: t.create[0], icon: "calendar-check", shortcut: ["N"] }, { label: t.create[1], icon: "user-plus" }],
+    notifications: ce(V.NotificationsPanel, { items: t.notifs }),
+    account: ce(V.AccountMenu, { user: t.user, orgs: t.orgs, currentOrgId: "aurora", onCatalog: () => {} })
+  });
+}
+function LX_Frames({ title, notes, render, desktopH = 900, mobileH = 1000 }) {
+  const fr = (t, cls, m, th, hgt) => ce("div", { key: t.lang + m }, ce("p", { className: "caption scr-lab" }, t.label, " · ", m === "desktop" ? "Desktop · 1280" : "Telefon · 390", " · ", th === "light" ? "Light" : "Dark"),
+    ce(V.LocaleProvider, { locale: t.lang }, ce("div", { className: cls, "data-theme": th, lang: t.lang, style: { height: hgt } }, render(m, th, t))));
+  return ce("div", { className: "scr" }, ce("p", { className: "heading" }, title), notes && ce("p", { className: "caption muted" }, notes.join(" · ")),
+    ce("div", { className: "scr-row" }, fr(LX.de, "scr-d", "desktop", "light", desktopH), fr(LX.it, "scr-m", "mobile", "light", mobileH)),
+    ce("div", { className: "scr-row" }, fr(LX.it, "scr-d", "desktop", "dark", desktopH), fr(LX.de, "scr-m", "mobile", "dark", mobileH)));
+}
+function LX_StateFrames({ title, notes, frames }) {
+  return ce("div", { className: "scr" }, ce("p", { className: "heading" }, title), notes && ce("p", { className: "caption muted" }, notes.join(" · ")),
+    ce("div", { className: "scr-row" }, frames.map(([lab, m, th, hgt, el], i) => ce("div", { key: i }, ce("p", { className: "caption scr-lab" }, lab, " · ", m === "desktop" ? "Desktop · 1280" : "Telefon · 390", " · ", th === "light" ? "Light" : "Dark"),
+      ce("div", { className: m === "desktop" ? "scr-d" : "scr-m", "data-theme": th, style: { height: hgt } }, el)))));
+}
+const AN_EUR = (a) => a.map((v) => Math.round(v / 5));
+const LX = {
+  de: {
+    lang: "de", label: "Deutsch",
+    orgs: [{ id: "aurora", name: "Salon Aurora", role: "Inhaber" }, { id: "praxis", name: "Zahnarztpraxis Dr. Müller", role: "Empfang" }],
+    user: { name: "Julia Becker", email: "julia@salon-aurora.de" }, create: ["Termin", "Kunde"],
+    notifs: [{ id: 1, title: "Der Bericht für Oktober ist fertig", app: "DataView", time: "vor 1 Std.", icon: "chart-line" }],
+    nav: [
+      { items: [{ id: "prezentare", label: "Übersicht", icon: "chart-line" }, { id: "venituri", label: "Umsatz", icon: "banknote" }, { id: "clienti", label: "Kunden", icon: "users" }, { id: "echipa", label: "Team", icon: "contact" }] },
+      { label: "Unternehmen", items: [{ id: "rapoarte", label: "Gespeicherte Berichte", icon: "file-text" }, { id: "setari", label: "Einstellungen", icon: "settings" }] }
+    ],
+    title: "Übersicht", desc: "Oktober 2026 bis heute, verglichen mit Oktober 2025.", period: "Zeitraum", periods: ["Monat", "Quartal", "Jahr"], cmp: ["Im Vergleich zum Vorjahr", "Im Vergleich zum Vormonat"],
+    vs: "ggü. Okt. 2025", stats: [["Umsatz", "9.650 €"], ["Termine", "862"], ["Neue Kunden", "64"], ["Wiederkehrende Kunden", "71 %"]], pp: "+3 Pp.", ppSr: "plus 3 Prozentpunkte",
+    line: "Umsatz pro Monat", lineDesc: "Letzte 12 Monate · der Oktober läuft noch", months: ["Nov.", "Dez.", "Jan.", "Feb.", "März", "Apr.", "Mai", "Juni", "Juli", "Aug.", "Sep.", "Okt."], now: "läuft",
+    series: ["Umsatz 2025–2026", "Ein Jahr zuvor"], unit: "€",
+    serv: "Umsatz nach Leistung", servDesc: "Oktober, bis heute", servL: ["Färben", "Haarschnitt und Styling", "Maniküre", "Gesichtsbehandlungen", "Pediküre"],
+    days: "Termine nach Wochentag", daysDesc: "Durchschnitt der letzten 4 Wochen", dayL: ["Mo.", "Di.", "Mi.", "Do.", "Fr.", "Sa."]
+  },
+  it: {
+    lang: "it", label: "Italiano",
+    orgs: [{ id: "aurora", name: "Salon Aurora", role: "Titolare" }, { id: "studio", name: "Studio Dentistico Rossi", role: "Reception" }],
+    user: { name: "Giulia Romano", email: "giulia@salon-aurora.it" }, create: ["Appuntamento", "Cliente"],
+    notifs: [{ id: 1, title: "Il report di ottobre è pronto", app: "DataView", time: "1 ora fa", icon: "chart-line" }],
+    nav: [
+      { items: [{ id: "prezentare", label: "Panoramica", icon: "chart-line" }, { id: "venituri", label: "Ricavi", icon: "banknote" }, { id: "clienti", label: "Clienti", icon: "users" }, { id: "echipa", label: "Team", icon: "contact" }] },
+      { label: "Attività", items: [{ id: "rapoarte", label: "Report salvati", icon: "file-text" }, { id: "setari", label: "Impostazioni", icon: "settings" }] }
+    ],
+    title: "Panoramica", desc: "Ottobre 2026 fino a oggi, rispetto a ottobre 2025.", period: "Periodo", periods: ["Mese", "Trimestre", "Anno"], cmp: ["Rispetto all’anno scorso", "Rispetto al mese scorso"],
+    vs: "rispetto a ott. 2025", stats: [["Ricavi", "9.650 €"], ["Appuntamenti", "862"], ["Nuovi clienti", "64"], ["Clienti che ritornano", "71%"]], pp: "+3 p.p.", ppSr: "più 3 punti percentuali",
+    line: "Ricavi per mese", lineDesc: "Ultimi 12 mesi · ottobre è ancora in corso", months: ["nov.", "dic.", "gen.", "feb.", "mar.", "apr.", "mag.", "giu.", "lug.", "ago.", "set.", "ott."], now: "in corso",
+    series: ["Ricavi 2025–2026", "Un anno prima"], unit: "€",
+    serv: "Ricavi per servizio", servDesc: "Ottobre, fino a oggi", servL: ["Colore", "Taglio e piega", "Manicure", "Trattamenti viso", "Pedicure"],
+    days: "Appuntamenti per giorno della settimana", daysDesc: "Media delle ultime 4 settimane", dayL: ["Lun", "Mar", "Mer", "Gio", "Ven", "Sab"]
+  }
+};
+function An_L({ mode, t }) {
+  return ce(V.AppShell, {
+    height: "100%",
+    spine: ce(V.Spine, { app: "analytics", sections: t.nav, activeId: "prezentare", onBackToHub: () => {}, bottomItems: ["prezentare", "venituri", "clienti", "echipa"] }),
+    contextBar: ce(LX_Bar, { t, title: "DataView" })
+  },
+    ce(V.PageHeader, {
+      title: t.title, description: mode === "mobile" ? void 0 : t.desc,
+      actions: ce(React.Fragment, null, ce(V.SegmentedControl, { label: t.period, size: mode === "mobile" ? "sm" : "md", defaultValue: "m", options: [{ value: "m", label: t.periods[0] }, { value: "q", label: t.periods[1] }, { value: "y", label: t.periods[2] }] }),
+        mode !== "mobile" && ce("div", { style: { width: 240 } }, ce(V.Select, { defaultValue: "ly", options: [{ value: "ly", label: t.cmp[0] }, { value: "pp", label: t.cmp[1] }] })))
+    }),
+    ce(AX_Body, { mode },
+      ce("div", { className: "v-stats" },
+        ce(V.Stat, { label: t.stats[0][0], value: t.stats[0][1], delta: { value: "+12%", period: t.vs } }),
+        ce(V.Stat, { label: t.stats[1][0], value: t.stats[1][1], delta: { value: "+5%", period: t.vs } }),
+        ce(V.Stat, { label: t.stats[2][0], value: t.stats[2][1], delta: { value: "−8%", period: t.vs } }),
+        ce(V.Stat, { label: t.stats[3][0], value: t.stats[3][1], delta: { value: t.pp, srValue: t.ppSr, period: t.vs } })),
+      ce(V.LineChart, { title: t.line, description: t.lineDesc, labels: t.months, nowIndex: 11, nowLabel: t.now, series: [{ label: t.series[0], values: AN_EUR(AX_AN_REV), color: 1 }, { label: t.series[1], values: AN_EUR(AX_AN_REV_LY), color: "compare" }], unit: t.unit, height: mode === "mobile" ? 200 : 260 }),
+      ce("div", { className: "axcharts" },
+        ce(V.BarChart, { orientation: "horizontal", title: t.serv, description: t.servDesc, data: AX_AN_SERV.map((d, i) => ({ ...d, label: t.servL[i], value: Math.round(d.value / 5) })), unit: t.unit }),
+        ce(V.BarChart, { title: t.days, description: t.daysDesc, data: AX_AN_DAYS.map((d, i) => ({ ...d, label: t.dayL[i] })), compareLabel: t.series[1], height: mode === "mobile" ? 200 : 240 }))));
+}
+function AN_Extra() {
+  return ce(LX_Frames, { title: "DE / IT — test de lungime a textelor: prezentarea generală", notes: ["Deutsch: Sie", "Italiano: Lei", "„+3 Pp.” / „+3 p.p.” cu textul complet pentru cititoarele de ecran"], desktopH: 1260, mobileH: 2050, render: (m, th, t) => ce(An_L, { mode: m, t }) });
+}
+mount(/* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(Screens, { title: "DataView \u2014 Prezentare general\u0103: patru cifre, venitul pe 12 luni \u0219i dou\u0103 compara\u021Bii", notes: ["O singur\u0103 culoare de serie (chart-1); compara\u021Bia e mereu gri (chart-compare)", "Luna \xEEn curs: punct peach \u0219i linie punctat\u0103", "Fiecare grafic are \u201EVezi ca tabel\u201D"], desktopH: 1260, tabletH: 1700, mobileH: 2050, render: (m) => /* @__PURE__ */ React.createElement(An, { mode: m }) }), /* @__PURE__ */ React.createElement(AN_Extra, null)));
 </script>
 </body>
 </html>

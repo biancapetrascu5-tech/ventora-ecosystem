@@ -1,0 +1,15 @@
+{
+ "name": "Cover",
+ "version": "1.0.1",
+ "kind": "foundation",
+ "group": "",
+ "status": "changed",
+ "description": "",
+ "exports": [],
+ "props": [],
+ "events": [],
+ "states": [],
+ "notes": "",
+ "readme": "components/Cover/README.md",
+ "preview": "components/Cover/preview.html"
+}

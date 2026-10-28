@@ -1,0 +1,30 @@
+{
+ "name": "AccessBadge",
+ "version": "1.0.1",
+ "kind": "component",
+ "group": "Hub",
+ "status": "changed",
+ "description": "The label for an app's access state, used on AppTiles and in the owner's access settings.",
+ "exports": [
+  "AccessBadge"
+ ],
+ "props": [
+  {
+   "name": "state",
+   "type": "AccessState",
+   "required": true,
+   "note": ""
+  }
+ ],
+ "events": [],
+ "states": [
+  "available",
+  "unavailable",
+  "notInRole",
+  "notInPlan",
+  "wrapNarrow"
+ ],
+ "notes": "",
+ "readme": "components/AccessBadge/README.md",
+ "preview": "components/AccessBadge/preview.html"
+}

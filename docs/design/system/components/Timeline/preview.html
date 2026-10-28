@@ -1,4 +1,4 @@
-<!-- @dsCard group="Data" height=520 width=1200 -->
+<!-- @dsCard group="Data" height=1918 width=1200 -->
 <!doctype html>
 <html lang="ro">
 <head><meta charset="utf-8"><title>Timeline — Ventora</title>
@@ -250,6 +250,15 @@ html,body{min-height:100%}
 .fxframe .caption{color:var(--ink-muted)}
 @container (max-width:420px){.fxlang{grid-template-columns:32px minmax(0,1fr) auto}.fxlang .v-iconbtn{display:none}}
 
+
+/* c5: light/dark frames and DE/IT sections */
+.qwrap{display:flex;flex-direction:column;gap:var(--space-6);padding:var(--space-4);box-sizing:border-box;background:var(--canvas);color:var(--ink)}
+.qfr{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--space-4);align-items:start}
+.qfr1{grid-template-columns:minmax(0,1fr)}
+.qf{display:flex;flex-direction:column;gap:var(--space-4);padding:var(--space-4);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg);min-width:0;box-sizing:border-box}
+.qf-t{margin:0;color:var(--ink-muted)}
+.qh{margin:0;color:var(--ink)}
+.qsec{display:flex;flex-direction:column;gap:var(--space-3)}
 </style>
 </head>
 <body>
@@ -278,10 +287,10 @@ const ORGS = [
   { id: "nord", name: "Agen\u021Bia Nord Studio", role: "Manager de proiect" }
 ];
 const NOTIFS = [
-  { id: 1, title: "Programare nou\u0103 de la Ana Popescu", body: "Joi, 29 oct., 14:30 \xB7 Tuns", app: "Booking", time: "acum 5 min", person: "Ana Popescu" },
-  { id: 2, title: "Factura #2026-114 e restant\u0103 de 3 zile", body: "Clinica Dentis \xB7 1.250 lei", app: "Finance", time: "acum 2 ore", icon: "receipt" },
-  { id: 3, title: "Ioana a cerut concediu pe 2\u20136 noiembrie", app: "HR", time: "ieri", person: "Ioana Pavel", read: true },
-  { id: 4, title: "Exportul clien\u021Bilor e gata", app: "CRM", time: "ieri", icon: "download", read: true }
+  { id: 1, title: "Programare nou\u0103 de la Ana Popescu", body: "Joi, 29 oct., 14:30 \xB7 Tuns", app: "EasyBook", time: "acum 5 min", person: "Ana Popescu" },
+  { id: 2, title: "Factura #2026-114 e restant\u0103 de 3 zile", body: "Clinica Dentis \xB7 1.250 lei", app: "MoneyDesk", time: "acum 2 ore", icon: "receipt" },
+  { id: 3, title: "Ioana a cerut concediu pe 2\u20136 noiembrie", app: "TeamSpace", time: "ieri", person: "Ioana Pavel", read: true },
+  { id: 4, title: "Exportul clien\u021Bilor e gata", app: "ClientDesk", time: "ieri", icon: "download", read: true }
 ];
 const USER = { name: "Bianca Petra\u0219cu", email: "bianca@ventora-hub.com" };
 function Bar({ title, de }) {
@@ -312,7 +321,7 @@ function BookingShell({ height, active, mobile }) {
       height,
       spine: /* @__PURE__ */ React.createElement(V.Spine, { app: "booking", sections: SECTIONS, activeId: active, onBackToHub: () => {
       }, footer: /* @__PURE__ */ React.createElement(V.UsageMeter, { compact: true, label: "Program\u0103ri", used: 312, limit: 1e3 }) }),
-      contextBar: /* @__PURE__ */ React.createElement(Bar, { title: "Booking" })
+      contextBar: /* @__PURE__ */ React.createElement(Bar, { title: "EasyBook" })
     },
     /* @__PURE__ */ React.createElement(V.PageHeader, { title: "Program\u0103ri", description: mobile ? void 0 : "Toate program\u0103rile afacerii, de azi \xEEnainte.", actions: mobile ? void 0 : /* @__PURE__ */ React.createElement(V.SegmentedControl, { label: "Vizualizare", size: "md", defaultValue: "list", options: [{ value: "list", label: "List\u0103", icon: "list" }, { value: "cal", label: "Calendar", icon: "calendar" }] }) }),
     /* @__PURE__ */ React.createElement(V.DataTable, { columns: [
@@ -462,7 +471,38 @@ function AX_PrjHead({ mode, view }) {
     }
   );
 }
-mount(/* @__PURE__ */ React.createElement("div", { className: "d" }, /* @__PURE__ */ React.createElement(V.Timeline, { label: "Etap\u0103", periods: AX_PRJ_PERIODS, rows: AX_PRJ_ROWS, today: 2.6 })));
+
+const Qh = React.createElement;
+const Q_Fr = ({ theme, title, children, style }) => Qh("section", { className: "qf", "data-theme": theme, style: Object.assign({ background: "var(--canvas)", color: "var(--ink)" }, style || {}) }, Qh("p", { className: "caption qf-t" }, title || (theme === "dark" ? "Dark" : "Light")), children);
+const Q_Pair = ({ children, cols, light, dark }) => Qh("div", { className: cols === 1 ? "qfr qfr1" : "qfr" }, Qh(Q_Fr, { theme: "light" }, light || children), Qh(Q_Fr, { theme: "dark" }, dark || children));
+const Q_Loc = ({ de, it, cols, theme }) => Qh("div", { className: cols === 1 ? "qfr qfr1" : "qfr" }, Qh(Q_Fr, { theme: theme || "light", title: "DE · Deutsch" }, Qh(V.LocaleProvider, { locale: "de" }, de)), Qh(Q_Fr, { theme: theme || "light", title: "IT · Italiano" }, Qh(V.LocaleProvider, { locale: "it" }, it)));
+const Q_Sec = ({ title, children }) => Qh("div", { className: "qsec" }, Qh("h2", { className: "heading qh" }, title), children);
+const Q_Row = ({ label, children }) => Qh("div", { className: "r" }, Qh("span", { className: "l caption" }, label), children);
+const Q_PER = (labels) => labels.map((l, i) => ({ label: l, current: i === 2 }));
+const Q_ROWS = (t) => [
+  { id: "p1", label: t[0], sub: "Bianca Petrașcu", start: 0, end: 2, status: "done", statusLabel: t[6] },
+  { id: "p2", label: t[1], sub: "Bianca Petrașcu", start: 1, end: 3.3, status: "active", progress: 85, statusLabel: "85%" },
+  { id: "p3", label: t[2], sub: "Ioana Pavel", start: 2, end: 2.7, status: "late", statusLabel: t[7] },
+  { id: "p4", label: t[3], sub: "Radu Matei", start: 2.4, end: 5.6, status: "active", progress: 35, statusLabel: "35%" },
+  { id: "p5", label: t[4], sub: "Mara Enache", start: 5.4, end: 6.6, status: "planned", statusLabel: t[8] },
+  { id: "p6", label: t[5], sub: t[9], milestone: 6.7, milestoneLabel: t[10] }
+];
+const Q_TL_RO = ["Brief și conținut", "Design", "Fotografii", "Dezvoltare", "Testare pe telefon și tabletă", "Lansare", "Gata", "Întârziată 2 zile", "9–20 nov.", "Toată echipa", "Vin, 20 nov."];
+const Q_TL_DE = ["Briefing und Inhalte", "Design", "Fotoshooting", "Entwicklung", "Test auf Smartphone und Tablet", "Veröffentlichung", "Fertig", "2 Tage verspätet", "9.–20. Nov.", "Gesamtes Team", "Fr., 20. Nov."];
+const Q_TL_IT = ["Brief e contenuti", "Design", "Servizio fotografico", "Sviluppo", "Test su smartphone e tablet", "Lancio", "Fatto", "In ritardo di 2 giorni", "9–20 nov.", "Tutto il team", "Ven 20 nov."];
+const Q_P_RO = Q_PER(["5 oct.", "12 oct.", "19 oct.", "26 oct.", "2 nov.", "9 nov.", "16 nov.", "23 nov."]);
+const Q_P_DE = Q_PER(["5. Okt.", "12. Okt.", "19. Okt.", "26. Okt.", "2. Nov.", "9. Nov.", "16. Nov.", "23. Nov."]);
+const Q_P_IT = Q_PER(["5 ott.", "12 ott.", "19 ott.", "26 ott.", "2 nov.", "9 nov.", "16 nov.", "23 nov."]);
+function Q_Extra() {
+  return Qh("div", { className: "qwrap" },
+    Qh(Q_Sec, { title: "Light / Dark · planificată, activă cu progres, întârziată, gata, reper, linia „Azi”" },
+      Qh(Q_Pair, { cols: 1 }, Qh(V.Timeline, { label: "Etapă", periods: Q_P_RO, rows: Q_ROWS(Q_TL_RO), today: 2.6 }))),
+    Qh(Q_Sec, { title: "DE / IT · lățime îngustă: săptămânile se derulează, etapele rămân fixe" }, Qh(Q_Loc, {
+      de: Qh(V.Timeline, { label: "Phase", periods: Q_P_DE, rows: Q_ROWS(Q_TL_DE), today: 2.6 }),
+      it: Qh(V.Timeline, { label: "Fase", periods: Q_P_IT, rows: Q_ROWS(Q_TL_IT), today: 2.6 }) })));
+}
+
+mount(Qh("div", null, /* @__PURE__ */ React.createElement("div", { className: "d" }, /* @__PURE__ */ React.createElement(V.Timeline, { label: "Etap\u0103", periods: AX_PRJ_PERIODS, rows: AX_PRJ_ROWS, today: 2.6 })), Qh(Q_Extra, null)));
 </script>
 </body>
 </html>

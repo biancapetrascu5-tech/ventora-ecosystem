@@ -1,0 +1,146 @@
+{
+ "name": "AppTile",
+ "version": "1.0.1",
+ "kind": "component",
+ "group": "Hub",
+ "status": "changed",
+ "description": "One app in the Hub, in exactly one of four access states — only \"Disponibilă\" opens.",
+ "exports": [
+  "AppTile"
+ ],
+ "props": [
+  {
+   "name": "layout",
+   "type": "\"icon\" | \"tile\" | \"row\"",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "app",
+   "type": "AppKey",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "name",
+   "type": "string",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "description",
+   "type": "string",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "icon",
+   "type": "string",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "access",
+   "type": "AccessState",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "reason",
+   "type": "string",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "grantedBy",
+   "type": "string",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "onOpen",
+   "type": "(e: any, name: string) => void",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "onRequestAccess",
+   "type": "() => void",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "onWriteUs",
+   "type": "() => void",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "onSeeStatus",
+   "type": "() => void",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "badge",
+   "type": "number",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "state",
+   "type": "ForcedState",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "recommendation",
+   "type": "{ reason: string; cost?: string; }",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "onDetails",
+   "type": "() => void",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "onDismiss",
+   "type": "() => void",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "onRemindLater",
+   "type": "(period: \"week\" | \"month\") => void",
+   "required": false,
+   "note": ""
+  }
+ ],
+ "events": [
+  "onDetails",
+  "onDismiss",
+  "onOpen",
+  "onRemindLater",
+  "onRequestAccess",
+  "onSeeStatus",
+  "onWriteUs"
+ ],
+ "states": [
+  "available",
+  "hover",
+  "focus",
+  "pressed",
+  "badge",
+  "unavailable",
+  "notInRole",
+  "notInRoleNoOne",
+  "notInPlan",
+  "layoutRow",
+  "layoutIcon"
+ ],
+ "notes": "",
+ "readme": "components/AppTile/README.md",
+ "preview": "components/AppTile/preview.html"
+}

@@ -1,0 +1,81 @@
+{
+ "name": "FormField",
+ "version": "1.0.1",
+ "kind": "component",
+ "group": "Forms",
+ "status": "changed",
+ "description": "The wrapper every form control sits in: label, required marker, helper text and error message, wired with `id` and `aria-describedby`.",
+ "exports": [
+  "FormField"
+ ],
+ "props": [
+  {
+   "name": "label",
+   "type": "ReactNode",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "helper",
+   "type": "ReactNode",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "error",
+   "type": "ReactNode",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "required",
+   "type": "boolean",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "optional",
+   "type": "boolean",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "labelHidden",
+   "type": "boolean",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "counter",
+   "type": "ReactNode",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "id",
+   "type": "string",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "children",
+   "type": "ReactElement",
+   "required": true,
+   "note": ""
+  }
+ ],
+ "events": [],
+ "states": [
+  "default",
+  "required",
+  "optional",
+  "helper",
+  "error",
+  "label-hidden",
+  "counter",
+  "disabled-control"
+ ],
+ "notes": "",
+ "readme": "components/FormField/README.md",
+ "preview": "components/FormField/preview.html"
+}

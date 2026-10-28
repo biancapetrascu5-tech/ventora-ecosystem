@@ -1,4 +1,4 @@
-<!-- @dsCard group="Hub" height=766 width=1100 -->
+<!-- @dsCard group="Hub" height=5840 width=1100 -->
 <!doctype html>
 <html lang="ro">
 <head><meta charset="utf-8"><title>AppTile — Ventora</title>
@@ -250,6 +250,9 @@ html,body{min-height:100%}
 .fxframe .caption{color:var(--ink-muted)}
 @container (max-width:420px){.fxlang{grid-template-columns:32px minmax(0,1fr) auto}.fxlang .v-iconbtn{display:none}}
 
+.thgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(520px,100%),1fr));gap:var(--space-4);align-items:start}
+.thf{display:flex;flex-direction:column;gap:var(--space-4);padding:var(--space-5);background:var(--canvas);color:var(--ink);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg);min-width:0;box-sizing:border-box}
+.thf .thl{margin:0;color:var(--ink-muted);font-weight:600}
 </style>
 </head>
 <body>
@@ -262,21 +265,51 @@ const DE = ({ children }) => /* @__PURE__ */ React.createElement(V.LocaleProvide
 const FR = ({ children }) => /* @__PURE__ */ React.createElement(V.LocaleProvider, { locale: "fr" }, children);
 const IT = ({ children }) => /* @__PURE__ */ React.createElement(V.LocaleProvider, { locale: "it" }, children);
 const mount = (el) => ReactDOM.createRoot(document.getElementById("root")).render(/* @__PURE__ */ React.createElement(V.LocaleProvider, { locale: "ro" }, el));
-function Demo() {
-  return /* @__PURE__ */ React.createElement("div", { className: "d", style: { background: "var(--canvas)" } }, /* @__PURE__ */ React.createElement("div", { className: "tiles" }, /* @__PURE__ */ React.createElement(V.AppTile, { app: "booking", description: "Program\u0103ri, calendar \u0219i reamintiri.", badge: 3, onOpen: () => {
-  } }), /* @__PURE__ */ React.createElement(V.AppTile, { app: "crm", description: "Clien\u021Bi, istoric \u0219i oportunit\u0103\u021Bi.", state: "hover", onOpen: () => {
-  } }), /* @__PURE__ */ React.createElement(V.AppTile, { app: "hr", description: "Echip\u0103, prezen\u021B\u0103 \u0219i concedii.", state: "focus", onOpen: () => {
-  } }), /* @__PURE__ */ React.createElement(V.AppTile, { app: "finance", description: "Facturi, scaden\u021Be \u0219i restan\u021Be.", state: "pressed", onOpen: () => {
-  } })), /* @__PURE__ */ React.createElement("div", { className: "tiles" }, /* @__PURE__ */ React.createElement(V.AppTile, { app: "inventory", access: "unavailable", onSeeStatus: () => {
-  } }), /* @__PURE__ */ React.createElement(V.AppTile, { app: "analytics", access: "notInRole", grantedBy: "Bianca Petra\u0219cu", onRequestAccess: () => {
-  } }), /* @__PURE__ */ React.createElement(V.AppTile, { app: "marketing", access: "notInPlan", onWriteUs: () => {
-  } }), /* @__PURE__ */ React.createElement(V.AppTile, { app: "projects", access: "notInRole" })), /* @__PURE__ */ React.createElement(DE, null, /* @__PURE__ */ React.createElement("div", { className: "tiles" }, /* @__PURE__ */ React.createElement(V.AppTile, { app: "booking", name: "Terminbuchung", description: "Termine, Kalender und Erinnerungen.", onOpen: () => {
-  } }), /* @__PURE__ */ React.createElement(V.AppTile, { app: "inventory", name: "Lagerverwaltung", access: "unavailable", onSeeStatus: () => {
-  } }), /* @__PURE__ */ React.createElement(V.AppTile, { app: "analytics", name: "Auswertungen", access: "notInRole", grantedBy: "Bianca Petra\u0219cu", onRequestAccess: () => {
-  } }), /* @__PURE__ */ React.createElement(V.AppTile, { app: "marketing", name: "Marketing", access: "notInPlan", onWriteUs: () => {
-  } }))));
+const h = React.createElement;
+const Frame = ({ th, label, children }) => h("section", { "data-theme": th, className: "thf" }, h("p", { className: "caption thl" }, (th === "dark" ? "Dark" : "Light") + (label ? " · " + label : "")), children);
+const noop = () => {
+};
+const T = {
+  ro: { lbl: ["Disponibilă · implicit, hover, focus, apăsat", "Cele trei stări blocate (plăcuță estompată)", "Layout „row” · Alte aplicații Ventora", "Layout „icon” · în AppDock"], d: { booking: "Programări, calendar și reamintiri.", crm: "Clienți, istoric și oportunități.", hr: "Echipă, prezență și concedii.", finance: "Facturi, scadențe și restanțe." }, owner: "Bianca Petrașcu", reason: "Facem o actualizare. Revine azi la 14:00, iar datele tale rămân neatinse.", ct: "Contracte, semnături și termene." },
+  de: { lbl: ["Verfügbar · Standard, Hover, Fokus, gedrückt", "Die drei gesperrten Zustände (gedämpfte Platte)", "Layout „row“ · Weitere Ventora-Apps", "Layout „icon“ · im AppDock"], d: { booking: "Termine, Kalender und Erinnerungen an einem Ort.", crm: "Kunden, Verlauf und Verkaufschancen.", hr: "Team, Anwesenheit und Urlaubsanträge.", finance: "Rechnungen, Fälligkeiten und Rückstände." }, owner: "Jürgen Weiß (Inhaber)", reason: "Wir führen ein Update durch. Ab 14:00 Uhr ist sie wieder da, Ihre Daten bleiben unverändert.", ct: "Verträge, Unterschriften und Fristen." },
+  it: { lbl: ["Disponibile · predefinito, hover, focus, premuto", "I tre stati bloccati (piastra attenuata)", "Layout «row» · Altre app Ventora", "Layout «icon» · nell’AppDock"], d: { booking: "Appuntamenti, calendario e promemoria.", crm: "Clienti, cronologia e opportunità.", hr: "Team, presenze e ferie.", finance: "Fatture, scadenze e pagamenti scaduti." }, owner: "Niccolò Lucà (titolare)", reason: "Stiamo facendo un aggiornamento. Torna oggi alle 14:00, i Suoi dati restano invariati.", ct: "Contratti, firme e scadenze." }
+};
+function Set({ L, compact }) {
+  return h(React.Fragment, null,
+    h("p", { className: "caption lab" }, L.lbl[0]),
+    h("div", { className: "tiles" },
+      h(V.AppTile, { app: "booking", description: L.d.booking, badge: 3, onOpen: noop }),
+      h(V.AppTile, { app: "crm", description: L.d.crm, state: "hover", onOpen: noop }),
+      h(V.AppTile, { app: "hr", description: L.d.hr, state: "focus", onOpen: noop }),
+      h(V.AppTile, { app: "finance", description: L.d.finance, state: "pressed", onOpen: noop })),
+    h("p", { className: "caption lab" }, L.lbl[1]),
+    h("div", { className: "tiles" },
+      h(V.AppTile, { app: "inventory", access: "unavailable", onSeeStatus: noop }),
+      h(V.AppTile, { app: "analytics", access: "notInRole", grantedBy: L.owner, onRequestAccess: noop }),
+      h(V.AppTile, { app: "marketing", access: "notInPlan", onWriteUs: noop }),
+      h(V.AppTile, { app: "projects", access: "notInRole" })),
+    !compact && h(React.Fragment, null,
+      h("p", { className: "caption lab" }, L.lbl[2]),
+      h("div", { className: "sheetlike", style: { padding: "var(--space-2) var(--space-4)", display: "flex", flexDirection: "column" } },
+        h(V.AppTile, { layout: "row", app: "events", access: "notInPlan", onWriteUs: noop }),
+        h(V.AppTile, { layout: "row", app: "contracts", access: "notInRole", grantedBy: L.owner, onRequestAccess: noop }),
+        h(V.AppTile, { layout: "row", app: "assets", access: "unavailable", reason: L.reason, onSeeStatus: noop })),
+      h("p", { className: "caption lab" }, L.lbl[3]),
+      h("div", { className: "r", style: { gap: "var(--space-4)", alignItems: "flex-start" } },
+        h(V.AppTile, { layout: "icon", app: "booking", description: L.d.booking, badge: 3, onOpen: noop }),
+        h(V.AppTile, { layout: "icon", app: "crm", description: L.d.crm, onOpen: noop }),
+        h(V.AppTile, { layout: "icon", app: "contracts", description: L.ct, onOpen: noop }))));
 }
-mount(/* @__PURE__ */ React.createElement(Demo, null));
+function Demo() {
+  return h("div", { className: "d" },
+    h(Frame, { th: "light" }, h(Set, { L: T.ro })),
+    h(Frame, { th: "dark" }, h(Set, { L: T.ro })),
+    h(Frame, { th: "light", label: "Deutsch" }, h(DE, null, h(Set, { L: T.de }))),
+    h(Frame, { th: "light", label: "Italiano" }, h(IT, null, h(Set, { L: T.it }))),
+    h(Frame, { th: "dark", label: "Deutsch" }, h(DE, null, h(Set, { L: T.de, compact: true }))),
+    h(Frame, { th: "dark", label: "Italiano" }, h(IT, null, h(Set, { L: T.it, compact: true }))));
+}
+mount(h(Demo, null));
 </script>
 </body>
 </html>

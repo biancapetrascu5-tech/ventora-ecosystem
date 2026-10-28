@@ -1,0 +1,84 @@
+{
+ "name": "Avatar",
+ "version": "1.0.1",
+ "kind": "component",
+ "group": "Status",
+ "status": "changed",
+ "description": "A person or business: photo, or initials on `avatar-bg`; AvatarGroup stacks several with a \"+n\" remainder.",
+ "exports": [
+  "Avatar",
+  "AvatarGroup"
+ ],
+ "props": [
+  {
+   "name": "name",
+   "type": "string",
+   "required": true,
+   "note": ""
+  },
+  {
+   "name": "src",
+   "type": "string",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "size",
+   "type": "\"sm\" | \"md\" | \"lg\" | \"xs\" | \"xl\"",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "shape",
+   "type": "\"circle\" | \"square\"",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "status",
+   "type": "Tone | \"offline\"",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "people",
+   "type": "{ name: string; src?: string; }[]",
+   "required": true,
+   "note": "",
+   "of": "AvatarGroup"
+  },
+  {
+   "name": "max",
+   "type": "number",
+   "required": false,
+   "note": "",
+   "of": "AvatarGroup"
+  },
+  {
+   "name": "size",
+   "type": "\"sm\" | \"md\" | \"lg\" | \"xs\" | \"xl\"",
+   "required": false,
+   "note": "",
+   "of": "AvatarGroup"
+  }
+ ],
+ "events": [],
+ "states": [
+  "xs",
+  "sm",
+  "md",
+  "lg",
+  "xl",
+  "statusDone",
+  "statusAttention",
+  "statusDanger",
+  "statusNeutral",
+  "statusOffline",
+  "square",
+  "group",
+  "groupOverflow"
+ ],
+ "notes": "photo (src) not shown: no sample photo asset in the design system",
+ "readme": "components/Avatar/README.md",
+ "preview": "components/Avatar/preview.html"
+}

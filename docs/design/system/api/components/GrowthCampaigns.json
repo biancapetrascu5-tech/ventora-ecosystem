@@ -1,0 +1,25 @@
+{
+ "name": "GrowthCampaigns",
+ "version": "1.0.1",
+ "kind": "page",
+ "group": "Founder",
+ "status": "changed",
+ "description": "Campaigns list: mode (automatic on a signal, or scheduled), offer, slots, disturbance rate and status. A campaign above the 5% disturbance threshold stops by itself.",
+ "exports": [],
+ "props": [],
+ "events": [],
+ "states": [
+  "Growth — Campanii",
+  "Model comercial",
+  "Growth",
+  "Sistem",
+  "Afaceri",
+  "Consum",
+  "Campanii",
+  "Control",
+  "Mai multe"
+ ],
+ "notes": "States are the labelled boards and frames of the preview (Light and Dark; desktop/tablet/phone).",
+ "readme": "components/GrowthCampaigns/README.md",
+ "preview": "components/GrowthCampaigns/preview.html"
+}

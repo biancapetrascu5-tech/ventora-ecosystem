@@ -1,0 +1,46 @@
+# BookingSmsExtraPhone
+
+`page` · Ecrane Booking · versiunea 1.0.0 · nouă
+
+EasyBook — the extra phone (SPEC_ECRANE_SMS §6): "Conectează alt telefon" when the phone included in the plan is already connected opens the existing UpgradeDialog with one add-on option, "Un telefon în plus". Only when the person acts — no proactive recommendation in the MVP. Built only from UpgradeDialog (options, confirm, processing, success, error; member variant with "Recomandă"), Sheet, SheetSection, Button and the §1 phone rows.
+
+## Evenimente
+
+—
+
+## Stări
+
+- EasyBook — Telefonul în plus („Conectează alt telefon” când telefonul inclus e deja conectat)
+- Gestionare
+- Afacere
+- Azi
+- Calendar
+- Programări
+- Clienți
+- Mai multe
+- SMS-urile pleacă între
+- Reamintirile cu o zi înainte pleacă între
+- Telefonul în plus · Light · desktop și tabletă
+- 1 · Proprietar: ce primește și cât costă ({preț} = de completat, D-SMS-4)
+- 2 · Confirmarea plății, pas separat (§14)
+- Plătești cu cardul
+- 3 · Se procesează plata
+- 4 · Plătit: „Conectează telefonul” deschide fluxul din §2
+- Înainte
+- Acum
+- 5 · Plata nu a trecut
+- 6 · Admin sau manager EasyBook: vede costul, cine decide și „Recomandă” (S12, S18)
+- 7 · După „Recomandă”
+- 8 · Manager, din alerta de capacitate: aceeași variantă
+- 9 · După conectare: două telefoane, cu numele lor (S7)
+- Telefonul în plus · Dark · desktop și tabletă
+- Telefonul în plus · Light · telefon (sheet)
+- Telefonul în plus · Dark · telefon (sheet)
+- Deutsch · desktop
+- Italiano · 390 · admin
+
+## Note
+
+States are the labelled boards and frames of the preview (Light and Dark; desktop/tablet/phone).
+
+Mai mult: `components/BookingSmsExtraPhone/README.md`, exemplele: `components/BookingSmsExtraPhone/preview.html`.

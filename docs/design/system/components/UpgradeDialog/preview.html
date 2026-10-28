@@ -1,4 +1,4 @@
-<!-- @dsCard group="Comercial" height=2780 width=1500 -->
+<!-- @dsCard group="Comercial" height=5950 width=1500 -->
 <!doctype html>
 <html lang="ro">
 <head><meta charset="utf-8"><title>UpgradeDialog — Ventora</title>
@@ -250,6 +250,15 @@ html,body{min-height:100%}
 .fxframe .caption{color:var(--ink-muted)}
 @container (max-width:420px){.fxlang{grid-template-columns:32px minmax(0,1fr) auto}.fxlang .v-iconbtn{display:none}}
 
+
+/* c5: light/dark frames and DE/IT sections */
+.qwrap{display:flex;flex-direction:column;gap:var(--space-6);padding:var(--space-4);box-sizing:border-box;background:var(--canvas);color:var(--ink)}
+.qfr{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--space-4);align-items:start}
+.qfr1{grid-template-columns:minmax(0,1fr)}
+.qf{display:flex;flex-direction:column;gap:var(--space-4);padding:var(--space-4);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg);min-width:0;box-sizing:border-box}
+.qf-t{margin:0;color:var(--ink-muted)}
+.qh{margin:0;color:var(--ink)}
+.qsec{display:flex;flex-direction:column;gap:var(--space-3)}
 </style>
 </head>
 <body>
@@ -264,9 +273,9 @@ const IT = ({ children }) => /* @__PURE__ */ React.createElement(V.LocaleProvide
 const mount = (el) => ReactDOM.createRoot(document.getElementById("root")).render(/* @__PURE__ */ React.createElement(V.LocaleProvider, { locale: "ro" }, el));
 const UP_LIMIT = [
   { id: "pack", kind: "pack", title: "Pachet de 200 de program\u0103ri", price: "39 lei \xB7 doar pentru octombrie \xB7 f\u0103r\u0103 cost de implementare", includes: ["Intr\u0103 imediat, po\u021Bi ad\u0103uga programarea acum", "Din noiembrie revii la limita abonamentului"] },
-  { id: "plan", kind: "plan", title: "Abonamentul Business Plus", price: "449 lei pe lun\u0103 \xEEn loc de 349 \xB7 f\u0103r\u0103 cost de implementare", includes: ["Program\u0103ri nelimitate", "3.000 SMS pe lun\u0103", "Analytics inclus"] }
+  { id: "plan", kind: "plan", title: "Abonamentul Business Plus", price: "449 lei pe lun\u0103 \xEEn loc de 349 \xB7 f\u0103r\u0103 cost de implementare", includes: ["Program\u0103ri nelimitate", "3.000 SMS pe lun\u0103", "DataView inclus"] }
 ];
-const UP_TRIAL = [{ id: "trial", kind: "trial", title: "Analytics, gratuit 14 zile", price: "Apoi 79 lei pe lun\u0103, doar dac\u0103 alegi s\u0103 continui \xB7 f\u0103r\u0103 cost de implementare", includes: ["Venitul pe servicii \u0219i pe angaja\u021Bi", "Compara\u021Bii cu luna \u0219i anul trecut", "Toate datele din Booking, de la prima zi"] }];
+const UP_TRIAL = [{ id: "trial", kind: "trial", title: "DataView, gratuit 14 zile", price: "Apoi 79 lei pe lun\u0103, doar dac\u0103 alegi s\u0103 continui \xB7 f\u0103r\u0103 cost de implementare", includes: ["Venitul pe servicii \u0219i pe angaja\u021Bi", "Compara\u021Bii cu luna \u0219i anul trecut", "Toate datele din EasyBook, de la prima zi"] }];
 const CARD = { brand: "Visa", last4: "4242", expiry: "08/28" };
 function UpDemo() {
   const lim = { label: "Program\u0103ri \xEEn octombrie", used: 1e3, limit: 1e3 };
@@ -276,19 +285,50 @@ function UpDemo() {
   } })), /* @__PURE__ */ React.createElement("div", { className: "d0" }, /* @__PURE__ */ React.createElement("p", { className: "caption muted" }, "3 \xB7 Confirmare \u2014 abonament (r\u0103m\xE2ne cerere)"), /* @__PURE__ */ React.createElement(V.UpgradeDialog, { inline: true, step: "confirm", title: "Trimite cererea", options: UP_LIMIT, value: "plan", summary: { what: "Abonamentul Business Plus", when: "Dup\u0103 ce \xEE\u021Bi confirm\u0103m noul abonament", price: "449 lei pe lun\u0103 \xEEn loc de 349", setup: "F\u0103r\u0103" }, onBack: () => {
   }, onPay: () => {
   } })), /* @__PURE__ */ React.createElement("div", { className: "d0" }, /* @__PURE__ */ React.createElement("p", { className: "caption muted" }, "4 \xB7 Op\u021Biuni \u2014 membru: vede variantele \u0219i cine decide"), /* @__PURE__ */ React.createElement(V.UpgradeDialog, { inline: true, role: "member", title: "Ai atins limita de program\u0103ri din octombrie", description: "Program\u0103rile existente r\u0103m\xE2n. Ca s\u0103 adaugi una nou\u0103 luna aceasta, e nevoie de una dintre variantele de mai jos.", usage: lim, options: UP_LIMIT, decider: "Bianca Petra\u0219cu (proprietar)", onRecommend: () => {
-  } })), /* @__PURE__ */ React.createElement("div", { className: "d0" }, /* @__PURE__ */ React.createElement("p", { className: "caption muted" }, "5 \xB7 Confirmare \u2014 perioad\u0103 de prob\u0103"), /* @__PURE__ */ React.createElement(V.UpgradeDialog, { inline: true, step: "confirm", title: "\xCEncepe perioada de prob\u0103", options: UP_TRIAL, value: "trial", summary: { what: "Analytics, gratuit 14 zile", when: "Azi, p\xE2n\u0103 pe 7 noiembrie", price: "Gratuit, apoi 79 lei pe lun\u0103 doar dac\u0103 alegi s\u0103 continui", setup: "F\u0103r\u0103" }, onBack: () => {
+  } })), /* @__PURE__ */ React.createElement("div", { className: "d0" }, /* @__PURE__ */ React.createElement("p", { className: "caption muted" }, "5 \xB7 Confirmare \u2014 perioad\u0103 de prob\u0103"), /* @__PURE__ */ React.createElement(V.UpgradeDialog, { inline: true, step: "confirm", title: "\xCEncepe perioada de prob\u0103", options: UP_TRIAL, value: "trial", summary: { what: "DataView, gratuit 14 zile", when: "Azi, p\xE2n\u0103 pe 7 noiembrie", price: "Gratuit, apoi 79 lei pe lun\u0103 doar dac\u0103 alegi s\u0103 continui", setup: "F\u0103r\u0103" }, onBack: () => {
   }, onPay: () => {
   } })), /* @__PURE__ */ React.createElement("div", { className: "d0" }, /* @__PURE__ */ React.createElement("p", { className: "caption muted" }, "6 \xB7 Se proceseaz\u0103"), /* @__PURE__ */ React.createElement(V.UpgradeDialog, { inline: true, step: "processing", title: "", options: UP_LIMIT, value: "pack", summary: { total: "39 lei" } })), /* @__PURE__ */ React.createElement("div", { className: "d0" }, /* @__PURE__ */ React.createElement("p", { className: "caption muted" }, "7 \xB7 Plata a reu\u0219it \u2014 limita cre\u0219te imediat, factura e gata"), /* @__PURE__ */ React.createElement(V.UpgradeDialog, { inline: true, step: "success", options: UP_LIMIT, value: "pack", success: { usage: { label: "Program\u0103ri \xEEn octombrie", used: 1e3, limitBefore: 1e3, limitAfter: 1200 }, invoice: { number: "VNT-2026-0207" } }, doneLabel: "Adaug\u0103 programarea", onDone: () => {
   } })), /* @__PURE__ */ React.createElement("div", { className: "d0" }, /* @__PURE__ */ React.createElement("p", { className: "caption muted" }, "8 \xB7 Plata nu a trecut"), /* @__PURE__ */ React.createElement(V.UpgradeDialog, { inline: true, step: "error", options: UP_LIMIT, value: "pack", card: CARD, error: { title: "Banca a refuzat plata", message: "Banca spune: cardul a expirat." }, onRetry: () => {
   }, onUseOtherCard: () => {
-  } })), /* @__PURE__ */ React.createElement("div", { className: "d0" }, /* @__PURE__ */ React.createElement("p", { className: "caption muted" }, "9 \xB7 Perioada de prob\u0103 a \xEEnceput"), /* @__PURE__ */ React.createElement(V.UpgradeDialog, { inline: true, step: "trial", options: UP_TRIAL, value: "trial", trial: { text: "Ai Analytics p\xE2n\u0103 pe 7 noiembrie. Atunci se opre\u0219te singur\u0103, iar datele r\u0103m\xE2n. O p\u0103strezi doar dac\u0103 alegi tu: 79 lei pe lun\u0103.", reminder: "\xCE\u021Bi amintim cu 3 zile \xEEnainte de final." }, doneLabel: "Deschide Analytics", onDone: () => {
+  } })), /* @__PURE__ */ React.createElement("div", { className: "d0" }, /* @__PURE__ */ React.createElement("p", { className: "caption muted" }, "9 \xB7 Perioada de prob\u0103 a \xEEnceput"), /* @__PURE__ */ React.createElement(V.UpgradeDialog, { inline: true, step: "trial", options: UP_TRIAL, value: "trial", trial: { text: "Ai DataView p\xE2n\u0103 pe 7 noiembrie. Atunci se opre\u0219te singur\u0103, iar datele r\u0103m\xE2n. O p\u0103strezi doar dac\u0103 alegi tu: 79 lei pe lun\u0103.", reminder: "\xCE\u021Bi amintim cu 3 zile \xEEnainte de final." }, doneLabel: "Deschide DataView", onDone: () => {
   } }))), /* @__PURE__ */ React.createElement("div", { className: "dlggrid" }, /* @__PURE__ */ React.createElement("div", { className: "d0" }, /* @__PURE__ */ React.createElement("p", { className: "caption muted" }, "Telefon: bottom sheet, op\u021Biunile una sub alta, butoanele pe toat\u0103 l\u0103\u021Bimea"), /* @__PURE__ */ React.createElement("div", { className: "phone2", style: { width: 360, position: "relative", height: 760, overflow: "hidden", background: "var(--scrim)", display: "flex", alignItems: "flex-end", padding: 0 } }, /* @__PURE__ */ React.createElement(V.UpgradeDialog, { inline: true, sheet: true, title: "Ai atins limita de program\u0103ri din octombrie", usage: lim, options: UP_LIMIT, onContinue: () => {
   } }))), /* @__PURE__ */ React.createElement("div", { className: "d0" }, /* @__PURE__ */ React.createElement("p", { className: "caption muted" }, "DE"), /* @__PURE__ */ React.createElement(DE, null, /* @__PURE__ */ React.createElement(V.UpgradeDialog, { inline: true, title: "Sie haben das Terminlimit f\xFCr Oktober erreicht", usage: { label: "Termine im Oktober", used: 1e3, limit: 1e3 }, options: [{ id: "p", kind: "pack", title: "Paket mit 200 Terminen", price: "39 lei \xB7 nur f\xFCr Oktober \xB7 keine Einrichtungsgeb\xFChr" }, { id: "q", kind: "plan", title: "Abonnement Business Plus", price: "449 lei pro Monat statt 349" }], onContinue: () => {
   } }))), /* @__PURE__ */ React.createElement("div", { className: "d0" }, /* @__PURE__ */ React.createElement("p", { className: "caption muted" }, "IT"), /* @__PURE__ */ React.createElement(IT, null, /* @__PURE__ */ React.createElement(V.UpgradeDialog, { inline: true, step: "confirm", title: "Verifichi e paghi", options: [{ id: "p", kind: "pack", title: "Pacchetto di 200 appuntamenti" }], value: "p", summary: { what: "200 appuntamenti in pi\xF9", when: "Subito dopo il pagamento, fino al 31 ottobre", price: "39 lei, una sola volta", setup: "Nessuno", total: "39 lei" }, card: CARD, onBack: () => {
   }, onPay: () => {
   } })))));
 }
-mount(/* @__PURE__ */ React.createElement(UpDemo, null));
+
+const Qh = React.createElement;
+const Q_Fr = ({ theme, title, children, style }) => Qh("section", { className: "qf", "data-theme": theme, style: Object.assign({ background: "var(--canvas)", color: "var(--ink)" }, style || {}) }, Qh("p", { className: "caption qf-t" }, title || (theme === "dark" ? "Dark" : "Light")), children);
+const Q_Pair = ({ children, cols, light, dark }) => Qh("div", { className: cols === 1 ? "qfr qfr1" : "qfr" }, Qh(Q_Fr, { theme: "light" }, light || children), Qh(Q_Fr, { theme: "dark" }, dark || children));
+const Q_Loc = ({ de, it, cols, theme }) => Qh("div", { className: cols === 1 ? "qfr qfr1" : "qfr" }, Qh(Q_Fr, { theme: theme || "light", title: "DE · Deutsch" }, Qh(V.LocaleProvider, { locale: "de" }, de)), Qh(Q_Fr, { theme: theme || "light", title: "IT · Italiano" }, Qh(V.LocaleProvider, { locale: "it" }, it)));
+const Q_Sec = ({ title, children }) => Qh("div", { className: "qsec" }, Qh("h2", { className: "heading qh" }, title), children);
+const Q_Row = ({ label, children }) => Qh("div", { className: "r" }, Qh("span", { className: "l caption" }, label), children);
+const Q_LIM = { label: "Programări în octombrie", used: 1e3, limit: 1e3 };
+const Q_Cap = (s) => Qh("p", { className: "caption muted", style: { margin: 0 } }, s);
+const Q_DarkAll = () => Qh("div", { className: "dlggrid" },
+  Qh("div", { className: "d0" }, Q_Cap("Opțiuni — proprietar"), Qh(V.UpgradeDialog, { inline: true, title: "Ai atins limita de programări din octombrie", description: "Ca să adaugi programarea de azi, alege una dintre variante.", usage: Q_LIM, options: UP_LIMIT, onContinue: () => {} })),
+  Qh("div", { className: "d0" }, Q_Cap("Confirmare — pachet plătit"), Qh(V.UpgradeDialog, { inline: true, step: "confirm", title: "Verifică și plătește", options: UP_LIMIT, value: "pack", summary: { what: "200 de programări în plus", when: "Imediat după plată, până pe 31 octombrie", price: "39 lei, o singură dată", setup: "Fără", total: "39 lei" }, card: CARD, onBack: () => {}, onPay: () => {} })),
+  Qh("div", { className: "d0" }, Q_Cap("Opțiuni — membru"), Qh(V.UpgradeDialog, { inline: true, role: "member", title: "Ai atins limita de programări din octombrie", usage: Q_LIM, options: UP_LIMIT, decider: "Bianca Petrașcu (proprietar)", onRecommend: () => {} })),
+  Qh("div", { className: "d0" }, Q_Cap("Se procesează"), Qh(V.UpgradeDialog, { inline: true, step: "processing", title: "", options: UP_LIMIT, value: "pack", summary: { total: "39 lei" } })),
+  Qh("div", { className: "d0" }, Q_Cap("Plata a reușit"), Qh(V.UpgradeDialog, { inline: true, step: "success", options: UP_LIMIT, value: "pack", success: { usage: { label: "Programări în octombrie", used: 1e3, limitBefore: 1e3, limitAfter: 1200 }, invoice: { number: "VNT-2026-0207" } }, doneLabel: "Adaugă programarea", onDone: () => {} })),
+  Qh("div", { className: "d0" }, Q_Cap("Plata nu a trecut"), Qh(V.UpgradeDialog, { inline: true, step: "error", options: UP_LIMIT, value: "pack", card: CARD, error: { title: "Banca a refuzat plata", message: "Banca spune: cardul a expirat." }, onRetry: () => {}, onUseOtherCard: () => {} })),
+  Qh("div", { className: "d0" }, Q_Cap("Perioada de probă a început"), Qh(V.UpgradeDialog, { inline: true, step: "trial", options: UP_TRIAL, value: "trial", trial: { text: "Ai DataView până pe 7 noiembrie. Atunci se oprește singură, iar datele rămân. O păstrezi doar dacă alegi tu: 79 lei pe lună.", reminder: "Îți amintim cu 3 zile înainte de final." }, doneLabel: "Deschide DataView", onDone: () => {} })));
+const Q_DE_OPT = [{ id: "p", kind: "pack", title: "Zusatzpaket mit 200 Terminen", price: "39 lei · nur für Oktober · keine Einrichtungsgebühr", includes: ["Sofort aktiv, Sie können den Termin jetzt hinzufügen", "Ab November gilt wieder das Limit Ihres Abonnements"] }, { id: "q", kind: "plan", title: "Abonnement Business Plus", price: "449 lei pro Monat statt 349 · keine Einrichtungsgebühr", includes: ["Unbegrenzte Termine", "3.000 SMS pro Monat", "DataView inklusive"] }];
+const Q_IT_OPT = [{ id: "p", kind: "pack", title: "Pacchetto extra di 200 appuntamenti", price: "39 lei · solo per ottobre · nessun costo di attivazione", includes: ["Attivo subito, può aggiungere l’appuntamento adesso", "Da novembre torna il limite del Suo abbonamento"] }, { id: "q", kind: "plan", title: "Abbonamento Business Plus", price: "449 lei al mese invece di 349 · nessun costo di attivazione", includes: ["Appuntamenti illimitati", "3.000 SMS al mese", "DataView incluso"] }];
+function Q_Extra() {
+  return Qh("div", { className: "qwrap" },
+    Qh(Q_Sec, { title: "Light / Dark · opțiuni (proprietar)" }, Qh("div", { className: "qfr" },
+      Qh(Q_Fr, { theme: "light" }, Qh(V.UpgradeDialog, { inline: true, title: "Ai atins limita de programări din octombrie", description: "Ca să adaugi programarea de azi, alege una dintre variante.", usage: Q_LIM, options: UP_LIMIT, onContinue: () => {} })),
+      Qh(Q_Fr, { theme: "dark" }, Qh(V.UpgradeDialog, { inline: true, title: "Ai atins limita de programări din octombrie", description: "Ca să adaugi programarea de azi, alege una dintre variante.", usage: Q_LIM, options: UP_LIMIT, onContinue: () => {} })))),
+    Qh(Q_Sec, { title: "Dark · toți pașii" }, Qh(Q_Fr, { theme: "dark" }, Qh(Q_DarkAll, null))),
+    Qh(Q_Sec, { title: "DE / IT · plata a reușit, plata nu a trecut, membru" }, Qh("div", { className: "dlggrid" },
+      Qh(Q_Fr, { theme: "light", title: "DE · Deutsch" }, Qh(V.LocaleProvider, { locale: "de" }, Qh(V.UpgradeDialog, { inline: true, step: "success", options: Q_DE_OPT, value: "p", success: { usage: { label: "Termine im Oktober", used: 1e3, limitBefore: 1e3, limitAfter: 1200 }, invoice: { number: "VNT-2026-0207" } }, doneLabel: "Termin hinzufügen", onDone: () => {} }))),
+      Qh(Q_Fr, { theme: "light", title: "DE · Deutsch" }, Qh(V.LocaleProvider, { locale: "de" }, Qh(V.UpgradeDialog, { inline: true, step: "error", options: Q_DE_OPT, value: "p", card: CARD, error: { title: "Ihre Bank hat die Zahlung abgelehnt", message: "Laut Ihrer Bank ist die Karte abgelaufen." }, onRetry: () => {}, onUseOtherCard: () => {} }))),
+      Qh(Q_Fr, { theme: "light", title: "IT · Italiano" }, Qh(V.LocaleProvider, { locale: "it" }, Qh(V.UpgradeDialog, { inline: true, role: "member", title: "Ha raggiunto il limite di appuntamenti di ottobre", description: "Gli appuntamenti esistenti restano. Per aggiungerne uno nuovo questo mese serve una delle opzioni qui sotto.", usage: { label: "Appuntamenti a ottobre", used: 1e3, limit: 1e3 }, options: Q_IT_OPT, decider: "Bianca Petrașcu (titolare)", onRecommend: () => {} }))))));
+}
+
+mount(Qh("div", null, /* @__PURE__ */ React.createElement(UpDemo, null), Qh(Q_Extra, null)));
 </script>
 </body>
 </html>

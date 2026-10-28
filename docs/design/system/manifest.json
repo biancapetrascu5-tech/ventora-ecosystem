@@ -1,0 +1,1374 @@
+{
+ "name": "Ventora",
+ "namespace": "Ventora",
+ "version": "2026.10.28",
+ "previousExport": "2026-10-25",
+ "generatedAt": "2026-10-28T12:00:00Z",
+ "versioning": "Exportul din 25 oct. 2026 = 1.0.0 pentru fiecare componentă. 2.0.0 = schimbare vizuală fără schimbare de cod; 1.1.0 = structură, proprietăți sau stiluri noi, compatibile; 1.0.1 = texte, README sau preview. Vezi CHANGELOG.md.",
+ "files": {
+  "bundle": "components/bundle.js",
+  "styles": "components/bundle.css",
+  "types": "components/index.d.ts",
+  "tokens": [
+   "tokens.json",
+   "tokens.css"
+  ],
+  "fonts": [
+   "fonts/DMSans-Italic-Variable.woff2",
+   "fonts/DMSans-Variable.woff2",
+   "fonts/Syne-Variable.woff2"
+  ],
+  "i18n": [
+   "i18n/two-factor.json"
+  ],
+  "docs": [
+   "README.md",
+   "patterns.md",
+   "glossary.md",
+   "CHANGELOG.md",
+   "api/README.md"
+  ]
+ },
+ "components": [
+  {
+   "name": "AccessBadge",
+   "version": "1.0.1",
+   "kind": "component",
+   "group": "Hub",
+   "status": "changed",
+   "readme": "components/AccessBadge/README.md",
+   "preview": "components/AccessBadge/preview.html",
+   "api": "api/components/AccessBadge.json"
+  },
+  {
+   "name": "AccountMenu",
+   "version": "1.1.0",
+   "kind": "component",
+   "group": "Hub",
+   "status": "changed",
+   "readme": "components/AccountMenu/README.md",
+   "preview": "components/AccountMenu/preview.html",
+   "api": "api/components/AccountMenu.json"
+  },
+  {
+   "name": "AddonPurchase",
+   "version": "1.0.1",
+   "kind": "component",
+   "group": "Hub",
+   "status": "changed",
+   "readme": "components/AddonPurchase/README.md",
+   "preview": "components/AddonPurchase/preview.html",
+   "api": "api/components/AddonPurchase.json"
+  },
+  {
+   "name": "Agenda",
+   "version": "1.0.1",
+   "kind": "component",
+   "group": "Data",
+   "status": "changed",
+   "readme": "components/Agenda/README.md",
+   "preview": "components/Agenda/preview.html",
+   "api": "api/components/Agenda.json"
+  },
+  {
+   "name": "AnalyticsDashboard",
+   "version": "1.0.1",
+   "kind": "page",
+   "group": "Ecrane aplicații",
+   "status": "changed",
+   "readme": "components/AnalyticsDashboard/README.md",
+   "preview": "components/AnalyticsDashboard/preview.html",
+   "api": "api/components/AnalyticsDashboard.json"
+  },
+  {
+   "name": "AppDock",
+   "version": "1.1.0",
+   "kind": "component",
+   "group": "Hub",
+   "status": "changed",
+   "readme": "components/AppDock/README.md",
+   "preview": "components/AppDock/preview.html",
+   "api": "api/components/AppDock.json"
+  },
+  {
+   "name": "AppIcon",
+   "version": "1.0.1",
+   "kind": "component",
+   "group": "Hub",
+   "status": "changed",
+   "readme": "components/AppIcon/README.md",
+   "preview": "components/AppIcon/preview.html",
+   "api": "api/components/AppIcon.json"
+  },
+  {
+   "name": "AppIconContext",
+   "version": "1.0.1",
+   "kind": "page",
+   "group": "Hub",
+   "status": "changed",
+   "readme": "components/AppIconContext/README.md",
+   "preview": "components/AppIconContext/preview.html",
+   "api": "api/components/AppIconContext.json"
+  },
+  {
+   "name": "AppIconGrid",
+   "version": "1.0.1",
+   "kind": "foundation",
+   "group": "Hub",
+   "status": "changed",
+   "readme": "components/AppIconGrid/README.md",
+   "preview": "components/AppIconGrid/preview.html",
+   "api": "api/components/AppIconGrid.json"
+  },
+  {
+   "name": "AppLaunch",
+   "version": "1.0.1",
+   "kind": "component",
+   "group": "Hub",
+   "status": "changed",
+   "readme": "components/AppLaunch/README.md",
+   "preview": "components/AppLaunch/preview.html",
+   "api": "api/components/AppLaunch.json"
+  },
+  {
+   "name": "AppShell",
+   "version": "1.0.1",
+   "kind": "component",
+   "group": "Shell",
+   "status": "changed",
+   "readme": "components/AppShell/README.md",
+   "preview": "components/AppShell/preview.html",
+   "api": "api/components/AppShell.json"
+  },
+  {
+   "name": "AppStates",
+   "version": "1.0.1",
+   "kind": "page",
+   "group": "Ecrane aplicații",
+   "status": "changed",
+   "readme": "components/AppStates/README.md",
+   "preview": "components/AppStates/preview.html",
+   "api": "api/components/AppStates.json"
+  },
+  {
+   "name": "AppTile",
+   "version": "1.0.1",
+   "kind": "component",
+   "group": "Hub",
+   "status": "changed",
+   "readme": "components/AppTile/README.md",
+   "preview": "components/AppTile/preview.html",
+   "api": "api/components/AppTile.json"
+  },
+  {
+   "name": "AttentionList",
+   "version": "2.0.0",
+   "kind": "component",
+   "group": "Feedback",
+   "status": "changed",
+   "readme": "components/AttentionList/README.md",
+   "preview": "components/AttentionList/preview.html",
+   "api": "api/components/AttentionList.json"
+  },
+  {
+   "name": "AuthLayout",
+   "version": "1.0.0",
+   "kind": "component",
+   "group": "Hub",
+   "status": "new",
+   "readme": "components/AuthLayout/README.md",
+   "preview": "components/AuthLayout/preview.html",
+   "api": "api/components/AuthLayout.json"
+  },
+  {
+   "name": "Avatar",
+   "version": "1.0.1",
+   "kind": "component",
+   "group": "Status",
+   "status": "changed",
+   "readme": "components/Avatar/README.md",
+   "preview": "components/Avatar/preview.html",
+   "api": "api/components/Avatar.json"
+  },
+  {
+   "name": "Badge",
+   "version": "1.0.1",
+   "kind": "component",
+   "group": "Status",
+   "status": "changed",
+   "readme": "components/Badge/README.md",
+   "preview": "components/Badge/preview.html",
+   "api": "api/components/Badge.json"
+  },
+  {
+   "name": "BarChart",
+   "version": "1.0.1",
+   "kind": "component",
+   "group": "Data",
+   "status": "changed",
+   "readme": "components/BarChart/README.md",
+   "preview": "components/BarChart/preview.html",
+   "api": "api/components/BarChart.json"
+  },
+  {
+   "name": "BookingCalendar",
+   "version": "1.0.1",
+   "kind": "page",
+   "group": "Ecrane Booking",
+   "status": "changed",
+   "readme": "components/BookingCalendar/README.md",
+   "preview": "components/BookingCalendar/preview.html",
+   "api": "api/components/BookingCalendar.json"
+  },
+  {
+   "name": "BookingDetail",
+   "version": "1.0.1",
+   "kind": "page",
+   "group": "Ecrane Booking",
+   "status": "changed",
+   "readme": "components/BookingDetail/README.md",
+   "preview": "components/BookingDetail/preview.html",
+   "api": "api/components/BookingDetail.json"
+  },
+  {
+   "name": "BookingLimit",
+   "version": "1.0.1",
+   "kind": "page",
+   "group": "Ecrane Booking",
+   "status": "changed",
+   "readme": "components/BookingLimit/README.md",
+   "preview": "components/BookingLimit/preview.html",
+   "api": "api/components/BookingLimit.json"
+  },
+  {
+   "name": "BookingList",
+   "version": "1.0.1",
+   "kind": "page",
+   "group": "Ecrane Booking",
+   "status": "changed",
+   "readme": "components/BookingList/README.md",
+   "preview": "components/BookingList/preview.html",
+   "api": "api/components/BookingList.json"
+  },
+  {
+   "name": "BookingNew",
+   "version": "1.0.1",
+   "kind": "page",
+   "group": "Ecrane Booking",
+   "status": "changed",
+   "readme": "components/BookingNew/README.md",
+   "preview": "components/BookingNew/preview.html",
+   "api": "api/components/BookingNew.json"
+  },
+  {
+   "name": "BookingSettings",
+   "version": "1.0.1",
+   "kind": "page",
+   "group": "Ecrane Booking",
+   "status": "changed",
+   "readme": "components/BookingSettings/README.md",
+   "preview": "components/BookingSettings/preview.html",
+   "api": "api/components/BookingSettings.json"
+  },
+  {
+   "name": "BookingSmsConnect",
+   "version": "1.0.0",
+   "kind": "page",
+   "group": "Ecrane Booking",
+   "status": "new",
+   "readme": "components/BookingSmsConnect/README.md",
+   "preview": "components/BookingSmsConnect/preview.html",
+   "api": "api/components/BookingSmsConnect.json"
+  },
+  {
+   "name": "BookingSmsExtraPhone",
+   "version": "1.0.0",
+   "kind": "page",
+   "group": "Ecrane Booking",
+   "status": "new",
+   "readme": "components/BookingSmsExtraPhone/README.md",
+   "preview": "components/BookingSmsExtraPhone/preview.html",
+   "api": "api/components/BookingSmsExtraPhone.json"
+  },
+  {
+   "name": "BookingSmsList",
+   "version": "1.0.0",
+   "kind": "page",
+   "group": "Ecrane Booking",
+   "status": "new",
+   "readme": "components/BookingSmsList/README.md",
+   "preview": "components/BookingSmsList/preview.html",
+   "api": "api/components/BookingSmsList.json"
+  },
+  {
+   "name": "BookingSmsMessages",
+   "version": "1.0.0",
+   "kind": "page",
+   "group": "Ecrane Booking",
+   "status": "new",
+   "readme": "components/BookingSmsMessages/README.md",
+   "preview": "components/BookingSmsMessages/preview.html",
+   "api": "api/components/BookingSmsMessages.json"
+  },
+  {
+   "name": "BookingSmsNotifications",
+   "version": "1.0.0",
+   "kind": "page",
+   "group": "Ecrane Booking",
+   "status": "new",
+   "readme": "components/BookingSmsNotifications/README.md",
+   "preview": "components/BookingSmsNotifications/preview.html",
+   "api": "api/components/BookingSmsNotifications.json"
+  },
+  {
+   "name": "BookingSmsSettings",
+   "version": "1.0.0",
+   "kind": "page",
+   "group": "Ecrane Booking",
+   "status": "new",
+   "readme": "components/BookingSmsSettings/README.md",
+   "preview": "components/BookingSmsSettings/preview.html",
+   "api": "api/components/BookingSmsSettings.json"
+  },
+  {
+   "name": "BookingSmsToday",
+   "version": "1.0.0",
+   "kind": "page",
+   "group": "Ecrane Booking",
+   "status": "new",
+   "readme": "components/BookingSmsToday/README.md",
+   "preview": "components/BookingSmsToday/preview.html",
+   "api": "api/components/BookingSmsToday.json"
+  },
+  {
+   "name": "BookingStates",
+   "version": "1.0.1",
+   "kind": "page",
+   "group": "Ecrane Booking",
+   "status": "changed",
+   "readme": "components/BookingStates/README.md",
+   "preview": "components/BookingStates/preview.html",
+   "api": "api/components/BookingStates.json"
+  },
+  {
+   "name": "BookingToday",
+   "version": "1.0.1",
+   "kind": "page",
+   "group": "Ecrane Booking",
+   "status": "changed",
+   "readme": "components/BookingToday/README.md",
+   "preview": "components/BookingToday/preview.html",
+   "api": "api/components/BookingToday.json"
+  },
+  {
+   "name": "BrandZone",
+   "version": "1.0.1",
+   "kind": "component",
+   "group": "Hub",
+   "status": "changed",
+   "readme": "components/BrandZone/README.md",
+   "preview": "components/BrandZone/preview.html",
+   "api": "api/components/BrandZone.json"
+  },
+  {
+   "name": "Button",
+   "version": "1.1.0",
+   "kind": "component",
+   "group": "Actions",
+   "status": "changed",
+   "readme": "components/Button/README.md",
+   "preview": "components/Button/preview.html",
+   "api": "api/components/Button.json"
+  },
+  {
+   "name": "CatalogRecommendation",
+   "version": "1.0.1",
+   "kind": "component",
+   "group": "Comercial",
+   "status": "changed",
+   "readme": "components/CatalogRecommendation/README.md",
+   "preview": "components/CatalogRecommendation/preview.html",
+   "api": "api/components/CatalogRecommendation.json"
+  },
+  {
+   "name": "Checkbox",
+   "version": "1.0.1",
+   "kind": "component",
+   "group": "Forms",
+   "status": "changed",
+   "readme": "components/Checkbox/README.md",
+   "preview": "components/Checkbox/preview.html",
+   "api": "api/components/Checkbox.json"
+  },
+  {
+   "name": "Combobox",
+   "version": "1.0.1",
+   "kind": "component",
+   "group": "Forms",
+   "status": "changed",
+   "readme": "components/Combobox/README.md",
+   "preview": "components/Combobox/preview.html",
+   "api": "api/components/Combobox.json"
+  },
+  {
+   "name": "CommandPalette",
+   "version": "1.0.1",
+   "kind": "component",
+   "group": "Navigation",
+   "status": "changed",
+   "readme": "components/CommandPalette/README.md",
+   "preview": "components/CommandPalette/preview.html",
+   "api": "api/components/CommandPalette.json"
+  },
+  {
+   "name": "CommercialPreferences",
+   "version": "1.0.1",
+   "kind": "component",
+   "group": "Comercial",
+   "status": "changed",
+   "readme": "components/CommercialPreferences/README.md",
+   "preview": "components/CommercialPreferences/preview.html",
+   "api": "api/components/CommercialPreferences.json"
+  },
+  {
+   "name": "CommercialStates",
+   "version": "1.0.1",
+   "kind": "page",
+   "group": "Comercial",
+   "status": "changed",
+   "readme": "components/CommercialStates/README.md",
+   "preview": "components/CommercialStates/preview.html",
+   "api": "api/components/CommercialStates.json"
+  },
+  {
+   "name": "ContextBar",
+   "version": "1.1.0",
+   "kind": "component",
+   "group": "Shell",
+   "status": "changed",
+   "readme": "components/ContextBar/README.md",
+   "preview": "components/ContextBar/preview.html",
+   "api": "api/components/ContextBar.json"
+  },
+  {
+   "name": "Cover",
+   "version": "1.0.1",
+   "kind": "foundation",
+   "group": "",
+   "status": "changed",
+   "readme": "components/Cover/README.md",
+   "preview": "components/Cover/preview.html",
+   "api": "api/components/Cover.json"
+  },
+  {
+   "name": "CrmPipeline",
+   "version": "1.0.1",
+   "kind": "page",
+   "group": "Ecrane aplicații",
+   "status": "changed",
+   "readme": "components/CrmPipeline/README.md",
+   "preview": "components/CrmPipeline/preview.html",
+   "api": "api/components/CrmPipeline.json"
+  },
+  {
+   "name": "DataTable",
+   "version": "1.0.1",
+   "kind": "component",
+   "group": "Data",
+   "status": "changed",
+   "readme": "components/DataTable/README.md",
+   "preview": "components/DataTable/preview.html",
+   "api": "api/components/DataTable.json"
+  },
+  {
+   "name": "DatePicker",
+   "version": "1.0.1",
+   "kind": "component",
+   "group": "Forms",
+   "status": "changed",
+   "readme": "components/DatePicker/README.md",
+   "preview": "components/DatePicker/preview.html",
+   "api": "api/components/DatePicker.json"
+  },
+  {
+   "name": "Dialog",
+   "version": "1.0.1",
+   "kind": "component",
+   "group": "Overlays",
+   "status": "changed",
+   "readme": "components/Dialog/README.md",
+   "preview": "components/Dialog/preview.html",
+   "api": "api/components/Dialog.json"
+  },
+  {
+   "name": "DiscoveryTooltip",
+   "version": "1.0.1",
+   "kind": "component",
+   "group": "Comercial",
+   "status": "changed",
+   "readme": "components/DiscoveryTooltip/README.md",
+   "preview": "components/DiscoveryTooltip/preview.html",
+   "api": "api/components/DiscoveryTooltip.json"
+  },
+  {
+   "name": "Drawer",
+   "version": "1.0.1",
+   "kind": "component",
+   "group": "Overlays",
+   "status": "changed",
+   "readme": "components/Drawer/README.md",
+   "preview": "components/Drawer/preview.html",
+   "api": "api/components/Drawer.json"
+  },
+  {
+   "name": "EmptyState",
+   "version": "1.0.1",
+   "kind": "component",
+   "group": "Feedback",
+   "status": "changed",
+   "readme": "components/EmptyState/README.md",
+   "preview": "components/EmptyState/preview.html",
+   "api": "api/components/EmptyState.json"
+  },
+  {
+   "name": "FileUpload",
+   "version": "1.0.1",
+   "kind": "component",
+   "group": "Forms",
+   "status": "changed",
+   "readme": "components/FileUpload/README.md",
+   "preview": "components/FileUpload/preview.html",
+   "api": "api/components/FileUpload.json"
+  },
+  {
+   "name": "FinanceDue",
+   "version": "1.0.1",
+   "kind": "page",
+   "group": "Ecrane aplicații",
+   "status": "changed",
+   "readme": "components/FinanceDue/README.md",
+   "preview": "components/FinanceDue/preview.html",
+   "api": "api/components/FinanceDue.json"
+  },
+  {
+   "name": "FormField",
+   "version": "1.0.1",
+   "kind": "component",
+   "group": "Forms",
+   "status": "changed",
+   "readme": "components/FormField/README.md",
+   "preview": "components/FormField/preview.html",
+   "api": "api/components/FormField.json"
+  },
+  {
+   "name": "FounderBusiness",
+   "version": "1.0.1",
+   "kind": "page",
+   "group": "Founder",
+   "status": "changed",
+   "readme": "components/FounderBusiness/README.md",
+   "preview": "components/FounderBusiness/preview.html",
+   "api": "api/components/FounderBusiness.json"
+  },
+  {
+   "name": "FounderBusinessSms",
+   "version": "1.0.0",
+   "kind": "page",
+   "group": "Founder",
+   "status": "new",
+   "readme": "components/FounderBusinessSms/README.md",
+   "preview": "components/FounderBusinessSms/preview.html",
+   "api": "api/components/FounderBusinessSms.json"
+  },
+  {
+   "name": "FounderBusinesses",
+   "version": "1.0.1",
+   "kind": "page",
+   "group": "Founder",
+   "status": "changed",
+   "readme": "components/FounderBusinesses/README.md",
+   "preview": "components/FounderBusinesses/preview.html",
+   "api": "api/components/FounderBusinesses.json"
+  },
+  {
+   "name": "FounderNewBusiness",
+   "version": "1.0.1",
+   "kind": "page",
+   "group": "Founder",
+   "status": "changed",
+   "readme": "components/FounderNewBusiness/README.md",
+   "preview": "components/FounderNewBusiness/preview.html",
+   "api": "api/components/FounderNewBusiness.json"
+  },
+  {
+   "name": "FounderPacks",
+   "version": "1.0.1",
+   "kind": "page",
+   "group": "Founder",
+   "status": "changed",
+   "readme": "components/FounderPacks/README.md",
+   "preview": "components/FounderPacks/preview.html",
+   "api": "api/components/FounderPacks.json"
+  },
+  {
+   "name": "FounderPlanEditor",
+   "version": "1.0.1",
+   "kind": "page",
+   "group": "Founder",
+   "status": "changed",
+   "readme": "components/FounderPlanEditor/README.md",
+   "preview": "components/FounderPlanEditor/preview.html",
+   "api": "api/components/FounderPlanEditor.json"
+  },
+  {
+   "name": "FounderPlans",
+   "version": "1.0.1",
+   "kind": "page",
+   "group": "Founder",
+   "status": "changed",
+   "readme": "components/FounderPlans/README.md",
+   "preview": "components/FounderPlans/preview.html",
+   "api": "api/components/FounderPlans.json"
+  },
+  {
+   "name": "FounderStates",
+   "version": "1.0.1",
+   "kind": "page",
+   "group": "Founder",
+   "status": "changed",
+   "readme": "components/FounderStates/README.md",
+   "preview": "components/FounderStates/preview.html",
+   "api": "api/components/FounderStates.json"
+  },
+  {
+   "name": "FounderTwoFactor",
+   "version": "1.0.0",
+   "kind": "page",
+   "group": "Founder",
+   "status": "new",
+   "readme": "components/FounderTwoFactor/README.md",
+   "preview": "components/FounderTwoFactor/preview.html",
+   "api": "api/components/FounderTwoFactor.json"
+  },
+  {
+   "name": "FounderUsage",
+   "version": "1.0.1",
+   "kind": "page",
+   "group": "Founder",
+   "status": "changed",
+   "readme": "components/FounderUsage/README.md",
+   "preview": "components/FounderUsage/preview.html",
+   "api": "api/components/FounderUsage.json"
+  },
+  {
+   "name": "Glosar",
+   "version": "1.0.1",
+   "kind": "foundation",
+   "group": "Foundations",
+   "status": "changed",
+   "readme": "components/Glosar/README.md",
+   "preview": "components/Glosar/preview.html",
+   "api": "api/components/Glosar.json"
+  },
+  {
+   "name": "GrowthAudiences",
+   "version": "1.0.1",
+   "kind": "page",
+   "group": "Founder",
+   "status": "changed",
+   "readme": "components/GrowthAudiences/README.md",
+   "preview": "components/GrowthAudiences/preview.html",
+   "api": "api/components/GrowthAudiences.json"
+  },
+  {
+   "name": "GrowthCampaignEditor",
+   "version": "1.0.1",
+   "kind": "page",
+   "group": "Founder",
+   "status": "changed",
+   "readme": "components/GrowthCampaignEditor/README.md",
+   "preview": "components/GrowthCampaignEditor/preview.html",
+   "api": "api/components/GrowthCampaignEditor.json"
+  },
+  {
+   "name": "GrowthCampaigns",
+   "version": "1.0.1",
+   "kind": "page",
+   "group": "Founder",
+   "status": "changed",
+   "readme": "components/GrowthCampaigns/README.md",
+   "preview": "components/GrowthCampaigns/preview.html",
+   "api": "api/components/GrowthCampaigns.json"
+  },
+  {
+   "name": "GrowthControl",
+   "version": "1.0.1",
+   "kind": "page",
+   "group": "Founder",
+   "status": "changed",
+   "readme": "components/GrowthControl/README.md",
+   "preview": "components/GrowthControl/preview.html",
+   "api": "api/components/GrowthControl.json"
+  },
+  {
+   "name": "GrowthOfferEditor",
+   "version": "1.0.1",
+   "kind": "page",
+   "group": "Founder",
+   "status": "changed",
+   "readme": "components/GrowthOfferEditor/README.md",
+   "preview": "components/GrowthOfferEditor/preview.html",
+   "api": "api/components/GrowthOfferEditor.json"
+  },
+  {
+   "name": "GrowthOffers",
+   "version": "1.0.1",
+   "kind": "page",
+   "group": "Founder",
+   "status": "changed",
+   "readme": "components/GrowthOffers/README.md",
+   "preview": "components/GrowthOffers/preview.html",
+   "api": "api/components/GrowthOffers.json"
+  },
+  {
+   "name": "GrowthResults",
+   "version": "1.0.1",
+   "kind": "page",
+   "group": "Founder",
+   "status": "changed",
+   "readme": "components/GrowthResults/README.md",
+   "preview": "components/GrowthResults/preview.html",
+   "api": "api/components/GrowthResults.json"
+  },
+  {
+   "name": "GrowthSlot",
+   "version": "1.0.1",
+   "kind": "component",
+   "group": "Comercial",
+   "status": "changed",
+   "readme": "components/GrowthSlot/README.md",
+   "preview": "components/GrowthSlot/preview.html",
+   "api": "api/components/GrowthSlot.json"
+  },
+  {
+   "name": "HrAttendance",
+   "version": "1.0.1",
+   "kind": "page",
+   "group": "Ecrane aplicații",
+   "status": "changed",
+   "readme": "components/HrAttendance/README.md",
+   "preview": "components/HrAttendance/preview.html",
+   "api": "api/components/HrAttendance.json"
+  },
+  {
+   "name": "HubAccount",
+   "version": "1.0.1",
+   "kind": "page",
+   "group": "Ecrane Hub",
+   "status": "changed",
+   "readme": "components/HubAccount/README.md",
+   "preview": "components/HubAccount/preview.html",
+   "api": "api/components/HubAccount.json"
+  },
+  {
+   "name": "HubAddonPurchase",
+   "version": "1.0.1",
+   "kind": "page",
+   "group": "Ecrane Hub",
+   "status": "changed",
+   "readme": "components/HubAddonPurchase/README.md",
+   "preview": "components/HubAddonPurchase/preview.html",
+   "api": "api/components/HubAddonPurchase.json"
+  },
+  {
+   "name": "HubAdminAccess",
+   "version": "1.0.1",
+   "kind": "page",
+   "group": "Ecrane Hub",
+   "status": "changed",
+   "readme": "components/HubAdminAccess/README.md",
+   "preview": "components/HubAdminAccess/preview.html",
+   "api": "api/components/HubAdminAccess.json"
+  },
+  {
+   "name": "HubAdminPlan",
+   "version": "1.0.1",
+   "kind": "page",
+   "group": "Ecrane Hub",
+   "status": "changed",
+   "readme": "components/HubAdminPlan/README.md",
+   "preview": "components/HubAdminPlan/preview.html",
+   "api": "api/components/HubAdminPlan.json"
+  },
+  {
+   "name": "HubAdminTeam",
+   "version": "1.0.1",
+   "kind": "page",
+   "group": "Ecrane Hub",
+   "status": "changed",
+   "readme": "components/HubAdminTeam/README.md",
+   "preview": "components/HubAdminTeam/preview.html",
+   "api": "api/components/HubAdminTeam.json"
+  },
+  {
+   "name": "HubCatalog",
+   "version": "1.0.1",
+   "kind": "page",
+   "group": "Comercial",
+   "status": "changed",
+   "readme": "components/HubCatalog/README.md",
+   "preview": "components/HubCatalog/preview.html",
+   "api": "api/components/HubCatalog.json"
+  },
+  {
+   "name": "HubCatalogApp",
+   "version": "1.0.1",
+   "kind": "page",
+   "group": "Comercial",
+   "status": "changed",
+   "readme": "components/HubCatalogApp/README.md",
+   "preview": "components/HubCatalogApp/preview.html",
+   "api": "api/components/HubCatalogApp.json"
+  },
+  {
+   "name": "HubChooseBusiness",
+   "version": "1.0.1",
+   "kind": "page",
+   "group": "Ecrane Hub",
+   "status": "changed",
+   "readme": "components/HubChooseBusiness/README.md",
+   "preview": "components/HubChooseBusiness/preview.html",
+   "api": "api/components/HubChooseBusiness.json"
+  },
+  {
+   "name": "HubEmpty",
+   "version": "1.0.1",
+   "kind": "page",
+   "group": "Ecrane Hub",
+   "status": "changed",
+   "readme": "components/HubEmpty/README.md",
+   "preview": "components/HubEmpty/preview.html",
+   "api": "api/components/HubEmpty.json"
+  },
+  {
+   "name": "HubInvite",
+   "version": "1.0.1",
+   "kind": "page",
+   "group": "Ecrane Hub",
+   "status": "changed",
+   "readme": "components/HubInvite/README.md",
+   "preview": "components/HubInvite/preview.html",
+   "api": "api/components/HubInvite.json"
+  },
+  {
+   "name": "HubLauncher",
+   "version": "1.0.1",
+   "kind": "page",
+   "group": "Ecrane Hub",
+   "status": "changed",
+   "readme": "components/HubLauncher/README.md",
+   "preview": "components/HubLauncher/preview.html",
+   "api": "api/components/HubLauncher.json"
+  },
+  {
+   "name": "HubRecommendation",
+   "version": "1.0.1",
+   "kind": "component",
+   "group": "Comercial",
+   "status": "changed",
+   "readme": "components/HubRecommendation/README.md",
+   "preview": "components/HubRecommendation/preview.html",
+   "api": "api/components/HubRecommendation.json"
+  },
+  {
+   "name": "HubSignIn",
+   "version": "1.0.1",
+   "kind": "page",
+   "group": "Ecrane Hub",
+   "status": "changed",
+   "readme": "components/HubSignIn/README.md",
+   "preview": "components/HubSignIn/preview.html",
+   "api": "api/components/HubSignIn.json"
+  },
+  {
+   "name": "HubStates",
+   "version": "1.0.1",
+   "kind": "page",
+   "group": "Ecrane Hub",
+   "status": "changed",
+   "readme": "components/HubStates/README.md",
+   "preview": "components/HubStates/preview.html",
+   "api": "api/components/HubStates.json"
+  },
+  {
+   "name": "HubSupport",
+   "version": "1.0.1",
+   "kind": "page",
+   "group": "Ecrane Hub",
+   "status": "changed",
+   "readme": "components/HubSupport/README.md",
+   "preview": "components/HubSupport/preview.html",
+   "api": "api/components/HubSupport.json"
+  },
+  {
+   "name": "HubTwoFactorSetup",
+   "version": "1.0.0",
+   "kind": "page",
+   "group": "Ecrane Hub",
+   "status": "new",
+   "readme": "components/HubTwoFactorSetup/README.md",
+   "preview": "components/HubTwoFactorSetup/preview.html",
+   "api": "api/components/HubTwoFactorSetup.json"
+  },
+  {
+   "name": "HubTwoFactorVerify",
+   "version": "1.0.0",
+   "kind": "page",
+   "group": "Ecrane Hub",
+   "status": "new",
+   "readme": "components/HubTwoFactorVerify/README.md",
+   "preview": "components/HubTwoFactorVerify/preview.html",
+   "api": "api/components/HubTwoFactorVerify.json"
+  },
+  {
+   "name": "Icon",
+   "version": "1.1.0",
+   "kind": "component",
+   "group": "Foundations",
+   "status": "changed",
+   "readme": "components/Icon/README.md",
+   "preview": "components/Icon/preview.html",
+   "api": "api/components/Icon.json"
+  },
+  {
+   "name": "IconButton",
+   "version": "1.0.1",
+   "kind": "component",
+   "group": "Actions",
+   "status": "changed",
+   "readme": "components/IconButton/README.md",
+   "preview": "components/IconButton/preview.html",
+   "api": "api/components/IconButton.json"
+  },
+  {
+   "name": "Input",
+   "version": "1.0.1",
+   "kind": "component",
+   "group": "Forms",
+   "status": "changed",
+   "readme": "components/Input/README.md",
+   "preview": "components/Input/preview.html",
+   "api": "api/components/Input.json"
+  },
+  {
+   "name": "InventoryStock",
+   "version": "1.0.1",
+   "kind": "page",
+   "group": "Ecrane aplicații",
+   "status": "changed",
+   "readme": "components/InventoryStock/README.md",
+   "preview": "components/InventoryStock/preview.html",
+   "api": "api/components/InventoryStock.json"
+  },
+  {
+   "name": "Italiano",
+   "version": "1.0.0",
+   "kind": "foundation",
+   "group": "Foundations",
+   "status": "same",
+   "readme": "components/Italiano/README.md",
+   "preview": "components/Italiano/preview.html",
+   "api": "api/components/Italiano.json"
+  },
+  {
+   "name": "Kanban",
+   "version": "1.0.1",
+   "kind": "component",
+   "group": "Data",
+   "status": "changed",
+   "readme": "components/Kanban/README.md",
+   "preview": "components/Kanban/preview.html",
+   "api": "api/components/Kanban.json"
+  },
+  {
+   "name": "Kbd",
+   "version": "1.0.1",
+   "kind": "component",
+   "group": "Feedback",
+   "status": "changed",
+   "readme": "components/Kbd/README.md",
+   "preview": "components/Kbd/preview.html",
+   "api": "api/components/Kbd.json"
+  },
+  {
+   "name": "LanguageSwitcher",
+   "version": "1.0.1",
+   "kind": "component",
+   "group": "Preferences",
+   "status": "changed",
+   "readme": "components/LanguageSwitcher/README.md",
+   "preview": "components/LanguageSwitcher/preview.html",
+   "api": "api/components/LanguageSwitcher.json"
+  },
+  {
+   "name": "LineChart",
+   "version": "1.0.1",
+   "kind": "component",
+   "group": "Data",
+   "status": "changed",
+   "readme": "components/LineChart/README.md",
+   "preview": "components/LineChart/preview.html",
+   "api": "api/components/LineChart.json"
+  },
+  {
+   "name": "Logo",
+   "version": "1.0.1",
+   "kind": "component",
+   "group": "Hub",
+   "status": "changed",
+   "readme": "components/Logo/README.md",
+   "preview": "components/Logo/preview.html",
+   "api": "api/components/Logo.json"
+  },
+  {
+   "name": "Menu",
+   "version": "1.0.1",
+   "kind": "component",
+   "group": "Overlays",
+   "status": "changed",
+   "readme": "components/Menu/README.md",
+   "preview": "components/Menu/preview.html",
+   "api": "api/components/Menu.json"
+  },
+  {
+   "name": "Notice",
+   "version": "1.0.1",
+   "kind": "component",
+   "group": "Feedback",
+   "status": "changed",
+   "readme": "components/Notice/README.md",
+   "preview": "components/Notice/preview.html",
+   "api": "api/components/Notice.json"
+  },
+  {
+   "name": "NotificationsPanel",
+   "version": "1.1.0",
+   "kind": "component",
+   "group": "Hub",
+   "status": "changed",
+   "readme": "components/NotificationsPanel/README.md",
+   "preview": "components/NotificationsPanel/preview.html",
+   "api": "api/components/NotificationsPanel.json"
+  },
+  {
+   "name": "OrgSwitcher",
+   "version": "1.0.1",
+   "kind": "component",
+   "group": "Hub",
+   "status": "changed",
+   "readme": "components/OrgSwitcher/README.md",
+   "preview": "components/OrgSwitcher/preview.html",
+   "api": "api/components/OrgSwitcher.json"
+  },
+  {
+   "name": "PageHeader",
+   "version": "1.0.1",
+   "kind": "component",
+   "group": "Shell",
+   "status": "changed",
+   "readme": "components/PageHeader/README.md",
+   "preview": "components/PageHeader/preview.html",
+   "api": "api/components/PageHeader.json"
+  },
+  {
+   "name": "Pagination",
+   "version": "1.0.1",
+   "kind": "component",
+   "group": "Data",
+   "status": "changed",
+   "readme": "components/Pagination/README.md",
+   "preview": "components/Pagination/preview.html",
+   "api": "api/components/Pagination.json"
+  },
+  {
+   "name": "PortalPresence",
+   "version": "1.0.1",
+   "kind": "component",
+   "group": "Hub",
+   "status": "changed",
+   "readme": "components/PortalPresence/README.md",
+   "preview": "components/PortalPresence/preview.html",
+   "api": "api/components/PortalPresence.json"
+  },
+  {
+   "name": "ProgressBar",
+   "version": "1.0.1",
+   "kind": "component",
+   "group": "Feedback",
+   "status": "changed",
+   "readme": "components/ProgressBar/README.md",
+   "preview": "components/ProgressBar/preview.html",
+   "api": "api/components/ProgressBar.json"
+  },
+  {
+   "name": "ProjectsBoard",
+   "version": "1.0.1",
+   "kind": "page",
+   "group": "Ecrane aplicații",
+   "status": "changed",
+   "readme": "components/ProjectsBoard/README.md",
+   "preview": "components/ProjectsBoard/preview.html",
+   "api": "api/components/ProjectsBoard.json"
+  },
+  {
+   "name": "ProjectsTimeline",
+   "version": "1.0.1",
+   "kind": "page",
+   "group": "Ecrane aplicații",
+   "status": "changed",
+   "readme": "components/ProjectsTimeline/README.md",
+   "preview": "components/ProjectsTimeline/preview.html",
+   "api": "api/components/ProjectsTimeline.json"
+  },
+  {
+   "name": "Radio",
+   "version": "1.1.0",
+   "kind": "component",
+   "group": "Forms",
+   "status": "changed",
+   "readme": "components/Radio/README.md",
+   "preview": "components/Radio/preview.html",
+   "api": "api/components/Radio.json"
+  },
+  {
+   "name": "RecommendationCard",
+   "version": "1.0.1",
+   "kind": "component",
+   "group": "Comercial",
+   "status": "changed",
+   "readme": "components/RecommendationCard/README.md",
+   "preview": "components/RecommendationCard/preview.html",
+   "api": "api/components/RecommendationCard.json"
+  },
+  {
+   "name": "RecommendationLabel",
+   "version": "1.0.1",
+   "kind": "component",
+   "group": "Comercial",
+   "status": "changed",
+   "readme": "components/RecommendationLabel/README.md",
+   "preview": "components/RecommendationLabel/preview.html",
+   "api": "api/components/RecommendationLabel.json"
+  },
+  {
+   "name": "RuleBuilder",
+   "version": "1.0.1",
+   "kind": "component",
+   "group": "Comercial",
+   "status": "changed",
+   "readme": "components/RuleBuilder/README.md",
+   "preview": "components/RuleBuilder/preview.html",
+   "api": "api/components/RuleBuilder.json"
+  },
+  {
+   "name": "Schedule",
+   "version": "1.0.1",
+   "kind": "component",
+   "group": "Data",
+   "status": "changed",
+   "readme": "components/Schedule/README.md",
+   "preview": "components/Schedule/preview.html",
+   "api": "api/components/Schedule.json"
+  },
+  {
+   "name": "SegmentedControl",
+   "version": "1.0.1",
+   "kind": "component",
+   "group": "Forms",
+   "status": "changed",
+   "readme": "components/SegmentedControl/README.md",
+   "preview": "components/SegmentedControl/preview.html",
+   "api": "api/components/SegmentedControl.json"
+  },
+  {
+   "name": "Select",
+   "version": "1.1.0",
+   "kind": "component",
+   "group": "Forms",
+   "status": "changed",
+   "readme": "components/Select/README.md",
+   "preview": "components/Select/preview.html",
+   "api": "api/components/Select.json"
+  },
+  {
+   "name": "Sheet",
+   "version": "1.0.1",
+   "kind": "component",
+   "group": "Shell",
+   "status": "changed",
+   "readme": "components/Sheet/README.md",
+   "preview": "components/Sheet/preview.html",
+   "api": "api/components/Sheet.json"
+  },
+  {
+   "name": "Skeleton",
+   "version": "1.0.1",
+   "kind": "component",
+   "group": "Feedback",
+   "status": "changed",
+   "readme": "components/Skeleton/README.md",
+   "preview": "components/Skeleton/preview.html",
+   "api": "api/components/Skeleton.json"
+  },
+  {
+   "name": "SlotPicker",
+   "version": "1.0.1",
+   "kind": "component",
+   "group": "Forms",
+   "status": "changed",
+   "readme": "components/SlotPicker/README.md",
+   "preview": "components/SlotPicker/preview.html",
+   "api": "api/components/SlotPicker.json"
+  },
+  {
+   "name": "SmsAppDownload",
+   "version": "1.0.0",
+   "kind": "page",
+   "group": "Ecrane Booking",
+   "status": "new",
+   "readme": "components/SmsAppDownload/README.md",
+   "preview": "components/SmsAppDownload/preview.html",
+   "api": "api/components/SmsAppDownload.json"
+  },
+  {
+   "name": "Spine",
+   "version": "1.0.1",
+   "kind": "component",
+   "group": "Shell",
+   "status": "changed",
+   "readme": "components/Spine/README.md",
+   "preview": "components/Spine/preview.html",
+   "api": "api/components/Spine.json"
+  },
+  {
+   "name": "Stat",
+   "version": "1.0.1",
+   "kind": "component",
+   "group": "Data",
+   "status": "changed",
+   "readme": "components/Stat/README.md",
+   "preview": "components/Stat/preview.html",
+   "api": "api/components/Stat.json"
+  },
+  {
+   "name": "StatusDot",
+   "version": "1.0.1",
+   "kind": "component",
+   "group": "Status",
+   "status": "changed",
+   "readme": "components/StatusDot/README.md",
+   "preview": "components/StatusDot/preview.html",
+   "api": "api/components/StatusDot.json"
+  },
+  {
+   "name": "StatusPill",
+   "version": "1.0.1",
+   "kind": "component",
+   "group": "Status",
+   "status": "changed",
+   "readme": "components/StatusPill/README.md",
+   "preview": "components/StatusPill/preview.html",
+   "api": "api/components/StatusPill.json"
+  },
+  {
+   "name": "Tabs",
+   "version": "1.0.1",
+   "kind": "component",
+   "group": "Navigation",
+   "status": "changed",
+   "readme": "components/Tabs/README.md",
+   "preview": "components/Tabs/preview.html",
+   "api": "api/components/Tabs.json"
+  },
+  {
+   "name": "Textarea",
+   "version": "1.0.1",
+   "kind": "component",
+   "group": "Forms",
+   "status": "changed",
+   "readme": "components/Textarea/README.md",
+   "preview": "components/Textarea/preview.html",
+   "api": "api/components/Textarea.json"
+  },
+  {
+   "name": "ThemeSwitcher",
+   "version": "1.0.1",
+   "kind": "component",
+   "group": "Preferences",
+   "status": "changed",
+   "readme": "components/ThemeSwitcher/README.md",
+   "preview": "components/ThemeSwitcher/preview.html",
+   "api": "api/components/ThemeSwitcher.json"
+  },
+  {
+   "name": "Timeline",
+   "version": "1.0.1",
+   "kind": "component",
+   "group": "Data",
+   "status": "changed",
+   "readme": "components/Timeline/README.md",
+   "preview": "components/Timeline/preview.html",
+   "api": "api/components/Timeline.json"
+  },
+  {
+   "name": "Toast",
+   "version": "1.0.1",
+   "kind": "component",
+   "group": "Overlays",
+   "status": "changed",
+   "readme": "components/Toast/README.md",
+   "preview": "components/Toast/preview.html",
+   "api": "api/components/Toast.json"
+  },
+  {
+   "name": "Toggle",
+   "version": "1.0.1",
+   "kind": "component",
+   "group": "Forms",
+   "status": "changed",
+   "readme": "components/Toggle/README.md",
+   "preview": "components/Toggle/preview.html",
+   "api": "api/components/Toggle.json"
+  },
+  {
+   "name": "Tooltip",
+   "version": "1.0.1",
+   "kind": "component",
+   "group": "Overlays",
+   "status": "changed",
+   "readme": "components/Tooltip/README.md",
+   "preview": "components/Tooltip/preview.html",
+   "api": "api/components/Tooltip.json"
+  },
+  {
+   "name": "UpgradeDialog",
+   "version": "1.1.0",
+   "kind": "component",
+   "group": "Comercial",
+   "status": "changed",
+   "readme": "components/UpgradeDialog/README.md",
+   "preview": "components/UpgradeDialog/preview.html",
+   "api": "api/components/UpgradeDialog.json"
+  },
+  {
+   "name": "UsageMeter",
+   "version": "1.0.1",
+   "kind": "component",
+   "group": "Feedback",
+   "status": "changed",
+   "readme": "components/UsageMeter/README.md",
+   "preview": "components/UsageMeter/preview.html",
+   "api": "api/components/UsageMeter.json"
+  }
+ ]
+}

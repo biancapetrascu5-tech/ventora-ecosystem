@@ -1,4 +1,4 @@
-<!-- @dsCard group="Forms" height=268 -->
+<!-- @dsCard group="Forms" height=1150 width=1200 -->
 <!doctype html>
 <html lang="ro">
 <head><meta charset="utf-8"><title>SegmentedControl — Ventora</title>
@@ -250,6 +250,9 @@ html,body{min-height:100%}
 .fxframe .caption{color:var(--ink-muted)}
 @container (max-width:420px){.fxlang{grid-template-columns:32px minmax(0,1fr) auto}.fxlang .v-iconbtn{display:none}}
 
+.thf{display:flex;flex-direction:column;gap:var(--space-4);padding:var(--space-5);background:var(--canvas);color:var(--ink);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg);min-width:0;box-sizing:border-box}
+.thg{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(420px,100%),1fr));gap:var(--space-4);align-items:start}
+.thstack{display:flex;flex-direction:column;gap:var(--space-4)}
 </style>
 </head>
 <body>
@@ -265,7 +268,31 @@ const mount = (el) => ReactDOM.createRoot(document.getElementById("root")).rende
 function Demo() {
   return /* @__PURE__ */ React.createElement("div", { className: "d" }, /* @__PURE__ */ React.createElement(Row, { label: "Vizualizare" }, /* @__PURE__ */ React.createElement(V.SegmentedControl, { label: "Vizualizare", defaultValue: "week", options: [{ value: "day", label: "Zi" }, { value: "week", label: "S\u0103pt\u0103m\xE2n\u0103" }, { value: "res", label: "Resurse" }] })), /* @__PURE__ */ React.createElement(Row, { label: "Cu iconuri" }, /* @__PURE__ */ React.createElement(V.SegmentedControl, { label: "Afi\u0219are", defaultValue: "list", options: [{ value: "list", label: "List\u0103", icon: "list" }, { value: "grid", label: "Gril\u0103", icon: "layout-grid" }, { value: "cal", label: "Calendar", icon: "calendar", disabled: true }] })), /* @__PURE__ */ React.createElement(Row, { label: "Doar iconuri" }, /* @__PURE__ */ React.createElement(V.SegmentedControl, { iconOnly: true, size: "sm", label: "Afi\u0219are", options: [{ value: "list", label: "List\u0103", icon: "list" }, { value: "grid", label: "Gril\u0103", icon: "layout-grid" }] })), /* @__PURE__ */ React.createElement(Row, { label: "Dezactivat" }, /* @__PURE__ */ React.createElement(V.SegmentedControl, { disabled: true, label: "x", options: [{ value: "a", label: "Zi" }, { value: "b", label: "S\u0103pt\u0103m\xE2n\u0103" }] })), /* @__PURE__ */ React.createElement(DE, null, /* @__PURE__ */ React.createElement(Row, { label: "DE" }, /* @__PURE__ */ React.createElement(V.SegmentedControl, { label: "Ansicht", defaultValue: "w", options: [{ value: "d", label: "Tag" }, { value: "w", label: "Woche" }, { value: "r", label: "Ressourcen" }] }))));
 }
-mount(/* @__PURE__ */ React.createElement(Demo, null));
+const ORIG = (/* @__PURE__ */ React.createElement(Demo, null));
+/* Light/Dark frames, DE/IT label test */
+const E = React.createElement;
+const noop = () => {
+};
+const Cap = ({ children }) => E("p", { className: "caption muted" }, children);
+const ThemeFrame = ({ th, children }) => E("div", { className: "thf", "data-theme": th }, E("p", { className: "heading" }, th === "light" ? "Light" : "Dark"), children);
+const LocFrame = ({ loc, label, children }) => E("div", { className: "thf", "data-theme": "light" }, E("p", { className: "heading" }, label), E(V.LocaleProvider, { locale: loc }, children));
+const Frames = ({ States, stack }) => E("div", { className: stack ? "thstack" : "thg" }, E(ThemeFrame, { th: "light" }, E(States, { th: "light" })), E(ThemeFrame, { th: "dark" }, E(States, { th: "dark" })));
+const Locales = ({ De, It, stack }) => E("div", { className: stack ? "thstack" : "thg" }, E(LocFrame, { loc: "de", label: "Deutsch (DE)" }, E(De)), E(LocFrame, { loc: "it", label: "Italiano (IT)" }, E(It)));
+const Extra = ({ States, De, It, stack, stackLoc }) => E("div", { className: "d" }, E("p", { className: "heading" }, "Stări · Light și Dark"), E(Frames, { States, stack }), E("p", { className: "heading" }, "Test de lungime: germană și italiană"), E(Locales, { De, It, stack: stackLoc }));
+const SG = (t) => E("div", { className: "d0" },
+  E(Row, { label: t.l[0] }, E(V.SegmentedControl, { label: t.l[0], defaultValue: "w", options: [{ value: "d", label: t.v[0] }, { value: "w", label: t.v[1] }, { value: "r", label: t.v[2] }] })),
+  E(Row, { label: t.l[1] }, E(V.SegmentedControl, { label: t.l[1], defaultValue: "list", options: [{ value: "list", label: t.i[0], icon: "list" }, { value: "grid", label: t.i[1], icon: "layout-grid" }, { value: "cal", label: t.i[2], icon: "calendar", disabled: true }] })),
+  E(Row, { label: t.l[2] }, E(V.SegmentedControl, { iconOnly: true, label: t.l[1], defaultValue: "list", options: [{ value: "list", label: t.i[0], icon: "list" }, { value: "grid", label: t.i[1], icon: "layout-grid" }] })),
+  E(Row, { label: t.l[3] }, E(V.SegmentedControl, { size: "sm", label: t.l[0], defaultValue: "d", options: [{ value: "d", label: t.v[0] }, { value: "w", label: t.v[1] }] })),
+  E(Row, { label: t.l[4] }, E("div", { style: { flex: 1, minWidth: 0 } }, E(V.SegmentedControl, { block: true, label: t.l[4], defaultValue: "all", options: [{ value: "all", label: t.b[0] }, { value: "unc", label: t.b[1] }] }))),
+  E(Row, { label: t.l[5] }, E(V.SegmentedControl, { disabled: true, label: t.l[5], defaultValue: "d", options: [{ value: "d", label: t.v[0] }, { value: "w", label: t.v[1] }] })));
+const SG_RO = { l: ["Vizualizare", "Afișare", "Doar iconuri", "Mic", "Pe toată lățimea", "Dezactivat"], v: ["Zi", "Săptămână", "Resurse"], i: ["Listă", "Grilă", "Calendar"], b: ["Toate programările", "Doar neconfirmate"] };
+const SG_DE = { l: ["Ansicht", "Darstellung", "Nur Symbole", "Klein", "Volle Breite", "Deaktiviert"], v: ["Tag", "Woche", "Ressourcen"], i: ["Liste", "Raster", "Kalender"], b: ["Alle Termine", "Nur unbestätigte Termine"] };
+const SG_IT = { l: ["Vista", "Visualizzazione", "Solo icone", "Piccolo", "Larghezza piena", "Disattivato"], v: ["Giorno", "Settimana", "Risorse"], i: ["Elenco", "Griglia", "Calendario"], b: ["Tutti gli appuntamenti", "Solo da confermare"] };
+const States = () => SG(SG_RO);
+const De = () => SG(SG_DE);
+const It = () => SG(SG_IT);
+mount(E("div", null, ORIG, E(Extra, { States, De, It })));
 </script>
 </body>
 </html>

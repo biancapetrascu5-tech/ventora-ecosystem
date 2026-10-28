@@ -1,0 +1,17 @@
+{
+ "name": "HubStates",
+ "version": "1.0.1",
+ "kind": "page",
+ "group": "Ecrane Hub",
+ "status": "changed",
+ "description": "The states that complete the Hub screens, with the approved copy: sign-in in progress, too many attempts, offline; invitation request sent, cancelled, already used; access requested and already requested; profile saved, save failed, password changed; stopping someone's access (danger dialog, \"Oprește accesul\" / \"Renunță\"); invitation sent; empty team and invitation lists; support request sent and no requests. Light and dark.",
+ "exports": [],
+ "props": [],
+ "events": [],
+ "states": [
+  "E-mail"
+ ],
+ "notes": "States are the labelled boards and frames of the preview (Light and Dark; desktop/tablet/phone).",
+ "readme": "components/HubStates/README.md",
+ "preview": "components/HubStates/preview.html"
+}

@@ -1,0 +1,61 @@
+{
+ "name": "HubRecommendation",
+ "version": "1.0.1",
+ "kind": "component",
+ "group": "Comercial",
+ "status": "changed",
+ "description": "Recommendations in the Hub notifications panel. They sit in their own section, \"Recomandări\", under the operational notifications and never mix with reminders, invoices or errors. The bell's unread count counts only operational notifications.",
+ "exports": [
+  "HubRecommendation"
+ ],
+ "props": [
+  {
+   "name": "r",
+   "type": "{ id: string; kind?: \"team\"; app?: AppKey; icon?: string; title: string; body?: string; note?: string; }",
+   "required": true,
+   "note": ""
+  },
+  {
+   "name": "onOpen",
+   "type": "(r: any) => void",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "onDismiss",
+   "type": "(r: any) => void",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "onSeeApp",
+   "type": "(r: any) => void",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "onReject",
+   "type": "(r: any) => void",
+   "required": false,
+   "note": ""
+  }
+ ],
+ "events": [
+  "onDismiss",
+  "onDismissRecommendation",
+  "onOpen",
+  "onOpenRecommendation",
+  "onReject",
+  "onRejectRecommendation",
+  "onSeeApp"
+ ],
+ "states": [
+  "member",
+  "admin-team-recommendation",
+  "unread",
+  "read"
+ ],
+ "notes": "",
+ "readme": "components/HubRecommendation/README.md",
+ "preview": "components/HubRecommendation/preview.html"
+}

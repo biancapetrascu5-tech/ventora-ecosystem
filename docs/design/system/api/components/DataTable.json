@@ -1,0 +1,155 @@
+{
+ "name": "DataTable",
+ "version": "1.0.1",
+ "kind": "component",
+ "group": "Data",
+ "status": "changed",
+ "description": "The one table for every list of records: sorting, filters, selection, row actions, bulk bar, pagination, empty and loading — and a list layout on narrow screens.",
+ "exports": [
+  "DataTable"
+ ],
+ "props": [
+  {
+   "name": "columns",
+   "type": "Column<R>[]",
+   "required": true,
+   "note": ""
+  },
+  {
+   "name": "rows",
+   "type": "R[]",
+   "required": true,
+   "note": ""
+  },
+  {
+   "name": "rowKey",
+   "type": "(row: R) => string | number",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "sort",
+   "type": "{ key: string; dir: \"asc\" | \"desc\"; }",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "onSortChange",
+   "type": "(s: { key: string; dir: \"asc\" | \"desc\"; }) => void",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "selectable",
+   "type": "boolean",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "selected",
+   "type": "(string | number)[]",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "onSelectedChange",
+   "type": "(keys: (string | number)[]) => void",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "rowActions",
+   "type": "(row: R) => MenuItem[]",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "bulkActions",
+   "type": "{ label: string; icon?: string; onClick?(): void; destructive?: boolean; }[]",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "toolbar",
+   "type": "ReactNode",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "pagination",
+   "type": "PaginationProps",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "loading",
+   "type": "boolean",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "loadingRows",
+   "type": "number",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "empty",
+   "type": "ReactNode",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "onRowClick",
+   "type": "(row: R) => void",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "activeRow",
+   "type": "string | number",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "density",
+   "type": "\"default\" | \"dense\"",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "layout",
+   "type": "\"auto\" | \"table\" | \"list\"",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "caption",
+   "type": "string",
+   "required": false,
+   "note": ""
+  }
+ ],
+ "events": [
+  "onRowClick",
+  "onSelectedChange",
+  "onSortChange"
+ ],
+ "states": [
+  "selected-bulk-bar",
+  "sorted",
+  "active-row",
+  "row-actions",
+  "toolbar-filters",
+  "pagination",
+  "dense",
+  "list",
+  "loading",
+  "empty-first-use",
+  "empty-no-results",
+  "empty-error"
+ ],
+ "notes": "",
+ "readme": "components/DataTable/README.md",
+ "preview": "components/DataTable/preview.html"
+}

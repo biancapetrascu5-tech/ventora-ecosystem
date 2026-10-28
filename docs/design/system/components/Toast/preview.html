@@ -1,4 +1,4 @@
-<!-- @dsCard group="Overlays" height=620 -->
+<!-- @dsCard group="Overlays" height=1810 width=1200 -->
 <!doctype html>
 <html lang="ro">
 <head><meta charset="utf-8"><title>Toast — Ventora</title>
@@ -250,6 +250,15 @@ html,body{min-height:100%}
 .fxframe .caption{color:var(--ink-muted)}
 @container (max-width:420px){.fxlang{grid-template-columns:32px minmax(0,1fr) auto}.fxlang .v-iconbtn{display:none}}
 
+
+/* c5: light/dark frames and DE/IT sections */
+.qwrap{display:flex;flex-direction:column;gap:var(--space-6);padding:var(--space-4);box-sizing:border-box;background:var(--canvas);color:var(--ink)}
+.qfr{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--space-4);align-items:start}
+.qfr1{grid-template-columns:minmax(0,1fr)}
+.qf{display:flex;flex-direction:column;gap:var(--space-4);padding:var(--space-4);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg);min-width:0;box-sizing:border-box}
+.qf-t{margin:0;color:var(--ink-muted)}
+.qh{margin:0;color:var(--ink)}
+.qsec{display:flex;flex-direction:column;gap:var(--space-3)}
 </style>
 </head>
 <body>
@@ -272,7 +281,29 @@ function Demo() {
   }, onDismiss: () => {
   } })));
 }
-mount(/* @__PURE__ */ React.createElement(Demo, null));
+
+const Qh = React.createElement;
+const Q_Fr = ({ theme, title, children, style }) => Qh("section", { className: "qf", "data-theme": theme, style: Object.assign({ background: "var(--canvas)", color: "var(--ink)" }, style || {}) }, Qh("p", { className: "caption qf-t" }, title || (theme === "dark" ? "Dark" : "Light")), children);
+const Q_Pair = ({ children, cols, light, dark }) => Qh("div", { className: cols === 1 ? "qfr qfr1" : "qfr" }, Qh(Q_Fr, { theme: "light" }, light || children), Qh(Q_Fr, { theme: "dark" }, dark || children));
+const Q_Loc = ({ de, it, cols, theme }) => Qh("div", { className: cols === 1 ? "qfr qfr1" : "qfr" }, Qh(Q_Fr, { theme: theme || "light", title: "DE · Deutsch" }, Qh(V.LocaleProvider, { locale: "de" }, de)), Qh(Q_Fr, { theme: theme || "light", title: "IT · Italiano" }, Qh(V.LocaleProvider, { locale: "it" }, it)));
+const Q_Sec = ({ title, children }) => Qh("div", { className: "qsec" }, Qh("h2", { className: "heading qh" }, title), children);
+const Q_Row = ({ label, children }) => Qh("div", { className: "r" }, Qh("span", { className: "l caption" }, label), children);
+const Q_Toasts = ({ t }) => Qh("div", { className: "d0", style: { maxWidth: "var(--panel-width)" } },
+  Qh(V.Toast, { tone: "neutral", title: t[0], onUndo: () => {}, onDismiss: () => {} }),
+  Qh(V.Toast, { tone: "done", title: t[1], description: t[2], onDismiss: () => {} }),
+  Qh(V.Toast, { tone: "attention", title: t[3], action: { label: t[4] }, onDismiss: () => {} }),
+  Qh(V.Toast, { tone: "danger", title: t[5], description: t[6], action: { label: t[7] }, onDismiss: () => {} }),
+  Qh(V.Toast, { loading: true, title: t[8] }));
+const Q_RO = ["Am mutat programarea pe joi, 14:30.", "Am trimis reamintirea.", "SMS-ul a ajuns la Ana Popescu la 09:12.", "Te apropii de limita de SMS-uri", "Vezi consumul", "Nu am putut salva", "Verifică internetul și încearcă din nou.", "Încearcă din nou", "Exportăm 248 de programări…"];
+const Q_DE = ["Der Termin wurde auf Donnerstag, 14:30 Uhr, verschoben.", "Die Erinnerung wurde gesendet.", "Die SMS hat Ana Popescu um 09:12 Uhr erreicht.", "Sie erreichen bald Ihr SMS-Limit", "Verbrauch anzeigen", "Speichern war nicht möglich", "Prüfen Sie Ihre Internetverbindung und versuchen Sie es erneut.", "Erneut versuchen", "248 Termine werden exportiert…"];
+const Q_IT = ["L’appuntamento è stato spostato a giovedì, 14:30.", "Il promemoria è stato inviato.", "L’SMS è arrivato ad Ana Popescu alle 09:12.", "Si sta avvicinando al limite di SMS", "Vedi i consumi", "Non è stato possibile salvare", "Controlli la connessione a internet e riprovi.", "Riprova", "Esportazione di 248 appuntamenti…"];
+function Q_Extra() {
+  return Qh("div", { className: "qwrap" },
+    Qh(Q_Sec, { title: "Light / Dark · cu „Anulează”, reușit, atenție, eroare, în lucru" }, Qh(Q_Pair, null, Qh(Q_Toasts, { t: Q_RO }))),
+    Qh(Q_Sec, { title: "DE / IT" }, Qh(Q_Loc, { de: Qh(Q_Toasts, { t: Q_DE }), it: Qh(Q_Toasts, { t: Q_IT }) })));
+}
+
+mount(Qh("div", null, /* @__PURE__ */ React.createElement(Demo, null), Qh(Q_Extra, null)));
 </script>
 </body>
 </html>

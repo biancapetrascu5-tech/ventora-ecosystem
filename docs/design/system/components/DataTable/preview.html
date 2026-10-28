@@ -1,4 +1,4 @@
-<!-- @dsCard group="Data" height=690 -->
+<!-- @dsCard group="Data" height=5530 width=1200 -->
 <!doctype html>
 <html lang="ro">
 <head><meta charset="utf-8"><title>DataTable — Ventora</title>
@@ -250,6 +250,18 @@ html,body{min-height:100%}
 .fxframe .caption{color:var(--ink-muted)}
 @container (max-width:420px){.fxlang{grid-template-columns:32px minmax(0,1fr) auto}.fxlang .v-iconbtn{display:none}}
 
+/* c2: theme + locale frames */
+.pv{display:flex;flex-direction:column;gap:var(--space-4);padding:var(--space-4)}
+.pv-frame{display:flex;flex-direction:column;gap:var(--space-4);padding:var(--space-6);background:var(--canvas);color:var(--ink);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg);min-width:0}
+.pv-frame>.heading{margin:0}
+.pv-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:var(--space-5) var(--space-4);align-items:start}
+.pv-grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--space-5) var(--space-4);align-items:start}
+.pv-grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--space-5) var(--space-4);align-items:start}
+.pv-cell{display:flex;flex-direction:column;gap:var(--space-2);min-width:0}
+.pv-lab{margin:0;color:var(--ink-muted)}
+.pv-box{padding:var(--space-4);background:var(--sheet);border:var(--border-width) solid var(--line);border-radius:var(--radius-md);min-width:0;color:var(--ink)}
+.pv-stage{position:relative;overflow:hidden;border:var(--border-width) solid var(--line-strong);border-radius:var(--radius-lg);background:var(--canvas);color:var(--ink)}
+.pv-note{margin:0;color:var(--ink-muted)}
 </style>
 </head>
 <body>
@@ -262,54 +274,64 @@ const DE = ({ children }) => /* @__PURE__ */ React.createElement(V.LocaleProvide
 const FR = ({ children }) => /* @__PURE__ */ React.createElement(V.LocaleProvider, { locale: "fr" }, children);
 const IT = ({ children }) => /* @__PURE__ */ React.createElement(V.LocaleProvider, { locale: "it" }, children);
 const mount = (el) => ReactDOM.createRoot(document.getElementById("root")).render(/* @__PURE__ */ React.createElement(V.LocaleProvider, { locale: "ro" }, el));
-const ROWS = [
-  { id: 1, client: "Ana Popescu", service: "Tuns", staff: "Ioana", when: "Azi, 09:30", price: 120, status: ["done", "Confirmat\u0103"] },
-  { id: 2, client: "Andrei Ionescu", service: "Vopsit", staff: "Mara", when: "Azi, 11:00", price: 350, status: ["attention", "\xCEn desf\u0103\u0219urare"] },
-  { id: 3, client: "Cristina Dobre", service: "Tratament facial", staff: "Ioana", when: "Azi, 13:15", price: 220, status: ["neutral", "Neconfirmat\u0103"] },
-  { id: 4, client: "Dan Stoica", service: "Tuns", staff: "Radu", when: "M\xE2ine, 10:00", price: 120, status: ["danger", "Neachitat\u0103"] },
-  { id: 5, client: "Elena Georgescu", service: "Manichiur\u0103", staff: "Mara", when: "Joi, 16:45", price: 110, status: ["done", "Confirmat\u0103"] }
-];
-const COLS = [
-  { key: "client", header: "Client", sortable: true, primary: true },
-  { key: "service", header: "Serviciu", secondary: true },
-  { key: "staff", header: "Angajat", sortable: true },
-  { key: "when", header: "C\xE2nd", sortable: true, secondary: true },
-  { key: "price", header: "Pre\u021B", align: "end", sortable: true, render: (r) => r.price + " lei" },
-  { key: "status", header: "Stare", trailing: true, render: (r) => /* @__PURE__ */ React.createElement(V.StatusPill, { tone: r.status[0] }, r.status[1]) }
-];
-const ACTS = () => [
-  { label: "Deschide", icon: "external-link" },
-  { label: "Trimite reamintire", icon: "send" },
-  { label: "Mut\u0103 programarea", icon: "calendar" },
-  { separator: true },
-  { label: "Anuleaz\u0103 programarea", icon: "trash-2", destructive: true }
-];
-function Demo() {
+/* c2: every README state, Light/Dark frames (data-theme on the frame), DE/IT with translated texts. */
+const h = React.createElement;
+const noop = () => {};
+const Cell = ({ label, children, style }) => h("div", { className: "pv-cell", style }, h("p", { className: "caption pv-lab" }, label), children);
+const FRAMES = [["light", "ro", "Light"], ["dark", "ro", "Dark"], ["light", "de", "Deutsch \u00b7 Light"], ["dark", "it", "Italiano \u00b7 Dark"]];
+const Frames = ({ Board, top }) => h("div", { className: "pv" }, top, FRAMES.map(([th, lang, lab], i) => h("section", { key: lab, className: "pv-frame", "data-theme": th }, h("p", { className: "heading" }, lab), h(V.LocaleProvider, { locale: lang }, h(Board, { lang, theme: th, first: i === 0 })))));
+const DT_T = {
+  ro: { l: ["Selecție (bara de acțiuni în masă), sortare, rând deschis în Drawer (margine peach), meniu pe rând, paginare", "Dens · 36px", "Listă (sub 640px sau layout „list”)", "Se încarcă", "Prima utilizare", "Niciun rezultat", "Eroare"],
+    cols: ["Client", "Serviciu", "Angajat", "Când", "Preț", "Stare"], cap: "Programări", search: "Caută client sau serviciu", filters: "Filtre", pill: "Angajat: Ioana",
+    rows: [["Ana Popescu", "Tuns", "Ioana", "Azi, 09:30", 120, "done", "Confirmată"], ["Andrei Ionescu", "Vopsit", "Mara", "Azi, 11:00", 350, "attention", "În desfășurare"], ["Cristina Dobre", "Tratament facial", "Ioana", "Azi, 13:15", 220, "neutral", "Neconfirmată"], ["Ștefan Țăranu", "Tuns", "Radu", "Mâine, 10:00", 120, "danger", "Neachitată"], ["Elena Georgescu", "Manichiură", "Mara", "Joi, 16:45", 110, "done", "Confirmată"]],
+    acts: ["Deschide", "Trimite reamintire", "Mută programarea", "Anulează programarea"], bulk: ["Trimite reamintire", "Exportă", "Anulează programările"],
+    e1: ["Nicio programare azi", "Când cineva rezervă, apare aici. Poți adăuga și tu una.", "Creează programare"], e2: ["Niciun rezultat pentru „Ionescu”", "Verifică ortografia sau șterge filtrele.", "Șterge filtrele"], e3: ["Nu am putut încărca lista", "Încearcă din nou. Dacă se repetă, scrie-ne.", "Încearcă din nou", "Scrie-ne"] },
+  de: { l: ["Auswahl (Leiste für Sammelaktionen), Sortierung, im Drawer geöffnete Zeile (Rand in Pfirsich), Zeilenmenü, Seitenwechsel", "Kompakt · 36px", "Liste (unter 640px oder Layout „list“)", "Wird geladen", "Erste Nutzung", "Keine Ergebnisse", "Fehler"],
+    cols: ["Kunde", "Leistung", "Mitarbeiter", "Wann", "Preis", "Status"], cap: "Termine", search: "Kunde oder Leistung suchen", filters: "Filter", pill: "Mitarbeiter: Johanna",
+    rows: [["Anna Müller", "Haarschnitt", "Johanna", "Heute, 09:30", 120, "done", "Bestätigt"], ["Andreas Schäfer", "Färben", "Mara", "Heute, 11:00", 350, "attention", "Läuft"], ["Christina Böhm", "Gesichtsbehandlung", "Johanna", "Heute, 13:15", 220, "neutral", "Unbestätigt"], ["Jürgen Köhler", "Haarschnitt", "Ralf", "Morgen, 10:00", 120, "danger", "Nicht bezahlt"], ["Elena Groß", "Maniküre", "Mara", "Donnerstag, 16:45", 110, "done", "Bestätigt"]],
+    acts: ["Öffnen", "Erinnerung senden", "Termin verschieben", "Termin absagen"], bulk: ["Erinnerung senden", "Exportieren", "Termine absagen"],
+    e1: ["Heute keine Termine", "Sobald jemand bucht, erscheint der Termin hier. Sie können auch selbst einen anlegen.", "Termin erstellen"], e2: ["Keine Ergebnisse für „Schäfer“", "Prüfen Sie die Schreibweise oder entfernen Sie die Filter.", "Filter entfernen"], e3: ["Die Liste konnte nicht geladen werden", "Versuchen Sie es erneut. Wenn es wieder passiert, schreiben Sie uns.", "Erneut versuchen", "Schreiben Sie uns"] },
+  it: { l: ["Selezione (barra delle azioni multiple), ordinamento, riga aperta nel Drawer (bordo pesca), menu di riga, paginazione", "Compatta · 36px", "Elenco (sotto 640px o layout „list”)", "Caricamento", "Primo utilizzo", "Nessun risultato", "Errore"],
+    cols: ["Cliente", "Servizio", "Dipendente", "Quando", "Prezzo", "Stato"], cap: "Appuntamenti", search: "Cerchi cliente o servizio", filters: "Filtri", pill: "Dipendente: Giovanna",
+    rows: [["Anna Rossi", "Taglio", "Giovanna", "Oggi, 09:30", 120, "done", "Confermato"], ["Andrea Bianchi", "Colore", "Mara", "Oggi, 11:00", 350, "attention", "In corso"], ["Cristina Greco", "Trattamento viso", "Giovanna", "Oggi, 13:15", 220, "neutral", "Non confermato"], ["Niccolò Lucà", "Taglio", "Raffaele", "Domani, 10:00", 120, "danger", "Non pagato"], ["Elena Ferrari", "Manicure", "Mara", "Giovedì, 16:45", 110, "done", "Confermato"]],
+    acts: ["Apri", "Invia promemoria", "Sposta l’appuntamento", "Annulla l’appuntamento"], bulk: ["Invia promemoria", "Esporta", "Annulla gli appuntamenti"],
+    e1: ["Nessun appuntamento oggi", "Quando qualcuno prenota, appare qui. Può anche aggiungerne uno Lei.", "Crea appuntamento"], e2: ["Nessun risultato per „Bianchi”", "Controlli l’ortografia o rimuova i filtri.", "Rimuovi i filtri"], e3: ["Non è stato possibile caricare l’elenco", "Riprovi. Se succede di nuovo, ci scriva.", "Riprova", "Ci scriva"] }
+};
+function Board({ lang }) {
+  const T = DT_T[lang], L = T.l, C = T.cols;
   const [sel, setSel] = useState([2, 3]);
   const [sort, setSort] = useState({ key: "when", dir: "asc" });
   const [page, setPage] = useState(1);
-  const toolbar = /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", { style: { flex: "1 1 var(--search-width)", maxWidth: "var(--search-width)" } }, /* @__PURE__ */ React.createElement(V.Input, { icon: "search", placeholder: "Caut\u0103 client sau serviciu", size: "sm", "aria-label": "Caut\u0103" })), /* @__PURE__ */ React.createElement(V.Button, { size: "sm", icon: "list-filter" }, "Filtre"), /* @__PURE__ */ React.createElement(V.StatusPill, { tone: "neutral", icon: "x" }, "Angajat: Ioana"));
-  return /* @__PURE__ */ React.createElement("div", { className: "d" }, /* @__PURE__ */ React.createElement(
-    V.DataTable,
-    {
-      caption: "Program\u0103ri",
-      columns: COLS,
-      rows: ROWS,
-      selectable: true,
-      selected: sel,
-      onSelectedChange: setSel,
-      sort,
-      onSortChange: setSort,
-      rowActions: ACTS,
-      toolbar,
-      activeRow: 2,
-      bulkActions: [{ label: "Trimite reamintire", icon: "send" }, { label: "Export\u0103", icon: "download" }, { label: "Anuleaz\u0103 program\u0103rile", icon: "trash-2", destructive: true }],
-      pagination: { page, pageSize: 20, total: 248, onPageChange: setPage, onPageSizeChange: () => {
-      } }
-    }
-  ), /* @__PURE__ */ React.createElement("div", { className: "g2" }, /* @__PURE__ */ React.createElement(V.DataTable, { columns: COLS.slice(0, 4), rows: [], loading: true, loadingRows: 3 }), /* @__PURE__ */ React.createElement(V.DataTable, { columns: COLS.slice(0, 4), rows: [], empty: /* @__PURE__ */ React.createElement(V.EmptyState, { size: "sm", icon: "search", title: "Niciun rezultat pentru \u201EIonescu\u201D", description: "Verific\u0103 ortografia sau \u0219terge filtrele.", actions: /* @__PURE__ */ React.createElement(V.Button, { size: "sm" }, "\u0218terge filtrele") }) })));
+  const rows = T.rows.map((r, i) => ({ id: i + 1, client: r[0], service: r[1], staff: r[2], when: r[3], price: r[4], status: [r[5], r[6]] }));
+  const cols = [
+    { key: "client", header: C[0], sortable: true, primary: true },
+    { key: "service", header: C[1], secondary: true },
+    { key: "staff", header: C[2], sortable: true },
+    { key: "when", header: C[3], sortable: true, secondary: true },
+    { key: "price", header: C[4], align: "end", sortable: true, render: (r) => r.price + " lei" },
+    { key: "status", header: C[5], trailing: true, render: (r) => h(V.StatusPill, { tone: r.status[0] }, r.status[1]) }
+  ];
+  const acts = () => [{ label: T.acts[0], icon: "external-link" }, { label: T.acts[1], icon: "send" }, { label: T.acts[2], icon: "calendar" }, { separator: true }, { label: T.acts[3], icon: "trash-2", destructive: true }];
+  const toolbar = h(React.Fragment, null,
+    h("div", { style: { flex: "1 1 var(--search-width)", maxWidth: "var(--search-width)" } }, h(V.Input, { icon: "search", placeholder: T.search, size: "sm", "aria-label": T.search })),
+    h(V.Button, { size: "sm", icon: "list-filter" }, T.filters),
+    h(V.StatusPill, { tone: "neutral", icon: "x" }, T.pill));
+  const short = cols.slice(0, 4);
+  return h("div", { className: "pv-cell", style: { gap: "var(--space-5)" } },
+    h(Cell, { label: L[0] }, h(V.DataTable, { caption: T.cap, columns: cols, rows, selectable: true, selected: sel, onSelectedChange: setSel, sort, onSortChange: setSort, rowActions: acts, toolbar, activeRow: 2, onRowClick: noop,
+      bulkActions: [{ label: T.bulk[0], icon: "send" }, { label: T.bulk[1], icon: "download" }, { label: T.bulk[2], icon: "trash-2", destructive: true }],
+      pagination: { page, pageSize: 20, total: 248, onPageChange: setPage, onPageSizeChange: noop } })),
+    h(Cell, { label: L[1] }, h(V.DataTable, { caption: T.cap, columns: cols, rows: rows.slice(0, 4), density: "dense", rowActions: acts, selectable: true, selected: [], onSelectedChange: noop })),
+    h("div", { className: "pv-grid2" },
+      h(Cell, { label: L[2] }, h(V.DataTable, { caption: T.cap, columns: cols, rows: rows.slice(0, 3), layout: "list", rowActions: acts, pagination: { page: 1, pageSize: 20, total: 3, onPageChange: noop } })),
+      h(Cell, { label: L[3] }, h(V.DataTable, { columns: short, rows: [], loading: true, loadingRows: 3 }))),
+    h("div", { className: "pv-grid3" },
+      h(Cell, { label: L[4] }, h(V.DataTable, { columns: short, rows: [], empty: h(V.EmptyState, { size: "sm", icon: "calendar", title: T.e1[0], description: T.e1[1], actions: h(V.Button, { size: "sm", variant: "primary", icon: "plus" }, T.e1[2]) }) })),
+      h(Cell, { label: L[5] }, h(V.DataTable, { columns: short, rows: [], empty: h(V.EmptyState, { size: "sm", icon: "search", title: T.e2[0], description: T.e2[1], actions: h(V.Button, { size: "sm" }, T.e2[2]) }) })),
+      h(Cell, { label: L[6] }, h(V.DataTable, { columns: short, rows: [], empty: h(V.EmptyState, { size: "sm", icon: "circle-alert", title: T.e3[0], description: T.e3[1], actions: h(React.Fragment, null, h(V.Button, { size: "sm", icon: "rotate-ccw" }, T.e3[2]), h(V.Button, { size: "sm", variant: "quiet" }, T.e3[3])) }) }))));
 }
-mount(/* @__PURE__ */ React.createElement(Demo, null));
+mount(h(Frames, { Board }));
+
 </script>
 </body>
 </html>

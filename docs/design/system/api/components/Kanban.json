@@ -1,0 +1,163 @@
+{
+ "name": "Kanban",
+ "version": "1.0.1",
+ "kind": "component",
+ "group": "Data",
+ "status": "changed",
+ "description": "Cards in stages — the ClientDesk pipeline, the TaskBoard board. Each column shows its name, the number of cards and an optional summary (the stage's value); a `tone: 'done'` column (\"Gata\", \"Câștigate\") gets the lime check.",
+ "exports": [
+  "Kanban",
+  "KanbanCard"
+ ],
+ "props": [
+  {
+   "name": "columns",
+   "type": "KanbanColumn[]",
+   "required": true,
+   "note": ""
+  },
+  {
+   "name": "cards",
+   "type": "KanbanCardProps[]",
+   "required": true,
+   "note": ""
+  },
+  {
+   "name": "renderCard",
+   "type": "(card: KanbanCardProps, ctx: { columns: KanbanColumn[]; onMove?(id: string, col: string): void; }) => ReactNode",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "onMove",
+   "type": "(id: string, col: string) => void",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "defaultColumn",
+   "type": "string",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "label",
+   "type": "string",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "id",
+   "type": "string",
+   "required": true,
+   "note": "",
+   "of": "KanbanCard"
+  },
+  {
+   "name": "col",
+   "type": "string",
+   "required": true,
+   "note": "",
+   "of": "KanbanCard"
+  },
+  {
+   "name": "title",
+   "type": "string",
+   "required": true,
+   "note": "",
+   "of": "KanbanCard"
+  },
+  {
+   "name": "subtitle",
+   "type": "string",
+   "required": false,
+   "note": "",
+   "of": "KanbanCard"
+  },
+  {
+   "name": "tag",
+   "type": "string",
+   "required": false,
+   "note": "",
+   "of": "KanbanCard"
+  },
+  {
+   "name": "amount",
+   "type": "string",
+   "required": false,
+   "note": "",
+   "of": "KanbanCard"
+  },
+  {
+   "name": "people",
+   "type": "string[]",
+   "required": false,
+   "note": "",
+   "of": "KanbanCard"
+  },
+  {
+   "name": "due",
+   "type": "{ label: string; tone?: \"danger\" | \"done\" | \"neutral\" | \"attention\"; icon?: string; }",
+   "required": false,
+   "note": "",
+   "of": "KanbanCard"
+  },
+  {
+   "name": "meta",
+   "type": "string[]",
+   "required": false,
+   "note": "",
+   "of": "KanbanCard"
+  },
+  {
+   "name": "progress",
+   "type": "{ done: number; total: number; }",
+   "required": false,
+   "note": "",
+   "of": "KanbanCard"
+  },
+  {
+   "name": "onOpen",
+   "type": "() => void",
+   "required": false,
+   "note": "",
+   "of": "KanbanCard"
+  },
+  {
+   "name": "onMove",
+   "type": "(id: string, col: string) => void",
+   "required": false,
+   "note": "",
+   "of": "KanbanCard"
+  },
+  {
+   "name": "columns",
+   "type": "KanbanColumn[]",
+   "required": false,
+   "note": "",
+   "of": "KanbanCard"
+  },
+  {
+   "name": "active",
+   "type": "boolean",
+   "required": false,
+   "note": "",
+   "of": "KanbanCard"
+  }
+ ],
+ "events": [
+  "onMove",
+  "onOpen"
+ ],
+ "states": [
+  "default",
+  "done-column",
+  "empty-column",
+  "active-card",
+  "due-attention",
+  "narrow-single-stage"
+ ],
+ "notes": "",
+ "readme": "components/Kanban/README.md",
+ "preview": "components/Kanban/preview.html"
+}

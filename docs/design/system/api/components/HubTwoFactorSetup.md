@@ -1,0 +1,42 @@
+# HubTwoFactorSetup
+
+`page` · Ecrane Hub · versiunea 1.0.0 · nouă
+
+Turning on two-step sign-in. It is required for the owner at the first sign-in after becoming owner. There is no "Sari peste" and no "Dezactivează" for the owner. The page is the AuthLayout component (S63), like HubSignIn and HubInvite: the brand panel, the sheet with the form and, on phones, the band with the logo and language. Locked after 5 wrong codes, for 15 minutes (S61). Shown at 1280 and 390, in light and dark, built only from the system's components. Every text is a key in `i18n/two-factor.json`, in the 6 languages.
+
+## Evenimente
+
+—
+
+## Stări
+
+- Hub — Activarea autentificării în doi pași
+- Pasul 1 · Codul QR și cheia
+- Pasul 2 · Codul din aplicație
+- Cod de 6 cifre
+- Pasul 3 · Codurile de rezervă
+- Stări · desktop (coloana formularului; panoul e ca mai sus)
+- 1 · Pasul 1, după „Copiază”
+- 2 · „Ce aplicație folosesc?”
+- 3 · Pasul 2, cod greșit
+- 4 · Pasul 2, se verifică
+- 5 · Pasul 2, prea multe încercări: blocat 15 minute
+- 6 · Pasul 3, după „Copiază”, fără bifă: „Continuă” inactiv
+- 7 · Pasul 3, cu bifa: „Continuă” activ
+- Stări · telefon
+- Cod greșit
+- Se verifică
+- Blocat 15 minute
+- Pasul 3 cu bifa
+- Pasul 1 după „Copiază”
+- „Ce aplicație folosesc?” pe telefon (sheet) · Light și Dark
+- Deutsch · 1280 · Pasul 1
+- Italiano · 390 · Pasul 3
+- Italiano · 390 · blocat
+- Codice di 6 cifre
+
+## Note
+
+States are the labelled boards and frames of the preview (Light and Dark; desktop/tablet/phone).
+
+Mai mult: `components/HubTwoFactorSetup/README.md`, exemplele: `components/HubTwoFactorSetup/preview.html`.

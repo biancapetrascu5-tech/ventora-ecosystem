@@ -1,4 +1,4 @@
-<!-- @dsCard group="Hub" height=1860 width=1280 page -->
+<!-- @dsCard group="Hub" height=3930 width=1280 page -->
 <!doctype html>
 <html lang="ro">
 <head><meta charset="utf-8"><title>AppIconContext — Ventora</title>
@@ -275,16 +275,78 @@ function Phone() {
   return /* @__PURE__ */ React.createElement("div", { className: "phone2" }, /* @__PURE__ */ React.createElement("div", { className: "r", style: { justifyContent: "space-between", padding: "var(--space-3) var(--space-4)" } }, /* @__PURE__ */ React.createElement(V.Logo, { size: 28 }), /* @__PURE__ */ React.createElement(V.Avatar, { name: "Bianca Petra\u0219cu", size: "sm" })), /* @__PURE__ */ React.createElement("p", { className: "display-m", style: { padding: "0 var(--space-4)", margin: "var(--space-2) 0 var(--space-4)" } }, "Aplica\u021Biile tale"), /* @__PURE__ */ React.createElement("div", { className: "pgrid" }, [...MINE, "shifts", "documents"].map((a) => /* @__PURE__ */ React.createElement("span", { key: a, className: "papp" }, /* @__PURE__ */ React.createElement(V.AppIcon, { app: a, size: 52, title: V.APPS[a].name }), /* @__PURE__ */ React.createElement("span", { className: "caption" }, V.APPS[a].name))), ["inventory", "marketing"].map((a) => /* @__PURE__ */ React.createElement("span", { key: a, className: "papp" }, /* @__PURE__ */ React.createElement(V.AppIcon, { app: a, size: 52, muted: true }), /* @__PURE__ */ React.createElement("span", { className: "caption", style: { color: "var(--ink-muted)" } }, V.APPS[a].name)))));
 }
 function Tabs() {
-  return /* @__PURE__ */ React.createElement("div", { className: "browser" }, [["booking", "Azi \u2014 Booking"], ["crm", "Clien\u021Bi \u2014 CRM"], ["finance", "Restan\u021Be \u2014 Finance"]].map(([a, t], i) => /* @__PURE__ */ React.createElement("span", { key: a, className: "btab" + (i === 0 ? " on" : "") }, /* @__PURE__ */ React.createElement(V.AppIcon, { app: a, size: 16 }), /* @__PURE__ */ React.createElement("span", { className: "caption" }, t))), /* @__PURE__ */ React.createElement("span", { className: "btab" }, /* @__PURE__ */ React.createElement(V.Logo, { variant: "mark", size: 16, title: "" }), /* @__PURE__ */ React.createElement("span", { className: "caption" }, "Ventora")));
+  return /* @__PURE__ */ React.createElement("div", { className: "browser" }, [["booking", "Azi \u2014 EasyBook"], ["crm", "Clien\u021Bi \u2014 ClientDesk"], ["finance", "Restan\u021Be \u2014 MoneyDesk"]].map(([a, t], i) => /* @__PURE__ */ React.createElement("span", { key: a, className: "btab" + (i === 0 ? " on" : "") }, /* @__PURE__ */ React.createElement(V.AppIcon, { app: a, size: 16 }), /* @__PURE__ */ React.createElement("span", { className: "caption" }, t))), /* @__PURE__ */ React.createElement("span", { className: "btab" }, /* @__PURE__ */ React.createElement(V.Logo, { variant: "mark", size: 16, title: "" }), /* @__PURE__ */ React.createElement("span", { className: "caption" }, "Ventora")));
 }
 function Side({ theme }) {
   return /* @__PURE__ */ React.createElement("div", { "data-theme": theme, className: "ctx" }, /* @__PURE__ */ React.createElement(Tabs, null), /* @__PURE__ */ React.createElement("div", { className: "ctxrow" }, /* @__PURE__ */ React.createElement(Launcher, null), /* @__PURE__ */ React.createElement("div", { className: "d0" }, /* @__PURE__ */ React.createElement("div", { className: "spinebox" }, /* @__PURE__ */ React.createElement(V.Spine, { app: "booking", sections: [{ items: [{ id: "a", label: "Azi", icon: "house" }, { id: "c", label: "Calendar", icon: "calendar" }, { id: "p", label: "Program\u0103ri", icon: "list" }] }], activeId: "a", onBackToHub: () => {
   } })), /* @__PURE__ */ React.createElement(Phone, null))));
 }
 function Demo() {
-  return /* @__PURE__ */ React.createElement("div", null, ["light", "dark"].map((t) => /* @__PURE__ */ React.createElement(Side, { key: t, theme: t })));
+  return /* @__PURE__ */ React.createElement("div", null, ["light", "dark"].map((t) => /* @__PURE__ */ React.createElement(React.Fragment, { key: t }, /* @__PURE__ */ React.createElement("p", { className: "caption muted", style: { padding: "var(--space-3) var(--space-4) var(--space-1)" } }, "Rom\xE2n\u0103 \xB7 ", t === "light" ? "Light" : "Dark"), /* @__PURE__ */ React.createElement(Side, { theme: t }))));
 }
-mount(/* @__PURE__ */ React.createElement(Demo, null));
+/* ---- DE / IT label test + extra states (p1) ---- */
+const ce = React.createElement;
+function LX_Bar({ t, title }) {
+  return ce(V.ContextBar, {
+    title,
+    org: ce(V.OrgSwitcher, { orgs: t.orgs, currentId: "aurora" }),
+    onSearch: () => {},
+    createItems: [{ label: t.create[0], icon: "calendar-check", shortcut: ["N"] }, { label: t.create[1], icon: "user-plus" }],
+    notifications: ce(V.NotificationsPanel, { items: t.notifs }),
+    account: ce(V.AccountMenu, { user: t.user, orgs: t.orgs, currentOrgId: "aurora", onCatalog: () => {} })
+  });
+}
+function LX_Frames({ title, notes, render, desktopH = 900, mobileH = 1000 }) {
+  const fr = (t, cls, m, th, hgt) => ce("div", { key: t.lang + m }, ce("p", { className: "caption scr-lab" }, t.label, " · ", m === "desktop" ? "Desktop · 1280" : "Telefon · 390", " · ", th === "light" ? "Light" : "Dark"),
+    ce(V.LocaleProvider, { locale: t.lang }, ce("div", { className: cls, "data-theme": th, lang: t.lang, style: { height: hgt } }, render(m, th, t))));
+  return ce("div", { className: "scr" }, ce("p", { className: "heading" }, title), notes && ce("p", { className: "caption muted" }, notes.join(" · ")),
+    ce("div", { className: "scr-row" }, fr(LX.de, "scr-d", "desktop", "light", desktopH), fr(LX.it, "scr-m", "mobile", "light", mobileH)),
+    ce("div", { className: "scr-row" }, fr(LX.it, "scr-d", "desktop", "dark", desktopH), fr(LX.de, "scr-m", "mobile", "dark", mobileH)));
+}
+function LX_StateFrames({ title, notes, frames }) {
+  return ce("div", { className: "scr" }, ce("p", { className: "heading" }, title), notes && ce("p", { className: "caption muted" }, notes.join(" · ")),
+    ce("div", { className: "scr-row" }, frames.map(([lab, m, th, hgt, el], i) => ce("div", { key: i }, ce("p", { className: "caption scr-lab" }, lab, " · ", m === "desktop" ? "Desktop · 1280" : "Telefon · 390", " · ", th === "light" ? "Light" : "Dark"),
+      ce("div", { className: m === "desktop" ? "scr-d" : "scr-m", "data-theme": th, style: { height: hgt } }, el)))));
+}
+const LX = {
+  de: {
+    lang: "de", label: "Deutsch", user: "Julia Becker", hi: "Guten Morgen, Julia", today: "Heute haben Sie 8 Termine und 2 Rechnungen im Blick.", mine: "Ihre Apps", other: "Weitere Ventora-Apps",
+    desc: { booking: "Termine und Kalender", crm: "Kunden und Verlauf", hr: "Team und Anwesenheit", finance: "Rechnungen und Fälligkeiten", projects: "Projekte und Fristen", analytics: "Berichte" },
+    tabs: ["Heute — EasyBook", "Kunden — ClientDesk", "Überfällig — MoneyDesk"], spine: ["Heute", "Kalender", "Termine"]
+  },
+  it: {
+    lang: "it", label: "Italiano", user: "Giulia Romano", hi: "Buongiorno, Giulia", today: "Oggi ha 8 appuntamenti e 2 fatture da seguire.", mine: "Le Sue app", other: "Altre app Ventora",
+    desc: { booking: "Appuntamenti e calendario", crm: "Clienti e cronologia", hr: "Team e presenze", finance: "Fatture e scadenze", projects: "Progetti e scadenze", analytics: "Report" },
+    tabs: ["Oggi — EasyBook", "Clienti — ClientDesk", "Scadute — MoneyDesk"], spine: ["Oggi", "Calendario", "Appuntamenti"]
+  }
+};
+function Launcher_L({ t }) {
+  return ce("div", { className: "launch" }, ce("div", { className: "r", style: { justifyContent: "space-between" } }, ce(V.Logo, { size: 32 }), ce(V.Avatar, { name: t.user, size: "sm" })),
+    ce("p", { className: "display-l", style: { margin: "var(--space-6) 0 var(--space-1)" } }, t.hi), ce("p", { className: "body", style: { color: "var(--ink-muted)" } }, t.today),
+    ce("p", { className: "display-m", style: { margin: "var(--space-6) 0 var(--space-3)" } }, t.mine),
+    ce("div", { className: "tiles3" }, MINE.map((a, i) => ce(V.AppTile, { key: a, app: a, badge: i === 0 ? 3 : void 0, description: t.desc[a], onOpen: () => {} }))),
+    ce("p", { className: "display-m", style: { margin: "var(--space-6) 0 var(--space-3)" } }, t.other),
+    ce("div", { className: "tiles3" }, OTHER.map(([a, s]) => ce(V.AppTile, { key: a, app: a, access: s, grantedBy: t.user, onWriteUs: () => {}, onRequestAccess: () => {}, onSeeStatus: () => {} }))));
+}
+function Phone_L({ t }) {
+  return ce("div", { className: "phone2" }, ce("div", { className: "r", style: { justifyContent: "space-between", padding: "var(--space-3) var(--space-4)" } }, ce(V.Logo, { size: 28 }), ce(V.Avatar, { name: t.user, size: "sm" })),
+    ce("p", { className: "display-m", style: { padding: "0 var(--space-4)", margin: "var(--space-2) 0 var(--space-4)" } }, t.mine),
+    ce("div", { className: "pgrid" }, [...MINE, "shifts", "documents"].map((a) => ce("span", { key: a, className: "papp" }, ce(V.AppIcon, { app: a, size: 52, title: V.APPS[a].name }), ce("span", { className: "caption" }, V.APPS[a].name))),
+      ["inventory", "marketing"].map((a) => ce("span", { key: a, className: "papp" }, ce(V.AppIcon, { app: a, size: 52, muted: true }), ce("span", { className: "caption", style: { color: "var(--ink-muted)" } }, V.APPS[a].name)))));
+}
+function Side_L({ theme, t }) {
+  return ce(V.LocaleProvider, { locale: t.lang }, ce("div", { "data-theme": theme, lang: t.lang, className: "ctx" },
+    ce("div", { className: "browser" }, ["booking", "crm", "finance"].map((a, i) => ce("span", { key: a, className: "btab" + (i === 0 ? " on" : "") }, ce(V.AppIcon, { app: a, size: 16 }), ce("span", { className: "caption" }, t.tabs[i]))), ce("span", { className: "btab" }, ce(V.Logo, { variant: "mark", size: 16, title: "" }), ce("span", { className: "caption" }, "Ventora"))),
+    ce("div", { className: "ctxrow" }, ce(Launcher_L, { t }), ce("div", { className: "d0" },
+      ce("div", { className: "spinebox" }, ce(V.Spine, { app: "booking", sections: [{ items: [{ id: "a", label: t.spine[0], icon: "house" }, { id: "c", label: t.spine[1], icon: "calendar" }, { id: "p", label: t.spine[2], icon: "list" }] }], activeId: "a", onBackToHub: () => {} })),
+      ce(Phone_L, { t })))));
+}
+function AIC_Extra() {
+  return ce("div", { className: "d" }, ce("p", { className: "heading" }, "DE / IT — test de lungime a textelor: iconițele \xEEn context"),
+    ce("p", { className: "caption muted" }, "Deutsch · Light"), ce(Side_L, { theme: "light", t: LX.de }),
+    ce("p", { className: "caption muted" }, "Italiano · Dark"), ce(Side_L, { theme: "dark", t: LX.it }));
+}
+mount(/* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(Demo, null), /* @__PURE__ */ React.createElement(AIC_Extra, null)));
 </script>
 </body>
 </html>

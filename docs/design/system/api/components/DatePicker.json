@@ -1,0 +1,191 @@
+{
+ "name": "DatePicker",
+ "version": "1.0.1",
+ "kind": "component",
+ "group": "Forms",
+ "status": "changed",
+ "description": "Choose a date, a date range or a time; weeks start on Monday in every language.",
+ "exports": [
+  "DatePicker",
+  "Calendar"
+ ],
+ "props": [
+  {
+   "name": "mode",
+   "type": "\"date\" | \"range\" | \"time\"",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "value",
+   "type": "string | Date | [Date, Date]",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "defaultValue",
+   "type": "string | Date | [Date, Date]",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "onChange",
+   "type": "(v: any) => void",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "placeholder",
+   "type": "string",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "min",
+   "type": "Date",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "max",
+   "type": "Date",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "isDisabled",
+   "type": "(d: Date) => boolean",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "step",
+   "type": "number",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "timeFrom",
+   "type": "string",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "timeTo",
+   "type": "string",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "today",
+   "type": "Date",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "invalid",
+   "type": "boolean",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "disabled",
+   "type": "boolean",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "size",
+   "type": "\"sm\" | \"md\" | \"lg\"",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "open",
+   "type": "boolean",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "defaultOpen",
+   "type": "boolean",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "id",
+   "type": "string",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "mode",
+   "type": "\"date\" | \"range\"",
+   "required": false,
+   "note": "",
+   "of": "Calendar"
+  },
+  {
+   "name": "value",
+   "type": "any",
+   "required": false,
+   "note": "",
+   "of": "Calendar"
+  },
+  {
+   "name": "onChange",
+   "type": "(v: any) => void",
+   "required": true,
+   "note": "",
+   "of": "Calendar"
+  },
+  {
+   "name": "min",
+   "type": "Date",
+   "required": false,
+   "note": "",
+   "of": "Calendar"
+  },
+  {
+   "name": "max",
+   "type": "Date",
+   "required": false,
+   "note": "",
+   "of": "Calendar"
+  },
+  {
+   "name": "isDisabled",
+   "type": "(d: Date) => boolean",
+   "required": false,
+   "note": "",
+   "of": "Calendar"
+  },
+  {
+   "name": "today",
+   "type": "Date",
+   "required": false,
+   "note": "",
+   "of": "Calendar"
+  }
+ ],
+ "events": [
+  "onChange"
+ ],
+ "states": [
+  "open",
+  "calendar-date",
+  "calendar-range",
+  "today",
+  "selected",
+  "unavailable",
+  "date-value",
+  "range-value",
+  "time-value",
+  "empty",
+  "invalid",
+  "disabled"
+ ],
+ "notes": "Open popover (with Azi/Golește footer) and time list shown open only in the Light frame; other frames show the calendar inline via Calendar.",
+ "readme": "components/DatePicker/README.md",
+ "preview": "components/DatePicker/preview.html"
+}

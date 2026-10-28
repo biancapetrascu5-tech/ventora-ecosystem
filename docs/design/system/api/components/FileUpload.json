@@ -1,0 +1,103 @@
+{
+ "name": "FileUpload",
+ "version": "1.0.1",
+ "kind": "component",
+ "group": "Forms",
+ "status": "changed",
+ "description": "A drop zone plus a file list with per-file progress, success and error.",
+ "exports": [
+  "FileUpload"
+ ],
+ "props": [
+  {
+   "name": "files",
+   "type": "UploadFile[]",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "onSelect",
+   "type": "(files: File[]) => void",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "onRemove",
+   "type": "(f: UploadFile) => void",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "onRetry",
+   "type": "(f: UploadFile) => void",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "accept",
+   "type": "string",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "multiple",
+   "type": "boolean",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "maxSize",
+   "type": "number",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "hint",
+   "type": "string",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "disabled",
+   "type": "boolean",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "invalid",
+   "type": "boolean",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "state",
+   "type": "ForcedState | \"drag\"",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "id",
+   "type": "string",
+   "required": false,
+   "note": ""
+  }
+ ],
+ "events": [
+  "onRemove",
+  "onRetry",
+  "onSelect"
+ ],
+ "states": [
+  "file-done",
+  "file-uploading",
+  "file-error-retry",
+  "default",
+  "hover",
+  "drag-over",
+  "zone-error",
+  "disabled"
+ ],
+ "notes": "No separate focus look on the drop zone (focus is on its inner link), so no forced focus frame.",
+ "readme": "components/FileUpload/README.md",
+ "preview": "components/FileUpload/preview.html"
+}

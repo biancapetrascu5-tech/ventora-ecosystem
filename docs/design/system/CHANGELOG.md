@@ -1,0 +1,459 @@
+# CHANGELOG — Ventora design system
+
+Fiecare intrare spune ce s-a schimbat pe componentă (structură, tokeni, texte, stări) și de ce, cu trimitere la registrul de decizii din `README.md` (S…, D-UX-4, R-…, PASUL 2).
+
+**Versiuni.** Exportul din 25 octombrie 2026 e baza: fiecare componentă de acolo are versiunea 1.0.0. `manifest.json` dă versiunea de acum: **2.0.0** când se schimbă ce vede omul fără să schimbi codul (AttentionList); **1.1.0** când componenta are structură, proprietăți sau stiluri noi, compatibile; **1.0.1** când se schimbă doar textele, README-ul sau preview-ul; **1.0.0** pentru componentele noi și pentru cele neschimbate.
+
+## 2026-10-28 — față de exportul din 25 octombrie 2026
+
+### Pe scurt
+- **13 componente noi:** AuthLayout, ecranele SMS (§1–§9) și cele ale autentificării în doi pași.
+- **Tokeni:** niciun token adăugat sau schimbat (`tokens.json` identic). `tokens.css` e nou în export, generat din `tokens.json`.
+- **D-UX-4:** numele afișate ale celor 13 module (EasyBook, ClientDesk, TeamSpace, MoneyDesk, TaskBoard, ShiftPlan, DocSpace, StockDesk, DataView, CampaignKit, EventSpace, AssetDesk, ContractDesk) în `APPS` și deci în AppIcon, AppTile, AppDock, AppLaunch, Spine, AccessBadge, invitație („Vei avea acces la”), launcher, catalog, Founder și Growth.
+- **Autentificare:** P5 și D10 înlocuite de S58–S63 (autentificare în doi pași fără grație, cod la fiecare intrare, coduri de rezervă, blocare 15 minute după 5 coduri greșite). Cheile de traducere sunt în `i18n/two-factor.json`.
+- **PASUL 2:** AttentionList e neutru implicit (b), UsageMeter la limită pentru proprietar și ceilalți (c), antetul Hub pe telefon (d), iconița `grid` (e), toate preview-urile complete (f).
+- **Preview-uri (PASUL 2 f):** toate cardurile au stările din README, diacritice, DE/IT și frame-uri Light/Dark cu `data-theme` pe frame. Founder și Growth rămân doar în română (S57).
+
+### Biblioteca (bundle.js, bundle.css) — schimbări care ating mai multe componente
+- **Liste și meniuri care se deschid deasupra paginii** (Menu, Select, Combobox, DatePicker, Tooltip, LanguageSwitcher, NotificationsPanel, OrgSwitcher, AccountMenu, CommandPalette): păstrează tema locului din care se deschid. Într-un frame Dark sunt închise la culoare și pe o pagină luminoasă; zona de brand nu-și impune tema. Clasa `.v-portal-theme` nu adaugă niciun element vizibil.
+- **Numere** (UsageMeter, Pagination, Stat, grafice): separatorul de mii apare mereu, și la patru cifre: „1.284”, nu „1284” (glosar, Cifre). Înainte, română, italiană și spaniolă grupau doar de la cinci cifre.
+- **Texte noi (`S`):** `notif_operational`, `notif_activity` (S2); `auth_line1`, `auth_line2`, `auth_founder_product`, `auth_founder_tagline` (AuthLayout), în 6 limbi.
+- **Iconițe noi:** `grid`, `grid-3x3`, `battery`, `battery-low`, `battery-charging`, `signal`, `qr-code`.
+- **`APPS`:** numele celor 13 module (D-UX-4). Cheile (`booking`, `crm`…) și iconițele nu se schimbă.
+
+### Componente noi
+
+- **AuthLayout** (1.0.0) — pagina de autentificare ca componentă (R-2F9, S63), același nume și aceleași zone ca în packages/ui: panoul de brand, foaia cu formularul, banda cu logo pe telefon; în plus `brand="founder"`, `statement`, `wide`; fraza panoului tradusă în 6 limbi (chei `auth_line1/2`).
+- **BookingSmsConnect** (1.0.0) — conectarea telefonului afacerii, 7 pași (SMS §2).
+- **BookingSmsExtraPhone** (1.0.0) — telefonul în plus (SMS §6, R-T1, D-SMS-11).
+- **BookingSmsList** (1.0.0) — lista mesajelor către clienți (SMS §5).
+- **BookingSmsMessages** (1.0.0) — mesajele către client pe detaliul programării (SMS §3, S38: fără diacritice, cel mult 160 de caractere).
+- **BookingSmsNotifications** (1.0.0) — notificările și e-mailul operațional (SMS §7, S55).
+- **BookingSmsSettings** (1.0.0) — Setări · Trimitere SMS: SMS-urile pleacă de pe telefonul afacerii (SMS §1, S25–S33).
+- **BookingSmsToday** (1.0.0) — alertele SMS din „Au nevoie de tine” (SMS §4; doar „telefonul e deconectat și are mesaje care așteaptă” e peach).
+- **FounderBusinessSms** (1.0.0) — secțiunea SMS a unei afaceri în Founder (SMS §8, S56, S57).
+- **FounderTwoFactor** (1.0.0) — autentificarea în doi pași în Founder, obligatorie pentru toți (S58, S63).
+- **HubTwoFactorSetup** (1.0.0) — activarea autentificării în doi pași, 3 pași (S58, S60, S61).
+- **HubTwoFactorVerify** (1.0.0) — verificarea după parolă și „Nu mai am acces” (S59, S61, S62).
+- **SmsAppDownload** (1.0.0) — pagina publică de descărcare a aplicației pentru telefon (SMS §9, S68).
+
+### Componente schimbate
+
+#### AccessBadge — 1.0.1
+- Preview: toate stările din README, exemple cu diacritice, variantele DE/IT și frame-uri Light/Dark cu `data-theme` pe frame (PASUL 2 f)
+
+#### AccountMenu — 1.1.0
+- Structură: prop nou `orgsInMenu`: „Afacerile tale” în meniu pe telefon, după lățimea layoutului (S66, PASUL 2 d); meniul păstrează tema locului din care se deschide (PASUL 2 f)
+- Texte: README: selectorul de afacere pe telefon, `orgsInMenu`
+- Preview: desktop și telefon, Light/Dark, DE/IT, fiecare meniu deschis
+
+#### AddonPurchase — 1.0.1
+- Preview: toate stările din README, exemple cu diacritice, variantele DE/IT și frame-uri Light/Dark cu `data-theme` pe frame (PASUL 2 f)
+
+#### Agenda — 1.0.1
+- Preview: toate stările din README, exemple cu diacritice, variantele DE/IT și frame-uri Light/Dark cu `data-theme` pe frame (PASUL 2 f)
+
+#### AnalyticsDashboard — 1.0.1
+- Texte: numele noi ale modulelor în README (D-UX-4)
+- Preview: test de etichete DE (1280) și IT (390), cu textele ecranului traduse, în Light și Dark (PASUL 2 f)
+
+#### AppDock — 1.1.0
+- Structură: eticheta folosește toată lățimea aplicației (`100cqw`), ca numele noi să nu se taie (D-UX-4)
+- Texte: numele afișate noi ale modulelor (D-UX-4)
+- Preview: toate stările din README, exemple cu diacritice, variantele DE/IT și frame-uri Light/Dark cu `data-theme` pe frame (PASUL 2 f); test cu toate cele 13 nume
+
+#### AppIcon — 1.0.1
+- Texte: numele noi ale modulelor în README (D-UX-4)
+- Preview: toate stările din README, exemple cu diacritice, variantele DE/IT și frame-uri Light/Dark cu `data-theme` pe frame (PASUL 2 f)
+
+#### AppIconContext — 1.0.1
+- Preview: test de etichete DE (1280) și IT (390), cu textele ecranului traduse, în Light și Dark (PASUL 2 f)
+
+#### AppIconGrid — 1.0.1
+- Preview: înălțimea cardului corectată
+
+#### AppLaunch — 1.0.1
+- Preview: toate stările din README, exemple cu diacritice, variantele DE/IT și frame-uri Light/Dark cu `data-theme` pe frame (PASUL 2 f)
+
+#### AppShell — 1.0.1
+- Texte: README corectat: varianta de telefon (bara de jos) începe sub 768px, cum face biblioteca, nu sub 640px
+- Preview: toate stările din README, exemple cu diacritice, variantele DE/IT și frame-uri Light/Dark cu `data-theme` pe frame (PASUL 2 f)
+
+#### AppStates — 1.0.1
+- Texte: numele noi ale modulelor în README (D-UX-4)
+- Preview: test de etichete DE (1280) și IT (390), cu textele ecranului traduse, în Light și Dark (PASUL 2 f)
+
+#### AppTile — 1.0.1
+- Preview: toate stările din README, exemple cu diacritice, variantele DE/IT și frame-uri Light/Dark cu `data-theme` pe frame (PASUL 2 f)
+
+#### AttentionList — 2.0.0
+- Structură: tonul implicit e acum neutru; `tone: "attention"` (nou) dă peach, `tone: "danger"` roșu. Elementele fără `tone` care erau peach devin neutre — schimbare vizuală (S64, PASUL 2 b; înlocuiește regula din S1)
+- Stări: neutru · attention · danger · cu acțiuni · cu oră · gol
+- Texte: README rescris pentru cele trei tonuri
+- Preview: cele trei tonuri, o zi reală în EasyBook, starea goală, Light/Dark, DE/IT
+
+#### Avatar — 1.0.1
+- Preview: toate stările din README, exemple cu diacritice, variantele DE/IT și frame-uri Light/Dark cu `data-theme` pe frame (PASUL 2 f)
+
+#### Badge — 1.0.1
+- Preview: toate stările din README, exemple cu diacritice, variantele DE/IT și frame-uri Light/Dark cu `data-theme` pe frame (PASUL 2 f)
+
+#### BarChart — 1.0.1
+- Preview: toate stările din README, exemple cu diacritice, variantele DE/IT și frame-uri Light/Dark cu `data-theme` pe frame (PASUL 2 f)
+
+#### BookingCalendar — 1.0.1
+- Texte: numele noi ale modulelor în README (D-UX-4)
+- Preview: test de etichete DE (1280) și IT (390), cu textele ecranului traduse, în Light și Dark (PASUL 2 f)
+
+#### BookingDetail — 1.0.1
+- Texte: numele noi ale modulelor în README (D-UX-4)
+- Preview: test de etichete DE (1280) și IT (390), cu textele ecranului traduse, în Light și Dark (PASUL 2 f)
+
+#### BookingLimit — 1.0.1
+- Texte: numele noi ale modulelor în README (D-UX-4)
+- Preview: test de etichete DE (1280) și IT (390), cu textele ecranului traduse, în Light și Dark (PASUL 2 f)
+
+#### BookingList — 1.0.1
+- Texte: numele noi ale modulelor în README (D-UX-4)
+- Preview: test de etichete DE (1280) și IT (390), cu textele ecranului traduse, în Light și Dark (PASUL 2 f)
+
+#### BookingNew — 1.0.1
+- Texte: numele noi ale modulelor în README (D-UX-4)
+- Preview: test de etichete DE (1280) și IT (390), cu textele ecranului traduse, în Light și Dark (PASUL 2 f)
+
+#### BookingSettings — 1.0.1
+- Texte: numele noi ale modulelor în README (D-UX-4)
+- Preview: test de etichete DE (1280) și IT (390), cu textele ecranului traduse, în Light și Dark (PASUL 2 f)
+
+#### BookingStates — 1.0.1
+- Texte: numele noi ale modulelor în README (D-UX-4)
+- Preview: test de etichete DE (1280) și IT (390), cu textele ecranului traduse, în Light și Dark (PASUL 2 f)
+
+#### BookingToday — 1.0.1
+- Structură: pe telefon „Azi” începe cu „Următoarea programare” (corecția din §4)
+- Texte: numele noi ale modulelor (D-UX-4)
+- Preview: test de etichete DE (1280) și IT (390), cu textele ecranului traduse, în Light și Dark (PASUL 2 f)
+
+#### BrandZone — 1.0.1
+- Preview: toate stările din README, exemple cu diacritice, variantele DE/IT și frame-uri Light/Dark cu `data-theme` pe frame (PASUL 2 f)
+
+#### Button — 1.1.0
+- Structură: `href` (link) cu `block` nu mai iese din părinte (`box-sizing`)
+- Preview: toate stările din README, exemple cu diacritice, variantele DE/IT și frame-uri Light/Dark cu `data-theme` pe frame (PASUL 2 f)
+
+#### CatalogRecommendation — 1.0.1
+- Texte: numele noi ale modulelor în README (D-UX-4)
+- Preview: toate stările din README, exemple cu diacritice, variantele DE/IT și frame-uri Light/Dark cu `data-theme` pe frame (PASUL 2 f)
+
+#### Checkbox — 1.0.1
+- Preview: toate stările din README, exemple cu diacritice, variantele DE/IT și frame-uri Light/Dark cu `data-theme` pe frame (PASUL 2 f)
+
+#### Combobox — 1.0.1
+- Preview: toate stările din README, exemple cu diacritice, variantele DE/IT și frame-uri Light/Dark cu `data-theme` pe frame (PASUL 2 f)
+
+#### CommandPalette — 1.0.1
+- Preview: toate stările din README, exemple cu diacritice, variantele DE/IT și frame-uri Light/Dark cu `data-theme` pe frame (PASUL 2 f)
+
+#### CommercialPreferences — 1.0.1
+- Preview: toate stările din README, exemple cu diacritice, variantele DE/IT și frame-uri Light/Dark cu `data-theme` pe frame (PASUL 2 f)
+
+#### CommercialStates — 1.0.1
+- Preview: test de etichete DE (1280) și IT (390), cu textele ecranului traduse, în Light și Dark (PASUL 2 f)
+
+#### ContextBar — 1.1.0
+- Structură: pe telefon, când pagina are titlu, bara arată doar semnul Ventora (D-UX-4, `.v-cb-logo--mark`)
+- Preview: toate stările din README, exemple cu diacritice, variantele DE/IT și frame-uri Light/Dark cu `data-theme` pe frame (PASUL 2 f)
+
+#### Cover — 1.0.1
+- Preview: doar lățimea cardului (1200) scrisă explicit
+
+#### CrmPipeline — 1.0.1
+- Texte: numele noi ale modulelor în README (D-UX-4)
+- Preview: test de etichete DE (1280) și IT (390), cu textele ecranului traduse, în Light și Dark (PASUL 2 f)
+
+#### DataTable — 1.0.1
+- Preview: toate stările din README, exemple cu diacritice, variantele DE/IT și frame-uri Light/Dark cu `data-theme` pe frame (PASUL 2 f)
+
+#### DatePicker — 1.0.1
+- Preview: toate stările din README, exemple cu diacritice, variantele DE/IT și frame-uri Light/Dark cu `data-theme` pe frame (PASUL 2 f)
+
+#### Dialog — 1.0.1
+- Preview: toate stările din README, exemple cu diacritice, variantele DE/IT și frame-uri Light/Dark cu `data-theme` pe frame (PASUL 2 f)
+
+#### DiscoveryTooltip — 1.0.1
+- Preview: toate stările din README, exemple cu diacritice, variantele DE/IT și frame-uri Light/Dark cu `data-theme` pe frame (PASUL 2 f)
+
+#### Drawer — 1.0.1
+- Preview: toate stările din README, exemple cu diacritice, variantele DE/IT și frame-uri Light/Dark cu `data-theme` pe frame (PASUL 2 f)
+
+#### EmptyState — 1.0.1
+- Preview: toate stările din README, exemple cu diacritice, variantele DE/IT și frame-uri Light/Dark cu `data-theme` pe frame (PASUL 2 f)
+
+#### FileUpload — 1.0.1
+- Preview: toate stările din README, exemple cu diacritice, variantele DE/IT și frame-uri Light/Dark cu `data-theme` pe frame (PASUL 2 f)
+
+#### FinanceDue — 1.0.1
+- Texte: numele noi ale modulelor în README (D-UX-4)
+- Preview: test de etichete DE (1280) și IT (390), cu textele ecranului traduse, în Light și Dark (PASUL 2 f)
+
+#### FormField — 1.0.1
+- Preview: toate stările din README, exemple cu diacritice, variantele DE/IT și frame-uri Light/Dark cu `data-theme` pe frame (PASUL 2 f)
+
+#### FounderBusiness — 1.0.1
+- Texte: numele noi ale modulelor în ecrane (D-UX-4)
+
+#### FounderBusinesses — 1.0.1
+- Texte: numele noi ale modulelor în ecrane (D-UX-4)
+
+#### FounderNewBusiness — 1.0.1
+- Texte: numele noi ale modulelor în ecrane (D-UX-4)
+
+#### FounderPacks — 1.0.1
+- Texte: numele noi ale modulelor în ecrane (D-UX-4)
+
+#### FounderPlanEditor — 1.0.1
+- Texte: numele noi ale modulelor în ecrane (D-UX-4)
+
+#### FounderPlans — 1.0.1
+- Texte: numele noi ale modulelor în ecrane (D-UX-4)
+
+#### FounderStates — 1.0.1
+- Texte: numele noi ale modulelor în ecrane (D-UX-4)
+
+#### FounderUsage — 1.0.1
+- Texte: numele noi ale modulelor în ecrane (D-UX-4)
+
+#### Glosar — 1.0.1
+- Texte: secțiunile „SMS și telefonul afacerii” (S38, S47, S48) și „Cont și securitate” (autentificare în doi pași, aplicație de autentificare, cod de rezervă, cont blocat temporar, Ține-mă minte; S58–S61), în 6 limbi
+
+#### GrowthAudiences — 1.0.1
+- Texte: numele noi ale modulelor în ecrane (D-UX-4); valorile lungi din Select pe două rânduri (S40)
+
+#### GrowthCampaignEditor — 1.0.1
+- Texte: numele noi ale modulelor în ecrane (D-UX-4); valorile lungi din Select pe două rânduri (S40)
+
+#### GrowthCampaigns — 1.0.1
+- Texte: numele noi ale modulelor în ecrane (D-UX-4); valorile lungi din Select pe două rânduri (S40)
+
+#### GrowthControl — 1.0.1
+- Texte: numele noi ale modulelor în ecrane (D-UX-4); valorile lungi din Select pe două rânduri (S40)
+
+#### GrowthOfferEditor — 1.0.1
+- Texte: numele noi ale modulelor în ecrane (D-UX-4); valorile lungi din Select pe două rânduri (S40)
+
+#### GrowthOffers — 1.0.1
+- Texte: numele noi ale modulelor în ecrane (D-UX-4); valorile lungi din Select pe două rânduri (S40)
+
+#### GrowthResults — 1.0.1
+- Texte: numele noi ale modulelor în ecrane (D-UX-4); valorile lungi din Select pe două rânduri (S40)
+
+#### GrowthSlot — 1.0.1
+- Texte: numele noi ale modulelor în README (D-UX-4)
+- Texte: numele noi ale modulelor în ecrane (D-UX-4); valorile lungi din Select pe două rânduri (S40)
+- Preview: toate stările din README, exemple cu diacritice, variantele DE/IT și frame-uri Light/Dark cu `data-theme` pe frame (PASUL 2 f)
+
+#### HrAttendance — 1.0.1
+- Texte: numele noi ale modulelor în README (D-UX-4)
+- Preview: test de etichete DE (1280) și IT (390), cu textele ecranului traduse, în Light și Dark (PASUL 2 f)
+
+#### HubAccount — 1.0.1
+- Stări: proprietarul vede starea autentificării în doi pași („Activă · obligatorie pentru proprietar”), nu un comutator (S58); codul se cere la fiecare intrare cu parola (S59)
+- Texte: „Coduri de rezervă” în loc de „Coduri de recuperare”; „Generează coduri noi” în loc de „Vezi codurile” (codurile se văd o singură dată) (S60)
+
+#### HubAddonPurchase — 1.0.1
+- Preview: test de etichete DE (1280) și IT (390), cu textele ecranului traduse, în Light și Dark (PASUL 2 f)
+
+#### HubAdminAccess — 1.0.1
+- Texte: numele noi ale modulelor în README (D-UX-4)
+- Preview: test de etichete DE (1280) și IT (390), cu textele ecranului traduse, în Light și Dark (PASUL 2 f)
+
+#### HubAdminPlan — 1.0.1
+- Preview: test de etichete DE (1280) și IT (390), cu textele ecranului traduse, în Light și Dark (PASUL 2 f)
+
+#### HubAdminTeam — 1.0.1
+- Preview: test de etichete DE (1280) și IT (390), cu textele ecranului traduse, în Light și Dark (PASUL 2 f)
+
+#### HubCatalog — 1.0.1
+- Preview: test de etichete DE (1280) și IT (390), cu textele ecranului traduse, în Light și Dark (PASUL 2 f)
+
+#### HubCatalogApp — 1.0.1
+- Preview: test de etichete DE (1280) și IT (390), cu textele ecranului traduse, în Light și Dark (PASUL 2 f)
+
+#### HubChooseBusiness — 1.0.1
+- Preview: test de etichete DE (1280) și IT (390), cu textele ecranului traduse, în Light și Dark (PASUL 2 f)
+
+#### HubEmpty — 1.0.1
+- Preview: test de etichete DE (1280) și IT (390), cu textele ecranului traduse, în Light și Dark (PASUL 2 f)
+
+#### HubInvite — 1.0.1
+- Structură: pagina e AuthLayout cu `wide` (S63)
+- Texte: README
+
+#### HubLauncher — 1.0.1
+- Stări: secțiune nouă: antetul pe telefon (logo, căutare, clopoțel, avatar) cu meniul contului deschis și „Afacerile tale” (S66, PASUL 2 d)
+- Texte: README; numele noi ale modulelor (D-UX-4)
+
+#### HubRecommendation — 1.0.1
+- Preview: toate stările din README, exemple cu diacritice, variantele DE/IT și frame-uri Light/Dark cu `data-theme` pe frame (PASUL 2 f)
+
+#### HubSignIn — 1.0.1
+- Structură: pagina e AuthLayout (S63)
+- Texte: README
+
+#### HubStates — 1.0.1
+- Stări: scoasă starea „Autentificarea în doi pași e oprită” (proprietar, 14 zile de grație), fiindcă P5 a fost înlocuit (S58)
+
+#### HubSupport — 1.0.1
+- Preview: test de etichete DE (1280) și IT (390), cu textele ecranului traduse, în Light și Dark (PASUL 2 f)
+
+#### Icon — 1.1.0
+- Structură: iconițe noi în registru: `grid`, `grid-3x3` (S67, PASUL 2 e), `battery`, `battery-low`, `battery-charging`, `signal`, `qr-code` (SMS); `Icon.names` include acum și iconițele adăugate
+- Preview: toate stările din README, exemple cu diacritice, variantele DE/IT și frame-uri Light/Dark cu `data-theme` pe frame (PASUL 2 f); setul cerut wrench, lock, globe, store, grid, arrow-right
+
+#### IconButton — 1.0.1
+- Preview: toate stările din README, exemple cu diacritice, variantele DE/IT și frame-uri Light/Dark cu `data-theme` pe frame (PASUL 2 f)
+
+#### Input — 1.0.1
+- Preview: toate stările din README, exemple cu diacritice, variantele DE/IT și frame-uri Light/Dark cu `data-theme` pe frame (PASUL 2 f)
+
+#### InventoryStock — 1.0.1
+- Texte: numele noi ale modulelor în README (D-UX-4)
+- Preview: test de etichete DE (1280) și IT (390), cu textele ecranului traduse, în Light și Dark (PASUL 2 f)
+
+#### Kanban — 1.0.1
+- Texte: numele noi ale modulelor în README (D-UX-4)
+- Preview: toate stările din README, exemple cu diacritice, variantele DE/IT și frame-uri Light/Dark cu `data-theme` pe frame (PASUL 2 f)
+
+#### Kbd — 1.0.1
+- Preview: toate stările din README, exemple cu diacritice, variantele DE/IT și frame-uri Light/Dark cu `data-theme` pe frame (PASUL 2 f)
+
+#### LanguageSwitcher — 1.0.1
+- Preview: toate stările din README, exemple cu diacritice, variantele DE/IT și frame-uri Light/Dark cu `data-theme` pe frame (PASUL 2 f)
+
+#### LineChart — 1.0.1
+- Preview: toate stările din README, exemple cu diacritice, variantele DE/IT și frame-uri Light/Dark cu `data-theme` pe frame (PASUL 2 f)
+
+#### Logo — 1.0.1
+- Preview: toate stările din README, exemple cu diacritice, variantele DE/IT și frame-uri Light/Dark cu `data-theme` pe frame (PASUL 2 f)
+
+#### Menu — 1.0.1
+- Preview: toate stările din README, exemple cu diacritice, variantele DE/IT și frame-uri Light/Dark cu `data-theme` pe frame (PASUL 2 f)
+
+#### Notice — 1.0.1
+- Preview: toate stările din README, exemple cu diacritice, variantele DE/IT și frame-uri Light/Dark cu `data-theme` pe frame (PASUL 2 f)
+
+#### NotificationsPanel — 1.1.0
+- Structură: grupuri „Despre cont și funcționare” / „Activitate” după `category` (S2); antetul trece pe două rânduri când „Marchează tot ca citit” e lung (DE), în loc să împingă setările afară
+- Texte: README: S2, `category?: "operational" | "activity"`
+- Preview: toate stările din README, exemple cu diacritice, variantele DE/IT și frame-uri Light/Dark cu `data-theme` pe frame (PASUL 2 f)
+
+#### OrgSwitcher — 1.0.1
+- Preview: toate stările din README, exemple cu diacritice, variantele DE/IT și frame-uri Light/Dark cu `data-theme` pe frame (PASUL 2 f)
+
+#### PageHeader — 1.0.1
+- Preview: toate stările din README, exemple cu diacritice, variantele DE/IT și frame-uri Light/Dark cu `data-theme` pe frame (PASUL 2 f)
+
+#### Pagination — 1.0.1
+- Preview: toate stările din README, exemple cu diacritice, variantele DE/IT și frame-uri Light/Dark cu `data-theme` pe frame (PASUL 2 f)
+
+#### PortalPresence — 1.0.1
+- Preview: toate stările din README, exemple cu diacritice, variantele DE/IT și frame-uri Light/Dark cu `data-theme` pe frame (PASUL 2 f)
+
+#### ProgressBar — 1.0.1
+- Preview: toate stările din README, exemple cu diacritice, variantele DE/IT și frame-uri Light/Dark cu `data-theme` pe frame (PASUL 2 f)
+
+#### ProjectsBoard — 1.0.1
+- Texte: numele noi ale modulelor în README (D-UX-4)
+- Preview: test de etichete DE (1280) și IT (390), cu textele ecranului traduse, în Light și Dark (PASUL 2 f)
+
+#### ProjectsTimeline — 1.0.1
+- Texte: numele noi ale modulelor în README (D-UX-4)
+- Preview: test de etichete DE (1280) și IT (390), cu textele ecranului traduse, în Light și Dark (PASUL 2 f)
+
+#### Radio — 1.1.0
+- Structură: un `RadioGroup` dezactivat estompează toate opțiunile
+- Preview: toate stările din README, exemple cu diacritice, variantele DE/IT și frame-uri Light/Dark cu `data-theme` pe frame (PASUL 2 f)
+
+#### RecommendationCard — 1.0.1
+- Preview: toate stările din README, exemple cu diacritice, variantele DE/IT și frame-uri Light/Dark cu `data-theme` pe frame (PASUL 2 f)
+
+#### RecommendationLabel — 1.0.1
+- Preview: toate stările din README, exemple cu diacritice, variantele DE/IT și frame-uri Light/Dark cu `data-theme` pe frame (PASUL 2 f)
+
+#### RuleBuilder — 1.0.1
+- Preview: toate stările din README, exemple cu diacritice, variantele DE/IT și frame-uri Light/Dark cu `data-theme` pe frame (PASUL 2 f)
+
+#### Schedule — 1.0.1
+- Preview: toate stările din README, exemple cu diacritice, variantele DE/IT și frame-uri Light/Dark cu `data-theme` pe frame (PASUL 2 f)
+
+#### SegmentedControl — 1.0.1
+- Preview: toate stările din README, exemple cu diacritice, variantele DE/IT și frame-uri Light/Dark cu `data-theme` pe frame (PASUL 2 f)
+
+#### Select — 1.1.0
+- Structură: `className="v-select--wrap"`: valoarea lungă trece pe două rânduri (S40, Founder Growth)
+- Preview: toate stările din README, exemple cu diacritice, variantele DE/IT și frame-uri Light/Dark cu `data-theme` pe frame (PASUL 2 f)
+
+#### Sheet — 1.0.1
+- Preview: toate stările din README, exemple cu diacritice, variantele DE/IT și frame-uri Light/Dark cu `data-theme` pe frame (PASUL 2 f)
+
+#### Skeleton — 1.0.1
+- Preview: toate stările din README, exemple cu diacritice, variantele DE/IT și frame-uri Light/Dark cu `data-theme` pe frame (PASUL 2 f)
+
+#### SlotPicker — 1.0.1
+- Preview: toate stările din README, exemple cu diacritice, variantele DE/IT și frame-uri Light/Dark cu `data-theme` pe frame (PASUL 2 f)
+
+#### Spine — 1.0.1
+- Preview: toate stările din README, exemple cu diacritice, variantele DE/IT și frame-uri Light/Dark cu `data-theme` pe frame (PASUL 2 f)
+
+#### Stat — 1.0.1
+- Texte: numele noi ale modulelor în README (D-UX-4)
+- Preview: toate stările din README, exemple cu diacritice, variantele DE/IT și frame-uri Light/Dark cu `data-theme` pe frame (PASUL 2 f)
+
+#### StatusDot — 1.0.1
+- Preview: toate stările din README, exemple cu diacritice, variantele DE/IT și frame-uri Light/Dark cu `data-theme` pe frame (PASUL 2 f)
+
+#### StatusPill — 1.0.1
+- Preview: toate stările din README, exemple cu diacritice, variantele DE/IT și frame-uri Light/Dark cu `data-theme` pe frame (PASUL 2 f)
+
+#### Tabs — 1.0.1
+- Preview: toate stările din README, exemple cu diacritice, variantele DE/IT și frame-uri Light/Dark cu `data-theme` pe frame (PASUL 2 f)
+
+#### Textarea — 1.0.1
+- Preview: toate stările din README, exemple cu diacritice, variantele DE/IT și frame-uri Light/Dark cu `data-theme` pe frame (PASUL 2 f)
+
+#### ThemeSwitcher — 1.0.1
+- Preview: toate stările din README, exemple cu diacritice, variantele DE/IT și frame-uri Light/Dark cu `data-theme` pe frame (PASUL 2 f)
+
+#### Timeline — 1.0.1
+- Texte: numele noi ale modulelor în README (D-UX-4)
+- Preview: toate stările din README, exemple cu diacritice, variantele DE/IT și frame-uri Light/Dark cu `data-theme` pe frame (PASUL 2 f)
+
+#### Toast — 1.0.1
+- Preview: toate stările din README, exemple cu diacritice, variantele DE/IT și frame-uri Light/Dark cu `data-theme` pe frame (PASUL 2 f)
+
+#### Toggle — 1.0.1
+- Preview: toate stările din README, exemple cu diacritice, variantele DE/IT și frame-uri Light/Dark cu `data-theme` pe frame (PASUL 2 f)
+
+#### Tooltip — 1.0.1
+- Preview: toate stările din README, exemple cu diacritice, variantele DE/IT și frame-uri Light/Dark cu `data-theme` pe frame (PASUL 2 f)
+
+#### UpgradeDialog — 1.1.0
+- Structură: contorul înainte/după de după plată e mereu neutru: fără peach și fără mesajul de limită (R-T1, regulă în componentă)
+- Texte: README: R-T1, `success.hint`
+- Preview: toate stările din README, exemple cu diacritice, variantele DE/IT și frame-uri Light/Dark cu `data-theme` pe frame (PASUL 2 f)
+
+#### UsageMeter — 1.0.1
+- Texte: README aliniat cu bundle-ul și glosarul: „abonament”, nu „plan”; „Te apropii de limita abonamentului · Mai ai 138”, „Ai atins limita abonamentului. Nu se pierde nimic din ce ai…”, „Cere alt abonament”; documentate `onBuy`, `buyLabel`, `owner`, `onNotifyOwner` (S65, PASUL 2 c)
+- Stări: sub prag · aproape (proprietar / ceilalți) · la limită proprietar („Cumpără pachet · 49 lei” + „Cere alt abonament”) · la limită ceilalți („…doar Bianca Petrașcu (proprietar).” + „Anunță proprietarul”) · nelimitat · cu unitate · compact
+- Preview: toate stările, Light/Dark, DE, IT · Dark
+- Numere: „1.000”, nu „1000”: separatorul de mii apare mereu (glosar, Cifre)
+
+### Neschimbate
+- **Italiano** (1.0.0).
+
+### Găsite la testul DE/IT și încă nerezolvate
+- Bara de jos pe telefon taie etichetele italiene lungi („Appuntam…”, „Abbonam…”). Ecranele trebuie să dea o etichetă scurtă (`short`) pentru fiecare element de navigare.
+- Titlul din bara de sus pe telefon taie „Impostazioni”; eticheta „Oggi” de pe linia de azi din Timeline se taie.
+- În meniul din stânga, la 1280, „Abonnement und Verbrauch” (DE) se termină cu „…”.
+- Pe barele de servicii din DataView, pe telefon, numele lungi în germană se termină cu „…” (așa e făcută componenta).
+- Tastatura nu poate fi arătată într-o imagine statică: mutarea cu săgețile în grila HubAdminAccess și în calendar e descrisă în README și în `api/`.

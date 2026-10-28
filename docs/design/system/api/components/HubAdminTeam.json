@@ -1,0 +1,28 @@
+{
+ "name": "HubAdminTeam",
+ "version": "1.0.1",
+ "kind": "page",
+ "group": "Ecrane Hub",
+ "status": "changed",
+ "description": "Business administration for the owner — team and invitations: members with role, apps and status; pending invitations with sent and expiry dates, resend and cancel.",
+ "exports": [],
+ "props": [],
+ "events": [],
+ "states": [
+  "default",
+  "member-active",
+  "access-stopped",
+  "invite-pending",
+  "invite-expired",
+  "seats-used",
+  "at-limit-upgrade-dialog",
+  "row-menu",
+  "light",
+  "dark",
+  "de",
+  "it"
+ ],
+ "notes": "Expired invitations disappearing after 30 days is a time-based rule and is not shown.",
+ "readme": "components/HubAdminTeam/README.md",
+ "preview": "components/HubAdminTeam/preview.html"
+}

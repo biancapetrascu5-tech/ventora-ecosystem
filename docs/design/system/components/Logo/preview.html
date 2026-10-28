@@ -1,4 +1,4 @@
-<!-- @dsCard group="Hub" height=340 width=1100 -->
+<!-- @dsCard group="Hub" height=580 width=1100 -->
 <!doctype html>
 <html lang="ro">
 <head><meta charset="utf-8"><title>Logo — Ventora</title>
@@ -250,6 +250,16 @@ html,body{min-height:100%}
 .fxframe .caption{color:var(--ink-muted)}
 @container (max-width:420px){.fxlang{grid-template-columns:32px minmax(0,1fr) auto}.fxlang .v-iconbtn{display:none}}
 
+/* c3: Light/Dark and DE/IT frames */
+.c3wrap{display:flex;flex-direction:column;min-width:0}
+.c3sec{display:flex;flex-direction:column;gap:var(--space-3);min-width:0}
+.c3h{margin:0;color:var(--ink)}
+.c3pair{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(360px,100%),1fr));gap:var(--space-4);align-items:start}
+.c3stack{display:flex;flex-direction:column;gap:var(--space-4);min-width:0}
+.c3f{display:flex;flex-direction:column;gap:var(--space-3);padding:var(--space-4);border:var(--border-width) solid var(--line);border-radius:var(--radius-md);background:var(--canvas);color:var(--ink);min-width:0;box-sizing:border-box}
+.c3lab{color:var(--ink-muted);margin:0}
+.c3kv{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:var(--space-2) var(--space-4);align-items:center}
+.c3ib{display:flex;align-items:center;gap:var(--space-3);min-width:0}
 </style>
 </head>
 <body>
@@ -263,9 +273,25 @@ const FR = ({ children }) => /* @__PURE__ */ React.createElement(V.LocaleProvide
 const IT = ({ children }) => /* @__PURE__ */ React.createElement(V.LocaleProvider, { locale: "it" }, children);
 const mount = (el) => ReactDOM.createRoot(document.getElementById("root")).render(/* @__PURE__ */ React.createElement(V.LocaleProvider, { locale: "ro" }, el));
 function LogoSet({ th }) {
-  return /* @__PURE__ */ React.createElement("div", { className: "logoset", "data-theme": th }, /* @__PURE__ */ React.createElement("p", { className: "caption muted" }, th === "light" ? "Light" : "Dark \xB7 varianta B"), /* @__PURE__ */ React.createElement(Row, { label: "Complet" }, /* @__PURE__ */ React.createElement(V.Logo, { size: 32 }), /* @__PURE__ */ React.createElement(V.Logo, { size: 24 }), /* @__PURE__ */ React.createElement(V.Logo, { size: 21 })), /* @__PURE__ */ React.createElement(Row, { label: "Semnul" }, /* @__PURE__ */ React.createElement(V.Logo, { variant: "mark", size: 64 }), /* @__PURE__ */ React.createElement(V.Logo, { variant: "mark", size: 40 }), /* @__PURE__ */ React.createElement(V.Logo, { variant: "mark", size: 24 }), /* @__PURE__ */ React.createElement(V.Logo, { variant: "mark", size: 16 })), /* @__PURE__ */ React.createElement(Row, { label: "Favicon" }, /* @__PURE__ */ React.createElement("span", { className: "favtab" }, /* @__PURE__ */ React.createElement(V.Logo, { variant: "mark", size: 16, title: "" }), /* @__PURE__ */ React.createElement("span", { className: "caption" }, "Ventora"))));
+  return /* @__PURE__ */ React.createElement("div", { className: "logoset", "data-theme": th }, /* @__PURE__ */ React.createElement("p", { className: "caption muted" }, th === "light" ? "Light" : "Dark \xB7 varianta B"), /* @__PURE__ */ React.createElement(Row, { label: "Complet" }, /* @__PURE__ */ React.createElement(V.Logo, { size: 32 }), /* @__PURE__ */ React.createElement(V.Logo, { size: 24 }), /* @__PURE__ */ React.createElement(V.Logo, { size: 21 })), /* @__PURE__ */ React.createElement(Row, { label: "Semnul" }, /* @__PURE__ */ React.createElement(V.Logo, { variant: "mark", size: 64 }), /* @__PURE__ */ React.createElement(V.Logo, { variant: "mark", size: 40 }), /* @__PURE__ */ React.createElement(V.Logo, { variant: "mark", size: 24 }), /* @__PURE__ */ React.createElement(V.Logo, { variant: "mark", size: 16 })), /* @__PURE__ */ React.createElement(Row, { label: "Favicon" }, /* @__PURE__ */ React.createElement("span", { className: "favtab" }, /* @__PURE__ */ React.createElement(V.Logo, { variant: "mark", size: 16, title: "" }), /* @__PURE__ */ React.createElement("span", { className: "caption" }, "Ventora")), /* @__PURE__ */ React.createElement("span", { className: "favtab" }, /* @__PURE__ */ React.createElement(V.Logo, { variant: "mark", size: 16, title: "" }), /* @__PURE__ */ React.createElement("span", { className: "caption" }, "Program\u0103ri \xB7 Ventora"))));
 }
-mount(/* @__PURE__ */ React.createElement("div", { className: "d" }, /* @__PURE__ */ React.createElement("div", { className: "logosets" }, /* @__PURE__ */ React.createElement(LogoSet, { th: "light" }), /* @__PURE__ */ React.createElement(LogoSet, { th: "dark" })), /* @__PURE__ */ React.createElement("p", { className: "body-small muted" }, "Fi\u0219ierele oficiale, folosite exact cum sunt: semnul \u0219i logo-ul complet, cu wordmark-ul \u201EVENTORA\u201D din fi\u0219ier. Tema alege singur\u0103 varianta.")));
+const C3_ORIG = /* @__PURE__ */ React.createElement("div", { className: "d" }, /* @__PURE__ */ React.createElement("div", { className: "logosets" }, /* @__PURE__ */ React.createElement(LogoSet, { th: "light" }), /* @__PURE__ */ React.createElement(LogoSet, { th: "dark" })), /* @__PURE__ */ React.createElement("p", { className: "body-small muted" }, "Fi\u0219ierele oficiale, folosite exact cum sunt: semnul \u0219i logo-ul complet, cu wordmark-ul \u201EVENTORA\u201D din fi\u0219ier. Tema alege singur\u0103 varianta."));
+const h = React.createElement;
+const C3Frame = ({ th, label, children, style }) => h("div", { className: "c3f", "data-theme": th, style }, h("p", { className: "caption c3lab" }, label), children);
+const C3Sec = ({ title, stack, children }) => h("div", { className: "c3sec" }, h("p", { className: "subheading c3h" }, title), h("div", { className: stack ? "c3stack" : "c3pair" }, children));
+const C3Themes = ({ render, stack, style }) => h(C3Sec, { title: "Light și Dark", stack }, h(C3Frame, { th: "light", label: "Light", style }, render("light")), h(C3Frame, { th: "dark", label: "Dark", style }, render("dark")));
+const C3Langs = ({ de, it, stack, style, itTheme }) => h(C3Sec, { title: "Germană și italiană — etichete mai lungi", stack }, h(V.LocaleProvider, { locale: "de" }, h(C3Frame, { th: "light", label: "Deutsch (de)", style }, de)), h(V.LocaleProvider, { locale: "it" }, h(C3Frame, { th: itTheme || "light", label: itTheme === "dark" ? "Italiano (it) \xB7 Dark" : "Italiano (it)", style }, it)));
+const LGSet = (cap, tab) => h("div", { className: "c3stack" },
+  h("div", { className: "r" }, h(V.Logo, { size: 32 }), h(V.Logo, { variant: "mark", size: 40 }), h(V.Logo, { variant: "mark", size: 16 })),
+  h("span", { className: "favtab", style: { alignSelf: "flex-start" } }, h(V.Logo, { variant: "mark", size: 16, title: "" }), h("span", { className: "caption" }, tab)),
+  h("p", { className: "body-small c3lab" }, cap));
+const C3_SECTIONS = [
+  h(C3Langs, { key: "l", itTheme: "dark",
+    de: LGSet("Offizielle Logodateien, unver\xE4ndert verwendet. Das Farbschema w\xE4hlt die Variante selbst.", "Anmelden \xB7 Ventora"),
+    it: LGSet("File ufficiali del logo, usati senza modifiche. Il tema sceglie da solo la variante.", "Accesso \xB7 Ventora") })
+];
+
+mount(h("div", { className: "c3wrap" }, C3_ORIG, h("div", { className: "d" }, ...C3_SECTIONS)));
 </script>
 </body>
 </html>

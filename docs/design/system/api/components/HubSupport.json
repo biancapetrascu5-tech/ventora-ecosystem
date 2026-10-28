@@ -1,0 +1,27 @@
+{
+ "name": "HubSupport",
+ "version": "1.0.1",
+ "kind": "page",
+ "group": "Ecrane Hub",
+ "status": "changed",
+ "description": "Support: \"Solicitările mele\" with states (new reply in peach, solved in lime) and a new-request form (\"Solicitare nouă\"). Two panes on desktop, stacked on tablet; on phones the list and the form are separate screens.",
+ "exports": [],
+ "props": [],
+ "events": [],
+ "states": [
+  "list",
+  "new-reply",
+  "in-progress",
+  "solved",
+  "new-request-form",
+  "mobile-list",
+  "mobile-form",
+  "light",
+  "dark",
+  "de",
+  "it"
+ ],
+ "notes": "Help-article suggestions wait for the help centre (per README).",
+ "readme": "components/HubSupport/README.md",
+ "preview": "components/HubSupport/preview.html"
+}

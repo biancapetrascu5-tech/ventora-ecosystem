@@ -1,4 +1,4 @@
-<!-- @dsCard group="Hub" height=180 -->
+<!-- @dsCard group="Hub" height=1060 width=1200 -->
 <!doctype html>
 <html lang="ro">
 <head><meta charset="utf-8"><title>AccessBadge — Ventora</title>
@@ -250,6 +250,9 @@ html,body{min-height:100%}
 .fxframe .caption{color:var(--ink-muted)}
 @container (max-width:420px){.fxlang{grid-template-columns:32px minmax(0,1fr) auto}.fxlang .v-iconbtn{display:none}}
 
+.thgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(520px,100%),1fr));gap:var(--space-4);align-items:start}
+.thf{display:flex;flex-direction:column;gap:var(--space-4);padding:var(--space-5);background:var(--canvas);color:var(--ink);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg);min-width:0;box-sizing:border-box}
+.thf .thl{margin:0;color:var(--ink-muted);font-weight:600}
 </style>
 </head>
 <body>
@@ -262,11 +265,32 @@ const DE = ({ children }) => /* @__PURE__ */ React.createElement(V.LocaleProvide
 const FR = ({ children }) => /* @__PURE__ */ React.createElement(V.LocaleProvider, { locale: "fr" }, children);
 const IT = ({ children }) => /* @__PURE__ */ React.createElement(V.LocaleProvider, { locale: "it" }, children);
 const mount = (el) => ReactDOM.createRoot(document.getElementById("root")).render(/* @__PURE__ */ React.createElement(V.LocaleProvider, { locale: "ro" }, el));
-function Demo() {
-  const s = ["available", "unavailable", "notInRole", "notInPlan"];
-  return /* @__PURE__ */ React.createElement("div", { className: "d" }, /* @__PURE__ */ React.createElement(Row, { label: "RO" }, s.map((x) => /* @__PURE__ */ React.createElement(V.AccessBadge, { key: x, state: x }))), /* @__PURE__ */ React.createElement(DE, null, /* @__PURE__ */ React.createElement(Row, { label: "DE" }, s.map((x) => /* @__PURE__ */ React.createElement(V.AccessBadge, { key: x, state: x })))), /* @__PURE__ */ React.createElement(FR, null, /* @__PURE__ */ React.createElement(Row, { label: "FR" }, s.map((x) => /* @__PURE__ */ React.createElement(V.AccessBadge, { key: x, state: x })))), /* @__PURE__ */ React.createElement(IT, null, /* @__PURE__ */ React.createElement(Row, { label: "IT" }, s.map((x) => /* @__PURE__ */ React.createElement(V.AccessBadge, { key: x, state: x })))));
+const h = React.createElement;
+const Frame = ({ th, label, children }) => h("section", { "data-theme": th, className: "thf" }, h("p", { className: "caption thl" }, (th === "dark" ? "Dark" : "Light") + (label ? " · " + label : "")), children);
+const S = ["available", "unavailable", "notInRole", "notInPlan"];
+const CTX = [["booking", "available"], ["inventory", "unavailable"], ["analytics", "notInRole"], ["marketing", "notInPlan"]];
+const all = () => S.map((x) => h(V.AccessBadge, { key: x, state: x }));
+const narrow = () => S.map((x) => h("div", { key: x, style: { width: 136 } }, h(V.AccessBadge, { state: x })));
+const ctx = () => CTX.map(([a, x]) => h("span", { key: a, className: "r", style: { gap: "var(--space-2)", flexWrap: "nowrap" } }, h(V.AppIcon, { app: a, size: 24, muted: x !== "available" }), h("span", { className: "body-strong" }, V.APPS[a].name), h(V.AccessBadge, { state: x })));
+function Block({ lbl }) {
+  return h(React.Fragment, null,
+    h(Row, { label: lbl[0] }, all()),
+    h(Row, { label: lbl[1] }, narrow()),
+    h(Row, { label: lbl[2] }, ctx()));
 }
-mount(/* @__PURE__ */ React.createElement(Demo, null));
+function Demo() {
+  return h("div", { className: "d" },
+    h("div", { className: "thgrid" },
+      h(Frame, { th: "light" }, h(Block, { lbl: ["Toate stările", "Îngust: textul trece pe rândul următor", "Lângă aplicație"] })),
+      h(Frame, { th: "dark" }, h(Block, { lbl: ["Toate stările", "Îngust: textul trece pe rândul următor", "Lângă aplicație"] }))),
+    h("div", { className: "thgrid" },
+      h(Frame, { th: "light", label: "Deutsch" }, h(DE, null, h(Block, { lbl: ["Alle Zustände", "Schmal: der Text bricht um", "Neben der App"] }))),
+      h(Frame, { th: "light", label: "Italiano" }, h(IT, null, h(Block, { lbl: ["Tutti gli stati", "Stretto: il testo va a capo", "Accanto all’app"] }))),
+      h(Frame, { th: "dark", label: "Deutsch" }, h(DE, null, h(Row, { label: "DE" }, all()))),
+      h(Frame, { th: "dark", label: "Italiano" }, h(IT, null, h(Row, { label: "IT" }, all())))),
+    h(Frame, { th: "light", label: "Français" }, h(FR, null, h(Row, { label: "FR" }, all()))));
+}
+mount(h(Demo, null));
 </script>
 </body>
 </html>

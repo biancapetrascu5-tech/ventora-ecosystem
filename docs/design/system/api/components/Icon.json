@@ -1,0 +1,55 @@
+{
+ "name": "Icon",
+ "version": "1.1.0",
+ "kind": "component",
+ "group": "Foundations",
+ "status": "changed",
+ "description": "Lucide icons, inlined — the only interface icon set; no emoji anywhere.",
+ "exports": [
+  "Icon"
+ ],
+ "props": [
+  {
+   "name": "name",
+   "type": "string",
+   "required": true,
+   "note": ""
+  },
+  {
+   "name": "size",
+   "type": "number",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "strokeWidth",
+   "type": "number",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "label",
+   "type": "string",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "className",
+   "type": "string",
+   "required": false,
+   "note": ""
+  }
+ ],
+ "events": [],
+ "states": [
+  "default",
+  "size-16",
+  "size-20",
+  "size-24",
+  "stroke-width",
+  "labelled"
+ ],
+ "notes": "\"grid\" renders but is missing from V.Icon.names (bundle adds it after names is computed); the preview appends it to the registry list.",
+ "readme": "components/Icon/README.md",
+ "preview": "components/Icon/preview.html"
+}

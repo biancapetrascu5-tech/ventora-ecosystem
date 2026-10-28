@@ -1,0 +1,30 @@
+{
+ "name": "HubAccount",
+ "version": "1.0.1",
+ "kind": "page",
+ "group": "Ecrane Hub",
+ "status": "changed",
+ "description": "Account settings in the Hub shell: profile, preferences (theme, language), notifications per channel, security (password, two-step sign-in, active sessions).",
+ "exports": [],
+ "props": [],
+ "events": [],
+ "states": [
+  "Setările contului — profil, temă, limbă, notificări, securitate",
+  "Contul tău",
+  "Afacerea",
+  "Ajutor",
+  "Profil",
+  "Echipă",
+  "Abonament",
+  "Suport",
+  "Mai multe",
+  "Nume complet * (obligatoriu)",
+  "Telefon (opțional)",
+  "E-mail",
+  "Temă",
+  "Limbă"
+ ],
+ "notes": "States are the labelled boards and frames of the preview (Light and Dark; desktop/tablet/phone).",
+ "readme": "components/HubAccount/README.md",
+ "preview": "components/HubAccount/preview.html"
+}

@@ -1,4 +1,4 @@
-<!-- @dsCard group="Status" height=160 -->
+<!-- @dsCard group="Status" height=500 width=1200 -->
 <!doctype html>
 <html lang="ro">
 <head><meta charset="utf-8"><title>StatusDot — Ventora</title>
@@ -250,6 +250,15 @@ html,body{min-height:100%}
 .fxframe .caption{color:var(--ink-muted)}
 @container (max-width:420px){.fxlang{grid-template-columns:32px minmax(0,1fr) auto}.fxlang .v-iconbtn{display:none}}
 
+
+/* c5: light/dark frames and DE/IT sections */
+.qwrap{display:flex;flex-direction:column;gap:var(--space-6);padding:var(--space-4);box-sizing:border-box;background:var(--canvas);color:var(--ink)}
+.qfr{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--space-4);align-items:start}
+.qfr1{grid-template-columns:minmax(0,1fr)}
+.qf{display:flex;flex-direction:column;gap:var(--space-4);padding:var(--space-4);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg);min-width:0;box-sizing:border-box}
+.qf-t{margin:0;color:var(--ink-muted)}
+.qh{margin:0;color:var(--ink)}
+.qsec{display:flex;flex-direction:column;gap:var(--space-3)}
 </style>
 </head>
 <body>
@@ -265,7 +274,30 @@ const mount = (el) => ReactDOM.createRoot(document.getElementById("root")).rende
 function Demo() {
   return /* @__PURE__ */ React.createElement("div", { className: "d" }, /* @__PURE__ */ React.createElement(Row, { label: "Tonuri" }, /* @__PURE__ */ React.createElement(V.StatusDot, { tone: "attention", label: "Acum, \xEEn cabinetul 2" }), /* @__PURE__ */ React.createElement(V.StatusDot, { tone: "done", label: "Confirmat" }), /* @__PURE__ */ React.createElement(V.StatusDot, { tone: "danger", label: "E\u0219uat" }), /* @__PURE__ */ React.createElement(V.StatusDot, { tone: "neutral", label: "\xCEn pauz\u0103" }), /* @__PURE__ */ React.createElement(V.StatusDot, { tone: "offline", label: "Offline" })), /* @__PURE__ */ React.createElement(DE, null, /* @__PURE__ */ React.createElement(Row, { label: "DE" }, /* @__PURE__ */ React.createElement(V.StatusDot, { tone: "attention", label: "Gerade in Behandlung" }), /* @__PURE__ */ React.createElement(V.StatusDot, { tone: "done", label: "Best\xE4tigt" }))));
 }
-mount(/* @__PURE__ */ React.createElement(Demo, null));
+
+const Qh = React.createElement;
+const Q_Fr = ({ theme, title, children, style }) => Qh("section", { className: "qf", "data-theme": theme, style: Object.assign({ background: "var(--canvas)", color: "var(--ink)" }, style || {}) }, Qh("p", { className: "caption qf-t" }, title || (theme === "dark" ? "Dark" : "Light")), children);
+const Q_Pair = ({ children, cols, light, dark }) => Qh("div", { className: cols === 1 ? "qfr qfr1" : "qfr" }, Qh(Q_Fr, { theme: "light" }, light || children), Qh(Q_Fr, { theme: "dark" }, dark || children));
+const Q_Loc = ({ de, it, cols, theme }) => Qh("div", { className: cols === 1 ? "qfr qfr1" : "qfr" }, Qh(Q_Fr, { theme: theme || "light", title: "DE · Deutsch" }, Qh(V.LocaleProvider, { locale: "de" }, de)), Qh(Q_Fr, { theme: theme || "light", title: "IT · Italiano" }, Qh(V.LocaleProvider, { locale: "it" }, it)));
+const Q_Sec = ({ title, children }) => Qh("div", { className: "qsec" }, Qh("h2", { className: "heading qh" }, title), children);
+const Q_Row = ({ label, children }) => Qh("div", { className: "r" }, Qh("span", { className: "l caption" }, label), children);
+const Q_Dots = ({ t }) => Qh("div", { className: "r" },
+  Qh(V.StatusDot, { tone: "attention", label: t[0] }), Qh(V.StatusDot, { tone: "done", label: t[1] }), Qh(V.StatusDot, { tone: "danger", label: t[2] }),
+  Qh(V.StatusDot, { tone: "neutral", label: t[3] }), Qh(V.StatusDot, { tone: "offline", label: t[4] }));
+const Q_RO = ["Acum, în cabinetul 2", "Confirmat", "Eșuat", "În pauză", "Deconectată"];
+function Q_Extra() {
+  return Qh("div", { className: "qwrap" },
+    Qh(Q_Sec, { title: "Doar semnul (eticheta rămâne pentru cititoarele de ecran)" },
+      Qh("div", { className: "r" },
+        Qh("span", { className: "r", style: { gap: "var(--space-2)" } }, Qh(V.Avatar, { name: "Ioana Pavel", size: "sm" }), Qh(V.StatusDot, { tone: "attention", label: "Ioana Pavel, la lucru", hideLabel: true }), Qh("span", { className: "body" }, "Ioana Pavel")),
+        Qh("span", { className: "r", style: { gap: "var(--space-2)" } }, Qh(V.Avatar, { name: "Șerban Țurcanu", size: "sm" }), Qh(V.StatusDot, { tone: "offline", label: "Șerban Țurcanu, deconectat", hideLabel: true }), Qh("span", { className: "body" }, "Șerban Țurcanu")))),
+    Qh(Q_Sec, { title: "Light / Dark" }, Qh(Q_Pair, null, Qh(Q_Dots, { t: Q_RO }))),
+    Qh(Q_Sec, { title: "DE / IT" }, Qh(Q_Loc, {
+      de: Qh(Q_Dots, { t: ["Gerade in Behandlung, Raum 2", "Bestätigt", "Fehlgeschlagen", "In der Pause", "Abgemeldet"] }),
+      it: Qh(Q_Dots, { t: ["Ora in trattamento, studio 2", "Confermato", "Non riuscito", "In pausa", "Disconnessa"] }) })));
+}
+
+mount(Qh("div", null, /* @__PURE__ */ React.createElement(Demo, null), Qh(Q_Extra, null)));
 </script>
 </body>
 </html>

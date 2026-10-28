@@ -1,4 +1,4 @@
-<!-- @dsCard group="Ecrane Booking" height=2676 width=2620 page -->
+<!-- @dsCard group="Ecrane Booking" height=6680 width=2620 page -->
 <!doctype html>
 <html lang="ro">
 <head><meta charset="utf-8"><title>BookingCalendar — Ventora</title>
@@ -278,10 +278,10 @@ const ORGS = [
   { id: "nord", name: "Agen\u021Bia Nord Studio", role: "Manager de proiect" }
 ];
 const NOTIFS = [
-  { id: 1, title: "Programare nou\u0103 de la Ana Popescu", body: "Joi, 29 oct., 14:30 \xB7 Tuns", app: "Booking", time: "acum 5 min", person: "Ana Popescu" },
-  { id: 2, title: "Factura #2026-114 e restant\u0103 de 3 zile", body: "Clinica Dentis \xB7 1.250 lei", app: "Finance", time: "acum 2 ore", icon: "receipt" },
-  { id: 3, title: "Ioana a cerut concediu pe 2\u20136 noiembrie", app: "HR", time: "ieri", person: "Ioana Pavel", read: true },
-  { id: 4, title: "Exportul clien\u021Bilor e gata", app: "CRM", time: "ieri", icon: "download", read: true }
+  { id: 1, title: "Programare nou\u0103 de la Ana Popescu", body: "Joi, 29 oct., 14:30 \xB7 Tuns", app: "EasyBook", time: "acum 5 min", person: "Ana Popescu" },
+  { id: 2, title: "Factura #2026-114 e restant\u0103 de 3 zile", body: "Clinica Dentis \xB7 1.250 lei", app: "MoneyDesk", time: "acum 2 ore", icon: "receipt" },
+  { id: 3, title: "Ioana a cerut concediu pe 2\u20136 noiembrie", app: "TeamSpace", time: "ieri", person: "Ioana Pavel", read: true },
+  { id: 4, title: "Exportul clien\u021Bilor e gata", app: "ClientDesk", time: "ieri", icon: "download", read: true }
 ];
 const USER = { name: "Bianca Petra\u0219cu", email: "bianca@ventora-hub.com" };
 function Bar({ title, de }) {
@@ -312,7 +312,7 @@ function BookingShell({ height, active, mobile }) {
       height,
       spine: /* @__PURE__ */ React.createElement(V.Spine, { app: "booking", sections: SECTIONS, activeId: active, onBackToHub: () => {
       }, footer: /* @__PURE__ */ React.createElement(V.UsageMeter, { compact: true, label: "Program\u0103ri", used: 312, limit: 1e3 }) }),
-      contextBar: /* @__PURE__ */ React.createElement(Bar, { title: "Booking" })
+      contextBar: /* @__PURE__ */ React.createElement(Bar, { title: "EasyBook" })
     },
     /* @__PURE__ */ React.createElement(V.PageHeader, { title: "Program\u0103ri", description: mobile ? void 0 : "Toate program\u0103rile afacerii, de azi \xEEnainte.", actions: mobile ? void 0 : /* @__PURE__ */ React.createElement(V.SegmentedControl, { label: "Vizualizare", size: "md", defaultValue: "list", options: [{ value: "list", label: "List\u0103", icon: "list" }, { value: "cal", label: "Calendar", icon: "calendar" }] }) }),
     /* @__PURE__ */ React.createElement(V.DataTable, { columns: [
@@ -333,7 +333,7 @@ function HubBar({ title, inApp }) {
   return /* @__PURE__ */ React.createElement(
     V.ContextBar,
     {
-      leading: inApp ? null : /* @__PURE__ */ React.createElement("span", { style: { padding: "0 var(--space-2)" } }, /* @__PURE__ */ React.createElement(V.Logo, { size: 32 })),
+      leading: inApp ? null : /* @__PURE__ */ React.createElement("span", { style: { padding: "0 var(--space-2)", display: "inline-flex" } }, /* @__PURE__ */ React.createElement(V.Logo, { size: 32, className: "v-cb-logo--full" }), /* @__PURE__ */ React.createElement(V.Logo, { variant: "mark", size: 32, className: "v-cb-logo--mark" })),
       title,
       org: /* @__PURE__ */ React.createElement(V.OrgSwitcher, { orgs: ORGS, currentId: "aurora" }),
       onSearch: () => {
@@ -366,7 +366,7 @@ function Screens({ title, notes, render, desktopH = 860, tabletH = 1100, mobileH
   return /* @__PURE__ */ React.createElement("div", { className: "scr" }, /* @__PURE__ */ React.createElement("p", { className: "heading" }, title), notes && /* @__PURE__ */ React.createElement("p", { className: "caption muted" }, notes.join(" \xB7 ")), ["light", "dark"].map((th) => /* @__PURE__ */ React.createElement("div", { className: "scr-row", key: th }, sizes.map(([m, lab, cls, h]) => /* @__PURE__ */ React.createElement("div", { key: m }, /* @__PURE__ */ React.createElement("p", { className: "caption scr-lab" }, lab, " \xB7 ", th === "light" ? "Light" : "Dark"), /* @__PURE__ */ React.createElement("div", { className: cls, "data-theme": th, style: { height: h } }, render(m, th)))))));
 }
 const MINE = [["booking", "Program\u0103ri, calendar \u0219i reamintiri", 3], ["crm", "Clien\u021Bi, istoric \u0219i oportunit\u0103\u021Bi"], ["hr", "Echip\u0103, prezen\u021B\u0103 \u0219i concedii", 1], ["finance", "Facturi, scaden\u021Be \u0219i restan\u021Be", 2], ["projects", "Proiecte, sarcini \u0219i termene"], ["shifts", "Ture \u0219i \xEEnlocuiri"], ["documents", "Documente \u0219i \u0219abloane"], ["portal", "Pagina afacerii pentru clien\u021Bi"]];
-const RECO = { marketing: { reason: "Se potrive\u0219te cu Booking: trimite automat reamintiri \u0219i campanii clien\u021Bilor t\u0103i.", cost: "49 lei pe lun\u0103 \xB7 f\u0103r\u0103 cost de implementare" } };
+const RECO = { marketing: { reason: "Se potrive\u0219te cu EasyBook: trimite automat reamintiri \u0219i campanii clien\u021Bilor t\u0103i.", cost: "49 lei pe lun\u0103 \xB7 f\u0103r\u0103 cost de implementare" } };
 const VIEWER_ROLE = "owner";
 const RECO_FOR = (a) => (VIEWER_ROLE === "owner" || VIEWER_ROLE === "admin") && a === "marketing" ? RECO[a] : null;
 const OTHER = [["inventory", "unavailable"], ["analytics", "notInRole"], ["marketing", "notInPlan"], ["network", "notInPlan"]];
@@ -442,7 +442,7 @@ function BookingApp({ active, title, children, footer }) {
       height: "100%",
       spine: /* @__PURE__ */ React.createElement(V.Spine, { app: "booking", sections: SECTIONS, activeId: active, onBackToHub: () => {
       }, bottomItems: ["azi", "calendar", "programari", "clienti"], footer: footer === false ? null : /* @__PURE__ */ React.createElement(V.UsageMeter, { compact: true, label: "Program\u0103ri \xEEn octombrie", used: 862, limit: 1e3 }) }),
-      contextBar: /* @__PURE__ */ React.createElement(Bar, { title: title || "Booking" })
+      contextBar: /* @__PURE__ */ React.createElement(Bar, { title: title || "EasyBook" })
     },
     children
   );
@@ -490,7 +490,228 @@ function Cal({ mode, th }) {
   }, minColumnWidth: 200 }));
   return /* @__PURE__ */ React.createElement(BookingApp, { active: "calendar", title: "Calendar" }, /* @__PURE__ */ React.createElement(V.PageHeader, { title: "Calendar", description: mode === "mobile" ? void 0 : "14 program\u0103ri azi \xB7 3 angaja\u021Bi \xB7 deschis 09:00\u201319:00", actions: mode === "mobile" ? /* @__PURE__ */ React.createElement(V.Button, { size: "sm", variant: "secondary", icon: "search" }, "Primul loc liber") : null }), /* @__PURE__ */ React.createElement("div", { className: "calwrap " + mode }, head, body));
 }
-mount(/* @__PURE__ */ React.createElement(Screens, { title: "Booking \u2014 Calendar: zi, s\u0103pt\u0103m\xE2n\u0103, resurse", notes: ["Desktop \xB7 Light: resurse", "Desktop \xB7 Dark: s\u0103pt\u0103m\xE2n\u0103", "Tablet\u0103 \xB7 Light: zi (alegi angajatul)", "Tablet\u0103 \xB7 Dark: resurse", "Telefon: zi"], desktopH: 960, tabletH: 1240, mobileH: 1240, render: (m, th) => /* @__PURE__ */ React.createElement(Cal, { mode: m, th }) }));
+/* ---- DE / IT label test + extra states (p1) ---- */
+const ce = React.createElement;
+function LX_Bar({ t, title }) {
+  return ce(V.ContextBar, {
+    title,
+    org: ce(V.OrgSwitcher, { orgs: t.orgs, currentId: "aurora" }),
+    onSearch: () => {},
+    createItems: [{ label: t.create[0], icon: "calendar-check", shortcut: ["N"] }, { label: t.create[1], icon: "user-plus" }],
+    notifications: ce(V.NotificationsPanel, { items: t.notifs }),
+    account: ce(V.AccountMenu, { user: t.user, orgs: t.orgs, currentOrgId: "aurora", onCatalog: () => {} })
+  });
+}
+function LX_Frames({ title, notes, render, desktopH = 900, mobileH = 1000 }) {
+  const fr = (t, cls, m, th, hgt) => ce("div", { key: t.lang + m }, ce("p", { className: "caption scr-lab" }, t.label, " · ", m === "desktop" ? "Desktop · 1280" : "Telefon · 390", " · ", th === "light" ? "Light" : "Dark"),
+    ce(V.LocaleProvider, { locale: t.lang }, ce("div", { className: cls, "data-theme": th, lang: t.lang, style: { height: hgt } }, render(m, th, t))));
+  return ce("div", { className: "scr" }, ce("p", { className: "heading" }, title), notes && ce("p", { className: "caption muted" }, notes.join(" · ")),
+    ce("div", { className: "scr-row" }, fr(LX.de, "scr-d", "desktop", "light", desktopH), fr(LX.it, "scr-m", "mobile", "light", mobileH)),
+    ce("div", { className: "scr-row" }, fr(LX.it, "scr-d", "desktop", "dark", desktopH), fr(LX.de, "scr-m", "mobile", "dark", mobileH)));
+}
+function LX_StateFrames({ title, notes, frames }) {
+  return ce("div", { className: "scr" }, ce("p", { className: "heading" }, title), notes && ce("p", { className: "caption muted" }, notes.join(" · ")),
+    ce("div", { className: "scr-row" }, frames.map(([lab, m, th, hgt, el], i) => ce("div", { key: i }, ce("p", { className: "caption scr-lab" }, lab, " · ", m === "desktop" ? "Desktop · 1280" : "Telefon · 390", " · ", th === "light" ? "Light" : "Dark"),
+      ce("div", { className: m === "desktop" ? "scr-d" : "scr-m", "data-theme": th, style: { height: hgt } }, el)))));
+}
+/* ---- DE / IT label test (p1) ---- */
+const LX_MAP = {
+  "Ana Popescu": ["Anna Schmidt", "Anna Russo"], "Elena Georgescu": ["Elena Hoffmann", "Elena Ricci"], "Andrei Ionescu": ["Andreas Wagner", "Andrea Marino"],
+  "Cristina Dobre": ["Christina Bauer", "Cristina Greco"], "Dan Stoica": ["Daniel Koch", "Daniele Gallo"], "Bianca Marin": ["Bianca Richter", "Bianca Costa"],
+  "Ioana Radu": ["Ines Lange", "Irene Fontana"], "Sorina Vlad": ["Sophie Vogel", "Sofia Moretti"], "Alina Murariu": ["Alina Meyer", "Alina Barbieri"],
+  "Oana Dinu": ["Olivia Braun", "Olivia Lombardi"], "Mihai Tudose": ["Michael Hahn", "Michele Rinaldi"], "Vlad Cristea": ["Felix Krüger", "Filippo Caruso"],
+  "Sergiu Pop": ["Sebastian Fuchs", "Sergio Ferrara"], "Paul Stan": ["Paul Schulz", "Paolo Mancini"],
+  "Ana P.": ["Anna S.", "Anna R."], "Elena G.": ["Elena H.", "Elena R."], "Andrei I.": ["Andreas W.", "Andrea M."], "Cristina D.": ["Christina B.", "Cristina G."],
+  "Dan S.": ["Daniel K.", "Daniele G."], "Bianca M.": ["Bianca R.", "Bianca C."], "Sorina V.": ["Sophie V.", "Sofia M."], "Oana D.": ["Olivia B.", "Olivia L."],
+  "Paul S.": ["Paul S.", "Paolo M."], "Mihai T.": ["Michael H.", "Michele R."],
+  "Ioana Pavel": ["Lena Wolf", "Chiara Bruno"], "Mara Enache": ["Mara Klein", "Sara Conti"], "Radu Matei": ["Jonas Weber", "Luca Ferri"],
+  "Ioana": ["Lena", "Chiara"], "Mara": ["Mara", "Sara"], "Radu": ["Jonas", "Luca"],
+  "Coafor": ["Friseurin", "Parrucchiera"], "Manichiură": ["Maniküre", "Manicure"], "Frizerie": ["Barbier", "Barbiere"],
+  "Vopsit": ["Färben", "Colore"], "Tratament facial": ["Gesichtsbehandlung", "Trattamento viso"], "Tuns": ["Haarschnitt", "Taglio"],
+  "Manichiură semipermanentă": ["Semipermanente Maniküre", "Manicure semipermanente"], "Coafat eveniment": ["Event-Frisur", "Acconciatura per eventi"],
+  "Tuns bărbați": ["Herrenhaarschnitt", "Taglio uomo"], "Vopsit rădăcini": ["Ansatzfärbung", "Ritocco radici"], "Pedichiură": ["Pediküre", "Pedicure"],
+  "Tuns + barbă": ["Haarschnitt + Bart", "Taglio + barba"], "Pauză de pr\xE2nz": ["Mittagspause", "Pausa pranzo"]
+};
+const lx = (s, t) => s && LX_MAP[s] ? LX_MAP[s][t.lang === "de" ? 0 : 1] : s;
+const LX_EUR = { 350: 70, 220: 45, 120: 25, 140: 30, 110: 22, 260: 55, 70: 15, 280: 58 };
+const LX = {
+  de: {
+    lang: "de", label: "Deutsch",
+    sections: [
+      { items: [{ id: "azi", label: "Heute", icon: "house" }, { id: "calendar", label: "Kalender", icon: "calendar" }, { id: "programari", label: "Termine", icon: "list", badge: 3 }] },
+      { label: "Verwaltung", items: [{ id: "clienti", label: "Kunden", icon: "users" }, { id: "servicii", label: "Leistungen", icon: "boxes" }, { id: "angajati", label: "Mitarbeiter", icon: "contact" }] },
+      { label: "Unternehmen", items: [{ id: "rapoarte", label: "Berichte", icon: "chart-column" }, { id: "setari", label: "Einstellungen", icon: "settings" }] }
+    ],
+    orgs: [{ id: "aurora", name: "Salon Aurora", role: "Inhaber" }, { id: "praxis", name: "Zahnarztpraxis Dr. Müller", role: "Empfang" }],
+    user: { name: "Julia Becker", email: "julia@salon-aurora.de" },
+    notifs: [{ id: 1, title: "Neuer Termin von Anna Schmidt", body: "Do., 29. Okt., 14:30 · Haarschnitt", app: "EasyBook", time: "vor 5 Min.", person: "Anna Schmidt" }, { id: 2, title: "Rechnung 2026-114 ist seit 3 Tagen überfällig", app: "MoneyDesk", time: "vor 2 Std.", icon: "receipt" }],
+    create: ["Termin", "Kunde"], usage: "Termine im Oktober",
+    status: { now: ["attention", "Läuft"], unconfirmed: ["neutral", "Unbestätigt"], confirmed: ["neutral", "Bestätigt"], done: ["done", "Erledigt"], cancelled: ["neutral", "Abgesagt"] },
+    cols: ["Kunde", "Leistung", "Mitarbeiter", "Wann", "Preis", "Status"],
+    today: "Heute", min: "Min.", phone: (p) => "0151 " + p.slice(5), eur: (n) => n + " €",
+    actions: ["Öffnen", "Bestätigen", "Erinnerung senden", "Termin verschieben", "Markieren: nicht erschienen", "Termin absagen"],
+    search: "Kunde, Telefon oder Leistung suchen", searchLabel: "Suchen", filters: "Filter · 2", period: "Zeitraum", periods: ["Heute", "Woche", "Monat"],
+    team: "Ganzes Team", states: ["Aktiv", "Unbestätigt", "Abgesagt"], pills: ["Zeitraum: heute", "Status: aktiv", "Filter löschen"],
+    bulk: ["Bestätigen", "Erinnerung senden", "Termine absagen"],
+    listTitle: "Termine", listDesc: "Alle Termine, mit Filtern und Aktionen für mehrere gleichzeitig.", export: "Exportieren",
+    detail: {
+      pill: "Unbestätigt", badge: "Online gebucht", kv: [["Wann", "Freitag, 23. Oktober · 12:30–13:15"], ["Leistung", "Gesichtsbehandlung · 45 Min. · 45 €"], ["Mitarbeiter", "Lena Wolf"], ["Kunde", "Christina Bauer · 0151 220 118 · 6. Besuch"]],
+      noticeT: "Noch nicht bestätigt", notice: "Wir haben die Erinnerung gestern um 12:30 gesendet. Sie können anrufen oder sie erneut senden.",
+      btns: ["Erinnerung erneut senden", "Anrufen"], notes: "Notizen für das Team", notesV: "Empfindliche Haut – keine parfümierten Produkte.",
+      hist: "Verlauf", histItems: [["22. Okt., 12:30", "Erinnerung per SMS gesendet"], ["16. Okt., 09:12", "Lena Wolf hat den Termin von 11:00 auf 12:30 verschoben"], ["15. Okt., 18:04", "Über die Buchungsseite gebucht"]], histAll: "Gesamten Verlauf anzeigen",
+      title: "Christina Bauer", sub: "Gesichtsbehandlung · Fr., 23. Okt., 12:30", menu: ["Termin verschieben", "Duplizieren", "Termin absagen"], more: "Weitere Aktionen", foot: ["Termin verschieben", "Bestätigen"]
+    },
+    cal: {
+      prev: "Vorheriger Tag", today: "Heute", next: "Nächster Tag", first: "Erster freier Termin", week: "19.–25. Oktober", day: "Freitag, 23. Oktober", dayShort: "Fr., 23. Okt.",
+      viewLabel: "Kalenderansicht", views: ["Tag", "Woche", "Ressourcen"], title: "Kalender", desc: "14 Termine heute · 3 Mitarbeiter · geöffnet 09:00–19:00",
+      res: { Coafor: "Friseurplatz 1", "Manichiură": "Maniküretisch", Frizerie: "Barbierplatz" }, daySub: "Friseurin · 6 Termine",
+      days: ["Mo. 19", "Di. 20", "Mi. 21", "Do. 22", "Fr. 23", "Sa. 24", "So. 25"], closed: "Geschlossen"
+    },
+    limit: {
+      newBtn: "Neuer Termin", title: "Sie haben das Terminlimit für Oktober erreicht",
+      desc: "Ihre bestehenden Termine bleiben erhalten und Sie können sie weiterhin ändern. Der begonnene Termin wartet auf Sie: Wir speichern ihn, sobald wieder Platz ist.",
+      decider: "Julia Becker (Inhaber)",
+      options: [{ id: "pack", kind: "pack", title: "Zusatzpaket · 200 Termine", price: "8 € · nur für Oktober · keine Einrichtungsgebühr", includes: ["Sofort aktiv; der begonnene Termin wird gespeichert"] }, { id: "plan", kind: "plan", title: "Abonnement Business Plus", price: "89 € pro Monat statt 69 € · keine Einrichtungsgebühr", includes: ["Unbegrenzte Termine", "3.000 SMS pro Monat"] }]
+    },
+    nw: {
+      title: "Neuer Termin", secs: ["Leistung und Mitarbeiter", "Wann", "Kunde", "Details"], service: "Leistung", groups: ["Kosmetik", "Friseur"],
+      svc: [["Gesichtsbehandlung", "45 Min. · 45 €"], ["Haarschnitt", "45 Min. · 25 €"]], staff: "Mitarbeiter", any: "Wer gerade frei ist",
+      date: "Datum", dur: "Dauer", start: "Startzeit", startHelp: "Durchgestrichene Zeiten sind bei Lena bereits belegt.",
+      client: "Kunde", clientHelp: "Nach Name oder Telefon suchen.", recent: "Letzte Kunden", newClient: "Neuer Kunde",
+      notes: "Notizen für das Team", notesPh: "z. B. empfindliche Haut", checks: ["Bestätigung jetzt per SMS senden", "Erinnerung 24 Stunden vorher senden"],
+      sum: "Zusammenfassung", sumK: ["Kunde", "Leistung", "Mit wem", "Wann", "Preis"], sumSvc: "Gesichtsbehandlung · 45 Min.", sumWhen: "Dienstag, 27. Oktober · ", price: "45 €",
+      book: "Buchen", cancel: "Abbrechen", clients: ["Christina Bauer", "Anna Schmidt", "Elena Hoffmann"], visits: "5 Besuche"
+    }
+  },
+  it: {
+    lang: "it", label: "Italiano",
+    sections: [
+      { items: [{ id: "azi", label: "Oggi", icon: "house" }, { id: "calendar", label: "Calendario", icon: "calendar" }, { id: "programari", label: "Appuntamenti", icon: "list", badge: 3 }] },
+      { label: "Gestione", items: [{ id: "clienti", label: "Clienti", icon: "users" }, { id: "servicii", label: "Servizi", icon: "boxes" }, { id: "angajati", label: "Dipendenti", icon: "contact" }] },
+      { label: "Attività", items: [{ id: "rapoarte", label: "Report", icon: "chart-column" }, { id: "setari", label: "Impostazioni", icon: "settings" }] }
+    ],
+    orgs: [{ id: "aurora", name: "Salon Aurora", role: "Titolare" }, { id: "studio", name: "Studio Dentistico Rossi", role: "Reception" }],
+    user: { name: "Giulia Romano", email: "giulia@salon-aurora.it" },
+    notifs: [{ id: 1, title: "Nuovo appuntamento da Anna Russo", body: "gio 29 ott., 14:30 · Taglio", app: "EasyBook", time: "5 min fa", person: "Anna Russo" }, { id: 2, title: "La fattura 2026-114 è scaduta da 3 giorni", app: "MoneyDesk", time: "2 ore fa", icon: "receipt" }],
+    create: ["Appuntamento", "Cliente"], usage: "Appuntamenti a ottobre",
+    status: { now: ["attention", "In corso"], unconfirmed: ["neutral", "Non confermato"], confirmed: ["neutral", "Confermato"], done: ["done", "Concluso"], cancelled: ["neutral", "Annullato"] },
+    cols: ["Cliente", "Servizio", "Dipendente", "Quando", "Prezzo", "Stato"],
+    today: "Oggi", min: "min", phone: (p) => "347 " + p.slice(5), eur: (n) => n + " €",
+    actions: ["Apri", "Conferma", "Invia promemoria", "Sposta l’appuntamento", "Segna: non presentato", "Annulla l’appuntamento"],
+    search: "Cerca cliente, telefono o servizio", searchLabel: "Cerca", filters: "Filtri · 2", period: "Periodo", periods: ["Oggi", "Settimana", "Mese"],
+    team: "Tutto il team", states: ["Attivi", "Non confermati", "Annullati"], pills: ["Periodo: oggi", "Stato: attivi", "Cancella i filtri"],
+    bulk: ["Conferma", "Invia promemoria", "Annulla gli appuntamenti"],
+    listTitle: "Appuntamenti", listDesc: "Tutti gli appuntamenti, con filtri e azioni su più appuntamenti insieme.", export: "Esporta",
+    detail: {
+      pill: "Non confermato", badge: "Prenotato online", kv: [["Quando", "Venerdì 23 ottobre · 12:30–13:15"], ["Servizio", "Trattamento viso · 45 min · 45 €"], ["Dipendente", "Chiara Bruno"], ["Cliente", "Cristina Greco · 347 220 118 · 6ª visita"]],
+      noticeT: "Non ha ancora confermato", notice: "Abbiamo inviato il promemoria ieri alle 12:30. Può chiamare o inviarlo di nuovo.",
+      btns: ["Invia di nuovo il promemoria", "Chiama"], notes: "Note per il team", notesV: "Pelle sensibile: niente prodotti profumati.",
+      hist: "Cronologia", histItems: [["22 ott., 12:30", "Promemoria inviato via SMS"], ["16 ott., 09:12", "Chiara Bruno l’ha spostato dalle 11:00 alle 12:30"], ["15 ott., 18:04", "Prenotato dalla pagina di prenotazione"]], histAll: "Vedi tutta la cronologia",
+      title: "Cristina Greco", sub: "Trattamento viso · ven 23 ott., 12:30", menu: ["Sposta l’appuntamento", "Duplica", "Annulla l’appuntamento"], more: "Altre azioni", foot: ["Sposta l’appuntamento", "Conferma"]
+    },
+    cal: {
+      prev: "Giorno precedente", today: "Oggi", next: "Giorno successivo", first: "Primo posto libero", week: "19–25 ottobre", day: "Venerdì 23 ottobre", dayShort: "ven 23 ott.",
+      viewLabel: "Vista del calendario", views: ["Giorno", "Settimana", "Risorse"], title: "Calendario", desc: "14 appuntamenti oggi · 3 dipendenti · aperto 09:00–19:00",
+      res: { Coafor: "Postazione parrucchiere 1", "Manichiură": "Tavolo manicure", Frizerie: "Postazione barbiere" }, daySub: "Parrucchiera · 6 appuntamenti",
+      days: ["Lun 19", "Mar 20", "Mer 21", "Gio 22", "Ven 23", "Sab 24", "Dom 25"], closed: "Chiuso"
+    },
+    limit: {
+      newBtn: "Nuovo appuntamento", title: "Ha raggiunto il limite di appuntamenti di ottobre",
+      desc: "Gli appuntamenti esistenti restano al loro posto e può continuare a modificarli. L’appuntamento iniziato La aspetta: lo salviamo appena c’è posto.",
+      decider: "Giulia Romano (titolare)",
+      options: [{ id: "pack", kind: "pack", title: "Pacchetto extra · 200 appuntamenti", price: "8 € · solo per ottobre · nessun costo di attivazione", includes: ["Attivo subito; l’appuntamento iniziato viene salvato"] }, { id: "plan", kind: "plan", title: "Abbonamento Business Plus", price: "89 € al mese invece di 69 € · nessun costo di attivazione", includes: ["Appuntamenti illimitati", "3.000 SMS al mese"] }]
+    },
+    nw: {
+      title: "Nuovo appuntamento", secs: ["Servizio e dipendente", "Quando", "Cliente", "Dettagli"], service: "Servizio", groups: ["Estetica", "Parrucchiere"],
+      svc: [["Trattamento viso", "45 min · 45 €"], ["Taglio", "45 min · 25 €"]], staff: "Dipendente", any: "Chiunque sia libero",
+      date: "Data", dur: "Durata", start: "Ora di inizio", startHelp: "Gli orari barrati sono già occupati per Chiara.",
+      client: "Cliente", clientHelp: "Cerchi per nome o telefono.", recent: "Clienti recenti", newClient: "Nuovo cliente",
+      notes: "Note per il team", notesPh: "Es.: pelle sensibile", checks: ["Invia ora la conferma via SMS", "Invia un promemoria 24 ore prima"],
+      sum: "Riepilogo", sumK: ["Cliente", "Servizio", "Con chi", "Quando", "Prezzo"], sumSvc: "Trattamento viso · 45 min", sumWhen: "Martedì 27 ottobre · ", price: "45 €",
+      book: "Prenota", cancel: "Annulla", clients: ["Cristina Greco", "Anna Russo", "Elena Ricci"], visits: "5 visite"
+    }
+  }
+};
+function LX_App({ t, active, title, footer, children }) {
+  return ce(V.AppShell, {
+    height: "100%",
+    spine: ce(V.Spine, { app: "booking", sections: t.sections, activeId: active, onBackToHub: () => {}, bottomItems: ["azi", "calendar", "programari", "clienti"], footer: footer === false ? null : ce(V.UsageMeter, { compact: true, label: t.usage, used: 862, limit: 1e3 }) }),
+    contextBar: ce(LX_Bar, { t, title: title || "EasyBook" })
+  }, children);
+}
+const LX_ROWS = (t) => BK_ROWS.map((r) => ({ ...r, client: lx(r.client, t), phone: t.phone(r.phone), service: lx(r.service, t), staff: lx(r.staff, t), when: r.when.replace("Azi", t.today), dur: r.dur.replace("min", t.min), price: LX_EUR[r.price] }));
+const LX_COLS = (t, mode) => [
+  { key: "client", header: t.cols[0], sortable: true, primary: true, render: (r) => ce("span", { style: { display: "flex", flexDirection: "column" } }, ce("span", null, r.client), mode !== "mobile" && ce("span", { className: "body-small muted" }, r.phone)) },
+  { key: "service", header: t.cols[1], secondary: true },
+  { key: "staff", header: t.cols[2], sortable: true, optional: true },
+  { key: "when", header: t.cols[3], sortable: true, secondary: true, render: (r) => ce("span", null, r.when, ce("span", { className: "muted" }, " · ", r.dur)) },
+  { key: "price", header: t.cols[4], align: "end", sortable: true, optional: true, render: (r) => t.eur(r.price) },
+  { key: "status", header: t.cols[5], trailing: true, render: (r) => ce(V.StatusPill, { tone: t.status[r.status][0], icon: r.status === "unconfirmed" ? "clock" : void 0 }, t.status[r.status][1]) }
+];
+const LX_ACTIONS = (t) => (r) => [
+  { label: t.actions[0], icon: "external-link" },
+  r.status === "unconfirmed" ? { label: t.actions[1], icon: "check" } : { label: t.actions[2], icon: "send" },
+  { label: t.actions[3], icon: "calendar" },
+  { label: t.actions[4], icon: "circle-x" },
+  { separator: true },
+  { label: t.actions[5], icon: "trash-2", destructive: true }
+];
+function LX_Filters({ t, mode }) {
+  return ce(React.Fragment, null,
+    ce("div", { style: { flex: "1 1 220px", minWidth: 0, maxWidth: mode === "mobile" ? "none" : "var(--search-width)" } }, ce(V.Input, { icon: "search", placeholder: t.search, size: "sm", "aria-label": t.searchLabel })),
+    mode === "mobile" ? ce(V.Button, { size: "sm", icon: "list-filter" }, t.filters) : ce(React.Fragment, null,
+      ce(V.SegmentedControl, { size: "sm", label: t.period, defaultValue: "azi", options: [{ value: "azi", label: t.periods[0] }, { value: "sapt", label: t.periods[1] }, { value: "luna", label: t.periods[2] }] }),
+      ce("div", { style: { width: 180 } }, ce(V.Select, { size: "sm", defaultValue: "all", options: [{ value: "all", label: t.team }, ...BK_STAFF.map((s) => ({ value: s.id, label: lx(s.label, t) }))] })),
+      ce("div", { style: { width: 180 } }, ce(V.Select, { size: "sm", defaultValue: "active", options: [{ value: "active", label: t.states[0] }, { value: "unconfirmed", label: t.states[1] }, { value: "cancelled", label: t.states[2] }] }))));
+}
+const LX_EVENTS = (t) => BK_EVENTS.map((e) => ({ ...e, title: lx(e.title, t), subtitle: lx(e.subtitle, t) }));
+const LX_WEEK = (t) => BK_WEEK.map((e) => ({ ...e, title: lx(e.title, t), subtitle: lx(e.subtitle, t) }));
+const LX_DAYS = (t) => BK_DAYS.map((d, i) => ({ ...d, label: t.cal.days[i], closed: d.closed ? t.cal.closed : void 0 }));
+function Cal_L({ mode, th, t }) {
+  const c = t.cal;
+  const [v, setV] = useState(mode === "desktop" ? th === "light" ? "res" : "week" : "day");
+  const staff = BK_STAFF.map((s) => ({ ...s, label: lx(s.label, t), sub: lx(s.sub, t), person: lx(s.person, t) }));
+  const head = ce("div", { className: "calbar" }, ce("div", { className: "r", style: { gap: "var(--space-1)", flexWrap: "nowrap" } },
+    ce(V.IconButton, { icon: "chevron-left", label: c.prev, variant: "secondary" }), ce(V.Button, null, c.today), ce(V.IconButton, { icon: "chevron-right", label: c.next, variant: "secondary" }),
+    mode !== "mobile" && ce(V.Button, { variant: "quiet", icon: "search" }, c.first),
+    ce("span", { className: "heading calbar-date" }, v === "week" ? c.week : mode === "mobile" ? c.dayShort : c.day)),
+    ce(V.SegmentedControl, { label: c.viewLabel, value: v, onChange: setV, size: mode === "mobile" ? "sm" : "md", options: [{ value: "day", label: c.views[0] }, { value: "week", label: c.views[1] }, { value: "res", label: c.views[2] }] }));
+  const hh = mode === "desktop" ? 700 : 1e3;
+  const ev = LX_EVENTS(t);
+  let body;
+  if (v === "week") body = ce(V.Schedule, { columns: LX_DAYS(t), events: LX_WEEK(t), from: 8, to: 19, now: BK_NOW, nowColumn: "fri", height: hh, minColumnWidth: mode === "desktop" ? 120 : 100, onEventClick: () => {} });
+  else if (v === "res") body = ce(V.Schedule, { columns: staff.map((s, i) => ({ id: s.id, label: c.res[BK_STAFF[i].sub], sub: s.label })), events: ev, from: 8, to: 19, now: BK_NOW, height: hh, onEventClick: () => {}, activeId: "e4", onSlotClick: () => {} });
+  else body = ce(React.Fragment, null, mode !== "desktop" && ce("div", { className: "staffpick" }, ce(V.Select, { defaultValue: "ioana", options: staff.map((s) => ({ value: s.id, label: s.label, description: s.sub })) })),
+    ce(V.Schedule, { columns: [{ id: "ioana", label: staff[0].label, sub: c.daySub, person: staff[0].label }], events: ev, from: 8, to: 19, now: BK_NOW, height: hh - 60, onEventClick: () => {}, minColumnWidth: 200 }));
+  return ce(LX_App, { t, active: "calendar", title: c.title }, ce(V.PageHeader, { title: c.title, description: mode === "mobile" ? void 0 : c.desc, actions: mode === "mobile" ? ce(V.Button, { size: "sm", variant: "secondary", icon: "search" }, c.first) : null }), ce("div", { className: "calwrap " + mode }, head, body));
+}
+/* RO state from the README: "Primul loc liber" found the next free slot */
+function CalFirstFree({ mode }) {
+  const head = ce("div", { className: "calbar" }, ce("div", { className: "r", style: { gap: "var(--space-1)", flexWrap: "nowrap" } },
+    ce(V.IconButton, { icon: "chevron-left", label: "Ziua anterioară", variant: "secondary" }), ce(V.Button, null, "Azi"), ce(V.IconButton, { icon: "chevron-right", label: "Ziua următoare", variant: "secondary" }),
+    ce("span", { className: "heading calbar-date" }, mode === "mobile" ? "Joi, 29 oct." : "Joi, 29 octombrie")),
+    ce(V.SegmentedControl, { label: "Cum arăt calendarul", defaultValue: mode === "mobile" ? "day" : "res", size: mode === "mobile" ? "sm" : "md", options: [{ value: "day", label: "Zi" }, { value: "week", label: "Săptăm\xE2nă" }, { value: "res", label: "Resurse" }] }));
+  const ev = [
+    { id: "f1", col: "ioana", start: "09:00", end: "10:00", title: "Ana Popescu", subtitle: "Vopsit", status: "confirmed" },
+    { id: "f2", col: "ioana", start: "10:30", end: "12:30", title: "Bianca Marin", subtitle: "Coafat eveniment", status: "confirmed" },
+    { id: "f3", col: "ioana", start: "12:30", end: "14:15", title: "Ștefania Toma", subtitle: "Balayage", status: "unconfirmed" },
+    { id: "f7", col: "ioana", start: "15:15", end: "16:30", title: "Oana Dinu", subtitle: "Tuns", status: "confirmed" },
+    { id: "f4", col: "mara", start: "09:00", end: "12:00", title: "Alina Murariu", subtitle: "Manichiură semipermanentă", status: "confirmed" },
+    { id: "f5", col: "mara", start: "12:00", end: "18:00", title: "Concediu", status: "blocked" },
+    { id: "f6", col: "radu", start: "09:00", end: "18:00", title: "Zi liberă", status: "blocked" }
+  ];
+  const notice = ce("div", { style: { marginBottom: "var(--space-3)" } }, ce(V.Notice, { tone: "neutral", icon: "search", title: "Următorul loc liber: joi, 14:30, la Ioana.", actions: ce(React.Fragment, null, ce(V.Button, { size: "sm", variant: "primary", icon: "check" }, "Programează aici"), ce(V.Button, { size: "sm", variant: "quiet" }, "Caută mai departe")) }, "Pentru Tratament facial (45 min). Mara și Radu nu au loc joi."));
+  const cols = mode === "mobile" ? [{ id: "ioana", label: "Ioana Pavel", sub: "Coafor", person: "Ioana Pavel" }] : BK_STAFF.map((c) => ({ id: c.id, label: { Coafor: "Post coafor 1", "Manichiură": "Masă manichiură", Frizerie: "Post frizerie" }[c.sub], sub: c.label }));
+  return ce(BookingApp, { active: "calendar", title: "Calendar" }, ce(V.PageHeader, { title: "Calendar", description: mode === "mobile" ? void 0 : "Primul loc liber pentru Tratament facial \xB7 caută de azi \xEEnainte" }),
+    ce("div", { className: "calwrap " + mode }, notice, head, ce(V.Schedule, { columns: cols, events: ev, from: 8, to: 19, height: mode === "mobile" ? 760 : 470, onEventClick: () => {}, onSlotClick: () => {}, minColumnWidth: mode === "mobile" ? 200 : void 0 })));
+}
+function BC_Extra() {
+  return ce(React.Fragment, null,
+    ce(LX_StateFrames, { title: "Stare: „Primul loc liber” a găsit următoarea oră liberă", notes: ["Sare la ziua găsită și marchează locul", "Pe ecranele tactile mutarea se face și din detaliu", "Grila se parcurge și cu tastatura"],
+      frames: [["Rom\xE2nă", "desktop", "light", 860, ce(CalFirstFree, { mode: "desktop" })], ["Rom\xE2nă", "mobile", "dark", 1180, ce(CalFirstFree, { mode: "mobile" })]] }),
+    ce(LX_Frames, { title: "DE / IT — test de lungime a textelor: calendarul", notes: ["Desktop Light: resurse", "Desktop Dark: săptăm\xE2nă", "Telefon: zi"], desktopH: 960, mobileH: 1240, render: (m, th, t) => ce(Cal_L, { mode: m, th, t }) }));
+}
+mount(/* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(Screens, { title: "EasyBook \u2014 Calendar: zi, s\u0103pt\u0103m\xE2n\u0103, resurse", notes: ["Desktop \xB7 Light: resurse", "Desktop \xB7 Dark: s\u0103pt\u0103m\xE2n\u0103", "Tablet\u0103 \xB7 Light: zi (alegi angajatul)", "Tablet\u0103 \xB7 Dark: resurse", "Telefon: zi"], desktopH: 960, tabletH: 1240, mobileH: 1240, render: (m, th) => /* @__PURE__ */ React.createElement(Cal, { mode: m, th }) }), /* @__PURE__ */ React.createElement(BC_Extra, null)));
 </script>
 </body>
 </html>

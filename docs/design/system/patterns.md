@@ -43,7 +43,7 @@ Niciodată roșu, niciodată „Eroare”.
 - **Selecție → bulk bar** deasupra tabelului cu acțiunile comune; acțiunea distructivă e ultima, în `danger-ink`.
 - **Acțiuni pe rând** în kebab (`ellipsis-vertical`): ordinea e deschide → acțiuni frecvente → separator → distructiv.
 - **Când tabelul are sub 640px lățime** (pe telefon, sau într-un Drawer îngust) rândurile devin o listă: nume, linia meta (coloanele `secondary`), stare la dreapta, kebab.
-- Starea fiecărei înregistrări e un `StatusPill` cu unul din cele patru tonuri; fiecare aplicație își mapează stările pe ele (ex. Booking: „În desfășurare” = attention, „Confirmată” = done, „De plată” = attention, „Anulată” = neutral).
+- Starea fiecărei înregistrări e un `StatusPill` cu unul din cele patru tonuri; fiecare aplicație își mapează stările pe ele (ex. EasyBook: „În desfășurare” = attention, „Confirmată” = done, „De plată” = attention, „Anulată” = neutral).
 
 ## Formulare
 
@@ -87,9 +87,9 @@ Niciodată roșu, niciodată „Eroare”.
 - **Pachetele în plus** le cumpără proprietarul direct, cu cardul afacerii: „Cumpără · 49 lei” deschide AddonPurchase (cantitate, total, cardul salvat — doar ultimele 4 cifre — sau locul formularului Stripe, „Plătește X lei”), apoi „Procesăm plata…”, reușește („Limita a crescut deja.”, apare factura) sau eșuează („Banca spune: …”, „Nu ți s-a retras niciun ban de pe card.”, ce poți face). Pachetele „Doar la cerere” și orice pachet cât timp afacerea nu are card salvat rămân „Cere activare”. Fiecare cumpărătură are factura ei („Pachet în plus · 500 SMS”).
 - **Datele cardului** nu trec niciodată prin componentele Ventora: formularul e al Stripe și se montează în `StripeSlot`.
 
-## În interiorul aplicațiilor (Booking ca model)
+## În interiorul aplicațiilor (EasyBook ca model)
 
-Fiecare aplicație urmează aceeași schemă; Booking e modelul.
+Fiecare aplicație urmează aceeași schemă; EasyBook e modelul.
 
 - **Azi** e primul element din Spine: salut + fraza zilei, „Au nevoie de tine” (AttentionList, 3–5 lucruri cu acțiunea lor), ce e „în desfășurare” (peach, cu timpul scurs) și programul zilei (Agenda cu linia „acum”). Pe desktop atenția stă în dreapta; pe tabletă și telefon vine prima.
 - **Calendarul** folosește Schedule: zi, săptămână și resurse (camere, echipamente sau spații pe care le rezervă clienții, definite în Setări → Resurse). Linia „acum” e peach; programările din trecut sunt stinse, cea în desfășurare e peach, cele neconfirmate au contur punctat. Click pe un spațiu liber creează o programare la ora aceea.
@@ -102,12 +102,12 @@ Fiecare aplicație urmează aceeași schemă; Booking e modelul.
 
 ## Celelalte aplicații — ecranele reprezentative
 
-Toate stau pe același shell și folosesc aceleași piese ca Booking; diferă doar conținutul.
+Toate stau pe același shell și folosesc aceleași piese ca EasyBook; diferă doar conținutul.
 
-- **Panou pe etape** (CRM — pipeline, Projects — sarcini): `Kanban`. Fiecare coloană are numărul de carduri și, unde contează, valoarea; „Gata” și „Câștigate” poartă bifa lime. Mutarea se face și din meniul cardului („Mută în „…””), nu doar prin tragere. Sub 640px se vede o etapă odată, aleasă din bara de etape.
-- **Cronologie** (Projects): `Timeline` — etapele ca bare pe săptămâni, eticheta lângă bară, linia de azi peach, lansarea ca romb. Etapele întârziate sunt peach („Întârziată 2 zile”), cele gata lime, cu bifă.
-- **Cifrele de sus** (HR, Finance, Analytics): 3–4 `Stat` într-un rând (`v-stats`), apoi lista sau graficele. Peach pe un Stat doar când cifra cere o acțiune (restanțe).
-- **„Au nevoie de tine”** e aceeași AttentionList în toate aplicațiile: concedii de aprobat, pontaje de corectat, facturi restante. Lângă tabel pe desktop când tabelul are puține coloane (Finance); deasupra lui când tabelul are nevoie de toată lățimea (HR).
+- **Panou pe etape** (ClientDesk — pipeline, TaskBoard — sarcini): `Kanban`. Fiecare coloană are numărul de carduri și, unde contează, valoarea; „Gata” și „Câștigate” poartă bifa lime. Mutarea se face și din meniul cardului („Mută în „…””), nu doar prin tragere. Sub 640px se vede o etapă odată, aleasă din bara de etape.
+- **Cronologie** (TaskBoard): `Timeline` — etapele ca bare pe săptămâni, eticheta lângă bară, linia de azi peach, lansarea ca romb. Etapele întârziate sunt peach („Întârziată 2 zile”), cele gata lime, cu bifă.
+- **Cifrele de sus** (TeamSpace, MoneyDesk, DataView): 3–4 `Stat` într-un rând (`v-stats`), apoi lista sau graficele. Peach pe un Stat doar când cifra cere o acțiune (restanțe).
+- **„Au nevoie de tine”** e aceeași AttentionList în toate aplicațiile: concedii de aprobat, pontaje de corectat, facturi restante. Lângă tabel pe desktop când tabelul are puține coloane (MoneyDesk); deasupra lui când tabelul are nevoie de toată lățimea (TeamSpace).
 - **Stări în tabele:** „La lucru” și „Scadentă azi” sunt peach (acum), „Plătită” lime, „Epuizat” și „Absență” roșu (o problemă reală), „Sub minim” și „Restantă” peach (de făcut ceva, nu o eroare), „Concediu” și „Comandat” neutre. Întârzierile mici sunt text `attention-ink`, nu alarme.
 
 ## Date vizuale
@@ -123,14 +123,14 @@ Toate stau pe același shell și folosesc aceleași piese ca Booking; diferă do
 
 - **Glosarul** (`glossary.md`, cardul Glosar) e sursa unică pentru termeni, în 6 limbi. Un termen nou intră întâi acolo.
 - **Fluxul pentru fiecare ecran sau componentă nouă:** prezinți ecranul; extragi toate textele vizibile din toate stările; propui textele revizuite; marchezi ce cere o decizie; ecranul e gata doar după aprobarea textelor.
-- **Ton:** prietenos la intrare și în stările goale; precis în Finance, HR și Contracts; calm în erori; fără umor în mesajele critice.
+- **Ton:** prietenos la intrare și în stările goale; precis în MoneyDesk, TeamSpace și ContractDesk; calm în erori; fără umor în mesajele critice.
 - **Reguli fixe:** diateza activă („Am emis factura”); plural ICU cu cele trei forme românești („1 necitită”, „2 necitite”, „20 de necitite”); fără dativ și fără gen lângă un nume din date („Trimitem cererea către {nume}”, „{nume} (proprietar)”); cantitățile cu cifre; fără calchieri din engleză („captură de ecran”, nu „print screen”).
 
 
 ## Comercial (recomandări)
 
 - **Discret și util, nu insistent.** O recomandare arată ca o informație bună la momentul potrivit: e legată de ce face deja afacerea și are mereu eticheta neutră „Recomandare”.
-- **Unde apare:** doar în locurile permise, prin `GrowthSlot` (coloana din „Azi”, setări), în secțiunea „Recomandări” din notificări, în launcher la „Alte aplicații Ventora” și în catalog. **Niciodată** în formulare în lucru, plăți, erori, confirmări, autentificare sau în acțiunile sensibile din Finance, HR și Contracts. Un tooltip de descoperire pe ecran, cel mult.
+- **Unde apare:** doar în locurile permise, prin `GrowthSlot` (coloana din „Azi”, setări), în secțiunea „Recomandări” din notificări, în launcher la „Alte aplicații Ventora” și în catalog. **Niciodată** în formulare în lucru, plăți, erori, confirmări, autentificare sau în acțiunile sensibile din MoneyDesk, TeamSpace și ContractDesk. Un tooltip de descoperire pe ecran, cel mult.
 - **Doar aplicații nedeținute.** O aplicație din abonament nu e niciodată recomandare.
 - **Închiderea e mereu la vedere** pe recomandările care vin singure: „Nu mă interesează” și „Amintește-mi mai târziu”, fiecare cu un Toast care se poate anula.
 - **Costul e întreg înainte de confirmare:** preț, cât de des se plătește, costul de implementare, condițiile perioadei de probă („Gratuit 14 zile. Apoi 79 lei pe lună, doar dacă alegi să continui.”).

@@ -1,0 +1,57 @@
+{
+ "name": "Timeline",
+ "version": "1.0.1",
+ "kind": "component",
+ "group": "Data",
+ "status": "changed",
+ "description": "Stages of a project as bars across weeks, with the peach \"Azi\" line and milestones. The TaskBoard \"Cronologie\" view.",
+ "exports": [
+  "Timeline"
+ ],
+ "props": [
+  {
+   "name": "periods",
+   "type": "{ label: string; current?: boolean; }[]",
+   "required": true,
+   "note": ""
+  },
+  {
+   "name": "rows",
+   "type": "({ id: string; label: string; sub?: string; start: number; end: number; status?: \"done\" | \"planned\" | \"active\" | \"late\"; progress?: number; statusLabel?: string; } | { id: string; label: string; sub?: string; milestone: number; milestoneLabel?: string; })[]",
+   "required": true,
+   "note": ""
+  },
+  {
+   "name": "today",
+   "type": "number",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "label",
+   "type": "string",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "minPeriodWidth",
+   "type": "number",
+   "required": false,
+   "note": ""
+  }
+ ],
+ "events": [],
+ "states": [
+  "planned",
+  "active",
+  "late",
+  "done",
+  "milestone",
+  "today",
+  "current-period",
+  "narrow-scroll"
+ ],
+ "notes": "",
+ "readme": "components/Timeline/README.md",
+ "preview": "components/Timeline/preview.html"
+}

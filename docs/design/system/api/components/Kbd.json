@@ -1,0 +1,30 @@
+{
+ "name": "Kbd",
+ "version": "1.0.1",
+ "kind": "component",
+ "group": "Feedback",
+ "status": "changed",
+ "description": "Keyboard keys in menus, tooltips and the command palette.",
+ "exports": [
+  "Kbd"
+ ],
+ "props": [
+  {
+   "name": "keys",
+   "type": "string[]",
+   "required": true,
+   "note": ""
+  }
+ ],
+ "events": [],
+ "states": [
+  "default",
+  "mod",
+  "shift",
+  "enter",
+  "arrows"
+ ],
+ "notes": "",
+ "readme": "components/Kbd/README.md",
+ "preview": "components/Kbd/preview.html"
+}

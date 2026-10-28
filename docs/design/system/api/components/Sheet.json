@@ -1,0 +1,101 @@
+{
+ "name": "Sheet",
+ "version": "1.0.1",
+ "kind": "component",
+ "group": "Shell",
+ "status": "changed",
+ "description": "The working surface: a `sheet` panel with a hairline edge on the `canvas`, holding forms, settings and content; SheetSection splits it with a heading.",
+ "exports": [
+  "Sheet",
+  "SheetSection"
+ ],
+ "props": [
+  {
+   "name": "children",
+   "type": "ReactNode",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "padded",
+   "type": "boolean",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "as",
+   "type": "string | number",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "className",
+   "type": "string",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "id",
+   "type": "string",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "style",
+   "type": "any",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "title",
+   "type": "string",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "role",
+   "type": "string",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "title",
+   "type": "ReactNode",
+   "required": false,
+   "note": "",
+   "of": "SheetSection"
+  },
+  {
+   "name": "description",
+   "type": "ReactNode",
+   "required": false,
+   "note": "",
+   "of": "SheetSection"
+  },
+  {
+   "name": "actions",
+   "type": "ReactNode",
+   "required": false,
+   "note": "",
+   "of": "SheetSection"
+  },
+  {
+   "name": "children",
+   "type": "ReactNode",
+   "required": false,
+   "note": "",
+   "of": "SheetSection"
+  }
+ ],
+ "events": [],
+ "states": [
+  "default",
+  "padded",
+  "unpadded",
+  "section-with-actions",
+  "section-without-actions"
+ ],
+ "notes": "",
+ "readme": "components/Sheet/README.md",
+ "preview": "components/Sheet/preview.html"
+}

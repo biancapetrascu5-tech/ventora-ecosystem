@@ -1,0 +1,53 @@
+{
+ "name": "EmptyState",
+ "version": "1.0.1",
+ "kind": "component",
+ "group": "Feedback",
+ "status": "changed",
+ "description": "What a screen shows when there is nothing to show: one Lucide icon in a quiet plate, a title, one sentence, the next action — no illustrations.",
+ "exports": [
+  "EmptyState"
+ ],
+ "props": [
+  {
+   "name": "icon",
+   "type": "string",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "title",
+   "type": "ReactNode",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "description",
+   "type": "ReactNode",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "actions",
+   "type": "ReactNode",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "size",
+   "type": "\"sm\" | \"md\"",
+   "required": false,
+   "note": ""
+  }
+ ],
+ "events": [],
+ "states": [
+  "first-use",
+  "no-results",
+  "error",
+  "size-sm"
+ ],
+ "notes": "",
+ "readme": "components/EmptyState/README.md",
+ "preview": "components/EmptyState/preview.html"
+}

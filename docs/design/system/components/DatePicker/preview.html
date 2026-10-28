@@ -1,4 +1,4 @@
-<!-- @dsCard group="Forms" height=470 -->
+<!-- @dsCard group="Forms" height=3320 width=1200 -->
 <!doctype html>
 <html lang="ro">
 <head><meta charset="utf-8"><title>DatePicker — Ventora</title>
@@ -250,6 +250,18 @@ html,body{min-height:100%}
 .fxframe .caption{color:var(--ink-muted)}
 @container (max-width:420px){.fxlang{grid-template-columns:32px minmax(0,1fr) auto}.fxlang .v-iconbtn{display:none}}
 
+/* c2: theme + locale frames */
+.pv{display:flex;flex-direction:column;gap:var(--space-4);padding:var(--space-4)}
+.pv-frame{display:flex;flex-direction:column;gap:var(--space-4);padding:var(--space-6);background:var(--canvas);color:var(--ink);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg);min-width:0}
+.pv-frame>.heading{margin:0}
+.pv-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:var(--space-5) var(--space-4);align-items:start}
+.pv-grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--space-5) var(--space-4);align-items:start}
+.pv-grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--space-5) var(--space-4);align-items:start}
+.pv-cell{display:flex;flex-direction:column;gap:var(--space-2);min-width:0}
+.pv-lab{margin:0;color:var(--ink-muted)}
+.pv-box{padding:var(--space-4);background:var(--sheet);border:var(--border-width) solid var(--line);border-radius:var(--radius-md);min-width:0;color:var(--ink)}
+.pv-stage{position:relative;overflow:hidden;border:var(--border-width) solid var(--line-strong);border-radius:var(--radius-lg);background:var(--canvas);color:var(--ink)}
+.pv-note{margin:0;color:var(--ink-muted)}
 </style>
 </head>
 <body>
@@ -262,11 +274,39 @@ const DE = ({ children }) => /* @__PURE__ */ React.createElement(V.LocaleProvide
 const FR = ({ children }) => /* @__PURE__ */ React.createElement(V.LocaleProvider, { locale: "fr" }, children);
 const IT = ({ children }) => /* @__PURE__ */ React.createElement(V.LocaleProvider, { locale: "it" }, children);
 const mount = (el) => ReactDOM.createRoot(document.getElementById("root")).render(/* @__PURE__ */ React.createElement(V.LocaleProvider, { locale: "ro" }, el));
+/* c2: every README state, Light/Dark frames (data-theme on the frame), DE/IT with translated texts. */
+const h = React.createElement;
+const noop = () => {};
+const Cell = ({ label, children, style }) => h("div", { className: "pv-cell", style }, h("p", { className: "caption pv-lab" }, label), children);
+const FRAMES = [["light", "ro", "Light"], ["dark", "ro", "Dark"], ["light", "de", "Deutsch \u00b7 Light"], ["dark", "it", "Italiano \u00b7 Dark"]];
+const Frames = ({ Board, top }) => h("div", { className: "pv" }, top, FRAMES.map(([th, lang, lab], i) => h("section", { key: lab, className: "pv-frame", "data-theme": th }, h("p", { className: "heading" }, lab), h(V.LocaleProvider, { locale: lang }, h(Board, { lang, theme: th, first: i === 0 })))));
 const TODAY = new Date(2026, 9, 24);
-function Demo() {
-  return /* @__PURE__ */ React.createElement("div", { className: "d g2" }, /* @__PURE__ */ React.createElement(V.FormField, { label: "Data program\u0103rii", helper: "S\u0103pt\u0103m\xE2na \xEEncepe luni." }, /* @__PURE__ */ React.createElement(V.DatePicker, { today: TODAY, defaultValue: new Date(2026, 9, 29), defaultOpen: true, min: new Date(2026, 9, 20), isDisabled: (d) => d.getDay() === 0 })), /* @__PURE__ */ React.createElement("div", { className: "d0" }, /* @__PURE__ */ React.createElement(V.FormField, { label: "Interval raport" }, /* @__PURE__ */ React.createElement(V.DatePicker, { mode: "range", today: TODAY, defaultValue: [new Date(2026, 9, 1), new Date(2026, 9, 24)] })), /* @__PURE__ */ React.createElement(V.FormField, { label: "Ora" }, /* @__PURE__ */ React.createElement(V.DatePicker, { mode: "time", defaultValue: "14:30" })), /* @__PURE__ */ React.createElement(V.FormField, { label: "Data na\u0219terii", required: true, error: "Alege o dat\u0103 din trecut." }, /* @__PURE__ */ React.createElement(V.DatePicker, { today: TODAY })), /* @__PURE__ */ React.createElement(V.FormField, { label: "Dezactivat" }, /* @__PURE__ */ React.createElement(V.DatePicker, { disabled: true, defaultValue: TODAY })), /* @__PURE__ */ React.createElement(DE, null, /* @__PURE__ */ React.createElement(V.FormField, { label: "Zeitraum des Berichts" }, /* @__PURE__ */ React.createElement(V.DatePicker, { mode: "range", today: TODAY })))));
+const DP_T = {
+  ro: { l: ["Deschis (popover) · azi cu inel peach, ziua aleasă, duminicile indisponibile", "Calendar · dată (azi, aleasă, zile tăiate)", "Calendar · interval", "Dată aleasă", "Interval", "Oră", "Gol (text de ajutor)", "Eroare", "Dezactivat"],
+    date: "Data programării", helper: "Săptămâna începe luni. Duminica salonul e închis.", range: "Interval raport", time: "Ora", empty: "Data următoarei vizite", birth: "Data nașterii", err: "Alege o dată din trecut.", dis: "Data facturii (blocată)", popNote: "Calendarul deschis stă deasupra paginii, așa că apare doar în acest cadru; în celelalte e arătat direct, mai jos." },
+  de: { l: ["Kalender · Datum (heute, ausgewählt, durchgestrichene Tage)", "Kalender · Zeitraum", "Ausgewähltes Datum", "Zeitraum", "Uhrzeit", "Leer (Hilfetext)", "Fehler", "Deaktiviert"],
+    date: "Datum des Termins", helper: "Die Woche beginnt am Montag. Sonntags ist geschlossen.", range: "Zeitraum des Berichts", time: "Uhrzeit", empty: "Datum des nächsten Besuchs", birth: "Geburtsdatum", err: "Wählen Sie ein Datum in der Vergangenheit.", dis: "Rechnungsdatum (gesperrt)" },
+  it: { l: ["Calendario · data (oggi, selezionata, giorni barrati)", "Calendario · intervallo", "Data scelta", "Intervallo", "Ora", "Vuoto (testo di aiuto)", "Errore", "Disattivato"],
+    date: "Data dell’appuntamento", helper: "La settimana inizia di lunedì. La domenica è chiuso.", range: "Periodo del report", time: "Ora", empty: "Data della prossima visita", birth: "Data di nascita", err: "Scelga una data nel passato.", dis: "Data della fattura (bloccata)" }
+};
+const sun = (d) => d.getDay() === 0;
+function Board({ lang, first }) {
+  const T = DP_T[lang], L = first ? T.l : [null].concat(T.l);
+  return h("div", { className: "pv-cell", style: { gap: "var(--space-5)" } },
+    first && h("div", { style: { minHeight: 440, display: "flex", gap: "var(--space-8)", alignItems: "flex-start" } }, h(Cell, { label: L[0], style: { width: 360, flex: "none" } }, h(V.FormField, { label: T.date, helper: T.helper }, h(V.DatePicker, { today: TODAY, defaultValue: new Date(2026, 9, 29), defaultOpen: true, min: new Date(2026, 9, 20), isDisabled: sun, onChange: noop }))), h("p", { className: "caption pv-note", style: { marginTop: "var(--space-10)", maxWidth: 360 } }, T.popNote)),
+    h("div", { className: "pv-grid2" },
+      h(Cell, { label: L[1] }, h("div", { className: "pv-box", style: { maxWidth: 360 } }, h(V.Calendar, { today: TODAY, value: new Date(2026, 9, 29), min: new Date(2026, 9, 20), isDisabled: sun, onChange: noop }))),
+      h(Cell, { label: L[2] }, h("div", { className: "pv-box", style: { maxWidth: 360 } }, h(V.Calendar, { mode: "range", today: TODAY, value: [new Date(2026, 9, 1), new Date(2026, 9, 24)], onChange: noop })))),
+    h("div", { className: "pv-grid" },
+      h(Cell, { label: L[3] }, h(V.FormField, { label: T.date }, h(V.DatePicker, { today: TODAY, defaultValue: new Date(2026, 9, 29), onChange: noop }))),
+      h(Cell, { label: L[4] }, h(V.FormField, { label: T.range }, h(V.DatePicker, { mode: "range", today: TODAY, defaultValue: [new Date(2026, 9, 1), new Date(2026, 9, 24)] }))),
+      h(Cell, { label: L[5] }, h(V.FormField, { label: T.time }, h(V.DatePicker, { mode: "time", defaultValue: "14:30", step: 15, timeFrom: "08:00", timeTo: "20:00" }))),
+      h(Cell, { label: L[6] }, h(V.FormField, { label: T.empty, helper: T.helper }, h(V.DatePicker, { today: TODAY }))),
+      h(Cell, { label: L[7] }, h(V.FormField, { label: T.birth, required: true, error: T.err }, h(V.DatePicker, { today: TODAY, invalid: true }))),
+      h(Cell, { label: L[8] }, h(V.FormField, { label: T.dis }, h(V.DatePicker, { disabled: true, defaultValue: TODAY })))));
 }
-mount(/* @__PURE__ */ React.createElement(Demo, null));
+mount(h(Frames, { Board }));
+
 </script>
 </body>
 </html>

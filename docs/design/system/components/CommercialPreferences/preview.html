@@ -1,4 +1,4 @@
-<!-- @dsCard group="Comercial" height=480 width=900 -->
+<!-- @dsCard group="Comercial" height=2008 width=900 -->
 <!doctype html>
 <html lang="ro">
 <head><meta charset="utf-8"><title>CommercialPreferences — Ventora</title>
@@ -250,6 +250,18 @@ html,body{min-height:100%}
 .fxframe .caption{color:var(--ink-muted)}
 @container (max-width:420px){.fxlang{grid-template-columns:32px minmax(0,1fr) auto}.fxlang .v-iconbtn{display:none}}
 
+/* c2: theme + locale frames */
+.pv{display:flex;flex-direction:column;gap:var(--space-4);padding:var(--space-4)}
+.pv-frame{display:flex;flex-direction:column;gap:var(--space-4);padding:var(--space-6);background:var(--canvas);color:var(--ink);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg);min-width:0}
+.pv-frame>.heading{margin:0}
+.pv-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:var(--space-5) var(--space-4);align-items:start}
+.pv-grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--space-5) var(--space-4);align-items:start}
+.pv-grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--space-5) var(--space-4);align-items:start}
+.pv-cell{display:flex;flex-direction:column;gap:var(--space-2);min-width:0}
+.pv-lab{margin:0;color:var(--ink-muted)}
+.pv-box{padding:var(--space-4);background:var(--sheet);border:var(--border-width) solid var(--line);border-radius:var(--radius-md);min-width:0;color:var(--ink)}
+.pv-stage{position:relative;overflow:hidden;border:var(--border-width) solid var(--line-strong);border-radius:var(--radius-lg);background:var(--canvas);color:var(--ink)}
+.pv-note{margin:0;color:var(--ink-muted)}
 </style>
 </head>
 <body>
@@ -278,10 +290,10 @@ const ORGS = [
   { id: "nord", name: "Agen\u021Bia Nord Studio", role: "Manager de proiect" }
 ];
 const NOTIFS = [
-  { id: 1, title: "Programare nou\u0103 de la Ana Popescu", body: "Joi, 29 oct., 14:30 \xB7 Tuns", app: "Booking", time: "acum 5 min", person: "Ana Popescu" },
-  { id: 2, title: "Factura #2026-114 e restant\u0103 de 3 zile", body: "Clinica Dentis \xB7 1.250 lei", app: "Finance", time: "acum 2 ore", icon: "receipt" },
-  { id: 3, title: "Ioana a cerut concediu pe 2\u20136 noiembrie", app: "HR", time: "ieri", person: "Ioana Pavel", read: true },
-  { id: 4, title: "Exportul clien\u021Bilor e gata", app: "CRM", time: "ieri", icon: "download", read: true }
+  { id: 1, title: "Programare nou\u0103 de la Ana Popescu", body: "Joi, 29 oct., 14:30 \xB7 Tuns", app: "EasyBook", time: "acum 5 min", person: "Ana Popescu" },
+  { id: 2, title: "Factura #2026-114 e restant\u0103 de 3 zile", body: "Clinica Dentis \xB7 1.250 lei", app: "MoneyDesk", time: "acum 2 ore", icon: "receipt" },
+  { id: 3, title: "Ioana a cerut concediu pe 2\u20136 noiembrie", app: "TeamSpace", time: "ieri", person: "Ioana Pavel", read: true },
+  { id: 4, title: "Exportul clien\u021Bilor e gata", app: "ClientDesk", time: "ieri", icon: "download", read: true }
 ];
 const USER = { name: "Bianca Petra\u0219cu", email: "bianca@ventora-hub.com" };
 function Bar({ title, de }) {
@@ -312,7 +324,7 @@ function BookingShell({ height, active, mobile }) {
       height,
       spine: /* @__PURE__ */ React.createElement(V.Spine, { app: "booking", sections: SECTIONS, activeId: active, onBackToHub: () => {
       }, footer: /* @__PURE__ */ React.createElement(V.UsageMeter, { compact: true, label: "Program\u0103ri", used: 312, limit: 1e3 }) }),
-      contextBar: /* @__PURE__ */ React.createElement(Bar, { title: "Booking" })
+      contextBar: /* @__PURE__ */ React.createElement(Bar, { title: "EasyBook" })
     },
     /* @__PURE__ */ React.createElement(V.PageHeader, { title: "Program\u0103ri", description: mobile ? void 0 : "Toate program\u0103rile afacerii, de azi \xEEnainte.", actions: mobile ? void 0 : /* @__PURE__ */ React.createElement(V.SegmentedControl, { label: "Vizualizare", size: "md", defaultValue: "list", options: [{ value: "list", label: "List\u0103", icon: "list" }, { value: "cal", label: "Calendar", icon: "calendar" }] }) }),
     /* @__PURE__ */ React.createElement(V.DataTable, { columns: [
@@ -333,7 +345,7 @@ function HubBar({ title, inApp }) {
   return /* @__PURE__ */ React.createElement(
     V.ContextBar,
     {
-      leading: inApp ? null : /* @__PURE__ */ React.createElement("span", { style: { padding: "0 var(--space-2)" } }, /* @__PURE__ */ React.createElement(V.Logo, { size: 32 })),
+      leading: inApp ? null : /* @__PURE__ */ React.createElement("span", { style: { padding: "0 var(--space-2)", display: "inline-flex" } }, /* @__PURE__ */ React.createElement(V.Logo, { size: 32, className: "v-cb-logo--full" }), /* @__PURE__ */ React.createElement(V.Logo, { variant: "mark", size: 32, className: "v-cb-logo--mark" })),
       title,
       org: /* @__PURE__ */ React.createElement(V.OrgSwitcher, { orgs: ORGS, currentId: "aurora" }),
       onSearch: () => {
@@ -366,7 +378,7 @@ function Screens({ title, notes, render, desktopH = 860, tabletH = 1100, mobileH
   return /* @__PURE__ */ React.createElement("div", { className: "scr" }, /* @__PURE__ */ React.createElement("p", { className: "heading" }, title), notes && /* @__PURE__ */ React.createElement("p", { className: "caption muted" }, notes.join(" \xB7 ")), ["light", "dark"].map((th) => /* @__PURE__ */ React.createElement("div", { className: "scr-row", key: th }, sizes.map(([m, lab, cls, h]) => /* @__PURE__ */ React.createElement("div", { key: m }, /* @__PURE__ */ React.createElement("p", { className: "caption scr-lab" }, lab, " \xB7 ", th === "light" ? "Light" : "Dark"), /* @__PURE__ */ React.createElement("div", { className: cls, "data-theme": th, style: { height: h } }, render(m, th)))))));
 }
 const MINE = [["booking", "Program\u0103ri, calendar \u0219i reamintiri", 3], ["crm", "Clien\u021Bi, istoric \u0219i oportunit\u0103\u021Bi"], ["hr", "Echip\u0103, prezen\u021B\u0103 \u0219i concedii", 1], ["finance", "Facturi, scaden\u021Be \u0219i restan\u021Be", 2], ["projects", "Proiecte, sarcini \u0219i termene"], ["shifts", "Ture \u0219i \xEEnlocuiri"], ["documents", "Documente \u0219i \u0219abloane"], ["portal", "Pagina afacerii pentru clien\u021Bi"]];
-const RECO = { marketing: { reason: "Se potrive\u0219te cu Booking: trimite automat reamintiri \u0219i campanii clien\u021Bilor t\u0103i.", cost: "49 lei pe lun\u0103 \xB7 f\u0103r\u0103 cost de implementare" } };
+const RECO = { marketing: { reason: "Se potrive\u0219te cu EasyBook: trimite automat reamintiri \u0219i campanii clien\u021Bilor t\u0103i.", cost: "49 lei pe lun\u0103 \xB7 f\u0103r\u0103 cost de implementare" } };
 const VIEWER_ROLE = "owner";
 const RECO_FOR = (a) => (VIEWER_ROLE === "owner" || VIEWER_ROLE === "admin") && a === "marketing" ? RECO[a] : null;
 const OTHER = [["inventory", "unavailable"], ["analytics", "notInRole"], ["marketing", "notInPlan"], ["network", "notInPlan"]];
@@ -388,10 +400,47 @@ function Launcher({ mode, empty }) {
   }, onSeeStatus: () => {
   } }))), /* @__PURE__ */ React.createElement("div", { style: { marginTop: "var(--space-4)" } }, /* @__PURE__ */ React.createElement(V.Button, { variant: "quiet", icon: "layout-grid", iconEnd: "arrow-right" }, "Vezi toate aplica\u021Biile Ventora"))))), run && /* @__PURE__ */ React.createElement(V.AppLaunch, { contained: true, app: run.app, from: run.from, onDone: () => setTimeout(() => setRun(null), 500) }));
 }
-function CommercialPrefs({ mode }) {
-  return /* @__PURE__ */ React.createElement(V.SheetSection, { title: "Recomand\u0103ri Ventora", description: "Sugestii despre aplica\u021Bii \u0219i pachete \xEEn plus care se potrivesc cu ce faci deja." }, /* @__PURE__ */ React.createElement("div", { className: "d0", style: { gap: "var(--space-3)" } }, /* @__PURE__ */ React.createElement(V.Toggle, { label: "\xCEn aplica\u021Bie", description: "Le vezi \xEEn pagini \u0219i \xEEn notific\u0103ri, la sec\u021Biunea Recomand\u0103ri.", defaultChecked: true, labelPosition: mode === "mobile" ? "start" : "end" }), /* @__PURE__ */ React.createElement(V.Toggle, { label: "Pe e-mail", description: "Disponibil \xEEn cur\xE2nd", disabled: true, labelPosition: mode === "mobile" ? "start" : "end" }), /* @__PURE__ */ React.createElement(V.Notice, { tone: "neutral", icon: "info" }, "Mesajele despre limitele contului t\u0103u r\u0103m\xE2n active, pentru c\u0103 sunt informa\u021Bii despre cont, nu recomand\u0103ri.")));
+/* c2: every README state, Light/Dark frames (data-theme on the frame), DE/IT with translated texts. */
+const h = React.createElement;
+const noop = () => {};
+const Cell = ({ label, children, style }) => h("div", { className: "pv-cell", style }, h("p", { className: "caption pv-lab" }, label), children);
+const FRAMES = [["light", "ro", "Light"], ["dark", "ro", "Dark"], ["light", "de", "Deutsch \u00b7 Light"], ["dark", "it", "Italiano \u00b7 Dark"]];
+const Frames = ({ Board, top }) => h("div", { className: "pv" }, top, FRAMES.map(([th, lang, lab], i) => h("section", { key: lab, className: "pv-frame", "data-theme": th }, h("p", { className: "heading" }, lab), h(V.LocaleProvider, { locale: lang }, h(Board, { lang, theme: th, first: i === 0 })))));
+const CPR_T = {
+  ro: { l: ["Desktop · în aplicație pornit, e-mail blocat", "Îngust (telefon) · în aplicație oprit"],
+    title: "Recomandări Ventora", desc: "Sugestii despre aplicații și pachete în plus care se potrivesc cu ce faci deja.",
+    app: "În aplicație", appD: "Le vezi în pagini și în notificări, la secțiunea Recomandări.", mail: "Pe e-mail", mailD: "Disponibil în curând",
+    notice: "Mesajele despre limitele contului tău rămân active, pentru că sunt informații despre cont, nu recomandări.",
+    note: "În Contul tău → Notificări (vezi HubAccount). Comutatorul pentru e-mail e oprit și blocat până când e-mailurile comerciale devin active." },
+  de: { l: ["Desktop · in der App aktiv, E-Mail gesperrt", "Schmal (Telefon) · in der App aus"],
+    title: "Ventora-Empfehlungen", desc: "Vorschläge zu Apps und Zusatzpaketen, die zu dem passen, was Sie bereits nutzen.",
+    app: "In der App", appD: "Sie sehen sie auf den Seiten und in den Benachrichtigungen, im Bereich Empfehlungen.", mail: "Per E-Mail", mailD: "Bald verfügbar",
+    notice: "Nachrichten zu den Limits Ihres Kontos bleiben aktiv, weil sie Kontoinformationen sind, keine Empfehlungen.",
+    note: "In Ihrem Konto → Benachrichtigungen. Der Schalter für E-Mail ist aus und gesperrt, bis kommerzielle E-Mails verfügbar sind." },
+  it: { l: ["Desktop · nell’app attivo, e-mail bloccata", "Stretto (telefono) · nell’app disattivato"],
+    title: "Raccomandazioni Ventora", desc: "Suggerimenti su app e pacchetti extra adatti a ciò che fa già.",
+    app: "Nell’app", appD: "Le vede nelle pagine e nelle notifiche, nella sezione Raccomandazioni.", mail: "Via e-mail", mailD: "Disponibile a breve",
+    notice: "I messaggi sui limiti del Suo account restano attivi, perché sono informazioni sull’account, non raccomandazioni.",
+    note: "Nel Suo account → Notifiche. L’interruttore per l’e-mail è spento e bloccato finché le e-mail commerciali non saranno disponibili." }
+};
+function CommercialPrefs({ mode, lang = "ro", on = true }) {
+  const T = CPR_T[lang], pos = mode === "mobile" ? "start" : "end";
+  return h(V.SheetSection, { title: T.title, description: T.desc },
+    h("div", { className: "d0", style: { gap: "var(--space-3)" } },
+      h(V.Toggle, { label: T.app, description: T.appD, defaultChecked: on, labelPosition: pos, onChange: noop }),
+      h(V.Toggle, { label: T.mail, description: T.mailD, disabled: true, labelPosition: pos }),
+      h(V.Notice, { tone: "neutral", icon: "info" }, T.notice)));
 }
-mount(/* @__PURE__ */ React.createElement("div", { className: "d" }, /* @__PURE__ */ React.createElement("div", { className: "sheetlike" }, /* @__PURE__ */ React.createElement(V.Sheet, null, /* @__PURE__ */ React.createElement(CommercialPrefs, { mode: "desktop" }))), /* @__PURE__ */ React.createElement("p", { className: "body-small muted" }, "\xCEn Contul t\u0103u \u2192 Notific\u0103ri (vezi HubAccount). Comutatorul pentru e-mail e oprit \u0219i blocat p\xE2n\u0103 c\xE2nd e-mailurile comerciale devin active.")));
+function Board({ lang }) {
+  const T = CPR_T[lang], L = T.l;
+  return h("div", { className: "pv-cell", style: { gap: "var(--space-5)" } },
+    h("div", { style: { display: "grid", gridTemplateColumns: "minmax(0,1fr) 390px", gap: "var(--space-5)", alignItems: "start" } },
+      h(Cell, { label: L[0] }, h("div", { className: "sheetlike" }, h(V.Sheet, null, h(CommercialPrefs, { mode: "desktop", lang })))),
+      h(Cell, { label: L[1] }, h("div", { className: "sheetlike" }, h(V.Sheet, null, h(CommercialPrefs, { mode: "mobile", lang, on: false }))))),
+    h("p", { className: "body-small pv-note" }, T.note));
+}
+mount(h(Frames, { Board }));
+
 </script>
 </body>
 </html>

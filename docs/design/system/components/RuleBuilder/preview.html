@@ -1,4 +1,4 @@
-<!-- @dsCard group="Comercial" height=712 width=1100 -->
+<!-- @dsCard group="Comercial" height=3282 width=1100 -->
 <!doctype html>
 <html lang="ro">
 <head><meta charset="utf-8"><title>RuleBuilder — Ventora</title>
@@ -250,6 +250,9 @@ html,body{min-height:100%}
 .fxframe .caption{color:var(--ink-muted)}
 @container (max-width:420px){.fxlang{grid-template-columns:32px minmax(0,1fr) auto}.fxlang .v-iconbtn{display:none}}
 
+.thf{display:flex;flex-direction:column;gap:var(--space-4);padding:var(--space-5);background:var(--canvas);color:var(--ink);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg);min-width:0;box-sizing:border-box}
+.thg{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(420px,100%),1fr));gap:var(--space-4);align-items:start}
+.thstack{display:flex;flex-direction:column;gap:var(--space-4)}
 </style>
 </head>
 <body>
@@ -278,10 +281,10 @@ const ORGS = [
   { id: "nord", name: "Agen\u021Bia Nord Studio", role: "Manager de proiect" }
 ];
 const NOTIFS = [
-  { id: 1, title: "Programare nou\u0103 de la Ana Popescu", body: "Joi, 29 oct., 14:30 \xB7 Tuns", app: "Booking", time: "acum 5 min", person: "Ana Popescu" },
-  { id: 2, title: "Factura #2026-114 e restant\u0103 de 3 zile", body: "Clinica Dentis \xB7 1.250 lei", app: "Finance", time: "acum 2 ore", icon: "receipt" },
-  { id: 3, title: "Ioana a cerut concediu pe 2\u20136 noiembrie", app: "HR", time: "ieri", person: "Ioana Pavel", read: true },
-  { id: 4, title: "Exportul clien\u021Bilor e gata", app: "CRM", time: "ieri", icon: "download", read: true }
+  { id: 1, title: "Programare nou\u0103 de la Ana Popescu", body: "Joi, 29 oct., 14:30 \xB7 Tuns", app: "EasyBook", time: "acum 5 min", person: "Ana Popescu" },
+  { id: 2, title: "Factura #2026-114 e restant\u0103 de 3 zile", body: "Clinica Dentis \xB7 1.250 lei", app: "MoneyDesk", time: "acum 2 ore", icon: "receipt" },
+  { id: 3, title: "Ioana a cerut concediu pe 2\u20136 noiembrie", app: "TeamSpace", time: "ieri", person: "Ioana Pavel", read: true },
+  { id: 4, title: "Exportul clien\u021Bilor e gata", app: "ClientDesk", time: "ieri", icon: "download", read: true }
 ];
 const USER = { name: "Bianca Petra\u0219cu", email: "bianca@ventora-hub.com" };
 function Bar({ title, de }) {
@@ -312,7 +315,7 @@ function BookingShell({ height, active, mobile }) {
       height,
       spine: /* @__PURE__ */ React.createElement(V.Spine, { app: "booking", sections: SECTIONS, activeId: active, onBackToHub: () => {
       }, footer: /* @__PURE__ */ React.createElement(V.UsageMeter, { compact: true, label: "Program\u0103ri", used: 312, limit: 1e3 }) }),
-      contextBar: /* @__PURE__ */ React.createElement(Bar, { title: "Booking" })
+      contextBar: /* @__PURE__ */ React.createElement(Bar, { title: "EasyBook" })
     },
     /* @__PURE__ */ React.createElement(V.PageHeader, { title: "Program\u0103ri", description: mobile ? void 0 : "Toate program\u0103rile afacerii, de azi \xEEnainte.", actions: mobile ? void 0 : /* @__PURE__ */ React.createElement(V.SegmentedControl, { label: "Vizualizare", size: "md", defaultValue: "list", options: [{ value: "list", label: "List\u0103", icon: "list" }, { value: "cal", label: "Calendar", icon: "calendar" }] }) }),
     /* @__PURE__ */ React.createElement(V.DataTable, { columns: [
@@ -520,15 +523,63 @@ const FX_CRITERIA = [
 const FX_RULES = [{ id: "a", criterion: "apps_on", operator: "include", value: "booking" }, { id: "b", criterion: "apps_on", operator: "nu include", value: "crm" }, { id: "c", criterion: "role", operator: "este", value: "Proprietar" }, { id: "d", criterion: "age", operator: "peste", value: "30" }];
 const FX_LANGS = [["Rom\xE2n\u0103", "RO", "done", "Aprobat"], ["English", "EN", "done", "Aprobat"], ["Fran\xE7ais", "FR", "neutral", "\xCEn revizuire"], ["Espa\xF1ol", "ES", "neutral", "\xCEn revizuire"], ["Deutsch", "DE", "done", "Aprobat"], ["Italiano", "IT", "attention", "Lipse\u0219te"]];
 const FX_CAMPAIGNS = [
-  { id: 1, name: "Booking f\u0103r\u0103 CRM", mode: "Automat \xB7 integrare lips\u0103", offer: "CRM \xB7 69 lei pe lun\u0103", slots: "Booking \xB7 Azi, Launcher", prio: 1, status: ["done", "Activ\u0103", "check"], annoy: 2.1 },
-  { id: 2, name: "SMS peste 80%", mode: "Automat \xB7 consum", offer: "500 SMS \xEEn plus", slots: "Abonament, Booking \xB7 Set\u0103ri", prio: 2, status: ["done", "Activ\u0103", "check"], annoy: 1.4 },
-  { id: 3, name: "Analytics de Black Friday", mode: "Programat \xB7 20\u201330 nov.", offer: "Analytics, 14 zile gratuit", slots: "Launcher, Notific\u0103ri", prio: 3, status: ["neutral", "Programat\u0103", "clock"], annoy: null },
-  { id: 4, name: "Marketing pentru saloane", mode: "Automat \xB7 vechime", offer: "Marketing \xB7 49 lei pe lun\u0103", slots: "Booking \xB7 Azi", prio: 4, status: ["attention", "Oprit\u0103: deranj peste prag", "triangle-alert"], annoy: 6.2 }
+  { id: 1, name: "EasyBook f\u0103r\u0103 ClientDesk", mode: "Automat \xB7 integrare lips\u0103", offer: "ClientDesk \xB7 69 lei pe lun\u0103", slots: "EasyBook \xB7 Azi, Launcher", prio: 1, status: ["done", "Activ\u0103", "check"], annoy: 2.1 },
+  { id: 2, name: "SMS peste 80%", mode: "Automat \xB7 consum", offer: "500 SMS \xEEn plus", slots: "Abonament, EasyBook \xB7 Set\u0103ri", prio: 2, status: ["done", "Activ\u0103", "check"], annoy: 1.4 },
+  { id: 3, name: "DataView de Black Friday", mode: "Programat \xB7 20\u201330 nov.", offer: "DataView, 14 zile gratuit", slots: "Launcher, Notific\u0103ri", prio: 3, status: ["neutral", "Programat\u0103", "clock"], annoy: null },
+  { id: 4, name: "CampaignKit pentru saloane", mode: "Automat \xB7 vechime", offer: "CampaignKit \xB7 49 lei pe lun\u0103", slots: "EasyBook \xB7 Azi", prio: 4, status: ["attention", "Oprit\u0103: deranj peste prag", "triangle-alert"], annoy: 6.2 }
 ];
 function FX_Frame({ th, label, children }) {
   return /* @__PURE__ */ React.createElement("div", { className: "fxframe", "data-theme": th }, /* @__PURE__ */ React.createElement("p", { className: "caption muted" }, label), /* @__PURE__ */ React.createElement("div", { className: "fxframe-in" }, children));
 }
-mount(/* @__PURE__ */ React.createElement("div", { className: "d" }, /* @__PURE__ */ React.createElement(V.RuleBuilder, { criteria: FX_CRITERIA, rules: FX_RULES, estimate: 46 }), /* @__PURE__ */ React.createElement("div", { style: { width: "100%", maxWidth: 360 } }, /* @__PURE__ */ React.createElement(V.RuleBuilder, { criteria: FX_CRITERIA, rules: FX_RULES.slice(0, 2), estimate: 46 }))));
+const ORIG = (/* @__PURE__ */ React.createElement("div", { className: "d" }, /* @__PURE__ */ React.createElement(V.RuleBuilder, { criteria: FX_CRITERIA, rules: FX_RULES, estimate: 46 }), /* @__PURE__ */ React.createElement("div", { style: { width: "100%", maxWidth: 360 } }, /* @__PURE__ */ React.createElement(V.RuleBuilder, { criteria: FX_CRITERIA, rules: FX_RULES.slice(0, 2), estimate: 46 }))));
+/* Light/Dark frames, DE/IT label test */
+const E = React.createElement;
+const noop = () => {
+};
+const Cap = ({ children }) => E("p", { className: "caption muted" }, children);
+const ThemeFrame = ({ th, children }) => E("div", { className: "thf", "data-theme": th }, E("p", { className: "heading" }, th === "light" ? "Light" : "Dark"), children);
+const LocFrame = ({ loc, label, children }) => E("div", { className: "thf", "data-theme": "light" }, E("p", { className: "heading" }, label), E(V.LocaleProvider, { locale: loc }, children));
+const Frames = ({ States, stack }) => E("div", { className: stack ? "thstack" : "thg" }, E(ThemeFrame, { th: "light" }, E(States, { th: "light" })), E(ThemeFrame, { th: "dark" }, E(States, { th: "dark" })));
+const Locales = ({ De, It, stack }) => E("div", { className: stack ? "thstack" : "thg" }, E(LocFrame, { loc: "de", label: "Deutsch (DE)" }, E(De)), E(LocFrame, { loc: "it", label: "Italiano (IT)" }, E(It)));
+const Extra = ({ States, De, It, stack, stackLoc }) => E("div", { className: "d" }, E("p", { className: "heading" }, "Stări · Light și Dark"), E(Frames, { States, stack }), E("p", { className: "heading" }, "Test de lungime: germană și italiană"), E(Locales, { De, It, stack: stackLoc }));
+const APPV = Object.keys(V.APPS).map((a) => ({ value: a, label: V.APPS[a].name }));
+const LANGV = ["Română", "English", "Français", "Español", "Deutsch", "Italiano"];
+const RB_DE = [
+  { value: "apps_on", label: "Aktive Apps", operators: ["enthält", "enthält nicht"], values: APPV },
+  { value: "plan", label: "Abonnement", operators: ["ist", "ist nicht"], values: ["Start", "Business", "Business Plus"] },
+  { value: "usage", label: "Verbrauch", operators: ["über", "unter"], unit: "%" },
+  { value: "age", label: "Alter des Unternehmens", operators: ["über", "unter"], unit: "Tage" },
+  { value: "onboarding", label: "Onboarding-Phase", operators: ["ist"], values: ["Begonnen", "Erste Woche", "Aktiv", "Etabliert"] },
+  { value: "role", label: "Rolle", operators: ["ist"], values: ["Inhaber", "Admin", "Mitglied"] },
+  { value: "lang", label: "Sprache", operators: ["ist", "ist nicht"], values: LANGV },
+  { value: "country", label: "Land", operators: ["ist", "ist nicht"], values: ["Rumänien", "Moldau", "Italien", "Deutschland"] },
+  { value: "users", label: "Anzahl der Nutzerinnen und Nutzer", operators: ["über", "unter"], unit: "Personen" }
+];
+const RB_IT = [
+  { value: "apps_on", label: "App attive", operators: ["include", "non include"], values: APPV },
+  { value: "plan", label: "Abbonamento", operators: ["è", "non è"], values: ["Start", "Business", "Business Plus"] },
+  { value: "usage", label: "Consumo", operators: ["sopra", "sotto"], unit: "%" },
+  { value: "age", label: "Anzianità dell’attività", operators: ["sopra", "sotto"], unit: "giorni" },
+  { value: "onboarding", label: "Fase di onboarding", operators: ["è"], values: ["Iniziata", "Prima settimana", "Attiva", "Matura"] },
+  { value: "role", label: "Ruolo", operators: ["è"], values: ["Titolare", "Admin", "Membro"] },
+  { value: "lang", label: "Lingua", operators: ["è", "non è"], values: LANGV },
+  { value: "country", label: "Paese", operators: ["è", "non è"], values: ["Romania", "Moldavia", "Italia", "Germania"] },
+  { value: "users", label: "Numero di utenti", operators: ["sopra", "sotto"], unit: "persone" }
+];
+const RULES_DE = [{ id: "a", criterion: "apps_on", operator: "enthält", value: "booking" }, { id: "b", criterion: "apps_on", operator: "enthält nicht", value: "crm" }, { id: "c", criterion: "role", operator: "ist", value: "Inhaber" }, { id: "d", criterion: "age", operator: "über", value: "30" }];
+const RULES_IT = [{ id: "a", criterion: "apps_on", operator: "include", value: "booking" }, { id: "b", criterion: "apps_on", operator: "non include", value: "crm" }, { id: "c", criterion: "role", operator: "è", value: "Titolare" }, { id: "d", criterion: "age", operator: "sopra", value: "30" }];
+function States() {
+  return E("div", { className: "d0" },
+    E(Cap, null, "Toate condițiile · patru reguli · estimare (număr, niciodată o listă de afaceri)"),
+    E(V.RuleBuilder, { criteria: FX_CRITERIA, rules: FX_RULES, estimate: 46 }),
+    E(Cap, null, "Oricare dintre condiții · țară și limbă"),
+    E(V.RuleBuilder, { criteria: FX_CRITERIA, match: "any", rules: [{ id: "x", criterion: "country", operator: "este", value: "România" }, { id: "y", criterion: "lang", operator: "este", value: "Română" }], estimate: 312 }),
+    E(Cap, null, "Fără condiții încă: doar „Adaugă condiție”"),
+    E(V.RuleBuilder, { criteria: FX_CRITERIA, rules: [] }));
+}
+const De = () => E("div", { className: "d0" }, E(V.RuleBuilder, { criteria: RB_DE, rules: RULES_DE, estimate: 46 }), E(V.RuleBuilder, { criteria: RB_DE, match: "any", rules: [{ id: "u", criterion: "users", operator: "über", value: "5" }], estimate: 212 }));
+const It = () => E("div", { className: "d0" }, E(V.RuleBuilder, { criteria: RB_IT, rules: RULES_IT, estimate: 46 }), E(V.RuleBuilder, { criteria: RB_IT, match: "any", rules: [{ id: "u", criterion: "users", operator: "sopra", value: "5" }], estimate: 212 }));
+mount(E("div", null, ORIG, E(Extra, { States, De, It, stack: true })));
 </script>
 </body>
 </html>

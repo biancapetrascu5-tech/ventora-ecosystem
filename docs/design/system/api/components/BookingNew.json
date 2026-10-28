@@ -1,0 +1,29 @@
+{
+ "name": "BookingNew",
+ "version": "1.0.1",
+ "kind": "page",
+ "group": "Ecrane Booking",
+ "status": "changed",
+ "description": "EasyBook — creating an appointment: client (search or new), service and person, date and the SlotPicker of free times, notes and confirmation/reminder options, with a summary and price. Desktop: form plus sticky summary; tablet: summary under the form; phone: one column with the actions fixed above the bottom bar.",
+ "exports": [],
+ "props": [],
+ "events": [],
+ "states": [
+  "default",
+  "service-time-client-order",
+  "slot-selected",
+  "slot-unavailable",
+  "start-from-client",
+  "anyone-free",
+  "summary-sticky",
+  "summary-below",
+  "mobile-sticky-actions",
+  "light",
+  "dark",
+  "de",
+  "it"
+ ],
+ "notes": "",
+ "readme": "components/BookingNew/README.md",
+ "preview": "components/BookingNew/preview.html"
+}

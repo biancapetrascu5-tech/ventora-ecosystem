@@ -1,4 +1,4 @@
-<!-- @dsCard group="Navigation" height=260 -->
+<!-- @dsCard group="Navigation" height=780 width=1200 -->
 <!doctype html>
 <html lang="ro">
 <head><meta charset="utf-8"><title>Tabs — Ventora</title>
@@ -250,6 +250,15 @@ html,body{min-height:100%}
 .fxframe .caption{color:var(--ink-muted)}
 @container (max-width:420px){.fxlang{grid-template-columns:32px minmax(0,1fr) auto}.fxlang .v-iconbtn{display:none}}
 
+
+/* c5: light/dark frames and DE/IT sections */
+.qwrap{display:flex;flex-direction:column;gap:var(--space-6);padding:var(--space-4);box-sizing:border-box;background:var(--canvas);color:var(--ink)}
+.qfr{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--space-4);align-items:start}
+.qfr1{grid-template-columns:minmax(0,1fr)}
+.qf{display:flex;flex-direction:column;gap:var(--space-4);padding:var(--space-4);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg);min-width:0;box-sizing:border-box}
+.qf-t{margin:0;color:var(--ink-muted)}
+.qh{margin:0;color:var(--ink)}
+.qsec{display:flex;flex-direction:column;gap:var(--space-3)}
 </style>
 </head>
 <body>
@@ -271,7 +280,34 @@ function Demo() {
     { value: "gdpr", label: "Consim\u021B\u0103minte", disabled: true }
   ] }, (v) => /* @__PURE__ */ React.createElement("p", { className: "body", style: { color: "var(--ink-secondary)" } }, "Con\u021Binutul tabului \u201E", v, "\u201D.")), /* @__PURE__ */ React.createElement(DE, null, /* @__PURE__ */ React.createElement(V.Tabs, { label: "Kunde", size: "sm", items: [{ value: "a", label: "Stammdaten" }, { value: "b", label: "Terminhistorie", count: 12 }, { value: "c", label: "Offene Zahlungen", count: 2, countTone: "attention" }, { value: "d", label: "Einwilligungserkl\xE4rungen" }] })));
 }
-mount(/* @__PURE__ */ React.createElement(Demo, null));
+
+const Qh = React.createElement;
+const Q_Fr = ({ theme, title, children, style }) => Qh("section", { className: "qf", "data-theme": theme, style: Object.assign({ background: "var(--canvas)", color: "var(--ink)" }, style || {}) }, Qh("p", { className: "caption qf-t" }, title || (theme === "dark" ? "Dark" : "Light")), children);
+const Q_Pair = ({ children, cols, light, dark }) => Qh("div", { className: cols === 1 ? "qfr qfr1" : "qfr" }, Qh(Q_Fr, { theme: "light" }, light || children), Qh(Q_Fr, { theme: "dark" }, dark || children));
+const Q_Loc = ({ de, it, cols, theme }) => Qh("div", { className: cols === 1 ? "qfr qfr1" : "qfr" }, Qh(Q_Fr, { theme: theme || "light", title: "DE · Deutsch" }, Qh(V.LocaleProvider, { locale: "de" }, de)), Qh(Q_Fr, { theme: theme || "light", title: "IT · Italiano" }, Qh(V.LocaleProvider, { locale: "it" }, it)));
+const Q_Sec = ({ title, children }) => Qh("div", { className: "qsec" }, Qh("h2", { className: "heading qh" }, title), children);
+const Q_Row = ({ label, children }) => Qh("div", { className: "r" }, Qh("span", { className: "l caption" }, label), children);
+const Q_Tb = ({ t, size, narrow }) => Qh("div", { style: narrow ? { maxWidth: 340 } : null },
+  Qh(V.Tabs, { label: t.label, size, defaultValue: "b", items: [
+    { value: "a", label: t.a, icon: "user" },
+    { value: "b", label: t.b, icon: "history", count: 12 },
+    { value: "c", label: t.c, icon: "receipt", count: 2, countTone: "attention" },
+    { value: "d", label: t.d, icon: "file-text" },
+    { value: "e", label: t.e, disabled: true }
+  ] }, (v) => Qh("p", { className: "body", style: { color: "var(--ink-secondary)" } }, t.panel, " „", t[v], "”.")));
+const Q_RO = { label: "Client", a: "Detalii", b: "Istoric", c: "Plăți", d: "Fișiere", e: "Consimțăminte", panel: "Conținutul tabului" };
+const Q_DE = { label: "Kunde", a: "Stammdaten", b: "Terminhistorie", c: "Offene Zahlungen", d: "Dateien", e: "Einwilligungserklärungen", panel: "Inhalt des Tabs" };
+const Q_IT = { label: "Cliente", a: "Dettagli", b: "Storico appuntamenti", c: "Pagamenti in sospeso", d: "File", e: "Consensi", panel: "Contenuto della scheda" };
+function Q_Extra() {
+  return Qh("div", { className: "qwrap" },
+    Qh(Q_Sec, { title: "Light / Dark · activ, cu număr, cu număr care cere acțiune, indisponibil, mic" },
+      Qh(Q_Pair, null, Qh("div", { className: "d0" }, Qh(Q_Tb, { t: Q_RO }), Qh(Q_Tb, { t: Q_RO, size: "sm" })))),
+    Qh(Q_Sec, { title: "DE / IT · lățime normală și îngustă (lista se derulează pe orizontală, nu se rupe pe rânduri)" }, Qh(Q_Loc, {
+      de: Qh("div", { className: "d0" }, Qh(Q_Tb, { t: Q_DE }), Qh(Q_Tb, { t: Q_DE, size: "sm", narrow: true })),
+      it: Qh("div", { className: "d0" }, Qh(Q_Tb, { t: Q_IT }), Qh(Q_Tb, { t: Q_IT, size: "sm", narrow: true })) })));
+}
+
+mount(Qh("div", null, /* @__PURE__ */ React.createElement(Demo, null), Qh(Q_Extra, null)));
 </script>
 </body>
 </html>

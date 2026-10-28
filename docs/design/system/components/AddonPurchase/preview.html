@@ -1,4 +1,4 @@
-<!-- @dsCard group="Hub" height=1530 width=1400 -->
+<!-- @dsCard group="Hub" height=6389 width=1400 -->
 <!doctype html>
 <html lang="ro">
 <head><meta charset="utf-8"><title>AddonPurchase — Ventora</title>
@@ -250,6 +250,9 @@ html,body{min-height:100%}
 .fxframe .caption{color:var(--ink-muted)}
 @container (max-width:420px){.fxlang{grid-template-columns:32px minmax(0,1fr) auto}.fxlang .v-iconbtn{display:none}}
 
+.thgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(520px,100%),1fr));gap:var(--space-4);align-items:start}
+.thf{display:flex;flex-direction:column;gap:var(--space-4);padding:var(--space-5);background:var(--canvas);color:var(--ink);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg);min-width:0;box-sizing:border-box}
+.thf .thl{margin:0;color:var(--ink-muted);font-weight:600}
 </style>
 </head>
 <body>
@@ -263,15 +266,50 @@ const FR = ({ children }) => /* @__PURE__ */ React.createElement(V.LocaleProvide
 const IT = ({ children }) => /* @__PURE__ */ React.createElement(V.LocaleProvider, { locale: "it" }, children);
 const mount = (el) => ReactDOM.createRoot(document.getElementById("root")).render(/* @__PURE__ */ React.createElement(V.LocaleProvider, { locale: "ro" }, el));
 const CARD = { brand: "Visa", last4: "4242", expiry: "08/28" };
-const CAMP = { name: "10 campanii \xEEn plus", description: "Pentru luna curent\u0103 \xB7 se adaug\u0103 imediat \xEEn Marketing", price: 39, icon: "megaphone", max: 10 };
-function Demo() {
-  return /* @__PURE__ */ React.createElement("div", { className: "d" }, /* @__PURE__ */ React.createElement("p", { className: "caption muted" }, "St\u0103rile fluxului: confirmare (card salvat) \xB7 confirmare f\u0103r\u0103 card (locul formularului Stripe) \xB7 se proceseaz\u0103 \xB7 reu\u0219it\u0103 \xB7 eroare"), /* @__PURE__ */ React.createElement("div", { className: "dlggrid" }, /* @__PURE__ */ React.createElement(V.AddonPurchase, { inline: true, addon: CAMP, card: CARD, defaultQuantity: 1 }), /* @__PURE__ */ React.createElement(V.AddonPurchase, { inline: true, addon: CAMP, card: null }), /* @__PURE__ */ React.createElement(V.AddonPurchase, { inline: true, addon: CAMP, card: CARD, state: "processing" }), /* @__PURE__ */ React.createElement(V.AddonPurchase, { inline: true, addon: CAMP, card: CARD, state: "success", usage: { label: "Campanii", used: 10, limitBefore: 10, limitAfter: 20 }, invoice: { number: "VNT-2026-0204" } }), /* @__PURE__ */ React.createElement(V.AddonPurchase, { inline: true, addon: CAMP, card: CARD, state: "error", error: { title: "Banca a refuzat plata", message: "Banca spune: cardul a expirat." } }), /* @__PURE__ */ React.createElement(DE, null, /* @__PURE__ */ React.createElement(V.AddonPurchase, { inline: true, addon: { ...CAMP, name: "10 zus\xE4tzliche Kampagnen", description: "F\xFCr den laufenden Monat \xB7 sofort verf\xFCgbar" }, card: CARD, defaultQuantity: 3 }))), /* @__PURE__ */ React.createElement("p", { className: "caption muted" }, "Limita atins\u0103 \u2014 proprietarul cump\u0103r\u0103 direct; ceilal\u021Bi afl\u0103 cine poate face asta"), /* @__PURE__ */ React.createElement("div", { className: "dlggrid" }, /* @__PURE__ */ React.createElement(V.Dialog, { inline: true, open: true, title: "Ai atins limita de campanii", description: "Campaniile deja programate pleac\u0103 normal. Ca s\u0103 trimi\u021Bi altele luna aceasta, ai nevoie de un pachet \xEEn plus." }, /* @__PURE__ */ React.createElement(V.UsageMeter, { label: "Campanii trimise", used: 10, limit: 10, onBuy: () => {
-  }, buyLabel: "Cump\u0103r\u0103 campanii \xEEn plus", onUpgrade: () => {
-  } })), /* @__PURE__ */ React.createElement(V.Dialog, { inline: true, open: true, title: "Ai atins limita de campanii", description: "Campaniile deja programate pleac\u0103 normal." }, /* @__PURE__ */ React.createElement(V.UsageMeter, { label: "Campanii trimise", used: 10, limit: 10, owner: "Bianca Petra\u0219cu", onNotifyOwner: () => {
-  } })), /* @__PURE__ */ React.createElement(IT, null, /* @__PURE__ */ React.createElement(V.Dialog, { inline: true, open: true, title: "Ha raggiunto il limite di campagne", description: "Le campagne programmate restano programmate." }, /* @__PURE__ */ React.createElement(V.UsageMeter, { label: "Campagne inviate", used: 10, limit: 10, owner: "Bianca Petra\u0219cu", onNotifyOwner: () => {
-  } })))));
+const CAMP = { name: "10 campanii \xEEn plus", description: "Pentru luna curent\u0103 \xB7 se adaug\u0103 imediat \xEEn CampaignKit", price: 39, icon: "megaphone", max: 10 };
+const h = React.createElement;
+const Frame = ({ th, label, children }) => h("section", { "data-theme": th, className: "thf" }, h("p", { className: "caption thl" }, (th === "dark" ? "Dark" : "Light") + (label ? " · " + label : "")), children);
+const noop = () => {
+};
+const AP = {
+  ro: { addon: CAMP, usage: { label: "Campanii", used: 10, limitBefore: 10, limitAfter: 20 }, error: { title: "Banca a refuzat plata", message: "Banca spune: cardul a expirat." } },
+  de: { addon: { ...CAMP, name: "10 zusätzliche Kampagnen", description: "Für den laufenden Monat · sofort in CampaignKit verfügbar" }, usage: { label: "Kampagnen", used: 10, limitBefore: 10, limitAfter: 20 }, error: { title: "Ihre Bank hat die Zahlung abgelehnt", message: "Laut Ihrer Bank ist die Karte abgelaufen." } },
+  it: { addon: { ...CAMP, name: "10 campagne in più", description: "Per il mese in corso · disponibili subito in CampaignKit" }, usage: { label: "Campagne", used: 10, limitBefore: 10, limitAfter: 20 }, error: { title: "La Sua banca ha rifiutato il pagamento", message: "Secondo la banca, la carta è scaduta." } }
+};
+function Flow({ L, states }) {
+  const all = {
+    review: h(V.AddonPurchase, { key: "r", inline: true, addon: L.addon, card: CARD, defaultQuantity: 3, onPay: noop, onChangeCard: noop }),
+    nocard: h(V.AddonPurchase, { key: "n", inline: true, addon: L.addon, card: null }),
+    processing: h(V.AddonPurchase, { key: "p", inline: true, addon: L.addon, card: CARD, state: "processing" }),
+    success: h(V.AddonPurchase, { key: "s", inline: true, addon: L.addon, card: CARD, state: "success", usage: L.usage, invoice: { number: "VNT-2026-0204", onOpen: noop }, onDone: noop }),
+    error: h(V.AddonPurchase, { key: "e", inline: true, addon: L.addon, card: CARD, state: "error", error: L.error, onRetry: noop, onUseOtherCard: noop })
+  };
+  return h("div", { className: "dlggrid" }, states.map((s) => all[s]));
 }
-mount(/* @__PURE__ */ React.createElement(Demo, null));
+const ALL = ["review", "nocard", "processing", "success", "error"];
+function Demo() {
+  return h("div", { className: "d" },
+    h(Frame, { th: "light" },
+      h("p", { className: "caption muted" }, "Stările fluxului: confirmare (card salvat) · confirmare fără card (locul formularului Stripe) · se procesează · reușită · eroare"),
+      h(Flow, { L: AP.ro, states: ALL }),
+      h("p", { className: "caption muted" }, "Limita atinsă — proprietarul cumpără direct; ceilalți află cine poate face asta"),
+      h("div", { className: "dlggrid" },
+        h(V.Dialog, { inline: true, open: true, title: "Ai atins limita de campanii", description: "Campaniile deja programate pleacă normal. Ca să trimiți altele luna aceasta, ai nevoie de un pachet în plus." }, h(V.UsageMeter, { label: "Campanii trimise", used: 10, limit: 10, onBuy: noop, buyLabel: "Cumpără campanii în plus", onUpgrade: noop })),
+        h(V.Dialog, { inline: true, open: true, title: "Ai atins limita de campanii", description: "Campaniile deja programate pleacă normal." }, h(V.UsageMeter, { label: "Campanii trimise", used: 10, limit: 10, owner: "Bianca Petrașcu", onNotifyOwner: noop })))),
+    h(Frame, { th: "dark" }, h(Flow, { L: AP.ro, states: ALL })),
+    h(Frame, { th: "light", label: "Deutsch" }, h(DE, null,
+      h(Flow, { L: AP.de, states: ALL }),
+      h("div", { className: "dlggrid" }, h(V.Dialog, { inline: true, open: true, title: "Sie haben das Kampagnenlimit erreicht", description: "Bereits geplante Kampagnen werden normal versendet. Für weitere Kampagnen in diesem Monat brauchen Sie ein Zusatzpaket." }, h(V.UsageMeter, { label: "Versendete Kampagnen", used: 10, limit: 10, onBuy: noop, buyLabel: "Zusätzliche Kampagnen kaufen", onUpgrade: noop }))))),
+    h(Frame, { th: "light", label: "Italiano" }, h(IT, null,
+      h(Flow, { L: AP.it, states: ALL }),
+      h("div", { className: "dlggrid" }, h(V.Dialog, { inline: true, open: true, title: "Ha raggiunto il limite di campagne", description: "Le campagne programmate restano programmate." }, h(V.UsageMeter, { label: "Campagne inviate", used: 10, limit: 10, owner: "Niccolò Lucà", onNotifyOwner: noop }))))),
+    h(Frame, { th: "dark", label: "Deutsch · Italiano" },
+      h("div", { className: "dlggrid" },
+        h(DE, null, h(V.AddonPurchase, { inline: true, addon: AP.de.addon, card: CARD, defaultQuantity: 2 })),
+        h(DE, null, h(V.AddonPurchase, { inline: true, addon: AP.de.addon, card: CARD, state: "error", error: AP.de.error })),
+        h(IT, null, h(V.AddonPurchase, { inline: true, addon: AP.it.addon, card: CARD, state: "success", usage: AP.it.usage, invoice: { number: "VNT-2026-0205" } })))));
+}
+mount(h(Demo, null));
 </script>
 </body>
 </html>

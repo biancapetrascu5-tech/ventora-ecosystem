@@ -1,4 +1,4 @@
-<!-- @dsCard group="Forms" height=420 -->
+<!-- @dsCard group="Forms" height=2370 width=1200 -->
 <!doctype html>
 <html lang="ro">
 <head><meta charset="utf-8"><title>Input — Ventora</title>
@@ -250,6 +250,16 @@ html,body{min-height:100%}
 .fxframe .caption{color:var(--ink-muted)}
 @container (max-width:420px){.fxlang{grid-template-columns:32px minmax(0,1fr) auto}.fxlang .v-iconbtn{display:none}}
 
+/* c3: Light/Dark and DE/IT frames */
+.c3wrap{display:flex;flex-direction:column;min-width:0}
+.c3sec{display:flex;flex-direction:column;gap:var(--space-3);min-width:0}
+.c3h{margin:0;color:var(--ink)}
+.c3pair{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(360px,100%),1fr));gap:var(--space-4);align-items:start}
+.c3stack{display:flex;flex-direction:column;gap:var(--space-4);min-width:0}
+.c3f{display:flex;flex-direction:column;gap:var(--space-3);padding:var(--space-4);border:var(--border-width) solid var(--line);border-radius:var(--radius-md);background:var(--canvas);color:var(--ink);min-width:0;box-sizing:border-box}
+.c3lab{color:var(--ink-muted);margin:0}
+.c3kv{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:var(--space-2) var(--space-4);align-items:center}
+.c3ib{display:flex;align-items:center;gap:var(--space-3);min-width:0}
 </style>
 </head>
 <body>
@@ -265,7 +275,38 @@ const mount = (el) => ReactDOM.createRoot(document.getElementById("root")).rende
 function Demo() {
   return /* @__PURE__ */ React.createElement("div", { className: "d g2" }, /* @__PURE__ */ React.createElement(V.FormField, { label: "Nume client", helper: "A\u0219a apare pe confirmare." }, /* @__PURE__ */ React.createElement(V.Input, { placeholder: "Ex.: Ana Popescu" })), /* @__PURE__ */ React.createElement(V.FormField, { label: "Hover" }, /* @__PURE__ */ React.createElement(V.Input, { defaultValue: "Ana Popescu", state: "hover" })), /* @__PURE__ */ React.createElement(V.FormField, { label: "Focus" }, /* @__PURE__ */ React.createElement(V.Input, { defaultValue: "Ana Popescu", state: "focus" })), /* @__PURE__ */ React.createElement(V.FormField, { label: "Email", required: true, error: "Adresa nu pare complet\u0103. Verific\u0103 dup\u0103 @." }, /* @__PURE__ */ React.createElement(V.Input, { type: "email", defaultValue: "ana.popescu@", icon: "mail" })), /* @__PURE__ */ React.createElement(V.FormField, { label: "Cod client" }, /* @__PURE__ */ React.createElement(V.Input, { defaultValue: "VNT-0042", disabled: true })), /* @__PURE__ */ React.createElement(V.FormField, { label: "Caut\u0103 client" }, /* @__PURE__ */ React.createElement(V.Input, { icon: "search", defaultValue: "Popescu", loading: true, clearable: true })), /* @__PURE__ */ React.createElement(V.FormField, { label: "Pre\u021B" }, /* @__PURE__ */ React.createElement(V.Input, { defaultValue: "180", suffix: "lei", inputMode: "decimal" })), /* @__PURE__ */ React.createElement(V.FormField, { label: "Parola" }, /* @__PURE__ */ React.createElement(V.Input, { type: "password", defaultValue: "ventora2026" })), /* @__PURE__ */ React.createElement(DE, null, /* @__PURE__ */ React.createElement(V.FormField, { label: "Telefonnummer der Kontaktperson", optional: true, helper: "Wir senden nur Terminerinnerungen." }, /* @__PURE__ */ React.createElement(V.Input, { placeholder: "+49 30 1234567", icon: "message-square" }))), /* @__PURE__ */ React.createElement(DE, null, /* @__PURE__ */ React.createElement(V.FormField, { label: "E-Mail-Adresse", required: true, error: "Bitte geben Sie eine g\xFCltige E-Mail-Adresse ein." }, /* @__PURE__ */ React.createElement(V.Input, { defaultValue: "anna@" }))));
 }
-mount(/* @__PURE__ */ React.createElement(Demo, null));
+const C3_ORIG = /* @__PURE__ */ React.createElement(Demo, null);
+const h = React.createElement;
+const C3Frame = ({ th, label, children, style }) => h("div", { className: "c3f", "data-theme": th, style }, h("p", { className: "caption c3lab" }, label), children);
+const C3Sec = ({ title, stack, children }) => h("div", { className: "c3sec" }, h("p", { className: "subheading c3h" }, title), h("div", { className: stack ? "c3stack" : "c3pair" }, children));
+const C3Themes = ({ render, stack, style }) => h(C3Sec, { title: "Light și Dark", stack }, h(C3Frame, { th: "light", label: "Light", style }, render("light")), h(C3Frame, { th: "dark", label: "Dark", style }, render("dark")));
+const C3Langs = ({ de, it, stack, style, itTheme }) => h(C3Sec, { title: "Germană și italiană — etichete mai lungi", stack }, h(V.LocaleProvider, { locale: "de" }, h(C3Frame, { th: "light", label: "Deutsch (de)", style }, de)), h(V.LocaleProvider, { locale: "it" }, h(C3Frame, { th: itTheme || "light", label: itTheme === "dark" ? "Italiano (it) \xB7 Dark" : "Italiano (it)", style }, it)));
+const INT = {
+  ro: ["Nume client", "Ex.: Ana Popescu", "Ștefan Țăranu", "Adresă de e-mail", "Adresa nu pare completă. Verifică după @.", "ana.popescu@", "Cod client (dezactivat)", "Număr factură (doar citire)", "Caută client", "Popescu", "Telefon", "Preț serviciu", "lei", "Parolă", "Mic", "Mare", "Caută \xEEn programări"],
+  de: ["Name der Kundin oder des Kunden", "Z. B. Anna Schmidt", "J\xFCrgen Gr\xFC\xDFer", "E-Mail-Adresse", "Bitte geben Sie eine vollst\xE4ndige E-Mail-Adresse ein.", "anna.schmidt@", "Kundennummer (deaktiviert)", "Rechnungsnummer (schreibgesch\xFCtzt)", "Kundin oder Kunden suchen", "Schmidt", "Telefonnummer", "Preis der Dienstleistung", "€", "Passwort", "Klein", "Gro\xDF", "In Terminen suchen"],
+  it: ["Nome della cliente o del cliente", "Es.: Giulia Bianchi", "Niccol\xF2 Fabbri", "Indirizzo e-mail", "Inserisca un indirizzo e-mail completo.", "giulia.bianchi@", "Codice cliente (disattivato)", "Numero fattura (sola lettura)", "Cerca una cliente o un cliente", "Bianchi", "Numero di telefono", "Prezzo del servizio", "€", "Password", "Piccolo", "Grande", "Cerca negli appuntamenti"]
+};
+const PFX = { ro: "+40", de: "+49", it: "+39" }, PH = { ro: "722 123 456", de: "30 1234567", it: "333 123 4567" };
+const INSet = (k) => { const t = INT[k]; return h("div", { className: "c3stack" },
+  h(V.FormField, { label: t[0] }, h(V.Input, { placeholder: t[1] })),
+  h(V.FormField, { label: "Hover" }, h(V.Input, { defaultValue: t[2], state: "hover" })),
+  h(V.FormField, { label: "Focus" }, h(V.Input, { defaultValue: t[2], state: "focus" })),
+  h(V.FormField, { label: t[3], required: true, error: t[4] }, h(V.Input, { type: "email", icon: "mail", defaultValue: t[5] })),
+  h(V.FormField, { label: t[6] }, h(V.Input, { defaultValue: "VNT-0042", disabled: true })),
+  h(V.FormField, { label: t[7] }, h(V.Input, { defaultValue: "VNT-2026-114", readOnly: true })),
+  h(V.FormField, { label: t[8] }, h(V.Input, { icon: "search", defaultValue: t[9], loading: true, clearable: true })),
+  h(V.FormField, { label: t[10] }, h(V.Input, { type: "tel", prefix: PFX[k], defaultValue: PH[k] })),
+  h(V.FormField, { label: t[11] }, h(V.Input, { defaultValue: "180", suffix: t[12], inputMode: "decimal" })),
+  h(V.FormField, { label: t[13] }, h(V.Input, { type: "password", defaultValue: "ventora2026" })),
+  h(V.FormField, { label: t[14] + " \xB7 sm" }, h(V.Input, { size: "sm", icon: "search", placeholder: t[16] })),
+  h(V.FormField, { label: t[15] + " \xB7 lg" }, h(V.Input, { size: "lg", icon: "search", placeholder: t[16] }))
+); };
+const C3_SECTIONS = [
+  h(C3Themes, { key: "t", render: () => INSet("ro") }),
+  h(C3Langs, { key: "l", de: INSet("de"), it: INSet("it") })
+];
+
+mount(h("div", { className: "c3wrap" }, C3_ORIG, h("div", { className: "d" }, ...C3_SECTIONS)));
 </script>
 </body>
 </html>

@@ -1,4 +1,4 @@
-<!-- @dsCard group="Preferences" height=272 -->
+<!-- @dsCard group="Preferences" height=1010 width=1200 -->
 <!doctype html>
 <html lang="ro">
 <head><meta charset="utf-8"><title>ThemeSwitcher — Ventora</title>
@@ -250,6 +250,15 @@ html,body{min-height:100%}
 .fxframe .caption{color:var(--ink-muted)}
 @container (max-width:420px){.fxlang{grid-template-columns:32px minmax(0,1fr) auto}.fxlang .v-iconbtn{display:none}}
 
+
+/* c5: light/dark frames and DE/IT sections */
+.qwrap{display:flex;flex-direction:column;gap:var(--space-6);padding:var(--space-4);box-sizing:border-box;background:var(--canvas);color:var(--ink)}
+.qfr{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--space-4);align-items:start}
+.qfr1{grid-template-columns:minmax(0,1fr)}
+.qf{display:flex;flex-direction:column;gap:var(--space-4);padding:var(--space-4);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg);min-width:0;box-sizing:border-box}
+.qf-t{margin:0;color:var(--ink-muted)}
+.qh{margin:0;color:var(--ink)}
+.qsec{display:flex;flex-direction:column;gap:var(--space-3)}
 </style>
 </head>
 <body>
@@ -266,7 +275,32 @@ function Demo() {
   const [v, setV] = useState("system");
   return /* @__PURE__ */ React.createElement("div", { className: "d" }, /* @__PURE__ */ React.createElement(Row, { label: "Implicit" }, /* @__PURE__ */ React.createElement(V.ThemeSwitcher, { value: v, onChange: setV })), /* @__PURE__ */ React.createElement(Row, { label: "Doar iconuri" }, /* @__PURE__ */ React.createElement(V.ThemeSwitcher, { value: v, onChange: setV, iconOnly: true, size: "sm" })), /* @__PURE__ */ React.createElement(DE, null, /* @__PURE__ */ React.createElement(Row, { label: "DE" }, /* @__PURE__ */ React.createElement(V.ThemeSwitcher, { value: v, onChange: setV }))), /* @__PURE__ */ React.createElement(FR, null, /* @__PURE__ */ React.createElement(Row, { label: "FR" }, /* @__PURE__ */ React.createElement(V.ThemeSwitcher, { value: v, onChange: setV }))), /* @__PURE__ */ React.createElement(IT, null, /* @__PURE__ */ React.createElement(Row, { label: "IT" }, /* @__PURE__ */ React.createElement(V.ThemeSwitcher, { value: v, onChange: setV }))));
 }
-mount(/* @__PURE__ */ React.createElement(Demo, null));
+
+const Qh = React.createElement;
+const Q_Fr = ({ theme, title, children, style }) => Qh("section", { className: "qf", "data-theme": theme, style: Object.assign({ background: "var(--canvas)", color: "var(--ink)" }, style || {}) }, Qh("p", { className: "caption qf-t" }, title || (theme === "dark" ? "Dark" : "Light")), children);
+const Q_Pair = ({ children, cols, light, dark }) => Qh("div", { className: cols === 1 ? "qfr qfr1" : "qfr" }, Qh(Q_Fr, { theme: "light" }, light || children), Qh(Q_Fr, { theme: "dark" }, dark || children));
+const Q_Loc = ({ de, it, cols, theme }) => Qh("div", { className: cols === 1 ? "qfr qfr1" : "qfr" }, Qh(Q_Fr, { theme: theme || "light", title: "DE · Deutsch" }, Qh(V.LocaleProvider, { locale: "de" }, de)), Qh(Q_Fr, { theme: theme || "light", title: "IT · Italiano" }, Qh(V.LocaleProvider, { locale: "it" }, it)));
+const Q_Sec = ({ title, children }) => Qh("div", { className: "qsec" }, Qh("h2", { className: "heading qh" }, title), children);
+const Q_Row = ({ label, children }) => Qh("div", { className: "r" }, Qh("span", { className: "l caption" }, label), children);
+function Q_TS({ lab }) {
+  const [v, setV] = useState("light");
+  return Qh("div", { className: "d0" },
+    Qh(Q_Row, { label: lab[0] }, Qh(V.ThemeSwitcher, { value: "light", onChange: () => {} })),
+    Qh(Q_Row, { label: lab[1] }, Qh(V.ThemeSwitcher, { value: "dark", onChange: () => {} })),
+    Qh(Q_Row, { label: lab[2] }, Qh(V.ThemeSwitcher, { value: "system", onChange: () => {} })),
+    Qh(Q_Row, { label: lab[3] }, Qh(V.ThemeSwitcher, { value: v, onChange: setV, iconOnly: true, size: "sm" })),
+    Qh(Q_Row, { label: lab[4] }, Qh("div", { style: { flex: 1, minWidth: 0 } }, Qh(V.ThemeSwitcher, { value: v, onChange: setV, block: true }))));
+}
+const Q_RO = ["Luminoasă aleasă", "Întunecată aleasă", "Automată aleasă", "Doar iconițe", "Lățime întreagă"];
+function Q_Extra() {
+  return Qh("div", { className: "qwrap" },
+    Qh(Q_Sec, { title: "Light / Dark · fiecare opțiune aleasă, doar iconițe, lățime întreagă" }, Qh(Q_Pair, null, Qh(Q_TS, { lab: Q_RO }))),
+    Qh(Q_Sec, { title: "DE / IT" }, Qh(Q_Loc, {
+      de: Qh(Q_TS, { lab: ["Hell gewählt", "Dunkel gewählt", "Automatisch gewählt", "Nur Symbole", "Volle Breite"] }),
+      it: Qh(Q_TS, { lab: ["Chiaro scelto", "Scuro scelto", "Automatico scelto", "Solo icone", "Larghezza intera"] }) })));
+}
+
+mount(Qh("div", null, /* @__PURE__ */ React.createElement(Demo, null), Qh(Q_Extra, null)));
 </script>
 </body>
 </html>
