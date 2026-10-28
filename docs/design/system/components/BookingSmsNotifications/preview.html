@@ -1,4 +1,4 @@
-<!-- @dsCard group="Ecrane Booking" height=6560 width=2620 page -->
+<!-- @dsCard group="Ecrane Booking" height=8360 width=2620 page -->
 <!doctype html>
 <html lang="ro">
 <head><meta charset="utf-8"><title>BookingSmsNotifications — Ventora</title>
@@ -572,7 +572,7 @@ function NScreen({ mode }) {
 /* ---- the operational e-mail (S3): one template for the whole ecosystem, 6 languages, light only, sent through Resend from ventora-hub.com ---- */
 const MAILS = {
   disc: {
-    from: "Ventora <notificari@ventora-hub.com>", to: "Bianca Petrașcu", subject: "Telefonul afacerii e deconectat · Salon Aurora", pre: "6 reamintiri trebuie să plece până la 18:00.",
+    from: "Ventora <noreply@ventora-hub.com>", to: "Bianca Petrașcu", subject: "Telefonul afacerii e deconectat · Salon Aurora", pre: "6 reamintiri trebuie să plece până la 18:00.",
     eyebrow: "Salon Aurora · EasyBook", title: "Telefonul afacerii e deconectat",
     lead: "Telefon recepție nu mai răspunde din 14:20. 6 reamintiri trebuie să plece de pe el până la 18:00.",
     check: "Ce să verifici pe telefon", list: ["E pornit și la încărcat.", "Are internet: Wi-Fi sau date mobile.", "Aplicația Ventora e pornită.", "Economisirea bateriei e oprită pentru Ventora."],
@@ -581,7 +581,7 @@ const MAILS = {
     why: "Primești acest e-mail pentru că ești proprietarul afacerii Salon Aurora în Ventora."
   },
   fail: {
-    from: "Ventora <notificari@ventora-hub.com>", to: "Bianca Petrașcu", subject: "Mesajele nu pleacă de pe telefonul afacerii · Salon Aurora", pre: "3 mesaje la rând nu au plecat.",
+    from: "Ventora <noreply@ventora-hub.com>", to: "Bianca Petrașcu", subject: "Mesajele nu pleacă de pe telefonul afacerii · Salon Aurora", pre: "3 mesaje la rând nu au plecat.",
     eyebrow: "Salon Aurora · EasyBook", title: "Mesajele nu pleacă",
     lead: "Ultimele 3 mesaje de pe Telefon recepție nu au plecat. Telefonul spune: SIM-ul nu are credit.",
     check: "Ce să verifici", list: ["Creditul SIM-ului afacerii.", "Semnalul la recepție.", "Dacă operatorul a blocat mesajele: sună la operator."],
@@ -590,7 +590,7 @@ const MAILS = {
     why: "Primești acest e-mail pentru că ești proprietarul afacerii Salon Aurora în Ventora."
   },
   invite: {
-    from: "Ventora <cont@ventora-hub.com>", to: "Ioana Pavel", subject: "Bianca Petrașcu te-a invitat în echipa Salon Aurora", pre: "Acceptă invitația ca să intri în Ventora.",
+    from: "Ventora <noreply@ventora-hub.com>", to: "Ioana Pavel", subject: "Bianca Petrașcu te-a invitat în echipa Salon Aurora", pre: "Acceptă invitația ca să intri în Ventora.",
     eyebrow: "Salon Aurora · invitație", title: "Ai o invitație în echipa Salon Aurora",
     lead: "Bianca Petrașcu (proprietar) te-a invitat în Ventora, cu rolul Recepție. Acolo vezi programările și aplicațiile la care ai acces.",
     cta: "Acceptă invitația",
@@ -598,7 +598,7 @@ const MAILS = {
     why: "Primești acest e-mail pentru că Bianca Petrașcu ți-a trimis o invitație în Ventora."
   },
   reset: {
-    from: "Ventora <cont@ventora-hub.com>", to: "Bianca Petrașcu", subject: "Setează o parolă nouă pentru Ventora", pre: "Linkul e valabil o oră.",
+    from: "Ventora <noreply@ventora-hub.com>", to: "Bianca Petrașcu", subject: "Setează o parolă nouă pentru Ventora", pre: "Linkul e valabil o oră.",
     eyebrow: "Contul tău Ventora", title: "Setează o parolă nouă",
     lead: "Ai cerut o parolă nouă pentru contul bianca@ventora-hub.com. Apasă butonul și alege-o.",
     cta: "Setează parola nouă",
@@ -606,7 +606,7 @@ const MAILS = {
     why: "Primești acest e-mail pentru că cineva a cerut o parolă nouă pentru contul tău."
   },
   discDE: {
-    from: "Ventora <notificari@ventora-hub.com>", to: "Bianca Petrașcu", subject: "Das Geschäftstelefon ist getrennt · Salon Aurora", pre: "6 Erinnerungen müssen bis 18:00 Uhr raus.",
+    from: "Ventora <noreply@ventora-hub.com>", to: "Bianca Petrașcu", subject: "Das Geschäftstelefon ist getrennt · Salon Aurora", pre: "6 Erinnerungen müssen bis 18:00 Uhr raus.",
     eyebrow: "Salon Aurora · EasyBook", title: "Das Geschäftstelefon ist getrennt",
     lead: "Telefon Empfang antwortet seit 14:20 Uhr nicht mehr. 6 Erinnerungen müssen bis 18:00 Uhr von diesem Telefon raus.",
     check: "Was Sie am Telefon prüfen sollten", list: ["Es ist eingeschaltet und lädt.", "Es hat Internet: WLAN oder mobile Daten.", "Die Ventora-App läuft.", "Der Energiesparmodus ist für Ventora ausgeschaltet."],
@@ -615,7 +615,7 @@ const MAILS = {
     why: "Sie erhalten diese E-Mail, weil Sie Inhaberin von Salon Aurora in Ventora sind.", foot: "Ventora Systems SRL · Sibiu, Rumänien"
   },
   failIT: {
-    from: "Ventora <notificari@ventora-hub.com>", to: "Bianca Petrașcu", subject: "I messaggi non partono dal telefono dell’attività · Salon Aurora", pre: "3 messaggi di fila non sono partiti.",
+    from: "Ventora <noreply@ventora-hub.com>", to: "Bianca Petrașcu", subject: "I messaggi non partono dal telefono dell’attività · Salon Aurora", pre: "3 messaggi di fila non sono partiti.",
     eyebrow: "Salon Aurora · EasyBook", title: "I messaggi non partono",
     lead: "Gli ultimi 3 messaggi da Telefono reception non sono partiti. Il telefono dice: la SIM non ha credito.",
     check: "Cosa controllare", list: ["Il credito della SIM dell’attività.", "Il segnale alla reception.", "Se l’operatore ha bloccato i messaggi: chiami l’operatore."],
@@ -624,6 +624,37 @@ const MAILS = {
     why: "Riceve questa e-mail perché è la titolare di Salon Aurora in Ventora.", foot: "Ventora Systems SRL · Sibiu, Romania"
   }
 };
+
+/* "Parola contului tău a fost schimbată" (S78, S82, S83): two variants by source; texts from i18n/password-reset.json (auth.reset.email.*). The time is in the fixed zone of the other e-mails, with its abbreviation. No reset link, no password. */
+const PRM = {"ro": {"auth.reset.email.subject": "Parola contului tău Ventora a fost schimbată", "auth.reset.email.pre": "Schimbarea s-a făcut pe {data}, la {ora}. Dacă nu ai fost tu, citește e-mailul.", "auth.reset.email.eyebrow": "Contul tău Ventora", "auth.reset.email.title": "Parola contului tău a fost schimbată", "auth.reset.email.leadReset": "Parola contului {email} a fost schimbată pe {data}, la {ora}. Te-am scos din cont pe toate dispozitivele.", "auth.reset.email.leadAccount": "Parola contului {email} a fost schimbată pe {data}, la {ora}. Te-am scos din cont pe celelalte dispozitive.", "auth.reset.email.ifYou": "Dacă ai fost tu, nu trebuie să faci nimic.", "auth.reset.email.notYou": "Nu ai fost tu? Alege imediat o parolă nouă din „Ai uitat parola?” și scrie-ne la support@ventorasystems.com.", "auth.reset.email.cta": "Scrie-ne la suport", "auth.reset.email.why": "Primești acest e-mail pentru că parola contului tău Ventora s-a schimbat. E un e-mail de securitate: îl trimitem la fiecare schimbare de parolă și nu se poate opri.", "auth.reset.email.from": "Ventora <noreply@ventora-hub.com>", "auth.reset.email.securityRow": "E-mailuri de securitate: le primești mereu, de exemplu când se schimbă parola contului."}, "en": {"auth.reset.email.subject": "Your Ventora password was changed", "auth.reset.email.pre": "The change was made on {data}, at {ora}. If it wasn't you, read this email.", "auth.reset.email.eyebrow": "Your Ventora account", "auth.reset.email.title": "Your account password was changed", "auth.reset.email.leadReset": "The password for {email} was changed on {data}, at {ora}. We've signed you out on all devices.", "auth.reset.email.leadAccount": "The password for {email} was changed on {data}, at {ora}. We've signed you out on your other devices.", "auth.reset.email.ifYou": "If it was you, you don't need to do anything.", "auth.reset.email.notYou": "Wasn't you? Choose a new password right away from \"Forgot your password?\" and write to us at support@ventorasystems.com.", "auth.reset.email.cta": "Write to support", "auth.reset.email.why": "You're receiving this email because your Ventora account password changed. It's a security email: we send it for every password change and it can't be turned off.", "auth.reset.email.from": "Ventora <noreply@ventora-hub.com>", "auth.reset.email.securityRow": "Security emails: you always get them, for example when your account password changes."}, "fr": {"auth.reset.email.subject": "Le mot de passe de votre compte Ventora a été modifié", "auth.reset.email.pre": "La modification a eu lieu le {data}, à {ora}. Si ce n’était pas vous, lisez cet e-mail.", "auth.reset.email.eyebrow": "Votre compte Ventora", "auth.reset.email.title": "Le mot de passe de votre compte a été modifié", "auth.reset.email.leadReset": "Le mot de passe du compte {email} a été modifié le {data}, à {ora}. Nous vous avons déconnecté de tous vos appareils.", "auth.reset.email.leadAccount": "Le mot de passe du compte {email} a été modifié le {data}, à {ora}. Nous vous avons déconnecté de vos autres appareils.", "auth.reset.email.ifYou": "Si c’était vous, vous n’avez rien à faire.", "auth.reset.email.notYou": "Ce n’était pas vous ? Choisissez immédiatement un nouveau mot de passe via « Mot de passe oublié ? » et écrivez-nous à support@ventorasystems.com.", "auth.reset.email.cta": "Écrire au support", "auth.reset.email.why": "Vous recevez cet e-mail parce que le mot de passe de votre compte Ventora a changé. C’est un e-mail de sécurité : nous l’envoyons à chaque changement de mot de passe et il ne peut pas être désactivé.", "auth.reset.email.from": "Ventora <noreply@ventora-hub.com>", "auth.reset.email.securityRow": "E-mails de sécurité : vous les recevez toujours, par exemple quand le mot de passe de votre compte change."}, "es": {"auth.reset.email.subject": "Se ha cambiado la contraseña de tu cuenta de Ventora", "auth.reset.email.pre": "El cambio se hizo el {data}, a las {ora}. Si no fuiste tú, lee este correo.", "auth.reset.email.eyebrow": "Tu cuenta de Ventora", "auth.reset.email.title": "Se ha cambiado la contraseña de tu cuenta", "auth.reset.email.leadReset": "La contraseña de la cuenta {email} se cambió el {data}, a las {ora}. Hemos cerrado tu sesión en todos los dispositivos.", "auth.reset.email.leadAccount": "La contraseña de la cuenta {email} se cambió el {data}, a las {ora}. Hemos cerrado tu sesión en los demás dispositivos.", "auth.reset.email.ifYou": "Si fuiste tú, no tienes que hacer nada.", "auth.reset.email.notYou": "¿No fuiste tú? Elige ahora mismo una contraseña nueva desde «¿Has olvidado la contraseña?» y escríbenos a support@ventorasystems.com.", "auth.reset.email.cta": "Escribir a soporte", "auth.reset.email.why": "Recibes este correo porque la contraseña de tu cuenta de Ventora ha cambiado. Es un correo de seguridad: lo enviamos con cada cambio de contraseña y no se puede desactivar.", "auth.reset.email.from": "Ventora <noreply@ventora-hub.com>", "auth.reset.email.securityRow": "Correos de seguridad: los recibes siempre, por ejemplo cuando cambia la contraseña de tu cuenta."}, "de": {"auth.reset.email.subject": "Das Passwort Ihres Ventora-Kontos wurde geändert", "auth.reset.email.pre": "Die Änderung erfolgte am {data} um {ora}. Wenn Sie das nicht waren, lesen Sie diese E-Mail.", "auth.reset.email.eyebrow": "Ihr Ventora-Konto", "auth.reset.email.title": "Das Passwort Ihres Kontos wurde geändert", "auth.reset.email.leadReset": "Das Passwort des Kontos {email} wurde am {data} um {ora} geändert. Wir haben Sie auf allen Geräten abgemeldet.", "auth.reset.email.leadAccount": "Das Passwort des Kontos {email} wurde am {data} um {ora} geändert. Wir haben Sie auf Ihren anderen Geräten abgemeldet.", "auth.reset.email.ifYou": "Wenn Sie das waren, müssen Sie nichts tun.", "auth.reset.email.notYou": "Das waren nicht Sie? Wählen Sie sofort über „Passwort vergessen?“ ein neues Passwort und schreiben Sie uns an support@ventorasystems.com.", "auth.reset.email.cta": "Support kontaktieren", "auth.reset.email.why": "Sie erhalten diese E-Mail, weil sich das Passwort Ihres Ventora-Kontos geändert hat. Es ist eine Sicherheits-E-Mail: Wir senden sie bei jeder Passwortänderung, und sie lässt sich nicht abbestellen.", "auth.reset.email.from": "Ventora <noreply@ventora-hub.com>", "auth.reset.email.securityRow": "Sicherheits-E-Mails: Sie erhalten sie immer, zum Beispiel wenn sich das Passwort Ihres Kontos ändert."}, "it": {"auth.reset.email.subject": "La password del Suo account Ventora è stata cambiata", "auth.reset.email.pre": "La modifica è avvenuta il {data} alle {ora}. Se non è stato Lei, legga questa e-mail.", "auth.reset.email.eyebrow": "Il Suo account Ventora", "auth.reset.email.title": "La password del Suo account è stata cambiata", "auth.reset.email.leadReset": "La password dell’account {email} è stata cambiata il {data} alle {ora}. Abbiamo chiuso la Sua sessione su tutti i dispositivi.", "auth.reset.email.leadAccount": "La password dell’account {email} è stata cambiata il {data} alle {ora}. Abbiamo chiuso la Sua sessione sugli altri dispositivi.", "auth.reset.email.ifYou": "Se è stato Lei, non deve fare nulla.", "auth.reset.email.notYou": "Non è stato Lei? Scelga subito una nuova password da «Ha dimenticato la password?» e ci scriva a support@ventorasystems.com.", "auth.reset.email.cta": "Scrivi al supporto", "auth.reset.email.why": "Riceve questa e-mail perché la password del Suo account Ventora è cambiata. È un’e-mail di sicurezza: la inviamo a ogni cambio di password e non si può disattivare.", "auth.reset.email.from": "Ventora <noreply@ventora-hub.com>", "auth.reset.email.securityRow": "E-mail di sicurezza: le riceve sempre, ad esempio quando cambia la password del Suo account."}};
+const PRD = { ro: "28 octombrie 2026", en: "28 October 2026", fr: "28 octobre 2026", es: "28 de octubre de 2026", de: "28. Oktober 2026", it: "28 ottobre 2026" };
+function pwMail(lang, source, to) {
+  const t = (k, v) => { let s = PRM[lang]["auth.reset.email." + k]; if (v) for (const x in v) s = s.split("{" + x + "}").join(v[x]); return s; };
+  const v = { email: "bianca@salonaurora.ro", data: PRD[lang], ora: "10:32 EET" };
+  return { from: t("from"), to: to || "Bianca Petrașcu", subject: t("subject"), pre: t("pre", v), eyebrow: t("eyebrow"), title: t("title"),
+    lead: t(source === "account" ? "leadAccount" : "leadReset", v), extra: [t("ifYou"), t("notYou")], cta: t("cta"), after: "", why: t("why") };
+}
+/* E-6 "Echipa Ventora are acces de suport" (S97, S99): Romanian only. Body keys as in code: email.supportSession.* (subject, intro, scope, until, close, notRequested); added in the same style: reason, footer. {expiresAt} is written "28 octombrie, la 18:30 EET" (fixed zone, with "la"). Sender, greeting, signature and company line come from the shared e-mail template. No button: the session is closed from the banner in Ventora. */
+const SSM = {
+  "email.supportSession.subject": "Echipa Ventora are acces de suport la {businessName}",
+  "email.supportSession.intro": "{founderName} din echipa Ventora a deschis o sesiune de suport pentru {businessName}, pentru cererea {ticketRef}.",
+  "email.supportSession.reason": "Motivul: {reason}",
+  "email.supportSession.scope": "În timpul sesiunii, echipa Ventora poate doar să vadă datele afacerii, ca să rezolve cererea. Nu poate modifica date, nu vede parole și nu schimbă nimic în echipă sau în abonament.",
+  "email.supportSession.until": "Sesiunea se închide automat pe {expiresAt}.",
+  "email.supportSession.close": "O poți închide oricând din Ventora, din bannerul sesiunii de suport.",
+  "email.supportSession.notRequested": "Dacă nu ai cerut ajutor, închide sesiunea și scrie-ne la support@ventorasystems.com.",
+  "email.supportSession.footer": "Primești acest e-mail pentru că ești proprietarul afacerii {businessName} în Ventora."
+};
+const TPL = { from: "Ventora <noreply@ventora-hub.com>", greeting: "Bună, {name},", greetingNoName: "Bună,", signature: "Echipa Ventora", company: "Ventora Systems SRL · Sibiu, România" };
+function ssMail(name, to) {
+  const v = { businessName: "Clinica Dentis Sibiu", founderName: "Mihai Ionescu", ticketRef: "VS-2026-0142", reason: "Programările de joi nu apar în calendar", expiresAt: "28 octombrie, la 18:30 EET", name: name || "" };
+  const f = (s) => { for (const x in v) s = s.split("{" + x + "}").join(v[x]); return s; };
+  const t = (k) => f(SSM["email.supportSession." + k]);
+  const intro = t("intro");
+  return { from: TPL.from, to: to || "andrei@dentis.ro", subject: t("subject"), pre: intro, eyebrow: v.businessName, title: t("subject"),
+    greet: f(name ? TPL.greeting : TPL.greetingNoName), lead: intro, extra: [t("reason"), t("scope"), t("until"), t("close"), { strong: true, text: t("notRequested") }],
+    sign: TPL.signature, after: "", why: t("footer"), foot: TPL.company };
+}
 function Mail({ m, w = 600 }) {
   return h("div", { className: "em", "data-theme": "light", style: { width: w } },
     h("div", { className: "em-inbox" },
@@ -637,10 +668,13 @@ function Mail({ m, w = 600 }) {
           h("p", { className: "caption em-mute em-eyebrow" }, m.eyebrow),
           h("h1", { className: "heading em-title" }, m.title),
           m.code ? h("p", { className: "em-code v-num" }, m.code) : null,
+          m.greet ? h("p", { className: "body" }, m.greet) : null,
           h("p", { className: "body" }, m.lead),
+          m.extra ? m.extra.map((x) => typeof x === "string" ? h("p", { key: x, className: "body" }, x) : h("p", { key: x.text, className: x.strong ? "body-strong" : "body" }, x.text)) : null,
           m.list ? h(React.Fragment, null, h("p", { className: "body-strong" }, m.check), h("ol", { className: "em-list body" }, m.list.map((x) => h("li", { key: x }, x)))) : null,
           m.cta ? h("a", { className: "em-btn body-strong", href: "#" }, m.cta) : null,
-          h("p", { className: "body-small em-mute" }, m.after))),
+          m.sign ? h("p", { className: "body" }, m.sign) : null,
+          m.after ? h("p", { className: "body-small em-mute" }, m.after) : null)),
       h("div", { className: "em-foot" },
         h("p", { className: "caption em-mute" }, m.why),
         h("p", { className: "caption em-mute" }, m.foot || "Ventora Systems SRL · Sibiu, România"))));
@@ -662,13 +696,21 @@ function Mails() {
       h(Box, { label: "2 · Mesajele nu pleacă (după 3 la rând, cel mult o dată pe zi)" }, h(Mail, { m: MAILS.fail })),
       h(Box, { label: "3 · Același șablon: invitația în echipă" }, h(Mail, { m: MAILS.invite })),
       h(Box, { label: "4 · Același șablon: resetarea parolei" }, h(Mail, { m: MAILS.reset })),
-      h(Box, { label: "5 · Pe telefon (390)" }, h(Mail, { m: MAILS.disc, w: 390 }))));
+      h(Box, { label: "5 · Pe telefon (390)" }, h(Mail, { m: MAILS.disc, w: 390 })),
+      h(Box, { label: "6 · Parola contului a fost schimbată · din „Ai uitat parola?” (S78, S72)" }, h(Mail, { m: pwMail("ro", "reset") })),
+      h(Box, { label: "7 · Parola contului a fost schimbată · din Contul tău · Securitate (S78, S82)" }, h(Mail, { m: pwMail("ro", "account") })),
+      h(Box, { label: "8 · Parola schimbată · pe telefon (390)" }, h(Mail, { m: pwMail("ro", "account"), w: 390 })),
+      h(Box, { label: "9 · Deutsch · din „Passwort vergessen?”" }, h(Mail, { m: pwMail("de", "reset") })),
+      h(Box, { label: "10 · Italiano · din Contul tău · Securitate" }, h(Mail, { m: pwMail("it", "account") })),
+      h(Box, { label: "11 · E-6 · Echipa Ventora are acces de suport · cu nume · doar în română · fără buton" }, h(Mail, { m: ssMail("Andrei") })),
+      h(Box, { label: "12 · E-6 · fără nume · pe telefon (390)" }, h(Mail, { m: ssMail(""), w: 390 }))));
 }
 function Prefs({ th }) {
   const row = (owner) => h(V.Sheet, null, h(V.SheetSection, { title: "E-mailuri", description: "Ce primești pe e-mail, pe lângă notificările din Ventora." },
     h("div", { className: "n-prefs" },
       h(V.Toggle, { label: "E-mailuri despre telefonul afacerii", description: "Când telefonul e deconectat sau mesajele nu pleacă.", checked: true, disabled: owner, onChange: () => {} }),
-      owner ? h("p", { className: "body-small sms-sec n-lock" }, h(V.Icon, { name: "lock", size: 14 }), "Proprietarul primește mereu aceste e-mailuri, ca să afle cineva sigur când reamintirile nu pleacă.") : null)));
+      owner ? h("p", { className: "body-small sms-sec n-lock" }, h(V.Icon, { name: "lock", size: 14 }), "Proprietarul primește mereu aceste e-mailuri, ca să afle cineva sigur când reamintirile nu pleacă.") : null,
+      h("p", { className: "body-small sms-sec n-lock" }, h(V.Icon, { name: "shield", size: 14 }), PRM.ro["auth.reset.email.securityRow"]))));
   return h("div", { className: "sms-states", "data-theme": th },
     h("p", { className: "heading" }, "Contul tău · Notificări: e-mailurile operaționale SMS (R-N4) · " + (th === "light" ? "Light" : "Dark")),
     h("div", { className: "n-grid" },

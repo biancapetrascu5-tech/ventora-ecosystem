@@ -430,7 +430,14 @@
       "tile": "s"
     },
     "Logos": {
-      "files": {},
+      "files": {
+        "ventora-logo-email-2x.png": {
+          "name": "ventora-logo-email-2x.png",
+          "blob": "8b14667ee685da1c7c6612324b922ee0",
+          "size": 9280,
+          "type": "image/png"
+        }
+      },
       "name": "Logos",
       "order": [
         "ventora-logo.svg",
@@ -438,6 +445,7 @@
         "ventora-mark-dark.svg",
         "favicon.svg",
         "ventora-logo-dark.svg",
+        "ventora-logo-email-2x.png",
         "README.md"
       ],
       "tile": "l"
@@ -460,10 +468,10 @@
     "App~20icons"
   ],
   "lastChange": {
-    "at": "2026-10-28T08:45:00Z",
+    "at": "2026-10-28T15:47:30Z",
     "by": "Bianca Petrașcu",
-    "note": "S70 completat cu EN (Bookings, Plan); S71: P-1 titlul pe telefon (ContextBar) și P-2 ziua de azi în Timeline, aplicate în componente și preview-uri",
-    "via": "Claude"
+    "via": "Claude",
+    "note": "Lotul 2.5c închis: textele noi aprobate (S98), E-6 cu cheile din cod email.supportSession.* (S99)"
   },
   "layout": "files",
   "libraries": [

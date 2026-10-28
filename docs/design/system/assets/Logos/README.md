@@ -7,5 +7,6 @@ The official Ventora logo files, used exactly as supplied. Full colour (peach, c
 - `ventora-mark.svg` — the mark alone, light.
 - `ventora-mark-dark.svg` — the mark alone, dark, variant B.
 - `favicon.svg` — the mark; switches to variant B when the system is in dark mode.
+- `ventora-logo-email-2x.png` — the light full logo as PNG for e-mail headers, where SVG doesn't show everywhere: 320 × 88 px, transparent, for display at 160 × 44 (S88). Rendered from `ventora-logo.svg`, colours checked.
 
 The wordmark is part of the file. Never set "Ventora" in Syne (or any font) next to the mark in its place.

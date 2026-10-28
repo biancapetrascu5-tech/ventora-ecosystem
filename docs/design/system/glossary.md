@@ -154,6 +154,7 @@ Un singur cuvânt pentru fiecare lucru, în toate ecranele și în toate cele 6 
 | cod de rezervă | backup code | code de secours | código de respaldo | Backup-Code | codice di riserva | Nu „cod de recuperare” (S60). 10 coduri de 8 cifre, fiecare merge o singură dată. |
 | cont blocat temporar | account locked for now | compte bloqué temporairement | cuenta bloqueada temporalmente | Konto vorübergehend gesperrt | account bloccato temporaneamente | După 5 coduri greșite, 15 minute; spunem ora (S61). Roșu, ca eroare. |
 | Ține-mă minte | Keep me signed in | Rester connecté | Mantener la sesión | Angemeldet bleiben | Resta connesso | Spune cât ține: „… timp de 30 de zile”. Păstrează doar sesiunea; codul se cere la fiecare intrare cu parola (S59). |
+| link pentru o parolă nouă | link to set a new password | lien pour un nouveau mot de passe | enlace para una contraseña nueva | Link für ein neues Passwort | link per una nuova password | Nu „link de resetare” în ce văd oamenii. Valabil o oră, merge o singură dată (S55, S72–S77). Butonul: „Trimite linkul”; după expirare: „Cere un link nou”. |
 
 ## Etichete scurte în bara de jos pe telefon
 

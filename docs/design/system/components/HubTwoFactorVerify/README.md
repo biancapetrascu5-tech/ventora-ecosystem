@@ -17,3 +17,10 @@ Two-step check at sign-in, after the password. The page is AuthLayout (S63), lik
 - Verification session expired after 10 minutes: Notice neutral "Au trecut mai mult de 10 minute" / "Din motive de siguranță, intră din nou cu e-mailul și parola.", with "Înapoi la autentificare" back to sign-in.
 
 **"Nu mai am acces la telefon și nici la coduri".** A short screen: "Recuperează accesul", "Scrie-ne de pe adresa contului și te ajutăm să recuperezi accesul după ce îți confirmăm identitatea.", the address, "Scrie-ne pe e-mail" and "Înapoi". The address is support@ventorasystems.com (S62), from the key `auth.2fa.recovery.email`; the same in Founder. There is no automatic reset.
+
+**After a sign-in with a backup code (R-2F10, S81).** Where you land (launcher or app), a Toast "Ai intrat cu un cod de rezervă" says how many codes are left, with "Generează coduri noi" (to Contul tău · Securitate, where new codes are generated and shown once):
+- 3 or more: neutral, "Mai ai {n} coduri de rezervă.", closes by itself;
+- 2: peach, "Mai ai doar {n} coduri de rezervă. Generează coduri noi ca să nu rămâi fără.";
+- 1: peach, "Mai ai un singur cod de rezervă. Generează coduri noi ca să nu rămâi fără.";
+- 0: peach, "Ai folosit ultimul cod de rezervă. Generează coduri noi, ca să poți intra și dacă pierzi telefonul."
+With 2 or fewer it stays until closed. Keys `auth.2fa.backupLeft.*`. Shown on the launcher at 1280 (7 left) and 390 (2 left), light and dark, the four cases, and a German and Italian test.

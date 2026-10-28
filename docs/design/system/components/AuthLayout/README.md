@@ -19,6 +19,6 @@ The phone layout follows the width of the layout itself (a container query), not
 
 The statement is translated in all 6 languages; `packages/ui` still has it written directly in Romanian.
 
-**Used by.** HubSignIn, HubInvite, HubTwoFactorSetup, HubTwoFactorVerify and FounderTwoFactor.
+**Used by.** HubSignIn, HubInvite, HubTwoFactorSetup, HubTwoFactorVerify, HubPasswordReset, FounderTwoFactor and FounderPasswordReset.
 
 The preview shows the Hub and Founder versions at 1280, 820 and 390, in Light and Dark, plus German at 1280 and Italian at 390 in Dark.

@@ -4,4 +4,4 @@ Sign-in, invitation only (direction B). The page is the AuthLayout component (S6
 
 Shown at 1280 (desktop), 820 (tablet portrait) and 390 (phone), in light and dark, built only from the system's components. On phones the panel becomes a band with the logo and language, and the form rises over it; the footer keeps "© 2026 Ventora Systems · Termeni · Confidențialitate · Ajutor" there, while on desktop the © sits in the panel and the footer keeps the links.
 
-After the product review: fields use `autocomplete` (`username`, `current-password`) and Enter submits; the error state offers "Ai uitat parola?" right in the message; "Ține-mă minte pe acest dispozitiv timp de 30 de zile" is unticked by default; the error is announced and focus returns to the first wrong field.
+After the product review: fields use `autocomplete` (`username`, `current-password`) and Enter submits; the error state offers "Ai uitat parola?" right in the message; "Ai uitat parola?" opens HubPasswordReset with the address filled in; "Ține-mă minte pe acest dispozitiv timp de 30 de zile" is unticked by default; the error is announced and focus returns to the first wrong field.

@@ -458,7 +458,7 @@ Fiecare intrare spune ce s-a schimbat pe componentă (structură, tokeni, texte,
 - Pe barele de servicii din DataView, pe telefon, numele lungi în germană se termină cu „…” (așa e făcută componenta).
 - Tastatura nu poate fi arătată într-o imagine statică: mutarea cu săgețile în grila HubAdminAccess și în calendar e descrisă în README și în `api/`.
 
-## 2026-10-28 · al doilea export (design system v56) — față de primul export din 28.10 (v49)
+## 2026-10-28 · al doilea export (design system v55) — față de primul export din 28.10 (v49)
 
 ### HubTwoFactorVerify — 1.0.1 · FounderTwoFactor — 1.0.1
 - Texte: adresa pentru recuperarea accesului e **support@ventorasystems.com** (R-2F7, S62), în locul exemplului ajutor@ventora-hub.com, pe ecranul „Nu mai am acces la telefon și nici la coduri”, în Hub și în Founder. Butonul „Scrie-ne pe e-mail” deschide aceeași adresă.
@@ -491,3 +491,101 @@ Fiecare intrare spune ce s-a schimbat pe componentă (structură, tokeni, texte,
 - Preview: secțiune nouă la 360px: română Light (se deschide derulat la azi), italiană Dark („Oggi” întreg), germană cu azi în ultima perioadă și română cu azi în prima perioadă (eticheta mutată spre interior).
 - Texte: README.
 - Folosită și în ProjectsTimeline, care primește comportamentul fără nicio schimbare în ecran.
+
+## 2026-10-28 · al treilea export — față de al doilea export (v55/v56)
+
+### Pe scurt
+- **Lotul 2.4b, parola nouă:** două ecrane noi, HubPasswordReset și FounderPasswordReset (S72–S79). Cheile de traducere sunt într-un fișier nou, `i18n/password-reset.json` (40 de chei, 6 limbi).
+- **Fișa 2FA închisă:** R-2F4, R-2F6, R-2F8 aprobate (S80); R-2F10 desenat (S81).
+- **Tokeni, bundle.js, bundle.css:** neschimbate. Ecranele folosesc doar componente existente; „Arată parola” e butonul din `Input type="password"`.
+
+### Componente noi
+- **HubPasswordReset** (1.0.0) — „Ai uitat parola?”, „Verifică-ți e-mailul”, „Alege o parolă nouă”, „Parola e schimbată”, pe AuthLayout; 16 stări, DE/IT (S55, S72–S79).
+- **FounderPasswordReset** (1.0.0) — aceleași ecrane cu `brand="founder"`, doar în română, cu rândul despre cod mereu vizibil (S57, S58, S72).
+
+### Componente schimbate
+
+#### HubTwoFactorVerify — 1.0.2
+- Preview: secțiune nouă, „După intrarea cu un cod de rezervă”: toastul pe launcher (1280 și 390, Light/Dark), cele patru cazuri (7, 2, 1, 0 coduri) și testul DE/IT (R-2F10, S81).
+- Texte: README.
+
+#### FounderTwoFactor — 1.0.2
+- Preview: toastul după intrarea cu un cod de rezervă, cele patru cazuri, Light/Dark (S81).
+- Texte: README.
+
+#### HubTwoFactorSetup — 1.0.2
+- Preview: aceleași chei de traducere ca celelalte ecrane 2FA (fără schimbări vizibile).
+
+#### AuthLayout — 1.0.1 · HubSignIn — 1.0.1
+- Texte: README — AuthLayout e folosit și de HubPasswordReset și FounderPasswordReset; „Ai uitat parola?” din HubSignIn deschide HubPasswordReset cu adresa completată.
+
+#### Glosar — 1.0.3
+- Termen nou în „Cont și securitate”: **link pentru o parolă nouă** (nu „link de resetare”), în cele 6 limbi.
+
+### i18n
+- `i18n/password-reset.json` — nou, chei `auth.reset.*`.
+- `i18n/two-factor.json` — chei noi `auth.2fa.backupLeft.title`, `.many`, `.few`, `.one`, `.none`, `.action`, în cele 6 limbi.
+
+### Registru și documentație
+- README: S72–S81; rândul nou din „Ecosistemul și regulile de produs” → Autentificare; inventarul (Ecrane Hub, Founder); tabelul de fișiere (`i18n/password-reset.json`).
+- patterns.md → Intrarea: parola nouă.
+- „D17” din cerere nu exista în registru (D1–D14); regula e acum S72.
+
+### Încă deschis
+- Textele e-mailului „Parola contului tău a fost schimbată” (S78) așteaptă aprobarea; după aprobare intră în BookingSmsNotifications, lângă celelalte e-mailuri din șablon.
+- În Founder nu există încă o pagină de cont: unde duce „Generează coduri noi” din toast (S81) rămâne de stabilit.
+
+## 2026-10-28 · al patrulea export — față de al treilea (v58)
+
+### Pe scurt
+- **FounderBackupCodes** (1.0.0) — nou: pagina „Coduri de rezervă” din Founder, la care duce „Generează coduri noi” (S84). Rezolvă punctul deschis din v58.
+- **Registru:** S82 (e-mailul de securitate pleacă la orice schimbare de parolă, R-PR9), S83 (e-mailul nu se poate opri, R-PR10), S84; S78 reformulat după cerințele pentru textele e-mailului.
+- **i18n/two-factor.json:** chei noi `auth.2fa.codes.title`, `.lead`, `.left`, `.oldStop`, `.confirmTitle`, `.confirmLead`, `.confirm`, `.cancel`, `.newDone`, în cele 6 limbi. Preview-urile 2FA au aceleași chei (fără schimbări vizibile).
+- **Texte:** README — HubPasswordReset (S82, S83), HubAccount (rândul informativ despre e-mailurile de securitate, S83), FounderTwoFactor (toastul duce la FounderBackupCodes).
+- **Tokeni, bundle.js, bundle.css:** neschimbate.
+
+### Încă deschis (rezolvat în exportul următor)
+- Textele e-mailului „Parola contului tău a fost schimbată” (S78) așteptau aprobarea.
+
+## 2026-10-28 · al cincilea export — față de al patrulea
+
+- **BookingSmsNotifications — 1.0.1:** e-mailul „Parola contului tău a fost schimbată” desenat în ambele variante (din „Ai uitat parola?” și din Contul tău · Securitate), pe telefon, în germană și italiană; rândul informativ „E-mailuri de securitate”, fără comutator, în preferințe (S83). README.
+- **Registru:** S78 — textele e-mailului aprobate, cu cele 4 corecturi: expeditor noreply@ventora-hub.com, ora în fusul fix al e-mailurilor cu abreviere („10:32 EET”), fraza în două variante după sursă, „Nu ai fost tu?” doar text.
+- **i18n/password-reset.json:** chei noi `auth.reset.email.*` (subject, pre, eyebrow, title, leadReset, leadAccount, ifYou, notYou, cta, why, from, securityRow), în cele 6 limbi.
+- **HubPasswordReset:** README (trimitere la e-mailul desenat).
+- **Încă deschis (rezolvat mai jos):** celelalte e-mailuri din preview (invitația, parola nouă, alertele SMS) folosesc încă expeditorii cont@ și notificari@; în cod toate pleacă de pe noreply@ventora-hub.com.
+
+## 2026-10-28 · după al cincilea export (v62) — intră în exportul următor
+
+- **BookingSmsNotifications — 1.0.2:** toate e-mailurile din preview pleacă de la Ventora <noreply@ventora-hub.com>, ca în cod: alertele SMS (înainte notificari@, și în testul DE/IT), invitația și parola nouă (înainte cont@). S3 spune expeditorul. README.
+
+## 2026-10-28 · Lotul 2.5c — sesiunea de suport și recuperarea proprietarului (închide Faza 2)
+
+### Componente noi
+- **HubSupportSession** (1.0.0) — bannerul sesiunii de suport în launcher și în aplicații, închiderea (proprietar și admin), sesiunile în Administrare · Roluri și acces (S85; R-SS1–R-SS3 în review).
+- **FounderSupportSession** (1.0.0) — deschiderea din pagina afacerii, eroarea „există deja o sesiune”, bannerul, închiderea și expirarea (S86; R-SS2, R-SS4 în review).
+- **FounderOwnerRecovery** (1.0.0) — recuperarea accesului proprietarului, cu regula verificărilor și cele 11 stări (S87; R-SS5 în review).
+
+### Altele
+- **i18n:** `support-session.json` (6 limbi; RO aprobat, celelalte de verificat cu codul) și `founder-support.json` (RO).
+- **assets/Logos:** `ventora-logo-email-2x.png` pentru antetul e-mailurilor (S88).
+- **FounderBusiness:** în preview-urile noi, meniul „Mai multe” are „Deschide o sesiune de suport” și „Recuperează accesul proprietarului”. Cardul FounderBusiness rămâne neschimbat.
+- **Încă deschis:** e-mailul E-6 către proprietari la deschiderea sesiunii — lipsesc textele.
+
+## 2026-10-28 · Lotul 2.5c — deciziile R-SS1–R-SS8 și e-mailul E-6
+
+- **Registru:** S89–S96 (R-SS1–R-SS8) și S97 (E-6). S86 și S87 spun acum durata și limitele.
+- **FounderSupportSession — 1.0.1:** durata 30 de minute / 1 oră / 2 ore / 4 ore, implicit 1 oră (S92); motivul 10–1.000 de caractere, cu contor; referința cel mult 255 (S93). Texte de ajutor actualizate (propuneri). README.
+- **FounderOwnerRecovery — 1.0.1:** motivul 10–1.000 de caractere, cu contor; referința cel mult 255 (S93). README.
+- **HubSupportSession — 1.0.1:** EN/FR/ES/DE/IT pentru `support.session.banner.*` din cod (S96); dialogul de închidere cu titlul `close`, fără `closeTitle` (S94); propunerile FR/IT folosesc „support/supporto”. README.
+- **BookingSmsNotifications — 1.1.0:** e-mailul E-6 (S97), cardurile 11–12; șablonul primește salut, paragraf îngroșat și semnătură, iar rândul de după buton apare doar când are text. README.
+- **i18n:** `support-session.json` (traducerile din cod), `founder-support.json` (textele de ajutor pentru durată și limite).
+
+## 2026-10-28 · Lotul 2.5c — texte aprobate, E-6 aliniat cu codul (lotul e închis)
+
+- **Registru:** S98 (cele 71 de texte noi aprobate în română, cu corectura la `founder.recovery.check.emailHelp`) și S99 (E-6 după review). S97 trimite la cheile din cod.
+- **BookingSmsNotifications — 1.1.1:** E-6 folosește cheile din cod `email.supportSession.*`; rânduri noi `reason` („Motivul: {reason}”) și `footer` („Primești acest e-mail pentru că ești proprietarul afacerii {businessName} în Ventora.”); ora „pe 28 octombrie, la 18:30 EET”. README.
+- **FounderOwnerRecovery — 1.0.2:** textul nou pentru verificarea prin e-mail (S98). README.
+- **HubSupportSession, FounderSupportSession — 1.0.2:** textele noi nu mai sunt propuneri (S98). README.
+- **i18n:** `founder-support.json` (corectura `founder.recovery.check.emailHelp`).
+
