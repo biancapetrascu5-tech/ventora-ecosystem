@@ -2,12 +2,14 @@ import { afterAll, beforeEach, describe, expect, it } from 'vitest';
 import { PrismaClient as IdentityClient } from '../../generated/identity-client';
 import { PrismaClient as FounderClient } from '../../generated/founder-client';
 import { Pool } from 'pg';
-import { betterAuth, APIError } from 'better-auth';
+import { betterAuth } from 'better-auth';
 import { prismaAdapter } from 'better-auth/adapters/prisma';
-import { bearer, twoFactor } from 'better-auth/plugins';
-import { hashPassword, verifyPassword } from '../password-policy';
-import { revokeFounderUser } from '../founder-contracts';
+import { bearer } from 'better-auth/plugins';
+import { addFounderUser, requireFounderSession, revokeFounderUser } from '../founder-contracts';
+import { founderAuth } from '../auth-founder';
 import { makeIdentityClient, makeFounderClient } from '../db';
+import { hashPassword, verifyPassword } from '../password-policy';
+import { createHubAuthOptions, createFounderAuthOptions } from '../auth-options';
 
 const DB_URL = process.env.DATABASE_URL;
 if (!DB_URL) throw new Error('DATABASE_URL required');
@@ -21,85 +23,25 @@ const REMEMBER_ME_SECONDS = 30 * 24 * 60 * 60;
 // Better Auth 1.7.12: expiresIn = rememberMe duration; rememberMe:false → 24h hardcoded
 const SHORT_SESSION_SECONDS = 24 * 60 * 60;
 
+// Tests use the same factory as production — only database, secret, and advanced.secure differ.
+// hooks / twoFactor / disabledPaths / emailAndPassword come unchanged from the factory.
 const hubAuth = betterAuth({
-  secret: 'test-hub-secret-must-be-32-chars-x', // gitleaks:allow
-  database: prismaAdapter(identityDb, { provider: 'postgresql', transaction: true }),
-  emailAndPassword: {
-    enabled: true,
-    minPasswordLength: 10,
-    password: { hash: hashPassword, verify: verifyPassword },
-    resetPasswordTokenExpiresIn: 3600,
-    sendResetPassword: async () => {},
-  },
-  rateLimit: {
-    enabled: true,
-    storage: 'database',
-    window: 60,
-    max: 100,
-    customRules: {
-      '/sign-in/email': { window: 60 * 15, max: 5 },
-      '/two-factor/verify-totp': { window: 60 * 15, max: 5 },
-      '/two-factor/verify-backup-code': { window: 60 * 15, max: 5 },
-      '/request-password-reset': { window: 60 * 15, max: 5 },
-      '/reset-password': { window: 60 * 15, max: 5 },
-    },
-  },
-  session: {
-    expiresIn: REMEMBER_ME_SECONDS,
-    updateAge: 24 * 60 * 60,
-    cookieCache: { enabled: false },
-    additionalFields: {
-      activeOrganizationId: { type: 'string', nullable: true, defaultValue: null },
-    },
-  },
-  plugins: [bearer(), twoFactor({ issuer: 'Test' })],
-  disabledPaths: ['/two-factor/disable'],
-  hooks: {
-    before: async (ctx: any) => {
-      if (
-        (ctx.path === '/two-factor/verify-totp' || ctx.path === '/two-factor/verify-backup-code') &&
-        ctx.body?.trustDevice === true
-      ) {
-        throw new APIError('FORBIDDEN', { message: 'trustDevice is not permitted' });
-      }
-    },
-  },
+  ...createHubAuthOptions(identityDb, 'test-hub-secret-must-be-32-chars-x'), // gitleaks:allow
   advanced: {
+    database: { generateId: () => crypto.randomUUID() },
     crossSubDomainCookies: { enabled: false },
     defaultCookieAttributes: { sameSite: 'lax', secure: false, httpOnly: true },
+    ipAddress: { ipAddressHeaders: ['x-forwarded-for'] },
   },
 });
 
 const founderAuthTest = betterAuth({
-  secret: 'test-founder-secret-32-chars-abc1', // gitleaks:allow
-  database: prismaAdapter(founderDb, { provider: 'postgresql', transaction: true }),
-  emailAndPassword: {
-    enabled: true,
-    minPasswordLength: 12,
-    password: { hash: hashPassword, verify: verifyPassword },
-  },
-  rateLimit: {
-    enabled: true,
-    storage: 'database',
-    window: 60,
-    max: 100,
-    customRules: {
-      '/sign-in/email': { window: 60 * 15, max: 5 },
-      '/two-factor/verify-totp': { window: 60 * 15, max: 5 },
-      '/two-factor/verify-backup-code': { window: 60 * 15, max: 5 },
-      '/request-password-reset': { window: 60 * 15, max: 5 },
-      '/reset-password': { window: 60 * 15, max: 5 },
-    },
-  },
-  session: {
-    expiresIn: 8 * 60 * 60,
-    updateAge: 60 * 60,
-    cookieCache: { enabled: false },
-  },
-  plugins: [twoFactor({ issuer: 'TestFounder' })],
+  ...createFounderAuthOptions(founderDb, 'test-founder-secret-32-chars-abc1'), // gitleaks:allow
   advanced: {
+    database: { generateId: () => crypto.randomUUID() },
     crossSubDomainCookies: { enabled: false },
     defaultCookieAttributes: { sameSite: 'lax', secure: false, httpOnly: true },
+    ipAddress: { ipAddressHeaders: ['x-forwarded-for'] },
   },
 });
 
@@ -804,32 +746,15 @@ describe('T2FA — 2FA plugin config and hooks', () => {
   });
 
   it('T2FA.E — account lockout after 5 failed TOTP verifications (R-2F5)', async () => {
-    // Hub instance with rate limiting disabled to allow 5+ attempts without 429 from RL
+    // Same config as production except rateLimit disabled (to test lockout, not IP rate-limit)
     const noRlAuth = betterAuth({
-      secret: 'test-hub-secret-must-be-32-chars-x', // gitleaks:allow
-      database: prismaAdapter(identityDb, { provider: 'postgresql', transaction: true }),
-      emailAndPassword: {
-        enabled: true,
-        minPasswordLength: 10,
-        password: { hash: hashPassword, verify: verifyPassword },
-      },
+      ...createHubAuthOptions(identityDb, 'test-hub-secret-must-be-32-chars-x'), // gitleaks:allow
       rateLimit: { enabled: false },
-      session: {
-        expiresIn: 30 * 24 * 60 * 60,
-        updateAge: 24 * 60 * 60,
-        cookieCache: { enabled: false },
-      },
-      plugins: [
-        bearer(),
-        twoFactor({
-          issuer: 'Test',
-          accountLockout: { enabled: true, maxFailedAttempts: 5, durationSeconds: 900 },
-        }),
-      ],
       advanced: {
         database: { generateId: () => crypto.randomUUID() },
         crossSubDomainCookies: { enabled: false },
         defaultCookieAttributes: { sameSite: 'lax', secure: false, httpOnly: true },
+        ipAddress: { ipAddressHeaders: ['x-forwarded-for'] },
       },
     });
 
@@ -931,6 +856,159 @@ describe('T2FA — 2FA plugin config and hooks', () => {
       }),
     );
     expect(lockedResp.status).toBe(429);
+  });
+
+  it('T2FA.F — session created between enable and verify-totp is revoked after enrollment', async () => {
+    // Same config as production, rate limit enabled (uses main hubAuth)
+    const email = 't2fa.revoke@test.com';
+    const password = 'RevokeMe12';
+
+    await signUp(email, password);
+
+    // Sign in to get bearer token for 2FA setup
+    const loginResp = await hubAuth.handler(
+      new Request('http://localhost/api/auth/sign-in/email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      }),
+    );
+    const loginBody = (await loginResp.json()) as { token?: string };
+    const bearerToken = loginBody?.token ?? '';
+    expect(bearerToken).toBeTruthy();
+
+    // Enable 2FA
+    const enableResp = await hubAuth.handler(
+      new Request('http://localhost/api/auth/two-factor/enable', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${bearerToken}` },
+        body: JSON.stringify({ password }),
+      }),
+    );
+    expect(enableResp.status).toBe(200);
+    const enableBody = (await enableResp.json()) as { totpURI?: string };
+    const totpSecret = (enableBody?.totpURI ?? '').match(/[?&]secret=([A-Z2-7=]+)/i)?.[1] ?? '';
+    expect(totpSecret).toBeTruthy();
+
+    // Create an extra session directly in DB (simulates a session opened between enable and verify)
+    const extraToken = crypto.randomUUID();
+    const userId = (
+      await identityDb.user.findUnique({ where: { email }, select: { id: true } })
+    )?.id ?? '';
+    await identityDb.session.create({
+      data: {
+        id: crypto.randomUUID(),
+        userId,
+        token: extraToken,
+        expiresAt: new Date(Date.now() + 60 * 60 * 1000),
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+    });
+
+    // Verify the extra session exists before enrollment completes
+    const extraBefore = await identityDb.session.findFirst({ where: { token: extraToken } });
+    expect(extraBefore).not.toBeNull();
+
+    // Complete enrollment: first verify-totp with valid code → triggers revocation in after hook
+    const { code: validCode } = await hubAuth.api.generateTOTP({ body: { secret: totpSecret } });
+    await hubAuth.handler(
+      new Request('http://localhost/api/auth/two-factor/verify-totp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${bearerToken}` },
+        body: JSON.stringify({ code: validCode }),
+      }),
+    );
+
+    // Extra session must be revoked; current bearer session must survive
+    const extraAfter = await identityDb.session.findFirst({ where: { token: extraToken } });
+    expect(extraAfter).toBeNull();
+
+    const currentSession = await identityDb.session.findFirst({ where: { token: bearerToken } });
+    expect(currentSession).not.toBeNull();
+  });
+
+  it('T2FA.G — 6th verify-totp in 15 min returns 429 from rate limiter (RL enabled)', async () => {
+    // Uses the main hubAuth with rate limiting ON — confirms TOTP endpoint is rate-limited
+    // in production config independent of account lockout.
+    for (let i = 0; i < 5; i++) {
+      const resp = await hubAuth.handler(
+        new Request('http://localhost/api/auth/two-factor/verify-totp', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-forwarded-for': '10.2.2.40',
+          },
+          body: JSON.stringify({ code: '000000' }),
+        }),
+      );
+      expect(resp.status).not.toBe(429);
+    }
+
+    const blocked = await hubAuth.handler(
+      new Request('http://localhost/api/auth/two-factor/verify-totp', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-forwarded-for': '10.2.2.40',
+        },
+        body: JSON.stringify({ code: '000000' }),
+      }),
+    );
+    expect(blocked.status).toBe(429);
+  });
+});
+
+describe('T2FA.H — exported founder functions reject actor without 2FA', () => {
+  it('requireFounderSession: no session → NotAuthenticated', async () => {
+    const { NotAuthenticated } = await import('@ventora/errors');
+    await expect(
+      requireFounderSession(new Headers({ Authorization: 'Bearer invalid-token' })),
+    ).rejects.toThrow(NotAuthenticated);
+  });
+
+  it('requireFounderSession: session without 2FA → TwoFactorRequired', async () => {
+    // Use production founderAuth (same secret as requireFounderSession) so the cookie is recognized
+    await founderAuth.api.signUpEmail({
+      body: { email: 'req.founder.no2fa@test.com', password: 'FounderPass1', name: 'No2FA' },
+    });
+    const loginResp = await founderAuth.api.signInEmail({
+      body: { email: 'req.founder.no2fa@test.com', password: 'FounderPass1' },
+      asResponse: true,
+    });
+    const cookie = (loginResp.headers.get('set-cookie') ?? '').split(';')[0];
+
+    const { TwoFactorRequired } = await import('@ventora/errors');
+    await expect(
+      requireFounderSession(new Headers({ Cookie: cookie })),
+    ).rejects.toThrow(TwoFactorRequired);
+  });
+
+  it('addFounderUser: actor without 2FA → TwoFactorRequired', async () => {
+    const actor = await founderAuthTest.api.signUpEmail({
+      body: { email: 'add.actor.no2fa@test.com', password: 'FounderPass1', name: 'Actor' },
+    });
+    const { TwoFactorRequired } = await import('@ventora/errors');
+    await expect(
+      addFounderUser(actor.user.id, {
+        name: 'New Founder',
+        email: 'new.founder@test.com',
+        password: 'NewFounderPass1',
+      }),
+    ).rejects.toThrow(TwoFactorRequired);
+  });
+
+  it('revokeFounderUser: actor without 2FA → TwoFactorRequired', async () => {
+    const actor = await founderAuthTest.api.signUpEmail({
+      body: { email: 'rev.actor.no2fa@test.com', password: 'FounderPass1', name: 'Actor' },
+    });
+    const target = await founderAuthTest.api.signUpEmail({
+      body: { email: 'rev.target.no2fa@test.com', password: 'FounderPass1', name: 'Target' },
+    });
+    const { TwoFactorRequired } = await import('@ventora/errors');
+    await expect(revokeFounderUser(actor.user.id, target.user.id)).rejects.toThrow(
+      TwoFactorRequired,
+    );
   });
 });
 

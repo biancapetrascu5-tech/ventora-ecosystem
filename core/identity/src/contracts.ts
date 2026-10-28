@@ -61,7 +61,7 @@ export async function listSessions(userId: string): Promise<HubSession[]> {
       select: { twoFactorEnabled: true },
     }),
   ]);
-  const twoFactorEnabled = (user as any)?.twoFactorEnabled === true;
+  const twoFactorEnabled = user?.twoFactorEnabled === true;
   return sessions.map((s) => ({
     id: s.id,
     userId: s.userId,
