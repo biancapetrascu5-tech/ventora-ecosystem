@@ -32,14 +32,27 @@ export interface TabsProps extends Omit<RACTabsProps, 'children' | 'className'> 
   size?: 'sm' | 'md';
   fullWidth?: boolean;
   className?: string;
+  /** Clasa listei de taburi (ex. spațiul lateral într-un panou). */
+  listClassName?: string;
 }
 
 /* Tabs din bundle.js: .v-tabs__list cu linie jos, tabul ales cu bară primary de 2px. */
-export function Tabs({ items, label, size = 'md', fullWidth, className, ...props }: TabsProps) {
+export function Tabs({
+  items,
+  label,
+  size = 'md',
+  fullWidth,
+  className,
+  listClassName,
+  ...props
+}: TabsProps) {
   const hasPanels = items.some((it) => it.children != null);
   return (
     <RACTabs className={cn(styles.root, size === 'sm' && styles.sm, className)} {...props}>
-      <TabList className={cn(styles.tablist, fullWidth && styles.full)} aria-label={label}>
+      <TabList
+        className={cn(styles.tablist, fullWidth && styles.full, listClassName)}
+        aria-label={label}
+      >
         {items.map((item) => (
           <Tab key={item.id} id={item.id} isDisabled={item.isDisabled} className={styles.tab}>
             {({ isSelected }) => (

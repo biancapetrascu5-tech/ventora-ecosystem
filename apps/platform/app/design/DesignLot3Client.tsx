@@ -24,7 +24,7 @@ import {
   type CommandDef,
 } from '@ventora/ui';
 import styles from './design.module.css';
-import { PAGINATION_RO, SPINE_RO } from './demo/gallery/_shared/labels';
+import { CONTEXTBAR_RO, PAGINATION_RO, SPINE_RO } from './demo/gallery/_shared/labels';
 
 export function DesignLot3Client() {
   const [paginaActiva, setPaginaActiva] = useState(1);
@@ -264,15 +264,13 @@ export function DesignLot3Client() {
 
       <Section title="ContextBar">
         <div className={styles.componentStack}>
-          <ContextBar title="Ventora Hub" />
+          <ContextBar title="Ventora Hub" labels={CONTEXTBAR_RO} />
           <ContextBar
             title="Ventora Hub"
-            actions={
-              <div className={styles.componentRow}>
-                <IconButton icon="search" label="Caută" variant="quiet" />
-                <IconButton icon="bell" label="Notificări" variant="quiet" />
-              </div>
-            }
+            labels={CONTEXTBAR_RO}
+            onSearch={() => {}}
+            onCreate={() => {}}
+            notifications={<IconButton icon="bell" label="Notificări" variant="quiet" />}
           />
         </div>
       </Section>
@@ -300,7 +298,7 @@ export function DesignLot3Client() {
           }}
         >
           <AppShell
-            contextBar={<ContextBar title="Demo AppShell" />}
+            contextBar={<ContextBar title="Demo AppShell" labels={CONTEXTBAR_RO} />}
             spine={
               <Spine
                 labels={SPINE_RO}

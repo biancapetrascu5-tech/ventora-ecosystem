@@ -12,6 +12,8 @@ export interface BrandZoneProps {
   [key: string]: unknown;
 }
 
+/* BrandZone din bundle.js: suprafața navy a Hub-ului; interiorul ia tema dark, cu tokenii
+   suprafeței (--bz-*) calculați din tema locului. */
 export function BrandZone({
   as: Tag = 'div',
   className,
@@ -21,7 +23,9 @@ export function BrandZone({
 }: BrandZoneProps) {
   return (
     <Tag data-brand className={cn(styles.root, className)} style={style} {...rest}>
-      {children}
+      <div className={styles.in} data-theme="dark">
+        {children}
+      </div>
     </Tag>
   );
 }

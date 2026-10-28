@@ -344,3 +344,53 @@
   color: var(--ink-muted);
   margin: var(--space-2) 0 0;
 }
+
+/* AccountMenu (.am > .am-col) */
+.am {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: var(--space-4);
+  padding: var(--space-4);
+}
+.amCol {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-4);
+  height: 660px;
+  background: var(--canvas);
+  color: var(--ink);
+  border: var(--border-width) solid var(--line);
+  border-radius: var(--radius-lg);
+}
+.amLab {
+  margin: 0;
+  color: var(--ink-muted);
+}
+.amBar {
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* .dlggrid din preview.html (AddonPurchase, UpgradeDialog) */
+.dlggrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-6);
+  align-items: start;
+}
+.dlggrid [role='dialog'],
+.dlggrid [role='alertdialog'] {
+  width: auto;
+}
+
+/* .phone din preview.html (ContextBar) */
+.phone {
+  width: 390px;
+  height: 600px;
+  flex: none;
+  border: var(--border-width) solid var(--line-strong);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  box-sizing: border-box;
+}

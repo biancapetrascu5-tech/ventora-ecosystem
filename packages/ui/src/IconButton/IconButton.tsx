@@ -12,6 +12,8 @@ export interface IconButtonProps {
   icon: IconName;
   label: string;
   size?: 'sm' | 'md' | 'lg';
+  /** Mărimea iconiței, când diferă de cea a butonului (ex. 16 într-un buton lg, ca în DataTable). */
+  iconSize?: number;
   variant?: IconButtonVariant;
   isDisabled?: boolean;
   /** Spinner în locul iconiței; butonul rămâne activ vizual, apăsarea e ignorată. */
@@ -32,6 +34,7 @@ export function IconButton({
   icon,
   label,
   size = 'md',
+  iconSize,
   variant = 'quiet',
   isDisabled,
   isPending,
@@ -65,7 +68,7 @@ export function IconButton({
             <Icon icon="loader-circle" size={size === 'sm' ? 14 : 16} />
           </span>
         ) : (
-          <Icon icon={icon} size={size === 'lg' ? 20 : 16} />
+          <Icon icon={icon} size={iconSize ?? (size === 'lg' ? 20 : 16)} />
         )}
         {badge != null && badge !== false && (
           <span className={cn(styles.badge, 'caption')} aria-hidden="true">

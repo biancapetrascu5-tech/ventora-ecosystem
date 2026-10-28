@@ -309,11 +309,16 @@
   justify-content: center;
 }
 
+/* .v-bottomnav__label; elementele au și .v-truncate, „Mai multe” nu (trece pe două rânduri) */
 .blabel {
   max-width: 100%;
+}
+
+.btrunc {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  min-width: 0;
 }
 
 @container shell (max-width: 1023px) {

@@ -11,7 +11,7 @@ export type AvatarStatus = StatusDotTone;
 
 const AV: Record<AvatarSize, number> = { xs: 20, sm: 24, md: 32, lg: 40, xl: 56 };
 
-function initials(name: string): string {
+export function initials(name: string): string {
   const p = name.trim().split(/\s+/).filter(Boolean);
   return p.length ? ((p[0][0] ?? '') + (p.length > 1 ? p[p.length - 1][0] : '')).toUpperCase() : '';
 }

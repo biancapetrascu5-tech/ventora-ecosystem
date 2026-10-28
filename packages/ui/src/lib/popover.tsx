@@ -12,7 +12,7 @@ import {
 } from 'react';
 import { createPortal } from 'react-dom';
 
-export type Placement = 'bottom-start' | 'bottom-end';
+export type Placement = 'bottom-start' | 'bottom-end' | 'left-start';
 
 /* useAnchor din bundle.js: poziție fixă sub ancoră, întoarsă deasupra dacă nu încape,
    ținută în fereastră; se actualizează la derulare și redimensionare. */
@@ -40,9 +40,16 @@ export function useAnchor(
     const ph = p ? p.offsetHeight : 0;
     const vw = window.innerWidth;
     const vh = window.innerHeight;
-    const above = r.bottom + offset + ph > vh && r.top - offset - ph > 0;
-    let top = above ? r.top - offset - ph : r.bottom + offset;
-    let left = placement === 'bottom-end' ? r.right - pw : r.left;
+    let top: number;
+    let left: number;
+    if (placement === 'left-start') {
+      left = r.left - offset - pw;
+      top = r.top;
+    } else {
+      const above = r.bottom + offset + ph > vh && r.top - offset - ph > 0;
+      top = above ? r.top - offset - ph : r.bottom + offset;
+      left = placement === 'bottom-end' ? r.right - pw : r.left;
+    }
     left = Math.max(8, Math.min(left, vw - pw - 8));
     top = Math.max(8, Math.min(top, vh - ph - 8));
     setPos({ top, left, width: matchWidth ? r.width : undefined });

@@ -34,6 +34,8 @@ export interface DialogProps {
   inline?: boolean;
   /** Doar la `inline`: apăsarea pe „x”. */
   onClose?: () => void;
+  /** Foaie de jos (telefon): lățime întreagă, colțuri doar sus, butoanele unul sub altul. */
+  sheet?: boolean;
   className?: string;
 }
 
@@ -109,12 +111,19 @@ export function Dialog({
   footer,
   inline,
   onClose,
+  sheet,
   className,
 }: DialogProps) {
   const base = 'd' + useId().replace(/:/g, '');
   const titleId = `${base}-t`;
   const descId = `${base}-d`;
-  const cls = cn(styles.dialog, size === 'wide' && styles.wide, inline && styles.inline, className);
+  const cls = cn(
+    styles.dialog,
+    size === 'wide' && styles.wide,
+    inline && styles.inline,
+    sheet && styles.sheet,
+    className,
+  );
 
   if (inline) {
     return (

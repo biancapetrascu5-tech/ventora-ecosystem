@@ -3,46 +3,41 @@ import { describe, it, expect } from 'vitest';
 import { AppIcon } from '../src/AppIcon/AppIcon';
 
 describe('AppIcon', () => {
-  it('renders an img with correct src for booking', () => {
-    const { container } = render(<AppIcon app="booking" />);
-    const img = container.querySelector('img');
-    expect(img).toBeTruthy();
-    expect(img?.getAttribute('src')).toBe('/app-icons/booking.svg');
+  it('desenează SVG-ul aplicației: placa, marginea și glifa', () => {
+    const { container } = render(<AppIcon app="booking" size={32} />);
+    const svg = container.querySelector('svg')!;
+    expect(svg.getAttribute('width')).toBe('32');
+    expect(svg.getAttribute('viewBox')).toBe('0 0 48 48');
+    expect(svg.querySelector('.v-ag-plate')).toBeTruthy();
+    expect(svg.querySelector('.v-ag-edge')).toBeTruthy();
+    expect(svg.querySelector('.v-ag-a')).toBeTruthy();
   });
 
-  it('uses inactive variant when muted', () => {
-    const { container } = render(<AppIcon app="crm" muted />);
-    const img = container.querySelector('img');
-    expect(img?.getAttribute('src')).toBe('/app-icons/crm-inactive.svg');
+  it('muted adaugă starea estompată', () => {
+    const a = render(<AppIcon app="crm" />)
+      .container.querySelector('svg')!
+      .getAttribute('class');
+    const b = render(<AppIcon app="crm" muted />)
+      .container.querySelector('svg')!
+      .getAttribute('class');
+    expect(a).not.toBe(b);
   });
 
-  it('uses dark variant when dark=true', () => {
-    const { container } = render(<AppIcon app="hr" dark />);
-    const img = container.querySelector('img');
-    expect(img?.getAttribute('src')).toBe('/app-icons/hr-dark.svg');
+  it('aplicație fără glifă: iconița Lucide pe placă', () => {
+    const { container } = render(<AppIcon app="necunoscută" icon="store" size={40} />);
+    const span = container.querySelector('span')!;
+    expect(span.style.width).toBe('40px');
+    expect(span.querySelector('svg')).toBeTruthy();
   });
 
-  it('uses inactive-dark variant when both muted and dark', () => {
-    const { container } = render(<AppIcon app="finance" muted dark />);
-    const img = container.querySelector('img');
-    expect(img?.getAttribute('src')).toBe('/app-icons/finance-inactive-dark.svg');
-  });
-
-  it('has aria-hidden when no title', () => {
-    const { container } = render(<AppIcon app="finance" />);
-    const img = container.querySelector('img');
-    expect(img?.getAttribute('aria-hidden')).toBe('true');
-  });
-
-  it('has alt text when title provided', () => {
-    const { container } = render(<AppIcon app="booking" title="Booking" />);
-    const img = container.querySelector('img');
-    expect(img?.getAttribute('alt')).toBe('Booking');
-  });
-
-  it('accepts custom basePath', () => {
-    const { container } = render(<AppIcon app="shifts" basePath="/icons/" />);
-    const img = container.querySelector('img');
-    expect(img?.getAttribute('src')).toBe('/icons/shifts.svg');
+  it('decorativă fără title; cu title are rol img și nume', () => {
+    expect(
+      render(<AppIcon app="finance" />)
+        .container.querySelector('svg')!
+        .getAttribute('aria-hidden'),
+    ).toBe('true');
+    const svg = render(<AppIcon app="booking" title="EasyBook" />).container.querySelector('svg')!;
+    expect(svg.getAttribute('role')).toBe('img');
+    expect(svg.getAttribute('aria-label')).toBe('EasyBook');
   });
 });

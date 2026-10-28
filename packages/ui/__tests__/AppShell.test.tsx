@@ -13,17 +13,20 @@ const labels = {
   more: 'Mai multe',
 };
 
+const cbLabels = { search: 'Caută', searchPlaceholder: 'Caută…', create: 'Creează' };
+
 describe('AppShell', () => {
   it('renders children', () => {
     render(
       <AppShell
         spine={<Spine appName="Test" labels={labels} items={items} activeId="home" />}
-        contextBar={<ContextBar title="Test App" />}
+        contextBar={<ContextBar title="Test App" labels={cbLabels} />}
       >
-        <main>Conținut principal</main>
+        <p>Conținut principal</p>
       </AppShell>,
     );
     expect(screen.getByText('Conținut principal')).toBeDefined();
+    expect(screen.getByRole('main').id).toBe('v-main');
   });
 
   it('renders spine', () => {
@@ -45,5 +48,32 @@ describe('AppShell', () => {
     // browser una e mereu display: none, dar jsdom nu aplică CSS-ul modulelor.
     const results = await axe.run(container, { rules: { 'landmark-unique': { enabled: false } } });
     expect(results.violations).toHaveLength(0);
+  });
+});
+
+describe('ContextBar', () => {
+  it('numește căutarea și „Creează” din etichete; onCreate fără listă', () => {
+    let created = 0;
+    render(
+      <ContextBar
+        title="EasyBook"
+        labels={cbLabels}
+        onSearch={() => {}}
+        onCreate={() => {
+          created += 1;
+        }}
+      />,
+    );
+    expect(screen.getByRole('button', { name: 'Caută' }).getAttribute('aria-keyshortcuts')).toBe(
+      'Control+K Meta+K',
+    );
+    screen.getByRole('button', { name: 'Creează' }).click();
+    expect(created).toBe(1);
+    expect(screen.getByText('EasyBook')).toBeDefined();
+  });
+
+  it('fără onSearch și fără creare nu desenează butoanele', () => {
+    render(<ContextBar title="Hub" labels={cbLabels} />);
+    expect(screen.queryByRole('button')).toBeNull();
   });
 });

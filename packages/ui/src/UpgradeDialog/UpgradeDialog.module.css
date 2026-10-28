@@ -1,0 +1,150 @@
+/* .v-up__*, .v-upopt din bundle.css */
+.contents {
+  display: contents;
+}
+
+.desc {
+  margin: 0;
+  color: var(--ink-secondary);
+}
+
+.usage {
+  padding: var(--space-3);
+  background: var(--sunken);
+  border-radius: var(--radius-md);
+}
+
+.opts {
+  border: 0;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.opts legend {
+  padding: 0;
+  margin-bottom: var(--space-2);
+  color: var(--ink);
+}
+
+.opt {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  border: var(--border-width) solid var(--line-strong);
+  border-radius: var(--radius-md);
+  background: var(--sheet);
+}
+
+.optOn {
+  border-color: var(--ink);
+  box-shadow: inset 0 0 0 1px var(--ink);
+}
+
+.static {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-0-5);
+}
+
+.price {
+  color: var(--ink-secondary);
+}
+
+.inc {
+  list-style: none;
+  margin: 0;
+  padding: 0 0 0 calc(var(--space-5) + var(--space-3));
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  color: var(--ink-secondary);
+}
+
+.optStatic .inc {
+  padding-left: 0;
+}
+
+.inc li {
+  display: flex;
+  gap: var(--space-2);
+  align-items: flex-start;
+}
+
+.inc svg {
+  flex: none;
+  margin-top: 3px;
+  color: var(--ink-muted);
+}
+
+.safe {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  margin: 0;
+  color: var(--ink-secondary);
+}
+
+.safe svg {
+  flex: none;
+  margin-top: 3px;
+}
+
+.decider {
+  margin: 0;
+  color: var(--ink-muted);
+}
+
+.sum {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  border-top: var(--border-width) solid var(--line);
+}
+
+.sum > div {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--space-4);
+  padding: var(--space-2) 0;
+  border-bottom: var(--border-width) solid var(--line);
+}
+
+.sum dt {
+  color: var(--ink-muted);
+}
+
+.sum dd {
+  margin: 0;
+  text-align: right;
+}
+
+.sum > .total {
+  padding-top: var(--space-3);
+  border-bottom: 0;
+}
+
+.total dt {
+  color: var(--ink);
+}
+
+/* .v-paywith (aceleași reguli ca în AddonPurchase) */
+.paywith {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.lab {
+  color: var(--ink-muted);
+}
+
+.none {
+  margin: 0;
+  color: var(--ink-secondary);
+}

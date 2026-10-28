@@ -14,7 +14,7 @@
   ],
   "themes": ["light", "dark"],
   "designUrl": "/design/preview/{name}",
-  "designSelector": "body [data-theme=\"{theme}\"]",
+  "designSelector": "body [data-theme=\"{theme}\"]:not(.v-brandzone__in)",
   "implUrl": "/design/demo/gallery/{name}",
   "implSelector": "[data-gallery-frame][data-theme=\"{theme}\"]",
   "enforced": [
@@ -62,8 +62,15 @@
     "Agenda",
     "SlotPicker",
     "Select",
-    "Menu"
+    "Menu",
+    "AccountMenu",
+    "OrgSwitcher",
+    "NotificationsPanel",
+    "AddonPurchase",
+    "UpgradeDialog",
+    "AppShell",
+    "ContextBar"
   ],
   "exceptions": {},
-  "$comment_selectors": "designSelector: primul cadru cu data-theme din preview.html (clasele cadrelor diferă de la o componentă la alta: c3f, qf, al-frame…). implSelector: cadrul galeriei marcat cu data-gallery-frame. Ambele cadre trebuie să conțină exact aceleași exemple."
+  "$comment_selectors": "designSelector: primul cadru cu data-theme din preview.html (clasele cadrelor diferă de la o componentă la alta: c3f, qf, al-frame…). Interiorul BrandZone (.v-brandzone__in, data-theme=\"dark\", display: contents) e parte din componentă, nu cadru, deci e sărit. implSelector: cadrul galeriei marcat cu data-gallery-frame. Ambele cadre trebuie să conțină exact aceleași exemple."
 }

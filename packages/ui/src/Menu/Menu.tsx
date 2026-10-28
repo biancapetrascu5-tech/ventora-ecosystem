@@ -54,7 +54,7 @@ export interface MenuProps {
   defaultOpen?: boolean;
   onOpenChange?: (open: boolean) => void;
   header?: ReactNode;
-  width?: number;
+  width?: number | string;
   className?: string;
 }
 
@@ -156,16 +156,31 @@ export function Menu({
     }
   };
 
-  const triggerProps = children.props as { onPress?: () => void };
+  const triggerProps = children.props as {
+    onPress?: () => void;
+    onClick?: (e: React.MouseEvent) => void;
+  };
+  // Button/IconButton (react-aria) folosesc onPress; un <button> nativ folosește onClick.
+  const native = typeof children.type === 'string';
+  const toggle = native
+    ? {
+        onClick: (e: React.MouseEvent) => {
+          triggerProps.onClick?.(e);
+          setOpen(!open);
+        },
+      }
+    : {
+        onPress: () => {
+          triggerProps.onPress?.();
+          setOpen(!open);
+        },
+      };
   const trigger = isValidElement(children)
     ? cloneElement(children as ReactElement<Record<string, unknown>>, {
         'aria-haspopup': 'menu',
         'aria-expanded': open,
         'aria-controls': open ? menuId : undefined,
-        onPress: () => {
-          triggerProps.onPress?.();
-          setOpen(!open);
-        },
+        ...toggle,
       })
     : children;
 

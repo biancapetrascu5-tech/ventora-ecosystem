@@ -1,0 +1,211 @@
+/* .v-notifs, .v-notif, .v-hubreco din bundle.css */
+.notifs {
+  width: var(--panel-width);
+  max-width: calc(100vw - var(--space-4));
+  display: flex;
+  flex-direction: column;
+  max-height: var(--panel-max-height);
+  overflow: hidden;
+}
+
+.pop {
+  position: fixed;
+  z-index: var(--z-popover);
+  box-sizing: border-box;
+  background: var(--raised);
+  color: var(--ink);
+  border: var(--border-width) solid var(--line);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-2);
+  outline: none;
+  animation: pop var(--duration-fast) var(--ease-standard);
+}
+
+@keyframes pop {
+  from {
+    opacity: 0;
+    transform: translateY(calc(var(--space-1) * -1));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pop {
+    animation: none;
+  }
+}
+
+.inline {
+  background: var(--raised);
+  border: var(--border-width) solid var(--line);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-2);
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-3) var(--space-1) var(--space-4);
+  flex-wrap: wrap;
+}
+
+.headact {
+  display: flex;
+  gap: var(--space-1);
+  align-items: center;
+  margin-left: auto;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+/* butoane native cu clasele Button / IconButton: hover fără react-aria */
+.hover:hover {
+  background: var(--state-hover);
+}
+
+.hover:focus-visible {
+  outline: var(--focus-ring-width) solid var(--focus-ring);
+  outline-offset: var(--focus-ring-offset);
+}
+
+.tabs.tabs {
+  padding: 0 var(--space-4);
+}
+
+.list {
+  list-style: none;
+  margin: 0;
+  padding: var(--space-1);
+  overflow-y: auto;
+}
+
+.notif {
+  appearance: none;
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  width: 100%;
+  padding: var(--space-3);
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--ink);
+  cursor: pointer;
+  text-align: start;
+  font-family: inherit;
+  position: relative;
+  transition: background-color var(--duration-instant) var(--ease-standard);
+}
+
+.notif:hover {
+  background: var(--state-hover);
+}
+
+.notif:focus-visible {
+  outline: var(--focus-ring-width) solid var(--focus-ring);
+  outline-offset: calc(var(--focus-ring-width) * -1);
+}
+
+.icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: var(--space-8);
+  height: var(--space-8);
+  border-radius: var(--radius-full);
+  background: var(--neutral-soft);
+  color: var(--ink-secondary);
+}
+
+.text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-0-5);
+}
+
+.body {
+  color: var(--ink-secondary);
+}
+
+.meta {
+  color: var(--ink-muted);
+}
+
+/* .v-badge.v-badge--dot.v-badge--attention.v-notif__dot */
+.dot {
+  display: inline-flex;
+  box-sizing: border-box;
+  width: var(--space-2);
+  height: var(--space-2);
+  min-width: 0;
+  padding: 0;
+  border-radius: var(--radius-full);
+  background: var(--attention);
+  margin-top: var(--space-1);
+  flex: none;
+}
+
+.recos {
+  border-top: var(--border-width) solid var(--line-strong);
+  margin-top: var(--space-1);
+}
+
+.recohead {
+  padding: var(--space-3) var(--space-4) var(--space-1);
+  margin: 0;
+  color: var(--ink-muted);
+}
+
+/* HubRecommendation */
+.reco {
+  display: flex;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border-bottom: var(--border-width) solid var(--line);
+}
+
+.reco:last-child {
+  border-bottom: 0;
+}
+
+.recoIcon {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-md);
+  color: var(--ink-secondary);
+}
+
+.recoText {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-width: 0;
+}
+
+.recoKind {
+  color: var(--ink-muted);
+}
+
+.recoBody,
+.recoNote {
+  color: var(--ink-secondary);
+}
+
+.recoNote {
+  font-style: italic;
+}
+
+.recoActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-top: var(--space-1);
+}

@@ -1,9 +1,17 @@
 import type {
+  AccountMenuLabels,
+  AddonPurchaseLabels,
+  UpgradeLabels,
+  ContextBarLabels,
+  PaymentLabels,
+  OrgSwitcherLabels,
+  ThemeSwitcherLabels,
   ChartLabels,
   DataTableLabels,
   DatePickerLabels,
   FileUploadLabels,
   KanbanLabels,
+  NotificationsLabels,
   PaginationLabels,
   ScheduleStatusLabels,
   SpineLabels,
@@ -108,4 +116,129 @@ export const EVENT_STATUS_RO: ScheduleStatusLabels = {
   noshow: 'Nu a venit',
   cancelled: 'Anulată',
   blocked: 'Blocat',
+};
+
+// Lotul 7 — S.themeLight/Dark/System, S.switchBusiness, S.yourBusinesses, S.findBusiness,
+// S.account, S.theme, S.language, S.allApps, S.support, S.signOut (ro)
+export const THEME_RO: ThemeSwitcherLabels = {
+  theme: 'Temă',
+  light: 'Luminoasă',
+  dark: 'Întunecată',
+  system: 'Automată',
+};
+export const ORG_RO: OrgSwitcherLabels = {
+  switchBusiness: 'Schimbă afacerea',
+  yourBusinesses: 'Afacerile tale',
+  findBusiness: 'Caută o afacere…',
+  noResultsFor: (q) => `Niciun rezultat pentru „${q}”`,
+};
+export const ACCOUNT_RO: AccountMenuLabels = {
+  account: 'Contul tău',
+  yourBusinesses: 'Afacerile tale',
+  theme: 'Temă',
+  language: 'Limbă',
+  allApps: 'Toate aplicațiile Ventora',
+  support: 'Suport',
+  signOut: 'Ieși din cont',
+  themeSwitcher: THEME_RO,
+  orgSwitcher: ORG_RO,
+};
+
+// S.notifications … S.notInterested (ro) — NotificationsPanel + HubRecommendation
+export const NOTIF_RO: NotificationsLabels = {
+  notifications: 'Notificări',
+  unreadN: (n) => `${n} necitite`,
+  markAllRead: 'Marchează toate ca citite',
+  notificationSettings: 'Setări notificări',
+  all: 'Toate',
+  unread: 'Necitite',
+  noNotifications: 'Nu ai notificări noi',
+  noNotificationsHint: 'Îți spunem aici când ceva are nevoie de tine.',
+  operational: 'Despre cont și funcționare',
+  activity: 'Activitate',
+  recommendations: 'Recomandări',
+  recommendation: 'Recomandare',
+  fromTeam: 'Recomandare de la echipă',
+  seeApp: 'Vezi aplicația',
+  reject: 'Respinge',
+  seeDetails: 'Vezi detaliile',
+  notInterested: 'Nu mă interesează',
+};
+
+// S.* plăți (ro) — AddonPurchase, UpgradeDialog
+export const PAYMENT_RO: PaymentLabels = {
+  expires: (date) => `expiră ${date}`,
+  changeCard: 'Schimbă cardul',
+  stripeSlot: 'Formular securizat Stripe: număr card, expirare, CVC',
+  saveCard: 'Păstrează cardul pentru plățile următoare',
+  processingHint: 'Nu închide fereastra. Durează doar câteva secunde.',
+  paySuccessHint: 'Limita a crescut deja. Ți-am trimis factura și pe e-mail.',
+  before: 'Înainte',
+  after: 'Acum',
+  invoiceIssued: (nr) => `Am emis factura ${nr}`,
+  seeInvoice: 'Vezi factura',
+  payFailed: 'Plata nu a trecut',
+  noMoneyTaken: 'Nu ți s-a retras niciun ban de pe card.',
+  whatYouCanDo: 'Ce poți face',
+  tryAgain: 'Încearcă din nou',
+  useOtherCard: 'Folosește alt card',
+  callBank: 'Dacă se repetă, sună la bancă: uneori blochează plățile online noi.',
+};
+export const ADDON_RO: AddonPurchaseLabels = {
+  ...PAYMENT_RO,
+  processing: 'Procesăm plata…',
+  paySuccess: 'Plata a reușit',
+  payAmount: (amount) => `Plătește ${amount}`,
+  done: 'Gata',
+  cancel: 'Renunță',
+  quantity: 'Cantitate',
+  decrease: 'Scade cantitatea',
+  increase: 'Crește cantitatea',
+  total: 'Total',
+  finalPrice: 'Prețul e final, nu se adaugă TVA.',
+  payWith: 'Plătești cu cardul',
+  cardExpiring: 'Cardul expiră luna aceasta. Poți plăti cu el acum sau îl schimbi.',
+  noCardSaved: 'Afacerea nu are încă un card salvat.',
+  close: 'Închide',
+};
+
+// S.chooseOption… din bundle.js (UpgradeDialog)
+export const UPGRADE_RO: UpgradeLabels = {
+  ...PAYMENT_RO,
+  chooseOption: 'Alege ce ți se potrivește',
+  nothingLost: 'Nu se pierde nimic din ce ai.',
+  decides: (who) => `Ajunge la ${who}.`,
+  recommendSent: (who) => `Am trimis recomandarea către ${who}.`,
+  recommendSend: 'Recomandă',
+  cancel: 'Renunță',
+  continueBtn: 'Continuă',
+  close: 'Închide',
+  back: 'Înapoi',
+  youActivate: 'Ce activezi',
+  whenLabel: 'Când',
+  priceLabel: 'Preț',
+  setupCost: 'Cost de implementare',
+  noneCost: 'Fără',
+  payToday: 'Plătești azi',
+  planRequestNote:
+    'Nu plătești nimic acum. Îți confirmăm noul abonament și prețul înainte să-l pornim, în cel mult o zi lucrătoare.',
+  trialNoCard:
+    'Nu ai nevoie de card. La final aplicația se oprește, datele rămân, iar continuarea e alegerea ta.',
+  upgrade: 'Cere alt abonament',
+  startTrial: 'Începe perioada de probă',
+  activating: 'Activăm…',
+  processing: 'Procesăm plata…',
+  paySuccess: 'Plata a reușit',
+  trialActive: 'Perioada de probă a început',
+  done: 'Gata',
+  payAmount: (amount) => `Plătește ${amount}`,
+  payWith: 'Plătești cu cardul',
+  noCardSaved: 'Afacerea nu are încă un card salvat.',
+};
+
+// S.search / S.searchPlaceholder / S.create din bundle.js (ContextBar)
+export const CONTEXTBAR_RO: ContextBarLabels = {
+  search: 'Caută',
+  searchPlaceholder: 'Caută…',
+  create: 'Creează',
 };

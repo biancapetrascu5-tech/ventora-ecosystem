@@ -91,7 +91,7 @@ export { PageHeader } from './PageHeader/PageHeader';
 export type { PageHeaderProps, Breadcrumb } from './PageHeader/PageHeader';
 
 export { ContextBar } from './ContextBar/ContextBar';
-export type { ContextBarProps } from './ContextBar/ContextBar';
+export type { ContextBarProps, ContextBarLabels } from './ContextBar/ContextBar';
 
 export { Spine } from './Spine/Spine';
 export type { SpineProps, NavItem, NavSection, SpineLabels } from './Spine/Spine';
@@ -100,7 +100,7 @@ export { AppShell } from './AppShell/AppShell';
 export type { AppShellProps } from './AppShell/AppShell';
 
 // App icons (Lot 4 demo — Lot 7 va migra la inline SVG)
-export { AppIcon } from './AppIcon/AppIcon';
+export { AppIcon, APPS } from './AppIcon/AppIcon';
 export type { AppIconProps, AppName } from './AppIcon/AppIcon';
 
 // Hub components (Direcția B)
@@ -109,6 +109,8 @@ export type { AuthLayoutProps } from './AuthLayout/AuthLayout';
 
 export { BrandZone } from './BrandZone/BrandZone';
 export type { BrandZoneProps } from './BrandZone/BrandZone';
+export { Logo } from './Logo/Logo';
+export type { LogoProps } from './Logo/Logo';
 
 export { AppDock } from './AppDock/AppDock';
 export type { AppDockProps, DockApp } from './AppDock/AppDock';
@@ -242,3 +244,48 @@ export type { AgendaProps, AgendaItem, AgendaItemStatus } from './Agenda/Agenda'
 // Utilities
 export { cn } from './lib/cn';
 export type { ForcedState } from './lib/forced';
+
+// Lotul 7 — meniuri și shell
+export { ThemeSwitcher } from './ThemeSwitcher/ThemeSwitcher';
+export type {
+  ThemeSwitcherProps,
+  ThemeSwitcherLabels,
+  ThemeChoice,
+} from './ThemeSwitcher/ThemeSwitcher';
+export { LanguageSwitcher, LOCALES } from './LanguageSwitcher/LanguageSwitcher';
+export type { LanguageSwitcherProps, LocaleCode } from './LanguageSwitcher/LanguageSwitcher';
+export { OrgSwitcher } from './OrgSwitcher/OrgSwitcher';
+export type { OrgSwitcherProps, OrgSwitcherLabels, Org } from './OrgSwitcher/OrgSwitcher';
+export { AccountMenu } from './AccountMenu/AccountMenu';
+export type { AccountMenuProps, AccountMenuLabels } from './AccountMenu/AccountMenu';
+export { RecommendationLabel } from './RecommendationLabel/RecommendationLabel';
+export type { RecommendationLabelProps } from './RecommendationLabel/RecommendationLabel';
+export { NotificationsPanel, HubRecommendation } from './NotificationsPanel/NotificationsPanel';
+export type {
+  NotificationsPanelProps,
+  NotificationsLabels,
+  NotificationData,
+  HubRecommendationData,
+} from './NotificationsPanel/NotificationsPanel';
+export { AddonPurchase } from './AddonPurchase/AddonPurchase';
+export type {
+  AddonPurchaseProps,
+  AddonPurchaseLabels,
+  AddonData,
+} from './AddonPurchase/AddonPurchase';
+export {
+  PaymentCard,
+  StripeSlot,
+  PayProcessing,
+  PaySuccess,
+  PayError,
+  PayErrorActions,
+} from './AddonPurchase/Payment';
+export type { PaymentCardData, PaymentLabels, PayUsage } from './AddonPurchase/Payment';
+export { UpgradeDialog } from './UpgradeDialog/UpgradeDialog';
+export type {
+  UpgradeDialogProps,
+  UpgradeLabels,
+  UpgradeOption,
+  UpgradeSummary,
+} from './UpgradeDialog/UpgradeDialog';

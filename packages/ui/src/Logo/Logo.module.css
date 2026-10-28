@@ -1,0 +1,15 @@
+/* .v-logo din bundle.css */
+.logo {
+  display: inline-flex;
+  align-items: center;
+  flex: none;
+  line-height: 0;
+}
+
+.img {
+  display: block;
+}
+
+.img :global(svg) {
+  display: block;
+}

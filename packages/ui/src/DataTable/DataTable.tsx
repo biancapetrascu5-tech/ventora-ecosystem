@@ -132,7 +132,13 @@ function RowMenu({
         a?.onClick?.();
       }}
     >
-      <IconButton icon="ellipsis-vertical" label={label} size={size} variant="quiet" />
+      <IconButton
+        icon="ellipsis-vertical"
+        label={label}
+        size={size}
+        iconSize={16}
+        variant="quiet"
+      />
     </Menu>
   );
 }

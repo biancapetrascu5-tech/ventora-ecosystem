@@ -202,3 +202,11 @@
   white-space: nowrap;
   pointer-events: none;
 }
+
+/* .v-contextbar .v-iconbtn: în bara de context, pe telefon, iconițele au 44px */
+@container shell (max-width: 767px) {
+  :global([data-contextbar]) .root {
+    width: var(--control-lg);
+    height: var(--control-lg);
+  }
+}

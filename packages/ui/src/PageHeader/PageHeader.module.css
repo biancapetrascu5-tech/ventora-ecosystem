@@ -102,3 +102,10 @@
     min-height: var(--touch-target);
   }
 }
+
+/* .v-shell .v-pageheader pe telefon (containerul shell din AppShell) */
+@container shell (max-width: 767px) {
+  .root {
+    padding: 0 var(--space-4);
+  }
+}

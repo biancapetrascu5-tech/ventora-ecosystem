@@ -41,12 +41,6 @@
   }
 }
 
-.inline {
-  animation: none;
-  box-shadow: var(--shadow-2);
-  max-height: none;
-}
-
 @media (prefers-reduced-motion: reduce) {
   .dialog {
     animation: none;
@@ -149,4 +143,25 @@
   .foot > * {
     width: 100%;
   }
+}
+
+/* .v-dialog--inline (după media query, ca în bundle: max-height: none câștigă pe telefon) */
+.inline {
+  animation: none;
+  box-shadow: var(--shadow-2);
+  max-height: none;
+}
+
+/* .v-dialog--sheet */
+.inline.sheet {
+  width: 100%;
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+}
+
+.sheet .foot {
+  flex-direction: column-reverse;
+}
+
+.sheet .foot > * {
+  width: 100%;
 }

@@ -49,7 +49,8 @@ const fill = (tpl, vars) => tpl.replace(/\{(\w+)\}/g, (_, k) => vars[k]);
    fereastră la derulare și ajung peste cadrul capturat. Le ascundem, la design și la galerie
    deopotrivă: o listă ([role=menu], [role=listbox], .v-popover, [data-popover]) din afara cadrului
    se ascunde dacă butonul care o controlează (aria-controls = id-ul ei sau al unui element din ea)
-   nu e în cadru. Listele fără buton cunoscut rămân neatinse. (Decizia fondatoarei, 28.10.2026.) */
+   nu e în cadru; o listă fără buton legat se ascunde dacă în cadru nu e niciun buton deschis
+   (aria-expanded="true"). (Decizia fondatoarei, 28.10.2026.) */
 function hideForeignPopovers(frame) {
   const floating = document.querySelectorAll(
     '[role="menu"], [role="listbox"], .v-popover, [data-popover]',
@@ -61,8 +62,12 @@ function hideForeignPopovers(frame) {
     const triggers = ids.flatMap((id) => [
       ...document.querySelectorAll(`[aria-controls="${CSS.escape(id)}"]`),
     ]);
-    if (triggers.length && !triggers.some((t) => frame.contains(t)))
-      box.style.visibility = 'hidden';
+    // Fără buton legat prin aria-controls (ex. .v-popover din bundle la OrgSwitcher/DatePicker):
+    // lista e străină dacă în cadru nu e niciun buton deschis.
+    const foreign = triggers.length
+      ? !triggers.some((t) => frame.contains(t))
+      : !frame.querySelector('[aria-expanded="true"]');
+    if (foreign) box.style.visibility = 'hidden';
   }
 }
 

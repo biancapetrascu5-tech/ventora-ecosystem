@@ -158,6 +158,7 @@ export function Spine({
       <nav
         className={cn(styles.spine, isCollapsed && styles.isCollapsed, className)}
         aria-label={appName}
+        data-spine=""
       >
         <div className={styles.head}>
           <button
@@ -216,7 +217,9 @@ export function Spine({
               <Icon icon={it.icon} size={22} />
               {it.badge != null && <span className={cn(styles.bbadge, 'caption')}>{it.badge}</span>}
             </span>
-            <span className={cn(styles.blabel, 'caption')}>{it.short || it.label}</span>
+            <span className={cn(styles.blabel, styles.btrunc, 'caption')}>
+              {it.short || it.label}
+            </span>
           </button>
         ))}
         <button

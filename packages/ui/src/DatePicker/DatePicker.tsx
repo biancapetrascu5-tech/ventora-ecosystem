@@ -399,6 +399,7 @@ export function DatePicker({
             className={cn(styles.pop, mode === 'time' && styles.popTime)}
             role="dialog"
             aria-label={ph}
+            data-popover
           >
             {mode === 'time' ? (
               <div

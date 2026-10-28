@@ -14,6 +14,8 @@ export interface UsageMeterProps {
   locale?: string;
   format?: (n: number) => string;
   compact?: boolean;
+  /** Fără peach și fără mesajele de limită (comparația „Înainte / Acum” după o plată). */
+  neutral?: boolean;
   warnAt?: number;
   onUpgrade?: () => void;
   onBuy?: () => void;
@@ -42,6 +44,7 @@ export function UsageMeter({
   locale,
   format,
   compact = false,
+  neutral = false,
   warnAt = 0.8,
   onUpgrade,
   onBuy,
@@ -63,7 +66,8 @@ export function UsageMeter({
   const f = format ?? ((n: number) => fmtNumber(n, locale));
   const unlimited = limit == null;
   const ratio = unlimited ? 0 : used / limit;
-  const state = unlimited ? 'ok' : ratio >= 1 ? 'limit' : ratio >= warnAt ? 'warn' : 'ok';
+  const state =
+    unlimited || neutral ? 'ok' : ratio >= 1 ? 'limit' : ratio >= warnAt ? 'warn' : 'ok';
   const remaining = unlimited ? null : Math.max(0, limit - used);
   const u = unit ? ` ${unit}` : '';
   const usedOf = unlimited ? '' : (usedOfLabel?.({ used: f(used), limit: f(limit) + u }) ?? '');
