@@ -1,0 +1,165 @@
+import { APIError } from 'better-auth';
+import { createAuthMiddleware, isAPIError } from 'better-auth/api';
+import { prismaAdapter } from 'better-auth/adapters/prisma';
+import { bearer, twoFactor } from 'better-auth/plugins';
+import type { UserWithTwoFactor } from 'better-auth/plugins/two-factor';
+import type { PrismaClient as IdentityBaseClient } from '../generated/identity-client';
+import type { PrismaClient as FounderBaseClient } from '../generated/founder-client';
+import { hashPassword, verifyPassword } from './password-policy';
+
+const HUB_RATE_LIMIT = {
+  enabled: true,
+  storage: 'database' as const,
+  window: 60,
+  max: 100,
+  customRules: {
+    '/sign-in/email': { window: 60 * 15, max: 5 },
+    '/two-factor/verify-totp': { window: 60 * 15, max: 5 },
+    '/two-factor/verify-backup-code': { window: 60 * 15, max: 5 },
+    '/request-password-reset': { window: 60 * 15, max: 5 },
+    '/reset-password': { window: 60 * 15, max: 5 },
+  },
+};
+
+const FOUNDER_RATE_LIMIT = { ...HUB_RATE_LIMIT };
+
+export function createHubAuthOptions(db: IdentityBaseClient, secret: string) {
+  const REMEMBER_ME_SECONDS = 30 * 24 * 60 * 60;
+
+  const before = createAuthMiddleware(async (ctx) => {
+    if (
+      (ctx.path === '/two-factor/verify-totp' || ctx.path === '/two-factor/verify-backup-code') &&
+      ctx.body?.trustDevice === true
+    ) {
+      throw new APIError('FORBIDDEN', { message: 'trustDevice is not permitted' });
+    }
+  });
+
+  const after = createAuthMiddleware(async (ctx) => {
+    // Revoke all other sessions when 2FA enrollment completes.
+    // Detection: bearer session whose cached user had twoFactorEnabled=false at sign-in time,
+    // calling verify-totp — this combination only occurs during enrollment (not sign-in challenge,
+    // which uses __two-factor cookie with no bearer session).
+    const sessionUser = ctx.context.session?.user as UserWithTwoFactor | undefined;
+    if (
+      ctx.path === '/two-factor/verify-totp' &&
+      !isAPIError(ctx.context.returned) &&
+      ctx.context.session?.session?.userId &&
+      sessionUser?.twoFactorEnabled !== true
+    ) {
+      const userId = ctx.context.session.session.userId;
+      const currentSessionId = ctx.context.session.session.id;
+      await db.session.deleteMany({
+        where: { userId, id: { not: currentSessionId } },
+      });
+    }
+  });
+
+  return {
+    secret,
+    database: prismaAdapter(db, { provider: 'postgresql', transaction: true }),
+    emailAndPassword: {
+      enabled: true,
+      minPasswordLength: 10,
+      password: { hash: hashPassword, verify: verifyPassword },
+      resetPasswordTokenExpiresIn: 3600,
+      // no-op: password reset emails are sent by a separate service watching the verification table
+      sendResetPassword: async () => {},
+    },
+    rateLimit: HUB_RATE_LIMIT,
+    session: {
+      expiresIn: REMEMBER_ME_SECONDS,
+      updateAge: 24 * 60 * 60,
+      cookieCache: { enabled: false },
+      additionalFields: {
+        activeOrganizationId: { type: 'string' as const, nullable: true, defaultValue: null },
+      },
+    },
+    plugins: [
+      bearer(),
+      twoFactor({
+        issuer: 'Ventora Hub',
+        backupCodeOptions: { storeBackupCodes: 'encrypted' as const },
+        accountLockout: { enabled: true, maxFailedAttempts: 5, durationSeconds: 900 },
+      }),
+    ],
+    disabledPaths: ['/two-factor/disable'],
+    hooks: { before, after },
+    advanced: {
+      database: { generateId: () => crypto.randomUUID() },
+      crossSubDomainCookies: { enabled: false },
+      defaultCookieAttributes: {
+        sameSite: 'lax' as const,
+        secure: process.env.NODE_ENV !== 'development',
+        httpOnly: true,
+      },
+      ipAddress: { ipAddressHeaders: ['x-forwarded-for'] },
+    },
+  };
+}
+
+export function createFounderAuthOptions(db: FounderBaseClient, secret: string) {
+  const SESSION_SECONDS = 8 * 60 * 60;
+
+  const before = createAuthMiddleware(async (ctx) => {
+    if (
+      (ctx.path === '/two-factor/verify-totp' || ctx.path === '/two-factor/verify-backup-code') &&
+      ctx.body?.trustDevice === true
+    ) {
+      throw new APIError('FORBIDDEN', { message: 'trustDevice is not permitted' });
+    }
+  });
+
+  const after = createAuthMiddleware(async (ctx) => {
+    const sessionUser = ctx.context.session?.user as UserWithTwoFactor | undefined;
+    if (
+      ctx.path === '/two-factor/verify-totp' &&
+      !isAPIError(ctx.context.returned) &&
+      ctx.context.session?.session?.userId &&
+      sessionUser?.twoFactorEnabled !== true
+    ) {
+      const userId = ctx.context.session.session.userId;
+      const currentSessionId = ctx.context.session.session.id;
+      await db.session.deleteMany({
+        where: { userId, id: { not: currentSessionId } },
+      });
+    }
+  });
+
+  return {
+    secret,
+    database: prismaAdapter(db, { provider: 'postgresql', transaction: true }),
+    emailAndPassword: {
+      enabled: true,
+      minPasswordLength: 12,
+      password: { hash: hashPassword, verify: verifyPassword },
+      resetPasswordTokenExpiresIn: 3600,
+      sendResetPassword: async () => {},
+    },
+    rateLimit: FOUNDER_RATE_LIMIT,
+    session: {
+      expiresIn: SESSION_SECONDS,
+      updateAge: 60 * 60,
+      cookieCache: { enabled: false },
+    },
+    plugins: [
+      twoFactor({
+        issuer: 'Ventora Founder',
+        backupCodeOptions: { storeBackupCodes: 'encrypted' as const },
+        accountLockout: { enabled: true, maxFailedAttempts: 5, durationSeconds: 900 },
+      }),
+    ],
+    disabledPaths: ['/two-factor/disable'],
+    hooks: { before, after },
+    advanced: {
+      database: { generateId: () => crypto.randomUUID() },
+      crossSubDomainCookies: { enabled: false },
+      defaultCookieAttributes: {
+        sameSite: 'lax' as const,
+        secure: process.env.NODE_ENV !== 'development',
+        httpOnly: true,
+      },
+      ipAddress: { ipAddressHeaders: ['x-forwarded-for'] },
+    },
+  };
+}

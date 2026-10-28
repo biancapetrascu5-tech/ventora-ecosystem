@@ -5,6 +5,7 @@ import {
   AppNotEnabled,
   Forbidden,
   ResourceNotFound,
+  TwoFactorRequired,
 } from '@ventora/errors';
 import type { EntitlementProvider } from '@ventora/contracts';
 import { getSession } from '@ventora/identity';
@@ -86,6 +87,11 @@ export async function authorize(params: AuthorizeParams): Promise<TenantContext>
 
   const role = orgCtx.role as MembershipRole;
   const membershipId = orgCtx.membershipId;
+
+  // Step 2b: owner must have 2FA enabled
+  if (role === 'owner' && !session.twoFactorEnabled) {
+    throw new TwoFactorRequired();
+  }
 
   // Step 3: application enabled (entitlement check — provider mandatory)
   if (!_config) throw new Error('[access] configureAccess() must be called before authorize()');
