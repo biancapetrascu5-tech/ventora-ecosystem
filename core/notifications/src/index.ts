@@ -17,9 +17,12 @@ export { passwordResetLink, invitationLink } from './links';
 export type { AuthApp } from './links';
 export {
   renderPasswordReset,
+  renderPasswordChanged,
   renderMemberInvitation,
   renderOwnerInvitation,
   renderOwnerRecovery,
+  renderSupportSessionOpened,
 } from './templates/index';
 export type { RenderedEmail, MembershipRoleName } from './templates/index';
 export { sendOwnerRecoveryNotice } from './owner-recovery';
+export { sendSupportSessionNotice } from './support-session';

@@ -22,6 +22,7 @@
     "@ventora/contracts": "workspace:*",
     "@ventora/errors": "workspace:*",
     "@ventora/identity": "workspace:*",
+    "@ventora/notifications": "workspace:*",
     "@ventora/organizations": "workspace:*",
     "pg": "^8.0.0",
     "prisma": "^7.0.0"

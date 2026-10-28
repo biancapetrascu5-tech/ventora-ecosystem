@@ -85,6 +85,18 @@
         "notRequested": "Dacă nu ai cerut tu resetarea, scrie imediat la {supportEmail}. Poate fi o încercare de acces la contul tău."
       }
     },
+    "passwordChanged": {
+      "subject": "Parola contului tău Ventora a fost schimbată",
+      "pre": "Schimbarea s-a făcut pe {date}, la {time}. Dacă nu ai fost tu, citește e-mailul.",
+      "eyebrow": "Contul tău Ventora",
+      "title": "Parola contului tău a fost schimbată",
+      "leadReset": "Parola contului {email} a fost schimbată pe {date}, la {time}. Te-am scos din cont pe toate dispozitivele.",
+      "leadAccount": "Parola contului {email} a fost schimbată pe {date}, la {time}. Te-am scos din cont pe celelalte dispozitive.",
+      "ifYou": "Dacă ai fost tu, nu trebuie să faci nimic.",
+      "notYou": "Nu ai fost tu? Alege imediat o parolă nouă din „Ai uitat parola?” și scrie-ne la {supportEmail}.",
+      "cta": "Scrie-ne la suport",
+      "why": "Primești acest e-mail pentru că parola contului tău Ventora s-a schimbat. E un e-mail de securitate: îl trimitem la fiecare schimbare de parolă și nu se poate opri."
+    },
     "invitation": {
       "member": {
         "subject": "{inviterName} te-a invitat în {businessName} pe Ventora",
@@ -111,6 +123,30 @@
       "button": "Alege o parolă nouă",
       "nextSteps": "Ce urmează: la următoarea intrare în cont pornești din nou autentificarea în doi pași, cu o aplicație de autentificare. Până atunci nu poți face modificări ca proprietar în {businessName}. Păstrează noile coduri de rezervă într-un loc sigur.",
       "notRequested": "Dacă nu ai cerut tu asta, scrie-ne imediat la {supportEmail}. Verificăm imediat ce s-a întâmplat."
+    },
+    "supportSession": {
+      "subject": "Echipa Ventora are acces de suport la {businessName}",
+      "intro": "{founderName} din echipa Ventora a deschis o sesiune de suport pentru {businessName}, pentru cererea {ticketRef}.",
+      "reason": "Motivul: {reason}",
+      "scope": "În timpul sesiunii, echipa Ventora poate doar să vadă datele afacerii, ca să rezolve cererea. Nu poate modifica date, nu vede parole și nu schimbă nimic în echipă sau în abonament.",
+      "until": "Sesiunea se închide automat pe {date}, la {time}.",
+      "close": "O poți închide oricând din Ventora, din bannerul sesiunii de suport.",
+      "notRequested": "Dacă nu ai cerut ajutor, închide sesiunea și scrie-ne la {supportEmail}.",
+      "footer": "Primești acest e-mail pentru că ești proprietarul afacerii {businessName} în Ventora."
+    }
+  },
+  "support": {
+    "session": {
+      "banner": {
+        "title": "Sesiune de suport activă",
+        "message": "{founderName} din echipa Ventora poate vedea datele afacerii până la {expiresAt}.",
+        "readOnly": "Doar citire: nu poate modifica date, membri, parole sau abonamentul.",
+        "reason": "Motiv: {reason}",
+        "ticketRef": "Cerere: {ticketRef}",
+        "close": "Închide sesiunea",
+        "closeConfirm": "Închizi sesiunea de suport? Echipa Ventora pierde accesul imediat.",
+        "closed": "Sesiunea de suport s-a închis."
+      }
     }
   },
   "auth": {

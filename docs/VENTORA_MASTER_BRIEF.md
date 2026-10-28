@@ -2,8 +2,9 @@
 ## MASTER PRODUCT & TECHNICAL ARCHITECTURE BRIEF
 ### Document de predare către Claude pentru proiectarea, auditarea și dezvoltarea ecosistemului Ventora
 
-**Versiune:** 1.1  
+**Versiune:** 1.2  
 **Modificare 1.1 (24.10.2026):** se adaugă italiana; ecosistemul suportă 6 limbi (decizia fondatoarei D-I18N-2, ARCHITECTURE.md §17.7). Restul documentului e neschimbat.  
+**Modificare 1.2 (28.10.2026):** §37 face distincția între automatizările predefinite ale modulelor (setări ale afacerii) și automatizările construite în workflow engine (doar Founder); deciziile fondatoarei D-WF-2, D-WF-3, D-WF-6, ARCHITECTURE.md §17.23. Restul documentului e neschimbat.  
 **Data de referință:** 23 octombrie 2026  
 **Stadiu:** Specificație funcțională confirmată pentru 15 aplicații; arhitectură tehnică de referință definită conceptual; auditul repository-ului existent NU a fost încă efectuat.
 
@@ -2108,7 +2109,9 @@ Organizațiile pot configura doar opțiunile permise.
 
 ## 37. Automatizări
 
-Automatizările sunt definite și întreținute de Ventora.
+Automatizările sunt definite și întreținute de Ventora. Există două feluri, distincte (D-WF-6, 28.10.2026):
+
+**1. Automatizările predefinite ale unui modul** (de exemplu, reminderele și confirmările din Booking) sunt setări ale modulului. Nu țin de workflow engine.
 
 Clienții pot:
 
@@ -2117,7 +2120,9 @@ Clienții pot:
 - Configura parametrii permiși.
 - Consulta istoricul.
 
-Nu construim implicit un workflow builder arbitrar în care clienții pot modifica orice proces intern.
+**2. Automatizările construite în workflow engine** (D-WF-2, D-WF-3) le construiește echipa Ventora pentru o afacere, din Founder Control Center. Doar Founder le pornește și le oprește. Afacerea (owner/admin) vede în Hub lista celor active, doar pentru citire. Numărul celor active simultan e o cotă a abonamentului (D-WF-4).
+
+Nu construim un workflow builder în care clienții pot modifica orice proces intern.
 
 ## 38. AI Assistant
 

@@ -85,6 +85,18 @@
         "notRequested": "Se non ha richiesto Lei la reimpostazione, scriva subito a {supportEmail}. Potrebbe trattarsi di un tentativo di accesso al Suo account."
       }
     },
+    "passwordChanged": {
+      "subject": "La password del Suo account Ventora è stata cambiata",
+      "pre": "La modifica è avvenuta il {date} alle {time}. Se non è stato Lei, legga questa e-mail.",
+      "eyebrow": "Il Suo account Ventora",
+      "title": "La password del Suo account è stata cambiata",
+      "leadReset": "La password dell’account {email} è stata cambiata il {date} alle {time}. Abbiamo chiuso la Sua sessione su tutti i dispositivi.",
+      "leadAccount": "La password dell’account {email} è stata cambiata il {date} alle {time}. Abbiamo chiuso la Sua sessione sugli altri dispositivi.",
+      "ifYou": "Se è stato Lei, non deve fare nulla.",
+      "notYou": "Non è stato Lei? Scelga subito una nuova password da «Ha dimenticato la password?» e ci scriva a {supportEmail}.",
+      "cta": "Scrivi al supporto",
+      "why": "Riceve questa e-mail perché la password del Suo account Ventora è cambiata. È un’e-mail di sicurezza: la inviamo a ogni cambio di password e non si può disattivare."
+    },
     "invitation": {
       "member": {
         "subject": "Invito da {inviterName}: {businessName} su Ventora",
@@ -111,6 +123,30 @@
       "button": "Scegli una nuova password",
       "nextSteps": "Cosa succede ora: al prossimo accesso riattiverà l’autenticazione a due fattori con un’app di autenticazione. Fino ad allora non potrà apportare modifiche con il ruolo di titolare in {businessName}. Conservi i nuovi codici di backup in un luogo sicuro.",
       "notRequested": "Se non l’ha richiesto Lei, ci scriva subito a {supportEmail}. Verifichiamo immediatamente cosa è successo."
+    },
+    "supportSession": {
+      "subject": "Il team Ventora ha un accesso di supporto a {businessName}",
+      "intro": "{founderName} del team Ventora ha aperto una sessione di supporto per {businessName}, per la richiesta {ticketRef}.",
+      "reason": "Motivo: {reason}",
+      "scope": "Durante la sessione il team Ventora può solo consultare i dati della Sua attività per risolvere la richiesta. Non può modificare dati, non vede le password e non cambia nulla nel Suo team o nell’abbonamento.",
+      "until": "La sessione si chiude automaticamente il {date} alle {time}.",
+      "close": "Può chiuderla in qualsiasi momento in Ventora, dal banner della sessione di supporto.",
+      "notRequested": "Se non ha chiesto assistenza, chiuda la sessione e ci scriva a {supportEmail}.",
+      "footer": "Riceve questa e-mail perché è il titolare dell’attività {businessName} in Ventora."
+    }
+  },
+  "support": {
+    "session": {
+      "banner": {
+        "title": "Sessione di supporto attiva",
+        "message": "{founderName} del team Ventora può consultare i dati della Sua attività fino alle {expiresAt}.",
+        "readOnly": "Sola lettura: non può modificare dati, membri, password o l’abbonamento.",
+        "reason": "Motivo: {reason}",
+        "ticketRef": "Richiesta: {ticketRef}",
+        "close": "Chiudi la sessione",
+        "closeConfirm": "Chiudere la sessione di supporto? Il team Ventora perde subito l’accesso.",
+        "closed": "La sessione di supporto è stata chiusa."
+      }
     }
   },
   "auth": {

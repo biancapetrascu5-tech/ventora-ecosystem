@@ -1969,6 +1969,377 @@ describe.skipIf(shouldSkipForEnv('DATABASE_URL_ADMIN_TEST'))('PR — password re
   });
 });
 
+// ---------------------------------------------------------------------------
+// Lot 2.4b-backend — password reset rules (R-PR3, R-PR4, R-PR5, R-PR7)
+// ---------------------------------------------------------------------------
+const CHANGED_SUBJECT = 'Parola contului tău Ventora a fost schimbată';
+
+async function requestReset(auth: AuthInstance, email: string, ip?: string) {
+  return post(auth, '/request-password-reset', { email }, ip ? { 'x-forwarded-for': ip } : {});
+}
+
+async function renewLink(auth: AuthInstance, token: unknown) {
+  const r = await post(auth, '/request-new-reset-link', { token });
+  return { ...r, body: (await r.resp.json()) as Record<string, unknown> };
+}
+
+async function expireResetTokens(db: typeof identityDb | typeof founderDb, userId: string) {
+  await (db as typeof identityDb).verification.updateMany({
+    where: { value: userId, identifier: { startsWith: 'reset-password:' } },
+    data: { expiresAt: new Date(Date.now() - 60_000) },
+  });
+}
+
+const resetMails = (email: string) =>
+  mailbox.to(email).filter((m) => m.subject !== CHANGED_SUBJECT);
+
+describe.skipIf(shouldSkipForEnv('DATABASE_URL_ADMIN_TEST'))(
+  'R-PR3 — a new request invalidates earlier tokens',
+  () => {
+    it('Hub: after two requests the first token is rejected, the second works', async () => {
+      const email = 'rpr3.hub@test.com';
+      const { user } = await signUp(email, 'Password123');
+      await requestReset(hubAuth, email);
+      await requestReset(hubAuth, email);
+      const [first, second] = resetMails(email).map((m) => tokenFromMail(m.text!));
+      expect(first).not.toBe(second);
+      expect(
+        await identityDb.verification.count({
+          where: { value: user.id, identifier: { startsWith: 'reset-password:' } },
+        }),
+      ).toBe(1);
+
+      const old = await post(hubAuth, '/reset-password', {
+        token: first,
+        newPassword: 'NewPassword123',
+      });
+      expect(old.resp.status).toBe(400);
+      expect(((await old.resp.json()) as { code?: string }).code).toBe('INVALID_TOKEN');
+      const ok = await post(hubAuth, '/reset-password', {
+        token: second,
+        newPassword: 'NewPassword123',
+      });
+      expect(ok.resp.status).toBe(200);
+    });
+
+    it('Founder: same rule', async () => {
+      const email = 'rpr3.founder@founder.com';
+      await founderAuthTest.api.signUpEmail({
+        body: { email, password: 'FounderPass12', name: 'Founder RPR3' }, // gitleaks:allow
+      });
+      await requestReset(founderAuthTest, email);
+      await requestReset(founderAuthTest, email);
+      const [first, second] = resetMails(email).map((m) => tokenFromMail(m.text!));
+      const old = await post(founderAuthTest, '/reset-password', {
+        token: first,
+        newPassword: 'FounderNewPass12', // gitleaks:allow
+      });
+      expect(old.resp.status).toBe(400);
+      const ok = await post(founderAuthTest, '/reset-password', {
+        token: second,
+        newPassword: 'FounderNewPass12', // gitleaks:allow
+      });
+      expect(ok.resp.status).toBe(200);
+    });
+  },
+);
+
+describe.skipIf(shouldSkipForEnv('DATABASE_URL_ADMIN_TEST'))(
+  'R-PR4 — 5 requests per hour per address',
+  () => {
+    async function expectLimited(resp: Response, startedAt: number) {
+      expect(resp.status).toBe(429);
+      const body = (await resp.json()) as { code?: string; retryAt?: string };
+      expect(body.code).toBe('PASSWORD_RESET_RATE_LIMITED');
+      const retryAt = new Date(body.retryAt!).getTime();
+      // the window opened with the first request: retryAt = first request + 1 hour
+      expect(retryAt).toBeGreaterThanOrEqual(startedAt + 60 * 60 * 1000 - 1000);
+      expect(retryAt).toBeLessThanOrEqual(Date.now() + 60 * 60 * 1000);
+      expect(Number(resp.headers.get('retry-after'))).toBeGreaterThan(3500);
+      return body;
+    }
+
+    it('Hub: the 6th request in the hour is limited, with retryAt; audited without the address', async () => {
+      const email = 'rpr4.hub@test.com';
+      await signUp(email, 'Password123');
+      const startedAt = Date.now();
+      for (let i = 0; i < 5; i++) {
+        // each from its own IP: only the per-address rule can stop the 6th; mixed case = same address
+        const r = await requestReset(hubAuth, i === 2 ? 'RPR4.Hub@Test.com' : email);
+        expect(r.resp.status).toBe(200);
+      }
+      const sixth = await requestReset(hubAuth, email);
+      const body = await expectLimited(sixth.resp, startedAt);
+      expect(resetMails(email)).toHaveLength(5);
+
+      const [row] = await byRequest(sixth.requestId);
+      expect(row).toMatchObject({
+        action: 'password.reset_rate_limited',
+        outcome: 'denied',
+        actor_type: 'anonymous',
+        target_id: null,
+        metadata: { emailHash: hashEmail(email), retryAt: body.retryAt },
+      });
+      expect(JSON.stringify(row)).not.toContain(email);
+    });
+
+    it('an address without an account gets the same limit and the same audit row', async () => {
+      const email = 'rpr4.nobody@test.com';
+      const startedAt = Date.now();
+      for (let i = 0; i < 5; i++)
+        expect((await requestReset(hubAuth, email)).resp.status).toBe(200);
+      const sixth = await requestReset(hubAuth, email);
+      await expectLimited(sixth.resp, startedAt);
+      expect(mailbox.sent).toHaveLength(0);
+      const [row] = await byRequest(sixth.requestId);
+      expect(row).toMatchObject({
+        action: 'password.reset_rate_limited',
+        target_id: null,
+        metadata: { emailHash: hashEmail(email) },
+      });
+    });
+
+    it('another address from the same IP is not affected by the per-address limit', async () => {
+      const limited = 'rpr4.a@test.com';
+      const other = 'rpr4.b@test.com';
+      await signUp(other, 'Password123');
+      const ip = '10.44.0.1';
+      for (let i = 0; i < 5; i++) await requestReset(hubAuth, limited);
+      expect((await requestReset(hubAuth, limited, ip)).resp.status).toBe(429);
+      const r = await requestReset(hubAuth, other, ip);
+      expect(r.resp.status).toBe(200);
+      expect(resetMails(other)).toHaveLength(1);
+    });
+
+    it('once the hour is over the address can ask again', async () => {
+      const email = 'rpr4.window@test.com';
+      for (let i = 0; i < 5; i++) await requestReset(hubAuth, email);
+      expect((await requestReset(hubAuth, email)).resp.status).toBe(429);
+      await identityDb.rateLimit.updateMany({
+        where: { key: `password-reset-email:${hashEmail(email)}` },
+        data: { lastRequest: Date.now() - 60 * 60 * 1000 - 1000 },
+      });
+      expect((await requestReset(hubAuth, email)).resp.status).toBe(200);
+    });
+
+    it('Founder: same limit, audited as founder.password_reset_rate_limited', async () => {
+      const email = 'rpr4@founder.com';
+      const startedAt = Date.now();
+      for (let i = 0; i < 5; i++) await requestReset(founderAuthTest, email);
+      const sixth = await requestReset(founderAuthTest, email);
+      await expectLimited(sixth.resp, startedAt);
+      const [row] = await byRequest(sixth.requestId);
+      expect(row).toMatchObject({
+        category: 'founder',
+        action: 'founder.password_reset_rate_limited',
+        outcome: 'denied',
+      });
+    });
+  },
+);
+
+describe.skipIf(shouldSkipForEnv('DATABASE_URL_ADMIN_TEST'))(
+  'R-PR5 — new link from a token',
+  () => {
+    it('expired token, row still there → new link on the account address; it works, the old one does not', async () => {
+      const email = 'rpr5.expired@test.com';
+      const { user } = await signUp(email, 'Password123', 'Ana Pop');
+      await requestReset(hubAuth, email);
+      const oldToken = tokenFromMail(resetMails(email)[0]!.text!);
+      await expireResetTokens(identityDb, user.id);
+
+      // the screen's flow: the expired token is refused, then the user asks for a new link
+      const refused = await post(hubAuth, '/reset-password', {
+        token: oldToken,
+        newPassword: 'NewPassword123',
+      });
+      expect(refused.resp.status).toBe(400);
+      const renewed = await renewLink(hubAuth, oldToken);
+      expect(renewed.resp.status).toBe(200);
+      expect(renewed.body).toEqual({ status: 'link_sent' });
+
+      const mails = resetMails(email);
+      expect(mails).toHaveLength(2);
+      expect(mails[1]!.subject).toBe('Alege o parolă nouă pentru contul Ventora');
+      const newToken = tokenFromMail(mails[1]!.text!);
+      expect(newToken).not.toBe(oldToken);
+
+      // R-PR3: the expired row is gone too
+      expect(await renewLink(hubAuth, oldToken)).toMatchObject({
+        body: { status: 'forgot_password' },
+      });
+      const ok = await post(hubAuth, '/reset-password', {
+        token: newToken,
+        newPassword: 'NewPassword123',
+      });
+      expect(ok.resp.status).toBe(200);
+
+      const [row] = await byRequest(renewed.requestId);
+      expect(row).toMatchObject({
+        action: 'password.reset_requested',
+        target_id: user.id,
+        metadata: { emailHash: hashEmail(email), via: 'expired_link' },
+      });
+      expect(JSON.stringify(row)).not.toContain(oldToken);
+    });
+
+    it('unknown, used or malformed token → forgot_password, no email', async () => {
+      const email = 'rpr5.used@test.com';
+      await signUp(email, 'Password123');
+      await requestReset(hubAuth, email);
+      const used = tokenFromMail(resetMails(email)[0]!.text!);
+      await post(hubAuth, '/reset-password', { token: used, newPassword: 'NewPassword123' });
+      mailbox.clear();
+
+      for (const token of ['not-a-real-token', used, '', '../../etc', 'x'.repeat(500), 42, null]) {
+        const r = await renewLink(hubAuth, token);
+        expect(r.resp.status).toBe(200);
+        expect(r.body).toEqual({ status: 'forgot_password' });
+      }
+      expect(mailbox.sent).toHaveLength(0);
+    });
+
+    it('respects R-PR4: an address at its limit gets 429 with retryAt', async () => {
+      const email = 'rpr5.limit@test.com';
+      const { user } = await signUp(email, 'Password123');
+      for (let i = 0; i < 5; i++) await requestReset(hubAuth, email);
+      const token = tokenFromMail(resetMails(email).at(-1)!.text!);
+      await expireResetTokens(identityDb, user.id);
+
+      const r = await renewLink(hubAuth, token);
+      expect(r.resp.status).toBe(429);
+      expect(r.body).toMatchObject({ code: 'PASSWORD_RESET_RATE_LIMITED' });
+      expect(typeof r.body.retryAt).toBe('string');
+      expect(resetMails(email)).toHaveLength(5);
+    });
+
+    it('Founder: expired token → new Founder link', async () => {
+      const email = 'rpr5@founder.com';
+      const user = await founderAuthTest.api.signUpEmail({
+        body: { email, password: 'FounderPass12', name: 'Founder RPR5' }, // gitleaks:allow
+      });
+      await requestReset(founderAuthTest, email);
+      const oldToken = tokenFromMail(resetMails(email)[0]!.text!);
+      await expireResetTokens(founderDb, user.user.id);
+
+      const renewed = await renewLink(founderAuthTest, oldToken);
+      expect(renewed.body).toEqual({ status: 'link_sent' });
+      const newToken = tokenFromMail(resetMails(email)[1]!.text!);
+      expect(resetMails(email)[1]!.text).toContain(passwordResetLink('founder', newToken));
+    });
+
+    it('cleanup: expired reset rows stay 7 days, other expired rows go at once', async () => {
+      const past = (ms: number) => new Date(Date.now() - ms);
+      const rows = [
+        { identifier: 'reset-password:recent-expired', expiresAt: past(60_000) },
+        { identifier: 'reset-password:old-expired', expiresAt: past(8 * 24 * 60 * 60 * 1000) },
+        { identifier: 'two-factor-expired', expiresAt: past(60_000) },
+      ];
+      for (const r of rows) {
+        await identityDb.verification.create({
+          data: { id: crypto.randomUUID(), value: 'nobody', createdAt: new Date(), ...r },
+        });
+      }
+      // a request on a path that reads verification rows runs the cleanup
+      await requestReset(hubAuth, 'rpr5.cleanup@test.com');
+      const left = await identityDb.verification.findMany({ select: { identifier: true } });
+      expect(left.map((r) => r.identifier)).toEqual(['reset-password:recent-expired']);
+    });
+  },
+);
+
+describe.skipIf(shouldSkipForEnv('DATABASE_URL_ADMIN_TEST'))(
+  'R-PR7 — "password changed" notice',
+  () => {
+    it('Hub: after a successful reset', async () => {
+      const email = 'rpr7.reset@test.com';
+      await signUp(email, 'Password123', 'Ana Pop');
+      await requestReset(hubAuth, email);
+      const token = tokenFromMail(resetMails(email)[0]!.text!);
+      expect(mailbox.to(email).some((m) => m.subject === CHANGED_SUBJECT)).toBe(false);
+
+      await post(hubAuth, '/reset-password', { token, newPassword: 'NewPassword123' });
+      const changed = mailbox.to(email).filter((m) => m.subject === CHANGED_SUBJECT);
+      expect(changed).toHaveLength(1);
+      expect(changed[0]!.text).toContain(`Parola contului ${email} a fost schimbată pe`);
+      expect(changed[0]!.text).toContain('Te-am scos din cont pe toate dispozitivele.');
+    });
+
+    it('Hub: after change-password; a failed change sends nothing', async () => {
+      const email = 'rpr7.change@test.com';
+      await signUp(email, 'Password123');
+      const login = await signIn(email, 'Password123');
+      const wrong = await post(
+        hubAuth,
+        '/change-password',
+        { currentPassword: 'WrongPass1234', newPassword: 'Changed12345' }, // gitleaks:allow
+        bearerHeader(login.token),
+      );
+      expect(wrong.resp.status).toBe(400);
+      expect(mailbox.to(email)).toHaveLength(0);
+
+      const ok = await post(
+        hubAuth,
+        '/change-password',
+        { currentPassword: 'Password123', newPassword: 'Changed12345' },
+        bearerHeader(login.token),
+      );
+      expect(ok.resp.status).toBe(200);
+      const changed = mailbox.to(email);
+      expect(changed.map((m) => m.subject)).toEqual([CHANGED_SUBJECT]);
+      expect(changed[0]!.text).toContain('Te-am scos din cont pe celelalte dispozitive.');
+    });
+
+    it('Founder: after a successful reset', async () => {
+      const email = 'rpr7@founder.com';
+      await founderAuthTest.api.signUpEmail({
+        body: { email, password: 'FounderPass12', name: 'Founder RPR7' }, // gitleaks:allow
+      });
+      await requestReset(founderAuthTest, email);
+      const token = tokenFromMail(resetMails(email)[0]!.text!);
+      await post(founderAuthTest, '/reset-password', {
+        token,
+        newPassword: 'FounderNewPass12', // gitleaks:allow
+      });
+      const changed = mailbox.to(email).filter((m) => m.subject === CHANGED_SUBJECT);
+      expect(changed).toHaveLength(1);
+      expect(changed[0]!.text).toContain(
+        `Parola contului ${email} a fost schimbată pe`, // same texts as Hub
+      );
+      expect(changed[0]!.text).toContain('Te-am scos din cont pe toate dispozitivele.');
+    });
+
+    it('best_effort: delivery fails → reset still 200, password.changed_email_failed without the address', async () => {
+      const email = 'rpr7.fail@test.com';
+      const { user } = await signUp(email, 'Password123');
+      await requestReset(hubAuth, email);
+      const token = tokenFromMail(resetMails(email)[0]!.text!);
+      mailbox.failWith = new Error('[notifications] Resend error: rate_limit_exceeded');
+      const errors = vi.spyOn(console, 'error').mockImplementation(() => {});
+      try {
+        const reset = await post(hubAuth, '/reset-password', {
+          token,
+          newPassword: 'NewPassword123',
+        });
+        expect(reset.resp.status).toBe(200);
+        const rows = await byRequest(reset.requestId);
+        const failed = rows.find((r) => r.action === 'password.changed_email_failed');
+        expect(failed).toMatchObject({
+          category: 'identity',
+          outcome: 'failure',
+          actor_type: 'system',
+          target_id: user.id,
+          metadata: { reason: 'provider_error', trigger: 'reset', emailHash: hashEmail(email) },
+        });
+        expect(JSON.stringify(failed)).not.toContain(email);
+        expect(rows.some((r) => r.action === 'password.reset_completed')).toBe(true);
+      } finally {
+        errors.mockRestore();
+      }
+    });
+  },
+);
+
 describe.skipIf(shouldSkipForEnv('DATABASE_URL_ADMIN_TEST'))('T3.7 — Founder audit', () => {
   it('E30 — Founder login succeeded / failed, 2FA enrollment, 2FA required', async () => {
     const email = 'audit.e30@founder.com';

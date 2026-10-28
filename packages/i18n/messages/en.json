@@ -85,6 +85,18 @@
         "notRequested": "If you didn't ask for this, write to {supportEmail} right away. Someone may be trying to access your account."
       }
     },
+    "passwordChanged": {
+      "subject": "Your Ventora password was changed",
+      "pre": "The change was made on {date}, at {time}. If it wasn't you, read this email.",
+      "eyebrow": "Your Ventora account",
+      "title": "Your account password was changed",
+      "leadReset": "The password for {email} was changed on {date}, at {time}. We've signed you out on all devices.",
+      "leadAccount": "The password for {email} was changed on {date}, at {time}. We've signed you out on your other devices.",
+      "ifYou": "If it was you, you don't need to do anything.",
+      "notYou": "Wasn't you? Choose a new password right away from \"Forgot your password?\" and write to us at {supportEmail}.",
+      "cta": "Write to support",
+      "why": "You're receiving this email because your Ventora account password changed. It's a security email: we send it for every password change and it can't be turned off."
+    },
     "invitation": {
       "member": {
         "subject": "{inviterName} invited you to {businessName} on Ventora",
@@ -111,6 +123,30 @@
       "button": "Choose a new password",
       "nextSteps": "What happens next: the next time you sign in, you'll turn on two-step authentication again with an authenticator app. Until then, you can't make changes as owner of {businessName}. Keep your new backup codes somewhere safe.",
       "notRequested": "If you didn't ask for this, write to us right away at {supportEmail}. We'll look into what happened immediately."
+    },
+    "supportSession": {
+      "subject": "The Ventora team has support access to {businessName}",
+      "intro": "{founderName} from the Ventora team opened a support session for {businessName}, for request {ticketRef}.",
+      "reason": "Reason: {reason}",
+      "scope": "During the session, the Ventora team can only view your business data to resolve the request. They can't change data, can't see passwords and don't change anything about your team or subscription.",
+      "until": "The session closes automatically on {date}, at {time}.",
+      "close": "You can close it at any time in Ventora, from the support session banner.",
+      "notRequested": "If you didn't ask for help, close the session and write to us at {supportEmail}.",
+      "footer": "You're receiving this email because you're the owner of {businessName} in Ventora."
+    }
+  },
+  "support": {
+    "session": {
+      "banner": {
+        "title": "Support session active",
+        "message": "{founderName} from the Ventora team can view your business data until {expiresAt}.",
+        "readOnly": "Read only: they can't change data, members, passwords or the subscription.",
+        "reason": "Reason: {reason}",
+        "ticketRef": "Request: {ticketRef}",
+        "close": "Close session",
+        "closeConfirm": "Close the support session? The Ventora team loses access immediately.",
+        "closed": "The support session is closed."
+      }
     }
   },
   "auth": {

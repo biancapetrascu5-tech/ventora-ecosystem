@@ -22,6 +22,8 @@ export const AuditActions = {
   passwordResetFailed: 'password.reset_failed', // E18
   passwordChanged: 'password.changed', // E19
   passwordResetEmailFailed: 'password.reset_email_failed', // Lot 2.5b — reset email not delivered
+  passwordResetRateLimited: 'password.reset_rate_limited', // Lot 2.4b R-PR4 — per-address limit hit
+  passwordChangedEmailFailed: 'password.changed_email_failed', // Lot 2.4b R-PR7 — notice not delivered
   // §2.3 Organizations and access
   organizationCreated: 'org.created', // E20
   invitationCreated: 'invitation.created', // E21
@@ -37,8 +39,9 @@ export const AuditActions = {
   founderUserAdded: 'founder.user_added', // E31
   founderUserRevoked: 'founder.user_revoked', // E32
   founderAuditViewed: 'founder.audit_viewed', // E33
-  // §2.5 Support and recovery (category support) — Lot 2.5b
+  // §2.5 Support and recovery (category support) — Lot 2.5c
   supportSessionOpened: 'support.session_opened', // E34
+  supportSessionNoticeFailed: 'support.session_notice_failed', // E34 follow-up: E-6 to an owner not delivered
   supportSessionClosed: 'support.session_closed', // E35
   supportSessionRevokedByOrg: 'support.session_revoked_by_org', // E36
   supportSessionExpired: 'support.session_expired', // E37

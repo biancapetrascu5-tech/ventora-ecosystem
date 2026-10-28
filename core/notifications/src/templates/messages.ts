@@ -22,6 +22,19 @@ export interface EmailMessages {
     'hub' | 'founder',
     { subject: string; intro: string; button: string; validity: string; notRequested: string }
   >;
+  // R-PR7 (S78): approved copy, the same for Hub and Founder.
+  passwordChanged: {
+    subject: string;
+    pre: string;
+    eyebrow: string;
+    title: string;
+    leadReset: string;
+    leadAccount: string;
+    ifYou: string;
+    notYou: string;
+    cta: string;
+    why: string;
+  };
   invitation: {
     member: {
       subject: string;
@@ -48,6 +61,16 @@ export interface EmailMessages {
     button: string;
     nextSteps: string;
     notRequested: string;
+  };
+  supportSession: {
+    subject: string;
+    intro: string;
+    reason: string;
+    scope: string;
+    until: string;
+    close: string;
+    notRequested: string;
+    footer: string;
   };
 }
 

@@ -1,0 +1,15 @@
+{
+  "founder": {
+    "support": {
+      "banner": {
+        "title": "Ești în sesiune de suport pentru {organizationName}",
+        "expires": "Expiră la {expiresAt}",
+        "readOnly": "Doar citire: nu poți modifica date, membri, parole sau abonamentul.",
+        "close": "Închide",
+        "closeConfirm": "Închizi sesiunea de suport pentru {organizationName}?",
+        "closed": "Sesiunea de suport s-a închis.",
+        "expired": "Sesiunea de suport a expirat. Deschide una nouă dacă mai ai nevoie de acces."
+      }
+    }
+  }
+}

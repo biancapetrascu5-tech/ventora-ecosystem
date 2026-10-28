@@ -20,3 +20,12 @@ export function passwordResetLink(app: AuthApp, token: string): string {
 export function invitationLink(token: string): string {
   return `${baseUrl('hub')}/invite/${encodeURIComponent(token)}`;
 }
+
+/**
+ * The email header logo, served by the platform (apps/platform/public/email). Only with a
+ * configured platform URL: an email never loads an image from localhost.
+ */
+export function emailLogoUrl(): string | null {
+  const raw = process.env.NEXT_PUBLIC_PLATFORM_URL?.trim();
+  return raw ? `${raw.replace(/\/+$/, '')}/email/ventora-logo-email-2x.png` : null;
+}

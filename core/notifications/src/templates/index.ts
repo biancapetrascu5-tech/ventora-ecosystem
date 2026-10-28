@@ -56,6 +56,63 @@ export function renderPasswordReset(params: {
   });
 }
 
+/** Time with the abbreviation of the display zone, e.g. "10:32 EET" (S78). */
+function formatTimeWithZone(date: Date, locale: Locale): string {
+  const time = new Intl.DateTimeFormat(locale, {
+    hour: '2-digit',
+    minute: '2-digit',
+    hourCycle: 'h23',
+    timeZone: DISPLAY_TIME_ZONE,
+  }).format(date);
+  // EET / EEST in every language: some locales only offer "GMT+2" or a translated name
+  const zone = new Intl.DateTimeFormat(CANONICAL_LOCALE, {
+    timeZone: DISPLAY_TIME_ZONE,
+    timeZoneName: 'short',
+  })
+    .formatToParts(date)
+    .find((p) => p.type === 'timeZoneName')?.value;
+  return zone ? `${time} ${zone}` : time;
+}
+
+/**
+ * R-PR7 (Lot 2.4b, S78): the password was changed. `reset` = from the reset link, every
+ * session is closed; `change` = from the account settings, the other sessions are closed.
+ * Same texts for Hub and Founder; the button writes to support.
+ */
+export function renderPasswordChanged(params: {
+  email: string;
+  trigger: 'reset' | 'change';
+  changedAt: Date;
+  locale?: Locale;
+}): RenderedEmail {
+  const locale = params.locale ?? DEFAULT_EMAIL_LOCALE;
+  const m = emailMessages(locale);
+  const t = m.passwordChanged;
+  const vars = {
+    email: params.email,
+    date: formatDate(params.changedAt, locale),
+    time: formatTimeWithZone(params.changedAt, locale),
+  };
+  const support = supportEmail();
+  return renderOperationalEmail({
+    lang: locale,
+    subject: t.subject,
+    preheader: fill(t.pre, vars),
+    eyebrow: t.eyebrow,
+    title: t.title,
+    lead: [
+      fill(params.trigger === 'reset' ? t.leadReset : t.leadAccount, vars),
+      t.ifYou,
+      fill(t.notYou, { supportEmail: support }),
+    ],
+    button: { label: t.cta, href: `mailto:${support}` },
+    after: [],
+    signature: m.common.signature,
+    why: t.why,
+    company: m.common.company,
+  });
+}
+
 export function renderMemberInvitation(params: {
   email: string;
   inviterName: string;
@@ -161,6 +218,56 @@ export function renderOwnerRecovery(params: {
     ],
     signature: m.common.signature,
     why: fill(m.common.footerAccount, { email: params.email }),
+    company: m.common.company,
+  });
+}
+
+/**
+ * E-6 (Lot 2.5c, D10 variant A; S99): tells an owner that a Founder opened a read-only support
+ * session for the business, with the reason. No button: the Hub screens come with F1 (D18).
+ * The expiry uses the date and time format of the "password changed" email.
+ */
+export function renderSupportSessionOpened(params: {
+  email: string;
+  name?: string | null;
+  businessName: string;
+  founderName: string;
+  reason: string;
+  ticketRef: string;
+  expiresAt: Date;
+  locale?: Locale;
+}): RenderedEmail {
+  const locale = params.locale ?? DEFAULT_EMAIL_LOCALE;
+  const m = emailMessages(locale);
+  const t = m.supportSession;
+  const vars = {
+    businessName: params.businessName,
+    founderName: params.founderName,
+    ticketRef: params.ticketRef,
+    reason: params.reason,
+    date: formatDate(params.expiresAt, locale),
+    time: formatTimeWithZone(params.expiresAt, locale),
+  };
+  const subject = fill(t.subject, vars);
+  return renderOperationalEmail({
+    lang: locale,
+    subject,
+    preheader: fill(t.intro, vars),
+    eyebrow: params.businessName,
+    title: subject,
+    lead: [
+      greeting(m, params.name, params.email),
+      fill(t.intro, vars),
+      fill(t.reason, vars),
+      t.scope,
+    ],
+    after: [
+      fill(t.until, vars),
+      t.close,
+      { text: fill(t.notRequested, { supportEmail: supportEmail() }), strong: true },
+    ],
+    signature: m.common.signature,
+    why: fill(t.footer, vars),
     company: m.common.company,
   });
 }

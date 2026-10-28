@@ -5,7 +5,9 @@ import {
   renderMemberInvitation,
   renderOwnerInvitation,
   renderOwnerRecovery,
+  renderPasswordChanged,
   renderPasswordReset,
+  renderSupportSessionOpened,
 } from '../index';
 
 const saved = { ...process.env };
@@ -40,6 +42,8 @@ describe('S3 / S54 — one operational layout for every email', () => {
       link: 'https://l/4',
     }),
     renderOwnerRecovery({ email: 'a@x.ro', businessName: 'Salon Aurora', ticketRef: 'T-1' }),
+    renderPasswordChanged({ email: 'a@x.ro', trigger: 'reset', changedAt: expiresAt }),
+    renderPasswordChanged({ email: 'a@x.ro', trigger: 'change', changedAt: expiresAt }),
   ];
 
   it('same skeleton: preheader, logo, eyebrow, title, footer with company; light only, 600px', () => {
@@ -64,10 +68,11 @@ describe('S3 / S54 — one operational layout for every email', () => {
     }
   });
 
-  it('the eyebrow names the business when there is one, else the product', () => {
+  it('the eyebrow names the business when there is one, else the product or the account', () => {
     expect(all[0]!.html).toMatch(/uppercase[^>]*>Ventora<\/p>/);
     expect(all[1]!.html).toMatch(/uppercase[^>]*>Ventora Founder<\/p>/);
-    for (const r of all.slice(2)) expect(r.html).toMatch(/uppercase[^>]*>Salon Aurora<\/p>/);
+    for (const r of all.slice(2, 5)) expect(r.html).toMatch(/uppercase[^>]*>Salon Aurora<\/p>/);
+    for (const r of all.slice(5)) expect(r.html).toMatch(/uppercase[^>]*>Contul tău Ventora<\/p>/);
   });
 
   it('phones: the button takes the full width', () => {
@@ -138,6 +143,120 @@ describe('N.3 — password reset (E-1, E-2)', () => {
     expect(r.html).not.toContain('<script>');
     expect(r.html).toContain('&lt;script&gt;');
     expect(r.html).toContain('href="https://l?a=1&amp;b=2"');
+  });
+});
+
+describe('R-PR7 — password changed (S78, approved copy)', () => {
+  const changedAt = new Date('2026-10-28T12:05:00Z'); // 14:05 in Bucharest (EET)
+
+  it('after a reset: signed out on all devices', () => {
+    const r = renderPasswordChanged({ email: 'ana@x.ro', trigger: 'reset', changedAt });
+    expectComplete(r);
+    expect(r.subject).toBe('Parola contului tău Ventora a fost schimbată');
+    expect(r.html).toContain(
+      '>Schimbarea s-a făcut pe 28 octombrie 2026, la 14:05 EET. Dacă nu ai fost tu, citește e-mailul.</div>',
+    );
+    expect(r.html).toMatch(/uppercase[^>]*>Contul tău Ventora<\/p>/);
+    expect(r.html).toMatch(/<h1 [^>]*>Parola contului tău a fost schimbată<\/h1>/);
+    expect(r.text).toContain(
+      'Parola contului ana@x.ro a fost schimbată pe 28 octombrie 2026, la 14:05 EET. Te-am scos din cont pe toate dispozitivele.',
+    );
+    expect(r.text).not.toContain('celelalte dispozitive');
+    expect(r.text).toContain('Dacă ai fost tu, nu trebuie să faci nimic.');
+    expect(r.text).toContain(
+      'Nu ai fost tu? Alege imediat o parolă nouă din „Ai uitat parola?” și scrie-ne la support@ventorasystems.com.',
+    );
+    expect(r.text).toContain(
+      'Primești acest e-mail pentru că parola contului tău Ventora s-a schimbat. E un e-mail de securitate: îl trimitem la fiecare schimbare de parolă și nu se poate opri.',
+    );
+    expect(r.text).not.toContain('Bună,');
+  });
+
+  it('from the account settings: signed out on the other devices', () => {
+    const r = renderPasswordChanged({ email: 'ana@x.ro', trigger: 'change', changedAt });
+    expectComplete(r);
+    expect(r.text).toContain(
+      'Parola contului ana@x.ro a fost schimbată pe 28 octombrie 2026, la 14:05 EET. Te-am scos din cont pe celelalte dispozitive.',
+    );
+    expect(r.text).not.toContain('toate dispozitivele');
+  });
+
+  it('summer time shows EEST', () => {
+    const r = renderPasswordChanged({
+      email: 'ana@x.ro',
+      trigger: 'reset',
+      changedAt: new Date('2026-07-01T07:32:00Z'),
+    });
+    expect(r.text).toContain('pe 1 iulie 2026, la 10:32 EEST.');
+  });
+
+  it('the button writes to support; in the text the address is not a link', () => {
+    const r = renderPasswordChanged({ email: 'ana@x.ro', trigger: 'reset', changedAt });
+    expect(r.html).toContain('class="v-btn" href="mailto:support@ventorasystems.com"');
+    expect(r.html).toMatch(/>Scrie-ne la suport<\/a>/);
+    expect(r.text).toContain('Scrie-ne la suport: mailto:support@ventorasystems.com');
+    expect(r.html.match(/<a /g)).toHaveLength(1); // no link to "Ai uitat parola?"
+    expect(r.html).not.toContain('forgot');
+    expect(r.html).not.toContain('reset-password');
+  });
+});
+
+describe('E-6 — support session opened (S99)', () => {
+  const base = {
+    email: 'owner@x.ro',
+    name: 'Ana',
+    businessName: 'Salon Aurora',
+    founderName: 'Bianca Ventora',
+    reason: 'Clientul nu vede programările de ieri',
+    ticketRef: 'SUP-2026-001',
+    expiresAt: new Date('2026-10-28T16:30:00Z'), // 18:30 in Bucharest (EET)
+  };
+
+  it('expiry as "pe {date}, la {time}", the reason right after the intro, the owner footer', () => {
+    const r = renderSupportSessionOpened(base);
+    expectComplete(r);
+    expect(r.text).toContain('Sesiunea se închide automat pe 28 octombrie 2026, la 18:30 EET.');
+    expect(r.text).toContain(
+      'Bianca Ventora din echipa Ventora a deschis o sesiune de suport pentru Salon Aurora, pentru cererea SUP-2026-001.\n\nMotivul: Clientul nu vede programările de ieri\n\nÎn timpul sesiunii',
+    );
+    expect(r.text).toContain(
+      'Primești acest e-mail pentru că ești proprietarul afacerii Salon Aurora în Ventora.',
+    );
+    expect(r.text).not.toContain('e folosită pentru un cont Ventora');
+  });
+
+  it('summer time shows EEST', () => {
+    const r = renderSupportSessionOpened({ ...base, expiresAt: new Date('2026-07-01T07:32:00Z') });
+    expect(r.text).toContain('pe 1 iulie 2026, la 10:32 EEST.');
+  });
+
+  it('escapes HTML in the reason written by the Founder', () => {
+    const r = renderSupportSessionOpened({ ...base, reason: 'Eroare <b>la</b> programări' });
+    expect(r.html).toContain('Motivul: Eroare &lt;b&gt;la&lt;/b&gt; programări');
+  });
+});
+
+describe('Header logo (S99)', () => {
+  const render = () =>
+    renderPasswordReset({ app: 'hub', email: 'a@x.ro', link: 'https://l/1' }).html;
+
+  it('with NEXT_PUBLIC_PLATFORM_URL: the hosted 2x PNG at 160×44, alt "Ventora"', () => {
+    process.env.NEXT_PUBLIC_PLATFORM_URL = 'https://app.ventora-hub.com/';
+    const html = render();
+    expect(html).toContain(
+      '<img src="https://app.ventora-hub.com/email/ventora-logo-email-2x.png" width="160" height="44" alt="Ventora"',
+    );
+    expect(html).toContain('width:160px;height:44px');
+    expect(html).not.toContain('>Ventora</span>');
+  });
+
+  it('without it (local, tests): the wordmark, as before, no image', () => {
+    delete process.env.NEXT_PUBLIC_PLATFORM_URL;
+    const html = render();
+    expect(html).toContain('>Ventora</span>');
+    expect(html).not.toContain('<img');
+    process.env.NEXT_PUBLIC_PLATFORM_URL = '  ';
+    expect(render()).not.toContain('<img');
   });
 });
 

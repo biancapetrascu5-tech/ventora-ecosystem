@@ -136,6 +136,16 @@ psqlFile(
   join(ROOT, 'core/audit/prisma/migrations/20261028000001_audit_init/migration.sql'),
 );
 
+// M4 (2.5c) după founder: GRANT EXECUTE către founder_runtime
+console.log('[test:db:up] Aplic migrarea identity #3 (founder owner recovery)...');
+psqlFile(
+  TEST_DB.identityDb,
+  join(
+    ROOT,
+    'core/identity/prisma/identity/migrations/20261028000004_founder_owner_recovery/migration.sql',
+  ),
+);
+
 console.log('[test:db:up] Setez parolele rolurilor identity...');
 psql(
   TEST_DB.identityDb,
@@ -158,6 +168,15 @@ psqlFile(
   join(
     ROOT,
     'core/organizations/prisma/migrations/20261027000003_invitation_application_ids/migration.sql',
+  ),
+);
+
+console.log('[test:db:up] Aplic migrarea organizations #3 (founder owner lookup)...');
+psqlFile(
+  TEST_DB.orgDb,
+  join(
+    ROOT,
+    'core/organizations/prisma/migrations/20261028000003_founder_owner_lookup/migration.sql',
   ),
 );
 
@@ -227,6 +246,14 @@ psqlFile(
   TEST_DB.accessDb,
   join(ROOT, 'core/audit/prisma/migrations/20261028000001_audit_init/migration.sql'),
 );
+// Lot 2.5c: M2 (support_session), M3 (organizations), M4 (identity) — după audit și founder
+for (const migration of [
+  'core/access/prisma/migrations/20261028000002_support_session/migration.sql',
+  'core/organizations/prisma/migrations/20261028000003_founder_owner_lookup/migration.sql',
+  'core/identity/prisma/identity/migrations/20261028000004_founder_owner_recovery/migration.sql',
+]) {
+  psqlFile(TEST_DB.accessDb, join(ROOT, migration));
+}
 // Create runtime roles in access DB
 psql(
   TEST_DB.accessDb,

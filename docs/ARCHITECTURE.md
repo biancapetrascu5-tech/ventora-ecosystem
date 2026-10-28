@@ -1,7 +1,7 @@
 # VENTORA ECOSYSTEM — ARHITECTURĂ TEHNICĂ
 
-**Versiune:** 0.4.4
-**Data:** 27 octombrie 2026
+**Versiune:** 0.4.6
+**Data:** 28 octombrie 2026
 **Stadiu:** Faza 0 închisă (tag `faza-0`). Deciziile marcate CONFIRMAT sunt baza implementării; cele PROPUS sau NECESITĂ DECIZIE nu se implementează fără aprobare.
 
 ## Istoric
@@ -27,6 +27,8 @@
 | 0.4.2 | 25.10.2026 | Numele afișate ale celor 13 module de business (D-UX-4): EasyBook, ClientDesk, TeamSpace, MoneyDesk, TaskBoard, ShiftPlan, DocSpace, StockDesk, DataView, CampaignKit, EventSpace, AssetDesk, ContractDesk. Identificatorii tehnici rămân neschimbați. Detalii: §17.19. |
 | 0.4.3 | 27.10.2026 | Ecranele Hub pornesc în paralel cu F3 și F4, imediat după F1 și F2, pe contracte definite dinainte (D-ROAD-4). Regiunea Resend confirmată (eu-west-1). Regulile SMS: GSM-7 fără diacritice (D-SMS-10) și mai multe telefoane (D-SMS-11). Detalii: §17.20. |
 | 0.4.4 | 27.10.2026 | ADR 0003: organizațiile se implementează în modulul propriu `core/organizations`, nu prin plugin-ul Better Auth; organizația activă rămâne în sesiune, printr-un câmp propriu. D-AUTH-5 actualizat. Detalii: §17.21. |
+| 0.4.5 | 28.10.2026 | Deciziile din 27–28.10: 2FA (R-2F1, R-2F2, R-2F3, R-2F5, R-2F7, R-2F9; înlocuiesc P5 și D10 din fișele de review), loturile 2.4a/b și 2.5a/b/c, separatorul de mii și AttentionList 2.0.0, staging (D-INF-3), e-mailul tranzacțional (expeditor, Reply-To, șablon unic, valabilități), deciziile L2.5-D0…D18 (jurnal de audit, sesiune de suport, recuperarea owner-ului). Detalii: §17.22. |
+| 0.4.6 | 28.10.2026 | Decizii ale fondatoarei: workflow engine în Core, construit în F4, automatizările construite și pornite doar din Founder (D-WF-1…5); funnel builder doar în Founder, cu publicare pe domeniul afacerii sau pe un domeniu Ventora (D-FUN-1…6); asistentul AI în Core, prin `authorize()`, cu confirmare înainte de scriere și audit (D-AI-1…5); cele trei marcate obligatorii pentru produs în planul fazelor (D-ROAD-5). Contradicțiile C14–C16 rezolvate de fondatoare: automatizările predefinite ale modulelor rămân setări ale afacerii (D-WF-6), formularele simple de lead le configurează afacerea (D-FUN-7), F4 păstrează doar infrastructura AI (D-AI-6), asistentul pentru consumatori e produs separat al Portalului (D-AI-7); brief-ul §37 și checklisturile Booking, Marketing, Projects actualizate. Detalii: §17.23. |
 
 ## Statusuri folosite în acest document
 
@@ -161,13 +163,21 @@ Core conține doar **servicii de business ale platformei**: lucruri pe care le d
 | `notifications` | Template, preferințe, livrare, istoric; fiecare notificare are categoria obligatorie `operational` sau `commercial`, cu preferințe separate. Emailul pleacă printr-un adaptor (`EmailChannel`), cu Resend ca furnizor (§11.6) | CONFIRMAT (brief §36; categoria: D-GRW-3; furnizorul: D-NOT-1) |
 | `messaging` | Canalele de trimitere folosite de `notifications`: interfața comună `SmsChannel`, adaptoarele `SMS_PROVIDER` și `ANDROID_SIM`, registrul dispozitivelor (telefoanele afacerilor), credențialele de dispozitiv, coada și eșalonarea pe dispozitiv, stările mesajelor, webhook-urile de stare, alertele de disponibilitate (§11.5). Specificația: `docs/SMS_NUMAR_PROPRIU.md`. | CONFIRMAT condiționat (D-SMS-1); implementarea după E-SMS-1 |
 | `growth` | Growth Engine: oferte, campanii, eligibilitate, sloturi, plafoane, tracking, experimente, oprire centrală (§8.7). Nu deține prețuri sau drepturi: le citește din `commercial` și `billing`. | CONFIRMAT (D-GRW-1) |
-| `audit` | Un singur AuditLog cu categorii | PROPUS (lecția L5 din audit) |
+| `audit` | Un singur jurnal (`audit.audit_log`) cu categorii, imutabil, scris doar prin `audit.append_event` (§17.22) | CONFIRMAT (L2.5-D1…D7, 28.10.2026; lecția L5 din audit) |
 | `support` | SupportTicket | CONFIRMAT (brief §39) |
 | `ai` | Configurarea modelelor, contorizarea, cadrul asistentului contextual | CONFIRMAT (brief §38) |
 | `integrations` | Outbox, livrarea evenimentelor, conexiuni de integrare, chei API externe, webhooks | CONFIRMAT (brief §33–35) |
 | `files` | Stocarea, URL-urile semnate și politicile de acces la fișiere (conținutul și versiunile documentelor rămân în Documents) | PROPUS |
 
 Automatizările comune (brief §37): motorul e în Core (`integrations`), iar fiecare automatizare predefinită aparține modulului care o folosește. Status: PROPUS.
+
+**Decizii din 28.10.2026 (§17.23):**
+
+- **Workflow engine (D-WF-1…5, CONFIRMAT):** motorul care rulează automatizările e un serviciu comun în Core, proiectat și construit în F4, după outbox și evenimente. Constructorul de automatizări, pornirea și oprirea există doar în Founder Control Center: echipa Ventora construiește automatizările pentru o afacere. În Hub, owner-ul și adminul văd lista automatizărilor active, doar pentru citire, fără buton de pornit sau oprit. Serviciul Core exact (`integrations` sau unul propriu) se stabilește la proiectarea din F4.
+- **Două feluri de automatizări (D-WF-6, CONFIRMAT, C14 rezolvat):** automatizările predefinite ale unui modul (de exemplu, reminderele și confirmările Booking) sunt setări ale modulului, din fraza de mai sus: afacerea le pornește, le oprește și le configurează în limitele permise (brief §37). Nu țin de workflow engine. Automatizările construite în workflow engine urmează D-WF-2 și D-WF-3.
+- **Asistentul AI (D-AI-1…5, CONFIRMAT):** stă în `ai` și e disponibil în aplicațiile afacerilor. Trece prin `authorize()`, cu identitatea persoanei care îl folosește; cere un card de confirmare înainte de orice scriere; fiecare acțiune intră în jurnalul de audit pe numele persoanei, marcată ca făcută prin asistent. Faza: după F4, de stabilit.
+- **Infrastructura AI în F4 (D-AI-6, CONFIRMAT, C16 rezolvat):** F4 construiește doar rândul `ai` din tabelul de mai sus: configurarea modelelor, contorizarea, limitele de cost. Asistentul cu interfață vine după F4 (D-AI-5).
+- **Asistentul pentru consumatori (D-AI-7, CONFIRMAT):** „AI Assistant pentru consumatori” din checklistul Portal e produs separat și intră în faza Portalului. Nu e acoperit de D-AI-1…6.
 
 ---
 
@@ -213,6 +223,18 @@ Fiecare aplicație are o stare înregistrată în `docs/checklists/<app>.md` și
 
 - Doar aplicațiile `Pilot` (pentru organizațiile din pilot) și `Production ready` pot fi activate pentru clienți.
 - Starea `Production ready` cere **toate** funcționalitățile confirmate din checklist, bifate și testate, plus criteriile din brief §56. Un flux principal funcțional nu e suficient.
+
+### 5.3 Funnel builder
+
+**Status: CONFIRMAT (D-FUN-1…7, 28.10.2026); faza: NECESITĂ DECIZIE.** C15 rezolvat (§16).
+
+- Constructorul de pagini există **doar în Founder Control Center**: echipa Ventora construiește și publică landing pages și funnel-urile pentru o afacere.
+- **Formularele simple de lead** (câmpurile unui formular de contact sau de captare) le configurează afacerea, în CampaignKit (Marketing) sau ClientDesk (CRM) (D-FUN-7).
+- Publicarea se face pe domeniul afacerii sau pe un domeniu Ventora. Domeniile proprii (DNS, verificare) se fac odată cu proiectul Vercel, care azi nu există (D-INF-3).
+- În Hub, afacerea vede lista paginilor publicate, doar pentru citire.
+- Numărul de pagini e o cotă a abonamentului (§8.5), cu pachet cumpărabil la limită.
+- Tehnic stă lângă CampaignKit (Marketing).
+- Referință de idei: funnel builder-ul din Hub 1.0 (blocuri, previzualizare, `/f/[slug]`, domenii proprii). Nu se migrează cod (D-MIG-1).
 
 ---
 
@@ -331,9 +353,12 @@ Exemplu, rezervare cu avans din Portal: Booking creează programarea `pending_pa
 - **Sesiuni stocate în baza de date**, cu ID opac în cookie. Rolul **nu** stă în token. Permisiunile se citesc din DB la fiecare request, cu cache doar pe durata request-ului. Asta rezolvă vulnerabilitatea S2 din audit.
 - Librăria propusă: **Better Auth** (self-hosted, adapter Prisma, invitații, 2FA). Versiunea stabilă se verifică la start. Alternative evaluate: Clerk/Auth0 (cost per utilizator, date la terți), Supabase Auth (organizațiile tot le construim noi).
 - Parole cu **scrypt**, algoritmul implicit al Better Auth (CONFIRMAT 25.10.2026, în locul argon2id propus inițial: sigur, inclus în Node.js, fără pachete compilate pe Vercel). 2FA TOTP opțional pentru utilizatori, **obligatoriu** pentru Founder.
-- **Configurația Better Auth validată în E9 (CONFIRMAT):** sesiuni în baza de date; **cache-ul de sesiune din cookie dezactivat** (altfel revocarea și retrogradarea întârzie; vezi și issue-ul Better Auth #11690); organizația activă în sesiune, ca un câmp propriu (`activeOrganizationId`), schimbată doar pe server, după verificarea membership-ului în `core/organizations` (ADR 0003: modul propriu, nu plugin-ul Better Auth pentru organizații); plugin-urile oficiale 2FA (TOTP + coduri de recuperare de unică folosință, stocate criptat) și sesiuni pe token pentru clienți fără browser (viitoarea aplicație mobilă); **limitarea încercărilor activă în producție** (dezactivată doar în teste).
-- **2FA obligatoriu pentru Owner (CONFIRMAT, P5):** proprietarul poate plăti și schimba accesul celorlalți, deci autentificarea în doi pași e obligatorie pentru el. La primirea rolului de Owner are o **perioadă de grație de 14 zile** (cu un Notice neutru, fără blocare); după ea, accesul la acțiunile de Owner cere 2FA activ. La activare primește **coduri de recuperare** de unică folosință (stocate ca hash, regenerabile, regenerarea auditată). Pierderea dispozitivului fără coduri se rezolvă doar prin sesiune de suport Founder, auditată.
-- **Codul 2FA se cere pe un dispozitiv nou** (CONFIRMAT, D10 microcopy); „Ține-mă minte” păstrează sesiunea 30 de zile pe dispozitivul ales (CONFIRMAT, P1), revocabilă din Securitate.
+- **Configurația Better Auth validată în E9 (CONFIRMAT):** sesiuni în baza de date; **cache-ul de sesiune din cookie dezactivat** (altfel revocarea și retrogradarea întârzie; vezi și issue-ul Better Auth #11690); organizația activă în sesiune, ca un câmp propriu (`activeOrganizationId`), schimbată doar pe server, după verificarea membership-ului în `core/organizations` (ADR 0003: modul propriu, nu plugin-ul Better Auth pentru organizații); plugin-urile oficiale 2FA (TOTP + coduri de rezervă de unică folosință, stocate criptat) și sesiuni pe token pentru clienți fără browser (viitoarea aplicație mobilă); **limitarea încercărilor activă în producție** (dezactivată doar în teste).
+- **2FA obligatoriu pentru Owner, fără grație (CONFIRMAT, R-2F1, 28.10.2026; înlocuiește P5 din fișele de review):** proprietarul poate plăti și schimba accesul celorlalți, deci activează autentificarea în doi pași la prima intrare. Nu există perioadă de grație: până la activare, `authorize()` refuză orice acțiune ca Owner cu `TwoFactorRequired`. Nu există comutator pentru oprirea 2FA (`/two-factor/disable` e dezactivat).
+- **Cod la fiecare intrare cu parola (CONFIRMAT, R-2F2, 28.10.2026; înlocuiește D10 din microcopy):** dacă 2FA e activ, codul se cere la fiecare autentificare cu parola, pe orice dispozitiv. Fără „ține minte dispozitivul”: `trustDevice` e refuzat pe server. „Ține-mă minte” (P1) rămâne doar durata sesiunii deja deschise (30 de zile), revocabilă din Securitate; nu sare peste cod la o intrare nouă.
+- **„Coduri de rezervă” (CONFIRMAT, R-2F3, 28.10.2026):** termenul din interfață și din documentație pentru codurile de unică folosință primite la activare. Sunt stocate criptat (configurația Better Auth, E9) și regenerabile; regenerarea e auditată.
+- **Blocarea la coduri greșite (CONFIRMAT, R-2F5, 28.10.2026):** după 5 coduri greșite consecutive, contul e blocat 15 minute (`accountLockout` în Better Auth, pentru Hub și Founder).
+- **Recuperarea (CONFIRMAT, R-2F7, 28.10.2026):** fără resetare automată. Owner-ul care a pierdut accesul scrie la `support@ventorasystems.com`, iar echipa Ventora face recuperarea din Founder după procedura `docs/ops/PROCEDURA-RECUPERARE-OWNER.md` (L2.5-D13…D16, §7.5).
 
 **Acceptare (testat):**
 - retrogradarea unui Admin are efect la următorul request;
@@ -362,7 +387,8 @@ Modelul de date și serviciile **nu** presupun că doar Founder poate crea organ
 **Status: PROPUS**
 
 - Flux: Founder invită Owner-ul. Owner-ul invită membri și setează rolul și accesul la aplicații. Invitatul acceptă, își setează parola și intră în organizație.
-- Token de unică folosință (stocat ca hash), expirare (implicit 7 zile, configurabilă), stări (trimisă / acceptată / expirată / revocată), retrimitere, revocare.
+- Token de unică folosință (stocat ca hash), stări (trimisă / acceptată / expirată / revocată), retrimitere, revocare.
+- **Valabilitatea linkurilor (CONFIRMAT, S55, 28.10.2026):** invitația unui membru 7 zile; invitația owner-ului creată din Founder 30 de zile (și la retrimitere); linkul de resetare a parolei o oră.
 - **Invitațiile expirate dispar din lista echipei după 30 de zile** (CONFIRMAT, P6), dar rămân în jurnalul de audit. „Retrimite” stă la vedere pe invitațiile expirate.
 - După acceptare, invitatul ajunge direct în aplicația principală a rolului său; launcher-ul rămâne la un click (P3, aprobat parțial: comportamentul exact se fixează la implementarea Hub-ului).
 - Un email care are deja cont primește un membership nou, nu un cont nou.
@@ -401,6 +427,17 @@ Funcția verifică, în ordine: sesiunea validă, membership-ul activ în organi
 Rolurile personalizate pe organizație: **NECESITĂ DECIZIE** (D-ACC-2). Modelul de date le permite din prima.
 
 **Founder:** administrarea comercială e separată de accesul la datele clienților. Accesul la date se face doar prin **sesiune de suport**: motiv, durată limitată, `actor: 'support'` în context, audit, vizibilă organizației. Status: CONFIRMAT (brief §41).
+
+**Sesiunea de suport (CONFIRMAT, 28.10.2026, L2.5-D9…D12; implementată în Lotul 2.5c):**
+- stă în schema `access` (`access.support_session`), pentru că `authorize` o citește la fiecare cerere (L2.5-D9);
+- pornește fără acord prealabil: e activă imediat, vizibilă organizației, iar owner-ii primesc e-mail (L2.5-D10);
+- owner-ul o poate închide oricând (L2.5-D11);
+- în Lotul 2.5 e doar de citire, printr-o listă explicită de permisiuni, nederivată din vreun rol (L2.5-D12);
+- motivul și referința cererii sunt obligatorii; durata e implicit 60 de minute, maximum 240;
+- fiecare apel e verificat (`authorizeSupport`) și auditat, cu `founder_id` și `support_session_id`;
+- la expirare, la închidere sau la revocarea Founder-ului, accesul încetează la cererea următoare.
+
+**Recuperarea owner-ului (CONFIRMAT, 28.10.2026, L2.5-D13…D16):** se face din Founder, separat de sesiunea de suport (L2.5-D16). Founder-ul introduce un cod TOTP proaspăt al său (L2.5-D14) și alege ce se resetează, implicit 2FA + parola (L2.5-D15). Resetarea și rândul de audit se scriu într-o singură tranzacție. Identitatea se verifică în afara aplicației, după `docs/ops/PROCEDURA-RECUPERARE-OWNER.md` (L2.5-D13).
 
 **Echipa Founder (CONFIRMAT, 25.10.2026, D-ACC-4):** accesul Founder nu aparține unei singure persoane. Pot exista mai multe conturi Founder, **fiecare nominal** (un om, un cont; fără conturi partajate), toate cu acces Founder complet; primul cont suplimentar este al lui Bibi. Reguli: 2FA obligatoriu pentru fiecare cont Founder; acordarea și retragerea rolului Founder se fac doar de un alt Founder și se auditează; fiecare acțiune din Founder Control Center și fiecare sesiune de suport se auditează pe persoana care a făcut-o, nu pe „Founder” generic. Restricția pe IP (`FOUNDER_ALLOWED_IPS`) e opțională și **oprită implicit**. Rolul Founder e un rol de platformă, separat de rolurile pe organizație: un cont Founder nu devine membru al vreunei organizații și nu vede datele ei decât prin sesiune de suport.
 
@@ -498,6 +535,7 @@ export const manifest = {
 - **Anunțul la migrare (CONFIRMAT, P19):** când versiunea nouă e în **dezavantajul** clientului (preț mai mare sau mai puțin inclus), migrarea se programează cu **anunț cu cel puțin 30 de zile înainte**, fără excepție. Când e doar în **avantajul** clientului, se aplică imediat, cu anunț. Clasificarea (avantaj/dezavantaj) se calculează automat din diferențele dintre versiuni și se arată în editor; Founder nu o poate ocoli.
 - **Excepțiile au termen obligatoriu (CONFIRMAT, P17):** orice override are dată de expirare, **cel mult 12 luni**, prelungibilă explicit (prelungirea e auditată). Cu 7 zile înainte de expirare apare în „Prezentare” din Founder. Excepțiile nu se șterg: se încheie și rămân în istoric.
 - **SMS de pe numărul propriu (D-SMS-4):** funcționalitatea `booking.sms.ownNumber` în planurile Booking eligibile; numărul de telefoane conectate e o cotă de stoc (`booking.sms.devices`, 1 inclus), iar telefoanele suplimentare sunt add-on cumpărabil de Owner (D-COM-6). SMS-urile trimise de pe SIM-ul propriu **nu consumă** cota de SMS Ventora. Prețurile și planurile eligibile: NECESITĂ DECIZIE.
+- **Automatizări active și pagini publicate (CONFIRMAT, D-WF-4, D-FUN-4, 28.10.2026):** numărul de automatizări active simultan și numărul de pagini publicate sunt cote de stoc ale abonamentului, construite în F3 odată cu modelul comercial (planuri, drepturi, cote). Owner-ul le vede ca `UsageMeter` în Administrare, pe ecranul de abonament și consum (`HubAdminPlan`). La limită cumpără singur un pachet în plus cu cardul (`AddonPurchase`, D-COM-6) sau cere alt abonament (D-COM-7). Cheile cotelor și pachetele: NECESITĂ DECIZIE la proiectarea F3.
 - **Dreptul efectiv** = PlanVersion + add-on-uri active + excepții (override-uri) active, calculat de o singură funcție. Pattern-ul vine din `get-org-effective-limits.ts`, componenta recomandată de audit (L15). `null` înseamnă nelimitat.
 - Orice modificare făcută de Founder → `CommercialAuditEvent`.
 
@@ -608,6 +646,8 @@ export const manifest = {
 
   Reguli: niciun nume de modul nu folosește „Hub” (e numele platformei); un nume nou trece prin glosar și prin testul de lungime (eticheta din AppDock, germană).
 - **Terminologie (CONFIRMAT, D1):** clienții văd doar „abonament”. Cuvântul „plan” apare **doar în Founder Control Center** (unde e termenul tehnic corect). Cheile i18n și glosarul respectă regula.
+- **AttentionList 2.0.0 (CONFIRMAT, 28.10.2026):** neutră implicit; `tone: "attention"` o face peach. Versiunea majoră semnalează schimbarea implicitului: folosirile existente fără `tone` se revizuiesc la migrare.
+- **AuthLayout e componentă (CONFIRMAT, R-2F9, 28.10.2026):** ecranele de autentificare (intrare, 2FA, resetare, invitație) folosesc aceeași componentă din `packages/ui`, nu un layout copiat în fiecare aplicație.
 
 ### 10.2 Reguli
 
@@ -682,7 +722,8 @@ Fiecare componentă din `packages/ui` are un fișier de contract (`<Component>.c
 - **Teme:** Light / Dark / System. Preferința e salvată în DB și în cookie, ca serverul să randeze direct tema corectă. Pe domeniul `platform` se păstrează automat între aplicații.
 - **Limbi:** RO, EN, FR, ES, DE, IT. Fallback EN. Nicio cheie brută afișată.
   - **next-intl** pentru tot ecosistemul (ICU, plurale, formatare dată/număr/monedă, Server Components). Înlocuiește sistemul custom `useT()` din Hub-ul vechi. O singură infrastructură i18n în `packages/i18n` (CONFIRMAT, D-I18N-1).
-- **Namespace-uri:** `common` în `packages/i18n`, câte unul pe modul în `modules/<app>/messages/`.
+- **Separatorul de mii și la 4 cifre (CONFIRMAT, 28.10.2026):** „1.284”, nu „1284”. `Intl.NumberFormat` (Node 24) omite implicit separatorul la 4 cifre pentru `es` și `it` („1284”), dar nu și pentru `ro`, `de`, `en` sau `fr`. Formatarea comună din `packages/i18n` folosește deci `useGrouping: 'always'`, ca regula să fie aceeași în toate cele 6 limbi.
+- **Namespace-uri:** `common` în `packages/i18n`, câte unul pe modul în `modules/<app>/messages/`. Textele aplicației Founder sunt doar în română, dar tot ca chei (`packages/i18n/messages/founder/ro.json`).
 - Emailurile, SMS-urile, notificările și PDF-urile folosesc aceleași cataloage, în limba destinatarului.
 
 ### 10.7 Responsive
@@ -856,7 +897,10 @@ Implementare (PROPUS): chei API pe organizație (hash, scope-uri), rate limiting
 
 - **Furnizor: Resend**, cu trimiterea din **regiunea UE (Irlanda)**. Datele contului Resend sunt în SUA; transferul e acoperit de DPA, clauzele contractuale standard (SCC) și Data Privacy Framework. Se trece în registrul de subcontractori (GDPR).
 - **Doar prin adaptor:** `core/notifications` expune interfața `EmailChannel`; adaptorul Resend e singura implementare acum. Aplicațiile nu apelează niciodată Resend direct, deci furnizorul se poate schimba fără să atingem modulele.
-- **Domeniul de expediere:** `ventora-hub.com`, deja verificat în Resend (SPF și DKIM). Se adaugă DMARC dacă lipsește. Adresele de expediere (de ex. `noreply@ventora-hub.com`) se stabilesc la configurare. Un subdomeniu dedicat (`mail.`) rămâne o opțiune pentru mai târziu, dacă volumul o cere.
+- **Domeniul de expediere (CONFIRMAT, B-1, 28.10.2026):** `ventora-hub.com`, deja verificat în Resend (SPF și DKIM). Se adaugă DMARC dacă lipsește. Un subdomeniu dedicat (`mail.`) rămâne o opțiune pentru mai târziu, dacă volumul o cere.
+- **Expeditorul și răspunsurile (CONFIRMAT, B-2, B-3, 28.10.2026):** `Ventora <noreply@ventora-hub.com>`, cu Reply-To `support@ventorasystems.com`. Se pot suprascrie din `EMAIL_FROM` / `EMAIL_REPLY_TO`.
+- **Un singur șablon operațional (CONFIRMAT, S3, S54, 28.10.2026):** toate e-mailurile tranzacționale trec prin aceeași funcție de randare (`renderOperationalEmail`): o coloană, doar light, culorile din tokens, butonul pe toată lățimea pe telefon. Nu există HTML separat per e-mail.
+- **Valabilitățile din e-mailuri (CONFIRMAT, S55, 28.10.2026):** invitația unui membru 7 zile, invitația owner-ului din Founder 30 de zile, resetarea parolei o oră. Textul fiecărui e-mail spune aceeași valabilitate ca baza de date.
 - **Ce trimite:** invitații, resetarea parolei, 2FA și securitate, notificări operaționale. Emailul comercial rămâne dezactivat (D-GRW-8).
 - **Cheia API** stă doar în variabilele de mediu Vercel și în `.env.local`, niciodată în cod sau în chat. Staging și producție au chei separate.
 - **Contul Resend există** (al fondatoarei), cu `ventora-hub.com` verificat. Regiunea domeniului confirmată: eu-west-1 (Irlanda). Rămân cheile API noi, separate pentru staging și producție, folosite doar de ecosistem, puse în Vercel. Până atunci, în dezvoltare, emailurile se scriu în log sau într-o cutie de test locală.
@@ -981,9 +1025,10 @@ Plus, la nivel de platformă: teste de webhook Stripe (semnătură, idempotenț�
 **Status: PROPUS; domeniile CONFIRMAT (D-INF-1)**
 
 - **Medii:** `local` (Supabase local), `staging`, `production`, fiecare cu proiect Supabase separat. Fără date de producție în dezvoltare.
-- **Domenii (CONFIRMAT):** ecosistemul folosește `ventora-hub.com`: `app.ventora-hub.com` (platform), `portal.ventora-hub.com` (portal), `founder.ventora-hub.com` (founder). Website-ul corporate e `ventorasystems.com`, separat de ecosistem. Nu se introduc alte domenii fără aprobare.
+- **Domenii (CONFIRMAT):** ecosistemul folosește `ventora-hub.com`: `app.ventora-hub.com` (platform), `portal.ventora-hub.com` (portal), `founder.ventora-hub.com` (founder). Website-ul corporate e `ventorasystems.com`, separat de ecosistem. Nu se introduc alte domenii fără aprobare. **Excepție aprobată (D-FUN-2, 28.10.2026):** paginile făcute cu funnel builder-ul (§5.3) se pot publica pe domeniul afacerii sau pe un domeniu Ventora; care domeniu Ventora: NECESITĂ DECIZIE, odată cu proiectul Vercel.
 - **Cookie-uri:** sesiunea B2B e emisă doar pentru `app.ventora-hub.com` (host-only, nu pe `.ventora-hub.com`), sesiunea B2C doar pentru `portal.ventora-hub.com`, sesiunea Founder doar pentru `founder.ventora-hub.com`. Nicio sesiune nu se partajează între subdomenii.
-- **Vercel:** trei proiecte (§3.1), cu preview pe PR legat de staging. Domeniile de staging: **NECESITĂ DECIZIE** (propunere: `staging-app.ventora-hub.com` etc. sau doar URL-urile Vercel).
+- **Vercel:** trei proiecte (§3.1), cu preview pe PR legat de staging.
+- **Staging (CONFIRMAT, D-INF-3, 28.10.2026):** pe URL-urile stabile Vercel ale celor trei proiecte, fără subdomenii proprii de staging. **Azi nu există niciun proiect Vercel**, deci „staging” înseamnă baza Supabase de staging. Migrările se aplică pe ea doar din `main`, cu `DIRECT_URL` (§6.3), iar testele nu rulează pe ea.
 - **CI (GitHub Actions):** setul din §13.3 + testele T1–T9. Merge doar pe verde.
 - **Migrațiile de producție** rulează în pipeline, înainte de promovare. Niciodată manual.
 - **Backup:** zilnic + PITR. Test de restaurare periodic.
@@ -1003,7 +1048,7 @@ Plus, la nivel de platformă: teste de webhook Stripe (semnătură, idempotenț�
 | **F1 — Design system** | `packages/tokens`, `packages/ui` cu contracte, `packages/i18n`, `/design` | Exportul Claude Design aprobat (cel puțin etapa 1) | Fiecare componentă aprobată pe `/design` în Light/Dark × 6 limbi |
 | **F2 — Identitate și acces** | Identitate, sesiuni, invitații, organizații, membership, organizația activă, `authorize()`, `db-kit` cu gardă și RLS, audit | F0 | T1, T2, T3 verzi pe un modul de probă; revocare și retrogradare testate |
 | **F3 — Comercial** | Registru aplicații, planuri și versiuni, entitlements, cote cu rezervare, add-on-uri, excepții, billing Stripe + SmartBill, aplicația `founder` | F2 | T5 verde; schimbarea unei limite fără deploy; plata → factura; audit pe acțiunile Founder |
-| **F4 — Servicii de platformă** | Outbox + job-uri, notificări (6 limbi), suport, cadrul AI, fișiere, `pdf` | F2 | T6 verde; notificare în limba destinatarului; tichet din orice aplicație |
+| **F4 — Servicii de platformă** | Outbox + job-uri, notificări (6 limbi), suport, cadrul AI (doar infrastructura: configurarea modelelor, contorizarea, limitele de cost, D-AI-6), fișiere, `pdf`; **workflow engine** (D-WF-1), după outbox și evenimente | F2 | T6 verde; notificare în limba destinatarului; tichet din orice aplicație |
 | **F5 — Hub** | Autentificare, alegerea organizației, launcher (4 stări de acces), setări cont, administrarea organizației, suport; **Growth Engine v1** (§8.7) cu componentele comerciale și secțiunea Growth & Campaigns din Founder | F1, F2, F3 (parțial: entitlements), F4 (parțial: notificări) | Fluxurile Hub testate end-to-end în Light/Dark × 6 limbi; testele Growth: produsele deținute nu apar, plafoanele și opt-out-ul se respectă, oprirea are efect imediat, aplicațiile funcționează identic cu Growth oprit, nicio activare plătită fără confirmare |
 
 ### 15.2 Ce se poate face în paralel
@@ -1031,7 +1076,17 @@ Plus, la nivel de platformă: teste de webhook Stripe (semnătură, idempotenț�
 - **Condiția paralelismului:** fluxurile paralele nu modifică simultan pachetele comune. O schimbare în `packages/ui` sau `core/*` se face într-un PR separat, cu review și testele tuturor modulelor afectate.
 - Ordinea aplicațiilor după Booking: **NECESITĂ DECIZIE** (D-ROAD-1), pe baza priorităților comerciale. Propunere de pornire: CRM → Marketing → Finance → HR → Shifts → Documents → Contracts → Projects → Inventory → Assets → Events → Analytics → Network → Portal.
 
-### 15.4 Riscuri
+### 15.4 Obligatorii pentru produs (D-ROAD-5)
+
+**Status: CONFIRMAT (decizia fondatoarei, 28.10.2026).** Cele trei elemente sunt obligatorii pentru produs. Nu se scot din plan și nu se amână fără o decizie nouă a fondatoarei.
+
+| Element | Unde | Faza | Depinde de |
+|---|---|---|---|
+| Workflow engine (D-WF-1…6) | Motorul în Core; constructorul, pornirea și oprirea în Founder; lista doar pentru citire în Hub | F4 | Outbox și evenimente (F4, §11.2); cota de automatizări active (F3); Founder Control Center |
+| Funnel builder (D-FUN-1…7) | Constructorul în Founder, lângă CampaignKit; lista doar pentru citire în Hub | NECESITĂ DECIZIE | Cota de pagini (F3); proiectul Vercel și domeniile proprii (§14); Founder Control Center |
+| Asistentul AI (D-AI-1…6) | Core (`ai`), în aplicațiile afacerilor | După F4, NECESITĂ DECIZIE | `authorize()` (F2); jurnalul de audit (F2); infrastructura AI (F4, D-AI-6) |
+
+### 15.5 Riscuri
 
 | Risc | Atenuare |
 |---|---|
@@ -1052,7 +1107,7 @@ Plus, la nivel de platformă: teste de webhook Stripe (semnătură, idempotenț�
 | C2 | API/Webhooks externe pentru Booking, Documents, Events, HR | Checklisturile acestor patru aplicații nu conțin API/Webhooks externe (nici ca funcționalitate, nici ca excludere). API extern apare ca funcționalitate doar în CRM, Analytics, Assets și Network. Deci nu sunt în scope. | CONFIRMAT (din checklisturi) |
 | C3a | AI ca aplicație separată | Brief §38: contextual, nu a 16-a aplicație | CONFIRMAT (nu e aplicație) |
 | C3b | Messaging ca aplicație separată | Brief: mesageria apare în Portal și Network, nu ca aplicație | CONFIRMAT (nu e aplicație) |
-| C3c | Funnel builder (există în Hub-ul vechi) | Checklistul Marketing conține „Lead Capture & Landing Pages” (10 funcționalități: formulare, landing pages, șabloane, formulare încorporabile). Landing pages aparțin Marketing; funnel builder-ul vechi nu devine aplicație separată. | CONFIRMAT (din checklist) |
+| C3c | Funnel builder (există în Hub-ul vechi) | Checklistul Marketing conține „Lead Capture & Landing Pages” (10 funcționalități: formulare, landing pages, șabloane, formulare încorporabile). Landing pages aparțin Marketing; funnel builder-ul vechi nu devine aplicație separată. **Precizare 28.10.2026 (D-FUN-1, D-FUN-7):** landing pages și funnel-urile le construiește doar echipa Ventora, din Founder (funnel builder-ul, tehnic lângă CampaignKit, §5.3); formularele simple de lead le configurează afacerea în CampaignKit / ClientDesk. | CONFIRMAT (din checklist; precizat 28.10.2026) |
 | C4 | Ce e o campanie consumată / campaniile multi-pas | Brief §25 lasă explicit deschis | NECESITĂ DECIZIE |
 | C5 | Founding 100 după lansare | Nu apare în brief ca parte a platformei | NECESITĂ DECIZIE |
 | C6 | Denumirea în launcher („Your Booking” vs „Booking”) | Brief §2 dă „Your Booking” ca exemplu | NECESITĂ DECIZIE |
@@ -1063,6 +1118,9 @@ Plus, la nivel de platformă: teste de webhook Stripe (semnătură, idempotenț�
 | C11 | Pagini publice Network | Brief-ul nu spune dacă există | CONFIRMAT: închis la lansare (D-NET-1, v0.3.2) |
 | C12 | Partea business a Portal: în `portal` sau în `platform` | §3.1 | CONFIRMAT: `platform` (D-POR-1, v0.3.2) |
 | C13 | Clienții reali din Hub-ul vechi | Nu există clienți reali activi; nu se migrează date. Hub-ul vechi rămâne doar sursă de cod și idei (auditul de recoltare, 24.10.2026). Repository-ul, datele și resursele lui nu se șterg fără aprobare explicită. | CONFIRMAT |
+| C14 | Cine pornește și oprește automatizările | Brief §37 și checklisturile Booking, Marketing, Projects spuneau că afacerea activează automatizările; D-WF-2/D-WF-3 spun „doar Founder”. Sunt două lucruri distincte (D-WF-6): automatizările predefinite ale modulului sunt setări ale afacerii; cele construite în workflow engine sunt doar în Founder. Brief §37 și cele trei checklisturi actualizate (§17.23). | REZOLVAT (D-WF-6, 28.10.2026) |
+| C15 | Cine construiește landing pages | Landing pages și funnel-urile: doar Founder (D-FUN-1). Formularele simple de lead: afacerea, în CampaignKit / ClientDesk (D-FUN-7). Checklistul Marketing, C3c și §17.5 actualizate. | REZOLVAT (D-FUN-1, D-FUN-7, 28.10.2026) |
+| C16 | AI: „cadrul AI” în F4 vs. asistentul „după F4”; asistentul pentru consumatori | F4 păstrează doar infrastructura AI (D-AI-6); asistentul cu interfață vine după F4 (D-AI-5). Asistentul pentru consumatori din Portal e produs separat, în faza Portalului (D-AI-7). | REZOLVAT (D-AI-6, D-AI-7, 28.10.2026) |
 
 ---
 
@@ -1114,7 +1172,7 @@ Plus, la nivel de platformă: teste de webhook Stripe (semnătură, idempotenț�
 | D-I18N-1 | next-intl în locul `useT()` custom; fallback EN | Da | CONFIRMAT | Nu |
 | D-I18N-2 | Limbile ecosistemului: RO, EN, FR, ES, DE, IT (italiana adăugată pe 24.10.2026) | Da | CONFIRMAT | Nu |
 | D-INF-1 | Domeniile: `app.`, `portal.`, `founder.ventora-hub.com`; corporate `ventorasystems.com` | — | CONFIRMAT | Nu |
-| D-INF-3 | Domeniile de staging | Subdomenii dedicate sau URL-uri Vercel | NECESITĂ DECIZIE | Da |
+| D-INF-3 | Staging: URL-urile stabile Vercel, fără subdomenii; azi fără proiect Vercel, staging = baza Supabase (§14) | — | CONFIRMAT (28.10.2026) | Nu |
 | D-MIG-1 | Fără migrare de date din Hub-ul vechi; repo-ul vechi rămâne read-only, nimic nu se șterge fără aprobare | — | CONFIRMAT | Nu |
 | D-INF-2 | Inngest + outbox pentru job-uri și evenimente | Da | CONFIRMAT (specificație) | Nu |
 | D-API-1 | API extern pentru Booking, Documents, Events, HR | Nu sunt în checklisturi, deci nu se construiesc | CONFIRMAT (din checklisturi) | Nu |
@@ -1122,7 +1180,17 @@ Plus, la nivel de platformă: teste de webhook Stripe (semnătură, idempotenț�
 | D-POR-1 | Partea business a Portal în `platform` | Da | CONFIRMAT | Nu |
 | D-PROF-1 | Profil public comun în Core | Doar identitatea de bază în Core (cu verificarea și categoria de bază); extensiile separate | CONFIRMAT | Nu |
 | D-MKT-1 | Definiția campaniei consumate | — | NECESITĂ DECIZIE | Da |
-| D-AUTH-3 | 2FA obligatoriu pentru Owner: grație 14 zile, coduri de recuperare, cod pe dispozitiv nou (P5, D10) | Da | CONFIRMAT | Nu |
+| D-AUTH-3 | 2FA obligatoriu pentru Owner. ~~Grație 14 zile, cod pe dispozitiv nou (P5, D10)~~: înlocuite pe 28.10.2026 de R-2F1 și R-2F2 (§7.1) | Da | CONFIRMAT (actualizat 28.10.2026) | Nu |
+| R-2F1 | Owner-ul activează 2FA la prima intrare, fără grație; înlocuiește P5 (§7.1) | Da | CONFIRMAT (28.10.2026) | Nu |
+| R-2F2 | Cod la fiecare intrare cu parola, fără `trustDevice`; înlocuiește D10 (§7.1) | Da | CONFIRMAT (28.10.2026) | Nu |
+| R-2F3 | Termenul „coduri de rezervă” (§7.1) | Da | CONFIRMAT (28.10.2026) | Nu |
+| R-2F5 | 5 coduri greșite → blocare 15 minute (§7.1) | Da | CONFIRMAT (28.10.2026) | Nu |
+| R-2F7 | Recuperarea prin `support@ventorasystems.com`, fără resetare automată (§7.1, §7.5) | Da | CONFIRMAT (28.10.2026) | Nu |
+| R-2F9 | AuthLayout e componentă comună (§10.1) | Da | CONFIRMAT (28.10.2026) | Nu |
+| D-UX-5 | Separatorul de mii și la 4 cifre („1.284”) (§10.6) | Da | CONFIRMAT (28.10.2026) | Nu |
+| D-UI-7 | AttentionList 2.0.0: neutră implicit, `tone: "attention"` = peach (§10.1) | Da | CONFIRMAT (28.10.2026) | Nu |
+| D-NOT-2 | E-mail: `Ventora <noreply@ventora-hub.com>`, Reply-To `support@ventorasystems.com`, un singur șablon operațional (S3, S54), valabilități S55 (§11.6) | Da | CONFIRMAT (28.10.2026) | Nu |
+| L2.5-D0…D18 | Deciziile Lotului 2.5: jurnal de audit, sesiune de suport, recuperarea owner-ului (§17.22) | Da | CONFIRMAT (28.10.2026) | Nu |
 | D-ACC-3 | Invitațiile expirate ies din listă după 30 de zile, rămân în audit (P6) | Da | CONFIRMAT | Nu |
 | D-COM-8 | Excepții cu termen obligatoriu, maximum 12 luni, prelungibile (P17) | Da | CONFIRMAT | Nu |
 | D-COM-9 | Migrarea pe o versiune nouă de plan: anunț de 30 de zile dacă e în dezavantajul clientului; imediat, cu anunț, dacă e în avantaj (P19) | Da | CONFIRMAT | Nu |
@@ -1165,6 +1233,10 @@ Plus, la nivel de platformă: teste de webhook Stripe (semnătură, idempotenț�
 | D-ROAD-2 | Booking prima aplicație | Da | CONFIRMAT | Nu |
 | D-ROAD-3 | Fluxuri verticale paralele, fără reducerea scope-ului | Da | CONFIRMAT | Nu |
 | D-ROAD-4 | Ecranele Hub (F5) pornesc după F1 + F2, în paralel cu F3 și F4, pe contracte din `packages/contracts` și surse de date temporare pentru entitlements, cote și notificări (§15.2) | Da | CONFIRMAT (27.10.2026) | Nu |
+| D-WF-1…6 | Workflow engine în Core (F4, după outbox); constructorul, pornirea și oprirea doar în Founder; Hub doar citire; cota de automatizări active cu pachet cumpărabil; Hub 1.0 doar referință de idei; automatizările predefinite ale modulelor rămân setări ale afacerii (§4, §8.5, §17.23) | Da | CONFIRMAT (28.10.2026); serviciul Core al motorului: de ales în F4 | Serviciul Core, în F4 |
+| D-FUN-1…7 | Funnel builder doar în Founder; publicare pe domeniul afacerii sau Ventora; Hub doar citire; cota de pagini cu pachet cumpărabil; lângă CampaignKit; Hub 1.0 doar referință de idei; formularele simple de lead le configurează afacerea (§5.3, §17.23) | Da | CONFIRMAT (28.10.2026); faza, domeniul Ventora, cheile cotelor și pachetele: NECESITĂ DECIZIE | Faza, domeniul, cotele |
+| D-AI-1…7 | Asistentul AI în Core, în aplicațiile afacerilor; prin `authorize()`; confirmare înainte de scriere; audit pe numele persoanei, marcat „prin asistent”; după F4; F4 doar infrastructura AI; asistentul pentru consumatori separat, în faza Portalului (§4, §17.23) | Da | CONFIRMAT (28.10.2026); faza asistentului: NECESITĂ DECIZIE | Faza |
+| D-ROAD-5 | Workflow engine, funnel builder și asistentul AI obligatorii pentru produs (§15.4) | Da | CONFIRMAT (28.10.2026) | Nu |
 
 ### 17.2 Modificări față de v0.1
 
@@ -1225,7 +1297,7 @@ Fiecare experiment produce un raport scurt și un ADR. Pentru toate se folosesc 
 
 1. **Checklisturile** sunt în `docs/checklists/`: 15 fișiere + index, 1.465 de funcționalități, extrase fără modificări. C1 rezolvat.
 2. **API extern** pentru Booking, Documents, Events, HR: nu apare în checklisturi, deci nu se construiește. C2 / D-API-1 rezolvate.
-3. **Landing pages** aparțin Marketing (secțiunea „Lead Capture & Landing Pages”). C3c rezolvat.
+3. **Landing pages** aparțin Marketing (secțiunea „Lead Capture & Landing Pages”). C3c rezolvat. *Precizare 28.10.2026 (D-FUN-1, D-FUN-7, §17.23):* landing pages și funnel-urile le construiește doar echipa Ventora, din Founder; formularele simple de lead le configurează afacerea în CampaignKit / ClientDesk.
 4. Specificația stabilește explicit **direcția tehnică**: Next.js App Router, TypeScript, Prisma, PostgreSQL/Supabase, Better Auth, Stripe, SmartBill, Supabase Storage, Inngest/outbox, Sentry. D-AUTH-2, D-INF-2, D-COM-2 trec în CONFIRMAT. Pentru D-DB-1, experimentul din F0 compară doar variantele Prisma A și B; Drizzle nu mai e o alternativă fără decizia fondatorilor.
 5. Specificația confirmă și principiul de livrare: fiecare funcționalitate e cerință V1, dar ordinea de livrare se stabilește separat. Consecvent cu §15.3.
 6. **Diferențe de numărătoare față de brief** (HR 111 vs 112, Contracts „69 din 71” vs 71, Portal 150 vs 151): conform ierarhiei, checklisturile au prioritate; brief-ul trebuie corectat. Detalii în `docs/checklists/README.md`.
@@ -1295,6 +1367,130 @@ Fiecare experiment produce un raport scurt și un ADR. Pentru toate se folosesc 
 4. **Nicio decizie deschisă nu s-a închis prin această versiune** în afara celor de mai sus. D-COM-7, D-PX-2, D-PX-3, D-GRW-8 (validarea juridică), D-UX-2 rămân NECESITĂ DECIZIE.
 
 ---
+
+### 17.23 Modificări în v0.4.6
+
+Decizii ale fondatoarei din 28.10.2026. Doar documentație; nimic nu e implementat. Contradicțiile găsite cu sursele existente (C14–C16, §16) au fost rezolvate de fondatoare în aceeași zi (punctul 5).
+
+**1. Workflow engine** (§4, §8.5, §15.1, §15.4):
+
+| ID | Data | Decizie |
+|---|---|---|
+| D-WF-1 | 28.10.2026 | Motorul care rulează automatizările stă în Core, ca serviciu comun. Se proiectează și se construiește în F4, după outbox și evenimente, de care depinde. |
+| D-WF-2 | 28.10.2026 | Constructorul de automatizări, pornirea și oprirea există doar în Founder Control Center. Echipa Ventora construiește automatizările pentru o afacere. |
+| D-WF-3 | 28.10.2026 | În Hub, owner-ul și adminul văd lista automatizărilor active ale afacerii, doar pentru citire, fără buton de pornit sau oprit. |
+| D-WF-4 | 28.10.2026 | Numărul de automatizări active simultan e o cotă a abonamentului (F3). Owner-ul o vede ca `UsageMeter` în Administrare (ecranul de abonament și consum). La limită cumpără singur un pachet în plus cu cardul (`AddonPurchase`, ca la SMS-uri) sau cere alt abonament. |
+| D-WF-5 | 28.10.2026 | Referință de idei: workflow engine-ul din Hub 1.0 (nodurile Delay, Send SMS, Database Action; triggere pe modele dintr-un whitelist). Nu se migrează cod; se reproiectează pe Core. |
+
+**2. Funnel builder** (§5.3, §8.5, §14, §15.4):
+
+| ID | Data | Decizie |
+|---|---|---|
+| D-FUN-1 | 28.10.2026 | Constructorul există doar în Founder Control Center: echipa Ventora construiește și publică paginile pentru o afacere. |
+| D-FUN-2 | 28.10.2026 | Publicarea se face pe domeniul afacerii sau pe un domeniu Ventora. Domeniile proprii (DNS, verificare) se fac odată cu proiectul Vercel, care azi nu există. |
+| D-FUN-3 | 28.10.2026 | În Hub, afacerea vede lista paginilor publicate, doar pentru citire. |
+| D-FUN-4 | 28.10.2026 | Numărul de pagini e o cotă a abonamentului (F3), cu pachet cumpărabil la limită. |
+| D-FUN-5 | 28.10.2026 | Tehnic stă lângă CampaignKit (Marketing). Faza exactă rămâne de stabilit. |
+| D-FUN-6 | 28.10.2026 | Referință de idei: funnel builder-ul din Hub 1.0 (blocuri, previzualizare, `/f/[slug]`, domenii proprii). Nu se migrează cod. |
+
+**3. Asistentul AI** (§4, §15.4):
+
+| ID | Data | Decizie |
+|---|---|---|
+| D-AI-1 | 28.10.2026 | Asistentul stă în Core și e disponibil în aplicațiile afacerilor. |
+| D-AI-2 | 28.10.2026 | Trece prin `authorize()`: vede și face doar ce poate persoana care îl folosește. |
+| D-AI-3 | 28.10.2026 | Card de confirmare obligatoriu înainte de orice scriere (ca în Hub 1.0). |
+| D-AI-4 | 28.10.2026 | Fiecare acțiune a asistentului intră în jurnalul de audit, pe numele persoanei, marcată ca făcută prin asistent. |
+| D-AI-5 | 28.10.2026 | Faza: de stabilit, după F4. |
+
+**4. Planul fazelor** (§15.1, §15.4):
+
+| ID | Data | Decizie |
+|---|---|---|
+| D-ROAD-5 | 28.10.2026 | Workflow engine, funnel builder și asistentul AI sunt obligatorii pentru produs, cu dependențele de mai sus. Workflow engine-ul intră în livrabilele F4. |
+
+**5. Rezolvarea contradicțiilor C14–C16** (§16):
+
+| ID | Data | Decizie |
+|---|---|---|
+| D-WF-6 | 28.10.2026 | Două lucruri distincte. (a) Automatizările predefinite ale unui modul (de exemplu, reminderele și confirmările Booking) sunt setări ale modulului: afacerea le pornește, le oprește și le configurează în limitele permise (brief §37, checklisturi). Nu țin de workflow engine. (b) Automatizările construite în workflow engine: doar Founder le construiește, le pornește și le oprește; Hub doar citire (D-WF-2, D-WF-3). „Activarea și dezactivarea automatizărilor” din Marketing se referă la (b) doar pentru o automatizare construită. Rezolvă C14. |
+| D-FUN-7 | 28.10.2026 | Landing pages și funnel-urile: doar Founder (D-FUN-1). Formularele simple de lead (câmpurile unui formular de contact sau de captare) le configurează afacerea în CampaignKit / ClientDesk. Rezolvă C15. |
+| D-AI-6 | 28.10.2026 | F4 păstrează doar infrastructura AI: configurarea modelelor, contorizarea, limitele de cost (rândul `ai` din §4). Asistentul cu interfață vine după F4 (D-AI-5). Rezolvă C16, prima parte. |
+| D-AI-7 | 28.10.2026 | „AI Assistant pentru consumatori” din Portal e produs separat și intră în faza Portalului; nu e acoperit de D-AI-1…6. Rezolvă C16, a doua parte. |
+
+Documente actualizate: `VENTORA_MASTER_BRIEF.md` §37 (v1.2), `docs/checklists/01-booking.md`, `09-marketing-campaigns.md`, `12-projects-tasks.md` (precizări, fără funcționalități noi sau scoase; numărătorile rămân) și `docs/checklists/README.md` („Modificări aprobate după extragere”).
+
+**6. Abateri confirmate de fondatoare:** ecranul e „Abonament și consum” (`HubAdminPlan`); fazele se numesc F3/F4, ca în document; serviciul Core al motorului se alege în F4; domeniul Ventora pentru pagini și cheile cotelor / pachetelor (automatizări, pagini) rămân NECESITĂ DECIZIE.
+
+**7. Schimbări de numerotare:** „Riscuri” devine §15.5 (§15.4 e acum „Obligatorii pentru produs”).
+
+### 17.22 Modificări în v0.4.5
+
+Decizii ale fondatoarei din 27–28.10.2026 (sursa: `reports/HANDOFF_2026-10-28.md` §6 și `reports/2026-10-28_1205_plan-lot2-5.md` §7, cu aprobările din rapoartele loturilor 2.5a–2.5c). D-SMS-4 (prețurile) și D-ROAD-1 (ordinea aplicațiilor) **nu** intră aici: așteaptă confirmarea.
+
+**1. 2FA** (§7.1). P5 și D10 sunt id-urile din fișele de review și din microcopy, nu principiul P5 din §2.
+
+| ID | Data | Decizie |
+|---|---|---|
+| R-2F1 | 28.10.2026 | Owner-ul activează 2FA la prima intrare, fără perioadă de grație; înlocuiește P5 (comutatorul din HubAccount și starea „oprită” din HubStates au fost scoase). |
+| R-2F2 | 28.10.2026 | Codul se cere la fiecare intrare cu parola, fără „ține minte dispozitivul” (`trustDevice` refuzat); înlocuiește D10. |
+| R-2F3 | 28.10.2026 | Termenul e „coduri de rezervă”. |
+| R-2F5 | 28.10.2026 | 5 coduri greșite consecutive, apoi contul e blocat 15 minute. |
+| R-2F7 | 28.10.2026 | Recuperarea se face prin `support@ventorasystems.com`, fără resetare automată. |
+| R-2F9 | 28.10.2026 | AuthLayout e componentă comună. |
+
+**2. Loturile Fazei 2** (`docs/plans/FAZA-2.md`):
+
+| ID | Data | Decizie |
+|---|---|---|
+| L-2.4 | 28.10.2026 | Lotul 2.4 e împărțit: 2.4a = logică + teste, 2.4b = ecranele 2FA (după exportul de design). |
+| L-2.5 | 28.10.2026 | Lotul 2.5 e împărțit: 2.5a = jurnalul de audit; 2.5b = corectura E6 + e-mailurile tranzacționale; 2.5c = sesiunea de suport + recuperarea owner-ului. |
+
+**3. Design** (§10.1, §10.6):
+
+| ID | Data | Decizie |
+|---|---|---|
+| D-UX-5 | 28.10.2026 | Separatorul de mii apare și la 4 cifre („1.284”). |
+| D-UI-7 | 28.10.2026 | AttentionList 2.0.0: neutră implicit; `tone: "attention"` = peach. |
+
+**4. Staging** (§14):
+
+| ID | Data | Decizie |
+|---|---|---|
+| D-INF-3 | 28.10.2026 | Staging pe URL-urile stabile Vercel, fără subdomenii; azi nu există proiect Vercel, deci staging = baza Supabase. |
+
+**5. E-mailul tranzacțional** (§11.6, §7.3):
+
+| ID | Data | Decizie |
+|---|---|---|
+| B-1 | 28.10.2026 | Domeniul de expediere e `ventora-hub.com`. |
+| B-2, B-3 | 28.10.2026 | Expeditorul e `Ventora <noreply@ventora-hub.com>`, cu Reply-To `support@ventorasystems.com`. |
+| S3, S54 | 28.10.2026 | Toate e-mailurile tranzacționale folosesc un singur șablon operațional. |
+| S55 | 28.10.2026 | Valabilitatea linkurilor: invitația unui membru 7 zile, invitația owner-ului din Founder 30 de zile, resetarea parolei o oră. |
+
+**6. Deciziile Lotului 2.5** (`reports/2026-10-28_1205_plan-lot2-5.md` §7). Planul le numerotează D0–D18. Aici primesc prefixul `L2.5-`, ca să nu se confunde cu D1 (terminologie) și D10 (microcopy).
+
+| ID | Data | Decizie |
+|---|---|---|
+| L2.5-D0 | 28.10.2026 | Nu: fără script separat de verificare a RLS / grant-urilor pe `access` pe staging. |
+| L2.5-D1 | 28.10.2026 | Modul nou `core/audit`, cu schema `audit` și un singur tabel `audit_log`. |
+| L2.5-D2 | 28.10.2026 | Auditul e `required` (operația eșuează fără rândul de audit) pentru suport, recuperare și acțiunile Founder, și `best_effort` pentru autentificare. Înlocuiește regula „best-effort pentru tot” din FAZA-2. |
+| L2.5-D3 | 28.10.2026 | Categoria nouă de audit `founder`. |
+| L2.5-D4 | 28.10.2026 | Din organizație, jurnalul îl citesc doar `owner` și `admin` (permisiunea `platform/audit.log.read`). |
+| L2.5-D5 | 28.10.2026 | La un login eșuat se păstrează hash-ul SHA-256 al e-mailului, nu adresa în clar. |
+| L2.5-D6 | 28.10.2026 | Fără lanț de hash-uri anti-modificare în 2.5. |
+| L2.5-D7 | 28.10.2026 | Retenția: 24 de luni (identity / organization / access), 60 de luni (support / founder), IP anonimizat după 12 luni. În 2.5 s-a livrat doar structura; ștergerea vine într-un lot ulterior. |
+| L2.5-D8 | 28.10.2026 | Varianta (b): schimbarea rolului unui membru e amânată; E28 rămâne definit, netestat. |
+| L2.5-D9 | 28.10.2026 | Sesiunea de suport stă în schema `access`, nu în contractul `core/audit`. |
+| L2.5-D10 | 28.10.2026 | Varianta A: fără acord prealabil al owner-ului; sesiunea e vizibilă imediat organizației, iar owner-ii primesc e-mail. |
+| L2.5-D11 | 28.10.2026 | Owner-ul poate închide o sesiune de suport. |
+| L2.5-D12 | 28.10.2026 | În sesiunea de suport, Founder-ul poate doar să citească în Lotul 2.5. |
+| L2.5-D13 | 28.10.2026 | Procedura scrisă de verificare a identității stă în `docs/ops/PROCEDURA-RECUPERARE-OWNER.md`. |
+| L2.5-D14 | 28.10.2026 | Recuperarea cere un cod TOTP proaspăt al Founder-ului. |
+| L2.5-D15 | 28.10.2026 | Founder-ul alege la fiecare caz ce se resetează; implicit varianta B (2FA + parolă, cu linkul de resetare în e-mailul către owner). |
+| L2.5-D16 | 28.10.2026 | Recuperarea e separată de sesiunea de suport. |
+| L2.5-D17 | 28.10.2026 | `revokeSessionsOnPasswordReset: true`: o resetare de parolă închide toate sesiunile. |
+| L2.5-D18 | 28.10.2026 | Ecranele (bannerele de suport, formularul de recuperare) vin după F1, ca la 2.4b; în 2.5 s-au livrat doar contracte și chei i18n. |
 
 ### 17.21 Modificări în v0.4.4
 
