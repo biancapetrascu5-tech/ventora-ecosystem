@@ -70,7 +70,7 @@ Scriptul face automat: pornește postgres:17 + pgbouncer pe porturile 5433/6432,
 
 1. Decizii aprobate ale fondatorilor + `docs/checklists/` (cerințele funcționale)
 2. `docs/VENTORA_MASTER_BRIEF.md` (viziunea și regulile de produs)
-3. `docs/ARCHITECTURE.md` v0.4.0 (implementarea tehnică aprobată — decizii Fazei 0 CONFIRMATE)
+3. `docs/ARCHITECTURE.md` v0.4.6 (implementarea tehnică aprobată; istoricul deciziilor în §17)
 4. `docs/DESIGN_RULES.md` + `docs/design/system/README.md` (regulile vizuale)
 5. `docs/VENTORA_SOURCE_OF_TRUTH.md` (indexul central)
 6. `docs/adr/` (deciziile arhitecturale individuale)

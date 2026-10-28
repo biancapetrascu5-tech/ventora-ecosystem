@@ -56,6 +56,8 @@ lipit (2).txt
 
 ## Marketing Automation (11)
 
+> **Două feluri de automatizări (D-WF-6, 28.10.2026):** automatizările predefinite ale modulului sunt setări pe care afacerea le pornește, le oprește și le configurează în limitele permise. Automatizările construite în workflow engine le construiește, le pornește și le oprește doar Founder; în Hub sunt doar pentru citire (D-WF-2, D-WF-3).
+
 - [ ] Automatizări predefinite create de Ventora
 - [ ] Mesaje automate de bun venit
 - [ ] Follow-up automat după o interacțiune
@@ -63,17 +65,19 @@ lipit (2).txt
 - [ ] Mesaje aniversare și de ziua de naștere
 - [ ] Automatizări pe baza segmentelor de audiență
 - [ ] Automatizări declanșate de evenimente din aplicații integrate
-- [ ] Activarea și dezactivarea automatizărilor
+- [ ] Activarea și dezactivarea automatizărilor (de către afacere: cele predefinite ale modulului; o automatizare construită în workflow engine se pornește și se oprește doar din Founder — D-WF-2, D-WF-6)
 - [ ] Configurarea intervalelor și condițiilor permise
 - [ ] Istoric de execuție și rezultate
 - [ ] Prevenirea trimiterilor duplicate
 
 ## Lead Capture & Landing Pages (10)
 
+> **Cine construiește (D-FUN-1, D-FUN-7, 28.10.2026):** landing pages și funnel-urile le construiește și le publică doar echipa Ventora, din Founder Control Center (funnel builder); afacerea le vede în Hub doar pentru citire. Formularele simple de lead (câmpurile unui formular de contact sau de captare) le configurează afacerea în CampaignKit.
+
 - [ ] Formulare publice pentru colectarea leadurilor
-- [ ] Editor de formulare personalizabile
-- [ ] Pagini de destinație / Landing Pages
-- [ ] Șabloane de landing pages
+- [ ] Editor de formulare personalizabile (folosit de afacere, pentru formularele simple de lead — D-FUN-7)
+- [ ] Pagini de destinație / Landing Pages (construite și publicate de echipa Ventora, din Founder — D-FUN-1)
+- [ ] Șabloane de landing pages (folosite de echipa Ventora în funnel builder — D-FUN-1)
 - [ ] Câmpuri și întrebări personalizate
 - [ ] Mesaje de confirmare după completare
 - [ ] Protecție antispam și validarea datelor

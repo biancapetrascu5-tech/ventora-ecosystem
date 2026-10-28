@@ -52,7 +52,7 @@ lipit(6).txt
 - [ ] Mesaje de follow-up după programare
 - [ ] Notificări pentru anulări și modificări
 - [ ] Solicitări de recenzii după vizită
-- [ ] Automatizări predefinite activabile de organizație
+- [ ] Automatizări predefinite activabile de organizație (setări ale modulului: organizația le pornește, le oprește și le configurează în limitele permise; nu țin de workflow engine — D-WF-6)
 - [ ] Șabloane de mesaje controlate de Ventora
 - [ ] Notificări interne pentru personal
 
