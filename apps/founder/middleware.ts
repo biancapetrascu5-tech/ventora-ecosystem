@@ -24,7 +24,6 @@ function isPublicPath(pathname: string): boolean {
 }
 
 function isPublicPage(pathname: string): boolean {
-  if (process.env.NODE_ENV === 'development' && pathname.startsWith('/design')) return true;
   return PUBLIC_PAGES.some((p) => pathname === p || pathname.startsWith(`${p}/`));
 }
 

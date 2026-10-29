@@ -13,9 +13,7 @@ import {
 } from '@ventora/ui';
 
 /* Shell-ul Founder Control Center (FX_App din preview-urile Founder): Spine cu navigația Founder,
-   ContextBar cu căutarea, notificările și contul. Iconițele building-2, ticket, chart-line și
-   sliders-horizontal lipsesc din registrul Icon (packages/ui): folosim cele mai apropiate
-   (store, receipt, chart-column, sliders) — DE VALIDAT TEHNIC. */
+   ContextBar cu căutarea, notificările și contul. */
 
 export function useFounderNav(): NavSection[] {
   const t = useTranslations('founder.nav');
@@ -23,7 +21,7 @@ export function useFounderNav(): NavSection[] {
     {
       items: [
         { id: 'azi', label: t('overview'), short: t('overview'), icon: 'house' },
-        { id: 'afaceri', label: t('businesses'), icon: 'store' },
+        { id: 'afaceri', label: t('businesses'), icon: 'building-2' },
         { id: 'consum', label: t('usage'), icon: 'chart-column' },
       ],
     },
@@ -37,11 +35,11 @@ export function useFounderNav(): NavSection[] {
     {
       label: t('growth'),
       items: [
-        { id: 'oferte', label: t('offers'), icon: 'receipt' },
+        { id: 'oferte', label: t('offers'), icon: 'ticket' },
         { id: 'campanii', label: t('campaigns'), icon: 'megaphone' },
         { id: 'audiente', label: t('audiences'), icon: 'users' },
-        { id: 'rezultate', label: t('results'), icon: 'chart-column' },
-        { id: 'control', label: t('control'), icon: 'sliders' },
+        { id: 'rezultate', label: t('results'), icon: 'chart-line' },
+        { id: 'control', label: t('control'), icon: 'sliders-horizontal' },
       ],
     },
     {

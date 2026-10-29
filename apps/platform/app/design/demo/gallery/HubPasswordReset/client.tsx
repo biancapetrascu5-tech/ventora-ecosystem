@@ -1,8 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { AuthFrame } from '@/screens/auth/parts';
-import { ResetRequest } from '@/screens/auth/PasswordResetView';
+import { AuthFrame, ResetRequest } from '@ventora/screens';
 
 // Datele primului cadru: adresa vine completată din autentificare.
 export function HubPasswordResetFrame() {

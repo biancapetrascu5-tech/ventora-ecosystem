@@ -1,5 +1,4 @@
 /* Datele de exemplu din preview.html, comune galeriilor și panourilor de stări. */
-import type { InviteData } from '@/screens/auth/InviteView';
 
 export const DEMO_INVITE: InviteData = {
   inviterName: 'Bianca Petrașcu',
@@ -9,6 +8,7 @@ export const DEMO_INVITE: InviteData = {
   email: 'ioana.pavel@salonaurora.ro',
   expires: '31 octombrie 2026',
 };
+import { type InviteData } from '@ventora/screens';
 
 // Cheia din preview („JBSW Y3DP EHPK 3PXP Q2NM 7K4R WX5T LA6C”), într-un URI otpauth de test.
 export const DEMO_TOTP_URI =

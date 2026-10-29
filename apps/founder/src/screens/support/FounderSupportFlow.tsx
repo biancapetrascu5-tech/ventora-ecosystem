@@ -4,7 +4,7 @@ import { useEffect, useState, type ReactNode } from 'react';
 import { useFormatter } from 'next-intl';
 import { DialogTrigger } from '@ventora/ui';
 import { closeSupport, openSupport } from '@/server/support-actions';
-import { useIsPhone } from '../auth/hooks';
+import { useIsPhone } from '@ventora/screens';
 import {
   CloseFounderSupportDialog,
   FounderSupportBanner,
@@ -12,8 +12,8 @@ import {
   OpenSupportDialog,
   REASON_MIN,
   type OpenFormState,
-} from './FounderSupportView';
-import styles from './support.module.css';
+} from '@ventora/screens';
+import { founderSupportStyles as styles } from '@ventora/screens';
 
 /* Sesiunea de suport din pagina afacerii (S95): formularul, bannerul peach cât ține, închiderea
    și expirarea. Pagina afacerii (FounderBusiness) nu face parte din lot: fluxul se montează în ea
@@ -37,6 +37,7 @@ export function FounderSupportFlow({
   const [ticket, setTicket] = useState('');
   const [duration, setDuration] = useState('60');
   const [form, setForm] = useState<OpenFormState>('idle');
+  const [existing, setExisting] = useState<{ founderName: string; expiresAt: string } | null>(null);
   const [session, setSession] = useState<{ id: string; expiresAt: string } | null>(null);
   const [expired, setExpired] = useState(false);
   const [confirm, setConfirm] = useState(false);
@@ -68,8 +69,11 @@ export function FounderSupportFlow({
       setExpired(false);
       setForm('idle');
       onOpeningChange(false);
-    } else
-      setForm(res.reason === 'exists' ? 'exists' : res.reason === 'invalid' ? 'errors' : 'idle');
+    } else if (res.reason === 'exists') {
+      // Lot 2.6 · G: cine are sesiunea deschisă și până când
+      setExisting(res.existing);
+      setForm('exists');
+    } else setForm(res.reason === 'invalid' ? 'errors' : 'idle');
   }
 
   async function close() {
@@ -106,6 +110,17 @@ export function FounderSupportFlow({
       <DialogTrigger isOpen={opening} onOpenChange={onOpeningChange}>
         <OpenSupportDialog
           state={form}
+          existing={
+            existing
+              ? {
+                  founderName: existing.founderName,
+                  expiresAt: format.dateTime(new Date(existing.expiresAt), {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                  }),
+                }
+              : undefined
+          }
           reason={reason}
           ticket={ticket}
           duration={duration}

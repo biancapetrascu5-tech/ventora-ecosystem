@@ -1,10 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useFormatter } from 'next-intl';
 import { DialogTrigger } from '@ventora/ui';
-import { recoverOwner } from '@/server/support-actions';
-import { useIsPhone } from '../auth/hooks';
+import { readBusiness, recoverOwner } from '@/server/support-actions';
+import { useIsPhone } from '@ventora/screens';
 import {
   CHECK_CODE,
   EMPTY_RECOVERY,
@@ -14,28 +14,38 @@ import {
   canSubmit,
   type RecoveryFlags,
   type RecoveryValues,
-} from './OwnerRecoveryView';
+} from '@ventora/screens';
 
 export type OwnerOption = { userId: string; name: string; email: string };
 
-/* Recuperarea accesului proprietarului (S87), din pagina afacerii. Lista proprietarilor activi
-   o dă pagina; în core nu există încă un contract Founder care s-o citească (NECESITĂ DECIZIE).
+/* Recuperarea accesului proprietarului (S87), din pagina afacerii. Numele afacerii și
+   proprietarii activi vin din getBusinessForFounder (Lot 2.6 · G), citiți la deschidere.
    Serverul verifică din nou regula, codul (5 greșite → 15 minute) și identitatea. */
 export function OwnerRecoveryFlow({
   organizationId,
-  businessName,
-  owners,
   open,
   onOpenChange,
 }: {
   organizationId: string;
-  businessName: string;
-  owners: OwnerOption[];
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }) {
   const format = useFormatter();
   const phone = useIsPhone();
+  const [businessName, setBusinessName] = useState('');
+  const [owners, setOwners] = useState<OwnerOption[]>([]);
+  useEffect(() => {
+    if (!open) return;
+    let live = true;
+    void readBusiness(organizationId).then((res) => {
+      if (!live || !res.ok) return;
+      setBusinessName(res.organizationName);
+      setOwners(res.owners);
+    });
+    return () => {
+      live = false;
+    };
+  }, [open, organizationId]);
   const [values, setValues] = useState<RecoveryValues>(EMPTY_RECOVERY);
   const [flags, setFlags] = useState<RecoveryFlags>({});
   const [confirm, setConfirm] = useState(false);

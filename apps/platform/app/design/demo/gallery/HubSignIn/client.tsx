@@ -1,8 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { AuthFrame } from '@/screens/auth/parts';
-import { SignInView } from '@/screens/auth/SignInView';
+import { AuthFrame, SignInView } from '@ventora/screens';
 
 // Datele din preview: adresa completată, o parolă de test, „Ține-mă minte” nebifat.
 export function HubSignInFrame() {

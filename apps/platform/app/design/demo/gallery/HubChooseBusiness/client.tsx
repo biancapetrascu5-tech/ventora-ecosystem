@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { ChooseBusinessView, type BusinessRow } from '@/screens/auth/ChooseBusinessView';
+import { ChooseBusinessView, type BusinessRow } from '@ventora/screens';
 
 const BIZ: BusinessRow[] = [
   {

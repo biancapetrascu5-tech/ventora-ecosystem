@@ -1,8 +1,7 @@
 'use client';
 
-import { AuthFrame } from '@/screens/auth/parts';
-import { SetupStep1 } from '@/screens/auth/TwoFactorSetupView';
 import { DEMO_TOTP_URI } from '../_shared/demo-data';
+import { AuthFrame, SetupStep1 } from '@ventora/screens';
 
 export function HubTwoFactorSetupFrame() {
   return (

@@ -1,8 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { AuthFrame } from '@/screens/auth/parts';
-import { TwoFactorVerify } from '@/screens/auth/TwoFactorVerifyView';
+import { AuthFrame, TwoFactorVerify } from '@ventora/screens';
 
 export function HubTwoFactorVerifyFrame() {
   const [code, setCode] = useState('');

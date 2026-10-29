@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation';
 import { StateBoard } from '../../gallery/_shared/StateBoard';
-import { InviteView } from '@/screens/auth/InviteView';
 import { DEMO_INVITE } from '../../gallery/_shared/demo-data';
+import { InviteView } from '@ventora/screens';
 
 // HubInvite (expirată, din cadrul Telefon · Dark) + HubStates (cerere trimisă, anulată, folosită)
 export default function HubInviteStates() {

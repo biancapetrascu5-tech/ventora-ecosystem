@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation';
 import { StateBoard } from '../../gallery/_shared/StateBoard';
-import { AppsDialog, SetupStep1, SetupStep2, SetupStep3 } from '@/screens/auth/TwoFactorSetupView';
 import { DEMO_BACKUP_CODES as CODES, DEMO_TOTP_URI } from '../../gallery/_shared/demo-data';
+import { AppsDialog, SetupStep1, SetupStep2, SetupStep3 } from '@ventora/screens';
 
 // preview.html → Pașii 2 și 3 și Stări 1–7
 export default function HubTwoFactorSetupStates() {

@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation';
 import { StateBoard } from '../../gallery/_shared/StateBoard';
-import { SignInView } from '@/screens/auth/SignInView';
+import { SignInView } from '@ventora/screens';
 
 const M = 'bianca@salonaurora.ro';
 

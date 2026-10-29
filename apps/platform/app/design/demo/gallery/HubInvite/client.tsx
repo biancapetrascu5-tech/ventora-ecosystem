@@ -1,9 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { AuthFrame } from '@/screens/auth/parts';
-import { InviteView } from '@/screens/auth/InviteView';
 import { DEMO_INVITE } from '../_shared/demo-data';
+import { AuthFrame, InviteView } from '@ventora/screens';
 
 export function HubInviteFrame() {
   const [name, setName] = useState('Ioana Pavel');

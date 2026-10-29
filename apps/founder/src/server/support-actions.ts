@@ -3,8 +3,10 @@
 import { headers } from 'next/headers';
 import {
   closeSupportSession,
+  getBusinessForFounder,
   openSupportSession,
   recoverOwnerAccess,
+  SupportSessionConflict,
   type RecoveryVerification,
 } from '@ventora/access';
 
@@ -14,9 +16,36 @@ import {
 
 type Coded = { code?: string; lockedUntil?: string };
 
+export type BusinessResult =
+  | {
+      ok: true;
+      organizationName: string;
+      owners: { userId: string; name: string; email: string }[];
+    }
+  | { ok: false };
+
+/** Lot 2.6 · G: numele afacerii și proprietarii activi (recuperarea, bannerul). */
+export async function readBusiness(organizationId: string): Promise<BusinessResult> {
+  try {
+    const business = await getBusinessForFounder({
+      founderHeaders: await headers(),
+      organizationId,
+    });
+    return { ok: true, ...business };
+  } catch {
+    return { ok: false };
+  }
+}
+
 export type OpenResult =
   | { ok: true; id: string; expiresAt: string }
-  | { ok: false; reason: 'exists' | 'invalid' | 'error' };
+  | {
+      ok: false;
+      reason: 'exists';
+      /** Cine are sesiunea deschisă și până când (ISO); null dacă s-a închis între timp. */
+      existing: { founderName: string; expiresAt: string } | null;
+    }
+  | { ok: false; reason: 'invalid' | 'error' };
 
 export async function openSupport(input: {
   organizationId: string;
@@ -28,9 +57,10 @@ export async function openSupport(input: {
     const s = await openSupportSession({ founderHeaders: await headers(), ...input });
     return { ok: true, id: s.id, expiresAt: s.expiresAt.toISOString() };
   } catch (err) {
+    if (err instanceof SupportSessionConflict)
+      return { ok: false, reason: 'exists', existing: err.existing };
     const code = (err as Coded).code;
-    // Conflict: o sesiune e deja deschisă; cine și până când nu vin în eroare (NECESITĂ DECIZIE).
-    if (code === 'CONFLICT') return { ok: false, reason: 'exists' };
+    if (code === 'CONFLICT') return { ok: false, reason: 'exists', existing: null };
     if (code === 'INVALID_INPUT') return { ok: false, reason: 'invalid' };
     return { ok: false, reason: 'error' };
   }

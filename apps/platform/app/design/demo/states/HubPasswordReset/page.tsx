@@ -1,11 +1,6 @@
 import { notFound } from 'next/navigation';
 import { StateBoard } from '../../gallery/_shared/StateBoard';
-import {
-  ResetDone,
-  ResetNewPassword,
-  ResetRequest,
-  ResetSent,
-} from '@/screens/auth/PasswordResetView';
+import { ResetDone, ResetNewPassword, ResetRequest, ResetSent } from '@ventora/screens';
 
 const MAIL = 'bianca@salonaurora.ro';
 

@@ -2,13 +2,22 @@
 import type { ReactNode } from 'react';
 import { NextIntlClientProvider } from 'next-intl';
 import ro from '@ventora/i18n/messages/ro.json';
+import founderRo from '@ventora/i18n/messages/founder/ro.json';
 import f from './frames.module.css';
 
 /* Ecranele (Faza 2) în galerie: textele vin din chei, mereu în română, ca primul cadru din
    preview.html — indiferent de limba aleasă în browser. */
-export function RoIntl({ children }: { children: ReactNode }) {
+/* Founder (doar RO, S57): catalogul RO al Hub-ului (auth.*, ui.*) + messages/founder/ro.json,
+   ca în apps/founder/src/i18n/request.ts. */
+const FOUNDER_MESSAGES = { ...ro, ...founderRo };
+
+export function RoIntl({ children, founder }: { children: ReactNode; founder?: boolean }) {
   return (
-    <NextIntlClientProvider locale="ro" messages={ro} timeZone="Europe/Bucharest">
+    <NextIntlClientProvider
+      locale="ro"
+      messages={founder ? FOUNDER_MESSAGES : ro}
+      timeZone="Europe/Bucharest"
+    >
       {children}
     </NextIntlClientProvider>
   );
@@ -19,13 +28,15 @@ export function DesktopFrames({
   title,
   height,
   render,
+  founder,
 }: {
   title: string;
   height: number;
+  founder?: boolean;
   render: (theme: 'light' | 'dark') => ReactNode;
 }) {
   return (
-    <RoIntl>
+    <RoIntl founder={founder}>
       <div className={f.base}>
         <div className={f.scrWrap}>
           <p className="heading">{title}</p>

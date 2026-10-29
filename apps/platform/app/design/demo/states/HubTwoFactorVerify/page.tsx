@@ -1,10 +1,6 @@
 import { notFound } from 'next/navigation';
 import { StateBoard } from '../../gallery/_shared/StateBoard';
-import {
-  BackupCodesLeftToast,
-  TwoFactorRecovery,
-  TwoFactorVerify,
-} from '@/screens/auth/TwoFactorVerifyView';
+import { BackupCodesLeftToast, TwoFactorRecovery, TwoFactorVerify } from '@ventora/screens';
 
 const M = 'bianca@salonaurora.ro';
 
@@ -21,12 +17,9 @@ export default function HubTwoFactorVerifyStates() {
         ],
         ['1 · Cod greșit', <TwoFactorVerify key="1" email={M} state="wrong" code="418207" />],
         ['2 · Se verifică', <TwoFactorVerify key="2" email={M} state="loading" code="582914" />],
+        // D2 (29.10): greșit sau deja folosit → un singur mesaj; starea 3 din preview nu mai apare
         [
-          '3 · Cod de rezervă deja folosit',
-          <TwoFactorVerify key="3" email={M} backup state="used" code="6051 2984" />,
-        ],
-        [
-          '4 · Cod de rezervă greșit',
+          '3–4 · Cod de rezervă greșit sau deja folosit',
           <TwoFactorVerify key="4" email={M} backup state="wrong" code="6051 2948" />,
         ],
         [

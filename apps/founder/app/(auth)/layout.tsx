@@ -1,7 +1,12 @@
 import type { ReactNode } from 'react';
+import { FounderAuthProvider } from '@/screens/FounderAuthProvider';
 import styles from './auth-layout.module.css';
 
-/* Ecranele de autentificare ocupă toată fereastra; AuthLayout umple înălțimea (min-height: 100%). */
+/* Ecranele de autentificare Founder ocupă toată fereastra. */
 export default function AuthRouteLayout({ children }: { children: ReactNode }) {
-  return <div className={styles.page}>{children}</div>;
+  return (
+    <div className={styles.page}>
+      <FounderAuthProvider>{children}</FounderAuthProvider>
+    </div>
+  );
 }

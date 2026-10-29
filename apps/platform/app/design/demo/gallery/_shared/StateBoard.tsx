@@ -10,13 +10,15 @@ export function StateBoard({
   title,
   boxes,
   column = 400,
+  founder,
 }: {
   title: string;
   boxes: (theme: 'light' | 'dark') => StateBox[];
   column?: number;
+  founder?: boolean;
 }) {
   return (
-    <RoIntl>
+    <RoIntl founder={founder}>
       {(['light', 'dark'] as const).map((th) => (
         <div key={th} className={s.board} data-theme={th}>
           <p className="heading">

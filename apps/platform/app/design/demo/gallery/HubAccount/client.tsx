@@ -21,7 +21,6 @@ import {
   type ThemeChoice,
 } from '@ventora/ui';
 import { SecuritySection } from '@/screens/account/SecurityView';
-import { Glyph } from '@/screens/glyphs';
 import { HubSettings } from '../_shared/hubSettings';
 import { noop } from '../_shared/shell';
 import { THEME_RO } from '../_shared/labels';
@@ -59,7 +58,10 @@ export function HubAccountFrame() {
               <Input defaultValue="Bianca Petrașcu" />
             </FormField>
             <FormField label="Telefon" isOptional optionalLabel="opțional">
-              <Input defaultValue="0740 123 456" prefix={<Glyph name="message-square" />} />
+              <Input
+                defaultValue="0740 123 456"
+                prefix={<Icon icon="message-square" size={16} />}
+              />
             </FormField>
             <FormField label="E-mail" hint="Dacă îl schimbi, îți trimitem un link de confirmare.">
               <Input defaultValue="bianca@salonaurora.ro" icon="mail" />
@@ -135,7 +137,7 @@ export function HubAccountFrame() {
           <p className={`subheading ${a.devHead}`}>Dispozitive conectate</p>
           <div className={a.secrow}>
             <div className={a.r3}>
-              <Glyph name="laptop" size={20} />
+              <Icon icon="laptop" size={20} />
               <div>
                 <p className="body">MacBook · Chrome · Sibiu</p>
                 <StatusDot tone="attention" label="Activ acum · acest dispozitiv" />

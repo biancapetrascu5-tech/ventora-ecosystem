@@ -40,3 +40,11 @@
   flex-direction: column;
   gap: var(--space-4);
 }
+
+/* Un Drawer contained are nevoie de un cadru poziționat, cu înălțime */
+.contained {
+  position: relative;
+  height: 420px;
+  width: 560px;
+  max-width: 100%;
+}

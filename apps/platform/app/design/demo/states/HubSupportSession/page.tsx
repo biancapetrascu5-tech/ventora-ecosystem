@@ -45,7 +45,7 @@ const ROWS: SessionRow[] = [
   },
 ];
 
-// preview.html → Board2 1–6; rândul „Închisă automat” e nou (NECESITĂ DECIZIE)
+// preview.html → Board2 1–6; rândul „Închisă automat” e confirmat (D8, 29.10)
 export default function HubSupportSessionStates() {
   if (process.env.NODE_ENV !== 'development') notFound();
   return (
