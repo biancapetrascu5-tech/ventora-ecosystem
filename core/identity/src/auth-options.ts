@@ -13,6 +13,12 @@ import {
   type AuthApp,
 } from '@ventora/notifications';
 import { createAuthAuditHooks } from './audit-hooks';
+import {
+  generateBackupCodeList,
+  hashBackupCodeInBody,
+  hashedBackupCodeStore,
+} from './backup-codes';
+import { addLockedUntil } from './lock-info';
 import { runAuthBackgroundTask } from './background';
 import {
   afterPasswordHooks,
@@ -137,12 +143,15 @@ export function createHubAuthOptions(db: IdentityBaseClient, secret: string) {
     }
     await beforeRequestPasswordReset(ctx, db, audit);
     await audit.before(ctx);
+    return hashBackupCodeInBody(ctx, secret);
   });
 
   const after = createAuthMiddleware(async (ctx) => {
     await revokeOtherSessionsOn2faEnroll(ctx, db, audit);
     await audit.after(ctx);
     await afterPasswordHooks(ctx, db, audit);
+    // last: it replaces the answer when the account is locked (B)
+    await addLockedUntil(ctx, db);
   });
 
   return {
@@ -173,11 +182,16 @@ export function createHubAuthOptions(db: IdentityBaseClient, secret: string) {
       passwordResetRenewal({ db, audit }),
       twoFactor({
         issuer: 'Ventora Hub',
-        backupCodeOptions: { storeBackupCodes: 'encrypted' as const },
+        // D1: 10 codes of 8 digits, stored as HMACs (backup-codes.ts)
+        backupCodeOptions: {
+          customBackupCodesGenerate: generateBackupCodeList,
+          storeBackupCodes: hashedBackupCodeStore(secret),
+        },
         accountLockout: TWO_FACTOR_LOCKOUT,
       }),
     ],
-    disabledPaths: ['/two-factor/disable'],
+    // D3: new backup codes only with the TOTP code (regenerateBackupCodes), not the password
+    disabledPaths: ['/two-factor/disable', '/two-factor/generate-backup-codes'],
     hooks: { before, after },
     advanced: {
       database: { generateId: () => crypto.randomUUID() },
@@ -209,12 +223,15 @@ export function createFounderAuthOptions(db: FounderBaseClient, secret: string) 
     }
     await beforeRequestPasswordReset(ctx, db, audit);
     await audit.before(ctx);
+    return hashBackupCodeInBody(ctx, secret);
   });
 
   const after = createAuthMiddleware(async (ctx) => {
     await revokeOtherSessionsOn2faEnroll(ctx, db, audit);
     await audit.after(ctx);
     await afterPasswordHooks(ctx, db, audit);
+    // last: it replaces the answer when the account is locked (B)
+    await addLockedUntil(ctx, db);
   });
 
   return {
@@ -240,11 +257,16 @@ export function createFounderAuthOptions(db: FounderBaseClient, secret: string) 
       passwordResetRenewal({ db, audit }),
       twoFactor({
         issuer: 'Ventora Founder',
-        backupCodeOptions: { storeBackupCodes: 'encrypted' as const },
+        // D1: 10 codes of 8 digits, stored as HMACs (backup-codes.ts)
+        backupCodeOptions: {
+          customBackupCodesGenerate: generateBackupCodeList,
+          storeBackupCodes: hashedBackupCodeStore(secret),
+        },
         accountLockout: TWO_FACTOR_LOCKOUT,
       }),
     ],
-    disabledPaths: ['/two-factor/disable'],
+    // D3: new backup codes only with the TOTP code (regenerateBackupCodes), not the password
+    disabledPaths: ['/two-factor/disable', '/two-factor/generate-backup-codes'],
     hooks: { before, after },
     advanced: {
       database: { generateId: () => crypto.randomUUID() },

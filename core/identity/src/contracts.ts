@@ -88,3 +88,31 @@ export async function listSessions(userId: string): Promise<HubSession[]> {
     twoFactorEnabled,
   }));
 }
+
+/** Lot 2.6 · F: „Deschide direct ultima afacere data viitoare” (preferința utilizatorului). */
+export async function getOpenLastOrganization(userId: string): Promise<boolean> {
+  const user = await getIdentityDb().user.findUnique({
+    where: { id: userId },
+    select: { openLastOrganization: true },
+  });
+  return user?.openLastOrganization === true;
+}
+
+export async function setOpenLastOrganization(userId: string, value: boolean): Promise<void> {
+  await getIdentityDb().user.update({
+    where: { id: userId },
+    data: { openLastOrganization: value },
+  });
+}
+
+/**
+ * Lot 2.6 · E: are adresa invitată deja un cont Hub? (o invitație acceptată de un cont existent
+ * creează doar membership-ul, T2.5). Folosit doar cu adresa dintr-o invitație validă.
+ */
+export async function hasAccountForEmail(email: string): Promise<boolean> {
+  const user = await getIdentityDb().user.findFirst({
+    where: { email: email.trim().toLowerCase() },
+    select: { id: true },
+  });
+  return !!user;
+}
