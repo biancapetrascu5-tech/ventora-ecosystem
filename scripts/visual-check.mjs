@@ -75,6 +75,18 @@ async function captureFrame(page, url, selector, outPath) {
   const res = await page.goto(BASE + url, { waitUntil: 'networkidle' });
   if (!res || !res.ok()) throw new Error(`${url} → HTTP ${res?.status() ?? 'fără răspuns'}`);
   await page.evaluate(() => document.fonts.ready);
+  /* Listele deschise din start (ex. AccountMenu) își calculează poziția la deschidere și o
+     actualizează doar la scroll / resize, în bundle ca și la noi. Pe runnerul Linux, DM Sans poate
+     sosi după deschidere: fallback-ul mai lat schimbă rândurile din jur, apoi ancora se mută și lista
+     rămâne pe vechea poziție (CI 3a9db7a: AccountMenu 1280 light, designul cu 16px mai jos). După
+     încărcarea fonturilor trimitem un resize, ca ambele pagini să-și repoziționeze listele. */
+  await page.evaluate(
+    () =>
+      new Promise((done) => {
+        window.dispatchEvent(new Event('resize'));
+        requestAnimationFrame(() => requestAnimationFrame(done));
+      }),
+  );
   const frame = page.locator(selector).first();
   if ((await frame.count()) === 0) throw new Error(`${url}: cadrul ${selector} lipsește`);
   await frame.scrollIntoViewIfNeeded();
