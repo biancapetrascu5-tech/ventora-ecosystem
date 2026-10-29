@@ -92,10 +92,13 @@ export function Bar({
   title,
   leading,
   hub,
+  countCategory,
 }: {
   title?: string;
   leading?: React.ReactNode;
   hub?: boolean;
+  /** Ce necitite numără clopoțelul (Hub: operational, decizia fondatoarei). */
+  countCategory?: 'operational';
 }) {
   return (
     <ContextBar
@@ -104,7 +107,9 @@ export function Bar({
       org={<OrgSwitcher orgs={ORGS} currentId="aurora" onChange={noop} labels={ORG_RO} />}
       onSearch={noop}
       createItems={hub ? undefined : CREATE}
-      notifications={<NotificationsPanel items={NOTIFS} labels={NOTIF_RO} />}
+      notifications={
+        <NotificationsPanel items={NOTIFS} labels={NOTIF_RO} countCategory={countCategory} />
+      }
       account={
         <AccountMenu
           user={USER}

@@ -1,4 +1,3 @@
- 
 import { notFound } from 'next/navigation';
 import { DesktopFrames } from '../_shared/ScreenFrames';
 import { HubAccountFrame } from './client';

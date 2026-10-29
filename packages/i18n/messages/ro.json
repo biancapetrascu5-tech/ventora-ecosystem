@@ -402,7 +402,14 @@
     "prevPage": "Pagina anterioară",
     "nextPage": "Pagina următoare",
     "pageOf": "Pagina {n} din {total}",
-    "rangeOf": "{from}–{to} din {total}"
+    "rangeOf": "{from}–{to} din {total}",
+    "clearSelection": "Renunță la selecție",
+    "selectAll": "Selectează toate rândurile",
+    "selectRow": "Selectează rândul",
+    "sortAsc": "Sortat crescător",
+    "sortDesc": "Sortat descrescător",
+    "rowsPerPage": "Rânduri pe pagină",
+    "selectedN": "{n, plural, one {# selectat} few {# selectate} other {# de selectate}}"
   },
   "hub": {
     "chooseBusiness": {

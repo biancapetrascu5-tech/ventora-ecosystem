@@ -26,3 +26,11 @@ export const DEMO_BACKUP_CODES = [
   '5193 0745',
   '0468 3529',
 ];
+
+// HubSupportSession: SESSION din preview.html
+export const DEMO_SUPPORT_SESSION = {
+  founderName: 'Mihai Ionescu',
+  expiresAt: '16:30',
+  reason: 'Programările de joi nu apar în calendar',
+  ticketRef: 'VS-2026-0142',
+};

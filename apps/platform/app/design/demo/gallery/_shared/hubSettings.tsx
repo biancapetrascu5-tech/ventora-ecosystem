@@ -1,4 +1,3 @@
- 
 'use client';
 // HUB_SECTIONS + HubSettings din preview-urile ecranelor Hub (Contul tău, Administrare)
 import type { ReactNode } from 'react';

@@ -402,7 +402,14 @@
     "prevPage": "Pagina precedente",
     "nextPage": "Pagina successiva",
     "pageOf": "Pagina {n} di {total}",
-    "rangeOf": "{from}–{to} di {total}"
+    "rangeOf": "{from}–{to} di {total}",
+    "clearSelection": "Annulla selezione",
+    "selectAll": "Seleziona tutte le righe",
+    "selectRow": "Seleziona riga",
+    "sortAsc": "Ordine crescente",
+    "sortDesc": "Ordine decrescente",
+    "rowsPerPage": "Righe per pagina",
+    "selectedN": "{n, plural, one {# selezionato} other {# selezionati}}"
   },
   "hub": {
     "chooseBusiness": {

@@ -1,4 +1,3 @@
- 
 import { notFound } from 'next/navigation';
 import { StateBoard } from '../../gallery/_shared/StateBoard';
 import { DEMO_BACKUP_CODES } from '../../gallery/_shared/demo-data';

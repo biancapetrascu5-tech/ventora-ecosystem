@@ -1,0 +1,67 @@
+/* .frame-rel / .wrap / .greet / .sechead / .tiles4 / .rows / .rows2 din preview-urile Hub */
+.frameRel {
+  position: relative;
+  height: 100%;
+}
+.lead {
+  padding: 0 var(--space-2);
+  display: inline-flex;
+}
+.wrap {
+  max-width: 1120px;
+  width: 100%;
+  margin: 0 auto;
+  padding: var(--space-6) var(--space-6) var(--space-10);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+  box-sizing: border-box;
+}
+.greet {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+.greet p,
+.greet h1,
+.wrap h2 {
+  margin: 0;
+}
+.daylinks :global(.v-link) {
+  font-weight: 500;
+}
+.sechead {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-3);
+  flex-wrap: wrap;
+}
+.sec {
+  margin-bottom: var(--space-3);
+}
+.intro {
+  margin-bottom: var(--space-3);
+}
+.tiles4 {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-4);
+}
+.rows {
+  display: flex;
+  flex-direction: column;
+  background: var(--sheet);
+  border: var(--border-width) solid var(--line);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+.rows2 {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-2);
+}
+.more {
+  margin-top: var(--space-4);
+}
