@@ -11,18 +11,22 @@ const SYSTEM_ROLES = ['owner', 'admin', 'member', 'external_collaborator', 'appl
 
 export default async function ChooseBusinessPage() {
   const session = await getSession(await headers());
-  const businesses = await listMyBusinesses();
-  if (!session || !businesses) redirect('/sign-in');
+  const mine = await listMyBusinesses();
+  if (!session || !mine) redirect('/sign-in');
   const user = await getUserById(session.userId);
   const t = await getTranslations('roles');
   return (
     <ChooseBusinessScreen
       userName={user?.name ?? ''}
-      businesses={businesses.map((b) => ({
+      openLast={mine.openLast}
+      businesses={mine.businesses.map((b, i) => ({
         id: b.id,
         name: b.name,
         role: SYSTEM_ROLES.includes(b.role) ? t(b.role) : b.role,
-        recent: b.active,
+        apps: b.apps,
+        lastOpenedAt: b.lastOpenedAt,
+        // „Ultima folosită”: prima din listă, dacă a fost deschisă vreodată
+        recent: i === 0 && b.lastOpenedAt !== null,
       }))}
     />
   );

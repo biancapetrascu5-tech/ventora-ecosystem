@@ -3,9 +3,8 @@
 import type { FormEvent, ReactNode } from 'react';
 import { useTranslations } from 'next-intl';
 import { Button, FormField, Icon, Input, Notice, SheetSection, StatusPill, cn } from '@ventora/ui';
-import { BackupCodesList } from '../auth/TwoFactorSetupView';
-import auth from '../auth/auth.module.css';
 import styles from './account.module.css';
+import { BackupCodesList, authStyles as auth } from '@ventora/screens';
 
 /* HubAccount · Securitate (S58, S60, S82, S83): parola, starea 2FA fără comutator pentru
    proprietar, „Coduri de rezervă” cu „Generează coduri noi” (afișate o singură dată). */
@@ -147,7 +146,7 @@ export function SecuritySection({
   twoFactorEnabled: boolean;
   /** „acum 3 luni” (deja formatat); lipsește din API azi. */
   passwordChanged?: string;
-  /** Câte coduri de rezervă au rămas; lipsește din API azi (NECESITĂ DECIZIE). */
+  /** Câte coduri de rezervă au rămas, din countBackupCodes (Lot 2.6 · A). */
   codesLeft?: number;
   /** Fluxul „Generează coduri noi”, sub rândul codurilor, cât e deschis. */
   codesFlow?: ReactNode;

@@ -8,7 +8,7 @@ import {
   readSupportSessions,
   type SessionsPage,
 } from '@/server/support-actions';
-import { useIsPhone } from '../auth/hooks';
+import { useIsPhone } from '@ventora/screens';
 import { CloseSupportDialog, SupportSessionsSection, type SessionRow } from './SupportSessionView';
 
 /* Administrare · Roluri și acces → „Sesiuni de suport” (S91, A5: page / pageSize).
@@ -42,7 +42,7 @@ export function SupportSessionsScreen({ initial }: { initial: SessionsPage }) {
         : i.status === 'expired'
           ? { kind: 'expired' }
           : i.closedBy?.type === 'system'
-            ? { kind: 'closedAuto' } // A4: închisă de sistem înainte de expirare (NECESITĂ DECIZIE)
+            ? { kind: 'closedAuto' } // A4: închisă de sistem înainte de expirare (D8, 29.10)
             : { kind: 'closedBy', name: i.closedBy?.name ?? '—' },
   }));
 

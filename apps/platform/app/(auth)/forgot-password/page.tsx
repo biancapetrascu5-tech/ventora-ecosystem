@@ -1,5 +1,5 @@
-import { ForgotPasswordScreen } from '@/screens/auth/ForgotPasswordScreen';
+import { ForgotPasswordScreen } from '@ventora/screens';
 
-export default function ForgotPasswordPage() {
+export default function Page() {
   return <ForgotPasswordScreen />;
 }

@@ -1,5 +1,5 @@
-import { TwoFactorVerifyScreen } from '@/screens/auth/TwoFactorVerifyScreen';
+import { TwoFactorVerifyScreen } from '@ventora/screens';
 
-export default function TwoFactorPage() {
+export default function Page() {
   return <TwoFactorVerifyScreen />;
 }

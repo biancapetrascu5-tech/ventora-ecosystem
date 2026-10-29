@@ -1,6 +1,6 @@
 import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
-import { getSession } from '@ventora/identity';
+import { countBackupCodes, getSession } from '@ventora/identity';
 import { listMyOrganizations } from '@ventora/organizations';
 import { AccountSecurityScreen } from '@/screens/account/AccountSecurityScreen';
 
@@ -19,10 +19,14 @@ export default async function AccountPage() {
   const active = memberships.find(
     (m) => m.organization_id === session.activeOrganizationId && m.status === 'active',
   );
+  const codesLeft = session.twoFactorEnabled
+    ? ((await countBackupCodes('hub', await headers()).catch(() => null)) ?? undefined)
+    : undefined;
   return (
     <AccountSecurityScreen
       owner={active?.role === 'owner'}
       twoFactorEnabled={session.twoFactorEnabled}
+      codesLeft={codesLeft}
     />
   );
 }

@@ -1,5 +1,5 @@
-import { SignInScreen } from '@/screens/auth/SignInScreen';
+import { SignInScreen } from '@ventora/screens';
 
-export default function SignInPage() {
+export default function Page() {
   return <SignInScreen />;
 }

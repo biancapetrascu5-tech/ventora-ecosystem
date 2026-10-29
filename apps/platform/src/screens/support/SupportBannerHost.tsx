@@ -4,7 +4,7 @@ import { useState, type ReactNode } from 'react';
 import { useFormatter } from 'next-intl';
 import { DialogTrigger } from '@ventora/ui';
 import { closeSupportSession, type BannerData } from '@/server/support-actions';
-import { useIsPhone } from '../auth/hooks';
+import { useIsPhone } from '@ventora/screens';
 import { CloseSupportDialog, SupportBanner, SupportClosedToast } from './SupportSessionView';
 import styles from './support.module.css';
 
