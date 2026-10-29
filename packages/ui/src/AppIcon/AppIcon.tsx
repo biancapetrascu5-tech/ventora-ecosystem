@@ -24,8 +24,12 @@ export type AppName =
 
 export { APPS };
 
+/** Aplicațiile cu glifă, în ordinea din bundle (AppIcon.apps). */
+export const APP_IDS = Object.keys(APP_GLYPHS) as AppName[];
+
 export interface AppIconProps {
-  app: AppName | string;
+  /** Fără `app` (sau fără glifă) se desenează iconița Lucide pe plăcuță. */
+  app?: AppName | string;
   /** Iconița Lucide pentru o aplicație fără glifă (implicit APPS[app].icon, apoi layout-grid). */
   icon?: IconName;
   size?: number;
@@ -39,9 +43,11 @@ export interface AppIconProps {
 /* AppIcon din bundle.js: SVG 48×48 cu placa (appicon-plate), forma și accentul aplicației;
    culorile vin din tokeni, deci tema se schimbă singură. */
 export function AppIcon({ app, icon, size = 40, muted = false, title, className }: AppIconProps) {
-  const glyph = APP_GLYPHS[app];
+  const glyph = app ? APP_GLYPHS[app] : undefined;
   if (!glyph) {
-    const ic = (icon ?? (APPS[app]?.icon as IconName | undefined) ?? 'layout-grid') as IconName;
+    const ic = (icon ??
+      ((app && APPS[app]?.icon) as IconName | undefined) ??
+      'layout-grid') as IconName;
     return (
       <span
         className={cn(styles.appicon, styles.lucide, muted && styles.isMuted, className)}

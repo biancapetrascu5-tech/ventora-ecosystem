@@ -1,142 +1,107 @@
 'use client';
 
+import { useId } from 'react';
+import { AppIcon } from '../AppIcon/AppIcon';
+import { Button } from '../Button/Button';
+import type { IconName } from '../Icon/Icon';
 import { cn } from '../lib/cn';
-import { Icon } from '../Icon/Icon';
+import { StatusPill, type StatusPillTone } from '../StatusPill/StatusPill';
 import styles from './PortalPresence.module.css';
 
 export type PortalStatus = 'published' | 'hidden' | 'draft';
 
-export interface PortalPresenceTranslations {
+export interface PortalPresenceLabels {
+  /** S.portal_eyebrow, S.portal_title, S.portal_desc, S.portal_noManage. */
   eyebrow: string;
   title: string;
   description: string;
-  memberNote: string;
+  noManage: string;
+  /** S.portal_manage / S.portal_finish (pagina nepublicată). */
   manage: string;
   finish: string;
+  /** S.portal_preview și S.newTab (în numele accesibil). */
   preview: string;
-  previewTab: string;
-  statusPublished: string;
-  statusHidden: string;
-  statusDraft: string;
+  newTab: string;
+  /** S.portal_published, S.portal_hidden, S.portal_draft. */
+  published: string;
+  hidden: string;
+  draft: string;
 }
 
 export interface PortalPresenceProps {
-  status: PortalStatus;
+  status?: PortalStatus;
+  /** Fără drept de gestionare: apare nota cu cine poate schimba pagina. */
   canManage?: boolean;
-  onManage?: (e: React.MouseEvent<HTMLButtonElement>) => void;
+  onManage?: () => void;
   onPreview?: () => void;
   previewHref?: string;
   compact?: boolean;
-  translations: PortalPresenceTranslations;
+  labels: PortalPresenceLabels;
+  className?: string;
 }
 
+const STATUS: Record<PortalStatus, [StatusPillTone, IconName]> = {
+  published: ['done', 'circle-check'],
+  hidden: ['neutral', 'eye-off'],
+  draft: ['attention', 'circle-alert'],
+};
+
+/* PortalPresence din bundle.js: cartonașul „Pagina afacerii în Portal” — starea paginii,
+   „Gestionează pagina” și „Vezi cum arată în Portal”. */
 export function PortalPresence({
-  status,
+  status = 'published',
   canManage = true,
   onManage,
   onPreview,
   previewHref,
   compact = false,
-  translations: t,
+  labels,
+  className,
 }: PortalPresenceProps) {
-  const statusLabel =
-    status === 'published'
-      ? t.statusPublished
-      : status === 'hidden'
-        ? t.statusHidden
-        : t.statusDraft;
-
-  const manageLabel = status === 'draft' ? t.finish : t.manage;
-
+  const titleId = useId();
+  const [tone, icon] = STATUS[status] ?? STATUS.published;
+  const preview =
+    onPreview ?? (previewHref ? () => window.open(previewHref, '_blank', 'noopener') : undefined);
+  const manage = canManage && (
+    <Button variant="secondary" onPress={onManage}>
+      {status === 'draft' ? labels.finish : labels.manage}
+    </Button>
+  );
+  const prev = status !== 'draft' && (
+    <Button
+      variant="quiet"
+      iconEnd="external-link"
+      onPress={preview}
+      aria-label={`${labels.preview} (${labels.newTab})`}
+    >
+      {labels.preview}
+    </Button>
+  );
   return (
-    <div className={cn(styles.card, 'v-portalcard', compact && styles.compact)}>
-      <div className={styles.meta}>
-        <div className={styles.storeIconWrap} aria-hidden>
-          <Icon icon="store" size="md" />
+    <section
+      className={cn(styles.card, compact && styles.compact, className)}
+      aria-labelledby={titleId}
+    >
+      <span className={styles.icon}>
+        <AppIcon app="portal" size={compact ? 40 : 48} />
+      </span>
+      <div className={styles.text}>
+        <p className={cn('caption', styles.eyebrow)}>{labels.eyebrow}</p>
+        <h3 className={cn('heading', styles.title)} id={titleId}>
+          {labels.title}
+        </h3>
+        <p className={cn('body', styles.desc)}>{labels.description}</p>
+        {!canManage && <p className={cn('body-small', styles.note)}>{labels.noManage}</p>}
+      </div>
+      <StatusPill tone={tone} icon={icon} className={styles.pill}>
+        {labels[status]}
+      </StatusPill>
+      {(manage || prev) && (
+        <div className={styles.act}>
+          {manage}
+          {prev}
         </div>
-        <p className={styles.eyebrow}>
-          {t.eyebrow}
-          <span className={cn(styles.pill, styles[status])}>
-            {status === 'published' ? (
-              <svg
-                className={styles.pillCheck}
-                aria-hidden
-                width="10"
-                height="10"
-                viewBox="0 0 12 12"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <polyline points="2,6 5,9 10,3" />
-              </svg>
-            ) : (
-              <span className={styles.pillDot} aria-hidden />
-            )}
-            {statusLabel}
-          </span>
-        </p>
-        <h3 className={styles.title}>{t.title}</h3>
-        <p className={styles.description}>{t.description}</p>
-        {!canManage && <p className={styles.memberNote}>{t.memberNote}</p>}
-      </div>
-
-      <div className={styles.actions}>
-        {canManage && onManage && (
-          <button type="button" className={styles.manageBtn} onClick={onManage}>
-            {manageLabel}
-          </button>
-        )}
-
-        {status === 'published' &&
-          (previewHref || onPreview) &&
-          (previewHref ? (
-            <a
-              href={previewHref}
-              target="_blank"
-              rel="noopener noreferrer"
-              className={styles.externalLink}
-            >
-              {t.preview}
-              <svg
-                aria-label={t.previewTab}
-                width="14"
-                height="14"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
-                <polyline points="15 3 21 3 21 9" />
-                <line x1="10" y1="14" x2="21" y2="3" />
-              </svg>
-            </a>
-          ) : (
-            <button type="button" className={styles.externalLink} onClick={onPreview}>
-              {t.preview}
-              <svg
-                aria-hidden
-                width="14"
-                height="14"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
-                <polyline points="15 3 21 3 21 9" />
-                <line x1="10" y1="14" x2="21" y2="3" />
-              </svg>
-            </button>
-          ))}
-      </div>
-    </div>
+      )}
+    </section>
   );
 }

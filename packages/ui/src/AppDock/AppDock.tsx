@@ -1,178 +1,106 @@
 'use client';
 
-import { useState, useRef, useCallback } from 'react';
-import { AppIcon, type AppName } from '../AppIcon/AppIcon';
+import type { CSSProperties, MouseEvent } from 'react';
+import type { AppName } from '../AppIcon/AppIcon';
+import { AppTile, type AppTileLabels } from '../AppTile/AppTile';
+import type { IconName } from '../Icon/Icon';
 import { cn } from '../lib/cn';
 import styles from './AppDock.module.css';
 
 export interface DockApp {
   app: AppName;
   name?: string;
-  description: string;
+  icon?: IconName;
+  description?: string;
   badge?: number;
+  /** Linia de azi din fișă; `attention` adaugă punctul. */
   live?: { text: string; attention?: boolean };
+}
+
+/** Pozițiile de pornire pentru AppLaunch. */
+export interface DockLaunch {
+  from?: DOMRect;
+  fromCard?: DOMRect;
+  iconEl?: Element | null;
 }
 
 export interface AppDockProps {
   apps: DockApp[];
-  onOpen: (
-    event: React.MouseEvent | React.KeyboardEvent,
+  onOpen?: (
+    e: MouseEvent<HTMLButtonElement>,
     app: AppName,
     name: string,
-    launch: { from: DOMRect; fromCard: DOMRect; iconEl: Element },
+    launch: DockLaunch,
   ) => void;
-  label?: string;
+  /** S.dock_label — numele listei. */
+  label: string;
+  /** Textele plăcuțelor (openApp, unreadN…). */
+  tileLabels: AppTileLabels;
+  /** Stare forțată (galerii): aplicația deschisă în fișă și cea cu focus de tastatură. */
+  hoverIndex?: number;
+  focusIndex?: number;
+  className?: string;
 }
 
-const APP_LABELS: Record<AppName, string> = {
-  booking: 'Booking',
-  crm: 'CRM',
-  hr: 'HR',
-  finance: 'Finance',
-  projects: 'Projects',
-  shifts: 'Shifts',
-  documents: 'Documents',
-  portal: 'Portal',
-  inventory: 'Inventory',
-  analytics: 'Analytics',
-  marketing: 'Marketing',
-  network: 'Network',
-  contracts: 'Contracts',
-  events: 'Events',
-  assets: 'Assets',
-};
-
-export function AppDock({ apps, onOpen, label = 'Aplicațiile tale' }: AppDockProps) {
-  const [openIndex, setOpenIndex] = useState<number | null>(null);
-  const dockRef = useRef<HTMLDivElement>(null);
-  // Timer ref for hover intent delay (duration-intent = 120ms)
-  const hoverTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  const clearHoverTimer = useCallback(() => {
-    if (hoverTimerRef.current !== null) {
-      clearTimeout(hoverTimerRef.current);
-      hoverTimerRef.current = null;
-    }
-  }, []);
-
-  const handleMouseEnter = useCallback(
-    (idx: number) => {
-      clearHoverTimer();
-      // Open card only after 120ms hover intent (duration-intent token)
-      hoverTimerRef.current = setTimeout(() => {
-        setOpenIndex(idx);
-        hoverTimerRef.current = null;
-      }, 120);
-    },
-    [clearHoverTimer],
-  );
-
-  const handleMouseLeave = useCallback(() => {
-    // Cancel pending open and close immediately
-    clearHoverTimer();
-    setOpenIndex(null);
-  }, [clearHoverTimer]);
-
-  // Keyboard focus: instant, no delay
-  const handleFocus = useCallback(
-    (idx: number) => {
-      clearHoverTimer();
-      setOpenIndex(idx);
-    },
-    [clearHoverTimer],
-  );
-
-  const handleBlur = useCallback(() => {
-    clearHoverTimer();
-    setOpenIndex(null);
-  }, [clearHoverTimer]);
-
-  const handleClick = useCallback(
-    (
-      e: React.MouseEvent | React.KeyboardEvent,
-      dockApp: DockApp,
-      slotEl: HTMLElement | null,
-      iconEl: HTMLElement | null,
-    ) => {
-      if (!slotEl || !iconEl) return;
-      const from = iconEl.getBoundingClientRect();
-      const fromCard = slotEl.getBoundingClientRect();
-      const name = dockApp.name ?? APP_LABELS[dockApp.app];
-      onOpen(e, dockApp.app, name, { from, fromCard, iconEl });
-    },
-    [onOpen],
-  );
-
+/* AppDock din bundle.js: rândul de iconuri al launcherului; la hover sau focus, iconul se deschide
+   în fișa aplicației (descriere + linia de azi). Pe telefon (containerul vdock ≤ 560px) e o grilă. */
+export function AppDock({
+  apps,
+  onOpen,
+  label,
+  tileLabels,
+  hoverIndex,
+  focusIndex,
+  className,
+}: AppDockProps) {
   return (
-    <div className={styles.wrapper}>
-      <div ref={dockRef} className={cn(styles.dock, 'v-dock')} role="list" aria-label={label}>
-        {apps.map((dockApp, idx) => {
-          const name = dockApp.name ?? APP_LABELS[dockApp.app];
-          const isOpen = openIndex === idx;
-
-          return (
-            <div
-              key={dockApp.app}
-              className={cn(styles.slot, isOpen && styles.isOpen)}
-              role="listitem"
-              onMouseEnter={() => handleMouseEnter(idx)}
-              onMouseLeave={handleMouseLeave}
-              onFocus={() => handleFocus(idx)}
-              onBlur={handleBlur}
-            >
-              {isOpen && (
-                <div className={styles.card} role="tooltip">
-                  <div className={styles.cardHead}>
-                    <div className={styles.cardIconWrap}>
-                      <AppIcon app={dockApp.app} size={48} title={name} />
-                    </div>
-                    <div className={styles.cardMeta}>
-                      <span className={styles.cardName}>{name}</span>
-                      <span className={styles.cardDesc}>{dockApp.description}</span>
-                    </div>
-                  </div>
-                  {dockApp.live && (
-                    <div className={styles.cardLive}>
-                      {dockApp.live.attention && (
-                        <span className={styles.cardLiveDot} aria-hidden />
-                      )}
-                      {dockApp.live.text}
-                    </div>
-                  )}
-                </div>
+    <div className={cn(styles.wrap, className)}>
+      <div className={styles.dock} role="list" aria-label={label}>
+        {apps.map((a, i) => (
+          <div
+            key={a.app || a.name}
+            className={cn(styles.item, hoverIndex === i && styles.isHover)}
+            role="listitem"
+            style={{ '--i': i } as CSSProperties}
+            onClick={(e) => {
+              if (e.target === e.currentTarget) {
+                e.currentTarget.querySelector<HTMLButtonElement>('[data-apptile-icon]')?.click();
+              }
+            }}
+          >
+            <div className={styles.card} data-dock-card="">
+              <AppTile
+                app={a.app}
+                name={a.name}
+                icon={a.icon}
+                layout="icon"
+                badge={a.badge}
+                state={focusIndex === i ? 'focus' : undefined}
+                labels={tileLabels}
+                onOpen={
+                  onOpen
+                    ? (e, nm) => {
+                        const card = e.currentTarget.closest('[data-dock-card]');
+                        const ic = card?.querySelector('[data-apptile-iconwrap] > svg');
+                        onOpen(e, a.app, nm, {
+                          from: ic?.getBoundingClientRect(),
+                          fromCard: card?.getBoundingClientRect(),
+                          iconEl: ic,
+                        });
+                      }
+                    : undefined
+                }
+              />
+              {a.description && <p className={styles.desc}>{a.description}</p>}
+              {a.live && (
+                <p className={styles.live}>
+                  {a.live.attention && <span className={styles.dot} aria-hidden="true" />}
+                  {a.live.text}
+                </p>
               )}
-
-              <button
-                type="button"
-                className={styles.item}
-                aria-label={name}
-                onClick={(e) => {
-                  const slotEl = e.currentTarget.closest(`.${styles.slot}`) as HTMLElement | null;
-                  const iconEl = e.currentTarget.querySelector('svg, img') as HTMLElement | null;
-                  handleClick(e, dockApp, slotEl, iconEl);
-                }}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                    const slotEl = e.currentTarget.closest(`.${styles.slot}`) as HTMLElement | null;
-                    const iconEl = e.currentTarget.querySelector('svg, img') as HTMLElement | null;
-                    handleClick(e, dockApp, slotEl, iconEl);
-                  }
-                }}
-              >
-                <div className={styles.iconWrap}>
-                  <AppIcon app={dockApp.app} size={64} title={name} />
-                  {dockApp.badge != null && dockApp.badge > 0 && (
-                    <span className={styles.badge} aria-label={`${dockApp.badge} notificări`}>
-                      {dockApp.badge}
-                    </span>
-                  )}
-                </div>
-                <span className={styles.name}>{name}</span>
-              </button>
             </div>
-          );
-        })}
+          </div>
+        ))}
       </div>
     </div>
   );

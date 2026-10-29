@@ -1,6 +1,7 @@
 /* eslint-disable i18next/no-literal-string */
 'use client';
 
+import { APPTILE_RO, LAUNCH_RO, PORTAL_RO } from '../../gallery/_shared/labels';
 import { useEffect, useState } from 'react';
 import {
   AppDock,
@@ -28,21 +29,6 @@ const APP_LABELS: Partial<Record<AppName, string>> = {
   analytics: 'Analytics',
   marketing: 'Marketing',
   network: 'Network',
-};
-
-const PORTAL_TRANSLATIONS = {
-  eyebrow: 'Portal · pentru clienții tăi',
-  title: 'Pagina afacerii în Portal',
-  description:
-    'Clienții te găsesc în Portal și își fac programări acolo. De aici schimbi ce văd ei.',
-  memberNote: 'Pagina o pot schimba proprietarul, adminii și managerul aplicației Portal.',
-  manage: 'Gestionează pagina',
-  finish: 'Termină pagina',
-  preview: 'Vezi cum arată în Portal',
-  previewTab: '(se deschide într-un tab nou)',
-  statusPublished: 'Publicată',
-  statusHidden: 'Ascunsă',
-  statusDraft: 'Nu e publicată încă',
 };
 
 const DOCK_APPS: DockApp[] = [
@@ -217,7 +203,7 @@ function AppTileRow({ config }: { config: OtherConfig }) {
   );
 }
 
-type LaunchState = { app: AppName; name: string; from: DOMRect; fromCard: DOMRect };
+type LaunchState = { app: AppName; name: string; from?: DOMRect; fromCard?: DOMRect };
 
 export function LauncherScreenClient({ theme }: { theme: 'light' | 'dark'; activeApp?: string }) {
   const [launch, setLaunch] = useState<LaunchState | null>(null);
@@ -424,6 +410,8 @@ export function LauncherScreenClient({ theme }: { theme: 'light' | 'dark'; activ
           >
             <AppDock
               apps={DOCK_APPS}
+              label="Aplicațiile tale"
+              tileLabels={APPTILE_RO}
               onOpen={(_e, app, name, launchInfo) => {
                 setLaunch({ app, name, from: launchInfo.from, fromCard: launchInfo.fromCard });
               }}
@@ -432,7 +420,7 @@ export function LauncherScreenClient({ theme }: { theme: 'light' | 'dark'; activ
               status="published"
               onManage={() => {}}
               previewHref="#"
-              translations={PORTAL_TRANSLATIONS}
+              labels={PORTAL_RO}
             />
           </div>
         </div>
@@ -464,6 +452,7 @@ export function LauncherScreenClient({ theme }: { theme: 'light' | 'dark'; activ
 
       {launch && (
         <AppLaunch
+          openingLabel={LAUNCH_RO}
           app={launch.app}
           name={launch.name}
           from={launch.from}

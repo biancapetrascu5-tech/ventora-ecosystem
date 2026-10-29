@@ -1,61 +1,104 @@
-/* AppDock — Hub launcher row of app icons with hover cards */
-
-.wrapper {
-  container-type: inline-size;
-  width: 100%;
+/* .v-dockwrap + .v-dock din bundle.css: rândul de iconuri al launcherului; la hover sau focus de
+   tastatură, iconul se deschide în fișa aplicației, deasupra rândului */
+.wrap {
+  container: vdock / inline-size;
+  position: relative;
+  z-index: 1;
 }
 
-/* Desktop / tablet: icons on a raised sheet */
 .dock {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(96px, 1fr));
   gap: var(--space-2);
-  padding: var(--space-4) var(--space-5);
+  padding: var(--space-5) var(--space-4);
   background: var(--raised);
   border-radius: var(--radius-xl);
   box-shadow: var(--shadow-2);
-  position: relative;
-}
-
-/* Each slot contains the icon + optional hover card above */
-.slot {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  flex: none;
 }
 
 .item {
-  appearance: none;
-  border: 0;
-  background: none;
-  cursor: pointer;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--space-1);
-  padding: var(--space-2);
-  border-radius: var(--radius-md);
   position: relative;
-  font-family: var(--font-sans);
-  transition: background-color var(--duration-instant) var(--ease-standard);
-  /* Keep focus ring for keyboard */
+  height: 120px;
+  min-width: 0;
+  animation: dock-in var(--duration-slow) var(--ease-spring) backwards;
+  animation-delay: calc(var(--i) * 40ms);
 }
 
-.item:focus-visible {
-  outline: var(--focus-ring-width) solid var(--focus-ring);
-  outline-offset: var(--focus-ring-offset);
+.item:is(:hover, .isHover, :focus-within) {
+  z-index: 5;
 }
 
-.item:hover {
-  background: var(--state-hover);
+@keyframes dock-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.94);
+  }
 }
 
-/* Icon wrapper — shrinks when card is open */
-.iconWrap {
-  position: relative;
+.card {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  container-type: inline-size;
+  border-radius: var(--radius-xl);
+  background: transparent;
+  box-shadow: none;
+  transition:
+    left var(--duration-morph) var(--ease-spring),
+    top var(--duration-morph) var(--ease-spring),
+    width var(--duration-morph) var(--ease-spring),
+    height var(--duration-morph) var(--ease-spring),
+    background-color var(--duration-fast) var(--ease-standard),
+    box-shadow var(--duration-morph) var(--ease-standard);
+}
+
+.card::after {
+  content: '';
+  position: absolute;
+  left: var(--space-6);
+  right: var(--space-6);
+  bottom: 0;
+  height: var(--marker-width);
+  border-radius: var(--marker-width) var(--marker-width) 0 0;
+  background: var(--hover-accent);
+  transform: scaleX(0);
+  transition: transform var(--duration-playful) var(--ease-spring);
+}
+
+/* AppTile layout „icon” în dock */
+.dock .item [data-apptile-icon] {
+  position: static;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  background: transparent;
+  box-shadow: none;
+  border-radius: var(--radius-xl);
+}
+
+.dock .item [data-apptile-icon]:hover {
+  background: transparent;
+}
+
+.dock .item [data-apptile-icon]::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius-xl);
+  z-index: 1;
+}
+
+.dock .item [data-apptile-iconwrap] {
+  position: absolute;
+  left: 0;
+  top: 0;
+  transform: translate(calc(50cqw - 50%), var(--space-4));
+  transition: transform var(--duration-morph) var(--ease-spring);
+}
+
+.dock .item [data-apptile-iconwrap] > svg {
   width: var(--dock-icon);
   height: var(--dock-icon);
   transition:
@@ -63,149 +106,48 @@
     height var(--duration-morph) var(--ease-spring);
 }
 
-.slot.isOpen .iconWrap {
-  width: var(--dock-icon-compact);
-  height: var(--dock-icon-compact);
+.dock .item [data-apptile-iconwrap] > :not(svg) {
+  top: -6px;
+  right: -6px;
+  box-shadow: 0 0 0 var(--focus-ring-width) var(--raised);
 }
 
-.badge {
+.dock .item [data-apptile-name] {
   position: absolute;
-  top: -4px;
-  right: -4px;
-  min-width: 18px;
-  height: 18px;
-  padding: 0 5px;
-  background: var(--attention);
-  color: var(--on-attention);
-  border-radius: var(--radius-full);
-  font-size: 11px;
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  line-height: 1;
-  box-shadow: 0 0 0 2px var(--raised);
+  left: 0;
+  top: 0;
+  max-width: 100cqw;
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 600;
+  color: var(--ink);
+  transform: translate(calc(50cqw - 50%), 90px);
+  transition:
+    transform var(--duration-morph) var(--ease-spring),
+    font-size var(--duration-morph) var(--ease-spring);
+}
+
+.desc,
+.live {
+  position: absolute;
+  left: var(--space-5);
+  width: calc(var(--dock-card-w) - var(--space-10));
+  margin: 0;
+  text-align: start;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(var(--space-2));
+  transition:
+    opacity var(--duration-fast) var(--ease-standard),
+    transform var(--duration-morph) var(--ease-spring),
+    visibility 0s linear var(--duration-fast);
   pointer-events: none;
 }
 
-.name {
-  font-size: var(--type-body-size);
-  font-weight: var(--type-body-strong-weight);
-  line-height: var(--type-body-line);
-  color: var(--ink);
-  text-align: center;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: calc(var(--dock-icon) + var(--space-4));
-  transition: font-size var(--duration-morph) var(--ease-spring);
-}
-
-/* Hover card — floats above the slot */
-.card {
-  position: absolute;
-  bottom: calc(100% + var(--space-2));
-  left: 50%;
-  transform: translateX(-50%);
-  width: var(--dock-card-w);
-  background: var(--raised);
-  border-radius: var(--radius-xl);
-  box-shadow: var(--shadow-tile-hover);
-  padding: var(--space-4);
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
-  z-index: var(--z-popover);
-  /* Spring entrance */
-  animation: cardIn var(--duration-morph) var(--ease-spring);
-  border-bottom: 3px solid var(--hover-accent);
-}
-
-/* Prevent card from going off-screen left */
-.slot:first-child .card {
-  left: 0;
-  transform: none;
-}
-
-/* Prevent card from going off-screen right */
-.slot:last-child .card {
-  left: auto;
-  right: 0;
-  transform: none;
-}
-
-@keyframes cardIn {
-  from {
-    opacity: 0;
-    transform: translateX(-50%) translateY(8px) scale(0.95);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(-50%) translateY(0) scale(1);
-  }
-}
-
-.slot:first-child .card {
-  animation-name: cardInLeft;
-}
-
-@keyframes cardInLeft {
-  from {
-    opacity: 0;
-    transform: translateY(8px) scale(0.95);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
-
-.slot:last-child .card {
-  animation-name: cardInRight;
-}
-
-@keyframes cardInRight {
-  from {
-    opacity: 0;
-    transform: translateY(8px) scale(0.95);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
-
-.cardHead {
-  display: flex;
-  align-items: flex-start;
-  gap: var(--space-3);
-}
-
-.cardIconWrap {
-  flex: none;
-}
-
-.cardMeta {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-0-5);
-  min-width: 0;
-  padding-top: var(--space-0-5);
-}
-
-.cardName {
-  font-size: 16px;
-  line-height: 24px;
-  font-weight: 600;
-  color: var(--ink);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.cardDesc {
-  font-size: var(--type-body-size);
-  line-height: var(--type-body-line);
+.desc {
+  top: 106px;
+  font-size: 14px;
+  line-height: 20px;
   color: var(--ink-secondary);
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -213,78 +155,169 @@
   overflow: hidden;
 }
 
-.cardLive {
+.live {
+  bottom: var(--space-4);
+  padding-top: 9px;
+  border-top: var(--border-width) solid var(--line);
   display: flex;
   align-items: center;
-  gap: var(--space-1);
-  padding-top: var(--space-2);
-  border-top: 1px solid var(--line);
-  font-size: var(--type-body-small-size);
-  line-height: var(--type-body-small-line);
+  gap: 6px;
+  font-size: 13px;
+  line-height: 18px;
+  font-weight: 500;
   color: var(--ink-secondary);
-  animation: fadeIn 140ms var(--ease-standard) 130ms both;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.cardLiveDot {
+.dot {
+  flex: none;
   width: var(--dot-size);
   height: var(--dot-size);
   border-radius: var(--radius-full);
   background: var(--attention);
-  flex: none;
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+.item:is(:hover, .isHover, :focus-within) .card {
+  left: calc(50% - var(--dock-card-w) / 2);
+  top: -28px;
+  width: var(--dock-card-w);
+  height: 196px;
+  background: var(--raised);
+  box-shadow: var(--shadow-tile-hover);
 }
 
-/* Phone grid — container < 560px */
-@container (max-width: 559px) {
+.item:first-child:is(:hover, .isHover, :focus-within) .card {
+  left: calc(var(--space-2) * -1);
+}
+
+.item:last-child:is(:hover, .isHover, :focus-within) .card {
+  left: calc(100% + var(--space-2) - var(--dock-card-w));
+}
+
+.item:is(:hover, .isHover, :focus-within) .card::after {
+  transform: scaleX(1);
+}
+
+.item:is(:hover, .isHover, :focus-within) [data-apptile-iconwrap] {
+  transform: translate(var(--space-5), var(--space-5));
+}
+
+.dock .item:is(:hover, .isHover, :focus-within) [data-apptile-iconwrap] > svg {
+  width: var(--dock-icon-compact);
+  height: var(--dock-icon-compact);
+}
+
+.dock .item:is(:hover, .isHover, :focus-within) [data-apptile-name] {
+  font-size: 16px;
+  line-height: 24px;
+  transform: translate(var(--space-5), 78px);
+}
+
+.item:is(:hover, .isHover, :focus-within) :is(.desc, .live) {
+  opacity: 1;
+  visibility: visible;
+  transform: none;
+  transition:
+    opacity var(--duration-fast) var(--ease-standard) 80ms,
+    transform var(--duration-morph) var(--ease-spring) 20ms,
+    visibility 0s;
+}
+
+.item:is(:hover, .isHover, :focus-within) .live {
+  transition-delay: 130ms, 60ms, 0s;
+}
+
+.item:active .card {
+  box-shadow: var(--shadow-2);
+}
+
+.dock .item [data-apptile-icon]:focus-visible,
+.dock .item [data-apptile-icon][data-forced-focus] {
+  outline: none;
+}
+
+.item:has([data-apptile-icon]:focus-visible) .card,
+.item:has([data-forced-focus]) .card {
+  outline: var(--focus-ring-width) solid var(--focus-ring);
+  outline-offset: var(--focus-ring-offset);
+}
+
+/* R-B2: intenția de hover — fișa se deschide după 120ms de repaus și se închide imediat */
+.item:hover .card,
+.item:hover [data-apptile-iconwrap],
+.item:hover [data-apptile-iconwrap] > svg,
+.item:hover [data-apptile-name],
+.item:hover .card::after {
+  transition-delay: var(--duration-intent);
+}
+
+.item:hover :is(.desc, .live) {
+  transition-delay: calc(var(--duration-intent) + 80ms), calc(var(--duration-intent) + 20ms),
+    var(--duration-intent);
+}
+
+.item:hover .live {
+  transition-delay: calc(var(--duration-intent) + 130ms), calc(var(--duration-intent) + 60ms),
+    var(--duration-intent);
+}
+
+.item:hover {
+  transition: z-index 0s linear var(--duration-intent);
+}
+
+/* telefon: grilă de iconuri pe canvas, fără foaie și fără fișă (atingerea deschide aplicația) */
+@container vdock (max-width: 560px) {
   .dock {
-    background: none;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: var(--space-3) var(--space-1);
+    padding: 0;
+    background: transparent;
     box-shadow: none;
     border-radius: 0;
-    padding: 0;
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: var(--space-4) var(--space-1);
   }
-
-  .slot {
-    /* No hover card on phone */
-  }
-
   .item {
-    padding: var(--space-1);
+    height: 96px;
   }
-
-  .iconWrap {
+  .dock .item [data-apptile-iconwrap] > svg,
+  .dock .item:is(:hover, .isHover, :focus-within) [data-apptile-iconwrap] > svg {
     width: var(--dock-icon-phone);
     height: var(--dock-icon-phone);
   }
-
-  .slot.isOpen .iconWrap {
-    width: var(--dock-icon-phone);
-    height: var(--dock-icon-phone);
+  .dock .item [data-apptile-iconwrap],
+  .dock .item:is(:hover, .isHover, :focus-within) [data-apptile-iconwrap] {
+    transform: translate(calc(50cqw - 50%), var(--space-1));
   }
-
-  .card {
+  .dock .item [data-apptile-name],
+  .dock .item:is(:hover, .isHover, :focus-within) [data-apptile-name] {
+    font-size: 12px;
+    line-height: 16px;
+    transform: translate(calc(50cqw - 50%), 68px);
+    max-width: 100cqw;
+  }
+  .desc,
+  .live,
+  .card::after {
     display: none;
+  }
+  .item:is(:hover, .isHover, :focus-within) .card {
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    box-shadow: none;
   }
 }
 
-/* Reduced motion */
 @media (prefers-reduced-motion: reduce) {
-  .iconWrap,
-  .name {
-    transition: none;
-  }
-
-  .card {
+  .item {
     animation: none;
   }
-
-  .cardLive {
-    animation: none;
+  .item,
+  .item *,
+  .card::after {
+    transition: none !important;
   }
 }

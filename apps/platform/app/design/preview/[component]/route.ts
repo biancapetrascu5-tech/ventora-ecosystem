@@ -15,7 +15,10 @@ const RUNTIME_HEAD = `\
 <link rel="stylesheet" href="/design/preview-assets/bundle.css">
 <script src="/design/preview-runtime/react.production.min.js"></script>
 <script src="/design/preview-runtime/react-dom.production.min.js"></script>
-<script src="/design/preview-assets/bundle.js"></script>`;
+<script src="/design/preview-assets/bundle.js"></script>
+<script>window.mount = (el) => ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(window.Ventora.LocaleProvider, { locale: 'ro' }, el));</script>`;
+// mount: AppDock, BrandZone și PortalPresence din export îl apelează fără să-l definească (mediul
+// de design îl oferă global); e același helper pe care celelalte preview-uri îl declară singure.
 
 export async function GET(_req: Request, { params }: { params: Promise<{ component: string }> }) {
   if (process.env.NODE_ENV !== 'development') {

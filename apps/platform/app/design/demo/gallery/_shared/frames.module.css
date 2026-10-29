@@ -394,3 +394,270 @@
   overflow: hidden;
   box-sizing: border-box;
 }
+
+/* .sheetlike din preview.html (RecommendationLabel, AppTile) */
+.sheetlike {
+  background: var(--sheet);
+  border: var(--border-width) solid var(--line);
+  border-radius: var(--radius-lg);
+}
+
+/* Logo (.logosets > .logoset, .favtab) */
+.logosets {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(420px, 100%), 1fr));
+  gap: var(--space-4);
+}
+.logoset {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: var(--space-6);
+  min-width: 0;
+  background: var(--sheet);
+  border: var(--border-width) solid var(--line);
+  border-radius: var(--radius-lg);
+  color: var(--ink);
+}
+.favtab {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+  background: var(--canvas);
+  color: var(--ink-secondary);
+  border: var(--border-width) solid var(--line);
+  border-bottom: 0;
+}
+
+/* BrandZone (.d > .zone) */
+.bzd {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: var(--space-6);
+  box-sizing: border-box;
+  background: var(--canvas);
+  color: var(--ink);
+}
+.zone {
+  border-radius: var(--radius-lg);
+  padding: var(--space-6) var(--space-8);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+.zone p {
+  margin: 0;
+}
+.eb {
+  text-transform: uppercase;
+  color: var(--ink-muted);
+}
+.sec {
+  color: var(--ink-secondary);
+}
+.bzrow {
+  display: flex;
+  gap: var(--space-3);
+  align-items: center;
+  flex-wrap: wrap;
+}
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  height: 32px;
+  padding: 0 var(--space-3) 0 var(--space-1);
+  border-radius: var(--radius-full);
+  background: var(--sheet);
+  box-shadow: inset 0 0 0 var(--border-width) var(--line);
+  font-weight: 600;
+}
+.chipDot {
+  width: var(--dot-size);
+  height: var(--dot-size);
+  border-radius: var(--radius-full);
+  background: var(--attention);
+}
+.field {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  height: var(--control-md);
+  padding: 0 var(--space-3);
+  min-width: 220px;
+  border: var(--border-width) solid var(--control-border);
+  border-radius: var(--radius-sm);
+  color: var(--ink-muted);
+}
+.lab0 {
+  margin: 0;
+  color: var(--ink-muted);
+}
+
+/* .two din preview.html (PortalPresence) */
+.two {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+}
+
+/* AppIcon (.panel, .fam, .famcell, .sz) */
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-6);
+  background: var(--sheet);
+  color: var(--ink);
+}
+.fam {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: var(--space-4) var(--space-2);
+}
+.famcell,
+.sz {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1);
+  color: var(--ink-secondary);
+}
+
+/* .tiles din preview.html (AppTile) */
+.tiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(var(--app-tile-width), 1fr));
+  gap: var(--space-4);
+}
+
+/* AppDock (.d > .stage / .stage.band / .row / .phone) */
+.dockd {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  padding: var(--space-6);
+  box-sizing: border-box;
+  background: var(--canvas);
+  color: var(--ink);
+}
+.stage {
+  position: relative;
+  padding: var(--space-10) var(--space-6) var(--space-12);
+  border-radius: var(--radius-lg);
+  background: var(--canvas);
+}
+.stage.band {
+  background: linear-gradient(var(--brand-surface) 0 55%, var(--canvas) 55%);
+}
+.dockrow {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+.dockphone {
+  width: 358px;
+  padding: var(--space-4);
+  border: var(--border-width) solid var(--line-strong);
+  border-radius: var(--radius-xl);
+  background: var(--canvas);
+}
+
+/* AppLaunch (.lframes > .lframe, .lstage) */
+.lframes {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-4);
+}
+.lframe {
+  position: relative;
+  height: 220px;
+  border: var(--border-width) solid var(--line-strong);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background: var(--canvas);
+}
+.lframeTiles {
+  display: flex;
+  gap: var(--space-3);
+  padding: var(--space-4);
+}
+.lstage {
+  position: relative;
+  height: 240px;
+  border: var(--border-width) solid var(--line-strong);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background: var(--canvas);
+  padding: var(--space-4);
+}
+.lstage2 {
+  height: auto;
+  position: relative;
+  overflow: hidden;
+  padding: var(--space-12) var(--space-6) var(--space-6);
+  min-height: 360px;
+  box-sizing: border-box;
+}
+
+/* AuthLayout (.scr > .scr-row > .scr-d) */
+.scrWrap {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-6);
+  background: var(--sheet);
+  color: var(--ink);
+}
+.scrRow {
+  display: flex;
+  gap: var(--space-6);
+  align-items: flex-start;
+  margin-top: var(--space-3);
+}
+.scrLab {
+  color: var(--ink-muted);
+  margin-bottom: var(--space-2);
+}
+.scr {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+  border: var(--border-width) solid var(--line-strong);
+  background: var(--canvas);
+  color: var(--ink);
+  box-sizing: border-box;
+}
+.scrD {
+  width: 1280px;
+  border-radius: var(--radius-lg);
+}
+.zl {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+/* .two din preview.html (PortalPresence): cartonașul de membru + cel compact, la 390px */
+.ppTwo {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 390px;
+  gap: var(--space-6);
+  align-items: start;
+}
+
+/* .c3sec / .c3h din preview.html (secțiunea c3 cu titlu) */
+.c3sec {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  min-width: 0;
+}
+.c3h {
+  margin: 0;
+  color: var(--ink);
+}

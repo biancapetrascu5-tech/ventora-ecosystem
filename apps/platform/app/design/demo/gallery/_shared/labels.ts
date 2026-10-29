@@ -15,6 +15,13 @@ import type {
   PaginationLabels,
   ScheduleStatusLabels,
   SpineLabels,
+  AccessLabels,
+  RemindLabels,
+  RecommendationCardLabels,
+  AppTileLabels,
+  DiscoveryTooltipLabels,
+  PortalPresenceLabels,
+  RuleBuilderLabels,
 } from '@ventora/ui';
 import ro from '@ventora/i18n/messages/ro.json';
 
@@ -241,4 +248,97 @@ export const CONTEXTBAR_RO: ContextBarLabels = {
   search: 'Caută',
   searchPlaceholder: 'Caută…',
   create: 'Creează',
+};
+
+// S.access_* din bundle.js (AccessBadge, AppTile)
+export const ACCESS_RO: AccessLabels = {
+  available: 'Disponibilă',
+  unavailable: 'Temporar indisponibilă',
+  notInRole: 'Nu e în rolul tău',
+  notInPlan: 'Nu e în abonament',
+};
+
+// S.moreOptions / S.remindLater / S.remindWeek / S.remindMonth / S.notInterested (RemindMenu)
+export const REMIND_RO: RemindLabels = {
+  moreOptions: 'Mai multe opțiuni',
+  remindLater: 'Amintește-mi mai târziu',
+  remindWeek: 'Peste o săptămână',
+  remindMonth: 'Peste o lună',
+  notInterested: 'Nu mă interesează',
+};
+
+// RecommendationCard
+export const RECO_RO: RecommendationCardLabels = {
+  recommendation: 'Recomandare',
+  recommendSend: 'Recomandă',
+  decides: (who) => `Ajunge la ${who}.`,
+  recommendSent: (who) => `Am trimis recomandarea către ${who}.`,
+  recoActivated: 'Activată',
+  recoDeclined: 'Nu acum',
+  recoPending: 'În așteptare',
+  remind: REMIND_RO,
+};
+
+// AppTile
+export const APPTILE_RO: AppTileLabels = {
+  access: ACCESS_RO,
+  hintUnavailable: 'Lucrăm la ea acum. Revine în curând.',
+  hintNotInRole: (who) => `Rolul tău nu include această aplicație. ${who} îți poate da acces.`,
+  hintNotInRoleNoOne:
+    'Rolul tău nu include această aplicație. Proprietarul afacerii îți poate da acces.',
+  hintNotInPlan: 'Nu e inclusă în abonamentul afacerii. Scrie-ne și o activăm.',
+  requestAccess: 'Cere acces',
+  writeUs: 'Scrie-ne',
+  seeStatus: 'Vezi starea',
+  openApp: (app) => `Deschide ${app}`,
+  unreadN: (n) => `${n} necitite`,
+  seeDetails: 'Vezi detaliile',
+  recommendation: 'Recomandare',
+  remind: REMIND_RO,
+};
+
+// DiscoveryTooltip
+export const DISCO_RO: DiscoveryTooltipLabels = {
+  gotIt: 'Am înțeles',
+  seeHow: 'Vezi cum funcționează',
+  recommendation: 'Recomandare',
+};
+
+// PortalPresence (S.portal_*)
+export const PORTAL_RO: PortalPresenceLabels = {
+  eyebrow: 'Portal · pentru clienții tăi',
+  title: 'Pagina afacerii în Portal',
+  description:
+    'Clienții te găsesc în Portal și își fac programări acolo. De aici schimbi ce văd ei.',
+  noManage: 'Pagina o pot schimba proprietarul, adminii și managerul aplicației Portal.',
+  manage: 'Gestionează pagina',
+  finish: 'Termină pagina',
+  preview: 'Vezi cum arată în Portal',
+  newTab: 'se deschide într-un tab nou',
+  published: 'Publicată',
+  hidden: 'Ascunsă',
+  draft: 'Nu e publicată încă',
+};
+
+// S.launch_opening (AppLaunch)
+export const LAUNCH_RO = (app: string) => `Se deschide ${app}`;
+
+// RuleBuilder (S.matchLabel, S.ruleN, S.eligibleN…)
+export const RULES_RO: RuleBuilderLabels = {
+  matchLabel: 'Afacerea trebuie să îndeplinească',
+  matchAll: 'Toate condițiile',
+  matchAny: 'Oricare dintre ele',
+  ruleN: (n) => `Condiția ${n}`,
+  criterion: 'Criteriu',
+  operator: 'Condiție',
+  value: 'Valoare',
+  removeCondition: 'Șterge condiția',
+  addCondition: 'Adaugă o condiție',
+  // S.eligibleN are forme de plural (one / few / other): 1 afacere, 2–19 afaceri, 20+ „de afaceri”
+  eligibleN: (n) =>
+    ({
+      one: `Aproximativ ${n} afacere eligibilă`,
+      few: `Aproximativ ${n} afaceri eligibile`,
+    })[new Intl.PluralRules('ro').select(n) as 'one' | 'few'] ??
+    `Aproximativ ${n} de afaceri eligibile`,
 };

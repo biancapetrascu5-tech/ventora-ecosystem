@@ -1,0 +1,28 @@
+/* .v-growthslot din bundle.css */
+.slot {
+  display: grid;
+  grid-template-rows: 1fr;
+  animation: slot-in var(--duration-base) var(--ease-standard);
+}
+
+.in {
+  min-height: 0;
+  overflow: hidden;
+}
+
+@keyframes slot-in {
+  from {
+    grid-template-rows: 0fr;
+    opacity: 0;
+  }
+  to {
+    grid-template-rows: 1fr;
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .slot {
+    animation: none;
+  }
+}

@@ -1,5 +1,7 @@
-.shell {
-  min-height: 100vh;
+/* .v-auth din bundle.css; regulile responsive răspund la lățimea layoutului (container), nu a ecranului */
+.auth {
+  container-type: inline-size;
+  min-height: 100%;
   display: flex;
   flex-direction: column;
   background: var(--canvas);
@@ -9,34 +11,41 @@
 .split {
   flex: 1;
   display: flex;
-  min-height: 100vh;
+  min-height: 100%;
 }
 
-/* ── Brand panel (desktop) ── */
 .brand {
   position: relative;
   flex: 0 0 46%;
   display: flex;
   flex-direction: column;
   gap: var(--space-8);
-  padding: var(--space-8) var(--space-10);
-  overflow: hidden;
+  padding: var(--space-6) var(--space-12) var(--space-8);
   box-sizing: border-box;
+  overflow: hidden;
 }
 
-.brandTop {
+.top {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  position: relative;
+  z-index: 1;
 }
 
-.langMobile {
+.fx {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--ink);
+}
+
+.langband {
   display: none;
 }
 
 .statement {
   margin-top: auto;
-  padding-bottom: var(--space-6);
   position: relative;
   z-index: 1;
   display: flex;
@@ -57,101 +66,110 @@
   color: var(--ink-muted);
 }
 
-.foot {
-  margin-top: 0;
-  color: var(--ink-muted);
-  font-size: var(--type-caption-size);
-}
-
-.founderBrand {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-}
-
 .chev {
   position: absolute;
-  right: var(--space-8);
-  top: 50%;
-  transform: translateY(-50%);
-  width: 280px;
-  height: 380px;
+  right: -56px;
+  top: 96px;
+  width: 340px;
+  height: 460px;
+  fill: none;
+  stroke: var(--line-strong);
+  stroke-width: 1.5;
   pointer-events: none;
-  opacity: 0.25;
 }
 
-/* ── Form side ── */
-.formSide {
+.foot {
+  margin: 0;
+  color: var(--ink-muted);
+  position: relative;
+  z-index: 1;
+}
+
+.sheet {
   flex: 1;
   display: flex;
   flex-direction: column;
+  min-width: 0;
   background: var(--sheet);
   color: var(--ink);
 }
 
-.formHeader {
+.head {
   display: flex;
   justify-content: flex-end;
+  align-items: center;
   padding: var(--space-4) var(--space-6);
 }
 
-.formMain {
+.main {
   flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: var(--space-12) var(--space-4);
+  padding: var(--space-8);
 }
 
-.formFooter {
+.form {
+  width: 400px;
+  max-width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.wide {
+  width: 480px;
+}
+
+.footer {
   padding: var(--space-4) var(--space-6);
-  font-size: var(--type-caption-size);
   color: var(--ink-muted);
   text-align: center;
-  border-top: 1px solid var(--line);
 }
 
-/* ── Mobile ≤767px ── */
-@media (max-width: 767px) {
+@container (max-width: 1023px) {
+  .brand {
+    flex-basis: 40%;
+    padding: var(--space-6) var(--space-8) var(--space-8);
+  }
+  .statement :global(.display-xl) {
+    font-size: 40px;
+    line-height: 44px;
+  }
+}
+
+@container (max-width: 767px) {
   .split {
     flex-direction: column;
   }
-
   .brand {
     flex: none;
-    width: 100%;
-    height: 56px;
-    min-height: 56px;
-    padding: 0 var(--space-5);
-    flex-direction: row;
-    gap: var(--space-3);
-    align-items: center;
-    justify-content: space-between;
-    overflow: visible;
+    padding: var(--space-4) var(--space-4) var(--space-10);
+    gap: 0;
   }
-
   .statement,
+  .chev,
   .foot,
-  .chev {
+  .head {
     display: none;
   }
-
-  .langMobile {
+  .langband {
     display: flex;
-    align-items: center;
   }
-
-  .formSide {
+  .sheet {
     border-radius: var(--radius-xl) var(--radius-xl) 0 0;
-    margin-top: -8px;
-    flex: 1;
+    margin-top: calc(var(--space-6) * -1);
+    position: relative;
   }
-
-  .formHeader {
-    display: none;
+  .main {
+    padding: var(--space-6) var(--space-4);
+    align-items: stretch;
   }
-
-  .formMain {
-    padding: var(--space-8) var(--space-4) var(--space-6);
+  .form {
+    width: 100%;
+  }
+  .auth :global(.display-hub) {
+    font-size: 32px;
+    line-height: 36px;
   }
 }

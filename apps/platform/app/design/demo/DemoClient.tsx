@@ -1,6 +1,7 @@
 /* eslint-disable i18next/no-literal-string */
 'use client';
 
+import { APPTILE_RO, LAUNCH_RO, PORTAL_RO } from './gallery/_shared/labels';
 import { useState, useEffect, useRef } from 'react';
 import {
   Button,
@@ -21,21 +22,6 @@ import {
 import styles from './demo.module.css';
 
 /* ── Traduceri componente (în producție vin din useTranslations) ─────── */
-
-const PORTAL_TRANSLATIONS = {
-  eyebrow: 'Portal · pentru clienții tăi',
-  title: 'Pagina afacerii în Portal',
-  description:
-    'Clienții te găsesc în Portal și își fac programări acolo. De aici schimbi ce văd ei.',
-  memberNote: 'Pagina o pot schimba proprietarul, adminii și managerul aplicației Portal.',
-  manage: 'Gestionează pagina',
-  finish: 'Termină pagina',
-  preview: 'Vezi cum arată în Portal',
-  previewTab: '(se deschide într-un tab nou)',
-  statusPublished: 'Publicată',
-  statusHidden: 'Ascunsă',
-  statusDraft: 'Nu e publicată încă',
-};
 
 /* ── Date aprobate din preview.html ─────────────────────────────────────── */
 
@@ -275,7 +261,7 @@ const DOCK_APPS: DockApp[] = [
   { app: 'projects', description: 'Proiecte, sarcini și termene' },
 ];
 
-type LaunchState = { app: AppName; name: string; from: DOMRect; fromCard: DOMRect };
+type LaunchState = { app: AppName; name: string; from?: DOMRect; fromCard?: DOMRect };
 
 export function DemoClient() {
   const [theme, setTheme] = useState<'light' | 'dark'>('light');
@@ -668,6 +654,8 @@ export function DemoClient() {
           <span className={styles.colLabel}>AppDock — treci cu mouse-ul peste icoane</span>
           <AppDock
             apps={DOCK_APPS}
+            label="Aplicațiile tale"
+            tileLabels={APPTILE_RO}
             onOpen={(_e, app, name, launchInfo) => {
               setLaunch({ app, name, from: launchInfo.from, fromCard: launchInfo.fromCard });
             }}
@@ -678,30 +666,27 @@ export function DemoClient() {
               status="published"
               onManage={() => {}}
               previewHref="#"
-              translations={PORTAL_TRANSLATIONS}
+              labels={PORTAL_RO}
             />
-            <PortalPresence
-              status="hidden"
-              onManage={() => {}}
-              translations={PORTAL_TRANSLATIONS}
-            />
-            <PortalPresence status="draft" onManage={() => {}} translations={PORTAL_TRANSLATIONS} />
+            <PortalPresence status="hidden" onManage={() => {}} labels={PORTAL_RO} />
+            <PortalPresence status="draft" onManage={() => {}} labels={PORTAL_RO} />
             <PortalPresence
               status="published"
               canManage={false}
               previewHref="#"
-              translations={PORTAL_TRANSLATIONS}
+              labels={PORTAL_RO}
             />
             <PortalPresence
               status="published"
               compact
               onManage={() => {}}
               previewHref="#"
-              translations={PORTAL_TRANSLATIONS}
+              labels={PORTAL_RO}
             />
           </div>
           {launch && (
             <AppLaunch
+              openingLabel={LAUNCH_RO}
               app={launch.app}
               name={launch.name}
               from={launch.from}
@@ -752,18 +737,9 @@ export function DemoClient() {
                   }}
                 >
                   <AppLaunch
+                    openingLabel={LAUNCH_RO}
                     app="booking"
-                    from={{
-                      left: 0,
-                      top: 0,
-                      right: 64,
-                      bottom: 64,
-                      width: 64,
-                      height: 64,
-                      x: 0,
-                      y: 0,
-                      toJSON: () => ({}),
-                    }}
+                    from={{ left: 0, top: 0, width: 64, height: 64 }}
                     progress={p}
                   />
                 </div>
@@ -865,6 +841,8 @@ export function DemoClient() {
                 <div className={styles.lbMine}>
                   <AppDock
                     apps={DOCK_APPS}
+                    label="Aplicațiile tale"
+                    tileLabels={APPTILE_RO}
                     onOpen={(_e, app, name, launchInfo) => {
                       setLaunchLB({
                         app,
@@ -879,7 +857,7 @@ export function DemoClient() {
                     status="published"
                     onManage={() => {}}
                     previewHref="#"
-                    translations={PORTAL_TRANSLATIONS}
+                    labels={PORTAL_RO}
                   />
                 </div>
 
@@ -901,6 +879,7 @@ export function DemoClient() {
 
                 {launchLB && (
                   <AppLaunch
+                    openingLabel={LAUNCH_RO}
                     app={launchLB.app}
                     name={launchLB.name}
                     from={launchLB.from}

@@ -114,7 +114,8 @@ test.describe('/design/demo smoke', () => {
 
   test('renders HubLauncher — AppIcon CRM tile', async ({ page }) => {
     await page.goto('/design/demo');
-    const crmTile = page.getByRole('button', { name: 'CRM' }).first();
+    // AppDock din bundle: plăcuța se numește „Deschide <aplicație>”, cu numele din APPS (ClientDesk).
+    const crmTile = page.getByRole('button', { name: 'Deschide ClientDesk' }).first();
     await expect(crmTile).toBeVisible();
   });
 

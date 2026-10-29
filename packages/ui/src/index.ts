@@ -100,7 +100,7 @@ export { AppShell } from './AppShell/AppShell';
 export type { AppShellProps } from './AppShell/AppShell';
 
 // App icons (Lot 4 demo — Lot 7 va migra la inline SVG)
-export { AppIcon, APPS } from './AppIcon/AppIcon';
+export { AppIcon, APPS, APP_IDS } from './AppIcon/AppIcon';
 export type { AppIconProps, AppName } from './AppIcon/AppIcon';
 
 // Hub components (Direcția B)
@@ -113,10 +113,14 @@ export { Logo } from './Logo/Logo';
 export type { LogoProps } from './Logo/Logo';
 
 export { AppDock } from './AppDock/AppDock';
-export type { AppDockProps, DockApp } from './AppDock/AppDock';
+export type { AppDockProps, DockApp, DockLaunch } from './AppDock/AppDock';
 
 export { PortalPresence } from './PortalPresence/PortalPresence';
-export type { PortalPresenceProps, PortalStatus } from './PortalPresence/PortalPresence';
+export type {
+  PortalPresenceProps,
+  PortalPresenceLabels,
+  PortalStatus,
+} from './PortalPresence/PortalPresence';
 
 export { AppLaunch } from './AppLaunch/AppLaunch';
 export type { AppLaunchProps } from './AppLaunch/AppLaunch';
@@ -215,7 +219,12 @@ export { SlotPicker } from './SlotPicker/SlotPicker';
 export type { SlotPickerProps, SlotItem } from './SlotPicker/SlotPicker';
 
 export { RuleBuilder } from './RuleBuilder/RuleBuilder';
-export type { RuleBuilderProps, RuleCriterion, RuleRow } from './RuleBuilder/RuleBuilder';
+export type {
+  RuleBuilderProps,
+  RuleBuilderLabels,
+  RuleCriterion,
+  RuleRow,
+} from './RuleBuilder/RuleBuilder';
 
 export { Kanban, KanbanCard } from './Kanban/Kanban';
 export type {
@@ -260,6 +269,24 @@ export { AccountMenu } from './AccountMenu/AccountMenu';
 export type { AccountMenuProps, AccountMenuLabels } from './AccountMenu/AccountMenu';
 export { RecommendationLabel } from './RecommendationLabel/RecommendationLabel';
 export type { RecommendationLabelProps } from './RecommendationLabel/RecommendationLabel';
+export { AccessBadge } from './AccessBadge/AccessBadge';
+export type { AccessBadgeProps, AccessLabels, AccessState } from './AccessBadge/AccessBadge';
+export { AppTile } from './AppTile/AppTile';
+export type { AppTileProps, AppTileLabels, AppTileRecommendation } from './AppTile/AppTile';
+export { RecommendationCard } from './RecommendationCard/RecommendationCard';
+export type {
+  RecommendationCardProps,
+  RecommendationCardLabels,
+} from './RecommendationCard/RecommendationCard';
+export { RemindMenu } from './RecommendationCard/RemindMenu';
+export type { RemindLabels } from './RecommendationCard/RemindMenu';
+export { DiscoveryTooltip } from './DiscoveryTooltip/DiscoveryTooltip';
+export type {
+  DiscoveryTooltipProps,
+  DiscoveryTooltipLabels,
+} from './DiscoveryTooltip/DiscoveryTooltip';
+export { GrowthSlot } from './GrowthSlot/GrowthSlot';
+export type { GrowthSlotProps } from './GrowthSlot/GrowthSlot';
 export { NotificationsPanel, HubRecommendation } from './NotificationsPanel/NotificationsPanel';
 export type {
   NotificationsPanelProps,

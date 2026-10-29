@@ -1,241 +1,71 @@
-/* PortalPresence — Portal card under AppDock in the Hub launcher */
-
+/* .v-portalcard din bundle.css */
 .card {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: var(--space-4);
-  padding: var(--space-5);
+  padding: var(--space-4) var(--space-5);
   background: var(--sheet);
-  border: 1px solid var(--line);
+  border: var(--border-width) solid var(--line);
   border-radius: var(--radius-xl);
-  color: var(--ink);
+  container-type: inline-size;
 }
 
-.card.compact {
-  flex-direction: column;
-  align-items: stretch;
+.icon {
+  display: inline-flex;
+  flex: none;
 }
 
-.meta {
+.text {
   flex: 1;
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: var(--space-1);
+  gap: 2px;
+}
+
+.eyebrow,
+.title,
+.desc,
+.note {
+  margin: 0;
 }
 
 .eyebrow {
-  margin: 0;
-  font-size: var(--type-eyebrow-size);
-  line-height: var(--type-eyebrow-line);
-  font-weight: var(--type-eyebrow-weight);
-  color: var(--ink-muted);
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-  flex-wrap: wrap;
+  color: var(--ink-secondary);
+  letter-spacing: 0.04em;
 }
 
-.title {
-  margin: 0;
-  font-size: var(--type-heading-size);
-  font-weight: var(--type-heading-weight);
-  line-height: var(--type-heading-line);
-  color: var(--ink);
-}
-
-.description {
-  margin: 0;
-  font-size: var(--type-body-small-size);
-  line-height: var(--type-body-small-line);
+.desc,
+.note {
   color: var(--ink-secondary);
 }
 
-.memberNote {
-  margin: 0;
-  font-size: var(--type-body-small-size);
-  color: var(--ink-muted);
+.note {
+  margin-top: var(--space-1);
 }
 
-/* Status pill */
-.pill {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-1);
-  padding: 2px var(--space-2);
-  border-radius: var(--radius-full);
-  font-size: var(--type-caption-size);
-  font-weight: 500;
-  line-height: var(--type-caption-line);
-  flex: none;
-}
-
-.pill.published {
-  background: var(--done-soft);
-  color: var(--done-ink);
-}
-
-.pill.hidden {
-  background: var(--neutral-soft);
-  color: var(--ink-secondary);
-}
-
-.pill.draft {
-  background: var(--attention-soft);
-  color: var(--attention-ink);
-}
-
-.pillDot {
-  width: var(--dot-size);
-  height: var(--dot-size);
-  border-radius: var(--radius-full);
-  flex: none;
-}
-
-.pillCheck {
-  display: block;
-  flex: none;
-}
-
-.pill.published .pillDot { background: var(--done-mark); }
-.pill.hidden .pillDot { background: var(--ink-secondary); }
-.pill.draft .pillDot { background: var(--attention-mark); }
-
-/* Actions column */
-.actions {
+.act {
   display: flex;
-  flex-direction: row;
-  align-items: center;
   gap: var(--space-2);
-  flex-wrap: wrap;
   flex: none;
 }
 
-.card.compact .actions {
+.compact {
+  flex-wrap: wrap;
+  align-items: flex-start;
+  padding: var(--space-4);
+}
+
+.compact .text {
+  flex-basis: calc(100% - 56px);
+}
+
+.compact > .pill {
+  margin-left: 56px;
+}
+
+.compact .act {
+  flex-basis: 100%;
   flex-direction: column;
   align-items: stretch;
-}
-
-.card.compact .actions > * {
-  width: 100%;
-}
-
-/* Store icon wrapper — colored square as in planșă */
-.storeIconWrap {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  border-radius: var(--radius-md);
-  background: var(--brand-surface);
-  color: var(--on-brand);
-  flex: none;
-  margin-bottom: var(--space-2);
-}
-
-/* Manage / Termină pagina button */
-.manageBtn {
-  appearance: none;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  height: var(--control-md);
-  padding: 0 var(--space-3);
-  border-radius: var(--radius-sm);
-  background: transparent;
-  border: 1px solid var(--primary);
-  color: var(--primary);
-  font: inherit;
-  font-size: var(--type-body-size);
-  font-weight: var(--type-body-strong-weight);
-  line-height: 1;
-  white-space: nowrap;
-  transition: background-color var(--duration-instant) var(--ease-standard);
-}
-
-.manageBtn:hover {
-  background: color-mix(in srgb, var(--primary) 10%, transparent);
-}
-
-.manageBtn:focus-visible {
-  outline: var(--focus-ring-width) solid var(--focus-ring);
-  outline-offset: var(--focus-ring-offset);
-}
-
-.card.compact .manageBtn {
-  width: 100%;
-  height: var(--control-lg);
-}
-
-/* External link button */
-.externalLink {
-  appearance: none;
-  border: 0;
-  background: none;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-1);
-  font: inherit;
-  font-size: var(--type-body-size);
-  font-weight: 500;
-  color: var(--ink);
-  text-decoration: underline;
-  text-underline-offset: var(--marker-width);
-  text-decoration-thickness: 1px;
-  padding: 0;
-  border-radius: var(--radius-xs);
-  white-space: nowrap;
-}
-
-.externalLink:hover {
-  text-decoration-thickness: 2px;
-}
-
-.externalLink:focus-visible {
-  outline: var(--focus-ring-width) solid var(--focus-ring);
-  outline-offset: var(--focus-ring-offset);
-}
-
-.card.compact .externalLink {
-  justify-content: center;
-  padding: 0 var(--space-3);
-  height: var(--control-md);
-  border: 1px solid var(--line);
-  border-radius: var(--radius-sm);
-  text-decoration: none;
-}
-
-/* Responsive: column on mobile, row on desktop */
-@media (max-width: 767px) {
-  .card {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .actions {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .actions > * {
-    width: 100%;
-  }
-
-  .manageBtn {
-    width: 100%;
-    height: var(--control-lg);
-  }
-}
-
-@media (min-width: 768px) {
-  .storeIconWrap {
-    margin-bottom: 0;
-  }
-
-  .meta {
-    flex: 1;
-  }
 }

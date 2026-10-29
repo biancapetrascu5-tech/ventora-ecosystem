@@ -1,0 +1,81 @@
+/* .v-disco din bundle.css */
+.disco {
+  position: relative;
+  display: inline-flex;
+}
+
+.card {
+  position: absolute;
+  z-index: var(--z-popover);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-1);
+  width: 280px;
+  max-width: calc(100vw - var(--space-8));
+  padding: var(--space-3) var(--space-4) var(--space-3);
+  background: var(--raised);
+  color: var(--ink);
+  border: var(--border-width) solid var(--line);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-2);
+  box-sizing: border-box;
+  text-align: left;
+}
+
+.card::before {
+  content: '';
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background: var(--raised);
+  border: var(--border-width) solid var(--line);
+  transform: rotate(45deg);
+}
+
+.bottom {
+  top: calc(100% + 10px);
+}
+
+.bottom::before {
+  top: -6px;
+  border-right: 0;
+  border-bottom: 0;
+}
+
+.top {
+  bottom: calc(100% + 10px);
+}
+
+.top::before {
+  bottom: -6px;
+  border-left: 0;
+  border-top: 0;
+}
+
+.start {
+  left: 0;
+}
+
+.start::before {
+  left: var(--space-4);
+}
+
+.end {
+  right: 0;
+}
+
+.end::before {
+  right: var(--space-4);
+}
+
+.body {
+  color: var(--ink-secondary);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-top: var(--space-2);
+}

@@ -1,0 +1,85 @@
+/* .v-reco din bundle.css */
+.reco {
+  container-type: inline-size;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  background: var(--sheet);
+  border: var(--border-width) solid var(--line);
+  border-radius: var(--radius-lg);
+  color: var(--ink);
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  min-height: var(--control-sm);
+  margin: calc(var(--space-1) * -1) calc(var(--space-2) * -1) 0 0;
+}
+
+.body {
+  display: flex;
+  gap: var(--space-3);
+  align-items: flex-start;
+}
+
+.icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  flex: none;
+  border-radius: var(--radius-md);
+  background: var(--sunken);
+  color: var(--ink-secondary);
+  border: var(--border-width) solid var(--line);
+  box-sizing: border-box;
+}
+
+.text {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-width: 0;
+}
+
+.text p {
+  margin: 0;
+}
+
+.benefit {
+  color: var(--ink-secondary);
+}
+
+.cost {
+  color: var(--ink);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.decider {
+  color: var(--ink-muted);
+}
+
+.sent {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  color: var(--done-ink);
+}
+
+@container (max-width: 300px) {
+  .actions .main {
+    flex: 1 1 100%;
+    justify-content: center;
+  }
+}

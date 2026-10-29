@@ -1,205 +1,214 @@
 'use client';
 
-import { useEffect, useRef, useCallback } from 'react';
-import { AppIcon, type AppName } from '../AppIcon/AppIcon';
+import { useLayoutEffect, useRef } from 'react';
+import { AppIcon, APPS, type AppName } from '../AppIcon/AppIcon';
 import { cn } from '../lib/cn';
 import styles from './AppLaunch.module.css';
 
+type Box = { left: number; top: number; width: number; height: number };
+
 export interface AppLaunchProps {
   app: AppName;
+  /** Numele afișat (implicit numele din APPS). */
   name?: string;
-  from: DOMRect;
-  fromCard?: DOMRect;
-  iconEl?: Element;
+  /** Iconul și fișa din AppDock (coordonate de ecran, getBoundingClientRect). */
+  from?: Box;
+  fromCard?: Box;
+  /** Iconul în coordonatele containerului (în locul lui `from`). */
+  fromLocal?: Box;
+  /** Iconul din dock, care crește și dispare când pornește foaia. */
+  iconEl?: Element | null;
   onDone?: () => void;
-  waiting?: boolean;
+  /** În interiorul unui container (position: absolute), nu peste toată fereastra. */
   contained?: boolean;
-  fromLocal?: boolean;
-  progress?: number; // 0-1 for static doc frames
+  /** 0–1: animația oprită într-un punct (documentație, capturi). */
+  progress?: number;
+  /** Aplicația se încarcă greu: iconul rămâne în centru, cu numele dedesubt. */
+  waiting?: boolean;
+  /** S.launch_opening, ex. (app) => `Se deschide ${app}`. */
+  openingLabel: (app: string) => string;
 }
 
-function prefersReducedMotion(): boolean {
-  if (typeof window === 'undefined') return false;
-  return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-}
+const LAUNCH_EASE = 'cubic-bezier(0.2, 0, 0, 1)';
+const LAUNCH_SPRING = 'cubic-bezier(0.34, 1.56, 0.64, 1)';
+const LAUNCH_T = 850;
 
+/* AppLaunch din bundle.js: aplicația crește din fișa din dock până la ecranul întreg, iconul trece
+   prin centru și se așază în bara aplicației; conținutul apare. */
 export function AppLaunch({
   app,
   name,
   from,
+  fromLocal,
   fromCard,
+  iconEl,
   onDone,
-  // waiting and fromLocal are reserved for future use
   contained = false,
   progress,
+  waiting = false,
+  openingLabel,
 }: AppLaunchProps) {
-  const surfaceRef = useRef<HTMLDivElement>(null);
-  const iconRef = useRef<HTMLDivElement>(null);
-  const doneFiredRef = useRef(false);
+  const ref = useRef<HTMLDivElement>(null);
+  const nm = name ?? APPS[app]?.name ?? app;
 
-  const fireDone = useCallback(() => {
-    if (!doneFiredRef.current) {
-      doneFiredRef.current = true;
-      onDone?.();
+  useLayoutEffect(() => {
+    const root = ref.current;
+    if (!root) return;
+    const fr = root.getBoundingClientRect();
+    const W = fr.width;
+    const H = fr.height;
+    const q = (k: string) => root.querySelector<HTMLElement>(`[data-launch="${k}"]`)!;
+    const sheet = q('sheet');
+    const icon = q('icon');
+    const appEl = q('app');
+    const title = q('title');
+    const nmEl = q('name');
+    const loc = (r?: Box) =>
+      r
+        ? fromLocal
+          ? { x: r.left, y: r.top, w: r.width, h: r.height }
+          : { x: r.left - fr.left, y: r.top - fr.top, w: r.width, h: r.height }
+        : null;
+    const I = loc(fromLocal ?? from) ?? { x: W / 2 - 28, y: H / 2 - 28, w: 56, h: 56 };
+    const C = loc(fromCard) ?? { x: I.x - 24, y: I.y - 20, w: I.w + 48, h: I.h + 56 };
+    const Sz = 72;
+    const T = { x: 20, y: 14, w: 28 };
+    const M = 88;
+    const mx = W / 2 - M / 2;
+    const my = H / 2 - M / 2 - 24;
+    const big = 1.12;
+    const ix = I.x - (I.w * (big - 1)) / 2;
+    const iy = I.y - (I.h * (big - 1)) / 2;
+    const A: Animation[] = [];
+    const reduce =
+      progress == null && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+    const clip = `inset(${C.y}px ${W - C.x - C.w}px ${H - C.y - C.h}px ${C.x}px round 18px)`;
+    const end = waiting ? { x: mx, y: my, w: M } : T;
+    if (reduce) {
+      icon.style.transform = `translate(${end.x}px,${end.y}px) scale(${end.w / Sz})`;
+      if (waiting) nmEl.style.opacity = '1';
+      A.push(root.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 150, fill: 'both' }));
+    } else {
+      if (iconEl && progress == null) {
+        A.push(
+          iconEl.animate([{ transform: 'scale(1)' }, { transform: `scale(${big})` }], {
+            duration: 160,
+            easing: LAUNCH_SPRING,
+            fill: 'forwards',
+          }),
+        );
+        A.push(
+          iconEl.animate([{ opacity: 1 }, { opacity: 0 }], {
+            delay: 150,
+            duration: 1,
+            fill: 'forwards',
+          }),
+        );
+      }
+      A.push(
+        sheet.animate(
+          [
+            { clipPath: clip, opacity: 0 },
+            { clipPath: clip, opacity: 1, offset: 0.08 },
+            { clipPath: 'inset(0px 0px 0px 0px round 0px)', opacity: 1 },
+          ],
+          { delay: 150, duration: 420, easing: LAUNCH_EASE, fill: 'both' },
+        ),
+      );
+      const frames: Keyframe[] = [
+        { transform: `translate(${ix}px,${iy}px) scale(${(I.w * big) / Sz})`, easing: LAUNCH_EASE },
+        {
+          transform: `translate(${mx}px,${my}px) scale(${M / Sz})`,
+          offset: waiting ? 1 : 0.6,
+          easing: LAUNCH_EASE,
+        },
+      ];
+      if (!waiting)
+        frames.push({ transform: `translate(${end.x}px,${end.y}px) scale(${end.w / Sz})` });
+      A.push(icon.animate(frames, { delay: 150, duration: waiting ? 420 : 700, fill: 'both' }));
+      if (waiting) {
+        A.push(
+          nmEl.animate([{ opacity: 0 }, { opacity: 1 }], {
+            delay: 420,
+            duration: 220,
+            fill: 'both',
+          }),
+        );
+      } else {
+        A.push(
+          appEl.animate(
+            [
+              { opacity: 0, transform: 'translateY(16px)' },
+              { opacity: 1, transform: 'none' },
+            ],
+            { delay: 560, duration: 300, easing: LAUNCH_EASE, fill: 'both' },
+          ),
+        );
+        A.push(
+          title.animate([{ opacity: 0 }, { opacity: 1 }], {
+            delay: 620,
+            duration: 200,
+            fill: 'both',
+          }),
+        );
+      }
     }
-  }, [onDone]);
-
-  useEffect(() => {
-    if (progress !== undefined) return; // static frame, no animation
-
-    const reduced = prefersReducedMotion();
-    const surface = surfaceRef.current;
-    const iconEl = iconRef.current;
-    if (!surface || !iconEl) return;
-
-    const container = surface.offsetParent as HTMLElement | null;
-    const containerRect = container?.getBoundingClientRect() ?? {
-      left: 0,
-      top: 0,
-      width: window.innerWidth,
-      height: window.innerHeight,
-    };
-
-    if (reduced) {
-      // Reduced motion: simple opacity fade
-      surface.style.opacity = '0';
-      surface.style.transition = `opacity 150ms var(--ease-standard)`;
-      iconEl.style.opacity = '0';
-
-      requestAnimationFrame(() => {
-        surface.style.opacity = '1';
-        iconEl.style.opacity = '1';
-      });
-
-      const timer = setTimeout(fireDone, 150);
-      return () => clearTimeout(timer);
+    if (progress != null) {
+      for (const a of A) {
+        a.pause();
+        a.currentTime = progress * LAUNCH_T;
+      }
+      return () => A.forEach((a) => a.cancel());
     }
-
-    // Full animation
-    const startRect = fromCard ?? from;
-
-    // Phase 1: Position icon at from rect, swell it
-    const iconStartX = from.left - containerRect.left + from.width / 2;
-    const iconStartY = from.top - containerRect.top + from.height / 2;
-    const iconSize = 64;
-    const iconSwellSize = Math.round(iconSize * 1.12);
-
-    iconEl.style.cssText = `
-      left: ${iconStartX - iconSize / 2}px;
-      top: ${iconStartY - iconSize / 2}px;
-      width: ${iconSize}px;
-      height: ${iconSize}px;
-      opacity: 1;
-      transform: scale(1);
-      transition: transform 160ms var(--ease-spring), opacity 140ms var(--ease-standard);
-    `;
-
-    // Phase 1: swell the icon
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        iconEl.style.transform = `scale(${iconSwellSize / iconSize})`;
-      });
-    });
-
-    // Phase 2 (150ms): Surface grows out of card rect
-    const surfaceStartX = startRect.left - containerRect.left;
-    const surfaceStartY = startRect.top - containerRect.top;
-    const surfaceStartW = startRect.width;
-    const surfaceStartH = startRect.height;
-    const surfaceEndW = containerRect.width;
-    const surfaceEndH = containerRect.height;
-
-    const scaleX = surfaceStartW / surfaceEndW;
-    const scaleY = surfaceStartH / surfaceEndH;
-    const translateX = surfaceStartX - (surfaceEndW * (1 - scaleX)) / 2;
-    const translateY = surfaceStartY - (surfaceEndH * (1 - scaleY)) / 2;
-
-    surface.style.cssText = `
-      opacity: 0;
-      transform: translate(${translateX}px, ${translateY}px) scale(${scaleX}, ${scaleY});
-      transform-origin: top left;
-      border-radius: var(--radius-xl);
-      transition: none;
-    `;
-
-    const t2 = setTimeout(() => {
-      surface.style.transition = `
-        transform var(--duration-launch) var(--ease-standard),
-        opacity 80ms var(--ease-standard),
-        border-radius var(--duration-launch) var(--ease-standard)
-      `;
-      surface.style.opacity = '1';
-      surface.style.transform = 'translate(0, 0) scale(1)';
-      surface.style.borderRadius = '0';
-    }, 150);
-
-    // Phase 3 (560ms): icon moves toward center then fades
-    const t3 = setTimeout(() => {
-      iconEl.style.transition = 'opacity 200ms var(--ease-standard)';
-      iconEl.style.opacity = '0';
-    }, 560);
-
-    const tDone = setTimeout(fireDone, 850);
-
+    if (waiting) return () => A.forEach((a) => a.cancel());
+    const k = setTimeout(() => onDone?.(), reduce ? 120 : 900);
     return () => {
-      clearTimeout(t2);
-      clearTimeout(t3);
-      clearTimeout(tDone);
+      clearTimeout(k);
+      A.forEach((a) => a.cancel());
     };
-  }, [from, fromCard, fireDone, progress]);
+    // Ca în bundle: animația pornește o dată și se reia doar la alt progres sau la „waiting”.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [progress, waiting]);
 
-  // Static doc frame
-  if (progress !== undefined) {
-    const p = Math.max(0, Math.min(1, progress));
-    const surfaceOpacity = p > 0.15 ? Math.min(1, (p - 0.15) / 0.4) : 0;
-    const iconScale =
-      p < 0.15
-        ? 1 + 0.12 * (p / 0.15)
-        : p < 0.55
-          ? 1.12
-          : Math.max(0, 1.12 - ((p - 0.55) / 0.45) * 1.12);
-    const iconOpacity = p < 0.75 ? 1 : Math.max(0, 1 - (p - 0.75) / 0.25);
-
-    return (
-      <div className={cn(styles.frame)} style={{ minHeight: 120, position: 'relative' }}>
-        <div
-          style={{
-            position: 'absolute',
-            inset: 0,
-            background: 'var(--canvas)',
-            opacity: surfaceOpacity,
-            borderRadius: surfaceOpacity < 1 ? 'var(--radius-xl)' : 0,
-          }}
-        />
-        <div
-          style={{
-            position: 'absolute',
-            left: '50%',
-            top: '50%',
-            transform: `translate(-50%, -50%) scale(${iconScale})`,
-            opacity: iconOpacity,
-          }}
-        >
-          <AppIcon app={app} size={64} title={name} />
-        </div>
-      </div>
-    );
-  }
-
+  const sk = (w: number | string, h: number, r?: number) => (
+    <span className={styles.sk} style={{ width: w, height: h, borderRadius: r }} />
+  );
   return (
     <div
-      className={cn(
-        styles.overlay,
-        'v-applaunch',
-        contained ? styles.contained : styles.fullscreen,
-      )}
-      role="status"
-      aria-label={name ? `Se deschide ${name}` : 'Se deschide aplicația'} // TODO: i18n
+      ref={ref}
+      className={cn(styles.launch, contained && styles.contained, waiting && styles.isWaiting)}
     >
-      <div ref={surfaceRef} className={styles.surface} />
-      <div ref={iconRef} className={styles.icon}>
-        <AppIcon app={app} size={64} title={name} />
+      <div className={styles.sheet} data-launch="sheet">
+        <div className={styles.bar}>
+          <span className={cn('body-strong', styles.title)} data-launch="title">
+            {nm}
+          </span>
+          <span className={styles.barsk}>
+            {sk(180, 32, 8)}
+            {sk(32, 32, 16)}
+          </span>
+        </div>
+        <div className={styles.app} data-launch="app">
+          <div className={styles.head}>
+            {sk('34%', 28)}
+            {sk(120, 36, 8)}
+          </div>
+          <div className={styles.grid}>
+            {Array.from({ length: 15 }, (_, i) => (
+              <span key={i} className={styles.cell} />
+            ))}
+          </div>
+        </div>
+        <span className={cn('display-m', styles.name)} data-launch="name">
+          {nm}
+        </span>
       </div>
+      <span className={styles.icon} data-launch="icon">
+        <AppIcon app={app} size={72} />
+      </span>
+      <span className={styles.sr}>
+        <span aria-live="polite">{openingLabel(nm)}</span>
+      </span>
     </div>
   );
 }
