@@ -386,7 +386,7 @@
       },
       "limit": {
         "title": "Ai încercat de prea multe ori",
-        "body": "Mai încearcă peste 5 minute sau alege o parolă nouă."
+        "body": "Mai încearcă peste 15 minute sau alege o parolă nouă."
       }
     }
   },
@@ -452,7 +452,7 @@
     "chooseBusiness": {
       "title": "Alege afacerea",
       "lead": "Lucrezi în {count} afaceri. Treci de la una la alta oricând, din bara de sus.",
-      "apps": "{count} aplicații",
+      "apps": "{count, plural, one {# aplicație} few {# aplicații} other {# de aplicații}}",
       "opened": "deschisă {when}",
       "lastUsed": "Ultima folosită",
       "remember": "Deschide direct ultima afacere data viitoare",

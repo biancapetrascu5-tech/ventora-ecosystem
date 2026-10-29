@@ -386,7 +386,7 @@
       },
       "limit": {
         "title": "Sie haben es zu oft versucht",
-        "body": "Versuchen Sie es in 5 Minuten erneut oder wählen Sie ein neues Passwort."
+        "body": "Versuchen Sie es in 15 Minuten erneut oder wählen Sie ein neues Passwort."
       }
     }
   },
@@ -452,7 +452,7 @@
     "chooseBusiness": {
       "title": "Unternehmen wählen",
       "lead": "Sie arbeiten in {count} Unternehmen. Sie können jederzeit oben in der Leiste wechseln.",
-      "apps": "{count} Apps",
+      "apps": "{count, plural, one {# App} other {# Apps}}",
       "opened": "geöffnet {when}",
       "lastUsed": "Zuletzt verwendet",
       "remember": "Nächstes Mal direkt das zuletzt verwendete Unternehmen öffnen",

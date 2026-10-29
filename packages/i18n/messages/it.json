@@ -386,7 +386,7 @@
       },
       "limit": {
         "title": "Ha provato troppe volte",
-        "body": "Riprovi tra 5 minuti o scelga una nuova password."
+        "body": "Riprovi tra 15 minuti o scelga una nuova password."
       }
     }
   },
@@ -452,7 +452,7 @@
     "chooseBusiness": {
       "title": "Scelga l’attività",
       "lead": "Lavora in {count} attività. Può passare dall’una all’altra in qualsiasi momento, dalla barra in alto.",
-      "apps": "{count} app",
+      "apps": "{count, plural, one {# app} other {# app}}",
       "opened": "aperta {when}",
       "lastUsed": "Usata per ultima",
       "remember": "La prossima volta aprire direttamente l’ultima attività",

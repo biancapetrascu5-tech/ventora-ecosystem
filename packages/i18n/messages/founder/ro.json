@@ -102,6 +102,9 @@
     },
     "shell": {
       "search": "Caută o afacere, un plan sau o campanie"
+    },
+    "auth": {
+      "reqLength": "Cel puțin 12 caractere"
     }
   }
 }
