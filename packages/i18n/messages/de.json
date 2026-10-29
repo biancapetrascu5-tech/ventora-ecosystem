@@ -36,7 +36,20 @@
     "expiry": "Einladung gültig bis {data}.",
     "expiredTitle": "Einladung abgelaufen",
     "expiredBody": "Einladungen sind 7 Tage gültig. Fordere eine neue an: Wir leiten die Anfrage an {name} weiter und du erhältst den neuen Link per E-Mail.",
-    "requestNew": "Neue Einladung anfordern"
+    "requestNew": "Neue Einladung anfordern",
+    "requested": {
+      "title": "Wir haben die Anfrage gesendet",
+      "body": "Sie erhalten den neuen Link per E-Mail, sobald {name} ihn erneut sendet."
+    },
+    "revoked": {
+      "title": "Diese Einladung ist nicht mehr gültig",
+      "body": "Falls das ein Fehler ist, bitten Sie die einladende Person um eine neue Einladung."
+    },
+    "used": {
+      "title": "Sie haben diese Einladung bereits verwendet",
+      "body": "Melden Sie sich mit Ihrer E-Mail-Adresse und Ihrem Passwort an."
+    },
+    "signIn": "Anmelden"
   },
   "usageMeter": {
     "unlimited": "Unbegrenzt",
@@ -145,14 +158,294 @@
         "ticketRef": "Anfrage: {ticketRef}",
         "close": "Sitzung beenden",
         "closeConfirm": "Support-Sitzung beenden? Das Ventora-Team verliert sofort den Zugriff.",
-        "closed": "Die Support-Sitzung wurde beendet."
+        "closed": "Die Support-Sitzung wurde beendet.",
+        "cancel": "Abbrechen"
       }
+    },
+    "sessions": {
+      "title": "Support-Sitzungen",
+      "lead": "Das Ventora-Team sieht die Daten des Unternehmens nur in einer Support-Sitzung, nur lesend und nur bis zur festgelegten Uhrzeit. Hier sehen Sie, wer, warum und wann.",
+      "col": {
+        "who": "Vom Ventora-Team",
+        "reason": "Grund",
+        "ticket": "Anfrage",
+        "when": "Wann",
+        "status": "Status"
+      },
+      "status": {
+        "active": "Aktiv bis {expiresAt}",
+        "closedBy": "Beendet von {name}",
+        "expired": "Abgelaufen",
+        "closedAuto": "Automatisch beendet"
+      },
+      "empty": "Bisher keine Support-Sitzungen."
     }
   },
   "auth": {
     "line1": "Ihr Unternehmen.",
     "line2": "An einem Ort.",
     "founderProduct": "Control Center",
-    "founderTagline": "Das interne Werkzeug des Ventora-Teams"
+    "founderTagline": "Das interne Werkzeug des Ventora-Teams",
+    "reset": {
+      "request": {
+        "title": "Passwort vergessen?",
+        "lead": "Geben Sie die E-Mail-Adresse Ihres Kontos ein. Wir senden Ihnen einen Link für ein neues Passwort.",
+        "submit": "Link senden"
+      },
+      "emailLabel": "E-Mail",
+      "sending": "Wird gesendet …",
+      "back": "Zurück zur Anmeldung",
+      "error": {
+        "empty": "Geben Sie die E-Mail-Adresse Ihres Kontos ein.",
+        "format": "Die Adresse scheint unvollständig. Prüfen Sie den Teil nach @.",
+        "reqs": "Das Passwort erfüllt noch nicht alle Anforderungen unten."
+      },
+      "limit": {
+        "title": "Sie haben es zu oft versucht",
+        "body": "Sie können nach {time} Uhr einen neuen Link anfordern."
+      },
+      "offline": {
+        "title": "Wir können Sie gerade nicht verbinden",
+        "body": "Prüfen Sie Ihre Internetverbindung und versuchen Sie es erneut."
+      },
+      "sent": {
+        "title": "Prüfen Sie Ihre E-Mails",
+        "body": "Wenn {email} zu einem Ventora-Konto gehört, haben wir Ihnen dorthin einen Link für ein neues Passwort gesendet.",
+        "validity": "Der Link ist eine Stunde gültig.",
+        "help": "Keine E-Mail da? Sehen Sie auch im Spam- oder Werbeordner nach.",
+        "resend": "Neuen Link senden",
+        "resendWait": "In einer Minute können Sie einen neuen Link anfordern.",
+        "resent": "Wir haben einen neuen Link gesendet. Verwenden Sie den neuesten.",
+        "otherEmail": "Andere Adresse verwenden"
+      },
+      "new": {
+        "title": "Neues Passwort wählen",
+        "account": "Für das Konto {email}.",
+        "label": "Neues Passwort",
+        "signOutNote": "Nach dem Speichern melden wir Sie auf allen Geräten ab.",
+        "submit": "Passwort speichern"
+      },
+      "req": {
+        "length": "Mindestens 10 Zeichen",
+        "digit": "Mindestens eine Ziffer",
+        "upper": "Mindestens ein Großbuchstabe"
+      },
+      "saving": "Wird gespeichert …",
+      "expired": {
+        "title": "Der Link ist abgelaufen",
+        "body": "Links für ein neues Passwort sind eine Stunde gültig. Fordern Sie einen neuen an, Sie erhalten ihn per E-Mail."
+      },
+      "newLink": "Neuen Link anfordern",
+      "used": {
+        "title": "Sie haben diesen Link bereits verwendet",
+        "body": "Jeder Link funktioniert nur einmal. Wenn Sie Ihr neues Passwort schon gewählt haben, melden Sie sich damit an."
+      },
+      "signIn": "Anmelden",
+      "done": {
+        "title": "Ihr Passwort ist geändert",
+        "signedOut": "Wir haben Sie auf allen Geräten abgemeldet.",
+        "body": "Melden Sie sich auf jedem Gerät, das Sie nutzen, mit Ihrem neuen Passwort wieder an.",
+        "twoStep": "Nach dem Passwort fragen wir auch nach dem Code aus Ihrer Authenticator-App."
+      },
+      "email": {
+        "securityRow": "Sicherheits-E-Mails: Sie erhalten sie immer, zum Beispiel wenn sich das Passwort Ihres Kontos ändert."
+      }
+    },
+    "2fa": {
+      "step": "Schritt {step} von 3",
+      "signOut": "Abmelden",
+      "codeLabel": "6-stelliger Code",
+      "codeHelper": "Der Code ändert sich alle 30 Sekunden.",
+      "checking": "Wird geprüft …",
+      "copy": "Kopieren",
+      "copied": "Kopiert",
+      "download": "Herunterladen",
+      "error": {
+        "wrongCode": "Der Code stimmt nicht. Geben Sie den Code ein, den die App jetzt anzeigt.",
+        "codeLength": "Der Code hat 6 Ziffern.",
+        "backupUsed": "Diesen Backup-Code haben Sie schon verwendet. Versuchen Sie einen anderen aus Ihrer Liste.",
+        "backupWrong": "Der Code passt zu keinem Backup-Code."
+      },
+      "setup": {
+        "s1": {
+          "title": "Schützen Sie Ihr Konto",
+          "leadOwner": "Das Inhaberkonto hat Zugriff auf alles, deshalb schützen wir es mit einem zweiten Schritt.",
+          "leadFounder": "Ein Founder-Konto hat Zugriff auf alle Unternehmen, deshalb schützen wir es mit einem zweiten Schritt. In Founder ist das für alle Pflicht.",
+          "how": "Nach dem Passwort fragen wir zusätzlich nach einem Code aus der Authenticator-App auf Ihrem Telefon.",
+          "scan": "Scannen Sie den Code mit der Authenticator-App",
+          "qrAlt": "QR-Code für die Authenticator-App",
+          "manual": "Scannen geht nicht? Geben Sie den Schlüssel unten in der App ein.",
+          "keyLabel": "Schlüssel",
+          "keyCopied": "Schlüssel kopiert.",
+          "whichApp": "Welche App verwende ich?",
+          "next": "Weiter"
+        },
+        "s2": {
+          "title": "Geben Sie den Code aus der App ein",
+          "lead": "Die App zeigt jetzt einen 6-stelligen Code für Ventora.",
+          "submit": "Aktivieren",
+          "back": "Zurück zum QR-Code"
+        },
+        "locked": {
+          "title": "Sie haben es zu oft versucht",
+          "body": "Sie können es in 15 Minuten wieder versuchen, um {time} Uhr."
+        },
+        "s3": {
+          "title": "Speichern Sie Ihre Backup-Codes",
+          "done": "Die Anmeldung in zwei Schritten ist aktiv.",
+          "lead": "Wenn Sie Ihr Telefon nicht dabeihaben, melden Sie sich mit einem dieser Codes an. Jeder funktioniert nur einmal.",
+          "once": "Sie sehen sie nur dieses eine Mal.",
+          "listLabel": "Backup-Codes",
+          "copied": "Codes kopiert.",
+          "fileName": "ventora-backup-codes.txt",
+          "confirm": "Ich habe sie sicher gespeichert",
+          "confirmHelp": "Haken Sie das an, wenn Sie sie heruntergeladen oder kopiert haben.",
+          "next": "Weiter"
+        }
+      },
+      "apps": {
+        "body": "Jede Authenticator-App funktioniert, zum Beispiel Google Authenticator, Microsoft Authenticator oder 1Password. Wenn Sie keine haben, installieren Sie eine aus Google Play oder dem App Store.",
+        "how": "Fügen Sie in der App ein neues Konto hinzu und scannen Sie den Code auf dieser Seite.",
+        "close": "Verstanden"
+      },
+      "verify": {
+        "title": "Noch ein Schritt",
+        "lead": "Geben Sie den 6-stelligen Code aus der Authenticator-App ein.",
+        "leadBackup": "Geben Sie einen der Backup-Codes ein, die Sie beim Aktivieren der Anmeldung in zwei Schritten gespeichert haben.",
+        "account": "Anmeldung als {email}.",
+        "otherAccount": "Anderes Konto verwenden",
+        "submit": "Anmelden",
+        "useBackup": "Backup-Code verwenden",
+        "useApp": "Code aus der App verwenden",
+        "backupLabel": "Backup-Code",
+        "backupHelper": "Jeder Backup-Code funktioniert nur einmal.",
+        "locked": {
+          "title": "Ihr Konto ist vorübergehend gesperrt",
+          "body": "Es gab zu viele falsche Versuche. Sie können sich ab {time} Uhr wieder anmelden."
+        },
+        "expired": {
+          "title": "Es sind mehr als 10 Minuten vergangen",
+          "body": "Aus Sicherheitsgründen melden Sie sich bitte erneut mit E-Mail und Passwort an.",
+          "action": "Zurück zur Anmeldung"
+        },
+        "noAccess": "Ich habe weder Telefon noch Codes"
+      },
+      "recovery": {
+        "email": "support@ventorasystems.com",
+        "title": "Zugriff wiederherstellen",
+        "body": "Schreiben Sie uns von der E-Mail-Adresse Ihres Kontos. Wir helfen Ihnen, den Zugriff wiederherzustellen, sobald wir Ihre Identität bestätigt haben.",
+        "address": "Unsere Adresse: support@ventorasystems.com",
+        "write": "E-Mail schreiben",
+        "back": "Zurück"
+      },
+      "founder": {
+        "name": "Founder",
+        "tagline": "Das interne Werkzeug des Ventora-Teams",
+        "product": "Control Center"
+      },
+      "backupLeft": {
+        "title": "Sie haben sich mit einem Backup-Code angemeldet",
+        "many": "Sie haben noch {n} Backup-Codes.",
+        "few": "Sie haben nur noch {n} Backup-Codes. Erzeugen Sie neue, damit Ihnen keine ausgehen.",
+        "one": "Sie haben nur noch einen Backup-Code. Erzeugen Sie neue, damit Ihnen keine ausgehen.",
+        "none": "Sie haben Ihren letzten Backup-Code verwendet. Erzeugen Sie neue, damit Sie sich auch ohne Telefon anmelden können.",
+        "action": "Neue Codes erzeugen"
+      },
+      "codes": {
+        "title": "Backup-Codes",
+        "lead": "Verwenden Sie sie, wenn Sie Ihr Telefon nicht dabeihaben. Sie sehen sie nur einmal, beim Erzeugen.",
+        "left": "Sie haben noch {n} von 10.",
+        "oldStop": "Wenn Sie neue Codes erzeugen, funktionieren die alten nicht mehr.",
+        "confirmTitle": "Mit dem Code aus der App bestätigen",
+        "confirmLead": "Um neue Codes zu erzeugen, geben Sie den Code ein, der jetzt in Ihrer Authenticator-App angezeigt wird.",
+        "confirm": "Codes erzeugen",
+        "cancel": "Abbrechen",
+        "newDone": "Sie haben neue Codes. Die alten funktionieren nicht mehr."
+      }
+    },
+    "panel": {
+      "line1": "Ihr Unternehmen.",
+      "line2": "An einem Ort."
+    },
+    "footer": {
+      "links": "AGB · Datenschutz · Hilfe"
+    },
+    "signIn": {
+      "title": "Willkommen zurück",
+      "lead": "Melden Sie sich bei Ihrem Ventora-Konto an.",
+      "emailLabel": "E-Mail",
+      "passwordLabel": "Passwort",
+      "forgot": "Passwort vergessen?",
+      "remember": "Auf diesem Gerät 30 Tage angemeldet bleiben",
+      "submit": "Anmelden",
+      "submitting": "Anmeldung …",
+      "inviteOnly": "Kein Konto? Konten entstehen nur per Einladung. Wenn Sie eine erhalten haben, öffnen Sie den Link in der E-Mail und wählen Sie Ihr Passwort.",
+      "error": {
+        "title": "E-Mail-Adresse oder Passwort sind nicht korrekt",
+        "body": "Prüfen Sie beides und versuchen Sie es erneut."
+      },
+      "limit": {
+        "title": "Sie haben es zu oft versucht",
+        "body": "Versuchen Sie es in 5 Minuten erneut oder wählen Sie ein neues Passwort."
+      }
+    }
+  },
+  "ui": {
+    "language": "Sprache",
+    "showPassword": "Passwort anzeigen",
+    "hidePassword": "Passwort verbergen",
+    "close": "Schließen",
+    "cancel": "Abbrechen",
+    "required": "Pflichtfeld",
+    "optional": "optional",
+    "rowActions": "Aktionen",
+    "prevPage": "Vorherige Seite",
+    "nextPage": "Nächste Seite",
+    "pageOf": "Seite {n} von {total}",
+    "rangeOf": "{from}–{to} von {total}"
+  },
+  "hub": {
+    "chooseBusiness": {
+      "title": "Unternehmen wählen",
+      "lead": "Sie arbeiten in {count} Unternehmen. Sie können jederzeit oben in der Leiste wechseln.",
+      "apps": "{count} Apps",
+      "opened": "geöffnet {when}",
+      "lastUsed": "Zuletzt verwendet",
+      "remember": "Nächstes Mal direkt das zuletzt verwendete Unternehmen öffnen",
+      "missing": "Fehlt ein Unternehmen? Bitten Sie den Inhaber um eine Einladung.",
+      "search": "Unternehmen suchen"
+    }
+  },
+  "roles": {
+    "owner": "Inhaber",
+    "admin": "Administrator",
+    "member": "Mitglied",
+    "external_collaborator": "Externe Mitarbeit",
+    "application_manager": "App-Verwaltung"
+  },
+  "account": {
+    "title": "Ihr Konto",
+    "lead": "Ihre Daten, wie Ventora für Sie aussieht und wie Sie Ihr Konto schützen.",
+    "notifications": {
+      "title": "Benachrichtigungen",
+      "lead": "Wählen Sie, wo Sie über was informiert werden."
+    },
+    "security": {
+      "title": "Sicherheit",
+      "password": {
+        "title": "Passwort",
+        "changed": "Geändert {when}.",
+        "change": "Passwort ändern",
+        "done": {
+          "title": "Ihr Passwort ist geändert.",
+          "body": "Auf Ihren anderen Geräten müssen Sie sich erneut anmelden."
+        }
+      },
+      "twoStep": {
+        "title": "Anmeldung in zwei Schritten",
+        "ownerBody": "Für den Inhaber verpflichtend. Bei jeder Anmeldung mit Passwort fragen wir auch nach einem Code aus Ihrer Authenticator-App.",
+        "active": "Aktiv"
+      }
+    }
   }
 }

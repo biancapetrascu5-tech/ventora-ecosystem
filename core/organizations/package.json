@@ -16,9 +16,10 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@ventora/audit": "workspace:*",
     "@prisma/adapter-pg": "^7.0.0",
     "@prisma/client": "^7.0.0",
+    "@prisma/client-runtime-utils": "^7.10.1",
+    "@ventora/audit": "workspace:*",
     "@ventora/errors": "workspace:*",
     "@ventora/notifications": "workspace:*",
     "pg": "^8.0.0",

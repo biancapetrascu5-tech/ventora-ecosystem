@@ -45,6 +45,8 @@ describe('Hub banner: support.session.banner.* in the 6 languages', () => {
       close: [],
       closeConfirm: [],
       closed: [],
+      // Lot Faza 2 · ecrane: butonul „Renunță” din dialogul de închidere (S94)
+      cancel: [],
     });
   });
 

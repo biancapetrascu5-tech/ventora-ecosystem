@@ -36,7 +36,20 @@
     "expiry": "Invitation valid until {data}.",
     "expiredTitle": "Invitation expired",
     "expiredBody": "Invitations are valid for 7 days. Request a new one: we'll forward the request to {name} and you'll receive the new link by email.",
-    "requestNew": "Request a new invitation"
+    "requestNew": "Request a new invitation",
+    "requested": {
+      "title": "We sent the request",
+      "body": "You’ll get the new link by email as soon as {name} sends it again."
+    },
+    "revoked": {
+      "title": "This invitation is no longer valid",
+      "body": "If this is a mistake, ask the person who invited you for a new invitation."
+    },
+    "used": {
+      "title": "You’ve already used this invitation",
+      "body": "Sign in with your email and password."
+    },
+    "signIn": "Sign in"
   },
   "usageMeter": {
     "unlimited": "Unlimited",
@@ -145,14 +158,294 @@
         "ticketRef": "Request: {ticketRef}",
         "close": "Close session",
         "closeConfirm": "Close the support session? The Ventora team loses access immediately.",
-        "closed": "The support session is closed."
+        "closed": "The support session is closed.",
+        "cancel": "Cancel"
       }
+    },
+    "sessions": {
+      "title": "Support sessions",
+      "lead": "The Ventora team sees the business data only in a support session, read only and only until the set time. Here you see who, why and when.",
+      "col": {
+        "who": "From the Ventora team",
+        "reason": "Reason",
+        "ticket": "Request",
+        "when": "When",
+        "status": "Status"
+      },
+      "status": {
+        "active": "Active until {expiresAt}",
+        "closedBy": "Closed by {name}",
+        "expired": "Expired",
+        "closedAuto": "Closed automatically"
+      },
+      "empty": "No support sessions so far."
     }
   },
   "auth": {
     "line1": "Your business.",
     "line2": "All in one place.",
     "founderProduct": "Control Center",
-    "founderTagline": "The Ventora team's internal tool"
+    "founderTagline": "The Ventora team's internal tool",
+    "reset": {
+      "request": {
+        "title": "Forgot your password?",
+        "lead": "Enter your account's email address and we'll send you a link to set a new password.",
+        "submit": "Send link"
+      },
+      "emailLabel": "Email",
+      "sending": "Sending…",
+      "back": "Back to sign-in",
+      "error": {
+        "empty": "Enter your account's email address.",
+        "format": "This address looks incomplete. Check the part after @.",
+        "reqs": "The password doesn't meet all the requirements below yet."
+      },
+      "limit": {
+        "title": "You've tried too many times",
+        "body": "You can ask for a new link after {time}."
+      },
+      "offline": {
+        "title": "We can't connect you right now",
+        "body": "Check your internet connection and try again."
+      },
+      "sent": {
+        "title": "Check your email",
+        "body": "If {email} belongs to a Ventora account, we've sent a link there to set a new password.",
+        "validity": "The link is valid for one hour.",
+        "help": "Can't see the email? Check your spam or promotions folder too.",
+        "resend": "Send another link",
+        "resendWait": "You can ask for another link in a minute.",
+        "resent": "We've sent another link. Use the newest one.",
+        "otherEmail": "Use another address"
+      },
+      "new": {
+        "title": "Choose a new password",
+        "account": "For the account {email}.",
+        "label": "New password",
+        "signOutNote": "When you save it, we'll sign you out on all devices.",
+        "submit": "Save password"
+      },
+      "req": {
+        "length": "At least 10 characters",
+        "digit": "At least one number",
+        "upper": "At least one capital letter"
+      },
+      "saving": "Saving…",
+      "expired": {
+        "title": "This link has expired",
+        "body": "Links for a new password are valid for one hour. Ask for a new one and we'll email it to you."
+      },
+      "newLink": "Ask for a new link",
+      "used": {
+        "title": "You've already used this link",
+        "body": "Each link works only once. If you've already chosen your new password, sign in with it."
+      },
+      "signIn": "Sign in",
+      "done": {
+        "title": "Your password is changed",
+        "signedOut": "We've signed you out on all devices.",
+        "body": "Sign in again with your new password on each device you use.",
+        "twoStep": "After your password, we'll also ask for the code from your authenticator app."
+      },
+      "email": {
+        "securityRow": "Security emails: you always get them, for example when your account password changes."
+      }
+    },
+    "2fa": {
+      "step": "Step {step} of 3",
+      "signOut": "Sign out",
+      "codeLabel": "6-digit code",
+      "codeHelper": "The code changes every 30 seconds.",
+      "checking": "Checking…",
+      "copy": "Copy",
+      "copied": "Copied",
+      "download": "Download",
+      "error": {
+        "wrongCode": "That code doesn't match. Enter the code your app shows now.",
+        "codeLength": "The code has 6 digits.",
+        "backupUsed": "You've already used this backup code. Try another one from your list.",
+        "backupWrong": "That code doesn't match any backup code."
+      },
+      "setup": {
+        "s1": {
+          "title": "Protect your account",
+          "leadOwner": "The owner account can reach everything, so we protect it with a second step.",
+          "leadFounder": "A Founder account can reach every business, so we protect it with a second step. In Founder it's required for everyone.",
+          "how": "After your password, we'll also ask for a code from the authenticator app on your phone.",
+          "scan": "Scan the code with your authenticator app",
+          "qrAlt": "QR code for the authenticator app",
+          "manual": "Can't scan? Enter the key below in the app.",
+          "keyLabel": "Key",
+          "keyCopied": "Key copied.",
+          "whichApp": "Which app do I use?",
+          "next": "Continue"
+        },
+        "s2": {
+          "title": "Enter the code from the app",
+          "lead": "The app now shows a 6-digit code for Ventora.",
+          "submit": "Turn on",
+          "back": "Back to the QR code"
+        },
+        "locked": {
+          "title": "You've tried too many times",
+          "body": "You can try again in 15 minutes, at {time}."
+        },
+        "s3": {
+          "title": "Save your backup codes",
+          "done": "Two-step sign-in is on.",
+          "lead": "If you don't have your phone with you, sign in with one of these codes. Each one works once.",
+          "once": "This is the only time you'll see them.",
+          "listLabel": "Backup codes",
+          "copied": "Codes copied.",
+          "fileName": "ventora-backup-codes.txt",
+          "confirm": "I've saved them somewhere safe",
+          "confirmHelp": "Tick this once you've downloaded or copied them.",
+          "next": "Continue"
+        }
+      },
+      "apps": {
+        "body": "Any authenticator app works, for example Google Authenticator, Microsoft Authenticator or 1Password. If you don't have one, install it from Google Play or the App Store.",
+        "how": "In the app, add a new account and scan the code on this page.",
+        "close": "Got it"
+      },
+      "verify": {
+        "title": "One more step",
+        "lead": "Enter the 6-digit code from your authenticator app.",
+        "leadBackup": "Enter one of the backup codes you saved when you turned on two-step sign-in.",
+        "account": "Signing in as {email}.",
+        "otherAccount": "Use another account",
+        "submit": "Sign in",
+        "useBackup": "Use a backup code",
+        "useApp": "Use the code from the app",
+        "backupLabel": "Backup code",
+        "backupHelper": "Each backup code works once.",
+        "locked": {
+          "title": "Your account is locked for now",
+          "body": "There were too many wrong attempts. You can sign in again after {time}."
+        },
+        "expired": {
+          "title": "More than 10 minutes have passed",
+          "body": "For your security, sign in again with your email and password.",
+          "action": "Back to sign-in"
+        },
+        "noAccess": "I can't use my phone or my codes"
+      },
+      "recovery": {
+        "email": "support@ventorasystems.com",
+        "title": "Get back into your account",
+        "body": "Write to us from your account's email address and we'll help you get back in once we've confirmed who you are.",
+        "address": "Our address: support@ventorasystems.com",
+        "write": "Email us",
+        "back": "Back"
+      },
+      "founder": {
+        "name": "Founder",
+        "tagline": "The Ventora team's internal tool",
+        "product": "Control Center"
+      },
+      "backupLeft": {
+        "title": "You signed in with a backup code",
+        "many": "You have {n} backup codes left.",
+        "few": "Only {n} backup codes left. Generate new codes so you don't run out.",
+        "one": "You have one backup code left. Generate new codes so you don't run out.",
+        "none": "You've used your last backup code. Generate new codes so you can still sign in if you lose your phone.",
+        "action": "Generate new codes"
+      },
+      "codes": {
+        "title": "Backup codes",
+        "lead": "Use them if you don't have your phone with you. You see them only once, when you generate them.",
+        "left": "You have {n} of 10 left.",
+        "oldStop": "When you generate new codes, the old ones stop working.",
+        "confirmTitle": "Confirm with the code from your app",
+        "confirmLead": "To generate new codes, enter the code showing now in your authenticator app.",
+        "confirm": "Generate codes",
+        "cancel": "Cancel",
+        "newDone": "You have new codes. The old ones no longer work."
+      }
+    },
+    "panel": {
+      "line1": "Your business.",
+      "line2": "All in one place."
+    },
+    "footer": {
+      "links": "Terms · Privacy · Help"
+    },
+    "signIn": {
+      "title": "Welcome back",
+      "lead": "Sign in to your Ventora account.",
+      "emailLabel": "Email",
+      "passwordLabel": "Password",
+      "forgot": "Forgot your password?",
+      "remember": "Keep me signed in on this device for 30 days",
+      "submit": "Sign in",
+      "submitting": "Signing in…",
+      "inviteOnly": "No account? Accounts are created by invitation only. If you received one, open the link in the email and choose your password.",
+      "error": {
+        "title": "The email or password is incorrect",
+        "body": "Check them and try again."
+      },
+      "limit": {
+        "title": "You’ve tried too many times",
+        "body": "Try again in 5 minutes or choose a new password."
+      }
+    }
+  },
+  "ui": {
+    "language": "Language",
+    "showPassword": "Show password",
+    "hidePassword": "Hide password",
+    "close": "Close",
+    "cancel": "Cancel",
+    "required": "required",
+    "optional": "optional",
+    "rowActions": "Actions",
+    "prevPage": "Previous page",
+    "nextPage": "Next page",
+    "pageOf": "Page {n} of {total}",
+    "rangeOf": "{from}–{to} of {total}"
+  },
+  "hub": {
+    "chooseBusiness": {
+      "title": "Choose a business",
+      "lead": "You work in {count} businesses. Switch between them anytime from the top bar.",
+      "apps": "{count} apps",
+      "opened": "opened {when}",
+      "lastUsed": "Last used",
+      "remember": "Open the last business directly next time",
+      "missing": "Missing a business? Ask its owner for an invitation.",
+      "search": "Search for a business"
+    }
+  },
+  "roles": {
+    "owner": "Owner",
+    "admin": "Admin",
+    "member": "Member",
+    "external_collaborator": "External collaborator",
+    "application_manager": "App manager"
+  },
+  "account": {
+    "title": "Your account",
+    "lead": "Your details, how Ventora looks for you and how you protect your account.",
+    "notifications": {
+      "title": "Notifications",
+      "lead": "Choose where you want to hear about each one."
+    },
+    "security": {
+      "title": "Security",
+      "password": {
+        "title": "Password",
+        "changed": "Changed {when}.",
+        "change": "Change password",
+        "done": {
+          "title": "Your password is changed.",
+          "body": "You’ll have to sign in again on your other devices."
+        }
+      },
+      "twoStep": {
+        "title": "Two-step sign-in",
+        "ownerBody": "Required for the owner. Each time you sign in with your password, we also ask for a code from your authenticator app.",
+        "active": "On"
+      }
+    }
   }
 }

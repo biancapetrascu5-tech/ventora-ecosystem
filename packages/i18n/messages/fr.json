@@ -36,7 +36,20 @@
     "expiry": "Invitation valable jusqu'au {data}.",
     "expiredTitle": "Invitation expirée",
     "expiredBody": "Les invitations sont valables 7 jours. Demandez-en une nouvelle : nous transmettrons la demande à {name} et vous recevrez le nouveau lien par e-mail.",
-    "requestNew": "Demander une nouvelle invitation"
+    "requestNew": "Demander une nouvelle invitation",
+    "requested": {
+      "title": "Nous avons envoyé la demande",
+      "body": "Vous recevrez le nouveau lien par e-mail dès que {name} le renverra."
+    },
+    "revoked": {
+      "title": "Cette invitation n’est plus valable",
+      "body": "S’il s’agit d’une erreur, demandez une nouvelle invitation à la personne qui vous a invité."
+    },
+    "used": {
+      "title": "Vous avez déjà utilisé cette invitation",
+      "body": "Connectez-vous avec votre e-mail et votre mot de passe."
+    },
+    "signIn": "Se connecter"
   },
   "usageMeter": {
     "unlimited": "Illimité",
@@ -145,14 +158,294 @@
         "ticketRef": "Demande : {ticketRef}",
         "close": "Fermer la session",
         "closeConfirm": "Fermer la session de support ? L’équipe Ventora perd l’accès immédiatement.",
-        "closed": "La session de support est fermée."
+        "closed": "La session de support est fermée.",
+        "cancel": "Annuler"
       }
+    },
+    "sessions": {
+      "title": "Sessions de support",
+      "lead": "L’équipe Ventora ne consulte les données de l’entreprise que pendant une session de support, en lecture seule et jusqu’à l’heure prévue. Ici, vous voyez qui, pourquoi et quand.",
+      "col": {
+        "who": "De l’équipe Ventora",
+        "reason": "Motif",
+        "ticket": "Demande",
+        "when": "Quand",
+        "status": "État"
+      },
+      "status": {
+        "active": "Active jusqu’à {expiresAt}",
+        "closedBy": "Fermée par {name}",
+        "expired": "Expirée",
+        "closedAuto": "Fermée automatiquement"
+      },
+      "empty": "Aucune session de support pour l’instant."
     }
   },
   "auth": {
     "line1": "Votre entreprise.",
     "line2": "En un seul endroit.",
     "founderProduct": "Control Center",
-    "founderTagline": "L’outil interne de l’équipe Ventora"
+    "founderTagline": "L’outil interne de l’équipe Ventora",
+    "reset": {
+      "request": {
+        "title": "Mot de passe oublié ?",
+        "lead": "Saisissez l’adresse e-mail de votre compte : nous vous enverrons un lien pour choisir un nouveau mot de passe.",
+        "submit": "Envoyer le lien"
+      },
+      "emailLabel": "E-mail",
+      "sending": "Envoi…",
+      "back": "Retour à la connexion",
+      "error": {
+        "empty": "Saisissez l’adresse e-mail de votre compte.",
+        "format": "Cette adresse semble incomplète. Vérifiez la partie après @.",
+        "reqs": "Le mot de passe ne remplit pas encore toutes les conditions ci-dessous."
+      },
+      "limit": {
+        "title": "Vous avez essayé trop de fois",
+        "body": "Vous pourrez demander un nouveau lien après {time}."
+      },
+      "offline": {
+        "title": "Connexion impossible pour le moment",
+        "body": "Vérifiez votre connexion internet et réessayez."
+      },
+      "sent": {
+        "title": "Consultez vos e-mails",
+        "body": "Si {email} correspond à un compte Ventora, nous y avons envoyé un lien pour choisir un nouveau mot de passe.",
+        "validity": "Le lien est valable une heure.",
+        "help": "Vous ne voyez pas l’e-mail ? Vérifiez aussi vos spams ou l’onglet Promotions.",
+        "resend": "Envoyer un autre lien",
+        "resendWait": "Vous pourrez demander un autre lien dans une minute.",
+        "resent": "Nous avons envoyé un autre lien. Utilisez le plus récent.",
+        "otherEmail": "Utiliser une autre adresse"
+      },
+      "new": {
+        "title": "Choisissez un nouveau mot de passe",
+        "account": "Pour le compte {email}.",
+        "label": "Nouveau mot de passe",
+        "signOutNote": "Une fois enregistré, nous vous déconnecterons de tous vos appareils.",
+        "submit": "Enregistrer le mot de passe"
+      },
+      "req": {
+        "length": "Au moins 10 caractères",
+        "digit": "Au moins un chiffre",
+        "upper": "Au moins une majuscule"
+      },
+      "saving": "Enregistrement…",
+      "expired": {
+        "title": "Ce lien a expiré",
+        "body": "Les liens pour un nouveau mot de passe sont valables une heure. Demandez-en un nouveau : vous le recevrez par e-mail."
+      },
+      "newLink": "Demander un nouveau lien",
+      "used": {
+        "title": "Vous avez déjà utilisé ce lien",
+        "body": "Chaque lien ne fonctionne qu’une fois. Si vous avez déjà choisi votre nouveau mot de passe, connectez-vous avec."
+      },
+      "signIn": "Se connecter",
+      "done": {
+        "title": "Votre mot de passe est modifié",
+        "signedOut": "Nous vous avons déconnecté de tous vos appareils.",
+        "body": "Reconnectez-vous avec votre nouveau mot de passe sur chaque appareil que vous utilisez.",
+        "twoStep": "Après le mot de passe, nous vous demanderons aussi le code de votre application d’authentification."
+      },
+      "email": {
+        "securityRow": "E-mails de sécurité : vous les recevez toujours, par exemple quand le mot de passe de votre compte change."
+      }
+    },
+    "2fa": {
+      "step": "Étape {step} sur 3",
+      "signOut": "Se déconnecter",
+      "codeLabel": "Code à 6 chiffres",
+      "codeHelper": "Le code change toutes les 30 secondes.",
+      "checking": "Vérification…",
+      "copy": "Copier",
+      "copied": "Copié",
+      "download": "Télécharger",
+      "error": {
+        "wrongCode": "Ce code ne correspond pas. Saisissez le code affiché maintenant dans l’application.",
+        "codeLength": "Le code comporte 6 chiffres.",
+        "backupUsed": "Vous avez déjà utilisé ce code de secours. Essayez-en un autre de votre liste.",
+        "backupWrong": "Ce code ne correspond à aucun code de secours."
+      },
+      "setup": {
+        "s1": {
+          "title": "Protégez votre compte",
+          "leadOwner": "Le compte du propriétaire a accès à tout, nous le protégeons donc par une deuxième étape.",
+          "leadFounder": "Un compte Founder a accès à toutes les entreprises, nous le protégeons donc par une deuxième étape. Dans Founder, c’est obligatoire pour tous.",
+          "how": "Après le mot de passe, nous vous demanderons aussi un code de l’application d’authentification de votre téléphone.",
+          "scan": "Scannez le code avec l’application d’authentification",
+          "qrAlt": "Code QR pour l’application d’authentification",
+          "manual": "Impossible de scanner ? Saisissez la clé ci-dessous dans l’application.",
+          "keyLabel": "Clé",
+          "keyCopied": "Clé copiée.",
+          "whichApp": "Quelle application utiliser ?",
+          "next": "Continuer"
+        },
+        "s2": {
+          "title": "Saisissez le code de l’application",
+          "lead": "L’application affiche maintenant un code à 6 chiffres pour Ventora.",
+          "submit": "Activer",
+          "back": "Retour au code QR"
+        },
+        "locked": {
+          "title": "Vous avez essayé trop de fois",
+          "body": "Vous pourrez réessayer dans 15 minutes, à {time}."
+        },
+        "s3": {
+          "title": "Enregistrez vos codes de secours",
+          "done": "La connexion en deux étapes est activée.",
+          "lead": "Si vous n’avez pas votre téléphone, connectez-vous avec l’un de ces codes. Chacun ne sert qu’une fois.",
+          "once": "C’est la seule fois où vous les verrez.",
+          "listLabel": "Codes de secours",
+          "copied": "Codes copiés.",
+          "fileName": "ventora-codes-de-secours.txt",
+          "confirm": "Je les ai enregistrés en lieu sûr",
+          "confirmHelp": "Cochez après les avoir téléchargés ou copiés.",
+          "next": "Continuer"
+        }
+      },
+      "apps": {
+        "body": "Toute application d’authentification convient, par exemple Google Authenticator, Microsoft Authenticator ou 1Password. Si vous n’en avez pas, installez-en une depuis Google Play ou l’App Store.",
+        "how": "Dans l’application, ajoutez un compte et scannez le code de cette page.",
+        "close": "J’ai compris"
+      },
+      "verify": {
+        "title": "Encore une étape",
+        "lead": "Saisissez le code à 6 chiffres de l’application d’authentification.",
+        "leadBackup": "Saisissez l’un des codes de secours enregistrés lors de l’activation de la connexion en deux étapes.",
+        "account": "Connexion en tant que {email}.",
+        "otherAccount": "Utiliser un autre compte",
+        "submit": "Se connecter",
+        "useBackup": "Utiliser un code de secours",
+        "useApp": "Utiliser le code de l’application",
+        "backupLabel": "Code de secours",
+        "backupHelper": "Chaque code de secours ne sert qu’une fois.",
+        "locked": {
+          "title": "Votre compte est bloqué temporairement",
+          "body": "Il y a eu trop de tentatives erronées. Vous pourrez vous reconnecter après {time}."
+        },
+        "expired": {
+          "title": "Plus de 10 minutes se sont écoulées",
+          "body": "Pour votre sécurité, reconnectez-vous avec votre e-mail et votre mot de passe.",
+          "action": "Retour à la connexion"
+        },
+        "noAccess": "Je n’ai plus accès à mon téléphone ni à mes codes"
+      },
+      "recovery": {
+        "email": "support@ventorasystems.com",
+        "title": "Récupérer l’accès",
+        "body": "Écrivez-nous depuis l’adresse de votre compte : nous vous aiderons à récupérer l’accès après avoir confirmé votre identité.",
+        "address": "Notre adresse : support@ventorasystems.com",
+        "write": "Nous écrire",
+        "back": "Retour"
+      },
+      "founder": {
+        "name": "Founder",
+        "tagline": "L’outil interne de l’équipe Ventora",
+        "product": "Control Center"
+      },
+      "backupLeft": {
+        "title": "Vous vous êtes connecté avec un code de secours",
+        "many": "Il vous reste {n} codes de secours.",
+        "few": "Il ne vous reste que {n} codes de secours. Générez-en de nouveaux pour ne pas en manquer.",
+        "one": "Il ne vous reste qu’un code de secours. Générez-en de nouveaux pour ne pas en manquer.",
+        "none": "Vous avez utilisé votre dernier code de secours. Générez-en de nouveaux pour pouvoir vous connecter si vous perdez votre téléphone.",
+        "action": "Générer de nouveaux codes"
+      },
+      "codes": {
+        "title": "Codes de secours",
+        "lead": "Utilisez-les si vous n’avez pas votre téléphone. Vous ne les voyez qu’une fois, au moment de les générer.",
+        "left": "Il vous en reste {n} sur 10.",
+        "oldStop": "Quand vous générez de nouveaux codes, les anciens ne fonctionnent plus.",
+        "confirmTitle": "Confirmez avec le code de l’application",
+        "confirmLead": "Pour générer de nouveaux codes, saisissez le code affiché maintenant dans votre application d’authentification.",
+        "confirm": "Générer les codes",
+        "cancel": "Annuler",
+        "newDone": "Vous avez de nouveaux codes. Les anciens ne fonctionnent plus."
+      }
+    },
+    "panel": {
+      "line1": "Votre entreprise.",
+      "line2": "En un seul endroit."
+    },
+    "footer": {
+      "links": "Conditions · Confidentialité · Aide"
+    },
+    "signIn": {
+      "title": "Bon retour",
+      "lead": "Connectez-vous à votre compte Ventora.",
+      "emailLabel": "E-mail",
+      "passwordLabel": "Mot de passe",
+      "forgot": "Mot de passe oublié ?",
+      "remember": "Rester connecté sur cet appareil pendant 30 jours",
+      "submit": "Se connecter",
+      "submitting": "Connexion…",
+      "inviteOnly": "Pas de compte ? Les comptes se créent uniquement sur invitation. Si vous en avez reçu une, ouvrez le lien de l’e-mail et choisissez votre mot de passe.",
+      "error": {
+        "title": "L’e-mail ou le mot de passe est incorrect",
+        "body": "Vérifiez-les et réessayez."
+      },
+      "limit": {
+        "title": "Vous avez essayé trop de fois",
+        "body": "Réessayez dans 5 minutes ou choisissez un nouveau mot de passe."
+      }
+    }
+  },
+  "ui": {
+    "language": "Langue",
+    "showPassword": "Afficher le mot de passe",
+    "hidePassword": "Masquer le mot de passe",
+    "close": "Fermer",
+    "cancel": "Annuler",
+    "required": "obligatoire",
+    "optional": "facultatif",
+    "rowActions": "Actions",
+    "prevPage": "Page précédente",
+    "nextPage": "Page suivante",
+    "pageOf": "Page {n} sur {total}",
+    "rangeOf": "{from}–{to} sur {total}"
+  },
+  "hub": {
+    "chooseBusiness": {
+      "title": "Choisissez l’entreprise",
+      "lead": "Vous travaillez dans {count} entreprises. Passez de l’une à l’autre à tout moment depuis la barre du haut.",
+      "apps": "{count} applications",
+      "opened": "ouverte {when}",
+      "lastUsed": "Utilisée en dernier",
+      "remember": "Ouvrir directement la dernière entreprise la prochaine fois",
+      "missing": "Il manque une entreprise ? Demandez une invitation à son propriétaire.",
+      "search": "Rechercher une entreprise"
+    }
+  },
+  "roles": {
+    "owner": "Propriétaire",
+    "admin": "Administrateur",
+    "member": "Membre",
+    "external_collaborator": "Collaborateur externe",
+    "application_manager": "Gestionnaire d’application"
+  },
+  "account": {
+    "title": "Votre compte",
+    "lead": "Vos données, l’apparence de Ventora pour vous et la protection de votre compte.",
+    "notifications": {
+      "title": "Notifications",
+      "lead": "Choisissez où être informé de chaque sujet."
+    },
+    "security": {
+      "title": "Sécurité",
+      "password": {
+        "title": "Mot de passe",
+        "changed": "Modifié {when}.",
+        "change": "Changer le mot de passe",
+        "done": {
+          "title": "Votre mot de passe est modifié.",
+          "body": "Vous devrez vous reconnecter sur vos autres appareils."
+        }
+      },
+      "twoStep": {
+        "title": "Connexion en deux étapes",
+        "ownerBody": "Obligatoire pour le propriétaire. À chaque connexion avec le mot de passe, nous demandons aussi un code de votre application d’authentification.",
+        "active": "Activée"
+      }
+    }
   }
 }

@@ -1,0 +1,294 @@
+/* Clasele de ecran din preview.html (HubSignIn, HubInvite, HubTwoFactorSetup, HubTwoFactorVerify,
+   HubPasswordReset), cu aceleași valori; numai token-uri. Formularul stă în coloana AuthLayout
+   (.form: flex, gap space-4). */
+
+/* .auth-head; în ecranele 2FA și de resetare (.v-auth .auth-head) spațiul e space-2 */
+.head {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  margin-bottom: var(--space-2);
+}
+.headWide {
+  gap: var(--space-2);
+}
+.head p {
+  margin: 0;
+}
+
+/* .tfa-step */
+.step {
+  margin: 0 0 var(--space-1);
+  color: var(--ink-muted);
+}
+
+/* .auth-note */
+.note {
+  display: flex;
+  gap: var(--space-2);
+  padding-top: var(--space-4);
+  border-top: var(--border-width) solid var(--line);
+  color: var(--ink-muted);
+}
+.note > :global(svg) {
+  flex: none;
+  margin-top: var(--space-0-5);
+}
+.note p {
+  margin: 0;
+}
+
+/* .reqs / .req / .req.ok */
+.reqs {
+  list-style: none;
+  margin: calc(var(--space-2) * -1) 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+.req {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+  color: var(--ink-muted);
+}
+.reqOk {
+  color: var(--done-ink);
+}
+
+/* .pr-line / .pr-ok / .pr-mail */
+.line {
+  display: flex;
+  gap: var(--space-2);
+  align-items: flex-start;
+  margin: 0;
+  color: var(--ink-secondary);
+}
+.line > :global(svg) {
+  flex: none;
+  margin-top: var(--space-0-5);
+}
+.lineOk {
+  color: var(--ink);
+}
+.mail {
+  color: var(--ink);
+  overflow-wrap: anywhere;
+}
+
+/* .pr-resend / .pr-links */
+.resend {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+.resend p {
+  margin: 0;
+}
+.center {
+  text-align: center;
+}
+.links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-1) var(--space-2);
+}
+
+/* .tfa-acct / .tfa-done / .tfa-once */
+.acct {
+  margin: 0;
+  color: var(--ink-secondary);
+}
+.done {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--ink-secondary);
+}
+.done > :global(svg) {
+  flex: none;
+  color: var(--ink);
+}
+.once {
+  font-weight: 600;
+  color: var(--ink);
+}
+
+/* .tfa-scan / .tfa-qr */
+.scan {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-3);
+}
+.scan p {
+  margin: 0;
+}
+.qr {
+  padding: var(--space-3);
+  background: var(--raised);
+  border: var(--border-width) solid var(--line);
+  border-radius: var(--radius-md);
+  line-height: 0;
+}
+.qr svg {
+  display: block;
+}
+
+/* .tfa-key / .tfa-keybox */
+.key {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+.keyLab {
+  margin: 0;
+  color: var(--ink-secondary);
+}
+.keyBox {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-3) var(--space-3) var(--space-4);
+  background: var(--raised);
+  border: var(--border-width) solid var(--line);
+  border-radius: var(--radius-md);
+}
+.keyBox > :last-child {
+  flex: none;
+}
+.keyText {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  color: var(--ink);
+  letter-spacing: 0.06em;
+  word-spacing: 0.15em;
+  overflow-wrap: anywhere;
+  font-variant-numeric: tabular-nums;
+}
+
+/* .tfa-code: cifrele codului, distanțate */
+.code input {
+  letter-spacing: 0.12em;
+  font-variant-numeric: tabular-nums;
+}
+
+/* .tfa-lk / .tfa-links / .tfa-out */
+.lk {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1-5, 6px);
+  text-align: left;
+}
+.lk > :global(svg) {
+  flex: none;
+}
+.linkRow {
+  display: flex;
+  justify-content: center;
+}
+.out {
+  margin: 0;
+  text-align: center;
+}
+
+/* .tfa-codes: lista codurilor de rezervă, pe două coloane */
+.codes {
+  list-style: none;
+  margin: 0;
+  padding: var(--space-4);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-2) var(--space-6);
+  background: var(--raised);
+  border: var(--border-width) solid var(--line);
+  border-radius: var(--radius-md);
+  font-size: var(--text-body-size, 15px);
+  letter-spacing: 0.06em;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+
+/* .tfa-row: Descarcă / Copiază, egale */
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+.row > * {
+  flex: 1 1 0;
+}
+
+/* HubInvite: .inv-head / .inv-mark / .inv-role / .inv-app / .inv-email */
+.invHead {
+  display: flex;
+  gap: var(--space-3);
+  align-items: center;
+}
+.invHead p,
+.invHead h1 {
+  margin: 0;
+}
+.mark {
+  width: var(--space-12);
+  height: var(--space-12);
+  border-radius: var(--radius-md);
+  background: var(--neutral-soft);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  color: var(--ink);
+  flex: none;
+  box-shadow: inset 0 0 0 var(--border-width) var(--line-strong);
+}
+.markSm {
+  width: var(--space-10);
+  height: var(--space-10);
+}
+.invRole {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  background: var(--sunken);
+  border-radius: var(--radius-sm);
+}
+.invRole p {
+  margin: 0;
+}
+.invApps {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+}
+.invApp {
+  display: inline-flex;
+  gap: var(--space-1);
+  align-items: center;
+  color: var(--ink-secondary);
+  margin-right: var(--space-2);
+}
+.invEmail {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+/* Formularul nu adaugă un nivel în coloana AuthLayout (gap space-4 între câmpuri) */
+.contents {
+  display: contents;
+}
+
+/* Titlul urmează lățimea layoutului (AuthLayout e container), nu a ferestrei: regula
+   @media (max-width: 560px) din tokens ar micșora titlul și pe un layout lat. */
+@container (min-width: 768px) {
+  .head :global(.display-hub) {
+    font-size: var(--type-display-hub-size);
+    line-height: var(--type-display-hub-line);
+  }
+}
