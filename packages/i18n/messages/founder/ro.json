@@ -81,6 +81,27 @@
       "back": "Înapoi la afacere",
       "disabledHelp": "Butonul se activează când verificările respectă regula, identitatea e confirmată și codul are 6 cifre.",
       "ownerPlaceholder": "Alege proprietarul"
+    },
+    "nav": {
+      "overview": "Prezentare",
+      "businesses": "Afaceri",
+      "usage": "Consum",
+      "commercial": "Model comercial",
+      "plans": "Planuri",
+      "packs": "Pachete în plus",
+      "packsShort": "Pachete",
+      "growth": "Growth",
+      "offers": "Oferte",
+      "campaigns": "Campanii",
+      "audiences": "Audiențe",
+      "results": "Rezultate",
+      "control": "Control",
+      "system": "Sistem",
+      "log": "Jurnal",
+      "settings": "Setări"
+    },
+    "shell": {
+      "search": "Caută o afacere, un plan sau o campanie"
     }
   }
 }
