@@ -1,0 +1,929 @@
+/* Demo pagină — comparație design aprobat vs implementare React */
+
+.page {
+  min-height: 100dvh;
+  background: var(--canvas);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-12);
+  padding: var(--space-8) var(--space-4) var(--space-16);
+}
+
+/* ── Header pagină ── */
+
+.pageHeader {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.pageTitle {
+  font-family: var(--font-display);
+  font-size: var(--type-display-m-size);
+  font-weight: var(--type-display-m-weight);
+  line-height: var(--type-display-m-line);
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+
+.pageSubtitle {
+  font-size: var(--type-body-small-size);
+  color: var(--ink-muted);
+}
+
+.themeRow {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-2);
+  margin-top: var(--space-1);
+}
+
+/* ── Secțiuni ── */
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.sectionTitle {
+  font-family: var(--font-display);
+  font-size: var(--type-display-m-size);
+  font-weight: var(--type-display-m-weight);
+  color: var(--ink);
+  padding-bottom: var(--space-3);
+  border-bottom: 1px solid var(--line);
+}
+
+/* ── Comparație stânga/dreapta ── */
+
+.compareRow {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-6);
+}
+
+@media (min-width: 1024px) {
+  .compareRow {
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-8);
+    align-items: start;
+  }
+}
+
+.compareCol {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.colLabel {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+}
+
+/* ── Frame-uri device ── */
+
+.framePhone {
+  width: 100%;
+  max-width: 420px;
+  height: 640px;
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-3);
+  overflow: hidden;
+  border: 1px solid var(--line-strong);
+  background: var(--sheet);
+}
+
+.frameDesktop {
+  width: 100%;
+  height: 640px;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-3);
+  overflow: hidden;
+  border: 1px solid var(--line-strong);
+  background: var(--canvas);
+}
+
+.iframe {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  display: block;
+}
+
+/* ── HubSignIn (implementare React) ── */
+
+.signIn {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: var(--canvas);
+  color: var(--ink);
+}
+
+.authTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-4) var(--space-6);
+}
+
+.authBrand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.brandName {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.langBtn {
+  appearance: none;
+  border: 1px solid var(--line-strong);
+  background: transparent;
+  color: var(--ink-secondary);
+  font: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+
+.langBtn:hover {
+  background: var(--state-hover);
+}
+
+.authMain {
+  flex: 1;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: var(--space-8) var(--space-4);
+  overflow-y: auto;
+}
+
+.authCard {
+  width: 100%;
+  max-width: 360px;
+  background: var(--sheet);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  padding: var(--space-8) var(--space-6);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  box-sizing: border-box;
+}
+
+.authHead {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  margin-bottom: var(--space-2);
+}
+
+.passwordField {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.passwordLabel {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: var(--type-subheading-size);
+  font-weight: var(--type-subheading-weight);
+  color: var(--ink);
+}
+
+.forgotLink {
+  font-size: var(--type-caption-size);
+  font-weight: 500;
+  color: var(--ink);
+  text-decoration: underline;
+  text-underline-offset: var(--marker-width);
+  text-decoration-thickness: 1px;
+}
+
+.forgotLink:hover {
+  text-decoration-thickness: 2px;
+}
+
+.blockBtn {
+  width: 100%;
+}
+
+.authNote {
+  display: flex;
+  gap: var(--space-2);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--line);
+  color: var(--ink-muted);
+}
+
+.authFoot {
+  padding: var(--space-4) var(--space-6);
+  font-size: var(--type-caption-size);
+  color: var(--ink-muted);
+  text-align: center;
+}
+
+/* ── HubLauncher (implementare React) ── */
+
+.launcher {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+
+.hubLogo {
+  padding: 0 var(--space-2);
+  display: flex;
+  align-items: center;
+}
+
+.contextActions {
+  display: flex;
+  gap: var(--space-1);
+}
+
+.launcherContent {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--space-6);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+}
+
+.greet {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.dayLink {
+  font-weight: 500;
+  color: var(--ink);
+  text-decoration: underline;
+  text-underline-offset: var(--marker-width);
+  text-decoration-thickness: 1px;
+}
+
+.dayLink:hover {
+  text-decoration-thickness: 2px;
+}
+
+.appsSection {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.secHead {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+
+/* Grilă 4 coloane pentru AppTile */
+.tiles4 {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-4);
+}
+
+@media (max-width: 900px) {
+  .tiles4 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* AppTile card (NECESITĂ DECIZIE FONDATORI: Lot 5) */
+.appTileCard {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-2);
+  padding: var(--space-4);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--line);
+  background: var(--sheet);
+  cursor: pointer;
+  text-align: left;
+  font: inherit;
+  min-height: var(--app-tile-min-height, 156px);
+  transition:
+    background var(--duration-fast) var(--ease-standard),
+    box-shadow var(--duration-fast) var(--ease-standard);
+}
+
+.appTileCard:hover {
+  background: var(--raised);
+  box-shadow: var(--shadow-1);
+}
+
+.appTileIconWrap {
+  position: relative;
+  display: inline-block;
+}
+
+.appTileBadge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  background: var(--attention);
+  color: var(--on-attention);
+  border-radius: var(--radius-full);
+  font-size: 11px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  box-shadow: 0 0 0 2px var(--sheet);
+}
+
+.appTileCardLabel {
+  font-size: var(--type-body-size);
+  font-weight: 600;
+  color: var(--ink);
+  margin-top: var(--space-1);
+}
+
+.appTileCardDesc {
+  font-size: var(--type-body-small-size);
+  line-height: var(--type-body-small-line);
+  color: var(--ink-secondary);
+  flex: 1;
+}
+
+/* AppTile row (OTHER apps — NECESITĂ DECIZIE FONDATORI: Lot 5) */
+.rows2 {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-2);
+}
+
+@media (max-width: 900px) {
+  .rows2 {
+    grid-template-columns: 1fr;
+  }
+}
+
+.appTileRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  background: var(--sheet);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+}
+
+.appTileRowText {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.appTileRowLabel {
+  font-size: var(--type-body-size);
+  font-weight: 500;
+  color: var(--ink);
+}
+
+.appTileRowAccess {
+  font-size: var(--type-body-small-size);
+  color: var(--ink-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ── HubSignIn Direcția B (split layout) ── */
+
+.signInSplit {
+  display: flex;
+  flex-direction: row;
+  height: 100%;
+}
+
+.signInBrand {
+  position: relative;
+  flex: 0 0 46%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+  padding: var(--space-6) var(--space-8) var(--space-8);
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.signInBrandTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.signInStatement {
+  margin: auto 0 0;
+  position: relative;
+  z-index: 1;
+  color: var(--ink);
+}
+
+.signInChev {
+  position: absolute;
+  right: -56px;
+  top: 96px;
+  width: 340px;
+  height: 460px;
+  pointer-events: none;
+}
+
+.signInFoot {
+  margin: 0;
+  color: var(--ink-muted);
+}
+
+.signInFormSide {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  background: var(--sheet);
+}
+
+.signInFormHeader {
+  justify-content: flex-end;
+}
+
+.signInFormMain {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-6) var(--space-4);
+  overflow-y: auto;
+}
+
+.signInCard {
+  width: 380px;
+  max-width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  box-sizing: border-box;
+}
+
+/* ── HubLauncher Direcția B (bandă brand + AppDock) ── */
+
+/* Wrapper fără cutie — launcher apare ca un ecran real */
+.launcherShell {
+  width: 100%;
+  height: 860px;
+  overflow: hidden;
+  position: relative;
+  background: var(--canvas);
+}
+
+/* Conținut interior (înlocuiește .launcherContent vechi) */
+.lbWrap {
+  max-width: 1120px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 var(--space-6) var(--space-10);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+  box-sizing: border-box;
+  height: 100%;
+  overflow-y: auto;
+}
+
+/* Bara de sus (contextBar) cu BrandZone */
+.hubContextBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--space-6);
+  height: var(--contextbar-height, 56px);
+  gap: var(--space-3);
+}
+
+.hubBarLeft {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.hubBarRight {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.hubOrgName {
+  font-family: var(--font-sans);
+  font-size: var(--type-body-size);
+  font-weight: 600;
+  color: var(--ink);
+  white-space: nowrap;
+}
+
+.hubAvatar {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-full);
+  background: var(--neutral-soft);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink);
+  flex: none;
+}
+
+.lbBand {
+  position: relative;
+  padding: var(--space-8) 0 112px;
+  /* Extinde banda la lățimea completă — clip-path elimina overflow */
+  box-shadow: 0 0 0 100vmax var(--brand-surface);
+  clip-path: inset(0 -100vmax);
+  margin: 0 calc(var(--space-6) * -1);
+  padding-left: var(--space-6);
+  padding-right: var(--space-6);
+}
+
+.lbHero {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-8);
+  min-width: 0;
+}
+
+.lbHeroText {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  min-width: 0;
+}
+
+.lbEyebrow {
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.lbDay {
+  margin: 0;
+  max-width: 780px;
+}
+
+.lbChip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  height: 32px;
+  margin: 2px 0;
+  padding: 0 var(--space-3) 0 var(--space-1);
+  border-radius: var(--radius-full);
+  background: var(--sheet);
+  box-shadow: inset 0 0 0 var(--border-width) var(--line);
+  color: var(--ink);
+  font-weight: 600;
+  text-decoration: none;
+  vertical-align: middle;
+  transition:
+    box-shadow var(--duration-fast) var(--ease-standard),
+    transform var(--duration-fast) var(--ease-standard);
+}
+
+.lbChip:hover {
+  box-shadow: inset 0 0 0 var(--border-width) var(--line-strong);
+  transform: translateY(-1px);
+  text-decoration: none;
+}
+
+.lbDot {
+  width: var(--dot-size);
+  height: var(--dot-size);
+  border-radius: var(--radius-full);
+  background: var(--attention);
+  margin-left: calc(var(--space-1) * -1);
+}
+
+.lbChev {
+  position: absolute;
+  right: var(--space-4);
+  top: calc(var(--space-2) * -1);
+  width: 150px;
+  height: 200px;
+  pointer-events: none;
+}
+
+.lbSechead {
+  margin-top: var(--space-8);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+
+.lbMine {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  margin-top: calc(-96px - var(--space-8));
+  position: relative;
+  z-index: 1;
+}
+
+.lbOther {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.lbOtherIntro {
+  margin: 0 0 var(--space-3);
+}
+
+.lbOtherRows {
+  display: flex;
+  flex-direction: column;
+  background: var(--sheet);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+/* ── HubInvite card ── */
+
+.invHead {
+  display: flex;
+  gap: var(--space-3);
+  align-items: center;
+}
+
+.invMark {
+  width: var(--space-12);
+  height: var(--space-12);
+  border-radius: var(--radius-md);
+  background: var(--neutral-soft);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: var(--type-heading-size);
+  color: var(--ink);
+  flex: none;
+  box-shadow: inset 0 0 0 var(--border-width) var(--line-strong);
+}
+
+.invRole {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  background: var(--sunken);
+  border-radius: var(--radius-sm);
+}
+
+.invApps {
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.invApp {
+  display: inline-flex;
+  gap: var(--space-1);
+  align-items: center;
+  color: var(--ink-secondary);
+}
+
+.invEmail {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.invReqs {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.invReq {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+  color: var(--ink-muted);
+}
+
+.invReqOk {
+  color: var(--done-ink);
+}
+
+.signInFormMainTop {
+  align-items: flex-start;
+}
+
+/* Toggle stare invitație (Activă / Expirată) */
+.stateToggle {
+  display: flex;
+  gap: var(--space-1);
+  margin-bottom: var(--space-3);
+}
+
+.stateBtn {
+  appearance: none;
+  border: var(--border-width) solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  background: var(--sheet);
+  color: var(--ink-secondary);
+  padding: var(--space-1) var(--space-3);
+  cursor: pointer;
+  font-size: var(--type-body-small-size);
+  font-family: inherit;
+  transition: background var(--duration-fast) var(--ease-standard);
+}
+
+.stateBtn:hover {
+  background: var(--selected);
+  color: var(--ink);
+}
+
+.stateBtnActive {
+  background: var(--ink);
+  color: var(--on-primary, #fff);
+  border-color: var(--ink);
+}
+
+/* Notice inline pentru starea expirată (temporar — înlocuit cu <Notice> la Lot 4) */
+.invExpiredNotice {
+  display: flex;
+  gap: var(--space-3);
+  align-items: flex-start;
+  padding: var(--space-3) var(--space-4);
+  background: var(--attention-soft);
+  border-radius: var(--radius-sm);
+  color: var(--attention-ink);
+}
+
+/* Heading "Aplicațiile tale" vizibil doar pe telefon (<560px) */
+.lbSecheadMobile {
+  display: none;
+}
+
+@media (max-width: 559px) {
+  .lbSecheadMobile {
+    display: block;
+    padding: var(--space-4) 0 var(--space-2);
+  }
+
+  /* Banda se termină după fraza zilei — fără 112px padding-bottom */
+  .lbBand {
+    padding-bottom: var(--space-8);
+  }
+
+  /* Sechead din interiorul benzii dispare pe telefon */
+  .lbSechead {
+    display: none;
+  }
+
+  /* AppDock nu mai trage negativ peste bandă pe telefon */
+  .lbMine {
+    margin-top: var(--space-4);
+  }
+}
+
+/* Toggle parolă — iconiță ochi ÎN câmp (poziție absolută în raport cu wrapper-ul Input) */
+.passWrap {
+  position: relative;
+}
+
+.passToggleBtn {
+  position: absolute;
+  right: var(--space-2);
+  top: 50%;
+  transform: translateY(-50%);
+  appearance: none;
+  border: 0;
+  background: none;
+  padding: var(--space-1);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  color: var(--ink-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+}
+
+.passToggleBtn:hover {
+  color: var(--ink);
+  background: var(--state-hover);
+}
+
+/* Butoane org din contextBar (org + rol + chevron) */
+.hubOrgBtn {
+  appearance: none;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--ink);
+  font: inherit;
+}
+
+.hubOrgBtn:hover {
+  background: var(--state-hover);
+}
+
+.hubOrgInfo {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0;
+}
+
+.hubOrgRole {
+  font-size: var(--type-caption-size);
+  font-weight: 400;
+  color: var(--ink-secondary);
+  line-height: 1.2;
+}
+
+/* Selector limbă — glob + text + chevron */
+.langBtnFull {
+  appearance: none;
+  border: 1px solid var(--line-strong);
+  background: transparent;
+  color: var(--ink-secondary);
+  font: inherit;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 4px 8px 4px 6px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+}
+
+.langBtnFull:hover {
+  background: var(--state-hover);
+}
+
+/* Pill stare per-app în rândurile AppTileRow */
+.appRowPill {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px var(--space-2);
+  border-radius: var(--radius-full);
+  font-size: var(--type-caption-size);
+  font-weight: 500;
+  background: var(--neutral-soft);
+  color: var(--ink-secondary);
+  white-space: nowrap;
+  flex: none;
+}
+
+.appRowPillAttention {
+  background: var(--attention-soft);
+  color: var(--attention-ink);
+}

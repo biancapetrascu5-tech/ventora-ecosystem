@@ -1,0 +1,204 @@
+/* .v-upload din bundle.css */
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.zone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-1);
+  text-align: center;
+  padding: var(--space-6) var(--space-4);
+  border: var(--border-width-control) dashed var(--control-border);
+  border-radius: var(--radius-md);
+  background: var(--sheet);
+  color: var(--ink);
+}
+
+.zone:hover,
+.isHover {
+  border-color: var(--control-border-hover);
+  background: var(--sunken);
+}
+
+.isFocus {
+  outline: var(--focus-ring-width) solid var(--focus-ring);
+  outline-offset: var(--focus-ring-offset);
+}
+
+.zone.isDrag {
+  border-style: solid;
+  border-color: var(--primary);
+  background: var(--selected);
+}
+
+.zone.isError {
+  border-color: var(--danger);
+}
+
+.zone.isDisabled {
+  background: var(--sunken);
+  border-color: var(--line-strong);
+  color: var(--ink-disabled);
+}
+
+.icon {
+  color: var(--ink-secondary);
+  margin-bottom: var(--space-1);
+}
+
+.hint {
+  margin: 0;
+  color: var(--ink-muted);
+}
+
+.zone p {
+  margin: 0;
+}
+
+/* .v-link */
+.link {
+  appearance: none;
+  background: none;
+  border: 0;
+  padding: 0;
+  font: inherit;
+  color: var(--ink);
+  text-decoration: underline;
+  text-underline-offset: var(--marker-width);
+  text-decoration-thickness: var(--border-width);
+  cursor: pointer;
+  border-radius: var(--radius-xs);
+}
+
+.link:hover {
+  text-decoration-thickness: var(--focus-ring-width);
+}
+
+.link:focus-visible {
+  outline: var(--focus-ring-width) solid var(--focus-ring);
+  outline-offset: var(--focus-ring-offset);
+}
+
+.isDisabled .link {
+  color: var(--ink-disabled);
+  cursor: not-allowed;
+}
+
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.file {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  border: var(--border-width) solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--sheet);
+}
+
+.fileError {
+  border-color: var(--danger);
+}
+
+.ficon {
+  color: var(--ink-secondary);
+}
+
+.fileError .ficon {
+  color: var(--danger-ink);
+}
+
+.fmain {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.frow {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+
+.fmeta {
+  color: var(--ink-muted);
+  white-space: nowrap;
+}
+
+.ferror {
+  margin: 0;
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-1);
+  color: var(--danger-ink);
+}
+
+/* .v-progress.v-progress--sm */
+.progress {
+  position: relative;
+  height: var(--space-1);
+  border-radius: var(--radius-full);
+  background: var(--neutral-soft);
+  overflow: hidden;
+  box-shadow: inset 0 0 0 var(--border-width) var(--line);
+}
+
+.fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  border-radius: inherit;
+  background: var(--primary);
+  transition: width var(--duration-base) var(--ease-standard);
+}
+
+/* .v-control__btn */
+.btn {
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: var(--space-6);
+  height: var(--space-6);
+  margin-right: calc(var(--space-1) * -1);
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-xs);
+  background: transparent;
+  color: var(--ink-muted);
+  cursor: pointer;
+}
+
+.btn:hover {
+  background: var(--state-hover);
+  color: var(--ink);
+}
+
+@media (pointer: coarse), (max-width: 767px) {
+  .btn {
+    width: var(--touch-target);
+    height: var(--touch-target);
+    margin-right: calc(var(--space-3) * -1);
+  }
+}

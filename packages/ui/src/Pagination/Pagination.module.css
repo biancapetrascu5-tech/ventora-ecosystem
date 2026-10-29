@@ -1,0 +1,84 @@
+/* Pagination — 1:1 cu .v-pagination din bundle.css */
+.root {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+
+.range {
+  color: var(--ink-muted);
+}
+
+.ctrl {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  flex-wrap: wrap;
+}
+
+.size {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-right: var(--space-3);
+}
+
+.select {
+  width: auto;
+  min-width: calc(var(--control-md) * 2);
+}
+
+.sizeLabel,
+.of {
+  color: var(--ink-muted);
+  white-space: nowrap;
+}
+
+.page {
+  appearance: none;
+  min-width: var(--control-md);
+  height: var(--control-md);
+  padding: 0 var(--space-2);
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--ink-secondary);
+  cursor: pointer;
+  font-family: inherit;
+  font-variant-numeric: tabular-nums;
+  transition:
+    background-color var(--duration-instant) var(--ease-standard),
+    color var(--duration-instant) var(--ease-standard),
+    box-shadow var(--duration-fast) var(--ease-standard);
+}
+
+.page:hover {
+  background: var(--state-hover);
+  color: var(--ink);
+}
+
+.page:focus-visible {
+  outline: var(--focus-ring-width) solid var(--focus-ring);
+  outline-offset: var(--focus-ring-offset);
+}
+
+.page.on {
+  background: var(--selected);
+  color: var(--ink);
+  font-weight: 600;
+  box-shadow: inset 0 0 0 var(--border-width) var(--control-border);
+}
+
+.gap {
+  color: var(--ink-muted);
+  padding: 0 var(--space-1);
+}
+
+@media (pointer: coarse), (max-width: 767px) {
+  .page {
+    min-width: var(--touch-target);
+    min-height: var(--touch-target);
+  }
+}

@@ -1,0 +1,42 @@
+/* .v-tooltip din bundle.css */
+.tooltip {
+  z-index: var(--z-popover);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  max-width: var(--search-width);
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-sm);
+  background: var(--tooltip-bg);
+  color: var(--tooltip-ink);
+  box-shadow: var(--shadow-2);
+  pointer-events: none;
+}
+
+.tooltip[data-entering] {
+  animation: pop var(--duration-fast) var(--ease-standard);
+}
+
+@keyframes pop {
+  from {
+    opacity: 0;
+    transform: translateY(calc(var(--space-1) * -1));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tooltip[data-entering] {
+    animation: none;
+  }
+}
+
+.static {
+  position: static;
+}
+
+/* .v-tooltip .v-kbd__key */
+.tooltip kbd {
+  background: transparent;
+  color: var(--tooltip-ink);
+  border-color: var(--ink-muted);
+}

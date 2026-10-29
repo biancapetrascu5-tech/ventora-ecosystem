@@ -1,0 +1,65 @@
+.wrap {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.top {
+  display: flex;
+  justify-content: space-between;
+  color: var(--ink-secondary);
+}
+
+.bar {
+  position: relative;
+  height: var(--space-2);
+  border-radius: var(--radius-full);
+  background: var(--neutral-soft);
+  overflow: hidden;
+  box-shadow: inset 0 0 0 var(--border-width) var(--line);
+}
+
+.md {
+  height: var(--space-2);
+}
+
+.sm {
+  height: var(--space-1);
+}
+
+.lg {
+  height: var(--space-3);
+}
+
+.fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  border-radius: inherit;
+  background: var(--primary);
+  transition: width var(--duration-base) var(--ease-standard);
+}
+
+.done .fill {
+  background: var(--done-mark);
+}
+
+.indeterminate .fill {
+  width: 32%;
+  animation: indet 1.4s var(--ease-standard) infinite;
+}
+
+@keyframes indet {
+  from {
+    left: -32%;
+  }
+  to {
+    left: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .indeterminate .fill {
+    animation-duration: 0.01ms;
+    animation-iteration-count: 1;
+  }
+}

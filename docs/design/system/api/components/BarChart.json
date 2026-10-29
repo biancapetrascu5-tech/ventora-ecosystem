@@ -1,0 +1,86 @@
+{
+ "name": "BarChart",
+ "version": "1.0.1",
+ "kind": "component",
+ "group": "Data",
+ "status": "changed",
+ "description": "Columns for periods or days, horizontal bars for categories ranked by size. Built on the chart tokens.",
+ "exports": [
+  "BarChart"
+ ],
+ "props": [
+  {
+   "name": "data",
+   "type": "{ label: string; value: number; compare?: number; now?: boolean; nowLabel?: string; share?: string; }[]",
+   "required": true,
+   "note": ""
+  },
+  {
+   "name": "orientation",
+   "type": "\"vertical\" | \"horizontal\"",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "title",
+   "type": "string",
+   "required": true,
+   "note": ""
+  },
+  {
+   "name": "description",
+   "type": "string",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "unit",
+   "type": "string",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "format",
+   "type": "(v: number) => string",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "compareLabel",
+   "type": "string",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "color",
+   "type": "2 | 1 | 3 | 4 | 5",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "height",
+   "type": "number",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "actions",
+   "type": "ReactNode",
+   "required": false,
+   "note": ""
+  }
+ ],
+ "events": [],
+ "states": [
+  "vertical",
+  "compare",
+  "now",
+  "hover",
+  "table",
+  "horizontal",
+  "narrow"
+ ],
+ "notes": "phone layout (bar under label) is a viewport media query (<768px) and cannot show inside the card",
+ "readme": "components/BarChart/README.md",
+ "preview": "components/BarChart/preview.html"
+}

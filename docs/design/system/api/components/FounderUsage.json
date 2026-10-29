@@ -1,0 +1,25 @@
+{
+ "name": "FounderUsage",
+ "version": "1.0.1",
+ "kind": "page",
+ "group": "Founder",
+ "status": "changed",
+ "description": "Usage monitoring: businesses above 80% of a limit (in attention), charts by resource and by day, and a table with the estimated date each limit is reached.",
+ "exports": [],
+ "props": [],
+ "events": [],
+ "states": [
+  "Founder — Monitorizarea consumului",
+  "Model comercial",
+  "Growth",
+  "Sistem",
+  "Afaceri",
+  "Consum",
+  "Campanii",
+  "Control",
+  "Mai multe"
+ ],
+ "notes": "States are the labelled boards and frames of the preview (Light and Dark; desktop/tablet/phone).",
+ "readme": "components/FounderUsage/README.md",
+ "preview": "components/FounderUsage/preview.html"
+}

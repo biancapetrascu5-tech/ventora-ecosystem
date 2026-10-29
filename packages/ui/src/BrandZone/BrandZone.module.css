@@ -1,0 +1,28 @@
+/* .v-brandzone + .v-brandzone__in din bundle.css: navy în light, aproape negru în dark; doar în Hub
+   (bara launcherului și banda, panoul de autentificare) */
+.root {
+  --bz-surface: var(--brand-surface);
+  --bz-raised: var(--brand-raised);
+  --bz-ink: var(--on-brand);
+  --bz-muted: var(--on-brand-muted);
+  --bz-line: var(--brand-line);
+  --bz-line-strong: var(--brand-line-strong);
+  --bz-control: var(--brand-control-border);
+  background: var(--brand-surface);
+  color: var(--on-brand);
+}
+
+.in[data-theme] {
+  display: contents;
+  --canvas: var(--bz-surface);
+  --sheet: var(--bz-raised);
+  --raised: var(--bz-raised);
+  --ink: var(--bz-ink);
+  --ink-secondary: var(--bz-muted);
+  --ink-muted: var(--bz-muted);
+  --line: var(--bz-line);
+  --line-strong: var(--bz-line-strong);
+  --control-border: var(--bz-control);
+  --control-border-hover: var(--bz-ink);
+  color: var(--bz-ink);
+}

@@ -1,0 +1,91 @@
+{
+ "name": "Drawer",
+ "version": "1.0.1",
+ "kind": "component",
+ "group": "Overlays",
+ "status": "changed",
+ "description": "A side panel over the current list for a record's detail or a longer form; full screen under 640px with a back arrow.",
+ "exports": [
+  "Drawer"
+ ],
+ "props": [
+  {
+   "name": "contained",
+   "type": "boolean",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "layout",
+   "type": "\"auto\" | \"side\" | \"full\"",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "open",
+   "type": "boolean",
+   "required": true,
+   "note": ""
+  },
+  {
+   "name": "onOpenChange",
+   "type": "(o: boolean) => void",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "title",
+   "type": "ReactNode",
+   "required": true,
+   "note": ""
+  },
+  {
+   "name": "subtitle",
+   "type": "ReactNode",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "actions",
+   "type": "ReactNode",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "children",
+   "type": "ReactNode",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "footer",
+   "type": "ReactNode",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "width",
+   "type": "string | number",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "modal",
+   "type": "boolean",
+   "required": false,
+   "note": ""
+  }
+ ],
+ "events": [
+  "onOpenChange"
+ ],
+ "states": [
+  "side-over-list",
+  "active-row",
+  "full-screen-back",
+  "modal-trigger"
+ ],
+ "notes": "Modal trigger now starts closed; the drawer is shown contained in each frame.",
+ "readme": "components/Drawer/README.md",
+ "preview": "components/Drawer/preview.html"
+}

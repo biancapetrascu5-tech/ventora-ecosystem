@@ -1,4 +1,4 @@
-<!-- @dsCard group="Feedback" height=232 -->
+<!-- @dsCard group="Feedback" height=1060 width=1200 -->
 <!doctype html>
 <html lang="ro">
 <head><meta charset="utf-8"><title>ProgressBar — Ventora</title>
@@ -250,6 +250,9 @@ html,body{min-height:100%}
 .fxframe .caption{color:var(--ink-muted)}
 @container (max-width:420px){.fxlang{grid-template-columns:32px minmax(0,1fr) auto}.fxlang .v-iconbtn{display:none}}
 
+.thf{display:flex;flex-direction:column;gap:var(--space-4);padding:var(--space-5);background:var(--canvas);color:var(--ink);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg);min-width:0;box-sizing:border-box}
+.thg{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(420px,100%),1fr));gap:var(--space-4);align-items:start}
+.thstack{display:flex;flex-direction:column;gap:var(--space-4)}
 </style>
 </head>
 <body>
@@ -265,7 +268,32 @@ const mount = (el) => ReactDOM.createRoot(document.getElementById("root")).rende
 function Demo() {
   return /* @__PURE__ */ React.createElement("div", { className: "d", style: { maxWidth: "calc(var(--panel-width) * 1.2)" } }, /* @__PURE__ */ React.createElement(V.ProgressBar, { label: "Import clien\u021Bi", value: 42, showValue: true }), /* @__PURE__ */ React.createElement(V.ProgressBar, { label: "Configurare afacere", value: 100, showValue: true }), /* @__PURE__ */ React.createElement(V.ProgressBar, { label: "Se preg\u0103te\u0219te exportul" }), /* @__PURE__ */ React.createElement(V.ProgressBar, { value: 18, size: "sm", label: "\xCEnc\u0103rcare" }), /* @__PURE__ */ React.createElement(DE, null, /* @__PURE__ */ React.createElement(V.ProgressBar, { label: "Kundendaten werden importiert", value: 73, showValue: true })));
 }
-mount(/* @__PURE__ */ React.createElement(Demo, null));
+const ORIG = (/* @__PURE__ */ React.createElement(Demo, null));
+/* Light/Dark frames, DE/IT label test */
+const E = React.createElement;
+const noop = () => {
+};
+const Cap = ({ children }) => E("p", { className: "caption muted" }, children);
+const ThemeFrame = ({ th, children }) => E("div", { className: "thf", "data-theme": th }, E("p", { className: "heading" }, th === "light" ? "Light" : "Dark"), children);
+const LocFrame = ({ loc, label, children }) => E("div", { className: "thf", "data-theme": "light" }, E("p", { className: "heading" }, label), E(V.LocaleProvider, { locale: loc }, children));
+const Frames = ({ States, stack }) => E("div", { className: stack ? "thstack" : "thg" }, E(ThemeFrame, { th: "light" }, E(States, { th: "light" })), E(ThemeFrame, { th: "dark" }, E(States, { th: "dark" })));
+const Locales = ({ De, It, stack }) => E("div", { className: stack ? "thstack" : "thg" }, E(LocFrame, { loc: "de", label: "Deutsch (DE)" }, E(De)), E(LocFrame, { loc: "it", label: "Italiano (IT)" }, E(It)));
+const Extra = ({ States, De, It, stack, stackLoc }) => E("div", { className: "d" }, E("p", { className: "heading" }, "Stări · Light și Dark"), E(Frames, { States, stack }), E("p", { className: "heading" }, "Test de lungime: germană și italiană"), E(Locales, { De, It, stack: stackLoc }));
+const PB = (t) => E("div", { className: "d0" },
+  E(V.ProgressBar, { label: t[0], value: 0, showValue: true }),
+  E(V.ProgressBar, { label: t[1], value: 42, showValue: true }),
+  E(V.ProgressBar, { label: t[2], value: 100, showValue: true }),
+  E(V.ProgressBar, { label: t[3] }),
+  E(V.ProgressBar, { label: t[4], value: 18, size: "sm" }),
+  E(V.ProgressBar, { label: t[5], value: 66, size: "lg", showValue: true }));
+function States() {
+  return E("div", { className: "d0" },
+    E(Cap, null, "0% · în lucru · gata (lime) · fără procent (nedeterminat) · mic · mare"),
+    PB(["Importul începe în curând", "Import clienți din fișierul „Clienți Sibiu.xlsx”", "Configurarea afacerii e gata", "Se pregătește exportul…", "Încărcare fișier", "Sincronizare programări"]));
+}
+const De = () => PB(["Der Import beginnt in Kürze", "Kundendaten aus „Kunden Hermannstadt.xlsx“ werden importiert", "Die Einrichtung Ihres Unternehmens ist abgeschlossen", "Export wird vorbereitet…", "Datei wird hochgeladen", "Termine werden synchronisiert"]);
+const It = () => PB(["L’importazione inizia a breve", "Importazione dei clienti da «Clienti Sibiu.xlsx» in corso", "La configurazione della Sua attività è completata", "Preparazione dell’esportazione…", "Caricamento del file", "Sincronizzazione degli appuntamenti"]);
+mount(E("div", null, ORIG, E(Extra, { States, De, It })));
 </script>
 </body>
 </html>

@@ -2,7 +2,7 @@ import type { NextConfig } from 'next';
 import { withSentryConfig } from '@sentry/nextjs/config';
 
 const nextConfig: NextConfig = {
-  transpilePackages: ['@ventora/config', '@ventora/contracts', '@ventora/i18n'],
+  transpilePackages: ['@ventora/config', '@ventora/contracts', '@ventora/i18n', '@ventora/tokens'],
 };
 
 export default withSentryConfig(nextConfig);

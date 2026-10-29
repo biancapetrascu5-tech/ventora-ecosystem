@@ -1,6 +1,6 @@
 # HubInvite
 
-Accepting an invitation and setting the password: who invited you, the business and your role, the apps you will get, live password requirements (lime when met), terms, "Acceptă invitația". The phone/dark frame shows an expired invitation with "Cere o invitație nouă".
+Accepting an invitation and setting the password, on AuthLayout with `wide` (S63): who invited you, the business and your role, the apps you will get, live password requirements (lime when met), terms, "Acceptă invitația". The phone/dark frame shows an expired invitation with "Cere o invitație nouă".
 
 Shown at 1280 (desktop), 820 (tablet portrait) and 390 (phone), in light and dark, built only from the system's components.
 

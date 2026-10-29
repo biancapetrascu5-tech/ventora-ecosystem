@@ -1,4 +1,4 @@
-<!-- @dsCard group="Overlays" height=180 -->
+<!-- @dsCard group="Overlays" height=920 width=1200 -->
 <!doctype html>
 <html lang="ro">
 <head><meta charset="utf-8"><title>Tooltip — Ventora</title>
@@ -250,6 +250,15 @@ html,body{min-height:100%}
 .fxframe .caption{color:var(--ink-muted)}
 @container (max-width:420px){.fxlang{grid-template-columns:32px minmax(0,1fr) auto}.fxlang .v-iconbtn{display:none}}
 
+
+/* c5: light/dark frames and DE/IT sections */
+.qwrap{display:flex;flex-direction:column;gap:var(--space-6);padding:var(--space-4);box-sizing:border-box;background:var(--canvas);color:var(--ink)}
+.qfr{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--space-4);align-items:start}
+.qfr1{grid-template-columns:minmax(0,1fr)}
+.qf{display:flex;flex-direction:column;gap:var(--space-4);padding:var(--space-4);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg);min-width:0;box-sizing:border-box}
+.qf-t{margin:0;color:var(--ink-muted)}
+.qh{margin:0;color:var(--ink)}
+.qsec{display:flex;flex-direction:column;gap:var(--space-3)}
 </style>
 </head>
 <body>
@@ -265,7 +274,38 @@ const mount = (el) => ReactDOM.createRoot(document.getElementById("root")).rende
 function Demo() {
   return /* @__PURE__ */ React.createElement("div", { className: "d", style: { paddingTop: "var(--space-12)" } }, /* @__PURE__ */ React.createElement(Row, { label: "Deschis" }, /* @__PURE__ */ React.createElement(V.Tooltip, { content: "Trimite reamintire", open: true }, /* @__PURE__ */ React.createElement(V.IconButton, { icon: "send", label: "Trimite reamintire" })), /* @__PURE__ */ React.createElement("span", { style: { width: "calc(var(--space-16) * 2)" } }), /* @__PURE__ */ React.createElement(V.Tooltip, { content: "Caut\u0103", shortcut: ["mod", "K"], open: true }, /* @__PURE__ */ React.createElement(V.IconButton, { icon: "search", label: "Caut\u0103", variant: "secondary" })), /* @__PURE__ */ React.createElement("span", { style: { width: "calc(var(--space-16) * 2)" } }), /* @__PURE__ */ React.createElement(V.LocaleProvider, { locale: "de" }, /* @__PURE__ */ React.createElement(V.Tooltip, { content: "Erinnerung an alle ausgew\xE4hlten Kunden senden", open: true, placement: "bottom-center" }, /* @__PURE__ */ React.createElement(V.IconButton, { icon: "send", label: "Senden" })))));
 }
-mount(/* @__PURE__ */ React.createElement(Demo, null));
+
+const Qh = React.createElement;
+const Q_Fr = ({ theme, title, children, style }) => Qh("section", { className: "qf", "data-theme": theme, style: Object.assign({ background: "var(--canvas)", color: "var(--ink)" }, style || {}) }, Qh("p", { className: "caption qf-t" }, title || (theme === "dark" ? "Dark" : "Light")), children);
+const Q_Pair = ({ children, cols, light, dark }) => Qh("div", { className: cols === 1 ? "qfr qfr1" : "qfr" }, Qh(Q_Fr, { theme: "light" }, light || children), Qh(Q_Fr, { theme: "dark" }, dark || children));
+const Q_Loc = ({ de, it, cols, theme }) => Qh("div", { className: cols === 1 ? "qfr qfr1" : "qfr" }, Qh(Q_Fr, { theme: theme || "light", title: "DE · Deutsch" }, Qh(V.LocaleProvider, { locale: "de" }, de)), Qh(Q_Fr, { theme: theme || "light", title: "IT · Italiano" }, Qh(V.LocaleProvider, { locale: "it" }, it)));
+const Q_Sec = ({ title, children }) => Qh("div", { className: "qsec" }, Qh("h2", { className: "heading qh" }, title), children);
+const Q_Row = ({ label, children }) => Qh("div", { className: "r" }, Qh("span", { className: "l caption" }, label), children);
+const Q_Static = ({ content, shortcut }) => Qh("span", { role: "tooltip", className: "v-tooltip caption", style: { position: "static", animation: "none" } }, content, shortcut && Qh(V.Kbd, { keys: shortcut, className: "v-tooltip__kbd" }));
+const Q_Pin = ({ icon, label, content, shortcut, variant }) => Qh("span", { style: { display: "inline-flex", flexDirection: "column", alignItems: "center", gap: "var(--space-2)" } }, Qh(Q_Static, { content, shortcut }), Qh(V.IconButton, { icon, label, variant }));
+const Q_TT = ({ t }) => Qh("div", { className: "r", style: { gap: "var(--space-8)", alignItems: "flex-end" } },
+  Qh(Q_Pin, { icon: "send", label: t[0], content: t[0] }),
+  Qh(Q_Pin, { icon: "search", label: t[1], content: t[1], shortcut: ["mod", "K"], variant: "secondary" }),
+  Qh(Q_Pin, { icon: "trash-2", label: t[2], content: t[2] }));
+const Q_RO = ["Trimite reamintire", "Caută", "Șterge programarea"];
+const Q_Live = ({ t }) => Qh("div", { className: "r", style: { gap: "calc(var(--space-16) * 3)", padding: "var(--space-12) 0 var(--space-16)", marginTop: "var(--space-4)", alignItems: "center" } },
+  Qh(V.Tooltip, { content: t[0], open: true }, Qh(V.IconButton, { icon: "send", label: t[0] })),
+  Qh(V.Tooltip, { content: t[1], shortcut: ["mod", "K"], open: true, placement: "bottom-center" }, Qh(V.IconButton, { icon: "search", label: t[1], variant: "secondary" })),
+  Qh(V.Tooltip, { content: t[2], open: true, placement: "right-start" }, Qh(V.IconButton, { icon: "trash-2", label: t[2] })));
+function Q_Extra() {
+  return Qh("div", { className: "qwrap", style: { paddingTop: "var(--space-12)" } },
+    Qh(Q_Sec, { title: "Stări: închis (apare după 400 ms la hover sau focus, Esc îl închide) · deschis sus / jos / în dreapta" },
+      Qh("div", { className: "r", style: { gap: "var(--space-6)" } },
+        Qh(V.Tooltip, { content: "Mută programarea" }, Qh(V.IconButton, { icon: "calendar-check", label: "Mută programarea" })),
+        Qh("span", { className: "caption" }, "Închis — treci cu mouse-ul peste buton")),
+      Qh(Q_Live, { t: ["Trimite reamintire", "Caută în toate aplicațiile", "Șterge programarea"] })),
+    Qh(Q_Sec, { title: "Light / Dark (eticheta fixată, ca să se vadă culorile inversate în ambele teme)" }, Qh(Q_Pair, null, Qh(Q_TT, { t: Q_RO }))),
+    Qh(Q_Sec, { title: "DE / IT" }, Qh(Q_Loc, {
+      de: Qh(Q_TT, { t: ["Erinnerung an alle ausgewählten Kunden senden", "Suchen", "Termin löschen"] }),
+      it: Qh(Q_TT, { t: ["Invia il promemoria a tutti i clienti selezionati", "Cerca", "Elimina l’appuntamento"] }) })));
+}
+
+mount(Qh("div", null, /* @__PURE__ */ React.createElement(Demo, null), Qh(Q_Extra, null)));
 </script>
 </body>
 </html>

@@ -1,4 +1,4 @@
-<!-- @dsCard group="Data" height=224 -->
+<!-- @dsCard group="Data" height=2000 width=1200 -->
 <!doctype html>
 <html lang="ro">
 <head><meta charset="utf-8"><title>Pagination — Ventora</title>
@@ -250,6 +250,9 @@ html,body{min-height:100%}
 .fxframe .caption{color:var(--ink-muted)}
 @container (max-width:420px){.fxlang{grid-template-columns:32px minmax(0,1fr) auto}.fxlang .v-iconbtn{display:none}}
 
+.thf{display:flex;flex-direction:column;gap:var(--space-4);padding:var(--space-5);background:var(--canvas);color:var(--ink);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg);min-width:0;box-sizing:border-box}
+.thg{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(420px,100%),1fr));gap:var(--space-4);align-items:start}
+.thstack{display:flex;flex-direction:column;gap:var(--space-4)}
 </style>
 </head>
 <body>
@@ -271,7 +274,42 @@ function Demo() {
   }, onPageSizeChange: () => {
   } })));
 }
-mount(/* @__PURE__ */ React.createElement(Demo, null));
+const ORIG = (/* @__PURE__ */ React.createElement(Demo, null));
+/* Light/Dark frames, DE/IT label test */
+const E = React.createElement;
+const noop = () => {
+};
+const Cap = ({ children }) => E("p", { className: "caption muted" }, children);
+const ThemeFrame = ({ th, children }) => E("div", { className: "thf", "data-theme": th }, E("p", { className: "heading" }, th === "light" ? "Light" : "Dark"), children);
+const LocFrame = ({ loc, label, children }) => E("div", { className: "thf", "data-theme": "light" }, E("p", { className: "heading" }, label), E(V.LocaleProvider, { locale: loc }, children));
+const Frames = ({ States, stack }) => E("div", { className: stack ? "thstack" : "thg" }, E(ThemeFrame, { th: "light" }, E(States, { th: "light" })), E(ThemeFrame, { th: "dark" }, E(States, { th: "dark" })));
+const Locales = ({ De, It, stack }) => E("div", { className: stack ? "thstack" : "thg" }, E(LocFrame, { loc: "de", label: "Deutsch (DE)" }, E(De)), E(LocFrame, { loc: "it", label: "Italiano (IT)" }, E(It)));
+const Extra = ({ States, De, It, stack, stackLoc }) => E("div", { className: "d" }, E("p", { className: "heading" }, "Stări · Light și Dark"), E(Frames, { States, stack }), E("p", { className: "heading" }, "Test de lungime: germană și italiană"), E(Locales, { De, It, stack: stackLoc }));
+function States() {
+  const [p, setP] = useState(4);
+  const [s, setS] = useState(20);
+  return E("div", { className: "d0" },
+    E(Cap, null, "Cu rânduri pe pagină · pagina din mijloc, cu pauze între numere"),
+    E(V.Pagination, { page: p, pageSize: s, total: 1284, onPageChange: setP, onPageSizeChange: setS }),
+    E(Cap, null, "Prima pagină: „înapoi” dezactivat"),
+    E(V.Pagination, { page: 1, pageSize: 20, total: 248, onPageChange: noop }),
+    E(Cap, null, "Ultima pagină: „înainte” dezactivat"),
+    E(V.Pagination, { page: 13, pageSize: 20, total: 248, onPageChange: noop }),
+    E(Cap, null, "O singură pagină"),
+    E(V.Pagination, { page: 1, pageSize: 20, total: 12, onPageChange: noop }),
+    E(Cap, null, "Compact, pentru spații înguste"),
+    E("div", { style: { maxWidth: "var(--panel-width)" } }, E(V.Pagination, { compact: true, page: 2, pageSize: 20, total: 248, onPageChange: noop })));
+}
+const Loc = ({ c }) => E("div", { className: "d0" },
+  E(Cap, null, c[0]),
+  E(V.Pagination, { page: 3, pageSize: 50, total: 1284, onPageChange: noop, onPageSizeChange: noop }),
+  E(Cap, null, c[1]),
+  E(V.Pagination, { page: 26, pageSize: 50, total: 1284, onPageChange: noop }),
+  E(Cap, null, c[2]),
+  E("div", { style: { maxWidth: "var(--panel-width)" } }, E(V.Pagination, { compact: true, page: 2, pageSize: 20, total: 248, onPageChange: noop })));
+const De = () => E(Loc, { c: ["Kundenliste mit Auswahl der Zeilen pro Seite", "Letzte Seite der Kundenliste", "Kompakt, für schmale Bereiche"] });
+const It = () => E(Loc, { c: ["Elenco clienti con la scelta delle righe per pagina", "Ultima pagina dell’elenco clienti", "Compatta, per spazi stretti"] });
+mount(E("div", null, ORIG, E(Extra, { States, De, It, stack: true, stackLoc: true })));
 </script>
 </body>
 </html>

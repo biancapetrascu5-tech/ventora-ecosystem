@@ -1,0 +1,56 @@
+{
+ "name": "ProgressBar",
+ "version": "1.0.1",
+ "kind": "component",
+ "group": "Feedback",
+ "status": "changed",
+ "description": "Progress of a task the user started (import, export, upload, setup).",
+ "exports": [
+  "ProgressBar"
+ ],
+ "props": [
+  {
+   "name": "value",
+   "type": "number",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "label",
+   "type": "string",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "showValue",
+   "type": "boolean",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "size",
+   "type": "\"sm\" | \"md\" | \"lg\"",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "tone",
+   "type": "\"default\" | \"done\"",
+   "required": false,
+   "note": ""
+  }
+ ],
+ "events": [],
+ "states": [
+  "zero",
+  "running",
+  "done",
+  "indeterminate",
+  "small",
+  "medium",
+  "large"
+ ],
+ "notes": "tone='done' below 100% is not shown (lime is reserved for done).",
+ "readme": "components/ProgressBar/README.md",
+ "preview": "components/ProgressBar/preview.html"
+}

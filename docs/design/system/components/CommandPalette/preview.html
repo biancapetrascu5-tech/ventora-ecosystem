@@ -1,4 +1,4 @@
-<!-- @dsCard group="Navigation" height=520 -->
+<!-- @dsCard group="Navigation" height=2990 width=1200 -->
 <!doctype html>
 <html lang="ro">
 <head><meta charset="utf-8"><title>CommandPalette — Ventora</title>
@@ -250,6 +250,18 @@ html,body{min-height:100%}
 .fxframe .caption{color:var(--ink-muted)}
 @container (max-width:420px){.fxlang{grid-template-columns:32px minmax(0,1fr) auto}.fxlang .v-iconbtn{display:none}}
 
+/* c2: theme + locale frames */
+.pv{display:flex;flex-direction:column;gap:var(--space-4);padding:var(--space-4)}
+.pv-frame{display:flex;flex-direction:column;gap:var(--space-4);padding:var(--space-6);background:var(--canvas);color:var(--ink);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg);min-width:0}
+.pv-frame>.heading{margin:0}
+.pv-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:var(--space-5) var(--space-4);align-items:start}
+.pv-grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--space-5) var(--space-4);align-items:start}
+.pv-grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--space-5) var(--space-4);align-items:start}
+.pv-cell{display:flex;flex-direction:column;gap:var(--space-2);min-width:0}
+.pv-lab{margin:0;color:var(--ink-muted)}
+.pv-box{padding:var(--space-4);background:var(--sheet);border:var(--border-width) solid var(--line);border-radius:var(--radius-md);min-width:0;color:var(--ink)}
+.pv-stage{position:relative;overflow:hidden;border:var(--border-width) solid var(--line-strong);border-radius:var(--radius-lg);background:var(--canvas);color:var(--ink)}
+.pv-note{margin:0;color:var(--ink-muted)}
 </style>
 </head>
 <body>
@@ -262,16 +274,37 @@ const DE = ({ children }) => /* @__PURE__ */ React.createElement(V.LocaleProvide
 const FR = ({ children }) => /* @__PURE__ */ React.createElement(V.LocaleProvider, { locale: "fr" }, children);
 const IT = ({ children }) => /* @__PURE__ */ React.createElement(V.LocaleProvider, { locale: "it" }, children);
 const mount = (el) => ReactDOM.createRoot(document.getElementById("root")).render(/* @__PURE__ */ React.createElement(V.LocaleProvider, { locale: "ro" }, el));
-const GROUPS = [
-  { label: "Pagini", items: [{ label: "Azi", icon: "house", shortcut: ["G", "A"] }, { label: "Calendar", icon: "calendar", shortcut: ["G", "C"] }, { label: "Program\u0103ri", icon: "list" }] },
-  { label: "Persoane", items: [{ label: "Ana Popescu", icon: "user", description: "Client \xB7 0740 123 450" }, { label: "Andrei Ionescu", icon: "user", description: "Client \xB7 0741 123 451" }] },
-  { label: "Comenzi", items: [{ label: "Creeaz\u0103 programare", icon: "plus", shortcut: ["N"] }, { label: "Schimb\u0103 afacerea", icon: "building-2" }, { label: "Tem\u0103 \xEEntunecat\u0103", icon: "moon" }] }
-];
-function Demo() {
-  return /* @__PURE__ */ React.createElement("div", { className: "d", style: { alignItems: "center" } }, /* @__PURE__ */ React.createElement(V.CommandPalette, { inline: true, open: true, onOpenChange: () => {
-  }, groups: GROUPS }));
+/* c2: every README state, Light/Dark frames (data-theme on the frame), DE/IT with translated texts. */
+const h = React.createElement;
+const noop = () => {};
+const Cell = ({ label, children, style }) => h("div", { className: "pv-cell", style }, h("p", { className: "caption pv-lab" }, label), children);
+const FRAMES = [["light", "ro", "Light"], ["dark", "ro", "Dark"], ["light", "de", "Deutsch \u00b7 Light"], ["dark", "it", "Italiano \u00b7 Dark"]];
+const Frames = ({ Board, top }) => h("div", { className: "pv" }, top, FRAMES.map(([th, lang, lab], i) => h("section", { key: lab, className: "pv-frame", "data-theme": th }, h("p", { className: "heading" }, lab), h(V.LocaleProvider, { locale: lang }, h(Board, { lang, theme: th, first: i === 0 })))));
+const CP_T = {
+  ro: { l: ["Deschis · primul rând activ (săgețile mută, Enter rulează)", "Se încarcă (rezultate de pe server)", "Fără rezultate"],
+    g: [["Pagini", [["Azi", "house", ["G", "A"]], ["Calendar", "calendar", ["G", "C"]], ["Programări", "list"]]],
+        ["Persoane", [["Ana Popescu", "user", null, "Client · 0740 123 450"], ["Ștefan Țăranu", "user", null, "Client · 0741 123 451"]]],
+        ["Comenzi", [["Creează programare", "plus", ["N"]], ["Schimbă afacerea", "building-2"], ["Temă întunecată", "moon"]]]] },
+  de: { l: ["Geöffnet · erste Zeile aktiv (Pfeiltasten bewegen, Enter führt aus)", "Wird geladen (Ergebnisse vom Server)", "Keine Ergebnisse"],
+    g: [["Seiten", [["Heute", "house", ["G", "H"]], ["Kalender", "calendar", ["G", "K"]], ["Terminübersicht", "list"]]],
+        ["Personen", [["Anna Müller", "user", null, "Kunde · +49 151 2345 670"], ["Jürgen Köhler", "user", null, "Kunde · +49 151 2345 671"]]],
+        ["Befehle", [["Termin erstellen", "plus", ["N"]], ["Unternehmen wechseln", "building-2"], ["Dunkles Erscheinungsbild", "moon"]]]] },
+  it: { l: ["Aperto · prima riga attiva (le frecce spostano, Invio esegue)", "Caricamento (risultati dal server)", "Nessun risultato"],
+    g: [["Pagine", [["Oggi", "house", ["G", "O"]], ["Calendario", "calendar", ["G", "C"]], ["Appuntamenti", "list"]]],
+        ["Persone", [["Anna Rossi", "user", null, "Cliente · +39 347 123 450"], ["Niccolò Lucà", "user", null, "Cliente · +39 347 123 451"]]],
+        ["Comandi", [["Crea appuntamento", "plus", ["N"]], ["Cambia attività", "building-2"], ["Tema scuro", "moon"]]]] }
+};
+const cpGroups = (lang) => CP_T[lang].g.map(([label, items]) => ({ label, items: items.map(([l, icon, shortcut, description]) => ({ label: l, icon, shortcut: shortcut || void 0, description, onSelect: noop })) }));
+function Board({ lang }) {
+  const L = CP_T[lang].l;
+  return h("div", { style: { display: "grid", gridTemplateColumns: "minmax(0,3fr) minmax(0,2fr)", gap: "var(--space-5)", alignItems: "start" } },
+    h(Cell, { label: L[0] }, h(V.CommandPalette, { inline: true, open: true, onOpenChange: noop, groups: cpGroups(lang) })),
+    h("div", { className: "pv-cell", style: { gap: "var(--space-5)" } },
+      h(Cell, { label: L[1] }, h(V.CommandPalette, { inline: true, open: true, onOpenChange: noop, onQueryChange: noop, loading: true, groups: [] })),
+      h(Cell, { label: L[2] }, h(V.CommandPalette, { inline: true, open: true, onOpenChange: noop, groups: [] }))));
 }
-mount(/* @__PURE__ */ React.createElement(Demo, null));
+mount(h(Frames, { Board }));
+
 </script>
 </body>
 </html>

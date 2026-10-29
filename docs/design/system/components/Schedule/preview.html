@@ -1,4 +1,4 @@
-<!-- @dsCard group="Data" height=776 width=1200 -->
+<!-- @dsCard group="Data" height=2968 width=1200 -->
 <!doctype html>
 <html lang="ro">
 <head><meta charset="utf-8"><title>Schedule — Ventora</title>
@@ -250,6 +250,9 @@ html,body{min-height:100%}
 .fxframe .caption{color:var(--ink-muted)}
 @container (max-width:420px){.fxlang{grid-template-columns:32px minmax(0,1fr) auto}.fxlang .v-iconbtn{display:none}}
 
+.thf{display:flex;flex-direction:column;gap:var(--space-4);padding:var(--space-5);background:var(--canvas);color:var(--ink);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg);min-width:0;box-sizing:border-box}
+.thg{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(420px,100%),1fr));gap:var(--space-4);align-items:start}
+.thstack{display:flex;flex-direction:column;gap:var(--space-4)}
 </style>
 </head>
 <body>
@@ -278,10 +281,10 @@ const ORGS = [
   { id: "nord", name: "Agen\u021Bia Nord Studio", role: "Manager de proiect" }
 ];
 const NOTIFS = [
-  { id: 1, title: "Programare nou\u0103 de la Ana Popescu", body: "Joi, 29 oct., 14:30 \xB7 Tuns", app: "Booking", time: "acum 5 min", person: "Ana Popescu" },
-  { id: 2, title: "Factura #2026-114 e restant\u0103 de 3 zile", body: "Clinica Dentis \xB7 1.250 lei", app: "Finance", time: "acum 2 ore", icon: "receipt" },
-  { id: 3, title: "Ioana a cerut concediu pe 2\u20136 noiembrie", app: "HR", time: "ieri", person: "Ioana Pavel", read: true },
-  { id: 4, title: "Exportul clien\u021Bilor e gata", app: "CRM", time: "ieri", icon: "download", read: true }
+  { id: 1, title: "Programare nou\u0103 de la Ana Popescu", body: "Joi, 29 oct., 14:30 \xB7 Tuns", app: "EasyBook", time: "acum 5 min", person: "Ana Popescu" },
+  { id: 2, title: "Factura #2026-114 e restant\u0103 de 3 zile", body: "Clinica Dentis \xB7 1.250 lei", app: "MoneyDesk", time: "acum 2 ore", icon: "receipt" },
+  { id: 3, title: "Ioana a cerut concediu pe 2\u20136 noiembrie", app: "TeamSpace", time: "ieri", person: "Ioana Pavel", read: true },
+  { id: 4, title: "Exportul clien\u021Bilor e gata", app: "ClientDesk", time: "ieri", icon: "download", read: true }
 ];
 const USER = { name: "Bianca Petra\u0219cu", email: "bianca@ventora-hub.com" };
 function Bar({ title, de }) {
@@ -312,7 +315,7 @@ function BookingShell({ height, active, mobile }) {
       height,
       spine: /* @__PURE__ */ React.createElement(V.Spine, { app: "booking", sections: SECTIONS, activeId: active, onBackToHub: () => {
       }, footer: /* @__PURE__ */ React.createElement(V.UsageMeter, { compact: true, label: "Program\u0103ri", used: 312, limit: 1e3 }) }),
-      contextBar: /* @__PURE__ */ React.createElement(Bar, { title: "Booking" })
+      contextBar: /* @__PURE__ */ React.createElement(Bar, { title: "EasyBook" })
     },
     /* @__PURE__ */ React.createElement(V.PageHeader, { title: "Program\u0103ri", description: mobile ? void 0 : "Toate program\u0103rile afacerii, de azi \xEEnainte.", actions: mobile ? void 0 : /* @__PURE__ */ React.createElement(V.SegmentedControl, { label: "Vizualizare", size: "md", defaultValue: "list", options: [{ value: "list", label: "List\u0103", icon: "list" }, { value: "cal", label: "Calendar", icon: "calendar" }] }) }),
     /* @__PURE__ */ React.createElement(V.DataTable, { columns: [
@@ -375,7 +378,7 @@ function BookingApp({ active, title, children, footer }) {
       height: "100%",
       spine: /* @__PURE__ */ React.createElement(V.Spine, { app: "booking", sections: SECTIONS, activeId: active, onBackToHub: () => {
       }, bottomItems: ["azi", "calendar", "programari", "clienti"], footer: footer === false ? null : /* @__PURE__ */ React.createElement(V.UsageMeter, { compact: true, label: "Program\u0103ri \xEEn octombrie", used: 862, limit: 1e3 }) }),
-      contextBar: /* @__PURE__ */ React.createElement(Bar, { title: title || "Booking" })
+      contextBar: /* @__PURE__ */ React.createElement(Bar, { title: title || "EasyBook" })
     },
     children
   );
@@ -413,7 +416,61 @@ function Demo() {
   return /* @__PURE__ */ React.createElement("div", { className: "d" }, /* @__PURE__ */ React.createElement("p", { className: "caption muted" }, "Resurse (angaja\u021Bi) \xB7 linia \u201Eacum\u201D 11:20 \xB7 st\u0103ri: \xEEncheiat\u0103 (\u2713), \xEEn desf\u0103\u0219urare (peach), confirmat\u0103, neconfirmat\u0103 (contur punctat), anulat\u0103, indisponibil"), /* @__PURE__ */ React.createElement(V.Schedule, { columns: BK_STAFF, events: BK_EVENTS, from: 8, to: 18, now: BK_NOW, height: 440, onEventClick: (e) => setAct(e.id), activeId: act, onSlotClick: () => {
   } }), /* @__PURE__ */ React.createElement("p", { className: "caption muted" }, "S\u0103pt\u0103m\xE2n\u0103 \xB7 azi marcat, duminic\u0103 \xEEnchis"), /* @__PURE__ */ React.createElement(V.Schedule, { columns: BK_DAYS, events: BK_WEEK, from: 8, to: 18, now: BK_NOW, nowColumn: "fri", height: 220, minColumnWidth: 110 }));
 }
-mount(/* @__PURE__ */ React.createElement(Demo, null));
+const ORIG = (/* @__PURE__ */ React.createElement(Demo, null));
+/* Light/Dark frames, DE/IT label test */
+const E = React.createElement;
+const noop = () => {
+};
+const Cap = ({ children }) => E("p", { className: "caption muted" }, children);
+const ThemeFrame = ({ th, children }) => E("div", { className: "thf", "data-theme": th }, E("p", { className: "heading" }, th === "light" ? "Light" : "Dark"), children);
+const LocFrame = ({ loc, label, children }) => E("div", { className: "thf", "data-theme": "light" }, E("p", { className: "heading" }, label), E(V.LocaleProvider, { locale: loc }, children));
+const Frames = ({ States, stack }) => E("div", { className: stack ? "thstack" : "thg" }, E(ThemeFrame, { th: "light" }, E(States, { th: "light" })), E(ThemeFrame, { th: "dark" }, E(States, { th: "dark" })));
+const Locales = ({ De, It, stack }) => E("div", { className: stack ? "thstack" : "thg" }, E(LocFrame, { loc: "de", label: "Deutsch (DE)" }, E(De)), E(LocFrame, { loc: "it", label: "Italiano (IT)" }, E(It)));
+const Extra = ({ States, De, It, stack, stackLoc }) => E("div", { className: "d" }, E("p", { className: "heading" }, "Stări · Light și Dark"), E(Frames, { States, stack }), E("p", { className: "heading" }, "Test de lungime: germană și italiană"), E(Locales, { De, It, stack: stackLoc }));
+const SC_EV = (n, s) => [
+  { id: "a1", col: "a", start: "09:00", end: "09:45", title: n[0], subtitle: s[0], status: "done" },
+  { id: "a2", col: "a", start: "10:00", end: "11:00", title: n[1], subtitle: s[1], status: "done" },
+  { id: "a3", col: "a", start: "11:00", end: "12:00", title: n[2], subtitle: s[2], status: "now" },
+  { id: "a4", col: "a", start: "12:30", end: "13:15", title: n[3], subtitle: s[3], status: "unconfirmed" },
+  { id: "b1", col: "b", start: "09:30", end: "10:20", title: n[4], subtitle: s[4], status: "noshow" },
+  { id: "b2", col: "b", start: "11:00", end: "11:45", title: n[5], subtitle: s[5], status: "confirmed" },
+  { id: "b3", col: "b", start: "11:15", end: "12:15", title: n[6], subtitle: s[6], status: "confirmed" },
+  { id: "b4", col: "b", start: "13:00", end: "14:00", title: s[7], status: "blocked" },
+  { id: "c1", col: "c", start: "09:00", end: "09:30", title: n[7], subtitle: s[8], status: "done" },
+  { id: "c2", col: "c", start: "10:00", end: "10:30", title: n[8], subtitle: s[8], status: "cancelled" },
+  { id: "c3", col: "c", start: "11:30", end: "12:00", title: n[9], subtitle: s[9], status: "confirmed" },
+  { id: "c4", col: "c", start: "12:15", end: "13:00", title: n[10], subtitle: s[8], status: "unconfirmed" }
+];
+const SC_COLS = (c) => [
+  { id: "a", label: c[0][0], sub: c[0][1], person: c[0][0] },
+  { id: "b", label: c[1][0], sub: c[1][1], person: c[1][0] },
+  { id: "c", label: c[2][0], sub: c[2][1], person: c[2][0] },
+  { id: "d", label: c[3][0], sub: c[3][1], person: c[3][0], closed: c[3][2] }
+];
+const SC_RO = {
+  c: [["Ioana Pavel", "Coafor"], ["Mara Enache", "Manichiură"], ["Radu Matei", "Frizerie"], ["Ștefan Țurcanu", "Masaj", "În concediu"]],
+  n: ["Ana Popescu", "Elena Georgescu", "Andrei Ionescu", "Cristina Dobre", "Ioana Rădulescu", "Sorina Vlad", "Alina Mureșan", "Mihai Tudose", "Vlad Cristea", "Sergiu Pop", "Paul Ștefănescu"],
+  s: ["Tuns", "Vopsit rădăcini", "Vopsit", "Tratament facial", "Manichiură", "Pedichiură", "Manichiură semipermanentă", "Pauză de prânz", "Tuns bărbați", "Tuns + barbă"]
+};
+const SC_DE = {
+  c: [["Jana Weber", "Friseurin"], ["Lena Hoffmann", "Maniküre"], ["Paul Fischer", "Herrenfriseur"], ["Tobias Krüger", "Massage", "Im Urlaub"]],
+  n: ["Anna Schmidt", "Eva Schäfer", "Lukas Wagner", "Julia Becker", "Sophie Koch", "Marie Richter", "Laura Neumann", "Felix Schwarz", "Jonas Zimmermann", "Max Braun", "Leon Hartmann"],
+  s: ["Haarschnitt", "Ansatzfärbung", "Färben", "Gesichtsbehandlung", "Maniküre", "Pediküre", "Shellac-Maniküre", "Mittagspause", "Herrenhaarschnitt", "Haarschnitt und Bart"]
+};
+const SC_IT = {
+  c: [["Giulia Bianchi", "Parrucchiera"], ["Sara Conti", "Manicure"], ["Luca Romano", "Barbiere"], ["Matteo Greco", "Massaggi", "In ferie"]],
+  n: ["Francesca Russo", "Chiara Ferrari", "Andrea Esposito", "Valentina Gallo", "Elena Costa", "Martina Fontana", "Alessia Moretti", "Davide Rinaldi", "Simone Lombardi", "Paolo Marino", "Lorenzo Bruno"],
+  s: ["Taglio", "Colore alla radice", "Colore", "Trattamento viso", "Manicure", "Pedicure", "Manicure semipermanente", "Pausa pranzo", "Taglio uomo", "Taglio e barba"]
+};
+const SC = (t, act) => E(V.Schedule, { columns: SC_COLS(t.c), events: SC_EV(t.n, t.s), from: 9, to: 14, now: "11:20", height: 400, activeId: act, onEventClick: noop, onSlotClick: noop, minColumnWidth: 140 });
+function States() {
+  return E("div", { className: "d0" },
+    E(Cap, null, "Toate stările: încheiată (✓), în desfășurare (peach, singurul peach), confirmată, neconfirmată (contur punctat), neprezentare, anulată, pauză (hașurat) · suprapunere · coloană închisă · programare selectată"),
+    SC(SC_RO, "a4"));
+}
+const De = () => SC(SC_DE);
+const It = () => SC(SC_IT);
+mount(E("div", null, ORIG, E(Extra, { States, De, It, stack: true, stackLoc: true })));
 </script>
 </body>
 </html>

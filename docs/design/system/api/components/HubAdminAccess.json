@@ -1,0 +1,27 @@
+{
+ "name": "HubAdminAccess",
+ "version": "1.0.1",
+ "kind": "page",
+ "group": "Ecrane Hub",
+ "status": "changed",
+ "description": "Business administration — roles and app access: a role × app matrix on desktop and tablet; on phones you pick a role and switch apps one by one. Apps outside the plan or temporarily unavailable carry an AccessBadge and cannot be granted.",
+ "exports": [],
+ "props": [],
+ "events": [],
+ "states": [
+  "matrix",
+  "role-picker-mobile",
+  "not-in-plan",
+  "unavailable",
+  "disabled-owner",
+  "view-as-menu",
+  "toast-undo",
+  "light",
+  "dark",
+  "de",
+  "it"
+ ],
+ "notes": "Arrow-key navigation of the grid is interactive behaviour and is not shown as a static state.",
+ "readme": "components/HubAdminAccess/README.md",
+ "preview": "components/HubAdminAccess/preview.html"
+}

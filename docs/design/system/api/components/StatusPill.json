@@ -1,0 +1,50 @@
+{
+ "name": "StatusPill",
+ "version": "1.0.1",
+ "kind": "component",
+ "group": "Status",
+ "status": "changed",
+ "description": "The state of a record in one or two words, with an icon or dot — colour is never the only signal.",
+ "exports": [
+  "StatusPill"
+ ],
+ "props": [
+  {
+   "name": "tone",
+   "type": "Tone",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "icon",
+   "type": "string | false",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "size",
+   "type": "\"sm\" | \"md\"",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "children",
+   "type": "ReactNode",
+   "required": true,
+   "note": ""
+  }
+ ],
+ "events": [],
+ "states": [
+  "attention",
+  "done",
+  "danger",
+  "neutral",
+  "custom-icon",
+  "dot",
+  "small"
+ ],
+ "notes": "",
+ "readme": "components/StatusPill/README.md",
+ "preview": "components/StatusPill/preview.html"
+}

@@ -1,4 +1,4 @@
-<!-- @dsCard group="Hub" height=440 -->
+<!-- @dsCard group="Hub" height=730 width=2620 -->
 <!doctype html>
 <html lang="ro">
 <head><meta charset="utf-8"><title>AccountMenu — Ventora</title>
@@ -250,6 +250,10 @@ html,body{min-height:100%}
 .fxframe .caption{color:var(--ink-muted)}
 @container (max-width:420px){.fxlang{grid-template-columns:32px minmax(0,1fr) auto}.fxlang .v-iconbtn{display:none}}
 
+.am{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:var(--space-4);padding:var(--space-4)}
+.am-col{display:flex;flex-direction:column;gap:var(--space-2);padding:var(--space-4);height:660px;background:var(--canvas);color:var(--ink);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg)}
+.am-lab{margin:0;color:var(--ink-muted)}
+.am-bar{display:flex;justify-content:flex-end}
 </style>
 </head>
 <body>
@@ -262,12 +266,27 @@ const DE = ({ children }) => /* @__PURE__ */ React.createElement(V.LocaleProvide
 const FR = ({ children }) => /* @__PURE__ */ React.createElement(V.LocaleProvider, { locale: "fr" }, children);
 const IT = ({ children }) => /* @__PURE__ */ React.createElement(V.LocaleProvider, { locale: "it" }, children);
 const mount = (el) => ReactDOM.createRoot(document.getElementById("root")).render(/* @__PURE__ */ React.createElement(V.LocaleProvider, { locale: "ro" }, el));
-function Demo() {
-  const [l, setL] = useState("ro");
-  const [th, setTh] = useState("system");
-  return /* @__PURE__ */ React.createElement("div", { className: "d", style: { alignItems: "flex-end" } }, /* @__PURE__ */ React.createElement(V.LocaleProvider, { locale: l }, /* @__PURE__ */ React.createElement(V.AccountMenu, { defaultOpen: true, user: { name: "Bianca Petra\u0219cu", email: "bianca@ventora-hub.com" }, locale: l, onLocaleChange: setL, theme: th, onThemeChange: setTh })));
+/* AccountMenu — desktop (business switcher in the ContextBar) and phone (switcher in the menu, S66); Light/Dark frames; DE/IT. Each menu is open in its own column. */
+const h = React.createElement;
+const ORGS_RO = [{ id: "aurora", name: "Salon Aurora", role: "Proprietar" }, { id: "dentis", name: "Clinica Dentis Sibiu", role: "Recepție" }];
+const ORGS_DE = [{ id: 1, name: "Zahnarztpraxis Dr. Müller", role: "Empfang" }, { id: 2, name: "Salon Aurora", role: "Inhaberin" }];
+const ORGS_IT = [{ id: 1, name: "Studio Dentistico Bianchi", role: "Reception" }, { id: 2, name: "Salon Aurora", role: "Titolare" }];
+const USER = { name: "Bianca Petrașcu", email: "bianca@salonaurora.ro" };
+function Col({ th, label, lang = "ro", phone }) {
+  const orgs = lang === "de" ? ORGS_DE : lang === "it" ? ORGS_IT : ORGS_RO;
+  return h("div", { className: "am-col" + (phone ? " is-phone" : ""), "data-theme": th },
+    h("p", { className: "caption am-lab" }, label),
+    h("div", { className: "am-bar" }, h(V.LocaleProvider, { locale: lang },
+      h(V.AccountMenu, { defaultOpen: true, user: USER, locale: lang, onLocaleChange: () => {}, theme: "system", onThemeChange: () => {}, onCatalog: () => {}, orgs: phone ? orgs : undefined, currentOrgId: orgs[0].id, orgsInMenu: !!phone }))));
 }
-mount(/* @__PURE__ */ React.createElement(Demo, null));
+mount(h("div", { className: "am" },
+  h(Col, { th: "light", label: "Light · desktop: afacerea se schimbă din ContextBar" }),
+  h(Col, { th: "light", label: "Light · telefon: „Afacerile tale” în meniu", phone: true }),
+  h(Col, { th: "dark", label: "Dark · desktop" }),
+  h(Col, { th: "dark", label: "Dark · telefon", phone: true }),
+  h(Col, { th: "light", label: "Deutsch · telefon", lang: "de", phone: true }),
+  h(Col, { th: "dark", label: "Italiano · telefon · Dark", lang: "it", phone: true })));
+
 </script>
 </body>
 </html>

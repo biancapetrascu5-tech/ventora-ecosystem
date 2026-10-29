@@ -1,0 +1,29 @@
+{
+ "name": "GrowthOfferEditor",
+ "version": "1.0.1",
+ "kind": "page",
+ "group": "Founder",
+ "status": "changed",
+ "description": "Offer editor: type, commercial object, action (always opens UpgradeDialog), costs read only from the commercial model, texts in 6 languages with approval status, and a RecommendationCard preview in light and dark.",
+ "exports": [],
+ "props": [],
+ "events": [],
+ "states": [
+  "Growth — Editorul unei oferte: tip, obiect, acțiune, costuri din modelul comercial, texte în 6 limbi",
+  "Model comercial",
+  "Growth",
+  "Sistem",
+  "Afaceri",
+  "Consum",
+  "Campanii",
+  "Control",
+  "Mai multe",
+  "Tipul ofertei * (obligatoriu)",
+  "Obiectul * (obligatoriu)",
+  "Acțiunea * (obligatoriu)",
+  "Recomandare"
+ ],
+ "notes": "States are the labelled boards and frames of the preview (Light and Dark; desktop/tablet/phone).",
+ "readme": "components/GrowthOfferEditor/README.md",
+ "preview": "components/GrowthOfferEditor/preview.html"
+}

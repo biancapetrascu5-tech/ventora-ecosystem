@@ -1,0 +1,27 @@
+{
+ "name": "HubCatalog",
+ "version": "1.0.1",
+ "kind": "page",
+ "group": "Comercial",
+ "status": "changed",
+ "description": "Hub — the full catalog: all 15 Ventora apps, grouped by category (Programări și clienți, Echipă, Operațiuni, Bani și documente, Proiecte și date, Comunitate), with search and \"Doar cele pe care nu le ai\". Owned apps say \"în abonament\" and open directly; the others show what they do and the price, and the recommended ones carry the label, the reason and \"Vezi detaliile\".",
+ "exports": [],
+ "props": [],
+ "events": [],
+ "states": [
+  "default",
+  "owned",
+  "not-in-plan",
+  "recommended",
+  "write-us",
+  "search",
+  "only-missing-filter",
+  "light",
+  "dark",
+  "de",
+  "it"
+ ],
+ "notes": "",
+ "readme": "components/HubCatalog/README.md",
+ "preview": "components/HubCatalog/preview.html"
+}

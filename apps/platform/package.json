@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start -p 3100",
     "lint": "eslint .",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test:e2e": "playwright test"
   },
   "dependencies": {
     "@sentry/nextjs": "^11.0.0",
@@ -15,12 +16,16 @@
     "@ventora/contracts": "workspace:*",
     "@ventora/i18n": "workspace:*",
     "@ventora/identity": "workspace:*",
+    "@ventora/tokens": "workspace:*",
+    "@ventora/ui": "workspace:*",
+    "lucide-react": "1.61.0",
     "next": "^16.0.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.0",
+    "@playwright/test": "^1.49.0",
     "eslint": "^9.0.0",
     "eslint-config-next": "^16.0.0",
     "@types/node": "^22.0.0",

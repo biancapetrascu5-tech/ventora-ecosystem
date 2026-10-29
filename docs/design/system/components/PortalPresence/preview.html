@@ -1,4 +1,4 @@
-<!-- @dsCard group="Hub" height=1850 width=1200 -->
+<!-- @dsCard group="Hub" height=3460 width=1200 -->
 <!doctype html>
 <html lang="ro">
 <head><meta charset="utf-8"><title>PortalPresence — Ventora</title>
@@ -7,6 +7,8 @@ html,body{margin:0}
 .d{display:flex;flex-direction:column;gap:var(--space-4);padding:var(--space-6);box-sizing:border-box;background:var(--canvas);color:var(--ink)}
 .lab{margin:var(--space-2) 0 0;color:var(--ink-muted)}
 .two{display:grid;grid-template-columns:minmax(0,1fr) 390px;gap:var(--space-6);align-items:start}
+.thf{display:flex;flex-direction:column;gap:var(--space-4);padding:var(--space-5);background:var(--canvas);color:var(--ink);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg);min-width:0;box-sizing:border-box}
+.thg{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(420px,100%),1fr));gap:var(--space-4);align-items:start}
 </style>
 </head>
 <body>
@@ -16,7 +18,7 @@ const V = window.Ventora;
 const h = React.createElement;
 const Lab = ({ children }) => h("p", { className: "caption lab" }, children);
 function Theme({ th }) {
-  return h("div", { "data-theme": th, className: "d" },
+  return h("div", { "data-theme": th, className: "d thf" },
     h("p", { className: "heading" }, th === "light" ? "Light" : "Dark"),
     h(Lab, null, "Publicată · proprietar, admin sau managerul aplicației Portal"),
     h(V.PortalPresence, { status: "published", onManage: () => {}, previewHref: "#" }),
@@ -28,8 +30,22 @@ function Theme({ th }) {
       h("div", null, h(Lab, null, "Membru: vede pagina, nu o poate schimba"), h(V.PortalPresence, { status: "published", canManage: false, previewHref: "#" })),
       h("div", null, h(Lab, null, "Telefon și tabletă (compact)"), h(V.PortalPresence, { status: "published", compact: true, onManage: () => {}, previewHref: "#" }))));
 }
-mount(h("div", null, h(Theme, { th: "light" }), h(Theme, { th: "dark" }),
-  h("div", { className: "d", "data-theme": "light" }, h(Lab, null, "Test în germană"), h(V.LocaleProvider, { locale: "de" }, h(V.PortalPresence, { status: "published", onManage: () => {}, previewHref: "#" })))));
+function Loc({ loc, label, member }) {
+  return h("div", { className: "thf", "data-theme": "light" },
+    h("p", { className: "heading" }, label),
+    h(V.LocaleProvider, { locale: loc },
+      h(V.PortalPresence, { status: "published", onManage: () => {}, previewHref: "#" }),
+      h(V.PortalPresence, { status: "hidden", onManage: () => {}, previewHref: "#" }),
+      h(V.PortalPresence, { status: "draft", onManage: () => {} }),
+      h(Lab, null, member),
+      h(V.PortalPresence, { status: "published", canManage: false, previewHref: "#" }),
+      h(V.PortalPresence, { status: "published", compact: true, onManage: () => {}, previewHref: "#" })));
+}
+mount(h("div", { className: "d" }, h(Theme, { th: "light" }), h(Theme, { th: "dark" }),
+  h("div", { className: "d0" }, h("p", { className: "heading" }, "Test de lungime: germană și italiană"),
+    h("div", { className: "d0" },
+      h(Loc, { loc: "de", label: "Deutsch (DE)", member: "Mitglied: sieht die Seite, kann sie aber nicht ändern · darunter kompakt" }),
+      h(Loc, { loc: "it", label: "Italiano (IT)", member: "Membro: vede la pagina ma non può modificarla · sotto, versione compatta" })))));
 </script>
 </body>
 </html>

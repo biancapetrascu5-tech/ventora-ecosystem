@@ -1,4 +1,4 @@
-<!-- @dsCard group="Preferences" height=344 -->
+<!-- @dsCard group="Preferences" height=980 width=1200 -->
 <!doctype html>
 <html lang="ro">
 <head><meta charset="utf-8"><title>LanguageSwitcher — Ventora</title>
@@ -250,6 +250,16 @@ html,body{min-height:100%}
 .fxframe .caption{color:var(--ink-muted)}
 @container (max-width:420px){.fxlang{grid-template-columns:32px minmax(0,1fr) auto}.fxlang .v-iconbtn{display:none}}
 
+/* c3: Light/Dark and DE/IT frames */
+.c3wrap{display:flex;flex-direction:column;min-width:0}
+.c3sec{display:flex;flex-direction:column;gap:var(--space-3);min-width:0}
+.c3h{margin:0;color:var(--ink)}
+.c3pair{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(360px,100%),1fr));gap:var(--space-4);align-items:start}
+.c3stack{display:flex;flex-direction:column;gap:var(--space-4);min-width:0}
+.c3f{display:flex;flex-direction:column;gap:var(--space-3);padding:var(--space-4);border:var(--border-width) solid var(--line);border-radius:var(--radius-md);background:var(--canvas);color:var(--ink);min-width:0;box-sizing:border-box}
+.c3lab{color:var(--ink-muted);margin:0}
+.c3kv{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:var(--space-2) var(--space-4);align-items:center}
+.c3ib{display:flex;align-items:center;gap:var(--space-3);min-width:0}
 </style>
 </head>
 <body>
@@ -266,7 +276,27 @@ function Demo() {
   const [l, setL] = useState("ro");
   return /* @__PURE__ */ React.createElement("div", { className: "d", style: { flexDirection: "row", gap: "var(--space-8)" } }, /* @__PURE__ */ React.createElement(V.LanguageSwitcher, { value: l, onChange: setL, placement: "bottom-start", defaultOpen: true }), /* @__PURE__ */ React.createElement(V.LanguageSwitcher, { variant: "icon", value: l, onChange: setL }), /* @__PURE__ */ React.createElement(V.LocaleProvider, { locale: l }, /* @__PURE__ */ React.createElement("span", { className: "body", style: { color: "var(--ink-secondary)" } }, V.translate(l, "signOut"), " \xB7 ", V.translate(l, "notifications"))));
 }
-mount(/* @__PURE__ */ React.createElement(Demo, null));
+const C3_ORIG = /* @__PURE__ */ React.createElement(Demo, null);
+const h = React.createElement;
+const C3Frame = ({ th, label, children, style }) => h("div", { className: "c3f", "data-theme": th, style }, h("p", { className: "caption c3lab" }, label), children);
+const C3Sec = ({ title, stack, children }) => h("div", { className: "c3sec" }, h("p", { className: "subheading c3h" }, title), h("div", { className: stack ? "c3stack" : "c3pair" }, children));
+const C3Themes = ({ render, stack, style }) => h(C3Sec, { title: "Light și Dark", stack }, h(C3Frame, { th: "light", label: "Light", style }, render("light")), h(C3Frame, { th: "dark", label: "Dark", style }, render("dark")));
+const C3Langs = ({ de, it, stack, style, itTheme }) => h(C3Sec, { title: "Germană și italiană — etichete mai lungi", stack }, h(V.LocaleProvider, { locale: "de" }, h(C3Frame, { th: "light", label: "Deutsch (de)", style }, de)), h(V.LocaleProvider, { locale: "it" }, h(C3Frame, { th: itTheme || "light", label: itTheme === "dark" ? "Italiano (it) \xB7 Dark" : "Italiano (it)", style }, it)));
+/* popups render in document.body: give each open popup the theme of the frame its trigger sits in */
+const c3sync = () => document.querySelectorAll(".c3f [aria-controls], .c3f[aria-controls]").forEach((t) => { const f = t.closest("[data-theme]"); const p = document.getElementById(t.getAttribute("aria-controls")); if (f && p && p.getAttribute("data-theme") !== f.getAttribute("data-theme")) p.setAttribute("data-theme", f.getAttribute("data-theme")); });
+new MutationObserver(c3sync).observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ["aria-controls"] });
+function LSFrame({ init, lab, open }) {
+  const [l, setL] = useState(init);
+  return h("div", { className: "c3stack", style: { minHeight: open ? 320 : void 0 } },
+    h("div", { className: "r" }, h("span", { className: "body-small" }, lab), h(V.LanguageSwitcher, { value: l, onChange: setL, placement: "bottom-start", defaultOpen: open }), h(V.LanguageSwitcher, { variant: "icon", value: l, onChange: setL })),
+    h("span", { className: "body-small", style: { color: "var(--ink-secondary)" } }, V.translate(l, "signOut"), " \xB7 ", V.translate(l, "notifications")));
+}
+const C3_SECTIONS = [
+  h(C3Themes, { key: "t", render: (th) => h(LSFrame, { init: "ro", lab: "Limba interfeței:", open: th === "dark" }) }),
+  h(C3Langs, { key: "l", de: h(LSFrame, { init: "de", lab: "Sprache der Benutzeroberfl\xE4che:" }), it: h(LSFrame, { init: "it", lab: "Lingua dell’interfaccia:" }) })
+];
+
+mount(h("div", { className: "c3wrap" }, h("div", { style: { minHeight: 340 } }, C3_ORIG), h("div", { className: "d" }, ...C3_SECTIONS)));
 </script>
 </body>
 </html>

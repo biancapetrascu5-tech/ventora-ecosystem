@@ -1,0 +1,44 @@
+.root {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--ink-secondary);
+}
+
+.dot {
+  width: var(--space-2);
+  height: var(--space-2);
+  border-radius: var(--radius-full);
+  background: var(--ink-muted);
+  flex: none;
+}
+
+.attention .dot {
+  background: var(--attention-mark);
+  box-shadow: 0 0 0 var(--marker-width) var(--attention-soft);
+}
+
+.done .dot {
+  background: var(--done-mark);
+}
+
+.danger .dot {
+  background: var(--danger);
+}
+
+.offline .dot {
+  background: transparent;
+  box-shadow: inset 0 0 0 var(--border-width-control) var(--ink-muted);
+}
+
+.sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

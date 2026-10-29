@@ -1,0 +1,167 @@
+/* .v-overlay--center + .v-dialog din bundle.css */
+.overlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--scrim);
+  z-index: var(--z-overlay);
+  padding: var(--space-6);
+}
+
+.modal {
+  display: contents;
+  outline: none;
+}
+
+.dialog {
+  width: var(--dialog-width);
+  max-width: 100%;
+  max-height: calc(100vh - var(--space-8));
+  display: flex;
+  flex-direction: column;
+  background: var(--raised);
+  color: var(--ink);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-3);
+  animation: rise var(--duration-base) var(--ease-standard);
+  box-sizing: border-box;
+  outline: none;
+}
+
+.wide {
+  width: var(--dialog-width-wide);
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(var(--space-2)) scale(0.98);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dialog {
+    animation: none;
+  }
+}
+
+.head {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-6) var(--space-6) var(--space-4);
+}
+
+.titles {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.desc {
+  margin: 0;
+  color: var(--ink-secondary);
+}
+
+.titles h2 {
+  margin: 0;
+}
+
+.x {
+  display: inline-flex;
+  margin: calc(var(--space-1) * -1) calc(var(--space-2) * -1) 0 0;
+}
+
+.icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: var(--space-10);
+  height: var(--space-10);
+  border-radius: var(--radius-full);
+  background: var(--neutral-soft);
+  color: var(--ink);
+}
+
+.icon-danger {
+  background: var(--danger-soft);
+  color: var(--danger-ink);
+}
+
+.icon-attention {
+  background: var(--attention-soft);
+  color: var(--attention-ink);
+}
+
+.icon-done {
+  background: var(--done-soft);
+  color: var(--done-ink);
+}
+
+.body {
+  padding: 0 var(--space-6) var(--space-4);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.foot {
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  padding: var(--space-4) var(--space-6);
+  border-top: var(--border-width) solid var(--line);
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  .wide {
+    width: 90vw;
+  }
+}
+
+@media (max-width: 767px) {
+  .overlay {
+    align-items: flex-end;
+    padding: 0;
+  }
+  .dialog,
+  .wide {
+    width: 100%;
+    max-height: 92vh;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  }
+  .foot {
+    flex-direction: column-reverse;
+  }
+  .foot > * {
+    width: 100%;
+  }
+}
+
+/* .v-dialog--inline (după media query, ca în bundle: max-height: none câștigă pe telefon) */
+.inline {
+  animation: none;
+  box-shadow: var(--shadow-2);
+  max-height: none;
+}
+
+/* .v-dialog--sheet */
+.inline.sheet {
+  width: 100%;
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+}
+
+.sheet .foot {
+  flex-direction: column-reverse;
+}
+
+.sheet .foot > * {
+  width: 100%;
+}

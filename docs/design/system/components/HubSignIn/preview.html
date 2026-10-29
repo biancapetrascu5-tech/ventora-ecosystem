@@ -46,7 +46,7 @@ html,body{min-height:100%}
 .scr{display:flex;flex-direction:column;gap:var(--space-3);padding:var(--space-6);background:var(--sheet);color:var(--ink)}
 .scr-row{display:flex;gap:var(--space-6);align-items:flex-start;margin-top:var(--space-3)}
 .scr-lab{color:var(--ink-muted);margin-bottom:var(--space-2)}
-.scr-d,.scr-t,.scr-m{position:relative;overflow:hidden;border:var(--border-width) solid var(--line-strong);background:var(--canvas);color:var(--ink);box-sizing:border-box}
+.scr-d,.scr-t,.scr-m{display:flex;flex-direction:column;position:relative;overflow:hidden;border:var(--border-width) solid var(--line-strong);background:var(--canvas);color:var(--ink);box-sizing:border-box}
 .scr-d{width:1280px;border-radius:var(--radius-lg)}
 .scr-m{width:390px;border-radius:var(--radius-xl)}
 .scr-t{width:820px;border-radius:var(--radius-xl)}
@@ -307,6 +307,7 @@ html,body{min-height:100%}
 .sb.mobile .display-hub{font-size:32px;line-height:36px}
 @media (prefers-reduced-motion: reduce){.lb *,.sb *{transition:none!important}}
 
+.scr-d>.v-auth,.scr-t>.v-auth,.scr-m>.v-auth{min-height:100%;height:100%}
 </style>
 </head>
 <body>
@@ -335,10 +336,10 @@ const ORGS = [
   { id: "nord", name: "Agen\u021Bia Nord Studio", role: "Manager de proiect" }
 ];
 const NOTIFS = [
-  { id: 1, title: "Programare nou\u0103 de la Ana Popescu", body: "Joi, 29 oct., 14:30 \xB7 Tuns", app: "Booking", time: "acum 5 min", person: "Ana Popescu" },
-  { id: 2, title: "Factura #2026-114 e restant\u0103 de 3 zile", body: "Clinica Dentis \xB7 1.250 lei", app: "Finance", time: "acum 2 ore", icon: "receipt" },
-  { id: 3, title: "Ioana a cerut concediu pe 2\u20136 noiembrie", app: "HR", time: "ieri", person: "Ioana Pavel", read: true },
-  { id: 4, title: "Exportul clien\u021Bilor e gata", app: "CRM", time: "ieri", icon: "download", read: true }
+  { id: 1, title: "Programare nou\u0103 de la Ana Popescu", body: "Joi, 29 oct., 14:30 \xB7 Tuns", app: "EasyBook", time: "acum 5 min", person: "Ana Popescu" },
+  { id: 2, title: "Factura #2026-114 e restant\u0103 de 3 zile", body: "Clinica Dentis \xB7 1.250 lei", app: "MoneyDesk", time: "acum 2 ore", icon: "receipt" },
+  { id: 3, title: "Ioana a cerut concediu pe 2\u20136 noiembrie", app: "TeamSpace", time: "ieri", person: "Ioana Pavel", read: true },
+  { id: 4, title: "Exportul clien\u021Bilor e gata", app: "ClientDesk", time: "ieri", icon: "download", read: true }
 ];
 const USER = { name: "Bianca Petra\u0219cu", email: "bianca@ventora-hub.com" };
 function Bar({ title, de }) {
@@ -369,7 +370,7 @@ function BookingShell({ height, active, mobile }) {
       height,
       spine: /* @__PURE__ */ React.createElement(V.Spine, { app: "booking", sections: SECTIONS, activeId: active, onBackToHub: () => {
       }, footer: /* @__PURE__ */ React.createElement(V.UsageMeter, { compact: true, label: "Program\u0103ri", used: 312, limit: 1e3 }) }),
-      contextBar: /* @__PURE__ */ React.createElement(Bar, { title: "Booking" })
+      contextBar: /* @__PURE__ */ React.createElement(Bar, { title: "EasyBook" })
     },
     /* @__PURE__ */ React.createElement(V.PageHeader, { title: "Program\u0103ri", description: mobile ? void 0 : "Toate program\u0103rile afacerii, de azi \xEEnainte.", actions: mobile ? void 0 : /* @__PURE__ */ React.createElement(V.SegmentedControl, { label: "Vizualizare", size: "md", defaultValue: "list", options: [{ value: "list", label: "List\u0103", icon: "list" }, { value: "cal", label: "Calendar", icon: "calendar" }] }) }),
     /* @__PURE__ */ React.createElement(V.DataTable, { columns: [
@@ -390,7 +391,7 @@ function HubBar({ title, inApp }) {
   return /* @__PURE__ */ React.createElement(
     V.ContextBar,
     {
-      leading: inApp ? null : /* @__PURE__ */ React.createElement("span", { style: { padding: "0 var(--space-2)" } }, /* @__PURE__ */ React.createElement(V.Logo, { size: 32 })),
+      leading: inApp ? null : /* @__PURE__ */ React.createElement("span", { style: { padding: "0 var(--space-2)", display: "inline-flex" } }, /* @__PURE__ */ React.createElement(V.Logo, { size: 32, className: "v-cb-logo--full" }), /* @__PURE__ */ React.createElement(V.Logo, { variant: "mark", size: 32, className: "v-cb-logo--mark" })),
       title,
       org: /* @__PURE__ */ React.createElement(V.OrgSwitcher, { orgs: ORGS, currentId: "aurora" }),
       onSearch: () => {
@@ -423,7 +424,7 @@ function Screens({ title, notes, render, desktopH = 860, tabletH = 1100, mobileH
   return /* @__PURE__ */ React.createElement("div", { className: "scr" }, /* @__PURE__ */ React.createElement("p", { className: "heading" }, title), notes && /* @__PURE__ */ React.createElement("p", { className: "caption muted" }, notes.join(" \xB7 ")), ["light", "dark"].map((th) => /* @__PURE__ */ React.createElement("div", { className: "scr-row", key: th }, sizes.map(([m, lab, cls, h]) => /* @__PURE__ */ React.createElement("div", { key: m }, /* @__PURE__ */ React.createElement("p", { className: "caption scr-lab" }, lab, " \xB7 ", th === "light" ? "Light" : "Dark"), /* @__PURE__ */ React.createElement("div", { className: cls, "data-theme": th, style: { height: h } }, render(m, th)))))));
 }
 const MINE = [["booking", "Program\u0103ri, calendar \u0219i reamintiri", 3], ["crm", "Clien\u021Bi, istoric \u0219i oportunit\u0103\u021Bi"], ["hr", "Echip\u0103, prezen\u021B\u0103 \u0219i concedii", 1], ["finance", "Facturi, scaden\u021Be \u0219i restan\u021Be", 2], ["projects", "Proiecte, sarcini \u0219i termene"], ["shifts", "Ture \u0219i \xEEnlocuiri"], ["documents", "Documente \u0219i \u0219abloane"], ["portal", "Pagina afacerii pentru clien\u021Bi"]];
-const RECO = { marketing: { reason: "Se potrive\u0219te cu Booking: trimite automat reamintiri \u0219i campanii clien\u021Bilor t\u0103i.", cost: "49 lei pe lun\u0103 \xB7 f\u0103r\u0103 cost de implementare" } };
+const RECO = { marketing: { reason: "Se potrive\u0219te cu EasyBook: trimite automat reamintiri \u0219i campanii clien\u021Bilor t\u0103i.", cost: "49 lei pe lun\u0103 \xB7 f\u0103r\u0103 cost de implementare" } };
 const VIEWER_ROLE = "owner";
 const RECO_FOR = (a) => (VIEWER_ROLE === "owner" || VIEWER_ROLE === "admin") && a === "marketing" ? RECO[a] : null;
 const OTHER = [["inventory", "unavailable"], ["analytics", "notInRole"], ["marketing", "notInPlan"], ["network", "notInPlan"]];
@@ -459,11 +460,6 @@ function SignIn({ mode, th }) {
   const err = mode === "mobile" && th === "dark";
   const mob = mode === "mobile";
   const lang = h(V.LanguageSwitcher, { value: "ro", onChange: () => {} });
-  const panel = h(V.BrandZone, { as: "aside", className: "sb-brand" },
-    h("div", { className: "sb-brand__top" }, h(V.Logo, { size: mob ? 32 : 40 }), mob ? lang : null),
-    mob ? null : h("p", { className: "display-xl sb-statement" }, "Afacerea ta.", h("br"), "Într-un singur loc."),
-    mob ? null : h(Chevrons, { cls: "sb-chev" }),
-    mob ? null : h("p", { className: "caption sb-foot" }, "© 2026 Ventora Systems"));
   const form = h("div", { className: "auth-card sb-card" },
     h("div", { className: "auth-head" }, h("h1", { className: "display-hub" }, "Bine ai revenit"), h("p", { className: "body muted" }, "Intră în contul tău Ventora.")),
     err && h(V.Notice, { tone: "danger", title: "E-mailul sau parola nu sunt corecte", actions: h(V.Button, { size: "sm", variant: "quiet" }, "Ai uitat parola?") }, "Verifică-le și încearcă din nou."),
@@ -472,12 +468,8 @@ function SignIn({ mode, th }) {
     h(V.Checkbox, { label: "Ține-mă minte pe acest dispozitiv timp de 30 de zile" }),
     h(V.Button, { variant: "primary", size: "lg", block: true }, "Intră în cont"),
     h("div", { className: "auth-note" }, h(V.Icon, { name: "mail", size: 16 }), h("p", { className: "body-small" }, "Nu ai cont? Conturile se fac doar prin invitație. Dacă ai primit una, deschide linkul din e-mail și îți alegi parola.")));
-  return h("div", { className: "auth sb " + mode },
-    panel,
-    h("div", { className: "sb-formside" },
-      mob ? null : h("header", { className: "auth-top sb-top" }, lang),
-      h("main", { className: "auth-main" }, form),
-      h("footer", { className: "auth-foot caption" }, mob ? "© 2026 Ventora Systems · Termeni · Confidențialitate · Ajutor" : "Termeni · Confidențialitate · Ajutor")));
+  /* the page is the system's AuthLayout (R-2F9) */
+  return h(V.AuthLayout, { languageSelector: lang, footer: "Termeni · Confidențialitate · Ajutor" }, form);
 }
 
 mount(/* @__PURE__ */ React.createElement(Screens, { title: "Autentificare \u2014 doar prin invita\u021Bie", notes: ["Mobil \xB7 Dark: starea de eroare"], render: (m, th) => /* @__PURE__ */ React.createElement(SignIn, { mode: m, th }) }));

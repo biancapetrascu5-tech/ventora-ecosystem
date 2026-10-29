@@ -1,0 +1,69 @@
+{
+ "name": "RuleBuilder",
+ "version": "1.0.1",
+ "kind": "component",
+ "group": "Comercial",
+ "status": "changed",
+ "description": "Eligibility rules for a Growth campaign: criterion, operator, value, joined by \"all\" or \"any\", with the estimated number of eligible businesses.",
+ "exports": [
+  "RuleBuilder"
+ ],
+ "props": [
+  {
+   "name": "criteria",
+   "type": "RuleCriterion[]",
+   "required": true,
+   "note": ""
+  },
+  {
+   "name": "rules",
+   "type": "Rule[]",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "match",
+   "type": "\"all\" | \"any\"",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "onChange",
+   "type": "(rules: Rule[]) => void",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "onMatchChange",
+   "type": "(m: \"all\" | \"any\") => void",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "estimate",
+   "type": "number",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "className",
+   "type": "string",
+   "required": false,
+   "note": ""
+  }
+ ],
+ "events": [
+  "onChange",
+  "onMatchChange"
+ ],
+ "states": [
+  "match-all",
+  "match-any",
+  "empty",
+  "stacked",
+  "with-estimate"
+ ],
+ "notes": "",
+ "readme": "components/RuleBuilder/README.md",
+ "preview": "components/RuleBuilder/preview.html"
+}

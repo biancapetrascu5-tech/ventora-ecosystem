@@ -1,4 +1,4 @@
-<!-- @dsCard group="Forms" height=300 -->
+<!-- @dsCard group="Forms" height=1930 width=1200 -->
 <!doctype html>
 <html lang="ro">
 <head><meta charset="utf-8"><title>Textarea — Ventora</title>
@@ -250,6 +250,15 @@ html,body{min-height:100%}
 .fxframe .caption{color:var(--ink-muted)}
 @container (max-width:420px){.fxlang{grid-template-columns:32px minmax(0,1fr) auto}.fxlang .v-iconbtn{display:none}}
 
+
+/* c5: light/dark frames and DE/IT sections */
+.qwrap{display:flex;flex-direction:column;gap:var(--space-6);padding:var(--space-4);box-sizing:border-box;background:var(--canvas);color:var(--ink)}
+.qfr{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--space-4);align-items:start}
+.qfr1{grid-template-columns:minmax(0,1fr)}
+.qf{display:flex;flex-direction:column;gap:var(--space-4);padding:var(--space-4);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg);min-width:0;box-sizing:border-box}
+.qf-t{margin:0;color:var(--ink-muted)}
+.qh{margin:0;color:var(--ink)}
+.qsec{display:flex;flex-direction:column;gap:var(--space-3)}
 </style>
 </head>
 <body>
@@ -265,7 +274,34 @@ const mount = (el) => ReactDOM.createRoot(document.getElementById("root")).rende
 function Demo() {
   return /* @__PURE__ */ React.createElement("div", { className: "d g2" }, /* @__PURE__ */ React.createElement(V.FormField, { label: "Note pentru echip\u0103", helper: "Le vede doar echipa, nu clientul." }, /* @__PURE__ */ React.createElement(V.Textarea, { placeholder: "Ex.: prefer\u0103 o camer\u0103 lini\u0219tit\u0103" })), /* @__PURE__ */ React.createElement(V.FormField, { label: "Mesaj pentru client", counter: null }, /* @__PURE__ */ React.createElement(V.Textarea, { defaultValue: "Ne vedem joi la 14:30.", maxLength: 160, showCount: true, state: "focus" })), /* @__PURE__ */ React.createElement(V.FormField, { label: "Motivul anul\u0103rii", required: true, error: "Scrie un motiv, \xEEl trimitem clientului." }, /* @__PURE__ */ React.createElement(V.Textarea, { rows: 2 })), /* @__PURE__ */ React.createElement(V.FormField, { label: "Istoric" }, /* @__PURE__ */ React.createElement(V.Textarea, { rows: 2, defaultValue: "Creat de Ana, 12.10.2026", disabled: true })), /* @__PURE__ */ React.createElement(DE, null, /* @__PURE__ */ React.createElement(V.FormField, { label: "Interne Notizen f\xFCr das Team", optional: true }, /* @__PURE__ */ React.createElement(V.Textarea, { rows: 2, placeholder: "z. B. bevorzugt einen ruhigen Raum" }))));
 }
-mount(/* @__PURE__ */ React.createElement(Demo, null));
+
+const Qh = React.createElement;
+const Q_Fr = ({ theme, title, children, style }) => Qh("section", { className: "qf", "data-theme": theme, style: Object.assign({ background: "var(--canvas)", color: "var(--ink)" }, style || {}) }, Qh("p", { className: "caption qf-t" }, title || (theme === "dark" ? "Dark" : "Light")), children);
+const Q_Pair = ({ children, cols, light, dark }) => Qh("div", { className: cols === 1 ? "qfr qfr1" : "qfr" }, Qh(Q_Fr, { theme: "light" }, light || children), Qh(Q_Fr, { theme: "dark" }, dark || children));
+const Q_Loc = ({ de, it, cols, theme }) => Qh("div", { className: cols === 1 ? "qfr qfr1" : "qfr" }, Qh(Q_Fr, { theme: theme || "light", title: "DE · Deutsch" }, Qh(V.LocaleProvider, { locale: "de" }, de)), Qh(Q_Fr, { theme: theme || "light", title: "IT · Italiano" }, Qh(V.LocaleProvider, { locale: "it" }, it)));
+const Q_Sec = ({ title, children }) => Qh("div", { className: "qsec" }, Qh("h2", { className: "heading qh" }, title), children);
+const Q_Row = ({ label, children }) => Qh("div", { className: "r" }, Qh("span", { className: "l caption" }, label), children);
+const Q_TA = ({ t }) => Qh("div", { className: "g2" },
+  Qh(V.FormField, { label: t.l1, helper: t.h1 }, Qh(V.Textarea, { placeholder: t.p1 })),
+  Qh(V.FormField, { label: t.l2, counter: null }, Qh(V.Textarea, { defaultValue: t.v2, maxLength: 160, showCount: true, state: "focus" })),
+  Qh(V.FormField, { label: t.l3, required: true, error: t.e3 }, Qh(V.Textarea, { rows: 2, invalid: true })),
+  Qh(V.FormField, { label: t.l4 }, Qh(V.Textarea, { rows: 2, defaultValue: t.v4, disabled: true })));
+const Q_RO = { l1: "Note pentru echipă", h1: "Le vede doar echipa, nu clientul.", p1: "Ex.: preferă o cameră liniștită", l2: "Mesaj pentru client", v2: "Ne vedem joi la 14:30. Te rugăm să ajungi cu 5 minute mai devreme.", l3: "Motivul anulării", e3: "Scrie un motiv, îl trimitem clientului.", l4: "Istoric", v4: "Creat de Ana, 12.10.2026" };
+const Q_DE = { l1: "Interne Notizen für das Team", h1: "Nur Ihr Team sieht diese Notizen, nicht der Kunde.", p1: "z. B. bevorzugt einen ruhigen Raum", l2: "Nachricht an den Kunden", v2: "Wir sehen uns am Donnerstag um 14:30 Uhr. Bitte kommen Sie 5 Minuten früher.", l3: "Grund der Terminabsage", e3: "Bitte geben Sie einen Grund an, wir senden ihn an den Kunden.", l4: "Verlauf", v4: "Erstellt von Ana am 12.10.2026" };
+const Q_IT = { l1: "Note interne per il team", h1: "Le vede solo il Suo team, non il cliente.", p1: "Es.: preferisce una stanza tranquilla", l2: "Messaggio per il cliente", v2: "Ci vediamo giovedì alle 14:30. La preghiamo di arrivare 5 minuti prima.", l3: "Motivo dell’annullamento", e3: "Scriva un motivo, lo invieremo al cliente.", l4: "Cronologia", v4: "Creato da Ana il 12.10.2026" };
+function Q_Extra() {
+  return Qh("div", { className: "qwrap" },
+    Qh(Q_Sec, { title: "Stări: cu mouse-ul deasupra · doar citire · crește cu textul · aproape de limită" },
+      Qh("div", { className: "g2" },
+        Qh(V.FormField, { label: "Cu mouse-ul deasupra" }, Qh(V.Textarea, { rows: 2, state: "hover", placeholder: "Scrie o notă…" })),
+        Qh(V.FormField, { label: "Doar citire", helper: "Se poate copia, nu se poate modifica." }, Qh(V.Textarea, { rows: 2, readOnly: true, defaultValue: "Alergie la amoniac — folosește vopsea fără amoniac." })),
+        Qh(V.FormField, { label: "Crește cu textul" }, Qh(V.Textarea, { rows: 3, autoGrow: true, defaultValue: "Prima vizită: tuns și spălat.\nA doua vizită: vopsit șuvițe.\nA treia vizită: tratament de hidratare." })),
+        Qh(V.FormField, { label: "Aproape de limită", counter: null }, Qh(V.Textarea, { rows: 2, maxLength: 160, showCount: true, defaultValue: "Bună, Ana! Îți reamintim că mâine, joi, la 14:30, ai programare la Salon Aurora pentru tuns și coafat. Dacă nu poți ajunge, anunță-ne." })))),
+    Qh(Q_Sec, { title: "Light / Dark" }, Qh(Q_Pair, { cols: 1 }, Qh(Q_TA, { t: Q_RO }))),
+    Qh(Q_Sec, { title: "DE / IT" }, Qh(Q_Loc, { cols: 1, de: Qh(Q_TA, { t: Q_DE }), it: Qh(Q_TA, { t: Q_IT }) })));
+}
+
+mount(Qh("div", null, /* @__PURE__ */ React.createElement(Demo, null), Qh(Q_Extra, null)));
 </script>
 </body>
 </html>

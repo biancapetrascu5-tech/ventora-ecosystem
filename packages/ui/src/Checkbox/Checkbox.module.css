@@ -1,0 +1,105 @@
+/* .v-check din bundle.css */
+.root {
+  position: relative;
+  display: inline-flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.boxWrap {
+  position: relative;
+  display: inline-flex;
+  flex: none;
+  width: var(--space-5);
+  height: var(--space-5);
+  align-items: center;
+  justify-content: center;
+}
+
+.box {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: var(--space-4);
+  height: var(--space-4);
+  border-radius: var(--radius-xs);
+  border: var(--border-width-control) solid var(--control-border);
+  background: var(--sheet);
+  color: transparent;
+  pointer-events: none;
+  transition:
+    background-color var(--duration-instant) var(--ease-standard),
+    border-color var(--duration-instant) var(--ease-standard),
+    color var(--duration-instant) var(--ease-standard),
+    box-shadow var(--duration-fast) var(--ease-standard);
+}
+
+.root[data-hovered] .box,
+.isHover .box {
+  border-color: var(--control-border-hover);
+}
+
+.root[data-focus-visible] .box,
+.isFocus .box {
+  outline: var(--focus-ring-width) solid var(--focus-ring);
+  outline-offset: var(--focus-ring-offset);
+}
+
+.root[data-pressed] .box,
+.isPressed .box {
+  background-image: linear-gradient(var(--state-pressed), var(--state-pressed));
+}
+
+.root[data-selected] .box,
+.root[data-indeterminate] .box {
+  background-color: var(--primary);
+  border-color: var(--primary);
+  color: var(--on-primary);
+}
+
+.root.isError .box {
+  border-color: var(--danger);
+}
+
+.root[data-disabled] {
+  color: var(--ink-disabled);
+  cursor: not-allowed;
+}
+
+.root[data-disabled] .box {
+  border-color: var(--line-strong);
+  background: var(--sunken);
+}
+
+.root[data-disabled][data-selected] .box {
+  background: var(--ink-disabled);
+  border-color: var(--ink-disabled);
+  color: var(--sheet);
+}
+
+.text {
+  display: flex;
+  flex-direction: column;
+  padding-top: var(--space-0-5);
+  min-width: 0;
+}
+
+.desc {
+  color: var(--ink-muted);
+}
+
+.root[data-disabled] .desc {
+  color: var(--ink-disabled);
+}
+
+@media (pointer: coarse), (max-width: 767px) {
+  .boxWrap {
+    width: var(--touch-target);
+    height: var(--touch-target);
+    margin: calc((var(--touch-target) - var(--space-5)) / -2);
+    margin-right: 0;
+  }
+}

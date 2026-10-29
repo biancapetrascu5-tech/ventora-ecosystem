@@ -1,4 +1,4 @@
-<!-- @dsCard group="Data" height=520 width=1100 -->
+<!-- @dsCard group="Data" height=1342 width=1100 -->
 <!doctype html>
 <html lang="ro">
 <head><meta charset="utf-8"><title>Stat — Ventora</title>
@@ -250,6 +250,15 @@ html,body{min-height:100%}
 .fxframe .caption{color:var(--ink-muted)}
 @container (max-width:420px){.fxlang{grid-template-columns:32px minmax(0,1fr) auto}.fxlang .v-iconbtn{display:none}}
 
+
+/* c5: light/dark frames and DE/IT sections */
+.qwrap{display:flex;flex-direction:column;gap:var(--space-6);padding:var(--space-4);box-sizing:border-box;background:var(--canvas);color:var(--ink)}
+.qfr{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--space-4);align-items:start}
+.qfr1{grid-template-columns:minmax(0,1fr)}
+.qf{display:flex;flex-direction:column;gap:var(--space-4);padding:var(--space-4);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg);min-width:0;box-sizing:border-box}
+.qf-t{margin:0;color:var(--ink-muted)}
+.qh{margin:0;color:var(--ink)}
+.qsec{display:flex;flex-direction:column;gap:var(--space-3)}
 </style>
 </head>
 <body>
@@ -266,7 +275,34 @@ function StatDemo() {
   return /* @__PURE__ */ React.createElement("div", { className: "d" }, /* @__PURE__ */ React.createElement("div", { className: "v-stats" }, /* @__PURE__ */ React.createElement(V.Stat, { label: "Venituri", value: "48.250 lei", delta: { value: "+12%", period: "fa\u021B\u0103 de oct. 2025" } }), /* @__PURE__ */ React.createElement(V.Stat, { label: "Clien\u021Bi noi", value: "64", delta: { value: "\u22128%", period: "fa\u021B\u0103 de oct. 2025" } }), /* @__PURE__ */ React.createElement(V.Stat, { label: "Restante", value: "4.310 lei", tone: "attention", hint: "4 facturi", onClick: () => {
   } }), /* @__PURE__ */ React.createElement(V.Stat, { label: "La lucru acum", value: "4", unit: "din 6", hint: "Sorin \xEEncepe la 11:00" })), /* @__PURE__ */ React.createElement(DE, null, /* @__PURE__ */ React.createElement("div", { className: "v-stats" }, /* @__PURE__ */ React.createElement(V.Stat, { label: "Umsatz im laufenden Monat", value: "48.250 lei", delta: { value: "+12 %", period: "gegen\xFCber Oktober 2025" } }), /* @__PURE__ */ React.createElement(V.Stat, { label: "\xDCberf\xE4llige Rechnungen", value: "4.310 lei", tone: "attention", hint: "4 Rechnungen, die \xE4lteste seit 14 Tagen" }))), /* @__PURE__ */ React.createElement("div", { className: "v-stats" }, /* @__PURE__ */ React.createElement(V.Stat, { label: "Durat\u0103 medie pe programare", value: "52", unit: "min", delta: { value: "+4 min", direction: "up", good: false, period: "mai mult dec\xE2t planificat" } })));
 }
-mount(/* @__PURE__ */ React.createElement(StatDemo, null));
+
+const Qh = React.createElement;
+const Q_Fr = ({ theme, title, children, style }) => Qh("section", { className: "qf", "data-theme": theme, style: Object.assign({ background: "var(--canvas)", color: "var(--ink)" }, style || {}) }, Qh("p", { className: "caption qf-t" }, title || (theme === "dark" ? "Dark" : "Light")), children);
+const Q_Pair = ({ children, cols, light, dark }) => Qh("div", { className: cols === 1 ? "qfr qfr1" : "qfr" }, Qh(Q_Fr, { theme: "light" }, light || children), Qh(Q_Fr, { theme: "dark" }, dark || children));
+const Q_Loc = ({ de, it, cols, theme }) => Qh("div", { className: cols === 1 ? "qfr qfr1" : "qfr" }, Qh(Q_Fr, { theme: theme || "light", title: "DE · Deutsch" }, Qh(V.LocaleProvider, { locale: "de" }, de)), Qh(Q_Fr, { theme: theme || "light", title: "IT · Italiano" }, Qh(V.LocaleProvider, { locale: "it" }, it)));
+const Q_Sec = ({ title, children }) => Qh("div", { className: "qsec" }, Qh("h2", { className: "heading qh" }, title), children);
+const Q_Row = ({ label, children }) => Qh("div", { className: "r" }, Qh("span", { className: "l caption" }, label), children);
+const Q_Stats = ({ t }) => Qh("div", { className: "v-stats" },
+  Qh(V.Stat, { label: t.rev, value: "48.250 lei", icon: "banknote", delta: { value: "+12%", period: t.per } }),
+  Qh(V.Stat, { label: t.cli, value: "64", delta: { value: "−8%", period: t.per } }),
+  Qh(V.Stat, { label: t.over, value: "4.310 lei", tone: "attention", hint: t.overH, onClick: () => {} }),
+  Qh(V.Stat, { label: t.work, value: "4", unit: t.of6, hint: t.workH }));
+const Q_RO = { rev: "Venituri", cli: "Clienți noi", per: "față de oct. 2025", over: "Facturi restante", overH: "4 facturi, cea mai veche de 14 zile", work: "La lucru acum", of6: "din 6", workH: "Sorin începe la 11:00" };
+const Q_DE = { rev: "Umsatz im laufenden Monat", cli: "Neue Kunden", per: "gegenüber Oktober 2025", over: "Überfällige Rechnungen", overH: "4 Rechnungen, die älteste seit 14 Tagen", work: "Gerade im Dienst", of6: "von 6", workH: "Sorin beginnt um 11:00 Uhr" };
+const Q_IT = { rev: "Entrate del mese in corso", cli: "Nuovi clienti", per: "rispetto a ottobre 2025", over: "Fatture scadute", overH: "4 fatture, la più vecchia da 14 giorni", work: "Al lavoro adesso", of6: "su 6", workH: "Sorin inizia alle 11:00" };
+function Q_Extra() {
+  return Qh("div", { className: "qwrap" },
+    Qh(Q_Sec, { title: "Stări: cu icon · creștere bună · scădere bună · creștere rea · fără schimbare (atenția, care se poate apăsa, e mai sus)" },
+      Qh("div", { className: "v-stats" },
+        Qh(V.Stat, { label: "Programări în octombrie", value: "312", icon: "calendar-check", delta: { value: "+18", direction: "up", good: true, period: "față de septembrie" } }),
+        Qh(V.Stat, { label: "Anulări", value: "9", delta: { value: "−3", direction: "down", good: true, period: "față de septembrie" } }),
+        Qh(V.Stat, { label: "Cheltuieli", value: "12.900 lei", delta: { value: "+21%", direction: "up", good: false, period: "față de septembrie" } }),
+        Qh(V.Stat, { label: "Ședințe în așteptare", value: "2", hint: "Fără termen depășit" }))),
+    Qh(Q_Sec, { title: "Light / Dark" }, Qh(Q_Pair, null, Qh(Q_Stats, { t: Q_RO }))),
+    Qh(Q_Sec, { title: "DE / IT" }, Qh(Q_Loc, { de: Qh(Q_Stats, { t: Q_DE }), it: Qh(Q_Stats, { t: Q_IT }) })));
+}
+
+mount(Qh("div", null, /* @__PURE__ */ React.createElement(StatDemo, null), Qh(Q_Extra, null)));
 </script>
 </body>
 </html>

@@ -1,4 +1,4 @@
-<!-- @dsCard group="Hub" height=2250 width=1200 -->
+<!-- @dsCard group="Hub" height=4488 width=1200 -->
 <!doctype html>
 <html lang="ro">
 <head><meta charset="utf-8"><title>AppDock — Ventora</title>
@@ -11,6 +11,9 @@ html,body{margin:0;overflow-x:hidden}
 .phone{width:358px;padding:var(--space-4);border:var(--border-width) solid var(--line-strong);border-radius:var(--radius-xl);background:var(--canvas)}
 .row{display:flex;flex-direction:column;gap:var(--space-6)}
 .note{margin:0;color:var(--ink-secondary)}
+.thgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(520px,100%),1fr));gap:var(--space-4);align-items:start}
+.thf{display:flex;flex-direction:column;gap:var(--space-4);padding:var(--space-5);background:var(--canvas);color:var(--ink);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg);min-width:0;box-sizing:border-box}
+.thf .thl{margin:0;color:var(--ink-muted);font-weight:600}
 </style>
 </head>
 <body>
@@ -27,9 +30,10 @@ const APPS = [
   { app: "shifts", description: "Ture și înlocuiri", live: { text: "Azi lucrează 4 colegi" } },
   { app: "documents", description: "Documente și șabloane", live: { text: "Ultimul deschis: Contract Salon Aurora · ieri" } }
 ];
+const ALL13 = ["booking","crm","hr","finance","projects","shifts","documents","inventory","analytics","marketing","events","assets","contracts"].map((a) => ({ app: a, description: "" }));
 const DE = [
-  { app: "booking", name: "Terminbuchung", description: "Termine, Kalender und Erinnerungen an einem Ort verwalten", badge: 3, live: { text: "Nächster Termin: 09:30 · Ana Popescu" } },
-  { app: "crm", name: "Kundenbeziehungsmanagement", description: "Kunden, Verlauf und Verkaufschancen", live: { text: "4 neue Kunden diese Woche" } },
+  { app: "booking", description: "Termine, Kalender und Erinnerungen an einem Ort verwalten", badge: 3, live: { text: "Nächster Termin: 09:30 · Ana Popescu" } },
+  { app: "crm", description: "Kunden, Verlauf und Verkaufschancen", live: { text: "4 neue Kunden diese Woche" } },
   { app: "hr", description: "Team, Anwesenheit und Urlaub", badge: 1, live: { text: "1 Antrag wartet auf Freigabe", attention: true } },
   { app: "finance", description: "Rechnungen, Fälligkeiten und Rückstände", live: { text: "2 fällige Rechnungen · 2.480 lei", attention: true } }
 ];
@@ -48,16 +52,37 @@ function Theme({ th }) {
     h("div", null, h("p", { className: "caption lab" }, "Repaus, peste marginea benzii de brand · treci cu mouse-ul peste o aplicație"),
       h("div", { className: "stage band" }, h(V.AppDock, { apps: APPS }))),
     h("div", { className: "row" },
-      h("div", null, h("p", { className: "caption lab" }, "Hover sau focus de tastatură pe CRM: iconul se deschide în fișa aplicației"),
+      h("div", null, h("p", { className: "caption lab" }, "Hover sau focus de tastatură pe ClientDesk: iconul se deschide în fișa aplicației"),
         h("div", { className: "stage" }, h(Forced, { apps: APPS, hover: 1, focus: th === "dark" ? 1 : null }))),
       h("div", null, h("p", { className: "caption lab" }, "Telefon: grilă de iconuri, fără fișă"),
         h("div", { className: "phone" }, h(V.AppDock, { apps: APPS })))));
 }
+const ITA = [
+  { app: "booking", description: "Appuntamenti, calendario e promemoria in un unico posto", badge: 3, live: { text: "Prossimo: 09:30 · Niccolò Lucà" } },
+  { app: "crm", description: "Clienti, cronologia e opportunità", live: { text: "4 nuovi clienti questa settimana" } },
+  { app: "hr", description: "Team, presenze e ferie", badge: 1, live: { text: "1 richiesta da approvare", attention: true } },
+  { app: "finance", description: "Fatture, scadenze e pagamenti scaduti", badge: 2, live: { text: "2 fatture in scadenza · 2.480 lei", attention: true } },
+  { app: "contracts", description: "Contratti, firme e rinnovi", live: { text: "1 rinnovo entro venerdì" } }
+];
 mount(h("div", null,
   h(Theme, { th: "light" }), h(Theme, { th: "dark" }),
   h("div", { className: "d", "data-theme": "light" },
-    h("p", { className: "caption lab" }, "Test cu etichete lungi în germană: numele lungi se taie cu „…”, descrierea se oprește la 2 rânduri, linia de azi la unul"),
-    h(V.LocaleProvider, { locale: "de" }, h("div", { className: "stage" }, h(Forced, { apps: DE, hover: 1 }))))));
+    h("p", { className: "heading" }, "Light · Deutsch"),
+    h("p", { className: "caption lab" }, "Test în germană: numele aplicațiilor nu se traduc (D-UX-4); descrierea se oprește la 2 rânduri, linia de azi la unul"),
+    h(V.LocaleProvider, { locale: "de" }, h("div", { className: "stage" }, h(Forced, { apps: DE, hover: 1 }))),
+    h("p", { className: "caption lab" }, "Toate cele 13 nume, la lățimea cea mai mică a unei aplicații (96px; pe telefon 86px): niciunul nu se taie, cel mai lung e ContractDesk"),
+    h("div", { className: "stage", style: { width: 7 * 96 + 6 * 8 + 32 + 48, boxSizing: "border-box" } }, h(V.AppDock, { apps: ALL13 })),
+    h("div", { className: "phone" }, h(V.AppDock, { apps: ALL13 }))),
+  h("div", { className: "d", "data-theme": "light" },
+    h("p", { className: "heading" }, "Light · Italiano"),
+    h("p", { className: "caption lab" }, "Test în italiană: prima fișă se deschide spre interior; linia de azi peach doar când te așteaptă ceva"),
+    h(V.LocaleProvider, { locale: "it" }, h("div", { className: "stage" }, h(Forced, { apps: ITA, hover: 0 }))),
+    h(V.LocaleProvider, { locale: "it" }, h("div", { className: "stage" }, h(Forced, { apps: ITA, hover: 4 })))),
+  h("div", { className: "d", "data-theme": "dark" },
+    h("p", { className: "heading" }, "Dark · Deutsch · Italiano"),
+    h("div", { className: "row" },
+      h(V.LocaleProvider, { locale: "de" }, h("div", { className: "stage band" }, h(Forced, { apps: DE, hover: 3 }))),
+      h(V.LocaleProvider, { locale: "it" }, h("div", { className: "phone" }, h(V.AppDock, { apps: ITA })))))));
 </script>
 </body>
 </html>

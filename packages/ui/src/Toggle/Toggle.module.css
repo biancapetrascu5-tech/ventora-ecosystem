@@ -1,0 +1,157 @@
+/* .v-toggle din bundle.css */
+.root {
+  display: inline-flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.labelStart {
+  flex-direction: row-reverse;
+  justify-content: space-between;
+}
+
+.track {
+  position: relative;
+  flex: none;
+  width: var(--space-10);
+  height: var(--space-6);
+  padding: 0;
+  margin-top: calc(var(--space-0-5) * -1);
+  border-radius: var(--radius-full);
+  border: var(--border-width-control) solid var(--control-border);
+  background: var(--sheet);
+  box-sizing: border-box;
+  transition:
+    background-color var(--duration-instant) var(--ease-standard),
+    border-color var(--duration-instant) var(--ease-standard),
+    box-shadow var(--duration-fast) var(--ease-standard);
+}
+
+.root[data-hovered] .track,
+.isHover .track {
+  border-color: var(--control-border-hover);
+}
+
+.root[data-focus-visible] .track,
+.isFocus .track {
+  outline: var(--focus-ring-width) solid var(--focus-ring);
+  outline-offset: var(--focus-ring-offset);
+}
+
+.thumb {
+  position: absolute;
+  top: var(--space-0-5);
+  left: var(--space-0-5);
+  width: var(--space-4);
+  height: var(--space-4);
+  border-radius: var(--radius-full);
+  background: var(--control-border);
+  color: var(--on-primary);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition:
+    transform var(--duration-fast) var(--ease-standard),
+    background-color var(--duration-fast) var(--ease-standard);
+}
+
+.root[data-selected] .track {
+  background: var(--primary);
+  border-color: var(--primary);
+}
+
+.root[data-selected] .thumb {
+  transform: translateX(var(--space-4));
+  background: var(--on-primary);
+  color: var(--primary);
+}
+
+.root[data-pressed] .thumb,
+.isPressed .thumb {
+  width: var(--space-5);
+}
+
+.isPressed[data-selected] .thumb {
+  transform: translateX(var(--space-3));
+}
+
+.root.isError .track {
+  border-color: var(--danger);
+}
+
+.root[data-disabled] {
+  color: var(--ink-disabled);
+  cursor: not-allowed;
+}
+
+.root[data-disabled] .track {
+  background: var(--sunken);
+  border-color: var(--line-strong);
+}
+
+.root[data-disabled] .thumb {
+  background: var(--line-strong);
+}
+
+.root[data-disabled][data-selected] .track {
+  background: var(--ink-disabled);
+  border-color: var(--ink-disabled);
+}
+
+.root[data-disabled][data-selected] .thumb {
+  background: var(--sheet);
+  color: var(--ink-disabled);
+}
+
+.isLoading {
+  cursor: progress;
+}
+
+.root.isLoading .thumb {
+  background: var(--on-primary);
+  color: var(--ink);
+}
+
+.root.isLoading:not([data-selected]) .thumb {
+  background: var(--sunken);
+}
+
+.spinner {
+  display: inline-flex;
+  flex: none;
+  color: currentColor;
+  animation: spin 0.9s linear infinite;
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.text {
+  display: flex;
+  flex-direction: column;
+  padding-top: var(--space-0-5);
+  min-width: 0;
+}
+
+.desc {
+  color: var(--ink-muted);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spinner {
+    animation-duration: 0.01ms;
+    animation-iteration-count: 1;
+  }
+}
+
+@media (pointer: coarse), (max-width: 767px) {
+  .track::after {
+    content: '';
+    position: absolute;
+    inset: calc((var(--touch-target) - var(--space-6)) / -2) calc(var(--space-0-5) * -1);
+  }
+}

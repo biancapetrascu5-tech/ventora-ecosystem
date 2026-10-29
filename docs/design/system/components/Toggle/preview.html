@@ -1,4 +1,4 @@
-<!-- @dsCard group="Forms" height=260 -->
+<!-- @dsCard group="Forms" height=1310 width=1200 -->
 <!doctype html>
 <html lang="ro">
 <head><meta charset="utf-8"><title>Toggle — Ventora</title>
@@ -250,6 +250,15 @@ html,body{min-height:100%}
 .fxframe .caption{color:var(--ink-muted)}
 @container (max-width:420px){.fxlang{grid-template-columns:32px minmax(0,1fr) auto}.fxlang .v-iconbtn{display:none}}
 
+
+/* c5: light/dark frames and DE/IT sections */
+.qwrap{display:flex;flex-direction:column;gap:var(--space-6);padding:var(--space-4);box-sizing:border-box;background:var(--canvas);color:var(--ink)}
+.qfr{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--space-4);align-items:start}
+.qfr1{grid-template-columns:minmax(0,1fr)}
+.qf{display:flex;flex-direction:column;gap:var(--space-4);padding:var(--space-4);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg);min-width:0;box-sizing:border-box}
+.qf-t{margin:0;color:var(--ink-muted)}
+.qh{margin:0;color:var(--ink)}
+.qsec{display:flex;flex-direction:column;gap:var(--space-3)}
 </style>
 </head>
 <body>
@@ -265,7 +274,34 @@ const mount = (el) => ReactDOM.createRoot(document.getElementById("root")).rende
 function Demo() {
   return /* @__PURE__ */ React.createElement("div", { className: "d g2" }, /* @__PURE__ */ React.createElement("div", { className: "d0" }, /* @__PURE__ */ React.createElement(V.Toggle, { label: "Rezerv\u0103ri online", description: "Clien\u021Bii te g\u0103sesc \xEEn Portal.", defaultChecked: true }), /* @__PURE__ */ React.createElement(V.Toggle, { label: "Hover", state: "hover" }), /* @__PURE__ */ React.createElement(V.Toggle, { label: "Focus", state: "focus", defaultChecked: true }), /* @__PURE__ */ React.createElement(V.Toggle, { label: "Ap\u0103sat", state: "pressed", defaultChecked: true })), /* @__PURE__ */ React.createElement("div", { className: "d0" }, /* @__PURE__ */ React.createElement(V.Toggle, { label: "Se salveaz\u0103", loading: true, defaultChecked: true }), /* @__PURE__ */ React.createElement(V.Toggle, { label: "Eroare la salvare", invalid: true }), /* @__PURE__ */ React.createElement(V.Toggle, { label: "Dezactivat", disabled: true, defaultChecked: true }), /* @__PURE__ */ React.createElement(DE, null, /* @__PURE__ */ React.createElement(V.Toggle, { label: "Online-Buchungen aktivieren", labelPosition: "start", defaultChecked: true }))));
 }
-mount(/* @__PURE__ */ React.createElement(Demo, null));
+
+const Qh = React.createElement;
+const Q_Fr = ({ theme, title, children, style }) => Qh("section", { className: "qf", "data-theme": theme, style: Object.assign({ background: "var(--canvas)", color: "var(--ink)" }, style || {}) }, Qh("p", { className: "caption qf-t" }, title || (theme === "dark" ? "Dark" : "Light")), children);
+const Q_Pair = ({ children, cols, light, dark }) => Qh("div", { className: cols === 1 ? "qfr qfr1" : "qfr" }, Qh(Q_Fr, { theme: "light" }, light || children), Qh(Q_Fr, { theme: "dark" }, dark || children));
+const Q_Loc = ({ de, it, cols, theme }) => Qh("div", { className: cols === 1 ? "qfr qfr1" : "qfr" }, Qh(Q_Fr, { theme: theme || "light", title: "DE · Deutsch" }, Qh(V.LocaleProvider, { locale: "de" }, de)), Qh(Q_Fr, { theme: theme || "light", title: "IT · Italiano" }, Qh(V.LocaleProvider, { locale: "it" }, it)));
+const Q_Sec = ({ title, children }) => Qh("div", { className: "qsec" }, Qh("h2", { className: "heading qh" }, title), children);
+const Q_Row = ({ label, children }) => Qh("div", { className: "r" }, Qh("span", { className: "l caption" }, label), children);
+const Q_Tg = ({ t }) => Qh("div", { className: "g2" },
+  Qh("div", { className: "d0" },
+    Qh(V.Toggle, { label: t[0], description: t[1], defaultChecked: true }),
+    Qh(V.Toggle, { label: t[2] }),
+    Qh(V.Toggle, { label: t[3], state: "focus", defaultChecked: true }),
+    Qh(V.Toggle, { label: t[4], labelPosition: "start", description: t[5], defaultChecked: true })),
+  Qh("div", { className: "d0" },
+    Qh(V.Toggle, { label: t[6], loading: true, defaultChecked: true }),
+    Qh(V.Toggle, { label: t[7], invalid: true }),
+    Qh(V.Toggle, { label: t[8], disabled: true, defaultChecked: true }),
+    Qh(V.Toggle, { label: t[9], disabled: true })));
+const Q_RO = ["Rezervări online", "Clienții te găsesc în Portal.", "Reamintiri prin SMS (oprit)", "Focus", "Mesaj de mulțumire după vizită", "Pleacă la 2 ore după programare.", "Se salvează", "Nu s-a salvat — încearcă din nou", "Dezactivat, pornit", "Dezactivat, oprit"];
+const Q_DE = ["Online-Terminbuchung", "Kunden finden Sie im Portal.", "SMS-Erinnerungen (aus)", "Fokus", "Dankesnachricht nach dem Besuch", "Wird 2 Stunden nach dem Termin gesendet.", "Wird gespeichert", "Nicht gespeichert – bitte erneut versuchen", "Deaktiviert, eingeschaltet", "Deaktiviert, ausgeschaltet"];
+const Q_IT = ["Prenotazioni online", "I clienti La trovano su Portal.", "Promemoria via SMS (disattivati)", "Focus", "Messaggio di ringraziamento dopo la visita", "Viene inviato 2 ore dopo l’appuntamento.", "Salvataggio in corso", "Non salvato: riprovi", "Disabilitato, attivo", "Disabilitato, non attivo"];
+function Q_Extra() {
+  return Qh("div", { className: "qwrap" },
+    Qh(Q_Sec, { title: "Light / Dark · pornit, oprit, focus, etichetă la început, se salvează, eroare, dezactivat" }, Qh(Q_Pair, { cols: 1 }, Qh(Q_Tg, { t: Q_RO }))),
+    Qh(Q_Sec, { title: "DE / IT" }, Qh(Q_Loc, { cols: 1, de: Qh(Q_Tg, { t: Q_DE }), it: Qh(Q_Tg, { t: Q_IT }) })));
+}
+
+mount(Qh("div", null, /* @__PURE__ */ React.createElement(Demo, null), Qh(Q_Extra, null)));
 </script>
 </body>
 </html>

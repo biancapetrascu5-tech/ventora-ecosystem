@@ -1,0 +1,105 @@
+{
+ "name": "Dialog",
+ "version": "1.0.1",
+ "kind": "component",
+ "group": "Overlays",
+ "status": "changed",
+ "description": "A modal decision that blocks the page: confirm, a short form, a destructive choice.",
+ "exports": [
+  "Dialog"
+ ],
+ "props": [
+  {
+   "name": "open",
+   "type": "boolean",
+   "required": true,
+   "note": ""
+  },
+  {
+   "name": "onOpenChange",
+   "type": "(o: boolean) => void",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "title",
+   "type": "ReactNode",
+   "required": true,
+   "note": ""
+  },
+  {
+   "name": "description",
+   "type": "ReactNode",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "children",
+   "type": "ReactNode",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "footer",
+   "type": "ReactNode",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "size",
+   "type": "\"md\" | \"wide\"",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "tone",
+   "type": "\"danger\" | \"default\" | \"attention\"",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "icon",
+   "type": "string",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "dismissible",
+   "type": "boolean",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "initialFocus",
+   "type": "RefObject<HTMLElement>",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "inline",
+   "type": "boolean",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "className",
+   "type": "string",
+   "required": false,
+   "note": ""
+  }
+ ],
+ "events": [
+  "onOpenChange"
+ ],
+ "states": [
+  "danger",
+  "default-form",
+  "attention",
+  "wide",
+  "non-dismissible",
+  "modal-trigger"
+ ],
+ "notes": "Bottom-sheet layout under 640px depends on viewport width and is not shown; the modal trigger now starts closed so the frames stay visible.",
+ "readme": "components/Dialog/README.md",
+ "preview": "components/Dialog/preview.html"
+}

@@ -1,0 +1,27 @@
+{
+ "name": "FounderTwoFactor",
+ "version": "1.0.1",
+ "kind": "page",
+ "group": "Founder",
+ "status": "new",
+ "description": "Two-step sign-in in Founder Control Center: the same screens as HubTwoFactorSetup and HubTwoFactorVerify, with the Founder mark: AuthLayout with `brand=\"founder\"` (S63). - **The panel:** the Ventora mark next to \"Founder\", \"Control Center\" and \"Instrumentul intern al echipei Ventora\". There is no language selector. - **Required for everyone:** \"Contul Founder are acces la toate afacerile, așa că îl protejăm cu un al doilea pas. În Founder e obligatoriu pentru toți.\" - **Language:** Founder stays in Romanian (S57), but every text is a key in `i18n/two-factor.json`. - **Shown:** 1280 and 390, in light and dark — activation step 1 and verification as full screens, then on phone step 2 with a wrong code, step 3, the backup code, locked, and no access.",
+ "exports": [],
+ "props": [],
+ "events": [],
+ "states": [
+  "Founder Control Center — autentificarea în doi pași, obligatorie pentru toți",
+  "Activare · Pasul 1",
+  "Verificare · codul din aplicație",
+  "Cod de 6 cifre",
+  "Founder · celelalte ecrane · telefon",
+  "Activare · Pasul 2, cod greșit",
+  "Activare · Pasul 3",
+  "Verificare · cod de rezervă",
+  "Cod de rezervă",
+  "Verificare · blocat temporar",
+  "Nu mai am acces"
+ ],
+ "notes": "States are the labelled boards and frames of the preview (Light and Dark; desktop/tablet/phone).",
+ "readme": "components/FounderTwoFactor/README.md",
+ "preview": "components/FounderTwoFactor/preview.html"
+}

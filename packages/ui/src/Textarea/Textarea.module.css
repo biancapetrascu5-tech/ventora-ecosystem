@@ -1,0 +1,23 @@
+/* .v-control--area din bundle.css (restul vine din Input.module.css → .v-control) */
+/* Clasa dublată: trebuie să bată .control din Input.module.css indiferent de ordinea fișierelor. */
+.area.area {
+  height: auto;
+  align-items: stretch;
+  flex-direction: column;
+  padding: var(--space-2) var(--space-3);
+  gap: var(--space-1);
+}
+
+.input.input {
+  resize: vertical;
+  min-height: var(--control-lg);
+}
+
+.input.input.noResize {
+  resize: none;
+}
+
+.count {
+  align-self: flex-end;
+  color: var(--ink-muted);
+}

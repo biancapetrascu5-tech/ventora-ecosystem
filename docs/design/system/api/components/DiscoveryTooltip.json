@@ -1,0 +1,81 @@
+{
+ "name": "DiscoveryTooltip",
+ "version": "1.0.1",
+ "kind": "component",
+ "group": "Comercial",
+ "status": "changed",
+ "description": "A one-off hint next to the thing it explains: an arrow to the element, a short title, one sentence, \"Am înțeles\" and, optionally, \"Vezi cum funcționează\". At most one per screen; once closed it does not come back. On touch screens it is the same small anchored card — it never depends on hover. It does not cover fields or buttons in use. `commercial` adds the \"Recomandare\" label.",
+ "exports": [
+  "DiscoveryTooltip"
+ ],
+ "props": [
+  {
+   "name": "open",
+   "type": "boolean",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "title",
+   "type": "string",
+   "required": true,
+   "note": ""
+  },
+  {
+   "name": "body",
+   "type": "string",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "onGotIt",
+   "type": "() => void",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "onLearnMore",
+   "type": "() => void",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "placement",
+   "type": "\"bottom\" | \"top\"",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "align",
+   "type": "\"start\" | \"end\"",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "commercial",
+   "type": "boolean",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "children",
+   "type": "ReactNode",
+   "required": true,
+   "note": ""
+  }
+ ],
+ "events": [
+  "onGotIt",
+  "onLearnMore"
+ ],
+ "states": [
+  "bottom-start",
+  "commercial-end",
+  "top",
+  "without-learn-more",
+  "closed"
+ ],
+ "notes": "",
+ "readme": "components/DiscoveryTooltip/README.md",
+ "preview": "components/DiscoveryTooltip/preview.html"
+}

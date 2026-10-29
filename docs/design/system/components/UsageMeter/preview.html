@@ -1,4 +1,4 @@
-<!-- @dsCard group="Feedback" height=540 -->
+<!-- @dsCard group="Feedback" height=2870 width=1400 -->
 <!doctype html>
 <html lang="ro">
 <head><meta charset="utf-8"><title>UsageMeter — Ventora</title>
@@ -250,6 +250,13 @@ html,body{min-height:100%}
 .fxframe .caption{color:var(--ink-muted)}
 @container (max-width:420px){.fxlang{grid-template-columns:32px minmax(0,1fr) auto}.fxlang .v-iconbtn{display:none}}
 
+.um{display:flex;flex-direction:column;gap:var(--space-4);padding:var(--space-4)}
+.um-frame{display:flex;flex-direction:column;gap:var(--space-4);padding:var(--space-6);background:var(--canvas);color:var(--ink);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg)}
+.um-frame .heading{margin:0}
+.um-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--space-4);align-items:start}
+.um-cell{display:flex;flex-direction:column;gap:var(--space-2);min-width:0}
+.um-lab{margin:0;color:var(--ink-muted)}
+.um-body{padding:var(--space-4);background:var(--sheet);border:var(--border-width) solid var(--line);border-radius:var(--radius-md)}
 </style>
 </head>
 <body>
@@ -262,15 +269,30 @@ const DE = ({ children }) => /* @__PURE__ */ React.createElement(V.LocaleProvide
 const FR = ({ children }) => /* @__PURE__ */ React.createElement(V.LocaleProvider, { locale: "fr" }, children);
 const IT = ({ children }) => /* @__PURE__ */ React.createElement(V.LocaleProvider, { locale: "it" }, children);
 const mount = (el) => ReactDOM.createRoot(document.getElementById("root")).render(/* @__PURE__ */ React.createElement(V.LocaleProvider, { locale: "ro" }, el));
-function Demo() {
-  return /* @__PURE__ */ React.createElement("div", { className: "d g2" }, /* @__PURE__ */ React.createElement("div", { className: "frame", style: { padding: "var(--space-4)" } }, /* @__PURE__ */ React.createElement(V.UsageMeter, { label: "Program\u0103ri luna aceasta", used: 312, limit: 1e3, onUpgrade: () => {
-  } })), /* @__PURE__ */ React.createElement("div", { className: "frame", style: { padding: "var(--space-4)" } }, /* @__PURE__ */ React.createElement(V.UsageMeter, { label: "SMS-uri", used: 862, limit: 1e3, onUpgrade: () => {
-  } })), /* @__PURE__ */ React.createElement("div", { className: "frame", style: { padding: "var(--space-4)" } }, /* @__PURE__ */ React.createElement(V.UsageMeter, { label: "Angaja\u021Bi", used: 10, limit: 10, onUpgrade: () => {
-  } })), /* @__PURE__ */ React.createElement("div", { className: "frame", style: { padding: "var(--space-4)" } }, /* @__PURE__ */ React.createElement(V.UsageMeter, { label: "Spa\u021Biu documente", used: 2.4, limit: 5, unit: "GB", format: (n) => n.toLocaleString("ro-RO") }), /* @__PURE__ */ React.createElement("br", null), /* @__PURE__ */ React.createElement(V.UsageMeter, { label: "Clien\u021Bi", used: 4210 })), /* @__PURE__ */ React.createElement("div", { className: "frame", style: { padding: "var(--space-3)", maxWidth: "var(--spine-width)" } }, /* @__PURE__ */ React.createElement(V.UsageMeter, { compact: true, label: "Program\u0103ri", used: 980, limit: 1e3, onUpgrade: () => {
-  } })), /* @__PURE__ */ React.createElement(DE, null, /* @__PURE__ */ React.createElement("div", { className: "frame", style: { padding: "var(--space-4)" } }, /* @__PURE__ */ React.createElement(V.UsageMeter, { label: "SMS-Kontingent diesen Monat", used: 1e3, limit: 1e3, onUpgrade: () => {
-  } }))));
+/* UsageMeter — every state from the README, owner and non-owner at the limit (PASUL 2 c), Light/Dark frames, DE/IT. */
+const h = React.createElement;
+const noop = () => {};
+const Cell = ({ label, children, w }) => h("div", { className: "um-cell", style: w ? { maxWidth: w } : undefined }, h("p", { className: "caption um-lab" }, label), h("div", { className: "um-body" }, children));
+function Board({ lang = "ro" }) {
+  const T = {
+    ro: { appts: "Programări luna aceasta", sms: "SMS-uri luna aceasta", staff: "Angajați", docs: "Spațiu documente", clients: "Clienți", buy: "Cumpără pachet · 49 lei", owner: "Bianca Petrașcu", short: "Programări" },
+    de: { appts: "Termine diesen Monat", sms: "SMS diesen Monat", staff: "Mitarbeiter", docs: "Speicherplatz für Dokumente", clients: "Kunden", buy: "Paket kaufen · 49 lei", owner: "Bianca Petrașcu", short: "Termine" },
+    it: { appts: "Appuntamenti questo mese", sms: "SMS questo mese", staff: "Dipendenti", docs: "Spazio documenti", clients: "Clienti", buy: "Acquista pacchetto · 49 lei", owner: "Bianca Petrașcu", short: "Appuntamenti" }
+  }[lang];
+  return h("div", { className: "um-grid" },
+    h(Cell, { label: "1 · Sub prag: „Mai ai 688”" }, h(V.UsageMeter, { label: T.appts, used: 312, limit: 1000, onUpgrade: noop })),
+    h(Cell, { label: "2 · Aproape de limită · proprietar" }, h(V.UsageMeter, { label: T.sms, used: 862, limit: 1000, onBuy: noop, buyLabel: T.buy, onUpgrade: noop })),
+    h(Cell, { label: "3 · Aproape de limită · ceilalți" }, h(V.UsageMeter, { label: T.sms, used: 862, limit: 1000, owner: T.owner, onNotifyOwner: noop })),
+    h(Cell, { label: "4 · La limită · proprietar" }, h(V.UsageMeter, { label: T.staff, used: 10, limit: 10, onBuy: noop, buyLabel: T.buy, onUpgrade: noop })),
+    h(Cell, { label: "5 · La limită · ceilalți" }, h(V.UsageMeter, { label: T.staff, used: 10, limit: 10, owner: T.owner, onNotifyOwner: noop })),
+    h(Cell, { label: "6 · Cu unitate și format; nelimitat" }, h(V.UsageMeter, { label: T.docs, used: 2.4, limit: 5, unit: "GB", format: (n) => n.toLocaleString(lang === "ro" ? "ro-RO" : lang) }), h("div", { style: { height: 16 } }), h(V.UsageMeter, { label: T.clients, used: 4210 })),
+    h(Cell, { label: "7 · Compact (subsolul Spine) · aproape și la limită", w: 280 }, h(V.UsageMeter, { compact: true, label: T.short, used: 980, limit: 1000, onBuy: noop, buyLabel: T.buy, onUpgrade: noop }), h("div", { style: { height: 16 } }), h(V.UsageMeter, { compact: true, label: T.short, used: 1000, limit: 1000, owner: T.owner, onNotifyOwner: noop })));
 }
-mount(/* @__PURE__ */ React.createElement(Demo, null));
+mount(h("div", { className: "um" },
+  ["light", "dark"].map((th) => h("section", { key: th, className: "um-frame", "data-theme": th }, h("p", { className: "heading" }, th === "light" ? "Light" : "Dark"), h(Board, null))),
+  h("section", { className: "um-frame", "data-theme": "light" }, h("p", { className: "heading" }, "Deutsch"), h(V.LocaleProvider, { locale: "de" }, h(Board, { lang: "de" }))),
+  h("section", { className: "um-frame", "data-theme": "dark" }, h("p", { className: "heading" }, "Italiano · Dark"), h(V.LocaleProvider, { locale: "it" }, h(Board, { lang: "it" })))));
+
 </script>
 </body>
 </html>

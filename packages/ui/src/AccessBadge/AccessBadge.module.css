@@ -1,0 +1,16 @@
+/* .v-access din bundle.css (peste .v-pill): toate stările sunt neutre. `span.` = peste .root din
+   StatusPill.module.css, indiferent de ordinea foilor de stil. */
+span.access {
+  white-space: normal;
+  height: auto;
+  min-height: var(--space-6);
+  padding-top: var(--space-0-5);
+  padding-bottom: var(--space-0-5);
+  border-radius: var(--radius-md);
+  background: var(--neutral-soft);
+  color: var(--ink-secondary);
+}
+
+span.access > span:last-child {
+  overflow: visible;
+}

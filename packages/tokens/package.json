@@ -1,0 +1,17 @@
+{
+  "name": "@ventora/tokens",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "generate": "node scripts/generate.mjs",
+    "build": "node scripts/generate.mjs"
+  },
+  "exports": {
+    "./business/tokens.css": "./business/tokens.css",
+    "./business/fonts.css": "./business/fonts.css",
+    "./business/typography.css": "./business/typography.css",
+    "./business/types": "./business/types.ts",
+    "./portal/tokens.css": "./portal/tokens.css",
+    "./network/tokens.css": "./network/tokens.css"
+  }
+}

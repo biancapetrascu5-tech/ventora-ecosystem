@@ -1,0 +1,41 @@
+# BookingStates
+
+`page` · Ecrane Booking · versiunea 1.0.1
+
+The states that complete the EasyBook screens, with the approved copy: empty day, nothing that needs you, loading error, appointment marked done (with undo); first-use hint in the calendar; empty list with and without filters, export ready; bulk and single cancellation dialogs (the client message is mentioned only when the business has the notification on); "Marchează: nu a venit" and a successful move; validation and overlap in the new-appointment form, appointment saved; settings saved, unsaved changes; owner notified at the limit. Light and dark.
+
+## Evenimente
+
+—
+
+## Stări
+
+- empty-day
+- needs-you-empty
+- load-error
+- marked-done-undo
+- first-use-hint
+- empty-filtered
+- empty-all
+- export-ready
+- bulk-cancel-dialog
+- single-cancel-dialog
+- no-show
+- moved
+- validation-error
+- overlap
+- saved
+- settings-saved
+- unsaved-changes-dialog
+- owner-notified
+- confirmed-undo
+- see-all
+- first-free-slot
+- results-other-days
+- done-detail
+- de
+- it
+- light
+- dark
+
+Mai mult: `components/BookingStates/README.md`, exemplele: `components/BookingStates/preview.html`.

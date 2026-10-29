@@ -1,0 +1,136 @@
+/* .v-org + .v-orgmenu din bundle.css */
+.org {
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+  max-width: var(--search-width);
+  height: var(--control-md);
+  padding: 0 var(--space-2) 0 var(--space-1);
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--ink);
+  cursor: pointer;
+  font-family: inherit;
+  text-align: start;
+  transition: background-color var(--duration-instant) var(--ease-standard);
+}
+
+.org:hover,
+.isOpen {
+  background: var(--state-hover);
+}
+
+.org:focus-visible {
+  outline: var(--focus-ring-width) solid var(--focus-ring);
+  outline-offset: var(--focus-ring-offset);
+}
+
+.isStatic,
+.isStatic:hover {
+  cursor: default;
+  background: transparent;
+}
+
+.mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: var(--space-6);
+  height: var(--space-6);
+  border-radius: var(--radius-xs);
+  background: var(--neutral-soft);
+  color: var(--ink);
+  font-size: calc(var(--space-6) * 0.42);
+  font-weight: 700;
+  box-shadow: inset 0 0 0 var(--border-width) var(--line-strong);
+}
+
+.text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+
+.role {
+  color: var(--ink-muted);
+}
+
+.chev {
+  color: var(--ink-muted);
+}
+
+/* Lista (.v-popover.v-orgmenu) */
+.menu.menu {
+  position: fixed;
+  width: var(--popover-width);
+  min-width: 0;
+  padding: var(--space-1);
+}
+
+.heading {
+  padding: var(--space-2) var(--space-2) var(--space-1);
+  color: var(--ink-muted);
+}
+
+.search {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin: var(--space-1);
+  padding: 0 var(--space-2);
+  height: var(--control-md);
+  border: var(--border-width) solid var(--control-border);
+  border-radius: var(--radius-sm);
+  color: var(--ink-muted);
+}
+
+.search input {
+  flex: 1;
+  border: 0;
+  outline: none;
+  background: transparent;
+  color: var(--ink);
+  font-family: inherit;
+  min-width: 0;
+}
+
+.search:focus-within {
+  outline: var(--focus-ring-width) solid var(--focus-ring);
+  outline-offset: var(--focus-ring-offset);
+}
+
+.list {
+  max-height: var(--popover-max-height);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-0-5);
+}
+
+/* Butonul opțiunii: resetul de <button> (fundalul rămâne al .option / .optionSelected) */
+.item {
+  appearance: none;
+  border: 0;
+  font-family: inherit;
+}
+
+.item.item {
+  min-height: var(--control-lg);
+}
+
+@media (pointer: coarse), (max-width: 767px) {
+  .org {
+    min-height: var(--touch-target);
+  }
+}

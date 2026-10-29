@@ -1,0 +1,60 @@
+{
+ "name": "Tooltip",
+ "version": "1.0.1",
+ "kind": "component",
+ "group": "Overlays",
+ "status": "changed",
+ "description": "A short label for an icon-only control or a truncated value, on hover and keyboard focus (400ms delay); never essential information.",
+ "exports": [
+  "Tooltip"
+ ],
+ "props": [
+  {
+   "name": "content",
+   "type": "ReactNode",
+   "required": true,
+   "note": ""
+  },
+  {
+   "name": "shortcut",
+   "type": "string[]",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "placement",
+   "type": "string",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "delay",
+   "type": "number",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "open",
+   "type": "boolean",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "children",
+   "type": "ReactElement",
+   "required": true,
+   "note": ""
+  }
+ ],
+ "events": [],
+ "states": [
+  "closed",
+  "open-top",
+  "open-bottom",
+  "open-right",
+  "shortcut"
+ ],
+ "notes": "Light/Dark frames show the tooltip pinned in place (static .v-tooltip markup), because the live tooltip renders outside the frame and takes the page theme.",
+ "readme": "components/Tooltip/README.md",
+ "preview": "components/Tooltip/preview.html"
+}

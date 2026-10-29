@@ -1,0 +1,21 @@
+.root {
+  display: inline-flex;
+  gap: var(--space-0-5);
+  flex: none;
+}
+
+.key {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: var(--space-5);
+  height: var(--space-5);
+  padding: 0 var(--space-1);
+  box-sizing: border-box;
+  border-radius: var(--radius-xs);
+  border: var(--border-width) solid var(--line-strong);
+  border-bottom-width: var(--focus-ring-width);
+  background: var(--sunken);
+  color: var(--ink-secondary);
+  font-family: inherit;
+}

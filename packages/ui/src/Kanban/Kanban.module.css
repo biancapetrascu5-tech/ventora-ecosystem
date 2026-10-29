@@ -1,0 +1,233 @@
+/* .v-kanban + .v-kcard din bundle.css */
+.kanban {
+  container-type: inline-size;
+  container-name: kanban;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  min-width: 0;
+}
+
+.switch {
+  display: none;
+  gap: var(--space-2);
+  overflow-x: auto;
+  padding-bottom: var(--space-1);
+  scrollbar-width: none;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex: none;
+  height: var(--control-lg);
+  padding: 0 var(--space-3);
+  border: var(--border-width) solid var(--line-strong);
+  border-radius: var(--radius-full);
+  background: var(--sheet);
+  color: var(--ink-secondary);
+  font: inherit;
+  cursor: pointer;
+}
+
+.chipOn {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: var(--on-primary);
+}
+
+.chip:focus-visible {
+  outline: var(--focus-ring-width) solid var(--focus-ring);
+  outline-offset: var(--focus-ring-offset);
+}
+
+.cols {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(232px, 1fr);
+  gap: var(--space-3);
+  overflow-x: auto;
+  padding-bottom: var(--space-2);
+  align-items: start;
+}
+
+.col {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-width: 0;
+  padding: var(--space-2);
+  background: var(--sunken);
+  border-radius: var(--radius-lg);
+}
+
+.head {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-0-5);
+  padding: var(--space-1) var(--space-2) var(--space-2);
+}
+
+.ctitle {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--ink);
+}
+
+.count {
+  color: var(--ink-muted);
+}
+
+.done {
+  color: var(--done-mark);
+}
+
+.sum {
+  color: var(--ink-secondary);
+}
+
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.empty {
+  padding: var(--space-4) var(--space-2);
+  color: var(--ink-muted);
+  text-align: center;
+  border: var(--border-width) dashed var(--line-strong);
+  border-radius: var(--radius-md);
+}
+
+@container kanban (max-width: 640px) {
+  .switch {
+    display: flex;
+  }
+  .cols {
+    grid-auto-flow: row;
+    grid-auto-columns: auto;
+    grid-template-columns: 1fr;
+    overflow: visible;
+  }
+  .col {
+    display: none;
+    background: transparent;
+    padding: 0;
+  }
+  .colActive {
+    display: flex;
+  }
+  .col .head {
+    display: none;
+  }
+}
+
+/* Card */
+.card {
+  display: flex;
+  flex-direction: column;
+  background: var(--sheet);
+  border: var(--border-width) solid var(--line);
+  border-radius: var(--radius-md);
+  color: var(--ink);
+}
+
+.isActive {
+  border-color: var(--ink);
+}
+
+.main {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding: var(--space-3) var(--space-3) var(--space-2);
+  background: none;
+  border: 0;
+  border-radius: var(--radius-md) var(--radius-md) 0 0;
+  text-align: left;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  min-width: 0;
+}
+
+.main:hover {
+  background: var(--state-hover);
+}
+
+.main:focus-visible {
+  outline: var(--focus-ring-width) solid var(--focus-ring);
+  outline-offset: calc(var(--focus-ring-width) * -1);
+}
+
+.tag {
+  color: var(--ink-muted);
+}
+
+.title {
+  overflow-wrap: anywhere;
+}
+
+.sub {
+  color: var(--ink-secondary);
+}
+
+.amount {
+  margin-top: var(--space-1);
+}
+
+.prog {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--ink-muted);
+  margin-top: var(--space-1);
+}
+
+.progbar {
+  flex: 1;
+  height: 4px;
+  border-radius: var(--radius-full);
+  background: var(--selected);
+  overflow: hidden;
+}
+
+.progbar > span {
+  display: block;
+  height: 100%;
+  background: var(--ink-secondary);
+  border-radius: inherit;
+}
+
+.foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 0 var(--space-2) var(--space-2) var(--space-3);
+  min-height: var(--control-sm);
+}
+
+.meta {
+  color: var(--ink-muted);
+}
+
+.end {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  margin-left: auto;
+}
+
+@media (pointer: coarse) {
+  .more {
+    width: var(--touch-target);
+    height: var(--touch-target);
+  }
+}

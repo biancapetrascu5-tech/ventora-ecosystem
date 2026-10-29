@@ -1,4 +1,4 @@
-<!-- @dsCard group="Ecrane aplicații" height=3420 width=2620 page -->
+<!-- @dsCard group="Ecrane aplicații" height=5144 width=2620 page -->
 <!doctype html>
 <html lang="ro">
 <head><meta charset="utf-8"><title>FinanceDue — Ventora</title>
@@ -278,10 +278,10 @@ const ORGS = [
   { id: "nord", name: "Agen\u021Bia Nord Studio", role: "Manager de proiect" }
 ];
 const NOTIFS = [
-  { id: 1, title: "Programare nou\u0103 de la Ana Popescu", body: "Joi, 29 oct., 14:30 \xB7 Tuns", app: "Booking", time: "acum 5 min", person: "Ana Popescu" },
-  { id: 2, title: "Factura #2026-114 e restant\u0103 de 3 zile", body: "Clinica Dentis \xB7 1.250 lei", app: "Finance", time: "acum 2 ore", icon: "receipt" },
-  { id: 3, title: "Ioana a cerut concediu pe 2\u20136 noiembrie", app: "HR", time: "ieri", person: "Ioana Pavel", read: true },
-  { id: 4, title: "Exportul clien\u021Bilor e gata", app: "CRM", time: "ieri", icon: "download", read: true }
+  { id: 1, title: "Programare nou\u0103 de la Ana Popescu", body: "Joi, 29 oct., 14:30 \xB7 Tuns", app: "EasyBook", time: "acum 5 min", person: "Ana Popescu" },
+  { id: 2, title: "Factura #2026-114 e restant\u0103 de 3 zile", body: "Clinica Dentis \xB7 1.250 lei", app: "MoneyDesk", time: "acum 2 ore", icon: "receipt" },
+  { id: 3, title: "Ioana a cerut concediu pe 2\u20136 noiembrie", app: "TeamSpace", time: "ieri", person: "Ioana Pavel", read: true },
+  { id: 4, title: "Exportul clien\u021Bilor e gata", app: "ClientDesk", time: "ieri", icon: "download", read: true }
 ];
 const USER = { name: "Bianca Petra\u0219cu", email: "bianca@ventora-hub.com" };
 function Bar({ title, de }) {
@@ -312,7 +312,7 @@ function BookingShell({ height, active, mobile }) {
       height,
       spine: /* @__PURE__ */ React.createElement(V.Spine, { app: "booking", sections: SECTIONS, activeId: active, onBackToHub: () => {
       }, footer: /* @__PURE__ */ React.createElement(V.UsageMeter, { compact: true, label: "Program\u0103ri", used: 312, limit: 1e3 }) }),
-      contextBar: /* @__PURE__ */ React.createElement(Bar, { title: "Booking" })
+      contextBar: /* @__PURE__ */ React.createElement(Bar, { title: "EasyBook" })
     },
     /* @__PURE__ */ React.createElement(V.PageHeader, { title: "Program\u0103ri", description: mobile ? void 0 : "Toate program\u0103rile afacerii, de azi \xEEnainte.", actions: mobile ? void 0 : /* @__PURE__ */ React.createElement(V.SegmentedControl, { label: "Vizualizare", size: "md", defaultValue: "list", options: [{ value: "list", label: "List\u0103", icon: "list" }, { value: "cal", label: "Calendar", icon: "calendar" }] }) }),
     /* @__PURE__ */ React.createElement(V.DataTable, { columns: [
@@ -333,7 +333,7 @@ function HubBar({ title, inApp }) {
   return /* @__PURE__ */ React.createElement(
     V.ContextBar,
     {
-      leading: inApp ? null : /* @__PURE__ */ React.createElement("span", { style: { padding: "0 var(--space-2)" } }, /* @__PURE__ */ React.createElement(V.Logo, { size: 32 })),
+      leading: inApp ? null : /* @__PURE__ */ React.createElement("span", { style: { padding: "0 var(--space-2)", display: "inline-flex" } }, /* @__PURE__ */ React.createElement(V.Logo, { size: 32, className: "v-cb-logo--full" }), /* @__PURE__ */ React.createElement(V.Logo, { variant: "mark", size: 32, className: "v-cb-logo--mark" })),
       title,
       org: /* @__PURE__ */ React.createElement(V.OrgSwitcher, { orgs: ORGS, currentId: "aurora" }),
       onSearch: () => {
@@ -366,7 +366,7 @@ function Screens({ title, notes, render, desktopH = 860, tabletH = 1100, mobileH
   return /* @__PURE__ */ React.createElement("div", { className: "scr" }, /* @__PURE__ */ React.createElement("p", { className: "heading" }, title), notes && /* @__PURE__ */ React.createElement("p", { className: "caption muted" }, notes.join(" \xB7 ")), ["light", "dark"].map((th) => /* @__PURE__ */ React.createElement("div", { className: "scr-row", key: th }, sizes.map(([m, lab, cls, h]) => /* @__PURE__ */ React.createElement("div", { key: m }, /* @__PURE__ */ React.createElement("p", { className: "caption scr-lab" }, lab, " \xB7 ", th === "light" ? "Light" : "Dark"), /* @__PURE__ */ React.createElement("div", { className: cls, "data-theme": th, style: { height: h } }, render(m, th)))))));
 }
 const MINE = [["booking", "Program\u0103ri, calendar \u0219i reamintiri", 3], ["crm", "Clien\u021Bi, istoric \u0219i oportunit\u0103\u021Bi"], ["hr", "Echip\u0103, prezen\u021B\u0103 \u0219i concedii", 1], ["finance", "Facturi, scaden\u021Be \u0219i restan\u021Be", 2], ["projects", "Proiecte, sarcini \u0219i termene"], ["shifts", "Ture \u0219i \xEEnlocuiri"], ["documents", "Documente \u0219i \u0219abloane"], ["portal", "Pagina afacerii pentru clien\u021Bi"]];
-const RECO = { marketing: { reason: "Se potrive\u0219te cu Booking: trimite automat reamintiri \u0219i campanii clien\u021Bilor t\u0103i.", cost: "49 lei pe lun\u0103 \xB7 f\u0103r\u0103 cost de implementare" } };
+const RECO = { marketing: { reason: "Se potrive\u0219te cu EasyBook: trimite automat reamintiri \u0219i campanii clien\u021Bilor t\u0103i.", cost: "49 lei pe lun\u0103 \xB7 f\u0103r\u0103 cost de implementare" } };
 const VIEWER_ROLE = "owner";
 const RECO_FOR = (a) => (VIEWER_ROLE === "owner" || VIEWER_ROLE === "admin") && a === "marketing" ? RECO[a] : null;
 const OTHER = [["inventory", "unavailable"], ["analytics", "notInRole"], ["marketing", "notInPlan"], ["network", "notInPlan"]];
@@ -552,7 +552,140 @@ function Fin({ mode }) {
     }
   ), /* @__PURE__ */ React.createElement("aside", { className: "axside" }, /* @__PURE__ */ React.createElement("h2", { className: "heading" }, "Au nevoie de tine ", /* @__PURE__ */ React.createElement(V.Badge, { tone: "attention", count: 3 })), /* @__PURE__ */ React.createElement("div", { className: "sheetlike" }, /* @__PURE__ */ React.createElement(V.AttentionList, { items: AX_FIN_ATTN }))))));
 }
-mount(/* @__PURE__ */ React.createElement(Screens, { title: "Finance \u2014 Scaden\u021Be \u0219i restan\u021Be: c\xE2t ai de \xEEncasat, de la cine \u0219i ce faci azi", notes: ["Restan\u021Bele sunt peach (de rezolvat), nu ro\u0219ii: o factur\u0103 \xEEnt\xE2rziat\u0103 nu e o eroare", "Lime doar pentru \u201EPl\u0103tit\u0103\u201D"], desktopH: 1e3, tabletH: 1500, mobileH: 1600, render: (m) => /* @__PURE__ */ React.createElement(Fin, { mode: m }) }));
+
+/* p2 · DE/IT label test: translated copies of this screen (data and labels), rendered inside V.LocaleProvider */
+const __p2 = {
+  tx: (s, d) => typeof s !== "string" ? s : Object.prototype.hasOwnProperty.call(d, s) ? d[s] : s === " lei" ? " €" : s.replace(/(\d) lei\b/g, "$1 €"),
+  trd: (v, d) => typeof v === "string" ? __p2.tx(v, d) : Array.isArray(v) ? v.map((x) => __p2.trd(x, d)) : v && typeof v === "object" && Object.getPrototypeOf(v) === Object.prototype && !v.$$typeof ? Object.fromEntries(Object.entries(v).map(([k, x]) => [k, __p2.trd(x, d)])) : v
+};
+
+const D__de = {"Proprietar": "Inhaber", "Clinica Dentis Sibiu": "Zahnklinik Dentis Sibiu", "Recep\u021bie": "Empfang", "Agen\u021bia Nord Studio": "Agentur Nord Studio", "Manager de proiect": "Projektleitung", "Programare nou\u0103 de la Ana Popescu": "Neuer Termin von Ana Popescu", "Joi, 29 oct., 14:30 \u00b7 Tuns": "Do., 29. Okt., 14:30 \u00b7 Haarschnitt", "acum 5 min": "vor 5 Min.", "Factura #2026-114 e restant\u0103 de 3 zile": "Rechnung #2026-114 ist seit 3 Tagen \u00fcberf\u00e4llig", "Clinica Dentis \u00b7 1.250 lei": "Zahnklinik Dentis \u00b7 1.250 \u20ac", "acum 2 ore": "vor 2 Std.", "Ioana a cerut concediu pe 2\u20136 noiembrie": "Ioana hat Urlaub vom 2. bis 6. November beantragt", "Exportul clien\u021bilor e gata": "Der Kundenexport ist fertig", "Programare": "Termin", "Client": "Kunde", "Scaden\u021be": "F\u00e4lligkeiten", "Facturi": "Rechnungen", "\u00cencas\u0103ri": "Zahlungseing\u00e4nge", "Cheltuieli": "Ausgaben", "Afacere": "Unternehmen", "Rapoarte": "Berichte", "Set\u0103ri": "Einstellungen", "25 sep.": "25. Sep.", "9 oct.": "9. Okt.", "Restant\u0103 \u00b7 14 zile": "\u00dcberf\u00e4llig \u00b7 14 Tage", "2 oct.": "2. Okt.", "16 oct.": "16. Okt.", "Restant\u0103 \u00b7 7 zile": "\u00dcberf\u00e4llig \u00b7 7 Tage", "6 oct.": "6. Okt.", "20 oct.": "20. Okt.", "Restant\u0103 \u00b7 3 zile": "\u00dcberf\u00e4llig \u00b7 3 Tage", "Cabinet Avocatura Pop": "Kanzlei Pop", "23 oct.": "23. Okt.", "Scadent\u0103 azi": "Heute f\u00e4llig", "14 oct.": "14. Okt.", "28 oct.": "28. Okt.", "Scadent\u0103 \u00een 5 zile": "F\u00e4llig in 5 Tagen", "Liceul de Art\u0103 Sibiu": "Kunstgymnasium Sibiu", "30 oct.": "30. Okt.", "Scadent\u0103 \u00een 7 zile": "F\u00e4llig in 7 Tagen", "29 sep.": "29. Sep.", "13 oct.": "13. Okt.", "Pl\u0103tit\u0103 pe 12 oct.": "Bezahlt am 12. Okt.", "3 oct.": "3. Okt.", "17 oct.": "17. Okt.", "Pl\u0103tit\u0103 pe 15 oct.": "Bezahlt am 15. Okt.", "Clinica Dentis Sibiu \u00b7 1.250 lei": "Zahnklinik Dentis Sibiu \u00b7 1.250 \u20ac", "Restant\u0103 de 14 zile \u00b7 2 reamintiri automate trimise": "Seit 14 Tagen \u00fcberf\u00e4llig \u00b7 2 automatische Erinnerungen gesendet", "Sun\u0103": "Anrufen", "Marcheaz\u0103 pl\u0103tit\u0103": "Als bezahlt markieren", "Agen\u021bia Nord Studio \u00b7 2.140 lei": "Agentur Nord Studio \u00b7 2.140 \u20ac", "Restant\u0103 de 7 zile \u00b7 o reamintire automat\u0103 trimis\u0103": "Seit 7 Tagen \u00fcberf\u00e4llig \u00b7 1 automatische Erinnerung gesendet", "Trimite reamintire": "Erinnerung senden", "Restant\u0103 de 3 zile": "Seit 3 Tagen \u00fcberf\u00e4llig", "Emis\u0103": "Ausgestellt", "Scaden\u021ba": "F\u00e4llig am", "Sum\u0103": "Betrag", "Stare": "Status", "Scaden\u021be \u0219i restan\u021be": "F\u00e4llige und \u00fcberf\u00e4llige Rechnungen", "Facturile emise care a\u0219teapt\u0103 plata, de la cea mai veche.": "Ausgestellte Rechnungen, die auf Zahlung warten \u2013 die \u00e4lteste zuerst.", "Export\u0103 pentru contabil": "F\u00fcr die Buchhaltung exportieren", "De \u00eencasat": "Offen", "8 facturi": "8 Rechnungen", "Restante": "\u00dcberf\u00e4llig", "4 facturi, cea mai veche de 14 zile": "4 Rechnungen, die \u00e4lteste seit 14 Tagen", "Scadente \u00een 7 zile": "F\u00e4llig in 7 Tagen", "2 facturi": "2 Rechnungen", "\u00cencasat \u00een octombrie": "Eingegangen im Oktober", "fa\u021b\u0103 de septembrie": "gegen\u00fcber September", "Facturi de \u00eencasat": "Offene Rechnungen", "Vezi factura": "Rechnung ansehen", "Arat\u0103": "Anzeigen", "Toate": "Alle", "Restante \u00b7 4": "\u00dcberf\u00e4llig \u00b7 4", "Urm\u0103toarele": "Demn\u00e4chst f\u00e4llig", "Pl\u0103tite": "Bezahlt", "Au nevoie de tine ": "Wartet auf Sie "};
+const t__de = (s) => __p2.tx(s, D__de);
+const ORGS__de = __p2.trd(ORGS, D__de);
+const NOTIFS__de = __p2.trd(NOTIFS, D__de);
+const USER__de = __p2.trd(USER, D__de);
+function Bar__de({ title, de }) {
+  return /* @__PURE__ */ React.createElement(
+    V.ContextBar,
+    {
+      title,
+      org: /* @__PURE__ */ React.createElement(V.OrgSwitcher, { orgs: de ? [{ id: 1, name: t__de("Zahnarztpraxis Dr. M\xFCller"), role: t__de("Empfang") }, { id: 2, name: t__de("Salon Aurora"), role: t__de("Inhaberin") }] : ORGS__de, currentId: de ? 1 : t__de("aurora") }),
+      onSearch: () => {
+      },
+      createItems: [{ label: de ? t__de("Termin") : t__de("Programare"), icon: t__de("calendar-check"), shortcut: [t__de("N")] }, { label: de ? t__de("Kunde") : t__de("Client"), icon: t__de("user-plus") }],
+      notifications: /* @__PURE__ */ React.createElement(V.NotificationsPanel, { items: NOTIFS__de }),
+      account: /* @__PURE__ */ React.createElement(V.AccountMenu, { user: USER__de, orgs: ORGS__de, currentOrgId: t__de("aurora"), onCatalog: () => {
+      } })
+    }
+  );
+}
+function AX_App__de({ app, sections, active, title, bottom, footer, children }) {
+  return /* @__PURE__ */ React.createElement(
+    V.AppShell,
+    {
+      height: t__de("100%"),
+      spine: /* @__PURE__ */ React.createElement(V.Spine, { app, sections, activeId: active, onBackToHub: () => {
+      }, bottomItems: bottom, footer }),
+      contextBar: /* @__PURE__ */ React.createElement(Bar__de, { title })
+    },
+    children
+  );
+}
+const AX_Body__de = ({ mode, children }) => /* @__PURE__ */ React.createElement(t__de("div"), { className: t__de("axb ") + mode }, children);
+const AX_FIN_NAV__de = __p2.trd(AX_FIN_NAV, D__de);
+const AX_FIN_ROWS__de = __p2.trd(AX_FIN_ROWS, D__de);
+const AX_FIN_ATTN__de = __p2.trd(AX_FIN_ATTN, D__de);
+function Fin__de({ mode }) {
+  const [tab, setTab] = useState(t__de("all"));
+  const rows = tab === t__de("over") ? AX_FIN_ROWS__de.filter((r) => r.over) : tab === t__de("paid") ? AX_FIN_ROWS__de.filter((r) => r.status[0] === t__de("done")) : tab === t__de("soon") ? AX_FIN_ROWS__de.filter((r) => !r.over && r.status[0] === t__de("neutral")) : AX_FIN_ROWS__de;
+  const cols = [
+    { key: t__de("client"), header: t__de("Client"), primary: true, sortable: true, render: (r) => /* @__PURE__ */ React.createElement(t__de("span"), { style: { display: t__de("flex"), flexDirection: t__de("column") } }, /* @__PURE__ */ React.createElement(t__de("span"), null, r.client), mode !== t__de("mobile") && /* @__PURE__ */ React.createElement(t__de("span"), { className: t__de("body-small muted v-num") }, r.nr)) },
+    { key: t__de("issued"), header: t__de("Emis\u0103"), optional: true, muted: true },
+    { key: t__de("due"), header: t__de("Scaden\u021Ba"), sortable: true, secondary: true, render: (r) => /* @__PURE__ */ React.createElement(t__de("span"), { className: t__de("v-num") }, r.due) },
+    { key: t__de("amount"), header: t__de("Sum\u0103"), align: t__de("end"), sortable: true, secondary: true, render: (r) => /* @__PURE__ */ React.createElement(t__de("span"), { className: t__de("v-num body-strong") }, r.amount.toLocaleString(t__de("ro-RO")), t__de(" lei")) },
+    { key: t__de("status"), header: t__de("Stare"), trailing: true, render: (r) => /* @__PURE__ */ React.createElement(V.StatusPill, { tone: r.status[0], icon: r.status[2] }, r.status[1]) }
+  ];
+  return /* @__PURE__ */ React.createElement(AX_App__de, { app: t__de("finance"), sections: AX_FIN_NAV__de, active: t__de("scadente"), title: t__de("Scaden\u021Be"), bottom: [t__de("scadente"), t__de("facturi"), t__de("incasari"), t__de("cheltuieli")] }, /* @__PURE__ */ React.createElement(V.PageHeader, { title: t__de("Scaden\u021Be \u0219i restan\u021Be"), description: mode === t__de("mobile") ? void 0 : t__de("Facturile emise care a\u0219teapt\u0103 plata, de la cea mai veche."), actions: mode === t__de("mobile") ? null : /* @__PURE__ */ React.createElement(V.Button, { icon: t__de("download") }, t__de("Export\u0103 pentru contabil")) }), /* @__PURE__ */ React.createElement(AX_Body__de, { mode }, /* @__PURE__ */ React.createElement(t__de("div"), { className: t__de("v-stats") }, /* @__PURE__ */ React.createElement(V.Stat, { label: t__de("De \xEEncasat"), value: t__de("15.930 lei"), hint: t__de("8 facturi") }), /* @__PURE__ */ React.createElement(V.Stat, { label: t__de("Restante"), value: t__de("4.310 lei"), tone: t__de("attention"), hint: t__de("4 facturi, cea mai veche de 14 zile") }), /* @__PURE__ */ React.createElement(V.Stat, { label: t__de("Scadente \xEEn 7 zile"), value: t__de("6.900 lei"), hint: t__de("2 facturi") }), /* @__PURE__ */ React.createElement(V.Stat, { label: t__de("\xCEncasat \xEEn octombrie"), value: t__de("31.250 lei"), delta: { value: t__de("+8%"), period: t__de("fa\u021B\u0103 de septembrie") } })), /* @__PURE__ */ React.createElement(t__de("div"), { className: t__de("axsplit") }, /* @__PURE__ */ React.createElement(
+    V.DataTable,
+    {
+      caption: t__de("Facturi de \xEEncasat"),
+      columns: cols,
+      rows,
+      rowActions: (r) => r.status[0] === t__de("done") ? [{ label: t__de("Vezi factura"), icon: t__de("receipt") }] : [{ label: t__de("Trimite reamintire"), icon: t__de("send") }, { label: t__de("Marcheaz\u0103 pl\u0103tit\u0103"), icon: t__de("check") }, { label: t__de("Vezi factura"), icon: t__de("receipt") }],
+      onRowClick: () => {
+      },
+      toolbar: /* @__PURE__ */ React.createElement(V.SegmentedControl, { size: t__de("sm"), label: t__de("Arat\u0103"), value: tab, onChange: setTab, options: [{ value: t__de("all"), label: t__de("Toate") }, { value: t__de("over"), label: t__de("Restante \xB7 4") }, { value: t__de("soon"), label: t__de("Urm\u0103toarele") }, { value: t__de("paid"), label: t__de("Pl\u0103tite") }] })
+    }
+  ), /* @__PURE__ */ React.createElement(t__de("aside"), { className: t__de("axside") }, /* @__PURE__ */ React.createElement(t__de("h2"), { className: t__de("heading") }, t__de("Au nevoie de tine "), /* @__PURE__ */ React.createElement(V.Badge, { tone: t__de("attention"), count: 3 })), /* @__PURE__ */ React.createElement(t__de("div"), { className: t__de("sheetlike") }, /* @__PURE__ */ React.createElement(V.AttentionList, { items: AX_FIN_ATTN__de }))))));
+}
+const D__it = {"Proprietar": "Titolare", "Recep\u021bie": "Reception", "Agen\u021bia Nord Studio": "Agenzia Nord Studio", "Manager de proiect": "Responsabile di progetto", "Programare nou\u0103 de la Ana Popescu": "Nuovo appuntamento da Ana Popescu", "Joi, 29 oct., 14:30 \u00b7 Tuns": "Gio 29 ott., 14:30 \u00b7 Taglio", "acum 5 min": "5 min fa", "Factura #2026-114 e restant\u0103 de 3 zile": "La fattura #2026-114 \u00e8 scaduta da 3 giorni", "Clinica Dentis \u00b7 1.250 lei": "Clinica Dentis \u00b7 1.250 \u20ac", "acum 2 ore": "2 ore fa", "Ioana a cerut concediu pe 2\u20136 noiembrie": "Ioana ha chiesto ferie dal 2 al 6 novembre", "Exportul clien\u021bilor e gata": "L\u2019esportazione dei clienti \u00e8 pronta", "Programare": "Appuntamento", "Client": "Cliente", "Scaden\u021be": "Scadenze", "Facturi": "Fatture", "\u00cencas\u0103ri": "Incassi", "Cheltuieli": "Spese", "Afacere": "Attivit\u00e0", "Rapoarte": "Report", "Set\u0103ri": "Impostazioni", "25 sep.": "25 set.", "9 oct.": "9 ott.", "Restant\u0103 \u00b7 14 zile": "Scaduta \u00b7 14 giorni", "2 oct.": "2 ott.", "16 oct.": "16 ott.", "Restant\u0103 \u00b7 7 zile": "Scaduta \u00b7 7 giorni", "6 oct.": "6 ott.", "20 oct.": "20 ott.", "Restant\u0103 \u00b7 3 zile": "Scaduta \u00b7 3 giorni", "Cabinet Avocatura Pop": "Studio legale Pop", "23 oct.": "23 ott.", "Scadent\u0103 azi": "In scadenza oggi", "14 oct.": "14 ott.", "28 oct.": "28 ott.", "Scadent\u0103 \u00een 5 zile": "In scadenza tra 5 giorni", "Liceul de Art\u0103 Sibiu": "Liceo artistico di Sibiu", "30 oct.": "30 ott.", "Scadent\u0103 \u00een 7 zile": "In scadenza tra 7 giorni", "29 sep.": "29 set.", "13 oct.": "13 ott.", "Pl\u0103tit\u0103 pe 12 oct.": "Pagata il 12 ott.", "3 oct.": "3 ott.", "17 oct.": "17 ott.", "Pl\u0103tit\u0103 pe 15 oct.": "Pagata il 15 ott.", "Clinica Dentis Sibiu \u00b7 1.250 lei": "Clinica Dentis Sibiu \u00b7 1.250 \u20ac", "Restant\u0103 de 14 zile \u00b7 2 reamintiri automate trimise": "Scaduta da 14 giorni \u00b7 2 promemoria automatici inviati", "Sun\u0103": "Chiama", "Marcheaz\u0103 pl\u0103tit\u0103": "Segna come pagata", "Agen\u021bia Nord Studio \u00b7 2.140 lei": "Agenzia Nord Studio \u00b7 2.140 \u20ac", "Restant\u0103 de 7 zile \u00b7 o reamintire automat\u0103 trimis\u0103": "Scaduta da 7 giorni \u00b7 1 promemoria automatico inviato", "Trimite reamintire": "Invia promemoria", "Restant\u0103 de 3 zile": "Scaduta da 3 giorni", "Emis\u0103": "Emessa", "Scaden\u021ba": "Scadenza", "Sum\u0103": "Importo", "Stare": "Stato", "Scaden\u021be \u0219i restan\u021be": "Fatture in scadenza e scadute", "Facturile emise care a\u0219teapt\u0103 plata, de la cea mai veche.": "Le fatture emesse in attesa di pagamento, dalla pi\u00f9 vecchia.", "Export\u0103 pentru contabil": "Esporta per il commercialista", "De \u00eencasat": "Da incassare", "8 facturi": "8 fatture", "Restante": "Scadute", "4 facturi, cea mai veche de 14 zile": "4 fatture, la pi\u00f9 vecchia da 14 giorni", "Scadente \u00een 7 zile": "In scadenza entro 7 giorni", "2 facturi": "2 fatture", "\u00cencasat \u00een octombrie": "Incassato a ottobre", "fa\u021b\u0103 de septembrie": "rispetto a settembre", "Facturi de \u00eencasat": "Fatture da incassare", "Vezi factura": "Vedi la fattura", "Arat\u0103": "Mostra", "Toate": "Tutte", "Restante \u00b7 4": "Scadute \u00b7 4", "Urm\u0103toarele": "Prossime", "Pl\u0103tite": "Pagate", "Au nevoie de tine ": "In attesa di Lei "};
+const t__it = (s) => __p2.tx(s, D__it);
+const ORGS__it = __p2.trd(ORGS, D__it);
+const NOTIFS__it = __p2.trd(NOTIFS, D__it);
+const USER__it = __p2.trd(USER, D__it);
+function Bar__it({ title, de }) {
+  return /* @__PURE__ */ React.createElement(
+    V.ContextBar,
+    {
+      title,
+      org: /* @__PURE__ */ React.createElement(V.OrgSwitcher, { orgs: de ? [{ id: 1, name: t__it("Zahnarztpraxis Dr. M\xFCller"), role: t__it("Empfang") }, { id: 2, name: t__it("Salon Aurora"), role: t__it("Inhaberin") }] : ORGS__it, currentId: de ? 1 : t__it("aurora") }),
+      onSearch: () => {
+      },
+      createItems: [{ label: de ? t__it("Termin") : t__it("Programare"), icon: t__it("calendar-check"), shortcut: [t__it("N")] }, { label: de ? t__it("Kunde") : t__it("Client"), icon: t__it("user-plus") }],
+      notifications: /* @__PURE__ */ React.createElement(V.NotificationsPanel, { items: NOTIFS__it }),
+      account: /* @__PURE__ */ React.createElement(V.AccountMenu, { user: USER__it, orgs: ORGS__it, currentOrgId: t__it("aurora"), onCatalog: () => {
+      } })
+    }
+  );
+}
+function AX_App__it({ app, sections, active, title, bottom, footer, children }) {
+  return /* @__PURE__ */ React.createElement(
+    V.AppShell,
+    {
+      height: t__it("100%"),
+      spine: /* @__PURE__ */ React.createElement(V.Spine, { app, sections, activeId: active, onBackToHub: () => {
+      }, bottomItems: bottom, footer }),
+      contextBar: /* @__PURE__ */ React.createElement(Bar__it, { title })
+    },
+    children
+  );
+}
+const AX_Body__it = ({ mode, children }) => /* @__PURE__ */ React.createElement(t__it("div"), { className: t__it("axb ") + mode }, children);
+const AX_FIN_NAV__it = __p2.trd(AX_FIN_NAV, D__it);
+const AX_FIN_ROWS__it = __p2.trd(AX_FIN_ROWS, D__it);
+const AX_FIN_ATTN__it = __p2.trd(AX_FIN_ATTN, D__it);
+function Fin__it({ mode }) {
+  const [tab, setTab] = useState(t__it("all"));
+  const rows = tab === t__it("over") ? AX_FIN_ROWS__it.filter((r) => r.over) : tab === t__it("paid") ? AX_FIN_ROWS__it.filter((r) => r.status[0] === t__it("done")) : tab === t__it("soon") ? AX_FIN_ROWS__it.filter((r) => !r.over && r.status[0] === t__it("neutral")) : AX_FIN_ROWS__it;
+  const cols = [
+    { key: t__it("client"), header: t__it("Client"), primary: true, sortable: true, render: (r) => /* @__PURE__ */ React.createElement(t__it("span"), { style: { display: t__it("flex"), flexDirection: t__it("column") } }, /* @__PURE__ */ React.createElement(t__it("span"), null, r.client), mode !== t__it("mobile") && /* @__PURE__ */ React.createElement(t__it("span"), { className: t__it("body-small muted v-num") }, r.nr)) },
+    { key: t__it("issued"), header: t__it("Emis\u0103"), optional: true, muted: true },
+    { key: t__it("due"), header: t__it("Scaden\u021Ba"), sortable: true, secondary: true, render: (r) => /* @__PURE__ */ React.createElement(t__it("span"), { className: t__it("v-num") }, r.due) },
+    { key: t__it("amount"), header: t__it("Sum\u0103"), align: t__it("end"), sortable: true, secondary: true, render: (r) => /* @__PURE__ */ React.createElement(t__it("span"), { className: t__it("v-num body-strong") }, r.amount.toLocaleString(t__it("ro-RO")), t__it(" lei")) },
+    { key: t__it("status"), header: t__it("Stare"), trailing: true, render: (r) => /* @__PURE__ */ React.createElement(V.StatusPill, { tone: r.status[0], icon: r.status[2] }, r.status[1]) }
+  ];
+  return /* @__PURE__ */ React.createElement(AX_App__it, { app: t__it("finance"), sections: AX_FIN_NAV__it, active: t__it("scadente"), title: t__it("Scaden\u021Be"), bottom: [t__it("scadente"), t__it("facturi"), t__it("incasari"), t__it("cheltuieli")] }, /* @__PURE__ */ React.createElement(V.PageHeader, { title: t__it("Scaden\u021Be \u0219i restan\u021Be"), description: mode === t__it("mobile") ? void 0 : t__it("Facturile emise care a\u0219teapt\u0103 plata, de la cea mai veche."), actions: mode === t__it("mobile") ? null : /* @__PURE__ */ React.createElement(V.Button, { icon: t__it("download") }, t__it("Export\u0103 pentru contabil")) }), /* @__PURE__ */ React.createElement(AX_Body__it, { mode }, /* @__PURE__ */ React.createElement(t__it("div"), { className: t__it("v-stats") }, /* @__PURE__ */ React.createElement(V.Stat, { label: t__it("De \xEEncasat"), value: t__it("15.930 lei"), hint: t__it("8 facturi") }), /* @__PURE__ */ React.createElement(V.Stat, { label: t__it("Restante"), value: t__it("4.310 lei"), tone: t__it("attention"), hint: t__it("4 facturi, cea mai veche de 14 zile") }), /* @__PURE__ */ React.createElement(V.Stat, { label: t__it("Scadente \xEEn 7 zile"), value: t__it("6.900 lei"), hint: t__it("2 facturi") }), /* @__PURE__ */ React.createElement(V.Stat, { label: t__it("\xCEncasat \xEEn octombrie"), value: t__it("31.250 lei"), delta: { value: t__it("+8%"), period: t__it("fa\u021B\u0103 de septembrie") } })), /* @__PURE__ */ React.createElement(t__it("div"), { className: t__it("axsplit") }, /* @__PURE__ */ React.createElement(
+    V.DataTable,
+    {
+      caption: t__it("Facturi de \xEEncasat"),
+      columns: cols,
+      rows,
+      rowActions: (r) => r.status[0] === t__it("done") ? [{ label: t__it("Vezi factura"), icon: t__it("receipt") }] : [{ label: t__it("Trimite reamintire"), icon: t__it("send") }, { label: t__it("Marcheaz\u0103 pl\u0103tit\u0103"), icon: t__it("check") }, { label: t__it("Vezi factura"), icon: t__it("receipt") }],
+      onRowClick: () => {
+      },
+      toolbar: /* @__PURE__ */ React.createElement(V.SegmentedControl, { size: t__it("sm"), label: t__it("Arat\u0103"), value: tab, onChange: setTab, options: [{ value: t__it("all"), label: t__it("Toate") }, { value: t__it("over"), label: t__it("Restante \xB7 4") }, { value: t__it("soon"), label: t__it("Urm\u0103toarele") }, { value: t__it("paid"), label: t__it("Pl\u0103tite") }] })
+    }
+  ), /* @__PURE__ */ React.createElement(t__it("aside"), { className: t__it("axside") }, /* @__PURE__ */ React.createElement(t__it("h2"), { className: t__it("heading") }, t__it("Au nevoie de tine "), /* @__PURE__ */ React.createElement(V.Badge, { tone: t__it("attention"), count: 3 })), /* @__PURE__ */ React.createElement(t__it("div"), { className: t__it("sheetlike") }, /* @__PURE__ */ React.createElement(V.AttentionList, { items: AX_FIN_ATTN__it }))))));
+}
+
+function __p2Locale({ title, desktopH, mobileH, de, it }) {
+  if (window.__SOLO) return null;
+  const h = React.createElement;
+  const fr = (lab, cls, th, hgt, loc, el) => h("div", null, h("p", { className: "caption scr-lab" }, lab), h("div", { className: cls, "data-theme": th, style: { height: hgt } }, h(V.LocaleProvider, { locale: loc }, el)));
+  return h("div", { className: "scr" }, h("p", { className: "heading" }, title), h("p", { className: "caption muted" }, "Textele ecranului traduse (germana cu „Sie”, italiana cu „Lei”), ca să verificăm că etichetele mai lungi \xEEncap \xB7 numele aplicațiilor răm\xE2n neschimbate"), h("div", { className: "scr-row" }, fr("Deutsch \xB7 Desktop \xB7 1280 \xB7 Light", "scr-d", "light", desktopH, "de", de("desktop")), fr("Italiano \xB7 Telefon \xB7 390 \xB7 Light", "scr-m", "light", mobileH, "it", it("mobile")), fr("Italiano \xB7 Telefon \xB7 390 \xB7 Dark", "scr-m", "dark", mobileH, "it", it("mobile"))));
+}
+
+mount(React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(Screens, { title: "MoneyDesk \u2014 Scaden\u021Be \u0219i restan\u021Be: c\xE2t ai de \xEEncasat, de la cine \u0219i ce faci azi", notes: ["Restan\u021Bele sunt peach (de rezolvat), nu ro\u0219ii: o factur\u0103 \xEEnt\xE2rziat\u0103 nu e o eroare", "Lime doar pentru \u201EPl\u0103tit\u0103\u201D"], desktopH: 1e3, tabletH: 1500, mobileH: 1600, render: (m) => /* @__PURE__ */ React.createElement(Fin, { mode: m }) }), React.createElement(__p2Locale, { title: "Test de lungime \u2014 german\u0103 (1280) \u0219i italian\u0103 (390)", desktopH: 1e3, mobileH: 1600, de: (m) => React.createElement(Fin__de, { mode: m }), it: (m) => React.createElement(Fin__it, { mode: m }) })));
 </script>
 </body>
 </html>

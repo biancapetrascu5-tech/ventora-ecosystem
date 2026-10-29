@@ -1,0 +1,24 @@
+{
+ "name": "FounderStates",
+ "version": "1.0.1",
+ "kind": "page",
+ "group": "Founder",
+ "status": "changed",
+ "description": "States for Stage 5: invitation sent, add exception, publish a plan version, global stop confirmation, publish blocked until RO texts are approved, campaign stopped automatically, audience too small, empty results and save error.",
+ "exports": [],
+ "props": [],
+ "events": [],
+ "states": [
+  "Ce schimbi * (obligatoriu)",
+  "Valoare nouă * (obligatoriu)",
+  "Până la * (obligatoriu)",
+  "Motiv * (obligatoriu)",
+  "Scrie numele afacerii ca să confirmi * (obligatoriu)",
+  "Titlu * (obligatoriu)",
+  "Beneficiu * (obligatoriu)",
+  "Pe zi"
+ ],
+ "notes": "States are the labelled boards and frames of the preview (Light and Dark; desktop/tablet/phone).",
+ "readme": "components/FounderStates/README.md",
+ "preview": "components/FounderStates/preview.html"
+}

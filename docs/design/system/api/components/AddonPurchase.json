@@ -1,0 +1,206 @@
+{
+ "name": "AddonPurchase",
+ "version": "1.0.1",
+ "kind": "component",
+ "group": "Hub",
+ "status": "changed",
+ "description": "The dialog in which the business owner buys an extra pack (\"pachet în plus\") with the card: review → processing → success or error. Plan changes are never bought here — they stay a request (\"Cere alt abonament\").",
+ "exports": [
+  "AddonPurchase",
+  "PaymentCard",
+  "StripeSlot"
+ ],
+ "props": [
+  {
+   "name": "open",
+   "type": "boolean",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "onOpenChange",
+   "type": "(o: boolean) => void",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "inline",
+   "type": "boolean",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "sheet",
+   "type": "boolean",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "addon",
+   "type": "{ name: string; title?: string; description?: string; price: number; icon?: string; max?: number; note?: string; }",
+   "required": true,
+   "note": ""
+  },
+  {
+   "name": "quantity",
+   "type": "number",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "defaultQuantity",
+   "type": "number",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "onQuantityChange",
+   "type": "(q: number) => void",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "card",
+   "type": "PaymentCardData",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "onChangeCard",
+   "type": "() => void",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "cardSlot",
+   "type": "ReactNode",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "state",
+   "type": "\"processing\" | \"success\" | \"error\" | \"review\"",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "error",
+   "type": "{ title?: string; message?: string; }",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "usage",
+   "type": "{ label: string; used: number; limitBefore: number; limitAfter: number; unit?: string; }",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "invoice",
+   "type": "{ number: string; onOpen?(): void; }",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "onPay",
+   "type": "(quantity: number, total: number) => void",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "onRetry",
+   "type": "() => void",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "onUseOtherCard",
+   "type": "() => void",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "onDone",
+   "type": "() => void",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "currency",
+   "type": "string",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "format",
+   "type": "(n: number) => string",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "card",
+   "type": "PaymentCardData",
+   "required": true,
+   "note": "",
+   "of": "PaymentCard"
+  },
+  {
+   "name": "onChange",
+   "type": "() => void",
+   "required": false,
+   "note": "",
+   "of": "PaymentCard"
+  },
+  {
+   "name": "compact",
+   "type": "boolean",
+   "required": false,
+   "note": "",
+   "of": "PaymentCard"
+  },
+  {
+   "name": "children",
+   "type": "ReactNode",
+   "required": false,
+   "note": "",
+   "of": "StripeSlot"
+  },
+  {
+   "name": "saveCard",
+   "type": "boolean",
+   "required": false,
+   "note": "",
+   "of": "StripeSlot"
+  },
+  {
+   "name": "onSaveCardChange",
+   "type": "(v: boolean) => void",
+   "required": false,
+   "note": "",
+   "of": "StripeSlot"
+  }
+ ],
+ "events": [
+  "onChange",
+  "onChangeCard",
+  "onDone",
+  "onOpenChange",
+  "onPay",
+  "onQuantityChange",
+  "onRetry",
+  "onSaveCardChange",
+  "onUseOtherCard"
+ ],
+ "states": [
+  "review",
+  "reviewNoCard",
+  "processing",
+  "success",
+  "error",
+  "limitReachedOwner",
+  "limitReachedMember"
+ ],
+ "notes": "",
+ "readme": "components/AddonPurchase/README.md",
+ "preview": "components/AddonPurchase/preview.html"
+}

@@ -1,0 +1,46 @@
+{
+ "name": "AppShell",
+ "version": "1.0.1",
+ "kind": "component",
+ "group": "Shell",
+ "status": "changed",
+ "description": "The frame of every app: Spine on the left, ContextBar on top, the content (PageHeader + Sheet) in the middle — and a bottom nav under 768px.",
+ "exports": [
+  "AppShell"
+ ],
+ "props": [
+  {
+   "name": "spine",
+   "type": "ReactNode",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "contextBar",
+   "type": "ReactNode",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "children",
+   "type": "ReactNode",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "height",
+   "type": "string | number",
+   "required": false,
+   "note": ""
+  }
+ ],
+ "events": [],
+ "states": [
+  "desktopExpanded",
+  "tabletCollapsed",
+  "mobileBottomNav"
+ ],
+ "notes": "README says 640px/1024px; the bundle switches to bottom nav under 768px (container query), so the preview uses 820px for tablet",
+ "readme": "components/AppShell/README.md",
+ "preview": "components/AppShell/preview.html"
+}

@@ -1,0 +1,86 @@
+/* .v-accountbtn + .v-account din bundle.css */
+.btn {
+  appearance: none;
+  border: 0;
+  padding: var(--space-0-5);
+  background: transparent;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  display: inline-flex;
+  margin-left: var(--space-1);
+  transition: box-shadow var(--duration-fast) var(--ease-standard);
+}
+
+.btn:hover {
+  box-shadow: 0 0 0 var(--marker-width) var(--state-hover);
+}
+
+.btn:focus-visible {
+  outline: var(--focus-ring-width) solid var(--focus-ring);
+  outline-offset: var(--focus-ring-offset);
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-1);
+}
+
+.who {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+
+.mail {
+  color: var(--ink-muted);
+}
+
+.row {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding: var(--space-1) 0;
+}
+
+.row .langswitch {
+  justify-content: flex-start;
+  padding: 0 var(--space-2);
+  margin-left: calc(var(--space-2) * -1);
+}
+
+.label {
+  color: var(--ink-muted);
+}
+
+/* Pe telefon afacerea se schimbă de aici, nu din ContextBar (S66). */
+.org {
+  display: none;
+}
+
+@media (max-width: 767px) {
+  .org {
+    display: flex;
+  }
+}
+
+.org.isOn {
+  display: flex;
+}
+
+@media (pointer: coarse), (max-width: 767px) {
+  .btn {
+    min-width: var(--touch-target);
+    min-height: var(--touch-target);
+    justify-content: center;
+    align-items: center;
+  }
+}

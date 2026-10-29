@@ -1,0 +1,83 @@
+{
+ "name": "SegmentedControl",
+ "version": "1.0.1",
+ "kind": "component",
+ "group": "Forms",
+ "status": "changed",
+ "description": "Switch between two to five views of the same content (Zi / Săptămână / Resurse; Listă / Calendar).",
+ "exports": [
+  "SegmentedControl"
+ ],
+ "props": [
+  {
+   "name": "options",
+   "type": "Option<V>[]",
+   "required": true,
+   "note": ""
+  },
+  {
+   "name": "value",
+   "type": "V",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "defaultValue",
+   "type": "V",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "onChange",
+   "type": "(v: V) => void",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "label",
+   "type": "string",
+   "required": true,
+   "note": ""
+  },
+  {
+   "name": "size",
+   "type": "\"sm\" | \"md\"",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "block",
+   "type": "boolean",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "disabled",
+   "type": "boolean",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "iconOnly",
+   "type": "boolean",
+   "required": false,
+   "note": ""
+  }
+ ],
+ "events": [
+  "onChange"
+ ],
+ "states": [
+  "default",
+  "selected",
+  "with-icons",
+  "icon-only",
+  "option-disabled",
+  "disabled",
+  "small",
+  "block"
+ ],
+ "notes": "Hover/focus have no forced state prop and are not shown.",
+ "readme": "components/SegmentedControl/README.md",
+ "preview": "components/SegmentedControl/preview.html"
+}

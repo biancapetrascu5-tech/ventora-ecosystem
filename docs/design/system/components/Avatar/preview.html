@@ -1,4 +1,4 @@
-<!-- @dsCard group="Status" height=200 -->
+<!-- @dsCard group="Status" height=1310 width=1200 -->
 <!doctype html>
 <html lang="ro">
 <head><meta charset="utf-8"><title>Avatar — Ventora</title>
@@ -250,6 +250,9 @@ html,body{min-height:100%}
 .fxframe .caption{color:var(--ink-muted)}
 @container (max-width:420px){.fxlang{grid-template-columns:32px minmax(0,1fr) auto}.fxlang .v-iconbtn{display:none}}
 
+.thgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(520px,100%),1fr));gap:var(--space-4);align-items:start}
+.thf{display:flex;flex-direction:column;gap:var(--space-4);padding:var(--space-5);background:var(--canvas);color:var(--ink);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg);min-width:0;box-sizing:border-box}
+.thf .thl{margin:0;color:var(--ink-muted);font-weight:600}
 </style>
 </head>
 <body>
@@ -262,11 +265,32 @@ const DE = ({ children }) => /* @__PURE__ */ React.createElement(V.LocaleProvide
 const FR = ({ children }) => /* @__PURE__ */ React.createElement(V.LocaleProvider, { locale: "fr" }, children);
 const IT = ({ children }) => /* @__PURE__ */ React.createElement(V.LocaleProvider, { locale: "it" }, children);
 const mount = (el) => ReactDOM.createRoot(document.getElementById("root")).render(/* @__PURE__ */ React.createElement(V.LocaleProvider, { locale: "ro" }, el));
-function Demo() {
-  const people = ["Ana Popescu", "Andrei Ionescu", "Bianca Marin", "Cristina Dobre", "Dan Stoica", "Elena Georgescu", "Ioana Pavel"].map((name) => ({ name }));
-  return /* @__PURE__ */ React.createElement("div", { className: "d" }, /* @__PURE__ */ React.createElement(Row, { label: "M\u0103rimi" }, ["xs", "sm", "md", "lg", "xl"].map((s) => /* @__PURE__ */ React.createElement(V.Avatar, { key: s, size: s, name: "Bianca Petra\u0219cu" }))), /* @__PURE__ */ React.createElement(Row, { label: "Stare" }, /* @__PURE__ */ React.createElement(V.Avatar, { name: "Ioana Pavel", status: "done" }), /* @__PURE__ */ React.createElement(V.Avatar, { name: "Mara Enache", status: "attention" }), /* @__PURE__ */ React.createElement(V.Avatar, { name: "Radu Matei", status: "offline" }), /* @__PURE__ */ React.createElement(V.Avatar, { name: "Salon Aurora", shape: "square" })), /* @__PURE__ */ React.createElement(Row, { label: "Grup" }, /* @__PURE__ */ React.createElement(V.AvatarGroup, { people, max: 4 }), /* @__PURE__ */ React.createElement(V.AvatarGroup, { people: people.slice(0, 3), size: "md" })));
+const h = React.createElement;
+const Frame = ({ th, label, children }) => h("section", { "data-theme": th, className: "thf" }, h("p", { className: "caption thl" }, (th === "dark" ? "Dark" : "Light") + (label ? " · " + label : "")), children);
+const T = {
+  ro: { lbl: ["Mărimi", "Stare", "Formă", "Grup", "În context"], me: "Bianca Petrașcu", st: [["Ștefan Țăranu", "done", "Disponibil"], ["Mara Enache", "attention", "Te așteaptă"], ["Ilinca Ștefănescu", "danger", "Absentă"], ["Radu Matei", "neutral", "În pauză"], ["Ioana Pavel", "offline", "Deconectată"]], biz: ["Salon Aurora", "Clinica Dentis Sibiu"], people: ["Ana Popescu", "Andrei Ionescu", "Bianca Marin", "Cristina Dobre", "Dan Stoica", "Elena Georgescu", "Ioana Pavel"], ctx: ["Ștefan Țăranu", "Coafor · lucrează azi 09:00–17:00"] },
+  de: { lbl: ["Größen", "Status", "Form", "Gruppe", "Im Kontext"], me: "Jürgen Weiß", st: [["Jürgen Weiß", "done", "Verfügbar"], ["Lena Größer", "attention", "Wartet auf Sie"], ["Sören Kühn", "danger", "Abwesend"], ["Anja Brückner", "neutral", "In der Pause"], ["Björn Mäder", "offline", "Abgemeldet"]], biz: ["Zahnarztpraxis Dr. Müller", "Friseursalon Schönhaar"], people: ["Jürgen Weiß", "Lena Größer", "Sören Kühn", "Anja Brückner", "Björn Mäder", "Käthe Vogel"], ctx: ["Jürgen Weiß", "Friseur · arbeitet heute 09:00–17:00"] },
+  it: { lbl: ["Dimensioni", "Stato", "Forma", "Gruppo", "Nel contesto"], me: "Niccolò Lucà", st: [["Niccolò Lucà", "done", "Disponibile"], ["Chiara Mancini", "attention", "La sta aspettando"], ["Fabrizio Nicolò", "danger", "Assente"], ["Giulia Ferrara", "neutral", "In pausa"], ["Matteo Rossi", "offline", "Disconnesso"]], biz: ["Studio dentistico Bianchi", "Salone Bellezza"], people: ["Niccolò Lucà", "Chiara Mancini", "Fabrizio Nicolò", "Giulia Ferrara", "Matteo Rossi", "Sofia Gallo"], ctx: ["Niccolò Lucà", "Parrucchiere · oggi lavora 09:00–17:00"] }
+};
+function Set({ L }) {
+  const people = L.people.map((name) => ({ name }));
+  return h(React.Fragment, null,
+    h(Row, { label: L.lbl[0] }, ["xs", "sm", "md", "lg", "xl"].map((s) => h(V.Avatar, { key: s, size: s, name: L.me }))),
+    h(Row, { label: L.lbl[1] }, L.st.map(([n, s, t]) => h("span", { key: n, className: "r", style: { gap: "var(--space-2)", flexWrap: "nowrap" } }, h(V.Avatar, { name: n, status: s }), h("span", { className: "body-small" }, t)))),
+    h(Row, { label: L.lbl[2] }, h(V.Avatar, { name: L.st[0][0] }), L.biz.map((b) => h("span", { key: b, className: "r", style: { gap: "var(--space-2)", flexWrap: "nowrap" } }, h(V.Avatar, { name: b, shape: "square" }), h("span", { className: "body" }, b)))),
+    h(Row, { label: L.lbl[3] }, h(V.AvatarGroup, { people, max: 4 }), h(V.AvatarGroup, { people: people.slice(0, 3), size: "md" }), h(V.AvatarGroup, { people, max: 3, size: "lg" })),
+    h(Row, { label: L.lbl[4] }, h("span", { className: "r", style: { gap: "var(--space-3)", flexWrap: "nowrap" } }, h(V.Avatar, { name: L.ctx[0], size: "lg", status: "done" }), h("span", { style: { display: "flex", flexDirection: "column" } }, h("span", { className: "body-strong" }, L.ctx[0]), h("span", { className: "body-small", style: { color: "var(--ink-secondary)" } }, L.ctx[1])))));
 }
-mount(/* @__PURE__ */ React.createElement(Demo, null));
+function Demo() {
+  return h("div", { className: "d" },
+    h("div", { className: "thgrid" }, h(Frame, { th: "light" }, h(Set, { L: T.ro })), h(Frame, { th: "dark" }, h(Set, { L: T.ro }))),
+    h("div", { className: "thgrid" },
+      h(Frame, { th: "light", label: "Deutsch" }, h(DE, null, h(Set, { L: T.de }))),
+      h(Frame, { th: "light", label: "Italiano" }, h(IT, null, h(Set, { L: T.it }))),
+      h(Frame, { th: "dark", label: "Deutsch" }, h(DE, null, h(Set, { L: T.de }))),
+      h(Frame, { th: "dark", label: "Italiano" }, h(IT, null, h(Set, { L: T.it })))));
+}
+mount(h(Demo, null));
 </script>
 </body>
 </html>

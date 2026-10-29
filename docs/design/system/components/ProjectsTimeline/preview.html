@@ -1,4 +1,4 @@
-<!-- @dsCard group="Ecrane aplicații" height=2300 width=2620 page -->
+<!-- @dsCard group="Ecrane aplicații" height=3044 width=2620 page -->
 <!doctype html>
 <html lang="ro">
 <head><meta charset="utf-8"><title>ProjectsTimeline — Ventora</title>
@@ -278,10 +278,10 @@ const ORGS = [
   { id: "nord", name: "Agen\u021Bia Nord Studio", role: "Manager de proiect" }
 ];
 const NOTIFS = [
-  { id: 1, title: "Programare nou\u0103 de la Ana Popescu", body: "Joi, 29 oct., 14:30 \xB7 Tuns", app: "Booking", time: "acum 5 min", person: "Ana Popescu" },
-  { id: 2, title: "Factura #2026-114 e restant\u0103 de 3 zile", body: "Clinica Dentis \xB7 1.250 lei", app: "Finance", time: "acum 2 ore", icon: "receipt" },
-  { id: 3, title: "Ioana a cerut concediu pe 2\u20136 noiembrie", app: "HR", time: "ieri", person: "Ioana Pavel", read: true },
-  { id: 4, title: "Exportul clien\u021Bilor e gata", app: "CRM", time: "ieri", icon: "download", read: true }
+  { id: 1, title: "Programare nou\u0103 de la Ana Popescu", body: "Joi, 29 oct., 14:30 \xB7 Tuns", app: "EasyBook", time: "acum 5 min", person: "Ana Popescu" },
+  { id: 2, title: "Factura #2026-114 e restant\u0103 de 3 zile", body: "Clinica Dentis \xB7 1.250 lei", app: "MoneyDesk", time: "acum 2 ore", icon: "receipt" },
+  { id: 3, title: "Ioana a cerut concediu pe 2\u20136 noiembrie", app: "TeamSpace", time: "ieri", person: "Ioana Pavel", read: true },
+  { id: 4, title: "Exportul clien\u021Bilor e gata", app: "ClientDesk", time: "ieri", icon: "download", read: true }
 ];
 const USER = { name: "Bianca Petra\u0219cu", email: "bianca@ventora-hub.com" };
 function Bar({ title, de }) {
@@ -312,7 +312,7 @@ function BookingShell({ height, active, mobile }) {
       height,
       spine: /* @__PURE__ */ React.createElement(V.Spine, { app: "booking", sections: SECTIONS, activeId: active, onBackToHub: () => {
       }, footer: /* @__PURE__ */ React.createElement(V.UsageMeter, { compact: true, label: "Program\u0103ri", used: 312, limit: 1e3 }) }),
-      contextBar: /* @__PURE__ */ React.createElement(Bar, { title: "Booking" })
+      contextBar: /* @__PURE__ */ React.createElement(Bar, { title: "EasyBook" })
     },
     /* @__PURE__ */ React.createElement(V.PageHeader, { title: "Program\u0103ri", description: mobile ? void 0 : "Toate program\u0103rile afacerii, de azi \xEEnainte.", actions: mobile ? void 0 : /* @__PURE__ */ React.createElement(V.SegmentedControl, { label: "Vizualizare", size: "md", defaultValue: "list", options: [{ value: "list", label: "List\u0103", icon: "list" }, { value: "cal", label: "Calendar", icon: "calendar" }] }) }),
     /* @__PURE__ */ React.createElement(V.DataTable, { columns: [
@@ -333,7 +333,7 @@ function HubBar({ title, inApp }) {
   return /* @__PURE__ */ React.createElement(
     V.ContextBar,
     {
-      leading: inApp ? null : /* @__PURE__ */ React.createElement("span", { style: { padding: "0 var(--space-2)" } }, /* @__PURE__ */ React.createElement(V.Logo, { size: 32 })),
+      leading: inApp ? null : /* @__PURE__ */ React.createElement("span", { style: { padding: "0 var(--space-2)", display: "inline-flex" } }, /* @__PURE__ */ React.createElement(V.Logo, { size: 32, className: "v-cb-logo--full" }), /* @__PURE__ */ React.createElement(V.Logo, { variant: "mark", size: 32, className: "v-cb-logo--mark" })),
       title,
       org: /* @__PURE__ */ React.createElement(V.OrgSwitcher, { orgs: ORGS, currentId: "aurora" }),
       onSearch: () => {
@@ -366,7 +366,7 @@ function Screens({ title, notes, render, desktopH = 860, tabletH = 1100, mobileH
   return /* @__PURE__ */ React.createElement("div", { className: "scr" }, /* @__PURE__ */ React.createElement("p", { className: "heading" }, title), notes && /* @__PURE__ */ React.createElement("p", { className: "caption muted" }, notes.join(" \xB7 ")), ["light", "dark"].map((th) => /* @__PURE__ */ React.createElement("div", { className: "scr-row", key: th }, sizes.map(([m, lab, cls, h]) => /* @__PURE__ */ React.createElement("div", { key: m }, /* @__PURE__ */ React.createElement("p", { className: "caption scr-lab" }, lab, " \xB7 ", th === "light" ? "Light" : "Dark"), /* @__PURE__ */ React.createElement("div", { className: cls, "data-theme": th, style: { height: h } }, render(m, th)))))));
 }
 const MINE = [["booking", "Program\u0103ri, calendar \u0219i reamintiri", 3], ["crm", "Clien\u021Bi, istoric \u0219i oportunit\u0103\u021Bi"], ["hr", "Echip\u0103, prezen\u021B\u0103 \u0219i concedii", 1], ["finance", "Facturi, scaden\u021Be \u0219i restan\u021Be", 2], ["projects", "Proiecte, sarcini \u0219i termene"], ["shifts", "Ture \u0219i \xEEnlocuiri"], ["documents", "Documente \u0219i \u0219abloane"], ["portal", "Pagina afacerii pentru clien\u021Bi"]];
-const RECO = { marketing: { reason: "Se potrive\u0219te cu Booking: trimite automat reamintiri \u0219i campanii clien\u021Bilor t\u0103i.", cost: "49 lei pe lun\u0103 \xB7 f\u0103r\u0103 cost de implementare" } };
+const RECO = { marketing: { reason: "Se potrive\u0219te cu EasyBook: trimite automat reamintiri \u0219i campanii clien\u021Bilor t\u0103i.", cost: "49 lei pe lun\u0103 \xB7 f\u0103r\u0103 cost de implementare" } };
 const VIEWER_ROLE = "owner";
 const RECO_FOR = (a) => (VIEWER_ROLE === "owner" || VIEWER_ROLE === "admin") && a === "marketing" ? RECO[a] : null;
 const OTHER = [["inventory", "unavailable"], ["analytics", "notInRole"], ["marketing", "notInPlan"], ["network", "notInPlan"]];
@@ -532,7 +532,122 @@ function AX_PrjHead({ mode, view }) {
 function PrjTl({ mode }) {
   return /* @__PURE__ */ React.createElement(AX_App, { app: "projects", sections: AX_PRJ_NAV, active: "proiecte", title: "Proiecte", bottom: ["proiecte", "sarcini", "calendar", "rapoarte"] }, /* @__PURE__ */ React.createElement(AX_PrjHead, { mode, view: "timeline" }), /* @__PURE__ */ React.createElement(AX_Body, { mode }, /* @__PURE__ */ React.createElement(V.Timeline, { label: "Etap\u0103", periods: AX_PRJ_PERIODS, rows: AX_PRJ_ROWS, today: 2.6, minPeriodWidth: mode === "mobile" ? 64 : 80 }), /* @__PURE__ */ React.createElement("p", { className: "body-small muted" }, "Fotografiile au \xEEnt\xE2rziat 2 zile. Dezvoltarea are \xEEnc\u0103 rezerv\u0103 p\xE2n\u0103 la testare, a\u0219a c\u0103 lansarea r\u0103m\xE2ne pe 20 noiembrie.")));
 }
-mount(/* @__PURE__ */ React.createElement(Screens, { title: "Projects \u2014 Cronologie: etapele pe s\u0103pt\u0103m\xE2ni, cu linia de azi \u0219i lansarea", notes: ["Pe telefon cronologia se deruleaz\u0103 orizontal \xEEn cadrul ei; numele etapelor r\u0103m\xE2n fixe la st\xE2nga"], desktopH: 760, tabletH: 900, mobileH: 900, render: (m) => /* @__PURE__ */ React.createElement(PrjTl, { mode: m }) }));
+
+/* p2 · DE/IT label test: translated copies of this screen (data and labels), rendered inside V.LocaleProvider */
+const __p2 = {
+  tx: (s, d) => typeof s !== "string" ? s : Object.prototype.hasOwnProperty.call(d, s) ? d[s] : s === " lei" ? " €" : s.replace(/(\d) lei\b/g, "$1 €"),
+  trd: (v, d) => typeof v === "string" ? __p2.tx(v, d) : Array.isArray(v) ? v.map((x) => __p2.trd(x, d)) : v && typeof v === "object" && Object.getPrototypeOf(v) === Object.prototype && !v.$$typeof ? Object.fromEntries(Object.entries(v).map(([k, x]) => [k, __p2.trd(x, d)])) : v
+};
+
+const D__de = {"Proprietar": "Inhaber", "Clinica Dentis Sibiu": "Zahnklinik Dentis Sibiu", "Recep\u021bie": "Empfang", "Agen\u021bia Nord Studio": "Agentur Nord Studio", "Manager de proiect": "Projektleitung", "Programare nou\u0103 de la Ana Popescu": "Neuer Termin von Ana Popescu", "Joi, 29 oct., 14:30 \u00b7 Tuns": "Do., 29. Okt., 14:30 \u00b7 Haarschnitt", "acum 5 min": "vor 5 Min.", "Factura #2026-114 e restant\u0103 de 3 zile": "Rechnung #2026-114 ist seit 3 Tagen \u00fcberf\u00e4llig", "Clinica Dentis \u00b7 1.250 lei": "Zahnklinik Dentis \u00b7 1.250 \u20ac", "acum 2 ore": "vor 2 Std.", "Ioana a cerut concediu pe 2\u20136 noiembrie": "Ioana hat Urlaub vom 2. bis 6. November beantragt", "Exportul clien\u021bilor e gata": "Der Kundenexport ist fertig", "Programare": "Termin", "Client": "Kunde", "Proiecte": "Projekte", "Sarcinile mele": "Meine Aufgaben", "Sarcini": "Aufgaben", "Calendar": "Kalender", "Afacere": "Unternehmen", "Rapoarte": "Berichte", "Set\u0103ri": "Einstellungen", "5 oct.": "5. Okt.", "12 oct.": "12. Okt.", "19 oct.": "19. Okt.", "26 oct.": "26. Okt.", "2 nov.": "2. Nov.", "9 nov.": "9. Nov.", "16 nov.": "16. Nov.", "23 nov.": "23. Nov.", "Brief \u0219i con\u021binut": "Briefing und Inhalte", "Gata": "Fertig", "Fotografii": "Fotos", "\u00cent\u00e2rziat\u0103 2 zile": "2 Tage versp\u00e4tet", "Dezvoltare": "Entwicklung", "Testare pe telefon \u0219i tablet\u0103": "Test auf Smartphone und Tablet", "9\u201320 nov.": "9.\u201320. Nov.", "Lansare": "Start", "Toat\u0103 echipa": "Ganzes Team", "Vin, 20 nov.": "Fr., 20. Nov.", "Site nou pentru Salon Aurora": "Neue Website f\u00fcr Salon Aurora", "Lansare vineri, 20 nov.": "Start am Freitag, 20. Nov.", "10 sarcini deschise din 16": "10 von 16 Aufgaben offen", "Proiect": "Projekt", "Panou": "Board", "Cronologie": "Zeitplan", "Fi\u0219iere": "Dateien", "Etap\u0103": "Phase", "Fotografiile au \u00eent\u00e2rziat 2 zile. Dezvoltarea are \u00eenc\u0103 rezerv\u0103 p\u00e2n\u0103 la testare, a\u0219a c\u0103 lansarea r\u0103m\u00e2ne pe 20 noiembrie.": "Die Fotos sind 2 Tage im Verzug. Die Entwicklung hat bis zum Test noch Puffer, daher bleibt der Start am 20. November."};
+const t__de = (s) => __p2.tx(s, D__de);
+const ORGS__de = __p2.trd(ORGS, D__de);
+const NOTIFS__de = __p2.trd(NOTIFS, D__de);
+const USER__de = __p2.trd(USER, D__de);
+function Bar__de({ title, de }) {
+  return /* @__PURE__ */ React.createElement(
+    V.ContextBar,
+    {
+      title,
+      org: /* @__PURE__ */ React.createElement(V.OrgSwitcher, { orgs: de ? [{ id: 1, name: t__de("Zahnarztpraxis Dr. M\xFCller"), role: t__de("Empfang") }, { id: 2, name: t__de("Salon Aurora"), role: t__de("Inhaberin") }] : ORGS__de, currentId: de ? 1 : t__de("aurora") }),
+      onSearch: () => {
+      },
+      createItems: [{ label: de ? t__de("Termin") : t__de("Programare"), icon: t__de("calendar-check"), shortcut: [t__de("N")] }, { label: de ? t__de("Kunde") : t__de("Client"), icon: t__de("user-plus") }],
+      notifications: /* @__PURE__ */ React.createElement(V.NotificationsPanel, { items: NOTIFS__de }),
+      account: /* @__PURE__ */ React.createElement(V.AccountMenu, { user: USER__de, orgs: ORGS__de, currentOrgId: t__de("aurora"), onCatalog: () => {
+      } })
+    }
+  );
+}
+function AX_App__de({ app, sections, active, title, bottom, footer, children }) {
+  return /* @__PURE__ */ React.createElement(
+    V.AppShell,
+    {
+      height: t__de("100%"),
+      spine: /* @__PURE__ */ React.createElement(V.Spine, { app, sections, activeId: active, onBackToHub: () => {
+      }, bottomItems: bottom, footer }),
+      contextBar: /* @__PURE__ */ React.createElement(Bar__de, { title })
+    },
+    children
+  );
+}
+const AX_Body__de = ({ mode, children }) => /* @__PURE__ */ React.createElement(t__de("div"), { className: t__de("axb ") + mode }, children);
+const AX_PRJ_NAV__de = __p2.trd(AX_PRJ_NAV, D__de);
+const AX_PRJ_PERIODS__de = __p2.trd(AX_PRJ_PERIODS, D__de);
+const AX_PRJ_ROWS__de = __p2.trd(AX_PRJ_ROWS, D__de);
+function AX_PrjHead__de({ mode, view }) {
+  return /* @__PURE__ */ React.createElement(
+    V.PageHeader,
+    {
+      title: t__de("Site nou pentru Salon Aurora"),
+      breadcrumbs: mode === t__de("mobile") ? void 0 : [{ label: t__de("Proiecte"), href: t__de("#") }, { label: t__de("Site nou pentru Salon Aurora") }],
+      meta: /* @__PURE__ */ React.createElement(t__de("span"), { className: t__de("r"), style: { gap: t__de("var(--space-3)") } }, /* @__PURE__ */ React.createElement(V.StatusPill, { tone: t__de("neutral"), icon: t__de("calendar") }, t__de("Lansare vineri, 20 nov.")), /* @__PURE__ */ React.createElement(t__de("span"), { className: t__de("body-small muted") }, t__de("10 sarcini deschise din 16")), /* @__PURE__ */ React.createElement(V.AvatarGroup, { people: [{ name: t__de("Bianca Petra\u0219cu") }, { name: t__de("Ioana Pavel") }, { name: t__de("Radu Matei") }, { name: t__de("Mara Enache") }], size: t__de("sm") })),
+      tabs: /* @__PURE__ */ React.createElement(V.Tabs, { label: t__de("Proiect"), defaultValue: view, items: [{ value: t__de("board"), label: t__de("Panou") }, { value: t__de("timeline"), label: t__de("Cronologie") }, { value: t__de("files"), label: t__de("Fi\u0219iere"), count: 14 }] })
+    }
+  );
+}
+function PrjTl__de({ mode }) {
+  return /* @__PURE__ */ React.createElement(AX_App__de, { app: t__de("projects"), sections: AX_PRJ_NAV__de, active: t__de("proiecte"), title: t__de("Proiecte"), bottom: [t__de("proiecte"), t__de("sarcini"), t__de("calendar"), t__de("rapoarte")] }, /* @__PURE__ */ React.createElement(AX_PrjHead__de, { mode, view: t__de("timeline") }), /* @__PURE__ */ React.createElement(AX_Body__de, { mode }, /* @__PURE__ */ React.createElement(V.Timeline, { label: t__de("Etap\u0103"), periods: AX_PRJ_PERIODS__de, rows: AX_PRJ_ROWS__de, today: 2.6, minPeriodWidth: mode === t__de("mobile") ? 64 : 80 }), /* @__PURE__ */ React.createElement(t__de("p"), { className: t__de("body-small muted") }, t__de("Fotografiile au \xEEnt\xE2rziat 2 zile. Dezvoltarea are \xEEnc\u0103 rezerv\u0103 p\xE2n\u0103 la testare, a\u0219a c\u0103 lansarea r\u0103m\xE2ne pe 20 noiembrie."))));
+}
+const D__it = {"Proprietar": "Titolare", "Recep\u021bie": "Reception", "Agen\u021bia Nord Studio": "Agenzia Nord Studio", "Manager de proiect": "Responsabile di progetto", "Programare nou\u0103 de la Ana Popescu": "Nuovo appuntamento da Ana Popescu", "Joi, 29 oct., 14:30 \u00b7 Tuns": "Gio 29 ott., 14:30 \u00b7 Taglio", "acum 5 min": "5 min fa", "Factura #2026-114 e restant\u0103 de 3 zile": "La fattura #2026-114 \u00e8 scaduta da 3 giorni", "Clinica Dentis \u00b7 1.250 lei": "Clinica Dentis \u00b7 1.250 \u20ac", "acum 2 ore": "2 ore fa", "Ioana a cerut concediu pe 2\u20136 noiembrie": "Ioana ha chiesto ferie dal 2 al 6 novembre", "Exportul clien\u021bilor e gata": "L\u2019esportazione dei clienti \u00e8 pronta", "Programare": "Appuntamento", "Client": "Cliente", "Proiecte": "Progetti", "Sarcinile mele": "Le mie attivit\u00e0", "Sarcini": "Attivit\u00e0", "Calendar": "Calendario", "Afacere": "Attivit\u00e0", "Rapoarte": "Report", "Set\u0103ri": "Impostazioni", "5 oct.": "5 ott.", "12 oct.": "12 ott.", "19 oct.": "19 ott.", "26 oct.": "26 ott.", "Brief \u0219i con\u021binut": "Brief e contenuti", "Gata": "Fatto", "Fotografii": "Fotografie", "\u00cent\u00e2rziat\u0103 2 zile": "In ritardo di 2 giorni", "Dezvoltare": "Sviluppo", "Testare pe telefon \u0219i tablet\u0103": "Test su telefono e tablet", "Lansare": "Lancio", "Toat\u0103 echipa": "Tutto il team", "Vin, 20 nov.": "Ven 20 nov.", "Site nou pentru Salon Aurora": "Nuovo sito per Salon Aurora", "Lansare vineri, 20 nov.": "Lancio venerd\u00ec 20 nov.", "10 sarcini deschise din 16": "10 attivit\u00e0 aperte su 16", "Proiect": "Progetto", "Panou": "Bacheca", "Cronologie": "Cronologia", "Fi\u0219iere": "File", "Etap\u0103": "Fase", "Fotografiile au \u00eent\u00e2rziat 2 zile. Dezvoltarea are \u00eenc\u0103 rezerv\u0103 p\u00e2n\u0103 la testare, a\u0219a c\u0103 lansarea r\u0103m\u00e2ne pe 20 noiembrie.": "Le fotografie sono in ritardo di 2 giorni. Lo sviluppo ha ancora margine fino al test, quindi il lancio resta il 20 novembre."};
+const t__it = (s) => __p2.tx(s, D__it);
+const ORGS__it = __p2.trd(ORGS, D__it);
+const NOTIFS__it = __p2.trd(NOTIFS, D__it);
+const USER__it = __p2.trd(USER, D__it);
+function Bar__it({ title, de }) {
+  return /* @__PURE__ */ React.createElement(
+    V.ContextBar,
+    {
+      title,
+      org: /* @__PURE__ */ React.createElement(V.OrgSwitcher, { orgs: de ? [{ id: 1, name: t__it("Zahnarztpraxis Dr. M\xFCller"), role: t__it("Empfang") }, { id: 2, name: t__it("Salon Aurora"), role: t__it("Inhaberin") }] : ORGS__it, currentId: de ? 1 : t__it("aurora") }),
+      onSearch: () => {
+      },
+      createItems: [{ label: de ? t__it("Termin") : t__it("Programare"), icon: t__it("calendar-check"), shortcut: [t__it("N")] }, { label: de ? t__it("Kunde") : t__it("Client"), icon: t__it("user-plus") }],
+      notifications: /* @__PURE__ */ React.createElement(V.NotificationsPanel, { items: NOTIFS__it }),
+      account: /* @__PURE__ */ React.createElement(V.AccountMenu, { user: USER__it, orgs: ORGS__it, currentOrgId: t__it("aurora"), onCatalog: () => {
+      } })
+    }
+  );
+}
+function AX_App__it({ app, sections, active, title, bottom, footer, children }) {
+  return /* @__PURE__ */ React.createElement(
+    V.AppShell,
+    {
+      height: t__it("100%"),
+      spine: /* @__PURE__ */ React.createElement(V.Spine, { app, sections, activeId: active, onBackToHub: () => {
+      }, bottomItems: bottom, footer }),
+      contextBar: /* @__PURE__ */ React.createElement(Bar__it, { title })
+    },
+    children
+  );
+}
+const AX_Body__it = ({ mode, children }) => /* @__PURE__ */ React.createElement(t__it("div"), { className: t__it("axb ") + mode }, children);
+const AX_PRJ_NAV__it = __p2.trd(AX_PRJ_NAV, D__it);
+const AX_PRJ_PERIODS__it = __p2.trd(AX_PRJ_PERIODS, D__it);
+const AX_PRJ_ROWS__it = __p2.trd(AX_PRJ_ROWS, D__it);
+function AX_PrjHead__it({ mode, view }) {
+  return /* @__PURE__ */ React.createElement(
+    V.PageHeader,
+    {
+      title: t__it("Site nou pentru Salon Aurora"),
+      breadcrumbs: mode === t__it("mobile") ? void 0 : [{ label: t__it("Proiecte"), href: t__it("#") }, { label: t__it("Site nou pentru Salon Aurora") }],
+      meta: /* @__PURE__ */ React.createElement(t__it("span"), { className: t__it("r"), style: { gap: t__it("var(--space-3)") } }, /* @__PURE__ */ React.createElement(V.StatusPill, { tone: t__it("neutral"), icon: t__it("calendar") }, t__it("Lansare vineri, 20 nov.")), /* @__PURE__ */ React.createElement(t__it("span"), { className: t__it("body-small muted") }, t__it("10 sarcini deschise din 16")), /* @__PURE__ */ React.createElement(V.AvatarGroup, { people: [{ name: t__it("Bianca Petra\u0219cu") }, { name: t__it("Ioana Pavel") }, { name: t__it("Radu Matei") }, { name: t__it("Mara Enache") }], size: t__it("sm") })),
+      tabs: /* @__PURE__ */ React.createElement(V.Tabs, { label: t__it("Proiect"), defaultValue: view, items: [{ value: t__it("board"), label: t__it("Panou") }, { value: t__it("timeline"), label: t__it("Cronologie") }, { value: t__it("files"), label: t__it("Fi\u0219iere"), count: 14 }] })
+    }
+  );
+}
+function PrjTl__it({ mode }) {
+  return /* @__PURE__ */ React.createElement(AX_App__it, { app: t__it("projects"), sections: AX_PRJ_NAV__it, active: t__it("proiecte"), title: t__it("Proiecte"), bottom: [t__it("proiecte"), t__it("sarcini"), t__it("calendar"), t__it("rapoarte")] }, /* @__PURE__ */ React.createElement(AX_PrjHead__it, { mode, view: t__it("timeline") }), /* @__PURE__ */ React.createElement(AX_Body__it, { mode }, /* @__PURE__ */ React.createElement(V.Timeline, { label: t__it("Etap\u0103"), periods: AX_PRJ_PERIODS__it, rows: AX_PRJ_ROWS__it, today: 2.6, minPeriodWidth: mode === t__it("mobile") ? 64 : 80 }), /* @__PURE__ */ React.createElement(t__it("p"), { className: t__it("body-small muted") }, t__it("Fotografiile au \xEEnt\xE2rziat 2 zile. Dezvoltarea are \xEEnc\u0103 rezerv\u0103 p\xE2n\u0103 la testare, a\u0219a c\u0103 lansarea r\u0103m\xE2ne pe 20 noiembrie."))));
+}
+
+function __p2Locale({ title, desktopH, mobileH, de, it }) {
+  if (window.__SOLO) return null;
+  const h = React.createElement;
+  const fr = (lab, cls, th, hgt, loc, el) => h("div", null, h("p", { className: "caption scr-lab" }, lab), h("div", { className: cls, "data-theme": th, style: { height: hgt } }, h(V.LocaleProvider, { locale: loc }, el)));
+  return h("div", { className: "scr" }, h("p", { className: "heading" }, title), h("p", { className: "caption muted" }, "Textele ecranului traduse (germana cu „Sie”, italiana cu „Lei”), ca să verificăm că etichetele mai lungi \xEEncap \xB7 numele aplicațiilor răm\xE2n neschimbate"), h("div", { className: "scr-row" }, fr("Deutsch \xB7 Desktop \xB7 1280 \xB7 Light", "scr-d", "light", desktopH, "de", de("desktop")), fr("Italiano \xB7 Telefon \xB7 390 \xB7 Light", "scr-m", "light", mobileH, "it", it("mobile")), fr("Italiano \xB7 Telefon \xB7 390 \xB7 Dark", "scr-m", "dark", mobileH, "it", it("mobile"))));
+}
+
+mount(React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(Screens, { title: "TaskBoard \u2014 Cronologie: etapele pe s\u0103pt\u0103m\xE2ni, cu linia de azi \u0219i lansarea", notes: ["Pe telefon cronologia se deruleaz\u0103 orizontal \xEEn cadrul ei; numele etapelor r\u0103m\xE2n fixe la st\xE2nga"], desktopH: 760, tabletH: 900, mobileH: 900, render: (m) => /* @__PURE__ */ React.createElement(PrjTl, { mode: m }) }), React.createElement(__p2Locale, { title: "Test de lungime \u2014 german\u0103 (1280) \u0219i italian\u0103 (390)", desktopH: 760, mobileH: 900, de: (m) => React.createElement(PrjTl__de, { mode: m }), it: (m) => React.createElement(PrjTl__it, { mode: m }) })));
 </script>
 </body>
 </html>

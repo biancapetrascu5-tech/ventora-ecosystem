@@ -1,0 +1,108 @@
+{
+ "name": "Spine",
+ "version": "1.0.1",
+ "kind": "component",
+ "group": "Shell",
+ "status": "changed",
+ "description": "The app's navigation: app name (click to return to the Hub launcher), grouped items, an optional footer (usually a compact UsageMeter), collapse control — and the bottom nav on mobile.",
+ "exports": [
+  "Spine"
+ ],
+ "props": [
+  {
+   "name": "app",
+   "type": "AppKey",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "hub",
+   "type": "boolean",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "appName",
+   "type": "string",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "appIcon",
+   "type": "string",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "sections",
+   "type": "{ label?: string; items: NavItem[]; }[]",
+   "required": true,
+   "note": ""
+  },
+  {
+   "name": "activeId",
+   "type": "string",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "onNavigate",
+   "type": "(item: NavItem) => void",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "onBackToHub",
+   "type": "() => void",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "footer",
+   "type": "ReactNode",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "collapsed",
+   "type": "boolean",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "defaultCollapsed",
+   "type": "boolean",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "onCollapsedChange",
+   "type": "(c: boolean) => void",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "bottomItems",
+   "type": "string[]",
+   "required": false,
+   "note": ""
+  }
+ ],
+ "events": [
+  "onBackToHub",
+  "onCollapsedChange",
+  "onNavigate"
+ ],
+ "states": [
+  "default",
+  "active",
+  "badge",
+  "disabled-item",
+  "collapsed",
+  "footer-meter",
+  "mobile-bottom-nav"
+ ],
+ "notes": "",
+ "readme": "components/Spine/README.md",
+ "preview": "components/Spine/preview.html"
+}

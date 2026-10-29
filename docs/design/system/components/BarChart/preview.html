@@ -1,4 +1,4 @@
-<!-- @dsCard group="Data" height=760 width=1200 -->
+<!-- @dsCard group="Data" height=4826 width=1200 -->
 <!doctype html>
 <html lang="ro">
 <head><meta charset="utf-8"><title>BarChart — Ventora</title>
@@ -250,6 +250,9 @@ html,body{min-height:100%}
 .fxframe .caption{color:var(--ink-muted)}
 @container (max-width:420px){.fxlang{grid-template-columns:32px minmax(0,1fr) auto}.fxlang .v-iconbtn{display:none}}
 
+.thgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(520px,100%),1fr));gap:var(--space-4);align-items:start}
+.thf{display:flex;flex-direction:column;gap:var(--space-4);padding:var(--space-5);background:var(--canvas);color:var(--ink);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg);min-width:0;box-sizing:border-box}
+.thf .thl{margin:0;color:var(--ink-muted);font-weight:600}
 </style>
 </head>
 <body>
@@ -278,10 +281,10 @@ const ORGS = [
   { id: "nord", name: "Agen\u021Bia Nord Studio", role: "Manager de proiect" }
 ];
 const NOTIFS = [
-  { id: 1, title: "Programare nou\u0103 de la Ana Popescu", body: "Joi, 29 oct., 14:30 \xB7 Tuns", app: "Booking", time: "acum 5 min", person: "Ana Popescu" },
-  { id: 2, title: "Factura #2026-114 e restant\u0103 de 3 zile", body: "Clinica Dentis \xB7 1.250 lei", app: "Finance", time: "acum 2 ore", icon: "receipt" },
-  { id: 3, title: "Ioana a cerut concediu pe 2\u20136 noiembrie", app: "HR", time: "ieri", person: "Ioana Pavel", read: true },
-  { id: 4, title: "Exportul clien\u021Bilor e gata", app: "CRM", time: "ieri", icon: "download", read: true }
+  { id: 1, title: "Programare nou\u0103 de la Ana Popescu", body: "Joi, 29 oct., 14:30 \xB7 Tuns", app: "EasyBook", time: "acum 5 min", person: "Ana Popescu" },
+  { id: 2, title: "Factura #2026-114 e restant\u0103 de 3 zile", body: "Clinica Dentis \xB7 1.250 lei", app: "MoneyDesk", time: "acum 2 ore", icon: "receipt" },
+  { id: 3, title: "Ioana a cerut concediu pe 2\u20136 noiembrie", app: "TeamSpace", time: "ieri", person: "Ioana Pavel", read: true },
+  { id: 4, title: "Exportul clien\u021Bilor e gata", app: "ClientDesk", time: "ieri", icon: "download", read: true }
 ];
 const USER = { name: "Bianca Petra\u0219cu", email: "bianca@ventora-hub.com" };
 function Bar({ title, de }) {
@@ -312,7 +315,7 @@ function BookingShell({ height, active, mobile }) {
       height,
       spine: /* @__PURE__ */ React.createElement(V.Spine, { app: "booking", sections: SECTIONS, activeId: active, onBackToHub: () => {
       }, footer: /* @__PURE__ */ React.createElement(V.UsageMeter, { compact: true, label: "Program\u0103ri", used: 312, limit: 1e3 }) }),
-      contextBar: /* @__PURE__ */ React.createElement(Bar, { title: "Booking" })
+      contextBar: /* @__PURE__ */ React.createElement(Bar, { title: "EasyBook" })
     },
     /* @__PURE__ */ React.createElement(V.PageHeader, { title: "Program\u0103ri", description: mobile ? void 0 : "Toate program\u0103rile afacerii, de azi \xEEnainte.", actions: mobile ? void 0 : /* @__PURE__ */ React.createElement(V.SegmentedControl, { label: "Vizualizare", size: "md", defaultValue: "list", options: [{ value: "list", label: "List\u0103", icon: "list" }, { value: "cal", label: "Calendar", icon: "calendar" }] }) }),
     /* @__PURE__ */ React.createElement(V.DataTable, { columns: [
@@ -462,9 +465,49 @@ function AX_PrjHead({ mode, view }) {
     }
   );
 }
-mount(
-  /* @__PURE__ */ React.createElement("div", { className: "d" }, /* @__PURE__ */ React.createElement("div", { className: "axcharts" }, /* @__PURE__ */ React.createElement(V.BarChart, { title: "Program\u0103ri pe zi a s\u0103pt\u0103m\xE2nii", description: "Media pe ultimele 4 s\u0103pt\u0103m\xE2ni", data: AX_AN_DAYS, compareLabel: "Cu un an \xEEnainte" }), /* @__PURE__ */ React.createElement(V.BarChart, { title: "Venituri pe lun\u0103", description: "Octombrie e \xEEnc\u0103 \xEEn curs", data: AX_AN_MONTHS.slice(6).map((l, i) => ({ label: l, value: AX_AN_REV[6 + i], now: i === 5, nowLabel: "\xEEn curs" })), unit: "lei" })), /* @__PURE__ */ React.createElement(V.BarChart, { orientation: "horizontal", title: "Venituri pe serviciu", description: "Octombrie, p\xE2n\u0103 azi", data: AX_AN_SERV, unit: "lei" }))
-);
+const h = React.createElement;
+const Frame = ({ th, label, children }) => h("section", { "data-theme": th, className: "thf" }, h("p", { className: "caption thl" }, (th === "dark" ? "Dark" : "Light") + (label ? " · " + label : "")), children);
+function Forced({ hover, table, children }) {
+  const ref = React.useRef(null);
+  React.useEffect(() => {
+    const t = setTimeout(() => {
+      const el = ref.current;
+      if (!el) return;
+      if (hover != null) {
+        const it = el.querySelectorAll(".v-chart__band, .v-hbars__row")[hover];
+        if (it) it.dispatchEvent(new MouseEvent("mouseover", { bubbles: true, relatedTarget: document.body }));
+      }
+      if (table) {
+        const b = el.querySelector(".v-chart__actions .v-btn");
+        if (b) b.click();
+      }
+    }, 400);
+    return () => clearTimeout(t);
+  }, []);
+  return h("div", { ref, style: { minWidth: 0 } }, children);
+}
+const BC = {
+  ro: { lbl: ["Implicit", "Hover pe vineri (tooltip)", "„Vezi ca tabel”", "Coloană îngustă (360px): eticheta lungă se taie"], days: AX_AN_DAYS, t1: "Programări pe zi a săptămânii", d1: "Media pe ultimele 4 săptămâni", cmp: "Cu un an înainte", months: AX_AN_MONTHS.slice(6), t2: "Venituri pe lună", d2: "Octombrie e încă în curs", now: "în curs", t3: "Venituri pe serviciu", d3: "Octombrie, până azi", serv: AX_AN_SERV },
+  de: { lbl: ["Standard", "Hover auf Freitag (Tooltip)", "„Als Tabelle anzeigen“", "Schmale Spalte (360px): lange Beschriftungen werden gekürzt"], days: ["Mo", "Di", "Mi", "Do", "Fr", "Sa"].map((l, i) => ({ ...AX_AN_DAYS[i], label: l })), t1: "Termine pro Wochentag", d1: "Durchschnitt der letzten 4 Wochen", cmp: "Ein Jahr zuvor", months: ["Mai", "Juni", "Juli", "Aug.", "Sep.", "Okt."], t2: "Umsatz pro Monat", d2: "Der Oktober läuft noch", now: "laufend", t3: "Umsatz pro Leistung", d3: "Oktober, bis heute", serv: ["Färben", "Haarschnitt und Styling", "Maniküre", "Gesichtsbehandlungen", "Pediküre"].map((l, i) => ({ ...AX_AN_SERV[i], label: l })) },
+  it: { lbl: ["Predefinito", "Hover su venerdì (tooltip)", "«Mostra come tabella»", "Colonna stretta (360px): le etichette lunghe vengono troncate"], days: ["Lun", "Mar", "Mer", "Gio", "Ven", "Sab"].map((l, i) => ({ ...AX_AN_DAYS[i], label: l })), t1: "Appuntamenti per giorno della settimana", d1: "Media delle ultime 4 settimane", cmp: "Un anno prima", months: ["mag.", "giu.", "lug.", "ago.", "set.", "ott."], t2: "Ricavi mensili", d2: "Ottobre è ancora in corso", now: "in corso", t3: "Ricavi per servizio", d3: "Ottobre, fino a oggi", serv: ["Colore", "Taglio e piega", "Manicure", "Trattamenti viso", "Pedicure"].map((l, i) => ({ ...AX_AN_SERV[i], label: l })) }
+};
+function Set({ L }) {
+  const months = L.months.map((l, i) => ({ label: l, value: AX_AN_REV[6 + i], now: i === 5, nowLabel: L.now }));
+  return h(React.Fragment, null,
+    h("div", { className: "axcharts" },
+      h(Forced, null, h("p", { className: "caption lab" }, L.lbl[0]), h(V.BarChart, { title: L.t1, description: L.d1, data: L.days, compareLabel: L.cmp })),
+      h(Forced, { hover: 4 }, h("p", { className: "caption lab" }, L.lbl[1]), h(V.BarChart, { title: L.t1, description: L.d1, data: L.days, compareLabel: L.cmp })),
+      h(Forced, { hover: 5 }, h("p", { className: "caption lab" }, L.lbl[1].replace(/vineri|Freitag|venerdì/, (m) => ({ vineri: "octombrie", Freitag: "Oktober", "venerdì": "ottobre" })[m])), h(V.BarChart, { title: L.t2, description: L.d2, data: months, unit: "lei" })),
+      h(Forced, { table: true }, h("p", { className: "caption lab" }, L.lbl[2]), h(V.BarChart, { title: L.t2, description: L.d2, data: months, unit: "lei" }))),
+    h("div", { className: "axcharts" },
+      h(Forced, { hover: 1 }, h(V.BarChart, { orientation: "horizontal", title: L.t3, description: L.d3, data: L.serv, unit: "lei" })),
+      h("div", { style: { maxWidth: 360 } }, h("p", { className: "caption lab" }, L.lbl[3]), h(V.BarChart, { orientation: "horizontal", title: L.t3, description: L.d3, data: L.serv, unit: "lei" }))));
+}
+mount(h("div", { className: "d" },
+  h(Frame, { th: "light" }, h(Set, { L: BC.ro })),
+  h(Frame, { th: "dark" }, h(Set, { L: BC.ro })),
+  h(Frame, { th: "light", label: "Deutsch" }, h(DE, null, h(Set, { L: BC.de }))),
+  h(Frame, { th: "dark", label: "Italiano" }, h(IT, null, h(Set, { L: BC.it })))));
 </script>
 </body>
 </html>

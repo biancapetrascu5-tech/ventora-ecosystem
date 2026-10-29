@@ -1,0 +1,31 @@
+# GrowthCampaignEditor
+
+`page` · Founder · versiunea 1.0.1
+
+Campaign editor: mode (signal or period), offer, slots, eligibility via RuleBuilder (only allowed criteria; the estimate is a count, never a list), priority, the global caps shown as information, and a per-slot preview in light/dark and by language. Publishing needs the Romanian texts approved.
+
+## Evenimente
+
+—
+
+## Stări
+
+- Growth — Editorul unei campanii: mod, ofertă, sloturi, eligibilitate, prioritate, plafoane, previzualizare
+- Model comercial
+- Growth
+- Sistem
+- Afaceri
+- Consum
+- Campanii
+- Control
+- Mai multe
+- Semnalul * (obligatoriu)
+- Oferta * (obligatoriu)
+- Prioritate
+- Recomandare
+
+## Note
+
+States are the labelled boards and frames of the preview (Light and Dark; desktop/tablet/phone).
+
+Mai mult: `components/GrowthCampaignEditor/README.md`, exemplele: `components/GrowthCampaignEditor/preview.html`.

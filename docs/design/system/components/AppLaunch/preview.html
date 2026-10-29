@@ -1,4 +1,4 @@
-<!-- @dsCard group="Hub" height=1230 width=1200 -->
+<!-- @dsCard group="Hub" height=3262 width=1200 -->
 <!doctype html>
 <html lang="ro">
 <head><meta charset="utf-8"><title>AppLaunch — Ventora</title>
@@ -251,6 +251,9 @@ html,body{min-height:100%}
 @container (max-width:420px){.fxlang{grid-template-columns:32px minmax(0,1fr) auto}.fxlang .v-iconbtn{display:none}}
 
 .lstage2{height:auto;position:relative;overflow:hidden;padding:var(--space-12) var(--space-6) var(--space-6);min-height:360px;box-sizing:border-box}
+.thgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(520px,100%),1fr));gap:var(--space-4);align-items:start}
+.thf{display:flex;flex-direction:column;gap:var(--space-4);padding:var(--space-5);background:var(--canvas);color:var(--ink);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg);min-width:0;box-sizing:border-box}
+.thf .thl{margin:0;color:var(--ink-muted);font-weight:600}
 </style>
 </head>
 <body>
@@ -263,21 +266,48 @@ const DE = ({ children }) => /* @__PURE__ */ React.createElement(V.LocaleProvide
 const FR = ({ children }) => /* @__PURE__ */ React.createElement(V.LocaleProvider, { locale: "fr" }, children);
 const IT = ({ children }) => /* @__PURE__ */ React.createElement(V.LocaleProvider, { locale: "it" }, children);
 const mount = (el) => ReactDOM.createRoot(document.getElementById("root")).render(/* @__PURE__ */ React.createElement(V.LocaleProvider, { locale: "ro" }, el));
-function Demo() {
+const Frame = ({ th, label, children }) => React.createElement("section", { "data-theme": th, className: "thf" }, React.createElement("p", { className: "caption thl" }, (th === "dark" ? "Dark" : "Light") + (label ? " · " + label : "")), children);
+const LFRAMES = [0, 0.15, 0.35, 0.55, 0.75, 1];
+function Frames({ app }) {
+  const h = React.createElement;
+  return h("div", { className: "lframes" }, LFRAMES.map((p) => h("div", { key: p, className: "lframe" },
+    h("div", { className: "lframe-tiles" }, [app || "booking"].concat(["booking", "crm", "hr", "finance"].filter((x) => x !== (app || "booking"))).map((a) => h(V.AppIcon, { key: a, app: a, size: 44 }))),
+    h(V.AppLaunch, { app: app || "booking", contained: true, progress: p, fromLocal: { left: 16, top: 16, width: 44, height: 44 }, fromCard: { left: 4, top: 4, width: 68, height: 76 } }))));
+}
+const Waiting = ({ app }) => React.createElement("div", { className: "lframe" }, React.createElement(V.AppLaunch, { app, contained: true, progress: 1, waiting: true, fromLocal: { left: 16, top: 16, width: 44, height: 44 } }));
+function Live({ apps, hint }) {
   const h = React.createElement;
   const [run, setRun] = useState(null);
-  const APPS = [["booking", "Programări, calendar și reamintiri", 3], ["crm", "Clienți, istoric și oportunități"], ["hr", "Echipă, prezență și concedii", 1], ["finance", "Facturi, scadențe și restanțe", 2], ["projects", "Proiecte, sarcini și termene"]].map(([a, d, b]) => ({ app: a, description: d, badge: b }));
-  const frames = [0, 0.15, 0.35, 0.55, 0.75, 1];
-  return h("div", { className: "d" },
-    h("p", { className: "caption", style: { color: "var(--ink-muted)" } }, "Cadre: 0 · 130 · 300 · 470 · 640 · 850 ms. Iconul crește la 112%, aplicația crește din card (duration-launch 420ms, ease-standard), iconul trece prin centru la 88px și se așază în bara aplicației; conținutul urcă și apare."),
-    h("div", { className: "lframes" }, frames.map((p) => h("div", { key: p, className: "lframe" },
-      h("div", { className: "lframe-tiles" }, ["booking", "crm", "hr", "finance"].map((a) => h(V.AppIcon, { key: a, app: a, size: 44 }))),
-      h(V.AppLaunch, { app: "booking", contained: true, progress: p, fromLocal: { left: 16, top: 16, width: 44, height: 44 }, fromCard: { left: 4, top: 4, width: 68, height: 76 } })))),
-    h("p", { className: "caption", style: { color: "var(--ink-muted)" } }, "Dacă aplicația se încarcă greu (waiting): iconul rămâne în centru cu numele dedesubt, ca în prima versiune."),
-    h("div", { className: "lframes" }, h("div", { className: "lframe" }, h(V.AppLaunch, { app: "booking", contained: true, progress: 1, waiting: true, fromLocal: { left: 16, top: 16, width: 44, height: 44 } }))),
-    h("div", { className: "r" }, h("span", { className: "body-small", style: { color: "var(--ink-muted)" } }, "Apasă pe o aplicație din rând.")),
-    h("div", { className: "lstage lstage2" }, h(V.AppDock, { apps: APPS, onOpen: (e, app, name, l) => setRun(Object.assign({ app, name, t: Date.now() }, l)) }),
+  return h(React.Fragment, null,
+    h("div", { className: "r" }, h("span", { className: "body-small", style: { color: "var(--ink-muted)" } }, hint)),
+    h("div", { className: "lstage lstage2" }, h(V.AppDock, { apps, onOpen: (e, app, name, l) => setRun(Object.assign({ app, name, t: Date.now() }, l)) }),
       run && h(V.AppLaunch, Object.assign({ key: run.t, contained: true, onDone: () => setTimeout(() => setRun(null), 600) }, run))));
+}
+function Demo() {
+  const h = React.createElement;
+  const APPS = [["booking", "Programări, calendar și reamintiri", 3], ["crm", "Clienți, istoric și oportunități"], ["hr", "Echipă, prezență și concedii", 1], ["finance", "Facturi, scadențe și restanțe", 2], ["projects", "Proiecte, sarcini și termene"]].map(([a, d, b]) => ({ app: a, description: d, badge: b }));
+  const APPS_DE = [["booking", "Termine, Kalender und Erinnerungen", 3], ["crm", "Kunden, Verlauf und Verkaufschancen"], ["hr", "Team, Anwesenheit und Urlaub", 1], ["finance", "Rechnungen, Fälligkeiten und Rückstände", 2], ["contracts", "Verträge, Unterschriften und Fristen"]].map(([a, d, b]) => ({ app: a, description: d, badge: b }));
+  const APPS_IT = [["booking", "Appuntamenti, calendario e promemoria", 3], ["crm", "Clienti, cronologia e opportunità"], ["hr", "Team, presenze e ferie", 1], ["finance", "Fatture, scadenze e pagamenti scaduti", 2], ["contracts", "Contratti, firme e scadenze"]].map(([a, d, b]) => ({ app: a, description: d, badge: b }));
+  return h("div", { className: "d" },
+    h(Frame, { th: "light" },
+      h("p", { className: "caption", style: { color: "var(--ink-muted)" } }, "Cadre: 0 · 130 · 300 · 470 · 640 · 850 ms. Iconul crește la 112%, aplicația crește din card (duration-launch 420ms, ease-standard), iconul trece prin centru la 88px și se așază în bara aplicației; conținutul urcă și apare."),
+      h(Frames, null),
+      h("p", { className: "caption", style: { color: "var(--ink-muted)" } }, "Dacă aplicația se încarcă greu (waiting): iconul rămâne în centru cu numele dedesubt, ca în prima versiune."),
+      h("div", { className: "lframes" }, h(Waiting, { app: "booking" }), h(Waiting, { app: "contracts" })),
+      h(Live, { apps: APPS, hint: "Apasă pe o aplicație din rând." })),
+    h(Frame, { th: "dark" },
+      h(Frames, { app: "finance" }),
+      h("div", { className: "lframes" }, h(Waiting, { app: "booking" }), h(Waiting, { app: "contracts" })),
+      h(Live, { apps: APPS, hint: "Apasă pe o aplicație din rând." })),
+    h("div", { className: "thgrid" },
+      h(Frame, { th: "light", label: "Deutsch" }, h(V.LocaleProvider, { locale: "de" },
+        h("p", { className: "caption", style: { color: "var(--ink-muted)", margin: 0 } }, "Wenn die App länger lädt, bleibt das Symbol mit dem Namen in der Mitte. Der Screenreader sagt „EasyBook wird geöffnet“."),
+        h("div", { className: "lframes", style: { gridTemplateColumns: "repeat(2,1fr)" } }, h(Waiting, { app: "contracts" }), h("div", { className: "lframe" }, h(V.AppLaunch, { app: "contracts", contained: true, progress: 0.55, fromLocal: { left: 16, top: 16, width: 44, height: 44 } }))),
+        h(Live, { apps: APPS_DE, hint: "Tippen Sie auf eine App in der Leiste." }))),
+      h(Frame, { th: "dark", label: "Italiano" }, h(V.LocaleProvider, { locale: "it" },
+        h("p", { className: "caption", style: { color: "var(--ink-muted)", margin: 0 } }, "Se l’app impiega più tempo, l’icona resta al centro con il nome. Lo screen reader annuncia «Apertura di EasyBook»."),
+        h("div", { className: "lframes", style: { gridTemplateColumns: "repeat(2,1fr)" } }, h(Waiting, { app: "contracts" }), h("div", { className: "lframe" }, h(V.AppLaunch, { app: "contracts", contained: true, progress: 0.55, fromLocal: { left: 16, top: 16, width: 44, height: 44 } }))),
+        h(Live, { apps: APPS_IT, hint: "Tocchi un’app nella barra." })))));
 }
 mount(/* @__PURE__ */ React.createElement(Demo, null));
 </script>

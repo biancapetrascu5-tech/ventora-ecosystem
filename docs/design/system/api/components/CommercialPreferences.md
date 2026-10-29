@@ -1,0 +1,19 @@
+# CommercialPreferences
+
+`component` · Comercial · versiunea 1.0.1
+
+Account settings → Notifications → "Recomandări Ventora": in-app recommendations on or off; e-mail switched off and locked with "Disponibil în curând"; and a note that messages about the account's limits stay on, because they are account information, not recommendations. Part of HubAccount.
+
+## Evenimente
+
+—
+
+## Stări
+
+- in-app-on
+- in-app-off
+- email-locked
+- limits-notice
+- narrow
+
+Mai mult: `components/CommercialPreferences/README.md`, exemplele: `components/CommercialPreferences/preview.html`.

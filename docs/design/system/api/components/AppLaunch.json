@@ -1,0 +1,89 @@
+{
+ "name": "AppLaunch",
+ "version": "1.0.1",
+ "kind": "component",
+ "group": "Hub",
+ "status": "changed",
+ "description": "Opening an app from the Hub (version 2, direction B): the tapped icon swells, the app grows out of the card you pressed, the icon rides in its centre and settles into the app's bar, and the app's first frame rises in.",
+ "exports": [
+  "AppLaunch"
+ ],
+ "props": [
+  {
+   "name": "app",
+   "type": "AppKey",
+   "required": true,
+   "note": ""
+  },
+  {
+   "name": "name",
+   "type": "string",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "from",
+   "type": "Box",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "fromCard",
+   "type": "Box",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "iconEl",
+   "type": "Element",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "fromLocal",
+   "type": "{ left: number; top: number; width: number; height: number; }",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "onDone",
+   "type": "() => void",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "contained",
+   "type": "boolean",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "progress",
+   "type": "number",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "waiting",
+   "type": "boolean",
+   "required": false,
+   "note": ""
+  }
+ ],
+ "events": [
+  "onDone"
+ ],
+ "states": [
+  "frame0",
+  "frame130",
+  "frame300",
+  "frame470",
+  "frame640",
+  "frame850",
+  "waiting",
+  "live"
+ ],
+ "notes": "prefers-reduced-motion fade cannot be forced in a static preview",
+ "readme": "components/AppLaunch/README.md",
+ "preview": "components/AppLaunch/preview.html"
+}

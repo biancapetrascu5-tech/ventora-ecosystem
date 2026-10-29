@@ -3,6 +3,57 @@
     "ok": "OK",
     "items": "{count, plural, one {# elemento} other {# elementos}}"
   },
+  "portal": {
+    "eyebrow": "Portal · para tus clientes",
+    "title": "Tu página de negocio en el Portal",
+    "description": "Los clientes te encuentran en el Portal y hacen citas allí. Desde aquí controlas lo que ellos ven.",
+    "memberNote": "La página puede ser modificada por el propietario, los admins y el gestor de la aplicación Portal.",
+    "manage": "Gestionar página",
+    "finish": "Terminar página",
+    "preview": "Ver cómo se ve en el Portal",
+    "previewTab": "(se abre en una nueva pestaña)",
+    "statusPublished": "Publicada",
+    "statusHidden": "Oculta",
+    "statusDraft": "Aún no publicada"
+  },
+  "documents": {
+    "lastOpened": "Último abierto: {document} · {cuándo}"
+  },
+  "invite": {
+    "fromLabel": "Invitación de {name}",
+    "title": "Únete al equipo de {afacere}",
+    "roleDesc": "Tu rol: {role}. Tendrás acceso a:",
+    "nameField": "Nombre completo",
+    "emailLabel": "Correo electrónico",
+    "emailNote": "Esta es la dirección a la que se envió la invitación.",
+    "passwordField": "Nueva contraseña",
+    "reqLength": "Al menos 10 caracteres",
+    "reqDigit": "Al menos un dígito",
+    "reqUpper": "Al menos una letra mayúscula",
+    "termsLabel": "Acepto los Términos y la Política de privacidad",
+    "termsDesc": "Puedes leerlos en cualquier momento en Configuración.",
+    "accept": "Aceptar invitación",
+    "expiry": "Invitación válida hasta el {data}.",
+    "expiredTitle": "Invitación expirada",
+    "expiredBody": "Las invitaciones son válidas durante 7 días. Solicita una nueva: enviaremos la solicitud a {name} y recibirás el nuevo enlace por correo electrónico.",
+    "requestNew": "Solicitar una nueva invitación"
+  },
+  "usageMeter": {
+    "unlimited": "Ilimitado",
+    "usedOf": "{used} de {limit}",
+    "left": "Te quedan {n}",
+    "nearLimit": "Te acercas al límite de tu suscripción",
+    "atLimit": "Has alcanzado el límite de tu suscripción",
+    "atLimitHint": "Lo que ya tienes no se perderá. Para añadir más, compra un complemento o solicita otra suscripción.",
+    "upgrade": "Solicitar otra suscripción",
+    "buyMore": "Comprar complemento",
+    "notifyOwner": "Notificar al propietario",
+    "onlyOwnerBuys": "Los complementos solo puede comprarlos {who} (propietario)."
+  },
+  "toast": {
+    "undo": "Deshacer",
+    "close": "Cerrar"
+  },
   "email": {
     "common": {
       "greeting": "Hola, {name}:",
@@ -97,5 +148,11 @@
         "closed": "La sesión de soporte se ha cerrado."
       }
     }
+  },
+  "auth": {
+    "line1": "Tu negocio.",
+    "line2": "Todo en un solo lugar.",
+    "founderProduct": "Control Center",
+    "founderTagline": "La herramienta interna del equipo Ventora"
   }
 }

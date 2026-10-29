@@ -1,0 +1,72 @@
+{
+ "name": "AuthLayout",
+ "version": "1.0.0",
+ "kind": "component",
+ "group": "Hub",
+ "status": "new",
+ "description": "The sign-in page as a component (R-2F9). It has the same name and the same zones as `AuthLayout` in `packages/ui`. - **The brand panel:** a `BrandZone` on 46% of the width (40% under 1024px). It holds the logo, \"Afacerea ta. Într-un singur loc.\" in `display-xl`, the chevrons and \"© 2026 Ventora Systems\". - **The sheet with the form:** the language selector at the top right, the form centred (400px, 480px with `wide`) and the footer. - **On phones** (the layout narrower than 768px): the panel becomes a band with the logo and the language selector, and the sheet rises over it with rounded corners. The statement, the chevrons and the © are hidden.",
+ "exports": [
+  "AuthLayout"
+ ],
+ "props": [
+  {
+   "name": "children",
+   "type": "ReactNode",
+   "required": true,
+   "note": ""
+  },
+  {
+   "name": "languageSelector",
+   "type": "ReactNode",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "footer",
+   "type": "ReactNode",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "theme",
+   "type": "\"light\" | \"dark\"",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "brand",
+   "type": "\"hub\" | \"founder\"",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "statement",
+   "type": "ReactNode",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "wide",
+   "type": "boolean",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "className",
+   "type": "string",
+   "required": false,
+   "note": ""
+  }
+ ],
+ "events": [],
+ "states": [
+  "hub-desktop",
+  "hub-tablet",
+  "hub-phone-band",
+  "founder",
+  "wide"
+ ],
+ "notes": "Layout component: no events of its own.",
+ "readme": "components/AuthLayout/README.md",
+ "preview": "components/AuthLayout/preview.html"
+}

@@ -5,7 +5,8 @@ Un singur cuvânt pentru fiecare lucru, în toate ecranele și în toate cele 6 
 ## Reguli de scriere
 
 - **Cui vorbim.** RO „tu”, EN „you”, FR „vous”, ES „tú”, DE „Sie”, IT „Lei”. Mesajele care pleacă de la afacere către clienții ei: „dumneavoastră”.
-- **Tonul.** Prietenos la intrare și în stările goale; precis în Finance, HR și Contracts; calm în erori; fără umor în mesajele critice (plăți, ștergeri, acces).
+- **SMS-urile către clienții afacerii (S38).** Fără diacritice și în cel mult 160 de caractere, adică 1 SMS: „Buna ziua! Va reamintim de programarea de vineri, 23 oct., ora 12:30, la Salon Aurora. Pentru modificari: 0722 123 456.” Un singur caracter în afara alfabetului SMS standard (ă, â, î, ș, ț, ghilimelele „”, apostroful ’, liniuța —) face mesajul de 70 de caractere, iar o reamintire obișnuită ar pleca în 3 SMS-uri. Germana (ä, ö, ü, ß) și italiana (à, è, é, ì, ò, ù) își păstrează literele, care sunt în alfabetul SMS. E-mailurile și interfața rămân cu diacritice.
+- **Tonul.** Prietenos la intrare și în stările goale; precis în MoneyDesk, TeamSpace și ContractDesk; calm în erori; fără umor în mesajele critice (plăți, ștergeri, acces).
 - **Butoane.** Verb la început, concret: „Programează”, „Trimite link de plată”. Niciodată „OK”. Acțiunile cu bani spun suma.
 - **Anunțuri automate.** Un dialog spune că pleacă un mesaj către client doar dacă notificarea e pornită în setările afacerii; altfel nu promite nimic.
 - **Erori.** Ce s-a întâmplat, apoi ce poți face. Fără vină pe om, fără coduri tehnice. Dacă nu s-au luat bani, spunem asta.
@@ -28,7 +29,7 @@ Un singur cuvânt pentru fiecare lucru, în toate ecranele și în toate cele 6 
 | rol | role | rôle | rol | Rolle | ruolo |  |
 | acces | access | accès | acceso | Zugriff | accesso | „Cere acces”, „Acces oprit”. |
 | invitație | invitation | invitation | invitación | Einladung | invito | Singura cale de intrare. Niciodată „Creează cont”. |
-| aplicație | app | application | aplicación | App | app | Numele aplicațiilor rămân în engleză în toate limbile (Booking, CRM, HR…). |
+| aplicație | app | application | aplicación | App | app | Numele aplicațiilor rămân în engleză în toate limbile, fără traducere și fără articol (D-UX-4): EasyBook, ClientDesk, TeamSpace, MoneyDesk, TaskBoard, ShiftPlan, DocSpace, StockDesk, DataView, CampaignKit, EventSpace, AssetDesk, ContractDesk; plus Portal și Network. Nu „Booking”, „CRM”, „HR”… în ce văd oamenii. |
 | Hub | Hub | Hub | Hub | Hub | Hub | Nume propriu, nu se traduce. În texte: „aplicațiile tale”. |
 | pagina afacerii (în Portal) | business page (on Portal) | page de l’entreprise (sur Portal) | página del negocio (en Portal) | Unternehmensseite (auf Portal) | pagina dell’attività (su Portal) | Ce văd clienții în Portal. Titlul cardului din launcher: „Pagina afacerii în Portal”. Nu „profil”, nu „vitrină”. |
 | Gestionează pagina | Manage page | Gérer la page | Gestionar la página | Seite verwalten | Gestisci la pagina | Deschide gestionarea în platforma de business. Pagina nepublicată: „Termină pagina”. |
@@ -58,11 +59,14 @@ Un singur cuvânt pentru fiecare lucru, în toate ecranele și în toate cele 6 
 | solicitare | request | demande | solicitud | Anfrage | richiesta | Mesaj către suportul Ventora. Nu „tichet”. |
 | cerere | request | demande | solicitud | Antrag | richiesta | Acces, concediu, mutarea unei programări. |
 | notificare | notification | notification | notificación | Benachrichtigung | notifica |  |
-| reamintire | reminder | rappel | recordatorio | Erinnerung | promemoria |  |
+| reamintire | reminder | rappel | recordatorio | Erinnerung | promemoria | Și pentru SMS-urile de pe telefonul afacerii: „reamintire”, niciodată „reminder” (S10). Ca tip de mesaj, aceeași formă și în detaliu, și în tabel. |
+| confirmarea programării / scurt: confirmare | appointment confirmation / confirmation | confirmation du rendez-vous / confirmation | confirmación de la cita / confirmación | Terminbestätigung / Bestätigung | conferma dell’appuntamento / conferma | Tipul mesajului. Forma lungă în detaliul programării, forma scurtă în tabele și pe cardurile de telefon. |
+| programare mutată / scurt: mutare | appointment moved / move | rendez-vous déplacé / déplacement | cita cambiada / cambio | Termin verschoben / Verschiebung | appuntamento spostato / spostamento | La fel: lungă în detaliu, scurtă în tabel. |
+| programare anulată / scurt: anulare | appointment cancelled / cancellation | rendez-vous annulé / annulation | cita cancelada / cancelación | Termin abgesagt / Absage | appuntamento annullato / annullamento | La fel. Nu se confundă cu starea mesajului „Anulat”. |
 | setări | settings | paramètres | ajustes | Einstellungen | impostazioni |  |
 | au nevoie de tine | needs you | à traiter | pendiente de ti | wartet auf Sie | in attesa di Lei | Titlul listei de lucruri care așteaptă o acțiune. Peach. |
 
-## Booking
+## EasyBook
 
 | RO | EN | FR | ES | DE | IT | Regulă |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -79,6 +83,25 @@ Un singur cuvânt pentru fiecare lucru, în toate ecranele și în toate cele 6 
 | anulată | cancelled | annulé | cancelada | abgesagt | annullato |  |
 | nu a venit | no-show | absent | no se presentó | nicht erschienen | non presentato | Nu „neprezentare”. |
 | blocat | blocked | bloqué | bloqueado | blockiert | bloccato | Interval în care nu se poate rezerva. |
+
+## SMS și telefonul afacerii
+
+| RO | EN | FR | ES | DE | IT | Regulă |
+| --- | --- | --- | --- | --- | --- | --- |
+| telefonul afacerii | business phone | téléphone de l’entreprise | teléfono del negocio | Geschäftstelefon | telefono dell’attività | Telefonul Android cu SIM-ul afacerii, de pe care pleacă SMS-urile. Nu „dispozitiv”, nu „gateway”. |
+| aplicația Ventora pentru telefon | Ventora phone app | application Ventora pour téléphone | aplicación Ventora para el teléfono | Ventora-App für das Telefon | app Ventora per il telefono | Nu „APK”. |
+| conectat / deconectat | connected / disconnected | connecté / déconnecté | conectado / desconectado | verbunden / getrennt | collegato / scollegato | Despre telefon. „Conectat” e neutru; „Deconectat” e peach doar cu mesaje în așteptare (S8). |
+| în așteptare | waiting | en attente | en espera | wartet | in attesa | Mesajul e la noi și n-a plecat la telefon: „Pleacă la {ora}”. |
+| predat telefonului | handed to the phone | transmis au téléphone | pasado al teléfono | an das Telefon übergeben | passato al telefono | Telefonul l-a primit, dar încă nu l-a trimis. |
+| trimis | sent | envoyé | enviado | gesendet | inviato | A plecat în rețea. Lime, cu o bifă. |
+| livrat | delivered | distribué | entregado | zugestellt | consegnato | A ajuns, doar când operatorul (sau furnizorul de email) confirmă. Lime, cu bifă dublă. |
+| nu s-a trimis / la plural: nu au plecat | not sent | non envoyé / non envoyés | no enviado / no enviados | nicht gesendet | non inviato / non inviati | Doar când știm sigur, cu motivul pe înțeles. Singular „Nu s-a trimis” (starea unui mesaj); plural, un singur termen: „Nu au plecat” (cifrele, filtrele, alertele). Nu „Nu s-au trimis”. |
+| fără confirmare | no confirmation | sans confirmation | sin confirmación | keine Bestätigung | senza conferma | Telefonul l-a primit, dar nu știm dacă a plecat: „Poate să fi plecat.” Nu „neconfirmat” (S9). Nu există pentru email. |
+| SMS de probă | test SMS | SMS de test | SMS de prueba | Test-SMS | SMS di prova | Un SMS trimis de afacere către propriul număr, ca să verifice telefonul. |
+| codul de conectare | connection code | code de connexion | código de conexión | Verbindungscode | codice di collegamento | Codul QR și varianta scurtă (de ex. „K7P-42Q”) cu care telefonul se leagă de afacere. Expiră în 10 minute: „Codul expiră în {m:ss}”, „Generează alt cod”. |
+| declarația ta | your declaration | votre déclaration | tu declaración | Ihre Erklärung | la Sua dichiarazione | Pasul 5 din conectare: „Folosesc un SIM al afacerii și respect condițiile operatorului meu de telefonie.” Caseta e nebifată implicit. |
+| capacitate de trimitere | sending capacity | capacité d’envoi | capacidad de envío | Sendekapazität | capacità di invio | Pe ecran: „Poți trimite aproximativ {n} mesaje pe oră de pe acest telefon.” |
+| rezervă (când telefonul nu e disponibil) | backup (when the phone is unavailable) | solution de secours | respaldo | Ausweichweg | riserva | Implicit nu există. E-mailul e gratuit; prin Ventora consumă din SMS-urile abonamentului (S14). |
 
 ## Comercial
 
@@ -116,11 +139,31 @@ Un singur cuvânt pentru fiecare lucru, în toate ecranele și în toate cele 6 
 | --- | --- | --- | --- | --- | --- | --- |
 | întârziere | late | retard | retraso | Verspätung | ritardo | Ton neutru și factual: „Întârziere · 12 min”. |
 
-## CRM
+## ClientDesk
 
 | RO | EN | FR | ES | DE | IT | Regulă |
 | --- | --- | --- | --- | --- | --- | --- |
 | etapă | stage | étape | etapa | Phase | fase | Etapele pipeline-ului le alege afacerea; setul implicit: Contact nou, Ofertă trimisă, Negociere, Câștigate, Pierdute. |
+
+## Cont și securitate
+
+| RO | EN | FR | ES | DE | IT | Regulă |
+| --- | --- | --- | --- | --- | --- | --- |
+| autentificare în doi pași | two-step sign-in | connexion en deux étapes | inicio de sesión en dos pasos | Anmeldung in zwei Schritten | accesso in due passaggi | Nu „2FA”, nu „verificare în doi factori” în ce văd oamenii. Obligatorie pentru proprietar și în Founder (S58). |
+| aplicație de autentificare | authenticator app | application d’authentification | aplicación de autenticación | Authenticator-App | app di autenticazione | Google Authenticator, Microsoft Authenticator, 1Password. Nu trimitem coduri pe e-mail sau SMS. |
+| cod de rezervă | backup code | code de secours | código de respaldo | Backup-Code | codice di riserva | Nu „cod de recuperare” (S60). 10 coduri de 8 cifre, fiecare merge o singură dată. |
+| cont blocat temporar | account locked for now | compte bloqué temporairement | cuenta bloqueada temporalmente | Konto vorübergehend gesperrt | account bloccato temporaneamente | După 5 coduri greșite, 15 minute; spunem ora (S61). Roșu, ca eroare. |
+| Ține-mă minte | Keep me signed in | Rester connecté | Mantener la sesión | Angemeldet bleiben | Resta connesso | Spune cât ține: „… timp de 30 de zile”. Păstrează doar sesiunea; codul se cere la fiecare intrare cu parola (S59). |
+| link pentru o parolă nouă | link to set a new password | lien pour un nouveau mot de passe | enlace para una contraseña nueva | Link für ein neues Passwort | link per una nuova password | Nu „link de resetare” în ce văd oamenii. Valabil o oră, merge o singură dată (S55, S72–S77). Butonul: „Trimite linkul”; după expirare: „Cere un link nou”. |
+
+## Etichete scurte în bara de jos pe telefon
+
+Bara de jos lasă cel mult 70px pentru o etichetă (DM Sans 12px, 500, la 390px). Când eticheta lungă nu încape, elementul de navigare primește o formă scurtă (`short`). Forma scurtă apare doar în bara de jos pe telefon; meniul din stânga, titlurile și restul textelor folosesc forma lungă. Româna păstrează peste tot forma lungă.
+
+| RO | EN | FR | ES | DE | IT | Regulă |
+| --- | --- | --- | --- | --- | --- | --- |
+| Programări (meniu) · scurt: — | Bookings | Agenda | — (Citas încape) | — (Termine încape) | Agenda | Forma scurtă (`short`) doar în bara de jos pe telefon; în rest „Appointments” / „Rendez-vous” / „Appuntamenti”. EN „Bookings” (52px), nu „Agenda”, care în engleză e ordinea de zi a unei ședințe. S70. |
+| Abonament și consum · scurt: — | Plan | Usage | — (Suscripción încape) | Abo | Utilizzo | Forma scurtă (`short`) doar în bara de jos pe telefon; în rest forma lungă (Abonnement / Abbonamento, „Abonnement und Verbrauch”). „Abo” e prescurtarea uzuală în germană. EN „Plan”: în engleză e chiar cuvântul din glosar pentru abonament (D1 interzice „plan” doar în română). S70. |
 
 ## Verbe
 

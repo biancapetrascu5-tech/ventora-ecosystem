@@ -1,0 +1,68 @@
+{
+ "name": "CommandPalette",
+ "version": "1.0.1",
+ "kind": "component",
+ "group": "Navigation",
+ "status": "changed",
+ "description": "Search and run anything from anywhere — pages, people, records, commands — with ⌘K / Ctrl+K.",
+ "exports": [
+  "CommandPalette"
+ ],
+ "props": [
+  {
+   "name": "open",
+   "type": "boolean",
+   "required": true,
+   "note": ""
+  },
+  {
+   "name": "onOpenChange",
+   "type": "(o: boolean) => void",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "groups",
+   "type": "{ label: string; items: CommandItem[]; }[]",
+   "required": true,
+   "note": ""
+  },
+  {
+   "name": "placeholder",
+   "type": "string",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "onQueryChange",
+   "type": "(q: string) => void",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "loading",
+   "type": "boolean",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "inline",
+   "type": "boolean",
+   "required": false,
+   "note": ""
+  }
+ ],
+ "events": [
+  "onOpenChange",
+  "onQueryChange",
+  "onSelect"
+ ],
+ "states": [
+  "open-active-item",
+  "loading",
+  "no-results"
+ ],
+ "notes": "Full-screen mobile layout depends on viewport width and is not shown.",
+ "readme": "components/CommandPalette/README.md",
+ "preview": "components/CommandPalette/preview.html"
+}

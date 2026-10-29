@@ -1,0 +1,50 @@
+/* .v-slots din bundle.css */
+.slots {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(calc(var(--control-lg) * 2), 1fr));
+  gap: var(--space-2);
+}
+
+.slot {
+  appearance: none;
+  height: var(--control-md);
+  border-radius: var(--radius-sm);
+  border: var(--border-width) solid var(--control-border);
+  background: var(--sheet);
+  color: var(--ink);
+  cursor: pointer;
+  font-family: inherit;
+  transition:
+    background-color var(--duration-instant) var(--ease-standard),
+    border-color var(--duration-instant) var(--ease-standard);
+}
+
+.slot:hover {
+  border-color: var(--control-border-hover);
+  background-image: linear-gradient(var(--state-hover), var(--state-hover));
+}
+
+.slot:focus-visible {
+  outline: var(--focus-ring-width) solid var(--focus-ring);
+  outline-offset: var(--focus-ring-offset);
+}
+
+.isOn {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: var(--on-primary);
+}
+
+.slot:disabled {
+  background: var(--sunken);
+  border-color: var(--line);
+  color: var(--ink-disabled);
+  text-decoration: line-through;
+  cursor: not-allowed;
+}
+
+@media (pointer: coarse), (max-width: 767px) {
+  .slot {
+    height: var(--touch-target);
+  }
+}

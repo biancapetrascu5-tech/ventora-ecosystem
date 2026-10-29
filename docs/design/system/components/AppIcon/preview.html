@@ -1,4 +1,4 @@
-<!-- @dsCard group="Hub" height=940 width=1200 -->
+<!-- @dsCard group="Hub" height=2548 width=1200 -->
 <!doctype html>
 <html lang="ro">
 <head><meta charset="utf-8"><title>AppIcon — Ventora</title>
@@ -250,6 +250,9 @@ html,body{min-height:100%}
 .fxframe .caption{color:var(--ink-muted)}
 @container (max-width:420px){.fxlang{grid-template-columns:32px minmax(0,1fr) auto}.fxlang .v-iconbtn{display:none}}
 
+.thgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(520px,100%),1fr));gap:var(--space-4);align-items:start}
+.thf{display:flex;flex-direction:column;gap:var(--space-4);padding:var(--space-5);background:var(--canvas);color:var(--ink);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg);min-width:0;box-sizing:border-box}
+.thf .thl{margin:0;color:var(--ink-muted);font-weight:600}
 </style>
 </head>
 <body>
@@ -269,10 +272,31 @@ function Family({ muted }) {
 function Panel({ theme }) {
   return /* @__PURE__ */ React.createElement("div", { "data-theme": theme, className: "panel" }, /* @__PURE__ */ React.createElement("p", { className: "caption lab" }, theme === "dark" ? "Dark" : "Light", " \xB7 activ\u0103"), /* @__PURE__ */ React.createElement(Family, null), /* @__PURE__ */ React.createElement("p", { className: "caption lab" }, theme === "dark" ? "Dark" : "Light", " \xB7 inactiv\u0103"), /* @__PURE__ */ React.createElement(Family, { muted: true }), /* @__PURE__ */ React.createElement("p", { className: "caption lab" }, "24px \u2014 trebuie s\u0103 r\u0103m\xE2n\u0103 distincte"), /* @__PURE__ */ React.createElement("div", { className: "r", style: { gap: "var(--space-3)" } }, APPS.map((a) => /* @__PURE__ */ React.createElement(V.AppIcon, { key: a, app: a, size: 24 }))), /* @__PURE__ */ React.createElement("div", { className: "r", style: { gap: "var(--space-3)" } }, APPS.map((a) => /* @__PURE__ */ React.createElement(V.AppIcon, { key: a, app: a, size: 24, muted: true }))), /* @__PURE__ */ React.createElement("p", { className: "caption lab" }, "M\u0103rimi"), /* @__PURE__ */ React.createElement("div", { className: "r", style: { alignItems: "flex-end", gap: "var(--space-4)" } }, [96, 64, 48, 40, 32, 24, 20, 16].map((s) => /* @__PURE__ */ React.createElement("span", { key: s, className: "sz" }, /* @__PURE__ */ React.createElement(V.AppIcon, { app: "booking", size: s }), /* @__PURE__ */ React.createElement("span", { className: "caption" }, s)))));
 }
-function Demo() {
-  return /* @__PURE__ */ React.createElement("div", { className: "two" }, /* @__PURE__ */ React.createElement(Panel, { theme: "light" }), /* @__PURE__ */ React.createElement(Panel, { theme: "dark" }));
+const h = React.createElement;
+const Frame = ({ th, label, children }) => h("section", { "data-theme": th, className: "thf" }, h("p", { className: "caption thl" }, (th === "dark" ? "Dark" : "Light") + (label ? " · " + label : "")), children);
+const NT = {
+  ro: { lbl: ["Notificări din aplicații", "Comutator: aplicația curentă activă, celelalte inactive", "Aplicație fără glif (iconul Lucide pe plăcuță)"], n: [["booking", "Programare nouă de la Ștefan Țăranu", "Joi, 29 oct., 14:30 · Tuns"], ["finance", "Factura AUR-2026-114 e restantă de 3 zile", "Clinica Dentis Sibiu · 1.250 lei"], ["hr", "Ioana Pavel a cerut concediu pe 2–6 noiembrie", "Îi rămân 9 zile"]], fb: "Aplicație în pregătire" },
+  de: { lbl: ["Benachrichtigungen aus den Apps", "Umschalter: aktuelle App aktiv, die anderen inaktiv", "App ohne eigenes Symbol (Lucide-Symbol auf der Platte)"], n: [["booking", "Neuer Termin von Jürgen Weiß", "Donnerstag, 29. Okt., 14:30 · Haarschnitt"], ["finance", "Rechnung AUR-2026-114 ist seit 3 Tagen überfällig", "Zahnarztpraxis Dr. Müller · 1.250 lei"], ["hr", "Lena Größer hat Urlaub vom 2. bis 6. November beantragt", "Ihr bleiben 9 Tage"]], fb: "App in Vorbereitung" },
+  it: { lbl: ["Notifiche dalle app", "Selettore: app corrente attiva, le altre inattive", "App senza glifo (icona Lucide sulla piastra)"], n: [["booking", "Nuovo appuntamento da Niccolò Lucà", "Giovedì 29 ott., 14:30 · Taglio"], ["finance", "La fattura AUR-2026-114 è scaduta da 3 giorni", "Studio dentistico Bianchi · 1.250 lei"], ["hr", "Chiara Mancini ha chiesto le ferie dal 2 al 6 novembre", "Le restano 9 giorni"]], fb: "App in preparazione" }
+};
+function Ctx({ L }) {
+  return h(React.Fragment, null,
+    h("p", { className: "caption lab" }, L.lbl[0]),
+    h("div", { style: { display: "flex", flexDirection: "column", gap: "var(--space-3)" } }, L.n.map(([a, t, s]) => h("div", { key: a, className: "r", style: { gap: "var(--space-3)", flexWrap: "nowrap", alignItems: "flex-start" } }, h(V.AppIcon, { app: a, size: 32 }), h("span", { style: { display: "flex", flexDirection: "column", minWidth: 0 } }, h("span", { className: "caption", style: { color: "var(--ink-muted)" } }, V.APPS[a].name), h("span", { className: "body-strong" }, t), h("span", { className: "body-small", style: { color: "var(--ink-secondary)" } }, s))))),
+    h("p", { className: "caption lab" }, L.lbl[1]),
+    h("div", { className: "r", style: { gap: "var(--space-4)" } }, ["booking", "crm", "hr", "finance", "portal", "network"].map((a, i) => h("span", { key: a, className: "r", style: { gap: "var(--space-2)", flexWrap: "nowrap" } }, h(V.AppIcon, { app: a, size: 24, muted: i !== 0 }), h("span", { className: i === 0 ? "body-strong" : "body", style: { color: i === 0 ? "var(--ink)" : "var(--ink-muted)" } }, V.APPS[a].name)))),
+    h("p", { className: "caption lab" }, L.lbl[2]),
+    h("div", { className: "r", style: { gap: "var(--space-3)" } }, h(V.AppIcon, { icon: "layout-grid", size: 44, title: L.fb }), h(V.AppIcon, { icon: "layout-grid", size: 44, muted: true, title: L.fb }), h("span", { className: "body" }, L.fb)));
 }
-mount(/* @__PURE__ */ React.createElement(Demo, null));
+function Demo() {
+  return h("div", null,
+    h("div", { className: "two" }, h(Panel, { theme: "light" }), h(Panel, { theme: "dark" })),
+    h("div", { className: "d" },
+      h("div", { className: "thgrid" }, h(Frame, { th: "light", label: "Română" }, h(Ctx, { L: NT.ro })), h(Frame, { th: "dark", label: "Română" }, h(Ctx, { L: NT.ro }))),
+      h("div", { className: "thgrid" }, h(Frame, { th: "light", label: "Deutsch" }, h(DE, null, h(Ctx, { L: NT.de }))), h(Frame, { th: "light", label: "Italiano" }, h(IT, null, h(Ctx, { L: NT.it }))),
+        h(Frame, { th: "dark", label: "Deutsch" }, h(DE, null, h(Ctx, { L: NT.de }))), h(Frame, { th: "dark", label: "Italiano" }, h(IT, null, h(Ctx, { L: NT.it }))))));
+}
+mount(h(Demo, null));
 </script>
 </body>
 </html>

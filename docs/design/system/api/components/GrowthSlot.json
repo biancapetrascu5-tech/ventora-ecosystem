@@ -1,0 +1,34 @@
+{
+ "name": "GrowthSlot",
+ "version": "1.0.1",
+ "kind": "component",
+ "group": "Comercial",
+ "status": "changed",
+ "description": "The container an app puts in a permitted place (the side column of \"Azi\", a settings page). It shows what the Growth Engine sends — a RecommendationCard or a DiscoveryTooltip — or nothing.",
+ "exports": [
+  "GrowthSlot"
+ ],
+ "props": [
+  {
+   "name": "children",
+   "type": "ReactNode",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "label",
+   "type": "string",
+   "required": false,
+   "note": ""
+  }
+ ],
+ "events": [],
+ "states": [
+  "empty",
+  "loading",
+  "with-content"
+ ],
+ "notes": "Loading renders nothing by design (same as empty); the ease-in motion is not visible in a static frame.",
+ "readme": "components/GrowthSlot/README.md",
+ "preview": "components/GrowthSlot/preview.html"
+}

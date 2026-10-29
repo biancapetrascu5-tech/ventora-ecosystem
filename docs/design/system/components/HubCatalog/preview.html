@@ -1,4 +1,4 @@
-<!-- @dsCard group="Comercial" height=3420 width=2620 page -->
+<!-- @dsCard group="Comercial" height=5144 width=2620 page -->
 <!doctype html>
 <html lang="ro">
 <head><meta charset="utf-8"><title>HubCatalog — Ventora</title>
@@ -278,10 +278,10 @@ const ORGS = [
   { id: "nord", name: "Agen\u021Bia Nord Studio", role: "Manager de proiect" }
 ];
 const NOTIFS = [
-  { id: 1, title: "Programare nou\u0103 de la Ana Popescu", body: "Joi, 29 oct., 14:30 \xB7 Tuns", app: "Booking", time: "acum 5 min", person: "Ana Popescu" },
-  { id: 2, title: "Factura #2026-114 e restant\u0103 de 3 zile", body: "Clinica Dentis \xB7 1.250 lei", app: "Finance", time: "acum 2 ore", icon: "receipt" },
-  { id: 3, title: "Ioana a cerut concediu pe 2\u20136 noiembrie", app: "HR", time: "ieri", person: "Ioana Pavel", read: true },
-  { id: 4, title: "Exportul clien\u021Bilor e gata", app: "CRM", time: "ieri", icon: "download", read: true }
+  { id: 1, title: "Programare nou\u0103 de la Ana Popescu", body: "Joi, 29 oct., 14:30 \xB7 Tuns", app: "EasyBook", time: "acum 5 min", person: "Ana Popescu" },
+  { id: 2, title: "Factura #2026-114 e restant\u0103 de 3 zile", body: "Clinica Dentis \xB7 1.250 lei", app: "MoneyDesk", time: "acum 2 ore", icon: "receipt" },
+  { id: 3, title: "Ioana a cerut concediu pe 2\u20136 noiembrie", app: "TeamSpace", time: "ieri", person: "Ioana Pavel", read: true },
+  { id: 4, title: "Exportul clien\u021Bilor e gata", app: "ClientDesk", time: "ieri", icon: "download", read: true }
 ];
 const USER = { name: "Bianca Petra\u0219cu", email: "bianca@ventora-hub.com" };
 function Bar({ title, de }) {
@@ -312,7 +312,7 @@ function BookingShell({ height, active, mobile }) {
       height,
       spine: /* @__PURE__ */ React.createElement(V.Spine, { app: "booking", sections: SECTIONS, activeId: active, onBackToHub: () => {
       }, footer: /* @__PURE__ */ React.createElement(V.UsageMeter, { compact: true, label: "Program\u0103ri", used: 312, limit: 1e3 }) }),
-      contextBar: /* @__PURE__ */ React.createElement(Bar, { title: "Booking" })
+      contextBar: /* @__PURE__ */ React.createElement(Bar, { title: "EasyBook" })
     },
     /* @__PURE__ */ React.createElement(V.PageHeader, { title: "Program\u0103ri", description: mobile ? void 0 : "Toate program\u0103rile afacerii, de azi \xEEnainte.", actions: mobile ? void 0 : /* @__PURE__ */ React.createElement(V.SegmentedControl, { label: "Vizualizare", size: "md", defaultValue: "list", options: [{ value: "list", label: "List\u0103", icon: "list" }, { value: "cal", label: "Calendar", icon: "calendar" }] }) }),
     /* @__PURE__ */ React.createElement(V.DataTable, { columns: [
@@ -329,32 +329,74 @@ const HUB_SECTIONS = [
   { label: "Afacerea", items: [{ id: "echipa", label: "Echip\u0103 \u0219i invita\u021Bii", short: "Echip\u0103", icon: "users" }, { id: "roluri", label: "Roluri \u0219i acces", icon: "key-round" }, { id: "abonament", label: "Abonament \u0219i consum", short: "Abonament", icon: "credit-card" }] },
   { label: "Ajutor", items: [{ id: "suport", label: "Suport", icon: "life-buoy", badge: 1 }] }
 ];
-function HubBar({ title, inApp }) {
+/* DE / IT: the same Hub chrome with German and Italian texts (label-length test). */
+const HUB_SECTIONS_L = {
+  de: [
+    { label: "Ihr Konto", items: [{ id: "profil", label: "Profil und Einstellungen", short: "Profil", icon: "circle-user" }, { id: "securitate", label: "Sicherheit", icon: "shield" }] },
+    { label: "Unternehmen", items: [{ id: "echipa", label: "Team und Einladungen", short: "Team", icon: "users" }, { id: "roluri", label: "Rollen und Zugriff", short: "Rollen", icon: "key-round" }, { id: "abonament", label: "Abonnement und Verbrauch", short: "Abonnement", icon: "credit-card" }] },
+    { label: "Hilfe", items: [{ id: "suport", label: "Support", icon: "life-buoy", badge: 1 }] }
+  ],
+  it: [
+    { label: "Il Suo account", items: [{ id: "profil", label: "Profilo e preferenze", short: "Profilo", icon: "circle-user" }, { id: "securitate", label: "Sicurezza", icon: "shield" }] },
+    { label: "Attività", items: [{ id: "echipa", label: "Team e inviti", short: "Team", icon: "users" }, { id: "roluri", label: "Ruoli e accesso", short: "Ruoli", icon: "key-round" }, { id: "abonament", label: "Abbonamento e utilizzo", short: "Abbonamento", icon: "credit-card" }] },
+    { label: "Aiuto", items: [{ id: "suport", label: "Assistenza", icon: "life-buoy", badge: 1 }] }
+  ]
+};
+const ORGS_L = {
+  de: [{ id: "aurora", name: "Salon Aurora", role: "Inhaber" }, { id: "dentis", name: "Clinica Dentis Sibiu", role: "Empfang" }, { id: "nord", name: "Agenția Nord Studio", role: "Projektmanager" }],
+  it: [{ id: "aurora", name: "Salon Aurora", role: "Titolare" }, { id: "dentis", name: "Clinica Dentis Sibiu", role: "Reception" }, { id: "nord", name: "Agenția Nord Studio", role: "Project manager" }]
+};
+const NOTIFS_L = {
+  de: [
+    { id: 1, title: "Neuer Termin von Ana Popescu", body: "Do., 29. Okt., 14:30 · Haarschnitt", app: "EasyBook", time: "vor 5 Min.", person: "Ana Popescu" },
+    { id: 2, title: "Rechnung #2026-114 ist seit 3 Tagen überfällig", body: "Clinica Dentis · 1.250 lei", app: "MoneyDesk", time: "vor 2 Std.", icon: "receipt" },
+    { id: 3, title: "Ioana hat Urlaub vom 2. bis 6. November beantragt", app: "TeamSpace", time: "gestern", person: "Ioana Pavel", read: true }
+  ],
+  it: [
+    { id: 1, title: "Nuovo appuntamento di Ana Popescu", body: "Gio 29 ott, 14:30 · Taglio", app: "EasyBook", time: "5 min fa", person: "Ana Popescu" },
+    { id: 2, title: "La fattura #2026-114 è scaduta da 3 giorni", body: "Clinica Dentis · 1.250 lei", app: "MoneyDesk", time: "2 ore fa", icon: "receipt" },
+    { id: 3, title: "Ioana ha chiesto ferie dal 2 al 6 novembre", app: "TeamSpace", time: "ieri", person: "Ioana Pavel", read: true }
+  ]
+};
+const isL = (lang) => lang === "de" || lang === "it";
+function HubBar({ title, inApp, lang }) {
+  const orgs = isL(lang) ? ORGS_L[lang] : ORGS;
   return /* @__PURE__ */ React.createElement(
     V.ContextBar,
     {
-      leading: inApp ? null : /* @__PURE__ */ React.createElement("span", { style: { padding: "0 var(--space-2)" } }, /* @__PURE__ */ React.createElement(V.Logo, { size: 32 })),
+      leading: inApp ? null : /* @__PURE__ */ React.createElement("span", { style: { padding: "0 var(--space-2)", display: "inline-flex" } }, /* @__PURE__ */ React.createElement(V.Logo, { size: 32, className: "v-cb-logo--full" }), /* @__PURE__ */ React.createElement(V.Logo, { variant: "mark", size: 32, className: "v-cb-logo--mark" })),
       title,
-      org: /* @__PURE__ */ React.createElement(V.OrgSwitcher, { orgs: ORGS, currentId: "aurora" }),
+      org: /* @__PURE__ */ React.createElement(V.OrgSwitcher, { orgs, currentId: "aurora" }),
       onSearch: () => {
       },
-      notifications: /* @__PURE__ */ React.createElement(V.NotificationsPanel, { items: NOTIFS }),
-      account: /* @__PURE__ */ React.createElement(V.AccountMenu, { user: USER, orgs: ORGS, currentOrgId: "aurora", onCatalog: () => {
+      notifications: /* @__PURE__ */ React.createElement(V.NotificationsPanel, { items: isL(lang) ? NOTIFS_L[lang] : NOTIFS }),
+      account: /* @__PURE__ */ React.createElement(V.AccountMenu, { user: USER, orgs, currentOrgId: "aurora", onCatalog: () => {
       } })
     }
   );
 }
-function HubSettings({ active, title, children }) {
+function HubSettings({ active, title, children, lang }) {
   return /* @__PURE__ */ React.createElement(
     V.AppShell,
     {
       height: "100%",
-      spine: /* @__PURE__ */ React.createElement(V.Spine, { hub: true, sections: HUB_SECTIONS, activeId: active, onBackToHub: () => {
+      spine: /* @__PURE__ */ React.createElement(V.Spine, { hub: true, sections: isL(lang) ? HUB_SECTIONS_L[lang] : HUB_SECTIONS, activeId: active, onBackToHub: () => {
       }, bottomItems: ["profil", "echipa", "abonament", "suport"] }),
-      contextBar: /* @__PURE__ */ React.createElement(HubBar, { title, inApp: true })
+      contextBar: /* @__PURE__ */ React.createElement(HubBar, { title, inApp: true, lang })
     },
     children
   );
+}
+/* The DE / IT label test: the main view at 1280 in German and at 390 in Italian, each frame with its own theme. */
+function LocTest({ items, note }) {
+  if (window.__SOLO) return null;
+  const h = React.createElement;
+  return h("div", { className: "scr" },
+    h("p", { className: "heading" }, "Test cu etichete în germană și italiană"),
+    h("p", { className: "caption muted" }, note || "Același ecran, cu textele traduse, ca să vedem că etichetele mai lungi încap."),
+    h("div", { className: "scr-row" }, items.map(([lab, lang, mode, th, H, el]) => h("div", { key: lab },
+      h("p", { className: "caption scr-lab" }, lab),
+      h("div", { className: mode === "mobile" ? "scr-m" : mode === "tablet" ? "scr-t" : "scr-d", "data-theme": th, style: { height: H } }, h(V.LocaleProvider, { locale: lang }, el))))));
 }
 function Screens({ title, notes, render, desktopH = 860, tabletH = 1100, mobileH = 844 }) {
   if (window.__SOLO) {
@@ -366,7 +408,7 @@ function Screens({ title, notes, render, desktopH = 860, tabletH = 1100, mobileH
   return /* @__PURE__ */ React.createElement("div", { className: "scr" }, /* @__PURE__ */ React.createElement("p", { className: "heading" }, title), notes && /* @__PURE__ */ React.createElement("p", { className: "caption muted" }, notes.join(" \xB7 ")), ["light", "dark"].map((th) => /* @__PURE__ */ React.createElement("div", { className: "scr-row", key: th }, sizes.map(([m, lab, cls, h]) => /* @__PURE__ */ React.createElement("div", { key: m }, /* @__PURE__ */ React.createElement("p", { className: "caption scr-lab" }, lab, " \xB7 ", th === "light" ? "Light" : "Dark"), /* @__PURE__ */ React.createElement("div", { className: cls, "data-theme": th, style: { height: h } }, render(m, th)))))));
 }
 const MINE = [["booking", "Program\u0103ri, calendar \u0219i reamintiri", 3], ["crm", "Clien\u021Bi, istoric \u0219i oportunit\u0103\u021Bi"], ["hr", "Echip\u0103, prezen\u021B\u0103 \u0219i concedii", 1], ["finance", "Facturi, scaden\u021Be \u0219i restan\u021Be", 2], ["projects", "Proiecte, sarcini \u0219i termene"], ["shifts", "Ture \u0219i \xEEnlocuiri"], ["documents", "Documente \u0219i \u0219abloane"], ["portal", "Pagina afacerii pentru clien\u021Bi"]];
-const RECO = { marketing: { reason: "Se potrive\u0219te cu Booking: trimite automat reamintiri \u0219i campanii clien\u021Bilor t\u0103i.", cost: "49 lei pe lun\u0103 \xB7 f\u0103r\u0103 cost de implementare" } };
+const RECO = { marketing: { reason: "Se potrive\u0219te cu EasyBook: trimite automat reamintiri \u0219i campanii clien\u021Bilor t\u0103i.", cost: "49 lei pe lun\u0103 \xB7 f\u0103r\u0103 cost de implementare" } };
 const VIEWER_ROLE = "owner";
 const RECO_FOR = (a) => (VIEWER_ROLE === "owner" || VIEWER_ROLE === "admin") && a === "marketing" ? RECO[a] : null;
 const OTHER = [["inventory", "unavailable"], ["analytics", "notInRole"], ["marketing", "notInPlan"], ["network", "notInPlan"]];
@@ -400,21 +442,41 @@ const CAT = [
   ["Comunitate", [["network", "no"]]]
 ];
 const CAT_DESC = { booking: "Program\u0103ri, calendar \u0219i reamintiri", crm: "Clien\u021Bi, istoric \u0219i oportunit\u0103\u021Bi", marketing: "Campanii \u0219i reamintiri automate", portal: "Pagina afacerii pentru clien\u021Bi", hr: "Echip\u0103, prezen\u021B\u0103 \u0219i concedii", shifts: "Ture \u0219i \xEEnlocuiri", inventory: "Stoc, comenzi \u0219i furnizori", assets: "Echipamente, revizii \u0219i garan\u021Bii", events: "Evenimente, bilete \u0219i invita\u021Bi", finance: "Facturi, scaden\u021Be \u0219i restan\u021Be", contracts: "Contracte, semn\u0103turi \u0219i termene", documents: "Documente \u0219i \u0219abloane", projects: "Proiecte, sarcini \u0219i termene", analytics: "Cifrele afacerii, pe luni \u0219i servicii", network: "Comunitatea afacerilor Ventora" };
-const CAT_RECO = { marketing: { reason: "Se potrive\u0219te cu Booking: trimite automat reamintiri \u0219i campanii clien\u021Bilor t\u0103i.", cost: "49 lei pe lun\u0103 \xB7 f\u0103r\u0103 cost de implementare" }, contracts: { reason: "Se potrive\u0219te cu CRM: contracte cu firmele din pipeline, cu semn\u0103tur\u0103 \u0219i reamintire \xEEnainte de expirare.", cost: "59 lei pe lun\u0103 \xB7 300 lei implementare" } };
+const CAT_RECO = { marketing: { reason: "Se potrive\u0219te cu EasyBook: trimite automat reamintiri \u0219i campanii clien\u021Bilor t\u0103i.", cost: "49 lei pe lun\u0103 \xB7 f\u0103r\u0103 cost de implementare" }, contracts: { reason: "Se potrive\u0219te cu ClientDesk: contracte cu firmele din pipeline, cu semn\u0103tur\u0103 \u0219i reamintire \xEEnainte de expirare.", cost: "59 lei pe lun\u0103 \xB7 300 lei implementare" } };
 const CAT_PRICE = { assets: "39 lei pe lun\u0103", events: "59 lei pe lun\u0103", network: "Inclus \xEEn orice abonament, la cerere" };
-function Catalog({ mode }) {
-  const [only, setOnly] = useState(false);
+const CATALOG_TX = {
+  ro: { groups: CAT.map(([g]) => g), desc: CAT_DESC, reco: CAT_RECO, price: CAT_PRICE, bar: "Toate aplica\u021Biile", title: "Toate aplica\u021Biile Ventora", lead: "15 aplica\u021Bii care lucreaz\u0103 \xEEmpreun\u0103. Ai 10 \xEEn abonament; la celelalte vezi ce fac, c\xE2t cost\u0103 \u0219i dac\u0103 au perioad\u0103 de prob\u0103.", search: "Caut\u0103 o aplica\u021Bie sau ce vrei s\u0103 faci", searchLabel: "Caut\u0103", only: "Doar cele pe care nu le ai", inPlan: " \xB7 \xEEn abonament" },
+  de: { groups: ["Termine und Kunden", "Team", "Betrieb", "Geld und Dokumente", "Projekte und Daten", "Community"],
+    desc: { booking: "Termine, Kalender und Erinnerungen", crm: "Kunden, Verlauf und Verkaufschancen", marketing: "Kampagnen und automatische Erinnerungen", portal: "Unternehmensseite f\xFCr Kunden", hr: "Team, Anwesenheit und Urlaub", shifts: "Schichten und Vertretungen", inventory: "Bestand, Bestellungen und Lieferanten", assets: "Ger\xE4te, Wartungen und Garantien", events: "Veranstaltungen, Tickets und G\xE4ste", finance: "Rechnungen, F\xE4lligkeiten und \xDCberf\xE4lliges", contracts: "Vertr\xE4ge, Unterschriften und Fristen", documents: "Dokumente und Vorlagen", projects: "Projekte, Aufgaben und Fristen", analytics: "Die Zahlen des Unternehmens, nach Monaten und Leistungen", network: "Die Community der Ventora-Unternehmen" },
+    reco: { marketing: { reason: "Passt zu EasyBook: sendet automatisch Erinnerungen und Kampagnen an Ihre Kunden.", cost: "49 lei pro Monat \xB7 keine Einrichtungsgeb\xFChr" }, contracts: { reason: "Passt zu ClientDesk: Vertr\xE4ge mit den Firmen aus der Pipeline, mit Unterschrift und Erinnerung vor dem Ablauf.", cost: "59 lei pro Monat \xB7 300 lei Einrichtungsgeb\xFChr" } },
+    price: { assets: "39 lei pro Monat", events: "59 lei pro Monat", network: "In jedem Abonnement enthalten, auf Anfrage" },
+    bar: "Alle Apps", title: "Alle Ventora-Apps", lead: "15 Apps, die zusammenarbeiten. 10 davon sind in Ihrem Abonnement; bei den anderen sehen Sie, was sie k\xF6nnen, was sie kosten und ob es einen kostenlosen Test gibt.", search: "App oder Aufgabe suchen", searchLabel: "Suchen", only: "Nur die, die Sie noch nicht haben", inPlan: " \xB7 im Abonnement" },
+  it: { groups: ["Appuntamenti e clienti", "Team", "Operazioni", "Soldi e documenti", "Progetti e dati", "Community"],
+    desc: { booking: "Appuntamenti, calendario e promemoria", crm: "Clienti, storico e opportunit\xE0", marketing: "Campagne e promemoria automatici", portal: "La pagina dell\u2019attivit\xE0 per i clienti", hr: "Team, presenze e ferie", shifts: "Turni e sostituzioni", inventory: "Magazzino, ordini e fornitori", assets: "Attrezzature, revisioni e garanzie", events: "Eventi, biglietti e invitati", finance: "Fatture, scadenze e insoluti", contracts: "Contratti, firme e scadenze", documents: "Documenti e modelli", projects: "Progetti, attivit\xE0 e scadenze", analytics: "I numeri dell\u2019attivit\xE0, per mese e per servizio", network: "La community delle attivit\xE0 Ventora" },
+    reco: { marketing: { reason: "Si abbina a EasyBook: invia in automatico promemoria e campagne ai Suoi clienti.", cost: "49 lei al mese \xB7 nessun costo di attivazione" }, contracts: { reason: "Si abbina a ClientDesk: contratti con le aziende della pipeline, con firma e promemoria prima della scadenza.", cost: "59 lei al mese \xB7 300 lei di costo di attivazione" } },
+    price: { assets: "39 lei al mese", events: "59 lei al mese", network: "Incluso in ogni abbonamento, su richiesta" },
+    bar: "Tutte le app", title: "Tutte le app Ventora", lead: "15 app che lavorano insieme. Ne ha 10 nell\u2019abbonamento; per le altre vede che cosa fanno, quanto costano e se hanno una prova gratuita.", search: "Cerchi un\u2019app o che cosa vuole fare", searchLabel: "Cerca", only: "Solo quelle che non ha", inPlan: " \xB7 nell\u2019abbonamento" }
+};
+function Catalog({ mode, lang, onlyMissing }) {
+  const T = CATALOG_TX[isL(lang) ? lang : "ro"];
+  const [only, setOnly] = useState(!!onlyMissing);
   const mob = mode === "mobile";
-  return /* @__PURE__ */ React.createElement(V.AppShell, { height: "100%", contextBar: /* @__PURE__ */ React.createElement(HubBar, { title: "Toate aplica\u021Biile" }) }, /* @__PURE__ */ React.createElement("div", { className: "wrap " + mode }, /* @__PURE__ */ React.createElement("div", { className: "d0", style: { gap: "var(--space-2)" } }, /* @__PURE__ */ React.createElement("h1", { className: "display-m" }, "Toate aplica\u021Biile Ventora"), /* @__PURE__ */ React.createElement("p", { className: "body muted" }, "15 aplica\u021Bii care lucreaz\u0103 \xEEmpreun\u0103. Ai 10 \xEEn abonament; la celelalte vezi ce fac, c\xE2t cost\u0103 \u0219i dac\u0103 au perioad\u0103 de prob\u0103.")), /* @__PURE__ */ React.createElement("div", { className: "r", style: { gap: "var(--space-3)" } }, /* @__PURE__ */ React.createElement("div", { style: { flex: "1 1 260px", maxWidth: mob ? "none" : 360 } }, /* @__PURE__ */ React.createElement(V.Input, { icon: "search", placeholder: "Caut\u0103 o aplica\u021Bie sau ce vrei s\u0103 faci", "aria-label": "Caut\u0103" })), /* @__PURE__ */ React.createElement(V.Toggle, { label: "Doar cele pe care nu le ai", checked: only, onChange: setOnly })), CAT.map(([g, apps]) => {
+  return /* @__PURE__ */ React.createElement(V.AppShell, { height: "100%", contextBar: /* @__PURE__ */ React.createElement(HubBar, { title: T.bar, lang }) }, /* @__PURE__ */ React.createElement("div", { className: "wrap " + mode }, /* @__PURE__ */ React.createElement("div", { className: "d0", style: { gap: "var(--space-2)" } }, /* @__PURE__ */ React.createElement("h1", { className: "display-m" }, T.title), /* @__PURE__ */ React.createElement("p", { className: "body muted" }, T.lead)), /* @__PURE__ */ React.createElement("div", { className: "r", style: { gap: "var(--space-3)" } }, /* @__PURE__ */ React.createElement("div", { style: { flex: "1 1 260px", maxWidth: mob ? "none" : 360 } }, /* @__PURE__ */ React.createElement(V.Input, { icon: "search", placeholder: T.search, "aria-label": T.searchLabel })), /* @__PURE__ */ React.createElement(V.Toggle, { label: T.only, checked: only, onChange: setOnly })), CAT.map(([g0, apps], gi) => {
+    const g = T.groups[gi];
     const list = apps.filter(([, st]) => !only || st !== "own");
     if (!list.length) return null;
-    return /* @__PURE__ */ React.createElement("section", { key: g }, /* @__PURE__ */ React.createElement("h2", { className: "heading sec" }, g), /* @__PURE__ */ React.createElement("div", { className: mob ? "rows" : "tiles4" }, list.map(([a, st]) => st === "own" ? /* @__PURE__ */ React.createElement(V.AppTile, { key: a, app: a, layout: mob ? "row" : "tile", description: CAT_DESC[a] + " \xB7 \xEEn abonament", onOpen: () => {
-    } }) : /* @__PURE__ */ React.createElement(V.AppTile, { key: a, app: a, layout: mob ? "row" : "tile", access: "notInPlan", reason: CAT_DESC[a] + ". " + (CAT_PRICE[a] || ""), recommendation: CAT_RECO[a], onDetails: () => {
+    return /* @__PURE__ */ React.createElement("section", { key: g }, /* @__PURE__ */ React.createElement("h2", { className: "heading sec" }, g), /* @__PURE__ */ React.createElement("div", { className: mob ? "rows" : "tiles4" }, list.map(([a, st]) => st === "own" ? /* @__PURE__ */ React.createElement(V.AppTile, { key: a, app: a, layout: mob ? "row" : "tile", description: T.desc[a] + T.inPlan, onOpen: () => {
+    } }) : /* @__PURE__ */ React.createElement(V.AppTile, { key: a, app: a, layout: mob ? "row" : "tile", access: "notInPlan", reason: T.desc[a] + ". " + (T.price[a] || ""), recommendation: T.reco[a], onDetails: () => {
     }, onWriteUs: st === "no" ? () => {
     } : void 0 }))));
   })));
 }
-mount(/* @__PURE__ */ React.createElement(Screens, { title: "Hub \u2014 Catalogul aplica\u021Biilor: toate cele 15, pe categorii, cu c\u0103utare", notes: ["Se deschide din launcher (\u201EVezi toate aplica\u021Biile Ventora\u201D), din paleta de comenzi \u0219i din meniul contului", "Recomandarea apare doar la aplica\u021Biile pe care nu le ai", "Cele de\u021Binute spun \u201E\xEEn abonament\u201D \u0219i se deschid direct"], desktopH: 1180, tabletH: 1500, mobileH: 1600, render: (m) => /* @__PURE__ */ React.createElement(Catalog, { mode: m }) }));
+mount(React.createElement("div", null,
+  React.createElement(Screens, { title: "Hub \u2014 Catalogul aplica\u021Biilor: toate cele 15, pe categorii, cu c\u0103utare", notes: ["Se deschide din launcher (\u201EVezi toate aplica\u021Biile Ventora\u201D), din paleta de comenzi \u0219i din meniul contului", "Recomandarea apare doar la aplica\u021Biile pe care nu le ai", "Cele de\u021Binute spun \u201E\xEEn abonament\u201D \u0219i se deschid direct", "Tablet\u0103 \xB7 Dark: \u201EDoar cele pe care nu le ai\u201D pornit"], desktopH: 1180, tabletH: 1500, mobileH: 1600, render: (m, th) => /* @__PURE__ */ React.createElement(Catalog, { mode: m, onlyMissing: m === "tablet" && th === "dark" }) }),
+  React.createElement(LocTest, { items: [
+    ["Deutsch \xB7 1280 \xB7 Light", "de", "desktop", "light", 1180, React.createElement(Catalog, { mode: "desktop", lang: "de" })],
+    ["Italiano \xB7 390 \xB7 Dark", "it", "mobile", "dark", 1600, React.createElement(Catalog, { mode: "mobile", lang: "it" })]
+  ] })));
 </script>
 </body>
 </html>

@@ -1,0 +1,323 @@
+/* .v-dockwrap + .v-dock din bundle.css: rândul de iconuri al launcherului; la hover sau focus de
+   tastatură, iconul se deschide în fișa aplicației, deasupra rândului */
+.wrap {
+  container: vdock / inline-size;
+  position: relative;
+  z-index: 1;
+}
+
+.dock {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(96px, 1fr));
+  gap: var(--space-2);
+  padding: var(--space-5) var(--space-4);
+  background: var(--raised);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-2);
+}
+
+.item {
+  position: relative;
+  height: 120px;
+  min-width: 0;
+  animation: dock-in var(--duration-slow) var(--ease-spring) backwards;
+  animation-delay: calc(var(--i) * 40ms);
+}
+
+.item:is(:hover, .isHover, :focus-within) {
+  z-index: 5;
+}
+
+@keyframes dock-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.94);
+  }
+}
+
+.card {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  container-type: inline-size;
+  border-radius: var(--radius-xl);
+  background: transparent;
+  box-shadow: none;
+  transition:
+    left var(--duration-morph) var(--ease-spring),
+    top var(--duration-morph) var(--ease-spring),
+    width var(--duration-morph) var(--ease-spring),
+    height var(--duration-morph) var(--ease-spring),
+    background-color var(--duration-fast) var(--ease-standard),
+    box-shadow var(--duration-morph) var(--ease-standard);
+}
+
+.card::after {
+  content: '';
+  position: absolute;
+  left: var(--space-6);
+  right: var(--space-6);
+  bottom: 0;
+  height: var(--marker-width);
+  border-radius: var(--marker-width) var(--marker-width) 0 0;
+  background: var(--hover-accent);
+  transform: scaleX(0);
+  transition: transform var(--duration-playful) var(--ease-spring);
+}
+
+/* AppTile layout „icon” în dock */
+.dock .item [data-apptile-icon] {
+  position: static;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  background: transparent;
+  box-shadow: none;
+  border-radius: var(--radius-xl);
+}
+
+.dock .item [data-apptile-icon]:hover {
+  background: transparent;
+}
+
+.dock .item [data-apptile-icon]::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius-xl);
+  z-index: 1;
+}
+
+.dock .item [data-apptile-iconwrap] {
+  position: absolute;
+  left: 0;
+  top: 0;
+  transform: translate(calc(50cqw - 50%), var(--space-4));
+  transition: transform var(--duration-morph) var(--ease-spring);
+}
+
+.dock .item [data-apptile-iconwrap] > svg {
+  width: var(--dock-icon);
+  height: var(--dock-icon);
+  transition:
+    width var(--duration-morph) var(--ease-spring),
+    height var(--duration-morph) var(--ease-spring);
+}
+
+.dock .item [data-apptile-iconwrap] > :not(svg) {
+  top: -6px;
+  right: -6px;
+  box-shadow: 0 0 0 var(--focus-ring-width) var(--raised);
+}
+
+.dock .item [data-apptile-name] {
+  position: absolute;
+  left: 0;
+  top: 0;
+  max-width: 100cqw;
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 600;
+  color: var(--ink);
+  transform: translate(calc(50cqw - 50%), 90px);
+  transition:
+    transform var(--duration-morph) var(--ease-spring),
+    font-size var(--duration-morph) var(--ease-spring);
+}
+
+.desc,
+.live {
+  position: absolute;
+  left: var(--space-5);
+  width: calc(var(--dock-card-w) - var(--space-10));
+  margin: 0;
+  text-align: start;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(var(--space-2));
+  transition:
+    opacity var(--duration-fast) var(--ease-standard),
+    transform var(--duration-morph) var(--ease-spring),
+    visibility 0s linear var(--duration-fast);
+  pointer-events: none;
+}
+
+.desc {
+  top: 106px;
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--ink-secondary);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.live {
+  bottom: var(--space-4);
+  padding-top: 9px;
+  border-top: var(--border-width) solid var(--line);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  line-height: 18px;
+  font-weight: 500;
+  color: var(--ink-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dot {
+  flex: none;
+  width: var(--dot-size);
+  height: var(--dot-size);
+  border-radius: var(--radius-full);
+  background: var(--attention);
+}
+
+.item:is(:hover, .isHover, :focus-within) .card {
+  left: calc(50% - var(--dock-card-w) / 2);
+  top: -28px;
+  width: var(--dock-card-w);
+  height: 196px;
+  background: var(--raised);
+  box-shadow: var(--shadow-tile-hover);
+}
+
+.item:first-child:is(:hover, .isHover, :focus-within) .card {
+  left: calc(var(--space-2) * -1);
+}
+
+.item:last-child:is(:hover, .isHover, :focus-within) .card {
+  left: calc(100% + var(--space-2) - var(--dock-card-w));
+}
+
+.item:is(:hover, .isHover, :focus-within) .card::after {
+  transform: scaleX(1);
+}
+
+.item:is(:hover, .isHover, :focus-within) [data-apptile-iconwrap] {
+  transform: translate(var(--space-5), var(--space-5));
+}
+
+.dock .item:is(:hover, .isHover, :focus-within) [data-apptile-iconwrap] > svg {
+  width: var(--dock-icon-compact);
+  height: var(--dock-icon-compact);
+}
+
+.dock .item:is(:hover, .isHover, :focus-within) [data-apptile-name] {
+  font-size: 16px;
+  line-height: 24px;
+  transform: translate(var(--space-5), 78px);
+}
+
+.item:is(:hover, .isHover, :focus-within) :is(.desc, .live) {
+  opacity: 1;
+  visibility: visible;
+  transform: none;
+  transition:
+    opacity var(--duration-fast) var(--ease-standard) 80ms,
+    transform var(--duration-morph) var(--ease-spring) 20ms,
+    visibility 0s;
+}
+
+.item:is(:hover, .isHover, :focus-within) .live {
+  transition-delay: 130ms, 60ms, 0s;
+}
+
+.item:active .card {
+  box-shadow: var(--shadow-2);
+}
+
+.dock .item [data-apptile-icon]:focus-visible,
+.dock .item [data-apptile-icon][data-forced-focus] {
+  outline: none;
+}
+
+.item:has([data-apptile-icon]:focus-visible) .card,
+.item:has([data-forced-focus]) .card {
+  outline: var(--focus-ring-width) solid var(--focus-ring);
+  outline-offset: var(--focus-ring-offset);
+}
+
+/* R-B2: intenția de hover — fișa se deschide după 120ms de repaus și se închide imediat */
+.item:hover .card,
+.item:hover [data-apptile-iconwrap],
+.item:hover [data-apptile-iconwrap] > svg,
+.item:hover [data-apptile-name],
+.item:hover .card::after {
+  transition-delay: var(--duration-intent);
+}
+
+.item:hover :is(.desc, .live) {
+  transition-delay: calc(var(--duration-intent) + 80ms), calc(var(--duration-intent) + 20ms),
+    var(--duration-intent);
+}
+
+.item:hover .live {
+  transition-delay: calc(var(--duration-intent) + 130ms), calc(var(--duration-intent) + 60ms),
+    var(--duration-intent);
+}
+
+.item:hover {
+  transition: z-index 0s linear var(--duration-intent);
+}
+
+/* telefon: grilă de iconuri pe canvas, fără foaie și fără fișă (atingerea deschide aplicația) */
+@container vdock (max-width: 560px) {
+  .dock {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: var(--space-3) var(--space-1);
+    padding: 0;
+    background: transparent;
+    box-shadow: none;
+    border-radius: 0;
+  }
+  .item {
+    height: 96px;
+  }
+  .dock .item [data-apptile-iconwrap] > svg,
+  .dock .item:is(:hover, .isHover, :focus-within) [data-apptile-iconwrap] > svg {
+    width: var(--dock-icon-phone);
+    height: var(--dock-icon-phone);
+  }
+  .dock .item [data-apptile-iconwrap],
+  .dock .item:is(:hover, .isHover, :focus-within) [data-apptile-iconwrap] {
+    transform: translate(calc(50cqw - 50%), var(--space-1));
+  }
+  .dock .item [data-apptile-name],
+  .dock .item:is(:hover, .isHover, :focus-within) [data-apptile-name] {
+    font-size: 12px;
+    line-height: 16px;
+    transform: translate(calc(50cqw - 50%), 68px);
+    max-width: 100cqw;
+  }
+  .desc,
+  .live,
+  .card::after {
+    display: none;
+  }
+  .item:is(:hover, .isHover, :focus-within) .card {
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    box-shadow: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .item {
+    animation: none;
+  }
+  .item,
+  .item *,
+  .card::after {
+    transition: none !important;
+  }
+}

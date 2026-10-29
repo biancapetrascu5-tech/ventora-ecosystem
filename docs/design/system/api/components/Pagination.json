@@ -1,0 +1,70 @@
+{
+ "name": "Pagination",
+ "version": "1.0.1",
+ "kind": "component",
+ "group": "Data",
+ "status": "changed",
+ "description": "Move through pages of a list: range (\"21–40 din 248\"), rows per page, page numbers with gaps, previous/next.",
+ "exports": [
+  "Pagination"
+ ],
+ "props": [
+  {
+   "name": "page",
+   "type": "number",
+   "required": true,
+   "note": ""
+  },
+  {
+   "name": "pageSize",
+   "type": "number",
+   "required": true,
+   "note": ""
+  },
+  {
+   "name": "total",
+   "type": "number",
+   "required": true,
+   "note": ""
+  },
+  {
+   "name": "onPageChange",
+   "type": "(page: number) => void",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "onPageSizeChange",
+   "type": "(size: number) => void",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "pageSizes",
+   "type": "number[]",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "compact",
+   "type": "boolean",
+   "required": false,
+   "note": ""
+  }
+ ],
+ "events": [
+  "onPageChange",
+  "onPageSizeChange"
+ ],
+ "states": [
+  "default",
+  "with-page-size",
+  "first-page",
+  "last-page",
+  "single-page",
+  "compact"
+ ],
+ "notes": "",
+ "readme": "components/Pagination/README.md",
+ "preview": "components/Pagination/preview.html"
+}

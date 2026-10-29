@@ -1,0 +1,30 @@
+{
+ "name": "CommercialStates",
+ "version": "1.0.1",
+ "kind": "page",
+ "group": "Comercial",
+ "status": "changed",
+ "description": "The states that complete the commercial components: catalog search without results; the trial ending in 3 days and the trial ended (the app pauses, data stays, continuing is a choice); a team recommendation declined (admin) and turned on (member notification); a slot hidden by a cap or a dismissal; the member's recommendation states; \"Ajunge la {nume} (proprietar).\" Light and dark.",
+ "exports": [],
+ "props": [],
+ "events": [],
+ "states": [
+  "catalog-no-results",
+  "trial-ending",
+  "trial-ended",
+  "team-recommendation-declined",
+  "team-recommendation-activated",
+  "slot-hidden",
+  "member-pending",
+  "member-activated",
+  "member-not-now",
+  "member-decider",
+  "de",
+  "it",
+  "light",
+  "dark"
+ ],
+ "notes": "",
+ "readme": "components/CommercialStates/README.md",
+ "preview": "components/CommercialStates/preview.html"
+}

@@ -1,0 +1,74 @@
+{
+ "name": "NotificationsPanel",
+ "version": "1.1.0",
+ "kind": "component",
+ "group": "Hub",
+ "status": "changed",
+ "description": "The bell in the ContextBar and its panel: All / Unread, mark all as read, settings, items with person or app icon.",
+ "exports": [
+  "NotificationsPanel"
+ ],
+ "props": [
+  {
+   "name": "items",
+   "type": "Notification[]",
+   "required": true,
+   "note": ""
+  },
+  {
+   "name": "onOpenItem",
+   "type": "(n: Notification) => void",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "onMarkAllRead",
+   "type": "() => void",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "onSettings",
+   "type": "() => void",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "inline",
+   "type": "boolean",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "open",
+   "type": "boolean",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "onOpenChange",
+   "type": "(o: boolean) => void",
+   "required": false,
+   "note": ""
+  }
+ ],
+ "events": [
+  "onMarkAllRead",
+  "onOpenChange",
+  "onOpenItem",
+  "onSettings"
+ ],
+ "states": [
+  "closed-with-unread",
+  "closed-all-read",
+  "open",
+  "unread",
+  "read",
+  "grouped-operational",
+  "recommendations",
+  "empty"
+ ],
+ "notes": "Unread tab is internal state, not forced; in DE the 400px panel header overflows ('Alle als gelesen markieren' pushes the settings icon out) - component fix needed.",
+ "readme": "components/NotificationsPanel/README.md",
+ "preview": "components/NotificationsPanel/preview.html"
+}

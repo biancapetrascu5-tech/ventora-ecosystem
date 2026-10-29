@@ -1,4 +1,4 @@
-<!-- @dsCard group="Data" height=420 width=1200 -->
+<!-- @dsCard group="Data" height=1680 width=1200 -->
 <!doctype html>
 <html lang="ro">
 <head><meta charset="utf-8"><title>LineChart — Ventora</title>
@@ -250,6 +250,16 @@ html,body{min-height:100%}
 .fxframe .caption{color:var(--ink-muted)}
 @container (max-width:420px){.fxlang{grid-template-columns:32px minmax(0,1fr) auto}.fxlang .v-iconbtn{display:none}}
 
+/* c3: Light/Dark and DE/IT frames */
+.c3wrap{display:flex;flex-direction:column;min-width:0}
+.c3sec{display:flex;flex-direction:column;gap:var(--space-3);min-width:0}
+.c3h{margin:0;color:var(--ink)}
+.c3pair{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(360px,100%),1fr));gap:var(--space-4);align-items:start}
+.c3stack{display:flex;flex-direction:column;gap:var(--space-4);min-width:0}
+.c3f{display:flex;flex-direction:column;gap:var(--space-3);padding:var(--space-4);border:var(--border-width) solid var(--line);border-radius:var(--radius-md);background:var(--canvas);color:var(--ink);min-width:0;box-sizing:border-box}
+.c3lab{color:var(--ink-muted);margin:0}
+.c3kv{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:var(--space-2) var(--space-4);align-items:center}
+.c3ib{display:flex;align-items:center;gap:var(--space-3);min-width:0}
 </style>
 </head>
 <body>
@@ -278,10 +288,10 @@ const ORGS = [
   { id: "nord", name: "Agen\u021Bia Nord Studio", role: "Manager de proiect" }
 ];
 const NOTIFS = [
-  { id: 1, title: "Programare nou\u0103 de la Ana Popescu", body: "Joi, 29 oct., 14:30 \xB7 Tuns", app: "Booking", time: "acum 5 min", person: "Ana Popescu" },
-  { id: 2, title: "Factura #2026-114 e restant\u0103 de 3 zile", body: "Clinica Dentis \xB7 1.250 lei", app: "Finance", time: "acum 2 ore", icon: "receipt" },
-  { id: 3, title: "Ioana a cerut concediu pe 2\u20136 noiembrie", app: "HR", time: "ieri", person: "Ioana Pavel", read: true },
-  { id: 4, title: "Exportul clien\u021Bilor e gata", app: "CRM", time: "ieri", icon: "download", read: true }
+  { id: 1, title: "Programare nou\u0103 de la Ana Popescu", body: "Joi, 29 oct., 14:30 \xB7 Tuns", app: "EasyBook", time: "acum 5 min", person: "Ana Popescu" },
+  { id: 2, title: "Factura #2026-114 e restant\u0103 de 3 zile", body: "Clinica Dentis \xB7 1.250 lei", app: "MoneyDesk", time: "acum 2 ore", icon: "receipt" },
+  { id: 3, title: "Ioana a cerut concediu pe 2\u20136 noiembrie", app: "TeamSpace", time: "ieri", person: "Ioana Pavel", read: true },
+  { id: 4, title: "Exportul clien\u021Bilor e gata", app: "ClientDesk", time: "ieri", icon: "download", read: true }
 ];
 const USER = { name: "Bianca Petra\u0219cu", email: "bianca@ventora-hub.com" };
 function Bar({ title, de }) {
@@ -312,7 +322,7 @@ function BookingShell({ height, active, mobile }) {
       height,
       spine: /* @__PURE__ */ React.createElement(V.Spine, { app: "booking", sections: SECTIONS, activeId: active, onBackToHub: () => {
       }, footer: /* @__PURE__ */ React.createElement(V.UsageMeter, { compact: true, label: "Program\u0103ri", used: 312, limit: 1e3 }) }),
-      contextBar: /* @__PURE__ */ React.createElement(Bar, { title: "Booking" })
+      contextBar: /* @__PURE__ */ React.createElement(Bar, { title: "EasyBook" })
     },
     /* @__PURE__ */ React.createElement(V.PageHeader, { title: "Program\u0103ri", description: mobile ? void 0 : "Toate program\u0103rile afacerii, de azi \xEEnainte.", actions: mobile ? void 0 : /* @__PURE__ */ React.createElement(V.SegmentedControl, { label: "Vizualizare", size: "md", defaultValue: "list", options: [{ value: "list", label: "List\u0103", icon: "list" }, { value: "cal", label: "Calendar", icon: "calendar" }] }) }),
     /* @__PURE__ */ React.createElement(V.DataTable, { columns: [
@@ -462,7 +472,27 @@ function AX_PrjHead({ mode, view }) {
     }
   );
 }
-mount(/* @__PURE__ */ React.createElement("div", { className: "d" }, /* @__PURE__ */ React.createElement(V.LineChart, { title: "Venituri pe lun\u0103", description: "Ultimele 12 luni \xB7 octombrie e \xEEnc\u0103 \xEEn curs", labels: AX_AN_MONTHS, nowIndex: 11, nowLabel: "\xEEn curs", series: [{ label: "Venituri 2025\u20132026", values: AX_AN_REV, color: 1 }, { label: "Cu un an \xEEnainte", values: AX_AN_REV_LY, color: "compare" }], unit: "lei" })));
+const C3_ORIG = /* @__PURE__ */ React.createElement("div", { className: "d" }, /* @__PURE__ */ React.createElement(V.LineChart, { title: "Venituri pe lun\u0103", description: "Ultimele 12 luni \xB7 octombrie e \xEEnc\u0103 \xEEn curs", labels: AX_AN_MONTHS, nowIndex: 11, nowLabel: "\xEEn curs", series: [{ label: "Venituri 2025\u20132026", values: AX_AN_REV, color: 1 }, { label: "Cu un an \xEEnainte", values: AX_AN_REV_LY, color: "compare" }], unit: "lei" }));
+const h = React.createElement;
+const C3Frame = ({ th, label, children, style }) => h("div", { className: "c3f", "data-theme": th, style }, h("p", { className: "caption c3lab" }, label), children);
+const C3Sec = ({ title, stack, children }) => h("div", { className: "c3sec" }, h("p", { className: "subheading c3h" }, title), h("div", { className: stack ? "c3stack" : "c3pair" }, children));
+const C3Themes = ({ render, stack, style }) => h(C3Sec, { title: "Light și Dark", stack }, h(C3Frame, { th: "light", label: "Light", style }, render("light")), h(C3Frame, { th: "dark", label: "Dark", style }, render("dark")));
+const C3Langs = ({ de, it, stack, style, itTheme }) => h(C3Sec, { title: "Germană și italiană — etichete mai lungi", stack }, h(V.LocaleProvider, { locale: "de" }, h(C3Frame, { th: "light", label: "Deutsch (de)", style }, de)), h(V.LocaleProvider, { locale: "it" }, h(C3Frame, { th: itTheme || "light", label: itTheme === "dark" ? "Italiano (it) \xB7 Dark" : "Italiano (it)", style }, it)));
+const LC_DE_M = ["Nov.", "Dez.", "Jan.", "Feb.", "M\xE4rz", "Apr.", "Mai", "Juni", "Juli", "Aug.", "Sep.", "Okt."];
+const LC_IT_M = ["nov", "dic", "gen", "feb", "mar", "apr", "mag", "giu", "lug", "ago", "set", "ott"];
+const EUR = (a) => a.map((v) => v == null ? null : Math.round(v / 50) * 10);
+const LCRo = (extra) => h(V.LineChart, { title: "Venituri pe lună", description: "Ultimele 12 luni \xB7 octombrie e \xEEncă \xEEn curs", labels: AX_AN_MONTHS, nowIndex: 11, nowLabel: "\xEEn curs", series: [{ label: "Venituri 2025–2026", values: AX_AN_REV, color: 1 }, { label: "Cu un an \xEEnainte", values: AX_AN_REV_LY, color: "compare" }], unit: "lei", ...extra });
+const C3_SECTIONS = [
+  h(C3Sec, { key: "v" , title: "O singură serie, fără suprafață \xB7 \xEEngust (o lună da, una nu, mereu ultima)" },
+    h("div", { className: "d0" }, h(V.LineChart, { title: "Programări pe lună", description: "Toate locațiile \xB7 fără comparație", labels: AX_AN_MONTHS, area: false, height: 200, series: [{ label: "Programări", values: [212, 248, 190, 205, 231, 244, 259, 266, 228, 201, 249, 281], color: 2 }] })),
+    h("div", { style: { width: 360 } }, LCRo({ height: 200 }))),
+  h(C3Themes, { key: "t", render: () => LCRo({ height: 220 }) }),
+  h(C3Langs, { key: "l",
+    de: h(V.LineChart, { title: "Umsatz pro Monat", description: "Letzte 12 Monate \xB7 der Oktober l\xE4uft noch", labels: LC_DE_M, nowIndex: 11, nowLabel: "l\xE4uft noch", unit: "€", height: 220, series: [{ label: "Umsatz 2025–2026", values: EUR(AX_AN_REV), color: 1 }, { label: "Ein Jahr zuvor", values: EUR(AX_AN_REV_LY), color: "compare" }] }),
+    it: h(V.LineChart, { title: "Ricavi al mese", description: "Ultimi 12 mesi \xB7 ottobre \xE8 ancora in corso", labels: LC_IT_M, nowIndex: 11, nowLabel: "in corso", unit: "€", height: 220, series: [{ label: "Ricavi 2025–2026", values: EUR(AX_AN_REV), color: 1 }, { label: "Un anno prima", values: EUR(AX_AN_REV_LY), color: "compare" }] }) })
+];
+
+mount(h("div", { className: "c3wrap" }, C3_ORIG, h("div", { className: "d" }, ...C3_SECTIONS)));
 </script>
 </body>
 </html>

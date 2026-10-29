@@ -1,0 +1,174 @@
+{
+ "name": "Radio",
+ "version": "1.1.0",
+ "kind": "component",
+ "group": "Forms",
+ "status": "changed",
+ "description": "One choice from a small set, all options visible; use RadioGroup, which renders the fieldset, legend and error.",
+ "exports": [
+  "Radio",
+  "RadioGroup"
+ ],
+ "props": [
+  {
+   "name": "label",
+   "type": "ReactNode",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "description",
+   "type": "ReactNode",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "name",
+   "type": "string",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "value",
+   "type": "string | number",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "checked",
+   "type": "boolean",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "onChange",
+   "type": "() => void",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "disabled",
+   "type": "boolean",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "invalid",
+   "type": "boolean",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "state",
+   "type": "ForcedState",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "legend",
+   "type": "ReactNode",
+   "required": false,
+   "note": "",
+   "of": "RadioGroup"
+  },
+  {
+   "name": "name",
+   "type": "string",
+   "required": false,
+   "note": "",
+   "of": "RadioGroup"
+  },
+  {
+   "name": "options",
+   "type": "Option<V>[]",
+   "required": true,
+   "note": "",
+   "of": "RadioGroup"
+  },
+  {
+   "name": "value",
+   "type": "V",
+   "required": false,
+   "note": "",
+   "of": "RadioGroup"
+  },
+  {
+   "name": "defaultValue",
+   "type": "V",
+   "required": false,
+   "note": "",
+   "of": "RadioGroup"
+  },
+  {
+   "name": "onChange",
+   "type": "(v: V) => void",
+   "required": false,
+   "note": "",
+   "of": "RadioGroup"
+  },
+  {
+   "name": "orientation",
+   "type": "\"vertical\" | \"horizontal\"",
+   "required": false,
+   "note": "",
+   "of": "RadioGroup"
+  },
+  {
+   "name": "required",
+   "type": "boolean",
+   "required": false,
+   "note": "",
+   "of": "RadioGroup"
+  },
+  {
+   "name": "error",
+   "type": "ReactNode",
+   "required": false,
+   "note": "",
+   "of": "RadioGroup"
+  },
+  {
+   "name": "helper",
+   "type": "ReactNode",
+   "required": false,
+   "note": "",
+   "of": "RadioGroup"
+  },
+  {
+   "name": "disabled",
+   "type": "boolean",
+   "required": false,
+   "note": "",
+   "of": "RadioGroup"
+  },
+  {
+   "name": "invalid",
+   "type": "boolean",
+   "required": false,
+   "note": "",
+   "of": "RadioGroup"
+  }
+ ],
+ "events": [
+  "onChange"
+ ],
+ "states": [
+  "default",
+  "checked",
+  "hover",
+  "focus",
+  "pressed",
+  "disabled",
+  "disabled-checked",
+  "invalid",
+  "group-error",
+  "group-helper",
+  "group-horizontal",
+  "group-disabled",
+  "option-disabled",
+  "option-description"
+ ],
+ "notes": "RadioGroup disabled renders without visible dimming in the bundle.",
+ "readme": "components/Radio/README.md",
+ "preview": "components/Radio/preview.html"
+}

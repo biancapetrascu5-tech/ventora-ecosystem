@@ -1,4 +1,4 @@
-<!-- @dsCard group="Comercial" height=900 width=1100 -->
+<!-- @dsCard group="Comercial" height=2020 width=1100 -->
 <!doctype html>
 <html lang="ro">
 <head><meta charset="utf-8"><title>HubRecommendation — Ventora</title>
@@ -250,6 +250,16 @@ html,body{min-height:100%}
 .fxframe .caption{color:var(--ink-muted)}
 @container (max-width:420px){.fxlang{grid-template-columns:32px minmax(0,1fr) auto}.fxlang .v-iconbtn{display:none}}
 
+/* c3: Light/Dark and DE/IT frames */
+.c3wrap{display:flex;flex-direction:column;min-width:0}
+.c3sec{display:flex;flex-direction:column;gap:var(--space-3);min-width:0}
+.c3h{margin:0;color:var(--ink)}
+.c3pair{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(360px,100%),1fr));gap:var(--space-4);align-items:start}
+.c3stack{display:flex;flex-direction:column;gap:var(--space-4);min-width:0}
+.c3f{display:flex;flex-direction:column;gap:var(--space-3);padding:var(--space-4);border:var(--border-width) solid var(--line);border-radius:var(--radius-md);background:var(--canvas);color:var(--ink);min-width:0;box-sizing:border-box}
+.c3lab{color:var(--ink-muted);margin:0}
+.c3kv{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:var(--space-2) var(--space-4);align-items:center}
+.c3ib{display:flex;align-items:center;gap:var(--space-3);min-width:0}
 </style>
 </head>
 <body>
@@ -278,10 +288,10 @@ const ORGS = [
   { id: "nord", name: "Agen\u021Bia Nord Studio", role: "Manager de proiect" }
 ];
 const NOTIFS = [
-  { id: 1, title: "Programare nou\u0103 de la Ana Popescu", body: "Joi, 29 oct., 14:30 \xB7 Tuns", app: "Booking", time: "acum 5 min", person: "Ana Popescu" },
-  { id: 2, title: "Factura #2026-114 e restant\u0103 de 3 zile", body: "Clinica Dentis \xB7 1.250 lei", app: "Finance", time: "acum 2 ore", icon: "receipt" },
-  { id: 3, title: "Ioana a cerut concediu pe 2\u20136 noiembrie", app: "HR", time: "ieri", person: "Ioana Pavel", read: true },
-  { id: 4, title: "Exportul clien\u021Bilor e gata", app: "CRM", time: "ieri", icon: "download", read: true }
+  { id: 1, title: "Programare nou\u0103 de la Ana Popescu", body: "Joi, 29 oct., 14:30 \xB7 Tuns", app: "EasyBook", time: "acum 5 min", person: "Ana Popescu" },
+  { id: 2, title: "Factura #2026-114 e restant\u0103 de 3 zile", body: "Clinica Dentis \xB7 1.250 lei", app: "MoneyDesk", time: "acum 2 ore", icon: "receipt" },
+  { id: 3, title: "Ioana a cerut concediu pe 2\u20136 noiembrie", app: "TeamSpace", time: "ieri", person: "Ioana Pavel", read: true },
+  { id: 4, title: "Exportul clien\u021Bilor e gata", app: "ClientDesk", time: "ieri", icon: "download", read: true }
 ];
 const USER = { name: "Bianca Petra\u0219cu", email: "bianca@ventora-hub.com" };
 function Bar({ title, de }) {
@@ -312,7 +322,7 @@ function BookingShell({ height, active, mobile }) {
       height,
       spine: /* @__PURE__ */ React.createElement(V.Spine, { app: "booking", sections: SECTIONS, activeId: active, onBackToHub: () => {
       }, footer: /* @__PURE__ */ React.createElement(V.UsageMeter, { compact: true, label: "Program\u0103ri", used: 312, limit: 1e3 }) }),
-      contextBar: /* @__PURE__ */ React.createElement(Bar, { title: "Booking" })
+      contextBar: /* @__PURE__ */ React.createElement(Bar, { title: "EasyBook" })
     },
     /* @__PURE__ */ React.createElement(V.PageHeader, { title: "Program\u0103ri", description: mobile ? void 0 : "Toate program\u0103rile afacerii, de azi \xEEnainte.", actions: mobile ? void 0 : /* @__PURE__ */ React.createElement(V.SegmentedControl, { label: "Vizualizare", size: "md", defaultValue: "list", options: [{ value: "list", label: "List\u0103", icon: "list" }, { value: "cal", label: "Calendar", icon: "calendar" }] }) }),
     /* @__PURE__ */ React.createElement(V.DataTable, { columns: [
@@ -324,12 +334,48 @@ function BookingShell({ height, active, mobile }) {
     } } })
   );
 }
-const RECOS = [{ id: "r1", app: "crm", title: "\u021Aine istoricul clien\u021Bilor \xEEn CRM", body: "Program\u0103rile din Booking devin istoric, note \u0219i follow-up. 69 lei pe lun\u0103." }];
-const RECOS_ADMIN = [...RECOS, { id: "r2", kind: "team", app: "marketing", title: "Ioana Pavel recomand\u0103 Marketing", note: "Am trimite reamintiri automate pentru vopsit la 6 s\u0103pt\u0103m\xE2ni." }];
-mount(
+const RECOS = [{ id: "r1", app: "crm", title: "\u021Aine istoricul clien\u021Bilor \xEEn ClientDesk", body: "Program\u0103rile din EasyBook devin istoric, note \u0219i follow-up. 69 lei pe lun\u0103." }];
+const RECOS_ADMIN = [...RECOS, { id: "r2", kind: "team", app: "marketing", title: "Ioana Pavel recomand\u0103 CampaignKit", note: "Am trimite reamintiri automate pentru vopsit la 6 s\u0103pt\u0103m\xE2ni." }];
+const C3_ORIG = 
   /* @__PURE__ */ React.createElement("div", { className: "d" }, /* @__PURE__ */ React.createElement("div", { className: "r", style: { alignItems: "flex-start", gap: "var(--space-6)" } }, /* @__PURE__ */ React.createElement("div", { className: "d0" }, /* @__PURE__ */ React.createElement("p", { className: "caption muted" }, "Membru: recomand\u0103rile stau sub notific\u0103ri, separat"), /* @__PURE__ */ React.createElement(V.NotificationsPanel, { inline: true, items: NOTIFS, recommendations: RECOS, onMarkAllRead: () => {
   } })), /* @__PURE__ */ React.createElement("div", { className: "d0" }, /* @__PURE__ */ React.createElement("p", { className: "caption muted" }, "Proprietar / admin: \u0219i \u201ERecomandare de la echip\u0103\u201D"), /* @__PURE__ */ React.createElement(V.NotificationsPanel, { inline: true, items: NOTIFS.map((n) => ({ ...n, read: true })), recommendations: RECOS_ADMIN }))), /* @__PURE__ */ React.createElement("p", { className: "body-small muted" }, "Contorul clopo\u021Belului num\u0103r\u0103 doar notific\u0103rile opera\u021Bionale: \xEEn st\xE2nga, 2 necitite; recomand\u0103rile nu intr\u0103 \xEEn el."))
-);
+;
+const h = React.createElement;
+const C3Frame = ({ th, label, children, style }) => h("div", { className: "c3f", "data-theme": th, style }, h("p", { className: "caption c3lab" }, label), children);
+const C3Sec = ({ title, stack, children }) => h("div", { className: "c3sec" }, h("p", { className: "subheading c3h" }, title), h("div", { className: stack ? "c3stack" : "c3pair" }, children));
+const C3Themes = ({ render, stack, style }) => h(C3Sec, { title: "Light și Dark", stack }, h(C3Frame, { th: "light", label: "Light", style }, render("light")), h(C3Frame, { th: "dark", label: "Dark", style }, render("dark")));
+const C3Langs = ({ de, it, stack, style, itTheme }) => h(C3Sec, { title: "Germană și italiană — etichete mai lungi", stack }, h(V.LocaleProvider, { locale: "de" }, h(C3Frame, { th: "light", label: "Deutsch (de)", style }, de)), h(V.LocaleProvider, { locale: "it" }, h(C3Frame, { th: itTheme || "light", label: itTheme === "dark" ? "Italiano (it) \xB7 Dark" : "Italiano (it)", style }, it)));
+const HR_NOOP = { onOpenRecommendation: () => {}, onDismissRecommendation: () => {}, onSeeApp: () => {}, onRejectRecommendation: () => {}, onMarkAllRead: () => {} };
+const HR_DE = {
+  items: [
+    { id: 1, title: "Neuer Termin von Anna Schmidt", body: "Do., 29. Okt., 14:30 \xB7 Haarschnitt", app: "EasyBook", time: "vor 5 Min.", person: "Anna Schmidt" },
+    { id: 2, title: "Rechnung #2026-114 ist seit 3 Tagen \xFCberf\xE4llig", body: "Zahnarztpraxis Dr. M\xFCller \xB7 1.250 €", app: "MoneyDesk", time: "vor 2 Std.", icon: "receipt" },
+    { id: 3, title: "Lena Weber hat Urlaub vom 2. bis 6. November beantragt", app: "TeamSpace", time: "gestern", person: "Lena Weber", read: true },
+    { id: 4, title: "Der Kundenexport ist fertig", app: "ClientDesk", time: "gestern", icon: "download", read: true }
+  ],
+  recos: [
+    { id: "r1", app: "crm", title: "Kundenhistorie in ClientDesk f\xFChren", body: "Termine aus EasyBook werden zu Verlauf, Notizen und Nachfassaktionen. 14 € pro Monat." },
+    { id: "r2", kind: "team", app: "marketing", title: "Lena Weber empfiehlt CampaignKit", note: "Wir k\xF6nnten nach 6 Wochen automatisch an das Nachf\xE4rben erinnern." }
+  ]
+};
+const HR_IT = {
+  items: [
+    { id: 1, title: "Nuovo appuntamento da Giulia Bianchi", body: "gio 29 ott, 14:30 \xB7 Taglio", app: "EasyBook", time: "5 min fa", person: "Giulia Bianchi" },
+    { id: 2, title: "La fattura #2026-114 \xE8 scaduta da 3 giorni", body: "Studio dentistico Rossi \xB7 1.250 €", app: "MoneyDesk", time: "2 ore fa", icon: "receipt" },
+    { id: 3, title: "Chiara Russo ha chiesto ferie dal 2 al 6 novembre", app: "TeamSpace", time: "ieri", person: "Chiara Russo", read: true },
+    { id: 4, title: "L’esportazione dei clienti \xE8 pronta", app: "ClientDesk", time: "ieri", icon: "download", read: true }
+  ],
+  recos: [
+    { id: "r1", app: "crm", title: "Tenga lo storico dei clienti in ClientDesk", body: "Gli appuntamenti di EasyBook diventano storico, note e follow-up. 14 € al mese." },
+    { id: "r2", kind: "team", app: "marketing", title: "Chiara Russo consiglia CampaignKit", note: "Potremmo inviare promemoria automatici per il colore dopo 6 settimane." }
+  ]
+};
+const C3_SECTIONS = [
+  h(C3Themes, { key: "t", render: (th) => h(V.NotificationsPanel, { inline: true, items: NOTIFS, recommendations: RECOS_ADMIN, ...HR_NOOP }) }),
+  h(C3Langs, { key: "l", de: h(V.NotificationsPanel, { inline: true, items: HR_DE.items, recommendations: HR_DE.recos, ...HR_NOOP }), it: h(V.NotificationsPanel, { inline: true, items: HR_IT.items, recommendations: HR_IT.recos, ...HR_NOOP }) })
+];
+
+mount(h("div", { className: "c3wrap" }, C3_ORIG, h("div", { className: "d" }, ...C3_SECTIONS)));
 </script>
 </body>
 </html>

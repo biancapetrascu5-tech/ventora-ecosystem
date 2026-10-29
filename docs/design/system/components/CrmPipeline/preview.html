@@ -1,4 +1,4 @@
-<!-- @dsCard group="Ecrane aplicații" height=2400 width=2620 page -->
+<!-- @dsCard group="Ecrane aplicații" height=3644 width=2620 page -->
 <!doctype html>
 <html lang="ro">
 <head><meta charset="utf-8"><title>CrmPipeline — Ventora</title>
@@ -278,10 +278,10 @@ const ORGS = [
   { id: "nord", name: "Agen\u021Bia Nord Studio", role: "Manager de proiect" }
 ];
 const NOTIFS = [
-  { id: 1, title: "Programare nou\u0103 de la Ana Popescu", body: "Joi, 29 oct., 14:30 \xB7 Tuns", app: "Booking", time: "acum 5 min", person: "Ana Popescu" },
-  { id: 2, title: "Factura #2026-114 e restant\u0103 de 3 zile", body: "Clinica Dentis \xB7 1.250 lei", app: "Finance", time: "acum 2 ore", icon: "receipt" },
-  { id: 3, title: "Ioana a cerut concediu pe 2\u20136 noiembrie", app: "HR", time: "ieri", person: "Ioana Pavel", read: true },
-  { id: 4, title: "Exportul clien\u021Bilor e gata", app: "CRM", time: "ieri", icon: "download", read: true }
+  { id: 1, title: "Programare nou\u0103 de la Ana Popescu", body: "Joi, 29 oct., 14:30 \xB7 Tuns", app: "EasyBook", time: "acum 5 min", person: "Ana Popescu" },
+  { id: 2, title: "Factura #2026-114 e restant\u0103 de 3 zile", body: "Clinica Dentis \xB7 1.250 lei", app: "MoneyDesk", time: "acum 2 ore", icon: "receipt" },
+  { id: 3, title: "Ioana a cerut concediu pe 2\u20136 noiembrie", app: "TeamSpace", time: "ieri", person: "Ioana Pavel", read: true },
+  { id: 4, title: "Exportul clien\u021Bilor e gata", app: "ClientDesk", time: "ieri", icon: "download", read: true }
 ];
 const USER = { name: "Bianca Petra\u0219cu", email: "bianca@ventora-hub.com" };
 function Bar({ title, de }) {
@@ -312,7 +312,7 @@ function BookingShell({ height, active, mobile }) {
       height,
       spine: /* @__PURE__ */ React.createElement(V.Spine, { app: "booking", sections: SECTIONS, activeId: active, onBackToHub: () => {
       }, footer: /* @__PURE__ */ React.createElement(V.UsageMeter, { compact: true, label: "Program\u0103ri", used: 312, limit: 1e3 }) }),
-      contextBar: /* @__PURE__ */ React.createElement(Bar, { title: "Booking" })
+      contextBar: /* @__PURE__ */ React.createElement(Bar, { title: "EasyBook" })
     },
     /* @__PURE__ */ React.createElement(V.PageHeader, { title: "Program\u0103ri", description: mobile ? void 0 : "Toate program\u0103rile afacerii, de azi \xEEnainte.", actions: mobile ? void 0 : /* @__PURE__ */ React.createElement(V.SegmentedControl, { label: "Vizualizare", size: "md", defaultValue: "list", options: [{ value: "list", label: "List\u0103", icon: "list" }, { value: "cal", label: "Calendar", icon: "calendar" }] }) }),
     /* @__PURE__ */ React.createElement(V.DataTable, { columns: [
@@ -333,7 +333,7 @@ function HubBar({ title, inApp }) {
   return /* @__PURE__ */ React.createElement(
     V.ContextBar,
     {
-      leading: inApp ? null : /* @__PURE__ */ React.createElement("span", { style: { padding: "0 var(--space-2)" } }, /* @__PURE__ */ React.createElement(V.Logo, { size: 32 })),
+      leading: inApp ? null : /* @__PURE__ */ React.createElement("span", { style: { padding: "0 var(--space-2)", display: "inline-flex" } }, /* @__PURE__ */ React.createElement(V.Logo, { size: 32, className: "v-cb-logo--full" }), /* @__PURE__ */ React.createElement(V.Logo, { variant: "mark", size: 32, className: "v-cb-logo--mark" })),
       title,
       org: /* @__PURE__ */ React.createElement(V.OrgSwitcher, { orgs: ORGS, currentId: "aurora" }),
       onSearch: () => {
@@ -366,7 +366,7 @@ function Screens({ title, notes, render, desktopH = 860, tabletH = 1100, mobileH
   return /* @__PURE__ */ React.createElement("div", { className: "scr" }, /* @__PURE__ */ React.createElement("p", { className: "heading" }, title), notes && /* @__PURE__ */ React.createElement("p", { className: "caption muted" }, notes.join(" \xB7 ")), ["light", "dark"].map((th) => /* @__PURE__ */ React.createElement("div", { className: "scr-row", key: th }, sizes.map(([m, lab, cls, h]) => /* @__PURE__ */ React.createElement("div", { key: m }, /* @__PURE__ */ React.createElement("p", { className: "caption scr-lab" }, lab, " \xB7 ", th === "light" ? "Light" : "Dark"), /* @__PURE__ */ React.createElement("div", { className: cls, "data-theme": th, style: { height: h } }, render(m, th)))))));
 }
 const MINE = [["booking", "Program\u0103ri, calendar \u0219i reamintiri", 3], ["crm", "Clien\u021Bi, istoric \u0219i oportunit\u0103\u021Bi"], ["hr", "Echip\u0103, prezen\u021B\u0103 \u0219i concedii", 1], ["finance", "Facturi, scaden\u021Be \u0219i restan\u021Be", 2], ["projects", "Proiecte, sarcini \u0219i termene"], ["shifts", "Ture \u0219i \xEEnlocuiri"], ["documents", "Documente \u0219i \u0219abloane"], ["portal", "Pagina afacerii pentru clien\u021Bi"]];
-const RECO = { marketing: { reason: "Se potrive\u0219te cu Booking: trimite automat reamintiri \u0219i campanii clien\u021Bilor t\u0103i.", cost: "49 lei pe lun\u0103 \xB7 f\u0103r\u0103 cost de implementare" } };
+const RECO = { marketing: { reason: "Se potrive\u0219te cu EasyBook: trimite automat reamintiri \u0219i campanii clien\u021Bilor t\u0103i.", cost: "49 lei pe lun\u0103 \xB7 f\u0103r\u0103 cost de implementare" } };
 const VIEWER_ROLE = "owner";
 const RECO_FOR = (a) => (VIEWER_ROLE === "owner" || VIEWER_ROLE === "admin") && a === "marketing" ? RECO[a] : null;
 const OTHER = [["inventory", "unavailable"], ["analytics", "notInRole"], ["marketing", "notInPlan"], ["network", "notInPlan"]];
@@ -542,7 +542,120 @@ function Crm({ mode }) {
   ), /* @__PURE__ */ React.createElement(AX_Body, { mode }, /* @__PURE__ */ React.createElement(V.Kanban, { label: "Etape", columns: AX_CRM_COLS, cards, defaultColumn: "oferta", onMove: move, renderCard: (k, ctx) => /* @__PURE__ */ React.createElement(V.KanbanCard, { ...k, columns: ctx.columns, onMove: move, onOpen: () => {
   }, active: k.id === "c4" && mode === "desktop" }) })));
 }
-mount(/* @__PURE__ */ React.createElement(Screens, { title: "CRM \u2014 Pipeline: oportunit\u0103\u021Bile pe etape, cu valoarea fiec\u0103rei etape \u0219i pasul urm\u0103tor", notes: ["Pe telefon vezi o etap\u0103 odat\u0103; alegi etapa din bara de sus", "Fiecare card are \u201EMut\u0103 \xEEn\u2026\u201D din meniu, nu doar tragere"], desktopH: 900, tabletH: 1100, mobileH: 1100, render: (m) => /* @__PURE__ */ React.createElement(Crm, { mode: m }) }));
+
+/* p2 · DE/IT label test: translated copies of this screen (data and labels), rendered inside V.LocaleProvider */
+const __p2 = {
+  tx: (s, d) => typeof s !== "string" ? s : Object.prototype.hasOwnProperty.call(d, s) ? d[s] : s === " lei" ? " €" : s.replace(/(\d) lei\b/g, "$1 €"),
+  trd: (v, d) => typeof v === "string" ? __p2.tx(v, d) : Array.isArray(v) ? v.map((x) => __p2.trd(x, d)) : v && typeof v === "object" && Object.getPrototypeOf(v) === Object.prototype && !v.$$typeof ? Object.fromEntries(Object.entries(v).map(([k, x]) => [k, __p2.trd(x, d)])) : v
+};
+
+const D__de = {"Proprietar": "Inhaber", "Clinica Dentis Sibiu": "Zahnklinik Dentis Sibiu", "Recep\u021bie": "Empfang", "Agen\u021bia Nord Studio": "Agentur Nord Studio", "Manager de proiect": "Projektleitung", "Programare nou\u0103 de la Ana Popescu": "Neuer Termin von Ana Popescu", "Joi, 29 oct., 14:30 \u00b7 Tuns": "Do., 29. Okt., 14:30 \u00b7 Haarschnitt", "acum 5 min": "vor 5 Min.", "Factura #2026-114 e restant\u0103 de 3 zile": "Rechnung #2026-114 ist seit 3 Tagen \u00fcberf\u00e4llig", "Clinica Dentis \u00b7 1.250 lei": "Zahnklinik Dentis \u00b7 1.250 \u20ac", "acum 2 ore": "vor 2 Std.", "Ioana a cerut concediu pe 2\u20136 noiembrie": "Ioana hat Urlaub vom 2. bis 6. November beantragt", "Exportul clien\u021bilor e gata": "Der Kundenexport ist fertig", "Programare": "Termin", "Client": "Kunde", "Clien\u021bi": "Kunden", "Activit\u0103\u021bi": "Aktivit\u00e4ten", "Afacere": "Unternehmen", "Rapoarte": "Berichte", "Set\u0103ri": "Einstellungen", "Contact nou": "Neuer Kontakt", "Ofert\u0103 trimis\u0103": "Angebot gesendet", "Negociere": "Verhandlung", "C\u00e2\u0219tigate \u00een octombrie": "Gewonnen im Oktober", "Abonament lunar pentru 10 angaja\u021bi": "Monatsabonnement f\u00fcr 10 Mitarbeiter", "Sun\u0103 azi": "Heute anrufen", "Coafat pentru nun\u021bi, sezonul 2027": "Hochzeitsfrisuren, Saison 2027", "Joi, 29 oct.": "Do., 29. Okt.", "Pachet mireas\u0103": "Brautpaket", "Din pagina de rezerv\u0103ri": "\u00dcber die Buchungsseite", "Eveniment corporate, 40 de persoane": "Firmenveranstaltung, 40 Personen", "F\u0103r\u0103 r\u0103spuns de 9 zile": "Seit 9 Tagen keine Antwort", "Zi de r\u0103sf\u0103\u021b pentru echip\u0103": "Verw\u00f6hntag f\u00fcr das Team", "Vin, 30 oct.": "Fr., 30. Okt.", "Abonament anual coafat": "Jahresabonnement Frisuren", "Luni, 2 nov.": "Mo., 2. Nov.", "Machiaj pentru spectacole, 6 luni": "B\u00fchnen-Make-up, 6 Monate", "\u00cent\u00e2lnire m\u00e2ine, 10:00": "Treffen morgen, 10:00", "Cabinet Avocatura Pop": "Kanzlei Pop", "Carduri cadou de Cr\u0103ciun": "Weihnachts-Gutscheinkarten", "Liceul de Art\u0103 Sibiu": "Kunstgymnasium Sibiu", "Bal de absolvire": "Abschlussball", "C\u00e2\u0219tigat\u0103 pe 21 oct.": "Gewonnen am 21. Okt.", "Abonament anual vopsit": "Jahresabonnement F\u00e4rben", "C\u00e2\u0219tigat\u0103 pe 14 oct.": "Gewonnen am 14. Okt.", "12 oportunit\u0103\u021bi deschise, \u00een valoare de 77.900 lei. Dou\u0103 a\u0219teapt\u0103 un telefon azi.": "12 offene Verkaufschancen im Wert von 77.900 \u20ac. Zwei warten heute auf einen Anruf.", "Editeaz\u0103 etapele": "Phasen bearbeiten", "Afi\u0219are": "Ansicht", "Panou": "Board", "List\u0103": "Liste", "Toat\u0103 echipa": "Ganzes Team", "Doar ale mele": "Nur meine", "Etape": "Phasen"};
+const t__de = (s) => __p2.tx(s, D__de);
+const ORGS__de = __p2.trd(ORGS, D__de);
+const NOTIFS__de = __p2.trd(NOTIFS, D__de);
+const USER__de = __p2.trd(USER, D__de);
+function Bar__de({ title, de }) {
+  return /* @__PURE__ */ React.createElement(
+    V.ContextBar,
+    {
+      title,
+      org: /* @__PURE__ */ React.createElement(V.OrgSwitcher, { orgs: de ? [{ id: 1, name: t__de("Zahnarztpraxis Dr. M\xFCller"), role: t__de("Empfang") }, { id: 2, name: t__de("Salon Aurora"), role: t__de("Inhaberin") }] : ORGS__de, currentId: de ? 1 : t__de("aurora") }),
+      onSearch: () => {
+      },
+      createItems: [{ label: de ? t__de("Termin") : t__de("Programare"), icon: t__de("calendar-check"), shortcut: [t__de("N")] }, { label: de ? t__de("Kunde") : t__de("Client"), icon: t__de("user-plus") }],
+      notifications: /* @__PURE__ */ React.createElement(V.NotificationsPanel, { items: NOTIFS__de }),
+      account: /* @__PURE__ */ React.createElement(V.AccountMenu, { user: USER__de, orgs: ORGS__de, currentOrgId: t__de("aurora"), onCatalog: () => {
+      } })
+    }
+  );
+}
+function AX_App__de({ app, sections, active, title, bottom, footer, children }) {
+  return /* @__PURE__ */ React.createElement(
+    V.AppShell,
+    {
+      height: t__de("100%"),
+      spine: /* @__PURE__ */ React.createElement(V.Spine, { app, sections, activeId: active, onBackToHub: () => {
+      }, bottomItems: bottom, footer }),
+      contextBar: /* @__PURE__ */ React.createElement(Bar__de, { title })
+    },
+    children
+  );
+}
+const AX_Body__de = ({ mode, children }) => /* @__PURE__ */ React.createElement(t__de("div"), { className: t__de("axb ") + mode }, children);
+const AX_CRM_NAV__de = __p2.trd(AX_CRM_NAV, D__de);
+const AX_CRM_COLS__de = __p2.trd(AX_CRM_COLS, D__de);
+const AX_CRM_CARDS__de = __p2.trd(AX_CRM_CARDS, D__de);
+function Crm__de({ mode }) {
+  const [cards, setCards] = useState(AX_CRM_CARDS__de);
+  const move = (id, col) => setCards(cards.map((c) => c.id === id ? { ...c, col } : c));
+  return /* @__PURE__ */ React.createElement(AX_App__de, { app: t__de("crm"), sections: AX_CRM_NAV__de, active: t__de("pipeline"), title: t__de("Pipeline"), bottom: [t__de("pipeline"), t__de("clienti"), t__de("activitati"), t__de("rapoarte")] }, /* @__PURE__ */ React.createElement(
+    V.PageHeader,
+    {
+      title: t__de("Pipeline"),
+      description: mode === t__de("mobile") ? void 0 : t__de("12 oportunit\u0103\u021Bi deschise, \xEEn valoare de 77.900 lei. Dou\u0103 a\u0219teapt\u0103 un telefon azi."),
+      actions: mode === t__de("mobile") ? null : /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(V.Button, { variant: t__de("quiet"), icon: t__de("pencil") }, t__de("Editeaz\u0103 etapele")), /* @__PURE__ */ React.createElement(V.SegmentedControl, { label: t__de("Afi\u0219are"), defaultValue: t__de("board"), options: [{ value: t__de("board"), label: t__de("Panou"), icon: t__de("kanban") }, { value: t__de("list"), label: t__de("List\u0103"), icon: t__de("list") }] }), /* @__PURE__ */ React.createElement(t__de("div"), { style: { width: 168 } }, /* @__PURE__ */ React.createElement(V.Select, { defaultValue: t__de("all"), options: [{ value: t__de("all"), label: t__de("Toat\u0103 echipa") }, { value: t__de("me"), label: t__de("Doar ale mele") }] })))
+    }
+  ), /* @__PURE__ */ React.createElement(AX_Body__de, { mode }, /* @__PURE__ */ React.createElement(V.Kanban, { label: t__de("Etape"), columns: AX_CRM_COLS__de, cards, defaultColumn: t__de("oferta"), onMove: move, renderCard: (k, ctx) => /* @__PURE__ */ React.createElement(V.KanbanCard, { ...k, columns: ctx.columns, onMove: move, onOpen: () => {
+  }, active: k.id === t__de("c4") && mode === t__de("desktop") }) })));
+}
+const D__it = {"Proprietar": "Titolare", "Recep\u021bie": "Reception", "Agen\u021bia Nord Studio": "Agenzia Nord Studio", "Manager de proiect": "Responsabile di progetto", "Programare nou\u0103 de la Ana Popescu": "Nuovo appuntamento da Ana Popescu", "Joi, 29 oct., 14:30 \u00b7 Tuns": "Gio 29 ott., 14:30 \u00b7 Taglio", "acum 5 min": "5 min fa", "Factura #2026-114 e restant\u0103 de 3 zile": "La fattura #2026-114 \u00e8 scaduta da 3 giorni", "Clinica Dentis \u00b7 1.250 lei": "Clinica Dentis \u00b7 1.250 \u20ac", "acum 2 ore": "2 ore fa", "Ioana a cerut concediu pe 2\u20136 noiembrie": "Ioana ha chiesto ferie dal 2 al 6 novembre", "Exportul clien\u021bilor e gata": "L\u2019esportazione dei clienti \u00e8 pronta", "Programare": "Appuntamento", "Client": "Cliente", "Clien\u021bi": "Clienti", "Activit\u0103\u021bi": "Attivit\u00e0", "Afacere": "Attivit\u00e0", "Rapoarte": "Report", "Set\u0103ri": "Impostazioni", "Contact nou": "Nuovo contatto", "Ofert\u0103 trimis\u0103": "Offerta inviata", "Negociere": "Trattativa", "C\u00e2\u0219tigate \u00een octombrie": "Vinte a ottobre", "Abonament lunar pentru 10 angaja\u021bi": "Abbonamento mensile per 10 dipendenti", "Sun\u0103 azi": "Chiamare oggi", "Coafat pentru nun\u021bi, sezonul 2027": "Acconciature per matrimoni, stagione 2027", "Joi, 29 oct.": "Gio 29 ott.", "Pachet mireas\u0103": "Pacchetto sposa", "Din pagina de rezerv\u0103ri": "Dalla pagina di prenotazione", "Eveniment corporate, 40 de persoane": "Evento aziendale, 40 persone", "F\u0103r\u0103 r\u0103spuns de 9 zile": "Nessuna risposta da 9 giorni", "Zi de r\u0103sf\u0103\u021b pentru echip\u0103": "Giornata di benessere per il team", "Vin, 30 oct.": "Ven 30 ott.", "Abonament anual coafat": "Abbonamento annuale acconciature", "Luni, 2 nov.": "Lun 2 nov.", "Machiaj pentru spectacole, 6 luni": "Trucco per spettacoli, 6 mesi", "\u00cent\u00e2lnire m\u00e2ine, 10:00": "Incontro domani, 10:00", "Cabinet Avocatura Pop": "Studio legale Pop", "Carduri cadou de Cr\u0103ciun": "Carte regalo di Natale", "Liceul de Art\u0103 Sibiu": "Liceo artistico di Sibiu", "Bal de absolvire": "Ballo di fine anno", "C\u00e2\u0219tigat\u0103 pe 21 oct.": "Vinta il 21 ott.", "Abonament anual vopsit": "Abbonamento annuale colore", "C\u00e2\u0219tigat\u0103 pe 14 oct.": "Vinta il 14 ott.", "12 oportunit\u0103\u021bi deschise, \u00een valoare de 77.900 lei. Dou\u0103 a\u0219teapt\u0103 un telefon azi.": "12 opportunit\u00e0 aperte, per un valore di 77.900 \u20ac. Due attendono una telefonata oggi.", "Editeaz\u0103 etapele": "Modifica le fasi", "Afi\u0219are": "Visualizzazione", "Panou": "Bacheca", "List\u0103": "Elenco", "Toat\u0103 echipa": "Tutto il team", "Doar ale mele": "Solo le mie", "Etape": "Fasi"};
+const t__it = (s) => __p2.tx(s, D__it);
+const ORGS__it = __p2.trd(ORGS, D__it);
+const NOTIFS__it = __p2.trd(NOTIFS, D__it);
+const USER__it = __p2.trd(USER, D__it);
+function Bar__it({ title, de }) {
+  return /* @__PURE__ */ React.createElement(
+    V.ContextBar,
+    {
+      title,
+      org: /* @__PURE__ */ React.createElement(V.OrgSwitcher, { orgs: de ? [{ id: 1, name: t__it("Zahnarztpraxis Dr. M\xFCller"), role: t__it("Empfang") }, { id: 2, name: t__it("Salon Aurora"), role: t__it("Inhaberin") }] : ORGS__it, currentId: de ? 1 : t__it("aurora") }),
+      onSearch: () => {
+      },
+      createItems: [{ label: de ? t__it("Termin") : t__it("Programare"), icon: t__it("calendar-check"), shortcut: [t__it("N")] }, { label: de ? t__it("Kunde") : t__it("Client"), icon: t__it("user-plus") }],
+      notifications: /* @__PURE__ */ React.createElement(V.NotificationsPanel, { items: NOTIFS__it }),
+      account: /* @__PURE__ */ React.createElement(V.AccountMenu, { user: USER__it, orgs: ORGS__it, currentOrgId: t__it("aurora"), onCatalog: () => {
+      } })
+    }
+  );
+}
+function AX_App__it({ app, sections, active, title, bottom, footer, children }) {
+  return /* @__PURE__ */ React.createElement(
+    V.AppShell,
+    {
+      height: t__it("100%"),
+      spine: /* @__PURE__ */ React.createElement(V.Spine, { app, sections, activeId: active, onBackToHub: () => {
+      }, bottomItems: bottom, footer }),
+      contextBar: /* @__PURE__ */ React.createElement(Bar__it, { title })
+    },
+    children
+  );
+}
+const AX_Body__it = ({ mode, children }) => /* @__PURE__ */ React.createElement(t__it("div"), { className: t__it("axb ") + mode }, children);
+const AX_CRM_NAV__it = __p2.trd(AX_CRM_NAV, D__it);
+const AX_CRM_COLS__it = __p2.trd(AX_CRM_COLS, D__it);
+const AX_CRM_CARDS__it = __p2.trd(AX_CRM_CARDS, D__it);
+function Crm__it({ mode }) {
+  const [cards, setCards] = useState(AX_CRM_CARDS__it);
+  const move = (id, col) => setCards(cards.map((c) => c.id === id ? { ...c, col } : c));
+  return /* @__PURE__ */ React.createElement(AX_App__it, { app: t__it("crm"), sections: AX_CRM_NAV__it, active: t__it("pipeline"), title: t__it("Pipeline"), bottom: [t__it("pipeline"), t__it("clienti"), t__it("activitati"), t__it("rapoarte")] }, /* @__PURE__ */ React.createElement(
+    V.PageHeader,
+    {
+      title: t__it("Pipeline"),
+      description: mode === t__it("mobile") ? void 0 : t__it("12 oportunit\u0103\u021Bi deschise, \xEEn valoare de 77.900 lei. Dou\u0103 a\u0219teapt\u0103 un telefon azi."),
+      actions: mode === t__it("mobile") ? null : /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(V.Button, { variant: t__it("quiet"), icon: t__it("pencil") }, t__it("Editeaz\u0103 etapele")), /* @__PURE__ */ React.createElement(V.SegmentedControl, { label: t__it("Afi\u0219are"), defaultValue: t__it("board"), options: [{ value: t__it("board"), label: t__it("Panou"), icon: t__it("kanban") }, { value: t__it("list"), label: t__it("List\u0103"), icon: t__it("list") }] }), /* @__PURE__ */ React.createElement(t__it("div"), { style: { width: 168 } }, /* @__PURE__ */ React.createElement(V.Select, { defaultValue: t__it("all"), options: [{ value: t__it("all"), label: t__it("Toat\u0103 echipa") }, { value: t__it("me"), label: t__it("Doar ale mele") }] })))
+    }
+  ), /* @__PURE__ */ React.createElement(AX_Body__it, { mode }, /* @__PURE__ */ React.createElement(V.Kanban, { label: t__it("Etape"), columns: AX_CRM_COLS__it, cards, defaultColumn: t__it("oferta"), onMove: move, renderCard: (k, ctx) => /* @__PURE__ */ React.createElement(V.KanbanCard, { ...k, columns: ctx.columns, onMove: move, onOpen: () => {
+  }, active: k.id === t__it("c4") && mode === t__it("desktop") }) })));
+}
+
+function __p2Locale({ title, desktopH, mobileH, de, it }) {
+  if (window.__SOLO) return null;
+  const h = React.createElement;
+  const fr = (lab, cls, th, hgt, loc, el) => h("div", null, h("p", { className: "caption scr-lab" }, lab), h("div", { className: cls, "data-theme": th, style: { height: hgt } }, h(V.LocaleProvider, { locale: loc }, el)));
+  return h("div", { className: "scr" }, h("p", { className: "heading" }, title), h("p", { className: "caption muted" }, "Textele ecranului traduse (germana cu „Sie”, italiana cu „Lei”), ca să verificăm că etichetele mai lungi \xEEncap \xB7 numele aplicațiilor răm\xE2n neschimbate"), h("div", { className: "scr-row" }, fr("Deutsch \xB7 Desktop \xB7 1280 \xB7 Light", "scr-d", "light", desktopH, "de", de("desktop")), fr("Italiano \xB7 Telefon \xB7 390 \xB7 Light", "scr-m", "light", mobileH, "it", it("mobile")), fr("Italiano \xB7 Telefon \xB7 390 \xB7 Dark", "scr-m", "dark", mobileH, "it", it("mobile"))));
+}
+
+mount(React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(Screens, { title: "ClientDesk \u2014 Pipeline: oportunit\u0103\u021Bile pe etape, cu valoarea fiec\u0103rei etape \u0219i pasul urm\u0103tor", notes: ["Pe telefon vezi o etap\u0103 odat\u0103; alegi etapa din bara de sus", "Fiecare card are \u201EMut\u0103 \xEEn\u2026\u201D din meniu, nu doar tragere"], desktopH: 900, tabletH: 1100, mobileH: 1100, render: (m) => /* @__PURE__ */ React.createElement(Crm, { mode: m }) }), React.createElement(__p2Locale, { title: "Test de lungime \u2014 german\u0103 (1280) \u0219i italian\u0103 (390)", desktopH: 900, mobileH: 1100, de: (m) => React.createElement(Crm__de, { mode: m }), it: (m) => React.createElement(Crm__it, { mode: m }) })));
 </script>
 </body>
 </html>

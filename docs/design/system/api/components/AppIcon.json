@@ -1,0 +1,53 @@
+{
+ "name": "AppIcon",
+ "version": "1.0.1",
+ "kind": "component",
+ "group": "Hub",
+ "status": "changed",
+ "description": "One of the fifteen Ventora app icons — a navy plate with off-white shapes and a single peach part, drawn on a shared 48-unit grid as an echo of the Ventora mark.",
+ "exports": [
+  "AppIcon"
+ ],
+ "props": [
+  {
+   "name": "app",
+   "type": "AppKey",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "icon",
+   "type": "string",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "size",
+   "type": "number",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "muted",
+   "type": "boolean",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "title",
+   "type": "string",
+   "required": false,
+   "note": ""
+  }
+ ],
+ "events": [],
+ "states": [
+  "active",
+  "muted",
+  "sizes",
+  "lucideFallback"
+ ],
+ "notes": "",
+ "readme": "components/AppIcon/README.md",
+ "preview": "components/AppIcon/preview.html"
+}

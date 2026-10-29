@@ -1,0 +1,134 @@
+/* .v-agenda din bundle.css */
+.agenda {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.agenda > li {
+  border-bottom: var(--border-width) solid var(--line);
+}
+
+.agenda > li:last-child {
+  border-bottom: 0;
+}
+
+.item {
+  appearance: none;
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  width: 100%;
+  padding: var(--space-3) var(--space-4);
+  min-height: var(--touch-target);
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+  text-align: start;
+  font-family: inherit;
+  box-sizing: border-box;
+}
+
+.button {
+  cursor: pointer;
+}
+
+.button:hover {
+  background: var(--state-hover);
+}
+
+.button:focus-visible {
+  outline: var(--focus-ring-width) solid var(--focus-ring);
+  outline-offset: calc(var(--focus-ring-width) * -1);
+}
+
+.item.isActive {
+  background: var(--selected);
+}
+
+.time {
+  display: flex;
+  flex-direction: column;
+  width: var(--schedule-gutter);
+  flex: none;
+  color: var(--ink);
+}
+
+.time :global(.caption) {
+  color: var(--ink-muted);
+}
+
+.main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-0-5);
+}
+
+.title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sub {
+  color: var(--ink-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.item-now {
+  background: var(--attention-soft);
+}
+
+.item-done .title,
+.item-done .time :global(.body-strong) {
+  color: var(--ink-secondary);
+  font-weight: 500;
+}
+
+.item-cancelled .title {
+  text-decoration: line-through;
+  color: var(--ink-muted);
+}
+
+.progress {
+  display: block;
+  height: var(--space-1);
+  margin-top: var(--space-1);
+  border-radius: var(--radius-full);
+  background: var(--sheet);
+  overflow: hidden;
+  max-width: var(--search-width);
+}
+
+.progress > span {
+  display: block;
+  height: 100%;
+  background: var(--attention-mark);
+  border-radius: inherit;
+}
+
+.nowline {
+  position: relative;
+  height: 0;
+  border-bottom: 0 !important;
+  border-top: var(--focus-ring-width) solid var(--attention-mark);
+  margin: var(--space-2) 0;
+}
+
+.nowline > span {
+  position: absolute;
+  left: var(--space-4);
+  top: 0;
+  transform: translateY(-50%);
+  padding: 0 var(--space-1);
+  border-radius: var(--radius-xs);
+  background: var(--attention);
+  color: var(--on-attention);
+  font-weight: 600;
+}

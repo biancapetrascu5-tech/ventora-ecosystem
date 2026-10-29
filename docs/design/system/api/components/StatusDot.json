@@ -1,0 +1,43 @@
+{
+ "name": "StatusDot",
+ "version": "1.0.1",
+ "kind": "component",
+ "group": "Status",
+ "status": "changed",
+ "description": "A small mark beside a label for live or presence state (\"Acum, în cabinetul 2\", \"Offline\").",
+ "exports": [
+  "StatusDot"
+ ],
+ "props": [
+  {
+   "name": "tone",
+   "type": "Tone | \"offline\"",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "label",
+   "type": "string",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "hideLabel",
+   "type": "boolean",
+   "required": false,
+   "note": ""
+  }
+ ],
+ "events": [],
+ "states": [
+  "attention",
+  "done",
+  "danger",
+  "neutral",
+  "offline",
+  "hide-label"
+ ],
+ "notes": "",
+ "readme": "components/StatusDot/README.md",
+ "preview": "components/StatusDot/preview.html"
+}

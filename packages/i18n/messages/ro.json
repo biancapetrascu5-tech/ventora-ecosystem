@@ -3,6 +3,57 @@
     "ok": "OK",
     "items": "{count, plural, one {# element} other {# elemente}}"
   },
+  "portal": {
+    "eyebrow": "Portal · pentru clienții tăi",
+    "title": "Pagina afacerii în Portal",
+    "description": "Clienții te găsesc în Portal și își fac programări acolo. De aici schimbi ce văd ei.",
+    "memberNote": "Pagina o pot schimba proprietarul, adminii și managerul aplicației Portal.",
+    "manage": "Gestionează pagina",
+    "finish": "Termină pagina",
+    "preview": "Vezi cum arată în Portal",
+    "previewTab": "(se deschide într-un tab nou)",
+    "statusPublished": "Publicată",
+    "statusHidden": "Ascunsă",
+    "statusDraft": "Nu e publicată încă"
+  },
+  "documents": {
+    "lastOpened": "Ultimul deschis: {document} · {când}"
+  },
+  "invite": {
+    "fromLabel": "Invitație de la {name}",
+    "title": "Intră în echipa {afacere}",
+    "roleDesc": "Rolul tău: {role}. Vei avea acces la:",
+    "nameField": "Nume complet",
+    "emailLabel": "E-mail",
+    "emailNote": "Pe această adresă ai primit invitația.",
+    "passwordField": "Parolă nouă",
+    "reqLength": "Cel puțin 10 caractere",
+    "reqDigit": "Cel puțin o cifră",
+    "reqUpper": "Cel puțin o literă mare",
+    "termsLabel": "Accept Termenii și Politica de confidențialitate",
+    "termsDesc": "Le poți citi oricând din Setări.",
+    "accept": "Acceptă invitația",
+    "expiry": "Invitația e valabilă până pe {data}.",
+    "expiredTitle": "Invitația a expirat",
+    "expiredBody": "Invitațiile sunt valabile 7 zile. Cere una nouă: trimitem cererea către {name}, iar linkul nou îl primești pe e-mail.",
+    "requestNew": "Cere o invitație nouă"
+  },
+  "usageMeter": {
+    "unlimited": "Nelimitat",
+    "usedOf": "{used} din {limit}",
+    "left": "Mai ai {n}",
+    "nearLimit": "Te apropii de limita abonamentului",
+    "atLimit": "Ai atins limita abonamentului",
+    "atLimitHint": "Nu se pierde nimic din ce ai. Ca să adaugi altele, cumpără un pachet în plus sau cere alt abonament.",
+    "upgrade": "Cere alt abonament",
+    "buyMore": "Cumpără pachet",
+    "notifyOwner": "Anunță proprietarul",
+    "onlyOwnerBuys": "Pachetele în plus le poate cumpăra doar {who} (proprietar)."
+  },
+  "toast": {
+    "undo": "Anulează",
+    "close": "Închide"
+  },
   "email": {
     "common": {
       "greeting": "Bună, {name},",
@@ -97,5 +148,11 @@
         "closed": "Sesiunea de suport s-a închis."
       }
     }
+  },
+  "auth": {
+    "line1": "Afacerea ta.",
+    "line2": "Într-un singur loc.",
+    "founderProduct": "Control Center",
+    "founderTagline": "Instrumentul intern al echipei Ventora"
   }
 }

@@ -3,6 +3,57 @@
     "ok": "OK",
     "items": "{count, plural, one {# Element} other {# Elemente}}"
   },
+  "portal": {
+    "eyebrow": "Portal · für Ihre Kunden",
+    "title": "Ihre Unternehmensseite im Portal",
+    "description": "Kunden finden Sie im Portal und buchen dort Termine. Von hier aus steuern Sie, was sie sehen.",
+    "memberNote": "Die Seite kann vom Inhaber, den Admins und dem Manager der Portal-App geändert werden.",
+    "manage": "Seite verwalten",
+    "finish": "Seite fertigstellen",
+    "preview": "Im Portal ansehen",
+    "previewTab": "(öffnet sich in einem neuen Tab)",
+    "statusPublished": "Veröffentlicht",
+    "statusHidden": "Ausgeblendet",
+    "statusDraft": "Noch nicht veröffentlicht"
+  },
+  "documents": {
+    "lastOpened": "Zuletzt geöffnet: {document} · {wann}"
+  },
+  "invite": {
+    "fromLabel": "Einladung von {name}",
+    "title": "Dem Team von {afacere} beitreten",
+    "roleDesc": "Deine Rolle: {role}. Du erhältst Zugang zu:",
+    "nameField": "Vollständiger Name",
+    "emailLabel": "E-Mail",
+    "emailNote": "An diese Adresse wurde die Einladung gesendet.",
+    "passwordField": "Neues Passwort",
+    "reqLength": "Mindestens 10 Zeichen",
+    "reqDigit": "Mindestens eine Ziffer",
+    "reqUpper": "Mindestens ein Großbuchstabe",
+    "termsLabel": "Ich akzeptiere die Nutzungsbedingungen und Datenschutzrichtlinie",
+    "termsDesc": "Du kannst sie jederzeit in den Einstellungen lesen.",
+    "accept": "Einladung annehmen",
+    "expiry": "Einladung gültig bis {data}.",
+    "expiredTitle": "Einladung abgelaufen",
+    "expiredBody": "Einladungen sind 7 Tage gültig. Fordere eine neue an: Wir leiten die Anfrage an {name} weiter und du erhältst den neuen Link per E-Mail.",
+    "requestNew": "Neue Einladung anfordern"
+  },
+  "usageMeter": {
+    "unlimited": "Unbegrenzt",
+    "usedOf": "{used} von {limit}",
+    "left": "Noch {n} übrig",
+    "nearLimit": "Abonnement-Limit fast erreicht",
+    "atLimit": "Sie haben das Limit Ihres Abonnements erreicht.",
+    "atLimitHint": "Es geht nichts verloren. Für mehr kaufen Sie ein Zusatzpaket oder fragen Sie ein anderes Abonnement an.",
+    "upgrade": "Anderes Abonnement anfragen",
+    "buyMore": "Paket kaufen",
+    "notifyOwner": "Inhaber benachrichtigen",
+    "onlyOwnerBuys": "Zusatzpakete können nur {who} (Inhaber) kaufen."
+  },
+  "toast": {
+    "undo": "Rückgängig",
+    "close": "Schließen"
+  },
   "email": {
     "common": {
       "greeting": "Hallo {name},",
@@ -97,5 +148,11 @@
         "closed": "Die Support-Sitzung wurde beendet."
       }
     }
+  },
+  "auth": {
+    "line1": "Ihr Unternehmen.",
+    "line2": "An einem Ort.",
+    "founderProduct": "Control Center",
+    "founderTagline": "Das interne Werkzeug des Ventora-Teams"
   }
 }

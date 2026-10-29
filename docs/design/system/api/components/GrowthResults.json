@@ -1,0 +1,25 @@
+{
+ "name": "GrowthResults",
+ "version": "1.0.1",
+ "kind": "page",
+ "group": "Founder",
+ "status": "changed",
+ "description": "Results: disturbance rate first, in attention against the threshold, then impressions, clicks, conversions, attributed revenue and opt-outs; a weekly chart and a per-campaign table.",
+ "exports": [],
+ "props": [],
+ "events": [],
+ "states": [
+  "Growth — Rezultate, cu rata de deranjare în față",
+  "Model comercial",
+  "Growth",
+  "Sistem",
+  "Afaceri",
+  "Consum",
+  "Campanii",
+  "Control",
+  "Mai multe"
+ ],
+ "notes": "States are the labelled boards and frames of the preview (Light and Dark; desktop/tablet/phone).",
+ "readme": "components/GrowthResults/README.md",
+ "preview": "components/GrowthResults/preview.html"
+}

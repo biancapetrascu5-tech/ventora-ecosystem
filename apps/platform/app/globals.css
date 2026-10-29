@@ -1,0 +1,37 @@
+/* Body reset — asigură că fontul DM Sans și culorile token sunt aplicate peste tot */
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: var(--type-body-size);
+  line-height: var(--type-body-line);
+  font-weight: var(--type-body-weight);
+  color: var(--ink);
+  background: var(--canvas);
+  -webkit-font-smoothing: antialiased;
+}
+
+p, h1, h2, h3, h4, h5, h6 {
+  margin: 0;
+}
+
+/* Modificatori */
+.muted { color: var(--ink-muted); }
+
+/* Portal theme — marker de clasă; tema se aplică prin data-theme setat în JS pe containerul de portal */
+.v-portal-theme {
+}
+
+/* Link de bază */
+.v-link {
+  appearance: none;
+  background: none;
+  border: 0;
+  padding: 0;
+  font: inherit;
+  color: var(--ink);
+  text-decoration: underline;
+  text-underline-offset: var(--marker-width);
+  text-decoration-thickness: var(--border-width);
+  cursor: pointer;
+  border-radius: var(--radius-xs);
+}

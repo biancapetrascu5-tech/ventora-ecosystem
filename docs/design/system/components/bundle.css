@@ -1176,7 +1176,7 @@ button.v-agenda__item:hover { background: var(--state-hover); }
 .v-dock .v-apptile__iconwrap { position: absolute; left: 0; top: 0; transform: translate(calc(50cqw - 50%), var(--space-4)); transition: transform var(--duration-morph) var(--ease-spring); }
 .v-dock svg.v-appicon { width: var(--dock-icon); height: var(--dock-icon); transition: width var(--duration-morph) var(--ease-spring), height var(--duration-morph) var(--ease-spring); }
 .v-dock .v-apptile__iconwrap .v-badge { top: -6px; right: -6px; box-shadow: 0 0 0 var(--focus-ring-width) var(--raised); }
-.v-dock .v-apptile__name { position: absolute; left: 0; top: 0; max-width: calc(100cqw - var(--space-6)); font-size: 14px; line-height: 20px; font-weight: 600; color: var(--ink); transform: translate(calc(50cqw - 50%), 90px); transition: transform var(--duration-morph) var(--ease-spring), font-size var(--duration-morph) var(--ease-spring); }
+.v-dock .v-apptile__name { position: absolute; left: 0; top: 0; max-width: 100cqw; font-size: 14px; line-height: 20px; font-weight: 600; color: var(--ink); transform: translate(calc(50cqw - 50%), 90px); transition: transform var(--duration-morph) var(--ease-spring), font-size var(--duration-morph) var(--ease-spring); }
 .v-dock__desc, .v-dock__live { position: absolute; left: var(--space-5); width: calc(var(--dock-card-w) - var(--space-10)); margin: 0; text-align: start; opacity: 0; visibility: hidden; transform: translateY(var(--space-2)); transition: opacity var(--duration-fast) var(--ease-standard), transform var(--duration-morph) var(--ease-spring), visibility 0s linear var(--duration-fast); pointer-events: none; }
 .v-dock__desc { top: 106px; font-size: 14px; line-height: 20px; color: var(--ink-secondary); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .v-dock__live { bottom: var(--space-4); padding-top: 9px; border-top: var(--border-width) solid var(--line); display: flex; align-items: center; gap: 6px; font-size: 13px; line-height: 18px; font-weight: 500; color: var(--ink-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -1199,7 +1199,7 @@ button.v-agenda__item:hover { background: var(--state-hover); }
   .v-dock__item { height: 96px; }
   .v-dock svg.v-appicon { width: var(--dock-icon-phone); height: var(--dock-icon-phone); }
   .v-dock .v-apptile__iconwrap { transform: translate(calc(50cqw - 50%), var(--space-1)); }
-  .v-dock .v-apptile__name { font-size: 12px; line-height: 16px; transform: translate(calc(50cqw - 50%), 68px); max-width: calc(100cqw - var(--space-1)); }
+  .v-dock .v-apptile__name { font-size: 12px; line-height: 16px; transform: translate(calc(50cqw - 50%), 68px); max-width: 100cqw; }
   .v-dock__desc, .v-dock__live, .v-dock__card::after { display: none; }
   .v-dock__item:is(:hover, .is-hover, :focus-within) .v-dock__card { left: 0; top: 0; width: 100%; height: 100%; background: transparent; box-shadow: none; }
   .v-dock__item:is(:hover, .is-hover, :focus-within) .v-apptile__iconwrap { transform: translate(calc(50cqw - 50%), var(--space-1)); }
@@ -1247,3 +1247,72 @@ button.v-agenda__item:hover { background: var(--state-hover); }
 .v-dock__item:hover :is(.v-dock__desc, .v-dock__live) { transition-delay: calc(var(--duration-intent) + 80ms), calc(var(--duration-intent) + 20ms), var(--duration-intent); }
 .v-dock__item:hover .v-dock__live { transition-delay: calc(var(--duration-intent) + 130ms), calc(var(--duration-intent) + 60ms), var(--duration-intent); }
 .v-dock__item:hover { transition: z-index 0s linear var(--duration-intent); }
+/* D-UX-4 follow-up: on phones the Hub bar shows only the Ventora mark when the page has a title */
+.v-cb-logo--mark { display: none; }
+@container shell (max-width: 767px) {
+  .v-contextbar:has(.v-contextbar__title > *) .v-cb-logo--full { display: none; }
+  .v-contextbar:has(.v-contextbar__title > *) .v-cb-logo--mark { display: inline-flex; }
+}
+/* Select whose value may run to two lines (long offer or audience names in Founder Growth) */
+.v-select.v-select--wrap { height: auto; min-height: var(--control-md); padding-top: var(--space-2); padding-bottom: var(--space-2); align-items: center; }
+.v-select--wrap .v-select__value { white-space: normal; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; line-height: 20px; }
+/* S1 + PASUL 2 b: AttentionList — the default tone is neutral; peach only for "are nevoie de tine acum" (tone "attention"); red for error or loss (tone "danger") */
+.v-attn__icon, .v-attn__icon.is-neutral { background: var(--neutral-soft); color: var(--ink-secondary); }
+.v-attn__icon.is-attention { background: var(--attention-soft); color: var(--attention-ink); }
+.v-attn__icon.is-danger { background: var(--danger-soft); color: var(--danger-ink); }
+/* R-T1 (26 Oct 2026): the before/after counter after a payment is a record, not a call to action — always neutral, no peach, no limit message */
+.v-paycompare .v-usage--limit .v-progress__fill, .v-paycompare .v-usage--warn .v-progress__fill { background: var(--primary); }
+.v-paycompare .v-usage--limit .v-progress, .v-paycompare .v-usage--warn .v-progress { box-shadow: inset 0 0 0 var(--border-width) var(--line); }
+.v-paycompare .v-usage__limit, .v-paycompare .v-usage__msg--warn { display: none; }
+
+/* R-2F9: AuthLayout (container query: the phone layout follows the layout's own width, so it also works inside frames) */
+.v-auth{container-type:inline-size;min-height:100%;display:flex;flex-direction:column;background:var(--canvas);color:var(--ink)}
+.v-auth__split{flex:1;display:flex;min-height:100%}
+.v-auth__brand{position:relative;flex:0 0 46%;display:flex;flex-direction:column;gap:var(--space-8);padding:var(--space-6) var(--space-12) var(--space-8);box-sizing:border-box;overflow:hidden}
+.v-auth__top{display:flex;justify-content:space-between;align-items:center;position:relative;z-index:1}
+.v-auth__fx{display:inline-flex;align-items:center;gap:var(--space-2);color:var(--ink)}
+.v-auth__langband{display:none}
+.v-auth__statement{margin-top:auto;position:relative;z-index:1;display:flex;flex-direction:column;gap:var(--space-3);color:var(--ink)}
+.v-auth__statement .display-xl{display:block}
+.v-auth__product{max-width:6.5em}
+.v-auth__tag{color:var(--ink-muted)}
+.v-auth__chev{position:absolute;right:-56px;top:96px;width:340px;height:460px;fill:none;stroke:var(--line-strong);stroke-width:1.5;pointer-events:none}
+.v-auth__foot{margin:0;color:var(--ink-muted);position:relative;z-index:1}
+.v-auth__sheet{flex:1;display:flex;flex-direction:column;min-width:0;background:var(--sheet);color:var(--ink)}
+.v-auth__head{display:flex;justify-content:flex-end;align-items:center;padding:var(--space-4) var(--space-6)}
+.v-auth__main{flex:1;display:flex;align-items:center;justify-content:center;padding:var(--space-8)}
+.v-auth__form{width:400px;max-width:100%;display:flex;flex-direction:column;gap:var(--space-4)}
+.v-auth__form--wide{width:480px}
+.v-auth__form>.auth-card{width:100%;border:0;background:transparent;padding:0;box-shadow:none}
+.v-auth__footer{padding:var(--space-4) var(--space-6);color:var(--ink-muted);text-align:center}
+@container (max-width: 1023px){.v-auth__brand{flex-basis:40%;padding:var(--space-6) var(--space-8) var(--space-8)}.v-auth__statement .display-xl{font-size:40px;line-height:44px}}
+@container (max-width: 767px){
+.v-auth__split{flex-direction:column}
+.v-auth__brand{flex:none;padding:var(--space-4) var(--space-4) var(--space-10);gap:0}
+.v-auth__statement,.v-auth__chev,.v-auth__foot,.v-auth__head{display:none}
+.v-auth__langband{display:flex}
+.v-auth__sheet{border-radius:var(--radius-xl) var(--radius-xl) 0 0;margin-top:calc(var(--space-6) * -1);position:relative}
+.v-auth__main{padding:var(--space-6) var(--space-4);align-items:stretch}
+.v-auth__form{width:100%}
+.v-auth .display-hub{font-size:32px;line-height:36px}
+}
+
+/* Button with href (an <a>): same box as a <button>, so "block" does not overflow its parent */
+a.v-btn { box-sizing: border-box; }
+
+/* S66: on phones the business switcher lives in AccountMenu; follow the shell width too, not only the window */
+.v-account__org.is-on { display: flex; }
+
+/* PASUL 2 f: the wrapper that carries the theme of a portaled popover adds no box */
+.v-portal-theme { display: contents; }
+
+/* PASUL 2 f finding: long "mark all as read" labels (DE) wrap under the title instead of pushing the settings button out */
+.v-notifs__head { flex-wrap: wrap; }
+.v-notifs__headact { margin-left: auto; flex-wrap: wrap; justify-content: flex-end; }
+
+/* P-1 (28 oct. 2026): on phones, when the bar has a title, the title takes all the free space up to the icons (the spacer goes); what does not fit ends in "…" */
+@container shell (max-width: 767px) {
+  .v-shell:has(.v-spine) .v-contextbar:has(.v-contextbar__title > *) .v-contextbar__spacer { display: none; }
+  .v-contextbar__title > .v-truncate, .v-contextbar__title .heading { min-width: 0; }
+}
+/* P-2 (28 oct. 2026): the "today" label stays on screen — centred on the line when it fits, otherwise moved inwards (the Timeline sets the offset) */

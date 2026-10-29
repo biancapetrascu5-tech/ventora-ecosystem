@@ -1,4 +1,4 @@
-<!-- @dsCard group="Feedback" height=200 -->
+<!-- @dsCard group="Feedback" height=1260 width=1200 -->
 <!doctype html>
 <html lang="ro">
 <head><meta charset="utf-8"><title>Skeleton — Ventora</title>
@@ -250,6 +250,15 @@ html,body{min-height:100%}
 .fxframe .caption{color:var(--ink-muted)}
 @container (max-width:420px){.fxlang{grid-template-columns:32px minmax(0,1fr) auto}.fxlang .v-iconbtn{display:none}}
 
+
+/* c5: light/dark frames and DE/IT sections */
+.qwrap{display:flex;flex-direction:column;gap:var(--space-6);padding:var(--space-4);box-sizing:border-box;background:var(--canvas);color:var(--ink)}
+.qfr{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--space-4);align-items:start}
+.qfr1{grid-template-columns:minmax(0,1fr)}
+.qf{display:flex;flex-direction:column;gap:var(--space-4);padding:var(--space-4);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg);min-width:0;box-sizing:border-box}
+.qf-t{margin:0;color:var(--ink-muted)}
+.qh{margin:0;color:var(--ink)}
+.qsec{display:flex;flex-direction:column;gap:var(--space-3)}
 </style>
 </head>
 <body>
@@ -265,7 +274,35 @@ const mount = (el) => ReactDOM.createRoot(document.getElementById("root")).rende
 function Demo() {
   return /* @__PURE__ */ React.createElement("div", { className: "d g2" }, /* @__PURE__ */ React.createElement("div", { className: "frame d0", style: { padding: "var(--space-4)" } }, /* @__PURE__ */ React.createElement("div", { className: "r" }, /* @__PURE__ */ React.createElement(V.Skeleton, { shape: "circle", width: 40, height: 40 }), /* @__PURE__ */ React.createElement("div", { style: { flex: 1 } }, /* @__PURE__ */ React.createElement(V.SkeletonText, { lines: 2 }))), /* @__PURE__ */ React.createElement(V.Skeleton, { shape: "block", height: 64 })), /* @__PURE__ */ React.createElement("div", { className: "frame d0", style: { padding: "var(--space-4)" } }, /* @__PURE__ */ React.createElement(V.SkeletonText, { lines: 4 })));
 }
-mount(/* @__PURE__ */ React.createElement(Demo, null));
+
+const Qh = React.createElement;
+const Q_Fr = ({ theme, title, children, style }) => Qh("section", { className: "qf", "data-theme": theme, style: Object.assign({ background: "var(--canvas)", color: "var(--ink)" }, style || {}) }, Qh("p", { className: "caption qf-t" }, title || (theme === "dark" ? "Dark" : "Light")), children);
+const Q_Pair = ({ children, cols, light, dark }) => Qh("div", { className: cols === 1 ? "qfr qfr1" : "qfr" }, Qh(Q_Fr, { theme: "light" }, light || children), Qh(Q_Fr, { theme: "dark" }, dark || children));
+const Q_Loc = ({ de, it, cols, theme }) => Qh("div", { className: cols === 1 ? "qfr qfr1" : "qfr" }, Qh(Q_Fr, { theme: theme || "light", title: "DE · Deutsch" }, Qh(V.LocaleProvider, { locale: "de" }, de)), Qh(Q_Fr, { theme: theme || "light", title: "IT · Italiano" }, Qh(V.LocaleProvider, { locale: "it" }, it)));
+const Q_Sec = ({ title, children }) => Qh("div", { className: "qsec" }, Qh("h2", { className: "heading qh" }, title), children);
+const Q_Row = ({ label, children }) => Qh("div", { className: "r" }, Qh("span", { className: "l caption" }, label), children);
+const Q_Sk = ({ t }) => Qh("div", { className: "d0" },
+  Qh("p", { className: "caption", style: { margin: 0 } }, t.load),
+  Qh("div", { className: "frame d0", style: { padding: "var(--space-4)" } },
+    Qh("div", { className: "r" }, Qh(V.Skeleton, { shape: "circle", width: 40, height: 40 }), Qh("div", { style: { flex: 1 } }, Qh(V.SkeletonText, { lines: 2 }))),
+    Qh(V.Skeleton, { shape: "line", width: "60%" }),
+    Qh(V.Skeleton, { shape: "block", height: 64 })),
+  Qh("p", { className: "body-small", style: { margin: 0, color: "var(--ink-secondary)" } }, t.after));
+function Q_Extra() {
+  return Qh("div", { className: "qwrap" },
+    Qh(Q_Sec, { title: "Forme: linie · bloc · cerc · text pe mai multe rânduri" },
+      Qh("div", { className: "frame d0", style: { padding: "var(--space-4)" } },
+        Qh(Q_Row, { label: "Linie" }, Qh("div", { style: { flex: 1 } }, Qh(V.Skeleton, { shape: "line" }))),
+        Qh(Q_Row, { label: "Bloc" }, Qh("div", { style: { flex: 1 } }, Qh(V.Skeleton, { shape: "block", height: 48 }))),
+        Qh(Q_Row, { label: "Cerc" }, Qh(V.Skeleton, { shape: "circle", width: 32, height: 32 }), Qh(V.Skeleton, { shape: "circle", width: 48, height: 48 })),
+        Qh(Q_Row, { label: "Text, 3 rânduri" }, Qh("div", { style: { flex: 1 } }, Qh(V.SkeletonText, { lines: 3 }))))),
+    Qh(Q_Sec, { title: "Light / Dark" }, Qh(Q_Pair, null, Qh(Q_Sk, { t: { load: "Se încarcă fișa clientului…", after: "Apoi apare: Ana Popescu · 12 programări · ultima vizită pe 14 oct." } }))),
+    Qh(Q_Sec, { title: "DE / IT" }, Qh(Q_Loc, {
+      de: Qh(Q_Sk, { t: { load: "Die Kundenakte wird geladen…", after: "Danach erscheint: Ana Popescu · 12 Termine · letzter Besuch am 14. Okt." } }),
+      it: Qh(Q_Sk, { t: { load: "Caricamento della scheda cliente…", after: "Poi compare: Ana Popescu · 12 appuntamenti · ultima visita il 14 ott." } }) })));
+}
+
+mount(Qh("div", null, /* @__PURE__ */ React.createElement(Demo, null), Qh(Q_Extra, null)));
 </script>
 </body>
 </html>

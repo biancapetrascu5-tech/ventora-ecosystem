@@ -1,4 +1,4 @@
-<!-- @dsCard group="Forms" height=460 -->
+<!-- @dsCard group="Forms" height=2240 width=1200 -->
 <!doctype html>
 <html lang="ro">
 <head><meta charset="utf-8"><title>Combobox — Ventora</title>
@@ -250,6 +250,18 @@ html,body{min-height:100%}
 .fxframe .caption{color:var(--ink-muted)}
 @container (max-width:420px){.fxlang{grid-template-columns:32px minmax(0,1fr) auto}.fxlang .v-iconbtn{display:none}}
 
+/* c2: theme + locale frames */
+.pv{display:flex;flex-direction:column;gap:var(--space-4);padding:var(--space-4)}
+.pv-frame{display:flex;flex-direction:column;gap:var(--space-4);padding:var(--space-6);background:var(--canvas);color:var(--ink);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg);min-width:0}
+.pv-frame>.heading{margin:0}
+.pv-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:var(--space-5) var(--space-4);align-items:start}
+.pv-grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--space-5) var(--space-4);align-items:start}
+.pv-grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--space-5) var(--space-4);align-items:start}
+.pv-cell{display:flex;flex-direction:column;gap:var(--space-2);min-width:0}
+.pv-lab{margin:0;color:var(--ink-muted)}
+.pv-box{padding:var(--space-4);background:var(--sheet);border:var(--border-width) solid var(--line);border-radius:var(--radius-md);min-width:0;color:var(--ink)}
+.pv-stage{position:relative;overflow:hidden;border:var(--border-width) solid var(--line-strong);border-radius:var(--radius-lg);background:var(--canvas);color:var(--ink)}
+.pv-note{margin:0;color:var(--ink-muted)}
 </style>
 </head>
 <body>
@@ -262,11 +274,43 @@ const DE = ({ children }) => /* @__PURE__ */ React.createElement(V.LocaleProvide
 const FR = ({ children }) => /* @__PURE__ */ React.createElement(V.LocaleProvider, { locale: "fr" }, children);
 const IT = ({ children }) => /* @__PURE__ */ React.createElement(V.LocaleProvider, { locale: "it" }, children);
 const mount = (el) => ReactDOM.createRoot(document.getElementById("root")).render(/* @__PURE__ */ React.createElement(V.LocaleProvider, { locale: "ro" }, el));
-const CLIENTS = ["Ana Popescu", "Andrei Ionescu", "Bianca Marin", "Cristina Dobre", "Dan Stoica", "Elena Georgescu", "Ioana Pavel"].map((n, i) => ({ value: i, label: n, description: "07" + (40 + i) + " 123 45" + i }));
-function Demo() {
-  return /* @__PURE__ */ React.createElement("div", { className: "d g2" }, /* @__PURE__ */ React.createElement(V.FormField, { label: "Client", helper: "Caut\u0103 dup\u0103 nume sau telefon." }, /* @__PURE__ */ React.createElement(V.Combobox, { options: CLIENTS, defaultOpen: true, defaultQuery: "an", placeholder: "Caut\u0103 clientul" })), /* @__PURE__ */ React.createElement("div", { className: "d0" }, /* @__PURE__ */ React.createElement(V.FormField, { label: "Participan\u021Bi" }, /* @__PURE__ */ React.createElement(V.Combobox, { multiple: true, options: CLIENTS, defaultValue: [0, 2], icon: "users" })), /* @__PURE__ */ React.createElement(V.FormField, { label: "Client ales" }, /* @__PURE__ */ React.createElement(V.Combobox, { options: CLIENTS, defaultValue: 3 })), /* @__PURE__ */ React.createElement(V.FormField, { label: "Client", required: true, error: "Alege un client din list\u0103." }, /* @__PURE__ */ React.createElement(V.Combobox, { options: CLIENTS })), /* @__PURE__ */ React.createElement(V.FormField, { label: "Dezactivat" }, /* @__PURE__ */ React.createElement(V.Combobox, { options: CLIENTS, disabled: true })), /* @__PURE__ */ React.createElement(DE, null, /* @__PURE__ */ React.createElement(V.FormField, { label: "Kundin oder Kunde" }, /* @__PURE__ */ React.createElement(V.Combobox, { options: CLIENTS, loading: true })))));
+/* c2: every README state, Light/Dark frames (data-theme on the frame), DE/IT with translated texts. */
+const h = React.createElement;
+const noop = () => {};
+const Cell = ({ label, children, style }) => h("div", { className: "pv-cell", style }, h("p", { className: "caption pv-lab" }, label), children);
+const FRAMES = [["light", "ro", "Light"], ["dark", "ro", "Dark"], ["light", "de", "Deutsch \u00b7 Light"], ["dark", "it", "Italiano \u00b7 Dark"]];
+const Frames = ({ Board, top }) => h("div", { className: "pv" }, top, FRAMES.map(([th, lang, lab], i) => h("section", { key: lab, className: "pv-frame", "data-theme": th }, h("p", { className: "heading" }, lab), h(V.LocaleProvider, { locale: lang }, h(Board, { lang, theme: th, first: i === 0 })))));
+const CO_NAMES = {
+  ro: ["Ana Popescu", "Andrei Ionescu", "Bianca Marin", "Cristina Dobre", "Dan Stoica", "Elena Georgescu", "Ioana Pavel", "Ștefan Țăranu"],
+  de: ["Anna Müller", "Andreas Schäfer", "Bianca Weiß", "Christina Böhm", "Daniel Krüger", "Elena Groß", "Johanna Pfeiffer", "Jürgen Köhler"],
+  it: ["Anna Rossi", "Andrea Bianchi", "Bianca Marino", "Cristina Greco", "Daniele Russo", "Elena Ferrari", "Giovanna Conti", "Niccolò Lucà"]
+};
+const CO_PH = { ro: (i) => "07" + (40 + i) + " 123 45" + i, de: (i) => "+49 151 2345 67" + i, it: (i) => "+39 347 123 45" + i };
+const CO_T = {
+  ro: { l: ["Deschis · filtrat după „an”", "Fără rezultate", "Mai multe valori (chips)", "Valoare aleasă", "Eroare", "Dezactivat", "Se încarcă (căutare pe măsură ce scrii)"],
+    client: "Client", helper: "Caută după nume sau telefon.", ph: "Caută clientul", part: "Participanți", chosen: "Client ales", err: "Alege un client din listă.", dis: "Client (dezactivat)", load: "Client", q0: "Țăranu Ș", closed: "Lista se deschide la focus; deschisă e arătată doar în cadrul Light (stă deasupra paginii)." },
+  de: { l: ["Gefiltert nach „an“", "Keine Ergebnisse", "Mehrere Werte (Chips)", "Ausgewählter Wert", "Fehler", "Deaktiviert", "Wird geladen (Suche beim Tippen)"],
+    client: "Kunde", helper: "Suchen Sie nach Name oder Telefonnummer.", ph: "Kunden suchen", part: "Teilnehmende", chosen: "Ausgewählter Kunde", err: "Wählen Sie einen Kunden aus der Liste.", dis: "Kunde (deaktiviert)", load: "Kunde", q0: "Schröder", closed: "Die Liste öffnet sich beim Fokus." },
+  it: { l: ["Filtrato per „an”", "Nessun risultato", "Più valori (chip)", "Valore scelto", "Errore", "Disattivato", "Caricamento (ricerca mentre scrive)"],
+    client: "Cliente", helper: "Cerchi per nome o numero di telefono.", ph: "Cerchi il cliente", part: "Partecipanti", chosen: "Cliente scelto", err: "Scelga un cliente dall’elenco.", dis: "Cliente (disattivato)", load: "Cliente", q0: "Esposito", closed: "L’elenco si apre al focus." }
+};
+function Board({ lang, first }) {
+  const T = CO_T[lang], L = T.l;
+  const opts = CO_NAMES[lang].map((n, i) => ({ value: i, label: n, description: CO_PH[lang](i) }));
+  return h("div", { className: "pv-cell", style: { gap: "var(--space-5)" } },
+    h("div", { className: "pv-grid2", style: { minHeight: first ? 380 : 0 } },
+      h(Cell, { label: L[0] }, h(V.FormField, { label: T.client, helper: T.helper }, h(V.Combobox, { options: opts, defaultOpen: first, defaultQuery: "an", placeholder: T.ph }))),
+      h(Cell, { label: L[1] }, h(V.FormField, { label: T.client }, h(V.Combobox, { options: opts, defaultOpen: first, defaultQuery: T.q0, placeholder: T.ph })))),
+    !first && h("p", { className: "caption pv-note" }, T.closed),
+    h("div", { className: "pv-grid" },
+      h(Cell, { label: L[2] }, h(V.FormField, { label: T.part }, h(V.Combobox, { multiple: true, options: opts, defaultValue: [0, 2, 7], icon: "users" }))),
+      h(Cell, { label: L[3] }, h(V.FormField, { label: T.chosen }, h(V.Combobox, { options: opts, defaultValue: 3 }))),
+      h(Cell, { label: L[4] }, h(V.FormField, { label: T.client, required: true, error: T.err }, h(V.Combobox, { options: opts, invalid: true, placeholder: T.ph }))),
+      h(Cell, { label: L[5] }, h(V.FormField, { label: T.dis }, h(V.Combobox, { options: opts, disabled: true, placeholder: T.ph }))),
+      h(Cell, { label: L[6] }, h(V.FormField, { label: T.load }, h(V.Combobox, { options: opts, loading: true, filter: false, onQueryChange: noop, defaultQuery: "Io", placeholder: T.ph })))));
 }
-mount(/* @__PURE__ */ React.createElement(Demo, null));
+mount(h(Frames, { Board }));
+
 </script>
 </body>
 </html>

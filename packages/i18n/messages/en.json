@@ -3,6 +3,57 @@
     "ok": "OK",
     "items": "{count, plural, one {# item} other {# items}}"
   },
+  "portal": {
+    "eyebrow": "Portal · for your clients",
+    "title": "Your business page in Portal",
+    "description": "Clients find you in Portal and book appointments there. From here you control what they see.",
+    "memberNote": "The page can be changed by the owner, admins and the Portal app manager.",
+    "manage": "Manage page",
+    "finish": "Finish page",
+    "preview": "See how it looks in Portal",
+    "previewTab": "(opens in a new tab)",
+    "statusPublished": "Published",
+    "statusHidden": "Hidden",
+    "statusDraft": "Not published yet"
+  },
+  "documents": {
+    "lastOpened": "Last opened: {document} · {when}"
+  },
+  "invite": {
+    "fromLabel": "Invitation from {name}",
+    "title": "Join {afacere}'s team",
+    "roleDesc": "Your role: {role}. You'll have access to:",
+    "nameField": "Full name",
+    "emailLabel": "Email",
+    "emailNote": "This is the address your invitation was sent to.",
+    "passwordField": "New password",
+    "reqLength": "At least 10 characters",
+    "reqDigit": "At least one digit",
+    "reqUpper": "At least one uppercase letter",
+    "termsLabel": "I accept the Terms and Privacy Policy",
+    "termsDesc": "You can read them anytime in Settings.",
+    "accept": "Accept invitation",
+    "expiry": "Invitation valid until {data}.",
+    "expiredTitle": "Invitation expired",
+    "expiredBody": "Invitations are valid for 7 days. Request a new one: we'll forward the request to {name} and you'll receive the new link by email.",
+    "requestNew": "Request a new invitation"
+  },
+  "usageMeter": {
+    "unlimited": "Unlimited",
+    "usedOf": "{used} of {limit}",
+    "left": "{n} remaining",
+    "nearLimit": "Approaching your subscription limit",
+    "atLimit": "You've reached your subscription limit",
+    "atLimitHint": "Nothing you already have will be lost. To add more, buy an add-on or request another subscription.",
+    "upgrade": "Request another subscription",
+    "buyMore": "Buy add-on",
+    "notifyOwner": "Notify owner",
+    "onlyOwnerBuys": "Add-ons can only be purchased by {who} (owner)."
+  },
+  "toast": {
+    "undo": "Undo",
+    "close": "Close"
+  },
   "email": {
     "common": {
       "greeting": "Hi {name},",
@@ -97,5 +148,11 @@
         "closed": "The support session is closed."
       }
     }
+  },
+  "auth": {
+    "line1": "Your business.",
+    "line2": "All in one place.",
+    "founderProduct": "Control Center",
+    "founderTagline": "The Ventora team's internal tool"
   }
 }

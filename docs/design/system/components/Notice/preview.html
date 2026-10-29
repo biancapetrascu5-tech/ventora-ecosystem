@@ -1,4 +1,4 @@
-<!-- @dsCard group="Feedback" height=360 -->
+<!-- @dsCard group="Feedback" height=1390 width=1200 -->
 <!doctype html>
 <html lang="ro">
 <head><meta charset="utf-8"><title>Notice — Ventora</title>
@@ -250,6 +250,16 @@ html,body{min-height:100%}
 .fxframe .caption{color:var(--ink-muted)}
 @container (max-width:420px){.fxlang{grid-template-columns:32px minmax(0,1fr) auto}.fxlang .v-iconbtn{display:none}}
 
+/* c3: Light/Dark and DE/IT frames */
+.c3wrap{display:flex;flex-direction:column;min-width:0}
+.c3sec{display:flex;flex-direction:column;gap:var(--space-3);min-width:0}
+.c3h{margin:0;color:var(--ink)}
+.c3pair{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(360px,100%),1fr));gap:var(--space-4);align-items:start}
+.c3stack{display:flex;flex-direction:column;gap:var(--space-4);min-width:0}
+.c3f{display:flex;flex-direction:column;gap:var(--space-3);padding:var(--space-4);border:var(--border-width) solid var(--line);border-radius:var(--radius-md);background:var(--canvas);color:var(--ink);min-width:0;box-sizing:border-box}
+.c3lab{color:var(--ink-muted);margin:0}
+.c3kv{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:var(--space-2) var(--space-4);align-items:center}
+.c3ib{display:flex;align-items:center;gap:var(--space-3);min-width:0}
 </style>
 </head>
 <body>
@@ -263,9 +273,32 @@ const FR = ({ children }) => /* @__PURE__ */ React.createElement(V.LocaleProvide
 const IT = ({ children }) => /* @__PURE__ */ React.createElement(V.LocaleProvider, { locale: "it" }, children);
 const mount = (el) => ReactDOM.createRoot(document.getElementById("root")).render(/* @__PURE__ */ React.createElement(V.LocaleProvider, { locale: "ro" }, el));
 function Demo() {
-  return /* @__PURE__ */ React.createElement("div", { className: "d g2" }, /* @__PURE__ */ React.createElement(V.Notice, { tone: "danger", title: "E-mailul sau parola nu sunt corecte" }, "Verific\u0103-le \u0219i \xEEncearc\u0103 din nou. Dup\u0103 5 \xEEncerc\u0103ri \xEE\u021Bi trimitem un link de resetare."), /* @__PURE__ */ React.createElement(V.Notice, { tone: "attention", title: "Invita\u021Bia a expirat", actions: /* @__PURE__ */ React.createElement(V.Button, { size: "sm", variant: "secondary" }, "Cere o invita\u021Bie nou\u0103") }, "Invita\u021Biile sunt valabile 7 zile. Bianca Petra\u0219cu \xEE\u021Bi poate trimite una nou\u0103."), /* @__PURE__ */ React.createElement(V.Notice, { tone: "done", title: "Parola a fost schimbat\u0103" }, "Te-am deconectat de pe celelalte dispozitive."), /* @__PURE__ */ React.createElement(V.Notice, { title: "Planul se re\xEEnnoie\u0219te pe 1 noiembrie" }, "Factura ajunge pe e-mail cu 3 zile \xEEnainte."), /* @__PURE__ */ React.createElement(DE, null, /* @__PURE__ */ React.createElement(V.Notice, { tone: "attention", title: "Die Einladung ist abgelaufen" }, "Einladungen sind 7 Tage g\xFCltig. Bitten Sie um eine neue.")));
+  return /* @__PURE__ */ React.createElement("div", { className: "d g2" }, /* @__PURE__ */ React.createElement(V.Notice, { tone: "danger", title: "E-mailul sau parola nu sunt corecte" }, "Verific\u0103-le \u0219i \xEEncearc\u0103 din nou. Dup\u0103 5 \xEEncerc\u0103ri \xEE\u021Bi trimitem un link de resetare."), /* @__PURE__ */ React.createElement(V.Notice, { tone: "attention", title: "Invita\u021Bia a expirat", actions: /* @__PURE__ */ React.createElement(V.Button, { size: "sm", variant: "secondary" }, "Cere o invita\u021Bie nou\u0103") }, "Invita\u021Biile sunt valabile 7 zile. Bianca Petra\u0219cu \xEE\u021Bi poate trimite una nou\u0103."), /* @__PURE__ */ React.createElement(V.Notice, { tone: "done", title: "Parola a fost schimbat\u0103" }, "Te-am deconectat de pe celelalte dispozitive."), /* @__PURE__ */ React.createElement(V.Notice, { title: "Abonamentul se re\xEEnnoie\u0219te pe 1 noiembrie" }, "Factura ajunge pe e-mail cu 3 zile \xEEnainte."), /* @__PURE__ */ React.createElement(DE, null, /* @__PURE__ */ React.createElement(V.Notice, { tone: "attention", title: "Die Einladung ist abgelaufen" }, "Einladungen sind 7 Tage g\xFCltig. Bitten Sie um eine neue.")));
 }
-mount(/* @__PURE__ */ React.createElement(Demo, null));
+const C3_ORIG = /* @__PURE__ */ React.createElement(Demo, null);
+const h = React.createElement;
+const C3Frame = ({ th, label, children, style }) => h("div", { className: "c3f", "data-theme": th, style }, h("p", { className: "caption c3lab" }, label), children);
+const C3Sec = ({ title, stack, children }) => h("div", { className: "c3sec" }, h("p", { className: "subheading c3h" }, title), h("div", { className: stack ? "c3stack" : "c3pair" }, children));
+const C3Themes = ({ render, stack, style }) => h(C3Sec, { title: "Light și Dark", stack }, h(C3Frame, { th: "light", label: "Light", style }, render("light")), h(C3Frame, { th: "dark", label: "Dark", style }, render("dark")));
+const C3Langs = ({ de, it, stack, style, itTheme }) => h(C3Sec, { title: "Germană și italiană — etichete mai lungi", stack }, h(V.LocaleProvider, { locale: "de" }, h(C3Frame, { th: "light", label: "Deutsch (de)", style }, de)), h(V.LocaleProvider, { locale: "it" }, h(C3Frame, { th: itTheme || "light", label: itTheme === "dark" ? "Italiano (it) \xB7 Dark" : "Italiano (it)", style }, it)));
+const NT = {
+  ro: { d: ["E-mailul sau parola nu sunt corecte", "Verifică-le și \xEEncearcă din nou. După 5 \xEEncercări \xEEți trimitem un link de resetare."], a: ["Invitația a expirat", "Invitațiile sunt valabile 7 zile. Bianca Petrașcu \xEEți poate trimite una nouă.", "Cere o invitație nouă"], ok: ["Parola a fost schimbată", "Te-am deconectat de pe celelalte dispozitive."], n: ["Abonamentul se re\xEEnnoiește pe 1 noiembrie", "Factura ajunge pe e-mail cu 3 zile \xEEnainte."], i: ["Mentenanță programată \xEEn noaptea de s\xE2mbătă", "\xCEntre 02:00 și 03:00 programările online sunt oprite c\xE2teva minute."] },
+  de: { d: ["E-Mail-Adresse oder Passwort ist nicht korrekt", "Bitte pr\xFCfen Sie beides und versuchen Sie es erneut. Nach 5 Versuchen senden wir Ihnen einen Link zum Zur\xFCcksetzen."], a: ["Die Einladung ist abgelaufen", "Einladungen sind 7 Tage g\xFCltig. Bianca Petrașcu kann Ihnen eine neue Einladung senden.", "Neue Einladung anfragen"], ok: ["Ihr Passwort ist ge\xE4ndert", "Wir haben Sie auf allen anderen Ger\xE4ten abgemeldet."], n: ["Ihr Abonnement verl\xE4ngert sich am 1. November", "Die Rechnung kommt 3 Tage vorher per E-Mail."], i: ["Geplante Wartungsarbeiten in der Nacht auf Sonntag", "Zwischen 02:00 und 03:00 Uhr sind Online-Buchungen f\xFCr einige Minuten nicht m\xF6glich."] },
+  it: { d: ["L’e-mail o la password non sono corrette", "Le controlli e riprovi. Dopo 5 tentativi Le inviamo un link per reimpostare la password."], a: ["L’invito \xE8 scaduto", "Gli inviti sono validi 7 giorni. Bianca Petrașcu pu\xF2 inviarLe un nuovo invito.", "Richiedi un nuovo invito"], ok: ["La Sua password \xE8 stata cambiata", "Abbiamo chiuso la Sua sessione su tutti gli altri dispositivi."], n: ["Il Suo abbonamento si rinnova il 1\xB0 novembre", "La fattura arriva per e-mail 3 giorni prima."], i: ["Manutenzione programmata nella notte di sabato", "Tra le 02:00 e le 03:00 le prenotazioni online si fermano per qualche minuto."] }
+};
+const NSet = (t) => h("div", { className: "c3stack" },
+  h(V.Notice, { tone: "danger", title: t.d[0] }, t.d[1]),
+  h(V.Notice, { tone: "attention", title: t.a[0], actions: h(V.Button, { size: "sm", variant: "secondary" }, t.a[2]) }, t.a[1]),
+  h(V.Notice, { tone: "done", title: t.ok[0] }, t.ok[1]),
+  h(V.Notice, { title: t.n[0] }, t.n[1]),
+  h(V.Notice, { icon: "wrench", title: t.i[0] }, t.i[1])
+);
+const C3_SECTIONS = [
+  h(C3Themes, { key: "t", render: () => NSet(NT.ro) }),
+  h(C3Langs, { key: "l", de: NSet(NT.de), it: NSet(NT.it) })
+];
+
+mount(h("div", { className: "c3wrap" }, C3_ORIG, h("div", { className: "d" }, ...C3_SECTIONS)));
 </script>
 </body>
 </html>

@@ -1,0 +1,169 @@
+{
+ "name": "Checkbox",
+ "version": "1.0.1",
+ "kind": "component",
+ "group": "Forms",
+ "status": "changed",
+ "description": "An independent yes/no choice, or one of several in a list; supports `indeterminate` for \"select all\" headers.",
+ "exports": [
+  "Checkbox"
+ ],
+ "props": [
+  {
+   "name": "label",
+   "type": "ReactNode",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "description",
+   "type": "ReactNode",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "checked",
+   "type": "boolean",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "defaultChecked",
+   "type": "boolean",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "indeterminate",
+   "type": "boolean",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "onChange",
+   "type": "(checked: boolean) => void",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "invalid",
+   "type": "boolean",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "state",
+   "type": "ForcedState",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "value",
+   "type": "any",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "defaultValue",
+   "type": "any",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "placeholder",
+   "type": "string",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "disabled",
+   "type": "boolean",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "readOnly",
+   "type": "boolean",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "name",
+   "type": "string",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "type",
+   "type": "string",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "autoComplete",
+   "type": "string",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "inputMode",
+   "type": "string",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "maxLength",
+   "type": "number",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "className",
+   "type": "string",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "id",
+   "type": "string",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "style",
+   "type": "any",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "title",
+   "type": "string",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "role",
+   "type": "string",
+   "required": false,
+   "note": ""
+  }
+ ],
+ "events": [
+  "onChange"
+ ],
+ "states": [
+  "default",
+  "checked",
+  "with-description",
+  "hover",
+  "focus",
+  "pressed",
+  "indeterminate",
+  "invalid",
+  "disabled",
+  "disabled-checked"
+ ],
+ "notes": "",
+ "readme": "components/Checkbox/README.md",
+ "preview": "components/Checkbox/preview.html"
+}

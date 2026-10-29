@@ -1,6 +1,6 @@
 # BookingSettings
 
-Booking — app settings: opening hours per day (toggle + time range), booking rules (notice, free cancellation, buffer, confirmation mode), automatic reminders with their SMS usage and the owner's "Cumpără SMS-uri în plus".
+EasyBook — app settings: opening hours per day (toggle + time range), booking rules (notice, free cancellation, buffer, confirmation mode), automatic reminders with their SMS usage and the owner's "Cumpără SMS-uri în plus".
 
 Shown at 1280 (desktop), 820 (tablet portrait) and 390 (phone), in light and dark, built only from the system's components.
 

@@ -1,0 +1,54 @@
+{
+ "name": "LanguageSwitcher",
+ "version": "1.0.1",
+ "kind": "component",
+ "group": "Preferences",
+ "status": "changed",
+ "description": "Choose the interface language; each language is named in itself (Română, English, Français, Español, Deutsch).",
+ "exports": [
+  "LanguageSwitcher"
+ ],
+ "props": [
+  {
+   "name": "value",
+   "type": "Locale",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "onChange",
+   "type": "(code: Locale) => void",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "variant",
+   "type": "\"button\" | \"icon\"",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "placement",
+   "type": "string",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "defaultOpen",
+   "type": "boolean",
+   "required": false,
+   "note": ""
+  }
+ ],
+ "events": [
+  "onChange"
+ ],
+ "states": [
+  "closed",
+  "open",
+  "icon-variant"
+ ],
+ "notes": "",
+ "readme": "components/LanguageSwitcher/README.md",
+ "preview": "components/LanguageSwitcher/preview.html"
+}

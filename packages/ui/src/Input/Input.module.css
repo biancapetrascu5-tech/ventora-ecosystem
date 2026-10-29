@@ -1,0 +1,140 @@
+/* .v-control din bundle.css (comun cu Textarea/Select în design) */
+.control {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  height: var(--control-md);
+  padding: 0 var(--space-3);
+  border-radius: var(--radius-sm);
+  background: var(--sheet);
+  border: var(--border-width) solid var(--control-border);
+  color: var(--ink);
+  text-align: start;
+  font-family: inherit;
+  transition:
+    background-color var(--duration-instant) var(--ease-standard),
+    border-color var(--duration-instant) var(--ease-standard),
+    color var(--duration-instant) var(--ease-standard),
+    box-shadow var(--duration-fast) var(--ease-standard);
+}
+.sm {
+  height: var(--control-sm);
+  padding: 0 var(--space-2);
+}
+.lg {
+  height: var(--control-lg);
+}
+.control:hover,
+.control.isHover {
+  border-color: var(--control-border-hover);
+}
+.control:focus-within,
+.control.isFocus {
+  outline: var(--focus-ring-width) solid var(--focus-ring);
+  outline-offset: var(--focus-ring-offset);
+  border-color: var(--control-border-hover);
+}
+.isError {
+  border-color: var(--danger);
+  box-shadow: inset 0 0 0 var(--border-width) var(--danger);
+}
+.isDisabled {
+  background: var(--sunken);
+  border-color: var(--line);
+  color: var(--ink-disabled);
+  cursor: not-allowed;
+}
+.isReadonly {
+  background: var(--sunken);
+  border-color: var(--line);
+}
+
+.input {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  border: 0;
+  outline: none;
+  background: transparent;
+  color: inherit;
+  padding: 0;
+  margin: 0;
+  font-family: inherit;
+}
+.input:focus-visible {
+  outline: none;
+}
+.input::placeholder {
+  color: var(--ink-muted);
+  opacity: 1;
+}
+.input:disabled {
+  cursor: not-allowed;
+  color: var(--ink-disabled);
+}
+.input:disabled::placeholder {
+  color: var(--ink-disabled);
+}
+
+.icon {
+  color: var(--ink-muted);
+}
+.isDisabled .icon {
+  color: var(--ink-disabled);
+}
+.affix {
+  color: var(--ink-muted);
+  white-space: nowrap;
+}
+.btn {
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: var(--space-6);
+  height: var(--space-6);
+  margin-right: calc(var(--space-1) * -1);
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-xs);
+  background: transparent;
+  color: var(--ink-muted);
+  cursor: pointer;
+}
+.btn:hover {
+  background: var(--state-hover);
+  color: var(--ink);
+}
+
+.spinner {
+  display: inline-flex;
+  flex: none;
+  color: currentColor;
+  animation: spin 0.9s linear infinite;
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .spinner {
+    animation-duration: 0.01ms;
+    animation-iteration-count: 1;
+  }
+}
+
+@media (pointer: coarse), (max-width: 767px) {
+  .control {
+    min-height: var(--touch-target);
+  }
+  .btn {
+    width: var(--touch-target);
+    height: var(--touch-target);
+    margin-right: calc(var(--space-3) * -1);
+  }
+}

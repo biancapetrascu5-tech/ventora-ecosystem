@@ -6,6 +6,10 @@
       "dependsOn": ["^build"],
       "outputs": [".next/**", "!.next/cache/**", "dist/**"]
     },
+    "@ventora/tokens#build": {
+      "dependsOn": [],
+      "outputs": ["business/**", "portal/**", "network/**"]
+    },
     "dev": {
       "cache": false,
       "persistent": true

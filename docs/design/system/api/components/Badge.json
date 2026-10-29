@@ -1,0 +1,62 @@
+{
+ "name": "Badge",
+ "version": "1.0.1",
+ "kind": "component",
+ "group": "Status",
+ "status": "changed",
+ "description": "Counts and very short labels: unread counts, \"Nou\", plan tier.",
+ "exports": [
+  "Badge"
+ ],
+ "props": [
+  {
+   "name": "tone",
+   "type": "\"primary\" | \"neutral\" | \"attention\"",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "count",
+   "type": "number",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "max",
+   "type": "number",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "dot",
+   "type": "boolean",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "label",
+   "type": "string",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "children",
+   "type": "ReactNode",
+   "required": false,
+   "note": ""
+  }
+ ],
+ "events": [],
+ "states": [
+  "countAttention",
+  "countCapped",
+  "countNeutral",
+  "countPrimary",
+  "label",
+  "labelPrimary",
+  "dot"
+ ],
+ "notes": "",
+ "readme": "components/Badge/README.md",
+ "preview": "components/Badge/preview.html"
+}

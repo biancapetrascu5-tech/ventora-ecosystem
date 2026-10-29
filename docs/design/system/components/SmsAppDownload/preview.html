@@ -1,0 +1,681 @@
+<!-- @dsCard group="Ecrane Booking" height=7290 width=2620 page -->
+<!doctype html>
+<html lang="ro">
+<head><meta charset="utf-8"><title>SmsAppDownload — Ventora</title>
+<style>
+html,body{min-height:100%}
+.d{display:flex;flex-direction:column;gap:var(--space-4);padding:var(--space-4);box-sizing:border-box}
+.d0{display:flex;flex-direction:column;gap:var(--space-4);min-width:0}
+.r{display:flex;flex-wrap:wrap;gap:var(--space-3);align-items:center}
+.l{color:var(--ink-muted);width:calc(var(--space-16) + var(--space-6));flex:none}
+.g2{display:grid;grid-template-columns:repeat(auto-fit,minmax(var(--search-width),1fr));gap:var(--space-4) var(--space-6);align-items:start}
+.frame{border:var(--border-width) solid var(--line);border-radius:var(--radius-md);background:var(--sheet);box-sizing:border-box}
+.phone{width:390px;height:600px;flex:none;border:var(--border-width) solid var(--line-strong);border-radius:var(--radius-xl);overflow:hidden;box-sizing:border-box}
+.tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(var(--app-tile-width),1fr));gap:var(--space-4)}
+.icons{display:grid;grid-template-columns:repeat(auto-fill,minmax(calc(var(--app-tile-width) - var(--space-12)),1fr));gap:var(--space-2)}
+.ic{display:flex;align-items:center;gap:var(--space-2);color:var(--ink);padding:var(--space-1);min-width:0}
+.ic .caption{color:var(--ink-muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:0}
+.panel{display:flex;flex-direction:column;gap:var(--space-3);padding:var(--space-6);background:var(--sheet);color:var(--ink)}
+.lab{color:var(--ink-muted);margin-top:var(--space-2)}
+.fam{display:grid;grid-template-columns:repeat(5,1fr);gap:var(--space-4) var(--space-2)}
+.famcell,.sz,.papp{display:flex;flex-direction:column;align-items:center;gap:var(--space-1);color:var(--ink-secondary)}
+.gcell{display:flex;flex-direction:column;align-items:center;gap:var(--space-2);color:var(--ink-secondary)}
+.gwrap{position:relative;width:240px;height:240px}
+.gover{position:absolute;inset:0}
+.gwrap--sm{width:64px;height:64px;display:inline-block}
+.gwrap--sm .key{stroke-width:.5}
+.gl{stroke:var(--attention);stroke-width:.06;opacity:.55}
+.gl--major{stroke-width:.12;opacity:.9}
+.key{fill:none;stroke:var(--done);stroke-width:.18}
+.key--plate{stroke:var(--attention);stroke-dasharray:.6 .4}
+.key--diag{stroke-dasharray:.5 .5}
+.rules{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--space-6);color:var(--ink)}
+.rules .body-small{color:var(--ink-muted);margin-top:var(--space-1)}
+.ctx{display:flex;flex-direction:column;background:var(--canvas);color:var(--ink);padding:var(--space-4);gap:var(--space-4)}
+.ctxrow{display:flex;gap:var(--space-4);align-items:flex-start}
+.launch{flex:1;min-width:0;background:var(--canvas);padding:var(--space-4) var(--space-6);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg)}
+.tiles3{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--space-3)}
+.spinebox{height:250px;display:flex;border:var(--border-width) solid var(--line);border-radius:var(--radius-lg);overflow:hidden;background:var(--canvas)}
+.phone2{width:300px;border:var(--border-width) solid var(--line-strong);border-radius:var(--radius-xl);background:var(--canvas);padding-bottom:var(--space-4)}
+.pgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--space-4) var(--space-1);padding:0 var(--space-3)}
+.browser{display:flex;gap:var(--space-1);background:var(--sunken);padding:var(--space-2) var(--space-2) 0;border-radius:var(--radius-md) var(--radius-md) 0 0;border:var(--border-width) solid var(--line)}
+.btab{display:inline-flex;align-items:center;gap:var(--space-2);padding:var(--space-2) var(--space-3);border-radius:var(--radius-sm) var(--radius-sm) 0 0;color:var(--ink-secondary);min-width:160px}
+.btab.on{background:var(--sheet);color:var(--ink)}
+.muted{color:var(--ink-muted)}.center{text-align:center}
+.scr{display:flex;flex-direction:column;gap:var(--space-3);padding:var(--space-6);background:var(--sheet);color:var(--ink)}
+.scr-row{display:flex;gap:var(--space-6);align-items:flex-start;margin-top:var(--space-3)}
+.scr-lab{color:var(--ink-muted);margin-bottom:var(--space-2)}
+.scr-d,.scr-t,.scr-m{position:relative;overflow:hidden;border:var(--border-width) solid var(--line-strong);background:var(--canvas);color:var(--ink);box-sizing:border-box}
+.scr-d{width:1280px;border-radius:var(--radius-lg)}
+.scr-m{width:390px;border-radius:var(--radius-xl)}
+.scr-t{width:820px;border-radius:var(--radius-xl)}
+.wrap.tablet .tiles4{grid-template-columns:repeat(3,1fr)}
+.wrap.tablet{padding:var(--space-6) var(--space-5)}
+.sup.tablet{grid-template-columns:1fr}
+.paymethod{display:flex;flex-direction:column;gap:var(--space-2);margin-top:var(--space-4);padding-top:var(--space-4);border-top:var(--border-width) solid var(--line);max-width:480px}
+.modal-demo{position:absolute;inset:0;background:var(--scrim);display:flex;align-items:center;justify-content:center;padding:var(--space-6);z-index:var(--z-overlay)}
+.modal-demo.mobile{align-items:flex-end;padding:0}
+.modal-demo .v-dialog{max-height:none}
+.dlggrid{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--space-6);align-items:start}
+.dlggrid .v-dialog{width:auto}
+.today{display:flex;flex-direction:column;gap:var(--space-6)}
+.today.mobile{gap:var(--space-4)}.today.mobile .greet{padding:0 var(--space-4)}
+.today-grid{display:grid;grid-template-columns:minmax(0,2fr) minmax(320px,1fr);gap:var(--space-6);align-items:start}
+.today.tablet .today-grid,.today.mobile .today-grid{grid-template-columns:1fr}
+.today.tablet .today-side,.today.mobile .today-side{order:-1}
+.today-main{display:flex;flex-direction:column;gap:var(--space-6);min-width:0}
+.today.mobile .sec,.today.mobile .sechead{padding:0 var(--space-4)}
+.today.mobile .sheetlike,.today.mobile .nowcard{border-radius:0;border-left:0;border-right:0}
+.nowcards{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:var(--space-3)}
+.nowcard{display:flex;flex-direction:column;gap:var(--space-3);padding:var(--space-4);background:var(--sheet);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg)}
+.sechead{display:flex;justify-content:space-between;align-items:center;gap:var(--space-3);margin-bottom:var(--space-3);flex-wrap:wrap}
+.sec .v-badge{vertical-align:middle;margin-left:var(--space-1)}
+.reslist{list-style:none;margin:0 0 var(--space-3);padding:0;display:flex;flex-direction:column}
+.reslist li{display:flex;flex-direction:column;gap:2px;padding:var(--space-3) 0;border-bottom:var(--border-width) solid var(--line)}
+.reslist li:last-child{border-bottom:0}
+.stth{background:var(--canvas);color:var(--ink);padding:var(--space-6);border-radius:var(--radius-lg)}
+.stgrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--space-5) var(--space-4);align-items:start}
+@media (max-width:1100px){.stgrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:640px){.stgrid{grid-template-columns:minmax(0,1fr)}.stgrid>.stc{grid-column:auto!important}}
+.stc{display:flex;flex-direction:column;gap:var(--space-2);min-width:0}
+.stc-box{background:var(--sheet);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg);padding:var(--space-4);min-width:0}
+.stc-box .v-dialog{width:100%;box-shadow:none}
+.stc-box .v-toast{width:100%;box-sizing:border-box}
+.slotcol{display:flex;flex-direction:column;gap:var(--space-3);padding:var(--space-4);background:var(--canvas);border-radius:var(--radius-lg);color:var(--ink)}
+.recogrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--space-5);align-items:start}
+.toastdemo{position:fixed;right:var(--space-6);bottom:var(--space-6);width:var(--panel-width);z-index:var(--z-toast)}
+.appdet{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:var(--space-6);align-items:start}
+.wrap.tablet .appdet,.wrap.mobile .appdet{grid-template-columns:1fr}
+.appdet-main,.appdet-side{display:flex;flex-direction:column;gap:var(--space-5);padding:var(--space-6)}
+.wrap.mobile .appdet-main,.wrap.mobile .appdet-side{padding:var(--space-4)}
+.appdet-side{gap:var(--space-3)}
+.appdet-why{padding:var(--space-4);background:var(--sunken);border-radius:var(--radius-md)}
+.appdet-why .body{margin-top:var(--space-1)}
+.appdet-list{list-style:none;margin:var(--space-2) 0 0;padding:0;display:flex;flex-direction:column;gap:var(--space-2)}
+.appdet-list li{display:flex;gap:var(--space-2);align-items:flex-start}
+.appdet-list svg{flex:none;margin-top:2px;color:var(--ink-muted)}
+.seclist{display:flex;flex-direction:column;background:var(--sheet);border-top:var(--border-width) solid var(--line);border-bottom:var(--border-width) solid var(--line)}
+.secitem{display:flex;align-items:center;gap:var(--space-3);min-height:var(--touch-target);padding:var(--space-3) var(--space-4);background:none;border:0;border-top:var(--border-width) solid var(--line);color:var(--ink);text-align:left;font:inherit;cursor:pointer}
+.secitem .biz-text{flex:1}
+.inv-email{display:flex;flex-direction:column;gap:2px}
+.daylinks .v-link{font-weight:500}
+.rows2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--space-2)}
+.wrap.tablet .rows2{grid-template-columns:1fr}
+.unsaved{position:absolute;left:0;right:0;bottom:0;display:flex;align-items:center;justify-content:space-between;gap:var(--space-3);padding:var(--space-3) var(--space-6);background:var(--raised);border-top:var(--border-width) solid var(--line-strong);box-shadow:var(--shadow-2);z-index:var(--z-sticky);flex-wrap:wrap}
+.scr-d .unsaved{left:var(--spine-width)}
+.scr-t .unsaved{left:var(--spine-width-collapsed)}
+.scr-m .unsaved{bottom:var(--bottomnav-height);padding:var(--space-3) var(--space-4)}
+.axb{display:flex;flex-direction:column;gap:var(--space-6);min-width:0}
+.axb.mobile{gap:var(--space-4)}
+.axsplit{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:var(--space-6);align-items:start}
+.axb.tablet .axsplit,.axb.mobile .axsplit{grid-template-columns:1fr}
+.axb.tablet .axside,.axb.mobile .axside{order:-1}
+.axstack{display:flex;flex-direction:column;gap:var(--space-6);min-width:0}
+.axstack .axside{order:-1}
+.axb .axside.axafter{order:0}
+.logosets{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(420px,100%),1fr));gap:var(--space-4)}
+.logoset{display:flex;flex-direction:column;gap:var(--space-4);padding:var(--space-6);min-width:0;background:var(--sheet);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg);color:var(--ink)}
+.favtab{display:inline-flex;align-items:center;gap:var(--space-2);padding:var(--space-2) var(--space-3);border-radius:var(--radius-sm) var(--radius-sm) 0 0;background:var(--canvas);color:var(--ink-secondary);border:var(--border-width) solid var(--line);border-bottom:0}
+.axb.mobile .axside.axafter{padding:0 var(--space-4)}
+.axb.mobile .sechead,.axb.mobile>div>h2.heading{padding:0 var(--space-4)}
+.axb.mobile .fxplans{padding:0 var(--space-4)}
+.axb.mobile>.v-notice{margin:0 var(--space-4)}
+.axside{display:flex;flex-direction:column;gap:var(--space-3);min-width:0}
+.axside .v-badge{vertical-align:middle;margin-left:var(--space-1)}
+.axb.mobile .axside .heading{padding:0}
+.axcharts{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:var(--space-4)}
+.axb.mobile .axcharts{grid-template-columns:1fr}
+.axb.mobile .v-stats{grid-template-columns:1fr 1fr}
+.stockcell{display:grid;grid-template-columns:auto;gap:2px;min-width:120px}
+.stockbar{position:relative;display:block;height:4px;border-radius:var(--radius-full);background:var(--selected);max-width:140px}
+.stockbar>span{position:absolute;left:0;top:0;bottom:0;border-radius:inherit;background:var(--ink-secondary)}
+.stockbar.is-attention>span{background:var(--attention-mark)}
+.stockbar.is-danger>span{background:var(--danger)}
+.stockbar>i{position:absolute;top:-3px;bottom:-3px;width:2px;margin-left:-1px;background:var(--ink-muted);border-radius:1px}
+.glo{background:var(--sheet);color:var(--ink);gap:var(--space-6);padding:var(--space-6)}
+.glo-lead{max-width:760px;margin-top:var(--space-2)}
+.glo-rules{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:var(--space-4) var(--space-6)}
+.glo-rules .body-small{margin-top:var(--space-1)}
+.glo-sec{display:flex;flex-direction:column;gap:var(--space-2)}
+.glo-t{width:100%;border-collapse:collapse;table-layout:fixed}
+.glo-t th{text-align:left;color:var(--ink-muted);padding:var(--space-2) var(--space-3);border-bottom:var(--border-width) solid var(--line-strong)}
+.glo-t th:last-child{width:30%}
+.glo-t td{padding:var(--space-2) var(--space-3);border-bottom:var(--border-width) solid var(--line);vertical-align:top;overflow-wrap:anywhere}
+.glo-dec{display:inline-flex;align-items:center;gap:var(--space-1);margin-left:var(--space-2);padding:0 var(--space-2);border-radius:var(--radius-full);background:var(--attention-soft);color:var(--attention-ink);white-space:nowrap}
+.calbar{display:flex;justify-content:space-between;align-items:center;gap:var(--space-3);flex-wrap:wrap;margin-bottom:var(--space-3)}
+.calbar-date{margin-left:var(--space-2);white-space:nowrap}
+.calwrap.mobile{padding:0 var(--space-4)}
+.staffpick{margin-bottom:var(--space-3);max-width:var(--search-width)}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:var(--space-2) var(--space-4);margin:0}
+.kv dt{color:var(--ink-muted);padding-top:var(--space-0-5)}.kv dd{margin:0;color:var(--ink)}
+.hist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:var(--space-2);color:var(--ink-secondary)}
+.hist .muted{margin-right:var(--space-2)}
+.newgrid{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:var(--space-6);align-items:start}
+.newgrid.tablet,.newgrid.mobile{grid-template-columns:1fr}
+.newgrid.mobile{padding-bottom:var(--space-16)}
+.sumcard{position:sticky;top:0;display:flex;flex-direction:column;gap:var(--space-3);padding:var(--space-5);background:var(--sheet);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg)}
+.newgrid.mobile .sumcard{border-radius:0;border-left:0;border-right:0}
+.sumtotal{display:flex;justify-content:space-between;align-items:baseline;padding-top:var(--space-3);border-top:var(--border-width) solid var(--line)}
+.stickybar{position:absolute;left:0;right:0;bottom:var(--bottomnav-height);display:flex;gap:var(--space-2);justify-content:flex-end;padding:var(--space-3) var(--space-4);background:var(--sheet);border-top:var(--border-width) solid var(--line);z-index:var(--z-sticky)}
+.stickybar .v-btn--primary{flex:1}
+.hours{display:flex;flex-direction:column}
+.hrow{display:flex;align-items:center;justify-content:space-between;gap:var(--space-4);padding:var(--space-2) 0;border-bottom:var(--border-width) solid var(--line);min-height:var(--touch-target);flex-wrap:wrap}
+.hrow .v-toggle{min-width:160px}
+.hrange{display:inline-flex;align-items:center;gap:var(--space-2)}
+.hrange .v-datepicker{width:120px}
+.auth{min-height:100%;display:flex;flex-direction:column;background:var(--canvas);color:var(--ink)}
+.auth-top{display:flex;justify-content:space-between;align-items:center;padding:var(--space-4) var(--space-6)}
+.auth.mobile .auth-top{padding:var(--space-3) var(--space-4)}
+.auth-main{flex:1;display:flex;align-items:flex-start;justify-content:center;padding:var(--space-12) var(--space-4)}
+.auth.mobile .auth-main{padding:var(--space-2) 0 0;align-items:stretch}
+.auth-card{width:400px;background:var(--sheet);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg);padding:var(--space-10);display:flex;flex-direction:column;gap:var(--space-4);box-sizing:border-box}
+.auth-card.wide{width:480px}
+.auth.mobile .auth-card{width:100%;border-radius:0;border-left:0;border-right:0;border-bottom:0;padding:var(--space-6) var(--space-4)}
+.auth-head{display:flex;flex-direction:column;gap:var(--space-1);margin-bottom:var(--space-2)}
+.auth-note{display:flex;gap:var(--space-2);padding-top:var(--space-4);border-top:var(--border-width) solid var(--line);color:var(--ink-muted)}
+.auth-note .v-icon{margin-top:var(--space-0-5)}
+.auth-foot{padding:var(--space-4) var(--space-6);color:var(--ink-muted);text-align:center}
+.auth.mobile .auth-foot{display:none}
+.inv-head{display:flex;gap:var(--space-3);align-items:center}
+.inv-mark{width:var(--space-12);height:var(--space-12);border-radius:var(--radius-md);background:var(--neutral-soft);display:inline-flex;align-items:center;justify-content:center;font-weight:700;color:var(--ink);flex:none;box-shadow:inset 0 0 0 var(--border-width) var(--line-strong)}
+.inv-mark.sm{width:var(--space-10);height:var(--space-10)}
+.inv-role{display:flex;flex-direction:column;gap:var(--space-2);padding:var(--space-3) var(--space-4);background:var(--sunken);border-radius:var(--radius-sm)}
+.inv-app{display:inline-flex;gap:var(--space-1);align-items:center;color:var(--ink-secondary);margin-right:var(--space-2)}
+.reqs{list-style:none;margin:calc(var(--space-2) * -1) 0 0;padding:0;display:flex;flex-direction:column;gap:var(--space-1)}
+.req{display:flex;gap:var(--space-2);align-items:center;color:var(--ink-muted)}.req.ok{color:var(--done-ink)}
+.choose{width:560px;display:flex;flex-direction:column;gap:var(--space-4)}
+.auth.mobile .choose{width:auto;padding:var(--space-4)}
+.biz-list{display:flex;flex-direction:column;background:var(--sheet);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg);overflow:hidden}
+.biz{appearance:none;display:flex;align-items:center;gap:var(--space-3);padding:var(--space-4);border:0;border-bottom:var(--border-width) solid var(--line);background:transparent;color:var(--ink);text-align:start;font-family:inherit;cursor:pointer;min-height:var(--touch-target)}
+.biz:last-child{border-bottom:0}.biz:hover{background:var(--state-hover)}
+.biz-text{flex:1;min-width:0;display:flex;flex-direction:column;gap:var(--space-0-5);align-items:flex-start}
+.frame-rel{position:relative;height:100%}
+.wrap{max-width:1120px;width:100%;margin:0 auto;padding:var(--space-6) var(--space-6) var(--space-10);display:flex;flex-direction:column;gap:var(--space-8);box-sizing:border-box}
+.wrap.mobile{padding:var(--space-4);gap:var(--space-6)}
+.greet{display:flex;flex-direction:column;gap:var(--space-2)}
+.sec{margin-bottom:var(--space-3)}
+.tiles4{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--space-4)}
+.mgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--space-3) var(--space-1)}
+.rows{display:flex;flex-direction:column;background:var(--sheet);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg);overflow:hidden}
+.sheetlike{background:var(--sheet);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg)}
+.g2f{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(260px,100%),1fr));gap:var(--space-4) var(--space-6)}
+.nrow{display:grid;grid-template-columns:1fr repeat(3,var(--control-lg));align-items:center;padding:var(--space-2) 0;border-bottom:var(--border-width) solid var(--line);gap:var(--space-4)}
+.nrow>span:not(:first-child){display:flex;justify-content:center;text-align:center}
+.nhead{color:var(--ink-muted)}
+.secrow{display:flex;align-items:center;justify-content:space-between;gap:var(--space-4);padding:var(--space-3) 0;border-bottom:var(--border-width) solid var(--line);flex-wrap:wrap}
+.appsrow{display:inline-flex;gap:var(--space-1);align-items:center;flex-wrap:wrap}
+.mx-row{display:grid;grid-template-columns:minmax(320px,1.8fr) repeat(4,1fr);align-items:center;padding:var(--space-3) var(--space-6);border-bottom:var(--border-width) solid var(--line);gap:var(--space-2)}
+.mx-head{background:var(--sunken);color:var(--ink-secondary);border-radius:var(--radius-lg) var(--radius-lg) 0 0}
+.mx-c{display:flex;flex-direction:column;align-items:center;text-align:center}
+.mx-app{display:flex;align-items:center;gap:var(--space-3);flex-wrap:wrap}
+.mx-foot{padding:var(--space-4) var(--space-6)}
+.mrow{display:flex;align-items:center;gap:var(--space-3);padding:var(--space-3) var(--space-4);border-bottom:var(--border-width) solid var(--line);color:var(--ink-secondary)}.mrow:last-child{border-bottom:0}
+.plan{display:flex;justify-content:space-between;align-items:center;gap:var(--space-4);flex-wrap:wrap}
+.numeric-inline{font-weight:600;color:var(--ink)}
+.usage-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:var(--space-6)}
+.sup{display:grid;grid-template-columns:1.5fr 1fr;gap:var(--space-6);align-items:start}
+.lframes{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--space-4)}
+.lframe{position:relative;height:220px;border:var(--border-width) solid var(--line-strong);border-radius:var(--radius-lg);overflow:hidden;background:var(--canvas)}
+.lframe-tiles{display:flex;gap:var(--space-3);padding:var(--space-4)}
+.lstage{position:relative;height:240px;border:var(--border-width) solid var(--line-strong);border-radius:var(--radius-lg);overflow:hidden;background:var(--canvas);padding:var(--space-4)}
+.lstage-grid{display:grid;grid-template-columns:repeat(6,96px);gap:var(--space-2)}
+.fxcard{display:flex;flex-direction:column;gap:var(--space-2);padding:var(--space-5)}
+.fxapps{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:var(--space-3) var(--space-4)}
+.fxmail{display:flex;flex-direction:column;gap:var(--space-3);padding:var(--space-5);border:var(--border-width) solid var(--line);border-radius:var(--radius-md);background:var(--canvas);color:var(--ink)}
+.fxmail-btn{align-self:flex-start;padding:var(--space-2) var(--space-4);border-radius:var(--radius-md);background:var(--primary);color:var(--on-primary);font-weight:600}
+.fxplans{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:var(--space-4)}
+.fxplan{display:flex;flex-direction:column;gap:var(--space-3);padding:var(--space-5)}
+.fxlim{margin:0;padding-left:var(--space-5);color:var(--ink-secondary);display:flex;flex-direction:column;gap:var(--space-1)}
+.fxver{width:100%;border-collapse:collapse}
+.fxver th{text-align:left;color:var(--ink-muted);font-weight:500;padding:var(--space-1) 0;border-bottom:var(--border-width) solid var(--line)}
+.fxver td{padding:var(--space-2) 0;border-bottom:var(--border-width) solid var(--line);color:var(--ink)}
+.fxver td .v-pill{margin-left:var(--space-2);vertical-align:middle}
+.fxlimits{display:flex;flex-direction:column}
+.fxlimits-row{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(60px,.6fr) minmax(120px,1fr);gap:var(--space-3);align-items:center;padding:var(--space-2) 0;border-bottom:var(--border-width) solid var(--line);color:var(--ink)}
+.fxlimits-row .v-icon{color:var(--done-ink,var(--ink-secondary));flex:none}
+.fxlimits-head{padding-top:0}
+.fxlink{color:var(--ink);text-decoration:underline;text-underline-offset:2px;font-weight:600;display:inline-flex;align-items:center;min-height:24px;min-width:24px}
+@media (pointer:coarse),(max-width:767px){.fxlink{min-height:44px;min-width:44px}}
+.fxlim-new{display:flex;align-items:center;gap:var(--space-2);min-width:0}
+.fxlim-new .v-control{flex:1 1 80px;min-width:0}
+.fxdelta{display:inline-flex;align-items:center;gap:var(--space-1);color:var(--done-ink);flex:none}
+.fxdelta--down{color:var(--attention-ink)}
+.fxplan .v-btn{align-self:flex-start}
+.fxcost{margin-top:var(--space-4);display:flex;flex-direction:column;gap:var(--space-1);padding:var(--space-4);border-radius:var(--radius-md);background:var(--sunken);color:var(--ink)}
+.fxlangs{display:flex;flex-direction:column}
+.fxlang{display:grid;grid-template-columns:32px minmax(0,1fr) auto auto;gap:var(--space-3);align-items:center;padding:var(--space-2) 0;border-bottom:var(--border-width) solid var(--line);color:var(--ink)}
+.fxlang-text{color:var(--ink-secondary);overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.fxframe{display:flex;flex-direction:column;gap:var(--space-2);padding:var(--space-3);border:var(--border-width) solid var(--line);border-radius:var(--radius-md);background:var(--canvas);color:var(--ink)}
+.fxframe .caption{color:var(--ink-muted)}
+@container (max-width:420px){.fxlang{grid-template-columns:32px minmax(0,1fr) auto}.fxlang .v-iconbtn{display:none}}
+
+/* SMS · Setări */
+.sms-sec{color:var(--ink-secondary);margin:0}
+.sms-np{display:flex;flex-wrap:wrap;align-items:center;gap:var(--space-2) var(--space-3);margin-top:var(--space-3)}
+.sms-np .body-small{flex:1 1 280px}
+.sms-phone{display:flex;gap:var(--space-3);align-items:flex-start;padding-bottom:var(--space-4);border-bottom:var(--border-width) solid var(--line);margin-bottom:var(--space-4)}
+.sms-phone__ic{display:inline-flex;align-items:center;justify-content:center;flex:none;width:var(--control-lg);height:var(--control-lg);border-radius:var(--radius-md);background:var(--neutral-soft);color:var(--ink-secondary)}
+.sms-phone__text{display:flex;flex-direction:column;gap:var(--space-1);min-width:0;flex:1}
+.sms-phone__text p{margin:0}
+.sms-phone__name{display:flex;align-items:center;gap:var(--space-1)}
+.sms-meta{display:flex;flex-wrap:wrap;gap:var(--space-1) var(--space-4);color:var(--ink-secondary)}
+.sms-meta>span{display:inline-flex;align-items:center;gap:var(--space-1)}
+.sms-stats{margin:var(--space-4) 0;grid-template-columns:repeat(4,minmax(0,1fr))}
+.sms-cap p{margin:0}
+.sms-cap{display:flex;flex-direction:column;gap:var(--space-1)}
+.sms-actions{display:flex;flex-wrap:wrap;gap:var(--space-2);margin-top:var(--space-4)}
+.sms-actions.is-col{flex-direction:column}
+.sms-pad{padding:0 var(--space-6) var(--space-6)}
+.v-sheet-section + .sms-pad,.sms-pad{margin-top:var(--space-2)}
+.v-notice{margin-bottom:var(--space-2)}
+.sms-states{display:flex;flex-direction:column;gap:var(--space-4);padding:var(--space-6);background:var(--canvas);color:var(--ink)}
+.sms-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--space-6);align-items:start}
+.sms-grid.mobile{grid-template-columns:repeat(4,390px)}
+.sms-box{display:flex;flex-direction:column;gap:var(--space-2);min-width:0}
+.sms-boxlab{margin:0;color:var(--ink-muted)}
+.sms-boxbody{border:var(--border-width) solid var(--line-strong);border-radius:var(--radius-lg);overflow:hidden;background:var(--canvas)}
+.sms-boxbody > .v-dialog{margin:var(--space-6) auto}
+.sms-langs{display:flex;flex-direction:column;gap:var(--space-4);padding:var(--space-6);background:var(--canvas);color:var(--ink)}
+.sms-langrow{display:flex;gap:var(--space-6);align-items:flex-start}
+.sms-lang{display:flex;flex-direction:column;gap:var(--space-2)}
+.sms-langframe{border:var(--border-width) solid var(--line-strong);border-radius:var(--radius-lg);overflow:hidden;background:var(--canvas)}
+.sms-langframe.t{width:820px}.sms-langframe.m{width:390px}
+.sms-stats.is-mob{grid-template-columns:1fr 1fr}
+.sms-grid.mobile{grid-template-columns:repeat(4,390px)}
+.sms-reco{display:flex;flex-wrap:wrap;align-items:center;gap:var(--space-2) var(--space-3);margin-top:var(--space-3)}
+.sms-check{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:var(--space-3)}
+.sms-check li{display:flex;gap:var(--space-3);align-items:flex-start;color:var(--ink-secondary)}
+.sms-check li>svg,.sms-check li>.v-icon{flex:none;color:var(--ink);margin-top:2px}
+.sms-check .body-strong{color:var(--ink)}
+/* SMS · pagina de descărcare */
+.dl-frame{height:100%;overflow:auto;background:var(--canvas)}
+.dl{min-height:100%;display:flex;flex-direction:column;background:var(--canvas);color:var(--ink)}
+.dl-bar{display:flex;align-items:center;gap:var(--space-3);padding:var(--space-4) var(--space-8);border-bottom:var(--border-width) solid var(--line);background:var(--raised)}
+.dl.mobile .dl-bar{padding:var(--space-3) var(--space-4)}
+.dl-sp{flex:1}
+.dl-main{width:100%;max-width:880px;margin:0 auto;padding:var(--space-10) var(--space-8);box-sizing:border-box;display:flex;flex-direction:column;gap:var(--space-10)}
+.dl.mobile .dl-main{padding:var(--space-6) var(--space-4);gap:var(--space-8)}
+.dl-hero{display:flex;gap:var(--space-8);align-items:flex-start}
+.dl-hero__text{flex:1;min-width:0;display:flex;flex-direction:column;gap:var(--space-4)}
+.dl-hero__text h1,.dl p{margin:0}
+.dl-eyebrow{color:var(--ink-secondary)}
+.dl-lead{color:var(--ink-secondary);font-size:17px;line-height:26px}
+.dl-cta{display:flex;flex-direction:column;align-items:flex-start;gap:var(--space-2)}
+.dl.mobile .dl-cta{align-items:stretch}
+.dl-iph{display:flex;gap:var(--space-2);align-items:flex-start}.dl-iph>svg{flex:none;margin-top:2px}
+.dl-qrbox{flex:none;width:220px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:var(--space-2);padding:var(--space-5);border-radius:var(--radius-lg);background:var(--raised);border:var(--border-width) solid var(--line)}
+.dl-qr{padding:var(--space-2);background:var(--raised);border-radius:var(--radius-md);line-height:0}
+.dl-sec{display:flex;flex-direction:column;gap:var(--space-3)}
+.dl-sec h2{margin:0}
+.dl-steps{list-style:none;margin:var(--space-2) 0 0;padding:0;display:flex;flex-direction:column;gap:var(--space-4)}
+.dl-steps li{display:flex;gap:var(--space-3);align-items:flex-start}
+.dl-num{display:inline-flex;align-items:center;justify-content:center;flex:none;width:28px;height:28px;border-radius:var(--radius-full);background:var(--neutral-soft);color:var(--ink)}
+.dl-auth{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:var(--space-4) var(--space-6)}
+.dl.mobile .dl-auth{grid-template-columns:1fr}
+.dl-auth li{display:flex;gap:var(--space-3);align-items:flex-start;color:var(--ink-secondary)}
+.dl-auth li>svg{flex:none;color:var(--ink);margin-top:2px}
+.dl-brand{display:flex;flex-direction:column;gap:var(--space-2)}
+.dl-help{padding:var(--space-5);border-radius:var(--radius-lg);background:var(--raised);border:var(--border-width) solid var(--line);display:flex;flex-direction:column;gap:var(--space-1)}
+.dl-foot{padding:var(--space-6) var(--space-8);text-align:center}
+.dl-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--space-6);align-items:start}
+.dl-pane{padding:var(--space-5);background:var(--canvas)}
+.dl-pane.m{width:390px;box-sizing:border-box;padding:var(--space-4)}
+.dl-lframe{border:var(--border-width) solid var(--line-strong);border-radius:var(--radius-lg);overflow:hidden}
+.dl-lframe.d{width:1280px}.dl-lframe.m{width:390px}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script>
+const V = window.Ventora;
+const { useState } = React;
+const Row = ({ label, children }) => /* @__PURE__ */ React.createElement("div", { className: "r" }, /* @__PURE__ */ React.createElement("span", { className: "l caption" }, label), children);
+const DE = ({ children }) => /* @__PURE__ */ React.createElement(V.LocaleProvider, { locale: "de" }, children);
+const FR = ({ children }) => /* @__PURE__ */ React.createElement(V.LocaleProvider, { locale: "fr" }, children);
+const IT = ({ children }) => /* @__PURE__ */ React.createElement(V.LocaleProvider, { locale: "it" }, children);
+const mount = (el) => ReactDOM.createRoot(document.getElementById("root")).render(/* @__PURE__ */ React.createElement(V.LocaleProvider, { locale: "ro" }, el));
+const SECTIONS = [
+  { items: [{ id: "azi", label: "Azi", icon: "house" }, { id: "calendar", label: "Calendar", icon: "calendar" }, { id: "programari", label: "Program\u0103ri", icon: "list", badge: 3 }] },
+  { label: "Gestionare", items: [{ id: "clienti", label: "Clien\u021Bi", icon: "users" }, { id: "servicii", label: "Servicii", icon: "boxes" }, { id: "angajati", label: "Angaja\u021Bi", icon: "contact" }] },
+  { label: "Afacere", items: [{ id: "rapoarte", label: "Rapoarte", icon: "chart-column" }, { id: "setari", label: "Set\u0103ri", icon: "settings" }] }
+];
+const SECTIONS_DE = [
+  { items: [{ id: "heute", label: "Heute", icon: "house" }, { id: "kalender", label: "Kalender", icon: "calendar" }, { id: "termine", label: "Termin\xFCbersicht", icon: "list", badge: 3 }] },
+  { label: "Verwaltung", items: [{ id: "kunden", label: "Kundenverwaltung", icon: "users" }, { id: "leistungen", label: "Dienstleistungen", icon: "boxes" }, { id: "mitarbeiter", label: "Mitarbeiterinnen", icon: "contact" }] },
+  { label: "Unternehmen", items: [{ id: "berichte", label: "Auswertungen", icon: "chart-column" }, { id: "einst", label: "Einstellungen", icon: "settings" }] }
+];
+const ORGS = [
+  { id: "aurora", name: "Salon Aurora", role: "Proprietar" },
+  { id: "dentis", name: "Clinica Dentis Sibiu", role: "Recep\u021Bie" },
+  { id: "nord", name: "Agen\u021Bia Nord Studio", role: "Manager de proiect" }
+];
+const NOTIFS = [
+  { id: 1, title: "Programare nou\u0103 de la Ana Popescu", body: "Joi, 29 oct., 14:30 \xB7 Tuns", app: "EasyBook", time: "acum 5 min", person: "Ana Popescu" },
+  { id: 2, title: "Factura #2026-114 e restant\u0103 de 3 zile", body: "Clinica Dentis \xB7 1.250 lei", app: "MoneyDesk", time: "acum 2 ore", icon: "receipt" },
+  { id: 3, title: "Ioana a cerut concediu pe 2\u20136 noiembrie", app: "TeamSpace", time: "ieri", person: "Ioana Pavel", read: true },
+  { id: 4, title: "Exportul clien\u021Bilor e gata", app: "ClientDesk", time: "ieri", icon: "download", read: true }
+];
+const USER = { name: "Bianca Petra\u0219cu", email: "bianca@ventora-hub.com" };
+function Bar({ title, de }) {
+  return /* @__PURE__ */ React.createElement(
+    V.ContextBar,
+    {
+      title,
+      org: /* @__PURE__ */ React.createElement(V.OrgSwitcher, { orgs: de ? [{ id: 1, name: "Zahnarztpraxis Dr. M\xFCller", role: "Empfang" }, { id: 2, name: "Salon Aurora", role: "Inhaberin" }] : ORGS, currentId: de ? 1 : "aurora" }),
+      onSearch: () => {
+      },
+      createItems: [{ label: de ? "Termin" : "Programare", icon: "calendar-check", shortcut: ["N"] }, { label: de ? "Kunde" : "Client", icon: "user-plus" }],
+      notifications: /* @__PURE__ */ React.createElement(V.NotificationsPanel, { items: NOTIFS }),
+      account: /* @__PURE__ */ React.createElement(V.AccountMenu, { user: USER, orgs: ORGS, currentOrgId: "aurora", onCatalog: () => {
+      } })
+    }
+  );
+}
+const SHELL_ROWS = [
+  { id: 1, client: "Ana Popescu", service: "Tuns", when: "09:30", status: ["done", "Confirmat\u0103"] },
+  { id: 2, client: "Andrei Ionescu", service: "Vopsit", when: "11:00", status: ["attention", "\xCEn desf\u0103\u0219urare"] },
+  { id: 3, client: "Cristina Dobre", service: "Tratament facial", when: "13:15", status: ["neutral", "Neconfirmat\u0103"] },
+  { id: 4, client: "Dan Stoica", service: "Tuns", when: "15:00", status: ["done", "Confirmat\u0103"] }
+];
+function BookingShell({ height, active, mobile }) {
+  return /* @__PURE__ */ React.createElement(
+    V.AppShell,
+    {
+      height,
+      spine: /* @__PURE__ */ React.createElement(V.Spine, { app: "booking", sections: SECTIONS, activeId: active, onBackToHub: () => {
+      }, footer: /* @__PURE__ */ React.createElement(V.UsageMeter, { compact: true, label: "Program\u0103ri", used: 312, limit: 1e3 }) }),
+      contextBar: /* @__PURE__ */ React.createElement(Bar, { title: "EasyBook" })
+    },
+    /* @__PURE__ */ React.createElement(V.PageHeader, { title: "Program\u0103ri", description: mobile ? void 0 : "Toate program\u0103rile afacerii, de azi \xEEnainte.", actions: mobile ? void 0 : /* @__PURE__ */ React.createElement(V.SegmentedControl, { label: "Vizualizare", size: "md", defaultValue: "list", options: [{ value: "list", label: "List\u0103", icon: "list" }, { value: "cal", label: "Calendar", icon: "calendar" }] }) }),
+    /* @__PURE__ */ React.createElement(V.DataTable, { columns: [
+      { key: "client", header: "Client", primary: true, sortable: true },
+      { key: "service", header: "Serviciu", secondary: true },
+      { key: "when", header: "Ora", secondary: true },
+      { key: "status", header: "Stare", trailing: true, render: (r) => /* @__PURE__ */ React.createElement(V.StatusPill, { tone: r.status[0] }, r.status[1]) }
+    ], rows: SHELL_ROWS, rowActions: () => [{ label: "Deschide", icon: "external-link" }], pagination: { page: 1, pageSize: 20, total: 4, onPageChange: () => {
+    } } })
+  );
+}
+const HUB_SECTIONS = [
+  { label: "Contul t\u0103u", items: [{ id: "profil", label: "Profil \u0219i preferin\u021Be", short: "Profil", icon: "circle-user" }, { id: "securitate", label: "Securitate", icon: "shield" }] },
+  { label: "Afacerea", items: [{ id: "echipa", label: "Echip\u0103 \u0219i invita\u021Bii", short: "Echip\u0103", icon: "users" }, { id: "roluri", label: "Roluri \u0219i acces", icon: "key-round" }, { id: "abonament", label: "Abonament \u0219i consum", short: "Abonament", icon: "credit-card" }] },
+  { label: "Ajutor", items: [{ id: "suport", label: "Suport", icon: "life-buoy", badge: 1 }] }
+];
+function HubBar({ title, inApp }) {
+  return /* @__PURE__ */ React.createElement(
+    V.ContextBar,
+    {
+      leading: inApp ? null : /* @__PURE__ */ React.createElement("span", { style: { padding: "0 var(--space-2)", display: "inline-flex" } }, /* @__PURE__ */ React.createElement(V.Logo, { size: 32, className: "v-cb-logo--full" }), /* @__PURE__ */ React.createElement(V.Logo, { variant: "mark", size: 32, className: "v-cb-logo--mark" })),
+      title,
+      org: /* @__PURE__ */ React.createElement(V.OrgSwitcher, { orgs: ORGS, currentId: "aurora" }),
+      onSearch: () => {
+      },
+      notifications: /* @__PURE__ */ React.createElement(V.NotificationsPanel, { items: NOTIFS }),
+      account: /* @__PURE__ */ React.createElement(V.AccountMenu, { user: USER, orgs: ORGS, currentOrgId: "aurora", onCatalog: () => {
+      } })
+    }
+  );
+}
+function HubSettings({ active, title, children }) {
+  return /* @__PURE__ */ React.createElement(
+    V.AppShell,
+    {
+      height: "100%",
+      spine: /* @__PURE__ */ React.createElement(V.Spine, { hub: true, sections: HUB_SECTIONS, activeId: active, onBackToHub: () => {
+      }, bottomItems: ["profil", "echipa", "abonament", "suport"] }),
+      contextBar: /* @__PURE__ */ React.createElement(HubBar, { title, inApp: true })
+    },
+    children
+  );
+}
+function Screens({ title, notes, render, desktopH = 860, tabletH = 1100, mobileH = 844 }) {
+  if (window.__SOLO) {
+    const w = window.innerWidth;
+    const m = w < 768 ? "mobile" : w < 1024 ? "tablet" : "desktop";
+    return /* @__PURE__ */ React.createElement("div", { style: { height: "100vh", position: "relative", background: "var(--canvas)" } }, render(m, "light"));
+  }
+  const sizes = [["desktop", "Desktop \xB7 1280", "scr-d", desktopH], ["tablet", "Tablet\u0103 portret \xB7 820", "scr-t", tabletH], ["mobile", "Telefon \xB7 390", "scr-m", mobileH]];
+  return /* @__PURE__ */ React.createElement("div", { className: "scr" }, /* @__PURE__ */ React.createElement("p", { className: "heading" }, title), notes && /* @__PURE__ */ React.createElement("p", { className: "caption muted" }, notes.join(" \xB7 ")), ["light", "dark"].map((th) => /* @__PURE__ */ React.createElement("div", { className: "scr-row", key: th }, sizes.map(([m, lab, cls, h]) => /* @__PURE__ */ React.createElement("div", { key: m }, /* @__PURE__ */ React.createElement("p", { className: "caption scr-lab" }, lab, " \xB7 ", th === "light" ? "Light" : "Dark"), /* @__PURE__ */ React.createElement("div", { className: cls, "data-theme": th, style: { height: h } }, render(m, th)))))));
+}
+const MINE = [["booking", "Program\u0103ri, calendar \u0219i reamintiri", 3], ["crm", "Clien\u021Bi, istoric \u0219i oportunit\u0103\u021Bi"], ["hr", "Echip\u0103, prezen\u021B\u0103 \u0219i concedii", 1], ["finance", "Facturi, scaden\u021Be \u0219i restan\u021Be", 2], ["projects", "Proiecte, sarcini \u0219i termene"], ["shifts", "Ture \u0219i \xEEnlocuiri"], ["documents", "Documente \u0219i \u0219abloane"], ["portal", "Pagina afacerii pentru clien\u021Bi"]];
+const RECO = { marketing: { reason: "Se potrive\u0219te cu EasyBook: trimite automat reamintiri \u0219i campanii clien\u021Bilor t\u0103i.", cost: "49 lei pe lun\u0103 \xB7 f\u0103r\u0103 cost de implementare" } };
+const VIEWER_ROLE = "owner";
+const RECO_FOR = (a) => (VIEWER_ROLE === "owner" || VIEWER_ROLE === "admin") && a === "marketing" ? RECO[a] : null;
+const OTHER = [["inventory", "unavailable"], ["analytics", "notInRole"], ["marketing", "notInPlan"], ["network", "notInPlan"]];
+function Launcher({ mode, empty }) {
+  const [run, setRun] = useState(null);
+  const mob = mode === "mobile";
+  const open = (a) => (e) => setRun({ app: a, from: e.currentTarget.querySelector(".v-appicon").getBoundingClientRect() });
+  return /* @__PURE__ */ React.createElement("div", { className: "frame-rel" }, /* @__PURE__ */ React.createElement(V.AppShell, { height: "100%", contextBar: /* @__PURE__ */ React.createElement(HubBar, null) }, /* @__PURE__ */ React.createElement("div", { className: "wrap " + mode }, /* @__PURE__ */ React.createElement("div", { className: "greet" }, /* @__PURE__ */ React.createElement("h1", { className: "display-l" }, "Bun\u0103 diminea\u021Ba, Bianca"), empty ? /* @__PURE__ */ React.createElement("p", { className: "body muted" }, "Bine ai venit \xEEn Salon Aurora. Aplica\u021Biile apar aici imediat ce prime\u0219ti acces.") : /* @__PURE__ */ React.createElement("p", { className: "body muted daylinks" }, "Azi ai ", /* @__PURE__ */ React.createElement("a", { className: "v-link", href: "#" }, "8 program\u0103ri"), ", ", /* @__PURE__ */ React.createElement("a", { className: "v-link", href: "#" }, "2 facturi scadente"), " \u0219i ", /* @__PURE__ */ React.createElement("a", { className: "v-link", href: "#" }, "o cerere de concediu"), " de aprobat.")), empty ? /* @__PURE__ */ React.createElement("div", { className: "sheetlike" }, /* @__PURE__ */ React.createElement(V.EmptyState, { icon: "layout-grid", title: "Nu ai \xEEnc\u0103 acces la nicio aplica\u021Bie", description: "Bianca Petra\u0219cu (proprietar) alege ce aplica\u021Bii folose\u0219te fiecare rol. Putem trimite noi cererea ta.", actions: /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(V.Button, { variant: "primary", icon: "send" }, "Cere acces"), /* @__PURE__ */ React.createElement(V.Button, { variant: "quiet" }, "Scrie-ne")) }), /* @__PURE__ */ React.createElement("p", { className: "body-small muted center", style: { paddingBottom: "var(--space-6)" } }, "\xCEntre timp, alege-\u021Bi fotografia \u0219i limba din ", /* @__PURE__ */ React.createElement("a", { className: "v-link", href: "#" }, "Contul t\u0103u"), ".")) : /* @__PURE__ */ React.createElement("section", null, /* @__PURE__ */ React.createElement("div", { className: "sechead" }, /* @__PURE__ */ React.createElement("h2", { className: "display-m" }, "Aplica\u021Biile tale"), /* @__PURE__ */ React.createElement(V.Button, { size: "sm", variant: "quiet", icon: "grip-vertical" }, "Reordoneaz\u0103")), mob ? /* @__PURE__ */ React.createElement("div", { className: "mgrid" }, MINE.map(([a, d, b]) => /* @__PURE__ */ React.createElement(V.AppTile, { key: a, app: a, layout: "icon", badge: b, onOpen: open(a) }))) : /* @__PURE__ */ React.createElement("div", { className: "tiles4" }, MINE.map(([a, d, b]) => /* @__PURE__ */ React.createElement(V.AppTile, { key: a, app: a, description: d, badge: b, onOpen: open(a) })))), /* @__PURE__ */ React.createElement("section", null, /* @__PURE__ */ React.createElement("h2", { className: "display-m sec" }, "Alte aplica\u021Bii Ventora"), /* @__PURE__ */ React.createElement("p", { className: "body-small muted", style: { marginBottom: "var(--space-3)" } }, "Nu le po\u021Bi deschide acum. La fiecare scrie de ce \u0219i ce po\u021Bi face."), true ? /* @__PURE__ */ React.createElement("div", { className: mob ? "rows" : "rows rows2" }, OTHER.map(([a, s]) => RECO_FOR(a) ? /* @__PURE__ */ React.createElement(V.GrowthSlot, { key: a, label: "Recomandare" }, /* @__PURE__ */ React.createElement(V.AppTile, { app: a, access: s, layout: "row", recommendation: RECO_FOR(a), onDetails: () => {
+  }, onDismiss: () => {
+  }, onRemindLater: () => {
+  } })) : /* @__PURE__ */ React.createElement(V.AppTile, { key: a, app: a, access: s, layout: "row", grantedBy: "Bianca Petra\u0219cu", onRequestAccess: () => {
+  }, onWriteUs: () => {
+  }, onSeeStatus: () => {
+  } }))) : /* @__PURE__ */ React.createElement("div", { className: "tiles4" }, OTHER.map(([a, s]) => RECO_FOR(a) ? /* @__PURE__ */ React.createElement(V.GrowthSlot, { key: a, label: "Recomandare" }, /* @__PURE__ */ React.createElement(V.AppTile, { app: a, access: s, recommendation: RECO_FOR(a), onDetails: () => {
+  }, onDismiss: () => {
+  }, onRemindLater: () => {
+  } })) : /* @__PURE__ */ React.createElement(V.AppTile, { key: a, app: a, access: s, grantedBy: "Bianca Petra\u0219cu", onRequestAccess: () => {
+  }, onWriteUs: () => {
+  }, onSeeStatus: () => {
+  } }))), /* @__PURE__ */ React.createElement("div", { style: { marginTop: "var(--space-4)" } }, /* @__PURE__ */ React.createElement(V.Button, { variant: "quiet", icon: "layout-grid", iconEnd: "arrow-right" }, "Vezi toate aplica\u021Biile Ventora"))))), run && /* @__PURE__ */ React.createElement(V.AppLaunch, { contained: true, app: run.app, from: run.from, onDone: () => setTimeout(() => setRun(null), 500) }));
+}
+function CommercialPrefs({ mode }) {
+  return /* @__PURE__ */ React.createElement(V.SheetSection, { title: "Recomand\u0103ri Ventora", description: "Sugestii despre aplica\u021Bii \u0219i pachete \xEEn plus care se potrivesc cu ce faci deja." }, /* @__PURE__ */ React.createElement("div", { className: "d0", style: { gap: "var(--space-3)" } }, /* @__PURE__ */ React.createElement(V.Toggle, { label: "\xCEn aplica\u021Bie", description: "Le vezi \xEEn pagini \u0219i \xEEn notific\u0103ri, la sec\u021Biunea Recomand\u0103ri.", defaultChecked: true, labelPosition: mode === "mobile" ? "start" : "end" }), /* @__PURE__ */ React.createElement(V.Toggle, { label: "Pe e-mail", description: "Disponibil \xEEn cur\xE2nd", disabled: true, labelPosition: mode === "mobile" ? "start" : "end" }), /* @__PURE__ */ React.createElement(V.Notice, { tone: "neutral", icon: "info" }, "Mesajele despre limitele contului t\u0103u r\u0103m\xE2n active, pentru c\u0103 sunt informa\u021Bii despre cont, nu recomand\u0103ri.")));
+}
+const BK_NOW = "11:20";
+const BK_STAFF = [{ id: "ioana", label: "Ioana Pavel", sub: "Coafor", person: "Ioana Pavel" }, { id: "mara", label: "Mara Enache", sub: "Manichiur\u0103", person: "Mara Enache" }, { id: "radu", label: "Radu Matei", sub: "Frizerie", person: "Radu Matei" }];
+const BK_EVENTS = [
+  { id: "e1", col: "ioana", start: "09:00", end: "09:45", title: "Ana Popescu", subtitle: "Tuns", status: "done" },
+  { id: "e2", col: "ioana", start: "10:00", end: "11:00", title: "Elena Georgescu", subtitle: "Vopsit r\u0103d\u0103cini", status: "done" },
+  { id: "e3", col: "ioana", start: "11:00", end: "12:00", title: "Andrei Ionescu", subtitle: "Vopsit", status: "now" },
+  { id: "e4", col: "ioana", start: "12:30", end: "13:15", title: "Cristina Dobre", subtitle: "Tratament facial", status: "unconfirmed" },
+  { id: "e5", col: "ioana", start: "14:30", end: "15:15", title: "Dan Stoica", subtitle: "Tuns", status: "confirmed" },
+  { id: "e6", col: "ioana", start: "16:00", end: "17:00", title: "Bianca Marin", subtitle: "Coafat eveniment", status: "confirmed" },
+  { id: "m1", col: "mara", start: "09:30", end: "10:20", title: "Ioana Radu", subtitle: "Manichiur\u0103", status: "done" },
+  { id: "m2", col: "mara", start: "10:45", end: "11:45", title: "Sorina Vlad", subtitle: "Pedichiur\u0103", status: "now" },
+  { id: "m3", col: "mara", start: "13:00", end: "14:00", title: "Pauz\u0103 de pr\xE2nz", status: "blocked" },
+  { id: "m4", col: "mara", start: "14:00", end: "14:50", title: "Alina Murariu", subtitle: "Manichiur\u0103 semipermanent\u0103", status: "confirmed" },
+  { id: "m5", col: "mara", start: "15:00", end: "15:50", title: "Oana Dinu", subtitle: "Manichiur\u0103", status: "unconfirmed" },
+  { id: "r1", col: "radu", start: "09:00", end: "09:30", title: "Mihai Tudose", subtitle: "Tuns b\u0103rba\u021Bi", status: "done" },
+  { id: "r2", col: "radu", start: "10:00", end: "10:30", title: "Vlad Cristea", subtitle: "Tuns b\u0103rba\u021Bi", status: "cancelled" },
+  { id: "r3", col: "radu", start: "11:30", end: "12:00", title: "Sergiu Pop", subtitle: "Tuns + barb\u0103", status: "confirmed" },
+  { id: "r4", col: "radu", start: "17:00", end: "17:30", title: "Paul Stan", subtitle: "Tuns b\u0103rba\u021Bi", status: "confirmed" }
+];
+const BK_STAFFNAME = { ioana: "Ioana", mara: "Mara", radu: "Radu" };
+const BK_AGENDA = BK_EVENTS.filter((e) => e.status !== "blocked").map((e) => ({ ...e, staff: BK_STAFFNAME[e.col], status: e.status === "now" ? "confirmed" : e.status }));
+const BK_DAYS = [["mon", "Lun 19"], ["tue", "Mar 20"], ["wed", "Mie 21"], ["thu", "Joi 22"], ["fri", "Vin 23"], ["sat", "S\xE2m 24"], ["sun", "Dum 25"]].map(([id, l]) => ({ id, label: l, today: id === "fri", closed: id === "sun" ? "\xCEnchis" : void 0 }));
+const BK_WEEK = (() => {
+  const base = [["09:00", "09:45", "done"], ["10:00", "11:00", "done"], ["11:30", "12:15", "confirmed"], ["13:00", "14:00", "confirmed"], ["14:30", "15:15", "confirmed"], ["16:00", "17:00", "unconfirmed"]];
+  const names = ["Ana P.", "Elena G.", "Andrei I.", "Cristina D.", "Dan S.", "Bianca M.", "Sorina V.", "Oana D.", "Paul S.", "Mihai T."];
+  const out = [];
+  let k = 0;
+  ["mon", "tue", "wed", "thu", "fri", "sat"].forEach((d, di) => base.forEach(([s, e, st], i) => {
+    if ((i + di) % 3 === 2 && d !== "fri") return;
+    out.push({ id: d + i, col: d, start: s, end: e, title: names[k++ % names.length], subtitle: ["Tuns", "Vopsit", "Manichiur\u0103", "Tratament facial"][(i + di) % 4], status: d === "fri" ? i < 2 ? "done" : i === 2 ? "now" : st : di < 4 ? "done" : st });
+  }));
+  return out;
+})();
+const BK_ROWS = [
+  { id: 1, client: "Andrei Ionescu", phone: "0741 123 451", service: "Vopsit", staff: "Ioana", when: "Azi, 11:00", dur: "60 min", price: 350, status: "now" },
+  { id: 2, client: "Cristina Dobre", phone: "0742 220 118", service: "Tratament facial", staff: "Ioana", when: "Azi, 12:30", dur: "45 min", price: 220, status: "unconfirmed" },
+  { id: 3, client: "Dan Stoica", phone: "0744 551 900", service: "Tuns", staff: "Ioana", when: "Azi, 14:30", dur: "45 min", price: 120, status: "confirmed" },
+  { id: 4, client: "Alina Murariu", phone: "0723 004 512", service: "Manichiur\u0103 semipermanent\u0103", staff: "Mara", when: "Azi, 14:00", dur: "50 min", price: 140, status: "confirmed" },
+  { id: 5, client: "Oana Dinu", phone: "0755 300 721", service: "Manichiur\u0103", staff: "Mara", when: "Azi, 15:00", dur: "50 min", price: 110, status: "unconfirmed" },
+  { id: 6, client: "Bianca Marin", phone: "0740 777 213", service: "Coafat eveniment", staff: "Ioana", when: "Azi, 16:00", dur: "60 min", price: 260, status: "confirmed" },
+  { id: 7, client: "Vlad Cristea", phone: "0733 120 004", service: "Tuns b\u0103rba\u021Bi", staff: "Radu", when: "Azi, 10:00", dur: "30 min", price: 70, status: "cancelled" },
+  { id: 8, client: "Elena Georgescu", phone: "0746 412 980", service: "Vopsit r\u0103d\u0103cini", staff: "Ioana", when: "Azi, 10:00", dur: "60 min", price: 280, status: "done" }
+];
+const BK_STATUS = { now: ["attention", "\xCEn desf\u0103\u0219urare"], unconfirmed: ["neutral", "Neconfirmat\u0103"], confirmed: ["neutral", "Confirmat\u0103"], done: ["done", "\xCEncheiat\u0103"], cancelled: ["neutral", "Anulat\u0103"] };
+function BookingApp({ active, title, children, footer }) {
+  return /* @__PURE__ */ React.createElement(
+    V.AppShell,
+    {
+      height: "100%",
+      spine: /* @__PURE__ */ React.createElement(V.Spine, { app: "booking", sections: SECTIONS, activeId: active, onBackToHub: () => {
+      }, bottomItems: ["azi", "calendar", "programari", "clienti"], footer: footer === false ? null : /* @__PURE__ */ React.createElement(V.UsageMeter, { compact: true, label: "Program\u0103ri \xEEn octombrie", used: 862, limit: 1e3 }) }),
+      contextBar: /* @__PURE__ */ React.createElement(Bar, { title: title || "EasyBook" })
+    },
+    children
+  );
+}
+const BK_COLS = (mode) => [
+  { key: "client", header: "Client", sortable: true, primary: true, render: (r) => /* @__PURE__ */ React.createElement("span", { style: { display: "flex", flexDirection: "column" } }, /* @__PURE__ */ React.createElement("span", null, r.client), mode !== "mobile" && /* @__PURE__ */ React.createElement("span", { className: "body-small muted" }, r.phone)) },
+  { key: "service", header: "Serviciu", secondary: true },
+  { key: "staff", header: "Angajat", sortable: true, optional: true },
+  { key: "when", header: "C\xE2nd", sortable: true, secondary: true, render: (r) => /* @__PURE__ */ React.createElement("span", null, r.when, /* @__PURE__ */ React.createElement("span", { className: "muted" }, " \xB7 ", r.dur)) },
+  { key: "price", header: "Pre\u021B", align: "end", sortable: true, optional: true, render: (r) => r.price + " lei" },
+  { key: "status", header: "Stare", trailing: true, render: (r) => /* @__PURE__ */ React.createElement(V.StatusPill, { tone: BK_STATUS[r.status][0], icon: r.status === "unconfirmed" ? "clock" : void 0 }, BK_STATUS[r.status][1]) }
+];
+const BK_ACTIONS = (r) => [
+  { label: "Deschide", icon: "external-link" },
+  r.status === "unconfirmed" ? { label: "Confirm\u0103", icon: "check" } : { label: "Trimite reamintire", icon: "send" },
+  { label: "Mut\u0103 programarea", icon: "calendar" },
+  { label: "Marcheaz\u0103: nu a venit", icon: "circle-x" },
+  { separator: true },
+  { label: "Anuleaz\u0103 programarea", icon: "trash-2", destructive: true }
+];
+function BookingFilters({ mode }) {
+  return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", { style: { flex: "1 1 220px", minWidth: 0, maxWidth: mode === "mobile" ? "none" : "var(--search-width)" } }, /* @__PURE__ */ React.createElement(V.Input, { icon: "search", placeholder: "Caut\u0103 client, telefon sau serviciu", size: "sm", "aria-label": "Caut\u0103" })), mode === "mobile" ? /* @__PURE__ */ React.createElement(V.Button, { size: "sm", icon: "list-filter" }, "Filtre \xB7 2") : /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(V.SegmentedControl, { size: "sm", label: "Perioad\u0103", defaultValue: "azi", options: [{ value: "azi", label: "Azi" }, { value: "sapt", label: "S\u0103pt\u0103m\xE2na" }, { value: "luna", label: "Luna" }] }), /* @__PURE__ */ React.createElement("div", { style: { width: 160 } }, /* @__PURE__ */ React.createElement(V.Select, { size: "sm", defaultValue: "all", options: [{ value: "all", label: "Toat\u0103 echipa" }, { value: "ioana", label: "Ioana Pavel" }, { value: "mara", label: "Mara Enache" }, { value: "radu", label: "Radu Matei" }] })), /* @__PURE__ */ React.createElement("div", { style: { width: 160 } }, /* @__PURE__ */ React.createElement(V.Select, { size: "sm", defaultValue: "active", options: [{ value: "active", label: "Active" }, { value: "unconfirmed", label: "Neconfirmate" }, { value: "cancelled", label: "Anulate" }] }))));
+}
+function BookingDetailBody() {
+  return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", { className: "r", style: { gap: "var(--space-2)" } }, /* @__PURE__ */ React.createElement(V.StatusPill, { tone: "neutral", icon: "clock" }, "Neconfirmat\u0103"), /* @__PURE__ */ React.createElement(V.Badge, null, "Rezervat\u0103 online")), /* @__PURE__ */ React.createElement("dl", { className: "kv" }, /* @__PURE__ */ React.createElement("dt", { className: "caption" }, "C\xE2nd"), /* @__PURE__ */ React.createElement("dd", { className: "body" }, "Vineri, 23 octombrie \xB7 12:30\u201313:15"), /* @__PURE__ */ React.createElement("dt", { className: "caption" }, "Serviciu"), /* @__PURE__ */ React.createElement("dd", { className: "body" }, "Tratament facial \xB7 45 min \xB7 220 lei"), /* @__PURE__ */ React.createElement("dt", { className: "caption" }, "Angajat"), /* @__PURE__ */ React.createElement("dd", { className: "body" }, "Ioana Pavel"), /* @__PURE__ */ React.createElement("dt", { className: "caption" }, "Client"), /* @__PURE__ */ React.createElement("dd", { className: "body" }, "Cristina Dobre \xB7 0742 220 118 \xB7 a 6-a vizit\u0103")), /* @__PURE__ */ React.createElement(V.Notice, { tone: "attention", title: "Nu a confirmat \xEEnc\u0103" }, "I-am trimis reamintirea ieri la 12:30. Po\u021Bi suna sau retrimite."), /* @__PURE__ */ React.createElement("div", { className: "r", style: { gap: "var(--space-2)" } }, /* @__PURE__ */ React.createElement(V.Button, { size: "sm", icon: "send" }, "Retrimite reamintirea"), /* @__PURE__ */ React.createElement(V.Button, { size: "sm", variant: "quiet", icon: "phone" }, "Sun\u0103")), /* @__PURE__ */ React.createElement(V.FormField, { label: "Note pentru echip\u0103" }, /* @__PURE__ */ React.createElement(V.Textarea, { rows: 3, defaultValue: "Ten sensibil \u2014 f\u0103r\u0103 produse cu parfum." })), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("p", { className: "subheading", style: { marginBottom: "var(--space-2)" } }, "Istoric"), /* @__PURE__ */ React.createElement("ul", { className: "hist body-small" }, /* @__PURE__ */ React.createElement("li", null, /* @__PURE__ */ React.createElement("span", { className: "muted" }, "22 oct., 12:30"), " Reamintire trimis\u0103 prin SMS"), /* @__PURE__ */ React.createElement("li", null, /* @__PURE__ */ React.createElement("span", { className: "muted" }, "16 oct., 09:12"), " Ioana Pavel a mutat-o de la 11:00 la 12:30"), /* @__PURE__ */ React.createElement("li", null, /* @__PURE__ */ React.createElement("span", { className: "muted" }, "15 oct., 18:04"), " Rezervat\u0103 din pagina de rezerv\u0103ri")), /* @__PURE__ */ React.createElement("button", { type: "button", className: "v-link body-small", style: { marginTop: "var(--space-2)" } }, "Vezi tot istoricul")));
+}
+const BK_ATTN = [
+  { id: 1, icon: "clock", title: "Cristina Dobre nu a confirmat", meta: "Azi la 12:30 \xB7 Tratament facial \xB7 Ioana", time: "peste 1 h", actions: [{ label: "Confirm\u0103", primary: true }, { label: "Retrimite reamintirea" }] },
+  { id: 2, icon: "clock", title: "Oana Dinu nu a confirmat", meta: "Azi la 15:00 \xB7 Manichiur\u0103 \xB7 Mara", time: "peste 4 h", actions: [{ label: "Confirm\u0103", primary: true }, { label: "Sun\u0103" }] },
+  { id: 3, icon: "wallet", tone: "danger", title: "Dan Stoica mai are de pl\u0103tit 120 lei", meta: "De la vizita din 16 octombrie", actions: [{ label: "\xCEncaseaz\u0103" }, { label: "Trimite link de plat\u0103", quiet: true }] },
+  { id: 4, icon: "calendar", title: "Elena Georgescu vrea s\u0103 mute programarea", meta: "De m\xE2ine, 10:00, pe s\xE2mb\u0103t\u0103, 11:00 \xB7 cerere online", actions: [{ label: "Accept\u0103", primary: true }, { label: "Propune alt\u0103 or\u0103" }] }
+];
+const DAYS = [["Luni", "09:00", "19:00", true], ["Mar\u021Bi", "09:00", "19:00", true], ["Miercuri", "09:00", "19:00", true], ["Joi", "09:00", "20:00", true], ["Vineri", "09:00", "20:00", true], ["S\xE2mb\u0103t\u0103", "10:00", "16:00", true], ["Duminic\u0103", "", "", false]];
+/* SMS de pe numărul propriu — §9 Pagina de descărcare a aplicației Ventora pentru telefon (app.ventora-hub.com/telefon). Public page, 6 languages. */
+const h = React.createElement;
+const Box = ({ label, children }) => h("div", { className: "sms-box" }, h("p", { className: "caption sms-boxlab" }, label), h("div", { className: "sms-boxbody" }, children));
+const DX = {
+  ro: {
+    eyebrow: "Aplicația Ventora pentru telefon", title: "Reamintirile pleacă de pe numărul afacerii tale",
+    lead: "Instalezi aplicația pe un telefon Android cu SIM-ul afacerii, iar reamintirile și confirmările programărilor pleacă de pe numărul tău. Telefonul stă la încărcat, de exemplu la recepție.",
+    dl: "Descarcă aplicația", meta: "Versiunea 1.4.2 · 27 octombrie 2026 · pentru Android 9 sau mai nou",
+    only: "Descarcă aplicația doar de pe această pagină.",
+    iphone: "Pe iPhone nu se poate: Apple nu permite trimiterea automată de SMS-uri.",
+    qrT: "Ești pe calculator?", qrD: "Scanează codul cu telefonul afacerii și descarcă aplicația de acolo.",
+    instT: "Cum o instalezi", instD: "Aplicația nu e încă în Magazin Play, așa că telefonul îți cere o dată voie s-o instalezi.",
+    steps: ["Pe telefonul afacerii, apasă „Descarcă aplicația”.", "Deschide fișierul descărcat, din notificare sau din Descărcări.", "Telefonul te întreabă dacă permiți instalarea. Apasă „Setări”, pornește „Permite din această sursă”, apoi revino.", "Apasă „Instalează”, apoi „Deschide”.", "În aplicație, apasă „Conectează telefonul” și scanează codul din EasyBook · Setări · Trimitere SMS."],
+    authT: "Cum știi că e aplicația noastră",
+    auth: [["globe", "Adresa paginii e app.ventora-hub.com/telefon. Nu instala o aplicație Ventora primită pe WhatsApp, pe e-mail sau de pe alt site."], ["smartphone", "După instalare, aplicația se numește „Ventora” și are iconul nostru. Versiunea din aplicație e cea scrisă pe această pagină."], ["store", "Când o conectezi, aplicația arată numele afacerii tale din EasyBook. Dacă vezi alt nume, oprește-te și scrie-ne."], ["info", "Telefonul poate spune că aplicația nu e cunoscută. E normal pentru aplicațiile din afara Magazin Play."]],
+    batT: "Ca telefonul să nu oprească aplicația", batD: "Telefoanele închid aplicațiile din fundal ca să economisească bateria. Pentru Ventora, oprește asta o singură dată.",
+    brand: "Marca telefonului", other: "Alte mărci",
+    help: "Ai nevoie de ajutor?", helpD: "Scrie-ne din EasyBook · Ajutor. Îți răspundem în cel mult o zi lucrătoare.",
+    foot: "Ventora Systems SRL · Sibiu, România"
+  },
+  de: {
+    eyebrow: "Die Ventora-App für das Telefon", title: "Erinnerungen gehen von der Nummer Ihres Unternehmens raus",
+    lead: "Sie installieren die App auf einem Android-Telefon mit der Geschäfts-SIM, und Erinnerungen und Terminbestätigungen gehen von Ihrer Nummer raus. Das Telefon bleibt am Ladegerät, zum Beispiel am Empfang.",
+    dl: "App herunterladen", meta: "Version 1.4.2 · 27. Oktober 2026 · für Android 9 oder neuer",
+    only: "Laden Sie die App nur von dieser Seite herunter.",
+    iphone: "Mit einem iPhone geht es nicht: Apple erlaubt kein automatisches Senden von SMS.",
+    qrT: "Sind Sie am Computer?", qrD: "Scannen Sie den Code mit dem Geschäftstelefon und laden Sie die App dort herunter.",
+    instT: "So installieren Sie sie", instD: "Die App ist noch nicht im Play Store, deshalb fragt das Telefon einmal um Erlaubnis.",
+    steps: ["Tippen Sie auf dem Geschäftstelefon auf „App herunterladen“.", "Öffnen Sie die heruntergeladene Datei, über die Benachrichtigung oder unter Downloads.", "Das Telefon fragt, ob Sie die Installation erlauben. Tippen Sie auf „Einstellungen“, aktivieren Sie „Aus dieser Quelle zulassen“ und gehen Sie zurück.", "Tippen Sie auf „Installieren“ und dann auf „Öffnen“.", "Tippen Sie in der App auf „Telefon verbinden“ und scannen Sie den Code aus EasyBook · Einstellungen · SMS-Versand."],
+    authT: "So erkennen Sie unsere App",
+    auth: [["globe", "Die Adresse der Seite ist app.ventora-hub.com/telefon. Installieren Sie keine Ventora-App, die Sie per WhatsApp, E-Mail oder von einer anderen Website bekommen haben."], ["smartphone", "Nach der Installation heißt die App „Ventora“ und hat unser Symbol. Die Version in der App ist die auf dieser Seite."], ["store", "Beim Verbinden zeigt die App den Namen Ihres Unternehmens aus EasyBook. Sehen Sie einen anderen Namen, hören Sie auf und schreiben Sie uns."], ["info", "Das Telefon meldet vielleicht, dass die App unbekannt ist. Das ist bei Apps außerhalb des Play Store normal."]],
+    batT: "Damit das Telefon die App nicht beendet", batD: "Telefone beenden Apps im Hintergrund, um Akku zu sparen. Schalten Sie das für Ventora einmal aus.",
+    brand: "Marke des Telefons", other: "Andere Marken",
+    help: "Brauchen Sie Hilfe?", helpD: "Schreiben Sie uns in EasyBook · Hilfe. Wir antworten innerhalb eines Werktags.",
+    foot: "Ventora Systems SRL · Sibiu, Rumänien"
+  },
+  it: {
+    eyebrow: "L’app Ventora per il telefono", title: "I promemoria partono dal numero della Sua attività",
+    lead: "Installa l’app su un telefono Android con la SIM dell’attività e i promemoria e le conferme degli appuntamenti partono dal Suo numero. Il telefono resta in carica, per esempio alla reception.",
+    dl: "Scarica l’app", meta: "Versione 1.4.2 · 27 ottobre 2026 · per Android 9 o successivi",
+    only: "Scarichi l’app solo da questa pagina.",
+    iphone: "Con l’iPhone non si può: Apple non permette l’invio automatico di SMS.",
+    qrT: "È al computer?", qrD: "Scansioni il codice con il telefono dell’attività e scarichi l’app da lì.",
+    instT: "Come installarla", instD: "L’app non è ancora sul Play Store, quindi il telefono chiede una volta il permesso.",
+    steps: ["Sul telefono dell’attività tocchi „Scarica l’app”.", "Apra il file scaricato, dalla notifica o da Download.", "Il telefono chiede se permette l’installazione. Tocchi „Impostazioni”, attivi „Consenti da questa fonte” e torni indietro.", "Tocchi „Installa”, poi „Apri”.", "Nell’app tocchi „Collega il telefono” e scansioni il codice da EasyBook · Impostazioni · Invio SMS."],
+    authT: "Come riconoscere la nostra app",
+    auth: [["globe", "L’indirizzo della pagina è app.ventora-hub.com/telefon. Non installi un’app Ventora ricevuta su WhatsApp, via e-mail o da un altro sito."], ["smartphone", "Dopo l’installazione l’app si chiama „Ventora” e ha la nostra icona. La versione nell’app è quella scritta su questa pagina."], ["store", "Quando la collega, l’app mostra il nome della Sua attività da EasyBook. Se vede un altro nome, si fermi e ci scriva."], ["info", "Il telefono può dire che l’app non è conosciuta. È normale per le app fuori dal Play Store."]],
+    batT: "Perché il telefono non chiuda l’app", batD: "I telefoni chiudono le app in background per risparmiare batteria. Per Ventora lo disattivi una volta sola.",
+    brand: "Marca del telefono", other: "Altre marche",
+    help: "Le serve aiuto?", helpD: "Ci scriva da EasyBook · Aiuto. Rispondiamo entro un giorno lavorativo.",
+    foot: "Ventora Systems SRL · Sibiu, Romania"
+  }
+};
+const BR = {
+  ro: {
+    samsung: [["Economisirea bateriei", "Setări → Baterie → Limite de utilizare în fundal → Aplicații care nu intră niciodată în repaus → adaugă Ventora."], ["Pornirea după o repornire", "Setări → Aplicații → Ventora → Baterie → alege „Fără restricții”."]],
+    xiaomi: [["Economisirea bateriei", "Setări → Aplicații → Gestionează aplicațiile → Ventora → Economisire baterie → alege „Fără restricții”."], ["Pornirea automată", "Setări → Aplicații → Permisiuni → Pornire automată → pornește Ventora."]],
+    motorola: [["Economisirea bateriei", "Setări → Aplicații → Ventora → Baterie → alege „Fără restricții”."], ["Folosirea în fundal", "În același loc, pornește „Permite utilizarea în fundal”."]],
+    pixel: [["Economisirea bateriei", "Setări → Aplicații → Ventora → Utilizarea bateriei de către aplicație → alege „Fără restricții”."], ["Bateria adaptabilă", "Nu trebuie oprită. Setarea de mai sus e suficientă."]],
+    other: [["Economisirea bateriei", "Caută în Setări „baterie” sau „economisire” și alege pentru Ventora „Fără restricții” sau „Nu optimiza”."], ["Pornirea automată", "Dacă telefonul are „Pornire automată”, pornește-o pentru Ventora."]]
+  },
+  de: {
+    samsung: [["Energiesparmodus", "Einstellungen → Akku → Hintergrundnutzungslimits → Apps, die nie in den Standby wechseln → Ventora hinzufügen."], ["Start nach einem Neustart", "Einstellungen → Apps → Ventora → Akku → „Nicht eingeschränkt“ wählen."]]
+  },
+  it: {
+    samsung: [["Risparmio energetico", "Impostazioni → Batteria → Limiti di utilizzo in background → App mai in sospensione → aggiunga Ventora."], ["Avvio dopo un riavvio", "Impostazioni → App → Ventora → Batteria → scelga „Senza restrizioni”."]],
+    xiaomi: [["Risparmio energetico", "Impostazioni → App → Gestisci app → Ventora → Risparmio batteria → scelga „Nessuna restrizione”."], ["Avvio automatico", "Impostazioni → App → Autorizzazioni → Avvio automatico → attivi Ventora."]]
+  }
+};
+const BRANDS9 = (T) => [["samsung", "Samsung"], ["xiaomi", "Xiaomi"], ["motorola", "Motorola"], ["pixel", "Google Pixel"], ["other", T.other]];
+function Qr({ size = 132 }) {
+  const n = 25, c = size / n, cells = []; let s = 11;
+  const rnd = () => (s = (s * 9301 + 49297) % 233280) / 233280;
+  const finder = (x, y) => (x < 7 && y < 7) || (x >= n - 7 && y < 7) || (x < 7 && y >= n - 7);
+  for (let y = 0; y < n; y++) for (let x = 0; x < n; x++) { if (!finder(x, y) && rnd() > 0.52) cells.push(h("rect", { key: x + "-" + y, x: x * c, y: y * c, width: c, height: c })); }
+  const fp = (x, y) => h("g", { key: "f" + x + y }, h("rect", { x: x * c, y: y * c, width: 7 * c, height: 7 * c }), h("rect", { x: (x + 1) * c, y: (y + 1) * c, width: 5 * c, height: 5 * c, fill: "var(--raised)" }), h("rect", { x: (x + 2) * c, y: (y + 2) * c, width: 3 * c, height: 3 * c }));
+  return h("div", { className: "dl-qr", "data-theme": "light" }, h("svg", { width: size, height: size, viewBox: `0 0 ${size} ${size}`, role: "img", "aria-label": "Cod QR către app.ventora-hub.com/telefon" }, h("g", { fill: "var(--ink)" }, cells, fp(0, 0), fp(n - 7, 0), fp(0, n - 7))));
+}
+function BrandGuide({ T, lang, brand = "samsung", mode }) {
+  const g = (BR[lang] && BR[lang][brand]) || BR.ro[brand];
+  return h("div", { className: "dl-brand" },
+    mode === "mobile" ? h(V.Select, { options: BRANDS9(T).map(([v, l]) => ({ value: v, label: l })), defaultValue: brand, icon: "smartphone", "aria-label": T.brand })
+      : h(V.Tabs, { label: T.brand, defaultValue: brand, items: BRANDS9(T).map(([v, l]) => ({ value: v, label: l })) }),
+    h("ol", { className: "dl-steps" }, g.map(([t, d], i) => h("li", { key: i }, h("span", { className: "dl-num body-strong", "aria-hidden": true }, i + 1), h("span", null, h("span", { className: "body-strong" }, t), h("br"), h("span", { className: "body sms-sec" }, d))))));
+}
+function DownloadPage({ mode, lang = "ro", brand }) {
+  const T = DX[lang], mob = mode === "mobile", desk = !mob;
+  return h("div", { className: "dl " + mode },
+    h("header", { className: "dl-bar" }, h(V.Logo, { size: mob ? 24 : 28 }), h("span", { className: "dl-sp" }), h(V.LanguageSwitcher, { value: lang }), mob ? null : h(V.ThemeSwitcher, { iconOnly: true, size: "sm" })),
+    h("main", { className: "dl-main" },
+      h("section", { className: "dl-hero" },
+        h("div", { className: "dl-hero__text" },
+          h("p", { className: "eyebrow dl-eyebrow" }, T.eyebrow),
+          h("h1", { className: mob ? "display-m" : "display-l" }, T.title),
+          h("p", { className: "body dl-lead" }, T.lead),
+          h("div", { className: "dl-cta" }, h(V.Button, { variant: "primary", size: "lg", icon: "download", block: mob }, T.dl), h("p", { className: "body-small sms-sec" }, T.meta)),
+          h(V.Notice, { tone: "neutral", icon: "lock", title: T.only }),
+          h("p", { className: "body-small sms-sec dl-iph" }, h(V.Icon, { name: "info", size: 16 }), T.iphone)),
+        desk ? h("div", { className: "dl-qrbox" }, h(Qr, { size: 148 }), h("p", { className: "body-strong" }, T.qrT), h("p", { className: "body-small sms-sec" }, T.qrD)) : null),
+      h("section", { className: "dl-sec" }, h("h2", { className: "heading" }, T.instT), h("p", { className: "body sms-sec" }, T.instD),
+        h("ol", { className: "dl-steps" }, T.steps.map((t, i) => h("li", { key: i }, h("span", { className: "dl-num body-strong", "aria-hidden": true }, i + 1), h("span", { className: "body" }, t))))),
+      h("section", { className: "dl-sec" }, h("h2", { className: "heading" }, T.authT),
+        h("ul", { className: "dl-auth" }, T.auth.map(([ic, t], i) => h("li", { key: i }, h(V.Icon, { name: ic, size: 20 }), h("span", { className: "body" }, t))))),
+      h("section", { className: "dl-sec" }, h("h2", { className: "heading" }, T.batT), h("p", { className: "body sms-sec" }, T.batD), h(BrandGuide, { T, lang, brand, mode })),
+      h("section", { className: "dl-help" }, h("p", { className: "body-strong" }, T.help), h("p", { className: "body sms-sec" }, T.helpD))),
+    h("footer", { className: "dl-foot caption sms-sec" }, T.foot));
+}
+function DScreen({ mode }) { return h("div", { className: "dl-frame" }, h(DownloadPage, { mode })); }
+function DStates({ th }) {
+  return h("div", { className: "sms-states", "data-theme": th },
+    h("p", { className: "heading" }, "Ghidul pe mărci · " + (th === "light" ? "Light" : "Dark") + " · fiecare marcă, desktop și telefon"),
+    h("div", { className: "dl-grid" },
+      ["samsung", "xiaomi", "motorola", "pixel", "other"].map((b) => h(Box, { key: b, label: BRANDS9(DX.ro).find(([v]) => v === b)[1] }, h("div", { className: "dl-pane" }, h(BrandGuide, { T: DX.ro, lang: "ro", brand: b, mode: "desktop" })))),
+      h(Box, { label: "Telefon (390): marca se alege dintr-o listă" }, h("div", { className: "dl-pane m" }, h(BrandGuide, { T: DX.ro, lang: "ro", brand: "xiaomi", mode: "mobile" })))));
+}
+function DLangs() {
+  return h("div", { className: "sms-langs", "data-theme": "light" },
+    h("p", { className: "heading" }, "Test cu etichete în germană și italiană · pagina întreagă"),
+    h("div", { className: "sms-langrow" },
+      h("div", { className: "sms-lang" }, h("p", { className: "caption sms-boxlab" }, "Deutsch · 1280"), h("div", { className: "dl-lframe d" }, h(V.LocaleProvider, { locale: "de" }, h(DownloadPage, { mode: "desktop", lang: "de" })))),
+      h("div", { className: "sms-lang" }, h("p", { className: "caption sms-boxlab" }, "Italiano · 390 · Xiaomi"), h("div", { className: "dl-lframe m" }, h(V.LocaleProvider, { locale: "it" }, h(DownloadPage, { mode: "mobile", lang: "it", brand: "xiaomi" }))))));
+}
+mount(h("div", null,
+  h(Screens, { title: "Pagina de descărcare · app.ventora-hub.com/telefon (publică, fără cont)", notes: ["Pe calculator: și codul QR, ca s-o deschizi pe telefonul afacerii", "Pe telefon, marca se alege dintr-o listă"], desktopH: 1540, tabletH: 1580, mobileH: 1940, render: (m) => h(DScreen, { mode: m }) }),
+  h(DStates, { th: "light" }), h(DStates, { th: "dark" }),
+  h(DLangs, null)));
+
+</script>
+</body>
+</html>

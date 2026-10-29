@@ -1,0 +1,9 @@
+/* Butonul nativ al LanguageSwitcher (.v-btn--quiet / .v-iconbtn) — hover fără react-aria */
+.hover:hover {
+  background: var(--state-hover);
+}
+
+.hover:focus-visible {
+  outline: var(--focus-ring-width) solid var(--focus-ring);
+  outline-offset: var(--focus-ring-offset);
+}

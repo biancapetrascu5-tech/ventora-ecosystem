@@ -1,4 +1,4 @@
-<!-- @dsCard group="Data" height=1260 width=1200 -->
+<!-- @dsCard group="Data" height=2920 width=1200 -->
 <!doctype html>
 <html lang="ro">
 <head><meta charset="utf-8"><title>Kanban — Ventora</title>
@@ -250,6 +250,16 @@ html,body{min-height:100%}
 .fxframe .caption{color:var(--ink-muted)}
 @container (max-width:420px){.fxlang{grid-template-columns:32px minmax(0,1fr) auto}.fxlang .v-iconbtn{display:none}}
 
+/* c3: Light/Dark and DE/IT frames */
+.c3wrap{display:flex;flex-direction:column;min-width:0}
+.c3sec{display:flex;flex-direction:column;gap:var(--space-3);min-width:0}
+.c3h{margin:0;color:var(--ink)}
+.c3pair{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(360px,100%),1fr));gap:var(--space-4);align-items:start}
+.c3stack{display:flex;flex-direction:column;gap:var(--space-4);min-width:0}
+.c3f{display:flex;flex-direction:column;gap:var(--space-3);padding:var(--space-4);border:var(--border-width) solid var(--line);border-radius:var(--radius-md);background:var(--canvas);color:var(--ink);min-width:0;box-sizing:border-box}
+.c3lab{color:var(--ink-muted);margin:0}
+.c3kv{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:var(--space-2) var(--space-4);align-items:center}
+.c3ib{display:flex;align-items:center;gap:var(--space-3);min-width:0}
 </style>
 </head>
 <body>
@@ -278,10 +288,10 @@ const ORGS = [
   { id: "nord", name: "Agen\u021Bia Nord Studio", role: "Manager de proiect" }
 ];
 const NOTIFS = [
-  { id: 1, title: "Programare nou\u0103 de la Ana Popescu", body: "Joi, 29 oct., 14:30 \xB7 Tuns", app: "Booking", time: "acum 5 min", person: "Ana Popescu" },
-  { id: 2, title: "Factura #2026-114 e restant\u0103 de 3 zile", body: "Clinica Dentis \xB7 1.250 lei", app: "Finance", time: "acum 2 ore", icon: "receipt" },
-  { id: 3, title: "Ioana a cerut concediu pe 2\u20136 noiembrie", app: "HR", time: "ieri", person: "Ioana Pavel", read: true },
-  { id: 4, title: "Exportul clien\u021Bilor e gata", app: "CRM", time: "ieri", icon: "download", read: true }
+  { id: 1, title: "Programare nou\u0103 de la Ana Popescu", body: "Joi, 29 oct., 14:30 \xB7 Tuns", app: "EasyBook", time: "acum 5 min", person: "Ana Popescu" },
+  { id: 2, title: "Factura #2026-114 e restant\u0103 de 3 zile", body: "Clinica Dentis \xB7 1.250 lei", app: "MoneyDesk", time: "acum 2 ore", icon: "receipt" },
+  { id: 3, title: "Ioana a cerut concediu pe 2\u20136 noiembrie", app: "TeamSpace", time: "ieri", person: "Ioana Pavel", read: true },
+  { id: 4, title: "Exportul clien\u021Bilor e gata", app: "ClientDesk", time: "ieri", icon: "download", read: true }
 ];
 const USER = { name: "Bianca Petra\u0219cu", email: "bianca@ventora-hub.com" };
 function Bar({ title, de }) {
@@ -312,7 +322,7 @@ function BookingShell({ height, active, mobile }) {
       height,
       spine: /* @__PURE__ */ React.createElement(V.Spine, { app: "booking", sections: SECTIONS, activeId: active, onBackToHub: () => {
       }, footer: /* @__PURE__ */ React.createElement(V.UsageMeter, { compact: true, label: "Program\u0103ri", used: 312, limit: 1e3 }) }),
-      contextBar: /* @__PURE__ */ React.createElement(Bar, { title: "Booking" })
+      contextBar: /* @__PURE__ */ React.createElement(Bar, { title: "EasyBook" })
     },
     /* @__PURE__ */ React.createElement(V.PageHeader, { title: "Program\u0103ri", description: mobile ? void 0 : "Toate program\u0103rile afacerii, de azi \xEEnainte.", actions: mobile ? void 0 : /* @__PURE__ */ React.createElement(V.SegmentedControl, { label: "Vizualizare", size: "md", defaultValue: "list", options: [{ value: "list", label: "List\u0103", icon: "list" }, { value: "cal", label: "Calendar", icon: "calendar" }] }) }),
     /* @__PURE__ */ React.createElement(V.DataTable, { columns: [
@@ -469,7 +479,47 @@ function KanbanDemo() {
   } }) }), /* @__PURE__ */ React.createElement("p", { className: "caption muted" }, "Sub 640px l\u0103\u021Bime proprie: o etap\u0103 odat\u0103, aleas\u0103 din bara de etape"), /* @__PURE__ */ React.createElement("div", { style: { width: 360 } }, /* @__PURE__ */ React.createElement(V.Kanban, { label: "Etape", columns: AX_CRM_COLS, cards: AX_CRM_CARDS, defaultColumn: "nou", onMove: () => {
   } })));
 }
-mount(/* @__PURE__ */ React.createElement(KanbanDemo, null));
+const C3_ORIG = /* @__PURE__ */ React.createElement(KanbanDemo, null);
+const h = React.createElement;
+const C3Frame = ({ th, label, children, style }) => h("div", { className: "c3f", "data-theme": th, style }, h("p", { className: "caption c3lab" }, label), children);
+const C3Sec = ({ title, stack, children }) => h("div", { className: "c3sec" }, h("p", { className: "subheading c3h" }, title), h("div", { className: stack ? "c3stack" : "c3pair" }, children));
+const C3Themes = ({ render, stack, style }) => h(C3Sec, { title: "Light și Dark", stack }, h(C3Frame, { th: "light", label: "Light", style }, render("light")), h(C3Frame, { th: "dark", label: "Dark", style }, render("dark")));
+const C3Langs = ({ de, it, stack, style, itTheme }) => h(C3Sec, { title: "Germană și italiană — etichete mai lungi", stack }, h(V.LocaleProvider, { locale: "de" }, h(C3Frame, { th: "light", label: "Deutsch (de)", style }, de)), h(V.LocaleProvider, { locale: "it" }, h(C3Frame, { th: itTheme || "light", label: itTheme === "dark" ? "Italiano (it) \xB7 Dark" : "Italiano (it)", style }, it)));
+const KB_RO_COLS = [{ id: "todo", label: "De făcut" }, { id: "doing", label: "\xCEn lucru" }, { id: "blocked", label: "Blocate", empty: "Nicio sarcină blocată acum." }, { id: "done", label: "Gata", tone: "done" }];
+const KB_RO_CARDS = [
+  { id: "a1", col: "todo", tag: "Conținut", title: "Texte pentru pagina de prețuri", people: ["Bianca Petrașcu"], due: { label: "Vin, 30 oct." } },
+  { id: "a2", col: "doing", tag: "Fotografii", title: "Ședință foto \xEEn salon", people: ["Ioana Pavel", "Mara Enache"], due: { label: "\xCEnt\xE2rziată 2 zile", tone: "attention", icon: "clock" }, progress: { done: 2, total: 5 }, active: true },
+  { id: "a3", col: "done", tag: "Design", title: "Paleta și fonturile site-ului", people: ["Bianca Petrașcu"], meta: ["Gata pe 16 oct."] }
+];
+const KB_DE_COLS = [{ id: "neu", label: "Neuer Kontakt", summary: "7.900 €" }, { id: "angebot", label: "Angebot gesendet", summary: "7.000 €" }, { id: "verh", label: "Verhandlung", summary: "9.750 €" }, { id: "gew", label: "Gewonnen im Oktober", summary: "6.200 €", tone: "done" }, { id: "verl", label: "Verloren", empty: "Noch keine verlorenen Chancen." }];
+const KB_DE_CARDS = [
+  { id: "d1", col: "neu", title: "Zahnarztpraxis Dr. M\xFCller", subtitle: "Monatliches Abonnement f\xFCr 10 Mitarbeiter", amount: "4.800 €", people: ["Lena Weber"], due: { label: "Heute anrufen", tone: "attention" } },
+  { id: "d2", col: "neu", title: "Hotel Adlon", subtitle: "Hochzeitsfrisuren, Saison 2027", amount: "3.100 €", people: ["Jonas Becker"], due: { label: "Do., 29. Okt." } },
+  { id: "d3", col: "angebot", title: "Agentur Nordlicht", subtitle: "Firmenveranstaltung, 40 Personen", amount: "7.000 €", people: ["Lena Weber"], due: { label: "Seit 9 Tagen keine Antwort", tone: "attention", icon: "clock" } },
+  { id: "d4", col: "verh", title: "Theater am Ring", subtitle: "Make-up f\xFCr Vorstellungen, 6 Monate", amount: "9.750 €", people: ["Jonas Becker", "Lena Weber"], due: { label: "Besprechung morgen, 10:00" } },
+  { id: "d5", col: "gew", title: "Kunstgymnasium Leipzig", subtitle: "Abschlussball", amount: "6.200 €", people: ["Lena Weber"], meta: ["Gewonnen am 21. Okt."] }
+];
+const KB_IT_COLS = [{ id: "nuovo", label: "Nuovo contatto", summary: "7.900 €" }, { id: "offerta", label: "Offerta inviata", summary: "7.000 €" }, { id: "tratt", label: "Trattativa", summary: "9.750 €" }, { id: "vinte", label: "Vinte a ottobre", summary: "6.200 €", tone: "done" }, { id: "perse", label: "Perse", empty: "Nessuna opportunit\xE0 persa finora." }];
+const KB_IT_CARDS = [
+  { id: "i1", col: "nuovo", title: "Studio dentistico Rossi", subtitle: "Abbonamento mensile per 10 dipendenti", amount: "4.800 €", people: ["Chiara Russo"], due: { label: "Da chiamare oggi", tone: "attention" } },
+  { id: "i2", col: "nuovo", title: "Hotel Baglioni", subtitle: "Acconciature per matrimoni, stagione 2027", amount: "3.100 €", people: ["Marco Conti"], due: { label: "gio 29 ott" } },
+  { id: "i3", col: "offerta", title: "Agenzia Nord Studio", subtitle: "Evento aziendale, 40 persone", amount: "7.000 €", people: ["Chiara Russo"], due: { label: "Nessuna risposta da 9 giorni", tone: "attention", icon: "clock" } },
+  { id: "i4", col: "tratt", title: "Teatro Comunale", subtitle: "Trucco per gli spettacoli, 6 mesi", amount: "9.750 €", people: ["Marco Conti", "Chiara Russo"], due: { label: "Incontro domani alle 10:00" } },
+  { id: "i5", col: "vinte", title: "Liceo artistico di Bologna", subtitle: "Ballo di fine anno", amount: "6.200 €", people: ["Chiara Russo"], meta: ["Vinta il 21 ott."] }
+];
+function KB({ cols, cards, label, def }) {
+  const [cs, setCs] = useState(cards);
+  const move = (id, col) => setCs(cs.map((c) => c.id === id ? { ...c, col } : c));
+  return h(V.Kanban, { label, columns: cols, cards: cs, onMove: move, defaultColumn: def, renderCard: (k, ctx) => h(V.KanbanCard, { ...k, columns: ctx.columns, onMove: move, onOpen: () => {} }) });
+}
+const C3_SECTIONS = [
+  h(C3Themes, { key: "t", stack: true, render: () => h("div", { className: "c3stack" }, h("p", { className: "caption c3lab" }, "Card activ \xB7 termen depășit (peach + ceas) \xB7 coloană goală \xB7 coloană „Gata” cu bifa lime"), h(KB, { cols: KB_RO_COLS, cards: KB_RO_CARDS, label: "Etape" })) }),
+  h(C3Langs, { key: "l", stack: true,
+    de: h("div", { className: "c3stack" }, h(KB, { cols: KB_DE_COLS, cards: KB_DE_CARDS, label: "Phasen" }), h("div", { style: { width: 360 } }, h(KB, { cols: KB_DE_COLS, cards: KB_DE_CARDS, label: "Phasen", def: "angebot" }))),
+    it: h("div", { className: "c3stack" }, h(KB, { cols: KB_IT_COLS, cards: KB_IT_CARDS, label: "Fasi" }), h("div", { style: { width: 360 } }, h(KB, { cols: KB_IT_COLS, cards: KB_IT_CARDS, label: "Fasi", def: "perse" }))) })
+];
+
+mount(h("div", { className: "c3wrap" }, C3_ORIG, h("div", { className: "d" }, ...C3_SECTIONS)));
 </script>
 </body>
 </html>

@@ -1,0 +1,172 @@
+.band {
+  position: relative;
+  margin: 0 calc(-1 * var(--space-6));
+  padding: var(--space-8) var(--space-6) 80px;
+  box-shadow: 0 0 0 100vmax var(--brand-surface);
+  clip-path: inset(0 -100vmax);
+  overflow: hidden;
+}
+
+.bandChev {
+  position: absolute;
+  right: var(--space-8);
+  top: 50%;
+  transform: translateY(-50%);
+  width: 160px;
+  height: 220px;
+  pointer-events: none;
+  fill: none;
+  stroke: var(--on-brand);
+  stroke-width: 1.5;
+  opacity: 0.15;
+}
+
+/* Summary chips — sentence format */
+.chipsSentence {
+  margin-top: var(--space-3);
+  font-size: 15px;
+  color: var(--on-brand);
+  line-height: 2;
+  margin-bottom: 0;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1-5);
+  padding: 2px var(--space-3) 2px var(--space-2);
+  border-radius: var(--radius-full);
+  background: var(--brand-line);
+  border: 1px solid var(--brand-line-strong);
+  color: var(--on-brand);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  vertical-align: middle;
+}
+
+.chipDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--attention);
+  flex-shrink: 0;
+}
+
+/* Search bar in top bar */
+.searchBar {
+  min-width: 160px;
+}
+
+.searchText,
+.searchKbd {
+  /* visible on desktop, hidden on mobile */
+}
+
+/* AppDock section — outside band, on canvas */
+.dockSection {
+  margin-top: calc(-60px + var(--space-2));
+  position: relative;
+  z-index: 1;
+}
+
+.dockHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--space-5);
+  margin-bottom: var(--space-2);
+  color: var(--ink);
+}
+
+/* Firm selector — hidden on mobile */
+.firmSelector {
+  display: inline-flex;
+}
+
+/* Alte aplicații — card wrapper */
+.otherCard {
+  background: var(--sheet);
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow-1);
+  padding: 0 var(--space-5);
+  margin-top: var(--space-3);
+}
+
+.dockWrap {
+  position: relative;
+  z-index: 1;
+}
+
+/* App tile row — "Alte aplicații" */
+.tileRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) 0;
+  border-bottom: 1px solid var(--line);
+  flex-wrap: wrap;
+}
+
+.tileRowBody {
+  flex: 1;
+  min-width: 0;
+}
+
+.tileRowAction {
+  display: flex;
+  gap: var(--space-1);
+  align-items: center;
+  flex-shrink: 0;
+}
+
+/* Mobile ≤599px */
+@media (max-width: 599px) {
+  .band {
+    padding-bottom: var(--space-5);
+  }
+
+  .bandChev {
+    display: none;
+  }
+
+  .dockSection {
+    margin-top: var(--space-4);
+  }
+
+  .dockHeader {
+    padding: 0;
+    color: var(--ink);
+  }
+
+  .searchBar {
+    min-width: unset !important;
+    width: 32px;
+    padding: 0 !important;
+    justify-content: center;
+  }
+
+  .searchText,
+  .searchKbd,
+  .firmSelector {
+    display: none !important;
+  }
+
+  .tileRow {
+    align-items: flex-start;
+  }
+
+  .tileRowAction {
+    order: 3;
+    width: 100%;
+    box-sizing: border-box;
+    padding-left: calc(36px + var(--space-3));
+    margin-top: var(--space-1);
+  }
+
+  .otherCard {
+    padding: 0 var(--space-4);
+  }
+}

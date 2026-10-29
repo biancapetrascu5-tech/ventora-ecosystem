@@ -1,4 +1,4 @@
-<!-- @dsCard group="Comercial" height=220 width=900 -->
+<!-- @dsCard group="Comercial" height=770 width=900 -->
 <!doctype html>
 <html lang="ro">
 <head><meta charset="utf-8"><title>RecommendationLabel — Ventora</title>
@@ -250,6 +250,9 @@ html,body{min-height:100%}
 .fxframe .caption{color:var(--ink-muted)}
 @container (max-width:420px){.fxlang{grid-template-columns:32px minmax(0,1fr) auto}.fxlang .v-iconbtn{display:none}}
 
+.thf{display:flex;flex-direction:column;gap:var(--space-4);padding:var(--space-5);background:var(--canvas);color:var(--ink);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg);min-width:0;box-sizing:border-box}
+.thg{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(420px,100%),1fr));gap:var(--space-4);align-items:start}
+.thstack{display:flex;flex-direction:column;gap:var(--space-4)}
 </style>
 </head>
 <body>
@@ -262,9 +265,26 @@ const DE = ({ children }) => /* @__PURE__ */ React.createElement(V.LocaleProvide
 const FR = ({ children }) => /* @__PURE__ */ React.createElement(V.LocaleProvider, { locale: "fr" }, children);
 const IT = ({ children }) => /* @__PURE__ */ React.createElement(V.LocaleProvider, { locale: "it" }, children);
 const mount = (el) => ReactDOM.createRoot(document.getElementById("root")).render(/* @__PURE__ */ React.createElement(V.LocaleProvider, { locale: "ro" }, el));
-mount(
+const ORIG = (
   /* @__PURE__ */ React.createElement("div", { className: "d" }, /* @__PURE__ */ React.createElement(Row, { label: "Eticheta" }, /* @__PURE__ */ React.createElement(V.RecommendationLabel, null)), /* @__PURE__ */ React.createElement(Row, { label: "DE \xB7 IT" }, /* @__PURE__ */ React.createElement(DE, null, /* @__PURE__ */ React.createElement(V.RecommendationLabel, null)), /* @__PURE__ */ React.createElement(IT, null, /* @__PURE__ */ React.createElement(V.RecommendationLabel, null))), /* @__PURE__ */ React.createElement("p", { className: "body-small muted" }, "Badge neutru, mic, pe orice con\u021Binut comercial: card, tooltip comercial, notificare, tile din catalog. Nu e peach (acum / aten\u021Bia ta) \u0219i nu e lime (gata)."))
 );
+/* Light/Dark frames, DE/IT label test */
+const E = React.createElement;
+const noop = () => {
+};
+const Cap = ({ children }) => E("p", { className: "caption muted" }, children);
+const ThemeFrame = ({ th, children }) => E("div", { className: "thf", "data-theme": th }, E("p", { className: "heading" }, th === "light" ? "Light" : "Dark"), children);
+const LocFrame = ({ loc, label, children }) => E("div", { className: "thf", "data-theme": "light" }, E("p", { className: "heading" }, label), E(V.LocaleProvider, { locale: loc }, children));
+const Frames = ({ States, stack }) => E("div", { className: stack ? "thstack" : "thg" }, E(ThemeFrame, { th: "light" }, E(States, { th: "light" })), E(ThemeFrame, { th: "dark" }, E(States, { th: "dark" })));
+const Locales = ({ De, It, stack }) => E("div", { className: stack ? "thstack" : "thg" }, E(LocFrame, { loc: "de", label: "Deutsch (DE)" }, E(De)), E(LocFrame, { loc: "it", label: "Italiano (IT)" }, E(It)));
+const Extra = ({ States, De, It, stack, stackLoc }) => E("div", { className: "d" }, E("p", { className: "heading" }, "Stări · Light și Dark"), E(Frames, { States, stack }), E("p", { className: "heading" }, "Test de lungime: germană și italiană"), E(Locales, { De, It, stack: stackLoc }));
+const RL = (title, line) => E("div", { className: "d0" },
+  E("div", { className: "r" }, E(V.RecommendationLabel, null)),
+  E("div", { className: "sheetlike", style: { padding: "var(--space-4)", display: "flex", flexDirection: "column", gap: "var(--space-2)", alignItems: "flex-start" } }, E(V.RecommendationLabel, null), E("p", { className: "body-strong" }, title), E("p", { className: "body-small muted" }, line)));
+const States = () => RL("Ține istoricul clienților în ClientDesk", "Clienții tăi din programări pot avea istoric, note și follow-up.");
+const De = () => RL("Kundenhistorie im ClientDesk führen", "Die Kundinnen und Kunden aus Ihren Terminen bekommen Verlauf, Notizen und Nachfassaktionen.");
+const It = () => RL("Tenga lo storico dei clienti in ClientDesk", "I clienti dei Suoi appuntamenti avranno cronologia, note e follow-up.");
+mount(E("div", null, ORIG, E(Extra, { States, De, It })));
 </script>
 </body>
 </html>

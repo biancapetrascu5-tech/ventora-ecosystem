@@ -1,0 +1,25 @@
+{
+ "name": "BookingLimit",
+ "version": "1.0.1",
+ "kind": "page",
+ "group": "Ecrane Booking",
+ "status": "changed",
+ "description": "EasyBook — the monthly appointment limit reached when creating an appointment: existing ones stay editable; the owner buys more right there or requests a plan change; anyone else sees who can buy and can tell them. Dialog on desktop and tablet, bottom sheet on phones.",
+ "exports": [],
+ "props": [],
+ "events": [],
+ "states": [
+  "owner",
+  "member",
+  "dialog",
+  "bottom-sheet",
+  "limit-reached",
+  "light",
+  "dark",
+  "de",
+  "it"
+ ],
+ "notes": "Purchase steps after the choice (confirm, processing, success) belong to UpgradeDialog and are not repeated here",
+ "readme": "components/BookingLimit/README.md",
+ "preview": "components/BookingLimit/preview.html"
+}

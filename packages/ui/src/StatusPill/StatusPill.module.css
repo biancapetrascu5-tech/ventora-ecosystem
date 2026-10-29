@@ -1,0 +1,55 @@
+.root {
+  width: fit-content;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  height: var(--space-6);
+  padding: 0 var(--space-2);
+  border-radius: var(--radius-full);
+  white-space: nowrap;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.root > span:last-child {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sm {
+  height: var(--space-5);
+  padding: 0 var(--space-2);
+}
+
+.dot {
+  width: var(--dot-size);
+  height: var(--dot-size);
+  border-radius: var(--radius-full);
+  background: currentColor;
+  flex: none;
+}
+
+.neutral {
+  background: var(--neutral-soft);
+  color: var(--ink-secondary);
+}
+
+.attention {
+  background: var(--attention-soft);
+  color: var(--attention-ink);
+}
+
+.done {
+  background: var(--done-soft);
+  color: var(--done-ink);
+}
+
+.danger {
+  background: var(--danger-soft);
+  color: var(--danger-ink);
+}
+
+.progress {
+  background: var(--selected);
+  color: var(--ink);
+}

@@ -1,0 +1,129 @@
+{
+ "name": "IconButton",
+ "version": "1.0.1",
+ "kind": "component",
+ "group": "Actions",
+ "status": "changed",
+ "description": "A square button carrying a single Lucide icon; `label` is required and becomes the accessible name and the native tooltip.",
+ "exports": [
+  "IconButton"
+ ],
+ "props": [
+  {
+   "name": "icon",
+   "type": "string",
+   "required": true,
+   "note": ""
+  },
+  {
+   "name": "label",
+   "type": "string",
+   "required": true,
+   "note": ""
+  },
+  {
+   "name": "variant",
+   "type": "\"primary\" | \"secondary\" | \"quiet\"",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "size",
+   "type": "\"sm\" | \"md\" | \"lg\"",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "loading",
+   "type": "boolean",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "pressed",
+   "type": "boolean",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "badge",
+   "type": "number | boolean",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "state",
+   "type": "ForcedState",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "type",
+   "type": "\"button\" | \"submit\" | \"reset\"",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "disabled",
+   "type": "boolean",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "onClick",
+   "type": "(e: any) => void",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "className",
+   "type": "string",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "id",
+   "type": "string",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "style",
+   "type": "any",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "title",
+   "type": "string",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "role",
+   "type": "string",
+   "required": false,
+   "note": ""
+  }
+ ],
+ "events": [
+  "onClick"
+ ],
+ "states": [
+  "default",
+  "hover",
+  "focus",
+  "pressed",
+  "toggled",
+  "disabled",
+  "loading",
+  "badge-count",
+  "badge-dot",
+  "size-sm",
+  "size-md",
+  "size-lg"
+ ],
+ "notes": "",
+ "readme": "components/IconButton/README.md",
+ "preview": "components/IconButton/preview.html"
+}

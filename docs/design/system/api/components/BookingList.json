@@ -1,0 +1,32 @@
+{
+ "name": "BookingList",
+ "version": "1.0.1",
+ "kind": "page",
+ "group": "Ecrane Booking",
+ "status": "changed",
+ "description": "EasyBook — the appointments list: search, period, person and status filters with removable filter pills, sorting, selection with the bulk bar (confirm, send reminder, cancel), row actions, pagination. On tablets the person and price columns hide (optional columns); on phones rows become a list.",
+ "exports": [],
+ "props": [],
+ "events": [],
+ "states": [
+  "default",
+  "filtered",
+  "filter-pills",
+  "sorted",
+  "selected",
+  "bulk-bar",
+  "row-actions",
+  "pagination",
+  "no-results-in-period",
+  "export-with-filters",
+  "optional-columns-hidden",
+  "mobile-list",
+  "light",
+  "dark",
+  "de",
+  "it"
+ ],
+ "notes": "Filters remembered per person is behaviour, mentioned in the notes",
+ "readme": "components/BookingList/README.md",
+ "preview": "components/BookingList/preview.html"
+}

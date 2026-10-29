@@ -1,0 +1,97 @@
+/* .v-combobox din bundle.css (controlul vine din Input.module.css, lista din Select.module.css) */
+.combobox {
+  cursor: text;
+}
+
+/* .is-open = focus vizibil pe control */
+.isOpen {
+  outline: var(--focus-ring-width) solid var(--focus-ring);
+  outline-offset: var(--focus-ring-offset);
+  border-color: var(--control-border-hover);
+}
+
+.hasValue input::placeholder {
+  color: var(--ink);
+}
+
+/* Clasă dublată: trebuie să bată .control din Input.module.css. */
+.multi.multi {
+  height: auto;
+  min-height: var(--control-md);
+  flex-wrap: wrap;
+  padding-top: var(--space-1);
+  padding-bottom: var(--space-1);
+}
+
+.multi input {
+  min-width: calc(var(--space-12) * 2);
+  height: var(--control-sm);
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  height: var(--space-6);
+  padding: 0 var(--space-1) 0 var(--space-2);
+  border-radius: var(--radius-xs);
+  background: var(--neutral-soft);
+  color: var(--ink);
+  max-width: 100%;
+}
+
+.chipX {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  color: var(--ink-secondary);
+  display: inline-flex;
+  padding: var(--space-0-5);
+  border-radius: var(--radius-xs);
+  cursor: pointer;
+}
+
+.chipX:hover {
+  background: var(--state-pressed);
+  color: var(--ink);
+}
+
+.pop.pop {
+  min-width: 0;
+  position: fixed;
+  animation: pop var(--duration-fast) var(--ease-standard);
+}
+
+@keyframes pop {
+  from {
+    opacity: 0;
+    transform: translateY(calc(var(--space-1) * -1));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pop.pop {
+    animation: none;
+  }
+}
+
+/* .v-check__box.v-option__check (multiple) */
+.check {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: var(--space-4);
+  height: var(--space-4);
+  border-radius: var(--radius-xs);
+  border: var(--border-width-control) solid var(--control-border);
+  background: var(--sheet);
+  color: transparent;
+}
+
+.checkOn {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: var(--on-primary);
+}

@@ -1,0 +1,69 @@
+{
+ "name": "PortalPresence",
+ "version": "1.0.1",
+ "kind": "component",
+ "group": "Hub",
+ "status": "changed",
+ "description": "Portal in the business launcher: not an app the business works in, but its page for clients — shown as its own card under the AppDock, never as one more icon.",
+ "exports": [
+  "PortalPresence"
+ ],
+ "props": [
+  {
+   "name": "status",
+   "type": "\"published\" | \"hidden\" | \"draft\"",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "canManage",
+   "type": "boolean",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "onManage",
+   "type": "() => void",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "onPreview",
+   "type": "() => void",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "previewHref",
+   "type": "string",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "compact",
+   "type": "boolean",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "className",
+   "type": "string",
+   "required": false,
+   "note": ""
+  }
+ ],
+ "events": [
+  "onManage",
+  "onPreview"
+ ],
+ "states": [
+  "published",
+  "hidden",
+  "draft",
+  "member-readonly",
+  "compact"
+ ],
+ "notes": "",
+ "readme": "components/PortalPresence/README.md",
+ "preview": "components/PortalPresence/preview.html"
+}

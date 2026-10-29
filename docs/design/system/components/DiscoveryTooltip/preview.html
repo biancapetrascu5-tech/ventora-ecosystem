@@ -1,4 +1,4 @@
-<!-- @dsCard group="Comercial" height=760 width=1200 -->
+<!-- @dsCard group="Comercial" height=2658 width=1200 -->
 <!doctype html>
 <html lang="ro">
 <head><meta charset="utf-8"><title>DiscoveryTooltip — Ventora</title>
@@ -250,6 +250,18 @@ html,body{min-height:100%}
 .fxframe .caption{color:var(--ink-muted)}
 @container (max-width:420px){.fxlang{grid-template-columns:32px minmax(0,1fr) auto}.fxlang .v-iconbtn{display:none}}
 
+/* c2: theme + locale frames */
+.pv{display:flex;flex-direction:column;gap:var(--space-4);padding:var(--space-4)}
+.pv-frame{display:flex;flex-direction:column;gap:var(--space-4);padding:var(--space-6);background:var(--canvas);color:var(--ink);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg);min-width:0}
+.pv-frame>.heading{margin:0}
+.pv-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:var(--space-5) var(--space-4);align-items:start}
+.pv-grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--space-5) var(--space-4);align-items:start}
+.pv-grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--space-5) var(--space-4);align-items:start}
+.pv-cell{display:flex;flex-direction:column;gap:var(--space-2);min-width:0}
+.pv-lab{margin:0;color:var(--ink-muted)}
+.pv-box{padding:var(--space-4);background:var(--sheet);border:var(--border-width) solid var(--line);border-radius:var(--radius-md);min-width:0;color:var(--ink)}
+.pv-stage{position:relative;overflow:hidden;border:var(--border-width) solid var(--line-strong);border-radius:var(--radius-lg);background:var(--canvas);color:var(--ink)}
+.pv-note{margin:0;color:var(--ink-muted)}
 </style>
 </head>
 <body>
@@ -262,16 +274,41 @@ const DE = ({ children }) => /* @__PURE__ */ React.createElement(V.LocaleProvide
 const FR = ({ children }) => /* @__PURE__ */ React.createElement(V.LocaleProvider, { locale: "fr" }, children);
 const IT = ({ children }) => /* @__PURE__ */ React.createElement(V.LocaleProvider, { locale: "it" }, children);
 const mount = (el) => ReactDOM.createRoot(document.getElementById("root")).render(/* @__PURE__ */ React.createElement(V.LocaleProvider, { locale: "ro" }, el));
-mount(
-  /* @__PURE__ */ React.createElement("div", { className: "d" }, /* @__PURE__ */ React.createElement("div", { className: "g2", style: { rowGap: "var(--space-16)" } }, /* @__PURE__ */ React.createElement("div", { className: "d0", style: { minHeight: 220 } }, /* @__PURE__ */ React.createElement("p", { className: "caption muted" }, "Func\u021Bionalitate, l\xE2ng\u0103 butonul ei"), /* @__PURE__ */ React.createElement("div", { className: "r" }, /* @__PURE__ */ React.createElement(V.DiscoveryTooltip, { title: "Exportul merge \u0219i pentru contabil", body: "Alegi perioada \u0219i prime\u0219ti un fi\u0219ier pe care contabilul \xEEl deschide direct.", onGotIt: () => {
-  }, onLearnMore: () => {
-  } }, /* @__PURE__ */ React.createElement(V.Button, { icon: "download" }, "Export\u0103")))), /* @__PURE__ */ React.createElement("div", { className: "d0", style: { minHeight: 220 } }, /* @__PURE__ */ React.createElement("p", { className: "caption muted" }, "Aplica\u021Bie (comercial: cu eticheta \u201ERecomandare\u201D), aliniat la dreapta"), /* @__PURE__ */ React.createElement("div", { className: "r", style: { justifyContent: "flex-end" } }, /* @__PURE__ */ React.createElement(V.DiscoveryTooltip, { commercial: true, align: "end", title: "Clien\u021Bii din Booking pot intra \xEEn CRM", body: "Fiecare client prime\u0219te istoric, note \u0219i pasul urm\u0103tor. Vezi detaliile \xEEn catalog.", onGotIt: () => {
-  }, onLearnMore: () => {
-  } }, /* @__PURE__ */ React.createElement(V.IconButton, { icon: "users", label: "Clien\u021Bi", variant: "secondary" })))), /* @__PURE__ */ React.createElement("div", { className: "d0", style: { minHeight: 200 } }, /* @__PURE__ */ React.createElement("p", { className: "caption muted" }, "Deasupra elementului, c\xE2nd jos nu e loc"), /* @__PURE__ */ React.createElement("div", { className: "r", style: { marginTop: 160 } }, /* @__PURE__ */ React.createElement(V.DiscoveryTooltip, { placement: "top", title: "Mut\u0103 programarea tr\u0103g\xE2nd-o", body: "Sau deschide-o \u0219i alege \u201EMut\u0103 programarea\u201D.", onGotIt: () => {
-  } }, /* @__PURE__ */ React.createElement(V.Button, null, "Calendar")))), /* @__PURE__ */ React.createElement("div", { className: "d0", style: { minHeight: 200 } }, /* @__PURE__ */ React.createElement("p", { className: "caption muted" }, "DE \xB7 IT"), /* @__PURE__ */ React.createElement("div", { className: "r", style: { gap: "var(--space-16)", alignItems: "flex-start" } }, /* @__PURE__ */ React.createElement(DE, null, /* @__PURE__ */ React.createElement(V.DiscoveryTooltip, { title: "Export auch f\xFCr die Buchhaltung", body: "Zeitraum w\xE4hlen, Datei erhalten.", onGotIt: () => {
-  }, onLearnMore: () => {
-  } }, /* @__PURE__ */ React.createElement(V.Button, { icon: "download" }, "Exportieren")))))), /* @__PURE__ */ React.createElement("p", { className: "body-small muted" }, "Cel mult unul pe ecran \xB7 dup\u0103 \u201EAm \xEEn\u021Beles\u201D nu mai apare \xB7 pe ecranele tactile e acela\u0219i card ancorat, nu apare la hover \xB7 nu acoper\u0103 c\xE2mpuri sau butoane \xEEn uz."))
-);
+/* c2: every README state, Light/Dark frames (data-theme on the frame), DE/IT with translated texts. */
+const h = React.createElement;
+const noop = () => {};
+const Cell = ({ label, children, style }) => h("div", { className: "pv-cell", style }, h("p", { className: "caption pv-lab" }, label), children);
+const FRAMES = [["light", "ro", "Light"], ["dark", "ro", "Dark"], ["light", "de", "Deutsch \u00b7 Light"], ["dark", "it", "Italiano \u00b7 Dark"]];
+const Frames = ({ Board, top }) => h("div", { className: "pv" }, top, FRAMES.map(([th, lang, lab], i) => h("section", { key: lab, className: "pv-frame", "data-theme": th }, h("p", { className: "heading" }, lab), h(V.LocaleProvider, { locale: lang }, h(Board, { lang, theme: th, first: i === 0 })))));
+const DT2 = {
+  ro: { l: ["Funcționalitate, lângă butonul ei · jos, la stânga", "Aplicație (comercial: cu eticheta „Recomandare”), aliniat la dreapta", "Deasupra elementului, când jos nu e loc · fără „Vezi cum funcționează”", "Închis (după „Am înțeles” nu mai apare)"],
+    t1: "Exportul merge și pentru contabil", b1: "Alegi perioada și primești un fișier pe care contabilul îl deschide direct.", btn1: "Exportă",
+    t2: "Clienții din EasyBook pot intra în ClientDesk", b2: "Fiecare client primește istoric, note și pasul următor. Vezi detaliile în catalog.", btn2: "Clienți",
+    t3: "Mută programarea trăgând-o", b3: "Sau deschide-o și alege „Mută programarea”.", btn3: "Calendar",
+    note: "Cel mult unul pe ecran · după „Am înțeles” nu mai apare · pe ecranele tactile e același card ancorat, nu apare la hover · nu acoperă câmpuri sau butoane în uz." },
+  de: { l: ["Funktion, neben ihrer Schaltfläche · unten, links", "App (kommerziell: mit dem Label „Empfehlung“), rechtsbündig", "Über dem Element, wenn unten kein Platz ist · ohne „So funktioniert es“", "Geschlossen (nach „Verstanden“ erscheint er nicht mehr)"],
+    t1: "Export auch für die Buchhaltung", b1: "Wählen Sie den Zeitraum und erhalten Sie eine Datei, die Ihre Buchhaltung direkt öffnen kann.", btn1: "Exportieren",
+    t2: "Kunden aus EasyBook können in ClientDesk übernommen werden", b2: "Jeder Kunde erhält Verlauf, Notizen und den nächsten Schritt. Details finden Sie im App-Katalog.", btn2: "Kunden",
+    t3: "Termin per Ziehen verschieben", b3: "Oder öffnen Sie ihn und wählen Sie „Termin verschieben“.", btn3: "Kalender",
+    note: "Höchstens einer pro Bildschirm · nach „Verstanden“ erscheint er nicht mehr · auf Touchscreens dieselbe verankerte Karte, nie per Hover · verdeckt keine Felder oder Schaltflächen in Benutzung." },
+  it: { l: ["Funzione, accanto al suo pulsante · in basso, a sinistra", "App (commerciale: con l’etichetta „Raccomandazione”), allineato a destra", "Sopra l’elemento, quando sotto non c’è spazio · senza „Guarda come funziona”", "Chiuso (dopo „Ho capito” non riappare)"],
+    t1: "L’esportazione funziona anche per il commercialista", b1: "Sceglie il periodo e riceve un file che il commercialista apre direttamente.", btn1: "Esporta",
+    t2: "I clienti di EasyBook possono entrare in ClientDesk", b2: "Ogni cliente riceve storico, note e il passo successivo. Trova i dettagli nel catalogo delle app.", btn2: "Clienti",
+    t3: "Sposti l’appuntamento trascinandolo", b3: "Oppure lo apra e scelga „Sposta l’appuntamento”.", btn3: "Calendario",
+    note: "Al massimo uno per schermata · dopo „Ho capito” non riappare · sugli schermi touch è la stessa scheda ancorata, mai al passaggio del mouse · non copre campi o pulsanti in uso." }
+};
+function Board({ lang }) {
+  const T = DT2[lang], L = T.l;
+  return h("div", { className: "pv-cell", style: { gap: "var(--space-5)" } },
+    h("div", { className: "pv-grid2", style: { rowGap: "var(--space-8)" } },
+      h(Cell, { label: L[0], style: { minHeight: 250 } }, h("div", { className: "r" }, h(V.DiscoveryTooltip, { title: T.t1, body: T.b1, onGotIt: noop, onLearnMore: noop }, h(V.Button, { icon: "download" }, T.btn1)))),
+      h(Cell, { label: L[1], style: { minHeight: 250 } }, h("div", { className: "r", style: { justifyContent: "flex-end" } }, h(V.DiscoveryTooltip, { commercial: true, align: "end", title: T.t2, body: T.b2, onGotIt: noop, onLearnMore: noop }, h(V.IconButton, { icon: "users", label: T.btn2, variant: "secondary" })))),
+      h(Cell, { label: L[2], style: { minHeight: 230 } }, h("div", { className: "r", style: { marginTop: 170 } }, h(V.DiscoveryTooltip, { placement: "top", title: T.t3, body: T.b3, onGotIt: noop }, h(V.Button, { icon: "calendar" }, T.btn3)))),
+      h(Cell, { label: L[3] }, h("div", { className: "r" }, h(V.DiscoveryTooltip, { open: false, title: T.t1, onGotIt: noop }, h(V.Button, { icon: "download" }, T.btn1))))),
+    h("p", { className: "body-small pv-note" }, T.note));
+}
+mount(h(Frames, { Board }));
+
 </script>
 </body>
 </html>

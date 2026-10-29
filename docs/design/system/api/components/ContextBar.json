@@ -1,0 +1,86 @@
+{
+ "name": "ContextBar",
+ "version": "1.2.0",
+ "kind": "component",
+ "group": "Shell",
+ "status": "changed",
+ "description": "The top bar of an app: business switcher, search (opens the CommandPalette, shows ⌘K), \"Creează\", notifications, account.",
+ "exports": [
+  "ContextBar"
+ ],
+ "props": [
+  {
+   "name": "title",
+   "type": "ReactNode",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "org",
+   "type": "ReactNode",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "onSearch",
+   "type": "() => void",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "searchLabel",
+   "type": "string",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "createItems",
+   "type": "MenuItem[]",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "onCreate",
+   "type": "() => void",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "createLabel",
+   "type": "string",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "notifications",
+   "type": "ReactNode",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "account",
+   "type": "ReactNode",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "leading",
+   "type": "ReactNode",
+   "required": false,
+   "note": ""
+  }
+ ],
+ "events": [
+  "onCreate",
+  "onSearch"
+ ],
+ "states": [
+  "desktop",
+  "tablet",
+  "mobile",
+  "brandzone-launcher"
+ ],
+ "notes": "",
+ "readme": "components/ContextBar/README.md",
+ "preview": "components/ContextBar/preview.html"
+}

@@ -1,0 +1,53 @@
+{
+ "name": "AppDock",
+ "version": "1.1.0",
+ "kind": "component",
+ "group": "Hub",
+ "status": "changed",
+ "description": "The launcher's \"Aplicațiile tale\": a row of app icons on one raised sheet; on hover or keyboard focus an icon opens into the app's card above the row. Hub launcher only.",
+ "exports": [
+  "AppDock"
+ ],
+ "props": [
+  {
+   "name": "apps",
+   "type": "DockApp[]",
+   "required": true,
+   "note": ""
+  },
+  {
+   "name": "onOpen",
+   "type": "(e: any, app: AppKey, name: string, launch: { from: DOMRect; fromCard: DOMRect; iconEl: Element; }) => void",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "label",
+   "type": "string",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "className",
+   "type": "string",
+   "required": false,
+   "note": ""
+  }
+ ],
+ "events": [
+  "onOpen"
+ ],
+ "states": [
+  "rest",
+  "hover",
+  "focus",
+  "firstOpensInward",
+  "lastOpensInward",
+  "liveAttention",
+  "badge",
+  "phoneGrid"
+ ],
+ "notes": "prefers-reduced-motion (instant swap) cannot be forced in a static preview",
+ "readme": "components/AppDock/README.md",
+ "preview": "components/AppDock/preview.html"
+}

@@ -1,0 +1,112 @@
+{
+ "name": "Select",
+ "version": "1.1.0",
+ "kind": "component",
+ "group": "Forms",
+ "status": "changed",
+ "description": "Pick one value from a short list; a custom listbox, never the native `<select>`.",
+ "exports": [
+  "Select"
+ ],
+ "props": [
+  {
+   "name": "options",
+   "type": "(Option<V> | OptionGroup<V>)[]",
+   "required": true,
+   "note": ""
+  },
+  {
+   "name": "value",
+   "type": "V",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "defaultValue",
+   "type": "V",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "onChange",
+   "type": "(v: V) => void",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "placeholder",
+   "type": "string",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "invalid",
+   "type": "boolean",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "disabled",
+   "type": "boolean",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "loading",
+   "type": "boolean",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "size",
+   "type": "\"sm\" | \"md\" | \"lg\"",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "icon",
+   "type": "string",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "defaultOpen",
+   "type": "boolean",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "id",
+   "type": "string",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "state",
+   "type": "ForcedState",
+   "required": false,
+   "note": ""
+  }
+ ],
+ "events": [
+  "onChange"
+ ],
+ "states": [
+  "default",
+  "placeholder",
+  "open",
+  "grouped",
+  "option-disabled",
+  "hover",
+  "focus",
+  "pressed",
+  "invalid",
+  "disabled",
+  "loading",
+  "small",
+  "large"
+ ],
+ "notes": "",
+ "readme": "components/Select/README.md",
+ "preview": "components/Select/preview.html"
+}

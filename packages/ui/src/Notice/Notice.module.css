@@ -1,0 +1,54 @@
+.root {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-sm);
+  background: var(--neutral-soft);
+  color: var(--ink);
+}
+
+.icon {
+  margin-top: var(--space-0-5);
+  color: var(--ink-secondary);
+}
+
+.text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-0-5);
+}
+
+.body {
+  color: var(--ink-secondary);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-top: var(--space-2);
+}
+
+.attention {
+  background: var(--attention-soft);
+}
+.attention .icon {
+  color: var(--attention-ink);
+}
+
+.done {
+  background: var(--done-soft);
+}
+.done .icon {
+  color: var(--done-ink);
+}
+
+.danger {
+  background: var(--danger-soft);
+}
+.danger .icon {
+  color: var(--danger-ink);
+}

@@ -1,477 +1,492 @@
 {
- "v": 3,
- "layout": "files",
- "createdOnFiles": {
-  "v": 1,
-  "at": "2026-10-24T07:59:56Z"
- },
- "title": "Ventora",
- "namespace": "Ventora",
- "libraries": [
-  {
-   "name": "react",
-   "version": "18"
-  },
-  {
-   "name": "react-dom",
-   "version": "18"
-  }
- ],
- "sections": {},
- "groups": [
-  "Logos",
-  "App icons"
- ],
- "assetGroups": {
-  "Logos": {
-   "name": "Logos",
-   "tile": "l",
-   "order": [
-    "ventora-logo.svg",
-    "ventora-logo-dark.svg",
-    "ventora-mark.svg",
-    "ventora-mark-dark.svg",
-    "favicon.svg"
-   ],
-   "files": {}
-  },
-  "App icons": {
-   "name": "App icons",
-   "tile": "s",
-   "order": [
-    "booking.svg",
-    "booking-dark.svg",
-    "booking-inactive.svg",
-    "booking-inactive-dark.svg",
-    "crm.svg",
-    "crm-dark.svg",
-    "crm-inactive.svg",
-    "crm-inactive-dark.svg",
-    "documents.svg",
-    "documents-dark.svg",
-    "documents-inactive.svg",
-    "documents-inactive-dark.svg",
-    "contracts.svg",
-    "contracts-dark.svg",
-    "contracts-inactive.svg",
-    "contracts-inactive-dark.svg",
-    "events.svg",
-    "events-dark.svg",
-    "events-inactive.svg",
-    "events-inactive-dark.svg",
-    "hr.svg",
-    "hr-dark.svg",
-    "hr-inactive.svg",
-    "hr-inactive-dark.svg",
-    "inventory.svg",
-    "inventory-dark.svg",
-    "inventory-inactive.svg",
-    "inventory-inactive-dark.svg",
-    "shifts.svg",
-    "shifts-dark.svg",
-    "shifts-inactive.svg",
-    "shifts-inactive-dark.svg",
-    "marketing.svg",
-    "marketing-dark.svg",
-    "marketing-inactive.svg",
-    "marketing-inactive-dark.svg",
-    "analytics.svg",
-    "analytics-dark.svg",
-    "analytics-inactive.svg",
-    "analytics-inactive-dark.svg",
-    "assets.svg",
-    "assets-dark.svg",
-    "assets-inactive.svg",
-    "assets-inactive-dark.svg",
-    "projects.svg",
-    "projects-dark.svg",
-    "projects-inactive.svg",
-    "projects-inactive-dark.svg",
-    "finance.svg",
-    "finance-dark.svg",
-    "finance-inactive.svg",
-    "finance-inactive-dark.svg",
-    "portal.svg",
-    "portal-dark.svg",
-    "portal-inactive.svg",
-    "portal-inactive-dark.svg",
-    "network.svg",
-    "network-dark.svg",
-    "network-inactive.svg",
-    "network-inactive-dark.svg"
-   ],
-   "files": {
-    "booking.svg": {
-     "name": "booking.svg",
-     "blob": "a9e97f9145f84a5918d4b1cbe3c1a294",
-     "size": 811,
-     "type": "image/svg+xml"
+  "v": 3,
+  "assetGroups": {
+    "App~20icons": {
+      "files": {
+        "analytics-dark.svg": {
+          "blob": "5788d0a0fe4c513f376b2b7e4ad949a7",
+          "name": "analytics-dark.svg",
+          "size": 784,
+          "type": "image/svg+xml"
+        },
+        "analytics-inactive-dark.svg": {
+          "blob": "19026390c886b409b66ea5d17f97c071",
+          "name": "analytics-inactive-dark.svg",
+          "size": 699,
+          "type": "image/svg+xml"
+        },
+        "analytics-inactive.svg": {
+          "blob": "e0d5fb1df564fcfa4ccbc6e2fe833fa1",
+          "name": "analytics-inactive.svg",
+          "size": 699,
+          "type": "image/svg+xml"
+        },
+        "analytics.svg": {
+          "blob": "c73dd292a9f11e709deec5a6355b2054",
+          "name": "analytics.svg",
+          "size": 699,
+          "type": "image/svg+xml"
+        },
+        "assets-dark.svg": {
+          "blob": "01c3c5ae2971ad1c9f96e77c23035932",
+          "name": "assets-dark.svg",
+          "size": 733,
+          "type": "image/svg+xml"
+        },
+        "assets-inactive-dark.svg": {
+          "blob": "7233df31e40b39afdbd369fff138b2b8",
+          "name": "assets-inactive-dark.svg",
+          "size": 648,
+          "type": "image/svg+xml"
+        },
+        "assets-inactive.svg": {
+          "blob": "7de7e3466cae192688ba4932e891048a",
+          "name": "assets-inactive.svg",
+          "size": 648,
+          "type": "image/svg+xml"
+        },
+        "assets.svg": {
+          "blob": "3e08edb757c123049f557ff58d1f5041",
+          "name": "assets.svg",
+          "size": 648,
+          "type": "image/svg+xml"
+        },
+        "booking-dark.svg": {
+          "blob": "c1f963dac7b2a665654747c2e7cdea9e",
+          "name": "booking-dark.svg",
+          "size": 896,
+          "type": "image/svg+xml"
+        },
+        "booking-inactive-dark.svg": {
+          "blob": "8cef953422ea28620e37d16d67c2310a",
+          "name": "booking-inactive-dark.svg",
+          "size": 811,
+          "type": "image/svg+xml"
+        },
+        "booking-inactive.svg": {
+          "blob": "01486421db0abe350af52dd25a733367",
+          "name": "booking-inactive.svg",
+          "size": 811,
+          "type": "image/svg+xml"
+        },
+        "booking.svg": {
+          "blob": "a9e97f9145f84a5918d4b1cbe3c1a294",
+          "name": "booking.svg",
+          "size": 811,
+          "type": "image/svg+xml"
+        },
+        "contracts-dark.svg": {
+          "blob": "cea688f2e55f78e4c50d4f4e101408e5",
+          "name": "contracts-dark.svg",
+          "size": 774,
+          "type": "image/svg+xml"
+        },
+        "contracts-inactive-dark.svg": {
+          "blob": "96b408717907272b9c900c31bd08b098",
+          "name": "contracts-inactive-dark.svg",
+          "size": 689,
+          "type": "image/svg+xml"
+        },
+        "contracts-inactive.svg": {
+          "blob": "7b23f14df6d6e1b0dc821e594470f45e",
+          "name": "contracts-inactive.svg",
+          "size": 689,
+          "type": "image/svg+xml"
+        },
+        "contracts.svg": {
+          "blob": "730b53ae89086b80b44ac302a60663c7",
+          "name": "contracts.svg",
+          "size": 689,
+          "type": "image/svg+xml"
+        },
+        "crm-dark.svg": {
+          "blob": "904dde1f6ba426f77f29a778d6951ac9",
+          "name": "crm-dark.svg",
+          "size": 778,
+          "type": "image/svg+xml"
+        },
+        "crm-inactive-dark.svg": {
+          "blob": "ab9333a3fecc1446dee761cb19d85986",
+          "name": "crm-inactive-dark.svg",
+          "size": 693,
+          "type": "image/svg+xml"
+        },
+        "crm-inactive.svg": {
+          "blob": "f531de448211822168f2b761f9a7ab60",
+          "name": "crm-inactive.svg",
+          "size": 693,
+          "type": "image/svg+xml"
+        },
+        "crm.svg": {
+          "blob": "ea4a469b82b78b6032e49fe52547b804",
+          "name": "crm.svg",
+          "size": 693,
+          "type": "image/svg+xml"
+        },
+        "documents-dark.svg": {
+          "blob": "751079a04744a8f7f267d83f7821850d",
+          "name": "documents-dark.svg",
+          "size": 825,
+          "type": "image/svg+xml"
+        },
+        "documents-inactive-dark.svg": {
+          "blob": "d2848d899db9aa0dab6665f22f9cd923",
+          "name": "documents-inactive-dark.svg",
+          "size": 740,
+          "type": "image/svg+xml"
+        },
+        "documents-inactive.svg": {
+          "blob": "94ea24d087db7a584e9c46c8b4d5d2b9",
+          "name": "documents-inactive.svg",
+          "size": 740,
+          "type": "image/svg+xml"
+        },
+        "documents.svg": {
+          "blob": "2344b9fd6c5131f68072edae88cc4414",
+          "name": "documents.svg",
+          "size": 740,
+          "type": "image/svg+xml"
+        },
+        "events-dark.svg": {
+          "blob": "98b411816d63c9d4c83e86bad6184fb3",
+          "name": "events-dark.svg",
+          "size": 838,
+          "type": "image/svg+xml"
+        },
+        "events-inactive-dark.svg": {
+          "blob": "456f4f928cff5d404c22d9ce5c6f8e87",
+          "name": "events-inactive-dark.svg",
+          "size": 753,
+          "type": "image/svg+xml"
+        },
+        "events-inactive.svg": {
+          "blob": "5d64944749d20ba8c4b9c2c80c58d481",
+          "name": "events-inactive.svg",
+          "size": 753,
+          "type": "image/svg+xml"
+        },
+        "events.svg": {
+          "blob": "c0f539be3f426bf2158bc49ececc260d",
+          "name": "events.svg",
+          "size": 753,
+          "type": "image/svg+xml"
+        },
+        "finance-dark.svg": {
+          "blob": "985494269c63b3bc05ca32f6728de198",
+          "name": "finance-dark.svg",
+          "size": 797,
+          "type": "image/svg+xml"
+        },
+        "finance-inactive-dark.svg": {
+          "blob": "e91f3fd76ac58745c29d4280608de144",
+          "name": "finance-inactive-dark.svg",
+          "size": 712,
+          "type": "image/svg+xml"
+        },
+        "finance-inactive.svg": {
+          "blob": "28976f2bdec1f76aea662a07dba3a03e",
+          "name": "finance-inactive.svg",
+          "size": 712,
+          "type": "image/svg+xml"
+        },
+        "finance.svg": {
+          "blob": "a40d03e1505563321060c21b30f55920",
+          "name": "finance.svg",
+          "size": 712,
+          "type": "image/svg+xml"
+        },
+        "hr-dark.svg": {
+          "blob": "b7377049b9c57e70abaaad7954ddf1cc",
+          "name": "hr-dark.svg",
+          "size": 868,
+          "type": "image/svg+xml"
+        },
+        "hr-inactive-dark.svg": {
+          "blob": "82b43fbabcb8bed5a75d94343ad1c6d8",
+          "name": "hr-inactive-dark.svg",
+          "size": 783,
+          "type": "image/svg+xml"
+        },
+        "hr-inactive.svg": {
+          "blob": "8e48bf426bfcfdc0e98c74473723f1d2",
+          "name": "hr-inactive.svg",
+          "size": 783,
+          "type": "image/svg+xml"
+        },
+        "hr.svg": {
+          "blob": "2dfb2077f3c7143ea9426d5fc0a5d206",
+          "name": "hr.svg",
+          "size": 783,
+          "type": "image/svg+xml"
+        },
+        "inventory-dark.svg": {
+          "blob": "3c84fd3613bd49949ec398254661e349",
+          "name": "inventory-dark.svg",
+          "size": 729,
+          "type": "image/svg+xml"
+        },
+        "inventory-inactive-dark.svg": {
+          "blob": "e3052ed4326155de59384c04f165aafa",
+          "name": "inventory-inactive-dark.svg",
+          "size": 644,
+          "type": "image/svg+xml"
+        },
+        "inventory-inactive.svg": {
+          "blob": "030392784eb91920631d8b00f0974ef7",
+          "name": "inventory-inactive.svg",
+          "size": 644,
+          "type": "image/svg+xml"
+        },
+        "inventory.svg": {
+          "blob": "97d2c8dbd548fbfad3ca9a8e41c5ff65",
+          "name": "inventory.svg",
+          "size": 644,
+          "type": "image/svg+xml"
+        },
+        "marketing-dark.svg": {
+          "blob": "5384e9a337e0742a1226e364b005f2e8",
+          "name": "marketing-dark.svg",
+          "size": 727,
+          "type": "image/svg+xml"
+        },
+        "marketing-inactive-dark.svg": {
+          "blob": "75adfa98a22a3917cc07fef3dd187651",
+          "name": "marketing-inactive-dark.svg",
+          "size": 642,
+          "type": "image/svg+xml"
+        },
+        "marketing-inactive.svg": {
+          "blob": "5d693257fbb2027669999478ad3a1357",
+          "name": "marketing-inactive.svg",
+          "size": 642,
+          "type": "image/svg+xml"
+        },
+        "marketing.svg": {
+          "blob": "de742d82e1380565a963785c3dbc5b61",
+          "name": "marketing.svg",
+          "size": 642,
+          "type": "image/svg+xml"
+        },
+        "network-dark.svg": {
+          "blob": "d645ea40994c5b7aa16f1265f34a2ac6",
+          "name": "network-dark.svg",
+          "size": 771,
+          "type": "image/svg+xml"
+        },
+        "network-inactive-dark.svg": {
+          "blob": "849af79921ec8b0dc012ed602b055f0c",
+          "name": "network-inactive-dark.svg",
+          "size": 686,
+          "type": "image/svg+xml"
+        },
+        "network-inactive.svg": {
+          "blob": "3c9163c598417e062a9355e85ff88111",
+          "name": "network-inactive.svg",
+          "size": 686,
+          "type": "image/svg+xml"
+        },
+        "network.svg": {
+          "blob": "8f59f767cac6d2f89435e9e955bd2f59",
+          "name": "network.svg",
+          "size": 686,
+          "type": "image/svg+xml"
+        },
+        "portal-dark.svg": {
+          "blob": "d511fcd792a67b38d7a8eee1113c3857",
+          "name": "portal-dark.svg",
+          "size": 813,
+          "type": "image/svg+xml"
+        },
+        "portal-inactive-dark.svg": {
+          "blob": "59780e3b96d6535b8cf6fd65278a0e4c",
+          "name": "portal-inactive-dark.svg",
+          "size": 728,
+          "type": "image/svg+xml"
+        },
+        "portal-inactive.svg": {
+          "blob": "45c2de4e6cbd53cdeec2dfba9eeb4cf2",
+          "name": "portal-inactive.svg",
+          "size": 728,
+          "type": "image/svg+xml"
+        },
+        "portal.svg": {
+          "blob": "05e9d8de99b88ea867da76d1074611a2",
+          "name": "portal.svg",
+          "size": 728,
+          "type": "image/svg+xml"
+        },
+        "projects-dark.svg": {
+          "blob": "e4b7e2acdf3428f38ce48259546d97e5",
+          "name": "projects-dark.svg",
+          "size": 959,
+          "type": "image/svg+xml"
+        },
+        "projects-inactive-dark.svg": {
+          "blob": "bae9af9e3e62991e5574474b41cde882",
+          "name": "projects-inactive-dark.svg",
+          "size": 874,
+          "type": "image/svg+xml"
+        },
+        "projects-inactive.svg": {
+          "blob": "3ed5da1fcbfe749068cb67e02bb048f0",
+          "name": "projects-inactive.svg",
+          "size": 874,
+          "type": "image/svg+xml"
+        },
+        "projects.svg": {
+          "blob": "11356f096ee444968a2747e0677fefab",
+          "name": "projects.svg",
+          "size": 874,
+          "type": "image/svg+xml"
+        },
+        "shifts-dark.svg": {
+          "blob": "3dc0eb4f307ca2bb57c2fd15bd8f8e9c",
+          "name": "shifts-dark.svg",
+          "size": 806,
+          "type": "image/svg+xml"
+        },
+        "shifts-inactive-dark.svg": {
+          "blob": "cb05e31a50c3239ffd45d7255b7a0b57",
+          "name": "shifts-inactive-dark.svg",
+          "size": 721,
+          "type": "image/svg+xml"
+        },
+        "shifts-inactive.svg": {
+          "blob": "9e90be822e0733ca59720ed09cf852b7",
+          "name": "shifts-inactive.svg",
+          "size": 721,
+          "type": "image/svg+xml"
+        },
+        "shifts.svg": {
+          "blob": "8e1cb7528c85fcd6fcd9709161071865",
+          "name": "shifts.svg",
+          "size": 721,
+          "type": "image/svg+xml"
+        }
+      },
+      "name": "App icons",
+      "order": [
+        "booking.svg",
+        "booking-dark.svg",
+        "booking-inactive.svg",
+        "booking-inactive-dark.svg",
+        "crm.svg",
+        "crm-dark.svg",
+        "crm-inactive.svg",
+        "crm-inactive-dark.svg",
+        "documents.svg",
+        "documents-dark.svg",
+        "documents-inactive.svg",
+        "documents-inactive-dark.svg",
+        "contracts.svg",
+        "contracts-dark.svg",
+        "contracts-inactive.svg",
+        "contracts-inactive-dark.svg",
+        "events.svg",
+        "events-dark.svg",
+        "events-inactive.svg",
+        "events-inactive-dark.svg",
+        "hr.svg",
+        "hr-dark.svg",
+        "hr-inactive.svg",
+        "hr-inactive-dark.svg",
+        "inventory.svg",
+        "inventory-dark.svg",
+        "inventory-inactive.svg",
+        "inventory-inactive-dark.svg",
+        "shifts.svg",
+        "shifts-dark.svg",
+        "shifts-inactive.svg",
+        "shifts-inactive-dark.svg",
+        "marketing.svg",
+        "marketing-dark.svg",
+        "marketing-inactive.svg",
+        "marketing-inactive-dark.svg",
+        "analytics.svg",
+        "analytics-dark.svg",
+        "analytics-inactive.svg",
+        "analytics-inactive-dark.svg",
+        "assets.svg",
+        "assets-dark.svg",
+        "assets-inactive.svg",
+        "assets-inactive-dark.svg",
+        "projects.svg",
+        "projects-dark.svg",
+        "projects-inactive.svg",
+        "projects-inactive-dark.svg",
+        "finance.svg",
+        "finance-dark.svg",
+        "finance-inactive.svg",
+        "finance-inactive-dark.svg",
+        "portal.svg",
+        "portal-dark.svg",
+        "portal-inactive.svg",
+        "portal-inactive-dark.svg",
+        "network.svg",
+        "network-dark.svg",
+        "network-inactive.svg",
+        "network-inactive-dark.svg"
+      ],
+      "tile": "s"
     },
-    "booking-dark.svg": {
-     "name": "booking-dark.svg",
-     "blob": "c1f963dac7b2a665654747c2e7cdea9e",
-     "size": 896,
-     "type": "image/svg+xml"
-    },
-    "booking-inactive.svg": {
-     "name": "booking-inactive.svg",
-     "blob": "01486421db0abe350af52dd25a733367",
-     "size": 811,
-     "type": "image/svg+xml"
-    },
-    "booking-inactive-dark.svg": {
-     "name": "booking-inactive-dark.svg",
-     "blob": "8cef953422ea28620e37d16d67c2310a",
-     "size": 811,
-     "type": "image/svg+xml"
-    },
-    "crm.svg": {
-     "name": "crm.svg",
-     "blob": "ea4a469b82b78b6032e49fe52547b804",
-     "size": 693,
-     "type": "image/svg+xml"
-    },
-    "crm-dark.svg": {
-     "name": "crm-dark.svg",
-     "blob": "904dde1f6ba426f77f29a778d6951ac9",
-     "size": 778,
-     "type": "image/svg+xml"
-    },
-    "crm-inactive.svg": {
-     "name": "crm-inactive.svg",
-     "blob": "f531de448211822168f2b761f9a7ab60",
-     "size": 693,
-     "type": "image/svg+xml"
-    },
-    "crm-inactive-dark.svg": {
-     "name": "crm-inactive-dark.svg",
-     "blob": "ab9333a3fecc1446dee761cb19d85986",
-     "size": 693,
-     "type": "image/svg+xml"
-    },
-    "documents.svg": {
-     "name": "documents.svg",
-     "blob": "2344b9fd6c5131f68072edae88cc4414",
-     "size": 740,
-     "type": "image/svg+xml"
-    },
-    "documents-dark.svg": {
-     "name": "documents-dark.svg",
-     "blob": "751079a04744a8f7f267d83f7821850d",
-     "size": 825,
-     "type": "image/svg+xml"
-    },
-    "documents-inactive.svg": {
-     "name": "documents-inactive.svg",
-     "blob": "94ea24d087db7a584e9c46c8b4d5d2b9",
-     "size": 740,
-     "type": "image/svg+xml"
-    },
-    "documents-inactive-dark.svg": {
-     "name": "documents-inactive-dark.svg",
-     "blob": "d2848d899db9aa0dab6665f22f9cd923",
-     "size": 740,
-     "type": "image/svg+xml"
-    },
-    "contracts.svg": {
-     "name": "contracts.svg",
-     "blob": "730b53ae89086b80b44ac302a60663c7",
-     "size": 689,
-     "type": "image/svg+xml"
-    },
-    "contracts-dark.svg": {
-     "name": "contracts-dark.svg",
-     "blob": "cea688f2e55f78e4c50d4f4e101408e5",
-     "size": 774,
-     "type": "image/svg+xml"
-    },
-    "contracts-inactive.svg": {
-     "name": "contracts-inactive.svg",
-     "blob": "7b23f14df6d6e1b0dc821e594470f45e",
-     "size": 689,
-     "type": "image/svg+xml"
-    },
-    "contracts-inactive-dark.svg": {
-     "name": "contracts-inactive-dark.svg",
-     "blob": "96b408717907272b9c900c31bd08b098",
-     "size": 689,
-     "type": "image/svg+xml"
-    },
-    "events.svg": {
-     "name": "events.svg",
-     "blob": "c0f539be3f426bf2158bc49ececc260d",
-     "size": 753,
-     "type": "image/svg+xml"
-    },
-    "events-dark.svg": {
-     "name": "events-dark.svg",
-     "blob": "98b411816d63c9d4c83e86bad6184fb3",
-     "size": 838,
-     "type": "image/svg+xml"
-    },
-    "events-inactive.svg": {
-     "name": "events-inactive.svg",
-     "blob": "5d64944749d20ba8c4b9c2c80c58d481",
-     "size": 753,
-     "type": "image/svg+xml"
-    },
-    "events-inactive-dark.svg": {
-     "name": "events-inactive-dark.svg",
-     "blob": "456f4f928cff5d404c22d9ce5c6f8e87",
-     "size": 753,
-     "type": "image/svg+xml"
-    },
-    "hr.svg": {
-     "name": "hr.svg",
-     "blob": "2dfb2077f3c7143ea9426d5fc0a5d206",
-     "size": 783,
-     "type": "image/svg+xml"
-    },
-    "hr-dark.svg": {
-     "name": "hr-dark.svg",
-     "blob": "b7377049b9c57e70abaaad7954ddf1cc",
-     "size": 868,
-     "type": "image/svg+xml"
-    },
-    "hr-inactive.svg": {
-     "name": "hr-inactive.svg",
-     "blob": "8e48bf426bfcfdc0e98c74473723f1d2",
-     "size": 783,
-     "type": "image/svg+xml"
-    },
-    "hr-inactive-dark.svg": {
-     "name": "hr-inactive-dark.svg",
-     "blob": "82b43fbabcb8bed5a75d94343ad1c6d8",
-     "size": 783,
-     "type": "image/svg+xml"
-    },
-    "inventory.svg": {
-     "name": "inventory.svg",
-     "blob": "97d2c8dbd548fbfad3ca9a8e41c5ff65",
-     "size": 644,
-     "type": "image/svg+xml"
-    },
-    "inventory-dark.svg": {
-     "name": "inventory-dark.svg",
-     "blob": "3c84fd3613bd49949ec398254661e349",
-     "size": 729,
-     "type": "image/svg+xml"
-    },
-    "inventory-inactive.svg": {
-     "name": "inventory-inactive.svg",
-     "blob": "030392784eb91920631d8b00f0974ef7",
-     "size": 644,
-     "type": "image/svg+xml"
-    },
-    "inventory-inactive-dark.svg": {
-     "name": "inventory-inactive-dark.svg",
-     "blob": "e3052ed4326155de59384c04f165aafa",
-     "size": 644,
-     "type": "image/svg+xml"
-    },
-    "shifts.svg": {
-     "name": "shifts.svg",
-     "blob": "8e1cb7528c85fcd6fcd9709161071865",
-     "size": 721,
-     "type": "image/svg+xml"
-    },
-    "shifts-dark.svg": {
-     "name": "shifts-dark.svg",
-     "blob": "3dc0eb4f307ca2bb57c2fd15bd8f8e9c",
-     "size": 806,
-     "type": "image/svg+xml"
-    },
-    "shifts-inactive.svg": {
-     "name": "shifts-inactive.svg",
-     "blob": "9e90be822e0733ca59720ed09cf852b7",
-     "size": 721,
-     "type": "image/svg+xml"
-    },
-    "shifts-inactive-dark.svg": {
-     "name": "shifts-inactive-dark.svg",
-     "blob": "cb05e31a50c3239ffd45d7255b7a0b57",
-     "size": 721,
-     "type": "image/svg+xml"
-    },
-    "marketing.svg": {
-     "name": "marketing.svg",
-     "blob": "de742d82e1380565a963785c3dbc5b61",
-     "size": 642,
-     "type": "image/svg+xml"
-    },
-    "marketing-dark.svg": {
-     "name": "marketing-dark.svg",
-     "blob": "5384e9a337e0742a1226e364b005f2e8",
-     "size": 727,
-     "type": "image/svg+xml"
-    },
-    "marketing-inactive.svg": {
-     "name": "marketing-inactive.svg",
-     "blob": "5d693257fbb2027669999478ad3a1357",
-     "size": 642,
-     "type": "image/svg+xml"
-    },
-    "marketing-inactive-dark.svg": {
-     "name": "marketing-inactive-dark.svg",
-     "blob": "75adfa98a22a3917cc07fef3dd187651",
-     "size": 642,
-     "type": "image/svg+xml"
-    },
-    "analytics.svg": {
-     "name": "analytics.svg",
-     "blob": "c73dd292a9f11e709deec5a6355b2054",
-     "size": 699,
-     "type": "image/svg+xml"
-    },
-    "analytics-dark.svg": {
-     "name": "analytics-dark.svg",
-     "blob": "5788d0a0fe4c513f376b2b7e4ad949a7",
-     "size": 784,
-     "type": "image/svg+xml"
-    },
-    "analytics-inactive.svg": {
-     "name": "analytics-inactive.svg",
-     "blob": "e0d5fb1df564fcfa4ccbc6e2fe833fa1",
-     "size": 699,
-     "type": "image/svg+xml"
-    },
-    "analytics-inactive-dark.svg": {
-     "name": "analytics-inactive-dark.svg",
-     "blob": "19026390c886b409b66ea5d17f97c071",
-     "size": 699,
-     "type": "image/svg+xml"
-    },
-    "assets.svg": {
-     "name": "assets.svg",
-     "blob": "3e08edb757c123049f557ff58d1f5041",
-     "size": 648,
-     "type": "image/svg+xml"
-    },
-    "assets-dark.svg": {
-     "name": "assets-dark.svg",
-     "blob": "01c3c5ae2971ad1c9f96e77c23035932",
-     "size": 733,
-     "type": "image/svg+xml"
-    },
-    "assets-inactive.svg": {
-     "name": "assets-inactive.svg",
-     "blob": "7de7e3466cae192688ba4932e891048a",
-     "size": 648,
-     "type": "image/svg+xml"
-    },
-    "assets-inactive-dark.svg": {
-     "name": "assets-inactive-dark.svg",
-     "blob": "7233df31e40b39afdbd369fff138b2b8",
-     "size": 648,
-     "type": "image/svg+xml"
-    },
-    "projects.svg": {
-     "name": "projects.svg",
-     "blob": "11356f096ee444968a2747e0677fefab",
-     "size": 874,
-     "type": "image/svg+xml"
-    },
-    "projects-dark.svg": {
-     "name": "projects-dark.svg",
-     "blob": "e4b7e2acdf3428f38ce48259546d97e5",
-     "size": 959,
-     "type": "image/svg+xml"
-    },
-    "projects-inactive.svg": {
-     "name": "projects-inactive.svg",
-     "blob": "3ed5da1fcbfe749068cb67e02bb048f0",
-     "size": 874,
-     "type": "image/svg+xml"
-    },
-    "projects-inactive-dark.svg": {
-     "name": "projects-inactive-dark.svg",
-     "blob": "bae9af9e3e62991e5574474b41cde882",
-     "size": 874,
-     "type": "image/svg+xml"
-    },
-    "finance.svg": {
-     "name": "finance.svg",
-     "blob": "a40d03e1505563321060c21b30f55920",
-     "size": 712,
-     "type": "image/svg+xml"
-    },
-    "finance-dark.svg": {
-     "name": "finance-dark.svg",
-     "blob": "985494269c63b3bc05ca32f6728de198",
-     "size": 797,
-     "type": "image/svg+xml"
-    },
-    "finance-inactive.svg": {
-     "name": "finance-inactive.svg",
-     "blob": "28976f2bdec1f76aea662a07dba3a03e",
-     "size": 712,
-     "type": "image/svg+xml"
-    },
-    "finance-inactive-dark.svg": {
-     "name": "finance-inactive-dark.svg",
-     "blob": "e91f3fd76ac58745c29d4280608de144",
-     "size": 712,
-     "type": "image/svg+xml"
-    },
-    "portal.svg": {
-     "name": "portal.svg",
-     "blob": "05e9d8de99b88ea867da76d1074611a2",
-     "size": 728,
-     "type": "image/svg+xml"
-    },
-    "portal-dark.svg": {
-     "name": "portal-dark.svg",
-     "blob": "d511fcd792a67b38d7a8eee1113c3857",
-     "size": 813,
-     "type": "image/svg+xml"
-    },
-    "portal-inactive.svg": {
-     "name": "portal-inactive.svg",
-     "blob": "45c2de4e6cbd53cdeec2dfba9eeb4cf2",
-     "size": 728,
-     "type": "image/svg+xml"
-    },
-    "portal-inactive-dark.svg": {
-     "name": "portal-inactive-dark.svg",
-     "blob": "59780e3b96d6535b8cf6fd65278a0e4c",
-     "size": 728,
-     "type": "image/svg+xml"
-    },
-    "network.svg": {
-     "name": "network.svg",
-     "blob": "8f59f767cac6d2f89435e9e955bd2f59",
-     "size": 686,
-     "type": "image/svg+xml"
-    },
-    "network-dark.svg": {
-     "name": "network-dark.svg",
-     "blob": "d645ea40994c5b7aa16f1265f34a2ac6",
-     "size": 771,
-     "type": "image/svg+xml"
-    },
-    "network-inactive.svg": {
-     "name": "network-inactive.svg",
-     "blob": "3c9163c598417e062a9355e85ff88111",
-     "size": 686,
-     "type": "image/svg+xml"
-    },
-    "network-inactive-dark.svg": {
-     "name": "network-inactive-dark.svg",
-     "blob": "849af79921ec8b0dc012ed602b055f0c",
-     "size": 686,
-     "type": "image/svg+xml"
+    "Logos": {
+      "files": {
+        "ventora-logo-email-2x.png": {
+          "name": "ventora-logo-email-2x.png",
+          "blob": "8b14667ee685da1c7c6612324b922ee0",
+          "size": 9280,
+          "type": "image/png"
+        }
+      },
+      "name": "Logos",
+      "order": [
+        "ventora-logo.svg",
+        "ventora-mark.svg",
+        "ventora-mark-dark.svg",
+        "favicon.svg",
+        "ventora-logo-dark.svg",
+        "ventora-logo-email-2x.png",
+        "README.md"
+      ],
+      "tile": "l"
     }
-   }
-  }
- },
- "blobs": {},
- "docs": {
-  "sections": []
- },
- "lastChange": {
-  "by": "Bianca Petrașcu",
-  "at": "2026-10-25T16:30:00Z",
-  "via": "Claude",
-  "note": "Recomandările R-B1–R-B7 aprobate și aplicate (V12–V18): clic doar sub cursor și întârzierea de 120ms în AppDock, texte Portal și Documents, panoul de brand pe invitație, display-hub pentru Hub"
- }
+  },
+  "blobs": {},
+  "createdOnFiles": {
+    "at": "2026-10-24T07:59:56Z",
+    "v": 1
+  },
+  "docs": {
+    "readme": "project/README.md",
+    "sections": [
+      "project/glossary.md",
+      "project/patterns.md"
+    ]
+  },
+  "groups": [
+    "Logos",
+    "App~20icons"
+  ],
+  "lastChange": {
+    "at": "2026-10-28T15:47:30Z",
+    "by": "Bianca Petrașcu",
+    "via": "Claude",
+    "note": "Lotul 2.5c închis: textele noi aprobate (S98), E-6 cu cheile din cod email.supportSession.* (S99)"
+  },
+  "layout": "files",
+  "libraries": [
+    {
+      "global": "React",
+      "name": "react",
+      "version": "18"
+    },
+    {
+      "global": "ReactDOM",
+      "name": "react-dom",
+      "version": "18"
+    }
+  ],
+  "namespace": "Ventora",
+  "sections": {},
+  "title": "Ventora"
 }

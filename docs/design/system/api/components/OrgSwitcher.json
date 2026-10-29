@@ -1,0 +1,57 @@
+{
+ "name": "OrgSwitcher",
+ "version": "1.0.1",
+ "kind": "component",
+ "group": "Hub",
+ "status": "changed",
+ "description": "Shows the business you are working in and your role; switches between the businesses you belong to.",
+ "exports": [
+  "OrgSwitcher"
+ ],
+ "props": [
+  {
+   "name": "orgs",
+   "type": "Org[]",
+   "required": true,
+   "note": ""
+  },
+  {
+   "name": "currentId",
+   "type": "string | number",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "onChange",
+   "type": "(id: string | number) => void",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "compact",
+   "type": "boolean",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "defaultOpen",
+   "type": "boolean",
+   "required": false,
+   "note": ""
+  }
+ ],
+ "events": [
+  "onChange"
+ ],
+ "states": [
+  "default",
+  "open",
+  "search",
+  "single",
+  "compact",
+  "long-name"
+ ],
+ "notes": "Hover has no forced state prop and is not shown.",
+ "readme": "components/OrgSwitcher/README.md",
+ "preview": "components/OrgSwitcher/preview.html"
+}

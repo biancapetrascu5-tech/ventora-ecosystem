@@ -1,0 +1,133 @@
+/* .v-contextbar din bundle.css; regulile responsive răspund la containerul `shell` (AppShell) */
+.root {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  height: var(--contextbar-height);
+  padding: 0 var(--space-6) 0 var(--space-2);
+  flex: none;
+  box-sizing: border-box;
+  background: var(--canvas);
+}
+
+.title {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+}
+
+.truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+
+/* într-o aplicație Spine numește aplicația, iar PageHeader pagina */
+:global([data-shell]):has(:global([data-spine])) .title {
+  display: none;
+}
+
+.org {
+  min-width: 0;
+  display: flex;
+}
+
+.spacer {
+  flex: 1;
+}
+
+.search {
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  height: var(--control-md);
+  width: var(--search-width);
+  max-width: 32vw;
+  min-width: 0;
+  padding: 0 var(--space-2) 0 var(--space-3);
+  border-radius: var(--radius-sm);
+  border: var(--border-width) solid var(--control-border);
+  background: var(--sheet);
+  color: var(--ink-muted);
+  cursor: pointer;
+  font-family: inherit;
+  text-align: start;
+}
+
+.search:hover {
+  border-color: var(--control-border-hover);
+  color: var(--ink-secondary);
+}
+
+.searchText {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* .v-brandzone .v-contextbar */
+:global([data-brand]) .root {
+  background: transparent;
+  border-bottom-color: var(--bz-line);
+}
+
+@container shell (max-width: 1023px) {
+  .searchText,
+  .search .kbd {
+    display: none;
+  }
+  .search {
+    width: var(--control-md);
+    padding: 0;
+    justify-content: center;
+  }
+}
+
+@container shell (max-width: 767px) {
+  .root {
+    padding: 0 var(--space-2) 0 var(--space-4);
+    gap: var(--space-1);
+  }
+  .org {
+    display: none;
+  }
+  :global([data-shell]):has(:global([data-spine])) .title {
+    display: flex;
+    flex: 1;
+  }
+  .search {
+    border: 0;
+    background: transparent;
+    color: var(--ink);
+    width: var(--control-lg);
+    height: var(--control-lg);
+  }
+  .root .create {
+    width: var(--control-lg);
+    height: var(--control-lg);
+    padding: 0;
+    border-radius: var(--radius-full);
+  }
+  .root .createLabel {
+    display: none;
+  }
+  /* P-1 (28 oct. 2026): pe telefon, când bara are titlu, titlul ia tot locul până la iconițe */
+  :global([data-shell]):has(:global([data-spine])) .root:has(.title > *) .spacer {
+    display: none;
+  }
+  .title > .truncate,
+  .title :global(.heading) {
+    min-width: 0;
+  }
+}
+
+@media (pointer: coarse), (max-width: 767px) {
+  .search {
+    min-height: var(--touch-target);
+    min-width: var(--touch-target);
+  }
+}

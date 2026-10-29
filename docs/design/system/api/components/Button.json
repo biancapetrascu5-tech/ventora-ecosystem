@@ -1,0 +1,130 @@
+{
+ "name": "Button",
+ "version": "1.1.0",
+ "kind": "component",
+ "group": "Actions",
+ "status": "changed",
+ "description": "Runs an action; the label is always a verb in sentence case (\"Confirmă\", \"Trimite reamintire\"), never \"OK\".",
+ "exports": [
+  "Button"
+ ],
+ "props": [
+  {
+   "name": "variant",
+   "type": "\"primary\" | \"secondary\" | \"quiet\" | \"danger\"",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "size",
+   "type": "\"sm\" | \"md\" | \"lg\"",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "icon",
+   "type": "string",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "iconEnd",
+   "type": "string",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "loading",
+   "type": "boolean",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "block",
+   "type": "boolean",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "href",
+   "type": "string",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "state",
+   "type": "ForcedState",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "type",
+   "type": "\"button\" | \"submit\" | \"reset\"",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "disabled",
+   "type": "boolean",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "onClick",
+   "type": "(e: any) => void",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "className",
+   "type": "string",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "id",
+   "type": "string",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "style",
+   "type": "any",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "title",
+   "type": "string",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "role",
+   "type": "string",
+   "required": false,
+   "note": ""
+  }
+ ],
+ "events": [
+  "onClick"
+ ],
+ "states": [
+  "default",
+  "hover",
+  "focus",
+  "pressed",
+  "disabled",
+  "loading",
+  "sm",
+  "md",
+  "lg",
+  "iconEnd",
+  "link",
+  "block",
+  "truncated"
+ ],
+ "notes": "",
+ "readme": "components/Button/README.md",
+ "preview": "components/Button/preview.html"
+}

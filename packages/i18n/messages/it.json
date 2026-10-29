@@ -3,6 +3,57 @@
     "ok": "OK",
     "items": "{count, plural, one {# elemento} other {# elementi}}"
   },
+  "portal": {
+    "eyebrow": "Portale · per i tuoi clienti",
+    "title": "La tua pagina aziendale nel Portale",
+    "description": "I clienti ti trovano nel Portale e prenotano lì. Da qui controlli cosa vedono.",
+    "memberNote": "La pagina può essere modificata dal proprietario, dagli admin e dal gestore dell'app Portale.",
+    "manage": "Gestisci pagina",
+    "finish": "Completa pagina",
+    "preview": "Vedi come appare nel Portale",
+    "previewTab": "(si apre in una nuova scheda)",
+    "statusPublished": "Pubblicata",
+    "statusHidden": "Nascosta",
+    "statusDraft": "Non ancora pubblicata"
+  },
+  "documents": {
+    "lastOpened": "Ultimo aperto: {document} · {quando}"
+  },
+  "invite": {
+    "fromLabel": "Invito da {name}",
+    "title": "Entra nel team di {afacere}",
+    "roleDesc": "Il tuo ruolo: {role}. Avrai accesso a:",
+    "nameField": "Nome completo",
+    "emailLabel": "E-mail",
+    "emailNote": "A questo indirizzo hai ricevuto l'invito.",
+    "passwordField": "Nuova password",
+    "reqLength": "Almeno 10 caratteri",
+    "reqDigit": "Almeno una cifra",
+    "reqUpper": "Almeno una lettera maiuscola",
+    "termsLabel": "Accetto i Termini e l'Informativa sulla privacy",
+    "termsDesc": "Puoi leggerli in qualsiasi momento nelle Impostazioni.",
+    "accept": "Accetta l'invito",
+    "expiry": "Invito valido fino al {data}.",
+    "expiredTitle": "Invito scaduto",
+    "expiredBody": "Gli inviti sono validi per 7 giorni. Richiedine uno nuovo: inoltreremo la richiesta a {name} e riceverai il nuovo link via e-mail.",
+    "requestNew": "Richiedi un nuovo invito"
+  },
+  "usageMeter": {
+    "unlimited": "Illimitato",
+    "usedOf": "{used} di {limit}",
+    "left": "Ne hai ancora {n}",
+    "nearLimit": "Stai per raggiungere il limite del tuo abbonamento",
+    "atLimit": "Hai raggiunto il limite del tuo abbonamento",
+    "atLimitHint": "Quello che hai già non andrà perso. Per aggiungerne altri, acquista un componente aggiuntivo o richiedi un altro abbonamento.",
+    "upgrade": "Richiedi un altro abbonamento",
+    "buyMore": "Acquista componente aggiuntivo",
+    "notifyOwner": "Notifica il proprietario",
+    "onlyOwnerBuys": "I componenti aggiuntivi possono essere acquistati solo da {who} (proprietario)."
+  },
+  "toast": {
+    "undo": "Annulla",
+    "close": "Chiudi"
+  },
   "email": {
     "common": {
       "greeting": "Buongiorno {name},",
@@ -97,5 +148,11 @@
         "closed": "La sessione di supporto è stata chiusa."
       }
     }
+  },
+  "auth": {
+    "line1": "La Sua attività.",
+    "line2": "In un unico posto.",
+    "founderProduct": "Control Center",
+    "founderTagline": "Lo strumento interno del team Ventora"
   }
 }

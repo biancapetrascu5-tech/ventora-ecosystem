@@ -7,3 +7,5 @@ The top bar of an app: business switcher, search (opens the CommandPalette, show
 "Creează" is the screen's primary button; there is no other primary in the ContextBar. Under 1024px search becomes an icon; under 640px the business switcher leaves the bar and appears inside the AccountMenu (pass it `orgs`) and "Creează" becomes a round icon button.
 
 **On the launcher (direction B)** the bar sits inside a `BrandZone`, so it shares the navy band with the greeting: transparent background, `brand-line` under it, the search field bordered in `brand-control-border`, the logo in variant B. Everywhere else — apps, Hub settings — the bar stays on the theme's surfaces.
+
+**On phones, with a title (P-1, S71).** When the bar has a title, the title takes all the free space up to the icons (the spacer goes); what does not fit ends in "…" and the full title stays in the PageHeader below. "Impostazioni" and "Einstellungen" fit.

@@ -1,0 +1,226 @@
+/* .v-apptile din bundle.css */
+.tile {
+  appearance: none;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--space-3);
+  box-sizing: border-box;
+  min-width: var(--app-tile-width);
+  min-height: var(--app-tile-min-height);
+  padding: var(--space-4);
+  border-radius: var(--radius-xl);
+  border: var(--border-width) solid var(--line);
+  background: var(--sheet);
+  color: var(--ink);
+  text-align: start;
+  font-family: inherit;
+  transition:
+    background-color var(--duration-instant) var(--ease-standard),
+    border-color var(--duration-instant) var(--ease-standard),
+    color var(--duration-instant) var(--ease-standard),
+    box-shadow var(--duration-fast) var(--ease-standard);
+}
+
+.tile:focus-visible,
+.tile.isFocus {
+  outline: var(--focus-ring-width) solid var(--focus-ring);
+  outline-offset: var(--focus-ring-offset);
+}
+
+.tile:focus:not(:focus-visible) {
+  outline: none;
+}
+
+.access {
+  margin: var(--space-0-5) 0 var(--space-1);
+}
+
+.top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.text {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-width: 0;
+}
+
+.desc {
+  color: var(--ink-muted);
+}
+
+.available {
+  cursor: pointer;
+}
+
+.available:hover,
+.available.isHover {
+  border-color: var(--line-strong);
+  box-shadow: var(--shadow-1);
+}
+
+.available:active,
+.available.isPressed {
+  background-image: linear-gradient(var(--state-pressed), var(--state-pressed));
+}
+
+.go {
+  position: absolute;
+  right: var(--space-4);
+  bottom: var(--space-4);
+  color: var(--ink-muted);
+  opacity: 0;
+  transform: translateX(calc(var(--space-1) * -1));
+  transition:
+    opacity var(--duration-fast) var(--ease-standard),
+    transform var(--duration-fast) var(--ease-standard);
+}
+
+.available:hover .go,
+.available.isHover .go,
+.available:focus-visible .go {
+  opacity: 1;
+  transform: none;
+  color: var(--ink);
+}
+
+.locked {
+  background: var(--canvas);
+  border-style: dashed;
+  border-color: var(--line-strong);
+}
+
+.locked :global(.heading) {
+  color: var(--ink-secondary);
+}
+
+.act {
+  align-self: flex-start;
+  margin-top: auto;
+}
+
+/* layout „icon” (AppDock) */
+.icon {
+  min-width: 0;
+  min-height: 0;
+  padding: var(--space-2) var(--space-1);
+  gap: var(--space-1);
+  align-items: center;
+  border: 0;
+  background: transparent;
+  border-radius: var(--radius-md);
+}
+
+.icon.available:hover {
+  box-shadow: none;
+  background: var(--state-hover);
+}
+
+.iconwrap {
+  position: relative;
+  display: inline-flex;
+}
+
+.iconwrap .badge {
+  position: absolute;
+  top: calc(var(--space-1) * -1);
+  right: calc(var(--space-1) * -1);
+  box-shadow: 0 0 0 var(--focus-ring-width) var(--canvas);
+}
+
+.name {
+  color: var(--ink);
+  text-align: center;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.icon.locked .name {
+  color: var(--ink-muted);
+}
+
+/* layout „row” (Alte aplicații Ventora) */
+.row {
+  flex-direction: row;
+  align-items: center;
+  min-width: 0;
+  min-height: var(--touch-target);
+  padding: var(--space-3) var(--space-4);
+  border-radius: 0;
+  border: 0;
+  border-bottom: var(--border-width) solid var(--line);
+  background: transparent;
+}
+
+.row:last-child {
+  border-bottom: 0;
+}
+
+.row.locked {
+  background: transparent;
+  border-style: solid;
+  border-color: var(--line);
+}
+
+.row .text {
+  flex: 1;
+}
+
+.row .act {
+  margin-top: 0;
+  align-self: center;
+  flex: none;
+}
+
+.row.available:hover {
+  box-shadow: none;
+  background: var(--state-hover);
+}
+
+.chev {
+  color: var(--ink-muted);
+  flex: none;
+}
+
+.badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+}
+
+.cost {
+  color: var(--ink);
+}
+
+.acts {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-1) var(--space-2);
+  margin-top: auto;
+  align-self: flex-start;
+}
+
+.acts .act {
+  margin-top: 0;
+}
+
+.rowmore {
+  flex: none;
+  align-self: center;
+}
+
+@media (pointer: coarse), (max-width: 767px) {
+  .go {
+    opacity: 1;
+    transform: none;
+  }
+}

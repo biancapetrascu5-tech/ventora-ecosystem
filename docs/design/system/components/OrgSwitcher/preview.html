@@ -1,4 +1,4 @@
-<!-- @dsCard group="Hub" height=340 -->
+<!-- @dsCard group="Hub" height=1420 width=1200 -->
 <!doctype html>
 <html lang="ro">
 <head><meta charset="utf-8"><title>OrgSwitcher — Ventora</title>
@@ -250,6 +250,9 @@ html,body{min-height:100%}
 .fxframe .caption{color:var(--ink-muted)}
 @container (max-width:420px){.fxlang{grid-template-columns:32px minmax(0,1fr) auto}.fxlang .v-iconbtn{display:none}}
 
+.thf{display:flex;flex-direction:column;gap:var(--space-4);padding:var(--space-5);background:var(--canvas);color:var(--ink);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg);min-width:0;box-sizing:border-box}
+.thg{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(420px,100%),1fr));gap:var(--space-4);align-items:start}
+.thstack{display:flex;flex-direction:column;gap:var(--space-4)}
 </style>
 </head>
 <body>
@@ -278,10 +281,10 @@ const ORGS = [
   { id: "nord", name: "Agen\u021Bia Nord Studio", role: "Manager de proiect" }
 ];
 const NOTIFS = [
-  { id: 1, title: "Programare nou\u0103 de la Ana Popescu", body: "Joi, 29 oct., 14:30 \xB7 Tuns", app: "Booking", time: "acum 5 min", person: "Ana Popescu" },
-  { id: 2, title: "Factura #2026-114 e restant\u0103 de 3 zile", body: "Clinica Dentis \xB7 1.250 lei", app: "Finance", time: "acum 2 ore", icon: "receipt" },
-  { id: 3, title: "Ioana a cerut concediu pe 2\u20136 noiembrie", app: "HR", time: "ieri", person: "Ioana Pavel", read: true },
-  { id: 4, title: "Exportul clien\u021Bilor e gata", app: "CRM", time: "ieri", icon: "download", read: true }
+  { id: 1, title: "Programare nou\u0103 de la Ana Popescu", body: "Joi, 29 oct., 14:30 \xB7 Tuns", app: "EasyBook", time: "acum 5 min", person: "Ana Popescu" },
+  { id: 2, title: "Factura #2026-114 e restant\u0103 de 3 zile", body: "Clinica Dentis \xB7 1.250 lei", app: "MoneyDesk", time: "acum 2 ore", icon: "receipt" },
+  { id: 3, title: "Ioana a cerut concediu pe 2\u20136 noiembrie", app: "TeamSpace", time: "ieri", person: "Ioana Pavel", read: true },
+  { id: 4, title: "Exportul clien\u021Bilor e gata", app: "ClientDesk", time: "ieri", icon: "download", read: true }
 ];
 const USER = { name: "Bianca Petra\u0219cu", email: "bianca@ventora-hub.com" };
 function Bar({ title, de }) {
@@ -312,7 +315,7 @@ function BookingShell({ height, active, mobile }) {
       height,
       spine: /* @__PURE__ */ React.createElement(V.Spine, { app: "booking", sections: SECTIONS, activeId: active, onBackToHub: () => {
       }, footer: /* @__PURE__ */ React.createElement(V.UsageMeter, { compact: true, label: "Program\u0103ri", used: 312, limit: 1e3 }) }),
-      contextBar: /* @__PURE__ */ React.createElement(Bar, { title: "Booking" })
+      contextBar: /* @__PURE__ */ React.createElement(Bar, { title: "EasyBook" })
     },
     /* @__PURE__ */ React.createElement(V.PageHeader, { title: "Program\u0103ri", description: mobile ? void 0 : "Toate program\u0103rile afacerii, de azi \xEEnainte.", actions: mobile ? void 0 : /* @__PURE__ */ React.createElement(V.SegmentedControl, { label: "Vizualizare", size: "md", defaultValue: "list", options: [{ value: "list", label: "List\u0103", icon: "list" }, { value: "cal", label: "Calendar", icon: "calendar" }] }) }),
     /* @__PURE__ */ React.createElement(V.DataTable, { columns: [
@@ -327,7 +330,45 @@ function BookingShell({ height, active, mobile }) {
 function Demo() {
   return /* @__PURE__ */ React.createElement("div", { className: "d", style: { flexDirection: "row", alignItems: "flex-start", gap: "var(--space-10)" } }, /* @__PURE__ */ React.createElement(V.OrgSwitcher, { orgs: ORGS, currentId: "aurora", defaultOpen: true }), /* @__PURE__ */ React.createElement("div", { className: "d0", style: { marginLeft: "auto" } }, /* @__PURE__ */ React.createElement(Row, { label: "O afacere" }, /* @__PURE__ */ React.createElement(V.OrgSwitcher, { orgs: ORGS.slice(0, 1) })), /* @__PURE__ */ React.createElement(Row, { label: "Compact" }, /* @__PURE__ */ React.createElement(V.OrgSwitcher, { orgs: ORGS, compact: true })), /* @__PURE__ */ React.createElement(DE, null, /* @__PURE__ */ React.createElement(Row, { label: "DE" }, /* @__PURE__ */ React.createElement(V.OrgSwitcher, { orgs: [{ id: 1, name: "Zahnarztpraxis Dr. M\xFCller-L\xFCdenscheidt", role: "Empfang und Terminplanung" }, { id: 2, name: "Salon Aurora", role: "Inhaberin" }] })))));
 }
-mount(/* @__PURE__ */ React.createElement(Demo, null));
+const ORIG = (/* @__PURE__ */ React.createElement(Demo, null));
+/* Light/Dark frames, DE/IT label test */
+const E = React.createElement;
+const noop = () => {
+};
+const Cap = ({ children }) => E("p", { className: "caption muted" }, children);
+const ThemeFrame = ({ th, children }) => E("div", { className: "thf", "data-theme": th }, E("p", { className: "heading" }, th === "light" ? "Light" : "Dark"), children);
+const LocFrame = ({ loc, label, children }) => E("div", { className: "thf", "data-theme": "light" }, E("p", { className: "heading" }, label), E(V.LocaleProvider, { locale: loc }, children));
+const Frames = ({ States, stack }) => E("div", { className: stack ? "thstack" : "thg" }, E(ThemeFrame, { th: "light" }, E(States, { th: "light" })), E(ThemeFrame, { th: "dark" }, E(States, { th: "dark" })));
+const Locales = ({ De, It, stack }) => E("div", { className: stack ? "thstack" : "thg" }, E(LocFrame, { loc: "de", label: "Deutsch (DE)" }, E(De)), E(LocFrame, { loc: "it", label: "Italiano (IT)" }, E(It)));
+const Extra = ({ States, De, It, stack, stackLoc }) => E("div", { className: "d" }, E("p", { className: "heading" }, "Stări · Light și Dark"), E(Frames, { States, stack }), E("p", { className: "heading" }, "Test de lungime: germană și italiană"), E(Locales, { De, It, stack: stackLoc }));
+const ORG7 = [
+  { id: "a1", name: "Salon Aurora", role: "Proprietar" },
+  { id: "a2", name: "Clinica Dentis Sibiu", role: "Recepție" },
+  { id: "a3", name: "Agenția Nord Studio", role: "Manager de proiect" },
+  { id: "a4", name: "Cofetăria Țuțu", role: "Admin" },
+  { id: "a5", name: "Școala de șoferi Ștefănescu", role: "Membru" },
+  { id: "a6", name: "Atelierul de ceramică Mâini", role: "Admin" },
+  { id: "a7", name: "Frizeria Bărbierul Sibian", role: "Membru" }
+];
+const OS_LONG = [{ id: 1, name: "Școala de șoferi Ștefănescu și Asociații din Târgu Mureș", role: "Recepție și programări" }, { id: 2, name: "Salon Aurora", role: "Proprietar" }];
+function States() {
+  return E("div", { className: "d0" },
+    E(Row, { label: "Mai multe afaceri" }, E(V.OrgSwitcher, { orgs: ORGS, currentId: "dentis" })),
+    E(Row, { label: "O afacere (text, fără meniu)" }, E(V.OrgSwitcher, { orgs: [{ id: "x", name: "Cofetăria Țuțu", role: "Proprietar" }] })),
+    E(Row, { label: "Compact" }, E(V.OrgSwitcher, { orgs: ORGS, compact: true })),
+    E(Row, { label: "Nume lung" }, E("div", { style: { maxWidth: 300, minWidth: 0 } }, E(V.OrgSwitcher, { orgs: OS_LONG }))));
+}
+const De = () => E("div", { className: "d0" },
+  E(Row, { label: "Mehrere" }, E(V.OrgSwitcher, { orgs: [{ id: 1, name: "Zahnarztpraxis Dr. Müller-Lüdenscheidt", role: "Empfang und Terminplanung" }, { id: 2, name: "Salon Aurora", role: "Inhaber" }] })),
+  E(Row, { label: "Eines" }, E(V.OrgSwitcher, { orgs: [{ id: 1, name: "Konditorei Schönberger", role: "Inhaber" }] })),
+  E(Row, { label: "Kompakt" }, E(V.OrgSwitcher, { compact: true, orgs: [{ id: 1, name: "Zahnarztpraxis Dr. Müller", role: "Empfang" }, { id: 2, name: "Salon Aurora", role: "Inhaber" }] })));
+const It = () => E("div", { className: "d0" },
+  E(Row, { label: "Più attività" }, E(V.OrgSwitcher, { orgs: [{ id: 1, name: "Studio dentistico Dott.ssa Rossi-Bellandi", role: "Accoglienza e appuntamenti" }, { id: 2, name: "Salon Aurora", role: "Titolare" }] })),
+  E(Row, { label: "Una" }, E(V.OrgSwitcher, { orgs: [{ id: 1, name: "Pasticceria Dolce Vita", role: "Titolare" }] })),
+  E(Row, { label: "Compatto" }, E(V.OrgSwitcher, { compact: true, orgs: [{ id: 1, name: "Studio dentistico Rossi", role: "Accoglienza" }, { id: 2, name: "Salon Aurora", role: "Titolare" }] })));
+mount(E("div", null, E("div", { style: { minHeight: 270 } }, ORIG),
+  E("div", { className: "d", style: { minHeight: 500, alignItems: "flex-start" } }, E(Cap, null, "Șapte afaceri sau mai multe: apare căutarea în meniu"), E(V.OrgSwitcher, { orgs: ORG7, currentId: "a4", defaultOpen: true })),
+  E(Extra, { States, De, It })));
 </script>
 </body>
 </html>

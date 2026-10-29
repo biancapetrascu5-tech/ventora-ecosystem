@@ -1,0 +1,55 @@
+{
+ "name": "Notice",
+ "version": "1.0.1",
+ "kind": "component",
+ "group": "Feedback",
+ "status": "changed",
+ "description": "An inline message inside a page, form or panel — a sign-in error, an expired invitation, a plan notice — with an icon, a title, one or two sentences and optional actions.",
+ "exports": [
+  "Notice"
+ ],
+ "props": [
+  {
+   "name": "tone",
+   "type": "Tone",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "title",
+   "type": "ReactNode",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "children",
+   "type": "ReactNode",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "icon",
+   "type": "string",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "actions",
+   "type": "ReactNode",
+   "required": false,
+   "note": ""
+  }
+ ],
+ "events": [],
+ "states": [
+  "neutral",
+  "attention",
+  "done",
+  "danger",
+  "with-actions",
+  "custom-icon"
+ ],
+ "notes": "",
+ "readme": "components/Notice/README.md",
+ "preview": "components/Notice/preview.html"
+}

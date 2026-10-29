@@ -1,0 +1,91 @@
+{
+ "name": "LineChart",
+ "version": "1.0.1",
+ "kind": "component",
+ "group": "Data",
+ "status": "changed",
+ "description": "A measure over time — revenue per month — with an optional grey comparison (last year) and the running period in peach.",
+ "exports": [
+  "LineChart"
+ ],
+ "props": [
+  {
+   "name": "labels",
+   "type": "string[]",
+   "required": true,
+   "note": ""
+  },
+  {
+   "name": "series",
+   "type": "{ label: string; values: number[]; color?: 2 | 1 | 3 | 4 | 5 | \"compare\"; }[]",
+   "required": true,
+   "note": ""
+  },
+  {
+   "name": "nowIndex",
+   "type": "number",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "nowLabel",
+   "type": "string",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "title",
+   "type": "string",
+   "required": true,
+   "note": ""
+  },
+  {
+   "name": "description",
+   "type": "string",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "unit",
+   "type": "string",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "format",
+   "type": "(v: number) => string",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "height",
+   "type": "number",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "area",
+   "type": "boolean",
+   "required": false,
+   "note": ""
+  },
+  {
+   "name": "actions",
+   "type": "ReactNode",
+   "required": false,
+   "note": ""
+  }
+ ],
+ "events": [],
+ "states": [
+  "default",
+  "compare-series",
+  "now-period",
+  "single-series",
+  "no-area",
+  "narrow"
+ ],
+ "notes": "The hover crosshair tooltip needs a pointer and is not shown statically.",
+ "readme": "components/LineChart/README.md",
+ "preview": "components/LineChart/preview.html"
+}

@@ -1,0 +1,733 @@
+<!-- @dsCard group="Founder" height=9290 width=2620 page -->
+<!doctype html>
+<html lang="ro">
+<head><meta charset="utf-8"><title>FounderPasswordReset — Ventora</title>
+<style>
+html,body{min-height:100%}
+.d{display:flex;flex-direction:column;gap:var(--space-4);padding:var(--space-4);box-sizing:border-box}
+.d0{display:flex;flex-direction:column;gap:var(--space-4);min-width:0}
+.r{display:flex;flex-wrap:wrap;gap:var(--space-3);align-items:center}
+.l{color:var(--ink-muted);width:calc(var(--space-16) + var(--space-6));flex:none}
+.g2{display:grid;grid-template-columns:repeat(auto-fit,minmax(var(--search-width),1fr));gap:var(--space-4) var(--space-6);align-items:start}
+.frame{border:var(--border-width) solid var(--line);border-radius:var(--radius-md);background:var(--sheet);box-sizing:border-box}
+.phone{width:390px;height:600px;flex:none;border:var(--border-width) solid var(--line-strong);border-radius:var(--radius-xl);overflow:hidden;box-sizing:border-box}
+.tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(var(--app-tile-width),1fr));gap:var(--space-4)}
+.icons{display:grid;grid-template-columns:repeat(auto-fill,minmax(calc(var(--app-tile-width) - var(--space-12)),1fr));gap:var(--space-2)}
+.ic{display:flex;align-items:center;gap:var(--space-2);color:var(--ink);padding:var(--space-1);min-width:0}
+.ic .caption{color:var(--ink-muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:0}
+.panel{display:flex;flex-direction:column;gap:var(--space-3);padding:var(--space-6);background:var(--sheet);color:var(--ink)}
+.lab{color:var(--ink-muted);margin-top:var(--space-2)}
+.fam{display:grid;grid-template-columns:repeat(5,1fr);gap:var(--space-4) var(--space-2)}
+.famcell,.sz,.papp{display:flex;flex-direction:column;align-items:center;gap:var(--space-1);color:var(--ink-secondary)}
+.gcell{display:flex;flex-direction:column;align-items:center;gap:var(--space-2);color:var(--ink-secondary)}
+.gwrap{position:relative;width:240px;height:240px}
+.gover{position:absolute;inset:0}
+.gwrap--sm{width:64px;height:64px;display:inline-block}
+.gwrap--sm .key{stroke-width:.5}
+.gl{stroke:var(--attention);stroke-width:.06;opacity:.55}
+.gl--major{stroke-width:.12;opacity:.9}
+.key{fill:none;stroke:var(--done);stroke-width:.18}
+.key--plate{stroke:var(--attention);stroke-dasharray:.6 .4}
+.key--diag{stroke-dasharray:.5 .5}
+.rules{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--space-6);color:var(--ink)}
+.rules .body-small{color:var(--ink-muted);margin-top:var(--space-1)}
+.ctx{display:flex;flex-direction:column;background:var(--canvas);color:var(--ink);padding:var(--space-4);gap:var(--space-4)}
+.ctxrow{display:flex;gap:var(--space-4);align-items:flex-start}
+.launch{flex:1;min-width:0;background:var(--canvas);padding:var(--space-4) var(--space-6);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg)}
+.tiles3{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--space-3)}
+.spinebox{height:250px;display:flex;border:var(--border-width) solid var(--line);border-radius:var(--radius-lg);overflow:hidden;background:var(--canvas)}
+.phone2{width:300px;border:var(--border-width) solid var(--line-strong);border-radius:var(--radius-xl);background:var(--canvas);padding-bottom:var(--space-4)}
+.pgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--space-4) var(--space-1);padding:0 var(--space-3)}
+.browser{display:flex;gap:var(--space-1);background:var(--sunken);padding:var(--space-2) var(--space-2) 0;border-radius:var(--radius-md) var(--radius-md) 0 0;border:var(--border-width) solid var(--line)}
+.btab{display:inline-flex;align-items:center;gap:var(--space-2);padding:var(--space-2) var(--space-3);border-radius:var(--radius-sm) var(--radius-sm) 0 0;color:var(--ink-secondary);min-width:160px}
+.btab.on{background:var(--sheet);color:var(--ink)}
+.muted{color:var(--ink-muted)}.center{text-align:center}
+.scr{display:flex;flex-direction:column;gap:var(--space-3);padding:var(--space-6);background:var(--sheet);color:var(--ink)}
+.scr-row{display:flex;gap:var(--space-6);align-items:flex-start;margin-top:var(--space-3)}
+.scr-lab{color:var(--ink-muted);margin-bottom:var(--space-2)}
+.scr-d,.scr-t,.scr-m{display:flex;flex-direction:column;position:relative;overflow:hidden;border:var(--border-width) solid var(--line-strong);background:var(--canvas);color:var(--ink);box-sizing:border-box}
+.scr-d{width:1280px;border-radius:var(--radius-lg)}
+.scr-m{width:390px;border-radius:var(--radius-xl)}
+.scr-t{width:820px;border-radius:var(--radius-xl)}
+.wrap.tablet .tiles4{grid-template-columns:repeat(3,1fr)}
+.wrap.tablet{padding:var(--space-6) var(--space-5)}
+.sup.tablet{grid-template-columns:1fr}
+.paymethod{display:flex;flex-direction:column;gap:var(--space-2);margin-top:var(--space-4);padding-top:var(--space-4);border-top:var(--border-width) solid var(--line);max-width:480px}
+.modal-demo{position:absolute;inset:0;background:var(--scrim);display:flex;align-items:center;justify-content:center;padding:var(--space-6);z-index:var(--z-overlay)}
+.modal-demo.mobile{align-items:flex-end;padding:0}
+.modal-demo .v-dialog{max-height:none}
+.dlggrid{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--space-6);align-items:start}
+.dlggrid .v-dialog{width:auto}
+.today{display:flex;flex-direction:column;gap:var(--space-6)}
+.today.mobile{gap:var(--space-4)}.today.mobile .greet{padding:0 var(--space-4)}
+.today-grid{display:grid;grid-template-columns:minmax(0,2fr) minmax(320px,1fr);gap:var(--space-6);align-items:start}
+.today.tablet .today-grid,.today.mobile .today-grid{grid-template-columns:1fr}
+.today.tablet .today-side,.today.mobile .today-side{order:-1}
+.today-main{display:flex;flex-direction:column;gap:var(--space-6);min-width:0}
+.today.mobile .sec,.today.mobile .sechead{padding:0 var(--space-4)}
+.today.mobile .sheetlike,.today.mobile .nowcard{border-radius:0;border-left:0;border-right:0}
+.nowcards{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:var(--space-3)}
+.nowcard{display:flex;flex-direction:column;gap:var(--space-3);padding:var(--space-4);background:var(--sheet);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg)}
+.sechead{display:flex;justify-content:space-between;align-items:center;gap:var(--space-3);margin-bottom:var(--space-3);flex-wrap:wrap}
+.sec .v-badge{vertical-align:middle;margin-left:var(--space-1)}
+.reslist{list-style:none;margin:0 0 var(--space-3);padding:0;display:flex;flex-direction:column}
+.reslist li{display:flex;flex-direction:column;gap:2px;padding:var(--space-3) 0;border-bottom:var(--border-width) solid var(--line)}
+.reslist li:last-child{border-bottom:0}
+.stth{background:var(--canvas);color:var(--ink);padding:var(--space-6);border-radius:var(--radius-lg)}
+.stgrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--space-5) var(--space-4);align-items:start}
+@media (max-width:1100px){.stgrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:640px){.stgrid{grid-template-columns:minmax(0,1fr)}.stgrid>.stc{grid-column:auto!important}}
+.stc{display:flex;flex-direction:column;gap:var(--space-2);min-width:0}
+.stc-box{background:var(--sheet);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg);padding:var(--space-4);min-width:0}
+.stc-box .v-dialog{width:100%;box-shadow:none}
+.stc-box .v-toast{width:100%;box-sizing:border-box}
+.slotcol{display:flex;flex-direction:column;gap:var(--space-3);padding:var(--space-4);background:var(--canvas);border-radius:var(--radius-lg);color:var(--ink)}
+.recogrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--space-5);align-items:start}
+.toastdemo{position:fixed;right:var(--space-6);bottom:var(--space-6);width:var(--panel-width);z-index:var(--z-toast)}
+.appdet{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:var(--space-6);align-items:start}
+.wrap.tablet .appdet,.wrap.mobile .appdet{grid-template-columns:1fr}
+.appdet-main,.appdet-side{display:flex;flex-direction:column;gap:var(--space-5);padding:var(--space-6)}
+.wrap.mobile .appdet-main,.wrap.mobile .appdet-side{padding:var(--space-4)}
+.appdet-side{gap:var(--space-3)}
+.appdet-why{padding:var(--space-4);background:var(--sunken);border-radius:var(--radius-md)}
+.appdet-why .body{margin-top:var(--space-1)}
+.appdet-list{list-style:none;margin:var(--space-2) 0 0;padding:0;display:flex;flex-direction:column;gap:var(--space-2)}
+.appdet-list li{display:flex;gap:var(--space-2);align-items:flex-start}
+.appdet-list svg{flex:none;margin-top:2px;color:var(--ink-muted)}
+.seclist{display:flex;flex-direction:column;background:var(--sheet);border-top:var(--border-width) solid var(--line);border-bottom:var(--border-width) solid var(--line)}
+.secitem{display:flex;align-items:center;gap:var(--space-3);min-height:var(--touch-target);padding:var(--space-3) var(--space-4);background:none;border:0;border-top:var(--border-width) solid var(--line);color:var(--ink);text-align:left;font:inherit;cursor:pointer}
+.secitem .biz-text{flex:1}
+.inv-email{display:flex;flex-direction:column;gap:2px}
+.daylinks .v-link{font-weight:500}
+.rows2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--space-2)}
+.wrap.tablet .rows2{grid-template-columns:1fr}
+.unsaved{position:absolute;left:0;right:0;bottom:0;display:flex;align-items:center;justify-content:space-between;gap:var(--space-3);padding:var(--space-3) var(--space-6);background:var(--raised);border-top:var(--border-width) solid var(--line-strong);box-shadow:var(--shadow-2);z-index:var(--z-sticky);flex-wrap:wrap}
+.scr-d .unsaved{left:var(--spine-width)}
+.scr-t .unsaved{left:var(--spine-width-collapsed)}
+.scr-m .unsaved{bottom:var(--bottomnav-height);padding:var(--space-3) var(--space-4)}
+.axb{display:flex;flex-direction:column;gap:var(--space-6);min-width:0}
+.axb.mobile{gap:var(--space-4)}
+.axsplit{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:var(--space-6);align-items:start}
+.axb.tablet .axsplit,.axb.mobile .axsplit{grid-template-columns:1fr}
+.axb.tablet .axside,.axb.mobile .axside{order:-1}
+.axstack{display:flex;flex-direction:column;gap:var(--space-6);min-width:0}
+.axstack .axside{order:-1}
+.axb .axside.axafter{order:0}
+.logosets{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(420px,100%),1fr));gap:var(--space-4)}
+.logoset{display:flex;flex-direction:column;gap:var(--space-4);padding:var(--space-6);min-width:0;background:var(--sheet);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg);color:var(--ink)}
+.favtab{display:inline-flex;align-items:center;gap:var(--space-2);padding:var(--space-2) var(--space-3);border-radius:var(--radius-sm) var(--radius-sm) 0 0;background:var(--canvas);color:var(--ink-secondary);border:var(--border-width) solid var(--line);border-bottom:0}
+.axb.mobile .axside.axafter{padding:0 var(--space-4)}
+.axb.mobile .sechead,.axb.mobile>div>h2.heading{padding:0 var(--space-4)}
+.axb.mobile .fxplans{padding:0 var(--space-4)}
+.axb.mobile>.v-notice{margin:0 var(--space-4)}
+.axside{display:flex;flex-direction:column;gap:var(--space-3);min-width:0}
+.axside .v-badge{vertical-align:middle;margin-left:var(--space-1)}
+.axb.mobile .axside .heading{padding:0}
+.axcharts{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:var(--space-4)}
+.axb.mobile .axcharts{grid-template-columns:1fr}
+.axb.mobile .v-stats{grid-template-columns:1fr 1fr}
+.stockcell{display:grid;grid-template-columns:auto;gap:2px;min-width:120px}
+.stockbar{position:relative;display:block;height:4px;border-radius:var(--radius-full);background:var(--selected);max-width:140px}
+.stockbar>span{position:absolute;left:0;top:0;bottom:0;border-radius:inherit;background:var(--ink-secondary)}
+.stockbar.is-attention>span{background:var(--attention-mark)}
+.stockbar.is-danger>span{background:var(--danger)}
+.stockbar>i{position:absolute;top:-3px;bottom:-3px;width:2px;margin-left:-1px;background:var(--ink-muted);border-radius:1px}
+.glo{background:var(--sheet);color:var(--ink);gap:var(--space-6);padding:var(--space-6)}
+.glo-lead{max-width:760px;margin-top:var(--space-2)}
+.glo-rules{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:var(--space-4) var(--space-6)}
+.glo-rules .body-small{margin-top:var(--space-1)}
+.glo-sec{display:flex;flex-direction:column;gap:var(--space-2)}
+.glo-t{width:100%;border-collapse:collapse;table-layout:fixed}
+.glo-t th{text-align:left;color:var(--ink-muted);padding:var(--space-2) var(--space-3);border-bottom:var(--border-width) solid var(--line-strong)}
+.glo-t th:last-child{width:30%}
+.glo-t td{padding:var(--space-2) var(--space-3);border-bottom:var(--border-width) solid var(--line);vertical-align:top;overflow-wrap:anywhere}
+.glo-dec{display:inline-flex;align-items:center;gap:var(--space-1);margin-left:var(--space-2);padding:0 var(--space-2);border-radius:var(--radius-full);background:var(--attention-soft);color:var(--attention-ink);white-space:nowrap}
+.calbar{display:flex;justify-content:space-between;align-items:center;gap:var(--space-3);flex-wrap:wrap;margin-bottom:var(--space-3)}
+.calbar-date{margin-left:var(--space-2);white-space:nowrap}
+.calwrap.mobile{padding:0 var(--space-4)}
+.staffpick{margin-bottom:var(--space-3);max-width:var(--search-width)}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:var(--space-2) var(--space-4);margin:0}
+.kv dt{color:var(--ink-muted);padding-top:var(--space-0-5)}.kv dd{margin:0;color:var(--ink)}
+.hist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:var(--space-2);color:var(--ink-secondary)}
+.hist .muted{margin-right:var(--space-2)}
+.newgrid{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:var(--space-6);align-items:start}
+.newgrid.tablet,.newgrid.mobile{grid-template-columns:1fr}
+.newgrid.mobile{padding-bottom:var(--space-16)}
+.sumcard{position:sticky;top:0;display:flex;flex-direction:column;gap:var(--space-3);padding:var(--space-5);background:var(--sheet);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg)}
+.newgrid.mobile .sumcard{border-radius:0;border-left:0;border-right:0}
+.sumtotal{display:flex;justify-content:space-between;align-items:baseline;padding-top:var(--space-3);border-top:var(--border-width) solid var(--line)}
+.stickybar{position:absolute;left:0;right:0;bottom:var(--bottomnav-height);display:flex;gap:var(--space-2);justify-content:flex-end;padding:var(--space-3) var(--space-4);background:var(--sheet);border-top:var(--border-width) solid var(--line);z-index:var(--z-sticky)}
+.stickybar .v-btn--primary{flex:1}
+.hours{display:flex;flex-direction:column}
+.hrow{display:flex;align-items:center;justify-content:space-between;gap:var(--space-4);padding:var(--space-2) 0;border-bottom:var(--border-width) solid var(--line);min-height:var(--touch-target);flex-wrap:wrap}
+.hrow .v-toggle{min-width:160px}
+.hrange{display:inline-flex;align-items:center;gap:var(--space-2)}
+.hrange .v-datepicker{width:120px}
+.auth{min-height:100%;display:flex;flex-direction:column;background:var(--canvas);color:var(--ink)}
+.auth-top{display:flex;justify-content:space-between;align-items:center;padding:var(--space-4) var(--space-6)}
+.auth.mobile .auth-top{padding:var(--space-3) var(--space-4)}
+.auth-main{flex:1;display:flex;align-items:flex-start;justify-content:center;padding:var(--space-12) var(--space-4)}
+.auth.mobile .auth-main{padding:var(--space-2) 0 0;align-items:stretch}
+.auth-card{width:400px;background:var(--sheet);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg);padding:var(--space-10);display:flex;flex-direction:column;gap:var(--space-4);box-sizing:border-box}
+.auth-card.wide{width:480px}
+.auth.mobile .auth-card{width:100%;border-radius:0;border-left:0;border-right:0;border-bottom:0;padding:var(--space-6) var(--space-4)}
+.auth-head{display:flex;flex-direction:column;gap:var(--space-1);margin-bottom:var(--space-2)}
+.auth-note{display:flex;gap:var(--space-2);padding-top:var(--space-4);border-top:var(--border-width) solid var(--line);color:var(--ink-muted)}
+.auth-note .v-icon{margin-top:var(--space-0-5)}
+.auth-foot{padding:var(--space-4) var(--space-6);color:var(--ink-muted);text-align:center}
+.auth.mobile .auth-foot{display:none}
+.inv-head{display:flex;gap:var(--space-3);align-items:center}
+.inv-mark{width:var(--space-12);height:var(--space-12);border-radius:var(--radius-md);background:var(--neutral-soft);display:inline-flex;align-items:center;justify-content:center;font-weight:700;color:var(--ink);flex:none;box-shadow:inset 0 0 0 var(--border-width) var(--line-strong)}
+.inv-mark.sm{width:var(--space-10);height:var(--space-10)}
+.inv-role{display:flex;flex-direction:column;gap:var(--space-2);padding:var(--space-3) var(--space-4);background:var(--sunken);border-radius:var(--radius-sm)}
+.inv-app{display:inline-flex;gap:var(--space-1);align-items:center;color:var(--ink-secondary);margin-right:var(--space-2)}
+.reqs{list-style:none;margin:calc(var(--space-2) * -1) 0 0;padding:0;display:flex;flex-direction:column;gap:var(--space-1)}
+.req{display:flex;gap:var(--space-2);align-items:center;color:var(--ink-muted)}.req.ok{color:var(--done-ink)}
+.choose{width:560px;display:flex;flex-direction:column;gap:var(--space-4)}
+.auth.mobile .choose{width:auto;padding:var(--space-4)}
+.biz-list{display:flex;flex-direction:column;background:var(--sheet);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg);overflow:hidden}
+.biz{appearance:none;display:flex;align-items:center;gap:var(--space-3);padding:var(--space-4);border:0;border-bottom:var(--border-width) solid var(--line);background:transparent;color:var(--ink);text-align:start;font-family:inherit;cursor:pointer;min-height:var(--touch-target)}
+.biz:last-child{border-bottom:0}.biz:hover{background:var(--state-hover)}
+.biz-text{flex:1;min-width:0;display:flex;flex-direction:column;gap:var(--space-0-5);align-items:flex-start}
+.frame-rel{position:relative;height:100%}
+.wrap{max-width:1120px;width:100%;margin:0 auto;padding:var(--space-6) var(--space-6) var(--space-10);display:flex;flex-direction:column;gap:var(--space-8);box-sizing:border-box}
+.wrap.mobile{padding:var(--space-4);gap:var(--space-6)}
+.greet{display:flex;flex-direction:column;gap:var(--space-2)}
+.sec{margin-bottom:var(--space-3)}
+.tiles4{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--space-4)}
+.mgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--space-3) var(--space-1)}
+.rows{display:flex;flex-direction:column;background:var(--sheet);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg);overflow:hidden}
+.sheetlike{background:var(--sheet);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg)}
+.g2f{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(260px,100%),1fr));gap:var(--space-4) var(--space-6)}
+.nrow{display:grid;grid-template-columns:1fr repeat(3,var(--control-lg));align-items:center;padding:var(--space-2) 0;border-bottom:var(--border-width) solid var(--line);gap:var(--space-4)}
+.nrow>span:not(:first-child){display:flex;justify-content:center;text-align:center}
+.nhead{color:var(--ink-muted)}
+.secrow{display:flex;align-items:center;justify-content:space-between;gap:var(--space-4);padding:var(--space-3) 0;border-bottom:var(--border-width) solid var(--line);flex-wrap:wrap}
+.appsrow{display:inline-flex;gap:var(--space-1);align-items:center;flex-wrap:wrap}
+.mx-row{display:grid;grid-template-columns:minmax(320px,1.8fr) repeat(4,1fr);align-items:center;padding:var(--space-3) var(--space-6);border-bottom:var(--border-width) solid var(--line);gap:var(--space-2)}
+.mx-head{background:var(--sunken);color:var(--ink-secondary);border-radius:var(--radius-lg) var(--radius-lg) 0 0}
+.mx-c{display:flex;flex-direction:column;align-items:center;text-align:center}
+.mx-app{display:flex;align-items:center;gap:var(--space-3);flex-wrap:wrap}
+.mx-foot{padding:var(--space-4) var(--space-6)}
+.mrow{display:flex;align-items:center;gap:var(--space-3);padding:var(--space-3) var(--space-4);border-bottom:var(--border-width) solid var(--line);color:var(--ink-secondary)}.mrow:last-child{border-bottom:0}
+.plan{display:flex;justify-content:space-between;align-items:center;gap:var(--space-4);flex-wrap:wrap}
+.numeric-inline{font-weight:600;color:var(--ink)}
+.usage-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:var(--space-6)}
+.sup{display:grid;grid-template-columns:1.5fr 1fr;gap:var(--space-6);align-items:start}
+.lframes{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--space-4)}
+.lframe{position:relative;height:220px;border:var(--border-width) solid var(--line-strong);border-radius:var(--radius-lg);overflow:hidden;background:var(--canvas)}
+.lframe-tiles{display:flex;gap:var(--space-3);padding:var(--space-4)}
+.lstage{position:relative;height:240px;border:var(--border-width) solid var(--line-strong);border-radius:var(--radius-lg);overflow:hidden;background:var(--canvas);padding:var(--space-4)}
+.lstage-grid{display:grid;grid-template-columns:repeat(6,96px);gap:var(--space-2)}
+.fxcard{display:flex;flex-direction:column;gap:var(--space-2);padding:var(--space-5)}
+.fxapps{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:var(--space-3) var(--space-4)}
+.fxmail{display:flex;flex-direction:column;gap:var(--space-3);padding:var(--space-5);border:var(--border-width) solid var(--line);border-radius:var(--radius-md);background:var(--canvas);color:var(--ink)}
+.fxmail-btn{align-self:flex-start;padding:var(--space-2) var(--space-4);border-radius:var(--radius-md);background:var(--primary);color:var(--on-primary);font-weight:600}
+.fxplans{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:var(--space-4)}
+.fxplan{display:flex;flex-direction:column;gap:var(--space-3);padding:var(--space-5)}
+.fxlim{margin:0;padding-left:var(--space-5);color:var(--ink-secondary);display:flex;flex-direction:column;gap:var(--space-1)}
+.fxver{width:100%;border-collapse:collapse}
+.fxver th{text-align:left;color:var(--ink-muted);font-weight:500;padding:var(--space-1) 0;border-bottom:var(--border-width) solid var(--line)}
+.fxver td{padding:var(--space-2) 0;border-bottom:var(--border-width) solid var(--line);color:var(--ink)}
+.fxver td .v-pill{margin-left:var(--space-2);vertical-align:middle}
+.fxlimits{display:flex;flex-direction:column}
+.fxlimits-row{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(60px,.6fr) minmax(120px,1fr);gap:var(--space-3);align-items:center;padding:var(--space-2) 0;border-bottom:var(--border-width) solid var(--line);color:var(--ink)}
+.fxlimits-row .v-icon{color:var(--done-ink,var(--ink-secondary));flex:none}
+.fxlimits-head{padding-top:0}
+.fxlink{color:var(--ink);text-decoration:underline;text-underline-offset:2px;font-weight:600;display:inline-flex;align-items:center;min-height:24px;min-width:24px}
+@media (pointer:coarse),(max-width:767px){.fxlink{min-height:44px;min-width:44px}}
+.fxlim-new{display:flex;align-items:center;gap:var(--space-2);min-width:0}
+.fxlim-new .v-control{flex:1 1 80px;min-width:0}
+.fxdelta{display:inline-flex;align-items:center;gap:var(--space-1);color:var(--done-ink);flex:none}
+.fxdelta--down{color:var(--attention-ink)}
+.fxplan .v-btn{align-self:flex-start}
+.fxcost{margin-top:var(--space-4);display:flex;flex-direction:column;gap:var(--space-1);padding:var(--space-4);border-radius:var(--radius-md);background:var(--sunken);color:var(--ink)}
+.fxlangs{display:flex;flex-direction:column}
+.fxlang{display:grid;grid-template-columns:32px minmax(0,1fr) auto auto;gap:var(--space-3);align-items:center;padding:var(--space-2) 0;border-bottom:var(--border-width) solid var(--line);color:var(--ink)}
+.fxlang-text{color:var(--ink-secondary);overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.fxframe{display:flex;flex-direction:column;gap:var(--space-2);padding:var(--space-3);border:var(--border-width) solid var(--line);border-radius:var(--radius-md);background:var(--canvas);color:var(--ink)}
+.fxframe .caption{color:var(--ink-muted)}
+@container (max-width:420px){.fxlang{grid-template-columns:32px minmax(0,1fr) auto}.fxlang .v-iconbtn{display:none}}
+
+/* Direcția B — launcher */
+.lb .v-shell__content{padding-top:0}
+.lb .lb-wrap{padding-top:0;gap:var(--space-8)}
+.lb-band{position:relative;padding:var(--space-8) 0 112px;box-shadow:0 0 0 100vmax var(--brand-surface);clip-path:inset(0 -100vmax)}
+.lb-hero{position:relative;display:flex;justify-content:space-between;gap:var(--space-8);min-width:0}
+.lb-hero__text{display:flex;flex-direction:column;gap:var(--space-3);min-width:0}
+.lb-eyebrow{margin:0;text-transform:uppercase;color:var(--ink-muted)}
+.lb-day{margin:0;color:var(--ink-secondary);max-width:780px}
+.lb-chip{display:inline-flex;align-items:center;gap:var(--space-2);height:32px;margin:2px 0;padding:0 var(--space-3) 0 var(--space-1);border-radius:var(--radius-full);background:var(--sheet);box-shadow:inset 0 0 0 var(--border-width) var(--line);color:var(--ink);font-weight:600;text-decoration:none;vertical-align:middle;transition:box-shadow var(--duration-fast) var(--ease-standard),transform var(--duration-fast) var(--ease-standard)}
+.lb-chip:hover{box-shadow:inset 0 0 0 var(--border-width) var(--line-strong);transform:translateY(-1px);text-decoration:none}
+.lb-chip svg.v-appicon{border-radius:var(--radius-full);overflow:hidden}
+.lb-dot{width:var(--dot-size);height:var(--dot-size);border-radius:var(--radius-full);background:var(--attention);margin-left:calc(var(--space-1) * -1)}
+.b-chev{fill:none;stroke:var(--line-strong);stroke-width:1.5}
+.lb-chev{position:absolute;right:var(--space-4);top:calc(var(--space-2) * -1);width:150px;height:200px}
+.lb-sechead{margin-top:var(--space-8)}
+.lb-mine{display:flex;flex-direction:column;gap:var(--space-4);margin-top:calc(-96px - var(--space-8));position:relative;z-index:1}
+.lb-other .rows{background:var(--sheet)}
+.lb-other__intro{margin:0 0 var(--space-3);color:var(--ink-secondary)}
+.lb-other .v-apptile--row{gap:var(--space-3);padding:var(--space-3) var(--space-4);min-height:0}
+.lb-other .v-apptile--row > svg.v-appicon{width:36px;height:36px;flex:none;align-self:flex-start;margin-top:2px}
+.lb-other .v-apptile--row .v-apptile__text{flex-direction:row;flex-wrap:wrap;align-items:center;column-gap:var(--space-2);row-gap:2px}
+.lb-other .v-apptile--row .v-apptile__text > .body-strong{font-size:16px;line-height:24px;font-weight:600;color:var(--ink)}
+.lb-other .v-apptile--row .v-apptile__badges{display:inline-flex;gap:var(--space-1)}
+.lb-other .v-apptile__desc,.lb-other .v-apptile__cost{flex-basis:100%;font-size:14px;line-height:20px}
+.lb-other .v-apptile__desc{color:var(--ink-secondary)}
+.lb-empty{margin-top:calc(-64px - var(--space-8));position:relative;z-index:1}
+.lb.tablet .lb-chev{display:none}
+.lb.mobile .lb-band{padding:var(--space-6) 0 var(--space-8)}
+.lb.mobile .display-hub{font-size:32px;line-height:36px}
+.lb.mobile .lb-day{font-size:15px;line-height:30px}
+.lb.mobile .lb-chip{height:28px;font-size:13px;gap:var(--space-1);padding:0 var(--space-2) 0 var(--space-1)}
+.lb.mobile .lb-mine{margin-top:0}
+.lb.mobile .lb-empty{margin-top:0}
+.lb.mobile .lb-other .v-apptile--row{flex-wrap:wrap;row-gap:var(--space-2)}
+.lb.mobile .lb-other .v-apptile--row .v-apptile__text{flex:1 1 calc(100% - 48px)}
+.lb.mobile .lb-other .v-apptile--row .v-apptile__act{margin-left:48px}
+/* Direcția B — sign-in */
+.sb{flex-direction:row}
+.sb-brand{position:relative;flex:0 0 46%;display:flex;flex-direction:column;gap:var(--space-8);padding:var(--space-6) var(--space-12) var(--space-8);overflow:hidden;box-sizing:border-box}
+.sb-brand__top{display:flex;justify-content:space-between;align-items:center}
+.sb-statement{margin:auto 0 0;position:relative;z-index:1;color:var(--ink)}
+.sb-chev{position:absolute;right:-56px;top:96px;width:340px;height:460px}
+.sb-foot{margin:0;color:var(--ink-muted)}
+.sb-formside{flex:1;display:flex;flex-direction:column;min-width:0;background:var(--sheet)}
+.sb-top{justify-content:flex-end}
+.sb .auth-main{align-items:center;padding:var(--space-8)}
+.sb .sb-card{width:400px;max-width:100%;border:0;background:transparent;padding:0;box-shadow:none}
+.sb.tablet .sb-brand{flex-basis:40%;padding:var(--space-6) var(--space-8) var(--space-8)}
+.sb.tablet .sb-statement{font-size:40px;line-height:44px}
+.sb.mobile{flex-direction:column}
+.sb.mobile .sb-brand{flex:none;padding:var(--space-4) var(--space-4) var(--space-10)}
+.sb.mobile .sb-formside{border-radius:var(--radius-xl) var(--radius-xl) 0 0;margin-top:calc(var(--space-6) * -1);position:relative}
+.sb.mobile .auth-main{padding:var(--space-6) var(--space-4);align-items:stretch}
+.sb.mobile .sb-card{width:100%}
+.sb.mobile .display-hub{font-size:32px;line-height:36px}
+@media (prefers-reduced-motion: reduce){.lb *,.sb *{transition:none!important}}
+
+.scr-d>.v-auth,.scr-t>.v-auth,.scr-m>.v-auth{min-height:100%;height:100%}
+/* SMS · Setări */
+.sms-sec{color:var(--ink-secondary);margin:0}
+.sms-np{display:flex;flex-wrap:wrap;align-items:center;gap:var(--space-2) var(--space-3);margin-top:var(--space-3)}
+.sms-np .body-small{flex:1 1 280px}
+.sms-phone{display:flex;gap:var(--space-3);align-items:flex-start;padding-bottom:var(--space-4);border-bottom:var(--border-width) solid var(--line);margin-bottom:var(--space-4)}
+.sms-phone__ic{display:inline-flex;align-items:center;justify-content:center;flex:none;width:var(--control-lg);height:var(--control-lg);border-radius:var(--radius-md);background:var(--neutral-soft);color:var(--ink-secondary)}
+.sms-phone__text{display:flex;flex-direction:column;gap:var(--space-1);min-width:0;flex:1}
+.sms-phone__text p{margin:0}
+.sms-phone__name{display:flex;align-items:center;gap:var(--space-1)}
+.sms-meta{display:flex;flex-wrap:wrap;gap:var(--space-1) var(--space-4);color:var(--ink-secondary)}
+.sms-meta>span{display:inline-flex;align-items:center;gap:var(--space-1)}
+.sms-stats{margin:var(--space-4) 0;grid-template-columns:repeat(4,minmax(0,1fr))}
+.sms-cap p{margin:0}
+.sms-cap{display:flex;flex-direction:column;gap:var(--space-1)}
+.sms-actions{display:flex;flex-wrap:wrap;gap:var(--space-2);margin-top:var(--space-4)}
+.sms-actions.is-col{flex-direction:column}
+.sms-pad{padding:0 var(--space-6) var(--space-6)}
+.v-sheet-section + .sms-pad,.sms-pad{margin-top:var(--space-2)}
+.v-notice{margin-bottom:var(--space-2)}
+.sms-states{display:flex;flex-direction:column;gap:var(--space-4);padding:var(--space-6);background:var(--canvas);color:var(--ink)}
+.sms-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--space-6);align-items:start}
+.sms-grid.mobile{grid-template-columns:repeat(4,390px)}
+.sms-box{display:flex;flex-direction:column;gap:var(--space-2);min-width:0}
+.sms-boxlab{margin:0;color:var(--ink-muted)}
+.sms-boxbody{border:var(--border-width) solid var(--line-strong);border-radius:var(--radius-lg);overflow:hidden;background:var(--canvas)}
+.sms-boxbody > .v-dialog{margin:var(--space-6) auto}
+.sms-langs{display:flex;flex-direction:column;gap:var(--space-4);padding:var(--space-6);background:var(--canvas);color:var(--ink)}
+.sms-langrow{display:flex;gap:var(--space-6);align-items:flex-start}
+.sms-lang{display:flex;flex-direction:column;gap:var(--space-2)}
+.sms-langframe{border:var(--border-width) solid var(--line-strong);border-radius:var(--radius-lg);overflow:hidden;background:var(--canvas)}
+.sms-langframe.t{width:820px}.sms-langframe.m{width:390px}
+.sms-stats.is-mob{grid-template-columns:1fr 1fr}
+.sms-grid.mobile{grid-template-columns:repeat(4,390px)}
+.sms-reco{display:flex;flex-wrap:wrap;align-items:center;gap:var(--space-2) var(--space-3);margin-top:var(--space-3)}
+.sms-check{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:var(--space-3)}
+.sms-check li{display:flex;gap:var(--space-3);align-items:flex-start;color:var(--ink-secondary)}
+.sms-check li>svg,.sms-check li>.v-icon{flex:none;color:var(--ink);margin-top:2px}
+.sms-check .body-strong{color:var(--ink)}
+/* 2FA */
+.tfa-step{margin:0 0 var(--space-1);color:var(--ink-muted)}
+.v-auth .auth-head p,.tfa-col .auth-head p{margin:0}
+.v-auth .auth-head,.tfa-col .auth-head{gap:var(--space-2)}
+.tfa-scan{display:flex;flex-direction:column;align-items:flex-start;gap:var(--space-3)}
+.tfa-scan p{margin:0}
+.tfa-qr{padding:var(--space-3);background:var(--raised);border:var(--border-width) solid var(--line);border-radius:var(--radius-md);line-height:0}
+.tfa-keyrow{display:flex;gap:var(--space-2);align-items:center}
+.tfa-keyrow>:first-child{flex:1;min-width:0}
+.tfa-key{display:flex;flex-direction:column;gap:var(--space-2)}
+.tfa-keylab{margin:0;color:var(--ink-secondary)}
+.tfa-keybox{display:flex;align-items:center;gap:var(--space-3);padding:var(--space-3) var(--space-3) var(--space-3) var(--space-4);background:var(--raised);border:var(--border-width) solid var(--line);border-radius:var(--radius-md)}
+.tfa-keytext{flex:1;min-width:0;margin:0;color:var(--ink);letter-spacing:.06em;word-spacing:.15em;overflow-wrap:anywhere}
+.tfa-keybox .v-btn,.tfa-keybox button{flex:none}
+.tfa-code input{letter-spacing:.12em}
+.tfa-lk{display:inline-flex;align-items:center;gap:var(--space-1-5,6px);text-align:left}
+.tfa-lk .v-icon{flex:none}
+.tfa-links{display:flex;justify-content:center}
+.tfa-out{margin:0;text-align:center}
+.tfa-acct{margin:0;color:var(--ink-secondary)}
+.tfa-done{display:flex;align-items:center;gap:var(--space-2);color:var(--ink-secondary)}
+.tfa-done .v-icon{flex:none;color:var(--ink)}
+.tfa-once{font-weight:600;color:var(--ink)}
+.tfa-codes{list-style:none;margin:0;padding:var(--space-4);display:grid;grid-template-columns:1fr 1fr;gap:var(--space-2) var(--space-6);background:var(--raised);border:var(--border-width) solid var(--line);border-radius:var(--radius-md);font-size:var(--text-body-size,15px);letter-spacing:.06em;color:var(--ink)}
+.tfa-row{display:flex;flex-wrap:wrap;gap:var(--space-2)}
+.tfa-row>*{flex:1 1 0}
+.tfa-fx{display:inline-flex;align-items:center;gap:var(--space-2);color:var(--ink)}
+.tfa-tag{margin:var(--space-3) 0 0;color:var(--ink-muted)}
+.sb-statement .display-xl{margin:0}
+.tfa-scrgroup{display:flex;flex-direction:column}
+.tfa-grouplab{margin:var(--space-6) 0 0}
+.tfa-col{display:flex;justify-content:center;padding:var(--space-10) var(--space-8);background:var(--sheet);color:var(--ink)}
+.tfa-states{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--space-6);align-items:start}
+.tfa-phones{display:grid;grid-template-columns:repeat(5,390px);gap:var(--space-6);align-items:start}
+.tfa-phone{width:390px;min-height:844px}
+.sms-langframe.tfa-d{width:1280px}
+.sms-boxbody > .v-dialog{margin:var(--space-6) auto}
+.tfa-col .sb-card{width:400px;max-width:100%;border:0;background:transparent;padding:0;box-shadow:none}
+.scr-m,.tfa-phone{display:flex;flex-direction:column}
+.scr-m>.auth,.tfa-phone>.auth,.scr-m>.v-auth,.tfa-phone>.v-auth,.sms-langframe>.v-auth{flex:1}
+.tfa-cc{max-width:6.5em}
+.sms-langframe{display:flex;flex-direction:column}
+.pr-line{display:flex;gap:var(--space-2);align-items:flex-start;margin:0;color:var(--ink-secondary)}
+.pr-line .v-icon{flex:none;margin-top:var(--space-0-5)}
+.pr-ok{color:var(--ink)}
+.pr-mail{color:var(--ink);overflow-wrap:anywhere}
+.pr-resend{display:flex;flex-direction:column;gap:var(--space-2)}
+.pr-resend p{margin:0}
+.pr-links{display:flex;flex-wrap:wrap;justify-content:center;gap:var(--space-1) var(--space-2)}
+.pr-help p{margin:0}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script>
+const V = window.Ventora;
+const { useState } = React;
+const Row = ({ label, children }) => /* @__PURE__ */ React.createElement("div", { className: "r" }, /* @__PURE__ */ React.createElement("span", { className: "l caption" }, label), children);
+const DE = ({ children }) => /* @__PURE__ */ React.createElement(V.LocaleProvider, { locale: "de" }, children);
+const FR = ({ children }) => /* @__PURE__ */ React.createElement(V.LocaleProvider, { locale: "fr" }, children);
+const IT = ({ children }) => /* @__PURE__ */ React.createElement(V.LocaleProvider, { locale: "it" }, children);
+const mount = (el) => ReactDOM.createRoot(document.getElementById("root")).render(/* @__PURE__ */ React.createElement(V.LocaleProvider, { locale: "ro" }, el));
+const SECTIONS = [
+  { items: [{ id: "azi", label: "Azi", icon: "house" }, { id: "calendar", label: "Calendar", icon: "calendar" }, { id: "programari", label: "Program\u0103ri", icon: "list", badge: 3 }] },
+  { label: "Gestionare", items: [{ id: "clienti", label: "Clien\u021Bi", icon: "users" }, { id: "servicii", label: "Servicii", icon: "boxes" }, { id: "angajati", label: "Angaja\u021Bi", icon: "contact" }] },
+  { label: "Afacere", items: [{ id: "rapoarte", label: "Rapoarte", icon: "chart-column" }, { id: "setari", label: "Set\u0103ri", icon: "settings" }] }
+];
+const SECTIONS_DE = [
+  { items: [{ id: "heute", label: "Heute", icon: "house" }, { id: "kalender", label: "Kalender", icon: "calendar" }, { id: "termine", label: "Termin\xFCbersicht", icon: "list", badge: 3 }] },
+  { label: "Verwaltung", items: [{ id: "kunden", label: "Kundenverwaltung", icon: "users" }, { id: "leistungen", label: "Dienstleistungen", icon: "boxes" }, { id: "mitarbeiter", label: "Mitarbeiterinnen", icon: "contact" }] },
+  { label: "Unternehmen", items: [{ id: "berichte", label: "Auswertungen", icon: "chart-column" }, { id: "einst", label: "Einstellungen", icon: "settings" }] }
+];
+const ORGS = [
+  { id: "aurora", name: "Salon Aurora", role: "Proprietar" },
+  { id: "dentis", name: "Clinica Dentis Sibiu", role: "Recep\u021Bie" },
+  { id: "nord", name: "Agen\u021Bia Nord Studio", role: "Manager de proiect" }
+];
+const NOTIFS = [
+  { id: 1, title: "Programare nou\u0103 de la Ana Popescu", body: "Joi, 29 oct., 14:30 \xB7 Tuns", app: "EasyBook", time: "acum 5 min", person: "Ana Popescu" },
+  { id: 2, title: "Factura #2026-114 e restant\u0103 de 3 zile", body: "Clinica Dentis \xB7 1.250 lei", app: "MoneyDesk", time: "acum 2 ore", icon: "receipt" },
+  { id: 3, title: "Ioana a cerut concediu pe 2\u20136 noiembrie", app: "TeamSpace", time: "ieri", person: "Ioana Pavel", read: true },
+  { id: 4, title: "Exportul clien\u021Bilor e gata", app: "ClientDesk", time: "ieri", icon: "download", read: true }
+];
+const USER = { name: "Bianca Petra\u0219cu", email: "bianca@ventora-hub.com" };
+function Bar({ title, de }) {
+  return /* @__PURE__ */ React.createElement(
+    V.ContextBar,
+    {
+      title,
+      org: /* @__PURE__ */ React.createElement(V.OrgSwitcher, { orgs: de ? [{ id: 1, name: "Zahnarztpraxis Dr. M\xFCller", role: "Empfang" }, { id: 2, name: "Salon Aurora", role: "Inhaberin" }] : ORGS, currentId: de ? 1 : "aurora" }),
+      onSearch: () => {
+      },
+      createItems: [{ label: de ? "Termin" : "Programare", icon: "calendar-check", shortcut: ["N"] }, { label: de ? "Kunde" : "Client", icon: "user-plus" }],
+      notifications: /* @__PURE__ */ React.createElement(V.NotificationsPanel, { items: NOTIFS }),
+      account: /* @__PURE__ */ React.createElement(V.AccountMenu, { user: USER, orgs: ORGS, currentOrgId: "aurora", onCatalog: () => {
+      } })
+    }
+  );
+}
+const SHELL_ROWS = [
+  { id: 1, client: "Ana Popescu", service: "Tuns", when: "09:30", status: ["done", "Confirmat\u0103"] },
+  { id: 2, client: "Andrei Ionescu", service: "Vopsit", when: "11:00", status: ["attention", "\xCEn desf\u0103\u0219urare"] },
+  { id: 3, client: "Cristina Dobre", service: "Tratament facial", when: "13:15", status: ["neutral", "Neconfirmat\u0103"] },
+  { id: 4, client: "Dan Stoica", service: "Tuns", when: "15:00", status: ["done", "Confirmat\u0103"] }
+];
+function BookingShell({ height, active, mobile }) {
+  return /* @__PURE__ */ React.createElement(
+    V.AppShell,
+    {
+      height,
+      spine: /* @__PURE__ */ React.createElement(V.Spine, { app: "booking", sections: SECTIONS, activeId: active, onBackToHub: () => {
+      }, footer: /* @__PURE__ */ React.createElement(V.UsageMeter, { compact: true, label: "Program\u0103ri", used: 312, limit: 1e3 }) }),
+      contextBar: /* @__PURE__ */ React.createElement(Bar, { title: "EasyBook" })
+    },
+    /* @__PURE__ */ React.createElement(V.PageHeader, { title: "Program\u0103ri", description: mobile ? void 0 : "Toate program\u0103rile afacerii, de azi \xEEnainte.", actions: mobile ? void 0 : /* @__PURE__ */ React.createElement(V.SegmentedControl, { label: "Vizualizare", size: "md", defaultValue: "list", options: [{ value: "list", label: "List\u0103", icon: "list" }, { value: "cal", label: "Calendar", icon: "calendar" }] }) }),
+    /* @__PURE__ */ React.createElement(V.DataTable, { columns: [
+      { key: "client", header: "Client", primary: true, sortable: true },
+      { key: "service", header: "Serviciu", secondary: true },
+      { key: "when", header: "Ora", secondary: true },
+      { key: "status", header: "Stare", trailing: true, render: (r) => /* @__PURE__ */ React.createElement(V.StatusPill, { tone: r.status[0] }, r.status[1]) }
+    ], rows: SHELL_ROWS, rowActions: () => [{ label: "Deschide", icon: "external-link" }], pagination: { page: 1, pageSize: 20, total: 4, onPageChange: () => {
+    } } })
+  );
+}
+const HUB_SECTIONS = [
+  { label: "Contul t\u0103u", items: [{ id: "profil", label: "Profil \u0219i preferin\u021Be", short: "Profil", icon: "circle-user" }, { id: "securitate", label: "Securitate", icon: "shield" }] },
+  { label: "Afacerea", items: [{ id: "echipa", label: "Echip\u0103 \u0219i invita\u021Bii", short: "Echip\u0103", icon: "users" }, { id: "roluri", label: "Roluri \u0219i acces", icon: "key-round" }, { id: "abonament", label: "Abonament \u0219i consum", short: "Abonament", icon: "credit-card" }] },
+  { label: "Ajutor", items: [{ id: "suport", label: "Suport", icon: "life-buoy", badge: 1 }] }
+];
+function HubBar({ title, inApp }) {
+  return /* @__PURE__ */ React.createElement(
+    V.ContextBar,
+    {
+      leading: inApp ? null : /* @__PURE__ */ React.createElement("span", { style: { padding: "0 var(--space-2)", display: "inline-flex" } }, /* @__PURE__ */ React.createElement(V.Logo, { size: 32, className: "v-cb-logo--full" }), /* @__PURE__ */ React.createElement(V.Logo, { variant: "mark", size: 32, className: "v-cb-logo--mark" })),
+      title,
+      org: /* @__PURE__ */ React.createElement(V.OrgSwitcher, { orgs: ORGS, currentId: "aurora" }),
+      onSearch: () => {
+      },
+      notifications: /* @__PURE__ */ React.createElement(V.NotificationsPanel, { items: NOTIFS }),
+      account: /* @__PURE__ */ React.createElement(V.AccountMenu, { user: USER, orgs: ORGS, currentOrgId: "aurora", onCatalog: () => {
+      } })
+    }
+  );
+}
+function HubSettings({ active, title, children }) {
+  return /* @__PURE__ */ React.createElement(
+    V.AppShell,
+    {
+      height: "100%",
+      spine: /* @__PURE__ */ React.createElement(V.Spine, { hub: true, sections: HUB_SECTIONS, activeId: active, onBackToHub: () => {
+      }, bottomItems: ["profil", "echipa", "abonament", "suport"] }),
+      contextBar: /* @__PURE__ */ React.createElement(HubBar, { title, inApp: true })
+    },
+    children
+  );
+}
+function Screens({ title, notes, render, desktopH = 860, tabletH = 1100, mobileH = 844 }) {
+  if (window.__SOLO) {
+    const w = window.innerWidth;
+    const m = w < 768 ? "mobile" : w < 1024 ? "tablet" : "desktop";
+    return /* @__PURE__ */ React.createElement("div", { style: { height: "100vh", position: "relative", background: "var(--canvas)" } }, render(m, "light"));
+  }
+  const sizes = [["desktop", "Desktop \xB7 1280", "scr-d", desktopH], ["tablet", "Tablet\u0103 portret \xB7 820", "scr-t", tabletH], ["mobile", "Telefon \xB7 390", "scr-m", mobileH]];
+  return /* @__PURE__ */ React.createElement("div", { className: "scr" }, /* @__PURE__ */ React.createElement("p", { className: "heading" }, title), notes && /* @__PURE__ */ React.createElement("p", { className: "caption muted" }, notes.join(" \xB7 ")), ["light", "dark"].map((th) => /* @__PURE__ */ React.createElement("div", { className: "scr-row", key: th }, sizes.map(([m, lab, cls, h]) => /* @__PURE__ */ React.createElement("div", { key: m }, /* @__PURE__ */ React.createElement("p", { className: "caption scr-lab" }, lab, " \xB7 ", th === "light" ? "Light" : "Dark"), /* @__PURE__ */ React.createElement("div", { className: cls, "data-theme": th, style: { height: h } }, render(m, th)))))));
+}
+const MINE = [["booking", "Program\u0103ri, calendar \u0219i reamintiri", 3], ["crm", "Clien\u021Bi, istoric \u0219i oportunit\u0103\u021Bi"], ["hr", "Echip\u0103, prezen\u021B\u0103 \u0219i concedii", 1], ["finance", "Facturi, scaden\u021Be \u0219i restan\u021Be", 2], ["projects", "Proiecte, sarcini \u0219i termene"], ["shifts", "Ture \u0219i \xEEnlocuiri"], ["documents", "Documente \u0219i \u0219abloane"], ["portal", "Pagina afacerii pentru clien\u021Bi"]];
+const RECO = { marketing: { reason: "Se potrive\u0219te cu EasyBook: trimite automat reamintiri \u0219i campanii clien\u021Bilor t\u0103i.", cost: "49 lei pe lun\u0103 \xB7 f\u0103r\u0103 cost de implementare" } };
+const VIEWER_ROLE = "owner";
+const RECO_FOR = (a) => (VIEWER_ROLE === "owner" || VIEWER_ROLE === "admin") && a === "marketing" ? RECO[a] : null;
+const OTHER = [["inventory", "unavailable"], ["analytics", "notInRole"], ["marketing", "notInPlan"], ["network", "notInPlan"]];
+function Launcher({ mode, empty }) {
+  const [run, setRun] = useState(null);
+  const mob = mode === "mobile";
+  const open = (a) => (e) => setRun({ app: a, from: e.currentTarget.querySelector(".v-appicon").getBoundingClientRect() });
+  return /* @__PURE__ */ React.createElement("div", { className: "frame-rel" }, /* @__PURE__ */ React.createElement(V.AppShell, { height: "100%", contextBar: /* @__PURE__ */ React.createElement(HubBar, null) }, /* @__PURE__ */ React.createElement("div", { className: "wrap " + mode }, /* @__PURE__ */ React.createElement("div", { className: "greet" }, /* @__PURE__ */ React.createElement("h1", { className: "display-l" }, "Bun\u0103 diminea\u021Ba, Bianca"), empty ? /* @__PURE__ */ React.createElement("p", { className: "body muted" }, "Bine ai venit \xEEn Salon Aurora. Aplica\u021Biile apar aici imediat ce prime\u0219ti acces.") : /* @__PURE__ */ React.createElement("p", { className: "body muted daylinks" }, "Azi ai ", /* @__PURE__ */ React.createElement("a", { className: "v-link", href: "#" }, "8 program\u0103ri"), ", ", /* @__PURE__ */ React.createElement("a", { className: "v-link", href: "#" }, "2 facturi scadente"), " \u0219i ", /* @__PURE__ */ React.createElement("a", { className: "v-link", href: "#" }, "o cerere de concediu"), " de aprobat.")), empty ? /* @__PURE__ */ React.createElement("div", { className: "sheetlike" }, /* @__PURE__ */ React.createElement(V.EmptyState, { icon: "layout-grid", title: "Nu ai \xEEnc\u0103 acces la nicio aplica\u021Bie", description: "Bianca Petra\u0219cu (proprietar) alege ce aplica\u021Bii folose\u0219te fiecare rol. Putem trimite noi cererea ta.", actions: /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(V.Button, { variant: "primary", icon: "send" }, "Cere acces"), /* @__PURE__ */ React.createElement(V.Button, { variant: "quiet" }, "Scrie-ne")) }), /* @__PURE__ */ React.createElement("p", { className: "body-small muted center", style: { paddingBottom: "var(--space-6)" } }, "\xCEntre timp, alege-\u021Bi fotografia \u0219i limba din ", /* @__PURE__ */ React.createElement("a", { className: "v-link", href: "#" }, "Contul t\u0103u"), ".")) : /* @__PURE__ */ React.createElement("section", null, /* @__PURE__ */ React.createElement("div", { className: "sechead" }, /* @__PURE__ */ React.createElement("h2", { className: "display-m" }, "Aplica\u021Biile tale"), /* @__PURE__ */ React.createElement(V.Button, { size: "sm", variant: "quiet", icon: "grip-vertical" }, "Reordoneaz\u0103")), mob ? /* @__PURE__ */ React.createElement("div", { className: "mgrid" }, MINE.map(([a, d, b]) => /* @__PURE__ */ React.createElement(V.AppTile, { key: a, app: a, layout: "icon", badge: b, onOpen: open(a) }))) : /* @__PURE__ */ React.createElement("div", { className: "tiles4" }, MINE.map(([a, d, b]) => /* @__PURE__ */ React.createElement(V.AppTile, { key: a, app: a, description: d, badge: b, onOpen: open(a) })))), /* @__PURE__ */ React.createElement("section", null, /* @__PURE__ */ React.createElement("h2", { className: "display-m sec" }, "Alte aplica\u021Bii Ventora"), /* @__PURE__ */ React.createElement("p", { className: "body-small muted", style: { marginBottom: "var(--space-3)" } }, "Nu le po\u021Bi deschide acum. La fiecare scrie de ce \u0219i ce po\u021Bi face."), true ? /* @__PURE__ */ React.createElement("div", { className: mob ? "rows" : "rows rows2" }, OTHER.map(([a, s]) => RECO_FOR(a) ? /* @__PURE__ */ React.createElement(V.GrowthSlot, { key: a, label: "Recomandare" }, /* @__PURE__ */ React.createElement(V.AppTile, { app: a, access: s, layout: "row", recommendation: RECO_FOR(a), onDetails: () => {
+  }, onDismiss: () => {
+  }, onRemindLater: () => {
+  } })) : /* @__PURE__ */ React.createElement(V.AppTile, { key: a, app: a, access: s, layout: "row", grantedBy: "Bianca Petra\u0219cu", onRequestAccess: () => {
+  }, onWriteUs: () => {
+  }, onSeeStatus: () => {
+  } }))) : /* @__PURE__ */ React.createElement("div", { className: "tiles4" }, OTHER.map(([a, s]) => RECO_FOR(a) ? /* @__PURE__ */ React.createElement(V.GrowthSlot, { key: a, label: "Recomandare" }, /* @__PURE__ */ React.createElement(V.AppTile, { app: a, access: s, recommendation: RECO_FOR(a), onDetails: () => {
+  }, onDismiss: () => {
+  }, onRemindLater: () => {
+  } })) : /* @__PURE__ */ React.createElement(V.AppTile, { key: a, app: a, access: s, grantedBy: "Bianca Petra\u0219cu", onRequestAccess: () => {
+  }, onWriteUs: () => {
+  }, onSeeStatus: () => {
+  } }))), /* @__PURE__ */ React.createElement("div", { style: { marginTop: "var(--space-4)" } }, /* @__PURE__ */ React.createElement(V.Button, { variant: "quiet", icon: "layout-grid", iconEnd: "arrow-right" }, "Vezi toate aplica\u021Biile Ventora"))))), run && /* @__PURE__ */ React.createElement(V.AppLaunch, { contained: true, app: run.app, from: run.from, onDone: () => setTimeout(() => setRun(null), 500) }));
+}
+function CommercialPrefs({ mode }) {
+  return /* @__PURE__ */ React.createElement(V.SheetSection, { title: "Recomand\u0103ri Ventora", description: "Sugestii despre aplica\u021Bii \u0219i pachete \xEEn plus care se potrivesc cu ce faci deja." }, /* @__PURE__ */ React.createElement("div", { className: "d0", style: { gap: "var(--space-3)" } }, /* @__PURE__ */ React.createElement(V.Toggle, { label: "\xCEn aplica\u021Bie", description: "Le vezi \xEEn pagini \u0219i \xEEn notific\u0103ri, la sec\u021Biunea Recomand\u0103ri.", defaultChecked: true, labelPosition: mode === "mobile" ? "start" : "end" }), /* @__PURE__ */ React.createElement(V.Toggle, { label: "Pe e-mail", description: "Disponibil \xEEn cur\xE2nd", disabled: true, labelPosition: mode === "mobile" ? "start" : "end" }), /* @__PURE__ */ React.createElement(V.Notice, { tone: "neutral", icon: "info" }, "Mesajele despre limitele contului t\u0103u r\u0103m\xE2n active, pentru c\u0103 sunt informa\u021Bii despre cont, nu recomand\u0103ri.")));
+}
+/* Direcția B (25 oct. 2026): sign-in with the brand panel (BrandZone) and the form on the sheet, without a card. */
+function Chevrons({ cls }) {
+  return React.createElement("svg", { className: "b-chev " + (cls || ""), viewBox: "0 0 176 240", "aria-hidden": true },
+    [40, 72, 104].map((y) => React.createElement("polyline", { key: y, points: `32,${y} 88,${y + 80} 144,${y}` })),
+    React.createElement("polyline", { points: "48,168 88,224 128,168" }));
+}
+const PR = {"ro": {"auth.reset.request.title": "Ai uitat parola?", "auth.reset.request.lead": "Scrie adresa contului și îți trimitem un link pentru o parolă nouă.", "auth.reset.emailLabel": "E-mail", "auth.reset.request.submit": "Trimite linkul", "auth.reset.sending": "Se trimite…", "auth.reset.back": "Înapoi la autentificare", "auth.reset.error.empty": "Scrie adresa de e-mail a contului.", "auth.reset.error.format": "Adresa nu pare completă. Verifică după @.", "auth.reset.limit.title": "Ai încercat de prea multe ori", "auth.reset.limit.body": "Poți cere un link nou după ora {time}.", "auth.reset.offline.title": "Nu te putem conecta acum", "auth.reset.offline.body": "Verifică internetul și încearcă din nou.", "auth.reset.sent.title": "Verifică-ți e-mailul", "auth.reset.sent.body": "Dacă {email} este adresa unui cont Ventora, ți-am trimis acolo un link pentru o parolă nouă.", "auth.reset.sent.validity": "Linkul e valabil o oră.", "auth.reset.sent.help": "Nu vezi e-mailul? Uită-te și în Spam sau Promoții.", "auth.reset.sent.resend": "Trimite alt link", "auth.reset.sent.resendWait": "Poți cere alt link peste un minut.", "auth.reset.sent.resent": "Ți-am trimis alt link. Folosește-l pe cel mai nou.", "auth.reset.sent.otherEmail": "Folosește altă adresă", "auth.reset.new.title": "Alege o parolă nouă", "auth.reset.new.account": "Pentru contul {email}.", "auth.reset.new.label": "Parolă nouă", "auth.reset.req.length": "Cel puțin 10 caractere", "auth.reset.req.digit": "Cel puțin o cifră", "auth.reset.req.upper": "Cel puțin o literă mare", "auth.reset.new.signOutNote": "Când o salvezi, te scoatem din cont pe toate dispozitivele.", "auth.reset.new.submit": "Salvează parola", "auth.reset.saving": "Se salvează…", "auth.reset.error.reqs": "Parola nu îndeplinește încă toate cerințele de mai jos.", "auth.reset.expired.title": "Linkul a expirat", "auth.reset.expired.body": "Linkurile pentru o parolă nouă sunt valabile o oră. Cere unul nou și îl primești pe e-mail.", "auth.reset.newLink": "Cere un link nou", "auth.reset.used.title": "Ai folosit deja acest link", "auth.reset.used.body": "Fiecare link merge o singură dată. Dacă ți-ai ales deja parola nouă, intră cu ea.", "auth.reset.signIn": "Intră în cont", "auth.reset.done.title": "Parola e schimbată", "auth.reset.done.signedOut": "Te-am scos din cont pe toate dispozitivele.", "auth.reset.done.body": "Intră din nou cu parola nouă, pe fiecare dispozitiv pe care lucrezi.", "auth.reset.done.twoStep": "După parolă îți cerem și codul din aplicația de autentificare."}};
+/* Password reset — "Ai uitat parola?", the new password from the e-mailed link, the confirmation; Hub and Founder. Same page as HubSignIn (AuthLayout, S63). Only existing components. All texts come from the translation keys (PR, i18n/password-reset.json). */
+const h = React.createElement;
+const t = (lang, key, vars) => {
+  let s = (PR[lang] && PR[lang][key]) || PR.ro[key] || key;
+  if (vars) for (const k in vars) s = s.split("{" + k + "}").join(vars[k]);
+  return s;
+};
+const HUB_USER = "bianca@salonaurora.ro", FX_MAIL = "bianca@ventora-hub.com", MEMBER = "ioana.pavel@salonaurora.ro";
+const LIMIT_AT = { ro: "10:45", en: "10:45", fr: "10 h 45", es: "10:45", de: "10:45", it: "10:45" };
+
+/* The page is the system's AuthLayout (R-2F9): brand panel, the sheet with the form, the logo band on phones. Founder: brand="founder", no language selector (S57, R-2F8). */
+function AuthFrame({ lang = "ro", founder, children }) {
+  return h(V.AuthLayout, { brand: founder ? "founder" : "hub",
+    languageSelector: founder ? null : h(V.LanguageSwitcher, { value: lang, onChange: () => {} }),
+    footer: founder ? null : PR_FOOT[lang] }, children);
+}
+const PR_FOOT = { ro: "Termeni · Confidențialitate · Ajutor", en: "Terms · Privacy · Help", fr: "Conditions · Confidentialité · Aide", es: "Términos · Privacidad · Ayuda", de: "AGB · Datenschutz · Hilfe", it: "Termini · Privacy · Aiuto" };
+const Head = ({ title, children }) => h("div", { className: "auth-head" }, h("h1", { className: "display-hub" }, title), children);
+const Line = ({ icon, children, cls }) => h("p", { className: "body-small pr-line " + (cls || "") }, h(V.Icon, { name: icon, size: 16 }), h("span", null, children));
+const Back = ({ lang }) => h(V.Button, { variant: "quiet", icon: "arrow-left", block: true }, t(lang, "auth.reset.back"));
+
+/* Shows the password, as after pressing the field's own "Arată parola" button (Input type="password"). */
+function Revealed({ children }) {
+  const ref = React.useRef(null);
+  React.useEffect(() => { const b = ref.current && ref.current.querySelector(".v-control__btn"); if (b) b.click(); }, []);
+  return h("div", { ref }, children);
+}
+function Req({ ok, children }) {
+  return h("li", { className: ok ? "req ok" : "req" }, h(V.Icon, { name: ok ? "circle-check" : "circle", size: 16 }), h("span", { className: "body-small" }, children));
+}
+
+/* ——— 1 · "Ai uitat parola?" ——— */
+function Request({ lang = "ro", state, mob, email = HUB_USER }) {
+  const err = state === "empty" ? t(lang, "auth.reset.error.empty") : state === "format" ? t(lang, "auth.reset.error.format") : undefined;
+  const limited = state === "limit", offline = state === "offline", loading = state === "loading";
+  const val = state === "empty" || state === "blank" ? "" : state === "format" ? email.split(".").slice(0, -1).join(".") : email;
+  return h(React.Fragment, null,
+    h(Head, { title: t(lang, "auth.reset.request.title") }, h("p", { className: "body muted" }, t(lang, "auth.reset.request.lead"))),
+    limited ? h(V.Notice, { tone: "danger", icon: "clock", title: t(lang, "auth.reset.limit.title") }, t(lang, "auth.reset.limit.body", { time: LIMIT_AT[lang] })) : null,
+    offline ? h(V.Notice, { tone: "neutral", icon: "globe", title: t(lang, "auth.reset.offline.title") }, t(lang, "auth.reset.offline.body")) : null,
+    h(V.FormField, { label: t(lang, "auth.reset.emailLabel"), error: err },
+      h(V.Input, { type: "email", autoComplete: "username", icon: "mail", defaultValue: val, invalid: !!err, disabled: limited, size: mob ? "lg" : "md" })),
+    h(V.Button, { variant: "primary", size: "lg", block: true, loading, disabled: limited, "aria-label": loading ? t(lang, "auth.reset.sending") : undefined }, t(lang, "auth.reset.request.submit")),
+    h(Back, { lang }));
+}
+
+/* ——— 2 · Link sent (the same screen whether or not the address has an account) ——— */
+function Sent({ lang = "ro", state, email = HUB_USER }) {
+  const ready = state === "ready" || state === "resent";
+  return h(React.Fragment, null,
+    h(Head, { title: t(lang, "auth.reset.sent.title") },
+      h("p", { className: "body muted" }, ...t(lang, "auth.reset.sent.body").split("{email}").flatMap((p, i) => i ? [h("strong", { key: i, className: "body-strong pr-mail" }, email), p] : [p])),
+      h("p", { className: "body muted" }, t(lang, "auth.reset.sent.validity"))),
+    state === "resent" ? h(Line, { icon: "mail-check", cls: "pr-ok" }, t(lang, "auth.reset.sent.resent")) : null,
+    h("div", { className: "auth-note pr-help" }, h(V.Icon, { name: "inbox", size: 16 }), h("p", { className: "body-small" }, t(lang, "auth.reset.sent.help"))),
+    h("div", { className: "pr-resend" },
+      h(V.Button, { variant: "secondary", icon: "send", block: true, disabled: !ready }, t(lang, "auth.reset.sent.resend")),
+      ready ? null : h("p", { className: "caption muted center" }, t(lang, "auth.reset.sent.resendWait"))),
+    h("div", { className: "pr-links" },
+      h("button", { className: "v-link body-small", type: "button" }, t(lang, "auth.reset.sent.otherEmail")),
+      h("span", { className: "muted", "aria-hidden": true }, "·"),
+      h("button", { className: "v-link body-small", type: "button" }, t(lang, "auth.reset.back"))));
+}
+
+/* ——— 3 · New password, from the e-mailed link ——— */
+const PWD = { none: "", part: "aurora2026", ok: "Aurora2026!", short: "aurora" };
+function NewPassword({ lang = "ro", state, email = HUB_USER, mob }) {
+  if (state === "expired") return h(React.Fragment, null,
+    h(Head, { title: t(lang, "auth.reset.new.title") }),
+    h(V.Notice, { tone: "attention", title: t(lang, "auth.reset.expired.title"), actions: h(V.Button, { variant: "primary", size: "sm", icon: "send" }, t(lang, "auth.reset.newLink")) }, t(lang, "auth.reset.expired.body")),
+    h(Back, { lang }));
+  if (state === "used") return h(React.Fragment, null,
+    h(V.EmptyState, { size: "sm", icon: "lock", title: t(lang, "auth.reset.used.title"), description: t(lang, "auth.reset.used.body"),
+      actions: h(React.Fragment, null, h(V.Button, { variant: "primary" }, t(lang, "auth.reset.signIn")), h(V.Button, { variant: "quiet", icon: "send" }, t(lang, "auth.reset.newLink"))) }));
+  const pwd = state === "error" ? PWD.part : state === "empty" ? PWD.none : state === "short" ? PWD.short : PWD.ok;
+  const ok = { len: pwd.length >= 10, dig: /\d/.test(pwd), up: /[A-ZĂÂÎȘȚ]/.test(pwd) };
+  const err = state === "error" ? t(lang, "auth.reset.error.reqs") : undefined;
+  const field = h(V.FormField, { label: t(lang, "auth.reset.new.label"), error: err },
+    h(V.Input, { type: "password", autoComplete: "new-password", defaultValue: pwd, invalid: !!err, size: mob ? "lg" : "md", "aria-describedby": "pr-reqs-" + lang }));
+  return h(React.Fragment, null,
+    h(Head, { title: t(lang, "auth.reset.new.title") },
+      h("p", { className: "body-small tfa-acct" }, t(lang, "auth.reset.new.account", { email }))),
+    state === "shown" ? h(Revealed, null, field) : field,
+    h("ul", { className: "reqs", id: "pr-reqs-" + lang, "aria-live": "polite" },
+      h(Req, { ok: ok.len }, t(lang, "auth.reset.req.length")),
+      h(Req, { ok: ok.dig }, t(lang, "auth.reset.req.digit")),
+      h(Req, { ok: ok.up }, t(lang, "auth.reset.req.upper"))),
+    h(Line, { icon: "log-out" }, t(lang, "auth.reset.new.signOutNote")),
+    h(V.Button, { variant: "primary", size: "lg", block: true, loading: state === "loading", "aria-label": state === "loading" ? t(lang, "auth.reset.saving") : undefined }, t(lang, "auth.reset.new.submit")));
+}
+
+/* ——— 4 · Password changed: every session is closed (S72) ——— */
+function Done({ lang = "ro", twoStep = true }) {
+  return h(React.Fragment, null,
+    h(Head, { title: t(lang, "auth.reset.done.title") },
+      h("p", { className: "tfa-done body-small" }, h(V.Icon, { name: "log-out", size: 16 }), t(lang, "auth.reset.done.signedOut")),
+      h("p", { className: "body muted" }, t(lang, "auth.reset.done.body"))),
+    twoStep ? h("div", { className: "auth-note" }, h(V.Icon, { name: "smartphone", size: 16 }), h("p", { className: "body-small" }, t(lang, "auth.reset.done.twoStep"))) : null,
+    h(V.Button, { variant: "primary", size: "lg", block: true }, t(lang, "auth.reset.signIn")));
+}
+
+/* ——— Boards ——— */
+function Screens2({ title, notes, items, founder }) {
+  return h("div", { className: "scr" },
+    h("p", { className: "heading" }, title),
+    notes ? h("p", { className: "caption muted" }, notes.join(" · ")) : null,
+    items.map(([lab, render, dH, mH]) => h("div", { key: lab, className: "tfa-scrgroup" },
+      h("p", { className: "subheading tfa-grouplab" }, lab),
+      ["light", "dark"].map((th) => h("div", { className: "scr-row", key: th },
+        [["desktop", "Desktop · 1280", "scr-d", dH], ["mobile", "Telefon · 390", "scr-m", mH]].map(([m, l, cls, H]) => h("div", { key: m },
+          h("p", { className: "caption scr-lab" }, l, " · ", th === "light" ? "Light" : "Dark"),
+          h("div", { className: cls, "data-theme": th, style: H === "auto" ? { minHeight: 844 } : { height: H } }, h(AuthFrame, { founder }, render(m))))))))));
+}
+const Box = ({ label, children }) => h("div", { className: "sms-box" }, h("p", { className: "caption sms-boxlab" }, label), h("div", { className: "sms-boxbody" }, children));
+const Col = ({ children }) => h("div", { className: "tfa-col" }, h("div", { className: "auth-card sb-card tfa-card" }, children));
+function StateBoard({ title, th, boxes }) {
+  return h("div", { className: "sms-states", "data-theme": th },
+    h("p", { className: "heading" }, title + " · " + (th === "light" ? "Light" : "Dark")),
+    h("div", { className: "tfa-states" }, boxes.map(([lab, el]) => h(Box, { key: lab, label: lab }, el))));
+}
+function PhoneBoard({ title, th, boxes, founder }) {
+  return h("div", { className: "sms-states", "data-theme": th },
+    h("p", { className: "heading" }, title + " · telefon · " + (th === "light" ? "Light" : "Dark")),
+    h("div", { className: "tfa-phones" }, boxes.map(([lab, el]) => h(Box, { key: lab, label: lab }, h("div", { className: "tfa-phone" }, h(AuthFrame, { founder }, el))))));
+}
+function Langs({ items }) {
+  return h("div", { className: "sms-langs", "data-theme": "light" },
+    h("p", { className: "heading" }, "Test cu etichete în germană și italiană"),
+    h("div", { className: "sms-langrow" }, items.map(([lab, lang, mode, el, H, th]) => h("div", { className: "sms-lang", key: lab },
+      h("p", { className: "caption sms-boxlab" }, lab),
+      h("div", { className: "sms-langframe " + (mode === "mobile" ? "m" : "tfa-d"), "data-theme": th || "light", style: { height: H } }, h(V.LocaleProvider, { locale: lang }, h(AuthFrame, { lang }, el)))))));
+}
+
+const HUB = h("div", null,
+  h(Screens2, { title: "Hub — Parolă nouă (din „Ai uitat parola?”)", notes: ["Același răspuns și pentru o adresă fără cont", "Linkul e valabil o oră (S55) și merge o singură dată", "După schimbare se închid toate sesiunile (S72)"], items: [
+    ["1 · „Ai uitat parola?” (adresa vine completată din autentificare)", (m) => h(Request, { mob: m === "mobile" }), 820, "auto"],
+    ["2 · Linkul e trimis", (m) => h(Sent, null), 820, "auto"],
+    ["3 · „Alege o parolă nouă” (din linkul din e-mail)", (m) => h(NewPassword, { state: "part", mob: m === "mobile" }), 820, "auto"],
+    ["4 · Parola e schimbată · proprietar cu autentificare în doi pași", (m) => h(Done, null), 820, "auto"]] }),
+  ["light", "dark"].map((th) => h(StateBoard, { key: th, th, title: "Stări · desktop (coloana formularului; panoul e ca mai sus)", boxes: [
+    ["1 · E-mail lipsă", h(Col, null, h(Request, { state: "empty" }))],
+    ["2 · Adresă incompletă", h(Col, null, h(Request, { state: "format" }))],
+    ["3 · Se trimite", h(Col, null, h(Request, { state: "loading" }))],
+    ["4 · Prea multe cereri, cu ora", h(Col, null, h(Request, { state: "limit" }))],
+    ["5 · Fără conexiune", h(Col, null, h(Request, { state: "offline" }))],
+    ["6 · După un minut: „Trimite alt link”", h(Col, null, h(Sent, { state: "ready" }))],
+    ["7 · Alt link trimis", h(Col, null, h(Sent, { state: "resent" }))],
+    ["8 · Parolă nouă · câmp gol", h(Col, null, h(NewPassword, { state: "empty" }))],
+    ["9 · „Arată parola” apăsat, toate cerințele bifate", h(Col, null, h(NewPassword, { state: "shown" }))],
+    ["10 · „Salvează parola” cu cerințe lipsă", h(Col, null, h(NewPassword, { state: "error" }))],
+    ["11 · Se salvează", h(Col, null, h(NewPassword, { state: "loading" }))],
+    ["12 · Linkul a expirat (după o oră)", h(Col, null, h(NewPassword, { state: "expired" }))],
+    ["13 · Linkul a fost deja folosit", h(Col, null, h(NewPassword, { state: "used" }))],
+    ["14 · Parola e schimbată · fără autentificare în doi pași (membru)", h(Col, null, h(Done, { twoStep: false }))],
+    ["15 · Link expirat → „Cere un link nou”: alt link, direct pe adresa contului (S76)", h(Col, null, h(Sent, null))],
+    ["16 · Link deja folosit → „Cere un link nou”: adresa nu se mai știe, câmpul e gol (S76)", h(Col, null, h(Request, { state: "blank" }))]] })),
+  ["light", "dark"].map((th) => h(PhoneBoard, { key: "p" + th, th, title: "Stări", boxes: [
+    ["Adresă incompletă", h(Request, { state: "format", mob: true })],
+    ["Prea multe cereri", h(Request, { state: "limit", mob: true })],
+    ["Cerințe lipsă", h(NewPassword, { state: "error", mob: true })],
+    ["Linkul a expirat", h(NewPassword, { state: "expired", mob: true })],
+    ["Linkul a fost deja folosit", h(NewPassword, { state: "used", mob: true })]] })),
+  h(Langs, { items: [
+    ["Deutsch · 1280 · cerințe lipsă", "de", "desktop", h(NewPassword, { lang: "de", state: "error" }), 820],
+    ["Italiano · 390 · link trimis", "it", "mobile", h(Sent, { lang: "it" }), 900],
+    ["Deutsch · 390 · parola schimbată", "de", "mobile", h(Done, { lang: "de" }), 900],
+    ["Italiano · 390 · link expirat · Dark", "it", "mobile", h(NewPassword, { lang: "it", state: "expired", mob: true }), 900, "dark"]] }));
+
+const FOUNDER = h("div", null,
+  h(Screens2, { founder: true, title: "Founder — Parolă nouă", notes: ["Doar în română, fără selector de limbă (S57, R-2F8)", "Autentificarea în doi pași e obligatorie pentru toți: după parolă se cere codul"], items: [
+    ["1 · „Ai uitat parola?”", (m) => h(Request, { mob: m === "mobile", email: FX_MAIL }), 820, "auto"],
+    ["2 · Linkul e trimis", (m) => h(Sent, { email: FX_MAIL }), 820, "auto"],
+    ["3 · „Alege o parolă nouă”", (m) => h(NewPassword, { state: "part", email: FX_MAIL, mob: m === "mobile" }), 820, "auto"],
+    ["4 · Parola e schimbată", (m) => h(Done, null), 820, "auto"]] }),
+  ["light", "dark"].map((th) => h(PhoneBoard, { key: "f" + th, th, founder: true, title: "Founder · stări", boxes: [
+    ["Prea multe cereri", h(Request, { state: "limit", mob: true, email: FX_MAIL })],
+    ["Cerințe lipsă", h(NewPassword, { state: "error", email: FX_MAIL, mob: true })],
+    ["Linkul a expirat", h(NewPassword, { state: "expired", mob: true })],
+    ["Linkul a fost deja folosit", h(NewPassword, { state: "used", mob: true })],
+    ["Se salvează", h(NewPassword, { state: "loading", email: FX_MAIL, mob: true })]] })));
+
+window.__PART="founder";
+mount(window.__PART === "founder" ? FOUNDER : window.__PART === "hub" ? HUB : h("div", null, HUB, FOUNDER));
+
+</script>
+</body>
+</html>

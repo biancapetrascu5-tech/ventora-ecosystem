@@ -1,0 +1,103 @@
+/* .v-appicon + .v-ag-* din bundle.css. Glifele folosesc clasele globale v-ag-* (din bundle),
+   de aceea regulile pentru ele sunt :global, legate de rădăcina modulului. */
+.appicon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  border-radius: var(--radius-md);
+}
+
+.svg {
+  display: block;
+  flex: none;
+  border-radius: 0;
+}
+
+.svg :global(.v-ag-plate) {
+  fill: var(--appicon-plate);
+}
+
+.svg :global(.v-ag-edge) {
+  fill: none;
+  stroke: var(--appicon-edge);
+  stroke-width: var(--border-width);
+  vector-effect: non-scaling-stroke;
+}
+
+.svg :global(.v-ag-s) {
+  fill: var(--appicon-shape);
+}
+
+.svg :global(.v-ag-a) {
+  fill: var(--appicon-accent);
+}
+
+.svg :global(.v-ag-p) {
+  fill: var(--appicon-plate);
+}
+
+.svg :global(.v-ag-k) {
+  stroke: var(--appicon-plate);
+  stroke-width: 2.5;
+  paint-order: stroke;
+  stroke-linejoin: round;
+}
+
+.svg :global(path.v-ag-k:not(.v-ag-s):not(.v-ag-a)) {
+  fill: none;
+  stroke-width: 2;
+}
+
+.svg :global(.v-ag-ws) {
+  fill: none;
+  stroke: var(--appicon-shape);
+  stroke-width: 3;
+  stroke-linecap: round;
+}
+
+.svg :global(.v-ag-as) {
+  fill: none;
+  stroke: var(--appicon-accent);
+  stroke-width: 3.5;
+  stroke-linecap: round;
+}
+
+.isMuted :global(.v-ag-plate),
+.isMuted :global(.v-ag-p) {
+  fill: var(--appicon-plate-muted);
+}
+
+.isMuted :global(.v-ag-k) {
+  stroke: var(--appicon-plate-muted);
+}
+
+.isMuted :global(.v-ag-edge) {
+  stroke: transparent;
+}
+
+.isMuted :global(.v-ag-s) {
+  fill: var(--appicon-shape-muted);
+}
+
+.isMuted :global(.v-ag-ws) {
+  stroke: var(--appicon-shape-muted);
+}
+
+.isMuted :global(.v-ag-a) {
+  fill: var(--appicon-accent-muted);
+}
+
+.isMuted :global(.v-ag-as) {
+  stroke: var(--appicon-accent-muted);
+}
+
+.lucide {
+  background: var(--appicon-plate);
+  color: var(--appicon-shape);
+}
+
+.lucide.isMuted {
+  background: var(--appicon-plate-muted);
+  color: var(--appicon-shape-muted);
+}

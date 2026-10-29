@@ -1,4 +1,4 @@
-<!-- @dsCard group="Shell" height=271 -->
+<!-- @dsCard group="Shell" height=1720 width=1200 -->
 <!doctype html>
 <html lang="ro">
 <head><meta charset="utf-8"><title>PageHeader — Ventora</title>
@@ -250,6 +250,9 @@ html,body{min-height:100%}
 .fxframe .caption{color:var(--ink-muted)}
 @container (max-width:420px){.fxlang{grid-template-columns:32px minmax(0,1fr) auto}.fxlang .v-iconbtn{display:none}}
 
+.thf{display:flex;flex-direction:column;gap:var(--space-4);padding:var(--space-5);background:var(--canvas);color:var(--ink);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg);min-width:0;box-sizing:border-box}
+.thg{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(420px,100%),1fr));gap:var(--space-4);align-items:start}
+.thstack{display:flex;flex-direction:column;gap:var(--space-4)}
 </style>
 </head>
 <body>
@@ -275,7 +278,40 @@ function Demo() {
     }
   ), /* @__PURE__ */ React.createElement(DE, null, /* @__PURE__ */ React.createElement(V.PageHeader, { title: "Terminverwaltung und Kundenhistorie", description: "Alle Termine Ihres Unternehmens an einem Ort.", actions: /* @__PURE__ */ React.createElement(V.Button, { variant: "primary", icon: "plus" }, "Neuen Termin erstellen") })));
 }
-mount(/* @__PURE__ */ React.createElement(Demo, null));
+const ORIG = (/* @__PURE__ */ React.createElement(Demo, null));
+/* Light/Dark frames, DE/IT label test */
+const E = React.createElement;
+const noop = () => {
+};
+const Cap = ({ children }) => E("p", { className: "caption muted" }, children);
+const ThemeFrame = ({ th, children }) => E("div", { className: "thf", "data-theme": th }, E("p", { className: "heading" }, th === "light" ? "Light" : "Dark"), children);
+const LocFrame = ({ loc, label, children }) => E("div", { className: "thf", "data-theme": "light" }, E("p", { className: "heading" }, label), E(V.LocaleProvider, { locale: loc }, children));
+const Frames = ({ States, stack }) => E("div", { className: stack ? "thstack" : "thg" }, E(ThemeFrame, { th: "light" }, E(States, { th: "light" })), E(ThemeFrame, { th: "dark" }, E(States, { th: "dark" })));
+const Locales = ({ De, It, stack }) => E("div", { className: stack ? "thstack" : "thg" }, E(LocFrame, { loc: "de", label: "Deutsch (DE)" }, E(De)), E(LocFrame, { loc: "it", label: "Italiano (IT)" }, E(It)));
+const Extra = ({ States, De, It, stack, stackLoc }) => E("div", { className: "d" }, E("p", { className: "heading" }, "Stări · Light și Dark"), E(Frames, { States, stack }), E("p", { className: "heading" }, "Test de lungime: germană și italiană"), E(Locales, { De, It, stack: stackLoc }));
+const PH = (t) => E(V.PageHeader, {
+  breadcrumbs: [{ label: t.crumb, href: "#" }, { label: t.name }],
+  title: t.name,
+  description: t.desc,
+  meta: E(React.Fragment, null, E(V.StatusPill, { tone: "done" }, t.loyal), E(V.StatusPill, { tone: "danger" }, t.due)),
+  actions: E(React.Fragment, null, E(V.Button, { icon: "send" }, t.msg), E(V.Button, { variant: "primary", icon: "plus" }, t.add), E(V.Menu, { items: [{ label: t.exp, icon: "download" }, { separator: true }, { label: t.del, icon: "trash-2", destructive: true }], trigger: E(V.IconButton, { icon: "ellipsis-vertical", label: t.more, variant: "secondary" }) })),
+  tabs: E(V.Tabs, { label: t.crumb, items: [{ value: "a", label: t.tabs[0] }, { value: "b", label: t.tabs[1], count: 23 }, { value: "c", label: t.tabs[2] }] })
+});
+const PH_RO = { crumb: "Clienți", name: "Ștefan Țăranu", desc: "Client din martie 2024 · 23 de programări · preferă dimineața.", loyal: "Client fidel", due: "1 plată restantă", msg: "Trimite mesaj", add: "Programare nouă", exp: "Exportă datele (GDPR)", del: "Șterge clientul", more: "Mai multe acțiuni", tabs: ["Detalii", "Istoric", "Plăți"] };
+const PH_DE = { crumb: "Kunden", name: "Anna Schmidt-Bergmann", desc: "Kundin seit März 2024 · 23 Termine · bevorzugt Vormittagstermine.", loyal: "Stammkundin", due: "1 offene Zahlung", msg: "Nachricht senden", add: "Neuen Termin anlegen", exp: "Daten exportieren (DSGVO)", del: "Kundin löschen", more: "Weitere Aktionen", tabs: ["Details", "Verlauf", "Zahlungen"] };
+const PH_IT = { crumb: "Clienti", name: "Giulia Bianchi", desc: "Cliente da marzo 2024 · 23 appuntamenti · preferisce la mattina.", loyal: "Cliente fedele", due: "1 pagamento in sospeso", msg: "Invia messaggio", add: "Nuovo appuntamento", exp: "Esporta i dati (GDPR)", del: "Elimina la cliente", more: "Altre azioni", tabs: ["Dettagli", "Cronologia", "Pagamenti"] };
+function States() {
+  return E("div", { className: "d0" },
+    E(Cap, null, "Complet: firimituri, titlu, descriere, stări, acțiuni, taburi"),
+    PH(PH_RO),
+    E(Cap, null, "Doar titlu și descriere"),
+    E(V.PageHeader, { title: "Rapoarte", description: "Încasările și programările lunii în curs, pe angajați și pe servicii." }),
+    E(Cap, null, "Doar titlu"),
+    E(V.PageHeader, { title: "Setări" }));
+}
+const De = () => E("div", { className: "d0" }, PH(PH_DE), E(V.PageHeader, { title: "Terminverwaltung und Kundenhistorie", description: "Alle Termine Ihres Unternehmens an einem Ort." }));
+const It = () => E("div", { className: "d0" }, PH(PH_IT), E(V.PageHeader, { title: "Gestione appuntamenti e storico clienti", description: "Tutti gli appuntamenti della Sua attività in un unico posto." }));
+mount(E("div", null, ORIG, E(Extra, { States, De, It, stack: true })));
 </script>
 </body>
 </html>

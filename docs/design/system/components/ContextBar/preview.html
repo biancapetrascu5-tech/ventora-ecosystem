@@ -1,4 +1,4 @@
-<!-- @dsCard group="Shell" height=332 width=1200 -->
+<!-- @dsCard group="Shell" height=3090 width=1200 -->
 <!doctype html>
 <html lang="ro">
 <head><meta charset="utf-8"><title>ContextBar — Ventora</title>
@@ -250,6 +250,23 @@ html,body{min-height:100%}
 .fxframe .caption{color:var(--ink-muted)}
 @container (max-width:420px){.fxlang{grid-template-columns:32px minmax(0,1fr) auto}.fxlang .v-iconbtn{display:none}}
 
+/* c2: theme + locale frames */
+.pv{display:flex;flex-direction:column;gap:var(--space-4);padding:var(--space-4)}
+.pv-frame{display:flex;flex-direction:column;gap:var(--space-4);padding:var(--space-6);background:var(--canvas);color:var(--ink);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg);min-width:0}
+.pv-frame>.heading{margin:0}
+.pv-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:var(--space-5) var(--space-4);align-items:start}
+.pv-grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--space-5) var(--space-4);align-items:start}
+.pv-grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--space-5) var(--space-4);align-items:start}
+.pv-cell{display:flex;flex-direction:column;gap:var(--space-2);min-width:0}
+.pv-lab{margin:0;color:var(--ink-muted)}
+.pv-box{padding:var(--space-4);background:var(--sheet);border:var(--border-width) solid var(--line);border-radius:var(--radius-md);min-width:0;color:var(--ink)}
+.pv-stage{position:relative;overflow:hidden;border:var(--border-width) solid var(--line-strong);border-radius:var(--radius-lg);background:var(--canvas);color:var(--ink)}
+.pv-note{margin:0;color:var(--ink-muted)}
+.p1{display:flex;flex-direction:column;gap:var(--space-3);padding:var(--space-6);background:var(--canvas);color:var(--ink)}
+.p1-row{display:flex;gap:var(--space-4);flex-wrap:wrap}
+.p1-col{display:flex;flex-direction:column;gap:var(--space-2)}
+.p1-lab{margin:0;color:var(--ink-muted)}
+.p1-frame{width:390px;height:240px;border:var(--border-width) solid var(--line-strong);border-radius:var(--radius-xl);overflow:hidden;background:var(--canvas);color:var(--ink)}
 </style>
 </head>
 <body>
@@ -278,10 +295,10 @@ const ORGS = [
   { id: "nord", name: "Agen\u021Bia Nord Studio", role: "Manager de proiect" }
 ];
 const NOTIFS = [
-  { id: 1, title: "Programare nou\u0103 de la Ana Popescu", body: "Joi, 29 oct., 14:30 \xB7 Tuns", app: "Booking", time: "acum 5 min", person: "Ana Popescu" },
-  { id: 2, title: "Factura #2026-114 e restant\u0103 de 3 zile", body: "Clinica Dentis \xB7 1.250 lei", app: "Finance", time: "acum 2 ore", icon: "receipt" },
-  { id: 3, title: "Ioana a cerut concediu pe 2\u20136 noiembrie", app: "HR", time: "ieri", person: "Ioana Pavel", read: true },
-  { id: 4, title: "Exportul clien\u021Bilor e gata", app: "CRM", time: "ieri", icon: "download", read: true }
+  { id: 1, title: "Programare nou\u0103 de la Ana Popescu", body: "Joi, 29 oct., 14:30 \xB7 Tuns", app: "EasyBook", time: "acum 5 min", person: "Ana Popescu" },
+  { id: 2, title: "Factura #2026-114 e restant\u0103 de 3 zile", body: "Clinica Dentis \xB7 1.250 lei", app: "MoneyDesk", time: "acum 2 ore", icon: "receipt" },
+  { id: 3, title: "Ioana a cerut concediu pe 2\u20136 noiembrie", app: "TeamSpace", time: "ieri", person: "Ioana Pavel", read: true },
+  { id: 4, title: "Exportul clien\u021Bilor e gata", app: "ClientDesk", time: "ieri", icon: "download", read: true }
 ];
 const USER = { name: "Bianca Petra\u0219cu", email: "bianca@ventora-hub.com" };
 function Bar({ title, de }) {
@@ -312,7 +329,7 @@ function BookingShell({ height, active, mobile }) {
       height,
       spine: /* @__PURE__ */ React.createElement(V.Spine, { app: "booking", sections: SECTIONS, activeId: active, onBackToHub: () => {
       }, footer: /* @__PURE__ */ React.createElement(V.UsageMeter, { compact: true, label: "Program\u0103ri", used: 312, limit: 1e3 }) }),
-      contextBar: /* @__PURE__ */ React.createElement(Bar, { title: "Booking" })
+      contextBar: /* @__PURE__ */ React.createElement(Bar, { title: "EasyBook" })
     },
     /* @__PURE__ */ React.createElement(V.PageHeader, { title: "Program\u0103ri", description: mobile ? void 0 : "Toate program\u0103rile afacerii, de azi \xEEnainte.", actions: mobile ? void 0 : /* @__PURE__ */ React.createElement(V.SegmentedControl, { label: "Vizualizare", size: "md", defaultValue: "list", options: [{ value: "list", label: "List\u0103", icon: "list" }, { value: "cal", label: "Calendar", icon: "calendar" }] }) }),
     /* @__PURE__ */ React.createElement(V.DataTable, { columns: [
@@ -324,10 +341,75 @@ function BookingShell({ height, active, mobile }) {
     } } })
   );
 }
-function Demo() {
-  return /* @__PURE__ */ React.createElement("div", { className: "d", style: { background: "var(--canvas)" } }, /* @__PURE__ */ React.createElement("div", { className: "frame", style: { background: "var(--canvas)" } }, /* @__PURE__ */ React.createElement(Bar, null)), /* @__PURE__ */ React.createElement("div", { className: "phone", style: { height: "calc(var(--contextbar-height) + var(--bottomnav-height) + var(--space-8))" } }, /* @__PURE__ */ React.createElement(V.AppShell, { height: "100%", spine: /* @__PURE__ */ React.createElement(V.Spine, { app: "booking", sections: SECTIONS, activeId: "azi" }), contextBar: /* @__PURE__ */ React.createElement(Bar, { title: "Booking" }) })), /* @__PURE__ */ React.createElement(DE, null, /* @__PURE__ */ React.createElement("div", { className: "frame", style: { background: "var(--canvas)" } }, /* @__PURE__ */ React.createElement(Bar, { de: true }))));
+/* c2: every README state, Light/Dark frames (data-theme on the frame), DE/IT with translated texts. */
+const h = React.createElement;
+const noop = () => {};
+const Cell = ({ label, children, style }) => h("div", { className: "pv-cell", style }, h("p", { className: "caption pv-lab" }, label), children);
+const FRAMES = [["light", "ro", "Light"], ["dark", "ro", "Dark"], ["light", "de", "Deutsch \u00b7 Light"], ["dark", "it", "Italiano \u00b7 Dark"]];
+const Frames = ({ Board, top }) => h("div", { className: "pv" }, top, FRAMES.map(([th, lang, lab], i) => h("section", { key: lab, className: "pv-frame", "data-theme": th }, h("p", { className: "heading" }, lab), h(V.LocaleProvider, { locale: lang }, h(Board, { lang, theme: th, first: i === 0 })))));
+const CB_L = {
+  ro: { l: ["Desktop · afacere, căutare cu ⌘K, „Creează”, notificări, cont", "Tabletă · 820 (căutarea devine icon)", "Telefon · 390 (afacerea trece în meniul contului, „Creează” devine buton rotund)", "Launcher Hub (BrandZone, direcția B)"],
+    orgs: ORGS, appt: "Programare", client: "Client", hub: "Aplicațiile tale", notifs: NOTIFS, sections: SECTIONS, app: "EasyBook" },
+  de: { l: ["Desktop · Unternehmen, Suche mit ⌘K, „Erstellen“, Benachrichtigungen, Konto", "Tablet · 820 (Suche wird zum Symbol)", "Telefon · 390 (Unternehmen im Kontomenü, „Erstellen“ als runde Schaltfläche)", "Hub-Launcher (BrandZone, Variante B)"],
+    orgs: [{ id: "aurora", name: "Zahnarztpraxis Dr. Müller", role: "Empfang" }, { id: "dentis", name: "Salon Aurora", role: "Inhaber" }, { id: "nord", name: "Agentur Nord Studio", role: "Projektleitung" }],
+    appt: "Termin", client: "Kunde", hub: "Ihre Apps", sections: SECTIONS_DE, app: "EasyBook",
+    notifs: [
+      { id: 1, title: "Neuer Termin von Anna Müller", body: "Do., 29. Okt., 14:30 · Haarschnitt", app: "EasyBook", time: "vor 5 Min.", person: "Anna Müller" },
+      { id: 2, title: "Rechnung #2026-114 ist seit 3 Tagen überfällig", body: "Zahnarztpraxis Dr. Müller · 1.250 lei", app: "MoneyDesk", time: "vor 2 Std.", icon: "receipt" },
+      { id: 3, title: "Johanna hat Urlaub vom 2. bis 6. November beantragt", app: "TeamSpace", time: "gestern", person: "Johanna Pfeiffer", read: true }] },
+  it: { l: ["Desktop · attività, ricerca con ⌘K, „Crea”, notifiche, account", "Tablet · 820 (la ricerca diventa un’icona)", "Telefono · 390 (l’attività passa nel menu dell’account, „Crea” diventa un pulsante rotondo)", "Launcher Hub (BrandZone, variante B)"],
+    orgs: [{ id: "aurora", name: "Studio Dentistico Ferrari", role: "Reception" }, { id: "dentis", name: "Salone Aurora", role: "Titolare" }, { id: "nord", name: "Agenzia Nord Studio", role: "Responsabile di progetto" }],
+    appt: "Appuntamento", client: "Cliente", hub: "Le Sue app", app: "EasyBook",
+    sections: [
+      { items: [{ id: "azi", label: "Oggi", icon: "house" }, { id: "calendar", label: "Calendario", icon: "calendar" }, { id: "programari", label: "Appuntamenti", icon: "list", badge: 3 }] },
+      { label: "Gestione", items: [{ id: "clienti", label: "Clienti", icon: "users" }, { id: "servicii", label: "Servizi", icon: "boxes" }, { id: "angajati", label: "Dipendenti", icon: "contact" }] },
+      { label: "Attività", items: [{ id: "rapoarte", label: "Report", icon: "chart-column" }, { id: "setari", label: "Impostazioni", icon: "settings" }] }],
+    notifs: [
+      { id: 1, title: "Nuovo appuntamento da Anna Rossi", body: "Gio 29 ott, 14:30 · Taglio", app: "EasyBook", time: "5 min fa", person: "Anna Rossi" },
+      { id: 2, title: "La fattura #2026-114 è scaduta da 3 giorni", body: "Studio Dentistico Ferrari · 1.250 lei", app: "MoneyDesk", time: "2 ore fa", icon: "receipt" },
+      { id: 3, title: "Giovanna ha chiesto ferie dal 2 al 6 novembre", app: "TeamSpace", time: "ieri", person: "Giovanna Conti", read: true }] }
+};
+function LBar({ lang, title, hub }) {
+  const T = CB_L[lang];
+  return h(V.ContextBar, {
+    title,
+    leading: hub ? h("span", { style: { padding: "0 var(--space-2)", display: "inline-flex" } }, h(V.Logo, { size: 32 })) : void 0,
+    org: h(V.OrgSwitcher, { orgs: T.orgs, currentId: "aurora", onChange: noop }),
+    onSearch: noop,
+    createItems: hub ? void 0 : [{ label: T.appt, icon: "calendar-check", shortcut: ["N"] }, { label: T.client, icon: "user-plus" }],
+    notifications: h(V.NotificationsPanel, { items: T.notifs, onOpenItem: noop, onMarkAllRead: noop }),
+    account: h(V.AccountMenu, { user: USER, orgs: T.orgs, currentOrgId: "aurora", onCatalog: noop })
+  });
 }
-mount(/* @__PURE__ */ React.createElement(Demo, null));
+function Board({ lang }) {
+  const T = CB_L[lang], L = T.l;
+  return h("div", { className: "pv-cell", style: { gap: "var(--space-5)" } },
+    h(Cell, { label: L[0] }, h("div", { className: "frame", style: { background: "var(--canvas)", overflow: "hidden" } }, h(LBar, { lang }))),
+    h("div", { style: { display: "flex", gap: "var(--space-5)", flexWrap: "wrap", alignItems: "flex-start" } },
+      h(Cell, { label: L[1], style: { width: 820, maxWidth: "100%" } }, h("div", { className: "pv-stage", style: { height: "calc(var(--contextbar-height) + var(--space-2))" } }, h(V.AppShell, { height: "100%", contextBar: h(LBar, { lang, title: T.hub }) }))),
+      h(Cell, { label: L[2], style: { width: 390 } }, h("div", { className: "phone", style: { height: "calc(var(--contextbar-height) + var(--bottomnav-height) + var(--space-8))" } }, h(V.AppShell, { height: "100%", spine: h(V.Spine, { app: "booking", sections: T.sections, activeId: T.sections[0].items[0].id }), contextBar: h(LBar, { lang, title: T.app }) })))),
+    h(Cell, { label: L[3] }, h(V.BrandZone, { style: { borderRadius: "var(--radius-md)", overflow: "hidden" } }, h(LBar, { lang, hub: true }))));
+}
+/* P-1 (28 oct. 2026): on phones, when the bar has a title, the title takes all the free space up to the icons; what does not fit ends in "…" */
+const P1_NAV = [{ items: [{ id: "azi", label: "Azi", icon: "house" }, { id: "cal", label: "Calendar", icon: "calendar" }, { id: "cli", label: "Clienți", icon: "users" }, { id: "set", label: "Setări", icon: "settings" }] }];
+function P1Phone({ th, title, lang, label }) {
+  return h("div", { className: "p1-col" }, h("p", { className: "caption p1-lab" }, label),
+    h("div", { className: "p1-frame", "data-theme": th }, h(V.LocaleProvider, { locale: lang || "ro" },
+      h(V.AppShell, { height: "100%", spine: h(V.Spine, { app: "booking", sections: P1_NAV, activeId: "set" }),
+        contextBar: h(V.ContextBar, { title, onSearch: () => {}, notifications: h(V.NotificationsPanel, { items: [] }), account: h(V.AccountMenu, { user: { name: "Bianca Petrașcu", email: "bianca@salonaurora.ro" } }) }) },
+        h("div", { style: { padding: 16 } }, h("p", { className: "body muted", style: { margin: 0 } }, "…"))))));
+}
+function P1() {
+  return h("div", { className: "p1", "data-theme": "light" },
+    h("p", { className: "heading", style: { margin: 0 } }, "Telefon · 390: titlul ia tot locul până la iconițe (P-1)"),
+    h("div", { className: "p1-row" },
+      h(P1Phone, { th: "light", lang: "it", title: "Impostazioni", label: "Italiano · Light" }),
+      h(P1Phone, { th: "dark", lang: "de", title: "Einstellungen", label: "Deutsch · Dark" }),
+      h(P1Phone, { th: "light", title: "Setări · Trimitere SMS de pe telefonul afacerii", label: "Titlu foarte lung: se termină cu „…”" }),
+      h(P1Phone, { th: "dark", title: "Setări", label: "Română · Dark" })));
+}
+mount(h("div", null, h(Frames, { Board }), h(P1)));
+
 </script>
 </body>
 </html>
