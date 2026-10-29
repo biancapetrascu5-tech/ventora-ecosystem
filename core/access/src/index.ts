@@ -1,6 +1,7 @@
 export {
   authorize,
   grantApplicationAccess,
+  countApplicationAccess,
   checkRolePermission,
   configureAccess,
   ensureAccessConfigured,
@@ -24,6 +25,8 @@ export {
   SUPPORT_SESSION_MAX_MINUTES,
   SUPPORT_HISTORY_DEFAULT_PAGE_SIZE,
   SUPPORT_HISTORY_MAX_PAGE_SIZE,
+  SupportSessionConflict,
+  getBusinessForFounder,
 } from './support';
 export type {
   SupportSessionSummary,

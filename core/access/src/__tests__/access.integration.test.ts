@@ -3,6 +3,7 @@ import { Pool } from 'pg';
 import {
   authorize,
   grantApplicationAccess,
+  countApplicationAccess,
   configureAccess,
   listAuditLogs,
   checkRolePermission,
@@ -278,6 +279,30 @@ describe('grantApplicationAccess', () => {
       grantApplicationAccess(testOrgId, testUserId, ['crm', 'crm']),
     ).resolves.not.toThrow();
     await adminQuery(`DELETE FROM organizations.organization WHERE id = $1`, [testOrgId]);
+  });
+});
+
+// Lot 2.6 · F — "{count} aplicații" in HubChooseBusiness
+describe('countApplicationAccess', () => {
+  it('counts the rows of each organization; another organization or user does not leak in', async () => {
+    const otherOrg = await createTestOrg();
+    const otherUser = newUuid();
+    await grantAppAccess(otherOrg, memberUserId, 'crm');
+    await grantAppAccess(otherOrg, memberUserId, 'hr');
+    await grantAppAccess(orgId, otherUser, 'crm');
+
+    expect(await countApplicationAccess(memberUserId, [orgId, otherOrg])).toEqual({
+      [orgId]: 1,
+      [otherOrg]: 2,
+    });
+    expect(await countApplicationAccess(newUuid(), [orgId])).toEqual({ [orgId]: 0 });
+    await expect(countApplicationAccess(memberUserId, ['not-a-uuid'])).rejects.toThrow();
+
+    await adminQuery(`DELETE FROM access.application_access WHERE organization_id = $1::uuid`, [
+      otherOrg,
+    ]);
+    await adminQuery(`DELETE FROM access.application_access WHERE user_id = $1::uuid`, [otherUser]);
+    await adminQuery(`DELETE FROM organizations.organization WHERE id = $1`, [otherOrg]);
   });
 });
 

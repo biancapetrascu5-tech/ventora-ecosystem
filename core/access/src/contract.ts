@@ -309,6 +309,28 @@ export async function grantApplicationAccess(
 }
 
 /**
+ * Lot 2.6 · F: how many applications the user has in each organization (HubChooseBusiness,
+ * "{count} aplicații"). Only rows of application_access count; owner and admin bypass the table
+ * (ADR-0004), so the caller leaves the count out for them. RLS keeps each read in its organization.
+ */
+export async function countApplicationAccess(
+  userId: string,
+  organizationIds: string[],
+): Promise<Record<string, number>> {
+  assertUuid(userId, 'userId');
+  const db = getAccessDb();
+  const counts: Record<string, number> = {};
+  for (const organizationId of organizationIds) {
+    assertUuid(organizationId, 'organizationId');
+    counts[organizationId] = await db.$transaction(async (tx: any) => {
+      await tx.$executeRaw`SELECT set_config('app.organization_id', ${organizationId}, true)`;
+      return tx.applicationAccess.count({ where: { organizationId, userId } });
+    });
+  }
+  return counts;
+}
+
+/**
  * Check whether a role has a specific permission.
  * Used by sync-permissions.ts to verify grants after upsert.
  */

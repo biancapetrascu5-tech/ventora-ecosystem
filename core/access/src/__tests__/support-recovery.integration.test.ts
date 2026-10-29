@@ -7,12 +7,14 @@ import {
   closeSupportSession,
   closeSupportSessionAsOwner,
   configureAccess,
+  getBusinessForFounder,
   getSupportSessionBanner,
   listActiveSupportSessions,
   listAuditLogs,
   listSupportSessions,
   openSupportSession,
   recoverOwnerAccess,
+  SupportSessionConflict,
   type RecoveryVerification,
 } from '../index.js';
 import { closeAuditPools } from '@ventora/audit';
@@ -441,8 +443,16 @@ describe('E34 + TS.6 — opening: audit row, owner notice, one open session per 
 
   it('TS.6 — a second open session for the same Founder and organization → Conflict', async () => {
     const orgId = await newOrg();
-    await open(orgId);
-    await expect(open(orgId)).rejects.toThrow(Conflict);
+    const first = await open(orgId);
+    const err = await open(orgId).catch((e: unknown) => e);
+    expect(err).toBeInstanceOf(Conflict);
+    // Lot 2.6 · G: who has the open session and until when
+    expect(err).toBeInstanceOf(SupportSessionConflict);
+    const row = await supportSessionRow(first.id);
+    expect((err as SupportSessionConflict).existing).toEqual({
+      founderName: 'Bianca Ventora',
+      expiresAt: new Date(row.expires_at).toISOString(),
+    });
     // another Founder may open one for the same organization
     await expect(open(orgId, otherFounder)).resolves.toMatchObject({ organizationId: orgId });
   });
@@ -451,6 +461,35 @@ describe('E34 + TS.6 — opening: audit row, owner notice, one open session per 
     const missing = newUuid();
     await expect(open(missing)).rejects.toMatchObject({ name: 'ResourceNotFound' });
     expect(await auditRows(`organization_id = $1::uuid`, [missing])).toHaveLength(0);
+  });
+});
+
+describe('Lot 2.6 · G — getBusinessForFounder: business name and active owners', () => {
+  it('returns the name and only the active owners; Hub session or unknown org refused', async () => {
+    const orgId = await newOrg('Salon Owneri');
+    const owner = await createMember(orgId, 'owner');
+    const second = await createMember(orgId, 'owner');
+    await createMember(orgId, 'admin');
+    await adminQuery(
+      `UPDATE organizations.membership SET status = 'suspended' WHERE user_id = $1::uuid`,
+      [second.userId],
+    );
+
+    const business = await getBusinessForFounder({
+      founderHeaders: founder.headers(),
+      organizationId: orgId,
+    });
+    expect(business).toEqual({
+      organizationName: 'Salon Owneri',
+      owners: [{ userId: owner.userId, name: 'Ana owner', email: owner.email }],
+    });
+
+    await expect(
+      getBusinessForFounder({ founderHeaders: bearer(owner.token), organizationId: orgId }),
+    ).rejects.toThrow(NotAuthenticated);
+    await expect(
+      getBusinessForFounder({ founderHeaders: founder.headers(), organizationId: newUuid() }),
+    ).rejects.toMatchObject({ name: 'ResourceNotFound' });
   });
 });
 
@@ -1382,6 +1421,7 @@ describe('TR.12 / TR.13 — no other way in', () => {
     'organizations.founder_set_owner_invitation_email_status(uuid, text)',
     'access.founder_open_support_session(uuid, text, text, text, text, integer)',
     'access.founder_get_support_session(uuid, text)',
+    'access.founder_get_open_support_session(uuid, text)',
     'access.founder_close_support_session(uuid, text)',
     'access.founder_expire_support_session(uuid, text)',
     'access.founder_close_support_sessions_of(text)',

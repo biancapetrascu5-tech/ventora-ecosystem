@@ -32,6 +32,7 @@ export const AuditActions = {
   invitationAccepted: 'invitation.accepted', // E24
   invitationAcceptFailed: 'invitation.accept_failed', // E25
   invitationEmailFailed: 'invitation.email_failed', // E26
+  invitationNewLinkRequested: 'invitation.new_link_requested', // Lot 2.6 · E — „Cere o invitație nouă”
   applicationAccessGranted: 'application_access.granted', // E27
   membershipRoleChanged: 'membership.role_changed', // E28 — defined, contract not built (D8 b)
   authorizeTwoFactorRequired: 'authorize.two_factor_required', // E29

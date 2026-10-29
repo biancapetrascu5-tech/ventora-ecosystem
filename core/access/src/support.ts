@@ -120,6 +120,42 @@ function expiredEvent(
 }
 
 /**
+ * Lot 2.6 · G: an open session of the same Founder already exists for the organization. The
+ * screen shows who and until when ("Afacerea are deja o sesiune de suport deschisă").
+ */
+export class SupportSessionConflict extends Conflict {
+  readonly existing: { founderName: string; expiresAt: string } | null;
+  constructor(existing: { founderName: string; expiresAt: Date } | null) {
+    super('A support session for this organization is already open');
+    this.existing = existing
+      ? { founderName: existing.founderName, expiresAt: existing.expiresAt.toISOString() }
+      : null;
+  }
+}
+
+/** Lot 2.6 · G: the business name and its active owners (FounderOwnerRecovery, the banner). */
+export async function getBusinessForFounder(params: {
+  founderHeaders: Headers;
+  organizationId: string;
+}): Promise<{
+  organizationName: string;
+  owners: { userId: string; name: string; email: string }[];
+}> {
+  await requireFounderSession(params.founderHeaders);
+  if (!UUID_RE.test(params.organizationId)) throw new InvalidInput('organizationId');
+  return withFounderTransaction(async (exec) => {
+    const organization = await listOrganizationOwnersInTx(exec, params.organizationId);
+    if (!organization) throw new ResourceNotFound('Organization not found');
+    const owners: { userId: string; name: string; email: string }[] = [];
+    for (const userId of organization.ownerUserIds) {
+      const contact = await getUserContactInTx(exec, userId);
+      if (contact) owners.push({ userId, ...contact });
+    }
+    return { organizationName: organization.organizationName, owners };
+  });
+}
+
+/**
  * Opens a read-only support session for an organization (D10 variant A: active immediately,
  * visible to the organization, the owners get E-6). The session row and E34 are one
  * transaction: no audit row, no session.
@@ -200,6 +236,21 @@ export async function openSupportSession(params: {
       if (contact) owners.push({ userId, ...contact });
     }
     return { session, organizationName: organization.organizationName, owners };
+  }).catch(async (err: unknown) => {
+    // Lot 2.6 · G: the screen says who has the open session and until when. The first
+    // transaction is rolled back; the open session is read in a new one.
+    if (!(err instanceof Conflict)) throw err;
+    const existing = await withFounderTransaction((exec) =>
+      exec.query(
+        `SELECT founder_name, expires_at
+           FROM access.founder_get_open_support_session($1::uuid, $2)`,
+        [params.organizationId, founder.userId],
+      ),
+    );
+    const row = existing[0];
+    throw new SupportSessionConflict(
+      row ? { founderName: row.founder_name as string, expiresAt: row.expires_at as Date } : null,
+    );
   });
 
   // E-6 after the commit: an email that cannot leave never undoes the session.
