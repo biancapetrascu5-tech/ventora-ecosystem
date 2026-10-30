@@ -15,14 +15,7 @@ CREATE TABLE "<TABLE>" (
     CONSTRAINT "<TABLE>_pkey" PRIMARY KEY ("id")
 );
 
--- CreateTable
-CREATE TABLE "outbox_events" (
-    "id" TEXT NOT NULL,
-    "eventType" TEXT NOT NULL,
-    "payload" JSONB NOT NULL,
-    "processedAt" TIMESTAMPTZ,
-    "attempts" INTEGER NOT NULL DEFAULT 0,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-
-    CONSTRAINT "outbox_events_pkey" PRIMARY KEY ("id")
-);
+-- Outbox (Lot 4.1): nu se mai scrie de mână. Migrarea-șablon (outbox_events +
+-- processed_events, RLS, funcțiile outbox_pending și outbox_dead_letters) o generează
+-- outboxMigrationSql("<schema>", "<rol_modul>") din @ventora/db-kit; rezultatul se lipește într-o
+-- migrare versionată separată (<data>_outbox_init/migration.sql), doar pentru schemele care emit.
