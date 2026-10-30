@@ -103,7 +103,7 @@ export async function countBackupCodesOf(
 
 export type BackupCodesApp = 'hub' | 'founder';
 
-function auditWriter(app: BackupCodesApp, userId: string): TotpAuditWriter {
+export function auditWriter(app: BackupCodesApp, userId: string): TotpAuditWriter {
   return async (e, metadata) => {
     const founder = app === 'founder';
     await writeAuditEvent(

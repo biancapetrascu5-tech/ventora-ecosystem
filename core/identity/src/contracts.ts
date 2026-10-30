@@ -12,6 +12,8 @@ export type HubSession = {
   userAgent: string | null;
   activeOrganizationId: string | null;
   twoFactorEnabled: boolean;
+  /** Lot 2.7 · D: last use of the session (Dispozitive conectate); only from listSessions. */
+  lastActiveAt?: Date;
 };
 
 export type HubUser = {
@@ -86,6 +88,7 @@ export async function listSessions(userId: string): Promise<HubSession[]> {
     userAgent: s.userAgent ?? null,
     activeOrganizationId: (s as any).activeOrganizationId ?? null,
     twoFactorEnabled,
+    lastActiveAt: s.updatedAt,
   }));
 }
 

@@ -7,6 +7,8 @@ export {
   ensureAccessConfigured,
   acceptInvitationWithAccess,
   signUpWithInvitation,
+  disableMemberTwoFactor,
+  isOwnerAnywhere,
   InvitationSignUpRefused,
   listAuditLogs,
 } from './contract';

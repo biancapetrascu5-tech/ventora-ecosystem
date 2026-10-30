@@ -35,6 +35,11 @@ export { setAuthBackgroundTaskHandler } from './background';
 export { RENEW_RESET_LINK_PATH, RESET_EMAIL_LIMIT } from './password-reset';
 export type { ResetLinkRenewalResult, PasswordResetRateLimitedBody } from './password-reset';
 export { countBackupCodes, regenerateBackupCodes } from './backup-codes-contract';
+export {
+  startTwoFactorEnrollment,
+  disableTwoFactorWithTotp,
+  getPasswordChangedAt,
+} from './member-two-factor';
 export { BACKUP_CODE_COUNT, normalizeBackupCode } from './backup-codes';
 export type { TwoFactorLockedBody } from './lock-info';
 export { getResetLinkInfo } from './reset-contract';

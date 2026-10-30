@@ -55,3 +55,80 @@
   flex: none;
   margin-top: var(--space-0-5);
 }
+
+/* HubAccountSecurity/preview.html (S100, S108): .as-body, .as-form, .as-row-actions, .as-sub,
+   .ss-overlay, .ss-toast */
+.asBody {
+  padding: 0 var(--space-6) var(--space-6);
+}
+.asBodyM {
+  padding: 0;
+}
+.asForm {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+.asForm p {
+  margin: 0;
+}
+.asRowActions {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+  flex-wrap: wrap;
+}
+.asSub {
+  margin: var(--space-4) 0 var(--space-2);
+}
+.grow {
+  flex: 1;
+  min-width: 0;
+}
+.grow p {
+  margin: 0;
+}
+.dev {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  align-items: center;
+}
+.dev p {
+  margin: 0;
+}
+.overlay {
+  position: absolute;
+  inset: 0;
+  background: var(--scrim);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-6);
+  z-index: var(--z-overlay);
+}
+.overlayM {
+  align-items: flex-end;
+  padding: 0;
+}
+.toast {
+  position: absolute;
+  right: var(--space-6);
+  bottom: var(--space-6);
+  width: var(--panel-width);
+  z-index: var(--z-toast);
+}
+.toastM {
+  left: var(--space-4);
+  right: var(--space-4);
+  bottom: calc(var(--space-16) + var(--space-4));
+  width: auto;
+}
+.fixed {
+  position: fixed;
+}
+/* .as-frame: cadrul galeriei (dialogul se așază peste pagină) */
+.frame {
+  position: relative;
+  height: 100%;
+}

@@ -1738,6 +1738,48 @@ describe.skipIf(shouldSkipForEnv('DATABASE_URL_ADMIN_TEST'))(
       expect(JSON.stringify(row.metadata)).not.toMatch(/Password123|Changed12345/);
     });
 
+    it('Lot 2.7 · D — "Schimbă parola": stays signed in here, signed out elsewhere (S100)', async () => {
+      await signUp('audit.s100@test.com', 'Password123');
+      const here = await signIn('audit.s100@test.com', 'Password123');
+      const elsewhere = await signIn('audit.s100@test.com', 'Password123');
+
+      const wrong = await post(
+        hubAuth,
+        '/change-password',
+        { currentPassword: 'Password999', newPassword: 'Changed12345', revokeOtherSessions: true },
+        bearerHeader(here.token),
+      );
+      expect(wrong.resp.status).toBe(400);
+      const weak = await post(
+        hubAuth,
+        '/change-password',
+        { currentPassword: 'Password123', newPassword: 'changed12345', revokeOtherSessions: true },
+        bearerHeader(here.token),
+      );
+      expect(weak.resp.status).toBe(400);
+      expect(
+        await hubAuth.api.getSession({ headers: new Headers(bearerHeader(elsewhere.token)) }),
+      ).not.toBeNull();
+
+      const change = await post(
+        hubAuth,
+        '/change-password',
+        { currentPassword: 'Password123', newPassword: 'Schimbată2026', revokeOtherSessions: true },
+        bearerHeader(here.token),
+      );
+      expect(change.resp.status).toBe(200);
+      const kept = decodeURIComponent(change.resp.headers.get('set-auth-token') ?? '').split(
+        '.',
+      )[0];
+      expect(kept).toBeTruthy();
+      expect(
+        await hubAuth.api.getSession({ headers: new Headers(bearerHeader(kept!)) }),
+      ).not.toBeNull();
+      expect(
+        await hubAuth.api.getSession({ headers: new Headers(bearerHeader(elsewhere.token)) }),
+      ).toBeNull();
+    });
+
     it('E7 — setSessionActiveOrganization → org.active_changed', async () => {
       const { user } = await signUp('audit.e7@test.com', 'Password123');
       const login = await signIn('audit.e7@test.com', 'Password123');

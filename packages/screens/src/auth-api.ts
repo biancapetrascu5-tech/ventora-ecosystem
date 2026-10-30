@@ -57,6 +57,15 @@ export function signIn(email: string, password: string, rememberMe: boolean) {
   return post<SignInData>('/sign-in/email', { email, password, rememberMe });
 }
 
+/** „Schimbă parola” (S100): rămâi conectat aici, celelalte sesiuni se închid. */
+export function changePassword(currentPassword: string, newPassword: string) {
+  return post<unknown>('/change-password', {
+    currentPassword,
+    newPassword,
+    revokeOtherSessions: true,
+  });
+}
+
 export function signOut() {
   return post<unknown>('/sign-out', {});
 }

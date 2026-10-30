@@ -7,7 +7,10 @@ import styles from './account.module.css';
 import { BackupCodesList, authStyles as auth } from '@ventora/screens';
 
 /* HubAccount · Securitate (S58, S60, S82, S83): parola, starea 2FA fără comutator pentru
-   proprietar, „Coduri de rezervă” cu „Generează coduri noi” (afișate o singură dată). */
+   proprietar, „Coduri de rezervă” cu „Generează coduri noi” (afișate o singură dată).
+   SecuritySection = secțiunea din preview-ul HubAccount (galeria lui); ecranul real folosește
+   rândurile din HubAccountSecurity (SecurityPageView, Lot 2.7 · D). BackupCodesFlow și
+   SecurityEmailsRow sunt comune. */
 
 export type CodesFlowState = 'confirm' | 'wrong' | 'loading' | 'locked' | 'new';
 

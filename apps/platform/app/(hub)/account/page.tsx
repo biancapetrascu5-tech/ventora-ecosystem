@@ -1,32 +1,32 @@
 import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
-import { countBackupCodes, getSession } from '@ventora/identity';
-import { listMyOrganizations } from '@ventora/organizations';
+import { countBackupCodes, getPasswordChangedAt, getSession } from '@ventora/identity';
+import { isOwnerAnywhere } from '@ventora/access';
 import { AccountSecurityScreen } from '@/screens/account/AccountSecurityScreen';
+import { listDevices } from '@/server/account-actions';
 
 export const dynamic = 'force-dynamic';
 
-/* Contul tău (Securitate + rândul „E-mailuri de securitate”). Shell-ul Hub-ului (AppShell, Spine,
-   ContextBar) nu există încă în aplicație: pagina stă singură (DE VALIDAT TEHNIC). */
+/* Contul tău (Notificări: rândul „E-mailuri de securitate”; Securitate: HubAccountSecurity).
+   Shell-ul Hub-ului (AppShell, Spine, ContextBar) nu există încă în aplicație: pagina stă singură
+   (DE VALIDAT TEHNIC). Proprietar = proprietar activ în oricare afacere (2FA obligatorie, S58). */
 export default async function AccountPage() {
-  const session = await getSession(await headers());
+  const h = await headers();
+  const session = await getSession(h);
   if (!session) redirect('/sign-in');
-  const memberships = (await listMyOrganizations(session.userId)) as {
-    organization_id: string;
-    role: string;
-    status: string;
-  }[];
-  const active = memberships.find(
-    (m) => m.organization_id === session.activeOrganizationId && m.status === 'active',
-  );
-  const codesLeft = session.twoFactorEnabled
-    ? ((await countBackupCodes('hub', await headers()).catch(() => null)) ?? undefined)
-    : undefined;
+  const [owner, changedAt, devices, codesLeft] = await Promise.all([
+    isOwnerAnywhere(session.userId),
+    getPasswordChangedAt(session.userId),
+    listDevices(),
+    session.twoFactorEnabled ? countBackupCodes('hub', h).catch(() => null) : Promise.resolve(null),
+  ]);
   return (
     <AccountSecurityScreen
-      owner={active?.role === 'owner'}
+      owner={owner}
       twoFactorEnabled={session.twoFactorEnabled}
-      codesLeft={codesLeft}
+      codesLeft={codesLeft ?? undefined}
+      passwordChangedAt={changedAt?.toISOString()}
+      devices={devices}
     />
   );
 }

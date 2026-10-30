@@ -11,10 +11,16 @@ import type { EntitlementProvider } from '@ventora/contracts';
 import {
   createHubAccount,
   deleteHubAccount,
+  disableTwoFactorWithTotp,
   getSession,
   hasAccountForEmail,
 } from '@ventora/identity';
-import { resolveOrgContext, acceptInvitation, getInvitationByToken } from '@ventora/organizations';
+import {
+  resolveOrgContext,
+  acceptInvitation,
+  getInvitationByToken,
+  listMyOrganizations,
+} from '@ventora/organizations';
 import {
   AuditActions,
   readOrganizationAuditLog,
@@ -433,6 +439,30 @@ export async function signUpWithInvitation(params: {
 }
 
 const normalizeAddress = (email: string) => email.trim().toLowerCase();
+
+/** Lot 2.7 · D: is the user an active owner of any business (2FA mandatory, R-2F1, S58)? */
+export async function isOwnerAnywhere(userId: string): Promise<boolean> {
+  const memberships = (await listMyOrganizations(userId)) as { role: string; status: string }[];
+  return memberships.some((m) => m.role === 'owner' && m.status === 'active');
+}
+
+/**
+ * Lot 2.7 · D: „Dezactivează” in Contul tău · Securitate, for members only. An owner of any
+ * business is refused before the code is checked (Forbidden, nothing counted); then the TOTP code
+ * with the account's lockout budget (5 wrong → 15 minutes) and audit 2fa.disabled. Founder
+ * accounts have no such path.
+ */
+export async function disableMemberTwoFactor(params: {
+  headers: Headers;
+  code: string;
+}): Promise<void> {
+  const session = await getSession(params.headers);
+  if (!session) throw new NotAuthenticated();
+  if (await isOwnerAnywhere(session.userId)) {
+    throw new Forbidden('Two-factor sign-in is mandatory for an owner');
+  }
+  await disableTwoFactorWithTotp(params.headers, params.code);
+}
 
 /**
  * Audit log of the session's active organization (TA.9). Requires `audit.log.read` on the
