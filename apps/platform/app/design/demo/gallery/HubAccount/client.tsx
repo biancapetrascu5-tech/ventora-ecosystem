@@ -129,7 +129,7 @@ export function HubAccountFrame() {
         <SecuritySection
           owner
           twoFactorEnabled
-          passwordChanged="acum 3 luni"
+          passwordChanged="28 oct., 09:15"
           codesLeft={8}
           onChangePassword={noop}
           onGenerate={noop}
@@ -139,8 +139,8 @@ export function HubAccountFrame() {
             <div className={a.r3}>
               <Icon icon="laptop" size={20} />
               <div>
-                <p className="body">MacBook · Chrome · Sibiu</p>
-                <StatusDot tone="attention" label="Activ acum · acest dispozitiv" />
+                <p className="body">macOS · Chrome · Activ acum</p>
+                <StatusDot tone="attention" label="Acest dispozitiv" />
               </div>
             </div>
           </div>
@@ -148,8 +148,7 @@ export function HubAccountFrame() {
             <div className={a.r3}>
               <Icon icon="smartphone" size={20} />
               <div>
-                <p className="body">iPhone · Safari · Sibiu</p>
-                <p className="body-small muted">Ieri, 21:40</p>
+                <p className="body">Windows · Chrome · Ieri, 21:40</p>
               </div>
             </div>
             <Button variant="quiet">Deconectează</Button>

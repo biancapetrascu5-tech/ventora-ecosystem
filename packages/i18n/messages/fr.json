@@ -478,7 +478,7 @@
       "title": "Sécurité",
       "password": {
         "title": "Mot de passe",
-        "changed": "Modifié {when}.",
+        "changed": "Modifié : {when}",
         "change": "Modifier le mot de passe",
         "done": {
           "title": "Votre mot de passe est modifié.",
@@ -505,7 +505,12 @@
         "disable": "Désactiver",
         "disableTitle": "Désactiver la connexion en deux étapes ?",
         "disableBody": "Votre compte ne sera plus protégé que par votre mot de passe, et vos codes de secours ne fonctionneront plus. Confirmez avec le code de votre application.",
-        "disabled": "La connexion en deux étapes est désactivée."
+        "disabled": "La connexion en deux étapes est désactivée.",
+        "passwordLead": "Pour activer la connexion en deux étapes, confirmez d’abord le mot de passe de votre compte.",
+        "confirmPassword": "Confirmer le mot de passe",
+        "error": {
+          "password": "Le mot de passe actuel n’est pas correct."
+        }
       },
       "cancel": "Annuler",
       "codes": {
@@ -515,8 +520,14 @@
       },
       "devices": {
         "title": "Appareils connectés",
-        "current": "Actif maintenant · cet appareil",
-        "signOut": "Déconnecter"
+        "signOut": "Déconnecter",
+        "thisDevice": "Cet appareil"
+      },
+      "when": {
+        "now": "Actif maintenant",
+        "today": "Aujourd’hui, {time}",
+        "yesterday": "Hier, {time}",
+        "date": "{date}, {time}"
       }
     }
   }

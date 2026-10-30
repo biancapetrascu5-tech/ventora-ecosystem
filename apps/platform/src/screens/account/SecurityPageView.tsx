@@ -41,8 +41,8 @@ export type DeviceRow = {
   id: string;
   icon: IconName;
   name: string;
-  /** „Ieri, 21:40” (deja formatat); lipsește pe dispozitivul curent. */
-  meta?: string;
+  /** „Activ acum”, „Ieri, 21:40” (deja formatat, S110). */
+  when: string;
   current: boolean;
 };
 
@@ -136,12 +136,10 @@ export function SecurityRows({
           <div className={styles.dev}>
             <Icon icon={d.icon} size={20} />
             <div>
-              <p className="body">{d.name}</p>
-              {d.current ? (
-                <StatusDot tone="attention" label={t('devices.current')} />
-              ) : (
-                d.meta && <p className="body-small muted">{d.meta}</p>
-              )}
+              <p className="body">
+                {d.name} · {d.when}
+              </p>
+              {d.current && <StatusDot tone="attention" label={t('devices.thisDevice')} />}
             </div>
           </div>
           {!d.current && (
@@ -274,12 +272,20 @@ export function ChangePasswordDialog({
   );
 }
 
-/* ——— „Activează” pentru un membru (S108): pașii HubTwoFactorSetup, „Renunță” ——— */
+/* ——— „Activează” pentru un membru (S108, S110): întâi parola actuală, apoi pașii
+   HubTwoFactorSetup, „Renunță” ——— */
 
 export type MemberStepCodeState = 'idle' | 'wrong' | 'loading' | 'locked';
+/** Parola de la pasul 1: greșită, se verifică, prea multe încercări (limita de la intrare). */
+export type MemberPasswordState = 'idle' | 'wrong' | 'loading' | 'limit';
 
 export function MemberTwoFactorDialog({
   step,
+  password = '',
+  passwordState = 'idle',
+  onPasswordChange,
+  forgotHref = '#',
+  onConfirmPassword,
   totpUri,
   keyCopied,
   onCopyKey,
@@ -304,6 +310,12 @@ export function MemberTwoFactorDialog({
   mob,
 }: {
   step: 1 | 2 | 3;
+  /** Pasul 1 cere parola până când există totpUri (S110). */
+  password?: string;
+  passwordState?: MemberPasswordState;
+  onPasswordChange?: (v: string) => void;
+  forgotHref?: string;
+  onConfirmPassword?: () => void;
   totpUri?: string;
   keyCopied?: boolean;
   onCopyKey?: () => void;
@@ -330,6 +342,7 @@ export function MemberTwoFactorDialog({
   const t = useTranslations('auth.2fa');
   const a = useTranslations('account.security');
   const ui = useTranslations('ui');
+  const signIn = useTranslations('auth.signIn');
   const wrong = codeState === 'wrong';
   const locked = codeState === 'locked';
   const loading = codeState === 'loading';
@@ -337,7 +350,65 @@ export function MemberTwoFactorDialog({
 
   let body: ReactNode;
   let footer: ReactNode;
-  if (step === 1) {
+  if (step === 1 && !totpUri) {
+    const pwWrong = passwordState === 'wrong';
+    const pwLimit = passwordState === 'limit';
+    body = (
+      <form
+        className={styles.asForm}
+        noValidate
+        onSubmit={(e: FormEvent) => {
+          e.preventDefault();
+          onConfirmPassword?.();
+        }}
+      >
+        <p className="body">{t('setup.s1.leadMember')}</p>
+        <p className="body muted">{a('twoStep.passwordLead')}</p>
+        {pwLimit && (
+          <Notice tone="danger" title={signIn('limit.title')}>
+            {signIn('limit.body')}
+          </Notice>
+        )}
+        <FormField
+          label={a('password.current')}
+          error={pwWrong ? a('twoStep.error.password') : undefined}
+          counter={
+            <a className="v-link caption" href={forgotHref}>
+              {a('password.forgot')}
+            </a>
+          }
+        >
+          {(field) => (
+            <Input
+              {...field}
+              type="password"
+              autoComplete="current-password"
+              size={mob ? 'lg' : 'md'}
+              value={password}
+              onChange={(e) => onPasswordChange?.(e.target.value)}
+              isInvalid={pwWrong}
+              disabled={pwLimit}
+            />
+          )}
+        </FormField>
+      </form>
+    );
+    footer = (
+      <>
+        <Button variant="quiet" onPress={onCancel}>
+          {a('cancel')}
+        </Button>
+        <Button
+          variant="primary"
+          isPending={passwordState === 'loading'}
+          isDisabled={pwLimit}
+          onPress={onConfirmPassword}
+        >
+          {a('twoStep.confirmPassword')}
+        </Button>
+      </>
+    );
+  } else if (step === 1) {
     body = (
       <div className={styles.asForm}>
         <p className="body">{t('setup.s1.leadMember')}</p>

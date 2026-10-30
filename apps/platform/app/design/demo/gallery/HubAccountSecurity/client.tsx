@@ -28,15 +28,28 @@ export function HubAccountSecurityFrame() {
             <SheetSection>
               <SecurityRows
                 twoStep="owner"
-                passwordChanged="acum 3 luni"
+                passwordChanged="28 oct., 09:15"
                 codesLeft={8}
                 devices={[
-                  { id: 'a', icon: 'laptop', name: 'MacBook · Chrome · Sibiu', current: true },
+                  {
+                    id: 'a',
+                    icon: 'laptop',
+                    name: 'macOS · Chrome',
+                    when: t('security.when.now'),
+                    current: true,
+                  },
                   {
                     id: 'b',
+                    icon: 'monitor',
+                    name: 'Windows · Chrome',
+                    when: 'Ieri, 21:40',
+                    current: false,
+                  },
+                  {
+                    id: 'c',
                     icon: 'smartphone',
-                    name: 'iPhone · Safari · Sibiu',
-                    meta: 'Ieri, 21:40',
+                    name: 'iOS · Safari',
+                    when: '28 oct., 09:15',
                     current: false,
                   },
                 ]}

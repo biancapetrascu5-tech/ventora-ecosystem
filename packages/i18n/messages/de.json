@@ -478,7 +478,7 @@
       "title": "Sicherheit",
       "password": {
         "title": "Passwort",
-        "changed": "Geändert {when}.",
+        "changed": "Geändert: {when}",
         "change": "Passwort ändern",
         "done": {
           "title": "Ihr Passwort ist geändert.",
@@ -505,7 +505,12 @@
         "disable": "Deaktivieren",
         "disableTitle": "Anmeldung in zwei Schritten deaktivieren?",
         "disableBody": "Ihr Konto ist dann nur noch durch Ihr Passwort geschützt, und Ihre Backup-Codes funktionieren nicht mehr. Bestätigen Sie mit dem Code aus Ihrer App.",
-        "disabled": "Die Anmeldung in zwei Schritten ist deaktiviert."
+        "disabled": "Die Anmeldung in zwei Schritten ist deaktiviert.",
+        "passwordLead": "Bestätigen Sie zuerst Ihr Kontopasswort, um die Anmeldung in zwei Schritten zu aktivieren.",
+        "confirmPassword": "Passwort bestätigen",
+        "error": {
+          "password": "Das aktuelle Passwort ist nicht korrekt."
+        }
       },
       "cancel": "Abbrechen",
       "codes": {
@@ -515,8 +520,14 @@
       },
       "devices": {
         "title": "Angemeldete Geräte",
-        "current": "Jetzt aktiv · dieses Gerät",
-        "signOut": "Abmelden"
+        "signOut": "Abmelden",
+        "thisDevice": "Dieses Gerät"
+      },
+      "when": {
+        "now": "Jetzt aktiv",
+        "today": "Heute, {time}",
+        "yesterday": "Gestern, {time}",
+        "date": "{date}, {time}"
       }
     }
   }

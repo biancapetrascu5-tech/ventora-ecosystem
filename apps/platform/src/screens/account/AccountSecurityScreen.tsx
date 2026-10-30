@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useFormatter, useTranslations } from 'next-intl';
+import { useTranslations } from 'next-intl';
 import { PageHeader, Sheet, SheetSection } from '@ventora/ui';
 import {
   authApi,
@@ -17,7 +17,6 @@ import {
   disableTwoFactor,
   listDevices,
   signOutDevice,
-  startTwoFactor,
   type Device,
 } from '@/server/account-actions';
 import { BackupCodesFlow, SecurityEmailsRow, type CodesFlowState } from './SecurityView';
@@ -29,10 +28,12 @@ import {
   SecurityRows,
   SecurityToast,
   type ChangePasswordState,
+  type MemberPasswordState,
   type MemberStepCodeState,
   type TwoStep,
 } from './SecurityPageView';
 import { describeDevice } from './device';
+import { useWhen } from './when';
 
 /* Contul tău · Securitate (Lot 2.7 · D; S100, S108).
    - „Schimbă parola”: /change-password cu revokeOtherSessions (rămâi conectat aici, pleacă E-mailul
@@ -62,7 +63,6 @@ export function AccountSecurityScreen({
   const router = useRouter();
   const t = useTranslations('account');
   const tfa = useTranslations('auth.2fa');
-  const format = useFormatter();
   const clock = useClock();
   const phone = useIsPhone();
 
@@ -78,7 +78,9 @@ export function AccountSecurityScreen({
   const [next, setNext] = useState('');
   const [pwState, setPwState] = useState<ChangePasswordState>('idle');
 
-  // „Activează” (membru)
+  // „Activează” (membru): întâi parola actuală (S110)
+  const [tfaPassword, setTfaPassword] = useState('');
+  const [tfaPasswordState, setTfaPasswordState] = useState<MemberPasswordState>('idle');
   const [step, setStep] = useState<1 | 2 | 3>(1);
   const [setup, setSetup] = useState<{ totpURI: string; backupCodes: string[] } | null>(null);
   const [keyCopied, setKeyCopied] = useState(false);
@@ -103,11 +105,7 @@ export function AccountSecurityScreen({
   const shownSetupCodes = (setup?.backupCodes ?? []).map(groupBackupCode);
   const shownNewCodes = newCodes.map(groupBackupCode);
 
-  const when = (iso: string) => {
-    const d = new Date(iso);
-    const today = new Date().toDateString() === d.toDateString();
-    return today ? format.relativeTime(d, { unit: 'day' }) : format.relativeTime(d);
-  };
+  const when = useWhen();
 
   function close() {
     setDialog(null);
@@ -115,6 +113,8 @@ export function AccountSecurityScreen({
     setNext('');
     setPwState('idle');
     setStep(1);
+    setTfaPassword('');
+    setTfaPasswordState('idle');
     setSetup(null);
     setKeyCopied(false);
     setAppsOpen(false);
@@ -148,11 +148,20 @@ export function AccountSecurityScreen({
     setPwState('idle');
   }
 
-  async function activate() {
-    setDialog('enable');
-    const res = await startTwoFactor();
-    if (res.ok) setSetup({ totpURI: res.totpURI, backupCodes: res.backupCodes });
-    else close();
+  /* S110: /two-factor/enable cu parola actuală; greșită → nimic pornit; limita de la intrare. */
+  async function confirmTfaPassword() {
+    if (!tfaPassword) return setTfaPasswordState('wrong');
+    setTfaPasswordState('loading');
+    const res = await authApi.enableTwoFactor(tfaPassword);
+    if (res.ok) {
+      setTfaPassword('');
+      setTfaPasswordState('idle');
+      setSetup({ totpURI: res.data.totpURI, backupCodes: res.data.backupCodes });
+      return;
+    }
+    setTfaPasswordState(
+      res.kind === 'rateLimited' ? 'limit' : res.kind === 'error' ? 'wrong' : 'idle',
+    );
   }
 
   async function verifySetupCode() {
@@ -234,16 +243,16 @@ export function AccountSecurityScreen({
         <SheetSection title={t('security.title')}>
           <SecurityRows
             twoStep={twoStep}
-            passwordChanged={changedAt ? when(changedAt) : undefined}
+            passwordChanged={changedAt ? when(new Date(changedAt)) : undefined}
             codesLeft={left}
             devices={devices.map((d) => ({
               id: d.id,
               ...describeDevice(d.userAgent),
-              meta: d.current ? undefined : format.relativeTime(new Date(d.lastActiveAt)),
+              when: when(new Date(d.lastActiveAt), { now: d.current }),
               current: d.current,
             }))}
             onChangePassword={() => setDialog('password')}
-            onActivate={activate}
+            onActivate={() => setDialog('enable')}
             onDisable={() => setDialog('disable')}
             onGenerate={() => setFlow('confirm')}
             onSignOutDevice={async (id) => {
@@ -300,6 +309,14 @@ export function AccountSecurityScreen({
           )}
           {dialog === 'enable' && (
             <MemberTwoFactorDialog
+              password={tfaPassword}
+              passwordState={tfaPasswordState}
+              onPasswordChange={(v) => {
+                setTfaPassword(v);
+                if (tfaPasswordState === 'wrong') setTfaPasswordState('idle');
+              }}
+              forgotHref={FORGOT_HREF}
+              onConfirmPassword={confirmTfaPassword}
               inline
               mob={phone}
               step={step}

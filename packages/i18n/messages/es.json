@@ -478,7 +478,7 @@
       "title": "Seguridad",
       "password": {
         "title": "Contraseña",
-        "changed": "Cambiada {when}.",
+        "changed": "Cambiada: {when}",
         "change": "Cambiar contraseña",
         "done": {
           "title": "Tu contraseña se ha cambiado.",
@@ -505,7 +505,12 @@
         "disable": "Desactivar",
         "disableTitle": "¿Desactivar el inicio de sesión en dos pasos?",
         "disableBody": "Tu cuenta quedará protegida solo por la contraseña y tus códigos de respaldo dejarán de funcionar. Confírmalo con el código de tu aplicación.",
-        "disabled": "El inicio de sesión en dos pasos está desactivado."
+        "disabled": "El inicio de sesión en dos pasos está desactivado.",
+        "passwordLead": "Para activar el inicio de sesión en dos pasos, confirma primero la contraseña de tu cuenta.",
+        "confirmPassword": "Confirmar contraseña",
+        "error": {
+          "password": "La contraseña actual no es correcta."
+        }
       },
       "cancel": "Cancelar",
       "codes": {
@@ -515,8 +520,14 @@
       },
       "devices": {
         "title": "Dispositivos conectados",
-        "current": "Activo ahora · este dispositivo",
-        "signOut": "Cerrar sesión"
+        "signOut": "Cerrar sesión",
+        "thisDevice": "Este dispositivo"
+      },
+      "when": {
+        "now": "Activo ahora",
+        "today": "Hoy, {time}",
+        "yesterday": "Ayer, {time}",
+        "date": "{date}, {time}"
       }
     }
   }

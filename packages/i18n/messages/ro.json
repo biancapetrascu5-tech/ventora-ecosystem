@@ -478,7 +478,7 @@
       "title": "Securitate",
       "password": {
         "title": "Parola",
-        "changed": "Schimbată {when}.",
+        "changed": "Schimbată: {when}",
         "change": "Schimbă parola",
         "done": {
           "title": "Parola e schimbată.",
@@ -505,7 +505,12 @@
         "disable": "Dezactivează",
         "disableTitle": "Dezactivezi autentificarea în doi pași?",
         "disableBody": "Contul tău rămâne protejat doar de parolă, iar codurile de rezervă nu mai merg. Confirmă cu codul din aplicație.",
-        "disabled": "Autentificarea în doi pași e dezactivată."
+        "disabled": "Autentificarea în doi pași e dezactivată.",
+        "passwordLead": "Ca să activezi autentificarea în doi pași, confirmă mai întâi parola contului.",
+        "confirmPassword": "Confirmă parola",
+        "error": {
+          "password": "Parola actuală nu e corectă."
+        }
       },
       "cancel": "Renunță",
       "codes": {
@@ -515,8 +520,14 @@
       },
       "devices": {
         "title": "Dispozitive conectate",
-        "current": "Activ acum · acest dispozitiv",
-        "signOut": "Deconectează"
+        "signOut": "Deconectează",
+        "thisDevice": "Acest dispozitiv"
+      },
+      "when": {
+        "now": "Activ acum",
+        "today": "Azi, {time}",
+        "yesterday": "Ieri, {time}",
+        "date": "{date}, {time}"
       }
     }
   }

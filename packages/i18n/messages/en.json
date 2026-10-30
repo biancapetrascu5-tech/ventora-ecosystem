@@ -478,7 +478,7 @@
       "title": "Security",
       "password": {
         "title": "Password",
-        "changed": "Changed {when}.",
+        "changed": "Changed: {when}",
         "change": "Change password",
         "done": {
           "title": "Your password is changed.",
@@ -505,7 +505,12 @@
         "disable": "Turn off",
         "disableTitle": "Turn off two-step sign-in?",
         "disableBody": "Your account will be protected by your password only, and your backup codes will stop working. Confirm with the code from your app.",
-        "disabled": "Two-step sign-in is off."
+        "disabled": "Two-step sign-in is off.",
+        "passwordLead": "To turn on two-step sign-in, first confirm your account password.",
+        "confirmPassword": "Confirm password",
+        "error": {
+          "password": "Your current password isn't correct."
+        }
       },
       "cancel": "Cancel",
       "codes": {
@@ -515,8 +520,14 @@
       },
       "devices": {
         "title": "Signed-in devices",
-        "current": "Active now · this device",
-        "signOut": "Sign out"
+        "signOut": "Sign out",
+        "thisDevice": "This device"
+      },
+      "when": {
+        "now": "Active now",
+        "today": "Today, {time}",
+        "yesterday": "Yesterday, {time}",
+        "date": "{date}, {time}"
       }
     }
   }

@@ -478,7 +478,7 @@
       "title": "Sicurezza",
       "password": {
         "title": "Password",
-        "changed": "Cambiata {when}.",
+        "changed": "Cambiata: {when}",
         "change": "Cambia password",
         "done": {
           "title": "La password è cambiata.",
@@ -505,7 +505,12 @@
         "disable": "Disattiva",
         "disableTitle": "Disattivare l’accesso in due passaggi?",
         "disableBody": "Il Suo account sarà protetto solo dalla password e i codici di riserva non funzioneranno più. Confermi con il codice della Sua app.",
-        "disabled": "L’accesso in due passaggi è disattivato."
+        "disabled": "L’accesso in due passaggi è disattivato.",
+        "passwordLead": "Per attivare l’accesso in due passaggi, confermi prima la password del Suo account.",
+        "confirmPassword": "Conferma la password",
+        "error": {
+          "password": "La password attuale non è corretta."
+        }
       },
       "cancel": "Annulla",
       "codes": {
@@ -515,8 +520,14 @@
       },
       "devices": {
         "title": "Dispositivi connessi",
-        "current": "Attivo ora · questo dispositivo",
-        "signOut": "Disconnetti"
+        "signOut": "Disconnetti",
+        "thisDevice": "Questo dispositivo"
+      },
+      "when": {
+        "now": "Attivo ora",
+        "today": "Oggi, {time}",
+        "yesterday": "Ieri, {time}",
+        "date": "{date}, {time}"
       }
     }
   }
