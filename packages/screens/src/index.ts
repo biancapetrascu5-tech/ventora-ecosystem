@@ -19,6 +19,8 @@ export type { AuthBrand } from './parts';
 
 export { SignInView } from './SignInView';
 export type { SignInState } from './SignInView';
+export { FounderSignInView } from './founder/FounderSignInView';
+export type { FounderSignInState } from './founder/FounderSignInView';
 
 export { InviteView } from './InviteView';
 export type { InviteData, InviteState } from './InviteView';

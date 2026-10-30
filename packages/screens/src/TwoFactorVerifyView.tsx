@@ -51,8 +51,7 @@ export function TwoFactorVerify({
     );
   const locked = state === 'locked';
   const loading = state === 'loading';
-  const err =
-    state === 'wrong' ? t(backup ? 'error.backupWrong' : 'error.wrongCode') : undefined;
+  const err = state === 'wrong' ? t(backup ? 'error.backupWrong' : 'error.wrongCode') : undefined;
   return (
     <form
       className={styles.contents}
