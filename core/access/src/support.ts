@@ -120,8 +120,8 @@ function expiredEvent(
 }
 
 /**
- * Lot 2.6 · G: an open session of the same Founder already exists for the organization. The
- * screen shows who and until when ("Afacerea are deja o sesiune de suport deschisă").
+ * Lot 2.6 · G, Lot 2.7 · B: the organization already has an open session (one per organization,
+ * whichever Founder opened it). The screen shows who and until when ("Afacerea are deja o sesiune de suport deschisă").
  */
 export class SupportSessionConflict extends Conflict {
   readonly existing: { founderName: string; expiresAt: string } | null;
@@ -177,7 +177,8 @@ export async function openSupportSession(params: {
     let rows: Record<string, unknown>[];
     try {
       rows = await exec.query(
-        `SELECT id::text AS id, opened_at, expires_at, expired_ids::text[] AS expired_ids
+        `SELECT id::text AS id, opened_at, expires_at, expired_ids::text[] AS expired_ids,
+                expired_founder_ids
            FROM access.founder_open_support_session($1::uuid, $2, $3, $4, $5, $6)`,
         [
           params.organizationId,
@@ -203,11 +204,18 @@ export async function openSupportSession(params: {
       expiresAt: row.expires_at as Date,
     };
 
-    // An expired session of the same pair was closed to make room: E37 for it, once.
-    for (const expiredId of (row.expired_ids as string[] | null) ?? []) {
+    // An expired session of the organization (any Founder, Lot 2.7 · B) was closed to make
+    // room: E37 for it, once, under the Founder who had it.
+    const expiredFounders = (row.expired_founder_ids as string[] | null) ?? [];
+    for (const [i, expiredId] of ((row.expired_ids as string[] | null) ?? []).entries()) {
       await appendAuditEventInTx(
         exec,
-        expiredEvent(expiredId, params.organizationId, founder.userId, 'open'),
+        expiredEvent(
+          expiredId,
+          params.organizationId,
+          expiredFounders[i] ?? founder.userId,
+          'open',
+        ),
       );
     }
 
@@ -243,8 +251,8 @@ export async function openSupportSession(params: {
     const existing = await withFounderTransaction((exec) =>
       exec.query(
         `SELECT founder_name, expires_at
-           FROM access.founder_get_open_support_session($1::uuid, $2)`,
-        [params.organizationId, founder.userId],
+           FROM access.founder_get_open_support_session($1::uuid)`,
+        [params.organizationId],
       ),
     );
     const row = existing[0];

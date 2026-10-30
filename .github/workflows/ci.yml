@@ -366,6 +366,7 @@ jobs:
           $PSQL -f core/access/prisma/migrations/20261027000002_access_init/migration.sql
           $PSQL -f core/access/prisma/migrations/20261028000002_support_session/migration.sql
           $PSQL -f core/access/prisma/migrations/20261029000007_lot26_founder_open_session/migration.sql
+          $PSQL -f core/access/prisma/migrations/20261030000001_lot27_support_one_per_org/migration.sql
       - name: Apply audit migration
         run: |
           psql postgresql://postgres:test@localhost:5435/ventora_access_test \

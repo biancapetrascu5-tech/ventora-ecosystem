@@ -273,6 +273,8 @@ for (const migration of [
   'core/identity/prisma/identity/migrations/20261029000006_lot26_open_last_organization/migration.sql',
   'core/organizations/prisma/migrations/20261029000005_lot26_invitation_view/migration.sql',
   'core/access/prisma/migrations/20261029000007_lot26_founder_open_session/migration.sql',
+  // Lot 2.7 · B: o sesiune de suport deschisă per afacere
+  'core/access/prisma/migrations/20261030000001_lot27_support_one_per_org/migration.sql',
 ]) {
   psqlFile(TEST_DB.accessDb, join(ROOT, migration));
 }

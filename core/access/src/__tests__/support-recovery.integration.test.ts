@@ -379,7 +379,7 @@ describe('TS.3 / TS.4 — reason, request reference, duration', () => {
   });
 });
 
-describe('E34 + TS.6 — opening: audit row, owner notice, one open session per Founder and organization', () => {
+describe('E34 + TS.6 — opening: audit row, owner notice, one open session per organization', () => {
   it('E34 written with reason, reference and expiry; every owner gets E-6', async () => {
     const orgId = await newOrg('Salon Aurora');
     const owner = await createMember(orgId, 'owner');
@@ -453,8 +453,53 @@ describe('E34 + TS.6 — opening: audit row, owner notice, one open session per 
       founderName: 'Bianca Ventora',
       expiresAt: new Date(row.expires_at).toISOString(),
     });
-    // another Founder may open one for the same organization
+  });
+
+  it('Lot 2.7 · B — another Founder → SupportSessionConflict with who and until when', async () => {
+    const orgId = await newOrg();
+    const first = await open(orgId);
+    const err = await open(orgId, otherFounder).catch((e: unknown) => e);
+    expect(err).toBeInstanceOf(SupportSessionConflict);
+    const row = await supportSessionRow(first.id);
+    expect((err as SupportSessionConflict).existing).toEqual({
+      founderName: 'Bianca Ventora',
+      expiresAt: new Date(row.expires_at).toISOString(),
+    });
+    const open_ = await adminQuery(
+      `SELECT count(*)::int AS n FROM access.support_session
+        WHERE organization_id = $1::uuid AND closed_at IS NULL`,
+      [orgId],
+    );
+    expect(open_[0].n).toBe(1);
+  });
+
+  it('Lot 2.7 · B — after it is closed, any Founder can open a new one', async () => {
+    const orgId = await newOrg();
+    const first = await open(orgId);
+    await closeSupportSession({ founderHeaders: founder.headers(), supportSessionId: first.id });
     await expect(open(orgId, otherFounder)).resolves.toMatchObject({ organizationId: orgId });
+  });
+
+  it('Lot 2.7 · B — after it expires, another Founder opens; E37 under the first Founder', async () => {
+    const orgId = await newOrg();
+    const first = await open(orgId);
+    await adminQuery(
+      `UPDATE access.support_session
+          SET opened_at = now() - INTERVAL '2 hours', expires_at = now() - INTERVAL '1 hour'
+        WHERE id = $1::uuid`,
+      [first.id],
+    );
+    const second = await open(orgId, otherFounder);
+    expect(second.organizationId).toBe(orgId);
+    const closed = await supportSessionRow(first.id);
+    expect(closed.closed_by_type).toBe('system');
+    const e37 = await auditRows(
+      `action = 'support.session_expired' AND support_session_id = $1::uuid`,
+      [first.id],
+    );
+    expect(e37).toHaveLength(1);
+    expect(e37[0].founder_id).toBe(founder.id);
+    expect(e37[0].metadata).toEqual({ detectedBy: 'open' });
   });
 
   it('unknown organization → ResourceNotFound, nothing written', async () => {
@@ -831,7 +876,7 @@ describe('Lot 2.5d — support session history (owner and admin, R-SS1)', () => 
     // closed by the owner (a member of the business)
     ids.byMember = (await open(orgId, otherFounder)).id;
     await closeSupportSessionAsOwner({ sessionToken: owner.token, supportSessionId: ids.byMember });
-    // expired: moved into the past, then closed by the system when the Founder opens again
+    // expired: moved into the past, then closed by the system when a Founder opens again
     ids.expired = (await open(orgId)).id;
     await adminQuery(
       `UPDATE access.support_session
@@ -839,11 +884,11 @@ describe('Lot 2.5d — support session history (owner and admin, R-SS1)', () => 
         WHERE id = $1::uuid`,
       [ids.expired],
     );
-    ids.active = (await open(orgId)).id;
-    // closed by the system because its Founder was revoked
+    // closed by the system because its Founder was revoked (one open session per business)
     const leaving = await createFounder('Plecat Istoric');
     ids.revoked = (await open(orgId, leaving)).id;
     await revokeFounderUser(founder.id, leaving.id);
+    ids.active = (await open(orgId)).id;
   });
 
   it('owner and admin: every session, newest first, with status and who closed it', async () => {
@@ -1421,7 +1466,7 @@ describe('TR.12 / TR.13 — no other way in', () => {
     'organizations.founder_set_owner_invitation_email_status(uuid, text)',
     'access.founder_open_support_session(uuid, text, text, text, text, integer)',
     'access.founder_get_support_session(uuid, text)',
-    'access.founder_get_open_support_session(uuid, text)',
+    'access.founder_get_open_support_session(uuid)',
     'access.founder_close_support_session(uuid, text)',
     'access.founder_expire_support_session(uuid, text)',
     'access.founder_close_support_sessions_of(text)',
