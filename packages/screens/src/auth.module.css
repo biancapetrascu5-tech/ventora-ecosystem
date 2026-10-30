@@ -284,15 +284,6 @@
   display: contents;
 }
 
-/* Titlul urmează lățimea layoutului (AuthLayout e container), nu a ferestrei: regula
-   @media (max-width: 560px) din tokens ar micșora titlul și pe un layout lat. */
-@container (min-width: 768px) {
-  .head :global(.display-hub) {
-    font-size: var(--type-display-hub-size);
-    line-height: var(--type-display-hub-line);
-  }
-}
-
 /* Toastul R-2F10 în colțul paginii (.bl-pos din HubTwoFactorVerify/preview.html) */
 .toastSlot {
   position: fixed;

@@ -183,7 +183,8 @@ for (const group of tokens.type.groups) {
 }
 
 if (typoPhoneRules.length > 0) {
-  typoCss.push('@media (max-width: 560px) {', ...typoPhoneRules, '}', '');
+  // S107 (29.10.2026): the phone sizes apply under 768px, as in bundle.css
+  typoCss.push('@media (max-width: 767.98px) {', ...typoPhoneRules, '}', '');
 }
 
 writeFileSync(join(outDir, 'typography.css'), typoCss.join('\n'), 'utf-8');
