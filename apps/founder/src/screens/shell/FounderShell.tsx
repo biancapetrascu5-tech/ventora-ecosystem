@@ -1,6 +1,7 @@
 'use client';
 
 import type { ReactNode } from 'react';
+import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import {
   AccountMenu,
@@ -11,44 +12,17 @@ import {
   type NavSection,
   type NotificationData,
 } from '@ventora/ui';
+import { authApi } from '@ventora/screens';
 
 /* Shell-ul Founder Control Center (FX_App din preview-urile Founder): Spine cu navigația Founder,
-   ContextBar cu căutarea, notificările și contul. */
+   ContextBar cu notificările și contul. Lot 2.8: Spine-ul arată doar intrările care au ecran
+   („Afaceri”); Prezentare, Consum, Model comercial, Growth, Campanii, Sistem și Control apar odată
+   cu ecranele lor. Căutarea (paleta de comenzi) și notificările n-au încă sursă. */
 
 export function useFounderNav(): NavSection[] {
   const t = useTranslations('founder.nav');
   return [
-    {
-      items: [
-        { id: 'azi', label: t('overview'), short: t('overview'), icon: 'house' },
-        { id: 'afaceri', label: t('businesses'), icon: 'building-2' },
-        { id: 'consum', label: t('usage'), icon: 'chart-column' },
-      ],
-    },
-    {
-      label: t('commercial'),
-      items: [
-        { id: 'planuri', label: t('plans'), icon: 'boxes' },
-        { id: 'pachete', label: t('packs'), short: t('packsShort'), icon: 'package' },
-      ],
-    },
-    {
-      label: t('growth'),
-      items: [
-        { id: 'oferte', label: t('offers'), icon: 'ticket' },
-        { id: 'campanii', label: t('campaigns'), icon: 'megaphone' },
-        { id: 'audiente', label: t('audiences'), icon: 'users' },
-        { id: 'rezultate', label: t('results'), icon: 'chart-line' },
-        { id: 'control', label: t('control'), icon: 'sliders-horizontal' },
-      ],
-    },
-    {
-      label: t('system'),
-      items: [
-        { id: 'jurnal', label: t('log'), icon: 'history' },
-        { id: 'setari', label: t('settings'), icon: 'settings' },
-      ],
-    },
+    { items: [{ id: 'afaceri', label: t('businesses'), icon: 'building-2', href: '/businesses' }] },
   ];
 }
 
@@ -67,8 +41,8 @@ export function FounderShell({
   businessesBadge?: number;
   children: ReactNode;
 }) {
+  const router = useRouter();
   const ui = useTranslations('ui');
-  const s = useTranslations('founder.shell');
   const nav = useFounderNav().map((sec) => ({
     ...sec,
     items: sec.items.map((i) =>
@@ -95,7 +69,7 @@ export function FounderShell({
           appName="Founder"
           sections={nav}
           activeId={active}
-          bottomItems={['afaceri', 'consum', 'campanii', 'control']}
+          bottomItems={['afaceri']}
           labels={{
             backToHub: ui('backToHub'),
             expandMenu: ui('expandMenu'),
@@ -109,8 +83,6 @@ export function FounderShell({
       contextBar={
         <ContextBar
           title={title}
-          onSearch={() => {}}
-          searchLabel={s('search')}
           labels={{
             search: ui('search'),
             searchPlaceholder: ui('searchPlaceholder'),
@@ -143,6 +115,10 @@ export function FounderShell({
           account={
             <AccountMenu
               user={user}
+              onSignOut={async () => {
+                await authApi.signOut();
+                router.replace('/sign-in');
+              }}
               labels={{
                 account: ui('account'),
                 yourBusinesses: ui('yourBusinesses'),
