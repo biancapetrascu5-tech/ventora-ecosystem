@@ -104,10 +104,11 @@ Estimările sunt în ore de agent: implementare, teste, pre-push complet și rap
   - plicul complet: `eventId` (UUIDv7), `type`, `version`, `occurredAt`, `organizationId`, `sourceApp`, `resourceId`, `correlationId`, `payload` validat cu Zod;
   - dead-letter după 3 eșecuri: stare, `last_error`, `failed_at`; mesajul eșuat nu mai e reluat automat;
   - blocarea într-o tranzacție;
-  - `processed_events` pe consumator, pentru idempotență (D4-1).
+  - `processed_events` pe consumator, pentru idempotență (D4-1, DECIS: a).
 - **Migrarea-șablon:** un `outbox_events` și un `processed_events` pentru fiecare schemă care emite, cu RLS și cu rolul modulului.
 - **Primul emițător real:** `core/organizations`, cu `invitation.new_link_requested` scris în aceeași tranzacție cu marcajul.
 - **Catalogul evenimentelor** (`packages/contracts`): nume, versiune, schemă Zod, `growthSafe` (pentru Growth, F5) și comportamentul fără destinatar.
+- **Unde stă codul** (D4-2, DECIS: a): helperii (plicul, scrierea în tranzacție, `processed_events`) în `packages/db-kit`, care rămâne fără concepte de business; dispecerul și registrul de job-uri în `core/integrations`.
 - **Dispecerul:** setează contextul de tenant din plic, în fiecare tranzacție (§12.3), și nu folosește `withSystemContext` în codul de request.
 - Lista dead-letter, citibilă din Founder; ecranul vine mai târziu (lipsește din design).
 
@@ -476,8 +477,8 @@ Tabelul e ordonat după lotul pe care îl blochează fiecare decizie. „Blochea
 
 | # | Blochează | Întrebare | Variante | Recomandare |
 |---|---|---|---|---|
-| D4-1 | 4.1 | **Idempotența consumatorilor** | a) `processed_events` pe consumator (ARCHITECTURE §11.2); b) `processedAt` pe rândul de outbox (E7) | **a**: b nu suportă mai mulți consumatori ai aceluiași eveniment (de ex. notificări + Growth). |
-| D4-2 | 4.1 | **Unde stă codul outbox-ului** | a) helperii în `packages/db-kit`, dispecerul și registrul în `core/integrations`; b) totul în `db-kit` | **a**: `db-kit` rămâne fără concepte de business (§9). |
+| D4-1 | 4.1 | **Idempotența consumatorilor** | a) `processed_events` pe consumator (ARCHITECTURE §11.2); b) `processedAt` pe rândul de outbox (E7) | **DECIS: a** (fondatoarea, 30.10.2026). `processed_events` pe consumator: același eveniment poate avea mai mulți consumatori (de ex. notificări + Growth), fiecare cu idempotența lui. |
+| D4-2 | 4.1 | **Unde stă codul outbox-ului** | a) helperii în `packages/db-kit`, dispecerul și registrul în `core/integrations`; b) totul în `db-kit` | **DECIS: a** (fondatoarea, 30.10.2026). Helperii în `packages/db-kit`; dispecerul și registrul de job-uri în `core/integrations`. `db-kit` rămâne fără concepte de business (§9). |
 | D4-3 | 4.2 | **Serviciul de job-uri** (D-INF-2: CONFIRMAT în §17.1, NECESITĂ DECIZIE în §11.3, vezi C-F4-8) | a) Inngest cloud; b) Trigger.dev; c) pg-boss + worker pe Railway / Fly | **a**: e în specificație, D-INF-4 se bazează pe el, iar E7 l-a testat local. Fondatoarea confirmă și costul. |
 | D4-4 | 4.2 | **Pachetul nou `inngest`** și CLI-ul de dezvoltare (regula 3) | a) aprobate la începutul lui 4.2; b) altă variantă | **a**. |
 | D4-5 | 4.4 (și 4.3) | **Ce înseamnă „operațional”** (C-F4-1) | a) `category` = `operational` / `commercial`, obligatorie (ARCHITECTURE); gruparea din panou („Despre cont și funcționare” / „Activitate”) devine un câmp separat (de ex. `group`); b) categoria din UI (`operational` / `activity`), cu `commercial` separat | **a**: contractul rămâne cel din ARCHITECTURE. Schimbarea tipului din `NotificationsPanel` e o schimbare de API în `packages/ui`, de aprobat. Regula numărării (doar operaționale) rămâne neschimbată. |
