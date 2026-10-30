@@ -706,6 +706,57 @@ export async function acceptInvitation(params: {
   };
 }
 
+export type InvitationListItem = {
+  id: string;
+  email: string;
+  role: MembershipRole;
+  applicationIds: string[];
+  invitedByName: string;
+  /** pending după termen = expired (ca la acceptare). */
+  status: 'pending' | 'expired' | 'accepted' | 'revoked';
+  emailStatus: string;
+  expiresAt: Date;
+  createdAt: Date;
+  /**
+   * Lot 2.7 · C: „Cere o invitație nouă” — cel invitat a cerut un link nou (marcajul din lista
+   * HubAdminTeam). Rămâne până la retrimitere (resendInvitation îl șterge).
+   */
+  newLinkRequestedAt: Date | null;
+};
+
+/**
+ * Lot 2.7 · C: invitațiile afacerii active, cele mai noi primele (HubAdminTeam). Doar owner și
+ * admin; RLS pe app.organization_id.
+ */
+export async function listInvitations(ctx: OrgContext): Promise<InvitationListItem[]> {
+  if (ctx.role !== 'owner' && ctx.role !== 'admin') throw new ForbiddenError();
+  const db = getOrgDb();
+  const rows = await db.$transaction(async (tx: any) => {
+    await tx.$executeRaw`SELECT set_config('app.organization_id', ${ctx.organizationId}, true)`;
+    return tx.invitation.findMany({
+      where: { organizationId: ctx.organizationId },
+      orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
+      select: {
+        id: true,
+        email: true,
+        role: true,
+        applicationIds: true,
+        invitedByName: true,
+        status: true,
+        emailStatus: true,
+        expiresAt: true,
+        createdAt: true,
+        newLinkRequestedAt: true,
+      },
+    });
+  });
+  const now = new Date();
+  return rows.map((r: InvitationListItem) => ({
+    ...r,
+    status: r.status === 'pending' && r.expiresAt < now ? 'expired' : r.status,
+  }));
+}
+
 export async function revokeInvitation(ctx: OrgContext, invitationId: string): Promise<void> {
   if (ctx.role !== 'owner' && ctx.role !== 'admin') throw new ForbiddenError();
   const db = getOrgDb();
@@ -781,6 +832,8 @@ export async function resendInvitation(
         status: 'pending',
         expiresAt,
         emailStatus: 'pending',
+        // Lot 2.7 · C: the new link answers the request
+        newLinkRequestedAt: null,
         updatedAt: new Date(),
       },
     });
