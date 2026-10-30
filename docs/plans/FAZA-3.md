@@ -105,11 +105,11 @@ Lotul ține de Faza 2 și se face **înaintea Fazei 3**. Stă aici pentru că lo
   - „Recuperează accesul proprietarului” → `FounderOwnerRecovery` (drawer, ecran întreg pe telefon), pe `recoverOwnerAccess`, cu `verifications` validat pe server.
   - Organizația vine din pagina afacerii, nu se mai alege separat. Ecranele fluxurilor sunt cele din Faza 2; 2.8 le leagă de pagina afacerii.
 - **Fără partea comercială:** cele patru cifre de sus (venitul lunar recurent, în perioadă de probă, plăți eșuate), coloanele de plan și consum, consumul față de limite, excepțiile și „Adaugă o excepție” se completează în Lotul 3.4. Până atunci nu apar; nu se afișează valori inventate.
-- **Suspendarea:** organizația nu are azi o stare în cod. E nevoie de o migrare în `core/organizations` și de un pas în `authorize()`. Efectul suspendării e D3-20.
+- **Suspendarea:** organizația nu are azi o stare în cod. E nevoie de o migrare în `core/organizations` și de un pas în `authorize()`. Efectul (D3-20, DECIS: a): nimeni din afacere nu mai intră, `authorize()` refuză orice cerere, inclusiv citirea; datele rămân, iar Founder poate reactiva afacerea. Owner-ul care are nevoie de date le cere prin suport.
 - Toate textele vin din chei next-intl, în 6 limbi. Capturile `_design` / `_impl` se fac la 390/1280 × light/dark (regula 12).
 
 **Nu intră:** `HubAdminTeam` (lipsește după raportul 2.7; se planifică separat, în Faza 2).
-**Dependențe:** loturile 2.1–2.7, inclusiv ecranele `FounderSupportSession` și `FounderOwnerRecovery` din Faza 2. D3-20 pentru suspendare.
+**Dependențe:** loturile 2.1–2.7, inclusiv ecranele `FounderSupportSession` și `FounderOwnerRecovery` din Faza 2. D3-20 (DECIS: a).
 **Migrări probabile:** `organization_status` (în `core/organizations`).
 **Ecrane:** AppShell, Spine, ContextBar (Hub), FounderBusinesses, FounderBusiness (fără secțiunile comerciale, cu intrările spre FounderSupportSession și FounderOwnerRecovery).
 **Gata când:**
@@ -117,7 +117,7 @@ Lotul ține de Faza 2 și se face **înaintea Fazei 3**. Stă aici pentru că lo
 - Hub și Founder se deschid în shell-ul din design, pe date reale;
 - „Afacere nouă” creează organizația și invitația owner-ului, cu audit;
 - din pagina afacerii pornesc sesiunea de suport și recuperarea owner-ului, pe date reale: sesiunea se deschide pentru afacerea respectivă și apare banda; recuperarea trece de regula verificărilor pe server; ambele au rândul de audit pe persoana Founder;
-- o afacere suspendată nu mai trece de `authorize()` la cererea următoare (test), iar suspendarea și reactivarea sunt auditate pe persoana Founder;
+- o afacere suspendată nu mai trece de `authorize()` la cererea următoare, nici pentru citire, pentru niciun rol din afacere (test); după reactivare, accesul revine fără pierderi de date (test); suspendarea și reactivarea sunt auditate pe persoana Founder;
 - capturile `_design` / `_impl` sunt în raport, cu diff.
 
 **Estimare:** 24–33 de ore (shell Hub 8–10, shell Founder 4–6, cele două ecrane Founder 8–12, suspendarea 2, intrările spre suport și recuperare cu testele lor 2–3).
@@ -509,7 +509,7 @@ Prețurile nu se inventează. Toate valorile se introduc din Founder; codul nu a
 
 | # | Blochează | Întrebare | Variante | Recomandare |
 |---|---|---|---|---|
-| D3-20 | 2.8 (înaintea Fazei 3) | **Ce înseamnă suspendarea unei afaceri** (`FounderBusiness`) | a) nimeni din afacere nu mai intră; datele rămân, iar Founder o poate reactiva; b) doar citire și export; c) suspendarea doar marcată, fără efect asupra accesului | **b**: e consecvent cu regula „datele nu se pierd” (brief §14) și cu neplata (D3-12). Suspendarea și reactivarea sunt auditate. |
+| D3-20 | 2.8 (înaintea Fazei 3) | **Ce înseamnă suspendarea unei afaceri** (`FounderBusiness`) | a) nimeni din afacere nu mai intră; datele rămân, iar Founder o poate reactiva; b) doar citire și export; c) suspendarea doar marcată, fără efect asupra accesului | **DECIS: a** (fondatoarea, 30.10.2026). `authorize()` refuză orice cerere a afacerii suspendate, inclusiv citirea; datele rămân; Founder poate reactiva. Dacă owner-ul are nevoie de date, le cere prin suport. Suspendarea și reactivarea sunt auditate. |
 | D3-14 | 3.1 | **Cheile cotelor** (D-WF-4, D-FUN-4 și setul inițial) | Propunere: `platform.members` (stoc), `booking.appointments` (flux, lunar), `messaging.sms` (flux), `documents.storage` (stoc, GB), `marketing.campaigns` (flux), `workflows.active` (stoc), `funnel.pages.published` (stoc), `booking.sms.devices` (stoc, D-SMS-4) | Fondatoarea confirmă lista și ce înseamnă „Angajați” (C-F3-3). „Campania consumată” rămâne D-MKT-1. |
 | D3-3 | 3.2 (și 3.3) | **Facturarea abonamentului: lunară / anuală** | a) doar lunară; b) lunară + anuală; c) anuală cu reducere | **a** la început (designul arată doar „pe lună”). Câmpul `interval` permite b mai târziu. Se decide și dacă perioada e luna calendaristică („De la 1 noiembrie, pornim de la zero”) sau ziua de start a abonamentului. Recomand luna calendaristică, ca în design. |
 | D3-7 | 3.2 | **Ce pachete se cumpără direct și ce rămâne „Doar la cerere”** | a) lista din `FounderPacks` (directe: 500 SMS, 200 de programări, 10 campanii, 5 angajați; la cerere: domeniul propriu); b) la început toate la cerere | **a**, cu o excepție: pachetele **lunare** („5 angajați în plus · 60 lei pe lună”) rămân la cerere până se decide cum se taxează lunar (C-F3-6). Pachetele pentru automatizări și pagini (D-WF-4, D-FUN-4) trebuie definite. |
