@@ -18,6 +18,7 @@ import {
   setOpenLastOrganization,
 } from '../contracts';
 import { setSessionActiveOrganization } from '../contract';
+import { bootstrapFounderAccount } from '../bootstrap-founder';
 import { closeAuditPools, hashEmail } from '@ventora/audit';
 import type { OrgContext } from '@ventora/organizations';
 import { founderAuth } from '../auth-founder';
@@ -1168,6 +1169,58 @@ describe('T2FA.H — exported founder functions reject actor without 2FA', () =>
     const { TwoFactorRequired } = await import('@ventora/errors');
     await expect(revokeFounderUser(actor.user.id, target.user.id)).rejects.toThrow(
       TwoFactorRequired,
+    );
+  });
+});
+
+describe('Lot 2.7 · G1 — Founder: no open sign-up', () => {
+  it('a direct request to /api/auth/sign-up/email gets 404 and creates nothing', async () => {
+    const res = await founderAuthTest.handler(
+      new Request('http://localhost/api/auth/sign-up/email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: 'Intrus',
+          email: 'g1.direct@test.com',
+          password: 'FounderPass12',
+        }),
+      }),
+    );
+    expect(res.status).toBe(404);
+    expect(await founderDb.user.count({ where: { email: 'g1.direct@test.com' } })).toBe(0);
+  });
+
+  it('bootstrap-founder still creates the first account, and only the first', async () => {
+    const first = await bootstrapFounderAccount(founderDb, FOUNDER_TEST_SECRET, {
+      name: 'Prima',
+      email: 'g1.first@test.com',
+      password: 'FounderPass12',
+    });
+    expect('userId' in first).toBe(true);
+    expect(await founderDb.user.count({ where: { email: 'g1.first@test.com' } })).toBe(1);
+
+    const second = await bootstrapFounderAccount(founderDb, FOUNDER_TEST_SECRET, {
+      name: 'A doua',
+      email: 'g1.second@test.com',
+      password: 'FounderPass12',
+    });
+    expect(second).toEqual({ refused: 'exists', activeCount: 1 });
+    expect(await founderDb.user.count({ where: { email: 'g1.second@test.com' } })).toBe(0);
+  });
+
+  it('addFounderUser still adds a Founder account', async () => {
+    const actor = await founderAuthTest.api.signUpEmail({
+      body: { email: 'g1.actor@test.com', password: 'FounderPass12', name: 'Actor' },
+    });
+    await founderDb.user.update({ where: { id: actor.user.id }, data: { twoFactorEnabled: true } });
+    const added = await addFounderUser(actor.user.id, {
+      name: 'Nou',
+      email: 'g1.added@test.com',
+      password: 'NewFounderPass1',
+    });
+    expect(added.email).toBe('g1.added@test.com');
+    expect((await founderDb.user.findUnique({ where: { id: added.id } }))?.createdByFounderId).toBe(
+      actor.user.id,
     );
   });
 });

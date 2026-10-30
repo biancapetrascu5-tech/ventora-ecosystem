@@ -44,7 +44,8 @@ const HUB_RATE_LIMIT = {
 
 const FOUNDER_RATE_LIMIT = { ...HUB_RATE_LIMIT };
 
-export const HUB_SIGN_UP_PATH = '/sign-up/email';
+/** /sign-up/email: closed over HTTP in Hub (Lot 2.7 · A) and in Founder (G1). */
+export const SIGN_UP_PATH = '/sign-up/email';
 
 // R-2F5 / S61: 5 consecutive wrong codes lock the account for 15 minutes (Hub and Founder).
 // Also applied by verifyFounderTotp() to the Founder's re-authentication (D14), on the same row.
@@ -196,7 +197,7 @@ export function createHubAuthOptions(db: IdentityBaseClient, secret: string) {
     // Lot 2.7 · A: no open sign-up — a Hub account is created only with a valid invitation
     // (signUpWithInvitation in core/access). The server-side auth.api calls are not affected.
     // Lot 2.7 · D: a member turns 2FA off with the TOTP code (disableTwoFactor), never here.
-    disabledPaths: ['/two-factor/disable', '/two-factor/generate-backup-codes', HUB_SIGN_UP_PATH],
+    disabledPaths: ['/two-factor/disable', '/two-factor/generate-backup-codes', SIGN_UP_PATH],
     hooks: { before, after },
     advanced: {
       database: { generateId: () => crypto.randomUUID() },
@@ -270,8 +271,10 @@ export function createFounderAuthOptions(db: FounderBaseClient, secret: string) 
         accountLockout: TWO_FACTOR_LOCKOUT,
       }),
     ],
-    // D3: new backup codes only with the TOTP code (regenerateBackupCodes), not the password
-    disabledPaths: ['/two-factor/disable', '/two-factor/generate-backup-codes'],
+    // D3: new backup codes only with the TOTP code (regenerateBackupCodes), not the password.
+    // Lot 2.7 · G1: no open sign-up in Founder either; Founder accounts come only from
+    // addFounderUser and bootstrap-founder (server-side auth.api calls, not affected).
+    disabledPaths: ['/two-factor/disable', '/two-factor/generate-backup-codes', SIGN_UP_PATH],
     hooks: { before, after },
     advanced: {
       database: { generateId: () => crypto.randomUUID() },

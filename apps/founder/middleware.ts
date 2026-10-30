@@ -4,7 +4,6 @@ import { founderAuth } from '@ventora/identity';
 
 const PUBLIC_PATHS = [
   '/api/auth/sign-in/email',
-  '/api/auth/sign-up/email',
   '/api/auth/two-factor/verify',
   '/api/auth/two-factor/enable',
   '/api/auth/session',

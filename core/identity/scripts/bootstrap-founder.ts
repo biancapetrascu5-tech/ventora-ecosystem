@@ -3,8 +3,7 @@ import { Writable } from 'stream';
 import { PrismaClient } from '../generated/founder-client';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { Pool } from 'pg';
-import { betterAuth } from 'better-auth';
-import { prismaAdapter } from 'better-auth/adapters/prisma';
+import { bootstrapFounderAccount } from '../src/bootstrap-founder';
 
 async function promptLine(question: string): Promise<string> {
   const rl = createInterface({ input: process.stdin, output: process.stdout });
@@ -46,9 +45,8 @@ async function main() {
   const db = new PrismaClient({ adapter: new PrismaPg(pool) });
 
   try {
-    const activeCount = await db.user.count({ where: { revokedAt: null } });
-    if (activeCount > 0) {
-      console.error(`Aborted: ${activeCount} active Founder account(s) already exist.`);
+    if ((await db.user.count({ where: { revokedAt: null } })) > 0) {
+      console.error('Aborted: an active Founder account already exists.');
       process.exit(1);
     }
 
@@ -62,15 +60,11 @@ async function main() {
       process.exit(1);
     }
 
-    const auth = betterAuth({
-      secret,
-      database: prismaAdapter(db, { provider: 'postgresql' }),
-      emailAndPassword: { enabled: true, minPasswordLength: 12 },
-      session: { expiresIn: 8 * 60 * 60, cookieCache: { enabled: false } },
-      advanced: { crossSubDomainCookies: { enabled: false } },
-    });
-
-    await auth.api.signUpEmail({ body: { name, email, password } });
+    const created = await bootstrapFounderAccount(db, secret, { name, email, password });
+    if ('refused' in created) {
+      console.error('Aborted: an active Founder account already exists.');
+      process.exit(1);
+    }
 
     console.log(`Founder account created: ${email}`);
     console.log('Enable 2FA on first login.');
