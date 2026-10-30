@@ -8,8 +8,19 @@ import {
   TwoFactorRequired,
 } from '@ventora/errors';
 import type { EntitlementProvider } from '@ventora/contracts';
-import { getSession } from '@ventora/identity';
-import { resolveOrgContext, acceptInvitation } from '@ventora/organizations';
+import {
+  createHubAccount,
+  deleteHubAccount,
+  disableTwoFactorWithTotp,
+  getSession,
+  hasAccountForEmail,
+} from '@ventora/identity';
+import {
+  resolveOrgContext,
+  acceptInvitation,
+  getInvitationByToken,
+  listMyOrganizations,
+} from '@ventora/organizations';
 import {
   AuditActions,
   readOrganizationAuditLog,
@@ -309,6 +320,28 @@ export async function grantApplicationAccess(
 }
 
 /**
+ * Lot 2.6 · F: how many applications the user has in each organization (HubChooseBusiness,
+ * "{count} aplicații"). Only rows of application_access count; owner and admin bypass the table
+ * (ADR-0004), so the caller leaves the count out for them. RLS keeps each read in its organization.
+ */
+export async function countApplicationAccess(
+  userId: string,
+  organizationIds: string[],
+): Promise<Record<string, number>> {
+  assertUuid(userId, 'userId');
+  const db = getAccessDb();
+  const counts: Record<string, number> = {};
+  for (const organizationId of organizationIds) {
+    assertUuid(organizationId, 'organizationId');
+    counts[organizationId] = await db.$transaction(async (tx: any) => {
+      await tx.$executeRaw`SELECT set_config('app.organization_id', ${organizationId}, true)`;
+      return tx.applicationAccess.count({ where: { organizationId, userId } });
+    });
+  }
+  return counts;
+}
+
+/**
  * Check whether a role has a specific permission.
  * Used by sync-permissions.ts to verify grants after upsert.
  */
@@ -343,6 +376,92 @@ export async function acceptInvitationWithAccess(params: {
   }
 
   return { organizationId, role };
+}
+
+export type InvitationSignUpRefusal =
+  'invalid' | 'expired' | 'used' | 'revoked' | 'mismatch' | 'exists';
+
+/** Lot 2.7 · A: no Hub account was created; `reason` says why, for HubInvite. */
+export class InvitationSignUpRefused extends Forbidden {
+  readonly reason: InvitationSignUpRefusal;
+  constructor(reason: InvitationSignUpRefusal) {
+    super(`Sign-up refused: ${reason}`);
+    this.reason = reason;
+  }
+}
+
+/**
+ * Lot 2.7 · A: the only way a Hub account is created. The invitation must be pending and
+ * unexpired, and the address exactly the invited one; otherwise nothing is created. The account
+ * is created, then the invitation accepted; when the acceptance fails, the account is deleted
+ * again, so no account is left without its business.
+ */
+export async function signUpWithInvitation(params: {
+  token: string;
+  name: string;
+  email: string;
+  password: string;
+}): Promise<{ userId: string; organizationId: string; role: string }> {
+  const invite = await getInvitationByToken(params.token);
+  if (!invite) throw new InvitationSignUpRefused('invalid');
+  if (invite.status === 'expired') throw new InvitationSignUpRefused('expired');
+  if (invite.status === 'accepted') throw new InvitationSignUpRefused('used');
+  if (invite.status === 'revoked') throw new InvitationSignUpRefused('revoked');
+  if (normalizeAddress(params.email) !== normalizeAddress(invite.email)) {
+    throw new InvitationSignUpRefused('mismatch');
+  }
+  if (await hasAccountForEmail(invite.email)) throw new InvitationSignUpRefused('exists');
+
+  const { userId } = await createHubAccount({
+    name: params.name,
+    email: invite.email,
+    password: params.password,
+  });
+  try {
+    const accepted = await acceptInvitationWithAccess({
+      token: params.token,
+      userId,
+      userEmail: invite.email,
+    });
+    return { userId, ...accepted };
+  } catch (err) {
+    await deleteHubAccount(userId).catch((cleanupErr: unknown) => {
+      console.error('[access] signUpWithInvitation: rollback of the new account failed', {
+        userId,
+        error: cleanupErr instanceof Error ? cleanupErr.message : String(cleanupErr),
+      });
+    });
+    const code = (err as { code?: string }).code;
+    if (code === 'TOKEN_EXPIRED') throw new InvitationSignUpRefused('expired');
+    if (code === 'EMAIL_MISMATCH') throw new InvitationSignUpRefused('mismatch');
+    throw err;
+  }
+}
+
+const normalizeAddress = (email: string) => email.trim().toLowerCase();
+
+/** Lot 2.7 · D: is the user an active owner of any business (2FA mandatory, R-2F1, S58)? */
+export async function isOwnerAnywhere(userId: string): Promise<boolean> {
+  const memberships = (await listMyOrganizations(userId)) as { role: string; status: string }[];
+  return memberships.some((m) => m.role === 'owner' && m.status === 'active');
+}
+
+/**
+ * Lot 2.7 · D: „Dezactivează” in Contul tău · Securitate, for members only. An owner of any
+ * business is refused before the code is checked (Forbidden, nothing counted); then the TOTP code
+ * with the account's lockout budget (5 wrong → 15 minutes) and audit 2fa.disabled. Founder
+ * accounts have no such path.
+ */
+export async function disableMemberTwoFactor(params: {
+  headers: Headers;
+  code: string;
+}): Promise<void> {
+  const session = await getSession(params.headers);
+  if (!session) throw new NotAuthenticated();
+  if (await isOwnerAnywhere(session.userId)) {
+    throw new Forbidden('Two-factor sign-in is mandatory for an owner');
+  }
+  await disableTwoFactorWithTotp(params.headers, params.code);
 }
 
 /**

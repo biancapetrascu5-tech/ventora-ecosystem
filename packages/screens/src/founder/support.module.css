@@ -1,0 +1,124 @@
+/* .ss-bar / .ss-txt / .ss-meta / .ss-act / .ss-form / .ss-rule / .ss-list din preview-urile
+   FounderSupportSession și FounderOwnerRecovery */
+.bar {
+  display: flex;
+  gap: var(--space-3);
+  align-items: center;
+  padding: var(--space-2) var(--space-4);
+  background: var(--sunken);
+  border-bottom: var(--border-width) solid var(--line-strong);
+  color: var(--ink);
+  flex: none;
+}
+.bar > :global(svg) {
+  flex: none;
+  color: var(--ink-secondary);
+}
+.attention {
+  background: var(--attention-soft);
+}
+.attention > :global(svg) {
+  color: var(--attention-ink);
+}
+.barMob {
+  align-items: flex-start;
+  padding: var(--space-3) var(--space-4);
+}
+.txt {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.txt p {
+  margin: 0;
+}
+.meta {
+  color: var(--ink-secondary);
+}
+.act {
+  margin-top: var(--space-2);
+}
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+.form p {
+  margin: 0;
+}
+.fieldset {
+  display: flex;
+  flex-direction: column;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  gap: var(--space-3);
+}
+.legend {
+  margin-bottom: var(--space-2);
+  padding: 0;
+}
+.rule {
+  display: flex;
+  gap: var(--space-2);
+  align-items: flex-start;
+  margin: 0;
+  color: var(--ink-secondary);
+}
+.rule > :global(svg) {
+  flex: none;
+  margin-top: 2px;
+}
+.ruleOk {
+  color: var(--done-ink);
+}
+.list {
+  margin: 0;
+  padding-left: var(--space-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+.after {
+  margin-top: var(--space-3);
+}
+.done {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+.done > :global(svg) {
+  flex: none;
+}
+.code input {
+  letter-spacing: 0.12em;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Pagina cu bannerul deasupra (ss-frame) și toastul în colț (ss-toast) */
+.frame {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  position: relative;
+}
+.body {
+  flex: 1;
+  min-height: 0;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+.body > * {
+  flex: 1;
+  min-height: 0;
+}
+.toast {
+  position: fixed;
+  right: var(--space-6);
+  bottom: var(--space-6);
+  width: var(--panel-width);
+  z-index: var(--z-toast);
+}

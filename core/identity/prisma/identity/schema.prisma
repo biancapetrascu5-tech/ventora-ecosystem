@@ -20,6 +20,9 @@ model User {
 
   twoFactorEnabled Boolean? @map("two_factor_enabled")
 
+  // Lot 2.6 · F: „Deschide direct ultima afacere data viitoare”
+  openLastOrganization Boolean @default(false) @map("open_last_organization")
+
   sessions   Session[]
   accounts   Account[]
   twoFactors TwoFactor[]

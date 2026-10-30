@@ -10,12 +10,20 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-p, h1, h2, h3, h4, h5, h6 {
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   margin: 0;
 }
 
 /* Modificatori */
-.muted { color: var(--ink-muted); }
+.muted {
+  color: var(--ink-muted);
+}
 
 /* Portal theme — marker de clasă; tema se aplică prin data-theme setat în JS pe containerul de portal */
 .v-portal-theme {

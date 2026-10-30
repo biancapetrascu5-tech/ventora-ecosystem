@@ -1,0 +1,15 @@
+{
+  "ro": {
+    "founder.signIn.title": "Bine ai revenit",
+    "founder.signIn.lead": "Intră în Founder Control Center.",
+    "founder.signIn.email": "E-mail",
+    "founder.signIn.password": "Parolă",
+    "founder.signIn.forgot": "Ai uitat parola?",
+    "founder.signIn.submit": "Intră în cont",
+    "founder.signIn.checking": "Intri în cont…",
+    "founder.signIn.error.title": "E-mailul sau parola nu sunt corecte",
+    "founder.signIn.error.body": "Verifică-le și încearcă din nou.",
+    "founder.signIn.limit.title": "Ai încercat de prea multe ori",
+    "founder.signIn.limit.body": "Poți încerca din nou peste 15 minute, la ora {time}."
+  }
+}

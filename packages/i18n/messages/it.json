@@ -36,7 +36,20 @@
     "expiry": "Invito valido fino al {data}.",
     "expiredTitle": "Invito scaduto",
     "expiredBody": "Gli inviti sono validi per 7 giorni. Richiedine uno nuovo: inoltreremo la richiesta a {name} e riceverai il nuovo link via e-mail.",
-    "requestNew": "Richiedi un nuovo invito"
+    "requestNew": "Richiedi un nuovo invito",
+    "requested": {
+      "title": "Abbiamo inviato la richiesta",
+      "body": "Riceverà il nuovo link per e-mail appena {name} lo invierà di nuovo."
+    },
+    "revoked": {
+      "title": "Questo invito non è più valido",
+      "body": "Se è un errore, chieda un nuovo invito a chi L’ha invitata."
+    },
+    "used": {
+      "title": "Ha già usato questo invito",
+      "body": "Acceda con la Sua e-mail e la Sua password."
+    },
+    "signIn": "Accedi"
   },
   "usageMeter": {
     "unlimited": "Illimitato",
@@ -145,14 +158,377 @@
         "ticketRef": "Richiesta: {ticketRef}",
         "close": "Chiudi la sessione",
         "closeConfirm": "Chiudere la sessione di supporto? Il team Ventora perde subito l’accesso.",
-        "closed": "La sessione di supporto è stata chiusa."
+        "closed": "La sessione di supporto è stata chiusa.",
+        "cancel": "Annulla"
       }
+    },
+    "sessions": {
+      "title": "Sessioni di supporto",
+      "lead": "Il team Ventora vede i dati della Sua attività solo durante una sessione di supporto, in sola lettura e solo fino all’ora stabilita. Qui vede chi, perché e quando.",
+      "col": {
+        "who": "Membro del team Ventora",
+        "reason": "Motivo",
+        "ticket": "Richiesta",
+        "when": "Quando",
+        "status": "Stato"
+      },
+      "status": {
+        "active": "Attiva fino alle {expiresAt}",
+        "closedBy": "Chiusa da {name}",
+        "expired": "Scaduta",
+        "closedAuto": "Chiusa automaticamente"
+      },
+      "empty": "Nessuna sessione di supporto finora."
     }
   },
   "auth": {
     "line1": "La Sua attività.",
     "line2": "In un unico posto.",
     "founderProduct": "Control Center",
-    "founderTagline": "Lo strumento interno del team Ventora"
+    "founderTagline": "Lo strumento interno del team Ventora",
+    "reset": {
+      "request": {
+        "title": "Ha dimenticato la password?",
+        "lead": "Inserisca l’indirizzo e-mail del Suo account: Le invieremo un link per scegliere una nuova password.",
+        "submit": "Invia il link"
+      },
+      "emailLabel": "E-mail",
+      "sending": "Invio in corso…",
+      "back": "Torna all’accesso",
+      "error": {
+        "empty": "Inserisca l’indirizzo e-mail del Suo account.",
+        "format": "L’indirizzo sembra incompleto. Controlli la parte dopo @.",
+        "reqs": "La password non soddisfa ancora tutti i requisiti qui sotto."
+      },
+      "limit": {
+        "title": "Ha provato troppe volte",
+        "body": "Potrà chiedere un nuovo link dopo le {time}."
+      },
+      "offline": {
+        "title": "Non riusciamo a collegarLa in questo momento",
+        "body": "Controlli la connessione a internet e riprovi."
+      },
+      "sent": {
+        "title": "Controlli la posta",
+        "body": "Se {email} corrisponde a un account Ventora, Le abbiamo inviato lì un link per scegliere una nuova password.",
+        "validity": "Il link è valido per un’ora.",
+        "help": "Non vede l’e-mail? Controlli anche nella cartella Spam o Promozioni.",
+        "resend": "Invia un altro link",
+        "resendWait": "Potrà chiedere un altro link tra un minuto.",
+        "resent": "Le abbiamo inviato un altro link. Usi quello più recente.",
+        "otherEmail": "Usa un altro indirizzo"
+      },
+      "new": {
+        "title": "Scelga una nuova password",
+        "account": "Per l’account {email}.",
+        "label": "Nuova password",
+        "signOutNote": "Dopo il salvataggio, chiuderemo la Sua sessione su tutti i dispositivi.",
+        "submit": "Salva la password"
+      },
+      "req": {
+        "length": "Almeno 10 caratteri",
+        "digit": "Almeno una cifra",
+        "upper": "Almeno una lettera maiuscola"
+      },
+      "saving": "Salvataggio…",
+      "expired": {
+        "title": "Il link è scaduto",
+        "body": "I link per una nuova password sono validi per un’ora. Ne chieda uno nuovo: Le arriverà per e-mail."
+      },
+      "newLink": "Chiedi un nuovo link",
+      "used": {
+        "title": "Ha già usato questo link",
+        "body": "Ogni link funziona una sola volta. Se ha già scelto la nuova password, acceda con quella."
+      },
+      "signIn": "Accedi",
+      "done": {
+        "title": "La password è cambiata",
+        "signedOut": "Abbiamo chiuso la Sua sessione su tutti i dispositivi.",
+        "body": "Acceda di nuovo con la nuova password su ogni dispositivo che usa.",
+        "twoStep": "Dopo la password, Le chiederemo anche il codice della Sua app di autenticazione."
+      },
+      "email": {
+        "securityRow": "E-mail di sicurezza: le riceve sempre, ad esempio quando cambia la password del Suo account."
+      }
+    },
+    "2fa": {
+      "step": "Passo {step} di 3",
+      "signOut": "Esci",
+      "codeLabel": "Codice di 6 cifre",
+      "codeHelper": "Il codice cambia ogni 30 secondi.",
+      "checking": "Verifica in corso…",
+      "copy": "Copia",
+      "copied": "Copiato",
+      "download": "Scarica",
+      "error": {
+        "wrongCode": "Il codice non corrisponde. Inserisca il codice che l’app mostra ora.",
+        "codeLength": "Il codice ha 6 cifre.",
+        "backupWrong": "Il codice non corrisponde o è già stato usato. Provi un altro codice della lista."
+      },
+      "setup": {
+        "s1": {
+          "title": "Protegga il Suo account",
+          "leadOwner": "L’account del titolare ha accesso a tutto, quindi lo proteggiamo con un secondo passaggio.",
+          "leadMember": "Un secondo passaggio protegge il Suo account anche se qualcuno scopre la Sua password.",
+          "leadFounder": "Un account Founder ha accesso a tutte le attività, quindi lo proteggiamo con un secondo passaggio. In Founder è obbligatorio per tutti.",
+          "how": "Dopo la password Le chiederemo anche un codice dall’app di autenticazione sul telefono.",
+          "scan": "Scansioni il codice con l’app di autenticazione",
+          "qrAlt": "Codice QR per l’app di autenticazione",
+          "manual": "Non riesce a scansionare? Inserisca nell’app la chiave qui sotto.",
+          "keyLabel": "Chiave",
+          "keyCopied": "Chiave copiata.",
+          "whichApp": "Quale app uso?",
+          "next": "Continua"
+        },
+        "s2": {
+          "title": "Inserisca il codice dell’app",
+          "lead": "L’app ora mostra un codice di 6 cifre per Ventora.",
+          "submit": "Attiva",
+          "back": "Torna al codice QR"
+        },
+        "locked": {
+          "title": "Ha provato troppe volte",
+          "body": "Potrà riprovare tra 15 minuti, alle {time}."
+        },
+        "s3": {
+          "title": "Salvi i codici di riserva",
+          "done": "L’accesso in due passaggi è attivo.",
+          "lead": "Se non ha il telefono con sé, entri con uno di questi codici. Ognuno vale una sola volta.",
+          "once": "Li vede solo adesso.",
+          "listLabel": "Codici di riserva",
+          "copied": "Codici copiati.",
+          "fileName": "ventora-codici-di-riserva.txt",
+          "confirm": "Li ho salvati in un posto sicuro",
+          "confirmHelp": "Selezioni dopo averli scaricati o copiati.",
+          "next": "Continua"
+        }
+      },
+      "apps": {
+        "body": "Va bene qualsiasi app di autenticazione, per esempio Google Authenticator, Microsoft Authenticator o 1Password. Se non ne ha una, la installi da Google Play o dall’App Store.",
+        "how": "Nell’app aggiunga un nuovo account e scansioni il codice di questa pagina.",
+        "close": "Ho capito"
+      },
+      "verify": {
+        "title": "Ancora un passaggio",
+        "lead": "Inserisca il codice di 6 cifre dell’app di autenticazione.",
+        "leadBackup": "Inserisca uno dei codici di riserva salvati quando ha attivato l’accesso in due passaggi.",
+        "account": "Accesso come {email}.",
+        "otherAccount": "Usa un altro account",
+        "submit": "Accedi",
+        "useBackup": "Usa un codice di riserva",
+        "useApp": "Usa il codice dell’app",
+        "backupLabel": "Codice di riserva",
+        "backupHelper": "Ogni codice di riserva vale una sola volta.",
+        "locked": {
+          "title": "L’account è bloccato temporaneamente",
+          "body": "Ci sono stati troppi tentativi errati. Potrà accedere di nuovo dopo le {time}."
+        },
+        "expired": {
+          "title": "Sono passati più di 10 minuti",
+          "body": "Per sicurezza, acceda di nuovo con e-mail e password.",
+          "action": "Torna all’accesso"
+        },
+        "noAccess": "Non ho più accesso al telefono né ai codici"
+      },
+      "recovery": {
+        "email": "support@ventorasystems.com",
+        "title": "Recuperi l’accesso",
+        "body": "Ci scriva dall’indirizzo dell’account: L’aiutiamo a recuperare l’accesso dopo aver confermato la Sua identità.",
+        "address": "Il nostro indirizzo: support@ventorasystems.com",
+        "write": "Ci scriva",
+        "back": "Indietro"
+      },
+      "founder": {
+        "name": "Founder",
+        "tagline": "Lo strumento interno del team Ventora",
+        "product": "Control Center"
+      },
+      "backupLeft": {
+        "title": "Ha effettuato l’accesso con un codice di riserva",
+        "many": "Le restano {n} codici di riserva.",
+        "few": "Le restano solo {n} codici di riserva. Generi nuovi codici per non restarne senza.",
+        "one": "Le resta un solo codice di riserva. Generi nuovi codici per non restarne senza.",
+        "none": "Ha usato l’ultimo codice di riserva. Generi nuovi codici per poter accedere anche se perde il telefono.",
+        "action": "Genera nuovi codici"
+      },
+      "codes": {
+        "title": "Codici di riserva",
+        "lead": "Li usi se non ha il telefono con sé. Li vede una sola volta, quando li genera.",
+        "left": "Gliene restano {n} su 10.",
+        "oldStop": "Quando genera nuovi codici, quelli vecchi smettono di funzionare.",
+        "confirmTitle": "Confermi con il codice dell’app",
+        "confirmLead": "Per generare nuovi codici, inserisca il codice che appare ora nella Sua app di autenticazione.",
+        "confirm": "Genera i codici",
+        "cancel": "Annulla",
+        "newDone": "Ha nuovi codici. Quelli vecchi non funzionano più."
+      }
+    },
+    "panel": {
+      "line1": "La Sua attività.",
+      "line2": "In un unico posto."
+    },
+    "footer": {
+      "links": "Termini · Privacy · Aiuto"
+    },
+    "signIn": {
+      "title": "Bentornato",
+      "lead": "Acceda al Suo account Ventora.",
+      "emailLabel": "E-mail",
+      "passwordLabel": "Password",
+      "forgot": "Ha dimenticato la password?",
+      "remember": "Resti connesso su questo dispositivo per 30 giorni",
+      "submit": "Accedi",
+      "submitting": "Accesso in corso…",
+      "inviteOnly": "Non ha un account? Gli account si creano solo su invito. Se ne ha ricevuto uno, apra il link nell’e-mail e scelga la password.",
+      "error": {
+        "title": "L’e-mail o la password non sono corretti",
+        "body": "Li controlli e riprovi."
+      },
+      "limit": {
+        "title": "Ha provato troppe volte",
+        "body": "Riprovi tra 15 minuti o scelga una nuova password."
+      }
+    }
+  },
+  "ui": {
+    "language": "Lingua",
+    "showPassword": "Mostra password",
+    "hidePassword": "Nascondi password",
+    "close": "Chiudi",
+    "cancel": "Annulla",
+    "required": "obbligatorio",
+    "optional": "facoltativo",
+    "rowActions": "Azioni",
+    "prevPage": "Pagina precedente",
+    "nextPage": "Pagina successiva",
+    "pageOf": "Pagina {n} di {total}",
+    "rangeOf": "{from}–{to} di {total}",
+    "clearSelection": "Annulla selezione",
+    "selectAll": "Seleziona tutte le righe",
+    "selectRow": "Seleziona riga",
+    "sortAsc": "Ordine crescente",
+    "sortDesc": "Ordine decrescente",
+    "rowsPerPage": "Righe per pagina",
+    "selectedN": "{n, plural, one {# selezionato} other {# selezionati}}",
+    "backToHub": "Torna alle app",
+    "expandMenu": "Espandi menu",
+    "collapseMenu": "Comprimi menu",
+    "more": "Altro",
+    "back": "Indietro",
+    "search": "Cerca",
+    "searchPlaceholder": "Cerca…",
+    "create": "Crea",
+    "notifications": "Notifiche",
+    "markAllRead": "Segna tutte come lette",
+    "notificationSettings": "Impostazioni notifiche",
+    "all": "Tutte",
+    "unread": "Non lette",
+    "noNotifications": "Non ha nuove notifiche",
+    "noNotificationsHint": "La avviseremo qui quando qualcosa richiede la Sua attenzione.",
+    "operational": "Account e funzionamento",
+    "activity": "Attività",
+    "recommendations": "Raccomandazioni",
+    "recommendation": "Raccomandazione",
+    "fromTeam": "Suggerimento dal team",
+    "seeApp": "Vedi l’app",
+    "reject": "Rifiuta",
+    "seeDetails": "Vedi dettagli",
+    "notInterested": "Non mi interessa",
+    "account": "Il Suo account",
+    "yourBusinesses": "Le Sue attività",
+    "theme": "Tema",
+    "themeLight": "Chiaro",
+    "themeDark": "Scuro",
+    "themeSystem": "Automatico",
+    "allApps": "Tutte le app Ventora",
+    "support": "Assistenza",
+    "signOut": "Esci",
+    "switchBusiness": "Cambia attività",
+    "findBusiness": "Cerca un’attività…",
+    "noResultsFor": "Nessun risultato per «{q}»",
+    "unreadN": "{n, plural, one {# non letta} other {# non lette}}"
+  },
+  "hub": {
+    "chooseBusiness": {
+      "title": "Scelga l’attività",
+      "lead": "Lavora in {count} attività. Può passare dall’una all’altra in qualsiasi momento, dalla barra in alto.",
+      "apps": "{count, plural, one {# app} other {# app}}",
+      "opened": "aperta {when}",
+      "lastUsed": "Usata per ultima",
+      "remember": "La prossima volta aprire direttamente l’ultima attività",
+      "missing": "Manca un’attività? Chieda un invito al titolare.",
+      "search": "Cerchi un’attività"
+    }
+  },
+  "roles": {
+    "owner": "Titolare",
+    "admin": "Amministratore",
+    "member": "Membro",
+    "external_collaborator": "Collaboratore esterno",
+    "application_manager": "Gestore dell’app"
+  },
+  "account": {
+    "title": "Il Suo account",
+    "lead": "I Suoi dati, come appare Ventora per Lei e come protegge il Suo account.",
+    "notifications": {
+      "title": "Notifiche",
+      "lead": "Scelga dove vuole essere avvisato di ciascuna."
+    },
+    "security": {
+      "title": "Sicurezza",
+      "password": {
+        "title": "Password",
+        "changed": "Cambiata: {when}",
+        "change": "Cambia password",
+        "done": {
+          "title": "La password è cambiata.",
+          "body": "Sugli altri dispositivi dovrà accedere di nuovo."
+        },
+        "current": "Password attuale",
+        "forgot": "Ha dimenticato la password?",
+        "new": "Nuova password",
+        "signOutNote": "Su questo dispositivo resta connesso. Sugli altri chiuderemo la Sua sessione.",
+        "submit": "Cambia password",
+        "error": {
+          "currentEmpty": "Inserisca la password attuale.",
+          "current": "La password attuale non corrisponde."
+        }
+      },
+      "twoStep": {
+        "title": "Accesso in due passaggi",
+        "ownerBody": "Obbligatorio per il titolare. A ogni accesso con la password Le chiediamo anche un codice dalla Sua app di autenticazione.",
+        "active": "Attivo",
+        "offBody": "Facoltativo per il Suo ruolo. Se lo attiva, a ogni accesso con la password Le chiediamo anche un codice dalla Sua app di autenticazione.",
+        "onBody": "A ogni accesso con la password Le chiediamo anche un codice dalla Sua app di autenticazione.",
+        "inactive": "Non attivo",
+        "activate": "Attiva",
+        "disable": "Disattiva",
+        "disableTitle": "Disattivare l’accesso in due passaggi?",
+        "disableBody": "Il Suo account sarà protetto solo dalla password e i codici di riserva non funzioneranno più. Confermi con il codice della Sua app.",
+        "disabled": "L’accesso in due passaggi è disattivato.",
+        "passwordLead": "Per attivare l’accesso in due passaggi, confermi prima la password del Suo account.",
+        "confirmPassword": "Conferma la password",
+        "error": {
+          "password": "La password attuale non è corretta."
+        }
+      },
+      "cancel": "Annulla",
+      "codes": {
+        "title": "Codici di riserva",
+        "body": "Li usi se non ha il telefono con sé. Gliene restano {n} su 10. Li vede una sola volta, quando li genera.",
+        "generate": "Genera nuovi codici"
+      },
+      "devices": {
+        "title": "Dispositivi connessi",
+        "signOut": "Disconnetti",
+        "thisDevice": "Questo dispositivo"
+      },
+      "when": {
+        "now": "Attivo ora",
+        "today": "Oggi, {time}",
+        "yesterday": "Ieri, {time}",
+        "date": "{date}, {time}"
+      }
+    }
   }
 }

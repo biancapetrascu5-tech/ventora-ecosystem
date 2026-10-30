@@ -1,7 +1,7 @@
 # VENTORA ECOSYSTEM — ARHITECTURĂ TEHNICĂ
 
-**Versiune:** 0.4.6
-**Data:** 28 octombrie 2026
+**Versiune:** 0.4.7
+**Data:** 30 octombrie 2026
 **Stadiu:** Faza 0 închisă (tag `faza-0`). Deciziile marcate CONFIRMAT sunt baza implementării; cele PROPUS sau NECESITĂ DECIZIE nu se implementează fără aprobare.
 
 ## Istoric
@@ -29,6 +29,7 @@
 | 0.4.4 | 27.10.2026 | ADR 0003: organizațiile se implementează în modulul propriu `core/organizations`, nu prin plugin-ul Better Auth; organizația activă rămâne în sesiune, printr-un câmp propriu. D-AUTH-5 actualizat. Detalii: §17.21. |
 | 0.4.5 | 28.10.2026 | Deciziile din 27–28.10: 2FA (R-2F1, R-2F2, R-2F3, R-2F5, R-2F7, R-2F9; înlocuiesc P5 și D10 din fișele de review), loturile 2.4a/b și 2.5a/b/c, separatorul de mii și AttentionList 2.0.0, staging (D-INF-3), e-mailul tranzacțional (expeditor, Reply-To, șablon unic, valabilități), deciziile L2.5-D0…D18 (jurnal de audit, sesiune de suport, recuperarea owner-ului). Detalii: §17.22. |
 | 0.4.6 | 28.10.2026 | Decizii ale fondatoarei: workflow engine în Core, construit în F4, automatizările construite și pornite doar din Founder (D-WF-1…5); funnel builder doar în Founder, cu publicare pe domeniul afacerii sau pe un domeniu Ventora (D-FUN-1…6); asistentul AI în Core, prin `authorize()`, cu confirmare înainte de scriere și audit (D-AI-1…5); cele trei marcate obligatorii pentru produs în planul fazelor (D-ROAD-5). Contradicțiile C14–C16 rezolvate de fondatoare: automatizările predefinite ale modulelor rămân setări ale afacerii (D-WF-6), formularele simple de lead le configurează afacerea (D-FUN-7), F4 păstrează doar infrastructura AI (D-AI-6), asistentul pentru consumatori e produs separat al Portalului (D-AI-7); brief-ul §37 și checklisturile Booking, Marketing, Projects actualizate. Detalii: §17.23. |
+| 0.4.7 | 30.10.2026 | Decizia fondatoarei din 30.10 pentru „Cere o invitație nouă”: notificare operațională în Hub pentru owner și admin, construită în F4, plus marcajul din lista invitațiilor de acum. Obligația e trecută sub tabelul fazelor (§15.1). |
 
 ## Statusuri folosite în acest document
 
@@ -1050,6 +1051,10 @@ Plus, la nivel de platformă: teste de webhook Stripe (semnătură, idempotenț�
 | **F3 — Comercial** | Registru aplicații, planuri și versiuni, entitlements, cote cu rezervare, add-on-uri, excepții, billing Stripe + SmartBill, aplicația `founder` | F2 | T5 verde; schimbarea unei limite fără deploy; plata → factura; audit pe acțiunile Founder |
 | **F4 — Servicii de platformă** | Outbox + job-uri, notificări (6 limbi), suport, cadrul AI (doar infrastructura: configurarea modelelor, contorizarea, limitele de cost, D-AI-6), fișiere, `pdf`; **workflow engine** (D-WF-1), după outbox și evenimente | F2 | T6 verde; notificare în limba destinatarului; tichet din orice aplicație |
 | **F5 — Hub** | Autentificare, alegerea organizației, launcher (4 stări de acces), setări cont, administrarea organizației, suport; **Growth Engine v1** (§8.7) cu componentele comerciale și secțiunea Growth & Campaigns din Founder | F1, F2, F3 (parțial: entitlements), F4 (parțial: notificări) | Fluxurile Hub testate end-to-end în Light/Dark × 6 limbi; testele Growth: produsele deținute nu apar, plafoanele și opt-out-ul se respectă, oprirea are efect imediat, aplicațiile funcționează identic cu Growth oprit, nicio activare plătită fără confirmare |
+
+**Obligații lăsate de F2 pentru F4 (notificări).** Evenimente care există deja în jurnalul de audit, dar pentru care notificarea din aplicație se construiește abia odată cu notificările din F4:
+
+- **`invitation.new_link_requested`** (Lotul 2.7 · C, decizia fondatoarei din 30.10.2026). Când cel invitat cere o invitație nouă dintr-o invitație expirată, owner-ul și adminii afacerii primesc o notificare `operational` în Hub: „{name} a cerut o invitație nouă pentru {businessName}.”, cu acțiunea spre lista invitațiilor (HubAdminTeam). `{name}` e adresa invitată (invitația nu are încă un nume), `{businessName}` e numele afacerii. Până atunci, cererea se vede doar ca marcaj în lista invitațiilor (`listInvitations` → `newLinkRequestedAt`), iar linkul nou se trimite cu „Retrimite” (`resendInvitation`, care șterge marcajul). Nu se trimite e-mail către cel care a invitat.
 
 ### 15.2 Ce se poate face în paralel
 

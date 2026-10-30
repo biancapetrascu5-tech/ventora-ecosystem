@@ -146,6 +146,15 @@ psqlFile(
   ),
 );
 
+console.log('[test:db:up] Aplic migrarea identity #4 (open last organization)...');
+psqlFile(
+  TEST_DB.identityDb,
+  join(
+    ROOT,
+    'core/identity/prisma/identity/migrations/20261029000006_lot26_open_last_organization/migration.sql',
+  ),
+);
+
 console.log('[test:db:up] Setez parolele rolurilor identity...');
 psql(
   TEST_DB.identityDb,
@@ -177,6 +186,15 @@ psqlFile(
   join(
     ROOT,
     'core/organizations/prisma/migrations/20261028000003_founder_owner_lookup/migration.sql',
+  ),
+);
+
+console.log('[test:db:up] Aplic migrarea organizations #4 (invitation view, last opened)...');
+psqlFile(
+  TEST_DB.orgDb,
+  join(
+    ROOT,
+    'core/organizations/prisma/migrations/20261029000005_lot26_invitation_view/migration.sql',
   ),
 );
 
@@ -251,6 +269,12 @@ for (const migration of [
   'core/access/prisma/migrations/20261028000002_support_session/migration.sql',
   'core/organizations/prisma/migrations/20261028000003_founder_owner_lookup/migration.sql',
   'core/identity/prisma/identity/migrations/20261028000004_founder_owner_recovery/migration.sql',
+  // Lot 2.6: în ordinea de pe staging (identity, organizations, access)
+  'core/identity/prisma/identity/migrations/20261029000006_lot26_open_last_organization/migration.sql',
+  'core/organizations/prisma/migrations/20261029000005_lot26_invitation_view/migration.sql',
+  'core/access/prisma/migrations/20261029000007_lot26_founder_open_session/migration.sql',
+  // Lot 2.7 · B: o sesiune de suport deschisă per afacere
+  'core/access/prisma/migrations/20261030000001_lot27_support_one_per_org/migration.sql',
 ]) {
   psqlFile(TEST_DB.accessDb, join(ROOT, migration));
 }

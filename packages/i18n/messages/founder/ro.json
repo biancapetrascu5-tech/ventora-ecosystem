@@ -9,6 +9,118 @@
         "closeConfirm": "Închizi sesiunea de suport pentru {organizationName}?",
         "closed": "Sesiunea de suport s-a închis.",
         "expired": "Sesiunea de suport a expirat. Deschide una nouă dacă mai ai nevoie de acces."
+      },
+      "open": {
+        "action": "Deschide o sesiune de suport",
+        "title": "Deschide o sesiune de suport",
+        "lead": "Vezi datele afacerii doar în citire, cât ține sesiunea. Proprietarii primesc un e-mail, iar toți membrii văd un banner.",
+        "reason": "Motiv",
+        "reasonHelp": "Îl văd proprietarul și adminii afacerii, în banner și în lista sesiunilor. Între 10 și 1.000 de caractere.",
+        "reasonError": "Scrie de ce ai nevoie de acces, în cel puțin 10 caractere.",
+        "ticket": "Referința cererii",
+        "ticketHelp": "Din cererea primită pe support@ventorasystems.com.",
+        "ticketError": "Scrie referința cererii.",
+        "duration": "Durata",
+        "durationHelp": "Implicit 1 oră, cel mult 4 ore. Sesiunea se închide singură la final.",
+        "submit": "Deschide sesiunea",
+        "cancel": "Renunță",
+        "existsTitle": "Afacerea are deja o sesiune de suport deschisă",
+        "existsBody": "{founderName} are o sesiune deschisă până la {expiresAt}. O singură sesiune poate fi deschisă pentru o afacere.",
+        "duration30": "30 de minute",
+        "duration60": "1 oră",
+        "duration120": "2 ore",
+        "duration240": "4 ore"
+      }
+    },
+    "recovery": {
+      "action": "Recuperează accesul proprietarului",
+      "title": "Recuperează accesul proprietarului",
+      "lead": "Folosește formularul doar după procedura de recuperare a proprietarului. Nu încărca acte, capturi sau e-mailuri: nu le păstrăm.",
+      "owner": "Proprietarul",
+      "ticket": "Referința cererii",
+      "ticketHelp": "Cererea primită pe support@ventorasystems.com.",
+      "reason": "Motiv",
+      "reasonHelp": "Între 10 și 1.000 de caractere. Intră în jurnalul afacerii.",
+      "checks": "Verificări",
+      "check": {
+        "email": "E-mailul contului",
+        "emailHelp": "Cererea vine de pe adresa contului, sau proprietarul a răspuns la e-mailul nostru trimis pe adresa contului.",
+        "phone": "Telefonul afacerii",
+        "phoneHelp": "Am sunat la numărul din contract sau din facturare, niciodată la cel din cerere.",
+        "admin": "Confirmarea altui admin",
+        "adminHelp": "Un alt admin activ al afacerii a confirmat în scris."
+      },
+      "compromised": "Adresa contului e compromisă",
+      "compromisedHelp": "E-mailul contului nu mai contează: telefonul afacerii și confirmarea adminului devin obligatorii.",
+      "rule": {
+        "min": "Bifează cel puțin 2 verificări.",
+        "compromised": "Cu adresa compromisă, bifează telefonul afacerii și confirmarea adminului.",
+        "ok": "Verificările respectă regula."
+      },
+      "identity": "Am verificat identitatea conform procedurii",
+      "variant": "Ce resetăm",
+      "variantB": "2FA și parola",
+      "variantBHelp": "Implicit. Proprietarul primește un link pentru o parolă nouă, valabil o oră.",
+      "variantA": "Doar 2FA",
+      "variantAHelp": "Doar dacă proprietarul a confirmat la telefon că are parola.",
+      "code": "Codul tău de autentificare",
+      "codeHelp": "Codul care apare acum în aplicația ta.",
+      "submit": "Recuperează accesul",
+      "cancel": "Renunță",
+      "confirmTitle": "Recuperezi accesul pentru {ownerName}?",
+      "confirmSessions": "Toate sesiunile lui {ownerName} se închid.",
+      "confirm2fa": "Autentificarea în doi pași se șterge; la intrarea următoare o activează din nou.",
+      "confirmPassword": "Parola se șterge; pe {email} pleacă un link pentru o parolă nouă, valabil o oră.",
+      "confirmLog": "Acțiunea intră în jurnalul afacerii, cu motivul și verificările.",
+      "refusedTitle": "Verificările nu respectă regula",
+      "refusedBody": "Nu s-a schimbat nimic. Bifează cel puțin 2 verificări; cu adresa compromisă, telefonul afacerii și confirmarea adminului.",
+      "doneTitle": "Accesul proprietarului a fost recuperat",
+      "doneB": "{ownerName} primește pe {email} un link pentru o parolă nouă, valabil o oră. După parolă, activează din nou autentificarea în doi pași.",
+      "doneA": "La intrarea următoare, după parolă, {ownerName} activează din nou autentificarea în doi pași.",
+      "doneLog": "Am trecut acțiunea în jurnalul afacerii.",
+      "back": "Înapoi la afacere",
+      "disabledHelp": "Butonul se activează când verificările respectă regula, identitatea e confirmată și codul are 6 cifre.",
+      "ownerPlaceholder": "Alege proprietarul"
+    },
+    "nav": {
+      "overview": "Prezentare",
+      "businesses": "Afaceri",
+      "usage": "Consum",
+      "commercial": "Model comercial",
+      "plans": "Planuri",
+      "packs": "Pachete în plus",
+      "packsShort": "Pachete",
+      "growth": "Growth",
+      "offers": "Oferte",
+      "campaigns": "Campanii",
+      "audiences": "Audiențe",
+      "results": "Rezultate",
+      "control": "Control",
+      "system": "Sistem",
+      "log": "Jurnal",
+      "settings": "Setări"
+    },
+    "shell": {
+      "search": "Caută o afacere, un plan sau o campanie"
+    },
+    "auth": {
+      "reqLength": "Cel puțin 12 caractere"
+    },
+    "signIn": {
+      "title": "Bine ai revenit",
+      "lead": "Intră în Founder Control Center.",
+      "email": "E-mail",
+      "password": "Parolă",
+      "forgot": "Ai uitat parola?",
+      "submit": "Intră în cont",
+      "checking": "Intri în cont…",
+      "error": {
+        "title": "E-mailul sau parola nu sunt corecte",
+        "body": "Verifică-le și încearcă din nou."
+      },
+      "limit": {
+        "title": "Ai încercat de prea multe ori",
+        "body": "Poți încerca din nou peste 15 minute, la ora {time}."
       }
     }
   }

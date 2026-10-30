@@ -13,6 +13,12 @@ import {
   type AuthApp,
 } from '@ventora/notifications';
 import { createAuthAuditHooks } from './audit-hooks';
+import {
+  generateBackupCodeList,
+  hashBackupCodeInBody,
+  hashedBackupCodeStore,
+} from './backup-codes';
+import { addLockedUntil } from './lock-info';
 import { runAuthBackgroundTask } from './background';
 import {
   afterPasswordHooks,
@@ -30,6 +36,8 @@ const HUB_RATE_LIMIT = {
     '/sign-in/email': { window: 60 * 15, max: 5 },
     '/two-factor/verify-totp': { window: 60 * 15, max: 5 },
     '/two-factor/verify-backup-code': { window: 60 * 15, max: 5 },
+    // S110: the password at „Activează” has the sign-in limit
+    '/two-factor/enable': { window: 60 * 15, max: 5 },
     '/request-password-reset': { window: 60 * 15, max: 5 },
     '/reset-password': { window: 60 * 15, max: 5 },
     [RENEW_RESET_LINK_PATH]: { window: 60 * 15, max: 5 },
@@ -37,6 +45,9 @@ const HUB_RATE_LIMIT = {
 };
 
 const FOUNDER_RATE_LIMIT = { ...HUB_RATE_LIMIT };
+
+/** /sign-up/email: closed over HTTP in Hub (Lot 2.7 · A) and in Founder (G1). */
+export const SIGN_UP_PATH = '/sign-up/email';
 
 // R-2F5 / S61: 5 consecutive wrong codes lock the account for 15 minutes (Hub and Founder).
 // Also applied by verifyFounderTotp() to the Founder's re-authentication (D14), on the same row.
@@ -137,12 +148,15 @@ export function createHubAuthOptions(db: IdentityBaseClient, secret: string) {
     }
     await beforeRequestPasswordReset(ctx, db, audit);
     await audit.before(ctx);
+    return hashBackupCodeInBody(ctx, secret);
   });
 
   const after = createAuthMiddleware(async (ctx) => {
     await revokeOtherSessionsOn2faEnroll(ctx, db, audit);
     await audit.after(ctx);
     await afterPasswordHooks(ctx, db, audit);
+    // last: it replaces the answer when the account is locked (B)
+    await addLockedUntil(ctx, db);
   });
 
   return {
@@ -173,11 +187,19 @@ export function createHubAuthOptions(db: IdentityBaseClient, secret: string) {
       passwordResetRenewal({ db, audit }),
       twoFactor({
         issuer: 'Ventora Hub',
-        backupCodeOptions: { storeBackupCodes: 'encrypted' as const },
+        // D1: 10 codes of 8 digits, stored as HMACs (backup-codes.ts)
+        backupCodeOptions: {
+          customBackupCodesGenerate: generateBackupCodeList,
+          storeBackupCodes: hashedBackupCodeStore(secret),
+        },
         accountLockout: TWO_FACTOR_LOCKOUT,
       }),
     ],
-    disabledPaths: ['/two-factor/disable'],
+    // D3: new backup codes only with the TOTP code (regenerateBackupCodes), not the password.
+    // Lot 2.7 · A: no open sign-up — a Hub account is created only with a valid invitation
+    // (signUpWithInvitation in core/access). The server-side auth.api calls are not affected.
+    // Lot 2.7 · D: a member turns 2FA off with the TOTP code (disableTwoFactor), never here.
+    disabledPaths: ['/two-factor/disable', '/two-factor/generate-backup-codes', SIGN_UP_PATH],
     hooks: { before, after },
     advanced: {
       database: { generateId: () => crypto.randomUUID() },
@@ -209,12 +231,15 @@ export function createFounderAuthOptions(db: FounderBaseClient, secret: string) 
     }
     await beforeRequestPasswordReset(ctx, db, audit);
     await audit.before(ctx);
+    return hashBackupCodeInBody(ctx, secret);
   });
 
   const after = createAuthMiddleware(async (ctx) => {
     await revokeOtherSessionsOn2faEnroll(ctx, db, audit);
     await audit.after(ctx);
     await afterPasswordHooks(ctx, db, audit);
+    // last: it replaces the answer when the account is locked (B)
+    await addLockedUntil(ctx, db);
   });
 
   return {
@@ -240,11 +265,18 @@ export function createFounderAuthOptions(db: FounderBaseClient, secret: string) 
       passwordResetRenewal({ db, audit }),
       twoFactor({
         issuer: 'Ventora Founder',
-        backupCodeOptions: { storeBackupCodes: 'encrypted' as const },
+        // D1: 10 codes of 8 digits, stored as HMACs (backup-codes.ts)
+        backupCodeOptions: {
+          customBackupCodesGenerate: generateBackupCodeList,
+          storeBackupCodes: hashedBackupCodeStore(secret),
+        },
         accountLockout: TWO_FACTOR_LOCKOUT,
       }),
     ],
-    disabledPaths: ['/two-factor/disable'],
+    // D3: new backup codes only with the TOTP code (regenerateBackupCodes), not the password.
+    // Lot 2.7 · G1: no open sign-up in Founder either; Founder accounts come only from
+    // addFounderUser and bootstrap-founder (server-side auth.api calls, not affected).
+    disabledPaths: ['/two-factor/disable', '/two-factor/generate-backup-codes', SIGN_UP_PATH],
     hooks: { before, after },
     advanced: {
       database: { generateId: () => crypto.randomUUID() },

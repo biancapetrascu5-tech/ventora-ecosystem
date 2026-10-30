@@ -117,6 +117,12 @@ import {
   Table,
   EllipsisVertical,
   type LucideIcon,
+  KeyRound,
+  Laptop,
+  MailCheck,
+  MessageSquare,
+  Ticket,
+  ChartLine,
 } from 'lucide-react';
 
 export const ICON_REGISTRY = {
@@ -239,6 +245,14 @@ export const ICON_REGISTRY = {
   table: Table,
   'ellipsis-vertical': EllipsisVertical,
   'trash-2': Trash2,
+  // Lotul 2.6 (D7): iconițele din ecranele Faza 2 (HubTwoFactor*, HubAccount, navigația Founder)
+  'key-round': KeyRound,
+  laptop: Laptop,
+  'mail-check': MailCheck,
+  'message-square': MessageSquare,
+  ticket: Ticket,
+  'chart-line': ChartLine,
+  'sliders-horizontal': SlidersHorizontal,
 } as const satisfies Record<string, LucideIcon>;
 
 export type IconName = keyof typeof ICON_REGISTRY;

@@ -18,3 +18,6 @@ core/access/generated/
 screenshots/
 docs/design/_incoming/
 visual-check/
+
+# Artefactele rulărilor Playwright locale
+apps/*/test-results/

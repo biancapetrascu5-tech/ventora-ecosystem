@@ -1,3 +1,4 @@
+import crypto from 'node:crypto';
 import { APIError, type BetterAuthPlugin } from 'better-auth';
 import { createAuthEndpoint, isAPIError } from 'better-auth/api';
 import { deliverEmail, renderPasswordChanged } from '@ventora/notifications';
@@ -22,6 +23,9 @@ type ResetDb = any;
 type AuthAudit = ReturnType<typeof createAuthAuditHooks>;
 
 export const RESET_IDENTIFIER_PREFIX = 'reset-password:';
+// Lot 2.6 · C: the mark of a used link — only the token's hash, kept EXPIRED_RESET_RETENTION_MS.
+// Its prefix is not RESET_IDENTIFIER_PREFIX, so cleanupExpiredVerifications removes it on expiry.
+export const USED_RESET_IDENTIFIER_PREFIX = 'reset-password-used:';
 export const RENEW_RESET_LINK_PATH = '/request-new-reset-link';
 export const RESET_EMAIL_LIMIT = { windowMs: 60 * 60 * 1000, max: 5 };
 // CONFIRMAT (7 days): how long an expired reset link can still ask for a new one (R-PR5).
@@ -200,6 +204,16 @@ export async function afterPasswordHooks(
     } else if (path === '/change-password') {
       user = ctx.context.session?.user ?? null;
     }
+    if (user && path === '/reset-password') {
+      try {
+        await markResetLinkUsed(db, ctx.body?.token, user.id);
+      } catch (err) {
+        // the reset itself has succeeded; without the mark the link reads as expired (S77)
+        console.error('[identity] used reset link mark failed', {
+          error: err instanceof Error ? err.name : 'unknown',
+        });
+      }
+    }
     if (user) {
       const trigger = path === '/reset-password' ? 'reset' : 'change';
       await ctx.context.runInBackgroundOrAwait(
@@ -216,6 +230,68 @@ export async function afterPasswordHooks(
       });
     }
   }
+}
+
+const tokenHash = (token: string) => crypto.createHash('sha256').update(token).digest('hex');
+
+/** Lot 2.6 · C: after a reset, the link is remembered as used (hash only) for 7 days. */
+export async function markResetLinkUsed(
+  db: ResetDb,
+  token: unknown,
+  userId: string,
+): Promise<void> {
+  if (typeof token !== 'string' || !TOKEN_SHAPE.test(token)) return;
+  const now = Date.now();
+  await db.verification.create({
+    data: {
+      id: crypto.randomUUID(),
+      identifier: USED_RESET_IDENTIFIER_PREFIX + tokenHash(token),
+      value: userId,
+      expiresAt: new Date(now + EXPIRED_RESET_RETENTION_MS),
+      createdAt: new Date(now),
+      updatedAt: new Date(now),
+    },
+  });
+}
+
+/** What the screen may know about a reset link (Lot 2.6 · C). Nothing for an unknown token. */
+export type ResetLinkInfo =
+  | { status: 'valid' | 'expired'; email: string; twoFactor: boolean }
+  | { status: 'used' }
+  | { status: 'unknown' };
+
+/**
+ * For /reset-password?token=…: valid or expired (row kept 7 days, R-PR5) → the account's address
+ * ("Pentru contul {email}", state 15) and whether it has 2FA ("Parola e schimbată"); used
+ * (mark kept 7 days) → "Ai folosit deja acest link"; anything else → unknown, nothing more.
+ */
+export async function readResetLinkInfo(
+  db: ResetDb,
+  token: string,
+  now = new Date(),
+): Promise<ResetLinkInfo> {
+  if (typeof token !== 'string' || !TOKEN_SHAPE.test(token)) return { status: 'unknown' };
+  const row = await db.verification.findFirst({
+    where: { identifier: RESET_IDENTIFIER_PREFIX + token },
+    select: { value: true, expiresAt: true },
+  });
+  if (row) {
+    const user = await db.user.findUnique({
+      where: { id: row.value },
+      select: { email: true, twoFactorEnabled: true },
+    });
+    if (!user) return { status: 'unknown' };
+    return {
+      status: row.expiresAt > now ? 'valid' : 'expired',
+      email: user.email,
+      twoFactor: user.twoFactorEnabled === true,
+    };
+  }
+  const used = await db.verification.findFirst({
+    where: { identifier: USED_RESET_IDENTIFIER_PREFIX + tokenHash(token), expiresAt: { gt: now } },
+    select: { id: true },
+  });
+  return used ? { status: 'used' } : { status: 'unknown' };
 }
 
 function generateResetToken(): string {

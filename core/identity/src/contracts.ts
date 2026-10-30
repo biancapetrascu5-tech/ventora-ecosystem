@@ -12,6 +12,8 @@ export type HubSession = {
   userAgent: string | null;
   activeOrganizationId: string | null;
   twoFactorEnabled: boolean;
+  /** Lot 2.7 · D: last use of the session (Dispozitive conectate); only from listSessions. */
+  lastActiveAt?: Date;
 };
 
 export type HubUser = {
@@ -86,5 +88,58 @@ export async function listSessions(userId: string): Promise<HubSession[]> {
     userAgent: s.userAgent ?? null,
     activeOrganizationId: (s as any).activeOrganizationId ?? null,
     twoFactorEnabled,
+    lastActiveAt: s.updatedAt,
   }));
+}
+
+/** Lot 2.6 · F: „Deschide direct ultima afacere data viitoare” (preferința utilizatorului). */
+export async function getOpenLastOrganization(userId: string): Promise<boolean> {
+  const user = await getIdentityDb().user.findUnique({
+    where: { id: userId },
+    select: { openLastOrganization: true },
+  });
+  return user?.openLastOrganization === true;
+}
+
+export async function setOpenLastOrganization(userId: string, value: boolean): Promise<void> {
+  await getIdentityDb().user.update({
+    where: { id: userId },
+    data: { openLastOrganization: value },
+  });
+}
+
+/**
+ * Lot 2.7 · A: the Hub account of an invitation. `/sign-up/email` is closed over HTTP
+ * (disabledPaths), so a Hub account exists only through signUpWithInvitation (core/access),
+ * which checks the invitation first and calls deleteHubAccount when the acceptance fails.
+ * The session Better Auth opens on sign-up is never sent to anyone: it is dropped, and the
+ * screen signs in with the password as usual.
+ */
+export async function createHubAccount(params: {
+  name: string;
+  email: string;
+  password: string;
+}): Promise<{ userId: string }> {
+  const result = await hubAuth.api.signUpEmail({
+    body: { name: params.name, email: params.email, password: params.password },
+  });
+  await getIdentityDb().session.deleteMany({ where: { userId: result.user.id } });
+  return { userId: result.user.id };
+}
+
+/** Lot 2.7 · A: undoes createHubAccount (the account, its credential and its sessions). */
+export async function deleteHubAccount(userId: string): Promise<void> {
+  await getIdentityDb().user.delete({ where: { id: userId } });
+}
+
+/**
+ * Lot 2.6 · E: are adresa invitată deja un cont Hub? (o invitație acceptată de un cont existent
+ * creează doar membership-ul, T2.5). Folosit doar cu adresa dintr-o invitație validă.
+ */
+export async function hasAccountForEmail(email: string): Promise<boolean> {
+  const user = await getIdentityDb().user.findFirst({
+    where: { email: email.trim().toLowerCase() },
+    select: { id: true },
+  });
+  return !!user;
 }

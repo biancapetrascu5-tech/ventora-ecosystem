@@ -1,0 +1,74 @@
+/* .ss-bar / .ss-txt / .ss-line / .ss-meta / .ss-act din HubSupportSession/preview.html */
+.bar {
+  display: flex;
+  gap: var(--space-3);
+  align-items: center;
+  padding: var(--space-2) var(--space-4);
+  background: var(--sunken);
+  border-bottom: var(--border-width) solid var(--line-strong);
+  color: var(--ink);
+  flex: none;
+}
+.bar > :global(svg) {
+  flex: none;
+  color: var(--ink-secondary);
+}
+.barMob {
+  align-items: flex-start;
+  padding: var(--space-3) var(--space-4);
+}
+.txt {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.txt p {
+  margin: 0;
+}
+.line {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 var(--space-3);
+}
+.meta {
+  color: var(--ink-secondary);
+}
+.act {
+  margin-top: var(--space-2);
+}
+
+/* .ss-frame: bannerul deasupra paginii, conținutul dedesubt */
+.frame {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  position: relative;
+}
+.body {
+  flex: 1;
+  min-height: 0;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+.body > * {
+  flex: 1;
+  min-height: 0;
+}
+
+/* .ss-toast: toastul în colțul paginii */
+.toast {
+  position: fixed;
+  right: var(--space-6);
+  bottom: var(--space-6);
+  width: var(--panel-width);
+  z-index: var(--z-toast);
+}
+.toastMob {
+  left: var(--space-4);
+  right: var(--space-4);
+  bottom: var(--space-4);
+  width: auto;
+}

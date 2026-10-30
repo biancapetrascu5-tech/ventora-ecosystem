@@ -16,6 +16,10 @@ import {
   EmailMismatchError,
   ForbiddenError,
   InvalidInvitationStatusError,
+  getInvitationByToken,
+  requestNewInvitationLink,
+  markOrganizationOpened,
+  listInvitations,
 } from '../index.js';
 import type { OrgContext } from '../index.js';
 import { closeAuditPools } from '@ventora/audit';
@@ -991,5 +995,185 @@ describe('INV — invitation emails', () => {
       }),
     ).rejects.toThrow();
     expect(mailbox.sent).toHaveLength(0);
+  });
+});
+
+// ---------------------------------------------------------------------------------------------
+// Lot 2.6 · E (invitația după token) și F (ultima deschidere)
+// ---------------------------------------------------------------------------------------------
+
+describe('Lot 2.6 — getInvitationByToken / requestNewInvitationLink (E)', () => {
+  it('pending: inviter, business, role, apps, address; then expired, accepted, revoked; unknown → null', async () => {
+    const stamp = Date.now();
+    const { organizationId } = await createOrganizationAsFounder(
+      { founderId: newUuid(), founderEmail: 'founder@test.com' },
+      { name: 'Salon E', slug: `l26e-${stamp}`, ownerEmail: `owner-e-${stamp}@example.com` },
+    );
+    const owner = await ownerContext(organizationId);
+    const email = `invitee-e-${stamp}@example.com`;
+    const { invitationToken } = await inviteMember(owner, {
+      email,
+      role: 'member',
+      inviterName: 'Bianca Petrașcu',
+      organizationName: 'Salon E',
+      applicationIds: ['booking', 'crm'],
+    });
+
+    const view = await getInvitationByToken(invitationToken);
+    expect(view).toMatchObject({
+      organizationId,
+      organizationName: 'Salon E',
+      inviterName: 'Bianca Petrașcu',
+      email,
+      role: 'member',
+      applicationIds: ['booking', 'crm'],
+      status: 'pending',
+    });
+    expect(await requestNewInvitationLink(invitationToken)).toBe(false); // still valid
+
+    // past its date: expired, and the request is recorded (column + audit row)
+    await adminQuery(
+      `UPDATE organizations.invitation SET expires_at = NOW() - INTERVAL '1 minute' WHERE id = $1`,
+      [view!.id],
+    );
+    expect((await getInvitationByToken(invitationToken))?.status).toBe('expired');
+    expect(await requestNewInvitationLink(invitationToken)).toBe(true);
+    const [inv] = await adminQuery(
+      `SELECT new_link_requested_at FROM organizations.invitation WHERE id = $1`,
+      [view!.id],
+    );
+    expect(inv.new_link_requested_at).toBeTruthy();
+    const rows = await auditRows(`action = 'invitation.new_link_requested' AND target_id = $1`, [
+      view!.id,
+    ]);
+    expect(rows).toHaveLength(1);
+    expect(rows[0]).toMatchObject({ organization_id: organizationId, actor_type: 'anonymous' });
+
+    // accepted and revoked are shown too (HubStates)
+    await adminQuery(`UPDATE organizations.invitation SET status = 'accepted' WHERE id = $1`, [
+      view!.id,
+    ]);
+    expect((await getInvitationByToken(invitationToken))?.status).toBe('accepted');
+    await adminQuery(`UPDATE organizations.invitation SET status = 'revoked' WHERE id = $1`, [
+      view!.id,
+    ]);
+    expect((await getInvitationByToken(invitationToken))?.status).toBe('revoked');
+    expect(await requestNewInvitationLink(invitationToken)).toBe(false);
+
+    expect(await getInvitationByToken('0'.repeat(64))).toBeNull();
+    expect(await getInvitationByToken('not-a-token')).toBeNull();
+
+    await adminQuery(`DELETE FROM organizations.organization WHERE id = $1`, [organizationId]);
+  });
+});
+
+describe('Lot 2.7 · C — listInvitations: the new-link request in the team list', () => {
+  it('owner and admin see newLinkRequestedAt; a member is refused; the new link clears it', async () => {
+    const stamp = Date.now();
+    const { organizationId } = await createOrganizationAsFounder(
+      { founderId: newUuid(), founderEmail: 'founder@test.com' },
+      { name: 'Salon C', slug: `l27c-${stamp}`, ownerEmail: `owner-c-${stamp}@example.com` },
+    );
+    const owner = await ownerContext(organizationId);
+    const { invitationToken } = await inviteMember(owner, {
+      email: `invitee-c-${stamp}@example.com`,
+      role: 'member',
+      inviterName: 'Bianca Petrașcu',
+      organizationName: 'Salon C',
+      applicationIds: ['booking'],
+    });
+    const view = (await getInvitationByToken(invitationToken))!;
+
+    let list = await listInvitations(owner);
+    const fresh = list.find((i) => i.id === view.id)!;
+    expect(fresh).toMatchObject({
+      email: `invitee-c-${stamp}@example.com`,
+      role: 'member',
+      applicationIds: ['booking'],
+      invitedByName: 'Bianca Petrașcu',
+      status: 'pending',
+      newLinkRequestedAt: null,
+    });
+    // the owner's own invitation from Founder is listed too, the newest first
+    expect(list.map((i) => i.id)[0]).toBe(view.id);
+    expect(list).toHaveLength(2);
+
+    await adminQuery(
+      `UPDATE organizations.invitation SET expires_at = NOW() - INTERVAL '1 minute' WHERE id = $1`,
+      [view.id],
+    );
+    expect(await requestNewInvitationLink(invitationToken)).toBe(true);
+    list = await listInvitations(owner);
+    const requested = list.find((i) => i.id === view.id)!;
+    expect(requested.status).toBe('expired');
+    expect(requested.newLinkRequestedAt).toBeInstanceOf(Date);
+
+    const adminId = newUuid();
+    await adminQuery(
+      `INSERT INTO organizations.membership(organization_id, user_id, role, status, updated_at)
+       VALUES($1, $2, 'admin', 'active', NOW())`,
+      [organizationId, adminId],
+    );
+    const admin = await resolveOrgContext({ userId: adminId, organizationId });
+    expect(
+      (await listInvitations(admin)).find((i) => i.id === view.id)?.newLinkRequestedAt,
+    ).toEqual(requested.newLinkRequestedAt);
+
+    const memberId = newUuid();
+    await adminQuery(
+      `INSERT INTO organizations.membership(organization_id, user_id, role, status, updated_at)
+       VALUES($1, $2, 'member', 'active', NOW())`,
+      [organizationId, memberId],
+    );
+    const member = await resolveOrgContext({ userId: memberId, organizationId });
+    await expect(listInvitations(member)).rejects.toThrow(ForbiddenError);
+
+    await resendInvitation(owner, view.id);
+    const resent = (await listInvitations(owner)).find((i) => i.id === view.id)!;
+    expect(resent).toMatchObject({ status: 'pending', newLinkRequestedAt: null });
+
+    await adminQuery(`DELETE FROM organizations.organization WHERE id = $1`, [organizationId]);
+  });
+});
+
+describe('Lot 2.6 — markOrganizationOpened / listMyOrganizations (F)', () => {
+  it('last_opened_at is set on open; the last opened business comes first', async () => {
+    const userId = newUuid();
+    const stamp = Date.now();
+    const orgs: string[] = [];
+    for (const name of ['Alfa', 'Beta']) {
+      const { organizationId } = await createOrganizationAsFounder(
+        { founderId: newUuid(), founderEmail: 'founder@test.com' },
+        {
+          name: `${name} F`,
+          slug: `l26f-${name.toLowerCase()}-${stamp}`,
+          ownerEmail: `o-${name}-${stamp}@example.com`,
+        },
+      );
+      await adminQuery(
+        `INSERT INTO organizations.membership(organization_id, user_id, role, status, updated_at)
+         VALUES($1, $2, 'member', 'active', NOW())`,
+        [organizationId, userId],
+      );
+      orgs.push(organizationId);
+    }
+    const before = await listMyOrganizations(userId);
+    expect(before.map((o: { last_opened_at: Date | null }) => o.last_opened_at)).toEqual([
+      null,
+      null,
+    ]);
+    expect(before.map((o: { organization_name: string }) => o.organization_name)).toEqual([
+      'Alfa F',
+      'Beta F',
+    ]);
+
+    await markOrganizationOpened(await resolveOrgContext({ userId, organizationId: orgs[1]! }));
+    const after = await listMyOrganizations(userId);
+    expect(after[0]).toMatchObject({ organization_id: orgs[1], organization_name: 'Beta F' });
+    expect(after[0]!.last_opened_at).toBeInstanceOf(Date);
+    expect(after[1]!.last_opened_at).toBeNull();
+
+    for (const id of orgs)
+      await adminQuery(`DELETE FROM organizations.organization WHERE id = $1`, [id]);
   });
 });

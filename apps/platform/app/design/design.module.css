@@ -74,8 +74,12 @@
   overflow: hidden;
 }
 
-.logoCard[data-bg="light"] { background: #EFF0EE; }
-.logoCard[data-bg="dark"]  { background: #0E0F11; }
+.logoCard[data-bg='light'] {
+  background: #eff0ee;
+}
+.logoCard[data-bg='dark'] {
+  background: #0e0f11;
+}
 
 .logoCardInner {
   display: flex;

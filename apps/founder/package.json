@@ -11,21 +11,26 @@
   },
   "dependencies": {
     "@sentry/nextjs": "^11.0.0",
+    "@ventora/access": "workspace:*",
     "@ventora/config": "workspace:*",
     "@ventora/contracts": "workspace:*",
     "@ventora/i18n": "workspace:*",
     "@ventora/identity": "workspace:*",
+    "@ventora/screens": "workspace:*",
+    "@ventora/tokens": "workspace:*",
+    "@ventora/ui": "workspace:*",
     "next": "^16.0.0",
+    "next-intl": "4.14.9",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.0",
-    "eslint": "^9.0.0",
-    "eslint-config-next": "^16.0.0",
     "@types/node": "^22.0.0",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
+    "eslint": "^9.0.0",
+    "eslint-config-next": "^16.0.0",
     "typescript": "^6.0.0",
     "vitest": "^2.1.0"
   }

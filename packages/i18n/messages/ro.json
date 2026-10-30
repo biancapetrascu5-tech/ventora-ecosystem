@@ -36,7 +36,20 @@
     "expiry": "Invitația e valabilă până pe {data}.",
     "expiredTitle": "Invitația a expirat",
     "expiredBody": "Invitațiile sunt valabile 7 zile. Cere una nouă: trimitem cererea către {name}, iar linkul nou îl primești pe e-mail.",
-    "requestNew": "Cere o invitație nouă"
+    "requestNew": "Cere o invitație nouă",
+    "requested": {
+      "title": "Am trimis cererea",
+      "body": "Primești linkul nou pe e-mail imediat ce {name} îl retrimite."
+    },
+    "revoked": {
+      "title": "Invitația nu mai e valabilă",
+      "body": "Dacă e o greșeală, cere-i o invitație nouă celui care te-a invitat."
+    },
+    "used": {
+      "title": "Ai folosit deja această invitație",
+      "body": "Intră în cont cu e-mailul și parola ta."
+    },
+    "signIn": "Intră în cont"
   },
   "usageMeter": {
     "unlimited": "Nelimitat",
@@ -145,14 +158,377 @@
         "ticketRef": "Cerere: {ticketRef}",
         "close": "Închide sesiunea",
         "closeConfirm": "Închizi sesiunea de suport? Echipa Ventora pierde accesul imediat.",
-        "closed": "Sesiunea de suport s-a închis."
+        "closed": "Sesiunea de suport s-a închis.",
+        "cancel": "Renunță"
       }
+    },
+    "sessions": {
+      "title": "Sesiuni de suport",
+      "lead": "Echipa Ventora vede datele afacerii doar într-o sesiune de suport, doar în citire și doar până la ora stabilită. Aici vezi cine, de ce și când.",
+      "col": {
+        "who": "Din echipa Ventora",
+        "reason": "Motiv",
+        "ticket": "Cerere",
+        "when": "Când",
+        "status": "Stare"
+      },
+      "status": {
+        "active": "Activă până la {expiresAt}",
+        "closedBy": "Închisă de {name}",
+        "expired": "Expirată",
+        "closedAuto": "Închisă automat"
+      },
+      "empty": "Nicio sesiune de suport până acum."
     }
   },
   "auth": {
     "line1": "Afacerea ta.",
     "line2": "Într-un singur loc.",
     "founderProduct": "Control Center",
-    "founderTagline": "Instrumentul intern al echipei Ventora"
+    "founderTagline": "Instrumentul intern al echipei Ventora",
+    "reset": {
+      "request": {
+        "title": "Ai uitat parola?",
+        "lead": "Scrie adresa contului și îți trimitem un link pentru o parolă nouă.",
+        "submit": "Trimite linkul"
+      },
+      "emailLabel": "E-mail",
+      "sending": "Se trimite…",
+      "back": "Înapoi la autentificare",
+      "error": {
+        "empty": "Scrie adresa de e-mail a contului.",
+        "format": "Adresa nu pare completă. Verifică după @.",
+        "reqs": "Parola nu îndeplinește încă toate cerințele de mai jos."
+      },
+      "limit": {
+        "title": "Ai încercat de prea multe ori",
+        "body": "Poți cere un link nou după ora {time}."
+      },
+      "offline": {
+        "title": "Nu te putem conecta acum",
+        "body": "Verifică internetul și încearcă din nou."
+      },
+      "sent": {
+        "title": "Verifică-ți e-mailul",
+        "body": "Dacă {email} este adresa unui cont Ventora, ți-am trimis acolo un link pentru o parolă nouă.",
+        "validity": "Linkul e valabil o oră.",
+        "help": "Nu vezi e-mailul? Uită-te și în Spam sau Promoții.",
+        "resend": "Trimite alt link",
+        "resendWait": "Poți cere alt link peste un minut.",
+        "resent": "Ți-am trimis alt link. Folosește-l pe cel mai nou.",
+        "otherEmail": "Folosește altă adresă"
+      },
+      "new": {
+        "title": "Alege o parolă nouă",
+        "account": "Pentru contul {email}.",
+        "label": "Parolă nouă",
+        "signOutNote": "Când o salvezi, te scoatem din cont pe toate dispozitivele.",
+        "submit": "Salvează parola"
+      },
+      "req": {
+        "length": "Cel puțin 10 caractere",
+        "digit": "Cel puțin o cifră",
+        "upper": "Cel puțin o literă mare"
+      },
+      "saving": "Se salvează…",
+      "expired": {
+        "title": "Linkul a expirat",
+        "body": "Linkurile pentru o parolă nouă sunt valabile o oră. Cere unul nou și îl primești pe e-mail."
+      },
+      "newLink": "Cere un link nou",
+      "used": {
+        "title": "Ai folosit deja acest link",
+        "body": "Fiecare link merge o singură dată. Dacă ți-ai ales deja parola nouă, intră cu ea."
+      },
+      "signIn": "Intră în cont",
+      "done": {
+        "title": "Parola e schimbată",
+        "signedOut": "Te-am scos din cont pe toate dispozitivele.",
+        "body": "Intră din nou cu parola nouă, pe fiecare dispozitiv pe care lucrezi.",
+        "twoStep": "După parolă îți cerem și codul din aplicația de autentificare."
+      },
+      "email": {
+        "securityRow": "E-mailuri de securitate: le primești mereu, de exemplu când se schimbă parola contului."
+      }
+    },
+    "2fa": {
+      "step": "Pasul {step} din 3",
+      "signOut": "Ieși din cont",
+      "codeLabel": "Cod de 6 cifre",
+      "codeHelper": "Codul se schimbă la fiecare 30 de secunde.",
+      "checking": "Se verifică…",
+      "copy": "Copiază",
+      "copied": "Copiat",
+      "download": "Descarcă",
+      "error": {
+        "wrongCode": "Codul nu se potrivește. Introdu codul care apare acum în aplicație.",
+        "codeLength": "Codul are 6 cifre.",
+        "backupWrong": "Codul nu se potrivește sau a fost deja folosit. Încearcă alt cod din listă."
+      },
+      "setup": {
+        "s1": {
+          "title": "Protejează-ți contul",
+          "leadOwner": "Contul de proprietar are acces la tot, așa că îl protejăm cu un al doilea pas.",
+          "leadMember": "Un al doilea pas îți protejează contul chiar dacă cineva îți află parola.",
+          "leadFounder": "Contul Founder are acces la toate afacerile, așa că îl protejăm cu un al doilea pas. În Founder e obligatoriu pentru toți.",
+          "how": "După parolă, îți vom cere și un cod din aplicația de autentificare de pe telefon.",
+          "scan": "Scanează codul cu aplicația de autentificare",
+          "qrAlt": "Cod QR pentru aplicația de autentificare",
+          "manual": "Nu poți scana? Introdu în aplicație cheia de mai jos.",
+          "keyLabel": "Cheia",
+          "keyCopied": "Cheia e copiată.",
+          "whichApp": "Ce aplicație folosesc?",
+          "next": "Continuă"
+        },
+        "s2": {
+          "title": "Introdu codul din aplicație",
+          "lead": "Aplicația arată acum un cod de 6 cifre pentru Ventora.",
+          "submit": "Activează",
+          "back": "Înapoi la codul QR"
+        },
+        "locked": {
+          "title": "Ai încercat de prea multe ori",
+          "body": "Poți încerca din nou peste 15 minute, la ora {time}."
+        },
+        "s3": {
+          "title": "Salvează codurile de rezervă",
+          "done": "Autentificarea în doi pași e activă.",
+          "lead": "Dacă nu ai telefonul la tine, intri cu unul dintre aceste coduri. Fiecare merge o singură dată.",
+          "once": "Le vezi acum pentru ultima dată.",
+          "listLabel": "Codurile de rezervă",
+          "copied": "Codurile sunt copiate.",
+          "fileName": "ventora-coduri-de-rezerva.txt",
+          "confirm": "Le-am salvat într-un loc sigur",
+          "confirmHelp": "Bifează după ce le-ai descărcat sau copiat.",
+          "next": "Continuă"
+        }
+      },
+      "apps": {
+        "body": "Merge orice aplicație de autentificare, de exemplu Google Authenticator, Microsoft Authenticator sau 1Password. Dacă nu ai una, o instalezi din Magazin Play sau din App Store.",
+        "how": "În aplicație, adaugi un cont nou și scanezi codul de pe această pagină.",
+        "close": "Am înțeles"
+      },
+      "verify": {
+        "title": "Încă un pas",
+        "lead": "Introdu codul de 6 cifre din aplicația de autentificare.",
+        "leadBackup": "Introdu unul dintre codurile de rezervă salvate când ai activat autentificarea în doi pași.",
+        "account": "Intri ca {email}.",
+        "otherAccount": "Intră cu alt cont",
+        "submit": "Intră în cont",
+        "useBackup": "Folosește un cod de rezervă",
+        "useApp": "Folosește codul din aplicație",
+        "backupLabel": "Cod de rezervă",
+        "backupHelper": "Fiecare cod de rezervă merge o singură dată.",
+        "locked": {
+          "title": "Contul e blocat temporar",
+          "body": "Au fost prea multe încercări greșite. Poți intra din nou după ora {time}."
+        },
+        "expired": {
+          "title": "Au trecut mai mult de 10 minute",
+          "body": "Din motive de siguranță, intră din nou cu e-mailul și parola.",
+          "action": "Înapoi la autentificare"
+        },
+        "noAccess": "Nu mai am acces la telefon și nici la coduri"
+      },
+      "recovery": {
+        "email": "support@ventorasystems.com",
+        "title": "Recuperează accesul",
+        "body": "Scrie-ne de pe adresa contului și te ajutăm să recuperezi accesul după ce îți confirmăm identitatea.",
+        "address": "Adresa noastră: support@ventorasystems.com",
+        "write": "Scrie-ne pe e-mail",
+        "back": "Înapoi"
+      },
+      "founder": {
+        "name": "Founder",
+        "tagline": "Instrumentul intern al echipei Ventora",
+        "product": "Control Center"
+      },
+      "backupLeft": {
+        "title": "Ai intrat cu un cod de rezervă",
+        "many": "Mai ai {n} coduri de rezervă.",
+        "few": "Mai ai doar {n} coduri de rezervă. Generează coduri noi ca să nu rămâi fără.",
+        "one": "Mai ai un singur cod de rezervă. Generează coduri noi ca să nu rămâi fără.",
+        "none": "Ai folosit ultimul cod de rezervă. Generează coduri noi, ca să poți intra și dacă pierzi telefonul.",
+        "action": "Generează coduri noi"
+      },
+      "codes": {
+        "title": "Coduri de rezervă",
+        "lead": "Le folosești dacă nu ai telefonul la tine. Le vezi o singură dată, când le generezi.",
+        "left": "Ți-au rămas {n} din 10.",
+        "oldStop": "Când generezi coduri noi, cele vechi nu mai merg.",
+        "confirmTitle": "Confirmă cu codul din aplicație",
+        "confirmLead": "Ca să generăm coduri noi, introdu codul care apare acum în aplicația de autentificare.",
+        "confirm": "Generează codurile",
+        "cancel": "Renunță",
+        "newDone": "Ai coduri noi. Cele vechi nu mai merg."
+      }
+    },
+    "panel": {
+      "line1": "Afacerea ta.",
+      "line2": "Într-un singur loc."
+    },
+    "footer": {
+      "links": "Termeni · Confidențialitate · Ajutor"
+    },
+    "signIn": {
+      "title": "Bine ai revenit",
+      "lead": "Intră în contul tău Ventora.",
+      "emailLabel": "E-mail",
+      "passwordLabel": "Parolă",
+      "forgot": "Ai uitat parola?",
+      "remember": "Ține-mă minte pe acest dispozitiv timp de 30 de zile",
+      "submit": "Intră în cont",
+      "submitting": "Intri în cont…",
+      "inviteOnly": "Nu ai cont? Conturile se fac doar prin invitație. Dacă ai primit una, deschide linkul din e-mail și îți alegi parola.",
+      "error": {
+        "title": "E-mailul sau parola nu sunt corecte",
+        "body": "Verifică-le și încearcă din nou."
+      },
+      "limit": {
+        "title": "Ai încercat de prea multe ori",
+        "body": "Mai încearcă peste 15 minute sau alege o parolă nouă."
+      }
+    }
+  },
+  "ui": {
+    "language": "Limbă",
+    "showPassword": "Arată parola",
+    "hidePassword": "Ascunde parola",
+    "close": "Închide",
+    "cancel": "Renunță",
+    "required": "obligatoriu",
+    "optional": "opțional",
+    "rowActions": "Acțiuni",
+    "prevPage": "Pagina anterioară",
+    "nextPage": "Pagina următoare",
+    "pageOf": "Pagina {n} din {total}",
+    "rangeOf": "{from}–{to} din {total}",
+    "clearSelection": "Renunță la selecție",
+    "selectAll": "Selectează toate rândurile",
+    "selectRow": "Selectează rândul",
+    "sortAsc": "Sortat crescător",
+    "sortDesc": "Sortat descrescător",
+    "rowsPerPage": "Rânduri pe pagină",
+    "selectedN": "{n, plural, one {# selectat} few {# selectate} other {# de selectate}}",
+    "backToHub": "Înapoi la aplicații",
+    "expandMenu": "Extinde meniul",
+    "collapseMenu": "Restrânge meniul",
+    "more": "Mai multe",
+    "back": "Înapoi",
+    "search": "Caută",
+    "searchPlaceholder": "Caută…",
+    "create": "Creează",
+    "notifications": "Notificări",
+    "markAllRead": "Marchează toate ca citite",
+    "notificationSettings": "Setări notificări",
+    "all": "Toate",
+    "unread": "Necitite",
+    "noNotifications": "Nu ai notificări noi",
+    "noNotificationsHint": "Îți spunem aici când ceva are nevoie de tine.",
+    "operational": "Despre cont și funcționare",
+    "activity": "Activitate",
+    "recommendations": "Recomandări",
+    "recommendation": "Recomandare",
+    "fromTeam": "Recomandare de la echipă",
+    "seeApp": "Vezi aplicația",
+    "reject": "Respinge",
+    "seeDetails": "Vezi detaliile",
+    "notInterested": "Nu mă interesează",
+    "account": "Contul tău",
+    "yourBusinesses": "Afacerile tale",
+    "theme": "Temă",
+    "themeLight": "Luminoasă",
+    "themeDark": "Întunecată",
+    "themeSystem": "Automată",
+    "allApps": "Toate aplicațiile Ventora",
+    "support": "Suport",
+    "signOut": "Ieși din cont",
+    "switchBusiness": "Schimbă afacerea",
+    "findBusiness": "Caută o afacere…",
+    "noResultsFor": "Niciun rezultat pentru „{q}”",
+    "unreadN": "{n, plural, one {# necitită} few {# necitite} other {# de necitite}}"
+  },
+  "hub": {
+    "chooseBusiness": {
+      "title": "Alege afacerea",
+      "lead": "Lucrezi în {count} afaceri. Treci de la una la alta oricând, din bara de sus.",
+      "apps": "{count, plural, one {# aplicație} few {# aplicații} other {# de aplicații}}",
+      "opened": "deschisă {when}",
+      "lastUsed": "Ultima folosită",
+      "remember": "Deschide direct ultima afacere data viitoare",
+      "missing": "Lipsește o afacere? Cere-i proprietarului ei o invitație.",
+      "search": "Caută o afacere"
+    }
+  },
+  "roles": {
+    "owner": "Proprietar",
+    "admin": "Administrator",
+    "member": "Membru",
+    "external_collaborator": "Colaborator extern",
+    "application_manager": "Manager de aplicație"
+  },
+  "account": {
+    "title": "Contul tău",
+    "lead": "Datele tale, cum arată Ventora pentru tine și cum îți protejezi contul.",
+    "notifications": {
+      "title": "Notificări",
+      "lead": "Alege pe unde vrei să afli de fiecare."
+    },
+    "security": {
+      "title": "Securitate",
+      "password": {
+        "title": "Parola",
+        "changed": "Schimbată: {when}",
+        "change": "Schimbă parola",
+        "done": {
+          "title": "Parola e schimbată.",
+          "body": "Pe celelalte dispozitive va trebui să intri din nou."
+        },
+        "current": "Parola actuală",
+        "forgot": "Ai uitat parola?",
+        "new": "Parola nouă",
+        "signOutNote": "Rămâi conectat pe acest dispozitiv. Pe celelalte te scoatem din cont.",
+        "submit": "Schimbă parola",
+        "error": {
+          "currentEmpty": "Scrie parola actuală.",
+          "current": "Parola actuală nu se potrivește."
+        }
+      },
+      "twoStep": {
+        "title": "Autentificare în doi pași",
+        "ownerBody": "Obligatorie pentru proprietar. La fiecare intrare cu parola îți cerem și un cod din aplicația de autentificare.",
+        "active": "Activă",
+        "offBody": "Opțională pentru rolul tău. Când e activă, la fiecare intrare cu parola îți cerem și un cod din aplicația de autentificare.",
+        "onBody": "La fiecare intrare cu parola îți cerem și un cod din aplicația de autentificare.",
+        "inactive": "Neactivă",
+        "activate": "Activează",
+        "disable": "Dezactivează",
+        "disableTitle": "Dezactivezi autentificarea în doi pași?",
+        "disableBody": "Contul tău rămâne protejat doar de parolă, iar codurile de rezervă nu mai merg. Confirmă cu codul din aplicație.",
+        "disabled": "Autentificarea în doi pași e dezactivată.",
+        "passwordLead": "Ca să activezi autentificarea în doi pași, confirmă mai întâi parola contului.",
+        "confirmPassword": "Confirmă parola",
+        "error": {
+          "password": "Parola actuală nu e corectă."
+        }
+      },
+      "cancel": "Renunță",
+      "codes": {
+        "title": "Coduri de rezervă",
+        "body": "Le folosești dacă nu ai telefonul la tine. Ți-au rămas {n} din 10. Le vezi o singură dată, când le generezi.",
+        "generate": "Generează coduri noi"
+      },
+      "devices": {
+        "title": "Dispozitive conectate",
+        "signOut": "Deconectează",
+        "thisDevice": "Acest dispozitiv"
+      },
+      "when": {
+        "now": "Activ acum",
+        "today": "Azi, {time}",
+        "yesterday": "Ieri, {time}",
+        "date": "{date}, {time}"
+      }
+    }
   }
 }

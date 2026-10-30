@@ -11,14 +11,23 @@ import {
   requireFounderSession,
   revokeFounderUser,
 } from '../founder-contracts';
-import { revokeSession } from '../contracts';
+import {
+  getOpenLastOrganization,
+  hasAccountForEmail,
+  revokeSession,
+  setOpenLastOrganization,
+} from '../contracts';
 import { setSessionActiveOrganization } from '../contract';
+import { bootstrapFounderAccount } from '../bootstrap-founder';
 import { closeAuditPools, hashEmail } from '@ventora/audit';
 import type { OrgContext } from '@ventora/organizations';
 import { founderAuth } from '../auth-founder';
 import { makeIdentityClient, makeFounderClient } from '../db';
 import { hashPassword, verifyPassword } from '../password-policy';
 import { createHubAuthOptions, createFounderAuthOptions } from '../auth-options';
+import { countBackupCodesOf, hashBackupCode, regenerateBackupCodesFor } from '../backup-codes';
+import { readResetLinkInfo } from '../password-reset';
+import { symmetricEncrypt } from 'better-auth/crypto';
 import { requireTestEnv, shouldSkipForEnv } from './env-guard';
 import { CaptureEmailAdapter, passwordResetLink, setEmailChannel } from '@ventora/notifications';
 
@@ -40,10 +49,13 @@ const REMEMBER_ME_SECONDS = 30 * 24 * 60 * 60;
 // Better Auth 1.7.12: expiresIn = rememberMe duration; rememberMe:false → 24h hardcoded
 const SHORT_SESSION_SECONDS = 24 * 60 * 60;
 
+const HUB_TEST_SECRET = 'test-hub-secret-must-be-32-chars-x'; // gitleaks:allow
+const FOUNDER_TEST_SECRET = 'test-founder-secret-32-chars-abc1'; // gitleaks:allow
+
 // Tests use the same factory as production — only database, secret, and advanced.secure differ.
 // hooks / twoFactor / disabledPaths / emailAndPassword come unchanged from the factory.
 const hubAuth = betterAuth({
-  ...createHubAuthOptions(identityDb, 'test-hub-secret-must-be-32-chars-x'), // gitleaks:allow
+  ...createHubAuthOptions(identityDb, HUB_TEST_SECRET),
   advanced: {
     database: { generateId: () => crypto.randomUUID() },
     crossSubDomainCookies: { enabled: false },
@@ -53,7 +65,7 @@ const hubAuth = betterAuth({
 });
 
 const founderAuthTest = betterAuth({
-  ...createFounderAuthOptions(founderDb, 'test-founder-secret-32-chars-abc1'), // gitleaks:allow
+  ...createFounderAuthOptions(founderDb, FOUNDER_TEST_SECRET),
   advanced: {
     database: { generateId: () => crypto.randomUUID() },
     crossSubDomainCookies: { enabled: false },
@@ -907,9 +919,10 @@ describe('T2FA — 2FA plugin config and hooks', () => {
     expect(twoFactorCookie).toBeTruthy();
 
     // Step 6: send 5 invalid TOTP codes via the __two-factor cookie (isSignIn=true path)
-    // Each failure increments failedVerificationCount on the twoFactor DB record.
-    // Every one of the 5 must be a plain wrong-code answer (401 INVALID_CODE), not 429:
-    // verify-two-factor.mjs invalid() → APIError.from("UNAUTHORIZED", ...).
+    // Each failure increments failedVerificationCount on the twoFactor DB record. The first 4
+    // are plain wrong-code answers (401 INVALID_CODE); the 5th sets the lock and, since Lot 2.6
+    // (B, A3), answers "locked" directly: 429 ACCOUNT_TEMPORARILY_LOCKED with lockedUntil.
+    const answers: { status: number; code?: string; lockedUntil?: string }[] = [];
     for (let i = 0; i < 5; i++) {
       const resp = await noRlAuth.handler(
         new Request('http://localhost/api/auth/two-factor/verify-totp', {
@@ -918,10 +931,11 @@ describe('T2FA — 2FA plugin config and hooks', () => {
           body: JSON.stringify({ code: '000000' }),
         }),
       );
-      expect(resp.status).toBe(401);
-      const body = (await resp.json()) as { code?: string };
-      expect(body.code).toBe('INVALID_CODE');
+      const body = (await resp.json()) as { code?: string; lockedUntil?: string };
+      answers.push({ status: resp.status, ...body });
     }
+    for (const a of answers.slice(0, 4))
+      expect(a).toMatchObject({ status: 401, code: 'INVALID_CODE' });
 
     // After the 5th failure: counter = 5 and the account is locked
     const userRow = await identityDb.user.findUnique({ where: { email }, select: { id: true } });
@@ -932,8 +946,13 @@ describe('T2FA — 2FA plugin config and hooks', () => {
     expect(twoFactorRow?.failedVerificationCount).toBe(5);
     expect(twoFactorRow?.lockedUntil).toBeTruthy();
     expect(twoFactorRow!.lockedUntil!.getTime()).toBeGreaterThan(Date.now());
+    expect(answers[4]).toMatchObject({
+      status: 429,
+      code: 'ACCOUNT_TEMPORARILY_LOCKED',
+      lockedUntil: twoFactorRow!.lockedUntil!.toISOString(),
+    });
 
-    // Step 7: 6th attempt — assertTwoFactorNotLocked fires first → 429 TOO_MANY_REQUESTS
+    // Step 7: 6th attempt — assertTwoFactorNotLocked fires first → 429, with the same lockedUntil
     const lockedResp = await noRlAuth.handler(
       new Request('http://localhost/api/auth/two-factor/verify-totp', {
         method: 'POST',
@@ -942,6 +961,9 @@ describe('T2FA — 2FA plugin config and hooks', () => {
       }),
     );
     expect(lockedResp.status).toBe(429);
+    expect(((await lockedResp.json()) as { lockedUntil?: string }).lockedUntil).toBe(
+      twoFactorRow!.lockedUntil!.toISOString(),
+    );
   });
 
   it('T2FA.F — session created between enable and verify-totp is revoked after enrollment', async () => {
@@ -1151,6 +1173,58 @@ describe('T2FA.H — exported founder functions reject actor without 2FA', () =>
   });
 });
 
+describe('Lot 2.7 · G1 — Founder: no open sign-up', () => {
+  it('a direct request to /api/auth/sign-up/email gets 404 and creates nothing', async () => {
+    const res = await founderAuthTest.handler(
+      new Request('http://localhost/api/auth/sign-up/email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: 'Intrus',
+          email: 'g1.direct@test.com',
+          password: 'FounderPass12',
+        }),
+      }),
+    );
+    expect(res.status).toBe(404);
+    expect(await founderDb.user.count({ where: { email: 'g1.direct@test.com' } })).toBe(0);
+  });
+
+  it('bootstrap-founder still creates the first account, and only the first', async () => {
+    const first = await bootstrapFounderAccount(founderDb, FOUNDER_TEST_SECRET, {
+      name: 'Prima',
+      email: 'g1.first@test.com',
+      password: 'FounderPass12',
+    });
+    expect('userId' in first).toBe(true);
+    expect(await founderDb.user.count({ where: { email: 'g1.first@test.com' } })).toBe(1);
+
+    const second = await bootstrapFounderAccount(founderDb, FOUNDER_TEST_SECRET, {
+      name: 'A doua',
+      email: 'g1.second@test.com',
+      password: 'FounderPass12',
+    });
+    expect(second).toEqual({ refused: 'exists', activeCount: 1 });
+    expect(await founderDb.user.count({ where: { email: 'g1.second@test.com' } })).toBe(0);
+  });
+
+  it('addFounderUser still adds a Founder account', async () => {
+    const actor = await founderAuthTest.api.signUpEmail({
+      body: { email: 'g1.actor@test.com', password: 'FounderPass12', name: 'Actor' },
+    });
+    await founderDb.user.update({ where: { id: actor.user.id }, data: { twoFactorEnabled: true } });
+    const added = await addFounderUser(actor.user.id, {
+      name: 'Nou',
+      email: 'g1.added@test.com',
+      password: 'NewFounderPass1',
+    });
+    expect(added.email).toBe('g1.added@test.com');
+    expect((await founderDb.user.findUnique({ where: { id: added.id } }))?.createdByFounderId).toBe(
+      actor.user.id,
+    );
+  });
+});
+
 describe('T1.18 — activeOrganizationId in session (B3)', () => {
   it('updateSession stores and getSession returns activeOrganizationId', async () => {
     const email = 't1.18.activeorg@test.com';
@@ -1317,6 +1391,7 @@ async function enrollTwoFactor(
     sessionAuth,
     newSessionAuth,
     backupCodes: enableBody.backupCodes,
+    totpSecret: secret,
     loginRequestId: login.requestId,
     enableRequestId: enable.requestId,
     verifyRequestId: verify.requestId,
@@ -1535,7 +1610,8 @@ describe.skipIf(shouldSkipForEnv('DATABASE_URL_ADMIN_TEST'))(
           { code: '000000' },
           { Cookie: challenge },
         );
-        expect(attempt.resp.status).toBe(401);
+        // Lot 2.6 (B, A3): the 5th wrong code, which sets the lock, answers 429 with lockedUntil
+        expect(attempt.resp.status).toBe(i === 4 ? 429 : 401);
         failures.push(attempt.requestId);
       }
       for (const [i, requestId] of failures.entries()) {
@@ -1572,7 +1648,7 @@ describe.skipIf(shouldSkipForEnv('DATABASE_URL_ADMIN_TEST'))(
       });
     });
 
-    it('E14 — regenerate backup codes', async () => {
+    it('E14 — regenerate backup codes (D3: with the TOTP code, not the password)', async () => {
       const enrolled = await enrollTwoFactor(
         hubAuth,
         identityDb,
@@ -1580,21 +1656,29 @@ describe.skipIf(shouldSkipForEnv('DATABASE_URL_ADMIN_TEST'))(
         'Password123',
         'bearer',
       );
-      // The session from enrollment stays valid (2.5b E6 fix): no sign-in challenge needed.
-      const regen = await post(
+      // Better Auth's password route is off (D3)
+      const old = await post(
         hubAuth,
         '/two-factor/generate-backup-codes',
         { password: 'Password123' },
         enrolled.newSessionAuth,
       );
-      expect(regen.resp.status).toBe(200);
-      const [row] = await byRequest(regen.requestId);
-      expect(row).toMatchObject({
-        action: '2fa.backup_codes_regenerated',
-        outcome: 'success',
-        actor_id: enrolled.userId,
+      expect(old.resp.status).toBe(404);
+      const codes = await regenerateBackupCodesFor({
+        app: 'hub',
+        auth: hubAuth,
+        db: identityDb,
+        secret: HUB_TEST_SECRET,
+        headers: new Headers(enrolled.newSessionAuth),
+        code: await generateTotpFromUri(enrolled.totpSecret),
       });
-      expect(row.metadata).toEqual({});
+      expect(codes).toHaveLength(10);
+      const [row] = await auditRows("action = '2fa.backup_codes_regenerated' AND actor_id = $1", [
+        enrolled.userId,
+      ]);
+      expect(row).toMatchObject({ outcome: 'success', category: 'identity' });
+      expect(row.metadata).toEqual({ method: 'totp' });
+      expect(JSON.stringify(row)).not.toContain(codes[0]);
     });
 
     it('E15 — trustDevice rejected → 2fa.trust_device_rejected (denied)', async () => {
@@ -1707,6 +1791,48 @@ describe.skipIf(shouldSkipForEnv('DATABASE_URL_ADMIN_TEST'))(
       expect(JSON.stringify(row.metadata)).not.toMatch(/Password123|Changed12345/);
     });
 
+    it('Lot 2.7 · D — "Schimbă parola": stays signed in here, signed out elsewhere (S100)', async () => {
+      await signUp('audit.s100@test.com', 'Password123');
+      const here = await signIn('audit.s100@test.com', 'Password123');
+      const elsewhere = await signIn('audit.s100@test.com', 'Password123');
+
+      const wrong = await post(
+        hubAuth,
+        '/change-password',
+        { currentPassword: 'Password999', newPassword: 'Changed12345', revokeOtherSessions: true },
+        bearerHeader(here.token),
+      );
+      expect(wrong.resp.status).toBe(400);
+      const weak = await post(
+        hubAuth,
+        '/change-password',
+        { currentPassword: 'Password123', newPassword: 'changed12345', revokeOtherSessions: true },
+        bearerHeader(here.token),
+      );
+      expect(weak.resp.status).toBe(400);
+      expect(
+        await hubAuth.api.getSession({ headers: new Headers(bearerHeader(elsewhere.token)) }),
+      ).not.toBeNull();
+
+      const change = await post(
+        hubAuth,
+        '/change-password',
+        { currentPassword: 'Password123', newPassword: 'Schimbată2026', revokeOtherSessions: true },
+        bearerHeader(here.token),
+      );
+      expect(change.resp.status).toBe(200);
+      const kept = decodeURIComponent(change.resp.headers.get('set-auth-token') ?? '').split(
+        '.',
+      )[0];
+      expect(kept).toBeTruthy();
+      expect(
+        await hubAuth.api.getSession({ headers: new Headers(bearerHeader(kept!)) }),
+      ).not.toBeNull();
+      expect(
+        await hubAuth.api.getSession({ headers: new Headers(bearerHeader(elsewhere.token)) }),
+      ).toBeNull();
+    });
+
     it('E7 — setSessionActiveOrganization → org.active_changed', async () => {
       const { user } = await signUp('audit.e7@test.com', 'Password123');
       const login = await signIn('audit.e7@test.com', 'Password123');
@@ -1814,7 +1940,7 @@ describe.skipIf(shouldSkipForEnv('DATABASE_URL_ADMIN_TEST'))(
       expect(bulk.metadata).toEqual({ count: sessionsBefore - 1 });
     });
 
-    it('E6.K2 — Hub: the enrollment session calls a protected endpoint without a new challenge', async () => {
+    it('E6.K2 — Hub: the enrollment session calls a protected action without a new challenge', async () => {
       const enrolled = await enrollTwoFactor(
         hubAuth,
         identityDb,
@@ -1822,16 +1948,15 @@ describe.skipIf(shouldSkipForEnv('DATABASE_URL_ADMIN_TEST'))(
         'Password123',
         'bearer',
       );
-      const regen = await post(
-        hubAuth,
-        '/two-factor/generate-backup-codes',
-        { password: 'Password123' },
-        enrolled.newSessionAuth,
-      );
-      expect(regen.resp.status).toBe(200);
-      expect(((await regen.resp.json()) as { backupCodes?: string[] }).backupCodes).toHaveLength(
-        10,
-      );
+      const codes = await regenerateBackupCodesFor({
+        app: 'hub',
+        auth: hubAuth,
+        db: identityDb,
+        secret: HUB_TEST_SECRET,
+        headers: new Headers(enrolled.newSessionAuth),
+        code: await generateTotpFromUri(enrolled.totpSecret),
+      });
+      expect(codes).toHaveLength(10);
     });
 
     it('E6.K4 — Founder: the new session cookie is valid, the old one is not', async () => {
@@ -2478,5 +2603,284 @@ describe.skipIf(shouldSkipForEnv('DATABASE_URL_ADMIN_TEST'))('T3.7 — Founder a
     ).toBeNull();
     const target = await founderDb.user.findUnique({ where: { id: targetId } });
     expect(target?.revokedAt).toBeNull();
+  });
+});
+
+// ---------------------------------------------------------------------------------------------
+// Lot 2.6 · A + B — backup codes (D1–D3) and lockedUntil on the lock answer
+// ---------------------------------------------------------------------------------------------
+
+/** Sign-in up to the two-step challenge; returns the challenge cookie. */
+async function challenge(auth: AuthInstance, email: string, password: string): Promise<string> {
+  const login = await post(auth, '/sign-in/email', { email, password });
+  expect(login.resp.status).toBe(200);
+  const cookie = cookieFrom(login.resp, 'two_factor');
+  expect(cookie).toBeTruthy();
+  return cookie;
+}
+
+describe('Lot 2.6 — backup codes D1–D3', () => {
+  it('D1 — enrollment gives 10 different codes of 8 digits; only HMACs are stored', async () => {
+    const enrolled = await enrollTwoFactor(
+      hubAuth,
+      identityDb,
+      'l26.d1@test.com',
+      'Password123',
+      'bearer',
+    );
+    expect(enrolled.backupCodes).toHaveLength(10);
+    expect(new Set(enrolled.backupCodes).size).toBe(10);
+    for (const c of enrolled.backupCodes) expect(c).toMatch(/^\d{8}$/);
+    const row = await identityDb.twoFactor.findFirst({ where: { userId: enrolled.userId } });
+    const stored = JSON.parse(row!.backupCodes) as string[];
+    expect(stored).toHaveLength(10);
+    for (const h of stored) expect(h).toMatch(/^h1:[0-9a-f]{64}$/);
+    for (const c of enrolled.backupCodes) expect(row!.backupCodes).not.toContain(c);
+    expect(stored).toContain(hashBackupCode(HUB_TEST_SECRET, enrolled.backupCodes[0]!));
+  });
+
+  it('D1/D2 — a code works once, in the grouped form too; used and wrong get the same answer', async () => {
+    const email = 'l26.d2@test.com';
+    const enrolled = await enrollTwoFactor(hubAuth, identityDb, email, 'Password123', 'bearer');
+    const code = enrolled.backupCodes[0]!;
+    const grouped = `${code.slice(0, 4)} ${code.slice(4)}`;
+
+    const first = await post(
+      hubAuth,
+      '/two-factor/verify-backup-code',
+      { code: grouped },
+      { Cookie: await challenge(hubAuth, email, 'Password123') },
+    );
+    expect(first.resp.status).toBe(200);
+    expect(await countBackupCodesOf(identityDb, HUB_TEST_SECRET, enrolled.userId)).toBe(9);
+
+    const again = await post(
+      hubAuth,
+      '/two-factor/verify-backup-code',
+      { code },
+      { Cookie: await challenge(hubAuth, email, 'Password123') },
+    );
+    const wrong = await post(
+      hubAuth,
+      '/two-factor/verify-backup-code',
+      { code: '00000000' },
+      { Cookie: await challenge(hubAuth, email, 'Password123') },
+    );
+    expect(again.resp.status).toBe(401);
+    expect(wrong.resp.status).toBe(401);
+    const a = (await again.resp.json()) as { code?: string; message?: string };
+    const w = (await wrong.resp.json()) as { code?: string; message?: string };
+    expect(a).toEqual(w);
+    expect(a.code).toBe('INVALID_BACKUP_CODE');
+    expect(await countBackupCodesOf(identityDb, HUB_TEST_SECRET, enrolled.userId)).toBe(9);
+  });
+
+  it('D3 — regeneration with the TOTP code: old codes stop, new ones work; a wrong code changes nothing', async () => {
+    const email = 'l26.d3@test.com';
+    const enrolled = await enrollTwoFactor(hubAuth, identityDb, email, 'Password123', 'bearer');
+    const headers = new Headers(enrolled.newSessionAuth);
+    const base = {
+      app: 'hub' as const,
+      auth: hubAuth,
+      db: identityDb,
+      secret: HUB_TEST_SECRET,
+      headers,
+    };
+
+    const before = (await identityDb.twoFactor.findFirst({ where: { userId: enrolled.userId } }))!
+      .backupCodes;
+    await expect(regenerateBackupCodesFor({ ...base, code: '000000' })).rejects.toMatchObject({
+      code: 'FORBIDDEN',
+    });
+    expect(
+      (await identityDb.twoFactor.findFirst({ where: { userId: enrolled.userId } }))!.backupCodes,
+    ).toBe(before);
+
+    const fresh = await regenerateBackupCodesFor({
+      ...base,
+      code: await generateTotpFromUri(enrolled.totpSecret),
+    });
+    expect(fresh).toHaveLength(10);
+    for (const c of fresh) expect(c).toMatch(/^\d{8}$/);
+    expect(await countBackupCodesOf(identityDb, HUB_TEST_SECRET, enrolled.userId)).toBe(10);
+
+    const oldCode = await post(
+      hubAuth,
+      '/two-factor/verify-backup-code',
+      { code: enrolled.backupCodes[0] },
+      { Cookie: await challenge(hubAuth, email, 'Password123') },
+    );
+    expect(oldCode.resp.status).toBe(401);
+    const newCode = await post(
+      hubAuth,
+      '/two-factor/verify-backup-code',
+      { code: fresh[0] },
+      { Cookie: await challenge(hubAuth, email, 'Password123') },
+    );
+    expect(newCode.resp.status).toBe(200);
+  });
+
+  it('D3 + A1 — 5 wrong codes at regeneration lock for 15 minutes; the sign-in challenge is locked too, with lockedUntil', async () => {
+    const email = 'l26.d3lock@test.com';
+    const enrolled = await enrollTwoFactor(hubAuth, identityDb, email, 'Password123', 'bearer');
+    const headers = new Headers(enrolled.newSessionAuth);
+    const base = {
+      app: 'hub' as const,
+      auth: hubAuth,
+      db: identityDb,
+      secret: HUB_TEST_SECRET,
+      headers,
+    };
+
+    for (let i = 0; i < 4; i++) {
+      await expect(regenerateBackupCodesFor({ ...base, code: '000000' })).rejects.toMatchObject({
+        code: 'FORBIDDEN',
+      });
+    }
+    const fifth = await regenerateBackupCodesFor({ ...base, code: '000000' }).catch((e) => e);
+    expect(fifth).toMatchObject({ code: 'TWO_FACTOR_LOCKED' });
+    const row = await identityDb.twoFactor.findFirst({ where: { userId: enrolled.userId } });
+    expect(fifth.lockedUntil).toBe(row!.lockedUntil!.toISOString());
+    const minutes = (row!.lockedUntil!.getTime() - Date.now()) / 60_000;
+    expect(minutes).toBeGreaterThan(14.9);
+    expect(minutes).toBeLessThanOrEqual(15);
+
+    // a good code is refused while locked
+    await expect(
+      regenerateBackupCodesFor({ ...base, code: await generateTotpFromUri(enrolled.totpSecret) }),
+    ).rejects.toMatchObject({ code: 'TWO_FACTOR_LOCKED' });
+
+    // one budget (A1): the sign-in challenge answers 429 with the same lockedUntil (B)
+    const locked = await post(
+      hubAuth,
+      '/two-factor/verify-totp',
+      { code: await generateTotpFromUri(enrolled.totpSecret) },
+      { Cookie: await challenge(hubAuth, email, 'Password123') },
+    );
+    expect(locked.resp.status).toBe(429);
+    expect(await locked.resp.json()).toMatchObject({
+      code: 'ACCOUNT_TEMPORARILY_LOCKED',
+      lockedUntil: row!.lockedUntil!.toISOString(),
+    });
+  });
+
+  it('codes stored before D1 (encrypted, xxxxx-xxxxx) still verify once; the row becomes HMACs', async () => {
+    const email = 'l26.legacy@test.com';
+    const enrolled = await enrollTwoFactor(hubAuth, identityDb, email, 'Password123', 'bearer');
+    const legacy = ['abcde-12345', 'fghij-67890'];
+    await identityDb.twoFactor.updateMany({
+      where: { userId: enrolled.userId },
+      data: {
+        backupCodes: await symmetricEncrypt({ key: HUB_TEST_SECRET, data: JSON.stringify(legacy) }),
+      },
+    });
+    expect(await countBackupCodesOf(identityDb, HUB_TEST_SECRET, enrolled.userId)).toBe(2);
+
+    const used = await post(
+      hubAuth,
+      '/two-factor/verify-backup-code',
+      { code: legacy[0] },
+      { Cookie: await challenge(hubAuth, email, 'Password123') },
+    );
+    expect(used.resp.status).toBe(200);
+    const row = await identityDb.twoFactor.findFirst({ where: { userId: enrolled.userId } });
+    expect(JSON.parse(row!.backupCodes)).toEqual([hashBackupCode(HUB_TEST_SECRET, legacy[1]!)]);
+  });
+
+  it('Founder: the same format and the TOTP regeneration', async () => {
+    const enrolled = await enrollTwoFactor(
+      founderAuthTest,
+      founderDb,
+      'l26.founder@founder.com',
+      'FounderPass12', // gitleaks:allow
+      'cookie',
+    );
+    for (const c of enrolled.backupCodes) expect(c).toMatch(/^\d{8}$/);
+    const codes = await regenerateBackupCodesFor({
+      app: 'founder',
+      auth: founderAuthTest,
+      db: founderDb,
+      secret: FOUNDER_TEST_SECRET,
+      headers: new Headers(enrolled.newSessionAuth),
+      code: await generateTotpFromUri(enrolled.totpSecret),
+    });
+    expect(codes).toHaveLength(10);
+    expect(await countBackupCodesOf(founderDb, FOUNDER_TEST_SECRET, enrolled.userId)).toBe(10);
+  });
+});
+
+// ---------------------------------------------------------------------------------------------
+// Lot 2.6 · C — what /reset-password may show for a token
+// ---------------------------------------------------------------------------------------------
+
+describe('Lot 2.6 — reset link info (C)', () => {
+  it('valid → address and 2FA; expired → address; used → only "used"; unknown → nothing', async () => {
+    const email = 'l26.c1@test.com';
+    const { user } = await signUp(email, 'Password123');
+    await requestReset(hubAuth, email);
+    const token = tokenFromMail(resetMails(email).at(-1)!.text ?? '');
+
+    expect(await readResetLinkInfo(identityDb, token)).toEqual({
+      status: 'valid',
+      email,
+      twoFactor: false,
+    });
+
+    await expireResetTokens(identityDb, user.id);
+    expect(await readResetLinkInfo(identityDb, token)).toMatchObject({ status: 'expired', email });
+
+    // a fresh link, used: the mark keeps only the hash, for 7 days
+    await requestReset(hubAuth, email);
+    const fresh = tokenFromMail(resetMails(email).at(-1)!.text ?? '');
+    const reset = await post(hubAuth, '/reset-password', {
+      token: fresh,
+      newPassword: 'NewPassword123', // gitleaks:allow
+    });
+    expect(reset.resp.status).toBe(200);
+    expect(await readResetLinkInfo(identityDb, fresh)).toEqual({ status: 'used' });
+    const marks = await identityDb.verification.findMany({
+      where: { identifier: { startsWith: 'reset-password-used:' }, value: user.id },
+    });
+    expect(marks).toHaveLength(1);
+    expect(marks[0]!.identifier).not.toContain(fresh);
+    const days = (marks[0]!.expiresAt.getTime() - Date.now()) / 86_400_000;
+    expect(days).toBeGreaterThan(6.9);
+
+    expect(await readResetLinkInfo(identityDb, 'abcdefghijklmnop')).toEqual({ status: 'unknown' });
+    expect(await readResetLinkInfo(identityDb, 'not a token')).toEqual({ status: 'unknown' });
+  });
+
+  it('an account with 2FA says so (the line on "Parola e schimbată")', async () => {
+    const email = 'l26.c2@test.com';
+    await enrollTwoFactor(hubAuth, identityDb, email, 'Password123', 'bearer');
+    await requestReset(hubAuth, email);
+    const token = tokenFromMail(resetMails(email).at(-1)!.text ?? '');
+    expect(await readResetLinkInfo(identityDb, token)).toMatchObject({
+      status: 'valid',
+      twoFactor: true,
+    });
+  });
+});
+
+describe('Lot 2.6 — "Deschide direct ultima afacere" (F)', () => {
+  it('off by default, saved per user, read back', async () => {
+    const { user } = await signUp('l26.f1@test.com', 'Password123');
+    const { user: other } = await signUp('l26.f2@test.com', 'Password123');
+    expect(await getOpenLastOrganization(user.id)).toBe(false);
+
+    await setOpenLastOrganization(user.id, true);
+    expect(await getOpenLastOrganization(user.id)).toBe(true);
+    expect(await getOpenLastOrganization(other.id)).toBe(false);
+    const row = await identityDb.user.findUnique({ where: { id: user.id } });
+    expect(row?.openLastOrganization).toBe(true);
+
+    await setOpenLastOrganization(user.id, false);
+    expect(await getOpenLastOrganization(user.id)).toBe(false);
+  });
+
+  it('hasAccountForEmail: case and spaces do not matter; unknown address → false', async () => {
+    await signUp('l26.f3@test.com', 'Password123');
+    expect(await hasAccountForEmail(' L26.F3@test.com ')).toBe(true);
+    expect(await hasAccountForEmail('l26.nobody@test.com')).toBe(false);
   });
 });

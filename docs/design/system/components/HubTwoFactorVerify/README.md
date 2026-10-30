@@ -10,8 +10,7 @@ Two-step check at sign-in, after the password. The page is AuthLayout (S63), lik
 
 **States.**
 - Wrong code.
-- Backup code that doesn't match.
-- Backup code already used: "Ai folosit deja acest cod de rezervă. Încearcă alt cod din listă."
+- Backup code that doesn't match or was already used — one message for both (S105): "Codul nu se potrivește sau a fost deja folosit. Încearcă alt cod din listă." (`auth.2fa.error.backupWrong`; `auth.2fa.error.backupUsed` is gone).
 - Checking.
 - Account locked for now, with the time: Notice danger "Contul e blocat temporar" / "Au fost prea multe încercări greșite. Poți intra din nou după ora {time}."
 - Verification session expired after 10 minutes: Notice neutral "Au trecut mai mult de 10 minute" / "Din motive de siguranță, intră din nou cu e-mailul și parola.", with "Înapoi la autentificare" back to sign-in.

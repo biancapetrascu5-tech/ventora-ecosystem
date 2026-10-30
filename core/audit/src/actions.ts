@@ -17,6 +17,7 @@ export const AuditActions = {
   twoFactorBackupCodeUsed: '2fa.backup_code_used', // E13
   twoFactorBackupCodesRegenerated: '2fa.backup_codes_regenerated', // E14
   twoFactorTrustDeviceRejected: '2fa.trust_device_rejected', // E15
+  twoFactorDisabled: '2fa.disabled', // Lot 2.7 · D — a member turns 2FA off with the TOTP code
   passwordResetRequested: 'password.reset_requested', // E16
   passwordResetCompleted: 'password.reset_completed', // E17
   passwordResetFailed: 'password.reset_failed', // E18
@@ -32,6 +33,7 @@ export const AuditActions = {
   invitationAccepted: 'invitation.accepted', // E24
   invitationAcceptFailed: 'invitation.accept_failed', // E25
   invitationEmailFailed: 'invitation.email_failed', // E26
+  invitationNewLinkRequested: 'invitation.new_link_requested', // Lot 2.6 · E — „Cere o invitație nouă”
   applicationAccessGranted: 'application_access.granted', // E27
   membershipRoleChanged: 'membership.role_changed', // E28 — defined, contract not built (D8 b)
   authorizeTwoFactorRequired: 'authorize.two_factor_required', // E29

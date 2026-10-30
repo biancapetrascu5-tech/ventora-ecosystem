@@ -387,6 +387,7 @@ export async function listMyOrganizations(userId: string) {
   const db = getOrgDb();
   return db.$transaction(async (tx: any) => {
     await tx.$executeRaw`SELECT set_config('app.user_id', ${userId}, true)`;
+    // Lot 2.6 · F: last_opened_at (ultima deschisă prima), din list_my_memberships_v2
     return tx.$queryRaw<
       Array<{
         organization_id: string;
@@ -394,10 +395,105 @@ export async function listMyOrganizations(userId: string) {
         organization_slug: string;
         role: MembershipRole;
         status: string;
+        last_opened_at: Date | null;
       }>
-    >`SELECT organization_id, organization_name, organization_slug, role, status
-      FROM organizations.list_my_memberships()`;
+    >`SELECT organization_id, organization_name, organization_slug, role, status, last_opened_at
+      FROM organizations.list_my_memberships_v2()`;
   });
+}
+
+/** Lot 2.6 · F: afacerea a fost deschisă acum (HubChooseBusiness, „deschisă …”). */
+export async function markOrganizationOpened(ctx: OrgContext): Promise<void> {
+  const db = getOrgDb();
+  await db.$transaction(async (tx: any) => {
+    await tx.$executeRaw`SELECT set_config('app.organization_id', ${ctx.organizationId}, true)`;
+    await tx.membership.update({
+      where: { organizationId_userId: { organizationId: ctx.organizationId, userId: ctx.userId } },
+      data: { lastOpenedAt: new Date() },
+    });
+  });
+}
+
+export type InvitationView = {
+  id: string;
+  organizationId: string;
+  organizationName: string;
+  inviterName: string;
+  email: string;
+  role: MembershipRole;
+  applicationIds: string[];
+  expiresAt: Date;
+  /** pending după termen = expired (ca la acceptare). */
+  status: 'pending' | 'expired' | 'accepted' | 'revoked';
+};
+
+const INVITATION_TOKEN = /^[0-9a-f]{64}$/;
+
+/**
+ * Lot 2.6 · E: ce arată /invite/[token] — cine invită, afacerea, rolul, aplicațiile, adresa și
+ * starea. null pentru un token necunoscut (fără să spună dacă a existat).
+ */
+export async function getInvitationByToken(token: string): Promise<InvitationView | null> {
+  if (typeof token !== 'string' || !INVITATION_TOKEN.test(token)) return null;
+  const db = getOrgDb();
+  const rows = await db.$queryRaw<
+    Array<{
+      id: string;
+      organization_id: string;
+      organization_name: string;
+      invited_by_name: string;
+      email: string;
+      role: MembershipRole;
+      expires_at: Date;
+      status: InvitationView['status'];
+      application_ids: string[] | null;
+    }>
+  >`SELECT id, organization_id, organization_name, invited_by_name, email, role, expires_at,
+           status, application_ids
+      FROM organizations.find_invitation_view_by_token_hash(${hashToken(token)}::text)`;
+  const row = rows[0];
+  if (!row) return null;
+  const status =
+    row.status === 'pending' && new Date(row.expires_at) < new Date() ? 'expired' : row.status;
+  return {
+    id: row.id,
+    organizationId: row.organization_id,
+    organizationName: row.organization_name,
+    inviterName: row.invited_by_name,
+    email: row.email,
+    role: row.role,
+    applicationIds: row.application_ids ?? [],
+    expiresAt: new Date(row.expires_at),
+    status,
+  };
+}
+
+/**
+ * Lot 2.6 · E: „Cere o invitație nouă” din invitația expirată. Marchează cererea (o vede cine a
+ * invitat; linkul nou îl trimite el, cu resendInvitation) și o trece în jurnal. false dacă
+ * invitația nu e expirată sau nu există.
+ */
+export async function requestNewInvitationLink(token: string): Promise<boolean> {
+  if (typeof token !== 'string' || !INVITATION_TOKEN.test(token)) return false;
+  const db = getOrgDb();
+  const rows = await db.$queryRaw<
+    Array<{ id: string; organization_id: string; invited_by_user_id: string }>
+  >`SELECT id, organization_id, invited_by_user_id
+      FROM organizations.request_new_invitation_link(${hashToken(token)}::text)`;
+  const row = rows[0];
+  if (!row) return false;
+  await auditBestEffort({
+    category: 'organization',
+    action: AuditActions.invitationNewLinkRequested,
+    outcome: 'success',
+    actorType: 'anonymous',
+    actorId: null,
+    organizationId: row.organization_id,
+    targetType: 'invitation',
+    targetId: row.id,
+    metadata: { invitedByUserId: row.invited_by_user_id },
+  });
+  return true;
 }
 
 // B1: uses ctx.organizationId exclusively — id param removed to prevent context confusion.
@@ -610,6 +706,57 @@ export async function acceptInvitation(params: {
   };
 }
 
+export type InvitationListItem = {
+  id: string;
+  email: string;
+  role: MembershipRole;
+  applicationIds: string[];
+  invitedByName: string;
+  /** pending după termen = expired (ca la acceptare). */
+  status: 'pending' | 'expired' | 'accepted' | 'revoked';
+  emailStatus: string;
+  expiresAt: Date;
+  createdAt: Date;
+  /**
+   * Lot 2.7 · C: „Cere o invitație nouă” — cel invitat a cerut un link nou (marcajul din lista
+   * HubAdminTeam). Rămâne până la retrimitere (resendInvitation îl șterge).
+   */
+  newLinkRequestedAt: Date | null;
+};
+
+/**
+ * Lot 2.7 · C: invitațiile afacerii active, cele mai noi primele (HubAdminTeam). Doar owner și
+ * admin; RLS pe app.organization_id.
+ */
+export async function listInvitations(ctx: OrgContext): Promise<InvitationListItem[]> {
+  if (ctx.role !== 'owner' && ctx.role !== 'admin') throw new ForbiddenError();
+  const db = getOrgDb();
+  const rows = await db.$transaction(async (tx: any) => {
+    await tx.$executeRaw`SELECT set_config('app.organization_id', ${ctx.organizationId}, true)`;
+    return tx.invitation.findMany({
+      where: { organizationId: ctx.organizationId },
+      orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
+      select: {
+        id: true,
+        email: true,
+        role: true,
+        applicationIds: true,
+        invitedByName: true,
+        status: true,
+        emailStatus: true,
+        expiresAt: true,
+        createdAt: true,
+        newLinkRequestedAt: true,
+      },
+    });
+  });
+  const now = new Date();
+  return rows.map((r: InvitationListItem) => ({
+    ...r,
+    status: r.status === 'pending' && r.expiresAt < now ? 'expired' : r.status,
+  }));
+}
+
 export async function revokeInvitation(ctx: OrgContext, invitationId: string): Promise<void> {
   if (ctx.role !== 'owner' && ctx.role !== 'admin') throw new ForbiddenError();
   const db = getOrgDb();
@@ -685,6 +832,8 @@ export async function resendInvitation(
         status: 'pending',
         expiresAt,
         emailStatus: 'pending',
+        // Lot 2.7 · C: the new link answers the request
+        newLinkRequestedAt: null,
         updatedAt: new Date(),
       },
     });

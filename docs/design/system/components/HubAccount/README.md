@@ -8,4 +8,8 @@ Notifications include the "Recomandări Ventora" section (see CommercialPreferen
 
 After the product review: on phones the page is a list of sections, each with its own page; theme and language apply at once. Two-step sign-in is mandatory for the owner and is turned on at the first sign-in (HubTwoFactorSetup), so the owner sees its status ("Activă", "Obligatorie pentru proprietar…"), not a switch (S58). The code is asked at every sign-in with the password (S59). Backup codes ("Coduri de rezervă", S60): how many are left, and "Generează coduri noi" — the codes are shown only once, when generated.
 
+**Connected devices and times (S110).** A device row is "system · browser · time", without a city (the location from the IP isn't kept): "macOS · Chrome · Activ acum" (this device), "Windows · Chrome · Ieri, 21:40". Times: "Activ acum", "Azi, 14:32", "Ieri, 21:40", then "28 oct., 09:15"; the password row uses the same format ("Schimbată: 28 oct., 09:15").
+
+**Securitate (S100, S108).** "Schimbă parola" and two-step sign-in for a member who doesn't have it on are drawn in HubAccountSecurity.
+
 **Security e-mails (S83).** The "Parola contului tău a fost schimbată" e-mail can't be turned off. In Notificări it may appear at most as an informational row, without a toggle.
