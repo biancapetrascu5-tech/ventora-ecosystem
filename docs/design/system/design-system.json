@@ -468,10 +468,10 @@
     "App~20icons"
   ],
   "lastChange": {
-    "at": "2026-10-29T20:50:49Z",
+    "at": "2026-10-30T17:58:33Z",
     "by": "Bianca Petrașcu",
     "via": "Claude",
-    "note": "Închiderea Fazei 2: HubAccountSecurity, FounderSignIn (S100–S109); 15 minute, Founder 12 caractere, un mesaj pentru codul de rezervă, „Închisă automat”, regula de telefon în tokens.json"
+    "note": "S110: parola actuală la activarea doi pași (membru); dispozitive fără oraș; format oră Activ acum / Azi / Ieri / 28 oct."
   },
   "layout": "files",
   "libraries": [

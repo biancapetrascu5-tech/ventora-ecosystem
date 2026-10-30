@@ -413,6 +413,7 @@ Pornesc din `SPEC_ECRANE_SMS.md` și `SMS_NUMAR_PROPRIU.md` (D-SMS-1…9). Func�
 | S107 | Regula de telefon pentru `display-hub` (32/36) și `lead` (15/30) e din nou în `tokens.json` (stilurile `display-hub-phone`, `lead-phone`), aplicată sub 768px în `bundle.css`; dispăruse din export după v49 (29 oct. 2026). |
 | S108 | Autentificarea în doi pași nu e obligatorie pentru membri; în Contul tău · Securitate, un membru care nu o are activă vede rândul cu starea și o poate activa (29 oct. 2026). (HubAccountSecurity) |
 | S109 | Traducerile EN, FR, ES, DE și IT pentru `support.sessions.*`, `support.session.banner.cancel` și `support.sessions.status.closedAuto` revizuite și corectate unde nu sunau natural (29 oct. 2026). Restul cheilor din cod (`hub.chooseBusiness.*`, `auth.signIn.*`, `invite.*`, `account.*`, `roles.*`) se verifică după lista din cod. |
+| S110 | HubAccountSecurity (după S108): activarea autentificării în doi pași de către un membru cere parola actuală, la pasul 1, înainte de codul QR, cu „Ai uitat parola?” (spre resetare); codul QR și cheia apar doar după ce parola e confirmată; eroare „Parola actuală nu e corectă.”. La „Dispozitive conectate” nu mai apare orașul (nu păstrăm localizarea după IP): „Windows · Chrome · Ieri, 21:40”. Format oră: „Activ acum”, „Azi, 14:32”, „Ieri, 21:40”, apoi „28 oct., 09:15”; la fel la „Schimbată …” pentru parolă (30 oct. 2026). |
 
 ## Ce nu e încă aici
 

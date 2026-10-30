@@ -615,3 +615,9 @@ Fiecare intrare spune ce s-a schimbat pe componentă (structură, tokeni, texte,
 ### Încă deschis
 - Traducerile din cod pentru `hub.chooseBusiness.*`, `auth.signIn.*`, `invite.requested/revoked/used.*`, `account.lead`, `account.notifications.lead`, `account.security.*`, `roles.*`: nu sunt în design system; se verifică după lista din cod.
 
+## 2026-10-30 · S110 — parola la activarea doi pași, dispozitive fără oraș
+
+- **HubAccountSecurity — 1.1.0:** la „Activează” (membru), pasul 1 cere întâi parola actuală, cu „Ai uitat parola?” și „Confirmă parola”; codul QR și cheia apar doar după confirmare; starea „Parola actuală nu e corectă.” (desktop și foaia de jos pe telefon). „Dispozitive conectate”: sistem · browser · oră, fără oraș; „Acest dispozitiv” pentru dispozitivul curent. Ora: „Activ acum”, „Azi, 14:32”, „Ieri, 21:40”, „28 oct., 09:15”; la fel „Schimbată: …” pentru parolă. Test DE/IT/FR. README.
+- **HubAccount — 1.0.2:** aceleași rânduri de dispozitiv și același format de oră în preview. README.
+- **i18n `account-security.json`:** noi `account.security.when.now/today/yesterday/date`, `account.security.devices.thisDevice`, `account.security.twoStep.passwordLead`, `account.security.twoStep.confirmPassword`, `account.security.twoStep.error.password` (6 limbi); `account.security.password.changed` devine „Schimbată: {when}”; `account.security.devices.current` scos.
+
