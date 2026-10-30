@@ -144,9 +144,28 @@ Lotul ține de Faza 2 și se face **înaintea Fazei 3**. Stă aici pentru că lo
 - Tabelele `application`, `feature_key` și `quota_key`. O cotă are `kind` (`flow` / `stock`), `unit`, `period`, `overflow`, `refundable`.
 - Tipul de manifest extins cu `features` și `quotas`. Manifestul modulului de probă (`modules/booking`) și `platformManifest` le declară.
 - Sincronizarea manifestelor în registru: un script idempotent, rulat la deploy. O cheie dispărută din manifest se marchează retrasă, nu se șterge.
-- Cotele platformei: utilizatorii activi, automatizările active (D-WF-4), paginile publicate (D-FUN-4). Cheile exacte se fixează după D3-14.
+- **Cotele inițiale** (D3-14, DECIS), 13 chei în registru:
 
-**Dependențe:** F2. Cheile cotelor (D3-14).
+  | Cheie | Tip | Perioadă / unitate | Ce numără |
+  |---|---|---|---|
+  | `platform.members` | stoc | — | locurile din echipă, cu cont (membership activ; „Membri” / „Locuri în echipă”, C-F3-3) |
+  | `platform.locations` | stoc | — | locațiile afacerii |
+  | `booking.appointments` | flux | lunar | programările |
+  | `booking.sms.devices` | stoc | — | telefoanele conectate pentru SMS (D-SMS-4) |
+  | `messaging.sms` | flux | lunar | SMS-urile trimise |
+  | `messaging.email` | flux | lunar | e-mailurile către clienții afacerii |
+  | `marketing.campaigns` | flux | lunar | campaniile („campania consumată” rămâne D-MKT-1) |
+  | `documents.storage` | stoc | GB | spațiul ocupat de documente |
+  | `workflows.active` | stoc | — | automatizările active (D-WF-4) |
+  | `funnel.pages.published` | stoc | — | paginile publicate (D-FUN-4) |
+  | `ai.analyses` | flux | lunar | analizele AI (legătura cu F4, D4-21) |
+  | `events.active` | stoc | — | evenimentele publicate care n-au avut încă loc |
+  | `events.created` | flux | lunar | evenimentele create |
+
+  Pentru mai târziu, fără migrare (doar o declarație nouă în manifest, sincronizată în registru): `booking.resources`, `hr.employees`, `portal.domains`, `events.guests`.
+- **Nelimitat:** pe un abonament, oricare cotă poate avea valoarea `null` (nelimitat). Hub-ul arată doar cotele cu valoare; o cotă nelimitată nu apare în „Abonament și consum”.
+
+**Dependențe:** F2. Cheile cotelor: D3-14, DECIS.
 **Migrări probabile:** `commercial_init`.
 **Ecrane:** —
 **Gata când:**
@@ -253,7 +272,7 @@ Lotul ține de Faza 2 și se face **înaintea Fazei 3**. Stă aici pentru că lo
 - Excepțiile care expiră în 7 zile apar în „Prezentare” (§8.5).
 - Toate textele vin din chei next-intl, în 6 limbi (T7). Capturile `_design` / `_impl` se fac la 390/1280 × light/dark (regula 12).
 
-**Dependențe:** 3.2, 3.3. Lotul 2.8 (shell-ul Founder, FounderBusinesses, FounderBusiness). Completarea de design pentru `FounderBusiness` (istoricul cumpărărilor, rambursarea, plata manuală) și designul listei de cereri.
+**Dependențe:** 3.2, 3.3. Lotul 2.8 (shell-ul Founder, FounderBusinesses, FounderBusiness). Completarea de design pentru `FounderBusiness` (istoricul cumpărărilor, rambursarea, plata manuală) și designul listei de cereri. Textele „Angajați” din FounderPlans, FounderPlanEditor, FounderPacks și FounderUsage schimbate de Design în „Membri” / „Locuri în echipă” (C-F3-3, DECIS: a).
 **Migrări probabile:** `commercial_requests` (cererile).
 **Ecrane:** FounderPlans, FounderPlanEditor, FounderPacks, FounderUsage; FounderBusinesses și FounderBusiness (partea comercială).
 **Gata când:**
@@ -352,7 +371,7 @@ Lotul ține de Faza 2 și se face **înaintea Fazei 3**. Stă aici pentru că lo
 - Afacerile fără card salvat văd „Cere activare” în loc de „Cumpără” (`patterns.md`).
 - Membrul vede „Anunță proprietarul” și nu poate cumpăra (verificat pe server, nu doar în interfață).
 
-**Dependențe:** 3.2, 3.3, 3.5, 3.6. Lotul 2.8 (shell-ul Hub).
+**Dependențe:** 3.2, 3.3, 3.5, 3.6. Lotul 2.8 (shell-ul Hub). Textele „Angajați” din HubAdminPlan și UsageMeter schimbate de Design în „Membri” / „Locuri în echipă” (C-F3-3, DECIS: a).
 **Migrări probabile:** —
 **Ecrane:** HubAdminPlan, HubAddonPurchase, UsageMeter, AddonPurchase, UpgradeDialog (doar pachetul).
 **Gata când:**
@@ -520,7 +539,7 @@ Prețurile nu se inventează. Toate valorile se introduc din Founder; codul nu a
 | # | Blochează | Întrebare | Variante | Recomandare |
 |---|---|---|---|---|
 | D3-20 | 2.8 (înaintea Fazei 3) | **Ce înseamnă suspendarea unei afaceri** (`FounderBusiness`) | a) nimeni din afacere nu mai intră; datele rămân, iar Founder o poate reactiva; b) doar citire și export; c) suspendarea doar marcată, fără efect asupra accesului | **DECIS: a** (fondatoarea, 30.10.2026). `authorize()` refuză orice cerere a afacerii suspendate, inclusiv citirea; datele rămân; Founder poate reactiva. Dacă owner-ul are nevoie de date, le cere prin suport. Sesiunea de suport rămâne posibilă pe o afacere suspendată: suspendarea oprește doar `authorize()`, nu și `authorizeSupport`. Suspendarea și reactivarea sunt auditate. |
-| D3-14 | 3.1 | **Cheile cotelor** (D-WF-4, D-FUN-4 și setul inițial) | Propunere: `platform.members` (stoc), `booking.appointments` (flux, lunar), `messaging.sms` (flux), `documents.storage` (stoc, GB), `marketing.campaigns` (flux), `workflows.active` (stoc), `funnel.pages.published` (stoc), `booking.sms.devices` (stoc, D-SMS-4) | Fondatoarea confirmă lista și ce înseamnă „Angajați” (C-F3-3). „Campania consumată” rămâne D-MKT-1. |
+| D3-14 | 3.1 | **Cheile cotelor** (D-WF-4, D-FUN-4 și setul inițial) | Propunere: `platform.members` (stoc), `booking.appointments` (flux, lunar), `messaging.sms` (flux), `documents.storage` (stoc, GB), `marketing.campaigns` (flux), `workflows.active` (stoc), `funnel.pages.published` (stoc), `booking.sms.devices` (stoc, D-SMS-4) | **DECIS** (fondatoarea, 30.10.2026). 13 cote inițiale: `platform.members` (stoc), `platform.locations` (stoc), `booking.appointments` (flux, lunar), `booking.sms.devices` (stoc), `messaging.sms` (flux, lunar), `messaging.email` (flux, lunar, e-mailuri către clienții afacerii), `marketing.campaigns` (flux, lunar), `documents.storage` (stoc, GB), `workflows.active` (stoc), `funnel.pages.published` (stoc), `ai.analyses` (flux, lunar), `events.active` (stoc, evenimente publicate care n-au avut încă loc), `events.created` (flux, lunar). Mai târziu, fără migrare: `booking.resources`, `hr.employees`, `portal.domains`, `events.guests`. Pe un abonament, oricare cotă poate fi nelimitată (`null`); Hub-ul arată doar cotele cu valoare. „Angajați” = `platform.members` (C-F3-3). „Campania consumată” rămâne D-MKT-1. Detalii: Lotul 3.1. |
 | D3-3 | 3.2 (și 3.3) | **Facturarea abonamentului: lunară / anuală** | a) doar lunară; b) lunară + anuală; c) anuală cu reducere | **a** la început (designul arată doar „pe lună”). Câmpul `interval` permite b mai târziu. Se decide și dacă perioada e luna calendaristică („De la 1 noiembrie, pornim de la zero”) sau ziua de start a abonamentului. Recomand luna calendaristică, ca în design. |
 | D3-7 | 3.2 | **Ce pachete se cumpără direct și ce rămâne „Doar la cerere”** | a) lista din `FounderPacks` (directe: 500 SMS, 200 de programări, 10 campanii, 5 angajați; la cerere: domeniul propriu); b) la început toate la cerere | **a**, cu o excepție: pachetele **lunare** („5 angajați în plus · 60 lei pe lună”) rămân la cerere până se decide cum se taxează lunar (C-F3-6). Pachetele pentru automatizări și pagini (D-WF-4, D-FUN-4) trebuie definite. |
 | D3-2 | 3.2 | **Moneda** | a) doar lei (RON); b) lei + euro; c) euro | **a** la început: firma e în România, facturile SmartBill sunt în lei, iar designul folosește „lei”. Modelul păstrează câmpul `currency`. Se decide și ce arată DE/IT (CommercialStates arată „€”, vezi C-F3-5). |
@@ -587,7 +606,7 @@ Le listez, nu le rezolv. Fiecare cere decizia fondatoarei.
 |---|---|---|---|
 | C-F3-1 | **Activarea unei aplicații: plată directă sau cerere** | `HubCatalogApp`: „Activează · 49 lei pe lună”, „Se plătește: Odată cu abonamentul”; `CommercialStates`: „Activează · 79 lei pe lună” | `patterns.md`: „Abonamentul se schimbă doar prin cerere”; ARCHITECTURE §8.6, D-COM-7 (NECESITĂ DECIZIE); AccessBadge: „Nu e inclusă în abonamentul afacerii. Scrie-ne și o activăm.” |
 | C-F3-2 | **Cine cumpără pachete** | ARCHITECTURE §8.6: „proprietarul (sau un rol cu permisiunea `billing.purchase`)”; `patterns.md` §Comercial: „și adminul cu drept de cumpărare” | FAZA-2 / migrația `access_init`: `admin` = „fără facturare”; UsageMeter și AddonPurchase: „doar {who} (proprietar)”; `UpgradeDialog.role` are doar `owner` / `member` |
-| C-F3-3 | **„Angajați” ca limită** | Designul (HubAdminPlan, FounderPlans, FounderPacks): „Angajați 10/10”, „5 angajați în plus” | Brief §13: „Număr utilizatori”. Neclar dacă e vorba de locurile din echipă (membership) sau de angajații din TeamSpace (HR). Butonul „Cumpără locuri în plus” sugerează locuri. |
+| C-F3-3 | **„Angajați” ca limită** | Designul (HubAdminPlan, FounderPlans, FounderPacks): „Angajați 10/10”, „5 angajați în plus” | Brief §13: „Număr utilizatori”. Neclar dacă e vorba de locurile din echipă (membership) sau de angajații din TeamSpace (HR). Butonul „Cumpără locuri în plus” sugerează locuri. **DECIS: a** (fondatoarea, 30.10.2026): „Angajați” din design = `platform.members`, locurile din echipă, cu cont. În texte: „Membri” / „Locuri în echipă”, nu „Angajați”. Schimbarea textelor se cere la Design înainte de loturile 3.4 și 3.7. |
 | C-F3-4 | **TVA afișat doar într-un loc** | `AddonPurchase`: „Prețul e final, nu se adaugă TVA.” | UpgradeDialog, HubCatalog(App), prețul abonamentului și facturile nu spun nimic despre TVA; glosarul nu are termenul. Brief-ul nu numește TVA, Stripe sau SmartBill („prin sistemele compatibile alese”). |
 | C-F3-5 | **Moneda** | Toate ecranele: „lei”, inclusiv în DE și IT | `CommercialStates`, în DE/IT: „€” |
 | C-F3-6 | **Pachetul lunar cumpărat ca plată unică** | `FounderPacks`: „5 angajați în plus · 60 lei · lunar, cu abonamentul” | `HubAdminPlan` îl deschide în `AddonPurchase`, care e o plată unică cu factură imediată. ARCHITECTURE §8.6 nu descrie add-on-uri recurente. |
