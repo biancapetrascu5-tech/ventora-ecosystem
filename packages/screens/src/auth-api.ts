@@ -57,11 +57,6 @@ export function signIn(email: string, password: string, rememberMe: boolean) {
   return post<SignInData>('/sign-in/email', { email, password, rememberMe });
 }
 
-/** Contul nou din invitație (HubInvite); adresa e cea din invitație, nu se scrie de mână. */
-export function signUp(name: string, email: string, password: string) {
-  return post<{ user?: { id: string } }>('/sign-up/email', { name, email, password });
-}
-
 export function signOut() {
   return post<unknown>('/sign-out', {});
 }

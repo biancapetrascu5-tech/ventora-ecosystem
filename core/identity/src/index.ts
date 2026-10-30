@@ -9,6 +9,8 @@ export {
   getOpenLastOrganization,
   setOpenLastOrganization,
   hasAccountForEmail,
+  createHubAccount,
+  deleteHubAccount,
 } from './contracts';
 export type { HubSession, HubUser } from './contracts';
 export {

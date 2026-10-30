@@ -8,8 +8,13 @@ import {
   TwoFactorRequired,
 } from '@ventora/errors';
 import type { EntitlementProvider } from '@ventora/contracts';
-import { getSession } from '@ventora/identity';
-import { resolveOrgContext, acceptInvitation } from '@ventora/organizations';
+import {
+  createHubAccount,
+  deleteHubAccount,
+  getSession,
+  hasAccountForEmail,
+} from '@ventora/identity';
+import { resolveOrgContext, acceptInvitation, getInvitationByToken } from '@ventora/organizations';
 import {
   AuditActions,
   readOrganizationAuditLog,
@@ -366,6 +371,68 @@ export async function acceptInvitationWithAccess(params: {
 
   return { organizationId, role };
 }
+
+export type InvitationSignUpRefusal =
+  'invalid' | 'expired' | 'used' | 'revoked' | 'mismatch' | 'exists';
+
+/** Lot 2.7 · A: no Hub account was created; `reason` says why, for HubInvite. */
+export class InvitationSignUpRefused extends Forbidden {
+  readonly reason: InvitationSignUpRefusal;
+  constructor(reason: InvitationSignUpRefusal) {
+    super(`Sign-up refused: ${reason}`);
+    this.reason = reason;
+  }
+}
+
+/**
+ * Lot 2.7 · A: the only way a Hub account is created. The invitation must be pending and
+ * unexpired, and the address exactly the invited one; otherwise nothing is created. The account
+ * is created, then the invitation accepted; when the acceptance fails, the account is deleted
+ * again, so no account is left without its business.
+ */
+export async function signUpWithInvitation(params: {
+  token: string;
+  name: string;
+  email: string;
+  password: string;
+}): Promise<{ userId: string; organizationId: string; role: string }> {
+  const invite = await getInvitationByToken(params.token);
+  if (!invite) throw new InvitationSignUpRefused('invalid');
+  if (invite.status === 'expired') throw new InvitationSignUpRefused('expired');
+  if (invite.status === 'accepted') throw new InvitationSignUpRefused('used');
+  if (invite.status === 'revoked') throw new InvitationSignUpRefused('revoked');
+  if (normalizeAddress(params.email) !== normalizeAddress(invite.email)) {
+    throw new InvitationSignUpRefused('mismatch');
+  }
+  if (await hasAccountForEmail(invite.email)) throw new InvitationSignUpRefused('exists');
+
+  const { userId } = await createHubAccount({
+    name: params.name,
+    email: invite.email,
+    password: params.password,
+  });
+  try {
+    const accepted = await acceptInvitationWithAccess({
+      token: params.token,
+      userId,
+      userEmail: invite.email,
+    });
+    return { userId, ...accepted };
+  } catch (err) {
+    await deleteHubAccount(userId).catch((cleanupErr: unknown) => {
+      console.error('[access] signUpWithInvitation: rollback of the new account failed', {
+        userId,
+        error: cleanupErr instanceof Error ? cleanupErr.message : String(cleanupErr),
+      });
+    });
+    const code = (err as { code?: string }).code;
+    if (code === 'TOKEN_EXPIRED') throw new InvitationSignUpRefused('expired');
+    if (code === 'EMAIL_MISMATCH') throw new InvitationSignUpRefused('mismatch');
+    throw err;
+  }
+}
+
+const normalizeAddress = (email: string) => email.trim().toLowerCase();
 
 /**
  * Audit log of the session's active organization (TA.9). Requires `audit.log.read` on the

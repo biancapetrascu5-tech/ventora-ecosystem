@@ -6,8 +6,11 @@ export {
   configureAccess,
   ensureAccessConfigured,
   acceptInvitationWithAccess,
+  signUpWithInvitation,
+  InvitationSignUpRefused,
   listAuditLogs,
 } from './contract';
+export type { InvitationSignUpRefusal } from './contract';
 export { PLATFORM_APPLICATION_ID, platformManifest } from './platform-manifest';
 export type { TenantContext, AuthorizeParams } from './contract';
 export { getAccessDb, makeAccessClient } from './db';

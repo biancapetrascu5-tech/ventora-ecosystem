@@ -13,10 +13,10 @@ import {
   type InviteData,
   type InviteState,
 } from '@ventora/screens';
-import { acceptInvite, requestNewInvite } from '@/server/invite-actions';
+import { requestNewInvite, signUpFromInvite } from '@/server/invite-actions';
 
-/* HubInvite pentru un cont nou (Lot 2.6 · E): contul se creează cu adresa din invitație, apoi
-   invitația e acceptată pe server pentru sesiunea nouă. Expirată → „Cere o invitație nouă”;
+/* HubInvite pentru un cont nou (Lot 2.6 · E, Lot 2.7 · A): contul și acceptarea invitației se fac
+   împreună pe server, cu adresa din invitație; apoi intrarea obișnuită cu parola. Expirată → „Cere o invitație nouă”;
    folosită → intrarea; anulată → doar mesajul. Butonul nu trimite până nu sunt toate câmpurile
    (numele, parola cu cerințele bifate, termenii): starea de eroare nu e desenată. */
 export function InviteScreen({
@@ -39,19 +39,26 @@ export function InviteScreen({
   async function submit() {
     if (!name.trim() || !passwordMeetsRules(password, app.minPassword) || !terms) return;
     setState('loading');
-    const created = await authApi.signUp(name.trim(), invite.email, password);
+    const created = await signUpFromInvite({
+      token,
+      name: name.trim(),
+      email: invite.email,
+      password,
+    });
     if (!created.ok) {
-      setState('form');
+      const r = created.reason;
+      setState(r === 'expired' || r === 'used' || r === 'revoked' ? r : 'form');
       return;
     }
-    const res = await acceptInvite(token);
-    if (!res.ok) {
-      setState(res.reason === 'expired' ? 'expired' : res.reason === 'used' ? 'used' : 'form');
+    const signedIn = await authApi.signIn(invite.email, password, false);
+    if (!signedIn.ok) {
+      router.push(app.routes.signIn);
       return;
     }
+    const to = await app.afterSignIn();
     // Proprietarul activează 2FA acum (R-2F1); /two-factor/enable cere parola, doar în memorie.
-    if (res.to === app.routes.twoFactorSetup) setHandoff({ password });
-    router.push(res.to);
+    if (to === app.routes.twoFactorSetup) setHandoff({ password });
+    router.push(to);
   }
 
   return (
