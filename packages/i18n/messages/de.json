@@ -164,9 +164,9 @@
     },
     "sessions": {
       "title": "Support-Sitzungen",
-      "lead": "Das Ventora-Team sieht die Daten des Unternehmens nur in einer Support-Sitzung, nur lesend und nur bis zur festgelegten Uhrzeit. Hier sehen Sie, wer, warum und wann.",
+      "lead": "Das Ventora-Team sieht die Daten Ihres Unternehmens nur während einer Support-Sitzung – nur lesend und nur bis zur festgelegten Uhrzeit. Hier sehen Sie, wer, warum und wann.",
       "col": {
-        "who": "Vom Ventora-Team",
+        "who": "Mitglied des Ventora-Teams",
         "reason": "Grund",
         "ticket": "Anfrage",
         "when": "Wann",
@@ -263,13 +263,13 @@
       "error": {
         "wrongCode": "Der Code stimmt nicht. Geben Sie den Code ein, den die App jetzt anzeigt.",
         "codeLength": "Der Code hat 6 Ziffern.",
-        "backupUsed": "Diesen Backup-Code haben Sie schon verwendet. Versuchen Sie einen anderen aus Ihrer Liste.",
-        "backupWrong": "Der Code passt zu keinem Backup-Code."
+        "backupWrong": "Der Code stimmt nicht oder wurde schon verwendet. Versuchen Sie einen anderen Code aus Ihrer Liste."
       },
       "setup": {
         "s1": {
           "title": "Schützen Sie Ihr Konto",
           "leadOwner": "Das Inhaberkonto hat Zugriff auf alles, deshalb schützen wir es mit einem zweiten Schritt.",
+          "leadMember": "Ein zweiter Schritt schützt Ihr Konto, selbst wenn jemand Ihr Passwort erfährt.",
           "leadFounder": "Ein Founder-Konto hat Zugriff auf alle Unternehmen, deshalb schützen wir es mit einem zweiten Schritt. In Founder ist das für alle Pflicht.",
           "how": "Nach dem Passwort fragen wir zusätzlich nach einem Code aus der Authenticator-App auf Ihrem Telefon.",
           "scan": "Scannen Sie den Code mit der Authenticator-App",
@@ -482,13 +482,41 @@
         "change": "Passwort ändern",
         "done": {
           "title": "Ihr Passwort ist geändert.",
-          "body": "Auf Ihren anderen Geräten müssen Sie sich erneut anmelden."
+          "body": "Auf Ihren anderen Geräten müssen Sie sich neu anmelden."
+        },
+        "current": "Aktuelles Passwort",
+        "forgot": "Passwort vergessen?",
+        "new": "Neues Passwort",
+        "signOutNote": "Auf diesem Gerät bleiben Sie angemeldet. Auf den anderen melden wir Sie ab.",
+        "submit": "Passwort ändern",
+        "error": {
+          "currentEmpty": "Geben Sie Ihr aktuelles Passwort ein.",
+          "current": "Das aktuelle Passwort stimmt nicht."
         }
       },
       "twoStep": {
         "title": "Anmeldung in zwei Schritten",
-        "ownerBody": "Für den Inhaber verpflichtend. Bei jeder Anmeldung mit Passwort fragen wir auch nach einem Code aus Ihrer Authenticator-App.",
-        "active": "Aktiv"
+        "ownerBody": "Für Inhaber Pflicht. Bei jeder Anmeldung mit Passwort fragen wir zusätzlich nach einem Code aus Ihrer Authenticator-App.",
+        "active": "Aktiv",
+        "offBody": "Für Ihre Rolle optional. Wenn sie aktiv ist, fragen wir bei jeder Anmeldung mit Passwort zusätzlich nach einem Code aus Ihrer Authenticator-App.",
+        "onBody": "Bei jeder Anmeldung mit Passwort fragen wir zusätzlich nach einem Code aus Ihrer Authenticator-App.",
+        "inactive": "Nicht aktiv",
+        "activate": "Aktivieren",
+        "disable": "Deaktivieren",
+        "disableTitle": "Anmeldung in zwei Schritten deaktivieren?",
+        "disableBody": "Ihr Konto ist dann nur noch durch Ihr Passwort geschützt, und Ihre Backup-Codes funktionieren nicht mehr. Bestätigen Sie mit dem Code aus Ihrer App.",
+        "disabled": "Die Anmeldung in zwei Schritten ist deaktiviert."
+      },
+      "cancel": "Abbrechen",
+      "codes": {
+        "title": "Backup-Codes",
+        "body": "Verwenden Sie sie, wenn Sie Ihr Telefon nicht dabeihaben. Sie haben noch {n} von 10. Sie sehen sie nur einmal, beim Erstellen.",
+        "generate": "Neue Codes erstellen"
+      },
+      "devices": {
+        "title": "Angemeldete Geräte",
+        "current": "Jetzt aktiv · dieses Gerät",
+        "signOut": "Abmelden"
       }
     }
   }

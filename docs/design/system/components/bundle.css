@@ -1316,3 +1316,8 @@ a.v-btn { box-sizing: border-box; }
   .v-contextbar__title > .v-truncate, .v-contextbar__title .heading { min-width: 0; }
 }
 /* P-2 (28 oct. 2026): the "today" label stays on screen — centred on the line when it fits, otherwise moved inwards (the Timeline sets the offset) */
+/* Phone sizes from tokens.json (display-hub-phone 32/36, lead-phone 15/30), restored after v49 (S107). AuthLayout already does this through its container query. */
+@media (max-width: 767.98px){
+.display-hub{font-size:32px;line-height:36px}
+.lead{font-size:15px;line-height:30px}
+}

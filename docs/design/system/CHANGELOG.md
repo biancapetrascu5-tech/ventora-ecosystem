@@ -589,3 +589,29 @@ Fiecare intrare spune ce s-a schimbat pe componentă (structură, tokeni, texte,
 - **HubSupportSession, FounderSupportSession — 1.0.2:** textele noi nu mai sunt propuneri (S98). README.
 - **i18n:** `founder-support.json` (corectura `founder.recovery.check.emailHelp`).
 
+## 2026-10-29 · Închiderea Fazei 2 — securitatea contului, intrarea în Founder, corecturi
+
+### Componente noi
+- **HubAccountSecurity** (1.0.0) — Contul tău · Securitate: „Schimbă parola” cu cerințele live și cele 7 stări (S100); autentificarea în doi pași pentru un membru care nu o are activă: rândul, cei 3 pași de activare, starea activă și propunerea „Dezactivează” (S108). Chei în `i18n/account-security.json`, 6 limbi; test DE/IT.
+- **FounderSignIn** (1.0.0) — intrarea în Founder pe AuthLayout `brand="founder"`, doar în română; eroare, se verifică, prea multe încercări (15 minute, cu ora) (S101, S102). Chei în `i18n/founder-auth.json`.
+
+### Componente schimbate
+- **FounderPasswordReset — 1.0.1:** „Cel puțin 12 caractere” (`auth.reset.req.lengthFounder`), verificarea la 12 (S103).
+- **HubTwoFactorVerify — 1.0.2, FounderTwoFactor — 1.0.2, HubTwoFactorSetup — 1.0.1, FounderBackupCodes — 1.0.1:** cod de rezervă greșit sau folosit = un singur mesaj (`auth.2fa.error.backupWrong`, text nou propus); `auth.2fa.error.backupUsed` scos; starea separată scoasă din HubTwoFactorVerify (S105). README.
+- **HubStates — 1.0.1:** „Mai încearcă peste 15 minute…” (era 5, S102).
+- **HubSupportSession — 1.0.3:** starea „Închisă automat” în lista sesiunilor (S106); traducerile revizuite (S109).
+- **HubAccount, HubSignIn, AuthLayout — README:** trimiteri la ecranele noi; 15 minute.
+
+### Tokeni și bibliotecă
+- **tokens.json:** stilurile `display-hub-phone` (32/36) și `lead-phone` (15/30) (S107).
+- **bundle.css:** sub 768px, `.display-hub` și `.lead` iau mărimile de telefon (S107).
+
+### i18n
+- `two-factor.json`: `auth.2fa.error.backupWrong` nou, `auth.2fa.error.backupUsed` scos, `auth.2fa.setup.s1.leadMember` nou.
+- `password-reset.json`: `auth.reset.req.lengthFounder` (RO).
+- `support-session.json`: `support.sessions.status.closedAuto` (6 limbi); EN–IT revizuite (S109).
+- Noi: `account-security.json`, `founder-auth.json`.
+
+### Încă deschis
+- Traducerile din cod pentru `hub.chooseBusiness.*`, `auth.signIn.*`, `invite.requested/revoked/used.*`, `account.lead`, `account.notifications.lead`, `account.security.*`, `roles.*`: nu sunt în design system; se verifică după lista din cod.
+

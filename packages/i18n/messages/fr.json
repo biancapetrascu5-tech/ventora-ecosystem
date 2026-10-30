@@ -164,9 +164,9 @@
     },
     "sessions": {
       "title": "Sessions de support",
-      "lead": "L’équipe Ventora ne consulte les données de l’entreprise que pendant une session de support, en lecture seule et jusqu’à l’heure prévue. Ici, vous voyez qui, pourquoi et quand.",
+      "lead": "L’équipe Ventora ne voit les données de votre entreprise que pendant une session de support, en lecture seule et jusqu’à l’heure prévue. Vous voyez ici qui, pourquoi et quand.",
       "col": {
-        "who": "De l’équipe Ventora",
+        "who": "Membre de l’équipe Ventora",
         "reason": "Motif",
         "ticket": "Demande",
         "when": "Quand",
@@ -263,13 +263,13 @@
       "error": {
         "wrongCode": "Ce code ne correspond pas. Saisissez le code affiché maintenant dans l’application.",
         "codeLength": "Le code comporte 6 chiffres.",
-        "backupUsed": "Vous avez déjà utilisé ce code de secours. Essayez-en un autre de votre liste.",
-        "backupWrong": "Ce code ne correspond à aucun code de secours."
+        "backupWrong": "Ce code ne correspond pas ou a déjà été utilisé. Essayez un autre code de votre liste."
       },
       "setup": {
         "s1": {
           "title": "Protégez votre compte",
           "leadOwner": "Le compte du propriétaire a accès à tout, nous le protégeons donc par une deuxième étape.",
+          "leadMember": "Une deuxième étape protège votre compte, même si quelqu’un découvre votre mot de passe.",
           "leadFounder": "Un compte Founder a accès à toutes les entreprises, nous le protégeons donc par une deuxième étape. Dans Founder, c’est obligatoire pour tous.",
           "how": "Après le mot de passe, nous vous demanderons aussi un code de l’application d’authentification de votre téléphone.",
           "scan": "Scannez le code avec l’application d’authentification",
@@ -479,16 +479,44 @@
       "password": {
         "title": "Mot de passe",
         "changed": "Modifié {when}.",
-        "change": "Changer le mot de passe",
+        "change": "Modifier le mot de passe",
         "done": {
           "title": "Votre mot de passe est modifié.",
           "body": "Vous devrez vous reconnecter sur vos autres appareils."
+        },
+        "current": "Mot de passe actuel",
+        "forgot": "Mot de passe oublié ?",
+        "new": "Nouveau mot de passe",
+        "signOutNote": "Vous restez connecté sur cet appareil. Nous vous déconnecterons des autres.",
+        "submit": "Modifier le mot de passe",
+        "error": {
+          "currentEmpty": "Saisissez votre mot de passe actuel.",
+          "current": "Le mot de passe actuel ne correspond pas."
         }
       },
       "twoStep": {
         "title": "Connexion en deux étapes",
-        "ownerBody": "Obligatoire pour le propriétaire. À chaque connexion avec le mot de passe, nous demandons aussi un code de votre application d’authentification.",
-        "active": "Activée"
+        "ownerBody": "Obligatoire pour le propriétaire. À chaque connexion avec votre mot de passe, nous vous demandons aussi un code de votre application d’authentification.",
+        "active": "Activée",
+        "offBody": "Facultative pour votre rôle. Une fois activée, à chaque connexion avec votre mot de passe, nous vous demandons aussi un code de votre application d’authentification.",
+        "onBody": "À chaque connexion avec votre mot de passe, nous vous demandons aussi un code de votre application d’authentification.",
+        "inactive": "Désactivée",
+        "activate": "Activer",
+        "disable": "Désactiver",
+        "disableTitle": "Désactiver la connexion en deux étapes ?",
+        "disableBody": "Votre compte ne sera plus protégé que par votre mot de passe, et vos codes de secours ne fonctionneront plus. Confirmez avec le code de votre application.",
+        "disabled": "La connexion en deux étapes est désactivée."
+      },
+      "cancel": "Annuler",
+      "codes": {
+        "title": "Codes de secours",
+        "body": "Utilisez-les si vous n’avez pas votre téléphone. Il vous en reste {n} sur 10. Vous ne les voyez qu’une fois, au moment de les générer.",
+        "generate": "Générer de nouveaux codes"
+      },
+      "devices": {
+        "title": "Appareils connectés",
+        "current": "Actif maintenant · cet appareil",
+        "signOut": "Déconnecter"
       }
     }
   }

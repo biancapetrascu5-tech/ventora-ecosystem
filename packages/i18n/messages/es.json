@@ -164,9 +164,9 @@
     },
     "sessions": {
       "title": "Sesiones de soporte",
-      "lead": "El equipo de Ventora solo ve los datos del negocio en una sesión de soporte, en solo lectura y hasta la hora fijada. Aquí ves quién, por qué y cuándo.",
+      "lead": "El equipo de Ventora solo ve los datos de tu negocio durante una sesión de soporte, en modo de solo lectura y hasta la hora fijada. Aquí ves quién, por qué y cuándo.",
       "col": {
-        "who": "Del equipo de Ventora",
+        "who": "Miembro del equipo de Ventora",
         "reason": "Motivo",
         "ticket": "Solicitud",
         "when": "Cuándo",
@@ -178,7 +178,7 @@
         "expired": "Caducada",
         "closedAuto": "Cerrada automáticamente"
       },
-      "empty": "Ninguna sesión de soporte por ahora."
+      "empty": "Todavía no hay sesiones de soporte."
     }
   },
   "auth": {
@@ -263,13 +263,13 @@
       "error": {
         "wrongCode": "El código no coincide. Escribe el código que muestra ahora la aplicación.",
         "codeLength": "El código tiene 6 cifras.",
-        "backupUsed": "Ya has usado este código de respaldo. Prueba otro de tu lista.",
-        "backupWrong": "El código no coincide con ningún código de respaldo."
+        "backupWrong": "El código no coincide o ya se ha usado. Prueba otro código de tu lista."
       },
       "setup": {
         "s1": {
           "title": "Protege tu cuenta",
           "leadOwner": "La cuenta de propietario tiene acceso a todo, así que la protegemos con un segundo paso.",
+          "leadMember": "Un segundo paso protege tu cuenta aunque alguien descubra tu contraseña.",
           "leadFounder": "Una cuenta de Founder tiene acceso a todos los negocios, así que la protegemos con un segundo paso. En Founder es obligatorio para todos.",
           "how": "Después de la contraseña, te pediremos también un código de la aplicación de autenticación de tu teléfono.",
           "scan": "Escanea el código con la aplicación de autenticación",
@@ -482,13 +482,41 @@
         "change": "Cambiar contraseña",
         "done": {
           "title": "Tu contraseña se ha cambiado.",
-          "body": "Tendrás que volver a entrar en tus otros dispositivos."
+          "body": "Tendrás que volver a entrar en los demás dispositivos."
+        },
+        "current": "Contraseña actual",
+        "forgot": "¿Has olvidado la contraseña?",
+        "new": "Contraseña nueva",
+        "signOutNote": "Seguirás con la sesión iniciada en este dispositivo. En los demás la cerraremos.",
+        "submit": "Cambiar contraseña",
+        "error": {
+          "currentEmpty": "Escribe tu contraseña actual.",
+          "current": "La contraseña actual no coincide."
         }
       },
       "twoStep": {
         "title": "Inicio de sesión en dos pasos",
-        "ownerBody": "Obligatorio para el propietario. Cada vez que entras con la contraseña, te pedimos también un código de tu aplicación de autenticación.",
-        "active": "Activado"
+        "ownerBody": "Obligatorio para el propietario. Cada vez que entras con tu contraseña, te pedimos también un código de tu aplicación de autenticación.",
+        "active": "Activada",
+        "offBody": "Opcional para tu rol. Si la activas, cada vez que entres con tu contraseña te pediremos también un código de tu aplicación de autenticación.",
+        "onBody": "Cada vez que entras con tu contraseña, te pedimos también un código de tu aplicación de autenticación.",
+        "inactive": "Desactivada",
+        "activate": "Activar",
+        "disable": "Desactivar",
+        "disableTitle": "¿Desactivar el inicio de sesión en dos pasos?",
+        "disableBody": "Tu cuenta quedará protegida solo por la contraseña y tus códigos de respaldo dejarán de funcionar. Confírmalo con el código de tu aplicación.",
+        "disabled": "El inicio de sesión en dos pasos está desactivado."
+      },
+      "cancel": "Cancelar",
+      "codes": {
+        "title": "Códigos de respaldo",
+        "body": "Úsalos si no tienes el móvil contigo. Te quedan {n} de 10. Solo los ves una vez, cuando los generas.",
+        "generate": "Generar códigos nuevos"
+      },
+      "devices": {
+        "title": "Dispositivos conectados",
+        "current": "Activo ahora · este dispositivo",
+        "signOut": "Cerrar sesión"
       }
     }
   }

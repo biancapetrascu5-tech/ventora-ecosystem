@@ -8,7 +8,8 @@ import styles from './auth.module.css';
 
 /* HubTwoFactorVerify (S59, S61, S62, S81): verificarea după parolă, recuperarea, toastul R-2F10. */
 
-export type VerifyState = 'idle' | 'wrong' | 'used' | 'loading' | 'locked' | 'expired';
+// S105: a wrong or already used backup code is one state (wrong), with one message.
+export type VerifyState = 'idle' | 'wrong' | 'loading' | 'locked' | 'expired';
 
 export function TwoFactorVerify({
   email,
@@ -51,11 +52,7 @@ export function TwoFactorVerify({
   const locked = state === 'locked';
   const loading = state === 'loading';
   const err =
-    state === 'wrong'
-      ? t(backup ? 'error.backupWrong' : 'error.wrongCode')
-      : state === 'used'
-        ? t('error.backupUsed')
-        : undefined;
+    state === 'wrong' ? t(backup ? 'error.backupWrong' : 'error.wrongCode') : undefined;
   return (
     <form
       className={styles.contents}

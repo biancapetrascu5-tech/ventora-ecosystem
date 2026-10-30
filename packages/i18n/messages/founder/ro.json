@@ -105,6 +105,23 @@
     },
     "auth": {
       "reqLength": "Cel puțin 12 caractere"
+    },
+    "signIn": {
+      "title": "Bine ai revenit",
+      "lead": "Intră în Founder Control Center.",
+      "email": "E-mail",
+      "password": "Parolă",
+      "forgot": "Ai uitat parola?",
+      "submit": "Intră în cont",
+      "checking": "Intri în cont…",
+      "error": {
+        "title": "E-mailul sau parola nu sunt corecte",
+        "body": "Verifică-le și încearcă din nou."
+      },
+      "limit": {
+        "title": "Ai încercat de prea multe ori",
+        "body": "Poți încerca din nou peste 15 minute, la ora {time}."
+      }
     }
   }
 }

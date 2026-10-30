@@ -19,6 +19,7 @@
     "support.sessions.status.active": "Activă până la {expiresAt}",
     "support.sessions.status.closedBy": "Închisă de {name}",
     "support.sessions.status.expired": "Expirată",
+    "support.sessions.status.closedAuto": "Închisă automat",
     "support.sessions.empty": "Nicio sesiune de suport până acum."
   },
   "en": {
@@ -32,8 +33,8 @@
     "support.session.banner.closed": "The support session is closed.",
     "support.session.banner.cancel": "Cancel",
     "support.sessions.title": "Support sessions",
-    "support.sessions.lead": "The Ventora team sees the business data only in a support session, read only and only until the set time. Here you see who, why and when.",
-    "support.sessions.col.who": "From the Ventora team",
+    "support.sessions.lead": "The Ventora team can see your business data only during a support session: read-only, and only until the time set. Here you can see who, why and when.",
+    "support.sessions.col.who": "Ventora team member",
     "support.sessions.col.reason": "Reason",
     "support.sessions.col.ticket": "Request",
     "support.sessions.col.when": "When",
@@ -41,7 +42,8 @@
     "support.sessions.status.active": "Active until {expiresAt}",
     "support.sessions.status.closedBy": "Closed by {name}",
     "support.sessions.status.expired": "Expired",
-    "support.sessions.empty": "No support sessions so far."
+    "support.sessions.status.closedAuto": "Closed automatically",
+    "support.sessions.empty": "No support sessions yet."
   },
   "fr": {
     "support.session.banner.title": "Session de support active",
@@ -54,8 +56,8 @@
     "support.session.banner.closed": "La session de support est fermée.",
     "support.session.banner.cancel": "Annuler",
     "support.sessions.title": "Sessions de support",
-    "support.sessions.lead": "L’équipe Ventora ne consulte les données de l’entreprise que pendant une session de support, en lecture seule et jusqu’à l’heure prévue. Ici, vous voyez qui, pourquoi et quand.",
-    "support.sessions.col.who": "De l’équipe Ventora",
+    "support.sessions.lead": "L’équipe Ventora ne voit les données de votre entreprise que pendant une session de support, en lecture seule et jusqu’à l’heure prévue. Vous voyez ici qui, pourquoi et quand.",
+    "support.sessions.col.who": "Membre de l’équipe Ventora",
     "support.sessions.col.reason": "Motif",
     "support.sessions.col.ticket": "Demande",
     "support.sessions.col.when": "Quand",
@@ -63,6 +65,7 @@
     "support.sessions.status.active": "Active jusqu’à {expiresAt}",
     "support.sessions.status.closedBy": "Fermée par {name}",
     "support.sessions.status.expired": "Expirée",
+    "support.sessions.status.closedAuto": "Fermée automatiquement",
     "support.sessions.empty": "Aucune session de support pour l’instant."
   },
   "es": {
@@ -76,8 +79,8 @@
     "support.session.banner.closed": "La sesión de soporte se ha cerrado.",
     "support.session.banner.cancel": "Cancelar",
     "support.sessions.title": "Sesiones de soporte",
-    "support.sessions.lead": "El equipo de Ventora solo ve los datos del negocio en una sesión de soporte, en solo lectura y hasta la hora fijada. Aquí ves quién, por qué y cuándo.",
-    "support.sessions.col.who": "Del equipo de Ventora",
+    "support.sessions.lead": "El equipo de Ventora solo ve los datos de tu negocio durante una sesión de soporte, en modo de solo lectura y hasta la hora fijada. Aquí ves quién, por qué y cuándo.",
+    "support.sessions.col.who": "Miembro del equipo de Ventora",
     "support.sessions.col.reason": "Motivo",
     "support.sessions.col.ticket": "Solicitud",
     "support.sessions.col.when": "Cuándo",
@@ -85,7 +88,8 @@
     "support.sessions.status.active": "Activa hasta las {expiresAt}",
     "support.sessions.status.closedBy": "Cerrada por {name}",
     "support.sessions.status.expired": "Caducada",
-    "support.sessions.empty": "Ninguna sesión de soporte por ahora."
+    "support.sessions.status.closedAuto": "Cerrada automáticamente",
+    "support.sessions.empty": "Todavía no hay sesiones de soporte."
   },
   "de": {
     "support.session.banner.title": "Support-Sitzung aktiv",
@@ -98,8 +102,8 @@
     "support.session.banner.closed": "Die Support-Sitzung wurde beendet.",
     "support.session.banner.cancel": "Abbrechen",
     "support.sessions.title": "Support-Sitzungen",
-    "support.sessions.lead": "Das Ventora-Team sieht die Daten des Unternehmens nur in einer Support-Sitzung, nur lesend und nur bis zur festgelegten Uhrzeit. Hier sehen Sie, wer, warum und wann.",
-    "support.sessions.col.who": "Vom Ventora-Team",
+    "support.sessions.lead": "Das Ventora-Team sieht die Daten Ihres Unternehmens nur während einer Support-Sitzung – nur lesend und nur bis zur festgelegten Uhrzeit. Hier sehen Sie, wer, warum und wann.",
+    "support.sessions.col.who": "Mitglied des Ventora-Teams",
     "support.sessions.col.reason": "Grund",
     "support.sessions.col.ticket": "Anfrage",
     "support.sessions.col.when": "Wann",
@@ -107,6 +111,7 @@
     "support.sessions.status.active": "Aktiv bis {expiresAt}",
     "support.sessions.status.closedBy": "Beendet von {name}",
     "support.sessions.status.expired": "Abgelaufen",
+    "support.sessions.status.closedAuto": "Automatisch beendet",
     "support.sessions.empty": "Bisher keine Support-Sitzungen."
   },
   "it": {
@@ -120,8 +125,8 @@
     "support.session.banner.closed": "La sessione di supporto è stata chiusa.",
     "support.session.banner.cancel": "Annulla",
     "support.sessions.title": "Sessioni di supporto",
-    "support.sessions.lead": "Il team Ventora vede i dati dell’attività solo in una sessione di supporto, in sola lettura e solo fino all’ora stabilita. Qui vede chi, perché e quando.",
-    "support.sessions.col.who": "Del team Ventora",
+    "support.sessions.lead": "Il team Ventora vede i dati della Sua attività solo durante una sessione di supporto, in sola lettura e solo fino all’ora stabilita. Qui vede chi, perché e quando.",
+    "support.sessions.col.who": "Membro del team Ventora",
     "support.sessions.col.reason": "Motivo",
     "support.sessions.col.ticket": "Richiesta",
     "support.sessions.col.when": "Quando",
@@ -129,6 +134,7 @@
     "support.sessions.status.active": "Attiva fino alle {expiresAt}",
     "support.sessions.status.closedBy": "Chiusa da {name}",
     "support.sessions.status.expired": "Scaduta",
+    "support.sessions.status.closedAuto": "Chiusa automaticamente",
     "support.sessions.empty": "Nessuna sessione di supporto finora."
   }
 }

@@ -164,9 +164,9 @@
     },
     "sessions": {
       "title": "Sessioni di supporto",
-      "lead": "Il team Ventora vede i dati dell’attività solo in una sessione di supporto, in sola lettura e solo fino all’ora stabilita. Qui vede chi, perché e quando.",
+      "lead": "Il team Ventora vede i dati della Sua attività solo durante una sessione di supporto, in sola lettura e solo fino all’ora stabilita. Qui vede chi, perché e quando.",
       "col": {
-        "who": "Del team Ventora",
+        "who": "Membro del team Ventora",
         "reason": "Motivo",
         "ticket": "Richiesta",
         "when": "Quando",
@@ -263,13 +263,13 @@
       "error": {
         "wrongCode": "Il codice non corrisponde. Inserisca il codice che l’app mostra ora.",
         "codeLength": "Il codice ha 6 cifre.",
-        "backupUsed": "Ha già usato questo codice di riserva. Provi un altro codice della lista.",
-        "backupWrong": "Il codice non corrisponde a nessun codice di riserva."
+        "backupWrong": "Il codice non corrisponde o è già stato usato. Provi un altro codice della lista."
       },
       "setup": {
         "s1": {
           "title": "Protegga il Suo account",
           "leadOwner": "L’account del titolare ha accesso a tutto, quindi lo proteggiamo con un secondo passaggio.",
+          "leadMember": "Un secondo passaggio protegge il Suo account anche se qualcuno scopre la Sua password.",
           "leadFounder": "Un account Founder ha accesso a tutte le attività, quindi lo proteggiamo con un secondo passaggio. In Founder è obbligatorio per tutti.",
           "how": "Dopo la password Le chiederemo anche un codice dall’app di autenticazione sul telefono.",
           "scan": "Scansioni il codice con l’app di autenticazione",
@@ -483,12 +483,40 @@
         "done": {
           "title": "La password è cambiata.",
           "body": "Sugli altri dispositivi dovrà accedere di nuovo."
+        },
+        "current": "Password attuale",
+        "forgot": "Ha dimenticato la password?",
+        "new": "Nuova password",
+        "signOutNote": "Su questo dispositivo resta connesso. Sugli altri chiuderemo la Sua sessione.",
+        "submit": "Cambia password",
+        "error": {
+          "currentEmpty": "Inserisca la password attuale.",
+          "current": "La password attuale non corrisponde."
         }
       },
       "twoStep": {
         "title": "Accesso in due passaggi",
-        "ownerBody": "Obbligatorio per il titolare. A ogni accesso con la password Le chiediamo anche un codice della Sua app di autenticazione.",
-        "active": "Attivo"
+        "ownerBody": "Obbligatorio per il titolare. A ogni accesso con la password Le chiediamo anche un codice dalla Sua app di autenticazione.",
+        "active": "Attivo",
+        "offBody": "Facoltativo per il Suo ruolo. Se lo attiva, a ogni accesso con la password Le chiediamo anche un codice dalla Sua app di autenticazione.",
+        "onBody": "A ogni accesso con la password Le chiediamo anche un codice dalla Sua app di autenticazione.",
+        "inactive": "Non attivo",
+        "activate": "Attiva",
+        "disable": "Disattiva",
+        "disableTitle": "Disattivare l’accesso in due passaggi?",
+        "disableBody": "Il Suo account sarà protetto solo dalla password e i codici di riserva non funzioneranno più. Confermi con il codice della Sua app.",
+        "disabled": "L’accesso in due passaggi è disattivato."
+      },
+      "cancel": "Annulla",
+      "codes": {
+        "title": "Codici di riserva",
+        "body": "Li usi se non ha il telefono con sé. Gliene restano {n} su 10. Li vede una sola volta, quando li genera.",
+        "generate": "Genera nuovi codici"
+      },
+      "devices": {
+        "title": "Dispositivi connessi",
+        "current": "Attivo ora · questo dispositivo",
+        "signOut": "Disconnetti"
       }
     }
   }

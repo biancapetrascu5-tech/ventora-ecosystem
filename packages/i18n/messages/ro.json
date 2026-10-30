@@ -263,13 +263,13 @@
       "error": {
         "wrongCode": "Codul nu se potrivește. Introdu codul care apare acum în aplicație.",
         "codeLength": "Codul are 6 cifre.",
-        "backupUsed": "Ai folosit deja acest cod de rezervă. Încearcă alt cod din listă.",
-        "backupWrong": "Codul nu se potrivește cu niciun cod de rezervă."
+        "backupWrong": "Codul nu se potrivește sau a fost deja folosit. Încearcă alt cod din listă."
       },
       "setup": {
         "s1": {
           "title": "Protejează-ți contul",
           "leadOwner": "Contul de proprietar are acces la tot, așa că îl protejăm cu un al doilea pas.",
+          "leadMember": "Un al doilea pas îți protejează contul chiar dacă cineva îți află parola.",
           "leadFounder": "Contul Founder are acces la toate afacerile, așa că îl protejăm cu un al doilea pas. În Founder e obligatoriu pentru toți.",
           "how": "După parolă, îți vom cere și un cod din aplicația de autentificare de pe telefon.",
           "scan": "Scanează codul cu aplicația de autentificare",
@@ -483,12 +483,40 @@
         "done": {
           "title": "Parola e schimbată.",
           "body": "Pe celelalte dispozitive va trebui să intri din nou."
+        },
+        "current": "Parola actuală",
+        "forgot": "Ai uitat parola?",
+        "new": "Parola nouă",
+        "signOutNote": "Rămâi conectat pe acest dispozitiv. Pe celelalte te scoatem din cont.",
+        "submit": "Schimbă parola",
+        "error": {
+          "currentEmpty": "Scrie parola actuală.",
+          "current": "Parola actuală nu se potrivește."
         }
       },
       "twoStep": {
         "title": "Autentificare în doi pași",
         "ownerBody": "Obligatorie pentru proprietar. La fiecare intrare cu parola îți cerem și un cod din aplicația de autentificare.",
-        "active": "Activă"
+        "active": "Activă",
+        "offBody": "Opțională pentru rolul tău. Când e activă, la fiecare intrare cu parola îți cerem și un cod din aplicația de autentificare.",
+        "onBody": "La fiecare intrare cu parola îți cerem și un cod din aplicația de autentificare.",
+        "inactive": "Neactivă",
+        "activate": "Activează",
+        "disable": "Dezactivează",
+        "disableTitle": "Dezactivezi autentificarea în doi pași?",
+        "disableBody": "Contul tău rămâne protejat doar de parolă, iar codurile de rezervă nu mai merg. Confirmă cu codul din aplicație.",
+        "disabled": "Autentificarea în doi pași e dezactivată."
+      },
+      "cancel": "Renunță",
+      "codes": {
+        "title": "Coduri de rezervă",
+        "body": "Le folosești dacă nu ai telefonul la tine. Ți-au rămas {n} din 10. Le vezi o singură dată, când le generezi.",
+        "generate": "Generează coduri noi"
+      },
+      "devices": {
+        "title": "Dispozitive conectate",
+        "current": "Activ acum · acest dispozitiv",
+        "signOut": "Deconectează"
       }
     }
   }

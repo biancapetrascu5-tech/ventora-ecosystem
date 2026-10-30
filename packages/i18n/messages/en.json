@@ -164,9 +164,9 @@
     },
     "sessions": {
       "title": "Support sessions",
-      "lead": "The Ventora team sees the business data only in a support session, read only and only until the set time. Here you see who, why and when.",
+      "lead": "The Ventora team can see your business data only during a support session: read-only, and only until the time set. Here you can see who, why and when.",
       "col": {
-        "who": "From the Ventora team",
+        "who": "Ventora team member",
         "reason": "Reason",
         "ticket": "Request",
         "when": "When",
@@ -178,7 +178,7 @@
         "expired": "Expired",
         "closedAuto": "Closed automatically"
       },
-      "empty": "No support sessions so far."
+      "empty": "No support sessions yet."
     }
   },
   "auth": {
@@ -263,13 +263,13 @@
       "error": {
         "wrongCode": "That code doesn't match. Enter the code your app shows now.",
         "codeLength": "The code has 6 digits.",
-        "backupUsed": "You've already used this backup code. Try another one from your list.",
-        "backupWrong": "That code doesn't match any backup code."
+        "backupWrong": "That code doesn't match or has already been used. Try another code from your list."
       },
       "setup": {
         "s1": {
           "title": "Protect your account",
           "leadOwner": "The owner account can reach everything, so we protect it with a second step.",
+          "leadMember": "A second step protects your account even if someone learns your password.",
           "leadFounder": "A Founder account can reach every business, so we protect it with a second step. In Founder it's required for everyone.",
           "how": "After your password, we'll also ask for a code from the authenticator app on your phone.",
           "scan": "Scan the code with your authenticator app",
@@ -482,13 +482,41 @@
         "change": "Change password",
         "done": {
           "title": "Your password is changed.",
-          "body": "You’ll have to sign in again on your other devices."
+          "body": "You'll need to sign in again on your other devices."
+        },
+        "current": "Current password",
+        "forgot": "Forgot your password?",
+        "new": "New password",
+        "signOutNote": "You'll stay signed in on this device. We'll sign you out on the others.",
+        "submit": "Change password",
+        "error": {
+          "currentEmpty": "Enter your current password.",
+          "current": "Your current password doesn't match."
         }
       },
       "twoStep": {
         "title": "Two-step sign-in",
         "ownerBody": "Required for the owner. Each time you sign in with your password, we also ask for a code from your authenticator app.",
-        "active": "On"
+        "active": "On",
+        "offBody": "Optional for your role. When it's on, each time you sign in with your password we also ask for a code from your authenticator app.",
+        "onBody": "Each time you sign in with your password, we also ask for a code from your authenticator app.",
+        "inactive": "Off",
+        "activate": "Turn on",
+        "disable": "Turn off",
+        "disableTitle": "Turn off two-step sign-in?",
+        "disableBody": "Your account will be protected by your password only, and your backup codes will stop working. Confirm with the code from your app.",
+        "disabled": "Two-step sign-in is off."
+      },
+      "cancel": "Cancel",
+      "codes": {
+        "title": "Backup codes",
+        "body": "Use them if you don't have your phone with you. You have {n} of 10 left. You see them only once, when you generate them.",
+        "generate": "Generate new codes"
+      },
+      "devices": {
+        "title": "Signed-in devices",
+        "current": "Active now · this device",
+        "signOut": "Sign out"
       }
     }
   }

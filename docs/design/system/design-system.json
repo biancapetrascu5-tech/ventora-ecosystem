@@ -468,10 +468,10 @@
     "App~20icons"
   ],
   "lastChange": {
-    "at": "2026-10-28T15:47:30Z",
+    "at": "2026-10-29T20:50:49Z",
     "by": "Bianca Petrașcu",
     "via": "Claude",
-    "note": "Lotul 2.5c închis: textele noi aprobate (S98), E-6 cu cheile din cod email.supportSession.* (S99)"
+    "note": "Închiderea Fazei 2: HubAccountSecurity, FounderSignIn (S100–S109); 15 minute, Founder 12 caractere, un mesaj pentru codul de rezervă, „Închisă automat”, regula de telefon în tokens.json"
   },
   "layout": "files",
   "libraries": [
