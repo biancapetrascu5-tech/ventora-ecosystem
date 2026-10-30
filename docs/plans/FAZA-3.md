@@ -86,11 +86,11 @@ Prețurile din preview-uri (Start 149 lei, Business 349 lei, Business Plus 449 l
 
 Estimările sunt în ore de agent: implementare, teste, pre-push complet și raport, fără așteptarea CI. Ele se recalibrează după primul lot.
 
-### Lot 2.8 — Shell-ul Hub și Founder + FounderBusinesses / FounderBusiness (fără partea comercială)
+### Lot 2.8 — Shell-ul Hub și Founder + HubAdminTeam + FounderBusinesses / FounderBusiness (fără partea comercială)
 
 Lotul ține de Faza 2 și se face **înaintea Fazei 3**. Stă aici pentru că loturile 3.4 și 3.7 depind de el. Dacă se aprobă, se trece și în `docs/plans/FAZA-2.md`.
 
-**Scop:** aplicațiile `platform` (Hub) și `founder` primesc carcasa comună din design, iar Founder primește lista afacerilor și pagina unei afaceri, cu datele care există deja după F2.
+**Scop:** aplicațiile `platform` (Hub) și `founder` primesc carcasa comună din design. Hub primește administrarea echipei (`HubAdminTeam`), iar Founder primește lista afacerilor și pagina unei afaceri, cu datele care există deja după F2.
 
 **Context:** după raportul Lotului 2.7, în cod nu există AppShell, Spine sau ContextBar în Hub, iar `HubAdminTeam` lipsește. Componentele există în `packages/ui` (F1, în `enforced`); lipsește compunerea lor în aplicații.
 
@@ -98,6 +98,13 @@ Lotul ține de Faza 2 și se face **înaintea Fazei 3**. Stă aici pentru că lo
 
 - **Shell-ul Hub** în `apps/platform`: AppShell, Spine, ContextBar, OrgSwitcher, AccountMenu, NotificationsPanel (fără sursă reală de notificări până la F4), legate de sesiune și de organizația activă. Navigația arată doar intrările care au ecran.
 - **Shell-ul Founder** în `apps/founder`: AppShell și Spine-ul din design (Afaceri, Consum, Model comercial, Growth, Campanii, Sistem, Control). În 2.8 e activă doar „Afaceri”; celelalte apar când au ecran.
+- **`HubAdminTeam`** (decizia fondatoarei, 30.10.2026), ecranul din design (`docs/design/system/components/HubAdminTeam`), în shell-ul Hub, legat la contractele existente din `core/organizations`:
+  - membrii afacerii (`listMembers`), cu rolul, aplicațiile și starea;
+  - invitațiile (`listInvitations`), cu marcajul `newLinkRequestedAt` pentru „a cerut o invitație nouă”;
+  - retrimiterea invitației (`resendInvitation`, care șterge marcajul) și anularea (`revokeInvitation`);
+  - doar owner și admin; un membru primește refuz pe server.
+
+  `listInvitations` și `newLinkRequestedAt` vin din ecranele Faza 2 (branch-ul `feat/faza-2-ecrane`, migrația `lot26_invitation_view`) și trebuie să fie în `main` înainte de lot.
 - **`FounderBusinesses`**, cu datele din `core/organizations` și `core/identity`: numele, owner-ul, clientă din, starea, „Afacere nouă” (prin `createOrganizationAsFounder`, existent).
 - **`FounderBusiness`**: owner-ul, schimbările recente (din jurnalul de audit, `readAuditLogAsFounder`), suspendarea cu confirmare.
 - **Intrările spre fluxurile din Faza 2**, din meniul „Mai multe” al paginii afacerii, ca în design (S95):
@@ -108,20 +115,22 @@ Lotul ține de Faza 2 și se face **înaintea Fazei 3**. Stă aici pentru că lo
 - **Suspendarea:** organizația nu are azi o stare în cod. E nevoie de o migrare în `core/organizations` și de un pas în `authorize()`. Efectul (D3-20, DECIS: a): nimeni din afacere nu mai intră, `authorize()` refuză orice cerere, inclusiv citirea; datele rămân, iar Founder poate reactiva afacerea. Owner-ul care are nevoie de date le cere prin suport. Suspendarea oprește doar utilizatorii afacerii (`authorize()`), nu și `authorizeSupport`: sesiunea de suport rămâne posibilă.
 - Toate textele vin din chei next-intl, în 6 limbi. Capturile `_design` / `_impl` se fac la 390/1280 × light/dark (regula 12).
 
-**Nu intră:** `HubAdminTeam` (lipsește după raportul 2.7; se planifică separat, în Faza 2).
 **Dependențe:** loturile 2.1–2.7, inclusiv ecranele `FounderSupportSession` și `FounderOwnerRecovery` din Faza 2. D3-20 (DECIS: a).
 **Migrări probabile:** `organization_status` (în `core/organizations`).
-**Ecrane:** AppShell, Spine, ContextBar (Hub), FounderBusinesses, FounderBusiness (fără secțiunile comerciale, cu intrările spre FounderSupportSession și FounderOwnerRecovery).
+**Ecrane:** AppShell, Spine, ContextBar (Hub), HubAdminTeam, FounderBusinesses, FounderBusiness (fără secțiunile comerciale, cu intrările spre FounderSupportSession și FounderOwnerRecovery).
 **Gata când:**
 
 - Hub și Founder se deschid în shell-ul din design, pe date reale;
+- în HubAdminTeam, marcajul cererii de link nou apare în listă și dispare după retrimitere (test);
+- un membru nu vede HubAdminTeam și nu poate apela contractele lui: refuz pe server (test);
+- capturile `_design` / `_impl` pentru HubAdminTeam la 390/1280 × light/dark;
 - „Afacere nouă” creează organizația și invitația owner-ului, cu audit;
 - din pagina afacerii pornesc sesiunea de suport și recuperarea owner-ului, pe date reale: sesiunea se deschide pentru afacerea respectivă și apare banda; recuperarea trece de regula verificărilor pe server; ambele au rândul de audit pe persoana Founder;
 - o afacere suspendată nu mai trece de `authorize()` la cererea următoare, nici pentru citire, pentru niciun rol din afacere (test); după reactivare, accesul revine fără pierderi de date (test); suspendarea și reactivarea sunt auditate pe persoana Founder;
 - pe o afacere suspendată, Founder deschide sesiunea de suport și citește datele, cu audit, în timp ce membrii afacerii rămân blocați (test);
 - capturile `_design` / `_impl` sunt în raport, cu diff.
 
-**Estimare:** 24–33 de ore (shell Hub 8–10, shell Founder 4–6, cele două ecrane Founder 8–12, suspendarea 2, intrările spre suport și recuperare cu testele lor 2–3).
+**Estimare:** 30–41 de ore (shell Hub 8–10, HubAdminTeam 6–8, shell Founder 4–6, cele două ecrane Founder 8–12, suspendarea 2, intrările spre suport și recuperare cu testele lor 2–3).
 
 ---
 
@@ -408,7 +417,7 @@ Lotul ține de Faza 2 și se face **înaintea Fazei 3**. Stă aici pentru că lo
 
 - 2.8 se face înaintea Fazei 3. Ar putea merge în paralel cu 3.1–3.3 (scrie în `apps/**`, nu în `core/commercial`), dar pasul de suspendare din `authorize()` atinge `core/access`, pe care îl atinge și 3.2. Recomand: 2.8 întâi, pe un singur fir.
 - 3.4 merge în paralel cu 3.5 și 3.6, după 3.3 (alt agent, alt worktree, alte foldere).
-- **Total Faza 3:** 146–196 de ore de agent pe un singur fir; cu 3.4 în paralel, drumul critic e de aproximativ 115–150 de ore. Lotul 2.8 adaugă înainte 24–33 de ore.
+- **Total Faza 3:** 146–196 de ore de agent pe un singur fir; cu 3.4 în paralel, drumul critic e de aproximativ 115–150 de ore. Lotul 2.8 adaugă înainte 30–41 de ore.
 
 **În paralel cu Faza 4** (outbox, notificări, suport, fișiere; ARCHITECTURE §15.2: „F3 și F4 merg în paralel după F2”), cu regula 10 (un agent per worktree):
 
