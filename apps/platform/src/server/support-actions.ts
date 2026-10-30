@@ -1,5 +1,6 @@
 'use server';
 
+import './access-config';
 import { headers } from 'next/headers';
 import {
   closeSupportSessionAsOwner,
