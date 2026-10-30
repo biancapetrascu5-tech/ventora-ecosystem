@@ -100,22 +100,27 @@ Lotul ține de Faza 2 și se face **înaintea Fazei 3**. Stă aici pentru că lo
 - **Shell-ul Founder** în `apps/founder`: AppShell și Spine-ul din design (Afaceri, Consum, Model comercial, Growth, Campanii, Sistem, Control). În 2.8 e activă doar „Afaceri”; celelalte apar când au ecran.
 - **`FounderBusinesses`**, cu datele din `core/organizations` și `core/identity`: numele, owner-ul, clientă din, starea, „Afacere nouă” (prin `createOrganizationAsFounder`, existent).
 - **`FounderBusiness`**: owner-ul, schimbările recente (din jurnalul de audit, `readAuditLogAsFounder`), suspendarea cu confirmare.
+- **Intrările spre fluxurile din Faza 2**, din meniul „Mai multe” al paginii afacerii, ca în design (S95):
+  - „Deschide o sesiune de suport” → `FounderSupportSession` (dialogul, apoi banda de sesiune), pe `openSupportSession` / `closeSupportSession`;
+  - „Recuperează accesul proprietarului” → `FounderOwnerRecovery` (drawer, ecran întreg pe telefon), pe `recoverOwnerAccess`, cu `verifications` validat pe server.
+  - Organizația vine din pagina afacerii, nu se mai alege separat. Ecranele fluxurilor sunt cele din Faza 2; 2.8 le leagă de pagina afacerii.
 - **Fără partea comercială:** cele patru cifre de sus (venitul lunar recurent, în perioadă de probă, plăți eșuate), coloanele de plan și consum, consumul față de limite, excepțiile și „Adaugă o excepție” se completează în Lotul 3.4. Până atunci nu apar; nu se afișează valori inventate.
 - **Suspendarea:** organizația nu are azi o stare în cod. E nevoie de o migrare în `core/organizations` și de un pas în `authorize()`. Efectul suspendării e D3-20.
 - Toate textele vin din chei next-intl, în 6 limbi. Capturile `_design` / `_impl` se fac la 390/1280 × light/dark (regula 12).
 
 **Nu intră:** `HubAdminTeam` (lipsește după raportul 2.7; se planifică separat, în Faza 2).
-**Dependențe:** loturile 2.1–2.7. D3-20 pentru suspendare.
+**Dependențe:** loturile 2.1–2.7, inclusiv ecranele `FounderSupportSession` și `FounderOwnerRecovery` din Faza 2. D3-20 pentru suspendare.
 **Migrări probabile:** `organization_status` (în `core/organizations`).
-**Ecrane:** AppShell, Spine, ContextBar (Hub), FounderBusinesses, FounderBusiness (fără secțiunile comerciale).
+**Ecrane:** AppShell, Spine, ContextBar (Hub), FounderBusinesses, FounderBusiness (fără secțiunile comerciale, cu intrările spre FounderSupportSession și FounderOwnerRecovery).
 **Gata când:**
 
 - Hub și Founder se deschid în shell-ul din design, pe date reale;
 - „Afacere nouă” creează organizația și invitația owner-ului, cu audit;
+- din pagina afacerii pornesc sesiunea de suport și recuperarea owner-ului, pe date reale: sesiunea se deschide pentru afacerea respectivă și apare banda; recuperarea trece de regula verificărilor pe server; ambele au rândul de audit pe persoana Founder;
 - o afacere suspendată nu mai trece de `authorize()` la cererea următoare (test), iar suspendarea și reactivarea sunt auditate pe persoana Founder;
 - capturile `_design` / `_impl` sunt în raport, cu diff.
 
-**Estimare:** 22–30 de ore (shell Hub 8–10, shell Founder 4–6, cele două ecrane Founder 8–12, suspendarea 2).
+**Estimare:** 24–33 de ore (shell Hub 8–10, shell Founder 4–6, cele două ecrane Founder 8–12, suspendarea 2, intrările spre suport și recuperare cu testele lor 2–3).
 
 ---
 
@@ -402,7 +407,7 @@ Lotul ține de Faza 2 și se face **înaintea Fazei 3**. Stă aici pentru că lo
 
 - 2.8 se face înaintea Fazei 3. Ar putea merge în paralel cu 3.1–3.3 (scrie în `apps/**`, nu în `core/commercial`), dar pasul de suspendare din `authorize()` atinge `core/access`, pe care îl atinge și 3.2. Recomand: 2.8 întâi, pe un singur fir.
 - 3.4 merge în paralel cu 3.5 și 3.6, după 3.3 (alt agent, alt worktree, alte foldere).
-- **Total Faza 3:** 146–196 de ore de agent pe un singur fir; cu 3.4 în paralel, drumul critic e de aproximativ 115–150 de ore. Lotul 2.8 adaugă înainte 22–30 de ore.
+- **Total Faza 3:** 146–196 de ore de agent pe un singur fir; cu 3.4 în paralel, drumul critic e de aproximativ 115–150 de ore. Lotul 2.8 adaugă înainte 24–33 de ore.
 
 **În paralel cu Faza 4** (outbox, notificări, suport, fișiere; ARCHITECTURE §15.2: „F3 și F4 merg în paralel după F2”), cu regula 10 (un agent per worktree):
 
