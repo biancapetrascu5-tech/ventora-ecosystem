@@ -27,6 +27,8 @@ export const AuditActions = {
   passwordChangedEmailFailed: 'password.changed_email_failed', // Lot 2.4b R-PR7 — notice not delivered
   // §2.3 Organizations and access
   organizationCreated: 'org.created', // E20
+  organizationSuspended: 'org.suspended', // Lot 2.8 (D3-20 a) — Founder suspends a business
+  organizationReactivated: 'org.reactivated', // Lot 2.8 — Founder reactivates it
   invitationCreated: 'invitation.created', // E21
   invitationResent: 'invitation.resent', // E22
   invitationRevoked: 'invitation.revoked', // E23

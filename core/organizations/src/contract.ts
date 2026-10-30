@@ -12,6 +12,7 @@ import {
   ReservedSlugError,
   InvalidNameError,
   InvalidEmailError,
+  OrganizationSuspendedError,
 } from './errors';
 import type { MembershipRole } from '../generated/organizations-client';
 import {
@@ -181,9 +182,9 @@ export async function resolveOrgContext(params: {
   organizationId: string;
 }): Promise<OrgContext> {
   const db = getOrgDb();
-  const membership = await db.$transaction(async (tx: any) => {
+  const { membership, organization } = await db.$transaction(async (tx: any) => {
     await tx.$executeRaw`SELECT set_config('app.organization_id', ${params.organizationId}, true)`;
-    return tx.membership.findUnique({
+    const membership = await tx.membership.findUnique({
       where: {
         organizationId_userId: {
           organizationId: params.organizationId,
@@ -192,8 +193,17 @@ export async function resolveOrgContext(params: {
       },
       select: { id: true, role: true, status: true },
     });
+    const organization = membership
+      ? await tx.organization.findUnique({
+          where: { id: params.organizationId },
+          select: { status: true },
+        })
+      : null;
+    return { membership, organization };
   });
   if (!membership || membership.status !== 'active') throw new NotMemberError();
+  // Lot 2.8 (D3-20 a): a suspended organization has no way in for anyone in it, not even to read.
+  if (organization?.status === 'suspended') throw new OrganizationSuspendedError();
   return {
     userId: params.userId,
     organizationId: params.organizationId,
@@ -339,6 +349,76 @@ export async function listOrganizationOwnersInTx(
   return {
     organizationName: rows[0]!.organization_name as string,
     ownerUserIds: rows.map((r) => r.user_id as string | null).filter((id): id is string => !!id),
+  };
+}
+
+export type FounderOrganizationRow = {
+  organizationId: string;
+  name: string;
+  slug: string;
+  status: 'active' | 'suspended';
+  createdAt: Date;
+  suspendedAt: Date | null;
+  /** The first active owner; null while the owner has not accepted the invitation yet. */
+  ownerUserId: string | null;
+  /** Without an owner: the newest owner invitation (address and pending / expired / revoked). */
+  ownerInvitation: { email: string; state: string } | null;
+};
+
+/**
+ * Lot 2.8 (FounderBusinesses), on a founder_runtime transaction owned by the caller: every
+ * organization with its first active owner or, until one exists, its newest owner invitation.
+ */
+export async function listOrganizationsAsFounderInTx(
+  exec: AuditSqlExecutor,
+): Promise<FounderOrganizationRow[]> {
+  const rows = await exec.query(
+    `SELECT organization_id::text AS organization_id, organization_name, organization_slug,
+            status::text AS status, created_at, suspended_at, owner_user_id::text AS owner_user_id,
+            owner_invitation_email, owner_invitation_state
+       FROM organizations.founder_list_organizations()`,
+    [],
+  );
+  return rows.map((r) => ({
+    organizationId: r.organization_id as string,
+    name: r.organization_name as string,
+    slug: r.organization_slug as string,
+    status: r.status as 'active' | 'suspended',
+    createdAt: new Date(r.created_at as string),
+    suspendedAt: r.suspended_at ? new Date(r.suspended_at as string) : null,
+    ownerUserId: (r.owner_user_id as string | null) ?? null,
+    ownerInvitation: r.owner_invitation_email
+      ? {
+          email: r.owner_invitation_email as string,
+          state: (r.owner_invitation_state as string | null) ?? 'pending',
+        }
+      : null,
+  }));
+}
+
+/**
+ * Lot 2.8 (D3-20 a): suspends or reactivates an organization, on the caller's founder_runtime
+ * transaction (the audit row goes in the same one). null when the organization does not exist;
+ * `changed` is false when it already had that status.
+ */
+export async function setOrganizationStatusInTx(
+  exec: AuditSqlExecutor,
+  organizationId: string,
+  status: 'active' | 'suspended',
+  founderId: string,
+): Promise<{ organizationName: string; changed: boolean } | null> {
+  assertUuid(organizationId, 'organizationId');
+  assertUuid(founderId, 'founderId');
+  const rows = await exec.query(
+    `SELECT organization_name, previous_status::text AS previous_status
+       FROM organizations.founder_set_organization_status($1::uuid, $2, $3::uuid)`,
+    [organizationId, status, founderId],
+  );
+  const row = rows[0];
+  if (!row) return null;
+  return {
+    organizationName: row.organization_name as string,
+    changed: row.previous_status !== status,
   };
 }
 
@@ -656,6 +736,13 @@ export async function acceptInvitation(params: {
   const result = await db
     .$transaction(async (tx: any) => {
       await tx.$executeRaw`SELECT set_config('app.organization_id', ${inv.organization_id}, true)`;
+
+      // Lot 2.8 (D3-20 a): nobody joins a suspended organization
+      const org = await tx.organization.findUnique({
+        where: { id: inv.organization_id },
+        select: { status: true },
+      });
+      if (org?.status === 'suspended') throw new OrganizationSuspendedError();
 
       // Atomic UPDATE — 0 rows means token was already used (race condition guard)
       const updated = await tx.$executeRaw`

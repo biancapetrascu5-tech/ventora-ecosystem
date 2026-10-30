@@ -6,6 +6,7 @@ import {
   Forbidden,
   ResourceNotFound,
   TwoFactorRequired,
+  OrganizationSuspended,
 } from '@ventora/errors';
 import type { EntitlementProvider } from '@ventora/contracts';
 import {
@@ -112,7 +113,9 @@ export async function authorize(params: AuthorizeParams): Promise<TenantContext>
   let orgCtx: Awaited<ReturnType<typeof resolveOrgContext>>;
   try {
     orgCtx = await resolveOrgContext({ userId: session.userId, organizationId });
-  } catch {
+  } catch (err) {
+    // Lot 2.8 (D3-20 a): a suspended organization refuses every request, for every role
+    if (err instanceof OrganizationSuspended) throw err;
     throw new NotMember();
   }
 
