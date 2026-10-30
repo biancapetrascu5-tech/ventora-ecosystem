@@ -91,3 +91,7 @@ export {
 } from './founder/OwnerRecoveryView';
 export type { Check, RecoveryValues, RecoveryFlags } from './founder/OwnerRecoveryView';
 export { default as founderSupportStyles } from './founder/support.module.css';
+
+// Ora și data în ecrane (S110; engleza britanică, Lot 2.8).
+export { useWhen, useDates, useTimeZone, intlLocale } from './when';
+export type { DateFormats } from './when';

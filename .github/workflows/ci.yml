@@ -65,6 +65,9 @@ jobs:
       - run: pnpm --filter @ventora/organizations generate
       - run: pnpm --filter @ventora/access generate
       - run: pnpm lint
+      # Lot 2.8: o cheie lipsă (sau în plus) într-o limbă pică CI-ul, nu doar pre-push-ul local.
+      - name: i18n:check
+        run: pnpm i18n:check
       - run: pnpm typecheck
       - run: pnpm format:check
 
