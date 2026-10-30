@@ -9,8 +9,8 @@ export interface EventEnvelope<TPayload = unknown> {
    */
   eventId: string;
   /**
-   * Format: `<app>.<entity>.<action>.v<n>`
-   * Exemplu: `booking.appointment.created.v1`
+   * Format: `<entitate>.<acțiune>` (catalogul din event-catalog.ts), versiunea separat în `version`.
+   * Exemplu: `invitation.new_link_requested`, versiunea 1.
    */
   type: string;
   version: number;

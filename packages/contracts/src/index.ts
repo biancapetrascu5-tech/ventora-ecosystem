@@ -4,3 +4,4 @@ export * from './notifications';
 export * from './commercial-preferences';
 export * from './owner-2fa';
 export * from './entitlement-provider';
+export * from './event-catalog';
