@@ -23,6 +23,22 @@ const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const RECENT_CHANGES = 5;
 
+/** „Ultimele modificări”: ce s-a schimbat la afacere (nu citirile jurnalului, nu cererile). */
+export const BUSINESS_CHANGE_ACTIONS = [
+  AuditActions.organizationCreated,
+  AuditActions.organizationSuspended,
+  AuditActions.organizationReactivated,
+  AuditActions.invitationCreated,
+  AuditActions.invitationResent,
+  AuditActions.invitationRevoked,
+  AuditActions.invitationAccepted,
+  AuditActions.applicationAccessGranted,
+  AuditActions.supportSessionOpened,
+  AuditActions.supportSessionClosed,
+  AuditActions.supportSessionRevokedByOrg,
+  AuditActions.ownerRecoveryPerformed,
+] as const;
+
 export type FounderBusiness = {
   id: string;
   name: string;
@@ -33,6 +49,8 @@ export type FounderBusiness = {
   owner: { userId: string; name: string; email: string } | null;
   /** Without an owner: the newest owner invitation (pending / expired / revoked). */
   ownerInvitation: { email: string; state: string } | null;
+  /** Active people in the business (the suspension dialog). */
+  memberCount: number;
 };
 
 async function withOwners(
@@ -50,6 +68,7 @@ async function withOwners(
       suspendedAt: r.suspendedAt,
       owner: r.ownerUserId && contact ? { userId: r.ownerUserId, ...contact } : null,
       ownerInvitation: r.ownerInvitation,
+      memberCount: r.memberCount,
     });
   }
   return out;
@@ -83,6 +102,7 @@ export async function getBusinessPageForFounder(params: {
   if (!business) throw new ResourceNotFound('Organization not found');
   const recent = await readAuditLogAsFounder(founder.userId, {
     organizationId: params.organizationId,
+    actions: [...BUSINESS_CHANGE_ACTIONS],
     limit: RECENT_CHANGES,
   });
   return { business, recent };

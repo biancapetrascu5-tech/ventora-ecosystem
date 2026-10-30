@@ -218,10 +218,12 @@ describe('TB.1 — FounderBusinesses: afacerile cu owner-ul sau invitația lui',
       status: 'active',
       owner: { userId: owner.userId, email: owner.email, name: 'Ana owner' },
       ownerInvitation: null,
+      memberCount: 1,
     });
     const b = all.find((x) => x.id === invited)!;
     expect(b.owner).toBeNull();
     expect(b.ownerInvitation).toEqual({ email: 'maria@studiolumina.test', state: 'pending' });
+    expect(b.memberCount).toBe(0);
   });
 
   it('a Founder without 2FA is refused', async () => {
@@ -304,6 +306,12 @@ describe('TB.3 — pagina afacerii: owner-ul și schimbările recente', () => {
     });
     expect(page.business.status).toBe('suspended');
     expect(page.recent.map((r) => r.action)).toContain('org.suspended');
+    // A doua citire: rândurile E33 ale primei citiri nu intră în „Ultimele modificări”
+    const again = await getBusinessPageForFounder({
+      founderHeaders: founder.headers(),
+      organizationId: orgId,
+    });
+    expect(again.recent.map((r) => r.action)).not.toContain('founder.audit_viewed');
     const viewed = await auditRows(`organization_id = $1 AND action = 'founder.audit_viewed'`, [
       orgId,
     ]);

@@ -51,6 +51,7 @@ export {
   reactivateBusiness,
   createBusinessAsFounder,
   slugFromName,
+  BUSINESS_CHANGE_ACTIONS,
 } from './businesses';
 export type { FounderBusiness } from './businesses';
 export {

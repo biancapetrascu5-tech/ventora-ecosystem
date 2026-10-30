@@ -363,6 +363,8 @@ export type FounderOrganizationRow = {
   ownerUserId: string | null;
   /** Without an owner: the newest owner invitation (address and pending / expired / revoked). */
   ownerInvitation: { email: string; state: string } | null;
+  /** Active memberships (the suspension dialog says how many people lose access). */
+  memberCount: number;
 };
 
 /**
@@ -375,7 +377,7 @@ export async function listOrganizationsAsFounderInTx(
   const rows = await exec.query(
     `SELECT organization_id::text AS organization_id, organization_name, organization_slug,
             status::text AS status, created_at, suspended_at, owner_user_id::text AS owner_user_id,
-            owner_invitation_email, owner_invitation_state
+            owner_invitation_email, owner_invitation_state, member_count
        FROM organizations.founder_list_organizations()`,
     [],
   );
@@ -393,6 +395,7 @@ export async function listOrganizationsAsFounderInTx(
           state: (r.owner_invitation_state as string | null) ?? 'pending',
         }
       : null,
+    memberCount: Number(r.member_count ?? 0),
   }));
 }
 

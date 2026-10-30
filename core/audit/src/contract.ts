@@ -121,6 +121,7 @@ export async function readAuditLogAsFounder(
           AND ($3::text IS NULL OR founder_id = $3)
           AND ($4::text IS NULL OR action = $4)
           AND ($5::timestamptz IS NULL OR created_at < $5)
+          AND ($7::text[] IS NULL OR action = ANY($7::text[]))
         ORDER BY created_at DESC, id DESC
         LIMIT $6`,
       [
@@ -130,6 +131,7 @@ export async function readAuditLogAsFounder(
         filters.action ?? null,
         filters.before ?? null,
         clampLimit(filters.limit),
+        filters.actions ?? null,
       ],
     );
     await appendAuditEventInTx(exec, {
@@ -146,6 +148,7 @@ export async function readAuditLogAsFounder(
           actorId: filters.actorId ?? null,
           founderId: filters.founderId ?? null,
           action: filters.action ?? null,
+          actions: filters.actions ?? null,
         },
         resultCount: rows.length,
       },

@@ -43,7 +43,8 @@ AS $$
 $$;
 
 -- Un rând per afacere: primul owner activ (după vechime) sau, dacă nu există încă, invitația de
--- owner cea mai nouă (adresa și starea ei, ca „pending”/„expired” calculat).
+-- owner cea mai nouă (adresa și starea ei, ca „pending”/„expired” calculat), plus câți oameni
+-- activi are afacerea (dialogul de suspendare: „Cei 8 oameni ai afacerii…”).
 CREATE OR REPLACE FUNCTION organizations.founder_list_organizations()
 RETURNS TABLE (
   organization_id        UUID,
@@ -54,7 +55,8 @@ RETURNS TABLE (
   suspended_at           TIMESTAMPTZ,
   owner_user_id          UUID,
   owner_invitation_email VARCHAR(255),
-  owner_invitation_state TEXT
+  owner_invitation_state TEXT,
+  member_count           INTEGER
 )
 LANGUAGE sql
 STABLE
@@ -68,7 +70,9 @@ AS $$
            WHEN ow.user_id IS NOT NULL OR inv.id IS NULL THEN NULL
            WHEN inv.status = 'pending' AND inv.expires_at < now() THEN 'expired'
            ELSE inv.status::text
-         END
+         END,
+         (SELECT count(*)::int FROM "organizations"."membership" mc
+           WHERE mc.organization_id = o.id AND mc.status = 'active')
     FROM "organizations"."organization" o
     LEFT JOIN LATERAL (
       SELECT m.user_id
