@@ -1,17 +1,12 @@
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { Pool } from 'pg';
 import { closeAuditPools } from '@ventora/audit';
-import {
-  countBackupCodes,
-  getPasswordChangedAt,
-  hubAuth,
-  startTwoFactorEnrollment,
-} from '@ventora/identity';
-import { Conflict, Forbidden, TwoFactorLocked } from '@ventora/errors';
+import { countBackupCodes, getPasswordChangedAt, hubAuth } from '@ventora/identity';
+import { Forbidden, TwoFactorLocked } from '@ventora/errors';
 import { disableMemberTwoFactor } from '../index.js';
 
 // Lot 2.7 · D (S108): a member turns two-step sign-in on from Contul tău · Securitate (without
-// the password, as designed) and off with the TOTP code; an owner cannot turn it off.
+// the current password, S110) and off with the TOTP code; an owner cannot turn it off.
 
 const adminPool = new Pool({
   connectionString: process.env.DIRECT_URL || process.env.DATABASE_URL,
@@ -89,9 +84,29 @@ async function createUser(role: 'member' | 'owner') {
   return { userId: signUp.user.id, email, token: signUp.token! };
 }
 
+let ipSeq = 0;
+
+/** "Activează" (S110): Better Auth /two-factor/enable over HTTP, with the password, from one IP. */
+async function enable(token: string, body: Record<string, unknown>, ip?: string) {
+  ipSeq += 1;
+  return hubAuth.handler(
+    new Request('http://localhost/api/auth/two-factor/enable', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+        'x-forwarded-for': ip ?? `10.27.3.${ipSeq}`,
+      },
+      body: JSON.stringify(body),
+    }),
+  );
+}
+
 /** "Activează" → step 2 (Better Auth verify-totp) → the session token kept after enrollment. */
 async function turnOn(token: string): Promise<{ token: string; secret: string; codes: string[] }> {
-  const started = await startTwoFactorEnrollment(bearer(token));
+  const res = await enable(token, { password: PASSPHRASE });
+  if (res.status !== 200) throw new Error(`enable failed: ${res.status}`);
+  const started = (await res.json()) as { totpURI: string; backupCodes: string[] };
   const secret = secretFromUri(started.totpURI);
   const resp = await hubAuth.api.verifyTOTP({
     headers: bearer(token),
@@ -137,28 +152,43 @@ afterAll(async () => {
   await closeAuditPools();
 });
 
-describe('Lot 2.7 · D — two-step sign-in for a member (S108)', () => {
-  it('"Activează" without the password: QR, 10 backup codes, on after the code (E8, E9)', async () => {
+describe('Lot 2.7 · D, G3 — two-step sign-in for a member (S108, S110)', () => {
+  it('"Activează" asks for the current password: none or wrong → refused, nothing started', async () => {
     const member = await createUser('member');
-    const started = await startTwoFactorEnrollment(bearer(member.token));
+    const none = await enable(member.token, {});
+    expect(none.status).toBe(400);
+    const wrong = await enable(member.token, { password: 'Gresita-parola-9' });
+    expect(wrong.status).toBe(400);
+    expect(((await wrong.json()) as { code?: string }).code).toBe('INVALID_PASSWORD');
+    expect(await twoFactorState(member.userId)).toEqual({ enabled: false, rows: [] });
+  });
+
+  it('wrong passwords have the sign-in limit: the 6th try from the same place gets 429', async () => {
+    const member = await createUser('member');
+    const ip = '10.27.9.9';
+    for (let i = 0; i < 5; i++) {
+      expect((await enable(member.token, { password: 'Gresita-parola-9' }, ip)).status).toBe(400);
+    }
+    expect((await enable(member.token, { password: PASSPHRASE }, ip)).status).toBe(429);
+    expect((await twoFactorState(member.userId)).rows).toEqual([]);
+  });
+
+  it('the right password starts the steps: QR, 10 codes, on after the code (E9)', async () => {
+    const member = await createUser('member');
+    const res = await enable(member.token, { password: PASSPHRASE });
+    expect(res.status).toBe(200);
+    const started = (await res.json()) as { totpURI: string; backupCodes: string[] };
     expect(started.totpURI).toMatch(/^otpauth:\/\/totp\/Ventora%20Hub:/);
-    expect(started.totpURI).toContain(encodeURIComponent(member.email));
     expect(started.backupCodes).toHaveLength(10);
     expect(started.backupCodes.every((c) => /^\d{8}$/.test(c))).toBe(true);
     let state = await twoFactorState(member.userId);
     expect(state.enabled).toBe(false);
-    expect(state.rows).toEqual([
-      { verified: false, failed_verification_count: 0, locked_until: null },
-    ]);
-
-    // starting again replaces the pending row (abandoned dialog)
-    const again = await startTwoFactorEnrollment(bearer(member.token));
-    const secret = secretFromUri(again.totpURI);
-    expect((await twoFactorState(member.userId)).rows).toHaveLength(1);
+    expect(state.rows).toHaveLength(1);
+    expect(state.rows[0]!.verified).toBe(false);
 
     const resp = await hubAuth.api.verifyTOTP({
       headers: bearer(member.token),
-      body: { code: await totpFromBase32(secret) },
+      body: { code: await totpFromBase32(secretFromUri(started.totpURI)) },
       asResponse: true,
     });
     expect(resp.status).toBe(200);
@@ -167,12 +197,7 @@ describe('Lot 2.7 · D — two-step sign-in for a member (S108)', () => {
     expect(state.enabled).toBe(true);
     expect(state.rows[0]!.verified).toBe(true);
     expect(await countBackupCodes('hub', bearer(token))).toBe(10);
-    expect(await auditRows('2fa.enroll_started', member.userId)).toHaveLength(2);
     expect(await auditRows('2fa.enabled', member.userId)).toHaveLength(1);
-
-    // already on → Conflict, nothing changed
-    await expect(startTwoFactorEnrollment(bearer(token))).rejects.toThrow(Conflict);
-    expect((await twoFactorState(member.userId)).rows[0]!.verified).toBe(true);
   });
 
   it('"Dezactivează" with the TOTP code: off, the codes gone, 2fa.disabled', async () => {

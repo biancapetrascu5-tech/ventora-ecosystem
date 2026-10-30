@@ -1,31 +1,14 @@
 'use server';
 
 import { headers } from 'next/headers';
-import {
-  getSession,
-  listSessions,
-  revokeSession,
-  startTwoFactorEnrollment,
-} from '@ventora/identity';
+import { getSession, listSessions, revokeSession } from '@ventora/identity';
 import { disableMemberTwoFactor } from '@ventora/access';
 
 /* Contul tău · Securitate (Lot 2.7 · D, S100, S108). Utilizatorul vine mereu din sesiune.
-   „Schimbă parola” și pasul 2 al activării merg direct la Better Auth (/change-password,
-   /two-factor/verify-totp), din ecran. */
+   „Schimbă parola” și activarea 2FA merg direct la Better Auth din ecran: /change-password,
+   /two-factor/enable cu parola actuală (S110), apoi /two-factor/verify-totp. */
 
 type Coded = { code?: string; lockedUntil?: string };
-
-export type StartTwoFactorResult =
-  { ok: true; totpURI: string; backupCodes: string[] } | { ok: false };
-
-/** „Activează”: codul QR și codurile de rezervă (afișate la pasul 3). */
-export async function startTwoFactor(): Promise<StartTwoFactorResult> {
-  try {
-    return { ok: true, ...(await startTwoFactorEnrollment(await headers())) };
-  } catch {
-    return { ok: false };
-  }
-}
 
 export type DisableTwoFactorResult =
   | { ok: true }

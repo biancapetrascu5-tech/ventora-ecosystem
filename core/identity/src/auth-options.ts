@@ -36,6 +36,8 @@ const HUB_RATE_LIMIT = {
     '/sign-in/email': { window: 60 * 15, max: 5 },
     '/two-factor/verify-totp': { window: 60 * 15, max: 5 },
     '/two-factor/verify-backup-code': { window: 60 * 15, max: 5 },
+    // S110: the password at „Activează” has the sign-in limit
+    '/two-factor/enable': { window: 60 * 15, max: 5 },
     '/request-password-reset': { window: 60 * 15, max: 5 },
     '/reset-password': { window: 60 * 15, max: 5 },
     [RENEW_RESET_LINK_PATH]: { window: 60 * 15, max: 5 },
