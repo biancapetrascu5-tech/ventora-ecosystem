@@ -1,9 +1,34 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { Avatar, Badge, Checkbox, Icon, Input, Logo, cn } from '@ventora/ui';
+import { Avatar, Badge, Checkbox, Icon, Input, Logo, StatusPill, cn } from '@ventora/ui';
 import styles from './choose.module.css';
 import auth from './auth.module.css';
+
+/**
+ * S112: a sentence with the support address as a link in place of `{email}` — the caller
+ * translates with a marker (U+0000) so the link is split out without rebuilding the sentence.
+ */
+export function SupportNote({
+  text,
+  email,
+  className = 'body muted',
+}: {
+  text: string;
+  email: string;
+  className?: string;
+}) {
+  const [before, after = ''] = text.split('\u0000');
+  return (
+    <p className={className}>
+      {before}
+      <a className={styles.link} href={`mailto:${email}`}>
+        {email}
+      </a>
+      {after}
+    </p>
+  );
+}
 
 /* HubChooseBusiness: pentru cine lucrează în mai multe afaceri. Ultima folosită stă prima și are
    focus; peste 6 afaceri apare căutarea. Fără „Adaugă afacere”. */
@@ -18,6 +43,8 @@ export type BusinessRow = {
   /** Când a fost deschisă ultima dată, deja formatat („acum 2 ore”); lipsește dacă niciodată. */
   last?: string;
   recent?: boolean;
+  /** S112: afacerea e suspendată — „Acces oprit”, lacăt, nu se deschide. */
+  suspended?: boolean;
 };
 
 const initials = (name: string) =>
@@ -37,6 +64,7 @@ export function ChooseBusinessView({
   onOpen,
   focusFirst,
   mob,
+  supportEmail,
 }: {
   userName: string;
   businesses: BusinessRow[];
@@ -48,6 +76,8 @@ export function ChooseBusinessView({
   /** Prima afacere (ultima folosită) primește focusul: Enter o deschide. */
   focusFirst?: boolean;
   mob?: boolean;
+  /** S112: adresa de suport din nota de sub listă, când o afacere are „Acces oprit”. */
+  supportEmail?: string;
 }) {
   const t = useTranslations('hub.chooseBusiness');
   const many = businesses.length > 6;
@@ -74,6 +104,27 @@ export function ChooseBusinessView({
           )}
           <div className={styles.list}>
             {shown.map((b, i) => {
+              if (b.suspended) {
+                const stopped = t('accessStopped');
+                return (
+                  <div
+                    key={b.id}
+                    className={cn(styles.biz, styles.isOff)}
+                    role="group"
+                    aria-disabled="true"
+                    aria-label={`${b.name}, ${stopped}`}
+                  >
+                    <span className={cn(auth.mark, auth.markSm)}>{initials(b.name)}</span>
+                    <span className={styles.text}>
+                      <span className="body-strong">{b.name}</span>
+                      <span className="body-small muted">{b.role}</span>
+                    </span>
+                    <StatusPill tone="neutral" icon="lock">
+                      {stopped}
+                    </StatusPill>
+                  </div>
+                );
+              }
               const meta = [
                 b.role,
                 b.apps !== undefined ? t('apps', { count: b.apps }) : null,
@@ -99,6 +150,9 @@ export function ChooseBusinessView({
               );
             })}
           </div>
+          {supportEmail && businesses.some((b) => b.suspended) && (
+            <SupportNote text={t('stoppedNote', { email: '\u0000' })} email={supportEmail} />
+          )}
           <Checkbox isSelected={remember} onChange={onRememberChange}>
             {t('remember')}
           </Checkbox>
