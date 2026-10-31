@@ -94,7 +94,7 @@ describe('T2.2 createOrganizationAsFounder', () => {
     const slug = `org-${Date.now()}`;
 
     const result = await createOrganizationAsFounder(
-      { founderId, founderEmail: 'founder@test.com' },
+      { founderId },
       { name: 'Test Organization', slug, ownerEmail: 'owner@test.com' },
     );
 
@@ -124,7 +124,7 @@ describe('T2.3 acceptInvitation', () => {
     const slug = `accept-${Date.now()}`;
 
     const { organizationId, invitationToken } = await createOrganizationAsFounder(
-      { founderId, founderEmail: 'founder@test.com' },
+      { founderId },
       { name: 'Accept Org', slug, ownerEmail: email },
     );
 
@@ -151,7 +151,7 @@ describe('T2.4 token is single-use', () => {
     const slug = `reuse-${Date.now()}`;
 
     const { organizationId, invitationToken } = await createOrganizationAsFounder(
-      { founderId, founderEmail: 'founder@test.com' },
+      { founderId },
       { name: 'Reuse Org', slug, ownerEmail: email },
     );
 
@@ -172,7 +172,7 @@ describe('T2.5 email mismatch', () => {
     const slug = `mismatch-${Date.now()}`;
 
     const { organizationId, invitationToken } = await createOrganizationAsFounder(
-      { founderId, founderEmail: 'founder@test.com' },
+      { founderId },
       { name: 'Mismatch Org', slug, ownerEmail: 'correct@example.com' },
     );
 
@@ -197,7 +197,7 @@ describe('T2.6 listMyOrganizations', () => {
     const slug = `list-${Date.now()}`;
 
     const { organizationId, invitationToken } = await createOrganizationAsFounder(
-      { founderId, founderEmail: 'founder@test.com' },
+      { founderId },
       { name: 'List Org', slug, ownerEmail: email },
     );
 
@@ -221,7 +221,7 @@ describe('T2.7 inviteMember and revokeInvitation', () => {
     const slug = `invite-${Date.now()}`;
 
     const { organizationId, invitationToken } = await createOrganizationAsFounder(
-      { founderId, founderEmail: 'founder@test.com' },
+      { founderId },
       { name: 'Invite Org', slug, ownerEmail },
     );
     await acceptInvitation({ token: invitationToken, userId: ownerId, userEmail: ownerEmail });
@@ -263,7 +263,7 @@ describe('T2.8 ForbiddenError for member role', () => {
     const slug = `forbidden-${Date.now()}`;
 
     const { organizationId, invitationToken: ownerToken } = await createOrganizationAsFounder(
-      { founderId, founderEmail: 'founder@test.com' },
+      { founderId },
       { name: 'Forbidden Org', slug, ownerEmail },
     );
     await acceptInvitation({ token: ownerToken, userId: ownerId, userEmail: ownerEmail });
@@ -302,7 +302,7 @@ describe('T2.9 admin escalation blocked (B4)', () => {
     const slug = `b4-${Date.now()}`;
 
     const { organizationId, invitationToken: ownerToken } = await createOrganizationAsFounder(
-      { founderId, founderEmail: 'founder@test.com' },
+      { founderId },
       { name: 'B4 Org', slug, ownerEmail },
     );
     await acceptInvitation({ token: ownerToken, userId: ownerId, userEmail: ownerEmail });
@@ -348,7 +348,7 @@ describe('T2.10 resendInvitation status guard (S2)', () => {
     const slug = `resend-s2-${Date.now()}`;
 
     const { organizationId, invitationToken } = await createOrganizationAsFounder(
-      { founderId, founderEmail: 'founder@test.com' },
+      { founderId },
       { name: 'Resend Org', slug, ownerEmail: email },
     );
     await acceptInvitation({ token: invitationToken, userId, userEmail: email });
@@ -375,7 +375,7 @@ describe('T2.10 resendInvitation status guard (S2)', () => {
     const slug = `s2r-${Date.now()}`;
 
     const { organizationId, invitationToken: ownerToken } = await createOrganizationAsFounder(
-      { founderId, founderEmail: 'founder@test.com' },
+      { founderId },
       { name: 'Revoke Resend Org', slug, ownerEmail },
     );
     await acceptInvitation({ token: ownerToken, userId: ownerId, userEmail: ownerEmail });
@@ -416,7 +416,7 @@ describe('T2.11 cross-org isolation', () => {
     const emailA = `userA-t211-${ts}@example.com`;
 
     const resultA = await createOrganizationAsFounder(
-      { founderId: newUuid(), founderEmail: 'founder-a@test.com' },
+      { founderId: newUuid() },
       { name: 'Org A T211', slug: `org-a-t211-${ts}`, ownerEmail: emailA },
     );
     orgIdA = resultA.organizationId;
@@ -424,7 +424,7 @@ describe('T2.11 cross-org isolation', () => {
     ctxA = await resolveOrgContext({ userId: userAId, organizationId: orgIdA });
 
     const resultB = await createOrganizationAsFounder(
-      { founderId: newUuid(), founderEmail: 'founder-b@test.com' },
+      { founderId: newUuid() },
       {
         name: 'Org B T211',
         slug: `org-b-t211-${ts}`,
@@ -541,7 +541,7 @@ describe('T3.7 — organization audit events', () => {
     const founderId = newUuid();
     const slug = `audit-e20-${Date.now()}`;
     const { organizationId } = await createOrganizationAsFounder(
-      { founderId, founderEmail: 'founder@test.com' },
+      { founderId },
       { name: 'Audit E20', slug, ownerEmail: 'Owner.E20@Test.com' },
     );
 
@@ -569,7 +569,7 @@ describe('T3.7 — organization audit events', () => {
     try {
       await expect(
         createOrganizationAsFounder(
-          { founderId: newUuid(), founderEmail: 'founder@test.com' },
+          { founderId: newUuid() },
           { name: 'Audit E20 fail', slug, ownerEmail: 'owner@test.com' },
         ),
       ).rejects.toThrow(/append_event/);
@@ -586,7 +586,7 @@ describe('T3.7 — organization audit events', () => {
 
   it('E21 / E22 / E23 — invite, resend, revoke', async () => {
     const { organizationId } = await createOrganizationAsFounder(
-      { founderId: newUuid(), founderEmail: 'founder@test.com' },
+      { founderId: newUuid() },
       { name: 'Audit E21', slug: `audit-e21-${Date.now()}`, ownerEmail: 'owner@test.com' },
     );
     const ctx = await ownerContext(organizationId);
@@ -635,7 +635,7 @@ describe('T3.7 — organization audit events', () => {
   it('E24 / E25 — accept, then reuse and wrong email are audited as accept_failed', async () => {
     const email = `accept-audit-${Date.now()}@example.com`;
     const { organizationId, invitationToken } = await createOrganizationAsFounder(
-      { founderId: newUuid(), founderEmail: 'founder@test.com' },
+      { founderId: newUuid() },
       { name: 'Audit E24', slug: `audit-e24-${Date.now()}`, ownerEmail: email },
     );
 
@@ -721,7 +721,7 @@ describe('INV — invitation emails', () => {
 
   async function newOrg(name: string, ownerEmail = `owner-${newUuid()}@example.com`) {
     const created = await createOrganizationAsFounder(
-      { founderId: newUuid(), founderEmail: 'founder@test.com' },
+      { founderId: newUuid() },
       { name, slug: `inv-${newUuid().slice(0, 12)}`, ownerEmail },
     );
     createdOrgs.push(created.organizationId);
@@ -1006,7 +1006,7 @@ describe('Lot 2.6 — getInvitationByToken / requestNewInvitationLink (E)', () =
   it('pending: inviter, business, role, apps, address; then expired, accepted, revoked; unknown → null', async () => {
     const stamp = Date.now();
     const { organizationId } = await createOrganizationAsFounder(
-      { founderId: newUuid(), founderEmail: 'founder@test.com' },
+      { founderId: newUuid() },
       { name: 'Salon E', slug: `l26e-${stamp}`, ownerEmail: `owner-e-${stamp}@example.com` },
     );
     const owner = await ownerContext(organizationId);
@@ -1071,7 +1071,7 @@ describe('Lot 2.7 · C — listInvitations: the new-link request in the team lis
   it('owner and admin see newLinkRequestedAt; a member is refused; the new link clears it', async () => {
     const stamp = Date.now();
     const { organizationId } = await createOrganizationAsFounder(
-      { founderId: newUuid(), founderEmail: 'founder@test.com' },
+      { founderId: newUuid() },
       { name: 'Salon C', slug: `l27c-${stamp}`, ownerEmail: `owner-c-${stamp}@example.com` },
     );
     const owner = await ownerContext(organizationId);
@@ -1143,7 +1143,7 @@ describe('Lot 2.6 — markOrganizationOpened / listMyOrganizations (F)', () => {
     const orgs: string[] = [];
     for (const name of ['Alfa', 'Beta']) {
       const { organizationId } = await createOrganizationAsFounder(
-        { founderId: newUuid(), founderEmail: 'founder@test.com' },
+        { founderId: newUuid() },
         {
           name: `${name} F`,
           slug: `l26f-${name.toLowerCase()}-${stamp}`,
