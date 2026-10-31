@@ -18,6 +18,8 @@ import {
   createPlanVersion,
   extendOverride,
   getBusinessCommercialForFounder,
+  getCatalogForOrg,
+  listAddonsForOrg,
   getEffectiveEntitlements,
   getIncludedMembersForFounder,
   getPlanVersionForFounder,
@@ -41,7 +43,7 @@ import {
   setApplicationActivationMode,
   setApplicationPrices,
   setApplicationQuotas,
-  setBundleSalePeriod,
+  setOfferPeriod,
   setBusinessCurrency,
   setIncludedMembers,
   stopBundleSales,
@@ -770,7 +772,7 @@ describe('Lot 3.4 — D3-24: the seats every account includes, applications à l
         (a) => a.id === 'booking',
       )!.quotas,
     ).toEqual({ 'booking.appointments': 1000, 'messaging.sms': 200 });
-    const [audit] = await auditRows('commercial.application_quotas_set', 'booking');
+    const [audit] = (await auditRows('commercial.application_quotas_set', 'booking')).slice(-1);
     expect(audit).toMatchObject({ actor_type: 'founder', founder_id: founderId });
 
     const org = newUuid();
@@ -873,43 +875,85 @@ describe('Lot 3.4 — D3-24: the seats every account includes, applications à l
     });
   });
 
-  it('a bundle sells in its sale period and until „Oprește vânzarea”; who has it keeps it', async () => {
+  it('an offer sells in its sale period, offers do not overlap, „Oprește vânzarea”; who has it keeps it', async () => {
     const { planId, versionId } = await plan();
     const existing = await business(versionId);
     const before = await getEffectiveEntitlements(existing);
+    const day = (d: number) => new Date(Date.now() + d * DAY).toISOString().slice(0, 10);
 
-    const yesterday = new Date(Date.now() - DAY).toISOString().slice(0, 10);
-    const lastWeek = new Date(Date.now() - 7 * DAY).toISOString().slice(0, 10);
-    await setBundleSalePeriod({
+    // a bundle sold by offers with periods: a scheduled one is not on sale yet
+    const { planId: p3 } = await createPlan({
       founderHeaders: founderHeaders(),
-      planId,
-      availableFrom: lastWeek,
-      availableUntil: yesterday,
+      code: `l34-sched-${newUuid().slice(0, 6)}`,
+      name: 'Clinică',
     });
-    await expect(business(versionId)).rejects.toThrow(InvalidInput);
+    const { versionId: sched } = await createPlanVersion({
+      founderHeaders: founderHeaders(),
+      planId: p3,
+    });
+    await updateDraftVersion({ founderHeaders: founderHeaders(), versionId: sched, terms: TERMS });
     await expect(
-      setBundleSalePeriod({
+      setOfferPeriod({
         founderHeaders: founderHeaders(),
-        planId,
-        availableFrom: yesterday,
-        availableUntil: lastWeek,
+        versionId: sched,
+        availableFrom: day(40),
+        availableUntil: day(10),
       }),
     ).rejects.toThrow(InvalidInput);
-    await setBundleSalePeriod({
+    await setOfferPeriod({
       founderHeaders: founderHeaders(),
-      planId,
-      availableFrom: null,
-      availableUntil: null,
+      versionId: sched,
+      availableFrom: day(10),
+      availableUntil: day(40),
     });
-    const onSale = await business(versionId);
-    expect((await getEffectiveEntitlements(onSale)).subscription!.planVersionId).toBe(versionId);
+    await publishVersion({ founderHeaders: founderHeaders(), versionId: sched });
+    await expect(business(sched)).rejects.toThrow(InvalidInput); // scheduled, not on sale yet
+    // a published offer does not change
+    await expect(
+      setOfferPeriod({
+        founderHeaders: founderHeaders(),
+        versionId: sched,
+        availableFrom: day(1),
+        availableUntil: day(40),
+      }),
+    ).rejects.toThrow(Conflict);
+    // the next offer may not overlap it („Perioada se suprapune cu oferta de acum”)
+    const { versionId: next } = await createPlanVersion({
+      founderHeaders: founderHeaders(),
+      planId: p3,
+      copyFromVersionId: sched,
+    });
+    await setOfferPeriod({
+      founderHeaders: founderHeaders(),
+      versionId: next,
+      availableFrom: day(25),
+      availableUntil: day(60),
+    });
+    await expect(
+      publishVersion({ founderHeaders: founderHeaders(), versionId: next }),
+    ).rejects.toThrow(InvalidInput);
+    await setOfferPeriod({
+      founderHeaders: founderHeaders(),
+      versionId: next,
+      availableFrom: day(41),
+      availableUntil: day(70),
+    });
+    await publishVersion({ founderHeaders: founderHeaders(), versionId: next });
+    expect(await auditRows('commercial.offer_period_set', next)).toHaveLength(2);
+    const versions = (await listPlansForFounder({ founderHeaders: founderHeaders() })).find(
+      (p) => p.id === p3,
+    )!.versions;
+    expect(versions.map((v) => [v.availableFrom, v.availableUntil])).toEqual([
+      [day(10), day(40)],
+      [day(41), day(70)],
+    ]);
 
+    // „Oprește vânzarea”: no new business on it, in the database too; who has it keeps it
     await stopBundleSales({ founderHeaders: founderHeaders(), planId });
     await expect(stopBundleSales({ founderHeaders: founderHeaders(), planId })).rejects.toThrow(
       Conflict,
     );
     await expect(business(versionId)).rejects.toThrow(InvalidInput);
-    // in the database too, whatever writes
     await expect(
       q(
         `INSERT INTO commercial.subscription (organization_id, plan_version_id, interval, currency,
@@ -918,11 +962,123 @@ describe('Lot 3.4 — D3-24: the seats every account includes, applications à l
         [newUuid(), versionId, founderId],
       ),
     ).rejects.toThrow(/not on sale/);
-    // the businesses that bought it keep their version and price
     expect(await getEffectiveEntitlements(existing)).toEqual(before);
-    const plans = await listPlansForFounder({ founderHeaders: founderHeaders() });
-    expect(plans.find((p) => p.id === planId)!.salesStoppedAt).not.toBeNull();
+    expect(
+      (await listPlansForFounder({ founderHeaders: founderHeaders() })).find(
+        (p) => p.id === planId,
+      )!.salesStoppedAt,
+    ).not.toBeNull();
     expect(await auditRows('commercial.bundle_sales_stopped', planId)).toHaveLength(1);
-    expect(await auditRows('commercial.bundle_sale_period_set', planId)).toHaveLength(2);
+  });
+});
+
+// ── S117: add-ons by application, the catalog in the Hub ──────────────────────────────────
+
+describe('Lot 3.4 — S117: add-ons „Disponibil pentru”, the catalog of bundles and applications', () => {
+  it('an add-on is available with the application of its quota; a platform one, to everyone', async () => {
+    const seatsCode = `l34-seats-all-${newUuid().slice(0, 6)}`;
+    const { addonId: seats } = await createAddon({
+      founderHeaders: founderHeaders(),
+      code: seatsCode,
+      name: '5 locuri în echipă în plus',
+      quotaKey: 'platform.members',
+      quantity: 5,
+      validity: 'monthly',
+      purchaseMode: 'direct',
+      prices: [{ currency: 'RON', amountMinor: 6000 }],
+      eligiblePlanIds: [],
+    });
+    const { addonId: appts } = await createAddon({
+      founderHeaders: founderHeaders(),
+      code: `l34-appts-${newUuid().slice(0, 6)}`,
+      name: '200 de programări în plus',
+      quotaKey: 'booking.appointments',
+      quantity: 200,
+      validity: 'current_month',
+      purchaseMode: 'direct',
+      prices: [{ currency: 'RON', amountMinor: 3900 }],
+      eligiblePlanIds: [],
+    });
+    // without a bundle and without EasyBook: only the platform add-on
+    const org = newUuid();
+    await setBusinessCurrency({
+      founderHeaders: founderHeaders(),
+      organizationId: org,
+      currency: 'RON',
+    });
+    await assignSubscription({
+      founderHeaders: founderHeaders(),
+      organizationId: org,
+      interval: 'month',
+    });
+    const offered = (await listAddonsForOrg(org)).map((a) => a.id);
+    expect(offered).toContain(seats);
+    expect(offered).not.toContain(appts);
+    await expect(
+      grantAddon({ founderHeaders: founderHeaders(), organizationId: org, addonId: appts }),
+    ).rejects.toThrow(InvalidInput);
+    await grantAddon({ founderHeaders: founderHeaders(), organizationId: org, addonId: seats });
+    // with EasyBook à la carte, its add-on too
+    await setApplicationPrices({
+      founderHeaders: founderHeaders(),
+      applicationId: 'booking',
+      prices: [{ currency: 'RON', kind: 'month', amountMinor: 14900 }],
+    });
+    await addApplicationToSubscription({
+      founderHeaders: founderHeaders(),
+      organizationId: org,
+      applicationId: 'booking',
+    });
+    expect((await listAddonsForOrg(org)).map((a) => a.id)).toContain(appts);
+    const packs = await listAddonsForFounder({ founderHeaders: founderHeaders() });
+    expect(packs.find((a) => a.id === appts)!.applicationId).toBe('booking');
+    expect(packs.find((a) => a.id === seats)!.applicationId).toBeNull();
+  });
+
+  it('the catalog: bundles on sale now, against the applications separately; the one the business has', async () => {
+    await setApplicationPrices({
+      founderHeaders: founderHeaders(),
+      applicationId: 'booking',
+      prices: [
+        { currency: 'RON', kind: 'month', amountMinor: 14900 },
+        { currency: 'RON', kind: 'setup', amountMinor: 30000 },
+      ],
+    });
+    await setApplicationPrices({
+      founderHeaders: founderHeaders(),
+      applicationId: 'crm',
+      prices: [{ currency: 'RON', kind: 'month', amountMinor: 6900 }],
+    });
+    const terms: VersionTermsInput = {
+      ...TERMS,
+      applications: ['booking', 'crm'],
+      prices: [
+        { currency: 'RON', kind: 'month', amountMinor: 17900 },
+        { currency: 'RON', kind: 'year', amountMinor: 179000 },
+        { currency: 'RON', kind: 'setup', amountMinor: 20000 },
+      ],
+    };
+    const { planId, versionId } = await plan(terms);
+    const org = await business(versionId);
+    const { planId: stopped } = await plan(terms);
+    await stopBundleSales({ founderHeaders: founderHeaders(), planId: stopped });
+
+    const c = await getCatalogForOrg(org);
+    expect(c).toMatchObject({ currency: 'RON', interval: 'month', includedMembers: 3 });
+    const mine = c.bundles.find((b) => b.planId === planId)!;
+    expect(mine).toMatchObject({
+      monthMinor: 17900,
+      yearMinor: 179000,
+      setupMinor: 20000,
+      separateMonthMinor: 14900 + 6900,
+      seats: 10,
+      have: { versionNumber: 1, priceMinor: 17900 },
+    });
+    expect(mine.quotas['platform.members']).toBeUndefined();
+    expect(c.bundles.find((b) => b.planId === stopped)).toBeUndefined();
+    const booking = c.applications.find((a) => a.id === 'booking')!;
+    expect(booking).toMatchObject({ active: true, monthMinor: 14900, setupMinor: 30000 });
+    expect(c.applications.find((a) => a.id === 'crm')!.active).toBe(true);
+    expect(c.applications.find((a) => a.id === 'hr')!.active).toBe(false);
   });
 });

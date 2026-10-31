@@ -287,7 +287,37 @@ export async function requireFeature(
 }
 
 /**
- * The add-ons the organization's plan can take, still on sale, priced in its currency (D3-2):
+ * S117 („Disponibil pentru”): an add-on is available to a business that has the application of
+ * its quota (a key of the platform — members, SMS… — to every business), whatever its bundle.
+ * `addon_eligible_plan` (per plan, Lot 3.2) is no longer what decides (raportul 3.4).
+ */
+export async function addonAvailableInTx(
+  client: PoolClient,
+  organizationId: string,
+  addonId: string,
+): Promise<{ validity: string } | null> {
+  const { rows } = await client.query<{
+    validity: string;
+    application_id: string;
+    is_platform: boolean;
+  }>(
+    `SELECT a.validity, k.application_id, ap.is_platform
+       FROM commercial.addon a
+       JOIN commercial.quota_key k ON k.key = a.quota_key
+       JOIN commercial.application ap ON ap.id = k.application_id
+      WHERE a.id = $1 AND a.sales_stopped_at IS NULL`,
+    [addonId],
+  );
+  const r = rows[0];
+  if (!r) return null;
+  if (r.is_platform) return { validity: r.validity };
+  const { applications } = await computeEntitlementsInTx(client, organizationId, null);
+  return applications.includes(r.application_id) ? { validity: r.validity } : null;
+}
+
+/**
+ * The add-ons the organization can take (S117: by the application of their quota), still on
+ * sale, priced in its currency (D3-2):
  * an add-on without a price in that currency is not offered. `purchaseMode` is the add-on's own
  * switch (D3-7); a business without a card or with manual payment sees every one as a request
  * (Lot 3.5 / 3.7 combine it with the payment method).
@@ -297,32 +327,32 @@ export async function listAddonsForOrg(organizationId: string): Promise<AddonOff
   return withOrganizationRead(organizationId, async (client) => {
     const sub = await liveSubscription(client);
     if (!sub) return [];
-    const versionId = await versionAt(client, sub, null);
-    // D3-24: add-ons are eligible per bundle; without one, none is offered (raportul 3.4)
-    if (!versionId) return [];
+    const { applications } = await computeEntitlementsInTx(client, organizationId, null);
     const { rows } = await client.query(
       `SELECT a.id, a.code, a.name, a.quota_key, a.quantity, a.validity, a.purchase_mode,
-              p.amount_minor, p.setup_minor
+              p.amount_minor, p.setup_minor, k.application_id, ap.is_platform
          FROM commercial.addon a
-         JOIN commercial.addon_price p ON p.addon_id = a.id AND p.currency = $2
-         JOIN commercial.addon_eligible_plan e ON e.addon_id = a.id
-         JOIN commercial.plan_version v ON v.plan_id = e.plan_id AND v.id = $1
+         JOIN commercial.addon_price p ON p.addon_id = a.id AND p.currency = $1
+         JOIN commercial.quota_key k ON k.key = a.quota_key
+         JOIN commercial.application ap ON ap.id = k.application_id
         WHERE a.sales_stopped_at IS NULL
         ORDER BY a.quota_key, a.quantity, a.code`,
-      [versionId, sub.currency],
+      [sub.currency],
     );
-    return rows.map((r) => ({
-      id: r.id,
-      code: r.code,
-      name: r.name,
-      quotaKey: r.quota_key,
-      quantity: Number(r.quantity),
-      validity: r.validity,
-      purchaseMode: r.purchase_mode,
-      currency: sub.currency,
-      priceMinor: Number(r.amount_minor),
-      setupMinor: Number(r.setup_minor),
-    }));
+    return rows
+      .filter((r) => r.is_platform || applications.includes(r.application_id))
+      .map((r) => ({
+        id: r.id,
+        code: r.code,
+        name: r.name,
+        quotaKey: r.quota_key,
+        quantity: Number(r.quantity),
+        validity: r.validity,
+        purchaseMode: r.purchase_mode,
+        currency: sub.currency,
+        priceMinor: Number(r.amount_minor),
+        setupMinor: Number(r.setup_minor),
+      }));
   });
 }
 

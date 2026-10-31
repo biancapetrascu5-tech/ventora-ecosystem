@@ -87,7 +87,7 @@ export const AuditActions = {
   commercialRequestRefused: 'commercial.request_refused',
   // D3-24 (31.10.2026): applications à la carte, bundles, the seats every account includes
   commercialApplicationQuotasSet: 'commercial.application_quotas_set',
-  commercialBundleSalePeriodSet: 'commercial.bundle_sale_period_set',
+  commercialOfferPeriodSet: 'commercial.offer_period_set', // S117: a bundle offer's sale period
   commercialBundleSalesStopped: 'commercial.bundle_sales_stopped',
   commercialSettingChanged: 'commercial.setting_changed',
 } as const;

@@ -5,7 +5,7 @@ import { AuditActions, appendAuditEventInTx, pgExecutor } from '@ventora/audit';
 import { writeOutboxEvent } from '@ventora/db-kit';
 import { requireFounderSession } from '@ventora/identity';
 import { withFounderRead, withFounderWrite, withOrganizationWrite } from './db';
-import { computeEntitlementsInTx, currentVersionInTx } from './entitlements';
+import { addonAvailableInTx, computeEntitlementsInTx, currentVersionInTx } from './entitlements';
 
 /*
  * Lot 3.4: the requests from the Hub (FounderRequests, S111). „Cere activare” — an add-on on
@@ -124,15 +124,12 @@ async function checkTarget(
     return;
   }
   if (targetType !== 'addon') throw new InvalidInput('targetType');
-  if (!versionNow) throw new InvalidInput('targetId', 'The business has no subscription');
-  const { rows } = await client.query(
-    `SELECT 1 FROM commercial.addon a
-       JOIN commercial.addon_eligible_plan e ON e.addon_id = a.id
-       JOIN commercial.plan_version v ON v.plan_id = e.plan_id AND v.id = $2
-      WHERE a.id = $1 AND a.sales_stopped_at IS NULL`,
-    [uuid('targetId', targetId), versionNow],
-  );
-  if (!rows[0]) throw new InvalidInput('targetId', 'Not available on this plan');
+  if (!entitlements.subscription) {
+    throw new InvalidInput('targetId', 'The business has no subscription');
+  }
+  if (!(await addonAvailableInTx(client, organizationId, uuid('targetId', targetId)))) {
+    throw new InvalidInput('targetId', 'Not available to this business');
+  }
 }
 
 /**

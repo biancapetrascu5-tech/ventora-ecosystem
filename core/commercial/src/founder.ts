@@ -15,6 +15,7 @@ import { assertKnownKeys } from './contract';
 import { withFounderRead, withFounderWrite } from './db';
 import { anchorDayOf, calendarDate, quotaPeriod, startOfDay } from './period';
 import { loadVersionTerms } from './terms';
+import { addonAvailableInTx } from './entitlements';
 
 /*
  * Lot 3.2: the Founder side of the commercial model — plans, versions, add-ons, the business's
@@ -71,6 +72,9 @@ function mapDbError(err: unknown, field: string): never {
   const e = err as { code?: string; hint?: string; message?: string };
   if (e.hint === 'published_plan_version_immutable') {
     throw new Conflict('A published version cannot be changed');
+  }
+  if (e.hint === 'offer_period_overlap') {
+    throw new InvalidInput('availableFrom', 'The offer overlaps another offer of the bundle');
   }
   if (e.hint === 'bundle_not_on_sale') {
     throw new InvalidInput('versionId', 'The bundle is not on sale (D3-24)');
@@ -312,13 +316,15 @@ export async function publishVersion(params: FounderParams & { versionId: string
       [versionId],
     );
     if (!monthly.rows[0]) throw new InvalidInput('prices', 'A monthly price is required');
-    await client.query(
-      `UPDATE commercial.plan_version
-          SET published_at = CURRENT_TIMESTAMP, published_by_founder_id = $2,
-              updated_at = CURRENT_TIMESTAMP
-        WHERE id = $1`,
-      [versionId, founder.userId],
-    );
+    await client
+      .query(
+        `UPDATE commercial.plan_version
+            SET published_at = CURRENT_TIMESTAMP, published_by_founder_id = $2,
+                updated_at = CURRENT_TIMESTAMP
+          WHERE id = $1`,
+        [versionId, founder.userId],
+      )
+      .catch((err) => mapDbError(err, 'availableFrom'));
     await audit(exec, founder.userId, {
       action: AuditActions.commercialVersionPublished,
       targetType: 'plan_version',
@@ -923,17 +929,10 @@ export async function grantAddon(
   return withFounderWrite(organizationId, async (client, exec) => {
     const sub = await liveSubscriptionForUpdate(client);
     if (!sub) throw new InvalidInput('organizationId', 'The business has no subscription');
-    const version = await currentVersion(client, sub);
-    if (!version) throw new InvalidInput('addonId', 'Add-ons are eligible per bundle (D3-24)');
-    const addon = await client.query<{ validity: string }>(
-      `SELECT a.validity FROM commercial.addon a
-         JOIN commercial.addon_eligible_plan e ON e.addon_id = a.id
-         JOIN commercial.plan_version v ON v.plan_id = e.plan_id AND v.id = $2
-        WHERE a.id = $1`,
-      [addonId, version],
-    );
-    if (!addon.rows[0]) throw new InvalidInput('addonId', 'Not available on this plan');
-    const recurring = addon.rows[0].validity === 'monthly';
+    // S117: available with the application of its quota (the platform's: to everyone)
+    const addon = await addonAvailableInTx(client, organizationId, addonId);
+    if (!addon) throw new InvalidInput('addonId', 'Not available to this business');
+    const recurring = addon.validity === 'monthly';
     const endsAt = recurring
       ? null
       : startOfDay(quotaPeriod(sub.started_on, calendarDate(new Date())).end);
@@ -1580,18 +1579,20 @@ export async function setApplicationQuotas(
 }
 
 /**
- * D3-24: a bundle (plan) sells in its sale period — from / until, 'YYYY-MM-DD', null = open — so
- * the offers can change month to month. Who bought it keeps its version and price.
+ * D3-24 / S117: an offer (a draft version of a bundle) sells in its sale period — from / until,
+ * 'YYYY-MM-DD', null = open — so the offers can change month to month. Set on the draft (a
+ * published offer does not change, trigger); at publishing the offers of a bundle must not
+ * overlap (trigger plan_version_offer_overlap). Who bought it keeps its version and price.
  */
-export async function setBundleSalePeriod(
+export async function setOfferPeriod(
   params: FounderParams & {
-    planId: string;
+    versionId: string;
     availableFrom: string | null;
     availableUntil: string | null;
   },
 ): Promise<void> {
   const founder = await requireFounderSession(params.founderHeaders);
-  const planId = uuid('planId', params.planId);
+  const versionId = uuid('versionId', params.versionId);
   for (const [field, v] of [
     ['availableFrom', params.availableFrom],
     ['availableUntil', params.availableUntil],
@@ -1608,17 +1609,17 @@ export async function setBundleSalePeriod(
   await withFounderWrite(null, async (client, exec) => {
     const { rowCount } = await client
       .query(
-        `UPDATE commercial.plan SET available_from = $2::date, available_until = $3::date,
+        `UPDATE commercial.plan_version SET available_from = $2::date, available_until = $3::date,
                 updated_at = CURRENT_TIMESTAMP
           WHERE id = $1`,
-        [planId, params.availableFrom, params.availableUntil],
+        [versionId, params.availableFrom, params.availableUntil],
       )
       .catch((err) => mapDbError(err, 'availableUntil'));
-    if (!rowCount) throw new ResourceNotFound('Bundle not found');
+    if (!rowCount) throw new ResourceNotFound('Version not found');
     await audit(exec, founder.userId, {
-      action: AuditActions.commercialBundleSalePeriodSet,
-      targetType: 'plan',
-      targetId: planId,
+      action: AuditActions.commercialOfferPeriodSet,
+      targetType: 'plan_version',
+      targetId: versionId,
       metadata: { availableFrom: params.availableFrom, availableUntil: params.availableUntil },
     });
   });

@@ -43,7 +43,7 @@ export {
   endOverride,
   setApplicationPrices,
   setApplicationQuotas,
-  setBundleSalePeriod,
+  setOfferPeriod,
   stopBundleSales,
   setIncludedMembers,
   addApplicationToSubscription,
@@ -157,4 +157,10 @@ export {
   type FounderExpiringOverride,
   type UsageEstimate,
 } from './founder-read';
+export {
+  getCatalogForOrg,
+  type Catalog,
+  type CatalogBundle,
+  type CatalogApplication,
+} from './catalog';
 export { closeCommercialPools, type CommercialConnection } from './db';

@@ -87,9 +87,7 @@ model Plan {
   createdByFounderId String   @map("created_by_founder_id") @db.Uuid
   createdAt          DateTime @default(now()) @map("created_at") @db.Timestamptz
   updatedAt          DateTime @default(now()) @map("updated_at") @db.Timestamptz
-  /// D3-24: perioada de vânzare a bundle-ului și „Oprește vânzarea”
-  availableFrom      DateTime? @map("available_from") @db.Date
-  availableUntil     DateTime? @map("available_until") @db.Date
+  /// D3-24: „Oprește vânzarea” pe bundle
   salesStoppedAt     DateTime? @map("sales_stopped_at") @db.Timestamptz
 
   versions       PlanVersion[]
@@ -109,6 +107,9 @@ model PlanVersion {
   createdByFounderId   String    @map("created_by_founder_id") @db.Uuid
   createdAt            DateTime  @default(now()) @map("created_at") @db.Timestamptz
   updatedAt            DateTime  @default(now()) @map("updated_at") @db.Timestamptz
+  /// D3-24 / S117: perioada de vânzare a ofertei (null = deschisă)
+  availableFrom        DateTime? @map("available_from") @db.Date
+  availableUntil       DateTime? @map("available_until") @db.Date
   plan                 Plan      @relation(fields: [planId], references: [id])
 
   applications  PlanVersionApplication[]

@@ -9,6 +9,11 @@ import {
   suspendBusiness,
   type FounderBusiness,
 } from '@ventora/access';
+import {
+  addApplicationToSubscription,
+  assignSubscription,
+  setBusinessCurrency,
+} from '@ventora/commercial';
 import { reportActionError } from './report-error';
 
 /* Afacerile în Founder (Lot 2.8). Sesiunea Founder vine din cookie (requireFounderSession în
@@ -98,21 +103,62 @@ export async function reactivate(organizationId: string): Promise<boolean> {
   }
 }
 
-export type CreateResult = { ok: true; organizationId: string } | { ok: false; field?: 'email' };
+export type CreateResult =
+  | { ok: true; organizationId: string; commercialFailed?: boolean }
+  | { ok: false; field?: 'email' };
 
-export async function createBusiness(name: string, ownerEmail: string): Promise<CreateResult> {
+/** S117 / D3-24 „Ce cumpără”: un bundle și / sau aplicații la bucată, moneda, lunar / anual. */
+export type NewBusinessPurchase = {
+  currency: 'RON' | 'EUR';
+  interval: 'month' | 'year';
+  /** Versiunea în vânzare a bundle-ului ales; null = doar aplicații la bucată. */
+  bundleVersionId: string | null;
+  applications: string[];
+  /** D3-5: probă pe tot abonamentul, 14 zile, doar din Founder. */
+  trial: boolean;
+};
+
+const TRIAL_DAYS = 14;
+
+/**
+ * „Afacere nouă” (Lot 2.8 + S117): întâi afacerea și invitația proprietarului (core/access), apoi,
+ * în core/commercial, moneda (D3-2), abonamentul — cu bundle sau doar cu aplicații la bucată
+ * (D3-24) — și aplicațiile la bucată, fiecare cu auditul ei. Sunt module diferite, deci tranzacții
+ * diferite: dacă partea comercială eșuează după ce afacerea s-a creat, ecranul o spune, iar
+ * abonamentul se completează din pagina afacerii (raportul 3.4).
+ */
+export async function createBusiness(
+  name: string,
+  ownerEmail: string,
+  purchase?: NewBusinessPurchase,
+): Promise<CreateResult> {
+  const h = await headers();
+  let organizationId: string;
   try {
-    const { organizationId } = await createBusinessAsFounder({
-      founderHeaders: await headers(),
-      name,
-      ownerEmail,
-    });
-    return { ok: true, organizationId };
+    ({ organizationId } = await createBusinessAsFounder({ founderHeaders: h, name, ownerEmail }));
   } catch (err) {
     const e = err as { code?: string; field?: string };
     if (e.code === 'INVALID_INPUT' && e.field === 'ownerEmail')
       return { ok: false, field: 'email' };
     reportActionError('createBusiness', err);
     return { ok: false };
+  }
+  if (!purchase) return { ok: true, organizationId };
+  try {
+    await setBusinessCurrency({ founderHeaders: h, organizationId, currency: purchase.currency });
+    await assignSubscription({
+      founderHeaders: h,
+      organizationId,
+      versionId: purchase.bundleVersionId,
+      interval: purchase.interval,
+      trialEndsAt: purchase.trial ? new Date(Date.now() + TRIAL_DAYS * 86_400_000) : undefined,
+    });
+    for (const applicationId of purchase.applications) {
+      await addApplicationToSubscription({ founderHeaders: h, organizationId, applicationId });
+    }
+    return { ok: true, organizationId };
+  } catch (err) {
+    reportActionError('createBusinessPurchase', err);
+    return { ok: true, organizationId, commercialFailed: true };
   }
 }

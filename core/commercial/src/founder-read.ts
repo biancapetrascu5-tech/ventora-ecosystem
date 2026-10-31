@@ -70,6 +70,9 @@ export interface FounderVersionRow {
   businesses: number;
   /** The latest published version of its plan: new businesses start on it. */
   current: boolean;
+  /** S117: the offer's sale period ('YYYY-MM-DD', null = open). */
+  availableFrom: string | null;
+  availableUntil: string | null;
 }
 
 export interface FounderPlanRow {
@@ -77,9 +80,7 @@ export interface FounderPlanRow {
   code: string;
   name: string;
   createdAt: Date;
-  /** D3-24: the bundle's sale period ('YYYY-MM-DD', null = open) and „Oprește vânzarea”. */
-  availableFrom: string | null;
-  availableUntil: string | null;
+  /** D3-24: „Oprește vânzarea” on the bundle. */
   salesStoppedAt: Date | null;
   versions: FounderVersionRow[];
 }
@@ -153,8 +154,11 @@ async function versionRows(
     published_at: Date | null;
     created_at: Date;
     updated_at: Date;
+    available_from: string | null;
+    available_until: string | null;
   }>(
-    `SELECT id, plan_id, version_number, published_at, created_at, updated_at
+    `SELECT id, plan_id, version_number, published_at, created_at, updated_at,
+            available_from::text AS available_from, available_until::text AS available_until
        FROM commercial.plan_version WHERE ${where} ORDER BY plan_id, version_number`,
     args,
   );
@@ -179,6 +183,8 @@ async function versionRows(
       terms: await loadVersionTerms(client, r.id),
       businesses: counts.get(r.id) ?? 0,
       current: !!r.published_at && latestPublished.get(r.plan_id) === r.version_number,
+      availableFrom: r.available_from,
+      availableUntil: r.available_until,
     });
   }
   return out;
@@ -200,12 +206,9 @@ export async function listPlansForFounder(params: FounderParams): Promise<Founde
       code: string;
       name: string;
       created_at: Date;
-      available_from: string | null;
-      available_until: string | null;
       sales_stopped_at: Date | null;
     }>(
-      `SELECT id, code, name, created_at, available_from::text AS available_from,
-              available_until::text AS available_until, sales_stopped_at
+      `SELECT id, code, name, created_at, sales_stopped_at
          FROM commercial.plan ORDER BY created_at, code`,
     );
     const versions = await versionRows(client, 'true', [], counts);
@@ -214,8 +217,6 @@ export async function listPlansForFounder(params: FounderParams): Promise<Founde
       code: p.code,
       name: p.name,
       createdAt: p.created_at,
-      availableFrom: p.available_from,
-      availableUntil: p.available_until,
       salesStoppedAt: p.sales_stopped_at,
       versions: versions.filter((v) => v.planId === p.id).map(({ planId: _, ...v }) => v),
     }));
@@ -233,12 +234,18 @@ export interface FounderAddonRow {
   salesStoppedAt: Date | null;
   prices: Array<{ currency: Currency; amountMinor: number; setupMinor: number }>;
   eligiblePlanIds: string[];
+  /** S117 „Disponibil pentru”: the application of its quota; null = every business (platform). */
+  applicationId: string | null;
 }
 
 async function addonRows(client: PoolClient): Promise<FounderAddonRow[]> {
   const { rows } = await client.query(
-    `SELECT id, code, name, quota_key, quantity, validity, purchase_mode, sales_stopped_at
-       FROM commercial.addon ORDER BY sales_stopped_at NULLS FIRST, quota_key, quantity, code`,
+    `SELECT a.id, a.code, a.name, a.quota_key, a.quantity, a.validity, a.purchase_mode,
+            a.sales_stopped_at, CASE WHEN ap.is_platform THEN NULL ELSE k.application_id END AS app
+       FROM commercial.addon a
+       JOIN commercial.quota_key k ON k.key = a.quota_key
+       JOIN commercial.application ap ON ap.id = k.application_id
+      ORDER BY a.sales_stopped_at NULLS FIRST, a.quota_key, a.quantity, a.code`,
   );
   const prices = await client.query<{
     addon_id: string;
@@ -268,6 +275,7 @@ async function addonRows(client: PoolClient): Promise<FounderAddonRow[]> {
         setupMinor: Number(p.setup_minor),
       })),
     eligiblePlanIds: plans.rows.filter((p) => p.addon_id === r.id).map((p) => p.plan_id),
+    applicationId: r.app,
   }));
 }
 
@@ -805,10 +813,12 @@ export async function getUsageTotalsForFounder(
   const prevFrom = startOfDay(addMonthsAnchored(from, -1, 1));
   // the same span of the month before: from its first day, as many days as this month so far
   const prevTo = new Date(prevFrom.getTime() + (now.getTime() - fromAt.getTime()));
+  // the month so far ends at the next month's start: the database's clock may run a moment ahead
+  const monthEnd = startOfDay(addMonthsAnchored(from, 1, 1));
   return withFounderRead(async (client) => {
     const cur = await client.query<{ quota_key: string; amount: string }>(
       `SELECT * FROM commercial.founder_usage_totals($1, $2)`,
-      [fromAt, now],
+      [fromAt, monthEnd],
     );
     const prev = await client.query<{ quota_key: string; amount: string }>(
       `SELECT * FROM commercial.founder_usage_totals($1, $2)`,
@@ -816,11 +826,11 @@ export async function getUsageTotalsForFounder(
     );
     const daily = await client.query<{ day: string; amount: string }>(
       `SELECT day::text AS day, amount FROM commercial.founder_usage_daily($1, $2, $3)`,
-      [params.dailyKey, fromAt, now],
+      [params.dailyKey, fromAt, monthEnd],
     );
     const sold = await client.query<{ n: string }>(
       `SELECT commercial.founder_addon_grants_count($1, $2) AS n`,
-      [fromAt, now],
+      [fromAt, monthEnd],
     );
     const keys = [...new Set([...cur.rows, ...prev.rows].map((r) => r.quota_key))].sort();
     return {
