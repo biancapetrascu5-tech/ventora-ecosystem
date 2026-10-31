@@ -74,6 +74,7 @@ export function BusinessScreen({
   requestsBadge,
   initialTab = 'overview',
   openException = false,
+  purchaseFailed = false,
 }: {
   user: { name: string };
   data: BusinessPageData;
@@ -82,6 +83,8 @@ export function BusinessScreen({
   requestsBadge: number;
   initialTab?: BusinessTab;
   openException?: boolean;
+  /** „Afacere nouă”: afacerea s-a creat, abonamentul nu (business-actions). */
+  purchaseFailed?: boolean;
 }) {
   const router = useRouter();
   const t = useTranslations('founder.business');
@@ -304,6 +307,8 @@ export function BusinessScreen({
                   ? t('suspendedNotice', { date: suspendedOn, name: data.suspension.by })
                   : t('suspendedNoticeNoName', { date: suspendedOn })}
               </Notice>
+            ) : purchaseFailed ? (
+              <Notice tone="danger">{t('purchaseFailed')}</Notice>
             ) : undefined
           }
         />

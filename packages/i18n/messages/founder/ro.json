@@ -288,7 +288,8 @@
         "errorValue": "Scrie un număr întreg, 0 sau mai mare.",
         "errorUntil": "Alege o dată din următoarele 12 luni.",
         "errorReason": "Scrie motivul excepției."
-      }
+      },
+      "purchaseFailed": "Afacerea și invitația sunt create, dar abonamentul nu s-a putut porni. Îl pornești de aici, din „Plăți și facturi”."
     },
     "newBusiness": {
       "title": "Afacere nouă",
@@ -301,7 +302,8 @@
       "submit": "Creează afacerea și trimite invitația",
       "submitShort": "Creează și trimite",
       "cancel": "Renunță",
-      "error": "Nu am putut crea afacerea. Încearcă din nou."
+      "error": "Nu am putut crea afacerea. Încearcă din nou.",
+      "trial": "Începe cu 14 zile de probă"
     },
     "chart": {
       "viewTable": "Vezi ca tabel",
@@ -324,11 +326,14 @@
         "monthlyEur": "Lunar, în euro",
         "annualEur": "Anual, în euro",
         "setupLei": "Cost de implementare, în lei",
-        "setupEur": "Cost de implementare, în euro"
+        "setupEur": "Cost de implementare, în euro",
+        "now": "Acum: {amount} (v2).",
+        "saving": "Față de 12 plăți lunare, clientul economisește {amount}."
       },
       "error": {
         "annualTooHigh": "Prețul anual trebuie să fie mai mic decât 12 plăți lunare ({amount}).",
-        "eurMissing": "Scrie prețul în euro. Nu îl calculăm din lei."
+        "eurMissing": "Scrie prețul în euro. Nu îl calculăm din lei.",
+        "publish": "Ca să publici v3, completează prețurile marcate."
       }
     },
     "packs": {
@@ -759,7 +764,9 @@
       "totalMonth": "Total pe lună",
       "totalYear": "Total pe an",
       "setupOnce": "Implementare, o singură dată",
-      "seats": "Locuri în echipă"
+      "seats": "Locuri în echipă",
+      "noSetupLower": "fără cost de implementare",
+      "noSetupValue": "Fără"
     },
     "bundles": {
       "title": "Bundle-uri",
@@ -799,12 +806,21 @@
         "body": "Bundle-ul dispare acum din catalog și nu îl mai poți alege pentru o afacere nouă, deși oferta era până pe {date}.",
         "keep": "{count, plural, one {Afacerea care îl are îl păstrează} few {Cele # afaceri care îl au îl păstrează} other {Cele # de afaceri care îl au îl păstrează}}, la prețul lor. Îl poți vinde din nou cu „Ofertă nouă”.",
         "log": "Acțiunea intră în jurnal.",
-        "cancel": "Renunță"
+        "cancel": "Renunță",
+        "bodyOpen": "Bundle-ul dispare acum din catalog și nu îl mai poți alege pentru o afacere nouă."
       },
       "stopped": "Am oprit vânzarea bundle-ului {name}",
       "stoppedBody": "{count, plural, one {Afacerea care îl are îl păstrează.} few {Cele # afaceri care îl au îl păstrează.} other {Cele # de afaceri care îl au îl păstrează.}}",
       "empty": "Niciun bundle încă. Primul se face cu „Bundle nou”.",
-      "error": "Nu am putut salva schimbările. Verifică internetul și încearcă din nou."
+      "error": "Nu am putut salva schimbările. Verifică internetul și încearcă din nou.",
+      "saleFrom": "de pe {date}",
+      "saleOpen": "fără termen",
+      "newDialog": {
+        "title": "Bundle nou",
+        "name": "Numele bundle-ului",
+        "nameHelp": "Apoi îi faci prima ofertă: aplicațiile, prețurile și perioada de vânzare.",
+        "submit": "Creează și fă oferta"
+      }
     },
     "bundleEditor": {
       "title": "{name} · ofertă nouă ({v})",
@@ -855,9 +871,29 @@
       "error": {
         "notCheaper": "Prețul bundle-ului trebuie să fie mai mic decât aplicațiile luate separat ({amount}).",
         "overlap": "Oferta de acum e în vânzare până pe {date}. Oferta nouă poate începe cel mai devreme pe {first}.",
-        "publish": "Ca să programezi oferta, corectează câmpurile marcate."
+        "publish": "Ca să programezi oferta, corectează câmpurile marcate.",
+        "required": "Scrie prețul lunar în lei.",
+        "amount": "Scrie o sumă, de exemplu 329 sau 22,13.",
+        "fromRequired": "Alege ziua de la care se vinde oferta.",
+        "untilBeforeFrom": "Ziua de sfârșit e înaintea celei de început.",
+        "overlapServer": "Perioada se suprapune cu altă ofertă a bundle-ului.",
+        "save": "Nu am putut salva oferta. Verifică internetul și încearcă din nou.",
+        "eurMissing": "Scrie prețul în euro. Nu îl calculăm din lei."
       },
-      "published": "Publicată"
+      "published": "Publicată",
+      "keepBodyOpen": "{count, plural, one {Afacerea care are {name} își păstrează} few {Cele # afaceri care au {name} își păstrează} other {Cele # de afaceri care au {name} își păstrează}} versiunea și prețul.",
+      "savedAt": "Ciornă salvată la {time}"
+    },
+    "plans": {
+      "lead": "Fiecare schimbare de preț sau de limite face o versiune nouă. Afacerile rămân pe versiunea lor până le muți tu.",
+      "col": {
+        "version": "Versiune",
+        "monthly": "Lunar",
+        "annual": "Anual",
+        "businesses": "Afaceri",
+        "since": "Din"
+      },
+      "limitsMonthly": "Limite pe lună, și la plata anuală"
     }
   }
 }

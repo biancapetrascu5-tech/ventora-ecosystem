@@ -107,7 +107,11 @@ export {
 } from './founder/BusinessView';
 export type { BusinessMenuItem, BusinessChange } from './founder/BusinessView';
 export { NewBusinessView } from './founder/NewBusinessView';
-export type { NewBusinessState } from './founder/NewBusinessView';
+export type {
+  NewBusinessState,
+  NewBusinessBuy,
+  NewBusinessOffer,
+} from './founder/NewBusinessView';
 export { default as businessStyles } from './founder/business.module.css';
 
 // Founder · modelul comercial (Lotul 3.4, doar română; D3-24): aplicațiile la bucată, pachetele,

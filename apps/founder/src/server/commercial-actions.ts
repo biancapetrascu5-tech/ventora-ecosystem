@@ -5,6 +5,8 @@ import {
   addApplicationToSubscription,
   createAddon,
   createDiscount,
+  createPlan,
+  createPlanVersion,
   createOverride,
   endDiscount,
   endOverride,
@@ -12,6 +14,7 @@ import {
   getBusinessCommercialForFounder,
   getDiscountLineNamesForFounder,
   getIncludedMembersForFounder,
+  getPlanVersionForFounder,
   getRegistry,
   getUsageTotalsForFounder,
   listActiveDiscountsForFounder,
@@ -22,13 +25,17 @@ import {
   listPlansForFounder,
   listRequestsForFounder,
   listSubscriptionsForFounder,
+  publishVersion,
   refuseRequest,
   resolveRequest,
   setApplicationActivationMode,
   setApplicationPrices,
   setApplicationQuotas,
+  setOfferPeriod,
   stopAddonSales,
+  stopBundleSales,
   updateAddon,
+  updateDraftVersion,
   updateDiscount,
   type DiscountDurationInput,
   type DiscountTarget,
@@ -735,4 +742,225 @@ export async function readExpiringExceptions(): Promise<ExpiringData[] | null> {
     reportActionError('readExpiringExceptions', err);
     return null;
   }
+}
+
+// ── FounderBundles (S117, D3-24): bundle-urile și ofertele lor ──────────────────────────────
+
+export type OfferData = {
+  id: string;
+  number: number;
+  published: boolean;
+  availableFrom: string | null;
+  availableUntil: string | null;
+  businesses: number;
+  applications: string[];
+  features: string[];
+  quotas: Record<string, number | null>;
+  prices: { currency: 'RON' | 'EUR'; kind: 'month' | 'year' | 'setup'; amountMinor: number }[];
+};
+
+export type BundleData = {
+  id: string;
+  name: string;
+  salesStoppedAt: string | null;
+  offers: OfferData[];
+};
+
+export type BundlesData = {
+  bundles: BundleData[];
+  apps: AppData[];
+  includedMembers: number;
+  quotas: QuotaInfo[];
+};
+
+const toOffer = (v: {
+  id: string;
+  number: number;
+  publishedAt: Date | null;
+  availableFrom: string | null;
+  availableUntil: string | null;
+  businesses: number;
+  terms: {
+    applications: readonly string[];
+    features: readonly string[];
+    quotas: Readonly<Record<string, number | null>>;
+    prices: ReadonlyArray<{
+      currency: 'RON' | 'EUR';
+      kind: 'month' | 'year' | 'setup';
+      amountMinor: number;
+    }>;
+  };
+}): OfferData => ({
+  id: v.id,
+  number: v.number,
+  published: !!v.publishedAt,
+  availableFrom: v.availableFrom,
+  availableUntil: v.availableUntil,
+  businesses: v.businesses,
+  applications: [...v.terms.applications],
+  features: [...v.terms.features],
+  quotas: { ...v.terms.quotas },
+  prices: [...v.terms.prices],
+});
+
+export async function readBundles(): Promise<BundlesData | null> {
+  try {
+    const h = await founderHeaders();
+    const [plans, apps, includedMembers, quotas] = await Promise.all([
+      listPlansForFounder({ founderHeaders: h }),
+      listApplicationsForFounder({ founderHeaders: h }),
+      getIncludedMembersForFounder({ founderHeaders: h }),
+      quotaKeys(),
+    ]);
+    return {
+      bundles: plans.map((p) => ({
+        id: p.id,
+        name: p.name,
+        salesStoppedAt: p.salesStoppedAt ? p.salesStoppedAt.toISOString() : null,
+        offers: p.versions.map(toOffer),
+      })),
+      apps: apps.map((a) => ({
+        id: a.id,
+        activationMode: a.activationMode,
+        prices: a.prices,
+        quotas: a.quotas,
+      })),
+      includedMembers,
+      quotas,
+    };
+  } catch (err) {
+    reportActionError('readBundles', err);
+    return null;
+  }
+}
+
+export type OfferDetail = BundlesData & {
+  bundle: { id: string; name: string };
+  offer: OfferData;
+  /** Oferta cu care se compară: cea de acum a bundle-ului. */
+  base: OfferData | null;
+  businessesOnBundle: number;
+};
+
+export async function readOffer(versionId: string): Promise<OfferDetail | null> {
+  try {
+    const h = await founderHeaders();
+    const [detail, rest] = await Promise.all([
+      getPlanVersionForFounder({ founderHeaders: h, versionId }),
+      readBundles(),
+    ]);
+    if (!rest) return null;
+    return {
+      ...rest,
+      bundle: { id: detail.plan.id, name: detail.plan.name },
+      offer: toOffer(detail.version),
+      base: detail.base ? toOffer(detail.base) : null,
+      businessesOnBundle: detail.businessesOnPlan,
+    };
+  } catch (err) {
+    reportActionError('readOffer', err);
+    return null;
+  }
+}
+
+/** „Bundle nou”: bundle-ul și prima lui ofertă (ciornă); întoarce ciorna, pentru editor. */
+export async function createBundle(
+  name: string,
+): Promise<{ ok: true; versionId: string } | { ok: false; field?: string }> {
+  const h = await founderHeaders();
+  try {
+    const slug =
+      name
+        .normalize('NFD')
+        .replace(/[̀-ͯ]/g, '')
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '')
+        .slice(0, 40) || 'bundle';
+    const code = /^[a-z]/.test(slug) ? slug : `b-${slug}`;
+    const { planId } = await createPlan({
+      founderHeaders: h,
+      code: `${code}-${Date.now().toString(36)}`,
+      name: name.trim(),
+    });
+    const { versionId } = await createPlanVersion({ founderHeaders: h, planId });
+    return { ok: true, versionId };
+  } catch (err) {
+    const r = fail('createBundle', err);
+    return { ok: false, field: r.ok ? undefined : r.field };
+  }
+}
+
+/** „Ofertă nouă”: ciorna existentă a bundle-ului sau una nouă, copiată din ultima ofertă. */
+export async function newOffer(
+  planId: string,
+): Promise<{ ok: true; versionId: string } | { ok: false }> {
+  const h = await founderHeaders();
+  try {
+    const plans = await listPlansForFounder({ founderHeaders: h });
+    const plan = plans.find((p) => p.id === planId);
+    if (!plan) return { ok: false };
+    const draft = plan.versions.find((v) => !v.publishedAt);
+    if (draft) return { ok: true, versionId: draft.id };
+    const last = [...plan.versions].reverse().find((v) => v.publishedAt);
+    const { versionId } = await createPlanVersion({
+      founderHeaders: h,
+      planId,
+      copyFromVersionId: last?.id,
+    });
+    return { ok: true, versionId };
+  } catch (err) {
+    reportActionError('newOffer', err);
+    return { ok: false };
+  }
+}
+
+export type OfferInput = {
+  versionId: string;
+  applications: string[];
+  features: string[];
+  quotas: Record<string, number | null>;
+  prices: { currency: 'RON' | 'EUR'; kind: 'month' | 'year' | 'setup'; amountMinor: number }[];
+  availableFrom: string | null;
+  availableUntil: string | null;
+};
+
+async function writeOffer(h: Headers, input: OfferInput) {
+  await updateDraftVersion({
+    founderHeaders: h,
+    versionId: input.versionId,
+    terms: {
+      applications: input.applications,
+      features: input.features,
+      quotas: input.quotas,
+      prices: input.prices,
+    },
+  });
+  await setOfferPeriod({
+    founderHeaders: h,
+    versionId: input.versionId,
+    availableFrom: input.availableFrom,
+    availableUntil: input.availableUntil,
+  });
+}
+
+/** „Salvează ciorna”. */
+export async function saveOffer(input: OfferInput): Promise<ActionResult> {
+  const h = await founderHeaders();
+  return run('saveOffer', () => writeOffer(h, input));
+}
+
+/** „Programează oferta”: ciorna salvată, apoi publicată (perioada ei nu se suprapune). */
+export async function scheduleOffer(input: OfferInput): Promise<ActionResult> {
+  const h = await founderHeaders();
+  return run('scheduleOffer', async () => {
+    await writeOffer(h, input);
+    await publishVersion({ founderHeaders: h, versionId: input.versionId });
+  });
+}
+
+/** „Oprește vânzarea” pe un bundle; cine îl are îl păstrează. */
+export async function stopBundle(planId: string): Promise<ActionResult> {
+  const h = await founderHeaders();
+  return run('stopBundleSales', () => stopBundleSales({ founderHeaders: h, planId }));
 }
