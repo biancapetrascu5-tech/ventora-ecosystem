@@ -535,21 +535,23 @@ const INVITATION_TOKEN = /^[0-9a-f]{64}$/;
 export async function getInvitationByToken(token: string): Promise<InvitationView | null> {
   if (typeof token !== 'string' || !INVITATION_TOKEN.test(token)) return null;
   const db = getOrgDb();
-  const rows = await db.$queryRaw<
-    Array<{
-      id: string;
-      organization_id: string;
-      organization_name: string;
-      invited_by_name: string;
-      email: string;
-      role: MembershipRole;
-      expires_at: Date;
-      status: InvitationView['status'];
-      application_ids: string[] | null;
-    }>
-  >`SELECT id, organization_id, organization_name, invited_by_name, email, role, expires_at,
-           status, application_ids
-      FROM organizations.find_invitation_view_by_token_hash(${hashToken(token)}::text)`;
+  // org_rw (SET LOCAL ROLE in $transaction): app_runtime alone has no USAGE on the schema
+  const rows: Array<{
+    id: string;
+    organization_id: string;
+    organization_name: string;
+    invited_by_name: string;
+    email: string;
+    role: MembershipRole;
+    expires_at: Date;
+    status: InvitationView['status'];
+    application_ids: string[] | null;
+  }> = await db.$transaction(
+    async (tx: any) =>
+      tx.$queryRaw`SELECT id, organization_id, organization_name, invited_by_name, email, role,
+             expires_at, status, application_ids
+        FROM organizations.find_invitation_view_by_token_hash(${hashToken(token)}::text)`,
+  );
   const row = rows[0];
   if (!row) return null;
   const status =

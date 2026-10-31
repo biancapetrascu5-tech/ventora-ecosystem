@@ -14,6 +14,16 @@ function validateRole(role: string): string {
 // Prevents double-wrapping when we're already inside our own $transaction
 const _inRoleTx = new AsyncLocalStorage<boolean>();
 
+// Raw queries called on the client itself (not on a transaction) would run as the login role
+// (app_runtime / founder_runtime, NOINHERIT), which has no rights of its own: they get the same
+// one-statement transaction with SET LOCAL ROLE as the model operations.
+const RAW_METHODS = new Set<PropertyKey>([
+  '$queryRaw',
+  '$executeRaw',
+  '$queryRawUnsafe',
+  '$executeRawUnsafe',
+]);
+
 export function makeIdentityClient(connectionString: string): IdentityBaseClient {
   const safeRole = validateRole('identity_rw');
   // max: 1 because connection_limit in the URL controls pgbouncer, not this pool.
@@ -44,6 +54,16 @@ export function makeIdentityClient(connectionString: string): IdentityBaseClient
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return new Proxy(extended as any, {
     get(target: any, prop: PropertyKey) {
+      if (RAW_METHODS.has(prop) && !_inRoleTx.getStore()) {
+        return (...args: unknown[]) =>
+          _inRoleTx.run(true, () =>
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            target.$transaction(async (tx: any) => {
+              await tx.$executeRawUnsafe(`SET LOCAL ROLE ${safeRole}`);
+              return tx[prop](...args);
+            }),
+          );
+      }
       if (prop === '$transaction') {
         return function (fn: unknown, opts?: unknown) {
           if (typeof fn !== 'function') {
@@ -89,6 +109,16 @@ export function makeFounderClient(connectionString: string): FounderBaseClient {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return new Proxy(extended as any, {
     get(target: any, prop: PropertyKey) {
+      if (RAW_METHODS.has(prop) && !_inRoleTx.getStore()) {
+        return (...args: unknown[]) =>
+          _inRoleTx.run(true, () =>
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            target.$transaction(async (tx: any) => {
+              await tx.$executeRawUnsafe(`SET LOCAL ROLE ${safeRole}`);
+              return tx[prop](...args);
+            }),
+          );
+      }
       if (prop === '$transaction') {
         return function (fn: unknown, opts?: unknown) {
           if (typeof fn !== 'function') {

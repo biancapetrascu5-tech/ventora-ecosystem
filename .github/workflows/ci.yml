@@ -294,7 +294,7 @@ jobs:
             -f core/audit/prisma/migrations/20261028000001_audit_init/migration.sql
       - name: Run organizations integration tests
         env:
-          DATABASE_URL_TEST: postgresql://postgres:test@localhost:5434/ventora_org_test
+          DATABASE_URL_TEST: postgresql://app_runtime:${{ env.APP_PW }}@localhost:5434/ventora_org_test
           DATABASE_URL_FOUNDER_TEST: postgresql://founder_runtime:${{ env.FOUNDER_PW }}@localhost:5434/ventora_org_test
           DATABASE_URL_ADMIN_TEST: postgresql://postgres:test@localhost:5434/ventora_org_test
         run: pnpm --filter @ventora/organizations test:integration
@@ -405,9 +405,9 @@ jobs:
           echo "FOUNDER_AUTH_SECRET=$(openssl rand -hex 32)" >> $GITHUB_ENV
       - name: Run access integration tests
         env:
-          DATABASE_URL_TEST: postgresql://postgres:test@localhost:5435/ventora_access_test
+          DATABASE_URL_TEST: postgresql://app_runtime:${{ env.APP_PW }}@localhost:5435/ventora_access_test
           DATABASE_URL_ADMIN_TEST: postgresql://postgres:test@localhost:5435/ventora_access_test
-          DATABASE_URL: postgresql://postgres:test@localhost:5435/ventora_access_test
+          DATABASE_URL: postgresql://app_runtime:${{ env.APP_PW }}@localhost:5435/ventora_access_test
           # Lot 2.5c: support sessions and owner recovery run on founder_runtime
           DATABASE_URL_FOUNDER_TEST: postgresql://founder_runtime:${{ env.FOUNDER_PW }}@localhost:5435/ventora_access_test
           BETTER_AUTH_SECRET: ${{ env.BETTER_AUTH_SECRET }}
