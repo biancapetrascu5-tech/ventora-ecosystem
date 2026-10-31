@@ -28,10 +28,10 @@ const COLS: DataTableColumn<Row>[] = [
   { key: 'why', header: 'Motiv', optional: true, muted: true },
   { key: 'by', header: 'Adăugată de', optional: true, muted: true },
 ];
-const ROWS: Row[] = [
+const rows = (what: string): Row[] => [
   {
     id: 1,
-    what: 'Limită de angajați',
+    what,
     val: '12 în loc de 10',
     until: '31 dec. 2026',
     why: 'Extindere la al doilea cabinet',
@@ -57,8 +57,33 @@ export const MENU_S95: BusinessMenuItem[] = [
   { id: 'suspend', label: 'Suspendă afacerea', icon: 'lock', danger: true, separatorBefore: true },
 ];
 
+/* Textele care diferă între FounderBusiness și FounderBusinessActions (S112, cu datele S113:
+   perioada de consum, „Locuri în echipă”, „membri”). */
+const COPY = {
+  s95: {
+    usage: 'Consum în octombrie',
+    seats: 'Angajați',
+    limit: 'Limită de angajați',
+    plan: ' · 349 lei pe lună',
+    note: 'Reducere 15% până pe 31 martie 2027 · se reînnoiește pe 1 noiembrie',
+    exception: 'Excepție: 12 angajați (Bianca Petrașcu)',
+  },
+  s112: {
+    usage: 'Consum: 17 oct. – 16 nov.',
+    seats: 'Locuri în echipă',
+    limit: 'Limită de membri',
+    plan: ' · plătește lunar: 349 lei',
+    note: 'Moneda: lei · reducere 15% până pe 31 martie 2027 · se reînnoiește pe 17 noiembrie · consumul pornește de la zero pe 17 ale fiecărei luni',
+    exception: 'Excepție: 12 membri (Bianca Petrașcu)',
+  },
+};
+
 /** FBizDetail: pagina afacerii din design, cu partea comercială (Lotul 3.4) pusă din galerie. */
-export function FounderBusinessDemo({ menu = MENU_S95 }: { menu?: BusinessMenuItem[] } = {}) {
+export function FounderBusinessDemo({
+  menu = MENU_S95,
+  copy = 's95',
+}: { menu?: BusinessMenuItem[]; copy?: keyof typeof COPY } = {}) {
+  const c = COPY[copy];
   return (
     <FounderShellDemo active="afaceri" title="Clinica Dentis Sibiu">
       <BusinessView
@@ -85,10 +110,7 @@ export function FounderBusinessDemo({ menu = MENU_S95 }: { menu?: BusinessMenuIt
         main={
           <>
             <Sheet>
-              <SheetSection
-                title="Consum în octombrie"
-                description="Limitele includ excepțiile active."
-              >
+              <SheetSection title={c.usage} description="Limitele includ excepțiile active.">
                 <div className={b.usage}>
                   <div className={b.stack}>
                     <UsageMeter {...USAGE_RO} label="SMS-uri" used={920} limit={1000} />
@@ -97,7 +119,7 @@ export function FounderBusinessDemo({ menu = MENU_S95 }: { menu?: BusinessMenuIt
                     </p>
                   </div>
                   <UsageMeter {...USAGE_RO} label="Programări" used={640} limit={1000} />
-                  <UsageMeter {...USAGE_RO} label="Angajați" used={8} limit={12} />
+                  <UsageMeter {...USAGE_RO} label={c.seats} used={8} limit={12} />
                   <UsageMeter
                     {...USAGE_RO}
                     label="Spațiu documente"
@@ -116,7 +138,7 @@ export function FounderBusinessDemo({ menu = MENU_S95 }: { menu?: BusinessMenuIt
               <DataTable
                 caption="Excepții"
                 columns={COLS}
-                rows={ROWS}
+                rows={rows(c.limit)}
                 rowActions={() => [
                   { label: 'Editează', icon: 'pencil' },
                   { separator: true },
@@ -132,11 +154,10 @@ export function FounderBusinessDemo({ menu = MENU_S95 }: { menu?: BusinessMenuIt
           <>
             <p className="subheading">Abonament</p>
             <p className="body">
-              <span className="body-strong">Business · v2</span> · 349 lei pe lună
+              <span className="body-strong">Business · v2</span>
+              {c.plan}
             </p>
-            <p className="body-small muted">
-              Reducere 15% până pe 31 martie 2027 · se reînnoiește pe 1 noiembrie
-            </p>
+            <p className="body-small muted">{c.note}</p>
             <div className={b.apps}>
               {APPS_ON.map((a) => (
                 <AppIcon key={a} app={a} size={24} title={APPS[a]?.name} />
@@ -151,7 +172,7 @@ export function FounderBusinessDemo({ menu = MENU_S95 }: { menu?: BusinessMenuIt
           </>
         }
         recent={[
-          { id: 1, date: '3 oct.', text: 'Excepție: 12 angajați (Bianca Petrașcu)' },
+          { id: 1, date: '3 oct.', text: c.exception },
           { id: 2, date: '24 sep.', text: 'Pachet în plus: 500 SMS (Andrei Mureșan)' },
           { id: 3, date: '1 iun.', text: 'Mutată pe Business v2' },
         ]}

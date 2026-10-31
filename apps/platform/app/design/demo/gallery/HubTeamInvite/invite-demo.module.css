@@ -1,0 +1,24 @@
+/* .x-frame / .x-overlay din HubTeamInvite/preview.html: dialogul deschis peste pagina Echipă */
+.frame {
+  position: relative;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+.frame > * {
+  flex: 1;
+  min-height: 0;
+}
+.overlay {
+  position: absolute;
+  inset: 0;
+  background: var(--scrim);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-6);
+  z-index: var(--z-overlay);
+}
+.overlay :global([role='dialog']) {
+  max-height: none;
+}

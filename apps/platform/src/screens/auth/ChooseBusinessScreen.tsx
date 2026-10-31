@@ -12,10 +12,13 @@ export function ChooseBusinessScreen({
   userName,
   businesses,
   openLast,
+  supportEmail,
 }: {
   userName: string;
   businesses: (Omit<BusinessRow, 'last'> & { lastOpenedAt: string | null })[];
   openLast: boolean;
+  /** S112: nota de sub listă, când o afacere are „Acces oprit”. */
+  supportEmail: string;
 }) {
   const router = useRouter();
   const phone = useIsPhone();
@@ -36,6 +39,7 @@ export function ChooseBusinessScreen({
       onRememberChange={setRemember}
       focusFirst
       mob={phone}
+      supportEmail={supportEmail}
       onOpen={async (id) => {
         if (await openBusiness(id, remember)) router.push('/');
       }}

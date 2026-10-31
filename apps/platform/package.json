@@ -19,6 +19,7 @@
     "@ventora/errors": "workspace:*",
     "@ventora/i18n": "workspace:*",
     "@ventora/identity": "workspace:*",
+    "@ventora/notifications": "workspace:*",
     "@ventora/organizations": "workspace:*",
     "@ventora/screens": "workspace:*",
     "@ventora/tokens": "workspace:*",
