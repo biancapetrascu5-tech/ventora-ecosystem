@@ -96,3 +96,58 @@ Orele sunt în UTC.
   - **după** (în tranzacție, apoi pe o conexiune nouă): 0 în `users`, `accounts`, `sessions`, `two_factors` și `verifications`. `COMMIT`.
   - Cele 5 rânduri de audit cu id-ul vechi rămân (jurnal append-only).
 - **Următorul pas:** fondatoarea refăce contul cu `pnpm founder:bootstrap` pe `DATABASE_URL_FOUNDER`, apoi activează din nou 2FA.
+
+### Afacerea nouă și invitația proprietarului
+
+- **10:06:** „Salon Test” s-a creat din Founder, cu contul Founder nou (id UUID). Invitația proprietarului (`petrascu.bianca@yahoo.com`) a fost prinsă în captură, cu `email_status = sent`.
+- **Deschiderea invitației în Hub (`/invite/[token]`) a picat cu 500:** `permission denied for schema organizations` (42501), în `getInvitationByToken` (`core/organizations/src/contract.ts:538`), apelată din `app/(auth)/invite/[token]/page.tsx:24`.
+
+### Analiza (doar citire; pe staging nu s-a schimbat nimic)
+
+**Rolurile pe staging:**
+
+- `DATABASE_URL` (Hub) se conectează ca `app_runtime`, `NOINHERIT`, membru în `access_rw`, `audit_org_reader`, `audit_writer`, `identity_rw` și `org_rw`. Nu are `USAGE` pe nicio schemă a modulelor.
+- `DATABASE_URL_FOUNDER` se conectează ca `founder_runtime`, `NOINHERIT`, membru în `audit_founder_reader`, `audit_writer` și `founder_identity_rw`. Are `USAGE` direct pe `access`, `identity` și `organizations`, pentru funcțiile `SECURITY DEFINER`.
+
+**Cauza.** Clienții Prisma ai modulelor trec pe rolul modulului (`SET LOCAL ROLE`) doar în `$transaction`, iar identity, founder și organizations și în operațiile pe modele. `$queryRaw` apelat direct pe client, în afara unei tranzacții, rulează ca rolul de conectare. `getInvitationByToken` face exact asta: apelează `find_invitation_view_by_token_hash`, la care `org_rw` are drept, dar fără să treacă pe `org_rw`. E același tip de bug ca la bootstrap.
+
+**De ce nu l-au prins testele.** Testele de integrare organizations, access și booking rulează contractele cu `DATABASE_URL` = `postgres` (admin), atât local (`scripts/test-integration.mjs`), cât și în CI (`.github/workflows/ci.yml`, joburile organizations și access + booking). Identity, audit, commercial și integrations (T6) rulează deja pe `app_runtime` / `founder_runtime`.
+
+**Experimentul.** Într-un worktree separat, necomis, am rulat suita de integrare cu `app_runtime` în loc de `postgres` pentru organizations, access și booking. Datele de pornire rămân pe `DIRECT_URL`.
+
+| Pachet        | Rezultat       |
+| ------------- | -------------- |
+| organizations | 4 din 37 pică  |
+| access        | 5 din 139 pică |
+| booking       | 7/7 trec       |
+| restul        | trec           |
+
+Toate cele 9 eșecuri au aceeași cauză: `getInvitationByToken`, direct sau prin `signUpWithInvitation`. Worktree-ul a fost șters.
+
+**Contractele apelate din aplicații:**
+
+| Contract                                                                                                                                                                           | Calea spre bază                                | Rolul                                   | Verificat pe rol de runtime                             |
+| ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------- | --------------------------------------- | ------------------------------------------------------- |
+| Hub: `getSession`, `hasAccountForEmail`, `getOpenLastOrganization`, `setOpenLastOrganization`, `setSessionActiveOrganization`, `revokeSession`, `hubAuth` (intrare, resetare, 2FA) | client identity (modele) / Better Auth         | `identity_rw` ✓                         | da (testele identity, `app_runtime`)                    |
+| Hub: `getUserById`, `listSessions`, `getResetLinkInfo`, `regenerateBackupCodes`                                                                                                    | client identity (modele)                       | `identity_rw` ✓                         | fără test; corect după cod                              |
+| Hub: `countBackupCodes`, `getPasswordChangedAt`                                                                                                                                    | client identity (modele)                       | `identity_rw` ✓                         | da (experiment, access)                                 |
+| Hub: **`getInvitationByToken`** (invitația, înscrierea, acceptarea)                                                                                                                | **`$queryRaw` în afara tranzacției**           | **`app_runtime` ✗**                     | **pică**                                                |
+| Hub: `requestNewInvitationLink`, `listMyOrganizations`, `markOrganizationOpened`, `resolveOrgContext`                                                                              | client organizations, `$transaction`           | `org_rw` ✓                              | da (experiment)                                         |
+| Hub: `isOwnerAnywhere`                                                                                                                                                             | client organizations, `$transaction`           | `org_rw` ✓                              | fără test; corect după cod                              |
+| Hub: `signUpWithInvitation`, `acceptInvitationWithAccess`                                                                                                                          | access + organizations                         | ✗ prin `getInvitationByToken`; restul ✓ | pică prin `getInvitationByToken`                        |
+| Hub: `countApplicationAccess`, `disableMemberTwoFactor`, `listTeamMembers`, `listTeamInvitations`, `resendTeamInvitation`, `revokeTeamInvitation`                                  | client access, `$transaction`                  | `access_rw` ✓                           | da (experiment)                                         |
+| Hub: `getSupportSessionBanner`, `listActiveSupportSessions`, `listSupportSessions`, `closeSupportSessionAsOwner`                                                                   | client access, `$transaction`                  | `access_rw` ✓                           | da (experiment)                                         |
+| Founder: `getFounderSession`, `founderAuth`, `countBackupCodes`, `regenerateBackupCodes`, `getResetLinkInfo`                                                                       | client founder (modele)                        | `founder_identity_rw` ✓                 | parțial (identity, `founder_runtime`); merge pe staging |
+| Founder: `createBusinessAsFounder`, `listBusinessesForFounder`, `getBusinessPageForFounder`, `suspendBusiness`, `reactivateBusiness`                                               | `founder_runtime` + funcții `SECURITY DEFINER` | ✓                                       | da (access, `founder_runtime`); merge pe staging        |
+| Founder: `getBusinessForFounder`, `openSupportSession`, `closeSupportSession`, `recoverOwnerAccess`                                                                                | `founder_runtime` + funcții `SECURITY DEFINER` | ✓                                       | da (access, `founder_runtime`)                          |
+
+**Corecția propusă (de deschis ca PR după acord):**
+
+- **(a) Cod:**
+  - `getInvitationByToken` în `db.$transaction(...)`;
+  - ca tot tipul de bug să dispară, clienții modulelor (identity, founder, organizations, access) învelesc automat în tranzacție cu `SET LOCAL ROLE` și `$queryRaw` / `$executeRaw` (și variantele `Unsafe`) apelate în afara unei tranzacții;
+  - clientul access învelește și operațiile pe modele, ca ceilalți (azi nu le învelește; nu există apeluri de acest fel, dar e o capcană).
+- **(b) Teste:**
+  - organizations, access și booking rulează cu `DATABASE_URL` = `app_runtime` (`NOINHERIT`), local și în CI, cu admin doar pe `DIRECT_URL` pentru datele de pornire;
+  - plus o gardă în setup-ul testelor: dacă `current_user` al conexiunii contractelor e superuser sau are `rolinherit = true`, testele pică imediat.
+- Pe staging nu se schimbă GRANT-uri.
