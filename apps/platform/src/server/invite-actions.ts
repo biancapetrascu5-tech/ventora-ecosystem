@@ -2,6 +2,7 @@
 
 import { requestNewInvitationLink } from '@ventora/organizations';
 import { signUpWithInvitation, type InvitationSignUpRefusal } from '@ventora/access';
+import { reportActionError } from './report-error';
 
 /* Acțiunile ecranului HubInvite. Lot 2.7 · A: contul se creează doar aici, împreună cu invitația
    (signUpWithInvitation: verifică invitația și adresa, creează contul, acceptă invitația; dacă
@@ -25,6 +26,7 @@ export async function signUpFromInvite(params: {
     if (e.reason) return { ok: false, reason: e.reason };
     // Better Auth (lungimea) și politica Hub (password-policy) refuză parola cu 400
     if (e.statusCode === 400) return { ok: false, reason: 'password' };
+    reportActionError('signUpFromInvite', err);
     return { ok: false, reason: 'error' };
   }
 }

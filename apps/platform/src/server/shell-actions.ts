@@ -4,6 +4,7 @@ import { headers } from 'next/headers';
 import { getSession, getUserById } from '@ventora/identity';
 import type { HubShellData } from '@/screens/shell/HubShell';
 import { myMemberships, openInSession } from './route';
+import { reportActionError } from './report-error';
 
 /* Shell-ul Hub (Lot 2.8): cine e conectat, afacerile lui (afacerile suspendate nu apar, D3-20 a)
    și rolul în afacerea activă. Utilizatorul vine din sesiune, niciodată din client (S1). */
@@ -36,7 +37,8 @@ export async function switchBusiness(organizationId: string): Promise<boolean> {
   try {
     await openInSession(session, organizationId);
     return true;
-  } catch {
+  } catch (err) {
+    reportActionError('switchBusiness', err);
     return false;
   }
 }

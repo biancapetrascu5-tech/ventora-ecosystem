@@ -9,6 +9,7 @@ import {
   suspendBusiness,
   type FounderBusiness,
 } from '@ventora/access';
+import { reportActionError } from './report-error';
 
 /* Afacerile în Founder (Lot 2.8). Sesiunea Founder vine din cookie (requireFounderSession în
    core/access, cu 2FA); erorile tipizate devin rezultate simple pentru ecrane. */
@@ -36,7 +37,8 @@ const serialize = (b: FounderBusiness): BusinessData => ({
 export async function readBusinesses(): Promise<BusinessData[] | null> {
   try {
     return (await listBusinessesForFounder({ founderHeaders: await headers() })).map(serialize);
-  } catch {
+  } catch (err) {
+    reportActionError('readBusinesses', err);
     return null;
   }
 }
@@ -60,7 +62,8 @@ export async function readBusinessPage(organizationId: string): Promise<Business
         createdAt: new Date(r.createdAt).toISOString(),
       })),
     };
-  } catch {
+  } catch (err) {
+    reportActionError('readBusinessPage', err);
     return null;
   }
 }
@@ -69,7 +72,8 @@ export async function suspend(organizationId: string, confirmName: string): Prom
   try {
     await suspendBusiness({ founderHeaders: await headers(), organizationId, confirmName });
     return true;
-  } catch {
+  } catch (err) {
+    reportActionError('suspendBusiness', err);
     return false;
   }
 }
@@ -78,7 +82,8 @@ export async function reactivate(organizationId: string): Promise<boolean> {
   try {
     await reactivateBusiness({ founderHeaders: await headers(), organizationId });
     return true;
-  } catch {
+  } catch (err) {
+    reportActionError('reactivateBusiness', err);
     return false;
   }
 }
@@ -97,6 +102,7 @@ export async function createBusiness(name: string, ownerEmail: string): Promise<
     const e = err as { code?: string; field?: string };
     if (e.code === 'INVALID_INPUT' && e.field === 'ownerEmail')
       return { ok: false, field: 'email' };
+    reportActionError('createBusiness', err);
     return { ok: false };
   }
 }
