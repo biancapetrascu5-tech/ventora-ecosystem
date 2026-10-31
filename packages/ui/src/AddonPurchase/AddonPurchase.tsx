@@ -16,6 +16,7 @@ import {
   PayProcessing,
   PaySuccess,
   StripeSlot,
+  type PayInvoice,
   type PaymentCardData,
   type PaymentLabels,
   type PayUsage,
@@ -34,6 +35,12 @@ export interface AddonPurchaseLabels extends PaymentLabels {
   decrease: string;
   increase: string;
   total: string;
+  /** S113: S.payToday — „Plătești azi”, în locul lui „Total” la plata proporțională. */
+  payToday?: string;
+  /** S113: S.prorateToday, ex. (amount, date) => `Azi: ${amount}, proporțional până pe ${date}`. */
+  prorateToday?: (amount: string, date: string) => string;
+  /** S113: S.prorateThen, ex. (amount) => `Apoi ${amount} pe lună, odată cu abonamentul.`. */
+  prorateThen?: (amount: string) => string;
   finalPrice: string;
   payWith: string;
   cardExpiring: string;
@@ -49,7 +56,7 @@ export interface AddonData {
   description?: string;
   price: number;
   icon?: IconName;
-  /** Cantitatea maximă (implicit 20). */
+  /** Cantitatea maximă (implicit 20); 1 ascunde cantitatea (S113). */
   max?: number;
   /** Rândul de sub „Total” (implicit labels.finalPrice). */
   note?: string;
@@ -69,7 +76,13 @@ export interface AddonPurchaseProps {
   cardExpiring?: boolean;
   error?: { title?: string; message?: string };
   usage?: PayUsage;
-  invoice?: { number: string; onOpen?: () => void };
+  /** Factura emisă sau, S111, `{ pending: true }`: plata a reușit, factura vine pe e-mail. */
+  invoice?: PayInvoice;
+  /**
+   * S113: pachetul lunar cumpărat în timpul perioadei — azi se plătește proporțional până la
+   * reînnoire (`today`, pe bucată), apoi `monthly` (implicit prețul pachetului) pe lună.
+   */
+  prorate?: { today: number; until: string; monthly?: number };
   onPay?: (quantity: number, total: number) => void;
   onRetry?: () => void;
   onUseOtherCard?: () => void;
@@ -90,7 +103,8 @@ export interface AddonPurchaseProps {
 }
 
 /* AddonPurchase din bundle.js: pachetul în plus — confirmare (cantitate, total, cardul),
-   se procesează, reușită (limita înainte / acum, factura), eroare (ce poți face). */
+   se procesează, reușită (limita înainte / acum, factura), eroare (ce poți face). 1.1.0 (S111):
+   factura încă în emitere; 1.2.0 (S113): plata proporțională, cantitatea ascunsă la `max: 1`. */
 export function AddonPurchase({
   addon,
   state = 'review',
@@ -104,6 +118,7 @@ export function AddonPurchase({
   error,
   usage,
   invoice,
+  prorate,
   onPay,
   onRetry,
   onUseOtherCard,
@@ -127,7 +142,7 @@ export function AddonPurchase({
     onQuantityChange?.(v);
   };
   const money = format ?? ((n: number) => `${fmtNumber(n, locale)} ${currency}`);
-  const total = (addon.price ?? 0) * q;
+  const total = (prorate ? prorate.today : (addon.price ?? 0)) * q;
 
   const addonRow = (full?: boolean) => (
     <div className={cn(styles.addon, full && styles.addonFull)}>
@@ -179,31 +194,43 @@ export function AddonPurchase({
     body = (
       <>
         {addonRow()}
-        <div className={styles.payline}>
-          <span className="subheading">{labels.quantity}</span>
-          <span className={styles.stepper} role="group" aria-label={labels.quantity}>
-            <IconButton
-              variant="secondary"
-              icon="minus"
-              label={labels.decrease}
-              onPress={() => setQ(q - 1)}
-              isDisabled={q <= 1}
-            />
-            <output className={cn(styles.value, 'body-strong', 'v-num')} aria-live="polite">
-              {q}
-            </output>
-            <IconButton
-              variant="secondary"
-              icon="plus"
-              label={labels.increase}
-              onPress={() => setQ(q + 1)}
-              isDisabled={q >= max}
-            />
-          </span>
-        </div>
+        {max !== 1 && (
+          <div className={styles.payline}>
+            <span className="subheading">{labels.quantity}</span>
+            <span className={styles.stepper} role="group" aria-label={labels.quantity}>
+              <IconButton
+                variant="secondary"
+                icon="minus"
+                label={labels.decrease}
+                onPress={() => setQ(q - 1)}
+                isDisabled={q <= 1}
+              />
+              <output className={cn(styles.value, 'body-strong', 'v-num')} aria-live="polite">
+                {q}
+              </output>
+              <IconButton
+                variant="secondary"
+                icon="plus"
+                label={labels.increase}
+                onPress={() => setQ(q + 1)}
+                isDisabled={q >= max}
+              />
+            </span>
+          </div>
+        )}
         <div className={cn(styles.payline, styles.paylineTotal)}>
           <span>
-            <span className="subheading">{labels.total}</span>
+            <span className="subheading">{prorate ? labels.payToday : labels.total}</span>
+            {prorate && (
+              <span className={cn('body-small', styles.note)}>
+                {labels.prorateToday?.(money(total), prorate.until)}
+              </span>
+            )}
+            {prorate && (
+              <span className={cn('body-small', styles.note)}>
+                {labels.prorateThen?.(money((prorate.monthly ?? addon.price ?? 0) * q))}
+              </span>
+            )}
             <span className={cn('body-small', styles.note)}>{addon.note ?? labels.finalPrice}</span>
           </span>
           <span className="numeric v-num">{money(total)}</span>

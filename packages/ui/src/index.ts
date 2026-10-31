@@ -308,7 +308,7 @@ export {
   PayError,
   PayErrorActions,
 } from './AddonPurchase/Payment';
-export type { PaymentCardData, PaymentLabels, PayUsage } from './AddonPurchase/Payment';
+export type { PaymentCardData, PaymentLabels, PayUsage, PayInvoice } from './AddonPurchase/Payment';
 export { UpgradeDialog } from './UpgradeDialog/UpgradeDialog';
 export type {
   UpgradeDialogProps,

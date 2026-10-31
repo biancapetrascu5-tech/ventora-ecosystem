@@ -2,6 +2,7 @@
 'use client';
 // FX_NAV + FX_App din preview-urile Founder (FounderBackupCodes, FounderSupportSession,
 // FounderOwnerRecovery): Spine cu navigația Founder, ContextBar cu căutarea, notificările, contul.
+// S111: „Cereri” după „Consum”; S113: „Aplicații” și „Reduceri” sub „Model comercial”.
 import type { ReactNode } from 'react';
 import {
   AccountMenu,
@@ -21,6 +22,7 @@ export const FX_NAV: NavSection[] = [
       { id: 'azi', label: 'Prezentare', short: 'Prezentare', icon: 'house' },
       { id: 'afaceri', label: 'Afaceri', icon: 'building-2', badge: 3 },
       { id: 'consum', label: 'Consum', icon: 'chart-column' },
+      { id: 'cereri', label: 'Cereri', icon: 'inbox', badge: 2 },
     ],
   },
   {
@@ -28,6 +30,8 @@ export const FX_NAV: NavSection[] = [
     items: [
       { id: 'planuri', label: 'Planuri', icon: 'boxes' },
       { id: 'pachete', label: 'Pachete în plus', short: 'Pachete', icon: 'package' },
+      { id: 'aplicatii', label: 'Aplicații', icon: 'layout-grid' },
+      { id: 'reduceri', label: 'Reduceri', icon: 'percent' },
     ],
   },
   {

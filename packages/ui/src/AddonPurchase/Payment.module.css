@@ -145,6 +145,16 @@
   flex-wrap: wrap;
 }
 
+/* .v-payinvoice--pending (S111): factura încă nu e emisă */
+.invoicePending {
+  flex-wrap: nowrap;
+  align-items: flex-start;
+}
+.invoicePending > svg {
+  flex: none;
+  margin-top: 1px;
+}
+
 /* .v-link */
 .link {
   appearance: none;

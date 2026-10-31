@@ -28,7 +28,7 @@ const L = {
 const T = {
   appts: 'Programări luna aceasta',
   sms: 'SMS-uri luna aceasta',
-  staff: 'Angajați',
+  staff: 'Locuri în echipă',
   docs: 'Spațiu documente',
   clients: 'Clienți',
   buy: 'Cumpără pachet · 49 lei',
