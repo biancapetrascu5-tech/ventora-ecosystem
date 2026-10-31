@@ -10,6 +10,7 @@ import {
   SupportSessionConflict,
   type RecoveryVerification,
 } from '@ventora/access';
+import { reportActionError } from './report-error';
 
 /* Acțiunile Founder pentru sesiunea de suport și recuperarea proprietarului (Lotul 2.5c).
    Sesiunea Founder vine din cookie (requireFounderSession în core/access); erorile tipizate
@@ -33,7 +34,8 @@ export async function readBusiness(organizationId: string): Promise<BusinessResu
       organizationId,
     });
     return { ok: true, ...business };
-  } catch {
+  } catch (err) {
+    reportActionError('readBusiness', err);
     return { ok: false };
   }
 }
@@ -63,6 +65,7 @@ export async function openSupport(input: {
     const code = (err as Coded).code;
     if (code === 'CONFLICT') return { ok: false, reason: 'exists', existing: null };
     if (code === 'INVALID_INPUT') return { ok: false, reason: 'invalid' };
+    reportActionError('openSupport', err);
     return { ok: false, reason: 'error' };
   }
 }
@@ -71,7 +74,8 @@ export async function closeSupport(supportSessionId: string): Promise<boolean> {
   try {
     await closeSupportSession({ founderHeaders: await headers(), supportSessionId });
     return true;
-  } catch {
+  } catch (err) {
+    reportActionError('closeSupport', err);
     return false;
   }
 }
@@ -102,6 +106,7 @@ export async function recoverOwner(input: {
       return { ok: false, reason: 'locked', lockedUntil: e.lockedUntil };
     if (e.code === 'FORBIDDEN') return { ok: false, reason: 'wrongCode' };
     if (e.code === 'INVALID_INPUT') return { ok: false, reason: 'invalid' };
+    reportActionError('recoverOwner', err);
     return { ok: false, reason: 'error' };
   }
 }
