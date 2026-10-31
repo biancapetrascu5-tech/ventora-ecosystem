@@ -193,3 +193,50 @@ export async function getCatalogForOrg(organizationId: string): Promise<Catalog>
     };
   });
 }
+
+export interface SeatsBreakdown {
+  /** The members limit now (null = unlimited). */
+  total: number | null;
+  /** D3-24: the seats every account includes. */
+  included: number;
+  /** The seats of the bundle and its name (0 / null without one). */
+  bundle: number;
+  bundleName: string | null;
+  /** The seats of active add-ons. */
+  packs: number;
+}
+
+/** HubAdminTeam (S117): where the team seats come from — the account, the bundle, the add-ons. */
+export async function getSeatsBreakdown(organizationId: string): Promise<SeatsBreakdown> {
+  if (!UUID_RE.test(organizationId ?? '')) throw new InvalidInput('organizationId');
+  return withOrganizationRead(organizationId, async (client) => {
+    const entitlements = await computeEntitlementsInTx(client, organizationId, null);
+    const versionNow = await currentVersionInTx(client);
+    let bundle = 0;
+    let bundleName: string | null = null;
+    if (versionNow) {
+      const terms = await loadVersionTerms(client, versionNow);
+      bundle = terms.quotas[MEMBERS_KEY] ?? 0;
+      const { rows } = await client.query<{ name: string }>(
+        `SELECT p.name FROM commercial.plan_version v JOIN commercial.plan p ON p.id = v.plan_id
+          WHERE v.id = $1`,
+        [versionNow],
+      );
+      bundleName = rows[0]?.name ?? null;
+    }
+    const packs = await client.query<{ units: string | null }>(
+      `SELECT sum(a.quantity * g.packs)::text AS units
+         FROM commercial.addon_grant g JOIN commercial.addon a ON a.id = g.addon_id
+        WHERE a.quota_key = $1 AND g.ended_at IS NULL AND g.starts_at <= now()
+          AND (g.ends_at IS NULL OR g.ends_at > now())`,
+      [MEMBERS_KEY],
+    );
+    return {
+      total: entitlements.quotas[MEMBERS_KEY] ?? 0,
+      included: await includedMembersInTx(client),
+      bundle,
+      bundleName,
+      packs: Number(packs.rows[0]?.units ?? 0),
+    };
+  });
+}

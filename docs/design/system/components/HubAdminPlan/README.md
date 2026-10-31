@@ -11,3 +11,5 @@ After the product review: usage that needs action comes first; the estimate "La 
 **S112.** The members quota is "Locuri în echipă" (DE "Teamplätze", IT "Posti nel team"); the pack is "5 locuri în echipă în plus".
 
 **How the business pays (S113).** "Plătești lunar: 349 lei · următoarea plată pe 17 noiembrie 2026". Usage starts from zero on the subscription's day of the month, not on the 1st: the section is "Consum: 17 oct. – 16 nov." with "Consumul pornește de la zero pe 17 noiembrie."; one-time packs are "valabil până pe 16 noiembrie"; invoices cover "17 oct. – 16 nov.". Yearly payment, discounts, the invoice lines and pro-rata purchases are drawn in HubPlanBilling.
+
+**S117.** "Abonamentul tău" shows "Bundle Business" and "Ce plătești" — the bundle, the individual app, the team seats (3 + 7) and the packs, each with its price, and the total (349 lei); the invoices read "Abonament · 17 oct. – 16 nov.". Full states in HubPlanBilling.

@@ -104,8 +104,7 @@ export async function reactivate(organizationId: string): Promise<boolean> {
 }
 
 export type CreateResult =
-  | { ok: true; organizationId: string; commercialFailed?: boolean }
-  | { ok: false; field?: 'email' };
+  { ok: true; organizationId: string; commercialFailed?: boolean } | { ok: false; field?: 'email' };
 
 /** S117 / D3-24 „Ce cumpără”: un bundle și / sau aplicații la bucată, moneda, lunar / anual. */
 export type NewBusinessPurchase = {

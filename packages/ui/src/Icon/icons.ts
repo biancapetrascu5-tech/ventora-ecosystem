@@ -125,6 +125,8 @@ import {
   Ticket,
   ChartLine,
   Percent,
+  CalendarClock,
+  CalendarOff,
 } from 'lucide-react';
 
 export const ICON_REGISTRY = {
@@ -258,6 +260,9 @@ export const ICON_REGISTRY = {
   'sliders-horizontal': SlidersHorizontal,
   // S113: intrarea „Reduceri” din Spine-ul Founder
   percent: Percent,
+  // S117: starea bundle-urilor („Programat”, „Vânzare oprită”)
+  'calendar-clock': CalendarClock,
+  'calendar-off': CalendarOff,
 } as const satisfies Record<string, LucideIcon>;
 
 export type IconName = keyof typeof ICON_REGISTRY;

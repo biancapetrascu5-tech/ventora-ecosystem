@@ -8,6 +8,6 @@ import { FounderAppsFrame } from '../_shared/founderCommercial';
 export default function FounderAppsGallery() {
   if (process.env.NODE_ENV !== 'development') notFound();
   return (
-    <DesktopFrames founder title="FounderApps" height={760} render={() => <FounderAppsFrame />} />
+    <DesktopFrames founder title="FounderApps" height={1040} render={() => <FounderAppsFrame />} />
   );
 }

@@ -41,6 +41,12 @@ export interface AddonPurchaseLabels extends PaymentLabels {
   prorateToday?: (amount: string, date: string) => string;
   /** S113: S.prorateThen, ex. (amount) => `Apoi ${amount} pe lună, odată cu abonamentul.`. */
   prorateThen?: (amount: string) => string;
+  /** S117: S.setupOnce — „Implementare, o singură dată”. */
+  setupOnce?: string;
+  /** S117: S.prorateMaint, ex. (amount, date) => `Mentenanța: ${amount}, proporțional până pe ${date}`. */
+  prorateMaint?: (amount: string, date: string) => string;
+  /** S117: S.addonIncludes — „Include”. */
+  addonIncludes?: string;
   finalPrice: string;
   payWith: string;
   cardExpiring: string;
@@ -60,6 +66,8 @@ export interface AddonData {
   max?: number;
   /** Rândul de sub „Total” (implicit labels.finalPrice). */
   note?: string;
+  /** S117: ce include (o aplicație la bucată: limitele ei), lista „Include”. */
+  includes?: string[];
 }
 
 export interface AddonPurchaseProps {
@@ -83,6 +91,8 @@ export interface AddonPurchaseProps {
    * reînnoire (`today`, pe bucată), apoi `monthly` (implicit prețul pachetului) pe lună.
    */
   prorate?: { today: number; until: string; monthly?: number };
+  /** S117: implementarea, o singură dată, plătită azi peste mentenanță. */
+  setup?: number;
   onPay?: (quantity: number, total: number) => void;
   onRetry?: () => void;
   onUseOtherCard?: () => void;
@@ -104,7 +114,8 @@ export interface AddonPurchaseProps {
 
 /* AddonPurchase din bundle.js: pachetul în plus — confirmare (cantitate, total, cardul),
    se procesează, reușită (limita înainte / acum, factura), eroare (ce poți face). 1.1.0 (S111):
-   factura încă în emitere; 1.2.0 (S113): plata proporțională, cantitatea ascunsă la `max: 1`. */
+   factura încă în emitere; 1.2.0 (S113): plata proporțională, cantitatea ascunsă la `max: 1`;
+   1.3.0 (S117): implementarea, o singură dată, peste mentenanță, și lista „Include”. */
 export function AddonPurchase({
   addon,
   state = 'review',
@@ -119,6 +130,7 @@ export function AddonPurchase({
   usage,
   invoice,
   prorate,
+  setup,
   onPay,
   onRetry,
   onUseOtherCard,
@@ -142,7 +154,8 @@ export function AddonPurchase({
     onQuantityChange?.(v);
   };
   const money = format ?? ((n: number) => `${fmtNumber(n, locale)} ${currency}`);
-  const total = (prorate ? prorate.today : (addon.price ?? 0)) * q;
+  const maint = (prorate ? prorate.today : (addon.price ?? 0)) * q;
+  const total = maint + (setup ?? 0);
 
   const addonRow = (full?: boolean) => (
     <div className={cn(styles.addon, full && styles.addonFull)}>
@@ -194,6 +207,22 @@ export function AddonPurchase({
     body = (
       <>
         {addonRow()}
+        {addon.includes && addon.includes.length > 0 && (
+          <div className={styles.inc}>
+            <span className={cn('caption', styles.lab)}>{labels.addonIncludes}</span>
+            <ul className={cn('body-small', styles.incList)}>
+              {addon.includes.map((x, i) => (
+                <li key={i}>{x}</li>
+              ))}
+            </ul>
+          </div>
+        )}
+        {!!setup && (
+          <div className={styles.payline}>
+            <span className="body">{labels.setupOnce}</span>
+            <span className="body v-num">{money(setup)}</span>
+          </div>
+        )}
         {max !== 1 && (
           <div className={styles.payline}>
             <span className="subheading">{labels.quantity}</span>
@@ -223,7 +252,9 @@ export function AddonPurchase({
             <span className="subheading">{prorate ? labels.payToday : labels.total}</span>
             {prorate && (
               <span className={cn('body-small', styles.note)}>
-                {labels.prorateToday?.(money(total), prorate.until)}
+                {setup
+                  ? labels.prorateMaint?.(money(maint), prorate.until)
+                  : labels.prorateToday?.(money(total), prorate.until)}
               </span>
             )}
             {prorate && (

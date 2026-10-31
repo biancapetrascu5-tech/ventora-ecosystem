@@ -346,3 +346,180 @@
     padding: 0 var(--space-4);
   }
 }
+
+/* S117 — FounderBundles, FounderBundleEditor, FounderApps, FounderNewBusiness (.fb-*) */
+.fbApps {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-4);
+}
+.fbApp {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  white-space: nowrap;
+}
+.fbInc {
+  margin: 0;
+  padding-inline-start: var(--space-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-0-5);
+}
+.fbCell {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-0-5);
+}
+.fbCell > span {
+  white-space: nowrap;
+}
+.fbCard {
+  /* preview-ul S117 nu are padding pe card (.sheetlike.fb-card): DE VALIDAT la Design */
+  composes: sheetlike;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+.fbCard p {
+  margin: 0;
+}
+.fbHead {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+.fbTitle {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+.fbActs {
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+.fbGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-4);
+}
+.fbGridMob {
+  grid-template-columns: 1fr;
+}
+.fbK {
+  color: var(--ink-muted);
+  margin: 0 0 var(--space-1) !important;
+}
+.fbVer {
+  width: 100%;
+  border-collapse: collapse;
+}
+.fbVer th {
+  text-align: start;
+  color: var(--ink-muted);
+  font-weight: inherit;
+  padding: var(--space-2) var(--space-3) var(--space-2) 0;
+  border-bottom: var(--border-width) solid var(--line);
+}
+.fbVer td {
+  padding: var(--space-2) var(--space-3) var(--space-2) 0;
+  border-bottom: var(--border-width) solid var(--line);
+  vertical-align: top;
+}
+.fbVer tr:last-child td {
+  border-bottom: 0;
+}
+.fbTw {
+  overflow-x: auto;
+}
+.fbSum {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  border-radius: var(--radius-sm);
+  background: var(--sunken);
+}
+.fbLine {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+.fbLine > span:last-child {
+  white-space: nowrap;
+}
+.fbLineTot {
+  composes: fbLine;
+  padding-top: var(--space-2);
+  border-top: var(--border-width) solid var(--line);
+}
+.fbPeriod {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-4);
+}
+.fbPeriodMob {
+  grid-template-columns: 1fr;
+}
+.fbAppList {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-2) var(--space-6);
+}
+.fbAppListMob {
+  grid-template-columns: 1fr;
+}
+.fbAppLab {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+.fbStack1 {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-width: 0;
+}
+
+/* „v2” în tabelul ofertelor: textul din design, deschide oferta */
+.versionLink {
+  appearance: none;
+  background: none;
+  border: 0;
+  padding: 0;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+
+.topSpace {
+  margin-top: var(--space-4);
+}
+.topSpace3 {
+  margin: var(--space-3) 0 0;
+}
+@media (max-width: 1023px) {
+  .unsaved:not(.unsavedMob) {
+    left: var(--spine-width-collapsed);
+  }
+}
+
+/* FounderApps · „Editează {app}” (S117): .fp-sub, textul de sub titlu, d0 cu gap 5 */
+.stack5 {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+.stack5 p {
+  margin: 0;
+}
+.fpSub {
+  margin: 0 0 var(--space-2) !important;
+}
+.helpBelow {
+  margin: 0 0 var(--space-3) !important;
+}

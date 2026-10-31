@@ -120,6 +120,8 @@ export type PackData = {
   prices: { currency: 'RON' | 'EUR'; amountMinor: number; setupMinor: number }[];
   plans: string[];
   allPlans: boolean;
+  /** S117 „Disponibil pentru”: aplicația cotei; null = toate afacerile. */
+  applicationId: string | null;
 };
 
 export type PacksData = {
@@ -149,6 +151,7 @@ export async function readPacks(): Promise<PacksData | null> {
         prices: a.prices,
         plans: a.eligiblePlanIds.map((id) => planName.get(id) ?? '').filter(Boolean),
         allPlans: plans.length > 0 && plans.every((p) => a.eligiblePlanIds.includes(p.id)),
+        applicationId: a.applicationId,
       })),
       plans: plans.map((p) => ({ id: p.id, name: p.name })),
       quotas,

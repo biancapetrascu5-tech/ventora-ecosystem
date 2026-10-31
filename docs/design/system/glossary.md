@@ -48,7 +48,10 @@ Un singur cuvânt pentru fiecare lucru, în toate ecranele și în toate cele 6 
 
 | RO | EN | FR | ES | DE | IT | Regulă |
 | --- | --- | --- | --- | --- | --- | --- |
-| abonament | plan | abonnement | plan | Abonnement | abbonamento | Singurul cuvânt pentru ce plătește afacerea lunar și limitele lui. Nivelul are nume propriu: „Business”. Butonul: „Cere alt abonament”. Nu „plan”. |
+| abonament | plan | abonnement | plan | Abonnement | abbonamento | Doar pentru ce plătește afacerea în total: bundle-ul (dacă are), aplicațiile la bucată, pachetele lunare — „Abonamentul tău”, „Plătești lunar: 349 lei”, „odată cu abonamentul”, „Cere alt abonament”. Nu pentru ofertă: ce vindem e „bundle” sau „aplicație la bucată” (S117). Nu „plan”. |
+| bundle | bundle | bundle | bundle | Bundle | bundle | Mai multe aplicații la un preț mai bun decât luate la bucată, cu limite și locuri în echipă incluse, vândute într-o perioadă („Disponibil 1–30 noiembrie”, în Hub „Ofertă valabilă până pe 30 noiembrie”). Cu numele lui: „Bundle Business”, „bundle-ul Business” (EN „Business bundle”). Afacerea îl păstrează, la același preț, și după ce oferta se încheie. Înlocuiește „plan” / „abonament” ca ofertă (S117). Plural RO „bundle-uri”. |
+| aplicație la bucată | individual app | application à l’unité | aplicación suelta | Einzel-App | app singola | O aplicație cumpărată separat, nu dintr-un bundle: implementare o dată, mentenanță lunar sau anual, cu limitele ei incluse. Pe factură: „CampaignKit · aplicație la bucată” (S117). |
+| mentenanță | maintenance | maintenance | mantenimiento | Wartung | manutenzione | Ce se plătește lunar sau anual pentru o aplicație la bucată: „Mentenanță: 49 lei pe lună” (S117). |
 | pachet în plus | extra pack | pack supplémentaire | paquete extra | Zusatzpaket | pacchetto extra | Singurul termen pentru ce se cumpără peste abonament: titlu, butoane, facturi („Pachet în plus · 500 SMS”). Nu „add-on”, nu „extraopțiune”. |
 | limită | limit | limite | límite | Limit | limite | Nu „cotă”. |
 | consum | usage | consommation | uso | Verbrauch | utilizzo |  |
@@ -117,15 +120,15 @@ Un singur cuvânt pentru fiecare lucru, în toate ecranele și în toate cele 6 
 | --- | --- | --- | --- | --- | --- | --- |
 | recomandare | recommendation | recommandation | recomendación | Empfehlung | raccomandazione | Eticheta neutră de pe orice conținut comercial. |
 | perioadă de probă | free trial | essai gratuit | prueba gratuita | kostenloser Test | prova gratuita | Butonul: „Încearcă gratuit 14 zile”. Fără card și fără plată automată: la final aplicația se oprește, datele rămân, iar continuarea e o alegere explicită. |
-| cost de implementare | setup cost | frais de mise en service | coste de puesta en marcha | Einrichtungsgebühr | costo di attivazione | Apare mereu, și când e zero: „fără cost de implementare”. |
+| implementare · cost de implementare | setup · setup cost | mise en service · frais de mise en service | puesta en marcha · coste de puesta en marcha | Einrichtung · Einrichtungsgebühr | attivazione · costo di attivazione | Ce se plătește o singură dată, la activarea unei aplicații sau la cumpărarea unui bundle: „Implementare: 150 lei, o singură dată”. Apare mereu, și când e zero: „Fără cost de implementare”. În Founder, coloana e „Implementare” (S117). |
 
 ## Founder
 
 | RO | EN | FR | ES | DE | IT | Regulă |
 | --- | --- | --- | --- | --- | --- | --- |
 | excepție | exception | exception | excepción | Ausnahme | eccezione | Abatere de la abonament pentru o singură afacere. Are mereu valoare, termen (cel mult 12 luni), motiv și autor. „Încheie excepția acum”, nu „Șterge”. |
-| versiune (de abonament) | plan version | version de l’abonnement | versión del plan | Tarifversion | versione del piano | O schimbare de preț sau de limite face o versiune nouă. Mutarea în dezavantajul clientului: anunț cu 30 de zile înainte; doar în avantajul lui: imediat, cu anunț. |
-| ofertă | offer | offre | oferta | Angebot | offerta | Un produs din modelul comercial plus textele lui aprobate. Apare doar prin sloturi Growth. |
+| versiune (de bundle) | bundle version | version du bundle | versión del bundle | Bundle-Version | versione del bundle | Fiecare ofertă a unui bundle (preț, limite, aplicații, perioada de vânzare) e o versiune nouă; „Ofertă nouă” o creează. Afacerile rămân pe versiunea cumpărată, la prețul ei. Stări: „În vânzare”, „Programat”, „Vânzare oprită”; versiunile vechi: „Încheiată” (S117). |
+| ofertă | offer | offre | oferta | Angebot | offerta | Un produs din modelul comercial plus textele lui aprobate. Apare doar prin sloturi Growth. În modelul comercial (S117), „ofertă” e și perioada de vânzare a unui bundle („Ofertă nouă”, „Ofertă valabilă până pe 30 noiembrie”) — în Growth rămâne obiectul de mai sus. |
 | campanie | campaign | campagne | campaña | Kampagne | campagna | Cine vede o ofertă, unde și când: automat (la un semnal) sau programat (într-o perioadă). |
 | audiență | audience | audience | audiencia | Zielgruppe | pubblico | Segment salvat, doar cu numărul estimat de afaceri; sub 5, numărul nu se arată și audiența nu se folosește. |
 | rată de deranjare | disturbance rate | taux de gêne | tasa de molestia | Störungsrate | tasso di disturbo | „Nu mă interesează” la 100 de afișări. Peste 5%, campania se oprește singură și Founder primește o notificare. |

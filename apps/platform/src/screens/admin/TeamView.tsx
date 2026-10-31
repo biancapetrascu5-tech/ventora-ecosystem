@@ -54,6 +54,7 @@ export function TeamView({
   members,
   invites,
   seats,
+  seatsWhere,
   onInvite,
   memberActions,
   onResend,
@@ -65,6 +66,8 @@ export function TeamView({
   invites: TeamInviteRow[];
   /** Locurile ocupate, lângă „Invită o persoană” (comercial, F3). */
   seats?: ReactNode;
+  /** S117: „Din cele 10 locuri: 3 sunt incluse în orice cont, 7 vin din bundle-ul Business. …” */
+  seatsWhere?: string;
   onInvite?: () => void;
   memberActions?: (row: TeamMemberRow) => DataTableAction[];
   onResend: (row: TeamInviteRow) => void;
@@ -192,6 +195,7 @@ export function TeamView({
           ) : undefined
         }
       />
+      {seatsWhere && <p className={`body-small muted ${s.seatsWhere}`}>{seatsWhere}</p>}
       <DataTable
         caption={t('members')}
         columns={memberCols}

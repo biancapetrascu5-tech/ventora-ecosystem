@@ -3,9 +3,9 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { APPS, APP_IDS, DialogTrigger, Toast, type AppName } from '@ventora/ui';
+import { APPS, APP_IDS, Toast, type AppName } from '@ventora/ui';
 import {
-  AppPriceDialog,
+  AppPriceDrawer,
   AppsView,
   amountInput,
   commercialStyles as cs,
@@ -27,11 +27,13 @@ import {
 import { FounderShell } from '../shell/FounderShell';
 import { useQuotaText } from './labels';
 
-/* FounderApps (Lotul 3.4, D3-24): aplicațiile la bucată — mentenanța lunară (și anuală) și
-   implementarea în lei și în euro, limitele incluse și comutatorul „Direct / La cerere” (cu
-   implementare rămâne la cerere, D3-23, verificat și în baza de date). */
+/* FounderApps (Lotul 3.4; S117 1.1.0; D3-24): aplicațiile la bucată — mentenanța lunară și
+   anuală și implementarea, în lei și în euro, limitele incluse și comutatorul „Direct / La
+   cerere”. D3-23 / D3-24: cu implementare, comutatorul rămâne pe „La cerere” (verificat și în
+   baza de date); S117 îl desenează liber — NECESITĂ DECIZIE (raportul 3.4). */
 
 const isApp = (id: string): id is AppName => (APP_IDS as string[]).includes(id);
+type Kind = 'month' | 'year' | 'setup';
 
 export function AppsScreen({
   user,
@@ -46,6 +48,7 @@ export function AppsScreen({
 }) {
   const router = useRouter();
   const t = useTranslations('founder.apps');
+  const ed = useTranslations('founder.editor.price');
   const ui = useTranslations('ui');
   const q = useQuotaText();
   const phone = useIsPhone();
@@ -56,28 +59,38 @@ export function AppsScreen({
   const [failed, setFailed] = useState(false);
   const [toast, setToast] = useState<{ tone: 'done' | 'danger'; text: string } | null>(null);
 
-  const price = (a: AppData, kind: 'month' | 'year' | 'setup', currency: 'RON' | 'EUR') =>
+  const price = (a: AppData, kind: Kind, currency: 'RON' | 'EUR') =>
     a.prices.find((p) => p.kind === kind && p.currency === currency)?.amountMinor;
+  const m = (v: number | undefined, c: 'RON' | 'EUR') => (v === undefined ? '' : money(v, c));
 
   const rows: AppRow[] = apps
     .filter((a) => isApp(a.id))
     .map((a) => {
-      const both = (kind: 'month' | 'setup') =>
-        (['RON', 'EUR'] as const)
-          .map((c) => {
-            const v = price(a, kind, c);
-            return v === undefined ? null : money(v, c);
-          })
-          .filter(Boolean)
-          .join(' · ');
-      const hasSetup = a.prices.some((p) => p.kind === 'setup' && p.amountMinor > 0);
+      const setupLei = price(a, 'setup', 'RON') ?? 0;
+      const setupEur = price(a, 'setup', 'EUR') ?? 0;
+      const hasSetup = setupLei > 0 || setupEur > 0;
       return {
         id: a.id,
         app: a.id as AppName,
-        price: both('month'),
-        setup: hasSetup ? both('setup') : t('none'),
-        hasSetup,
+        maintenance: {
+          lei: [m(price(a, 'month', 'RON'), 'RON'), m(price(a, 'year', 'RON'), 'RON')]
+            .filter(Boolean)
+            .join(' · '),
+          eur: [m(price(a, 'month', 'EUR'), 'EUR'), m(price(a, 'year', 'EUR'), 'EUR')]
+            .filter(Boolean)
+            .join(' · '),
+        },
+        maintenanceShort: t('mobMaint', {
+          amount: m(price(a, 'month', 'RON'), 'RON'),
+          eur: m(price(a, 'month', 'EUR'), 'EUR'),
+        }),
+        setup: hasSetup ? { lei: money(setupLei, 'RON'), eur: money(setupEur, 'EUR') } : null,
+        setupShort: hasSetup
+          ? t('mobSetup', { amount: money(setupLei, 'RON'), eur: money(setupEur, 'EUR') })
+          : t('noSetupShort'),
+        limits: Object.entries(a.quotas).map(([k, v]) => q.amount(k, v)),
         direct: a.activationMode === 'direct',
+        locked: hasSetup,
       };
     });
 
@@ -112,6 +125,14 @@ export function AppsScreen({
     setFailed(false);
     setEditing(a);
   }
+
+  const saving = (monthly: string, annual: string, c: 'RON' | 'EUR') => {
+    const mm = parseAmount(monthly);
+    const yy = parseAmount(annual);
+    return mm !== null && yy !== null && mm * 12 > yy
+      ? ed('saving', { amount: money(mm * 12 - yy, c) })
+      : undefined;
+  };
 
   async function save() {
     if (!editing || !values) return;
@@ -173,24 +194,25 @@ export function AppsScreen({
   return (
     <FounderShell active="aplicatii" title={t('title')} user={user} requestsBadge={requestsBadge}>
       <AppsView rows={rows} onToggle={(r, d) => void toggle(r, d)} onEdit={openEdit} />
-      <DialogTrigger isOpen={!!editing} onOpenChange={(o) => !o && setEditing(null)}>
-        {editing && values ? (
-          <AppPriceDialog
-            app={editing.id as AppName}
-            values={values}
-            errors={errors}
-            quotas={quotas.map((x) => ({ key: x.key, label: q.perMonth(x.key) }))}
-            pending={pending}
-            failed={failed}
-            mob={phone}
-            onChange={setValues}
-            onCancel={() => setEditing(null)}
-            onSave={() => void save()}
-          />
-        ) : (
-          <></>
-        )}
-      </DialogTrigger>
+      {editing && values && (
+        <AppPriceDrawer
+          isOpen
+          app={editing.id as AppName}
+          values={values}
+          errors={errors}
+          helpers={{
+            annualLei: saving(values.monthlyLei, values.annualLei, 'RON'),
+            annualEur: saving(values.monthlyEur, values.annualEur, 'EUR'),
+          }}
+          quotas={quotas.map((x) => ({ key: x.key, label: q.perMonth(x.key) }))}
+          pending={pending}
+          failed={failed}
+          mob={phone}
+          onChange={setValues}
+          onCancel={() => setEditing(null)}
+          onSave={() => void save()}
+        />
+      )}
       {toast && (
         <div className={phone ? `${cs.toast} ${cs.toastMob}` : cs.toast}>
           <Toast

@@ -1,3 +1,5 @@
 # HubAppActivation
 
 Activating an app from HubCatalogApp (S113). Direct: "Activează · 49 lei pe lună" opens AddonPurchase with `prorate` — "Plătești azi 22,13 lei", "Azi: 22,13 lei, proporțional până pe 17 noiembrie", "Apoi 49 lei pe lună, odată cu abonamentul." — and the pay button with today's amount; after paying, the usual success (invoice on its way). On request: "Cere activare" sends a request to the Ventora team and shows "Am trimis cererea" / "Echipa Ventora o vede acum. Primești o notificare când aplicația e activă." Shown at 1280 and 390, light and dark, with a German and Italian test. Keys `catalog.app.*`, `billing.prorate.*` in `i18n/pricing.json`, 6 languages.
+
+**Implementation and maintenance (S117).** AddonPurchase with `setup` and `addon.includes`: the app (individual, maintenance 49 lei a month), what it includes, "Implementare, o singură dată · 150 lei", then "Plătești azi 172,13 lei" with "Mentenanța: 22,13 lei, proporțional până pe 17 noiembrie" and "Apoi 49 lei pe lună, odată cu abonamentul."; the pay button uses today's total.

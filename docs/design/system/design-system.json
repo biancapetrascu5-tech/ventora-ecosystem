@@ -468,10 +468,10 @@
     "App~20icons"
   ],
   "lastChange": {
-    "at": "2026-10-31T11:55:10Z",
+    "at": "2026-10-31T19:19:09Z",
     "by": "Bianca Petrașcu",
     "via": "Claude",
-    "note": "S113: lunar sau anual, lei și euro, reduceri, direct / la cerere, plata proporțională; FounderApps, FounderDiscounts, HubPlanBilling, HubAppActivation; AddonPurchase prorate; i18n pricing, founder-pricing"
+    "note": "S117: aplicații la bucată (implementare + mentenanță, limite incluse) și bundle-uri (perioadă de vânzare, Oprește vânzarea, Ofertă nouă); HubCatalogBundles nou; Ce plătești în HubAdminPlan / HubPlanBilling; locurile în echipă; AddonPurchase setup + includes; Spine Founder „Bundle-uri”; glosar; i18n pricing.json, founder-pricing.json"
   },
   "layout": "files",
   "libraries": [

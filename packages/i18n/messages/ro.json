@@ -606,5 +606,111 @@
         "date": "{date}, {time}"
       }
     }
+  },
+  "billing": {
+    "plan": {
+      "payMonthly": "Plătești lunar: {amount}",
+      "payAnnual": "Plătești anual: {amount} · economisești {saving}",
+      "nextPayment": "Următoarea plată: {date}",
+      "reset": "Consumul pornește de la zero pe {date}.",
+      "annualLimits": "Plătești pe an, dar limitele sunt lunare: consumul pornește de la zero în fiecare lună, pe {day}.",
+      "usagePeriod": "Consum: {from} – {to}",
+      "fullPrice": "Preț întreg",
+      "discountValue": "Reducere {value}",
+      "discount": {
+        "until": "până pe {date}",
+        "once": "doar la această plată",
+        "permanent": "permanentă"
+      },
+      "total": "Total pe lună",
+      "totalYear": "Total pe an",
+      "free": "Gratuit"
+    },
+    "invoice": {
+      "view": "Vezi factura",
+      "title": "Factura {number}",
+      "lines": "Ce cuprinde",
+      "total": "Total de plată",
+      "finalPrice": "Prețul e final, nu se adaugă TVA."
+    },
+    "packs": {
+      "validUntil": "valabil până pe {date}"
+    },
+    "prorate": {
+      "today": "Azi: {amount}, proporțional până pe {date}",
+      "then": "Apoi {amount} pe lună, odată cu abonamentul."
+    },
+    "have": {
+      "title": "Ce plătești",
+      "bundle": "Bundle {name}",
+      "bundleKeep": "Prețul tău rămâne același cât timp păstrezi bundle-ul, și după ce oferta s-a încheiat.",
+      "app": "{app} · aplicație la bucată",
+      "pack": "{name} · pachet în plus",
+      "noPacks": "Niciun pachet în plus.",
+      "included": "Inclus"
+    }
+  },
+  "catalog": {
+    "app": {
+      "activate": "Activează · {price} pe lună",
+      "request": "Cere activare",
+      "onRequest": "La cerere",
+      "onRequestNote": "Aplicația are nevoie de configurare, așa că o activăm noi. După cerere, echipa Ventora te contactează și abia apoi se plătește.",
+      "requestSent": "Am trimis cererea",
+      "requestSentBody": "Echipa Ventora o vede acum. Primești o notificare când aplicația e activă.",
+      "activateTitle": "Activezi {app}",
+      "activateDesc": "Aplicație adăugată la abonament · {price} pe lună",
+      "maintenance": "Mentenanță: {amount} pe lună",
+      "setupValue": "{amount}, o singură dată",
+      "maintenanceLabel": "Mentenanță",
+      "includes": "Ce include",
+      "noLimits": "Fără limite proprii",
+      "alaCarte": "Aplicație la bucată",
+      "inBundle": "Inclusă în bundle-ul {name}",
+      "activateDescAlc": "Aplicație la bucată · mentenanță {price} pe lună"
+    },
+    "bundles": {
+      "title": "Bundle-uri",
+      "lead": "Mai multe aplicații împreună, la un preț mai mic decât luate separat, cu limite și locuri în echipă incluse.",
+      "validUntil": "Ofertă valabilă până pe {date}",
+      "price": "{amount} pe lună",
+      "priceYear": "sau {amount} pe an",
+      "separate": "Separat: {amount} pe lună",
+      "saving": "Economisești {amount} pe lună",
+      "limits": "Incluse în fiecare lună",
+      "apps": "{count, plural, one {# aplicație} few {# aplicații} other {# de aplicații}}",
+      "have": "Ai acest bundle",
+      "haveKeep": "Îl păstrezi la prețul tău: {amount} pe lună.",
+      "request": "Cere acest bundle",
+      "requestNote": "Echipa Ventora îl trece pe abonamentul tău de la următoarea plată. Aplicațiile pe care le ai la bucată și sunt în bundle nu le mai plătești separat.",
+      "alsoHave": "Include și {app}, pe care acum o plătești la bucată.",
+      "planTotal": "Abonamentul tău ar fi {amount} pe lună, în loc de {now}.",
+      "requestSent": "Am trimis cererea pentru bundle-ul {name}",
+      "requestSentBody": "Echipa Ventora îți scrie înainte de următoarea plată. Până atunci, totul rămâne cum e."
+    },
+    "alaCarte": {
+      "title": "Aplicații la bucată",
+      "lead": "Sau adaugi doar aplicația de care ai nevoie: implementarea o singură dată, apoi mentenanța lunar."
+    },
+    "setup": "Implementare: {amount}, o singură dată",
+    "noSetup": "Fără cost de implementare"
+  },
+  "seats": {
+    "count": "{count, plural, one {# loc în echipă} few {# locuri în echipă} other {# de locuri în echipă}}",
+    "breakdownBase": "{base} incluse în orice cont",
+    "breakdown": "{base} incluse în orice cont + {bundle} din bundle",
+    "breakdownPack": "{base} incluse în orice cont + {bundle} din bundle + {pack} din pachete în plus",
+    "more": "Mai ai nevoie de locuri? Le adaugi cu un pachet în plus sau cu un bundle care are mai multe.",
+    "where": "Din cele {total} locuri: {base} sunt incluse în orice cont, {bundle} vin din bundle-ul {name}.",
+    "wherePack": "Din cele {total} locuri: {base} sunt incluse în orice cont, {bundle} vin din bundle-ul {name}, {pack} din pachete în plus."
+  },
+  "limits": {
+    "appointments": "{count, plural, one {# programare} few {# programări} other {# de programări}} pe lună",
+    "sms": "{count, plural, one {# SMS} other {# SMS}} pe lună",
+    "campaigns": "{count, plural, one {# campanie} few {# campanii} other {# de campanii}} pe lună",
+    "emails": "{count, plural, one {# e-mail} few {# e-mailuri} other {# de e-mailuri}} pe lună",
+    "clients": "{count, plural, one {# client} few {# clienți} other {# de clienți}}",
+    "invoices": "{count, plural, one {# factură} few {# facturi} other {# de facturi}} pe lună",
+    "storage": "{amount} spațiu pentru documente"
   }
 }

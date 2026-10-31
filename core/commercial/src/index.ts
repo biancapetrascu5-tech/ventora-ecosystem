@@ -159,6 +159,8 @@ export {
 } from './founder-read';
 export {
   getCatalogForOrg,
+  getSeatsBreakdown,
+  type SeatsBreakdown,
   type Catalog,
   type CatalogBundle,
   type CatalogApplication,

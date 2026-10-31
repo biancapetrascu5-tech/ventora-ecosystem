@@ -80,6 +80,7 @@ export function HubAdminTeamFrame() {
           members={MEMBERS}
           invites={INVITES}
           seats={<span className="body-small muted v-num">4 din 10 locuri în echipă</span>}
+          seatsWhere="Din cele 10 locuri: 3 sunt incluse în orice cont, 7 vin din bundle-ul Business. Mai ai nevoie de locuri? Le adaugi cu un pachet în plus sau cu un bundle care are mai multe."
           onInvite={noop}
           memberActions={(r) =>
             r.owner

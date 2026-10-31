@@ -680,4 +680,62 @@ Fiecare intrare spune ce s-a schimbat pe componentă (structură, tokeni, texte,
 ### i18n
 - Noi: `pricing.json` (6 limbi), `founder-pricing.json` (RO).
 
-> Sincronizat în repo: S112 la Lotul 2.9b; S111 și S113 la Lotul 3.4 (tokens.json, tokens.css și logo-urile rămân din repo). D3-24 (31.10.2026 seara) schimbă „abonamentul” în bundle: FounderPlans, FounderPlanEditor și FounderNewBusiness așteaptă designul S117.
+## 2026-10-31 · S114 — meniul unui membru și textele agentului
+
+### Componente noi
+- **HubTeamMemberActions** (1.0.0) — meniul unui membru în HubAdminTeam: „Schimbă rolul”, „Acces la aplicații”, „Oprește accesul / Redă accesul”, „Elimină din afacere” (confirmare, „Se salvează…”, salvat, eroare la salvare, eroare „doar proprietarul”); vederea proprietarului și a unui admin; pagina principală Hub până la launcher; test DE/IT.
+
+### Componente schimbate
+- **README:** HubAdminTeam (regula admin / proprietar și dialogurile).
+
+### i18n
+- `team.json`: chei noi `hub.team.*` (inclusiv `hub.team.save`, `hub.team.actionError`, validate) și `hub.home.*` (`hub.home.soon`, validat), 6 limbi.
+- `founder-business.json`: `founder.business.suspended.noticeNoName` (RO), pentru nota fără numele celui care a suspendat.
+
+## 2026-10-31 · S114b — notificările din Contul tău și logo-ul varianta B
+
+### Componente schimbate
+- **HubAccount — 1.1.0:** „Notificări” refăcute (D4-6, D4-7): „În aplicație” informativ („Mereu”), comutator pe e-mail pe fiecare categorie, securitatea „Nu se pot opri”, fără coloana SMS, „Recomandări Ventora” și „Noutăți de la Ventora” separat (Noutăți: e-mail oprit implicit); pe telefon, pagina „Notificări” cu comutatoare; test DE/IT.
+- **Logo — 2.0.0:** pe fundal închis, varianta B (fețe separate prin tăieturi transparente, mască SVG), cu id de mască unic pe instanță (`ventora-logo-dark-cut-{id}`; în bibliotecă de la versiunea publicată înaintea acestei intrări); se vede în Logo, BrandZone, AuthLayout și ecranele de autentificare. `assets/Logos/favicon.svg`: varianta B în modul închis.
+- **Sincronizarea Lotului 3.4:** `assets/Logos/ventora-logo-dark.svg`, `ventora-mark-dark.svg`, `favicon.svg` și componenta Logo se iau din design system (excepție, doar pentru ele).
+
+### i18n
+- `notifications.json`: `notifications.prefs.*` (6 limbi).
+
+## 2026-10-31 · S115 — notificările Fazei 3
+
+### Componente noi
+- **BillingNotifications** (1.0.0) — notificările în aplicație (proprietar și ceilalți, light și dark, telefon) și e-mailurile pentru factură, plată, limite, anunțul de 30 de zile, perioada de probă, costul de implementare și neplata; test DE/IT.
+
+### Componente schimbate
+- **NotificationsPanel — 1.2.0:** `action` pe o notificare (rândul „Vezi factura →” sub text). `index.d.ts`.
+- **README:** NotificationsPanel, BookingSmsNotifications.
+
+### i18n
+- `notifications.json`: `notifications.billing.*`, `email.billing.*` (6 limbi).
+
+## 2026-10-31 · S117 — modelul comercial: aplicații la bucată și bundle-uri
+
+Decizia fondatoarei din 31.10: afacerile cumpără aplicații la bucată și bundle-uri. „Abonament” rămâne doar pentru ce plătește afacerea în total.
+
+### Componente noi
+- **HubCatalogBundles** (1.0.0) — catalogul din Hub: bundle-urile disponibile acum („Ofertă valabilă până pe 30 noiembrie”), prețul lunar și anual, „Separat: 366 lei pe lună” și „Economisești 47 lei pe lună”, limitele și locurile incluse, implementarea; bundle-ul pe care afacerea îl are („Ai acest bundle”, îl păstrează la prețul ei); „Cere acest bundle” și confirmarea; dedesubt, aplicațiile la bucată (mentenanță, implementare). 6 limbi (EN/FR/ES în testul de limbă), test DE/IT.
+
+### Componente schimbate
+- **AddonPurchase — 1.3.0:** `setup` (implementarea, o singură dată, plătită azi peste mentenanță: rândul „Implementare, o singură dată”, nota „Mentenanța: {amount}, proporțional până pe {date}”, butonul cu totalul de azi) și `addon.includes` (lista „Include”). Texte noi `setupOnce`, `prorateMaint`, `addonIncludes` (6 limbi). `index.d.ts`, `bundle.css` (`.v-addon__inc`, `.v-addon__inclist`).
+- **FounderApps — 1.1.0:** mentenanța lunară și anuală, în lei și în euro; implementarea; „Limite incluse”; „Direct / La cerere” nu mai e blocat de implementare; panoul „Editează EasyBook”.
+- **FounderPlans — 2.0.0:** devine „Bundle-uri”: aplicațiile, prețul față de aplicațiile luate separat (economia), limitele și locurile incluse, implementarea, perioada de vânzare și starea („În vânzare”, „Programat”, „Vânzare oprită”), versiunile cu perioada lor și numărul de afaceri; „Oprește vânzarea” (confirmare, toast), „Ofertă nouă”. Numele componentei rămâne deocamdată (vezi „Ce ai de decis”).
+- **FounderPlanEditor — 2.0.0:** „Ofertă nouă” pentru un bundle: aplicațiile (cu prețul la bucată și totalul separat), patru prețuri, implementarea, limitele, locurile în echipă din bundle, perioada de vânzare; erori: prețul nu e mai mic decât aplicațiile separat, perioada se suprapune cu oferta de acum; „Programează oferta”.
+- **FounderNewBusiness — 1.2.0:** „Ce cumpără”: bundle (doar cele în vânzare) și/sau aplicații la bucată (cele din bundle sunt deja incluse), moneda, lunar / anual; rezumatul cu fiecare linie, totalul, implementarea și locurile; invitația spune ce primește și cât plătește.
+- **FounderPacks — 1.1.1:** coloana „Planuri” devine „Disponibil pentru” (aplicația de care ține pachetul).
+- **HubCatalogApp — 1.2.0:** „Mentenanță · 49 lei pe lună”, „Cost de implementare · 150 lei, o singură dată”, „Ce include” (RO/DE/IT).
+- **HubAppActivation — 1.1.0:** activarea unei aplicații la bucată: implementarea, mentenanța proporțională, totalul de azi (172,13 lei), apoi 49 lei pe lună; ce include.
+- **HubPlanBilling — 1.1.0:** „Ce plătești”: Bundle Business (300 lei, prețul păstrat), CampaignKit · aplicație la bucată, locurile în echipă (3 + 7, incluse), pachetele, totalul; reducerile pe bundle și pe aplicație; factura; o stare nouă cu pachetul de 5 locuri (15 locuri, 409 lei).
+- **HubAdminPlan — 1.2.0:** „Bundle Business” și „Ce plătești” în „Abonamentul tău”; aplicațiile afișate sunt cele ale afacerii; pe facturi „Abonament · 17 oct. – 16 nov.” (RO/DE/IT).
+- **HubAdminTeam — 1.1.1:** de unde vin locurile („Din cele 10 locuri: 3 sunt incluse în orice cont, 7 vin din bundle-ul Business.”); în UpgradeDialog, opțiunea „Bundle Business Plus” în locul abonamentului Business Plus.
+- **Spine Founder:** „Model comercial” — „Aplicații”, „Bundle-uri”, „Pachete în plus”, „Reduceri”, în toate preview-urile Founder și Growth; căutarea: „Caută o afacere, un bundle sau o campanie”.
+- **README:** cele de mai sus, AddonPurchase. **Glosar:** bundle, aplicație la bucată, mentenanță, implementare, versiune (de bundle); „abonament” doar pentru totalul afacerii; nota la „ofertă”.
+
+### i18n
+- `pricing.json`: `catalog.bundles.*`, `catalog.alaCarte.*`, `catalog.setup`, `catalog.noSetup`, `catalog.app.*` (mentenanța, implementarea, ce include), `billing.have.*`, `seats.*`, `limits.*` (6 limbi).
+- `founder-pricing.json`: `founder.apps.*` (noi), `founder.bundles.*`, `founder.bundleEditor.*`, `founder.new.*` (noi) — RO.

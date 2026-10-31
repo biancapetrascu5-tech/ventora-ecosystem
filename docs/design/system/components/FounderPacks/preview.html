@@ -558,7 +558,7 @@ function AX_PrjHead({ mode, view }) {
 }
 const FX_NAV = [
   { items: [{ id: "azi", label: "Prezentare", short: "Prezentare", icon: "house" }, { id: "afaceri", label: "Afaceri", icon: "building-2", badge: 3 }, { id: "consum", label: "Consum", icon: "chart-column" }, { id: "cereri", label: "Cereri", icon: "inbox", badge: 2 }] },
-  { label: "Model comercial", items: [{ id: "planuri", label: "Planuri", icon: "boxes" }, { id: "pachete", label: "Pachete \xEEn plus", short: "Pachete", icon: "package" }, { id: "aplicatii", label: "Aplica\u021Bii", icon: "layout-grid" }, { id: "reduceri", label: "Reduceri", icon: "percent" }] },
+  { label: "Model comercial", items: [{ id: "aplicatii", label: "Aplica\u021Bii", icon: "layout-grid" }, { id: "planuri", label: "Bundle-uri", icon: "boxes" }, { id: "pachete", label: "Pachete \xEEn plus", short: "Pachete", icon: "package" }, { id: "reduceri", label: "Reduceri", icon: "percent" }] },
   { label: "Growth", items: [{ id: "oferte", label: "Oferte", icon: "ticket" }, { id: "campanii", label: "Campanii", icon: "megaphone" }, { id: "audiente", label: "Audien\u021Be", icon: "users" }, { id: "rezultate", label: "Rezultate", icon: "chart-line" }, { id: "control", label: "Control", icon: "sliders-horizontal" }] },
   { label: "Sistem", items: [{ id: "jurnal", label: "Jurnal", icon: "history" }, { id: "setari", label: "Set\u0103ri", icon: "settings" }] }
 ];
@@ -580,7 +580,7 @@ function FX_App({ active, title, children }) {
       spine: /* @__PURE__ */ React.createElement(V.Spine, { hub: true, appName: "Founder", sections: FX_NAV, activeId: active, onBackToHub: () => {
       }, bottomItems: ["afaceri", "consum", "campanii", "control"] }),
       contextBar: /* @__PURE__ */ React.createElement(V.ContextBar, { title, onSearch: () => {
-      }, searchLabel: "Caut\u0103 o afacere, un plan sau o campanie", notifications: /* @__PURE__ */ React.createElement(V.NotificationsPanel, { items: FX_NOTIFS }), account: /* @__PURE__ */ React.createElement(V.AccountMenu, { user: FX_USER }) })
+      }, searchLabel: "Caut\u0103 o afacere, un bundle sau o campanie", notifications: /* @__PURE__ */ React.createElement(V.NotificationsPanel, { items: FX_NOTIFS }), account: /* @__PURE__ */ React.createElement(V.AccountMenu, { user: FX_USER }) })
     },
     children
   );
@@ -664,11 +664,11 @@ const PRICES = {
 const PriceCell = ({ l, e, save }) => h("span", { className: "fp-cell" }, h("span", { className: "body v-num" }, l), h("span", { className: "body-small muted v-num" }, e), save ? h("span", { className: "caption fp-save" }, save) : null);
 /* FounderPacks (S113): every pack has a price in lei and a price in euro, typed in separately (no conversion), and the setup cost in both currencies. Monthly packs bought during the month are charged pro rata. Keys founder.packs.* in i18n/founder-pricing.json (FP). */
 const PACKS = [
-  { id: 1, n: "500 SMS în plus", l: 49, e: 10, per: "o dată, perioada în curs", setup: null, plans: "Toate", how: "Directă" },
-  { id: 2, n: "200 de programări în plus", l: 39, e: 8, per: "o dată, perioada în curs", setup: null, plans: "Start, Business", how: "Directă" },
-  { id: 3, n: "10 campanii în plus", l: 39, e: 8, per: "o dată, perioada în curs", setup: null, plans: "Toate", how: "Directă" },
-  { id: 4, n: "5 locuri în echipă în plus", l: 60, e: 12, per: "lunar, cu abonamentul", setup: null, plans: "Business, Business Plus", how: "Directă" },
-  { id: 5, n: "Domeniu propriu pentru pagina de rezervări", l: 25, e: 5, per: "lunar", setup: [150, 30], plans: "Business Plus", how: "La cerere, prin echipa Ventora" }
+  { id: 1, n: "500 SMS în plus", l: 49, e: 10, per: "o dată, perioada în curs", setup: null, plans: "Cu EasyBook", how: "Directă" },
+  { id: 2, n: "200 de programări în plus", l: 39, e: 8, per: "o dată, perioada în curs", setup: null, plans: "Cu EasyBook", how: "Directă" },
+  { id: 3, n: "10 campanii în plus", l: 39, e: 8, per: "o dată, perioada în curs", setup: null, plans: "Cu CampaignKit", how: "Directă" },
+  { id: 4, n: "5 locuri în echipă în plus", l: 60, e: 12, per: "lunar, cu abonamentul", setup: null, plans: "Toate afacerile", how: "Directă" },
+  { id: 5, n: "Domeniu propriu pentru pagina de rezervări", l: 25, e: 5, per: "lunar", setup: [150, 30], plans: "Cu EasyBook", how: "La cerere, prin echipa Ventora" }
 ];
 function FPacks({ mode, edit }) {
   return h("div", { className: "frame-rel" }, h(FX_App, { active: "pachete", title: "Pachete în plus" }, h(V.PageHeader, { title: "Pachete în plus", description: mode === "mobile" ? undefined : tf("founder.packs.lead"), actions: h(V.Button, { icon: "plus" }, "Pachet nou") }),
@@ -677,7 +677,7 @@ function FPacks({ mode, edit }) {
       { key: "p", header: tf("founder.packs.col.price"), secondary: true, render: (r) => h("span", { className: "v-num" }, lei(r.l) + " · " + eur(r.e)) },
       { key: "per", header: "Se plătește", secondary: true },
       { key: "setup", header: "Implementare", optional: true, render: (r) => r.setup ? lei(r.setup[0]) + " · " + eur(r.setup[1]) : "Fără" },
-      { key: "plans", header: "Planuri", optional: true, muted: true },
+      { key: "plans", header: "Disponibil pentru", optional: true, muted: true },
       { key: "how", header: "Cumpărare", trailing: true, render: (r) => h(V.StatusPill, { tone: "neutral", icon: r.how === "Directă" ? "credit-card" : "users" }, r.how) }],
       rows: PACKS, rowActions: () => [{ label: "Editează", icon: "pencil" }, { label: "Oprește vânzarea", icon: "lock" }] })),
     edit ? h("div", { className: "x-overlay" + (mode === "mobile" ? " m" : "") }, h(V.Dialog, { open: true, inline: true, className: mode === "mobile" ? "v-dialog--sheet" : undefined,

@@ -1,7 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { money, type Currency } from '@ventora/screens';
+import { count, money, type Currency } from '@ventora/screens';
 
 /* Etichetele cotelor (founder.quota.<cheie cu „_”>): „SMS-uri”, „Limită de SMS-uri”,
    „SMS pe lună”. O cheie nouă din registru, fără text încă, apare cu numele ei tehnic. */
@@ -14,6 +14,13 @@ export function useQuotaText() {
     label: (key: string) => pick(key, 'label'),
     limit: (key: string) => pick(key, 'limit'),
     perMonth: (key: string) => pick(key, 'perMonth'),
+    /** „1.000 de programări pe lună”, „Programări nelimitate” (null = nelimitat). */
+    amount: (key: string, n: number | null) =>
+      !t.has(`${id(key)}.amount`)
+        ? `${key}: ${n === null ? '∞' : count(n)}`
+        : n === null
+          ? t(`${id(key)}.unlimited`)
+          : t(`${id(key)}.amount`, { count: n, n: count(n) }),
   };
 }
 

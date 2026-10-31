@@ -17,8 +17,8 @@ import { authApi } from '@ventora/screens';
 /* Shell-ul Founder Control Center (FX_App din preview-urile Founder): Spine cu navigația Founder,
    ContextBar cu notificările și contul. Spine-ul arată doar intrările care au ecran: Lotul 2.8
    „Afaceri”; Lotul 3.4 „Prezentare”, „Consum”, „Cereri” (S111, cu numărul cererilor noi) și, sub
-   „Model comercial”, „Pachete în plus”, „Aplicații”, „Reduceri” (S113). „Planuri” (bundle-urile,
-   D3-24) apare cu designul S117; Growth, Campanii și Sistem, cu ecranele lor. Căutarea (paleta de
+   „Model comercial” (S117): „Aplicații”, „Bundle-uri”, „Pachete în plus”, „Reduceri”. Growth,
+   Campanii și Sistem apar cu ecranele lor. Căutarea (paleta de
    comenzi) n-are încă sursă. */
 
 export function useFounderNav(requestsBadge?: number): NavSection[] {
@@ -41,6 +41,8 @@ export function useFounderNav(requestsBadge?: number): NavSection[] {
     {
       label: t('commercial'),
       items: [
+        { id: 'aplicatii', label: t('apps'), icon: 'layout-grid', href: '/apps' },
+        { id: 'planuri', label: t('bundles'), icon: 'boxes', href: '/bundles' },
         {
           id: 'pachete',
           label: t('packs'),
@@ -48,7 +50,6 @@ export function useFounderNav(requestsBadge?: number): NavSection[] {
           icon: 'package',
           href: '/packs',
         },
-        { id: 'aplicatii', label: t('apps'), icon: 'layout-grid', href: '/apps' },
         { id: 'reduceri', label: t('discounts'), icon: 'percent', href: '/discounts' },
       ],
     },

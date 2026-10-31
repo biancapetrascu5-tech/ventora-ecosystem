@@ -6,10 +6,11 @@ import {
   AppIcon,
   Button,
   DataTable,
-  Dialog,
+  Drawer,
   FormField,
   Input,
   Notice,
+  Menu,
   PageHeader,
   Toggle,
   type AppName,
@@ -19,20 +20,25 @@ import { useIsPhone } from '../../screens/hooks';
 import { useTableLabels } from '../BusinessesView';
 import s from './commercial.module.css';
 
-/* FounderApps (Lotul 3.4, S113, doar română): aplicațiile la bucată (D3-24) — cât costă fiecare
-   pe lună, în lei și în euro, costul de implementare și comutatorul „Direct / La cerere”, blocat
-   pe „La cerere” când există un cost de implementare (D3-23). D3-24: fiecare aplicație își are
-   limitele incluse, scrise în dialogul de preț (fără design propriu, raportul 3.4). */
+/* FounderApps (Lotul 3.4; S117 1.1.0, D3-24): fiecare aplicație se vinde și la bucată —
+   implementarea o singură dată, mentenanța lunar sau anual, în lei și în euro — cu limitele ei
+   incluse; comutatorul „Direct / La cerere”. Panoul „Editează {app}”: mentenanța, implementarea,
+   limitele. `locked`: comutatorul blocat pe „La cerere” (D3-23 / D3-24: cu implementare →
+   la cerere; S117 îl desenează liber — NECESITĂ DECIZIE, raportul 3.4). Doar română (S57). */
 
 export type AppRow = {
   id: string;
   app: AppName;
-  /** „49 lei · 10 €” */
-  price: string;
-  /** „300 lei · 60 €” sau „Fără” */
-  setup: string;
-  hasSetup: boolean;
+  /** „149 lei · 1.490 lei” / „30 € · 300 €” */
+  maintenance: { lei: string; eur: string };
+  /** Pe telefon: „149 lei · 30 € pe lună” */
+  maintenanceShort: string;
+  setup: { lei: string; eur: string } | null;
+  setupShort: string;
+  /** „1.000 de programări pe lună” … */
+  limits: string[];
   direct: boolean;
+  locked?: boolean;
 };
 
 export function AppsView({
@@ -63,16 +69,49 @@ export function AppsView({
       ),
     },
     {
-      key: 'price',
-      header: t('col.price'),
+      key: 'maintenance',
+      header: t('col.maintenance'),
       secondary: true,
-      render: (r) => <span className="v-num">{r.price}</span>,
+      render: (r) =>
+        phone ? (
+          <span className="body-small v-num">{r.maintenanceShort}</span>
+        ) : (
+          <span className={s.fbCell}>
+            <span className="body v-num">{r.maintenance.lei}</span>
+            <span className="body-small muted v-num">{r.maintenance.eur}</span>
+          </span>
+        ),
     },
     {
       key: 'setup',
       header: t('col.setup'),
       secondary: true,
-      render: (r) => (r.hasSetup ? <span className="v-num">{r.setup}</span> : r.setup),
+      render: (r) =>
+        phone ? (
+          <span className="body-small muted v-num">{r.setupShort}</span>
+        ) : r.setup ? (
+          <span className={s.fbCell}>
+            <span className="body v-num">{r.setup.lei}</span>
+            <span className="body-small muted v-num">{r.setup.eur}</span>
+          </span>
+        ) : (
+          <span className="body-small muted">{t('none')}</span>
+        ),
+    },
+    {
+      key: 'limits',
+      header: t('col.limits'),
+      optional: true,
+      render: (r) =>
+        r.limits.length ? (
+          <ul className={`${s.fbInc} body-small`}>
+            {r.limits.map((x) => (
+              <li key={x}>{x}</li>
+            ))}
+          </ul>
+        ) : (
+          <span className="body-small muted">{t('noLimits')}</span>
+        ),
     },
     {
       key: 'activation',
@@ -82,7 +121,7 @@ export function AppsView({
         <span className={s.act}>
           <Toggle
             isSelected={r.direct}
-            isDisabled={r.hasSetup}
+            isDisabled={r.locked}
             labelPosition="end"
             onChange={(on) => onToggle(r, on)}
           >
@@ -90,7 +129,7 @@ export function AppsView({
           </Toggle>
           {!phone && (
             <span className="caption muted">
-              {r.hasSetup ? t('setupLocked') : r.direct ? t('directHelp') : t('onRequestHelp')}
+              {r.locked ? t('setupLocked') : r.direct ? t('directHelp2') : t('onRequestHelp')}
             </span>
           )}
         </span>
@@ -99,12 +138,12 @@ export function AppsView({
   ];
   return (
     <>
-      <PageHeader title={t('title')} description={phone ? undefined : t('lead')} />
+      <PageHeader title={t('title')} description={phone ? undefined : t('lead2')} />
       <DataTable
         caption={t('title')}
         columns={columns}
         rows={rows}
-        rowActions={(r) => [{ label: t('editPrice'), icon: 'pencil', onClick: () => onEdit(r) }]}
+        rowActions={(r) => [{ label: t('editAction'), icon: 'pencil', onClick: () => onEdit(r) }]}
         labels={labels}
         locale="ro"
       />
@@ -119,7 +158,7 @@ export type AppPriceValues = {
   annualEur: string;
   setupLei: string;
   setupEur: string;
-  /** D3-24: limitele incluse, pe cheie: „1.000”, gol = nu e inclusă. */
+  /** D3-24: limitele incluse, pe cheie: „1.000”. */
   limits: Record<string, string>;
 };
 
@@ -128,18 +167,21 @@ export type AppPriceErrors = Partial<Record<Exclude<keyof AppPriceValues, 'limit
 };
 
 /**
- * „Editează prețul” (FounderApps): mentenanța lunară și anuală (prețul anual se scrie direct),
- * implementarea, în lei și în euro, și limitele incluse (D3-24).
+ * „Editează {app}” (S117, panou lateral; pe telefon pe tot ecranul): mentenanța lunară și anuală
+ * (prețul anual se scrie direct), implementarea, în lei și în euro, și limitele incluse, cu
+ * „Adaugă o limită”.
  */
-export function AppPriceDialog({
+export function AppPriceDrawer({
   app,
   values,
   errors = {},
+  helpers = {},
   quotas,
   pending,
   failed,
   mob,
-  inline,
+  contained,
+  isOpen,
   onChange,
   onCancel,
   onSave,
@@ -147,27 +189,38 @@ export function AppPriceDialog({
   app: AppName;
   values: AppPriceValues;
   errors?: AppPriceErrors;
+  /** Economia sub prețurile anuale. */
+  helpers?: Partial<Record<'annualLei' | 'annualEur', string>>;
   /** Cotele registrului: cheia și eticheta („Programări pe lună”). */
   quotas: { key: string; label: string }[];
   pending?: boolean;
   failed?: boolean;
   mob?: boolean;
-  inline?: boolean;
+  /** Galeria: panoul în cadrul paginii. */
+  contained?: boolean;
+  isOpen: boolean;
   onChange: (v: AppPriceValues) => void;
   onCancel: () => void;
   onSave: () => void;
 }) {
-  const t = useTranslations('founder.apps.dialog');
+  const t = useTranslations('founder.apps.edit');
   const ed = useTranslations('founder.editor.price');
   const ui = useTranslations('ui');
   const set = (patch: Partial<AppPriceValues>) => onChange({ ...values, ...patch });
+  const shown = quotas.filter((q) => q.key in values.limits);
+  const others = quotas.filter((q) => !(q.key in values.limits));
   const price = (
     field: Exclude<keyof AppPriceValues, 'limits'>,
     label: string,
     suffix: string,
-    required?: boolean,
+    required = true,
   ) => (
-    <FormField label={label} isRequired={required} error={errors[field]}>
+    <FormField
+      label={label}
+      isRequired={required}
+      hint={errors[field] ? undefined : helpers[field as 'annualLei']}
+      error={errors[field]}
+    >
       <Input
         value={values[field]}
         suffix={suffix}
@@ -178,13 +231,16 @@ export function AppPriceDialog({
     </FormField>
   );
   return (
-    <Dialog
-      inline={inline}
-      sheet={mob}
+    <Drawer
+      isOpen={isOpen}
+      onOpenChange={(o) => !o && onCancel()}
+      contained={contained}
+      layout={mob ? 'full' : 'side'}
+      width={520}
       title={t('title', { app: APPS[app]?.name ?? app })}
-      description={t('lead')}
+      subtitle={t('subtitle')}
       closeLabel={ui('close')}
-      onClose={onCancel}
+      backLabel={ui('back')}
       footer={
         <>
           <Button variant="quiet" isDisabled={pending} onPress={onCancel}>
@@ -196,33 +252,59 @@ export function AppPriceDialog({
         </>
       }
     >
-      <div className={s.stack}>
+      <div className={s.stack5}>
         {failed && <Notice tone="danger">{t('error')}</Notice>}
-        <div className={mob ? `${s.prices} ${s.pricesMob}` : s.prices}>
-          {price('monthlyLei', ed('monthlyLei'), 'lei', true)}
-          {price('annualLei', ed('annualLei'), 'lei')}
-          {price('monthlyEur', ed('monthlyEur'), '€', true)}
-          {price('annualEur', ed('annualEur'), '€')}
-          {price('setupLei', ed('setupLei'), 'lei')}
-          {price('setupEur', ed('setupEur'), '€')}
+        <div>
+          <p className={`subheading ${s.fpSub}`}>{t('maintenance')}</p>
+          <p className={`body-small muted ${s.helpBelow}`}>{t('maintenanceHelp')}</p>
+          <div className={mob ? `${s.prices} ${s.pricesMob}` : s.prices}>
+            {price('monthlyLei', ed('monthlyLei'), 'lei')}
+            {price('annualLei', ed('annualLei'), 'lei')}
+            {price('monthlyEur', ed('monthlyEur'), '€')}
+            {price('annualEur', ed('annualEur'), '€')}
+          </div>
         </div>
-        <div className={s.stack2}>
-          <p className="subheading">{t('limits')}</p>
-          <p className="body-small muted">{t('limitsHelp')}</p>
+        <div>
+          <p className={`subheading ${s.fpSub}`}>{t('setup')}</p>
+          <p className={`body-small muted ${s.helpBelow}`}>{t('setupHelp')}</p>
+          <div className={mob ? `${s.prices} ${s.pricesMob}` : s.prices}>
+            {price('setupLei', ed('setupLei'), 'lei', false)}
+            {price('setupEur', ed('setupEur'), '€', false)}
+          </div>
         </div>
-        <div className={mob ? `${s.prices} ${s.pricesMob}` : s.prices}>
-          {quotas.map((q) => (
-            <FormField key={q.key} label={q.label} error={errors.limits?.[q.key]}>
-              <Input
-                value={values.limits[q.key] ?? ''}
-                inputMode="numeric"
-                isInvalid={!!errors.limits?.[q.key]}
-                onChange={(e) => set({ limits: { ...values.limits, [q.key]: e.target.value } })}
-              />
-            </FormField>
-          ))}
+        <div>
+          <p className={`subheading ${s.fpSub}`}>{t('limits')}</p>
+          <p className={`body-small muted ${s.helpBelow}`}>{t('limitsHelp')}</p>
+          <div className={mob ? `${s.prices} ${s.pricesMob}` : s.prices}>
+            {shown.map((q) => (
+              <FormField key={q.key} label={q.label} error={errors.limits?.[q.key]}>
+                <Input
+                  value={values.limits[q.key] ?? ''}
+                  inputMode="numeric"
+                  isInvalid={!!errors.limits?.[q.key]}
+                  onChange={(e) => set({ limits: { ...values.limits, [q.key]: e.target.value } })}
+                />
+              </FormField>
+            ))}
+          </div>
+          {others.length > 0 && (
+            <div className={s.topSpace3}>
+              <Menu
+                label={t('addLimit')}
+                items={others.map((q) => ({ id: q.key, label: q.label }))}
+                onAction={(k) => set({ limits: { ...values.limits, [String(k)]: '' } })}
+              >
+                <Button size="sm" variant="quiet" icon="plus">
+                  {t('addLimit')}
+                </Button>
+              </Menu>
+            </div>
+          )}
         </div>
+        <Notice tone="neutral" icon="info">
+          {t('note')}
+        </Notice>
       </div>
-    </Dialog>
+    </Drawer>
   );
 }

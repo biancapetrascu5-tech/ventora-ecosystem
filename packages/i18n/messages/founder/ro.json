@@ -101,10 +101,11 @@
       "settings": "Setări",
       "requests": "Cereri",
       "apps": "Aplicații",
-      "discounts": "Reduceri"
+      "discounts": "Reduceri",
+      "bundles": "Bundle-uri"
     },
     "shell": {
-      "search": "Caută o afacere, un plan sau o campanie"
+      "search": "Caută o afacere, un bundle sau o campanie"
     },
     "auth": {
       "reqLength": "Cel puțin 12 caractere"
@@ -340,8 +341,8 @@
         "price": "Preț",
         "period": "Se plătește",
         "setup": "Implementare",
-        "plans": "Planuri",
-        "purchase": "Cumpărare"
+        "purchase": "Cumpărare",
+        "availableFor": "Disponibil pentru"
       },
       "direct": "Directă",
       "onRequest": "La cerere, prin echipa Ventora",
@@ -379,7 +380,9 @@
       "stopTitle": "Oprești vânzarea pentru „{name}”?",
       "stopBody": "Pachetul nu se mai poate cumpăra. Afacerile care îl au îl păstrează. Acțiunea intră în jurnal.",
       "stopSubmit": "Oprește vânzarea",
-      "saved": "Am salvat „{name}”."
+      "saved": "Am salvat „{name}”.",
+      "availableWith": "Cu {app}",
+      "availableAll": "Toate afacerile"
     },
     "apps": {
       "nav": "Aplicații",
@@ -389,7 +392,9 @@
         "app": "Aplicație",
         "price": "Pe lună",
         "setup": "Implementare",
-        "activation": "Activare"
+        "activation": "Activare",
+        "maintenance": "Mentenanță: lunar · anual",
+        "limits": "Limite incluse"
       },
       "direct": "Direct",
       "onRequest": "La cerere",
@@ -412,7 +417,29 @@
         "errorAmount": "Scrie o sumă, de exemplu 49 sau 22,13.",
         "errorRequired": "Scrie prețul lunar în lei.",
         "errorEur": "Scrie prețul în euro. Nu îl calculăm din lei."
-      }
+      },
+      "lead2": "Fiecare aplicație se vinde și la bucată: implementarea o singură dată, apoi mentenanța lunar sau anual. Limitele de aici sunt incluse în prețul ei.",
+      "mobMaint": "Mentenanță {amount} pe lună · {eur}",
+      "mobSetup": "Implementare {amount} · {eur}",
+      "noLimits": "Fără limite proprii",
+      "directHelp2": "Afacerea o activează singură din catalog și plătește cu cardul, cu tot cu implementarea.",
+      "editAction": "Editează aplicația",
+      "edit": {
+        "title": "Editează {app}",
+        "subtitle": "Aplicație la bucată",
+        "maintenance": "Mentenanță",
+        "maintenanceHelp": "Se plătește lunar sau anual, odată cu abonamentul. Prețul anual îl scrii tu; euro nu se calculează din lei.",
+        "setup": "Implementare",
+        "setupHelp": "Se plătește o singură dată, la activare. Lasă 0 dacă aplicația nu are nevoie de implementare.",
+        "limits": "Limite incluse",
+        "limitsHelp": "Pe lună, și la plata anuală. Peste ele, afacerea cumpără pachete în plus.",
+        "addLimit": "Adaugă o limită",
+        "note": "Prețurile noi se aplică afacerilor care activează aplicația de acum înainte. Cele care o au deja își păstrează prețul.",
+        "cancel": "Renunță",
+        "save": "Salvează",
+        "error": "Nu am putut salva schimbările. Verifică internetul și încearcă din nou."
+      },
+      "noSetupShort": "Fără cost de implementare"
     },
     "usage": {
       "title": "Consum",
@@ -601,68 +628,236 @@
       "platform_members": {
         "label": "Locuri în echipă",
         "limit": "Limită de membri",
-        "perMonth": "Locuri în echipă"
+        "perMonth": "Locuri în echipă",
+        "amount": "{count, plural, one {{n} loc în echipă} few {{n} locuri în echipă} other {{n} de locuri în echipă}}",
+        "unlimited": "Locuri în echipă nelimitate"
       },
       "platform_locations": {
         "label": "Locații",
         "limit": "Limită de locații",
-        "perMonth": "Locații"
+        "perMonth": "Locații",
+        "amount": "{count, plural, one {{n} locație} few {{n} locații} other {{n} de locații}}",
+        "unlimited": "Locații nelimitate"
       },
       "booking_appointments": {
         "label": "Programări",
         "limit": "Limită de programări",
-        "perMonth": "Programări pe lună"
+        "perMonth": "Programări pe lună",
+        "amount": "{count, plural, one {{n} programare} few {{n} programări} other {{n} de programări}} pe lună",
+        "unlimited": "Programări nelimitate"
       },
       "booking_sms_devices": {
         "label": "Telefoane pentru SMS",
         "limit": "Limită de telefoane pentru SMS",
-        "perMonth": "Telefoane pentru SMS"
+        "perMonth": "Telefoane pentru SMS",
+        "amount": "{count, plural, one {{n} telefon pentru SMS} few {{n} telefoane pentru SMS} other {{n} de telefoane pentru SMS}}",
+        "unlimited": "Telefoane pentru SMS nelimitate"
       },
       "messaging_sms": {
         "label": "SMS-uri",
         "limit": "Limită de SMS-uri",
-        "perMonth": "SMS pe lună"
+        "perMonth": "SMS pe lună",
+        "amount": "{count, plural, other {{n} SMS}} pe lună",
+        "unlimited": "SMS nelimitate"
       },
       "messaging_email": {
         "label": "E-mailuri către clienți",
         "limit": "Limită de e-mailuri",
-        "perMonth": "E-mailuri pe lună"
+        "perMonth": "E-mailuri pe lună",
+        "amount": "{count, plural, one {{n} e-mail} few {{n} e-mailuri} other {{n} de e-mailuri}} pe lună",
+        "unlimited": "E-mailuri nelimitate"
       },
       "marketing_campaigns": {
         "label": "Campanii",
         "limit": "Limită de campanii",
-        "perMonth": "Campanii pe lună"
+        "perMonth": "Campanii pe lună",
+        "amount": "{count, plural, one {{n} campanie} few {{n} campanii} other {{n} de campanii}} pe lună",
+        "unlimited": "Campanii nelimitate"
       },
       "documents_storage": {
         "label": "Spațiu documente",
         "limit": "Limită de spațiu pentru documente",
-        "perMonth": "Spațiu documente, în GB"
+        "perMonth": "Spațiu documente, în GB",
+        "amount": "{n} GB spațiu pentru documente",
+        "unlimited": "Spațiu pentru documente nelimitat"
       },
       "workflows_active": {
         "label": "Automatizări active",
         "limit": "Limită de automatizări active",
-        "perMonth": "Automatizări active"
+        "perMonth": "Automatizări active",
+        "amount": "{count, plural, one {{n} automatizare activă} few {{n} automatizări active} other {{n} de automatizări active}}",
+        "unlimited": "Automatizări nelimitate"
       },
       "funnel_pages_published": {
         "label": "Pagini publicate",
         "limit": "Limită de pagini publicate",
-        "perMonth": "Pagini publicate"
+        "perMonth": "Pagini publicate",
+        "amount": "{count, plural, one {{n} pagină publicată} few {{n} pagini publicate} other {{n} de pagini publicate}}",
+        "unlimited": "Pagini publicate nelimitate"
       },
       "ai_analyses": {
         "label": "Analize AI",
         "limit": "Limită de analize AI",
-        "perMonth": "Analize AI pe lună"
+        "perMonth": "Analize AI pe lună",
+        "amount": "{count, plural, one {{n} analiză AI} few {{n} analize AI} other {{n} de analize AI}} pe lună",
+        "unlimited": "Analize AI nelimitate"
       },
       "events_active": {
         "label": "Evenimente publicate",
         "limit": "Limită de evenimente publicate",
-        "perMonth": "Evenimente publicate"
+        "perMonth": "Evenimente publicate",
+        "amount": "{count, plural, one {{n} eveniment publicat} few {{n} evenimente publicate} other {{n} de evenimente publicate}}",
+        "unlimited": "Evenimente publicate nelimitate"
       },
       "events_created": {
         "label": "Evenimente create",
         "limit": "Limită de evenimente create",
-        "perMonth": "Evenimente create pe lună"
+        "perMonth": "Evenimente create pe lună",
+        "amount": "{count, plural, one {{n} eveniment creat} few {{n} evenimente create} other {{n} de evenimente create}} pe lună",
+        "unlimited": "Evenimente create nelimitate"
       }
+    },
+    "new": {
+      "currency": "Moneda afacerii",
+      "currencyHelp": "Toate prețurile, facturile și plățile afacerii sunt în moneda aceasta, în orice limbă. După prima factură nu se mai schimbă.",
+      "billing": "Plata",
+      "billingHelp": "Clientul poate trece de la lunar la anual la reînnoire.",
+      "planPrice": {
+        "monthly": "{amount} pe lună",
+        "annual": "{amount} pe an · economisește {saving}"
+      },
+      "mail": {
+        "price": {
+          "monthly": "Apoi abonamentul e {amount} pe lună.",
+          "annual": "Apoi abonamentul e {amount} pe an."
+        },
+        "body": "Am pregătit contul afacerii {business}, cu {what}. Primele 14 zile sunt gratuite.",
+        "bundle": "bundle-ul {name}",
+        "total": {
+          "monthly": "Apoi abonamentul e {amount} pe lună.",
+          "annual": "Apoi abonamentul e {amount} pe an."
+        },
+        "setup": "Implementarea, {amount}, se plătește o singură dată, la prima factură."
+      },
+      "buy": {
+        "title": "Ce cumpără",
+        "desc": "Un bundle, aplicații la bucată sau amândouă."
+      },
+      "bundle": "Bundle",
+      "bundleHelp": "Doar bundle-urile în vânzare acum.",
+      "noBundle": "Fără bundle",
+      "apps": "Aplicații la bucată",
+      "appsHelp": "Cele din bundle sunt deja incluse.",
+      "inBundle": "Inclusă în bundle-ul {name}",
+      "perMonth": "{amount} pe lună",
+      "perYear": "{amount} pe an",
+      "setupShort": "implementare {amount}",
+      "line": {
+        "bundle": "Bundle {name} · {v}",
+        "app": "{app} · la bucată"
+      },
+      "totalMonth": "Total pe lună",
+      "totalYear": "Total pe an",
+      "setupOnce": "Implementare, o singură dată",
+      "seats": "Locuri în echipă"
+    },
+    "bundles": {
+      "title": "Bundle-uri",
+      "lead": "Un bundle e un grup de aplicații la un preț mai bun decât luate la bucată, cu limite și locuri în echipă incluse. Se vinde într-o perioadă; afacerile care îl cumpără îl păstrează la același preț și după ce oferta se încheie.",
+      "new": "Bundle nou",
+      "newOffer": "Ofertă nouă",
+      "editOffer": "Editează oferta",
+      "stop": "Oprește vânzarea",
+      "status": {
+        "selling": "În vânzare",
+        "scheduled": "Programat",
+        "stopped": "Vânzare oprită pe {date}"
+      },
+      "available": "Disponibil {period}",
+      "bizTotal": "{count, plural, one {# afacere îl are} few {# afaceri îl au} other {# de afaceri îl au}}",
+      "bizAria": "{count, plural, one {# afacere} few {# afaceri} other {# de afaceri}} pe {name} {v}, vezi lista",
+      "price": "Preț bundle",
+      "separate": "Aceleași aplicații la bucată",
+      "perMonth": "{amount} pe lună",
+      "perYear": "{amount} pe an",
+      "saving": "Economie: {amount} pe lună ({pct}%)",
+      "includes": "Include",
+      "seatsLine": "{bundle} locuri în echipă în plus ({total} cu cele din cont)",
+      "setupLine": "Implementare: {amount}, o singură dată (separat: {sep})",
+      "noSetup": "Fără cost de implementare",
+      "col": {
+        "sale": "Perioada de vânzare"
+      },
+      "ver": {
+        "now": "Oferta de acum",
+        "next": "Următoarea",
+        "ended": "Încheiată"
+      },
+      "keepNote": "Afacerile rămân pe versiunea pe care au cumpărat-o, la prețul ei, și după ce oferta se încheie.",
+      "stopDialog": {
+        "title": "Oprești vânzarea bundle-ului {name}?",
+        "body": "Bundle-ul dispare acum din catalog și nu îl mai poți alege pentru o afacere nouă, deși oferta era până pe {date}.",
+        "keep": "{count, plural, one {Afacerea care îl are îl păstrează} few {Cele # afaceri care îl au îl păstrează} other {Cele # de afaceri care îl au îl păstrează}}, la prețul lor. Îl poți vinde din nou cu „Ofertă nouă”.",
+        "log": "Acțiunea intră în jurnal.",
+        "cancel": "Renunță"
+      },
+      "stopped": "Am oprit vânzarea bundle-ului {name}",
+      "stoppedBody": "{count, plural, one {Afacerea care îl are îl păstrează.} few {Cele # afaceri care îl au îl păstrează.} other {Cele # de afaceri care îl au îl păstrează.}}",
+      "empty": "Niciun bundle încă. Primul se face cu „Bundle nou”.",
+      "error": "Nu am putut salva schimbările. Verifică internetul și încearcă din nou."
+    },
+    "bundleEditor": {
+      "title": "{name} · ofertă nouă ({v})",
+      "crumb": "{v} (ciornă)",
+      "draft": "Ciornă",
+      "keepTitle": "Oferta de acum nu se schimbă",
+      "keepBody": "v2 rămâne în vânzare până pe {date}. {count, plural, one {Afacerea care are {name} își păstrează} few {Cele # afaceri care au {name} își păstrează} other {Cele # de afaceri care au {name} își păstrează}} versiunea și prețul.",
+      "apps": {
+        "title": "Aplicații incluse",
+        "desc": "Sub fiecare, prețul ei la bucată.",
+        "separate": "{count, plural, one {# aplicație luată separat} few {# aplicații luate separat} other {# de aplicații luate separat}}",
+        "separateRest": "Pe an și în euro"
+      },
+      "newInVersion": "Nou în {v}",
+      "price": {
+        "title": "Prețul bundle-ului",
+        "desc": "Mai mic decât aplicațiile luate separat. Prețul anual îl scrii tu; euro nu se calculează din lei.",
+        "saving": "Clientul economisește {amount} pe lună ({pct}%) față de aplicațiile luate separat.",
+        "separateEur": "Separat: {amount} pe lună."
+      },
+      "setup": {
+        "title": "Implementare",
+        "desc": "O singură dată, la cumpărare. Separat, aplicațiile ar avea implementare de {amount} ({eur})."
+      },
+      "limits": {
+        "title": "Limite incluse",
+        "desc": "Pe lună, și la plata anuală. Înlocuiesc limitele aplicațiilor luate separat.",
+        "resource": "Resursă",
+        "up": "crește",
+        "down": "scade"
+      },
+      "seats": {
+        "title": "Locuri în echipă",
+        "label": "Locuri în plus din bundle",
+        "help": "Pe lângă cele {base} incluse în orice cont: {total} în total."
+      },
+      "sale": {
+        "title": "Perioada de vânzare",
+        "desc": "Cât timp apare bundle-ul în catalog și îl poți alege pentru o afacere nouă.",
+        "from": "Disponibil de pe",
+        "to": "Până pe",
+        "toHelp": "Inclusiv ziua aceasta.",
+        "catalog": "În catalog, afacerile văd „Ofertă valabilă până pe {date}”."
+      },
+      "savedAgo": "Ciornă salvată acum 2 min",
+      "saveDraft": "Salvează ciorna",
+      "schedule": "Programează oferta",
+      "error": {
+        "notCheaper": "Prețul bundle-ului trebuie să fie mai mic decât aplicațiile luate separat ({amount}).",
+        "overlap": "Oferta de acum e în vânzare până pe {date}. Oferta nouă poate începe cel mai devreme pe {first}.",
+        "publish": "Ca să programezi oferta, corectează câmpurile marcate."
+      },
+      "published": "Publicată"
     }
   }
 }

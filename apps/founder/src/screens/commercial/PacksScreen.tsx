@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { Button, Dialog, DialogTrigger, Toast } from '@ventora/ui';
+import { APPS, Button, Dialog, DialogTrigger, Toast, type AppName } from '@ventora/ui';
 import {
   PackDialog,
   PacksView,
@@ -77,7 +77,9 @@ export function PacksScreen({
       price,
       period: p.validity === 'monthly' ? t('period.monthly') : t('period.once'),
       setup,
-      plans: p.allPlans ? t('allPlans') : p.plans.join(', '),
+      availableFor: p.applicationId
+        ? t('availableWith', { app: APPS[p.applicationId as AppName]?.name ?? p.applicationId })
+        : t('availableAll'),
       direct: p.purchaseMode === 'direct',
       stopped: p.stopped,
     };

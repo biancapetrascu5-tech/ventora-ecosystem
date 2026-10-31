@@ -578,7 +578,7 @@ function AX_PrjHead({ mode, view }) {
 }
 const FX_NAV = [
   { items: [{ id: "azi", label: "Prezentare", short: "Prezentare", icon: "house" }, { id: "afaceri", label: "Afaceri", icon: "building-2", badge: 3 }, { id: "consum", label: "Consum", icon: "chart-column" }, { id: "cereri", label: "Cereri", icon: "inbox", badge: 2 }] },
-  { label: "Model comercial", items: [{ id: "planuri", label: "Planuri", icon: "boxes" }, { id: "pachete", label: "Pachete \xEEn plus", short: "Pachete", icon: "package" }, { id: "aplicatii", label: "Aplica\u021Bii", icon: "layout-grid" }, { id: "reduceri", label: "Reduceri", icon: "percent" }] },
+  { label: "Model comercial", items: [{ id: "aplicatii", label: "Aplica\u021Bii", icon: "layout-grid" }, { id: "planuri", label: "Bundle-uri", icon: "boxes" }, { id: "pachete", label: "Pachete \xEEn plus", short: "Pachete", icon: "package" }, { id: "reduceri", label: "Reduceri", icon: "percent" }] },
   { label: "Growth", items: [{ id: "oferte", label: "Oferte", icon: "ticket" }, { id: "campanii", label: "Campanii", icon: "megaphone" }, { id: "audiente", label: "Audien\u021Be", icon: "users" }, { id: "rezultate", label: "Rezultate", icon: "chart-line" }, { id: "control", label: "Control", icon: "sliders-horizontal" }] },
   { label: "Sistem", items: [{ id: "jurnal", label: "Jurnal", icon: "history" }, { id: "setari", label: "Set\u0103ri", icon: "settings" }] }
 ];
@@ -600,7 +600,7 @@ function FX_App({ active, title, children }) {
       spine: /* @__PURE__ */ React.createElement(V.Spine, { hub: true, appName: "Founder", sections: FX_NAV, activeId: active, onBackToHub: () => {
       }, bottomItems: ["afaceri", "consum", "campanii", "control"] }),
       contextBar: /* @__PURE__ */ React.createElement(V.ContextBar, { title, onSearch: () => {
-      }, searchLabel: "Caut\u0103 o afacere, un plan sau o campanie", notifications: /* @__PURE__ */ React.createElement(V.NotificationsPanel, { items: FX_NOTIFS }), account: /* @__PURE__ */ React.createElement(V.AccountMenu, { user: FX_USER }) })
+      }, searchLabel: "Caut\u0103 o afacere, un bundle sau o campanie", notifications: /* @__PURE__ */ React.createElement(V.NotificationsPanel, { items: FX_NOTIFS }), account: /* @__PURE__ */ React.createElement(V.AccountMenu, { user: FX_USER }) })
     },
     children
   );

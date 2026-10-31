@@ -34,8 +34,8 @@ export type PackRow = {
   period: string;
   /** „150 lei · 30 €” sau „Fără” */
   setup: string;
-  /** „Toate”, „Start, Business” */
-  plans: string;
+  /** S117 „Disponibil pentru”: „Cu EasyBook”, „Toate afacerile” */
+  availableFor: string;
   direct: boolean;
   /** „Oprește vânzarea” s-a apăsat: rândul nu mai are acțiunea. */
   stopped?: boolean;
@@ -68,7 +68,7 @@ export function PacksView({
     },
     { key: 'period', header: t('col.period'), secondary: true },
     { key: 'setup', header: t('col.setup'), optional: true },
-    { key: 'plans', header: t('col.plans'), optional: true, muted: true },
+    { key: 'availableFor', header: t('col.availableFor'), optional: true, muted: true },
     {
       key: 'how',
       header: t('col.purchase'),
