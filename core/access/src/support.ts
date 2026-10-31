@@ -149,7 +149,7 @@ export async function getBusinessForFounder(params: {
     const owners: { userId: string; name: string; email: string }[] = [];
     for (const userId of organization.ownerUserIds) {
       const contact = await getUserContactInTx(exec, userId);
-      if (contact) owners.push({ userId, ...contact });
+      if (contact) owners.push({ userId, name: contact.name, email: contact.email });
     }
     return { organizationName: organization.organizationName, owners };
   });
@@ -238,7 +238,7 @@ export async function openSupportSession(params: {
       },
     });
 
-    const owners: { userId: string; email: string; name: string }[] = [];
+    const owners: { userId: string; email: string; name: string; locale: string | null }[] = [];
     for (const userId of organization.ownerUserIds) {
       const contact = await getUserContactInTx(exec, userId);
       if (contact) owners.push({ userId, ...contact });
@@ -271,6 +271,8 @@ export async function openSupportSession(params: {
       reason: input.reason,
       ticketRef: input.ticketRef,
       expiresAt: opened.session.expiresAt,
+      // D4-8: in the owner's language
+      locale: owner.locale,
     });
     if (result.status === 'failed') {
       await writeAuditEvent(

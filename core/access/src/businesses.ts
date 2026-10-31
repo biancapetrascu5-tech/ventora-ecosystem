@@ -66,7 +66,10 @@ async function withOwners(
       status: r.status,
       createdAt: r.createdAt,
       suspendedAt: r.suspendedAt,
-      owner: r.ownerUserId && contact ? { userId: r.ownerUserId, ...contact } : null,
+      owner:
+        r.ownerUserId && contact
+          ? { userId: r.ownerUserId, name: contact.name, email: contact.email }
+          : null,
       ownerInvitation: r.ownerInvitation,
       memberCount: r.memberCount,
     });
