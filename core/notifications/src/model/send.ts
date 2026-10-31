@@ -2,6 +2,7 @@ import { InvalidInput } from '@ventora/errors';
 import { defaultCatalog, type NotificationCatalog, type NotificationCategory } from './catalog';
 import { uuidv7, type SqlClient } from './sql';
 import { defaultEnabled, type NotificationTopic } from './topics';
+import { requiredParams } from './render';
 
 /*
  * The `send` contract (Lot 4.3, FAZA-4): a notification is written inside the caller's
@@ -83,7 +84,12 @@ export async function sendNotification(
     throw new InvalidInput('category', `${input.type} is ${template.category}`);
   }
   if (template.textsPending) {
-    throw new InvalidInput('type', `${input.type}: its texts come in Lot 4.5`);
+    throw new InvalidInput('type', `${input.type}: its texts are pending (D4-12)`);
+  }
+  // Lot 4.5: every value the texts need, now — not a broken panel or e-mail later
+  const missing = requiredParams(template).filter((p) => !(input.params?.[p] ?? '').trim());
+  if (missing.length > 0) {
+    throw new InvalidInput('params', `${input.type} needs ${missing.join(', ')}`);
   }
   const key = (input.idempotencyKey ?? '').trim();
   if (!key || key.length > 200) throw new InvalidInput('idempotencyKey');

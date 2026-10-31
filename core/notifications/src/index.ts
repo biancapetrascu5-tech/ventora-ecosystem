@@ -32,9 +32,20 @@ export type {
   NotificationCategory,
   NotificationGroup,
   NotificationTemplate,
+  NotificationEmailKeys,
   DeliveryChannel,
 } from './model/catalog';
-export { renderNotification, notificationText, toLocale } from './model/render';
+export {
+  renderNotification,
+  notificationText,
+  toLocale,
+  requiredParams,
+  placeholdersOf,
+  templateKeys,
+} from './model/render';
+// Lot 4.5: the Phase 3 notifications (S115)
+export { BILLING_TEMPLATES, BILLING_KINDS, billingType } from './model/billing';
+export type { BillingKind, BillingTemplateId } from './model/billing';
 export { sendNotification } from './model/send';
 export type { SendNotificationInput, SendNotificationResult } from './model/send';
 export {

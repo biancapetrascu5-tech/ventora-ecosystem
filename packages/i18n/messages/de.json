@@ -667,7 +667,94 @@
     "email": {
       "open": "Deschide în Ventora",
       "why": "Primești acest e-mail pentru că faci parte din echipa {businessName} în Ventora.",
-      "whyAccount": "Primești acest e-mail pentru contul tău Ventora."
+      "whyAccount": "Primești acest e-mail pentru contul tău Ventora.",
+      "billing": {
+        "invoice": {
+          "card": {
+            "lead": "Wir haben die Rechnung {number} für {what} über {amount} ausgestellt.",
+            "next": "Die Zahlung ist bereits mit der Karte {brand} ···· {last4} erfolgt; Sie müssen nichts tun. Die Rechnung finden Sie jederzeit unter Abonnement und Verbrauch."
+          },
+          "transfer": {
+            "lead": "Wir haben die Rechnung {number} für {what} über {amount} ausgestellt.",
+            "next": "Bitte überweisen Sie den Betrag bis {due}; die Zahlungsdaten stehen auf der Rechnung. Sobald das Geld da ist, steht die Rechnung auf „Bezahlt“."
+          },
+          "pack": {
+            "lead": "Wir haben die Rechnung {number} für {item} über {amount} ausgestellt.",
+            "next": "Die Zahlung ist bereits per Karte erfolgt, das Paket ist aktiv. Sie müssen nichts tun."
+          }
+        },
+        "payment": {
+          "renewal": {
+            "lead": "Die Bank hat die Zahlung von {amount} für die Verlängerung des Abonnements mit der Karte {brand} ···· {last4} abgelehnt. Es wurde nichts abgebucht.",
+            "next": "Alles läuft wie gewohnt weiter. Wir versuchen es am {retryDate} automatisch erneut; wenn Sie die Karte vorher aktualisieren, verwenden wir die neue."
+          },
+          "pack": {
+            "lead": "Die Bank hat die Zahlung von {amount} für {item} abgelehnt. Es wurde nichts abgebucht, und das Paket wurde nicht aktiviert.",
+            "next": "Alles, was Sie bereits haben, läuft weiter. Sie können das Paket erneut kaufen, sobald Sie die Karte aktualisiert haben."
+          },
+          "retry": {
+            "lead": "Wir haben die Zahlung von {amount} erneut versucht, und die Bank hat sie abgelehnt. Es wurde nichts abgebucht.",
+            "next": "Der letzte automatische Versuch ist am {retryDate}. Damit er klappt, aktualisieren Sie die Karte vorher; wenn Sie Hilfe brauchen, schreiben Sie an support@ventorasystems.com."
+          },
+          "lastRetry": {
+            "lead": "Auch der letzte automatische Versuch, {amount} für das Abonnement zu zahlen, wurde abgelehnt. Es wurde nichts abgebucht.",
+            "next": "Bis {graceEnd} läuft für das ganze Team alles wie gewohnt. Wenn die Zahlung bis dahin nicht erfolgt, wechselt das Konto auf Nur-Lesen mit Export: Sie sehen alles, können aber nichts hinzufügen oder ändern. Aktualisieren Sie die Karte, dann buchen wir die Zahlung sofort ab."
+          }
+        },
+        "limit": {
+          "owner80": {
+            "lead": "{business} hat im Zeitraum bis {resetDate} {used} von {limit} {resource} verbraucht.",
+            "next": "Am {resetDate} beginnt der Verbrauch wieder bei null. Wenn Sie vorher mehr brauchen, kaufen Sie ein Zusatzpaket; das Limit steigt sofort."
+          },
+          "owner100": {
+            "lead": "{business} hat alle {limit} {resource} im Zeitraum bis {resetDate} verbraucht.",
+            "next": "Nichts von dem, was Sie haben, geht verloren. Um vor {resetDate} weiterzumachen, kaufen Sie ein Zusatzpaket: Das Limit steigt sofort. Sonst beginnt der Verbrauch am {resetDate} wieder bei null."
+          }
+        },
+        "planChange": {
+          "lead": "Ab {date} wechselt das Abonnement {plan} von {business} auf Version {version}: {changes}.",
+          "next": "Bis {date} ändert sich nichts. Wenn ein anderes Abonnement besser passt, können Sie es unter Abonnement und Verbrauch anfragen; bei Fragen schreiben Sie an support@ventorasystems.com."
+        },
+        "trial": {
+          "ending": {
+            "lead": "Sie haben noch 3 Tage im Testzeitraum für {app}.",
+            "next": "Wenn Sie sie behalten möchten, aktivieren Sie sie: Sie kostet {price} pro Monat, zusammen mit dem Abonnement. Andernfalls wird die App am {date} angehalten, und alles, was Sie darin erstellt haben, bleibt erhalten; Sie können sie später jederzeit aktivieren."
+          },
+          "ended": {
+            "lead": "Der Testzeitraum für {app} ist beendet, deshalb wurde die App angehalten.",
+            "next": "Alles, was Sie in {app} erstellt haben, bleibt erhalten. Wenn Sie sie aktivieren, machen Sie dort weiter, wo Sie aufgehört haben."
+          }
+        },
+        "setup": {
+          "accepted": {
+            "lead": "Das Ventora-Team hat Ihre Anfrage für {app} angenommen und richtet die App für {business} ein.",
+            "next": "Die Einrichtung kostet einmalig {setup}. Nach der Zahlung beginnen wir und melden uns, sobald die App bereit ist. Danach kostet {app} {price} pro Monat, zusammen mit dem Abonnement."
+          },
+          "due": {
+            "lead": "Die Einrichtung von {app} für {business} beginnt nach Zahlung der Einrichtungsgebühr von {setup}.",
+            "next": "Wenn Sie es sich anders überlegt haben oder Fragen haben, schreiben Sie an support@ventorasystems.com."
+          },
+          "started": {
+            "lead": "Die Einrichtung ist abgeschlossen, {app} läuft jetzt für {business}.",
+            "next": "Sie finden sie bei den Apps des Unternehmens. Ab heute kostet sie {price} pro Monat, zusammen mit dem Abonnement; der erste Monat wird anteilig berechnet."
+          }
+        },
+        "readonly": {
+          "owner": {
+            "lead": "Die Kulanzfrist endete am {date} ohne die Zahlung von {amount} für das Abonnement, deshalb ist {business} jetzt schreibgeschützt, mit Export.",
+            "next": "Es ist nichts verloren: Das ganze Team sieht alles und kann exportieren, aber nichts hinzufügen oder ändern. Sobald die Zahlung durchgeht, läuft alles wie vorher."
+          }
+        },
+        "restored": {
+          "lead": "Wir haben die Zahlung von {amount} erhalten, {business} läuft wieder normal.",
+          "next": "Das ganze Team kann wie vorher arbeiten; in der Zwischenzeit ist nichts verloren gegangen. Die Rechnung finden Sie unter Abonnement und Verbrauch."
+        },
+        "subject": "{title} · {business}",
+        "eyebrow": "{business} · Abonnement und Verbrauch",
+        "eyebrowApps": "{business} · Apps",
+        "why": "Sie erhalten diese E-Mail, weil Sie Inhaber von {business} in Ventora sind.",
+        "upgrade": "Wenn das öfter passiert, fragen Sie unter Abonnement und Verbrauch ein anderes Abonnement an."
+      }
     },
     "prefs": {
       "title": "Benachrichtigungen",
@@ -712,6 +799,121 @@
         "note": "Nachrichten zu den Limits Ihres Kontos bleiben aktiv, denn sie sind Kontoinformationen, keine Empfehlungen."
       },
       "saved": "Einstellungen gespeichert."
+    },
+    "billing": {
+      "invoice": {
+        "card": {
+          "title": "Rechnung {number} ist ausgestellt",
+          "body": "{what} · {amount} · mit Karte bezahlt",
+          "action": "Rechnung ansehen"
+        },
+        "transfer": {
+          "title": "Rechnung {number} ist ausgestellt",
+          "body": "{what} · {amount} · per Überweisung zu zahlen bis {due}",
+          "action": "Rechnung ansehen"
+        },
+        "pack": {
+          "title": "Rechnung {number} ist ausgestellt",
+          "body": "{item} · {amount}",
+          "action": "Rechnung ansehen"
+        }
+      },
+      "payment": {
+        "renewal": {
+          "title": "Die Zahlung für das Abonnement ist nicht durchgegangen",
+          "body": "Es wurde nichts abgebucht. Wir versuchen es am {retryDate} erneut; bis dahin läuft alles wie gewohnt.",
+          "action": "Karte aktualisieren"
+        },
+        "pack": {
+          "title": "Die Zahlung für {item} ist nicht durchgegangen",
+          "body": "Es wurde nichts abgebucht, und das Paket wurde nicht aktiviert. Sie können es mit einer anderen Karte erneut versuchen.",
+          "action": "Karte aktualisieren"
+        },
+        "retry": {
+          "title": "Die Zahlung für das Abonnement ist erneut nicht durchgegangen",
+          "body": "Es wurde nichts abgebucht. Der letzte automatische Versuch ist am {retryDate}; bis dahin läuft alles wie gewohnt.",
+          "action": "Karte aktualisieren"
+        },
+        "lastRetry": {
+          "title": "Der letzte Zahlungsversuch ist nicht durchgegangen",
+          "body": "Es wurde nichts abgebucht. Bis {graceEnd} läuft alles wie gewohnt; aktualisieren Sie die Karte, damit wir die Zahlung einziehen können.",
+          "action": "Karte aktualisieren"
+        }
+      },
+      "limit": {
+        "owner80": {
+          "title": "Sie haben 80 % Ihres Limits für {resource} verbraucht",
+          "body": "{used} von {limit} bis {resetDate}. Wenn Sie mehr brauchen, kaufen Sie ein Zusatzpaket.",
+          "action": "Zusätzliche {buyItem} kaufen"
+        },
+        "owner100": {
+          "title": "Sie haben Ihr Limit für {resource} erreicht",
+          "body": "Nichts von dem, was Sie haben, geht verloren. Um vor {resetDate} mehr hinzuzufügen, kaufen Sie ein Zusatzpaket.",
+          "action": "Zusätzliche {buyItem} kaufen"
+        },
+        "other80": {
+          "title": "Das Unternehmen hat 80 % seines Limits für {resource} verbraucht",
+          "body": "{used} von {limit} bis {resetDate}. Zusatzpakete kann nur {owner} (Inhaber) kaufen.",
+          "action": "Inhaber benachrichtigen"
+        },
+        "other100": {
+          "title": "Das Unternehmen hat sein Limit für {resource} erreicht",
+          "body": "Es geht nichts verloren. Bis {resetDate} kann nur {owner} (Inhaber) Zusatzpakete kaufen.",
+          "action": "Inhaber benachrichtigen"
+        }
+      },
+      "planChange": {
+        "title": "Ihr Abonnement ändert sich ab {date}",
+        "body": "{changes}. Bis dahin ändert sich nichts.",
+        "action": "Änderungen ansehen"
+      },
+      "trial": {
+        "ending": {
+          "title": "Der Testzeitraum für {app} endet am {date}",
+          "body": "Um sie zu behalten, aktivieren Sie sie. Sonst wird sie angehalten, Ihre Daten bleiben erhalten.",
+          "action": "Aktivieren · {price} pro Monat"
+        },
+        "ended": {
+          "title": "Der Testzeitraum für {app} ist beendet",
+          "body": "Die App wurde angehalten, Ihre Daten bleiben erhalten. Sie können sie jederzeit aktivieren.",
+          "action": "{app} aktivieren"
+        }
+      },
+      "setup": {
+        "accepted": {
+          "title": "Ihre Anfrage für {app} wurde angenommen",
+          "body": "Die Einrichtung kostet einmalig {setup}. Nach der Zahlung richten wir sie für Sie ein.",
+          "action": "{setup} bezahlen"
+        },
+        "due": {
+          "title": "Die Einrichtung von {app} wartet auf die Zahlung",
+          "body": "Einmalig {setup}. Wir beginnen nach der Zahlung mit der Einrichtung.",
+          "action": "{setup} bezahlen"
+        },
+        "started": {
+          "title": "{app} ist eingerichtet",
+          "body": "Die Einrichtung ist abgeschlossen. Ab heute kostet {app} {price} pro Monat, zusammen mit dem Abonnement.",
+          "action": "{app} öffnen"
+        }
+      },
+      "readonly": {
+        "owner": {
+          "title": "Das Unternehmenskonto ist schreibgeschützt",
+          "body": "Die Zahlung für das Abonnement ist nicht erfolgt. Alle können alles sehen und exportieren; um wieder zu arbeiten, zahlen Sie {amount}.",
+          "action": "{amount} bezahlen"
+        },
+        "member": {
+          "title": "Das Unternehmenskonto ist schreibgeschützt",
+          "body": "Sie können alles sehen und exportieren. Damit Sie wieder arbeiten können, muss {owner} (Inhaber) die Zahlung vornehmen.",
+          "action": "Inhaber benachrichtigen"
+        }
+      },
+      "restored": {
+        "title": "Das Unternehmenskonto läuft wieder normal",
+        "body": "Wir haben die Zahlung von {amount} erhalten. Das ganze Team kann wie vorher arbeiten.",
+        "action": "Rechnung ansehen"
+      },
+      "upgradeAction": "Anderes Abonnement anfragen"
     }
   }
 }

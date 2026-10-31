@@ -667,7 +667,94 @@
     "email": {
       "open": "Deschide în Ventora",
       "why": "Primești acest e-mail pentru că faci parte din echipa {businessName} în Ventora.",
-      "whyAccount": "Primești acest e-mail pentru contul tău Ventora."
+      "whyAccount": "Primești acest e-mail pentru contul tău Ventora.",
+      "billing": {
+        "invoice": {
+          "card": {
+            "lead": "Nous avons émis la facture {number} pour {what}, d’un montant de {amount}.",
+            "next": "Le paiement a déjà été effectué avec la carte {brand} ···· {last4} ; vous n’avez rien à faire. Vous retrouvez la facture à tout moment dans Abonnement et consommation."
+          },
+          "transfer": {
+            "lead": "Nous avons émis la facture {number} pour {what}, d’un montant de {amount}.",
+            "next": "Réglez par virement bancaire avant le {due} ; les coordonnées de paiement figurent sur la facture. Dès réception, la facture passe à « Payée »."
+          },
+          "pack": {
+            "lead": "Nous avons émis la facture {number} pour {item}, d’un montant de {amount}.",
+            "next": "Le paiement a déjà été effectué par carte et le pack est actif. Vous n’avez rien à faire."
+          }
+        },
+        "payment": {
+          "renewal": {
+            "lead": "La banque a refusé le paiement de {amount} pour le renouvellement de l’abonnement, avec la carte {brand} ···· {last4}. Aucun montant n’a été prélevé.",
+            "next": "Tout continue de fonctionner normalement. Nous réessaierons automatiquement le {retryDate} ; si vous mettez la carte à jour avant, nous utiliserons la nouvelle."
+          },
+          "pack": {
+            "lead": "La banque a refusé le paiement de {amount} pour {item}. Aucun montant n’a été prélevé et le pack n’a pas été activé.",
+            "next": "Tout ce que vous avez déjà continue de fonctionner. Vous pourrez racheter le pack après avoir mis la carte à jour."
+          },
+          "retry": {
+            "lead": "Nous avons de nouveau tenté le paiement de {amount} et la banque l’a refusé. Aucun montant n’a été prélevé.",
+            "next": "La dernière tentative automatique aura lieu le {retryDate}. Pour qu’elle passe, mettez la carte à jour avant ; si vous avez besoin d’aide, écrivez à support@ventorasystems.com."
+          },
+          "lastRetry": {
+            "lead": "La dernière tentative automatique de paiement de {amount} pour l’abonnement a elle aussi été refusée. Aucun montant n’a été prélevé.",
+            "next": "Jusqu’au {graceEnd}, tout fonctionne normalement pour toute l’équipe. Si le paiement n’est pas effectué d’ici là, le compte passe en lecture seule, avec export : vous voyez tout, mais vous ne pouvez rien ajouter ni modifier. Mettez la carte à jour et nous encaissons le paiement aussitôt."
+          }
+        },
+        "limit": {
+          "owner80": {
+            "lead": "{business} a utilisé {used} {resource} sur {limit} pendant la période qui se termine le {resetDate}.",
+            "next": "Le {resetDate}, la consommation repart de zéro. S’il vous en faut plus d’ici là, achetez un pack en plus ; la limite augmente immédiatement."
+          },
+          "owner100": {
+            "lead": "{business} a utilisé les {limit} {resource} de la période qui se termine le {resetDate}.",
+            "next": "Rien de ce que vous avez n’est perdu. Pour continuer avant le {resetDate}, achetez un pack en plus : la limite augmente immédiatement. Sinon, la consommation repart de zéro le {resetDate}."
+          }
+        },
+        "planChange": {
+          "lead": "À partir du {date}, l’abonnement {plan} de {business} passe à la version {version} : {changes}.",
+          "next": "Rien ne change d’ici le {date}. Si un autre abonnement vous convient mieux, vous pouvez le demander dans Abonnement et consommation ; pour toute question, écrivez à support@ventorasystems.com."
+        },
+        "trial": {
+          "ending": {
+            "lead": "Il vous reste 3 jours d’essai pour {app}.",
+            "next": "Si vous voulez la garder, activez-la : elle coûte {price} par mois, avec votre abonnement. Sinon, l’application s’arrête le {date}, et tout ce que vous y avez fait reste ; vous pourrez l’activer plus tard à tout moment."
+          },
+          "ended": {
+            "lead": "L’essai de {app} est terminé, l’application s’est donc arrêtée.",
+            "next": "Tout ce que vous avez fait dans {app} reste. Si vous l’activez, vous reprenez là où vous en étiez."
+          }
+        },
+        "setup": {
+          "accepted": {
+            "lead": "L’équipe Ventora a accepté votre demande pour {app} et la configure pour {business}.",
+            "next": "La mise en place coûte {setup}, une seule fois. Après le paiement, nous lançons la configuration et vous prévenons quand l’application est prête. Ensuite, {app} coûte {price} par mois, avec votre abonnement."
+          },
+          "due": {
+            "lead": "La configuration de {app} pour {business} commence après le paiement des frais de mise en place de {setup}.",
+            "next": "Si vous avez changé d’avis ou avez des questions, écrivez à support@ventorasystems.com."
+          },
+          "started": {
+            "lead": "Nous avons terminé la configuration : {app} est activée pour {business}.",
+            "next": "Vous la trouvez parmi les applications de l’entreprise. À partir d’aujourd’hui, elle coûte {price} par mois, avec votre abonnement ; le premier mois est calculé au prorata."
+          }
+        },
+        "readonly": {
+          "owner": {
+            "lead": "La période de grâce s’est terminée le {date} sans le paiement de {amount} pour l’abonnement : {business} est donc en lecture seule, avec export.",
+            "next": "Rien n’a été perdu : toute l’équipe voit tout et peut exporter, mais ne peut rien ajouter ni modifier. Dès que le paiement passe, tout fonctionne comme avant."
+          }
+        },
+        "restored": {
+          "lead": "Nous avons reçu le paiement de {amount} : {business} fonctionne de nouveau normalement.",
+          "next": "Toute l’équipe peut travailler comme avant ; rien n’a été perdu entre-temps. La facture se trouve dans Abonnement et consommation."
+        },
+        "subject": "{title} · {business}",
+        "eyebrow": "{business} · Abonnement et consommation",
+        "eyebrowApps": "{business} · Applications",
+        "why": "Vous recevez cet e-mail parce que vous êtes le propriétaire de {business} dans Ventora.",
+        "upgrade": "Si cela arrive souvent, demandez un autre abonnement dans Abonnement et consommation."
+      }
     },
     "prefs": {
       "title": "Notifications",
@@ -712,6 +799,121 @@
         "note": "Les messages sur les limites de votre compte restent actifs, car ce sont des informations sur le compte, pas des recommandations."
       },
       "saved": "Préférences enregistrées."
+    },
+    "billing": {
+      "invoice": {
+        "card": {
+          "title": "La facture {number} est émise",
+          "body": "{what} · {amount} · payée par carte",
+          "action": "Voir la facture"
+        },
+        "transfer": {
+          "title": "La facture {number} est émise",
+          "body": "{what} · {amount} · à régler par virement avant le {due}",
+          "action": "Voir la facture"
+        },
+        "pack": {
+          "title": "La facture {number} est émise",
+          "body": "{item} · {amount}",
+          "action": "Voir la facture"
+        }
+      },
+      "payment": {
+        "renewal": {
+          "title": "Le paiement de l’abonnement n’est pas passé",
+          "body": "Aucun montant n’a été prélevé. Nous réessaierons le {retryDate} ; d’ici là, tout fonctionne normalement.",
+          "action": "Mettre à jour la carte"
+        },
+        "pack": {
+          "title": "Le paiement pour {item} n’est pas passé",
+          "body": "Aucun montant n’a été prélevé et le pack n’a pas été activé. Vous pouvez réessayer avec une autre carte.",
+          "action": "Mettre à jour la carte"
+        },
+        "retry": {
+          "title": "Le paiement de l’abonnement n’est toujours pas passé",
+          "body": "Aucun montant n’a été prélevé. La dernière tentative automatique aura lieu le {retryDate} ; d’ici là, tout fonctionne normalement.",
+          "action": "Mettre à jour la carte"
+        },
+        "lastRetry": {
+          "title": "La dernière tentative de paiement n’est pas passée",
+          "body": "Aucun montant n’a été prélevé. Jusqu’au {graceEnd}, tout fonctionne normalement ; mettez la carte à jour pour que nous puissions encaisser le paiement.",
+          "action": "Mettre à jour la carte"
+        }
+      },
+      "limit": {
+        "owner80": {
+          "title": "Vous avez utilisé 80 % de votre limite de {resource}",
+          "body": "{used} sur {limit} jusqu’au {resetDate}. S’il vous en faut plus, achetez un pack en plus.",
+          "action": "Acheter des {buyItem} en plus"
+        },
+        "owner100": {
+          "title": "Vous avez atteint votre limite de {resource}",
+          "body": "Rien de ce que vous avez n’est perdu. Pour en ajouter d’autres avant le {resetDate}, achetez un pack en plus.",
+          "action": "Acheter des {buyItem} en plus"
+        },
+        "other80": {
+          "title": "L’entreprise a utilisé 80 % de sa limite de {resource}",
+          "body": "{used} sur {limit} jusqu’au {resetDate}. Seul(e) {owner} (propriétaire) peut acheter des packs en plus.",
+          "action": "Prévenir le propriétaire"
+        },
+        "other100": {
+          "title": "L’entreprise a atteint sa limite de {resource}",
+          "body": "Rien n’est perdu. Jusqu’au {resetDate}, seul(e) {owner} (propriétaire) peut acheter des packs en plus.",
+          "action": "Prévenir le propriétaire"
+        }
+      },
+      "planChange": {
+        "title": "Votre abonnement change à partir du {date}",
+        "body": "{changes}. D’ici là, rien ne change.",
+        "action": "Voir ce qui change"
+      },
+      "trial": {
+        "ending": {
+          "title": "L’essai de {app} se termine le {date}",
+          "body": "Pour la garder, activez-la. Sinon, elle s’arrête, et vos données restent.",
+          "action": "Activer · {price} par mois"
+        },
+        "ended": {
+          "title": "L’essai de {app} est terminé",
+          "body": "L’application s’est arrêtée, et vos données restent. Vous pouvez l’activer à tout moment.",
+          "action": "Activer {app}"
+        }
+      },
+      "setup": {
+        "accepted": {
+          "title": "Votre demande pour {app} est acceptée",
+          "body": "La mise en place coûte {setup}, une seule fois. Après le paiement, nous la configurons pour vous.",
+          "action": "Payer {setup}"
+        },
+        "due": {
+          "title": "La mise en place de {app} attend le paiement",
+          "body": "{setup}, une seule fois. Nous lançons la configuration après le paiement.",
+          "action": "Payer {setup}"
+        },
+        "started": {
+          "title": "{app} est activée",
+          "body": "Nous avons terminé la configuration. À partir d’aujourd’hui, {app} coûte {price} par mois, avec votre abonnement.",
+          "action": "Ouvrir {app}"
+        }
+      },
+      "readonly": {
+        "owner": {
+          "title": "Le compte de l’entreprise est en lecture seule",
+          "body": "Le paiement de l’abonnement n’a pas été effectué. Vous pouvez tout voir et exporter ; pour travailler de nouveau, payez {amount}.",
+          "action": "Payer {amount}"
+        },
+        "member": {
+          "title": "Le compte de l’entreprise est en lecture seule",
+          "body": "Vous pouvez tout voir et exporter. Pour travailler de nouveau, {owner} (propriétaire) doit effectuer le paiement.",
+          "action": "Prévenir le propriétaire"
+        }
+      },
+      "restored": {
+        "title": "Le compte de l’entreprise fonctionne de nouveau normalement",
+        "body": "Nous avons reçu le paiement de {amount}. Toute l’équipe peut travailler comme avant.",
+        "action": "Voir la facture"
+      },
+      "upgradeAction": "Demander un autre abonnement"
     }
   }
 }
