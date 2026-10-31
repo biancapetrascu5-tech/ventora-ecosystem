@@ -22,3 +22,5 @@ core/organizations/generated/
 core/access/generated/
 visual-check/
 screenshots/
+# Playwright (git-ignored; .last-run.json picase format:check, Lot 2.9)
+apps/platform/test-results/

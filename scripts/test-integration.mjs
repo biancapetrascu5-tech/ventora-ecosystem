@@ -9,13 +9,12 @@
  * Folosit de `pnpm test:integration`.
  */
 import { execSync } from 'node:child_process';
-import { fileURLToPath } from 'node:url';
-import { dirname, join } from 'node:path';
-
-const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
+import { ROOT, composeCmd } from './test-db-config.mjs';
 
 // Pornire DB (import efectuează setup-ul complet)
-const { TEST_DB, DOCKER } = await import('./test-db-up.mjs');
+// Lot 2.9: containerul și porturile sunt ale acestui worktree (scripts/test-db-config.mjs)
+const { TEST_DB, TEST_ENV, DOCKER, dockerEnv } = await import('./test-db-up.mjs');
+const PG = TEST_ENV.pgPort;
 
 function run(cmd, env = {}) {
   execSync(cmd, {
@@ -29,14 +28,14 @@ function runPkg(filter, script, env = {}) {
   run(`pnpm --filter ${filter} ${script}`, env);
 }
 
-const ADMIN_IDENTITY = `postgresql://postgres:test@localhost:5433/${TEST_DB.identityDb}`;
-const ADMIN_ORG = `postgresql://postgres:test@localhost:5433/${TEST_DB.orgDb}`;
-const ADMIN_ACCESS = `postgresql://postgres:test@localhost:5433/${TEST_DB.accessDb}`;
-const SHADOW_IDENTITY = 'postgresql://postgres:test@localhost:5433/shadow_identity_diff';
-const SHADOW_FOUNDER = 'postgresql://postgres:test@localhost:5433/shadow_founder_diff';
-const SHADOW_ORG = 'postgresql://postgres:test@localhost:5433/shadow_org_diff';
-const SHADOW_ACCESS = 'postgresql://postgres:test@localhost:5433/shadow_access_diff';
-const SHADOW_AUDIT = 'postgresql://postgres:test@localhost:5433/shadow_audit_diff';
+const ADMIN_IDENTITY = `postgresql://postgres:test@localhost:${PG}/${TEST_DB.identityDb}`;
+const ADMIN_ORG = `postgresql://postgres:test@localhost:${PG}/${TEST_DB.orgDb}`;
+const ADMIN_ACCESS = `postgresql://postgres:test@localhost:${PG}/${TEST_DB.accessDb}`;
+const SHADOW_IDENTITY = `postgresql://postgres:test@localhost:${PG}/shadow_identity_diff`;
+const SHADOW_FOUNDER = `postgresql://postgres:test@localhost:${PG}/shadow_founder_diff`;
+const SHADOW_ORG = `postgresql://postgres:test@localhost:${PG}/shadow_org_diff`;
+const SHADOW_ACCESS = `postgresql://postgres:test@localhost:${PG}/shadow_access_diff`;
+const SHADOW_AUDIT = `postgresql://postgres:test@localhost:${PG}/shadow_audit_diff`;
 
 let exitCode = 0;
 
@@ -80,8 +79,8 @@ try {
   // --- Audit integration tests (TA) — pe baza identity (app_runtime + founder_runtime) ---
   console.log('\n[test:integration] audit (TA)...');
   runPkg('@ventora/audit', 'test:integration', {
-    DATABASE_URL_TEST: `postgresql://app_runtime:${TEST_DB.appPw}@localhost:5433/${TEST_DB.identityDb}`,
-    DATABASE_URL_FOUNDER_TEST: `postgresql://founder_runtime:${TEST_DB.founderPw}@localhost:5433/${TEST_DB.identityDb}`,
+    DATABASE_URL_TEST: `postgresql://app_runtime:${TEST_DB.appPw}@localhost:${PG}/${TEST_DB.identityDb}`,
+    DATABASE_URL_FOUNDER_TEST: `postgresql://founder_runtime:${TEST_DB.founderPw}@localhost:${PG}/${TEST_DB.identityDb}`,
     DATABASE_URL_ADMIN_TEST: ADMIN_IDENTITY,
   });
 
@@ -90,10 +89,10 @@ try {
   runPkg('@ventora/identity', 'test:integration', {
     BETTER_AUTH_SECRET: TEST_DB.betterAuthSecret,
     FOUNDER_AUTH_SECRET: TEST_DB.founderAuthSecret,
-    DATABASE_URL_TEST: `postgresql://app_runtime:${TEST_DB.appPw}@localhost:5433/${TEST_DB.identityDb}`,
-    DATABASE_URL_FOUNDER_TEST: `postgresql://founder_runtime:${TEST_DB.founderPw}@localhost:5433/${TEST_DB.identityDb}`,
-    DATABASE_URL_APP_RUNTIME: `postgresql://app_runtime:${TEST_DB.appPw}@localhost:5433/${TEST_DB.identityDb}`,
-    DATABASE_URL_PGBOUNCER_TEST: `postgresql://app_runtime:${TEST_DB.appPw}@localhost:6432/${TEST_DB.identityDb}`,
+    DATABASE_URL_TEST: `postgresql://app_runtime:${TEST_DB.appPw}@localhost:${PG}/${TEST_DB.identityDb}`,
+    DATABASE_URL_FOUNDER_TEST: `postgresql://founder_runtime:${TEST_DB.founderPw}@localhost:${PG}/${TEST_DB.identityDb}`,
+    DATABASE_URL_APP_RUNTIME: `postgresql://app_runtime:${TEST_DB.appPw}@localhost:${PG}/${TEST_DB.identityDb}`,
+    DATABASE_URL_PGBOUNCER_TEST: `postgresql://app_runtime:${TEST_DB.appPw}@localhost:${TEST_ENV.pgbouncerPort}/${TEST_DB.identityDb}`,
     DATABASE_URL_ADMIN_TEST: ADMIN_IDENTITY,
   });
 
@@ -101,7 +100,7 @@ try {
   console.log('\n[test:integration] organizations (T2)...');
   runPkg('@ventora/organizations', 'test:integration', {
     DATABASE_URL_TEST: ADMIN_ORG,
-    DATABASE_URL_FOUNDER_TEST: `postgresql://founder_runtime:${TEST_DB.founderPw}@localhost:5433/${TEST_DB.orgDb}`,
+    DATABASE_URL_FOUNDER_TEST: `postgresql://founder_runtime:${TEST_DB.founderPw}@localhost:${PG}/${TEST_DB.orgDb}`,
     DATABASE_URL_ADMIN_TEST: ADMIN_ORG,
   });
 
@@ -125,7 +124,7 @@ try {
     DATABASE_URL_ADMIN_TEST: ADMIN_ACCESS,
     DATABASE_URL: ADMIN_ACCESS,
     // Lot 2.5c: sesiunea de suport și recuperarea owner-ului rulează pe founder_runtime
-    DATABASE_URL_FOUNDER_TEST: `postgresql://founder_runtime:${TEST_DB.founderPw}@localhost:5433/${TEST_DB.accessDb}`,
+    DATABASE_URL_FOUNDER_TEST: `postgresql://founder_runtime:${TEST_DB.founderPw}@localhost:${PG}/${TEST_DB.accessDb}`,
     BETTER_AUTH_SECRET: TEST_DB.betterAuthSecret,
     FOUNDER_AUTH_SECRET: TEST_DB.founderAuthSecret,
   });
@@ -147,10 +146,7 @@ try {
 } finally {
   console.log('\n[test:integration] Opresc containerele...');
   try {
-    execSync(`"${DOCKER}" compose -f docker-compose.test.yml down -v`, {
-      cwd: ROOT,
-      stdio: 'inherit',
-    });
+    execSync(composeCmd(DOCKER, 'down -v'), { cwd: ROOT, stdio: 'inherit', env: dockerEnv() });
   } catch (cleanupErr) {
     console.error('[test:integration] Eroare la cleanup:', cleanupErr.message);
   }

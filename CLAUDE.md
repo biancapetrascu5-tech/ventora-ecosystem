@@ -29,7 +29,20 @@ pnpm test:integration
 Dacă comanda reușește (exit 0) → poți face push.
 Dacă eșuează sau nu pot rula containerele Docker → mă opresc și raportez fondatoarei. **Nu fac push fără teste verzi.**
 
-Scriptul face automat: pornește postgres:17 + pgbouncer pe porturile 5433/6432, aplică toate migrațiile, verifică garda de drift pentru cele 3 scheme Prisma (identity, founder, organizations), rulează testele de integrare, și oprește containerele.
+Scriptul face automat: pornește postgres:17 + pgbouncer, aplică toate migrațiile, verifică garda de drift pentru cele 3 scheme Prisma (identity, founder, organizations), rulează testele de integrare, și oprește containerele.
+
+**Baza de test e per worktree** (Lot 2.9, `scripts/test-db-config.mjs`): containerele, proiectul compose și porturile se derivă din numele folderului, ca doi agenți în worktree-uri diferite să poată rula `pnpm test:integration` în paralel.
+
+| Folder | Containere | Postgres / pgbouncer |
+|---|---|---|
+| `ventora-ecosystem` | `ventora-test-ventora-ecosystem-{postgres,pgbouncer}` | 16050 / 16051 |
+| `ventora-ecosystem-ui` | `ventora-test-ventora-ecosystem-ui-{postgres,pgbouncer}` | 15676 / 15677 |
+| alt folder | `ventora-test-<slug>-…` | 15400–16399, din hash-ul numelui (scriptul îl afișează la pornire) |
+
+- La o coliziune de port: `VENTORA_TEST_PG_PORT` și `VENTORA_TEST_PGBOUNCER_PORT` suprascriu porturile.
+- `pnpm test:db:down` oprește doar containerele worktree-ului curent.
+- Nu atinge containerul altui worktree și nici vechiul `ventora-test-postgres` (5433), dacă mai rulează.
+- CI nu folosește aceste scripturi: are serviciile lui pe 5433/6432, neschimbate.
 
 ---
 

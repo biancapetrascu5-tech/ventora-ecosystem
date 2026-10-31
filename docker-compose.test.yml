@@ -1,37 +1,39 @@
-name: ventora-test
+# Lot 2.9: numele și porturile vin din scripts/test-db-config.mjs (derivate din folderul worktree-ului).
+# Valorile implicite sunt cele vechi (5433/6432), pentru un `docker compose` rulat de mână.
+name: ${VENTORA_TEST_PROJECT:-ventora-test}
 
 services:
   postgres-test:
     image: postgres:17
-    container_name: ventora-test-postgres
+    container_name: ${VENTORA_TEST_PROJECT:-ventora-test}-postgres
     environment:
       POSTGRES_PASSWORD: test
       POSTGRES_DB: postgres
       POSTGRES_HOST_AUTH_METHOD: trust
     ports:
-      - "5433:5432"
+      - '${VENTORA_TEST_PG_PORT:-5433}:5432'
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      test: ['CMD-SHELL', 'pg_isready -U postgres']
       interval: 3s
       timeout: 5s
       retries: 15
 
   pgbouncer-test:
     image: edoburu/pgbouncer:latest
-    container_name: ventora-test-pgbouncer
+    container_name: ${VENTORA_TEST_PROJECT:-ventora-test}-pgbouncer
     environment:
       DB_HOST: postgres-test
-      DB_PORT: "5432"
+      DB_PORT: '5432'
       DB_NAME: ventora_identity_test
       DB_USER: app_runtime
-      DB_PASSWORD: app_runtime_test_pw  # gitleaks:allow
+      DB_PASSWORD: app_runtime_test_pw # gitleaks:allow
       AUTH_TYPE: trust
       POOL_MODE: transaction
-      MAX_CLIENT_CONN: "100"
-      DEFAULT_POOL_SIZE: "10"
+      MAX_CLIENT_CONN: '100'
+      DEFAULT_POOL_SIZE: '10'
       SERVER_TLS_SSLMODE: disable
     ports:
-      - "6432:5432"
+      - '${VENTORA_TEST_PGBOUNCER_PORT:-6432}:5432'
     depends_on:
       postgres-test:
         condition: service_healthy
