@@ -462,6 +462,72 @@ jobs:
           DATABASE_URL_ADMIN_TEST: postgresql://postgres:test@localhost:5436/ventora_audit_test
         run: pnpm --filter @ventora/audit test:integration
 
+  # Lot 3.1: registrul comercial (T9: commercial_init pe o bază curată, fără drift)
+  integration-tests-commercial:
+    name: Integration tests (commercial — registrul)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_PASSWORD: test
+          POSTGRES_DB: ventora_commercial_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5437:5432
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Verify commercial schema matches migrations
+        run: |
+          psql postgresql://postgres:test@localhost:5437/ventora_commercial_test -c "CREATE DATABASE shadow_commercial_diff"
+          SHADOW_DATABASE_URL="postgresql://postgres:test@localhost:5437/shadow_commercial_diff" \
+          pnpm --filter @ventora/commercial exec prisma migrate diff \
+            --from-migrations ./prisma/migrations \
+            --to-schema ./prisma/schema.prisma \
+            --exit-code \
+            --config prisma7.config.ts
+        env:
+          DATABASE_URL: postgresql://postgres:test@localhost:5437/ventora_commercial_test
+      # Roles first: commercial_init grants commercial_rw / SELECT only to runtime roles that exist
+      - name: Create runtime roles
+        run: |
+          APP_PW=$(openssl rand -hex 32)
+          FOUNDER_PW=$(openssl rand -hex 32)
+          PSQL="psql postgresql://postgres:test@localhost:5437/ventora_commercial_test"
+          $PSQL -c "CREATE ROLE app_runtime WITH LOGIN PASSWORD '${APP_PW}' NOINHERIT"
+          $PSQL -c "CREATE ROLE founder_runtime WITH LOGIN PASSWORD '${FOUNDER_PW}' NOINHERIT"
+          echo "APP_PW=${APP_PW}" >> $GITHUB_ENV
+          echo "FOUNDER_PW=${FOUNDER_PW}" >> $GITHUB_ENV
+      - name: Apply commercial migration
+        run: |
+          psql postgresql://postgres:test@localhost:5437/ventora_commercial_test \
+            -v ON_ERROR_STOP=1 \
+            -f core/commercial/prisma/migrations/20261101000001_commercial_init/migration.sql
+      - name: Run commercial integration tests
+        env:
+          DATABASE_URL_TEST: postgresql://app_runtime:${{ env.APP_PW }}@localhost:5437/ventora_commercial_test
+          DATABASE_URL_FOUNDER_TEST: postgresql://founder_runtime:${{ env.FOUNDER_PW }}@localhost:5437/ventora_commercial_test
+          DATABASE_URL_ADMIN_TEST: postgresql://postgres:test@localhost:5437/ventora_commercial_test
+        run: pnpm --filter @ventora/commercial test:integration
+      # The real manifests, twice: the second run fails if it changes anything
+      - name: Sync the registry from the manifests (twice)
+        env:
+          DIRECT_URL: postgresql://postgres:test@localhost:5437/ventora_commercial_test
+        run: |
+          pnpm tsx scripts/sync-commercial-registry.ts
+          pnpm tsx scripts/sync-commercial-registry.ts --expect-noop
+
   build:
     name: Build
     runs-on: ubuntu-latest
@@ -475,6 +541,7 @@ jobs:
         integration-tests-organizations,
         integration-tests-access,
         integration-tests-audit,
+        integration-tests-commercial,
       ]
     steps:
       - uses: actions/checkout@v7

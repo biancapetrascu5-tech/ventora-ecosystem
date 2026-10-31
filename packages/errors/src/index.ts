@@ -102,6 +102,21 @@ export class TwoFactorLocked extends Error {
 }
 
 /**
+ * Lot 3.1 (ARCHITECTURE §8.4): Founder can set values only for keys a manifest declares. The key
+ * is not in the commercial registry, or was retired from its manifest. Nothing was written.
+ */
+export class UnknownCommercialKey extends Error {
+  readonly status = 400;
+  readonly code = 'UNKNOWN_COMMERCIAL_KEY';
+  readonly keys: string[];
+  constructor(keys: string[], message = `Unknown or retired commercial keys: ${keys.join(', ')}`) {
+    super(message);
+    this.name = 'UnknownCommercialKey';
+    this.keys = keys;
+  }
+}
+
+/**
  * Lot 2.8 (D3-20, varianta a): the organization is suspended from Founder. Nobody in it gets in,
  * not even to read; the data stays and Founder can reactivate it. Support sessions still work.
  */

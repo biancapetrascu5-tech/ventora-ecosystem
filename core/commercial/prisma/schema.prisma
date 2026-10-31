@@ -1,0 +1,60 @@
+// Schema "commercial" — folosită pentru garda de drift (prisma migrate diff) și prisma migrate deploy.
+// Codul nu folosește un client Prisma generat (ca în core/audit): registrul se scrie doar de
+// sincronizarea manifestelor la deploy (DIRECT_URL), iar runtime-ul îl citește prin commercial_rw.
+// CHECK-urile, rolurile și grant-urile sunt doar în migrare.
+
+datasource db {
+  provider = "postgresql"
+  schemas  = ["commercial"]
+}
+
+/// Cele 15 aplicații + platforma (Hub-ul și serviciile Core), ARCHITECTURE §5.
+model Application {
+  id         String    @id @db.VarChar(64)
+  name       String    @db.VarChar(128)
+  isPlatform Boolean   @default(false) @map("is_platform")
+  retiredAt  DateTime? @map("retired_at") @db.Timestamptz
+  createdAt  DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt  DateTime  @default(now()) @map("updated_at") @db.Timestamptz
+
+  features FeatureKey[]
+  quotas   QuotaKey[]
+
+  @@map("application")
+  @@schema("commercial")
+}
+
+/// Funcționalitățile declarate de manifeste (`requireFeature`, §8.1).
+model FeatureKey {
+  key           String      @id @db.VarChar(128)
+  applicationId String      @map("application_id") @db.VarChar(64)
+  description   String?
+  retiredAt     DateTime?   @map("retired_at") @db.Timestamptz
+  createdAt     DateTime    @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt     DateTime    @default(now()) @map("updated_at") @db.Timestamptz
+  application   Application @relation(fields: [applicationId], references: [id])
+
+  @@index([applicationId], map: "feature_key_application_id_idx")
+  @@map("feature_key")
+  @@schema("commercial")
+}
+
+/// Cotele declarate de manifeste (§8.2–8.4, D3-14).
+model QuotaKey {
+  key           String      @id @db.VarChar(128)
+  applicationId String      @map("application_id") @db.VarChar(64)
+  kind          String      @db.VarChar(8)
+  unit          String      @db.VarChar(32)
+  period        String?     @db.VarChar(16)
+  overflow      String      @db.VarChar(16)
+  refundable    Boolean     @default(false)
+  description   String?
+  retiredAt     DateTime?   @map("retired_at") @db.Timestamptz
+  createdAt     DateTime    @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt     DateTime    @default(now()) @map("updated_at") @db.Timestamptz
+  application   Application @relation(fields: [applicationId], references: [id])
+
+  @@index([applicationId], map: "quota_key_application_id_idx")
+  @@map("quota_key")
+  @@schema("commercial")
+}
