@@ -18,12 +18,12 @@
     "@ventora/db-kit": "workspace:*",
     "@ventora/errors": "workspace:*",
     "@ventora/i18n": "workspace:*",
+    "pg": "^8.0.0",
     "resend": "^6.0.0"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",
     "@types/pg": "^8.0.0",
-    "pg": "^8.0.0",
     "prisma": "^7.0.0",
     "typescript": "^6.0.0",
     "vitest": "^5.0.5"

@@ -30,6 +30,7 @@ export interface OperationalEmail {
   button?: { label: string; href: string };
   /** What happens next — smaller, secondary. `strong` for a warning that must stand out. */
   after: Array<string | { text: string; strong: true }>;
+  /** Empty: no signature (the S115 billing e-mails have none). */
   signature: string;
   /** Why the reader gets this email. */
   why: string;
@@ -110,7 +111,7 @@ export function renderOperationalEmail(e: OperationalEmail): RenderedEmail {
     e.lead.map((t) => `<p style="${P_BODY}">${escapeHtml(t)}</p>`).join('') +
     button +
     e.after.map(afterHtml).join('') +
-    `<p style="${P_BODY};margin:16px 0 0">${escapeHtml(e.signature)}</p>` +
+    (e.signature ? `<p style="${P_BODY};margin:16px 0 0">${escapeHtml(e.signature)}</p>` : '') +
     `</div></td></tr>` +
     // footer, outside the card
     `<tr><td class="v-pad" style="padding:16px 24px 0">` +
@@ -124,7 +125,7 @@ export function renderOperationalEmail(e: OperationalEmail): RenderedEmail {
       ...e.lead,
       ...(e.button ? [`${e.button.label}: ${e.button.href}`] : []),
       ...e.after.map((a) => (typeof a === 'string' ? a : a.text)),
-      e.signature,
+      ...(e.signature ? [e.signature] : []),
       '--',
       e.why,
       e.company,

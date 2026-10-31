@@ -10,6 +10,8 @@ import {
   sendNotification,
   UnconfiguredSmsChannel,
   SmsNotConfiguredError,
+  defaultEnabled,
+  isChangeable,
   type NotificationTemplate,
 } from '../index';
 
@@ -22,6 +24,7 @@ const PHONE: NotificationTemplate = {
   titleKey: 'sms.disconnected.title',
   bodyKey: 'sms.disconnected.body',
   channels: ['email'],
+  topic: 'phone',
   actionPath: () => '/booking/settings/sms',
 };
 
@@ -32,6 +35,41 @@ describe('the catalog', () => {
     );
   });
 
+  it('Lot 4.4: an e-mail template names its row of the preferences (topic), of its category', () => {
+    expect(() => new NotificationCatalog([{ ...PHONE, topic: undefined }])).toThrow(
+      /topic is required/,
+    );
+    expect(() => new NotificationCatalog([{ ...PHONE, topic: 'news' }])).toThrow(/not operational/);
+    expect(() => new NotificationCatalog([{ ...PHONE, security: true }])).toThrow(/security topic/);
+    expect(
+      () => new NotificationCatalog([{ ...PHONE, security: true, topic: 'password' }]),
+    ).not.toThrow();
+    // in the app only: no row to turn off
+    expect(
+      () => new NotificationCatalog([{ ...PHONE, channels: [], topic: undefined }]),
+    ).not.toThrow();
+  });
+
+  it('Lot 4.4: the fixed rows and the defaults (S114b, D4-6)', () => {
+    expect(isChangeable('phone', 'email')).toBe(true);
+    expect(isChangeable('phone', 'in_app')).toBe(false);
+    expect(isChangeable('password', 'email')).toBe(false);
+    expect(isChangeable('recommendations', 'in_app')).toBe(true);
+    expect(isChangeable('recommendations', 'email')).toBe(false);
+    expect(isChangeable('news', 'email')).toBe(true);
+    expect(defaultEnabled('news', 'email')).toBe(false);
+    expect(defaultEnabled('bookings', 'email')).toBe(true);
+    expect(defaultCatalog.get('billing.limit.owner80', 1)?.topic).toBe('limits');
+  });
+
+  it('S115: the action text, under the text in the panel, in the reader language', () => {
+    const withAction = { ...PHONE, actionKey: 'email.open' };
+    expect(renderNotification(withAction, { n: '1', time: '9:00' }, 'ro').action).toBe(
+      'Deschide în Ventora',
+    );
+    expect(renderNotification(PHONE, { n: '1', time: '9:00' }, 'ro').action).toBeUndefined();
+  });
+
   it('the first real notification is operational, in the Activity group, in the app only', () => {
     expect(defaultCatalog.get('invitation.new_link_requested', 1)).toMatchObject({
       category: 'operational',
@@ -40,9 +78,10 @@ describe('the catalog', () => {
     });
   });
 
-  it('the Faza 3 templates exist, waiting for their texts (Lot 4.5)', () => {
-    expect(defaultCatalog.get('commercial.quota.threshold', 1)?.textsPending).toBe(true);
-    expect(defaultCatalog.get('subscription.version_change_scheduled', 1)?.textsPending).toBe(true);
+  it('Lot 4.5: the Phase 3 placeholders of Lot 4.3 are replaced by the S115 templates', () => {
+    expect(defaultCatalog.get('commercial.quota.threshold', 1)).toBeUndefined();
+    expect(defaultCatalog.get('subscription.version_change_scheduled', 1)).toBeUndefined();
+    expect(defaultCatalog.all().filter((t) => t.textsPending)).toEqual([]);
   });
 });
 
@@ -92,9 +131,8 @@ describe('the language of the recipient (6 languages)', () => {
     expect(de.html).toContain('/booking/settings/sms');
   });
 
-  it('a template whose texts come in Lot 4.5 is not rendered', () => {
-    const quota = defaultCatalog.get('commercial.quota.threshold', 1)!;
-    expect(() => renderNotification(quota, {}, 'ro')).toThrow(/Lot 4\.5/);
+  it('a template whose texts are pending is not rendered (D4-12)', () => {
+    expect(() => renderNotification({ ...PHONE, textsPending: true }, {}, 'ro')).toThrow(/pending/);
   });
 });
 
@@ -132,13 +170,24 @@ describe('send: what is refused before touching the database', () => {
   });
 
   it('a template waiting for its texts is not sent', async () => {
+    const catalog = new NotificationCatalog([{ ...PHONE, textsPending: true }]);
+    await expect(
+      sendNotification(tx, { ...base, category: 'operational', type: PHONE.type }, { catalog }),
+    ).rejects.toThrow(/pending/);
+  });
+
+  it('Lot 4.5: a notification without a value its texts need is refused, before the database', async () => {
+    await expect(
+      sendNotification(tx, { ...base, category: 'operational', params: { name: 'a@b.ro' } }),
+    ).rejects.toThrow(/needs businessName/);
     await expect(
       sendNotification(tx, {
         ...base,
         category: 'operational',
-        type: 'commercial.quota.threshold',
+        type: 'billing.invoice.card',
+        params: { number: 'VEN-1', what: 'x', amount: '1 leu', brand: 'Visa', last4: '4242' },
       }),
-    ).rejects.toThrow(/Lot 4\.5/);
+    ).rejects.toThrow(/needs business$/);
   });
 });
 

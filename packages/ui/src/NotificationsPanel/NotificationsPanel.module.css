@@ -131,6 +131,16 @@
   color: var(--ink-secondary);
 }
 
+/* .v-notif__action (S115): ce face deschiderea, cu săgeată */
+.action {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  color: var(--ink);
+  font-weight: 600;
+  margin-top: var(--space-0-5);
+}
+
 .meta {
   color: var(--ink-muted);
 }

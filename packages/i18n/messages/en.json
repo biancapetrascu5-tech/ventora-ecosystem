@@ -667,7 +667,253 @@
     "email": {
       "open": "Deschide în Ventora",
       "why": "Primești acest e-mail pentru că faci parte din echipa {businessName} în Ventora.",
-      "whyAccount": "Primești acest e-mail pentru contul tău Ventora."
+      "whyAccount": "Primești acest e-mail pentru contul tău Ventora.",
+      "billing": {
+        "invoice": {
+          "card": {
+            "lead": "We’ve issued invoice {number} for {what}, for {amount}.",
+            "next": "The payment has already been made with your {brand} ···· {last4} card; there’s nothing you need to do. You’ll always find the invoice in Plan and usage."
+          },
+          "transfer": {
+            "lead": "We’ve issued invoice {number} for {what}, for {amount}.",
+            "next": "Please pay by bank transfer by {due}; the payment details are on the invoice. Once we receive the money, the invoice shows as “Paid”."
+          },
+          "pack": {
+            "lead": "We’ve issued invoice {number} for {item}, for {amount}.",
+            "next": "The payment has already been made by card and the pack is active. There’s nothing you need to do."
+          }
+        },
+        "payment": {
+          "renewal": {
+            "lead": "The bank declined the {amount} payment to renew your plan, with the {brand} ···· {last4} card. No money was taken.",
+            "next": "Everything keeps working as usual. We’ll try again automatically on {retryDate}; if you update your card before then, we’ll use the new one."
+          },
+          "pack": {
+            "lead": "The bank declined the {amount} payment for {item}. No money was taken and the pack wasn’t activated.",
+            "next": "Everything you already have keeps working. You can buy the pack again once you’ve updated your card."
+          },
+          "retry": {
+            "lead": "We tried the {amount} payment again and the bank declined it. No money was taken.",
+            "next": "The last automatic attempt is on {retryDate}. To make sure it goes through, update your card before then; if you need help, write to support@ventorasystems.com."
+          },
+          "lastRetry": {
+            "lead": "The last automatic attempt to pay {amount} for your plan was declined too. No money was taken.",
+            "next": "Until {graceEnd}, everything works as usual for the whole team. If the payment isn’t made by then, the account becomes read-only, with export: you can see everything, but can’t add or change anything. Update your card and we’ll take the payment right away."
+          }
+        },
+        "limit": {
+          "owner80": {
+            "lead": "{business} has used {used} of {limit} {resource} in the period ending on {resetDate}.",
+            "next": "On {resetDate}, usage starts again from zero. If you need more before then, buy an extra pack; the limit goes up right away."
+          },
+          "owner100": {
+            "lead": "{business} has used all {limit} {resource} in the period ending on {resetDate}.",
+            "next": "Nothing you have is lost. To keep going before {resetDate}, buy an extra pack: the limit goes up right away. Otherwise, usage starts again from zero on {resetDate}."
+          }
+        },
+        "planChange": {
+          "lead": "From {date}, {business}’s {plan} plan moves to version {version}: {changes}.",
+          "next": "Nothing changes until {date}. If another plan suits you better, you can request it in Plan and usage; if you have questions, write to support@ventorasystems.com."
+        },
+        "trial": {
+          "ending": {
+            "lead": "You have 3 days left in your {app} trial.",
+            "next": "If you want to keep it, activate it: it’s {price} a month, with your plan. If not, the app stops on {date}, and everything you did in it stays; you can activate it any time later."
+          },
+          "ended": {
+            "lead": "Your {app} trial has ended, so the app has stopped.",
+            "next": "Everything you did in {app} stays. If you activate it, you pick up where you left off."
+          }
+        },
+        "setup": {
+          "accepted": {
+            "lead": "The Ventora team has accepted your request for {app} and will set it up for {business}.",
+            "next": "Setup costs {setup}, once. After payment we start setting it up and let you know when the app is ready. After that, {app} is {price} a month, with your plan."
+          },
+          "due": {
+            "lead": "Setting up {app} for {business} starts once the {setup} setup fee is paid.",
+            "next": "If you’ve changed your mind or have questions, write to support@ventorasystems.com."
+          },
+          "started": {
+            "lead": "We’ve finished the setup, and {app} is now running for {business}.",
+            "next": "You’ll find it among the business’s apps. From today it’s {price} a month, with your plan; the first month is prorated."
+          }
+        },
+        "readonly": {
+          "owner": {
+            "lead": "The grace period ended on {date} without the {amount} plan payment, so {business} is now read-only, with export.",
+            "next": "Nothing has been lost: the whole team can see everything and export it, but can’t add or change anything. As soon as the payment goes through, everything works as before."
+          }
+        },
+        "restored": {
+          "lead": "We’ve received the {amount} payment, and {business} is back to normal.",
+          "next": "The whole team can work as before; nothing was lost in the meantime. The invoice is in Plan and usage."
+        },
+        "subject": "{title} · {business}",
+        "eyebrow": "{business} · Plan and usage",
+        "eyebrowApps": "{business} · Apps",
+        "why": "You’re getting this email because you’re the owner of {business} in Ventora.",
+        "upgrade": "If this happens often, request another plan in Plan and usage."
+      }
+    },
+    "prefs": {
+      "title": "Notifications",
+      "lead": "You always get these in the app: they’re about your account and your work. By email, you choose, except for security.",
+      "col": {
+        "category": "What",
+        "inApp": "In the app",
+        "email": "Email"
+      },
+      "always": "Always",
+      "alwaysInApp": "In the app: always",
+      "locked": "Can’t be turned off",
+      "emailToggle": "By email",
+      "group": {
+        "work": "Your account and your work",
+        "security": "Security"
+      },
+      "securityNote": "You always get these, in the app and by email, so you know right away if something changes in your account.",
+      "cat": {
+        "bookings": "New and changed bookings",
+        "phone": "The business phone and messages to clients",
+        "billing": "Invoices and payments",
+        "limits": "Plan limits",
+        "leave": "Leave requests",
+        "support": "Replies to support requests",
+        "password": "Account password changed",
+        "twoFactor": "Two-step sign-in",
+        "supportSession": "Ventora team support session"
+      },
+      "news": {
+        "title": "News from Ventora",
+        "desc": "What’s new in Ventora: apps, features, important changes.",
+        "inApp": "In the app",
+        "email": "By email",
+        "emailDesc": "Off until you turn it on."
+      },
+      "reco": {
+        "title": "Ventora recommendations",
+        "desc": "Suggestions for apps and extra packs that fit what you already do.",
+        "inAppDesc": "You see them on pages and in notifications, under Recommendations.",
+        "soon": "Coming soon",
+        "note": "Messages about your account’s limits stay on, because they’re account information, not recommendations."
+      },
+      "saved": "Preferences saved."
+    },
+    "billing": {
+      "invoice": {
+        "card": {
+          "title": "Invoice {number} has been issued",
+          "body": "{what} · {amount} · paid by card",
+          "action": "View invoice"
+        },
+        "transfer": {
+          "title": "Invoice {number} has been issued",
+          "body": "{what} · {amount} · to pay by bank transfer by {due}",
+          "action": "View invoice"
+        },
+        "pack": {
+          "title": "Invoice {number} has been issued",
+          "body": "{item} · {amount}",
+          "action": "View invoice"
+        }
+      },
+      "payment": {
+        "renewal": {
+          "title": "The plan payment didn’t go through",
+          "body": "No money was taken. We’ll try again on {retryDate}; until then, everything works as usual.",
+          "action": "Update card"
+        },
+        "pack": {
+          "title": "The payment for {item} didn’t go through",
+          "body": "No money was taken and the pack wasn’t activated. You can try again with another card.",
+          "action": "Update card"
+        },
+        "retry": {
+          "title": "The plan payment didn’t go through again",
+          "body": "No money was taken. The last automatic attempt is on {retryDate}; until then, everything works as usual.",
+          "action": "Update card"
+        },
+        "lastRetry": {
+          "title": "The last payment attempt didn’t go through",
+          "body": "No money was taken. Until {graceEnd}, everything works as usual; update your card so we can take the payment.",
+          "action": "Update card"
+        }
+      },
+      "limit": {
+        "owner80": {
+          "title": "You’ve used 80% of your {resource} limit",
+          "body": "{used} of {limit} until {resetDate}. If you need more, buy an extra pack.",
+          "action": "Buy extra {buyItem}"
+        },
+        "owner100": {
+          "title": "You’ve reached your {resource} limit",
+          "body": "Nothing you have is lost. To add more before {resetDate}, buy an extra pack.",
+          "action": "Buy extra {buyItem}"
+        },
+        "other80": {
+          "title": "The business has used 80% of its {resource} limit",
+          "body": "{used} of {limit} until {resetDate}. Only {owner} (owner) can buy extra packs.",
+          "action": "Let the owner know"
+        },
+        "other100": {
+          "title": "The business has reached its {resource} limit",
+          "body": "Nothing is lost. Until {resetDate}, only {owner} (owner) can buy extra packs.",
+          "action": "Let the owner know"
+        }
+      },
+      "planChange": {
+        "title": "Your plan changes from {date}",
+        "body": "{changes}. Nothing changes until then.",
+        "action": "See what changes"
+      },
+      "trial": {
+        "ending": {
+          "title": "Your {app} trial ends on {date}",
+          "body": "To keep it, activate it. Otherwise it stops, and your data stays.",
+          "action": "Activate · {price} a month"
+        },
+        "ended": {
+          "title": "Your {app} trial has ended",
+          "body": "The app has stopped, and your data stays. You can activate it any time.",
+          "action": "Activate {app}"
+        }
+      },
+      "setup": {
+        "accepted": {
+          "title": "Your {app} request has been accepted",
+          "body": "Setup costs {setup}, once. After payment, we set it up for you.",
+          "action": "Pay {setup}"
+        },
+        "due": {
+          "title": "{app} setup is waiting for payment",
+          "body": "{setup}, once. We start the setup after payment.",
+          "action": "Pay {setup}"
+        },
+        "started": {
+          "title": "{app} is up and running",
+          "body": "We’ve finished the setup. From today, {app} is {price} a month, with your plan.",
+          "action": "Open {app}"
+        }
+      },
+      "readonly": {
+        "owner": {
+          "title": "The business account is read-only",
+          "body": "The plan payment wasn’t made. You can all see and export everything; to work again, pay {amount}.",
+          "action": "Pay {amount}"
+        },
+        "member": {
+          "title": "The business account is read-only",
+          "body": "You can see and export everything. To work again, {owner} (owner) needs to make the payment.",
+          "action": "Let the owner know"
+        }
+      },
+      "restored": {
+        "title": "The business account is back to normal",
+        "body": "We’ve received the {amount} payment. The whole team can work as before.",
+        "action": "View invoice"
+      },
+      "upgradeAction": "Request another plan"
     }
   }
 }

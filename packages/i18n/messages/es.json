@@ -667,7 +667,253 @@
     "email": {
       "open": "Deschide în Ventora",
       "why": "Primești acest e-mail pentru că faci parte din echipa {businessName} în Ventora.",
-      "whyAccount": "Primești acest e-mail pentru contul tău Ventora."
+      "whyAccount": "Primești acest e-mail pentru contul tău Ventora.",
+      "billing": {
+        "invoice": {
+          "card": {
+            "lead": "Hemos emitido la factura {number} por {what}, por un importe de {amount}.",
+            "next": "El pago ya se ha hecho con la tarjeta {brand} ···· {last4}; no tienes que hacer nada. Encontrarás la factura cuando quieras en Plan y consumo."
+          },
+          "transfer": {
+            "lead": "Hemos emitido la factura {number} por {what}, por un importe de {amount}.",
+            "next": "Paga por transferencia bancaria antes del {due}; los datos de pago están en la factura. Cuando recibamos el dinero, la factura aparecerá como «Pagada»."
+          },
+          "pack": {
+            "lead": "Hemos emitido la factura {number} por {item}, por un importe de {amount}.",
+            "next": "El pago ya se ha hecho con tarjeta y el paquete está activo. No tienes que hacer nada."
+          }
+        },
+        "payment": {
+          "renewal": {
+            "lead": "El banco ha rechazado el pago de {amount} para renovar el plan, con la tarjeta {brand} ···· {last4}. No se ha cobrado nada.",
+            "next": "Todo sigue funcionando con normalidad. Lo intentaremos de nuevo automáticamente el {retryDate}; si actualizas la tarjeta antes, usaremos la nueva."
+          },
+          "pack": {
+            "lead": "El banco ha rechazado el pago de {amount} por {item}. No se ha cobrado nada y el paquete no se ha activado.",
+            "next": "Todo lo que ya tienes sigue funcionando. Puedes volver a comprar el paquete cuando actualices la tarjeta."
+          },
+          "retry": {
+            "lead": "Hemos vuelto a intentar el pago de {amount} y el banco lo ha rechazado. No se ha cobrado nada.",
+            "next": "El último intento automático es el {retryDate}. Para que salga bien, actualiza la tarjeta antes; si necesitas ayuda, escribe a support@ventorasystems.com."
+          },
+          "lastRetry": {
+            "lead": "El último intento automático de pagar {amount} por el plan también ha sido rechazado. No se ha cobrado nada.",
+            "next": "Hasta el {graceEnd}, todo funciona con normalidad para todo el equipo. Si el pago no se hace antes, la cuenta pasa a solo lectura, con exportación: veis todo, pero no podéis añadir ni cambiar nada. Actualiza la tarjeta y cobramos el pago al momento."
+          }
+        },
+        "limit": {
+          "owner80": {
+            "lead": "{business} ha usado {used} de {limit} {resource} en el periodo que termina el {resetDate}.",
+            "next": "El {resetDate}, el consumo vuelve a cero. Si necesitas más antes, compra un paquete extra; el límite sube al momento."
+          },
+          "owner100": {
+            "lead": "{business} ha usado los {limit} {resource} del periodo que termina el {resetDate}.",
+            "next": "No se pierde nada de lo que tienes. Para seguir antes del {resetDate}, compra un paquete extra: el límite sube al momento. Si no, el consumo vuelve a cero el {resetDate}."
+          }
+        },
+        "planChange": {
+          "lead": "A partir del {date}, el plan {plan} de {business} pasa a la versión {version}: {changes}.",
+          "next": "No cambia nada hasta el {date}. Si otro plan te encaja mejor, puedes solicitarlo en Plan y consumo; si tienes preguntas, escribe a support@ventorasystems.com."
+        },
+        "trial": {
+          "ending": {
+            "lead": "Te quedan 3 días de prueba de {app}.",
+            "next": "Si quieres conservarla, actívala: cuesta {price} al mes, junto con tu plan. Si no, la aplicación se detiene el {date} y todo lo que hiciste en ella se queda; puedes activarla más adelante cuando quieras."
+          },
+          "ended": {
+            "lead": "La prueba de {app} ha terminado, así que la aplicación se ha detenido.",
+            "next": "Todo lo que hiciste en {app} se queda. Si la activas, sigues donde lo dejaste."
+          }
+        },
+        "setup": {
+          "accepted": {
+            "lead": "El equipo de Ventora ha aceptado tu solicitud de {app} y la configurará para {business}.",
+            "next": "La implementación cuesta {setup}, una sola vez. Tras el pago empezamos la configuración y te avisamos cuando la aplicación esté lista. Después, {app} cuesta {price} al mes, junto con tu plan."
+          },
+          "due": {
+            "lead": "La configuración de {app} para {business} empieza tras pagar la implementación de {setup}.",
+            "next": "Si has cambiado de idea o tienes preguntas, escribe a support@ventorasystems.com."
+          },
+          "started": {
+            "lead": "Hemos terminado la configuración y {app} ya está en marcha para {business}.",
+            "next": "La encontrarás entre las aplicaciones del negocio. Desde hoy cuesta {price} al mes, junto con tu plan; el primer mes se prorratea."
+          }
+        },
+        "readonly": {
+          "owner": {
+            "lead": "El periodo de gracia terminó el {date} sin el pago de {amount} del plan, así que {business} ha pasado a solo lectura, con exportación.",
+            "next": "No se ha perdido nada: todo el equipo ve todo y puede exportarlo, pero no puede añadir ni cambiar nada. En cuanto se haga el pago, todo funciona como antes."
+          }
+        },
+        "restored": {
+          "lead": "Hemos recibido el pago de {amount} y {business} vuelve a funcionar con normalidad.",
+          "next": "Todo el equipo puede trabajar como antes; no se ha perdido nada mientras tanto. La factura está en Plan y consumo."
+        },
+        "subject": "{title} · {business}",
+        "eyebrow": "{business} · Plan y consumo",
+        "eyebrowApps": "{business} · Aplicaciones",
+        "why": "Recibes este correo porque eres el propietario de {business} en Ventora.",
+        "upgrade": "Si te pasa a menudo, solicita otro plan en Plan y consumo."
+      }
+    },
+    "prefs": {
+      "title": "Notificaciones",
+      "lead": "En la aplicación las recibes siempre: tratan de tu cuenta y de tu trabajo. Por correo eliges tú, salvo las de seguridad.",
+      "col": {
+        "category": "Qué",
+        "inApp": "En la aplicación",
+        "email": "Correo"
+      },
+      "always": "Siempre",
+      "alwaysInApp": "En la aplicación: siempre",
+      "locked": "No se pueden desactivar",
+      "emailToggle": "Por correo",
+      "group": {
+        "work": "Tu cuenta y tu trabajo",
+        "security": "Seguridad"
+      },
+      "securityNote": "Las recibes siempre, en la aplicación y por correo, para saber enseguida si algo cambia en tu cuenta.",
+      "cat": {
+        "bookings": "Citas nuevas y cambios",
+        "phone": "El teléfono del negocio y los mensajes a clientes",
+        "billing": "Facturas y pagos",
+        "limits": "Límites del plan",
+        "leave": "Solicitudes de vacaciones",
+        "support": "Respuestas a solicitudes de soporte",
+        "password": "Contraseña de la cuenta cambiada",
+        "twoFactor": "Inicio de sesión en dos pasos",
+        "supportSession": "Sesión de soporte del equipo de Ventora"
+      },
+      "news": {
+        "title": "Novedades de Ventora",
+        "desc": "Lo nuevo en Ventora: aplicaciones, funciones y cambios importantes.",
+        "inApp": "En la aplicación",
+        "email": "Por correo",
+        "emailDesc": "Desactivado hasta que lo actives."
+      },
+      "reco": {
+        "title": "Recomendaciones de Ventora",
+        "desc": "Sugerencias de aplicaciones y paquetes extra que encajan con lo que ya haces.",
+        "inAppDesc": "Las ves en las páginas y en las notificaciones, en Recomendaciones.",
+        "soon": "Disponible pronto",
+        "note": "Los mensajes sobre los límites de tu cuenta siguen activos, porque son información de la cuenta, no recomendaciones."
+      },
+      "saved": "Preferencias guardadas."
+    },
+    "billing": {
+      "invoice": {
+        "card": {
+          "title": "Se ha emitido la factura {number}",
+          "body": "{what} · {amount} · pagada con tarjeta",
+          "action": "Ver factura"
+        },
+        "transfer": {
+          "title": "Se ha emitido la factura {number}",
+          "body": "{what} · {amount} · a pagar por transferencia antes del {due}",
+          "action": "Ver factura"
+        },
+        "pack": {
+          "title": "Se ha emitido la factura {number}",
+          "body": "{item} · {amount}",
+          "action": "Ver factura"
+        }
+      },
+      "payment": {
+        "renewal": {
+          "title": "El pago del plan no se ha completado",
+          "body": "No se ha cobrado nada. Lo intentaremos de nuevo el {retryDate}; hasta entonces, todo funciona con normalidad.",
+          "action": "Actualizar tarjeta"
+        },
+        "pack": {
+          "title": "El pago de {item} no se ha completado",
+          "body": "No se ha cobrado nada y el paquete no se ha activado. Puedes intentarlo de nuevo con otra tarjeta.",
+          "action": "Actualizar tarjeta"
+        },
+        "retry": {
+          "title": "El pago del plan tampoco se ha completado esta vez",
+          "body": "No se ha cobrado nada. El último intento automático es el {retryDate}; hasta entonces, todo funciona con normalidad.",
+          "action": "Actualizar tarjeta"
+        },
+        "lastRetry": {
+          "title": "El último intento de pago no se ha completado",
+          "body": "No se ha cobrado nada. Hasta el {graceEnd}, todo funciona con normalidad; actualiza la tarjeta para que podamos cobrar el pago.",
+          "action": "Actualizar tarjeta"
+        }
+      },
+      "limit": {
+        "owner80": {
+          "title": "Has usado el 80 % de tu límite de {resource}",
+          "body": "{used} de {limit} hasta el {resetDate}. Si necesitas más, compra un paquete extra.",
+          "action": "Comprar {buyItem} extra"
+        },
+        "owner100": {
+          "title": "Has alcanzado tu límite de {resource}",
+          "body": "No se pierde nada de lo que tienes. Para añadir más antes del {resetDate}, compra un paquete extra.",
+          "action": "Comprar {buyItem} extra"
+        },
+        "other80": {
+          "title": "El negocio ha usado el 80 % de su límite de {resource}",
+          "body": "{used} de {limit} hasta el {resetDate}. Solo {owner} (propietario) puede comprar paquetes extra.",
+          "action": "Avisar al propietario"
+        },
+        "other100": {
+          "title": "El negocio ha alcanzado su límite de {resource}",
+          "body": "No se pierde nada. Hasta el {resetDate}, solo {owner} (propietario) puede comprar paquetes extra.",
+          "action": "Avisar al propietario"
+        }
+      },
+      "planChange": {
+        "title": "Tu plan cambia a partir del {date}",
+        "body": "{changes}. Hasta entonces no cambia nada.",
+        "action": "Ver qué cambia"
+      },
+      "trial": {
+        "ending": {
+          "title": "La prueba de {app} termina el {date}",
+          "body": "Para conservarla, actívala. Si no, se detiene y tus datos se quedan.",
+          "action": "Activar · {price} al mes"
+        },
+        "ended": {
+          "title": "La prueba de {app} ha terminado",
+          "body": "La aplicación se ha detenido y tus datos se quedan. Puedes activarla cuando quieras.",
+          "action": "Activar {app}"
+        }
+      },
+      "setup": {
+        "accepted": {
+          "title": "Tu solicitud de {app} ha sido aceptada",
+          "body": "La implementación cuesta {setup}, una sola vez. Tras el pago, la configuramos nosotros.",
+          "action": "Pagar {setup}"
+        },
+        "due": {
+          "title": "La implementación de {app} espera el pago",
+          "body": "{setup}, una sola vez. Empezamos la configuración tras el pago.",
+          "action": "Pagar {setup}"
+        },
+        "started": {
+          "title": "{app} ya está en marcha",
+          "body": "Hemos terminado la configuración. Desde hoy, {app} cuesta {price} al mes, junto con tu plan.",
+          "action": "Abrir {app}"
+        }
+      },
+      "readonly": {
+        "owner": {
+          "title": "La cuenta del negocio está en solo lectura",
+          "body": "El pago del plan no se ha hecho. Podéis ver y exportar todo; para volver a trabajar, paga {amount}.",
+          "action": "Pagar {amount}"
+        },
+        "member": {
+          "title": "La cuenta del negocio está en solo lectura",
+          "body": "Puedes ver y exportar todo. Para volver a trabajar, {owner} (propietario) tiene que hacer el pago.",
+          "action": "Avisar al propietario"
+        }
+      },
+      "restored": {
+        "title": "La cuenta del negocio vuelve a funcionar con normalidad",
+        "body": "Hemos recibido el pago de {amount}. Todo el equipo puede trabajar como antes.",
+        "action": "Ver factura"
+      },
+      "upgradeAction": "Solicitar otro plan"
     }
   }
 }

@@ -82,8 +82,30 @@ export function renderNotificationEmail(
   const template = catalog.get(row.type, row.version);
   if (!template) throw new Error(`[notifications] unknown template ${row.type}@${row.version}`);
   const locale: Locale = toLocale(contact.locale);
-  const { title, body } = renderNotification(template, row.params, locale);
+  const { title, body, action } = renderNotification(template, row.params, locale);
   const m = emailMessages(locale);
+  if (template.email) {
+    // Lot 4.5 (S115): the designed e-mail — subject „{title} · {business}”, the in-app text as
+    // preheader, lead and what happens next, the action as the button, no greeting or signature
+    const e = template.email;
+    const text = (key: string, extra: Record<string, string> = {}) =>
+      fill(notificationText(locale, key), { ...row.params, ...extra });
+    return renderOperationalEmail({
+      lang: locale,
+      subject: text(e.subjectKey, { title }),
+      preheader: body ?? title,
+      eyebrow: text(e.eyebrowKey),
+      title,
+      lead: [text(e.leadKey), ...e.nextKeys.map((k) => text(k))],
+      ...(row.action_url && action
+        ? { button: { label: action, href: `${platformUrl()}${row.action_url}` } }
+        : {}),
+      after: [],
+      signature: '',
+      why: text(e.whyKey),
+      company: m.common.company,
+    });
+  }
   const businessName = row.params.businessName;
   return renderOperationalEmail({
     lang: locale,

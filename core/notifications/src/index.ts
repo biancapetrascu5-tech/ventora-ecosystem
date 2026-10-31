@@ -32,9 +32,20 @@ export type {
   NotificationCategory,
   NotificationGroup,
   NotificationTemplate,
+  NotificationEmailKeys,
   DeliveryChannel,
 } from './model/catalog';
-export { renderNotification, notificationText, toLocale } from './model/render';
+export {
+  renderNotification,
+  notificationText,
+  toLocale,
+  requiredParams,
+  placeholdersOf,
+  templateKeys,
+} from './model/render';
+// Lot 4.5: the Phase 3 notifications (S115)
+export { BILLING_TEMPLATES, BILLING_KINDS, billingType } from './model/billing';
+export type { BillingKind, BillingTemplateId } from './model/billing';
 export { sendNotification } from './model/send';
 export type { SendNotificationInput, SendNotificationResult } from './model/send';
 export {
@@ -51,3 +62,22 @@ export type {
 export type { SqlClient } from './model/sql';
 export { UnconfiguredSmsChannel, SmsNotConfiguredError } from './sms';
 export type { SmsChannel, SmsMessage } from './sms';
+// Lot 4.4: the bell and the preferences (the person's side)
+export {
+  getInbox,
+  openNotification,
+  markAllNotificationsRead,
+  getNotificationPreferences,
+  setNotificationPreference,
+  closeNotificationsPool,
+  INBOX_DAYS,
+} from './model/inbox';
+export type { Inbox, InboxItem, NotificationPreferences } from './model/inbox';
+export {
+  EMAIL_TOPICS,
+  SECURITY_TOPICS,
+  COMMERCIAL_TOPICS,
+  isChangeable,
+  defaultEnabled,
+} from './model/topics';
+export type { EmailTopic, SecurityTopic, CommercialTopic, NotificationTopic } from './model/topics';

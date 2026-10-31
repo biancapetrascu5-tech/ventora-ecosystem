@@ -56,15 +56,16 @@ model Delivery {
   @@schema("notifications")
 }
 
-/// Pe persoană, categorie și canal (D4-6).
+/// Pe persoană, subiect și canal (D4-6; subiectul: Lot 4.4, rândurile din S114b).
 model NotificationPreference {
   userId    String   @map("user_id") @db.Uuid
   category  String   @db.VarChar(16)
   channel   String   @db.VarChar(32)
   enabled   Boolean
   updatedAt DateTime @default(now()) @map("updated_at") @db.Timestamptz
+  topic     String   @db.VarChar(32)
 
-  @@id([userId, category, channel])
+  @@id([userId, topic, channel])
   @@map("notification_preference")
   @@schema("notifications")
 }
