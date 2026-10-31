@@ -137,3 +137,40 @@ model Invitation {
   @@map("invitation")
   @@schema("organizations")
 }
+
+// Lot 4.1: outbox-ul modulului, din outboxMigrationSql('organizations', 'org_rw') (@ventora/db-kit).
+// Indecșii parțiali (pending, dead), constrângerile CHECK, RLS și funcțiile outbox_pending /
+// outbox_dead_letters există doar în migrare. Se scrie doar cu writeOutboxEvent.
+model OutboxEvent {
+  eventId        String    @id @map("event_id") @db.Uuid
+  type           String    @db.VarChar(128)
+  version        Int
+  occurredAt     DateTime  @map("occurred_at") @db.Timestamptz
+  organizationId String    @map("organization_id") @db.Uuid
+  sourceApp      String    @map("source_app") @db.VarChar(64)
+  resourceId     String    @map("resource_id") @db.VarChar(255)
+  correlationId  String?   @map("correlation_id") @db.VarChar(255)
+  payload        Json
+  status         String    @default("pending") @db.VarChar(16)
+  attempts       Int       @default(0)
+  availableAt    DateTime  @default(now()) @map("available_at") @db.Timestamptz
+  lastError      String?   @map("last_error")
+  failedAt       DateTime? @map("failed_at") @db.Timestamptz
+  dispatchedAt   DateTime? @map("dispatched_at") @db.Timestamptz
+  createdAt      DateTime  @default(now()) @map("created_at") @db.Timestamptz
+
+  @@map("outbox_events")
+  @@schema("organizations")
+}
+
+// Idempotența consumatorilor (D4-1 = a).
+model ProcessedEvent {
+  consumer       String   @db.VarChar(128)
+  eventId        String   @map("event_id") @db.Uuid
+  organizationId String   @map("organization_id") @db.Uuid
+  processedAt    DateTime @default(now()) @map("processed_at") @db.Timestamptz
+
+  @@id([consumer, eventId])
+  @@map("processed_events")
+  @@schema("organizations")
+}

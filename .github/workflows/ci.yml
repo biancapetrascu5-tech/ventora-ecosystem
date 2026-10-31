@@ -286,6 +286,7 @@ jobs:
           $PSQL -v ON_ERROR_STOP=1 -f core/organizations/prisma/migrations/20261028000003_founder_owner_lookup/migration.sql
           $PSQL -v ON_ERROR_STOP=1 -f core/organizations/prisma/migrations/20261029000005_lot26_invitation_view/migration.sql
           $PSQL -v ON_ERROR_STOP=1 -f core/organizations/prisma/migrations/20261031000001_lot28_organization_status/migration.sql
+          $PSQL -v ON_ERROR_STOP=1 -f core/organizations/prisma/migrations/20261031000002_outbox_init/migration.sql
       - name: Apply audit migration
         run: |
           psql postgresql://postgres:test@localhost:5434/ventora_org_test \
@@ -297,6 +298,12 @@ jobs:
           DATABASE_URL_FOUNDER_TEST: postgresql://founder_runtime:${{ env.FOUNDER_PW }}@localhost:5434/ventora_org_test
           DATABASE_URL_ADMIN_TEST: postgresql://postgres:test@localhost:5434/ventora_org_test
         run: pnpm --filter @ventora/organizations test:integration
+      - name: Run outbox integration tests (integrations — T6)
+        env:
+          DATABASE_URL_TEST: postgresql://app_runtime:${{ env.APP_PW }}@localhost:5434/ventora_org_test
+          DATABASE_URL_FOUNDER_TEST: postgresql://founder_runtime:${{ env.FOUNDER_PW }}@localhost:5434/ventora_org_test
+          DATABASE_URL_ADMIN_TEST: postgresql://postgres:test@localhost:5434/ventora_org_test
+        run: pnpm --filter @ventora/integrations test:integration
 
   integration-tests-access:
     name: Integration tests (access + booking — T3)

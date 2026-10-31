@@ -1,6 +1,6 @@
 # FAZA 4 — Servicii de platformă
 
-**Status:** PROPUS — așteaptă aprobarea explicită. Nimic nu se implementează înainte de aprobare și înainte de închiderea Fazei 2.
+**Status:** APROBAT (fondatoarea, 30.10.2026).
 **Referințe:** `ARCHITECTURE.md` v0.4.6 din `main` și v0.4.7 de pe `feat/faza-2-ecrane` (PR #24: §15.1 „Obligații lăsate de F2 pentru F4”). Plus §4, §11.2–11.6, §12.3–12.4, §13.2 (T6), §15, §17.1. Apoi `docs/plans/FAZA-3.md` (PR #25), `SMS_NUMAR_PROPRIU.md`, `GROWTH_ENGINE.md`, `VENTORA_MASTER_BRIEF.md` (§33–39) și `docs/design/system`.
 **Depinde de:** Faza 2 închisă, inclusiv Lotul 2.8 (shell-ul Hub și Founder, HubAdminTeam; definit în FAZA-3.md).
 **Merge în paralel cu:** Faza 3 (ARCHITECTURE §15.2: „F3 și F4 merg în paralel după F2”).

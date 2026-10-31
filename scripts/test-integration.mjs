@@ -3,7 +3,7 @@
  * Rulează toate testele de integrare local, identic cu CI:
  *   1. Pornește DB-ul de test
  *   2. Verifică garda de drift (prisma migrate diff --exit-code): identity, founder, organizations, audit, access
- *   3. Rulează testele de integrare (db-kit, audit, identity, organizations, access, booking)
+ *   3. Rulează testele de integrare (db-kit, audit, identity, organizations, integrations, access, booking)
  *   4. Oprește DB-ul (indiferent de rezultat)
  *
  * Folosit de `pnpm test:integration`.
@@ -101,6 +101,14 @@ try {
   console.log('\n[test:integration] organizations (T2)...');
   runPkg('@ventora/organizations', 'test:integration', {
     DATABASE_URL_TEST: ADMIN_ORG,
+    DATABASE_URL_FOUNDER_TEST: `postgresql://founder_runtime:${TEST_DB.founderPw}@localhost:5433/${TEST_DB.orgDb}`,
+    DATABASE_URL_ADMIN_TEST: ADMIN_ORG,
+  });
+
+  // --- Lot 4.1: outbox și evenimente (T6), pe un emițător de test în baza organizations ---
+  console.log('\n[test:integration] integrations (T6)...');
+  runPkg('@ventora/integrations', 'test:integration', {
+    DATABASE_URL_TEST: `postgresql://app_runtime:${TEST_DB.appPw}@localhost:5433/${TEST_DB.orgDb}`,
     DATABASE_URL_FOUNDER_TEST: `postgresql://founder_runtime:${TEST_DB.founderPw}@localhost:5433/${TEST_DB.orgDb}`,
     DATABASE_URL_ADMIN_TEST: ADMIN_ORG,
   });

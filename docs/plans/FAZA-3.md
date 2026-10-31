@@ -1,6 +1,6 @@
 # FAZA 3 — Sistemul comercial
 
-**Status:** PROPUS — așteaptă aprobarea explicită. Nimic nu se implementează înainte de aprobare și înainte de închiderea Fazei 2.
+**Status:** APROBAT (fondatoarea, 30.10.2026).
 **Referințe:** `ARCHITECTURE.md` v0.4.6 (§4, §7.2, §8, §13.2, §14, §15, §16, §17.1, §17.23), `GROWTH_ENGINE.md`, `VENTORA_MASTER_BRIEF.md` (§12–14, §43), `docs/design/system` (ecranele comerciale, `glossary.md`, `patterns.md`)
 **Depinde de:** Faza 2 (identitate și acces), închisă, inclusiv Lotul 2.8 (shell-ul Hub și Founder, §3). Faza 1 (design system) e închisă.
 **Acceptare globală (ARCHITECTURE §15.1):** T5 verde; o limită se schimbă din Founder fără deploy; plata duce la factură; fiecare acțiune comercială din Founder e auditată.

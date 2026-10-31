@@ -1,0 +1,77 @@
+import { z } from 'zod';
+
+/*
+ * Catalogul evenimentelor (ARCHITECTURE §11.2, Lot 4.1). Fiecare eveniment are un tip, o
+ * versiune, schema Zod a payload-ului, `growthSafe` (dacă poate fi semnal pentru Growth, F5) și
+ * ce se întâmplă când nu are niciun consumator înregistrat. Outbox-ul (`@ventora/db-kit`)
+ * validează payload-ul cu `parse` înainte de scriere.
+ *
+ * Evoluția: un câmp opțional nou păstrează versiunea; o schimbare incompatibilă înseamnă o
+ * versiune nouă, publicată în paralel cât timp există consumatori ai celei vechi.
+ */
+
+/**
+ * Fără consumator înregistrat:
+ * - `complete`: evenimentul se marchează livrat (nu așteaptă un consumator care poate nu vine);
+ * - `dead_letter`: evenimentul ajunge în dead-letter, vizibil în Founder (lipsa e o greșeală).
+ */
+export type WithoutConsumer = 'complete' | 'dead_letter';
+
+export interface EventDefinition<TPayload = unknown> {
+  /** `<entitate>.<acțiune>`, ex. `invitation.new_link_requested`; versiunea e separat. */
+  type: string;
+  version: number;
+  /** Aplicația care îl emite (plicul: `sourceApp`). */
+  sourceApp: string;
+  /** Payload-ul fără date sensibile, deci poate fi semnal Growth (GROWTH_ENGINE §2.3). */
+  growthSafe: boolean;
+  withoutConsumer: WithoutConsumer;
+  schema: z.ZodType<TPayload>;
+  /** Validează payload-ul; aruncă la nepotrivire. */
+  parse(payload: unknown): TPayload;
+}
+
+export function defineEvent<TPayload>(
+  def: Omit<EventDefinition<TPayload>, 'parse'>,
+): EventDefinition<TPayload> {
+  if (!/^[a-z][a-z0-9_]*(\.[a-z][a-z0-9_]*)+$/.test(def.type)) {
+    throw new Error(`[contracts] Tip de eveniment invalid: "${def.type}"`);
+  }
+  if (!Number.isInteger(def.version) || def.version < 1) {
+    throw new Error(`[contracts] Versiune invalidă pentru ${def.type}: ${def.version}`);
+  }
+  return { ...def, parse: (payload) => def.schema.parse(payload) };
+}
+
+/**
+ * `invitation.new_link_requested` v1 (Lot 2.6 · E, Lot 2.7 · C): cel invitat a cerut o invitație
+ * nouă dintr-o invitație expirată. Consumatorul (F4, Lotul 4.3) trimite owner-ului și adminilor
+ * notificarea operațională (ARCHITECTURE §15.1). Până atunci nu are consumator: se marchează
+ * livrat. Payload-ul are doar id-uri (fără adresa invitată).
+ */
+export const InvitationNewLinkRequestedV1 = defineEvent({
+  type: 'invitation.new_link_requested',
+  version: 1,
+  sourceApp: 'platform',
+  growthSafe: false,
+  withoutConsumer: 'complete',
+  schema: z
+    .object({
+      invitationId: z.uuid(),
+      invitedByUserId: z.uuid(),
+    })
+    .strict(),
+});
+
+export const EVENT_CATALOG: readonly EventDefinition[] = [
+  InvitationNewLinkRequestedV1 as EventDefinition,
+];
+
+/** Definiția unui eveniment după tip și versiune; null dacă nu e în catalog. */
+export function findEventDefinition(
+  type: string,
+  version: number,
+  catalog: readonly EventDefinition[] = EVENT_CATALOG,
+): EventDefinition | null {
+  return catalog.find((d) => d.type === type && d.version === version) ?? null;
+}

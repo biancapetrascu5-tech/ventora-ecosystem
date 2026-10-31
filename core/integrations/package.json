@@ -1,0 +1,28 @@
+{
+  "name": "@ventora/integrations",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "test": "vitest run",
+    "test:integration": "vitest run --config vitest.integration.config.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@ventora/contracts": "workspace:*",
+    "@ventora/db-kit": "workspace:*",
+    "pg": "^8.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "@types/pg": "^8.0.0",
+    "typescript": "^6.0.0",
+    "vitest": "^5.0.5",
+    "zod": "^4.0.0"
+  }
+}

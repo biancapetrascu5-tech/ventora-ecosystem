@@ -8,7 +8,17 @@ export {
 } from './guard';
 export type { TenantDb, TenantTx } from './with-tenant-context';
 export { withTenantContext } from './with-tenant-context';
-export type { OutboxTx } from './outbox';
-export { writeOutboxEvent } from './outbox';
-export type { OutboxEvent, OutboxDispatcherClient, OutboxEventHandler } from './outbox-dispatcher';
-export { processOutboxEvents } from './outbox-dispatcher';
+export { uuidv7, UUID_V7 } from './uuidv7';
+export type { OutboxEnvelope, OutboxEventType, OutboxWriter } from './outbox';
+export { writeOutboxEvent, outboxMigrationSql, sqlIdentifier, OUTBOX_MAX_ATTEMPTS } from './outbox';
+export type { OutboxSqlClient, DeadLetterEvent } from './outbox-store';
+export {
+  enterTenantContext,
+  listPendingOutboxEvents,
+  lockPendingOutboxEvent,
+  markOutboxEventProcessed,
+  isOutboxEventProcessed,
+  completeOutboxEvent,
+  recordOutboxFailure,
+  listDeadLetterEvents,
+} from './outbox-store';
