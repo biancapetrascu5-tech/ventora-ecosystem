@@ -81,3 +81,18 @@ Orele sunt în UTC.
    - Pe `DIRECT_URL`: `DELETE FROM founder_identity.users WHERE id = '5giVHYVyut1dW09dtJUEDQj7H1mAVuHD';`. Cascada șterge contul, sesiunea și 2FA-ul (FK `ON DELETE CASCADE`). Plus `DELETE FROM founder_identity.verifications` (o singură resetare, deja folosită).
    - Apoi bootstrap din nou, de data asta pe `DATABASE_URL_FOUNDER`, și 2FA din nou.
    - Rândurile de audit vechi rămân (jurnal append-only), cu id-ul vechi ca text.
+
+### Corecția și refacerea contului Founder
+
+- **PR #34** (`78c5c53` în `main`):
+  - bootstrap-ul folosește configurația aplicației Founder (id UUID) și `makeFounderClient`;
+  - testul verifică formatul UUID;
+  - cele 24 de `catch` din acțiunile Founder și Hub scriu acum cauza în jurnal (fără date personale), iar erorile neașteptate pleacă și la Sentry, dacă e configurat.
+- **Folderul principal** a fost actualizat la `78c5c53`. Serverele 3200 și 3202 și captura de e-mail au fost repornite din `main` nou; cele vechi fuseseră oprite de Claude Code din lipsă de memorie.
+- **Ștergerea, cu acordul fondatoarei.** Pe `DIRECT_URL`, într-o singură tranzacție, cu verificare înainte și după și cu `ROLLBACK` automat la orice diferență:
+  - **înainte:** 1 cont Founder (`5giVHYV…`), cu 1 cont de autentificare, 1 sesiune, 1 rând 2FA și 1 rând în `verifications` (marcajul `reset-password-used` al aceluiași cont); 0 afaceri, 0 sesiuni de suport;
+  - `DELETE FROM founder_identity.verifications WHERE id = '2036287a-…' AND value = '5giVHYV…'` → 1 rând;
+  - `DELETE FROM founder_identity.users WHERE id = '5giVHYV…'` → 1 rând (cascada a șters contul de autentificare, sesiunea și rândul 2FA);
+  - **după** (în tranzacție, apoi pe o conexiune nouă): 0 în `users`, `accounts`, `sessions`, `two_factors` și `verifications`. `COMMIT`.
+  - Cele 5 rânduri de audit cu id-ul vechi rămân (jurnal append-only).
+- **Următorul pas:** fondatoarea refăce contul cu `pnpm founder:bootstrap` pe `DATABASE_URL_FOUNDER`, apoi activează din nou 2FA.
