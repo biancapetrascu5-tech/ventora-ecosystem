@@ -81,6 +81,15 @@ export const AuditActions = {
   commercialDiscountCreated: 'commercial.discount_created',
   commercialDiscountUpdated: 'commercial.discount_updated',
   commercialDiscountEnded: 'commercial.discount_ended',
+  // Lot 3.4: the requests from the Hub (FounderRequests, S111; D3-9)
+  commercialRequestCreated: 'commercial.request_created', // the owner, from the Hub
+  commercialRequestResolved: 'commercial.request_resolved',
+  commercialRequestRefused: 'commercial.request_refused',
+  // D3-24 (31.10.2026): applications à la carte, bundles, the seats every account includes
+  commercialApplicationQuotasSet: 'commercial.application_quotas_set',
+  commercialBundleSalePeriodSet: 'commercial.bundle_sale_period_set',
+  commercialBundleSalesStopped: 'commercial.bundle_sales_stopped',
+  commercialSettingChanged: 'commercial.setting_changed',
 } as const;
 
 export type AuditAction = (typeof AuditActions)[keyof typeof AuditActions];

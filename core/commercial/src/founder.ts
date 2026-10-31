@@ -72,6 +72,12 @@ function mapDbError(err: unknown, field: string): never {
   if (e.hint === 'published_plan_version_immutable') {
     throw new Conflict('A published version cannot be changed');
   }
+  if (e.hint === 'bundle_not_on_sale') {
+    throw new InvalidInput('versionId', 'The bundle is not on sale (D3-24)');
+  }
+  if (e.hint === 'setup_cost_on_request') {
+    throw new Conflict('With a setup cost it stays on request (D3-23)');
+  }
   if (e.code === '23514' || e.code === 'P0001') throw new InvalidInput(field, e.message);
   if (e.code === '23505') throw new Conflict(e.message);
   throw err;
@@ -334,10 +340,12 @@ export async function setApplicationActivationMode(
       [params.applicationId],
     );
     if (!before.rows[0]) throw new ResourceNotFound('Application not found');
-    await client.query(`UPDATE commercial.application SET activation_mode = $2 WHERE id = $1`, [
-      params.applicationId,
-      params.mode,
-    ]);
+    await client
+      .query(`UPDATE commercial.application SET activation_mode = $2 WHERE id = $1`, [
+        params.applicationId,
+        params.mode,
+      ])
+      .catch((err) => mapDbError(err, 'mode'));
     await audit(exec, founder.userId, {
       action: AuditActions.commercialApplicationModeChanged,
       targetType: 'application',
@@ -354,6 +362,10 @@ export interface AddonPriceInput {
   amountMinor: number;
   setupMinor?: number;
 }
+
+/** D3-23: an add-on or an application with a setup cost is always on request. */
+const hasSetupCost = (prices: ReadonlyArray<{ setupMinor?: number }>) =>
+  prices.some((p) => (p.setupMinor ?? 0) > 0);
 
 function checkAddonPrices(prices: readonly AddonPriceInput[]): void {
   const seen = new Set<string>();
@@ -430,6 +442,9 @@ export async function createAddon(
     throw new InvalidInput('purchaseMode');
   }
   checkAddonPrices(params.prices);
+  if (params.purchaseMode === 'direct' && hasSetupCost(params.prices)) {
+    throw new InvalidInput('purchaseMode', 'With a setup cost it stays on request (D3-23)');
+  }
   await assertKnownKeys({ quotas: { [params.quotaKey]: params.quantity } });
 
   return withFounderWrite(null, async (client, exec) => {
@@ -450,7 +465,9 @@ export async function createAddon(
       )
       .catch((err) => mapDbError(err, 'code'));
     const addonId = rows[0]!.id;
-    await writeAddonPrices(client, addonId, params.prices);
+    await writeAddonPrices(client, addonId, params.prices).catch((err) =>
+      mapDbError(err, 'prices'),
+    );
     await writeEligiblePlans(client, addonId, params.eligiblePlanIds);
     await audit(exec, founder.userId, {
       action: AuditActions.commercialAddonCreated,
@@ -470,12 +487,18 @@ export async function createAddon(
   });
 }
 
-/** FounderPacks (3.4) is the only place for add-on prices; each change is audited. */
+/**
+ * FounderPacks (3.4) is the only place for add-on prices; each change is audited. A setup cost
+ * puts the add-on on request (D3-23): asked for together with „direct”, it is refused; with prices
+ * that add one to a direct add-on, the switch moves to „la cerere” in the same transaction (in the
+ * audit row). `validity` („Se plătește”): the add-ons already granted keep theirs.
+ */
 export async function updateAddon(
   params: FounderParams & {
     addonId: string;
     name?: string;
     purchaseMode?: PurchaseMode;
+    validity?: 'current_month' | 'monthly';
     prices?: readonly AddonPriceInput[];
     eligiblePlanIds?: readonly string[];
   },
@@ -490,20 +513,43 @@ export async function updateAddon(
   ) {
     throw new InvalidInput('purchaseMode');
   }
+  if (
+    params.validity !== undefined &&
+    params.validity !== 'current_month' &&
+    params.validity !== 'monthly'
+  ) {
+    throw new InvalidInput('validity');
+  }
   if (params.prices) checkAddonPrices(params.prices);
+  if (params.purchaseMode === 'direct' && params.prices && hasSetupCost(params.prices)) {
+    throw new InvalidInput('purchaseMode', 'With a setup cost it stays on request (D3-23)');
+  }
   await withFounderWrite(null, async (client, exec) => {
-    const found = await client.query(`SELECT 1 FROM commercial.addon WHERE id = $1 FOR UPDATE`, [
-      addonId,
-    ]);
-    if (!found.rows[0]) throw new ResourceNotFound('Add-on not found');
-    await client.query(
-      `UPDATE commercial.addon
-          SET name = COALESCE($2, name), purchase_mode = COALESCE($3, purchase_mode),
-              updated_at = CURRENT_TIMESTAMP
-        WHERE id = $1`,
-      [addonId, name ?? null, params.purchaseMode ?? null],
+    const found = await client.query<{ purchase_mode: PurchaseMode }>(
+      `SELECT purchase_mode FROM commercial.addon WHERE id = $1 FOR UPDATE`,
+      [addonId],
     );
-    if (params.prices) await writeAddonPrices(client, addonId, params.prices);
+    if (!found.rows[0]) throw new ResourceNotFound('Add-on not found');
+    const forcedOnRequest =
+      params.purchaseMode === undefined &&
+      found.rows[0].purchase_mode === 'direct' &&
+      !!params.prices &&
+      hasSetupCost(params.prices);
+    const mode = forcedOnRequest ? 'on_request' : (params.purchaseMode ?? null);
+    await client
+      .query(
+        `UPDATE commercial.addon
+            SET name = COALESCE($2, name), purchase_mode = COALESCE($3, purchase_mode),
+                validity = COALESCE($4, validity), updated_at = CURRENT_TIMESTAMP
+          WHERE id = $1`,
+        [addonId, name ?? null, mode, params.validity ?? null],
+      )
+      .catch((err) => mapDbError(err, 'purchaseMode'));
+    if (params.prices) {
+      await writeAddonPrices(client, addonId, params.prices).catch((err) =>
+        mapDbError(err, 'prices'),
+      );
+    }
     if (params.eligiblePlanIds) await writeEligiblePlans(client, addonId, params.eligiblePlanIds);
     await audit(exec, founder.userId, {
       action: AuditActions.commercialAddonUpdated,
@@ -511,7 +557,9 @@ export async function updateAddon(
       targetId: addonId,
       metadata: {
         name,
-        purchaseMode: params.purchaseMode,
+        purchaseMode: mode ?? undefined,
+        purchaseModeForcedBySetup: forcedOnRequest || undefined,
+        validity: params.validity,
         prices: params.prices,
         eligiblePlanIds: params.eligiblePlanIds,
       },
@@ -549,7 +597,7 @@ async function businessCurrency(client: PoolClient): Promise<Currency> {
 
 type FounderLiveSubscription = {
   id: string;
-  plan_version_id: string;
+  plan_version_id: string | null;
   interval: BillingInterval;
   currency: Currency;
   started_on: string;
@@ -566,7 +614,10 @@ async function liveSubscriptionForUpdate(
 }
 
 /** The version in effect now (the latest move already in effect, else the subscription's own). */
-async function currentVersion(client: PoolClient, sub: FounderLiveSubscription): Promise<string> {
+async function currentVersion(
+  client: PoolClient,
+  sub: FounderLiveSubscription,
+): Promise<string | null> {
   const { rows } = await client.query<{ to_version_id: string }>(
     `SELECT to_version_id FROM commercial.subscription_change
       WHERE subscription_id = $1 AND canceled_at IS NULL AND effective_at <= now()
@@ -613,12 +664,14 @@ export async function setBusinessCurrency(
  * Puts a business on a published version, monthly or yearly, in the business's currency. The
  * version must have the price of that currency and interval (D3-2: no conversion). The anchor
  * day is the start day (D3-3). `trialEndsAt`: a trial on the whole subscription, only from
- * Founder (D3-5).
+ * Founder (D3-5). D3-24: `versionId` (the bundle) is optional — without it the subscription holds
+ * only applications à la carte (addApplicationToSubscription); a bundle sells only in its sale
+ * period and while its sales are not stopped (checked in the database too).
  */
 export async function assignSubscription(
   params: FounderParams & {
     organizationId: string;
-    versionId: string;
+    versionId?: string | null;
     interval: BillingInterval;
     /** 'YYYY-MM-DD', default today (platform time zone). */
     startedOn?: string;
@@ -627,7 +680,7 @@ export async function assignSubscription(
 ): Promise<{ subscriptionId: string }> {
   const founder = await requireFounderSession(params.founderHeaders);
   const organizationId = uuid('organizationId', params.organizationId);
-  const versionId = uuid('versionId', params.versionId);
+  const versionId = params.versionId ? uuid('versionId', params.versionId) : null;
   if (params.interval !== 'month' && params.interval !== 'year') {
     throw new InvalidInput('interval');
   }
@@ -638,19 +691,21 @@ export async function assignSubscription(
   }
 
   return withFounderWrite(organizationId, async (client, exec) => {
-    const version = await client.query<{ published_at: Date | null }>(
-      `SELECT published_at FROM commercial.plan_version WHERE id = $1`,
-      [versionId],
-    );
-    if (!version.rows[0]) throw new ResourceNotFound('Version not found');
-    if (!version.rows[0].published_at) throw new InvalidInput('versionId', 'Not published');
     const currency = await businessCurrency(client);
-    const terms = await loadVersionTerms(client, versionId);
-    if (priceOf(terms, currency, params.interval) === null) {
-      throw new InvalidInput(
-        'versionId',
-        `The version has no ${params.interval} price in ${currency}`,
+    if (versionId) {
+      const version = await client.query<{ published_at: Date | null }>(
+        `SELECT published_at FROM commercial.plan_version WHERE id = $1`,
+        [versionId],
       );
+      if (!version.rows[0]) throw new ResourceNotFound('Version not found');
+      if (!version.rows[0].published_at) throw new InvalidInput('versionId', 'Not published');
+      const terms = await loadVersionTerms(client, versionId);
+      if (priceOf(terms, currency, params.interval) === null) {
+        throw new InvalidInput(
+          'versionId',
+          `The version has no ${params.interval} price in ${currency}`,
+        );
+      }
     }
     if (await liveSubscriptionForUpdate(client)) {
       throw new Conflict('The business already has a subscription');
@@ -745,6 +800,10 @@ export async function scheduleVersionChange(
         if (!version.rows[0]) throw new ResourceNotFound('Version not found');
         if (!version.rows[0].published_at) throw new InvalidInput('toVersionId', 'Not published');
         const fromVersionId = await currentVersion(client, sub);
+        // D3-24: a subscription of applications à la carte only has no bundle to move from
+        if (!fromVersionId) {
+          throw new InvalidInput('organizationIds', 'A business has no bundle to move');
+        }
         if (fromVersionId === toVersionId) {
           throw new InvalidInput('toVersionId', 'A business is already on this version');
         }
@@ -865,6 +924,7 @@ export async function grantAddon(
     const sub = await liveSubscriptionForUpdate(client);
     if (!sub) throw new InvalidInput('organizationId', 'The business has no subscription');
     const version = await currentVersion(client, sub);
+    if (!version) throw new InvalidInput('addonId', 'Add-ons are eligible per bundle (D3-24)');
     const addon = await client.query<{ validity: string }>(
       `SELECT a.validity FROM commercial.addon a
          JOIN commercial.addon_eligible_plan e ON e.addon_id = a.id
@@ -1059,43 +1119,67 @@ export async function endOverride(
 
 // ── D3-21: applications added to a subscription, discounts ──────────────────────────────────
 
-/** The price of an application added to a subscription (D3-9), per currency and interval. */
+/**
+ * The price of an application added to a subscription (D3-9), per currency and interval, and its
+ * setup cost (`setup`, FounderApps, S113). A setup cost keeps the application on request (D3-23):
+ * a direct application moves to „la cerere” in the same transaction (in the audit row).
+ */
 export async function setApplicationPrices(
   params: FounderParams & {
     applicationId: string;
-    prices: ReadonlyArray<{ currency: Currency; kind: BillingInterval; amountMinor: number }>;
+    prices: ReadonlyArray<{
+      currency: Currency;
+      kind: BillingInterval | 'setup';
+      amountMinor: number;
+    }>;
   },
 ): Promise<void> {
   const founder = await requireFounderSession(params.founderHeaders);
   const seen = new Set<string>();
   for (const p of params.prices) {
     if (!CURRENCIES.includes(p.currency)) throw new InvalidInput('prices.currency');
-    if (p.kind !== 'month' && p.kind !== 'year') throw new InvalidInput('prices.kind');
+    if (p.kind !== 'month' && p.kind !== 'year' && p.kind !== 'setup') {
+      throw new InvalidInput('prices.kind');
+    }
     minor('prices.amountMinor', p.amountMinor);
     if (seen.has(`${p.currency}:${p.kind}`)) throw new InvalidInput('prices');
     seen.add(`${p.currency}:${p.kind}`);
   }
+  const setup = params.prices.some((p) => p.kind === 'setup' && p.amountMinor > 0);
   await withFounderWrite(null, async (client, exec) => {
-    const app = await client.query(
-      `SELECT 1 FROM commercial.application WHERE id = $1 AND retired_at IS NULL AND NOT is_platform`,
+    const app = await client.query<{ activation_mode: PurchaseMode }>(
+      `SELECT activation_mode FROM commercial.application
+        WHERE id = $1 AND retired_at IS NULL AND NOT is_platform`,
       [params.applicationId],
     );
     if (!app.rows[0]) throw new ResourceNotFound('Application not found');
+    const forcedOnRequest = setup && app.rows[0].activation_mode === 'direct';
+    if (forcedOnRequest) {
+      await client.query(
+        `UPDATE commercial.application SET activation_mode = 'on_request' WHERE id = $1`,
+        [params.applicationId],
+      );
+    }
     await client.query(`DELETE FROM commercial.application_price WHERE application_id = $1`, [
       params.applicationId,
     ]);
     for (const p of params.prices) {
-      await client.query(
-        `INSERT INTO commercial.application_price (application_id, currency, kind, amount_minor)
-         VALUES ($1, $2, $3, $4)`,
-        [params.applicationId, p.currency, p.kind, p.amountMinor],
-      );
+      await client
+        .query(
+          `INSERT INTO commercial.application_price (application_id, currency, kind, amount_minor)
+           VALUES ($1, $2, $3, $4)`,
+          [params.applicationId, p.currency, p.kind, p.amountMinor],
+        )
+        .catch((err) => mapDbError(err, 'prices'));
     }
     await audit(exec, founder.userId, {
       action: AuditActions.commercialApplicationPricesSet,
       targetType: 'application',
       targetId: params.applicationId,
-      metadata: { prices: params.prices },
+      metadata: {
+        prices: params.prices,
+        activationModeForcedBySetup: forcedOnRequest || undefined,
+      },
     });
   });
 }
@@ -1113,8 +1197,9 @@ export async function addApplicationToSubscription(
   return withFounderWrite(organizationId, async (client, exec) => {
     const sub = await liveSubscriptionForUpdate(client);
     if (!sub) throw new InvalidInput('organizationId', 'The business has no subscription');
-    const terms = await loadVersionTerms(client, await currentVersion(client, sub));
-    if (terms.applications.includes(params.applicationId)) {
+    const version = await currentVersion(client, sub);
+    const terms = version ? await loadVersionTerms(client, version) : null;
+    if (terms?.applications.includes(params.applicationId)) {
       throw new Conflict('The application is already in the plan');
     }
     const price = await client.query<{ amount_minor: string }>(
@@ -1449,5 +1534,141 @@ export async function listForeverDiscounts(params: FounderParams): Promise<Forev
       createdByFounderId: r.created_by_founder_id,
       createdAt: r.created_at,
     }));
+  });
+}
+
+// ── D3-24 (31.10.2026): applications à la carte, bundles, the seats every account includes ─────
+
+/**
+ * The limits an application à la carte includes (FounderApps), e.g. EasyBook: 1.000
+ * booking.appointments a month. `null` = unlimited; a key left out is not included. They count
+ * for the businesses that have the application as a line (or on trial), not inside a bundle.
+ */
+export async function setApplicationQuotas(
+  params: FounderParams & {
+    applicationId: string;
+    quotas: Readonly<Record<string, number | null>>;
+  },
+): Promise<void> {
+  const founder = await requireFounderSession(params.founderHeaders);
+  await assertKnownKeys({ quotas: params.quotas });
+  await withFounderWrite(null, async (client, exec) => {
+    const app = await client.query(
+      `SELECT 1 FROM commercial.application WHERE id = $1 AND retired_at IS NULL AND NOT is_platform`,
+      [params.applicationId],
+    );
+    if (!app.rows[0]) throw new ResourceNotFound('Application not found');
+    await client.query(`DELETE FROM commercial.application_quota WHERE application_id = $1`, [
+      params.applicationId,
+    ]);
+    for (const [key, limit] of Object.entries(params.quotas)) {
+      await client
+        .query(
+          `INSERT INTO commercial.application_quota (application_id, quota_key, limit_value)
+           VALUES ($1, $2, $3)`,
+          [params.applicationId, key, limit],
+        )
+        .catch((err) => mapDbError(err, 'quotas'));
+    }
+    await audit(exec, founder.userId, {
+      action: AuditActions.commercialApplicationQuotasSet,
+      targetType: 'application',
+      targetId: params.applicationId,
+      metadata: { quotas: params.quotas },
+    });
+  });
+}
+
+/**
+ * D3-24: a bundle (plan) sells in its sale period — from / until, 'YYYY-MM-DD', null = open — so
+ * the offers can change month to month. Who bought it keeps its version and price.
+ */
+export async function setBundleSalePeriod(
+  params: FounderParams & {
+    planId: string;
+    availableFrom: string | null;
+    availableUntil: string | null;
+  },
+): Promise<void> {
+  const founder = await requireFounderSession(params.founderHeaders);
+  const planId = uuid('planId', params.planId);
+  for (const [field, v] of [
+    ['availableFrom', params.availableFrom],
+    ['availableUntil', params.availableUntil],
+  ] as const) {
+    if (v !== null && !DATE_RE.test(v)) throw new InvalidInput(field);
+  }
+  if (
+    params.availableFrom &&
+    params.availableUntil &&
+    params.availableUntil < params.availableFrom
+  ) {
+    throw new InvalidInput('availableUntil', 'The end is before the start');
+  }
+  await withFounderWrite(null, async (client, exec) => {
+    const { rowCount } = await client
+      .query(
+        `UPDATE commercial.plan SET available_from = $2::date, available_until = $3::date,
+                updated_at = CURRENT_TIMESTAMP
+          WHERE id = $1`,
+        [planId, params.availableFrom, params.availableUntil],
+      )
+      .catch((err) => mapDbError(err, 'availableUntil'));
+    if (!rowCount) throw new ResourceNotFound('Bundle not found');
+    await audit(exec, founder.userId, {
+      action: AuditActions.commercialBundleSalePeriodSet,
+      targetType: 'plan',
+      targetId: planId,
+      metadata: { availableFrom: params.availableFrom, availableUntil: params.availableUntil },
+    });
+  });
+}
+
+/** D3-24: „Oprește vânzarea” on a bundle — no new subscription on it; the existing ones stay. */
+export async function stopBundleSales(params: FounderParams & { planId: string }): Promise<void> {
+  const founder = await requireFounderSession(params.founderHeaders);
+  const planId = uuid('planId', params.planId);
+  await withFounderWrite(null, async (client, exec) => {
+    const { rowCount } = await client.query(
+      `UPDATE commercial.plan SET sales_stopped_at = CURRENT_TIMESTAMP, updated_at = CURRENT_TIMESTAMP
+        WHERE id = $1 AND sales_stopped_at IS NULL`,
+      [planId],
+    );
+    if (!rowCount) throw new Conflict('The bundle is not on sale');
+    await audit(exec, founder.userId, {
+      action: AuditActions.commercialBundleSalesStopped,
+      targetType: 'plan',
+      targetId: planId,
+    });
+  });
+}
+
+/** D3-24: the seats in the team every account includes (default 3), set globally from Founder. */
+export async function setIncludedMembers(
+  params: FounderParams & { members: number },
+): Promise<void> {
+  const founder = await requireFounderSession(params.founderHeaders);
+  if (!Number.isSafeInteger(params.members) || params.members < 0 || params.members > 10_000) {
+    throw new InvalidInput('members');
+  }
+  await withFounderWrite(null, async (client, exec) => {
+    const before = await client.query<{ int_value: string }>(
+      `SELECT int_value FROM commercial.setting WHERE key = 'included_members' FOR UPDATE`,
+    );
+    await client.query(
+      `UPDATE commercial.setting SET int_value = $1, updated_by_founder_id = $2,
+              updated_at = CURRENT_TIMESTAMP
+        WHERE key = 'included_members'`,
+      [params.members, founder.userId],
+    );
+    await audit(exec, founder.userId, {
+      action: AuditActions.commercialSettingChanged,
+      targetType: 'setting',
+      targetId: 'included_members',
+      metadata: {
+        from: before.rows[0] ? Number(before.rows[0].int_value) : null,
+        to: params.members,
+      },
+    });
   });
 }

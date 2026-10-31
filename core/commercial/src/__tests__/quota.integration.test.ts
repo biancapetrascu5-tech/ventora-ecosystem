@@ -148,6 +148,9 @@ beforeAll(async () => {
     'TRUNCATE commercial.quota_key, commercial.feature_key, commercial.application CASCADE',
   );
   await syncRegistry(admin, APPLICATIONS, MANIFESTS);
+  // D3-24 (Lot 3.4): these tests check the bundle on its own; the seats every account
+  // includes are checked in lot34.integration.test.ts
+  await admin.query(`UPDATE commercial.setting SET int_value = 0 WHERE key = 'included_members'`);
   const [p] = await q(
     `INSERT INTO commercial.plan (code, name, created_by_founder_id) VALUES ($1, 'T5', $2) RETURNING id`,
     [`t5-${newUuid().slice(0, 8)}`, founder],

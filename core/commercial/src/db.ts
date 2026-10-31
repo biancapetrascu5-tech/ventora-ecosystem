@@ -130,6 +130,27 @@ export async function withFounderRead<T>(fn: (client: PoolClient) => Promise<T>)
 }
 
 /**
+ * Lot 3.4: a Founder read as commercial_founder — the catalog (plans, add-ons, applications) and,
+ * with `organizationId`, one business (RLS), as the Founder screens show it. Read only.
+ */
+export async function withFounderModuleRead<T>(
+  organizationId: string | null,
+  fn: (client: PoolClient) => Promise<T>,
+): Promise<T> {
+  return inTransaction(
+    'founder',
+    'BEGIN READ ONLY',
+    async (client) => {
+      await client.query('SET LOCAL ROLE commercial_founder');
+      if (organizationId) {
+        await client.query(`SELECT set_config('app.organization_id', $1, true)`, [organizationId]);
+      }
+    },
+    fn,
+  );
+}
+
+/**
  * A Founder write, as commercial_founder on founder_runtime. With `organizationId`, the
  * transaction is in that organization's context (RLS, WITH CHECK): one business per transaction.
  * The audit row goes in the same transaction (required) through `exec`.

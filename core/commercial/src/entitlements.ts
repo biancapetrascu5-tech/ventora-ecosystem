@@ -24,7 +24,7 @@ function assertOrganizationId(organizationId: string): void {
   if (!UUID_RE.test(organizationId)) throw new InvalidInput('organizationId');
 }
 
-type LiveSubscription = NonNullable<EffectiveEntitlements['subscription']>;
+export type LiveSubscription = NonNullable<EffectiveEntitlements['subscription']>;
 
 /**
  * The instant the entitlements are read at. 
@@ -35,7 +35,7 @@ ull = the database's now(): what Founder or a
 export type At = Date | null;
 
 /** The subscription that is not canceled (one per business), in the read transaction (RLS). */
-async function liveSubscription(client: PoolClient): Promise<LiveSubscription | null> {
+export async function liveSubscription(client: PoolClient): Promise<LiveSubscription | null> {
   const { rows } = await client.query(
     `SELECT id, plan_version_id, status, interval, currency, started_on::text AS started_on,
             anchor_day, trial_ends_at
@@ -60,7 +60,11 @@ async function liveSubscription(client: PoolClient): Promise<LiveSubscription | 
  * version the subscription was created on. A move scheduled 30 days ahead takes effect by itself
  * when its time comes, at the next request — no job needed to read it right.
  */
-async function versionAt(client: PoolClient, sub: LiveSubscription, at: At): Promise<string> {
+async function versionAt(
+  client: PoolClient,
+  sub: LiveSubscription,
+  at: At,
+): Promise<string | null> {
   const { rows } = await client.query<{ to_version_id: string }>(
     `SELECT to_version_id FROM commercial.subscription_change
       WHERE subscription_id = $1 AND canceled_at IS NULL AND effective_at <= COALESCE($2::timestamptz, now())
@@ -68,6 +72,20 @@ async function versionAt(client: PoolClient, sub: LiveSubscription, at: At): Pro
     [sub.id, at],
   );
   return rows[0]?.to_version_id ?? sub.planVersionId;
+}
+
+/**
+ * D3-24: the seats every account includes (setting `included_members`, default 3), on top of the
+ * bundle's and the add-ons'.
+ */
+export const DEFAULT_INCLUDED_MEMBERS = 3;
+export const MEMBERS_KEY = 'platform.members';
+
+export async function includedMembersInTx(client: PoolClient): Promise<number> {
+  const { rows } = await client.query<{ int_value: string }>(
+    `SELECT int_value FROM commercial.setting WHERE key = 'included_members'`,
+  );
+  return rows[0] ? Number(rows[0].int_value) : DEFAULT_INCLUDED_MEMBERS;
 }
 
 /** A trial on the whole subscription that has ended includes nothing until Lot 3.8 decides. */
@@ -79,6 +97,15 @@ function planIncluded(sub: LiveSubscription, at: At): boolean {
   return true;
 }
 
+/**
+ * Lot 3.4: the plan version in effect now for the organization of the transaction (RLS), or
+ * null without a live subscription — the version a move already applied, not the original one.
+ */
+export async function currentVersionInTx(client: PoolClient): Promise<string | null> {
+  const sub = await liveSubscription(client);
+  return sub ? versionAt(client, sub, null) : null;
+}
+
 /** Lot 3.3: the same computation inside the caller's transaction (the quota operations). */
 export async function computeEntitlementsInTx(
   client: PoolClient,
@@ -88,31 +115,44 @@ export async function computeEntitlementsInTx(
   return (await computeEntitlements(client, organizationId, at)).entitlements;
 }
 
-async function computeEntitlements(
+export async function computeEntitlements(
   client: PoolClient,
   organizationId: string,
   at: At,
-): Promise<{ entitlements: EffectiveEntitlements; versionId: string | null }> {
+): Promise<{
+  entitlements: EffectiveEntitlements;
+  versionId: string | null;
+  /** D3-24: per key, what the account includes before exceptions and add-ons (Founder). */
+  included: Record<string, number | null>;
+}> {
   const sub = await liveSubscription(client);
-  const versionId = sub && planIncluded(sub, at) ? await versionAt(client, sub, at) : null;
+  // D3-24: a subscription has a bundle (a plan version), applications à la carte, or both
+  const included = !!sub && planIncluded(sub, at);
+  const versionId = sub && included ? await versionAt(client, sub, at) : null;
   const terms = versionId
     ? await loadVersionTerms(client, versionId)
     : { applications: [], features: [], quotas: {}, prices: [] };
 
   const applications = new Set(terms.applications);
   const features = new Set(terms.features);
+  /** The applications à la carte whose included limits count (D3-24). */
+  const alaCarte = new Set<string>();
 
-  // Applications added to the subscription (D3-9): recurring lines, while the plan is included
-  if (sub && versionId) {
+  // Applications added to the subscription (D3-9, D3-24): recurring lines, with their limits
+  if (sub && included) {
     const lines = await client.query<{ application_id: string }>(
       `SELECT application_id FROM commercial.subscription_application
         WHERE subscription_id = $1 AND ended_at IS NULL AND starts_at <= COALESCE($2::timestamptz, now())`,
       [sub.id, at],
     );
-    for (const l of lines.rows) applications.add(l.application_id);
+    for (const l of lines.rows) {
+      applications.add(l.application_id);
+      if (!terms.applications.includes(l.application_id)) alaCarte.add(l.application_id);
+    }
   }
 
-  // Active trials (D3-5): an application or a feature, for 14 days, without a card
+  // Active trials (D3-5): an application or a feature, for 14 days, without a card; an
+  // application on trial brings its own limits, as one à la carte (D3-24)
   const trials = await client.query<{ kind: string; application_id: string; feature_key: string }>(
     `SELECT kind, application_id, feature_key FROM commercial.trial
       WHERE ended_at IS NULL AND starts_at <= COALESCE($1::timestamptz, now())
@@ -120,9 +160,28 @@ async function computeEntitlements(
     [at],
   );
   for (const t of trials.rows) {
-    if (t.kind === 'application') applications.add(t.application_id);
-    else features.add(t.feature_key);
+    if (t.kind === 'application') {
+      if (!applications.has(t.application_id)) alaCarte.add(t.application_id);
+      applications.add(t.application_id);
+    } else features.add(t.feature_key);
   }
+
+  // D3-24: the limits each application à la carte includes (null = unlimited)
+  const appQuotas = new Map<string, Array<number | null>>();
+  if (alaCarte.size > 0) {
+    const { rows } = await client.query<{ quota_key: string; limit_value: string | null }>(
+      `SELECT quota_key, limit_value FROM commercial.application_quota
+        WHERE application_id = ANY($1::text[])`,
+      [[...alaCarte]],
+    );
+    for (const r of rows) {
+      appQuotas.set(r.quota_key, [
+        ...(appQuotas.get(r.quota_key) ?? []),
+        bigintOrNull(r.limit_value),
+      ]);
+    }
+  }
+  const includedMembers = await includedMembersInTx(client);
 
   // Active exceptions (D-COM-8): a feature turned on, or a limit that replaces the version's
   const overrides = await client.query<{
@@ -154,17 +213,25 @@ async function computeEntitlements(
   );
   const extra = new Map(grants.rows.map((g) => [g.quota_key, Number(g.units)]));
 
-  // Every active key of the registry: missing from the version = not included (0)
+  // Every active key of the registry (D3-24): the seats every account includes + the bundle's
+  // limit + the limits of the applications à la carte (null anywhere = unlimited); an exception
+  // replaces that sum; add-ons add on top (D3-22). A key nothing includes is 0.
   const keys = await client.query<{ key: string }>(
     `SELECT key FROM commercial.quota_key WHERE retired_at IS NULL ORDER BY key`,
   );
   const quotas: Record<string, number | null> = {};
+  const includedByKey: Record<string, number | null> = {};
   for (const { key } of keys.rows) {
-    const base = quotaOverrides.has(key)
-      ? quotaOverrides.get(key)!
-      : key in terms.quotas
-        ? terms.quotas[key]!
-        : 0;
+    const parts: Array<number | null> = [
+      key === MEMBERS_KEY ? includedMembers : 0,
+      key in terms.quotas ? terms.quotas[key]! : 0,
+      ...(appQuotas.get(key) ?? []),
+    ];
+    const included = parts.some((p) => p === null)
+      ? null
+      : parts.reduce<number>((sum, p) => sum + (p ?? 0), 0);
+    includedByKey[key] = included;
+    const base = quotaOverrides.has(key) ? quotaOverrides.get(key)! : included;
     quotas[key] = base === null ? null : base + (extra.get(key) ?? 0);
   }
 
@@ -177,6 +244,7 @@ async function computeEntitlements(
       quotas,
     },
     versionId,
+    included: includedByKey,
   };
 }
 
@@ -230,6 +298,8 @@ export async function listAddonsForOrg(organizationId: string): Promise<AddonOff
     const sub = await liveSubscription(client);
     if (!sub) return [];
     const versionId = await versionAt(client, sub, null);
+    // D3-24: add-ons are eligible per bundle; without one, none is offered (raportul 3.4)
+    if (!versionId) return [];
     const { rows } = await client.query(
       `SELECT a.id, a.code, a.name, a.quota_key, a.quantity, a.validity, a.purchase_mode,
               p.amount_minor, p.setup_minor
@@ -262,14 +332,15 @@ export async function listAddonsForOrg(organizationId: string): Promise<AddonOff
  * invoice as separate lines; the total. A monthly add-on on a yearly subscription is not on the
  * yearly invoice (Stripe bills one interval per subscription; see the Lot 3.2 report).
  */
-async function previewInvoice(
+export async function previewInvoice(
   client: PoolClient,
   sub: LiveSubscription,
-  p: { planCode: string; planPriceMinor: number; invoiceDate: string; at: At; now: Date },
+  /** `planCode` null: no bundle, only applications à la carte (D3-24) — no plan line. */
+  p: { planCode: string | null; planPriceMinor: number; invoiceDate: string; at: At; now: Date },
 ): Promise<InvoicePreview> {
-  const lines: InvoiceLinePreview[] = [
-    { kind: 'plan', key: p.planCode, lineId: null, amountMinor: p.planPriceMinor },
-  ];
+  const lines: InvoiceLinePreview[] = p.planCode
+    ? [{ kind: 'plan', key: p.planCode, lineId: null, amountMinor: p.planPriceMinor }]
+    : [];
   const apps = await client.query<{ id: string; application_id: string; amount_minor: string }>(
     `SELECT id, application_id, amount_minor FROM commercial.subscription_application
       WHERE subscription_id = $1 AND ended_at IS NULL AND interval = $2
@@ -341,13 +412,17 @@ export async function getSubscriptionSummary(
     const sub = entitlements.subscription;
     if (!sub) return null;
     const shownVersion = versionId ?? (await versionAt(client, sub, at));
-    const terms = await loadVersionTerms(client, shownVersion);
-    const { rows } = await client.query<{ code: string; name: string; version_number: number }>(
-      `SELECT p.code, p.name, v.version_number
-         FROM commercial.plan_version v JOIN commercial.plan p ON p.id = v.plan_id
-        WHERE v.id = $1`,
-      [shownVersion],
-    );
+    const terms = shownVersion
+      ? await loadVersionTerms(client, shownVersion)
+      : { applications: [], features: [], quotas: {}, prices: [] };
+    const { rows } = shownVersion
+      ? await client.query<{ code: string; name: string; version_number: number }>(
+          `SELECT p.code, p.name, v.version_number
+             FROM commercial.plan_version v JOIN commercial.plan p ON p.id = v.plan_id
+            WHERE v.id = $1`,
+          [shownVersion],
+        )
+      : { rows: [] as Array<{ code: string; name: string; version_number: number }> };
     const pending = await client.query<{ effective_at: Date; classification: string }>(
       `SELECT effective_at, classification FROM commercial.subscription_change
         WHERE subscription_id = $1 AND canceled_at IS NULL AND effective_at > COALESCE($2::timestamptz, now())
@@ -367,16 +442,16 @@ export async function getSubscriptionSummary(
     const invoiceDate = nextBillingDate(sub, today);
     const priceMinor = priceOf(terms, sub.currency, sub.interval) ?? 0;
     const nextInvoice = await previewInvoice(client, sub, {
-      planCode: rows[0]!.code,
+      planCode: rows[0]?.code ?? null,
       planPriceMinor: priceMinor,
       invoiceDate,
       at,
       now,
     });
     return {
-      planCode: rows[0]!.code,
-      planName: rows[0]!.name,
-      versionNumber: rows[0]!.version_number,
+      planCode: rows[0]?.code ?? null,
+      planName: rows[0]?.name ?? null,
+      versionNumber: rows[0]?.version_number ?? null,
       status: sub.status,
       interval: sub.interval,
       currency: sub.currency,
