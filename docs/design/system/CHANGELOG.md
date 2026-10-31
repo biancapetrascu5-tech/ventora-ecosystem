@@ -679,3 +679,5 @@ Fiecare intrare spune ce s-a schimbat pe componentă (structură, tokeni, texte,
 
 ### i18n
 - Noi: `pricing.json` (6 limbi), `founder-pricing.json` (RO).
+
+> Sincronizat în repo: S112 la Lotul 2.9b; S111 și S113 la Lotul 3.4 (tokens.json, tokens.css și logo-urile rămân din repo). D3-24 (31.10.2026 seara) schimbă „abonamentul” în bundle: FounderPlans, FounderPlanEditor și FounderNewBusiness așteaptă designul S117.

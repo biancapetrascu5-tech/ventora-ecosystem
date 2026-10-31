@@ -140,8 +140,19 @@
       "suspended": "Suspendată",
       "open": "Deschide afacerea",
       "status": {
-        "suspended": "Suspendată"
-      }
+        "suspended": "Suspendată",
+        "atLimit": "La limită",
+        "nearLimit": "Aproape de limită",
+        "trial": "Probă până pe {date}"
+      },
+      "colPlan": "Abonament",
+      "colUsage": "Consum maxim",
+      "usageValue": "{resource} · {pct}%",
+      "statActive": "Afaceri active",
+      "statActiveDelta": "în {month}",
+      "statTrial": "În perioadă de probă",
+      "statTrialHint": "{count, plural, one {# se încheie săptămâna aceasta} few {# se încheie săptămâna aceasta} other {# se încheie săptămâna aceasta}}",
+      "addException": "Adaugă o excepție"
     },
     "business": {
       "since": "client din {date}",
@@ -166,7 +177,18 @@
         "support_session_opened": "Sesiune de suport deschisă",
         "support_session_closed": "Sesiune de suport închisă",
         "support_session_revoked_by_org": "Sesiune de suport închisă de afacere",
-        "support_owner_recovery_performed": "Acces recuperat pentru proprietar"
+        "support_owner_recovery_performed": "Acces recuperat pentru proprietar",
+        "commercial_override_created": "Excepție adăugată",
+        "commercial_override_extended": "Excepție prelungită",
+        "commercial_override_ended": "Excepție încheiată",
+        "commercial_discount_created": "Reducere adăugată",
+        "commercial_discount_updated": "Reducere modificată",
+        "commercial_discount_ended": "Reducere încheiată",
+        "commercial_addon_granted": "Pachet în plus",
+        "commercial_application_line_added": "Aplicație adăugată la abonament",
+        "commercial_subscription_assigned": "Abonament pornit",
+        "commercial_version_change_scheduled": "Mutare programată pe altă versiune",
+        "commercial_currency_set": "Moneda afacerii setată"
       },
       "suspendDialog": {
         "title": "Suspenzi {name}?",
@@ -342,7 +364,9 @@
         "purchaseDirect": "Directă",
         "purchaseOnRequest": "La cerere, prin echipa Ventora",
         "setupLocked": "Are cost de implementare, deci rămâne la cerere.",
-        "error": "Nu am putut salva schimbările. Verifică internetul și încearcă din nou."
+        "error": "Nu am putut salva schimbările. Verifică internetul și încearcă din nou.",
+        "errorRequired": "Completează câmpul.",
+        "errorEur": "Scrie prețul în euro. Nu îl calculăm din lei."
       },
       "editAction": "Editează",
       "stop": "Oprește vânzarea",
@@ -384,7 +408,10 @@
         "save": "Salvează",
         "cancel": "Renunță",
         "error": "Nu am putut salva schimbările. Verifică internetul și încearcă din nou.",
-        "saved": "Am salvat prețul pentru {app}."
+        "saved": "Am salvat prețul pentru {app}.",
+        "errorAmount": "Scrie o sumă, de exemplu 49 sau 22,13.",
+        "errorRequired": "Scrie prețul lunar în lei.",
+        "errorEur": "Scrie prețul în euro. Nu îl calculăm din lei."
       }
     },
     "usage": {
@@ -419,7 +446,8 @@
         "appointments": "Programări create",
         "packs": "Pachete în plus vândute",
         "vsPrevious": "față de {month}"
-      }
+      },
+      "of": "{used} din {limit}"
     },
     "requests": {
       "nav": "Cereri",
@@ -471,7 +499,9 @@
       "card": "Plătește cu cardul {brand} ···· {last4}",
       "manual": "Plată manuală, prin transfer bancar",
       "renews": "se reînnoiește pe {date}",
-      "noPlan": "Afacerea nu are încă un abonament."
+      "noPlan": "Afacerea nu are încă un abonament.",
+      "monthlyStrong": "Plătește lunar: {amount}",
+      "annualStrong": "Plătește anual: {amount}"
     },
     "discounts": {
       "nav": "Reduceri",

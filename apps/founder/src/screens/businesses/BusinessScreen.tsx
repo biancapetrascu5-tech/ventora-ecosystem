@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { Button, DialogTrigger, Notice, StatusPill, Toast } from '@ventora/ui';
+import { Button, DialogTrigger, Notice, StatusPill, Tabs, Toast } from '@ventora/ui';
 import {
   BusinessView,
   ReactivateBusinessDialog,
@@ -15,7 +15,16 @@ import {
   type BusinessMenuItem,
 } from '@ventora/screens';
 import { reactivate, suspend, type BusinessPageData } from '@/server/business-actions';
+import type { BusinessCommercialData, QuotaInfo } from '@/server/commercial-actions';
+import { commercialStyles as cs } from '@ventora/screens';
 import { FounderShell } from '../shell/FounderShell';
+import { ExceptionFlow, type ExceptionTarget } from '../commercial/ExceptionFlow';
+import {
+  BillingTab,
+  PlanCard,
+  useCommercialText,
+  useUsageAndExceptions,
+} from './BusinessCommercialParts';
 import { FounderSupportFlow } from '../support/FounderSupportFlow';
 import { OwnerRecoveryFlow } from '../recovery/OwnerRecoveryFlow';
 import { businessStatus } from './status';
@@ -25,8 +34,12 @@ import s from './business-screen.module.css';
    și recuperarea proprietarului (OwnerRecoveryFlow), pe afacerea paginii (S95); suspendarea cu
    confirmarea numelui (D3-20 a). Lot 2.9b (FounderBusinessActions, S112): pe o afacere
    suspendată „Reactivează afacerea” e acțiunea principală, cu confirmare, nota de sub antet și
-   toastul de după; „Ultimele modificări” cu numele celui din echipa Ventora. Fără partea
-   comercială (Lotul 3.4: „Adaugă o excepție”, „Mută pe altă versiune”). */
+   toastul de după; „Ultimele modificări” cu numele celui din echipa Ventora. Lotul 3.4: partea
+   comercială — filele (Prezentare, Consum, Excepții, Plăți și facturi, Jurnal), consumul pe
+   perioada reală, excepțiile cu „Adaugă o excepție” și prelungirea auditată, fișa abonamentului
+   și reducerile. „Mută pe altă versiune” (bundle-urile, D3-24) vine cu designul S117. */
+
+export type BusinessTab = 'overview' | 'usage' | 'exceptions' | 'billing' | 'log';
 
 type Change =
   | 'org_created'
@@ -40,9 +53,36 @@ type Change =
   | 'support_session_opened'
   | 'support_session_closed'
   | 'support_session_revoked_by_org'
-  | 'support_owner_recovery_performed';
+  | 'support_owner_recovery_performed'
+  | 'commercial_override_created'
+  | 'commercial_override_extended'
+  | 'commercial_override_ended'
+  | 'commercial_discount_created'
+  | 'commercial_discount_updated'
+  | 'commercial_discount_ended'
+  | 'commercial_addon_granted'
+  | 'commercial_application_line_added'
+  | 'commercial_subscription_assigned'
+  | 'commercial_version_change_scheduled'
+  | 'commercial_currency_set';
 
-export function BusinessScreen({ user, data }: { user: { name: string }; data: BusinessPageData }) {
+export function BusinessScreen({
+  user,
+  data,
+  commercial,
+  quotas,
+  requestsBadge,
+  initialTab = 'overview',
+  openException = false,
+}: {
+  user: { name: string };
+  data: BusinessPageData;
+  commercial: BusinessCommercialData | null;
+  quotas: QuotaInfo[];
+  requestsBadge: number;
+  initialTab?: BusinessTab;
+  openException?: boolean;
+}) {
   const router = useRouter();
   const t = useTranslations('founder.business');
   const tl = useTranslations('founder.businesses');
@@ -60,12 +100,46 @@ export function BusinessScreen({ user, data }: { user: { name: string }; data: B
   const [confirmName, setConfirmName] = useState('');
   const [pending, setPending] = useState(false);
   const [reactivated, setReactivated] = useState(false);
+  const [tab, setTab] = useState<BusinessTab>(initialTab);
+  const [toast, setToast] = useState<string | null>(null);
+  const limited = quotas.filter((x) => (commercial?.quotas ?? []).some((u) => u.key === x.key));
+  const addTarget: ExceptionTarget = { kind: 'add', quotas: limited.length ? limited : quotas };
+  const [exception, setException] = useState<ExceptionTarget | null>(
+    openException && !suspended ? addTarget : null,
+  );
+  const text = useCommercialText(commercial);
+  const parts = useUsageAndExceptions({
+    organizationId: b.id,
+    c: commercial,
+    phone,
+    onAdd: () => setException(addTarget),
+    onExtend: (id) => {
+      const o = commercial?.overrides.find((x) => x.id === id);
+      if (o) {
+        setException({
+          kind: 'extend',
+          overrideId: o.id,
+          quotaKey: o.quotaKey ?? '',
+          limit: o.limit,
+          expiresAt: o.expiresAt,
+        });
+      }
+    },
+    onEnded: (msg) => {
+      setToast(msg);
+      router.refresh();
+    },
+  });
 
   const since = new Intl.DateTimeFormat(intlLocale('ro'), {
     month: 'long',
     year: 'numeric',
   }).format(new Date(b.createdAt));
-  const meta = [t('since', { date: since }), b.owner ? t('owner', { name: b.owner.name }) : null]
+  const meta = [
+    commercial ? text.meta : null,
+    t('since', { date: since }),
+    b.owner ? t('owner', { name: b.owner.name }) : null,
+  ]
     .filter(Boolean)
     .join(' · ');
 
@@ -155,20 +229,72 @@ export function BusinessScreen({ user, data }: { user: { name: string }; data: B
       opening={supportOpen}
       onOpeningChange={setSupportOpen}
     >
-      <FounderShell active="afaceri" title={b.name} user={user}>
+      <FounderShell active="afaceri" title={b.name} user={user} requestsBadge={requestsBadge}>
         <BusinessView
           name={b.name}
-          status={businessStatus(b.status, tl)}
+          status={businessStatus(b.status, tl, {
+            topPct: Math.max(
+              0,
+              ...(commercial?.quotas ?? [])
+                .filter((x) => x.limit !== null && x.limit > 0)
+                .map((x) => Math.round((x.used / x.limit!) * 100)),
+            ),
+          })}
           meta={meta}
           primaryAction={
             suspended ? (
               <Button variant="primary" icon="rotate-ccw" onPress={() => setReactivateOpen(true)}>
                 {t('reactivate')}
               </Button>
-            ) : undefined
+            ) : (
+              <Button icon="sliders-horizontal" onPress={() => setException(addTarget)}>
+                {t('addException')}
+              </Button>
+            )
           }
           menu={menu}
           onMenuAction={onMenu}
+          tabs={
+            <Tabs
+              label={b.name}
+              selectedKey={tab}
+              onSelectionChange={(k) => setTab(k as BusinessTab)}
+              items={[
+                { id: 'overview', label: t('tabs.overview') },
+                { id: 'usage', label: t('tabs.usage') },
+                {
+                  id: 'exceptions',
+                  label: t('tabs.exceptions'),
+                  count: commercial?.overrides.length || undefined,
+                },
+                { id: 'billing', label: t('tabs.billing') },
+                { id: 'log', label: t('tabs.log') },
+              ]}
+            />
+          }
+          main={
+            tab === 'overview' ? (
+              <>
+                {parts.usage}
+                {parts.exceptions}
+              </>
+            ) : undefined
+          }
+          full={
+            tab === 'usage' ? (
+              parts.usage
+            ) : tab === 'exceptions' ? (
+              parts.exceptions
+            ) : tab === 'billing' ? (
+              <BillingTab
+                organizationId={b.id}
+                business={b.name}
+                c={commercial}
+                onDone={setToast}
+              />
+            ) : undefined
+          }
+          plan={<PlanCard c={commercial} />}
           owner={owner}
           recent={recent}
           notice={
@@ -183,6 +309,27 @@ export function BusinessScreen({ user, data }: { user: { name: string }; data: B
         />
       </FounderShell>
       <OwnerRecoveryFlow organizationId={b.id} open={recoveryOpen} onOpenChange={setRecoveryOpen} />
+      <ExceptionFlow
+        organizationId={b.id}
+        business={b.name}
+        target={exception}
+        onClose={() => setException(null)}
+        onDone={(msg) => {
+          setException(null);
+          setToast(msg);
+          router.refresh();
+        }}
+      />
+      {toast && (
+        <div className={phone ? `${cs.toast} ${cs.toastMob}` : cs.toast}>
+          <Toast
+            tone="done"
+            title={toast}
+            onDismiss={() => setToast(null)}
+            dismissLabel={ui('close')}
+          />
+        </div>
+      )}
       <DialogTrigger isOpen={suspendOpen} onOpenChange={setSuspendOpen}>
         <SuspendBusinessDialog
           name={b.name}
