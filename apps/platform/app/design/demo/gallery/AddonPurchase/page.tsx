@@ -47,6 +47,16 @@ function Flow() {
       <AddonPurchase
         addon={CAMP}
         card={CARD}
+        state="success"
+        usage={USAGE}
+        invoice={{ pending: true }}
+        onDone={noop}
+        labels={L}
+        usageLabels={USAGE_RO}
+      />
+      <AddonPurchase
+        addon={CAMP}
+        card={CARD}
         state="error"
         error={ERROR}
         onRetry={noop}
@@ -62,7 +72,7 @@ function Light() {
     <>
       <p className={`caption ${f.muted}`}>
         Stările fluxului: confirmare (card salvat) · confirmare fără card (locul formularului
-        Stripe) · se procesează · reușită · eroare
+        Stripe) · se procesează · reușită · reușită, factura vine în curând (S111) · eroare
       </p>
       <Flow />
       <p className={`caption ${f.muted}`}>

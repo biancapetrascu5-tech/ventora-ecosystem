@@ -342,6 +342,11 @@ for (const migration of [
   'core/commercial/prisma/migrations/20261101000005_commercial_discounts/migration.sql',
   // Lot 3.3: cotele reale (T5)
   'core/commercial/prisma/migrations/20261101000006_commercial_usage/migration.sql',
+  // Lot 3.4: cererile din Hub; ce le trebuie ecranelor Founder (D3-23, citirile peste afaceri)
+  'core/commercial/prisma/migrations/20261101000007_commercial_requests/migration.sql',
+  'core/commercial/prisma/migrations/20261101000008_commercial_founder_screens/migration.sql',
+  // D3-24: aplicațiile la bucată cu limitele lor, bundle-ul cu perioadă de vânzare, locurile incluse
+  'core/commercial/prisma/migrations/20261101000009_commercial_bundles/migration.sql',
   // Lot 4.3: UserPreference (limba) și notificările
   'core/identity/prisma/identity/migrations/20261101000007_user_preference/migration.sql',
   'core/notifications/prisma/migrations/20261101000008_notifications_init/migration.sql',

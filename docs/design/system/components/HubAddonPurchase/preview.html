@@ -1,4 +1,4 @@
-<!-- @dsCard group="Ecrane Hub" height=3244 width=2620 page -->
+<!-- @dsCard group="Ecrane Hub" height=5450 width=2620 page -->
 <!doctype html>
 <html lang="ro">
 <head><meta charset="utf-8"><title>HubAddonPurchase — Ventora</title>
@@ -446,7 +446,7 @@ const FLOW_TX = {
 };
 function Flow({ mode, th, lang, force }) {
   const T = FLOW_TX[isL(lang) ? lang : "ro"];
-  const state = force || (mode === "desktop" ? "review" : mode === "tablet" ? th === "light" ? "processing" : "error" : th === "light" ? "success" : "review");
+  const state = force === "pending" ? "success" : force || (mode === "desktop" ? "review" : mode === "tablet" ? th === "light" ? "processing" : "error" : th === "light" ? "success" : "review");
   return /* @__PURE__ */ React.createElement("div", { className: "frame-rel" }, /* @__PURE__ */ React.createElement(HubSettings, { active: "abonament", title: T.bar, lang }, /* @__PURE__ */ React.createElement(V.PageHeader, { title: T.title, description: T.desc }), /* @__PURE__ */ React.createElement(V.Sheet, null, /* @__PURE__ */ React.createElement(V.SheetSection, { title: T.usage }, /* @__PURE__ */ React.createElement("div", { className: "usage-grid" }, /* @__PURE__ */ React.createElement(V.UsageMeter, { label: T.sms, used: 1e3, limit: 1e3, onBuy: () => {
   }, buyLabel: T.buySms, onUpgrade: () => {
   } }))))), /* @__PURE__ */ React.createElement(Overlay, { mode }, /* @__PURE__ */ React.createElement(
@@ -462,12 +462,13 @@ function Flow({ mode, th, lang, force }) {
       state,
       error: T.error,
       usage: { label: T.sms, used: 1e3, limitBefore: 1e3, limitAfter: 2e3 },
-      invoice: { number: "VNT-2026-0204" }
+      invoice: force === "pending" ? { pending: true } : { number: "VNT-2026-0204" }
     }
   )));
 }
 mount(React.createElement("div", null,
   React.createElement(Screens, { title: "Cump\u0103rarea unui pachet \xEEn plus \u2014 dialogul \u0219i st\u0103rile lui", notes: ["Desktop: confirmare cu un card care expir\u0103 luna aceasta", "Tablet\u0103 \xB7 Light: se proceseaz\u0103", "Tablet\u0103 \xB7 Dark: plata refuzat\u0103", "Telefon \xB7 Light: plata a reu\u0219it, limita cre\u0219te, butonul reia ce f\u0103ceai", "Telefon \xB7 Dark: f\u0103r\u0103 card salvat \u2014 locul formularului Stripe"], desktopH: 860, tabletH: 1e3, mobileH: 900, render: (m, th) => /* @__PURE__ */ React.createElement(Flow, { mode: m, th }) }),
+  React.createElement(Screens, { title: "Plata a reu\u0219it, factura vine \xEEn cur\xE2nd (S111)", notes: ["Pachetul e activ \u0219i limita a crescut", "Factura nu e \xEEnc\u0103 emis\u0103 (SmartBill poate \xEEnt\xE2rzia): o anun\u021B\u0103m neutru, f\u0103r\u0103 \u201EVezi factura\u201D"], desktopH: 860, tabletH: 1e3, mobileH: 900, render: (m, th) => React.createElement(Flow, { mode: m, th, force: "pending" }) }),
   React.createElement(LocTest, { items: [
     ["Deutsch \xB7 1280 \xB7 Light \xB7 Best\xE4tigung, Karte l\xE4uft ab", "de", "desktop", "light", 860, React.createElement(Flow, { mode: "desktop", th: "light", lang: "de" })],
     ["Italiano \xB7 390 \xB7 Dark \xB7 pagamento riuscito", "it", "mobile", "dark", 900, React.createElement(Flow, { mode: "mobile", th: "light", lang: "it", force: "success" })],

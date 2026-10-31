@@ -24,7 +24,11 @@ export type AuditTargetType =
   | 'addon_grant'
   | 'override'
   | 'subscription_application'
-  | 'discount';
+  | 'discount'
+  // Lot 3.4: the requests from the Hub
+  | 'commercial_request'
+  // D3-24: the global settings of the commercial model
+  | 'setting';
 
 export type AuditEvent = {
   category: AuditCategory;

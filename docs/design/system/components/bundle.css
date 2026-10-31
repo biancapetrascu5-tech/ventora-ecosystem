@@ -1327,3 +1327,10 @@ a.v-btn { box-sizing: border-box; }
 
 /* S113: the amount to pay stays on one line ("27,10 lei") */
 .v-payline--total > .numeric { white-space: nowrap; }
+
+/* S115: the action of a notification — what opening it does ("Vezi factura"). The whole row opens it. */
+.v-notif__action { display: inline-flex; align-items: center; gap: var(--space-1); color: var(--ink); font-weight: 600; margin-top: var(--space-0-5); }
+
+/* S117 · AddonPurchase: what the app includes */
+.v-addon__inc { display: flex; flex-direction: column; gap: var(--space-1); }
+.v-addon__inclist { margin: 0; padding-inline-start: var(--space-5); color: var(--ink-secondary); display: flex; flex-direction: column; gap: var(--space-0-5); }

@@ -3,7 +3,7 @@
 The official Ventora logo files, used exactly as supplied. Full colour (peach, copper, off-white facets on a navy diamond), not a single-ink mark: never recolour, redraw, retype or place them on a coloured plate.
 
 - `ventora-logo.svg` — full logo for light backgrounds: the mark plus the "VENTORA" wordmark (V in peach, the rest in navy #000C3F). 250 × 68.
-- `ventora-logo-dark.svg` — full logo for dark backgrounds, variant B: lighter diamond (#3A4680), off-white outlines and wordmark (#F1EFEA).
+- `ventora-logo-dark.svg` — full logo for dark backgrounds, variant B: lighter diamond (#3A4680), off-white wordmark (#F1EFEA). The facets are separated by transparent cuts (an SVG mask, same width as the light variant's outlines), so the ground shows through them on any dark surface — no outline colour to keep in step with the background. The mask id is unique per file (`ventora-logo-dark-cut`, `ventora-mark-dark-cut`).
 - `ventora-mark.svg` — the mark alone, light.
 - `ventora-mark-dark.svg` — the mark alone, dark, variant B.
 - `favicon.svg` — the mark; switches to variant B when the system is in dark mode.

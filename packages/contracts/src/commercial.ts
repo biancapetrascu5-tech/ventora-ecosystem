@@ -20,7 +20,8 @@ export interface EffectiveEntitlements {
   organizationId: string;
   subscription: {
     id: string;
-    planVersionId: string;
+    /** D3-24: the bundle's version; null for a subscription of applications à la carte only. */
+    planVersionId: string | null;
     status: SubscriptionStatus;
     interval: BillingInterval;
     currency: Currency;
@@ -79,9 +80,10 @@ export interface InvoicePreview {
 }
 
 export interface SubscriptionSummary {
-  planCode: string;
-  planName: string;
-  versionNumber: number;
+  /** D3-24: the bundle (plan); null without one (applications à la carte only). */
+  planCode: string | null;
+  planName: string | null;
+  versionNumber: number | null;
   status: SubscriptionStatus;
   interval: BillingInterval;
   currency: Currency;

@@ -24,6 +24,7 @@ model Application {
   versionApps PlanVersionApplication[]
   trials      Trial[]
   prices      ApplicationPrice[]
+  included    ApplicationQuota[]
   lines       SubscriptionApplication[]
 
   @@map("application")
@@ -65,6 +66,7 @@ model QuotaKey {
   application   Application @relation(fields: [applicationId], references: [id])
 
   versionQuotas PlanVersionQuota[]
+  appQuotas     ApplicationQuota[]
   addons        Addon[]
   overrides     Override[]
   counters      UsageCounter[]
@@ -85,6 +87,8 @@ model Plan {
   createdByFounderId String   @map("created_by_founder_id") @db.Uuid
   createdAt          DateTime @default(now()) @map("created_at") @db.Timestamptz
   updatedAt          DateTime @default(now()) @map("updated_at") @db.Timestamptz
+  /// D3-24: „Oprește vânzarea” pe bundle
+  salesStoppedAt     DateTime? @map("sales_stopped_at") @db.Timestamptz
 
   versions       PlanVersion[]
   eligibleAddons AddonEligiblePlan[]
@@ -103,6 +107,9 @@ model PlanVersion {
   createdByFounderId   String    @map("created_by_founder_id") @db.Uuid
   createdAt            DateTime  @default(now()) @map("created_at") @db.Timestamptz
   updatedAt            DateTime  @default(now()) @map("updated_at") @db.Timestamptz
+  /// D3-24 / S117: perioada de vânzare a ofertei (null = deschisă)
+  availableFrom        DateTime? @map("available_from") @db.Date
+  availableUntil       DateTime? @map("available_until") @db.Date
   plan                 Plan      @relation(fields: [planId], references: [id])
 
   applications  PlanVersionApplication[]
@@ -231,7 +238,7 @@ model BillingAccount {
 model Subscription {
   id                 String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   organizationId     String      @map("organization_id") @db.Uuid
-  planVersionId      String      @map("plan_version_id") @db.Uuid
+  planVersionId      String?     @map("plan_version_id") @db.Uuid
   interval           String      @db.VarChar(8)
   currency           String      @db.VarChar(3)
   startedOn          DateTime    @map("started_on") @db.Date
@@ -242,7 +249,7 @@ model Subscription {
   createdByFounderId String      @map("created_by_founder_id") @db.Uuid
   createdAt          DateTime    @default(now()) @map("created_at") @db.Timestamptz
   updatedAt          DateTime    @default(now()) @map("updated_at") @db.Timestamptz
-  version            PlanVersion @relation(fields: [planVersionId], references: [id])
+  version            PlanVersion? @relation(fields: [planVersionId], references: [id], onDelete: Restrict, onUpdate: Cascade)
 
   changes      SubscriptionChange[]
   addonGrants  AddonGrant[]
@@ -505,5 +512,55 @@ model UsageEvent {
 
   @@index([organizationId, quotaKey, createdAt], map: "usage_event_org_key_created_at_idx")
   @@map("usage_event")
+  @@schema("commercial")
+}
+
+// ── Lot 3.4 · commercial_requests ───────────────────────────────────────────────────────────
+
+/// Cererea din Hub (FounderRequests, S111): „Cere activare” (pachet / aplicație) sau „Cere alt
+/// abonament” (D3-9); nouă → rezolvată / refuzată (cu motiv), o singură dată.
+model CommercialRequest {
+  id                 String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  organizationId     String    @map("organization_id") @db.Uuid
+  kind               String    @db.VarChar(16)
+  targetType         String    @map("target_type") @db.VarChar(16)
+  targetId           String    @map("target_id") @db.VarChar(128)
+  requestedByUserId  String    @map("requested_by_user_id") @db.Uuid
+  requestedByRole    String    @map("requested_by_role") @db.VarChar(16)
+  status             String    @default("new") @db.VarChar(16)
+  refusalReason      String?   @map("refusal_reason")
+  decidedAt          DateTime? @map("decided_at") @db.Timestamptz
+  decidedByFounderId String?   @map("decided_by_founder_id") @db.Uuid
+  createdAt          DateTime  @default(now()) @map("created_at") @db.Timestamptz
+
+  @@index([organizationId], map: "commercial_request_organization_id_idx")
+  @@index([status, createdAt], map: "commercial_request_status_created_at_idx")
+  @@map("commercial_request")
+  @@schema("commercial")
+}
+
+// ── Lot 3.4 · commercial_bundles (D3-24) ────────────────────────────────────────────────────
+
+/// Limitele incluse ale unei aplicații la bucată (de ex. EasyBook: 1.000 de programări pe lună).
+model ApplicationQuota {
+  applicationId String      @map("application_id") @db.VarChar(64)
+  quotaKey      String      @map("quota_key") @db.VarChar(128)
+  limitValue    BigInt?     @map("limit_value")
+  application   Application @relation(fields: [applicationId], references: [id])
+  quota         QuotaKey    @relation(fields: [quotaKey], references: [key])
+
+  @@id([applicationId, quotaKey])
+  @@map("application_quota")
+  @@schema("commercial")
+}
+
+/// Setările globale ale modelului comercial (D3-24: `included_members`, implicit 3).
+model Setting {
+  key                String   @id @db.VarChar(64)
+  intValue           BigInt   @map("int_value")
+  updatedByFounderId String?  @map("updated_by_founder_id") @db.Uuid
+  updatedAt          DateTime @default(now()) @map("updated_at") @db.Timestamptz
+
+  @@map("setting")
   @@schema("commercial")
 }

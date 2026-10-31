@@ -1,0 +1,33 @@
+/* Cadrele preview-urilor comerciale Founder: .frame-rel (FounderPacks, FounderApps), .x-frame
+   (FounderDiscounts), .ss-frame > .ss-body (FounderRequests). */
+.frameRel {
+  position: relative;
+  height: 100%;
+}
+.xFrame {
+  position: relative;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+.xFrame > * {
+  flex: 1;
+  min-height: 0;
+}
+.ssFrame {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  position: relative;
+}
+.ssBody {
+  flex: 1;
+  min-height: 0;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+.ssBody > * {
+  flex: 1;
+  min-height: 0;
+}

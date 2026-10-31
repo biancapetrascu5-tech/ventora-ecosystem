@@ -607,6 +607,113 @@
       }
     }
   },
+  "billing": {
+    "plan": {
+      "payMonthly": "You pay monthly: {amount}",
+      "payAnnual": "You pay yearly: {amount} · you save {saving}",
+      "nextPayment": "Next payment: {date}",
+      "reset": "Usage starts again from zero on {date}.",
+      "annualLimits": "You pay yearly, but the limits are monthly: usage starts from zero every month on the {day}.",
+      "usagePeriod": "Usage: {from} – {to}",
+      "fullPrice": "Full price",
+      "discountValue": "Discount {value}",
+      "discount": {
+        "until": "until {date}",
+        "once": "this payment only",
+        "permanent": "permanent"
+      },
+      "total": "Monthly total",
+      "totalYear": "Yearly total",
+      "free": "Free"
+    },
+    "invoice": {
+      "view": "View invoice",
+      "title": "Invoice {number}",
+      "lines": "What it covers",
+      "total": "Total to pay",
+      "finalPrice": "Final price, no VAT is added."
+    },
+    "packs": {
+      "validUntil": "valid until {date}"
+    },
+    "prorate": {
+      "today": "Today: {amount}, prorated until {date}",
+      "then": "Then {amount} a month, with your plan."
+    },
+    "have": {
+      "title": "What you pay for",
+      "bundle": "{name} bundle",
+      "bundleKeep": "Your price stays the same for as long as you keep the bundle, even after the offer has ended.",
+      "app": "{app} · individual app",
+      "pack": "{name} · extra pack",
+      "noPacks": "No extra packs.",
+      "included": "Included"
+    }
+  },
+  "catalog": {
+    "app": {
+      "activate": "Activate · {price} a month",
+      "request": "Request activation",
+      "onRequest": "On request",
+      "onRequestNote": "This app needs to be set up, so we activate it for you. After your request, the Ventora team gets in touch, and only then do you pay.",
+      "requestSent": "Request sent",
+      "requestSentBody": "The Ventora team can see it now. You’ll get a notification when the app is active.",
+      "activateTitle": "Activate {app}",
+      "activateDesc": "App added to your plan · {price} a month",
+      "maintenance": "Maintenance: {amount} a month",
+      "setupValue": "{amount}, one-time",
+      "maintenanceLabel": "Maintenance",
+      "includes": "What’s included",
+      "noLimits": "No limits of its own",
+      "alaCarte": "Individual app",
+      "inBundle": "Included in the {name} bundle",
+      "activateDescAlc": "Individual app · maintenance {price} a month"
+    },
+    "bundles": {
+      "title": "Bundles",
+      "lead": "Several apps together, for less than buying them separately, with limits and team seats included.",
+      "validUntil": "Offer valid until {date}",
+      "price": "{amount} a month",
+      "priceYear": "or {amount} a year",
+      "separate": "Separately: {amount} a month",
+      "saving": "You save {amount} a month",
+      "limits": "Included every month",
+      "apps": "{count, plural, one {# app} other {# apps}}",
+      "have": "You have this bundle",
+      "haveKeep": "You keep it at your price: {amount} a month.",
+      "request": "Request this bundle",
+      "requestNote": "The Ventora team adds it to your plan from your next payment. Individual apps you have that are in the bundle are no longer charged separately.",
+      "alsoHave": "Also includes {app}, which you now pay for as an individual app.",
+      "planTotal": "Your plan would be {amount} a month instead of {now}.",
+      "requestSent": "We’ve sent your request for the {name} bundle",
+      "requestSentBody": "The Ventora team will write to you before your next payment. Until then, nothing changes.",
+      "requestFailed": "We couldn't send the request. Try again."
+    },
+    "alaCarte": {
+      "title": "Individual apps",
+      "lead": "Or add just the app you need: setup once, then monthly maintenance."
+    },
+    "setup": "Setup: {amount}, one-time",
+    "noSetup": "No setup cost"
+  },
+  "seats": {
+    "count": "{count, plural, one {# team seat} other {# team seats}}",
+    "breakdownBase": "{base} included with every account",
+    "breakdown": "{base} included with every account + {bundle} from the bundle",
+    "breakdownPack": "{base} included with every account + {bundle} from the bundle + {pack} from extra packs",
+    "more": "Need more seats? Add them with an extra pack or with a bundle that includes more.",
+    "where": "Of your {total} seats, {base} come with every account and {bundle} come from the {name} bundle.",
+    "wherePack": "Of your {total} seats, {base} come with every account, {bundle} from the {name} bundle and {pack} from extra packs."
+  },
+  "limits": {
+    "appointments": "{count, plural, one {# appointment} other {# appointments}} a month",
+    "sms": "{count, plural, one {# text message} other {# text messages}} a month",
+    "campaigns": "{count, plural, one {# campaign} other {# campaigns}} a month",
+    "emails": "{count, plural, one {# email} other {# emails}} a month",
+    "clients": "{count, plural, one {# client} other {# clients}}",
+    "invoices": "{count, plural, one {# invoice} other {# invoices}} a month",
+    "storage": "{amount} of document storage"
+  },
   "notifications": {
     "title": "Notifications",
     "filter": {

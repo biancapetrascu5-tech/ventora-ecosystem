@@ -130,11 +130,34 @@ export const QuotaOverLimitV1 = defineEvent({
     .strict(),
 });
 
+/**
+ * `commercial.request.decided` v1 (Lot 3.4, FounderRequests, S111): echipa Ventora a rezolvat sau a
+ * refuzat o cerere din Hub („Cere activare”, „Cere alt abonament”). Notificarea către cel care a
+ * cerut („rezolvată” / „refuzată”, cu motivul) o trimite consumatorul din F4, prin
+ * core/notifications; până atunci nu are consumator și se marchează livrat. Payload-ul are doar
+ * id-uri și starea: motivul se citește din cerere.
+ */
+export const CommercialRequestDecidedV1 = defineEvent({
+  type: 'commercial.request.decided',
+  version: 1,
+  sourceApp: 'founder',
+  growthSafe: false,
+  withoutConsumer: 'complete',
+  schema: z
+    .object({
+      requestId: z.uuid(),
+      requestedByUserId: z.uuid(),
+      status: z.enum(['resolved', 'refused']),
+    })
+    .strict(),
+});
+
 export const EVENT_CATALOG: readonly EventDefinition[] = [
   InvitationNewLinkRequestedV1 as EventDefinition,
   SubscriptionVersionChangeScheduledV1 as EventDefinition,
   QuotaThresholdV1 as EventDefinition,
   QuotaOverLimitV1 as EventDefinition,
+  CommercialRequestDecidedV1 as EventDefinition,
 ];
 
 /** Definiția unui eveniment după tip și versiune; null dacă nu e în catalog. */

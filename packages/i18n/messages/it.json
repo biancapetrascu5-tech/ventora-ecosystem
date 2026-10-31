@@ -607,6 +607,113 @@
       }
     }
   },
+  "billing": {
+    "plan": {
+      "payMonthly": "Paga ogni mese: {amount}",
+      "payAnnual": "Paga ogni anno: {amount} · risparmia {saving}",
+      "nextPayment": "Prossimo pagamento: {date}",
+      "reset": "L’utilizzo riparte da zero il {date}.",
+      "annualLimits": "Paga all’anno, ma i limiti sono mensili: l’utilizzo riparte da zero ogni mese, il giorno {day}.",
+      "usagePeriod": "Utilizzo: {from} – {to}",
+      "fullPrice": "Prezzo pieno",
+      "discountValue": "Sconto {value}",
+      "discount": {
+        "until": "fino al {date}",
+        "once": "solo su questo pagamento",
+        "permanent": "permanente"
+      },
+      "total": "Totale al mese",
+      "totalYear": "Totale all’anno",
+      "free": "Gratis"
+    },
+    "invoice": {
+      "view": "Vedi fattura",
+      "title": "Fattura {number}",
+      "lines": "Che cosa comprende",
+      "total": "Totale da pagare",
+      "finalPrice": "Prezzo finale, non si aggiunge l’IVA."
+    },
+    "packs": {
+      "validUntil": "valido fino al {date}"
+    },
+    "prorate": {
+      "today": "Oggi: {amount}, in proporzione fino al {date}",
+      "then": "Poi {amount} al mese, insieme all’abbonamento."
+    },
+    "have": {
+      "title": "Che cosa paga",
+      "bundle": "Bundle {name}",
+      "bundleKeep": "Il Suo prezzo resta lo stesso finché mantiene il bundle, anche dopo la fine dell’offerta.",
+      "app": "{app} · app singola",
+      "pack": "{name} · pacchetto extra",
+      "noPacks": "Nessun pacchetto extra.",
+      "included": "Incluso"
+    }
+  },
+  "catalog": {
+    "app": {
+      "activate": "Attiva · {price} al mese",
+      "request": "Richiedi attivazione",
+      "onRequest": "Su richiesta",
+      "onRequestNote": "Questa app richiede una configurazione, quindi la attiviamo noi. Dopo la richiesta, il team Ventora La contatta e solo allora si paga.",
+      "requestSent": "Richiesta inviata",
+      "requestSentBody": "Il team Ventora la vede già. Riceverà una notifica quando l’app sarà attiva.",
+      "activateTitle": "Attivare {app}",
+      "activateDesc": "App aggiunta all’abbonamento · {price} al mese",
+      "maintenance": "Manutenzione: {amount} al mese",
+      "setupValue": "{amount}, una tantum",
+      "maintenanceLabel": "Manutenzione",
+      "includes": "Che cosa include",
+      "noLimits": "Senza limiti propri",
+      "alaCarte": "App singola",
+      "inBundle": "Inclusa nel bundle {name}",
+      "activateDescAlc": "App singola · manutenzione {price} al mese"
+    },
+    "bundles": {
+      "title": "Bundle",
+      "lead": "Più app insieme, a un prezzo più basso che separatamente, con limiti e posti nel team inclusi.",
+      "validUntil": "Offerta valida fino al {date}",
+      "price": "{amount} al mese",
+      "priceYear": "o {amount} all’anno",
+      "separate": "Separatamente: {amount} al mese",
+      "saving": "Risparmia {amount} al mese",
+      "limits": "Inclusi ogni mese",
+      "apps": "{count, plural, one {# app} other {# app}}",
+      "have": "Ha questo bundle",
+      "haveKeep": "Lo mantiene al Suo prezzo: {amount} al mese.",
+      "request": "Richiedi questo bundle",
+      "requestNote": "Il team Ventora lo aggiunge al Suo abbonamento dal prossimo pagamento. Le app singole incluse nel bundle non si pagano più a parte.",
+      "alsoHave": "Include anche {app}, che ora paga come app singola.",
+      "planTotal": "Il Suo abbonamento sarebbe di {amount} al mese invece di {now}.",
+      "requestSent": "Abbiamo inviato la richiesta per il bundle {name}",
+      "requestSentBody": "Il team Ventora Le scriverà prima del prossimo pagamento. Fino ad allora non cambia nulla.",
+      "requestFailed": "Non siamo riusciti a inviare la richiesta. Riprova."
+    },
+    "alaCarte": {
+      "title": "App singole",
+      "lead": "Oppure aggiunga solo l’app che Le serve: attivazione una volta, poi manutenzione mensile."
+    },
+    "setup": "Attivazione: {amount}, una tantum",
+    "noSetup": "Nessun costo di attivazione"
+  },
+  "seats": {
+    "count": "{count, plural, one {# posto nel team} other {# posti nel team}}",
+    "breakdownBase": "{base} incluse in ogni account",
+    "breakdown": "{base} incluse in ogni account + {bundle} dal bundle",
+    "breakdownPack": "{base} incluse in ogni account + {bundle} dal bundle + {pack} da pacchetti extra",
+    "more": "Le servono più posti? Li aggiunga con un pacchetto extra o con un bundle che ne include di più.",
+    "where": "Dei Suoi {total} posti, {base} sono inclusi in ogni account e {bundle} arrivano dal bundle {name}.",
+    "wherePack": "Dei Suoi {total} posti, {base} sono inclusi in ogni account, {bundle} arrivano dal bundle {name} e {pack} da pacchetti extra."
+  },
+  "limits": {
+    "appointments": "{count, plural, one {# appuntamento} other {# appuntamenti}} al mese",
+    "sms": "{count, plural, one {# SMS} other {# SMS}} al mese",
+    "campaigns": "{count, plural, one {# campagna} other {# campagne}} al mese",
+    "emails": "{count, plural, one {# e-mail} other {# e-mail}} al mese",
+    "clients": "{count, plural, one {# cliente} other {# clienti}}",
+    "invoices": "{count, plural, one {# fattura} other {# fatture}} al mese",
+    "storage": "{amount} di spazio per i documenti"
+  },
   "notifications": {
     "title": "Notifiche",
     "filter": {

@@ -1,0 +1,128 @@
+/* HubCatalogBundles (S117): .wrap, .hb-* din preview.html. Pe telefon (containerul shell sub
+   768px) o singură coloană și cardurile mai strânse. */
+.wrap {
+  max-width: 1120px;
+  width: 100%;
+  margin: 0 auto;
+  padding: var(--space-6) var(--space-6) var(--space-10);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+  box-sizing: border-box;
+}
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-5);
+  align-items: start;
+}
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: var(--space-6);
+  background: var(--sheet);
+  border: var(--border-width) solid var(--line);
+  border-radius: var(--radius-lg);
+}
+.head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+.stack1 {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+.stack2 {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+.apps {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-4);
+}
+.app {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  white-space: nowrap;
+}
+.price {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+.cmp {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding: var(--space-3);
+  border-radius: var(--radius-sm);
+  background: var(--sunken);
+}
+.inc {
+  margin: 0;
+  padding-inline-start: var(--space-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+.sec {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin-top: var(--space-8);
+}
+.alc {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-4);
+}
+.alci {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-4);
+  background: var(--sheet);
+  border: var(--border-width) solid var(--line);
+  border-radius: var(--radius-lg);
+}
+.m0 {
+  margin: 0;
+}
+.lead {
+  margin: var(--space-1) 0 0;
+}
+.toast {
+  position: fixed;
+  right: var(--space-6);
+  bottom: var(--space-6);
+  width: var(--panel-width);
+  z-index: var(--z-toast);
+}
+
+@container shell (max-width: 767px) {
+  .wrap {
+    padding: var(--space-4);
+    gap: var(--space-6);
+  }
+  .grid,
+  .alc {
+    grid-template-columns: 1fr;
+  }
+  .card {
+    padding: var(--space-4);
+  }
+  .toast {
+    left: var(--space-4);
+    right: var(--space-4);
+    bottom: var(--space-4);
+    width: auto;
+  }
+}

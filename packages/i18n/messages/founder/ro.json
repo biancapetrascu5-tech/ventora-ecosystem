@@ -98,10 +98,14 @@
       "control": "Control",
       "system": "Sistem",
       "log": "Jurnal",
-      "settings": "Setări"
+      "settings": "Setări",
+      "requests": "Cereri",
+      "apps": "Aplicații",
+      "discounts": "Reduceri",
+      "bundles": "Bundle-uri"
     },
     "shell": {
-      "search": "Caută o afacere, un plan sau o campanie"
+      "search": "Caută o afacere, un bundle sau o campanie"
     },
     "auth": {
       "reqLength": "Cel puțin 12 caractere"
@@ -137,8 +141,19 @@
       "suspended": "Suspendată",
       "open": "Deschide afacerea",
       "status": {
-        "suspended": "Suspendată"
-      }
+        "suspended": "Suspendată",
+        "atLimit": "La limită",
+        "nearLimit": "Aproape de limită",
+        "trial": "Probă până pe {date}"
+      },
+      "colPlan": "Abonament",
+      "colUsage": "Consum maxim",
+      "usageValue": "{resource} · {pct}%",
+      "statActive": "Afaceri active",
+      "statActiveDelta": "în {month}",
+      "statTrial": "În perioadă de probă",
+      "statTrialHint": "{count, plural, one {# se încheie săptămâna aceasta} few {# se încheie săptămâna aceasta} other {# se încheie săptămâna aceasta}}",
+      "addException": "Adaugă o excepție"
     },
     "business": {
       "since": "client din {date}",
@@ -163,7 +178,18 @@
         "support_session_opened": "Sesiune de suport deschisă",
         "support_session_closed": "Sesiune de suport închisă",
         "support_session_revoked_by_org": "Sesiune de suport închisă de afacere",
-        "support_owner_recovery_performed": "Acces recuperat pentru proprietar"
+        "support_owner_recovery_performed": "Acces recuperat pentru proprietar",
+        "commercial_override_created": "Excepție adăugată",
+        "commercial_override_extended": "Excepție prelungită",
+        "commercial_override_ended": "Excepție încheiată",
+        "commercial_discount_created": "Reducere adăugată",
+        "commercial_discount_updated": "Reducere modificată",
+        "commercial_discount_ended": "Reducere încheiată",
+        "commercial_addon_granted": "Pachet în plus",
+        "commercial_application_line_added": "Aplicație adăugată la abonament",
+        "commercial_subscription_assigned": "Abonament pornit",
+        "commercial_version_change_scheduled": "Mutare programată pe altă versiune",
+        "commercial_currency_set": "Moneda afacerii setată"
       },
       "suspendDialog": {
         "title": "Suspenzi {name}?",
@@ -188,8 +214,82 @@
       },
       "log": {
         "inviteSent": "Invitație trimisă proprietarului",
-        "by": "{event} ({name})"
-      }
+        "by": "{event} ({name})",
+        "commercial": "{event}"
+      },
+      "planCard": "Abonament",
+      "currency": "Moneda: {currency}",
+      "currencyLei": "lei",
+      "currencyEur": "euro",
+      "billingMonthly": "plătește lunar: {amount}",
+      "billingAnnual": "plătește anual: {amount}",
+      "billingMonthlyStrong": "Plătește lunar: {amount}",
+      "billingAnnualStrong": "Plătește anual: {amount}",
+      "reset": "Consumul pornește de la zero pe {day} ale fiecărei luni.",
+      "resetShort": "consumul pornește de la zero pe {day} ale fiecărei luni",
+      "renews": "se reînnoiește pe {date}",
+      "discountNote": "reducere {value} până pe {date}",
+      "discountForever": "reducere {value}, permanentă",
+      "trialUntil": "probă până pe {date}",
+      "alaCarte": "Aplicații la bucată",
+      "noPlan": "Fără abonament",
+      "tabs": {
+        "overview": "Prezentare",
+        "usage": "Consum",
+        "exceptions": "Excepții",
+        "billing": "Plăți și facturi",
+        "log": "Jurnal"
+      },
+      "usage": {
+        "title": "Consum: {from} – {to}",
+        "titleNoPeriod": "Consum",
+        "lead": "Limitele includ excepțiile active.",
+        "none": "Afacerea nu are încă limite.",
+        "estimate": "La ritmul de acum, ajunge la limită pe {date}.",
+        "reached": "A atins limita în perioada aceasta."
+      },
+      "exceptions": {
+        "title": "Excepții",
+        "col": {
+          "what": "Ce",
+          "value": "Valoare",
+          "until": "Până la",
+          "reason": "Motiv",
+          "by": "Adăugată de"
+        },
+        "addShort": "Adaugă",
+        "edit": "Prelungește",
+        "end": "Încheie excepția acum",
+        "empty": "Nicio excepție activă.",
+        "value": "{value} în loc de {base}",
+        "unlimited": "nelimitat",
+        "by": "{name} · {date}",
+        "endTitle": "Închei excepția „{what}” acum?",
+        "endBody": "Limita revine la cea din abonament de la cererea următoare. Excepția rămâne în istoric.",
+        "endSubmit": "Încheie excepția",
+        "added": "Am adăugat excepția. Se vede de la cererea următoare.",
+        "extended": "Am prelungit excepția până pe {date}.",
+        "endedToast": "Am încheiat excepția."
+      },
+      "exceptionDialog": {
+        "title": "Adaugă o excepție pentru {business}",
+        "extendTitle": "Prelungește excepția pentru {business}",
+        "what": "Ce schimbi",
+        "value": "Valoare nouă",
+        "until": "Până la",
+        "untilHelp": "Cel mult 12 luni de azi.",
+        "reason": "Motiv",
+        "reasonHelp": "Rămâne în jurnal.",
+        "perMonth": "pe lună",
+        "submit": "Adaugă excepția",
+        "extendSubmit": "Prelungește",
+        "cancel": "Renunță",
+        "error": "Nu am putut salva schimbările. Verifică internetul și încearcă din nou.",
+        "errorValue": "Scrie un număr întreg, 0 sau mai mare.",
+        "errorUntil": "Alege o dată din următoarele 12 luni.",
+        "errorReason": "Scrie motivul excepției."
+      },
+      "purchaseFailed": "Afacerea și invitația sunt create, dar abonamentul nu s-a putut porni. Îl pornești de aici, din „Plăți și facturi”."
     },
     "newBusiness": {
       "title": "Afacere nouă",
@@ -202,7 +302,598 @@
       "submit": "Creează afacerea și trimite invitația",
       "submitShort": "Creează și trimite",
       "cancel": "Renunță",
-      "error": "Nu am putut crea afacerea. Încearcă din nou."
+      "error": "Nu am putut crea afacerea. Încearcă din nou.",
+      "trial": "Începe cu 14 zile de probă"
+    },
+    "chart": {
+      "viewTable": "Vezi ca tabel",
+      "viewChart": "Vezi graficul",
+      "millions": "mil."
+    },
+    "pricing": {
+      "monthly": "Lunar",
+      "annual": "Anual",
+      "lei": "Lei",
+      "euro": "Euro",
+      "saving": "economie {amount}"
+    },
+    "editor": {
+      "price": {
+        "title": "Preț",
+        "desc": "Prețul anual îl scrii tu, nu e un procent din cel lunar. Prețul în euro nu se calculează din lei.",
+        "monthlyLei": "Lunar, în lei",
+        "annualLei": "Anual, în lei",
+        "monthlyEur": "Lunar, în euro",
+        "annualEur": "Anual, în euro",
+        "setupLei": "Cost de implementare, în lei",
+        "setupEur": "Cost de implementare, în euro",
+        "now": "Acum: {amount} (v2).",
+        "saving": "Față de 12 plăți lunare, clientul economisește {amount}."
+      },
+      "error": {
+        "annualTooHigh": "Prețul anual trebuie să fie mai mic decât 12 plăți lunare ({amount}).",
+        "eurMissing": "Scrie prețul în euro. Nu îl calculăm din lei.",
+        "publish": "Ca să publici v3, completează prețurile marcate."
+      }
+    },
+    "packs": {
+      "title": "Pachete în plus",
+      "lead": "Ce pot cumpăra afacerile peste abonament. Prețul în lei, prețul în euro și costul de implementare de aici apar în toate ofertele.",
+      "new": "Pachet nou",
+      "newTitle": "Pachet nou",
+      "col": {
+        "pack": "Pachet",
+        "price": "Preț",
+        "period": "Se plătește",
+        "setup": "Implementare",
+        "purchase": "Cumpărare",
+        "availableFor": "Disponibil pentru"
+      },
+      "direct": "Directă",
+      "onRequest": "La cerere, prin echipa Ventora",
+      "stopped": "Vânzare oprită",
+      "edit": {
+        "title": "Editează „{name}”",
+        "priceLei": "Preț, în lei",
+        "priceEur": "Preț, în euro",
+        "priceHelp": "Pentru afacerile în euro. Nu se calculează din lei.",
+        "period": "Se plătește",
+        "periodOnce": "O dată, pentru perioada în curs",
+        "periodMonthly": "Lunar, cu abonamentul (proporțional în prima lună)",
+        "save": "Salvează",
+        "cancel": "Renunță",
+        "note": "Afacerile care l-au cumpărat deja îl plătesc la prețul vechi până îl reînnoiesc.",
+        "name": "Numele pachetului",
+        "resource": "Resursa",
+        "quantity": "Cantitatea",
+        "purchase": "Cumpărare",
+        "purchaseDirect": "Directă",
+        "purchaseOnRequest": "La cerere, prin echipa Ventora",
+        "setupLocked": "Are cost de implementare, deci rămâne la cerere.",
+        "error": "Nu am putut salva schimbările. Verifică internetul și încearcă din nou.",
+        "errorRequired": "Completează câmpul.",
+        "errorEur": "Scrie prețul în euro. Nu îl calculăm din lei."
+      },
+      "editAction": "Editează",
+      "stop": "Oprește vânzarea",
+      "period": {
+        "once": "o dată, perioada în curs",
+        "monthly": "lunar, cu abonamentul"
+      },
+      "allPlans": "Toate",
+      "none": "Fără",
+      "stopTitle": "Oprești vânzarea pentru „{name}”?",
+      "stopBody": "Pachetul nu se mai poate cumpăra. Afacerile care îl au îl păstrează. Acțiunea intră în jurnal.",
+      "stopSubmit": "Oprește vânzarea",
+      "saved": "Am salvat „{name}”.",
+      "availableWith": "Cu {app}",
+      "availableAll": "Toate afacerile"
+    },
+    "apps": {
+      "nav": "Aplicații",
+      "title": "Aplicații",
+      "lead": "Cât costă fiecare aplicație adăugată la abonament și dacă afacerea o poate activa singură. Cele care cer configurare stau „la cerere”.",
+      "col": {
+        "app": "Aplicație",
+        "price": "Pe lună",
+        "setup": "Implementare",
+        "activation": "Activare",
+        "maintenance": "Mentenanță: lunar · anual",
+        "limits": "Limite incluse"
+      },
+      "direct": "Direct",
+      "onRequest": "La cerere",
+      "directHelp": "Afacerea o activează singură din catalog și plătește cu cardul.",
+      "onRequestHelp": "Afacerea trimite o cerere; o activează echipa Ventora.",
+      "setupLocked": "Are cost de implementare, deci rămâne la cerere.",
+      "none": "Fără",
+      "switched": "{app} se activează acum direct din catalog.",
+      "switchedOff": "{app} se activează acum la cerere, prin echipa Ventora.",
+      "editPrice": "Editează prețul",
+      "dialog": {
+        "title": "Editează prețul pentru {app}",
+        "lead": "Mentenanța lunară și anuală și costul de implementare, în lei și în euro, plus limitele pe care le aduce aplicația.",
+        "limits": "Limite incluse",
+        "limitsHelp": "Ce aduce aplicația când e adăugată la bucată. Gol înseamnă că nu include resursa.",
+        "save": "Salvează",
+        "cancel": "Renunță",
+        "error": "Nu am putut salva schimbările. Verifică internetul și încearcă din nou.",
+        "saved": "Am salvat prețul pentru {app}.",
+        "errorAmount": "Scrie o sumă, de exemplu 49 sau 22,13.",
+        "errorRequired": "Scrie prețul lunar în lei.",
+        "errorEur": "Scrie prețul în euro. Nu îl calculăm din lei."
+      },
+      "lead2": "Fiecare aplicație se vinde și la bucată: implementarea o singură dată, apoi mentenanța lunar sau anual. Limitele de aici sunt incluse în prețul ei.",
+      "mobMaint": "Mentenanță {amount} pe lună · {eur}",
+      "mobSetup": "Implementare {amount} · {eur}",
+      "noLimits": "Fără limite proprii",
+      "directHelp2": "Afacerea o activează singură din catalog și plătește cu cardul, cu tot cu implementarea.",
+      "editAction": "Editează aplicația",
+      "edit": {
+        "title": "Editează {app}",
+        "subtitle": "Aplicație la bucată",
+        "maintenance": "Mentenanță",
+        "maintenanceHelp": "Se plătește lunar sau anual, odată cu abonamentul. Prețul anual îl scrii tu; euro nu se calculează din lei.",
+        "setup": "Implementare",
+        "setupHelp": "Se plătește o singură dată, la activare. Lasă 0 dacă aplicația nu are nevoie de implementare.",
+        "limits": "Limite incluse",
+        "limitsHelp": "Pe lună, și la plata anuală. Peste ele, afacerea cumpără pachete în plus.",
+        "addLimit": "Adaugă o limită",
+        "note": "Prețurile noi se aplică afacerilor care activează aplicația de acum înainte. Cele care o au deja își păstrează prețul.",
+        "cancel": "Renunță",
+        "save": "Salvează",
+        "error": "Nu am putut salva schimbările. Verifică internetul și încearcă din nou."
+      },
+      "noSetupShort": "Fără cost de implementare"
+    },
+    "usage": {
+      "title": "Consum",
+      "lead": "Cum se folosesc limitele în toate afacerile, în {month}, până azi.",
+      "col": {
+        "business": "Afacere",
+        "resource": "Resursă",
+        "usage": "Consum",
+        "estimate": "Ajunge la limită",
+        "status": "Stare"
+      },
+      "caption": "Afaceri aproape de limită",
+      "byResource": "Afaceri aproape de limită, pe resursă",
+      "byResourceHelp": "Peste 80% din limita lunii",
+      "businessesUnit": "afaceri",
+      "smsSeries": "SMS-uri",
+      "inProgress": "în curs",
+      "daily": "SMS-uri trimise pe zi",
+      "dailyHelp": "{month} · azi e încă în curs",
+      "open": "Deschide afacerea",
+      "addException": "Adaugă o excepție",
+      "empty": "Nicio afacere peste 80% la o limită.",
+      "tooEarly": "Prea devreme",
+      "tooEarlyHelp": "Estimăm data după primele 7 zile ale lunii.",
+      "reached": "Atinsă",
+      "atLimit": "La limită",
+      "stat": {
+        "attention": "Afaceri peste 80% la o limită",
+        "attentionHint": "{count, plural, one {# a atins limita} few {# au atins limita} other {# au atins limita}}",
+        "sms": "SMS-uri trimise",
+        "appointments": "Programări create",
+        "packs": "Pachete în plus vândute",
+        "vsPrevious": "față de {month}"
+      },
+      "of": "{used} din {limit}"
+    },
+    "requests": {
+      "nav": "Cereri",
+      "title": "Cereri din Hub",
+      "lead": "Ce au cerut afacerile din Hub: activarea unui pachet sau a unei aplicații, ori alt abonament.",
+      "filter": "Arată",
+      "filterNew": "Noi",
+      "filterAll": "Toate",
+      "col": {
+        "business": "Afacerea",
+        "who": "Cine a cerut",
+        "what": "Ce",
+        "when": "Când",
+        "status": "Stare"
+      },
+      "type": {
+        "activation": "Cere activare",
+        "plan": "Cere alt abonament"
+      },
+      "status": {
+        "new": "Nouă",
+        "resolved": "Rezolvată",
+        "refused": "Refuzată"
+      },
+      "action": {
+        "open": "Deschide afacerea",
+        "resolve": "Marchează rezolvată",
+        "refuse": "Refuză…"
+      },
+      "resolved": "Am marcat cererea ca rezolvată. {name} primește o notificare în Hub.",
+      "refuse": {
+        "title": "Refuzi cererea de la {business}?",
+        "what": "{type} · {item}",
+        "reason": "Motiv",
+        "reasonHelp": "{name} vede motivul în notificarea din Hub.",
+        "counter": "{n} / 1.000",
+        "submit": "Refuză cererea",
+        "cancel": "Renunță",
+        "error": "Nu am putut salva schimbările. Verifică internetul și încearcă din nou."
+      },
+      "refused": "Am refuzat cererea. {name} primește motivul în Hub.",
+      "emptyTitle": "Nicio cerere nouă",
+      "emptyBody": "Când o afacere cere o activare sau alt abonament din Hub, apare aici.",
+      "error": "Nu am putut salva schimbările. Verifică internetul și încearcă din nou."
+    },
+    "billing": {
+      "tab": "Plăți și facturi",
+      "planTitle": "Abonament",
+      "card": "Plătește cu cardul {brand} ···· {last4}",
+      "manual": "Plată manuală, prin transfer bancar",
+      "renews": "se reînnoiește pe {date}",
+      "noPlan": "Afacerea nu are încă un abonament.",
+      "monthlyStrong": "Plătește lunar: {amount}",
+      "annualStrong": "Plătește anual: {amount}"
+    },
+    "discounts": {
+      "nav": "Reduceri",
+      "title": "Reduceri",
+      "lead": "Toate reducerile permanente, din toate afacerile. Cele temporare le vezi și în pagina fiecărei afaceri.",
+      "filterLabel": "Arată",
+      "filterPermanent": "Permanente",
+      "filterActive": "Toate active",
+      "section": "Reduceri active",
+      "sectionLead": "Se aplică la următoarele facturi; facturile emise nu se schimbă.",
+      "add": "Adaugă o reducere",
+      "col": {
+        "business": "Afacerea",
+        "what": "Pe ce",
+        "value": "Reducere",
+        "duration": "Cât ține",
+        "reason": "Motiv",
+        "by": "Adăugată de",
+        "since": "Din"
+      },
+      "what": {
+        "plan": "Tot abonamentul",
+        "application": "{name} · aplicație adăugată",
+        "addon": "{name}"
+      },
+      "duration": {
+        "once": "O singură dată",
+        "months": "{count, plural, one {# lună} few {# luni} other {# de luni}}, până pe {date}",
+        "permanent": "Permanentă"
+      },
+      "edit": "Editează",
+      "end": "Încheie reducerea",
+      "open": "Deschide afacerea",
+      "empty": "Nicio reducere activă.",
+      "emptyPermanent": "Nicio reducere permanentă. Când adaugi una din pagina unei afaceri, apare aici.",
+      "total": "Total",
+      "discountLine": "Reducere {value}",
+      "planLine": "Abonament {plan}",
+      "dialog": {
+        "title": "Adaugă o reducere pentru {business}",
+        "editTitle": "Editează reducerea pentru {business}",
+        "scope": "Se aplică pe",
+        "scopePlan": "Tot abonamentul",
+        "scopePlanDesc": "Doar prețul abonamentului. Aplicațiile adăugate și pachetele lunare au reducerile lor.",
+        "scopeLine": "O singură linie",
+        "scopeLineDesc": "O aplicație adăugată sau un pachet lunar.",
+        "line": "Linia",
+        "kind": "Reducerea",
+        "kindPercent": "Procent",
+        "kindAmount": "Sumă fixă",
+        "value": "Valoare",
+        "percentHelp": "Între 1 și 100%. 100% înseamnă gratuit.",
+        "amountHelp": "În {currency}, moneda afacerii. Cel mult prețul liniei.",
+        "duration": "Cât ține",
+        "durationOnce": "O singură dată",
+        "durationOnceDesc": "Doar la următoarea factură.",
+        "durationMonths": "Un număr de luni",
+        "durationPermanent": "Permanent",
+        "durationPermanentDesc": "Până o închei tu. Apare și în lista „Reduceri”.",
+        "monthsLabel": "Luni",
+        "reason": "Motiv",
+        "reasonHelp": "Intră în jurnalul afacerii. Clientul nu îl vede.",
+        "preview": "Următoarea factură, pe {date}",
+        "free": "Cu 100%, linia devine gratuită: pe factură apare prețul întreg, reducerea și totalul 0.",
+        "submit": "Adaugă reducerea",
+        "save": "Salvează",
+        "cancel": "Renunță",
+        "error": "Nu am putut salva schimbările. Verifică internetul și încearcă din nou."
+      },
+      "error": {
+        "reason": "Scrie motivul reducerii.",
+        "reasonLength": "Motivul are între 10 și 1.000 de caractere.",
+        "percent": "Scrie un procent între 1 și 100.",
+        "amount": "Reducerea nu poate fi mai mare decât prețul liniei ({amount}).",
+        "amountInvalid": "Scrie o sumă mai mare decât zero.",
+        "months": "Scrie un număr de luni între 1 și 120."
+      },
+      "added": "Am adăugat reducerea. Se vede de la factura din {date}.",
+      "updated": "Am salvat reducerea.",
+      "endDialog": {
+        "title": "Închei reducerea de {value} pentru {business}?",
+        "body": "De la factura din {date}, prețul revine la {amount}. Facturile deja emise nu se schimbă. Acțiunea intră în jurnal.",
+        "bodyNoDate": "Reducerea nu se mai aplică facturilor următoare. Facturile deja emise nu se schimbă. Acțiunea intră în jurnal.",
+        "submit": "Încheie reducerea"
+      },
+      "ended": "Am încheiat reducerea. De la {date}, prețul e {amount}.",
+      "endedNoDate": "Am încheiat reducerea."
+    },
+    "overview": {
+      "title": "Prezentare",
+      "lead": "Ce cere atenția echipei Ventora azi.",
+      "expiring": "O excepție expiră pe {date}",
+      "extend": "Prelungește",
+      "empty": "Nicio excepție nu expiră în următoarele 7 zile."
+    },
+    "quota": {
+      "platform_members": {
+        "label": "Locuri în echipă",
+        "limit": "Limită de membri",
+        "perMonth": "Locuri în echipă",
+        "amount": "{count, plural, one {{n} loc în echipă} few {{n} locuri în echipă} other {{n} de locuri în echipă}}",
+        "unlimited": "Locuri în echipă nelimitate"
+      },
+      "platform_locations": {
+        "label": "Locații",
+        "limit": "Limită de locații",
+        "perMonth": "Locații",
+        "amount": "{count, plural, one {{n} locație} few {{n} locații} other {{n} de locații}}",
+        "unlimited": "Locații nelimitate"
+      },
+      "booking_appointments": {
+        "label": "Programări",
+        "limit": "Limită de programări",
+        "perMonth": "Programări pe lună",
+        "amount": "{count, plural, one {{n} programare} few {{n} programări} other {{n} de programări}} pe lună",
+        "unlimited": "Programări nelimitate"
+      },
+      "booking_sms_devices": {
+        "label": "Telefoane pentru SMS",
+        "limit": "Limită de telefoane pentru SMS",
+        "perMonth": "Telefoane pentru SMS",
+        "amount": "{count, plural, one {{n} telefon pentru SMS} few {{n} telefoane pentru SMS} other {{n} de telefoane pentru SMS}}",
+        "unlimited": "Telefoane pentru SMS nelimitate"
+      },
+      "messaging_sms": {
+        "label": "SMS-uri",
+        "limit": "Limită de SMS-uri",
+        "perMonth": "SMS pe lună",
+        "amount": "{count, plural, other {{n} SMS}} pe lună",
+        "unlimited": "SMS nelimitate"
+      },
+      "messaging_email": {
+        "label": "E-mailuri către clienți",
+        "limit": "Limită de e-mailuri",
+        "perMonth": "E-mailuri pe lună",
+        "amount": "{count, plural, one {{n} e-mail} few {{n} e-mailuri} other {{n} de e-mailuri}} pe lună",
+        "unlimited": "E-mailuri nelimitate"
+      },
+      "marketing_campaigns": {
+        "label": "Campanii",
+        "limit": "Limită de campanii",
+        "perMonth": "Campanii pe lună",
+        "amount": "{count, plural, one {{n} campanie} few {{n} campanii} other {{n} de campanii}} pe lună",
+        "unlimited": "Campanii nelimitate"
+      },
+      "documents_storage": {
+        "label": "Spațiu documente",
+        "limit": "Limită de spațiu pentru documente",
+        "perMonth": "Spațiu documente, în GB",
+        "amount": "{n} GB spațiu pentru documente",
+        "unlimited": "Spațiu pentru documente nelimitat"
+      },
+      "workflows_active": {
+        "label": "Automatizări active",
+        "limit": "Limită de automatizări active",
+        "perMonth": "Automatizări active",
+        "amount": "{count, plural, one {{n} automatizare activă} few {{n} automatizări active} other {{n} de automatizări active}}",
+        "unlimited": "Automatizări nelimitate"
+      },
+      "funnel_pages_published": {
+        "label": "Pagini publicate",
+        "limit": "Limită de pagini publicate",
+        "perMonth": "Pagini publicate",
+        "amount": "{count, plural, one {{n} pagină publicată} few {{n} pagini publicate} other {{n} de pagini publicate}}",
+        "unlimited": "Pagini publicate nelimitate"
+      },
+      "ai_analyses": {
+        "label": "Analize AI",
+        "limit": "Limită de analize AI",
+        "perMonth": "Analize AI pe lună",
+        "amount": "{count, plural, one {{n} analiză AI} few {{n} analize AI} other {{n} de analize AI}} pe lună",
+        "unlimited": "Analize AI nelimitate"
+      },
+      "events_active": {
+        "label": "Evenimente publicate",
+        "limit": "Limită de evenimente publicate",
+        "perMonth": "Evenimente publicate",
+        "amount": "{count, plural, one {{n} eveniment publicat} few {{n} evenimente publicate} other {{n} de evenimente publicate}}",
+        "unlimited": "Evenimente publicate nelimitate"
+      },
+      "events_created": {
+        "label": "Evenimente create",
+        "limit": "Limită de evenimente create",
+        "perMonth": "Evenimente create pe lună",
+        "amount": "{count, plural, one {{n} eveniment creat} few {{n} evenimente create} other {{n} de evenimente create}} pe lună",
+        "unlimited": "Evenimente create nelimitate"
+      }
+    },
+    "new": {
+      "currency": "Moneda afacerii",
+      "currencyHelp": "Toate prețurile, facturile și plățile afacerii sunt în moneda aceasta, în orice limbă. După prima factură nu se mai schimbă.",
+      "billing": "Plata",
+      "billingHelp": "Clientul poate trece de la lunar la anual la reînnoire.",
+      "planPrice": {
+        "monthly": "{amount} pe lună",
+        "annual": "{amount} pe an · economisește {saving}"
+      },
+      "mail": {
+        "price": {
+          "monthly": "Apoi abonamentul e {amount} pe lună.",
+          "annual": "Apoi abonamentul e {amount} pe an."
+        },
+        "body": "Am pregătit contul afacerii {business}, cu {what}. Primele 14 zile sunt gratuite.",
+        "bundle": "bundle-ul {name}",
+        "total": {
+          "monthly": "Apoi abonamentul e {amount} pe lună.",
+          "annual": "Apoi abonamentul e {amount} pe an."
+        },
+        "setup": "Implementarea, {amount}, se plătește o singură dată, la prima factură."
+      },
+      "buy": {
+        "title": "Ce cumpără",
+        "desc": "Un bundle, aplicații la bucată sau amândouă."
+      },
+      "bundle": "Bundle",
+      "bundleHelp": "Doar bundle-urile în vânzare acum.",
+      "noBundle": "Fără bundle",
+      "apps": "Aplicații la bucată",
+      "appsHelp": "Cele din bundle sunt deja incluse.",
+      "inBundle": "Inclusă în bundle-ul {name}",
+      "perMonth": "{amount} pe lună",
+      "perYear": "{amount} pe an",
+      "setupShort": "implementare {amount}",
+      "line": {
+        "bundle": "Bundle {name} · {v}",
+        "app": "{app} · la bucată"
+      },
+      "totalMonth": "Total pe lună",
+      "totalYear": "Total pe an",
+      "setupOnce": "Implementare, o singură dată",
+      "seats": "Locuri în echipă",
+      "noSetupLower": "fără cost de implementare",
+      "noSetupValue": "Fără"
+    },
+    "bundles": {
+      "title": "Bundle-uri",
+      "lead": "Un bundle e un grup de aplicații la un preț mai bun decât luate la bucată, cu limite și locuri în echipă incluse. Se vinde într-o perioadă; afacerile care îl cumpără îl păstrează la același preț și după ce oferta se încheie.",
+      "new": "Bundle nou",
+      "newOffer": "Ofertă nouă",
+      "editOffer": "Editează oferta",
+      "stop": "Oprește vânzarea",
+      "status": {
+        "selling": "În vânzare",
+        "scheduled": "Programat",
+        "stopped": "Vânzare oprită pe {date}"
+      },
+      "available": "Disponibil {period}",
+      "bizTotal": "{count, plural, one {# afacere îl are} few {# afaceri îl au} other {# de afaceri îl au}}",
+      "bizAria": "{count, plural, one {# afacere} few {# afaceri} other {# de afaceri}} pe {name} {v}, vezi lista",
+      "price": "Preț bundle",
+      "separate": "Aceleași aplicații la bucată",
+      "perMonth": "{amount} pe lună",
+      "perYear": "{amount} pe an",
+      "saving": "Economie: {amount} pe lună ({pct}%)",
+      "includes": "Include",
+      "seatsLine": "{bundle} locuri în echipă în plus ({total} cu cele din cont)",
+      "setupLine": "Implementare: {amount}, o singură dată (separat: {sep})",
+      "noSetup": "Fără cost de implementare",
+      "col": {
+        "sale": "Perioada de vânzare"
+      },
+      "ver": {
+        "now": "Oferta de acum",
+        "next": "Următoarea",
+        "ended": "Încheiată"
+      },
+      "keepNote": "Afacerile rămân pe versiunea pe care au cumpărat-o, la prețul ei, și după ce oferta se încheie.",
+      "stopDialog": {
+        "title": "Oprești vânzarea bundle-ului {name}?",
+        "body": "Bundle-ul dispare acum din catalog și nu îl mai poți alege pentru o afacere nouă, deși oferta era până pe {date}.",
+        "keep": "{count, plural, one {Afacerea care îl are îl păstrează} few {Cele # afaceri care îl au îl păstrează} other {Cele # de afaceri care îl au îl păstrează}}, la prețul lor. Îl poți vinde din nou cu „Ofertă nouă”.",
+        "log": "Acțiunea intră în jurnal.",
+        "cancel": "Renunță",
+        "bodyOpen": "Bundle-ul dispare acum din catalog și nu îl mai poți alege pentru o afacere nouă."
+      },
+      "stopped": "Am oprit vânzarea bundle-ului {name}",
+      "stoppedBody": "{count, plural, one {Afacerea care îl are îl păstrează.} few {Cele # afaceri care îl au îl păstrează.} other {Cele # de afaceri care îl au îl păstrează.}}",
+      "empty": "Niciun bundle încă. Primul se face cu „Bundle nou”.",
+      "error": "Nu am putut salva schimbările. Verifică internetul și încearcă din nou.",
+      "saleFrom": "de pe {date}",
+      "saleOpen": "fără termen",
+      "newDialog": {
+        "title": "Bundle nou",
+        "name": "Numele bundle-ului",
+        "nameHelp": "Apoi îi faci prima ofertă: aplicațiile, prețurile și perioada de vânzare.",
+        "submit": "Creează și fă oferta"
+      }
+    },
+    "bundleEditor": {
+      "title": "{name} · ofertă nouă ({v})",
+      "crumb": "{v} (ciornă)",
+      "draft": "Ciornă",
+      "keepTitle": "Oferta de acum nu se schimbă",
+      "keepBody": "v2 rămâne în vânzare până pe {date}. {count, plural, one {Afacerea care are {name} își păstrează} few {Cele # afaceri care au {name} își păstrează} other {Cele # de afaceri care au {name} își păstrează}} versiunea și prețul.",
+      "apps": {
+        "title": "Aplicații incluse",
+        "desc": "Sub fiecare, prețul ei la bucată.",
+        "separate": "{count, plural, one {# aplicație luată separat} few {# aplicații luate separat} other {# de aplicații luate separat}}",
+        "separateRest": "Pe an și în euro"
+      },
+      "newInVersion": "Nou în {v}",
+      "price": {
+        "title": "Prețul bundle-ului",
+        "desc": "Mai mic decât aplicațiile luate separat. Prețul anual îl scrii tu; euro nu se calculează din lei.",
+        "saving": "Clientul economisește {amount} pe lună ({pct}%) față de aplicațiile luate separat.",
+        "separateEur": "Separat: {amount} pe lună."
+      },
+      "setup": {
+        "title": "Implementare",
+        "desc": "O singură dată, la cumpărare. Separat, aplicațiile ar avea implementare de {amount} ({eur})."
+      },
+      "limits": {
+        "title": "Limite incluse",
+        "desc": "Pe lună, și la plata anuală. Înlocuiesc limitele aplicațiilor luate separat.",
+        "resource": "Resursă",
+        "up": "crește",
+        "down": "scade"
+      },
+      "seats": {
+        "title": "Locuri în echipă",
+        "label": "Locuri în plus din bundle",
+        "help": "Pe lângă cele {base} incluse în orice cont: {total} în total."
+      },
+      "sale": {
+        "title": "Perioada de vânzare",
+        "desc": "Cât timp apare bundle-ul în catalog și îl poți alege pentru o afacere nouă.",
+        "from": "Disponibil de pe",
+        "to": "Până pe",
+        "toHelp": "Inclusiv ziua aceasta.",
+        "catalog": "În catalog, afacerile văd „Ofertă valabilă până pe {date}”."
+      },
+      "savedAgo": "Ciornă salvată acum 2 min",
+      "saveDraft": "Salvează ciorna",
+      "schedule": "Programează oferta",
+      "error": {
+        "notCheaper": "Prețul bundle-ului trebuie să fie mai mic decât aplicațiile luate separat ({amount}).",
+        "overlap": "Oferta de acum e în vânzare până pe {date}. Oferta nouă poate începe cel mai devreme pe {first}.",
+        "publish": "Ca să programezi oferta, corectează câmpurile marcate.",
+        "required": "Scrie prețul lunar în lei.",
+        "amount": "Scrie o sumă, de exemplu 329 sau 22,13.",
+        "fromRequired": "Alege ziua de la care se vinde oferta.",
+        "untilBeforeFrom": "Ziua de sfârșit e înaintea celei de început.",
+        "overlapServer": "Perioada se suprapune cu altă ofertă a bundle-ului.",
+        "save": "Nu am putut salva oferta. Verifică internetul și încearcă din nou.",
+        "eurMissing": "Scrie prețul în euro. Nu îl calculăm din lei."
+      },
+      "published": "Publicată",
+      "keepBodyOpen": "{count, plural, one {Afacerea care are {name} își păstrează} few {Cele # afaceri care au {name} își păstrează} other {Cele # de afaceri care au {name} își păstrează}} versiunea și prețul.",
+      "savedAt": "Ciornă salvată la {time}"
+    },
+    "plans": {
+      "lead": "Fiecare schimbare de preț sau de limite face o versiune nouă. Afacerile rămân pe versiunea lor până le muți tu.",
+      "col": {
+        "version": "Versiune",
+        "monthly": "Lunar",
+        "annual": "Anual",
+        "businesses": "Afaceri",
+        "since": "Din"
+      },
+      "limitsMonthly": "Limite pe lună, și la plata anuală"
     }
   }
 }

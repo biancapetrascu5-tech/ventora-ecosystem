@@ -43,7 +43,7 @@ export const FX_NOTIFS: NotificationData[] = [
   {
     id: 3,
     title: 'O excepție expiră pe 30 octombrie',
-    body: 'Salon Aurora · 12 angajați în loc de 10',
+    body: 'Salon Aurora · 12 membri în loc de 10',
     app: 'Afaceri',
     time: 'ieri',
     icon: 'clock',

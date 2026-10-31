@@ -254,12 +254,13 @@
 }
 
 .item:hover :is(.desc, .live) {
-  transition-delay: calc(var(--duration-intent) + 80ms), calc(var(--duration-intent) + 20ms),
-    var(--duration-intent);
+  transition-delay:
+    calc(var(--duration-intent) + 80ms), calc(var(--duration-intent) + 20ms), var(--duration-intent);
 }
 
 .item:hover .live {
-  transition-delay: calc(var(--duration-intent) + 130ms), calc(var(--duration-intent) + 60ms),
+  transition-delay:
+    calc(var(--duration-intent) + 130ms), calc(var(--duration-intent) + 60ms),
     var(--duration-intent);
 }
 

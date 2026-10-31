@@ -1,0 +1,5 @@
+# FounderApps
+
+Founder · "Aplicații" (S113), a new Spine entry under "Model comercial": the apps a business can add to its plan, with the monthly price in lei and in euro, the setup cost, and the "Direct / La cerere" switch. Direct: the business activates it itself from the catalog and pays with the card. On request: it sends a request and the Ventora team activates it. An app with a setup cost stays on request (the switch is locked). Shown at 1280 and 390, light and dark. Romanian only (S57); keys `founder.apps.*` in `i18n/founder-pricing.json`.
+
+**Individual apps (S117).** Every app is sold on its own: implementation once, maintenance monthly or yearly, in lei and euro (typed in separately), with the limits it includes ("1.000 de programări pe lună", "500 SMS pe lună", or "Fără limite proprii"). "Direct / La cerere" no longer depends on the implementation: a direct app is paid by card, implementation included. Row action "Editează aplicația" opens a side panel with maintenance, implementation, limits and the note that existing businesses keep their price. Keys `founder.apps.*` in `i18n/founder-pricing.json`.

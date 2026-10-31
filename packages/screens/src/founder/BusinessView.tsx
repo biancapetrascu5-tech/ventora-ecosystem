@@ -49,14 +49,17 @@ export function BusinessView({
   owner,
   recent,
   notice,
+  full,
   phone: phoneProp,
 }: {
   name: string;
-  status: BusinessStatus;
+  /** Lipsă în filele care nu au starea în antet (FounderDiscounts: „Plăți și facturi”). */
+  status?: BusinessStatus;
   /** „client din martie 2025 · Andrei Mureșan (proprietar)” */
   meta: string;
   /** „Adaugă o excepție” (3.4). */
   primaryAction?: ReactNode;
+  /** Gol: fără „Mai multe acțiuni” (ca în preview-ul FounderDiscounts). */
   menu: BusinessMenuItem[];
   onMenuAction: (id: string) => void;
   /** Prezentare · Consum · Excepții · Facturi · Jurnal (3.4). */
@@ -69,6 +72,8 @@ export function BusinessView({
   recent: BusinessChange[];
   /** S112: „Suspendată pe {date} de {name}. …” sub antet. */
   notice?: ReactNode;
+  /** Lotul 3.4: o filă pe toată lățimea, fără fișele din dreapta („Plăți și facturi”, „Jurnal”). */
+  full?: ReactNode;
   /** Forța aspectul de telefon (galeria: cadrul de 1280 rămâne desktop). */
   phone?: boolean;
 }) {
@@ -105,36 +110,50 @@ export function BusinessView({
           phone ? undefined : [{ label: nav('businesses'), href: '/businesses' }, { label: name }]
         }
         meta={
-          <span className={styles.meta}>
-            <StatusPill tone={status.tone} icon={status.icon}>
-              {status.label}
-            </StatusPill>
+          status ? (
+            <span className={styles.meta}>
+              <StatusPill tone={status.tone} icon={status.icon}>
+                {status.label}
+              </StatusPill>
+              <span className="body-small muted">{meta}</span>
+            </span>
+          ) : (
             <span className="body-small muted">{meta}</span>
-          </span>
+          )
         }
         actions={
-          <span
-            className={phone ? `${styles.acts} ${styles.actsMob}` : styles.acts}
-            data-actions-full={phone ? '' : undefined}
-          >
-            {primaryAction}
-            <Menu
-              label={t('moreActions')}
-              items={menu.flatMap((m) => [
-                ...(m.separatorBefore ? [{ separator: true as const }] : []),
-                { id: m.id, label: m.label, icon: m.icon, isDanger: m.danger },
-              ])}
-              onAction={onMenuAction}
+          !primaryAction && menu.length === 0 ? undefined : (
+            <span
+              className={phone ? `${styles.acts} ${styles.actsMob}` : styles.acts}
+              data-actions-full={phone ? '' : undefined}
             >
-              <IconButton icon="ellipsis-vertical" label={t('moreActions')} variant="secondary" />
-            </Menu>
-          </span>
+              {primaryAction}
+              {menu.length > 0 && (
+                <Menu
+                  label={t('moreActions')}
+                  items={menu.flatMap((m) => [
+                    ...(m.separatorBefore ? [{ separator: true as const }] : []),
+                    { id: m.id, label: m.label, icon: m.icon, isDanger: m.danger },
+                  ])}
+                  onAction={onMenuAction}
+                >
+                  <IconButton
+                    icon="ellipsis-vertical"
+                    label={t('moreActions')}
+                    variant="secondary"
+                  />
+                </Menu>
+              )}
+            </span>
+          )
         }
         tabs={tabs}
       />
       <div className={styles.axb}>
         {notice}
-        {main ? (
+        {full ? (
+          full
+        ) : main ? (
           <div className={styles.split}>
             <div className={styles.main}>{main}</div>
             <aside className={styles.side}>{cards}</aside>

@@ -94,3 +94,18 @@
   margin: 0;
   color: var(--ink-secondary);
 }
+
+/* .v-addon__inc / .v-addon__inclist (S117): ce include o aplicație la bucată */
+.inc {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+.incList {
+  margin: 0;
+  padding-inline-start: var(--space-5);
+  color: var(--ink-secondary);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-0-5);
+}
