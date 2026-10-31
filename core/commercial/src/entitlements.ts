@@ -68,6 +68,15 @@ function planIncluded(sub: LiveSubscription, at: Date): boolean {
   return true;
 }
 
+/** Lot 3.3: the same computation inside the caller's transaction (the quota operations). */
+export async function computeEntitlementsInTx(
+  client: PoolClient,
+  organizationId: string,
+  at: Date,
+): Promise<EffectiveEntitlements> {
+  return (await computeEntitlements(client, organizationId, at)).entitlements;
+}
+
 async function computeEntitlements(
   client: PoolClient,
   organizationId: string,

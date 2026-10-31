@@ -85,4 +85,21 @@ export {
   priceInvoice,
   type DiscountTerms,
 } from './pricing';
+export {
+  checkQuota,
+  reserveQuota,
+  commitQuota,
+  releaseQuota,
+  refundQuota,
+  freeStockQuota,
+  reconcileExpiredReservations,
+  RESERVATION_TTL_MS,
+  QUOTA_THRESHOLDS,
+  type QuotaContext,
+  type QuotaState,
+  type ReserveResult,
+  type ReservationStatus,
+  type OperationResolver,
+  type ReconcileResult,
+} from './quota';
 export { closeCommercialPools, type CommercialConnection } from './db';
