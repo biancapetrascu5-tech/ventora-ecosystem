@@ -41,7 +41,7 @@ export function renderNotification(
   template: NotificationTemplate,
   params: Readonly<Record<string, string>>,
   locale: Locale,
-): { title: string; body?: string } {
+): { title: string; body?: string; action?: string } {
   if (template.textsPending) {
     throw new Error(`[notifications] ${template.type}@${template.version}: texts come in Lot 4.5`);
   }
@@ -50,5 +50,7 @@ export function renderNotification(
     ...(template.bodyKey
       ? { body: fill(notificationText(locale, template.bodyKey), { ...params }) }
       : {}),
+    // S115: „Vezi factura →” under the text in the panel
+    ...(template.actionKey ? { action: notificationText(locale, template.actionKey) } : {}),
   };
 }

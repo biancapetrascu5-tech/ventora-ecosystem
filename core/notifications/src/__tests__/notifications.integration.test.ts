@@ -1,9 +1,16 @@
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import pg from 'pg';
+import { InvalidInput, ResourceNotFound } from '@ventora/errors';
 import {
   NotificationCatalog,
+  closeNotificationsPool,
   deliverPendingNotifications,
+  getInbox,
+  getNotificationPreferences,
+  markAllNotificationsRead,
+  openNotification,
   sendNotification,
+  setNotificationPreference,
   type DeliveryContact,
   type EmailChannel,
   type NotificationTemplate,
@@ -26,9 +33,15 @@ const PHONE: NotificationTemplate = {
   titleKey: 'sms.disconnected.title',
   bodyKey: 'sms.disconnected.body',
   channels: ['email'],
+  topic: 'phone',
   actionPath: () => '/booking/settings/sms',
 };
-const SECURITY: NotificationTemplate = { ...PHONE, type: 'account.security_test', security: true };
+const SECURITY: NotificationTemplate = {
+  ...PHONE,
+  type: 'account.security_test',
+  security: true,
+  topic: 'password',
+};
 const LIMITED: NotificationTemplate = {
   ...PHONE,
   type: 'messaging.phone_failing',
@@ -41,8 +54,15 @@ const OFFER: NotificationTemplate = {
   type: 'growth.offer_test',
   category: 'commercial',
   group: 'recommendation',
+  topic: 'recommendations',
 };
-const catalog = new NotificationCatalog([PHONE, SECURITY, LIMITED, OFFER]);
+const ACTIVITY: NotificationTemplate = {
+  ...LIMITED,
+  type: 'messaging.activity_test',
+  group: 'activity',
+  rateLimit: undefined,
+};
+const catalog = new NotificationCatalog([PHONE, SECURITY, LIMITED, OFFER, ACTIVITY]);
 const PARAMS = { n: '6', time: '18:00' };
 
 let admin: pg.Pool;
@@ -124,6 +144,7 @@ run('Lot 4.3 — notifications: the model and the delivery', () => {
   afterAll(async () => {
     await admin?.end();
     await app?.end();
+    await closeNotificationsPool();
   });
 
   it('the same notification twice with the same key → one per recipient; the role is restored', async () => {
@@ -178,12 +199,15 @@ run('Lot 4.3 — notifications: the model and the delivery', () => {
     expect(results[2]!.rateLimited).toEqual([r]);
   });
 
-  it('preferences (D4-6): email off per category; security ignores it; commercial in-app toggle, commercial email never', async () => {
+  it('preferences (D4-6): email off per topic; security ignores it; commercial in-app toggle, commercial email never', async () => {
     const org = crypto.randomUUID();
     const [off, on] = [crypto.randomUUID(), crypto.randomUUID()];
+    // a security row written behind the contract's back is ignored too
     await q(
-      `INSERT INTO notifications.notification_preference (user_id, category, channel, enabled)
-       VALUES ($1, 'operational', 'email', false), ($1, 'commercial', 'in_app', false)`,
+      `INSERT INTO notifications.notification_preference (user_id, topic, category, channel, enabled)
+       VALUES ($1, 'phone', 'operational', 'email', false),
+              ($1, 'recommendations', 'commercial', 'in_app', false),
+              ($1, 'password', 'operational', 'email', false)`,
       [off],
     );
     await send(org, {
@@ -353,6 +377,180 @@ run('Lot 4.3 — notifications: the model and the delivery', () => {
         [org],
       ),
     ).toEqual([{ status: 'failed', last_error: 'not_configured' }]);
+  });
+
+  it('Lot 4.4 — the bell: last 30 days, newest first; counts only unread operational; open; mark all read', async () => {
+    const org = crypto.randomUUID();
+    const [me, other] = [crypto.randomUUID(), crypto.randomUUID()];
+    await send(org, {
+      type: PHONE.type,
+      version: 1,
+      recipientUserIds: [me, other],
+      idempotencyKey: 'b1',
+      params: PARAMS,
+    });
+    await send(org, {
+      type: ACTIVITY.type,
+      version: 1,
+      recipientUserIds: [me],
+      idempotencyKey: 'b2',
+      params: { n: '1', phone: 'A' },
+    });
+    await send(org, {
+      category: 'commercial',
+      type: OFFER.type,
+      version: 1,
+      recipientUserIds: [me],
+      idempotencyKey: 'b3',
+      params: PARAMS,
+    });
+    // one older than 30 days (D4-11 = a): not in the panel, not counted
+    await send(org, {
+      type: PHONE.type,
+      version: 1,
+      recipientUserIds: [me],
+      idempotencyKey: 'b0',
+      params: PARAMS,
+    });
+    await q(
+      `UPDATE notifications.notification SET created_at = now() - interval '31 days'
+        WHERE recipient_user_id = $1 AND dedup_key LIKE '%:b0'`,
+      [me],
+    );
+
+    let inbox = await getInbox(me, 'ro', { catalog });
+    expect(inbox.items.map((i) => i.title)).toEqual([
+      'Telefonul afacerii e deconectat', // b3 is commercial, same template texts
+      expect.any(String),
+      'Telefonul afacerii e deconectat',
+    ]);
+    expect(inbox.items.map((i) => i.category)).toEqual([
+      'commercial',
+      'operational',
+      'operational',
+    ]);
+    expect(inbox.items.map((i) => i.group)).toEqual(['recommendation', 'activity', 'operational']);
+    expect(inbox.items.every((i) => !i.read)).toBe(true);
+    // the bell: the two operational ones (the commercial and the old one are not counted)
+    expect(inbox.unreadOperational).toBe(2);
+    // in another language the same rows, other texts
+    const de = await getInbox(me, 'de', { catalog });
+    expect(de.items[2]!.title).not.toBe('Telefonul afacerii e deconectat');
+
+    const phoneItem = inbox.items[2]!;
+    expect(await openNotification(me, phoneItem.id)).toEqual({
+      actionUrl: '/booking/settings/sms',
+      organizationId: org,
+    });
+    inbox = await getInbox(me, 'ro', { catalog });
+    expect(inbox.unreadOperational).toBe(1);
+    expect(inbox.items[2]!.read).toBe(true);
+
+    // someone else's notification cannot be opened (RLS + recipient)
+    const [theirs] = await q(
+      `SELECT id::text FROM notifications.notification WHERE recipient_user_id = $1`,
+      [other],
+    );
+    await expect(openNotification(me, theirs!.id)).rejects.toBeInstanceOf(ResourceNotFound);
+
+    expect(await markAllNotificationsRead(me)).toBe(3); // b2, b3 and the old one
+    inbox = await getInbox(me, 'ro', { catalog });
+    expect(inbox.unreadOperational).toBe(0);
+    expect(inbox.items.every((i) => i.read)).toBe(true);
+    // the other person's stays unread
+    expect((await getInbox(other, 'ro', { catalog })).unreadOperational).toBe(1);
+  });
+
+  it('Lot 4.4 — a preference turned off stops that channel; security cannot be turned off', async () => {
+    const org = crypto.randomUUID();
+    const me = crypto.randomUUID();
+    expect(await getNotificationPreferences(me)).toEqual({
+      email: {
+        bookings: true,
+        phone: true,
+        billing: true,
+        limits: true,
+        leave: true,
+        support: true,
+      },
+      recommendations: { inApp: true },
+      news: { inApp: true, email: false }, // S114b: news by e-mail off until turned on
+    });
+
+    await setNotificationPreference(me, { topic: 'phone', channel: 'email', enabled: false });
+    await setNotificationPreference(me, {
+      topic: 'recommendations',
+      channel: 'in_app',
+      enabled: false,
+    });
+    const prefs = await getNotificationPreferences(me);
+    expect(prefs.email.phone).toBe(false);
+    expect(prefs.email.bookings).toBe(true);
+    expect(prefs.recommendations.inApp).toBe(false);
+
+    // fixed: security (S83), operational in the app (D4-6), recommendations by e-mail (D-GRW-8)
+    for (const bad of [
+      { topic: 'password', channel: 'email' },
+      { topic: 'supportSession', channel: 'email' },
+      { topic: 'phone', channel: 'in_app' },
+      { topic: 'recommendations', channel: 'email' },
+      { topic: 'phone', channel: 'sms' },
+      { topic: 'unknown', channel: 'email' },
+    ]) {
+      await expect(
+        setNotificationPreference(me, { ...bad, enabled: false }),
+      ).rejects.toBeInstanceOf(InvalidInput);
+    }
+
+    await send(org, {
+      type: PHONE.type,
+      version: 1,
+      recipientUserIds: [me],
+      idempotencyKey: 'pp1',
+      params: PARAMS,
+    });
+    await send(org, {
+      type: SECURITY.type,
+      version: 1,
+      recipientUserIds: [me],
+      idempotencyKey: 'pp2',
+      params: PARAMS,
+    });
+    const offer = await send(org, {
+      category: 'commercial',
+      type: OFFER.type,
+      version: 1,
+      recipientUserIds: [me],
+      idempotencyKey: 'pp3',
+      params: PARAMS,
+    });
+    expect(offer.result.skipped).toEqual([me]);
+    const deliveries = async () =>
+      (
+        await q(
+          `SELECT n.type FROM notifications.delivery d
+             JOIN notifications.notification n ON n.id = d.notification_id
+            WHERE d.recipient_user_id = $1 ORDER BY n.type`,
+          [me],
+        )
+      ).map((r) => r.type);
+    // the phone notification is in the app, without an e-mail; the security one has its e-mail
+    expect(await deliveries()).toEqual([SECURITY.type]);
+    expect((await getInbox(me, 'ro', { catalog })).items.map((i) => i.category)).toEqual([
+      'operational',
+      'operational',
+    ]);
+
+    // turned back on → the e-mail goes again
+    await setNotificationPreference(me, { topic: 'phone', channel: 'email', enabled: true });
+    await send(org, {
+      type: PHONE.type,
+      version: 1,
+      recipientUserIds: [me],
+      idempotencyKey: 'pp4',
+      params: PARAMS,
+    });
+    expect(await deliveries()).toEqual([SECURITY.type, PHONE.type].sort());
   });
 
   it('RLS: a person reads only their own notifications; another organization writes nothing here', async () => {

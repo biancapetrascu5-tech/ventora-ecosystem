@@ -1,6 +1,7 @@
 import { InvalidInput } from '@ventora/errors';
 import { defaultCatalog, type NotificationCatalog, type NotificationCategory } from './catalog';
 import { uuidv7, type SqlClient } from './sql';
+import { defaultEnabled, type NotificationTopic } from './topics';
 
 /*
  * The `send` contract (Lot 4.3, FAZA-4): a notification is written inside the caller's
@@ -15,8 +16,8 @@ import { uuidv7, type SqlClient } from './sql';
  *   - at most `rateLimit.max` of a type per recipient in its window (limiting);
  *   - in the app, operational notifications are always on; commercial ones follow the person's
  *     toggle (D4-6); commercial email is blocked centrally (D-GRW-8);
- *   - email can be turned off per category, except security messages (S83) and, for the owner,
- *     the ones the design keeps on (D4-6);
+ *   - email can be turned off per topic (Lot 4.4, the rows of S114b), except security messages
+ *     (S83) and, for the owner, the ones the design keeps on (D4-6);
  *   - the recipients are resolved by the caller (roles → people, core/organizations), as ids.
  */
 
@@ -48,21 +49,22 @@ export interface SendNotificationResult {
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const ROLE_RE = /^[a-z_][a-z0-9_]*$/;
 
+/** The person's choice for a topic and channel (Lot 4.4), or the default (S114b). */
 async function preferenceOf(
   tx: SqlClient,
   userId: string,
-  category: NotificationCategory,
+  topic: NotificationTopic,
   channel: string,
-): Promise<boolean | null> {
+): Promise<boolean> {
   // the preference is the person's own row (RLS on app.user_id): read it as the recipient
   const { rows } = await tx.query(
     `SELECT set_config('app.user_id', $1, true),
             (SELECT enabled FROM notifications.notification_preference
-              WHERE user_id = $1::uuid AND category = $2 AND channel = $3) AS enabled`,
-    [userId, category, channel],
+              WHERE user_id = $1::uuid AND topic = $2 AND channel = $3) AS enabled`,
+    [userId, topic, channel],
   );
   const enabled = (rows[0] as { enabled: boolean | null } | undefined)?.enabled;
-  return typeof enabled === 'boolean' ? enabled : null;
+  return typeof enabled === 'boolean' ? enabled : defaultEnabled(topic, channel);
 }
 
 export async function sendNotification(
@@ -112,8 +114,8 @@ export async function sendNotification(
     const actionUrl = template.actionPath?.(input.params ?? {}) ?? null;
     for (const userId of recipients) {
       if (template.category === 'commercial') {
-        // D4-6: commercial recommendations have their own toggle in the app
-        if ((await preferenceOf(tx, userId, 'commercial', 'in_app')) === false) {
+        // D4-6: commercial recommendations (and the news) have their own toggle in the app
+        if (!(await preferenceOf(tx, userId, template.topic ?? 'recommendations', 'in_app'))) {
           result.skipped.push(userId);
           continue;
         }
@@ -164,7 +166,12 @@ export async function sendNotification(
         const locked =
           template.security === true ||
           (template.emailLockedForOwner === true && owners.has(userId));
-        if (!locked && (await preferenceOf(tx, userId, template.category, channel)) === false) {
+        // Lot 4.4: the e-mail switch of the template's row in „Contul tău · Notificări”
+        if (
+          !locked &&
+          template.topic &&
+          !(await preferenceOf(tx, userId, template.topic, channel))
+        ) {
           continue;
         }
         await tx.query(
