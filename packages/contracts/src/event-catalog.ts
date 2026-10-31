@@ -87,9 +87,54 @@ export const SubscriptionVersionChangeScheduledV1 = defineEvent({
     .strict(),
 });
 
+/**
+ * `commercial.quota.threshold` v1 (Lot 3.3, FAZA-3): consumul unei cote a atins 80% sau 100% din
+ * limită în perioada curentă — o dată pe cheie, prag și perioadă. Pentru notificarea owner-ului
+ * (F4) și ca semnal Growth (F5): payload-ul are doar cheia, cifrele și perioada.
+ */
+export const QuotaThresholdV1 = defineEvent({
+  type: 'commercial.quota.threshold',
+  version: 1,
+  sourceApp: 'platform',
+  growthSafe: true,
+  withoutConsumer: 'complete',
+  schema: z
+    .object({
+      quotaKey: z.string().min(1),
+      threshold: z.union([z.literal(80), z.literal(100)]),
+      used: z.number().int().nonnegative(),
+      limit: z.number().int().nonnegative(),
+      periodStart: z.iso.date().nullable(),
+    })
+    .strict(),
+});
+
+/**
+ * `commercial.quota.over_limit` v1 (Lot 3.3, D3-6 a): ce era deja programat (remindere, campanii)
+ * a plecat și s-a contorizat peste limită. Mesajul către owner îl trimite consumatorul din F4; o
+ * dată pe cheie și perioadă.
+ */
+export const QuotaOverLimitV1 = defineEvent({
+  type: 'commercial.quota.over_limit',
+  version: 1,
+  sourceApp: 'platform',
+  growthSafe: false,
+  withoutConsumer: 'complete',
+  schema: z
+    .object({
+      quotaKey: z.string().min(1),
+      used: z.number().int().nonnegative(),
+      limit: z.number().int().nonnegative(),
+      periodStart: z.iso.date().nullable(),
+    })
+    .strict(),
+});
+
 export const EVENT_CATALOG: readonly EventDefinition[] = [
   InvitationNewLinkRequestedV1 as EventDefinition,
   SubscriptionVersionChangeScheduledV1 as EventDefinition,
+  QuotaThresholdV1 as EventDefinition,
+  QuotaOverLimitV1 as EventDefinition,
 ];
 
 /** Definiția unui eveniment după tip și versiune; null dacă nu e în catalog. */

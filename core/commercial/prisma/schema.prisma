@@ -67,6 +67,8 @@ model QuotaKey {
   versionQuotas PlanVersionQuota[]
   addons        Addon[]
   overrides     Override[]
+  counters      UsageCounter[]
+  reservations  QuotaReservation[]
 
   @@index([applicationId], map: "quota_key_application_id_idx")
   @@map("quota_key")
@@ -444,5 +446,64 @@ model Trial {
 
   @@index([organizationId], map: "trial_organization_id_idx")
   @@map("trial")
+  @@schema("commercial")
+}
+
+// ── Lot 3.3 · commercial_usage (T5, ARCHITECTURE §8.2–8.3) ──────────────────────────────────
+
+/// Consumul pe organizație × cheie × perioadă. period_start: ziua de ancorare a perioadei lunare
+/// (cote de flux, D3-3); NULL pentru o cotă de stoc. used + reserved ≤ limita, la rezervare.
+model UsageCounter {
+  id             String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  organizationId String    @map("organization_id") @db.Uuid
+  quotaKey       String    @map("quota_key") @db.VarChar(128)
+  periodStart    DateTime? @map("period_start") @db.Date
+  used           BigInt    @default(0)
+  reserved       BigInt    @default(0)
+  updatedAt      DateTime  @default(now()) @map("updated_at") @db.Timestamptz
+  quota          QuotaKey  @relation(fields: [quotaKey], references: [key])
+
+  // NULLS NOT DISTINCT în migrare: un singur contor de stoc (period_start NULL) pe cheie
+  @@unique([organizationId, quotaKey, periodStart], map: "usage_counter_org_key_period_key")
+  @@map("usage_counter")
+  @@schema("commercial")
+}
+
+/// Rezervarea în doi pași (§8.3): operationId = cheia de idempotență a operației.
+model QuotaReservation {
+  id             String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  organizationId String    @map("organization_id") @db.Uuid
+  quotaKey       String    @map("quota_key") @db.VarChar(128)
+  periodStart    DateTime? @map("period_start") @db.Date
+  operationId    String    @map("operation_id") @db.VarChar(128)
+  amount         BigInt
+  status         String    @db.VarChar(16)
+  overLimit      Boolean   @default(false) @map("over_limit")
+  expiresAt      DateTime  @map("expires_at") @db.Timestamptz
+  createdAt      DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  committedAt    DateTime? @map("committed_at") @db.Timestamptz
+  releasedAt     DateTime? @map("released_at") @db.Timestamptz
+  refundedAt     DateTime? @map("refunded_at") @db.Timestamptz
+  quota          QuotaKey  @relation(fields: [quotaKey], references: [key])
+
+  @@unique([organizationId, operationId], map: "quota_reservation_org_operation_key")
+  @@index([status, expiresAt], map: "quota_reservation_status_expires_at_idx")
+  @@map("quota_reservation")
+  @@schema("commercial")
+}
+
+/// Istoricul consumului: doar inserări (rezervare, confirmare, eliberare, rambursare, praguri).
+model UsageEvent {
+  id             String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  organizationId String    @map("organization_id") @db.Uuid
+  quotaKey       String    @map("quota_key") @db.VarChar(128)
+  periodStart    DateTime? @map("period_start") @db.Date
+  operationId    String?   @map("operation_id") @db.VarChar(128)
+  kind           String    @db.VarChar(24)
+  amount         BigInt    @default(0)
+  createdAt      DateTime  @default(now()) @map("created_at") @db.Timestamptz
+
+  @@index([organizationId, quotaKey, createdAt], map: "usage_event_org_key_created_at_idx")
+  @@map("usage_event")
   @@schema("commercial")
 }

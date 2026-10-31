@@ -11,6 +11,7 @@ import type {
   SubscriptionSummary,
 } from '@ventora/contracts';
 import { discountApplies, priceInvoice, type DiscountTerms } from './pricing';
+import { reconcileOrganization } from './quota';
 import { FeatureNotIncluded, InvalidInput } from '@ventora/errors';
 import { priceOf } from './classify';
 import { withOrganizationRead } from './db';
@@ -24,6 +25,14 @@ function assertOrganizationId(organizationId: string): void {
 }
 
 type LiveSubscription = NonNullable<EffectiveEntitlements['subscription']>;
+
+/**
+ * The instant the entitlements are read at. 
+ull = the database's now(): what Founder or a
+ * purchase wrote a moment ago counts at once, whatever the app server's clock says (Lot 3.3).
+ * A Date is for computing ahead or back (tests, previews).
+ */
+export type At = Date | null;
 
 /** The subscription that is not canceled (one per business), in the read transaction (RLS). */
 async function liveSubscription(client: PoolClient): Promise<LiveSubscription | null> {
@@ -51,10 +60,10 @@ async function liveSubscription(client: PoolClient): Promise<LiveSubscription | 
  * version the subscription was created on. A move scheduled 30 days ahead takes effect by itself
  * when its time comes, at the next request — no job needed to read it right.
  */
-async function versionAt(client: PoolClient, sub: LiveSubscription, at: Date): Promise<string> {
+async function versionAt(client: PoolClient, sub: LiveSubscription, at: At): Promise<string> {
   const { rows } = await client.query<{ to_version_id: string }>(
     `SELECT to_version_id FROM commercial.subscription_change
-      WHERE subscription_id = $1 AND canceled_at IS NULL AND effective_at <= $2
+      WHERE subscription_id = $1 AND canceled_at IS NULL AND effective_at <= COALESCE($2::timestamptz, now())
       ORDER BY effective_at DESC, created_at DESC LIMIT 1`,
     [sub.id, at],
   );
@@ -62,16 +71,27 @@ async function versionAt(client: PoolClient, sub: LiveSubscription, at: Date): P
 }
 
 /** A trial on the whole subscription that has ended includes nothing until Lot 3.8 decides. */
-function planIncluded(sub: LiveSubscription, at: Date): boolean {
+function planIncluded(sub: LiveSubscription, at: At): boolean {
   if (sub.status === 'canceled') return false;
-  if (sub.status === 'trialing') return !!sub.trialEndsAt && new Date(sub.trialEndsAt) > at;
+  if (sub.status === 'trialing') {
+    return !!sub.trialEndsAt && new Date(sub.trialEndsAt) > (at ?? new Date());
+  }
   return true;
+}
+
+/** Lot 3.3: the same computation inside the caller's transaction (the quota operations). */
+export async function computeEntitlementsInTx(
+  client: PoolClient,
+  organizationId: string,
+  at: At,
+): Promise<EffectiveEntitlements> {
+  return (await computeEntitlements(client, organizationId, at)).entitlements;
 }
 
 async function computeEntitlements(
   client: PoolClient,
   organizationId: string,
-  at: Date,
+  at: At,
 ): Promise<{ entitlements: EffectiveEntitlements; versionId: string | null }> {
   const sub = await liveSubscription(client);
   const versionId = sub && planIncluded(sub, at) ? await versionAt(client, sub, at) : null;
@@ -86,7 +106,7 @@ async function computeEntitlements(
   if (sub && versionId) {
     const lines = await client.query<{ application_id: string }>(
       `SELECT application_id FROM commercial.subscription_application
-        WHERE subscription_id = $1 AND ended_at IS NULL AND starts_at <= $2`,
+        WHERE subscription_id = $1 AND ended_at IS NULL AND starts_at <= COALESCE($2::timestamptz, now())`,
       [sub.id, at],
     );
     for (const l of lines.rows) applications.add(l.application_id);
@@ -95,7 +115,8 @@ async function computeEntitlements(
   // Active trials (D3-5): an application or a feature, for 14 days, without a card
   const trials = await client.query<{ kind: string; application_id: string; feature_key: string }>(
     `SELECT kind, application_id, feature_key FROM commercial.trial
-      WHERE ended_at IS NULL AND starts_at <= $1 AND ends_at > $1`,
+      WHERE ended_at IS NULL AND starts_at <= COALESCE($1::timestamptz, now())
+        AND ends_at > COALESCE($1::timestamptz, now())`,
     [at],
   );
   for (const t of trials.rows) {
@@ -111,7 +132,8 @@ async function computeEntitlements(
     limit_value: string | null;
   }>(
     `SELECT kind, quota_key, feature_key, limit_value FROM commercial.override
-      WHERE ended_at IS NULL AND created_at <= $1 AND expires_at > $1
+      WHERE ended_at IS NULL AND created_at <= COALESCE($1::timestamptz, now())
+        AND expires_at > COALESCE($1::timestamptz, now())
       ORDER BY created_at`,
     [at],
   );
@@ -125,7 +147,8 @@ async function computeEntitlements(
   const grants = await client.query<{ quota_key: string; units: string }>(
     `SELECT a.quota_key, sum(a.quantity * g.packs)::text AS units
        FROM commercial.addon_grant g JOIN commercial.addon a ON a.id = g.addon_id
-      WHERE g.ended_at IS NULL AND g.starts_at <= $1 AND (g.ends_at IS NULL OR g.ends_at > $1)
+      WHERE g.ended_at IS NULL AND g.starts_at <= COALESCE($1::timestamptz, now())
+        AND (g.ends_at IS NULL OR g.ends_at > COALESCE($1::timestamptz, now()))
       GROUP BY a.quota_key`,
     [at],
   );
@@ -166,11 +189,11 @@ async function computeEntitlements(
  */
 export async function getEffectiveEntitlements(
   organizationId: string,
-  at: Date = new Date(),
+  at?: Date,
 ): Promise<EffectiveEntitlements> {
   assertOrganizationId(organizationId);
   return withOrganizationRead(organizationId, async (client) => {
-    return (await computeEntitlements(client, organizationId, at)).entitlements;
+    return (await computeEntitlements(client, organizationId, at ?? null)).entitlements;
   });
 }
 
@@ -206,7 +229,7 @@ export async function listAddonsForOrg(organizationId: string): Promise<AddonOff
   return withOrganizationRead(organizationId, async (client) => {
     const sub = await liveSubscription(client);
     if (!sub) return [];
-    const versionId = await versionAt(client, sub, new Date());
+    const versionId = await versionAt(client, sub, null);
     const { rows } = await client.query(
       `SELECT a.id, a.code, a.name, a.quota_key, a.quantity, a.validity, a.purchase_mode,
               p.amount_minor, p.setup_minor
@@ -242,7 +265,7 @@ export async function listAddonsForOrg(organizationId: string): Promise<AddonOff
 async function previewInvoice(
   client: PoolClient,
   sub: LiveSubscription,
-  p: { planCode: string; planPriceMinor: number; invoiceDate: string; at: Date },
+  p: { planCode: string; planPriceMinor: number; invoiceDate: string; at: At; now: Date },
 ): Promise<InvoicePreview> {
   const lines: InvoiceLinePreview[] = [
     { kind: 'plan', key: p.planCode, lineId: null, amountMinor: p.planPriceMinor },
@@ -279,7 +302,7 @@ async function previewInvoice(
   const { rows } = await client.query(
     `SELECT id, scope, subscription_application_id, addon_grant_id, kind, percent_off,
             amount_off_minor, duration, duration_months, created_at, ended_at
-       FROM commercial.discount WHERE subscription_id = $1 AND (ended_at IS NULL OR ended_at > $2)
+       FROM commercial.discount WHERE subscription_id = $1 AND (ended_at IS NULL OR ended_at > COALESCE($2::timestamptz, now()))
       ORDER BY created_at`,
     [sub.id, p.at],
   );
@@ -296,7 +319,7 @@ async function previewInvoice(
       createdAt: r.created_at,
       endedAt: r.ended_at,
     }))
-    .filter((d) => discountApplies(d, sub, p.invoiceDate, p.at));
+    .filter((d) => discountApplies(d, sub, p.invoiceDate, p.now));
 
   return { date: p.invoiceDate, currency: sub.currency, lines, ...priceInvoice(lines, discounts) };
 }
@@ -304,9 +327,15 @@ async function previewInvoice(
 /** HubAdminPlan (Lot 3.7): the subscription, its price, its dates and the limited quotas. */
 export async function getSubscriptionSummary(
   organizationId: string,
-  at: Date = new Date(),
+  atArg?: Date,
 ): Promise<SubscriptionSummary | null> {
+  // SQL compares with the database's now() unless an instant is given; calendar dates use the
+  // app's clock (they are days, a few ms of skew do not move them)
+  const at: At = atArg ?? null;
+  const now = atArg ?? new Date();
   assertOrganizationId(organizationId);
+  // raportul 3.3: until the job of Lot 4.2, reading the consumption reconciles first
+  await reconcileOrganization({ organizationId }, { now: atArg });
   return withOrganizationRead(organizationId, async (client) => {
     const { entitlements, versionId } = await computeEntitlements(client, organizationId, at);
     const sub = entitlements.subscription;
@@ -321,11 +350,20 @@ export async function getSubscriptionSummary(
     );
     const pending = await client.query<{ effective_at: Date; classification: string }>(
       `SELECT effective_at, classification FROM commercial.subscription_change
-        WHERE subscription_id = $1 AND canceled_at IS NULL AND effective_at > $2
+        WHERE subscription_id = $1 AND canceled_at IS NULL AND effective_at > COALESCE($2::timestamptz, now())
         ORDER BY effective_at LIMIT 1`,
       [sub.id, at],
     );
-    const today = calendarDate(at);
+    const today = calendarDate(now);
+    // the consumption of the current monthly period (flow, D3-3) and of the stock counters
+    const usage = await client.query<{ quota_key: string; used: string }>(
+      `SELECT c.quota_key, c.used FROM commercial.usage_counter c
+         JOIN commercial.quota_key k ON k.key = c.quota_key
+        WHERE (k.kind = 'stock' AND c.period_start IS NULL)
+           OR (k.kind = 'flow' AND c.period_start = $1::date)`,
+      [quotaPeriod(sub.startedOn, today).start],
+    );
+    const usedNow = new Map(usage.rows.map((u) => [u.quota_key, Number(u.used)]));
     const invoiceDate = nextBillingDate(sub, today);
     const priceMinor = priceOf(terms, sub.currency, sub.interval) ?? 0;
     const nextInvoice = await previewInvoice(client, sub, {
@@ -333,6 +371,7 @@ export async function getSubscriptionSummary(
       planPriceMinor: priceMinor,
       invoiceDate,
       at,
+      now,
     });
     return {
       planCode: rows[0]!.code,
@@ -356,7 +395,7 @@ export async function getSubscriptionSummary(
       applications: entitlements.applications,
       quotas: Object.entries(entitlements.quotas)
         .filter((e): e is [string, number] => e[1] !== null && e[1] > 0)
-        .map(([key, limit]) => ({ key, limit })),
+        .map(([key, limit]) => ({ key, limit, used: usedNow.get(key) ?? 0 })),
     };
   });
 }

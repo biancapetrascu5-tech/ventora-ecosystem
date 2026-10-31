@@ -16,7 +16,8 @@
   "dependencies": {
     "@ventora/access": "workspace:*",
     "@ventora/contracts": "workspace:*",
-    "@ventora/errors": "workspace:*"
+    "@ventora/errors": "workspace:*",
+    "@ventora/quota": "workspace:*"
   },
   "devDependencies": {
     "@ventora/commercial": "workspace:*",

@@ -20,8 +20,10 @@ function getPool(connection: CommercialConnection): Pool {
   const url = connectionString(connection);
   let pool = _pools.get(url);
   if (!pool) {
-    // max: 1 — same serverless cap as the other modules (ARCHITECTURE §6.2)
-    pool = new Pool({ connectionString: url, max: 1, connectionTimeoutMillis: 10_000 });
+    // max: 1 — same serverless cap as the other modules (ARCHITECTURE §6.2). COMMERCIAL_POOL_MAX
+    // raises it only where real parallel transactions are needed (the T5 concurrency test).
+    const max = Number(process.env.COMMERCIAL_POOL_MAX) || 1;
+    pool = new Pool({ connectionString: url, max, connectionTimeoutMillis: 10_000 });
     _pools.set(url, pool);
   }
   return pool;
@@ -83,6 +85,37 @@ export async function withOrganizationRead<T>(
     async (client) => {
       await client.query('SET LOCAL ROLE commercial_rw');
       await client.query(`SELECT set_config('app.organization_id', $1, true)`, [organizationId]);
+    },
+    fn,
+  );
+}
+
+/**
+ * Lot 3.3: a read-write transaction in one organization's context, as commercial_rw — the quota
+ * operations (counter, reservation, history, outbox event) commit together or not at all.
+ */
+export async function withOrganizationWrite<T>(
+  organizationId: string,
+  fn: (client: PoolClient) => Promise<T>,
+): Promise<T> {
+  return inTransaction(
+    'app',
+    'BEGIN',
+    async (client) => {
+      await client.query('SET LOCAL ROLE commercial_rw');
+      await client.query(`SELECT set_config('app.organization_id', $1, true)`, [organizationId]);
+    },
+    fn,
+  );
+}
+
+/** Lot 3.3: a transaction as commercial_rw without an organization (only definer functions). */
+export async function withModuleRead<T>(fn: (client: PoolClient) => Promise<T>): Promise<T> {
+  return inTransaction(
+    'app',
+    'BEGIN READ ONLY',
+    async (client) => {
+      await client.query('SET LOCAL ROLE commercial_rw');
     },
     fn,
   );

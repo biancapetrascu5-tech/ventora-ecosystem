@@ -117,6 +117,30 @@ export class FeatureNotIncluded extends Error {
 }
 
 /**
+ * Lot 3.3 (ARCHITECTURE §8.3, D3-6 a): the quota has no room for this operation. Only creating is
+ * blocked — reading and export go on (brief §14). `limit` null never happens (unlimited).
+ */
+export class QuotaExceeded extends Error {
+  readonly status = 403;
+  readonly code = 'QUOTA_EXCEEDED';
+  readonly quotaKey: string;
+  readonly limit: number;
+  readonly used: number;
+  constructor(
+    quotaKey: string,
+    limit: number,
+    used: number,
+    message = `Quota exceeded: ${quotaKey}`,
+  ) {
+    super(message);
+    this.name = 'QuotaExceeded';
+    this.quotaKey = quotaKey;
+    this.limit = limit;
+    this.used = used;
+  }
+}
+
+/**
  * Lot 3.1 (ARCHITECTURE §8.4): Founder can set values only for keys a manifest declares. The key
  * is not in the commercial registry, or was retired from its manifest. Nothing was written.
  */
