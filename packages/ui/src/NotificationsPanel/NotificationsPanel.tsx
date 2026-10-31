@@ -25,8 +25,18 @@ export interface NotificationData {
   person?: string;
   icon?: IconName;
   read?: boolean;
-  /** S2: `operational` stă sus, în „Despre cont și funcționare”. */
-  category?: 'operational' | 'activity';
+  /**
+   * D4-5 (31.10.2026): categoria notificării, ca în ARCHITECTURE — `operational` sau
+   * `commercial`. Clopoțelul (`countCategory="operational"`) numără doar operaționalele.
+   * `activity` rămâne doar pentru compatibilitate (înseamnă grupul „Activitate”).
+   */
+  category?: 'operational' | 'commercial' | 'activity';
+  /**
+   * D4-5: grupul în care apare, doar pentru afișare (S2) — `operational` sus, în „Despre cont
+   * și funcționare”, `activity` în „Activitate”. Fără el, grupul vine din `category`, ca
+   * înainte (`operational` sus, restul în „Activitate”).
+   */
+  group?: 'operational' | 'activity';
 }
 
 export interface HubRecommendationData {
@@ -81,8 +91,8 @@ export interface NotificationsPanelProps {
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
   /**
-   * Ce necitite numără clopoțelul. Implicit toate (ca în design); `operational` = doar
-   * cele din „Despre cont și funcționare”.
+   * Ce necitite numără clopoțelul. Implicit toate (ca în design); `operational` = doar cele
+   * cu `category: 'operational'` (D4-5: clopoțelul numără doar operaționalele).
    */
   countCategory?: 'operational';
   labels: NotificationsLabels;
@@ -225,8 +235,10 @@ export function NotificationsPanel({
     (n) => !n.read && (!countCategory || n.category === countCategory),
   ).length;
   const list = tab === 'unread' ? items.filter((n) => !n.read) : items;
-  const ops = list.filter((n) => n.category === 'operational');
-  const rest = list.filter((n) => n.category !== 'operational');
+  const groupOf = (n: NotificationData) =>
+    n.group ?? (n.category === 'operational' ? 'operational' : 'activity');
+  const ops = list.filter((n) => groupOf(n) === 'operational');
+  const rest = list.filter((n) => groupOf(n) !== 'operational');
   const ul = (xs: NotificationData[]) => (
     <ul className={styles.list}>
       {xs.map((n) => (

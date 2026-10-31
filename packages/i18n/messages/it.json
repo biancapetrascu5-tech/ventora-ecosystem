@@ -713,5 +713,68 @@
     "clients": "{count, plural, one {# cliente} other {# clienti}}",
     "invoices": "{count, plural, one {# fattura} other {# fatture}} al mese",
     "storage": "{amount} di spazio per i documenti"
+  },
+  "notifications": {
+    "title": "Notifiche",
+    "filter": {
+      "all": "Tutte",
+      "unread": "Non lette"
+    },
+    "markAllRead": "Segna tutte come lette",
+    "settings": "Impostazioni notifiche",
+    "empty": {
+      "title": "Non ha nuove notifiche",
+      "body": "La avviseremo qui quando qualcosa richiede la Sua attenzione."
+    },
+    "group": {
+      "operational": "Account e funzionamento",
+      "activity": "Attività",
+      "recommendations": "Raccomandazioni"
+    },
+    "unreadCount": "{n, plural, one {# non letta} other {# non lette}}",
+    "sms": {
+      "disconnected": {
+        "title": "Il telefono dell’attività è disconnesso",
+        "body": "{n} promemoria devono partire entro le {time}. Controlli il telefono."
+      },
+      "failing": {
+        "title": "I messaggi non partono",
+        "body": "{n} messaggi di fila non sono partiti da {phone}."
+      },
+      "reconnected": {
+        "title": "Il telefono dell’attività è di nuovo connesso",
+        "body": "I promemoria in attesa sono partiti."
+      }
+    },
+    "support": {
+      "reply": {
+        "title": "Nuova risposta alla Sua richiesta",
+        "body": "„{subject}” · {author}, team Ventora"
+      }
+    },
+    "request": {
+      "resolved": {
+        "title": "La Sua richiesta è stata evasa",
+        "body": "{type} · {item}"
+      },
+      "refused": {
+        "title": "La Sua richiesta è stata rifiutata",
+        "body": "{type} · {item}. Motivo: {reason}"
+      },
+      "type": {
+        "activation": "Richiedi attivazione",
+        "plan": "Richiedi un altro abbonamento"
+      }
+    },
+    "invitation": {
+      "newLinkRequested": {
+        "title": "{name} a cerut o invitație nouă pentru {businessName}."
+      }
+    },
+    "email": {
+      "open": "Deschide în Ventora",
+      "why": "Primești acest e-mail pentru că faci parte din echipa {businessName} în Ventora.",
+      "whyAccount": "Primești acest e-mail pentru contul tău Ventora."
+    }
   }
 }

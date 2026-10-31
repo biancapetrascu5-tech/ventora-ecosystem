@@ -39,14 +39,24 @@ export async function resetOwnerAccessInTx(
   };
 }
 
-/** Email and name of a Hub user, for notices sent from the Founder application. */
+/**
+ * Email, name and chosen language of a Hub user, for notices sent from the Founder application
+ * (Lot 4.3, D4-8: E-6 in the recipient's language; null locale = not chosen yet).
+ */
 export async function getUserContactInTx(
   exec: AuditSqlExecutor,
   userId: string,
-): Promise<{ email: string; name: string } | null> {
-  const rows = await exec.query(`SELECT email, name FROM identity.founder_get_user_contact($1)`, [
-    userId,
-  ]);
+): Promise<{ email: string; name: string; locale: string | null } | null> {
+  const rows = await exec.query(
+    `SELECT email, name, locale FROM identity.founder_get_user_contact_v2($1)`,
+    [userId],
+  );
   const row = rows[0];
-  return row ? { email: row.email as string, name: row.name as string } : null;
+  return row
+    ? {
+        email: row.email as string,
+        name: row.name as string,
+        locale: typeof row.locale === 'string' ? row.locale : null,
+      }
+    : null;
 }

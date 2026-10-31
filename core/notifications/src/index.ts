@@ -26,3 +26,28 @@ export {
 export type { RenderedEmail, MembershipRoleName } from './templates/index';
 export { sendOwnerRecoveryNotice } from './owner-recovery';
 export { sendSupportSessionNotice } from './support-session';
+// Lot 4.3: the notification model, the templates, sending and delivery
+export { NotificationCatalog, NOTIFICATION_TEMPLATES, defaultCatalog } from './model/catalog';
+export type {
+  NotificationCategory,
+  NotificationGroup,
+  NotificationTemplate,
+  DeliveryChannel,
+} from './model/catalog';
+export { renderNotification, notificationText, toLocale } from './model/render';
+export { sendNotification } from './model/send';
+export type { SendNotificationInput, SendNotificationResult } from './model/send';
+export {
+  deliverPendingNotifications,
+  renderNotificationEmail,
+  DELIVERY_MAX_ATTEMPTS,
+} from './model/delivery';
+export type {
+  ContactResolver,
+  DeliveryChannels,
+  DeliveryContact,
+  DeliveryReport,
+} from './model/delivery';
+export type { SqlClient } from './model/sql';
+export { UnconfiguredSmsChannel, SmsNotConfiguredError } from './sms';
+export type { SmsChannel, SmsMessage } from './sms';

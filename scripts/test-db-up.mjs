@@ -110,6 +110,7 @@ for (const db of [
   'shadow_access_diff',
   'shadow_audit_diff',
   'shadow_commercial_diff',
+  'shadow_notifications_diff',
 ]) {
   psql('postgres', `DROP DATABASE IF EXISTS ${db}; CREATE DATABASE ${db};`);
 }
@@ -158,6 +159,15 @@ psqlFile(
   join(
     ROOT,
     'core/identity/prisma/identity/migrations/20261029000006_lot26_open_last_organization/migration.sql',
+  ),
+);
+
+console.log('[test:db:up] Aplic migrarea identity #5 (UserPreference, Lot 4.3)...');
+psqlFile(
+  TEST_DB.identityDb,
+  join(
+    ROOT,
+    'core/identity/prisma/identity/migrations/20261101000007_user_preference/migration.sql',
   ),
 );
 
@@ -227,6 +237,15 @@ psqlFile(
   join(
     ROOT,
     'core/organizations/prisma/migrations/20261101000001_lot29b_memberships_v3/migration.sql',
+  ),
+);
+
+console.log('[test:db:up] Aplic migrarea notifications (Lot 4.3, organizations DB)...');
+psqlFile(
+  TEST_DB.orgDb,
+  join(
+    ROOT,
+    'core/notifications/prisma/migrations/20261101000008_notifications_init/migration.sql',
   ),
 );
 
@@ -328,6 +347,9 @@ for (const migration of [
   'core/commercial/prisma/migrations/20261101000008_commercial_founder_screens/migration.sql',
   // D3-24: aplicațiile la bucată cu limitele lor, bundle-ul cu perioadă de vânzare, locurile incluse
   'core/commercial/prisma/migrations/20261101000009_commercial_bundles/migration.sql',
+  // Lot 4.3: UserPreference (limba) și notificările
+  'core/identity/prisma/identity/migrations/20261101000007_user_preference/migration.sql',
+  'core/notifications/prisma/migrations/20261101000008_notifications_init/migration.sql',
 ]) {
   psqlFile(TEST_DB.accessDb, join(ROOT, migration));
 }

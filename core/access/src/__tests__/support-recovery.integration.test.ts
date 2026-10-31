@@ -424,6 +424,18 @@ describe('E34 + TS.6 — opening: audit row, owner notice, one open session per 
     expect(mailbox.sent).toHaveLength(1); // the member gets no email
   });
 
+  it('D4-8: E-6 leaves in the language the owner chose (UserPreference)', async () => {
+    const orgId = await newOrg('Salon Berlin');
+    const owner = await createMember(orgId, 'owner');
+    await adminQuery(`INSERT INTO identity.user_preference (user_id, locale) VALUES ($1, 'de')`, [
+      owner.userId,
+    ]);
+    await open(orgId);
+    const mails = mailbox.to(owner.email);
+    expect(mails).toHaveLength(1);
+    expect(mails[0]!.subject).toBe('Das Ventora-Team hat Support-Zugriff auf Salon Berlin');
+  });
+
   it('E-6 not delivered → the session stays open, support.session_notice_failed is recorded', async () => {
     const orgId = await newOrg();
     const owner = await createMember(orgId, 'owner');

@@ -30,6 +30,8 @@ export type {
   FounderTotpCheck,
 } from './founder-contracts';
 export { resetOwnerAccessInTx, getUserContactInTx } from './founder-owner-recovery';
+export { setUserLocale, getUserLocale, getNotificationContactsInTx } from './preferences';
+export type { NotificationContact } from './preferences';
 export type { OwnerAccessReset } from './founder-owner-recovery';
 export { setSessionActiveOrganization } from './contract';
 export { setAuthBackgroundTaskHandler } from './background';
