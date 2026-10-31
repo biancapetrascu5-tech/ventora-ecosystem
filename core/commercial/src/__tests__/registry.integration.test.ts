@@ -31,7 +31,7 @@ const bookingManifest: ApplicationManifest = {
       unit: 'appointment',
       period: 'month',
       overflow: 'block',
-      refundable: false,
+      refundable: true,
     },
     {
       key: 'booking.sms.devices',
@@ -108,7 +108,7 @@ describe('Lot 3.1 — the registry sync', () => {
       unit: 'appointment',
       period: 'month',
       overflow: 'block',
-      refundable: false,
+      refundable: true,
       retired_at: null,
     });
   });

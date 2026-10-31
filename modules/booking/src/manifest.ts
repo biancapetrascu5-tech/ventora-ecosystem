@@ -25,7 +25,8 @@ export const manifest = {
       unit: 'appointment',
       period: 'month',
       overflow: 'block',
-      refundable: false,
+      // 31.10.2026: an appointment cancelled before it takes place gives its unit back
+      refundable: true,
       description: 'Appointments',
     },
     {

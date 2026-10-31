@@ -24,7 +24,11 @@ export interface QuotaDeclaration {
   /** `month` for a flow quota, `null` for a stock quota. */
   period: QuotaPeriod | null;
   overflow: QuotaOverflow;
-  /** `refundQuota` is allowed only when true (ARCHITECTURE §8.3). */
+  /**
+   * Flow quotas: `refundQuota` is allowed only when true (ARCHITECTURE §8.3) — campaigns and
+   * appointments cancelled in time (31.10.2026), not SMS or email. Stock quotas set false: their
+   * unit is released anyway when the item is deleted or archived.
+   */
   refundable: boolean;
   description?: string;
 }
