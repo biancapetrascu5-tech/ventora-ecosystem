@@ -234,7 +234,7 @@ Lotul ține de Faza 2 și se face **înaintea Fazei 3**. Stă aici pentru că lo
 - Tabelele `usage_counter` (organizație × cheie × perioadă), `quota_reservation` și `usage_event` (istoricul consumului), cu RLS și cu convenția snake_case.
 - API-ul din §8.1:
   - `checkQuota`;
-  - `reserveQuota` / `commitQuota` / `releaseQuota` (cu decizie pe nume, vezi C-F3-8);
+  - `reserveQuota` / `commitQuota` / `releaseQuota` (C-F3-8: `commitQuota`, ca în ARCHITECTURE §8.1 și §8.3; CLAUDE.md actualizat la Lotul 3.3);
   - `refundQuota`, doar pentru cotele cu `refundable: true`.
 - Fiecare operație rulează într-o tranzacție.
 - **Cotele de stoc**, prin `countActive(ctx, key)` din modulul proprietar sau printr-un contor la creare și arhivare.
@@ -636,7 +636,7 @@ Le listez, nu le rezolv. Fiecare cere decizia fondatoarei.
 | C-F3-5 | **Moneda** | Toate ecranele: „lei”, inclusiv în DE și IT | `CommercialStates`, în DE/IT: „€”. **Rezolvat prin D3-2** (31.10.2026): moneda vine din afacere, nu din limbă. |
 | C-F3-6 | **Pachetul lunar cumpărat ca plată unică** | `FounderPacks`: „5 angajați în plus · 60 lei · lunar, cu abonamentul” | `HubAdminPlan` îl deschide în `AddonPurchase`, care e o plată unică cu factură imediată. ARCHITECTURE §8.6 nu descrie add-on-uri recurente. **Rezolvat prin D3-7** (31.10.2026): pachetul lunar e o linie în abonamentul Stripe, cu taxare proporțională. |
 | C-F3-7 | **Domeniul propriu: pe ce abonament și cu ce cost de implementare** | `FounderPacks`: doar Business Plus, implementare 150 lei | `HubAdminPlan`: oferit unei afaceri pe Business, fără cost de implementare afișat. Glosarul: costul de implementare „apare mereu, și când e zero”. Rândurile de pachete din HubAdminPlan nu îl arată deloc. |
-| C-F3-8 | **Numele operației de confirmare a cotei** | ARCHITECTURE §8.1, §8.3: `commitQuota` | `core/quota`: `confirmQuota`; CLAUDE.md: `confirmQuota`. Și: codul folosește tabelele `lab_core` din E8, nu o schemă din `core`. |
+| C-F3-8 | **Numele operației de confirmare a cotei** | ARCHITECTURE §8.1, §8.3: `commitQuota` | `core/quota`: `confirmQuota`; CLAUDE.md: `confirmQuota`. Și: codul folosește tabelele `lab_core` din E8, nu o schemă din `core`. **Rezolvat la Lotul 3.3**: `commitQuota` peste tot (ARCHITECTURE stă mai sus în ierarhie decât CLAUDE.md); prototipul E8 scos, tabelele în schema `commercial`. |
 | C-F3-9 | **Factura „imediat” după plată** | `AddonPurchase`, la reușită: „Am emis factura {nr}”, „Ți-am trimis factura și pe e-mail” | ARCHITECTURE §8.6: factura se emite după webhook, prin SmartBill (un serviciu extern, deci poate întârzia sau eșua); e-mailul depinde de notificări (F4). Designul nu are starea „plata a reușit, factura vine în curând”. |
 | C-F3-10 | **Câmpurile pregătite în F2 pentru F3** | FAZA-2 §6: `Organization.planId` (null până la F3), `Membership.applicationAccess: string[]` | Codul: `organization` nu are `plan_id`; accesul la aplicații e tabelul `access.application_access` (ADR-0004). Planul F2 nu reflectă codul. |
 | C-F3-11 | **Componenta `founder` în F3** | ARCHITECTURE §15.1, F3: „aplicația `founder`” | Autentificarea Founder e construită în F2. Neclar dacă shell-ul și navigația Founder (Spine) intră în F2 (ecranele, Lotul 2.7) sau în F3. Propunerea acestui plan, de aprobat: Lotul 2.8. |
