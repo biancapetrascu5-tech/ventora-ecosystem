@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import { redirect } from 'next/navigation';
 import { readSupportBanner } from '@/server/support-actions';
 import { readHubShell } from '@/server/shell-actions';
 import { SupportBannerHost } from '@/screens/support/SupportBannerHost';
@@ -12,6 +13,8 @@ import styles from './hub-layout.module.css';
    R-2F10 (câte coduri au rămas). Fără sesiune, pagina își face singură redirecționarea. */
 export default async function HubLayout({ children }: { children: ReactNode }) {
   const [banner, shell] = await Promise.all([readSupportBanner(), readHubShell()]);
+  // Lot 2.9b (S112): afacerea din sesiune a fost suspendată între timp (D3-20 a)
+  if (shell?.suspendedRedirect) redirect(shell.suspendedRedirect);
   return (
     <div className={styles.page}>
       <SupportBannerHost manager={banner?.manager ?? false} sessions={banner?.sessions ?? []}>

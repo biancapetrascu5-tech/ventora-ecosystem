@@ -90,6 +90,20 @@
   justify-content: flex-end;
 }
 
+/* .fb-acts (FounderBusinessActions/preview.html, S112): pe telefon perechea ia lățimea întreagă,
+   acțiunea principală se întinde */
+.acts {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+}
+.actsMob {
+  width: 100%;
+}
+.actsMob > :first-child {
+  flex: 1;
+}
+
 @container shell (max-width: 1023px) {
   .split {
     grid-template-columns: 1fr;

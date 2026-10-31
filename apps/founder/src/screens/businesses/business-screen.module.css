@@ -1,0 +1,17 @@
+/* .x-toast din FounderBusinessActions/preview.html: „{business} e activă din nou” */
+.toast {
+  position: fixed;
+  right: var(--space-6);
+  bottom: var(--space-6);
+  width: var(--panel-width);
+  z-index: var(--z-toast);
+}
+
+@media (max-width: 767px) {
+  .toast {
+    left: var(--space-4);
+    right: var(--space-4);
+    bottom: var(--space-4);
+    width: auto;
+  }
+}

@@ -45,7 +45,10 @@ export async function readBusinesses(): Promise<BusinessData[] | null> {
 
 export type BusinessPageData = {
   business: BusinessData;
-  recent: { id: string; action: string; createdAt: string }[];
+  /** `founderName`: cine din echipa Ventora a făcut schimbarea („{event} ({name})”). */
+  recent: { id: string; action: string; createdAt: string; founderName: string | null }[];
+  /** S112: „Suspendată pe {date} de {name}”. */
+  suspension: { at: string; by: string | null } | null;
 };
 
 export async function readBusinessPage(organizationId: string): Promise<BusinessPageData | null> {
@@ -60,7 +63,14 @@ export async function readBusinessPage(organizationId: string): Promise<Business
         id: String(r.id),
         action: r.action,
         createdAt: new Date(r.createdAt).toISOString(),
+        founderName: (r.founderId && page.founderNames[r.founderId]) || null,
       })),
+      suspension: page.suspension
+        ? {
+            at: page.suspension.at.toISOString(),
+            by: (page.suspension.founderId && page.founderNames[page.suspension.founderId]) || null,
+          }
+        : null,
     };
   } catch (err) {
     reportActionError('readBusinessPage', err);

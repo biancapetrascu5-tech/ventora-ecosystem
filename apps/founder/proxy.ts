@@ -33,7 +33,7 @@ function isAllowedBefore2fa(pathname: string): boolean {
   return false;
 }
 
-export async function middleware(req: NextRequest) {
+export async function proxy(req: NextRequest) {
   const pathname = req.nextUrl.pathname;
   const isApi = pathname.startsWith('/api/');
 
@@ -63,8 +63,8 @@ export async function middleware(req: NextRequest) {
   return NextResponse.next();
 }
 
-// Better Auth + Prisma au nevoie de Node.js (în Edge, dev-ul dădea 500 pe orice pagină).
+// Next 16: `middleware` → `proxy` (Lot 2.9b). Proxy rulează mereu pe Node.js, de care au nevoie
+// Better Auth + Prisma (în Edge, dev-ul dădea 500 pe orice pagină); `runtime` nu mai e permis aici.
 export const config = {
-  runtime: 'nodejs',
   matcher: ['/api/:path*', '/((?!_next|favicon.ico).*)'],
 };

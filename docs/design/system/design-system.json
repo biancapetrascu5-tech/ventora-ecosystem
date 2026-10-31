@@ -468,10 +468,10 @@
     "App~20icons"
   ],
   "lastChange": {
-    "at": "2026-10-30T17:58:33Z",
+    "at": "2026-10-31T11:55:10Z",
     "by": "Bianca Petrașcu",
     "via": "Claude",
-    "note": "S110: parola actuală la activarea doi pași (membru); dispozitive fără oraș; format oră Activ acum / Azi / Ieri / 28 oct."
+    "note": "S112 (sincronizat la Lotul 2.9b): HubBusinessSuspended, HubTeamInvite, FounderBusinessActions; OrgSwitcher 1.1.0 (suspended); i18n business-access, team, founder-business"
   },
   "layout": "files",
   "libraries": [

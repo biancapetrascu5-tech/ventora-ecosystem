@@ -446,7 +446,8 @@
     "switchBusiness": "Switch business",
     "findBusiness": "Find a business…",
     "noResultsFor": "No results for “{q}”",
-    "unreadN": "{n, plural, one {# unread} other {# unread}}"
+    "unreadN": "{n, plural, one {# unread} other {# unread}}",
+    "accessStopped": "Access paused"
   },
   "hub": {
     "chooseBusiness": {
@@ -457,10 +458,12 @@
       "lastUsed": "Last used",
       "remember": "Open the last business directly next time",
       "missing": "Missing a business? Ask its owner for an invitation.",
-      "search": "Search for a business"
+      "search": "Search for a business",
+      "accessStopped": "Access paused",
+      "stoppedNote": "A business marked “Access paused” can’t be opened right now. For details, write to us at {email}."
     },
     "nav": {
-      "business": "Your business",
+      "business": "Business",
       "team": "Team and invitations",
       "teamShort": "Team",
       "roles": "Roles and access"
@@ -475,7 +478,7 @@
       "colApps": "Apps",
       "colStatus": "Status",
       "active": "Active",
-      "stopped": "Access stopped",
+      "stopped": "Access paused",
       "pending": "Pending invitations",
       "invitations": "Invitations",
       "colEmail": "Email",
@@ -486,9 +489,51 @@
       "statusExpired": "Expired",
       "newLinkRequested": "Asked for a new invitation",
       "resend": "Resend",
-      "resendInvitation": "Resend the invitation",
-      "copyLink": "Copy the link",
-      "cancelInvitation": "Cancel the invitation"
+      "resendInvitation": "Resend invitation",
+      "copyLink": "Copy link",
+      "cancelInvitation": "Cancel invitation",
+      "action": {
+        "editProfile": "Edit profile",
+        "changeRole": "Change role",
+        "appAccess": "App access",
+        "restore": "Restore access",
+        "stop": "Pause access",
+        "remove": "Remove from business"
+      },
+      "form": {
+        "title": "Invite someone to {business}",
+        "lead": "They’ll get an email with a link that’s valid for 7 days.",
+        "email": "Email address",
+        "emailPlaceholder": "name@example.com",
+        "role": "Role",
+        "roleMember": "Member",
+        "roleMemberDesc": "Uses the apps you choose below.",
+        "roleAdmin": "Admin",
+        "roleAdminDesc": "Has access to every app and can invite people and change roles and app access.",
+        "apps": "Apps",
+        "appsHelp": "You can change them any time from “App access”.",
+        "appsAdmin": "An admin has access to all of the business’s apps.",
+        "cancel": "Cancel",
+        "submit": "Send invitation",
+        "sending": "Sending invitation…",
+        "errorEmail": "Enter the full address, like name@example.com.",
+        "errorMember": "{email} is already on the team.",
+        "errorInvited": "You already sent an invitation to {email} on {date}, and it’s still waiting for a reply.",
+        "errorApps": "Choose at least one app.",
+        "sentTitle": "Invitation sent to {email}",
+        "sentBody": "It stays under “Pending invitations” until it’s accepted or until {date}, when it expires."
+      },
+      "save": "Save",
+      "actionError": "We couldn’t save the change. Try again."
+    },
+    "suspended": {
+      "title": "Access to {business} is paused for now",
+      "body": "For details, contact the Ventora team at {email}.",
+      "contact": "Write to support",
+      "signOut": "Sign out"
+    },
+    "home": {
+      "soon": "Your business’s apps will appear here."
     }
   },
   "roles": {

@@ -103,6 +103,9 @@
     "HubAdminTeam",
     "FounderBusinesses",
     "FounderBusiness",
+    "FounderBusinessActions",
+    "HubBusinessSuspended",
+    "HubTeamInvite",
     "BrandZone"
   ],
   "exceptions": {},

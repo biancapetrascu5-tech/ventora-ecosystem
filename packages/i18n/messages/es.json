@@ -446,7 +446,8 @@
     "switchBusiness": "Cambiar de negocio",
     "findBusiness": "Buscar un negocio…",
     "noResultsFor": "Sin resultados para «{q}»",
-    "unreadN": "{n, plural, one {# sin leer} other {# sin leer}}"
+    "unreadN": "{n, plural, one {# sin leer} other {# sin leer}}",
+    "accessStopped": "Acceso pausado"
   },
   "hub": {
     "chooseBusiness": {
@@ -457,10 +458,12 @@
       "lastUsed": "Usado por última vez",
       "remember": "Abrir directamente el último negocio la próxima vez",
       "missing": "¿Falta un negocio? Pide una invitación a su propietario.",
-      "search": "Buscar un negocio"
+      "search": "Buscar un negocio",
+      "accessStopped": "Acceso pausado",
+      "stoppedNote": "Un negocio con «Acceso pausado» no se puede abrir ahora. Para más detalles, escríbenos a {email}."
     },
     "nav": {
-      "business": "Tu negocio",
+      "business": "Negocio",
       "team": "Equipo e invitaciones",
       "teamShort": "Equipo",
       "roles": "Roles y acceso"
@@ -475,7 +478,7 @@
       "colApps": "Aplicaciones",
       "colStatus": "Estado",
       "active": "Activo",
-      "stopped": "Acceso detenido",
+      "stopped": "Acceso pausado",
       "pending": "Invitaciones pendientes",
       "invitations": "Invitaciones",
       "colEmail": "Correo electrónico",
@@ -484,11 +487,53 @@
       "expired": "caducó el {date}",
       "statusPending": "Pendiente",
       "statusExpired": "Caducada",
-      "newLinkRequested": "Pidió una invitación nueva",
+      "newLinkRequested": "Ha pedido una nueva invitación",
       "resend": "Reenviar",
-      "resendInvitation": "Reenviar la invitación",
-      "copyLink": "Copiar el enlace",
-      "cancelInvitation": "Cancelar la invitación"
+      "resendInvitation": "Reenviar invitación",
+      "copyLink": "Copiar enlace",
+      "cancelInvitation": "Cancelar invitación",
+      "action": {
+        "editProfile": "Editar perfil",
+        "changeRole": "Cambiar rol",
+        "appAccess": "Acceso a aplicaciones",
+        "restore": "Restablecer acceso",
+        "stop": "Pausar acceso",
+        "remove": "Quitar del negocio"
+      },
+      "form": {
+        "title": "Invitar a alguien a {business}",
+        "lead": "Recibirá un correo con un enlace válido durante 7 días.",
+        "email": "Correo electrónico",
+        "emailPlaceholder": "nombre@ejemplo.es",
+        "role": "Rol",
+        "roleMember": "Miembro",
+        "roleMemberDesc": "Usa las aplicaciones que elijas abajo.",
+        "roleAdmin": "Admin",
+        "roleAdminDesc": "Tiene acceso a todas las aplicaciones y puede invitar a personas y cambiar roles y el acceso a aplicaciones.",
+        "apps": "Aplicaciones",
+        "appsHelp": "Puedes cambiarlas cuando quieras desde «Acceso a aplicaciones».",
+        "appsAdmin": "Un admin tiene acceso a todas las aplicaciones del negocio.",
+        "cancel": "Cancelar",
+        "submit": "Enviar invitación",
+        "sending": "Enviando invitación…",
+        "errorEmail": "Escribe la dirección completa, como nombre@ejemplo.es.",
+        "errorMember": "{email} ya está en el equipo.",
+        "errorInvited": "Ya enviaste una invitación a {email} el {date}, y todavía espera respuesta.",
+        "errorApps": "Elige al menos una aplicación.",
+        "sentTitle": "Invitación enviada a {email}",
+        "sentBody": "Queda en «Invitaciones pendientes» hasta que la acepten o hasta el {date}, cuando caduca."
+      },
+      "save": "Guardar",
+      "actionError": "No hemos podido guardar el cambio. Inténtalo de nuevo."
+    },
+    "suspended": {
+      "title": "El acceso a {business} está pausado por ahora",
+      "body": "Para más detalles, contacta con el equipo de Ventora en {email}.",
+      "contact": "Escribir a soporte",
+      "signOut": "Cerrar sesión"
+    },
+    "home": {
+      "soon": "Las aplicaciones de tu negocio aparecerán aquí."
     }
   },
   "roles": {

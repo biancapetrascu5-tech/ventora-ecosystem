@@ -446,7 +446,8 @@
     "switchBusiness": "Unternehmen wechseln",
     "findBusiness": "Unternehmen suchen…",
     "noResultsFor": "Keine Ergebnisse für „{q}“",
-    "unreadN": "{n, plural, one {# ungelesen} other {# ungelesen}}"
+    "unreadN": "{n, plural, one {# ungelesen} other {# ungelesen}}",
+    "accessStopped": "Zugriff gesperrt"
   },
   "hub": {
     "chooseBusiness": {
@@ -457,7 +458,9 @@
       "lastUsed": "Zuletzt verwendet",
       "remember": "Nächstes Mal direkt das zuletzt verwendete Unternehmen öffnen",
       "missing": "Fehlt ein Unternehmen? Bitten Sie den Inhaber um eine Einladung.",
-      "search": "Unternehmen suchen"
+      "search": "Unternehmen suchen",
+      "accessStopped": "Zugriff gesperrt",
+      "stoppedNote": "Ein Unternehmen mit „Zugriff gesperrt“ lässt sich im Moment nicht öffnen. Für Einzelheiten schreiben Sie uns an {email}."
     },
     "nav": {
       "business": "Unternehmen",
@@ -488,7 +491,49 @@
       "resend": "Erneut senden",
       "resendInvitation": "Einladung erneut senden",
       "copyLink": "Link kopieren",
-      "cancelInvitation": "Einladung zurückziehen"
+      "cancelInvitation": "Einladung zurückziehen",
+      "action": {
+        "editProfile": "Profil bearbeiten",
+        "changeRole": "Rolle ändern",
+        "appAccess": "Zugriff auf Apps",
+        "restore": "Zugriff wiederherstellen",
+        "stop": "Zugriff sperren",
+        "remove": "Aus dem Unternehmen entfernen"
+      },
+      "form": {
+        "title": "Person zu {business} einladen",
+        "lead": "Die Person erhält eine E-Mail mit einem Link, der 7 Tage gültig ist.",
+        "email": "E-Mail-Adresse",
+        "emailPlaceholder": "name@beispiel.de",
+        "role": "Rolle",
+        "roleMember": "Mitglied",
+        "roleMemberDesc": "Nutzt die Apps, die Sie unten auswählen.",
+        "roleAdmin": "Admin",
+        "roleAdminDesc": "Hat Zugriff auf alle Apps und kann Personen einladen sowie Rollen und App-Zugriffe ändern.",
+        "apps": "Apps",
+        "appsHelp": "Sie können sie jederzeit unter „Zugriff auf Apps“ ändern.",
+        "appsAdmin": "Ein Admin hat Zugriff auf alle Apps des Unternehmens.",
+        "cancel": "Abbrechen",
+        "submit": "Einladung senden",
+        "sending": "Einladung wird gesendet…",
+        "errorEmail": "Geben Sie die vollständige Adresse ein, z. B. name@beispiel.de.",
+        "errorMember": "{email} ist bereits im Team.",
+        "errorInvited": "Sie haben am {date} bereits eine Einladung an {email} gesendet, und sie ist noch offen.",
+        "errorApps": "Wählen Sie mindestens eine App aus.",
+        "sentTitle": "Einladung an {email} gesendet",
+        "sentBody": "Sie bleibt unter „Ausstehende Einladungen“, bis sie angenommen wird oder am {date} abläuft."
+      },
+      "save": "Speichern",
+      "actionError": "Die Änderung konnte nicht gespeichert werden. Bitte versuchen Sie es erneut."
+    },
+    "suspended": {
+      "title": "Der Zugriff auf {business} ist im Moment gesperrt",
+      "body": "Für Einzelheiten wenden Sie sich bitte an das Ventora-Team unter {email}.",
+      "contact": "An den Support schreiben",
+      "signOut": "Abmelden"
+    },
+    "home": {
+      "soon": "Die Apps Ihres Unternehmens erscheinen hier."
     }
   },
   "roles": {

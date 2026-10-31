@@ -24,10 +24,13 @@ import { keepLocale } from '@/server/locale-actions';
 
 export type HubShellData = {
   user: { name: string; email: string };
-  orgs: { id: string; name: string; role: string }[];
+  /** Lot 2.9b (S112): o afacere suspendată apare oprită (lacăt, „Acces oprit”), nu se alege. */
+  orgs: { id: string; name: string; role: string; suspended?: boolean }[];
   currentOrgId: string | null;
   /** owner sau admin în afacerea activă: vede „Afacerea”. */
   manager: boolean;
+  /** S112: afacerea din sesiune a fost suspendată între timp — unde merge persoana. */
+  suspendedRedirect: '/choose-business' | '/business-suspended' | null;
 };
 
 type Route = { id: string; href: string };
@@ -93,12 +96,14 @@ export function HubShell({
     id: o.id,
     name: o.name,
     role: roles.has(o.role) ? roles(o.role) : o.role,
+    suspended: o.suspended,
   }));
   const orgLabels = {
     switchBusiness: ui('switchBusiness'),
     yourBusinesses: ui('yourBusinesses'),
     findBusiness: ui('findBusiness'),
     noResultsFor: (q: string) => ui('noResultsFor', { q }),
+    accessStopped: ui('accessStopped'),
   };
   const change = async (id: string | number) => {
     if (String(id) === data.currentOrgId) return;

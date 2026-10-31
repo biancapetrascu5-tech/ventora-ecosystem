@@ -59,5 +59,10 @@ export {
   listTeamInvitations,
   resendTeamInvitation,
   revokeTeamInvitation,
+  inviteToTeam,
+  changeTeamMemberRole,
+  setTeamMemberApplications,
+  setTeamMemberAccess,
+  removeTeamMember,
 } from './team';
-export type { TeamMember } from './team';
+export type { TeamMember, TeamInviteResult } from './team';

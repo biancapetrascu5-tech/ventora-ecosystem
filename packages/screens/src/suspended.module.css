@@ -1,0 +1,31 @@
+/* .sus / .sus-mark / .sus-actions din HubBusinessSuspended/preview.html (S112) */
+.sus {
+  width: 480px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+.sus p,
+.sus h1 {
+  margin: 0;
+}
+.mark {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  margin-top: var(--space-2);
+}
+
+.mobile .sus {
+  width: auto;
+  padding: var(--space-4);
+}
+.mobile .actions {
+  flex-direction: column;
+  align-items: stretch;
+}

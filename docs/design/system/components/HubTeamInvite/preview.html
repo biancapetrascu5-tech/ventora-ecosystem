@@ -1,0 +1,591 @@
+<!-- @dsCard group="Ecrane Hub" height=18262 width=2620 page -->
+<!doctype html>
+<html lang="ro">
+<head><meta charset="utf-8"><title>HubTeamInvite — Ventora</title>
+<style>
+html,body{min-height:100%}
+.d{display:flex;flex-direction:column;gap:var(--space-4);padding:var(--space-4);box-sizing:border-box}
+.d0{display:flex;flex-direction:column;gap:var(--space-4);min-width:0}
+.r{display:flex;flex-wrap:wrap;gap:var(--space-3);align-items:center}
+.l{color:var(--ink-muted);width:calc(var(--space-16) + var(--space-6));flex:none}
+.g2{display:grid;grid-template-columns:repeat(auto-fit,minmax(var(--search-width),1fr));gap:var(--space-4) var(--space-6);align-items:start}
+.frame{border:var(--border-width) solid var(--line);border-radius:var(--radius-md);background:var(--sheet);box-sizing:border-box}
+.phone{width:390px;height:600px;flex:none;border:var(--border-width) solid var(--line-strong);border-radius:var(--radius-xl);overflow:hidden;box-sizing:border-box}
+.tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(var(--app-tile-width),1fr));gap:var(--space-4)}
+.icons{display:grid;grid-template-columns:repeat(auto-fill,minmax(calc(var(--app-tile-width) - var(--space-12)),1fr));gap:var(--space-2)}
+.ic{display:flex;align-items:center;gap:var(--space-2);color:var(--ink);padding:var(--space-1);min-width:0}
+.ic .caption{color:var(--ink-muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:0}
+.panel{display:flex;flex-direction:column;gap:var(--space-3);padding:var(--space-6);background:var(--sheet);color:var(--ink)}
+.lab{color:var(--ink-muted);margin-top:var(--space-2)}
+.fam{display:grid;grid-template-columns:repeat(5,1fr);gap:var(--space-4) var(--space-2)}
+.famcell,.sz,.papp{display:flex;flex-direction:column;align-items:center;gap:var(--space-1);color:var(--ink-secondary)}
+.gcell{display:flex;flex-direction:column;align-items:center;gap:var(--space-2);color:var(--ink-secondary)}
+.gwrap{position:relative;width:240px;height:240px}
+.gover{position:absolute;inset:0}
+.gwrap--sm{width:64px;height:64px;display:inline-block}
+.gwrap--sm .key{stroke-width:.5}
+.gl{stroke:var(--attention);stroke-width:.06;opacity:.55}
+.gl--major{stroke-width:.12;opacity:.9}
+.key{fill:none;stroke:var(--done);stroke-width:.18}
+.key--plate{stroke:var(--attention);stroke-dasharray:.6 .4}
+.key--diag{stroke-dasharray:.5 .5}
+.rules{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--space-6);color:var(--ink)}
+.rules .body-small{color:var(--ink-muted);margin-top:var(--space-1)}
+.ctx{display:flex;flex-direction:column;background:var(--canvas);color:var(--ink);padding:var(--space-4);gap:var(--space-4)}
+.ctxrow{display:flex;gap:var(--space-4);align-items:flex-start}
+.launch{flex:1;min-width:0;background:var(--canvas);padding:var(--space-4) var(--space-6);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg)}
+.tiles3{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--space-3)}
+.spinebox{height:250px;display:flex;border:var(--border-width) solid var(--line);border-radius:var(--radius-lg);overflow:hidden;background:var(--canvas)}
+.phone2{width:300px;border:var(--border-width) solid var(--line-strong);border-radius:var(--radius-xl);background:var(--canvas);padding-bottom:var(--space-4)}
+.pgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--space-4) var(--space-1);padding:0 var(--space-3)}
+.browser{display:flex;gap:var(--space-1);background:var(--sunken);padding:var(--space-2) var(--space-2) 0;border-radius:var(--radius-md) var(--radius-md) 0 0;border:var(--border-width) solid var(--line)}
+.btab{display:inline-flex;align-items:center;gap:var(--space-2);padding:var(--space-2) var(--space-3);border-radius:var(--radius-sm) var(--radius-sm) 0 0;color:var(--ink-secondary);min-width:160px}
+.btab.on{background:var(--sheet);color:var(--ink)}
+.muted{color:var(--ink-muted)}.center{text-align:center}
+.scr{display:flex;flex-direction:column;gap:var(--space-3);padding:var(--space-6);background:var(--sheet);color:var(--ink)}
+.scr-row{display:flex;gap:var(--space-6);align-items:flex-start;margin-top:var(--space-3)}
+.scr-lab{color:var(--ink-muted);margin-bottom:var(--space-2)}
+.scr-d,.scr-t,.scr-m{position:relative;overflow:hidden;border:var(--border-width) solid var(--line-strong);background:var(--canvas);color:var(--ink);box-sizing:border-box}
+.scr-d{width:1280px;border-radius:var(--radius-lg)}
+.scr-m{width:390px;border-radius:var(--radius-xl)}
+.scr-t{width:820px;border-radius:var(--radius-xl)}
+.wrap.tablet .tiles4{grid-template-columns:repeat(3,1fr)}
+.wrap.tablet{padding:var(--space-6) var(--space-5)}
+.sup.tablet{grid-template-columns:1fr}
+.paymethod{display:flex;flex-direction:column;gap:var(--space-2);margin-top:var(--space-4);padding-top:var(--space-4);border-top:var(--border-width) solid var(--line);max-width:480px}
+.modal-demo{position:absolute;inset:0;background:var(--scrim);display:flex;align-items:center;justify-content:center;padding:var(--space-6);z-index:var(--z-overlay)}
+.modal-demo.mobile{align-items:flex-end;padding:0}
+.modal-demo .v-dialog{max-height:none}
+.dlggrid{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--space-6);align-items:start}
+.dlggrid .v-dialog{width:auto}
+.today{display:flex;flex-direction:column;gap:var(--space-6)}
+.today.mobile{gap:var(--space-4)}.today.mobile .greet{padding:0 var(--space-4)}
+.today-grid{display:grid;grid-template-columns:minmax(0,2fr) minmax(320px,1fr);gap:var(--space-6);align-items:start}
+.today.tablet .today-grid,.today.mobile .today-grid{grid-template-columns:1fr}
+.today.tablet .today-side,.today.mobile .today-side{order:-1}
+.today-main{display:flex;flex-direction:column;gap:var(--space-6);min-width:0}
+.today.mobile .sec,.today.mobile .sechead{padding:0 var(--space-4)}
+.today.mobile .sheetlike,.today.mobile .nowcard{border-radius:0;border-left:0;border-right:0}
+.nowcards{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:var(--space-3)}
+.nowcard{display:flex;flex-direction:column;gap:var(--space-3);padding:var(--space-4);background:var(--sheet);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg)}
+.sechead{display:flex;justify-content:space-between;align-items:center;gap:var(--space-3);margin-bottom:var(--space-3);flex-wrap:wrap}
+.sec .v-badge{vertical-align:middle;margin-left:var(--space-1)}
+.reslist{list-style:none;margin:0 0 var(--space-3);padding:0;display:flex;flex-direction:column}
+.reslist li{display:flex;flex-direction:column;gap:2px;padding:var(--space-3) 0;border-bottom:var(--border-width) solid var(--line)}
+.reslist li:last-child{border-bottom:0}
+.stth{background:var(--canvas);color:var(--ink);padding:var(--space-6);border-radius:var(--radius-lg)}
+.stgrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--space-5) var(--space-4);align-items:start}
+@media (max-width:1100px){.stgrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:640px){.stgrid{grid-template-columns:minmax(0,1fr)}.stgrid>.stc{grid-column:auto!important}}
+.stc{display:flex;flex-direction:column;gap:var(--space-2);min-width:0}
+.stc-box{background:var(--sheet);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg);padding:var(--space-4);min-width:0}
+.stc-box .v-dialog{width:100%;box-shadow:none}
+.stc-box .v-toast{width:100%;box-sizing:border-box}
+.slotcol{display:flex;flex-direction:column;gap:var(--space-3);padding:var(--space-4);background:var(--canvas);border-radius:var(--radius-lg);color:var(--ink)}
+.recogrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--space-5);align-items:start}
+.toastdemo{position:fixed;right:var(--space-6);bottom:var(--space-6);width:var(--panel-width);z-index:var(--z-toast)}
+.appdet{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:var(--space-6);align-items:start}
+.wrap.tablet .appdet,.wrap.mobile .appdet{grid-template-columns:1fr}
+.appdet-main,.appdet-side{display:flex;flex-direction:column;gap:var(--space-5);padding:var(--space-6)}
+.wrap.mobile .appdet-main,.wrap.mobile .appdet-side{padding:var(--space-4)}
+.appdet-side{gap:var(--space-3)}
+.appdet-why{padding:var(--space-4);background:var(--sunken);border-radius:var(--radius-md)}
+.appdet-why .body{margin-top:var(--space-1)}
+.appdet-list{list-style:none;margin:var(--space-2) 0 0;padding:0;display:flex;flex-direction:column;gap:var(--space-2)}
+.appdet-list li{display:flex;gap:var(--space-2);align-items:flex-start}
+.appdet-list svg{flex:none;margin-top:2px;color:var(--ink-muted)}
+.seclist{display:flex;flex-direction:column;background:var(--sheet);border-top:var(--border-width) solid var(--line);border-bottom:var(--border-width) solid var(--line)}
+.secitem{display:flex;align-items:center;gap:var(--space-3);min-height:var(--touch-target);padding:var(--space-3) var(--space-4);background:none;border:0;border-top:var(--border-width) solid var(--line);color:var(--ink);text-align:left;font:inherit;cursor:pointer}
+.secitem .biz-text{flex:1}
+.inv-email{display:flex;flex-direction:column;gap:2px}
+.daylinks .v-link{font-weight:500}
+.rows2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--space-2)}
+.wrap.tablet .rows2{grid-template-columns:1fr}
+.unsaved{position:absolute;left:0;right:0;bottom:0;display:flex;align-items:center;justify-content:space-between;gap:var(--space-3);padding:var(--space-3) var(--space-6);background:var(--raised);border-top:var(--border-width) solid var(--line-strong);box-shadow:var(--shadow-2);z-index:var(--z-sticky);flex-wrap:wrap}
+.scr-d .unsaved{left:var(--spine-width)}
+.scr-t .unsaved{left:var(--spine-width-collapsed)}
+.scr-m .unsaved{bottom:var(--bottomnav-height);padding:var(--space-3) var(--space-4)}
+.axb{display:flex;flex-direction:column;gap:var(--space-6);min-width:0}
+.axb.mobile{gap:var(--space-4)}
+.axsplit{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:var(--space-6);align-items:start}
+.axb.tablet .axsplit,.axb.mobile .axsplit{grid-template-columns:1fr}
+.axb.tablet .axside,.axb.mobile .axside{order:-1}
+.axstack{display:flex;flex-direction:column;gap:var(--space-6);min-width:0}
+.axstack .axside{order:-1}
+.axb .axside.axafter{order:0}
+.logosets{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(420px,100%),1fr));gap:var(--space-4)}
+.logoset{display:flex;flex-direction:column;gap:var(--space-4);padding:var(--space-6);min-width:0;background:var(--sheet);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg);color:var(--ink)}
+.favtab{display:inline-flex;align-items:center;gap:var(--space-2);padding:var(--space-2) var(--space-3);border-radius:var(--radius-sm) var(--radius-sm) 0 0;background:var(--canvas);color:var(--ink-secondary);border:var(--border-width) solid var(--line);border-bottom:0}
+.axb.mobile .axside.axafter{padding:0 var(--space-4)}
+.axb.mobile .sechead,.axb.mobile>div>h2.heading{padding:0 var(--space-4)}
+.axb.mobile .fxplans{padding:0 var(--space-4)}
+.axb.mobile>.v-notice{margin:0 var(--space-4)}
+.axside{display:flex;flex-direction:column;gap:var(--space-3);min-width:0}
+.axside .v-badge{vertical-align:middle;margin-left:var(--space-1)}
+.axb.mobile .axside .heading{padding:0}
+.axcharts{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:var(--space-4)}
+.axb.mobile .axcharts{grid-template-columns:1fr}
+.axb.mobile .v-stats{grid-template-columns:1fr 1fr}
+.stockcell{display:grid;grid-template-columns:auto;gap:2px;min-width:120px}
+.stockbar{position:relative;display:block;height:4px;border-radius:var(--radius-full);background:var(--selected);max-width:140px}
+.stockbar>span{position:absolute;left:0;top:0;bottom:0;border-radius:inherit;background:var(--ink-secondary)}
+.stockbar.is-attention>span{background:var(--attention-mark)}
+.stockbar.is-danger>span{background:var(--danger)}
+.stockbar>i{position:absolute;top:-3px;bottom:-3px;width:2px;margin-left:-1px;background:var(--ink-muted);border-radius:1px}
+.glo{background:var(--sheet);color:var(--ink);gap:var(--space-6);padding:var(--space-6)}
+.glo-lead{max-width:760px;margin-top:var(--space-2)}
+.glo-rules{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:var(--space-4) var(--space-6)}
+.glo-rules .body-small{margin-top:var(--space-1)}
+.glo-sec{display:flex;flex-direction:column;gap:var(--space-2)}
+.glo-t{width:100%;border-collapse:collapse;table-layout:fixed}
+.glo-t th{text-align:left;color:var(--ink-muted);padding:var(--space-2) var(--space-3);border-bottom:var(--border-width) solid var(--line-strong)}
+.glo-t th:last-child{width:30%}
+.glo-t td{padding:var(--space-2) var(--space-3);border-bottom:var(--border-width) solid var(--line);vertical-align:top;overflow-wrap:anywhere}
+.glo-dec{display:inline-flex;align-items:center;gap:var(--space-1);margin-left:var(--space-2);padding:0 var(--space-2);border-radius:var(--radius-full);background:var(--attention-soft);color:var(--attention-ink);white-space:nowrap}
+.calbar{display:flex;justify-content:space-between;align-items:center;gap:var(--space-3);flex-wrap:wrap;margin-bottom:var(--space-3)}
+.calbar-date{margin-left:var(--space-2);white-space:nowrap}
+.calwrap.mobile{padding:0 var(--space-4)}
+.staffpick{margin-bottom:var(--space-3);max-width:var(--search-width)}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:var(--space-2) var(--space-4);margin:0}
+.kv dt{color:var(--ink-muted);padding-top:var(--space-0-5)}.kv dd{margin:0;color:var(--ink)}
+.hist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:var(--space-2);color:var(--ink-secondary)}
+.hist .muted{margin-right:var(--space-2)}
+.newgrid{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:var(--space-6);align-items:start}
+.newgrid.tablet,.newgrid.mobile{grid-template-columns:1fr}
+.newgrid.mobile{padding-bottom:var(--space-16)}
+.sumcard{position:sticky;top:0;display:flex;flex-direction:column;gap:var(--space-3);padding:var(--space-5);background:var(--sheet);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg)}
+.newgrid.mobile .sumcard{border-radius:0;border-left:0;border-right:0}
+.sumtotal{display:flex;justify-content:space-between;align-items:baseline;padding-top:var(--space-3);border-top:var(--border-width) solid var(--line)}
+.stickybar{position:absolute;left:0;right:0;bottom:var(--bottomnav-height);display:flex;gap:var(--space-2);justify-content:flex-end;padding:var(--space-3) var(--space-4);background:var(--sheet);border-top:var(--border-width) solid var(--line);z-index:var(--z-sticky)}
+.stickybar .v-btn--primary{flex:1}
+.hours{display:flex;flex-direction:column}
+.hrow{display:flex;align-items:center;justify-content:space-between;gap:var(--space-4);padding:var(--space-2) 0;border-bottom:var(--border-width) solid var(--line);min-height:var(--touch-target);flex-wrap:wrap}
+.hrow .v-toggle{min-width:160px}
+.hrange{display:inline-flex;align-items:center;gap:var(--space-2)}
+.hrange .v-datepicker{width:120px}
+.auth{min-height:100%;display:flex;flex-direction:column;background:var(--canvas);color:var(--ink)}
+.auth-top{display:flex;justify-content:space-between;align-items:center;padding:var(--space-4) var(--space-6)}
+.auth.mobile .auth-top{padding:var(--space-3) var(--space-4)}
+.auth-main{flex:1;display:flex;align-items:flex-start;justify-content:center;padding:var(--space-12) var(--space-4)}
+.auth.mobile .auth-main{padding:var(--space-2) 0 0;align-items:stretch}
+.auth-card{width:400px;background:var(--sheet);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg);padding:var(--space-10);display:flex;flex-direction:column;gap:var(--space-4);box-sizing:border-box}
+.auth-card.wide{width:480px}
+.auth.mobile .auth-card{width:100%;border-radius:0;border-left:0;border-right:0;border-bottom:0;padding:var(--space-6) var(--space-4)}
+.auth-head{display:flex;flex-direction:column;gap:var(--space-1);margin-bottom:var(--space-2)}
+.auth-note{display:flex;gap:var(--space-2);padding-top:var(--space-4);border-top:var(--border-width) solid var(--line);color:var(--ink-muted)}
+.auth-note .v-icon{margin-top:var(--space-0-5)}
+.auth-foot{padding:var(--space-4) var(--space-6);color:var(--ink-muted);text-align:center}
+.auth.mobile .auth-foot{display:none}
+.inv-head{display:flex;gap:var(--space-3);align-items:center}
+.inv-mark{width:var(--space-12);height:var(--space-12);border-radius:var(--radius-md);background:var(--neutral-soft);display:inline-flex;align-items:center;justify-content:center;font-weight:700;color:var(--ink);flex:none;box-shadow:inset 0 0 0 var(--border-width) var(--line-strong)}
+.inv-mark.sm{width:var(--space-10);height:var(--space-10)}
+.inv-role{display:flex;flex-direction:column;gap:var(--space-2);padding:var(--space-3) var(--space-4);background:var(--sunken);border-radius:var(--radius-sm)}
+.inv-app{display:inline-flex;gap:var(--space-1);align-items:center;color:var(--ink-secondary);margin-right:var(--space-2)}
+.reqs{list-style:none;margin:calc(var(--space-2) * -1) 0 0;padding:0;display:flex;flex-direction:column;gap:var(--space-1)}
+.req{display:flex;gap:var(--space-2);align-items:center;color:var(--ink-muted)}.req.ok{color:var(--done-ink)}
+.choose{width:560px;display:flex;flex-direction:column;gap:var(--space-4)}
+.auth.mobile .choose{width:auto;padding:var(--space-4)}
+.biz-list{display:flex;flex-direction:column;background:var(--sheet);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg);overflow:hidden}
+.biz{appearance:none;display:flex;align-items:center;gap:var(--space-3);padding:var(--space-4);border:0;border-bottom:var(--border-width) solid var(--line);background:transparent;color:var(--ink);text-align:start;font-family:inherit;cursor:pointer;min-height:var(--touch-target)}
+.biz:last-child{border-bottom:0}.biz:hover{background:var(--state-hover)}
+.biz-text{flex:1;min-width:0;display:flex;flex-direction:column;gap:var(--space-0-5);align-items:flex-start}
+.frame-rel{position:relative;height:100%}
+.wrap{max-width:1120px;width:100%;margin:0 auto;padding:var(--space-6) var(--space-6) var(--space-10);display:flex;flex-direction:column;gap:var(--space-8);box-sizing:border-box}
+.wrap.mobile{padding:var(--space-4);gap:var(--space-6)}
+.greet{display:flex;flex-direction:column;gap:var(--space-2)}
+.sec{margin-bottom:var(--space-3)}
+.tiles4{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--space-4)}
+.mgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--space-3) var(--space-1)}
+.rows{display:flex;flex-direction:column;background:var(--sheet);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg);overflow:hidden}
+.sheetlike{background:var(--sheet);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg)}
+.g2f{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(260px,100%),1fr));gap:var(--space-4) var(--space-6)}
+.nrow{display:grid;grid-template-columns:1fr repeat(3,var(--control-lg));align-items:center;padding:var(--space-2) 0;border-bottom:var(--border-width) solid var(--line);gap:var(--space-4)}
+.nrow>span:not(:first-child){display:flex;justify-content:center;text-align:center}
+.nhead{color:var(--ink-muted)}
+.secrow{display:flex;align-items:center;justify-content:space-between;gap:var(--space-4);padding:var(--space-3) 0;border-bottom:var(--border-width) solid var(--line);flex-wrap:wrap}
+.appsrow{display:inline-flex;gap:var(--space-1);align-items:center;flex-wrap:wrap}
+.mx-row{display:grid;grid-template-columns:minmax(320px,1.8fr) repeat(4,1fr);align-items:center;padding:var(--space-3) var(--space-6);border-bottom:var(--border-width) solid var(--line);gap:var(--space-2)}
+.mx-head{background:var(--sunken);color:var(--ink-secondary);border-radius:var(--radius-lg) var(--radius-lg) 0 0}
+.mx-c{display:flex;flex-direction:column;align-items:center;text-align:center}
+.mx-app{display:flex;align-items:center;gap:var(--space-3);flex-wrap:wrap}
+.mx-foot{padding:var(--space-4) var(--space-6)}
+.mrow{display:flex;align-items:center;gap:var(--space-3);padding:var(--space-3) var(--space-4);border-bottom:var(--border-width) solid var(--line);color:var(--ink-secondary)}.mrow:last-child{border-bottom:0}
+.plan{display:flex;justify-content:space-between;align-items:center;gap:var(--space-4);flex-wrap:wrap}
+.numeric-inline{font-weight:600;color:var(--ink)}
+.usage-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:var(--space-6)}
+.sup{display:grid;grid-template-columns:1.5fr 1fr;gap:var(--space-6);align-items:start}
+.lframes{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--space-4)}
+.lframe{position:relative;height:220px;border:var(--border-width) solid var(--line-strong);border-radius:var(--radius-lg);overflow:hidden;background:var(--canvas)}
+.lframe-tiles{display:flex;gap:var(--space-3);padding:var(--space-4)}
+.lstage{position:relative;height:240px;border:var(--border-width) solid var(--line-strong);border-radius:var(--radius-lg);overflow:hidden;background:var(--canvas);padding:var(--space-4)}
+.lstage-grid{display:grid;grid-template-columns:repeat(6,96px);gap:var(--space-2)}
+.fxcard{display:flex;flex-direction:column;gap:var(--space-2);padding:var(--space-5)}
+.fxapps{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:var(--space-3) var(--space-4)}
+.fxmail{display:flex;flex-direction:column;gap:var(--space-3);padding:var(--space-5);border:var(--border-width) solid var(--line);border-radius:var(--radius-md);background:var(--canvas);color:var(--ink)}
+.fxmail-btn{align-self:flex-start;padding:var(--space-2) var(--space-4);border-radius:var(--radius-md);background:var(--primary);color:var(--on-primary);font-weight:600}
+.fxplans{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:var(--space-4)}
+.fxplan{display:flex;flex-direction:column;gap:var(--space-3);padding:var(--space-5)}
+.fxlim{margin:0;padding-left:var(--space-5);color:var(--ink-secondary);display:flex;flex-direction:column;gap:var(--space-1)}
+.fxver{width:100%;border-collapse:collapse}
+.fxver th{text-align:left;color:var(--ink-muted);font-weight:500;padding:var(--space-1) 0;border-bottom:var(--border-width) solid var(--line)}
+.fxver td{padding:var(--space-2) 0;border-bottom:var(--border-width) solid var(--line);color:var(--ink)}
+.fxver td .v-pill{margin-left:var(--space-2);vertical-align:middle}
+.fxlimits{display:flex;flex-direction:column}
+.fxlimits-row{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(60px,.6fr) minmax(120px,1fr);gap:var(--space-3);align-items:center;padding:var(--space-2) 0;border-bottom:var(--border-width) solid var(--line);color:var(--ink)}
+.fxlimits-row .v-icon{color:var(--done-ink,var(--ink-secondary));flex:none}
+.fxlimits-head{padding-top:0}
+.fxlink{color:var(--ink);text-decoration:underline;text-underline-offset:2px;font-weight:600;display:inline-flex;align-items:center;min-height:24px;min-width:24px}
+@media (pointer:coarse),(max-width:767px){.fxlink{min-height:44px;min-width:44px}}
+.fxlim-new{display:flex;align-items:center;gap:var(--space-2);min-width:0}
+.fxlim-new .v-control{flex:1 1 80px;min-width:0}
+.fxdelta{display:inline-flex;align-items:center;gap:var(--space-1);color:var(--done-ink);flex:none}
+.fxdelta--down{color:var(--attention-ink)}
+.fxplan .v-btn{align-self:flex-start}
+.fxcost{margin-top:var(--space-4);display:flex;flex-direction:column;gap:var(--space-1);padding:var(--space-4);border-radius:var(--radius-md);background:var(--sunken);color:var(--ink)}
+.fxlangs{display:flex;flex-direction:column}
+.fxlang{display:grid;grid-template-columns:32px minmax(0,1fr) auto auto;gap:var(--space-3);align-items:center;padding:var(--space-2) 0;border-bottom:var(--border-width) solid var(--line);color:var(--ink)}
+.fxlang-text{color:var(--ink-secondary);overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.fxframe{display:flex;flex-direction:column;gap:var(--space-2);padding:var(--space-3);border:var(--border-width) solid var(--line);border-radius:var(--radius-md);background:var(--canvas);color:var(--ink)}
+.fxframe .caption{color:var(--ink-muted)}
+@container (max-width:420px){.fxlang{grid-template-columns:32px minmax(0,1fr) auto}.fxlang .v-iconbtn{display:none}}
+
+.tfa-grouplab{margin:var(--space-6) 0 0}
+.tfa-scrgroup{display:flex;flex-direction:column}
+.sms-langs{display:flex;flex-direction:column;gap:var(--space-4);padding:var(--space-6);background:var(--canvas);color:var(--ink)}
+.sms-langrow{display:flex;gap:var(--space-6);align-items:flex-start}
+.sms-lang{display:flex;flex-direction:column;gap:var(--space-2)}
+.sms-boxlab{margin:0;color:var(--ink-muted)}
+.sms-langframe{border:var(--border-width) solid var(--line-strong);border-radius:var(--radius-lg);overflow:hidden;background:var(--canvas);color:var(--ink);display:flex;flex-direction:column}
+.sms-langframe>*{flex:1;min-height:0}
+.x-frame{position:relative;height:100%;display:flex;flex-direction:column}
+.x-frame>*{flex:1;min-height:0}
+.x-overlay{position:absolute;inset:0;background:var(--scrim);display:flex;align-items:center;justify-content:center;padding:var(--space-6);z-index:var(--z-overlay)}
+.x-overlay.m{align-items:flex-end;padding:0}
+.x-overlay .v-dialog{max-height:none}
+.x-toast{position:absolute;right:var(--space-6);bottom:var(--space-6);width:var(--panel-width);z-index:var(--z-toast)}
+.x-toast.m{left:var(--space-4);right:var(--space-4);bottom:var(--space-4);width:auto}
+.x-link{color:var(--ink);text-decoration:underline;text-underline-offset:2px}
+.x-apps{display:grid;grid-template-columns:1fr 1fr;gap:var(--space-2) var(--space-4)}
+.x-apps.m{grid-template-columns:1fr}
+.x-app{display:inline-flex;align-items:center;gap:var(--space-2)}
+.x-form{display:flex;flex-direction:column;gap:var(--space-5)}
+.x-err-act{margin-top:var(--space-2)}
+
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script>
+const V = window.Ventora;
+const { useState } = React;
+const Row = ({ label, children }) => /* @__PURE__ */ React.createElement("div", { className: "r" }, /* @__PURE__ */ React.createElement("span", { className: "l caption" }, label), children);
+const DE = ({ children }) => /* @__PURE__ */ React.createElement(V.LocaleProvider, { locale: "de" }, children);
+const FR = ({ children }) => /* @__PURE__ */ React.createElement(V.LocaleProvider, { locale: "fr" }, children);
+const IT = ({ children }) => /* @__PURE__ */ React.createElement(V.LocaleProvider, { locale: "it" }, children);
+const mount = (el) => ReactDOM.createRoot(document.getElementById("root")).render(/* @__PURE__ */ React.createElement(V.LocaleProvider, { locale: "ro" }, el));
+const SECTIONS = [
+  { items: [{ id: "azi", label: "Azi", icon: "house" }, { id: "calendar", label: "Calendar", icon: "calendar" }, { id: "programari", label: "Program\u0103ri", icon: "list", badge: 3 }] },
+  { label: "Gestionare", items: [{ id: "clienti", label: "Clien\u021Bi", icon: "users" }, { id: "servicii", label: "Servicii", icon: "boxes" }, { id: "angajati", label: "Angaja\u021Bi", icon: "contact" }] },
+  { label: "Afacere", items: [{ id: "rapoarte", label: "Rapoarte", icon: "chart-column" }, { id: "setari", label: "Set\u0103ri", icon: "settings" }] }
+];
+const SECTIONS_DE = [
+  { items: [{ id: "heute", label: "Heute", icon: "house" }, { id: "kalender", label: "Kalender", icon: "calendar" }, { id: "termine", label: "Termin\xFCbersicht", icon: "list", badge: 3 }] },
+  { label: "Verwaltung", items: [{ id: "kunden", label: "Kundenverwaltung", icon: "users" }, { id: "leistungen", label: "Dienstleistungen", icon: "boxes" }, { id: "mitarbeiter", label: "Mitarbeiterinnen", icon: "contact" }] },
+  { label: "Unternehmen", items: [{ id: "berichte", label: "Auswertungen", icon: "chart-column" }, { id: "einst", label: "Einstellungen", icon: "settings" }] }
+];
+const ORGS = [
+  { id: "aurora", name: "Salon Aurora", role: "Proprietar" },
+  { id: "dentis", name: "Clinica Dentis Sibiu", role: "Recep\u021Bie" },
+  { id: "nord", name: "Agen\u021Bia Nord Studio", role: "Manager de proiect" }
+];
+const NOTIFS = [
+  { id: 1, title: "Programare nou\u0103 de la Ana Popescu", body: "Joi, 29 oct., 14:30 \xB7 Tuns", app: "EasyBook", time: "acum 5 min", person: "Ana Popescu" },
+  { id: 2, title: "Factura #2026-114 e restant\u0103 de 3 zile", body: "Clinica Dentis \xB7 1.250 lei", app: "MoneyDesk", time: "acum 2 ore", icon: "receipt" },
+  { id: 3, title: "Ioana a cerut concediu pe 2\u20136 noiembrie", app: "TeamSpace", time: "ieri", person: "Ioana Pavel", read: true },
+  { id: 4, title: "Exportul clien\u021Bilor e gata", app: "ClientDesk", time: "ieri", icon: "download", read: true }
+];
+const USER = { name: "Bianca Petra\u0219cu", email: "bianca@ventora-hub.com" };
+function Bar({ title, de }) {
+  return /* @__PURE__ */ React.createElement(
+    V.ContextBar,
+    {
+      title,
+      org: /* @__PURE__ */ React.createElement(V.OrgSwitcher, { orgs: de ? [{ id: 1, name: "Zahnarztpraxis Dr. M\xFCller", role: "Empfang" }, { id: 2, name: "Salon Aurora", role: "Inhaberin" }] : ORGS, currentId: de ? 1 : "aurora" }),
+      onSearch: () => {
+      },
+      createItems: [{ label: de ? "Termin" : "Programare", icon: "calendar-check", shortcut: ["N"] }, { label: de ? "Kunde" : "Client", icon: "user-plus" }],
+      notifications: /* @__PURE__ */ React.createElement(V.NotificationsPanel, { items: NOTIFS }),
+      account: /* @__PURE__ */ React.createElement(V.AccountMenu, { user: USER, orgs: ORGS, currentOrgId: "aurora", onCatalog: () => {
+      } })
+    }
+  );
+}
+const SHELL_ROWS = [
+  { id: 1, client: "Ana Popescu", service: "Tuns", when: "09:30", status: ["done", "Confirmat\u0103"] },
+  { id: 2, client: "Andrei Ionescu", service: "Vopsit", when: "11:00", status: ["attention", "\xCEn desf\u0103\u0219urare"] },
+  { id: 3, client: "Cristina Dobre", service: "Tratament facial", when: "13:15", status: ["neutral", "Neconfirmat\u0103"] },
+  { id: 4, client: "Dan Stoica", service: "Tuns", when: "15:00", status: ["done", "Confirmat\u0103"] }
+];
+function BookingShell({ height, active, mobile }) {
+  return /* @__PURE__ */ React.createElement(
+    V.AppShell,
+    {
+      height,
+      spine: /* @__PURE__ */ React.createElement(V.Spine, { app: "booking", sections: SECTIONS, activeId: active, onBackToHub: () => {
+      }, footer: /* @__PURE__ */ React.createElement(V.UsageMeter, { compact: true, label: "Program\u0103ri", used: 312, limit: 1e3 }) }),
+      contextBar: /* @__PURE__ */ React.createElement(Bar, { title: "EasyBook" })
+    },
+    /* @__PURE__ */ React.createElement(V.PageHeader, { title: "Program\u0103ri", description: mobile ? void 0 : "Toate program\u0103rile afacerii, de azi \xEEnainte.", actions: mobile ? void 0 : /* @__PURE__ */ React.createElement(V.SegmentedControl, { label: "Vizualizare", size: "md", defaultValue: "list", options: [{ value: "list", label: "List\u0103", icon: "list" }, { value: "cal", label: "Calendar", icon: "calendar" }] }) }),
+    /* @__PURE__ */ React.createElement(V.DataTable, { columns: [
+      { key: "client", header: "Client", primary: true, sortable: true },
+      { key: "service", header: "Serviciu", secondary: true },
+      { key: "when", header: "Ora", secondary: true },
+      { key: "status", header: "Stare", trailing: true, render: (r) => /* @__PURE__ */ React.createElement(V.StatusPill, { tone: r.status[0] }, r.status[1]) }
+    ], rows: SHELL_ROWS, rowActions: () => [{ label: "Deschide", icon: "external-link" }], pagination: { page: 1, pageSize: 20, total: 4, onPageChange: () => {
+    } } })
+  );
+}
+const HUB_SECTIONS = [
+  { label: "Contul t\u0103u", items: [{ id: "profil", label: "Profil \u0219i preferin\u021Be", short: "Profil", icon: "circle-user" }, { id: "securitate", label: "Securitate", icon: "shield" }] },
+  { label: "Afacerea", items: [{ id: "echipa", label: "Echip\u0103 \u0219i invita\u021Bii", short: "Echip\u0103", icon: "users" }, { id: "roluri", label: "Roluri \u0219i acces", icon: "key-round" }, { id: "abonament", label: "Abonament \u0219i consum", short: "Abonament", icon: "credit-card" }] },
+  { label: "Ajutor", items: [{ id: "suport", label: "Suport", icon: "life-buoy", badge: 1 }] }
+];
+/* DE / IT: the same Hub chrome with German and Italian texts (label-length test). */
+const HUB_SECTIONS_L = {
+  de: [
+    { label: "Ihr Konto", items: [{ id: "profil", label: "Profil und Einstellungen", short: "Profil", icon: "circle-user" }, { id: "securitate", label: "Sicherheit", icon: "shield" }] },
+    { label: "Unternehmen", items: [{ id: "echipa", label: "Team und Einladungen", short: "Team", icon: "users" }, { id: "roluri", label: "Rollen und Zugriff", short: "Rollen", icon: "key-round" }, { id: "abonament", label: "Abonnement und Verbrauch", short: "Abonnement", icon: "credit-card" }] },
+    { label: "Hilfe", items: [{ id: "suport", label: "Support", icon: "life-buoy", badge: 1 }] }
+  ],
+  it: [
+    { label: "Il Suo account", items: [{ id: "profil", label: "Profilo e preferenze", short: "Profilo", icon: "circle-user" }, { id: "securitate", label: "Sicurezza", icon: "shield" }] },
+    { label: "Attività", items: [{ id: "echipa", label: "Team e inviti", short: "Team", icon: "users" }, { id: "roluri", label: "Ruoli e accesso", short: "Ruoli", icon: "key-round" }, { id: "abonament", label: "Abbonamento e utilizzo", short: "Abbonamento", icon: "credit-card" }] },
+    { label: "Aiuto", items: [{ id: "suport", label: "Assistenza", icon: "life-buoy", badge: 1 }] }
+  ]
+};
+const ORGS_L = {
+  de: [{ id: "aurora", name: "Salon Aurora", role: "Inhaber" }, { id: "dentis", name: "Clinica Dentis Sibiu", role: "Empfang" }, { id: "nord", name: "Agenția Nord Studio", role: "Projektmanager" }],
+  it: [{ id: "aurora", name: "Salon Aurora", role: "Titolare" }, { id: "dentis", name: "Clinica Dentis Sibiu", role: "Reception" }, { id: "nord", name: "Agenția Nord Studio", role: "Project manager" }]
+};
+const NOTIFS_L = {
+  de: [
+    { id: 1, title: "Neuer Termin von Ana Popescu", body: "Do., 29. Okt., 14:30 · Haarschnitt", app: "EasyBook", time: "vor 5 Min.", person: "Ana Popescu" },
+    { id: 2, title: "Rechnung #2026-114 ist seit 3 Tagen überfällig", body: "Clinica Dentis · 1.250 lei", app: "MoneyDesk", time: "vor 2 Std.", icon: "receipt" },
+    { id: 3, title: "Ioana hat Urlaub vom 2. bis 6. November beantragt", app: "TeamSpace", time: "gestern", person: "Ioana Pavel", read: true }
+  ],
+  it: [
+    { id: 1, title: "Nuovo appuntamento di Ana Popescu", body: "Gio 29 ott, 14:30 · Taglio", app: "EasyBook", time: "5 min fa", person: "Ana Popescu" },
+    { id: 2, title: "La fattura #2026-114 è scaduta da 3 giorni", body: "Clinica Dentis · 1.250 lei", app: "MoneyDesk", time: "2 ore fa", icon: "receipt" },
+    { id: 3, title: "Ioana ha chiesto ferie dal 2 al 6 novembre", app: "TeamSpace", time: "ieri", person: "Ioana Pavel", read: true }
+  ]
+};
+const isL = (lang) => lang === "de" || lang === "it";
+function HubBar({ title, inApp, lang }) {
+  const orgs = isL(lang) ? ORGS_L[lang] : ORGS;
+  return /* @__PURE__ */ React.createElement(
+    V.ContextBar,
+    {
+      leading: inApp ? null : /* @__PURE__ */ React.createElement("span", { style: { padding: "0 var(--space-2)", display: "inline-flex" } }, /* @__PURE__ */ React.createElement(V.Logo, { size: 32, className: "v-cb-logo--full" }), /* @__PURE__ */ React.createElement(V.Logo, { variant: "mark", size: 32, className: "v-cb-logo--mark" })),
+      title,
+      org: /* @__PURE__ */ React.createElement(V.OrgSwitcher, { orgs, currentId: "aurora" }),
+      onSearch: () => {
+      },
+      notifications: /* @__PURE__ */ React.createElement(V.NotificationsPanel, { items: isL(lang) ? NOTIFS_L[lang] : NOTIFS }),
+      account: /* @__PURE__ */ React.createElement(V.AccountMenu, { user: USER, orgs, currentOrgId: "aurora", onCatalog: () => {
+      } })
+    }
+  );
+}
+function HubSettings({ active, title, children, lang }) {
+  return /* @__PURE__ */ React.createElement(
+    V.AppShell,
+    {
+      height: "100%",
+      spine: /* @__PURE__ */ React.createElement(V.Spine, { hub: true, sections: isL(lang) ? HUB_SECTIONS_L[lang] : HUB_SECTIONS, activeId: active, onBackToHub: () => {
+      }, bottomItems: ["profil", "echipa", "abonament", "suport"] }),
+      contextBar: /* @__PURE__ */ React.createElement(HubBar, { title, inApp: true, lang })
+    },
+    children
+  );
+}
+/* The DE / IT label test: the main view at 1280 in German and at 390 in Italian, each frame with its own theme. */
+function LocTest({ items, note }) {
+  if (window.__SOLO) return null;
+  const h = React.createElement;
+  return h("div", { className: "scr" },
+    h("p", { className: "heading" }, "Test cu etichete în germană și italiană"),
+    h("p", { className: "caption muted" }, note || "Același ecran, cu textele traduse, ca să vedem că etichetele mai lungi încap."),
+    h("div", { className: "scr-row" }, items.map(([lab, lang, mode, th, H, el]) => h("div", { key: lab },
+      h("p", { className: "caption scr-lab" }, lab),
+      h("div", { className: mode === "mobile" ? "scr-m" : mode === "tablet" ? "scr-t" : "scr-d", "data-theme": th, style: { height: H } }, h(V.LocaleProvider, { locale: lang }, el))))));
+}
+function Screens({ title, notes, render, desktopH = 860, tabletH = 1100, mobileH = 844 }) {
+  if (window.__SOLO) {
+    const w = window.innerWidth;
+    const m = w < 768 ? "mobile" : w < 1024 ? "tablet" : "desktop";
+    return /* @__PURE__ */ React.createElement("div", { style: { height: "100vh", position: "relative", background: "var(--canvas)" } }, render(m, "light"));
+  }
+  const sizes = [["desktop", "Desktop \xB7 1280", "scr-d", desktopH], ["tablet", "Tablet\u0103 portret \xB7 820", "scr-t", tabletH], ["mobile", "Telefon \xB7 390", "scr-m", mobileH]];
+  return /* @__PURE__ */ React.createElement("div", { className: "scr" }, /* @__PURE__ */ React.createElement("p", { className: "heading" }, title), notes && /* @__PURE__ */ React.createElement("p", { className: "caption muted" }, notes.join(" \xB7 ")), ["light", "dark"].map((th) => /* @__PURE__ */ React.createElement("div", { className: "scr-row", key: th }, sizes.map(([m, lab, cls, h]) => /* @__PURE__ */ React.createElement("div", { key: m }, /* @__PURE__ */ React.createElement("p", { className: "caption scr-lab" }, lab, " \xB7 ", th === "light" ? "Light" : "Dark"), /* @__PURE__ */ React.createElement("div", { className: cls, "data-theme": th, style: { height: h } }, render(m, th)))))));
+}
+const MINE = [["booking", "Program\u0103ri, calendar \u0219i reamintiri", 3], ["crm", "Clien\u021Bi, istoric \u0219i oportunit\u0103\u021Bi"], ["hr", "Echip\u0103, prezen\u021B\u0103 \u0219i concedii", 1], ["finance", "Facturi, scaden\u021Be \u0219i restan\u021Be", 2], ["projects", "Proiecte, sarcini \u0219i termene"], ["shifts", "Ture \u0219i \xEEnlocuiri"], ["documents", "Documente \u0219i \u0219abloane"], ["portal", "Pagina afacerii pentru clien\u021Bi"]];
+const RECO = { marketing: { reason: "Se potrive\u0219te cu EasyBook: trimite automat reamintiri \u0219i campanii clien\u021Bilor t\u0103i.", cost: "49 lei pe lun\u0103 \xB7 f\u0103r\u0103 cost de implementare" } };
+const VIEWER_ROLE = "owner";
+const RECO_FOR = (a) => (VIEWER_ROLE === "owner" || VIEWER_ROLE === "admin") && a === "marketing" ? RECO[a] : null;
+const OTHER = [["inventory", "unavailable"], ["analytics", "notInRole"], ["marketing", "notInPlan"], ["network", "notInPlan"]];
+function Launcher({ mode, empty }) {
+  const [run, setRun] = useState(null);
+  const mob = mode === "mobile";
+  const open = (a) => (e) => setRun({ app: a, from: e.currentTarget.querySelector(".v-appicon").getBoundingClientRect() });
+  return /* @__PURE__ */ React.createElement("div", { className: "frame-rel" }, /* @__PURE__ */ React.createElement(V.AppShell, { height: "100%", contextBar: /* @__PURE__ */ React.createElement(HubBar, null) }, /* @__PURE__ */ React.createElement("div", { className: "wrap " + mode }, /* @__PURE__ */ React.createElement("div", { className: "greet" }, /* @__PURE__ */ React.createElement("h1", { className: "display-l" }, "Bun\u0103 diminea\u021Ba, Bianca"), empty ? /* @__PURE__ */ React.createElement("p", { className: "body muted" }, "Bine ai venit \xEEn Salon Aurora. Aplica\u021Biile apar aici imediat ce prime\u0219ti acces.") : /* @__PURE__ */ React.createElement("p", { className: "body muted daylinks" }, "Azi ai ", /* @__PURE__ */ React.createElement("a", { className: "v-link", href: "#" }, "8 program\u0103ri"), ", ", /* @__PURE__ */ React.createElement("a", { className: "v-link", href: "#" }, "2 facturi scadente"), " \u0219i ", /* @__PURE__ */ React.createElement("a", { className: "v-link", href: "#" }, "o cerere de concediu"), " de aprobat.")), empty ? /* @__PURE__ */ React.createElement("div", { className: "sheetlike" }, /* @__PURE__ */ React.createElement(V.EmptyState, { icon: "layout-grid", title: "Nu ai \xEEnc\u0103 acces la nicio aplica\u021Bie", description: "Bianca Petra\u0219cu (proprietar) alege ce aplica\u021Bii folose\u0219te fiecare rol. Putem trimite noi cererea ta.", actions: /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(V.Button, { variant: "primary", icon: "send" }, "Cere acces"), /* @__PURE__ */ React.createElement(V.Button, { variant: "quiet" }, "Scrie-ne")) }), /* @__PURE__ */ React.createElement("p", { className: "body-small muted center", style: { paddingBottom: "var(--space-6)" } }, "\xCEntre timp, alege-\u021Bi fotografia \u0219i limba din ", /* @__PURE__ */ React.createElement("a", { className: "v-link", href: "#" }, "Contul t\u0103u"), ".")) : /* @__PURE__ */ React.createElement("section", null, /* @__PURE__ */ React.createElement("div", { className: "sechead" }, /* @__PURE__ */ React.createElement("h2", { className: "display-m" }, "Aplica\u021Biile tale"), /* @__PURE__ */ React.createElement(V.Button, { size: "sm", variant: "quiet", icon: "grip-vertical" }, "Reordoneaz\u0103")), mob ? /* @__PURE__ */ React.createElement("div", { className: "mgrid" }, MINE.map(([a, d, b]) => /* @__PURE__ */ React.createElement(V.AppTile, { key: a, app: a, layout: "icon", badge: b, onOpen: open(a) }))) : /* @__PURE__ */ React.createElement("div", { className: "tiles4" }, MINE.map(([a, d, b]) => /* @__PURE__ */ React.createElement(V.AppTile, { key: a, app: a, description: d, badge: b, onOpen: open(a) })))), /* @__PURE__ */ React.createElement("section", null, /* @__PURE__ */ React.createElement("h2", { className: "display-m sec" }, "Alte aplica\u021Bii Ventora"), /* @__PURE__ */ React.createElement("p", { className: "body-small muted", style: { marginBottom: "var(--space-3)" } }, "Nu le po\u021Bi deschide acum. La fiecare scrie de ce \u0219i ce po\u021Bi face."), true ? /* @__PURE__ */ React.createElement("div", { className: mob ? "rows" : "rows rows2" }, OTHER.map(([a, s]) => RECO_FOR(a) ? /* @__PURE__ */ React.createElement(V.GrowthSlot, { key: a, label: "Recomandare" }, /* @__PURE__ */ React.createElement(V.AppTile, { app: a, access: s, layout: "row", recommendation: RECO_FOR(a), onDetails: () => {
+  }, onDismiss: () => {
+  }, onRemindLater: () => {
+  } })) : /* @__PURE__ */ React.createElement(V.AppTile, { key: a, app: a, access: s, layout: "row", grantedBy: "Bianca Petra\u0219cu", onRequestAccess: () => {
+  }, onWriteUs: () => {
+  }, onSeeStatus: () => {
+  } }))) : /* @__PURE__ */ React.createElement("div", { className: "tiles4" }, OTHER.map(([a, s]) => RECO_FOR(a) ? /* @__PURE__ */ React.createElement(V.GrowthSlot, { key: a, label: "Recomandare" }, /* @__PURE__ */ React.createElement(V.AppTile, { app: a, access: s, recommendation: RECO_FOR(a), onDetails: () => {
+  }, onDismiss: () => {
+  }, onRemindLater: () => {
+  } })) : /* @__PURE__ */ React.createElement(V.AppTile, { key: a, app: a, access: s, grantedBy: "Bianca Petra\u0219cu", onRequestAccess: () => {
+  }, onWriteUs: () => {
+  }, onSeeStatus: () => {
+  } }))), /* @__PURE__ */ React.createElement("div", { style: { marginTop: "var(--space-4)" } }, /* @__PURE__ */ React.createElement(V.Button, { variant: "quiet", icon: "layout-grid", iconEnd: "arrow-right" }, "Vezi toate aplica\u021Biile Ventora"))))), run && /* @__PURE__ */ React.createElement(V.AppLaunch, { contained: true, app: run.app, from: run.from, onDone: () => setTimeout(() => setRun(null), 500) }));
+}
+function CommercialPrefs({ mode }) {
+  return /* @__PURE__ */ React.createElement(V.SheetSection, { title: "Recomand\u0103ri Ventora", description: "Sugestii despre aplica\u021Bii \u0219i pachete \xEEn plus care se potrivesc cu ce faci deja." }, /* @__PURE__ */ React.createElement("div", { className: "d0", style: { gap: "var(--space-3)" } }, /* @__PURE__ */ React.createElement(V.Toggle, { label: "\xCEn aplica\u021Bie", description: "Le vezi \xEEn pagini \u0219i \xEEn notific\u0103ri, la sec\u021Biunea Recomand\u0103ri.", defaultChecked: true, labelPosition: mode === "mobile" ? "start" : "end" }), /* @__PURE__ */ React.createElement(V.Toggle, { label: "Pe e-mail", description: "Disponibil \xEEn cur\xE2nd", disabled: true, labelPosition: mode === "mobile" ? "start" : "end" }), /* @__PURE__ */ React.createElement(V.Notice, { tone: "neutral", icon: "info" }, "Mesajele despre limitele contului t\u0103u r\u0103m\xE2n active, pentru c\u0103 sunt informa\u021Bii despre cont, nu recomand\u0103ri.")));
+}
+const MEMBERS = [
+  { id: 1, name: "Bianca Petra\u0219cu", email: "bianca@salonaurora.ro", role: "Proprietar", owner: true, apps: ["booking", "crm", "hr", "finance", "projects", "shifts", "documents"], status: ["done", "Activ"] },
+  { id: 2, name: "Ioana Pavel", email: "ioana@salonaurora.ro", role: "Recep\u021Bie", apps: ["booking", "crm", "shifts"], status: ["done", "Activ"] },
+  { id: 3, name: "Mara Enache", email: "mara@salonaurora.ro", role: "Membru", apps: ["booking", "shifts"], status: ["done", "Activ"] },
+  { id: 4, name: "Radu Matei", email: "radu@salonaurora.ro", role: "Manager", apps: ["booking", "crm", "hr", "finance", "shifts"], status: ["neutral", "Acces oprit"], stopped: true }
+];
+const INVITES = [
+  { id: 1, email: "andreea.v@gmail.com", role: "Membru", sent: "22 oct.", exp: "expir\u0103 pe 29 oct.", status: ["neutral", "\xCEn a\u0219teptare"] },
+  { id: 2, email: "cosmin@salonaurora.ro", role: "Recep\u021Bie", sent: "12 oct.", exp: "a expirat pe 19 oct.", status: ["attention", "Expirat\u0103"], expired: true }
+];
+const TEAM_TX = {
+  ro: { members: MEMBERS, invites: INVITES, title: "Echipa", desc: "Cine lucreaz\u0103 \xEEn Salon Aurora, cu ce rol \u0219i la ce aplica\u021Bii are acces.", seats: (n) => n + " din 10 locuri \xEEn echip\u0103", invite: "Invit\u0103 o persoan\u0103", cMembers: "Membri", hName: "Nume", hRole: "Rol", hApps: "Aplica\u021Bii", hSt: "Stare", editProfile: "Editeaz\u0103 profilul", changeRole: "Schimb\u0103 rolul", appAccess: "Acces la aplica\u021Bii", restore: "Red\u0103 accesul", stop: "Opre\u0219te accesul", remove: "Elimin\u0103 din afacere", pending: "Invita\u021Bii \xEEn a\u0219teptare", cInv: "Invita\u021Bii", hEmail: "E-mail", hSent: "Trimis\u0103", resend: "Retrimite", resendInv: "Retrimite invita\u021Bia", copy: "Copiaz\u0103 linkul", cancel: "Anuleaz\u0103 invita\u021Bia",
+    up: { title: "Ai ocupat toate cele 10 locuri din echip\u0103", description: "Ca s\u0103 invi\u021Bi \xEEnc\u0103 o persoan\u0103, ai nevoie de locuri \xEEn plus. Echipa de acum lucreaz\u0103 mai departe ca \xEEnainte.", label: "Locuri \xEEn echip\u0103", options: [{ id: "pack", kind: "pack", title: "5 locuri \xEEn echip\u0103 \xEEn plus", price: "60 lei pe lun\u0103 \xB7 pl\u0103tit odat\u0103 cu abonamentul \xB7 f\u0103r\u0103 cost de implementare", includes: ["Intr\u0103 imediat; invita\u021Bia pleac\u0103 dup\u0103 plat\u0103"] }, { id: "plan", kind: "plan", title: "Abonamentul Business Plus", price: "449 lei pe lun\u0103 \xEEn loc de 349 \xB7 f\u0103r\u0103 cost de implementare", includes: ["20 de membri", "3.000 SMS pe lun\u0103"] }] } },
+  de: { members: [
+      { id: 1, name: "Bianca Petra\u0219cu", email: "bianca@salonaurora.ro", role: "Inhaber", owner: true, apps: ["booking", "crm", "hr", "finance", "projects", "shifts", "documents"], status: ["done", "Aktiv"] },
+      { id: 2, name: "Ioana Pavel", email: "ioana@salonaurora.ro", role: "Empfang", apps: ["booking", "crm", "shifts"], status: ["done", "Aktiv"] },
+      { id: 3, name: "Mara Enache", email: "mara@salonaurora.ro", role: "Mitglied", apps: ["booking", "shifts"], status: ["done", "Aktiv"] },
+      { id: 4, name: "Radu Matei", email: "radu@salonaurora.ro", role: "Manager", apps: ["booking", "crm", "hr", "finance", "shifts"], status: ["neutral", "Zugriff gesperrt"], stopped: true }
+    ], invites: [
+      { id: 1, email: "andreea.v@gmail.com", role: "Mitglied", sent: "22. Okt.", exp: "l\xE4uft am 29. Okt. ab", status: ["neutral", "Ausstehend"] },
+      { id: 2, email: "cosmin@salonaurora.ro", role: "Empfang", sent: "12. Okt.", exp: "am 19. Okt. abgelaufen", status: ["attention", "Abgelaufen"], expired: true }
+    ], title: "Team", desc: "Wer bei Salon Aurora arbeitet, mit welcher Rolle und mit Zugriff auf welche Apps.", seats: (n) => n + " von 10 Teamplätzen", invite: "Person einladen", cMembers: "Mitglieder", hName: "Name", hRole: "Rolle", hApps: "Apps", hSt: "Status", editProfile: "Profil bearbeiten", changeRole: "Rolle \xE4ndern", appAccess: "Zugriff auf Apps", restore: "Zugriff wiederherstellen", stop: "Zugriff sperren", remove: "Aus dem Unternehmen entfernen", pending: "Ausstehende Einladungen", cInv: "Einladungen", hEmail: "E-Mail", hSent: "Gesendet", resend: "Erneut senden", resendInv: "Einladung erneut senden", copy: "Link kopieren", cancel: "Einladung zur\xFCckziehen" },
+  it: { members: [
+      { id: 1, name: "Bianca Petra\u0219cu", email: "bianca@salonaurora.ro", role: "Titolare", owner: true, apps: ["booking", "crm", "hr", "finance", "projects", "shifts", "documents"], status: ["done", "Attivo"] },
+      { id: 2, name: "Ioana Pavel", email: "ioana@salonaurora.ro", role: "Reception", apps: ["booking", "crm", "shifts"], status: ["done", "Attivo"] },
+      { id: 3, name: "Mara Enache", email: "mara@salonaurora.ro", role: "Membro", apps: ["booking", "shifts"], status: ["done", "Attivo"] },
+      { id: 4, name: "Radu Matei", email: "radu@salonaurora.ro", role: "Manager", apps: ["booking", "crm", "hr", "finance", "shifts"], status: ["neutral", "Accesso sospeso"], stopped: true }
+    ], invites: [
+      { id: 1, email: "andreea.v@gmail.com", role: "Membro", sent: "22 ott.", exp: "scade il 29 ott.", status: ["neutral", "In attesa"] },
+      { id: 2, email: "cosmin@salonaurora.ro", role: "Reception", sent: "12 ott.", exp: "scaduto il 19 ott.", status: ["attention", "Scaduto"], expired: true }
+    ], title: "Team", desc: "Chi lavora in Salon Aurora, con quale ruolo e a quali app ha accesso.", seats: (n) => n + " su 10 posti nel team", invite: "Invita una persona", cMembers: "Membri", hName: "Nome", hRole: "Ruolo", hApps: "App", hSt: "Stato", editProfile: "Modifica il profilo", changeRole: "Cambia ruolo", appAccess: "Accesso alle app", restore: "Ripristina l\u2019accesso", stop: "Sospendi l\u2019accesso", remove: "Rimuovi dall\u2019attivit\xE0", pending: "Inviti in attesa", cInv: "Inviti", hEmail: "E-mail", hSent: "Inviato", resend: "Invia di nuovo", resendInv: "Invia di nuovo l\u2019invito", copy: "Copia il link", cancel: "Annulla l\u2019invito" }
+};
+function Team({ mode, lang, atLimit, extra }) {
+  const T = Object.assign({}, TEAM_TX[isL(lang) ? lang : "ro"], extra || {});
+  return /* @__PURE__ */ React.createElement("div", { className: "frame-rel" }, /* @__PURE__ */ React.createElement(HubSettings, { active: "echipa", title: T.title, lang }, /* @__PURE__ */ React.createElement(V.PageHeader, { title: T.title, description: T.desc, actions: /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("span", { className: "body-small muted v-num" }, T.seats(atLimit ? 10 : 4)), /* @__PURE__ */ React.createElement(V.Button, { variant: "primary", icon: "user-plus" }, T.invite)) }), /* @__PURE__ */ React.createElement(V.DataTable, { caption: T.cMembers, columns: [
+    { key: "name", header: T.hName, primary: true, render: (r) => /* @__PURE__ */ React.createElement("span", { className: "r", style: { gap: "var(--space-3)", flexWrap: "nowrap" } }, /* @__PURE__ */ React.createElement(V.Avatar, { name: r.name, size: "sm" }), /* @__PURE__ */ React.createElement("span", { style: { display: "flex", flexDirection: "column" } }, /* @__PURE__ */ React.createElement("span", null, r.name), /* @__PURE__ */ React.createElement("span", { className: "body-small muted" }, r.email))) },
+    { key: "role", header: T.hRole, secondary: true },
+    { key: "apps", header: T.hApps, render: (r) => /* @__PURE__ */ React.createElement("span", { className: "appsrow" }, r.apps.slice(0, 5).map((a) => /* @__PURE__ */ React.createElement(V.AppIcon, { key: a, app: a, size: 20, title: V.APPS[a].name })), r.apps.length > 5 && /* @__PURE__ */ React.createElement("span", { className: "caption muted" }, "+", r.apps.length - 5)) },
+    { key: "status", header: T.hSt, trailing: true, render: (r) => /* @__PURE__ */ React.createElement(V.StatusPill, { tone: r.status[0] }, r.status[1]) }
+  ], rows: T.members, rowActions: (r) => r.owner ? [{ label: T.editProfile, icon: "pencil" }] : [{ label: T.changeRole, icon: "key-round" }, { label: T.appAccess, icon: "layout-grid" }, { label: r.stopped ? T.restore : T.stop, icon: "lock" }, { separator: true }, { label: T.remove, icon: "trash-2", destructive: true }] }), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("h2", { className: "heading", style: { margin: "var(--space-2) 0 var(--space-3)", padding: mode === "mobile" ? "0 var(--space-4)" : 0 } }, T.pending), /* @__PURE__ */ React.createElement(V.DataTable, { caption: T.cInv, columns: [
+    { key: "email", header: T.hEmail, primary: true },
+    { key: "role", header: T.hRole, secondary: true },
+    { key: "sent", header: T.hSent, render: (r) => /* @__PURE__ */ React.createElement("span", null, r.sent, " \xB7 ", /* @__PURE__ */ React.createElement("span", { className: "muted" }, r.exp)), secondary: true },
+    { key: "status", header: T.hSt, trailing: true, render: (r) => /* @__PURE__ */ React.createElement("span", { className: "r", style: mode === "mobile" ? { gap: "var(--space-2)", flexDirection: "column", alignItems: "flex-end" } : { gap: "var(--space-2)", flexWrap: "nowrap" } }, /* @__PURE__ */ React.createElement(V.StatusPill, { tone: r.status[0] }, r.status[1]), r.expired && /* @__PURE__ */ React.createElement(V.Button, { size: "sm", icon: "send" }, T.resend)) }
+  ], rows: T.invites, rowActions: () => [{ label: T.resendInv, icon: "send" }, { label: T.copy, icon: "copy" }, { separator: true }, { label: T.cancel, icon: "x", destructive: true }] }))), atLimit && /* @__PURE__ */ React.createElement("div", { className: "modal-demo " + mode }, /* @__PURE__ */ React.createElement(V.UpgradeDialog, { inline: true, sheet: mode === "mobile", role: "owner", title: T.up.title, description: T.up.description, usage: { label: T.up.label, used: 10, limit: 10 }, options: T.up.options, onContinue: () => {
+  } })));
+}
+const TM = {"ro": {"hub.nav.account": "Contul tău", "hub.nav.profile": "Profil și preferințe", "hub.nav.profile.short": "Profil", "hub.nav.security": "Securitate", "hub.nav.business": "Afacerea", "hub.nav.team": "Echipă și invitații", "hub.nav.team.short": "Echipă", "hub.nav.roles": "Roluri și acces", "hub.nav.roles.short": "Roluri", "hub.nav.plan": "Abonament și consum", "hub.nav.plan.short": "Abonament", "hub.nav.help": "Ajutor", "hub.nav.support": "Suport", "team.title": "Echipa", "team.lead": "Cine lucrează în {business}, cu ce rol și la ce aplicații are acces.", "team.seats": "{used} din {limit} locuri în echipă", "team.members": "Membri", "team.col.name": "Nume", "team.col.role": "Rol", "team.col.apps": "Aplicații", "team.col.status": "Stare", "team.col.email": "E-mail", "team.col.sent": "Trimisă", "team.status.active": "Activ", "team.status.stopped": "Acces oprit", "team.status.pending": "În așteptare", "team.status.expired": "Expirată", "team.inviteRequested": "A cerut o invitație nouă", "team.expires": "expiră pe {date}", "team.expired": "a expirat pe {date}", "team.action.editProfile": "Editează profilul", "team.action.changeRole": "Schimbă rolul", "team.action.appAccess": "Acces la aplicații", "team.action.restore": "Redă accesul", "team.action.stop": "Oprește accesul", "team.action.remove": "Elimină din afacere", "team.pending": "Invitații în așteptare", "team.invitations": "Invitații", "team.action.resend": "Retrimite", "team.action.resendInvite": "Retrimite invitația", "team.action.copyLink": "Copiază linkul", "team.action.cancelInvite": "Anulează invitația", "team.invite.open": "Invită o persoană", "team.invite.title": "Invită o persoană în {business}", "team.invite.lead": "Primește un e-mail cu un link valabil 7 zile.", "team.invite.email": "Adresa de e-mail", "team.invite.emailPlaceholder": "nume@exemplu.ro", "team.invite.role": "Rol", "team.invite.role.member": "Membru", "team.invite.role.memberDesc": "Folosește aplicațiile pe care i le alegi mai jos.", "team.invite.role.admin": "Admin", "team.invite.role.adminDesc": "Are acces la toate aplicațiile și poate invita oameni, schimba roluri și accesul la aplicații.", "team.invite.apps": "Aplicații", "team.invite.appsHelp": "Le poți schimba oricând din „Acces la aplicații”.", "team.invite.appsAdmin": "Un admin are acces la toate aplicațiile afacerii.", "team.invite.cancel": "Renunță", "team.invite.submit": "Trimite invitația", "team.invite.sending": "Se trimite invitația…", "team.invite.error.email": "Scrie adresa întreagă, de forma nume@exemplu.ro.", "team.invite.error.member": "{email} e deja în echipă.", "team.invite.error.invited": "Ai trimis deja o invitație la {email}, pe {date}, și încă așteaptă răspuns.", "team.invite.error.apps": "Alege cel puțin o aplicație.", "team.invite.sent.title": "Invitația a plecat la {email}", "team.invite.sent.body": "Rămâne în „Invitații în așteptare” până o acceptă sau până pe {date}, când expiră.", "quota.members": "Locuri în echipă", "quota.members.count": "{count, plural, one {# membru} few {# membri} other {# de membri}}", "quota.members.pack": "{count} locuri în echipă în plus", "quota.members.full": "Ai ocupat toate cele {limit} locuri din echipă"}, "en": {"hub.nav.account": "Your account", "hub.nav.profile": "Profile and preferences", "hub.nav.profile.short": "Profile", "hub.nav.security": "Security", "hub.nav.business": "Business", "hub.nav.team": "Team and invitations", "hub.nav.team.short": "Team", "hub.nav.roles": "Roles and access", "hub.nav.roles.short": "Roles", "hub.nav.plan": "Plan and usage", "hub.nav.plan.short": "Plan", "hub.nav.help": "Help", "hub.nav.support": "Support", "team.title": "Team", "team.lead": "Who works at {business}, in which role and with access to which apps.", "team.seats": "{used} of {limit} team seats", "team.members": "Members", "team.col.name": "Name", "team.col.role": "Role", "team.col.apps": "Apps", "team.col.status": "Status", "team.col.email": "Email", "team.col.sent": "Sent", "team.status.active": "Active", "team.status.stopped": "Access paused", "team.status.pending": "Pending", "team.status.expired": "Expired", "team.inviteRequested": "Asked for a new invitation", "team.expires": "expires on {date}", "team.expired": "expired on {date}", "team.action.editProfile": "Edit profile", "team.action.changeRole": "Change role", "team.action.appAccess": "App access", "team.action.restore": "Restore access", "team.action.stop": "Pause access", "team.action.remove": "Remove from business", "team.pending": "Pending invitations", "team.invitations": "Invitations", "team.action.resend": "Resend", "team.action.resendInvite": "Resend invitation", "team.action.copyLink": "Copy link", "team.action.cancelInvite": "Cancel invitation", "team.invite.open": "Invite someone", "team.invite.title": "Invite someone to {business}", "team.invite.lead": "They’ll get an email with a link that’s valid for 7 days.", "team.invite.email": "Email address", "team.invite.emailPlaceholder": "name@example.com", "team.invite.role": "Role", "team.invite.role.member": "Member", "team.invite.role.memberDesc": "Uses the apps you choose below.", "team.invite.role.admin": "Admin", "team.invite.role.adminDesc": "Has access to every app and can invite people and change roles and app access.", "team.invite.apps": "Apps", "team.invite.appsHelp": "You can change them any time from “App access”.", "team.invite.appsAdmin": "An admin has access to all of the business’s apps.", "team.invite.cancel": "Cancel", "team.invite.submit": "Send invitation", "team.invite.sending": "Sending invitation…", "team.invite.error.email": "Enter the full address, like name@example.com.", "team.invite.error.member": "{email} is already on the team.", "team.invite.error.invited": "You already sent an invitation to {email} on {date}, and it’s still waiting for a reply.", "team.invite.error.apps": "Choose at least one app.", "team.invite.sent.title": "Invitation sent to {email}", "team.invite.sent.body": "It stays under “Pending invitations” until it’s accepted or until {date}, when it expires.", "quota.members": "Team seats", "quota.members.count": "{count, plural, one {# member} other {# members}}", "quota.members.pack": "{count} extra team seats", "quota.members.full": "You’ve used all {limit} team seats"}, "fr": {"hub.nav.account": "Votre compte", "hub.nav.profile": "Profil et préférences", "hub.nav.profile.short": "Profil", "hub.nav.security": "Sécurité", "hub.nav.business": "Entreprise", "hub.nav.team": "Équipe et invitations", "hub.nav.team.short": "Équipe", "hub.nav.roles": "Rôles et accès", "hub.nav.roles.short": "Rôles", "hub.nav.plan": "Abonnement et consommation", "hub.nav.plan.short": "Abonnement", "hub.nav.help": "Aide", "hub.nav.support": "Assistance", "team.title": "Équipe", "team.lead": "Qui travaille chez {business}, avec quel rôle et l’accès à quelles applications.", "team.seats": "{used} places d’équipe sur {limit}", "team.members": "Membres", "team.col.name": "Nom", "team.col.role": "Rôle", "team.col.apps": "Applications", "team.col.status": "Statut", "team.col.email": "E-mail", "team.col.sent": "Envoyée", "team.status.active": "Actif", "team.status.stopped": "Accès suspendu", "team.status.pending": "En attente", "team.status.expired": "Expirée", "team.inviteRequested": "A demandé une nouvelle invitation", "team.expires": "expire le {date}", "team.expired": "a expiré le {date}", "team.action.editProfile": "Modifier le profil", "team.action.changeRole": "Changer de rôle", "team.action.appAccess": "Accès aux applications", "team.action.restore": "Rétablir l’accès", "team.action.stop": "Suspendre l’accès", "team.action.remove": "Retirer de l’entreprise", "team.pending": "Invitations en attente", "team.invitations": "Invitations", "team.action.resend": "Renvoyer", "team.action.resendInvite": "Renvoyer l’invitation", "team.action.copyLink": "Copier le lien", "team.action.cancelInvite": "Annuler l’invitation", "team.invite.open": "Inviter une personne", "team.invite.title": "Inviter une personne chez {business}", "team.invite.lead": "La personne reçoit un e-mail avec un lien valable 7 jours.", "team.invite.email": "Adresse e-mail", "team.invite.emailPlaceholder": "nom@exemple.fr", "team.invite.role": "Rôle", "team.invite.role.member": "Membre", "team.invite.role.memberDesc": "Utilise les applications que vous choisissez ci-dessous.", "team.invite.role.admin": "Admin", "team.invite.role.adminDesc": "A accès à toutes les applications et peut inviter des personnes, changer les rôles et l’accès aux applications.", "team.invite.apps": "Applications", "team.invite.appsHelp": "Vous pouvez les modifier à tout moment depuis « Accès aux applications ».", "team.invite.appsAdmin": "Un admin a accès à toutes les applications de l’entreprise.", "team.invite.cancel": "Annuler", "team.invite.submit": "Envoyer l’invitation", "team.invite.sending": "Envoi de l’invitation…", "team.invite.error.email": "Saisissez l’adresse complète, par exemple nom@exemple.fr.", "team.invite.error.member": "{email} fait déjà partie de l’équipe.", "team.invite.error.invited": "Vous avez déjà envoyé une invitation à {email} le {date}, et elle attend toujours une réponse.", "team.invite.error.apps": "Choisissez au moins une application.", "team.invite.sent.title": "Invitation envoyée à {email}", "team.invite.sent.body": "Elle reste dans « Invitations en attente » jusqu’à son acceptation ou jusqu’au {date}, date à laquelle elle expire.", "quota.members": "Places d’équipe", "quota.members.count": "{count, plural, one {# membre} other {# membres}}", "quota.members.pack": "{count} places d’équipe en plus", "quota.members.full": "Vous avez utilisé les {limit} places d’équipe"}, "es": {"hub.nav.account": "Tu cuenta", "hub.nav.profile": "Perfil y preferencias", "hub.nav.profile.short": "Perfil", "hub.nav.security": "Seguridad", "hub.nav.business": "Negocio", "hub.nav.team": "Equipo e invitaciones", "hub.nav.team.short": "Equipo", "hub.nav.roles": "Roles y acceso", "hub.nav.roles.short": "Roles", "hub.nav.plan": "Plan y consumo", "hub.nav.plan.short": "Plan", "hub.nav.help": "Ayuda", "hub.nav.support": "Soporte", "team.title": "Equipo", "team.lead": "Quién trabaja en {business}, con qué rol y con acceso a qué aplicaciones.", "team.seats": "{used} de {limit} plazas en el equipo", "team.members": "Miembros", "team.col.name": "Nombre", "team.col.role": "Rol", "team.col.apps": "Aplicaciones", "team.col.status": "Estado", "team.col.email": "Correo electrónico", "team.col.sent": "Enviada", "team.status.active": "Activo", "team.status.stopped": "Acceso pausado", "team.status.pending": "Pendiente", "team.status.expired": "Caducada", "team.inviteRequested": "Ha pedido una nueva invitación", "team.expires": "caduca el {date}", "team.expired": "caducó el {date}", "team.action.editProfile": "Editar perfil", "team.action.changeRole": "Cambiar rol", "team.action.appAccess": "Acceso a aplicaciones", "team.action.restore": "Restablecer acceso", "team.action.stop": "Pausar acceso", "team.action.remove": "Quitar del negocio", "team.pending": "Invitaciones pendientes", "team.invitations": "Invitaciones", "team.action.resend": "Reenviar", "team.action.resendInvite": "Reenviar invitación", "team.action.copyLink": "Copiar enlace", "team.action.cancelInvite": "Cancelar invitación", "team.invite.open": "Invitar a alguien", "team.invite.title": "Invitar a alguien a {business}", "team.invite.lead": "Recibirá un correo con un enlace válido durante 7 días.", "team.invite.email": "Correo electrónico", "team.invite.emailPlaceholder": "nombre@ejemplo.es", "team.invite.role": "Rol", "team.invite.role.member": "Miembro", "team.invite.role.memberDesc": "Usa las aplicaciones que elijas abajo.", "team.invite.role.admin": "Admin", "team.invite.role.adminDesc": "Tiene acceso a todas las aplicaciones y puede invitar a personas y cambiar roles y el acceso a aplicaciones.", "team.invite.apps": "Aplicaciones", "team.invite.appsHelp": "Puedes cambiarlas cuando quieras desde «Acceso a aplicaciones».", "team.invite.appsAdmin": "Un admin tiene acceso a todas las aplicaciones del negocio.", "team.invite.cancel": "Cancelar", "team.invite.submit": "Enviar invitación", "team.invite.sending": "Enviando invitación…", "team.invite.error.email": "Escribe la dirección completa, como nombre@ejemplo.es.", "team.invite.error.member": "{email} ya está en el equipo.", "team.invite.error.invited": "Ya enviaste una invitación a {email} el {date}, y todavía espera respuesta.", "team.invite.error.apps": "Elige al menos una aplicación.", "team.invite.sent.title": "Invitación enviada a {email}", "team.invite.sent.body": "Queda en «Invitaciones pendientes» hasta que la acepten o hasta el {date}, cuando caduca.", "quota.members": "Plazas en el equipo", "quota.members.count": "{count, plural, one {# miembro} other {# miembros}}", "quota.members.pack": "{count} plazas más en el equipo", "quota.members.full": "Has ocupado las {limit} plazas del equipo"}, "de": {"hub.nav.account": "Ihr Konto", "hub.nav.profile": "Profil und Einstellungen", "hub.nav.profile.short": "Profil", "hub.nav.security": "Sicherheit", "hub.nav.business": "Unternehmen", "hub.nav.team": "Team und Einladungen", "hub.nav.team.short": "Team", "hub.nav.roles": "Rollen und Zugriff", "hub.nav.roles.short": "Rollen", "hub.nav.plan": "Abonnement und Verbrauch", "hub.nav.plan.short": "Abonnement", "hub.nav.help": "Hilfe", "hub.nav.support": "Support", "team.title": "Team", "team.lead": "Wer bei {business} arbeitet, mit welcher Rolle und mit Zugriff auf welche Apps.", "team.seats": "{used} von {limit} Teamplätzen", "team.members": "Mitglieder", "team.col.name": "Name", "team.col.role": "Rolle", "team.col.apps": "Apps", "team.col.status": "Status", "team.col.email": "E-Mail", "team.col.sent": "Gesendet", "team.status.active": "Aktiv", "team.status.stopped": "Zugriff gesperrt", "team.status.pending": "Ausstehend", "team.status.expired": "Abgelaufen", "team.inviteRequested": "Hat eine neue Einladung angefordert", "team.expires": "läuft am {date} ab", "team.expired": "am {date} abgelaufen", "team.action.editProfile": "Profil bearbeiten", "team.action.changeRole": "Rolle ändern", "team.action.appAccess": "Zugriff auf Apps", "team.action.restore": "Zugriff wiederherstellen", "team.action.stop": "Zugriff sperren", "team.action.remove": "Aus dem Unternehmen entfernen", "team.pending": "Ausstehende Einladungen", "team.invitations": "Einladungen", "team.action.resend": "Erneut senden", "team.action.resendInvite": "Einladung erneut senden", "team.action.copyLink": "Link kopieren", "team.action.cancelInvite": "Einladung zurückziehen", "team.invite.open": "Person einladen", "team.invite.title": "Person zu {business} einladen", "team.invite.lead": "Die Person erhält eine E-Mail mit einem Link, der 7 Tage gültig ist.", "team.invite.email": "E-Mail-Adresse", "team.invite.emailPlaceholder": "name@beispiel.de", "team.invite.role": "Rolle", "team.invite.role.member": "Mitglied", "team.invite.role.memberDesc": "Nutzt die Apps, die Sie unten auswählen.", "team.invite.role.admin": "Admin", "team.invite.role.adminDesc": "Hat Zugriff auf alle Apps und kann Personen einladen sowie Rollen und App-Zugriffe ändern.", "team.invite.apps": "Apps", "team.invite.appsHelp": "Sie können sie jederzeit unter „Zugriff auf Apps“ ändern.", "team.invite.appsAdmin": "Ein Admin hat Zugriff auf alle Apps des Unternehmens.", "team.invite.cancel": "Abbrechen", "team.invite.submit": "Einladung senden", "team.invite.sending": "Einladung wird gesendet…", "team.invite.error.email": "Geben Sie die vollständige Adresse ein, z. B. name@beispiel.de.", "team.invite.error.member": "{email} ist bereits im Team.", "team.invite.error.invited": "Sie haben am {date} bereits eine Einladung an {email} gesendet, und sie ist noch offen.", "team.invite.error.apps": "Wählen Sie mindestens eine App aus.", "team.invite.sent.title": "Einladung an {email} gesendet", "team.invite.sent.body": "Sie bleibt unter „Ausstehende Einladungen“, bis sie angenommen wird oder am {date} abläuft.", "quota.members": "Teamplätze", "quota.members.count": "{count, plural, one {# Mitglied} other {# Mitglieder}}", "quota.members.pack": "{count} zusätzliche Teamplätze", "quota.members.full": "Sie haben alle {limit} Teamplätze belegt"}, "it": {"hub.nav.account": "Il Suo account", "hub.nav.profile": "Profilo e preferenze", "hub.nav.profile.short": "Profilo", "hub.nav.security": "Sicurezza", "hub.nav.business": "Attività", "hub.nav.team": "Team e inviti", "hub.nav.team.short": "Team", "hub.nav.roles": "Ruoli e accesso", "hub.nav.roles.short": "Ruoli", "hub.nav.plan": "Abbonamento e utilizzo", "hub.nav.plan.short": "Abbonamento", "hub.nav.help": "Aiuto", "hub.nav.support": "Assistenza", "team.title": "Team", "team.lead": "Chi lavora in {business}, con quale ruolo e a quali app ha accesso.", "team.seats": "{used} su {limit} posti nel team", "team.members": "Membri", "team.col.name": "Nome", "team.col.role": "Ruolo", "team.col.apps": "App", "team.col.status": "Stato", "team.col.email": "E-mail", "team.col.sent": "Inviato", "team.status.active": "Attivo", "team.status.stopped": "Accesso sospeso", "team.status.pending": "In attesa", "team.status.expired": "Scaduto", "team.inviteRequested": "Ha chiesto un nuovo invito", "team.expires": "scade il {date}", "team.expired": "scaduto il {date}", "team.action.editProfile": "Modifica il profilo", "team.action.changeRole": "Cambia ruolo", "team.action.appAccess": "Accesso alle app", "team.action.restore": "Ripristina l’accesso", "team.action.stop": "Sospendi l’accesso", "team.action.remove": "Rimuovi dall’attività", "team.pending": "Inviti in attesa", "team.invitations": "Inviti", "team.action.resend": "Invia di nuovo", "team.action.resendInvite": "Invia di nuovo l’invito", "team.action.copyLink": "Copia il link", "team.action.cancelInvite": "Annulla l’invito", "team.invite.open": "Invita una persona", "team.invite.title": "Invita una persona in {business}", "team.invite.lead": "Riceverà un’e-mail con un link valido 7 giorni.", "team.invite.email": "Indirizzo e-mail", "team.invite.emailPlaceholder": "nome@esempio.it", "team.invite.role": "Ruolo", "team.invite.role.member": "Membro", "team.invite.role.memberDesc": "Usa le app che sceglie qui sotto.", "team.invite.role.admin": "Admin", "team.invite.role.adminDesc": "Ha accesso a tutte le app e può invitare persone e cambiare ruoli e accesso alle app.", "team.invite.apps": "App", "team.invite.appsHelp": "Può cambiarle in qualsiasi momento da «Accesso alle app».", "team.invite.appsAdmin": "Un admin ha accesso a tutte le app dell’attività.", "team.invite.cancel": "Annulla", "team.invite.submit": "Invia l’invito", "team.invite.sending": "Invio dell’invito…", "team.invite.error.email": "Inserisca l’indirizzo completo, ad esempio nome@esempio.it.", "team.invite.error.member": "{email} fa già parte del team.", "team.invite.error.invited": "Ha già inviato un invito a {email} il {date}, ed è ancora in attesa di risposta.", "team.invite.error.apps": "Scelga almeno un’app.", "team.invite.sent.title": "Invito inviato a {email}", "team.invite.sent.body": "Resta in «Inviti in attesa» finché non viene accettato o fino al {date}, quando scade.", "quota.members": "Posti nel team", "quota.members.count": "{count, plural, one {# membro} other {# membri}}", "quota.members.pack": "{count} posti nel team in più", "quota.members.full": "Ha occupato tutti i {limit} posti nel team"}};
+const h = React.createElement;
+const fmt = (s, vars) => { if (vars) for (const k in vars) s = s.split("{" + k + "}").join(vars[k]); return s; };
+/* Romanian plural for the ICU strings: one / few (0, 2–19, x01–x19) / other ("de"). */
+const roPl = (n) => n === 1 ? "one" : (n === 0 || (n % 100 >= 1 && n % 100 <= 19)) ? "few" : "other";
+const icu = (s, n, lang) => s.replace(/\{count, plural, (.*)\}$|\{count, plural, ((?:[^{}]|\{[^{}]*\})*)\}/, (m, a, b) => {
+  const body = a || b; const forms = {}; body.replace(/(\w+) \{([^{}]*)\}/g, (x, k, v) => { forms[k] = v; });
+  const cat = lang === "ro" ? roPl(n) : n === 1 ? "one" : "other";
+  return (forms[cat] || forms.other).split("#").join(String(n));
+});
+function Board({ title, notes, items }) {
+  return h("div", { className: "scr" },
+    h("p", { className: "heading" }, title),
+    notes ? h("p", { className: "caption muted" }, notes.join(" · ")) : null,
+    items.map(([lab, render, dH = 860, mH = 844]) => h("div", { key: lab, className: "tfa-scrgroup" },
+      h("p", { className: "subheading tfa-grouplab" }, lab),
+      ["light", "dark"].map((th) => h("div", { className: "scr-row", key: th },
+        [["desktop", "Desktop · 1280", "scr-d", dH], ["mobile", "Telefon · 390", "scr-m", mH]].map(([m, l, cls, H]) => h("div", { key: m },
+          h("p", { className: "caption scr-lab" }, l, " · ", th === "light" ? "Light" : "Dark"),
+          h("div", { className: cls, "data-theme": th, style: { height: H, position: "relative", overflow: "hidden" } }, render(m)))))))));
+}
+function Langs({ items }) {
+  return h("div", { className: "sms-langs" },
+    h("p", { className: "heading" }, "Test cu etichete în germană și italiană"),
+    h("div", { className: "sms-langrow" }, items.map(([lab, lang, mode, th, el, H]) => h("div", { className: "sms-lang", key: lab },
+      h("p", { className: "caption sms-boxlab" }, lab),
+      h("div", { className: "sms-langframe", "data-theme": th, style: { height: H, position: "relative", width: mode === "mobile" ? 390 : 1280 } }, h(V.LocaleProvider, { locale: lang }, el))))));
+}
+/* HubAdminTeam — "Invită o persoană" (S112): e-mail address, role (Membru / Admin) and the apps the person can open. States: invalid address, already in the team, invitation already sent, sending, sent. Keys team.invite.* in i18n/team.json (TM), in the 6 languages. */
+const tt = (lang, key, vars) => fmt((TM[lang] && TM[lang][key]) || TM.ro[key] || key, vars);
+const BIZ_APPS = ["booking", "crm", "hr", "finance", "projects", "shifts", "documents"];
+const BIZ_NAME = "Salon Aurora";
+const ST = {
+  fill: { email: "andrei.popa@gmail.com", role: "member", apps: ["booking", "shifts"] },
+  admin: { email: "andrei.popa@gmail.com", role: "admin" },
+  invalid: { email: "andrei.popa@gmail", role: "member", apps: ["booking", "shifts"], err: "email" },
+  member: { email: "mara@salonaurora.ro", role: "member", apps: ["booking"], err: "member" },
+  invited: { email: "andreea.v@gmail.com", role: "member", apps: ["booking", "shifts"], err: "invited" },
+  noapps: { email: "andrei.popa@gmail.com", role: "member", apps: [], err: "apps" },
+  sending: { email: "andrei.popa@gmail.com", role: "member", apps: ["booking", "shifts"], sending: true }
+};
+let RID = 0;
+const DATE_SENT = { ro: "22 oct.", de: "22. Okt.", it: "22 ott." };
+function Invite({ lang = "ro", mode, state }) {
+  const s = ST[state], mob = mode === "mobile", admin = s.role === "admin";
+  const L = isL(lang) ? lang : "ro";
+  const emailErr = s.err === "email" ? tt(lang, "team.invite.error.email") : s.err === "member" ? tt(lang, "team.invite.error.member", { email: s.email }) : s.err === "invited" ? tt(lang, "team.invite.error.invited", { email: s.email, date: DATE_SENT[L] }) : undefined;
+  return h("div", { className: "x-overlay" + (mob ? " m" : "") }, h(V.Dialog, { open: true, inline: true, className: mob ? "v-dialog--sheet" : undefined,
+    title: tt(lang, "team.invite.title", { business: BIZ_NAME }), description: tt(lang, "team.invite.lead"),
+    footer: h(React.Fragment, null, h(V.Button, { variant: "quiet", disabled: s.sending }, tt(lang, "team.invite.cancel")),
+      h(V.Button, { variant: "primary", icon: "send", loading: s.sending, "aria-label": s.sending ? tt(lang, "team.invite.sending") : undefined }, s.sending ? tt(lang, "team.invite.sending") : tt(lang, "team.invite.submit"))) },
+    h("div", { className: "x-form" },
+      h("div", null, h(V.FormField, { label: tt(lang, "team.invite.email"), required: true, error: emailErr },
+        h(V.Input, { type: "email", defaultValue: s.email, placeholder: tt(lang, "team.invite.emailPlaceholder"), invalid: !!emailErr, disabled: s.sending, autoComplete: "off" })),
+        s.err === "invited" ? h("div", { className: "x-err-act" }, h(V.Button, { size: "sm", icon: "send" }, tt(lang, "team.action.resendInvite"))) : null),
+      h(V.RadioGroup, { legend: tt(lang, "team.invite.role"), name: "role-" + (++RID), defaultValue: s.role, disabled: s.sending, options: [
+        { value: "member", label: tt(lang, "team.invite.role.member"), description: tt(lang, "team.invite.role.memberDesc") },
+        { value: "admin", label: tt(lang, "team.invite.role.admin"), description: tt(lang, "team.invite.role.adminDesc") }] }),
+      h(V.FormField, { label: tt(lang, "team.invite.apps"), helper: s.err === "apps" ? undefined : admin ? tt(lang, "team.invite.appsAdmin") : tt(lang, "team.invite.appsHelp"), error: s.err === "apps" ? tt(lang, "team.invite.error.apps") : undefined },
+        h("div", { className: "x-apps" + (mob ? " m" : ""), role: "group" }, BIZ_APPS.map((a) => h(V.Checkbox, { key: a, invalid: s.err === "apps",
+          label: h("span", { className: "x-app" }, h(V.AppIcon, { app: a, size: 20 }), V.APPS[a].name),
+          checked: admin || (s.apps || []).includes(a), disabled: admin || s.sending, onChange: () => {} })))))));
+}
+function Page({ lang = "ro", mode, state, sent }) {
+  const extra = sent ? { invites: [{ id: 9, email: "andrei.popa@gmail.com", role: tt(lang, "team.invite.role.member"), sent: lang === "ro" ? "azi" : lang === "de" ? "heute" : "oggi", exp: tt(lang, "team.expires", { date: lang === "ro" ? "7 nov." : "7 nov." }), status: ["neutral", tt(lang, "team.status.pending")] }].concat(TEAM_TX[isL(lang) ? lang : "ro"].invites), seats: () => tt(lang, "team.seats", { used: 5, limit: 10 }) }
+    : { seats: () => tt(lang, "team.seats", { used: 4, limit: 10 }) };
+  return h("div", { className: "x-frame" }, h(Team, { mode, lang, extra }),
+    state ? h(Invite, { lang, mode, state }) : null,
+    sent ? h("div", { className: "x-toast" + (mode === "mobile" ? " m" : "") }, h(V.Toast, { tone: "done", title: tt(lang, "team.invite.sent.title", { email: "andrei.popa@gmail.com" }), description: tt(lang, "team.invite.sent.body", { date: "7 nov." }), onDismiss: () => {} })) : null);
+}
+mount(h("div", null,
+  h(Board, { title: "Hub — Echipă: „Invită o persoană” (S112)", notes: ["Adresa, rolul (Membru / Admin) și aplicațiile", "Un admin are toate aplicațiile, bifate și blocate", "Erorile stau sub câmpul lor", "Pe telefon, foaie de jos"], items: [
+    ["1 · Membru, cu două aplicații", (m) => h(Page, { mode: m, state: "fill" }), 900, 980],
+    ["2 · Admin: toate aplicațiile", (m) => h(Page, { mode: m, state: "admin" }), 900, 980],
+    ["3 · Adresă greșită", (m) => h(Page, { mode: m, state: "invalid" }), 900, 980],
+    ["4 · E deja în echipă", (m) => h(Page, { mode: m, state: "member" }), 900, 980],
+    ["5 · Invitația e deja trimisă: o poți retrimite", (m) => h(Page, { mode: m, state: "invited" }), 940, 1020],
+    ["6 · Nicio aplicație aleasă", (m) => h(Page, { mode: m, state: "noapps" }), 900, 980],
+    ["7 · Se trimite", (m) => h(Page, { mode: m, state: "sending" }), 900, 980],
+    ["8 · Trimisă: apare în „Invitații în așteptare”, locurile cresc la 5 din 10", (m) => h(Page, { mode: m, sent: true }), 900, 1100]] }),
+  h(Langs, { items: [
+    ["Deutsch · 1280 · Light · Einladung schon gesendet", "de", "desktop", "light", h(Page, { lang: "de", mode: "desktop", state: "invited" }), 940],
+    ["Italiano · 390 · Dark · admin", "it", "mobile", "dark", h(Page, { lang: "it", mode: "mobile", state: "admin" }), 1020]] })));
+
+</script>
+</body>
+</html>

@@ -33,7 +33,7 @@ const MEMBERS: TeamMemberRow[] = [
     id: '3',
     name: 'Mara Enache',
     email: 'mara@salonaurora.ro',
-    role: 'Angajat',
+    role: 'Membru',
     owner: false,
     apps: ['booking', 'shifts'],
     stopped: false,
@@ -53,7 +53,7 @@ const INVITES: TeamInviteRow[] = [
   {
     id: '1',
     email: 'andreea.v@gmail.com',
-    role: 'Angajat',
+    role: 'Membru',
     sent: '22 oct.',
     until: '29 oct.',
     expired: false,
@@ -79,7 +79,7 @@ export function HubAdminTeamFrame() {
           business="Salon Aurora"
           members={MEMBERS}
           invites={INVITES}
-          seats={<span className="body-small muted v-num">4 din 10 angajați</span>}
+          seats={<span className="body-small muted v-num">4 din 10 locuri în echipă</span>}
           onInvite={noop}
           memberActions={(r) =>
             r.owner

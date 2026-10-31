@@ -216,6 +216,20 @@ describe('T2.6 listMyOrganizations', () => {
     expect(
       orgs.some((o: { organization_id: string }) => o.organization_id === organizationId),
     ).toBe(true);
+    expect(
+      orgs.find((o: { organization_id: string }) => o.organization_id === organizationId),
+    ).toMatchObject({ organization_status: 'active', role: 'owner' });
+
+    // Lot 2.9b (v3): o afacere suspendată rămâne în listă, marcată
+    await adminQuery(
+      `UPDATE organizations.organization SET status = 'suspended', suspended_at = now() WHERE id = $1`,
+      [organizationId],
+    );
+    expect(
+      (await listMyOrganizations(userId)).find(
+        (o: { organization_id: string }) => o.organization_id === organizationId,
+      ),
+    ).toMatchObject({ organization_status: 'suspended' });
 
     await adminQuery(`DELETE FROM organizations.organization WHERE id = $1`, [organizationId]);
   });

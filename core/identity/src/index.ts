@@ -16,6 +16,7 @@ export type { HubSession, HubUser } from './contracts';
 export {
   getFounderSession,
   requireFounderSession,
+  getFounderNames,
   verifyFounderTotp,
   registerFounderRevocationHook,
   addFounderUser,
