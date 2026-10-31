@@ -1,6 +1,6 @@
 # FAZA 3 — Sistemul comercial
 
-**Status:** APROBAT (fondatoarea, 30.10.2026).
+**Status:** APROBAT (fondatoarea, 30.10.2026). Deciziile D3-2–D3-9 și D3-11 trecute în §5 la 31.10.2026.
 **Referințe:** `ARCHITECTURE.md` v0.4.6 (§4, §7.2, §8, §13.2, §14, §15, §16, §17.1, §17.23), `GROWTH_ENGINE.md`, `VENTORA_MASTER_BRIEF.md` (§12–14, §43), `docs/design/system` (ecranele comerciale, `glossary.md`, `patterns.md`)
 **Depinde de:** Faza 2 (identitate și acces), închisă, inclusiv Lotul 2.8 (shell-ul Hub și Founder, §3). Faza 1 (design system) e închisă.
 **Acceptare globală (ARCHITECTURE §15.1):** T5 verde; o limită se schimbă din Founder fără deploy; plata duce la factură; fiecare acțiune comercială din Founder e auditată.
@@ -188,9 +188,11 @@ Lotul ține de Faza 2 și se face **înaintea Fazei 3**. Stă aici pentru că lo
 - **Tabele:**
   - `plan`;
   - `plan_version`, imuabilă după publicare, printr-un trigger care refuză UPDATE pe versiunile publicate;
-  - componentele versiunii: aplicațiile, funcționalitățile, limitele (`null` = nelimitat), prețul, moneda, periodicitatea, costul de implementare;
-  - `addon` (pachetul în plus): preț, capacitate, cotă, valabilitate (luna curentă sau lunar), planurile eligibile, `purchase_mode` (`direct` / `on_request`), cost de implementare;
-  - `subscription`: organizația → versiunea exactă, cu stare și perioadă;
+  - componentele versiunii: aplicațiile, funcționalitățile, limitele (`null` = nelimitat), costul de implementare și prețurile. Prețurile se dau pe monedă (`RON`, `EUR`) și pe periodicitate (`month`, `year`), fiecare introdus separat din Founder, fără conversie și fără calcul al reducerii anuale (D3-2, D3-3);
+  - `addon` (pachetul în plus): prețurile pe monedă, capacitate, cotă, valabilitate (luna curentă sau lunar), planurile eligibile, `purchase_mode` (`direct` / `on_request`, comutatorul din Founder, D3-7), cost de implementare;
+  - comutatorul „direct / la cerere” pe fiecare aplicație (`activation_mode`, D3-9);
+  - moneda afacerii (`billing_currency`: implicit `RON` pentru România, `EUR` în rest), fixată din Founder (D3-2);
+  - `subscription`: organizația → versiunea exactă, cu stare, periodicitatea aleasă (`month` / `year`) și ziua de ancorare a facturării (ziua de start; 29–31 → ultima zi a lunilor mai scurte, D3-3);
   - `addon_grant`: pachetele active pe organizație, cu sursă și valabilitate;
   - `override` (excepția): `expires_at` obligatoriu, cel mult 12 luni (D-COM-8); se încheie, nu se șterge;
   - `trial`: aplicația sau funcționalitatea, durata, stare.
@@ -213,7 +215,9 @@ Lotul ține de Faza 2 și se face **înaintea Fazei 3**. Stă aici pentru că lo
 - o excepție fără termen sau cu termen peste 12 luni e refuzată pe server;
 - mutarea în dezavantajul clientului cu mai puțin de 30 de zile e refuzată, indiferent de interfață;
 - o schimbare de limită din contractul Founder se vede la cererea următoare, fără deploy;
-- fiecare scriere Founder are rândul ei de audit.
+- fiecare scriere Founder are rândul ei de audit;
+- o versiune fără preț în moneda unei afaceri nu poate fi atribuită acelei afaceri (test, D3-2);
+- ziua de ancorare: un abonament pornit pe 31 se facturează pe 30 aprilie și pe 28/29 februarie (test, D3-3).
 
 **Estimare:** 20–26 ore.
 
@@ -233,7 +237,8 @@ Lotul ține de Faza 2 și se face **înaintea Fazei 3**. Stă aici pentru că lo
 - Fiecare operație rulează într-o tranzacție.
 - **Cotele de stoc**, prin `countActive(ctx, key)` din modulul proprietar sau printr-un contor la creare și arhivare.
 - Limita se citește din `getEffectiveEntitlements`. Cumpărarea unui pachet o crește imediat.
-- Resetarea cotelor de flux la începutul perioadei (ciclul de facturare sau luna calendaristică, după D3-3).
+- Resetarea cotelor de flux în ziua de ancorare a abonamentului (D3-3, DECIS): lunar, și pe abonamentul anual; 29–31 → ultima zi a lunilor mai scurte.
+- Ce era deja programat (remindere, campanii) pleacă și se contorizează peste limită, cu mesaj către owner (D3-6, DECIS).
 - **Reconcilierea:**
   - entitatea cu acel `operationId` există → commit; nu există → release;
   - funcția se livrează și se testează în F3; rularea periodică se leagă de serviciul de job-uri din F4 (D-INF-2).
@@ -270,6 +275,7 @@ Lotul ține de Faza 2 și se face **înaintea Fazei 3**. Stă aici pentru că lo
 - Pe `FounderBusiness`, după completarea de design (§2.2): istoricul cumpărărilor, anularea și rambursarea (după D3-10), confirmarea plății manuale.
 - Lista cererilor din Hub: „Cere activare”, „Cere alt abonament”, aplicația cerută din catalog. **Nu are design aprobat.**
 - Excepțiile care expiră în 7 zile apar în „Prezentare” (§8.5).
+- Comutatoarele „direct / la cerere” pe pachete și pe aplicații (D3-7, D3-9), prețurile pe monedă și prețul anual pe versiune (D3-2, D3-3), moneda afacerii. Alegerea lunar / anual din FounderPlanEditor, FounderPlans și FounderNewBusiness cere completarea de design (D3-3).
 - Toate textele vin din chei next-intl, în 6 limbi (T7). Capturile `_design` / `_impl` se fac la 390/1280 × light/dark (regula 12).
 
 **Dependențe:** 3.2, 3.3. Lotul 2.8 (shell-ul Founder, FounderBusinesses, FounderBusiness). Completarea de design pentru `FounderBusiness` (istoricul cumpărărilor, rambursarea, plata manuală) și designul listei de cereri. Textele „Angajați” din FounderPlans, FounderPlanEditor, FounderPacks și FounderUsage schimbate de Design în „Membri” / „Locuri în echipă” (C-F3-3, DECIS: a).
@@ -303,14 +309,16 @@ Lotul ține de Faza 2 și se face **înaintea Fazei 3**. Stă aici pentru că lo
   1. Se creează un PaymentIntent cu cardul salvat, cu persoana prezentă. Dacă banca cere 3-D Secure, confirmarea se face în dialog.
   2. Activarea are loc doar după `payment_intent.succeeded`, idempotent pe `payment_intent.id`.
   3. Cota crește, apoi se scrie evenimentul pentru factură (3.6).
-- **Abonamentul lunar:** după D3-4.
+- **Abonamentul:** Stripe Billing (D3-4, DECIS: a), lunar sau anual (D3-3), cu `billing_cycle_anchor` în ziua de start. Ventora creează prețurile Stripe din cod, pe monedă și periodicitate, și oglindește starea din webhook-uri.
+- **Pachetele lunare:** linie (`subscription item`) în abonamentul Stripe, cu taxare proporțională (D3-7). Pachetele pentru luna curentă: PaymentIntent cu cardul salvat, ca mai jos.
+- **Plata manuală prin transfer** stă alături (D3-4, D3-11): `billing_subscription` marcat „plată manuală”, fără abonament Stripe; ciclul ei e la 3.8.
 - **Ruta de webhook** `apps/platform/app/api/webhooks/stripe/route.ts`: verificarea semnăturii, înregistrarea în `stripe_event` și procesarea idempotentă. Ordinea greșită a evenimentelor nu dă înapoi starea.
 - **La eșec:**
   - **plata refuzată:** starea de eroare din design („Banca spune: …”, „Nu ți s-a retras niciun ban de pe card.”); nu se activează nimic, nu se emite factură, iar auditul are `outcome: failure`;
   - **plata rămasă în procesare:** „Procesăm plata…”; activarea vine din webhook, chiar dacă dialogul s-a închis;
   - **webhook întârziat sau dublat:** efect unic;
   - **dispută (chargeback):** notificare către Founder; decizia rămâne manuală.
-- Permisiunea `billing.purchase` în `platformManifest`, cu rolul care o primește după D3-8.
+- Permisiunea `billing.purchase` în `platformManifest`, primită doar de owner (D3-8, DECIS: a).
 - Variabilele de mediu `STRIPE_SECRET_KEY`, `STRIPE_PUBLISHABLE_KEY`, `STRIPE_WEBHOOK_SECRET`, doar în `.env.local` și în Vercel. În `.env.example` intră doar numele lor.
 - **Pachetul nou:** SDK-ul oficial `stripe` (server) și `@stripe/stripe-js` (client). **Cere acordul fondatoarei** (regula 3).
 
@@ -368,8 +376,10 @@ Lotul ține de Faza 2 și se face **înaintea Fazei 3**. Stă aici pentru că lo
 - `HubAddonPurchase` (`AddonPurchase` pe ecran): cardul care expiră luna aceasta, cantitatea implicită care acoperă nevoia, butonul final care reia sarcina persoanei.
 - `UsageMeter` în dialogul de limită atinsă din modulul de probă (`UpgradeDialog`, varianta pachet), declanșat doar de persoană.
 - Fără sloturile Growth (GrowthSlot, recomandări): rămân pentru F5.
-- Afacerile fără card salvat văd „Cere activare” în loc de „Cumpără” (`patterns.md`).
-- Membrul vede „Anunță proprietarul” și nu poate cumpăra (verificat pe server, nu doar în interfață).
+- Pachetele cu `purchase_mode: direct` se cumpără cu cardul salvat; cele lunare intră în abonamentul Stripe, cu taxare proporțională (D3-7). „Cere activare” apare la pachetele „la cerere” și la orice pachet pentru o afacere fără card sau cu plată manuală (`patterns.md`, D3-7).
+- Prețurile în moneda afacerii (lei sau euro, D3-2).
+- „De la 1 noiembrie, pornim de la zero” devine data reală de resetare a abonamentului (D3-3). Alegerea lunar / anual din HubAdminPlan și UpgradeDialog cere completarea de design (D3-3).
+- Membrul vede „Anunță proprietarul” și nu poate cumpăra (verificat pe server, nu doar în interfață; D3-8: doar owner-ul).
 
 **Dependențe:** 3.2, 3.3, 3.5, 3.6. Lotul 2.8 (shell-ul Hub). Textele „Angajați” din HubAdminPlan și UsageMeter schimbate de Design în „Membri” / „Locuri în echipă” (C-F3-3, DECIS: a).
 **Migrări probabile:** —
@@ -390,10 +400,10 @@ Lotul ține de Faza 2 și se face **înaintea Fazei 3**. Stă aici pentru că lo
 
 **Ce intră:**
 
-- **Plata manuală** (transfer): abonamentul marcat „plată manuală”, factura SmartBill, confirmarea încasării de către Founder, starea „scadentă” / „restantă” din glosar (după D3-11).
-- **Perioada de probă** (după D3-5): pornirea din `UpgradeDialog` (varianta „trial”) și oprirea automată la final, cu datele păstrate. Reminderul cu 3 zile înainte e evenimentul `commercial.trial.ending`, iar livrarea lui depinde de F4. Stările vin din `CommercialStates` (se încheie / s-a încheiat).
+- **Plata manuală** (transfer, D3-11 DECIS: a): abonamentul marcat „plată manuală”, factura SmartBill, confirmarea încasării de către Founder, starea „scadentă” / „restantă” din glosar. **Termenul de plată (scadența) se stabilește în acest lot**, cu fondatoarea.
+- **Perioada de probă** (D3-5, DECIS: a): 14 zile, fără card, pentru aplicații, pornită direct din `UpgradeDialog` (varianta „trial”), și oprirea automată la final, cu datele păstrate. Bifa din FounderNewBusiness (probă pe tot abonamentul) rămâne, doar în Founder. Reminderul cu 3 zile înainte e evenimentul `commercial.trial.ending`, iar livrarea lui depinde de F4. Stările vin din `CommercialStates` (se încheie / s-a încheiat).
 - **Neplata abonamentului** (după D3-12): reîncercările, perioada de grație, apoi rămân doar citirea și exportul.
-- **Cererile:** „Cere alt abonament” și „Cere activare” devin înregistrări în Founder (3.4), cu audit.
+- **Cererile:** „Cere alt abonament” și „Cere activare” devin înregistrări în Founder (3.4), cu audit. Schimbarea abonamentului e mereu o cerere (D3-9). O aplicație din catalog se activează direct sau prin cerere, după comutatorul ei din Founder; cele care cer configurare stau „la cerere”.
 
 **Dependențe:** 3.4–3.6. Pentru reminder și pentru oprirea programată: job-urile din F4.
 **Migrări probabile:** `billing_dunning`.
@@ -540,21 +550,21 @@ Prețurile nu se inventează. Toate valorile se introduc din Founder; codul nu a
 |---|---|---|---|---|
 | D3-20 | 2.8 (înaintea Fazei 3) | **Ce înseamnă suspendarea unei afaceri** (`FounderBusiness`) | a) nimeni din afacere nu mai intră; datele rămân, iar Founder o poate reactiva; b) doar citire și export; c) suspendarea doar marcată, fără efect asupra accesului | **DECIS: a** (fondatoarea, 30.10.2026). `authorize()` refuză orice cerere a afacerii suspendate, inclusiv citirea; datele rămân; Founder poate reactiva. Dacă owner-ul are nevoie de date, le cere prin suport. Sesiunea de suport rămâne posibilă pe o afacere suspendată: suspendarea oprește doar `authorize()`, nu și `authorizeSupport`. Suspendarea și reactivarea sunt auditate. |
 | D3-14 | 3.1 | **Cheile cotelor** (D-WF-4, D-FUN-4 și setul inițial) | Propunere: `platform.members` (stoc), `booking.appointments` (flux, lunar), `messaging.sms` (flux), `documents.storage` (stoc, GB), `marketing.campaigns` (flux), `workflows.active` (stoc), `funnel.pages.published` (stoc), `booking.sms.devices` (stoc, D-SMS-4) | **DECIS** (fondatoarea, 30.10.2026). 13 cote inițiale: `platform.members` (stoc), `platform.locations` (stoc), `booking.appointments` (flux, lunar), `booking.sms.devices` (stoc), `messaging.sms` (flux, lunar), `messaging.email` (flux, lunar, e-mailuri către clienții afacerii), `marketing.campaigns` (flux, lunar), `documents.storage` (stoc, GB), `workflows.active` (stoc), `funnel.pages.published` (stoc), `ai.analyses` (flux, lunar), `events.active` (stoc, evenimente publicate care n-au avut încă loc), `events.created` (flux, lunar). Mai târziu, fără migrare: `booking.resources`, `hr.employees`, `portal.domains`, `events.guests`. Pe un abonament, oricare cotă poate fi nelimitată (`null`); Hub-ul arată doar cotele cu valoare. „Angajați” = `platform.members` (C-F3-3). „Campania consumată” rămâne D-MKT-1. Detalii: Lotul 3.1. |
-| D3-3 | 3.2 (și 3.3) | **Facturarea abonamentului: lunară / anuală** | a) doar lunară; b) lunară + anuală; c) anuală cu reducere | **a** la început (designul arată doar „pe lună”). Câmpul `interval` permite b mai târziu. Se decide și dacă perioada e luna calendaristică („De la 1 noiembrie, pornim de la zero”) sau ziua de start a abonamentului. Recomand luna calendaristică, ca în design. |
-| D3-7 | 3.2 | **Ce pachete se cumpără direct și ce rămâne „Doar la cerere”** | a) lista din `FounderPacks` (directe: 500 SMS, 200 de programări, 10 campanii, 5 angajați; la cerere: domeniul propriu); b) la început toate la cerere | **a**, cu o excepție: pachetele **lunare** („5 angajați în plus · 60 lei pe lună”) rămân la cerere până se decide cum se taxează lunar (C-F3-6). Pachetele pentru automatizări și pagini (D-WF-4, D-FUN-4) trebuie definite. |
-| D3-2 | 3.2 | **Moneda** | a) doar lei (RON); b) lei + euro; c) euro | **a** la început: firma e în România, facturile SmartBill sunt în lei, iar designul folosește „lei”. Modelul păstrează câmpul `currency`. Se decide și ce arată DE/IT (CommercialStates arată „€”, vezi C-F3-5). |
-| D3-6 | 3.3 | **Depășirea unei limite** | a) blocarea creării; citirea și exportul rămân (brief §14), plus pachetul în plus; b) o toleranță mică pe cotă, configurabilă; c) consum peste limită facturat automat | **a**. c contrazice D-GRW-10 (nicio plată fără confirmare). Separat: ce se întâmplă cu ce era deja programat (reminderele SMS, campaniile)? Designul spune „Campaniile deja programate pleacă normal”. Recomand: pleacă și se contorizează, chiar peste limită, cu mesaj către owner. |
+| D3-3 | 3.2 (și 3.3) | **Facturarea abonamentului: lunară / anuală** | a) doar lunară; b) lunară + anuală; c) anuală cu reducere | **DECIS** (fondatoarea, 31.10.2026): plată lunară la preț întreg sau anuală cu reducere. Prețul anual se introduce direct din Founder, pe fiecare versiune (nu se calculează din cel lunar). Facturarea și resetarea cotelor de flux se fac în ziua în care a început abonamentul; pentru 29–31, în ultima zi a lunilor mai scurte. Pe abonamentul anual, cotele lunare se resetează tot lunar, în aceeași zi. **Design:** alegerea lunar / anual în FounderPlanEditor, FounderPlans, FounderNewBusiness, HubAdminPlan și UpgradeDialog; „De la 1 noiembrie” devine data reală de resetare. |
+| D3-7 | 3.2 | **Ce pachete se cumpără direct și ce rămâne „Doar la cerere”** | a) lista din `FounderPacks` (directe: 500 SMS, 200 de programări, 10 campanii, 5 angajați; la cerere: domeniul propriu); b) la început toate la cerere | **DECIS** (fondatoarea, 31.10.2026): pachetele pentru luna curentă și cele lunare se cumpără direct, cu cardul salvat. Cele lunare intră ca linie în abonamentul Stripe, cu taxare proporțională (rezolvă C-F3-6). „La cerere” rămân pachetele care cer muncă din partea echipei și orice pachet pentru o afacere fără card sau cu plată manuală. Fiecare pachet are în Founder comutatorul „direct / la cerere”. Pachetele pentru automatizări și pagini (D-WF-4, D-FUN-4) trebuie încă definite. |
+| D3-2 | 3.2 | **Moneda** | a) doar lei (RON); b) lei + euro; c) euro | **DECIS: b** (fondatoarea, 31.10.2026): lei și euro. Moneda se fixează pe afacere, din Founder: implicit lei pentru România, euro în rest. Prețurile în euro se introduc separat din Founder, pe fiecare versiune și pachet, fără conversie automată. Factura se emite în moneda afacerii; mențiunile de pe factură le confirmă contabilul (§6, întrebarea 7). Rezolvă C-F3-5. |
+| D3-6 | 3.3 | **Depășirea unei limite** | a) blocarea creării; citirea și exportul rămân (brief §14), plus pachetul în plus; b) o toleranță mică pe cotă, configurabilă; c) consum peste limită facturat automat | **DECIS: a** (fondatoarea, 31.10.2026). Ce era deja programat (remindere, campanii) pleacă și se contorizează peste limită, cu mesaj către owner. |
 | D3-16 | 3.4 | **Rolul Founder `commercial`** (F2 §6) | a) toți Founder rămân `full` în F3; b) se activează `commercial` (doar modelul comercial, fără sesiuni de suport) | **a**: echipa e mică, iar auditul pe persoană există deja. |
-| D3-9 | 3.4 (și 3.8) | **Schimbarea abonamentului și activarea unei aplicații din catalog** (D-COM-7) | a) ambele prin cerere; b) aplicația direct, cu plata, iar abonamentul prin cerere; c) ambele direct | **a**: e consecvent cu `patterns.md` („Schimbarea abonamentului rămâne o cerere”). Butonul „Activează · 49 lei pe lună” din HubCatalogApp devine cerere (C-F3-1). Perioada de probă rămâne directă. |
-| D3-4 | 3.5 | **Încasarea recurentă** | a) Stripe Billing (abonament Stripe, reîncercări și 3-D Secure gestionate de Stripe; Ventora oglindește starea); b) Ventora încarcă lunar cardul salvat, printr-un job propriu; c) la început doar plată manuală | **a**, cu plata manuală alături (D3-11): mai puțin cod de reîncercare și de autentificare a plăților. Fondatoarea verifică în contul ei costul Stripe Billing față de b. |
-| D3-8 | 3.5 | **Cine poate cumpăra** | a) doar owner-ul; b) owner-ul + adminul cu permisiunea `billing.purchase` | **a** la început: rolul `admin` e „fără facturare” (F2, rolurile de sistem), iar componentele au doar `owner` / `member`. Permisiunea `billing.purchase` permite b mai târziu, fără migrație. |
+| D3-9 | 3.4 (și 3.8) | **Schimbarea abonamentului și activarea unei aplicații din catalog** (D-COM-7) | a) ambele prin cerere; b) aplicația direct, cu plata, iar abonamentul prin cerere; c) ambele direct | **DECIS** (fondatoarea, 31.10.2026): schimbarea abonamentului se face prin cerere. Fiecare aplicație are în Founder comutatorul „direct / la cerere”; cele care cer configurare stau „la cerere”. Perioada de probă rămâne directă. Rezolvă C-F3-1. |
+| D3-4 | 3.5 | **Încasarea recurentă** | a) Stripe Billing (abonament Stripe, reîncercări și 3-D Secure gestionate de Stripe; Ventora oglindește starea); b) Ventora încarcă lunar cardul salvat, printr-un job propriu; c) la început doar plată manuală | **DECIS: a** (fondatoarea, 31.10.2026): Stripe Billing, cu plata manuală prin transfer alături. |
+| D3-8 | 3.5 | **Cine poate cumpăra** | a) doar owner-ul; b) owner-ul + adminul cu permisiunea `billing.purchase` | **DECIS: a** (fondatoarea, 31.10.2026): doar owner-ul. Permisiunea `billing.purchase` permite b mai târziu, fără migrație. |
 | D3-19 | 3.5 | **Pachetele noi** (regula 3): `stripe`, `@stripe/stripe-js`, eventual un client SmartBill (sau `fetch` simplu) | a) le aprob la începutul lui 3.5; b) altă variantă | **a**, cu clientul SmartBill scris pe `fetch`, fără pachet nou. |
 | D3-17 | 3.6 | **Datele de facturare ale afacerii** | a) le introduce Founder la crearea organizației (Model A), iar owner-ul le vede în Hub; b) le completează owner-ul în Hub, printr-un formular nou (fără design) | **a** pentru F3. b cere design înainte. |
 | D3-15 | 3.6 | **Seria și numerotarea facturilor** | a) o serie unică pentru ecosistem (de ex. `VNT`, ca în design); b) serii separate pentru abonament și pachete | **a**, dacă contabilul nu cere altfel. |
 | D3-10 | 3.6 (și 3.4) | **Anularea abonamentului și rambursările** | a) anularea doar prin cerere, la finalul perioadei plătite; pachetele nerambursabile, cu rambursare manuală la discreția Founder, auditată; b) anulare din Hub, imediat, cu rambursare proporțională | **a**, apoi validare juridică (§6). Rambursarea face și stornarea în SmartBill. |
 | D3-13 | 3.7 | **Ecranele Hub comerciale: în F3 sau în F5** | a) HubAdminPlan + HubAddonPurchase în F3, iar catalogul și recomandările în F5 cu Growth Engine; b) toate în F5 (ARCHITECTURE §15.2: „după F3: … plăți și facturare”) | **a**: acceptarea F3 „plata → factura” se demonstrează cap-coadă doar cu ecranul de cumpărare, iar D-COM-6 e CONFIRMAT. |
-| D3-5 | 3.8 | **Perioada de probă** | a) 14 zile, fără card, doar pentru aplicații (ca în design și în glosar); b) și pentru abonamente; c) fără perioadă de probă la lansare | **a**: e deja în designul aprobat și în glosar („Fără card și fără plată automată”). |
-| D3-11 | 3.8 | **Plata manuală prin transfer** (D-COM-2, PROPUS) | a) da, pentru afacerile care o cer; Founder confirmă încasarea; b) nu, doar card | **a**, pentru pilot. Se stabilește termenul de plată (scadența). |
+| D3-5 | 3.8 | **Perioada de probă** | a) 14 zile, fără card, doar pentru aplicații (ca în design și în glosar); b) și pentru abonamente; c) fără perioadă de probă la lansare | **DECIS: a** (fondatoarea, 31.10.2026): 14 zile, fără card, pentru aplicații. Bifa din FounderNewBusiness (probă pe tot abonamentul) rămâne, doar în Founder. |
+| D3-11 | 3.8 | **Plata manuală prin transfer** (D-COM-2, PROPUS) | a) da, pentru afacerile care o cer; Founder confirmă încasarea; b) nu, doar card | **DECIS: a** (fondatoarea, 31.10.2026). Termenul de plată (scadența) se stabilește la Lotul 3.8. |
 | D3-12 | 3.8 | **Neplata abonamentului** | a) reîncercările Stripe + 14 zile de grație, apoi doar citire și export; b) 7 zile; c) suspendarea completă | **a**: nu se pierd date, iar afacerea are timp să schimbe cardul. |
 | D3-18 | 3.9 | **Proiectul Vercel** (§4.3) | a) la 3.9; b) imediat, odată cu F3; c) după F3 | **a**: A (Stripe CLI) ajunge până atunci. |
 | D3-1 | niciun lot; blochează pilotul | **Abonamentele inițiale și prețurile lor.** Designul arată Start 149 lei, Business 349 lei, Business Plus 449 lei, cu limitele lor. Sunt aprobate sau sunt doar exemple? | a) valorile din design devin cele inițiale; b) fondatoarea dă alte valori; c) pilotul pornește cu un singur abonament | Fondatoarea trimite lista: nume, preț, limite, aplicații incluse. Până atunci, testele folosesc date fictive, marcate ca atare. |
@@ -573,6 +583,7 @@ Aceasta nu e consultanță juridică sau fiscală. Sunt întrebările de pus unu
 4. e-Factura: facturile către afacerile din România trebuie transmise prin SPV? În ce termen? Și pentru clienții PFA sau persoane fizice?
 5. Seria facturilor, numerotarea și stornarea la rambursare.
 6. Încasarea prin Stripe (plăți în lei, transferul către contul firmei): cum se înregistrează contabil comisioanele Stripe.
+7. Facturile în euro (D3-2: factura se emite în moneda afacerii): ce mențiuni trebuie pe o factură în euro (cursul BNR, contravaloarea în lei, data cursului), cum se configurează în SmartBill și cum se înregistrează încasarea în euro prin Stripe.
 
 **Întrebări pentru avocat:**
 
@@ -604,12 +615,12 @@ Le listez, nu le rezolv. Fiecare cere decizia fondatoarei.
 
 | ID | Subiect | Sursa A | Sursa B |
 |---|---|---|---|
-| C-F3-1 | **Activarea unei aplicații: plată directă sau cerere** | `HubCatalogApp`: „Activează · 49 lei pe lună”, „Se plătește: Odată cu abonamentul”; `CommercialStates`: „Activează · 79 lei pe lună” | `patterns.md`: „Abonamentul se schimbă doar prin cerere”; ARCHITECTURE §8.6, D-COM-7 (NECESITĂ DECIZIE); AccessBadge: „Nu e inclusă în abonamentul afacerii. Scrie-ne și o activăm.” |
+| C-F3-1 | **Activarea unei aplicații: plată directă sau cerere** | `HubCatalogApp`: „Activează · 49 lei pe lună”, „Se plătește: Odată cu abonamentul”; `CommercialStates`: „Activează · 79 lei pe lună” | `patterns.md`: „Abonamentul se schimbă doar prin cerere”; ARCHITECTURE §8.6, D-COM-7 (NECESITĂ DECIZIE); AccessBadge: „Nu e inclusă în abonamentul afacerii. Scrie-ne și o activăm.” **Rezolvat prin D3-9** (31.10.2026): comutatorul „direct / la cerere” pe fiecare aplicație, în Founder. |
 | C-F3-2 | **Cine cumpără pachete** | ARCHITECTURE §8.6: „proprietarul (sau un rol cu permisiunea `billing.purchase`)”; `patterns.md` §Comercial: „și adminul cu drept de cumpărare” | FAZA-2 / migrația `access_init`: `admin` = „fără facturare”; UsageMeter și AddonPurchase: „doar {who} (proprietar)”; `UpgradeDialog.role` are doar `owner` / `member` |
 | C-F3-3 | **„Angajați” ca limită** | Designul (HubAdminPlan, FounderPlans, FounderPacks): „Angajați 10/10”, „5 angajați în plus” | Brief §13: „Număr utilizatori”. Neclar dacă e vorba de locurile din echipă (membership) sau de angajații din TeamSpace (HR). Butonul „Cumpără locuri în plus” sugerează locuri. **DECIS: a** (fondatoarea, 30.10.2026): „Angajați” din design = `platform.members`, locurile din echipă, cu cont. În texte: „Membri” / „Locuri în echipă”, nu „Angajați”. Schimbarea textelor se cere la Design înainte de loturile 3.4 și 3.7. |
 | C-F3-4 | **TVA afișat doar într-un loc** | `AddonPurchase`: „Prețul e final, nu se adaugă TVA.” | UpgradeDialog, HubCatalog(App), prețul abonamentului și facturile nu spun nimic despre TVA; glosarul nu are termenul. Brief-ul nu numește TVA, Stripe sau SmartBill („prin sistemele compatibile alese”). |
-| C-F3-5 | **Moneda** | Toate ecranele: „lei”, inclusiv în DE și IT | `CommercialStates`, în DE/IT: „€” |
-| C-F3-6 | **Pachetul lunar cumpărat ca plată unică** | `FounderPacks`: „5 angajați în plus · 60 lei · lunar, cu abonamentul” | `HubAdminPlan` îl deschide în `AddonPurchase`, care e o plată unică cu factură imediată. ARCHITECTURE §8.6 nu descrie add-on-uri recurente. |
+| C-F3-5 | **Moneda** | Toate ecranele: „lei”, inclusiv în DE și IT | `CommercialStates`, în DE/IT: „€”. **Rezolvat prin D3-2** (31.10.2026): moneda vine din afacere, nu din limbă. |
+| C-F3-6 | **Pachetul lunar cumpărat ca plată unică** | `FounderPacks`: „5 angajați în plus · 60 lei · lunar, cu abonamentul” | `HubAdminPlan` îl deschide în `AddonPurchase`, care e o plată unică cu factură imediată. ARCHITECTURE §8.6 nu descrie add-on-uri recurente. **Rezolvat prin D3-7** (31.10.2026): pachetul lunar e o linie în abonamentul Stripe, cu taxare proporțională. |
 | C-F3-7 | **Domeniul propriu: pe ce abonament și cu ce cost de implementare** | `FounderPacks`: doar Business Plus, implementare 150 lei | `HubAdminPlan`: oferit unei afaceri pe Business, fără cost de implementare afișat. Glosarul: costul de implementare „apare mereu, și când e zero”. Rândurile de pachete din HubAdminPlan nu îl arată deloc. |
 | C-F3-8 | **Numele operației de confirmare a cotei** | ARCHITECTURE §8.1, §8.3: `commitQuota` | `core/quota`: `confirmQuota`; CLAUDE.md: `confirmQuota`. Și: codul folosește tabelele `lab_core` din E8, nu o schemă din `core`. |
 | C-F3-9 | **Factura „imediat” după plată** | `AddonPurchase`, la reușită: „Am emis factura {nr}”, „Ți-am trimis factura și pe e-mail” | ARCHITECTURE §8.6: factura se emite după webhook, prin SmartBill (un serviciu extern, deci poate întârzia sau eșua); e-mailul depinde de notificări (F4). Designul nu are starea „plata a reușit, factura vine în curând”. |
