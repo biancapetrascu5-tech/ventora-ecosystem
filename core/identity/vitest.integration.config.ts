@@ -7,7 +7,7 @@ const founderDbUrl = process.env.DATABASE_URL_FOUNDER_TEST ?? testDbUrl;
 
 export default defineConfig({
   test: {
-    setupFiles: ['./src/__tests__/test-setup.ts'],
+    setupFiles: ['./src/__tests__/test-setup.ts', './src/__tests__/runtime-role.setup.ts'],
     include: ['src/__tests__/**/*.integration.test.ts'],
     testTimeout: 30000,
     singleFork: true,

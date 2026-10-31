@@ -101,7 +101,7 @@ try {
   // --- Organizations integration tests ---
   console.log('\n[test:integration] organizations (T2)...');
   runPkg('@ventora/organizations', 'test:integration', {
-    DATABASE_URL_TEST: ADMIN_ORG,
+    DATABASE_URL_TEST: `postgresql://app_runtime:${TEST_DB.appPw}@localhost:${PG}/${TEST_DB.orgDb}`,
     DATABASE_URL_FOUNDER_TEST: `postgresql://founder_runtime:${TEST_DB.founderPw}@localhost:${PG}/${TEST_DB.orgDb}`,
     DATABASE_URL_ADMIN_TEST: ADMIN_ORG,
   });
@@ -130,9 +130,9 @@ try {
   // --- Access integration tests (T3) ---
   console.log('\n[test:integration] access (T3)...');
   runPkg('@ventora/access', 'test:integration', {
-    DATABASE_URL_TEST: ADMIN_ACCESS,
+    DATABASE_URL_TEST: `postgresql://app_runtime:${TEST_DB.appPw}@localhost:${PG}/${TEST_DB.accessDb}`,
     DATABASE_URL_ADMIN_TEST: ADMIN_ACCESS,
-    DATABASE_URL: ADMIN_ACCESS,
+    DATABASE_URL: `postgresql://app_runtime:${TEST_DB.appPw}@localhost:${PG}/${TEST_DB.accessDb}`,
     // Lot 2.5c: sesiunea de suport și recuperarea owner-ului rulează pe founder_runtime
     DATABASE_URL_FOUNDER_TEST: `postgresql://founder_runtime:${TEST_DB.founderPw}@localhost:${PG}/${TEST_DB.accessDb}`,
     BETTER_AUTH_SECRET: TEST_DB.betterAuthSecret,
@@ -161,9 +161,9 @@ try {
   // --- Booking integration tests ---
   console.log('\n[test:integration] booking...');
   runPkg('@ventora/booking', 'test:integration', {
-    DATABASE_URL_TEST: ADMIN_ACCESS,
+    DATABASE_URL_TEST: `postgresql://app_runtime:${TEST_DB.appPw}@localhost:${PG}/${TEST_DB.accessDb}`,
     DATABASE_URL_ADMIN_TEST: ADMIN_ACCESS,
-    DATABASE_URL: ADMIN_ACCESS,
+    DATABASE_URL: `postgresql://app_runtime:${TEST_DB.appPw}@localhost:${PG}/${TEST_DB.accessDb}`,
     BETTER_AUTH_SECRET: TEST_DB.betterAuthSecret,
     FOUNDER_AUTH_SECRET: TEST_DB.founderAuthSecret,
   });

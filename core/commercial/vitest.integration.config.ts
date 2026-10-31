@@ -6,6 +6,7 @@ import { defineConfig } from 'vitest/config';
 export default defineConfig({
   test: {
     environment: 'node',
+    setupFiles: ['./src/__tests__/runtime-role.setup.ts'],
     include: ['src/__tests__/**/*.integration.test.ts'],
     testTimeout: 30000,
     // the sync tests rewrite the shared registry: files must not run side by side

@@ -3,6 +3,7 @@ import { defineConfig } from 'vitest/config';
 export default defineConfig({
   test: {
     environment: 'node',
+    setupFiles: ['./src/__tests__/runtime-role.setup.ts'],
     testTimeout: 30000,
     // TR.8 renames audit.append_event for a moment: files must not run side by side.
     fileParallelism: false,
