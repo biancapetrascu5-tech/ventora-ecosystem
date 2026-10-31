@@ -37,6 +37,11 @@ export interface NotificationData {
    * înainte (`operational` sus, restul în „Activitate”).
    */
   group?: 'operational' | 'activity';
+  /**
+   * S115 (v1.2.0): ce face deschiderea („Vezi factura”), un rând cu săgeată sub text. Se
+   * deschide tot rândul; nu există un al doilea buton.
+   */
+  action?: string;
 }
 
 export interface HubRecommendationData {
@@ -119,6 +124,12 @@ function NotificationItem({
         <span className={styles.text}>
           <span className={n.read ? 'body' : 'body-strong'}>{n.title}</span>
           {n.body && <span className={cn(styles.body, 'body-small')}>{n.body}</span>}
+          {n.action && (
+            <span className={cn(styles.action, 'body-small')}>
+              {n.action}
+              <Icon icon="arrow-right" size={14} />
+            </span>
+          )}
           <span className={cn(styles.meta, 'caption')}>
             {[n.app, n.time].filter(Boolean).join(' · ')}
           </span>

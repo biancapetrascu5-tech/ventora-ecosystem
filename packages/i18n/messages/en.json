@@ -668,6 +668,50 @@
       "open": "Deschide în Ventora",
       "why": "Primești acest e-mail pentru că faci parte din echipa {businessName} în Ventora.",
       "whyAccount": "Primești acest e-mail pentru contul tău Ventora."
+    },
+    "prefs": {
+      "title": "Notifications",
+      "lead": "You always get these in the app: they’re about your account and your work. By email, you choose, except for security.",
+      "col": {
+        "category": "What",
+        "inApp": "In the app",
+        "email": "Email"
+      },
+      "always": "Always",
+      "alwaysInApp": "In the app: always",
+      "locked": "Can’t be turned off",
+      "emailToggle": "By email",
+      "group": {
+        "work": "Your account and your work",
+        "security": "Security"
+      },
+      "securityNote": "You always get these, in the app and by email, so you know right away if something changes in your account.",
+      "cat": {
+        "bookings": "New and changed bookings",
+        "phone": "The business phone and messages to clients",
+        "billing": "Invoices and payments",
+        "limits": "Plan limits",
+        "leave": "Leave requests",
+        "support": "Replies to support requests",
+        "password": "Account password changed",
+        "twoFactor": "Two-step sign-in",
+        "supportSession": "Ventora team support session"
+      },
+      "news": {
+        "title": "News from Ventora",
+        "desc": "What’s new in Ventora: apps, features, important changes.",
+        "inApp": "In the app",
+        "email": "By email",
+        "emailDesc": "Off until you turn it on."
+      },
+      "reco": {
+        "title": "Ventora recommendations",
+        "desc": "Suggestions for apps and extra packs that fit what you already do.",
+        "inAppDesc": "You see them on pages and in notifications, under Recommendations.",
+        "soon": "Coming soon",
+        "note": "Messages about your account’s limits stay on, because they’re account information, not recommendations."
+      },
+      "saved": "Preferences saved."
     }
   }
 }

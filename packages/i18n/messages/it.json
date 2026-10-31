@@ -668,6 +668,50 @@
       "open": "Deschide în Ventora",
       "why": "Primești acest e-mail pentru că faci parte din echipa {businessName} în Ventora.",
       "whyAccount": "Primești acest e-mail pentru contul tău Ventora."
+    },
+    "prefs": {
+      "title": "Notifiche",
+      "lead": "Nell’app le riceve sempre: riguardano il Suo account e il Suo lavoro. Via e-mail sceglie Lei, tranne quelle di sicurezza.",
+      "col": {
+        "category": "Cosa",
+        "inApp": "Nell’app",
+        "email": "E-mail"
+      },
+      "always": "Sempre",
+      "alwaysInApp": "Nell’app: sempre",
+      "locked": "Non si possono disattivare",
+      "emailToggle": "Via e-mail",
+      "group": {
+        "work": "Il Suo account e il Suo lavoro",
+        "security": "Sicurezza"
+      },
+      "securityNote": "Le riceve sempre, nell’app e via e-mail, per sapere subito se qualcosa cambia nel Suo account.",
+      "cat": {
+        "bookings": "Appuntamenti nuovi e modifiche",
+        "phone": "Il telefono dell’attività e i messaggi ai clienti",
+        "billing": "Fatture e pagamenti",
+        "limits": "Limiti dell’abbonamento",
+        "leave": "Richieste di ferie",
+        "support": "Risposte alle richieste di assistenza",
+        "password": "Password dell’account cambiata",
+        "twoFactor": "Accesso in due passaggi",
+        "supportSession": "Sessione di assistenza del team Ventora"
+      },
+      "news": {
+        "title": "Novità da Ventora",
+        "desc": "Le novità di Ventora: app, funzioni, cambiamenti importanti.",
+        "inApp": "Nell’app",
+        "email": "Via e-mail",
+        "emailDesc": "Disattivato finché non lo attiva Lei."
+      },
+      "reco": {
+        "title": "Raccomandazioni Ventora",
+        "desc": "Suggerimenti su app e pacchetti extra adatti a ciò che fa già.",
+        "inAppDesc": "Le vede nelle pagine e nelle notifiche, nella sezione Raccomandazioni.",
+        "soon": "Disponibile a breve",
+        "note": "I messaggi sui limiti del Suo account restano attivi, perché sono informazioni sull’account, non raccomandazioni."
+      },
+      "saved": "Preferenze salvate."
     }
   }
 }

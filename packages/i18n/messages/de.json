@@ -668,6 +668,50 @@
       "open": "Deschide în Ventora",
       "why": "Primești acest e-mail pentru că faci parte din echipa {businessName} în Ventora.",
       "whyAccount": "Primești acest e-mail pentru contul tău Ventora."
+    },
+    "prefs": {
+      "title": "Benachrichtigungen",
+      "lead": "In der App erhalten Sie diese immer: Es geht um Ihr Konto und Ihre Arbeit. Per E-Mail entscheiden Sie selbst, außer bei Sicherheit.",
+      "col": {
+        "category": "Was",
+        "inApp": "In der App",
+        "email": "E-Mail"
+      },
+      "always": "Immer",
+      "alwaysInApp": "In der App: immer",
+      "locked": "Nicht abschaltbar",
+      "emailToggle": "Per E-Mail",
+      "group": {
+        "work": "Ihr Konto und Ihre Arbeit",
+        "security": "Sicherheit"
+      },
+      "securityNote": "Diese erhalten Sie immer, in der App und per E-Mail, damit Sie sofort erfahren, wenn sich etwas an Ihrem Konto ändert.",
+      "cat": {
+        "bookings": "Neue und geänderte Termine",
+        "phone": "Das Geschäftstelefon und Nachrichten an Kunden",
+        "billing": "Rechnungen und Zahlungen",
+        "limits": "Limits des Abonnements",
+        "leave": "Urlaubsanträge",
+        "support": "Antworten auf Support-Anfragen",
+        "password": "Kontopasswort geändert",
+        "twoFactor": "Anmeldung in zwei Schritten",
+        "supportSession": "Support-Sitzung des Ventora-Teams"
+      },
+      "news": {
+        "title": "Neues von Ventora",
+        "desc": "Neues in Ventora: Apps, Funktionen, wichtige Änderungen.",
+        "inApp": "In der App",
+        "email": "Per E-Mail",
+        "emailDesc": "Aus, bis Sie es einschalten."
+      },
+      "reco": {
+        "title": "Ventora-Empfehlungen",
+        "desc": "Vorschläge für Apps und Zusatzpakete, die zu dem passen, was Sie schon tun.",
+        "inAppDesc": "Sie sehen sie auf den Seiten und in den Benachrichtigungen unter Empfehlungen.",
+        "soon": "Bald verfügbar",
+        "note": "Nachrichten zu den Limits Ihres Kontos bleiben aktiv, denn sie sind Kontoinformationen, keine Empfehlungen."
+      },
+      "saved": "Einstellungen gespeichert."
     }
   }
 }
