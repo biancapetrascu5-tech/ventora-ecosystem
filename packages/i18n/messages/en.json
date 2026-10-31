@@ -686,7 +686,8 @@
       "alsoHave": "Also includes {app}, which you now pay for as an individual app.",
       "planTotal": "Your plan would be {amount} a month instead of {now}.",
       "requestSent": "We’ve sent your request for the {name} bundle",
-      "requestSentBody": "The Ventora team will write to you before your next payment. Until then, nothing changes."
+      "requestSentBody": "The Ventora team will write to you before your next payment. Until then, nothing changes.",
+      "requestFailed": "We couldn't send the request. Try again."
     },
     "alaCarte": {
       "title": "Individual apps",

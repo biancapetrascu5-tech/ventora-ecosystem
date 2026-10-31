@@ -686,7 +686,8 @@
       "alsoHave": "Include și {app}, pe care acum o plătești la bucată.",
       "planTotal": "Abonamentul tău ar fi {amount} pe lună, în loc de {now}.",
       "requestSent": "Am trimis cererea pentru bundle-ul {name}",
-      "requestSentBody": "Echipa Ventora îți scrie înainte de următoarea plată. Până atunci, totul rămâne cum e."
+      "requestSentBody": "Echipa Ventora îți scrie înainte de următoarea plată. Până atunci, totul rămâne cum e.",
+      "requestFailed": "Nu am putut trimite cererea. Încearcă din nou."
     },
     "alaCarte": {
       "title": "Aplicații la bucată",

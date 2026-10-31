@@ -686,7 +686,8 @@
       "alsoHave": "Enthält auch {app}, das Sie jetzt als Einzel-App bezahlen.",
       "planTotal": "Ihr Abonnement läge bei {amount} pro Monat statt {now}.",
       "requestSent": "Wir haben Ihre Anfrage für das Bundle {name} gesendet",
-      "requestSentBody": "Das Ventora-Team meldet sich vor der nächsten Zahlung. Bis dahin bleibt alles, wie es ist."
+      "requestSentBody": "Das Ventora-Team meldet sich vor der nächsten Zahlung. Bis dahin bleibt alles, wie es ist.",
+      "requestFailed": "Wir konnten die Anfrage nicht senden. Versuch es noch einmal."
     },
     "alaCarte": {
       "title": "Einzel-Apps",

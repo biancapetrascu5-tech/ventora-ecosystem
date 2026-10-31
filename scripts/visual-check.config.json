@@ -113,7 +113,8 @@
     "FounderRequests",
     "FounderDiscounts",
     "FounderPlans",
-    "FounderPlanEditor"
+    "FounderPlanEditor",
+    "HubCatalogBundles"
   ],
   "exceptions": {},
   "$comment_selectors": "designSelector: primul cadru cu data-theme din preview.html (clasele cadrelor diferă de la o componentă la alta: c3f, qf, al-frame…). Interiorul BrandZone (.v-brandzone__in, data-theme=\"dark\", display: contents) e parte din componentă, nu cadru, deci e sărit. implSelector: cadrul galeriei marcat cu data-gallery-frame. Ambele cadre trebuie să conțină exact aceleași exemple."

@@ -686,7 +686,8 @@
       "alsoHave": "Include anche {app}, che ora paga come app singola.",
       "planTotal": "Il Suo abbonamento sarebbe di {amount} al mese invece di {now}.",
       "requestSent": "Abbiamo inviato la richiesta per il bundle {name}",
-      "requestSentBody": "Il team Ventora Le scriverà prima del prossimo pagamento. Fino ad allora non cambia nulla."
+      "requestSentBody": "Il team Ventora Le scriverà prima del prossimo pagamento. Fino ad allora non cambia nulla.",
+      "requestFailed": "Non siamo riusciti a inviare la richiesta. Riprova."
     },
     "alaCarte": {
       "title": "App singole",

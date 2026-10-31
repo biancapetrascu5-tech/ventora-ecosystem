@@ -62,6 +62,13 @@ export interface Catalog {
   currency: Currency;
   interval: BillingInterval;
   includedMembers: number;
+  /** What the business pays now per interval: its bundle (at its price) and its lines. */
+  current: {
+    bundleMinor: number;
+    /** The applications à la carte (recurring lines) and their price. */
+    lines: Array<{ applicationId: string; amountMinor: number }>;
+    totalMinor: number;
+  };
   bundles: CatalogBundle[];
   applications: CatalogApplication[];
 }
@@ -163,6 +170,22 @@ export async function getCatalogForOrg(organizationId: string): Promise<Catalog>
     }
     bundles.sort((a, b) => a.monthMinor - b.monthMinor || a.name.localeCompare(b.name));
 
+    const lines = sub
+      ? (
+          await client.query<{ application_id: string; amount_minor: string }>(
+            `SELECT application_id, amount_minor FROM commercial.subscription_application
+              WHERE subscription_id = $1 AND ended_at IS NULL ORDER BY application_id`,
+            [sub.id],
+          )
+        ).rows.map((r) => ({
+          applicationId: r.application_id,
+          amountMinor: Number(r.amount_minor),
+        }))
+      : [];
+    const bundleMinor =
+      ownTerms?.prices.find((p) => p.currency === currency && p.kind === interval)?.amountMinor ??
+      0;
+
     const apps = await client.query<{ id: string; activation_mode: PurchaseMode }>(
       `SELECT id, activation_mode FROM commercial.application
         WHERE retired_at IS NULL AND NOT is_platform ORDER BY id`,
@@ -176,6 +199,11 @@ export async function getCatalogForOrg(organizationId: string): Promise<Catalog>
       currency,
       interval,
       includedMembers: await includedMembersInTx(client),
+      current: {
+        bundleMinor,
+        lines,
+        totalMinor: bundleMinor + lines.reduce((sum, l) => sum + l.amountMinor, 0),
+      },
       bundles,
       applications: apps.rows.map((a) => ({
         id: a.id,

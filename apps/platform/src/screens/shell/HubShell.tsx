@@ -7,6 +7,7 @@ import {
   AccountMenu,
   AppShell,
   ContextBar,
+  Logo,
   NotificationsPanel,
   OrgSwitcher,
   Spine,
@@ -89,8 +90,14 @@ export function HubShell({
   const roles = useTranslations('roles');
   const nav = useHubNav(data.manager);
   const active = activeFor(pathname);
+  // S117: catalogul (HubCatalogBundles) se deschide fără Spine, cu sigla în bară.
+  const catalog = pathname === '/catalog' || pathname.startsWith('/catalog/');
+  const catalogTitle = useTranslations('catalog.bundles')('title');
   // Titlul din ContextBar (se vede doar pe telefon): numele paginii active din Spine.
-  const pageTitle = title ?? nav.flatMap((sec) => sec.items).find((i) => i.id === active)?.label;
+  const pageTitle =
+    title ??
+    (catalog ? catalogTitle : undefined) ??
+    nav.flatMap((sec) => sec.items).find((i) => i.id === active)?.label;
   const orgs = data.orgs.map((o) => ({
     id: o.id,
     name: o.name,
@@ -115,24 +122,27 @@ export function HubShell({
     <AppShell
       height="100%"
       spine={
-        <Spine
-          sections={nav}
-          activeId={active}
-          onBackToHub={() => go('/')}
-          bottomItems={['securitate', 'echipa', 'roluri']}
-          labels={{
-            backToHub: ui('backToHub'),
-            expandMenu: ui('expandMenu'),
-            collapseMenu: ui('collapseMenu'),
-            more: ui('more'),
-            close: ui('close'),
-            back: ui('back'),
-          }}
-        />
+        catalog ? undefined : (
+          <Spine
+            sections={nav}
+            activeId={active}
+            onBackToHub={() => go('/')}
+            bottomItems={['securitate', 'echipa', 'roluri']}
+            labels={{
+              backToHub: ui('backToHub'),
+              expandMenu: ui('expandMenu'),
+              collapseMenu: ui('collapseMenu'),
+              more: ui('more'),
+              close: ui('close'),
+              back: ui('back'),
+            }}
+          />
+        )
       }
       contextBar={
         <ContextBar
           title={pageTitle}
+          leading={catalog ? <Logo size={32} /> : undefined}
           org={
             orgs.length > 0 ? (
               <OrgSwitcher

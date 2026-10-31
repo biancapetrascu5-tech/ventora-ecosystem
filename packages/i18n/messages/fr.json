@@ -686,7 +686,8 @@
       "alsoHave": "Inclut aussi {app}, que vous payez aujourd’hui à l’unité.",
       "planTotal": "Votre abonnement serait de {amount} par mois au lieu de {now}.",
       "requestSent": "Nous avons envoyé votre demande pour le bundle {name}",
-      "requestSentBody": "L’équipe Ventora vous écrira avant le prochain paiement. D’ici là, rien ne change."
+      "requestSentBody": "L’équipe Ventora vous écrira avant le prochain paiement. D’ici là, rien ne change.",
+      "requestFailed": "Nous n'avons pas pu envoyer la demande. Réessaie."
     },
     "alaCarte": {
       "title": "Applications à l’unité",

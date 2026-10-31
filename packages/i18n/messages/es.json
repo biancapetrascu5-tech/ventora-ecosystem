@@ -686,7 +686,8 @@
       "alsoHave": "Incluye también {app}, que ahora pagas como aplicación suelta.",
       "planTotal": "Tu plan sería de {amount} al mes en lugar de {now}.",
       "requestSent": "Hemos enviado tu solicitud del bundle {name}",
-      "requestSentBody": "El equipo de Ventora te escribirá antes del próximo pago. Hasta entonces, nada cambia."
+      "requestSentBody": "El equipo de Ventora te escribirá antes del próximo pago. Hasta entonces, nada cambia.",
+      "requestFailed": "No hemos podido enviar la solicitud. Inténtalo de nuevo."
     },
     "alaCarte": {
       "title": "Aplicaciones sueltas",
