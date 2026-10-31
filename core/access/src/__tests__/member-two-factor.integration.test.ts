@@ -242,6 +242,39 @@ describe('Lot 2.7 · D, G3 — two-step sign-in for a member (S108, S110)', () =
     expect(await auditRows('2fa.disabled', owner.userId)).toHaveLength(0);
   });
 
+  it('Lot 2.9: the owner of a single business, suspended, still cannot turn it off', async () => {
+    const suspendedOrgId = newUuid();
+    await adminQuery(
+      `INSERT INTO organizations.organization (id, slug, name, created_via, status, suspended_at, updated_at)
+       VALUES ($1::uuid, $2, 'Salon suspendat', 'self_service', 'suspended', NOW(), NOW())`,
+      [suspendedOrgId, `member-2fa-susp-${suspendedOrgId.slice(0, 8)}`],
+    );
+    try {
+      const email = `tfa-owner-susp-${newUuid()}@test.local`;
+      const signUp = await hubAuth.api.signUpEmail({
+        body: { name: 'Test owner suspendat', email, password: PASSPHRASE },
+      });
+      await adminQuery(
+        `INSERT INTO organizations.membership (organization_id, user_id, role, status, updated_at)
+         VALUES ($1::uuid, $2::uuid, 'owner', 'active', NOW())`,
+        [suspendedOrgId, signUp.user.id],
+      );
+      const on = await turnOn(signUp.token!);
+      await expect(
+        disableMemberTwoFactor({
+          headers: bearer(on.token),
+          code: await totpFromBase32(on.secret),
+        }),
+      ).rejects.toThrow(Forbidden);
+      const state = await twoFactorState(signUp.user.id);
+      expect(state.enabled).toBe(true);
+      expect(state.rows[0]!.failed_verification_count).toBe(0);
+      expect(await auditRows('2fa.disabled', signUp.user.id)).toHaveLength(0);
+    } finally {
+      await adminQuery(`DELETE FROM organizations.organization WHERE id = $1`, [suspendedOrgId]);
+    }
+  });
+
   it('"Schimbată {when}": the date of the credential password', async () => {
     const member = await createUser('member');
     const at = await getPasswordChangedAt(member.userId);

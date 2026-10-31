@@ -11,6 +11,7 @@ export {
   resolveOrgContext,
   createOrganizationAsFounder,
   listMyOrganizations,
+  isOwnerOfAnyOrganization,
   markOrganizationOpened,
   getInvitationByToken,
   requestNewInvitationLink,

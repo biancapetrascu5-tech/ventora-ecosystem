@@ -157,7 +157,6 @@ function hashToken(token: string): string {
 
 export interface FounderContext {
   founderId: string;
-  founderEmail: string;
 }
 
 declare const _orgContextBrand: unique symbol;
@@ -483,6 +482,21 @@ export async function listMyOrganizations(userId: string) {
     >`SELECT organization_id, organization_name, organization_slug, role, status, last_opened_at
       FROM organizations.list_my_memberships_v2()`;
   });
+}
+
+/**
+ * Lot 2.9 (decizia 1): is the user an active owner of any business, whatever its state? A
+ * suspended business still exists, so its owner stays an owner. list_my_memberships (v1) filters
+ * only the membership status, not the organization status (v2 hides suspended businesses).
+ */
+export async function isOwnerOfAnyOrganization(userId: string): Promise<boolean> {
+  const db = getOrgDb();
+  const rows = await db.$transaction(async (tx: any) => {
+    await tx.$executeRaw`SELECT set_config('app.user_id', ${userId}, true)`;
+    return tx.$queryRaw<Array<{ role: MembershipRole }>>`SELECT role
+      FROM organizations.list_my_memberships()`;
+  });
+  return (rows as Array<{ role: MembershipRole }>).some((m) => m.role === 'owner');
 }
 
 /** Lot 2.6 · F: afacerea a fost deschisă acum (HubChooseBusiness, „deschisă …”). */
