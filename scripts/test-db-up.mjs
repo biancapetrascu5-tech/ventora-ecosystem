@@ -207,6 +207,12 @@ psqlFile(
   ),
 );
 
+console.log('[test:db:up] Aplic migrarea organizations #6 (outbox, Lot 4.1)...');
+psqlFile(
+  TEST_DB.orgDb,
+  join(ROOT, 'core/organizations/prisma/migrations/20261031000002_outbox_init/migration.sql'),
+);
+
 // Rolurile sunt la nivel de cluster (create de migrarea identity), deci grant-urile din M1 se aplică
 console.log('[test:db:up] Aplic migrarea audit (organizations DB)...');
 psqlFile(
@@ -286,6 +292,8 @@ for (const migration of [
   'core/access/prisma/migrations/20261030000001_lot27_support_one_per_org/migration.sql',
   // Lot 2.8: starea afacerii (suspendarea, D3-20)
   'core/organizations/prisma/migrations/20261031000001_lot28_organization_status/migration.sql',
+  // Lot 4.1: outbox-ul organizations (requestNewInvitationLink scrie evenimentul)
+  'core/organizations/prisma/migrations/20261031000002_outbox_init/migration.sql',
 ]) {
   psqlFile(TEST_DB.accessDb, join(ROOT, migration));
 }
