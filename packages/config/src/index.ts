@@ -60,6 +60,14 @@ const envSchema = z
     EMAIL_REPLY_TO: emptyAsUnset(
       z.string().email('EMAIL_REPLY_TO trebuie să fie o adresă de e-mail').optional(),
     ),
+
+    /**
+     * Serviciul de job-uri (Inngest, Lot 4.2, D4-3). Doar în .env.local și Vercel; fără ele,
+     * local, clientul folosește serverul de dezvoltare (inngest-cli dev). Devin obligatorii în
+     * production odată cu contul Inngest (Lotul 4.11).
+     */
+    INNGEST_EVENT_KEY: emptyAsUnset(z.string().min(1).optional()),
+    INNGEST_SIGNING_KEY: emptyAsUnset(z.string().min(1).optional()),
   })
   .refine((data) => data.NODE_ENV !== 'production' || !!data.SENTRY_DSN, {
     message: 'SENTRY_DSN este obligatoriu în production. Setați-l în variabilele de mediu.',
