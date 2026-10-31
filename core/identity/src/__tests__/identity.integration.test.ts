@@ -1198,6 +1198,10 @@ describe('Lot 2.7 · G1 — Founder: no open sign-up', () => {
     });
     expect('userId' in first).toBe(true);
     expect(await founderDb.user.count({ where: { email: 'g1.first@test.com' } })).toBe(1);
+    // the same id format as the Founder app: founder_create_organization casts it to uuid
+    expect((first as { userId: string }).userId).toMatch(
+      /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/,
+    );
 
     const second = await bootstrapFounderAccount(founderDb, FOUNDER_TEST_SECRET, {
       name: 'A doua',
