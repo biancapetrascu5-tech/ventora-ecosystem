@@ -93,6 +93,7 @@ export {
   refundQuota,
   freeStockQuota,
   reconcileExpiredReservations,
+  runQuotaReconciliationJob,
   reconcileOrganization,
   registerOperationResolver,
   getUsage,

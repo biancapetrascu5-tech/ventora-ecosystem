@@ -1,6 +1,6 @@
 # VENTORA ECOSYSTEM — ARHITECTURĂ TEHNICĂ
 
-**Versiune:** 0.4.8
+**Versiune:** 0.4.9
 **Data:** 31 octombrie 2026
 **Stadiu:** Faza 0 închisă (tag `faza-0`). Deciziile marcate CONFIRMAT sunt baza implementării; cele PROPUS sau NECESITĂ DECIZIE nu se implementează fără aprobare.
 
@@ -31,6 +31,7 @@
 | 0.4.6 | 28.10.2026 | Decizii ale fondatoarei: workflow engine în Core, construit în F4, automatizările construite și pornite doar din Founder (D-WF-1…5); funnel builder doar în Founder, cu publicare pe domeniul afacerii sau pe un domeniu Ventora (D-FUN-1…6); asistentul AI în Core, prin `authorize()`, cu confirmare înainte de scriere și audit (D-AI-1…5); cele trei marcate obligatorii pentru produs în planul fazelor (D-ROAD-5). Contradicțiile C14–C16 rezolvate de fondatoare: automatizările predefinite ale modulelor rămân setări ale afacerii (D-WF-6), formularele simple de lead le configurează afacerea (D-FUN-7), F4 păstrează doar infrastructura AI (D-AI-6), asistentul pentru consumatori e produs separat al Portalului (D-AI-7); brief-ul §37 și checklisturile Booking, Marketing, Projects actualizate. Detalii: §17.23. |
 | 0.4.7 | 30.10.2026 | Decizia fondatoarei din 30.10 pentru „Cere o invitație nouă”: notificare operațională în Hub pentru owner și admin, construită în F4, plus marcajul din lista invitațiilor de acum. Obligația e trecută sub tabelul fazelor (§15.1). |
 | 0.4.8 | 31.10.2026 | §8.4: în exemplul de manifest, `period: 'billing_cycle'` devine `period: 'month'`: cotele de flux se resetează lunar, în ziua de ancorare a abonamentului, și pe abonamentul anual (D3-3, `plans/FAZA-3.md`). Decizia fondatoarei pe raportul Lotului 3.1. |
+| 0.4.9 | 31.10.2026 | §11.3: D-INF-2 **DECIS: Inngest** (fondatoarea, 31.10.2026; D4-3 și D4-4 în `plans/FAZA-4.md`). Statusul din §11.3 se aliniază cu §17.1; contradicția C-F4-8 e rezolvată. Lotul 4.2 a construit serviciul: ruta comună, registrul de job-uri în aplicație, contextul de tenant din plic, erorile în Sentry. |
 
 ## Statusuri folosite în acest document
 
@@ -865,10 +866,16 @@ packages/
 
 ### 11.3 Job-uri de fundal
 
-**Status: PROPUS, NECESITĂ DECIZIE (D-INF-2)**
+**Status: DECIS — Inngest (D-INF-2, fondatoarea, 31.10.2026)**
 
-- Vercel e serverless și nu are worker permanent. Propunere: **Inngest** (retry, delay, pași durabili, compatibil Vercel).
-- Alternative: Trigger.dev, sau pg-boss + worker pe Railway/Fly.
+- Vercel e serverless și nu are worker permanent. Serviciul ales: **Inngest** (retry, delay, pași durabili, compatibil Vercel). Alternativele cântărite (Trigger.dev, pg-boss + worker pe Railway/Fly) nu se folosesc.
+- **Construit în Lotul 4.2:**
+  - ruta comună `apps/platform/app/api/inngest/route.ts` servește registrul de job-uri al aplicației (`apps/platform/src/server/jobs.ts`); un lot își înregistrează job-urile acolo, fără să atingă ruta;
+  - registrul, rularea și adaptorul sunt în `core/integrations` (D4-2);
+  - contextul de tenant vine din plicul evenimentului; un job programat ia organizația din fiecare rând; niciun job nu folosește `withSystemContext`;
+  - eroarea unui job ajunge în Sentry, cu `organizationId` și `correlationId`, apoi job-ul e reîncercat (implicit de 3 ori);
+  - dispecerul outbox rulează în fiecare minut (D-INF-4), iar reconcilierea cotelor la 5 minute.
+- Cheile (`INNGEST_EVENT_KEY`, `INNGEST_SIGNING_KEY`) stau doar în `.env.local` și Vercel; local se lucrează cu serverul de dezvoltare, fără cont.
 - Pe acest serviciu rulează: outbox dispatch, notificări, remindere, automatizări predefinite, reconcilierea cotelor și a referințelor, rapoarte programate.
 
 ### 11.4 API-uri externe
@@ -1181,7 +1188,7 @@ Plus, la nivel de platformă: teste de webhook Stripe (semnătură, idempotenț�
 | D-INF-1 | Domeniile: `app.`, `portal.`, `founder.ventora-hub.com`; corporate `ventorasystems.com` | — | CONFIRMAT | Nu |
 | D-INF-3 | Staging: URL-urile stabile Vercel, fără subdomenii; azi fără proiect Vercel, staging = baza Supabase (§14) | — | CONFIRMAT (28.10.2026) | Nu |
 | D-MIG-1 | Fără migrare de date din Hub-ul vechi; repo-ul vechi rămâne read-only, nimic nu se șterge fără aprobare | — | CONFIRMAT | Nu |
-| D-INF-2 | Inngest + outbox pentru job-uri și evenimente | Da | CONFIRMAT (specificație) | Nu |
+| D-INF-2 | Inngest + outbox pentru job-uri și evenimente | Da | DECIS: Inngest (fondatoarea, 31.10.2026; §11.3) | Nu |
 | D-API-1 | API extern pentru Booking, Documents, Events, HR | Nu sunt în checklisturi, deci nu se construiesc | CONFIRMAT (din checklisturi) | Nu |
 | D-NET-1 | Pagini publice Network | Închis la lansare | CONFIRMAT | Nu |
 | D-POR-1 | Partea business a Portal în `platform` | Da | CONFIRMAT | Nu |
