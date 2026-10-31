@@ -302,6 +302,12 @@ for (const migration of [
   'core/organizations/prisma/migrations/20261031000002_outbox_init/migration.sql',
   // Lot 3.1: registrul comercial (commercial_rw → app_runtime, SELECT → founder_runtime)
   'core/commercial/prisma/migrations/20261101000001_commercial_init/migration.sql',
+  // Lot 3.2: planuri, abonament, excepții (commercial_founder → founder_runtime)
+  'core/commercial/prisma/migrations/20261101000002_commercial_plans/migration.sql',
+  'core/commercial/prisma/migrations/20261101000003_commercial_subscription/migration.sql',
+  'core/commercial/prisma/migrations/20261101000004_commercial_overrides/migration.sql',
+  // D3-21: reducerile și aplicațiile adăugate la abonament
+  'core/commercial/prisma/migrations/20261101000005_commercial_discounts/migration.sql',
 ]) {
   psqlFile(TEST_DB.accessDb, join(ROOT, migration));
 }

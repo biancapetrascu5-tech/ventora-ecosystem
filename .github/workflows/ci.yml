@@ -383,8 +383,20 @@ jobs:
           psql postgresql://postgres:test@localhost:5435/ventora_access_test \
             -v ON_ERROR_STOP=1 \
             -f core/audit/prisma/migrations/20261028000001_audit_init/migration.sql
+      # Lot 3.2: T4 in booking reads the subscription through the real provider (commercial)
+      - name: Apply commercial migrations
+        run: |
+          PSQL="psql postgresql://postgres:test@localhost:5435/ventora_access_test -v ON_ERROR_STOP=1"
+          for f in core/commercial/prisma/migrations/*/migration.sql; do
+            echo "Applying $f"
+            $PSQL -f "$f"
+          done
       - name: Sync permissions
         run: pnpm tsx scripts/sync-permissions.ts
+        env:
+          DIRECT_URL: postgresql://postgres:test@localhost:5435/ventora_access_test
+      - name: Sync the commercial registry
+        run: pnpm tsx scripts/sync-commercial-registry.ts
         env:
           DIRECT_URL: postgresql://postgres:test@localhost:5435/ventora_access_test
       - name: Generate test secrets
@@ -462,7 +474,7 @@ jobs:
           DATABASE_URL_ADMIN_TEST: postgresql://postgres:test@localhost:5436/ventora_audit_test
         run: pnpm --filter @ventora/audit test:integration
 
-  # Lot 3.1: registrul comercial (T9: commercial_init pe o bază curată, fără drift)
+  # Lot 3.1–3.2: registrul și modelul comercial (T9: migrările commercial pe o bază curată, fără drift)
   integration-tests-commercial:
     name: Integration tests (commercial — registrul)
     runs-on: ubuntu-latest
@@ -509,16 +521,41 @@ jobs:
           $PSQL -c "CREATE ROLE founder_runtime WITH LOGIN PASSWORD '${FOUNDER_PW}' NOINHERIT"
           echo "APP_PW=${APP_PW}" >> $GITHUB_ENV
           echo "FOUNDER_PW=${FOUNDER_PW}" >> $GITHUB_ENV
-      - name: Apply commercial migration
+      # Lot 3.2: the Founder contracts need a real Founder session (founder_identity) and write
+      # their audit rows (audit) — applied before the commercial migrations, on the same clean DB
+      - run: pnpm --filter @ventora/identity generate
+      - run: pnpm --filter @ventora/organizations generate
+      - name: Apply identity, founder and audit migrations
         run: |
-          psql postgresql://postgres:test@localhost:5437/ventora_commercial_test \
-            -v ON_ERROR_STOP=1 \
-            -f core/commercial/prisma/migrations/20261101000001_commercial_init/migration.sql
+          PSQL="psql postgresql://postgres:test@localhost:5437/ventora_commercial_test -v ON_ERROR_STOP=1"
+          # same order as scripts/test-db-up.mjs (identity DB): founder and audit before M4
+          for f in core/identity/prisma/identity/migrations/20261025000001_identity_init/migration.sql \
+                   core/identity/prisma/identity/migrations/20261027000002_session_active_org/migration.sql \
+                   core/identity/prisma/founder/migrations/20261025000001_founder_init/migration.sql \
+                   core/audit/prisma/migrations/20261028000001_audit_init/migration.sql \
+                   core/identity/prisma/identity/migrations/20261028000004_founder_owner_recovery/migration.sql \
+                   core/identity/prisma/identity/migrations/20261029000006_lot26_open_last_organization/migration.sql; do
+            echo "Applying $f"
+            $PSQL -f "$f"
+          done
+      - name: Apply commercial migrations
+        run: |
+          PSQL="psql postgresql://postgres:test@localhost:5437/ventora_commercial_test -v ON_ERROR_STOP=1"
+          for f in core/commercial/prisma/migrations/*/migration.sql; do
+            echo "Applying $f"
+            $PSQL -f "$f"
+          done
+      - name: Generate test secrets
+        run: |
+          echo "BETTER_AUTH_SECRET=$(openssl rand -hex 32)" >> $GITHUB_ENV
+          echo "FOUNDER_AUTH_SECRET=$(openssl rand -hex 32)" >> $GITHUB_ENV
       - name: Run commercial integration tests
         env:
           DATABASE_URL_TEST: postgresql://app_runtime:${{ env.APP_PW }}@localhost:5437/ventora_commercial_test
           DATABASE_URL_FOUNDER_TEST: postgresql://founder_runtime:${{ env.FOUNDER_PW }}@localhost:5437/ventora_commercial_test
           DATABASE_URL_ADMIN_TEST: postgresql://postgres:test@localhost:5437/ventora_commercial_test
+          BETTER_AUTH_SECRET: ${{ env.BETTER_AUTH_SECRET }}
+          FOUNDER_AUTH_SECRET: ${{ env.FOUNDER_AUTH_SECRET }}
         run: pnpm --filter @ventora/commercial test:integration
       # The real manifests, twice: the second run fails if it changes anything
       - name: Sync the registry from the manifests (twice)

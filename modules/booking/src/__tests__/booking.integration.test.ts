@@ -130,6 +130,87 @@ describe('T3.3 — app disabled → AppNotEnabled', () => {
   });
 });
 
+// Lot 3.2 — T4: the real provider. Whether booking is on comes from the subscription (the plan
+// version in commercial), not from code. Needs commercial_* applied and the registry synced
+// (scripts/test-integration.mjs, the access job in CI).
+describe('T4 — AppNotEnabled comes from the subscription (commercialEntitlementProvider)', () => {
+  const founder = newUuid();
+  let planId: string;
+
+  async function publishedVersion(apps: string[]): Promise<string> {
+    const [{ id }] = (
+      await adminQuery(
+        `INSERT INTO commercial.plan_version (plan_id, version_number, created_by_founder_id)
+         SELECT $1, COALESCE(max(version_number), 0) + 1, $2 FROM commercial.plan_version WHERE plan_id = $1
+         RETURNING id`,
+        [planId, founder],
+      )
+    ).rows;
+    for (const app of apps) {
+      await adminQuery(
+        `INSERT INTO commercial.plan_version_application (plan_version_id, application_id) VALUES ($1, $2)`,
+        [id, app],
+      );
+    }
+    await adminQuery(
+      `INSERT INTO commercial.plan_version_price (plan_version_id, currency, kind, amount_minor)
+       VALUES ($1, 'RON', 'month', 100)`,
+      [id],
+    );
+    await adminQuery(
+      `UPDATE commercial.plan_version SET published_at = now(), published_by_founder_id = $2 WHERE id = $1`,
+      [id, founder],
+    );
+    return id;
+  }
+
+  async function subscribe(org: string, versionId: string) {
+    await adminQuery(
+      `INSERT INTO commercial.subscription
+         (organization_id, plan_version_id, interval, currency, started_on, anchor_day, status, created_by_founder_id)
+       VALUES ($1, $2, 'month', 'RON', CURRENT_DATE, EXTRACT(DAY FROM CURRENT_DATE), 'active', $3)`,
+      [org, versionId, founder],
+    );
+  }
+
+  let withoutBookingOrg: string;
+  let withoutBookingToken: string;
+
+  beforeAll(async () => {
+    const { commercialEntitlementProvider } = await import('@ventora/commercial');
+    configureAccess({ entitlementProvider: commercialEntitlementProvider });
+    planId = (
+      await adminQuery(
+        `INSERT INTO commercial.plan (code, name, created_by_founder_id) VALUES ($1, 'T4', $2) RETURNING id`,
+        [`t4-${newUuid().slice(0, 8)}`, founder],
+      )
+    ).rows[0].id;
+    // the main test business: booking in its subscription
+    await subscribe(orgId, await publishedVersion(['booking']));
+    // another business whose subscription has only crm
+    withoutBookingOrg = await createOrg();
+    const owner = await createUser(`booking-t4-${newUuid()}@test.local`, true);
+    await createMembership(withoutBookingOrg, owner, 'owner');
+    withoutBookingToken = await createSession(owner, withoutBookingOrg);
+    await subscribe(withoutBookingOrg, await publishedVersion(['crm']));
+  });
+  afterAll(async () => {
+    configureAccess({ entitlementProvider: { isEnabled: async () => true } });
+    await adminQuery(`DELETE FROM organizations.organization WHERE id = $1`, [withoutBookingOrg]);
+  });
+
+  it('a business without booking in its subscription gets AppNotEnabled', async () => {
+    await expect(listAppointments({ sessionToken: withoutBookingToken })).rejects.toThrow(
+      AppNotEnabled,
+    );
+  });
+
+  it('a business with booking in its subscription passes', async () => {
+    const result = await listAppointments({ sessionToken: ownerToken });
+    expect(result.ctx.role).toBe('owner');
+  });
+});
+
 describe('T3.4 — owner has booking:read permission (implicit)', () => {
   it('owner can list appointments', async () => {
     const result = await listAppointments({ sessionToken: ownerToken });

@@ -9,6 +9,7 @@
     ".": "./src/index.ts"
   },
   "scripts": {
+    "test": "vitest run",
     "test:integration": "vitest run --config vitest.integration.config.ts",
     "typecheck": "tsc --noEmit"
   },
@@ -18,6 +19,7 @@
     "@ventora/errors": "workspace:*"
   },
   "devDependencies": {
+    "@ventora/commercial": "workspace:*",
     "@types/pg": "^8.0.0",
     "@ventora/db-kit": "workspace:*",
     "pg": "^8.0.0",

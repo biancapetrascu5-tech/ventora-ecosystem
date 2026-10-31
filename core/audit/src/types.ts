@@ -12,7 +12,19 @@ export type AuditTargetType =
   | 'membership'
   | 'organization'
   | 'founder_user'
-  | 'support_session';
+  | 'support_session'
+  // Lot 3.2: the commercial model (category commercial)
+  | 'plan'
+  | 'plan_version'
+  | 'addon'
+  | 'application'
+  | 'billing_account'
+  | 'subscription'
+  | 'subscription_change'
+  | 'addon_grant'
+  | 'override'
+  | 'subscription_application'
+  | 'discount';
 
 export type AuditEvent = {
   category: AuditCategory;

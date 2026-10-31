@@ -194,7 +194,9 @@ Lotul ține de Faza 2 și se face **înaintea Fazei 3**. Stă aici pentru că lo
   - moneda afacerii (`billing_currency`: implicit `RON` pentru România, `EUR` în rest), fixată din Founder (D3-2);
   - `subscription`: organizația → versiunea exactă, cu stare, periodicitatea aleasă (`month` / `year`) și ziua de ancorare a facturării (ziua de start; 29–31 → ultima zi a lunilor mai scurte, D3-3);
   - `addon_grant`: pachetele active pe organizație, cu sursă și valabilitate;
-  - `override` (excepția): `expires_at` obligatoriu, cel mult 12 luni (D-COM-8); se încheie, nu se șterge;
+  - `override` (excepția): `expires_at` obligatoriu, cel mult 12 luni (D-COM-8); se încheie, nu se șterge. Excepția de limită înlocuiește limita versiunii, iar pachetele se adaugă peste (D3-22). O aplicație întreagă nu se dă prin excepție (D3-21);
+  - `discount` (reducerea, D3-21): pe tot abonamentul sau pe o linie (o aplicație adăugată, un pachet lunar); procent 1–100 sau sumă fixă în moneda afacerii; o singură dată / N luni / permanent; motiv 10–1.000 de caractere; audit required; se încheie, nu se șterge;
+  - aplicațiile adăugate la abonament (D3-9), ca linii recurente ale lui, cu prețul aplicației pe monedă și periodicitate;
   - `trial`: aplicația sau funcționalitatea, durata, stare.
 - **`getEffectiveEntitlements(orgId)`:** o singură funcție, după modelul din `get-org-effective-limits.ts` (L15), care combină `PlanVersion` + pachetele active + excepțiile active.
 - **`EntitlementProvider` real**, conectat la `authorize()`, în locul lui `allAppsEnabledProvider` (păstrat doar în teste). Plus `requireFeature(ctx, key)` (§8.1).
@@ -276,6 +278,7 @@ Lotul ține de Faza 2 și se face **înaintea Fazei 3**. Stă aici pentru că lo
 - Lista cererilor din Hub: „Cere activare”, „Cere alt abonament”, aplicația cerută din catalog. **Nu are design aprobat.**
 - Excepțiile care expiră în 7 zile apar în „Prezentare” (§8.5).
 - Comutatoarele „direct / la cerere” pe pachete și pe aplicații (D3-7, D3-9), prețurile pe monedă și prețul anual pe versiune (D3-2, D3-3), moneda afacerii. Alegerea lunar / anual din FounderPlanEditor, FounderPlans și FounderNewBusiness cere completarea de design (D3-3).
+- Reducerile pe afacere (D3-21): adaugă / încheie, lista reducerilor permanente, motivul obligatoriu. Ecranul cere design.
 - Toate textele vin din chei next-intl, în 6 limbi (T7). Capturile `_design` / `_impl` se fac la 390/1280 × light/dark (regula 12).
 
 **Dependențe:** 3.2, 3.3. Lotul 2.8 (shell-ul Founder, FounderBusinesses, FounderBusiness). Completarea de design pentru `FounderBusiness` (istoricul cumpărărilor, rambursarea, plata manuală) și designul listei de cereri. Textele „Angajați” din FounderPlans, FounderPlanEditor, FounderPacks și FounderUsage schimbate de Design în „Membri” / „Locuri în echipă” (C-F3-3, DECIS: a).
@@ -311,6 +314,13 @@ Lotul ține de Faza 2 și se face **înaintea Fazei 3**. Stă aici pentru că lo
   3. Cota crește, apoi se scrie evenimentul pentru factură (3.6).
 - **Abonamentul:** Stripe Billing (D3-4, DECIS: a), lunar sau anual (D3-3), cu `billing_cycle_anchor` în ziua de start. Ventora creează prețurile Stripe din cod, pe monedă și periodicitate, și oglindește starea din webhook-uri.
 - **Pachetele lunare:** linie (`subscription item`) în abonamentul Stripe, cu taxare proporțională (D3-7). Pachetele pentru luna curentă: PaymentIntent cu cardul salvat, ca mai jos.
+- **Aplicațiile adăugate la abonament** (D3-9): linii (`subscription item`), ca pachetele lunare.
+- **Reducerile** (D3-21), mapate pe cupoanele Stripe, create din cod:
+  - procentul → `percent_off`;
+  - suma fixă → `amount_off` + `currency` (moneda afacerii);
+  - o singură dată → `duration: once`; N luni → `duration: repeating` + `duration_in_months: N`; permanent → `duration: forever`;
+  - pe tot abonamentul → `discounts` pe abonament; pe o linie → `discounts` pe acel `subscription item`;
+  - încheierea → ștergerea discount-ului din Stripe; în Ventora reducerea rămâne, încheiată.
 - **Plata manuală prin transfer** stă alături (D3-4, D3-11): `billing_subscription` marcat „plată manuală”, fără abonament Stripe; ciclul ei e la 3.8.
 - **Ruta de webhook** `apps/platform/app/api/webhooks/stripe/route.ts`: verificarea semnăturii, înregistrarea în `stripe_event` și procesarea idempotentă. Ordinea greșită a evenimentelor nu dă înapoi starea.
 - **La eșec:**
@@ -378,6 +388,7 @@ Lotul ține de Faza 2 și se face **înaintea Fazei 3**. Stă aici pentru că lo
 - Fără sloturile Growth (GrowthSlot, recomandări): rămân pentru F5.
 - Pachetele cu `purchase_mode: direct` se cumpără cu cardul salvat; cele lunare intră în abonamentul Stripe, cu taxare proporțională (D3-7). „Cere activare” apare la pachetele „la cerere” și la orice pachet pentru o afacere fără card sau cu plată manuală (`patterns.md`, D3-7).
 - Prețurile în moneda afacerii (lei sau euro, D3-2).
+- O reducere (D3-21) apare ca linie separată, între prețul întreg și total. Cere design.
 - „De la 1 noiembrie, pornim de la zero” devine data reală de resetare a abonamentului (D3-3). Alegerea lunar / anual din HubAdminPlan și UpgradeDialog cere completarea de design (D3-3).
 - Membrul vede „Anunță proprietarul” și nu poate cumpăra (verificat pe server, nu doar în interfață; D3-8: doar owner-ul).
 
@@ -568,6 +579,8 @@ Prețurile nu se inventează. Toate valorile se introduc din Founder; codul nu a
 | D3-12 | 3.8 | **Neplata abonamentului** | a) reîncercările Stripe + 14 zile de grație, apoi doar citire și export; b) 7 zile; c) suspendarea completă | **a**: nu se pierd date, iar afacerea are timp să schimbe cardul. |
 | D3-18 | 3.9 | **Proiectul Vercel** (§4.3) | a) la 3.9; b) imediat, odată cu F3; c) după F3 | **a**: A (Stripe CLI) ajunge până atunci. |
 | D3-1 | niciun lot; blochează pilotul | **Abonamentele inițiale și prețurile lor.** Designul arată Start 149 lei, Business 349 lei, Business Plus 449 lei, cu limitele lor. Sunt aprobate sau sunt doar exemple? | a) valorile din design devin cele inițiale; b) fondatoarea dă alte valori; c) pilotul pornește cu un singur abonament | Fondatoarea trimite lista: nume, preț, limite, aplicații incluse. Până atunci, testele folosesc date fictive, marcate ca atare. |
+| D3-21 | 3.2 (model), 3.4 / 3.7 (ecrane), 3.5 (Stripe) | **Excepția pentru o aplicație întreagă** (raportul 3.2) | a) prin excepție (override); b) prin reduceri | **DECIS: b** (fondatoarea, 31.10.2026). Nu prin override. **Reduceri:**<br>• pe o afacere, pe tot abonamentul sau pe o singură linie (o aplicație adăugată la abonament, un pachet lunar);<br>• procent (1–100) sau sumă fixă în moneda afacerii; 100% = gratuit;<br>• durata: o singură dată (următoarea factură), N luni sau permanent;<br>• motiv obligatoriu (10–1.000 de caractere); audit required pe persoana Founder la creare, modificare și încheiere; reducerea se încheie, nu se șterge.<br>Contractele Founder: adaugă / încheie o reducere, plus lista reducerilor permanente. Prețul arătat în Hub: prețul întreg, reducerea ca linie separată și totalul. Aplicațiile adăugate la abonament (D3-9) devin linii recurente, ca pachetele lunare. Modelul se mapează la 3.5 pe cupoanele Stripe (`percent_off` / `amount_off`, `duration` once / repeating / forever). Ecranele: 3.4 (Founder) și 3.7 (Hub). |
+| D3-22 | 3.2 | **Excepția de limită și pachetele** (raportul 3.2) | a) excepția înlocuiește limita versiunii, pachetele se adaugă peste; b) excepția e limita finală | **DECIS: a** (fondatoarea, 31.10.2026), cum e implementat în Lotul 3.2. |
 
 ---
 
@@ -584,6 +597,7 @@ Aceasta nu e consultanță juridică sau fiscală. Sunt întrebările de pus unu
 5. Seria facturilor, numerotarea și stornarea la rambursare.
 6. Încasarea prin Stripe (plăți în lei, transferul către contul firmei): cum se înregistrează contabil comisioanele Stripe.
 7. Facturile în euro (D3-2: factura se emite în moneda afacerii): ce mențiuni trebuie pe o factură în euro (cursul BNR, contravaloarea în lei, data cursului), cum se configurează în SmartBill și cum se înregistrează încasarea în euro prin Stripe.
+8. Ce se scrie pe o factură cu reducere (linie separată)? Și pe o factură de 0 lei (reducere 100%) — se emite? (D3-21)
 
 **Întrebări pentru avocat:**
 

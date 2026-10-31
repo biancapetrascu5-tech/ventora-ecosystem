@@ -6,3 +6,4 @@ export * from './owner-2fa';
 export * from './entitlement-provider';
 export * from './event-catalog';
 export * from './manifest';
+export * from './commercial';

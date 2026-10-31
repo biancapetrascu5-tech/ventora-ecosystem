@@ -9,16 +9,22 @@ datasource db {
 }
 
 /// Cele 15 aplicații + platforma (Hub-ul și serviciile Core), ARCHITECTURE §5.
+/// activation_mode (Lot 3.2, D3-9): „direct / la cerere”, setat din Founder; sincronizarea nu îl atinge.
 model Application {
-  id         String    @id @db.VarChar(64)
-  name       String    @db.VarChar(128)
-  isPlatform Boolean   @default(false) @map("is_platform")
-  retiredAt  DateTime? @map("retired_at") @db.Timestamptz
-  createdAt  DateTime  @default(now()) @map("created_at") @db.Timestamptz
-  updatedAt  DateTime  @default(now()) @map("updated_at") @db.Timestamptz
+  id             String    @id @db.VarChar(64)
+  name           String    @db.VarChar(128)
+  isPlatform     Boolean   @default(false) @map("is_platform")
+  activationMode String    @default("on_request") @map("activation_mode") @db.VarChar(16)
+  retiredAt      DateTime? @map("retired_at") @db.Timestamptz
+  createdAt      DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt      DateTime  @default(now()) @map("updated_at") @db.Timestamptz
 
-  features FeatureKey[]
-  quotas   QuotaKey[]
+  features    FeatureKey[]
+  quotas      QuotaKey[]
+  versionApps PlanVersionApplication[]
+  trials      Trial[]
+  prices      ApplicationPrice[]
+  lines       SubscriptionApplication[]
 
   @@map("application")
   @@schema("commercial")
@@ -33,6 +39,10 @@ model FeatureKey {
   createdAt     DateTime    @default(now()) @map("created_at") @db.Timestamptz
   updatedAt     DateTime    @default(now()) @map("updated_at") @db.Timestamptz
   application   Application @relation(fields: [applicationId], references: [id])
+
+  versionFeatures PlanVersionFeature[]
+  overrides       Override[]
+  trials          Trial[]
 
   @@index([applicationId], map: "feature_key_application_id_idx")
   @@map("feature_key")
@@ -54,7 +64,385 @@ model QuotaKey {
   updatedAt     DateTime    @default(now()) @map("updated_at") @db.Timestamptz
   application   Application @relation(fields: [applicationId], references: [id])
 
+  versionQuotas PlanVersionQuota[]
+  addons        Addon[]
+  overrides     Override[]
+
   @@index([applicationId], map: "quota_key_application_id_idx")
   @@map("quota_key")
+  @@schema("commercial")
+}
+
+// ── Lot 3.2 · commercial_plans ──────────────────────────────────────────────────────────────
+
+/// Planul („abonamentul” în Hub, D1): numele intern și versiunile lui.
+model Plan {
+  id                 String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  code               String   @unique(map: "plan_code_key") @db.VarChar(64)
+  name               String   @db.VarChar(128)
+  createdByFounderId String   @map("created_by_founder_id") @db.Uuid
+  createdAt          DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt          DateTime @default(now()) @map("updated_at") @db.Timestamptz
+
+  versions       PlanVersion[]
+  eligibleAddons AddonEligiblePlan[]
+
+  @@map("plan")
+  @@schema("commercial")
+}
+
+/// O versiune: ciornă (published_at NULL) sau publicată — atunci imuabilă (trigger, §8.5).
+model PlanVersion {
+  id                   String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  planId               String    @map("plan_id") @db.Uuid
+  versionNumber        Int       @map("version_number")
+  publishedAt          DateTime? @map("published_at") @db.Timestamptz
+  publishedByFounderId String?   @map("published_by_founder_id") @db.Uuid
+  createdByFounderId   String    @map("created_by_founder_id") @db.Uuid
+  createdAt            DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt            DateTime  @default(now()) @map("updated_at") @db.Timestamptz
+  plan                 Plan      @relation(fields: [planId], references: [id])
+
+  applications  PlanVersionApplication[]
+  features      PlanVersionFeature[]
+  quotas        PlanVersionQuota[]
+  prices        PlanVersionPrice[]
+  subscriptions Subscription[]
+  changesFrom   SubscriptionChange[]     @relation("change_from")
+  changesTo     SubscriptionChange[]     @relation("change_to")
+
+  @@unique([planId, versionNumber], map: "plan_version_plan_id_version_number_key")
+  @@map("plan_version")
+  @@schema("commercial")
+}
+
+model PlanVersionApplication {
+  planVersionId String      @map("plan_version_id") @db.Uuid
+  applicationId String      @map("application_id") @db.VarChar(64)
+  version       PlanVersion @relation(fields: [planVersionId], references: [id], onDelete: Cascade)
+  application   Application @relation(fields: [applicationId], references: [id])
+
+  @@id([planVersionId, applicationId])
+  @@map("plan_version_application")
+  @@schema("commercial")
+}
+
+model PlanVersionFeature {
+  planVersionId String      @map("plan_version_id") @db.Uuid
+  featureKey    String      @map("feature_key") @db.VarChar(128)
+  version       PlanVersion @relation(fields: [planVersionId], references: [id], onDelete: Cascade)
+  feature       FeatureKey  @relation(fields: [featureKey], references: [key])
+
+  @@id([planVersionId, featureKey])
+  @@map("plan_version_feature")
+  @@schema("commercial")
+}
+
+/// limit_value NULL = nelimitat (D3-14). O cotă fără rând în versiune nu e inclusă (limita 0).
+model PlanVersionQuota {
+  planVersionId String      @map("plan_version_id") @db.Uuid
+  quotaKey      String      @map("quota_key") @db.VarChar(128)
+  limitValue    BigInt?     @map("limit_value")
+  version       PlanVersion @relation(fields: [planVersionId], references: [id], onDelete: Cascade)
+  quota         QuotaKey    @relation(fields: [quotaKey], references: [key])
+
+  @@id([planVersionId, quotaKey])
+  @@map("plan_version_quota")
+  @@schema("commercial")
+}
+
+/// Prețurile pe monedă (D3-2) și pe tip: month, year (introdus direct, D3-3), setup (implementarea).
+model PlanVersionPrice {
+  planVersionId String      @map("plan_version_id") @db.Uuid
+  currency      String      @db.VarChar(3)
+  kind          String      @db.VarChar(8)
+  amountMinor   BigInt      @map("amount_minor")
+  version       PlanVersion @relation(fields: [planVersionId], references: [id], onDelete: Cascade)
+
+  @@id([planVersionId, currency, kind])
+  @@map("plan_version_price")
+  @@schema("commercial")
+}
+
+/// Pachetul în plus: o cotă × cantitate, pentru luna curentă sau lunar (D3-7).
+model Addon {
+  id                 String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  code               String    @unique(map: "addon_code_key") @db.VarChar(64)
+  name               String    @db.VarChar(128)
+  quotaKey           String    @map("quota_key") @db.VarChar(128)
+  quantity           BigInt
+  validity           String    @db.VarChar(16)
+  purchaseMode       String    @default("on_request") @map("purchase_mode") @db.VarChar(16)
+  salesStoppedAt     DateTime? @map("sales_stopped_at") @db.Timestamptz
+  createdByFounderId String    @map("created_by_founder_id") @db.Uuid
+  createdAt          DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt          DateTime  @default(now()) @map("updated_at") @db.Timestamptz
+  quota              QuotaKey  @relation(fields: [quotaKey], references: [key])
+
+  prices        AddonPrice[]
+  eligiblePlans AddonEligiblePlan[]
+  grants        AddonGrant[]
+
+  @@index([quotaKey], map: "addon_quota_key_idx")
+  @@map("addon")
+  @@schema("commercial")
+}
+
+model AddonPrice {
+  addonId     String @map("addon_id") @db.Uuid
+  currency    String @db.VarChar(3)
+  amountMinor BigInt @map("amount_minor")
+  setupMinor  BigInt @default(0) @map("setup_minor")
+  addon       Addon  @relation(fields: [addonId], references: [id], onDelete: Cascade)
+
+  @@id([addonId, currency])
+  @@map("addon_price")
+  @@schema("commercial")
+}
+
+model AddonEligiblePlan {
+  addonId String @map("addon_id") @db.Uuid
+  planId  String @map("plan_id") @db.Uuid
+  addon   Addon  @relation(fields: [addonId], references: [id], onDelete: Cascade)
+  plan    Plan   @relation(fields: [planId], references: [id])
+
+  @@id([addonId, planId])
+  @@map("addon_eligible_plan")
+  @@schema("commercial")
+}
+
+// ── Lot 3.2 · commercial_subscription ───────────────────────────────────────────────────────
+
+/// Moneda afacerii (D3-2), fixată din Founder.
+model BillingAccount {
+  organizationId String   @id @map("organization_id") @db.Uuid
+  currency       String   @db.VarChar(3)
+  setByFounderId String   @map("set_by_founder_id") @db.Uuid
+  createdAt      DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt      DateTime @default(now()) @map("updated_at") @db.Timestamptz
+
+  @@map("billing_account")
+  @@schema("commercial")
+}
+
+/// Organizația → versiunea exactă; ziua de ancorare = ziua de start (D3-3).
+model Subscription {
+  id                 String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  organizationId     String      @map("organization_id") @db.Uuid
+  planVersionId      String      @map("plan_version_id") @db.Uuid
+  interval           String      @db.VarChar(8)
+  currency           String      @db.VarChar(3)
+  startedOn          DateTime    @map("started_on") @db.Date
+  anchorDay          Int         @map("anchor_day") @db.SmallInt
+  status             String      @db.VarChar(16)
+  trialEndsAt        DateTime?   @map("trial_ends_at") @db.Timestamptz
+  canceledAt         DateTime?   @map("canceled_at") @db.Timestamptz
+  createdByFounderId String      @map("created_by_founder_id") @db.Uuid
+  createdAt          DateTime    @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt          DateTime    @default(now()) @map("updated_at") @db.Timestamptz
+  version            PlanVersion @relation(fields: [planVersionId], references: [id])
+
+  changes      SubscriptionChange[]
+  addonGrants  AddonGrant[]
+  applications SubscriptionApplication[]
+  discounts    Discount[]
+
+  @@index([organizationId], map: "subscription_organization_id_idx")
+  @@map("subscription")
+  @@schema("commercial")
+}
+
+/// Mutarea pe altă versiune (§8.5): avantaj imediat, dezavantaj cu cel puțin 30 de zile (D-COM-9).
+model SubscriptionChange {
+  id                 String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  subscriptionId     String       @map("subscription_id") @db.Uuid
+  organizationId     String       @map("organization_id") @db.Uuid
+  fromVersionId      String       @map("from_version_id") @db.Uuid
+  toVersionId        String       @map("to_version_id") @db.Uuid
+  classification     String       @db.VarChar(16)
+  effectiveAt        DateTime     @map("effective_at") @db.Timestamptz
+  canceledAt         DateTime?    @map("canceled_at") @db.Timestamptz
+  createdByFounderId String       @map("created_by_founder_id") @db.Uuid
+  createdAt          DateTime     @default(now()) @map("created_at") @db.Timestamptz
+  subscription       Subscription @relation(fields: [subscriptionId], references: [id])
+  fromVersion        PlanVersion  @relation("change_from", fields: [fromVersionId], references: [id])
+  toVersion          PlanVersion  @relation("change_to", fields: [toVersionId], references: [id])
+
+  @@index([subscriptionId, effectiveAt], map: "subscription_change_subscription_id_effective_at_idx")
+  @@map("subscription_change")
+  @@schema("commercial")
+}
+
+/// Pachetele active pe organizație; cele lunare sunt linii recurente ale abonamentului (D3-7).
+model AddonGrant {
+  id                 String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  organizationId     String        @map("organization_id") @db.Uuid
+  addonId            String        @map("addon_id") @db.Uuid
+  subscriptionId     String?       @map("subscription_id") @db.Uuid
+  packs              Int           @default(1)
+  recurring          Boolean
+  source             String        @db.VarChar(16)
+  startsAt           DateTime      @default(now()) @map("starts_at") @db.Timestamptz
+  endsAt             DateTime?     @map("ends_at") @db.Timestamptz
+  endedAt            DateTime?     @map("ended_at") @db.Timestamptz
+  createdByFounderId String?       @map("created_by_founder_id") @db.Uuid
+  createdAt          DateTime      @default(now()) @map("created_at") @db.Timestamptz
+  addon              Addon         @relation(fields: [addonId], references: [id])
+  subscription       Subscription? @relation(fields: [subscriptionId], references: [id])
+
+  discounts Discount[]
+
+  @@index([organizationId], map: "addon_grant_organization_id_idx")
+  @@map("addon_grant")
+  @@schema("commercial")
+}
+
+// ── Lot 3.2 · commercial_discounts (D3-21) ───────────────────────────────────────────────────
+
+/// Prețul unei aplicații adăugate la abonament (D3-9), pe monedă și periodicitate (D3-2, D3-3).
+model ApplicationPrice {
+  applicationId String      @map("application_id") @db.VarChar(64)
+  currency      String      @db.VarChar(3)
+  kind          String      @db.VarChar(8)
+  amountMinor   BigInt      @map("amount_minor")
+  application   Application @relation(fields: [applicationId], references: [id])
+
+  @@id([applicationId, currency, kind])
+  @@map("application_price")
+  @@schema("commercial")
+}
+
+/// O aplicație adăugată la abonament: linie recurentă, cu prețul de la adăugare (D3-9, D3-21).
+model SubscriptionApplication {
+  id                 String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  organizationId     String       @map("organization_id") @db.Uuid
+  subscriptionId     String       @map("subscription_id") @db.Uuid
+  applicationId      String       @map("application_id") @db.VarChar(64)
+  currency           String       @db.VarChar(3)
+  interval           String       @db.VarChar(8)
+  amountMinor        BigInt       @map("amount_minor")
+  source             String       @db.VarChar(16)
+  startsAt           DateTime     @default(now()) @map("starts_at") @db.Timestamptz
+  endedAt            DateTime?    @map("ended_at") @db.Timestamptz
+  createdByFounderId String       @map("created_by_founder_id") @db.Uuid
+  endedByFounderId   String?      @map("ended_by_founder_id") @db.Uuid
+  createdAt          DateTime     @default(now()) @map("created_at") @db.Timestamptz
+  subscription       Subscription @relation(fields: [subscriptionId], references: [id])
+  application        Application  @relation(fields: [applicationId], references: [id])
+
+  discounts Discount[]
+
+  @@index([organizationId], map: "subscription_application_organization_id_idx")
+  @@map("subscription_application")
+  @@schema("commercial")
+}
+
+/// Reducerea (D3-21): pe abonament sau pe o linie; procent sau sumă; o dată / N luni / permanent.
+model Discount {
+  id                        String                   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  organizationId            String                   @map("organization_id") @db.Uuid
+  subscriptionId            String                   @map("subscription_id") @db.Uuid
+  scope                     String                   @db.VarChar(16)
+  subscriptionApplicationId String?                  @map("subscription_application_id") @db.Uuid
+  addonGrantId              String?                  @map("addon_grant_id") @db.Uuid
+  kind                      String                   @db.VarChar(8)
+  percentOff                Int?                     @map("percent_off") @db.SmallInt
+  amountOffMinor            BigInt?                  @map("amount_off_minor")
+  currency                  String                   @db.VarChar(3)
+  duration                  String                   @db.VarChar(16)
+  durationMonths            Int?                     @map("duration_months") @db.SmallInt
+  reason                    String
+  createdByFounderId        String                   @map("created_by_founder_id") @db.Uuid
+  createdAt                 DateTime                 @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt                 DateTime?                @map("updated_at") @db.Timestamptz
+  updatedByFounderId        String?                  @map("updated_by_founder_id") @db.Uuid
+  endedAt                   DateTime?                @map("ended_at") @db.Timestamptz
+  endedByFounderId          String?                  @map("ended_by_founder_id") @db.Uuid
+  subscription              Subscription             @relation(fields: [subscriptionId], references: [id])
+  applicationLine           SubscriptionApplication? @relation(fields: [subscriptionApplicationId], references: [id])
+  addonGrant                AddonGrant?              @relation(fields: [addonGrantId], references: [id])
+
+  @@index([organizationId], map: "discount_organization_id_idx")
+  @@map("discount")
+  @@schema("commercial")
+}
+
+model OutboxEvent {
+  eventId        String    @id @map("event_id") @db.Uuid
+  type           String    @db.VarChar(128)
+  version        Int
+  occurredAt     DateTime  @map("occurred_at") @db.Timestamptz
+  organizationId String    @map("organization_id") @db.Uuid
+  sourceApp      String    @map("source_app") @db.VarChar(64)
+  resourceId     String    @map("resource_id") @db.VarChar(255)
+  correlationId  String?   @map("correlation_id") @db.VarChar(255)
+  payload        Json
+  status         String    @default("pending") @db.VarChar(16)
+  attempts       Int       @default(0)
+  availableAt    DateTime  @default(now()) @map("available_at") @db.Timestamptz
+  lastError      String?   @map("last_error")
+  failedAt       DateTime? @map("failed_at") @db.Timestamptz
+  dispatchedAt   DateTime? @map("dispatched_at") @db.Timestamptz
+  createdAt      DateTime  @default(now()) @map("created_at") @db.Timestamptz
+
+  @@map("outbox_events")
+  @@schema("commercial")
+}
+
+model ProcessedEvent {
+  consumer       String   @db.VarChar(128)
+  eventId        String   @map("event_id") @db.Uuid
+  organizationId String   @map("organization_id") @db.Uuid
+  processedAt    DateTime @default(now()) @map("processed_at") @db.Timestamptz
+
+  @@id([consumer, eventId])
+  @@map("processed_events")
+  @@schema("commercial")
+}
+
+// ── Lot 3.2 · commercial_overrides ──────────────────────────────────────────────────────────
+
+/// Excepția (D-COM-8): termen obligatoriu, cel mult 12 luni; se încheie, nu se șterge.
+model Override {
+  id                  String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  organizationId      String      @map("organization_id") @db.Uuid
+  kind                String      @db.VarChar(8)
+  quotaKey            String?     @map("quota_key") @db.VarChar(128)
+  featureKey          String?     @map("feature_key") @db.VarChar(128)
+  limitValue          BigInt?     @map("limit_value")
+  reason              String
+  createdByFounderId  String      @map("created_by_founder_id") @db.Uuid
+  createdAt           DateTime    @default(now()) @map("created_at") @db.Timestamptz
+  expiresAt           DateTime    @map("expires_at") @db.Timestamptz
+  extendedAt          DateTime?   @map("extended_at") @db.Timestamptz
+  extendedByFounderId String?     @map("extended_by_founder_id") @db.Uuid
+  endedAt             DateTime?   @map("ended_at") @db.Timestamptz
+  endedByFounderId    String?     @map("ended_by_founder_id") @db.Uuid
+  quota               QuotaKey?   @relation(fields: [quotaKey], references: [key])
+  feature             FeatureKey? @relation(fields: [featureKey], references: [key])
+
+  @@index([organizationId], map: "override_organization_id_idx")
+  @@map("override")
+  @@schema("commercial")
+}
+
+/// Perioada de probă pe o aplicație sau o funcționalitate (D3-5: 14 zile, fără card).
+model Trial {
+  id             String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  organizationId String       @map("organization_id") @db.Uuid
+  kind           String       @db.VarChar(16)
+  applicationId  String?      @map("application_id") @db.VarChar(64)
+  featureKey     String?      @map("feature_key") @db.VarChar(128)
+  source         String       @db.VarChar(8)
+  startedBy      String       @map("started_by") @db.Uuid
+  startsAt       DateTime     @default(now()) @map("starts_at") @db.Timestamptz
+  endsAt         DateTime     @map("ends_at") @db.Timestamptz
+  endedAt        DateTime?    @map("ended_at") @db.Timestamptz
+  createdAt      DateTime     @default(now()) @map("created_at") @db.Timestamptz
+  application    Application? @relation(fields: [applicationId], references: [id])
+  feature        FeatureKey?  @relation(fields: [featureKey], references: [key])
+
+  @@index([organizationId], map: "trial_organization_id_idx")
+  @@map("trial")
   @@schema("commercial")
 }

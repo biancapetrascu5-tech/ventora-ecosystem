@@ -1,7 +1,7 @@
 # VENTORA ECOSYSTEM — ARHITECTURĂ TEHNICĂ
 
-**Versiune:** 0.4.7
-**Data:** 30 octombrie 2026
+**Versiune:** 0.4.8
+**Data:** 31 octombrie 2026
 **Stadiu:** Faza 0 închisă (tag `faza-0`). Deciziile marcate CONFIRMAT sunt baza implementării; cele PROPUS sau NECESITĂ DECIZIE nu se implementează fără aprobare.
 
 ## Istoric
@@ -30,6 +30,7 @@
 | 0.4.5 | 28.10.2026 | Deciziile din 27–28.10: 2FA (R-2F1, R-2F2, R-2F3, R-2F5, R-2F7, R-2F9; înlocuiesc P5 și D10 din fișele de review), loturile 2.4a/b și 2.5a/b/c, separatorul de mii și AttentionList 2.0.0, staging (D-INF-3), e-mailul tranzacțional (expeditor, Reply-To, șablon unic, valabilități), deciziile L2.5-D0…D18 (jurnal de audit, sesiune de suport, recuperarea owner-ului). Detalii: §17.22. |
 | 0.4.6 | 28.10.2026 | Decizii ale fondatoarei: workflow engine în Core, construit în F4, automatizările construite și pornite doar din Founder (D-WF-1…5); funnel builder doar în Founder, cu publicare pe domeniul afacerii sau pe un domeniu Ventora (D-FUN-1…6); asistentul AI în Core, prin `authorize()`, cu confirmare înainte de scriere și audit (D-AI-1…5); cele trei marcate obligatorii pentru produs în planul fazelor (D-ROAD-5). Contradicțiile C14–C16 rezolvate de fondatoare: automatizările predefinite ale modulelor rămân setări ale afacerii (D-WF-6), formularele simple de lead le configurează afacerea (D-FUN-7), F4 păstrează doar infrastructura AI (D-AI-6), asistentul pentru consumatori e produs separat al Portalului (D-AI-7); brief-ul §37 și checklisturile Booking, Marketing, Projects actualizate. Detalii: §17.23. |
 | 0.4.7 | 30.10.2026 | Decizia fondatoarei din 30.10 pentru „Cere o invitație nouă”: notificare operațională în Hub pentru owner și admin, construită în F4, plus marcajul din lista invitațiilor de acum. Obligația e trecută sub tabelul fazelor (§15.1). |
+| 0.4.8 | 31.10.2026 | §8.4: în exemplul de manifest, `period: 'billing_cycle'` devine `period: 'month'`: cotele de flux se resetează lunar, în ziua de ancorare a abonamentului, și pe abonamentul anual (D3-3, `plans/FAZA-3.md`). Decizia fondatoarei pe raportul Lotului 3.1. |
 
 ## Statusuri folosite în acest document
 
@@ -517,12 +518,13 @@ export const manifest = {
   features: ['marketing.sms', 'marketing.automations' /* ... */],
   quotas: [{
     key: 'marketing.campaigns', kind: 'flow', unit: 'campaign',
-    period: 'billing_cycle', overflow: 'block', refundable: true,
+    period: 'month', overflow: 'block', refundable: true,
   }],
   events: { emits: ['marketing.campaign.sent.v1'], consumes: ['crm.contact.created.v1'] },
 }
 ```
 
+- **Perioada unei cote de flux (D3-3, CONFIRMAT 31.10.2026):** `period: 'month'` înseamnă resetare lunară în ziua de ancorare a abonamentului, adică ziua în care a început. Pentru 29–31, resetarea cade în ultima zi a lunilor mai scurte. Regula e aceeași pe abonamentul anual: cotele lunare se resetează tot lunar, nu o dată pe an. O cotă de stoc nu are perioadă (`period: null`).
 - La deploy, manifestele se sincronizează în registrul Core.
 - Founder poate seta valori doar pentru cheile existente.
 - O funcționalitate nouă înseamnă o cheie nouă, deci dezvoltare. Asta e consecvent cu brief §14 („Clarificare importantă”).

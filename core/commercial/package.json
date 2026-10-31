@@ -15,8 +15,11 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@ventora/audit": "workspace:*",
     "@ventora/contracts": "workspace:*",
+    "@ventora/db-kit": "workspace:*",
     "@ventora/errors": "workspace:*",
+    "@ventora/identity": "workspace:*",
     "pg": "^8.0.0"
   },
   "devDependencies": {

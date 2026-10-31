@@ -31,7 +31,7 @@ const bookingManifest: ApplicationManifest = {
       unit: 'appointment',
       period: 'month',
       overflow: 'block',
-      refundable: false,
+      refundable: true,
     },
     {
       key: 'booking.sms.devices',
@@ -80,9 +80,11 @@ beforeAll(async () => {
 });
 
 beforeEach(async () => {
-  await admin.query('DELETE FROM commercial.quota_key');
-  await admin.query('DELETE FROM commercial.feature_key');
-  await admin.query('DELETE FROM commercial.application');
+  // Lot 3.2: plans, add-ons and exceptions reference the keys, and published versions refuse
+  // DELETE (trigger); TRUNCATE … CASCADE clears the whole commercial model without row triggers.
+  await admin.query(
+    'TRUNCATE commercial.quota_key, commercial.feature_key, commercial.application CASCADE',
+  );
 });
 
 afterAll(async () => {
@@ -108,7 +110,7 @@ describe('Lot 3.1 — the registry sync', () => {
       unit: 'appointment',
       period: 'month',
       overflow: 'block',
-      refundable: false,
+      refundable: true,
       retired_at: null,
     });
   });

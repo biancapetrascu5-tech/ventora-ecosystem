@@ -151,6 +151,9 @@ try {
     DATABASE_URL_TEST: `postgresql://app_runtime:${TEST_DB.appPw}@localhost:${PG}/${TEST_DB.accessDb}`,
     DATABASE_URL_FOUNDER_TEST: `postgresql://founder_runtime:${TEST_DB.founderPw}@localhost:${PG}/${TEST_DB.accessDb}`,
     DATABASE_URL_ADMIN_TEST: ADMIN_ACCESS,
+    // Lot 3.2: contractele Founder cer o sesiune Founder reală (founderAuth)
+    BETTER_AUTH_SECRET: TEST_DB.betterAuthSecret,
+    FOUNDER_AUTH_SECRET: TEST_DB.founderAuthSecret,
   });
   // după testele de mai sus (care folosesc manifeste de test): manifestele reale, de două ori;
   // a doua rulare pică dacă mai schimbă ceva

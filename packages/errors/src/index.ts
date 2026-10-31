@@ -102,6 +102,21 @@ export class TwoFactorLocked extends Error {
 }
 
 /**
+ * Lot 3.2 (ARCHITECTURE §8.1, requireFeature): the feature is not in the organization's effective
+ * plan (version + add-ons + exceptions + trials). Checking never consumes a quota.
+ */
+export class FeatureNotIncluded extends Error {
+  readonly status = 403;
+  readonly code = 'FEATURE_NOT_INCLUDED';
+  readonly featureKey: string;
+  constructor(featureKey: string, message = `Feature not included: ${featureKey}`) {
+    super(message);
+    this.name = 'FeatureNotIncluded';
+    this.featureKey = featureKey;
+  }
+}
+
+/**
  * Lot 3.1 (ARCHITECTURE §8.4): Founder can set values only for keys a manifest declares. The key
  * is not in the commercial registry, or was retired from its manifest. Nothing was written.
  */

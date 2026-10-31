@@ -63,8 +63,33 @@ export const InvitationNewLinkRequestedV1 = defineEvent({
     .strict(),
 });
 
+/**
+ * `subscription.version_change_scheduled` v1 (Lot 3.2, ARCHITECTURE §8.5, D-COM-9): Founder a
+ * programat mutarea unui abonament pe altă versiune. Anunțul către owner (cu cel puțin 30 de zile
+ * înainte, la dezavantaj) îl trimite consumatorul din F4, prin core/notifications; până atunci nu
+ * are consumator și se marchează livrat. Payload-ul are doar id-uri și termenul.
+ */
+export const SubscriptionVersionChangeScheduledV1 = defineEvent({
+  type: 'subscription.version_change_scheduled',
+  version: 1,
+  sourceApp: 'platform',
+  growthSafe: false,
+  withoutConsumer: 'complete',
+  schema: z
+    .object({
+      subscriptionChangeId: z.uuid(),
+      subscriptionId: z.uuid(),
+      fromVersionId: z.uuid(),
+      toVersionId: z.uuid(),
+      classification: z.enum(['advantage', 'disadvantage']),
+      effectiveAt: z.iso.datetime(),
+    })
+    .strict(),
+});
+
 export const EVENT_CATALOG: readonly EventDefinition[] = [
   InvitationNewLinkRequestedV1 as EventDefinition,
+  SubscriptionVersionChangeScheduledV1 as EventDefinition,
 ];
 
 /** Definiția unui eveniment după tip și versiune; null dacă nu e în catalog. */

@@ -1,8 +1,8 @@
-import { ensureAccessConfigured, authorize } from '@ventora/access';
+import { authorize } from '@ventora/access';
 import type { TenantContext } from '@ventora/access';
-import { allAppsEnabledProvider } from '@ventora/contracts';
 
-ensureAccessConfigured({ entitlementProvider: allAppsEnabledProvider });
+// Lot 3.2: the EntitlementProvider is configured by the app that serves the module
+// (apps/*/src/server/access-config.ts, the commercial provider); tests set their own.
 
 // Proof module — demonstrates authorize() integration in every public contract function.
 // Real booking data storage is out of scope for Lot 2.3.
