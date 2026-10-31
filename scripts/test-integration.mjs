@@ -2,8 +2,9 @@
 /**
  * Rulează toate testele de integrare local, identic cu CI:
  *   1. Pornește DB-ul de test
- *   2. Verifică garda de drift (prisma migrate diff --exit-code): identity, founder, organizations, audit, access
- *   3. Rulează testele de integrare (db-kit, audit, identity, organizations, integrations, access, booking)
+ *   2. Verifică garda de drift (prisma migrate diff --exit-code): identity, founder, organizations, audit, access, commercial
+ *   3. Rulează testele de integrare (db-kit, audit, identity, organizations, integrations, access, commercial, booking)
+ *      și sincronizarea registrului comercial de două ori (a doua nu trebuie să schimbe nimic)
  *   4. Oprește DB-ul (indiferent de rezultat)
  *
  * Folosit de `pnpm test:integration`.
@@ -36,6 +37,7 @@ const SHADOW_FOUNDER = `postgresql://postgres:test@localhost:${PG}/shadow_founde
 const SHADOW_ORG = `postgresql://postgres:test@localhost:${PG}/shadow_org_diff`;
 const SHADOW_ACCESS = `postgresql://postgres:test@localhost:${PG}/shadow_access_diff`;
 const SHADOW_AUDIT = `postgresql://postgres:test@localhost:${PG}/shadow_audit_diff`;
+const SHADOW_COMMERCIAL = `postgresql://postgres:test@localhost:${PG}/shadow_commercial_diff`;
 
 let exitCode = 0;
 
@@ -107,8 +109,8 @@ try {
   // --- Lot 4.1: outbox și evenimente (T6), pe un emițător de test în baza organizations ---
   console.log('\n[test:integration] integrations (T6)...');
   runPkg('@ventora/integrations', 'test:integration', {
-    DATABASE_URL_TEST: `postgresql://app_runtime:${TEST_DB.appPw}@localhost:5433/${TEST_DB.orgDb}`,
-    DATABASE_URL_FOUNDER_TEST: `postgresql://founder_runtime:${TEST_DB.founderPw}@localhost:5433/${TEST_DB.orgDb}`,
+    DATABASE_URL_TEST: `postgresql://app_runtime:${TEST_DB.appPw}@localhost:${PG}/${TEST_DB.orgDb}`,
+    DATABASE_URL_FOUNDER_TEST: `postgresql://founder_runtime:${TEST_DB.founderPw}@localhost:${PG}/${TEST_DB.orgDb}`,
     DATABASE_URL_ADMIN_TEST: ADMIN_ORG,
   });
 
@@ -136,6 +138,25 @@ try {
     BETTER_AUTH_SECRET: TEST_DB.betterAuthSecret,
     FOUNDER_AUTH_SECRET: TEST_DB.founderAuthSecret,
   });
+
+  // --- Lot 3.1: registrul comercial (drift, teste, sincronizarea reală rulată de două ori) ---
+  console.log('[test:integration] Verificare drift commercial schema...');
+  runPkg(
+    '@ventora/commercial',
+    `exec prisma migrate diff --from-migrations ./prisma/migrations --to-schema ./prisma/schema.prisma --exit-code --config prisma7.config.ts`,
+    { DATABASE_URL: ADMIN_ACCESS, SHADOW_DATABASE_URL: SHADOW_COMMERCIAL },
+  );
+  console.log('\n[test:integration] commercial (registrul)...');
+  runPkg('@ventora/commercial', 'test:integration', {
+    DATABASE_URL_TEST: `postgresql://app_runtime:${TEST_DB.appPw}@localhost:${PG}/${TEST_DB.accessDb}`,
+    DATABASE_URL_FOUNDER_TEST: `postgresql://founder_runtime:${TEST_DB.founderPw}@localhost:${PG}/${TEST_DB.accessDb}`,
+    DATABASE_URL_ADMIN_TEST: ADMIN_ACCESS,
+  });
+  // după testele de mai sus (care folosesc manifeste de test): manifestele reale, de două ori;
+  // a doua rulare pică dacă mai schimbă ceva
+  console.log('\n[test:integration] Sincronizare registru comercial (x2)...');
+  run('pnpm tsx scripts/sync-commercial-registry.ts', { DIRECT_URL: ADMIN_ACCESS });
+  run('pnpm tsx scripts/sync-commercial-registry.ts --expect-noop', { DIRECT_URL: ADMIN_ACCESS });
 
   // --- Booking integration tests ---
   console.log('\n[test:integration] booking...');

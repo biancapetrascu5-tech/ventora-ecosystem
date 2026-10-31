@@ -109,6 +109,7 @@ for (const db of [
   'shadow_org_diff',
   'shadow_access_diff',
   'shadow_audit_diff',
+  'shadow_commercial_diff',
 ]) {
   psql('postgres', `DROP DATABASE IF EXISTS ${db}; CREATE DATABASE ${db};`);
 }
@@ -299,6 +300,8 @@ for (const migration of [
   'core/organizations/prisma/migrations/20261031000001_lot28_organization_status/migration.sql',
   // Lot 4.1: outbox-ul organizations (requestNewInvitationLink scrie evenimentul)
   'core/organizations/prisma/migrations/20261031000002_outbox_init/migration.sql',
+  // Lot 3.1: registrul comercial (commercial_rw → app_runtime, SELECT → founder_runtime)
+  'core/commercial/prisma/migrations/20261101000001_commercial_init/migration.sql',
 ]) {
   psqlFile(TEST_DB.accessDb, join(ROOT, migration));
 }
