@@ -606,5 +606,68 @@
         "date": "{date}, {time}"
       }
     }
+  },
+  "notifications": {
+    "title": "Benachrichtigungen",
+    "filter": {
+      "all": "Alle",
+      "unread": "Ungelesen"
+    },
+    "markAllRead": "Alle als gelesen markieren",
+    "settings": "Benachrichtigungseinstellungen",
+    "empty": {
+      "title": "Sie haben keine neuen Benachrichtigungen",
+      "body": "Wir melden uns hier, wenn etwas Ihre Aufmerksamkeit braucht."
+    },
+    "group": {
+      "operational": "Konto und Betrieb",
+      "activity": "Aktivität",
+      "recommendations": "Empfehlungen"
+    },
+    "unreadCount": "{n, plural, one {# ungelesen} other {# ungelesen}}",
+    "sms": {
+      "disconnected": {
+        "title": "Das Geschäftstelefon ist getrennt",
+        "body": "{n} Erinnerungen müssen bis {time} Uhr raus. Prüfen Sie das Telefon."
+      },
+      "failing": {
+        "title": "Die Nachrichten gehen nicht raus",
+        "body": "{n} Nachrichten hintereinander wurden von {phone} nicht gesendet."
+      },
+      "reconnected": {
+        "title": "Das Geschäftstelefon ist wieder verbunden",
+        "body": "Die wartenden Erinnerungen sind raus."
+      }
+    },
+    "support": {
+      "reply": {
+        "title": "Neue Antwort auf Ihre Anfrage",
+        "body": "„{subject}“ · {author}, Ventora-Team"
+      }
+    },
+    "request": {
+      "resolved": {
+        "title": "Ihre Anfrage ist erledigt",
+        "body": "{type} · {item}"
+      },
+      "refused": {
+        "title": "Ihre Anfrage wurde abgelehnt",
+        "body": "{type} · {item}. Grund: {reason}"
+      },
+      "type": {
+        "activation": "Aktivierung anfragen",
+        "plan": "Anderes Abonnement anfragen"
+      }
+    },
+    "invitation": {
+      "newLinkRequested": {
+        "title": "{name} a cerut o invitație nouă pentru {businessName}."
+      }
+    },
+    "email": {
+      "open": "Deschide în Ventora",
+      "why": "Primești acest e-mail pentru că faci parte din echipa {businessName} în Ventora.",
+      "whyAccount": "Primești acest e-mail pentru contul tău Ventora."
+    }
   }
 }

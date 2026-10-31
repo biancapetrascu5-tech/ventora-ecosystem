@@ -606,5 +606,68 @@
         "date": "{date}, {time}"
       }
     }
+  },
+  "notifications": {
+    "title": "Notifications",
+    "filter": {
+      "all": "All",
+      "unread": "Unread"
+    },
+    "markAllRead": "Mark all as read",
+    "settings": "Notification settings",
+    "empty": {
+      "title": "You have no new notifications",
+      "body": "We’ll tell you here when something needs you."
+    },
+    "group": {
+      "operational": "Account and service",
+      "activity": "Activity",
+      "recommendations": "Recommendations"
+    },
+    "unreadCount": "{n, plural, one {# unread} other {# unread}}",
+    "sms": {
+      "disconnected": {
+        "title": "The business phone is disconnected",
+        "body": "{n} reminders need to go out by {time}. Check the phone."
+      },
+      "failing": {
+        "title": "Messages aren't going out",
+        "body": "{n} messages in a row didn't go out from {phone}."
+      },
+      "reconnected": {
+        "title": "The business phone is connected again",
+        "body": "The waiting reminders have gone out."
+      }
+    },
+    "support": {
+      "reply": {
+        "title": "New reply to your request",
+        "body": "“{subject}” · {author}, Ventora team"
+      }
+    },
+    "request": {
+      "resolved": {
+        "title": "Your request is done",
+        "body": "{type} · {item}"
+      },
+      "refused": {
+        "title": "Your request was declined",
+        "body": "{type} · {item}. Reason: {reason}"
+      },
+      "type": {
+        "activation": "Request activation",
+        "plan": "Request another plan"
+      }
+    },
+    "invitation": {
+      "newLinkRequested": {
+        "title": "{name} a cerut o invitație nouă pentru {businessName}."
+      }
+    },
+    "email": {
+      "open": "Deschide în Ventora",
+      "why": "Primești acest e-mail pentru că faci parte din echipa {businessName} în Ventora.",
+      "whyAccount": "Primești acest e-mail pentru contul tău Ventora."
+    }
   }
 }

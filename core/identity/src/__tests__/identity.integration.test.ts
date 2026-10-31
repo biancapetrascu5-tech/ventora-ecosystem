@@ -18,6 +18,7 @@ import {
   setOpenLastOrganization,
 } from '../contracts';
 import { setSessionActiveOrganization } from '../contract';
+import { getNotificationContactsInTx, getUserLocale, setUserLocale } from '../preferences';
 import { bootstrapFounderAccount } from '../bootstrap-founder';
 import { closeAuditPools, hashEmail } from '@ventora/audit';
 import type { OrgContext } from '@ventora/organizations';
@@ -2886,5 +2887,47 @@ describe('Lot 2.6 — "Deschide direct ultima afacere" (F)', () => {
     await signUp('l26.f3@test.com', 'Password123');
     expect(await hasAccountForEmail(' L26.F3@test.com ')).toBe(true);
     expect(await hasAccountForEmail('l26.nobody@test.com')).toBe(false);
+  });
+});
+
+describe('Lot 4.3 — UserPreference: the language of the notifications (D4-8)', () => {
+  it('the chosen language is kept with the account and read for the recipients', async () => {
+    const stamp = Date.now();
+    const a = await signUp(`pref-a-${stamp}@test.com`, 'Pass1234!x', 'Ana Pop');
+    const b = await signUp(`pref-b-${stamp}@test.com`, 'Pass1234!x');
+    expect(await getUserLocale(a.user.id)).toBeNull();
+    await setUserLocale(a.user.id, 'de');
+    await setUserLocale(a.user.id, 'it'); // changing it updates the same row
+    expect(await getUserLocale(a.user.id)).toBe('it');
+    await expect(setUserLocale(a.user.id, 'xx')).rejects.toThrow();
+
+    // the delivery job reads them inside its own transaction, on app_runtime
+    const pool = new Pool({ connectionString: DB_URL, max: 1 });
+    const client = await pool.connect();
+    try {
+      await client.query('BEGIN');
+      const contacts = await getNotificationContactsInTx(
+        {
+          query: async (sql, params) => (await client.query(sql, params)).rows,
+          exec: async (sql) => {
+            await client.query(sql);
+          },
+        },
+        [a.user.id, b.user.id],
+      );
+      expect(contacts.get(a.user.id)).toEqual({
+        email: `pref-a-${stamp}@test.com`,
+        name: 'Ana Pop',
+        locale: 'it',
+      });
+      expect(contacts.get(b.user.id)?.locale).toBeNull();
+      // and gives the caller its role back
+      const { rows } = await client.query('SELECT current_user::text AS role');
+      expect(rows[0].role).toBe('app_runtime');
+      await client.query('ROLLBACK');
+    } finally {
+      client.release();
+      await pool.end();
+    }
   });
 });

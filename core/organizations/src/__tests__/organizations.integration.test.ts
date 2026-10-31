@@ -20,11 +20,19 @@ import {
   requestNewInvitationLink,
   markOrganizationOpened,
   listInvitations,
+  invitationNewLinkRequestedConsumer,
 } from '../index.js';
 import type { OrgContext } from '../index.js';
 import { closeAuditPools } from '@ventora/audit';
 import { UUID_V7 } from '@ventora/db-kit';
-import { CaptureEmailAdapter, invitationLink, setEmailChannel } from '@ventora/notifications';
+import {
+  CaptureEmailAdapter,
+  defaultCatalog,
+  invitationLink,
+  renderNotification,
+  setEmailChannel,
+} from '@ventora/notifications';
+import { ConsumerRegistry, dispatchOutbox } from '@ventora/integrations';
 
 // Outside the INV block, invitation emails go to an in-memory mailbox, not to the console.
 setEmailChannel(new CaptureEmailAdapter());
@@ -1298,5 +1306,110 @@ describe('Lot 2.6 — markOrganizationOpened / listMyOrganizations (F)', () => {
 
     for (const id of orgs)
       await adminQuery(`DELETE FROM organizations.organization WHERE id = $1`, [id]);
+  });
+});
+
+describe('Lot 4.3 — invitation.new_link_requested → a notification for the owner and each admin', () => {
+  it('owner and admin get one in the Hub, members none, no email; delivered twice → one', async () => {
+    const stamp = Date.now();
+    const { organizationId } = await createOrganizationAsFounder(
+      { founderId: newUuid() },
+      { name: 'Salon Notif', slug: `l43n-${stamp}`, ownerEmail: `owner-n-${stamp}@example.com` },
+    );
+    const owner = await ownerContext(organizationId);
+    const adminId = newUuid();
+    const memberId = newUuid();
+    await adminQuery(
+      `INSERT INTO organizations.membership(organization_id, user_id, role, status, updated_at)
+       VALUES ($1, $2, 'admin', 'active', NOW()), ($1, $3, 'member', 'active', NOW())`,
+      [organizationId, adminId, memberId],
+    );
+    const invitee = `invitee-n-${stamp}@example.com`;
+    const { invitationToken } = await inviteMember(owner, {
+      email: invitee,
+      role: 'member',
+      inviterName: 'Bianca Petrașcu',
+      organizationName: 'Salon Notif',
+      applicationIds: ['booking'],
+    });
+    const view = (await getInvitationByToken(invitationToken))!;
+    await adminQuery(
+      `UPDATE organizations.invitation SET expires_at = NOW() - INTERVAL '1 minute' WHERE id = $1`,
+      [view.id],
+    );
+    expect(await requestNewInvitationLink(invitationToken)).toBe(true);
+
+    // only this test's event: the others in the shared outbox are not ours to deliver here
+    await adminQuery(
+      `UPDATE organizations.outbox_events SET status = 'dispatched'
+        WHERE status = 'pending' AND NOT (type = 'invitation.new_link_requested' AND resource_id = $1)`,
+      [view.id],
+    );
+    const pool = new Pool({ connectionString: process.env.DATABASE_URL ?? '', max: 1 });
+    try {
+      const registry = new ConsumerRegistry().register(invitationNewLinkRequestedConsumer);
+      const report = await dispatchOutbox({
+        pool,
+        source: { schema: 'organizations', moduleRole: 'org_rw' },
+        registry,
+      });
+      expect(report).toMatchObject({ delivered: 1, retried: 0, dead: 0 });
+
+      const rows = await adminQuery(
+        `SELECT recipient_user_id::text AS who, category, display_group, type, params, action_url
+           FROM notifications.notification WHERE organization_id = $1 ORDER BY who`,
+        [organizationId],
+      );
+      expect(rows.map((r) => r.who).sort()).toEqual([adminId, owner.userId].sort());
+      expect(rows[0]).toMatchObject({
+        category: 'operational',
+        display_group: 'activity',
+        type: 'invitation.new_link_requested',
+        params: { name: invitee, businessName: 'Salon Notif' },
+        action_url: '/admin/team',
+      });
+      // no email, to anyone (the template has no delivery channel)
+      expect(
+        await adminQuery(`SELECT 1 FROM notifications.delivery WHERE organization_id = $1`, [
+          organizationId,
+        ]),
+      ).toHaveLength(0);
+      const template = defaultCatalog.get('invitation.new_link_requested', 1)!;
+      expect(renderNotification(template, rows[0].params, 'ro').title).toBe(
+        `${invitee} a cerut o invitație nouă pentru Salon Notif.`,
+      );
+
+      // the same event delivered a second time → still one per person
+      const [event] = await adminQuery(
+        `SELECT event_id::text, organization_id::text, payload FROM organizations.outbox_events
+          WHERE type = 'invitation.new_link_requested' AND resource_id = $1`,
+        [view.id],
+      );
+      const client = await pool.connect();
+      try {
+        await client.query('BEGIN');
+        await client.query('SET LOCAL ROLE org_rw');
+        await client.query(`SELECT set_config('app.organization_id', $1, true)`, [organizationId]);
+        await invitationNewLinkRequestedConsumer.handle(
+          {
+            eventId: event.event_id,
+            organizationId: event.organization_id,
+            payload: event.payload,
+          },
+          client,
+        );
+        await client.query('COMMIT');
+      } finally {
+        client.release();
+      }
+      expect(
+        await adminQuery(`SELECT 1 FROM notifications.notification WHERE organization_id = $1`, [
+          organizationId,
+        ]),
+      ).toHaveLength(2);
+    } finally {
+      await pool.end();
+    }
+    await adminQuery(`DELETE FROM organizations.organization WHERE id = $1`, [organizationId]);
   });
 });
