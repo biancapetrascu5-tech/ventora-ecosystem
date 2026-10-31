@@ -4,6 +4,7 @@ process.env.COMMERCIAL_POOL_MAX = '20';
 import { describe, it, expect, beforeAll, afterAll, vi } from 'vitest';
 import { Pool, type PoolClient } from 'pg';
 import type { ApplicationManifest } from '@ventora/contracts';
+import { JobRegistry, runJob } from '@ventora/integrations';
 import {
   Conflict,
   InvalidInput,
@@ -22,6 +23,7 @@ import {
   registerOperationResolver,
   reconcileExpiredReservations,
   refundQuota,
+  runQuotaReconciliationJob,
   releaseQuota,
   reserveQuota,
   syncRegistry,
@@ -509,5 +511,80 @@ describe('raportul 3.3 — until Lot 4.2, reading the consumption reconciles fir
       [org],
     );
     expect(r!.status).toBe('reserved');
+  });
+});
+
+describe('Lot 4.2 — the reconciliation as the periodic job platform.quota-reconcile', () => {
+  const registryWith = (run: () => Promise<unknown>) =>
+    new JobRegistry().register({
+      id: 'platform.quota-reconcile',
+      owner: 'Lot 3.3',
+      description: 'Reconcilierea rezervărilor expirate de cote',
+      trigger: { cron: '*/5 * * * *' },
+      run,
+    });
+  const later = () => new Date(Date.now() + 16 * 60_000);
+
+  it('the scheduled job settles the expired reservations, each in its organization', async () => {
+    const { org } = await business({ 'messaging.sms': 10 });
+    const created = newUuid();
+    const lost = newUuid();
+    await reserveQuota({ organizationId: org }, 'messaging.sms', 1, created);
+    await reserveQuota({ organizationId: org }, 'messaging.sms', 1, lost);
+    const registry = registryWith(() =>
+      runQuotaReconciliationJob({
+        now: later(),
+        resolvers: { 'messaging.sms': async (o, op) => o === org && op === created },
+      }),
+    );
+    const [job] = registry.runnable();
+    expect(job?.id).toBe('platform.quota-reconcile');
+    const report = vi.fn();
+    const result = (await runJob(job!, { runId: 'r1', attempt: 0 }, report)) as {
+      committed: number;
+      released: number;
+    };
+    expect(report).not.toHaveBeenCalled();
+    expect(result.committed).toBeGreaterThanOrEqual(1);
+    expect(result.released).toBeGreaterThanOrEqual(1);
+    const statuses = await q(
+      `SELECT operation_id, status FROM commercial.quota_reservation WHERE organization_id = $1`,
+      [org],
+    );
+    expect(Object.fromEntries(statuses.map((s) => [s.operation_id, s.status]))).toEqual({
+      [created]: 'committed',
+      [lost]: 'released',
+    });
+  });
+
+  it('a reservation that cannot be settled fails the run: reported and thrown, for a retry', async () => {
+    const { org } = await business({ 'messaging.sms': 10 });
+    const stuck = newUuid();
+    await reserveQuota({ organizationId: org }, 'messaging.sms', 1, stuck);
+    const errors = vi.spyOn(console, 'error').mockImplementation(() => {});
+    const registry = registryWith(() =>
+      runQuotaReconciliationJob({
+        now: later(),
+        resolvers: {
+          'messaging.sms': async (o, op) => {
+            if (o === org && op === stuck) throw new Error('module unreachable');
+            return false;
+          },
+        },
+      }),
+    );
+    const report = vi.fn();
+    await expect(
+      runJob(registry.runnable()[0]!, { runId: 'r2', attempt: 0 }, report),
+    ).rejects.toThrow(/not reconciled/);
+    expect(report).toHaveBeenCalledWith(
+      expect.objectContaining({ jobId: 'platform.quota-reconcile', retriable: true }),
+    );
+    errors.mockRestore();
+    const [row] = await q(
+      `SELECT status FROM commercial.quota_reservation WHERE operation_id = $1`,
+      [stuck],
+    );
+    expect(row).toEqual({ status: 'reserved' }); // left for the next run
   });
 });

@@ -16,6 +16,8 @@
   "dependencies": {
     "@ventora/contracts": "workspace:*",
     "@ventora/db-kit": "workspace:*",
+    "@ventora/errors": "workspace:*",
+    "inngest": "4.24.0",
     "pg": "^8.0.0"
   },
   "devDependencies": {
