@@ -1,5 +1,6 @@
 import * as Sentry from '@sentry/nextjs';
 import { Pool } from 'pg';
+import { runQuotaReconciliationJob } from '@ventora/commercial';
 import { summarizeError } from '@ventora/errors';
 import {
   ConsumerRegistry,
@@ -49,14 +50,16 @@ export const platformJobs = new JobRegistry()
   .register(
     outboxDispatchJob({ pool: jobsPool, sources: OUTBOX_SOURCES, consumers: platformConsumers }),
   )
-  // Declarate; logica vine în lotul fiecăruia, cu platformJobs.attach(id, run).
-  // Lotul 3.3: attach('platform.quota-reconcile', …) cu reconcilierea pe tabelele reale de cote.
+  // Lotul 3.3: rezervările rămase după 15 minute, fiecare în contextul organizației din rândul ei
+  // (ARCHITECTURE §8.3); o rezervare nereconciliată face job-ul să eșueze (Sentry, reîncercare).
   .register({
     id: 'platform.quota-reconcile',
     owner: 'Lot 3.3',
     description: 'Reconcilierea rezervărilor expirate de cote',
     trigger: { cron: '*/5 * * * *' },
+    run: () => runQuotaReconciliationJob(),
   })
+  // Declarate; logica vine în lotul fiecăruia, cu platformJobs.attach(id, run).
   .register({
     id: 'platform.email-retry',
     owner: 'Lot 4.3',
