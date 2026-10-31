@@ -51,3 +51,22 @@ export type {
 export type { SqlClient } from './model/sql';
 export { UnconfiguredSmsChannel, SmsNotConfiguredError } from './sms';
 export type { SmsChannel, SmsMessage } from './sms';
+// Lot 4.4: the bell and the preferences (the person's side)
+export {
+  getInbox,
+  openNotification,
+  markAllNotificationsRead,
+  getNotificationPreferences,
+  setNotificationPreference,
+  closeNotificationsPool,
+  INBOX_DAYS,
+} from './model/inbox';
+export type { Inbox, InboxItem, NotificationPreferences } from './model/inbox';
+export {
+  EMAIL_TOPICS,
+  SECURITY_TOPICS,
+  COMMERCIAL_TOPICS,
+  isChangeable,
+  defaultEnabled,
+} from './model/topics';
+export type { EmailTopic, SecurityTopic, CommercialTopic, NotificationTopic } from './model/topics';

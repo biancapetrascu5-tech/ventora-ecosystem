@@ -20,6 +20,8 @@ import {
   type Device,
 } from '@/server/account-actions';
 import { BackupCodesFlow, SecurityEmailsRow, type CodesFlowState } from './SecurityView';
+import { NotificationPrefsForm } from './NotificationPrefsForm';
+import type { NotificationPrefsValue } from './NotificationPrefsView';
 import {
   ChangePasswordDialog,
   DisableTwoFactorDialog,
@@ -35,7 +37,7 @@ import {
 import { describeDevice } from './device';
 import { useWhen } from './when';
 
-/* Contul tău · Securitate (Lot 2.7 · D; S100, S108).
+/* Contul tău · Notificări (Lot 4.4, S114b) și Securitate (Lot 2.7 · D; S100, S108).
    - „Schimbă parola”: /change-password cu revokeOtherSessions (rămâi conectat aici, pleacă E-mailul
      S78 „celelalte dispozitive”); cerințele Hub: 10 caractere, o cifră, o literă mare.
    - Autentificarea în doi pași: obligatorie pentru proprietar (fără comutator); un membru o
@@ -53,16 +55,20 @@ export function AccountSecurityScreen({
   codesLeft: initialLeft,
   passwordChangedAt: initialChanged,
   devices: initialDevices,
+  notificationPrefs,
 }: {
   owner: boolean;
   twoFactorEnabled: boolean;
   codesLeft?: number;
   passwordChangedAt?: string;
   devices: Device[];
+  /** Lot 4.4: preferințele (S114b); fără ele (citirea a eșuat) rămâne doar rândul de securitate. */
+  notificationPrefs?: NotificationPrefsValue | null;
 }) {
   const router = useRouter();
   const t = useTranslations('account');
   const tfa = useTranslations('auth.2fa');
+  const tp = useTranslations('notifications.prefs');
   const clock = useClock();
   const phone = useIsPhone();
 
@@ -237,9 +243,19 @@ export function AccountSecurityScreen({
     <>
       <PageHeader title={t('title')} description={t('lead')} />
       <Sheet>
-        <SheetSection title={t('notifications.title')} description={t('notifications.lead')}>
-          <SecurityEmailsRow />
-        </SheetSection>
+        {notificationPrefs ? (
+          <NotificationPrefsForm
+            initial={notificationPrefs}
+            mob={phone}
+            onSaved={(ok) => {
+              if (ok) setToast({ title: tp('saved') });
+            }}
+          />
+        ) : (
+          <SheetSection title={t('notifications.title')} description={t('notifications.lead')}>
+            <SecurityEmailsRow />
+          </SheetSection>
+        )}
         <SheetSection title={t('security.title')}>
           <SecurityRows
             twoStep={twoStep}

@@ -668,6 +668,50 @@
       "open": "Deschide în Ventora",
       "why": "Primești acest e-mail pentru că faci parte din echipa {businessName} în Ventora.",
       "whyAccount": "Primești acest e-mail pentru contul tău Ventora."
+    },
+    "prefs": {
+      "title": "Notificaciones",
+      "lead": "En la aplicación las recibes siempre: tratan de tu cuenta y de tu trabajo. Por correo eliges tú, salvo las de seguridad.",
+      "col": {
+        "category": "Qué",
+        "inApp": "En la aplicación",
+        "email": "Correo"
+      },
+      "always": "Siempre",
+      "alwaysInApp": "En la aplicación: siempre",
+      "locked": "No se pueden desactivar",
+      "emailToggle": "Por correo",
+      "group": {
+        "work": "Tu cuenta y tu trabajo",
+        "security": "Seguridad"
+      },
+      "securityNote": "Las recibes siempre, en la aplicación y por correo, para saber enseguida si algo cambia en tu cuenta.",
+      "cat": {
+        "bookings": "Citas nuevas y cambios",
+        "phone": "El teléfono del negocio y los mensajes a clientes",
+        "billing": "Facturas y pagos",
+        "limits": "Límites del plan",
+        "leave": "Solicitudes de vacaciones",
+        "support": "Respuestas a solicitudes de soporte",
+        "password": "Contraseña de la cuenta cambiada",
+        "twoFactor": "Inicio de sesión en dos pasos",
+        "supportSession": "Sesión de soporte del equipo de Ventora"
+      },
+      "news": {
+        "title": "Novedades de Ventora",
+        "desc": "Lo nuevo en Ventora: aplicaciones, funciones y cambios importantes.",
+        "inApp": "En la aplicación",
+        "email": "Por correo",
+        "emailDesc": "Desactivado hasta que lo actives."
+      },
+      "reco": {
+        "title": "Recomendaciones de Ventora",
+        "desc": "Sugerencias de aplicaciones y paquetes extra que encajan con lo que ya haces.",
+        "inAppDesc": "Las ves en las páginas y en las notificaciones, en Recomendaciones.",
+        "soon": "Disponible pronto",
+        "note": "Los mensajes sobre los límites de tu cuenta siguen activos, porque son información de la cuenta, no recomendaciones."
+      },
+      "saved": "Preferencias guardadas."
     }
   }
 }

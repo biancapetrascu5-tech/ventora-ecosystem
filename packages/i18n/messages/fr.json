@@ -668,6 +668,50 @@
       "open": "Deschide în Ventora",
       "why": "Primești acest e-mail pentru că faci parte din echipa {businessName} în Ventora.",
       "whyAccount": "Primești acest e-mail pentru contul tău Ventora."
+    },
+    "prefs": {
+      "title": "Notifications",
+      "lead": "Vous les recevez toujours dans l’application : elles concernent votre compte et votre travail. Par e-mail, c’est vous qui choisissez, sauf pour la sécurité.",
+      "col": {
+        "category": "Quoi",
+        "inApp": "Dans l’application",
+        "email": "E-mail"
+      },
+      "always": "Toujours",
+      "alwaysInApp": "Dans l’application : toujours",
+      "locked": "Ne peuvent pas être désactivées",
+      "emailToggle": "Par e-mail",
+      "group": {
+        "work": "Votre compte et votre travail",
+        "security": "Sécurité"
+      },
+      "securityNote": "Vous les recevez toujours, dans l’application et par e-mail, pour savoir tout de suite si quelque chose change dans votre compte.",
+      "cat": {
+        "bookings": "Rendez-vous nouveaux et modifiés",
+        "phone": "Le téléphone de l’entreprise et les messages aux clients",
+        "billing": "Factures et paiements",
+        "limits": "Limites de l’abonnement",
+        "leave": "Demandes de congé",
+        "support": "Réponses aux demandes d’assistance",
+        "password": "Mot de passe du compte modifié",
+        "twoFactor": "Connexion en deux étapes",
+        "supportSession": "Session d’assistance de l’équipe Ventora"
+      },
+      "news": {
+        "title": "Nouveautés de Ventora",
+        "desc": "Les nouveautés de Ventora : applications, fonctions, changements importants.",
+        "inApp": "Dans l’application",
+        "email": "Par e-mail",
+        "emailDesc": "Désactivé jusqu’à ce que vous l’activiez."
+      },
+      "reco": {
+        "title": "Recommandations Ventora",
+        "desc": "Des suggestions d’applications et de packs en plus adaptés à ce que vous faites déjà.",
+        "inAppDesc": "Vous les voyez dans les pages et dans les notifications, à la rubrique Recommandations.",
+        "soon": "Bientôt disponible",
+        "note": "Les messages sur les limites de votre compte restent actifs, car ce sont des informations sur le compte, pas des recommandations."
+      },
+      "saved": "Préférences enregistrées."
     }
   }
 }

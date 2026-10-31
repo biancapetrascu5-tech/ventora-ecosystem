@@ -668,6 +668,50 @@
       "open": "Deschide în Ventora",
       "why": "Primești acest e-mail pentru că faci parte din echipa {businessName} în Ventora.",
       "whyAccount": "Primești acest e-mail pentru contul tău Ventora."
+    },
+    "prefs": {
+      "title": "Notificări",
+      "lead": "În aplicație le primești mereu: sunt despre cont și despre munca ta. Pe e-mail alegi tu, în afară de cele de securitate.",
+      "col": {
+        "category": "Ce",
+        "inApp": "În aplicație",
+        "email": "E-mail"
+      },
+      "always": "Mereu",
+      "alwaysInApp": "În aplicație: mereu",
+      "locked": "Nu se pot opri",
+      "emailToggle": "Pe e-mail",
+      "group": {
+        "work": "Despre cont și munca ta",
+        "security": "Securitate"
+      },
+      "securityNote": "Le primești mereu, și în aplicație, și pe e-mail, ca să afli imediat dacă ceva se schimbă în contul tău.",
+      "cat": {
+        "bookings": "Programări noi și modificări",
+        "phone": "Telefonul afacerii și mesajele către clienți",
+        "billing": "Facturi și plăți",
+        "limits": "Limitele abonamentului",
+        "leave": "Cereri de concediu",
+        "support": "Răspunsuri la solicitările de suport",
+        "password": "Parola contului schimbată",
+        "twoFactor": "Autentificarea în doi pași",
+        "supportSession": "Sesiunea de suport a echipei Ventora"
+      },
+      "news": {
+        "title": "Noutăți de la Ventora",
+        "desc": "Ce e nou în Ventora: aplicații, funcții, schimbări importante.",
+        "inApp": "În aplicație",
+        "email": "Pe e-mail",
+        "emailDesc": "Oprit până îl pornești tu."
+      },
+      "reco": {
+        "title": "Recomandări Ventora",
+        "desc": "Sugestii despre aplicații și pachete în plus care se potrivesc cu ce faci deja.",
+        "inAppDesc": "Le vezi în pagini și în notificări, la secțiunea Recomandări.",
+        "soon": "Disponibil în curând",
+        "note": "Mesajele despre limitele contului tău rămân active, pentru că sunt informații despre cont, nu recomandări."
+      },
+      "saved": "Am salvat preferințele."
     }
   }
 }

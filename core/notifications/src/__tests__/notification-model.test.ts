@@ -10,6 +10,8 @@ import {
   sendNotification,
   UnconfiguredSmsChannel,
   SmsNotConfiguredError,
+  defaultEnabled,
+  isChangeable,
   type NotificationTemplate,
 } from '../index';
 
@@ -22,6 +24,7 @@ const PHONE: NotificationTemplate = {
   titleKey: 'sms.disconnected.title',
   bodyKey: 'sms.disconnected.body',
   channels: ['email'],
+  topic: 'phone',
   actionPath: () => '/booking/settings/sms',
 };
 
@@ -30,6 +33,41 @@ describe('the catalog', () => {
     expect(() => new NotificationCatalog([{ ...PHONE, category: undefined as never }])).toThrow(
       /category is required/,
     );
+  });
+
+  it('Lot 4.4: an e-mail template names its row of the preferences (topic), of its category', () => {
+    expect(() => new NotificationCatalog([{ ...PHONE, topic: undefined }])).toThrow(
+      /topic is required/,
+    );
+    expect(() => new NotificationCatalog([{ ...PHONE, topic: 'news' }])).toThrow(/not operational/);
+    expect(() => new NotificationCatalog([{ ...PHONE, security: true }])).toThrow(/security topic/);
+    expect(
+      () => new NotificationCatalog([{ ...PHONE, security: true, topic: 'password' }]),
+    ).not.toThrow();
+    // in the app only: no row to turn off
+    expect(
+      () => new NotificationCatalog([{ ...PHONE, channels: [], topic: undefined }]),
+    ).not.toThrow();
+  });
+
+  it('Lot 4.4: the fixed rows and the defaults (S114b, D4-6)', () => {
+    expect(isChangeable('phone', 'email')).toBe(true);
+    expect(isChangeable('phone', 'in_app')).toBe(false);
+    expect(isChangeable('password', 'email')).toBe(false);
+    expect(isChangeable('recommendations', 'in_app')).toBe(true);
+    expect(isChangeable('recommendations', 'email')).toBe(false);
+    expect(isChangeable('news', 'email')).toBe(true);
+    expect(defaultEnabled('news', 'email')).toBe(false);
+    expect(defaultEnabled('bookings', 'email')).toBe(true);
+    expect(defaultCatalog.get('commercial.quota.threshold', 1)?.topic).toBe('limits');
+  });
+
+  it('S115: the action text, under the text in the panel, in the reader language', () => {
+    const withAction = { ...PHONE, actionKey: 'email.open' };
+    expect(renderNotification(withAction, { n: '1', time: '9:00' }, 'ro').action).toBe(
+      'Deschide în Ventora',
+    );
+    expect(renderNotification(PHONE, { n: '1', time: '9:00' }, 'ro').action).toBeUndefined();
   });
 
   it('the first real notification is operational, in the Activity group, in the app only', () => {
