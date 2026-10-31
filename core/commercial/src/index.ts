@@ -16,4 +16,54 @@ export {
   type RegistryFeatureRow,
   type RegistryQuotaRow,
 } from './contract';
+export {
+  getEffectiveEntitlements,
+  commercialEntitlementProvider,
+  requireFeature,
+  listAddonsForOrg,
+  getSubscriptionSummary,
+} from './entitlements';
+export {
+  createPlan,
+  createPlanVersion,
+  updateDraftVersion,
+  publishVersion,
+  setApplicationActivationMode,
+  createAddon,
+  updateAddon,
+  stopAddonSales,
+  setBusinessCurrency,
+  assignSubscription,
+  scheduleVersionChange,
+  grantAddon,
+  endAddonGrant,
+  createOverride,
+  extendOverride,
+  endOverride,
+  DISADVANTAGE_NOTICE_DAYS,
+  OVERRIDE_MAX_MONTHS,
+  DEFAULT_CURRENCY,
+  type VersionTermsInput,
+  type AddonPriceInput,
+  type ScheduledChange,
+} from './founder';
+export {
+  classifyChange,
+  priceOf,
+  type VersionTerms,
+  type PriceKind,
+  type ChangeReason,
+  type ChangeClassification,
+} from './classify';
+export {
+  anchorDateIn,
+  anchorDayOf,
+  billingDates,
+  calendarDate,
+  daysInMonth,
+  nextBillingDate,
+  quotaPeriod,
+  startOfDay,
+  BILLING_TIME_ZONE,
+} from './period';
 export { closeCommercialPools, type CommercialConnection } from './db';

@@ -53,6 +53,23 @@ export const AuditActions = {
   supportActionDenied: 'support.action_denied', // E39
   ownerRecoveryPerformed: 'support.owner_recovery_performed', // E40
   ownerRecoveryNotified: 'support.owner_recovery_notified', // E41
+  // Lot 3.2 — the commercial model, every Founder write (category commercial, required; §8.5)
+  commercialPlanCreated: 'commercial.plan_created',
+  commercialVersionCreated: 'commercial.version_created',
+  commercialVersionUpdated: 'commercial.version_updated', // a draft's terms
+  commercialVersionPublished: 'commercial.version_published',
+  commercialApplicationModeChanged: 'commercial.application_mode_changed', // D3-9
+  commercialAddonCreated: 'commercial.addon_created',
+  commercialAddonUpdated: 'commercial.addon_updated', // prices, switch, eligible plans (D3-7)
+  commercialAddonSalesStopped: 'commercial.addon_sales_stopped',
+  commercialCurrencySet: 'commercial.currency_set', // D3-2
+  commercialSubscriptionAssigned: 'commercial.subscription_assigned',
+  commercialVersionChangeScheduled: 'commercial.version_change_scheduled', // D-COM-9
+  commercialAddonGranted: 'commercial.addon_granted',
+  commercialAddonGrantEnded: 'commercial.addon_grant_ended',
+  commercialOverrideCreated: 'commercial.override_created', // D-COM-8
+  commercialOverrideExtended: 'commercial.override_extended',
+  commercialOverrideEnded: 'commercial.override_ended',
 } as const;
 
 export type AuditAction = (typeof AuditActions)[keyof typeof AuditActions];
