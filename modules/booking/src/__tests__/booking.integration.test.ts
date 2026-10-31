@@ -1,8 +1,14 @@
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { Pool } from 'pg';
-import { listAppointments, createAppointment } from '../contract.js';
+import { listAppointments, createAppointment, getAppointment } from '../contract.js';
 import { configureAccess } from '@ventora/access';
-import { NotAuthenticated, NotMember, AppNotEnabled, Forbidden } from '@ventora/errors';
+import {
+  NotAuthenticated,
+  NotMember,
+  AppNotEnabled,
+  Forbidden,
+  QuotaExceeded,
+} from '@ventora/errors';
 
 const adminPool = new Pool({
   connectionString: process.env.DIRECT_URL || process.env.DATABASE_URL,
@@ -68,6 +74,57 @@ async function grantApp(orgId: string, userId: string) {
   );
 }
 
+// Lot 3.2–3.3: a published plan version and a subscription, written as postgres (fixtures).
+const founder = newUuid();
+let planId: string;
+
+async function publishedVersion(
+  apps: string[],
+  quotas: Record<string, number | null>,
+): Promise<string> {
+  const [{ id }] = (
+    await adminQuery(
+      `INSERT INTO commercial.plan_version (plan_id, version_number, created_by_founder_id)
+       SELECT $1, COALESCE(max(version_number), 0) + 1, $2 FROM commercial.plan_version WHERE plan_id = $1
+       RETURNING id`,
+      [planId, founder],
+    )
+  ).rows;
+  for (const app of apps) {
+    await adminQuery(
+      `INSERT INTO commercial.plan_version_application (plan_version_id, application_id) VALUES ($1, $2)`,
+      [id, app],
+    );
+  }
+  for (const [key, limit] of Object.entries(quotas)) {
+    await adminQuery(
+      `INSERT INTO commercial.plan_version_quota (plan_version_id, quota_key, limit_value) VALUES ($1, $2, $3)`,
+      [id, key, limit],
+    );
+  }
+  await adminQuery(
+    `INSERT INTO commercial.plan_version_price (plan_version_id, currency, kind, amount_minor)
+     VALUES ($1, 'RON', 'month', 100)`,
+    [id],
+  );
+  await adminQuery(
+    `UPDATE commercial.plan_version SET published_at = now(), published_by_founder_id = $2 WHERE id = $1`,
+    [id, founder],
+  );
+  return id;
+}
+
+async function subscribe(org: string, versionId: string): Promise<string> {
+  const { rows } = await adminQuery(
+    `INSERT INTO commercial.subscription
+       (organization_id, plan_version_id, interval, currency, started_on, anchor_day, status, created_by_founder_id)
+     VALUES ($1, $2, 'month', 'RON', CURRENT_DATE, EXTRACT(DAY FROM CURRENT_DATE), 'active', $3)
+     RETURNING id`,
+    [org, versionId, founder],
+  );
+  return rows[0].id;
+}
+
 let orgId: string;
 let ownerToken: string;
 let adminToken: string;
@@ -96,6 +153,15 @@ beforeAll(async () => {
   adminToken = await createSession(adminUser, orgId);
   memberToken = await createSession(memberUser, orgId);
   noOrgToken = await createSession(noOrgUser, null);
+
+  // the main test business: booking in its subscription, appointments without a tight limit
+  planId = (
+    await adminQuery(
+      `INSERT INTO commercial.plan (code, name, created_by_founder_id) VALUES ($1, 'T4', $2) RETURNING id`,
+      [`t4-${newUuid().slice(0, 8)}`, founder],
+    )
+  ).rows[0].id;
+  await subscribe(orgId, await publishedVersion(['booking'], { 'booking.appointments': 100 }));
 });
 
 afterAll(async () => {
@@ -134,65 +200,18 @@ describe('T3.3 — app disabled → AppNotEnabled', () => {
 // version in commercial), not from code. Needs commercial_* applied and the registry synced
 // (scripts/test-integration.mjs, the access job in CI).
 describe('T4 — AppNotEnabled comes from the subscription (commercialEntitlementProvider)', () => {
-  const founder = newUuid();
-  let planId: string;
-
-  async function publishedVersion(apps: string[]): Promise<string> {
-    const [{ id }] = (
-      await adminQuery(
-        `INSERT INTO commercial.plan_version (plan_id, version_number, created_by_founder_id)
-         SELECT $1, COALESCE(max(version_number), 0) + 1, $2 FROM commercial.plan_version WHERE plan_id = $1
-         RETURNING id`,
-        [planId, founder],
-      )
-    ).rows;
-    for (const app of apps) {
-      await adminQuery(
-        `INSERT INTO commercial.plan_version_application (plan_version_id, application_id) VALUES ($1, $2)`,
-        [id, app],
-      );
-    }
-    await adminQuery(
-      `INSERT INTO commercial.plan_version_price (plan_version_id, currency, kind, amount_minor)
-       VALUES ($1, 'RON', 'month', 100)`,
-      [id],
-    );
-    await adminQuery(
-      `UPDATE commercial.plan_version SET published_at = now(), published_by_founder_id = $2 WHERE id = $1`,
-      [id, founder],
-    );
-    return id;
-  }
-
-  async function subscribe(org: string, versionId: string) {
-    await adminQuery(
-      `INSERT INTO commercial.subscription
-         (organization_id, plan_version_id, interval, currency, started_on, anchor_day, status, created_by_founder_id)
-       VALUES ($1, $2, 'month', 'RON', CURRENT_DATE, EXTRACT(DAY FROM CURRENT_DATE), 'active', $3)`,
-      [org, versionId, founder],
-    );
-  }
-
   let withoutBookingOrg: string;
   let withoutBookingToken: string;
 
   beforeAll(async () => {
     const { commercialEntitlementProvider } = await import('@ventora/commercial');
     configureAccess({ entitlementProvider: commercialEntitlementProvider });
-    planId = (
-      await adminQuery(
-        `INSERT INTO commercial.plan (code, name, created_by_founder_id) VALUES ($1, 'T4', $2) RETURNING id`,
-        [`t4-${newUuid().slice(0, 8)}`, founder],
-      )
-    ).rows[0].id;
-    // the main test business: booking in its subscription
-    await subscribe(orgId, await publishedVersion(['booking']));
     // another business whose subscription has only crm
     withoutBookingOrg = await createOrg();
     const owner = await createUser(`booking-t4-${newUuid()}@test.local`, true);
     await createMembership(withoutBookingOrg, owner, 'owner');
     withoutBookingToken = await createSession(owner, withoutBookingOrg);
-    await subscribe(withoutBookingOrg, await publishedVersion(['crm']));
+    await subscribe(withoutBookingOrg, await publishedVersion(['crm'], {}));
   });
   afterAll(async () => {
     configureAccess({ entitlementProvider: { isEnabled: async () => true } });
@@ -211,6 +230,77 @@ describe('T4 — AppNotEnabled comes from the subscription (commercialEntitlemen
   });
 });
 
+// Lot 3.3 — T5 on the probe module: creating an appointment consumes booking.appointments.
+describe('T5 — at the limit only creating is blocked; an add-on raises it at the next request', () => {
+  let org: string;
+  let token: string;
+  let subscriptionId: string;
+  let grantId: string;
+
+  beforeAll(async () => {
+    const { commercialEntitlementProvider } = await import('@ventora/commercial');
+    configureAccess({ entitlementProvider: commercialEntitlementProvider });
+    org = await createOrg();
+    const owner = await createUser(`booking-t5-${newUuid()}@test.local`, true);
+    await createMembership(org, owner, 'owner');
+    token = await createSession(owner, org);
+    subscriptionId = await subscribe(
+      org,
+      await publishedVersion(['booking'], { 'booking.appointments': 2 }),
+    );
+  });
+  afterAll(async () => {
+    configureAccess({ entitlementProvider: { isEnabled: async () => true } });
+    await adminQuery(`DELETE FROM organizations.organization WHERE id = $1`, [org]);
+  });
+
+  it('2 of 2: the third appointment is refused (QuotaExceeded); listing still works', async () => {
+    await createAppointment({ sessionToken: token, title: 'Unu' });
+    await createAppointment({ sessionToken: token, title: 'Doi' });
+    await expect(createAppointment({ sessionToken: token, title: 'Trei' })).rejects.toThrow(
+      QuotaExceeded,
+    );
+    // the refused one left nothing reserved
+    const [c] = (
+      await adminQuery(
+        `SELECT used, reserved FROM commercial.usage_counter WHERE organization_id = $1`,
+        [org],
+      )
+    ).rows;
+    expect(c).toEqual({ used: '2', reserved: '0' });
+    expect((await listAppointments({ sessionToken: token })).appointments).toEqual([]);
+  });
+
+  it('an add-on bought (3 more) raises the limit at the next request', async () => {
+    const [{ id: addonId }] = (
+      await adminQuery(
+        `INSERT INTO commercial.addon (code, name, quota_key, quantity, validity, created_by_founder_id)
+         VALUES ($1, '3 programări', 'booking.appointments', 3, 'monthly', $2) RETURNING id`,
+        [`t5-${newUuid().slice(0, 8)}`, founder],
+      )
+    ).rows;
+    grantId = (
+      await adminQuery(
+        `INSERT INTO commercial.addon_grant (organization_id, addon_id, subscription_id, recurring, source)
+         VALUES ($1, $2, $3, true, 'purchase') RETURNING id`,
+        [org, addonId, subscriptionId],
+      )
+    ).rows[0].id;
+    const created = await createAppointment({ sessionToken: token, title: 'Trei' });
+    expect(created.appointment.title).toBe('Trei');
+  });
+
+  it('after a downgrade (the add-on ends): creating is blocked, listing and reading go on', async () => {
+    await adminQuery(`UPDATE commercial.addon_grant SET ended_at = now() WHERE id = $1`, [grantId]);
+    // 3 used, limit 2 again: nothing is deleted, only creating stops
+    await expect(createAppointment({ sessionToken: token, title: 'Patru' })).rejects.toThrow(
+      QuotaExceeded,
+    );
+    expect((await listAppointments({ sessionToken: token })).ctx.role).toBe('owner');
+    const read = await getAppointment({ sessionToken: token, appointmentId: newUuid() });
+    expect(read.ctx.organizationId).toBe(org);
+  });
+});
 describe('T3.4 — owner has booking:read permission (implicit)', () => {
   it('owner can list appointments', async () => {
     const result = await listAppointments({ sessionToken: ownerToken });

@@ -98,8 +98,11 @@ export interface SubscriptionSummary {
   /** A move to another version already scheduled (the 30-day notice, D-COM-9). */
   pendingChange: { effectiveAt: string; classification: 'advantage' | 'disadvantage' } | null;
   applications: string[];
-  /** Only the limited quotas: an unlimited one is not shown in the Hub (D3-14). */
-  quotas: Array<{ key: string; limit: number }>;
+  /**
+   * Only the limited quotas: an unlimited one is not shown in the Hub (D3-14). `used` is the
+   * current monthly period for a flow quota (D3-3), the counter for a stock quota (Lot 3.3).
+   */
+  quotas: Array<{ key: string; limit: number; used: number }>;
 }
 
 export interface AddonOffer {

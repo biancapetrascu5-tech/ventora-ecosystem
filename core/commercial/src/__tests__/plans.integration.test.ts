@@ -493,8 +493,8 @@ describe('Lot 3.2 — getEffectiveEntitlements', () => {
     ).resolves.toBeUndefined();
     // the Hub shows only the limited quotas
     expect((await getSubscriptionSummary(org))!.quotas).toEqual([
-      { key: 'messaging.sms', limit: 500 },
-      { key: 'platform.members', limit: 10 },
+      { key: 'messaging.sms', limit: 500, used: 0 },
+      { key: 'platform.members', limit: 10, used: 0 },
     ]);
   });
 

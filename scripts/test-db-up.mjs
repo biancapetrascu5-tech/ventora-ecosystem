@@ -308,6 +308,8 @@ for (const migration of [
   'core/commercial/prisma/migrations/20261101000004_commercial_overrides/migration.sql',
   // D3-21: reducerile și aplicațiile adăugate la abonament
   'core/commercial/prisma/migrations/20261101000005_commercial_discounts/migration.sql',
+  // Lot 3.3: cotele reale (T5)
+  'core/commercial/prisma/migrations/20261101000006_commercial_usage/migration.sql',
 ]) {
   psqlFile(TEST_DB.accessDb, join(ROOT, migration));
 }

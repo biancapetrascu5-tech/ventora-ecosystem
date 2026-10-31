@@ -98,7 +98,7 @@ apps/platform/   -> Hub + aplicatii B2B + Network (port 3100, app.ventora-hub.co
 apps/portal/     -> Portal B2C (port 3101, portal.ventora-hub.com)
 apps/founder/    -> Founder Control Center (port 3102, founder.ventora-hub.com)
 modules/         -> logica de domeniu (cate un pachet pe aplicatie, 15 total)
-core/quota/      -> reserveQuota, confirmQuota, releaseQuota, reconcileExpiredReservations
+core/quota/      -> checkQuota, reserveQuota, commitQuota, releaseQuota, refundQuota, freeStockQuota, reconcileExpiredReservations (implementarea în core/commercial, schema commercial; Lot 3.3, C-F3-8: commitQuota)
 core/            -> alte servicii de platforma (identity, access, commercial, growth...)
 packages/db-kit/ -> withTenantContext, guardTenant, guardBulkOp, cleanUrl, writeOutboxEvent
 packages/        -> alte pachete tehnice si UI comune (config, contracts, i18n, ui...)
