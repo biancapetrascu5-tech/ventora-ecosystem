@@ -1,6 +1,8 @@
-# Staging, 31.10.2026: testul cap-coadă al Fazei 2 (în lucru)
+# Staging, 31.10.2026: testul cap-coadă al Fazei 2 — TRECUT
 
-**Codul:** `main` (`69fa617`), fără modificări. Serverele rulează local, din `C:\Projects\ventora-ecosystem`, conectate la baza de staging.
+**Rezultat:** testul cap-coadă al Fazei 2 pe staging e **trecut** (fondatoarea, 31.10.2026), după trei corecții făcute pe parcurs: PR #33, #34 și #36 (vezi mai jos).
+
+**Codul:** la început `main` (`69fa617`); testul s-a încheiat pe `main` `86bde28` (cu #33, #34 și #36). Serverele au rulat local, din `C:\Projects\ventora-ecosystem`, conectate la baza de staging.
 
 ## Pregătirea
 
@@ -151,3 +153,69 @@ Toate cele 9 eșecuri au aceeași cauză: `getInvitationByToken`, direct sau pri
   - organizations, access și booking rulează cu `DATABASE_URL` = `app_runtime` (`NOINHERIT`), local și în CI, cu admin doar pe `DIRECT_URL` pentru datele de pornire;
   - plus o gardă în setup-ul testelor: dacă `current_user` al conexiunii contractelor e superuser sau are `rolinherit = true`, testele pică imediat.
 - Pe staging nu se schimbă GRANT-uri.
+
+### Corecția invitației (PR #36) și reluarea testului
+
+- **PR #36** (`86bde28` în `main`):
+  - `getInvitationByToken` rulează sub `org_rw`;
+  - clienții modulelor trec pe rolul modulului și la interogările raw din afara unei tranzacții;
+  - testele organizations, access și booking rulează pe `app_runtime`, local și în CI;
+  - garda `assertRuntimeRole` oprește orice rulare a contractelor pe o conexiune care nu e rolul de runtime.
+- **Folderul principal** a fost actualizat la `86bde28`, iar serverele au fost repornite. Invitația veche (aceeași din captură) s-a deschis fără eroare și nu a mai trebuit retrimisă.
+
+## Rezultatul final
+
+**TRECUT** (fondatoarea, 31.10.2026). Orele sunt în UTC.
+
+### Founder
+
+| Pas                                                                     | Rezultat |
+| ----------------------------------------------------------------------- | -------- |
+| Contul (bootstrap pe `DATABASE_URL_FOUNDER`, după #34), 2FA             | ✓        |
+| Resetarea parolei (e-mail, link, confirmare)                            | ✓        |
+| Afacere nouă („Salon Test”, 10:06), cu invitația proprietarului         | ✓        |
+| Sesiunea de suport (deschisă 10:24 și 11:08; e-mailul către proprietar) | ✓        |
+| Suspendarea și reactivarea (10:25)                                      | ✓        |
+
+### Hub
+
+| Pas                                                                                         | Rezultat |
+| ------------------------------------------------------------------------------------------- | -------- |
+| Invitația: pagina, crearea contului, acceptarea (10:55)                                     | ✓        |
+| Contul proprietarului: prima intrare, 2FA (10:56–10:59)                                     | ✓        |
+| Echipa (`/admin/access`)                                                                    | ✓        |
+| Securitatea: schimbarea parolei (11:04, cu e-mailul de confirmare), dispozitivele           | ✓        |
+| Banda sesiunii de suport și închiderea ei din Hub (11:10, `support.session_revoked_by_org`) | ✓        |
+| Afacerea suspendată ascunsă în Hub                                                          | ✓        |
+
+Fiecare pas are rândul lui în audit: `org.created`, `support.session_opened` / `_closed` / `_revoked_by_org`, `org.suspended` / `org.reactivated`, `invitation.accepted`, `auth.login_succeeded`, `2fa.*`, `org.active_changed`, `password.changed`.
+
+## Corecțiile făcute pe parcurs
+
+| PR  | Ce a reparat                                                                                                                                                                                    |
+| --- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| #33 | `main` roșu după #30: `founderEmail` rămas în testul 4.1; portul T6 fix în `scripts/test-integration.mjs`                                                                                       |
+| #34 | bootstrap-ul Founder: id-uri UUID (configurația aplicației) și `makeFounderClient`. Acțiunile Founder și Hub nu mai înghit erorile: 24 de `catch` scriu în jurnal, cu Sentry dacă e configurat. |
+| #36 | interogările raw pe rolul modulului (invitația din Hub); testele de integrare pe rolurile de runtime, cu gardă                                                                                  |
+
+**Pe staging, singura schimbare de date** (aprobată): ștergerea contului Founder cu id-ul vechi și a rândului din `verifications`, într-o tranzacție. Niciun GRANT, rol sau migrare nu s-a schimbat.
+
+## Observații (nereparate)
+
+1. **Pagina principală a Hub-ului afișează „OK — platform (port 3100)”** (`apps/platform/app/(hub)/page.tsx:3`). E un înlocuitor tehnic din lotul de pornire; de schimbat cu un text normal până la launcher.
+2. **„Ultimele modificări” (Founder, pagina afacerii) arăta doar „Afacere creată”, fără „Invitație trimisă”.** Este comportamentul actual, conform designului de audit:
+   - invitația proprietarului din Founder nu are un rând `invitation.created` propriu; e înregistrată în rândul E20 `org.created` (în tranzacția creării afacerii, cu `invitationId` în metadate);
+   - `invitation.created` (E21) se scrie doar pentru invitațiile trimise din Hub, de proprietar sau admin (`inviteMember`);
+   - pe staging, în auditul afacerii, apare după aceea și `invitation.accepted`.
+
+   Dacă se vrea „Invitație trimisă” separat în listă, e o decizie de produs: fie un rând E21 în plus la crearea afacerii, fie afișarea lui E20 ca „Afacere creată · invitație trimisă”.
+
+3. **Avertisment Better Auth „Base URL is not set”** pe ambele aplicații: de configurat `BETTER_AUTH_URL` (Hub și Founder) la Vercel, odată cu secretele (Lotul 3.9 / 4.11).
+4. **Reactivarea afacerii se face fără dialog de confirmare.** Dialogul vine cu S112.
+5. **Încărcarea e lentă în modul de dezvoltare legat de staging:** `/admin/access` 18,6 s, `/account` 8,1 s. Prima compilare și pooler-ul de la distanță contează; de remăsurat pe deploy.
+6. **Founder:** Next 16 avertizează că `middleware` e depreciat, în favoarea lui `proxy`.
+7. **Subiectul confirmării de schimbare a parolei** spune „contului tău Ventora” și pentru contul Founder (e-mailul de resetare spune „Ventora Founder”).
+
+## Închiderea
+
+Serverele de test (3200, 3202) și captura de e-mail (4510) au fost oprite după test. Secretele `BETTER_AUTH_SECRET` și `FOUNDER_AUTH_SECRET` rămân în `.env.local` (vezi nota pentru Vercel de mai sus).
