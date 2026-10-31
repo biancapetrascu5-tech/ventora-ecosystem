@@ -3,6 +3,7 @@ export {
   NotMember as NotMemberError,
   Forbidden as ForbiddenError,
   ResourceNotFound as NotFoundError,
+  OrganizationSuspended as OrganizationSuspendedError,
 } from '@ventora/errors';
 
 // Organization-specific errors (not in @ventora/errors)

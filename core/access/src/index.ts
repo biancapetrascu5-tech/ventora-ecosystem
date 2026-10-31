@@ -44,3 +44,20 @@ export type {
 export { recoverOwnerAccess, validateRecoveryVerifications } from './owner-recovery';
 export type { RecoverOwnerAccessResult, RecoveryVerification } from './owner-recovery';
 export { closeFounderPools } from './founder-db';
+export {
+  listBusinessesForFounder,
+  getBusinessPageForFounder,
+  suspendBusiness,
+  reactivateBusiness,
+  createBusinessAsFounder,
+  slugFromName,
+  BUSINESS_CHANGE_ACTIONS,
+} from './businesses';
+export type { FounderBusiness } from './businesses';
+export {
+  listTeamMembers,
+  listTeamInvitations,
+  resendTeamInvitation,
+  revokeTeamInvitation,
+} from './team';
+export type { TeamMember } from './team';

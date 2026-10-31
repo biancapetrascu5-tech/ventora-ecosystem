@@ -458,6 +458,37 @@
       "remember": "Open the last business directly next time",
       "missing": "Missing a business? Ask its owner for an invitation.",
       "search": "Search for a business"
+    },
+    "nav": {
+      "business": "Your business",
+      "team": "Team and invitations",
+      "teamShort": "Team",
+      "roles": "Roles and access"
+    },
+    "team": {
+      "title": "Team",
+      "lead": "Who works at {business}, in which role and with access to which apps.",
+      "invite": "Invite someone",
+      "members": "Members",
+      "colName": "Name",
+      "colRole": "Role",
+      "colApps": "Apps",
+      "colStatus": "Status",
+      "active": "Active",
+      "stopped": "Access stopped",
+      "pending": "Pending invitations",
+      "invitations": "Invitations",
+      "colEmail": "Email",
+      "colSent": "Sent",
+      "expires": "expires on {date}",
+      "expired": "expired on {date}",
+      "statusPending": "Pending",
+      "statusExpired": "Expired",
+      "newLinkRequested": "Asked for a new invitation",
+      "resend": "Resend",
+      "resendInvitation": "Resend the invitation",
+      "copyLink": "Copy the link",
+      "cancelInvitation": "Cancel the invitation"
     }
   },
   "roles": {

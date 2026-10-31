@@ -122,6 +122,66 @@
         "title": "Ai încercat de prea multe ori",
         "body": "Poți încerca din nou peste 15 minute, la ora {time}."
       }
+    },
+    "businesses": {
+      "title": "Afaceri",
+      "lead": "Toate afacerile Ventora, cu abonamentul, consumul și starea lor.",
+      "new": "Afacere nouă",
+      "caption": "Afaceri",
+      "search": "Caută afacere, oraș sau proprietar",
+      "searchLabel": "Caută",
+      "colBusiness": "Afacere",
+      "colSince": "Client din",
+      "colStatus": "Stare",
+      "active": "Activă",
+      "suspended": "Suspendată",
+      "open": "Deschide afacerea"
+    },
+    "business": {
+      "since": "client din {date}",
+      "owner": "{name} (proprietar)",
+      "more": "Mai multe",
+      "moreActions": "Mai multe acțiuni",
+      "openSupport": "Deschide o sesiune de suport",
+      "recover": "Recuperează accesul proprietarului",
+      "suspend": "Suspendă afacerea",
+      "reactivate": "Reactivează afacerea",
+      "ownerCard": "Proprietar",
+      "recentCard": "Ultimele modificări",
+      "change": {
+        "org_created": "Afacere creată",
+        "org_suspended": "Afacere suspendată",
+        "org_reactivated": "Afacere reactivată",
+        "invitation_created": "Invitație trimisă",
+        "invitation_resent": "Invitație retrimisă",
+        "invitation_revoked": "Invitație anulată",
+        "invitation_accepted": "Invitație acceptată",
+        "application_access_granted": "Acces la aplicații",
+        "support_session_opened": "Sesiune de suport deschisă",
+        "support_session_closed": "Sesiune de suport închisă",
+        "support_session_revoked_by_org": "Sesiune de suport închisă de afacere",
+        "support_owner_recovery_performed": "Acces recuperat pentru proprietar"
+      },
+      "suspendDialog": {
+        "title": "Suspenzi {name}?",
+        "body": "{count, plural, =0 {Nimeni din afacere nu mai poate intra până o reactivezi.} one {Omul afacerii nu mai poate intra până o reactivezi.} few {Cei # oameni ai afacerii nu mai pot intra până o reactivezi.} other {Cei # de oameni ai afacerii nu mai pot intra până o reactivezi.}} Datele rămân.",
+        "confirmLabel": "Scrie numele afacerii ca să confirmi",
+        "keep": "Păstrează afacerea activă",
+        "confirm": "Suspendă afacerea"
+      }
+    },
+    "newBusiness": {
+      "title": "Afacere nouă",
+      "lead": "Creezi afacerea și îi trimiți proprietarului invitația. Contul lui se face doar din invitație.",
+      "sectionBusiness": "Afacerea",
+      "name": "Numele afacerii",
+      "sectionOwner": "Proprietarul",
+      "email": "E-mail",
+      "emailHelp": "Aici pleacă invitația.",
+      "submit": "Creează afacerea și trimite invitația",
+      "submitShort": "Creează și trimite",
+      "cancel": "Renunță",
+      "error": "Nu am putut crea afacerea. Încearcă din nou."
     }
   }
 }

@@ -458,6 +458,37 @@
       "remember": "Deschide direct ultima afacere data viitoare",
       "missing": "Lipsește o afacere? Cere-i proprietarului ei o invitație.",
       "search": "Caută o afacere"
+    },
+    "nav": {
+      "business": "Afacerea",
+      "team": "Echipă și invitații",
+      "teamShort": "Echipă",
+      "roles": "Roluri și acces"
+    },
+    "team": {
+      "title": "Echipa",
+      "lead": "Cine lucrează în {business}, cu ce rol și la ce aplicații are acces.",
+      "invite": "Invită o persoană",
+      "members": "Membri",
+      "colName": "Nume",
+      "colRole": "Rol",
+      "colApps": "Aplicații",
+      "colStatus": "Stare",
+      "active": "Activ",
+      "stopped": "Acces oprit",
+      "pending": "Invitații în așteptare",
+      "invitations": "Invitații",
+      "colEmail": "E-mail",
+      "colSent": "Trimisă",
+      "expires": "expiră pe {date}",
+      "expired": "a expirat pe {date}",
+      "statusPending": "În așteptare",
+      "statusExpired": "Expirată",
+      "newLinkRequested": "A cerut o invitație nouă",
+      "resend": "Retrimite",
+      "resendInvitation": "Retrimite invitația",
+      "copyLink": "Copiază linkul",
+      "cancelInvitation": "Anulează invitația"
     }
   },
   "roles": {

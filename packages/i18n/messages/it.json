@@ -458,6 +458,37 @@
       "remember": "La prossima volta aprire direttamente l’ultima attività",
       "missing": "Manca un’attività? Chieda un invito al titolare.",
       "search": "Cerchi un’attività"
+    },
+    "nav": {
+      "business": "Attività",
+      "team": "Team e inviti",
+      "teamShort": "Team",
+      "roles": "Ruoli e accesso"
+    },
+    "team": {
+      "title": "Team",
+      "lead": "Chi lavora in {business}, con quale ruolo e a quali app ha accesso.",
+      "invite": "Invita una persona",
+      "members": "Membri",
+      "colName": "Nome",
+      "colRole": "Ruolo",
+      "colApps": "App",
+      "colStatus": "Stato",
+      "active": "Attivo",
+      "stopped": "Accesso sospeso",
+      "pending": "Inviti in attesa",
+      "invitations": "Inviti",
+      "colEmail": "E-mail",
+      "colSent": "Inviato",
+      "expires": "scade il {date}",
+      "expired": "scaduto il {date}",
+      "statusPending": "In attesa",
+      "statusExpired": "Scaduto",
+      "newLinkRequested": "Ha chiesto un nuovo invito",
+      "resend": "Invia di nuovo",
+      "resendInvitation": "Invia di nuovo l’invito",
+      "copyLink": "Copia il link",
+      "cancelInvitation": "Annulla l’invito"
     }
   },
   "roles": {

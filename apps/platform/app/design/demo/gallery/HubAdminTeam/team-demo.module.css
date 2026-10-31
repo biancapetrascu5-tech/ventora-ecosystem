@@ -1,0 +1,5 @@
+/* .frame-rel din HubAdminTeam/preview.html: cadrul ecranului */
+.frame {
+  position: relative;
+  height: 100%;
+}

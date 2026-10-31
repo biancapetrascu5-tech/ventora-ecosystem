@@ -458,6 +458,37 @@
       "remember": "Ouvrir directement la dernière entreprise la prochaine fois",
       "missing": "Il manque une entreprise ? Demandez une invitation à son propriétaire.",
       "search": "Rechercher une entreprise"
+    },
+    "nav": {
+      "business": "Votre entreprise",
+      "team": "Équipe et invitations",
+      "teamShort": "Équipe",
+      "roles": "Rôles et accès"
+    },
+    "team": {
+      "title": "Équipe",
+      "lead": "Qui travaille chez {business}, avec quel rôle et accès à quelles applications.",
+      "invite": "Inviter une personne",
+      "members": "Membres",
+      "colName": "Nom",
+      "colRole": "Rôle",
+      "colApps": "Applications",
+      "colStatus": "Statut",
+      "active": "Actif",
+      "stopped": "Accès suspendu",
+      "pending": "Invitations en attente",
+      "invitations": "Invitations",
+      "colEmail": "E-mail",
+      "colSent": "Envoyée",
+      "expires": "expire le {date}",
+      "expired": "a expiré le {date}",
+      "statusPending": "En attente",
+      "statusExpired": "Expirée",
+      "newLinkRequested": "A demandé une nouvelle invitation",
+      "resend": "Renvoyer",
+      "resendInvitation": "Renvoyer l’invitation",
+      "copyLink": "Copier le lien",
+      "cancelInvitation": "Annuler l’invitation"
     }
   },
   "roles": {
