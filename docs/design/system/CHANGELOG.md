@@ -739,3 +739,5 @@ Decizia fondatoarei din 31.10: afacerile cumpără aplicații la bucată și bun
 ### i18n
 - `pricing.json`: `catalog.bundles.*`, `catalog.alaCarte.*`, `catalog.setup`, `catalog.noSetup`, `catalog.app.*` (mentenanța, implementarea, ce include), `billing.have.*`, `seats.*`, `limits.*` (6 limbi).
 - `founder-pricing.json`: `founder.apps.*` (noi), `founder.bundles.*`, `founder.bundleEditor.*`, `founder.new.*` (noi) — RO.
+
+> Sincronizat în repo: S112 la Lotul 2.9b; S111, S113 și S117 la Lotul 3.4 (tokens.json și tokens.css rămân din repo; logo-urile se iau din design system, nota S114b). În `_incoming` rămân, nesincronizate: HubAccount, HubTeamMemberActions, BillingNotifications, README-urile NotificationsPanel / BookingSmsNotifications și i18n `notifications.json`, `team.json`, `founder-business.json` (S114, S114b, S115). În cod, FounderPlans se numește FounderBundles (decizia fondatoarei).
