@@ -636,6 +636,29 @@ export async function reconcileExpiredReservations(
 }
 
 /**
+ * Lot 4.2: the periodic reconciliation, run by the job `platform.quota-reconcile` (every 5
+ * minutes, apps/platform/src/server/jobs.ts). Each reservation is settled in its own
+ * organization's context (from its row). Unlike a read of the consumption, the job does not
+ * swallow failures: reservations that could not be settled fail the run, so the job service
+ * reports it (Sentry) and retries; the settled ones stay settled. Ids only, no personal data.
+ */
+export async function runQuotaReconciliationJob(
+  params: Parameters<typeof reconcileExpiredReservations>[0] = {},
+): Promise<{ committed: number; released: number; skipped: number }> {
+  const result = await reconcileExpiredReservations(params);
+  if (result.failed.length > 0) {
+    throw new Error(
+      `[commercial] ${result.failed.length} expired quota reservation(s) not reconciled: ${result.failed.join(', ')}`,
+    );
+  }
+  return {
+    committed: result.committed.length,
+    released: result.released.length,
+    skipped: result.skipped.length,
+  };
+}
+
+/**
  * Raportul 3.3 (31.10.2026): until the job of Lot 4.2, every read of the consumption reconciles
  * first the organization's own expired reservations, so a lost one does not keep a unit taken.
  * Never fails the read: errors are logged (settle) and the reservation waits for the next read.
