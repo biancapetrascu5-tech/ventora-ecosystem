@@ -357,9 +357,12 @@ describe('TB.4 — o afacere suspendată nu mai trece de authorize, pentru niciu
         OrganizationSuspended,
       );
       await expect(getSupportSessionBanner({ sessionToken: p.token })).rejects.toThrow(NotMember);
-      // Hub-ul nu o mai oferă la alegerea afacerii
-      const mine = (await listMyOrganizations(p.userId)) as { organization_id: string }[];
-      expect(mine.map((m) => m.organization_id)).not.toContain(orgId);
+      // Lot 2.9b: Hub-ul o arată, marcată „Acces oprit” — dar nu o mai deschide (mai sus)
+      const mine = (await listMyOrganizations(p.userId)) as {
+        organization_id: string;
+        organization_status: string;
+      }[];
+      expect(mine.find((m) => m.organization_id === orgId)?.organization_status).toBe('suspended');
     }
 
     const audit = await auditRows(`organization_id = $1 AND action = 'org.suspended'`, [orgId]);

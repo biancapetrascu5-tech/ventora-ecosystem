@@ -219,6 +219,17 @@ psqlFile(
   join(ROOT, 'core/organizations/prisma/migrations/20261031000002_outbox_init/migration.sql'),
 );
 
+console.log(
+  '[test:db:up] Aplic migrarea organizations #7 (lista cu afacerile suspendate, Lot 2.9b)...',
+);
+psqlFile(
+  TEST_DB.orgDb,
+  join(
+    ROOT,
+    'core/organizations/prisma/migrations/20261101000001_lot29b_memberships_v3/migration.sql',
+  ),
+);
+
 // Rolurile sunt la nivel de cluster (create de migrarea identity), deci grant-urile din M1 se aplică
 console.log('[test:db:up] Aplic migrarea audit (organizations DB)...');
 psqlFile(
@@ -300,6 +311,8 @@ for (const migration of [
   'core/organizations/prisma/migrations/20261031000001_lot28_organization_status/migration.sql',
   // Lot 4.1: outbox-ul organizations (requestNewInvitationLink scrie evenimentul)
   'core/organizations/prisma/migrations/20261031000002_outbox_init/migration.sql',
+  // Lot 2.9b: lista afacerilor mele cu cele suspendate (list_my_memberships_v3)
+  'core/organizations/prisma/migrations/20261101000001_lot29b_memberships_v3/migration.sql',
   // Lot 3.1: registrul comercial (commercial_rw → app_runtime, SELECT → founder_runtime)
   'core/commercial/prisma/migrations/20261101000001_commercial_init/migration.sql',
   // Lot 3.2: planuri, abonament, excepții (commercial_founder → founder_runtime)

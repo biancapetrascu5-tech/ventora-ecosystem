@@ -71,6 +71,21 @@ export async function getFounderSession(headers: Headers): Promise<FounderSessio
   };
 }
 
+/**
+ * Lot 2.9b: the names of Founder accounts by id („Ultimele modificări”: „{event} ({name})”, the
+ * suspension notice). Revoked accounts keep their name: the history stays readable. Only for
+ * Founder screens — the caller has already checked the Founder session.
+ */
+export async function getFounderNames(ids: readonly string[]): Promise<Record<string, string>> {
+  const unique = [...new Set(ids.filter(Boolean))];
+  if (unique.length === 0) return {};
+  const rows = await getFounderDb().user.findMany({
+    where: { id: { in: unique } },
+    select: { id: true, name: true },
+  });
+  return Object.fromEntries(rows.map((r) => [r.id, r.name]));
+}
+
 /** Requires a valid founder session with 2FA already verified. Throws otherwise. */
 export async function requireFounderSession(headers: Headers): Promise<FounderSession> {
   const session = await getFounderSession(headers);

@@ -37,7 +37,11 @@ export const AuditActions = {
   invitationEmailFailed: 'invitation.email_failed', // E26
   invitationNewLinkRequested: 'invitation.new_link_requested', // Lot 2.6 · E — „Cere o invitație nouă”
   applicationAccessGranted: 'application_access.granted', // E27
-  membershipRoleChanged: 'membership.role_changed', // E28 — defined, contract not built (D8 b)
+  membershipRoleChanged: 'membership.role_changed', // E28 — HubAdminTeam „Schimbă rolul” (Lot 2.9b)
+  membershipAccessStopped: 'membership.access_stopped', // Lot 2.9b — „Oprește accesul”
+  membershipAccessRestored: 'membership.access_restored', // Lot 2.9b — „Redă accesul”
+  membershipRemoved: 'membership.removed', // Lot 2.9b — „Elimină din afacere”
+  applicationAccessUpdated: 'application_access.updated', // Lot 2.9b — „Acces la aplicații”
   authorizeTwoFactorRequired: 'authorize.two_factor_required', // E29
   // §2.4 Founder (category founder). E30 = Founder variants of E1–E19, see founderAction().
   founderUserAdded: 'founder.user_added', // E31

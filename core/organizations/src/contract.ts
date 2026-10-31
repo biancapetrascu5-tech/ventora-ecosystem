@@ -20,6 +20,7 @@ import {
   appendAuditEventInTx,
   hashEmail,
   pgExecutor,
+  prismaTxExecutor,
   writeAuditEvent,
   type AuditEvent,
   type AuditSqlExecutor,
@@ -471,7 +472,8 @@ export async function listMyOrganizations(userId: string) {
   const db = getOrgDb();
   return db.$transaction(async (tx: any) => {
     await tx.$executeRaw`SELECT set_config('app.user_id', ${userId}, true)`;
-    // Lot 2.6 · F: last_opened_at (ultima deschisă prima), din list_my_memberships_v2
+    // Lot 2.6 · F: last_opened_at (ultima deschisă prima). Lot 2.9b (S112): și afacerile
+    // suspendate, cu organization_status — se arată „Acces oprit”, nu se deschid.
     return tx.$queryRaw<
       Array<{
         organization_id: string;
@@ -480,9 +482,11 @@ export async function listMyOrganizations(userId: string) {
         role: MembershipRole;
         status: string;
         last_opened_at: Date | null;
+        organization_status: 'active' | 'suspended';
       }>
-    >`SELECT organization_id, organization_name, organization_slug, role, status, last_opened_at
-      FROM organizations.list_my_memberships_v2()`;
+    >`SELECT organization_id, organization_name, organization_slug, role, status, last_opened_at,
+             organization_status
+      FROM organizations.list_my_memberships_v3()`;
   });
 }
 
@@ -902,6 +906,131 @@ export async function revokeInvitation(ctx: OrgContext, invitationId: string): P
     organizationId: ctx.organizationId,
     targetType: 'invitation',
     targetId: invitationId,
+  });
+}
+
+// ── Lot 2.9b — the menu of a member in HubAdminTeam ───────────────────────────────────────────
+
+/** The roles a manager can give from HubAdminTeam (HubTeamInvite: Membru / Admin). */
+export type ManagedRole = 'admin' | 'member';
+
+/**
+ * The target membership, locked for the change. Only owner and admin manage the team; nobody
+ * acts on themselves here; the owner is never touched from this menu (an admin cannot touch the
+ * owner, and the owner changes hands only through owner recovery).
+ */
+async function managedMembership(
+  tx: any,
+  ctx: OrgContext,
+  targetUserId: string,
+): Promise<{ id: string; role: MembershipRole; status: string }> {
+  if (ctx.role !== 'owner' && ctx.role !== 'admin') throw new ForbiddenError();
+  assertUuid(targetUserId, 'userId');
+  if (targetUserId === ctx.userId) throw new ForbiddenError('Not on your own membership');
+  await tx.$executeRaw`SELECT set_config('app.organization_id', ${ctx.organizationId}, true)`;
+  const rows = await tx.$queryRaw<Array<{ id: string; role: MembershipRole; status: string }>>`
+    SELECT id, role, status FROM organizations.membership
+     WHERE organization_id = ${ctx.organizationId}::uuid AND user_id = ${targetUserId}::uuid
+     FOR UPDATE`;
+  const m = rows[0];
+  if (!m) throw new NotFoundError('Member not found');
+  if (m.role === 'owner') throw new ForbiddenError('The owner cannot be changed here');
+  return m;
+}
+
+function memberAudit(
+  ctx: OrgContext,
+  action: string,
+  targetUserId: string,
+  metadata: Record<string, unknown> = {},
+): AuditEvent {
+  return {
+    category: 'organization',
+    action,
+    outcome: 'success',
+    actorType: 'user',
+    actorId: ctx.userId,
+    organizationId: ctx.organizationId,
+    targetType: 'membership',
+    targetId: targetUserId,
+    metadata,
+  };
+}
+
+/**
+ * „Schimbă rolul” (E28): Membru ↔ Admin. B4: an admin cannot make another admin (as for
+ * invitations). The audit row is in the same transaction (required).
+ */
+export async function changeMemberRole(
+  ctx: OrgContext,
+  targetUserId: string,
+  role: ManagedRole,
+): Promise<{ changed: boolean }> {
+  if (role !== 'admin' && role !== 'member') throw new ForbiddenError('Unknown role');
+  if (ctx.role === 'admin' && role === 'admin') {
+    throw new ForbiddenError('Admins cannot make other admins');
+  }
+  const db = getOrgDb();
+  return db.$transaction(async (tx: any) => {
+    const m = await managedMembership(tx, ctx, targetUserId);
+    if (m.role === role) return { changed: false };
+    await tx.$executeRaw`UPDATE organizations.membership SET role = ${role}::"organizations"."MembershipRole", updated_at = now()
+      WHERE id = ${m.id}::uuid`;
+    await appendAuditEventInTx(
+      prismaTxExecutor(tx),
+      memberAudit(ctx, AuditActions.membershipRoleChanged, targetUserId, {
+        from: m.role,
+        to: role,
+      }),
+    );
+    return { changed: true };
+  });
+}
+
+/**
+ * „Oprește accesul” / „Redă accesul”: the membership stays (role, applications), the person
+ * cannot get in until it is restored (resolveOrgContext needs an active membership).
+ */
+export async function setMemberAccess(
+  ctx: OrgContext,
+  targetUserId: string,
+  access: 'stopped' | 'active',
+): Promise<{ changed: boolean }> {
+  const status = access === 'stopped' ? 'suspended' : 'active';
+  const db = getOrgDb();
+  return db.$transaction(async (tx: any) => {
+    const m = await managedMembership(tx, ctx, targetUserId);
+    if (m.status === status) return { changed: false };
+    await tx.$executeRaw`UPDATE organizations.membership SET status = ${status}::"organizations"."MembershipStatus", updated_at = now()
+      WHERE id = ${m.id}::uuid`;
+    await appendAuditEventInTx(
+      prismaTxExecutor(tx),
+      memberAudit(
+        ctx,
+        access === 'stopped'
+          ? AuditActions.membershipAccessStopped
+          : AuditActions.membershipAccessRestored,
+        targetUserId,
+        { role: m.role },
+      ),
+    );
+    return { changed: true };
+  });
+}
+
+/**
+ * „Elimină din afacere”: the membership is deleted (the account stays). The applications the
+ * person had (access.application_access) are removed by the caller (core/access), which owns them.
+ */
+export async function removeMember(ctx: OrgContext, targetUserId: string): Promise<void> {
+  const db = getOrgDb();
+  await db.$transaction(async (tx: any) => {
+    const m = await managedMembership(tx, ctx, targetUserId);
+    await tx.$executeRaw`DELETE FROM organizations.membership WHERE id = ${m.id}::uuid`;
+    await appendAuditEventInTx(
+      prismaTxExecutor(tx),
+      memberAudit(ctx, AuditActions.membershipRemoved, targetUserId, { role: m.role }),
+    );
   });
 }
 

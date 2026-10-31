@@ -287,6 +287,7 @@ jobs:
           $PSQL -v ON_ERROR_STOP=1 -f core/organizations/prisma/migrations/20261029000005_lot26_invitation_view/migration.sql
           $PSQL -v ON_ERROR_STOP=1 -f core/organizations/prisma/migrations/20261031000001_lot28_organization_status/migration.sql
           $PSQL -v ON_ERROR_STOP=1 -f core/organizations/prisma/migrations/20261031000002_outbox_init/migration.sql
+          $PSQL -v ON_ERROR_STOP=1 -f core/organizations/prisma/migrations/20261101000001_lot29b_memberships_v3/migration.sql
       - name: Apply audit migration
         run: |
           psql postgresql://postgres:test@localhost:5434/ventora_org_test \
