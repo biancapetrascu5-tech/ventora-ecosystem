@@ -1,40 +1,41 @@
-/* eslint-disable i18next/no-literal-string -- secțiunile din preview în afara lotului (Profil, Preferințe, Notificări, Recomandări, Dispozitive) */
+/* eslint-disable i18next/no-literal-string -- secțiunile din preview în afara loturilor (Profil, Preferințe, Dispozitive) */
 'use client';
 
 import { useState } from 'react';
 import {
   Avatar,
   Button,
-  Checkbox,
   FormField,
   Icon,
   Input,
   LOCALES,
-  Notice,
   PageHeader,
   Select,
   Sheet,
   SheetSection,
   StatusDot,
   ThemeSwitcher,
-  Toggle,
   type ThemeChoice,
 } from '@ventora/ui';
 import { SecuritySection } from '@/screens/account/SecurityView';
+import {
+  NotificationPrefs,
+  type NotificationPrefsValue,
+} from '@/screens/account/NotificationPrefsView';
 import { HubSettings } from '../_shared/hubSettings';
 import { noop } from '../_shared/shell';
 import { THEME_RO } from '../_shared/labels';
 import a from './account-demo.module.css';
 
-const NOTIF: [string, number[]][] = [
-  ['Programări noi și modificări', [1, 1, 0]],
-  ['Facturi scadente și restanțe', [1, 1, 1]],
-  ['Cereri de concediu', [1, 0, 0]],
-  ['Noutăți de la Ventora', [0, 1, 0]],
-];
-const CH = ['În aplicație', 'E-mail', 'SMS'];
+// S114b: datele primului cadru din preview (Concedii: e-mail oprit)
+const PREFS: NotificationPrefsValue = {
+  email: { bookings: true, phone: true, billing: true, limits: true, leave: false, support: true },
+  recommendations: { inApp: true },
+  news: { inApp: true, email: false },
+};
 
-// Securitate = componenta reală (lotul B); restul paginii = datele primului cadru din preview.
+// Securitate și Notificări = componentele reale (Lot 2.7 · B, Lot 4.4); restul paginii = datele
+// primului cadru din preview.
 export function HubAccountFrame() {
   const [theme, setTheme] = useState<ThemeChoice>('system');
   return (
@@ -86,46 +87,7 @@ export function HubAccountFrame() {
             </FormField>
           </div>
         </SheetSection>
-        <SheetSection title="Notificări" description="Alege pe unde vrei să afli de fiecare.">
-          <div className={a.ntable}>
-            <div className={`${a.nrow} ${a.nhead} caption`}>
-              <span /> <span>În aplicație</span>
-              <span>E-mail</span>
-              <span>SMS</span>
-            </div>
-            {NOTIF.map(([l, v]) => (
-              <div key={l} className={a.nrow}>
-                <span className="body">{l}</span>
-                {v.map((on, i) => (
-                  <span key={i}>
-                    <Checkbox defaultSelected={!!on} aria-label={`${l} — ${CH[i]}`} />
-                  </span>
-                ))}
-              </div>
-            ))}
-          </div>
-        </SheetSection>
-        <SheetSection
-          title="Recomandări Ventora"
-          description="Sugestii despre aplicații și pachete în plus care se potrivesc cu ce faci deja."
-        >
-          <div className={a.d0}>
-            <Toggle
-              defaultSelected
-              description="Le vezi în pagini și în notificări, la secțiunea Recomandări."
-              labelPosition="end"
-            >
-              În aplicație
-            </Toggle>
-            <Toggle isDisabled description="Disponibil în curând" labelPosition="end">
-              Pe e-mail
-            </Toggle>
-            <Notice tone="neutral" icon="info">
-              Mesajele despre limitele contului tău rămân active, pentru că sunt informații despre
-              cont, nu recomandări.
-            </Notice>
-          </div>
-        </SheetSection>
+        <NotificationPrefs mob={false} value={PREFS} />
         <SecuritySection
           owner
           twoFactorEnabled
