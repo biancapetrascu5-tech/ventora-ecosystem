@@ -1,0 +1,528 @@
+<!-- @dsCard group="Ecrane Hub" height=10402 width=2620 page -->
+<!doctype html>
+<html lang="ro">
+<head><meta charset="utf-8"><title>HubAppActivation — Ventora</title>
+<style>
+html,body{min-height:100%}
+.d{display:flex;flex-direction:column;gap:var(--space-4);padding:var(--space-4);box-sizing:border-box}
+.d0{display:flex;flex-direction:column;gap:var(--space-4);min-width:0}
+.r{display:flex;flex-wrap:wrap;gap:var(--space-3);align-items:center}
+.l{color:var(--ink-muted);width:calc(var(--space-16) + var(--space-6));flex:none}
+.g2{display:grid;grid-template-columns:repeat(auto-fit,minmax(var(--search-width),1fr));gap:var(--space-4) var(--space-6);align-items:start}
+.frame{border:var(--border-width) solid var(--line);border-radius:var(--radius-md);background:var(--sheet);box-sizing:border-box}
+.phone{width:390px;height:600px;flex:none;border:var(--border-width) solid var(--line-strong);border-radius:var(--radius-xl);overflow:hidden;box-sizing:border-box}
+.tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(var(--app-tile-width),1fr));gap:var(--space-4)}
+.icons{display:grid;grid-template-columns:repeat(auto-fill,minmax(calc(var(--app-tile-width) - var(--space-12)),1fr));gap:var(--space-2)}
+.ic{display:flex;align-items:center;gap:var(--space-2);color:var(--ink);padding:var(--space-1);min-width:0}
+.ic .caption{color:var(--ink-muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:0}
+.panel{display:flex;flex-direction:column;gap:var(--space-3);padding:var(--space-6);background:var(--sheet);color:var(--ink)}
+.lab{color:var(--ink-muted);margin-top:var(--space-2)}
+.fam{display:grid;grid-template-columns:repeat(5,1fr);gap:var(--space-4) var(--space-2)}
+.famcell,.sz,.papp{display:flex;flex-direction:column;align-items:center;gap:var(--space-1);color:var(--ink-secondary)}
+.gcell{display:flex;flex-direction:column;align-items:center;gap:var(--space-2);color:var(--ink-secondary)}
+.gwrap{position:relative;width:240px;height:240px}
+.gover{position:absolute;inset:0}
+.gwrap--sm{width:64px;height:64px;display:inline-block}
+.gwrap--sm .key{stroke-width:.5}
+.gl{stroke:var(--attention);stroke-width:.06;opacity:.55}
+.gl--major{stroke-width:.12;opacity:.9}
+.key{fill:none;stroke:var(--done);stroke-width:.18}
+.key--plate{stroke:var(--attention);stroke-dasharray:.6 .4}
+.key--diag{stroke-dasharray:.5 .5}
+.rules{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--space-6);color:var(--ink)}
+.rules .body-small{color:var(--ink-muted);margin-top:var(--space-1)}
+.ctx{display:flex;flex-direction:column;background:var(--canvas);color:var(--ink);padding:var(--space-4);gap:var(--space-4)}
+.ctxrow{display:flex;gap:var(--space-4);align-items:flex-start}
+.launch{flex:1;min-width:0;background:var(--canvas);padding:var(--space-4) var(--space-6);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg)}
+.tiles3{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--space-3)}
+.spinebox{height:250px;display:flex;border:var(--border-width) solid var(--line);border-radius:var(--radius-lg);overflow:hidden;background:var(--canvas)}
+.phone2{width:300px;border:var(--border-width) solid var(--line-strong);border-radius:var(--radius-xl);background:var(--canvas);padding-bottom:var(--space-4)}
+.pgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--space-4) var(--space-1);padding:0 var(--space-3)}
+.browser{display:flex;gap:var(--space-1);background:var(--sunken);padding:var(--space-2) var(--space-2) 0;border-radius:var(--radius-md) var(--radius-md) 0 0;border:var(--border-width) solid var(--line)}
+.btab{display:inline-flex;align-items:center;gap:var(--space-2);padding:var(--space-2) var(--space-3);border-radius:var(--radius-sm) var(--radius-sm) 0 0;color:var(--ink-secondary);min-width:160px}
+.btab.on{background:var(--sheet);color:var(--ink)}
+.muted{color:var(--ink-muted)}.center{text-align:center}
+.scr{display:flex;flex-direction:column;gap:var(--space-3);padding:var(--space-6);background:var(--sheet);color:var(--ink)}
+.scr-row{display:flex;gap:var(--space-6);align-items:flex-start;margin-top:var(--space-3)}
+.scr-lab{color:var(--ink-muted);margin-bottom:var(--space-2)}
+.scr-d,.scr-t,.scr-m{position:relative;overflow:hidden;border:var(--border-width) solid var(--line-strong);background:var(--canvas);color:var(--ink);box-sizing:border-box}
+.scr-d{width:1280px;border-radius:var(--radius-lg)}
+.scr-m{width:390px;border-radius:var(--radius-xl)}
+.scr-t{width:820px;border-radius:var(--radius-xl)}
+.wrap.tablet .tiles4{grid-template-columns:repeat(3,1fr)}
+.wrap.tablet{padding:var(--space-6) var(--space-5)}
+.sup.tablet{grid-template-columns:1fr}
+.paymethod{display:flex;flex-direction:column;gap:var(--space-2);margin-top:var(--space-4);padding-top:var(--space-4);border-top:var(--border-width) solid var(--line);max-width:480px}
+.modal-demo{position:absolute;inset:0;background:var(--scrim);display:flex;align-items:center;justify-content:center;padding:var(--space-6);z-index:var(--z-overlay)}
+.modal-demo.mobile{align-items:flex-end;padding:0}
+.modal-demo .v-dialog{max-height:none}
+.dlggrid{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--space-6);align-items:start}
+.dlggrid .v-dialog{width:auto}
+.today{display:flex;flex-direction:column;gap:var(--space-6)}
+.today.mobile{gap:var(--space-4)}.today.mobile .greet{padding:0 var(--space-4)}
+.today-grid{display:grid;grid-template-columns:minmax(0,2fr) minmax(320px,1fr);gap:var(--space-6);align-items:start}
+.today.tablet .today-grid,.today.mobile .today-grid{grid-template-columns:1fr}
+.today.tablet .today-side,.today.mobile .today-side{order:-1}
+.today-main{display:flex;flex-direction:column;gap:var(--space-6);min-width:0}
+.today.mobile .sec,.today.mobile .sechead{padding:0 var(--space-4)}
+.today.mobile .sheetlike,.today.mobile .nowcard{border-radius:0;border-left:0;border-right:0}
+.nowcards{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:var(--space-3)}
+.nowcard{display:flex;flex-direction:column;gap:var(--space-3);padding:var(--space-4);background:var(--sheet);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg)}
+.sechead{display:flex;justify-content:space-between;align-items:center;gap:var(--space-3);margin-bottom:var(--space-3);flex-wrap:wrap}
+.sec .v-badge{vertical-align:middle;margin-left:var(--space-1)}
+.reslist{list-style:none;margin:0 0 var(--space-3);padding:0;display:flex;flex-direction:column}
+.reslist li{display:flex;flex-direction:column;gap:2px;padding:var(--space-3) 0;border-bottom:var(--border-width) solid var(--line)}
+.reslist li:last-child{border-bottom:0}
+.stth{background:var(--canvas);color:var(--ink);padding:var(--space-6);border-radius:var(--radius-lg)}
+.stgrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--space-5) var(--space-4);align-items:start}
+@media (max-width:1100px){.stgrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:640px){.stgrid{grid-template-columns:minmax(0,1fr)}.stgrid>.stc{grid-column:auto!important}}
+.stc{display:flex;flex-direction:column;gap:var(--space-2);min-width:0}
+.stc-box{background:var(--sheet);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg);padding:var(--space-4);min-width:0}
+.stc-box .v-dialog{width:100%;box-shadow:none}
+.stc-box .v-toast{width:100%;box-sizing:border-box}
+.slotcol{display:flex;flex-direction:column;gap:var(--space-3);padding:var(--space-4);background:var(--canvas);border-radius:var(--radius-lg);color:var(--ink)}
+.recogrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--space-5);align-items:start}
+.toastdemo{position:fixed;right:var(--space-6);bottom:var(--space-6);width:var(--panel-width);z-index:var(--z-toast)}
+.appdet{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:var(--space-6);align-items:start}
+.wrap.tablet .appdet,.wrap.mobile .appdet{grid-template-columns:1fr}
+.appdet-main,.appdet-side{display:flex;flex-direction:column;gap:var(--space-5);padding:var(--space-6)}
+.wrap.mobile .appdet-main,.wrap.mobile .appdet-side{padding:var(--space-4)}
+.appdet-side{gap:var(--space-3)}
+.appdet-why{padding:var(--space-4);background:var(--sunken);border-radius:var(--radius-md)}
+.appdet-why .body{margin-top:var(--space-1)}
+.appdet-list{list-style:none;margin:var(--space-2) 0 0;padding:0;display:flex;flex-direction:column;gap:var(--space-2)}
+.appdet-list li{display:flex;gap:var(--space-2);align-items:flex-start}
+.appdet-list svg{flex:none;margin-top:2px;color:var(--ink-muted)}
+.seclist{display:flex;flex-direction:column;background:var(--sheet);border-top:var(--border-width) solid var(--line);border-bottom:var(--border-width) solid var(--line)}
+.secitem{display:flex;align-items:center;gap:var(--space-3);min-height:var(--touch-target);padding:var(--space-3) var(--space-4);background:none;border:0;border-top:var(--border-width) solid var(--line);color:var(--ink);text-align:left;font:inherit;cursor:pointer}
+.secitem .biz-text{flex:1}
+.inv-email{display:flex;flex-direction:column;gap:2px}
+.daylinks .v-link{font-weight:500}
+.rows2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--space-2)}
+.wrap.tablet .rows2{grid-template-columns:1fr}
+.unsaved{position:absolute;left:0;right:0;bottom:0;display:flex;align-items:center;justify-content:space-between;gap:var(--space-3);padding:var(--space-3) var(--space-6);background:var(--raised);border-top:var(--border-width) solid var(--line-strong);box-shadow:var(--shadow-2);z-index:var(--z-sticky);flex-wrap:wrap}
+.scr-d .unsaved{left:var(--spine-width)}
+.scr-t .unsaved{left:var(--spine-width-collapsed)}
+.scr-m .unsaved{bottom:var(--bottomnav-height);padding:var(--space-3) var(--space-4)}
+.axb{display:flex;flex-direction:column;gap:var(--space-6);min-width:0}
+.axb.mobile{gap:var(--space-4)}
+.axsplit{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:var(--space-6);align-items:start}
+.axb.tablet .axsplit,.axb.mobile .axsplit{grid-template-columns:1fr}
+.axb.tablet .axside,.axb.mobile .axside{order:-1}
+.axstack{display:flex;flex-direction:column;gap:var(--space-6);min-width:0}
+.axstack .axside{order:-1}
+.axb .axside.axafter{order:0}
+.logosets{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(420px,100%),1fr));gap:var(--space-4)}
+.logoset{display:flex;flex-direction:column;gap:var(--space-4);padding:var(--space-6);min-width:0;background:var(--sheet);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg);color:var(--ink)}
+.favtab{display:inline-flex;align-items:center;gap:var(--space-2);padding:var(--space-2) var(--space-3);border-radius:var(--radius-sm) var(--radius-sm) 0 0;background:var(--canvas);color:var(--ink-secondary);border:var(--border-width) solid var(--line);border-bottom:0}
+.axb.mobile .axside.axafter{padding:0 var(--space-4)}
+.axb.mobile .sechead,.axb.mobile>div>h2.heading{padding:0 var(--space-4)}
+.axb.mobile .fxplans{padding:0 var(--space-4)}
+.axb.mobile>.v-notice{margin:0 var(--space-4)}
+.axside{display:flex;flex-direction:column;gap:var(--space-3);min-width:0}
+.axside .v-badge{vertical-align:middle;margin-left:var(--space-1)}
+.axb.mobile .axside .heading{padding:0}
+.axcharts{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:var(--space-4)}
+.axb.mobile .axcharts{grid-template-columns:1fr}
+.axb.mobile .v-stats{grid-template-columns:1fr 1fr}
+.stockcell{display:grid;grid-template-columns:auto;gap:2px;min-width:120px}
+.stockbar{position:relative;display:block;height:4px;border-radius:var(--radius-full);background:var(--selected);max-width:140px}
+.stockbar>span{position:absolute;left:0;top:0;bottom:0;border-radius:inherit;background:var(--ink-secondary)}
+.stockbar.is-attention>span{background:var(--attention-mark)}
+.stockbar.is-danger>span{background:var(--danger)}
+.stockbar>i{position:absolute;top:-3px;bottom:-3px;width:2px;margin-left:-1px;background:var(--ink-muted);border-radius:1px}
+.glo{background:var(--sheet);color:var(--ink);gap:var(--space-6);padding:var(--space-6)}
+.glo-lead{max-width:760px;margin-top:var(--space-2)}
+.glo-rules{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:var(--space-4) var(--space-6)}
+.glo-rules .body-small{margin-top:var(--space-1)}
+.glo-sec{display:flex;flex-direction:column;gap:var(--space-2)}
+.glo-t{width:100%;border-collapse:collapse;table-layout:fixed}
+.glo-t th{text-align:left;color:var(--ink-muted);padding:var(--space-2) var(--space-3);border-bottom:var(--border-width) solid var(--line-strong)}
+.glo-t th:last-child{width:30%}
+.glo-t td{padding:var(--space-2) var(--space-3);border-bottom:var(--border-width) solid var(--line);vertical-align:top;overflow-wrap:anywhere}
+.glo-dec{display:inline-flex;align-items:center;gap:var(--space-1);margin-left:var(--space-2);padding:0 var(--space-2);border-radius:var(--radius-full);background:var(--attention-soft);color:var(--attention-ink);white-space:nowrap}
+.calbar{display:flex;justify-content:space-between;align-items:center;gap:var(--space-3);flex-wrap:wrap;margin-bottom:var(--space-3)}
+.calbar-date{margin-left:var(--space-2);white-space:nowrap}
+.calwrap.mobile{padding:0 var(--space-4)}
+.staffpick{margin-bottom:var(--space-3);max-width:var(--search-width)}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:var(--space-2) var(--space-4);margin:0}
+.kv dt{color:var(--ink-muted);padding-top:var(--space-0-5)}.kv dd{margin:0;color:var(--ink)}
+.hist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:var(--space-2);color:var(--ink-secondary)}
+.hist .muted{margin-right:var(--space-2)}
+.newgrid{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:var(--space-6);align-items:start}
+.newgrid.tablet,.newgrid.mobile{grid-template-columns:1fr}
+.newgrid.mobile{padding-bottom:var(--space-16)}
+.sumcard{position:sticky;top:0;display:flex;flex-direction:column;gap:var(--space-3);padding:var(--space-5);background:var(--sheet);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg)}
+.newgrid.mobile .sumcard{border-radius:0;border-left:0;border-right:0}
+.sumtotal{display:flex;justify-content:space-between;align-items:baseline;padding-top:var(--space-3);border-top:var(--border-width) solid var(--line)}
+.stickybar{position:absolute;left:0;right:0;bottom:var(--bottomnav-height);display:flex;gap:var(--space-2);justify-content:flex-end;padding:var(--space-3) var(--space-4);background:var(--sheet);border-top:var(--border-width) solid var(--line);z-index:var(--z-sticky)}
+.stickybar .v-btn--primary{flex:1}
+.hours{display:flex;flex-direction:column}
+.hrow{display:flex;align-items:center;justify-content:space-between;gap:var(--space-4);padding:var(--space-2) 0;border-bottom:var(--border-width) solid var(--line);min-height:var(--touch-target);flex-wrap:wrap}
+.hrow .v-toggle{min-width:160px}
+.hrange{display:inline-flex;align-items:center;gap:var(--space-2)}
+.hrange .v-datepicker{width:120px}
+.auth{min-height:100%;display:flex;flex-direction:column;background:var(--canvas);color:var(--ink)}
+.auth-top{display:flex;justify-content:space-between;align-items:center;padding:var(--space-4) var(--space-6)}
+.auth.mobile .auth-top{padding:var(--space-3) var(--space-4)}
+.auth-main{flex:1;display:flex;align-items:flex-start;justify-content:center;padding:var(--space-12) var(--space-4)}
+.auth.mobile .auth-main{padding:var(--space-2) 0 0;align-items:stretch}
+.auth-card{width:400px;background:var(--sheet);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg);padding:var(--space-10);display:flex;flex-direction:column;gap:var(--space-4);box-sizing:border-box}
+.auth-card.wide{width:480px}
+.auth.mobile .auth-card{width:100%;border-radius:0;border-left:0;border-right:0;border-bottom:0;padding:var(--space-6) var(--space-4)}
+.auth-head{display:flex;flex-direction:column;gap:var(--space-1);margin-bottom:var(--space-2)}
+.auth-note{display:flex;gap:var(--space-2);padding-top:var(--space-4);border-top:var(--border-width) solid var(--line);color:var(--ink-muted)}
+.auth-note .v-icon{margin-top:var(--space-0-5)}
+.auth-foot{padding:var(--space-4) var(--space-6);color:var(--ink-muted);text-align:center}
+.auth.mobile .auth-foot{display:none}
+.inv-head{display:flex;gap:var(--space-3);align-items:center}
+.inv-mark{width:var(--space-12);height:var(--space-12);border-radius:var(--radius-md);background:var(--neutral-soft);display:inline-flex;align-items:center;justify-content:center;font-weight:700;color:var(--ink);flex:none;box-shadow:inset 0 0 0 var(--border-width) var(--line-strong)}
+.inv-mark.sm{width:var(--space-10);height:var(--space-10)}
+.inv-role{display:flex;flex-direction:column;gap:var(--space-2);padding:var(--space-3) var(--space-4);background:var(--sunken);border-radius:var(--radius-sm)}
+.inv-app{display:inline-flex;gap:var(--space-1);align-items:center;color:var(--ink-secondary);margin-right:var(--space-2)}
+.reqs{list-style:none;margin:calc(var(--space-2) * -1) 0 0;padding:0;display:flex;flex-direction:column;gap:var(--space-1)}
+.req{display:flex;gap:var(--space-2);align-items:center;color:var(--ink-muted)}.req.ok{color:var(--done-ink)}
+.choose{width:560px;display:flex;flex-direction:column;gap:var(--space-4)}
+.auth.mobile .choose{width:auto;padding:var(--space-4)}
+.biz-list{display:flex;flex-direction:column;background:var(--sheet);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg);overflow:hidden}
+.biz{appearance:none;display:flex;align-items:center;gap:var(--space-3);padding:var(--space-4);border:0;border-bottom:var(--border-width) solid var(--line);background:transparent;color:var(--ink);text-align:start;font-family:inherit;cursor:pointer;min-height:var(--touch-target)}
+.biz:last-child{border-bottom:0}.biz:hover{background:var(--state-hover)}
+.biz-text{flex:1;min-width:0;display:flex;flex-direction:column;gap:var(--space-0-5);align-items:flex-start}
+.frame-rel{position:relative;height:100%}
+.wrap{max-width:1120px;width:100%;margin:0 auto;padding:var(--space-6) var(--space-6) var(--space-10);display:flex;flex-direction:column;gap:var(--space-8);box-sizing:border-box}
+.wrap.mobile{padding:var(--space-4);gap:var(--space-6)}
+.greet{display:flex;flex-direction:column;gap:var(--space-2)}
+.sec{margin-bottom:var(--space-3)}
+.tiles4{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--space-4)}
+.mgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--space-3) var(--space-1)}
+.rows{display:flex;flex-direction:column;background:var(--sheet);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg);overflow:hidden}
+.sheetlike{background:var(--sheet);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg)}
+.g2f{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(260px,100%),1fr));gap:var(--space-4) var(--space-6)}
+.nrow{display:grid;grid-template-columns:1fr repeat(3,var(--control-lg));align-items:center;padding:var(--space-2) 0;border-bottom:var(--border-width) solid var(--line);gap:var(--space-4)}
+.nrow>span:not(:first-child){display:flex;justify-content:center;text-align:center}
+.nhead{color:var(--ink-muted)}
+.secrow{display:flex;align-items:center;justify-content:space-between;gap:var(--space-4);padding:var(--space-3) 0;border-bottom:var(--border-width) solid var(--line);flex-wrap:wrap}
+.appsrow{display:inline-flex;gap:var(--space-1);align-items:center;flex-wrap:wrap}
+.mx-row{display:grid;grid-template-columns:minmax(320px,1.8fr) repeat(4,1fr);align-items:center;padding:var(--space-3) var(--space-6);border-bottom:var(--border-width) solid var(--line);gap:var(--space-2)}
+.mx-head{background:var(--sunken);color:var(--ink-secondary);border-radius:var(--radius-lg) var(--radius-lg) 0 0}
+.mx-c{display:flex;flex-direction:column;align-items:center;text-align:center}
+.mx-app{display:flex;align-items:center;gap:var(--space-3);flex-wrap:wrap}
+.mx-foot{padding:var(--space-4) var(--space-6)}
+.mrow{display:flex;align-items:center;gap:var(--space-3);padding:var(--space-3) var(--space-4);border-bottom:var(--border-width) solid var(--line);color:var(--ink-secondary)}.mrow:last-child{border-bottom:0}
+.plan{display:flex;justify-content:space-between;align-items:center;gap:var(--space-4);flex-wrap:wrap}
+.numeric-inline{font-weight:600;color:var(--ink)}
+.usage-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:var(--space-6)}
+.sup{display:grid;grid-template-columns:1.5fr 1fr;gap:var(--space-6);align-items:start}
+.lframes{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--space-4)}
+.lframe{position:relative;height:220px;border:var(--border-width) solid var(--line-strong);border-radius:var(--radius-lg);overflow:hidden;background:var(--canvas)}
+.lframe-tiles{display:flex;gap:var(--space-3);padding:var(--space-4)}
+.lstage{position:relative;height:240px;border:var(--border-width) solid var(--line-strong);border-radius:var(--radius-lg);overflow:hidden;background:var(--canvas);padding:var(--space-4)}
+.lstage-grid{display:grid;grid-template-columns:repeat(6,96px);gap:var(--space-2)}
+.fxcard{display:flex;flex-direction:column;gap:var(--space-2);padding:var(--space-5)}
+.fxapps{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:var(--space-3) var(--space-4)}
+.fxmail{display:flex;flex-direction:column;gap:var(--space-3);padding:var(--space-5);border:var(--border-width) solid var(--line);border-radius:var(--radius-md);background:var(--canvas);color:var(--ink)}
+.fxmail-btn{align-self:flex-start;padding:var(--space-2) var(--space-4);border-radius:var(--radius-md);background:var(--primary);color:var(--on-primary);font-weight:600}
+.fxplans{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:var(--space-4)}
+.fxplan{display:flex;flex-direction:column;gap:var(--space-3);padding:var(--space-5)}
+.fxlim{margin:0;padding-left:var(--space-5);color:var(--ink-secondary);display:flex;flex-direction:column;gap:var(--space-1)}
+.fxver{width:100%;border-collapse:collapse}
+.fxver th{text-align:left;color:var(--ink-muted);font-weight:500;padding:var(--space-1) 0;border-bottom:var(--border-width) solid var(--line)}
+.fxver td{padding:var(--space-2) 0;border-bottom:var(--border-width) solid var(--line);color:var(--ink)}
+.fxver td .v-pill{margin-left:var(--space-2);vertical-align:middle}
+.fxlimits{display:flex;flex-direction:column}
+.fxlimits-row{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(60px,.6fr) minmax(120px,1fr);gap:var(--space-3);align-items:center;padding:var(--space-2) 0;border-bottom:var(--border-width) solid var(--line);color:var(--ink)}
+.fxlimits-row .v-icon{color:var(--done-ink,var(--ink-secondary));flex:none}
+.fxlimits-head{padding-top:0}
+.fxlink{color:var(--ink);text-decoration:underline;text-underline-offset:2px;font-weight:600;display:inline-flex;align-items:center;min-height:24px;min-width:24px}
+@media (pointer:coarse),(max-width:767px){.fxlink{min-height:44px;min-width:44px}}
+.fxlim-new{display:flex;align-items:center;gap:var(--space-2);min-width:0}
+.fxlim-new .v-control{flex:1 1 80px;min-width:0}
+.fxdelta{display:inline-flex;align-items:center;gap:var(--space-1);color:var(--done-ink);flex:none}
+.fxdelta--down{color:var(--attention-ink)}
+.fxplan .v-btn{align-self:flex-start}
+.fxcost{margin-top:var(--space-4);display:flex;flex-direction:column;gap:var(--space-1);padding:var(--space-4);border-radius:var(--radius-md);background:var(--sunken);color:var(--ink)}
+.fxlangs{display:flex;flex-direction:column}
+.fxlang{display:grid;grid-template-columns:32px minmax(0,1fr) auto auto;gap:var(--space-3);align-items:center;padding:var(--space-2) 0;border-bottom:var(--border-width) solid var(--line);color:var(--ink)}
+.fxlang-text{color:var(--ink-secondary);overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.fxframe{display:flex;flex-direction:column;gap:var(--space-2);padding:var(--space-3);border:var(--border-width) solid var(--line);border-radius:var(--radius-md);background:var(--canvas);color:var(--ink)}
+.fxframe .caption{color:var(--ink-muted)}
+@container (max-width:420px){.fxlang{grid-template-columns:32px minmax(0,1fr) auto}.fxlang .v-iconbtn{display:none}}
+
+.tfa-grouplab{margin:var(--space-6) 0 0}
+.tfa-scrgroup{display:flex;flex-direction:column}
+.sms-langs{display:flex;flex-direction:column;gap:var(--space-4);padding:var(--space-6);background:var(--canvas);color:var(--ink)}
+.sms-langrow{display:flex;gap:var(--space-6);align-items:flex-start}
+.sms-lang{display:flex;flex-direction:column;gap:var(--space-2)}
+.sms-boxlab{margin:0;color:var(--ink-muted)}
+.sms-langframe{border:var(--border-width) solid var(--line-strong);border-radius:var(--radius-lg);overflow:hidden;background:var(--canvas);color:var(--ink);display:flex;flex-direction:column}
+.sms-langframe>*{flex:1;min-height:0}
+.x-frame{position:relative;height:100%;display:flex;flex-direction:column}
+.x-frame>*{flex:1;min-height:0}
+.x-overlay{position:absolute;inset:0;background:var(--scrim);display:flex;align-items:center;justify-content:center;padding:var(--space-6);z-index:var(--z-overlay)}
+.x-overlay.m{align-items:flex-end;padding:0}
+.x-overlay .v-dialog{max-height:none}
+.x-toast{position:absolute;right:var(--space-6);bottom:var(--space-6);width:var(--panel-width);z-index:var(--z-toast)}
+.x-toast.m{left:var(--space-4);right:var(--space-4);bottom:var(--space-4);width:auto}
+.x-link{color:var(--ink);text-decoration:underline;text-underline-offset:2px}
+
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script>
+const V = window.Ventora;
+const { useState } = React;
+const Row = ({ label, children }) => /* @__PURE__ */ React.createElement("div", { className: "r" }, /* @__PURE__ */ React.createElement("span", { className: "l caption" }, label), children);
+const DE = ({ children }) => /* @__PURE__ */ React.createElement(V.LocaleProvider, { locale: "de" }, children);
+const FR = ({ children }) => /* @__PURE__ */ React.createElement(V.LocaleProvider, { locale: "fr" }, children);
+const IT = ({ children }) => /* @__PURE__ */ React.createElement(V.LocaleProvider, { locale: "it" }, children);
+const mount = (el) => ReactDOM.createRoot(document.getElementById("root")).render(/* @__PURE__ */ React.createElement(V.LocaleProvider, { locale: "ro" }, el));
+const SECTIONS = [
+  { items: [{ id: "azi", label: "Azi", icon: "house" }, { id: "calendar", label: "Calendar", icon: "calendar" }, { id: "programari", label: "Program\u0103ri", icon: "list", badge: 3 }] },
+  { label: "Gestionare", items: [{ id: "clienti", label: "Clien\u021Bi", icon: "users" }, { id: "servicii", label: "Servicii", icon: "boxes" }, { id: "angajati", label: "Angaja\u021Bi", icon: "contact" }] },
+  { label: "Afacere", items: [{ id: "rapoarte", label: "Rapoarte", icon: "chart-column" }, { id: "setari", label: "Set\u0103ri", icon: "settings" }] }
+];
+const SECTIONS_DE = [
+  { items: [{ id: "heute", label: "Heute", icon: "house" }, { id: "kalender", label: "Kalender", icon: "calendar" }, { id: "termine", label: "Termin\xFCbersicht", icon: "list", badge: 3 }] },
+  { label: "Verwaltung", items: [{ id: "kunden", label: "Kundenverwaltung", icon: "users" }, { id: "leistungen", label: "Dienstleistungen", icon: "boxes" }, { id: "mitarbeiter", label: "Mitarbeiterinnen", icon: "contact" }] },
+  { label: "Unternehmen", items: [{ id: "berichte", label: "Auswertungen", icon: "chart-column" }, { id: "einst", label: "Einstellungen", icon: "settings" }] }
+];
+const ORGS = [
+  { id: "aurora", name: "Salon Aurora", role: "Proprietar" },
+  { id: "dentis", name: "Clinica Dentis Sibiu", role: "Recep\u021Bie" },
+  { id: "nord", name: "Agen\u021Bia Nord Studio", role: "Manager de proiect" }
+];
+const NOTIFS = [
+  { id: 1, title: "Programare nou\u0103 de la Ana Popescu", body: "Joi, 29 oct., 14:30 \xB7 Tuns", app: "EasyBook", time: "acum 5 min", person: "Ana Popescu" },
+  { id: 2, title: "Factura #2026-114 e restant\u0103 de 3 zile", body: "Clinica Dentis \xB7 1.250 lei", app: "MoneyDesk", time: "acum 2 ore", icon: "receipt" },
+  { id: 3, title: "Ioana a cerut concediu pe 2\u20136 noiembrie", app: "TeamSpace", time: "ieri", person: "Ioana Pavel", read: true },
+  { id: 4, title: "Exportul clien\u021Bilor e gata", app: "ClientDesk", time: "ieri", icon: "download", read: true }
+];
+const USER = { name: "Bianca Petra\u0219cu", email: "bianca@ventora-hub.com" };
+function Bar({ title, de }) {
+  return /* @__PURE__ */ React.createElement(
+    V.ContextBar,
+    {
+      title,
+      org: /* @__PURE__ */ React.createElement(V.OrgSwitcher, { orgs: de ? [{ id: 1, name: "Zahnarztpraxis Dr. M\xFCller", role: "Empfang" }, { id: 2, name: "Salon Aurora", role: "Inhaberin" }] : ORGS, currentId: de ? 1 : "aurora" }),
+      onSearch: () => {
+      },
+      createItems: [{ label: de ? "Termin" : "Programare", icon: "calendar-check", shortcut: ["N"] }, { label: de ? "Kunde" : "Client", icon: "user-plus" }],
+      notifications: /* @__PURE__ */ React.createElement(V.NotificationsPanel, { items: NOTIFS }),
+      account: /* @__PURE__ */ React.createElement(V.AccountMenu, { user: USER, orgs: ORGS, currentOrgId: "aurora", onCatalog: () => {
+      } })
+    }
+  );
+}
+const SHELL_ROWS = [
+  { id: 1, client: "Ana Popescu", service: "Tuns", when: "09:30", status: ["done", "Confirmat\u0103"] },
+  { id: 2, client: "Andrei Ionescu", service: "Vopsit", when: "11:00", status: ["attention", "\xCEn desf\u0103\u0219urare"] },
+  { id: 3, client: "Cristina Dobre", service: "Tratament facial", when: "13:15", status: ["neutral", "Neconfirmat\u0103"] },
+  { id: 4, client: "Dan Stoica", service: "Tuns", when: "15:00", status: ["done", "Confirmat\u0103"] }
+];
+function BookingShell({ height, active, mobile }) {
+  return /* @__PURE__ */ React.createElement(
+    V.AppShell,
+    {
+      height,
+      spine: /* @__PURE__ */ React.createElement(V.Spine, { app: "booking", sections: SECTIONS, activeId: active, onBackToHub: () => {
+      }, footer: /* @__PURE__ */ React.createElement(V.UsageMeter, { compact: true, label: "Program\u0103ri", used: 312, limit: 1e3 }) }),
+      contextBar: /* @__PURE__ */ React.createElement(Bar, { title: "EasyBook" })
+    },
+    /* @__PURE__ */ React.createElement(V.PageHeader, { title: "Program\u0103ri", description: mobile ? void 0 : "Toate program\u0103rile afacerii, de azi \xEEnainte.", actions: mobile ? void 0 : /* @__PURE__ */ React.createElement(V.SegmentedControl, { label: "Vizualizare", size: "md", defaultValue: "list", options: [{ value: "list", label: "List\u0103", icon: "list" }, { value: "cal", label: "Calendar", icon: "calendar" }] }) }),
+    /* @__PURE__ */ React.createElement(V.DataTable, { columns: [
+      { key: "client", header: "Client", primary: true, sortable: true },
+      { key: "service", header: "Serviciu", secondary: true },
+      { key: "when", header: "Ora", secondary: true },
+      { key: "status", header: "Stare", trailing: true, render: (r) => /* @__PURE__ */ React.createElement(V.StatusPill, { tone: r.status[0] }, r.status[1]) }
+    ], rows: SHELL_ROWS, rowActions: () => [{ label: "Deschide", icon: "external-link" }], pagination: { page: 1, pageSize: 20, total: 4, onPageChange: () => {
+    } } })
+  );
+}
+const HUB_SECTIONS = [
+  { label: "Contul t\u0103u", items: [{ id: "profil", label: "Profil \u0219i preferin\u021Be", short: "Profil", icon: "circle-user" }, { id: "securitate", label: "Securitate", icon: "shield" }] },
+  { label: "Afacerea", items: [{ id: "echipa", label: "Echip\u0103 \u0219i invita\u021Bii", short: "Echip\u0103", icon: "users" }, { id: "roluri", label: "Roluri \u0219i acces", icon: "key-round" }, { id: "abonament", label: "Abonament \u0219i consum", short: "Abonament", icon: "credit-card" }] },
+  { label: "Ajutor", items: [{ id: "suport", label: "Suport", icon: "life-buoy", badge: 1 }] }
+];
+/* DE / IT: the same Hub chrome with German and Italian texts (label-length test). */
+const HUB_SECTIONS_L = {
+  de: [
+    { label: "Ihr Konto", items: [{ id: "profil", label: "Profil und Einstellungen", short: "Profil", icon: "circle-user" }, { id: "securitate", label: "Sicherheit", icon: "shield" }] },
+    { label: "Unternehmen", items: [{ id: "echipa", label: "Team und Einladungen", short: "Team", icon: "users" }, { id: "roluri", label: "Rollen und Zugriff", short: "Rollen", icon: "key-round" }, { id: "abonament", label: "Abonnement und Verbrauch", short: "Abonnement", icon: "credit-card" }] },
+    { label: "Hilfe", items: [{ id: "suport", label: "Support", icon: "life-buoy", badge: 1 }] }
+  ],
+  it: [
+    { label: "Il Suo account", items: [{ id: "profil", label: "Profilo e preferenze", short: "Profilo", icon: "circle-user" }, { id: "securitate", label: "Sicurezza", icon: "shield" }] },
+    { label: "Attività", items: [{ id: "echipa", label: "Team e inviti", short: "Team", icon: "users" }, { id: "roluri", label: "Ruoli e accesso", short: "Ruoli", icon: "key-round" }, { id: "abonament", label: "Abbonamento e utilizzo", short: "Abbonamento", icon: "credit-card" }] },
+    { label: "Aiuto", items: [{ id: "suport", label: "Assistenza", icon: "life-buoy", badge: 1 }] }
+  ]
+};
+const ORGS_L = {
+  de: [{ id: "aurora", name: "Salon Aurora", role: "Inhaber" }, { id: "dentis", name: "Clinica Dentis Sibiu", role: "Empfang" }, { id: "nord", name: "Agenția Nord Studio", role: "Projektmanager" }],
+  it: [{ id: "aurora", name: "Salon Aurora", role: "Titolare" }, { id: "dentis", name: "Clinica Dentis Sibiu", role: "Reception" }, { id: "nord", name: "Agenția Nord Studio", role: "Project manager" }]
+};
+const NOTIFS_L = {
+  de: [
+    { id: 1, title: "Neuer Termin von Ana Popescu", body: "Do., 29. Okt., 14:30 · Haarschnitt", app: "EasyBook", time: "vor 5 Min.", person: "Ana Popescu" },
+    { id: 2, title: "Rechnung #2026-114 ist seit 3 Tagen überfällig", body: "Clinica Dentis · 1.250 lei", app: "MoneyDesk", time: "vor 2 Std.", icon: "receipt" },
+    { id: 3, title: "Ioana hat Urlaub vom 2. bis 6. November beantragt", app: "TeamSpace", time: "gestern", person: "Ioana Pavel", read: true }
+  ],
+  it: [
+    { id: 1, title: "Nuovo appuntamento di Ana Popescu", body: "Gio 29 ott, 14:30 · Taglio", app: "EasyBook", time: "5 min fa", person: "Ana Popescu" },
+    { id: 2, title: "La fattura #2026-114 è scaduta da 3 giorni", body: "Clinica Dentis · 1.250 lei", app: "MoneyDesk", time: "2 ore fa", icon: "receipt" },
+    { id: 3, title: "Ioana ha chiesto ferie dal 2 al 6 novembre", app: "TeamSpace", time: "ieri", person: "Ioana Pavel", read: true }
+  ]
+};
+const isL = (lang) => lang === "de" || lang === "it";
+function HubBar({ title, inApp, lang }) {
+  const orgs = isL(lang) ? ORGS_L[lang] : ORGS;
+  return /* @__PURE__ */ React.createElement(
+    V.ContextBar,
+    {
+      leading: inApp ? null : /* @__PURE__ */ React.createElement("span", { style: { padding: "0 var(--space-2)", display: "inline-flex" } }, /* @__PURE__ */ React.createElement(V.Logo, { size: 32, className: "v-cb-logo--full" }), /* @__PURE__ */ React.createElement(V.Logo, { variant: "mark", size: 32, className: "v-cb-logo--mark" })),
+      title,
+      org: /* @__PURE__ */ React.createElement(V.OrgSwitcher, { orgs, currentId: "aurora" }),
+      onSearch: () => {
+      },
+      notifications: /* @__PURE__ */ React.createElement(V.NotificationsPanel, { items: isL(lang) ? NOTIFS_L[lang] : NOTIFS }),
+      account: /* @__PURE__ */ React.createElement(V.AccountMenu, { user: USER, orgs, currentOrgId: "aurora", onCatalog: () => {
+      } })
+    }
+  );
+}
+function HubSettings({ active, title, children, lang }) {
+  return /* @__PURE__ */ React.createElement(
+    V.AppShell,
+    {
+      height: "100%",
+      spine: /* @__PURE__ */ React.createElement(V.Spine, { hub: true, sections: isL(lang) ? HUB_SECTIONS_L[lang] : HUB_SECTIONS, activeId: active, onBackToHub: () => {
+      }, bottomItems: ["profil", "echipa", "abonament", "suport"] }),
+      contextBar: /* @__PURE__ */ React.createElement(HubBar, { title, inApp: true, lang })
+    },
+    children
+  );
+}
+/* The DE / IT label test: the main view at 1280 in German and at 390 in Italian, each frame with its own theme. */
+function LocTest({ items, note }) {
+  if (window.__SOLO) return null;
+  const h = React.createElement;
+  return h("div", { className: "scr" },
+    h("p", { className: "heading" }, "Test cu etichete în germană și italiană"),
+    h("p", { className: "caption muted" }, note || "Același ecran, cu textele traduse, ca să vedem că etichetele mai lungi încap."),
+    h("div", { className: "scr-row" }, items.map(([lab, lang, mode, th, H, el]) => h("div", { key: lab },
+      h("p", { className: "caption scr-lab" }, lab),
+      h("div", { className: mode === "mobile" ? "scr-m" : mode === "tablet" ? "scr-t" : "scr-d", "data-theme": th, style: { height: H } }, h(V.LocaleProvider, { locale: lang }, el))))));
+}
+function Screens({ title, notes, render, desktopH = 860, tabletH = 1100, mobileH = 844 }) {
+  if (window.__SOLO) {
+    const w = window.innerWidth;
+    const m = w < 768 ? "mobile" : w < 1024 ? "tablet" : "desktop";
+    return /* @__PURE__ */ React.createElement("div", { style: { height: "100vh", position: "relative", background: "var(--canvas)" } }, render(m, "light"));
+  }
+  const sizes = [["desktop", "Desktop \xB7 1280", "scr-d", desktopH], ["tablet", "Tablet\u0103 portret \xB7 820", "scr-t", tabletH], ["mobile", "Telefon \xB7 390", "scr-m", mobileH]];
+  return /* @__PURE__ */ React.createElement("div", { className: "scr" }, /* @__PURE__ */ React.createElement("p", { className: "heading" }, title), notes && /* @__PURE__ */ React.createElement("p", { className: "caption muted" }, notes.join(" \xB7 ")), ["light", "dark"].map((th) => /* @__PURE__ */ React.createElement("div", { className: "scr-row", key: th }, sizes.map(([m, lab, cls, h]) => /* @__PURE__ */ React.createElement("div", { key: m }, /* @__PURE__ */ React.createElement("p", { className: "caption scr-lab" }, lab, " \xB7 ", th === "light" ? "Light" : "Dark"), /* @__PURE__ */ React.createElement("div", { className: cls, "data-theme": th, style: { height: h } }, render(m, th)))))));
+}
+const MINE = [["booking", "Program\u0103ri, calendar \u0219i reamintiri", 3], ["crm", "Clien\u021Bi, istoric \u0219i oportunit\u0103\u021Bi"], ["hr", "Echip\u0103, prezen\u021B\u0103 \u0219i concedii", 1], ["finance", "Facturi, scaden\u021Be \u0219i restan\u021Be", 2], ["projects", "Proiecte, sarcini \u0219i termene"], ["shifts", "Ture \u0219i \xEEnlocuiri"], ["documents", "Documente \u0219i \u0219abloane"], ["portal", "Pagina afacerii pentru clien\u021Bi"]];
+const RECO = { marketing: { reason: "Se potrive\u0219te cu EasyBook: trimite automat reamintiri \u0219i campanii clien\u021Bilor t\u0103i.", cost: "49 lei pe lun\u0103 \xB7 f\u0103r\u0103 cost de implementare" } };
+const VIEWER_ROLE = "owner";
+const RECO_FOR = (a) => (VIEWER_ROLE === "owner" || VIEWER_ROLE === "admin") && a === "marketing" ? RECO[a] : null;
+const OTHER = [["inventory", "unavailable"], ["analytics", "notInRole"], ["marketing", "notInPlan"], ["network", "notInPlan"]];
+function Launcher({ mode, empty }) {
+  const [run, setRun] = useState(null);
+  const mob = mode === "mobile";
+  const open = (a) => (e) => setRun({ app: a, from: e.currentTarget.querySelector(".v-appicon").getBoundingClientRect() });
+  return /* @__PURE__ */ React.createElement("div", { className: "frame-rel" }, /* @__PURE__ */ React.createElement(V.AppShell, { height: "100%", contextBar: /* @__PURE__ */ React.createElement(HubBar, null) }, /* @__PURE__ */ React.createElement("div", { className: "wrap " + mode }, /* @__PURE__ */ React.createElement("div", { className: "greet" }, /* @__PURE__ */ React.createElement("h1", { className: "display-l" }, "Bun\u0103 diminea\u021Ba, Bianca"), empty ? /* @__PURE__ */ React.createElement("p", { className: "body muted" }, "Bine ai venit \xEEn Salon Aurora. Aplica\u021Biile apar aici imediat ce prime\u0219ti acces.") : /* @__PURE__ */ React.createElement("p", { className: "body muted daylinks" }, "Azi ai ", /* @__PURE__ */ React.createElement("a", { className: "v-link", href: "#" }, "8 program\u0103ri"), ", ", /* @__PURE__ */ React.createElement("a", { className: "v-link", href: "#" }, "2 facturi scadente"), " \u0219i ", /* @__PURE__ */ React.createElement("a", { className: "v-link", href: "#" }, "o cerere de concediu"), " de aprobat.")), empty ? /* @__PURE__ */ React.createElement("div", { className: "sheetlike" }, /* @__PURE__ */ React.createElement(V.EmptyState, { icon: "layout-grid", title: "Nu ai \xEEnc\u0103 acces la nicio aplica\u021Bie", description: "Bianca Petra\u0219cu (proprietar) alege ce aplica\u021Bii folose\u0219te fiecare rol. Putem trimite noi cererea ta.", actions: /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(V.Button, { variant: "primary", icon: "send" }, "Cere acces"), /* @__PURE__ */ React.createElement(V.Button, { variant: "quiet" }, "Scrie-ne")) }), /* @__PURE__ */ React.createElement("p", { className: "body-small muted center", style: { paddingBottom: "var(--space-6)" } }, "\xCEntre timp, alege-\u021Bi fotografia \u0219i limba din ", /* @__PURE__ */ React.createElement("a", { className: "v-link", href: "#" }, "Contul t\u0103u"), ".")) : /* @__PURE__ */ React.createElement("section", null, /* @__PURE__ */ React.createElement("div", { className: "sechead" }, /* @__PURE__ */ React.createElement("h2", { className: "display-m" }, "Aplica\u021Biile tale"), /* @__PURE__ */ React.createElement(V.Button, { size: "sm", variant: "quiet", icon: "grip-vertical" }, "Reordoneaz\u0103")), mob ? /* @__PURE__ */ React.createElement("div", { className: "mgrid" }, MINE.map(([a, d, b]) => /* @__PURE__ */ React.createElement(V.AppTile, { key: a, app: a, layout: "icon", badge: b, onOpen: open(a) }))) : /* @__PURE__ */ React.createElement("div", { className: "tiles4" }, MINE.map(([a, d, b]) => /* @__PURE__ */ React.createElement(V.AppTile, { key: a, app: a, description: d, badge: b, onOpen: open(a) })))), /* @__PURE__ */ React.createElement("section", null, /* @__PURE__ */ React.createElement("h2", { className: "display-m sec" }, "Alte aplica\u021Bii Ventora"), /* @__PURE__ */ React.createElement("p", { className: "body-small muted", style: { marginBottom: "var(--space-3)" } }, "Nu le po\u021Bi deschide acum. La fiecare scrie de ce \u0219i ce po\u021Bi face."), true ? /* @__PURE__ */ React.createElement("div", { className: mob ? "rows" : "rows rows2" }, OTHER.map(([a, s]) => RECO_FOR(a) ? /* @__PURE__ */ React.createElement(V.GrowthSlot, { key: a, label: "Recomandare" }, /* @__PURE__ */ React.createElement(V.AppTile, { app: a, access: s, layout: "row", recommendation: RECO_FOR(a), onDetails: () => {
+  }, onDismiss: () => {
+  }, onRemindLater: () => {
+  } })) : /* @__PURE__ */ React.createElement(V.AppTile, { key: a, app: a, access: s, layout: "row", grantedBy: "Bianca Petra\u0219cu", onRequestAccess: () => {
+  }, onWriteUs: () => {
+  }, onSeeStatus: () => {
+  } }))) : /* @__PURE__ */ React.createElement("div", { className: "tiles4" }, OTHER.map(([a, s]) => RECO_FOR(a) ? /* @__PURE__ */ React.createElement(V.GrowthSlot, { key: a, label: "Recomandare" }, /* @__PURE__ */ React.createElement(V.AppTile, { app: a, access: s, recommendation: RECO_FOR(a), onDetails: () => {
+  }, onDismiss: () => {
+  }, onRemindLater: () => {
+  } })) : /* @__PURE__ */ React.createElement(V.AppTile, { key: a, app: a, access: s, grantedBy: "Bianca Petra\u0219cu", onRequestAccess: () => {
+  }, onWriteUs: () => {
+  }, onSeeStatus: () => {
+  } }))), /* @__PURE__ */ React.createElement("div", { style: { marginTop: "var(--space-4)" } }, /* @__PURE__ */ React.createElement(V.Button, { variant: "quiet", icon: "layout-grid", iconEnd: "arrow-right" }, "Vezi toate aplica\u021Biile Ventora"))))), run && /* @__PURE__ */ React.createElement(V.AppLaunch, { contained: true, app: run.app, from: run.from, onDone: () => setTimeout(() => setRun(null), 500) }));
+}
+function CommercialPrefs({ mode }) {
+  return /* @__PURE__ */ React.createElement(V.SheetSection, { title: "Recomand\u0103ri Ventora", description: "Sugestii despre aplica\u021Bii \u0219i pachete \xEEn plus care se potrivesc cu ce faci deja." }, /* @__PURE__ */ React.createElement("div", { className: "d0", style: { gap: "var(--space-3)" } }, /* @__PURE__ */ React.createElement(V.Toggle, { label: "\xCEn aplica\u021Bie", description: "Le vezi \xEEn pagini \u0219i \xEEn notific\u0103ri, la sec\u021Biunea Recomand\u0103ri.", defaultChecked: true, labelPosition: mode === "mobile" ? "start" : "end" }), /* @__PURE__ */ React.createElement(V.Toggle, { label: "Pe e-mail", description: "Disponibil \xEEn cur\xE2nd", disabled: true, labelPosition: mode === "mobile" ? "start" : "end" }), /* @__PURE__ */ React.createElement(V.Notice, { tone: "neutral", icon: "info" }, "Mesajele despre limitele contului t\u0103u r\u0103m\xE2n active, pentru c\u0103 sunt informa\u021Bii despre cont, nu recomand\u0103ri.")));
+}
+const CAPP_TX = {
+  ro: { all: "Toate aplica\u021Biile", lead: "Campanii \u0219i reamintiri automate pentru clien\u021Bii t\u0103i.", why: "De ce \u021Bi-o recomand\u0103m", whyText: "Folose\u0219ti EasyBook: CampaignKit poate trimite automat reamintiri de revenire (de exemplu, la 6 s\u0103pt\u0103m\xE2ni dup\u0103 vopsit) \u0219i campanii c\u0103tre clien\u021Bii din program\u0103ri.", does: "Ce face", items: ["Campanii prin SMS \u0219i e-mail c\u0103tre grupuri de clien\u021Bi", "Reamintiri de revenire, pornite de ultima programare", "Rezultate: c\xE2\u021Bi au deschis, c\xE2\u021Bi au rezervat"], links: "Se leag\u0103 de", price: "Pre\u021B", priceV: "49 lei pe lun\u0103", paid: "Se pl\u0103te\u0219te", paidV: "Odat\u0103 cu abonamentul", setup: "Cost de implementare", setupV: "F\u0103r\u0103", trial: "Perioad\u0103 de prob\u0103", trialV: "14 zile, gratuit", note: "Nu ai nevoie de card. La final aplica\u021Bia se opre\u0219te, datele r\u0103m\xE2n, iar continuarea e alegerea ta.", recommend: "Recomand\u0103 aplica\u021Bia", decider: "Ajunge la Bianca Petra\u0219cu (proprietar).", tryFree: "\xCEncearc\u0103 gratuit 14 zile", activate: "Activeaz\u0103 \xB7 49 lei pe lun\u0103" },
+  de: { all: "Alle Apps", lead: "Kampagnen und automatische Erinnerungen f\xFCr Ihre Kunden.", why: "Warum wir sie Ihnen empfehlen", whyText: "Sie nutzen EasyBook: CampaignKit kann automatisch Erinnerungen f\xFCr den n\xE4chsten Besuch senden (zum Beispiel 6 Wochen nach dem F\xE4rben) und Kampagnen an die Kunden aus Ihren Terminen.", does: "Was sie kann", items: ["Kampagnen per SMS und E-Mail an Kundengruppen", "Erinnerungen f\xFCr den n\xE4chsten Besuch, ausgel\xF6st durch den letzten Termin", "Ergebnisse: wie viele ge\xF6ffnet und wie viele gebucht haben"], links: "Verbunden mit", price: "Preis", priceV: "49 lei pro Monat", paid: "Bezahlung", paidV: "Zusammen mit dem Abonnement", setup: "Einrichtungsgeb\xFChr", setupV: "Keine", trial: "Kostenloser Test", trialV: "14 Tage, kostenlos", note: "Sie brauchen keine Karte. Am Ende stoppt die App, Ihre Daten bleiben erhalten, und ob Sie weitermachen, entscheiden Sie.", recommend: "App empfehlen", decider: "Geht an Bianca Petra\u0219cu (Inhaber).", tryFree: "14 Tage kostenlos testen", activate: "Aktivieren \xB7 49 lei pro Monat" },
+  it: { all: "Tutte le app", lead: "Campagne e promemoria automatici per i Suoi clienti.", why: "Perch\xE9 Gliela consigliamo", whyText: "Usa EasyBook: CampaignKit pu\xF2 inviare in automatico promemoria per tornare (per esempio 6 settimane dopo il colore) e campagne ai clienti dei Suoi appuntamenti.", does: "Che cosa fa", items: ["Campagne via SMS ed e-mail a gruppi di clienti", "Promemoria per tornare, avviati dall\u2019ultimo appuntamento", "Risultati: quanti hanno aperto, quanti hanno prenotato"], links: "Si collega a", price: "Prezzo", priceV: "49 lei al mese", paid: "Si paga", paidV: "Insieme all\u2019abbonamento", setup: "Costo di attivazione", setupV: "Nessuno", trial: "Prova gratuita", trialV: "14 giorni, gratis", note: "Non serve la carta. Alla fine l\u2019app si ferma, i dati restano e decide Lei se continuare.", recommend: "Consiglia l\u2019app", decider: "Arriva a Bianca Petra\u0219cu (titolare).", tryFree: "Prova gratis per 14 giorni", activate: "Attiva \xB7 49 lei al mese" }
+};
+function CatalogApp({ mode, th, lang, role, request }) {
+  const T = Object.assign({}, CAPP_TX[isL(lang) ? lang : "ro"], request ? CAPP_REQ[isL(lang) ? lang : "ro"] : {});
+  const member = role ? role === "member" : th === "dark" && mode !== "desktop";
+  const mob = mode === "mobile";
+  return /* @__PURE__ */ React.createElement(V.AppShell, { height: "100%", contextBar: /* @__PURE__ */ React.createElement(HubBar, { title: "CampaignKit", lang }) }, /* @__PURE__ */ React.createElement("div", { className: "wrap " + mode }, /* @__PURE__ */ React.createElement(V.PageHeader, { title: "CampaignKit", breadcrumbs: mob ? void 0 : [{ label: T.all, href: "#" }, { label: "CampaignKit" }] }), /* @__PURE__ */ React.createElement("div", { className: "appdet" }, /* @__PURE__ */ React.createElement("div", { className: "appdet-main sheetlike" }, /* @__PURE__ */ React.createElement("div", { className: "r", style: { gap: "var(--space-4)", flexWrap: "nowrap", alignItems: "flex-start" } }, /* @__PURE__ */ React.createElement(V.AppIcon, { app: "marketing", size: 64 }), /* @__PURE__ */ React.createElement("div", { className: "d0", style: { gap: "var(--space-1)" } }, /* @__PURE__ */ React.createElement("span", { className: "r", style: { gap: "var(--space-2)" } }, /* @__PURE__ */ React.createElement(V.RecommendationLabel, null), /* @__PURE__ */ React.createElement(V.AccessBadge, { state: "notInPlan" })), /* @__PURE__ */ React.createElement("p", { className: "body muted" }, T.lead))), /* @__PURE__ */ React.createElement("div", { className: "appdet-why" }, /* @__PURE__ */ React.createElement("p", { className: "subheading" }, T.why), /* @__PURE__ */ React.createElement("p", { className: "body" }, T.whyText)), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("p", { className: "subheading" }, T.does), /* @__PURE__ */ React.createElement("ul", { className: "appdet-list body" }, T.items.map((it) => /* @__PURE__ */ React.createElement("li", { key: it }, /* @__PURE__ */ React.createElement(V.Icon, { name: "check", size: 16 }), it)))), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("p", { className: "subheading" }, T.links), /* @__PURE__ */ React.createElement("div", { className: "r", style: { gap: "var(--space-3)" } }, ["booking", "crm", "portal"].map((a) => /* @__PURE__ */ React.createElement("span", { key: a, className: "r", style: { gap: "var(--space-2)" } }, /* @__PURE__ */ React.createElement(V.AppIcon, { app: a, size: 24 }), /* @__PURE__ */ React.createElement("span", { className: "body" }, V.APPS[a].name)))))), /* @__PURE__ */ React.createElement("aside", { className: "appdet-side sheetlike" }, /* @__PURE__ */ React.createElement("dl", { className: "v-up__sum" }, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("dt", { className: "caption" }, T.price), /* @__PURE__ */ React.createElement("dd", { className: "body-strong v-num" }, T.priceV)), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("dt", { className: "caption" }, T.paid), /* @__PURE__ */ React.createElement("dd", { className: "body" }, T.paidV)), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("dt", { className: "caption" }, T.setup), /* @__PURE__ */ React.createElement("dd", { className: "body" }, T.setupV)), !request && /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("dt", { className: "caption" }, T.trial), /* @__PURE__ */ React.createElement("dd", { className: "body" }, T.trialV))), /* @__PURE__ */ React.createElement("p", { className: "body-small muted" }, T.note), member ? /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(V.Button, { variant: "primary", block: true, icon: "send" }, T.recommend), /* @__PURE__ */ React.createElement("p", { className: "caption muted" }, T.decider)) : request ? /* @__PURE__ */ React.createElement(V.Button, { variant: "primary", block: true, icon: "send" }, T.reqBtn) : /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(V.Button, { variant: "primary", block: true }, T.tryFree), /* @__PURE__ */ React.createElement(V.Button, { block: true }, T.activate))))));
+}
+/* S113: the "La cerere" variant — the app needs setup, so the team activates it; texts from i18n/pricing.json (catalog.app.*). */
+const CAPP_REQ = {"ro": {"setupV": "300 lei", "note": "Aplicația are nevoie de configurare, așa că o activăm noi. După cerere, echipa Ventora te contactează și abia apoi se plătește.", "reqBtn": "Cere activare"}, "de": {"setupV": "300 lei", "note": "Diese App muss eingerichtet werden, deshalb aktivieren wir sie für Sie. Nach Ihrer Anfrage meldet sich das Ventora-Team, erst dann wird bezahlt.", "reqBtn": "Aktivierung anfragen"}, "it": {"setupV": "300 lei", "note": "Questa app richiede una configurazione, quindi la attiviamo noi. Dopo la richiesta, il team Ventora La contatta e solo allora si paga.", "reqBtn": "Richiedi attivazione"}};
+const PB = {"ro": {"billing.plan.payMonthly": "Plătești lunar: {amount}", "billing.plan.payAnnual": "Plătești anual: {amount} · economisești {saving}", "billing.plan.nextPayment": "Următoarea plată: {date}", "billing.plan.reset": "Consumul pornește de la zero pe {date}.", "billing.plan.annualLimits": "Plătești pe an, dar limitele sunt lunare: consumul pornește de la zero în fiecare lună, pe {day}.", "billing.plan.usagePeriod": "Consum: {from} – {to}", "billing.plan.fullPrice": "Preț întreg", "billing.plan.discount": "Reducere {value}", "billing.plan.discount.until": "până pe {date}", "billing.plan.discount.once": "doar la această plată", "billing.plan.discount.permanent": "permanentă", "billing.plan.total": "Total pe lună", "billing.plan.totalYear": "Total pe an", "billing.plan.free": "Gratuit", "billing.invoice.view": "Vezi factura", "billing.invoice.title": "Factura {number}", "billing.invoice.lines": "Ce cuprinde", "billing.invoice.total": "Total de plată", "billing.invoice.finalPrice": "Prețul e final, nu se adaugă TVA.", "billing.packs.validUntil": "valabil până pe {date}", "billing.prorate.today": "Azi: {amount}, proporțional până pe {date}", "billing.prorate.then": "Apoi {amount} pe lună, odată cu abonamentul.", "catalog.app.activate": "Activează · {price} pe lună", "catalog.app.request": "Cere activare", "catalog.app.onRequest": "La cerere", "catalog.app.onRequestNote": "Aplicația are nevoie de configurare, așa că o activăm noi. După cerere, echipa Ventora te contactează și abia apoi se plătește.", "catalog.app.requestSent": "Am trimis cererea", "catalog.app.requestSentBody": "Echipa Ventora o vede acum. Primești o notificare când aplicația e activă.", "catalog.app.activateTitle": "Activezi {app}", "catalog.app.activateDesc": "Aplicație adăugată la abonament · {price} pe lună"}, "en": {"billing.plan.payMonthly": "You pay monthly: {amount}", "billing.plan.payAnnual": "You pay yearly: {amount} · you save {saving}", "billing.plan.nextPayment": "Next payment: {date}", "billing.plan.reset": "Usage starts again from zero on {date}.", "billing.plan.annualLimits": "You pay yearly, but the limits are monthly: usage starts from zero every month on the {day}.", "billing.plan.usagePeriod": "Usage: {from} – {to}", "billing.plan.fullPrice": "Full price", "billing.plan.discount": "Discount {value}", "billing.plan.discount.until": "until {date}", "billing.plan.discount.once": "this payment only", "billing.plan.discount.permanent": "permanent", "billing.plan.total": "Monthly total", "billing.plan.totalYear": "Yearly total", "billing.plan.free": "Free", "billing.invoice.view": "View invoice", "billing.invoice.title": "Invoice {number}", "billing.invoice.lines": "What it covers", "billing.invoice.total": "Total to pay", "billing.invoice.finalPrice": "Final price, no VAT is added.", "billing.packs.validUntil": "valid until {date}", "billing.prorate.today": "Today: {amount}, prorated until {date}", "billing.prorate.then": "Then {amount} a month, with your plan.", "catalog.app.activate": "Activate · {price} a month", "catalog.app.request": "Request activation", "catalog.app.onRequest": "On request", "catalog.app.onRequestNote": "This app needs to be set up, so we activate it for you. After your request, the Ventora team gets in touch, and only then do you pay.", "catalog.app.requestSent": "Request sent", "catalog.app.requestSentBody": "The Ventora team can see it now. You’ll get a notification when the app is active.", "catalog.app.activateTitle": "Activate {app}", "catalog.app.activateDesc": "App added to your plan · {price} a month"}, "fr": {"billing.plan.payMonthly": "Vous payez chaque mois : {amount}", "billing.plan.payAnnual": "Vous payez chaque année : {amount} · vous économisez {saving}", "billing.plan.nextPayment": "Prochain paiement : {date}", "billing.plan.reset": "La consommation repart de zéro le {date}.", "billing.plan.annualLimits": "Vous payez à l’année, mais les limites sont mensuelles : la consommation repart de zéro chaque mois, le {day}.", "billing.plan.usagePeriod": "Consommation : {from} – {to}", "billing.plan.fullPrice": "Prix normal", "billing.plan.discount": "Réduction {value}", "billing.plan.discount.until": "jusqu’au {date}", "billing.plan.discount.once": "sur ce paiement uniquement", "billing.plan.discount.permanent": "permanente", "billing.plan.total": "Total par mois", "billing.plan.totalYear": "Total par an", "billing.plan.free": "Gratuit", "billing.invoice.view": "Voir la facture", "billing.invoice.title": "Facture {number}", "billing.invoice.lines": "Ce qu’elle comprend", "billing.invoice.total": "Total à payer", "billing.invoice.finalPrice": "Prix final, aucune TVA n’est ajoutée.", "billing.packs.validUntil": "valable jusqu’au {date}", "billing.prorate.today": "Aujourd’hui : {amount}, au prorata jusqu’au {date}", "billing.prorate.then": "Ensuite {amount} par mois, avec votre abonnement.", "catalog.app.activate": "Activer · {price} par mois", "catalog.app.request": "Demander l’activation", "catalog.app.onRequest": "Sur demande", "catalog.app.onRequestNote": "Cette application doit être configurée, c’est donc nous qui l’activons. Après votre demande, l’équipe Ventora vous contacte, et vous ne payez qu’ensuite.", "catalog.app.requestSent": "Demande envoyée", "catalog.app.requestSentBody": "L’équipe Ventora la voit dès maintenant. Vous recevrez une notification quand l’application sera active.", "catalog.app.activateTitle": "Activer {app}", "catalog.app.activateDesc": "Application ajoutée à l’abonnement · {price} par mois"}, "es": {"billing.plan.payMonthly": "Pagas cada mes: {amount}", "billing.plan.payAnnual": "Pagas cada año: {amount} · ahorras {saving}", "billing.plan.nextPayment": "Próximo pago: {date}", "billing.plan.reset": "El consumo vuelve a cero el {date}.", "billing.plan.annualLimits": "Pagas al año, pero los límites son mensuales: el consumo vuelve a cero cada mes, el día {day}.", "billing.plan.usagePeriod": "Consumo: {from} – {to}", "billing.plan.fullPrice": "Precio completo", "billing.plan.discount": "Descuento {value}", "billing.plan.discount.until": "hasta el {date}", "billing.plan.discount.once": "solo en este pago", "billing.plan.discount.permanent": "permanente", "billing.plan.total": "Total al mes", "billing.plan.totalYear": "Total al año", "billing.plan.free": "Gratis", "billing.invoice.view": "Ver factura", "billing.invoice.title": "Factura {number}", "billing.invoice.lines": "Qué incluye", "billing.invoice.total": "Total a pagar", "billing.invoice.finalPrice": "Precio final, no se añade IVA.", "billing.packs.validUntil": "válido hasta el {date}", "billing.prorate.today": "Hoy: {amount}, prorrateado hasta el {date}", "billing.prorate.then": "Después, {amount} al mes, junto con tu plan.", "catalog.app.activate": "Activar · {price} al mes", "catalog.app.request": "Solicitar activación", "catalog.app.onRequest": "Bajo solicitud", "catalog.app.onRequestNote": "Esta aplicación necesita configuración, así que la activamos nosotros. Tras tu solicitud, el equipo de Ventora se pone en contacto contigo y solo entonces pagas.", "catalog.app.requestSent": "Solicitud enviada", "catalog.app.requestSentBody": "El equipo de Ventora ya la ve. Recibirás una notificación cuando la aplicación esté activa.", "catalog.app.activateTitle": "Activar {app}", "catalog.app.activateDesc": "Aplicación añadida al plan · {price} al mes"}, "de": {"billing.plan.payMonthly": "Sie zahlen monatlich: {amount}", "billing.plan.payAnnual": "Sie zahlen jährlich: {amount} · Sie sparen {saving}", "billing.plan.nextPayment": "Nächste Zahlung: {date}", "billing.plan.reset": "Der Verbrauch beginnt am {date} wieder bei null.", "billing.plan.annualLimits": "Sie zahlen jährlich, die Limits gelten aber pro Monat: Der Verbrauch beginnt jeden Monat am {day}. wieder bei null.", "billing.plan.usagePeriod": "Verbrauch: {from} – {to}", "billing.plan.fullPrice": "Regulärer Preis", "billing.plan.discount": "Rabatt {value}", "billing.plan.discount.until": "bis {date}", "billing.plan.discount.once": "nur bei dieser Zahlung", "billing.plan.discount.permanent": "dauerhaft", "billing.plan.total": "Gesamt pro Monat", "billing.plan.totalYear": "Gesamt pro Jahr", "billing.plan.free": "Kostenlos", "billing.invoice.view": "Rechnung ansehen", "billing.invoice.title": "Rechnung {number}", "billing.invoice.lines": "Positionen", "billing.invoice.total": "Zu zahlen", "billing.invoice.finalPrice": "Endpreis, es kommt keine MwSt. hinzu.", "billing.packs.validUntil": "gültig bis {date}", "billing.prorate.today": "Heute: {amount}, anteilig bis {date}", "billing.prorate.then": "Danach {amount} pro Monat, zusammen mit dem Abonnement.", "catalog.app.activate": "Aktivieren · {price} pro Monat", "catalog.app.request": "Aktivierung anfragen", "catalog.app.onRequest": "Auf Anfrage", "catalog.app.onRequestNote": "Diese App muss eingerichtet werden, deshalb aktivieren wir sie für Sie. Nach Ihrer Anfrage meldet sich das Ventora-Team, erst dann wird bezahlt.", "catalog.app.requestSent": "Anfrage gesendet", "catalog.app.requestSentBody": "Das Ventora-Team sieht sie jetzt. Sie erhalten eine Benachrichtigung, sobald die App aktiv ist.", "catalog.app.activateTitle": "{app} aktivieren", "catalog.app.activateDesc": "Zum Abonnement hinzugefügte App · {price} pro Monat"}, "it": {"billing.plan.payMonthly": "Paga ogni mese: {amount}", "billing.plan.payAnnual": "Paga ogni anno: {amount} · risparmia {saving}", "billing.plan.nextPayment": "Prossimo pagamento: {date}", "billing.plan.reset": "L’utilizzo riparte da zero il {date}.", "billing.plan.annualLimits": "Paga all’anno, ma i limiti sono mensili: l’utilizzo riparte da zero ogni mese, il giorno {day}.", "billing.plan.usagePeriod": "Utilizzo: {from} – {to}", "billing.plan.fullPrice": "Prezzo pieno", "billing.plan.discount": "Sconto {value}", "billing.plan.discount.until": "fino al {date}", "billing.plan.discount.once": "solo su questo pagamento", "billing.plan.discount.permanent": "permanente", "billing.plan.total": "Totale al mese", "billing.plan.totalYear": "Totale all’anno", "billing.plan.free": "Gratis", "billing.invoice.view": "Vedi fattura", "billing.invoice.title": "Fattura {number}", "billing.invoice.lines": "Che cosa comprende", "billing.invoice.total": "Totale da pagare", "billing.invoice.finalPrice": "Prezzo finale, non si aggiunge l’IVA.", "billing.packs.validUntil": "valido fino al {date}", "billing.prorate.today": "Oggi: {amount}, in proporzione fino al {date}", "billing.prorate.then": "Poi {amount} al mese, insieme all’abbonamento.", "catalog.app.activate": "Attiva · {price} al mese", "catalog.app.request": "Richiedi attivazione", "catalog.app.onRequest": "Su richiesta", "catalog.app.onRequestNote": "Questa app richiede una configurazione, quindi la attiviamo noi. Dopo la richiesta, il team Ventora La contatta e solo allora si paga.", "catalog.app.requestSent": "Richiesta inviata", "catalog.app.requestSentBody": "Il team Ventora la vede già. Riceverà una notifica quando l’app sarà attiva.", "catalog.app.activateTitle": "Attivare {app}", "catalog.app.activateDesc": "App aggiunta all’abbonamento · {price} al mese"}};
+const h = React.createElement;
+const fmt = (s, vars) => { if (vars) for (const k in vars) s = s.split("{" + k + "}").join(vars[k]); return s; };
+/* Romanian plural for the ICU strings: one / few (0, 2–19, x01–x19) / other ("de"). */
+const roPl = (n) => n === 1 ? "one" : (n === 0 || (n % 100 >= 1 && n % 100 <= 19)) ? "few" : "other";
+const icu = (s, n, lang) => s.replace(/\{count, plural, (.*)\}$|\{count, plural, ((?:[^{}]|\{[^{}]*\})*)\}/, (m, a, b) => {
+  const body = a || b; const forms = {}; body.replace(/(\w+) \{([^{}]*)\}/g, (x, k, v) => { forms[k] = v; });
+  const cat = lang === "ro" ? roPl(n) : n === 1 ? "one" : "other";
+  return (forms[cat] || forms.other).split("#").join(String(n));
+});
+function Board({ title, notes, items }) {
+  return h("div", { className: "scr" },
+    h("p", { className: "heading" }, title),
+    notes ? h("p", { className: "caption muted" }, notes.join(" · ")) : null,
+    items.map(([lab, render, dH = 860, mH = 844]) => h("div", { key: lab, className: "tfa-scrgroup" },
+      h("p", { className: "subheading tfa-grouplab" }, lab),
+      ["light", "dark"].map((th) => h("div", { className: "scr-row", key: th },
+        [["desktop", "Desktop · 1280", "scr-d", dH], ["mobile", "Telefon · 390", "scr-m", mH]].map(([m, l, cls, H]) => h("div", { key: m },
+          h("p", { className: "caption scr-lab" }, l, " · ", th === "light" ? "Light" : "Dark"),
+          h("div", { className: cls, "data-theme": th, style: { height: H, position: "relative", overflow: "hidden" } }, render(m)))))))));
+}
+function Langs({ items }) {
+  return h("div", { className: "sms-langs" },
+    h("p", { className: "heading" }, "Test cu etichete în germană și italiană"),
+    h("div", { className: "sms-langrow" }, items.map(([lab, lang, mode, th, el, H]) => h("div", { className: "sms-lang", key: lab },
+      h("p", { className: "caption sms-boxlab" }, lab),
+      h("div", { className: "sms-langframe", "data-theme": th, style: { height: H, position: "relative", width: mode === "mobile" ? 390 : 1280 } }, h(V.LocaleProvider, { locale: lang }, el))))));
+}
+const tp = (lang, key, vars) => fmt((PB[lang] && PB[lang][key]) || PB.ro[key] || key, vars);
+const LOC = { ro: "ro-RO", en: "en-GB", fr: "fr-FR", es: "es-ES", de: "de-DE", it: "it-IT" };
+/* Money always in the business's currency, whatever the interface language (S113): "349 lei", "70 €". Decimals only when there are cents, then always two. */
+const mny = (n, cur, lang) => { const v = Math.abs(n).toLocaleString(LOC[lang] || "ro-RO", { minimumFractionDigits: n % 1 ? 2 : 0, maximumFractionDigits: 2 }); return (n < 0 ? "−" : "") + (cur === "eur" ? v + " €" : v + " lei"); };
+const DATES = {
+  ro: { next: "17 noiembrie 2026", nextY: "17 octombrie 2027", reset: "17 noiembrie", day: "17", until: "31 martie 2027", from: "17 oct.", to: "16 nov.", prorUntil: "17 noiembrie", per: "17 nov. – 16 dec." },
+  de: { next: "17. November 2026", nextY: "17. Oktober 2027", reset: "17. November", day: "17", until: "31. März 2027", from: "17. Okt.", to: "16. Nov.", prorUntil: "17. November", per: "17. Nov. – 16. Dez." },
+  it: { next: "17 novembre 2026", nextY: "17 ottobre 2027", reset: "17 novembre", day: "17", until: "31 marzo 2027", from: "17 ott.", to: "16 nov.", prorUntil: "17 novembre", per: "17 nov. – 16 dic." }
+};
+const dt = (lang) => DATES[lang] || DATES.ro;
+/* HubCatalogApp · activating an app (S113). "Direct" apps: "Activează · 49 lei pe lună" opens the payment with what is paid today, pro rata until the next renewal, and then each month. "La cerere" apps: "Cere activare" sends a request to the Ventora team (Founder · Cereri). Keys catalog.app.* and billing.prorate.* in i18n/pricing.json (PB), 6 languages; the dialog texts are built into AddonPurchase (prorate). */
+const CARD_ = { brand: "Visa", last4: "4242", expiry: "08/28" };
+function Activate(mode, lang, state) {
+  const D = dt(lang), monthly = 49, today = Math.round(monthly * 14 / 31 * 100) / 100;
+  return h("div", { className: "x-overlay" + (mode === "mobile" ? " m" : "") }, h(V.AddonPurchase, { inline: true, sheet: mode === "mobile", state,
+    addon: { name: "CampaignKit", title: tp(lang, "catalog.app.activateTitle", { app: "CampaignKit" }), description: tp(lang, "catalog.app.activateDesc", { price: mny(monthly, "lei", lang) }), price: monthly, icon: "megaphone", max: 1 },
+    card: CARD_, prorate: { today, until: D.prorUntil, monthly }, format: (n) => mny(n, "lei", lang), invoice: state === "success" ? { pending: true } : undefined }));
+}
+function Page({ mode, lang = "ro", request, overlay, toast }) {
+  return h("div", { className: "x-frame" }, h(CatalogApp, { mode, lang, role: "owner", request }),
+    overlay ? overlay(mode, lang) : null,
+    toast ? h("div", { className: "x-toast" + (mode === "mobile" ? " m" : "") }, h(V.Toast, { tone: "done", title: tp(lang, "catalog.app.requestSent"), description: tp(lang, "catalog.app.requestSentBody"), onDismiss: () => {} })) : null);
+}
+mount(h("div", null,
+  h(Board, { title: "Hub — Activarea unei aplicații: direct sau la cerere (S113)", notes: ["Direct: plătești azi proporțional până la reînnoire, apoi lunar, odată cu abonamentul", "La cerere: echipa Ventora o configurează și o activează", "Prețul, în moneda afacerii"], items: [
+    ["1 · Direct: „Activează · 49 lei pe lună”, cât plătești azi și apoi", (m) => h(Page, { mode: m, overlay: (mm, l) => Activate(mm, l, "review") }), 800, 1400],
+    ["2 · Activată", (m) => h(Page, { mode: m, overlay: (mm, l) => Activate(mm, l, "success") }), 800, 1400],
+    ["3 · La cerere: „Cere activare” trimisă", (m) => h(Page, { mode: m, request: true, toast: true }), 800, 1400]] }),
+  h(Langs, { items: [
+    ["Deutsch · 1280 · Light · direkt", "de", "desktop", "light", h(Page, { mode: "desktop", lang: "de", overlay: (mm, l) => Activate(mm, l, "review") }), 800],
+    ["Italiano · 390 · Dark · su richiesta, inviata", "it", "mobile", "dark", h(Page, { mode: "mobile", lang: "it", request: true, toast: true }), 1400]] })));
+
+</script>
+</body>
+</html>

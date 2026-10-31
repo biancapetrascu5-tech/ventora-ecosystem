@@ -415,7 +415,7 @@ const AX_CRM_COLS = [
   { id: "castig", label: "C\xE2\u0219tigate \xEEn octombrie", summary: "41.200 lei", tone: "done" }
 ];
 const AX_CRM_CARDS = [
-  { id: "c1", col: "nou", title: "Clinica Dentis Sibiu", subtitle: "Abonament lunar pentru 10 angaja\u021Bi", amount: "9.600 lei", people: ["Bianca Petra\u0219cu"], due: { label: "Sun\u0103 azi", tone: "attention" } },
+  { id: "c1", col: "nou", title: "Clinica Dentis Sibiu", subtitle: "Abonament lunar pentru 10 membri", amount: "9.600 lei", people: ["Bianca Petra\u0219cu"], due: { label: "Sun\u0103 azi", tone: "attention" } },
   { id: "c2", col: "nou", title: "Hotel Continental", subtitle: "Coafat pentru nun\u021Bi, sezonul 2027", amount: "6.200 lei", people: ["Ioana Pavel"], due: { label: "Joi, 29 oct." } },
   { id: "c3", col: "nou", title: "Andreea Vasile", subtitle: "Pachet mireas\u0103", amount: "2.600 lei", people: ["Ioana Pavel"], meta: ["Din pagina de rezerv\u0103ri"] },
   { id: "c4", col: "oferta", title: "Agen\u021Bia Nord Studio", subtitle: "Eveniment corporate, 40 de persoane", amount: "14.000 lei", people: ["Bianca Petra\u0219cu"], due: { label: "F\u0103r\u0103 r\u0103spuns de 9 zile", tone: "attention", icon: "clock" } },
@@ -530,15 +530,15 @@ function AX_PrjHead({ mode, view }) {
   );
 }
 const FX_NAV = [
-  { items: [{ id: "azi", label: "Prezentare", short: "Prezentare", icon: "house" }, { id: "afaceri", label: "Afaceri", icon: "building-2", badge: 3 }, { id: "consum", label: "Consum", icon: "chart-column" }] },
-  { label: "Model comercial", items: [{ id: "planuri", label: "Planuri", icon: "boxes" }, { id: "pachete", label: "Pachete \xEEn plus", short: "Pachete", icon: "package" }] },
+  { items: [{ id: "azi", label: "Prezentare", short: "Prezentare", icon: "house" }, { id: "afaceri", label: "Afaceri", icon: "building-2", badge: 3 }, { id: "consum", label: "Consum", icon: "chart-column" }, { id: "cereri", label: "Cereri", icon: "inbox", badge: 2 }] },
+  { label: "Model comercial", items: [{ id: "planuri", label: "Planuri", icon: "boxes" }, { id: "pachete", label: "Pachete \xEEn plus", short: "Pachete", icon: "package" }, { id: "aplicatii", label: "Aplica\u021Bii", icon: "layout-grid" }, { id: "reduceri", label: "Reduceri", icon: "percent" }] },
   { label: "Growth", items: [{ id: "oferte", label: "Oferte", icon: "ticket" }, { id: "campanii", label: "Campanii", icon: "megaphone" }, { id: "audiente", label: "Audien\u021Be", icon: "users" }, { id: "rezultate", label: "Rezultate", icon: "chart-line" }, { id: "control", label: "Control", icon: "sliders-horizontal" }] },
   { label: "Sistem", items: [{ id: "jurnal", label: "Jurnal", icon: "history" }, { id: "setari", label: "Set\u0103ri", icon: "settings" }] }
 ];
 const FX_NOTIFS = [
   { id: 1, title: "Am oprit automat \u201EMarketing pentru saloane\u201D", body: "Rata de deranjare a ajuns la 6,2% (prag: 5%).", app: "Growth", time: "azi, 09:41", icon: "triangle-alert" },
   { id: 2, title: "Plat\u0103 e\u0219uat\u0103: Fitness Atlas", body: "449 lei \xB7 a doua \xEEncercare m\xE2ine", app: "Afaceri", time: "ieri", icon: "circle-x" },
-  { id: 3, title: "O excep\u021Bie expir\u0103 pe 30 octombrie", body: "Salon Aurora \xB7 12 angaja\u021Bi \xEEn loc de 10", app: "Afaceri", time: "ieri", icon: "clock", read: true }
+  { id: 3, title: "O excep\u021Bie expir\u0103 pe 30 octombrie", body: "Salon Aurora \xB7 12 membri \xEEn loc de 10", app: "Afaceri", time: "ieri", icon: "clock", read: true }
 ];
 function FX_Switch({ label, desc, on, words = ["Pornit\u0103", "Oprit\u0103"], mode }) {
   const [v, setV] = useState(on);
@@ -560,7 +560,7 @@ function FX_App({ active, title, children }) {
 }
 const FX_BIZ = [
   { id: 1, name: "Clinica Dentis Sibiu", city: "Sibiu", owner: "Andrei Mure\u0219an", plan: "Business \xB7 v2", apps: ["booking", "crm", "finance", "hr"], usage: ["SMS", 92], status: ["attention", "Aproape de limit\u0103", "triangle-alert"], since: "mar. 2025" },
-  { id: 2, name: "Salon Aurora", city: "Sibiu", owner: "Ioana Pavel", plan: "Business \xB7 v2", apps: ["booking", "crm", "hr", "finance", "projects", "shifts", "documents"], usage: ["Angaja\u021Bi", 100], status: ["attention", "La limit\u0103", "triangle-alert"], since: "ian. 2025" },
+  { id: 2, name: "Salon Aurora", city: "Sibiu", owner: "Ioana Pavel", plan: "Business \xB7 v2", apps: ["booking", "crm", "hr", "finance", "projects", "shifts", "documents"], usage: ["Locuri \xEEn echip\u0103", 100], status: ["attention", "La limit\u0103", "triangle-alert"], since: "ian. 2025" },
   { id: 3, name: "Agen\u021Bia Nord Studio", city: "Cluj-Napoca", owner: "Mihai Rusu", plan: "Start \xB7 v2", apps: ["projects", "crm"], usage: ["Proiecte", 40], status: ["neutral", "Prob\u0103 p\xE2n\u0103 pe 2 nov.", "clock"], since: "oct. 2026" },
   { id: 4, name: "Fitness Atlas", city: "Bra\u0219ov", owner: "Elena Dragomir", plan: "Business Plus \xB7 v1", apps: ["booking", "shifts", "finance", "marketing", "analytics"], usage: ["SMS", 61], status: ["danger", "Plat\u0103 e\u0219uat\u0103", "circle-x"], since: "iun. 2025" },
   { id: 5, name: "Cabinet Avocatura Pop", city: "Sibiu", owner: "Radu Pop", plan: "Start \xB7 v1", apps: ["contracts", "documents", "finance"], usage: ["Documente", 33], status: ["done", "Activ\u0103", "check"], since: "feb. 2026" },
@@ -569,9 +569,9 @@ const FX_BIZ = [
 const FX_RANK = { danger: 0, attention: 1, neutral: 2, done: 3 };
 const FX_BIZ_SORTED = () => [...FX_BIZ].sort((a, b) => FX_RANK[a.status[0]] - FX_RANK[b.status[0]] || a.name.localeCompare(b.name, "ro"));
 const FX_PLANS = [
-  { id: "start", name: "Start", price: 149, versions: [["v1", 41, "ian. 2025"], ["v2", 23, "oct. 2026", true]], limits: ["300 de program\u0103ri", "300 SMS", "3 angaja\u021Bi", "2 GB"], apps: 3 },
-  { id: "business", name: "Business", price: 349, versions: [["v1", 34, "ian. 2025"], ["v2", 52, "iun. 2026", true]], limits: ["1.000 de program\u0103ri", "1.000 SMS", "10 angaja\u021Bi", "5 GB"], apps: 7 },
-  { id: "plus", name: "Business Plus", price: 449, versions: [["v1", 18, "mar. 2026", true]], limits: ["Program\u0103ri nelimitate", "3.000 SMS", "25 de angaja\u021Bi", "20 GB"], apps: 12 }
+  { id: "start", name: "Start", price: 149, versions: [["v1", 41, "ian. 2025"], ["v2", 23, "oct. 2026", true]], limits: ["300 de program\u0103ri", "300 SMS", "3 membri", "2 GB"], apps: 3 },
+  { id: "business", name: "Business", price: 349, versions: [["v1", 34, "ian. 2025"], ["v2", 52, "iun. 2026", true]], limits: ["1.000 de program\u0103ri", "1.000 SMS", "10 membri", "5 GB"], apps: 7 },
+  { id: "plus", name: "Business Plus", price: 449, versions: [["v1", 18, "mar. 2026", true]], limits: ["Program\u0103ri nelimitate", "3.000 SMS", "25 de membri", "20 GB"], apps: 12 }
 ];
 const FX_CRITERIA = [
   { value: "apps_on", label: "Aplica\u021Bii active", operators: ["include", "nu include"], values: Object.keys(V.APPS).map((a) => ({ value: a, label: V.APPS[a].name })) },
@@ -597,14 +597,14 @@ function FX_Frame({ th, label, children }) {
 }
 function FUsage({ mode }) {
   return /* @__PURE__ */ React.createElement(FX_App, { active: "consum", title: "Consum" }, /* @__PURE__ */ React.createElement(V.PageHeader, { title: "Consum", description: mode === "mobile" ? void 0 : "Cum se folosesc limitele \xEEn toate afacerile, \xEEn octombrie, p\xE2n\u0103 azi." }), /* @__PURE__ */ React.createElement(AX_Body, { mode }, /* @__PURE__ */ React.createElement("div", { className: "v-stats" }, /* @__PURE__ */ React.createElement(V.Stat, { label: "Afaceri peste 80% la o limit\u0103", value: "9", tone: "attention", hint: "3 au atins limita", onClick: () => {
-  } }), /* @__PURE__ */ React.createElement(V.Stat, { label: "SMS-uri trimise", value: "61.240", delta: { value: "+11%", period: "fa\u021B\u0103 de septembrie" } }), /* @__PURE__ */ React.createElement(V.Stat, { label: "Program\u0103ri create", value: "48.900", delta: { value: "+8%", period: "fa\u021B\u0103 de septembrie" } }), /* @__PURE__ */ React.createElement(V.Stat, { label: "Pachete \xEEn plus v\xE2ndute", value: "37", hint: "1.693 lei" })), /* @__PURE__ */ React.createElement("div", { className: "axcharts" }, /* @__PURE__ */ React.createElement(V.BarChart, { orientation: "horizontal", title: "Afaceri aproape de limit\u0103, pe resurs\u0103", description: "Peste 80% din limita lunii", data: [{ label: "SMS-uri", value: 5 }, { label: "Angaja\u021Bi", value: 2 }, { label: "Program\u0103ri", value: 1 }, { label: "Spa\u021Biu documente", value: 1 }], unit: "afaceri" }), /* @__PURE__ */ React.createElement(V.LineChart, { title: "SMS-uri trimise pe zi", description: "Octombrie \xB7 azi e \xEEnc\u0103 \xEEn curs", labels: ["1", "4", "7", "10", "13", "16", "19", "22", "24"], series: [{ label: "SMS-uri", values: [1700, 1900, 2050, 1980, 2200, 2310, 2280, 2400, 2120] }], nowIndex: 8, nowLabel: "\xEEn curs", height: 220 })), /* @__PURE__ */ React.createElement(V.DataTable, { caption: "Afaceri aproape de limit\u0103", columns: [
+  } }), /* @__PURE__ */ React.createElement(V.Stat, { label: "SMS-uri trimise", value: "61.240", delta: { value: "+11%", period: "fa\u021B\u0103 de septembrie" } }), /* @__PURE__ */ React.createElement(V.Stat, { label: "Program\u0103ri create", value: "48.900", delta: { value: "+8%", period: "fa\u021B\u0103 de septembrie" } }), /* @__PURE__ */ React.createElement(V.Stat, { label: "Pachete \xEEn plus v\xE2ndute", value: "37", hint: "1.693 lei" })), /* @__PURE__ */ React.createElement("div", { className: "axcharts" }, /* @__PURE__ */ React.createElement(V.BarChart, { orientation: "horizontal", title: "Afaceri aproape de limit\u0103, pe resurs\u0103", description: "Peste 80% din limita lunii", data: [{ label: "SMS-uri", value: 5 }, { label: "Locuri \xEEn echip\u0103", value: 2 }, { label: "Program\u0103ri", value: 1 }, { label: "Spa\u021Biu documente", value: 1 }], unit: "afaceri" }), /* @__PURE__ */ React.createElement(V.LineChart, { title: "SMS-uri trimise pe zi", description: "Octombrie \xB7 azi e \xEEnc\u0103 \xEEn curs", labels: ["1", "4", "7", "10", "13", "16", "19", "22", "24"], series: [{ label: "SMS-uri", values: [1700, 1900, 2050, 1980, 2200, 2310, 2280, 2400, 2120] }], nowIndex: 8, nowLabel: "\xEEn curs", height: 220 })), /* @__PURE__ */ React.createElement(V.DataTable, { caption: "Afaceri aproape de limit\u0103", columns: [
     { key: "b", header: "Afacere", primary: true },
     { key: "r", header: "Resurs\u0103", secondary: true },
     { key: "u", header: "Consum", secondary: true, render: (r) => /* @__PURE__ */ React.createElement("span", { className: "v-num" }, r.u) },
     { key: "e", header: "Ajunge la limit\u0103", optional: true },
     { key: "s", header: "Stare", trailing: true, render: (r) => /* @__PURE__ */ React.createElement(V.StatusPill, { tone: "attention", icon: "triangle-alert" }, r.s) }
   ], rows: [
-    { id: 1, b: "Salon Aurora", r: "Angaja\u021Bi", u: "10 din 10", e: "Atins\u0103", s: "La limit\u0103" },
+    { id: 1, b: "Salon Aurora", r: "Locuri \xEEn echip\u0103", u: "10 din 10", e: "Atins\u0103", s: "La limit\u0103" },
     { id: 2, b: "Clinica Dentis Sibiu", r: "SMS-uri", u: "920 din 1.000", e: "26 oct.", s: "92%" },
     { id: 3, b: "Fitness Atlas", r: "SMS-uri", u: "2.610 din 3.000", e: "29 oct.", s: "87%" }
   ], rowActions: () => [{ label: "Deschide afacerea", icon: "external-link" }, { label: "Adaug\u0103 o excep\u021Bie", icon: "sliders-horizontal" }] })));

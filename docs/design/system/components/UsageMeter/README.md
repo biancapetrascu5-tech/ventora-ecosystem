@@ -26,3 +26,5 @@ Consumption against a subscription limit, shown calmly: what is used, what is le
 - **Compact:** the same messages, smaller; at the limit, only the action that applies to the person.
 
 The preview shows every state in Light and Dark frames, plus German and Italian.
+
+**Label for the members quota (S112).** "Locuri în echipă" (not "Angajați"): `label="Locuri în echipă"`. See the glossary, "membru" and "loc în echipă".

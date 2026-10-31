@@ -621,6 +621,25 @@ Fiecare intrare spune ce s-a schimbat pe componentă (structură, tokeni, texte,
 - **HubAccount — 1.0.2:** aceleași rânduri de dispozitiv și același format de oră în preview. README.
 - **i18n `account-security.json`:** noi `account.security.when.now/today/yesterday/date`, `account.security.devices.thisDevice`, `account.security.twoStep.passwordLead`, `account.security.twoStep.confirmPassword`, `account.security.twoStep.error.password` (6 limbi); `account.security.password.changed` devine „Schimbată: {when}”; `account.security.devices.current` scos.
 
+## 2026-10-30 · S111 — Fazele 3 și 4: comercial și suport
+
+### Componente noi
+- **FounderBusinessBilling** (1.0.0) — tabul „Plăți și facturi”: abonamentul și cum se plătește, istoricul cumpărărilor cu factura, rambursarea (confirmare, motiv, stornare; refuz de la Stripe), confirmarea încasării prin transfer (data, suma, suma diferită). Doar RO.
+- **FounderRequests** (1.0.0) — „Cereri din Hub”: noi / toate, rezolvare, refuz cu motiv, listă goală. Doar RO.
+- **HubSupportThread** (1.0.0) — pagina unei solicitări: firul, răspunsul cu atașamente și erorile lor, se trimite, trimis, rezolvat, redeschidere; istoricul stării; test DE/IT.
+
+### Componente schimbate
+- **AddonPurchase — 1.1.0:** `invoice: { pending: true }` — plata a reușit, factura vine pe e-mail; texte noi `paySuccessHintPending`, `invoicePending` (6 limbi); clasa `.v-payinvoice--pending`. UpgradeDialog o primește la fel. `index.d.ts`.
+- **HubAddonPurchase — 1.0.1:** ecranul „plata a reușit, factura vine în curând”.
+- **HubAdminPlan — 1.1.0:** varianta fără Growth Engine (prop `growth`), nota de consum la pachetul potrivit, rândul „Factura se emite”.
+- **BookingSmsNotifications — 1.2.0:** e-mailul E-7, cardurile 13–16.
+- **Spine Founder:** „Cereri” după „Consum”, în toate preview-urile Founder și Growth (și HubSupportSession, care folosește același preambul).
+- **README:** FounderBusiness, HubAddonPurchase, AddonPurchase, HubAdminPlan, HubSupport, NotificationsPanel, BookingSmsNotifications.
+
+### i18n
+- Noi: `founder-commercial.json` (RO), `commercial.json`, `support.json`, `notifications.json` (6 limbi). Textele din HubSupport și HubStates (suport) și cele ale panoului de notificări erau până acum doar în preview-uri sau în bibliotecă.
+
+
 ## 2026-10-31 · S112 — completări după Lotul 2.8
 
 ### Componente noi
@@ -638,4 +657,25 @@ Fiecare intrare spune ce s-a schimbat pe componentă (structură, tokeni, texte,
 ### i18n
 - Noi: `business-access.json`, `team.json` (6 limbi), `founder-business.json` (RO). Textele scrise de agent fără design (Hub: „A cerut o invitație nouă”, meniul Hub și pagina Echipă în EN/FR/ES; Founder: „Suspendată”, „Reactivează afacerea”, „Ultimele modificări”, pluralul din suspendare, eroarea la crearea afacerii) sunt aici, corectate, ca chei.
 
-> Sincronizat în repo la Lotul 2.9b: doar S112. S111 (FounderBusinessBilling, FounderRequests, HubSupportThread, i18n commercial / support / notifications) și S113 (lunar / anual, lei / euro, reduceri) rămân în `_incoming` pentru loturile 3.4–3.8 și F4; FounderBusiness rămâne la versiunea din repo (exportul o are deja la 1.0.2, cu S113).
+## 2026-10-31 · S113 — completări pentru Faza 3: lunar sau anual, lei și euro, reduceri, direct sau la cerere, proporțional
+
+### Componente noi
+- **FounderApps** (1.0.0) — „Aplicații”: prețul lunar în lei și în euro, costul de implementare, comutatorul „Direct / La cerere” (blocat când există cost de implementare). Intrare nouă în Spine. Doar RO.
+- **FounderDiscounts** (1.0.0) — reducerile unei afaceri în „Plăți și facturi”: lista, „Adaugă o reducere” (abonament sau linie, procent sau sumă fixă, o dată / N luni / permanent, motiv), 100% = gratuit, erorile, „Încheie reducerea”; pagina „Reduceri” cu toate reducerile permanente, intrare nouă în Spine. Doar RO.
+- **HubPlanBilling** (1.0.0) — cum plătește afacerea: lunar sau anual, următoarea plată, limitele lunare pe anual, reducerile ca linii separate, factura, pachetul lunar plătit proporțional; test DE (afacere în euro) / IT.
+- **HubAppActivation** (1.0.0) — activarea unei aplicații: directă, cu plata de azi proporțională și apoi lunară; la cerere, cu cererea trimisă; test DE/IT.
+
+### Componente schimbate
+- **AddonPurchase — 1.2.0:** `prorate: { today, until, monthly? }`; texte noi `prorateToday`, `prorateThen` (6 limbi); `addon.max === 1` ascunde cantitatea; suma de plată nu se mai rupe pe două rânduri (`.v-payline--total > .numeric`). `index.d.ts`.
+- **Icon:** iconița nouă `percent` (intrarea „Reduceri”).
+- **FounderPlans — 1.1.0, FounderPlanEditor — 1.1.0, FounderPacks — 1.1.0:** preț lunar și anual, în lei și în euro; erorile de preț în editor; dialogul de editare a unui pachet.
+- **FounderNewBusiness — 1.1.0:** „Moneda afacerii” și „Plata” (lunar / anual); prețul în invitație.
+- **FounderBusiness — 1.0.2:** cardul abonamentului: cum plătește, moneda, reînnoirea pe 17, consumul de la 17; „Consum: 17 oct. – 16 nov.” (și în preview-urile cu același antet).
+- **HubAdminPlan — 1.1.1:** „Plătești lunar: 349 lei · următoarea plată pe 17 noiembrie 2026”; „Consumul pornește de la zero pe 17 noiembrie.”; perioada reală pe facturi și pe pachete (RO/DE/IT).
+- **HubCatalogApp — 1.1.0:** varianta „La cerere” (costul de implementare, nota, „Cere activare”, fără probă); test DE.
+- **CommercialStates — 1.0.1:** testul DE/IT păstrează „lei”; prețurile rămân în moneda afacerii.
+- **Spine Founder:** „Aplicații” și „Reduceri” sub „Model comercial”, în toate preview-urile Founder și Growth (și HubSupportSession).
+- **README:** cele de mai sus, plus FounderBusinessBilling. **Glosar:** plată lunară, plată anuală, monedă, reducere, la cerere, proporțional.
+
+### i18n
+- Noi: `pricing.json` (6 limbi), `founder-pricing.json` (RO).

@@ -1,4 +1,4 @@
-<!-- @dsCard group="Founder" height=2400 width=2620 page -->
+<!-- @dsCard group="Founder" height=5200 width=2620 page -->
 <!doctype html>
 <html lang="ro">
 <head><meta charset="utf-8"><title>FounderPacks — Ventora</title>
@@ -250,6 +250,33 @@ html,body{min-height:100%}
 .fxframe .caption{color:var(--ink-muted)}
 @container (max-width:420px){.fxlang{grid-template-columns:32px minmax(0,1fr) auto}.fxlang .v-iconbtn{display:none}}
 
+/*S113css*/
+.tfa-grouplab{margin:var(--space-6) 0 0}
+.tfa-scrgroup{display:flex;flex-direction:column}
+.sms-langs{display:flex;flex-direction:column;gap:var(--space-4);padding:var(--space-6);background:var(--canvas);color:var(--ink)}
+.sms-langrow{display:flex;gap:var(--space-6);align-items:flex-start}
+.sms-lang{display:flex;flex-direction:column;gap:var(--space-2)}
+.sms-boxlab{margin:0;color:var(--ink-muted)}
+.sms-langframe{border:var(--border-width) solid var(--line-strong);border-radius:var(--radius-lg);overflow:hidden;background:var(--canvas);color:var(--ink);display:flex;flex-direction:column}
+.sms-langframe>*{flex:1;min-height:0}
+.x-frame{position:relative;height:100%;display:flex;flex-direction:column}
+.x-frame>*{flex:1;min-height:0}
+.x-overlay{position:absolute;inset:0;background:var(--scrim);display:flex;align-items:center;justify-content:center;padding:var(--space-6);z-index:var(--z-overlay)}
+.x-overlay.m{align-items:flex-end;padding:0}
+.x-overlay .v-dialog{max-height:none}
+.x-toast{position:absolute;right:var(--space-6);bottom:var(--space-6);width:var(--panel-width);z-index:var(--z-toast)}
+.x-toast.m{left:var(--space-4);right:var(--space-4);bottom:var(--space-4);width:auto}
+.x-link{color:var(--ink);text-decoration:underline;text-underline-offset:2px}
+.fp-cell{display:flex;flex-direction:column;gap:var(--space-0-5)}
+.fp-save{color:var(--ink-muted)}
+.fp-ver td{vertical-align:top}
+.fp-prices{display:grid;grid-template-columns:1fr 1fr;gap:var(--space-4)}
+.fp-prices.m{grid-template-columns:1fr}
+.fp-sub{margin:0 0 var(--space-2)}
+.fp-list.fxplans{grid-template-columns:1fr}
+.fp-cell>span{white-space:nowrap}
+.fp-ver{width:100%}
+
 </style>
 </head>
 <body>
@@ -415,7 +442,7 @@ const AX_CRM_COLS = [
   { id: "castig", label: "C\xE2\u0219tigate \xEEn octombrie", summary: "41.200 lei", tone: "done" }
 ];
 const AX_CRM_CARDS = [
-  { id: "c1", col: "nou", title: "Clinica Dentis Sibiu", subtitle: "Abonament lunar pentru 10 angaja\u021Bi", amount: "9.600 lei", people: ["Bianca Petra\u0219cu"], due: { label: "Sun\u0103 azi", tone: "attention" } },
+  { id: "c1", col: "nou", title: "Clinica Dentis Sibiu", subtitle: "Abonament lunar pentru 10 membri", amount: "9.600 lei", people: ["Bianca Petra\u0219cu"], due: { label: "Sun\u0103 azi", tone: "attention" } },
   { id: "c2", col: "nou", title: "Hotel Continental", subtitle: "Coafat pentru nun\u021Bi, sezonul 2027", amount: "6.200 lei", people: ["Ioana Pavel"], due: { label: "Joi, 29 oct." } },
   { id: "c3", col: "nou", title: "Andreea Vasile", subtitle: "Pachet mireas\u0103", amount: "2.600 lei", people: ["Ioana Pavel"], meta: ["Din pagina de rezerv\u0103ri"] },
   { id: "c4", col: "oferta", title: "Agen\u021Bia Nord Studio", subtitle: "Eveniment corporate, 40 de persoane", amount: "14.000 lei", people: ["Bianca Petra\u0219cu"], due: { label: "F\u0103r\u0103 r\u0103spuns de 9 zile", tone: "attention", icon: "clock" } },
@@ -530,15 +557,15 @@ function AX_PrjHead({ mode, view }) {
   );
 }
 const FX_NAV = [
-  { items: [{ id: "azi", label: "Prezentare", short: "Prezentare", icon: "house" }, { id: "afaceri", label: "Afaceri", icon: "building-2", badge: 3 }, { id: "consum", label: "Consum", icon: "chart-column" }] },
-  { label: "Model comercial", items: [{ id: "planuri", label: "Planuri", icon: "boxes" }, { id: "pachete", label: "Pachete \xEEn plus", short: "Pachete", icon: "package" }] },
+  { items: [{ id: "azi", label: "Prezentare", short: "Prezentare", icon: "house" }, { id: "afaceri", label: "Afaceri", icon: "building-2", badge: 3 }, { id: "consum", label: "Consum", icon: "chart-column" }, { id: "cereri", label: "Cereri", icon: "inbox", badge: 2 }] },
+  { label: "Model comercial", items: [{ id: "planuri", label: "Planuri", icon: "boxes" }, { id: "pachete", label: "Pachete \xEEn plus", short: "Pachete", icon: "package" }, { id: "aplicatii", label: "Aplica\u021Bii", icon: "layout-grid" }, { id: "reduceri", label: "Reduceri", icon: "percent" }] },
   { label: "Growth", items: [{ id: "oferte", label: "Oferte", icon: "ticket" }, { id: "campanii", label: "Campanii", icon: "megaphone" }, { id: "audiente", label: "Audien\u021Be", icon: "users" }, { id: "rezultate", label: "Rezultate", icon: "chart-line" }, { id: "control", label: "Control", icon: "sliders-horizontal" }] },
   { label: "Sistem", items: [{ id: "jurnal", label: "Jurnal", icon: "history" }, { id: "setari", label: "Set\u0103ri", icon: "settings" }] }
 ];
 const FX_NOTIFS = [
   { id: 1, title: "Am oprit automat \u201EMarketing pentru saloane\u201D", body: "Rata de deranjare a ajuns la 6,2% (prag: 5%).", app: "Growth", time: "azi, 09:41", icon: "triangle-alert" },
   { id: 2, title: "Plat\u0103 e\u0219uat\u0103: Fitness Atlas", body: "449 lei \xB7 a doua \xEEncercare m\xE2ine", app: "Afaceri", time: "ieri", icon: "circle-x" },
-  { id: 3, title: "O excep\u021Bie expir\u0103 pe 30 octombrie", body: "Salon Aurora \xB7 12 angaja\u021Bi \xEEn loc de 10", app: "Afaceri", time: "ieri", icon: "clock", read: true }
+  { id: 3, title: "O excep\u021Bie expir\u0103 pe 30 octombrie", body: "Salon Aurora \xB7 12 membri \xEEn loc de 10", app: "Afaceri", time: "ieri", icon: "clock", read: true }
 ];
 function FX_Switch({ label, desc, on, words = ["Pornit\u0103", "Oprit\u0103"], mode }) {
   const [v, setV] = useState(on);
@@ -560,7 +587,7 @@ function FX_App({ active, title, children }) {
 }
 const FX_BIZ = [
   { id: 1, name: "Clinica Dentis Sibiu", city: "Sibiu", owner: "Andrei Mure\u0219an", plan: "Business \xB7 v2", apps: ["booking", "crm", "finance", "hr"], usage: ["SMS", 92], status: ["attention", "Aproape de limit\u0103", "triangle-alert"], since: "mar. 2025" },
-  { id: 2, name: "Salon Aurora", city: "Sibiu", owner: "Ioana Pavel", plan: "Business \xB7 v2", apps: ["booking", "crm", "hr", "finance", "projects", "shifts", "documents"], usage: ["Angaja\u021Bi", 100], status: ["attention", "La limit\u0103", "triangle-alert"], since: "ian. 2025" },
+  { id: 2, name: "Salon Aurora", city: "Sibiu", owner: "Ioana Pavel", plan: "Business \xB7 v2", apps: ["booking", "crm", "hr", "finance", "projects", "shifts", "documents"], usage: ["Locuri \xEEn echip\u0103", 100], status: ["attention", "La limit\u0103", "triangle-alert"], since: "ian. 2025" },
   { id: 3, name: "Agen\u021Bia Nord Studio", city: "Cluj-Napoca", owner: "Mihai Rusu", plan: "Start \xB7 v2", apps: ["projects", "crm"], usage: ["Proiecte", 40], status: ["neutral", "Prob\u0103 p\xE2n\u0103 pe 2 nov.", "clock"], since: "oct. 2026" },
   { id: 4, name: "Fitness Atlas", city: "Bra\u0219ov", owner: "Elena Dragomir", plan: "Business Plus \xB7 v1", apps: ["booking", "shifts", "finance", "marketing", "analytics"], usage: ["SMS", 61], status: ["danger", "Plat\u0103 e\u0219uat\u0103", "circle-x"], since: "iun. 2025" },
   { id: 5, name: "Cabinet Avocatura Pop", city: "Sibiu", owner: "Radu Pop", plan: "Start \xB7 v1", apps: ["contracts", "documents", "finance"], usage: ["Documente", 33], status: ["done", "Activ\u0103", "check"], since: "feb. 2026" },
@@ -569,9 +596,9 @@ const FX_BIZ = [
 const FX_RANK = { danger: 0, attention: 1, neutral: 2, done: 3 };
 const FX_BIZ_SORTED = () => [...FX_BIZ].sort((a, b) => FX_RANK[a.status[0]] - FX_RANK[b.status[0]] || a.name.localeCompare(b.name, "ro"));
 const FX_PLANS = [
-  { id: "start", name: "Start", price: 149, versions: [["v1", 41, "ian. 2025"], ["v2", 23, "oct. 2026", true]], limits: ["300 de program\u0103ri", "300 SMS", "3 angaja\u021Bi", "2 GB"], apps: 3 },
-  { id: "business", name: "Business", price: 349, versions: [["v1", 34, "ian. 2025"], ["v2", 52, "iun. 2026", true]], limits: ["1.000 de program\u0103ri", "1.000 SMS", "10 angaja\u021Bi", "5 GB"], apps: 7 },
-  { id: "plus", name: "Business Plus", price: 449, versions: [["v1", 18, "mar. 2026", true]], limits: ["Program\u0103ri nelimitate", "3.000 SMS", "25 de angaja\u021Bi", "20 GB"], apps: 12 }
+  { id: "start", name: "Start", price: 149, versions: [["v1", 41, "ian. 2025"], ["v2", 23, "oct. 2026", true]], limits: ["300 de program\u0103ri", "300 SMS", "3 membri", "2 GB"], apps: 3 },
+  { id: "business", name: "Business", price: 349, versions: [["v1", 34, "ian. 2025"], ["v2", 52, "iun. 2026", true]], limits: ["1.000 de program\u0103ri", "1.000 SMS", "10 membri", "5 GB"], apps: 7 },
+  { id: "plus", name: "Business Plus", price: 449, versions: [["v1", 18, "mar. 2026", true]], limits: ["Program\u0103ri nelimitate", "3.000 SMS", "25 de membri", "20 GB"], apps: 12 }
 ];
 const FX_CRITERIA = [
   { value: "apps_on", label: "Aplica\u021Bii active", operators: ["include", "nu include"], values: Object.keys(V.APPS).map((a) => ({ value: a, label: V.APPS[a].name })) },
@@ -595,23 +622,80 @@ const FX_CAMPAIGNS = [
 function FX_Frame({ th, label, children }) {
   return /* @__PURE__ */ React.createElement("div", { className: "fxframe", "data-theme": th }, /* @__PURE__ */ React.createElement("p", { className: "caption muted" }, label), /* @__PURE__ */ React.createElement("div", { className: "fxframe-in" }, children));
 }
-function FPacks({ mode }) {
-  return /* @__PURE__ */ React.createElement(FX_App, { active: "pachete", title: "Pachete \xEEn plus" }, /* @__PURE__ */ React.createElement(V.PageHeader, { title: "Pachete \xEEn plus", description: mode === "mobile" ? void 0 : "Ce pot cump\u0103ra afacerile peste abonament. Pre\u021Bul \u0219i costul de implementare de aici apar \xEEn toate ofertele.", actions: /* @__PURE__ */ React.createElement(V.Button, { icon: "plus" }, "Pachet nou") }), /* @__PURE__ */ React.createElement(V.DataTable, { caption: "Pachete \xEEn plus", columns: [
-    { key: "n", header: "Pachet", primary: true },
-    { key: "p", header: "Pre\u021B", secondary: true, render: (r) => /* @__PURE__ */ React.createElement("span", { className: "v-num" }, r.p) },
-    { key: "per", header: "Se pl\u0103te\u0219te", secondary: true },
-    { key: "setup", header: "Implementare", optional: true },
-    { key: "plans", header: "Planuri", optional: true, muted: true },
-    { key: "how", header: "Cump\u0103rare", trailing: true, render: (r) => /* @__PURE__ */ React.createElement(V.StatusPill, { tone: "neutral", icon: r.how === "Direct\u0103" ? "credit-card" : "users" }, r.how) }
-  ], rows: [
-    { id: 1, n: "500 SMS \xEEn plus", p: "49 lei", per: "o dat\u0103, luna curent\u0103", setup: "F\u0103r\u0103", plans: "Toate", how: "Direct\u0103" },
-    { id: 2, n: "200 de program\u0103ri \xEEn plus", p: "39 lei", per: "o dat\u0103, luna curent\u0103", setup: "F\u0103r\u0103", plans: "Start, Business", how: "Direct\u0103" },
-    { id: 3, n: "10 campanii \xEEn plus", p: "39 lei", per: "o dat\u0103, luna curent\u0103", setup: "F\u0103r\u0103", plans: "Toate", how: "Direct\u0103" },
-    { id: 4, n: "5 angaja\u021Bi \xEEn plus", p: "60 lei", per: "lunar, cu abonamentul", setup: "F\u0103r\u0103", plans: "Business, Business Plus", how: "Direct\u0103" },
-    { id: 5, n: "Domeniu propriu pentru pagina de rezerv\u0103ri", p: "25 lei", per: "lunar", setup: "150 lei", plans: "Business Plus", how: "La cerere, prin echipa Ventora" }
-  ], rowActions: () => [{ label: "Editeaz\u0103", icon: "pencil" }, { label: "Opre\u0219te v\xE2nzarea", icon: "lock" }] }));
+const FP = {"ro": {"founder.pricing.monthly": "Lunar", "founder.pricing.annual": "Anual", "founder.pricing.lei": "Lei", "founder.pricing.euro": "Euro", "founder.pricing.saving": "economie {amount}", "founder.plans.lead": "Fiecare schimbare de preț sau de limite face o versiune nouă. Afacerile rămân pe versiunea lor până le muți tu.", "founder.plans.col.version": "Versiune", "founder.plans.col.monthly": "Lunar", "founder.plans.col.annual": "Anual", "founder.plans.col.businesses": "Afaceri", "founder.plans.col.since": "Din", "founder.plans.limitsMonthly": "Limite pe lună, și la plata anuală", "founder.editor.price.title": "Preț", "founder.editor.price.desc": "Prețul anual îl scrii tu, nu e un procent din cel lunar. Prețul în euro nu se calculează din lei.", "founder.editor.price.monthlyLei": "Lunar, în lei", "founder.editor.price.annualLei": "Anual, în lei", "founder.editor.price.monthlyEur": "Lunar, în euro", "founder.editor.price.annualEur": "Anual, în euro", "founder.editor.price.now": "Acum: {amount} (v2).", "founder.editor.price.saving": "Față de 12 plăți lunare, clientul economisește {amount}.", "founder.editor.price.setupLei": "Cost de implementare, în lei", "founder.editor.price.setupEur": "Cost de implementare, în euro", "founder.editor.error.annualTooHigh": "Prețul anual trebuie să fie mai mic decât 12 plăți lunare ({amount}).", "founder.editor.error.eurMissing": "Scrie prețul în euro. Nu îl calculăm din lei.", "founder.editor.error.publish": "Ca să publici v3, completează prețurile marcate.", "founder.new.currency": "Moneda afacerii", "founder.new.currencyHelp": "Toate prețurile, facturile și plățile afacerii sunt în moneda aceasta, în orice limbă. După prima factură nu se mai schimbă.", "founder.new.billing": "Plata", "founder.new.billingHelp": "Clientul poate trece de la lunar la anual la reînnoire.", "founder.new.planPrice.monthly": "{amount} pe lună", "founder.new.planPrice.annual": "{amount} pe an · economisește {saving}", "founder.new.mail.price.monthly": "Apoi abonamentul e {amount} pe lună.", "founder.new.mail.price.annual": "Apoi abonamentul e {amount} pe an.", "founder.business.currency": "Moneda: {currency}", "founder.business.billing.monthly": "Plătește lunar: {amount}", "founder.business.billing.annual": "Plătește anual: {amount}", "founder.business.reset": "Consumul pornește de la zero pe {day} ale fiecărei luni.", "founder.packs.lead": "Ce pot cumpăra afacerile peste abonament. Prețul în lei, prețul în euro și costul de implementare de aici apar în toate ofertele.", "founder.packs.col.price": "Preț", "founder.packs.edit.title": "Editează „{name}”", "founder.packs.edit.priceLei": "Preț, în lei", "founder.packs.edit.priceEur": "Preț, în euro", "founder.packs.edit.priceHelp": "Pentru afacerile în euro. Nu se calculează din lei.", "founder.packs.edit.period": "Se plătește", "founder.packs.edit.period.once": "O dată, pentru perioada în curs", "founder.packs.edit.period.monthly": "Lunar, cu abonamentul (proporțional în prima lună)", "founder.packs.edit.save": "Salvează", "founder.packs.edit.cancel": "Renunță", "founder.packs.edit.note": "Afacerile care l-au cumpărat deja îl plătesc la prețul vechi până îl reînnoiesc.", "founder.apps.nav": "Aplicații", "founder.apps.title": "Aplicații", "founder.apps.lead": "Cât costă fiecare aplicație adăugată la abonament și dacă afacerea o poate activa singură. Cele care cer configurare stau „la cerere”.", "founder.apps.col.app": "Aplicație", "founder.apps.col.price": "Pe lună", "founder.apps.col.setup": "Implementare", "founder.apps.col.activation": "Activare", "founder.apps.direct": "Direct", "founder.apps.onRequest": "La cerere", "founder.apps.directHelp": "Afacerea o activează singură din catalog și plătește cu cardul.", "founder.apps.onRequestHelp": "Afacerea trimite o cerere; o activează echipa Ventora.", "founder.apps.setupLocked": "Are cost de implementare, deci rămâne la cerere.", "founder.apps.none": "Fără", "founder.apps.switched": "{app} se activează acum direct din catalog.", "founder.discounts.nav": "Reduceri", "founder.discounts.title": "Reduceri", "founder.discounts.lead": "Toate reducerile permanente, din toate afacerile. Cele temporare le vezi și în pagina fiecărei afaceri.", "founder.discounts.filter.permanent": "Permanente", "founder.discounts.filter.active": "Toate active", "founder.discounts.section": "Reduceri active", "founder.discounts.sectionLead": "Se aplică la următoarele facturi; facturile emise nu se schimbă.", "founder.discounts.add": "Adaugă o reducere", "founder.discounts.col.business": "Afacerea", "founder.discounts.col.what": "Pe ce", "founder.discounts.col.value": "Reducere", "founder.discounts.col.duration": "Cât ține", "founder.discounts.col.reason": "Motiv", "founder.discounts.col.by": "Adăugată de", "founder.discounts.what.plan": "Tot abonamentul", "founder.discounts.duration.once": "O singură dată", "founder.discounts.duration.months": "{count, plural, one {# lună} few {# luni} other {# de luni}}, până pe {date}", "founder.discounts.duration.permanent": "Permanentă", "founder.discounts.end": "Încheie reducerea", "founder.discounts.empty": "Nicio reducere activă.", "founder.discounts.emptyPermanent": "Nicio reducere permanentă. Când adaugi una din pagina unei afaceri, apare aici.", "founder.discounts.dialog.title": "Adaugă o reducere pentru {business}", "founder.discounts.dialog.scope": "Se aplică pe", "founder.discounts.dialog.scope.plan": "Tot abonamentul", "founder.discounts.dialog.scope.planDesc": "Abonamentul și tot ce se plătește odată cu el.", "founder.discounts.dialog.scope.line": "O singură linie", "founder.discounts.dialog.scope.lineDesc": "O aplicație adăugată sau un pachet lunar.", "founder.discounts.dialog.line": "Linia", "founder.discounts.dialog.kind": "Reducerea", "founder.discounts.dialog.kind.percent": "Procent", "founder.discounts.dialog.kind.amount": "Sumă fixă", "founder.discounts.dialog.value": "Valoare", "founder.discounts.dialog.percentHelp": "Între 1 și 100%. 100% înseamnă gratuit.", "founder.discounts.dialog.amountHelp": "În {currency}, moneda afacerii. Cel mult prețul liniei.", "founder.discounts.dialog.duration": "Cât ține", "founder.discounts.dialog.duration.once": "O singură dată", "founder.discounts.dialog.duration.onceDesc": "Doar la următoarea factură.", "founder.discounts.dialog.duration.months": "Un număr de luni", "founder.discounts.dialog.duration.permanent": "Permanent", "founder.discounts.dialog.duration.permanentDesc": "Până o închei tu. Apare și în lista „Reduceri”.", "founder.discounts.dialog.monthsLabel": "Luni", "founder.discounts.dialog.reason": "Motiv", "founder.discounts.dialog.reasonHelp": "Intră în jurnalul afacerii. Clientul nu îl vede.", "founder.discounts.dialog.preview": "Următoarea factură, pe {date}", "founder.discounts.dialog.free": "Cu 100%, linia devine gratuită: pe factură apare prețul întreg, reducerea și totalul 0.", "founder.discounts.dialog.submit": "Adaugă reducerea", "founder.discounts.dialog.cancel": "Renunță", "founder.discounts.error.reason": "Scrie motivul reducerii.", "founder.discounts.error.percent": "Scrie un procent între 1 și 100.", "founder.discounts.error.amount": "Reducerea nu poate fi mai mare decât prețul liniei ({amount}).", "founder.discounts.added": "Am adăugat reducerea. Se vede de la factura din {date}.", "founder.discounts.endDialog.title": "Închei reducerea de {value} pentru {business}?", "founder.discounts.endDialog.body": "De la factura din {date}, prețul revine la {amount}. Facturile deja emise nu se schimbă. Acțiunea intră în jurnal.", "founder.discounts.endDialog.submit": "Încheie reducerea", "founder.discounts.ended": "Am încheiat reducerea. De la {date}, prețul e {amount}."}};
+const h = React.createElement;
+const fmt = (s, vars) => { if (vars) for (const k in vars) s = s.split("{" + k + "}").join(vars[k]); return s; };
+/* Romanian plural for the ICU strings: one / few (0, 2–19, x01–x19) / other ("de"). */
+const roPl = (n) => n === 1 ? "one" : (n === 0 || (n % 100 >= 1 && n % 100 <= 19)) ? "few" : "other";
+const icu = (s, n, lang) => s.replace(/\{count, plural, (.*)\}$|\{count, plural, ((?:[^{}]|\{[^{}]*\})*)\}/, (m, a, b) => {
+  const body = a || b; const forms = {}; body.replace(/(\w+) \{([^{}]*)\}/g, (x, k, v) => { forms[k] = v; });
+  const cat = lang === "ro" ? roPl(n) : n === 1 ? "one" : "other";
+  return (forms[cat] || forms.other).split("#").join(String(n));
+});
+function Board({ title, notes, items }) {
+  return h("div", { className: "scr" },
+    h("p", { className: "heading" }, title),
+    notes ? h("p", { className: "caption muted" }, notes.join(" · ")) : null,
+    items.map(([lab, render, dH = 860, mH = 844]) => h("div", { key: lab, className: "tfa-scrgroup" },
+      h("p", { className: "subheading tfa-grouplab" }, lab),
+      ["light", "dark"].map((th) => h("div", { className: "scr-row", key: th },
+        [["desktop", "Desktop · 1280", "scr-d", dH], ["mobile", "Telefon · 390", "scr-m", mH]].map(([m, l, cls, H]) => h("div", { key: m },
+          h("p", { className: "caption scr-lab" }, l, " · ", th === "light" ? "Light" : "Dark"),
+          h("div", { className: cls, "data-theme": th, style: { height: H, position: "relative", overflow: "hidden" } }, render(m)))))))));
 }
-mount(/* @__PURE__ */ React.createElement(Screens, { title: "Founder \u2014 Pachete \xEEn plus: pre\u021Buri, periodicitate, implementare, disponibilitate", desktopH: 800, tabletH: 1e3, mobileH: 1100, render: (m) => /* @__PURE__ */ React.createElement(FPacks, { mode: m }) }));
+function Langs({ items }) {
+  return h("div", { className: "sms-langs" },
+    h("p", { className: "heading" }, "Test cu etichete în germană și italiană"),
+    h("div", { className: "sms-langrow" }, items.map(([lab, lang, mode, th, el, H]) => h("div", { className: "sms-lang", key: lab },
+      h("p", { className: "caption sms-boxlab" }, lab),
+      h("div", { className: "sms-langframe", "data-theme": th, style: { height: H, position: "relative", width: mode === "mobile" ? 390 : 1280 } }, h(V.LocaleProvider, { locale: lang }, el))))));
+}
+const tf = (key, vars) => { let s = (FP.ro[key] || key); if (vars) for (const k in vars) s = s.split("{" + k + "}").join(vars[k]); return s; };
+const nf = (n) => n.toLocaleString("ro-RO", { minimumFractionDigits: n % 1 ? 2 : 0, maximumFractionDigits: 2 });
+const lei = (n) => nf(n) + " lei";
+const eur = (n) => nf(n) + " €";
+const money = (n, cur) => cur === "eur" ? eur(n) : lei(n);
+/* Prices per plan version: [monthly lei, annual lei, monthly €, annual €]. The annual price is typed in, not a percentage (S113). */
+const PRICES = {
+  start: { v1: [129, 1290, 26, 260], v2: [149, 1490, 30, 300] },
+  business: { v1: [299, 2990, 60, 600], v2: [349, 3490, 70, 700] },
+  plus: { v1: [449, 4490, 90, 900] }
+};
+const PriceCell = ({ l, e, save }) => h("span", { className: "fp-cell" }, h("span", { className: "body v-num" }, l), h("span", { className: "body-small muted v-num" }, e), save ? h("span", { className: "caption fp-save" }, save) : null);
+/* FounderPacks (S113): every pack has a price in lei and a price in euro, typed in separately (no conversion), and the setup cost in both currencies. Monthly packs bought during the month are charged pro rata. Keys founder.packs.* in i18n/founder-pricing.json (FP). */
+const PACKS = [
+  { id: 1, n: "500 SMS în plus", l: 49, e: 10, per: "o dată, perioada în curs", setup: null, plans: "Toate", how: "Directă" },
+  { id: 2, n: "200 de programări în plus", l: 39, e: 8, per: "o dată, perioada în curs", setup: null, plans: "Start, Business", how: "Directă" },
+  { id: 3, n: "10 campanii în plus", l: 39, e: 8, per: "o dată, perioada în curs", setup: null, plans: "Toate", how: "Directă" },
+  { id: 4, n: "5 locuri în echipă în plus", l: 60, e: 12, per: "lunar, cu abonamentul", setup: null, plans: "Business, Business Plus", how: "Directă" },
+  { id: 5, n: "Domeniu propriu pentru pagina de rezervări", l: 25, e: 5, per: "lunar", setup: [150, 30], plans: "Business Plus", how: "La cerere, prin echipa Ventora" }
+];
+function FPacks({ mode, edit }) {
+  return h("div", { className: "frame-rel" }, h(FX_App, { active: "pachete", title: "Pachete în plus" }, h(V.PageHeader, { title: "Pachete în plus", description: mode === "mobile" ? undefined : tf("founder.packs.lead"), actions: h(V.Button, { icon: "plus" }, "Pachet nou") }),
+    h(V.DataTable, { caption: "Pachete în plus", columns: [
+      { key: "n", header: "Pachet", primary: true },
+      { key: "p", header: tf("founder.packs.col.price"), secondary: true, render: (r) => h("span", { className: "v-num" }, lei(r.l) + " · " + eur(r.e)) },
+      { key: "per", header: "Se plătește", secondary: true },
+      { key: "setup", header: "Implementare", optional: true, render: (r) => r.setup ? lei(r.setup[0]) + " · " + eur(r.setup[1]) : "Fără" },
+      { key: "plans", header: "Planuri", optional: true, muted: true },
+      { key: "how", header: "Cumpărare", trailing: true, render: (r) => h(V.StatusPill, { tone: "neutral", icon: r.how === "Directă" ? "credit-card" : "users" }, r.how) }],
+      rows: PACKS, rowActions: () => [{ label: "Editează", icon: "pencil" }, { label: "Oprește vânzarea", icon: "lock" }] })),
+    edit ? h("div", { className: "x-overlay" + (mode === "mobile" ? " m" : "") }, h(V.Dialog, { open: true, inline: true, className: mode === "mobile" ? "v-dialog--sheet" : undefined,
+      title: tf("founder.packs.edit.title", { name: "5 locuri în echipă în plus" }),
+      footer: h(React.Fragment, null, h(V.Button, { variant: "quiet" }, tf("founder.packs.edit.cancel")), h(V.Button, { variant: "primary" }, tf("founder.packs.edit.save"))) },
+      h("div", { className: "d0", style: { gap: "var(--space-4)" } },
+        h("div", { className: "fp-prices" + (mode === "mobile" ? " m" : "") },
+          h(V.FormField, { label: tf("founder.packs.edit.priceLei"), required: true }, h(V.Input, { defaultValue: "60", suffix: "lei", inputMode: "decimal" })),
+          h(V.FormField, { label: tf("founder.packs.edit.priceEur"), required: true, helper: tf("founder.packs.edit.priceHelp") }, h(V.Input, { defaultValue: "12", suffix: "€", inputMode: "decimal" })),
+          h(V.FormField, { label: tf("founder.editor.price.setupLei") }, h(V.Input, { defaultValue: "0", suffix: "lei", inputMode: "decimal" })),
+          h(V.FormField, { label: tf("founder.editor.price.setupEur") }, h(V.Input, { defaultValue: "0", suffix: "€", inputMode: "decimal" }))),
+        h(V.RadioGroup, { legend: tf("founder.packs.edit.period"), name: "per-" + mode + Math.random(), defaultValue: "monthly", options: [{ value: "once", label: tf("founder.packs.edit.period.once") }, { value: "monthly", label: tf("founder.packs.edit.period.monthly") }] }),
+        h(V.Notice, { tone: "neutral", icon: "info" }, tf("founder.packs.edit.note"))))) : null);
+}
+mount(h("div", null,
+  h(Screens, { title: "Founder — Pachete în plus: preț în lei și în euro (S113)", notes: ["Euro se introduce separat, fără conversie", "Pachetele lunare cumpărate în timpul lunii se plătesc proporțional în prima lună"], desktopH: 800, tabletH: 1000, mobileH: 1200, render: (m) => h(FPacks, { mode: m }) }),
+  h(Board, { title: "Editarea unui pachet", items: [["1 · Prețul în lei, prețul în euro, cum se plătește", (m) => h(FPacks, { mode: m, edit: true }), 820, 1200]] })));
+
 </script>
 </body>
 </html>

@@ -272,9 +272,9 @@ function ComStatesGrid() {
   } })));
 }
 
-/* p2 · DE/IT label test: translated copies of this screen (data and labels), rendered inside V.LocaleProvider */
+/* p2 · DE/IT label test: translated copies of this screen (data and labels), rendered inside V.LocaleProvider. Prices stay in the business's currency (lei here) in every language (S113). */
 const __p2 = {
-  tx: (s, d) => typeof s !== "string" ? s : Object.prototype.hasOwnProperty.call(d, s) ? d[s] : s === " lei" ? " €" : s.replace(/(\d) lei\b/g, "$1 €"),
+  tx: (s, d) => typeof s !== "string" ? s : Object.prototype.hasOwnProperty.call(d, s) ? d[s] : s,
   trd: (v, d) => typeof v === "string" ? __p2.tx(v, d) : Array.isArray(v) ? v.map((x) => __p2.trd(x, d)) : v && typeof v === "object" && Object.getPrototypeOf(v) === Object.prototype && !v.$$typeof ? Object.fromEntries(Object.entries(v).map(([k, x]) => [k, __p2.trd(x, d)])) : v
 };
 

@@ -1,0 +1,842 @@
+<!-- @dsCard group="Founder" height=23444 width=2620 page -->
+<!doctype html>
+<html lang="ro">
+<head><meta charset="utf-8"><title>FounderDiscounts — Ventora</title>
+<style>
+html,body{min-height:100%}
+.d{display:flex;flex-direction:column;gap:var(--space-4);padding:var(--space-4);box-sizing:border-box}
+.d0{display:flex;flex-direction:column;gap:var(--space-4);min-width:0}
+.r{display:flex;flex-wrap:wrap;gap:var(--space-3);align-items:center}
+.l{color:var(--ink-muted);width:calc(var(--space-16) + var(--space-6));flex:none}
+.g2{display:grid;grid-template-columns:repeat(auto-fit,minmax(var(--search-width),1fr));gap:var(--space-4) var(--space-6);align-items:start}
+.frame{border:var(--border-width) solid var(--line);border-radius:var(--radius-md);background:var(--sheet);box-sizing:border-box}
+.phone{width:390px;height:600px;flex:none;border:var(--border-width) solid var(--line-strong);border-radius:var(--radius-xl);overflow:hidden;box-sizing:border-box}
+.tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(var(--app-tile-width),1fr));gap:var(--space-4)}
+.icons{display:grid;grid-template-columns:repeat(auto-fill,minmax(calc(var(--app-tile-width) - var(--space-12)),1fr));gap:var(--space-2)}
+.ic{display:flex;align-items:center;gap:var(--space-2);color:var(--ink);padding:var(--space-1);min-width:0}
+.ic .caption{color:var(--ink-muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:0}
+.panel{display:flex;flex-direction:column;gap:var(--space-3);padding:var(--space-6);background:var(--sheet);color:var(--ink)}
+.lab{color:var(--ink-muted);margin-top:var(--space-2)}
+.fam{display:grid;grid-template-columns:repeat(5,1fr);gap:var(--space-4) var(--space-2)}
+.famcell,.sz,.papp{display:flex;flex-direction:column;align-items:center;gap:var(--space-1);color:var(--ink-secondary)}
+.gcell{display:flex;flex-direction:column;align-items:center;gap:var(--space-2);color:var(--ink-secondary)}
+.gwrap{position:relative;width:240px;height:240px}
+.gover{position:absolute;inset:0}
+.gwrap--sm{width:64px;height:64px;display:inline-block}
+.gwrap--sm .key{stroke-width:.5}
+.gl{stroke:var(--attention);stroke-width:.06;opacity:.55}
+.gl--major{stroke-width:.12;opacity:.9}
+.key{fill:none;stroke:var(--done);stroke-width:.18}
+.key--plate{stroke:var(--attention);stroke-dasharray:.6 .4}
+.key--diag{stroke-dasharray:.5 .5}
+.rules{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--space-6);color:var(--ink)}
+.rules .body-small{color:var(--ink-muted);margin-top:var(--space-1)}
+.ctx{display:flex;flex-direction:column;background:var(--canvas);color:var(--ink);padding:var(--space-4);gap:var(--space-4)}
+.ctxrow{display:flex;gap:var(--space-4);align-items:flex-start}
+.launch{flex:1;min-width:0;background:var(--canvas);padding:var(--space-4) var(--space-6);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg)}
+.tiles3{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--space-3)}
+.spinebox{height:250px;display:flex;border:var(--border-width) solid var(--line);border-radius:var(--radius-lg);overflow:hidden;background:var(--canvas)}
+.phone2{width:300px;border:var(--border-width) solid var(--line-strong);border-radius:var(--radius-xl);background:var(--canvas);padding-bottom:var(--space-4)}
+.pgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--space-4) var(--space-1);padding:0 var(--space-3)}
+.browser{display:flex;gap:var(--space-1);background:var(--sunken);padding:var(--space-2) var(--space-2) 0;border-radius:var(--radius-md) var(--radius-md) 0 0;border:var(--border-width) solid var(--line)}
+.btab{display:inline-flex;align-items:center;gap:var(--space-2);padding:var(--space-2) var(--space-3);border-radius:var(--radius-sm) var(--radius-sm) 0 0;color:var(--ink-secondary);min-width:160px}
+.btab.on{background:var(--sheet);color:var(--ink)}
+.muted{color:var(--ink-muted)}.center{text-align:center}
+.scr{display:flex;flex-direction:column;gap:var(--space-3);padding:var(--space-6);background:var(--sheet);color:var(--ink)}
+.scr-row{display:flex;gap:var(--space-6);align-items:flex-start;margin-top:var(--space-3)}
+.scr-lab{color:var(--ink-muted);margin-bottom:var(--space-2)}
+.scr-d,.scr-t,.scr-m{position:relative;overflow:hidden;border:var(--border-width) solid var(--line-strong);background:var(--canvas);color:var(--ink);box-sizing:border-box}
+.scr-d{width:1280px;border-radius:var(--radius-lg)}
+.scr-m{width:390px;border-radius:var(--radius-xl)}
+.scr-t{width:820px;border-radius:var(--radius-xl)}
+.wrap.tablet .tiles4{grid-template-columns:repeat(3,1fr)}
+.wrap.tablet{padding:var(--space-6) var(--space-5)}
+.sup.tablet{grid-template-columns:1fr}
+.paymethod{display:flex;flex-direction:column;gap:var(--space-2);margin-top:var(--space-4);padding-top:var(--space-4);border-top:var(--border-width) solid var(--line);max-width:480px}
+.modal-demo{position:absolute;inset:0;background:var(--scrim);display:flex;align-items:center;justify-content:center;padding:var(--space-6);z-index:var(--z-overlay)}
+.modal-demo.mobile{align-items:flex-end;padding:0}
+.modal-demo .v-dialog{max-height:none}
+.dlggrid{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--space-6);align-items:start}
+.dlggrid .v-dialog{width:auto}
+.today{display:flex;flex-direction:column;gap:var(--space-6)}
+.today.mobile{gap:var(--space-4)}.today.mobile .greet{padding:0 var(--space-4)}
+.today-grid{display:grid;grid-template-columns:minmax(0,2fr) minmax(320px,1fr);gap:var(--space-6);align-items:start}
+.today.tablet .today-grid,.today.mobile .today-grid{grid-template-columns:1fr}
+.today.tablet .today-side,.today.mobile .today-side{order:-1}
+.today-main{display:flex;flex-direction:column;gap:var(--space-6);min-width:0}
+.today.mobile .sec,.today.mobile .sechead{padding:0 var(--space-4)}
+.today.mobile .sheetlike,.today.mobile .nowcard{border-radius:0;border-left:0;border-right:0}
+.nowcards{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:var(--space-3)}
+.nowcard{display:flex;flex-direction:column;gap:var(--space-3);padding:var(--space-4);background:var(--sheet);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg)}
+.sechead{display:flex;justify-content:space-between;align-items:center;gap:var(--space-3);margin-bottom:var(--space-3);flex-wrap:wrap}
+.sec .v-badge{vertical-align:middle;margin-left:var(--space-1)}
+.reslist{list-style:none;margin:0 0 var(--space-3);padding:0;display:flex;flex-direction:column}
+.reslist li{display:flex;flex-direction:column;gap:2px;padding:var(--space-3) 0;border-bottom:var(--border-width) solid var(--line)}
+.reslist li:last-child{border-bottom:0}
+.stth{background:var(--canvas);color:var(--ink);padding:var(--space-6);border-radius:var(--radius-lg)}
+.stgrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--space-5) var(--space-4);align-items:start}
+@media (max-width:1100px){.stgrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:640px){.stgrid{grid-template-columns:minmax(0,1fr)}.stgrid>.stc{grid-column:auto!important}}
+.stc{display:flex;flex-direction:column;gap:var(--space-2);min-width:0}
+.stc-box{background:var(--sheet);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg);padding:var(--space-4);min-width:0}
+.stc-box .v-dialog{width:100%;box-shadow:none}
+.stc-box .v-toast{width:100%;box-sizing:border-box}
+.slotcol{display:flex;flex-direction:column;gap:var(--space-3);padding:var(--space-4);background:var(--canvas);border-radius:var(--radius-lg);color:var(--ink)}
+.recogrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--space-5);align-items:start}
+.toastdemo{position:fixed;right:var(--space-6);bottom:var(--space-6);width:var(--panel-width);z-index:var(--z-toast)}
+.appdet{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:var(--space-6);align-items:start}
+.wrap.tablet .appdet,.wrap.mobile .appdet{grid-template-columns:1fr}
+.appdet-main,.appdet-side{display:flex;flex-direction:column;gap:var(--space-5);padding:var(--space-6)}
+.wrap.mobile .appdet-main,.wrap.mobile .appdet-side{padding:var(--space-4)}
+.appdet-side{gap:var(--space-3)}
+.appdet-why{padding:var(--space-4);background:var(--sunken);border-radius:var(--radius-md)}
+.appdet-why .body{margin-top:var(--space-1)}
+.appdet-list{list-style:none;margin:var(--space-2) 0 0;padding:0;display:flex;flex-direction:column;gap:var(--space-2)}
+.appdet-list li{display:flex;gap:var(--space-2);align-items:flex-start}
+.appdet-list svg{flex:none;margin-top:2px;color:var(--ink-muted)}
+.seclist{display:flex;flex-direction:column;background:var(--sheet);border-top:var(--border-width) solid var(--line);border-bottom:var(--border-width) solid var(--line)}
+.secitem{display:flex;align-items:center;gap:var(--space-3);min-height:var(--touch-target);padding:var(--space-3) var(--space-4);background:none;border:0;border-top:var(--border-width) solid var(--line);color:var(--ink);text-align:left;font:inherit;cursor:pointer}
+.secitem .biz-text{flex:1}
+.inv-email{display:flex;flex-direction:column;gap:2px}
+.daylinks .v-link{font-weight:500}
+.rows2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--space-2)}
+.wrap.tablet .rows2{grid-template-columns:1fr}
+.unsaved{position:absolute;left:0;right:0;bottom:0;display:flex;align-items:center;justify-content:space-between;gap:var(--space-3);padding:var(--space-3) var(--space-6);background:var(--raised);border-top:var(--border-width) solid var(--line-strong);box-shadow:var(--shadow-2);z-index:var(--z-sticky);flex-wrap:wrap}
+.scr-d .unsaved{left:var(--spine-width)}
+.scr-t .unsaved{left:var(--spine-width-collapsed)}
+.scr-m .unsaved{bottom:var(--bottomnav-height);padding:var(--space-3) var(--space-4)}
+.axb{display:flex;flex-direction:column;gap:var(--space-6);min-width:0}
+.axb.mobile{gap:var(--space-4)}
+.axsplit{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:var(--space-6);align-items:start}
+.axb.tablet .axsplit,.axb.mobile .axsplit{grid-template-columns:1fr}
+.axb.tablet .axside,.axb.mobile .axside{order:-1}
+.axstack{display:flex;flex-direction:column;gap:var(--space-6);min-width:0}
+.axstack .axside{order:-1}
+.axb .axside.axafter{order:0}
+.logosets{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(420px,100%),1fr));gap:var(--space-4)}
+.logoset{display:flex;flex-direction:column;gap:var(--space-4);padding:var(--space-6);min-width:0;background:var(--sheet);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg);color:var(--ink)}
+.favtab{display:inline-flex;align-items:center;gap:var(--space-2);padding:var(--space-2) var(--space-3);border-radius:var(--radius-sm) var(--radius-sm) 0 0;background:var(--canvas);color:var(--ink-secondary);border:var(--border-width) solid var(--line);border-bottom:0}
+.axb.mobile .axside.axafter{padding:0 var(--space-4)}
+.axb.mobile .sechead,.axb.mobile>div>h2.heading{padding:0 var(--space-4)}
+.axb.mobile .fxplans{padding:0 var(--space-4)}
+.axb.mobile>.v-notice{margin:0 var(--space-4)}
+.axside{display:flex;flex-direction:column;gap:var(--space-3);min-width:0}
+.axside .v-badge{vertical-align:middle;margin-left:var(--space-1)}
+.axb.mobile .axside .heading{padding:0}
+.axcharts{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:var(--space-4)}
+.axb.mobile .axcharts{grid-template-columns:1fr}
+.axb.mobile .v-stats{grid-template-columns:1fr 1fr}
+.stockcell{display:grid;grid-template-columns:auto;gap:2px;min-width:120px}
+.stockbar{position:relative;display:block;height:4px;border-radius:var(--radius-full);background:var(--selected);max-width:140px}
+.stockbar>span{position:absolute;left:0;top:0;bottom:0;border-radius:inherit;background:var(--ink-secondary)}
+.stockbar.is-attention>span{background:var(--attention-mark)}
+.stockbar.is-danger>span{background:var(--danger)}
+.stockbar>i{position:absolute;top:-3px;bottom:-3px;width:2px;margin-left:-1px;background:var(--ink-muted);border-radius:1px}
+.glo{background:var(--sheet);color:var(--ink);gap:var(--space-6);padding:var(--space-6)}
+.glo-lead{max-width:760px;margin-top:var(--space-2)}
+.glo-rules{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:var(--space-4) var(--space-6)}
+.glo-rules .body-small{margin-top:var(--space-1)}
+.glo-sec{display:flex;flex-direction:column;gap:var(--space-2)}
+.glo-t{width:100%;border-collapse:collapse;table-layout:fixed}
+.glo-t th{text-align:left;color:var(--ink-muted);padding:var(--space-2) var(--space-3);border-bottom:var(--border-width) solid var(--line-strong)}
+.glo-t th:last-child{width:30%}
+.glo-t td{padding:var(--space-2) var(--space-3);border-bottom:var(--border-width) solid var(--line);vertical-align:top;overflow-wrap:anywhere}
+.glo-dec{display:inline-flex;align-items:center;gap:var(--space-1);margin-left:var(--space-2);padding:0 var(--space-2);border-radius:var(--radius-full);background:var(--attention-soft);color:var(--attention-ink);white-space:nowrap}
+.calbar{display:flex;justify-content:space-between;align-items:center;gap:var(--space-3);flex-wrap:wrap;margin-bottom:var(--space-3)}
+.calbar-date{margin-left:var(--space-2);white-space:nowrap}
+.calwrap.mobile{padding:0 var(--space-4)}
+.staffpick{margin-bottom:var(--space-3);max-width:var(--search-width)}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:var(--space-2) var(--space-4);margin:0}
+.kv dt{color:var(--ink-muted);padding-top:var(--space-0-5)}.kv dd{margin:0;color:var(--ink)}
+.hist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:var(--space-2);color:var(--ink-secondary)}
+.hist .muted{margin-right:var(--space-2)}
+.newgrid{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:var(--space-6);align-items:start}
+.newgrid.tablet,.newgrid.mobile{grid-template-columns:1fr}
+.newgrid.mobile{padding-bottom:var(--space-16)}
+.sumcard{position:sticky;top:0;display:flex;flex-direction:column;gap:var(--space-3);padding:var(--space-5);background:var(--sheet);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg)}
+.newgrid.mobile .sumcard{border-radius:0;border-left:0;border-right:0}
+.sumtotal{display:flex;justify-content:space-between;align-items:baseline;padding-top:var(--space-3);border-top:var(--border-width) solid var(--line)}
+.stickybar{position:absolute;left:0;right:0;bottom:var(--bottomnav-height);display:flex;gap:var(--space-2);justify-content:flex-end;padding:var(--space-3) var(--space-4);background:var(--sheet);border-top:var(--border-width) solid var(--line);z-index:var(--z-sticky)}
+.stickybar .v-btn--primary{flex:1}
+.hours{display:flex;flex-direction:column}
+.hrow{display:flex;align-items:center;justify-content:space-between;gap:var(--space-4);padding:var(--space-2) 0;border-bottom:var(--border-width) solid var(--line);min-height:var(--touch-target);flex-wrap:wrap}
+.hrow .v-toggle{min-width:160px}
+.hrange{display:inline-flex;align-items:center;gap:var(--space-2)}
+.hrange .v-datepicker{width:120px}
+.auth{min-height:100%;display:flex;flex-direction:column;background:var(--canvas);color:var(--ink)}
+.auth-top{display:flex;justify-content:space-between;align-items:center;padding:var(--space-4) var(--space-6)}
+.auth.mobile .auth-top{padding:var(--space-3) var(--space-4)}
+.auth-main{flex:1;display:flex;align-items:flex-start;justify-content:center;padding:var(--space-12) var(--space-4)}
+.auth.mobile .auth-main{padding:var(--space-2) 0 0;align-items:stretch}
+.auth-card{width:400px;background:var(--sheet);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg);padding:var(--space-10);display:flex;flex-direction:column;gap:var(--space-4);box-sizing:border-box}
+.auth-card.wide{width:480px}
+.auth.mobile .auth-card{width:100%;border-radius:0;border-left:0;border-right:0;border-bottom:0;padding:var(--space-6) var(--space-4)}
+.auth-head{display:flex;flex-direction:column;gap:var(--space-1);margin-bottom:var(--space-2)}
+.auth-note{display:flex;gap:var(--space-2);padding-top:var(--space-4);border-top:var(--border-width) solid var(--line);color:var(--ink-muted)}
+.auth-note .v-icon{margin-top:var(--space-0-5)}
+.auth-foot{padding:var(--space-4) var(--space-6);color:var(--ink-muted);text-align:center}
+.auth.mobile .auth-foot{display:none}
+.inv-head{display:flex;gap:var(--space-3);align-items:center}
+.inv-mark{width:var(--space-12);height:var(--space-12);border-radius:var(--radius-md);background:var(--neutral-soft);display:inline-flex;align-items:center;justify-content:center;font-weight:700;color:var(--ink);flex:none;box-shadow:inset 0 0 0 var(--border-width) var(--line-strong)}
+.inv-mark.sm{width:var(--space-10);height:var(--space-10)}
+.inv-role{display:flex;flex-direction:column;gap:var(--space-2);padding:var(--space-3) var(--space-4);background:var(--sunken);border-radius:var(--radius-sm)}
+.inv-app{display:inline-flex;gap:var(--space-1);align-items:center;color:var(--ink-secondary);margin-right:var(--space-2)}
+.reqs{list-style:none;margin:calc(var(--space-2) * -1) 0 0;padding:0;display:flex;flex-direction:column;gap:var(--space-1)}
+.req{display:flex;gap:var(--space-2);align-items:center;color:var(--ink-muted)}.req.ok{color:var(--done-ink)}
+.choose{width:560px;display:flex;flex-direction:column;gap:var(--space-4)}
+.auth.mobile .choose{width:auto;padding:var(--space-4)}
+.biz-list{display:flex;flex-direction:column;background:var(--sheet);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg);overflow:hidden}
+.biz{appearance:none;display:flex;align-items:center;gap:var(--space-3);padding:var(--space-4);border:0;border-bottom:var(--border-width) solid var(--line);background:transparent;color:var(--ink);text-align:start;font-family:inherit;cursor:pointer;min-height:var(--touch-target)}
+.biz:last-child{border-bottom:0}.biz:hover{background:var(--state-hover)}
+.biz-text{flex:1;min-width:0;display:flex;flex-direction:column;gap:var(--space-0-5);align-items:flex-start}
+.frame-rel{position:relative;height:100%}
+.wrap{max-width:1120px;width:100%;margin:0 auto;padding:var(--space-6) var(--space-6) var(--space-10);display:flex;flex-direction:column;gap:var(--space-8);box-sizing:border-box}
+.wrap.mobile{padding:var(--space-4);gap:var(--space-6)}
+.greet{display:flex;flex-direction:column;gap:var(--space-2)}
+.sec{margin-bottom:var(--space-3)}
+.tiles4{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--space-4)}
+.mgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--space-3) var(--space-1)}
+.rows{display:flex;flex-direction:column;background:var(--sheet);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg);overflow:hidden}
+.sheetlike{background:var(--sheet);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg)}
+.g2f{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(260px,100%),1fr));gap:var(--space-4) var(--space-6)}
+.nrow{display:grid;grid-template-columns:1fr repeat(3,var(--control-lg));align-items:center;padding:var(--space-2) 0;border-bottom:var(--border-width) solid var(--line);gap:var(--space-4)}
+.nrow>span:not(:first-child){display:flex;justify-content:center;text-align:center}
+.nhead{color:var(--ink-muted)}
+.secrow{display:flex;align-items:center;justify-content:space-between;gap:var(--space-4);padding:var(--space-3) 0;border-bottom:var(--border-width) solid var(--line);flex-wrap:wrap}
+.appsrow{display:inline-flex;gap:var(--space-1);align-items:center;flex-wrap:wrap}
+.mx-row{display:grid;grid-template-columns:minmax(320px,1.8fr) repeat(4,1fr);align-items:center;padding:var(--space-3) var(--space-6);border-bottom:var(--border-width) solid var(--line);gap:var(--space-2)}
+.mx-head{background:var(--sunken);color:var(--ink-secondary);border-radius:var(--radius-lg) var(--radius-lg) 0 0}
+.mx-c{display:flex;flex-direction:column;align-items:center;text-align:center}
+.mx-app{display:flex;align-items:center;gap:var(--space-3);flex-wrap:wrap}
+.mx-foot{padding:var(--space-4) var(--space-6)}
+.mrow{display:flex;align-items:center;gap:var(--space-3);padding:var(--space-3) var(--space-4);border-bottom:var(--border-width) solid var(--line);color:var(--ink-secondary)}.mrow:last-child{border-bottom:0}
+.plan{display:flex;justify-content:space-between;align-items:center;gap:var(--space-4);flex-wrap:wrap}
+.numeric-inline{font-weight:600;color:var(--ink)}
+.usage-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:var(--space-6)}
+.sup{display:grid;grid-template-columns:1.5fr 1fr;gap:var(--space-6);align-items:start}
+.lframes{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--space-4)}
+.lframe{position:relative;height:220px;border:var(--border-width) solid var(--line-strong);border-radius:var(--radius-lg);overflow:hidden;background:var(--canvas)}
+.lframe-tiles{display:flex;gap:var(--space-3);padding:var(--space-4)}
+.lstage{position:relative;height:240px;border:var(--border-width) solid var(--line-strong);border-radius:var(--radius-lg);overflow:hidden;background:var(--canvas);padding:var(--space-4)}
+.lstage-grid{display:grid;grid-template-columns:repeat(6,96px);gap:var(--space-2)}
+.fxcard{display:flex;flex-direction:column;gap:var(--space-2);padding:var(--space-5)}
+.fxapps{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:var(--space-3) var(--space-4)}
+.fxmail{display:flex;flex-direction:column;gap:var(--space-3);padding:var(--space-5);border:var(--border-width) solid var(--line);border-radius:var(--radius-md);background:var(--canvas);color:var(--ink)}
+.fxmail-btn{align-self:flex-start;padding:var(--space-2) var(--space-4);border-radius:var(--radius-md);background:var(--primary);color:var(--on-primary);font-weight:600}
+.fxplans{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:var(--space-4)}
+.fxplan{display:flex;flex-direction:column;gap:var(--space-3);padding:var(--space-5)}
+.fxlim{margin:0;padding-left:var(--space-5);color:var(--ink-secondary);display:flex;flex-direction:column;gap:var(--space-1)}
+.fxver{width:100%;border-collapse:collapse}
+.fxver th{text-align:left;color:var(--ink-muted);font-weight:500;padding:var(--space-1) 0;border-bottom:var(--border-width) solid var(--line)}
+.fxver td{padding:var(--space-2) 0;border-bottom:var(--border-width) solid var(--line);color:var(--ink)}
+.fxver td .v-pill{margin-left:var(--space-2);vertical-align:middle}
+.fxlimits{display:flex;flex-direction:column}
+.fxlimits-row{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(60px,.6fr) minmax(120px,1fr);gap:var(--space-3);align-items:center;padding:var(--space-2) 0;border-bottom:var(--border-width) solid var(--line);color:var(--ink)}
+.fxlimits-row .v-icon{color:var(--done-ink,var(--ink-secondary));flex:none}
+.fxlimits-head{padding-top:0}
+.fxlink{color:var(--ink);text-decoration:underline;text-underline-offset:2px;font-weight:600;display:inline-flex;align-items:center;min-height:24px;min-width:24px}
+@media (pointer:coarse),(max-width:767px){.fxlink{min-height:44px;min-width:44px}}
+.fxlim-new{display:flex;align-items:center;gap:var(--space-2);min-width:0}
+.fxlim-new .v-control{flex:1 1 80px;min-width:0}
+.fxdelta{display:inline-flex;align-items:center;gap:var(--space-1);color:var(--done-ink);flex:none}
+.fxdelta--down{color:var(--attention-ink)}
+.fxplan .v-btn{align-self:flex-start}
+.fxcost{margin-top:var(--space-4);display:flex;flex-direction:column;gap:var(--space-1);padding:var(--space-4);border-radius:var(--radius-md);background:var(--sunken);color:var(--ink)}
+.fxlangs{display:flex;flex-direction:column}
+.fxlang{display:grid;grid-template-columns:32px minmax(0,1fr) auto auto;gap:var(--space-3);align-items:center;padding:var(--space-2) 0;border-bottom:var(--border-width) solid var(--line);color:var(--ink)}
+.fxlang-text{color:var(--ink-secondary);overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.fxframe{display:flex;flex-direction:column;gap:var(--space-2);padding:var(--space-3);border:var(--border-width) solid var(--line);border-radius:var(--radius-md);background:var(--canvas);color:var(--ink)}
+.fxframe .caption{color:var(--ink-muted)}
+@container (max-width:420px){.fxlang{grid-template-columns:32px minmax(0,1fr) auto}.fxlang .v-iconbtn{display:none}}
+
+.reqs{list-style:none;margin:calc(var(--space-2) * -1) 0 0;padding:0;display:flex;flex-direction:column;gap:var(--space-1)}
+.req{display:flex;gap:var(--space-2);align-items:center;color:var(--ink-muted)}
+.req.ok{color:var(--done-ink)}
+.sms-states{display:flex;flex-direction:column;gap:var(--space-4);padding:var(--space-6);background:var(--canvas);color:var(--ink)}
+.sms-box{display:flex;flex-direction:column;gap:var(--space-2);min-width:0}
+.sms-boxlab{margin:0;color:var(--ink-muted)}
+.sms-boxbody{border:var(--border-width) solid var(--line-strong);border-radius:var(--radius-lg);overflow:hidden;background:var(--canvas)}
+.sms-boxbody > .v-dialog{margin:var(--space-6) auto}
+.sms-langs{display:flex;flex-direction:column;gap:var(--space-4);padding:var(--space-6);background:var(--canvas);color:var(--ink)}
+.sms-langrow{display:flex;gap:var(--space-6);align-items:flex-start}
+.sms-lang{display:flex;flex-direction:column;gap:var(--space-2)}
+.sms-langframe{border:var(--border-width) solid var(--line-strong);border-radius:var(--radius-lg);overflow:hidden;background:var(--canvas)}
+.sms-langframe.t{width:820px}
+.sms-langframe.m{width:390px}
+.tfa-code input{letter-spacing:.12em}
+.tfa-done{display:flex;align-items:center;gap:var(--space-2);color:var(--ink-secondary)}
+.tfa-done .v-icon{flex:none;color:var(--ink)}
+.tfa-once{font-weight:600;color:var(--ink)}
+.tfa-codes{list-style:none;margin:0;padding:var(--space-4);display:grid;grid-template-columns:1fr 1fr;gap:var(--space-2) var(--space-6);background:var(--raised);border:var(--border-width) solid var(--line);border-radius:var(--radius-md);font-size:var(--text-body-size,15px);letter-spacing:.06em;color:var(--ink)}
+.tfa-row{display:flex;flex-wrap:wrap;gap:var(--space-2)}
+.tfa-row>*{flex:1 1 0}
+.tfa-scrgroup{display:flex;flex-direction:column}
+.tfa-grouplab{margin:var(--space-6) 0 0}
+.sms-langframe.tfa-d{width:1280px}
+.sms-boxbody > .v-dialog{margin:var(--space-6) auto}
+.sms-langframe>.v-auth{flex:1}
+.sms-langframe{display:flex;flex-direction:column}
+.ss-frame{display:flex;flex-direction:column;height:100%;position:relative}
+.ss-frame>.ss-body{flex:1;min-height:0;position:relative;display:flex;flex-direction:column}
+.ss-frame>.ss-body>*{flex:1;min-height:0}
+.ss-bar{display:flex;gap:var(--space-3);align-items:center;padding:var(--space-2) var(--space-4);background:var(--sunken);border-bottom:var(--border-width) solid var(--line-strong);color:var(--ink);flex:none}
+.ss-bar.attention{background:var(--attention-soft)}
+.ss-bar.attention>.v-icon{color:var(--attention-ink)}
+.ss-bar>.v-icon{flex:none;color:var(--ink-secondary)}
+.ss-txt{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.ss-txt p{margin:0}
+.ss-line{display:flex;flex-wrap:wrap;gap:0 var(--space-3)}
+.ss-meta{color:var(--ink-secondary)}
+.ss-bar.m{align-items:flex-start;padding:var(--space-3) var(--space-4)}
+.ss-bar.m .ss-act{margin-top:var(--space-2)}
+.ss-overlay{position:absolute;inset:0;background:var(--scrim);display:flex;align-items:center;justify-content:center;padding:var(--space-6);z-index:var(--z-overlay)}
+.ss-overlay.m{align-items:flex-end;padding:0}
+.ss-overlay .v-dialog{max-height:none}
+.ss-toast{position:absolute;right:var(--space-6);bottom:var(--space-6);width:var(--panel-width);z-index:var(--z-toast)}
+.ss-toast.m{left:var(--space-4);right:var(--space-4);bottom:var(--space-4);width:auto}
+.ss-states{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--space-6);align-items:start}
+.ss-pad{padding:var(--space-6);display:flex;flex-direction:column;gap:var(--space-4);background:var(--canvas)}
+.ss-form{display:flex;flex-direction:column;gap:var(--space-4)}
+.ss-form p{margin:0}
+.ss-rule{display:flex;gap:var(--space-2);align-items:flex-start;margin:0;color:var(--ink-secondary)}
+.ss-rule.ok{color:var(--done-ink)}
+.ss-rule .v-icon{flex:none;margin-top:2px}
+.ss-list{margin:0;padding-left:var(--space-5);display:flex;flex-direction:column;gap:var(--space-1)}
+.tfa-grouplab{margin:var(--space-6) 0 0}
+.tfa-scrgroup{display:flex;flex-direction:column}
+.sms-langs{display:flex;flex-direction:column;gap:var(--space-4);padding:var(--space-6);background:var(--canvas);color:var(--ink)}
+.sms-langrow{display:flex;gap:var(--space-6);align-items:flex-start}
+.sms-lang{display:flex;flex-direction:column;gap:var(--space-2)}
+.sms-boxlab{margin:0;color:var(--ink-muted)}
+.sms-langframe{border:var(--border-width) solid var(--line-strong);border-radius:var(--radius-lg);overflow:hidden;background:var(--canvas);color:var(--ink);display:flex;flex-direction:column}
+.sms-langframe>*{flex:1;min-height:0}
+.x-frame{position:relative;height:100%;display:flex;flex-direction:column}
+.x-frame>*{flex:1;min-height:0}
+.x-overlay{position:absolute;inset:0;background:var(--scrim);display:flex;align-items:center;justify-content:center;padding:var(--space-6);z-index:var(--z-overlay)}
+.x-overlay.m{align-items:flex-end;padding:0}
+.x-overlay .v-dialog{max-height:none}
+.x-toast{position:absolute;right:var(--space-6);bottom:var(--space-6);width:var(--panel-width);z-index:var(--z-toast)}
+.x-toast.m{left:var(--space-4);right:var(--space-4);bottom:var(--space-4);width:auto}
+.x-link{color:var(--ink);text-decoration:underline;text-underline-offset:2px}
+.fp-cell{display:flex;flex-direction:column;gap:var(--space-0-5)}
+.fp-save{color:var(--ink-muted)}
+.fp-ver td{vertical-align:top}
+.fp-prices{display:grid;grid-template-columns:1fr 1fr;gap:var(--space-4)}
+.fp-prices.m{grid-template-columns:1fr}
+.fp-sub{margin:0 0 var(--space-2)}
+.fp-list.fxplans{grid-template-columns:1fr}
+.fp-cell>span{white-space:nowrap}
+.fp-ver{width:100%}
+.fd-prev{border:var(--border-width) solid var(--line);border-radius:var(--radius-md);padding:var(--space-3);display:flex;flex-direction:column;gap:var(--space-1)}
+.fd-line{display:flex;justify-content:space-between;gap:var(--space-3)}
+.fd-tot{border-top:var(--border-width) solid var(--line);padding-top:var(--space-2);margin-top:var(--space-1)}
+
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script>
+const V = window.Ventora;
+const { useState } = React;
+const Row = ({ label, children }) => /* @__PURE__ */ React.createElement("div", { className: "r" }, /* @__PURE__ */ React.createElement("span", { className: "l caption" }, label), children);
+const DE = ({ children }) => /* @__PURE__ */ React.createElement(V.LocaleProvider, { locale: "de" }, children);
+const FR = ({ children }) => /* @__PURE__ */ React.createElement(V.LocaleProvider, { locale: "fr" }, children);
+const IT = ({ children }) => /* @__PURE__ */ React.createElement(V.LocaleProvider, { locale: "it" }, children);
+const mount = (el) => ReactDOM.createRoot(document.getElementById("root")).render(/* @__PURE__ */ React.createElement(V.LocaleProvider, { locale: "ro" }, el));
+const SECTIONS = [
+  { items: [{ id: "azi", label: "Azi", icon: "house" }, { id: "calendar", label: "Calendar", icon: "calendar" }, { id: "programari", label: "Program\u0103ri", icon: "list", badge: 3 }] },
+  { label: "Gestionare", items: [{ id: "clienti", label: "Clien\u021Bi", icon: "users" }, { id: "servicii", label: "Servicii", icon: "boxes" }, { id: "angajati", label: "Angaja\u021Bi", icon: "contact" }] },
+  { label: "Afacere", items: [{ id: "rapoarte", label: "Rapoarte", icon: "chart-column" }, { id: "setari", label: "Set\u0103ri", icon: "settings" }] }
+];
+const SECTIONS_DE = [
+  { items: [{ id: "heute", label: "Heute", icon: "house" }, { id: "kalender", label: "Kalender", icon: "calendar" }, { id: "termine", label: "Termin\xFCbersicht", icon: "list", badge: 3 }] },
+  { label: "Verwaltung", items: [{ id: "kunden", label: "Kundenverwaltung", icon: "users" }, { id: "leistungen", label: "Dienstleistungen", icon: "boxes" }, { id: "mitarbeiter", label: "Mitarbeiterinnen", icon: "contact" }] },
+  { label: "Unternehmen", items: [{ id: "berichte", label: "Auswertungen", icon: "chart-column" }, { id: "einst", label: "Einstellungen", icon: "settings" }] }
+];
+const ORGS = [
+  { id: "aurora", name: "Salon Aurora", role: "Proprietar" },
+  { id: "dentis", name: "Clinica Dentis Sibiu", role: "Recep\u021Bie" },
+  { id: "nord", name: "Agen\u021Bia Nord Studio", role: "Manager de proiect" }
+];
+const NOTIFS = [
+  { id: 1, title: "Programare nou\u0103 de la Ana Popescu", body: "Joi, 29 oct., 14:30 \xB7 Tuns", app: "EasyBook", time: "acum 5 min", person: "Ana Popescu" },
+  { id: 2, title: "Factura #2026-114 e restant\u0103 de 3 zile", body: "Clinica Dentis \xB7 1.250 lei", app: "MoneyDesk", time: "acum 2 ore", icon: "receipt" },
+  { id: 3, title: "Ioana a cerut concediu pe 2\u20136 noiembrie", app: "TeamSpace", time: "ieri", person: "Ioana Pavel", read: true },
+  { id: 4, title: "Exportul clien\u021Bilor e gata", app: "ClientDesk", time: "ieri", icon: "download", read: true }
+];
+const USER = { name: "Bianca Petra\u0219cu", email: "bianca@ventora-hub.com" };
+function Bar({ title, de }) {
+  return /* @__PURE__ */ React.createElement(
+    V.ContextBar,
+    {
+      title,
+      org: /* @__PURE__ */ React.createElement(V.OrgSwitcher, { orgs: de ? [{ id: 1, name: "Zahnarztpraxis Dr. M\xFCller", role: "Empfang" }, { id: 2, name: "Salon Aurora", role: "Inhaberin" }] : ORGS, currentId: de ? 1 : "aurora" }),
+      onSearch: () => {
+      },
+      createItems: [{ label: de ? "Termin" : "Programare", icon: "calendar-check", shortcut: ["N"] }, { label: de ? "Kunde" : "Client", icon: "user-plus" }],
+      notifications: /* @__PURE__ */ React.createElement(V.NotificationsPanel, { items: NOTIFS }),
+      account: /* @__PURE__ */ React.createElement(V.AccountMenu, { user: USER, orgs: ORGS, currentOrgId: "aurora", onCatalog: () => {
+      } })
+    }
+  );
+}
+const SHELL_ROWS = [
+  { id: 1, client: "Ana Popescu", service: "Tuns", when: "09:30", status: ["done", "Confirmat\u0103"] },
+  { id: 2, client: "Andrei Ionescu", service: "Vopsit", when: "11:00", status: ["attention", "\xCEn desf\u0103\u0219urare"] },
+  { id: 3, client: "Cristina Dobre", service: "Tratament facial", when: "13:15", status: ["neutral", "Neconfirmat\u0103"] },
+  { id: 4, client: "Dan Stoica", service: "Tuns", when: "15:00", status: ["done", "Confirmat\u0103"] }
+];
+function BookingShell({ height, active, mobile }) {
+  return /* @__PURE__ */ React.createElement(
+    V.AppShell,
+    {
+      height,
+      spine: /* @__PURE__ */ React.createElement(V.Spine, { app: "booking", sections: SECTIONS, activeId: active, onBackToHub: () => {
+      }, footer: /* @__PURE__ */ React.createElement(V.UsageMeter, { compact: true, label: "Program\u0103ri", used: 312, limit: 1e3 }) }),
+      contextBar: /* @__PURE__ */ React.createElement(Bar, { title: "EasyBook" })
+    },
+    /* @__PURE__ */ React.createElement(V.PageHeader, { title: "Program\u0103ri", description: mobile ? void 0 : "Toate program\u0103rile afacerii, de azi \xEEnainte.", actions: mobile ? void 0 : /* @__PURE__ */ React.createElement(V.SegmentedControl, { label: "Vizualizare", size: "md", defaultValue: "list", options: [{ value: "list", label: "List\u0103", icon: "list" }, { value: "cal", label: "Calendar", icon: "calendar" }] }) }),
+    /* @__PURE__ */ React.createElement(V.DataTable, { columns: [
+      { key: "client", header: "Client", primary: true, sortable: true },
+      { key: "service", header: "Serviciu", secondary: true },
+      { key: "when", header: "Ora", secondary: true },
+      { key: "status", header: "Stare", trailing: true, render: (r) => /* @__PURE__ */ React.createElement(V.StatusPill, { tone: r.status[0] }, r.status[1]) }
+    ], rows: SHELL_ROWS, rowActions: () => [{ label: "Deschide", icon: "external-link" }], pagination: { page: 1, pageSize: 20, total: 4, onPageChange: () => {
+    } } })
+  );
+}
+const HUB_SECTIONS = [
+  { label: "Contul t\u0103u", items: [{ id: "profil", label: "Profil \u0219i preferin\u021Be", short: "Profil", icon: "circle-user" }, { id: "securitate", label: "Securitate", icon: "shield" }] },
+  { label: "Afacerea", items: [{ id: "echipa", label: "Echip\u0103 \u0219i invita\u021Bii", short: "Echip\u0103", icon: "users" }, { id: "roluri", label: "Roluri \u0219i acces", icon: "key-round" }, { id: "abonament", label: "Abonament \u0219i consum", short: "Abonament", icon: "credit-card" }] },
+  { label: "Ajutor", items: [{ id: "suport", label: "Suport", icon: "life-buoy", badge: 1 }] }
+];
+function HubBar({ title, inApp }) {
+  return /* @__PURE__ */ React.createElement(
+    V.ContextBar,
+    {
+      leading: inApp ? null : /* @__PURE__ */ React.createElement("span", { style: { padding: "0 var(--space-2)", display: "inline-flex" } }, /* @__PURE__ */ React.createElement(V.Logo, { size: 32, className: "v-cb-logo--full" }), /* @__PURE__ */ React.createElement(V.Logo, { variant: "mark", size: 32, className: "v-cb-logo--mark" })),
+      title,
+      org: /* @__PURE__ */ React.createElement(V.OrgSwitcher, { orgs: ORGS, currentId: "aurora" }),
+      onSearch: () => {
+      },
+      notifications: /* @__PURE__ */ React.createElement(V.NotificationsPanel, { items: NOTIFS }),
+      account: /* @__PURE__ */ React.createElement(V.AccountMenu, { user: USER, orgs: ORGS, currentOrgId: "aurora", onCatalog: () => {
+      } })
+    }
+  );
+}
+function HubSettings({ active, title, children }) {
+  return /* @__PURE__ */ React.createElement(
+    V.AppShell,
+    {
+      height: "100%",
+      spine: /* @__PURE__ */ React.createElement(V.Spine, { hub: true, sections: HUB_SECTIONS, activeId: active, onBackToHub: () => {
+      }, bottomItems: ["profil", "echipa", "abonament", "suport"] }),
+      contextBar: /* @__PURE__ */ React.createElement(HubBar, { title, inApp: true })
+    },
+    children
+  );
+}
+function Screens({ title, notes, render, desktopH = 860, tabletH = 1100, mobileH = 844 }) {
+  if (window.__SOLO) {
+    const w = window.innerWidth;
+    const m = w < 768 ? "mobile" : w < 1024 ? "tablet" : "desktop";
+    return /* @__PURE__ */ React.createElement("div", { style: { height: "100vh", position: "relative", background: "var(--canvas)" } }, render(m, "light"));
+  }
+  const sizes = [["desktop", "Desktop \xB7 1280", "scr-d", desktopH], ["tablet", "Tablet\u0103 portret \xB7 820", "scr-t", tabletH], ["mobile", "Telefon \xB7 390", "scr-m", mobileH]];
+  return /* @__PURE__ */ React.createElement("div", { className: "scr" }, /* @__PURE__ */ React.createElement("p", { className: "heading" }, title), notes && /* @__PURE__ */ React.createElement("p", { className: "caption muted" }, notes.join(" \xB7 ")), ["light", "dark"].map((th) => /* @__PURE__ */ React.createElement("div", { className: "scr-row", key: th }, sizes.map(([m, lab, cls, h]) => /* @__PURE__ */ React.createElement("div", { key: m }, /* @__PURE__ */ React.createElement("p", { className: "caption scr-lab" }, lab, " \xB7 ", th === "light" ? "Light" : "Dark"), /* @__PURE__ */ React.createElement("div", { className: cls, "data-theme": th, style: { height: h } }, render(m, th)))))));
+}
+const MINE = [["booking", "Program\u0103ri, calendar \u0219i reamintiri", 3], ["crm", "Clien\u021Bi, istoric \u0219i oportunit\u0103\u021Bi"], ["hr", "Echip\u0103, prezen\u021B\u0103 \u0219i concedii", 1], ["finance", "Facturi, scaden\u021Be \u0219i restan\u021Be", 2], ["projects", "Proiecte, sarcini \u0219i termene"], ["shifts", "Ture \u0219i \xEEnlocuiri"], ["documents", "Documente \u0219i \u0219abloane"], ["portal", "Pagina afacerii pentru clien\u021Bi"]];
+const RECO = { marketing: { reason: "Se potrive\u0219te cu EasyBook: trimite automat reamintiri \u0219i campanii clien\u021Bilor t\u0103i.", cost: "49 lei pe lun\u0103 \xB7 f\u0103r\u0103 cost de implementare" } };
+const VIEWER_ROLE = "owner";
+const RECO_FOR = (a) => (VIEWER_ROLE === "owner" || VIEWER_ROLE === "admin") && a === "marketing" ? RECO[a] : null;
+const OTHER = [["inventory", "unavailable"], ["analytics", "notInRole"], ["marketing", "notInPlan"], ["network", "notInPlan"]];
+function Launcher({ mode, empty }) {
+  const [run, setRun] = useState(null);
+  const mob = mode === "mobile";
+  const open = (a) => (e) => setRun({ app: a, from: e.currentTarget.querySelector(".v-appicon").getBoundingClientRect() });
+  return /* @__PURE__ */ React.createElement("div", { className: "frame-rel" }, /* @__PURE__ */ React.createElement(V.AppShell, { height: "100%", contextBar: /* @__PURE__ */ React.createElement(HubBar, null) }, /* @__PURE__ */ React.createElement("div", { className: "wrap " + mode }, /* @__PURE__ */ React.createElement("div", { className: "greet" }, /* @__PURE__ */ React.createElement("h1", { className: "display-l" }, "Bun\u0103 diminea\u021Ba, Bianca"), empty ? /* @__PURE__ */ React.createElement("p", { className: "body muted" }, "Bine ai venit \xEEn Salon Aurora. Aplica\u021Biile apar aici imediat ce prime\u0219ti acces.") : /* @__PURE__ */ React.createElement("p", { className: "body muted daylinks" }, "Azi ai ", /* @__PURE__ */ React.createElement("a", { className: "v-link", href: "#" }, "8 program\u0103ri"), ", ", /* @__PURE__ */ React.createElement("a", { className: "v-link", href: "#" }, "2 facturi scadente"), " \u0219i ", /* @__PURE__ */ React.createElement("a", { className: "v-link", href: "#" }, "o cerere de concediu"), " de aprobat.")), empty ? /* @__PURE__ */ React.createElement("div", { className: "sheetlike" }, /* @__PURE__ */ React.createElement(V.EmptyState, { icon: "layout-grid", title: "Nu ai \xEEnc\u0103 acces la nicio aplica\u021Bie", description: "Bianca Petra\u0219cu (proprietar) alege ce aplica\u021Bii folose\u0219te fiecare rol. Putem trimite noi cererea ta.", actions: /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(V.Button, { variant: "primary", icon: "send" }, "Cere acces"), /* @__PURE__ */ React.createElement(V.Button, { variant: "quiet" }, "Scrie-ne")) }), /* @__PURE__ */ React.createElement("p", { className: "body-small muted center", style: { paddingBottom: "var(--space-6)" } }, "\xCEntre timp, alege-\u021Bi fotografia \u0219i limba din ", /* @__PURE__ */ React.createElement("a", { className: "v-link", href: "#" }, "Contul t\u0103u"), ".")) : /* @__PURE__ */ React.createElement("section", null, /* @__PURE__ */ React.createElement("div", { className: "sechead" }, /* @__PURE__ */ React.createElement("h2", { className: "display-m" }, "Aplica\u021Biile tale"), /* @__PURE__ */ React.createElement(V.Button, { size: "sm", variant: "quiet", icon: "grip-vertical" }, "Reordoneaz\u0103")), mob ? /* @__PURE__ */ React.createElement("div", { className: "mgrid" }, MINE.map(([a, d, b]) => /* @__PURE__ */ React.createElement(V.AppTile, { key: a, app: a, layout: "icon", badge: b, onOpen: open(a) }))) : /* @__PURE__ */ React.createElement("div", { className: "tiles4" }, MINE.map(([a, d, b]) => /* @__PURE__ */ React.createElement(V.AppTile, { key: a, app: a, description: d, badge: b, onOpen: open(a) })))), /* @__PURE__ */ React.createElement("section", null, /* @__PURE__ */ React.createElement("h2", { className: "display-m sec" }, "Alte aplica\u021Bii Ventora"), /* @__PURE__ */ React.createElement("p", { className: "body-small muted", style: { marginBottom: "var(--space-3)" } }, "Nu le po\u021Bi deschide acum. La fiecare scrie de ce \u0219i ce po\u021Bi face."), true ? /* @__PURE__ */ React.createElement("div", { className: mob ? "rows" : "rows rows2" }, OTHER.map(([a, s]) => RECO_FOR(a) ? /* @__PURE__ */ React.createElement(V.GrowthSlot, { key: a, label: "Recomandare" }, /* @__PURE__ */ React.createElement(V.AppTile, { app: a, access: s, layout: "row", recommendation: RECO_FOR(a), onDetails: () => {
+  }, onDismiss: () => {
+  }, onRemindLater: () => {
+  } })) : /* @__PURE__ */ React.createElement(V.AppTile, { key: a, app: a, access: s, layout: "row", grantedBy: "Bianca Petra\u0219cu", onRequestAccess: () => {
+  }, onWriteUs: () => {
+  }, onSeeStatus: () => {
+  } }))) : /* @__PURE__ */ React.createElement("div", { className: "tiles4" }, OTHER.map(([a, s]) => RECO_FOR(a) ? /* @__PURE__ */ React.createElement(V.GrowthSlot, { key: a, label: "Recomandare" }, /* @__PURE__ */ React.createElement(V.AppTile, { app: a, access: s, recommendation: RECO_FOR(a), onDetails: () => {
+  }, onDismiss: () => {
+  }, onRemindLater: () => {
+  } })) : /* @__PURE__ */ React.createElement(V.AppTile, { key: a, app: a, access: s, grantedBy: "Bianca Petra\u0219cu", onRequestAccess: () => {
+  }, onWriteUs: () => {
+  }, onSeeStatus: () => {
+  } }))), /* @__PURE__ */ React.createElement("div", { style: { marginTop: "var(--space-4)" } }, /* @__PURE__ */ React.createElement(V.Button, { variant: "quiet", icon: "layout-grid", iconEnd: "arrow-right" }, "Vezi toate aplica\u021Biile Ventora"))))), run && /* @__PURE__ */ React.createElement(V.AppLaunch, { contained: true, app: run.app, from: run.from, onDone: () => setTimeout(() => setRun(null), 500) }));
+}
+function CommercialPrefs({ mode }) {
+  return /* @__PURE__ */ React.createElement(V.SheetSection, { title: "Recomand\u0103ri Ventora", description: "Sugestii despre aplica\u021Bii \u0219i pachete \xEEn plus care se potrivesc cu ce faci deja." }, /* @__PURE__ */ React.createElement("div", { className: "d0", style: { gap: "var(--space-3)" } }, /* @__PURE__ */ React.createElement(V.Toggle, { label: "\xCEn aplica\u021Bie", description: "Le vezi \xEEn pagini \u0219i \xEEn notific\u0103ri, la sec\u021Biunea Recomand\u0103ri.", defaultChecked: true, labelPosition: mode === "mobile" ? "start" : "end" }), /* @__PURE__ */ React.createElement(V.Toggle, { label: "Pe e-mail", description: "Disponibil \xEEn cur\xE2nd", disabled: true, labelPosition: mode === "mobile" ? "start" : "end" }), /* @__PURE__ */ React.createElement(V.Notice, { tone: "neutral", icon: "info" }, "Mesajele despre limitele contului t\u0103u r\u0103m\xE2n active, pentru c\u0103 sunt informa\u021Bii despre cont, nu recomand\u0103ri.")));
+}
+function AX_App({ app, sections, active, title, bottom, footer, children }) {
+  return /* @__PURE__ */ React.createElement(
+    V.AppShell,
+    {
+      height: "100%",
+      spine: /* @__PURE__ */ React.createElement(V.Spine, { app, sections, activeId: active, onBackToHub: () => {
+      }, bottomItems: bottom, footer }),
+      contextBar: /* @__PURE__ */ React.createElement(Bar, { title })
+    },
+    children
+  );
+}
+const AX_Body = ({ mode, children }) => /* @__PURE__ */ React.createElement("div", { className: "axb " + mode }, children);
+const AX_CRM_NAV = [
+  { items: [{ id: "pipeline", label: "Pipeline", icon: "kanban" }, { id: "clienti", label: "Clien\u021Bi", icon: "users" }, { id: "activitati", label: "Activit\u0103\u021Bi", icon: "calendar-check", badge: 3 }] },
+  { label: "Afacere", items: [{ id: "rapoarte", label: "Rapoarte", icon: "chart-column" }, { id: "setari", label: "Set\u0103ri", icon: "settings" }] }
+];
+const AX_CRM_COLS = [
+  { id: "nou", label: "Contact nou", summary: "18.400 lei" },
+  { id: "oferta", label: "Ofert\u0103 trimis\u0103", summary: "32.000 lei" },
+  { id: "neg", label: "Negociere", summary: "27.500 lei" },
+  { id: "castig", label: "C\xE2\u0219tigate \xEEn octombrie", summary: "41.200 lei", tone: "done" }
+];
+const AX_CRM_CARDS = [
+  { id: "c1", col: "nou", title: "Clinica Dentis Sibiu", subtitle: "Abonament lunar pentru 10 membri", amount: "9.600 lei", people: ["Bianca Petra\u0219cu"], due: { label: "Sun\u0103 azi", tone: "attention" } },
+  { id: "c2", col: "nou", title: "Hotel Continental", subtitle: "Coafat pentru nun\u021Bi, sezonul 2027", amount: "6.200 lei", people: ["Ioana Pavel"], due: { label: "Joi, 29 oct." } },
+  { id: "c3", col: "nou", title: "Andreea Vasile", subtitle: "Pachet mireas\u0103", amount: "2.600 lei", people: ["Ioana Pavel"], meta: ["Din pagina de rezerv\u0103ri"] },
+  { id: "c4", col: "oferta", title: "Agen\u021Bia Nord Studio", subtitle: "Eveniment corporate, 40 de persoane", amount: "14.000 lei", people: ["Bianca Petra\u0219cu"], due: { label: "F\u0103r\u0103 r\u0103spuns de 9 zile", tone: "attention", icon: "clock" } },
+  { id: "c5", col: "oferta", title: "Banca Transilvania \xB7 Sibiu", subtitle: "Zi de r\u0103sf\u0103\u021B pentru echip\u0103", amount: "11.800 lei", people: ["Radu Matei"], due: { label: "Vin, 30 oct." } },
+  { id: "c6", col: "oferta", title: "Maria Ionescu", subtitle: "Abonament anual coafat", amount: "6.200 lei", people: ["Mara Enache"], due: { label: "Luni, 2 nov." } },
+  { id: "c7", col: "neg", title: "Sala Thalia", subtitle: "Machiaj pentru spectacole, 6 luni", amount: "19.500 lei", people: ["Bianca Petra\u0219cu", "Ioana Pavel"], due: { label: "\xCEnt\xE2lnire m\xE2ine, 10:00" } },
+  { id: "c8", col: "neg", title: "Cabinet Avocatura Pop", subtitle: "Carduri cadou de Cr\u0103ciun", amount: "8.000 lei", people: ["Radu Matei"], due: { label: "Sun\u0103 azi", tone: "attention" } },
+  { id: "c9", col: "castig", title: "Liceul de Art\u0103 Sibiu", subtitle: "Bal de absolvire", amount: "12.400 lei", people: ["Ioana Pavel"], meta: ["C\xE2\u0219tigat\u0103 pe 21 oct."] },
+  { id: "c10", col: "castig", title: "Elena Georgescu", subtitle: "Abonament anual vopsit", amount: "4.800 lei", people: ["Mara Enache"], meta: ["C\xE2\u0219tigat\u0103 pe 14 oct."] }
+];
+const AX_HR_NAV = [
+  { items: [{ id: "azi", label: "Azi", icon: "house" }, { id: "prezenta", label: "Prezen\u021B\u0103", icon: "clock" }, { id: "concedii", label: "Concedii", icon: "plane", badge: 1 }, { id: "echipa", label: "Echip\u0103", icon: "users" }] },
+  { label: "Afacere", items: [{ id: "documente", label: "Documente", icon: "file-text" }, { id: "setari", label: "Set\u0103ri", icon: "settings" }] }
+];
+const AX_HR_DAYS = [["lun", "Lun 19"], ["mar", "Mar 20"], ["mie", "Mie 21"], ["joi", "Joi 22"], ["vin", "Vin 23"]];
+const AX_HR_ROWS = [
+  { id: 1, name: "Ioana Pavel", role: "Coafor", d: [["ok", "08:56\u201317:04"], ["ok", "08:58\u201317:10"], ["ok", "09:00\u201317:02"], ["ok", "08:55\u201317:00"], ["now", "La lucru din 08:57"]], total: "34 h 05 min" },
+  { id: 2, name: "Mara Enache", role: "Manichiur\u0103", d: [["ok", "09:58\u201318:00"], ["ok", "10:00\u201318:05"], ["missing", "10:02 \xB7 f\u0103r\u0103 ie\u0219ire"], ["ok", "09:59\u201318:01"], ["now", "La lucru din 10:01"]], total: "31 h 12 min" },
+  { id: 3, name: "Radu Matei", role: "Frizerie", d: [["late", "09:17 \xB7 \xCEnt\xE2rziere \xB7 17 min"], ["ok", "09:00\u201317:00"], ["ok", "08:59\u201317:03"], ["late", "09:12 \xB7 \xCEnt\xE2rziere \xB7 12 min"], ["now", "La lucru din 08:59"]], total: "30 h 40 min" },
+  { id: 4, name: "Ana Ilie", role: "Recep\u021Bie", d: [["leave", "Concediu"], ["leave", "Concediu"], ["leave", "Concediu"], ["leave", "Concediu"], ["leave", "Concediu"]], total: "\u2014" },
+  { id: 5, name: "Sorin Neagu", role: "Coafor", d: [["ok", "11:00\u201319:00"], ["off", "Liber"], ["ok", "11:02\u201319:05"], ["ok", "10:58\u201319:00"], ["later", "\xCEncepe la 11:00"]], total: "24 h 05 min" },
+  { id: 6, name: "Diana Rusu", role: "Cosmetic\u0103", d: [["ok", "09:00\u201315:00"], ["ok", "09:01\u201315:00"], ["absent", "Absen\u021B\u0103"], ["ok", "08:58\u201315:02"], ["now", "La lucru din 09:00"]], total: "18 h 03 min" }
+];
+const AX_HR_ATTN = [
+  { id: "h1", icon: "plane", tone: "attention", title: "Ioana Pavel cere concediu", meta: "2\u20136 noiembrie \xB7 5 zile lucr\u0103toare \xB7 \xEEi r\u0103m\xE2n 9 zile", actions: [{ label: "Aprob\u0103", icon: "check", primary: true }, { label: "Refuz\u0103", quiet: true }] },
+  { id: "h2", icon: "clock", tone: "attention", title: "Mara Enache nu a pontat ie\u0219irea", meta: "Miercuri, 21 octombrie \xB7 intrare la 10:02", actions: [{ label: "Corecteaz\u0103 pontajul", icon: "pencil", primary: true }] }
+];
+const AX_INV_NAV = [
+  { items: [{ id: "stoc", label: "Stoc", icon: "package", badge: 4 }, { id: "miscari", label: "Mi\u0219c\u0103ri", icon: "arrow-right-left" }, { id: "comenzi", label: "Comenzi", icon: "truck" }, { id: "furnizori", label: "Furnizori", icon: "building-2" }] },
+  { label: "Afacere", items: [{ id: "rapoarte", label: "Rapoarte", icon: "chart-column" }, { id: "setari", label: "Set\u0103ri", icon: "settings" }] }
+];
+const AX_INV_ROWS = [
+  { id: 1, name: "Vopsea Majirel 7.1", sku: "LOR-MAJ-71", cat: "Vopsele", qty: 0, min: 6, unit: "tuburi", supplier: "Beauty Pro Distribution", last: "ieri, 16:40", status: "out" },
+  { id: 2, name: "Oxidant 6% \xB7 1 l", sku: "LOR-OXI-06", cat: "Vopsele", qty: 3, min: 8, unit: "flacoane", supplier: "Beauty Pro Distribution", last: "azi, 10:15", status: "low" },
+  { id: 3, name: "Oj\u0103 semipermanent\u0103 \xB7 Nude 04", sku: "OPI-GEL-N04", cat: "Manichiur\u0103", qty: 2, min: 5, unit: "buc.", supplier: "Nails Expert", last: "azi, 09:30", status: "low" },
+  { id: 4, name: "\u0218ampon reparator \xB7 1 l", sku: "KER-SHA-1L", cat: "\xCEngrijire", qty: 4, min: 6, unit: "flacoane", supplier: "Kerastase Rom\xE2nia", last: "21 oct.", status: "ordered" },
+  { id: 5, name: "M\u0103nu\u0219i nitril M", sku: "GEN-MAN-M", cat: "Consumabile", qty: 140, min: 100, unit: "buc.", supplier: "MedSupply", last: "20 oct.", status: "ok" },
+  { id: 6, name: "Folie aluminiu \xB7 100 m", sku: "GEN-FOL-100", cat: "Consumabile", qty: 9, min: 4, unit: "role", supplier: "MedSupply", last: "19 oct.", status: "ok" },
+  { id: 7, name: "Masc\u0103 de p\u0103r hidratant\u0103", sku: "KER-MAS-500", cat: "\xCEngrijire", qty: 12, min: 6, unit: "borcane", supplier: "Kerastase Rom\xE2nia", last: "18 oct.", status: "ok" },
+  { id: 8, name: "Pile unghii 180/240", sku: "NE-PIL-180", cat: "Manichiur\u0103", qty: 3, min: 20, unit: "buc.", supplier: "Nails Expert", last: "16 oct.", status: "low" }
+];
+const AX_INV_STATUS = { out: ["danger", "Epuizat", "circle-x"], low: ["attention", "Sub minim", "triangle-alert"], ordered: ["neutral", "Comandat", "truck"], ok: ["neutral", "\xCEn stoc", void 0] };
+const AX_PRJ_NAV = [
+  { items: [{ id: "proiecte", label: "Proiecte", icon: "folder" }, { id: "sarcini", label: "Sarcinile mele", short: "Sarcini", icon: "clipboard-list", badge: 4 }, { id: "calendar", label: "Calendar", icon: "calendar" }] },
+  { label: "Afacere", items: [{ id: "rapoarte", label: "Rapoarte", icon: "chart-column" }, { id: "setari", label: "Set\u0103ri", icon: "settings" }] }
+];
+const AX_PRJ_COLS = [{ id: "todo", label: "De f\u0103cut" }, { id: "doing", label: "\xCEn lucru" }, { id: "review", label: "De verificat" }, { id: "done", label: "Gata", tone: "done" }];
+const AX_PRJ_CARDS = [
+  { id: "t1", col: "todo", tag: "Con\u021Binut", title: "Texte pentru pagina de pre\u021Buri", people: ["Bianca Petra\u0219cu"], due: { label: "Vin, 30 oct." } },
+  { id: "t2", col: "todo", tag: "Dezvoltare", title: "Formular de rezervare pe telefon", people: ["Radu Matei"], due: { label: "Mar, 3 nov." }, progress: { done: 0, total: 4 } },
+  { id: "t3", col: "todo", tag: "Lansare", title: "Anun\u021B pentru clien\u021Bi prin SMS", people: ["Ioana Pavel"], due: { label: "Joi, 19 nov." } },
+  { id: "t4", col: "doing", tag: "Fotografii", title: "\u0218edin\u021B\u0103 foto \xEEn salon", people: ["Ioana Pavel", "Mara Enache"], due: { label: "\xCEnt\xE2rziat\u0103 2 zile", tone: "attention", icon: "clock" }, progress: { done: 2, total: 5 } },
+  { id: "t5", col: "doing", tag: "Dezvoltare", title: "Pagina \u201EEchipa\u201D", people: ["Radu Matei"], due: { label: "Azi", tone: "attention" }, progress: { done: 3, total: 4 } },
+  { id: "t6", col: "doing", tag: "Dezvoltare", title: "Galerie de lucr\u0103ri", people: ["Radu Matei"], due: { label: "Mie, 28 oct." }, progress: { done: 1, total: 3 } },
+  { id: "t7", col: "review", tag: "Design", title: "Varianta final\u0103 a paginii principale", people: ["Bianca Petra\u0219cu"], due: { label: "Luni, 26 oct." }, meta: ["3 comentarii"] },
+  { id: "t8", col: "review", tag: "Con\u021Binut", title: "Descrierile serviciilor", people: ["Mara Enache"], due: { label: "Mar, 27 oct." } },
+  { id: "t9", col: "done", tag: "Design", title: "Paleta \u0219i fonturile site-ului", people: ["Bianca Petra\u0219cu"], meta: ["Gata pe 16 oct."] },
+  { id: "t10", col: "done", tag: "Con\u021Binut", title: "Lista serviciilor \u0219i pre\u021Burilor", people: ["Ioana Pavel"], meta: ["Gata pe 12 oct."] }
+];
+const AX_PRJ_PERIODS = ["5 oct.", "12 oct.", "19 oct.", "26 oct.", "2 nov.", "9 nov.", "16 nov.", "23 nov."].map((l, i) => ({ label: l, current: i === 2 }));
+const AX_PRJ_ROWS = [
+  { id: "p1", label: "Brief \u0219i con\u021Binut", sub: "Bianca Petra\u0219cu", start: 0, end: 2, status: "done", statusLabel: "Gata" },
+  { id: "p2", label: "Design", sub: "Bianca Petra\u0219cu", start: 1, end: 3.3, status: "active", progress: 85, statusLabel: "85%" },
+  { id: "p3", label: "Fotografii", sub: "Ioana Pavel", start: 2, end: 2.7, status: "late", statusLabel: "\xCEnt\xE2rziat\u0103 2 zile" },
+  { id: "p4", label: "Dezvoltare", sub: "Radu Matei", start: 2.4, end: 5.6, status: "active", progress: 35, statusLabel: "35%" },
+  { id: "p5", label: "Testare pe telefon \u0219i tablet\u0103", sub: "Mara Enache", start: 5.4, end: 6.6, status: "planned", statusLabel: "9\u201320 nov." },
+  { id: "p6", label: "Lansare", sub: "Toat\u0103 echipa", milestone: 6.7, milestoneLabel: "Vin, 20 nov." }
+];
+const AX_FIN_NAV = [
+  { items: [{ id: "scadente", label: "Scaden\u021Be", icon: "calendar-clock", badge: 4 }, { id: "facturi", label: "Facturi", icon: "receipt" }, { id: "incasari", label: "\xCEncas\u0103ri", icon: "banknote" }, { id: "cheltuieli", label: "Cheltuieli", icon: "wallet" }] },
+  { label: "Afacere", items: [{ id: "rapoarte", label: "Rapoarte", icon: "chart-column" }, { id: "setari", label: "Set\u0103ri", icon: "settings" }] }
+];
+const AX_FIN_ROWS = [
+  { id: 1, nr: "AUR-2026-114", client: "Clinica Dentis Sibiu", issued: "25 sep.", due: "9 oct.", amount: 1250, status: ["attention", "Restant\u0103 \xB7 14 zile", "clock"], over: true },
+  { id: 2, nr: "AUR-2026-121", client: "Agen\u021Bia Nord Studio", issued: "2 oct.", due: "16 oct.", amount: 2140, status: ["attention", "Restant\u0103 \xB7 7 zile", "clock"], over: true },
+  { id: 3, nr: "AUR-2026-126", client: "Hotel Continental", issued: "6 oct.", due: "20 oct.", amount: 620, status: ["attention", "Restant\u0103 \xB7 3 zile", "clock"], over: true },
+  { id: 4, nr: "AUR-2026-129", client: "Cabinet Avocatura Pop", issued: "9 oct.", due: "23 oct.", amount: 300, status: ["attention", "Scadent\u0103 azi", "circle-dot"], over: true },
+  { id: 5, nr: "AUR-2026-133", client: "Sala Thalia", issued: "14 oct.", due: "28 oct.", amount: 3900, status: ["neutral", "Scadent\u0103 \xEEn 5 zile"] },
+  { id: 6, nr: "AUR-2026-135", client: "Liceul de Art\u0103 Sibiu", issued: "16 oct.", due: "30 oct.", amount: 3e3, status: ["neutral", "Scadent\u0103 \xEEn 7 zile"] },
+  { id: 7, nr: "AUR-2026-118", client: "Banca Transilvania \xB7 Sibiu", issued: "29 sep.", due: "13 oct.", amount: 4720, status: ["done", "Pl\u0103tit\u0103 pe 12 oct.", "check"] },
+  { id: 8, nr: "AUR-2026-122", client: "Maria Ionescu", issued: "3 oct.", due: "17 oct.", amount: 520, status: ["done", "Pl\u0103tit\u0103 pe 15 oct.", "check"] }
+];
+const AX_FIN_ATTN = [
+  { id: "f1", icon: "receipt", tone: "attention", title: "Clinica Dentis Sibiu \xB7 1.250 lei", meta: "Restant\u0103 de 14 zile \xB7 2 reamintiri automate trimise", actions: [{ label: "Sun\u0103", icon: "phone", primary: true }, { label: "Marcheaz\u0103 pl\u0103tit\u0103", quiet: true }] },
+  { id: "f2", icon: "receipt", tone: "attention", title: "Agen\u021Bia Nord Studio \xB7 2.140 lei", meta: "Restant\u0103 de 7 zile \xB7 o reamintire automat\u0103 trimis\u0103", actions: [{ label: "Trimite reamintire", icon: "send", primary: true }, { label: "Marcheaz\u0103 pl\u0103tit\u0103", quiet: true }] },
+  { id: "f3", icon: "receipt", tone: "attention", title: "Hotel Continental \xB7 620 lei", meta: "Restant\u0103 de 3 zile", actions: [{ label: "Trimite reamintire", icon: "send", primary: true }] }
+];
+const AX_AN_NAV = [
+  { items: [{ id: "prezentare", label: "Prezentare", icon: "chart-line" }, { id: "venituri", label: "Venituri", icon: "banknote" }, { id: "clienti", label: "Clien\u021Bi", icon: "users" }, { id: "echipa", label: "Echip\u0103", icon: "contact" }] },
+  { label: "Afacere", items: [{ id: "rapoarte", label: "Rapoarte salvate", icon: "file-text" }, { id: "setari", label: "Set\u0103ri", icon: "settings" }] }
+];
+const AX_AN_MONTHS = ["nov.", "dec.", "ian.", "feb.", "mar.", "apr.", "mai", "iun.", "iul.", "aug.", "sep.", "oct."];
+const AX_AN_REV = [36400, 44100, 33800, 35200, 39600, 41800, 43900, 45200, 38700, 34900, 43100, 48250];
+const AX_AN_REV_LY = [32100, 39800, 30500, 31900, 35400, 37900, 39100, 41e3, 36200, 33100, 39800, 43080];
+const AX_AN_SERV = [
+  { label: "Vopsit", value: 16420, share: "34%" },
+  { label: "Tuns \u0219i coafat", value: 12880, share: "27%" },
+  { label: "Manichiur\u0103", value: 8650, share: "18%" },
+  { label: "Tratamente faciale", value: 6120, share: "13%" },
+  { label: "Pedichiur\u0103", value: 4180, share: "8%" }
+];
+const AX_AN_DAYS = [{ label: "Lun", value: 98, compare: 91 }, { label: "Mar", value: 124, compare: 117 }, { label: "Mie", value: 131, compare: 120 }, { label: "Joi", value: 146, compare: 138 }, { label: "Vin", value: 188, compare: 171 }, { label: "S\xE2m", value: 175, compare: 182 }];
+function AX_PrjHead({ mode, view }) {
+  return /* @__PURE__ */ React.createElement(
+    V.PageHeader,
+    {
+      title: "Site nou pentru Salon Aurora",
+      breadcrumbs: mode === "mobile" ? void 0 : [{ label: "Proiecte", href: "#" }, { label: "Site nou pentru Salon Aurora" }],
+      meta: /* @__PURE__ */ React.createElement("span", { className: "r", style: { gap: "var(--space-3)" } }, /* @__PURE__ */ React.createElement(V.StatusPill, { tone: "neutral", icon: "calendar" }, "Lansare vineri, 20 nov."), /* @__PURE__ */ React.createElement("span", { className: "body-small muted" }, "10 sarcini deschise din 16"), /* @__PURE__ */ React.createElement(V.AvatarGroup, { people: [{ name: "Bianca Petra\u0219cu" }, { name: "Ioana Pavel" }, { name: "Radu Matei" }, { name: "Mara Enache" }], size: "sm" })),
+      tabs: /* @__PURE__ */ React.createElement(V.Tabs, { label: "Proiect", defaultValue: view, items: [{ value: "board", label: "Panou" }, { value: "timeline", label: "Cronologie" }, { value: "files", label: "Fi\u0219iere", count: 14 }] })
+    }
+  );
+}
+const FX_NAV = [
+  { items: [{ id: "azi", label: "Prezentare", short: "Prezentare", icon: "house" }, { id: "afaceri", label: "Afaceri", icon: "building-2", badge: 3 }, { id: "consum", label: "Consum", icon: "chart-column" }, { id: "cereri", label: "Cereri", icon: "inbox", badge: 2 }] },
+  { label: "Model comercial", items: [{ id: "planuri", label: "Planuri", icon: "boxes" }, { id: "pachete", label: "Pachete \xEEn plus", short: "Pachete", icon: "package" }, { id: "aplicatii", label: "Aplica\u021Bii", icon: "layout-grid" }, { id: "reduceri", label: "Reduceri", icon: "percent" }] },
+  { label: "Growth", items: [{ id: "oferte", label: "Oferte", icon: "ticket" }, { id: "campanii", label: "Campanii", icon: "megaphone" }, { id: "audiente", label: "Audien\u021Be", icon: "users" }, { id: "rezultate", label: "Rezultate", icon: "chart-line" }, { id: "control", label: "Control", icon: "sliders-horizontal" }] },
+  { label: "Sistem", items: [{ id: "jurnal", label: "Jurnal", icon: "history" }, { id: "setari", label: "Set\u0103ri", icon: "settings" }] }
+];
+const FX_NOTIFS = [
+  { id: 1, title: "Am oprit automat \u201EMarketing pentru saloane\u201D", body: "Rata de deranjare a ajuns la 6,2% (prag: 5%).", app: "Growth", time: "azi, 09:41", icon: "triangle-alert" },
+  { id: 2, title: "Plat\u0103 e\u0219uat\u0103: Fitness Atlas", body: "449 lei \xB7 a doua \xEEncercare m\xE2ine", app: "Afaceri", time: "ieri", icon: "circle-x" },
+  { id: 3, title: "O excep\u021Bie expir\u0103 pe 30 octombrie", body: "Salon Aurora \xB7 12 membri \xEEn loc de 10", app: "Afaceri", time: "ieri", icon: "clock", read: true }
+];
+function FX_Switch({ label, desc, on, words = ["Pornit\u0103", "Oprit\u0103"], mode }) {
+  const [v, setV] = useState(on);
+  return /* @__PURE__ */ React.createElement(V.Toggle, { label, description: (v ? words[0] : words[1]) + (desc ? " \xB7 " + desc : ""), checked: v, onChange: setV, labelPosition: mode === "mobile" ? "start" : "end" });
+}
+const FX_USER = { name: "Bianca Petra\u0219cu", email: "bianca@ventora.ro" };
+function FX_App({ active, title, children }) {
+  return /* @__PURE__ */ React.createElement(
+    V.AppShell,
+    {
+      height: "100%",
+      spine: /* @__PURE__ */ React.createElement(V.Spine, { hub: true, appName: "Founder", sections: FX_NAV, activeId: active, onBackToHub: () => {
+      }, bottomItems: ["afaceri", "consum", "campanii", "control"] }),
+      contextBar: /* @__PURE__ */ React.createElement(V.ContextBar, { title, onSearch: () => {
+      }, searchLabel: "Caut\u0103 o afacere, un plan sau o campanie", notifications: /* @__PURE__ */ React.createElement(V.NotificationsPanel, { items: FX_NOTIFS }), account: /* @__PURE__ */ React.createElement(V.AccountMenu, { user: FX_USER }) })
+    },
+    children
+  );
+}
+const FX_BIZ = [
+  { id: 1, name: "Clinica Dentis Sibiu", city: "Sibiu", owner: "Andrei Mure\u0219an", plan: "Business \xB7 v2", apps: ["booking", "crm", "finance", "hr"], usage: ["SMS", 92], status: ["attention", "Aproape de limit\u0103", "triangle-alert"], since: "mar. 2025" },
+  { id: 2, name: "Salon Aurora", city: "Sibiu", owner: "Ioana Pavel", plan: "Business \xB7 v2", apps: ["booking", "crm", "hr", "finance", "projects", "shifts", "documents"], usage: ["Locuri \xEEn echip\u0103", 100], status: ["attention", "La limit\u0103", "triangle-alert"], since: "ian. 2025" },
+  { id: 3, name: "Agen\u021Bia Nord Studio", city: "Cluj-Napoca", owner: "Mihai Rusu", plan: "Start \xB7 v2", apps: ["projects", "crm"], usage: ["Proiecte", 40], status: ["neutral", "Prob\u0103 p\xE2n\u0103 pe 2 nov.", "clock"], since: "oct. 2026" },
+  { id: 4, name: "Fitness Atlas", city: "Bra\u0219ov", owner: "Elena Dragomir", plan: "Business Plus \xB7 v1", apps: ["booking", "shifts", "finance", "marketing", "analytics"], usage: ["SMS", 61], status: ["danger", "Plat\u0103 e\u0219uat\u0103", "circle-x"], since: "iun. 2025" },
+  { id: 5, name: "Cabinet Avocatura Pop", city: "Sibiu", owner: "Radu Pop", plan: "Start \xB7 v1", apps: ["contracts", "documents", "finance"], usage: ["Documente", 33], status: ["done", "Activ\u0103", "check"], since: "feb. 2026" },
+  { id: 6, name: "Pensiunea Valea Verde", city: "R\u0103\u0219inari", owner: "Ana Stoica", plan: "Business \xB7 v1", apps: ["booking", "events", "finance"], usage: ["Program\u0103ri", 48], status: ["done", "Activ\u0103", "check"], since: "aug. 2025" }
+];
+const FX_RANK = { danger: 0, attention: 1, neutral: 2, done: 3 };
+const FX_BIZ_SORTED = () => [...FX_BIZ].sort((a, b) => FX_RANK[a.status[0]] - FX_RANK[b.status[0]] || a.name.localeCompare(b.name, "ro"));
+const FX_PLANS = [
+  { id: "start", name: "Start", price: 149, versions: [["v1", 41, "ian. 2025"], ["v2", 23, "oct. 2026", true]], limits: ["300 de program\u0103ri", "300 SMS", "3 membri", "2 GB"], apps: 3 },
+  { id: "business", name: "Business", price: 349, versions: [["v1", 34, "ian. 2025"], ["v2", 52, "iun. 2026", true]], limits: ["1.000 de program\u0103ri", "1.000 SMS", "10 membri", "5 GB"], apps: 7 },
+  { id: "plus", name: "Business Plus", price: 449, versions: [["v1", 18, "mar. 2026", true]], limits: ["Program\u0103ri nelimitate", "3.000 SMS", "25 de membri", "20 GB"], apps: 12 }
+];
+const FX_CRITERIA = [
+  { value: "apps_on", label: "Aplica\u021Bii active", operators: ["include", "nu include"], values: Object.keys(V.APPS).map((a) => ({ value: a, label: V.APPS[a].name })) },
+  { value: "plan", label: "Abonament", operators: ["este", "nu este"], values: ["Start", "Business", "Business Plus"] },
+  { value: "usage", label: "Consum", operators: ["peste", "sub"], unit: "%" },
+  { value: "age", label: "Vechimea afacerii", operators: ["peste", "sub"], unit: "zile" },
+  { value: "onboarding", label: "Stadiul de onboarding", operators: ["este"], values: ["\xCEnceput", "Prima s\u0103pt\u0103m\xE2n\u0103", "Activ", "Matur"] },
+  { value: "role", label: "Rol", operators: ["este"], values: ["Proprietar", "Admin", "Membru"] },
+  { value: "lang", label: "Limb\u0103", operators: ["este", "nu este"], values: ["Rom\xE2n\u0103", "English", "Fran\xE7ais", "Espa\xF1ol", "Deutsch", "Italiano"] },
+  { value: "country", label: "\u021Aar\u0103", operators: ["este", "nu este"], values: ["Rom\xE2nia", "Moldova", "Italia", "Germania"] },
+  { value: "users", label: "Num\u0103r de utilizatori", operators: ["peste", "sub"], unit: "persoane" }
+];
+const FX_RULES = [{ id: "a", criterion: "apps_on", operator: "include", value: "booking" }, { id: "b", criterion: "apps_on", operator: "nu include", value: "crm" }, { id: "c", criterion: "role", operator: "este", value: "Proprietar" }, { id: "d", criterion: "age", operator: "peste", value: "30" }];
+const FX_LANGS = [["Rom\xE2n\u0103", "RO", "done", "Aprobat"], ["English", "EN", "done", "Aprobat"], ["Fran\xE7ais", "FR", "neutral", "\xCEn revizuire"], ["Espa\xF1ol", "ES", "neutral", "\xCEn revizuire"], ["Deutsch", "DE", "done", "Aprobat"], ["Italiano", "IT", "attention", "Lipse\u0219te"]];
+const FX_CAMPAIGNS = [
+  { id: 1, name: "EasyBook f\u0103r\u0103 ClientDesk", mode: "Automat \xB7 integrare lips\u0103", offer: "ClientDesk \xB7 69 lei pe lun\u0103", slots: "EasyBook \xB7 Azi, Launcher", prio: 1, status: ["done", "Activ\u0103", "check"], annoy: 2.1 },
+  { id: 2, name: "SMS peste 80%", mode: "Automat \xB7 consum", offer: "500 SMS \xEEn plus", slots: "Abonament, EasyBook \xB7 Set\u0103ri", prio: 2, status: ["done", "Activ\u0103", "check"], annoy: 1.4 },
+  { id: 3, name: "DataView de Black Friday", mode: "Programat \xB7 20\u201330 nov.", offer: "DataView, 14 zile gratuit", slots: "Launcher, Notific\u0103ri", prio: 3, status: ["neutral", "Programat\u0103", "clock"], annoy: null },
+  { id: 4, name: "CampaignKit pentru saloane", mode: "Automat \xB7 vechime", offer: "CampaignKit \xB7 49 lei pe lun\u0103", slots: "EasyBook \xB7 Azi", prio: 4, status: ["attention", "Oprit\u0103: deranj peste prag", "triangle-alert"], annoy: 6.2 }
+];
+function FX_Frame({ th, label, children }) {
+  return /* @__PURE__ */ React.createElement("div", { className: "fxframe", "data-theme": th }, /* @__PURE__ */ React.createElement("p", { className: "caption muted" }, label), /* @__PURE__ */ React.createElement("div", { className: "fxframe-in" }, children));
+}
+function FBizDetail({ mode }) {
+  return /* @__PURE__ */ React.createElement(FX_App, { active: "afaceri", title: "Clinica Dentis Sibiu" }, /* @__PURE__ */ React.createElement(
+    V.PageHeader,
+    {
+      title: "Clinica Dentis Sibiu",
+      breadcrumbs: mode === "mobile" ? void 0 : [{ label: "Afaceri", href: "#" }, { label: "Clinica Dentis Sibiu" }],
+      meta: /* @__PURE__ */ React.createElement("span", { className: "r", style: { gap: "var(--space-2)" } }, /* @__PURE__ */ React.createElement(V.StatusPill, { tone: "attention", icon: "triangle-alert" }, "Aproape de limit\u0103"), /* @__PURE__ */ React.createElement("span", { className: "body-small muted" }, "Business \xB7 v2 \xB7 client din martie 2025 \xB7 Andrei Mure\u0219an (proprietar)")),
+      actions: /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(V.Button, { icon: "sliders-horizontal" }, "Adaug\u0103 o excep\u021Bie"), /* @__PURE__ */ React.createElement(V.Menu, { label: "Mai multe", items: [{ label: "Deschide o sesiune de suport", icon: "eye" }, { label: "Recuperează accesul proprietarului", icon: "key-round" }, { separator: true }, { label: "Mut\u0103 pe alt\u0103 versiune", icon: "arrow-right-left" }, { label: "Retrimite invita\u021Bia proprietarului", icon: "send" }, { separator: true }, { label: "Suspend\u0103 afacerea", icon: "lock", destructive: true }], trigger: /* @__PURE__ */ React.createElement(V.IconButton, { icon: "ellipsis-vertical", label: "Mai multe ac\u021Biuni", variant: "secondary" }) })),
+      tabs: /* @__PURE__ */ React.createElement(V.Tabs, { label: "Afacere", defaultValue: "o", items: [{ value: "o", label: "Prezentare" }, { value: "c", label: "Consum" }, { value: "e", label: "Excep\u021Bii", count: 2 }, { value: "f", label: "Facturi" }, { value: "j", label: "Jurnal" }] })
+    }
+  ), /* @__PURE__ */ React.createElement(AX_Body, { mode }, /* @__PURE__ */ React.createElement("div", { className: "axsplit" }, /* @__PURE__ */ React.createElement("div", { className: "d0", style: { gap: "var(--space-6)" } }, /* @__PURE__ */ React.createElement(V.Sheet, null, /* @__PURE__ */ React.createElement(V.SheetSection, { title: "Consum \xEEn octombrie", description: "Limitele includ excep\u021Biile active." }, /* @__PURE__ */ React.createElement("div", { className: "usage-grid" }, /* @__PURE__ */ React.createElement("div", { className: "d0", style: { gap: "var(--space-2)" } }, /* @__PURE__ */ React.createElement(V.UsageMeter, { label: "SMS-uri", used: 920, limit: 1e3 }), /* @__PURE__ */ React.createElement("p", { className: "body-small muted" }, "La ritmul de acum, ajunge la limit\u0103 pe 26 octombrie.")), /* @__PURE__ */ React.createElement(V.UsageMeter, { label: "Program\u0103ri", used: 640, limit: 1e3 }), /* @__PURE__ */ React.createElement(V.UsageMeter, { label: "Locuri \xEEn echip\u0103", used: 8, limit: 12 }), /* @__PURE__ */ React.createElement(V.UsageMeter, { label: "Spa\u021Biu documente", used: 1.2, limit: 5, unit: "GB", format: (n) => n.toLocaleString("ro-RO") })))), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { className: "sechead" }, /* @__PURE__ */ React.createElement("h2", { className: "heading" }, "Excep\u021Bii"), mode === "mobile" && /* @__PURE__ */ React.createElement(V.Button, { size: "sm", icon: "plus" }, "Adaug\u0103")), /* @__PURE__ */ React.createElement(V.DataTable, { caption: "Excep\u021Bii", columns: [
+    { key: "what", header: "Ce", primary: true },
+    { key: "val", header: "Valoare", secondary: true },
+    { key: "until", header: "P\xE2n\u0103 la", secondary: true },
+    { key: "why", header: "Motiv", optional: true, muted: true },
+    { key: "by", header: "Ad\u0103ugat\u0103 de", optional: true, muted: true }
+  ], rows: [
+    { id: 1, what: "Limit\u0103 de membri", val: "12 \xEEn loc de 10", until: "31 dec. 2026", why: "Extindere la al doilea cabinet", by: "Bianca Petra\u0219cu \xB7 3 oct." },
+    { id: 2, what: "Reducere la abonament", val: "15%", until: "31 mar. 2027", why: "Client din primul val", by: "Bianca Petra\u0219cu \xB7 1 mar." }
+  ], rowActions: () => [{ label: "Editeaz\u0103", icon: "pencil" }, { separator: true }, { label: "\xCEncheie excep\u021Bia acum", icon: "x", destructive: true }] }))), /* @__PURE__ */ React.createElement("aside", { className: "axside" }, /* @__PURE__ */ React.createElement("div", { className: "sheetlike fxcard" }, /* @__PURE__ */ React.createElement("p", { className: "subheading" }, "Abonament"), /* @__PURE__ */ React.createElement("p", { className: "body" }, /* @__PURE__ */ React.createElement("span", { className: "body-strong" }, "Business \xB7 v2"), " \xB7 349 lei pe lun\u0103"), /* @__PURE__ */ React.createElement("p", { className: "body-small muted" }, "Reducere 15% p\xE2n\u0103 pe 31 martie 2027 \xB7 se re\xEEnnoie\u0219te pe 1 noiembrie"), /* @__PURE__ */ React.createElement("div", { className: "appsrow" }, ["booking", "crm", "finance", "hr"].map((a) => /* @__PURE__ */ React.createElement(V.AppIcon, { key: a, app: a, size: 24, title: V.APPS[a].name })))), /* @__PURE__ */ React.createElement("div", { className: "sheetlike fxcard" }, /* @__PURE__ */ React.createElement("p", { className: "subheading" }, "Proprietar"), /* @__PURE__ */ React.createElement("p", { className: "body" }, "Andrei Mure\u0219an"), /* @__PURE__ */ React.createElement("p", { className: "body-small muted" }, "andrei@dentis.ro \xB7 autentificare \xEEn doi pa\u0219i pornit\u0103")), /* @__PURE__ */ React.createElement("div", { className: "sheetlike fxcard" }, /* @__PURE__ */ React.createElement("p", { className: "subheading" }, "Ultimele modific\u0103ri"), /* @__PURE__ */ React.createElement("ul", { className: "hist body-small" }, /* @__PURE__ */ React.createElement("li", null, /* @__PURE__ */ React.createElement("span", { className: "muted" }, "3 oct."), " Excep\u021Bie: 12 membri (Bianca Petra\u0219cu)"), /* @__PURE__ */ React.createElement("li", null, /* @__PURE__ */ React.createElement("span", { className: "muted" }, "24 sep."), " Pachet \xEEn plus: 500 SMS (Andrei Mure\u0219an)"), /* @__PURE__ */ React.createElement("li", null, /* @__PURE__ */ React.createElement("span", { className: "muted" }, "1 iun."), " Mutat\u0103 pe Business v2")))))));
+}
+const FP = {"ro": {"founder.pricing.monthly": "Lunar", "founder.pricing.annual": "Anual", "founder.pricing.lei": "Lei", "founder.pricing.euro": "Euro", "founder.pricing.saving": "economie {amount}", "founder.plans.lead": "Fiecare schimbare de preț sau de limite face o versiune nouă. Afacerile rămân pe versiunea lor până le muți tu.", "founder.plans.col.version": "Versiune", "founder.plans.col.monthly": "Lunar", "founder.plans.col.annual": "Anual", "founder.plans.col.businesses": "Afaceri", "founder.plans.col.since": "Din", "founder.plans.limitsMonthly": "Limite pe lună, și la plata anuală", "founder.editor.price.title": "Preț", "founder.editor.price.desc": "Prețul anual îl scrii tu, nu e un procent din cel lunar. Prețul în euro nu se calculează din lei.", "founder.editor.price.monthlyLei": "Lunar, în lei", "founder.editor.price.annualLei": "Anual, în lei", "founder.editor.price.monthlyEur": "Lunar, în euro", "founder.editor.price.annualEur": "Anual, în euro", "founder.editor.price.now": "Acum: {amount} (v2).", "founder.editor.price.saving": "Față de 12 plăți lunare, clientul economisește {amount}.", "founder.editor.price.setupLei": "Cost de implementare, în lei", "founder.editor.price.setupEur": "Cost de implementare, în euro", "founder.editor.error.annualTooHigh": "Prețul anual trebuie să fie mai mic decât 12 plăți lunare ({amount}).", "founder.editor.error.eurMissing": "Scrie prețul în euro. Nu îl calculăm din lei.", "founder.editor.error.publish": "Ca să publici v3, completează prețurile marcate.", "founder.new.currency": "Moneda afacerii", "founder.new.currencyHelp": "Toate prețurile, facturile și plățile afacerii sunt în moneda aceasta, în orice limbă. După prima factură nu se mai schimbă.", "founder.new.billing": "Plata", "founder.new.billingHelp": "Clientul poate trece de la lunar la anual la reînnoire.", "founder.new.planPrice.monthly": "{amount} pe lună", "founder.new.planPrice.annual": "{amount} pe an · economisește {saving}", "founder.new.mail.price.monthly": "Apoi abonamentul e {amount} pe lună.", "founder.new.mail.price.annual": "Apoi abonamentul e {amount} pe an.", "founder.business.currency": "Moneda: {currency}", "founder.business.billing.monthly": "Plătește lunar: {amount}", "founder.business.billing.annual": "Plătește anual: {amount}", "founder.business.reset": "Consumul pornește de la zero pe {day} ale fiecărei luni.", "founder.packs.lead": "Ce pot cumpăra afacerile peste abonament. Prețul în lei, prețul în euro și costul de implementare de aici apar în toate ofertele.", "founder.packs.col.price": "Preț", "founder.packs.edit.title": "Editează „{name}”", "founder.packs.edit.priceLei": "Preț, în lei", "founder.packs.edit.priceEur": "Preț, în euro", "founder.packs.edit.priceHelp": "Pentru afacerile în euro. Nu se calculează din lei.", "founder.packs.edit.period": "Se plătește", "founder.packs.edit.period.once": "O dată, pentru perioada în curs", "founder.packs.edit.period.monthly": "Lunar, cu abonamentul (proporțional în prima lună)", "founder.packs.edit.save": "Salvează", "founder.packs.edit.cancel": "Renunță", "founder.packs.edit.note": "Afacerile care l-au cumpărat deja îl plătesc la prețul vechi până îl reînnoiesc.", "founder.apps.nav": "Aplicații", "founder.apps.title": "Aplicații", "founder.apps.lead": "Cât costă fiecare aplicație adăugată la abonament și dacă afacerea o poate activa singură. Cele care cer configurare stau „la cerere”.", "founder.apps.col.app": "Aplicație", "founder.apps.col.price": "Pe lună", "founder.apps.col.setup": "Implementare", "founder.apps.col.activation": "Activare", "founder.apps.direct": "Direct", "founder.apps.onRequest": "La cerere", "founder.apps.directHelp": "Afacerea o activează singură din catalog și plătește cu cardul.", "founder.apps.onRequestHelp": "Afacerea trimite o cerere; o activează echipa Ventora.", "founder.apps.setupLocked": "Are cost de implementare, deci rămâne la cerere.", "founder.apps.none": "Fără", "founder.apps.switched": "{app} se activează acum direct din catalog.", "founder.discounts.nav": "Reduceri", "founder.discounts.title": "Reduceri", "founder.discounts.lead": "Toate reducerile permanente, din toate afacerile. Cele temporare le vezi și în pagina fiecărei afaceri.", "founder.discounts.filter.permanent": "Permanente", "founder.discounts.filter.active": "Toate active", "founder.discounts.section": "Reduceri active", "founder.discounts.sectionLead": "Se aplică la următoarele facturi; facturile emise nu se schimbă.", "founder.discounts.add": "Adaugă o reducere", "founder.discounts.col.business": "Afacerea", "founder.discounts.col.what": "Pe ce", "founder.discounts.col.value": "Reducere", "founder.discounts.col.duration": "Cât ține", "founder.discounts.col.reason": "Motiv", "founder.discounts.col.by": "Adăugată de", "founder.discounts.what.plan": "Tot abonamentul", "founder.discounts.duration.once": "O singură dată", "founder.discounts.duration.months": "{count, plural, one {# lună} few {# luni} other {# de luni}}, până pe {date}", "founder.discounts.duration.permanent": "Permanentă", "founder.discounts.end": "Încheie reducerea", "founder.discounts.empty": "Nicio reducere activă.", "founder.discounts.emptyPermanent": "Nicio reducere permanentă. Când adaugi una din pagina unei afaceri, apare aici.", "founder.discounts.dialog.title": "Adaugă o reducere pentru {business}", "founder.discounts.dialog.scope": "Se aplică pe", "founder.discounts.dialog.scope.plan": "Tot abonamentul", "founder.discounts.dialog.scope.planDesc": "Doar prețul abonamentului. Aplicațiile adăugate și pachetele lunare au reducerile lor.", "founder.discounts.dialog.scope.line": "O singură linie", "founder.discounts.dialog.scope.lineDesc": "O aplicație adăugată sau un pachet lunar.", "founder.discounts.dialog.line": "Linia", "founder.discounts.dialog.kind": "Reducerea", "founder.discounts.dialog.kind.percent": "Procent", "founder.discounts.dialog.kind.amount": "Sumă fixă", "founder.discounts.dialog.value": "Valoare", "founder.discounts.dialog.percentHelp": "Între 1 și 100%. 100% înseamnă gratuit.", "founder.discounts.dialog.amountHelp": "În {currency}, moneda afacerii. Cel mult prețul liniei.", "founder.discounts.dialog.duration": "Cât ține", "founder.discounts.dialog.duration.once": "O singură dată", "founder.discounts.dialog.duration.onceDesc": "Doar la următoarea factură.", "founder.discounts.dialog.duration.months": "Un număr de luni", "founder.discounts.dialog.duration.permanent": "Permanent", "founder.discounts.dialog.duration.permanentDesc": "Până o închei tu. Apare și în lista „Reduceri”.", "founder.discounts.dialog.monthsLabel": "Luni", "founder.discounts.dialog.reason": "Motiv", "founder.discounts.dialog.reasonHelp": "Intră în jurnalul afacerii. Clientul nu îl vede.", "founder.discounts.dialog.preview": "Următoarea factură, pe {date}", "founder.discounts.dialog.free": "Cu 100%, linia devine gratuită: pe factură apare prețul întreg, reducerea și totalul 0.", "founder.discounts.dialog.submit": "Adaugă reducerea", "founder.discounts.dialog.cancel": "Renunță", "founder.discounts.error.reason": "Scrie motivul reducerii.", "founder.discounts.error.percent": "Scrie un procent între 1 și 100.", "founder.discounts.error.amount": "Reducerea nu poate fi mai mare decât prețul liniei ({amount}).", "founder.discounts.added": "Am adăugat reducerea. Se vede de la factura din {date}.", "founder.discounts.endDialog.title": "Închei reducerea de {value} pentru {business}?", "founder.discounts.endDialog.body": "De la factura din {date}, prețul revine la {amount}. Facturile deja emise nu se schimbă. Acțiunea intră în jurnal.", "founder.discounts.endDialog.submit": "Încheie reducerea", "founder.discounts.ended": "Am încheiat reducerea. De la {date}, prețul e {amount}."}};
+const h = React.createElement;
+const fmt = (s, vars) => { if (vars) for (const k in vars) s = s.split("{" + k + "}").join(vars[k]); return s; };
+/* Romanian plural for the ICU strings: one / few (0, 2–19, x01–x19) / other ("de"). */
+const roPl = (n) => n === 1 ? "one" : (n === 0 || (n % 100 >= 1 && n % 100 <= 19)) ? "few" : "other";
+const icu = (s, n, lang) => s.replace(/\{count, plural, (.*)\}$|\{count, plural, ((?:[^{}]|\{[^{}]*\})*)\}/, (m, a, b) => {
+  const body = a || b; const forms = {}; body.replace(/(\w+) \{([^{}]*)\}/g, (x, k, v) => { forms[k] = v; });
+  const cat = lang === "ro" ? roPl(n) : n === 1 ? "one" : "other";
+  return (forms[cat] || forms.other).split("#").join(String(n));
+});
+function Board({ title, notes, items }) {
+  return h("div", { className: "scr" },
+    h("p", { className: "heading" }, title),
+    notes ? h("p", { className: "caption muted" }, notes.join(" · ")) : null,
+    items.map(([lab, render, dH = 860, mH = 844]) => h("div", { key: lab, className: "tfa-scrgroup" },
+      h("p", { className: "subheading tfa-grouplab" }, lab),
+      ["light", "dark"].map((th) => h("div", { className: "scr-row", key: th },
+        [["desktop", "Desktop · 1280", "scr-d", dH], ["mobile", "Telefon · 390", "scr-m", mH]].map(([m, l, cls, H]) => h("div", { key: m },
+          h("p", { className: "caption scr-lab" }, l, " · ", th === "light" ? "Light" : "Dark"),
+          h("div", { className: cls, "data-theme": th, style: { height: H, position: "relative", overflow: "hidden" } }, render(m)))))))));
+}
+function Langs({ items }) {
+  return h("div", { className: "sms-langs" },
+    h("p", { className: "heading" }, "Test cu etichete în germană și italiană"),
+    h("div", { className: "sms-langrow" }, items.map(([lab, lang, mode, th, el, H]) => h("div", { className: "sms-lang", key: lab },
+      h("p", { className: "caption sms-boxlab" }, lab),
+      h("div", { className: "sms-langframe", "data-theme": th, style: { height: H, position: "relative", width: mode === "mobile" ? 390 : 1280 } }, h(V.LocaleProvider, { locale: lang }, el))))));
+}
+const tf = (key, vars) => { let s = (FP.ro[key] || key); if (vars) for (const k in vars) s = s.split("{" + k + "}").join(vars[k]); return s; };
+const nf = (n) => n.toLocaleString("ro-RO", { minimumFractionDigits: n % 1 ? 2 : 0, maximumFractionDigits: 2 });
+const lei = (n) => nf(n) + " lei";
+const eur = (n) => nf(n) + " €";
+const money = (n, cur) => cur === "eur" ? eur(n) : lei(n);
+/* Prices per plan version: [monthly lei, annual lei, monthly €, annual €]. The annual price is typed in, not a percentage (S113). */
+const PRICES = {
+  start: { v1: [129, 1290, 26, 260], v2: [149, 1490, 30, 300] },
+  business: { v1: [299, 2990, 60, 600], v2: [349, 3490, 70, 700] },
+  plus: { v1: [449, 4490, 90, 900] }
+};
+const PriceCell = ({ l, e, save }) => h("span", { className: "fp-cell" }, h("span", { className: "body v-num" }, l), h("span", { className: "body-small muted v-num" }, e), save ? h("span", { className: "caption fp-save" }, save) : null);
+/* FounderDiscounts (S113): discounts on one business, in the "Plăți și facturi" tab (FounderBusinessBilling) — on the whole subscription or on one line (an added app, a monthly pack); a percentage (1–100%) or a fixed amount in the business's currency; once / N months / permanent; reason required. 100% = free. Plus the "Reduceri" page in the Spine (all permanent discounts). Romanian only (S57); keys founder.discounts.* in i18n/founder-pricing.json (FP). */
+const DISC = [
+  { id: 1, what: tf("founder.discounts.what.plan"), value: "15%", dur: icu(tf("founder.discounts.duration.months"), 5, "ro").replace("{date}", "31 mar. 2027"), reason: "Client din primul val", by: "Bianca Petrașcu · 1 mar." },
+  { id: 2, what: "CampaignKit · aplicație adăugată", value: "100%", dur: tf("founder.discounts.duration.permanent"), reason: "Partener de test pentru campanii", by: "Bianca Petrașcu · 12 oct." },
+  { id: 3, what: "5 locuri în echipă în plus", value: "20 lei", dur: tf("founder.discounts.duration.once"), reason: "Compensare pentru întreruperea din 9 oct.", by: "Mihai Ionescu · 10 oct." }
+];
+function Tab({ mode, rows = DISC, overlay, toast }) {
+  const mob = mode === "mobile";
+  return h("div", { className: "x-frame" }, h(FX_App, { active: "afaceri", title: "Clinica Dentis Sibiu" },
+    h(V.PageHeader, { title: "Clinica Dentis Sibiu", breadcrumbs: mob ? undefined : [{ label: "Afaceri", href: "#" }, { label: "Clinica Dentis Sibiu" }],
+      meta: h("span", { className: "body-small muted" }, "Business · v2 · " + tf("founder.business.currency", { currency: "lei" })),
+      tabs: h(V.Tabs, { label: "Afacere", defaultValue: "f", items: [{ value: "o", label: "Prezentare" }, { value: "c", label: "Consum" }, { value: "e", label: "Excepții", count: 2 }, { value: "f", label: "Plăți și facturi" }, { value: "j", label: "Jurnal" }] }) }),
+    h(AX_Body, { mode }, h(V.Sheet, null,
+      h(V.SheetSection, { title: "Abonament" }, h("p", { className: "body" }, h("span", { className: "body-strong" }, tf("founder.business.billing.monthly", { amount: lei(349) })), " · se reînnoiește pe 17 noiembrie"),
+        h("p", { className: "body-small muted" }, "Plătește cu cardul Visa ···· 4242 · " + tf("founder.business.reset", { day: "17" }))),
+      h(V.SheetSection, { title: tf("founder.discounts.section"), description: tf("founder.discounts.sectionLead"), actions: h(V.Button, { icon: "plus", size: mob ? "sm" : undefined }, tf("founder.discounts.add")) },
+        rows.length ? h(V.DataTable, { caption: tf("founder.discounts.section"), columns: [
+          { key: "what", header: tf("founder.discounts.col.what"), primary: true },
+          { key: "value", header: tf("founder.discounts.col.value"), secondary: true, render: (r) => h("span", { className: "body-strong v-num" }, r.value) },
+          { key: "dur", header: tf("founder.discounts.col.duration"), secondary: true },
+          { key: "reason", header: tf("founder.discounts.col.reason"), optional: true, muted: true },
+          { key: "by", header: tf("founder.discounts.col.by"), optional: true, muted: true }],
+          rows, rowActions: () => [{ label: "Editează", icon: "pencil" }, { separator: true }, { label: tf("founder.discounts.end"), icon: "x", destructive: true }] })
+        : h("p", { className: "body muted" }, tf("founder.discounts.empty")))))),
+    overlay || null,
+    toast ? h("div", { className: "x-toast" + (mob ? " m" : "") }, h(V.Toast, { tone: "done", title: toast, onDismiss: () => {} })) : null);
+}
+let RN = 0;
+const ST = {
+  plan: { scope: "plan", kind: "percent", val: "20", dur: "months", months: "6", reason: "Al doilea cabinet deschis în noiembrie" },
+  line: { scope: "line", kind: "amount", val: "20", dur: "once", reason: "Compensare pentru întreruperea din 9 oct." },
+  free: { scope: "line", kind: "percent", val: "100", dur: "permanent", reason: "Partener de test pentru campanii", line: "marketing" },
+  errors: { scope: "line", kind: "amount", val: "80", dur: "once", reason: "", errAmount: true, errReason: true }
+};
+const LINES = [{ value: "seats", label: "5 locuri în echipă în plus · 60 lei pe lună" }, { value: "marketing", label: "CampaignKit · aplicație adăugată · 49 lei pe lună" }];
+function preview(s) {
+  const base = s.scope === "plan" ? 349 : s.line === "marketing" ? 49 : 60;
+  const d = s.kind === "percent" ? base * (+s.val) / 100 : Math.min(+s.val, base);
+  return [base, d, base - d];
+}
+function AddDialog({ mode, state }) {
+  const s = ST[state], mob = mode === "mobile", [base, d, tot] = preview(s);
+  return h("div", { className: "x-overlay" + (mob ? " m" : "") }, h(V.Dialog, { open: true, inline: true, className: mob ? "v-dialog--sheet" : undefined, title: tf("founder.discounts.dialog.title", { business: "Clinica Dentis Sibiu" }),
+    footer: h(React.Fragment, null, h(V.Button, { variant: "quiet" }, tf("founder.discounts.dialog.cancel")), h(V.Button, { variant: "primary", icon: "plus" }, tf("founder.discounts.dialog.submit"))) },
+    h("div", { className: "d0", style: { gap: "var(--space-4)" } },
+      h(V.RadioGroup, { legend: tf("founder.discounts.dialog.scope"), name: "sc" + (++RN), defaultValue: s.scope, options: [{ value: "plan", label: tf("founder.discounts.dialog.scope.plan"), description: tf("founder.discounts.dialog.scope.planDesc") }, { value: "line", label: tf("founder.discounts.dialog.scope.line"), description: tf("founder.discounts.dialog.scope.lineDesc") }] }),
+      s.scope === "line" ? h(V.FormField, { label: tf("founder.discounts.dialog.line"), required: true }, h(V.Select, { defaultValue: s.line || "seats", options: LINES })) : null,
+      h("div", { className: "fp-prices" + (mob ? " m" : "") },
+        h(V.FormField, { label: tf("founder.discounts.dialog.kind") }, h(V.SegmentedControl, { label: tf("founder.discounts.dialog.kind"), defaultValue: s.kind, options: [{ value: "percent", label: tf("founder.discounts.dialog.kind.percent") }, { value: "amount", label: tf("founder.discounts.dialog.kind.amount") }] })),
+        h(V.FormField, { label: tf("founder.discounts.dialog.value"), required: true, helper: s.errAmount ? undefined : s.kind === "percent" ? tf("founder.discounts.dialog.percentHelp") : tf("founder.discounts.dialog.amountHelp", { currency: "lei" }), error: s.errAmount ? tf("founder.discounts.error.amount", { amount: lei(60) }) : undefined },
+          h(V.Input, { defaultValue: s.val, suffix: s.kind === "percent" ? "%" : "lei", inputMode: "decimal", invalid: !!s.errAmount }))),
+      s.val === "100" ? h(V.Notice, { tone: "neutral", icon: "info" }, tf("founder.discounts.dialog.free")) : null,
+      h(V.RadioGroup, { legend: tf("founder.discounts.dialog.duration"), name: "du" + (++RN), defaultValue: s.dur, options: [{ value: "once", label: tf("founder.discounts.dialog.duration.once"), description: tf("founder.discounts.dialog.duration.onceDesc") }, { value: "months", label: tf("founder.discounts.dialog.duration.months") }, { value: "permanent", label: tf("founder.discounts.dialog.duration.permanent"), description: tf("founder.discounts.dialog.duration.permanentDesc") }] }),
+      s.dur === "months" ? h(V.FormField, { label: tf("founder.discounts.dialog.monthsLabel"), required: true }, h(V.Input, { defaultValue: s.months, inputMode: "numeric", style: { maxWidth: 120 } })) : null,
+      h(V.FormField, { label: tf("founder.discounts.dialog.reason"), required: true, helper: s.errReason ? undefined : tf("founder.discounts.dialog.reasonHelp"), error: s.errReason ? tf("founder.discounts.error.reason") : undefined }, h(V.Textarea, { rows: 2, defaultValue: s.reason, invalid: !!s.errReason })),
+      s.errAmount ? null : h("div", { className: "fd-prev" }, h("p", { className: "caption muted" }, tf("founder.discounts.dialog.preview", { date: "17 noiembrie" })),
+        h("div", { className: "fd-line" }, h("span", { className: "body" }, s.scope === "plan" ? "Abonament Business" : (s.line === "marketing" ? "CampaignKit" : "5 locuri în echipă în plus")), h("span", { className: "body v-num" }, lei(base))),
+        h("div", { className: "fd-line" }, h("span", { className: "body" }, "Reducere " + (s.kind === "percent" ? s.val + "%" : lei(+s.val))), h("span", { className: "body v-num" }, "−" + lei(d))),
+        h("div", { className: "fd-line fd-tot" }, h("span", { className: "body-strong" }, "Total"), h("span", { className: "body-strong v-num" }, lei(tot)))))));
+}
+function EndDialog({ mode }) {
+  return h("div", { className: "x-overlay" + (mode === "mobile" ? " m" : "") }, h(V.Dialog, { open: true, inline: true, tone: "danger", className: mode === "mobile" ? "v-dialog--sheet" : undefined,
+    title: tf("founder.discounts.endDialog.title", { value: "15%", business: "Clinica Dentis Sibiu" }),
+    footer: h(React.Fragment, null, h(V.Button, { variant: "quiet" }, tf("founder.discounts.dialog.cancel")), h(V.Button, { variant: "danger", icon: "x" }, tf("founder.discounts.endDialog.submit"))) },
+    h("p", { className: "body" }, tf("founder.discounts.endDialog.body", { date: "17 noiembrie", amount: lei(349) }))));
+}
+const ALL = [
+  { id: 1, biz: "Clinica Dentis Sibiu", what: "CampaignKit · aplicație adăugată", value: "100%", since: "12 oct. 2026", reason: "Partener de test pentru campanii", by: "Bianca Petrașcu" },
+  { id: 2, biz: "Salon Aurora", what: tf("founder.discounts.what.plan"), value: "10%", since: "3 mar. 2025", reason: "Client din primul val", by: "Bianca Petrașcu" },
+  { id: 3, biz: "Atelier Nord", what: tf("founder.discounts.what.plan"), value: "15 €", since: "8 sep. 2026", reason: "Contract anual negociat", by: "Mihai Ionescu" },
+  { id: 4, biz: "Fitness Atlas", what: "5 locuri în echipă în plus", value: "50%", since: "21 aug. 2026", reason: "Echipă de voluntari", by: "Bianca Petrașcu" }
+];
+function AllPage({ mode, empty }) {
+  return h(FX_App, { active: "reduceri", title: tf("founder.discounts.title") }, h(V.PageHeader, { title: tf("founder.discounts.title"), description: mode === "mobile" ? undefined : tf("founder.discounts.lead") }),
+    h(AX_Body, { mode }, h("div", { className: "d0", style: { gap: "var(--space-4)" } },
+      h("div", null, h(V.SegmentedControl, { label: "Arată", defaultValue: "perm", options: [{ value: "perm", label: tf("founder.discounts.filter.permanent") + (empty ? "" : " · 4") }, { value: "all", label: tf("founder.discounts.filter.active") }] })),
+      empty ? h(V.EmptyState, { icon: "percent", title: tf("founder.discounts.empty"), description: tf("founder.discounts.emptyPermanent") }) :
+      h(V.DataTable, { caption: tf("founder.discounts.title"), columns: [
+        { key: "biz", header: tf("founder.discounts.col.business"), primary: true },
+        { key: "what", header: tf("founder.discounts.col.what"), secondary: true },
+        { key: "value", header: tf("founder.discounts.col.value"), secondary: true, render: (r) => h("span", { className: "body-strong v-num" }, r.value) },
+        { key: "since", header: "Din", optional: true },
+        { key: "reason", header: tf("founder.discounts.col.reason"), optional: true, muted: true },
+        { key: "by", header: tf("founder.discounts.col.by"), optional: true, muted: true }],
+        rows: ALL, rowActions: () => [{ label: "Deschide afacerea", icon: "building-2" }, { separator: true }, { label: tf("founder.discounts.end"), icon: "x", destructive: true }] }))));
+}
+mount(h("div", null,
+  h(Board, { title: "Founder — Reduceri pe o afacere, în „Plăți și facturi” (S113)", notes: ["Pe tot abonamentul sau pe o linie", "Procent (1–100%) sau sumă fixă în moneda afacerii", "O dată, N luni sau permanent; motiv obligatoriu", "Facturile emise nu se schimbă", "Doar în română (S57)"], items: [
+    ["1 · Reducerile active ale afacerii", (m) => h(Tab, { mode: m }), 760, 1300],
+    ["2 · „Adaugă o reducere”: 20% pe tot abonamentul, 6 luni", (m) => h(Tab, { mode: m, overlay: h(AddDialog, { mode: m, state: "plan" }) }), 1020, 1300],
+    ["3 · O singură linie, sumă fixă, o singură dată", (m) => h(Tab, { mode: m, overlay: h(AddDialog, { mode: m, state: "line" }) }), 1020, 1300],
+    ["4 · 100% = gratuit, permanent", (m) => h(Tab, { mode: m, overlay: h(AddDialog, { mode: m, state: "free" }) }), 1020, 1300],
+    ["5 · Erori: suma mai mare decât linia, motiv lipsă", (m) => h(Tab, { mode: m, overlay: h(AddDialog, { mode: m, state: "errors" }) }), 1020, 1300],
+    ["6 · „Încheie reducerea”", (m) => h(Tab, { mode: m, overlay: h(EndDialog, { mode: m }) }), 760, 1300],
+    ["7 · Reducerea adăugată", (m) => h(Tab, { mode: m, rows: [{ id: 9, what: tf("founder.discounts.what.plan"), value: "20%", dur: icu(tf("founder.discounts.duration.months"), 6, "ro").replace("{date}", "16 mai 2027"), reason: "Al doilea cabinet deschis în noiembrie", by: "Bianca Petrașcu · azi" }].concat(DISC.slice(1)), toast: tf("founder.discounts.added", { date: "17 noiembrie" }) }), 760, 1300]] }),
+  h(Board, { title: "Founder — „Reduceri”: toate reducerile permanente (S113)", notes: ["Intrare nouă în Spine, sub „Model comercial”", "Filtrul „Toate active” arată și reducerile temporare"], items: [
+    ["8 · Reducerile permanente", (m) => h(AllPage, { mode: m }), 780, 1100],
+    ["9 · Nicio reducere permanentă", (m) => h(AllPage, { mode: m, empty: true }), 560, 844]] })));
+
+</script>
+</body>
+</html>

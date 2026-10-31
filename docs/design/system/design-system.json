@@ -471,7 +471,7 @@
     "at": "2026-10-31T11:55:10Z",
     "by": "Bianca Petrașcu",
     "via": "Claude",
-    "note": "S112 (sincronizat la Lotul 2.9b): HubBusinessSuspended, HubTeamInvite, FounderBusinessActions; OrgSwitcher 1.1.0 (suspended); i18n business-access, team, founder-business"
+    "note": "S113: lunar sau anual, lei și euro, reduceri, direct / la cerere, plata proporțională; FounderApps, FounderDiscounts, HubPlanBilling, HubAppActivation; AddonPurchase prorate; i18n pricing, founder-pricing"
   },
   "layout": "files",
   "libraries": [

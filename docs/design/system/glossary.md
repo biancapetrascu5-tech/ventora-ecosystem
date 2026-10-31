@@ -27,6 +27,12 @@ Un singur cuvânt pentru fiecare lucru, în toate ecranele și în toate cele 6 
 | angajat | employee | employé | empleado | Mitarbeiter | dipendente | Doar pentru personalul afacerii, în aplicații: meniul „Angajați” din EasyBook, rapoarte „pe angajați”, coloana „Angajat” la o programare. Nu pentru limita de abonament și nu ca nume de rol (S112). În filtre folosește „echipa”. |
 | membru | member | membre | miembro | Mitglied | membro | O persoană cu cont Ventora într-o afacere; limita `platform.members` se numără în membri: „10 membri”, „Limită de membri”. Și rolul de bază, lângă „Admin” (S112). |
 | loc în echipă | team seat | place d’équipe | plaza en el equipo | Teamplatz | posto nel team | Limita de membri ca resursă și ca pachet: „Locuri în echipă · 8 din 12”, „4 din 10 locuri în echipă”, „5 locuri în echipă în plus” (S112). |
+| plată lunară | monthly payment | paiement mensuel | pago mensual | monatliche Zahlung | pagamento mensile | „Plătești lunar: 349 lei”. Prețul întreg (S113). |
+| plată anuală | yearly payment | paiement annuel | pago anual | jährliche Zahlung | pagamento annuale | „Plătești anual: 3.490 lei · economisești 698 lei”. Limitele rămân lunare (S113). |
+| monedă | currency | devise | moneda | Währung | valuta | A afacerii, nu a limbii: „349 lei” și „70 €” în orice limbă. Zecimale doar când există, mereu două (S113). |
+| reducere | discount | réduction | descuento | Rabatt | sconto | Mereu linie separată: preț întreg, reducere, total. „Reducere 15% · până pe 31 martie 2027” (S113). |
+| la cerere | on request | sur demande | bajo solicitud | auf Anfrage | su richiesta | O activează echipa Ventora; butonul e „Cere activare” (S113). |
+| proporțional | prorated | au prorata | prorrateado | anteilig | in proporzione | „Azi: 23 lei, proporțional până pe 17 noiembrie” (S113). |
 | coleg | teammate | collègue | compañero | Kollege | collega | Când vorbești despre ceilalți din echipă. |
 | rol | role | rôle | rol | Rolle | ruolo |  |
 | acces | access | accès | acceso | Zugriff | accesso | „Cere acces”, „Acces oprit”. |
