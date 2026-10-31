@@ -30,6 +30,7 @@
   },
   "devDependencies": {
     "@types/pg": "^8.0.0",
+    "@ventora/db-kit": "workspace:*",
     "typescript": "^6.0.0",
     "vitest": "^5.0.5"
   }

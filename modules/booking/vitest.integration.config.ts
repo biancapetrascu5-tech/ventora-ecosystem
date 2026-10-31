@@ -3,6 +3,7 @@ import { defineConfig } from 'vitest/config';
 export default defineConfig({
   test: {
     environment: 'node',
+    setupFiles: ['./src/__tests__/runtime-role.setup.ts'],
     testTimeout: 30000,
     env: {
       DATABASE_URL: process.env.DATABASE_URL_TEST ?? process.env.DATABASE_URL ?? '',
