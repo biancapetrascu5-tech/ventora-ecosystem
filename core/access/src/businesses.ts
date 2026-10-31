@@ -6,7 +6,7 @@ import {
   readAuditLogAsFounder,
   type AuditLogEntry,
 } from '@ventora/audit';
-import { getUserContactInTx, requireFounderSession } from '@ventora/identity';
+import { getFounderNames, getUserContactInTx, requireFounderSession } from '@ventora/identity';
 import {
   createOrganizationAsFounder,
   listOrganizationsAsFounderInTx,
@@ -91,7 +91,14 @@ export async function listBusinessesForFounder(params: {
 export async function getBusinessPageForFounder(params: {
   founderHeaders: Headers;
   organizationId: string;
-}): Promise<{ business: FounderBusiness; recent: AuditLogEntry[] }> {
+}): Promise<{
+  business: FounderBusiness;
+  recent: AuditLogEntry[];
+  /** Lot 2.9b: the Founder names in the rows („{event} ({name})”). */
+  founderNames: Record<string, string>;
+  /** Lot 2.9b (S112): „Suspendată pe {date} de {name}” — from the latest org.suspended row. */
+  suspension: { at: Date; founderId: string | null } | null;
+}> {
   const founder = await requireFounderSession(params.founderHeaders);
   if (!UUID_RE.test(params.organizationId)) throw new ResourceNotFound('Organization not found');
   const business = await withFounderTransaction(async (exec) => {
@@ -105,7 +112,25 @@ export async function getBusinessPageForFounder(params: {
     actions: [...BUSINESS_CHANGE_ACTIONS],
     limit: RECENT_CHANGES,
   });
-  return { business, recent };
+  let suspension: { at: Date; founderId: string | null } | null = null;
+  if (business.status === 'suspended') {
+    const row =
+      recent.find((r) => r.action === AuditActions.organizationSuspended) ??
+      (
+        await readAuditLogAsFounder(founder.userId, {
+          organizationId: params.organizationId,
+          actions: [AuditActions.organizationSuspended],
+          limit: 1,
+        })
+      )[0];
+    const at = row ? new Date(row.createdAt) : business.suspendedAt;
+    suspension = at ? { at, founderId: row?.founderId ?? null } : null;
+  }
+  const founderNames = await getFounderNames([
+    ...recent.map((r) => r.founderId ?? ''),
+    suspension?.founderId ?? '',
+  ]);
+  return { business, recent, founderNames, suspension };
 }
 
 /**

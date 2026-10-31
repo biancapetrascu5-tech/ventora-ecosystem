@@ -446,7 +446,8 @@
     "switchBusiness": "Cambia attività",
     "findBusiness": "Cerca un’attività…",
     "noResultsFor": "Nessun risultato per «{q}»",
-    "unreadN": "{n, plural, one {# non letta} other {# non lette}}"
+    "unreadN": "{n, plural, one {# non letta} other {# non lette}}",
+    "accessStopped": "Accesso sospeso"
   },
   "hub": {
     "chooseBusiness": {
@@ -457,7 +458,9 @@
       "lastUsed": "Usata per ultima",
       "remember": "La prossima volta aprire direttamente l’ultima attività",
       "missing": "Manca un’attività? Chieda un invito al titolare.",
-      "search": "Cerchi un’attività"
+      "search": "Cerchi un’attività",
+      "accessStopped": "Accesso sospeso",
+      "stoppedNote": "Un’attività con «Accesso sospeso» non si può aprire ora. Per i dettagli, ci scriva a {email}."
     },
     "nav": {
       "business": "Attività",
@@ -488,7 +491,49 @@
       "resend": "Invia di nuovo",
       "resendInvitation": "Invia di nuovo l’invito",
       "copyLink": "Copia il link",
-      "cancelInvitation": "Annulla l’invito"
+      "cancelInvitation": "Annulla l’invito",
+      "action": {
+        "editProfile": "Modifica il profilo",
+        "changeRole": "Cambia ruolo",
+        "appAccess": "Accesso alle app",
+        "restore": "Ripristina l’accesso",
+        "stop": "Sospendi l’accesso",
+        "remove": "Rimuovi dall’attività"
+      },
+      "form": {
+        "title": "Invita una persona in {business}",
+        "lead": "Riceverà un’e-mail con un link valido 7 giorni.",
+        "email": "Indirizzo e-mail",
+        "emailPlaceholder": "nome@esempio.it",
+        "role": "Ruolo",
+        "roleMember": "Membro",
+        "roleMemberDesc": "Usa le app che sceglie qui sotto.",
+        "roleAdmin": "Admin",
+        "roleAdminDesc": "Ha accesso a tutte le app e può invitare persone e cambiare ruoli e accesso alle app.",
+        "apps": "App",
+        "appsHelp": "Può cambiarle in qualsiasi momento da «Accesso alle app».",
+        "appsAdmin": "Un admin ha accesso a tutte le app dell’attività.",
+        "cancel": "Annulla",
+        "submit": "Invia l’invito",
+        "sending": "Invio dell’invito…",
+        "errorEmail": "Inserisca l’indirizzo completo, ad esempio nome@esempio.it.",
+        "errorMember": "{email} fa già parte del team.",
+        "errorInvited": "Ha già inviato un invito a {email} il {date}, ed è ancora in attesa di risposta.",
+        "errorApps": "Scelga almeno un’app.",
+        "sentTitle": "Invito inviato a {email}",
+        "sentBody": "Resta in «Inviti in attesa» finché non viene accettato o fino al {date}, quando scade."
+      },
+      "save": "Salva",
+      "actionError": "Non siamo riusciti a salvare la modifica. Riprovi."
+    },
+    "suspended": {
+      "title": "L’accesso a {business} è sospeso per il momento",
+      "body": "Per i dettagli, contatti il team Ventora all’indirizzo {email}.",
+      "contact": "Scriva all’assistenza",
+      "signOut": "Esci"
+    },
+    "home": {
+      "soon": "Le app della Sua attività appariranno qui."
     }
   },
   "roles": {

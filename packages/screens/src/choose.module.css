@@ -67,6 +67,27 @@
   align-items: flex-start;
 }
 
+/* S112: .biz.is-off / .x-link (HubBusinessSuspended/preview.html) */
+.isOff {
+  cursor: default;
+  color: var(--ink-muted);
+}
+.isOff:hover {
+  background: transparent;
+}
+.isOff :global(.body-strong) {
+  color: var(--ink-secondary);
+}
+.isOff > span:first-child {
+  color: var(--ink-muted);
+  background: transparent;
+}
+.link {
+  color: var(--ink);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
 .mobile .top {
   padding: var(--space-3) var(--space-4);
 }

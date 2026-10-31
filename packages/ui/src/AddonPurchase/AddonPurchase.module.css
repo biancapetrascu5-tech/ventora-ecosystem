@@ -60,6 +60,11 @@
   border-top: var(--border-width) solid var(--line);
 }
 
+/* bundle.css (S113, adus cu sincronizarea S112): suma de plată rămâne pe un rând („27,10 lei”) */
+.paylineTotal > :global(.numeric) {
+  white-space: nowrap;
+}
+
 .note {
   color: var(--ink-muted);
 }

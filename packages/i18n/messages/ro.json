@@ -446,7 +446,8 @@
     "switchBusiness": "Schimbă afacerea",
     "findBusiness": "Caută o afacere…",
     "noResultsFor": "Niciun rezultat pentru „{q}”",
-    "unreadN": "{n, plural, one {# necitită} few {# necitite} other {# de necitite}}"
+    "unreadN": "{n, plural, one {# necitită} few {# necitite} other {# de necitite}}",
+    "accessStopped": "Acces oprit"
   },
   "hub": {
     "chooseBusiness": {
@@ -457,7 +458,9 @@
       "lastUsed": "Ultima folosită",
       "remember": "Deschide direct ultima afacere data viitoare",
       "missing": "Lipsește o afacere? Cere-i proprietarului ei o invitație.",
-      "search": "Caută o afacere"
+      "search": "Caută o afacere",
+      "accessStopped": "Acces oprit",
+      "stoppedNote": "O afacere cu „Acces oprit” nu se poate deschide acum. Pentru detalii, scrie-ne la {email}."
     },
     "nav": {
       "business": "Afacerea",
@@ -488,7 +491,49 @@
       "resend": "Retrimite",
       "resendInvitation": "Retrimite invitația",
       "copyLink": "Copiază linkul",
-      "cancelInvitation": "Anulează invitația"
+      "cancelInvitation": "Anulează invitația",
+      "action": {
+        "editProfile": "Editează profilul",
+        "changeRole": "Schimbă rolul",
+        "appAccess": "Acces la aplicații",
+        "restore": "Redă accesul",
+        "stop": "Oprește accesul",
+        "remove": "Elimină din afacere"
+      },
+      "form": {
+        "title": "Invită o persoană în {business}",
+        "lead": "Primește un e-mail cu un link valabil 7 zile.",
+        "email": "Adresa de e-mail",
+        "emailPlaceholder": "nume@exemplu.ro",
+        "role": "Rol",
+        "roleMember": "Membru",
+        "roleMemberDesc": "Folosește aplicațiile pe care i le alegi mai jos.",
+        "roleAdmin": "Admin",
+        "roleAdminDesc": "Are acces la toate aplicațiile și poate invita oameni, schimba roluri și accesul la aplicații.",
+        "apps": "Aplicații",
+        "appsHelp": "Le poți schimba oricând din „Acces la aplicații”.",
+        "appsAdmin": "Un admin are acces la toate aplicațiile afacerii.",
+        "cancel": "Renunță",
+        "submit": "Trimite invitația",
+        "sending": "Se trimite invitația…",
+        "errorEmail": "Scrie adresa întreagă, de forma nume@exemplu.ro.",
+        "errorMember": "{email} e deja în echipă.",
+        "errorInvited": "Ai trimis deja o invitație la {email}, pe {date}, și încă așteaptă răspuns.",
+        "errorApps": "Alege cel puțin o aplicație.",
+        "sentTitle": "Invitația a plecat la {email}",
+        "sentBody": "Rămâne în „Invitații în așteptare” până o acceptă sau până pe {date}, când expiră."
+      },
+      "save": "Salvează",
+      "actionError": "Nu am putut salva schimbarea. Încearcă din nou."
+    },
+    "suspended": {
+      "title": "Accesul la {business} e oprit momentan",
+      "body": "Pentru detalii, ia legătura cu echipa Ventora la {email}.",
+      "contact": "Scrie-ne la suport",
+      "signOut": "Ieși din cont"
+    },
+    "home": {
+      "soon": "Aplicațiile afacerii tale vor apărea aici."
     }
   },
   "roles": {

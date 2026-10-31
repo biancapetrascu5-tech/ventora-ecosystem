@@ -25,7 +25,8 @@ export type { FounderSignInState } from './founder/FounderSignInView';
 export { InviteView } from './InviteView';
 export type { InviteData, InviteState } from './InviteView';
 
-export { ChooseBusinessView } from './ChooseBusinessView';
+export { ChooseBusinessView, SupportNote } from './ChooseBusinessView';
+export { SuspendedBusinessView } from './SuspendedBusinessView';
 export type { BusinessRow } from './ChooseBusinessView';
 
 export { ResetRequest, ResetSent, ResetNewPassword, ResetDone } from './PasswordResetView';
@@ -99,7 +100,11 @@ export type { DateFormats } from './when';
 // Founder · afacerile (Lot 2.8, doar română): lista, pagina unei afaceri, „Afacere nouă”.
 export { BusinessesView, useTableLabels } from './founder/BusinessesView';
 export type { BusinessListRow, BusinessStatus } from './founder/BusinessesView';
-export { BusinessView, SuspendBusinessDialog } from './founder/BusinessView';
+export {
+  BusinessView,
+  ReactivateBusinessDialog,
+  SuspendBusinessDialog,
+} from './founder/BusinessView';
 export type { BusinessMenuItem, BusinessChange } from './founder/BusinessView';
 export { NewBusinessView } from './founder/NewBusinessView';
 export type { NewBusinessState } from './founder/NewBusinessView';

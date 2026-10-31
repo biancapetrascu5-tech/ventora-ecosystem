@@ -13,6 +13,11 @@ export interface Org {
   name: string;
   /** Rolul tău în afacere (ex. „Proprietar”). */
   role?: string;
+  /**
+   * S112 (OrgSwitcher 1.1.0): afacerea e suspendată — rândul arată „{rol} · Acces oprit” și un
+   * lacăt, e dezactivat și nu se poate alege. Afacerea curentă nu e niciodată una suspendată.
+   */
+  suspended?: boolean;
 }
 
 export interface OrgSwitcherLabels {
@@ -24,6 +29,8 @@ export interface OrgSwitcherLabels {
   findBusiness: string;
   /** S.noResultsFor, ex. (q) => `Niciun rezultat pentru „${q}”`. */
   noResultsFor: (q: string) => string;
+  /** S.accessStopped — „Acces oprit”, pe rândul unei afaceri suspendate (S112). */
+  accessStopped?: string;
 }
 
 export interface OrgSwitcherProps {
@@ -134,8 +141,16 @@ export function OrgSwitcher({
                   type="button"
                   role="option"
                   aria-selected={o.id === cur.id}
-                  className={cn(styles.item, list.option, o.id === cur.id && list.optionSelected)}
+                  aria-disabled={o.suspended ? true : undefined}
+                  disabled={!!o.suspended}
+                  className={cn(
+                    styles.item,
+                    list.option,
+                    o.id === cur.id && list.optionSelected,
+                    o.suspended && list.optionDisabled,
+                  )}
                   onClick={() => {
+                    if (o.suspended) return;
                     setOpen(false);
                     onChange?.(o.id);
                   }}
@@ -145,9 +160,17 @@ export function OrgSwitcher({
                   </span>
                   <span className={list.optionText}>
                     <span className="body">{o.name}</span>
-                    <span className={cn(list.optionDesc, 'body-small')}>{o.role}</span>
+                    <span className={cn(list.optionDesc, 'body-small')}>
+                      {o.suspended && labels.accessStopped
+                        ? `${o.role ? `${o.role} · ` : ''}${labels.accessStopped}`
+                        : o.role}
+                    </span>
                   </span>
-                  {o.id === cur.id && <Icon icon="check" size={16} className={list.optionTick} />}
+                  {o.suspended ? (
+                    <Icon icon="lock" size={16} className={list.optionTick} />
+                  ) : (
+                    o.id === cur.id && <Icon icon="check" size={16} className={list.optionTick} />
+                  )}
                 </button>
               ))}
             </div>

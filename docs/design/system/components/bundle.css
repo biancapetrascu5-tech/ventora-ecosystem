@@ -1321,3 +1321,9 @@ a.v-btn { box-sizing: border-box; }
 .display-hub{font-size:32px;line-height:36px}
 .lead{font-size:15px;line-height:30px}
 }
+/* AddonPurchase / UpgradeDialog success with the invoice not issued yet (S111): one neutral line, icon beside the text. */
+.v-payinvoice--pending { flex-wrap: nowrap; align-items: flex-start; }
+.v-payinvoice--pending .v-icon { flex: none; margin-top: 1px; }
+
+/* S113: the amount to pay stays on one line ("27,10 lei") */
+.v-payline--total > .numeric { white-space: nowrap; }

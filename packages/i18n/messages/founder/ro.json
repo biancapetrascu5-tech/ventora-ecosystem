@@ -135,7 +135,10 @@
       "colStatus": "Stare",
       "active": "Activă",
       "suspended": "Suspendată",
-      "open": "Deschide afacerea"
+      "open": "Deschide afacerea",
+      "status": {
+        "suspended": "Suspendată"
+      }
     },
     "business": {
       "since": "client din {date}",
@@ -164,10 +167,28 @@
       },
       "suspendDialog": {
         "title": "Suspenzi {name}?",
-        "body": "{count, plural, =0 {Nimeni din afacere nu mai poate intra până o reactivezi.} one {Omul afacerii nu mai poate intra până o reactivezi.} few {Cei # oameni ai afacerii nu mai pot intra până o reactivezi.} other {Cei # de oameni ai afacerii nu mai pot intra până o reactivezi.}} Datele rămân.",
+        "body": "{count, plural, one {# membru nu se va mai putea conecta} few {# membri nu se vor mai putea conecta} other {# de membri nu se vor mai putea conecta}} până reactivezi afacerea.",
         "confirmLabel": "Scrie numele afacerii ca să confirmi",
         "keep": "Păstrează afacerea activă",
         "confirm": "Suspendă afacerea"
+      },
+      "actionsMobile": "Acțiuni",
+      "addException": "Adaugă o excepție",
+      "suspendedNotice": "Suspendată pe {date} de {name}. Membrii nu se pot conecta până reactivezi afacerea.",
+      "suspendedNoticeNoName": "Suspendată pe {date}. Membrii nu se pot conecta până reactivezi afacerea.",
+      "reactivateDialog": {
+        "title": "Reactivezi {business}?",
+        "body": "{count, plural, one {Membrul afacerii se poate conecta din nou} few {Cei # membri se pot conecta din nou} other {Cei # de membri se pot conecta din nou}} imediat, cu rolurile și accesul la aplicații pe care le aveau.",
+        "what": "Suspendată pe {date} de {name}",
+        "whatNoName": "Suspendată pe {date}",
+        "cancel": "Renunță",
+        "submit": "Reactivează afacerea",
+        "done": "{business} e activă din nou",
+        "doneBody": "Membrii se pot conecta de acum."
+      },
+      "log": {
+        "inviteSent": "Invitație trimisă proprietarului",
+        "by": "{event} ({name})"
       }
     },
     "newBusiness": {

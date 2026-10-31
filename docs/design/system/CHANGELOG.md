@@ -621,3 +621,21 @@ Fiecare intrare spune ce s-a schimbat pe componentă (structură, tokeni, texte,
 - **HubAccount — 1.0.2:** aceleași rânduri de dispozitiv și același format de oră în preview. README.
 - **i18n `account-security.json`:** noi `account.security.when.now/today/yesterday/date`, `account.security.devices.thisDevice`, `account.security.twoStep.passwordLead`, `account.security.twoStep.confirmPassword`, `account.security.twoStep.error.password` (6 limbi); `account.security.password.changed` devine „Schimbată: {when}”; `account.security.devices.current` scos.
 
+## 2026-10-31 · S112 — completări după Lotul 2.8
+
+### Componente noi
+- **HubBusinessSuspended** (1.0.0) — afacerea suspendată în Hub: ecranul care înlocuiește alegerea afacerii când e singura (fără motiv, neutru, adresa de suport ca link, „Scrie-ne la suport”, „Ieși din cont”); rândul „Acces oprit” în alegerea afacerii, cu nota de sub listă; OrgSwitcher cu rândul oprit (pe telefon, în meniul contului); test DE/IT.
+- **HubTeamInvite** (1.0.0) — „Invită o persoană”: adresa, rolul Membru / Admin, aplicațiile; adresă greșită, deja în echipă, invitație deja trimisă (cu „Retrimite invitația”), nicio aplicație, se trimite, trimisă; foaie de jos pe telefon; test DE/IT.
+- **FounderBusinessActions** (1.0.0) — o afacere în Founder: acțiunile din antet pe telefon (aceeași pereche ca pe desktop), „Mai multe acțiuni” deschis, afacerea suspendată, confirmarea „Reactivează afacerea”, toastul și „Ultimele modificări”; pluralul din dialogul de suspendare. Doar RO.
+
+### Componente schimbate
+- **OrgSwitcher — 1.1.0:** `suspended` pe o afacere din `orgs`: rândul arată „{rol} · Acces oprit” și un lacăt, e `disabled` / `aria-disabled` și nu se poate alege. Text nou în bibliotecă: `accessStopped` (6 limbi). `index.d.ts` (`Org.suspended`). AccountMenu îl moștenește.
+- **FounderBusiness — 1.0.1:** pe telefon apar acțiunile din antet („Adaugă o excepție” și „Mai multe acțiuni”); meniul are și „Deschide o sesiune de suport” și „Recuperează accesul proprietarului”. La fel în preview-urile care folosesc același antet (FounderOwnerRecovery, FounderSupportSession, FounderBusinessSms, FounderBusinessBilling, FounderRequests, HubSupportSession).
+- **„Angajați” → „membri” / „locuri în echipă”** (limita `platform.members`): FounderPlans, FounderPlanEditor, FounderPacks, FounderUsage, FounderBusiness, FounderStates („Limită de membri”), HubAdminPlan (și DE „Teamplätze”, IT „Posti nel team”), UsageMeter (preview), HubAdminTeam („4 din 10 locuri în echipă”, „Ai ocupat toate cele 10 locuri din echipă”, „5 locuri în echipă în plus”), rolul „Angajat” → „Membru” (HubAdminTeam, HubChooseBusiness; DE „Mitglied”, IT „Membro”). Datele comune din toate preview-urile Founder și Growth (limitele abonamentelor, excepția „12 membri în loc de 10”).
+- **Rămâne „Angajați”** (personalul afacerii): meniul EasyBook din Spine, descrierea din PageHeader („pe angajați și pe servicii”), coloana „Angajat” din BookingSmsNotifications, textul DataView din GrowthOfferEditor. FounderBusinessSms nu are „Angajați” al lui, doar datele comune, schimbate mai sus.
+- **README:** OrgSwitcher, HubChooseBusiness, HubAdminTeam, FounderBusiness, FounderPlans, FounderPlanEditor, FounderPacks, FounderUsage, HubAdminPlan, UsageMeter, PageHeader. **Glosar:** „angajat” restrâns la personal; rânduri noi „membru” și „loc în echipă”.
+
+### i18n
+- Noi: `business-access.json`, `team.json` (6 limbi), `founder-business.json` (RO). Textele scrise de agent fără design (Hub: „A cerut o invitație nouă”, meniul Hub și pagina Echipă în EN/FR/ES; Founder: „Suspendată”, „Reactivează afacerea”, „Ultimele modificări”, pluralul din suspendare, eroarea la crearea afacerii) sunt aici, corectate, ca chei.
+
+> Sincronizat în repo la Lotul 2.9b: doar S112. S111 (FounderBusinessBilling, FounderRequests, HubSupportThread, i18n commercial / support / notifications) și S113 (lunar / anual, lei / euro, reduceri) rămân în `_incoming` pentru loturile 3.4–3.8 și F4; FounderBusiness rămâne la versiunea din repo (exportul o are deja la 1.0.2, cu S113).

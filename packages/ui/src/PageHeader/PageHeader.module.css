@@ -48,6 +48,12 @@
   align-items: center;
 }
 
+/* bundle.css (S112): .v-pageheader__actions:has(> .fb-acts.m) — o pereche de acțiuni pe telefon
+   ia rândul întreg (FounderBusinessActions) */
+.actions:has(> [data-actions-full]) {
+  flex: 1 1 100%;
+}
+
 .tabs {
   margin-top: var(--space-2);
 }

@@ -21,8 +21,9 @@ import styles from './business.module.css';
    „Mai multe” (sesiunea de suport și recuperarea proprietarului, S95; suspendarea și reactivarea,
    D3-20 a), fișa proprietarului și ultimele modificări. Partea comercială (consumul, excepțiile,
    fișa abonamentului, „Adaugă o excepție”, filele) vine din Lotul 3.4: aici sunt doar locurile ei,
-   umplute în galeria /design cu exemplele din design. Pe telefon acțiunile din antet nu apar
-   (ca în cadrul de 390). */
+   umplute în galeria /design cu exemplele din design. S112 (FounderBusinessActions): pe telefon
+   antetul păstrează aceeași pereche ca pe desktop — acțiunea principală și „Mai multe acțiuni” —
+   sub titlu; o afacere suspendată are nota ei sub antet. */
 
 export type BusinessMenuItem = {
   id: string;
@@ -47,6 +48,7 @@ export function BusinessView({
   plan,
   owner,
   recent,
+  notice,
   phone: phoneProp,
 }: {
   name: string;
@@ -65,6 +67,8 @@ export function BusinessView({
   plan?: ReactNode;
   owner: ReactNode;
   recent: BusinessChange[];
+  /** S112: „Suspendată pe {date} de {name}. …” sub antet. */
+  notice?: ReactNode;
   /** Forța aspectul de telefon (galeria: cadrul de 1280 rămâne desktop). */
   phone?: boolean;
 }) {
@@ -109,25 +113,27 @@ export function BusinessView({
           </span>
         }
         actions={
-          phone ? undefined : (
-            <>
-              {primaryAction}
-              <Menu
-                label={t('more')}
-                items={menu.flatMap((m) => [
-                  ...(m.separatorBefore ? [{ separator: true as const }] : []),
-                  { id: m.id, label: m.label, icon: m.icon, isDanger: m.danger },
-                ])}
-                onAction={onMenuAction}
-              >
-                <IconButton icon="ellipsis-vertical" label={t('moreActions')} variant="secondary" />
-              </Menu>
-            </>
-          )
+          <span
+            className={phone ? `${styles.acts} ${styles.actsMob}` : styles.acts}
+            data-actions-full={phone ? '' : undefined}
+          >
+            {primaryAction}
+            <Menu
+              label={t('moreActions')}
+              items={menu.flatMap((m) => [
+                ...(m.separatorBefore ? [{ separator: true as const }] : []),
+                { id: m.id, label: m.label, icon: m.icon, isDanger: m.danger },
+              ])}
+              onAction={onMenuAction}
+            >
+              <IconButton icon="ellipsis-vertical" label={t('moreActions')} variant="secondary" />
+            </Menu>
+          </span>
         }
         tabs={tabs}
       />
       <div className={styles.axb}>
+        {notice}
         {main ? (
           <div className={styles.split}>
             <div className={styles.main}>{main}</div>
@@ -138,6 +144,65 @@ export function BusinessView({
         )}
       </div>
     </>
+  );
+}
+
+/**
+ * „Reactivează afacerea” (FounderBusinessActions, S112): confirmarea — ce se întâmplă (membrii
+ * se pot conecta din nou, cu rolurile și accesul pe care le aveau) și cine a suspendat-o, când.
+ */
+export function ReactivateBusinessDialog({
+  name,
+  people,
+  suspendedOn,
+  suspendedBy,
+  pending,
+  inline,
+  mob,
+  onCancel,
+  onConfirm,
+}: {
+  name: string;
+  people: number;
+  /** „29 oct.” */
+  suspendedOn?: string;
+  suspendedBy?: string | null;
+  pending?: boolean;
+  inline?: boolean;
+  mob?: boolean;
+  onCancel: () => void;
+  onConfirm: () => void;
+}) {
+  const t = useTranslations('founder.business.reactivateDialog');
+  const ui = useTranslations('ui');
+  return (
+    <Dialog
+      inline={inline}
+      sheet={mob}
+      icon="rotate-ccw"
+      title={t('title', { business: name })}
+      description={
+        !suspendedOn
+          ? undefined
+          : suspendedBy
+            ? t('what', { date: suspendedOn, name: suspendedBy })
+            : t('whatNoName', { date: suspendedOn })
+      }
+      closeLabel={ui('close')}
+      onClose={onCancel}
+      footer={
+        <>
+          <Button variant="quiet" isDisabled={pending} onPress={onCancel}>
+            {t('cancel')}
+          </Button>
+          <Button variant="primary" icon="rotate-ccw" isPending={pending} onPress={onConfirm}>
+            {t('submit')}
+          </Button>
+        </>
+      }
+    >
+      <p className="body">{t('body', { count: people })}</p>
+    </Dialog>
   );
 }
 

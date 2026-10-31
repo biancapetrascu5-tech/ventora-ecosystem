@@ -1,4 +1,8 @@
-export default function Page() {
-  // eslint-disable-next-line i18next/no-literal-string
-  return <p>OK — platform (port 3100)</p>;
+import { getTranslations } from 'next-intl/server';
+
+/* Pagina principală Hub, până la launcher (HubLauncher): un text normal în locul celui tehnic
+   (Lot 2.9b, punctul 7). */
+export default async function Page() {
+  const t = await getTranslations('hub.home');
+  return <p className="body muted">{t('soon')}</p>;
 }
