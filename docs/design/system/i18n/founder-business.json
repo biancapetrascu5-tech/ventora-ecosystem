@@ -1,0 +1,32 @@
+{
+  "ro": {
+    "founder.business.status.suspended": "Suspendată",
+    "founder.business.actions.more": "Mai multe acțiuni",
+    "founder.business.actions.mobile": "Acțiuni",
+    "founder.business.actions.addException": "Adaugă o excepție",
+    "founder.business.actions.supportSession": "Deschide o sesiune de suport",
+    "founder.business.actions.recovery": "Recuperează accesul proprietarului",
+    "founder.business.actions.moveVersion": "Mută pe altă versiune",
+    "founder.business.actions.resendInvite": "Retrimite invitația proprietarului",
+    "founder.business.actions.suspend": "Suspendă afacerea",
+    "founder.business.actions.reactivate": "Reactivează afacerea",
+    "founder.business.suspended.notice": "Suspendată pe {date} de {name}. Membrii nu se pot conecta până reactivezi afacerea.",
+    "founder.business.suspend.body": "{count, plural, one {# membru nu se va mai putea conecta} few {# membri nu se vor mai putea conecta} other {# de membri nu se vor mai putea conecta}} până reactivezi afacerea.",
+    "founder.business.reactivate.title": "Reactivezi {business}?",
+    "founder.business.reactivate.body": "{count, plural, one {Membrul afacerii se poate conecta din nou} few {Cei # membri se pot conecta din nou} other {Cei # de membri se pot conecta din nou}} imediat, cu rolurile și accesul la aplicații pe care le aveau.",
+    "founder.business.reactivate.what": "Suspendată pe {date} de {name}",
+    "founder.business.reactivate.cancel": "Renunță",
+    "founder.business.reactivate.submit": "Reactivează afacerea",
+    "founder.business.reactivate.done": "{business} e activă din nou",
+    "founder.business.reactivate.doneBody": "Membrii se pot conecta de acum.",
+    "founder.business.log.title": "Ultimele modificări",
+    "founder.business.log.created": "Afacere creată",
+    "founder.business.log.inviteSent": "Invitație trimisă proprietarului",
+    "founder.business.log.supportSession": "Sesiune de suport deschisă",
+    "founder.business.log.ownerRecovered": "Acces recuperat pentru proprietar",
+    "founder.business.log.suspended": "Afacere suspendată",
+    "founder.business.log.reactivated": "Afacere reactivată",
+    "founder.business.log.by": "{event} ({name})",
+    "founder.newBusiness.error.create": "Nu am putut crea afacerea. Încearcă din nou."
+  }
+}

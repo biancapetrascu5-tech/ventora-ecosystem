@@ -1,0 +1,56 @@
+{
+  "ro": {
+    "hub.suspended.title": "Accesul la {business} e oprit momentan",
+    "hub.suspended.body": "Pentru detalii, ia legătura cu echipa Ventora la {email}.",
+    "hub.suspended.contact": "Scrie-ne la suport",
+    "hub.suspended.signOut": "Ieși din cont",
+    "hub.chooseBusiness.accessStopped": "Acces oprit",
+    "hub.chooseBusiness.stoppedNote": "O afacere cu „Acces oprit” nu se poate deschide acum. Pentru detalii, scrie-ne la {email}.",
+    "accessStopped": "Acces oprit"
+  },
+  "en": {
+    "hub.suspended.title": "Access to {business} is paused for now",
+    "hub.suspended.body": "For details, contact the Ventora team at {email}.",
+    "hub.suspended.contact": "Write to support",
+    "hub.suspended.signOut": "Sign out",
+    "hub.chooseBusiness.accessStopped": "Access paused",
+    "hub.chooseBusiness.stoppedNote": "A business marked “Access paused” can’t be opened right now. For details, write to us at {email}.",
+    "accessStopped": "Access paused"
+  },
+  "fr": {
+    "hub.suspended.title": "L’accès à {business} est suspendu pour le moment",
+    "hub.suspended.body": "Pour en savoir plus, contactez l’équipe Ventora à {email}.",
+    "hub.suspended.contact": "Écrire au support",
+    "hub.suspended.signOut": "Se déconnecter",
+    "hub.chooseBusiness.accessStopped": "Accès suspendu",
+    "hub.chooseBusiness.stoppedNote": "Une entreprise marquée « Accès suspendu » ne peut pas être ouverte pour le moment. Pour en savoir plus, écrivez-nous à {email}.",
+    "accessStopped": "Accès suspendu"
+  },
+  "es": {
+    "hub.suspended.title": "El acceso a {business} está pausado por ahora",
+    "hub.suspended.body": "Para más detalles, contacta con el equipo de Ventora en {email}.",
+    "hub.suspended.contact": "Escribir a soporte",
+    "hub.suspended.signOut": "Cerrar sesión",
+    "hub.chooseBusiness.accessStopped": "Acceso pausado",
+    "hub.chooseBusiness.stoppedNote": "Un negocio con «Acceso pausado» no se puede abrir ahora. Para más detalles, escríbenos a {email}.",
+    "accessStopped": "Acceso pausado"
+  },
+  "de": {
+    "hub.suspended.title": "Der Zugriff auf {business} ist im Moment gesperrt",
+    "hub.suspended.body": "Für Einzelheiten wenden Sie sich bitte an das Ventora-Team unter {email}.",
+    "hub.suspended.contact": "An den Support schreiben",
+    "hub.suspended.signOut": "Abmelden",
+    "hub.chooseBusiness.accessStopped": "Zugriff gesperrt",
+    "hub.chooseBusiness.stoppedNote": "Ein Unternehmen mit „Zugriff gesperrt“ lässt sich im Moment nicht öffnen. Für Einzelheiten schreiben Sie uns an {email}.",
+    "accessStopped": "Zugriff gesperrt"
+  },
+  "it": {
+    "hub.suspended.title": "L’accesso a {business} è sospeso per il momento",
+    "hub.suspended.body": "Per i dettagli, contatti il team Ventora all’indirizzo {email}.",
+    "hub.suspended.contact": "Scriva all’assistenza",
+    "hub.suspended.signOut": "Esci",
+    "hub.chooseBusiness.accessStopped": "Accesso sospeso",
+    "hub.chooseBusiness.stoppedNote": "Un’attività con «Accesso sospeso» non si può aprire ora. Per i dettagli, ci scriva a {email}.",
+    "accessStopped": "Accesso sospeso"
+  }
+}

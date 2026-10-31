@@ -24,7 +24,9 @@ Un singur cuvânt pentru fiecare lucru, în toate ecranele și în toate cele 6 
 | afacere | business | entreprise | negocio | Unternehmen | attività | Spațiul de lucru al unei firme în Ventora. |
 | proprietar | owner | propriétaire | propietario | Inhaber | titolare | Lângă un nume, între paranteze: „Bianca Petrașcu (proprietar)”. Nu „proprietara”, nu dativ. |
 | echipă | team | équipe | equipo | Team | team | Filtrul „toți oamenii” e „Toată echipa”. |
-| angajat | employee | employé | empleado | Mitarbeiter | dipendente | Ca limită de abonament și nume de rol. În filtre folosește „echipa”. |
+| angajat | employee | employé | empleado | Mitarbeiter | dipendente | Doar pentru personalul afacerii, în aplicații: meniul „Angajați” din EasyBook, rapoarte „pe angajați”, coloana „Angajat” la o programare. Nu pentru limita de abonament și nu ca nume de rol (S112). În filtre folosește „echipa”. |
+| membru | member | membre | miembro | Mitglied | membro | O persoană cu cont Ventora într-o afacere; limita `platform.members` se numără în membri: „10 membri”, „Limită de membri”. Și rolul de bază, lângă „Admin” (S112). |
+| loc în echipă | team seat | place d’équipe | plaza en el equipo | Teamplatz | posto nel team | Limita de membri ca resursă și ca pachet: „Locuri în echipă · 8 din 12”, „4 din 10 locuri în echipă”, „5 locuri în echipă în plus” (S112). |
 | coleg | teammate | collègue | compañero | Kollege | collega | Când vorbești despre ceilalți din echipă. |
 | rol | role | rôle | rol | Rolle | ruolo |  |
 | acces | access | accès | acceso | Zugriff | accesso | „Cere acces”, „Acces oprit”. |
