@@ -143,3 +143,44 @@ export class OrganizationSuspended extends Error {
     this.name = 'OrganizationSuspended';
   }
 }
+
+const EMAIL_IN_TEXT = /[^\s@"'<>(),;:]+@[^\s@"'<>(),;:]+\.[^\s@"'<>(),;:]+/g;
+
+/** A caught error, reduced to what may go into a log or to Sentry. */
+export interface ErrorSummary {
+  name: string;
+  code?: string;
+  status?: number;
+  /** The message, with e-mail addresses masked and cut at 300 characters. */
+  message: string;
+  /** A typed refusal (4xx: wrong code, no right, invalid input) that the screen already shows. */
+  expected: boolean;
+}
+
+/**
+ * For the server log: the error's class, code (ours, Postgres SQLSTATE, Better Auth) and message,
+ * without personal data. Better Auth's APIError carries the HTTP code in `statusCode`.
+ */
+export function summarizeError(err: unknown): ErrorSummary {
+  const e = (typeof err === 'object' && err !== null ? err : {}) as {
+    code?: unknown;
+    status?: unknown;
+    statusCode?: unknown;
+  };
+  const status =
+    typeof e.status === 'number'
+      ? e.status
+      : typeof e.statusCode === 'number'
+        ? e.statusCode
+        : undefined;
+  const code =
+    typeof e.code === 'string' || typeof e.code === 'number' ? String(e.code) : undefined;
+  const raw = err instanceof Error ? err.message : String(err);
+  return {
+    name: err instanceof Error ? err.name : typeof err,
+    ...(code !== undefined ? { code } : {}),
+    ...(status !== undefined ? { status } : {}),
+    message: raw.replace(EMAIL_IN_TEXT, '[email]').slice(0, 300),
+    expected: status !== undefined && status >= 400 && status < 500,
+  };
+}

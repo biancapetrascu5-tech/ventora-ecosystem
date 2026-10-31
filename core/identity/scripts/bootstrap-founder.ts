@@ -1,8 +1,6 @@
 import { createInterface } from 'readline';
 import { Writable } from 'stream';
-import { PrismaClient } from '../generated/founder-client';
-import { PrismaPg } from '@prisma/adapter-pg';
-import { Pool } from 'pg';
+import { makeFounderClient } from '../src/db';
 import { bootstrapFounderAccount } from '../src/bootstrap-founder';
 
 async function promptLine(question: string): Promise<string> {
@@ -41,8 +39,9 @@ async function main() {
     process.exit(1);
   }
 
-  const pool = new Pool({ connectionString: dbUrl });
-  const db = new PrismaClient({ adapter: new PrismaPg(pool) });
+  // founder_runtime (NOINHERIT) has no rights of its own: like the Founder app, every query runs
+  // under SET LOCAL ROLE founder_identity_rw (ARCHITECTURE §12.3).
+  const db = makeFounderClient(dbUrl);
 
   try {
     if ((await db.user.count({ where: { revokedAt: null } })) > 0) {
@@ -70,11 +69,14 @@ async function main() {
     console.log('Enable 2FA on first login.');
   } finally {
     await db.$disconnect();
-    await pool.end();
   }
 }
 
-main().catch((err: unknown) => {
-  console.error(err instanceof Error ? err.message : 'Unexpected error');
-  process.exit(1);
-});
+// makeFounderClient keeps its pool private: exit explicitly instead of waiting for idle sockets.
+main().then(
+  () => process.exit(0),
+  (err: unknown) => {
+    console.error(err instanceof Error ? err.message : 'Unexpected error');
+    process.exit(1);
+  },
+);

@@ -10,6 +10,7 @@ import {
 } from '@ventora/access';
 import { getSession } from '@ventora/identity';
 import { myMemberships } from './route';
+import { reportActionError } from './report-error';
 
 /* HubAdminTeam (Lot 2.8). Tokenul vine din sesiunea din cookie; core/access refuză pe server tot
    ce nu e owner sau admin în afacerea activă (și orice afacere suspendată, D3-20 a). */
@@ -68,7 +69,8 @@ export async function readTeam(): Promise<TeamData | null> {
         newLinkRequestedAt: i.newLinkRequestedAt ? i.newLinkRequestedAt.toISOString() : null,
       })),
     };
-  } catch {
+  } catch (err) {
+    reportActionError('readTeam', err);
     return null;
   }
 }
@@ -79,7 +81,8 @@ export async function resendInvite(invitationId: string): Promise<boolean> {
   try {
     await resendTeamInvitation({ sessionToken: session.token, invitationId });
     return true;
-  } catch {
+  } catch (err) {
+    reportActionError('resendInvite', err);
     return false;
   }
 }
@@ -90,7 +93,8 @@ export async function cancelInvite(invitationId: string): Promise<boolean> {
   try {
     await revokeTeamInvitation({ sessionToken: session.token, invitationId });
     return true;
-  } catch {
+  } catch (err) {
+    reportActionError('cancelInvite', err);
     return false;
   }
 }

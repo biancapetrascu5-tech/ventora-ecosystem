@@ -3,6 +3,7 @@
 import { headers } from 'next/headers';
 import { getSession, listSessions, revokeSession } from '@ventora/identity';
 import { disableMemberTwoFactor } from '@ventora/access';
+import { reportActionError } from './report-error';
 
 /* Contul tău · Securitate (Lot 2.7 · D, S100, S108). Utilizatorul vine mereu din sesiune.
    „Schimbă parola” și activarea 2FA merg direct la Better Auth din ecran: /change-password,
@@ -26,6 +27,7 @@ export async function disableTwoFactor(code: string): Promise<DisableTwoFactorRe
       return { ok: false, reason: 'locked', lockedUntil: e.lockedUntil };
     if (e.code === 'FORBIDDEN')
       return { ok: false, reason: e.message?.includes('owner') ? 'owner' : 'wrong' };
+    reportActionError('disableTwoFactor', err);
     return { ok: false, reason: 'error' };
   }
 }

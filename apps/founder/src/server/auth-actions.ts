@@ -2,6 +2,7 @@
 
 import { headers } from 'next/headers';
 import { countBackupCodes, getFounderSession, regenerateBackupCodes } from '@ventora/identity';
+import { reportActionError } from './report-error';
 
 /* Founder: după intrare, fără 2FA → activarea (obligatorie pentru toți, T1.8); altfel Control
    Center. Codurile de rezervă: câte au rămas și regenerarea cu codul din aplicație (D1–D3). */
@@ -14,7 +15,8 @@ export async function founderAfterSignIn(): Promise<string> {
 export async function readFounderBackupCodesLeft(): Promise<number | null> {
   try {
     return await countBackupCodes('founder', await headers());
-  } catch {
+  } catch (err) {
+    reportActionError('readFounderBackupCodesLeft', err);
     return null;
   }
 }
@@ -34,6 +36,7 @@ export async function regenerateFounderCodes(code: string): Promise<RegenerateRe
     if (e.code === 'TWO_FACTOR_LOCKED' && e.lockedUntil)
       return { ok: false, reason: 'locked', lockedUntil: e.lockedUntil };
     if (e.code === 'FORBIDDEN') return { ok: false, reason: 'wrong' };
+    reportActionError('regenerateFounderCodes', err);
     return { ok: false, reason: 'error' };
   }
 }

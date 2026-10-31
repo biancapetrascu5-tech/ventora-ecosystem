@@ -2,6 +2,7 @@ import { cookies } from 'next/headers';
 import { getUserById } from '@ventora/identity';
 import { getInvitationByToken } from '@ventora/organizations';
 import { acceptInvitationWithAccess } from '@ventora/access';
+import { reportActionError } from './report-error';
 
 /* Invitația (Lot 2.6 · E), partea de server comună paginii, acțiunilor și intrării. Un cont
    existent intră întâi; tokenul așteaptă într-un cookie httpOnly și e acceptat după intrare. */
@@ -33,6 +34,7 @@ export async function acceptInviteFor(
     const code = (err as { code?: string }).code;
     if (code === 'TOKEN_EXPIRED') return { ok: false, reason: 'expired' };
     if (code === 'EMAIL_MISMATCH') return { ok: false, reason: 'mismatch' };
+    reportActionError('acceptInvite', err);
     return { ok: false, reason: 'error' };
   }
 }

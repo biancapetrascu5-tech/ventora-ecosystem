@@ -10,6 +10,7 @@ import {
   type SupportSessionHistoryItem,
 } from '@ventora/access';
 import { getSession } from '@ventora/identity';
+import { reportActionError } from './report-error';
 
 /* Sesiunea de suport în Hub (Lotul 2.5c). Tokenul vine din sesiunea din cookie; core/access
    decide ce vede fiecare (R-SS1): proprietarul și adminul — motivul, cererea, închiderea;
@@ -45,8 +46,9 @@ export async function readSupportBanner(): Promise<{
         ticketRef: s.ticketRef,
       })),
     };
-  } catch {
+  } catch (err) {
     // Nu e proprietar / admin (sau proprietar fără 2FA): doar bannerul pentru membri.
+    reportActionError('readSupportBanner (manager)', err, { quietIfExpected: true });
   }
   try {
     const open = await getSupportSessionBanner({ sessionToken });
@@ -58,7 +60,8 @@ export async function readSupportBanner(): Promise<{
         expiresAt: s.expiresAt.toISOString(),
       })),
     };
-  } catch {
+  } catch (err) {
+    reportActionError('readSupportBanner', err);
     return null;
   }
 }
@@ -69,7 +72,8 @@ export async function closeSupportSession(supportSessionId: string): Promise<boo
   try {
     await closeSupportSessionAsOwner({ sessionToken, supportSessionId });
     return true;
-  } catch {
+  } catch (err) {
+    reportActionError('closeSupportSession', err);
     return false;
   }
 }
@@ -102,7 +106,8 @@ export async function readSupportSessions(page = 1): Promise<SessionsPage | null
         expiresAt: i.expiresAt.toISOString(),
       })),
     };
-  } catch {
+  } catch (err) {
+    reportActionError('readSupportSessions', err);
     return null;
   }
 }
