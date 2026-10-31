@@ -279,6 +279,7 @@ Lotul ține de Faza 2 și se face **înaintea Fazei 3**. Stă aici pentru că lo
 - Excepțiile care expiră în 7 zile apar în „Prezentare” (§8.5).
 - Comutatoarele „direct / la cerere” pe pachete și pe aplicații (D3-7, D3-9), prețurile pe monedă și prețul anual pe versiune (D3-2, D3-3), moneda afacerii. Alegerea lunar / anual din FounderPlanEditor, FounderPlans și FounderNewBusiness cere completarea de design (D3-3).
 - Reducerile pe afacere (D3-21): adaugă / încheie, lista reducerilor permanente, motivul obligatoriu. Ecranul cere design.
+- Costul de implementare (D3-23): în lista cererilor, confirmarea echipei, încasarea (sau confirmarea transferului), „în lucru” / „pornită”, anularea cu rambursare înainte de începerea lucrului. Cere design.
 - Toate textele vin din chei next-intl, în 6 limbi (T7). Capturile `_design` / `_impl` se fac la 390/1280 × light/dark (regula 12).
 
 **Dependențe:** 3.2, 3.3. Lotul 2.8 (shell-ul Founder, FounderBusinesses, FounderBusiness). Completarea de design pentru `FounderBusiness` (istoricul cumpărărilor, rambursarea, plata manuală) și designul listei de cereri. Textele „Angajați” din FounderPlans, FounderPlanEditor, FounderPacks și FounderUsage schimbate de Design în „Membri” / „Locuri în echipă” (C-F3-3, DECIS: a).
@@ -389,6 +390,7 @@ Lotul ține de Faza 2 și se face **înaintea Fazei 3**. Stă aici pentru că lo
 - Pachetele cu `purchase_mode: direct` se cumpără cu cardul salvat; cele lunare intră în abonamentul Stripe, cu taxare proporțională (D3-7). „Cere activare” apare la pachetele „la cerere” și la orice pachet pentru o afacere fără card sau cu plată manuală (`patterns.md`, D3-7).
 - Prețurile în moneda afacerii (lei sau euro, D3-2).
 - O reducere (D3-21) apare ca linie separată, între prețul întreg și total. Cere design.
+- Costul de implementare (D3-23): arătat înainte de cerere („Implementare: 150 lei, o singură dată”), acceptat odată cu ea; starea cererii, cu plata înainte de începerea lucrului și data de la care începe abonamentul aplicației. Cere design.
 - „De la 1 noiembrie, pornim de la zero” devine data reală de resetare a abonamentului (D3-3). Alegerea lunar / anual din HubAdminPlan și UpgradeDialog cere completarea de design (D3-3).
 - Membrul vede „Anunță proprietarul” și nu poate cumpăra (verificat pe server, nu doar în interfață; D3-8: doar owner-ul).
 
@@ -415,6 +417,14 @@ Lotul ține de Faza 2 și se face **înaintea Fazei 3**. Stă aici pentru că lo
 - **Perioada de probă** (D3-5, DECIS: a): 14 zile, fără card, pentru aplicații, pornită direct din `UpgradeDialog` (varianta „trial”), și oprirea automată la final, cu datele păstrate. Bifa din FounderNewBusiness (probă pe tot abonamentul) rămâne, doar în Founder. Reminderul cu 3 zile înainte e evenimentul `commercial.trial.ending`, iar livrarea lui depinde de F4. Stările vin din `CommercialStates` (se încheie / s-a încheiat).
 - **Neplata abonamentului** (după D3-12): reîncercările, perioada de grație, apoi rămân doar citirea și exportul.
 - **Cererile:** „Cere alt abonament” și „Cere activare” devin înregistrări în Founder (3.4), cu audit. Schimbarea abonamentului e mereu o cerere (D3-9). O aplicație din catalog se activează direct sau prin cerere, după comutatorul ei din Founder; cele care cer configurare stau „la cerere”.
+- **Costul de implementare** (D3-23, DECIS):
+  1. Aplicațiile și pachetele cu cost de implementare sunt mereu „la cerere”, indiferent de comutator.
+  2. Owner-ul vede costul înainte de cerere („Implementare: 150 lei, o singură dată”) și îl acceptă odată cu ea; acceptarea se păstrează în cerere, cu auditul ei.
+  3. După confirmarea echipei, costul se încasează **înainte** de începerea lucrului: cu cardul salvat (PaymentIntent, ca pachetele, Lotul 3.5) sau prin transfer, pentru plata manuală (factura întâi, apoi confirmarea încasării de către Founder).
+  4. Lucrul începe doar după încasare. Abonamentul lunar al aplicației (linia recurentă, D3-9) începe din ziua în care aplicația e configurată și pornită, nu din ziua cererii.
+  5. Rambursarea e integrală doar dacă cererea se anulează înainte de începerea lucrului, cu stornarea facturii (3.6).
+  6. Factura are o linie separată „Implementare {aplicație} · o singură dată”; reducerile (D3-21), inclusiv 100%, se pot aplica și pe ea.
+  - **PROPUS** (de confirmat la 3.8): stările cererii — cerută → acceptată de client → confirmată de echipă → plătită → în lucru → pornită, plus anulată / rambursată; fiecare trecere auditată.
 
 **Dependențe:** 3.4–3.6. Pentru reminder și pentru oprirea programată: job-urile din F4.
 **Migrări probabile:** `billing_dunning`.
@@ -581,6 +591,7 @@ Prețurile nu se inventează. Toate valorile se introduc din Founder; codul nu a
 | D3-1 | niciun lot; blochează pilotul | **Abonamentele inițiale și prețurile lor.** Designul arată Start 149 lei, Business 349 lei, Business Plus 449 lei, cu limitele lor. Sunt aprobate sau sunt doar exemple? | a) valorile din design devin cele inițiale; b) fondatoarea dă alte valori; c) pilotul pornește cu un singur abonament | Fondatoarea trimite lista: nume, preț, limite, aplicații incluse. Până atunci, testele folosesc date fictive, marcate ca atare. |
 | D3-21 | 3.2 (model), 3.4 / 3.7 (ecrane), 3.5 (Stripe) | **Excepția pentru o aplicație întreagă** (raportul 3.2) | a) prin excepție (override); b) prin reduceri | **DECIS: b** (fondatoarea, 31.10.2026). Nu prin override. **Reduceri:**<br>• pe o afacere, pe tot abonamentul sau pe o singură linie (o aplicație adăugată la abonament, un pachet lunar);<br>• procent (1–100) sau sumă fixă în moneda afacerii; 100% = gratuit;<br>• durata: o singură dată (următoarea factură), N luni sau permanent;<br>• motiv obligatoriu (10–1.000 de caractere); audit required pe persoana Founder la creare, modificare și încheiere; reducerea se încheie, nu se șterge.<br>Contractele Founder: adaugă / încheie o reducere, plus lista reducerilor permanente. Prețul arătat în Hub: prețul întreg, reducerea ca linie separată și totalul. Aplicațiile adăugate la abonament (D3-9) devin linii recurente, ca pachetele lunare. Modelul se mapează la 3.5 pe cupoanele Stripe (`percent_off` / `amount_off`, `duration` once / repeating / forever). Ecranele: 3.4 (Founder) și 3.7 (Hub). |
 | D3-22 | 3.2 | **Excepția de limită și pachetele** (raportul 3.2) | a) excepția înlocuiește limita versiunii, pachetele se adaugă peste; b) excepția e limita finală | **DECIS: a** (fondatoarea, 31.10.2026), cum e implementat în Lotul 3.2. |
+| D3-23 | 3.8 (flux), 3.4 / 3.7 (ecrane) | **Fluxul costului de implementare** | — | **DECIS** (fondatoarea, 31.10.2026):<br>• aplicațiile și pachetele cu cost de implementare stau „la cerere”;<br>• owner-ul vede costul înainte („Implementare: 150 lei, o singură dată”) și îl acceptă odată cu cererea;<br>• costul se încasează după acceptarea clientului și confirmarea echipei, **înainte** de începerea lucrului: cu cardul salvat sau prin transfer, pentru plata manuală;<br>• abonamentul lunar al aplicației începe din ziua în care aplicația e configurată și pornită, nu din ziua cererii;<br>• rambursarea e integrală doar dacă cererea se anulează înainte să înceapă lucrul (stornare);<br>• pe factură apare o linie separată „Implementare {aplicație} · o singură dată”; reducerile (D3-21), inclusiv 100%, se pot aplica și pe ea.<br>Detalii: Lotul 3.8; ecranele în 3.4 și 3.7. Întrebări juridice și contabile: §6. |
 
 ---
 
@@ -598,6 +609,7 @@ Aceasta nu e consultanță juridică sau fiscală. Sunt întrebările de pus unu
 6. Încasarea prin Stripe (plăți în lei, transferul către contul firmei): cum se înregistrează contabil comisioanele Stripe.
 7. Facturile în euro (D3-2: factura se emite în moneda afacerii): ce mențiuni trebuie pe o factură în euro (cursul BNR, contravaloarea în lei, data cursului), cum se configurează în SmartBill și cum se înregistrează încasarea în euro prin Stripe.
 8. Ce se scrie pe o factură cu reducere (linie separată)? Și pe o factură de 0 lei (reducere 100%) — se emite? (D3-21)
+9. Costul de implementare (D3-23), încasat înainte de începerea lucrului: se facturează ca avans (factură de avans, apoi factura finală la pornirea aplicației, cu regularizarea avansului) sau direct ca factură finală la încasare? Ce se întâmplă la stornare, dacă cererea se anulează înainte să înceapă lucrul?
 
 **Întrebări pentru avocat:**
 
@@ -607,6 +619,7 @@ Aceasta nu e consultanță juridică sau fiscală. Sunt întrebările de pus unu
 4. Stripe și SmartBill ca procesatori de date: DPA-urile, registrul de subcontractori (ca la Resend), locul datelor.
 5. Ce se întâmplă cu datele unei afaceri care nu mai plătește: cât timp le păstrăm, ce comunicăm.
 6. Mesajele despre limite și facturi sunt operaționale, nu comerciale (D-GRW-8, CommercialPreferences): de confirmat pentru e-mail.
+7. Termenii serviciului de implementare (D3-23): ce cuprinde serviciul, termenul de livrare, momentul de la care lucrul e considerat „început” (după care nu se mai rambursează), răspunderea dacă aplicația nu poate fi pornită, și cum se dovedește acceptarea costului de către owner (acceptarea din Hub, păstrată cu auditul ei).
 
 **Riscuri tehnice:**
 
