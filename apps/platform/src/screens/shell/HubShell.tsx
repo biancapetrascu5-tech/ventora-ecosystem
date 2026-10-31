@@ -15,6 +15,7 @@ import {
 import { authApi } from '@ventora/screens';
 import { rememberLocale } from '@/i18n/locale';
 import { switchBusiness } from '@/server/shell-actions';
+import { keepLocale } from '@/server/locale-actions';
 
 /* Shell-ul Hub (HubSettings din preview-urile ecranelor Hub, Lot 2.8): Spine cu „Contul tău”,
    „Afacerea” și „Ajutor”, ContextBar cu afacerea, notificările și contul. Navigația arată doar
@@ -182,6 +183,8 @@ export function HubShell({
               locale={locale}
               onLocaleChange={(code) => {
                 rememberLocale(code);
+                // D4-8: the notifications follow the language chosen here
+                void keepLocale(code);
                 router.refresh();
               }}
               labels={{

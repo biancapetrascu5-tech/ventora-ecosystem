@@ -2,6 +2,13 @@ import * as Sentry from '@sentry/nextjs';
 import { Pool } from 'pg';
 import { runQuotaReconciliationJob } from '@ventora/commercial';
 import { summarizeError } from '@ventora/errors';
+import { getNotificationContactsInTx } from '@ventora/identity';
+import {
+  deliverPendingNotifications,
+  getEmailChannel,
+  type ContactResolver,
+} from '@ventora/notifications';
+import { invitationNewLinkRequestedConsumer, notifyManagersInTx } from '@ventora/organizations';
 import {
   ConsumerRegistry,
   JobRegistry,
@@ -44,7 +51,73 @@ const jobsPool: PoolLike = {
 };
 
 /** Consumatorii evenimentelor; notificările (4.3) și Growth (F5) se înregistrează aici. */
-export const platformConsumers = new ConsumerRegistry();
+export const platformConsumers = new ConsumerRegistry()
+  // Lot 4.3: primul consumator real (ARCHITECTURE §15.1), notificarea în Hub pentru owner și admini
+  .register(invitationNewLinkRequestedConsumer);
+
+/*
+ * Lot 4.3: consumatorii pregătiți pentru evenimentele Fazei 3. Nu se înregistrează încă: textele
+ * notificărilor vin în Lotul 4.5 (șabloanele au `textsPending`). Până atunci evenimentele se
+ * marchează livrate fără consumator (`withoutConsumer: 'complete'`). Lotul 4.5 le adaugă mai sus.
+ */
+export const F3_NOTIFICATION_CONSUMERS = [
+  {
+    name: 'notifications.quota-threshold',
+    handles: [{ type: 'commercial.quota.threshold', version: 1 }],
+    async handle(
+      envelope: { eventId: string; organizationId: string; payload: unknown },
+      tx: Parameters<typeof notifyManagersInTx>[0],
+    ) {
+      const p = envelope.payload as {
+        quotaKey: string;
+        threshold: number;
+        used: number;
+        limit: number;
+      };
+      await notifyManagersInTx(tx, {
+        organizationId: envelope.organizationId,
+        type: 'commercial.quota.threshold',
+        version: 1,
+        idempotencyKey: envelope.eventId,
+        params: {
+          quotaKey: p.quotaKey,
+          threshold: String(p.threshold),
+          used: String(p.used),
+          limit: String(p.limit),
+        },
+      });
+    },
+  },
+  {
+    name: 'notifications.subscription-version-change',
+    handles: [{ type: 'subscription.version_change_scheduled', version: 1 }],
+    async handle(
+      envelope: { eventId: string; organizationId: string; payload: unknown },
+      tx: Parameters<typeof notifyManagersInTx>[0],
+    ) {
+      const p = envelope.payload as { classification: string; effectiveAt: string };
+      await notifyManagersInTx(tx, {
+        organizationId: envelope.organizationId,
+        type: 'subscription.version_change_scheduled',
+        version: 1,
+        idempotencyKey: envelope.eventId,
+        params: { classification: p.classification, effectiveAt: p.effectiveAt },
+      });
+    },
+  },
+] as const;
+
+// Datele de contact și limba destinatarului, din identity (în tranzacția job-ului de livrare).
+const notificationContacts: ContactResolver = (tx, userIds) =>
+  getNotificationContactsInTx(
+    {
+      query: async (sql, params) => (await tx.query(sql, params)).rows as Record<string, unknown>[],
+      exec: async (sql) => {
+        await tx.query(sql);
+      },
+    },
+    userIds,
+  );
 
 export const platformJobs = new JobRegistry()
   .register(
@@ -59,13 +132,21 @@ export const platformJobs = new JobRegistry()
     trigger: { cron: '*/5 * * * *' },
     run: () => runQuotaReconciliationJob(),
   })
-  // Declarate; logica vine în lotul fiecăruia, cu platformJobs.attach(id, run).
+  // Lotul 4.3: livrarea notificărilor pe e-mail, cu reîncercări (1 și 5 minute), apoi „failed”;
+  // fiecare livrare în contextul destinatarului, în limba lui (D4-8).
   .register({
-    id: 'platform.email-retry',
+    id: 'platform.notification-delivery',
     owner: 'Lot 4.3',
-    description: 'Reîncercarea e-mailurilor eșuate',
-    trigger: { cron: '*/10 * * * *' },
+    description: 'Livrarea notificărilor (e-mail), cu reîncercări',
+    trigger: { cron: '* * * * *' },
+    run: () =>
+      deliverPendingNotifications({
+        pool: jobsPool,
+        contacts: notificationContacts,
+        channels: { email: getEmailChannel() },
+      }),
   })
+  // Declarate; logica vine în lotul fiecăruia, cu platformJobs.attach(id, run).
   .register({
     id: 'commercial.subscription-renewal',
     owner: 'Lot 3.5',

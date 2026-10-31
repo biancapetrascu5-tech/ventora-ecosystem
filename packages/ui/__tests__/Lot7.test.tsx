@@ -278,3 +278,37 @@ describe('Logo și BrandZone', () => {
     expect(screen.getByText('bara').parentElement!.getAttribute('data-theme')).toBe('dark');
   });
 });
+
+describe('NotificationsPanel — D4-5: the category and the display group are separate', () => {
+  const items = [
+    {
+      id: 'a',
+      title: 'Telefonul afacerii e deconectat',
+      category: 'operational' as const,
+      group: 'operational' as const,
+    },
+    {
+      id: 'b',
+      title: 'Ana a cerut o invitație nouă pentru Salon Test.',
+      category: 'operational' as const,
+      group: 'activity' as const,
+    },
+    { id: 'c', title: 'Ofertă', category: 'commercial' as const, group: 'activity' as const },
+  ];
+
+  it('an operational notification shown under „Activitate” is still counted; commercial is not', () => {
+    render(<NotificationsPanel items={items} countCategory="operational" labels={NOTIF_L} />);
+    expect(screen.getByRole('button', { name: /2 necitite/ })).toBeDefined();
+  });
+
+  it('the group decides where it is shown', () => {
+    render(
+      <NotificationsPanel items={items} countCategory="operational" labels={NOTIF_L} inline />,
+    );
+    const ops = screen.getByRole('region', { name: NOTIF_L.operational });
+    const act = screen.getByRole('region', { name: NOTIF_L.activity });
+    expect(within(ops).getByText('Telefonul afacerii e deconectat')).toBeDefined();
+    expect(within(act).getByText('Ana a cerut o invitație nouă pentru Salon Test.')).toBeDefined();
+    expect(within(act).getByText('Ofertă')).toBeDefined();
+  });
+});
