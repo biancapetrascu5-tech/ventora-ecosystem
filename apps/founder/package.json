@@ -12,6 +12,7 @@
   "dependencies": {
     "@sentry/nextjs": "^11.0.0",
     "@ventora/access": "workspace:*",
+    "@ventora/commercial": "workspace:*",
     "@ventora/config": "workspace:*",
     "@ventora/contracts": "workspace:*",
     "@ventora/i18n": "workspace:*",

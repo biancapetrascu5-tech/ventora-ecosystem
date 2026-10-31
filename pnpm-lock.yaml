@@ -205,6 +205,9 @@ importers:
       '@ventora/access':
         specifier: workspace:*
         version: link:../../core/access
+      '@ventora/commercial':
+        specifier: workspace:*
+        version: link:../../core/commercial
       '@ventora/config':
         specifier: workspace:*
         version: link:../../packages/config
@@ -272,6 +275,9 @@ importers:
       '@ventora/access':
         specifier: workspace:*
         version: link:../../core/access
+      '@ventora/commercial':
+        specifier: workspace:*
+        version: link:../../core/commercial
       '@ventora/config':
         specifier: workspace:*
         version: link:../../packages/config
@@ -459,12 +465,21 @@ importers:
 
   core/commercial:
     dependencies:
+      '@ventora/audit':
+        specifier: workspace:*
+        version: link:../audit
       '@ventora/contracts':
         specifier: workspace:*
         version: link:../../packages/contracts
+      '@ventora/db-kit':
+        specifier: workspace:*
+        version: link:../../packages/db-kit
       '@ventora/errors':
         specifier: workspace:*
         version: link:../../packages/errors
+      '@ventora/identity':
+        specifier: workspace:*
+        version: link:../identity
       pg:
         specifier: ^8.0.0
         version: 8.23.1
@@ -645,6 +660,9 @@ importers:
       '@types/pg':
         specifier: ^8.0.0
         version: 8.23.1
+      '@ventora/commercial':
+        specifier: workspace:*
+        version: link:../../core/commercial
       pg:
         specifier: ^8.0.0
         version: 8.23.1

@@ -19,6 +19,7 @@
     "@ventora/errors": "workspace:*"
   },
   "devDependencies": {
+    "@ventora/commercial": "workspace:*",
     "@types/pg": "^8.0.0",
     "pg": "^8.0.0",
     "typescript": "^6.0.0",
