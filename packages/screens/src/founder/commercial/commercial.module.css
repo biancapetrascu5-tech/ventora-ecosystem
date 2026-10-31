@@ -1,0 +1,348 @@
+/* Ecranele comerciale Founder (Lotul 3.4): clasele din preview.html — FounderPlans,
+   FounderPlanEditor, FounderPacks, FounderApps, FounderUsage, FounderDiscounts, FounderRequests,
+   FounderBusinessBilling, FounderBusiness. Valorile sunt doar token-uri. */
+
+/* .d0 */
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  min-width: 0;
+}
+.stack2 {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-width: 0;
+}
+.stack6 {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  min-width: 0;
+}
+.stack p,
+.stack2 p,
+.stack6 p {
+  margin: 0;
+}
+
+/* „Prea devreme” + nota (FounderStates: gap 2px) */
+.tight {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-0-5);
+}
+
+/* „Luni” în dialogul de reducere (design: maxWidth 120) */
+.narrow {
+  max-width: 120px;
+}
+
+/* .r */
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  align-items: center;
+}
+.rowBetween {
+  composes: row;
+  justify-content: space-between;
+}
+.inline2 {
+  display: inline-flex;
+  gap: var(--space-2);
+  align-items: center;
+}
+.nowrap2 {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: var(--space-2);
+  align-items: center;
+}
+
+/* .sheetlike + .fxplan / .fxcard */
+.sheetlike {
+  background: var(--sheet);
+  border: var(--border-width) solid var(--line);
+  border-radius: var(--radius-lg);
+}
+.plan {
+  composes: sheetlike;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-5);
+}
+.plan p {
+  margin: 0;
+}
+.plan :global(.v-btn) {
+  align-self: flex-start;
+}
+.card {
+  composes: sheetlike;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-5);
+}
+.card p {
+  margin: 0;
+}
+
+/* .fxplans.fp-list */
+.plans {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-4);
+}
+
+/* .fxlim */
+.limits {
+  margin: 0;
+  padding-left: var(--space-5);
+  color: var(--ink-secondary);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+/* .fxver.fp-ver */
+.versions {
+  width: 100%;
+  border-collapse: collapse;
+}
+.versions th {
+  text-align: left;
+  color: var(--ink-muted);
+  font-weight: 500;
+  padding: var(--space-1) 0;
+  border-bottom: var(--border-width) solid var(--line);
+}
+.versions td {
+  padding: var(--space-2) 0;
+  border-bottom: var(--border-width) solid var(--line);
+  color: var(--ink);
+  vertical-align: top;
+}
+.versions td :global(.v-pill) {
+  margin-left: var(--space-2);
+  vertical-align: middle;
+}
+
+/* .fp-cell */
+.price {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-0-5);
+}
+.price > span {
+  white-space: nowrap;
+}
+.saving {
+  color: var(--ink-muted);
+}
+
+/* .fxlink */
+.link {
+  color: var(--ink);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  min-width: 24px;
+  background: none;
+  border: 0;
+  padding: 0;
+  font: inherit;
+  cursor: pointer;
+}
+@media (pointer: coarse), (max-width: 767px) {
+  .link {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
+/* .fp-prices */
+.prices {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-4);
+}
+.pricesMob {
+  grid-template-columns: 1fr;
+}
+
+/* .fxlimits */
+.limitRows {
+  display: flex;
+  flex-direction: column;
+}
+.limitRow {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(60px, 0.6fr) minmax(120px, 1fr);
+  gap: var(--space-3);
+  align-items: center;
+  padding: var(--space-2) 0;
+  border-bottom: var(--border-width) solid var(--line);
+  color: var(--ink);
+}
+.limitHead {
+  composes: limitRow;
+  padding-top: 0;
+}
+.limitNew {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+}
+.limitNew > :first-child {
+  flex: 1 1 80px;
+  min-width: 0;
+}
+.delta {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  color: var(--done-ink);
+  flex: none;
+}
+.deltaDown {
+  color: var(--attention-ink);
+}
+
+/* .fxapps */
+.apps {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: var(--space-3) var(--space-4);
+}
+.appLabel {
+  display: inline-flex;
+  gap: var(--space-2);
+  align-items: center;
+}
+
+/* .unsaved (FounderPlanEditor): bara de jos, peste conținut, din dreapta Spine-ului */
+.frame {
+  position: relative;
+  height: 100%;
+}
+.unsaved {
+  position: absolute;
+  left: var(--spine-width);
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-6);
+  background: var(--raised);
+  border-top: var(--border-width) solid var(--line-strong);
+  box-shadow: var(--shadow-2);
+  z-index: var(--z-sticky);
+  flex-wrap: wrap;
+}
+.unsavedMob {
+  left: 0;
+  bottom: var(--bottomnav-height);
+  padding: var(--space-3) var(--space-4);
+}
+
+/* .sechead */
+.sechead {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-3);
+  flex-wrap: wrap;
+}
+.sechead h2 {
+  margin: 0;
+}
+
+/* .usage-grid */
+.usageGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: var(--space-6);
+}
+
+/* .axcharts */
+.charts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  gap: var(--space-4);
+}
+
+/* .fa-act (FounderApps) */
+.act {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--space-1);
+  text-align: end;
+  max-width: 280px;
+}
+
+/* .fd-prev / .fd-line / .fd-tot (FounderDiscounts) */
+.invoice {
+  border: var(--border-width) solid var(--line);
+  border-radius: var(--radius-md);
+  padding: var(--space-3);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+.invoice p {
+  margin: 0;
+}
+.invoiceLine {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+.invoiceTotal {
+  composes: invoiceLine;
+  padding-top: var(--space-2);
+  margin-top: var(--space-1);
+  border-top: var(--border-width) solid var(--line);
+}
+
+/* .ss-list */
+.list {
+  margin: 0;
+  padding-left: var(--space-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+/* Overlay-ul dialogurilor și toastul, în cadrul paginii (ss-overlay / ss-toast din preview) */
+.toast {
+  position: fixed;
+  right: var(--space-6);
+  bottom: var(--space-6);
+  width: var(--panel-width);
+  z-index: var(--z-toast);
+}
+.toastMob {
+  left: var(--space-4);
+  right: var(--space-4);
+  bottom: var(--space-4);
+  width: auto;
+}
+
+@container shell (max-width: 767px) {
+  .padMob {
+    padding: 0 var(--space-4);
+  }
+}

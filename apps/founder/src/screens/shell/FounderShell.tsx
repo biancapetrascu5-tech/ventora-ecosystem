@@ -66,6 +66,7 @@ export function FounderShell({
       height="100%"
       spine={
         <Spine
+          hub
           appName="Founder"
           sections={nav}
           activeId={active}

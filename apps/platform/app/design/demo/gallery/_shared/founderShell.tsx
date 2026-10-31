@@ -67,6 +67,7 @@ export function FounderShellDemo({
       height="100%"
       spine={
         <Spine
+          hub
           appName="Founder"
           sections={FX_NAV}
           activeId={active}

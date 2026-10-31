@@ -109,3 +109,42 @@ export type { BusinessMenuItem, BusinessChange } from './founder/BusinessView';
 export { NewBusinessView } from './founder/NewBusinessView';
 export type { NewBusinessState } from './founder/NewBusinessView';
 export { default as businessStyles } from './founder/business.module.css';
+
+// Founder · modelul comercial (Lotul 3.4, doar română; D3-24): aplicațiile la bucată, pachetele,
+// consumul, cererile din Hub, reducerile, partea comercială a unei afaceri, „Prezentare”.
+export * from './founder/commercial/money';
+export { PacksView, PackDialog } from './founder/commercial/PacksView';
+export type { PackRow, PackFormValues, PackFormErrors } from './founder/commercial/PacksView';
+export { AppsView, AppPriceDialog } from './founder/commercial/AppsView';
+export type { AppRow, AppPriceValues, AppPriceErrors } from './founder/commercial/AppsView';
+export { UsageView, TooEarly, useChartLabels } from './founder/commercial/UsageView';
+export type { UsageRow } from './founder/commercial/UsageView';
+export { RequestsView, RefuseRequestDialog } from './founder/commercial/RequestsView';
+export type { RequestRow, RequestStatus } from './founder/commercial/RequestsView';
+export {
+  BusinessBillingView,
+  DiscountsPageView,
+  DiscountDialog,
+  EndDiscountDialog,
+} from './founder/commercial/DiscountsView';
+export type {
+  DiscountRow,
+  ForeverDiscountRow,
+  DiscountFormValues,
+  DiscountFormErrors,
+} from './founder/commercial/DiscountsView';
+export {
+  BusinessUsageSection,
+  ExceptionsSection,
+  PlanCardContent,
+  ExceptionDialog,
+  OverviewView,
+  useUsageLabels,
+} from './founder/commercial/BusinessCommercial';
+export type {
+  UsageItem,
+  ExceptionRow,
+  ExceptionFormValues,
+  ExceptionFormErrors,
+} from './founder/commercial/BusinessCommercial';
+export { default as commercialStyles } from './founder/commercial/commercial.module.css';
