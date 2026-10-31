@@ -7,19 +7,17 @@ import {
   AppIcon,
   Button,
   DataTable,
-  IconButton,
-  Menu,
-  PageHeader,
   Sheet,
   SheetSection,
-  StatusPill,
   Tabs,
   UsageMeter,
   type AppName,
   type DataTableColumn,
 } from '@ventora/ui';
+import { BusinessView, type BusinessMenuItem } from '@ventora/screens';
 import { FounderShellDemo } from './founderShell';
 import { DATATABLE_RO, USAGE_RO } from './labels';
+import { noop } from './shell';
 import b from './founderBusiness.module.css';
 
 type Row = { id: number; what: string; val: string; until: string; why: string; by: string };
@@ -50,41 +48,27 @@ const ROWS: Row[] = [
 ];
 const APPS_ON: AppName[] = ['booking', 'crm', 'finance', 'hr'];
 
-export function FounderBusinessDemo() {
+/* „Mai multe” din preview-urile FounderSupportSession / FounderOwnerRecovery (S95). */
+export const MENU_S95: BusinessMenuItem[] = [
+  { id: 'support', label: 'Deschide o sesiune de suport', icon: 'eye' },
+  { id: 'recovery', label: 'Recuperează accesul proprietarului', icon: 'key-round' },
+  { id: 'move', label: 'Mută pe altă versiune', icon: 'arrow-right', separatorBefore: true },
+  { id: 'resend', label: 'Retrimite invitația proprietarului', icon: 'send' },
+  { id: 'suspend', label: 'Suspendă afacerea', icon: 'lock', danger: true, separatorBefore: true },
+];
+
+/** FBizDetail: pagina afacerii din design, cu partea comercială (Lotul 3.4) pusă din galerie. */
+export function FounderBusinessDemo({ menu = MENU_S95 }: { menu?: BusinessMenuItem[] } = {}) {
   return (
     <FounderShellDemo active="afaceri" title="Clinica Dentis Sibiu">
-      <PageHeader
-        title="Clinica Dentis Sibiu"
-        breadcrumbs={[{ label: 'Afaceri', href: '#' }, { label: 'Clinica Dentis Sibiu' }]}
-        meta={
-          <span className={b.meta}>
-            <StatusPill tone="attention" icon="triangle-alert">
-              Aproape de limită
-            </StatusPill>
-            <span className="body-small muted">
-              Business · v2 · client din martie 2025 · Andrei Mureșan (proprietar)
-            </span>
-          </span>
-        }
-        actions={
-          <>
-            <Button icon="sliders-horizontal">Adaugă o excepție</Button>
-            <Menu
-              label="Mai multe"
-              items={[
-                { id: 'support', label: 'Deschide o sesiune de suport', icon: 'eye' },
-                { id: 'recovery', label: 'Recuperează accesul proprietarului', icon: 'key-round' },
-                { separator: true },
-                { id: 'move', label: 'Mută pe altă versiune', icon: 'arrow-right' },
-                { id: 'resend', label: 'Retrimite invitația proprietarului', icon: 'send' },
-                { separator: true },
-                { id: 'suspend', label: 'Suspendă afacerea', icon: 'lock', isDanger: true },
-              ]}
-            >
-              <IconButton icon="ellipsis-vertical" label="Mai multe acțiuni" variant="secondary" />
-            </Menu>
-          </>
-        }
+      <BusinessView
+        phone={false}
+        name="Clinica Dentis Sibiu"
+        status={{ tone: 'attention', label: 'Aproape de limită', icon: 'triangle-alert' }}
+        meta="Business · v2 · client din martie 2025 · Andrei Mureșan (proprietar)"
+        primaryAction={<Button icon="sliders-horizontal">Adaugă o excepție</Button>}
+        menu={menu}
+        onMenuAction={noop}
         tabs={
           <Tabs
             label="Afacere"
@@ -98,10 +82,8 @@ export function FounderBusinessDemo() {
             ]}
           />
         }
-      />
-      <div className={b.axb}>
-        <div className={b.split}>
-          <div className={b.main}>
+        main={
+          <>
             <Sheet>
               <SheetSection
                 title="Consum în octombrie"
@@ -144,46 +126,36 @@ export function FounderBusinessDemo() {
                 locale="ro"
               />
             </div>
-          </div>
-          <aside className={b.side}>
-            <div className={b.card}>
-              <p className="subheading">Abonament</p>
-              <p className="body">
-                <span className="body-strong">Business · v2</span> · 349 lei pe lună
-              </p>
-              <p className="body-small muted">
-                Reducere 15% până pe 31 martie 2027 · se reînnoiește pe 1 noiembrie
-              </p>
-              <div className={b.apps}>
-                {APPS_ON.map((a) => (
-                  <AppIcon key={a} app={a} size={24} title={APPS[a]?.name} />
-                ))}
-              </div>
+          </>
+        }
+        plan={
+          <>
+            <p className="subheading">Abonament</p>
+            <p className="body">
+              <span className="body-strong">Business · v2</span> · 349 lei pe lună
+            </p>
+            <p className="body-small muted">
+              Reducere 15% până pe 31 martie 2027 · se reînnoiește pe 1 noiembrie
+            </p>
+            <div className={b.apps}>
+              {APPS_ON.map((a) => (
+                <AppIcon key={a} app={a} size={24} title={APPS[a]?.name} />
+              ))}
             </div>
-            <div className={b.card}>
-              <p className="subheading">Proprietar</p>
-              <p className="body">Andrei Mureșan</p>
-              <p className="body-small muted">
-                andrei@dentis.ro · autentificare în doi pași pornită
-              </p>
-            </div>
-            <div className={b.card}>
-              <p className="subheading">Ultimele modificări</p>
-              <ul className={`body-small ${b.hist}`}>
-                <li>
-                  <span className="muted">3 oct.</span> Excepție: 12 angajați (Bianca Petrașcu)
-                </li>
-                <li>
-                  <span className="muted">24 sep.</span> Pachet în plus: 500 SMS (Andrei Mureșan)
-                </li>
-                <li>
-                  <span className="muted">1 iun.</span> Mutată pe Business v2
-                </li>
-              </ul>
-            </div>
-          </aside>
-        </div>
-      </div>
+          </>
+        }
+        owner={
+          <>
+            <p className="body">Andrei Mureșan</p>
+            <p className="body-small muted">andrei@dentis.ro · autentificare în doi pași pornită</p>
+          </>
+        }
+        recent={[
+          { id: 1, date: '3 oct.', text: 'Excepție: 12 angajați (Bianca Petrașcu)' },
+          { id: 2, date: '24 sep.', text: 'Pachet în plus: 500 SMS (Andrei Mureșan)' },
+          { id: 3, date: '1 iun.', text: 'Mutată pe Business v2' },
+        ]}
+      />
     </FounderShellDemo>
   );
 }

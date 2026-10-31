@@ -91,3 +91,16 @@ export {
 } from './founder/OwnerRecoveryView';
 export type { Check, RecoveryValues, RecoveryFlags } from './founder/OwnerRecoveryView';
 export { default as founderSupportStyles } from './founder/support.module.css';
+
+// Ora și data în ecrane (S110; engleza britanică, Lot 2.8).
+export { useWhen, useDates, useTimeZone, intlLocale } from './when';
+export type { DateFormats } from './when';
+
+// Founder · afacerile (Lot 2.8, doar română): lista, pagina unei afaceri, „Afacere nouă”.
+export { BusinessesView, useTableLabels } from './founder/BusinessesView';
+export type { BusinessListRow, BusinessStatus } from './founder/BusinessesView';
+export { BusinessView, SuspendBusinessDialog } from './founder/BusinessView';
+export type { BusinessMenuItem, BusinessChange } from './founder/BusinessView';
+export { NewBusinessView } from './founder/NewBusinessView';
+export type { NewBusinessState } from './founder/NewBusinessView';
+export { default as businessStyles } from './founder/business.module.css';

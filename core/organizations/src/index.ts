@@ -1,6 +1,12 @@
 export { makeOrgClient, getOrgDb } from './db';
 export * from './errors';
-export type { FounderContext, OrgContext, InvitationView, InvitationListItem } from './contract';
+export type {
+  FounderContext,
+  OrgContext,
+  InvitationView,
+  InvitationListItem,
+  FounderOrganizationRow,
+} from './contract';
 export {
   resolveOrgContext,
   createOrganizationAsFounder,
@@ -18,4 +24,6 @@ export {
   resendInvitation,
   getOwnerMembershipInTx,
   listOrganizationOwnersInTx,
+  listOrganizationsAsFounderInTx,
+  setOrganizationStatusInTx,
 } from './contract';

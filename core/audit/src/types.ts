@@ -73,4 +73,6 @@ export type FounderAuditLogFilters = AuditLogFilters & {
   organizationId?: string;
   actorId?: string;
   founderId?: string;
+  /** Lot 2.8: only these actions (FounderBusiness „Ultimele modificări”). */
+  actions?: string[];
 };

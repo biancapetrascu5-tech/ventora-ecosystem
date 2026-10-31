@@ -1,0 +1,13 @@
+/* FounderBusinesses/preview.html: lățimile filtrelor din bara tabelului (160 / 180) și .appsrow */
+.plans {
+  width: 160px;
+}
+.states {
+  width: 180px;
+}
+.apps {
+  display: inline-flex;
+  gap: var(--space-1);
+  align-items: center;
+  flex-wrap: wrap;
+}

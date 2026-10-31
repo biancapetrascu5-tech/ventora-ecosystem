@@ -100,3 +100,16 @@ export class TwoFactorLocked extends Error {
     this.lockedUntil = lockedUntil.toISOString();
   }
 }
+
+/**
+ * Lot 2.8 (D3-20, varianta a): the organization is suspended from Founder. Nobody in it gets in,
+ * not even to read; the data stays and Founder can reactivate it. Support sessions still work.
+ */
+export class OrganizationSuspended extends Error {
+  readonly status = 403;
+  readonly code = 'ORGANIZATION_SUSPENDED';
+  constructor(message = 'The organization is suspended') {
+    super(message);
+    this.name = 'OrganizationSuspended';
+  }
+}

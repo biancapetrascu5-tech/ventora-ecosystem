@@ -65,6 +65,9 @@ jobs:
       - run: pnpm --filter @ventora/organizations generate
       - run: pnpm --filter @ventora/access generate
       - run: pnpm lint
+      # Lot 2.8: o cheie lipsă (sau în plus) într-o limbă pică CI-ul, nu doar pre-push-ul local.
+      - name: i18n:check
+        run: pnpm i18n:check
       - run: pnpm typecheck
       - run: pnpm format:check
 
@@ -282,6 +285,7 @@ jobs:
           $PSQL -f core/organizations/prisma/migrations/20261027000003_invitation_application_ids/migration.sql
           $PSQL -v ON_ERROR_STOP=1 -f core/organizations/prisma/migrations/20261028000003_founder_owner_lookup/migration.sql
           $PSQL -v ON_ERROR_STOP=1 -f core/organizations/prisma/migrations/20261029000005_lot26_invitation_view/migration.sql
+          $PSQL -v ON_ERROR_STOP=1 -f core/organizations/prisma/migrations/20261031000001_lot28_organization_status/migration.sql
       - name: Apply audit migration
         run: |
           psql postgresql://postgres:test@localhost:5434/ventora_org_test \

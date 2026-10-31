@@ -41,6 +41,14 @@ enum InvitationEmailStatus {
   @@schema("organizations")
 }
 
+// Lot 2.8 (D3-20): o afacere suspendată nu mai are intrare pentru nimeni din ea; datele rămân.
+enum OrganizationStatus {
+  active
+  suspended
+
+  @@schema("organizations")
+}
+
 enum CreatedVia {
   founder
   self_service
@@ -50,13 +58,16 @@ enum CreatedVia {
 }
 
 model Organization {
-  id                 String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  slug               String     @unique @db.VarChar(63)
-  name               String     @db.VarChar(255)
-  createdVia         CreatedVia @map("created_via")
-  createdByFounderId String?    @map("created_by_founder_id") @db.Uuid
-  createdAt          DateTime   @default(now()) @map("created_at") @db.Timestamptz
-  updatedAt          DateTime   @updatedAt @map("updated_at") @db.Timestamptz
+  id                   String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  slug                 String             @unique @db.VarChar(63)
+  name                 String             @db.VarChar(255)
+  createdVia           CreatedVia         @map("created_via")
+  createdByFounderId   String?            @map("created_by_founder_id") @db.Uuid
+  status               OrganizationStatus @default(active)
+  suspendedAt          DateTime?          @map("suspended_at") @db.Timestamptz
+  suspendedByFounderId String?            @map("suspended_by_founder_id") @db.Uuid
+  createdAt            DateTime           @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt            DateTime           @updatedAt @map("updated_at") @db.Timestamptz
 
   settings    OrganizationSetting[]
   memberships Membership[]
