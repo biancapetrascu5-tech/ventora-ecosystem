@@ -445,6 +445,90 @@ describe('TM.4 — „Elimină din afacere”', () => {
   });
 });
 
+describe('TM.5 — only the owner manages admins (PR #42, 31.10.2026)', () => {
+  it('admin → another admin: demote, stop, apps and remove are refused; nothing changes', async () => {
+    const orgId = await newOrg();
+    await createMember(orgId, 'owner');
+    const admin = await createMember(orgId, 'admin');
+    const other = await createMember(orgId, 'admin');
+
+    await expect(
+      changeTeamMemberRole({ sessionToken: admin.token, userId: other.userId, role: 'member' }),
+    ).rejects.toThrow(Forbidden);
+    await expect(
+      setTeamMemberAccess({ sessionToken: admin.token, userId: other.userId, access: 'stopped' }),
+    ).rejects.toThrow(Forbidden);
+    await expect(
+      setTeamMemberApplications({
+        sessionToken: admin.token,
+        userId: other.userId,
+        applicationIds: ['booking'],
+      }),
+    ).rejects.toThrow(InvalidInput);
+    await expect(
+      removeTeamMember({ sessionToken: admin.token, userId: other.userId }),
+    ).rejects.toThrow(Forbidden);
+
+    expect(await membership(orgId, other.userId)).toEqual({ role: 'admin', status: 'active' });
+    for (const action of [
+      'membership.role_changed',
+      'membership.access_stopped',
+      'membership.removed',
+    ]) {
+      expect(await auditRows(orgId, action)).toHaveLength(0);
+    }
+  });
+
+  it('owner → admin: demote, promote, stop, restore and remove are allowed', async () => {
+    const orgId = await newOrg();
+    const owner = await createMember(orgId, 'owner');
+    const admin = await createMember(orgId, 'admin');
+
+    await changeTeamMemberRole({ sessionToken: owner.token, userId: admin.userId, role: 'member' });
+    expect((await membership(orgId, admin.userId))?.role).toBe('member');
+    await changeTeamMemberRole({ sessionToken: owner.token, userId: admin.userId, role: 'admin' });
+    expect((await membership(orgId, admin.userId))?.role).toBe('admin');
+
+    await setTeamMemberAccess({
+      sessionToken: owner.token,
+      userId: admin.userId,
+      access: 'stopped',
+    });
+    expect((await membership(orgId, admin.userId))?.status).toBe('suspended');
+    await setTeamMemberAccess({
+      sessionToken: owner.token,
+      userId: admin.userId,
+      access: 'active',
+    });
+    expect((await membership(orgId, admin.userId))?.status).toBe('active');
+
+    await removeTeamMember({ sessionToken: owner.token, userId: admin.userId });
+    expect(await membership(orgId, admin.userId)).toBeUndefined();
+    expect(await auditRows(orgId, 'membership.role_changed')).toHaveLength(2);
+    expect(await auditRows(orgId, 'membership.removed')).toHaveLength(1);
+  });
+
+  it('an admin still manages members', async () => {
+    const orgId = await newOrg();
+    await createMember(orgId, 'owner');
+    const admin = await createMember(orgId, 'admin');
+    const member = await createMember(orgId, 'member', ['booking']);
+
+    await setTeamMemberAccess({
+      sessionToken: admin.token,
+      userId: member.userId,
+      access: 'stopped',
+    });
+    await setTeamMemberAccess({
+      sessionToken: admin.token,
+      userId: member.userId,
+      access: 'active',
+    });
+    await removeTeamMember({ sessionToken: admin.token, userId: member.userId });
+    expect(await membership(orgId, member.userId)).toBeUndefined();
+  });
+});
+
 // ---------------------------------------------------------------------------
 // TS — afacerea suspendată (HubBusinessSuspended)
 // ---------------------------------------------------------------------------

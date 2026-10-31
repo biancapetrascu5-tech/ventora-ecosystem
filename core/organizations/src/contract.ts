@@ -935,6 +935,10 @@ async function managedMembership(
   const m = rows[0];
   if (!m) throw new NotFoundError('Member not found');
   if (m.role === 'owner') throw new ForbiddenError('The owner cannot be changed here');
+  // Decizia fondatoarei pe PR #42 (31.10.2026): doar owner-ul gestionează adminii
+  if (ctx.role === 'admin' && m.role === 'admin') {
+    throw new ForbiddenError('Only the owner manages admins');
+  }
   return m;
 }
 

@@ -35,8 +35,8 @@ import s from './team.module.css';
 
 /* HubAdminTeam (Lot 2.8) cu „Invită o persoană” (HubTeamInvite, S112) și meniul unui membru
    (Lot 2.9b): schimbă rolul, accesul la aplicații, oprește / redă accesul, elimină din afacere.
-   Pe server: doar owner și admin, owner-ul neatins, un admin nu face admini; aici rândul
-   owner-ului și rândul propriu n-au meniu. Dialogurile din meniu nu au design propriu: sunt
+   Pe server: doar owner și admin, owner-ul neatins, doar owner-ul gestionează adminii; aici
+   rândul owner-ului, rândul propriu și (pentru un admin) rândurile adminilor n-au meniu. Dialogurile din meniu nu au design propriu: sunt
    compuse din textele aprobate ale paginii și ale formularului (raportul 2.9b). */
 
 const isApp = (id: string): id is AppName => (APP_IDS as string[]).includes(id);
@@ -154,8 +154,10 @@ export function TeamScreen({ initial }: { initial: TeamData }) {
 
   const memberActions = (row: TeamMemberRow): DataTableAction[] => {
     const m = data.members.find((x) => x.id === row.id);
-    // the owner is never touched here; nobody acts on their own row
+    // the owner is never touched here; nobody acts on their own row; only the owner manages
+    // admins (PR #42, 31.10.2026)
     if (!m || row.owner || m.id === data.viewer.id) return [];
+    if (m.role === 'admin' && data.viewer.role !== 'owner') return [];
     const open = (kind: MemberDialog['kind']) => {
       setFailed(false);
       setDialogRole(m.role === 'admin' ? 'admin' : 'member');
