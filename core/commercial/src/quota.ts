@@ -92,20 +92,21 @@ async function resolve(
   client: PoolClient,
   organizationId: string,
   quotaKey: string,
-  at: Date,
+  at: Date | undefined,
 ): Promise<Resolved> {
   const { rows } = await client.query<{ kind: 'flow' | 'stock'; refundable: boolean }>(
     `SELECT kind, refundable FROM commercial.quota_key WHERE key = $1 AND retired_at IS NULL`,
     [quotaKey],
   );
   if (!rows[0]) throw new UnknownCommercialKey([quotaKey]);
-  const entitlements = await computeEntitlementsInTx(client, organizationId, at);
+  // the limit at the database's now() unless an instant is given (a purchase counts at once)
+  const entitlements = await computeEntitlementsInTx(client, organizationId, at ?? null);
   // null = unlimited (D3-14): `?? 0` would turn it into 0
   const limit = quotaKey in entitlements.quotas ? entitlements.quotas[quotaKey]! : 0;
   if (rows[0].kind === 'stock') {
     return { ...rows[0], limit, periodStart: null, periodEnd: null };
   }
-  const today = calendarDate(at);
+  const today = calendarDate(at ?? new Date());
   // Without a subscription the limit is 0; the period is then the calendar month
   const period = entitlements.subscription
     ? quotaPeriod(entitlements.subscription.startedOn, today)
@@ -201,10 +202,12 @@ export async function checkQuota(
   ctx: QuotaContext,
   quotaKey: string,
   amount = 1,
-  at: Date = new Date(),
+  at?: Date,
 ): Promise<QuotaState> {
   const organizationId = checkContext(ctx);
   checkAmount(amount);
+  // raportul 3.3: a read of the consumption reconciles the expired reservations first
+  await reconcileOrganization(ctx, { now: at });
   return withOrganizationRead(organizationId, async (client) => {
     const r = await resolve(client, organizationId, quotaKey, at);
     const { used, reserved } = await counter(client, quotaKey, r.periodStart);
@@ -240,7 +243,7 @@ export async function reserveQuota(
   const organizationId = checkContext(ctx);
   checkAmount(amount);
   checkOperation(operationId);
-  const at = opts.at ?? new Date();
+  const at = opts.at;
 
   return withOrganizationWrite(organizationId, async (client) => {
     await lockOperation(client, organizationId, operationId);
@@ -298,7 +301,7 @@ export async function reserveQuota(
         operationId,
         amount,
         overLimit,
-        new Date(at.getTime() + RESERVATION_TTL_MS),
+        new Date((at ?? new Date()).getTime() + RESERVATION_TTL_MS),
       ],
     );
     await history(client, {
@@ -330,9 +333,11 @@ async function notices(
   organizationId: string,
   res: ReservationRow,
   used: number,
-  at: Date,
+  at: Date | undefined,
 ): Promise<void> {
-  const limit = (await computeEntitlementsInTx(client, organizationId, at)).quotas[res.quota_key];
+  const limit = (await computeEntitlementsInTx(client, organizationId, at ?? null)).quotas[
+    res.quota_key
+  ];
   if (limit === null || limit === undefined || limit <= 0) return;
   const base = { organizationId, quotaKey: res.quota_key, periodStart: res.period_start };
   for (const threshold of QUOTA_THRESHOLDS) {
@@ -368,7 +373,7 @@ async function notices(
 export async function commitQuota(
   ctx: QuotaContext,
   operationId: string,
-  at: Date = new Date(),
+  at?: Date,
 ): Promise<{ status: 'committed'; used: number; idempotent: boolean }> {
   const organizationId = checkContext(ctx);
   checkOperation(operationId);
@@ -554,43 +559,132 @@ export interface ReconcileResult {
   released: string[];
   /** No resolver for the key: left as is, for a module that has one. */
   skipped: string[];
+  /** The resolver or the commit / release threw: logged, left for the next run. */
+  failed: string[];
 }
 
+const registeredResolvers = new Map<string, OperationResolver>();
+
 /**
- * §8.3 step 4: reservations still `reserved` after their 15 minutes — a process stopped between
- * the steps. The owning module tells whether the entity with that operationId exists: yes →
- * commit, no → release. Tested here; run periodically by the jobs of Lot 4.2 (D-INF-2).
+ * The module that owns a quota key registers how to tell whether the entity of an operation
+ * exists (at load time, like ensureAccessConfigured). Used by the reconciliation — the periodic
+ * job of Lot 4.2 and, until then, every read of the consumption (raportul 3.3).
  */
-export async function reconcileExpiredReservations(params: {
-  resolvers: Readonly<Record<string, OperationResolver>>;
-  now?: Date;
-  limit?: number;
-}): Promise<ReconcileResult> {
-  const now = params.now ?? new Date();
-  const expired = await withModuleRead(async (client) => {
-    const { rows } = await client.query<{
-      id: string;
-      organization_id: string;
-      quota_key: string;
-      operation_id: string;
-    }>(`SELECT * FROM commercial.expired_quota_reservations($1, $2)`, [now, params.limit ?? 100]);
-    return rows;
-  });
-  const out: ReconcileResult = { committed: [], released: [], skipped: [] };
-  for (const r of expired) {
-    const resolver = params.resolvers[r.quota_key];
+export function registerOperationResolver(quotaKey: string, resolver: OperationResolver): void {
+  registeredResolvers.set(quotaKey, resolver);
+}
+
+type ExpiredRow = { id: string; organization_id: string; quota_key: string; operation_id: string };
+
+async function settle(
+  rows: readonly ExpiredRow[],
+  resolvers: Readonly<Record<string, OperationResolver>> | undefined,
+  now: Date | undefined,
+): Promise<ReconcileResult> {
+  const out: ReconcileResult = { committed: [], released: [], skipped: [], failed: [] };
+  for (const r of rows) {
+    const resolver = resolvers ? resolvers[r.quota_key] : registeredResolvers.get(r.quota_key);
     if (!resolver) {
       out.skipped.push(r.id);
       continue;
     }
     const ctx = { organizationId: r.organization_id };
-    if (await resolver(r.organization_id, r.operation_id)) {
-      await commitQuota(ctx, r.operation_id, now);
-      out.committed.push(r.id);
-    } else {
-      await releaseQuota(ctx, r.operation_id);
-      out.released.push(r.id);
+    try {
+      if (await resolver(r.organization_id, r.operation_id)) {
+        await commitQuota(ctx, r.operation_id, now);
+        out.committed.push(r.id);
+      } else {
+        await releaseQuota(ctx, r.operation_id);
+        out.released.push(r.id);
+      }
+    } catch (err) {
+      // no personal data: ids and the quota key only
+      console.error('[commercial] reconciling a quota reservation failed', {
+        reservationId: r.id,
+        organizationId: r.organization_id,
+        quotaKey: r.quota_key,
+        error: err instanceof Error ? err.message : String(err),
+      });
+      out.failed.push(r.id);
     }
   }
   return out;
+}
+
+/**
+ * §8.3 step 4: reservations still `reserved` after their 15 minutes — a process stopped between
+ * the steps. The owning module tells whether the entity with that operationId exists: yes →
+ * commit, no → release. `resolvers` defaults to the registered ones. Run periodically by the
+ * jobs of Lot 4.2 (D-INF-2).
+ */
+export async function reconcileExpiredReservations(
+  params: {
+    resolvers?: Readonly<Record<string, OperationResolver>>;
+    now?: Date;
+    limit?: number;
+  } = {},
+): Promise<ReconcileResult> {
+  const now = params.now ?? new Date();
+  const expired = await withModuleRead(async (client) => {
+    const { rows } = await client.query<ExpiredRow>(
+      `SELECT * FROM commercial.expired_quota_reservations($1, $2)`,
+      [now, params.limit ?? 100],
+    );
+    return rows;
+  });
+  return settle(expired, params.resolvers, params.now);
+}
+
+/**
+ * Raportul 3.3 (31.10.2026): until the job of Lot 4.2, every read of the consumption reconciles
+ * first the organization's own expired reservations, so a lost one does not keep a unit taken.
+ * Never fails the read: errors are logged (settle) and the reservation waits for the next read.
+ */
+export async function reconcileOrganization(
+  ctx: QuotaContext,
+  opts: { resolvers?: Readonly<Record<string, OperationResolver>>; now?: Date } = {},
+): Promise<ReconcileResult> {
+  const organizationId = checkContext(ctx);
+  const expired = await withOrganizationRead(organizationId, async (client) => {
+    const { rows } = await client.query<ExpiredRow>(
+      `SELECT id, organization_id, quota_key, operation_id FROM commercial.quota_reservation
+        WHERE status = 'reserved' AND expires_at < COALESCE($1::timestamptz, now())
+        ORDER BY expires_at LIMIT 100`,
+      [opts.now ?? null],
+    );
+    return rows;
+  });
+  return settle(expired, opts.resolvers, opts.now);
+}
+
+/**
+ * The consumption of every limited quota of the organization in the current period (UsageMeter
+ * in HubAdminPlan, Lot 3.7; FounderUsage, Lot 3.4). Reconciles the expired reservations first.
+ * Unlimited quotas are left out, as in the Hub (D3-14); quotas not included (0) too.
+ */
+export async function getUsage(ctx: QuotaContext, at?: Date): Promise<QuotaState[]> {
+  const organizationId = checkContext(ctx);
+  await reconcileOrganization(ctx, { now: at });
+  return withOrganizationRead(organizationId, async (client) => {
+    const entitlements = await computeEntitlementsInTx(client, organizationId, at ?? null);
+    const out: QuotaState[] = [];
+    for (const [quotaKey, limit] of Object.entries(entitlements.quotas)) {
+      if (limit === null || limit === 0) continue;
+      const r = await resolve(client, organizationId, quotaKey, at);
+      const { used, reserved } = await counter(client, quotaKey, r.periodStart);
+      const remaining = Math.max(0, limit - used - reserved);
+      out.push({
+        quotaKey,
+        kind: r.kind,
+        limit,
+        used,
+        reserved,
+        remaining,
+        allowed: remaining >= 1,
+        periodStart: r.periodStart,
+        periodEnd: r.periodEnd,
+      });
+    }
+    return out;
+  });
 }

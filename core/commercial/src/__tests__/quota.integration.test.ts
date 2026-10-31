@@ -1,7 +1,7 @@
 // Real parallel transactions for the concurrency test (the default pool has one connection).
 process.env.COMMERCIAL_POOL_MAX = '20';
 
-import { describe, it, expect, beforeAll, afterAll } from 'vitest';
+import { describe, it, expect, beforeAll, afterAll, vi } from 'vitest';
 import { Pool, type PoolClient } from 'pg';
 import type { ApplicationManifest } from '@ventora/contracts';
 import {
@@ -17,6 +17,9 @@ import {
   closeCommercialPools,
   commitQuota,
   freeStockQuota,
+  getSubscriptionSummary,
+  getUsage,
+  registerOperationResolver,
   reconcileExpiredReservations,
   refundQuota,
   releaseQuota,
@@ -425,5 +428,86 @@ describe('stock quotas — one counter, freed on deletion (§8.2)', () => {
     const [c] = await counters(org);
     expect(c).toMatchObject({ quota_key: 'platform.members', period_start: null, used: 2 });
     await expect(freeStockQuota(ctx, 'messaging.sms', 1, newUuid())).rejects.toThrow(InvalidInput);
+  });
+});
+
+describe('raportul 3.3 — until Lot 4.2, reading the consumption reconciles first', () => {
+  it('getSubscriptionSummary, getUsage and checkQuota reconcile the expired reservations (both branches)', async () => {
+    const created = new Set<string>();
+    registerOperationResolver('booking.appointments', async (_org, op) => created.has(op));
+    const { org } = await business({ 'booking.appointments': 5 });
+    const ctx = { organizationId: org };
+    const expire = (op: string) =>
+      q(
+        `UPDATE commercial.quota_reservation SET expires_at = now() - interval '1 minute'
+          WHERE organization_id = $1 AND operation_id = $2`,
+        [org, op],
+      );
+    const status = async (op: string) =>
+      (
+        await q(
+          `SELECT status FROM commercial.quota_reservation WHERE organization_id = $1 AND operation_id = $2`,
+          [org, op],
+        )
+      )[0]!.status;
+
+    // 1. the summary (HubAdminPlan)
+    const kept = newUuid();
+    const lost = newUuid();
+    created.add(kept);
+    await reserveQuota(ctx, 'booking.appointments', 1, kept);
+    await reserveQuota(ctx, 'booking.appointments', 1, lost);
+    await expire(kept);
+    await expire(lost);
+    const summary = await getSubscriptionSummary(org);
+    expect([await status(kept), await status(lost)]).toEqual(['committed', 'released']);
+    expect(summary!.quotas).toEqual([{ key: 'booking.appointments', limit: 5, used: 1 }]);
+
+    // 2. the usage list (UsageMeter, FounderUsage)
+    const viaUsage = newUuid();
+    created.add(viaUsage);
+    await reserveQuota(ctx, 'booking.appointments', 1, viaUsage);
+    await expire(viaUsage);
+    const usage = await getUsage(ctx);
+    expect(await status(viaUsage)).toBe('committed');
+    expect(usage).toEqual([
+      expect.objectContaining({ quotaKey: 'booking.appointments', limit: 5, used: 2, reserved: 0 }),
+    ]);
+
+    // 3. checkQuota
+    const viaCheck = newUuid();
+    await reserveQuota(ctx, 'booking.appointments', 1, viaCheck);
+    await expire(viaCheck);
+    expect(await checkQuota(ctx, 'booking.appointments')).toMatchObject({ used: 2, reserved: 0 });
+    expect(await status(viaCheck)).toBe('released');
+  });
+
+  it('a resolver that fails does not fail the read: logged, the reservation waits', async () => {
+    registerOperationResolver('booking.appointments', async () => {
+      throw new Error('module down');
+    });
+    const { org } = await business({ 'booking.appointments': 5 });
+    const op = newUuid();
+    await reserveQuota({ organizationId: org }, 'booking.appointments', 1, op);
+    await q(
+      `UPDATE commercial.quota_reservation SET expires_at = now() - interval '1 minute' WHERE organization_id = $1`,
+      [org],
+    );
+    const errors = vi.spyOn(console, 'error').mockImplementation(() => {});
+    try {
+      const usage = await getUsage({ organizationId: org });
+      expect(usage[0]).toMatchObject({ used: 0, reserved: 1 });
+      expect(errors).toHaveBeenCalledWith(
+        '[commercial] reconciling a quota reservation failed',
+        expect.objectContaining({ quotaKey: 'booking.appointments', error: 'module down' }),
+      );
+    } finally {
+      errors.mockRestore();
+    }
+    const [r] = await q(
+      `SELECT status FROM commercial.quota_reservation WHERE organization_id = $1`,
+      [org],
+    );
+    expect(r!.status).toBe('reserved');
   });
 });
