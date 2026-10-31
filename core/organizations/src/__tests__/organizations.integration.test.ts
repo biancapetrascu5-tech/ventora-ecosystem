@@ -21,11 +21,15 @@ import {
   markOrganizationOpened,
   listInvitations,
   invitationNewLinkRequestedConsumer,
+  notifyBillingInTx,
 } from '../index.js';
 import type { OrgContext } from '../index.js';
 import { closeAuditPools } from '@ventora/audit';
-import { UUID_V7 } from '@ventora/db-kit';
+import { UUID_V7, writeOutboxEvent } from '@ventora/db-kit';
+import { QuotaThresholdV1 } from '@ventora/contracts';
+import { InvalidInput } from '@ventora/errors';
 import {
+  BILLING_KINDS,
   CaptureEmailAdapter,
   closeNotificationsPool,
   defaultCatalog,
@@ -33,7 +37,9 @@ import {
   invitationLink,
   openNotification,
   renderNotification,
+  requiredParams,
   setEmailChannel,
+  type BillingKind,
 } from '@ventora/notifications';
 import { ConsumerRegistry, dispatchOutbox } from '@ventora/integrations';
 
@@ -1492,5 +1498,212 @@ describe('Lot 4.4 — end to end: the bell → HubAdminTeam → „Retrimite”'
     expect(resent).toMatchObject({ status: 'pending', newLinkRequestedAt: null });
 
     await adminQuery(`DELETE FROM organizations.organization WHERE id = $1`, [organizationId]);
+  });
+});
+
+describe('Lot 4.5 — the Phase 3 notifications: one contract call per event (S115)', () => {
+  /** A value for every text of both variants of a kind (the caller of F3 builds them). */
+  const paramsOf = (kind: BillingKind) => {
+    const route = BILLING_KINDS[kind] as { owner: string; others?: string };
+    const names = [route.owner, route.others]
+      .filter((id): id is string => !!id)
+      .flatMap((id) => requiredParams(defaultCatalog.get(`billing.${id}`, 1)!));
+    return Object.fromEntries(names.map((n) => [n, `«${n}»`]));
+  };
+
+  async function orgWithTeam(stamp: number) {
+    const { organizationId } = await createOrganizationAsFounder(
+      { founderId: newUuid() },
+      { name: 'Salon Facturi', slug: `l45-${stamp}`, ownerEmail: `owner-f-${stamp}@example.com` },
+    );
+    const owner = await ownerContext(organizationId);
+    const [adminId, memberId, externalId] = [newUuid(), newUuid(), newUuid()];
+    await adminQuery(
+      `INSERT INTO organizations.membership(organization_id, user_id, role, status, updated_at)
+       VALUES ($1, $2, 'admin', 'active', NOW()), ($1, $3, 'member', 'active', NOW()),
+              ($1, $4, 'external_collaborator', 'active', NOW())`,
+      [organizationId, adminId, memberId, externalId],
+    );
+    return { organizationId, ownerId: owner.userId, adminId, memberId, externalId };
+  }
+
+  it('a simulated F3 event (commercial.quota.threshold, 80%) → owner in the app and by e-mail; admin and member in the app; external collaborator nothing', async () => {
+    const stamp = Date.now();
+    const team = await orgWithTeam(stamp);
+    // F3's consumer: the event has the figures; the texts' values are built by F3 (here, fixed)
+    const consumer = {
+      name: 'test.f3-quota-threshold',
+      handles: [{ type: 'commercial.quota.threshold', version: 1 }],
+      async handle(
+        envelope: { eventId: string; organizationId: string; payload: unknown },
+        tx: Parameters<typeof notifyBillingInTx>[0],
+      ) {
+        const p = envelope.payload as { threshold: 80 | 100; used: number; limit: number };
+        await notifyBillingInTx(tx, {
+          organizationId: envelope.organizationId,
+          kind: p.threshold === 80 ? 'limit80' : 'limit100',
+          idempotencyKey: envelope.eventId,
+          params: {
+            ...paramsOf('limit80'),
+            used: String(p.used),
+            limit: String(p.limit),
+            business: 'Salon Facturi',
+          },
+        });
+      },
+    };
+    const pool = new Pool({ connectionString: process.env.DATABASE_URL ?? '', max: 1 });
+    try {
+      const client = await pool.connect();
+      try {
+        await client.query('BEGIN');
+        await client.query('SET LOCAL ROLE org_rw');
+        await client.query(`SELECT set_config('app.organization_id', $1, true)`, [
+          team.organizationId,
+        ]);
+        await writeOutboxEvent(client, 'organizations', QuotaThresholdV1, {
+          organizationId: team.organizationId,
+          sourceApp: QuotaThresholdV1.sourceApp,
+          resourceId: team.organizationId,
+          payload: {
+            quotaKey: 'booking.appointments',
+            threshold: 80,
+            used: 400,
+            limit: 500,
+            periodStart: '2026-10-01',
+          },
+        });
+        await client.query('COMMIT');
+      } finally {
+        client.release();
+      }
+      await adminQuery(
+        `UPDATE organizations.outbox_events SET status = 'dispatched'
+          WHERE status = 'pending' AND NOT (type = 'commercial.quota.threshold' AND organization_id = $1)`,
+        [team.organizationId],
+      );
+      const report = await dispatchOutbox({
+        pool,
+        source: { schema: 'organizations', moduleRole: 'org_rw' },
+        registry: new ConsumerRegistry().register(consumer),
+      });
+      expect(report).toMatchObject({ delivered: 1, dead: 0 });
+    } finally {
+      await pool.end();
+    }
+
+    const rows = await adminQuery(
+      `SELECT n.recipient_user_id::text AS who, n.type, n.category, n.action_url,
+              count(d.id)::int AS emails
+         FROM notifications.notification n
+         LEFT JOIN notifications.delivery d ON d.notification_id = n.id AND d.channel = 'email'
+        WHERE n.organization_id = $1
+        GROUP BY 1, 2, 3, 4 ORDER BY 2, 1`,
+      [team.organizationId],
+    );
+    expect(rows).toEqual(
+      [
+        { who: team.adminId, type: 'billing.limit.other80', emails: 0, action_url: null },
+        { who: team.memberId, type: 'billing.limit.other80', emails: 0, action_url: null },
+        { who: team.ownerId, type: 'billing.limit.owner80', emails: 1, action_url: '/admin/plan' },
+      ]
+        .map((r) => ({ ...r, category: 'operational' }))
+        .sort((a, b) => (a.type + a.who).localeCompare(b.type + b.who)),
+    );
+    // in the bell, in the reader's language, with the action under the text
+    const [mine] = (await getInbox(team.ownerId, 'ro')).items;
+    expect(mine).toMatchObject({
+      title: 'Ai folosit 80% din limita de «resource»',
+      action: 'Cumpără «buyItem» în plus',
+      actionUrl: '/admin/plan',
+    });
+    expect((await getInbox(team.memberId, 'de')).items[0]!.action).toBeTruthy();
+    expect((await getInbox(team.externalId, 'ro')).items).toEqual([]);
+    await adminQuery(`DELETE FROM organizations.organization WHERE id = $1`, [team.organizationId]);
+  });
+
+  it('every kind goes through the same call; delivered twice → once; a missing value is refused', async () => {
+    const stamp = Date.now();
+    const team = await orgWithTeam(stamp);
+    const pool = new Pool({ connectionString: process.env.DATABASE_URL ?? '', max: 1 });
+    const inOrg = async (fn: (tx: Parameters<typeof notifyBillingInTx>[0]) => Promise<void>) => {
+      const client = await pool.connect();
+      try {
+        await client.query('BEGIN');
+        await client.query('SET LOCAL ROLE org_rw');
+        await client.query(`SELECT set_config('app.organization_id', $1, true)`, [
+          team.organizationId,
+        ]);
+        await fn(client);
+        await client.query('COMMIT');
+      } catch (err) {
+        await client.query('ROLLBACK');
+        throw err;
+      } finally {
+        client.release();
+      }
+    };
+    try {
+      const kinds = Object.keys(BILLING_KINDS) as BillingKind[];
+      for (const kind of kinds) {
+        await inOrg(async (tx) => {
+          const first = await notifyBillingInTx(tx, {
+            organizationId: team.organizationId,
+            kind,
+            idempotencyKey: `evt-${kind}`,
+            params: paramsOf(kind),
+          });
+          expect(first.owner.created).toEqual([team.ownerId]);
+          const again = await notifyBillingInTx(tx, {
+            organizationId: team.organizationId,
+            kind,
+            idempotencyKey: `evt-${kind}`,
+            params: paramsOf(kind),
+          });
+          expect(again.owner.duplicates).toEqual([team.ownerId]);
+        });
+      }
+      const [counts] = await adminQuery(
+        `SELECT count(*) FILTER (WHERE recipient_user_id = $2)::int AS owner,
+                count(*) FILTER (WHERE recipient_user_id = $3)::int AS member,
+                count(*) FILTER (WHERE recipient_user_id = $4)::int AS external
+           FROM notifications.notification WHERE organization_id = $1`,
+        [team.organizationId, team.ownerId, team.memberId, team.externalId],
+      );
+      expect(counts).toEqual({ owner: kinds.length, member: 3, external: 0 });
+
+      // the owner's e-mails: one per kind, in the recipient's language when delivered
+      const [emails] = await adminQuery(
+        `SELECT count(*)::int AS n FROM notifications.delivery
+          WHERE organization_id = $1 AND recipient_user_id = $2 AND channel = 'email'`,
+        [team.organizationId, team.ownerId],
+      );
+      expect(emails.n).toBe(kinds.length);
+
+      const { owner: _o, ...withoutOwner } = paramsOf('readonly');
+      await expect(
+        inOrg((tx) =>
+          notifyBillingInTx(tx, {
+            organizationId: team.organizationId,
+            kind: 'readonly',
+            idempotencyKey: 'evt-missing',
+            params: withoutOwner,
+          }).then(() => undefined),
+        ),
+      ).rejects.toBeInstanceOf(InvalidInput);
+      await expect(
+        inOrg((tx) =>
+          notifyBillingInTx(tx, {
+            organizationId: team.organizationId,
+            kind: 'nope' as BillingKind,
+            idempotencyKey: 'evt-nope',
+            params: {},
+          }).then(() => undefined),
+        ),
+      ).rejects.toBeInstanceOf(InvalidInput);
+    } finally {
+      await pool.end();
+    }
+    await adminQuery(`DELETE FROM organizations.organization WHERE id = $1`, [team.organizationId]);
   });
 });

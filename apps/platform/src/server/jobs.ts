@@ -8,7 +8,7 @@ import {
   getEmailChannel,
   type ContactResolver,
 } from '@ventora/notifications';
-import { invitationNewLinkRequestedConsumer, notifyManagersInTx } from '@ventora/organizations';
+import { invitationNewLinkRequestedConsumer } from '@ventora/organizations';
 import {
   ConsumerRegistry,
   JobRegistry,
@@ -56,56 +56,15 @@ export const platformConsumers = new ConsumerRegistry()
   .register(invitationNewLinkRequestedConsumer);
 
 /*
- * Lot 4.3: consumatorii pregătiți pentru evenimentele Fazei 3. Nu se înregistrează încă: textele
- * notificărilor vin în Lotul 4.5 (șabloanele au `textsPending`). Până atunci evenimentele se
- * marchează livrate fără consumator (`withoutConsumer: 'complete'`). Lotul 4.5 le adaugă mai sus.
+ * Lot 4.5: notificările Fazei 3 (S115) se trimit cu un singur apel, notifyBillingInTx
+ * (core/organizations): varianta owner-ului, în aplicație și pe e-mail, și, la limite și la doar
+ * citire, varianta pentru ceilalți membri, în aplicație. Consumatorii evenimentelor F3
+ * (commercial.quota.threshold, subscription.version_change_scheduled, plățile, facturile, proba)
+ * se înregistrează în loturile F3 care au datele textelor: evenimentele au doar id-uri și cifre,
+ * iar textele cer numele resursei și al pachetului, data resetării, sumele și numele owner-ului
+ * (Loturile 3.4, 3.5, 3.6, 3.7, 3.8). Până atunci evenimentele se marchează livrate fără
+ * consumator (withoutConsumer: 'complete').
  */
-export const F3_NOTIFICATION_CONSUMERS = [
-  {
-    name: 'notifications.quota-threshold',
-    handles: [{ type: 'commercial.quota.threshold', version: 1 }],
-    async handle(
-      envelope: { eventId: string; organizationId: string; payload: unknown },
-      tx: Parameters<typeof notifyManagersInTx>[0],
-    ) {
-      const p = envelope.payload as {
-        quotaKey: string;
-        threshold: number;
-        used: number;
-        limit: number;
-      };
-      await notifyManagersInTx(tx, {
-        organizationId: envelope.organizationId,
-        type: 'commercial.quota.threshold',
-        version: 1,
-        idempotencyKey: envelope.eventId,
-        params: {
-          quotaKey: p.quotaKey,
-          threshold: String(p.threshold),
-          used: String(p.used),
-          limit: String(p.limit),
-        },
-      });
-    },
-  },
-  {
-    name: 'notifications.subscription-version-change',
-    handles: [{ type: 'subscription.version_change_scheduled', version: 1 }],
-    async handle(
-      envelope: { eventId: string; organizationId: string; payload: unknown },
-      tx: Parameters<typeof notifyManagersInTx>[0],
-    ) {
-      const p = envelope.payload as { classification: string; effectiveAt: string };
-      await notifyManagersInTx(tx, {
-        organizationId: envelope.organizationId,
-        type: 'subscription.version_change_scheduled',
-        version: 1,
-        idempotencyKey: envelope.eventId,
-        params: { classification: p.classification, effectiveAt: p.effectiveAt },
-      });
-    },
-  },
-] as const;
 
 // Datele de contact și limba destinatarului, din identity (în tranzacția job-ului de livrare).
 const notificationContacts: ContactResolver = (tx, userIds) =>

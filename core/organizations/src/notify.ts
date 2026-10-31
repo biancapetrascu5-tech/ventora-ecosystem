@@ -1,5 +1,10 @@
+import { InvalidInput } from '@ventora/errors';
 import {
+  BILLING_KINDS,
+  billingType,
   sendNotification,
+  type BillingKind,
+  type BillingTemplateId,
   type SendNotificationResult,
   type SqlClient,
 } from '@ventora/notifications';
@@ -12,11 +17,13 @@ import {
 
 const ROLE_RE = /^[a-z_][a-z0-9_]*$/;
 
-/** The active owners and admins of the organization in context, read as org_rw. */
-export async function listManagersInTx(
+type MemberRole = 'owner' | 'admin' | 'member' | 'external_collaborator';
+
+/** The active members of the organization in context (all roles), read as org_rw. */
+async function listActiveMembersInTx(
   tx: SqlClient,
   organizationId: string,
-): Promise<{ userId: string; role: 'owner' | 'admin' }[]> {
+): Promise<{ userId: string; role: MemberRole }[]> {
   const { rows: who } = await tx.query('SELECT current_user::text AS role');
   const previous = (who[0] as { role: string }).role;
   if (!ROLE_RE.test(previous)) throw new Error(`[organizations] unexpected role "${previous}"`);
@@ -24,17 +31,28 @@ export async function listManagersInTx(
   try {
     const { rows } = await tx.query(
       `SELECT user_id::text AS user_id, role::text AS role FROM organizations.membership
-        WHERE organization_id = $1::uuid AND status = 'active' AND role IN ('owner', 'admin')
+        WHERE organization_id = $1::uuid AND status = 'active'
         ORDER BY role, user_id`,
       [organizationId],
     );
-    return (rows as { user_id: string; role: 'owner' | 'admin' }[]).map((r) => ({
+    return (rows as { user_id: string; role: MemberRole }[]).map((r) => ({
       userId: r.user_id,
       role: r.role,
     }));
   } finally {
     if (previous !== 'org_rw') await tx.query(`SET LOCAL ROLE ${previous}`);
   }
+}
+
+/** The active owners and admins of the organization in context, read as org_rw. */
+export async function listManagersInTx(
+  tx: SqlClient,
+  organizationId: string,
+): Promise<{ userId: string; role: 'owner' | 'admin' }[]> {
+  return (await listActiveMembersInTx(tx, organizationId)).filter(
+    (m): m is { userId: string; role: 'owner' | 'admin' } =>
+      m.role === 'owner' || m.role === 'admin',
+  );
 }
 
 /** One operational notification for the owner and each admin; members get none. */
@@ -95,3 +113,48 @@ export const invitationNewLinkRequestedConsumer = {
     });
   },
 };
+
+/**
+ * Lot 4.5 — what F3 sends, one call per event (FAZA-4 „Gata când”): the owner's variant (in the
+ * app and by e-mail, S115) and, where the design has one (the limits, read-only), the variant for
+ * everyone else in the business, in the app only. External collaborators get nothing. The caller
+ * is an outbox consumer (or F3's own transaction), in the organization's context.
+ *
+ * `params` are the values of the texts, as the design names them (`business`, `amount`, `date`…);
+ * the ones for everyone else also need `owner` (the owner's name). A missing value is refused by
+ * `send` (InvalidInput), not discovered in the panel.
+ */
+export async function notifyBillingInTx(
+  tx: SqlClient,
+  input: {
+    organizationId: string;
+    kind: BillingKind;
+    idempotencyKey: string;
+    params: Readonly<Record<string, string>>;
+  },
+): Promise<{ owner: SendNotificationResult; others: SendNotificationResult | null }> {
+  const route: { owner: BillingTemplateId; others?: BillingTemplateId } | undefined =
+    BILLING_KINDS[input.kind];
+  if (!route) throw new InvalidInput('kind', `Unknown billing notification ${input.kind}`);
+  const members = await listActiveMembersInTx(tx, input.organizationId);
+  const owners = members.filter((m) => m.role === 'owner').map((m) => m.userId);
+  const send = (id: BillingTemplateId, recipients: string[]) =>
+    sendNotification(tx, {
+      category: 'operational',
+      type: billingType(id),
+      version: 1,
+      organizationId: input.organizationId,
+      recipientUserIds: recipients,
+      ownerUserIds: owners,
+      idempotencyKey: input.idempotencyKey,
+      params: input.params,
+    });
+  const owner = await send(route.owner, owners);
+  const others = route.others
+    ? await send(
+        route.others,
+        members.filter((m) => m.role === 'admin' || m.role === 'member').map((m) => m.userId),
+      )
+    : null;
+  return { owner, others };
+}
