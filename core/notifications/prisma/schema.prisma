@@ -1,0 +1,70 @@
+// Schema "notifications" (Lot 4.3) — folosită pentru garda de drift (prisma migrate diff) și
+// prisma migrate deploy. Codul nu folosește un client Prisma generat (ca în core/audit și
+// core/commercial): rulează pe pg, cu SET LOCAL ROLE notifications_rw.
+// CHECK-urile, indexul parțial, rolurile, grant-urile, RLS și funcția pending_deliveries sunt
+// doar în migrare.
+
+datasource db {
+  provider = "postgresql"
+  schemas  = ["notifications"]
+}
+
+/// În aplicație, câte una pe destinatar. `category` e obligatorie (D4-5); `display_group` e doar
+/// pentru afișarea din NotificationsPanel.
+model Notification {
+  id              String    @id @db.Uuid
+  organizationId  String?   @map("organization_id") @db.Uuid
+  recipientUserId String    @map("recipient_user_id") @db.Uuid
+  category        String    @db.VarChar(16)
+  displayGroup    String    @map("display_group") @db.VarChar(16)
+  type            String    @db.VarChar(128)
+  version         Int
+  params          Json      @default("{}")
+  actionUrl       String?   @map("action_url") @db.VarChar(512)
+  dedupKey        String    @map("dedup_key") @db.VarChar(255)
+  validUntil      DateTime? @map("valid_until") @db.Timestamptz
+  readAt          DateTime? @map("read_at") @db.Timestamptz
+  createdAt       DateTime  @default(now()) @map("created_at") @db.Timestamptz
+
+  deliveries Delivery[]
+
+  @@unique([recipientUserId, dedupKey])
+  @@index([recipientUserId, createdAt])
+  @@index([recipientUserId, type, createdAt])
+  @@map("notification")
+  @@schema("notifications")
+}
+
+/// Livrarea pe un canal (D4-7: un canal nou nu schimbă modelul).
+model Delivery {
+  id              String    @id @db.Uuid
+  notificationId  String    @map("notification_id") @db.Uuid
+  organizationId  String?   @map("organization_id") @db.Uuid
+  recipientUserId String    @map("recipient_user_id") @db.Uuid
+  channel         String    @db.VarChar(32)
+  status          String    @default("pending") @db.VarChar(16)
+  attempts        Int       @default(0)
+  nextAttemptAt   DateTime  @default(now()) @map("next_attempt_at") @db.Timestamptz
+  lastError       String?   @map("last_error")
+  sentAt          DateTime? @map("sent_at") @db.Timestamptz
+  createdAt       DateTime  @default(now()) @map("created_at") @db.Timestamptz
+
+  notification Notification @relation(fields: [notificationId], references: [id], onDelete: Cascade)
+
+  @@unique([notificationId, channel])
+  @@map("delivery")
+  @@schema("notifications")
+}
+
+/// Pe persoană, categorie și canal (D4-6).
+model NotificationPreference {
+  userId    String   @map("user_id") @db.Uuid
+  category  String   @db.VarChar(16)
+  channel   String   @db.VarChar(32)
+  enabled   Boolean
+  updatedAt DateTime @default(now()) @map("updated_at") @db.Timestamptz
+
+  @@id([userId, category, channel])
+  @@map("notification_preference")
+  @@schema("notifications")
+}

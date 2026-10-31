@@ -9,15 +9,22 @@
     ".": "./src/index.ts"
   },
   "scripts": {
+    "db:migrate": "prisma migrate deploy --config prisma7.config.ts",
     "test": "vitest run",
+    "test:integration": "vitest run --config vitest.integration.config.ts",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@ventora/db-kit": "workspace:*",
+    "@ventora/errors": "workspace:*",
     "@ventora/i18n": "workspace:*",
     "resend": "^6.0.0"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",
+    "@types/pg": "^8.0.0",
+    "pg": "^8.0.0",
+    "prisma": "^7.0.0",
     "typescript": "^6.0.0",
     "vitest": "^5.0.5"
   }

@@ -561,5 +561,68 @@
         "date": "{date}, {time}"
       }
     }
+  },
+  "notifications": {
+    "title": "Notificaciones",
+    "filter": {
+      "all": "Todas",
+      "unread": "No leídas"
+    },
+    "markAllRead": "Marcar todo como leído",
+    "settings": "Ajustes de notificaciones",
+    "empty": {
+      "title": "No tienes notificaciones nuevas",
+      "body": "Te avisaremos aquí cuando algo te necesite."
+    },
+    "group": {
+      "operational": "Cuenta y funcionamiento",
+      "activity": "Actividad",
+      "recommendations": "Recomendaciones"
+    },
+    "unreadCount": "{n, plural, one {# sin leer} other {# sin leer}}",
+    "sms": {
+      "disconnected": {
+        "title": "El teléfono del negocio está desconectado",
+        "body": "{n} recordatorios tienen que salir antes de las {time}. Revisa el teléfono."
+      },
+      "failing": {
+        "title": "Los mensajes no salen",
+        "body": "{n} mensajes seguidos no han salido de {phone}."
+      },
+      "reconnected": {
+        "title": "El teléfono del negocio se ha vuelto a conectar",
+        "body": "Los recordatorios pendientes han salido."
+      }
+    },
+    "support": {
+      "reply": {
+        "title": "Respuesta nueva a tu solicitud",
+        "body": "«{subject}» · {author}, equipo de Ventora"
+      }
+    },
+    "request": {
+      "resolved": {
+        "title": "Tu solicitud está resuelta",
+        "body": "{type} · {item}"
+      },
+      "refused": {
+        "title": "Tu solicitud ha sido rechazada",
+        "body": "{type} · {item}. Motivo: {reason}"
+      },
+      "type": {
+        "activation": "Solicitar activación",
+        "plan": "Solicitar otra suscripción"
+      }
+    },
+    "invitation": {
+      "newLinkRequested": {
+        "title": "{name} a cerut o invitație nouă pentru {businessName}."
+      }
+    },
+    "email": {
+      "open": "Deschide în Ventora",
+      "why": "Primești acest e-mail pentru că faci parte din echipa {businessName} în Ventora.",
+      "whyAccount": "Primești acest e-mail pentru contul tău Ventora."
+    }
   }
 }

@@ -561,5 +561,68 @@
         "date": "{date}, {time}"
       }
     }
+  },
+  "notifications": {
+    "title": "Notificări",
+    "filter": {
+      "all": "Toate",
+      "unread": "Necitite"
+    },
+    "markAllRead": "Marchează toate ca citite",
+    "settings": "Setări notificări",
+    "empty": {
+      "title": "Nu ai notificări noi",
+      "body": "Îți spunem aici când ceva are nevoie de tine."
+    },
+    "group": {
+      "operational": "Despre cont și funcționare",
+      "activity": "Activitate",
+      "recommendations": "Recomandări"
+    },
+    "unreadCount": "{n, plural, one {# necitită} few {# necitite} other {# de necitite}}",
+    "sms": {
+      "disconnected": {
+        "title": "Telefonul afacerii e deconectat",
+        "body": "{n} reamintiri trebuie să plece până la {time}. Verifică telefonul."
+      },
+      "failing": {
+        "title": "Mesajele nu pleacă",
+        "body": "{n} mesaje la rând nu au plecat de pe {phone}."
+      },
+      "reconnected": {
+        "title": "Telefonul afacerii s-a conectat din nou",
+        "body": "Reamintirile în așteptare au plecat."
+      }
+    },
+    "support": {
+      "reply": {
+        "title": "Răspuns nou la solicitarea ta",
+        "body": "„{subject}” · {author}, echipa Ventora"
+      }
+    },
+    "request": {
+      "resolved": {
+        "title": "Cererea ta e rezolvată",
+        "body": "{type} · {item}"
+      },
+      "refused": {
+        "title": "Cererea ta a fost refuzată",
+        "body": "{type} · {item}. Motiv: {reason}"
+      },
+      "type": {
+        "activation": "Cere activare",
+        "plan": "Cere alt abonament"
+      }
+    },
+    "invitation": {
+      "newLinkRequested": {
+        "title": "{name} a cerut o invitație nouă pentru {businessName}."
+      }
+    },
+    "email": {
+      "open": "Deschide în Ventora",
+      "why": "Primești acest e-mail pentru că faci parte din echipa {businessName} în Ventora.",
+      "whyAccount": "Primești acest e-mail pentru contul tău Ventora."
+    }
   }
 }
