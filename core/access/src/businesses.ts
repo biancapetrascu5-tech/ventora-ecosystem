@@ -219,8 +219,7 @@ export async function createBusinessAsFounder(params: {
       attempt === 0 ? base : `${base.slice(0, 44)}-${crypto.randomBytes(3).toString('hex')}`;
     try {
       const created = await createOrganizationAsFounder(
-        // founderEmail is not used by the contract (the audit row carries founderId)
-        { founderId: founder.userId, founderEmail: '' },
+        { founderId: founder.userId },
         { name, slug, ownerEmail },
       );
       return { organizationId: created.organizationId };

@@ -6,14 +6,15 @@
 import { execSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import { existsSync } from 'node:fs';
-import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
+import { ROOT, TEST_ENV, composeCmd, composeEnv } from './test-db-config.mjs';
 
-const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
+export { TEST_ENV };
 
 // Credențiale test (nu secrete — container local dedicat testelor)
+// Lot 2.9: porturile și containerele sunt per worktree (scripts/test-db-config.mjs)
 export const TEST_DB = {
-  adminUrl: 'postgresql://postgres:test@localhost:5433',
+  adminUrl: `postgresql://postgres:test@localhost:${TEST_ENV.pgPort}`,
   identityDb: 'ventora_identity_test',
   orgDb: 'ventora_org_test',
   accessDb: 'ventora_access_test',
@@ -47,11 +48,13 @@ export const DOCKER = findDocker();
 
 // Adaugă directorul docker în PATH ca docker-credential-desktop să fie găsit
 const DOCKER_BIN_DIR = dirname(DOCKER);
-function dockerEnv() {
+export function dockerEnv() {
   const existing = process.env.PATH || '';
-  return existing.includes(DOCKER_BIN_DIR)
-    ? process.env
-    : { ...process.env, PATH: `${DOCKER_BIN_DIR};${existing}` };
+  return composeEnv(
+    existing.includes(DOCKER_BIN_DIR)
+      ? process.env
+      : { ...process.env, PATH: `${DOCKER_BIN_DIR};${existing}` },
+  );
 }
 
 function run(cmd, opts = {}) {
@@ -60,7 +63,7 @@ function run(cmd, opts = {}) {
 
 function psql(db, sql) {
   execSync(
-    `"${DOCKER}" exec -i ventora-test-postgres psql -U postgres -d ${db} -v ON_ERROR_STOP=1`,
+    `"${DOCKER}" exec -i ${TEST_ENV.postgresContainer} psql -U postgres -d ${db} -v ON_ERROR_STOP=1`,
     { input: sql, stdio: ['pipe', 'inherit', 'inherit'], env: dockerEnv() },
   );
 }
@@ -69,8 +72,10 @@ function psqlFile(db, filePath) {
   psql(db, readFileSync(filePath, 'utf8'));
 }
 
-console.log('[test:db:up] Pornesc containerul postgres-test...');
-run(`"${DOCKER}" compose -f docker-compose.test.yml up -d postgres-test`, { cwd: ROOT });
+console.log(
+  `[test:db:up] Pornesc ${TEST_ENV.postgresContainer} (port ${TEST_ENV.pgPort}, pgbouncer ${TEST_ENV.pgbouncerPort})...`,
+);
+run(composeCmd(DOCKER, 'up -d postgres-test'), { cwd: ROOT });
 
 console.log('[test:db:up] Aștept postgres să fie healthy...');
 {
@@ -79,7 +84,7 @@ console.log('[test:db:up] Aștept postgres să fie healthy...');
   while (Date.now() < deadline) {
     try {
       const out = execSync(
-        `"${DOCKER}" inspect --format "{{.State.Health.Status}}" ventora-test-postgres`,
+        `"${DOCKER}" inspect --format "{{.State.Health.Status}}" ${TEST_ENV.postgresContainer}`,
         { stdio: ['ignore', 'pipe', 'ignore'] },
       )
         .toString()
@@ -91,7 +96,7 @@ console.log('[test:db:up] Aștept postgres să fie healthy...');
     } catch {}
     await new Promise((r) => setTimeout(r, 1000));
   }
-  if (!healthy) throw new Error('ventora-test-postgres nu a ajuns healthy în 60s');
+  if (!healthy) throw new Error(`${TEST_ENV.postgresContainer} nu a ajuns healthy în 60s`);
 }
 
 console.log('[test:db:up] Creez bazele de date de test...');
@@ -315,18 +320,19 @@ psql(
 );
 
 console.log('[test:db:up] Pornesc pgbouncer-test...');
-run(`"${DOCKER}" compose -f docker-compose.test.yml up -d pgbouncer-test`, { cwd: ROOT });
+run(composeCmd(DOCKER, 'up -d pgbouncer-test'), { cwd: ROOT });
 
 // Scurt delay pentru pgbouncer să fie gata
 await new Promise((r) => setTimeout(r, 2000));
 
+const P = TEST_ENV.pgPort;
 console.log('[test:db:up] Gata. Conexiuni disponibile:');
-console.log(`  identity admin:    postgresql://postgres:test@localhost:5433/${TEST_DB.identityDb}`);
+console.log(`  identity admin:    postgresql://postgres:test@localhost:${P}/${TEST_DB.identityDb}`);
 console.log(
-  `  identity runtime:  postgresql://app_runtime:${TEST_DB.appPw}@localhost:5433/${TEST_DB.identityDb}`,
+  `  identity runtime:  postgresql://app_runtime:${TEST_DB.appPw}@localhost:${P}/${TEST_DB.identityDb}`,
 );
 console.log(
-  `  identity pgbouncer: postgresql://app_runtime:${TEST_DB.appPw}@localhost:6432/${TEST_DB.identityDb}`,
+  `  identity pgbouncer: postgresql://app_runtime:${TEST_DB.appPw}@localhost:${TEST_ENV.pgbouncerPort}/${TEST_DB.identityDb}`,
 );
-console.log(`  organizations:     postgresql://postgres:test@localhost:5433/${TEST_DB.orgDb}`);
-console.log(`  access:            postgresql://postgres:test@localhost:5433/${TEST_DB.accessDb}`);
+console.log(`  organizations:     postgresql://postgres:test@localhost:${P}/${TEST_DB.orgDb}`);
+console.log(`  access:            postgresql://postgres:test@localhost:${P}/${TEST_DB.accessDb}`);

@@ -20,7 +20,7 @@ import {
   resolveOrgContext,
   acceptInvitation,
   getInvitationByToken,
-  listMyOrganizations,
+  isOwnerOfAnyOrganization,
 } from '@ventora/organizations';
 import {
   AuditActions,
@@ -443,10 +443,12 @@ export async function signUpWithInvitation(params: {
 
 const normalizeAddress = (email: string) => email.trim().toLowerCase();
 
-/** Lot 2.7 · D: is the user an active owner of any business (2FA mandatory, R-2F1, S58)? */
+/**
+ * Lot 2.7 · D: is the user an active owner of any business (2FA mandatory, R-2F1, S58)?
+ * Lot 2.9: suspended businesses count too — an owner stays an owner while the business exists.
+ */
 export async function isOwnerAnywhere(userId: string): Promise<boolean> {
-  const memberships = (await listMyOrganizations(userId)) as { role: string; status: string }[];
-  return memberships.some((m) => m.role === 'owner' && m.status === 'active');
+  return isOwnerOfAnyOrganization(userId);
 }
 
 /**
