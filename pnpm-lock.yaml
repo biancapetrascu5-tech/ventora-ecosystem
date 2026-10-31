@@ -564,6 +564,12 @@ importers:
       '@ventora/audit':
         specifier: workspace:*
         version: link:../audit
+      '@ventora/contracts':
+        specifier: workspace:*
+        version: link:../../packages/contracts
+      '@ventora/db-kit':
+        specifier: workspace:*
+        version: link:../../packages/db-kit
       '@ventora/errors':
         specifier: workspace:*
         version: link:../../packages/errors

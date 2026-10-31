@@ -32,6 +32,8 @@ import {
   type EmailFailureReason,
   type RenderedEmail,
 } from '@ventora/notifications';
+import { writeOutboxEvent } from '@ventora/db-kit';
+import { InvitationNewLinkRequestedV1 } from '@ventora/contracts';
 
 // E21–E25 are best_effort (D2): the organization operation never fails because of the audit write.
 async function auditBestEffort(event: AuditEvent): Promise<void> {
@@ -555,15 +557,28 @@ export async function getInvitationByToken(token: string): Promise<InvitationVie
  * Lot 2.6 · E: „Cere o invitație nouă” din invitația expirată. Marchează cererea (o vede cine a
  * invitat; linkul nou îl trimite el, cu resendInvitation) și o trece în jurnal. false dacă
  * invitația nu e expirată sau nu există.
+ *
+ * Lot 4.1: marcajul și evenimentul `invitation.new_link_requested` se scriu în aceeași
+ * tranzacție (org_rw, cu organizația invitației): fără marcaj nu există eveniment, și invers.
  */
 export async function requestNewInvitationLink(token: string): Promise<boolean> {
   if (typeof token !== 'string' || !INVITATION_TOKEN.test(token)) return false;
   const db = getOrgDb();
-  const rows = await db.$queryRaw<
-    Array<{ id: string; organization_id: string; invited_by_user_id: string }>
-  >`SELECT id, organization_id, invited_by_user_id
-      FROM organizations.request_new_invitation_link(${hashToken(token)}::text)`;
-  const row = rows[0];
+  const row = await db.$transaction(async (tx: any) => {
+    const rows: Array<{ id: string; organization_id: string; invited_by_user_id: string }> =
+      await tx.$queryRaw`SELECT id, organization_id, invited_by_user_id
+        FROM organizations.request_new_invitation_link(${hashToken(token)}::text)`;
+    const marked = rows[0];
+    if (!marked) return null;
+    await tx.$executeRaw`SELECT set_config('app.organization_id', ${marked.organization_id}, true)`;
+    await writeOutboxEvent(tx, 'organizations', InvitationNewLinkRequestedV1, {
+      organizationId: marked.organization_id,
+      sourceApp: InvitationNewLinkRequestedV1.sourceApp,
+      resourceId: marked.id,
+      payload: { invitationId: marked.id, invitedByUserId: marked.invited_by_user_id },
+    });
+    return marked;
+  });
   if (!row) return false;
   await auditBestEffort({
     category: 'organization',

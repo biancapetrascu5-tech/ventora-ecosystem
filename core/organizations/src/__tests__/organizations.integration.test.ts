@@ -23,6 +23,7 @@ import {
 } from '../index.js';
 import type { OrgContext } from '../index.js';
 import { closeAuditPools } from '@ventora/audit';
+import { UUID_V7 } from '@ventora/db-kit';
 import { CaptureEmailAdapter, invitationLink, setEmailChannel } from '@ventora/notifications';
 
 // Outside the INV block, invitation emails go to an in-memory mailbox, not to the console.
@@ -1062,6 +1063,114 @@ describe('Lot 2.6 — getInvitationByToken / requestNewInvitationLink (E)', () =
 
     expect(await getInvitationByToken('0'.repeat(64))).toBeNull();
     expect(await getInvitationByToken('not-a-token')).toBeNull();
+
+    await adminQuery(`DELETE FROM organizations.organization WHERE id = $1`, [organizationId]);
+  });
+});
+
+describe('Lot 4.1 — requestNewInvitationLink writes invitation.new_link_requested (outbox)', () => {
+  async function expiredInvitation(label: string) {
+    const stamp = Date.now();
+    const { organizationId } = await createOrganizationAsFounder(
+      { founderId: newUuid(), founderEmail: 'founder@test.com' },
+      {
+        name: `Salon ${label}`,
+        slug: `l41${label}-${stamp}`,
+        ownerEmail: `owner-${label}-${stamp}@example.com`,
+      },
+    );
+    const owner = await ownerContext(organizationId);
+    const { invitationToken } = await inviteMember(owner, {
+      email: `invitee-${label}-${stamp}@example.com`,
+      role: 'member',
+      inviterName: 'Bianca Petrașcu',
+      organizationName: `Salon ${label}`,
+      applicationIds: ['booking'],
+    });
+    const view = (await getInvitationByToken(invitationToken))!;
+    return { organizationId, invitationToken, invitationId: view.id };
+  }
+
+  const outboxRows = (invitationId: string) =>
+    adminQuery(
+      `SELECT * FROM organizations.outbox_events
+        WHERE type = 'invitation.new_link_requested' AND resource_id = $1`,
+      [invitationId],
+    );
+
+  it('a successful request leaves exactly one event, with the full envelope', async () => {
+    const { organizationId, invitationToken, invitationId } = await expiredInvitation('ok');
+
+    // still valid: no marker, no event
+    expect(await requestNewInvitationLink(invitationToken)).toBe(false);
+    expect(await outboxRows(invitationId)).toHaveLength(0);
+
+    await adminQuery(
+      `UPDATE organizations.invitation SET expires_at = NOW() - INTERVAL '1 minute' WHERE id = $1`,
+      [invitationId],
+    );
+    expect(await requestNewInvitationLink(invitationToken)).toBe(true);
+
+    const [inv] = await adminQuery(
+      `SELECT invited_by_user_id, new_link_requested_at FROM organizations.invitation WHERE id = $1`,
+      [invitationId],
+    );
+    expect(inv.new_link_requested_at).toBeTruthy();
+    const events = await outboxRows(invitationId);
+    expect(events).toHaveLength(1);
+    expect(events[0]).toMatchObject({
+      type: 'invitation.new_link_requested',
+      version: 1,
+      organization_id: organizationId,
+      source_app: 'platform',
+      resource_id: invitationId,
+      correlation_id: null,
+      status: 'pending',
+      attempts: 0,
+      payload: { invitationId, invitedByUserId: inv.invited_by_user_id },
+    });
+    expect(events[0].event_id).toMatch(UUID_V7);
+    expect(Object.keys(events[0].payload).sort()).toEqual(['invitationId', 'invitedByUserId']);
+    expect(events[0].occurred_at).toBeInstanceOf(Date);
+
+    await adminQuery(`DELETE FROM organizations.organization WHERE id = $1`, [organizationId]);
+  });
+
+  it('a rolled-back transaction leaves neither the marker nor the event', async () => {
+    const { organizationId, invitationToken, invitationId } = await expiredInvitation('rb');
+    await adminQuery(
+      `UPDATE organizations.invitation SET expires_at = NOW() - INTERVAL '1 minute' WHERE id = $1`,
+      [invitationId],
+    );
+
+    // the event write fails after the marker was written, inside the same transaction
+    await adminQuery(`CREATE FUNCTION organizations.l41_fail_outbox() RETURNS trigger
+      LANGUAGE plpgsql AS $$ BEGIN RAISE EXCEPTION 'outbox write failed (test)'; END $$`);
+    await adminQuery(`CREATE TRIGGER l41_fail_outbox BEFORE INSERT ON organizations.outbox_events
+      FOR EACH ROW WHEN (NEW.resource_id = '${invitationId}')
+      EXECUTE FUNCTION organizations.l41_fail_outbox()`);
+    try {
+      await expect(requestNewInvitationLink(invitationToken)).rejects.toThrow();
+    } finally {
+      await adminQuery(`DROP TRIGGER l41_fail_outbox ON organizations.outbox_events`);
+      await adminQuery(`DROP FUNCTION organizations.l41_fail_outbox()`);
+    }
+
+    const [inv] = await adminQuery(
+      `SELECT new_link_requested_at FROM organizations.invitation WHERE id = $1`,
+      [invitationId],
+    );
+    expect(inv.new_link_requested_at).toBeNull();
+    expect(await outboxRows(invitationId)).toHaveLength(0);
+    expect(
+      await auditRows(`action = 'invitation.new_link_requested' AND target_id = $1`, [
+        invitationId,
+      ]),
+    ).toHaveLength(0);
+
+    // without the failure the same request goes through: marker and one event
+    expect(await requestNewInvitationLink(invitationToken)).toBe(true);
+    expect(await outboxRows(invitationId)).toHaveLength(1);
 
     await adminQuery(`DELETE FROM organizations.organization WHERE id = $1`, [organizationId]);
   });
