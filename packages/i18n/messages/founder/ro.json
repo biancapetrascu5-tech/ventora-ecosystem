@@ -175,10 +175,12 @@
       "actionsMobile": "Acțiuni",
       "addException": "Adaugă o excepție",
       "suspendedNotice": "Suspendată pe {date} de {name}. Membrii nu se pot conecta până reactivezi afacerea.",
+      "suspendedNoticeNoName": "Suspendată pe {date}. Membrii nu se pot conecta până reactivezi afacerea.",
       "reactivateDialog": {
         "title": "Reactivezi {business}?",
         "body": "{count, plural, one {Membrul afacerii se poate conecta din nou} few {Cei # membri se pot conecta din nou} other {Cei # de membri se pot conecta din nou}} imediat, cu rolurile și accesul la aplicații pe care le aveau.",
         "what": "Suspendată pe {date} de {name}",
+        "whatNoName": "Suspendată pe {date}",
         "cancel": "Renunță",
         "submit": "Reactivează afacerea",
         "done": "{business} e activă din nou",

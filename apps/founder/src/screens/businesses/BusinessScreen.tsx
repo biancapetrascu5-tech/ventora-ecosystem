@@ -174,7 +174,9 @@ export function BusinessScreen({ user, data }: { user: { name: string }; data: B
           notice={
             suspended && suspendedOn ? (
               <Notice tone="neutral" icon="lock">
-                {t('suspendedNotice', { date: suspendedOn, name: data.suspension?.by ?? '' })}
+                {data.suspension?.by
+                  ? t('suspendedNotice', { date: suspendedOn, name: data.suspension.by })
+                  : t('suspendedNoticeNoName', { date: suspendedOn })}
               </Notice>
             ) : undefined
           }

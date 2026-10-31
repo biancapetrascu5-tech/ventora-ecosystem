@@ -182,7 +182,11 @@ export function ReactivateBusinessDialog({
       icon="rotate-ccw"
       title={t('title', { business: name })}
       description={
-        suspendedOn ? t('what', { date: suspendedOn, name: suspendedBy ?? '' }) : undefined
+        !suspendedOn
+          ? undefined
+          : suspendedBy
+            ? t('what', { date: suspendedOn, name: suspendedBy })
+            : t('whatNoName', { date: suspendedOn })
       }
       closeLabel={ui('close')}
       onClose={onCancel}
