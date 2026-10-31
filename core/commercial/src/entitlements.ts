@@ -5,9 +5,12 @@ import type {
   Currency,
   EffectiveEntitlements,
   EntitlementProvider,
+  InvoiceLinePreview,
+  InvoicePreview,
   SubscriptionStatus,
   SubscriptionSummary,
 } from '@ventora/contracts';
+import { discountApplies, priceInvoice, type DiscountTerms } from './pricing';
 import { FeatureNotIncluded, InvalidInput } from '@ventora/errors';
 import { priceOf } from './classify';
 import { withOrganizationRead } from './db';
@@ -78,6 +81,16 @@ async function computeEntitlements(
 
   const applications = new Set(terms.applications);
   const features = new Set(terms.features);
+
+  // Applications added to the subscription (D3-9): recurring lines, while the plan is included
+  if (sub && versionId) {
+    const lines = await client.query<{ application_id: string }>(
+      `SELECT application_id FROM commercial.subscription_application
+        WHERE subscription_id = $1 AND ended_at IS NULL AND starts_at <= $2`,
+      [sub.id, at],
+    );
+    for (const l of lines.rows) applications.add(l.application_id);
+  }
 
   // Active trials (D3-5): an application or a feature, for 14 days, without a card
   const trials = await client.query<{ kind: string; application_id: string; feature_key: string }>(
@@ -220,6 +233,74 @@ export async function listAddonsForOrg(organizationId: string): Promise<AddonOff
   });
 }
 
+/**
+ * D3-21: the next invoice — the plan, the applications added (D3-9) and, on a monthly
+ * subscription, the monthly add-ons (D3-7), each at full price; the discounts that reach that
+ * invoice as separate lines; the total. A monthly add-on on a yearly subscription is not on the
+ * yearly invoice (Stripe bills one interval per subscription; see the Lot 3.2 report).
+ */
+async function previewInvoice(
+  client: PoolClient,
+  sub: LiveSubscription,
+  p: { planCode: string; planPriceMinor: number; invoiceDate: string; at: Date },
+): Promise<InvoicePreview> {
+  const lines: InvoiceLinePreview[] = [
+    { kind: 'plan', key: p.planCode, lineId: null, amountMinor: p.planPriceMinor },
+  ];
+  const apps = await client.query<{ id: string; application_id: string; amount_minor: string }>(
+    `SELECT id, application_id, amount_minor FROM commercial.subscription_application
+      WHERE subscription_id = $1 AND ended_at IS NULL AND interval = $2
+      ORDER BY application_id`,
+    [sub.id, sub.interval],
+  );
+  for (const a of apps.rows) {
+    lines.push({
+      kind: 'application',
+      key: a.application_id,
+      lineId: a.id,
+      amountMinor: Number(a.amount_minor),
+    });
+  }
+  if (sub.interval === 'month') {
+    const addons = await client.query<{ id: string; code: string; amount: string | null }>(
+      `SELECT g.id, a.code, (p.amount_minor * g.packs)::text AS amount
+         FROM commercial.addon_grant g
+         JOIN commercial.addon a ON a.id = g.addon_id
+         LEFT JOIN commercial.addon_price p ON p.addon_id = a.id AND p.currency = $2
+        WHERE g.subscription_id = $1 AND g.recurring AND g.ended_at IS NULL
+        ORDER BY a.code, g.created_at`,
+      [sub.id, sub.currency],
+    );
+    for (const a of addons.rows) {
+      lines.push({ kind: 'addon', key: a.code, lineId: a.id, amountMinor: Number(a.amount ?? 0) });
+    }
+  }
+
+  const { rows } = await client.query(
+    `SELECT id, scope, subscription_application_id, addon_grant_id, kind, percent_off,
+            amount_off_minor, duration, duration_months, created_at, ended_at
+       FROM commercial.discount WHERE subscription_id = $1 AND (ended_at IS NULL OR ended_at > $2)
+      ORDER BY created_at`,
+    [sub.id, p.at],
+  );
+  const discounts: DiscountTerms[] = rows
+    .map((r) => ({
+      id: r.id,
+      scope: r.scope,
+      lineId: r.subscription_application_id ?? r.addon_grant_id ?? null,
+      kind: r.kind,
+      percentOff: r.percent_off,
+      amountOffMinor: bigintOrNull(r.amount_off_minor),
+      duration: r.duration,
+      durationMonths: r.duration_months,
+      createdAt: r.created_at,
+      endedAt: r.ended_at,
+    }))
+    .filter((d) => discountApplies(d, sub, p.invoiceDate, p.at));
+
+  return { date: p.invoiceDate, currency: sub.currency, lines, ...priceInvoice(lines, discounts) };
+}
+
 /** HubAdminPlan (Lot 3.7): the subscription, its price, its dates and the limited quotas. */
 export async function getSubscriptionSummary(
   organizationId: string,
@@ -245,6 +326,14 @@ export async function getSubscriptionSummary(
       [sub.id, at],
     );
     const today = calendarDate(at);
+    const invoiceDate = nextBillingDate(sub, today);
+    const priceMinor = priceOf(terms, sub.currency, sub.interval) ?? 0;
+    const nextInvoice = await previewInvoice(client, sub, {
+      planCode: rows[0]!.code,
+      planPriceMinor: priceMinor,
+      invoiceDate,
+      at,
+    });
     return {
       planCode: rows[0]!.code,
       planName: rows[0]!.name,
@@ -252,9 +341,10 @@ export async function getSubscriptionSummary(
       status: sub.status,
       interval: sub.interval,
       currency: sub.currency,
-      priceMinor: priceOf(terms, sub.currency, sub.interval) ?? 0,
+      priceMinor,
+      nextInvoice,
       startedOn: sub.startedOn,
-      nextBillingDate: nextBillingDate(sub, today),
+      nextBillingDate: invoiceDate,
       quotaPeriod: quotaPeriod(sub.startedOn, today),
       trialEndsAt: sub.trialEndsAt,
       pendingChange: pending.rows[0]

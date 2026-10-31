@@ -89,6 +89,14 @@ export async function withOrganizationRead<T>(
 }
 
 /**
+ * A Founder read across businesses, as founder_runtime itself (no module role): only through
+ * the SECURITY DEFINER functions granted to it (e.g. founder_list_forever_discounts).
+ */
+export async function withFounderRead<T>(fn: (client: PoolClient) => Promise<T>): Promise<T> {
+  return inTransaction('founder', 'BEGIN READ ONLY', async () => {}, fn);
+}
+
+/**
  * A Founder write, as commercial_founder on founder_runtime. With `organizationId`, the
  * transaction is in that organization's context (RLS, WITH CHECK): one business per transaction.
  * The audit row goes in the same transaction (required) through `exec`.

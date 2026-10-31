@@ -40,6 +40,19 @@ export {
   createOverride,
   extendOverride,
   endOverride,
+  setApplicationPrices,
+  addApplicationToSubscription,
+  endApplicationLine,
+  createDiscount,
+  updateDiscount,
+  endDiscount,
+  listForeverDiscounts,
+  DISCOUNT_REASON_MIN,
+  DISCOUNT_REASON_MAX,
+  type DiscountTarget,
+  type DiscountValue,
+  type DiscountDurationInput,
+  type ForeverDiscountRow,
   DISADVANTAGE_NOTICE_DAYS,
   OVERRIDE_MAX_MONTHS,
   DEFAULT_CURRENCY,
@@ -66,4 +79,10 @@ export {
   startOfDay,
   BILLING_TIME_ZONE,
 } from './period';
+export {
+  discountApplies,
+  firstDiscountedInvoice,
+  priceInvoice,
+  type DiscountTerms,
+} from './pricing';
 export { closeCommercialPools, type CommercialConnection } from './db';

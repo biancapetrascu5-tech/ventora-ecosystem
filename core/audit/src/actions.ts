@@ -70,6 +70,13 @@ export const AuditActions = {
   commercialOverrideCreated: 'commercial.override_created', // D-COM-8
   commercialOverrideExtended: 'commercial.override_extended',
   commercialOverrideEnded: 'commercial.override_ended',
+  // D3-21 (31.10.2026): discounts and applications added to a subscription (D3-9)
+  commercialApplicationPricesSet: 'commercial.application_prices_set',
+  commercialApplicationLineAdded: 'commercial.application_line_added',
+  commercialApplicationLineEnded: 'commercial.application_line_ended',
+  commercialDiscountCreated: 'commercial.discount_created',
+  commercialDiscountUpdated: 'commercial.discount_updated',
+  commercialDiscountEnded: 'commercial.discount_ended',
 } as const;
 
 export type AuditAction = (typeof AuditActions)[keyof typeof AuditActions];

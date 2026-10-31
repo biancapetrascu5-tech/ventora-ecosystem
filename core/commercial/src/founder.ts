@@ -12,7 +12,7 @@ import { writeOutboxEvent } from '@ventora/db-kit';
 import { requireFounderSession } from '@ventora/identity';
 import { classifyChange, priceOf, type ChangeReason, type PriceKind } from './classify';
 import { assertKnownKeys } from './contract';
-import { withFounderWrite } from './db';
+import { withFounderRead, withFounderWrite } from './db';
 import { anchorDayOf, calendarDate, quotaPeriod, startOfDay } from './period';
 import { loadVersionTerms } from './terms';
 
@@ -1054,5 +1054,400 @@ export async function endOverride(
       targetId: overrideId,
       organizationId,
     });
+  });
+}
+
+// ── D3-21: applications added to a subscription, discounts ──────────────────────────────────
+
+/** The price of an application added to a subscription (D3-9), per currency and interval. */
+export async function setApplicationPrices(
+  params: FounderParams & {
+    applicationId: string;
+    prices: ReadonlyArray<{ currency: Currency; kind: BillingInterval; amountMinor: number }>;
+  },
+): Promise<void> {
+  const founder = await requireFounderSession(params.founderHeaders);
+  const seen = new Set<string>();
+  for (const p of params.prices) {
+    if (!CURRENCIES.includes(p.currency)) throw new InvalidInput('prices.currency');
+    if (p.kind !== 'month' && p.kind !== 'year') throw new InvalidInput('prices.kind');
+    minor('prices.amountMinor', p.amountMinor);
+    if (seen.has(`${p.currency}:${p.kind}`)) throw new InvalidInput('prices');
+    seen.add(`${p.currency}:${p.kind}`);
+  }
+  await withFounderWrite(null, async (client, exec) => {
+    const app = await client.query(
+      `SELECT 1 FROM commercial.application WHERE id = $1 AND retired_at IS NULL AND NOT is_platform`,
+      [params.applicationId],
+    );
+    if (!app.rows[0]) throw new ResourceNotFound('Application not found');
+    await client.query(`DELETE FROM commercial.application_price WHERE application_id = $1`, [
+      params.applicationId,
+    ]);
+    for (const p of params.prices) {
+      await client.query(
+        `INSERT INTO commercial.application_price (application_id, currency, kind, amount_minor)
+         VALUES ($1, $2, $3, $4)`,
+        [params.applicationId, p.currency, p.kind, p.amountMinor],
+      );
+    }
+    await audit(exec, founder.userId, {
+      action: AuditActions.commercialApplicationPricesSet,
+      targetType: 'application',
+      targetId: params.applicationId,
+      metadata: { prices: params.prices },
+    });
+  });
+}
+
+/**
+ * D3-9: an application added to the live subscription, as a recurring line (like a monthly
+ * add-on), at the application's price for the subscription's currency and interval, copied now.
+ * An application already in the plan version is not added again.
+ */
+export async function addApplicationToSubscription(
+  params: FounderParams & { organizationId: string; applicationId: string },
+): Promise<{ lineId: string }> {
+  const founder = await requireFounderSession(params.founderHeaders);
+  const organizationId = uuid('organizationId', params.organizationId);
+  return withFounderWrite(organizationId, async (client, exec) => {
+    const sub = await liveSubscriptionForUpdate(client);
+    if (!sub) throw new InvalidInput('organizationId', 'The business has no subscription');
+    const terms = await loadVersionTerms(client, await currentVersion(client, sub));
+    if (terms.applications.includes(params.applicationId)) {
+      throw new Conflict('The application is already in the plan');
+    }
+    const price = await client.query<{ amount_minor: string }>(
+      `SELECT p.amount_minor FROM commercial.application_price p
+         JOIN commercial.application a ON a.id = p.application_id
+        WHERE p.application_id = $1 AND p.currency = $2 AND p.kind = $3
+          AND a.retired_at IS NULL AND NOT a.is_platform`,
+      [params.applicationId, sub.currency, sub.interval],
+    );
+    if (!price.rows[0]) {
+      throw new InvalidInput(
+        'applicationId',
+        `The application has no ${sub.interval} price in ${sub.currency}`,
+      );
+    }
+    const { rows } = await client
+      .query<{ id: string }>(
+        `INSERT INTO commercial.subscription_application
+           (organization_id, subscription_id, application_id, currency, interval, amount_minor,
+            source, created_by_founder_id)
+         VALUES ($1, $2, $3, $4, $5, $6, 'founder', $7) RETURNING id`,
+        [
+          organizationId,
+          sub.id,
+          params.applicationId,
+          sub.currency,
+          sub.interval,
+          price.rows[0].amount_minor,
+          founder.userId,
+        ],
+      )
+      .catch((err) => mapDbError(err, 'applicationId'));
+    const lineId = rows[0]!.id;
+    await audit(exec, founder.userId, {
+      action: AuditActions.commercialApplicationLineAdded,
+      targetType: 'subscription_application',
+      targetId: lineId,
+      organizationId,
+      metadata: {
+        applicationId: params.applicationId,
+        currency: sub.currency,
+        interval: sub.interval,
+        amountMinor: Number(price.rows[0].amount_minor),
+      },
+    });
+    return { lineId };
+  });
+}
+
+/** The line ends (stays in the history); a discount on it ends with it. */
+export async function endApplicationLine(
+  params: FounderParams & { organizationId: string; lineId: string },
+): Promise<void> {
+  const founder = await requireFounderSession(params.founderHeaders);
+  const organizationId = uuid('organizationId', params.organizationId);
+  const lineId = uuid('lineId', params.lineId);
+  await withFounderWrite(organizationId, async (client, exec) => {
+    const { rowCount } = await client.query(
+      `UPDATE commercial.subscription_application
+          SET ended_at = CURRENT_TIMESTAMP, ended_by_founder_id = $2
+        WHERE id = $1 AND ended_at IS NULL`,
+      [lineId, founder.userId],
+    );
+    if (!rowCount) throw new ResourceNotFound('Active application line not found');
+    const ended = await client.query<{ id: string }>(
+      `UPDATE commercial.discount SET ended_at = CURRENT_TIMESTAMP, ended_by_founder_id = $2
+        WHERE subscription_application_id = $1 AND ended_at IS NULL RETURNING id`,
+      [lineId, founder.userId],
+    );
+    await audit(exec, founder.userId, {
+      action: AuditActions.commercialApplicationLineEnded,
+      targetType: 'subscription_application',
+      targetId: lineId,
+      organizationId,
+      metadata: { discountsEnded: ended.rows.map((r) => r.id) },
+    });
+  });
+}
+
+export const DISCOUNT_REASON_MIN = 10;
+export const DISCOUNT_REASON_MAX = 1000;
+
+export type DiscountTarget =
+  | { scope: 'subscription' }
+  | { scope: 'application'; lineId: string }
+  | { scope: 'addon'; lineId: string };
+
+export type DiscountValue =
+  { kind: 'percent'; percentOff: number } | { kind: 'amount'; amountOffMinor: number };
+
+export type DiscountDurationInput =
+  | { duration: 'once' }
+  | { duration: 'repeating'; durationMonths: number }
+  | { duration: 'forever' };
+
+function discountReason(reason: string): string {
+  const v = reason?.trim() ?? '';
+  if (v.length < DISCOUNT_REASON_MIN || v.length > DISCOUNT_REASON_MAX) {
+    throw new InvalidInput(
+      'reason',
+      `A reason of ${DISCOUNT_REASON_MIN}–${DISCOUNT_REASON_MAX} characters is required`,
+    );
+  }
+  return v;
+}
+
+function discountValue(value: DiscountValue): { percent: number | null; amount: number | null } {
+  if (value.kind === 'percent') {
+    if (!Number.isInteger(value.percentOff) || value.percentOff < 1 || value.percentOff > 100) {
+      throw new InvalidInput('percentOff', 'A percentage from 1 to 100');
+    }
+    return { percent: value.percentOff, amount: null };
+  }
+  if (value.kind === 'amount') {
+    if (!Number.isSafeInteger(value.amountOffMinor) || value.amountOffMinor <= 0) {
+      throw new InvalidInput('amountOffMinor', 'An amount above zero');
+    }
+    return { percent: null, amount: value.amountOffMinor };
+  }
+  throw new InvalidInput('kind');
+}
+
+/**
+ * D3-21: a discount on a business — on the whole subscription or on one line (an application
+ * added, a monthly add-on); a percentage (1–100, 100 = free) or a fixed amount in the business's
+ * currency; once (the next invoice), N months, or forever; with a reason (10–1,000 characters).
+ * One active discount per target. Audited (required) on the Founder.
+ */
+export async function createDiscount(
+  params: FounderParams & {
+    organizationId: string;
+    target: DiscountTarget;
+    value: DiscountValue;
+    duration: DiscountDurationInput;
+    reason: string;
+  },
+): Promise<{ discountId: string }> {
+  const founder = await requireFounderSession(params.founderHeaders);
+  const organizationId = uuid('organizationId', params.organizationId);
+  const reason = discountReason(params.reason);
+  const { percent, amount } = discountValue(params.value);
+  const target = params.target;
+  if (!['subscription', 'application', 'addon'].includes(target.scope)) {
+    throw new InvalidInput('target');
+  }
+  const lineId = target.scope === 'subscription' ? null : uuid('target.lineId', target.lineId);
+  const d = params.duration;
+  if (!['once', 'repeating', 'forever'].includes(d.duration)) throw new InvalidInput('duration');
+  const months = d.duration === 'repeating' ? d.durationMonths : null;
+  if (months !== null && (!Number.isInteger(months) || months < 1 || months > 120)) {
+    throw new InvalidInput('durationMonths', 'From 1 to 120 months');
+  }
+
+  return withFounderWrite(organizationId, async (client, exec) => {
+    const sub = await liveSubscriptionForUpdate(client);
+    if (!sub) throw new InvalidInput('organizationId', 'The business has no subscription');
+    const { rows } = await client
+      .query<{ id: string }>(
+        `INSERT INTO commercial.discount
+           (organization_id, subscription_id, scope, subscription_application_id, addon_grant_id,
+            kind, percent_off, amount_off_minor, currency, duration, duration_months, reason,
+            created_by_founder_id)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13) RETURNING id`,
+        [
+          organizationId,
+          sub.id,
+          target.scope,
+          target.scope === 'application' ? lineId : null,
+          target.scope === 'addon' ? lineId : null,
+          params.value.kind,
+          percent,
+          amount,
+          sub.currency,
+          d.duration,
+          months,
+          reason,
+          founder.userId,
+        ],
+      )
+      .catch((err: { code?: string }) => {
+        if (err.code === '23505') throw new Conflict('The target already has an active discount');
+        return mapDbError(err, 'target');
+      });
+    const discountId = rows[0]!.id;
+    await audit(exec, founder.userId, {
+      action: AuditActions.commercialDiscountCreated,
+      targetType: 'discount',
+      targetId: discountId,
+      organizationId,
+      metadata: {
+        scope: target.scope,
+        lineId,
+        kind: params.value.kind,
+        percentOff: percent,
+        amountOffMinor: amount,
+        currency: sub.currency,
+        duration: d.duration,
+        durationMonths: months,
+        reason,
+      },
+    });
+    return { discountId };
+  });
+}
+
+/** D3-21 „modificare”: the value and / or the reason; scope, kind and duration stay. Audited. */
+export async function updateDiscount(
+  params: FounderParams & {
+    organizationId: string;
+    discountId: string;
+    value?: DiscountValue;
+    reason?: string;
+  },
+): Promise<void> {
+  const founder = await requireFounderSession(params.founderHeaders);
+  const organizationId = uuid('organizationId', params.organizationId);
+  const discountId = uuid('discountId', params.discountId);
+  const reason = params.reason === undefined ? undefined : discountReason(params.reason);
+  const value = params.value ? discountValue(params.value) : undefined;
+  if (!reason && !value) throw new InvalidInput('value');
+  await withFounderWrite(organizationId, async (client, exec) => {
+    const before = await client.query<{
+      kind: string;
+      percent_off: number | null;
+      amount_off_minor: string | null;
+      reason: string;
+    }>(
+      `SELECT kind, percent_off, amount_off_minor, reason FROM commercial.discount
+        WHERE id = $1 AND ended_at IS NULL FOR UPDATE`,
+      [discountId],
+    );
+    const row = before.rows[0];
+    if (!row) throw new ResourceNotFound('Active discount not found');
+    if (params.value && params.value.kind !== row.kind) {
+      throw new InvalidInput('kind', 'A discount keeps its kind; end it and add another');
+    }
+    await client
+      .query(
+        `UPDATE commercial.discount
+            SET percent_off = $2, amount_off_minor = $3, reason = $4, updated_by_founder_id = $5
+          WHERE id = $1`,
+        [
+          discountId,
+          value ? value.percent : row.percent_off,
+          value ? value.amount : row.amount_off_minor,
+          reason ?? row.reason,
+          founder.userId,
+        ],
+      )
+      .catch((err) => mapDbError(err, 'value'));
+    await audit(exec, founder.userId, {
+      action: AuditActions.commercialDiscountUpdated,
+      targetType: 'discount',
+      targetId: discountId,
+      organizationId,
+      metadata: {
+        from: {
+          percentOff: row.percent_off,
+          amountOffMinor: row.amount_off_minor === null ? null : Number(row.amount_off_minor),
+          reason: row.reason,
+        },
+        to: {
+          percentOff: value ? value.percent : row.percent_off,
+          amountOffMinor: value
+            ? value.amount
+            : row.amount_off_minor === null
+              ? null
+              : Number(row.amount_off_minor),
+          reason: reason ?? row.reason,
+        },
+      },
+    });
+  });
+}
+
+/** The discount ends: no invoice from now on gets it; it stays in the history. */
+export async function endDiscount(
+  params: FounderParams & { organizationId: string; discountId: string },
+): Promise<void> {
+  const founder = await requireFounderSession(params.founderHeaders);
+  const organizationId = uuid('organizationId', params.organizationId);
+  const discountId = uuid('discountId', params.discountId);
+  await withFounderWrite(organizationId, async (client, exec) => {
+    const { rowCount } = await client.query(
+      `UPDATE commercial.discount SET ended_at = CURRENT_TIMESTAMP, ended_by_founder_id = $2
+        WHERE id = $1 AND ended_at IS NULL`,
+      [discountId, founder.userId],
+    );
+    if (!rowCount) throw new ResourceNotFound('Active discount not found');
+    await audit(exec, founder.userId, {
+      action: AuditActions.commercialDiscountEnded,
+      targetType: 'discount',
+      targetId: discountId,
+      organizationId,
+    });
+  });
+}
+
+export interface ForeverDiscountRow {
+  discountId: string;
+  organizationId: string;
+  subscriptionId: string;
+  scope: 'subscription' | 'application' | 'addon';
+  lineId: string | null;
+  kind: 'percent' | 'amount';
+  percentOff: number | null;
+  amountOffMinor: number | null;
+  currency: Currency;
+  reason: string;
+  createdByFounderId: string;
+  createdAt: Date;
+}
+
+/** D3-21: every permanent discount still active, across businesses (the list in Founder). */
+export async function listForeverDiscounts(params: FounderParams): Promise<ForeverDiscountRow[]> {
+  await requireFounderSession(params.founderHeaders);
+  return withFounderRead(async (client) => {
+    const { rows } = await client.query(
+      `SELECT * FROM commercial.founder_list_forever_discounts()`,
+    );
+    return rows.map((r) => ({
+      discountId: r.id,
+      organizationId: r.organization_id,
+      subscriptionId: r.subscription_id,
+      scope: r.scope,
+      lineId: r.subscription_application_id ?? r.addon_grant_id ?? null,
+      kind: r.kind,
+      percentOff: r.percent_off,
+      amountOffMinor: r.amount_off_minor === null ? null : Number(r.amount_off_minor),
+      currency: r.currency,
+      reason: r.reason,
+      createdByFounderId: r.created_by_founder_id,
+      createdAt: r.created_at,
+    }));
   });
 }

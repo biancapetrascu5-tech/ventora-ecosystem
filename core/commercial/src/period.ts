@@ -89,6 +89,13 @@ export function nextBillingDate(
   }
 }
 
+/** `date` moved by `months`, on the anchor day of the target month (clamped like billing). */
+export function addMonthsAnchored(date: string, months: number, anchorDay: number): string {
+  const { y, m } = parse(date);
+  const at = addMonths(y, m, months);
+  return anchorDateIn(at.y, at.m, anchorDay);
+}
+
 /**
  * The monthly quota period that contains `onDate` (for flow quotas, on monthly and yearly
  * subscriptions alike): from the latest anchor date on or before it (not before the start) to

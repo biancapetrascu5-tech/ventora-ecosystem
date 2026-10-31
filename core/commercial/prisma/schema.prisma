@@ -23,6 +23,8 @@ model Application {
   quotas      QuotaKey[]
   versionApps PlanVersionApplication[]
   trials      Trial[]
+  prices      ApplicationPrice[]
+  lines       SubscriptionApplication[]
 
   @@map("application")
   @@schema("commercial")
@@ -240,8 +242,10 @@ model Subscription {
   updatedAt          DateTime    @default(now()) @map("updated_at") @db.Timestamptz
   version            PlanVersion @relation(fields: [planVersionId], references: [id])
 
-  changes     SubscriptionChange[]
-  addonGrants AddonGrant[]
+  changes      SubscriptionChange[]
+  addonGrants  AddonGrant[]
+  applications SubscriptionApplication[]
+  discounts    Discount[]
 
   @@index([organizationId], map: "subscription_organization_id_idx")
   @@map("subscription")
@@ -286,8 +290,80 @@ model AddonGrant {
   addon              Addon         @relation(fields: [addonId], references: [id])
   subscription       Subscription? @relation(fields: [subscriptionId], references: [id])
 
+  discounts Discount[]
+
   @@index([organizationId], map: "addon_grant_organization_id_idx")
   @@map("addon_grant")
+  @@schema("commercial")
+}
+
+// ── Lot 3.2 · commercial_discounts (D3-21) ───────────────────────────────────────────────────
+
+/// Prețul unei aplicații adăugate la abonament (D3-9), pe monedă și periodicitate (D3-2, D3-3).
+model ApplicationPrice {
+  applicationId String      @map("application_id") @db.VarChar(64)
+  currency      String      @db.VarChar(3)
+  kind          String      @db.VarChar(8)
+  amountMinor   BigInt      @map("amount_minor")
+  application   Application @relation(fields: [applicationId], references: [id])
+
+  @@id([applicationId, currency, kind])
+  @@map("application_price")
+  @@schema("commercial")
+}
+
+/// O aplicație adăugată la abonament: linie recurentă, cu prețul de la adăugare (D3-9, D3-21).
+model SubscriptionApplication {
+  id                 String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  organizationId     String       @map("organization_id") @db.Uuid
+  subscriptionId     String       @map("subscription_id") @db.Uuid
+  applicationId      String       @map("application_id") @db.VarChar(64)
+  currency           String       @db.VarChar(3)
+  interval           String       @db.VarChar(8)
+  amountMinor        BigInt       @map("amount_minor")
+  source             String       @db.VarChar(16)
+  startsAt           DateTime     @default(now()) @map("starts_at") @db.Timestamptz
+  endedAt            DateTime?    @map("ended_at") @db.Timestamptz
+  createdByFounderId String       @map("created_by_founder_id") @db.Uuid
+  endedByFounderId   String?      @map("ended_by_founder_id") @db.Uuid
+  createdAt          DateTime     @default(now()) @map("created_at") @db.Timestamptz
+  subscription       Subscription @relation(fields: [subscriptionId], references: [id])
+  application        Application  @relation(fields: [applicationId], references: [id])
+
+  discounts Discount[]
+
+  @@index([organizationId], map: "subscription_application_organization_id_idx")
+  @@map("subscription_application")
+  @@schema("commercial")
+}
+
+/// Reducerea (D3-21): pe abonament sau pe o linie; procent sau sumă; o dată / N luni / permanent.
+model Discount {
+  id                        String                   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  organizationId            String                   @map("organization_id") @db.Uuid
+  subscriptionId            String                   @map("subscription_id") @db.Uuid
+  scope                     String                   @db.VarChar(16)
+  subscriptionApplicationId String?                  @map("subscription_application_id") @db.Uuid
+  addonGrantId              String?                  @map("addon_grant_id") @db.Uuid
+  kind                      String                   @db.VarChar(8)
+  percentOff                Int?                     @map("percent_off") @db.SmallInt
+  amountOffMinor            BigInt?                  @map("amount_off_minor")
+  currency                  String                   @db.VarChar(3)
+  duration                  String                   @db.VarChar(16)
+  durationMonths            Int?                     @map("duration_months") @db.SmallInt
+  reason                    String
+  createdByFounderId        String                   @map("created_by_founder_id") @db.Uuid
+  createdAt                 DateTime                 @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt                 DateTime?                @map("updated_at") @db.Timestamptz
+  updatedByFounderId        String?                  @map("updated_by_founder_id") @db.Uuid
+  endedAt                   DateTime?                @map("ended_at") @db.Timestamptz
+  endedByFounderId          String?                  @map("ended_by_founder_id") @db.Uuid
+  subscription              Subscription             @relation(fields: [subscriptionId], references: [id])
+  applicationLine           SubscriptionApplication? @relation(fields: [subscriptionApplicationId], references: [id])
+  addonGrant                AddonGrant?              @relation(fields: [addonGrantId], references: [id])
+
+  @@index([organizationId], map: "discount_organization_id_idx")
+  @@map("discount")
   @@schema("commercial")
 }
 

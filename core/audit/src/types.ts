@@ -22,7 +22,9 @@ export type AuditTargetType =
   | 'subscription'
   | 'subscription_change'
   | 'addon_grant'
-  | 'override';
+  | 'override'
+  | 'subscription_application'
+  | 'discount';
 
 export type AuditEvent = {
   category: AuditCategory;

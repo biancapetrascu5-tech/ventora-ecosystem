@@ -6,7 +6,16 @@ import { closeAuditPools } from '@ventora/audit';
 import { founderAuth } from '@ventora/identity';
 import {
   APPLICATIONS,
+  addApplicationToSubscription,
   assignSubscription,
+  createDiscount,
+  endApplicationLine,
+  endDiscount,
+  firstDiscountedInvoice,
+  listForeverDiscounts,
+  setApplicationPrices,
+  startOfDay,
+  updateDiscount,
   closeCommercialPools,
   commercialEntitlementProvider,
   createAddon,
@@ -906,5 +915,400 @@ describe('Lot 3.2 — moving businesses to another version (§8.5, D-COM-9)', ()
         toVersionId: fewer,
       }),
     ).rejects.toThrow(Conflict);
+  });
+});
+
+// ── D3-21: discounts and applications added to a subscription ───────────────────────────────
+
+describe('D3-21 — applications added to a subscription are recurring lines', () => {
+  it('added at the application’s price for the subscription’s currency and interval; ended', async () => {
+    await setApplicationPrices({
+      founderHeaders: founderHeaders(),
+      applicationId: 'crm',
+      prices: [{ currency: 'RON', kind: 'month', amountMinor: 4900 }],
+    });
+    const { versionId } = await publishedVersion();
+    const org = newUuid();
+    await assignSubscription({
+      founderHeaders: founderHeaders(),
+      organizationId: org,
+      versionId,
+      interval: 'month',
+    });
+    const { lineId } = await addApplicationToSubscription({
+      founderHeaders: founderHeaders(),
+      organizationId: org,
+      applicationId: 'crm',
+    });
+    expect((await getEffectiveEntitlements(org)).applications).toEqual(['booking', 'crm']);
+    const invoice = (await getSubscriptionSummary(org))!.nextInvoice;
+    expect(invoice.lines).toEqual([
+      expect.objectContaining({ kind: 'plan', amountMinor: 34900 }),
+      { kind: 'application', key: 'crm', lineId, amountMinor: 4900 },
+    ]);
+    expect(invoice).toMatchObject({ subtotalMinor: 39800, discountMinor: 0, totalMinor: 39800 });
+    // already in the plan → refused; no price in the subscription's currency / interval → refused
+    await expect(
+      addApplicationToSubscription({
+        founderHeaders: founderHeaders(),
+        organizationId: org,
+        applicationId: 'booking',
+      }),
+    ).rejects.toThrow(Conflict);
+    const yearlyOrg = newUuid();
+    await assignSubscription({
+      founderHeaders: founderHeaders(),
+      organizationId: yearlyOrg,
+      versionId,
+      interval: 'year',
+    });
+    await expect(
+      addApplicationToSubscription({
+        founderHeaders: founderHeaders(),
+        organizationId: yearlyOrg,
+        applicationId: 'crm',
+      }),
+    ).rejects.toThrow(/no year price in RON/);
+    await endApplicationLine({ founderHeaders: founderHeaders(), organizationId: org, lineId });
+    expect((await getEffectiveEntitlements(org)).applications).toEqual(['booking']);
+    expect(await auditCount('commercial.application_line_added', lineId)).toBe(1);
+    expect(await auditCount('commercial.application_line_ended', lineId)).toBe(1);
+    expect(await auditCount('commercial.application_prices_set', 'crm')).toBeGreaterThan(0);
+  });
+});
+
+describe('D3-21 — discounts', () => {
+  const REASON = 'Partener fondator, înțelegere din octombrie';
+  /** A business on the monthly test plan (34900 RON), started on the 15th. */
+  async function business(): Promise<{ org: string; planId: string }> {
+    const { planId, versionId } = await publishedVersion();
+    const org = newUuid();
+    await assignSubscription({
+      founderHeaders: founderHeaders(),
+      organizationId: org,
+      versionId,
+      interval: 'month',
+      startedOn: '2026-10-15',
+    });
+    return { org, planId };
+  }
+  const sub = { startedOn: '2026-10-15', interval: 'month' as const };
+  /** Seen the day before an invoice date, the next invoice is that one. */
+  const dayBefore = (invoiceDate: string) =>
+    new Date(startOfDay(invoiceDate).getTime() - 12 * 3_600_000);
+  const nextAfter = (date: string, months: number) => {
+    const d = new Date(`${date}T12:00:00Z`);
+    d.setUTCMonth(d.getUTCMonth() + months);
+    return d.toISOString().slice(0, 10);
+  };
+
+  it('a percentage on the whole subscription: full price, the discount as a line, the total; audited', async () => {
+    const { org } = await business();
+    const { discountId } = await createDiscount({
+      founderHeaders: founderHeaders(),
+      organizationId: org,
+      target: { scope: 'subscription' },
+      value: { kind: 'percent', percentOff: 20 },
+      duration: { duration: 'forever' },
+      reason: REASON,
+    });
+    const s = (await getSubscriptionSummary(org))!;
+    expect(s.priceMinor).toBe(34900);
+    expect(s.nextInvoice).toMatchObject({
+      currency: 'RON',
+      subtotalMinor: 34900,
+      discountMinor: 6980,
+      totalMinor: 27920,
+    });
+    expect(s.nextInvoice.discounts).toEqual([
+      expect.objectContaining({
+        discountId,
+        scope: 'subscription',
+        kind: 'percent',
+        percentOff: 20,
+        appliedMinor: 6980,
+      }),
+    ]);
+    expect(await auditCount('commercial.discount_created', discountId)).toBe(1);
+  });
+
+  it('a fixed amount in the business currency; 100% = free', async () => {
+    const { org } = await business();
+    await createDiscount({
+      founderHeaders: founderHeaders(),
+      organizationId: org,
+      target: { scope: 'subscription' },
+      value: { kind: 'amount', amountOffMinor: 5000 },
+      duration: { duration: 'forever' },
+      reason: REASON,
+    });
+    expect((await getSubscriptionSummary(org))!.nextInvoice.totalMinor).toBe(29900);
+    const [row] = await q(`SELECT currency FROM commercial.discount WHERE organization_id = $1`, [
+      org,
+    ]);
+    expect(row!.currency).toBe('RON');
+    // the database keeps it in the subscription's currency
+    const [s] = await q(`SELECT id FROM commercial.subscription WHERE organization_id = $1`, [org]);
+    await expect(
+      q(
+        `INSERT INTO commercial.discount (organization_id, subscription_id, scope, kind, amount_off_minor, currency, duration, reason, created_by_founder_id)
+         VALUES ($1, $2, 'subscription', 'amount', 100, 'EUR', 'once', $3, $4)`,
+        [org, s!.id, REASON, founderId],
+      ),
+    ).rejects.toThrow(/subscription currency/);
+
+    const free = await business();
+    await createDiscount({
+      founderHeaders: founderHeaders(),
+      organizationId: free.org,
+      target: { scope: 'subscription' },
+      value: { kind: 'percent', percentOff: 100 },
+      duration: { duration: 'forever' },
+      reason: REASON,
+    });
+    expect((await getSubscriptionSummary(free.org))!.nextInvoice).toMatchObject({
+      subtotalMinor: 34900,
+      discountMinor: 34900,
+      totalMinor: 0,
+    });
+  });
+
+  it('on one line (an application added, a monthly add-on) vs. on the whole subscription', async () => {
+    await setApplicationPrices({
+      founderHeaders: founderHeaders(),
+      applicationId: 'crm',
+      prices: [{ currency: 'RON', kind: 'month', amountMinor: 4900 }],
+    });
+    const { org, planId } = await business();
+    const { lineId } = await addApplicationToSubscription({
+      founderHeaders: founderHeaders(),
+      organizationId: org,
+      applicationId: 'crm',
+    });
+    const seats = await createAddon({
+      founderHeaders: founderHeaders(),
+      code: `seats-d-${newUuid().slice(0, 6)}`,
+      name: '5 locuri',
+      quotaKey: 'platform.members',
+      quantity: 5,
+      validity: 'monthly',
+      purchaseMode: 'direct',
+      prices: [{ currency: 'RON', amountMinor: 6000 }],
+      eligiblePlanIds: [planId],
+    });
+    const { grantId } = await grantAddon({
+      founderHeaders: founderHeaders(),
+      organizationId: org,
+      addonId: seats.addonId,
+    });
+    await createDiscount({
+      founderHeaders: founderHeaders(),
+      organizationId: org,
+      target: { scope: 'application', lineId },
+      value: { kind: 'percent', percentOff: 100 },
+      duration: { duration: 'forever' },
+      reason: REASON,
+    });
+    await createDiscount({
+      founderHeaders: founderHeaders(),
+      organizationId: org,
+      target: { scope: 'addon', lineId: grantId },
+      value: { kind: 'amount', amountOffMinor: 1000 },
+      duration: { duration: 'forever' },
+      reason: REASON,
+    });
+    let inv = (await getSubscriptionSummary(org))!.nextInvoice;
+    // 34900 + 4900 + 6000 = 45800; - 4900 (crm free) - 1000 (seats)
+    expect(inv).toMatchObject({ subtotalMinor: 45800, discountMinor: 5900, totalMinor: 39900 });
+    // a subscription discount comes on top, on what is left
+    await createDiscount({
+      founderHeaders: founderHeaders(),
+      organizationId: org,
+      target: { scope: 'subscription' },
+      value: { kind: 'percent', percentOff: 10 },
+      duration: { duration: 'forever' },
+      reason: REASON,
+    });
+    inv = (await getSubscriptionSummary(org))!.nextInvoice;
+    expect(inv.totalMinor).toBe(39900 - 3990);
+    // one active discount per target
+    await expect(
+      createDiscount({
+        founderHeaders: founderHeaders(),
+        organizationId: org,
+        target: { scope: 'application', lineId },
+        value: { kind: 'percent', percentOff: 50 },
+        duration: { duration: 'once' },
+        reason: REASON,
+      }),
+    ).rejects.toThrow(Conflict);
+    // a line of another business, or a current-month add-on, is not a line of this subscription
+    await expect(
+      createDiscount({
+        founderHeaders: founderHeaders(),
+        organizationId: (await business()).org,
+        target: { scope: 'application', lineId },
+        value: { kind: 'percent', percentOff: 50 },
+        duration: { duration: 'once' },
+        reason: REASON,
+      }),
+    ).rejects.toThrow(InvalidInput);
+  });
+
+  it('once: only the next invoice; N months: N invoices; forever: until ended', async () => {
+    const { org } = await business();
+    const first = firstDiscountedInvoice(sub, new Date());
+    const { discountId: once } = await createDiscount({
+      founderHeaders: founderHeaders(),
+      organizationId: org,
+      target: { scope: 'subscription' },
+      value: { kind: 'amount', amountOffMinor: 100 },
+      duration: { duration: 'once' },
+      reason: REASON,
+    });
+    const at = (months: number) => dayBefore(nextAfter(first, months));
+    expect((await getSubscriptionSummary(org, at(0)))!.nextInvoice.discountMinor).toBe(100);
+    expect((await getSubscriptionSummary(org, at(1)))!.nextInvoice.discountMinor).toBe(0);
+    await endDiscount({ founderHeaders: founderHeaders(), organizationId: org, discountId: once });
+
+    const { discountId: three } = await createDiscount({
+      founderHeaders: founderHeaders(),
+      organizationId: org,
+      target: { scope: 'subscription' },
+      value: { kind: 'amount', amountOffMinor: 200 },
+      duration: { duration: 'repeating', durationMonths: 3 },
+      reason: REASON,
+    });
+    const applied = [];
+    for (const m of [0, 1, 2, 3])
+      applied.push((await getSubscriptionSummary(org, at(m)))!.nextInvoice.discountMinor);
+    expect(applied).toEqual([200, 200, 200, 0]);
+    await endDiscount({ founderHeaders: founderHeaders(), organizationId: org, discountId: three });
+
+    const { discountId: forever } = await createDiscount({
+      founderHeaders: founderHeaders(),
+      organizationId: org,
+      target: { scope: 'subscription' },
+      value: { kind: 'amount', amountOffMinor: 300 },
+      duration: { duration: 'forever' },
+      reason: REASON,
+    });
+    expect((await getSubscriptionSummary(org, at(24)))!.nextInvoice.discountMinor).toBe(300);
+    expect(
+      (await listForeverDiscounts({ founderHeaders: founderHeaders() })).map((d) => d.discountId),
+    ).toContain(forever);
+    await endDiscount({
+      founderHeaders: founderHeaders(),
+      organizationId: org,
+      discountId: forever,
+    });
+    expect((await getSubscriptionSummary(org))!.nextInvoice.discountMinor).toBe(0);
+    const permanent = await listForeverDiscounts({ founderHeaders: founderHeaders() });
+    expect(permanent.map((d) => d.discountId)).not.toContain(forever);
+    expect(permanent.map((d) => d.discountId)).not.toContain(three);
+    // ended, not deleted: the rows stay, with who ended them
+    const rows = await q(
+      `SELECT ended_by_founder_id FROM commercial.discount WHERE id = ANY($1::uuid[])`,
+      [[once, three, forever]],
+    );
+    expect(rows.map((r) => r.ended_by_founder_id)).toEqual([founderId, founderId, founderId]);
+    expect(await auditCount('commercial.discount_ended', forever)).toBe(1);
+  });
+
+  it('modified (value, reason) with its audit row; the kind stays; an ended one cannot change', async () => {
+    const { org } = await business();
+    const { discountId } = await createDiscount({
+      founderHeaders: founderHeaders(),
+      organizationId: org,
+      target: { scope: 'subscription' },
+      value: { kind: 'percent', percentOff: 10 },
+      duration: { duration: 'forever' },
+      reason: REASON,
+    });
+    await updateDiscount({
+      founderHeaders: founderHeaders(),
+      organizationId: org,
+      discountId,
+      value: { kind: 'percent', percentOff: 25 },
+      reason: 'Partener fondator, reducere mărită în noiembrie',
+    });
+    expect((await getSubscriptionSummary(org))!.nextInvoice.discountMinor).toBe(8725);
+    const [row] = await q(
+      `SELECT updated_by_founder_id, updated_at FROM commercial.discount WHERE id = $1`,
+      [discountId],
+    );
+    expect(row!.updated_by_founder_id).toBe(founderId);
+    expect(row!.updated_at).toBeInstanceOf(Date);
+    expect(await auditCount('commercial.discount_updated', discountId)).toBe(1);
+    await expect(
+      updateDiscount({
+        founderHeaders: founderHeaders(),
+        organizationId: org,
+        discountId,
+        value: { kind: 'amount', amountOffMinor: 10 },
+      }),
+    ).rejects.toThrow(InvalidInput);
+    await expect(
+      q(`UPDATE commercial.discount SET duration = 'once' WHERE id = $1`, [discountId]),
+    ).rejects.toThrow(/can only change its value and reason/);
+    await endDiscount({ founderHeaders: founderHeaders(), organizationId: org, discountId });
+    await expect(
+      updateDiscount({
+        founderHeaders: founderHeaders(),
+        organizationId: org,
+        discountId,
+        reason: REASON,
+      }),
+    ).rejects.toThrow();
+    await expect(
+      q(`UPDATE commercial.discount SET reason = $2 WHERE id = $1`, [discountId, REASON + ' x']),
+    ).rejects.toThrow(/has ended/);
+  });
+
+  it('the server refuses a bad reason, percentage or amount (and the database too)', async () => {
+    const { org } = await business();
+    const base = {
+      founderHeaders: founderHeaders(),
+      organizationId: org,
+      target: { scope: 'subscription' as const },
+      duration: { duration: 'forever' as const },
+    };
+    await expect(
+      createDiscount({ ...base, value: { kind: 'percent', percentOff: 10 }, reason: 'scurt' }),
+    ).rejects.toThrow(InvalidInput);
+    await expect(
+      createDiscount({
+        ...base,
+        value: { kind: 'percent', percentOff: 10 },
+        reason: 'x'.repeat(1001),
+      }),
+    ).rejects.toThrow(InvalidInput);
+    for (const percentOff of [0, 101, 12.5]) {
+      await expect(
+        createDiscount({ ...base, value: { kind: 'percent', percentOff }, reason: REASON }),
+      ).rejects.toThrow(InvalidInput);
+    }
+    await expect(
+      createDiscount({ ...base, value: { kind: 'amount', amountOffMinor: 0 }, reason: REASON }),
+    ).rejects.toThrow(InvalidInput);
+    await expect(
+      createDiscount({
+        ...base,
+        value: { kind: 'percent', percentOff: 10 },
+        duration: { duration: 'repeating', durationMonths: 0 },
+        reason: REASON,
+      }),
+    ).rejects.toThrow(InvalidInput);
+    const [s] = await q(`SELECT id FROM commercial.subscription WHERE organization_id = $1`, [org]);
+    await expect(
+      q(
+        `INSERT INTO commercial.discount (organization_id, subscription_id, scope, kind, percent_off, currency, duration, reason, created_by_founder_id)
+         VALUES ($1, $2, 'subscription', 'percent', 10, 'RON', 'forever', 'scurt', $3)`,
+        [org, s!.id, founderId],
+      ),
+    ).rejects.toThrow(/discount_reason/);
+    expect(await q(`SELECT 1 FROM commercial.discount WHERE organization_id = $1`, [org])).toEqual(
+      [],
+    );
   });
 });

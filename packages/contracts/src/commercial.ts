@@ -36,6 +36,48 @@ export interface EffectiveEntitlements {
   quotas: Record<string, number | null>;
 }
 
+/** D3-21: a percentage (1–100, 100 = free) or a fixed amount in the business's currency. */
+export type DiscountKind = 'percent' | 'amount';
+
+/** D3-21: the next invoice only, N months, or until ended (Stripe: once / repeating / forever). */
+export type DiscountDuration = 'once' | 'repeating' | 'forever';
+
+/** One line of an invoice at full price: the plan, an application added, a monthly add-on. */
+export interface InvoiceLinePreview {
+  kind: 'plan' | 'application' | 'addon';
+  /** The plan code, the application id or the add-on code. */
+  key: string;
+  /** The application or add-on line (null for the plan). */
+  lineId: string | null;
+  amountMinor: number;
+}
+
+/** A discount shown as its own line (D3-21), with what it takes off this invoice. */
+export interface InvoiceDiscountPreview {
+  discountId: string;
+  /** The whole subscription, or one application / add-on line (`lineId`). */
+  scope: 'subscription' | 'application' | 'addon';
+  lineId: string | null;
+  kind: DiscountKind;
+  percentOff: number | null;
+  amountOffMinor: number | null;
+  duration: DiscountDuration;
+  durationMonths: number | null;
+  /** What it takes off this invoice (never more than what it applies to). */
+  appliedMinor: number;
+}
+
+/** The next invoice: full prices, the discounts as separate lines, the total. */
+export interface InvoicePreview {
+  date: string;
+  currency: Currency;
+  lines: InvoiceLinePreview[];
+  discounts: InvoiceDiscountPreview[];
+  subtotalMinor: number;
+  discountMinor: number;
+  totalMinor: number;
+}
+
 export interface SubscriptionSummary {
   planCode: string;
   planName: string;
@@ -43,8 +85,10 @@ export interface SubscriptionSummary {
   status: SubscriptionStatus;
   interval: BillingInterval;
   currency: Currency;
-  /** The price of the subscription's interval, in its currency. */
+  /** The plan's full price for the subscription's interval, in its currency. */
   priceMinor: number;
+  /** D3-21: the next invoice — full price, discounts as separate lines, total. */
+  nextInvoice: InvoicePreview;
   startedOn: string;
   /** D3-3: the next billing date, on the anchor day. */
   nextBillingDate: string;
