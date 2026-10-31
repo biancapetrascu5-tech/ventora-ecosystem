@@ -1072,7 +1072,7 @@ describe('Lot 4.1 — requestNewInvitationLink writes invitation.new_link_reques
   async function expiredInvitation(label: string) {
     const stamp = Date.now();
     const { organizationId } = await createOrganizationAsFounder(
-      { founderId: newUuid(), founderEmail: 'founder@test.com' },
+      { founderId: newUuid() },
       {
         name: `Salon ${label}`,
         slug: `l41${label}-${stamp}`,

@@ -107,8 +107,8 @@ try {
   // --- Lot 4.1: outbox și evenimente (T6), pe un emițător de test în baza organizations ---
   console.log('\n[test:integration] integrations (T6)...');
   runPkg('@ventora/integrations', 'test:integration', {
-    DATABASE_URL_TEST: `postgresql://app_runtime:${TEST_DB.appPw}@localhost:5433/${TEST_DB.orgDb}`,
-    DATABASE_URL_FOUNDER_TEST: `postgresql://founder_runtime:${TEST_DB.founderPw}@localhost:5433/${TEST_DB.orgDb}`,
+    DATABASE_URL_TEST: `postgresql://app_runtime:${TEST_DB.appPw}@localhost:${PG}/${TEST_DB.orgDb}`,
+    DATABASE_URL_FOUNDER_TEST: `postgresql://founder_runtime:${TEST_DB.founderPw}@localhost:${PG}/${TEST_DB.orgDb}`,
     DATABASE_URL_ADMIN_TEST: ADMIN_ORG,
   });
 
