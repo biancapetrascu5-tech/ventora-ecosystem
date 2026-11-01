@@ -207,7 +207,7 @@ Estimările sunt în ore de agent: implementare, teste, pre-push complet și rap
 - **`countCategory="operational"`** rămâne ca în design: clopoțelul numără doar notificările operaționale (HubRecommendation). Gruparea „Despre cont și funcționare” / „Activitate” urmează D4-5.
 - **„Contul tău · Notificări”** (HubAccount), după D4-6 și D4-7, cu rândul fix „E-mailuri de securitate: le primești mereu…”.
 - **„Recomandări Ventora”** (CommercialPreferences): „În aplicație” activ, „Pe e-mail” blocat („Disponibil în curând”).
-- Fără pagină de istoric dacă D4-11 = a.
+- Fără pagină de istoric (D4-11 = a): panoul arată ultimele 30 de zile.
 - Capturile `_design` / `_impl` la 390/1280 × light/dark (regula 12).
 
 **Dependențe:** 4.3. Lotul 2.8 (shell-urile, HubAdminTeam). D4-5, D4-6, D4-7.
@@ -488,7 +488,7 @@ Tabelul e ordonat după lotul pe care îl blochează fiecare decizie. „Blochea
 | D4-8 | 4.3 | **Limba e-mailului E-6** (sesiunea de suport, „doar română”, C-F4-5) | a) în limba destinatarului, ca toate notificările (criteriul F4); b) rămâne în română | **DECIS: a** (fondatoarea, 31.10.2026). E-mailul E-6 (sesiunea de suport) pleacă în limba destinatarului, ca toate notificările. Traducerile vin de la Design; până atunci, cheile există în 6 limbi cu textul din română, marcat ca netradus în raportul lotului. |
 | D4-9 | 4.3 | **E-mailurile trimise azi direct** (resetarea parolei, invitațiile, notificările de suport) | a) invitațiile și notificările trec prin outbox (cu reîncercare); resetarea parolei rămâne imediată (persoana așteaptă linkul); b) toate prin outbox | **DECIS: a** (fondatoarea, 31.10.2026). Invitațiile și notificările trec prin outbox (reîncercare, apoi dead-letter). Resetarea parolei rămâne imediată. |
 | D4-10 | 4.11 | **Starea livrării e-mailurilor** (webhook Resend) | a) după Vercel; b) deloc deocamdată | **a**. |
-| D4-11 | 4.4 | **Istoricul notificărilor** (brief §36, lipsește din design) | a) doar panoul, cu ultimele 30 de zile; pagina de istoric vine cu design; b) pagina în F4, după design | **a**. Retenția se decide la D4-18. |
+| D4-11 | 4.4 | **Istoricul notificărilor** (brief §36, lipsește din design) | a) doar panoul, cu ultimele 30 de zile; pagina de istoric vine cu design; b) pagina în F4, după design | **DECIS: a** (fondatoarea, 31.10.2026). Doar panoul, cu ultimele 30 de zile; pagina de istoric vine cu design. Retenția se decide la D4-18. |
 | D4-12 | 4.5 | **Textele notificărilor cerute de F3** | a) Design / microcopy le scrie, iar fondatoarea le aprobă (D-UX-1) înaintea lui 4.5; b) le propune agentul și se aprobă la review | **a**: textele vizibile nu se inventează. |
 | D4-13 | 4.6 | **Modelul solicitării** (C-F4-6) | a) ca în design: aplicație, subiect, descriere, urgență pe 2 niveluri, 3 stări, fir de mesaje; categoria și responsabilul doar intern, în Founder; b) toate câmpurile din brief §39, vizibile | **a**. |
 | D4-14 | 4.6 | **Cum răspunde echipa Ventora** (C-F4-7) | a) doar pe e-mail (`support@ventorasystems.com`), iar solicitarea din Hub creează e-mailul; b) inbox în Founder, cu răspunsul vizibil în Hub („Îți răspundem aici și pe e-mail”) | **b**: e ce promite designul Hub. Cere design pentru inbox. Până atunci, a. |

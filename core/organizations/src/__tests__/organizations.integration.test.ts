@@ -27,8 +27,11 @@ import { closeAuditPools } from '@ventora/audit';
 import { UUID_V7 } from '@ventora/db-kit';
 import {
   CaptureEmailAdapter,
+  closeNotificationsPool,
   defaultCatalog,
+  getInbox,
   invitationLink,
+  openNotification,
   renderNotification,
   setEmailChannel,
 } from '@ventora/notifications';
@@ -53,6 +56,7 @@ beforeAll(async () => {
 afterAll(async () => {
   await adminPool.end();
   await closeAuditPools();
+  await closeNotificationsPool();
 });
 
 async function adminQuery(sql: string, params: unknown[] = []) {
@@ -1410,6 +1414,83 @@ describe('Lot 4.3 — invitation.new_link_requested → a notification for the o
     } finally {
       await pool.end();
     }
+    await adminQuery(`DELETE FROM organizations.organization WHERE id = $1`, [organizationId]);
+  });
+});
+
+describe('Lot 4.4 — end to end: the bell → HubAdminTeam → „Retrimite”', () => {
+  it('the owner sees it in the bell, opening it leads to the team list with the mark; after resend the mark is gone', async () => {
+    const stamp = Date.now();
+    const { organizationId } = await createOrganizationAsFounder(
+      { founderId: newUuid() },
+      { name: 'Salon Clopoțel', slug: `l44e-${stamp}`, ownerEmail: `owner-e-${stamp}@example.com` },
+    );
+    const owner = await ownerContext(organizationId);
+    const memberId = newUuid();
+    await adminQuery(
+      `INSERT INTO organizations.membership(organization_id, user_id, role, status, updated_at)
+       VALUES ($1, $2, 'member', 'active', NOW())`,
+      [organizationId, memberId],
+    );
+    const invitee = `invitee-e-${stamp}@example.com`;
+    const { invitationToken } = await inviteMember(owner, {
+      email: invitee,
+      role: 'member',
+      inviterName: 'Bianca Petrașcu',
+      organizationName: 'Salon Clopoțel',
+      applicationIds: ['booking'],
+    });
+    const view = (await getInvitationByToken(invitationToken))!;
+    await adminQuery(
+      `UPDATE organizations.invitation SET expires_at = NOW() - INTERVAL '1 minute' WHERE id = $1`,
+      [view.id],
+    );
+    expect(await requestNewInvitationLink(invitationToken)).toBe(true);
+    await adminQuery(
+      `UPDATE organizations.outbox_events SET status = 'dispatched'
+        WHERE status = 'pending' AND NOT (type = 'invitation.new_link_requested' AND resource_id = $1)`,
+      [view.id],
+    );
+    const pool = new Pool({ connectionString: process.env.DATABASE_URL ?? '', max: 1 });
+    try {
+      await dispatchOutbox({
+        pool,
+        source: { schema: 'organizations', moduleRole: 'org_rw' },
+        registry: new ConsumerRegistry().register(invitationNewLinkRequestedConsumer),
+      });
+    } finally {
+      await pool.end();
+    }
+
+    // the bell: one unread operational notification, in the owner's language
+    const inbox = await getInbox(owner.userId, 'ro');
+    expect(inbox.unreadOperational).toBe(1);
+    expect(inbox.items).toHaveLength(1);
+    expect(inbox.items[0]).toMatchObject({
+      title: `${invitee} a cerut o invitație nouă pentru Salon Clopoțel.`,
+      category: 'operational',
+      group: 'activity',
+      actionUrl: '/admin/team',
+      organizationId,
+      read: false,
+    });
+    // a member gets nothing
+    expect((await getInbox(memberId, 'ro')).items).toHaveLength(0);
+
+    // opening it: read, and it leads to HubAdminTeam in this business
+    expect(await openNotification(owner.userId, inbox.items[0]!.id)).toEqual({
+      actionUrl: '/admin/team',
+      organizationId,
+    });
+    expect((await getInbox(owner.userId, 'ro')).unreadOperational).toBe(0);
+
+    // in HubAdminTeam the mark is visible; „Retrimite” clears it
+    const marked = (await listInvitations(owner)).find((i) => i.id === view.id)!;
+    expect(marked.newLinkRequestedAt).toBeInstanceOf(Date);
+    await resendInvitation(owner, view.id);
+    const resent = (await listInvitations(owner)).find((i) => i.id === view.id)!;
+    expect(resent).toMatchObject({ status: 'pending', newLinkRequestedAt: null });
+
     await adminQuery(`DELETE FROM organizations.organization WHERE id = $1`, [organizationId]);
   });
 });
