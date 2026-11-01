@@ -152,12 +152,50 @@ export const CommercialRequestDecidedV1 = defineEvent({
     .strict(),
 });
 
+/** Ce au în comun evenimentele de fișier (Lot 4.7): id-uri, proprietarul, tipul și mărimea. */
+const filePayload = z
+  .object({
+    fileId: z.uuid(),
+    ownerModule: z.string().min(1),
+    ownerResourceType: z.string().min(1),
+    ownerResourceId: z.string().min(1),
+    contentType: z.enum(['image/png', 'image/jpeg', 'application/pdf']),
+    sizeBytes: z.number().int().positive(),
+  })
+  .strict();
+
+/**
+ * `file.uploaded` v1 (Lot 4.7): un fișier a fost încărcat și verificat pe server (tipul și mărimea
+ * reale). Pentru contorizarea spațiului (cota din F3, prin consumatorul ei) și pentru modulul
+ * proprietar. Payload-ul nu are numele fișierului (poate conține date personale).
+ */
+export const FileUploadedV1 = defineEvent({
+  type: 'file.uploaded',
+  version: 1,
+  sourceApp: 'platform',
+  growthSafe: false,
+  withoutConsumer: 'complete',
+  schema: filePayload,
+});
+
+/** `file.deleted` v1 (Lot 4.7): un fișier a fost șters; spațiul lui se eliberează. */
+export const FileDeletedV1 = defineEvent({
+  type: 'file.deleted',
+  version: 1,
+  sourceApp: 'platform',
+  growthSafe: false,
+  withoutConsumer: 'complete',
+  schema: filePayload,
+});
+
 export const EVENT_CATALOG: readonly EventDefinition[] = [
   InvitationNewLinkRequestedV1 as EventDefinition,
   SubscriptionVersionChangeScheduledV1 as EventDefinition,
   QuotaThresholdV1 as EventDefinition,
   QuotaOverLimitV1 as EventDefinition,
   CommercialRequestDecidedV1 as EventDefinition,
+  FileUploadedV1 as EventDefinition,
+  FileDeletedV1 as EventDefinition,
 ];
 
 /** Definiția unui eveniment după tip și versiune; null dacă nu e în catalog. */
