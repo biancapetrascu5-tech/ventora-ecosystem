@@ -29,8 +29,7 @@ import { useQuotaText } from './labels';
 
 /* FounderApps (Lotul 3.4; S117 1.1.0; D3-24): aplicațiile la bucată — mentenanța lunară și
    anuală și implementarea, în lei și în euro, limitele incluse și comutatorul „Direct / La
-   cerere”. D3-23 / D3-24: cu implementare, comutatorul rămâne pe „La cerere” (verificat și în
-   baza de date); S117 îl desenează liber — NECESITĂ DECIZIE (raportul 3.4). */
+   cerere”, liber și cu implementare (D3-24 înlocuiește D3-23, migrarea 010). */
 
 const isApp = (id: string): id is AppName => (APP_IDS as string[]).includes(id);
 type Kind = 'month' | 'year' | 'setup';
@@ -90,7 +89,6 @@ export function AppsScreen({
           : t('noSetupShort'),
         limits: Object.entries(a.quotas).map(([k, v]) => q.amount(k, v)),
         direct: a.activationMode === 'direct',
-        locked: hasSetup,
       };
     });
 

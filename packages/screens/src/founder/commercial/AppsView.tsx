@@ -23,8 +23,8 @@ import s from './commercial.module.css';
 /* FounderApps (Lotul 3.4; S117 1.1.0, D3-24): fiecare aplicație se vinde și la bucată —
    implementarea o singură dată, mentenanța lunar sau anual, în lei și în euro — cu limitele ei
    incluse; comutatorul „Direct / La cerere”. Panoul „Editează {app}”: mentenanța, implementarea,
-   limitele. `locked`: comutatorul blocat pe „La cerere” (D3-23 / D3-24: cu implementare →
-   la cerere; S117 îl desenează liber — NECESITĂ DECIZIE, raportul 3.4). Doar română (S57). */
+   limitele. Comutatorul e liber și cu implementare (D3-24 înlocuiește D3-23): pe „Direct”,
+   implementarea se plătește la activare, cu cardul. Doar română (S57). */
 
 export type AppRow = {
   id: string;
@@ -38,7 +38,6 @@ export type AppRow = {
   /** „1.000 de programări pe lună” … */
   limits: string[];
   direct: boolean;
-  locked?: boolean;
 };
 
 export function AppsView({
@@ -119,17 +118,12 @@ export function AppsView({
       trailing: true,
       render: (r) => (
         <span className={s.act}>
-          <Toggle
-            isSelected={r.direct}
-            isDisabled={r.locked}
-            labelPosition="end"
-            onChange={(on) => onToggle(r, on)}
-          >
+          <Toggle isSelected={r.direct} labelPosition="end" onChange={(on) => onToggle(r, on)}>
             {r.direct ? t('direct') : t('onRequest')}
           </Toggle>
           {!phone && (
             <span className="caption muted">
-              {r.locked ? t('setupLocked') : r.direct ? t('directHelp2') : t('onRequestHelp')}
+              {r.direct ? t('directHelp2') : t('onRequestHelp')}
             </span>
           )}
         </span>

@@ -56,7 +56,7 @@ import {
 // Lot 3.4 — the Founder screens' contracts: „Gata când” (a limit changed in FounderPlanEditor and
 // published shows in the Hub at the next request, without a deploy; every action has its audit row
 // on the Founder), the requests from the Hub (commercial_requests), D3-23 (a setup cost keeps an
-// application or an add-on on request, in the database too), the reads across businesses
+// add-on on request, in the database too; D3-24 lifted it for applications, migration 010), the reads across businesses
 // (FounderPlans, FounderUsage, FounderDiscounts, „Prezentare”) and one business (FounderBusiness).
 
 const adminPool = new Pool({ connectionString: process.env.DIRECT_URL, max: 2 });
@@ -464,10 +464,10 @@ describe('Lot 3.4 — commercial_requests: „Cere activare”, „Cere alt abon
   });
 });
 
-// ── D3-23 ──────────────────────────────────────────────────────────────────────────────────
+// ── Setup cost: D3-24 (applications), D3-23 (add-ons) ──────────────────────────────────────
 
-describe('Lot 3.4 — D3-23: with a setup cost it stays on request', () => {
-  it('an application: the setup price moves it to „la cerere”; „direct” is refused, in SQL too', async () => {
+describe('Lot 3.4 — setup cost: free switch for applications (D3-24), on request for add-ons (D3-23)', () => {
+  it('an application with a setup cost stays „direct” and can be switched freely, in SQL too', async () => {
     await setApplicationActivationMode({
       founderHeaders: founderHeaders(),
       applicationId: 'crm',
@@ -485,33 +485,29 @@ describe('Lot 3.4 — D3-23: with a setup cost it stays on request', () => {
     });
     const apps = await listApplicationsForFounder({ founderHeaders: founderHeaders() });
     const crm = apps.find((a) => a.id === 'crm')!;
-    expect(crm.activationMode).toBe('on_request');
+    expect(crm.activationMode).toBe('direct');
     expect(crm.prices).toContainEqual({ currency: 'RON', kind: 'setup', amountMinor: 30000 });
     const [audit] = await auditRows('commercial.application_prices_set', 'crm').then((r) =>
       r.slice(-1),
     );
-    expect(audit!.metadata.activationModeForcedBySetup).toBe(true);
-    await expect(
-      setApplicationActivationMode({
-        founderHeaders: founderHeaders(),
-        applicationId: 'crm',
-        mode: 'direct',
-      }),
-    ).rejects.toThrow(Conflict);
-    await expect(
-      q(`UPDATE commercial.application SET activation_mode = 'direct' WHERE id = 'crm'`),
-    ).rejects.toThrow(/setup cost/);
-    // without the setup cost, „direct” is allowed again
-    await setApplicationPrices({
+    expect(audit!.metadata.activationModeForcedBySetup).toBeUndefined();
+    await setApplicationActivationMode({
       founderHeaders: founderHeaders(),
       applicationId: 'crm',
-      prices: [{ currency: 'RON', kind: 'month', amountMinor: 6900 }],
+      mode: 'on_request',
     });
     await setApplicationActivationMode({
       founderHeaders: founderHeaders(),
       applicationId: 'crm',
       mode: 'direct',
     });
+    // the D3-23 triggers on applications are gone (migration 010)
+    await q(`UPDATE commercial.application SET activation_mode = 'direct' WHERE id = 'crm'`);
+    const triggers = await q(
+      `SELECT tgname FROM pg_trigger
+        WHERE tgname IN ('application_setup_on_request', 'application_price_setup_on_request')`,
+    );
+    expect(triggers).toEqual([]);
   });
 
   it('an add-on: direct + setup refused; a setup price on a direct add-on moves it; validity changes', async () => {

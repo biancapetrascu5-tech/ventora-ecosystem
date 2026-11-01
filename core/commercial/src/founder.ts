@@ -333,7 +333,7 @@ export async function publishVersion(params: FounderParams & { versionId: string
   });
 }
 
-/** D3-9: „direct / la cerere” on an application (those that need configuration stay on request). */
+/** D3-9 / D3-24: „direct / la cerere” on an application, chosen freely (setup cost or not). */
 export async function setApplicationActivationMode(
   params: FounderParams & { applicationId: string; mode: PurchaseMode },
 ): Promise<void> {
@@ -369,7 +369,7 @@ export interface AddonPriceInput {
   setupMinor?: number;
 }
 
-/** D3-23: an add-on or an application with a setup cost is always on request. */
+/** D3-23, for add-ons only: an add-on with a setup cost is always on request (D3-24 lifted it for applications). */
 const hasSetupCost = (prices: ReadonlyArray<{ setupMinor?: number }>) =>
   prices.some((p) => (p.setupMinor ?? 0) > 0);
 
@@ -1120,8 +1120,8 @@ export async function endOverride(
 
 /**
  * The price of an application added to a subscription (D3-9), per currency and interval, and its
- * setup cost (`setup`, FounderApps, S113). A setup cost keeps the application on request (D3-23):
- * a direct application moves to „la cerere” in the same transaction (in the audit row).
+ * setup cost (`setup`, FounderApps, S113). The activation mode does not depend on the setup cost
+ * (D3-24 replaces D3-23 for applications): on „direct” the setup is paid with the card at activation.
  */
 export async function setApplicationPrices(
   params: FounderParams & {
@@ -1144,21 +1144,13 @@ export async function setApplicationPrices(
     if (seen.has(`${p.currency}:${p.kind}`)) throw new InvalidInput('prices');
     seen.add(`${p.currency}:${p.kind}`);
   }
-  const setup = params.prices.some((p) => p.kind === 'setup' && p.amountMinor > 0);
   await withFounderWrite(null, async (client, exec) => {
-    const app = await client.query<{ activation_mode: PurchaseMode }>(
-      `SELECT activation_mode FROM commercial.application
+    const app = await client.query(
+      `SELECT 1 FROM commercial.application
         WHERE id = $1 AND retired_at IS NULL AND NOT is_platform`,
       [params.applicationId],
     );
     if (!app.rows[0]) throw new ResourceNotFound('Application not found');
-    const forcedOnRequest = setup && app.rows[0].activation_mode === 'direct';
-    if (forcedOnRequest) {
-      await client.query(
-        `UPDATE commercial.application SET activation_mode = 'on_request' WHERE id = $1`,
-        [params.applicationId],
-      );
-    }
     await client.query(`DELETE FROM commercial.application_price WHERE application_id = $1`, [
       params.applicationId,
     ]);
@@ -1175,10 +1167,7 @@ export async function setApplicationPrices(
       action: AuditActions.commercialApplicationPricesSet,
       targetType: 'application',
       targetId: params.applicationId,
-      metadata: {
-        prices: params.prices,
-        activationModeForcedBySetup: forcedOnRequest || undefined,
-      },
+      metadata: { prices: params.prices },
     });
   });
 }

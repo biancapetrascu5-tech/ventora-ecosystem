@@ -354,6 +354,8 @@ for (const migration of [
   'core/commercial/prisma/migrations/20261101000008_commercial_founder_screens/migration.sql',
   // D3-24: aplicațiile la bucată cu limitele lor, bundle-ul cu perioadă de vânzare, locurile incluse
   'core/commercial/prisma/migrations/20261101000009_commercial_bundles/migration.sql',
+  // D3-24 înlocuiește D3-23 pe aplicații: „direct / la cerere” liber și cu implementare
+  'core/commercial/prisma/migrations/20261101000010_commercial_app_setup_direct/migration.sql',
   // Lot 4.3: UserPreference (limba) și notificările
   'core/identity/prisma/identity/migrations/20261101000007_user_preference/migration.sql',
   'core/notifications/prisma/migrations/20261101000008_notifications_init/migration.sql',
