@@ -6,7 +6,9 @@
  * in the reader's language, at read time (in the app) or at delivery time (email).
  */
 
+import { BILLING_TEMPLATES } from './billing';
 import { isSecurityTopic, topicCategory, type NotificationTopic } from './topics';
+import type { NotificationParams, NotificationValueType } from './values';
 
 export type NotificationCategory = 'operational' | 'commercial';
 /** Display only (D4-5): „Despre cont și funcționare” / „Activitate” / „Recomandări”. */
@@ -36,11 +38,32 @@ export interface NotificationTemplate {
   /** At most `max` per recipient in `windowMinutes` (deduplication beyond the idempotency key). */
   rateLimit?: { max: number; windowMinutes: number };
   /** The action, a path in the Hub (B-4: language-neutral). */
-  actionPath?: (params: Readonly<Record<string, string>>) => string;
+  actionPath?: (params: NotificationParams) => string;
+  /**
+   * D4-28: the kind of value each placeholder takes. `send` refuses another kind, so a caller
+   * cannot send an amount or a date already formatted in one language.
+   */
+  paramTypes?: Readonly<Record<string, NotificationValueType>>;
   /** S115: what opening it does, under the text in the panel („Vezi factura”); i18n key. */
   actionKey?: string;
-  /** The texts come later (Lot 4.5): the template exists, nothing is sent with it yet. */
+  /** The texts come later: the template exists, nothing is sent with it yet (D4-12). */
   textsPending?: boolean;
+  /**
+   * Lot 4.5: the e-mail drawn for it (S115, single operational template S3). Without it, the
+   * e-mail is the generic one of Lot 4.3 (greeting, the in-app text, „Deschide în Ventora”).
+   */
+  email?: NotificationEmailKeys;
+}
+
+/** i18n keys (under `notifications`) of a designed e-mail. */
+export interface NotificationEmailKeys {
+  /** Filled with `{title}` and the params (S115: „{title} · {business}”). */
+  subjectKey: string;
+  eyebrowKey: string;
+  leadKey: string;
+  /** The paragraphs after the lead: what happens next. */
+  nextKeys: readonly string[];
+  whyKey: string;
 }
 
 export const NOTIFICATION_TEMPLATES: readonly NotificationTemplate[] = [
@@ -54,28 +77,8 @@ export const NOTIFICATION_TEMPLATES: readonly NotificationTemplate[] = [
     channels: [],
     actionPath: () => '/admin/team',
   },
-  {
-    // Lot 3.3: 80% / 100% of a quota (texts: Lot 4.5)
-    type: 'commercial.quota.threshold',
-    version: 1,
-    category: 'operational',
-    group: 'operational',
-    titleKey: 'quota.threshold.title',
-    channels: ['email'],
-    topic: 'limits',
-    textsPending: true,
-  },
-  {
-    // Lot 3.2: a plan version change scheduled for the business (texts: Lot 4.5)
-    type: 'subscription.version_change_scheduled',
-    version: 1,
-    category: 'operational',
-    group: 'operational',
-    titleKey: 'subscription.versionChangeScheduled.title',
-    channels: ['email'],
-    topic: 'billing',
-    textsPending: true,
-  },
+  // Lot 4.5: the Phase 3 notifications (S115); they replace the placeholders of Lot 4.3
+  ...BILLING_TEMPLATES,
 ];
 
 export class NotificationCatalog {

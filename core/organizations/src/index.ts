@@ -33,4 +33,9 @@ export {
   setOrganizationStatusInTx,
 } from './contract';
 // Lot 4.3: notifications to the business's managers; the first real consumer
-export { listManagersInTx, notifyManagersInTx, invitationNewLinkRequestedConsumer } from './notify';
+export {
+  listManagersInTx,
+  notifyManagersInTx,
+  notifyBillingInTx,
+  invitationNewLinkRequestedConsumer,
+} from './notify';
