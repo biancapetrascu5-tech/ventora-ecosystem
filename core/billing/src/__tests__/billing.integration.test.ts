@@ -35,7 +35,8 @@ import { eventFor, FakeStripe } from './fake-stripe';
 // D3-24 (setup on „Direct”), the Stripe subscription (D3-4) and its coupons (D3-21), the owner's
 // notifications (Lot 4.5 consumers), the isolation between businesses (T1/T2).
 
-const SECRET = 'whsec_test_lot35_billing';
+// a webhook secret made up for the tests (they sign their own events); no Stripe account
+const SECRET = 'whsec_test_lot35_billing'; // gitleaks:allow
 const adminPool = new Pool({ connectionString: process.env.DIRECT_URL, max: 2 });
 const appPool = new Pool({ connectionString: process.env.DATABASE_URL, max: 1 });
 let admin: PoolClient;

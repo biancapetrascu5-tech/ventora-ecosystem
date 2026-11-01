@@ -14,5 +14,9 @@ commits = [
   # b8437d75 (Lot 2.5a): Founder test-fixture password in identity.integration.test.ts
   # (E30 test, local test DB only); the gitleaks:allow annotation was added in the next commit.
   "b8437d75d1eb25f4312578b28dfec75cc1c021fe",
+  # 289afbc4 (Lot 3.5): a made-up Stripe webhook secret in billing.integration.test.ts, used
+  # only to sign the test's own events (fake Stripe, no account); the gitleaks:allow annotation
+  # was added in the next commit.
+  "289afbc4c9383891af9857d837353fa43ad219cc",
 ]
 
