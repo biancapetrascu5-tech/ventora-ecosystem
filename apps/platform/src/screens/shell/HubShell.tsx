@@ -1,6 +1,6 @@
 'use client';
 
-import type { ReactNode } from 'react';
+import { useState, type ReactNode } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
 import {
@@ -11,16 +11,20 @@ import {
   OrgSwitcher,
   Spine,
   type NavSection,
+  type NotificationData,
 } from '@ventora/ui';
-import { authApi } from '@ventora/screens';
+import { authApi, useWhen } from '@ventora/screens';
 import { rememberLocale } from '@/i18n/locale';
 import { switchBusiness } from '@/server/shell-actions';
 import { keepLocale } from '@/server/locale-actions';
+import { markBellRead, openBellItem, readBell, type Bell } from '@/server/notification-actions';
 
 /* Shell-ul Hub (HubSettings din preview-urile ecranelor Hub, Lot 2.8): Spine cu „Contul tău”,
    „Afacerea” și „Ajutor”, ContextBar cu afacerea, notificările și contul. Navigația arată doar
    intrările care au ecran: „Profil și preferințe”, „Abonament și consum” și „Suport” apar odată
-   cu ecranele lor; „Afacerea” doar pentru owner și admin. Notificările n-au încă sursă (F4). */
+   cu ecranele lor; „Afacerea” doar pentru owner și admin.
+   Lot 4.4: clopoțelul are sursa reală (core/notifications): ultimele 30 de zile (D4-11), numără
+   doar operaționalele necitite (D4-5); deschiderea duce la acțiunea notificării. */
 
 export type HubShellData = {
   user: { name: string; email: string };
@@ -74,16 +78,75 @@ export function useHubNav(manager: boolean): NavSection[] {
   return sections;
 }
 
+/** Clopoțelul: lista din core/notifications, cu ora (S110) și afacerea, când persoana are mai multe. */
+function useBell(initial: Bell, orgs: HubShellData['orgs']) {
+  const router = useRouter();
+  const when = useWhen();
+  const [bell, setBell] = useState(initial);
+  const [open, setOpen] = useState(false);
+  // o listă nouă de la server (navigare, router.refresh) o înlocuiește pe cea de aici
+  const [fromServer, setFromServer] = useState(initial);
+  if (fromServer !== initial) {
+    setFromServer(initial);
+    setBell(initial);
+  }
+
+  const orgName = (id: string | null) =>
+    orgs.length > 1 && id ? orgs.find((o) => o.id === id)?.name : undefined;
+  const items: NotificationData[] = bell.items.map((i) => ({
+    id: i.id,
+    title: i.title,
+    body: i.body,
+    action: i.action,
+    read: i.read,
+    category: i.category,
+    group: i.group === 'recommendation' ? 'activity' : i.group,
+    app: orgName(i.organizationId),
+    time: when(new Date(i.createdAt)),
+  }));
+  const markRead = (pred: (id: string) => boolean) =>
+    setBell((b) => ({ items: b.items.map((i) => (pred(i.id) ? { ...i, read: true } : i)) }));
+
+  return {
+    items,
+    open,
+    onOpenChange: (o: boolean) => {
+      setOpen(o);
+      // la fiecare deschidere, lista de acum
+      if (o) void readBell().then(setBell);
+    },
+    onOpenItem: async (n: NotificationData) => {
+      markRead((id) => id === String(n.id));
+      setOpen(false);
+      const res = await openBellItem(String(n.id));
+      if (!res?.href) return;
+      router.push(res.href);
+      if (res.switched) router.refresh();
+    },
+    onMarkAllRead: async () => {
+      markRead(() => true);
+      await markBellRead();
+    },
+    onSettings: () => {
+      setOpen(false);
+      router.push('/account/notifications');
+    },
+  };
+}
+
 export function HubShell({
   data,
+  bell: initialBell = { items: [] },
   title,
   children,
 }: {
   data: HubShellData;
+  bell?: Bell;
   title?: string;
   children: ReactNode;
 }) {
   const router = useRouter();
+  const bell = useBell(initialBell, data.orgs);
   const pathname = usePathname();
   const locale = useLocale();
   const ui = useTranslations('ui');
@@ -151,7 +214,12 @@ export function HubShell({
           }}
           notifications={
             <NotificationsPanel
-              items={[]}
+              items={bell.items}
+              open={bell.open}
+              onOpenChange={bell.onOpenChange}
+              onOpenItem={bell.onOpenItem}
+              onMarkAllRead={bell.onMarkAllRead}
+              onSettings={bell.onSettings}
               countCategory="operational"
               labels={{
                 notifications: ui('notifications'),

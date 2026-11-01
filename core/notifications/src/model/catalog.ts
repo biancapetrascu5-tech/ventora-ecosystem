@@ -6,6 +6,8 @@
  * in the reader's language, at read time (in the app) or at delivery time (email).
  */
 
+import { isSecurityTopic, topicCategory, type NotificationTopic } from './topics';
+
 export type NotificationCategory = 'operational' | 'commercial';
 /** Display only (D4-5): „Despre cont și funcționare” / „Activitate” / „Recomandări”. */
 export type NotificationGroup = 'operational' | 'activity' | 'recommendation';
@@ -22,6 +24,11 @@ export interface NotificationTemplate {
   bodyKey?: string;
   /** Delivery channels besides the app. Commercial email is blocked centrally (D-GRW-8). */
   channels: readonly DeliveryChannel[];
+  /**
+   * Lot 4.4: the row of „Contul tău · Notificări” that governs it (S114b). Required when the
+   * template has a delivery channel or is commercial; a security template has a security topic.
+   */
+  topic?: NotificationTopic;
   /** Security messages cannot be turned off (S83). */
   security?: boolean;
   /** Cannot be turned off on email by the owner, by design (D4-6, BookingSmsNotifications). */
@@ -30,6 +37,8 @@ export interface NotificationTemplate {
   rateLimit?: { max: number; windowMinutes: number };
   /** The action, a path in the Hub (B-4: language-neutral). */
   actionPath?: (params: Readonly<Record<string, string>>) => string;
+  /** S115: what opening it does, under the text in the panel („Vezi factura”); i18n key. */
+  actionKey?: string;
   /** The texts come later (Lot 4.5): the template exists, nothing is sent with it yet. */
   textsPending?: boolean;
 }
@@ -53,6 +62,7 @@ export const NOTIFICATION_TEMPLATES: readonly NotificationTemplate[] = [
     group: 'operational',
     titleKey: 'quota.threshold.title',
     channels: ['email'],
+    topic: 'limits',
     textsPending: true,
   },
   {
@@ -63,6 +73,7 @@ export const NOTIFICATION_TEMPLATES: readonly NotificationTemplate[] = [
     group: 'operational',
     titleKey: 'subscription.versionChangeScheduled.title',
     channels: ['email'],
+    topic: 'billing',
     textsPending: true,
   },
 ];
@@ -76,6 +87,16 @@ export class NotificationCatalog {
       if (this.byKey.has(key)) throw new Error(`[notifications] template twice: ${key}`);
       if (t.category !== 'operational' && t.category !== 'commercial') {
         throw new Error(`[notifications] ${key}: category is required (D4-5)`);
+      }
+      // Lot 4.4: what the person can turn off is decided by the topic (S114b)
+      if ((t.channels.length > 0 || t.category === 'commercial') && !t.topic) {
+        throw new Error(`[notifications] ${key}: a topic is required (Lot 4.4)`);
+      }
+      if (t.topic && topicCategory(t.topic) !== t.category) {
+        throw new Error(`[notifications] ${key}: topic ${t.topic} is not ${t.category}`);
+      }
+      if (t.security === true && !(t.topic && isSecurityTopic(t.topic))) {
+        throw new Error(`[notifications] ${key}: a security template needs a security topic`);
       }
       this.byKey.set(key, t);
     }

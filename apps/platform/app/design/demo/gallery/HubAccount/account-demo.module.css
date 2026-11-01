@@ -1,4 +1,4 @@
-/* .r / .g2f / .ntable / .nrow / .nhead / .d0 / .secrow din HubAccount/preview.html */
+/* .r / .g2f / .secrow din HubAccount/preview.html */
 .r {
   display: flex;
   flex-wrap: wrap;
@@ -19,32 +19,6 @@
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(260px, 100%), 1fr));
   gap: var(--space-4) var(--space-6);
-}
-.ntable {
-  display: flex;
-  flex-direction: column;
-}
-.nrow {
-  display: grid;
-  grid-template-columns: 1fr repeat(3, var(--control-lg));
-  align-items: center;
-  padding: var(--space-2) 0;
-  border-bottom: var(--border-width) solid var(--line);
-  gap: var(--space-4);
-}
-.nrow > span:not(:first-child) {
-  display: flex;
-  justify-content: center;
-  text-align: center;
-}
-.nhead {
-  color: var(--ink-muted);
-}
-.d0 {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-3);
-  min-width: 0;
 }
 .devHead {
   margin: var(--space-4) 0 var(--space-2);

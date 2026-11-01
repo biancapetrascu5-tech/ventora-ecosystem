@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { render, screen, within } from '@testing-library/react';
+import { fireEvent, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { AccountMenu } from '../src/AccountMenu/AccountMenu';
 import { AddonPurchase } from '../src/AddonPurchase/AddonPurchase';
@@ -310,5 +310,24 @@ describe('NotificationsPanel — D4-5: the category and the display group are se
     expect(within(ops).getByText('Telefonul afacerii e deconectat')).toBeDefined();
     expect(within(act).getByText('Ana a cerut o invitație nouă pentru Salon Test.')).toBeDefined();
     expect(within(act).getByText('Ofertă')).toBeDefined();
+  });
+});
+
+describe('NotificationsPanel — S115: the action under the text', () => {
+  it('shows what opening does; the whole item opens it, there is no second button', () => {
+    const opened: string[] = [];
+    render(
+      <NotificationsPanel
+        inline
+        items={[{ id: 'f', title: 'Factura e gata', action: 'Vezi factura' }]}
+        onOpenItem={(n) => opened.push(String(n.id))}
+        labels={NOTIF_L}
+      />,
+    );
+    const item = screen.getByRole('button', { name: /Factura e gata.*Vezi factura/ });
+    expect(screen.queryByRole('button', { name: 'Vezi factura' })).toBeNull();
+    fireEvent.click(screen.getByText('Vezi factura'));
+    expect(opened).toEqual(['f']);
+    expect(item).toBeDefined();
   });
 });

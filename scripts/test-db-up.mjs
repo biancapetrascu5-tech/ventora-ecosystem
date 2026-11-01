@@ -248,6 +248,13 @@ psqlFile(
     'core/notifications/prisma/migrations/20261101000008_notifications_init/migration.sql',
   ),
 );
+psqlFile(
+  TEST_DB.orgDb,
+  join(
+    ROOT,
+    'core/notifications/prisma/migrations/20261101000009_notification_preference_topic/migration.sql',
+  ),
+);
 
 // Rolurile sunt la nivel de cluster (create de migrarea identity), deci grant-urile din M1 se aplică
 console.log('[test:db:up] Aplic migrarea audit (organizations DB)...');
@@ -345,6 +352,8 @@ for (const migration of [
   // Lot 4.3: UserPreference (limba) și notificările
   'core/identity/prisma/identity/migrations/20261101000007_user_preference/migration.sql',
   'core/notifications/prisma/migrations/20261101000008_notifications_init/migration.sql',
+  // Lot 4.4: preferințele pe subiect (rândurile din „Contul tău · Notificări”)
+  'core/notifications/prisma/migrations/20261101000009_notification_preference_topic/migration.sql',
 ]) {
   psqlFile(TEST_DB.accessDb, join(ROOT, migration));
 }
