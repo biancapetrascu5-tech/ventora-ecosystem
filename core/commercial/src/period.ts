@@ -89,6 +89,24 @@ export function nextBillingDate(
   }
 }
 
+/**
+ * Lot 3.5: the billing period that contains `onDate` — from the latest billing date on or before
+ * it (not before the start) to the next one, exclusive. A line added mid-period is charged for
+ * the days left (D3-7), and the Stripe subscription is anchored on `end` (D3-3).
+ */
+export function billingPeriod(
+  subscription: { startedOn: string; interval: BillingInterval },
+  onDate: string,
+): { start: string; end: string } {
+  const end = nextBillingDate(subscription, onDate);
+  if (subscription.startedOn > onDate) {
+    return { start: subscription.startedOn, end: nextBillingDate(subscription, end) };
+  }
+  const step = subscription.interval === 'year' ? 12 : 1;
+  const start = addMonthsAnchored(end, -step, parse(subscription.startedOn).d);
+  return { start: start < subscription.startedOn ? subscription.startedOn : start, end };
+}
+
 /** `date` moved by `months`, on the anchor day of the target month (clamped like billing). */
 export function addMonthsAnchored(date: string, months: number, anchorDay: number): string {
   const { y, m } = parse(date);

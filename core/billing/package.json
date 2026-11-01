@@ -1,0 +1,37 @@
+{
+  "name": "@ventora/billing",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "db:migrate": "prisma migrate deploy --config prisma7.config.ts",
+    "test": "vitest run",
+    "test:integration": "vitest run --config vitest.integration.config.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@ventora/audit": "workspace:*",
+    "@ventora/commercial": "workspace:*",
+    "@ventora/contracts": "workspace:*",
+    "@ventora/db-kit": "workspace:*",
+    "@ventora/errors": "workspace:*",
+    "@ventora/notifications": "workspace:*",
+    "@ventora/organizations": "workspace:*",
+    "pg": "^8.0.0",
+    "stripe": "23.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "@types/pg": "^8.0.0",
+    "@ventora/identity": "workspace:*",
+    "@ventora/integrations": "workspace:*",
+    "prisma": "^7.0.0",
+    "typescript": "^6.0.0",
+    "vitest": "^5.0.5"
+  }
+}

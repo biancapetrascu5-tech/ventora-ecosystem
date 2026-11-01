@@ -291,10 +291,11 @@ describe('T5 — the limit is the effective entitlement', () => {
        VALUES ($1, '500 SMS', 'messaging.sms', 500, 'monthly', $2) RETURNING id`,
       [`sms-${newUuid().slice(0, 8)}`, founder],
     );
+    // Lot 3.5: a pack bought carries its purchase (core/billing), once
     await q(
-      `INSERT INTO commercial.addon_grant (organization_id, addon_id, subscription_id, recurring, source)
-       VALUES ($1, $2, $3, true, 'purchase')`,
-      [org, a!.id, subscriptionId],
+      `INSERT INTO commercial.addon_grant (organization_id, addon_id, subscription_id, recurring, source, purchase_id)
+       VALUES ($1, $2, $3, true, 'purchase', $4)`,
+      [org, a!.id, subscriptionId, newUuid()],
     );
     const r = await reserveQuota({ organizationId: org }, 'messaging.sms', 1, newUuid());
     expect(r.limit).toBe(503);

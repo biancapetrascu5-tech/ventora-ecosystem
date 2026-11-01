@@ -90,6 +90,13 @@ export const AuditActions = {
   commercialOfferPeriodSet: 'commercial.offer_period_set', // S117: a bundle offer's sale period
   commercialBundleSalesStopped: 'commercial.bundle_sales_stopped',
   commercialSettingChanged: 'commercial.setting_changed',
+  // Lot 3.5 — payments with the card (core/billing, category commercial, §8.6): the owner's card
+  // and purchases (actor user), what Stripe reports through the webhook (actor system)
+  billingCardSaved: 'billing.card_saved',
+  billingPurchaseSucceeded: 'billing.purchase_succeeded', // paid and activated
+  billingPurchaseFailed: 'billing.purchase_failed', // outcome failure: nothing activated
+  billingSubscriptionCreated: 'billing.subscription_created', // the subscription in Stripe Billing
+  billingDisputeOpened: 'billing.dispute_opened', // chargeback: Founder decides, by hand
 } as const;
 
 export type AuditAction = (typeof AuditActions)[keyof typeof AuditActions];
