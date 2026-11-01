@@ -307,6 +307,14 @@ Lotul ține de Faza 2 și se face **înaintea Fazei 3**. Stă aici pentru că lo
 
 **Scop:** cardul salvat, plata pachetelor, abonamentul lunar, webhook-urile idempotente.
 
+**Precizări la implementare (Lotul 3.5, 01.11.2026, PROPUS; detalii în raportul lotului):**
+
+- Job-ul declarat `commercial.subscription-renewal` devine `billing.stripe-reconcile` (la 15 minute). Reînnoirea o face Stripe Billing (D3-4 a). Job-ul aduce abonamentul Stripe la modelul comercial (liniile, reducerile, anularea din Founder) și activează cumpărările plătite rămase neactivate.
+- Liniile cumpărate din Hub (pachet lunar, aplicație pe „Direct”): zilele rămase din perioada curentă + implementarea, într-un singur PaymentIntent; apoi linia intră în abonamentul Stripe fără o a doua proratare.
+- Pachetele lunare pe un abonament anual rămân cerere (Stripe facturează o singură periodicitate pe abonament, raportul 3.2).
+- Notificările produse în 3.5: `payment.pack`, `payment.renewal`, `payment.retry`. `payment.lastRetry` (cu grația de 14 zile, D3-12) rămâne la 3.8.
+- Ecranele care montează cumpărarea (StripeSlot cu Stripe Elements, AddonPurchase) sunt în 3.7. În 3.5 sunt contractele, acțiunile din Hub și Stripe.js.
+
 **Ce intră:**
 
 - Pachetul nou `core/billing`, cu schema `billing` și rolul `billing_rw`.
