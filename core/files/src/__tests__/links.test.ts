@@ -29,6 +29,7 @@ describe('download links: signed, bound to the file and its organization, expiri
     const err = (() => {
       try {
         verifyDownloadToken(token, NOW);
+        return null;
       } catch (e) {
         return e;
       }

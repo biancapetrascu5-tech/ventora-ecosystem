@@ -17,6 +17,7 @@
     "@ventora/config": "workspace:*",
     "@ventora/contracts": "workspace:*",
     "@ventora/errors": "workspace:*",
+    "@ventora/files": "workspace:*",
     "@ventora/i18n": "workspace:*",
     "@ventora/identity": "workspace:*",
     "@ventora/integrations": "workspace:*",

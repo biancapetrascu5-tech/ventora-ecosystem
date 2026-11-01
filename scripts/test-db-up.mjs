@@ -111,6 +111,7 @@ for (const db of [
   'shadow_audit_diff',
   'shadow_commercial_diff',
   'shadow_notifications_diff',
+  'shadow_files_diff',
 ]) {
   psql('postgres', `DROP DATABASE IF EXISTS ${db}; CREATE DATABASE ${db};`);
 }
@@ -361,6 +362,8 @@ for (const migration of [
   'core/notifications/prisma/migrations/20261101000008_notifications_init/migration.sql',
   // Lot 4.4: preferințele pe subiect (rândurile din „Contul tău · Notificări”)
   'core/notifications/prisma/migrations/20261101000009_notification_preference_topic/migration.sql',
+  // Lot 4.7: fișierele (schema files, rolul files_rw, outbox-ul modulului)
+  'core/files/prisma/migrations/20261101000011_files_init/migration.sql',
 ]) {
   psqlFile(TEST_DB.accessDb, join(ROOT, migration));
 }
