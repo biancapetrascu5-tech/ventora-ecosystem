@@ -3,6 +3,7 @@ import { defaultCatalog, type NotificationCatalog, type NotificationCategory } f
 import { uuidv7, type SqlClient } from './sql';
 import { defaultEnabled, type NotificationTopic } from './topics';
 import { requiredParams } from './render';
+import { checkParams, isPresent, type NotificationParams } from './values';
 
 /*
  * The `send` contract (Lot 4.3, FAZA-4): a notification is written inside the caller's
@@ -34,7 +35,8 @@ export interface SendNotificationInput {
   ownerUserIds?: readonly string[];
   /** Deterministic: the same key twice → one notification per recipient. */
   idempotencyKey: string;
-  params?: Readonly<Record<string, string>>;
+  /** The values of the texts, neutral (D4-28): formatted in each reader's language. */
+  params?: NotificationParams;
   /** A notification past this time is not delivered any more. */
   validUntil?: Date | null;
 }
@@ -87,10 +89,13 @@ export async function sendNotification(
     throw new InvalidInput('type', `${input.type}: its texts are pending (D4-12)`);
   }
   // Lot 4.5: every value the texts need, now — not a broken panel or e-mail later
-  const missing = requiredParams(template).filter((p) => !(input.params?.[p] ?? '').trim());
+  const params = input.params ?? {};
+  const missing = requiredParams(template).filter((p) => !isPresent(params[p]));
   if (missing.length > 0) {
     throw new InvalidInput('params', `${input.type} needs ${missing.join(', ')}`);
   }
+  // D4-28: neutral values, well formed, of the kind the template expects
+  checkParams(params, template.paramTypes);
   const key = (input.idempotencyKey ?? '').trim();
   if (!key || key.length > 200) throw new InvalidInput('idempotencyKey');
   if (input.organizationId !== null && !UUID.test(input.organizationId)) {
@@ -117,7 +122,7 @@ export async function sendNotification(
   try {
     const owners = new Set(input.ownerUserIds ?? []);
     const dedupKey = `${template.type}@${template.version}:${key}`;
-    const actionUrl = template.actionPath?.(input.params ?? {}) ?? null;
+    const actionUrl = template.actionPath?.(params) ?? null;
     for (const userId of recipients) {
       if (template.category === 'commercial') {
         // D4-6: commercial recommendations (and the news) have their own toggle in the app
@@ -154,7 +159,7 @@ export async function sendNotification(
           template.group,
           template.type,
           template.version,
-          JSON.stringify(input.params ?? {}),
+          JSON.stringify(params),
           actionUrl,
           dedupKey,
           input.validUntil ?? null,

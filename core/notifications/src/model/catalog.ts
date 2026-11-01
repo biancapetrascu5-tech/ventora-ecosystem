@@ -8,6 +8,7 @@
 
 import { BILLING_TEMPLATES } from './billing';
 import { isSecurityTopic, topicCategory, type NotificationTopic } from './topics';
+import type { NotificationParams, NotificationValueType } from './values';
 
 export type NotificationCategory = 'operational' | 'commercial';
 /** Display only (D4-5): „Despre cont și funcționare” / „Activitate” / „Recomandări”. */
@@ -37,7 +38,12 @@ export interface NotificationTemplate {
   /** At most `max` per recipient in `windowMinutes` (deduplication beyond the idempotency key). */
   rateLimit?: { max: number; windowMinutes: number };
   /** The action, a path in the Hub (B-4: language-neutral). */
-  actionPath?: (params: Readonly<Record<string, string>>) => string;
+  actionPath?: (params: NotificationParams) => string;
+  /**
+   * D4-28: the kind of value each placeholder takes. `send` refuses another kind, so a caller
+   * cannot send an amount or a date already formatted in one language.
+   */
+  paramTypes?: Readonly<Record<string, NotificationValueType>>;
   /** S115: what opening it does, under the text in the panel („Vezi factura”); i18n key. */
   actionKey?: string;
   /** The texts come later: the template exists, nothing is sent with it yet (D4-12). */

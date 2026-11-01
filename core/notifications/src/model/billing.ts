@@ -1,4 +1,5 @@
 import type { NotificationTemplate } from './catalog';
+import type { NotificationValueType } from './values';
 
 /*
  * Lot 4.5 — the Phase 3 notifications (FAZA-3 §3.10, design S115 BillingNotifications): the
@@ -54,6 +55,38 @@ function actionPath(id: BillingTemplateId): string | undefined {
 
 export const billingType = (id: BillingTemplateId) => `billing.${id}`;
 
+/**
+ * D4-28 = a: what F3 sends for each value of the S115 texts. Amounts and dates are neutral and
+ * are formatted in the reader's language; what is said in words (the resource, the pack, what the
+ * invoice is for, what changes) is an i18n key; names stay as given. `used` / `limit` are text
+ * for now: a number type was not part of the decision (see the 4.5 report).
+ */
+const BILLING_PARAM_TYPES: Readonly<Record<string, NotificationValueType>> = {
+  business: 'text',
+  owner: 'text',
+  number: 'text',
+  brand: 'text',
+  last4: 'text',
+  app: 'text',
+  plan: 'text',
+  version: 'text',
+  used: 'text',
+  limit: 'text',
+  what: 'key',
+  item: 'key',
+  resource: 'key',
+  buyItem: 'key',
+  changes: 'key',
+  amount: 'money',
+  price: 'money',
+  setup: 'money',
+  date: 'date',
+  due: 'date',
+  retryDate: 'date',
+  graceEnd: 'date',
+  resetDate: 'date',
+};
+
 function template(id: BillingTemplateId, withEmail: boolean): NotificationTemplate {
   const path = actionPath(id);
   return {
@@ -67,6 +100,7 @@ function template(id: BillingTemplateId, withEmail: boolean): NotificationTempla
     ...(path ? { actionPath: () => path } : {}),
     channels: withEmail ? ['email'] : [],
     topic: isLimit(id) ? 'limits' : 'billing',
+    paramTypes: BILLING_PARAM_TYPES,
     ...(withEmail
       ? {
           email: {

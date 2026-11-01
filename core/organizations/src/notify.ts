@@ -5,6 +5,7 @@ import {
   sendNotification,
   type BillingKind,
   type BillingTemplateId,
+  type NotificationParams,
   type SendNotificationResult,
   type SqlClient,
 } from '@ventora/notifications';
@@ -63,7 +64,7 @@ export async function notifyManagersInTx(
     type: string;
     version: number;
     idempotencyKey: string;
-    params: Readonly<Record<string, string>>;
+    params: NotificationParams;
   },
 ): Promise<SendNotificationResult> {
   const managers = await listManagersInTx(tx, input.organizationId);
@@ -121,8 +122,10 @@ export const invitationNewLinkRequestedConsumer = {
  * is an outbox consumer (or F3's own transaction), in the organization's context.
  *
  * `params` are the values of the texts, as the design names them (`business`, `amount`, `date`…);
- * the ones for everyone else also need `owner` (the owner's name). A missing value is refused by
- * `send` (InvalidInput), not discovered in the panel.
+ * the ones for everyone else also need `owner` (the owner's name). They are neutral (D4-28):
+ * amounts in minor units with the currency, dates as ISO days, what is said in words as an i18n
+ * key, names as text; each reader sees them in their own language. A missing value, or one of
+ * another kind (an amount already formatted), is refused by `send` (InvalidInput).
  */
 export async function notifyBillingInTx(
   tx: SqlClient,
@@ -130,7 +133,7 @@ export async function notifyBillingInTx(
     organizationId: string;
     kind: BillingKind;
     idempotencyKey: string;
-    params: Readonly<Record<string, string>>;
+    params: NotificationParams;
   },
 ): Promise<{ owner: SendNotificationResult; others: SendNotificationResult | null }> {
   const route: { owner: BillingTemplateId; others?: BillingTemplateId } | undefined =

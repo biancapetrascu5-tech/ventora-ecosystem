@@ -43,6 +43,9 @@ export {
   placeholdersOf,
   templateKeys,
 } from './model/render';
+// D4-28: the values of the texts, neutral, formatted in the reader's language
+export { formatDay, formatMoney, resolveParams, checkParams, valueType } from './model/values';
+export type { NotificationValue, NotificationParams, NotificationValueType } from './model/values';
 // Lot 4.5: the Phase 3 notifications (S115)
 export { BILLING_TEMPLATES, BILLING_KINDS, billingType } from './model/billing';
 export type { BillingKind, BillingTemplateId } from './model/billing';

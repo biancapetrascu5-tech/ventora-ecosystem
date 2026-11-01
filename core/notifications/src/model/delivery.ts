@@ -5,6 +5,7 @@ import type { EmailChannel } from '../email';
 import { defaultCatalog, type NotificationCatalog } from './catalog';
 import { notificationText, renderNotification, toLocale } from './render';
 import type { SqlClient } from './sql';
+import { resolveParams, type NotificationParams } from './values';
 
 /*
  * The delivery job (Lot 4.3; registered in apps/platform/src/server/jobs.ts, every minute).
@@ -60,7 +61,7 @@ type Row = {
   organization_id: string | null;
   type: string;
   version: number;
-  params: Record<string, string>;
+  params: NotificationParams;
   action_url: string | null;
   valid_until: Date | null;
 };
@@ -83,13 +84,15 @@ export function renderNotificationEmail(
   if (!template) throw new Error(`[notifications] unknown template ${row.type}@${row.version}`);
   const locale: Locale = toLocale(contact.locale);
   const { title, body, action } = renderNotification(template, row.params, locale);
+  // D4-28: the values in the recipient's language too (the resource, the dates, the amounts)
+  const values = resolveParams(row.params, locale);
   const m = emailMessages(locale);
   if (template.email) {
     // Lot 4.5 (S115): the designed e-mail — subject „{title} · {business}”, the in-app text as
     // preheader, lead and what happens next, the action as the button, no greeting or signature
     const e = template.email;
     const text = (key: string, extra: Record<string, string> = {}) =>
-      fill(notificationText(locale, key), { ...row.params, ...extra });
+      fill(notificationText(locale, key), { ...values, ...extra });
     return renderOperationalEmail({
       lang: locale,
       subject: text(e.subjectKey, { title }),
@@ -106,7 +109,7 @@ export function renderNotificationEmail(
       company: m.common.company,
     });
   }
-  const businessName = row.params.businessName;
+  const businessName = values.businessName;
   return renderOperationalEmail({
     lang: locale,
     subject: title,

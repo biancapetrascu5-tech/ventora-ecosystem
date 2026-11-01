@@ -40,6 +40,8 @@ import {
   requiredParams,
   setEmailChannel,
   type BillingKind,
+  type NotificationValue,
+  type NotificationValueType,
 } from '@ventora/notifications';
 import { ConsumerRegistry, dispatchOutbox } from '@ventora/integrations';
 
@@ -1502,13 +1504,22 @@ describe('Lot 4.4 — end to end: the bell → HubAdminTeam → „Retrimite”'
 });
 
 describe('Lot 4.5 — the Phase 3 notifications: one contract call per event (S115)', () => {
+  /** D4-28: a neutral value of each kind, as F3 sends them; texts marked to be found. */
+  const SAMPLE: Record<NotificationValueType, (name: string) => NotificationValue> = {
+    text: (name) => `«${name}»`,
+    key: () => ({ type: 'key', key: 'usageMeter.unlimited' }),
+    date: () => ({ type: 'date', date: '2026-11-17' }),
+    money: () => ({ type: 'money', amountMinor: 34900, currency: 'RON' }),
+  };
   /** A value for every text of both variants of a kind (the caller of F3 builds them). */
-  const paramsOf = (kind: BillingKind) => {
+  const paramsOf = (kind: BillingKind): Record<string, NotificationValue> => {
     const route = BILLING_KINDS[kind] as { owner: string; others?: string };
-    const names = [route.owner, route.others]
+    const templates = [route.owner, route.others]
       .filter((id): id is string => !!id)
-      .flatMap((id) => requiredParams(defaultCatalog.get(`billing.${id}`, 1)!));
-    return Object.fromEntries(names.map((n) => [n, `«${n}»`]));
+      .map((id) => defaultCatalog.get(`billing.${id}`, 1)!);
+    return Object.fromEntries(
+      templates.flatMap((t) => requiredParams(t).map((n) => [n, SAMPLE[t.paramTypes![n]!](n)])),
+    );
   };
 
   async function orgWithTeam(stamp: number) {
@@ -1539,12 +1550,15 @@ describe('Lot 4.5 — the Phase 3 notifications: one contract call per event (S1
         tx: Parameters<typeof notifyBillingInTx>[0],
       ) {
         const p = envelope.payload as { threshold: 80 | 100; used: number; limit: number };
+        // D4-28: neutral values — the resource as a key, the reset as an ISO day
         await notifyBillingInTx(tx, {
           organizationId: envelope.organizationId,
           kind: p.threshold === 80 ? 'limit80' : 'limit100',
           idempotencyKey: envelope.eventId,
           params: {
             ...paramsOf('limit80'),
+            resource: { type: 'key', key: 'usageMeter.unlimited' },
+            resetDate: { type: 'date', date: '2026-11-01' },
             used: String(p.used),
             limit: String(p.limit),
             business: 'Salon Facturi',
@@ -1610,14 +1624,18 @@ describe('Lot 4.5 — the Phase 3 notifications: one contract call per event (S1
         .map((r) => ({ ...r, category: 'operational' }))
         .sort((a, b) => (a.type + a.who).localeCompare(b.type + b.who)),
     );
-    // in the bell, in the reader's language, with the action under the text
+    // in the bell, in the reader's language — the values too (D4-28) — with the action
     const [mine] = (await getInbox(team.ownerId, 'ro')).items;
     expect(mine).toMatchObject({
-      title: 'Ai folosit 80% din limita de «resource»',
-      action: 'Cumpără «buyItem» în plus',
+      title: 'Ai folosit 80% din limita de Nelimitat',
+      body: '400 din 500 până pe 1 noiembrie. Dacă îți trebuie mai multe, cumpără un pachet în plus.',
+      action: 'Cumpără Nelimitat în plus',
       actionUrl: '/admin/plan',
     });
-    expect((await getInbox(team.memberId, 'de')).items[0]!.action).toBeTruthy();
+    const [german] = (await getInbox(team.memberId, 'de')).items;
+    expect(german!.action).toBeTruthy();
+    expect(german!.title).toContain('Unbegrenzt');
+    expect(german!.body).toContain('1. November');
     expect((await getInbox(team.externalId, 'ro')).items).toEqual([]);
     await adminQuery(`DELETE FROM organizations.organization WHERE id = $1`, [team.organizationId]);
   });
