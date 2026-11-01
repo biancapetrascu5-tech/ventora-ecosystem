@@ -3,6 +3,7 @@ import { InvalidInput, ResourceNotFound } from '@ventora/errors';
 import type { Locale } from '@ventora/i18n';
 import { defaultCatalog, type NotificationCatalog, type NotificationCategory } from './catalog';
 import { renderNotification } from './render';
+import type { NotificationParams } from './values';
 import {
   defaultEnabled,
   EMAIL_TOPICS,
@@ -93,7 +94,7 @@ type Row = {
   display_group: InboxItem['group'];
   type: string;
   version: number;
-  params: Record<string, string> | null;
+  params: NotificationParams | null;
   action_url: string | null;
   read_at: Date | null;
   created_at: Date;

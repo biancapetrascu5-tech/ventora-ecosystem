@@ -667,7 +667,94 @@
     "email": {
       "open": "Deschide în Ventora",
       "why": "Primești acest e-mail pentru că faci parte din echipa {businessName} în Ventora.",
-      "whyAccount": "Primești acest e-mail pentru contul tău Ventora."
+      "whyAccount": "Primești acest e-mail pentru contul tău Ventora.",
+      "billing": {
+        "invoice": {
+          "card": {
+            "lead": "Am emis factura {number} pentru {what}, în valoare de {amount}.",
+            "next": "Plata s-a făcut deja cu cardul {brand} ···· {last4}; nu trebuie să faci nimic. Factura o găsești oricând în Abonament și consum."
+          },
+          "transfer": {
+            "lead": "Am emis factura {number} pentru {what}, în valoare de {amount}.",
+            "next": "Plătește prin transfer bancar până pe {due}; datele pentru plată sunt pe factură. După ce primim banii, factura apare „Plătită”."
+          },
+          "pack": {
+            "lead": "Am emis factura {number} pentru {item}, în valoare de {amount}.",
+            "next": "Plata s-a făcut deja cu cardul, iar pachetul e activ. Nu trebuie să faci nimic."
+          }
+        },
+        "payment": {
+          "renewal": {
+            "lead": "Banca a refuzat plata de {amount} pentru reînnoirea abonamentului, cu cardul {brand} ···· {last4}. Nu s-a retras niciun ban.",
+            "next": "Totul merge normal. Încercăm din nou automat pe {retryDate}; dacă actualizezi cardul înainte, folosim cardul nou."
+          },
+          "pack": {
+            "lead": "Banca a refuzat plata de {amount} pentru {item}. Nu s-a retras niciun ban, iar pachetul nu s-a activat.",
+            "next": "Ce ai deja merge mai departe ca înainte. Poți cumpăra pachetul din nou după ce actualizezi cardul."
+          },
+          "retry": {
+            "lead": "Am încercat din nou plata de {amount}, iar banca a refuzat-o. Nu s-a retras niciun ban.",
+            "next": "Ultima încercare automată e pe {retryDate}. Ca să fii sigur că trece, actualizează cardul înainte; dacă ai nevoie de ajutor, scrie-ne la support@ventorasystems.com."
+          },
+          "lastRetry": {
+            "lead": "Și ultima încercare automată de a plăti {amount} pentru abonament a fost refuzată. Nu s-a retras niciun ban.",
+            "next": "Până pe {graceEnd}, totul merge normal pentru toată echipa. Dacă plata nu se face până atunci, contul trece pe doar citire și export: vedeți tot, dar nu puteți adăuga sau schimba nimic. Actualizează cardul și facem plata imediat."
+          }
+        },
+        "limit": {
+          "owner80": {
+            "lead": "{business} a folosit {used} din {limit} {resource} în perioada care se încheie pe {resetDate}.",
+            "next": "Pe {resetDate}, consumul pornește de la zero. Dacă îți trebuie mai multe până atunci, cumpără un pachet în plus; limita crește imediat."
+          },
+          "owner100": {
+            "lead": "{business} a folosit toate cele {limit} {resource} din perioada care se încheie pe {resetDate}.",
+            "next": "Nu se pierde nimic din ce ai. Ca să continui înainte de {resetDate}, cumpără un pachet în plus: limita crește imediat. Altfel, pe {resetDate} consumul pornește de la zero."
+          }
+        },
+        "planChange": {
+          "lead": "De la {date}, abonamentul {plan} al afacerii {business} trece pe versiunea {version}: {changes}.",
+          "next": "Până pe {date} nu se schimbă nimic. Dacă alt abonament ți se potrivește mai bine, îl poți cere din Abonament și consum; dacă ai întrebări, scrie-ne la support@ventorasystems.com."
+        },
+        "trial": {
+          "ending": {
+            "lead": "Mai ai 3 zile din perioada de probă pentru {app}.",
+            "next": "Dacă vrei s-o păstrezi, activeaz-o: costă {price} pe lună, odată cu abonamentul. Dacă nu, pe {date} aplicația se oprește, iar tot ce ai lucrat în ea rămâne; o poți activa oricând mai târziu."
+          },
+          "ended": {
+            "lead": "Perioada de probă pentru {app} s-a încheiat, așa că aplicația s-a oprit.",
+            "next": "Tot ce ai lucrat în {app} rămâne. Dacă o activezi, continui de unde ai rămas."
+          }
+        },
+        "setup": {
+          "accepted": {
+            "lead": "Echipa Ventora a acceptat cererea ta pentru {app} și o configurează pentru {business}.",
+            "next": "Implementarea costă {setup}, o singură dată. După plată pornim configurarea și îți spunem când aplicația e gata. Apoi {app} costă {price} pe lună, odată cu abonamentul."
+          },
+          "due": {
+            "lead": "Configurarea {app} pentru {business} pornește după plata implementării, de {setup}.",
+            "next": "Dacă te-ai răzgândit sau ai întrebări, scrie-ne la support@ventorasystems.com."
+          },
+          "started": {
+            "lead": "Am terminat configurarea, iar {app} e pornită pentru {business}.",
+            "next": "O găsești în aplicațiile afacerii. Din azi costă {price} pe lună, odată cu abonamentul; prima lună se plătește proporțional."
+          }
+        },
+        "readonly": {
+          "owner": {
+            "lead": "Perioada de grație s-a încheiat pe {date} fără plata de {amount} pentru abonament, așa că {business} a trecut pe doar citire și export.",
+            "next": "Nimic nu s-a pierdut: toată echipa vede tot și poate exporta, dar nu poate adăuga sau schimba nimic. Imediat ce plata trece, totul merge ca înainte."
+          }
+        },
+        "restored": {
+          "lead": "Am primit plata de {amount}, iar {business} merge din nou normal.",
+          "next": "Toată echipa poate lucra ca înainte; nimic nu s-a pierdut între timp. Factura e în Abonament și consum."
+        },
+        "subject": "{title} · {business}",
+        "eyebrow": "{business} · Abonament și consum",
+        "eyebrowApps": "{business} · Aplicații",
+        "why": "Primești acest e-mail pentru că ești proprietarul afacerii {business} în Ventora.",
+        "upgrade": "Dacă ți se întâmplă des, cere alt abonament din Abonament și consum."
+      }
     },
     "prefs": {
       "title": "Notificări",
@@ -712,6 +799,121 @@
         "note": "Mesajele despre limitele contului tău rămân active, pentru că sunt informații despre cont, nu recomandări."
       },
       "saved": "Am salvat preferințele."
+    },
+    "billing": {
+      "invoice": {
+        "card": {
+          "title": "Factura {number} e emisă",
+          "body": "{what} · {amount} · plătită cu cardul",
+          "action": "Vezi factura"
+        },
+        "transfer": {
+          "title": "Factura {number} e emisă",
+          "body": "{what} · {amount} · de plătit prin transfer până pe {due}",
+          "action": "Vezi factura"
+        },
+        "pack": {
+          "title": "Factura {number} e emisă",
+          "body": "{item} · {amount}",
+          "action": "Vezi factura"
+        }
+      },
+      "payment": {
+        "renewal": {
+          "title": "Plata abonamentului nu a trecut",
+          "body": "Nu s-a retras niciun ban. Încercăm din nou pe {retryDate}; până atunci, totul merge normal.",
+          "action": "Actualizează cardul"
+        },
+        "pack": {
+          "title": "Plata pentru {item} nu a trecut",
+          "body": "Nu s-a retras niciun ban, iar pachetul nu s-a activat. Poți încerca din nou cu alt card.",
+          "action": "Actualizează cardul"
+        },
+        "retry": {
+          "title": "Plata abonamentului nu a trecut nici a doua oară",
+          "body": "Nu s-a retras niciun ban. Ultima încercare automată e pe {retryDate}; până atunci, totul merge normal.",
+          "action": "Actualizează cardul"
+        },
+        "lastRetry": {
+          "title": "Ultima încercare de plată nu a trecut",
+          "body": "Nu s-a retras niciun ban. Până pe {graceEnd}, totul merge normal; actualizează cardul ca să facem plata.",
+          "action": "Actualizează cardul"
+        }
+      },
+      "limit": {
+        "owner80": {
+          "title": "Ai folosit 80% din limita de {resource}",
+          "body": "{used} din {limit} până pe {resetDate}. Dacă îți trebuie mai multe, cumpără un pachet în plus.",
+          "action": "Cumpără {buyItem} în plus"
+        },
+        "owner100": {
+          "title": "Ai atins limita de {resource}",
+          "body": "Nu se pierde nimic din ce ai. Ca să adaugi altele până pe {resetDate}, cumpără un pachet în plus.",
+          "action": "Cumpără {buyItem} în plus"
+        },
+        "other80": {
+          "title": "Afacerea a folosit 80% din limita de {resource}",
+          "body": "{used} din {limit} până pe {resetDate}. Pachetele în plus le poate cumpăra doar {owner} (proprietar).",
+          "action": "Anunță proprietarul"
+        },
+        "other100": {
+          "title": "Afacerea a atins limita de {resource}",
+          "body": "Nu se pierde nimic. Până pe {resetDate}, pachetele în plus le poate cumpăra doar {owner} (proprietar).",
+          "action": "Anunță proprietarul"
+        }
+      },
+      "planChange": {
+        "title": "Abonamentul se schimbă de la {date}",
+        "body": "{changes}. Până atunci nu se schimbă nimic.",
+        "action": "Vezi ce se schimbă"
+      },
+      "trial": {
+        "ending": {
+          "title": "Perioada de probă pentru {app} se încheie pe {date}",
+          "body": "Ca s-o păstrezi, activeaz-o. Altfel se oprește, iar datele rămân.",
+          "action": "Activează · {price} pe lună"
+        },
+        "ended": {
+          "title": "Perioada de probă pentru {app} s-a încheiat",
+          "body": "Aplicația s-a oprit, iar datele rămân. O poți activa oricând.",
+          "action": "Activează {app}"
+        }
+      },
+      "setup": {
+        "accepted": {
+          "title": "Cererea pentru {app} e acceptată",
+          "body": "Implementarea costă {setup}, o singură dată. După plată, o configurăm noi.",
+          "action": "Plătește {setup}"
+        },
+        "due": {
+          "title": "Implementarea {app} așteaptă plata",
+          "body": "{setup}, o singură dată. Pornim configurarea după plată.",
+          "action": "Plătește {setup}"
+        },
+        "started": {
+          "title": "{app} e pornită",
+          "body": "Am terminat configurarea. Din azi, {app} costă {price} pe lună, odată cu abonamentul.",
+          "action": "Deschide {app}"
+        }
+      },
+      "readonly": {
+        "owner": {
+          "title": "Contul afacerii e doar pentru citire",
+          "body": "Plata abonamentului nu s-a făcut. Vedeți și exportați tot; ca să lucrați din nou, plătește {amount}.",
+          "action": "Plătește {amount}"
+        },
+        "member": {
+          "title": "Contul afacerii e doar pentru citire",
+          "body": "Poți vedea și exporta tot. Ca să lucrați din nou, {owner} (proprietar) trebuie să facă plata.",
+          "action": "Anunță proprietarul"
+        }
+      },
+      "restored": {
+        "title": "Contul afacerii merge din nou normal",
+        "body": "Am primit plata de {amount}. Toată echipa poate lucra ca înainte.",
+        "action": "Vezi factura"
+      },
+      "upgradeAction": "Cere alt abonament"
     }
   }
 }

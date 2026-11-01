@@ -238,8 +238,13 @@ Estimările sunt în ore de agent: implementare, teste, pre-push complet și rap
   - **finalul perioadei de probă:** reminderul cu 3 zile înainte și „s-a încheiat”.
 - F3 emite evenimentele, iar F4 le transformă în notificări. Fiecare tip are categoria `operational`.
 - **Textele** se aprobă la revizuirea de microcopy (D-UX-1). Fără texte aprobate, cheile nu se publică (D4-12).
+- **Valorile din texte** (D4-28 = a, DECIS 01.11.2026): F3 trimite valori neutre, iar `core/notifications` le formatează în limba cititorului, în clopoțel și în e-mail:
+  - **text:** numele, ca atare (afacerea, owner-ul, numărul facturii);
+  - **cheie i18n:** ce se spune în cuvinte (resursa, pachetul, ce se schimbă), cu valorile ei;
+  - **dată:** ziua ISO (`2026-12-01` → „1 decembrie”, „1. Dezember”);
+  - **sumă:** în bani + moneda (`34900 RON` → „349 lei”).
 
-**Dependențe:** 4.3. Lista de chei de la F3 (începutul lui 3.2). D4-12.
+**Dependențe:** 4.3. Lista de chei de la F3 (începutul lui 3.2). D4-12, D4-28.
 **Migrări probabile:** —
 **Ecrane:** — (designul e-mailului e șablonul unic, S3).
 **Gata când:**
@@ -490,6 +495,7 @@ Tabelul e ordonat după lotul pe care îl blochează fiecare decizie. „Blochea
 | D4-10 | 4.11 | **Starea livrării e-mailurilor** (webhook Resend) | a) după Vercel; b) deloc deocamdată | **a**. |
 | D4-11 | 4.4 | **Istoricul notificărilor** (brief §36, lipsește din design) | a) doar panoul, cu ultimele 30 de zile; pagina de istoric vine cu design; b) pagina în F4, după design | **DECIS: a** (fondatoarea, 31.10.2026). Doar panoul, cu ultimele 30 de zile; pagina de istoric vine cu design. Retenția se decide la D4-18. |
 | D4-12 | 4.5 | **Textele notificărilor cerute de F3** | a) Design / microcopy le scrie, iar fondatoarea le aprobă (D-UX-1) înaintea lui 4.5; b) le propune agentul și se aprobă la review | **a**: textele vizibile nu se inventează. |
+| D4-28 | 4.5 | **Valorile din texte, în limba cititorului** (o notificare se scrie o dată și se citește în limba fiecăruia) | a) F3 trimite valori neutre (cheia resursei, data ISO, suma în bani + moneda), iar `core/notifications` le formatează la citire, în limba cititorului; b) F3 trimite valorile în limba owner-ului, iar ceilalți le văd în aceeași limbă | **DECIS: a** (fondatoarea, 01.11.2026), făcută în 4.5, înaintea primului consumator F3. Tipuri de valori: text, cheie i18n, dată, sumă (`core/notifications/src/model/values.ts`). Fiecare șablon spune ce tip ia fiecare valoare (`paramTypes`); `send` refuză o sumă sau o dată deja formatată. |
 | D4-13 | 4.6 | **Modelul solicitării** (C-F4-6) | a) ca în design: aplicație, subiect, descriere, urgență pe 2 niveluri, 3 stări, fir de mesaje; categoria și responsabilul doar intern, în Founder; b) toate câmpurile din brief §39, vizibile | **a**. |
 | D4-14 | 4.6 | **Cum răspunde echipa Ventora** (C-F4-7) | a) doar pe e-mail (`support@ventorasystems.com`), iar solicitarea din Hub creează e-mailul; b) inbox în Founder, cu răspunsul vizibil în Hub („Îți răspundem aici și pe e-mail”) | **b**: e ce promite designul Hub. Cere design pentru inbox. Până atunci, a. |
 | D4-15 | 4.6 | **„În cel mult o zi lucrătoare”** | a) e o promisiune din design, fără termen în sistem; b) termen urmărit, cu alertă în Founder | **b**, dacă D4-14 = b. |
