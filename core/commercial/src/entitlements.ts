@@ -75,17 +75,32 @@ async function versionAt(
 }
 
 /**
- * D3-24: the seats every account includes (setting `included_members`, default 3), on top of the
- * bundle's and the add-ons'.
+ * D3-24: the seats a new subscription includes (setting `included_members`, default 3), on top of
+ * the bundle's and the add-ons'. D3-25: each subscription keeps the value it got at creation
+ * (`subscription.included_members`); a later change of the setting reaches only new ones.
  */
 export const DEFAULT_INCLUDED_MEMBERS = 3;
 export const MEMBERS_KEY = 'platform.members';
 
+/** The setting: what a subscription created now would include (Founder, the catalog). */
 export async function includedMembersInTx(client: PoolClient): Promise<number> {
   const { rows } = await client.query<{ int_value: string }>(
     `SELECT int_value FROM commercial.setting WHERE key = 'included_members'`,
   );
   return rows[0] ? Number(rows[0].int_value) : DEFAULT_INCLUDED_MEMBERS;
+}
+
+/** D3-25: the seats the subscription includes, fixed at its creation; 0 without one. */
+export async function subscriptionIncludedMembersInTx(
+  client: PoolClient,
+  sub: LiveSubscription | null,
+): Promise<number> {
+  if (!sub) return 0;
+  const { rows } = await client.query<{ included_members: number }>(
+    `SELECT included_members FROM commercial.subscription WHERE id = $1`,
+    [sub.id],
+  );
+  return rows[0]?.included_members ?? 0;
 }
 
 /** A trial on the whole subscription that has ended includes nothing until Lot 3.8 decides. */
@@ -181,7 +196,7 @@ export async function computeEntitlements(
       ]);
     }
   }
-  const includedMembers = await includedMembersInTx(client);
+  const includedMembers = await subscriptionIncludedMembersInTx(client, sub);
 
   // Active exceptions (D-COM-8): a feature turned on, or a limit that replaces the version's
   const overrides = await client.query<{
@@ -213,7 +228,7 @@ export async function computeEntitlements(
   );
   const extra = new Map(grants.rows.map((g) => [g.quota_key, Number(g.units)]));
 
-  // Every active key of the registry (D3-24): the seats every account includes + the bundle's
+  // Every active key of the registry (D3-24): the seats the subscription includes (D3-25) + the bundle's
   // limit + the limits of the applications à la carte (null anywhere = unlimited); an exception
   // replaces that sum; add-ons add on top (D3-22). A key nothing includes is 0.
   const keys = await client.query<{ key: string }>(

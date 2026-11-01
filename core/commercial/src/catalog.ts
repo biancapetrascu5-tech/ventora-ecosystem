@@ -8,6 +8,7 @@ import {
   includedMembersInTx,
   liveSubscription,
   MEMBERS_KEY,
+  subscriptionIncludedMembersInTx,
 } from './entitlements';
 import { DEFAULT_CURRENCY } from './founder';
 import { calendarDate } from './period';
@@ -61,6 +62,7 @@ export interface CatalogApplication {
 export interface Catalog {
   currency: Currency;
   interval: BillingInterval;
+  /** D3-25: the subscription's included seats; without a subscription, what a new one gets. */
   includedMembers: number;
   /** What the business pays now per interval: its bundle (at its price) and its lines. */
   current: {
@@ -198,7 +200,10 @@ export async function getCatalogForOrg(organizationId: string): Promise<Catalog>
     return {
       currency,
       interval,
-      includedMembers: await includedMembersInTx(client),
+      // D3-25: a bundle bought later keeps the subscription's seats; without one, a new one's
+      includedMembers: sub
+        ? await subscriptionIncludedMembersInTx(client, sub)
+        : await includedMembersInTx(client),
       current: {
         bundleMinor,
         lines,
@@ -225,7 +230,7 @@ export async function getCatalogForOrg(organizationId: string): Promise<Catalog>
 export interface SeatsBreakdown {
   /** The members limit now (null = unlimited). */
   total: number | null;
-  /** D3-24: the seats every account includes. */
+  /** D3-24 / D3-25: the seats the subscription includes, fixed at its creation. */
   included: number;
   /** The seats of the bundle and its name (0 / null without one). */
   bundle: number;
@@ -261,7 +266,7 @@ export async function getSeatsBreakdown(organizationId: string): Promise<SeatsBr
     );
     return {
       total: entitlements.quotas[MEMBERS_KEY] ?? 0,
-      included: await includedMembersInTx(client),
+      included: await subscriptionIncludedMembersInTx(client, await liveSubscription(client)),
       bundle,
       bundleName,
       packs: Number(packs.rows[0]?.units ?? 0),

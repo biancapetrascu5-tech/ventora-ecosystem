@@ -1633,7 +1633,10 @@ export async function stopBundleSales(params: FounderParams & { planId: string }
   });
 }
 
-/** D3-24: the seats in the team every account includes (default 3), set globally from Founder. */
+/**
+ * D3-24: the seats in the team a new subscription includes (default 3), set globally from Founder.
+ * D3-25: only subscriptions created afterwards get the new value; existing ones keep theirs.
+ */
 export async function setIncludedMembers(
   params: FounderParams & { members: number },
 ): Promise<void> {

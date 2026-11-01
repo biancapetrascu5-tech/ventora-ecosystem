@@ -23,6 +23,7 @@ import {
   getEffectiveEntitlements,
   getIncludedMembersForFounder,
   getPlanVersionForFounder,
+  getSeatsBreakdown,
   getSubscriptionSummary,
   getUsage,
   getUsageTotalsForFounder,
@@ -730,19 +731,69 @@ describe('Lot 3.4 — FounderBusiness, FounderUsage, „Reduceri”, „Prezenta
 
 // ── D3-24 (31.10.2026): applications à la carte, bundles, the seats every account includes ────
 
-describe('Lot 3.4 — D3-24: the seats every account includes, applications à la carte, bundles', () => {
-  it('every account includes the seats of the setting (default 3), set globally from Founder', async () => {
-    const org = newUuid();
-    expect((await getEffectiveEntitlements(org)).quotas['platform.members']).toBe(3);
+describe('Lot 3.4 — D3-24 / D3-25: the included seats, applications à la carte, bundles', () => {
+  it('D3-25: a new subscription takes the included seats of the setting and keeps them; existing ones keep 0', async () => {
+    const { versionId } = await plan(); // the bundle brings 10 seats
+    const members = async (org: string) =>
+      (await getEffectiveEntitlements(org)).quotas['platform.members'];
     expect(await getIncludedMembersForFounder({ founderHeaders: founderHeaders() })).toBe(3);
+    // without a subscription nothing is included
+    const none = newUuid();
+    expect(await members(none)).toBe(0);
+
+    // a subscription from before the lot: the column's default (what ADD COLUMN gave the rows
+    // already there), without the trigger that fills it at creation
+    const old = newUuid();
+    await q(`ALTER TABLE commercial.subscription DISABLE TRIGGER subscription_included_members`);
+    try {
+      await q(
+        `INSERT INTO commercial.subscription (organization_id, plan_version_id, interval, currency,
+           started_on, anchor_day, status, created_by_founder_id)
+         VALUES ($1, $2, 'month', 'RON', CURRENT_DATE, EXTRACT(DAY FROM CURRENT_DATE), 'active', $3)`,
+        [old, versionId, founderId],
+      );
+    } finally {
+      await q(`ALTER TABLE commercial.subscription ENABLE TRIGGER subscription_included_members`);
+    }
+    // a new one, created from Founder (founder_runtime): the setting's value now
+    const fresh = await business(versionId);
+    // read as app_runtime (commercial_rw)
+    expect(await members(old)).toBe(10);
+    expect(await members(fresh)).toBe(13);
+    expect((await getSeatsBreakdown(old)).included).toBe(0);
+    expect(await getSeatsBreakdown(fresh)).toMatchObject({ total: 13, included: 3, bundle: 10 });
+    expect((await getCatalogForOrg(fresh)).includedMembers).toBe(3);
+
+    // the setting changes: only subscriptions created afterwards get it
     await setIncludedMembers({ founderHeaders: founderHeaders(), members: 5 });
-    // at the next request, without a deploy
-    expect((await getEffectiveEntitlements(org)).quotas['platform.members']).toBe(5);
     const [row] = await auditRows('commercial.setting_changed', 'included_members').then((r) =>
       r.slice(-1),
     );
     expect(row).toMatchObject({ actor_type: 'founder', founder_id: founderId });
     expect(row!.metadata).toMatchObject({ from: 3, to: 5 });
+    expect(await members(old)).toBe(10);
+    expect(await members(fresh)).toBe(13);
+    expect((await getSeatsBreakdown(fresh)).included).toBe(3);
+    expect((await getCatalogForOrg(fresh)).includedMembers).toBe(3);
+    const later = await business(versionId);
+    expect(await members(later)).toBe(15);
+    expect((await getSeatsBreakdown(later)).included).toBe(5);
+    // without a subscription, the catalog shows what a new one would include
+    expect((await getCatalogForOrg(none)).includedMembers).toBe(5);
+
+    // fixed at creation, in the database too
+    await expect(
+      q(`UPDATE commercial.subscription SET included_members = 9 WHERE organization_id = $1`, [
+        fresh,
+      ]),
+    ).rejects.toThrow(/fixed at its creation/);
+    const snap = await q(
+      `SELECT included_members FROM commercial.subscription WHERE organization_id = ANY($1::uuid[])
+        ORDER BY included_members`,
+      [[old, fresh, later]],
+    );
+    expect(snap.map((r) => r.included_members)).toEqual([0, 3, 5]);
+
     await expect(
       setIncludedMembers({ founderHeaders: founderHeaders(), members: -1 }),
     ).rejects.toThrow(InvalidInput);

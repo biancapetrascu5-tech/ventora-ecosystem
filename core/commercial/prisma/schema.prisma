@@ -249,6 +249,8 @@ model Subscription {
   createdByFounderId String      @map("created_by_founder_id") @db.Uuid
   createdAt          DateTime    @default(now()) @map("created_at") @db.Timestamptz
   updatedAt          DateTime    @default(now()) @map("updated_at") @db.Timestamptz
+  /// D3-25: locurile în echipă incluse, fotografiate din setare la creare (trigger); 0 pentru cele de dinainte de Lotul 3.4.
+  includedMembers    Int         @default(0) @map("included_members")
   version            PlanVersion? @relation(fields: [planVersionId], references: [id], onDelete: Restrict, onUpdate: Cascade)
 
   changes      SubscriptionChange[]

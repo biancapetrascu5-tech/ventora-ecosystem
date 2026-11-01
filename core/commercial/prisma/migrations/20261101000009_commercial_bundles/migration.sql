@@ -12,8 +12,11 @@
 --    prețul lui (versiunile rămân imuabile; regula de 30 de zile rămâne).
 -- 3. Abonamentul afacerii nu mai cere un bundle: plan_version_id devine opțional — o afacere poate
 --    avea un bundle, aplicații la bucată (subscription_application), sau ambele.
--- 4. Locurile în echipă incluse în orice cont: setarea globală `included_members` (implicit 3),
---    setabilă din Founder; se adună cu cele din bundle și cu pachetele.
+-- 4. Locurile în echipă incluse: setarea globală `included_members` (implicit 3), setabilă din
+--    Founder; se adună cu cele din bundle și cu pachetele. D3-25 (fondatoarea, 01.11.2026): ca
+--    prețul și limitele versiunii, valoarea se fotografiază pe abonament la creare
+--    (subscription.included_members) și nu se mai schimbă; schimbarea setării ajunge doar la
+--    abonamentele noi. Abonamentele de dinainte de lot rămân la 0 (DEFAULT-ul coloanei).
 -- 5. Dreptul efectiv (getEffectiveEntitlements, în cod): locurile incluse + versiunea bundle-ului +
 --    limitele aplicațiilor la bucată + pachete + excepții (excepția înlocuiește, pachetele se adaugă).
 
@@ -132,6 +135,33 @@ INSERT INTO "commercial"."setting" ("key", "int_value") VALUES ('included_member
 REVOKE ALL ON "commercial"."setting" FROM PUBLIC;
 GRANT SELECT ON "commercial"."setting" TO commercial_rw;
 GRANT SELECT, UPDATE ON "commercial"."setting" TO commercial_founder;
+
+-- D3-25: locurile incluse, fotografiate pe abonament. Coloana nouă dă 0 abonamentelor existente
+-- (contractul lor nu se schimbă); fiecare abonament nou primește valoarea setării din momentul
+-- creării, indiferent de interfață, și o păstrează.
+ALTER TABLE "commercial"."subscription" ADD COLUMN "included_members" INTEGER NOT NULL DEFAULT 0;
+ALTER TABLE "commercial"."subscription"
+  ADD CONSTRAINT "subscription_included_members" CHECK ("included_members" >= 0);
+
+CREATE OR REPLACE FUNCTION commercial.subscription_included_members()
+RETURNS trigger
+LANGUAGE plpgsql
+SET search_path = commercial, pg_catalog
+AS $$
+BEGIN
+  IF TG_OP = 'INSERT' THEN
+    NEW.included_members := COALESCE(
+      (SELECT int_value FROM commercial.setting WHERE key = 'included_members'), 0);
+  ELSIF NEW.included_members IS DISTINCT FROM OLD.included_members THEN
+    RAISE EXCEPTION 'the included members of subscription % are fixed at its creation', NEW.id
+      USING ERRCODE = 'P0001', HINT = 'included_members_fixed';
+  END IF;
+  RETURN NEW;
+END $$;
+
+CREATE TRIGGER subscription_included_members
+  BEFORE INSERT OR UPDATE OF "included_members" ON "commercial"."subscription"
+  FOR EACH ROW EXECUTE FUNCTION commercial.subscription_included_members();
 
 -- Lista abonamentelor din Founder: și cele fără bundle (LEFT JOIN)
 DROP FUNCTION IF EXISTS commercial.founder_list_subscriptions();
