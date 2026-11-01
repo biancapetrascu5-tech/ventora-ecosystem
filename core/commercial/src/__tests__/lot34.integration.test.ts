@@ -56,8 +56,8 @@ import {
 
 // Lot 3.4 — the Founder screens' contracts: „Gata când” (a limit changed in FounderPlanEditor and
 // published shows in the Hub at the next request, without a deploy; every action has its audit row
-// on the Founder), the requests from the Hub (commercial_requests), D3-23 (a setup cost keeps an
-// add-on on request, in the database too; D3-24 lifted it for applications, migration 010), the reads across businesses
+// on the Founder), the requests from the Hub (commercial_requests), D3-24 (a setup cost no longer
+// keeps an application or an add-on on request: migrations 010 and 011), the reads across businesses
 // (FounderPlans, FounderUsage, FounderDiscounts, „Prezentare”) and one business (FounderBusiness).
 
 const adminPool = new Pool({ connectionString: process.env.DIRECT_URL, max: 2 });
@@ -465,9 +465,9 @@ describe('Lot 3.4 — commercial_requests: „Cere activare”, „Cere alt abon
   });
 });
 
-// ── Setup cost: D3-24 (applications), D3-23 (add-ons) ──────────────────────────────────────
+// ── Setup cost: D3-24 (applications, Lot 3.4; add-ons, Lot 3.5) ───────────────────────────
 
-describe('Lot 3.4 — setup cost: free switch for applications (D3-24), on request for add-ons (D3-23)', () => {
+describe('Lot 3.4 / 3.5 — setup cost: the switch is free for applications and add-ons (D3-24)', () => {
   it('an application with a setup cost stays „direct” and can be switched freely, in SQL too', async () => {
     await setApplicationActivationMode({
       founderHeaders: founderHeaders(),
@@ -511,7 +511,7 @@ describe('Lot 3.4 — setup cost: free switch for applications (D3-24), on reque
     expect(triggers).toEqual([]);
   });
 
-  it('an add-on: direct + setup refused; a setup price on a direct add-on moves it; validity changes', async () => {
+  it('an add-on (D3-24, Lot 3.5): direct with a setup cost, the switch free, in SQL too; validity changes', async () => {
     const { planId } = await plan();
     const base = {
       founderHeaders: founderHeaders(),
@@ -521,14 +521,17 @@ describe('Lot 3.4 — setup cost: free switch for applications (D3-24), on reque
       validity: 'current_month' as const,
       eligiblePlanIds: [planId],
     };
-    await expect(
-      createAddon({
-        ...base,
-        code: `l34-x-${newUuid().slice(0, 6)}`,
-        purchaseMode: 'direct',
-        prices: [{ currency: 'RON', amountMinor: 4900, setupMinor: 100 }],
-      }),
-    ).rejects.toThrow(InvalidInput);
+    const { addonId: withSetup } = await createAddon({
+      ...base,
+      code: `l34-x-${newUuid().slice(0, 6)}`,
+      purchaseMode: 'direct',
+      prices: [{ currency: 'RON', amountMinor: 4900, setupMinor: 100 }],
+    });
+    expect(
+      (await listAddonsForFounder({ founderHeaders: founderHeaders() })).find(
+        (a) => a.id === withSetup,
+      ),
+    ).toMatchObject({ purchaseMode: 'direct' });
     const { addonId } = await createAddon({
       ...base,
       code: `l34-y-${newUuid().slice(0, 6)}`,
@@ -550,19 +553,22 @@ describe('Lot 3.4 — setup cost: free switch for applications (D3-24), on reque
     const addon = (await listAddonsForFounder({ founderHeaders: founderHeaders() })).find(
       (a) => a.id === addonId,
     )!;
-    expect(addon).toMatchObject({ purchaseMode: 'on_request', validity: 'monthly' });
+    // a setup price keeps the add-on direct
+    expect(addon).toMatchObject({ purchaseMode: 'direct', validity: 'monthly' });
     expect(addon.prices).toContainEqual({ currency: 'EUR', amountMinor: 1200, setupMinor: 3000 });
-    await expect(
-      updateAddon({ founderHeaders: founderHeaders(), addonId, purchaseMode: 'direct' }),
-    ).rejects.toThrow(Conflict);
-    await expect(
-      q(`UPDATE commercial.addon SET purchase_mode = 'direct' WHERE id = $1`, [addonId]),
-    ).rejects.toThrow(/setup cost/);
+    await updateAddon({ founderHeaders: founderHeaders(), addonId, purchaseMode: 'on_request' });
+    await updateAddon({ founderHeaders: founderHeaders(), addonId, purchaseMode: 'direct' });
     const audit = await auditRows('commercial.addon_updated', addonId);
-    expect(audit[0]!.metadata).toMatchObject({
-      purchaseModeForcedBySetup: true,
-      validity: 'monthly',
-    });
+    expect(audit[0]!.metadata).toMatchObject({ validity: 'monthly' });
+    expect(audit[0]!.metadata.purchaseModeForcedBySetup).toBeUndefined();
+    // the D3-23 triggers on add-ons are gone too (migration 011)
+    await q(`UPDATE commercial.addon SET purchase_mode = 'on_request' WHERE id = $1`, [addonId]);
+    await q(`UPDATE commercial.addon SET purchase_mode = 'direct' WHERE id = $1`, [addonId]);
+    const triggers = await q(
+      `SELECT tgname FROM pg_trigger
+        WHERE tgname IN ('addon_setup_on_request', 'addon_price_setup_on_request')`,
+    );
+    expect(triggers).toEqual([]);
   });
 });
 

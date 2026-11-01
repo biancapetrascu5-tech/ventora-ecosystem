@@ -298,6 +298,8 @@ model AddonGrant {
   endedAt            DateTime?     @map("ended_at") @db.Timestamptz
   createdByFounderId String?       @map("created_by_founder_id") @db.Uuid
   createdAt          DateTime      @default(now()) @map("created_at") @db.Timestamptz
+  /// Lot 3.5: cumpărarea din billing (source = 'purchase'); o activare per cumpărare.
+  purchaseId         String?       @unique(map: "addon_grant_purchase_id_key") @map("purchase_id") @db.Uuid
   addon              Addon         @relation(fields: [addonId], references: [id])
   subscription       Subscription? @relation(fields: [subscriptionId], references: [id])
 
@@ -335,9 +337,12 @@ model SubscriptionApplication {
   source             String       @db.VarChar(16)
   startsAt           DateTime     @default(now()) @map("starts_at") @db.Timestamptz
   endedAt            DateTime?    @map("ended_at") @db.Timestamptz
-  createdByFounderId String       @map("created_by_founder_id") @db.Uuid
+  /// Null doar pentru aplicația cumpărată din Hub (source = 'purchase', Lot 3.5).
+  createdByFounderId String?      @map("created_by_founder_id") @db.Uuid
   endedByFounderId   String?      @map("ended_by_founder_id") @db.Uuid
   createdAt          DateTime     @default(now()) @map("created_at") @db.Timestamptz
+  /// Lot 3.5: cumpărarea din billing; o activare per cumpărare.
+  purchaseId         String?      @unique(map: "subscription_application_purchase_id_key") @map("purchase_id") @db.Uuid
   subscription       Subscription @relation(fields: [subscriptionId], references: [id])
   application        Application  @relation(fields: [applicationId], references: [id])
 

@@ -14,12 +14,18 @@ export const platformManifest = {
       description: 'See support sessions opened by the Ventora team, with reason and request',
     },
     { name: 'support.session.close', description: 'Close a support session (D11)' },
+    {
+      name: 'billing.purchase',
+      description: 'Save the card and buy packs or applications with it (D-COM-6)',
+    },
   ],
   // D4: only owner and admin read the organization's audit log.
   // Lot 2.5c: owner and admin see the support sessions in detail; only the owner closes one
   // (D11). Every member sees the banner (no permission, see getSupportSessionBanner).
+  // Lot 3.5 (D3-8 a): only the owner buys; granting `billing.purchase` to admin later needs no
+  // migration (the permission sync).
   defaultGrants: {
-    owner: ['audit.log.read', 'support.session.read', 'support.session.close'],
+    owner: ['audit.log.read', 'support.session.read', 'support.session.close', 'billing.purchase'],
     admin: ['audit.log.read', 'support.session.read'],
   },
   features: [],

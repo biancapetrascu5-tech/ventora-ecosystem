@@ -152,12 +152,82 @@ export const CommercialRequestDecidedV1 = defineEvent({
     .strict(),
 });
 
+const billingPayment = {
+  paymentId: z.uuid(),
+  /** `purchase`: a pack or an application bought from the Hub; `subscription`: an invoice of the subscription. */
+  kind: z.enum(['purchase', 'subscription']),
+  purchaseId: z.uuid().nullable(),
+  /** The Stripe invoice (subscription), for the invoice of Lot 3.6. */
+  invoiceId: z.string().min(1).nullable(),
+  amountMinor: z.number().int().nonnegative(),
+  currency: z.enum(['RON', 'EUR']),
+};
+
+/**
+ * `billing.payment.succeeded` v1 (Lot 3.5): a payment with the card went through (a purchase, or
+ * a renewal of the subscription in Stripe Billing). The invoice (SmartBill, Lot 3.6) consumes
+ * it; until then it has no consumer and is marked delivered. Only ids and the amount.
+ */
+export const BillingPaymentSucceededV1 = defineEvent({
+  type: 'billing.payment.succeeded',
+  version: 1,
+  sourceApp: 'platform',
+  growthSafe: false,
+  withoutConsumer: 'complete',
+  schema: z.object(billingPayment).strict(),
+});
+
+/**
+ * `billing.payment.failed` v1 (Lot 3.5): the bank refused a payment — a pack bought from the Hub,
+ * or an attempt of the subscription's invoice (`attempt`, and when Stripe tries again). The owner's
+ * notification (S115: payment.pack, payment.renewal, payment.retry) is sent by its consumer, so
+ * an event without one is a mistake (dead letter).
+ */
+export const BillingPaymentFailedV1 = defineEvent({
+  type: 'billing.payment.failed',
+  version: 1,
+  sourceApp: 'platform',
+  growthSafe: false,
+  withoutConsumer: 'dead_letter',
+  schema: z
+    .object({
+      ...billingPayment,
+      attempt: z.number().int().positive(),
+      nextAttemptAt: z.iso.datetime().nullable(),
+    })
+    .strict(),
+});
+
+/**
+ * `billing.dispute.opened` v1 (Lot 3.5): a customer disputed a charge with the bank (chargeback).
+ * The decision stays manual, at Founder; the webhook also reports it to Sentry. Who in the team is
+ * told, and how, is still open (see the Lot 3.5 report).
+ */
+export const BillingDisputeOpenedV1 = defineEvent({
+  type: 'billing.dispute.opened',
+  version: 1,
+  sourceApp: 'platform',
+  growthSafe: false,
+  withoutConsumer: 'complete',
+  schema: z
+    .object({
+      disputeId: z.string().min(1),
+      amountMinor: z.number().int().nonnegative(),
+      currency: z.enum(['RON', 'EUR']),
+      reason: z.string().min(1),
+    })
+    .strict(),
+});
+
 export const EVENT_CATALOG: readonly EventDefinition[] = [
   InvitationNewLinkRequestedV1 as EventDefinition,
   SubscriptionVersionChangeScheduledV1 as EventDefinition,
   QuotaThresholdV1 as EventDefinition,
   QuotaOverLimitV1 as EventDefinition,
   CommercialRequestDecidedV1 as EventDefinition,
+  BillingPaymentSucceededV1 as EventDefinition,
+  BillingPaymentFailedV1 as EventDefinition,
+  BillingDisputeOpenedV1 as EventDefinition,
 ];
 
 /** Definiția unui eveniment după tip și versiune; null dacă nu e în catalog. */

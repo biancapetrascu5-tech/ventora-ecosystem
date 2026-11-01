@@ -77,6 +77,7 @@ export {
   anchorDateIn,
   anchorDayOf,
   billingDates,
+  billingPeriod,
   calendarDate,
   daysInMonth,
   nextBillingDate,
@@ -165,4 +166,14 @@ export {
   type CatalogBundle,
   type CatalogApplication,
 } from './catalog';
+export {
+  getPurchaseQuote,
+  activatePurchasedAddon,
+  activatePurchasedApplication,
+  getBillingTerms,
+  type PurchaseItem,
+  type PurchaseQuote,
+  type BillingTerms,
+  type BillingDiscount,
+} from './purchases';
 export { closeCommercialPools, type CommercialConnection } from './db';
