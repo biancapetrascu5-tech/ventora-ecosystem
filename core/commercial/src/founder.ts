@@ -79,9 +79,6 @@ function mapDbError(err: unknown, field: string): never {
   if (e.hint === 'bundle_not_on_sale') {
     throw new InvalidInput('versionId', 'The bundle is not on sale (D3-24)');
   }
-  if (e.hint === 'setup_cost_on_request') {
-    throw new Conflict('With a setup cost it stays on request (D3-23)');
-  }
   if (e.code === '23514' || e.code === 'P0001') throw new InvalidInput(field, e.message);
   if (e.code === '23505') throw new Conflict(e.message);
   throw err;
@@ -369,10 +366,6 @@ export interface AddonPriceInput {
   setupMinor?: number;
 }
 
-/** D3-23, for add-ons only: an add-on with a setup cost is always on request (D3-24 lifted it for applications). */
-const hasSetupCost = (prices: ReadonlyArray<{ setupMinor?: number }>) =>
-  prices.some((p) => (p.setupMinor ?? 0) > 0);
-
 function checkAddonPrices(prices: readonly AddonPriceInput[]): void {
   const seen = new Set<string>();
   for (const p of prices) {
@@ -420,7 +413,8 @@ async function writeEligiblePlans(
 
 /**
  * An add-on: `quantity` units of one quota, for the current month or monthly (a recurring line of
- * the subscription, D3-7), prices per currency (D3-2), its „direct / la cerere” switch.
+ * the subscription, D3-7), prices per currency (D3-2), its „direct / la cerere” switch — free
+ * with a setup cost too (D3-24, Lot 3.5): on „direct” the setup is paid with the card at purchase.
  */
 export async function createAddon(
   params: FounderParams & {
@@ -448,9 +442,6 @@ export async function createAddon(
     throw new InvalidInput('purchaseMode');
   }
   checkAddonPrices(params.prices);
-  if (params.purchaseMode === 'direct' && hasSetupCost(params.prices)) {
-    throw new InvalidInput('purchaseMode', 'With a setup cost it stays on request (D3-23)');
-  }
   await assertKnownKeys({ quotas: { [params.quotaKey]: params.quantity } });
 
   return withFounderWrite(null, async (client, exec) => {
@@ -494,10 +485,9 @@ export async function createAddon(
 }
 
 /**
- * FounderPacks (3.4) is the only place for add-on prices; each change is audited. A setup cost
- * puts the add-on on request (D3-23): asked for together with „direct”, it is refused; with prices
- * that add one to a direct add-on, the switch moves to „la cerere” in the same transaction (in the
- * audit row). `validity` („Se plătește”): the add-ons already granted keep theirs.
+ * FounderPacks (3.4) is the only place for add-on prices; each change is audited. The switch does
+ * not depend on the setup cost (D3-24 replaces D3-23 for add-ons, Lot 3.5). `validity` („Se
+ * plătește”): the add-ons already granted keep theirs.
  */
 export async function updateAddon(
   params: FounderParams & {
@@ -527,21 +517,12 @@ export async function updateAddon(
     throw new InvalidInput('validity');
   }
   if (params.prices) checkAddonPrices(params.prices);
-  if (params.purchaseMode === 'direct' && params.prices && hasSetupCost(params.prices)) {
-    throw new InvalidInput('purchaseMode', 'With a setup cost it stays on request (D3-23)');
-  }
   await withFounderWrite(null, async (client, exec) => {
-    const found = await client.query<{ purchase_mode: PurchaseMode }>(
-      `SELECT purchase_mode FROM commercial.addon WHERE id = $1 FOR UPDATE`,
-      [addonId],
-    );
+    const found = await client.query(`SELECT 1 FROM commercial.addon WHERE id = $1 FOR UPDATE`, [
+      addonId,
+    ]);
     if (!found.rows[0]) throw new ResourceNotFound('Add-on not found');
-    const forcedOnRequest =
-      params.purchaseMode === undefined &&
-      found.rows[0].purchase_mode === 'direct' &&
-      !!params.prices &&
-      hasSetupCost(params.prices);
-    const mode = forcedOnRequest ? 'on_request' : (params.purchaseMode ?? null);
+    const mode = params.purchaseMode ?? null;
     await client
       .query(
         `UPDATE commercial.addon
@@ -564,7 +545,6 @@ export async function updateAddon(
       metadata: {
         name,
         purchaseMode: mode ?? undefined,
-        purchaseModeForcedBySetup: forcedOnRequest || undefined,
         validity: params.validity,
         prices: params.prices,
         eligiblePlanIds: params.eligiblePlanIds,

@@ -128,8 +128,9 @@ export type PackFormErrors = Partial<Record<keyof PackFormValues, string>>;
 
 /**
  * „Editează „{name}”” (S113) și „Pachet nou”: prețul în lei și în euro, implementarea, cum se
- * plătește; la un pachet nou și resursa, cantitatea; „Cumpărare” (direct / la cerere, D3-7) —
- * blocată pe „la cerere” când există cost de implementare (D3-23). Câmpurile pachetului nou și
+ * plătește; la un pachet nou și resursa, cantitatea; „Cumpărare” (direct / la cerere, D3-7),
+ * liberă și cu implementare (D3-24, Lotul 3.5: pe „direct”, implementarea se plătește la
+ * cumpărare, cu cardul). Câmpurile pachetului nou și
  * comutatorul nu au design propriu: sunt compuse din textele aprobate (raportul 3.4).
  */
 export function PackDialog({
@@ -164,7 +165,6 @@ export function PackDialog({
   const ed = useTranslations('founder.editor.price');
   const ui = useTranslations('ui');
   const set = (patch: Partial<PackFormValues>) => onChange({ ...values, ...patch });
-  const hasSetup = [values.setupLei, values.setupEur].some((v) => v.trim() && v.trim() !== '0');
   return (
     <Dialog
       inline={inline}
@@ -267,13 +267,10 @@ export function PackDialog({
         </RadioGroup>
         <RadioGroup
           label={t('purchase')}
-          value={hasSetup ? 'on_request' : values.purchaseMode}
+          value={values.purchaseMode}
           onChange={(v) => set({ purchaseMode: v as PackFormValues['purchaseMode'] })}
-          hint={hasSetup ? t('setupLocked') : undefined}
         >
-          <Radio value="direct" isDisabled={hasSetup}>
-            {t('purchaseDirect')}
-          </Radio>
+          <Radio value="direct">{t('purchaseDirect')}</Radio>
           <Radio value="on_request">{t('purchaseOnRequest')}</Radio>
         </RadioGroup>
         {mode === 'edit' && (
