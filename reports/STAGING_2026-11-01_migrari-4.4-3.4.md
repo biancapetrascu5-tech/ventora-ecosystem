@@ -14,11 +14,23 @@ Aplicarea s-a făcut:
 
 | Modul | Migrarea | Stare |
 | --- | --- | --- |
-| notifications | `20261101000009_notification_preference_topic` (4.4) | **APLICATĂ**; verificările au trecut |
-| commercial | `20261101000007_commercial_requests` | **NEAPLICATĂ: oprit la pasul 4** (GRANT-uri nedescrise în raportul 3.4) |
-| commercial | `20261101000008_commercial_founder_screens` | **NEAPLICATĂ** (același deploy) |
-| commercial | `20261101000009_commercial_bundles` | **NEAPLICATĂ: oprit la pasul 4** |
-| commercial | `20261101000010_commercial_app_setup_direct` | **NEAPLICATĂ** (același deploy) |
+| notifications | `20261101000009_notification_preference_topic` (4.4) | **APLICATĂ** (dimineața); verificările au trecut (§4) |
+| commercial | `20261101000007_commercial_requests` | **APLICATĂ** după aprobarea GRANT-urilor (13:43); verificările au trecut (§5) |
+| commercial | `20261101000008_commercial_founder_screens` | **APLICATĂ** (același deploy) |
+| commercial | `20261101000009_commercial_bundles` | **APLICATĂ** (același deploy) |
+| commercial | `20261101000010_commercial_app_setup_direct` | **APLICATĂ** (același deploy) |
+
+**Starea finală:**
+
+- `prisma migrate status` dă „Database schema is up to date!” pe toate cele 7 scheme;
+- `_prisma_migrations` are 30 de rânduri, niciunul neterminat sau `rolled_back`;
+- pe staging nu rămâne nicio scriere de test.
+
+**Cronologie:**
+
+- dimineața: notifications e aplicată; commercial e oprită la pasul 4, la GRANT-uri (§2);
+- 13:43: fondatoarea aprobă GRANT-urile de la §2;
+- după-amiaza: commercial e aplicată și verificată (§5).
 
 **Abatere (greșeala mea, reparată).** La verificarea preferințelor 4.4, un rând de test a ajuns scris pe staging și a stat acolo câteva minute, apoi l-am șters. Detaliile sunt la §4.
 
@@ -64,11 +76,16 @@ Toate `GRANT` / `REVOKE` / `SECURITY DEFINER` din cele 5 migrări, căutate în 
 | 009 | 137 | `GRANT SELECT, UPDATE ON commercial.setting TO commercial_founder` |
 | 009 | 219 | `GRANT EXECUTE ON FUNCTION commercial.founder_list_subscriptions() TO founder_runtime` (în planul 3.4) |
 
-- **Ce ar trebui aprobat:** liniile 110, 111 (007) și 37, 38, 136, 137 (009).
-  - Urmează tiparul drepturilor existente: `commercial_rw` doar citește catalogul, iar `commercial_founder` îl scrie.
-  - `commercial_rw` primește `INSERT` doar pe cereri: cererea se face din Hub.
-  - Fără ele, codul din `main` (#47) nu poate citi tabelele noi.
-- **După aprobare,** commercial se aplică într-un singur `deploy`, cu verificările din planul 3.4 (§3 de acolo). Starea de acum rămâne valabilă: nimic nou în așteptare, N = 0 abonamente.
+- **APROBATE de fondatoare, 01.11.2026, 13:43:**
+  - liniile 110 și 111 din 007;
+  - liniile 37, 38, 136 și 137 din 009;
+  - cele deja aprobate sau descrise în planul 3.4: `GRANT UPDATE ("validity")` din 008, `GRANT EXECUTE` către `founder_runtime` și `REVOKE … FROM PUBLIC` pe funcțiile Founder.
+
+  Alte GRANT-uri sau schimbări de rol nu sunt aprobate, iar migrările nu conțin altele. După aplicare, drepturile pe tabelele noi sunt exact acestea, iar apartenența la roluri a rămas neschimbată (§5).
+- **De ce erau necesare:**
+  - urmează tiparul drepturilor existente: `commercial_rw` doar citește catalogul, iar `commercial_founder` îl scrie;
+  - `commercial_rw` primește `INSERT` doar pe cereri, pentru că cererea se face din Hub;
+  - fără ele, codul din `main` (#47) nu poate citi tabelele noi.
 
 ## 3. Migrarea notifications
 
@@ -86,7 +103,7 @@ EXIT: 0
 | Verificare | Rezultat | Așteptat |
 | --- | --- | --- |
 | `prisma migrate status`: identity, founder, organizations, access, audit, notifications | „Database schema is up to date!” | ✓ |
-| `prisma migrate status`: commercial | în așteptare 007, 008, 009, 010 (neaplicate, vezi §2) | conform opririi |
+| `prisma migrate status`: commercial | în așteptare 007, 008, 009, 010 (oprite la §2, aplicate după-amiaza, §5) | conform opririi |
 | `_prisma_migrations` | 26, niciuna neterminată sau `rolled_back` | ✓ |
 | `notification_preference_pkey` | `PRIMARY KEY (user_id, topic, channel)` | ✓ |
 | Coloana `topic` | `character varying`, `NOT NULL` | ✓ |
@@ -96,8 +113,6 @@ EXIT: 0
 | citire ca persoana | un rând, `billing / email / true` | ✓ |
 | citire ca altă persoană (RLS) | 0 rânduri vizibile | ✓ |
 | după `ROLLBACK`: `count(*) FROM notifications.notification_preference` | 0 | ✓ |
-
-**Neverificate (commercial neaplicat):** `included_members = 0` pe abonamentele existente, trigger-ele D3-23 de pe aplicații scoase și `addon_setup_on_request` prezent, `commercial_request` gol. Se fac după aprobarea de la §2.
 
 ### Abaterea la verificare (greșeala mea, reparată)
 
@@ -114,13 +129,75 @@ EXIT: 0
   - Nicio altă scriere n-a trecut: celelalte instrucțiuni erau citiri sau au fost refuzate.
 - **Verificarea refăcută** a rulat ca `app_runtime`, cum cere planul, într-un singur bloc `BEGIN … ROLLBACK`: orice eroare anulează tot blocul. Rezultatele sunt în tabelul de mai sus.
 
+## 5. Commercial, după aprobarea de la 13:43
+
+### Înainte (refăcut, doar citire)
+
+| Verificare | Rezultat | Așteptat |
+| --- | --- | --- |
+| `main` după `git pull --ff-only` | HEAD = `913408c` (neschimbat) | ✓ |
+| `prisma migrate status`: identity, founder, organizations, access, audit, notifications | „Database schema is up to date!” | ✓ |
+| `prisma migrate status`: commercial | în așteptare exact 007, 008, 009, 010; nimic altceva | ✓ |
+| `_prisma_migrations` neterminate sau `rolled_back` | 0 (26 aplicate) | ✓ |
+| `to_regclass` pe cele 3 tabele noi | `NULL`, `NULL`, `NULL` | ✓ |
+| `count(*) FROM commercial.subscription` (N) | 0 | notat |
+
+### Migrarea (un singur deploy)
+
+```
+### commercial — prisma migrate deploy --config prisma7.config.ts
+Datasource "db": PostgreSQL database "postgres", schemas "commercial" at "[gazda staging, session mode]"
+10 migrations found in prisma/migrations
+Applying migration `20261101000007_commercial_requests`
+Applying migration `20261101000008_commercial_founder_screens`
+Applying migration `20261101000009_commercial_bundles`
+Applying migration `20261101000010_commercial_app_setup_direct`
+All migrations have been successfully applied.
+EXIT: 0
+```
+
+### După (planul 3.4, §3)
+
+**Citiri din catalog, ca `postgres`, doar SELECT:**
+
+| Verificare | Rezultat | Așteptat |
+| --- | --- | --- |
+| `prisma migrate status`, toate cele 7 scheme | „Database schema is up to date!” | ✓ |
+| `_prisma_migrations` | 30, niciuna neterminată sau `rolled_back` | ✓ |
+| Tabelele noi | `commercial_request` (RLS on), `application_quota`, `setting` | ✓ |
+| `SELECT key, int_value FROM commercial.setting` | exact `included_members \| 3` | ✓ |
+| **D3-25:** abonamentele existente au `included_members = 0` | N = 0: nu există abonamente pe staging, deci niciunul cu altă valoare; coloana are `DEFAULT 0` și `NOT NULL` | ✓ |
+| `subscription.plan_version_id` | `is_nullable = YES` | ✓ |
+| Trigger-ele D3-23 pe aplicații: `application_setup_on_request`, `application_price_setup_on_request` | **absente** | ✓ |
+| `addon_setup_on_request`, `addon_price_setup_on_request` | **prezente** | ✓ |
+| `commercial_request_guard`, `plan_version_offer_overlap`, `subscription_bundle_on_sale`, `subscription_included_members` | prezente | ✓ |
+| `count(*) FROM commercial.commercial_request` | 0 | ✓ |
+| `has_column_privilege('commercial_founder', 'commercial.addon', 'validity', 'UPDATE')` | true | ✓ |
+| `has_function_privilege('founder_runtime', …, 'EXECUTE')` pe cele 7 funcții Founder (`founder_list_requests(boolean)`, `founder_list_subscriptions()`, `founder_expiring_overrides(timestamptz)`, `founder_list_active_discounts()`, `founder_usage_daily(varchar, timestamptz, timestamptz)`, `founder_usage_totals(timestamptz, timestamptz)`, `founder_addon_grants_count(timestamptz, timestamptz)`) | true pe toate 7; `app_runtime`: false pe toate (REVOKE FROM PUBLIC) | ✓ |
+| Drepturile pe tabelele noi | `commercial_rw`: `commercial_request` INSERT, SELECT; `application_quota` SELECT; `setting` SELECT. `commercial_founder`: `commercial_request` SELECT, UPDATE; `application_quota` DELETE, INSERT, SELECT, UPDATE; `setting` SELECT, UPDATE. Exact liniile aprobate | ✓ |
+| Apartenența la roluri | `commercial_rw` ← `app_runtime`; `commercial_founder` ← `founder_runtime` (plus `postgres`, creatorul) | ✓ neschimbată |
+
+**Ca rolurile runtime, fiecare bloc trimis ca un singur `BEGIN … ROLLBACK`.** O eroare anulează tot blocul, iar conexiunea se închide fără commit:
+
+| Bloc | Login | Rezultat | Așteptat |
+| --- | --- | --- | --- |
+| A: `SET LOCAL ROLE commercial_rw`; `count(*) FROM commercial_request`; citirea `setting`; `count(*) FROM application_quota` | `app_runtime` (`DATABASE_URL`, pooler) | rolul `commercial_rw`; 0 cereri; `included_members \| 3`; 0 limite | ✓ |
+| B: `SET LOCAL ROLE commercial_rw`; `UPDATE commercial.setting SET int_value = int_value …` | `app_runtime` | **refuzat: `42501 permission denied for table setting`**; bloc anulat | ✓ |
+| C: `founder_list_requests(false)`, `founder_list_subscriptions()` | `founder_runtime` (`DATABASE_URL_FOUNDER`) | 0 / 0, apelurile merg | ✓ |
+
+- **Pe staging nu a rămas nimic din verificări.** Toate scrierile au fost în blocuri anulate: singura încercată, `UPDATE` pe `setting`, a fost refuzată.
+- **Citit din nou la final, ca `postgres`:** `setting` e tot `included_members | 3`, iar `commercial_request` are 0 rânduri.
+- **Sincronizarea registrului comercial:** nerulată. Planul 3.4 spune că nu e necesară, pentru că manifestele nu s-au schimbat.
+
 ## De știut
 
-- **Deploy-ul aplicațiilor:**
-  - **4.4 poate merge pe staging:** codul scrie și citește `topic`, iar migrarea e aplicată.
-  - **3.4 nu poate merge** până la aplicarea commercial 007–010: codul cheamă `founder_list_requests`, `application_quota`, `setting` și `subscription.included_members`.
-- **Fără sincronizarea registrului comercial:** planul 3.4 spune că nu e necesară.
-- **Revenirea** se aprobă separat. Migrarea 4.4 a schimbat cheia primară a unui tabel gol.
+- **Deploy-ul aplicațiilor:** migrările 4.4 și 3.4 sunt pe staging, deci codul din `main` (`913408c`) poate merge acolo.
+  - 4.4 scrie și citește `topic`.
+  - 3.4 cheamă `founder_list_requests`, `application_quota`, `setting` și `subscription.included_members`.
+- **Locurile incluse (D3-25):** staging nu are încă abonamente. Fiecare abonament creat de acum din Founder primește 3, cât e setarea în acel moment.
+- **Revenirea** se aprobă separat:
+  - migrarea 4.4 a schimbat cheia primară a unui tabel gol;
+  - pentru commercial, condițiile sunt în planul 3.4.
 
 ## Sarcina 2: deciziile trecute în `docs/plans/FAZA-4.md` (DECIS 01.11.2026)
 
@@ -138,7 +215,7 @@ EXIT: 0
 | D4-21 | a: intern costul, pentru client cota „Număr analize AI” |
 | D4-22 | b: `core/workflows` |
 | D4-23 | a: designul automatizărilor cerut acum |
-| D4-24 | toate cele 6 automatizări, plus reminderul dinaintea programării, în Booking core |
+| D4-24 | cele 6 automatizări aprobate de fondatoare (mulțumirea după programare, reactivarea clientului inactiv, La mulți ani, alerta owner-ului la neprezentări, rezumatul zilei pentru echipă, limita aproape atinsă); reminderul dinaintea programării stă în Booking core, nu în motor |
 | D4-25 | a: AI, PDF și workflow engine rămân în F4 |
 | D4-26 | a: doar interfața `SmsChannel` în F4 |
 | D4-27 | da: traducerile se verifică înaintea primei notificări reale în altă limbă |
@@ -148,7 +225,6 @@ EXIT: 0
 **De știut:**
 
 - **D4-18:** planul are o singură valoare provizorie, textele SMS la 30 de zile (din design). Pentru atașamente, notificări și solicitări nu există încă o valoare provizorie. Am scris asta în rând, fără să inventez valori. Retenția de 24 / 60 de luni din ARCHITECTURE (L2.5-D7) e pentru identity / organization / access / support / founder, nu pentru acestea.
-- **D4-24:** lista celor 6 automatizări nu apare nicăieri în repo (FAZA-4, BOOKING.md, ARCHITECTURE, design). Am trecut decizia cu cuvintele fondatoarei. Lista trebuie numită înainte de 4.10, pentru că lista albă se deduce din ea.
 - **D4-29 și D4-30** au primit numere noi; în plan erau doar întrebări în raportul 4.4.
 
 ### Follow-up pentru 4.6 (diferență față de 4.4, cod neschimbat)
