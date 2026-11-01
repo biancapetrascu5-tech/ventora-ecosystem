@@ -621,6 +621,25 @@ Fiecare intrare spune ce s-a schimbat pe componentă (structură, tokeni, texte,
 - **HubAccount — 1.0.2:** aceleași rânduri de dispozitiv și același format de oră în preview. README.
 - **i18n `account-security.json`:** noi `account.security.when.now/today/yesterday/date`, `account.security.devices.thisDevice`, `account.security.twoStep.passwordLead`, `account.security.twoStep.confirmPassword`, `account.security.twoStep.error.password` (6 limbi); `account.security.password.changed` devine „Schimbată: {when}”; `account.security.devices.current` scos.
 
+## 2026-10-30 · S111 — Fazele 3 și 4: comercial și suport
+
+### Componente noi
+- **FounderBusinessBilling** (1.0.0) — tabul „Plăți și facturi”: abonamentul și cum se plătește, istoricul cumpărărilor cu factura, rambursarea (confirmare, motiv, stornare; refuz de la Stripe), confirmarea încasării prin transfer (data, suma, suma diferită). Doar RO.
+- **FounderRequests** (1.0.0) — „Cereri din Hub”: noi / toate, rezolvare, refuz cu motiv, listă goală. Doar RO.
+- **HubSupportThread** (1.0.0) — pagina unei solicitări: firul, răspunsul cu atașamente și erorile lor, se trimite, trimis, rezolvat, redeschidere; istoricul stării; test DE/IT.
+
+### Componente schimbate
+- **AddonPurchase — 1.1.0:** `invoice: { pending: true }` — plata a reușit, factura vine pe e-mail; texte noi `paySuccessHintPending`, `invoicePending` (6 limbi); clasa `.v-payinvoice--pending`. UpgradeDialog o primește la fel. `index.d.ts`.
+- **HubAddonPurchase — 1.0.1:** ecranul „plata a reușit, factura vine în curând”.
+- **HubAdminPlan — 1.1.0:** varianta fără Growth Engine (prop `growth`), nota de consum la pachetul potrivit, rândul „Factura se emite”.
+- **BookingSmsNotifications — 1.2.0:** e-mailul E-7, cardurile 13–16.
+- **Spine Founder:** „Cereri” după „Consum”, în toate preview-urile Founder și Growth (și HubSupportSession, care folosește același preambul).
+- **README:** FounderBusiness, HubAddonPurchase, AddonPurchase, HubAdminPlan, HubSupport, NotificationsPanel, BookingSmsNotifications.
+
+### i18n
+- Noi: `founder-commercial.json` (RO), `commercial.json`, `support.json`, `notifications.json` (6 limbi). Textele din HubSupport și HubStates (suport) și cele ale panoului de notificări erau până acum doar în preview-uri sau în bibliotecă.
+
+
 ## 2026-10-31 · S112 — completări după Lotul 2.8
 
 ### Componente noi
@@ -638,4 +657,87 @@ Fiecare intrare spune ce s-a schimbat pe componentă (structură, tokeni, texte,
 ### i18n
 - Noi: `business-access.json`, `team.json` (6 limbi), `founder-business.json` (RO). Textele scrise de agent fără design (Hub: „A cerut o invitație nouă”, meniul Hub și pagina Echipă în EN/FR/ES; Founder: „Suspendată”, „Reactivează afacerea”, „Ultimele modificări”, pluralul din suspendare, eroarea la crearea afacerii) sunt aici, corectate, ca chei.
 
-> Sincronizat în repo la Lotul 2.9b: doar S112. S111 (FounderBusinessBilling, FounderRequests, HubSupportThread, i18n commercial / support / notifications) și S113 (lunar / anual, lei / euro, reduceri) rămân în `_incoming` pentru loturile 3.4–3.8 și F4; FounderBusiness rămâne la versiunea din repo (exportul o are deja la 1.0.2, cu S113).
+## 2026-10-31 · S113 — completări pentru Faza 3: lunar sau anual, lei și euro, reduceri, direct sau la cerere, proporțional
+
+### Componente noi
+- **FounderApps** (1.0.0) — „Aplicații”: prețul lunar în lei și în euro, costul de implementare, comutatorul „Direct / La cerere” (blocat când există cost de implementare). Intrare nouă în Spine. Doar RO.
+- **FounderDiscounts** (1.0.0) — reducerile unei afaceri în „Plăți și facturi”: lista, „Adaugă o reducere” (abonament sau linie, procent sau sumă fixă, o dată / N luni / permanent, motiv), 100% = gratuit, erorile, „Încheie reducerea”; pagina „Reduceri” cu toate reducerile permanente, intrare nouă în Spine. Doar RO.
+- **HubPlanBilling** (1.0.0) — cum plătește afacerea: lunar sau anual, următoarea plată, limitele lunare pe anual, reducerile ca linii separate, factura, pachetul lunar plătit proporțional; test DE (afacere în euro) / IT.
+- **HubAppActivation** (1.0.0) — activarea unei aplicații: directă, cu plata de azi proporțională și apoi lunară; la cerere, cu cererea trimisă; test DE/IT.
+
+### Componente schimbate
+- **AddonPurchase — 1.2.0:** `prorate: { today, until, monthly? }`; texte noi `prorateToday`, `prorateThen` (6 limbi); `addon.max === 1` ascunde cantitatea; suma de plată nu se mai rupe pe două rânduri (`.v-payline--total > .numeric`). `index.d.ts`.
+- **Icon:** iconița nouă `percent` (intrarea „Reduceri”).
+- **FounderPlans — 1.1.0, FounderPlanEditor — 1.1.0, FounderPacks — 1.1.0:** preț lunar și anual, în lei și în euro; erorile de preț în editor; dialogul de editare a unui pachet.
+- **FounderNewBusiness — 1.1.0:** „Moneda afacerii” și „Plata” (lunar / anual); prețul în invitație.
+- **FounderBusiness — 1.0.2:** cardul abonamentului: cum plătește, moneda, reînnoirea pe 17, consumul de la 17; „Consum: 17 oct. – 16 nov.” (și în preview-urile cu același antet).
+- **HubAdminPlan — 1.1.1:** „Plătești lunar: 349 lei · următoarea plată pe 17 noiembrie 2026”; „Consumul pornește de la zero pe 17 noiembrie.”; perioada reală pe facturi și pe pachete (RO/DE/IT).
+- **HubCatalogApp — 1.1.0:** varianta „La cerere” (costul de implementare, nota, „Cere activare”, fără probă); test DE.
+- **CommercialStates — 1.0.1:** testul DE/IT păstrează „lei”; prețurile rămân în moneda afacerii.
+- **Spine Founder:** „Aplicații” și „Reduceri” sub „Model comercial”, în toate preview-urile Founder și Growth (și HubSupportSession).
+- **README:** cele de mai sus, plus FounderBusinessBilling. **Glosar:** plată lunară, plată anuală, monedă, reducere, la cerere, proporțional.
+
+### i18n
+- Noi: `pricing.json` (6 limbi), `founder-pricing.json` (RO).
+
+## 2026-10-31 · S114 — meniul unui membru și textele agentului
+
+### Componente noi
+- **HubTeamMemberActions** (1.0.0) — meniul unui membru în HubAdminTeam: „Schimbă rolul”, „Acces la aplicații”, „Oprește accesul / Redă accesul”, „Elimină din afacere” (confirmare, „Se salvează…”, salvat, eroare la salvare, eroare „doar proprietarul”); vederea proprietarului și a unui admin; pagina principală Hub până la launcher; test DE/IT.
+
+### Componente schimbate
+- **README:** HubAdminTeam (regula admin / proprietar și dialogurile).
+
+### i18n
+- `team.json`: chei noi `hub.team.*` (inclusiv `hub.team.save`, `hub.team.actionError`, validate) și `hub.home.*` (`hub.home.soon`, validat), 6 limbi.
+- `founder-business.json`: `founder.business.suspended.noticeNoName` (RO), pentru nota fără numele celui care a suspendat.
+
+## 2026-10-31 · S114b — notificările din Contul tău și logo-ul varianta B
+
+### Componente schimbate
+- **HubAccount — 1.1.0:** „Notificări” refăcute (D4-6, D4-7): „În aplicație” informativ („Mereu”), comutator pe e-mail pe fiecare categorie, securitatea „Nu se pot opri”, fără coloana SMS, „Recomandări Ventora” și „Noutăți de la Ventora” separat (Noutăți: e-mail oprit implicit); pe telefon, pagina „Notificări” cu comutatoare; test DE/IT.
+- **Logo — 2.0.0:** pe fundal închis, varianta B (fețe separate prin tăieturi transparente, mască SVG), cu id de mască unic pe instanță (`ventora-logo-dark-cut-{id}`; în bibliotecă de la versiunea publicată înaintea acestei intrări); se vede în Logo, BrandZone, AuthLayout și ecranele de autentificare. `assets/Logos/favicon.svg`: varianta B în modul închis.
+- **Sincronizarea Lotului 3.4:** `assets/Logos/ventora-logo-dark.svg`, `ventora-mark-dark.svg`, `favicon.svg` și componenta Logo se iau din design system (excepție, doar pentru ele).
+
+### i18n
+- `notifications.json`: `notifications.prefs.*` (6 limbi).
+
+## 2026-10-31 · S115 — notificările Fazei 3
+
+### Componente noi
+- **BillingNotifications** (1.0.0) — notificările în aplicație (proprietar și ceilalți, light și dark, telefon) și e-mailurile pentru factură, plată, limite, anunțul de 30 de zile, perioada de probă, costul de implementare și neplata; test DE/IT.
+
+### Componente schimbate
+- **NotificationsPanel — 1.2.0:** `action` pe o notificare (rândul „Vezi factura →” sub text). `index.d.ts`.
+- **README:** NotificationsPanel, BookingSmsNotifications.
+
+### i18n
+- `notifications.json`: `notifications.billing.*`, `email.billing.*` (6 limbi).
+
+## 2026-10-31 · S117 — modelul comercial: aplicații la bucată și bundle-uri
+
+Decizia fondatoarei din 31.10: afacerile cumpără aplicații la bucată și bundle-uri. „Abonament” rămâne doar pentru ce plătește afacerea în total.
+
+### Componente noi
+- **HubCatalogBundles** (1.0.0) — catalogul din Hub: bundle-urile disponibile acum („Ofertă valabilă până pe 30 noiembrie”), prețul lunar și anual, „Separat: 366 lei pe lună” și „Economisești 47 lei pe lună”, limitele și locurile incluse, implementarea; bundle-ul pe care afacerea îl are („Ai acest bundle”, îl păstrează la prețul ei); „Cere acest bundle” și confirmarea; dedesubt, aplicațiile la bucată (mentenanță, implementare). 6 limbi (EN/FR/ES în testul de limbă), test DE/IT.
+
+### Componente schimbate
+- **AddonPurchase — 1.3.0:** `setup` (implementarea, o singură dată, plătită azi peste mentenanță: rândul „Implementare, o singură dată”, nota „Mentenanța: {amount}, proporțional până pe {date}”, butonul cu totalul de azi) și `addon.includes` (lista „Include”). Texte noi `setupOnce`, `prorateMaint`, `addonIncludes` (6 limbi). `index.d.ts`, `bundle.css` (`.v-addon__inc`, `.v-addon__inclist`).
+- **FounderApps — 1.1.0:** mentenanța lunară și anuală, în lei și în euro; implementarea; „Limite incluse”; „Direct / La cerere” nu mai e blocat de implementare; panoul „Editează EasyBook”.
+- **FounderPlans — 2.0.0:** devine „Bundle-uri”: aplicațiile, prețul față de aplicațiile luate separat (economia), limitele și locurile incluse, implementarea, perioada de vânzare și starea („În vânzare”, „Programat”, „Vânzare oprită”), versiunile cu perioada lor și numărul de afaceri; „Oprește vânzarea” (confirmare, toast), „Ofertă nouă”. Numele componentei rămâne deocamdată (vezi „Ce ai de decis”).
+- **FounderPlanEditor — 2.0.0:** „Ofertă nouă” pentru un bundle: aplicațiile (cu prețul la bucată și totalul separat), patru prețuri, implementarea, limitele, locurile în echipă din bundle, perioada de vânzare; erori: prețul nu e mai mic decât aplicațiile separat, perioada se suprapune cu oferta de acum; „Programează oferta”.
+- **FounderNewBusiness — 1.2.0:** „Ce cumpără”: bundle (doar cele în vânzare) și/sau aplicații la bucată (cele din bundle sunt deja incluse), moneda, lunar / anual; rezumatul cu fiecare linie, totalul, implementarea și locurile; invitația spune ce primește și cât plătește.
+- **FounderPacks — 1.1.1:** coloana „Planuri” devine „Disponibil pentru” (aplicația de care ține pachetul).
+- **HubCatalogApp — 1.2.0:** „Mentenanță · 49 lei pe lună”, „Cost de implementare · 150 lei, o singură dată”, „Ce include” (RO/DE/IT).
+- **HubAppActivation — 1.1.0:** activarea unei aplicații la bucată: implementarea, mentenanța proporțională, totalul de azi (172,13 lei), apoi 49 lei pe lună; ce include.
+- **HubPlanBilling — 1.1.0:** „Ce plătești”: Bundle Business (300 lei, prețul păstrat), CampaignKit · aplicație la bucată, locurile în echipă (3 + 7, incluse), pachetele, totalul; reducerile pe bundle și pe aplicație; factura; o stare nouă cu pachetul de 5 locuri (15 locuri, 409 lei).
+- **HubAdminPlan — 1.2.0:** „Bundle Business” și „Ce plătești” în „Abonamentul tău”; aplicațiile afișate sunt cele ale afacerii; pe facturi „Abonament · 17 oct. – 16 nov.” (RO/DE/IT).
+- **HubAdminTeam — 1.1.1:** de unde vin locurile („Din cele 10 locuri: 3 sunt incluse în orice cont, 7 vin din bundle-ul Business.”); în UpgradeDialog, opțiunea „Bundle Business Plus” în locul abonamentului Business Plus.
+- **Spine Founder:** „Model comercial” — „Aplicații”, „Bundle-uri”, „Pachete în plus”, „Reduceri”, în toate preview-urile Founder și Growth; căutarea: „Caută o afacere, un bundle sau o campanie”.
+- **README:** cele de mai sus, AddonPurchase. **Glosar:** bundle, aplicație la bucată, mentenanță, implementare, versiune (de bundle); „abonament” doar pentru totalul afacerii; nota la „ofertă”.
+
+### i18n
+- `pricing.json`: `catalog.bundles.*`, `catalog.alaCarte.*`, `catalog.setup`, `catalog.noSetup`, `catalog.app.*` (mentenanța, implementarea, ce include), `billing.have.*`, `seats.*`, `limits.*` (6 limbi).
+- `founder-pricing.json`: `founder.apps.*` (noi), `founder.bundles.*`, `founder.bundleEditor.*`, `founder.new.*` (noi) — RO.
+
+> Sincronizat în repo: S112 la Lotul 2.9b; S111, S113 și S117 la Lotul 3.4 (tokens.json și tokens.css rămân din repo; logo-urile se iau din design system, nota S114b). În `_incoming` rămân, nesincronizate: HubAccount, HubTeamMemberActions, BillingNotifications, README-urile NotificationsPanel / BookingSmsNotifications și i18n `notifications.json`, `team.json`, `founder-business.json` (S114, S114b, S115). În cod, FounderPlans se numește FounderBundles (decizia fondatoarei).

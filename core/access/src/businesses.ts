@@ -37,6 +37,18 @@ export const BUSINESS_CHANGE_ACTIONS = [
   AuditActions.supportSessionClosed,
   AuditActions.supportSessionRevokedByOrg,
   AuditActions.ownerRecoveryPerformed,
+  // Lotul 3.4: ce s-a schimbat comercial la afacere (excepții, reduceri, pachete, abonament)
+  AuditActions.commercialOverrideCreated,
+  AuditActions.commercialOverrideExtended,
+  AuditActions.commercialOverrideEnded,
+  AuditActions.commercialDiscountCreated,
+  AuditActions.commercialDiscountUpdated,
+  AuditActions.commercialDiscountEnded,
+  AuditActions.commercialAddonGranted,
+  AuditActions.commercialApplicationLineAdded,
+  AuditActions.commercialSubscriptionAssigned,
+  AuditActions.commercialVersionChangeScheduled,
+  AuditActions.commercialCurrencySet,
 ] as const;
 
 export type FounderBusiness = {

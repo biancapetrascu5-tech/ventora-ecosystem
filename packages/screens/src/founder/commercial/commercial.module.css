@@ -1,0 +1,525 @@
+/* Ecranele comerciale Founder (Lotul 3.4): clasele din preview.html — FounderPlans,
+   FounderPlanEditor, FounderPacks, FounderApps, FounderUsage, FounderDiscounts, FounderRequests,
+   FounderBusinessBilling, FounderBusiness. Valorile sunt doar token-uri. */
+
+/* .d0 */
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  min-width: 0;
+}
+.stack2 {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-width: 0;
+}
+.stack6 {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  min-width: 0;
+}
+.stack p,
+.stack2 p,
+.stack6 p {
+  margin: 0;
+}
+
+/* „Prea devreme” + nota (FounderStates: gap 2px) */
+.tight {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-0-5);
+}
+
+/* „Luni” în dialogul de reducere (design: maxWidth 120) */
+.narrow {
+  max-width: 120px;
+}
+
+/* .r */
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  align-items: center;
+}
+.rowBetween {
+  composes: row;
+  justify-content: space-between;
+}
+.inline2 {
+  display: inline-flex;
+  gap: var(--space-2);
+  align-items: center;
+}
+.nowrap2 {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: var(--space-2);
+  align-items: center;
+}
+
+/* .sheetlike + .fxplan / .fxcard */
+.sheetlike {
+  background: var(--sheet);
+  border: var(--border-width) solid var(--line);
+  border-radius: var(--radius-lg);
+}
+.plan {
+  composes: sheetlike;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-5);
+}
+.plan p {
+  margin: 0;
+}
+.plan :global(.v-btn) {
+  align-self: flex-start;
+}
+.card {
+  composes: sheetlike;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-5);
+}
+.card p {
+  margin: 0;
+}
+
+/* .fxplans.fp-list */
+.plans {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-4);
+}
+
+/* .fxlim */
+.limits {
+  margin: 0;
+  padding-left: var(--space-5);
+  color: var(--ink-secondary);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+/* .fxver.fp-ver */
+.versions {
+  width: 100%;
+  border-collapse: collapse;
+}
+.versions th {
+  text-align: left;
+  color: var(--ink-muted);
+  font-weight: 500;
+  padding: var(--space-1) 0;
+  border-bottom: var(--border-width) solid var(--line);
+}
+.versions td {
+  padding: var(--space-2) 0;
+  border-bottom: var(--border-width) solid var(--line);
+  color: var(--ink);
+  vertical-align: top;
+}
+.versions td :global(.v-pill) {
+  margin-left: var(--space-2);
+  vertical-align: middle;
+}
+
+/* .fp-cell */
+.price {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-0-5);
+}
+.price > span {
+  white-space: nowrap;
+}
+.saving {
+  color: var(--ink-muted);
+}
+
+/* .fxlink */
+.link {
+  color: var(--ink);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  min-width: 24px;
+  background: none;
+  border: 0;
+  padding: 0;
+  font: inherit;
+  cursor: pointer;
+}
+@media (pointer: coarse), (max-width: 767px) {
+  .link {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
+/* .fp-prices */
+.prices {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-4);
+}
+.pricesMob {
+  grid-template-columns: 1fr;
+}
+
+/* .fxlimits */
+.limitRows {
+  display: flex;
+  flex-direction: column;
+}
+.limitRow {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(60px, 0.6fr) minmax(120px, 1fr);
+  gap: var(--space-3);
+  align-items: center;
+  padding: var(--space-2) 0;
+  border-bottom: var(--border-width) solid var(--line);
+  color: var(--ink);
+}
+.limitHead {
+  composes: limitRow;
+  padding-top: 0;
+}
+.limitNew {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+}
+.limitNew > :first-child {
+  flex: 1 1 80px;
+  min-width: 0;
+}
+.delta {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  color: var(--done-ink);
+  flex: none;
+}
+.deltaDown {
+  color: var(--attention-ink);
+}
+
+/* .fxapps */
+.apps {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: var(--space-3) var(--space-4);
+}
+.appLabel {
+  display: inline-flex;
+  gap: var(--space-2);
+  align-items: center;
+}
+
+/* .unsaved (FounderPlanEditor): bara de jos, peste conținut, din dreapta Spine-ului */
+.frame {
+  position: relative;
+  height: 100%;
+}
+.unsaved {
+  position: absolute;
+  left: var(--spine-width);
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-6);
+  background: var(--raised);
+  border-top: var(--border-width) solid var(--line-strong);
+  box-shadow: var(--shadow-2);
+  z-index: var(--z-sticky);
+  flex-wrap: wrap;
+}
+.unsavedMob {
+  left: 0;
+  bottom: var(--bottomnav-height);
+  padding: var(--space-3) var(--space-4);
+}
+
+/* .sechead */
+.sechead {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-3);
+  flex-wrap: wrap;
+}
+.sechead h2 {
+  margin: 0;
+}
+
+/* .usage-grid */
+.usageGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: var(--space-6);
+}
+
+/* .axcharts */
+.charts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  gap: var(--space-4);
+}
+
+/* .fa-act (FounderApps) */
+.act {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--space-1);
+  text-align: end;
+  max-width: 280px;
+}
+
+/* .fd-prev / .fd-line / .fd-tot (FounderDiscounts) */
+.invoice {
+  border: var(--border-width) solid var(--line);
+  border-radius: var(--radius-md);
+  padding: var(--space-3);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+.invoice p {
+  margin: 0;
+}
+.invoiceLine {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+.invoiceTotal {
+  composes: invoiceLine;
+  padding-top: var(--space-2);
+  margin-top: var(--space-1);
+  border-top: var(--border-width) solid var(--line);
+}
+
+/* .ss-list */
+.list {
+  margin: 0;
+  padding-left: var(--space-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+/* Overlay-ul dialogurilor și toastul, în cadrul paginii (ss-overlay / ss-toast din preview) */
+.toast {
+  position: fixed;
+  right: var(--space-6);
+  bottom: var(--space-6);
+  width: var(--panel-width);
+  z-index: var(--z-toast);
+}
+.toastMob {
+  left: var(--space-4);
+  right: var(--space-4);
+  bottom: var(--space-4);
+  width: auto;
+}
+
+@container shell (max-width: 767px) {
+  .padMob {
+    padding: 0 var(--space-4);
+  }
+}
+
+/* S117 — FounderBundles, FounderBundleEditor, FounderApps, FounderNewBusiness (.fb-*) */
+.fbApps {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-4);
+}
+.fbApp {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  white-space: nowrap;
+}
+.fbInc {
+  margin: 0;
+  padding-inline-start: var(--space-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-0-5);
+}
+.fbCell {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-0-5);
+}
+.fbCell > span {
+  white-space: nowrap;
+}
+.fbCard {
+  /* preview-ul S117 nu are padding pe card (.sheetlike.fb-card): DE VALIDAT la Design */
+  composes: sheetlike;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+.fbCard p {
+  margin: 0;
+}
+.fbHead {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+.fbTitle {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+.fbActs {
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+.fbGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-4);
+}
+.fbGridMob {
+  grid-template-columns: 1fr;
+}
+.fbK {
+  color: var(--ink-muted);
+  margin: 0 0 var(--space-1) !important;
+}
+.fbVer {
+  width: 100%;
+  border-collapse: collapse;
+}
+.fbVer th {
+  text-align: start;
+  color: var(--ink-muted);
+  font-weight: inherit;
+  padding: var(--space-2) var(--space-3) var(--space-2) 0;
+  border-bottom: var(--border-width) solid var(--line);
+}
+.fbVer td {
+  padding: var(--space-2) var(--space-3) var(--space-2) 0;
+  border-bottom: var(--border-width) solid var(--line);
+  vertical-align: top;
+}
+.fbVer tr:last-child td {
+  border-bottom: 0;
+}
+.fbTw {
+  overflow-x: auto;
+}
+.fbSum {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  border-radius: var(--radius-sm);
+  background: var(--sunken);
+}
+.fbLine {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+.fbLine > span:last-child {
+  white-space: nowrap;
+}
+.fbLineTot {
+  composes: fbLine;
+  padding-top: var(--space-2);
+  border-top: var(--border-width) solid var(--line);
+}
+.fbPeriod {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-4);
+}
+.fbPeriodMob {
+  grid-template-columns: 1fr;
+}
+.fbAppList {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-2) var(--space-6);
+}
+.fbAppListMob {
+  grid-template-columns: 1fr;
+}
+.fbAppLab {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+.fbStack1 {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-width: 0;
+}
+
+/* „v2” în tabelul ofertelor: textul din design, deschide oferta */
+.versionLink {
+  appearance: none;
+  background: none;
+  border: 0;
+  padding: 0;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+
+.topSpace {
+  margin-top: var(--space-4);
+}
+.topSpace3 {
+  margin: var(--space-3) 0 0;
+}
+@media (max-width: 1023px) {
+  .unsaved:not(.unsavedMob) {
+    left: var(--spine-width-collapsed);
+  }
+}
+
+/* FounderApps · „Editează {app}” (S117): .fp-sub, textul de sub titlu, d0 cu gap 5 */
+.stack5 {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+.stack5 p {
+  margin: 0;
+}
+.fpSub {
+  margin: 0 0 var(--space-2) !important;
+}
+.helpBelow {
+  margin: 0 0 var(--space-3) !important;
+}

@@ -1,10 +1,31 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="20 8 360 392" role="img" aria-label="Ventora">
-  <style>@media (prefers-color-scheme: dark){.fv-base{fill:#3A4680}.fv-edge{stroke:#F1EFEA}}</style>
-  <polygon points="200,150 352,262 200,330 48,262" class="fv-base" fill="#161e38"/>
-  <polygon points="126,96 196,132 192,344 158,230" fill="#f2ede3"/>
-  <polygon points="274,96 204,132 208,344 242,230" fill="#f2ede3"/>
-  <polygon points="28,16 120,80 188,352 200,392" fill="#FFAA75" class="fv-edge" stroke="#0a1024" stroke-width="6"/>
-  <polygon points="372,16 280,80 212,352 200,392" fill="#B1744F" class="fv-edge" stroke="#0a1024" stroke-width="6"/>
-  <polygon points="200,172 200,362 162,246" fill="#FFAA75" class="fv-edge" stroke="#0a1024" stroke-width="7"/>
-  <polygon points="200,172 238,246 200,362" fill="#B1744F" class="fv-edge" stroke="#0a1024" stroke-width="7"/>
+  <style>.fv-dark{display:none}@media (prefers-color-scheme: dark){.fv-light{display:none}.fv-dark{display:inline}}</style>
+  <g class="fv-light">
+    <polygon points="200,150 352,262 200,330 48,262" fill="#161e38"/>
+    <polygon points="126,96 196,132 192,344 158,230" fill="#f2ede3"/>
+    <polygon points="274,96 204,132 208,344 242,230" fill="#f2ede3"/>
+    <polygon points="28,16 120,80 188,352 200,392" fill="#FFAA75" stroke="#0a1024" stroke-width="6"/>
+    <polygon points="372,16 280,80 212,352 200,392" fill="#B1744F" stroke="#0a1024" stroke-width="6"/>
+    <polygon points="200,172 200,362 162,246" fill="#FFAA75" stroke="#0a1024" stroke-width="7"/>
+    <polygon points="200,172 238,246 200,362" fill="#B1744F" stroke="#0a1024" stroke-width="7"/>
+  </g>
+  <mask id="favicon-dark-cut" maskUnits="userSpaceOnUse" x="0" y="0" width="400" height="400">
+    <rect x="0" y="0" width="400" height="400" fill="#fff"/>
+    <polygon points="28,16 120,80 188,352 200,392" fill="none" stroke="#000" stroke-width="6" stroke-linejoin="miter"/>
+    <polygon points="372,16 280,80 212,352 200,392" fill="#fff"/>
+    <polygon points="372,16 280,80 212,352 200,392" fill="none" stroke="#000" stroke-width="6" stroke-linejoin="miter"/>
+    <polygon points="200,172 200,362 162,246" fill="#fff"/>
+    <polygon points="200,172 200,362 162,246" fill="none" stroke="#000" stroke-width="7" stroke-linejoin="miter"/>
+    <polygon points="200,172 238,246 200,362" fill="#fff"/>
+    <polygon points="200,172 238,246 200,362" fill="none" stroke="#000" stroke-width="7" stroke-linejoin="miter"/>
+  </mask>
+  <g class="fv-dark" mask="url(#favicon-dark-cut)">
+    <polygon points="200,150 352,262 200,330 48,262" fill="#3A4680"/>
+    <polygon points="126,96 196,132 192,344 158,230" fill="#f2ede3"/>
+    <polygon points="274,96 204,132 208,344 242,230" fill="#f2ede3"/>
+    <polygon points="28,16 120,80 188,352 200,392" fill="#FFAA75"/>
+    <polygon points="372,16 280,80 212,352 200,392" fill="#B1744F"/>
+    <polygon points="200,172 200,362 162,246" fill="#FFAA75"/>
+    <polygon points="200,172 238,246 200,362" fill="#B1744F"/>
+  </g>
 </svg>

@@ -70,3 +70,14 @@
   margin: 0;
   color: var(--danger);
 }
+
+/* S117: de unde vin locurile din echipă, sub antet */
+.seatsWhere {
+  margin: 0;
+  max-width: 720px;
+}
+@container shell (max-width: 767px) {
+  .seatsWhere {
+    padding: 0 var(--space-4);
+  }
+}

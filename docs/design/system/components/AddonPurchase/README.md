@@ -11,3 +11,9 @@ The dialog in which the business owner buys an extra pack ("pachet în plus") wi
 - *Error* — a danger Notice with the bank's reason and "Nu ți s-a retras niciun ban de pe card.", what you can do (try again, another card, call the bank), "Folosește alt card" and "Încearcă din nou".
 
 **Where it opens.** "Cumpără · 49 lei" on HubAdminPlan, and "Cumpără … în plus" from a UsageMeter at or near its limit — owner only. Packs marked "Doar la cerere", or any pack while the business has no saved card, show "Cere activare" instead. Every purchase gets its own invoice in the invoice list.
+
+**Invoice not issued yet (S111).** `invoice: { pending: true }` with `state="success"`: the hint becomes "Pachetul e activ și limita a crescut deja." and the invoice line "Factura ți-o trimitem pe e-mail imediat ce e emisă, de obicei în câteva minute." (neutral, clock icon, no link). Built-in texts `paySuccessHintPending`, `invoicePending` in the 6 languages; also in `i18n/commercial.json`. UpgradeDialog shares it.
+
+**Pro rata (S113).** `prorate: { today, until, monthly? }` for monthly packs and added apps bought mid-period: the total becomes what is paid today, with "Azi: 23 lei, proporțional până pe 17 noiembrie" and "Apoi 49 lei pe lună, odată cu abonamentul." under it; the pay button uses today's amount. `addon.max === 1` hides the quantity (an app). Use `format` for money with cents ("22,13 lei") and for euro ("12 €"). Built-in texts `prorateToday`, `prorateThen` (6 languages); also in `i18n/pricing.json`.
+
+**Implementation and what it includes (S117).** `setup` — the one-time implementation of an individual app, paid today on top of the maintenance: a line "Implementare, o singură dată", the note "Mentenanța: 22,13 lei, proporțional până pe 17 noiembrie", and the pay button with the total. `addon.includes` — a short "Include" list of the app's limits, localized by the caller. Built-in texts `setupOnce`, `prorateMaint`, `addonIncludes` (6 languages).

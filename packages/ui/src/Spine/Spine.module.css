@@ -47,6 +47,30 @@
   color: var(--ink-muted);
 }
 
+/* `hub` (bundle.css .v-spine__mark, __logo, __brand): marca Ventora în Hub și în Founder */
+.mark {
+  display: block;
+  flex: none;
+}
+.markCollapsedOnly {
+  display: none;
+}
+.isCollapsed .markCollapsedOnly {
+  display: inline-flex;
+}
+.isCollapsed .logo {
+  display: none;
+}
+.logo {
+  margin-right: auto;
+}
+.brand {
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+
 .scroll {
   flex: 1;
   overflow-y: auto;
@@ -346,6 +370,12 @@
   .spine:not(.sheet) .app {
     justify-content: center;
     padding: 0;
+  }
+  .spine:not(.sheet) .logo {
+    display: none;
+  }
+  .spine:not(.sheet) .markCollapsedOnly {
+    display: inline-flex;
   }
 }
 

@@ -49,6 +49,7 @@ type MemberDialog =
 export function TeamScreen({ initial }: { initial: TeamData }) {
   const t = useTranslations('hub.team');
   const roles = useTranslations('roles');
+  const seatsT = useTranslations('seats');
   const ui = useTranslations('ui');
   const dates = useDates();
   const phone = useIsPhone();
@@ -72,6 +73,27 @@ export function TeamScreen({ initial }: { initial: TeamData }) {
   const [failed, setFailed] = useState(false);
 
   const apps = data.apps.filter(isApp);
+  // S117: de unde vin locurile (cont + bundle + pachete), doar când există un bundle
+  const st = data.seats;
+  const seatsWhere =
+    st && st.total !== null && st.bundle > 0 && st.bundleName
+      ? `${
+          st.packs > 0
+            ? seatsT('wherePack', {
+                total: st.total,
+                base: st.included,
+                bundle: st.bundle,
+                name: st.bundleName,
+                pack: st.packs,
+              })
+            : seatsT('where', {
+                total: st.total,
+                base: st.included,
+                bundle: st.bundle,
+                name: st.bundleName,
+              })
+        } ${seatsT('more')}`
+      : undefined;
   const roleName = (r: string) => (roles.has(r) ? roles(r) : r);
   const members: TeamMemberRow[] = data.members.map((m) => ({
     id: m.id,
@@ -197,6 +219,7 @@ export function TeamScreen({ initial }: { initial: TeamData }) {
     <>
       <TeamView
         business={data.business}
+        seatsWhere={seatsWhere}
         members={members}
         invites={invites}
         onInvite={openInvite}

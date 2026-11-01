@@ -50,7 +50,7 @@ export default function UsageMeterExtraPage() {
         <div style={frame}>
           <UsageMeter
             {...roProps}
-            label="Angajați"
+            label="Locuri în echipă"
             used={10}
             limit={10}
             onBuy={() => {}}
@@ -60,7 +60,7 @@ export default function UsageMeterExtraPage() {
         <div style={frame}>
           <UsageMeter
             {...roProps}
-            label="Angajați"
+            label="Locuri în echipă"
             used={10}
             limit={10}
             owner="Maria Constantin"

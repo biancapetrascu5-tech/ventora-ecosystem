@@ -2,6 +2,8 @@
 'use client';
 // FX_NAV + FX_App din preview-urile Founder (FounderBackupCodes, FounderSupportSession,
 // FounderOwnerRecovery): Spine cu navigația Founder, ContextBar cu căutarea, notificările, contul.
+// S111: „Cereri” după „Consum”; S117: „Model comercial” — Aplicații, Bundle-uri, Pachete în plus,
+// Reduceri; căutarea „…un bundle…”.
 import type { ReactNode } from 'react';
 import {
   AccountMenu,
@@ -21,13 +23,16 @@ export const FX_NAV: NavSection[] = [
       { id: 'azi', label: 'Prezentare', short: 'Prezentare', icon: 'house' },
       { id: 'afaceri', label: 'Afaceri', icon: 'building-2', badge: 3 },
       { id: 'consum', label: 'Consum', icon: 'chart-column' },
+      { id: 'cereri', label: 'Cereri', icon: 'inbox', badge: 2 },
     ],
   },
   {
     label: 'Model comercial',
     items: [
-      { id: 'planuri', label: 'Planuri', icon: 'boxes' },
+      { id: 'aplicatii', label: 'Aplicații', icon: 'layout-grid' },
+      { id: 'planuri', label: 'Bundle-uri', icon: 'boxes' },
       { id: 'pachete', label: 'Pachete în plus', short: 'Pachete', icon: 'package' },
+      { id: 'reduceri', label: 'Reduceri', icon: 'percent' },
     ],
   },
   {
@@ -63,6 +68,7 @@ export function FounderShellDemo({
       height="100%"
       spine={
         <Spine
+          hub
           appName="Founder"
           sections={FX_NAV}
           activeId={active}
@@ -75,7 +81,7 @@ export function FounderShellDemo({
         <ContextBar
           title={title}
           onSearch={noop}
-          searchLabel="Caută o afacere, un plan sau o campanie"
+          searchLabel="Caută o afacere, un bundle sau o campanie"
           notifications={<NotificationsPanel items={FX_NOTIFS} labels={NOTIF_RO} />}
           account={<AccountMenu user={FX_USER} labels={ACCOUNT_RO} />}
           labels={CONTEXTBAR_RO}

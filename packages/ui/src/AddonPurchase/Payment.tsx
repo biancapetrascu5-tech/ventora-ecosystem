@@ -25,6 +25,10 @@ export interface PaymentLabels {
   saveCard: string;
   processingHint: string;
   paySuccessHint: string;
+  /** S111: plata a reușit, factura încă nu e emisă (S.paySuccessHintPending). */
+  paySuccessHintPending?: string;
+  /** S111: S.invoicePending — „Factura ți-o trimitem pe e-mail imediat ce e emisă…”. */
+  invoicePending?: string;
   before: string;
   after: string;
   /** S.invoiceIssued, ex. (nr) => `Am emis factura ${nr}`. */
@@ -37,6 +41,9 @@ export interface PaymentLabels {
   useOtherCard: string;
   callBank: string;
 }
+
+/** Factura după plată: emisă (numărul ei) sau, S111, încă în emitere (`{ pending: true }`). */
+export type PayInvoice = { number: string; onOpen?: () => void } | { pending: true };
 
 export function PaymentCard({
   card,
@@ -137,18 +144,27 @@ export function PaySuccess({
 }: {
   hint?: ReactNode;
   usage?: PayUsage;
-  invoice?: { number: string; onOpen?: () => void };
+  invoice?: PayInvoice;
   children?: ReactNode;
   labels: Pick<
     PaymentLabels,
-    'paySuccessHint' | 'before' | 'after' | 'invoiceIssued' | 'seeInvoice'
+    | 'paySuccessHint'
+    | 'paySuccessHintPending'
+    | 'invoicePending'
+    | 'before'
+    | 'after'
+    | 'invoiceIssued'
+    | 'seeInvoice'
   >;
   /** Textele UsageMeter (usedOfLabel…) pentru comparație. */
   usageLabels?: Partial<UsageMeterProps>;
 }) {
+  const pending = !!invoice && 'pending' in invoice;
   return (
     <>
-      <p className={cn('body', styles.hint)}>{hint ?? labels.paySuccessHint}</p>
+      <p className={cn('body', styles.hint)}>
+        {hint ?? (pending ? labels.paySuccessHintPending : labels.paySuccessHint)}
+      </p>
       {usage && (
         <div className={styles.compare}>
           <div>
@@ -178,7 +194,13 @@ export function PaySuccess({
         </div>
       )}
       {children}
-      {invoice && (
+      {pending && (
+        <div className={cn(styles.invoice, styles.invoicePending)}>
+          <Icon icon="clock" size={16} />
+          <span className="body-small">{labels.invoicePending}</span>
+        </div>
+      )}
+      {invoice && !('pending' in invoice) && (
         <div className={styles.invoice}>
           <Icon icon="receipt" size={16} />
           <span className="body-small">{labels.invoiceIssued(invoice.number)}</span>

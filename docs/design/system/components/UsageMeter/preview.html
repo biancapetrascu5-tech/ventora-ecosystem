@@ -275,9 +275,9 @@ const noop = () => {};
 const Cell = ({ label, children, w }) => h("div", { className: "um-cell", style: w ? { maxWidth: w } : undefined }, h("p", { className: "caption um-lab" }, label), h("div", { className: "um-body" }, children));
 function Board({ lang = "ro" }) {
   const T = {
-    ro: { appts: "Programări luna aceasta", sms: "SMS-uri luna aceasta", staff: "Angajați", docs: "Spațiu documente", clients: "Clienți", buy: "Cumpără pachet · 49 lei", owner: "Bianca Petrașcu", short: "Programări" },
-    de: { appts: "Termine diesen Monat", sms: "SMS diesen Monat", staff: "Mitarbeiter", docs: "Speicherplatz für Dokumente", clients: "Kunden", buy: "Paket kaufen · 49 lei", owner: "Bianca Petrașcu", short: "Termine" },
-    it: { appts: "Appuntamenti questo mese", sms: "SMS questo mese", staff: "Dipendenti", docs: "Spazio documenti", clients: "Clienti", buy: "Acquista pacchetto · 49 lei", owner: "Bianca Petrașcu", short: "Appuntamenti" }
+    ro: { appts: "Programări luna aceasta", sms: "SMS-uri luna aceasta", staff: "Locuri în echipă", docs: "Spațiu documente", clients: "Clienți", buy: "Cumpără pachet · 49 lei", owner: "Bianca Petrașcu", short: "Programări" },
+    de: { appts: "Termine diesen Monat", sms: "SMS diesen Monat", staff: "Teamplätze", docs: "Speicherplatz für Dokumente", clients: "Kunden", buy: "Paket kaufen · 49 lei", owner: "Bianca Petrașcu", short: "Termine" },
+    it: { appts: "Appuntamenti questo mese", sms: "SMS questo mese", staff: "Posti nel team", docs: "Spazio documenti", clients: "Clienti", buy: "Acquista pacchetto · 49 lei", owner: "Bianca Petrașcu", short: "Appuntamenti" }
   }[lang];
   return h("div", { className: "um-grid" },
     h(Cell, { label: "1 · Sub prag: „Mai ai 688”" }, h(V.UsageMeter, { label: T.appts, used: 312, limit: 1000, onUpgrade: noop })),

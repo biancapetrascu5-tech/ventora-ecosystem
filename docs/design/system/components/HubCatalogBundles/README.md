@@ -1,0 +1,5 @@
+# HubCatalogBundles
+
+Hub catalog — the bundles available now (S117). Each bundle: its apps, "Ofertă valabilă până pe 30 noiembrie", the price per month (and per year), the same apps bought separately and the saving ("Separat: 366 lei pe lună", "Economisești 47 lei pe lună"), the limits included every month, the team seats ("10 locuri în echipă · 3 incluse în orice cont + 7 din bundle"), the implementation. The bundle the business already has shows "Ai acest bundle" and "Îl păstrezi la prețul tău: 300 lei pe lună." Another bundle: what it adds ("Include și CampaignKit, pe care acum o plătești la bucată."), the new total, "Cere acest bundle" (the Ventora team switches the subscription from the next payment) and the confirmation toast. Under them, "Aplicații la bucată": maintenance, implementation or "Fără cost de implementare", limits.
+
+Shown at 1280 and 390, light and dark, with a German and Italian test and EN / FR / ES. Keys `catalog.bundles.*`, `catalog.alaCarte.*`, `catalog.setup`, `catalog.noSetup`, `catalog.app.maintenance`, `seats.*`, `limits.*` in `i18n/pricing.json`, 6 languages.

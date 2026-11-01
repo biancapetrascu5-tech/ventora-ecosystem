@@ -607,6 +607,113 @@
       }
     }
   },
+  "billing": {
+    "plan": {
+      "payMonthly": "Vous payez chaque mois : {amount}",
+      "payAnnual": "Vous payez chaque année : {amount} · vous économisez {saving}",
+      "nextPayment": "Prochain paiement : {date}",
+      "reset": "La consommation repart de zéro le {date}.",
+      "annualLimits": "Vous payez à l’année, mais les limites sont mensuelles : la consommation repart de zéro chaque mois, le {day}.",
+      "usagePeriod": "Consommation : {from} – {to}",
+      "fullPrice": "Prix normal",
+      "discountValue": "Réduction {value}",
+      "discount": {
+        "until": "jusqu’au {date}",
+        "once": "sur ce paiement uniquement",
+        "permanent": "permanente"
+      },
+      "total": "Total par mois",
+      "totalYear": "Total par an",
+      "free": "Gratuit"
+    },
+    "invoice": {
+      "view": "Voir la facture",
+      "title": "Facture {number}",
+      "lines": "Ce qu’elle comprend",
+      "total": "Total à payer",
+      "finalPrice": "Prix final, aucune TVA n’est ajoutée."
+    },
+    "packs": {
+      "validUntil": "valable jusqu’au {date}"
+    },
+    "prorate": {
+      "today": "Aujourd’hui : {amount}, au prorata jusqu’au {date}",
+      "then": "Ensuite {amount} par mois, avec votre abonnement."
+    },
+    "have": {
+      "title": "Ce que vous payez",
+      "bundle": "Bundle {name}",
+      "bundleKeep": "Votre prix reste le même tant que vous gardez le bundle, même après la fin de l’offre.",
+      "app": "{app} · application à l’unité",
+      "pack": "{name} · pack supplémentaire",
+      "noPacks": "Aucun pack supplémentaire.",
+      "included": "Inclus"
+    }
+  },
+  "catalog": {
+    "app": {
+      "activate": "Activer · {price} par mois",
+      "request": "Demander l’activation",
+      "onRequest": "Sur demande",
+      "onRequestNote": "Cette application doit être configurée, c’est donc nous qui l’activons. Après votre demande, l’équipe Ventora vous contacte, et vous ne payez qu’ensuite.",
+      "requestSent": "Demande envoyée",
+      "requestSentBody": "L’équipe Ventora la voit dès maintenant. Vous recevrez une notification quand l’application sera active.",
+      "activateTitle": "Activer {app}",
+      "activateDesc": "Application ajoutée à l’abonnement · {price} par mois",
+      "maintenance": "Maintenance : {amount} par mois",
+      "setupValue": "{amount}, une seule fois",
+      "maintenanceLabel": "Maintenance",
+      "includes": "Ce qui est inclus",
+      "noLimits": "Sans limites propres",
+      "alaCarte": "Application à l’unité",
+      "inBundle": "Incluse dans le bundle {name}",
+      "activateDescAlc": "Application à l’unité · maintenance {price} par mois"
+    },
+    "bundles": {
+      "title": "Bundles",
+      "lead": "Plusieurs applications ensemble, moins cher que séparément, avec limites et places d’équipe incluses.",
+      "validUntil": "Offre valable jusqu’au {date}",
+      "price": "{amount} par mois",
+      "priceYear": "ou {amount} par an",
+      "separate": "Séparément : {amount} par mois",
+      "saving": "Vous économisez {amount} par mois",
+      "limits": "Inclus chaque mois",
+      "apps": "{count, plural, one {# application} other {# applications}}",
+      "have": "Vous avez ce bundle",
+      "haveKeep": "Vous le gardez à votre prix : {amount} par mois.",
+      "request": "Demander ce bundle",
+      "requestNote": "L’équipe Ventora l’ajoute à votre abonnement à partir du prochain paiement. Les applications à l’unité incluses dans le bundle ne sont plus facturées séparément.",
+      "alsoHave": "Inclut aussi {app}, que vous payez aujourd’hui à l’unité.",
+      "planTotal": "Votre abonnement serait de {amount} par mois au lieu de {now}.",
+      "requestSent": "Nous avons envoyé votre demande pour le bundle {name}",
+      "requestSentBody": "L’équipe Ventora vous écrira avant le prochain paiement. D’ici là, rien ne change.",
+      "requestFailed": "Nous n'avons pas pu envoyer la demande. Réessaie."
+    },
+    "alaCarte": {
+      "title": "Applications à l’unité",
+      "lead": "Ou ajoutez seulement l’application dont vous avez besoin : mise en service une fois, puis maintenance chaque mois."
+    },
+    "setup": "Mise en service : {amount}, une seule fois",
+    "noSetup": "Sans frais de mise en service"
+  },
+  "seats": {
+    "count": "{count, plural, one {# place d’équipe} other {# places d’équipe}}",
+    "breakdownBase": "{base} incluses dans tout compte",
+    "breakdown": "{base} incluses dans tout compte + {bundle} du bundle",
+    "breakdownPack": "{base} incluses dans tout compte + {bundle} du bundle + {pack} des packs supplémentaires",
+    "more": "Besoin de plus de places ? Ajoutez-les avec un pack supplémentaire ou avec un bundle qui en inclut davantage.",
+    "where": "Sur vos {total} places, {base} sont incluses dans tout compte et {bundle} viennent du bundle {name}.",
+    "wherePack": "Sur vos {total} places, {base} sont incluses dans tout compte, {bundle} viennent du bundle {name} et {pack} de packs supplémentaires."
+  },
+  "limits": {
+    "appointments": "{count, plural, one {# rendez-vous} other {# rendez-vous}} par mois",
+    "sms": "{count, plural, one {# SMS} other {# SMS}} par mois",
+    "campaigns": "{count, plural, one {# campagne} other {# campagnes}} par mois",
+    "emails": "{count, plural, one {# e-mail} other {# e-mails}} par mois",
+    "clients": "{count, plural, one {# client} other {# clients}}",
+    "invoices": "{count, plural, one {# facture} other {# factures}} par mois",
+    "storage": "{amount} d’espace pour les documents"
+  },
   "notifications": {
     "title": "Notifications",
     "filter": {

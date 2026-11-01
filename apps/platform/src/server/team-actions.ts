@@ -13,7 +13,12 @@ import {
   setTeamMemberAccess,
   setTeamMemberApplications,
 } from '@ventora/access';
-import { APPLICATIONS, getEffectiveEntitlements } from '@ventora/commercial';
+import {
+  APPLICATIONS,
+  getEffectiveEntitlements,
+  getSeatsBreakdown,
+  type SeatsBreakdown,
+} from '@ventora/commercial';
 import { getSession } from '@ventora/identity';
 import { myMemberships } from './route';
 import { reportActionError } from './report-error';
@@ -23,6 +28,8 @@ import { reportActionError } from './report-error';
 
 export type TeamData = {
   business: string;
+  /** S117: de unde vin locurile din echipă (cont, bundle, pachete); null dacă nu se poate citi. */
+  seats: SeatsBreakdown | null;
   /** Lot 2.9b: cine se uită (nu se poate atinge pe sine) și rolul lui (un admin nu face admini). */
   viewer: { id: string; role: 'owner' | 'admin' };
   /** Aplicațiile afacerii, pentru „Invită o persoană” și „Acces la aplicații”. */
@@ -61,8 +68,15 @@ export async function readTeam(): Promise<TeamData | null> {
     const entitled = session.activeOrganizationId
       ? (await getEffectiveEntitlements(session.activeOrganizationId)).applications
       : [];
+    const seats = session.activeOrganizationId
+      ? await getSeatsBreakdown(session.activeOrganizationId).catch((err) => {
+          reportActionError('readTeamSeats', err);
+          return null;
+        })
+      : null;
     return {
       business,
+      seats,
       viewer: { id: session.userId, role: current?.role === 'owner' ? 'owner' : 'admin' },
       // fără abonament încă (afacerile de dinaintea Fazei 3): toate aplicațiile, ca invitația
       // să nu fie blocată (raportul 2.9b, NECESITĂ DECIZIE)

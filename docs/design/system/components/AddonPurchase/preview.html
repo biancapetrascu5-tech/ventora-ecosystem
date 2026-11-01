@@ -282,15 +282,16 @@ function Flow({ L, states }) {
     nocard: h(V.AddonPurchase, { key: "n", inline: true, addon: L.addon, card: null }),
     processing: h(V.AddonPurchase, { key: "p", inline: true, addon: L.addon, card: CARD, state: "processing" }),
     success: h(V.AddonPurchase, { key: "s", inline: true, addon: L.addon, card: CARD, state: "success", usage: L.usage, invoice: { number: "VNT-2026-0204", onOpen: noop }, onDone: noop }),
+    pending: h(V.AddonPurchase, { key: "pe", inline: true, addon: L.addon, card: CARD, state: "success", usage: L.usage, invoice: { pending: true }, onDone: noop }),
     error: h(V.AddonPurchase, { key: "e", inline: true, addon: L.addon, card: CARD, state: "error", error: L.error, onRetry: noop, onUseOtherCard: noop })
   };
   return h("div", { className: "dlggrid" }, states.map((s) => all[s]));
 }
-const ALL = ["review", "nocard", "processing", "success", "error"];
+const ALL = ["review", "nocard", "processing", "success", "pending", "error"];
 function Demo() {
   return h("div", { className: "d" },
     h(Frame, { th: "light" },
-      h("p", { className: "caption muted" }, "Stările fluxului: confirmare (card salvat) · confirmare fără card (locul formularului Stripe) · se procesează · reușită · eroare"),
+      h("p", { className: "caption muted" }, "Stările fluxului: confirmare (card salvat) · confirmare fără card (locul formularului Stripe) · se procesează · reușită · reușită, factura vine în curând (S111) · eroare"),
       h(Flow, { L: AP.ro, states: ALL }),
       h("p", { className: "caption muted" }, "Limita atinsă — proprietarul cumpără direct; ceilalți află cine poate face asta"),
       h("div", { className: "dlggrid" },

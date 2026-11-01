@@ -1,0 +1,38 @@
+{
+  "ro": {
+    "billing.purchase.successPending": "Pachetul e activ și limita a crescut deja.",
+    "billing.purchase.invoicePending": "Factura ți-o trimitem pe e-mail imediat ce e emisă, de obicei în câteva minute.",
+    "billing.invoices.pending": "Factura se emite",
+    "billing.packs.usageNote": "Ai folosit {used} din {limit} luna aceasta."
+  },
+  "en": {
+    "billing.purchase.successPending": "The pack is active and your limit is already higher.",
+    "billing.purchase.invoicePending": "We'll email you the invoice as soon as it's issued, usually within a few minutes.",
+    "billing.invoices.pending": "Invoice being issued",
+    "billing.packs.usageNote": "You've used {used} of {limit} this month."
+  },
+  "fr": {
+    "billing.purchase.successPending": "Le pack est actif et votre limite a déjà augmenté.",
+    "billing.purchase.invoicePending": "Nous vous enverrons la facture par e-mail dès qu’elle sera émise, en général en quelques minutes.",
+    "billing.invoices.pending": "Facture en cours d’émission",
+    "billing.packs.usageNote": "Vous avez utilisé {used} sur {limit} ce mois-ci."
+  },
+  "es": {
+    "billing.purchase.successPending": "El paquete está activo y tu límite ya ha aumentado.",
+    "billing.purchase.invoicePending": "Te enviaremos la factura por correo en cuanto se emita, normalmente en unos minutos.",
+    "billing.invoices.pending": "Factura en emisión",
+    "billing.packs.usageNote": "Has usado {used} de {limit} este mes."
+  },
+  "de": {
+    "billing.purchase.successPending": "Das Paket ist aktiv und Ihr Limit ist bereits erhöht.",
+    "billing.purchase.invoicePending": "Wir schicken Ihnen die Rechnung per E-Mail, sobald sie ausgestellt ist – meist innerhalb weniger Minuten.",
+    "billing.invoices.pending": "Rechnung wird ausgestellt",
+    "billing.packs.usageNote": "Sie haben diesen Monat {used} von {limit} verbraucht."
+  },
+  "it": {
+    "billing.purchase.successPending": "Il pacchetto è attivo e il limite è già aumentato.",
+    "billing.purchase.invoicePending": "Le invieremo la fattura via e-mail appena viene emessa, di solito entro pochi minuti.",
+    "billing.invoices.pending": "Fattura in emissione",
+    "billing.packs.usageNote": "Ha usato {used} su {limit} questo mese."
+  }
+}

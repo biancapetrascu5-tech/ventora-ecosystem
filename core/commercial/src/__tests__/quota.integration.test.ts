@@ -148,6 +148,10 @@ beforeAll(async () => {
     'TRUNCATE commercial.quota_key, commercial.feature_key, commercial.application CASCADE',
   );
   await syncRegistry(admin, APPLICATIONS, MANIFESTS);
+  // D3-25 (Lot 3.4): the subscriptions created here take the setting's value at creation and keep
+  // it; at 0 they stand for the subscriptions from before the lot (the bundle on its own). The
+  // included seats are checked in lot34.integration.test.ts
+  await admin.query(`UPDATE commercial.setting SET int_value = 0 WHERE key = 'included_members'`);
   const [p] = await q(
     `INSERT INTO commercial.plan (code, name, created_by_founder_id) VALUES ($1, 'T5', $2) RETURNING id`,
     [`t5-${newUuid().slice(0, 8)}`, founder],

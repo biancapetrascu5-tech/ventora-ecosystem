@@ -10,7 +10,12 @@ import {
   PaySuccess,
   StripeSlot,
 } from '../AddonPurchase/Payment';
-import type { PaymentCardData, PaymentLabels, PayUsage } from '../AddonPurchase/Payment';
+import type {
+  PayInvoice,
+  PaymentCardData,
+  PaymentLabels,
+  PayUsage,
+} from '../AddonPurchase/Payment';
 import { Button } from '../Button/Button';
 import { Dialog } from '../Dialog/Dialog';
 import { Icon, type IconName } from '../Icon/Icon';
@@ -93,7 +98,8 @@ export interface UpgradeDialogProps {
     title?: string;
     hint?: ReactNode;
     usage?: PayUsage;
-    invoice?: { number: string; onOpen?: () => void };
+    /** S111: `{ pending: true }` — plata a reușit, factura vine pe e-mail. */
+    invoice?: PayInvoice;
   };
   trial?: { text: ReactNode; reminder?: ReactNode };
   onContinue?: (id: string) => void;

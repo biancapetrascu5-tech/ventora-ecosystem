@@ -2,47 +2,33 @@
 'use client';
 // FBizDetail din preview-urile FounderSupportSession / FounderOwnerRecovery: pagina afacerii
 // (FounderBusiness, în afara Lotului 2.6), fundalul formularului și al Drawer-ului.
+import { Button, Tabs, type AppName } from '@ventora/ui';
 import {
-  APPS,
-  AppIcon,
-  Button,
-  DataTable,
-  Sheet,
-  SheetSection,
-  Tabs,
-  UsageMeter,
-  type AppName,
-  type DataTableColumn,
-} from '@ventora/ui';
-import { BusinessView, type BusinessMenuItem } from '@ventora/screens';
+  BusinessUsageSection,
+  BusinessView,
+  ExceptionsSection,
+  PlanCardContent,
+  type BusinessMenuItem,
+  type ExceptionRow,
+} from '@ventora/screens';
 import { FounderShellDemo } from './founderShell';
-import { DATATABLE_RO, USAGE_RO } from './labels';
 import { noop } from './shell';
-import b from './founderBusiness.module.css';
 
-type Row = { id: number; what: string; val: string; until: string; why: string; by: string };
-const COLS: DataTableColumn<Row>[] = [
-  { key: 'what', header: 'Ce', primary: true },
-  { key: 'val', header: 'Valoare', secondary: true },
-  { key: 'until', header: 'Până la', secondary: true },
-  { key: 'why', header: 'Motiv', optional: true, muted: true },
-  { key: 'by', header: 'Adăugată de', optional: true, muted: true },
-];
-const rows = (what: string): Row[] => [
+const rows = (what: string): ExceptionRow[] => [
   {
     id: 1,
     what,
-    val: '12 în loc de 10',
+    value: '12 în loc de 10',
     until: '31 dec. 2026',
-    why: 'Extindere la al doilea cabinet',
+    reason: 'Extindere la al doilea cabinet',
     by: 'Bianca Petrașcu · 3 oct.',
   },
   {
     id: 2,
     what: 'Reducere la abonament',
-    val: '15%',
+    value: '15%',
     until: '31 mar. 2027',
-    why: 'Client din primul val',
+    reason: 'Client din primul val',
     by: 'Bianca Petrașcu · 1 mar.',
   },
 ];
@@ -81,7 +67,7 @@ const COPY = {
 /** FBizDetail: pagina afacerii din design, cu partea comercială (Lotul 3.4) pusă din galerie. */
 export function FounderBusinessDemo({
   menu = MENU_S95,
-  copy = 's95',
+  copy = 's112',
 }: { menu?: BusinessMenuItem[]; copy?: keyof typeof COPY } = {}) {
   const c = COPY[copy];
   return (
@@ -109,61 +95,44 @@ export function FounderBusinessDemo({
         }
         main={
           <>
-            <Sheet>
-              <SheetSection title={c.usage} description="Limitele includ excepțiile active.">
-                <div className={b.usage}>
-                  <div className={b.stack}>
-                    <UsageMeter {...USAGE_RO} label="SMS-uri" used={920} limit={1000} />
-                    <p className="body-small muted">
-                      La ritmul de acum, ajunge la limită pe 26 octombrie.
-                    </p>
-                  </div>
-                  <UsageMeter {...USAGE_RO} label="Programări" used={640} limit={1000} />
-                  <UsageMeter {...USAGE_RO} label={c.seats} used={8} limit={12} />
-                  <UsageMeter
-                    {...USAGE_RO}
-                    label="Spațiu documente"
-                    used={1.2}
-                    limit={5}
-                    unit="GB"
-                    format={(n) => n.toLocaleString('ro-RO')}
-                  />
-                </div>
-              </SheetSection>
-            </Sheet>
-            <div>
-              <div className={b.sechead}>
-                <h2 className="heading">Excepții</h2>
-              </div>
-              <DataTable
-                caption="Excepții"
-                columns={COLS}
-                rows={rows(c.limit)}
-                rowActions={() => [
-                  { label: 'Editează', icon: 'pencil' },
-                  { separator: true },
-                  { label: 'Încheie excepția acum', icon: 'x', destructive: true },
-                ]}
-                labels={DATATABLE_RO}
-                locale="ro"
-              />
-            </div>
+            <BusinessUsageSection
+              title={c.usage}
+              items={[
+                {
+                  key: 'sms',
+                  label: 'SMS-uri',
+                  used: 920,
+                  limit: 1000,
+                  note: 'La ritmul de acum, ajunge la limită pe 26 octombrie.',
+                },
+                { key: 'appt', label: 'Programări', used: 640, limit: 1000 },
+                { key: 'seats', label: c.seats, used: 8, limit: 12 },
+                {
+                  key: 'docs',
+                  label: 'Spațiu documente',
+                  used: 1.2,
+                  limit: 5,
+                  unit: 'GB',
+                  decimal: true,
+                },
+              ]}
+            />
+            <ExceptionsSection
+              phone={false}
+              rows={rows(c.limit)}
+              onAdd={noop}
+              onExtend={noop}
+              onEnd={noop}
+            />
           </>
         }
         plan={
-          <>
-            <p className="subheading">Abonament</p>
-            <p className="body">
-              <span className="body-strong">Business · v2</span>
-              {c.plan}
-            </p>
-            <p className="body-small muted">{c.note}</p>
-            <div className={b.apps}>
-              {APPS_ON.map((a) => (
-                <AppIcon key={a} app={a} size={24} title={APPS[a]?.name} />
-              ))}
-            </div>
-          </>
+          <PlanCardContent
+            title="Business · v2"
+            rest={c.plan.replace(/^ · /, '')}
+            note={c.note}
+            apps={APPS_ON}
+          />
         }
         owner={
           <>

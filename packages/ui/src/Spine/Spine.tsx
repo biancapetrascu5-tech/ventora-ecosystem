@@ -4,6 +4,7 @@ import { useState, type ReactNode } from 'react';
 import { AppIcon, type AppName } from '../AppIcon/AppIcon';
 import { Drawer } from '../Drawer/Drawer';
 import { Icon, type IconName } from '../Icon/Icon';
+import { Logo } from '../Logo/Logo';
 import { cn } from '../lib/cn';
 import styles from './Spine.module.css';
 
@@ -43,6 +44,11 @@ export interface SpineProps {
   app?: AppName;
   /** Numele aplicației din antet (ex. „EasyBook”). */
   appName?: string;
+  /**
+   * Hub-ul și Founder (bundle.js `hub`): marca Ventora în locul iconiței aplicației; cu `appName`
+   * („Founder”) numele are fontul mărcii, fără `appName` apare logo-ul întreg („Ventora”).
+   */
+  hub?: boolean;
   sections?: NavSection[];
   /** Listă plată (o singură secțiune fără titlu). */
   items?: NavItem[];
@@ -124,6 +130,7 @@ function Item({
 export function Spine({
   app,
   appName = '',
+  hub = false,
   sections: sectionsProp,
   items,
   activeId,
@@ -168,8 +175,21 @@ export function Spine({
             title={backLabel}
             aria-label={`${appName} — ${backLabel}`}
           >
-            {app && <AppIcon app={app} size={32} />}
-            <span className={cn(styles.appname, 'heading')}>{appName}</span>
+            {hub ? (
+              <Logo
+                variant="mark"
+                size={32}
+                title=""
+                className={cn(styles.mark, !appName && styles.markCollapsedOnly)}
+              />
+            ) : (
+              app && <AppIcon app={app} size={32} />
+            )}
+            {hub && !appName ? (
+              <Logo size={28} title="" className={styles.logo} />
+            ) : (
+              <span className={cn(styles.appname, 'heading', hub && styles.brand)}>{appName}</span>
+            )}
             <Icon icon="layout-grid" size={16} className={styles.hub} />
           </button>
         </div>
