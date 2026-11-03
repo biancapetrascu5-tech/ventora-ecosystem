@@ -13,7 +13,7 @@ The phone layout follows the width of the layout itself (a container query), not
 - `footer`: "Termeni · Confidențialitate · Ajutor".
 - `theme`
 - Added beyond `packages/ui`, all optional:
-  - `brand: 'hub' | 'founder'`: Founder shows the Ventora mark next to "Founder", "Control Center" and "Instrumentul intern al echipei Ventora". It is used without a language selector, because Founder is only in Romanian (S57).
+  - `brand: 'hub' | 'founder'`: Founder shows the Ventora Systems mark next to "Founder", "Control Center" and "Instrumentul intern al echipei Ventora Systems". It is used without a language selector, because Founder is only in Romanian (S57).
   - `statement`: replaces the sentence on the panel.
   - `wide`: the invitation's 480px column.
 

@@ -264,9 +264,9 @@ export function DesignLot3Client() {
 
       <Section title="ContextBar">
         <div className={styles.componentStack}>
-          <ContextBar title="Ventora Hub" labels={CONTEXTBAR_RO} />
+          <ContextBar title="Hub" labels={CONTEXTBAR_RO} />
           <ContextBar
-            title="Ventora Hub"
+            title="Hub"
             labels={CONTEXTBAR_RO}
             onSearch={() => {}}
             onCreate={() => {}}
@@ -308,7 +308,7 @@ export function DesignLot3Client() {
               />
             }
           >
-            <PageHeader title="Dashboard" subtitle="Bun venit în Ventora" />
+            <PageHeader title="Dashboard" subtitle="Bun venit în Ventora Systems" />
           </AppShell>
         </div>
       </Section>

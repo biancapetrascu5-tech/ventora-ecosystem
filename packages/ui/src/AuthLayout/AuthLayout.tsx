@@ -43,7 +43,11 @@ export function AuthLayout({
       <span className="heading">Founder</span>
     </span>
   ) : (
-    <Logo size={40} />
+    // AuthLayout 1.1.0 (MARCA-1): pe un rând pe desktop, pe două rânduri sub 1024px și pe telefon
+    <>
+      <Logo size={40} className={styles.logoWide} />
+      <Logo variant="stacked" size={40} className={styles.logoNarrow} />
+    </>
   );
   const st = founder ? (
     statement || tagline ? (

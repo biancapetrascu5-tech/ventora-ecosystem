@@ -7,7 +7,7 @@ import { NextIntlClientProvider } from 'next-intl';
 import { getLocale } from 'next-intl/server';
 
 export const metadata: Metadata = {
-  title: 'Ventora Platform',
+  title: 'Hub · Ventora Systems',
 };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {

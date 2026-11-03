@@ -1,7 +1,7 @@
 <!-- @dsCard group="Comercial" height=3280 width=1200 -->
 <!doctype html>
 <html lang="ro">
-<head><meta charset="utf-8"><title>CatalogRecommendation — Ventora</title>
+<head><meta charset="utf-8"><title>CatalogRecommendation — Ventora Systems</title>
 <style>
 html,body{min-height:100%}
 .d{display:flex;flex-direction:column;gap:var(--space-4);padding:var(--space-4);box-sizing:border-box}
@@ -281,17 +281,17 @@ const Cell = ({ label, children, style }) => h("div", { className: "pv-cell", st
 const FRAMES = [["light", "ro", "Light"], ["dark", "ro", "Dark"], ["light", "de", "Deutsch \u00b7 Light"], ["dark", "it", "Italiano \u00b7 Dark"]];
 const Frames = ({ Board, top }) => h("div", { className: "pv" }, top, FRAMES.map(([th, lang, lab], i) => h("section", { key: lab, className: "pv-frame", "data-theme": th }, h("p", { className: "heading" }, lab), h(V.LocaleProvider, { locale: lang }, h(Board, { lang, theme: th, first: i === 0 })))));
 const CR_T = {
-  ro: { l: ["Recomandare · fără cost de implementare", "Recomandare · cu cost de implementare", "Nu e în abonament, fără recomandare", "Aplicație deținută: recomandarea e ignorată", "Recomandare · rând (launcher, „Alte aplicații Ventora”)", "Recomandare · rând, cu cost de implementare"],
+  ro: { l: ["Recomandare · fără cost de implementare", "Recomandare · cu cost de implementare", "Nu e în abonament, fără recomandare", "Aplicație deținută: recomandarea e ignorată", "Recomandare · rând (launcher, „Alte aplicații Ventora Systems”)", "Recomandare · rând, cu cost de implementare"],
     r1: "Se potrivește cu EasyBook: trimite automat reamintiri și campanii clienților tăi.", c1: "49 lei pe lună · fără cost de implementare",
     r2: "Se potrivește cu ClientDesk: contractele cu firmele din pipeline, cu semnătură și reamintire înainte de expirare.", c2: "59 lei pe lună · 300 lei implementare",
     own: "Programări, calendar și reamintiri.", ignored: "Nu apare: o aplicație deținută nu e niciodată recomandare.", c1s: "49 lei pe lună",
     note: "Al patrulea tile (EasyBook) primește aceleași date de recomandare, dar fiind deținut le ignoră." },
-  de: { l: ["Empfehlung · keine Einrichtungsgebühr", "Empfehlung · mit Einrichtungsgebühr", "Nicht im Abonnement, ohne Empfehlung", "Eigene App: Empfehlung wird ignoriert", "Empfehlung · Zeile (Launcher, „Weitere Ventora-Apps“)", "Empfehlung · Zeile, mit Einrichtungsgebühr"],
+  de: { l: ["Empfehlung · keine Einrichtungsgebühr", "Empfehlung · mit Einrichtungsgebühr", "Nicht im Abonnement, ohne Empfehlung", "Eigene App: Empfehlung wird ignoriert", "Empfehlung · Zeile (Launcher, „Weitere Ventora-Systems-Apps“)", "Empfehlung · Zeile, mit Einrichtungsgebühr"],
     r1: "Passt zu EasyBook: sendet Ihren Kunden automatisch Erinnerungen und Kampagnen.", c1: "49 lei pro Monat · keine Einrichtungsgebühr",
     r2: "Passt zu ClientDesk: Verträge mit den Firmen aus Ihrer Pipeline, mit Unterschrift und Erinnerung vor Ablauf.", c2: "59 lei pro Monat · 300 lei Einrichtungsgebühr",
     own: "Termine, Kalender und Erinnerungen.", ignored: "Erscheint nicht: Eine eigene App ist nie eine Empfehlung.", c1s: "49 lei pro Monat",
     note: "Die vierte Kachel (EasyBook) erhält dieselben Empfehlungsdaten, ignoriert sie aber, weil die App bereits genutzt wird." },
-  it: { l: ["Raccomandazione · nessun costo di attivazione", "Raccomandazione · con costo di attivazione", "Non incluso nell’abbonamento, senza raccomandazione", "App già attiva: la raccomandazione viene ignorata", "Raccomandazione · riga (launcher, „Altre app Ventora”)", "Raccomandazione · riga, con costo di attivazione"],
+  it: { l: ["Raccomandazione · nessun costo di attivazione", "Raccomandazione · con costo di attivazione", "Non incluso nell’abbonamento, senza raccomandazione", "App già attiva: la raccomandazione viene ignorata", "Raccomandazione · riga (launcher, „Altre app Ventora Systems”)", "Raccomandazione · riga, con costo di attivazione"],
     r1: "Si adatta a EasyBook: invia automaticamente promemoria e campagne ai Suoi clienti.", c1: "49 lei al mese · nessun costo di attivazione",
     r2: "Si adatta a ClientDesk: i contratti con le aziende della Sua pipeline, con firma e promemoria prima della scadenza.", c2: "59 lei al mese · 300 lei di costo di attivazione",
     own: "Appuntamenti, calendario e promemoria.", ignored: "Non appare: un’app già attiva non è mai una raccomandazione.", c1s: "49 lei al mese",

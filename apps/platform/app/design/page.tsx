@@ -29,7 +29,7 @@ export default function DesignPage() {
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 6 250 68"
             role="img"
-            aria-label="Ventora"
+            aria-label="Ventora Systems"
             height="40"
           >
             <svg x="8" y="10" width="60" height="60" viewBox="0 0 400 400" overflow="visible">
@@ -84,7 +84,7 @@ export default function DesignPage() {
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 6 250 68"
               role="img"
-              aria-label="Ventora"
+              aria-label="Ventora Systems"
               height="48"
             >
               <svg x="8" y="10" width="60" height="60" viewBox="0 0 400 400" overflow="visible">
@@ -131,7 +131,7 @@ export default function DesignPage() {
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 6 250 68"
               role="img"
-              aria-label="Ventora"
+              aria-label="Ventora Systems"
               height="48"
             >
               <svg x="8" y="10" width="60" height="60" viewBox="0 0 400 400" overflow="visible">
@@ -252,7 +252,7 @@ export default function DesignPage() {
             family="display"
             size="40px / 44px"
             weight="700"
-            sample="Bine ai venit în Ventora"
+            sample="Bine ai venit în Ventora Systems"
           />
           <TypeRow
             name="display-l"

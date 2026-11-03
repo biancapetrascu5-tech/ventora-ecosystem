@@ -251,7 +251,7 @@ export function BundleEditorScreen({
   return (
     <div className={cs.frame}>
       <FounderShell
-        active="planuri"
+        active="bundles"
         title={t('title', { name: data.bundle.name, v: `v${offer.number}` })}
         user={user}
         requestsBadge={requestsBadge}

@@ -30,7 +30,7 @@ export const FX_NAV: NavSection[] = [
     label: 'Model comercial',
     items: [
       { id: 'aplicatii', label: 'Aplicații', icon: 'layout-grid' },
-      { id: 'planuri', label: 'Bundle-uri', icon: 'boxes' },
+      { id: 'bundles', label: 'Bundle-uri', icon: 'boxes' },
       { id: 'pachete', label: 'Pachete în plus', short: 'Pachete', icon: 'package' },
       { id: 'reduceri', label: 'Reduceri', icon: 'percent' },
     ],

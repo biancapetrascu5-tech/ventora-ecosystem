@@ -71,9 +71,9 @@
     "common": {
       "greeting": "Bună, {name},",
       "greetingNoName": "Bună,",
-      "signature": "Echipa Ventora",
-      "footerAccount": "Ai primit acest e-mail pentru că adresa {email} e folosită pentru un cont Ventora.",
-      "footerInvitation": "Ai primit acest e-mail pentru că cineva a invitat adresa {email} în Ventora.",
+      "signature": "Echipa Ventora Systems",
+      "footerAccount": "Ai primit acest e-mail pentru că adresa {email} e folosită pentru un cont Ventora Systems.",
+      "footerInvitation": "Ai primit acest e-mail pentru că cineva a invitat adresa {email} în Ventora Systems.",
       "company": "Ventora Systems SRL · Sibiu, România"
     },
     "roles": {
@@ -84,45 +84,45 @@
     },
     "passwordReset": {
       "hub": {
-        "subject": "Alege o parolă nouă pentru contul Ventora",
-        "intro": "Am primit o cerere de resetare a parolei pentru contul tău Ventora.",
+        "subject": "Alege o parolă nouă pentru contul Ventora Systems",
+        "intro": "Am primit o cerere de resetare a parolei pentru contul tău Ventora Systems.",
         "button": "Alege o parolă nouă",
         "validity": "Linkul e valabil o oră și merge o singură dată. După ce schimbi parola, te deconectăm de pe toate dispozitivele, ca doar tu să ai acces la cont.",
         "notRequested": "Dacă nu ai cerut tu resetarea, ignoră acest e-mail. Parola ta rămâne aceeași."
       },
       "founder": {
-        "subject": "Resetarea parolei pentru Ventora Founder",
-        "intro": "Am primit o cerere de resetare a parolei pentru contul tău Ventora Founder.",
+        "subject": "Resetarea parolei pentru Founder",
+        "intro": "Am primit o cerere de resetare a parolei pentru contul tău Founder.",
         "button": "Alege o parolă nouă",
         "validity": "Linkul e valabil o oră și merge o singură dată. Toate sesiunile deschise se închid, iar la intrare îți cerem în continuare codul de autentificare în doi pași.",
         "notRequested": "Dacă nu ai cerut tu resetarea, scrie imediat la {supportEmail}. Poate fi o încercare de acces la contul tău."
       }
     },
     "passwordChanged": {
-      "subject": "Parola contului tău Ventora a fost schimbată",
+      "subject": "Parola contului tău Ventora Systems a fost schimbată",
       "pre": "Schimbarea s-a făcut pe {date}, la {time}. Dacă nu ai fost tu, citește e-mailul.",
-      "eyebrow": "Contul tău Ventora",
+      "eyebrow": "Contul tău Ventora Systems",
       "title": "Parola contului tău a fost schimbată",
       "leadReset": "Parola contului {email} a fost schimbată pe {date}, la {time}. Te-am scos din cont pe toate dispozitivele.",
       "leadAccount": "Parola contului {email} a fost schimbată pe {date}, la {time}. Te-am scos din cont pe celelalte dispozitive.",
       "ifYou": "Dacă ai fost tu, nu trebuie să faci nimic.",
       "notYou": "Nu ai fost tu? Alege imediat o parolă nouă din „Ai uitat parola?” și scrie-ne la {supportEmail}.",
       "cta": "Scrie-ne la suport",
-      "why": "Primești acest e-mail pentru că parola contului tău Ventora s-a schimbat. E un e-mail de securitate: îl trimitem la fiecare schimbare de parolă și nu se poate opri."
+      "why": "Primești acest e-mail pentru că parola contului tău Ventora Systems s-a schimbat. E un e-mail de securitate: îl trimitem la fiecare schimbare de parolă și nu se poate opri."
     },
     "invitation": {
       "member": {
-        "subject": "{inviterName} te-a invitat în {businessName} pe Ventora",
-        "intro": "{inviterName} te-a invitat în echipa {businessName} pe Ventora, ca {roleName}.",
+        "subject": "{inviterName} te-a invitat în {businessName} pe Ventora Systems",
+        "intro": "{inviterName} te-a invitat în echipa {businessName} pe Ventora Systems, ca {roleName}.",
         "button": "Acceptă invitația",
         "resentNotice": "Ăsta e un link nou. Cel primit înainte nu mai funcționează.",
         "validity": "Invitația e valabilă 7 zile, până pe {expiresDate}.",
-        "existingAccount": "Dacă ai deja cont Ventora, intri cu e-mailul și parola ta, iar {businessName} apare lângă celelalte afaceri. Dacă nu ai, îți alegi parola când deschizi linkul.",
+        "existingAccount": "Dacă ai deja cont Ventora Systems, intri cu e-mailul și parola ta, iar {businessName} apare lângă celelalte afaceri. Dacă nu ai, îți alegi parola când deschizi linkul.",
         "notExpected": "Nu te așteptai la această invitație? Poți ignora acest e-mail. Fără să accepți, nu se creează niciun cont."
       },
       "owner": {
-        "subject": "{businessName} e gata pe Ventora",
-        "intro": "Am pregătit spațiul {businessName} pe Ventora. Tu vei fi proprietarul lui: îl configurezi, inviți echipa și alegi aplicațiile.",
+        "subject": "{businessName} e gata pe Ventora Systems",
+        "intro": "Am pregătit spațiul {businessName} pe Ventora Systems. Tu vei fi proprietarul lui: îl configurezi, inviți echipa și alegi aplicațiile.",
         "button": "Intră în {businessName}",
         "validity": "Linkul e valabil 30 de zile, până pe {expiresDate}.",
         "firstLogin": "La prima intrare îți alegi parola și pornești autentificarea în doi pași, ca afacerea ta să fie protejată de la început.",
@@ -131,42 +131,42 @@
     },
     "ownerRecovery": {
       "subject": "Autentificarea în doi pași a contului tău a fost resetată",
-      "intro": "La cererea ta ({ticketRef}), echipa Ventora a resetat autentificarea în doi pași pentru contul tău. Am închis și toate sesiunile deschise.",
+      "intro": "La cererea ta ({ticketRef}), echipa Ventora Systems a resetat autentificarea în doi pași pentru contul tău. Am închis și toate sesiunile deschise.",
       "passwordReset": "Am resetat și parola. Alege una nouă din linkul de mai jos, valabil o oră:",
       "button": "Alege o parolă nouă",
       "nextSteps": "Ce urmează: la următoarea intrare în cont pornești din nou autentificarea în doi pași, cu o aplicație de autentificare. Până atunci nu poți face modificări ca proprietar în {businessName}. Păstrează noile coduri de rezervă într-un loc sigur.",
       "notRequested": "Dacă nu ai cerut tu asta, scrie-ne imediat la {supportEmail}. Verificăm imediat ce s-a întâmplat."
     },
     "supportSession": {
-      "subject": "Echipa Ventora are acces de suport la {businessName}",
-      "intro": "{founderName} din echipa Ventora a deschis o sesiune de suport pentru {businessName}, pentru cererea {ticketRef}.",
+      "subject": "Echipa Ventora Systems are acces de suport la {businessName}",
+      "intro": "{founderName} din echipa Ventora Systems a deschis o sesiune de suport pentru {businessName}, pentru cererea {ticketRef}.",
       "reason": "Motivul: {reason}",
-      "scope": "În timpul sesiunii, echipa Ventora poate doar să vadă datele afacerii, ca să rezolve cererea. Nu poate modifica date, nu vede parole și nu schimbă nimic în echipă sau în abonament.",
+      "scope": "În timpul sesiunii, echipa Ventora Systems poate doar să vadă datele afacerii, ca să rezolve cererea. Nu poate modifica date, nu vede parole și nu schimbă nimic în echipă sau în abonament.",
       "until": "Sesiunea se închide automat pe {date}, la {time}.",
-      "close": "O poți închide oricând din Ventora, din bannerul sesiunii de suport.",
+      "close": "O poți închide oricând din Ventora Systems, din bannerul sesiunii de suport.",
       "notRequested": "Dacă nu ai cerut ajutor, închide sesiunea și scrie-ne la {supportEmail}.",
-      "footer": "Primești acest e-mail pentru că ești proprietarul afacerii {businessName} în Ventora."
+      "footer": "Primești acest e-mail pentru că ești proprietarul afacerii {businessName} în Ventora Systems."
     }
   },
   "support": {
     "session": {
       "banner": {
         "title": "Sesiune de suport activă",
-        "message": "{founderName} din echipa Ventora poate vedea datele afacerii până la {expiresAt}.",
+        "message": "{founderName} din echipa Ventora Systems poate vedea datele afacerii până la {expiresAt}.",
         "readOnly": "Doar citire: nu poate modifica date, membri, parole sau abonamentul.",
         "reason": "Motiv: {reason}",
         "ticketRef": "Cerere: {ticketRef}",
         "close": "Închide sesiunea",
-        "closeConfirm": "Închizi sesiunea de suport? Echipa Ventora pierde accesul imediat.",
+        "closeConfirm": "Închizi sesiunea de suport? Echipa Ventora Systems pierde accesul imediat.",
         "closed": "Sesiunea de suport s-a închis.",
         "cancel": "Renunță"
       }
     },
     "sessions": {
       "title": "Sesiuni de suport",
-      "lead": "Echipa Ventora vede datele afacerii doar într-o sesiune de suport, doar în citire și doar până la ora stabilită. Aici vezi cine, de ce și când.",
+      "lead": "Echipa Ventora Systems vede datele afacerii doar într-o sesiune de suport, doar în citire și doar până la ora stabilită. Aici vezi cine, de ce și când.",
       "col": {
-        "who": "Din echipa Ventora",
+        "who": "Din echipa Ventora Systems",
         "reason": "Motiv",
         "ticket": "Cerere",
         "when": "Când",
@@ -185,7 +185,7 @@
     "line1": "Afacerea ta.",
     "line2": "Într-un singur loc.",
     "founderProduct": "Control Center",
-    "founderTagline": "Instrumentul intern al echipei Ventora",
+    "founderTagline": "Instrumentul intern al echipei Ventora Systems",
     "reset": {
       "request": {
         "title": "Ai uitat parola?",
@@ -210,7 +210,7 @@
       },
       "sent": {
         "title": "Verifică-ți e-mailul",
-        "body": "Dacă {email} este adresa unui cont Ventora, ți-am trimis acolo un link pentru o parolă nouă.",
+        "body": "Dacă {email} este adresa unui cont Ventora Systems, ți-am trimis acolo un link pentru o parolă nouă.",
         "validity": "Linkul e valabil o oră.",
         "help": "Nu vezi e-mailul? Uită-te și în Spam sau Promoții.",
         "resend": "Trimite alt link",
@@ -282,7 +282,7 @@
         },
         "s2": {
           "title": "Introdu codul din aplicație",
-          "lead": "Aplicația arată acum un cod de 6 cifre pentru Ventora.",
+          "lead": "Aplicația arată acum un cod de 6 cifre pentru Ventora Systems.",
           "submit": "Activează",
           "back": "Înapoi la codul QR"
         },
@@ -340,7 +340,7 @@
       },
       "founder": {
         "name": "Founder",
-        "tagline": "Instrumentul intern al echipei Ventora",
+        "tagline": "Instrumentul intern al echipei Ventora Systems",
         "product": "Control Center"
       },
       "backupLeft": {
@@ -372,7 +372,7 @@
     },
     "signIn": {
       "title": "Bine ai revenit",
-      "lead": "Intră în contul tău Ventora.",
+      "lead": "Intră în contul tău Ventora Systems.",
       "emailLabel": "E-mail",
       "passwordLabel": "Parolă",
       "forgot": "Ai uitat parola?",
@@ -440,7 +440,7 @@
     "themeLight": "Luminoasă",
     "themeDark": "Întunecată",
     "themeSystem": "Automată",
-    "allApps": "Toate aplicațiile Ventora",
+    "allApps": "Toate aplicațiile Ventora Systems",
     "support": "Suport",
     "signOut": "Ieși din cont",
     "switchBusiness": "Schimbă afacerea",
@@ -528,7 +528,7 @@
     },
     "suspended": {
       "title": "Accesul la {business} e oprit momentan",
-      "body": "Pentru detalii, ia legătura cu echipa Ventora la {email}.",
+      "body": "Pentru detalii, ia legătura cu echipa Ventora Systems la {email}.",
       "contact": "Scrie-ne la suport",
       "signOut": "Ieși din cont"
     },
@@ -545,7 +545,7 @@
   },
   "account": {
     "title": "Contul tău",
-    "lead": "Datele tale, cum arată Ventora pentru tine și cum îți protejezi contul.",
+    "lead": "Datele tale, cum arată Ventora Systems pentru tine și cum îți protejezi contul.",
     "notifications": {
       "title": "Notificări",
       "lead": "Alege pe unde vrei să afli de fiecare."
@@ -655,9 +655,9 @@
       "activate": "Activează · {price} pe lună",
       "request": "Cere activare",
       "onRequest": "La cerere",
-      "onRequestNote": "Aplicația are nevoie de configurare, așa că o activăm noi. După cerere, echipa Ventora te contactează și abia apoi se plătește.",
+      "onRequestNote": "Aplicația are nevoie de configurare, așa că o activăm noi. După cerere, echipa Ventora Systems te contactează și abia apoi se plătește.",
       "requestSent": "Am trimis cererea",
-      "requestSentBody": "Echipa Ventora o vede acum. Primești o notificare când aplicația e activă.",
+      "requestSentBody": "Echipa Ventora Systems o vede acum. Primești o notificare când aplicația e activă.",
       "activateTitle": "Activezi {app}",
       "activateDesc": "Aplicație adăugată la abonament · {price} pe lună",
       "maintenance": "Mentenanță: {amount} pe lună",
@@ -682,11 +682,11 @@
       "have": "Ai acest bundle",
       "haveKeep": "Îl păstrezi la prețul tău: {amount} pe lună.",
       "request": "Cere acest bundle",
-      "requestNote": "Echipa Ventora îl trece pe abonamentul tău de la următoarea plată. Aplicațiile pe care le ai la bucată și sunt în bundle nu le mai plătești separat.",
+      "requestNote": "Echipa Ventora Systems îl trece pe abonamentul tău de la următoarea plată. Aplicațiile pe care le ai la bucată și sunt în bundle nu le mai plătești separat.",
       "alsoHave": "Include și {app}, pe care acum o plătești la bucată.",
       "planTotal": "Abonamentul tău ar fi {amount} pe lună, în loc de {now}.",
       "requestSent": "Am trimis cererea pentru bundle-ul {name}",
-      "requestSentBody": "Echipa Ventora îți scrie înainte de următoarea plată. Până atunci, totul rămâne cum e.",
+      "requestSentBody": "Echipa Ventora Systems îți scrie înainte de următoarea plată. Până atunci, totul rămâne cum e.",
       "requestFailed": "Nu am putut trimite cererea. Încearcă din nou."
     },
     "alaCarte": {
@@ -749,7 +749,7 @@
     "support": {
       "reply": {
         "title": "Răspuns nou la solicitarea ta",
-        "body": "„{subject}” · {author}, echipa Ventora"
+        "body": "„{subject}” · {author}, echipa Ventora Systems"
       }
     },
     "request": {
@@ -772,9 +772,9 @@
       }
     },
     "email": {
-      "open": "Deschide în Ventora",
-      "why": "Primești acest e-mail pentru că faci parte din echipa {businessName} în Ventora.",
-      "whyAccount": "Primești acest e-mail pentru contul tău Ventora.",
+      "open": "Deschide în Ventora Systems",
+      "why": "Primești acest e-mail pentru că faci parte din echipa {businessName} în Ventora Systems.",
+      "whyAccount": "Primești acest e-mail pentru contul tău Ventora Systems.",
       "billing": {
         "invoice": {
           "card": {
@@ -834,7 +834,7 @@
         },
         "setup": {
           "accepted": {
-            "lead": "Echipa Ventora a acceptat cererea ta pentru {app} și o configurează pentru {business}.",
+            "lead": "Echipa Ventora Systems a acceptat cererea ta pentru {app} și o configurează pentru {business}.",
             "next": "Implementarea costă {setup}, o singură dată. După plată pornim configurarea și îți spunem când aplicația e gata. Apoi {app} costă {price} pe lună, odată cu abonamentul."
           },
           "due": {
@@ -859,7 +859,7 @@
         "subject": "{title} · {business}",
         "eyebrow": "{business} · Abonament și consum",
         "eyebrowApps": "{business} · Aplicații",
-        "why": "Primești acest e-mail pentru că ești proprietarul afacerii {business} în Ventora.",
+        "why": "Primești acest e-mail pentru că ești proprietarul afacerii {business} în Ventora Systems.",
         "upgrade": "Dacă ți se întâmplă des, cere alt abonament din Abonament și consum."
       }
     },
@@ -889,17 +889,17 @@
         "support": "Răspunsuri la solicitările de suport",
         "password": "Parola contului schimbată",
         "twoFactor": "Autentificarea în doi pași",
-        "supportSession": "Sesiunea de suport a echipei Ventora"
+        "supportSession": "Sesiunea de suport a echipei Ventora Systems"
       },
       "news": {
-        "title": "Noutăți de la Ventora",
-        "desc": "Ce e nou în Ventora: aplicații, funcții, schimbări importante.",
+        "title": "Noutăți de la Ventora Systems",
+        "desc": "Ce e nou în Ventora Systems: aplicații, funcții, schimbări importante.",
         "inApp": "În aplicație",
         "email": "Pe e-mail",
         "emailDesc": "Oprit până îl pornești tu."
       },
       "reco": {
-        "title": "Recomandări Ventora",
+        "title": "Recomandări Ventora Systems",
         "desc": "Sugestii despre aplicații și pachete în plus care se potrivesc cu ce faci deja.",
         "inAppDesc": "Le vezi în pagini și în notificări, la secțiunea Recomandări.",
         "soon": "Disponibil în curând",

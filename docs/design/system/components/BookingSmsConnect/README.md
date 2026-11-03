@@ -8,7 +8,7 @@ Shown at 1280, 820 and 390 over the Settings page, then every step and every sta
 
 **Steps.**
 1. *Ce îți trebuie* — Android phone (dedicated, with PIN, S6), the business SIM with credit, a charger, internet. Quiet note: "Pe iPhone nu se poate: Apple nu permite trimiterea automată de SMS-uri." Link "Vezi telefoanele recomandate".
-2. *Instalează aplicația pe telefon* — QR to the download page app.ventora-hub.com/telefon (desktop) or "Deschide pagina de descărcare" (phone), brand picker, numbered steps with text only (S11), "Descarcă aplicația doar de pe pagina Ventora" (S4).
+2. *Instalează aplicația pe telefon* — QR to the download page app.ventora-hub.com/telefon (desktop) or "Deschide pagina de descărcare" (phone), brand picker, numbered steps with text only (S11), "Descarcă aplicația doar de pe pagina Ventora Systems" (S4).
 3. *Scanează codul* — big QR (always dark on light, also in dark theme, so it scans), short code "K7P-42Q" with copy, "Codul expiră în 9:41", "Așteptăm telefonul…", "Generează alt cod". Moves on by itself when the phone connects.
 4. *Setările telefonului* — the connected phone, brand picker, two guides (battery saving, start after restart) each with "Am făcut asta".
 5. *Declarația ta* — unchecked checkbox; "Continuă" works only when it is checked. **Legal text to validate (D-SMS-7, S31):** the declaration and the "Ce înseamnă asta" page are provisional until the legal review.
@@ -19,4 +19,4 @@ Shown at 1280, 820 and 390 over the Settings page, then every step and every sta
 
 **Not here (§11).** No commercial offer, no prices, no technical terms.
 
-**Approved 25 Oct 2026 (S25–S33).** Step 3 moves on by itself; leaving after step 3 keeps the phone connected but silent until the declaration and test are done ("Continuă conectarea" in Settings); the phone is named at step 7; "A ajuns, continuă" for a test without confirmation, and "Continuă" after "Trimis"; brand guides for Samsung, Xiaomi, Motorola, Google Pixel and other brands (on phone, a Select); the SIM is paid at the operator, never "abonament"; "aplicația Ventora pornită" (works in the background); download address app.ventora-hub.com/telefon.
+**Approved 25 Oct 2026 (S25–S33).** Step 3 moves on by itself; leaving after step 3 keeps the phone connected but silent until the declaration and test are done ("Continuă conectarea" in Settings); the phone is named at step 7; "A ajuns, continuă" for a test without confirmation, and "Continuă" after "Trimis"; brand guides for Samsung, Xiaomi, Motorola, Google Pixel and other brands (on phone, a Select); the SIM is paid at the operator, never "abonament"; "aplicația Ventora Systems pornită" (works in the background); download address app.ventora-hub.com/telefon.

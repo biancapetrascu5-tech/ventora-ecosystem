@@ -22,7 +22,7 @@ const ACCOUNT_L = {
   yourBusinesses: 'Afacerile tale',
   theme: 'Temă',
   language: 'Limbă',
-  allApps: 'Toate aplicațiile Ventora',
+  allApps: 'Toate aplicațiile Ventora Systems',
   support: 'Ajutor și suport',
   signOut: 'Ieși din cont',
   themeSwitcher: THEME_L,
@@ -41,7 +41,7 @@ const NOTIF_L = {
   activity: 'Activitate',
   recommendations: 'Recomandări',
   recommendation: 'Recomandare',
-  fromTeam: 'De la echipa Ventora',
+  fromTeam: 'De la echipa Ventora Systems',
   seeApp: 'Vezi aplicația',
   reject: 'Refuză',
   seeDetails: 'Vezi detalii',
@@ -168,7 +168,7 @@ describe('AccountMenu', () => {
     );
     await userEvent.click(screen.getByRole('button', { name: /Contul tău/ }));
     expect(screen.getByText('bianca@salonaurora.ro')).toBeDefined();
-    expect(screen.getByText('Toate aplicațiile Ventora')).toBeDefined();
+    expect(screen.getByText('Toate aplicațiile Ventora Systems')).toBeDefined();
     await userEvent.click(screen.getByText('Ieși din cont'));
     expect(onSignOut).toHaveBeenCalled();
   });
@@ -262,11 +262,26 @@ describe('UpgradeDialog', () => {
 });
 
 describe('Logo și BrandZone', () => {
-  it('Logo are numele mărcii; fără titlu e decorativ', () => {
+  it('Logo are numele mărcii, „Ventora Systems” (MARCA-1); fără titlu e decorativ', () => {
     const { container, rerender } = render(<Logo />);
-    expect(screen.getByRole('img', { name: 'Ventora' })).toBeDefined();
+    // două desene, light și dark (varianta B); tema cea mai apropiată îl arată pe unul
+    expect(screen.getAllByRole('img', { name: 'Ventora Systems' })).toHaveLength(2);
     rerender(<Logo variant="mark" title="" />);
     expect(container.firstElementChild!.getAttribute('aria-hidden')).toBe('true');
+  });
+
+  it('Logo pe două rânduri: sub 32px, varianta mică; fiecare instanță are masca ei', () => {
+    const { container } = render(
+      <>
+        <Logo variant="stacked" size={28} />
+        <Logo variant="stacked" size={40} />
+      </>,
+    );
+    const html = container.innerHTML;
+    expect(html).toMatch(/ventora-logo-stacked-small-dark-cut-/);
+    expect(html).toMatch(/ventora-logo-stacked-dark-cut-/);
+    const ids = [...html.matchAll(/id="(ventora-[a-z-]+-dark-cut-[^"]+)"/g)].map((m) => m[1]);
+    expect(new Set(ids).size).toBe(ids.length);
   });
 
   it('BrandZone pune conținutul pe tema dark', () => {

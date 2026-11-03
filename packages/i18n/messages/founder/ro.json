@@ -129,7 +129,7 @@
     },
     "businesses": {
       "title": "Afaceri",
-      "lead": "Toate afacerile Ventora, cu abonamentul, consumul și starea lor.",
+      "lead": "Toate afacerile Ventora Systems, cu abonamentul, consumul și starea lor.",
       "new": "Afacere nouă",
       "caption": "Afaceri",
       "search": "Caută afacere, oraș sau proprietar",
@@ -350,7 +350,7 @@
         "availableFor": "Disponibil pentru"
       },
       "direct": "Directă",
-      "onRequest": "La cerere, prin echipa Ventora",
+      "onRequest": "La cerere, prin echipa Ventora Systems",
       "stopped": "Vânzare oprită",
       "edit": {
         "title": "Editează „{name}”",
@@ -368,7 +368,7 @@
         "quantity": "Cantitatea",
         "purchase": "Cumpărare",
         "purchaseDirect": "Directă",
-        "purchaseOnRequest": "La cerere, prin echipa Ventora",
+        "purchaseOnRequest": "La cerere, prin echipa Ventora Systems",
         "error": "Nu am putut salva schimbările. Verifică internetul și încearcă din nou.",
         "errorRequired": "Completează câmpul.",
         "errorEur": "Scrie prețul în euro. Nu îl calculăm din lei."
@@ -403,11 +403,10 @@
       "direct": "Direct",
       "onRequest": "La cerere",
       "directHelp": "Afacerea o activează singură din catalog și plătește cu cardul.",
-      "onRequestHelp": "Afacerea trimite o cerere; o activează echipa Ventora.",
-      "setupLocked": "Are cost de implementare, deci rămâne la cerere.",
+      "onRequestHelp": "Afacerea trimite o cerere; o activează echipa Ventora Systems.",
       "none": "Fără",
       "switched": "{app} se activează acum direct din catalog.",
-      "switchedOff": "{app} se activează acum la cerere, prin echipa Ventora.",
+      "switchedOff": "{app} se activează acum la cerere, prin echipa Ventora Systems.",
       "editPrice": "Editează prețul",
       "dialog": {
         "title": "Editează prețul pentru {app}",
@@ -623,7 +622,7 @@
     },
     "overview": {
       "title": "Prezentare",
-      "lead": "Ce cere atenția echipei Ventora azi.",
+      "lead": "Ce cere atenția echipei Ventora Systems azi.",
       "expiring": "O excepție expiră pe {date}",
       "extend": "Prelungește",
       "empty": "Nicio excepție nu expiră în următoarele 7 zile."

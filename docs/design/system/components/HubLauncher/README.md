@@ -1,6 +1,6 @@
 # HubLauncher
 
-The launcher (direction B "Navy de comandă"): a brand band with the date and business, the greeting and the day's sentence; "Aplicațiile tale" as an AppDock laid over the band's edge; Portal's own card; "Alte aplicații Ventora" with the reason and action for each; and AppLaunch when you open an app (hover an icon to see its card, click to open).
+The launcher (direction B "Navy de comandă"): a brand band with the date and business, the greeting and the day's sentence; "Aplicațiile tale" as an AppDock laid over the band's edge; Portal's own card; "Alte aplicații Ventora Systems" with the reason and action for each; and AppLaunch when you open an app (hover an icon to see its card, click to open).
 
 Shown at 1280 (desktop), 820 (tablet portrait) and 390 (phone), in light and dark, built only from the system's components.
 
@@ -8,6 +8,6 @@ Shown at 1280 (desktop), 820 (tablet portrait) and 390 (phone), in light and dar
 
 **Your apps** are an `AppDock`: icons with their names; hover or keyboard focus opens the app's card (description and today's line, e.g. "Următoarea: 09:30 · Ana Popescu"). Phones: a 4-column icon grid. Portal is never in the dock — it is the `PortalPresence` card right under it.
 
-**Other Ventora apps** are compact rows, name first. They can carry one catalog recommendation — a commercial slot, only for owners and admins, with "Nu mă interesează", the remind menu and the global caps (CampaignKit here) — and end with "Vezi toate aplicațiile Ventora", which opens HubCatalog. Tab order goes through your apps and Portal before the commercial slot.
+**Other Ventora Systems apps** are compact rows, name first. They can carry one catalog recommendation — a commercial slot, only for owners and admins, with "Nu mă interesează", the remind menu and the global caps (CampaignKit here) — and end with "Vezi toate aplicațiile Ventora Systems", which opens HubCatalog. Tab order goes through your apps and Portal before the commercial slot.
 
 **On phones (S66).** The header keeps only the logo (the mark), search as an icon, the bell and the avatar. The business switcher is in AccountMenu ("Afacerile tale", `orgsInMenu`). The section under the screens shows the menu open, in Light, Dark and German.

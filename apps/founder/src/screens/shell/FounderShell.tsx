@@ -42,7 +42,7 @@ export function useFounderNav(requestsBadge?: number): NavSection[] {
       label: t('commercial'),
       items: [
         { id: 'aplicatii', label: t('apps'), icon: 'layout-grid', href: '/apps' },
-        { id: 'planuri', label: t('bundles'), icon: 'boxes', href: '/bundles' },
+        { id: 'bundles', label: t('bundles'), icon: 'boxes', href: '/bundles' },
         {
           id: 'pachete',
           label: t('packs'),

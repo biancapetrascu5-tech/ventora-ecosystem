@@ -183,8 +183,8 @@ export async function purchase(ctx: BillingContext, item: PurchaseItem): Promise
     currency: quote.currency,
     description:
       quote.kind === 'addon'
-        ? `Ventora · ${quote.name}${quote.packs > 1 ? ` × ${quote.packs}` : ''}`
-        : `Ventora · ${quote.name}`,
+        ? `Ventora Systems · ${quote.name}${quote.packs > 1 ? ` × ${quote.packs}` : ''}`
+        : `Ventora Systems · ${quote.name}`,
     metadata: { organization_id: organizationId, purchase_id: purchaseId },
     idempotencyKey: `purchase-${purchaseId}`,
   });

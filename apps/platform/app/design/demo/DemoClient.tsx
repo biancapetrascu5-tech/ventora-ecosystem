@@ -50,7 +50,7 @@ function VentoraLogoFull({ height = 28 }: { height?: number }) {
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 6 250 68"
       role="img"
-      aria-label="Ventora"
+      aria-label="Ventora Systems"
       height={height}
       style={{ display: 'block', flexShrink: 0 }}
     >
@@ -861,9 +861,9 @@ export function DemoClient() {
                   />
                 </div>
 
-                {/* Alte aplicații Ventora */}
+                {/* Alte aplicații Ventora Systems */}
                 <div className={styles.lbOther}>
-                  <h2 className="display-m">Alte aplicații Ventora</h2>
+                  <h2 className="display-m">Alte aplicații Ventora Systems</h2>
                   <p className={cn('body', styles.lbOtherIntro)}>
                     Nu le poți deschide acum. La fiecare scrie de ce și ce poți face.
                   </p>
@@ -873,7 +873,7 @@ export function DemoClient() {
                     ))}
                   </div>
                   <div style={{ marginTop: 'var(--space-4)' }}>
-                    <Button variant="quiet">Vezi toate aplicațiile Ventora</Button>
+                    <Button variant="quiet">Vezi toate aplicațiile Ventora Systems</Button>
                   </div>
                 </div>
 

@@ -1,7 +1,7 @@
 <!-- @dsCard group="Ecrane Hub" height=3404 width=2620 page -->
 <!doctype html>
 <html lang="ro">
-<head><meta charset="utf-8"><title>HubEmpty — Ventora</title>
+<head><meta charset="utf-8"><title>HubEmpty — Ventora Systems</title>
 <style>
 html,body{min-height:100%}
 .d{display:flex;flex-direction:column;gap:var(--space-4);padding:var(--space-4);box-sizing:border-box}
@@ -513,12 +513,12 @@ function Launcher({ mode, empty, lang, requested }) {
       mob ? null : h(Chevrons, { cls: "lb-chev" })),
     !empty && !mob ? sechead : null);
   const other = h("section", { className: "lb-other" },
-    h("h2", { className: "display-m sec" }, "Alte aplicații Ventora"),
+    h("h2", { className: "display-m sec" }, "Alte aplicații Ventora Systems"),
     h("p", { className: "body lb-other__intro" }, "Nu le poți deschide acum. La fiecare scrie de ce și ce poți face."),
     h("div", { className: "rows" }, OTHER.map(([a, s]) => RECO_FOR(a)
       ? h(V.GrowthSlot, { key: a, label: "Recomandare" }, h(V.AppTile, { app: a, access: s, layout: "row", recommendation: RECO_FOR(a), onDetails: () => {}, onDismiss: () => {}, onRemindLater: () => {} }))
       : h(V.AppTile, { key: a, app: a, access: s, layout: "row", grantedBy: "Bianca Petrașcu", onRequestAccess: () => {}, onWriteUs: () => {}, onSeeStatus: () => {} }))),
-    h("div", { style: { marginTop: "var(--space-4)" } }, h(V.Button, { variant: "quiet", icon: "layout-grid", iconEnd: "arrow-right" }, "Vezi toate aplicațiile Ventora")));
+    h("div", { style: { marginTop: "var(--space-4)" } }, h(V.Button, { variant: "quiet", icon: "layout-grid", iconEnd: "arrow-right" }, "Vezi toate aplicațiile Ventora Systems")));
   const body = empty
     ? [h("div", { key: "e", className: "sheetlike lb-empty" }, h(V.EmptyState, { icon: "layout-grid", title: T.title, description: requested ? T.descSent : T.desc, actions: h(React.Fragment, null, requested ? h(V.Button, { variant: "primary", icon: "check", disabled: true }, T.sent) : h(V.Button, { variant: "primary", icon: "send" }, T.ask), h(V.Button, { variant: "quiet" }, T.write)) }), h("p", { className: "body-small muted center", style: { paddingBottom: "var(--space-6)" } }, requested ? T.waitNote : T.meanwhile, h("a", { className: "v-link", href: "#" }, T.account), "."))]
     : [mob ? h("div", { key: "s" }, sechead) : null,
@@ -531,7 +531,7 @@ function Launcher({ mode, empty, lang, requested }) {
 }
 
 function CommercialPrefs({ mode }) {
-  return /* @__PURE__ */ React.createElement(V.SheetSection, { title: "Recomand\u0103ri Ventora", description: "Sugestii despre aplica\u021Bii \u0219i pachete \xEEn plus care se potrivesc cu ce faci deja." }, /* @__PURE__ */ React.createElement("div", { className: "d0", style: { gap: "var(--space-3)" } }, /* @__PURE__ */ React.createElement(V.Toggle, { label: "\xCEn aplica\u021Bie", description: "Le vezi \xEEn pagini \u0219i \xEEn notific\u0103ri, la sec\u021Biunea Recomand\u0103ri.", defaultChecked: true, labelPosition: mode === "mobile" ? "start" : "end" }), /* @__PURE__ */ React.createElement(V.Toggle, { label: "Pe e-mail", description: "Disponibil \xEEn cur\xE2nd", disabled: true, labelPosition: mode === "mobile" ? "start" : "end" }), /* @__PURE__ */ React.createElement(V.Notice, { tone: "neutral", icon: "info" }, "Mesajele despre limitele contului t\u0103u r\u0103m\xE2n active, pentru c\u0103 sunt informa\u021Bii despre cont, nu recomand\u0103ri.")));
+  return /* @__PURE__ */ React.createElement(V.SheetSection, { title: "Recomand\u0103ri Ventora Systems", description: "Sugestii despre aplica\u021Bii \u0219i pachete \xEEn plus care se potrivesc cu ce faci deja." }, /* @__PURE__ */ React.createElement("div", { className: "d0", style: { gap: "var(--space-3)" } }, /* @__PURE__ */ React.createElement(V.Toggle, { label: "\xCEn aplica\u021Bie", description: "Le vezi \xEEn pagini \u0219i \xEEn notific\u0103ri, la sec\u021Biunea Recomand\u0103ri.", defaultChecked: true, labelPosition: mode === "mobile" ? "start" : "end" }), /* @__PURE__ */ React.createElement(V.Toggle, { label: "Pe e-mail", description: "Disponibil \xEEn cur\xE2nd", disabled: true, labelPosition: mode === "mobile" ? "start" : "end" }), /* @__PURE__ */ React.createElement(V.Notice, { tone: "neutral", icon: "info" }, "Mesajele despre limitele contului t\u0103u r\u0103m\xE2n active, pentru c\u0103 sunt informa\u021Bii despre cont, nu recomand\u0103ri.")));
 }
 mount(React.createElement("div", null,
   React.createElement(Screens, { title: "Starea goal\u0103 \u2014 nicio aplica\u021Bie disponibil\u0103", notes: ["Light: \xEEnainte de cerere", "Dark: dup\u0103 \u201ECere acces\u201D \u2014 butonul devine \u201ECerere trimis\u0103 \xB7 25 oct.\u201D \u0219i nu mai poate fi ap\u0103sat; linkul spre Contul t\u0103u r\u0103m\xE2ne pentru a\u0219teptare"], render: (m, th) => React.createElement(Launcher, { mode: m, empty: true, requested: th === "dark" }) }),

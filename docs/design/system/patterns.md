@@ -11,7 +11,7 @@ Cum se compun componentele în ecrane. Fiecare regulă de aici se aplică identi
 
 ## Navigație
 
-- **Hub → aplicație:** launcher-ul arată „Aplicațiile tale” (AppTile disponibile) și „Alte aplicații Ventora” (fără acces, cu motivul). Click pe AppTile deschide aplicația; în aplicație, numele aplicației din Spine duce înapoi în Hub.
+- **Hub → aplicație:** launcher-ul arată „Aplicațiile tale” (AppTile disponibile) și „Alte aplicații Ventora Systems” (fără acces, cu motivul). Click pe AppTile deschide aplicația; în aplicație, numele aplicației din Spine duce înapoi în Hub.
 - **Ești aici:** elementul activ din Spine are fundal `selected`, etichetă puternică și bara peach `attention-mark`. E singurul loc unde peach marchează locația. Taburile folosesc sublinierea navy.
 - **De la 1024px:** Spine extins. **Tabletă portret 768–1023px:** Spine ca bară de iconuri (tooltip cu numele), căutarea devine icon, OrgSwitcher rămâne în ContextBar. **Telefon sub 768px:** bottom nav cu patru destinații (etichete scurte, `short`) + „Mai multe” (toată navigația pe tot ecranul), ContextBar cu numele aplicației, căutare, „Creează” rotund, notificări, cont; schimbarea afacerii se face din AccountMenu.
 - **Căutare globală:** ⌘K / Ctrl+K sau butonul de căutare deschid `CommandPalette` cu pagini, persoane, înregistrări și comenzi (inclusiv „Schimbă afacerea”, „Temă întunecată”).
@@ -19,7 +19,7 @@ Cum se compun componentele în ecrane. Fiecare regulă de aici se aplică identi
 
 ## Acces și cont
 
-- **B2B doar prin invitație.** Nu există „Creează cont” și nici „Adaugă afacere”. Afacerile le creează echipa Ventora; proprietarul primește o invitație, apoi își invită echipa. Ecranul de autentificare are doar e-mail, parolă, „Ai uitat parola?” și selectorul de limbă.
+- **B2B doar prin invitație.** Nu există „Creează cont” și nici „Adaugă afacere”. Afacerile le creează echipa Ventora Systems; proprietarul primește o invitație, apoi își invită echipa. Ecranul de autentificare are doar e-mail, parolă, „Ai uitat parola?” și selectorul de limbă.
 - **Cele patru stări ale unei aplicații** (`AppTile` + `AccessBadge`), niciodată confundate:
   - *Disponibilă* — se deschide.
   - *Temporar indisponibilă* — „Lucrăm la ea acum. Revine în curând.” + „Vezi starea”.
@@ -77,15 +77,15 @@ Niciodată roșu, niciodată „Eroare”.
 ## Ecranele Hub
 
 - **Intrarea** e doar prin invitație: autentificare (e-mail, parolă, „Ai uitat parola?”, limbă), acceptarea invitației cu setarea parolei (cerințele parolei se bifează în lime pe măsură ce sunt îndeplinite; invitația expirată spune ce poți face), alegerea afacerii pentru cine are mai multe (fără „Adaugă afacere”). „Ai uitat parola?” trimite un link pentru o parolă nouă: același răspuns pentru orice adresă, linkul ține o oră și merge o dată; după salvare, toate sesiunile se închid și ecranul o spune (HubPasswordReset, FounderPasswordReset, S72–S79).
-- **Launcher-ul (direcția B):** antetul și banda de sus sunt o zonă de brand (`BrandZone`). Pe bandă: data și afacerea în `eyebrow`, salutul în `display-hub`, fraza zilei în `lead`, cu legăturile ca jetoane (iconul aplicației, textul și, când te așteaptă ceva, punctul peach), apoi titlul „Aplicațiile tale” cu „Reordonează”. Aplicațiile sunt un `AppDock`: rând de iconuri pe o foaie ridicată peste marginea benzii; la hover sau focus iconul se deschide în fișa aplicației. Sub el, Portal are cardul lui (`PortalPresence`). „Alte aplicații Ventora” sunt rânduri compacte, cu numele în față. Deschiderea unei aplicații folosește `AppLaunch` (v2), pornind din cardul apăsat.
+- **Launcher-ul (direcția B):** antetul și banda de sus sunt o zonă de brand (`BrandZone`). Pe bandă: data și afacerea în `eyebrow`, salutul în `display-hub`, fraza zilei în `lead`, cu legăturile ca jetoane (iconul aplicației, textul și, când te așteaptă ceva, punctul peach), apoi titlul „Aplicațiile tale” cu „Reordonează”. Aplicațiile sunt un `AppDock`: rând de iconuri pe o foaie ridicată peste marginea benzii; la hover sau focus iconul se deschide în fișa aplicației. Sub el, Portal are cardul lui (`PortalPresence`). „Alte aplicații Ventora Systems” sunt rânduri compacte, cu numele în față. Deschiderea unei aplicații folosește `AppLaunch` (v2), pornind din cardul apăsat.
 - **Pe telefon** banda ține doar data, salutul și fraza zilei; „Aplicațiile tale” stă pe canvas, ca grilă de iconuri; cardul Portal e compact, cu butoanele unul sub altul.
 - **Autentificarea și invitația (direcția B):** panoul de brand ocupă 46% din lățime pe desktop (logo, „Afacerea ta. Într-un singur loc.” în `display-xl`, modelul de chevroni, „© 2026 Ventora Systems”); formularul stă pe `sheet`, fără card. Pe telefon panoul devine o bandă sus, cu logo-ul și limba, iar formularul urcă peste ea.
 - **Starea goală:** banda și salutul rămân (fraza zilei devine „Bine ai venit în Salon Aurora. Aplicațiile apar aici imediat ce primești acces.”), EmptyState urcă peste marginea benzii, spune cine alege aplicațiile și oferă „Cere acces”.
 - **Setări și administrare** folosesc AppShell cu Spine-ul Hub (`hub`): Contul tău (profil, preferințe, notificări, securitate), Afacerea — doar pentru proprietar (echipă și invitații, roluri și acces la aplicații, abonament și consum), Suport (solicitările mele + solicitare nouă; „Îți răspundem în cel mult o zi lucrătoare.”).
 - **Accesul la aplicații** se editează ca matrice rol × aplicație pe desktop și tabletă; pe telefon alegi rolul și comuți aplicațiile una câte una. Aplicațiile din afara abonamentului sau temporar indisponibile apar cu AccessBadge și nu se pot bifa.
-- **Abonamentul** se schimbă doar prin cerere către echipa Ventora („Cere alt abonament”).
+- **Abonamentul** se schimbă doar prin cerere către echipa Ventora Systems („Cere alt abonament”).
 - **Pachetele în plus** le cumpără proprietarul direct, cu cardul afacerii: „Cumpără · 49 lei” deschide AddonPurchase (cantitate, total, cardul salvat — doar ultimele 4 cifre — sau locul formularului Stripe, „Plătește X lei”), apoi „Procesăm plata…”, reușește („Limita a crescut deja.”, apare factura) sau eșuează („Banca spune: …”, „Nu ți s-a retras niciun ban de pe card.”, ce poți face). Pachetele „Doar la cerere” și orice pachet cât timp afacerea nu are card salvat rămân „Cere activare”. Fiecare cumpărătură are factura ei („Pachet în plus · 500 SMS”).
-- **Datele cardului** nu trec niciodată prin componentele Ventora: formularul e al Stripe și se montează în `StripeSlot`.
+- **Datele cardului** nu trec niciodată prin componentele Ventora Systems: formularul e al Stripe și se montează în `StripeSlot`.
 
 ## În interiorul aplicațiilor (EasyBook ca model)
 
@@ -130,7 +130,7 @@ Toate stau pe același shell și folosesc aceleași piese ca EasyBook; diferă d
 ## Comercial (recomandări)
 
 - **Discret și util, nu insistent.** O recomandare arată ca o informație bună la momentul potrivit: e legată de ce face deja afacerea și are mereu eticheta neutră „Recomandare”.
-- **Unde apare:** doar în locurile permise, prin `GrowthSlot` (coloana din „Azi”, setări), în secțiunea „Recomandări” din notificări, în launcher la „Alte aplicații Ventora” și în catalog. **Niciodată** în formulare în lucru, plăți, erori, confirmări, autentificare sau în acțiunile sensibile din MoneyDesk, TeamSpace și ContractDesk. Un tooltip de descoperire pe ecran, cel mult.
+- **Unde apare:** doar în locurile permise, prin `GrowthSlot` (coloana din „Azi”, setări), în secțiunea „Recomandări” din notificări, în launcher la „Alte aplicații Ventora Systems” și în catalog. **Niciodată** în formulare în lucru, plăți, erori, confirmări, autentificare sau în acțiunile sensibile din MoneyDesk, TeamSpace și ContractDesk. Un tooltip de descoperire pe ecran, cel mult.
 - **Doar aplicații nedeținute.** O aplicație din abonament nu e niciodată recomandare.
 - **Închiderea e mereu la vedere** pe recomandările care vin singure: „Nu mă interesează” și „Amintește-mi mai târziu”, fiecare cu un Toast care se poate anula.
 - **Costul e întreg înainte de confirmare:** preț, cât de des se plătește, costul de implementare, condițiile perioadei de probă („Gratuit 14 zile. Apoi 79 lei pe lună, doar dacă alegi să continui.”).
@@ -138,13 +138,13 @@ Toate stau pe același shell și folosesc aceleași piese ca EasyBook; diferă d
 - **Rolul decide acțiunea:** proprietarul (și adminul cu drept de cumpărare) cumpără, încearcă sau cere; ceilalți văd opțiunile și „Recomandă aplicația”, cu „Ajunge la {nume} (proprietar).”. Adminul primește recomandările echipei în notificări („Vezi aplicația” / „Respinge”). Membrul vede starea fiecărei recomandări („În așteptare”, „Activată”, „Nu acum”) și primește notificare doar la activare.
 - **Perioada de probă** nu cere card și nu trece singură la plată: la final aplicația se oprește, datele rămân, iar continuarea e o alegere explicită.
 - **Plafoane:** cel mult un slot comercial pe ecran; global 1 pe zi și 3 pe săptămână; o respingere ține 30 de zile. Când plafonul e atins, slotul nu se afișează deloc.
-- **Catalogul** se deschide din launcher („Vezi toate aplicațiile Ventora”), din paleta de comenzi și din meniul contului.
+- **Catalogul** se deschide din launcher („Vezi toate aplicațiile Ventora Systems”), din paleta de comenzi și din meniul contului.
 - **Fără dark patterns:** fără numărători inverse, fără „ultimele locuri”, fără refuz culpabilizant, fără opțiuni pre-bifate, fără culori de brand ca decor (navy doar pe acțiunea principală, peach doar pentru limită și „acum”).
-- **Preferințe:** în Contul tău → Notificări, „Recomandări Ventora” se pot opri; mesajele despre limitele contului rămân, pentru că sunt informații despre cont.
+- **Preferințe:** în Contul tău → Notificări, „Recomandări Ventora Systems” se pot opri; mesajele despre limitele contului rămân, pentru că sunt informații despre cont.
 
 ## Founder Control Center și Growth
 
-Instrumentul intern al echipei Ventora, pe același shell: Spine cu semnul Ventora și numele „Founder”, secțiuni Afaceri · Consum · Model comercial · Growth · Sistem.
+Instrumentul intern al echipei Ventora Systems, pe același shell: Spine cu semnul Ventora Systems și numele „Founder”, secțiuni Afaceri · Consum · Model comercial · Growth · Sistem.
 - **Afaceri:** lista arată întâi ce cere atenție (plăți eșuate, limite, probe care se încheie), apoi alfabetic; cifrele de sus filtrează lista. La o afacere nouă, un CUI sau un e-mail de proprietar deja folosit dă un avertisment (nu o blocare). O afacere nouă se creează împreună cu invitația proprietarului; contul se face doar din invitație, iar previzualizarea arată exact e-mailul.
 - **Excepții per afacere:** au mereu valoare, termen (cel mult 12 luni, prelungibil), motiv și autor; intră în jurnal; cu 7 zile înainte de expirare apar în Prezentare; „Încheie excepția acum”, nu „Șterge”. Suspendarea unei afaceri cere numele ei scris.
 - **Planuri cu versiuni:** orice schimbare de preț sau de limite face o versiune nouă, cu creșterile și scăderile marcate față de versiunea curentă. Afacerile noi pornesc pe versiunea curentă; celelalte rămân unde sunt până le muți. Mutarea e o acțiune separată de publicare: dacă e în dezavantajul clientului (preț mai mare sau mai puțin inclus), anunțul pleacă cu 30 de zile înainte; dacă e doar în avantajul lui, se aplică imediat, tot cu anunț. Prețurile pachetelor în plus se scriu într-un singur loc și apar de acolo în toate ofertele.

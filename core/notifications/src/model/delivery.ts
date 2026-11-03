@@ -114,7 +114,7 @@ export function renderNotificationEmail(
     lang: locale,
     subject: title,
     preheader: body ?? title,
-    eyebrow: businessName ?? 'Ventora',
+    eyebrow: businessName ?? 'Ventora Systems',
     title,
     lead: [fill(m.common.greeting, { name: contact.name }), ...(body ? [body] : [])],
     ...(row.action_url

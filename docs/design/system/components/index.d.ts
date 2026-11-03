@@ -158,7 +158,8 @@ export declare function Sheet(props: { children?: React.ReactNode; padded?: bool
 export declare function SheetSection(props: { title?: React.ReactNode; description?: React.ReactNode; actions?: React.ReactNode; children?: React.ReactNode }): React.ReactElement;
 
 /** The official logo files, unchanged (light + dark variant B). */
-export declare function Logo(props: { variant?: 'full' | 'mark'; size?: number; title?: string; className?: string }): React.ReactElement;
+/** Ventora Systems (01.11.2026): 'full' — the mark + "VENTORA SYSTEMS" on one line (415 × 68); 'stacked' — the mark + "VENTORA" with a smaller "SYSTEMS" centred under it (250 × 68; under 32px it uses "SYSTEMS" at full size, left-aligned, to stay readable), for narrow places (the Hub Spine, the sign-in panel under 1024px and the phone band, the cover); 'mark' — the mark alone (favicon, collapsed Spine). `size` = the mark's height; default title "Ventora Systems". */
+export declare function Logo(props: { variant?: 'full' | 'stacked' | 'mark'; size?: number; title?: string; className?: string }): React.ReactElement;
 /** The light and dark (variant B) marks as SVG data URLs. */
 export declare const LOGO_MARK: string;
 export declare const LOGO_MARK_DARK: string;
@@ -178,7 +179,7 @@ type Box = DOMRect | { left: number; top: number; width: number; height: number 
 export declare function AppLaunch(props: { app: AppKey; name?: string; from?: Box; fromCard?: Box; iconEl?: Element; fromLocal?: { left: number; top: number; width: number; height: number }; onDone?(): void; contained?: boolean; progress?: number; waiting?: boolean }): React.ReactElement;
 /** A brand zone — Hub only (launcher bar and band, sign-in panel): brand-surface ground, everything inside rendered dark. */
 /** The sign-in page (R-2F9; same name and zones as packages/ui AuthLayout): the brand panel (BrandZone), the sheet with the form, and on phones (layout width < 768px) the logo band with the language selector, the sheet rising over it. Used by HubSignIn, HubInvite and two-step sign-in (Hub and Founder). */
-export interface AuthLayoutProps { children: React.ReactNode; languageSelector?: React.ReactNode; footer?: React.ReactNode; theme?: 'light' | 'dark'; /** 'founder': the Ventora mark next to "Founder" and "Control Center" */ brand?: 'hub' | 'founder'; /** replaces "Afacerea ta. Într-un singur loc." (translated) */ statement?: React.ReactNode; /** form column 480px instead of 400px (invitation) */ wide?: boolean; className?: string }
+export interface AuthLayoutProps { children: React.ReactNode; languageSelector?: React.ReactNode; footer?: React.ReactNode; theme?: 'light' | 'dark'; /** 'founder': the Ventora Systems mark next to "Founder" and "Control Center" */ brand?: 'hub' | 'founder'; /** replaces "Afacerea ta. Într-un singur loc." (translated) */ statement?: React.ReactNode; /** form column 480px instead of 400px (invitation) */ wide?: boolean; className?: string }
 export declare function AuthLayout(props: AuthLayoutProps): React.ReactElement;
 export declare function BrandZone(props: { as?: keyof JSX.IntrinsicElements; className?: string; style?: React.CSSProperties; children?: React.ReactNode; [attr: string]: unknown }): React.ReactElement;
 export interface DockApp { app: AppKey; name?: string; icon?: IconName; description?: string; badge?: number; live?: { text: string; attention?: boolean } }
@@ -187,7 +188,7 @@ export declare function AppDock(props: { apps: DockApp[]; onOpen?(e: React.Mouse
 /** Portal in the business launcher: the business page for clients, with "Gestionează pagina" and "Vezi cum arată în Portal". */
 export declare function PortalPresence(props: { status?: 'published' | 'hidden' | 'draft'; canManage?: boolean; onManage?(): void; onPreview?(): void; previewHref?: string; compact?: boolean; className?: string }): React.ReactElement;
 export declare function Notice(props: { tone?: Tone; title?: React.ReactNode; children?: React.ReactNode; icon?: IconName; actions?: React.ReactNode }): React.ReactElement;
-export interface Org { id: string | number; name: string; role?: string; /** S112: the business is suspended by Ventora. The row shows "Acces oprit" (key accessStopped, 6 languages) with a lock and cannot be chosen. Never the current business. */ suspended?: boolean }
+export interface Org { id: string | number; name: string; role?: string; /** S112: the business is suspended by Ventora Systems. The row shows "Acces oprit" (key accessStopped, 6 languages) with a lock and cannot be chosen. Never the current business. */ suspended?: boolean }
 export declare function OrgSwitcher(props: { orgs: Org[]; currentId?: Org['id']; onChange?(id: Org['id']): void; compact?: boolean; defaultOpen?: boolean }): React.ReactElement;
 export interface Notification { id: string | number; title: string; body?: string; app?: string; time?: string; person?: string; icon?: IconName; read?: boolean; category?: "operational" | "activity"; /** S115: what opening it does, shown under the text ("Vezi factura"). The whole item opens it; there is no second button. */ action?: string }
 export declare function NotificationsPanel(props: { items: Notification[]; onOpenItem?(n: Notification): void; onMarkAllRead?(): void; onSettings?(): void; inline?: boolean; open?: boolean; onOpenChange?(o: boolean): void }): React.ReactElement;

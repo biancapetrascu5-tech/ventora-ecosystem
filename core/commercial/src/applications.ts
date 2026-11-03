@@ -12,7 +12,7 @@ export interface RegistryApplication {
 }
 
 export const APPLICATIONS: readonly RegistryApplication[] = [
-  { id: 'platform', name: 'Ventora Hub', isPlatform: true },
+  { id: 'platform', name: 'Hub', isPlatform: true },
   { id: 'booking', name: 'EasyBook', isPlatform: false },
   { id: 'crm', name: 'ClientDesk', isPlatform: false },
   { id: 'documents', name: 'DocSpace', isPlatform: false },

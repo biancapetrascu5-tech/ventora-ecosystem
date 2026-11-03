@@ -13,3 +13,12 @@
 .img :global(svg) {
   display: block;
 }
+
+/* .v-logo__img--light / --dark: tema cea mai apropiată alege desenul (tokens.css) */
+.light {
+  display: var(--v-logo-light, block);
+}
+
+.dark {
+  display: var(--v-logo-dark, none);
+}

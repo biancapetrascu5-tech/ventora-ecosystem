@@ -68,6 +68,9 @@ jobs:
       # Lot 2.8: o cheie lipsă (sau în plus) într-o limbă pică CI-ul, nu doar pre-push-ul local.
       - name: i18n:check
         run: pnpm i18n:check
+      # MARCA-1: „Ventora” fără „Systems” în mesaje, e-mailuri sau titluri pică CI-ul
+      - name: brand:check
+        run: pnpm brand:check
       - run: pnpm typecheck
       - run: pnpm format:check
 

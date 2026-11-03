@@ -433,8 +433,8 @@
       "files": {
         "ventora-logo-email-2x.png": {
           "name": "ventora-logo-email-2x.png",
-          "blob": "8b14667ee685da1c7c6612324b922ee0",
-          "size": 9280,
+          "blob": "a6feffc13c851ddc707e96cbe1738267",
+          "size": 13509,
           "type": "image/png"
         }
       },
@@ -445,6 +445,10 @@
         "ventora-mark-dark.svg",
         "favicon.svg",
         "ventora-logo-dark.svg",
+        "ventora-logo-stacked.svg",
+        "ventora-logo-stacked-dark.svg",
+        "ventora-logo-stacked-small.svg",
+        "ventora-logo-stacked-small-dark.svg",
         "ventora-logo-email-2x.png",
         "README.md"
       ],
@@ -468,10 +472,10 @@
     "App~20icons"
   ],
   "lastChange": {
-    "at": "2026-10-31T19:19:09Z",
+    "at": "2026-11-03T09:27:09Z",
     "by": "Bianca Petrașcu",
     "via": "Claude",
-    "note": "S117: aplicații la bucată (implementare + mentenanță, limite incluse) și bundle-uri (perioadă de vânzare, Oprește vânzarea, Ofertă nouă); HubCatalogBundles nou; Ce plătești în HubAdminPlan / HubPlanBilling; locurile în echipă; AddonPurchase setup + includes; Spine Founder „Bundle-uri”; glosar; i18n pricing.json, founder-pricing.json"
+    "note": "Logo pe două rânduri: „SYSTEMS” mai mic (62%), centrat sub „VENTORA” (varianta C); sub 32px, varianta mică cu „SYSTEMS” la mărime întreagă"
   },
   "layout": "files",
   "libraries": [
@@ -488,5 +492,5 @@
   ],
   "namespace": "Ventora",
   "sections": {},
-  "title": "Ventora"
+  "title": "Ventora Systems"
 }

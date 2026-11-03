@@ -61,7 +61,7 @@ describe('S3 / S54 — one operational layout for every email', () => {
       expect(r.html).toContain('<meta name="color-scheme" content="light">');
       expect(r.html).toContain('max-width:600px');
       expect(r.html).toContain('display:none;max-height:0'); // preheader
-      expect(r.html).toContain('>Ventora</span>'); // logo (wordmark)
+      expect(r.html).toContain('>Ventora Systems</span>'); // logo (wordmark)
       expect(r.html).toContain('text-transform:uppercase'); // eyebrow
       expect(r.html).toMatch(/<h1 [^>]*>[^<]+<\/h1>/); // title
       expect(r.text).toContain('Ventora Systems SRL · Sibiu, România');
@@ -69,10 +69,11 @@ describe('S3 / S54 — one operational layout for every email', () => {
   });
 
   it('the eyebrow names the business when there is one, else the product or the account', () => {
-    expect(all[0]!.html).toMatch(/uppercase[^>]*>Ventora<\/p>/);
-    expect(all[1]!.html).toMatch(/uppercase[^>]*>Ventora Founder<\/p>/);
+    expect(all[0]!.html).toMatch(/uppercase[^>]*>Ventora Systems<\/p>/);
+    expect(all[1]!.html).toMatch(/uppercase[^>]*>Founder · Ventora Systems<\/p>/);
     for (const r of all.slice(2, 5)) expect(r.html).toMatch(/uppercase[^>]*>Salon Aurora<\/p>/);
-    for (const r of all.slice(5)) expect(r.html).toMatch(/uppercase[^>]*>Contul tău Ventora<\/p>/);
+    for (const r of all.slice(5))
+      expect(r.html).toMatch(/uppercase[^>]*>Contul tău Ventora Systems<\/p>/);
   });
 
   it('phones: the button takes the full width', () => {
@@ -101,13 +102,13 @@ describe('N.3 — password reset (E-1, E-2)', () => {
     const link = 'https://app.ventora-hub.com/reset-password?token=abc';
     const r = renderPasswordReset({ app: 'hub', email: 'ana@x.ro', name: 'Ana', link });
     expectComplete(r);
-    expect(r.subject).toBe('Alege o parolă nouă pentru contul Ventora');
+    expect(r.subject).toBe('Alege o parolă nouă pentru contul Ventora Systems');
     expect(r.text).toContain('Bună, Ana,');
     expect(r.text).toContain(`Alege o parolă nouă: ${link}`);
     expect(r.html).toContain(`href="${link}"`);
     expect(r.text).toContain('te deconectăm de pe toate dispozitivele'); // T-2
     expect(r.text).toContain(
-      'Ai primit acest e-mail pentru că adresa ana@x.ro e folosită pentru un cont Ventora.',
+      'Ai primit acest e-mail pentru că adresa ana@x.ro e folosită pentru un cont Ventora Systems.',
     );
   });
 
@@ -127,7 +128,7 @@ describe('N.3 — password reset (E-1, E-2)', () => {
       link: 'https://f/reset-password?token=1',
     });
     expectComplete(r);
-    expect(r.subject).toBe('Resetarea parolei pentru Ventora Founder');
+    expect(r.subject).toBe('Resetarea parolei pentru Founder');
     expect(r.text).toContain(
       'Dacă nu ai cerut tu resetarea, scrie imediat la support@ventorasystems.com. Poate fi o încercare de acces la contul tău.',
     );
@@ -152,11 +153,11 @@ describe('R-PR7 — password changed (S78, approved copy)', () => {
   it('after a reset: signed out on all devices', () => {
     const r = renderPasswordChanged({ email: 'ana@x.ro', trigger: 'reset', changedAt });
     expectComplete(r);
-    expect(r.subject).toBe('Parola contului tău Ventora a fost schimbată');
+    expect(r.subject).toBe('Parola contului tău Ventora Systems a fost schimbată');
     expect(r.html).toContain(
       '>Schimbarea s-a făcut pe 28 octombrie 2026, la 14:05 EET. Dacă nu ai fost tu, citește e-mailul.</div>',
     );
-    expect(r.html).toMatch(/uppercase[^>]*>Contul tău Ventora<\/p>/);
+    expect(r.html).toMatch(/uppercase[^>]*>Contul tău Ventora Systems<\/p>/);
     expect(r.html).toMatch(/<h1 [^>]*>Parola contului tău a fost schimbată<\/h1>/);
     expect(r.text).toContain(
       'Parola contului ana@x.ro a fost schimbată pe 28 octombrie 2026, la 14:05 EET. Te-am scos din cont pe toate dispozitivele.',
@@ -167,7 +168,7 @@ describe('R-PR7 — password changed (S78, approved copy)', () => {
       'Nu ai fost tu? Alege imediat o parolă nouă din „Ai uitat parola?” și scrie-ne la support@ventorasystems.com.',
     );
     expect(r.text).toContain(
-      'Primești acest e-mail pentru că parola contului tău Ventora s-a schimbat. E un e-mail de securitate: îl trimitem la fiecare schimbare de parolă și nu se poate opri.',
+      'Primești acest e-mail pentru că parola contului tău Ventora Systems s-a schimbat. E un e-mail de securitate: îl trimitem la fiecare schimbare de parolă și nu se poate opri.',
     );
     expect(r.text).not.toContain('Bună,');
   });
@@ -217,12 +218,12 @@ describe('E-6 — support session opened (S99)', () => {
     expectComplete(r);
     expect(r.text).toContain('Sesiunea se închide automat pe 28 octombrie 2026, la 18:30 EET.');
     expect(r.text).toContain(
-      'Bianca Ventora din echipa Ventora a deschis o sesiune de suport pentru Salon Aurora, pentru cererea SUP-2026-001.\n\nMotivul: Clientul nu vede programările de ieri\n\nÎn timpul sesiunii',
+      'Bianca Ventora din echipa Ventora Systems a deschis o sesiune de suport pentru Salon Aurora, pentru cererea SUP-2026-001.\n\nMotivul: Clientul nu vede programările de ieri\n\nÎn timpul sesiunii',
     );
     expect(r.text).toContain(
-      'Primești acest e-mail pentru că ești proprietarul afacerii Salon Aurora în Ventora.',
+      'Primești acest e-mail pentru că ești proprietarul afacerii Salon Aurora în Ventora Systems.',
     );
-    expect(r.text).not.toContain('e folosită pentru un cont Ventora');
+    expect(r.text).not.toContain('e folosită pentru un cont Ventora Systems');
   });
 
   it('summer time shows EEST', () => {
@@ -240,20 +241,20 @@ describe('Header logo (S99)', () => {
   const render = () =>
     renderPasswordReset({ app: 'hub', email: 'a@x.ro', link: 'https://l/1' }).html;
 
-  it('with NEXT_PUBLIC_PLATFORM_URL: the hosted 2x PNG at 160×44, alt "Ventora"', () => {
+  it('with NEXT_PUBLIC_PLATFORM_URL: the hosted 2x PNG at 268×44, alt "Ventora Systems"', () => {
     process.env.NEXT_PUBLIC_PLATFORM_URL = 'https://app.ventora-hub.com/';
     const html = render();
     expect(html).toContain(
-      '<img src="https://app.ventora-hub.com/email/ventora-logo-email-2x.png" width="160" height="44" alt="Ventora"',
+      '<img src="https://app.ventora-hub.com/email/ventora-logo-email-2x.png" width="268" height="44" alt="Ventora Systems"',
     );
-    expect(html).toContain('width:160px;height:44px');
-    expect(html).not.toContain('>Ventora</span>');
+    expect(html).toContain('width:268px;height:44px');
+    expect(html).not.toContain('>Ventora Systems</span>');
   });
 
   it('without it (local, tests): the wordmark, as before, no image', () => {
     delete process.env.NEXT_PUBLIC_PLATFORM_URL;
     const html = render();
-    expect(html).toContain('>Ventora</span>');
+    expect(html).toContain('>Ventora Systems</span>');
     expect(html).not.toContain('<img');
     process.env.NEXT_PUBLIC_PLATFORM_URL = '  ';
     expect(render()).not.toContain('<img');
@@ -273,14 +274,14 @@ describe('N.3 — invitations (E-3, E-3b, E-4)', () => {
       link: 'https://app/invite/t',
     });
     expectComplete(r);
-    expect(r.subject).toBe('Bianca Petrașcu te-a invitat în Salon Aurora pe Ventora');
+    expect(r.subject).toBe('Bianca Petrașcu te-a invitat în Salon Aurora pe Ventora Systems');
     expect(r.text).toContain(
-      'Bianca Petrașcu te-a invitat în echipa Salon Aurora pe Ventora, ca administrator.',
+      'Bianca Petrașcu te-a invitat în echipa Salon Aurora pe Ventora Systems, ca administrator.',
     );
     expect(r.text).toContain('Invitația e valabilă 7 zile, până pe 4 noiembrie 2026.');
     expect(r.text).toContain('Nu te așteptai la această invitație?');
     expect(r.text).not.toContain('Ăsta e un link nou');
-    expect(r.text).toContain('cineva a invitat adresa ion@x.ro în Ventora');
+    expect(r.text).toContain('cineva a invitat adresa ion@x.ro în Ventora Systems');
   });
 
   it('resent invitation adds the new-link line', () => {
@@ -305,7 +306,7 @@ describe('N.3 — invitations (E-3, E-3b, E-4)', () => {
       link: 'https://app/invite/o',
     });
     expectComplete(r);
-    expect(r.subject).toBe('Salon Aurora e gata pe Ventora');
+    expect(r.subject).toBe('Salon Aurora e gata pe Ventora Systems');
     expect(r.text).toContain('Intră în Salon Aurora: https://app/invite/o');
     // S55: the owner's invitation from Founder lasts 30 days
     expect(r.text).toContain('Linkul e valabil 30 de zile, până pe 4 noiembrie 2026.');

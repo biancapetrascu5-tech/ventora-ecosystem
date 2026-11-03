@@ -1,7 +1,7 @@
 /* eslint-disable i18next/no-literal-string -- datele de exemplu din preview.html (Launcher) */
 'use client';
 // Launcher din preview-urile ecranelor Hub (HubSupportSession, HubTwoFactorVerify · R-2F10):
-// AppShell cu bara Hub, salutul, „Aplicațiile tale” și „Alte aplicații Ventora”.
+// AppShell cu bara Hub, salutul, „Aplicațiile tale” și „Alte aplicații Ventora Systems”.
 import {
   AppShell,
   AppTile,
@@ -91,7 +91,7 @@ export function DemoLauncher() {
             </div>
           </section>
           <section>
-            <h2 className={`display-m ${l.sec}`}>Alte aplicații Ventora</h2>
+            <h2 className={`display-m ${l.sec}`}>Alte aplicații Ventora Systems</h2>
             <p className={`body-small muted ${l.intro}`}>
               Nu le poți deschide acum. La fiecare scrie de ce și ce poți face.
             </p>
@@ -127,7 +127,7 @@ export function DemoLauncher() {
             </div>
             <div className={l.more}>
               <Button variant="quiet" icon="layout-grid" iconEnd="arrow-right">
-                Vezi toate aplicațiile Ventora
+                Vezi toate aplicațiile Ventora Systems
               </Button>
             </div>
           </section>

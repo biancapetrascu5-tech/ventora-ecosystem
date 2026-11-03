@@ -27,6 +27,7 @@
     "founder.business.log.suspended": "Afacere suspendată",
     "founder.business.log.reactivated": "Afacere reactivată",
     "founder.business.log.by": "{event} ({name})",
-    "founder.newBusiness.error.create": "Nu am putut crea afacerea. Încearcă din nou."
+    "founder.newBusiness.error.create": "Nu am putut crea afacerea. Încearcă din nou.",
+    "founder.business.suspended.noticeNoName": "Suspendată pe {date}. Membrii nu se pot conecta până reactivezi afacerea."
   }
 }
