@@ -6,6 +6,7 @@ import { closeAuditPools } from '@ventora/audit';
 import { founderAuth } from '@ventora/identity';
 import {
   APPLICATIONS,
+  activatePurchasedApplication,
   addApplicationToSubscription,
   assignSubscription,
   closeCommercialPools,
@@ -914,13 +915,21 @@ describe('Lot 3.4 — D3-24 / D3-25: the included seats, applications à la cart
       expiresAt: new Date(Date.now() + 30 * DAY),
     });
     expect((await getEffectiveEntitlements(org)).quotas['messaging.sms']).toBe(2000);
-    // an unlimited application limit makes the key unlimited
+    // an unlimited application limit makes the key unlimited — on a line created with it; the
+    // line above keeps the limits it was created with (D3-26, Lot 3.5b)
     await setApplicationQuotas({
       founderHeaders: founderHeaders(),
       applicationId: 'crm',
       quotas: { 'booking.appointments': null },
     });
-    expect((await getEffectiveEntitlements(org)).quotas['booking.appointments']).toBeNull();
+    const later = await business(versionId);
+    await addApplicationToSubscription({
+      founderHeaders: founderHeaders(),
+      organizationId: later,
+      applicationId: 'crm',
+    });
+    expect((await getEffectiveEntitlements(later)).quotas['booking.appointments']).toBeNull();
+    expect((await getEffectiveEntitlements(org)).quotas['booking.appointments']).toBe(1000);
     await setApplicationQuotas({
       founderHeaders: founderHeaders(),
       applicationId: 'crm',
@@ -1133,5 +1142,206 @@ describe('Lot 3.4 — S117: add-ons „Disponibil pentru”, the catalog of bund
     expect(booking).toMatchObject({ active: true, monthMinor: 14900, setupMinor: 30000 });
     expect(c.applications.find((a) => a.id === 'crm')!.active).toBe(true);
     expect(c.applications.find((a) => a.id === 'hr')!.active).toBe(false);
+  });
+});
+
+// ── D3-26 (Lot 3.5b): the limits of an application line, fixed at its creation ───────────────
+
+describe('Lot 3.5b — D3-26: an application line keeps the limits it was created with', () => {
+  const sms = async (org: string) => (await getEffectiveEntitlements(org)).quotas['messaging.sms'];
+  const crmQuotas = (limit: number) =>
+    setApplicationQuotas({
+      founderHeaders: founderHeaders(),
+      applicationId: 'crm',
+      quotas: { 'messaging.sms': limit },
+    });
+
+  /** A transaction as one module role, in one business's context; always rolled back. */
+  async function asRole(
+    url: string | undefined,
+    role: 'commercial_rw' | 'commercial_founder',
+    organizationId: string,
+    fn: (c: PoolClient) => Promise<void>,
+  ): Promise<void> {
+    const pool = new Pool({ connectionString: url, max: 1 });
+    const client = await pool.connect();
+    try {
+      await client.query('BEGIN');
+      await client.query(`SET LOCAL ROLE ${role}`);
+      await client.query(`SELECT set_config('app.organization_id', $1, true)`, [organizationId]);
+      await fn(client);
+    } finally {
+      await client.query('ROLLBACK').catch(() => {});
+      client.release();
+      await pool.end();
+    }
+  }
+
+  /** The request path: the line written as commercial_founder (source `request`), on founder_runtime. */
+  async function requestLine(organizationId: string): Promise<string> {
+    const pool = new Pool({ connectionString: process.env.DATABASE_URL_FOUNDER, max: 1 });
+    const client = await pool.connect();
+    try {
+      await client.query('BEGIN');
+      await client.query('SET LOCAL ROLE commercial_founder');
+      await client.query(`SELECT set_config('app.organization_id', $1, true)`, [organizationId]);
+      const [sub] = (
+        await client.query(`SELECT id FROM commercial.subscription WHERE canceled_at IS NULL`)
+      ).rows;
+      const { rows } = await client.query(
+        `INSERT INTO commercial.subscription_application
+           (organization_id, subscription_id, application_id, currency, interval, amount_minor,
+            source, created_by_founder_id)
+         VALUES ($1, $2, 'crm', 'RON', 'month', 6900, 'request', $3) RETURNING id`,
+        [organizationId, sub.id, founderId],
+      );
+      await client.query('COMMIT');
+      return rows[0].id;
+    } finally {
+      client.release();
+      await pool.end();
+    }
+  }
+
+  beforeAll(async () => {
+    await setApplicationPrices({
+      founderHeaders: founderHeaders(),
+      applicationId: 'crm',
+      prices: [
+        { currency: 'RON', kind: 'month', amountMinor: 6900 },
+        { currency: 'EUR', kind: 'month', amountMinor: 1400 },
+      ],
+    });
+  });
+
+  it('every way a line is created copies the limits of that day; a later change in Founder, down or up, does not reach it', async () => {
+    await crmQuotas(300);
+    const { versionId } = await plan(); // the bundle: 1.000 SMS
+    // 1. Founder adds the line (also after a request is resolved)
+    const a = await business(versionId);
+    const { lineId: la } = await addApplicationToSubscription({
+      founderHeaders: founderHeaders(),
+      organizationId: a,
+      applicationId: 'crm',
+    });
+    // 2. bought from the Hub (core/billing, Lot 3.5), as commercial_rw on app_runtime
+    const b = await business(versionId);
+    const { lineId: lb } = await activatePurchasedApplication({
+      organizationId: b,
+      purchaseId: newUuid(),
+      applicationId: 'crm',
+      currency: 'RON',
+      interval: 'month',
+      amountMinor: 6900,
+    });
+    // 3. a line from a request (source `request`)
+    const c = await business(versionId);
+    const lc = await requestLine(c);
+
+    for (const org of [a, b, c]) expect(await sms(org)).toBe(1300);
+    const snap = await q(
+      `SELECT subscription_application_id AS line, quota_key, limit_value
+         FROM commercial.subscription_application_quota
+        WHERE subscription_application_id = ANY($1::uuid[]) ORDER BY 1`,
+      [[la, lb, lc]],
+    );
+    expect(snap).toEqual(
+      [la, lb, lc].sort().map((line) => ({ line, quota_key: 'messaging.sms', limit_value: '300' })),
+    );
+
+    // Founder lowers the limit, then raises it: the existing lines keep theirs (D3-26)
+    await crmQuotas(50);
+    for (const org of [a, b, c]) expect(await sms(org)).toBe(1300);
+    await crmQuotas(900);
+    for (const org of [a, b, c]) expect(await sms(org)).toBe(1300);
+    // a line created afterwards gets the new one
+    const d = await business(versionId);
+    await addApplicationToSubscription({
+      founderHeaders: founderHeaders(),
+      organizationId: d,
+      applicationId: 'crm',
+    });
+    expect(await sms(d)).toBe(1900);
+  });
+
+  it('on trial (no line, no contract yet) the limits are read as they are now', async () => {
+    await crmQuotas(200);
+    const { versionId } = await plan();
+    const org = await business(versionId);
+    await q(
+      `INSERT INTO commercial.trial (organization_id, kind, application_id, source, started_by, ends_at)
+       VALUES ($1, 'application', 'crm', 'founder', $2, now() + interval '14 days')`,
+      [org, founderId],
+    );
+    expect(await sms(org)).toBe(1200);
+    await crmQuotas(400);
+    expect(await sms(org)).toBe(1400);
+    expect(
+      await q(
+        `SELECT 1 FROM commercial.subscription_application_quota WHERE organization_id = $1`,
+        [org],
+      ),
+    ).toEqual([]);
+  });
+
+  it('fixed in the database: no UPDATE, no writes for the module roles; one business sees only its own', async () => {
+    await crmQuotas(300);
+    const { versionId } = await plan();
+    const a = await business(versionId);
+    const b = await business(versionId);
+    const { lineId } = await addApplicationToSubscription({
+      founderHeaders: founderHeaders(),
+      organizationId: a,
+      applicationId: 'crm',
+    });
+    await expect(
+      q(
+        `UPDATE commercial.subscription_application_quota SET limit_value = 5000
+          WHERE subscription_application_id = $1`,
+        [lineId],
+      ),
+    ).rejects.toThrow(/fixed at its creation/);
+
+    const count = async (c: PoolClient) =>
+      Number(
+        (
+          await c.query(
+            `SELECT count(*) AS n FROM commercial.subscription_application_quota
+              WHERE subscription_application_id = $1`,
+            [lineId],
+          )
+        ).rows[0].n,
+      );
+    // its own business sees the line's limits; another business sees nothing (T1/T2)
+    await asRole(process.env.DATABASE_URL, 'commercial_rw', a, async (c) => {
+      expect(await count(c)).toBe(1);
+    });
+    await asRole(process.env.DATABASE_URL, 'commercial_rw', b, async (c) => {
+      expect(await count(c)).toBe(0);
+    });
+    await asRole(process.env.DATABASE_URL_FOUNDER, 'commercial_founder', a, async (c) => {
+      expect(await count(c)).toBe(1);
+    });
+    // neither module role writes the snapshot itself: only the trigger does, at creation
+    for (const [url, role] of [
+      [process.env.DATABASE_URL, 'commercial_rw'],
+      [process.env.DATABASE_URL_FOUNDER, 'commercial_founder'],
+    ] as const) {
+      await asRole(url, role, a, async (c) => {
+        await expect(
+          c.query(
+            `INSERT INTO commercial.subscription_application_quota
+               (subscription_application_id, organization_id, quota_key, limit_value)
+             VALUES ($1, $2, 'messaging.sms', 1)`,
+            [lineId, a],
+          ),
+        ).rejects.toThrow(/permission denied/);
+      });
+      await asRole(url, role, a, async (c) => {
+        await expect(
+          c.query(`UPDATE commercial.subscription_application_quota SET limit_value = 1`),
+        ).rejects.toThrow(/permission denied/);
+      });
+    }
   });
 });

@@ -1,6 +1,6 @@
 # FAZA 3 — Sistemul comercial
 
-**Status:** APROBAT (fondatoarea, 30.10.2026). Deciziile D3-2–D3-9 și D3-11 trecute în §5 la 31.10.2026; seara, D3-10, D3-11 (termenul), D3-12, D3-13, D3-15–D3-19 și **D3-24 (modelul comercial: aplicații la bucată + bundle-uri)**, la Lotul 3.4; la 01.11.2026, **D3-25** (locurile incluse, fotografiate pe abonament) și precizările D3-24 (implementarea, Lotul 3.4 / 3.5).
+**Status:** APROBAT (fondatoarea, 30.10.2026). Deciziile D3-2–D3-9 și D3-11 trecute în §5 la 31.10.2026; seara, D3-10, D3-11 (termenul), D3-12, D3-13, D3-15–D3-19 și **D3-24 (modelul comercial: aplicații la bucată + bundle-uri)**, la Lotul 3.4; la 01.11.2026, **D3-25** (locurile incluse, fotografiate pe abonament) și precizările D3-24 (implementarea, Lotul 3.4 / 3.5); tot la 01.11.2026, **D3-26** (limitele aplicațiilor la bucată, fotografiate pe linie, Lotul 3.5b); 01–03.11.2026, deciziile pe raportul 3.5 (pachetele din Founder, disputele, setările Stripe).
 **Referințe:** `ARCHITECTURE.md` v0.4.6 (§4, §7.2, §8, §13.2, §14, §15, §16, §17.1, §17.23), `GROWTH_ENGINE.md`, `VENTORA_MASTER_BRIEF.md` (§12–14, §43), `docs/design/system` (ecranele comerciale, `glossary.md`, `patterns.md`)
 **Depinde de:** Faza 2 (identitate și acces), închisă, inclusiv Lotul 2.8 (shell-ul Hub și Founder, §3). Faza 1 (design system) e închisă.
 **Acceptare globală (ARCHITECTURE §15.1):** T5 verde; o limită se schimbă din Founder fără deploy; plata duce la factură; fiecare acțiune comercială din Founder e auditată.
@@ -315,6 +315,27 @@ Lotul ține de Faza 2 și se face **înaintea Fazei 3**. Stă aici pentru că lo
 - Notificările produse în 3.5: `payment.pack`, `payment.renewal`, `payment.retry`. `payment.lastRetry` (cu grația de 14 zile, D3-12) rămâne la 3.8.
 - Ecranele care montează cumpărarea (StripeSlot cu Stripe Elements, AddonPurchase) sunt în 3.7. În 3.5 sunt contractele, acțiunile din Hub și Stripe.js.
 
+**Decizii pe raportul 3.5 (fondatoarea, 01–03.11.2026, DECIS):**
+
+- **Pachetele acordate din Founder** (`grantAddon`) rămân gratuite și nu intră în Stripe. O cerere plătită trece prin fluxul cererilor (Lotul 3.8).
+- **Disputele (chargeback):** alertă pe e-mail din Lotul 3.6, pe adresa din variabila `FOUNDER_ALERTS_EMAIL` (pe staging: `support@ventorasystems.com`, pusă de fondatoare în `.env.local`). Lista disputelor în Founder vine mai târziu, cu design.
+- **Setările contului Stripe** (le face fondatoarea în dashboard): 3 încercări în total (program custom, 2 reîncercări); după ultima, „Leave the subscription past-due” (grația de 14 zile e a Ventora, D3-12, Lotul 3.8); e-mailurile Stripe către clienți oprite (factura legală e SmartBill, 3.6); webhook-ul de staging la 3.9.
+
+### Lot 3.5b — Limitele aplicațiilor la bucată, fotografiate pe linie (D3-26)
+
+**Scop:** limitele incluse ale unei aplicații adăugate la abonament se copiază pe linie la creare și nu se mai schimbă singure (D3-26, ca D3-25 și ca prețul liniei).
+
+**Ce intră:**
+
+- Tabelul `commercial.subscription_application_quota` (linia, cheia, limita), cu RLS. `commercial_rw` și `commercial_founder` îl citesc; scrierea o face doar trigger-ul de creare (SECURITY DEFINER), la orice cale: Founder adaugă linia, cererea rezolvată, cumpărarea din Hub (3.5).
+- Liniile existente primesc la migrare valorile de azi din `application_quota`.
+- Dreptul efectiv citește limitele de pe linie. O aplicație doar în perioada de probă își citește limitele la zi (nu e încă un contract).
+- Un trigger refuză modificarea limitelor fotografiate.
+- **Follow-up, nu în acest lot:** o îmbunătățire a limitelor pentru clienții existenți devine o acțiune explicită din Founder, cu design și cu regula de 30 de zile pentru dezavantaj (P19).
+
+**Migrare:** `commercial_app_quota_snapshot`.
+**Dependențe:** 3.4, 3.5.
+
 **Ce intră:**
 
 - Pachetul nou `core/billing`, cu schema `billing` și rolul `billing_rw`.
@@ -377,6 +398,7 @@ Lotul ține de Faza 2 și se face **înaintea Fazei 3**. Stă aici pentru că lo
 - **Plata manuală:** factura se emite la crearea abonamentului sau a perioadei, iar Founder confirmă încasarea (§8.6, după D3-11).
 - **Stornarea**, la rambursarea făcută de Founder (după D3-10).
 - **La eșec:** SmartBill indisponibil sau răspuns de eroare → factura rămâne `pending`, cu reîncercare și cu alertă în Founder; pachetul rămâne activ (plata a reușit). Starea din Hub pentru acest caz e C-F3-9.
+- **Alerta de dispută** (decizia pe raportul 3.5, 01–03.11.2026): consumatorul evenimentului `billing.dispute.opened` trimite un e-mail pe adresa din `FOUNDER_ALERTS_EMAIL`.
 - E-mailul „Ți-am trimis factura și pe e-mail” trece prin `core/notifications`, cu șablonul cerut de la F4 sau adăugat în F3 (după §3.10).
 - Lista facturilor din Hub („Descarcă PDF”) se servește printr-un link semnat, nu printr-un link SmartBill public.
 - Variabilele `SMARTBILL_USER`, `SMARTBILL_TOKEN`, `SMARTBILL_CIF`, `SMARTBILL_SERIES`, doar în `.env.local` și în Vercel.
@@ -411,7 +433,7 @@ Lotul ține de Faza 2 și se face **înaintea Fazei 3**. Stă aici pentru că lo
 - „De la 1 noiembrie, pornim de la zero” devine data reală de resetare a abonamentului (D3-3). Alegerea lunar / anual din HubAdminPlan și UpgradeDialog cere completarea de design (D3-3).
 - Membrul vede „Anunță proprietarul” și nu poate cumpăra (verificat pe server, nu doar în interfață; D3-8: doar owner-ul).
 
-**Dependențe:** 3.2, 3.3, 3.5, 3.6. Lotul 2.8 (shell-ul Hub). Textele „Angajați” din HubAdminPlan și UsageMeter schimbate de Design în „Membri” / „Locuri în echipă” (C-F3-3, DECIS: a).
+**Dependențe:** 3.2, 3.3, 3.5, **3.5b** (limitele afișate ale aplicațiilor la bucată sunt cele de pe linie, D3-26), 3.6. Lotul 2.8 (shell-ul Hub). Textele „Angajați” din HubAdminPlan și UsageMeter schimbate de Design în „Membri” / „Locuri în echipă” (C-F3-3, DECIS: a).
 **Migrări probabile:** —
 **Ecrane:** HubAdminPlan, HubAddonPurchase, UsageMeter, AddonPurchase, UpgradeDialog (doar pachetul).
 **Gata când:**
@@ -611,6 +633,7 @@ Prețurile nu se inventează. Toate valorile se introduc din Founder; codul nu a
 | D3-23 | 3.8 (flux), 3.4 / 3.7 (ecrane) | **Fluxul costului de implementare** | — | **DECIS** (fondatoarea, 31.10.2026); **înlocuit de D3-24** (01.11.2026: „direct / la cerere” liber, pe „direct” implementarea se plătește la activare, cu cardul) — pentru aplicații din Lotul 3.4, pentru pachete din Lotul 3.5:<br>• ~~aplicațiile și pachetele cu cost de implementare stau „la cerere”~~ (pe pachete, scoasă în Lotul 3.5 prin migrarea `commercial_addon_setup_direct`);<br>• owner-ul vede costul înainte („Implementare: 150 lei, o singură dată”) și îl acceptă odată cu cererea;<br>• costul se încasează după acceptarea clientului și confirmarea echipei, **înainte** de începerea lucrului: cu cardul salvat sau prin transfer, pentru plata manuală;<br>• abonamentul lunar al aplicației începe din ziua în care aplicația e configurată și pornită, nu din ziua cererii;<br>• rambursarea e integrală doar dacă cererea se anulează înainte să înceapă lucrul (stornare);<br>• pe factură apare o linie separată „Implementare {aplicație} · o singură dată”; reducerile (D3-21), inclusiv 100%, se pot aplica și pe ea.<br>Detalii: Lotul 3.8; ecranele în 3.4 și 3.7. Întrebări juridice și contabile: §6. |
 | D3-24 | 3.4 (model), 3.4–3.8 (ecrane, Stripe, facturi) | **Modelul comercial: aplicații la bucată și bundle-uri** (31.10.2026) | — | **DECIS** (fondatoarea, 31.10.2026):<br>1. **Aplicații la bucată:** fiecare aplicație are cost de implementare (o dată) și mentenanță (lunar sau anual, prețul anual introdus direct), în lei și în euro, și **limitele ei incluse** (de ex. EasyBook aduce 1.000 `booking.appointments` pe lună). Comutatorul „direct / la cerere” se alege liber pentru fiecare aplicație, indiferent de implementare; pe „direct”, implementarea se plătește la activare, cu cardul (fondatoarea, 01.11.2026, după S117 / FounderApps 1.1.0: **înlocuiește D3-23 pentru aplicații**; migrarea `commercial_app_setup_direct` scoate trigger-ul D3-23 de pe aplicații).<br>2. **„Abonamentul” (planul cu versiuni) devine „Bundle”:** mai multe aplicații la un preț mai bun, cu limite și locuri în echipă incluse. Bundle-ul are o perioadă de vânzare (disponibil de la / până la) și „Oprește vânzarea”; ofertele se schimbă lună de lună. Cine a cumpărat un bundle îl păstrează la versiunea și prețul lui (versiunile rămân imuabile; regula de 30 de zile rămâne).<br>3. O afacere poate avea un bundle, aplicații la bucată, sau ambele: abonamentul afacerii nu mai cere un bundle.<br>4. **Locuri în echipă:** un număr inclus în orice abonament nou (setabil global din Founder, implicit 3), fotografiat pe abonament la creare (D3-25), plus cele din bundle, plus pachetele.<br>5. **Dreptul efectiv** (`getEffectiveEntitlements`) = locurile incluse în cont + versiunea bundle-ului (dacă există) + limitele aplicațiilor la bucată + pachete + excepții (excepția de limită înlocuiește suma; pachetele se adaugă peste, D3-22).<br>În cod: tabelele rămân `plan` / `plan_version` (redenumirea e în texte și în contractele noi); migrarea `commercial_bundles` (Lotul 3.4). Ecranele de bundle (FounderPlans / FounderPlanEditor redenumite) și FounderNewBusiness se fac după designul S117. |
 | D3-25 | 3.4 | **Locurile în echipă incluse, fotografiate pe abonament** (01.11.2026) | — | **DECIS** (fondatoarea, 01.11.2026):<br>• fiecare abonament primește la creare valoarea curentă a locurilor incluse (setarea `included_members`) și o păstrează, ca prețul și limitele versiunii de bundle;<br>• schimbarea ulterioară a setării se aplică doar abonamentelor noi;<br>• abonamentele existente își păstrează ce aveau înainte de Lotul 3.4, adică 0 locuri incluse; nu primesc automat 3;<br>• argumentul: un contract semnat pe N utilizatori nu se modifică automat.<br>În cod: coloana `subscription.included_members` (implicit 0), completată la creare de trigger-ul `subscription_included_members` și imuabilă după aceea (migrarea `commercial_bundles`). Fără abonament, dreptul efectiv nu include locuri; catalogul arată ce ar primi un abonament nou. |
+| D3-26 | 3.5b | **Limitele aplicațiilor la bucată, fotografiate pe linie** (01.11.2026) | — | **DECIS** (fondatoarea, 01.11.2026):<br>• ca la D3-25 (locurile incluse) și ca prețul liniei, limitele incluse ale unei aplicații adăugate la abonament se copiază pe linie la creare și nu se mai schimbă singure;<br>• motivul: un contract semnat nu se modifică automat, nici în sus, nici în jos;<br>• liniile existente păstrează valorile de la data migrării; o aplicație doar în perioada de probă își citește limitele la zi (nu e încă un contract);<br>• o îmbunătățire pentru clienții existenți se face doar printr-o acțiune explicită din Founder, cu design (follow-up, după 3.5b).<br>În cod: tabelul `subscription_application_quota`, scris doar de trigger-ul de creare a liniei (SECURITY DEFINER) și imuabil (migrarea `commercial_app_quota_snapshot`, Lotul 3.5b). |
 
 ---
 
