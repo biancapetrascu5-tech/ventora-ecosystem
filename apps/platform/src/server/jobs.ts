@@ -37,6 +37,8 @@ import { safeErrorForSentry } from './report-error';
 const OUTBOX_SOURCES: readonly OutboxSource[] = [
   { schema: 'organizations', moduleRole: 'org_rw' },
   { schema: 'commercial', moduleRole: 'commercial_rw' },
+  // Lot 4.7: file.uploaded / file.deleted (fără consumator încă: se marchează livrate)
+  { schema: 'files', moduleRole: 'files_rw' },
   // Lot 3.5: plățile (billing.payment.succeeded / failed, billing.dispute.opened)
   { schema: 'billing', moduleRole: 'billing_rw' },
 ];

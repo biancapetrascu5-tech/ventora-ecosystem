@@ -1,0 +1,65 @@
+// Schema "files" (Lot 4.7) — folosită pentru garda de drift (prisma migrate diff) și
+// prisma migrate deploy. Codul nu folosește un client Prisma generat (ca în core/notifications):
+// rulează pe pg, cu SET LOCAL ROLE files_rw.
+// CHECK-urile, rolul, grant-urile, RLS și funcțiile outbox-ului sunt doar în migrare.
+
+datasource db {
+  provider = "postgresql"
+  schemas  = ["files"]
+}
+
+/// Un fișier al unei organizații. Conținutul stă în stocare (D4-16), la `storage_key`.
+model File {
+  id                String    @id @db.Uuid
+  organizationId    String    @map("organization_id") @db.Uuid
+  ownerModule       String    @map("owner_module") @db.VarChar(64)
+  ownerResourceType String    @map("owner_resource_type") @db.VarChar(64)
+  ownerResourceId   String    @map("owner_resource_id") @db.VarChar(255)
+  name              String    @db.VarChar(255)
+  contentType       String    @map("content_type") @db.VarChar(64)
+  sizeBytes         BigInt    @map("size_bytes")
+  storageKey        String    @unique(map: "file_storage_key_key") @map("storage_key") @db.VarChar(512)
+  status            String    @default("pending") @db.VarChar(16)
+  uploadedByUserId  String    @map("uploaded_by_user_id") @db.Uuid
+  uploadExpiresAt   DateTime  @map("upload_expires_at") @db.Timestamptz
+  readyAt           DateTime? @map("ready_at") @db.Timestamptz
+  deletedAt         DateTime? @map("deleted_at") @db.Timestamptz
+  createdAt         DateTime  @default(now()) @map("created_at") @db.Timestamptz
+
+  @@index([organizationId, ownerModule, ownerResourceType, ownerResourceId], map: "file_organization_id_owner_idx")
+  @@map("file")
+  @@schema("files")
+}
+
+model OutboxEvent {
+  eventId        String    @id @map("event_id") @db.Uuid
+  type           String    @db.VarChar(128)
+  version        Int
+  occurredAt     DateTime  @map("occurred_at") @db.Timestamptz
+  organizationId String    @map("organization_id") @db.Uuid
+  sourceApp      String    @map("source_app") @db.VarChar(64)
+  resourceId     String    @map("resource_id") @db.VarChar(255)
+  correlationId  String?   @map("correlation_id") @db.VarChar(255)
+  payload        Json
+  status         String    @default("pending") @db.VarChar(16)
+  attempts       Int       @default(0)
+  availableAt    DateTime  @default(now()) @map("available_at") @db.Timestamptz
+  lastError      String?   @map("last_error")
+  failedAt       DateTime? @map("failed_at") @db.Timestamptz
+  dispatchedAt   DateTime? @map("dispatched_at") @db.Timestamptz
+  createdAt      DateTime  @default(now()) @map("created_at") @db.Timestamptz
+
+  @@map("outbox_events")
+  @@schema("files")
+}
+
+model ProcessedEvent {
+  consumer       String   @db.VarChar(128)
+  eventId        String   @map("event_id") @db.Uuid
+  organizationId String   @map("organization_id") @db.Uuid
+  processedAt    DateTime @default(now()) @map("processed_at") @db.Timestamptz
+
+  @@id([consumer, eventId])
+  @@map("processed_events")
+  @@schema("files")
+}
