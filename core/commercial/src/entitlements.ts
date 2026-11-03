@@ -150,19 +150,26 @@ export async function computeEntitlements(
 
   const applications = new Set(terms.applications);
   const features = new Set(terms.features);
-  /** The applications à la carte whose included limits count (D3-24). */
-  const alaCarte = new Set<string>();
+  /**
+   * The applications à la carte whose included limits count (D3-24): a line's own limits,
+   * fixed when it was created (D3-26), or — only on trial, no contract yet — today's.
+   */
+  const alaCarteLines = new Map<string, string>();
+  const alaCarteTrials = new Set<string>();
 
   // Applications added to the subscription (D3-9, D3-24): recurring lines, with their limits
   if (sub && included) {
-    const lines = await client.query<{ application_id: string }>(
-      `SELECT application_id FROM commercial.subscription_application
-        WHERE subscription_id = $1 AND ended_at IS NULL AND starts_at <= COALESCE($2::timestamptz, now())`,
+    const lines = await client.query<{ id: string; application_id: string }>(
+      `SELECT id, application_id FROM commercial.subscription_application
+        WHERE subscription_id = $1 AND ended_at IS NULL AND starts_at <= COALESCE($2::timestamptz, now())
+        ORDER BY created_at, id`,
       [sub.id, at],
     );
     for (const l of lines.rows) {
       applications.add(l.application_id);
-      if (!terms.applications.includes(l.application_id)) alaCarte.add(l.application_id);
+      if (!terms.applications.includes(l.application_id) && !alaCarteLines.has(l.application_id)) {
+        alaCarteLines.set(l.application_id, l.id);
+      }
     }
   }
 
@@ -176,25 +183,34 @@ export async function computeEntitlements(
   );
   for (const t of trials.rows) {
     if (t.kind === 'application') {
-      if (!applications.has(t.application_id)) alaCarte.add(t.application_id);
+      if (!applications.has(t.application_id)) alaCarteTrials.add(t.application_id);
       applications.add(t.application_id);
     } else features.add(t.feature_key);
   }
 
-  // D3-24: the limits each application à la carte includes (null = unlimited)
+  // D3-24: the limits each application à la carte includes (null = unlimited) — D3-26: a line's
+  // are the ones copied at its creation; a later change in Founder does not reach it
   const appQuotas = new Map<string, Array<number | null>>();
-  if (alaCarte.size > 0) {
+  const addAppQuota = (r: { quota_key: string; limit_value: string | null }) =>
+    appQuotas.set(r.quota_key, [
+      ...(appQuotas.get(r.quota_key) ?? []),
+      bigintOrNull(r.limit_value),
+    ]);
+  if (alaCarteLines.size > 0) {
+    const { rows } = await client.query<{ quota_key: string; limit_value: string | null }>(
+      `SELECT quota_key, limit_value FROM commercial.subscription_application_quota
+        WHERE subscription_application_id = ANY($1::uuid[])`,
+      [[...alaCarteLines.values()]],
+    );
+    rows.forEach(addAppQuota);
+  }
+  if (alaCarteTrials.size > 0) {
     const { rows } = await client.query<{ quota_key: string; limit_value: string | null }>(
       `SELECT quota_key, limit_value FROM commercial.application_quota
         WHERE application_id = ANY($1::text[])`,
-      [[...alaCarte]],
+      [[...alaCarteTrials]],
     );
-    for (const r of rows) {
-      appQuotas.set(r.quota_key, [
-        ...(appQuotas.get(r.quota_key) ?? []),
-        bigintOrNull(r.limit_value),
-      ]);
-    }
+    rows.forEach(addAppQuota);
   }
   const includedMembers = await subscriptionIncludedMembersInTx(client, sub);
 

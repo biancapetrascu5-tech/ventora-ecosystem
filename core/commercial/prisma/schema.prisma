@@ -71,6 +71,7 @@ model QuotaKey {
   overrides     Override[]
   counters      UsageCounter[]
   reservations  QuotaReservation[]
+  lineQuotas    SubscriptionApplicationQuota[]
 
   @@index([applicationId], map: "quota_key_application_id_idx")
   @@map("quota_key")
@@ -347,6 +348,7 @@ model SubscriptionApplication {
   application        Application  @relation(fields: [applicationId], references: [id])
 
   discounts Discount[]
+  quotas    SubscriptionApplicationQuota[]
 
   @@index([organizationId], map: "subscription_application_organization_id_idx")
   @@map("subscription_application")
@@ -569,5 +571,24 @@ model Setting {
   updatedAt          DateTime @default(now()) @map("updated_at") @db.Timestamptz
 
   @@map("setting")
+  @@schema("commercial")
+}
+
+// ── Lot 3.5b · commercial_app_quota_snapshot (D3-26) ─────────────────────────────────────────
+
+/// Limitele unei linii (aplicație la bucată), copiate din application_quota la crearea liniei
+/// (trigger SECURITY DEFINER) și imuabile: o schimbare din Founder nu mai atinge liniile existente.
+model SubscriptionApplicationQuota {
+  subscriptionApplicationId String                  @map("subscription_application_id") @db.Uuid
+  organizationId            String                  @map("organization_id") @db.Uuid
+  quotaKey                  String                  @map("quota_key") @db.VarChar(128)
+  limitValue                BigInt?                 @map("limit_value")
+  createdAt                 DateTime                @default(now()) @map("created_at") @db.Timestamptz
+  line                      SubscriptionApplication @relation(fields: [subscriptionApplicationId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  quota                     QuotaKey                @relation(fields: [quotaKey], references: [key], onDelete: Restrict, onUpdate: Cascade)
+
+  @@id([subscriptionApplicationId, quotaKey])
+  @@index([organizationId], map: "subscription_application_quota_organization_id_idx")
+  @@map("subscription_application_quota")
   @@schema("commercial")
 }

@@ -371,6 +371,8 @@ for (const migration of [
   'core/files/prisma/migrations/20261101000011_files_init/migration.sql',
   // Lot 3.5: core/billing (schema billing, rolul billing_rw, outbox)
   'core/billing/prisma/migrations/20261101000013_billing_init/migration.sql',
+  // Lot 3.5b (D3-26): limitele liniilor de aplicație, fotografiate la creare
+  'core/commercial/prisma/migrations/20261103000001_commercial_app_quota_snapshot/migration.sql',
 ]) {
   psqlFile(TEST_DB.accessDb, join(ROOT, migration));
 }
