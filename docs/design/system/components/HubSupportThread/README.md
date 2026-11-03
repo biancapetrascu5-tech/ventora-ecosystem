@@ -4,7 +4,7 @@ One support request in the Hub (S111), opened from "Solicitările mele" (HubSupp
 
 **Header.** The subject as the title, "Solicitările mele" as the way back, the status pill and "{app} · deschisă pe {date} · {ref}". Statuses: "Răspuns nou" (peach: it waits for you), "În lucru" (neutral), "Rezolvat" (lime).
 
-**The thread.** Messages oldest first. Each has the avatar, "Tu" or the person's name with the badge "Echipa Ventora", the time, the text and its attachments (name, size, download). The team's messages sit on `raised`, yours on `sheet`. On phones the cards go full width.
+**The thread.** Messages oldest first. Each has the avatar, "Tu" or the person's name with the badge "Echipa Ventora Systems", the time, the text and its attachments (name, size, download). The team's messages sit on `raised`, yours on `sheet`. On phones the cards go full width.
 
 **Replying.** "Răspunsul tău" (Textarea), "Atașamente" (FileUpload: PNG, JPG or PDF, at most 10 MB each, several files) and "Trimite răspunsul". States: files uploading and uploaded; errors — empty message ("Scrie un mesaj înainte să trimiți."), a file over 10 MB ("{file} are peste 10 MB. Trimite un fișier mai mic."), a file of another type ("{file} nu e PNG, JPG sau PDF."); sending (Button `loading`); sent (Toast "Am primit mesajul." / "Îți răspundem aici și pe e-mail, în cel mult o zi lucrătoare.", the status goes to "În lucru").
 

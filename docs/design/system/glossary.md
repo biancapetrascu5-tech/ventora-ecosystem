@@ -17,21 +17,36 @@ Un singur cuvânt pentru fiecare lucru, în toate ecranele și în toate cele 6 
 - **Diacritice.** ș și ț cu virgulă dedesubt (U+0219, U+021B), niciodată cu sedilă.
 - **Localizare.** Fiecare limbă se scrie pentru limba ei; textele trebuie să suporte cu ~30% mai mult spațiu. Nu lipi bucăți de propoziție; frazele întregi au variabile.
 
+## Marca
+
+Decizia fondatoarei din 1 noiembrie 2026: numele vizibil e „Ventora Systems”, peste tot — interfață, texte, e-mailuri, în toate cele 6 limbi. „Ventora” singur nu mai apare (marca „Ventora” e înregistrată de altcineva la EUIPO).
+
+| RO | EN | FR | ES | DE | IT | Regulă |
+| --- | --- | --- | --- | --- | --- | --- |
+| Ventora Systems | Ventora Systems | Ventora Systems | Ventora Systems | Ventora Systems | Ventora Systems | Mereu întreg, cu majusculă la ambele cuvinte; nu se traduce, nu se prescurtează („VS”, „Ventora”), nu se declină. „Alte aplicații Ventora Systems”, „Contul tău Ventora Systems”, „Noutăți de la Ventora Systems”. |
+| echipa Ventora Systems | the Ventora Systems team | l’équipe Ventora Systems | el equipo de Ventora Systems | das Ventora-Systems-Team | il team Ventora Systems | Semnătura și expeditorul e-mailurilor: „Echipa Ventora Systems”, „Ventora Systems <noreply@ventora-hub.com>”. |
+| Hub · Portal · Network · Founder | aceleași | aceleași | aceleași | aceleași | aceleași | Produsele, fără „Ventora” în față: nu „Ventora Hub”, „Ventora Portal”, „Ventora Network”, „Ventora Founder”. Aplicațiile (EasyBook, ClientDesk…) nu se schimbă (D-UX-4). |
+| Hub · Ventora Systems | Hub · Ventora Systems | Hub · Ventora Systems | Hub · Ventora Systems | Hub · Ventora Systems | Hub · Ventora Systems | Formula pentru un produs sau o pagină fără context: titlul filei din browser („Programări · Ventora Systems”), antetul unui e-mail, pagina publică din Portal („Salon Aurora · Portal · Ventora Systems”). În text curent, doar „Hub”. |
+
+- **Germană:** în cuvintele compuse, marca se leagă cu cratimă de ambele părți: „Ventora-Systems-Team”, „Ihr Ventora-Systems-Konto”, „Ventora-Systems-App”, „Ventora-Systems-Empfehlungen”.
+- **Ce nu se schimbă:** domeniile și adresele (ventora-hub.com, ventorasystems.com, noreply@ventora-hub.com), numele fișierelor (`ventora-logo.svg`) și identificatorii din cod (`window.Ventora`, `VentoraProvider`, cheia `ventora-theme`). Nu se văd ca marcă.
+- **Logo-ul** are wordmark-ul „VENTORA SYSTEMS” în fișier; nu se compune din text. Vezi README, „Logo”.
+
 ## Ecosistem
 
 | RO | EN | FR | ES | DE | IT | Regulă |
 | --- | --- | --- | --- | --- | --- | --- |
-| afacere | business | entreprise | negocio | Unternehmen | attività | Spațiul de lucru al unei firme în Ventora. |
+| afacere | business | entreprise | negocio | Unternehmen | attività | Spațiul de lucru al unei firme în Ventora Systems. |
 | proprietar | owner | propriétaire | propietario | Inhaber | titolare | Lângă un nume, între paranteze: „Bianca Petrașcu (proprietar)”. Nu „proprietara”, nu dativ. |
 | echipă | team | équipe | equipo | Team | team | Filtrul „toți oamenii” e „Toată echipa”. |
 | angajat | employee | employé | empleado | Mitarbeiter | dipendente | Doar pentru personalul afacerii, în aplicații: meniul „Angajați” din EasyBook, rapoarte „pe angajați”, coloana „Angajat” la o programare. Nu pentru limita de abonament și nu ca nume de rol (S112). În filtre folosește „echipa”. |
-| membru | member | membre | miembro | Mitglied | membro | O persoană cu cont Ventora într-o afacere; limita `platform.members` se numără în membri: „10 membri”, „Limită de membri”. Și rolul de bază, lângă „Admin” (S112). |
+| membru | member | membre | miembro | Mitglied | membro | O persoană cu cont Ventora Systems într-o afacere; limita `platform.members` se numără în membri: „10 membri”, „Limită de membri”. Și rolul de bază, lângă „Admin” (S112). |
 | loc în echipă | team seat | place d’équipe | plaza en el equipo | Teamplatz | posto nel team | Limita de membri ca resursă și ca pachet: „Locuri în echipă · 8 din 12”, „4 din 10 locuri în echipă”, „5 locuri în echipă în plus” (S112). |
 | plată lunară | monthly payment | paiement mensuel | pago mensual | monatliche Zahlung | pagamento mensile | „Plătești lunar: 349 lei”. Prețul întreg (S113). |
 | plată anuală | yearly payment | paiement annuel | pago anual | jährliche Zahlung | pagamento annuale | „Plătești anual: 3.490 lei · economisești 698 lei”. Limitele rămân lunare (S113). |
 | monedă | currency | devise | moneda | Währung | valuta | A afacerii, nu a limbii: „349 lei” și „70 €” în orice limbă. Zecimale doar când există, mereu două (S113). |
 | reducere | discount | réduction | descuento | Rabatt | sconto | Mereu linie separată: preț întreg, reducere, total. „Reducere 15% · până pe 31 martie 2027” (S113). |
-| la cerere | on request | sur demande | bajo solicitud | auf Anfrage | su richiesta | O activează echipa Ventora; butonul e „Cere activare” (S113). |
+| la cerere | on request | sur demande | bajo solicitud | auf Anfrage | su richiesta | O activează echipa Ventora Systems; butonul e „Cere activare” (S113). |
 | proporțional | prorated | au prorata | prorrateado | anteilig | in proporzione | „Azi: 23 lei, proporțional până pe 17 noiembrie” (S113). |
 | coleg | teammate | collègue | compañero | Kollege | collega | Când vorbești despre ceilalți din echipă. |
 | rol | role | rôle | rol | Rolle | ruolo |  |
@@ -67,7 +82,7 @@ Un singur cuvânt pentru fiecare lucru, în toate ecranele și în toate cele 6 
 
 | RO | EN | FR | ES | DE | IT | Regulă |
 | --- | --- | --- | --- | --- | --- | --- |
-| solicitare | request | demande | solicitud | Anfrage | richiesta | Mesaj către suportul Ventora. Nu „tichet”. |
+| solicitare | request | demande | solicitud | Anfrage | richiesta | Mesaj către suportul Ventora Systems. Nu „tichet”. |
 | cerere | request | demande | solicitud | Antrag | richiesta | Acces, concediu, mutarea unei programări. |
 | notificare | notification | notification | notificación | Benachrichtigung | notifica |  |
 | reamintire | reminder | rappel | recordatorio | Erinnerung | promemoria | Și pentru SMS-urile de pe telefonul afacerii: „reamintire”, niciodată „reminder” (S10). Ca tip de mesaj, aceeași formă și în detaliu, și în tabel. |
@@ -100,7 +115,7 @@ Un singur cuvânt pentru fiecare lucru, în toate ecranele și în toate cele 6 
 | RO | EN | FR | ES | DE | IT | Regulă |
 | --- | --- | --- | --- | --- | --- | --- |
 | telefonul afacerii | business phone | téléphone de l’entreprise | teléfono del negocio | Geschäftstelefon | telefono dell’attività | Telefonul Android cu SIM-ul afacerii, de pe care pleacă SMS-urile. Nu „dispozitiv”, nu „gateway”. |
-| aplicația Ventora pentru telefon | Ventora phone app | application Ventora pour téléphone | aplicación Ventora para el teléfono | Ventora-App für das Telefon | app Ventora per il telefono | Nu „APK”. |
+| aplicația Ventora Systems pentru telefon | Ventora Systems phone app | application Ventora Systems pour téléphone | aplicación Ventora Systems para el teléfono | Ventora-Systems-App für das Telefon | app Ventora Systems per il telefono | Nu „APK”. |
 | conectat / deconectat | connected / disconnected | connecté / déconnecté | conectado / desconectado | verbunden / getrennt | collegato / scollegato | Despre telefon. „Conectat” e neutru; „Deconectat” e peach doar cu mesaje în așteptare (S8). |
 | în așteptare | waiting | en attente | en espera | wartet | in attesa | Mesajul e la noi și n-a plecat la telefon: „Pleacă la {ora}”. |
 | predat telefonului | handed to the phone | transmis au téléphone | pasado al teléfono | an das Telefon übergeben | passato al telefono | Telefonul l-a primit, dar încă nu l-a trimis. |
@@ -112,7 +127,7 @@ Un singur cuvânt pentru fiecare lucru, în toate ecranele și în toate cele 6 
 | codul de conectare | connection code | code de connexion | código de conexión | Verbindungscode | codice di collegamento | Codul QR și varianta scurtă (de ex. „K7P-42Q”) cu care telefonul se leagă de afacere. Expiră în 10 minute: „Codul expiră în {m:ss}”, „Generează alt cod”. |
 | declarația ta | your declaration | votre déclaration | tu declaración | Ihre Erklärung | la Sua dichiarazione | Pasul 5 din conectare: „Folosesc un SIM al afacerii și respect condițiile operatorului meu de telefonie.” Caseta e nebifată implicit. |
 | capacitate de trimitere | sending capacity | capacité d’envoi | capacidad de envío | Sendekapazität | capacità di invio | Pe ecran: „Poți trimite aproximativ {n} mesaje pe oră de pe acest telefon.” |
-| rezervă (când telefonul nu e disponibil) | backup (when the phone is unavailable) | solution de secours | respaldo | Ausweichweg | riserva | Implicit nu există. E-mailul e gratuit; prin Ventora consumă din SMS-urile abonamentului (S14). |
+| rezervă (când telefonul nu e disponibil) | backup (when the phone is unavailable) | solution de secours | respaldo | Ausweichweg | riserva | Implicit nu există. E-mailul e gratuit; prin Ventora Systems consumă din SMS-urile abonamentului (S14). |
 
 ## Comercial
 
@@ -141,7 +156,7 @@ Un singur cuvânt pentru fiecare lucru, în toate ecranele și în toate cele 6 
 | Nu mă interesează | Not interested | Ça ne m’intéresse pas | No me interesa | Kein Interesse | Non mi interessa | Refuzul, neutru. Nu „Nu, mulțumesc”. |
 | Amintește-mi mai târziu | Remind me later | Me le rappeler plus tard | Recordármelo más tarde | Später erinnern | Ricordamelo più tardi | În meniul recomandării: „Peste o săptămână” sau „Peste o lună”. |
 | Recomandă aplicația | Recommend this app | Recommander l’application | Recomendar la aplicación | App empfehlen | Consiglia l’app | Acțiunea membrului; dedesubt, „Ajunge la {nume} (proprietar).” Stările lui: „În așteptare”, „Activată”, „Nu acum”. |
-| catalogul aplicațiilor | app catalog | catalogue des applications | catálogo de aplicaciones | App-Katalog | catalogo delle app | Pe ecran: „Toate aplicațiile Ventora”. |
+| catalogul aplicațiilor | app catalog | catalogue des applications | catálogo de aplicaciones | App-Katalog | catalogo delle app | Pe ecran: „Toate aplicațiile Ventora Systems”. |
 | pp | pp | pts | p. p. | Pp. | p.p. | „+3 pp” în grafice și carduri compacte; pentru cititoarele de ecran și în tooltip: „3 puncte procentuale”. |
 
 ## Echipă

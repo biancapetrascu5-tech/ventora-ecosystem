@@ -1,7 +1,7 @@
 <!-- @dsCard group="Ecrane Hub" height=4480 width=2620 page -->
 <!doctype html>
 <html lang="ro">
-<head><meta charset="utf-8"><title>HubLauncher — Ventora</title>
+<head><meta charset="utf-8"><title>HubLauncher — Ventora Systems</title>
 <style>
 html,body{min-height:100%}
 .d{display:flex;flex-direction:column;gap:var(--space-4);padding:var(--space-4);box-sizing:border-box}
@@ -468,12 +468,12 @@ function Launcher({ mode, empty }) {
       mob ? null : h(Chevrons, { cls: "lb-chev" })),
     !empty && !mob ? sechead : null);
   const other = h("section", { className: "lb-other" },
-    h("h2", { className: "display-m sec" }, "Alte aplicații Ventora"),
+    h("h2", { className: "display-m sec" }, "Alte aplicații Ventora Systems"),
     h("p", { className: "body lb-other__intro" }, "Nu le poți deschide acum. La fiecare scrie de ce și ce poți face."),
     h("div", { className: "rows" }, OTHER.map(([a, s]) => RECO_FOR(a)
       ? h(V.GrowthSlot, { key: a, label: "Recomandare" }, h(V.AppTile, { app: a, access: s, layout: "row", recommendation: RECO_FOR(a), onDetails: () => {}, onDismiss: () => {}, onRemindLater: () => {} }))
       : h(V.AppTile, { key: a, app: a, access: s, layout: "row", grantedBy: "Bianca Petrașcu", onRequestAccess: () => {}, onWriteUs: () => {}, onSeeStatus: () => {} }))),
-    h("div", { style: { marginTop: "var(--space-4)" } }, h(V.Button, { variant: "quiet", icon: "layout-grid", iconEnd: "arrow-right" }, "Vezi toate aplicațiile Ventora")));
+    h("div", { style: { marginTop: "var(--space-4)" } }, h(V.Button, { variant: "quiet", icon: "layout-grid", iconEnd: "arrow-right" }, "Vezi toate aplicațiile Ventora Systems")));
   const body = empty
     ? [h("div", { key: "e", className: "sheetlike lb-empty" }, h(V.EmptyState, { icon: "layout-grid", title: "Nu ai încă acces la nicio aplicație", description: "Bianca Petrașcu (proprietar) alege ce aplicații folosește fiecare rol. Putem trimite noi cererea ta.", actions: h(React.Fragment, null, h(V.Button, { variant: "primary", icon: "send" }, "Cere acces"), h(V.Button, { variant: "quiet" }, "Scrie-ne")) }), h("p", { className: "body-small muted center", style: { paddingBottom: "var(--space-6)" } }, "Între timp, alege-ți fotografia și limba din ", h("a", { className: "v-link", href: "#" }, "Contul tău"), "."))]
     : [mob ? h("div", { key: "s" }, sechead) : null,
@@ -486,7 +486,7 @@ function Launcher({ mode, empty }) {
 }
 
 function CommercialPrefs({ mode }) {
-  return /* @__PURE__ */ React.createElement(V.SheetSection, { title: "Recomand\u0103ri Ventora", description: "Sugestii despre aplica\u021Bii \u0219i pachete \xEEn plus care se potrivesc cu ce faci deja." }, /* @__PURE__ */ React.createElement("div", { className: "d0", style: { gap: "var(--space-3)" } }, /* @__PURE__ */ React.createElement(V.Toggle, { label: "\xCEn aplica\u021Bie", description: "Le vezi \xEEn pagini \u0219i \xEEn notific\u0103ri, la sec\u021Biunea Recomand\u0103ri.", defaultChecked: true, labelPosition: mode === "mobile" ? "start" : "end" }), /* @__PURE__ */ React.createElement(V.Toggle, { label: "Pe e-mail", description: "Disponibil \xEEn cur\xE2nd", disabled: true, labelPosition: mode === "mobile" ? "start" : "end" }), /* @__PURE__ */ React.createElement(V.Notice, { tone: "neutral", icon: "info" }, "Mesajele despre limitele contului t\u0103u r\u0103m\xE2n active, pentru c\u0103 sunt informa\u021Bii despre cont, nu recomand\u0103ri.")));
+  return /* @__PURE__ */ React.createElement(V.SheetSection, { title: "Recomand\u0103ri Ventora Systems", description: "Sugestii despre aplica\u021Bii \u0219i pachete \xEEn plus care se potrivesc cu ce faci deja." }, /* @__PURE__ */ React.createElement("div", { className: "d0", style: { gap: "var(--space-3)" } }, /* @__PURE__ */ React.createElement(V.Toggle, { label: "\xCEn aplica\u021Bie", description: "Le vezi \xEEn pagini \u0219i \xEEn notific\u0103ri, la sec\u021Biunea Recomand\u0103ri.", defaultChecked: true, labelPosition: mode === "mobile" ? "start" : "end" }), /* @__PURE__ */ React.createElement(V.Toggle, { label: "Pe e-mail", description: "Disponibil \xEEn cur\xE2nd", disabled: true, labelPosition: mode === "mobile" ? "start" : "end" }), /* @__PURE__ */ React.createElement(V.Notice, { tone: "neutral", icon: "info" }, "Mesajele despre limitele contului t\u0103u r\u0103m\xE2n active, pentru c\u0103 sunt informa\u021Bii despre cont, nu recomand\u0103ri.")));
 }
 /* PASUL 2 d (S66): under 600px the Hub header keeps only the logo, search (icon), the bell and the avatar; the business switcher moves into AccountMenu. */
 function PhoneHeader({ th, lang }) {

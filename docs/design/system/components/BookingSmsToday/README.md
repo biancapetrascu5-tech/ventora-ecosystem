@@ -11,7 +11,7 @@ Shown at 1280, 820 and 390, light and dark; every alert on its own in the right-
 - *{n} mesaje fără confirmare.* — neutral (S9); "Vezi mesajele".
 - *Bateria telefonului: 12%, nu se încarcă.* — neutral.
 - *Mâine ai mai multe reamintiri decât poate trimite telefonul.* — neutral, with the numbers (S22); "Vezi setările".
-- *Aplicația Ventora de pe telefon trebuie actualizată.* (S5) — neutral; "Vezi cum o actualizezi".
+- *Aplicația Ventora Systems de pe telefon trebuie actualizată.* (S5) — neutral; "Vezi cum o actualizezi".
 
 **Also.** Members see no SMS alerts; the manager sees them with only the actions they have (test SMS, hours), and the "Vezi ce poți face" Dialog without "Conectează alt telefon". When the phone comes back, the alert goes away by itself and a Toast says the waiting reminders are leaving. While the phone-disconnected alert is shown, the commercial slot under the list stays hidden (S43).
 

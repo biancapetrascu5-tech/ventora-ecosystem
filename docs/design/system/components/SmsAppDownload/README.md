@@ -1,6 +1,6 @@
 # SmsAppDownload
 
-The public download page of the Ventora phone app (SPEC_ECRANE_SMS §9), at app.ventora-hub.com/telefon — no account needed. In the 6 languages, light and dark, at 1280, 820 and 390. Built from Logo, LanguageSwitcher, ThemeSwitcher, Button, Notice, Tabs / Select and Icon; the QR is a placeholder drawn dark on light in both themes so phones can read it.
+The public download page of the Ventora Systems phone app (SPEC_ECRANE_SMS §9), at app.ventora-hub.com/telefon — no account needed. In the 6 languages, light and dark, at 1280, 820 and 390. Built from Logo, LanguageSwitcher, ThemeSwitcher, Button, Notice, Tabs / Select and Icon; the QR is a placeholder drawn dark on light in both themes so phones can read it.
 
 **Sections.**
 - *What it is* — in two sentences ("Instalezi aplicația pe un telefon Android cu SIM-ul afacerii, iar reamintirile și confirmările programărilor pleacă de pe numărul tău…"), "Descarcă aplicația", the version and its date and the minimum Android ("Versiunea 1.4.2 · 27 octombrie 2026 · pentru Android 9 sau mai nou"), "Descarcă aplicația doar de pe această pagină." (S4) and the iPhone note. On a computer or tablet, a QR to open the page on the business phone.

@@ -1,6 +1,6 @@
 # AppIcon
 
-One of the fifteen Ventora app icons — a navy plate with off-white shapes and a single peach part, drawn on a shared 48-unit grid as an echo of the Ventora mark.
+One of the fifteen Ventora Systems app icons — a navy plate with off-white shapes and a single peach part, drawn on a shared 48-unit grid as an echo of the Ventora Systems mark.
 
 **Props.** `app` (`booking`, `crm`, `documents`, `contracts`, `events`, `hr`, `inventory`, `shifts`, `marketing`, `analytics`, `assets`, `projects`, `finance`, `portal`, `network`), `size` (px; 16 minimum), `muted` (the inactive variant), `title` (accessible name when the icon stands alone; omit it when the app name is written next to it). An unknown `app` falls back to a plate with the Lucide `icon` you pass.
 

@@ -1,6 +1,6 @@
 # App icons
 
-The fifteen Ventora app icons as standalone SVG files (48 × 48 viewBox, colours baked in), for favicons, app manifests, emails and anything outside the React bundle. Inside the apps use the `AppIcon` component, which draws the same shapes from the `appicon-*` tokens and follows the theme.
+The fifteen Ventora Systems app icons as standalone SVG files (48 × 48 viewBox, colours baked in), for favicons, app manifests, emails and anything outside the React bundle. Inside the apps use the `AppIcon` component, which draws the same shapes from the `appicon-*` tokens and follows the theme.
 
 - `<app>.svg` — active, light theme: navy plate `#000C3F`, off-white shapes `#EFF0EE`, one peach part `#FFAA75`. Use this as the app's favicon.
 - `<app>-dark.svg` — active, dark theme: navy plate `#14205E` with a `#2F3B7A` hairline (navy stays only here in dark).
