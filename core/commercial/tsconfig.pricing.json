@@ -1,0 +1,9 @@
+{
+  // D3-1: scripts/seed-pricing.ts and its test (outside src/, so not in tsconfig.json's rootDir)
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "types": ["node"]
+  },
+  "include": ["src/__tests__/pricing/**/*", "../../scripts/seed-pricing.ts"]
+}

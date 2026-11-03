@@ -641,6 +641,34 @@ jobs:
         run: |
           pnpm tsx scripts/sync-commercial-registry.ts
           pnpm tsx scripts/sync-commercial-registry.ts --expect-noop
+      # D3-1: scripts/seed-pricing.ts on a clean base of its own (the tests above set their own
+      # prices): every migration, the registry from the real manifests, then the seed twice
+      - name: Prepare a clean base for the pricing seed (D3-1)
+        run: |
+          psql postgresql://postgres:test@localhost:5437/ventora_commercial_test -c "CREATE DATABASE ventora_pricing_test"
+          PSQL="psql postgresql://postgres:test@localhost:5437/ventora_pricing_test -v ON_ERROR_STOP=1"
+          for f in core/identity/prisma/identity/migrations/20261025000001_identity_init/migration.sql \
+                   core/identity/prisma/identity/migrations/20261027000002_session_active_org/migration.sql \
+                   core/identity/prisma/founder/migrations/20261025000001_founder_init/migration.sql \
+                   core/audit/prisma/migrations/20261028000001_audit_init/migration.sql \
+                   core/identity/prisma/identity/migrations/20261028000004_founder_owner_recovery/migration.sql \
+                   core/identity/prisma/identity/migrations/20261029000006_lot26_open_last_organization/migration.sql \
+                   core/commercial/prisma/migrations/*/migration.sql; do
+            echo "Applying $f"
+            $PSQL -f "$f"
+          done
+      - name: Sync the registry on the pricing base
+        env:
+          DIRECT_URL: postgresql://postgres:test@localhost:5437/ventora_pricing_test
+        run: pnpm tsx scripts/sync-commercial-registry.ts
+      - name: Run the pricing seed test (D3-1)
+        env:
+          DATABASE_URL_TEST: postgresql://app_runtime:${{ env.APP_PW }}@localhost:5437/ventora_pricing_test
+          DATABASE_URL_FOUNDER_TEST: postgresql://founder_runtime:${{ env.FOUNDER_PW }}@localhost:5437/ventora_pricing_test
+          DATABASE_URL_ADMIN_TEST: postgresql://postgres:test@localhost:5437/ventora_pricing_test
+          BETTER_AUTH_SECRET: ${{ env.BETTER_AUTH_SECRET }}
+          FOUNDER_AUTH_SECRET: ${{ env.FOUNDER_AUTH_SECRET }}
+        run: pnpm --filter @ventora/commercial test:pricing
 
   build:
     name: Build
