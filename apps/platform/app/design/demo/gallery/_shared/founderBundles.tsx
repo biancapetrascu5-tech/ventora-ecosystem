@@ -1,6 +1,6 @@
 /* eslint-disable i18next/no-literal-string -- datele de exemplu din preview.html (S117) */
 'use client';
-// FounderPlans 2.0.0 → „Bundle-uri” și FounderPlanEditor 2.0.0 → „Ofertă nouă” (S117), cu vederile
+// FounderBundles (fostul FounderPlans) → „Bundle-uri” și FounderPlanEditor 2.0.0 → „Ofertă nouă” (S117), cu vederile
 // din @ventora/screens ca în aplicația Founder (FounderBundles în cod). Datele sunt cele din
 // preview, nu prețuri aprobate (D3-1).
 import {
@@ -181,11 +181,11 @@ const BUNDLES: BundleCardData[] = [
   },
 ];
 
-/** FounderPlans (S117) → „1 · Lista bundle-urilor” → Desktop · 1280 (H 1760). */
+/** FounderBundles (S117) → „1 · Lista bundle-urilor” → Desktop · 1280 (H 1760). */
 export function FounderBundlesFrame() {
   return (
     <div className={c.frameRel}>
-      <FounderShellDemo active="planuri" title="Bundle-uri">
+      <FounderShellDemo active="bundles" title="Bundle-uri">
         <BundlesView
           phone={false}
           bundles={BUNDLES}
@@ -253,7 +253,7 @@ const ED: BundleEditorState = {
 export function FounderBundleEditorFrame() {
   return (
     <div className={c.frameRel}>
-      <FounderShellDemo active="planuri" title="Business · ofertă nouă">
+      <FounderShellDemo active="bundles" title="Business · ofertă nouă">
         <BundleEditorView
           phone={false}
           title="Business · ofertă nouă (v3)"

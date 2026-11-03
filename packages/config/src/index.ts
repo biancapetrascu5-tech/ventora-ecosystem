@@ -55,7 +55,7 @@ const envSchema = z
      */
     RESEND_API_KEY: emptyAsUnset(z.string().min(1).optional()),
 
-    /** Expeditorul și Reply-To; implicit Ventora <noreply@ventora-hub.com> și support@ventorasystems.com. */
+    /** Expeditorul și Reply-To; implicit Ventora Systems <noreply@ventora-hub.com> și support@ventorasystems.com. */
     EMAIL_FROM: emptyAsUnset(z.string().min(3).optional()),
     EMAIL_REPLY_TO: emptyAsUnset(
       z.string().email('EMAIL_REPLY_TO trebuie să fie o adresă de e-mail').optional(),

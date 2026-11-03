@@ -16,7 +16,7 @@ import { useIsPhone } from '../../screens/hooks';
 import styles from '../business.module.css';
 import s from './commercial.module.css';
 
-/* FounderBundles (Lotul 3.4, S117, D3-24; FounderPlans 2.0.0 în design): bundle-urile — mai multe
+/* FounderBundles (Lotul 3.4, S117, D3-24; fostul FounderPlans): bundle-urile — mai multe
    aplicații la preț mai bun, cu limite și locuri incluse — cu prețul față de aplicațiile luate
    separat, perioada de vânzare și starea („În vânzare”, „Programat”, „Vânzare oprită”), ofertele
    (versiunile) cu perioada lor și câte afaceri au fiecare; „Oprește vânzarea”, „Ofertă nouă”.

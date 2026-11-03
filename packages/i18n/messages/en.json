@@ -71,9 +71,9 @@
     "common": {
       "greeting": "Hi {name},",
       "greetingNoName": "Hi,",
-      "signature": "The Ventora team",
-      "footerAccount": "You received this email because {email} is used for a Ventora account.",
-      "footerInvitation": "You received this email because someone invited {email} to Ventora.",
+      "signature": "The Ventora Systems team",
+      "footerAccount": "You received this email because {email} is used for a Ventora Systems account.",
+      "footerInvitation": "You received this email because someone invited {email} to Ventora Systems.",
       "company": "Ventora Systems SRL · Sibiu, Romania"
     },
     "roles": {
@@ -84,45 +84,45 @@
     },
     "passwordReset": {
       "hub": {
-        "subject": "Choose a new password for your Ventora account",
-        "intro": "We received a request to reset the password for your Ventora account.",
+        "subject": "Choose a new password for your Ventora Systems account",
+        "intro": "We received a request to reset the password for your Ventora Systems account.",
         "button": "Choose a new password",
         "validity": "The link is valid for one hour and works only once. Once you change your password, we sign you out on every device, so only you have access to your account.",
         "notRequested": "If you didn't ask for this, you can ignore this email. Your password stays the same."
       },
       "founder": {
-        "subject": "Reset your Ventora Founder password",
-        "intro": "We received a request to reset the password for your Ventora Founder account.",
+        "subject": "Reset your Founder password",
+        "intro": "We received a request to reset the password for your Founder account.",
         "button": "Choose a new password",
         "validity": "The link is valid for one hour and works only once. All open sessions will be closed, and you'll still be asked for your two-step authentication code when you sign in.",
         "notRequested": "If you didn't ask for this, write to {supportEmail} right away. Someone may be trying to access your account."
       }
     },
     "passwordChanged": {
-      "subject": "Your Ventora password was changed",
+      "subject": "Your Ventora Systems password was changed",
       "pre": "The change was made on {date}, at {time}. If it wasn't you, read this email.",
-      "eyebrow": "Your Ventora account",
+      "eyebrow": "Your Ventora Systems account",
       "title": "Your account password was changed",
       "leadReset": "The password for {email} was changed on {date}, at {time}. We've signed you out on all devices.",
       "leadAccount": "The password for {email} was changed on {date}, at {time}. We've signed you out on your other devices.",
       "ifYou": "If it was you, you don't need to do anything.",
       "notYou": "Wasn't you? Choose a new password right away from \"Forgot your password?\" and write to us at {supportEmail}.",
       "cta": "Write to support",
-      "why": "You're receiving this email because your Ventora account password changed. It's a security email: we send it for every password change and it can't be turned off."
+      "why": "You're receiving this email because your Ventora Systems account password changed. It's a security email: we send it for every password change and it can't be turned off."
     },
     "invitation": {
       "member": {
-        "subject": "{inviterName} invited you to {businessName} on Ventora",
-        "intro": "{inviterName} invited you to join the {businessName} team on Ventora, with the {roleName} role.",
+        "subject": "{inviterName} invited you to {businessName} on Ventora Systems",
+        "intro": "{inviterName} invited you to join the {businessName} team on Ventora Systems, with the {roleName} role.",
         "button": "Accept the invitation",
         "resentNotice": "This is a new link. The one you received earlier no longer works.",
         "validity": "The invitation is valid for 7 days, until {expiresDate}.",
-        "existingAccount": "If you already have a Ventora account, sign in with your email and password, and {businessName} will appear next to your other businesses. If not, you'll choose a password when you open the link.",
+        "existingAccount": "If you already have a Ventora Systems account, sign in with your email and password, and {businessName} will appear next to your other businesses. If not, you'll choose a password when you open the link.",
         "notExpected": "Weren't expecting this invitation? You can ignore this email. No account is created unless you accept."
       },
       "owner": {
-        "subject": "{businessName} is ready on Ventora",
-        "intro": "We've set up {businessName} on Ventora. You'll be its owner: you set it up, invite your team and choose the apps.",
+        "subject": "{businessName} is ready on Ventora Systems",
+        "intro": "We've set up {businessName} on Ventora Systems. You'll be its owner: you set it up, invite your team and choose the apps.",
         "button": "Open {businessName}",
         "validity": "The link is valid for 30 days, until {expiresDate}.",
         "firstLogin": "The first time you sign in, you'll choose a password and turn on two-step authentication, so your business is protected from the start.",
@@ -131,42 +131,42 @@
     },
     "ownerRecovery": {
       "subject": "Two-step authentication on your account has been reset",
-      "intro": "At your request ({ticketRef}), the Ventora team reset two-step authentication on your account. We also closed all open sessions.",
+      "intro": "At your request ({ticketRef}), the Ventora Systems team reset two-step authentication on your account. We also closed all open sessions.",
       "passwordReset": "We also reset your password. Choose a new one using the link below, valid for one hour:",
       "button": "Choose a new password",
       "nextSteps": "What happens next: the next time you sign in, you'll turn on two-step authentication again with an authenticator app. Until then, you can't make changes as owner of {businessName}. Keep your new backup codes somewhere safe.",
       "notRequested": "If you didn't ask for this, write to us right away at {supportEmail}. We'll look into what happened immediately."
     },
     "supportSession": {
-      "subject": "The Ventora team has support access to {businessName}",
-      "intro": "{founderName} from the Ventora team opened a support session for {businessName}, for request {ticketRef}.",
+      "subject": "The Ventora Systems team has support access to {businessName}",
+      "intro": "{founderName} from the Ventora Systems team opened a support session for {businessName}, for request {ticketRef}.",
       "reason": "Reason: {reason}",
-      "scope": "During the session, the Ventora team can only view your business data to resolve the request. They can't change data, can't see passwords and don't change anything about your team or subscription.",
+      "scope": "During the session, the Ventora Systems team can only view your business data to resolve the request. They can't change data, can't see passwords and don't change anything about your team or subscription.",
       "until": "The session closes automatically on {date}, at {time}.",
-      "close": "You can close it at any time in Ventora, from the support session banner.",
+      "close": "You can close it at any time in Ventora Systems, from the support session banner.",
       "notRequested": "If you didn't ask for help, close the session and write to us at {supportEmail}.",
-      "footer": "You're receiving this email because you're the owner of {businessName} in Ventora."
+      "footer": "You're receiving this email because you're the owner of {businessName} in Ventora Systems."
     }
   },
   "support": {
     "session": {
       "banner": {
         "title": "Support session active",
-        "message": "{founderName} from the Ventora team can view your business data until {expiresAt}.",
+        "message": "{founderName} from the Ventora Systems team can view your business data until {expiresAt}.",
         "readOnly": "Read only: they can't change data, members, passwords or the subscription.",
         "reason": "Reason: {reason}",
         "ticketRef": "Request: {ticketRef}",
         "close": "Close session",
-        "closeConfirm": "Close the support session? The Ventora team loses access immediately.",
+        "closeConfirm": "Close the support session? The Ventora Systems team loses access immediately.",
         "closed": "The support session is closed.",
         "cancel": "Cancel"
       }
     },
     "sessions": {
       "title": "Support sessions",
-      "lead": "The Ventora team can see your business data only during a support session: read-only, and only until the time set. Here you can see who, why and when.",
+      "lead": "The Ventora Systems team can see your business data only during a support session: read-only, and only until the time set. Here you can see who, why and when.",
       "col": {
-        "who": "Ventora team member",
+        "who": "Ventora Systems team member",
         "reason": "Reason",
         "ticket": "Request",
         "when": "When",
@@ -185,7 +185,7 @@
     "line1": "Your business.",
     "line2": "All in one place.",
     "founderProduct": "Control Center",
-    "founderTagline": "The Ventora team's internal tool",
+    "founderTagline": "The Ventora Systems team's internal tool",
     "reset": {
       "request": {
         "title": "Forgot your password?",
@@ -210,7 +210,7 @@
       },
       "sent": {
         "title": "Check your email",
-        "body": "If {email} belongs to a Ventora account, we've sent a link there to set a new password.",
+        "body": "If {email} belongs to a Ventora Systems account, we've sent a link there to set a new password.",
         "validity": "The link is valid for one hour.",
         "help": "Can't see the email? Check your spam or promotions folder too.",
         "resend": "Send another link",
@@ -282,7 +282,7 @@
         },
         "s2": {
           "title": "Enter the code from the app",
-          "lead": "The app now shows a 6-digit code for Ventora.",
+          "lead": "The app now shows a 6-digit code for Ventora Systems.",
           "submit": "Turn on",
           "back": "Back to the QR code"
         },
@@ -340,7 +340,7 @@
       },
       "founder": {
         "name": "Founder",
-        "tagline": "The Ventora team's internal tool",
+        "tagline": "The Ventora Systems team's internal tool",
         "product": "Control Center"
       },
       "backupLeft": {
@@ -372,7 +372,7 @@
     },
     "signIn": {
       "title": "Welcome back",
-      "lead": "Sign in to your Ventora account.",
+      "lead": "Sign in to your Ventora Systems account.",
       "emailLabel": "Email",
       "passwordLabel": "Password",
       "forgot": "Forgot your password?",
@@ -440,7 +440,7 @@
     "themeLight": "Light",
     "themeDark": "Dark",
     "themeSystem": "Automatic",
-    "allApps": "All Ventora apps",
+    "allApps": "All Ventora Systems apps",
     "support": "Support",
     "signOut": "Sign out",
     "switchBusiness": "Switch business",
@@ -528,7 +528,7 @@
     },
     "suspended": {
       "title": "Access to {business} is paused for now",
-      "body": "For details, contact the Ventora team at {email}.",
+      "body": "For details, contact the Ventora Systems team at {email}.",
       "contact": "Write to support",
       "signOut": "Sign out"
     },
@@ -545,7 +545,7 @@
   },
   "account": {
     "title": "Your account",
-    "lead": "Your details, how Ventora looks for you and how you protect your account.",
+    "lead": "Your details, how Ventora Systems looks for you and how you protect your account.",
     "notifications": {
       "title": "Notifications",
       "lead": "Choose where you want to hear about each one."
@@ -655,9 +655,9 @@
       "activate": "Activate · {price} a month",
       "request": "Request activation",
       "onRequest": "On request",
-      "onRequestNote": "This app needs to be set up, so we activate it for you. After your request, the Ventora team gets in touch, and only then do you pay.",
+      "onRequestNote": "This app needs to be set up, so we activate it for you. After your request, the Ventora Systems team gets in touch, and only then do you pay.",
       "requestSent": "Request sent",
-      "requestSentBody": "The Ventora team can see it now. You’ll get a notification when the app is active.",
+      "requestSentBody": "The Ventora Systems team can see it now. You’ll get a notification when the app is active.",
       "activateTitle": "Activate {app}",
       "activateDesc": "App added to your plan · {price} a month",
       "maintenance": "Maintenance: {amount} a month",
@@ -682,11 +682,11 @@
       "have": "You have this bundle",
       "haveKeep": "You keep it at your price: {amount} a month.",
       "request": "Request this bundle",
-      "requestNote": "The Ventora team adds it to your plan from your next payment. Individual apps you have that are in the bundle are no longer charged separately.",
+      "requestNote": "The Ventora Systems team adds it to your plan from your next payment. Individual apps you have that are in the bundle are no longer charged separately.",
       "alsoHave": "Also includes {app}, which you now pay for as an individual app.",
       "planTotal": "Your plan would be {amount} a month instead of {now}.",
       "requestSent": "We’ve sent your request for the {name} bundle",
-      "requestSentBody": "The Ventora team will write to you before your next payment. Until then, nothing changes.",
+      "requestSentBody": "The Ventora Systems team will write to you before your next payment. Until then, nothing changes.",
       "requestFailed": "We couldn't send the request. Try again."
     },
     "alaCarte": {
@@ -749,7 +749,7 @@
     "support": {
       "reply": {
         "title": "New reply to your request",
-        "body": "“{subject}” · {author}, Ventora team"
+        "body": "“{subject}” · {author}, Ventora Systems team"
       }
     },
     "request": {
@@ -772,9 +772,9 @@
       }
     },
     "email": {
-      "open": "Deschide în Ventora",
-      "why": "Primești acest e-mail pentru că faci parte din echipa {businessName} în Ventora.",
-      "whyAccount": "Primești acest e-mail pentru contul tău Ventora.",
+      "open": "Open in Ventora Systems",
+      "why": "You’re getting this email because you’re part of the {businessName} team in Ventora Systems.",
+      "whyAccount": "You’re getting this email for your Ventora Systems account.",
       "billing": {
         "invoice": {
           "card": {
@@ -834,7 +834,7 @@
         },
         "setup": {
           "accepted": {
-            "lead": "The Ventora team has accepted your request for {app} and will set it up for {business}.",
+            "lead": "The Ventora Systems team has accepted your request for {app} and will set it up for {business}.",
             "next": "Setup costs {setup}, once. After payment we start setting it up and let you know when the app is ready. After that, {app} is {price} a month, with your plan."
           },
           "due": {
@@ -859,7 +859,7 @@
         "subject": "{title} · {business}",
         "eyebrow": "{business} · Plan and usage",
         "eyebrowApps": "{business} · Apps",
-        "why": "You’re getting this email because you’re the owner of {business} in Ventora.",
+        "why": "You’re getting this email because you’re the owner of {business} in Ventora Systems.",
         "upgrade": "If this happens often, request another plan in Plan and usage."
       }
     },
@@ -889,17 +889,17 @@
         "support": "Replies to support requests",
         "password": "Account password changed",
         "twoFactor": "Two-step sign-in",
-        "supportSession": "Ventora team support session"
+        "supportSession": "Ventora Systems team support session"
       },
       "news": {
-        "title": "News from Ventora",
-        "desc": "What’s new in Ventora: apps, features, important changes.",
+        "title": "News from Ventora Systems",
+        "desc": "What’s new in Ventora Systems: apps, features, important changes.",
         "inApp": "In the app",
         "email": "By email",
         "emailDesc": "Off until you turn it on."
       },
       "reco": {
-        "title": "Ventora recommendations",
+        "title": "Ventora Systems recommendations",
         "desc": "Suggestions for apps and extra packs that fit what you already do.",
         "inAppDesc": "You see them on pages and in notifications, under Recommendations.",
         "soon": "Coming soon",

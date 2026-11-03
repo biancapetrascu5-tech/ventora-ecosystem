@@ -2017,7 +2017,7 @@ describe.skipIf(shouldSkipForEnv('DATABASE_URL_ADMIN_TEST'))('PR — password re
 
     const mails = mailbox.to(email);
     expect(mails).toHaveLength(1);
-    expect(mails[0]!.subject).toBe('Alege o parolă nouă pentru contul Ventora');
+    expect(mails[0]!.subject).toBe('Alege o parolă nouă pentru contul Ventora Systems');
     expect(mails[0]!.text).toContain('Bună, Ana Pop,');
     const token = tokenFromMail(mails[0]!.text!);
     expect(mails[0]!.text).toContain(passwordResetLink('hub', token));
@@ -2086,7 +2086,7 @@ describe.skipIf(shouldSkipForEnv('DATABASE_URL_ADMIN_TEST'))('PR — password re
 
     const mails = mailbox.to(email);
     expect(mails).toHaveLength(1);
-    expect(mails[0]!.subject).toBe('Resetarea parolei pentru Ventora Founder');
+    expect(mails[0]!.subject).toBe('Resetarea parolei pentru Founder');
     expect(mails[0]!.text).toContain('support@ventorasystems.com');
     const token = tokenFromMail(mails[0]!.text!);
     expect(mails[0]!.text).toContain(passwordResetLink('founder', token));
@@ -2102,7 +2102,7 @@ describe.skipIf(shouldSkipForEnv('DATABASE_URL_ADMIN_TEST'))('PR — password re
 // ---------------------------------------------------------------------------
 // Lot 2.4b-backend — password reset rules (R-PR3, R-PR4, R-PR5, R-PR7)
 // ---------------------------------------------------------------------------
-const CHANGED_SUBJECT = 'Parola contului tău Ventora a fost schimbată';
+const CHANGED_SUBJECT = 'Parola contului tău Ventora Systems a fost schimbată';
 
 async function requestReset(auth: AuthInstance, email: string, ip?: string) {
   return post(auth, '/request-password-reset', { email }, ip ? { 'x-forwarded-for': ip } : {});
@@ -2290,7 +2290,7 @@ describe.skipIf(shouldSkipForEnv('DATABASE_URL_ADMIN_TEST'))(
 
       const mails = resetMails(email);
       expect(mails).toHaveLength(2);
-      expect(mails[1]!.subject).toBe('Alege o parolă nouă pentru contul Ventora');
+      expect(mails[1]!.subject).toBe('Alege o parolă nouă pentru contul Ventora Systems');
       const newToken = tokenFromMail(mails[1]!.text!);
       expect(newToken).not.toBe(oldToken);
 

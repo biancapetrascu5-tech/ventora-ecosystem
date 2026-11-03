@@ -66,5 +66,6 @@ export async function proxy(req: NextRequest) {
 // Next 16: `middleware` → `proxy` (Lot 2.9b). Proxy rulează mereu pe Node.js, de care au nevoie
 // Better Auth + Prisma (în Edge, dev-ul dădea 500 pe orice pagină); `runtime` nu mai e permis aici.
 export const config = {
-  matcher: ['/api/:path*', '/((?!_next|favicon.ico).*)'],
+  // MARCA-1: favicon-ul (app/icon.svg) se vede și pe pagina de autentificare
+  matcher: ['/api/:path*', '/((?!_next|favicon.ico|icon.svg).*)'],
 };

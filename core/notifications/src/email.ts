@@ -25,7 +25,7 @@ export class EmailNotConfiguredError extends Error {
 }
 
 /** Sender and Reply-To (ARCHITECTURE §11.6, decisions B-1, B-2, B-3). */
-export const DEFAULT_FROM = 'Ventora <noreply@ventora-hub.com>';
+export const DEFAULT_FROM = 'Ventora Systems <noreply@ventora-hub.com>';
 export const DEFAULT_REPLY_TO = 'support@ventorasystems.com';
 
 export function emailFrom(): string {

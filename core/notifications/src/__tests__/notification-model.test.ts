@@ -65,7 +65,7 @@ describe('the catalog', () => {
   it('S115: the action text, under the text in the panel, in the reader language', () => {
     const withAction = { ...PHONE, actionKey: 'email.open' };
     expect(renderNotification(withAction, { n: '1', time: '9:00' }, 'ro').action).toBe(
-      'Deschide în Ventora',
+      'Deschide în Ventora Systems',
     );
     expect(renderNotification(PHONE, { n: '1', time: '9:00' }, 'ro').action).toBeUndefined();
   });

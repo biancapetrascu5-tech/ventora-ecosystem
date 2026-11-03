@@ -90,7 +90,7 @@ export function BundlesScreen({
   const stopOffer = stopData ? currentOffer(stopData).offer : null;
 
   return (
-    <FounderShell active="planuri" title={t('title')} user={user} requestsBadge={requestsBadge}>
+    <FounderShell active="bundles" title={t('title')} user={user} requestsBadge={requestsBadge}>
       <BundlesView
         bundles={cards}
         onNew={() => {

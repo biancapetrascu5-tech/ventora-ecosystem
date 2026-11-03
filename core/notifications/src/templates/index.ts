@@ -11,8 +11,9 @@ const DEFAULT_EMAIL_LOCALE: Locale = CANONICAL_LOCALE;
 // Expiry dates are shown in the platform's home time zone until organizations store their own.
 const DISPLAY_TIME_ZONE = 'Europe/Bucharest';
 // Product names used as the eyebrow when no business is involved (not translated).
-const HUB_PRODUCT = 'Ventora';
-const FOUNDER_PRODUCT = 'Ventora Founder';
+const HUB_PRODUCT = 'Ventora Systems';
+// MARCA-1: produsul fără marcă în față, cu „Ventora Systems” după el (glosarul, „Marca”)
+const FOUNDER_PRODUCT = 'Founder · Ventora Systems';
 
 function formatDate(date: Date, locale: Locale): string {
   return new Intl.DateTimeFormat(locale, {

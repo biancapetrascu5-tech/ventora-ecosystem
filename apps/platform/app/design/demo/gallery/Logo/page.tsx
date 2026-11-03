@@ -15,6 +15,11 @@ function LogoSet({ th }: { th: 'light' | 'dark' }) {
         <Logo size={24} />
         <Logo size={21} />
       </Row>
+      <Row label="Pe două rânduri">
+        <Logo variant="stacked" size={32} />
+        <Logo variant="stacked" size={24} />
+        <Logo variant="stacked" size={21} />
+      </Row>
       <Row label="Semnul">
         <Logo variant="mark" size={64} />
         <Logo variant="mark" size={40} />
@@ -24,11 +29,11 @@ function LogoSet({ th }: { th: 'light' | 'dark' }) {
       <Row label="Favicon">
         <span className={f.favtab}>
           <Logo variant="mark" size={16} title="" />
-          <span className="caption">Ventora</span>
+          <span className="caption">Hub · Ventora Systems</span>
         </span>
         <span className={f.favtab}>
           <Logo variant="mark" size={16} title="" />
-          <span className="caption">Programări · Ventora</span>
+          <span className="caption">Programări · Ventora Systems</span>
         </span>
       </Row>
     </div>

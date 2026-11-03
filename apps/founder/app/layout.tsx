@@ -6,7 +6,7 @@ import type { Metadata } from 'next';
 import { NextIntlClientProvider } from 'next-intl';
 
 export const metadata: Metadata = {
-  title: 'Ventora Founder',
+  title: 'Founder · Ventora Systems',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
