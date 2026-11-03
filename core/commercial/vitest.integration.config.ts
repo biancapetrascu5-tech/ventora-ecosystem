@@ -8,6 +8,8 @@ export default defineConfig({
     environment: 'node',
     setupFiles: ['./src/__tests__/runtime-role.setup.ts'],
     include: ['src/__tests__/**/*.integration.test.ts'],
+    // D3-1: the pricing seed needs a clean base of its own (vitest.pricing.config.ts)
+    exclude: ['**/node_modules/**', 'src/__tests__/pricing/**'],
     testTimeout: 30000,
     // the sync tests rewrite the shared registry: files must not run side by side
     fileParallelism: false,
