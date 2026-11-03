@@ -45,6 +45,29 @@ async function listActiveMembersInTx(
   }
 }
 
+/**
+ * Lot 3.5: the business's name (the `business` value of the S115 texts), read as org_rw in the
+ * organization's context; null when it does not exist.
+ */
+export async function organizationNameInTx(
+  tx: SqlClient,
+  organizationId: string,
+): Promise<string | null> {
+  const { rows: who } = await tx.query('SELECT current_user::text AS role');
+  const previous = (who[0] as { role: string }).role;
+  if (!ROLE_RE.test(previous)) throw new Error(`[organizations] unexpected role "${previous}"`);
+  if (previous !== 'org_rw') await tx.query('SET LOCAL ROLE org_rw');
+  try {
+    const { rows } = await tx.query(
+      `SELECT name FROM organizations.organization WHERE id = $1::uuid`,
+      [organizationId],
+    );
+    return (rows[0] as { name: string } | undefined)?.name ?? null;
+  } finally {
+    if (previous !== 'org_rw') await tx.query(`SET LOCAL ROLE ${previous}`);
+  }
+}
+
 /** The active owners and admins of the organization in context, read as org_rw. */
 export async function listManagersInTx(
   tx: SqlClient,

@@ -12,7 +12,9 @@
   },
   "dependencies": {
     "@sentry/nextjs": "^11.0.0",
+    "@stripe/stripe-js": "10.1.0",
     "@ventora/access": "workspace:*",
+    "@ventora/billing": "workspace:*",
     "@ventora/commercial": "workspace:*",
     "@ventora/config": "workspace:*",
     "@ventora/contracts": "workspace:*",

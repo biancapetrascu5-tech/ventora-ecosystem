@@ -1,0 +1,173 @@
+// Schema "billing" (Lot 3.5) — folosită pentru garda de drift (prisma migrate diff) și prisma
+// migrate deploy. Codul nu folosește un client Prisma generat (ca în core/commercial): runtime-ul
+// scrie prin billing_rw, cu pg. CHECK-urile, rolurile, grant-urile, politicile RLS și indexurile
+// parțiale sunt doar în migrare.
+
+datasource db {
+  provider = "postgresql"
+  schemas  = ["billing"]
+}
+
+/// Organizația ↔ clientul Stripe.
+model BillingCustomer {
+  organizationId   String   @id @map("organization_id") @db.Uuid
+  stripeCustomerId String   @unique(map: "billing_customer_stripe_customer_id_key") @map("stripe_customer_id") @db.VarChar(255)
+  createdAt        DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt        DateTime @default(now()) @map("updated_at") @db.Timestamptz
+
+  @@map("billing_customer")
+  @@schema("billing")
+}
+
+/// Cardul salvat: doar marca, ultimele 4 cifre, expirarea și id-ul Stripe (§8.6).
+model PaymentMethodRef {
+  id                    String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  organizationId        String    @map("organization_id") @db.Uuid
+  stripePaymentMethodId String    @unique(map: "payment_method_ref_stripe_payment_method_id_key") @map("stripe_payment_method_id") @db.VarChar(255)
+  brand                 String    @db.VarChar(32)
+  last4                 String    @db.VarChar(4)
+  expMonth              Int       @map("exp_month") @db.SmallInt
+  expYear               Int       @map("exp_year") @db.SmallInt
+  isDefault             Boolean   @default(false) @map("is_default")
+  detachedAt            DateTime? @map("detached_at") @db.Timestamptz
+  createdAt             DateTime  @default(now()) @map("created_at") @db.Timestamptz
+
+  @@index([organizationId], map: "payment_method_ref_organization_id_idx")
+  @@map("payment_method_ref")
+  @@schema("billing")
+}
+
+/// O cumpărare din Hub: un pachet sau o aplicație pe „Direct” (D3-24), cu plata și activarea ei.
+model Purchase {
+  id                    String    @id @db.Uuid
+  organizationId        String    @map("organization_id") @db.Uuid
+  kind                  String    @db.VarChar(16)
+  addonId               String?   @map("addon_id") @db.Uuid
+  applicationId         String?   @map("application_id") @db.VarChar(64)
+  /// Numele pachetului la cumpărare (Founder), sau id-ul aplicației.
+  itemName              String    @map("item_name") @db.VarChar(128)
+  packs                 Int       @default(1)
+  currency              String    @db.VarChar(3)
+  priceMinor            BigInt    @map("price_minor")
+  setupMinor            BigInt    @default(0) @map("setup_minor")
+  recurring             Boolean
+  status                String    @default("pending") @db.VarChar(16)
+  stripePaymentIntentId String?   @unique(map: "purchase_stripe_payment_intent_id_key") @map("stripe_payment_intent_id") @db.VarChar(255)
+  stripeInvoiceId       String?   @unique(map: "purchase_stripe_invoice_id_key") @map("stripe_invoice_id") @db.VarChar(255)
+  failureCode           String?   @map("failure_code") @db.VarChar(64)
+  failureMessage        String?   @map("failure_message") @db.VarChar(500)
+  commercialRef         String?   @map("commercial_ref") @db.Uuid
+  activatedAt           DateTime? @map("activated_at") @db.Timestamptz
+  createdByUserId       String    @map("created_by_user_id") @db.Uuid
+  createdAt             DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt             DateTime  @default(now()) @map("updated_at") @db.Timestamptz
+
+  payments Payment[]
+
+  @@index([organizationId, createdAt], map: "purchase_organization_id_created_at_idx")
+  @@map("purchase")
+  @@schema("billing")
+}
+
+/// Rezultatul unei încercări de plată (o cumpărare sau o factură a abonamentului).
+model Payment {
+  id                    String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  organizationId        String    @map("organization_id") @db.Uuid
+  purchaseId            String?   @map("purchase_id") @db.Uuid
+  kind                  String    @db.VarChar(16)
+  idempotencyKey        String    @unique(map: "payment_idempotency_key_key") @map("idempotency_key") @db.VarChar(255)
+  stripePaymentIntentId String?   @map("stripe_payment_intent_id") @db.VarChar(255)
+  stripeInvoiceId       String?   @map("stripe_invoice_id") @db.VarChar(255)
+  attempt               Int       @default(1)
+  status                String    @db.VarChar(16)
+  amountMinor           BigInt    @map("amount_minor")
+  currency              String    @db.VarChar(3)
+  failureCode           String?   @map("failure_code") @db.VarChar(64)
+  nextAttemptAt         DateTime? @map("next_attempt_at") @db.Timestamptz
+  occurredAt            DateTime  @map("occurred_at") @db.Timestamptz
+  createdAt             DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  purchase              Purchase? @relation(fields: [purchaseId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+
+  @@index([organizationId, occurredAt], map: "payment_organization_id_occurred_at_idx")
+  @@map("payment")
+  @@schema("billing")
+}
+
+/// Webhook-ul Stripe: fiecare event.id se procesează o singură dată.
+model StripeEvent {
+  eventId         String   @id @map("event_id") @db.VarChar(255)
+  type            String   @db.VarChar(128)
+  organizationId  String?  @map("organization_id") @db.Uuid
+  stripeCreatedAt DateTime @map("stripe_created_at") @db.Timestamptz
+  receivedAt      DateTime @default(now()) @map("received_at") @db.Timestamptz
+
+  @@map("stripe_event")
+  @@schema("billing")
+}
+
+/// Legătura cu abonamentul Stripe (D3-4) sau marcajul de plată manuală (D3-11).
+model BillingSubscription {
+  organizationId       String    @id @map("organization_id") @db.Uuid
+  subscriptionId       String    @map("subscription_id") @db.Uuid
+  paymentMethod        String    @default("card") @map("payment_method") @db.VarChar(8)
+  stripeSubscriptionId String?   @unique(map: "billing_subscription_stripe_subscription_id_key") @map("stripe_subscription_id") @db.VarChar(255)
+  status               String?   @db.VarChar(32)
+  currentPeriodEnd     DateTime? @map("current_period_end") @db.Timestamptz
+  cancelAtPeriodEnd    Boolean   @default(false) @map("cancel_at_period_end")
+  lastEventAt          DateTime? @map("last_event_at") @db.Timestamptz
+  createdAt            DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt            DateTime  @default(now()) @map("updated_at") @db.Timestamptz
+
+  @@map("billing_subscription")
+  @@schema("billing")
+}
+
+/// Disputa (chargeback): decizia rămâne manuală, la Founder.
+model Dispute {
+  stripeDisputeId String   @id @map("stripe_dispute_id") @db.VarChar(255)
+  organizationId  String   @map("organization_id") @db.Uuid
+  stripeChargeId  String   @map("stripe_charge_id") @db.VarChar(255)
+  amountMinor     BigInt   @map("amount_minor")
+  currency        String   @db.VarChar(3)
+  reason          String   @db.VarChar(64)
+  status          String   @db.VarChar(32)
+  createdAt       DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt       DateTime @default(now()) @map("updated_at") @db.Timestamptz
+
+  @@index([organizationId], map: "dispute_organization_id_idx")
+  @@map("dispute")
+  @@schema("billing")
+}
+
+model OutboxEvent {
+  eventId        String    @id @map("event_id") @db.Uuid
+  type           String    @db.VarChar(128)
+  version        Int
+  occurredAt     DateTime  @map("occurred_at") @db.Timestamptz
+  organizationId String    @map("organization_id") @db.Uuid
+  sourceApp      String    @map("source_app") @db.VarChar(64)
+  resourceId     String    @map("resource_id") @db.VarChar(255)
+  correlationId  String?   @map("correlation_id") @db.VarChar(255)
+  payload        Json
+  status         String    @default("pending") @db.VarChar(16)
+  attempts       Int       @default(0)
+  availableAt    DateTime  @default(now()) @map("available_at") @db.Timestamptz
+  lastError      String?   @map("last_error")
+  failedAt       DateTime? @map("failed_at") @db.Timestamptz
+  dispatchedAt   DateTime? @map("dispatched_at") @db.Timestamptz
+  createdAt      DateTime  @default(now()) @map("created_at") @db.Timestamptz
+
+  @@map("outbox_events")
+  @@schema("billing")
+}
+
+model ProcessedEvent {
+  consumer       String   @db.VarChar(128)
+  eventId        String   @map("event_id") @db.Uuid
+  organizationId String   @map("organization_id") @db.Uuid
+  processedAt    DateTime @default(now()) @map("processed_at") @db.Timestamptz
+
+  @@id([consumer, eventId])
+  @@map("processed_events")
+  @@schema("billing")
+}

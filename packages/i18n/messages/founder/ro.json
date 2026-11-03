@@ -369,7 +369,6 @@
         "purchase": "Cumpărare",
         "purchaseDirect": "Directă",
         "purchaseOnRequest": "La cerere, prin echipa Ventora",
-        "setupLocked": "Are cost de implementare, deci rămâne la cerere.",
         "error": "Nu am putut salva schimbările. Verifică internetul și încearcă din nou.",
         "errorRequired": "Completează câmpul.",
         "errorEur": "Scrie prețul în euro. Nu îl calculăm din lei."

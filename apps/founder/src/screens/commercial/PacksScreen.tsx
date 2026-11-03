@@ -22,7 +22,7 @@ import { FounderShell } from '../shell/FounderShell';
 import { useQuotaText } from './labels';
 
 /* FounderPacks (Lotul 3.4): „Pachete în plus” — prețurile în lei și în euro, implementarea, cum
-   se plătește, „direct / la cerere” (D3-7; cu implementare → la cerere, D3-23), „Oprește
+   se plătește, „direct / la cerere” (D3-7; liber și cu implementare, D3-24), „Oprește
    vânzarea”. Fiecare schimbare trece prin core/commercial, cu auditul ei pe persoana Founder. */
 
 const EMPTY: PackFormValues = {

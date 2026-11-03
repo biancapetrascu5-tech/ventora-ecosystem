@@ -2,8 +2,8 @@
 /**
  * Rulează toate testele de integrare local, identic cu CI:
  *   1. Pornește DB-ul de test
- *   2. Verifică garda de drift (prisma migrate diff --exit-code): identity, founder, organizations, audit, access, notifications, files, commercial
- *   3. Rulează testele de integrare (db-kit, audit, identity, organizations, integrations, access, notifications, files, commercial, booking)
+ *   2. Verifică garda de drift (prisma migrate diff --exit-code): identity, founder, organizations, audit, access, notifications, files, commercial, billing
+ *   3. Rulează testele de integrare (db-kit, audit, identity, organizations, integrations, access, notifications, files, commercial, booking, billing)
  *      și sincronizarea registrului comercial de două ori (a doua nu trebuie să schimbe nimic)
  *   4. Oprește DB-ul (indiferent de rezultat)
  *
@@ -40,6 +40,7 @@ const SHADOW_AUDIT = `postgresql://postgres:test@localhost:${PG}/shadow_audit_di
 const SHADOW_COMMERCIAL = `postgresql://postgres:test@localhost:${PG}/shadow_commercial_diff`;
 const SHADOW_NOTIFICATIONS = `postgresql://postgres:test@localhost:${PG}/shadow_notifications_diff`;
 const SHADOW_FILES = `postgresql://postgres:test@localhost:${PG}/shadow_files_diff`;
+const SHADOW_BILLING = `postgresql://postgres:test@localhost:${PG}/shadow_billing_diff`;
 
 let exitCode = 0;
 
@@ -197,6 +198,19 @@ try {
     DATABASE_URL: `postgresql://app_runtime:${TEST_DB.appPw}@localhost:${PG}/${TEST_DB.accessDb}`,
     BETTER_AUTH_SECRET: TEST_DB.betterAuthSecret,
     FOUNDER_AUTH_SECRET: TEST_DB.founderAuthSecret,
+  });
+
+  // --- Lot 3.5: core/billing (drift, teste pe baza access, cu registrul comercial real) ---
+  console.log('[test:integration] Verificare drift billing schema...');
+  runPkg(
+    '@ventora/billing',
+    `exec prisma migrate diff --from-migrations ./prisma/migrations --to-schema ./prisma/schema.prisma --exit-code --config prisma7.config.ts`,
+    { DATABASE_URL: ADMIN_ACCESS, SHADOW_DATABASE_URL: SHADOW_BILLING },
+  );
+  console.log('\n[test:integration] billing...');
+  runPkg('@ventora/billing', 'test:integration', {
+    DATABASE_URL_TEST: `postgresql://app_runtime:${TEST_DB.appPw}@localhost:${PG}/${TEST_DB.accessDb}`,
+    DATABASE_URL_ADMIN_TEST: ADMIN_ACCESS,
   });
 
   console.log('\n[test:integration] Toate testele au trecut.');

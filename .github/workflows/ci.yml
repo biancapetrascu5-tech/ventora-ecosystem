@@ -310,7 +310,7 @@ jobs:
         run: pnpm --filter @ventora/integrations test:integration
 
   integration-tests-access:
-    name: Integration tests (access + booking — T3)
+    name: Integration tests (access + booking + billing — T3)
     runs-on: ubuntu-latest
     timeout-minutes: 20
     services:
@@ -403,6 +403,14 @@ jobs:
             echo "Applying $f"
             $PSQL -f "$f"
           done
+      # Lot 3.5: core/billing (schema billing, role billing_rw, outbox)
+      - name: Apply billing migrations
+        run: |
+          PSQL="psql postgresql://postgres:test@localhost:5435/ventora_access_test -v ON_ERROR_STOP=1"
+          for f in core/billing/prisma/migrations/*/migration.sql; do
+            echo "Applying $f"
+            $PSQL -f "$f"
+          done
       - name: Sync permissions
         run: pnpm tsx scripts/sync-permissions.ts
         env:
@@ -467,6 +475,23 @@ jobs:
           DATABASE_URL_TEST: postgresql://app_runtime:${{ env.APP_PW }}@localhost:5435/ventora_access_test
           DATABASE_URL_ADMIN_TEST: postgresql://postgres:test@localhost:5435/ventora_access_test
         run: pnpm --filter @ventora/files test:integration
+      - name: Verify billing schema matches migrations
+        run: |
+          psql postgresql://postgres:test@localhost:5435/ventora_access_test -c "CREATE DATABASE shadow_billing_diff"
+          SHADOW_DATABASE_URL="postgresql://postgres:test@localhost:5435/shadow_billing_diff" \
+          pnpm --filter @ventora/billing exec prisma migrate diff \
+            --from-migrations ./prisma/migrations \
+            --to-schema ./prisma/schema.prisma \
+            --exit-code \
+            --config prisma7.config.ts
+        env:
+          DATABASE_URL: postgresql://postgres:test@localhost:5435/ventora_access_test
+      # Lot 3.5: a fake Stripe (no keys in CI); the real one runs locally (stripe-live, skipped here)
+      - name: Run billing integration tests
+        env:
+          DATABASE_URL_TEST: postgresql://app_runtime:${{ env.APP_PW }}@localhost:5435/ventora_access_test
+          DATABASE_URL_ADMIN_TEST: postgresql://postgres:test@localhost:5435/ventora_access_test
+        run: pnpm --filter @ventora/billing test:integration
 
   integration-tests-audit:
     name: Integration tests (audit — TA)

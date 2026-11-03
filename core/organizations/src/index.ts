@@ -37,5 +37,6 @@ export {
   listManagersInTx,
   notifyManagersInTx,
   notifyBillingInTx,
+  organizationNameInTx,
   invitationNewLinkRequestedConsumer,
 } from './notify';

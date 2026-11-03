@@ -1,6 +1,8 @@
 import * as Sentry from '@sentry/nextjs';
 import { Pool } from 'pg';
+import { billingPaymentFailedConsumer, runStripeReconcileJob } from '@ventora/billing';
 import { runQuotaReconciliationJob } from '@ventora/commercial';
+import './billing-config';
 import { summarizeError } from '@ventora/errors';
 import { getNotificationContactsInTx } from '@ventora/identity';
 import {
@@ -37,6 +39,8 @@ const OUTBOX_SOURCES: readonly OutboxSource[] = [
   { schema: 'commercial', moduleRole: 'commercial_rw' },
   // Lot 4.7: file.uploaded / file.deleted (fără consumator încă: se marchează livrate)
   { schema: 'files', moduleRole: 'files_rw' },
+  // Lot 3.5: plățile (billing.payment.succeeded / failed, billing.dispute.opened)
+  { schema: 'billing', moduleRole: 'billing_rw' },
 ];
 
 // app_runtime (DATABASE_URL), creat la prima rulare: nu la build și nu în codul de request.
@@ -55,7 +59,9 @@ const jobsPool: PoolLike = {
 /** Consumatorii evenimentelor; notificările (4.3) și Growth (F5) se înregistrează aici. */
 export const platformConsumers = new ConsumerRegistry()
   // Lot 4.3: primul consumator real (ARCHITECTURE §15.1), notificarea în Hub pentru owner și admini
-  .register(invitationNewLinkRequestedConsumer);
+  .register(invitationNewLinkRequestedConsumer)
+  // Lot 3.5: plata refuzată → owner-ul (S115: payment.pack, payment.renewal, payment.retry)
+  .register(billingPaymentFailedConsumer);
 
 /*
  * Lot 4.5: notificările Fazei 3 (S115) se trimit cu un singur apel, notifyBillingInTx
@@ -65,7 +71,7 @@ export const platformConsumers = new ConsumerRegistry()
  * se înregistrează în loturile F3 care au datele textelor: evenimentele au doar id-uri și cifre,
  * iar textele cer numele resursei și al pachetului, data resetării, sumele și numele owner-ului
  * (Loturile 3.4, 3.5, 3.6, 3.7, 3.8). Până atunci evenimentele se marchează livrate fără
- * consumator (withoutConsumer: 'complete').
+ * consumator (withoutConsumer: 'complete'). Lotul 3.5: plata refuzată (billingPaymentFailedConsumer).
  */
 
 // Datele de contact și limba destinatarului, din identity (în tranzacția job-ului de livrare).
@@ -107,13 +113,28 @@ export const platformJobs = new JobRegistry()
         channels: { email: getEmailChannel() },
       }),
   })
-  // Declarate; logica vine în lotul fiecăruia, cu platformJobs.attach(id, run).
+  // Lotul 3.5 (D3-4 a): reînnoirea o face Stripe Billing; job-ul aduce abonamentul Stripe al
+  // fiecărei afaceri cu card la modelul comercial (liniile, reducerile, anularea făcute din
+  // Founder) și activează cumpărările plătite rămase neactivate. Fiecare afacere în contextul ei.
   .register({
-    id: 'commercial.subscription-renewal',
+    id: 'billing.stripe-reconcile',
     owner: 'Lot 3.5',
-    description: 'Reînnoirea abonamentelor',
-    trigger: { cron: '0 3 * * *' },
+    description: 'Abonamentele Stripe aliniate la modelul comercial',
+    trigger: { cron: '*/15 * * * *' },
+    run: async () => {
+      const report = await runStripeReconcileJob();
+      if (report.failed.length) {
+        // job-ul eșuează (jurnal + Sentry, reîncercare); afacerile reușite rămân făcute
+        throw new AggregateError(
+          report.failed.map((f) => f.error),
+          `[billing] ${report.failed.length} of ${report.checked} businesses not reconciled: ` +
+            report.failed.map((f) => f.organizationId).join(', '),
+        );
+      }
+      return report;
+    },
   })
+  // Declarate; logica vine în lotul fiecăruia, cu platformJobs.attach(id, run).
   .register({
     id: 'commercial.trial-end',
     owner: 'Lot 3.8',

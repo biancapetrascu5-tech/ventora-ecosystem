@@ -112,6 +112,7 @@ for (const db of [
   'shadow_commercial_diff',
   'shadow_notifications_diff',
   'shadow_files_diff',
+  'shadow_billing_diff',
 ]) {
   psql('postgres', `DROP DATABASE IF EXISTS ${db}; CREATE DATABASE ${db};`);
 }
@@ -357,6 +358,10 @@ for (const migration of [
   'core/commercial/prisma/migrations/20261101000009_commercial_bundles/migration.sql',
   // D3-24 înlocuiește D3-23 pe aplicații: „direct / la cerere” liber și cu implementare
   'core/commercial/prisma/migrations/20261101000010_commercial_app_setup_direct/migration.sql',
+  // Lot 3.5: D3-24 și pe pachete (fără addon_setup_on_request)
+  'core/commercial/prisma/migrations/20261101000011_commercial_addon_setup_direct/migration.sql',
+  // Lot 3.5: ce se cumpără din Hub se activează în modelul comercial (purchase_id, commercial_rw)
+  'core/commercial/prisma/migrations/20261101000012_commercial_purchases/migration.sql',
   // Lot 4.3: UserPreference (limba) și notificările
   'core/identity/prisma/identity/migrations/20261101000007_user_preference/migration.sql',
   'core/notifications/prisma/migrations/20261101000008_notifications_init/migration.sql',
@@ -364,6 +369,8 @@ for (const migration of [
   'core/notifications/prisma/migrations/20261101000009_notification_preference_topic/migration.sql',
   // Lot 4.7: fișierele (schema files, rolul files_rw, outbox-ul modulului)
   'core/files/prisma/migrations/20261101000011_files_init/migration.sql',
+  // Lot 3.5: core/billing (schema billing, rolul billing_rw, outbox)
+  'core/billing/prisma/migrations/20261101000013_billing_init/migration.sql',
 ]) {
   psqlFile(TEST_DB.accessDb, join(ROOT, migration));
 }

@@ -281,9 +281,10 @@ describe('T5 — at the limit only creating is blocked; an add-on raises it at t
     ).rows;
     grantId = (
       await adminQuery(
-        `INSERT INTO commercial.addon_grant (organization_id, addon_id, subscription_id, recurring, source)
-         VALUES ($1, $2, $3, true, 'purchase') RETURNING id`,
-        [org, addonId, subscriptionId],
+        // Lot 3.5: a pack bought carries its purchase (core/billing)
+        `INSERT INTO commercial.addon_grant (organization_id, addon_id, subscription_id, recurring, source, purchase_id)
+         VALUES ($1, $2, $3, true, 'purchase', $4) RETURNING id`,
+        [org, addonId, subscriptionId, newUuid()],
       )
     ).rows[0].id;
     const created = await createAppointment({ sessionToken: token, title: 'Trei' });
