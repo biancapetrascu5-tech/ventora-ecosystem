@@ -7,6 +7,7 @@
  */
 
 import { BILLING_TEMPLATES } from './billing';
+import { OWNER_NOTICE_TEMPLATES } from './owner-notice';
 import { isSecurityTopic, topicCategory, type NotificationTopic } from './topics';
 import type { NotificationParams, NotificationValueType } from './values';
 
@@ -79,6 +80,8 @@ export const NOTIFICATION_TEMPLATES: readonly NotificationTemplate[] = [
   },
   // Lot 4.5: the Phase 3 notifications (S115); they replace the placeholders of Lot 4.3
   ...BILLING_TEMPLATES,
+  // Lot 3.7: „Recomandă” / „Anunță proprietarul” from the Hub, to the owner, in the app only
+  ...OWNER_NOTICE_TEMPLATES,
 ];
 
 export class NotificationCatalog {

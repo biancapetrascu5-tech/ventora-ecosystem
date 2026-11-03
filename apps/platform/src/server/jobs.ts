@@ -1,7 +1,7 @@
 import * as Sentry from '@sentry/nextjs';
 import { Pool } from 'pg';
 import { billingPaymentFailedConsumer, runStripeReconcileJob } from '@ventora/billing';
-import { runQuotaReconciliationJob } from '@ventora/commercial';
+import { ownerNotifiedConsumer, runQuotaReconciliationJob } from '@ventora/commercial';
 import './billing-config';
 import { summarizeError } from '@ventora/errors';
 import { getNotificationContactsInTx } from '@ventora/identity';
@@ -61,7 +61,9 @@ export const platformConsumers = new ConsumerRegistry()
   // Lot 4.3: primul consumator real (ARCHITECTURE §15.1), notificarea în Hub pentru owner și admini
   .register(invitationNewLinkRequestedConsumer)
   // Lot 3.5: plata refuzată → owner-ul (S115: payment.pack, payment.renewal, payment.retry)
-  .register(billingPaymentFailedConsumer);
+  .register(billingPaymentFailedConsumer)
+  // Lotul 3.7: „Recomandă” / „Anunță proprietarul” → notificarea owner-ului, în Hub
+  .register(ownerNotifiedConsumer);
 
 /*
  * Lot 4.5: notificările Fazei 3 (S115) se trimit cu un singur apel, notifyBillingInTx

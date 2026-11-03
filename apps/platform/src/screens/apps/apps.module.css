@@ -1,0 +1,223 @@
+/* HubCatalog / HubCatalogApp (preview.html): .wrap, .tiles4, .rows, .sec, .appdet*, .sheetlike,
+   .v-up__sum. Sub 768px (containerul shell): o coloană, rânduri în loc de plăcuțe. */
+
+.wrap {
+  max-width: 1120px;
+  width: 100%;
+  margin: 0 auto;
+  padding: var(--space-6) var(--space-6) var(--space-10);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+  box-sizing: border-box;
+}
+
+.intro {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.m0 {
+  margin: 0;
+}
+
+.tools {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.search {
+  flex: 1 1 260px;
+  max-width: 360px;
+}
+
+.sec {
+  margin: 0 0 var(--space-3);
+}
+
+.tiles4 {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-4);
+}
+
+.rows {
+  display: flex;
+  flex-direction: column;
+  background: var(--sheet);
+  border: var(--border-width) solid var(--line);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.appdet {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  gap: var(--space-6);
+  align-items: start;
+}
+
+.sheetlike {
+  background: var(--sheet);
+  border: var(--border-width) solid var(--line);
+  border-radius: var(--radius-lg);
+}
+
+.main,
+.side {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  padding: var(--space-6);
+}
+
+.side {
+  gap: var(--space-3);
+}
+
+.head {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: flex-start;
+  gap: var(--space-4);
+}
+
+.headText {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-width: 0;
+}
+
+.badges {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.why {
+  padding: var(--space-4);
+  background: var(--sunken);
+  border-radius: var(--radius-md);
+}
+
+.why p {
+  margin: 0;
+}
+
+.why p + p {
+  margin-top: var(--space-1);
+}
+
+.list {
+  list-style: none;
+  margin: var(--space-2) 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.list li {
+  display: flex;
+  gap: var(--space-2);
+  align-items: flex-start;
+}
+
+.list svg {
+  flex: none;
+  margin-top: 2px;
+  color: var(--ink-muted);
+}
+
+.links {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.link {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.sum {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  border-top: var(--border-width) solid var(--line);
+}
+
+.sum > div {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--space-4);
+  padding: var(--space-2) 0;
+  border-bottom: var(--border-width) solid var(--line);
+}
+
+.sum dt {
+  color: var(--ink-muted);
+}
+
+.sum dd {
+  margin: 0;
+  text-align: right;
+}
+
+.inc {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.incList {
+  margin: 0;
+  padding-inline-start: var(--space-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-0-5);
+}
+
+.toast {
+  position: fixed;
+  right: var(--space-6);
+  bottom: var(--space-6);
+  z-index: var(--z-overlay);
+  max-width: 420px;
+}
+
+@container shell (max-width: 1023px) {
+  .tiles4 {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .appdet {
+    grid-template-columns: 1fr;
+  }
+}
+
+@container shell (max-width: 767px) {
+  .wrap {
+    padding: var(--space-4);
+    gap: var(--space-6);
+  }
+  .search {
+    max-width: none;
+  }
+  .main,
+  .side {
+    padding: var(--space-4);
+  }
+  .sheetlike {
+    border-radius: 0;
+    border-left: 0;
+    border-right: 0;
+  }
+}

@@ -38,6 +38,7 @@ export function HubSettings({
       height="100%"
       spine={
         <Spine
+          hub
           labels={SPINE_RO}
           sections={HUB_SECTIONS}
           activeId={active}

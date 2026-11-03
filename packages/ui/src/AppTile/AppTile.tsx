@@ -113,7 +113,13 @@ export function AppTile({
           ? { label: labels.seeStatus, fn: onSeeStatus }
           : null;
   const reco = !ok && recommendation ? recommendation : null;
-  const act2 = reco && onDetails ? { label: labels.seeDetails, fn: onDetails } : null;
+  // Lotul 3.7 (NECESITĂ DECIZIE, raportul 3.7): fără Growth (S111) nu există recomandări, iar
+  // pagina aplicației (HubCatalogApp) trebuie să se poată deschide; „Vezi detaliile” apare și
+  // fără recomandare, la „Nu e în abonament”, doar când apelantul dă `onDetails`.
+  const act2 =
+    onDetails && (reco || access === 'notInPlan')
+      ? { label: labels.seeDetails, fn: onDetails }
+      : null;
   const action = act2 ?? act;
   const lockedName = `${nm} — ${labels.access[access]}`;
   const badgeEl =

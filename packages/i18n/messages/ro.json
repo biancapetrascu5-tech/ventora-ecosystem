@@ -466,7 +466,9 @@
       "business": "Afacerea",
       "team": "Echipă și invitații",
       "teamShort": "Echipă",
-      "roles": "Roluri și acces"
+      "roles": "Roluri și acces",
+      "plan": "Abonament și consum",
+      "planShort": "Abonament"
     },
     "team": {
       "title": "Echipa",
@@ -534,6 +536,97 @@
     },
     "home": {
       "soon": "Aplicațiile afacerii tale vor apărea aici."
+    },
+    "plan": {
+      "title": "Abonament și consum",
+      "lead": "Ce include abonamentul afacerii, cât ai folosit luna aceasta, ce poți cumpăra în plus și facturile tale.",
+      "yours": "Abonamentul tău",
+      "status": {
+        "active": "Activ",
+        "trialing": "În perioada de probă",
+        "past_due": "Plată restantă"
+      },
+      "cardFor": "Cardul pentru cumpărături",
+      "noCard": "Nu ai încă un card salvat. Până adaugi unul, pachetele în plus le activăm la cerere.",
+      "packs": "Pachete în plus",
+      "packsLead": "Le cumperi direct, cu cardul afacerii. Cele marcate „Doar la cerere” le activăm noi.",
+      "buy": "Cumpără · {price}",
+      "buySeats": "Cumpără locuri în plus",
+      "buySms": "Cumpără SMS-uri în plus",
+      "perMonth": "pe lună, plătit odată cu abonamentul",
+      "invoices": "Facturi",
+      "invoicesLead": "Abonamentul și fiecare cumpărătură au factura lor.",
+      "col": {
+        "invoice": "Factura",
+        "for": "Pentru",
+        "date": "Data",
+        "amount": "Sumă",
+        "status": "Stare"
+      },
+      "paid": "Plătită",
+      "downloadPdf": "Descarcă PDF",
+      "forSubscription": "Abonament",
+      "forPack": "Pachet în plus · {name}",
+      "noPayments": "Încă nu ai nicio plată.",
+      "noSubscription": "Afacerea nu are încă un abonament. Scrie-ne și îl pornim.",
+      "requestSentBody": "Echipa Ventora Systems o vede acum. Primești o notificare când pachetul e activ.",
+      "saveCard": "Salvează cardul",
+      "cardSaved": "Cardul e salvat.",
+      "cardError": "Nu am putut salva cardul. Încearcă din nou.",
+      "cardUnavailable": "Plata cu cardul nu e disponibilă acum. Încearcă mai târziu.",
+      "paymentProcessing": "Banca încă procesează plata. Pachetul se activează imediat ce plata trece.",
+      "sendFailed": "Nu am putut trimite. Încearcă din nou."
+    },
+    "apps": {
+      "bar": "Toate aplicațiile",
+      "title": "Toate aplicațiile Ventora Systems",
+      "lead": "{total} aplicații care lucrează împreună. Ai {have} în abonament; la celelalte vezi ce fac, cât costă și dacă au perioadă de probă.",
+      "search": "Caută o aplicație sau ce vrei să faci",
+      "searchLabel": "Caută",
+      "only": "Doar cele pe care nu le ai",
+      "inPlan": "în abonament",
+      "group": {
+        "clients": "Programări și clienți",
+        "team": "Echipă",
+        "operations": "Operațiuni",
+        "money": "Bani și documente",
+        "projects": "Proiecte și date",
+        "community": "Comunitate"
+      },
+      "desc": {
+        "booking": "Programări, calendar și reamintiri",
+        "crm": "Clienți, istoric și oportunități",
+        "marketing": "Campanii și reamintiri automate",
+        "portal": "Pagina afacerii pentru clienți",
+        "hr": "Echipă, prezență și concedii",
+        "shifts": "Ture și înlocuiri",
+        "inventory": "Stoc, comenzi și furnizori",
+        "assets": "Echipamente, revizii și garanții",
+        "events": "Evenimente, bilete și invitați",
+        "finance": "Facturi, scadențe și restanțe",
+        "contracts": "Contracte, semnături și termene",
+        "documents": "Documente și șabloane",
+        "projects": "Proiecte, sarcini și termene",
+        "analytics": "Cifrele afacerii, pe luni și servicii",
+        "network": "Comunitatea afacerilor Ventora Systems"
+      }
+    },
+    "app": {
+      "does": "Ce face",
+      "links": "Se leagă de",
+      "paid": "Se plătește",
+      "paidValue": "Odată cu abonamentul",
+      "recommend": "Recomandă aplicația",
+      "decider": "Ajunge la {who} (proprietar).",
+      "active": "Aplicația e activă. O găsești în aplicațiile tale.",
+      "content": {
+        "marketing": {
+          "lead": "Campanii și reamintiri automate pentru clienții tăi.",
+          "f1": "Campanii prin SMS și e-mail către grupuri de clienți",
+          "f2": "Reamintiri de revenire, pornite de ultima programare",
+          "f3": "Rezultate: câți au deschis, câți au rezervat"
+        }
+      }
     }
   },
   "roles": {
@@ -634,7 +727,8 @@
       "finalPrice": "Prețul e final, nu se adaugă TVA."
     },
     "packs": {
-      "validUntil": "valabil până pe {date}"
+      "validUntil": "valabil până pe {date}",
+      "usageNote": "Ai folosit {used} din {limit} luna aceasta."
     },
     "prorate": {
       "today": "Azi: {amount}, proporțional până pe {date}",
@@ -648,6 +742,13 @@
       "pack": "{name} · pachet în plus",
       "noPacks": "Niciun pachet în plus.",
       "included": "Inclus"
+    },
+    "purchase": {
+      "successPending": "Pachetul e activ și limita a crescut deja.",
+      "invoicePending": "Factura ți-o trimitem pe e-mail imediat ce e emisă, de obicei în câteva minute."
+    },
+    "invoices": {
+      "pending": "Factura se emite"
     }
   },
   "catalog": {
@@ -1021,6 +1122,158 @@
         "action": "Vezi factura"
       },
       "upgradeAction": "Cere alt abonament"
+    },
+    "ownerNotice": {
+      "application": {
+        "title": "{name} îți recomandă {app}",
+        "body": "Vezi ce face aplicația și cât costă. Doar tu o poți activa.",
+        "action": "Vezi aplicația"
+      },
+      "addon": {
+        "title": "{name} îți cere un pachet în plus: {pack}",
+        "body": "Pachetele în plus le poți cumpăra doar tu, din Abonament și consum.",
+        "action": "Vezi pachetele"
+      },
+      "quota": {
+        "title": "{name} te anunță despre limita de {resource}",
+        "body": "Afacerea se apropie de limită sau a atins-o. Nu se pierde nimic; pachetele în plus le poți cumpăra doar tu.",
+        "action": "Vezi consumul"
+      }
+    }
+  },
+  "pay": {
+    "expires": "expiră {date}",
+    "changeCard": "Schimbă cardul",
+    "addCard": "Adaugă card",
+    "stripeSlot": "Formular securizat Stripe: număr card, expirare, CVC",
+    "saveCard": "Păstrează cardul pentru plățile următoare",
+    "processingHint": "Nu închide fereastra. Durează doar câteva secunde.",
+    "paySuccessHint": "Limita a crescut deja. Ți-am trimis factura și pe e-mail.",
+    "paySuccessHintPending": "Pachetul e activ și limita a crescut deja.",
+    "invoicePending": "Factura ți-o trimitem pe e-mail imediat ce e emisă, de obicei în câteva minute.",
+    "before": "Înainte",
+    "after": "Acum",
+    "invoiceIssued": "Am emis factura {nr}",
+    "seeInvoice": "Vezi factura",
+    "payFailed": "Plata nu a trecut",
+    "noMoneyTaken": "Nu ți s-a retras niciun ban de pe card.",
+    "whatYouCanDo": "Ce poți face",
+    "tryAgain": "Încearcă din nou",
+    "useOtherCard": "Folosește alt card",
+    "callBank": "Dacă se repetă, sună la bancă: uneori blochează plățile online noi.",
+    "processing": "Procesăm plata…",
+    "paySuccess": "Plata a reușit",
+    "payAmount": "Plătește {amount}",
+    "done": "Gata",
+    "cancel": "Renunță",
+    "quantity": "Cantitate",
+    "decrease": "Scade cantitatea",
+    "increase": "Crește cantitatea",
+    "total": "Total",
+    "payToday": "Plătești azi",
+    "prorateToday": "Azi: {amount}, proporțional până pe {date}",
+    "prorateThen": "Apoi {amount} pe lună, odată cu abonamentul.",
+    "finalPrice": "Prețul e final, nu se adaugă TVA.",
+    "payWith": "Plătești cu cardul",
+    "cardExpiring": "Cardul expiră luna aceasta. Poți plăti cu el acum sau îl schimbi.",
+    "noCardSaved": "Afacerea nu are încă un card salvat.",
+    "close": "Închide",
+    "chooseOption": "Alege ce ți se potrivește",
+    "nothingLost": "Nu se pierde nimic din ce ai.",
+    "decides": "Ajunge la {who}.",
+    "recommendSent": "Am trimis recomandarea către {who}.",
+    "recommendSend": "Recomandă",
+    "continueBtn": "Continuă",
+    "back": "Înapoi",
+    "youActivate": "Ce activezi",
+    "whenLabel": "Când",
+    "priceLabel": "Preț",
+    "setupCost": "Cost de implementare",
+    "noneCost": "Fără",
+    "planRequestNote": "Nu plătești nimic acum. Îți confirmăm noul abonament și prețul înainte să-l pornim, în cel mult o zi lucrătoare.",
+    "trialNoCard": "Nu ai nevoie de card. La final aplicația se oprește, datele rămân, iar continuarea e alegerea ta.",
+    "upgrade": "Cere alt abonament",
+    "startTrial": "Începe perioada de probă",
+    "activating": "Activăm…",
+    "trialActive": "Perioada de probă a început",
+    "setupOnce": "Implementare, o singură dată",
+    "prorateMaint": "Mentenanța: {amount}, proporțional până pe {date}",
+    "addonIncludes": "Include",
+    "access_available": "Disponibilă",
+    "access_unavailable": "Temporar indisponibilă",
+    "access_notInRole": "Nu e în rolul tău",
+    "access_notInPlan": "Nu e în abonament",
+    "hint_unavailable": "Lucrăm la ea acum. Revine în curând.",
+    "hint_notInRole": "Rolul tău nu include această aplicație. {who} îți poate da acces.",
+    "hint_notInRoleNoOne": "Rolul tău nu include această aplicație. Proprietarul afacerii îți poate da acces.",
+    "hint_notInPlan": "Nu e inclusă în abonamentul afacerii. Scrie-ne și o activăm.",
+    "requestAccess": "Cere acces",
+    "writeUs": "Scrie-ne",
+    "seeStatus": "Vezi starea",
+    "openApp": "Deschide {app}",
+    "seeDetails": "Vezi detaliile",
+    "recommendation": "Recomandare",
+    "moreOptions": "Mai multe opțiuni",
+    "remindLater": "Amintește-mi mai târziu",
+    "remindWeek": "Peste o săptămână",
+    "remindMonth": "Peste o lună",
+    "notInterested": "Nu mă interesează",
+    "onRequestOnly": "Doar la cerere",
+    "requestActivation": "Cere activare",
+    "notifyOwner": "Anunță proprietarul"
+  },
+  "quota": {
+    "platform_members": {
+      "label": "Locuri în echipă",
+      "resource": "locuri în echipă"
+    },
+    "platform_locations": {
+      "label": "Locații",
+      "resource": "locații"
+    },
+    "booking_appointments": {
+      "label": "Programări",
+      "resource": "programări"
+    },
+    "booking_sms_devices": {
+      "label": "Telefoane pentru SMS",
+      "resource": "telefoane pentru SMS"
+    },
+    "messaging_sms": {
+      "label": "SMS-uri",
+      "resource": "SMS-uri"
+    },
+    "messaging_email": {
+      "label": "E-mailuri către clienți",
+      "resource": "e-mailuri către clienți"
+    },
+    "marketing_campaigns": {
+      "label": "Campanii",
+      "resource": "campanii"
+    },
+    "documents_storage": {
+      "label": "Spațiu documente",
+      "resource": "spațiu pentru documente"
+    },
+    "workflows_active": {
+      "label": "Automatizări active",
+      "resource": "automatizări active"
+    },
+    "funnel_pages_published": {
+      "label": "Pagini publicate",
+      "resource": "pagini publicate"
+    },
+    "ai_analyses": {
+      "label": "Analize AI",
+      "resource": "analize AI"
+    },
+    "events_active": {
+      "label": "Evenimente publicate",
+      "resource": "evenimente publicate"
+    },
+    "events_created": {
+      "label": "Evenimente create",
+      "resource": "evenimente create"
     }
   }
 }

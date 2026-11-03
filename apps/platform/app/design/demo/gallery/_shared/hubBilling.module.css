@@ -1,0 +1,30 @@
+/* Lotul 3.7 — .x-frame / .x-overlay / .modal-demo din preview-urile HubAppActivation și
+   HubAddonPurchase: dialogul peste ecran, cu fundalul scrim, doar în galerie. */
+.frame {
+  position: relative;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.frame > * {
+  flex: 1;
+  min-height: 0;
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  background: var(--scrim);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-6);
+  z-index: var(--z-overlay);
+}
+
+.usageGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: var(--space-6);
+}

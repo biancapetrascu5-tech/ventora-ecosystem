@@ -466,7 +466,9 @@
       "business": "Negocio",
       "team": "Equipo e invitaciones",
       "teamShort": "Equipo",
-      "roles": "Roles y acceso"
+      "roles": "Roles y acceso",
+      "plan": "Plan y uso",
+      "planShort": "Plan"
     },
     "team": {
       "title": "Equipo",
@@ -534,6 +536,97 @@
     },
     "home": {
       "soon": "Las aplicaciones de tu negocio aparecerán aquí."
+    },
+    "plan": {
+      "title": "Plan y uso",
+      "lead": "Lo que incluye el plan de tu negocio, cuánto has usado este mes, lo que puedes comprar de más y tus facturas.",
+      "yours": "Tu plan",
+      "status": {
+        "active": "Activo",
+        "trialing": "En periodo de prueba",
+        "past_due": "Pago vencido"
+      },
+      "cardFor": "Tarjeta para compras",
+      "noCard": "Aún no has guardado ninguna tarjeta. Hasta que añadas una, activamos los paquetes extra bajo solicitud.",
+      "packs": "Paquetes extra",
+      "packsLead": "Los compras directamente con la tarjeta del negocio. Los marcados «Solo bajo petición» los activamos nosotros.",
+      "buy": "Comprar · {price}",
+      "buySeats": "Comprar plazas extra",
+      "buySms": "Comprar SMS extra",
+      "perMonth": "al mes, pagado con tu plan",
+      "invoices": "Facturas",
+      "invoicesLead": "El plan y cada compra tienen su propia factura.",
+      "col": {
+        "invoice": "Factura",
+        "for": "Concepto",
+        "date": "Fecha",
+        "amount": "Importe",
+        "status": "Estado"
+      },
+      "paid": "Pagada",
+      "downloadPdf": "Descargar PDF",
+      "forSubscription": "Plan",
+      "forPack": "Paquete extra · {name}",
+      "noPayments": "Aún no hay pagos.",
+      "noSubscription": "Tu negocio aún no tiene un plan. Escríbenos y lo activamos.",
+      "requestSentBody": "El equipo de Ventora Systems ya la ve. Recibirás una notificación cuando el paquete esté activo.",
+      "saveCard": "Guardar tarjeta",
+      "cardSaved": "Tarjeta guardada.",
+      "cardError": "No hemos podido guardar la tarjeta. Inténtalo de nuevo.",
+      "cardUnavailable": "El pago con tarjeta no está disponible ahora. Inténtalo más tarde.",
+      "paymentProcessing": "El banco todavía está procesando el pago. El paquete se activa en cuanto se complete.",
+      "sendFailed": "No hemos podido enviarlo. Inténtalo de nuevo."
+    },
+    "apps": {
+      "bar": "Todas las aplicaciones",
+      "title": "Todas las aplicaciones de Ventora Systems",
+      "lead": "{total} aplicaciones que funcionan juntas. Tienes {have} en tu plan; en las demás ves qué hacen, cuánto cuestan y si tienen periodo de prueba.",
+      "search": "Busca una aplicación o lo que quieres hacer",
+      "searchLabel": "Buscar",
+      "only": "Solo las que no tienes",
+      "inPlan": "en tu plan",
+      "group": {
+        "clients": "Citas y clientes",
+        "team": "Equipo",
+        "operations": "Operaciones",
+        "money": "Dinero y documentos",
+        "projects": "Proyectos y datos",
+        "community": "Comunidad"
+      },
+      "desc": {
+        "booking": "Citas, calendario y recordatorios",
+        "crm": "Clientes, historial y oportunidades",
+        "marketing": "Campañas y recordatorios automáticos",
+        "portal": "La página del negocio para tus clientes",
+        "hr": "Equipo, asistencia y vacaciones",
+        "shifts": "Turnos y sustituciones",
+        "inventory": "Stock, pedidos y proveedores",
+        "assets": "Equipos, revisiones y garantías",
+        "events": "Eventos, entradas e invitados",
+        "finance": "Facturas, vencimientos e impagos",
+        "contracts": "Contratos, firmas y plazos",
+        "documents": "Documentos y plantillas",
+        "projects": "Proyectos, tareas y plazos",
+        "analytics": "Las cifras del negocio, por meses y servicios",
+        "network": "La comunidad de negocios de Ventora Systems"
+      }
+    },
+    "app": {
+      "does": "Qué hace",
+      "links": "Se conecta con",
+      "paid": "Se paga",
+      "paidValue": "Con tu plan",
+      "recommend": "Recomendar la aplicación",
+      "decider": "Llega a {who} (propietario).",
+      "active": "La aplicación está activa. La encontrarás entre tus aplicaciones.",
+      "content": {
+        "marketing": {
+          "lead": "Campañas y recordatorios automáticos para tus clientes.",
+          "f1": "Campañas por SMS y correo a grupos de clientes",
+          "f2": "Recordatorios de vuelta, activados por la última cita",
+          "f3": "Resultados: cuántos abrieron, cuántos reservaron"
+        }
+      }
     }
   },
   "roles": {
@@ -634,7 +727,8 @@
       "finalPrice": "Precio final, no se añade IVA."
     },
     "packs": {
-      "validUntil": "válido hasta el {date}"
+      "validUntil": "válido hasta el {date}",
+      "usageNote": "Has usado {used} de {limit} este mes."
     },
     "prorate": {
       "today": "Hoy: {amount}, prorrateado hasta el {date}",
@@ -648,6 +742,13 @@
       "pack": "{name} · paquete extra",
       "noPacks": "Ningún paquete extra.",
       "included": "Incluido"
+    },
+    "purchase": {
+      "successPending": "El paquete está activo y tu límite ya ha aumentado.",
+      "invoicePending": "Te enviaremos la factura por correo en cuanto se emita, normalmente en unos minutos."
+    },
+    "invoices": {
+      "pending": "Factura en emisión"
     }
   },
   "catalog": {
@@ -1021,6 +1122,158 @@
         "action": "Ver factura"
       },
       "upgradeAction": "Solicitar otro plan"
+    },
+    "ownerNotice": {
+      "application": {
+        "title": "{name} te recomienda {app}",
+        "body": "Mira qué hace la aplicación y cuánto cuesta. Solo tú puedes activarla.",
+        "action": "Ver la aplicación"
+      },
+      "addon": {
+        "title": "{name} pide un paquete extra: {pack}",
+        "body": "Solo tú puedes comprar paquetes extra, desde Plan y uso.",
+        "action": "Ver los paquetes"
+      },
+      "quota": {
+        "title": "{name} te avisa del límite de {resource}",
+        "body": "El negocio está cerca del límite o lo ha alcanzado. No se pierde nada; solo tú puedes comprar paquetes extra.",
+        "action": "Ver el uso"
+      }
+    }
+  },
+  "pay": {
+    "expires": "caduca {date}",
+    "changeCard": "Cambiar tarjeta",
+    "addCard": "Añadir tarjeta",
+    "stripeSlot": "Formulario seguro de Stripe: número, caducidad, CVC",
+    "saveCard": "Guardar la tarjeta para los próximos pagos",
+    "processingHint": "No cierres esta ventana. Solo tarda unos segundos.",
+    "paySuccessHint": "Tu límite ya ha aumentado. También te hemos enviado la factura por correo.",
+    "paySuccessHintPending": "El paquete está activo y tu límite ya ha aumentado.",
+    "invoicePending": "Te enviaremos la factura por correo en cuanto se emita, normalmente en unos minutos.",
+    "before": "Antes",
+    "after": "Ahora",
+    "invoiceIssued": "Hemos emitido la factura {nr}",
+    "seeInvoice": "Ver factura",
+    "payFailed": "El pago no se ha completado",
+    "noMoneyTaken": "No se ha cobrado nada de tu tarjeta.",
+    "whatYouCanDo": "Qué puedes hacer",
+    "tryAgain": "Reintentar",
+    "useOtherCard": "Usar otra tarjeta",
+    "callBank": "Si se repite, llama a tu banco: a veces bloquea pagos online nuevos.",
+    "processing": "Estamos procesando el pago…",
+    "paySuccess": "Pago realizado",
+    "payAmount": "Pagar {amount}",
+    "done": "Listo",
+    "cancel": "Cancelar",
+    "quantity": "Cantidad",
+    "decrease": "Reducir la cantidad",
+    "increase": "Aumentar la cantidad",
+    "total": "Total",
+    "payToday": "Pagas hoy",
+    "prorateToday": "Hoy: {amount}, prorrateado hasta el {date}",
+    "prorateThen": "Después, {amount} al mes, junto con tu plan.",
+    "finalPrice": "Precio final, no se añade IVA.",
+    "payWith": "Pagas con tarjeta",
+    "cardExpiring": "Tu tarjeta caduca este mes. Puedes pagar con ella ahora o cambiarla.",
+    "noCardSaved": "Tu negocio aún no tiene una tarjeta guardada.",
+    "close": "Cerrar",
+    "chooseOption": "Elige lo que mejor te encaje",
+    "nothingLost": "No pierdes nada de lo que tienes.",
+    "decides": "Llega a {who}.",
+    "recommendSent": "Hemos enviado tu recomendación a {who}.",
+    "recommendSend": "Recomendar",
+    "continueBtn": "Continuar",
+    "back": "Atrás",
+    "youActivate": "Qué activas",
+    "whenLabel": "Cuándo",
+    "priceLabel": "Precio",
+    "setupCost": "Coste de puesta en marcha",
+    "noneCost": "Ninguno",
+    "planRequestNote": "No pagas nada ahora. Te confirmamos el nuevo plan y su precio antes de activarlo, en un día laborable como máximo.",
+    "trialNoCard": "No necesitas tarjeta. Al final la aplicación se detiene, tus datos se quedan y continuar es decisión tuya.",
+    "upgrade": "Solicitar otro plan",
+    "startTrial": "Empezar la prueba gratuita",
+    "activating": "Activando…",
+    "trialActive": "Tu prueba gratuita ha empezado",
+    "setupOnce": "Puesta en marcha, pago único",
+    "prorateMaint": "Mantenimiento: {amount}, prorrateado hasta el {date}",
+    "addonIncludes": "Incluye",
+    "access_available": "Disponible",
+    "access_unavailable": "No disponible temporalmente",
+    "access_notInRole": "No incluida en tu rol",
+    "access_notInPlan": "No incluida en tu plan",
+    "hint_unavailable": "Estamos trabajando en ella. Volverá pronto.",
+    "hint_notInRole": "Tu rol no incluye esta aplicación. {who} puede darte acceso.",
+    "hint_notInRoleNoOne": "Tu rol no incluye esta aplicación. El propietario del negocio puede darte acceso.",
+    "hint_notInPlan": "No está incluida en el plan de tu negocio. Escríbenos y la activamos.",
+    "requestAccess": "Solicitar acceso",
+    "writeUs": "Escríbenos",
+    "seeStatus": "Ver estado",
+    "openApp": "Abrir {app}",
+    "seeDetails": "Ver detalles",
+    "recommendation": "Recomendación",
+    "moreOptions": "Más opciones",
+    "remindLater": "Recordármelo más tarde",
+    "remindWeek": "Dentro de una semana",
+    "remindMonth": "Dentro de un mes",
+    "notInterested": "No me interesa",
+    "onRequestOnly": "Solo bajo petición",
+    "requestActivation": "Solicitar activación",
+    "notifyOwner": "Avisar al propietario"
+  },
+  "quota": {
+    "platform_members": {
+      "label": "Plazas en el equipo",
+      "resource": "plazas en el equipo"
+    },
+    "platform_locations": {
+      "label": "Ubicaciones",
+      "resource": "ubicaciones"
+    },
+    "booking_appointments": {
+      "label": "Citas",
+      "resource": "citas"
+    },
+    "booking_sms_devices": {
+      "label": "Teléfonos para SMS",
+      "resource": "teléfonos para SMS"
+    },
+    "messaging_sms": {
+      "label": "SMS",
+      "resource": "SMS"
+    },
+    "messaging_email": {
+      "label": "Correos a clientes",
+      "resource": "correos a clientes"
+    },
+    "marketing_campaigns": {
+      "label": "Campañas",
+      "resource": "campañas"
+    },
+    "documents_storage": {
+      "label": "Espacio para documentos",
+      "resource": "espacio para documentos"
+    },
+    "workflows_active": {
+      "label": "Automatizaciones activas",
+      "resource": "automatizaciones activas"
+    },
+    "funnel_pages_published": {
+      "label": "Páginas publicadas",
+      "resource": "páginas publicadas"
+    },
+    "ai_analyses": {
+      "label": "Análisis con IA",
+      "resource": "análisis con IA"
+    },
+    "events_active": {
+      "label": "Eventos publicados",
+      "resource": "eventos publicados"
+    },
+    "events_created": {
+      "label": "Eventos creados",
+      "resource": "eventos creados"
     }
   }
 }

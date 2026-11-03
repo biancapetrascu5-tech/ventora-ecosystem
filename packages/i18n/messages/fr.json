@@ -466,7 +466,9 @@
       "business": "Entreprise",
       "team": "Équipe et invitations",
       "teamShort": "Équipe",
-      "roles": "Rôles et accès"
+      "roles": "Rôles et accès",
+      "plan": "Abonnement et consommation",
+      "planShort": "Abonnement"
     },
     "team": {
       "title": "Équipe",
@@ -534,6 +536,97 @@
     },
     "home": {
       "soon": "Les applications de votre entreprise apparaîtront ici."
+    },
+    "plan": {
+      "title": "Abonnement et consommation",
+      "lead": "Ce que comprend l’abonnement de l’entreprise, ce que vous avez utilisé ce mois-ci, ce que vous pouvez acheter en plus et vos factures.",
+      "yours": "Votre abonnement",
+      "status": {
+        "active": "Actif",
+        "trialing": "En période d’essai",
+        "past_due": "Paiement en retard"
+      },
+      "cardFor": "Carte pour les achats",
+      "noCard": "Vous n’avez pas encore enregistré de carte. En attendant, nous activons les packs supplémentaires sur demande.",
+      "packs": "Packs supplémentaires",
+      "packsLead": "Vous les achetez directement avec la carte de l’entreprise. Ceux marqués « Sur demande uniquement », nous les activons pour vous.",
+      "buy": "Acheter · {price}",
+      "buySeats": "Acheter des places supplémentaires",
+      "buySms": "Acheter des SMS supplémentaires",
+      "perMonth": "par mois, payé avec l’abonnement",
+      "invoices": "Factures",
+      "invoicesLead": "L’abonnement et chaque achat ont leur propre facture.",
+      "col": {
+        "invoice": "Facture",
+        "for": "Pour",
+        "date": "Date",
+        "amount": "Montant",
+        "status": "Statut"
+      },
+      "paid": "Payée",
+      "downloadPdf": "Télécharger le PDF",
+      "forSubscription": "Abonnement",
+      "forPack": "Pack supplémentaire · {name}",
+      "noPayments": "Aucun paiement pour l’instant.",
+      "noSubscription": "L’entreprise n’a pas encore d’abonnement. Écrivez-nous et nous le démarrerons.",
+      "requestSentBody": "L’équipe Ventora Systems la voit dès maintenant. Vous recevrez une notification quand le pack sera actif.",
+      "saveCard": "Enregistrer la carte",
+      "cardSaved": "Carte enregistrée.",
+      "cardError": "Nous n’avons pas pu enregistrer la carte. Réessayez.",
+      "cardUnavailable": "Le paiement par carte n’est pas disponible pour le moment. Réessayez plus tard.",
+      "paymentProcessing": "La banque traite encore le paiement. Le pack s’active dès qu’il est accepté.",
+      "sendFailed": "Nous n’avons pas pu l’envoyer. Réessayez."
+    },
+    "apps": {
+      "bar": "Toutes les applications",
+      "title": "Toutes les applications Ventora Systems",
+      "lead": "{total} applications qui fonctionnent ensemble. {have} sont dans votre abonnement ; pour les autres, voyez ce qu’elles font, ce qu’elles coûtent et si elles ont une période d’essai.",
+      "search": "Cherchez une application ou ce que vous voulez faire",
+      "searchLabel": "Rechercher",
+      "only": "Seulement celles que vous n’avez pas",
+      "inPlan": "dans l’abonnement",
+      "group": {
+        "clients": "Rendez-vous et clients",
+        "team": "Équipe",
+        "operations": "Opérations",
+        "money": "Argent et documents",
+        "projects": "Projets et données",
+        "community": "Communauté"
+      },
+      "desc": {
+        "booking": "Rendez-vous, agenda et rappels",
+        "crm": "Clients, historique et opportunités",
+        "marketing": "Campagnes et rappels automatiques",
+        "portal": "La page de l’entreprise pour les clients",
+        "hr": "Équipe, présence et congés",
+        "shifts": "Plannings et remplacements",
+        "inventory": "Stock, commandes et fournisseurs",
+        "assets": "Équipements, révisions et garanties",
+        "events": "Événements, billets et invités",
+        "finance": "Factures, échéances et retards",
+        "contracts": "Contrats, signatures et échéances",
+        "documents": "Documents et modèles",
+        "projects": "Projets, tâches et échéances",
+        "analytics": "Les chiffres de l’entreprise, par mois et par service",
+        "network": "La communauté des entreprises Ventora Systems"
+      }
+    },
+    "app": {
+      "does": "Ce qu’elle fait",
+      "links": "Se connecte à",
+      "paid": "Facturation",
+      "paidValue": "Avec l’abonnement",
+      "recommend": "Recommander l’application",
+      "decider": "Arrive chez {who} (propriétaire).",
+      "active": "L’application est active. Vous la trouverez dans vos applications.",
+      "content": {
+        "marketing": {
+          "lead": "Campagnes et rappels automatiques pour vos clients.",
+          "f1": "Campagnes par SMS et e-mail vers des groupes de clients",
+          "f2": "Rappels de retour, déclenchés par le dernier rendez-vous",
+          "f3": "Résultats : combien ont ouvert, combien ont réservé"
+        }
+      }
     }
   },
   "roles": {
@@ -634,7 +727,8 @@
       "finalPrice": "Prix final, aucune TVA n’est ajoutée."
     },
     "packs": {
-      "validUntil": "valable jusqu’au {date}"
+      "validUntil": "valable jusqu’au {date}",
+      "usageNote": "Vous avez utilisé {used} sur {limit} ce mois-ci."
     },
     "prorate": {
       "today": "Aujourd’hui : {amount}, au prorata jusqu’au {date}",
@@ -648,6 +742,13 @@
       "pack": "{name} · pack supplémentaire",
       "noPacks": "Aucun pack supplémentaire.",
       "included": "Inclus"
+    },
+    "purchase": {
+      "successPending": "Le pack est actif et votre limite a déjà augmenté.",
+      "invoicePending": "Nous vous enverrons la facture par e-mail dès qu’elle sera émise, en général en quelques minutes."
+    },
+    "invoices": {
+      "pending": "Facture en cours d’émission"
     }
   },
   "catalog": {
@@ -1021,6 +1122,158 @@
         "action": "Voir la facture"
       },
       "upgradeAction": "Demander un autre abonnement"
+    },
+    "ownerNotice": {
+      "application": {
+        "title": "{name} vous recommande {app}",
+        "body": "Voyez ce que fait l’application et ce qu’elle coûte. Vous seul pouvez l’activer.",
+        "action": "Voir l’application"
+      },
+      "addon": {
+        "title": "{name} demande un pack supplémentaire : {pack}",
+        "body": "Vous seul pouvez acheter des packs supplémentaires, depuis Abonnement et consommation.",
+        "action": "Voir les packs"
+      },
+      "quota": {
+        "title": "{name} vous signale la limite de {resource}",
+        "body": "L’entreprise approche de la limite ou l’a atteinte. Rien n’est perdu ; vous seul pouvez acheter des packs supplémentaires.",
+        "action": "Voir la consommation"
+      }
+    }
+  },
+  "pay": {
+    "expires": "expire {date}",
+    "changeCard": "Changer de carte",
+    "addCard": "Ajouter une carte",
+    "stripeSlot": "Formulaire sécurisé Stripe : numéro, expiration, CVC",
+    "saveCard": "Conserver la carte pour les prochains paiements",
+    "processingHint": "Ne fermez pas cette fenêtre. Cela ne prend que quelques secondes.",
+    "paySuccessHint": "Votre limite a déjà augmenté. Nous vous avons aussi envoyé la facture par e-mail.",
+    "paySuccessHintPending": "Le pack est actif et votre limite a déjà augmenté.",
+    "invoicePending": "Nous vous enverrons la facture par e-mail dès qu’elle sera émise, en général en quelques minutes.",
+    "before": "Avant",
+    "after": "Maintenant",
+    "invoiceIssued": "Nous avons émis la facture {nr}",
+    "seeInvoice": "Voir la facture",
+    "payFailed": "Le paiement n’a pas abouti",
+    "noMoneyTaken": "Rien n’a été débité de votre carte.",
+    "whatYouCanDo": "Ce que vous pouvez faire",
+    "tryAgain": "Réessayer",
+    "useOtherCard": "Utiliser une autre carte",
+    "callBank": "Si cela se reproduit, appelez votre banque : elle bloque parfois les nouveaux paiements en ligne.",
+    "processing": "Nous traitons votre paiement…",
+    "paySuccess": "Paiement réussi",
+    "payAmount": "Payer {amount}",
+    "done": "Terminé",
+    "cancel": "Annuler",
+    "quantity": "Quantité",
+    "decrease": "Diminuer la quantité",
+    "increase": "Augmenter la quantité",
+    "total": "Total",
+    "payToday": "Vous payez aujourd’hui",
+    "prorateToday": "Aujourd’hui : {amount}, au prorata jusqu’au {date}",
+    "prorateThen": "Ensuite {amount} par mois, avec votre abonnement.",
+    "finalPrice": "Prix final, aucune TVA n’est ajoutée.",
+    "payWith": "Vous payez par carte",
+    "cardExpiring": "Votre carte expire ce mois-ci. Vous pouvez payer avec maintenant ou la changer.",
+    "noCardSaved": "Votre entreprise n’a pas encore de carte enregistrée.",
+    "close": "Fermer",
+    "chooseOption": "Choisissez ce qui vous convient",
+    "nothingLost": "Rien de ce que vous avez n’est perdu.",
+    "decides": "Envoyé à {who}.",
+    "recommendSent": "Nous avons envoyé votre recommandation à {who}.",
+    "recommendSend": "Recommander",
+    "continueBtn": "Continuer",
+    "back": "Retour",
+    "youActivate": "Ce que vous activez",
+    "whenLabel": "Quand",
+    "priceLabel": "Prix",
+    "setupCost": "Frais de mise en service",
+    "noneCost": "Aucun",
+    "planRequestNote": "Vous ne payez rien maintenant. Nous vous confirmons le nouvel abonnement et son prix avant de l’activer, sous un jour ouvré.",
+    "trialNoCard": "Aucune carte n’est nécessaire. À la fin, l’application s’arrête, vos données restent et la suite est votre choix.",
+    "upgrade": "Demander un autre abonnement",
+    "startTrial": "Commencer l’essai gratuit",
+    "activating": "Activation…",
+    "trialActive": "Votre essai gratuit a commencé",
+    "setupOnce": "Mise en service, une seule fois",
+    "prorateMaint": "Maintenance : {amount}, au prorata jusqu’au {date}",
+    "addonIncludes": "Inclus",
+    "access_available": "Disponible",
+    "access_unavailable": "Temporairement indisponible",
+    "access_notInRole": "Hors de votre rôle",
+    "access_notInPlan": "Hors abonnement",
+    "hint_unavailable": "Nous y travaillons. Elle revient bientôt.",
+    "hint_notInRole": "Votre rôle n’inclut pas cette application. {who} peut vous donner accès.",
+    "hint_notInRoleNoOne": "Votre rôle n’inclut pas cette application. Le propriétaire de l’entreprise peut vous donner accès.",
+    "hint_notInPlan": "Elle n’est pas incluse dans l’abonnement. Écrivez-nous et nous l’activerons.",
+    "requestAccess": "Demander l’accès",
+    "writeUs": "Écrivez-nous",
+    "seeStatus": "Voir l’état",
+    "openApp": "Ouvrir {app}",
+    "seeDetails": "Voir les détails",
+    "recommendation": "Recommandation",
+    "moreOptions": "Plus d’options",
+    "remindLater": "Me le rappeler plus tard",
+    "remindWeek": "Dans une semaine",
+    "remindMonth": "Dans un mois",
+    "notInterested": "Ça ne m’intéresse pas",
+    "onRequestOnly": "Sur demande uniquement",
+    "requestActivation": "Demander l’activation",
+    "notifyOwner": "Prévenir le propriétaire"
+  },
+  "quota": {
+    "platform_members": {
+      "label": "Places d’équipe",
+      "resource": "places d’équipe"
+    },
+    "platform_locations": {
+      "label": "Emplacements",
+      "resource": "emplacements"
+    },
+    "booking_appointments": {
+      "label": "Rendez-vous",
+      "resource": "rendez-vous"
+    },
+    "booking_sms_devices": {
+      "label": "Téléphones pour les SMS",
+      "resource": "téléphones pour les SMS"
+    },
+    "messaging_sms": {
+      "label": "SMS",
+      "resource": "SMS"
+    },
+    "messaging_email": {
+      "label": "E-mails aux clients",
+      "resource": "e-mails aux clients"
+    },
+    "marketing_campaigns": {
+      "label": "Campagnes",
+      "resource": "campagnes"
+    },
+    "documents_storage": {
+      "label": "Espace pour les documents",
+      "resource": "espace pour les documents"
+    },
+    "workflows_active": {
+      "label": "Automatisations actives",
+      "resource": "automatisations actives"
+    },
+    "funnel_pages_published": {
+      "label": "Pages publiées",
+      "resource": "pages publiées"
+    },
+    "ai_analyses": {
+      "label": "Analyses IA",
+      "resource": "analyses IA"
+    },
+    "events_active": {
+      "label": "Événements publiés",
+      "resource": "événements publiés"
+    },
+    "events_created": {
+      "label": "Événements créés",
+      "resource": "événements créés"
     }
   }
 }

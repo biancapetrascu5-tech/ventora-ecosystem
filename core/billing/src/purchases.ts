@@ -82,11 +82,17 @@ export interface PurchasePreview {
 export async function previewPurchase(
   ctx: BillingContext,
   item: PurchaseItem,
+  /**
+   * Lot 3.7: the price without a saved card (`card: null`), for the dialog that saves the card
+   * in Stripe Elements before paying (an application on „Direct”). The purchase itself still
+   * needs the saved card.
+   */
+  options: { withoutCard?: boolean } = {},
 ): Promise<PurchasePreview> {
   assertBuyer(ctx);
   const quote = await getPurchaseQuote(ctx.organizationId, item);
   const account = await withBillingRead(ctx.organizationId, readAccountInTx);
-  const amountDueMinor = amountDue(quote, account);
+  const amountDueMinor = amountDue(quote, account, new Date(), !options.withoutCard);
   return {
     quote,
     amountDueMinor,
@@ -100,11 +106,16 @@ export async function previewPurchase(
 type Account = Awaited<ReturnType<typeof readAccountInTx>>;
 
 /** The checks shared by the preview and the purchase, then the amount charged now. */
-function amountDue(quote: PurchaseQuote, account: Account, now = new Date()): number {
+function amountDue(
+  quote: PurchaseQuote,
+  account: Account,
+  now = new Date(),
+  requireCard = true,
+): number {
   if (quote.purchaseMode !== 'direct') throw new PurchaseRefused('on_request');
   // D3-7 / §8.6: a business on manual payment sees „Cere activare”
   if (account.manualPayment) throw new PurchaseRefused('manual_payment');
-  if (!account.card) throw new InvalidInput('card', 'No saved card');
+  if (requireCard && !account.card) throw new InvalidInput('card', 'No saved card');
   if (!quote.recurring) return quote.priceMinor + quote.setupMinor;
   if (quote.kind === 'addon' && quote.interval !== 'month') {
     // Stripe bills one interval per subscription (Lot 3.2 report): a monthly pack on a yearly
@@ -112,6 +123,9 @@ function amountDue(quote: PurchaseQuote, account: Account, now = new Date()): nu
     throw new InvalidInput('interval', 'A monthly pack needs a monthly subscription');
   }
   const status = account.subscriptionStatus;
+  // Lot 3.7: without a saved card there is no Stripe subscription yet; saving the card in the
+  // dialog creates it (D3-4), then the purchase checks it — the preview only prices the days left
+  if (!requireCard && !account.card) return prorated(quote, now) + quote.setupMinor;
   if (!account.stripeSubscriptionId || !['active', 'trialing'].includes(status ?? '')) {
     throw new InvalidInput('subscription', 'The subscription is not paid with the card');
   }

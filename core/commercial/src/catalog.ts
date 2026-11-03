@@ -273,3 +273,63 @@ export async function getSeatsBreakdown(organizationId: string): Promise<SeatsBr
     };
   });
 }
+
+export interface ActivePack {
+  grantId: string;
+  addonId: string;
+  name: string;
+  quotaKey: string;
+  /** Units the grant adds: the add-on's quantity × the packs bought. */
+  units: number;
+  packs: number;
+  /** Monthly with the subscription (D3-7) or until `endsAt` (the period's end). */
+  recurring: boolean;
+  endsAt: string | null;
+  /** The price of the packs in the business's currency, per interval; null without one. */
+  amountMinor: number | null;
+}
+
+/**
+ * HubAdminPlan („Ce plătești”, S117): the business's active add-ons — the recurring ones and those
+ * still valid this period — with what they add and their price. Read in the business's context
+ * (RLS), as commercial_rw, with the grants it already has.
+ */
+export async function getActivePacks(organizationId: string): Promise<ActivePack[]> {
+  if (!UUID_RE.test(organizationId ?? '')) throw new InvalidInput('organizationId');
+  return withOrganizationRead(organizationId, async (client) => {
+    const sub = await liveSubscription(client);
+    const currency = sub?.currency ?? DEFAULT_CURRENCY;
+    const { rows } = await client.query<{
+      id: string;
+      addon_id: string;
+      name: string;
+      quota_key: string;
+      quantity: string;
+      packs: number;
+      recurring: boolean;
+      ends_at: Date | null;
+      amount: string | null;
+    }>(
+      `SELECT g.id, g.addon_id, a.name, a.quota_key, a.quantity::text AS quantity, g.packs,
+              g.recurring, g.ends_at, (p.amount_minor * g.packs)::text AS amount
+         FROM commercial.addon_grant g
+         JOIN commercial.addon a ON a.id = g.addon_id
+         LEFT JOIN commercial.addon_price p ON p.addon_id = a.id AND p.currency = $1
+        WHERE g.ended_at IS NULL AND g.starts_at <= now()
+          AND (g.ends_at IS NULL OR g.ends_at > now())
+        ORDER BY g.recurring DESC, a.quota_key, g.created_at`,
+      [currency],
+    );
+    return rows.map((r) => ({
+      grantId: r.id,
+      addonId: r.addon_id,
+      name: r.name,
+      quotaKey: r.quota_key,
+      units: Number(r.quantity) * r.packs,
+      packs: r.packs,
+      recurring: r.recurring,
+      endsAt: r.ends_at ? r.ends_at.toISOString() : null,
+      amountMinor: r.amount === null ? null : Number(r.amount),
+    }));
+  });
+}
