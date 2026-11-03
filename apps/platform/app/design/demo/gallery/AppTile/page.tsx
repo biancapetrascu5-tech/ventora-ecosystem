@@ -43,7 +43,7 @@ function Set() {
         <AppTile app="marketing" access="notInPlan" onWriteUs={noop} labels={L} />
         <AppTile app="projects" access="notInRole" labels={L} />
       </div>
-      <Lab>Layout „row” · Alte aplicații Ventora</Lab>
+      <Lab>Layout „row” · Alte aplicații Ventora Systems</Lab>
       <div
         className={f.sheetlike}
         style={{

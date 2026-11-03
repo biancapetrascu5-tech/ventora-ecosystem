@@ -4,7 +4,7 @@ EasyBook — the messages sent to the client, on an appointment's detail (SPEC_E
 
 Shown at 1280 (480 drawer), 820 (560 side panel) and 390 (full screen), light and dark, with every message state below and a German (480) and Italian (390) label test.
 
-**A message row.** Type ("Reamintire", "Confirmarea programării", "Programare mutată", "Programare anulată"), channel ("Telefonul afacerii", "Prin Ventora", "E-mail"; with two or more phones also the phone's name, S7), its scheduled time, and a StatusPill with the state and its time. Under the row: "Pleacă la {ora}", the reason, or the "Fără confirmare" explanation. Below 420px the pill moves under the text.
+**A message row.** Type ("Reamintire", "Confirmarea programării", "Programare mutată", "Programare anulată"), channel ("Telefonul afacerii", "Prin Ventora Systems", "E-mail"; with two or more phones also the phone's name, S7), its scheduled time, and a StatusPill with the state and its time. Under the row: "Pleacă la {ora}", the reason, or the "Fără confirmare" explanation. Below 420px the pill moves under the text.
 
 **States (S19).** Neutral: "În așteptare", "Predat telefonului", "Fără confirmare", "Anulat". Lime: "Trimis" (check) and "Livrat" (double check, only with a confirmation). Danger: "Nu s-a trimis", always with a reason in plain words ("Telefonul nu avea semnal.", "Fără credit pe SIM.", "Programarea a început înainte ca telefonul să revină online."). E-mail has only "Trimis", "Livrat", "Nu s-a trimis" (S17).
 

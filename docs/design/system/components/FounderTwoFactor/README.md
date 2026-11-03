@@ -1,7 +1,7 @@
 # FounderTwoFactor
 
 Two-step sign-in in Founder Control Center: the same screens as HubTwoFactorSetup and HubTwoFactorVerify, with the Founder mark: AuthLayout with `brand="founder"` (S63).
-- **The panel:** the Ventora mark next to "Founder", "Control Center" and "Instrumentul intern al echipei Ventora". There is no language selector.
+- **The panel:** the Ventora Systems mark next to "Founder", "Control Center" and "Instrumentul intern al echipei Ventora Systems". There is no language selector.
 - **Required for everyone:** "Contul Founder are acces la toate afacerile, așa că îl protejăm cu un al doilea pas. În Founder e obligatoriu pentru toți."
 - **Backup codes:** 8 digits in two groups (S60, S104); a wrong or already used code gets one message (S105).
 - **Language:** Founder stays in Romanian (S57), but every text is a key in `i18n/two-factor.json`.

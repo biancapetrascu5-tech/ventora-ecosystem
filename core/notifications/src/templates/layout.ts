@@ -1,5 +1,5 @@
 // The single operational email template for the whole ecosystem (design system S3 / S54,
-// BookingSmsNotifications, export v56): inbox preheader, Ventora logo, eyebrow, title, the
+// BookingSmsNotifications, export v56): inbox preheader, Ventora Systems logo, eyebrow, title, the
 // text, one primary button, what happens next, then a footer with why you get it and the
 // company. One column, 600px, light only; on phones the button takes the full width.
 // Every transactional email renders through renderOperationalEmail — no per-email HTML.
@@ -66,12 +66,12 @@ function logo(): string {
   if (!src) {
     return (
       `<span style="font-family:'Syne',${FONT};font-size:20px;line-height:24px;font-weight:700;` +
-      `color:${COLOR.ink}">Ventora</span>`
+      `color:${COLOR.ink}">Ventora Systems</span>`
     );
   }
   return (
-    `<img src="${escapeHtml(src)}" width="160" height="44" alt="Ventora" ` +
-    `style="display:block;width:160px;height:44px;border:0;outline:none;text-decoration:none">`
+    `<img src="${escapeHtml(src)}" width="268" height="44" alt="Ventora Systems" ` +
+    `style="display:block;width:268px;height:44px;border:0;outline:none;text-decoration:none">`
   );
 }
 
@@ -99,7 +99,7 @@ export function renderOperationalEmail(e: OperationalEmail): RenderedEmail {
     `<table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" ` +
     `style="width:100%;max-width:600px"><tr><td style="background:${COLOR.raised};` +
     `border:1px solid ${COLOR.line};border-radius:12px">` +
-    // head: the Ventora logo (2x PNG shown at 160×44), or the wordmark without a platform URL
+    // head: the Ventora Systems logo (2x PNG shown at 268×44, MARCA-1), or the wordmark without a platform URL
     `<div class="v-pad" style="padding:20px 24px;border-bottom:1px solid ${COLOR.line}">` +
     logo() +
     `</div>` +

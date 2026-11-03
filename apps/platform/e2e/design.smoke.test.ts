@@ -119,9 +119,9 @@ test.describe('/design/demo smoke', () => {
     await expect(crmTile).toBeVisible();
   });
 
-  test('renders HubLauncher — secțiunea "Alte aplicații Ventora"', async ({ page }) => {
+  test('renders HubLauncher — secțiunea "Alte aplicații Ventora Systems"', async ({ page }) => {
     await page.goto('/design/demo');
-    const otherSection = page.getByRole('heading', { name: 'Alte aplicații Ventora' });
+    const otherSection = page.getByRole('heading', { name: 'Alte aplicații Ventora Systems' });
     await expect(otherSection).toBeVisible();
   });
 

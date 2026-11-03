@@ -60,6 +60,12 @@ for (const t of tokens.shadow.tokens) {
   pushThemed(t.name, t.value);
 }
 
+// Logo (bundle.css, .v-logo__img--light / --dark): the nearest data-theme shows one of the two
+// drawings — variant B in dark has a different structure (masked cuts), so it is not one SVG
+// with light-dark() colours (MARCA-1, Logo 3.x)
+pushThemed('v-logo-light', { light: 'block', dark: 'none' });
+pushThemed('v-logo-dark', { light: 'none', dark: 'block' });
+
 // Font families
 staticVars.push('  /* font families */');
 pushStatic('font-sans', tokens.type.families.sans);

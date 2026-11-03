@@ -42,7 +42,7 @@ export function HubAccountFrame() {
     <HubSettings active="profil" title="Contul tău">
       <PageHeader
         title="Contul tău"
-        description="Datele tale, cum arată Ventora pentru tine și cum îți protejezi contul."
+        description="Datele tale, cum arată Ventora Systems pentru tine și cum îți protejezi contul."
       />
       <Sheet>
         <SheetSection

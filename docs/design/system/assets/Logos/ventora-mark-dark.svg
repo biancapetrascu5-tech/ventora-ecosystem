@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="20 8 360 392" role="img" aria-label="Ventora">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="20 8 360 392" role="img" aria-label="Ventora Systems">
   <mask id="ventora-mark-dark-cut" maskUnits="userSpaceOnUse" x="0" y="0" width="400" height="400">
     <rect x="0" y="0" width="400" height="400" fill="#fff"/>
     <polygon points="28,16 120,80 188,352 200,392" fill="none" stroke="#000" stroke-width="6" stroke-linejoin="miter"/>

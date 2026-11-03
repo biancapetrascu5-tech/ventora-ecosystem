@@ -9,3 +9,5 @@ A brand zone: the only place navy is a surface. Navy (`brand-surface` #000C3F) i
 **Peach on the zone** keeps its meaning only: the "needs you" dot on a chip (8.75:1 on `brand-raised`). The chevron pattern is `brand-line-strong`, decoration only.
 
 **Props.** `as` (element, default `div`), `className`, `style`, any other attribute.
+
+**Logo on the zone (1 Nov 2026).** The zone shows the Ventora Systems logo in variant B: on one line ("VENTORA SYSTEMS") where there is room, on two lines (`Logo variant="stacked"`) where the zone is narrow — the sign-in panel under 1024px and the phone band.

@@ -82,18 +82,18 @@ describe('N.4 — Resend adapter', () => {
         text: message.text,
       }),
     );
-    expect(DEFAULT_FROM).toBe('Ventora <noreply@ventora-hub.com>');
+    expect(DEFAULT_FROM).toBe('Ventora Systems <noreply@ventora-hub.com>');
     expect(DEFAULT_REPLY_TO).toBe('support@ventorasystems.com');
   });
 
   it('EMAIL_FROM / EMAIL_REPLY_TO override the defaults', async () => {
-    process.env.EMAIL_FROM = 'Ventora <noreply@staging.example>';
+    process.env.EMAIL_FROM = 'Ventora Systems <noreply@staging.example>';
     process.env.EMAIL_REPLY_TO = 'help@staging.example';
     resendSend.mockResolvedValue({ data: { id: '1' }, error: null });
     await new ResendEmailAdapter('test-key-not-real').send(message);
     expect(resendSend).toHaveBeenCalledWith(
       expect.objectContaining({
-        from: 'Ventora <noreply@staging.example>',
+        from: 'Ventora Systems <noreply@staging.example>',
         replyTo: 'help@staging.example',
       }),
     );

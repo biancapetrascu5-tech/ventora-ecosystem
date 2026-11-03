@@ -254,7 +254,7 @@ describe('Lot 3.1 — the runtime roles only read the registry', () => {
   it('app_runtime reads it through commercial_rw', async () => {
     const reg = await getRegistry('app');
     expect(reg.applications).toHaveLength(16);
-    expect(reg.applications[0]).toEqual({ id: 'platform', name: 'Ventora Hub', isPlatform: true });
+    expect(reg.applications[0]).toEqual({ id: 'platform', name: 'Hub', isPlatform: true });
     expect(reg.quotas.map((q) => q.key)).toEqual([
       'booking.appointments',
       'booking.sms.devices',

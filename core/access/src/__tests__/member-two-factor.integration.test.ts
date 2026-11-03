@@ -178,7 +178,8 @@ describe('Lot 2.7 · D, G3 — two-step sign-in for a member (S108, S110)', () =
     const res = await enable(member.token, { password: PASSPHRASE });
     expect(res.status).toBe(200);
     const started = (await res.json()) as { totpURI: string; backupCodes: string[] };
-    expect(started.totpURI).toMatch(/^otpauth:\/\/totp\/Ventora%20Hub:/);
+    // MARCA-1: issuer-ul din aplicația de autentificare e „Ventora Systems”
+    expect(started.totpURI).toMatch(/^otpauth:\/\/totp\/Ventora%20Systems:/);
     expect(started.backupCodes).toHaveLength(10);
     expect(started.backupCodes.every((c) => /^\d{8}$/.test(c))).toBe(true);
     let state = await twoFactorState(member.userId);

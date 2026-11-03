@@ -788,7 +788,9 @@ describe('INV — invitation emails', () => {
 
     const mails = mailbox.to(email);
     expect(mails).toHaveLength(1);
-    expect(mails[0]!.subject).toBe('Bianca Petrașcu te-a invitat în Salon Aurora pe Ventora');
+    expect(mails[0]!.subject).toBe(
+      'Bianca Petrașcu te-a invitat în Salon Aurora pe Ventora Systems',
+    );
     expect(mails[0]!.text).toContain('ca administrator.');
     expect(mails[0]!.text).toContain('Invitația e valabilă 7 zile');
     expect(tokenFrom(mails[0]!.text!)).toBe(invitationToken);
@@ -867,7 +869,7 @@ describe('INV — invitation emails', () => {
     expect(second.invitationToken).not.toBe(first.invitationToken);
     const mails = mailbox.to(email);
     expect(mails).toHaveLength(1);
-    expect(mails[0]!.subject).toBe('Ana Pop te-a invitat în Inv Four pe Ventora');
+    expect(mails[0]!.subject).toBe('Ana Pop te-a invitat în Inv Four pe Ventora Systems');
     expect(mails[0]!.text).toContain('Ăsta e un link nou. Cel primit înainte nu mai funcționează.');
     expect(tokenFrom(mails[0]!.text!)).toBe(second.invitationToken);
     expect((await invitationRow(`id = $1`, [row.id])).email_status).toBe('sent');
@@ -889,7 +891,7 @@ describe('INV — invitation emails', () => {
 
     const mails = mailbox.to(ownerEmail);
     expect(mails).toHaveLength(1);
-    expect(mails[0]!.subject).toBe('Salon Aurora e gata pe Ventora');
+    expect(mails[0]!.subject).toBe('Salon Aurora e gata pe Ventora Systems');
     expect(mails[0]!.text).toContain('Linkul e valabil 30 de zile, până pe');
     const shown = new Intl.DateTimeFormat('ro', {
       day: 'numeric',
@@ -987,7 +989,7 @@ describe('INV — invitation emails', () => {
 
     const mails = mailbox.to(ownerEmail);
     expect(mails).toHaveLength(1);
-    expect(mails[0]!.subject).toBe('Salon Aurora e gata pe Ventora');
+    expect(mails[0]!.subject).toBe('Salon Aurora e gata pe Ventora Systems');
     expect(mails[0]!.text).toContain('Linkul e valabil 30 de zile');
     expect(mails[0]!.text).not.toContain('Ăsta e un link nou');
     expect(mails[0]!.text).not.toContain('te-a invitat');

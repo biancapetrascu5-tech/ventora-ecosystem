@@ -410,8 +410,10 @@ describe('E34 + TS.6 — opening: audit row, owner notice, one open session per 
 
     const mails = mailbox.to(owner.email);
     expect(mails).toHaveLength(1);
-    expect(mails[0]!.subject).toBe('Echipa Ventora are acces de suport la Salon Aurora');
-    expect(mails[0]!.text).toContain('Bianca Ventora din echipa Ventora a deschis o sesiune');
+    expect(mails[0]!.subject).toBe('Echipa Ventora Systems are acces de suport la Salon Aurora');
+    expect(mails[0]!.text).toContain(
+      'Bianca Ventora din echipa Ventora Systems a deschis o sesiune',
+    );
     expect(mails[0]!.text).toContain(TICKET);
     // S99: the reason, the expiry as "pe {date}, la {time}" and the owner footer
     expect(mails[0]!.text).toContain(`Motivul: ${REASON}`);
@@ -419,7 +421,7 @@ describe('E34 + TS.6 — opening: audit row, owner notice, one open session per 
       /Sesiunea se închide automat pe \d{1,2} \p{L}+ \d{4}, la \d{2}:\d{2} EES?T\./u,
     );
     expect(mails[0]!.text).toContain(
-      'Primești acest e-mail pentru că ești proprietarul afacerii Salon Aurora în Ventora.',
+      'Primești acest e-mail pentru că ești proprietarul afacerii Salon Aurora în Ventora Systems.',
     );
     expect(mailbox.sent).toHaveLength(1); // the member gets no email
   });
@@ -433,7 +435,7 @@ describe('E34 + TS.6 — opening: audit row, owner notice, one open session per 
     await open(orgId);
     const mails = mailbox.to(owner.email);
     expect(mails).toHaveLength(1);
-    expect(mails[0]!.subject).toBe('Das Ventora-Team hat Support-Zugriff auf Salon Berlin');
+    expect(mails[0]!.subject).toBe('Das Ventora-Systems-Team hat Support-Zugriff auf Salon Berlin');
   });
 
   it('E-6 not delivered → the session stays open, support.session_notice_failed is recorded', async () => {

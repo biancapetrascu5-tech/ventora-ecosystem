@@ -740,4 +740,59 @@ Decizia fondatoarei din 31.10: afacerile cumpără aplicații la bucată și bun
 - `pricing.json`: `catalog.bundles.*`, `catalog.alaCarte.*`, `catalog.setup`, `catalog.noSetup`, `catalog.app.*` (mentenanța, implementarea, ce include), `billing.have.*`, `seats.*`, `limits.*` (6 limbi).
 - `founder-pricing.json`: `founder.apps.*` (noi), `founder.bundles.*`, `founder.bundleEditor.*`, `founder.new.*` (noi) — RO.
 
-> Sincronizat în repo: S112 la Lotul 2.9b; S111, S113 și S117 la Lotul 3.4 (tokens.json și tokens.css rămân din repo; logo-urile se iau din design system, nota S114b). În `_incoming` rămân, nesincronizate: HubAccount, HubTeamMemberActions, BillingNotifications, README-urile NotificationsPanel / BookingSmsNotifications și i18n `notifications.json`, `team.json`, `founder-business.json` (S114, S114b, S115). În cod, FounderPlans se numește FounderBundles (decizia fondatoarei).
+## 2026-11-01 · S117 — FounderPlans devine FounderBundles
+
+Decizia ta la P-S117-6: ecranul gestionează bundle-uri, iar după S117 nu mai avem „planuri”.
+
+### Componente schimbate
+- **FounderBundles — 2.0.1** (fostul FounderPlans): componenta și preview-ul au numele nou; `FounderPlans` nu mai există. Titlul ecranului rămâne „Bundle-uri”. Conținutul nu se schimbă.
+- **Spine Founder:** intrarea „Bundle-uri” are id-ul `bundles` (era `planuri`), în toate preview-urile Founder și Growth. FounderPlanEditor deschide tot „Bundle-uri” în Spine.
+- **HubSupportSession:** Spine-ul Founder din preview avea încă ordinea de dinainte de S117 („Planuri” primul). Acum e la fel ca în celelalte: „Aplicații”, „Bundle-uri”, „Pachete în plus”, „Reduceri”.
+- **README:** registrul S117, lista componentelor Founder și descrierea au numele FounderBundles. Intrările mai vechi din CHANGELOG și din registru păstrează numele de atunci.
+
+## 2026-11-01 · Marca: „Ventora Systems” (MARCA-1)
+
+Decizia fondatoarei: numele vizibil e „Ventora Systems”, peste tot; „Ventora” singur nu mai apare în interfață, texte sau e-mailuri (marca „Ventora” e înregistrată de altcineva la EUIPO).
+
+### Logo
+- `assets/Logos/ventora-logo.svg`, `ventora-logo-dark.svg`: wordmark-ul „VENTORA SYSTEMS” pe un rând (Montserrat ExtraBold, ca vechiul „VENTORA”, aceeași spațiere), 415 × 68. Nou: `ventora-logo-stacked.svg`, `ventora-logo-stacked-dark.svg` — pe două rânduri, 250 × 68, pentru spații înguste. `ventora-logo-email-2x.png`: 537 × 88, afișat la 268 × 44. Semnul (`ventora-mark*.svg`, `favicon.svg`) rămâne; doar numele accesibil devine „Ventora Systems”.
+- **Logo — 3.0.0:** `variant="stacked"`; `full` are proporțiile noi; titlul implicit „Ventora Systems”; id-ul de mască unic și pentru varianta pe două rânduri. `index.d.ts`.
+- **AuthLayout — 1.1.0:** logo-ul pe un rând pe desktop, pe două rânduri sub 1024px și pe banda de pe telefon (`bundle.css`).
+- **Spine — 1.1.0:** Spine-ul Hub-ului desfășurat arată logo-ul pe două rânduri; numele accesibil al Hub-ului e „Hub” (nu „Ventora”).
+- **Cover:** logo-ul pe două rânduri, în locul vechiului wordmark.
+- **README:** Logo, BrandZone, `assets/Logos/README.md`.
+
+### Texte
+- „Ventora” → „Ventora Systems” în toate componentele (preview-uri, README-uri), în bibliotecă (`allApps`, `auth_founder_tagline`, 6 limbi), în `README.md` și `patterns.md` și în i18n; în germană, cuvintele compuse cu cratimă („Ventora-Systems-Team”). Titlul filei fără context: „Hub · Ventora Systems”. Intrările mai vechi din registru și din CHANGELOG rămân cum erau.
+- Nu se schimbă: domeniile și adresele (ventora-hub.com, noreply@…), numele fișierelor, identificatorii din cod (`window.Ventora`, `VentoraProvider`).
+- **Glosar:** secțiunea nouă „Marca”.
+- Numele sistemului: „Ventora Systems” (`design-system.json` `title`, `tokens.json` `name`); spațiul de nume din cod rămâne `Ventora`.
+
+### i18n
+- `business-access.json`: `hub.suspended.body` (6 limbi)
+- `founder-pricing.json`: `founder.apps.onRequestHelp` — scos: `founder.apps.setupLocked` (RO)
+- `notifications.json`: `email.billing.setup.accepted.lead`, `email.billing.why`, `notifications.prefs.cat.supportSession`, `notifications.prefs.news.desc`, `notifications.prefs.news.title`, `notifications.prefs.reco.title`, `notifications.support.reply.body` (6 limbi)
+- `password-reset.json`: `auth.reset.email.eyebrow`, `auth.reset.email.from`, `auth.reset.email.subject`, `auth.reset.email.why`, `auth.reset.sent.body` (6 limbi)
+- `pricing.json`: `catalog.app.onRequestNote`, `catalog.app.requestSentBody`, `catalog.bundles.requestNote`, `catalog.bundles.requestSentBody` (6 limbi)
+- `support-session.json`: `support.session.banner.closeConfirm`, `support.session.banner.message`, `support.sessions.col.who`, `support.sessions.lead` (6 limbi)
+- `support.json`: `email.supportReply.body`, `email.supportReply.lead`, `email.supportReply.preheader`, `email.supportReply.why`, `support.thread.team` (6 limbi)
+- `team.json`: `hub.team.remove.account` (6 limbi)
+- `two-factor.json`: `auth.2fa.founder.tagline`, `auth.2fa.setup.s2.lead` (6 limbi)
+
+### Curățenie după FounderBundles
+- `manifest.json` și `api/components/*.md` sunt generate de pagina design system-ului la salvare; nu le scriem de aici. Vor pierde FounderPlans la următoarea salvare din pagină.
+
+## 2026-11-03 · Logo: S-ul din „SYSTEMS” peach
+
+- `assets/Logos/ventora-logo.svg`, `ventora-logo-dark.svg`, `ventora-logo-stacked.svg`, `ventora-logo-stacked-dark.svg`: primul S din „SYSTEMS” e peach (#FFAA75), ca V-ul din „VENTORA”, în toate variantele, light și dark. Restul wordmark-ului nu se schimbă.
+- **Logo — 3.0.1** (în bibliotecă, aceleași patru desene), **Cover**, `ventora-logo-email-2x.png` (537 × 88, refăcut din `ventora-logo.svg`).
+- **README:** Logo, `assets/Logos/README.md`, README („Logo”).
+
+## 2026-11-03 · Logo pe două rânduri: „SYSTEMS” mai mic, centrat
+
+- `assets/Logos/ventora-logo-stacked.svg`, `ventora-logo-stacked-dark.svg`: „SYSTEMS” are 62% din mărimea lui „VENTORA” și stă centrat sub el (varianta C, aleasă de fondatoare). Inițialele V și S rămân peach.
+- Nou: `ventora-logo-stacked-small.svg`, `-dark.svg` — varianta de până acum („SYSTEMS” la mărime întreagă, aliniat la stânga), pentru mărimi mici, unde „SYSTEMS” mai mic nu s-ar citi.
+- **Logo — 3.1.0:** `variant="stacked"` alege singur varianta mică sub 32px înălțimea semnului (Spine-ul Hub-ului, 28px); de la 32px în sus, „SYSTEMS” centrat (panoul de autentificare sub 1024px, banda de pe telefon, coperta). `index.d.ts`.
+- **Cover:** logo-ul cu „SYSTEMS” centrat.
+- **README:** Logo, `assets/Logos/README.md`, README („Logo”).
+

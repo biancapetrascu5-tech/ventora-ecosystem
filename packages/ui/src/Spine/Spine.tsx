@@ -45,8 +45,9 @@ export interface SpineProps {
   /** Numele aplicației din antet (ex. „EasyBook”). */
   appName?: string;
   /**
-   * Hub-ul și Founder (bundle.js `hub`): marca Ventora în locul iconiței aplicației; cu `appName`
-   * („Founder”) numele are fontul mărcii, fără `appName` apare logo-ul întreg („Ventora”).
+   * Hub-ul și Founder (bundle.js `hub`): semnul Ventora Systems în locul iconiței aplicației; cu
+   * `appName` („Founder”) numele are fontul mărcii, fără `appName` apare logo-ul pe două rânduri
+   * (Spine 1.1.0, MARCA-1), iar numele accesibil e „Hub”.
    */
   hub?: boolean;
   sections?: NavSection[];
@@ -158,13 +159,16 @@ export function Spine({
   const bottom = bottomItems ? all.filter((i) => bottomItems.includes(i.id)) : all.slice(0, 4);
   const restActive = !bottom.some((i) => i.id === activeId);
   const backLabel = labels?.backToHub ?? '';
+  // bundle.js: numele accesibil al Hub-ului e „Hub” (MARCA-1), nu marca
+  // eslint-disable-next-line i18next/no-literal-string -- numele produsului, ca în bundle
+  const name = appName || (hub ? 'Hub' : '');
   const toggleLabel = isCollapsed ? labels?.expandMenu : labels?.collapseMenu;
 
   return (
     <>
       <nav
         className={cn(styles.spine, isCollapsed && styles.isCollapsed, className)}
-        aria-label={appName}
+        aria-label={name}
         data-spine=""
       >
         <div className={styles.head}>
@@ -173,7 +177,7 @@ export function Spine({
             className={styles.app}
             onClick={onBackToHub}
             title={backLabel}
-            aria-label={`${appName} — ${backLabel}`}
+            aria-label={`${name} — ${backLabel}`}
           >
             {hub ? (
               <Logo
@@ -186,7 +190,7 @@ export function Spine({
               app && <AppIcon app={app} size={32} />
             )}
             {hub && !appName ? (
-              <Logo size={28} title="" className={styles.logo} />
+              <Logo variant="stacked" size={28} title="" className={styles.logo} />
             ) : (
               <span className={cn(styles.appname, 'heading', hub && styles.brand)}>{appName}</span>
             )}
@@ -224,7 +228,7 @@ export function Spine({
         </button>
       </nav>
 
-      <nav className={styles.bottomnav} aria-label={appName}>
+      <nav className={styles.bottomnav} aria-label={name}>
         {bottom.map((it) => (
           <button
             key={it.id}

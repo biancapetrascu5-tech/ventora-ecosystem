@@ -107,7 +107,7 @@ function VentoraLogoFull({ height = 28 }: { height?: number }) {
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 6 250 68"
       role="img"
-      aria-label="Ventora"
+      aria-label="Ventora Systems"
       height={height}
       style={{ display: 'block', flexShrink: 0 }}
     >
@@ -427,7 +427,7 @@ export function LauncherScreenClient({ theme }: { theme: 'light' | 'dark'; activ
 
         {/* Alte aplicații */}
         <div style={{ marginTop: 'var(--space-8)', paddingBottom: 'var(--space-8)' }}>
-          <h2 className="display-m">Alte aplicații Ventora</h2>
+          <h2 className="display-m">Alte aplicații Ventora Systems</h2>
           <p
             className="body"
             style={{
@@ -444,7 +444,7 @@ export function LauncherScreenClient({ theme }: { theme: 'light' | 'dark'; activ
           </div>
           <div style={{ marginTop: 'var(--space-4)' }}>
             <Button variant="quiet" icon="grid" iconEnd="arrow-right">
-              Vezi toate aplicațiile Ventora
+              Vezi toate aplicațiile Ventora Systems
             </Button>
           </div>
         </div>

@@ -186,7 +186,7 @@ export function createHubAuthOptions(db: IdentityBaseClient, secret: string) {
       bearer(),
       passwordResetRenewal({ db, audit }),
       twoFactor({
-        issuer: 'Ventora Hub',
+        issuer: 'Ventora Systems',
         // D1: 10 codes of 8 digits, stored as HMACs (backup-codes.ts)
         backupCodeOptions: {
           customBackupCodesGenerate: generateBackupCodeList,
@@ -264,7 +264,7 @@ export function createFounderAuthOptions(db: FounderBaseClient, secret: string) 
     plugins: [
       passwordResetRenewal({ db, audit }),
       twoFactor({
-        issuer: 'Ventora Founder',
+        issuer: 'Ventora Systems Founder',
         // D1: 10 codes of 8 digits, stored as HMACs (backup-codes.ts)
         backupCodeOptions: {
           customBackupCodesGenerate: generateBackupCodeList,

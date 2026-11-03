@@ -144,7 +144,7 @@ export const ACCOUNT_RO: AccountMenuLabels = {
   yourBusinesses: 'Afacerile tale',
   theme: 'Temă',
   language: 'Limbă',
-  allApps: 'Toate aplicațiile Ventora',
+  allApps: 'Toate aplicațiile Ventora Systems',
   support: 'Suport',
   signOut: 'Ieși din cont',
   themeSwitcher: THEME_RO,

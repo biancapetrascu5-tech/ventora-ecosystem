@@ -27,7 +27,7 @@ const T = {
   back: 'Renunță',
   move: 'Mută programarea',
   t3: 'Telefonul afacerii e deconectat',
-  d3: '3 reamintiri așteaptă să plece. Deschide aplicația Ventora pe telefon ca să le trimiți.',
+  d3: '3 reamintiri așteaptă să plece. Deschide aplicația Ventora Systems pe telefon ca să le trimiți.',
   later: 'Mai târziu',
   fix: 'Vezi telefonul',
   t4: 'Cere alt abonament',
