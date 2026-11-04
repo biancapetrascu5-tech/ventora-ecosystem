@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation';
 import { readSupportBanner } from '@/server/support-actions';
 import { readHubShell } from '@/server/shell-actions';
 import { readBell } from '@/server/notification-actions';
+import { readSupportBadge } from '@/server/support-request-actions';
 import { SupportBannerHost } from '@/screens/support/SupportBannerHost';
 import { HubShell } from '@/screens/shell/HubShell';
 import { BackupCodesLeftNotice } from '@ventora/screens';
@@ -14,10 +15,12 @@ import styles from './hub-layout.module.css';
    R-2F10 (câte coduri au rămas). Fără sesiune, pagina își face singură redirecționarea.
    Lot 4.4: clopoțelul pornește cu lista de la încărcare și o reîncarcă la fiecare deschidere. */
 export default async function HubLayout({ children }: { children: ReactNode }) {
-  const [banner, shell, bell] = await Promise.all([
+  const [banner, shell, bell, supportBadge] = await Promise.all([
     readSupportBanner(),
     readHubShell(),
     readBell(),
+    // Lotul 4.6: Spine · Suport, cu solicitările care au „Răspuns nou”
+    readSupportBadge(),
   ]);
   // Lot 2.9b (S112): afacerea din sesiune a fost suspendată între timp (D3-20 a)
   if (shell?.suspendedRedirect) redirect(shell.suspendedRedirect);
@@ -25,7 +28,7 @@ export default async function HubLayout({ children }: { children: ReactNode }) {
     <div className={styles.page}>
       <SupportBannerHost manager={banner?.manager ?? false} sessions={banner?.sessions ?? []}>
         {shell ? (
-          <HubShell data={shell} bell={bell}>
+          <HubShell data={shell} bell={bell} supportBadge={supportBadge}>
             {children}
           </HubShell>
         ) : (

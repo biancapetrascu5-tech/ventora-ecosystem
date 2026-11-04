@@ -20,7 +20,13 @@ export default async function BusinessRoute({
   searchParams,
 }: {
   params: Promise<{ id: string }>;
-  searchParams: Promise<{ tab?: string; exception?: string; purchaseFailed?: string }>;
+  searchParams: Promise<{
+    tab?: string;
+    exception?: string;
+    purchaseFailed?: string;
+    /** Lotul 4.6: referința solicitării pentru sesiunea de suport (FounderSupportInbox). */
+    session?: string;
+  }>;
 }) {
   const session = await getFounderSession(await headers());
   if (!session) redirect('/sign-in');
@@ -43,6 +49,7 @@ export default async function BusinessRoute({
       initialTab={TABS.includes(sp.tab as BusinessTab) ? (sp.tab as BusinessTab) : 'overview'}
       openException={sp.exception === '1'}
       purchaseFailed={sp.purchaseFailed === '1'}
+      openSupportFor={sp.session && /^VS-\d{4}-\d{4,}$/.test(sp.session) ? sp.session : undefined}
     />
   );
 }

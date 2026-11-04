@@ -175,6 +175,45 @@ export const CommercialOwnerNotifiedV1 = defineEvent({
     .strict(),
 });
 
+/**
+ * `support.reply.posted` v1 (Lot 4.6, D4-14 b): the Ventora team answered a support request from
+ * Founder · Suport. The person who opened it gets „Răspuns nou la solicitarea ta” in the Hub and
+ * e-mail E-7 (its consumer, core/support), so an event without one is a mistake (dead letter).
+ * Only ids: the texts come from the request, read by the consumer in the organization's context.
+ */
+export const SupportReplyPostedV1 = defineEvent({
+  type: 'support.reply.posted',
+  version: 1,
+  sourceApp: 'founder',
+  growthSafe: false,
+  withoutConsumer: 'dead_letter',
+  schema: z
+    .object({
+      requestId: z.uuid(),
+      messageId: z.uuid(),
+    })
+    .strict(),
+});
+
+/**
+ * `support.request.auto_close_warning` v1 (Lot 4.6, S116-D18): a request waiting for the business
+ * for 6 days closes tomorrow. The person who opened it gets the notice in the Hub and by e-mail
+ * (its consumer, core/support). `closesAt` is the moment of the automatic closing.
+ */
+export const SupportAutoCloseWarningV1 = defineEvent({
+  type: 'support.request.auto_close_warning',
+  version: 1,
+  sourceApp: 'platform',
+  growthSafe: false,
+  withoutConsumer: 'dead_letter',
+  schema: z
+    .object({
+      requestId: z.uuid(),
+      closesAt: z.iso.datetime({ offset: true }),
+    })
+    .strict(),
+});
+
 const billingPayment = {
   paymentId: z.uuid(),
   /** `purchase`: a pack or an application bought from the Hub; `subscription`: an invoice of the subscription. */
@@ -290,6 +329,8 @@ export const EVENT_CATALOG: readonly EventDefinition[] = [
   BillingDisputeOpenedV1 as EventDefinition,
   FileUploadedV1 as EventDefinition,
   FileDeletedV1 as EventDefinition,
+  SupportReplyPostedV1 as EventDefinition,
+  SupportAutoCloseWarningV1 as EventDefinition,
 ];
 
 /** Definiția unui eveniment după tip și versiune; null dacă nu e în catalog. */

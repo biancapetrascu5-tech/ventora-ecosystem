@@ -140,3 +140,12 @@
 .notice {
   margin-bottom: var(--space-2);
 }
+
+/* .ss-toast din preview.html: toastul „Am primit cererea…” */
+.toast {
+  position: fixed;
+  right: var(--space-6);
+  bottom: var(--space-6);
+  width: var(--panel-width);
+  z-index: var(--z-toast);
+}

@@ -2,8 +2,8 @@
 /**
  * Rulează toate testele de integrare local, identic cu CI:
  *   1. Pornește DB-ul de test
- *   2. Verifică garda de drift (prisma migrate diff --exit-code): identity, founder, organizations, audit, access, notifications, files, commercial, billing, workflows
- *   3. Rulează testele de integrare (db-kit, audit, identity, organizations, integrations, access, notifications, files, commercial, booking, billing, workflows)
+ *   2. Verifică garda de drift (prisma migrate diff --exit-code): identity, founder, organizations, audit, access, notifications, files, support, commercial, billing, workflows
+ *   3. Rulează testele de integrare (db-kit, audit, identity, organizations, integrations, access, notifications, files, support, commercial, booking, billing, workflows)
  *      și sincronizarea registrului comercial de două ori (a doua nu trebuie să schimbe nimic)
  *   4. Oprește DB-ul (indiferent de rezultat)
  *
@@ -43,6 +43,7 @@ const SHADOW_NOTIFICATIONS = `postgresql://postgres:test@localhost:${PG}/shadow_
 const SHADOW_FILES = `postgresql://postgres:test@localhost:${PG}/shadow_files_diff`;
 const SHADOW_BILLING = `postgresql://postgres:test@localhost:${PG}/shadow_billing_diff`;
 const SHADOW_WORKFLOWS = `postgresql://postgres:test@localhost:${PG}/shadow_workflows_diff`;
+const SHADOW_SUPPORT = `postgresql://postgres:test@localhost:${PG}/shadow_support_diff`;
 
 let exitCode = 0;
 
@@ -168,6 +169,22 @@ try {
   runPkg('@ventora/files', 'test:integration', {
     DATABASE_URL_TEST: `postgresql://app_runtime:${TEST_DB.appPw}@localhost:${PG}/${TEST_DB.accessDb}`,
     DATABASE_URL_ADMIN_TEST: ADMIN_ACCESS,
+  });
+
+  // --- Lot 4.6: solicitările de suport (drift, teste pe baza access: Hub + Founder + fișiere) ---
+  console.log('[test:integration] Verificare drift support schema...');
+  runPkg(
+    '@ventora/support',
+    `exec prisma migrate diff --from-migrations ./prisma/migrations --to-schema ./prisma/schema.prisma --exit-code --config prisma7.config.ts`,
+    { DATABASE_URL: ADMIN_ACCESS, SHADOW_DATABASE_URL: SHADOW_SUPPORT },
+  );
+  console.log('\n[test:integration] support...');
+  runPkg('@ventora/support', 'test:integration', {
+    DATABASE_URL_TEST: `postgresql://app_runtime:${TEST_DB.appPw}@localhost:${PG}/${TEST_DB.accessDb}`,
+    DATABASE_URL_FOUNDER_TEST: `postgresql://founder_runtime:${TEST_DB.founderPw}@localhost:${PG}/${TEST_DB.accessDb}`,
+    DATABASE_URL_ADMIN_TEST: ADMIN_ACCESS,
+    BETTER_AUTH_SECRET: TEST_DB.betterAuthSecret,
+    FOUNDER_AUTH_SECRET: TEST_DB.founderAuthSecret,
   });
 
   // --- Lot 3.1: registrul comercial (drift, teste, sincronizarea reală rulată de două ori) ---

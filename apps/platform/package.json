@@ -26,6 +26,7 @@
     "@ventora/notifications": "workspace:*",
     "@ventora/organizations": "workspace:*",
     "@ventora/screens": "workspace:*",
+    "@ventora/support": "workspace:*",
     "@ventora/tokens": "workspace:*",
     "@ventora/ui": "workspace:*",
     "@ventora/workflows": "workspace:*",

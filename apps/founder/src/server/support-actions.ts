@@ -10,6 +10,7 @@ import {
   SupportSessionConflict,
   type RecoveryVerification,
 } from '@ventora/access';
+import { isSupportRequestRefOf } from '@ventora/support';
 import { reportActionError } from './report-error';
 
 /* Acțiunile Founder pentru sesiunea de suport și recuperarea proprietarului (Lotul 2.5c).
@@ -48,7 +49,7 @@ export type OpenResult =
       /** Cine are sesiunea deschisă și până când (ISO); null dacă s-a închis între timp. */
       existing: { founderName: string; expiresAt: string } | null;
     }
-  | { ok: false; reason: 'invalid' | 'error' };
+  | { ok: false; reason: 'invalid' | 'ticket' | 'error' };
 
 export async function openSupport(input: {
   organizationId: string;
@@ -57,7 +58,15 @@ export async function openSupport(input: {
   durationMinutes: number;
 }): Promise<OpenResult> {
   try {
-    const s = await openSupportSession({ founderHeaders: await headers(), ...input });
+    const founderHeaders = await headers();
+    // Lotul 4.6 (D4-14 b, S-4 = a): referința e a unei solicitări a aceleiași afaceri
+    const known = await isSupportRequestRefOf({
+      founderHeaders,
+      organizationId: input.organizationId,
+      ref: input.ticketRef,
+    });
+    if (!known) return { ok: false, reason: 'ticket' };
+    const s = await openSupportSession({ founderHeaders, ...input });
     return { ok: true, id: s.id, expiresAt: s.expiresAt.toISOString() };
   } catch (err) {
     if (err instanceof SupportSessionConflict)

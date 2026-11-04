@@ -19,6 +19,7 @@ import {
   useThemeChoice,
 } from '@ventora/ui';
 import { authApi, useWhen } from '@ventora/screens';
+import { supportApplicationFor } from '@ventora/support/apps';
 import { rememberLocale } from '@/i18n/locale';
 import { switchBusiness } from '@/server/shell-actions';
 import { keepLocale } from '@/server/locale-actions';
@@ -56,16 +57,19 @@ const ROUTES: Route[] = [
   { id: 'roluri', href: '/admin/access' },
   { id: 'abonament', href: '/admin/plan' },
   { id: 'automatizari', href: '/admin/automations' },
+  // Lotul 4.6: HubSupport, HubSupportThread
+  { id: 'suport', href: '/support' },
 ];
 
 function activeFor(pathname: string): string | undefined {
   return ROUTES.find((r) => pathname === r.href || pathname.startsWith(r.href + '/'))?.id;
 }
 
-export function useHubNav(manager: boolean): NavSection[] {
+export function useHubNav(manager: boolean, supportBadge = 0): NavSection[] {
   const nav = useTranslations('hub.nav');
   const account = useTranslations('account');
   const automations = useTranslations('automations');
+  const ui = useTranslations('ui');
   const sections: NavSection[] = [
     {
       label: account('title'),
@@ -103,6 +107,19 @@ export function useHubNav(manager: boolean): NavSection[] {
       ],
     });
   }
+  // Lotul 4.6 (HubSupport): „Ajutor · Suport”, cu numărul solicitărilor cu „Răspuns nou”
+  sections.push({
+    label: nav('help'),
+    items: [
+      {
+        id: 'suport',
+        label: ui('support'),
+        icon: 'life-buoy',
+        href: '/support',
+        ...(supportBadge ? { badge: supportBadge } : {}),
+      },
+    ],
+  });
   return sections;
 }
 
@@ -165,11 +182,14 @@ function useBell(initial: Bell, orgs: HubShellData['orgs']) {
 export function HubShell({
   data,
   bell: initialBell = { items: [] },
+  supportBadge = 0,
   title,
   children,
 }: {
   data: HubShellData;
   bell?: Bell;
+  /** Lotul 4.6: solicitările cu „Răspuns nou” (Spine · Suport). */
+  supportBadge?: number;
   title?: string;
   children: ReactNode;
 }) {
@@ -180,7 +200,7 @@ export function HubShell({
   const ui = useTranslations('ui');
   const themeChoice = useThemeChoice();
   const roles = useTranslations('roles');
-  const nav = useHubNav(data.manager);
+  const nav = useHubNav(data.manager, supportBadge);
   const active = activeFor(pathname);
   // S117: catalogul (HubCatalogBundles, HubCatalog, HubCatalogApp) se deschide fără Spine, cu
   // sigla în bară; titlul barei e al paginii.
@@ -225,7 +245,7 @@ export function HubShell({
             sections={nav}
             activeId={active}
             onBackToHub={() => go('/')}
-            bottomItems={['securitate', 'echipa', 'abonament']}
+            bottomItems={['securitate', 'echipa', 'abonament', 'suport']}
             labels={{
               backToHub: ui('backToHub'),
               expandMenu: ui('expandMenu'),
@@ -293,6 +313,14 @@ export function HubShell({
               currentOrgId={data.currentOrgId ?? undefined}
               onOrgChange={change}
               onProfile={() => go('/account')}
+              // Lotul 4.6 (S-3): HubSupport, cu aplicația paginii de pornire precompletată
+              onSupport={() =>
+                go(
+                  pathname.startsWith('/support')
+                    ? '/support'
+                    : `/support?app=${supportApplicationFor(pathname)}`,
+                )
+              }
               onSignOut={async () => {
                 await authApi.signOut();
                 router.replace('/sign-in');

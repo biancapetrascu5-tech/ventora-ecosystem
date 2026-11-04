@@ -179,6 +179,91 @@
         "closedAuto": "Automatisch beendet"
       },
       "empty": "Bisher keine Support-Sitzungen."
+    },
+    "title": "Support",
+    "lead": "Schreiben Sie uns, wenn etwas nicht funktioniert oder Sie eine Frage haben. Wir antworten innerhalb von einem Werktag.",
+    "list": {
+      "title": "Meine Anfragen",
+      "col": {
+        "subject": "Betreff",
+        "app": "App",
+        "updated": "Aktualisiert",
+        "status": "Status",
+        "from": "Gesendet von"
+      },
+      "titleBusiness": "Anfragen des Unternehmens"
+    },
+    "status": {
+      "newReply": "Neue Antwort",
+      "inProgress": "In Bearbeitung",
+      "resolved": "Erledigt"
+    },
+    "new": {
+      "title": "Neue Anfrage",
+      "app": "App",
+      "appHelp": "Ausgefüllt nach der Seite, von der Sie gekommen sind.",
+      "subject": "Betreff",
+      "subjectPlaceholder": "z. B.: Erinnerungen kommen bei Kunden nicht an",
+      "what": "Was ist passiert?",
+      "whatHelp": "Beschreiben Sie, was Sie versucht und was Sie gesehen haben. Ein Bildschirmfoto hilft.",
+      "urgency": "Wie dringend ist es?",
+      "urgencyHelp": "„Blockiert mich“ bedeutet, dass Sie gar nicht arbeiten können, bis es gelöst ist.",
+      "urgencyLabel": "Dringlichkeit",
+      "normal": "Normal",
+      "blocking": "Blockiert mich",
+      "send": "Senden",
+      "appPlatform": "Hub (Konto, Abo, Team)",
+      "error": {
+        "required": "Bitte füllen Sie dieses Feld aus."
+      }
+    },
+    "attachments": "Anhänge",
+    "attachmentsHint": "PNG, JPG oder PDF",
+    "sent": {
+      "title": "Wir haben Ihre Nachricht erhalten.",
+      "body": "Wir antworten hier und per E-Mail innerhalb von einem Werktag."
+    },
+    "empty": {
+      "title": "Sie haben keine Anfragen",
+      "body": "Wenn etwas nicht funktioniert, schreiben Sie uns von hier aus."
+    },
+    "thread": {
+      "meta": "{app} · eröffnet am {date} · {ref}",
+      "you": "Sie",
+      "team": "Ventora-Systems-Team",
+      "reply": "Ihre Antwort",
+      "attachHint": "PNG, JPG oder PDF, je höchstens 10 MB",
+      "send": "Antwort senden",
+      "sending": "Wird gesendet …",
+      "error": {
+        "empty": "Schreiben Sie eine Nachricht, bevor Sie senden.",
+        "size": "{file} ist größer als 10 MB. Senden Sie eine kleinere Datei.",
+        "type": "{file} ist kein PNG, JPG oder PDF."
+      },
+      "download": "{file} herunterladen",
+      "history": "Statusverlauf",
+      "h": {
+        "opened": "Sie haben die Anfrage eröffnet",
+        "inProgress": "In Bearbeitung · {name}",
+        "newReply": "Neue Antwort von {name}",
+        "resolved": "Erledigt · {name}",
+        "reopened": "Sie haben die Anfrage wieder geöffnet",
+        "openedBy": "{name} hat die Anfrage eröffnet",
+        "reopenedBy": "{name} hat die Anfrage wieder eröffnet",
+        "autoClosed": "Nach 7 Tagen ohne Antwort automatisch geschlossen"
+      },
+      "resolvedNote": "Diese Anfrage ist erledigt. Wenn das Problem wieder auftritt, können Sie sie wieder öffnen.",
+      "reopen": "Anfrage wieder öffnen",
+      "reopenLabel": "Was ist wieder passiert?",
+      "reopenHelp": "Nach dem Senden steht die Anfrage wieder auf „In Bearbeitung“.",
+      "reopenSubmit": "Wieder öffnen und senden",
+      "reopened": "Wir haben die Anfrage wieder geöffnet.",
+      "cancel": "Abbrechen",
+      "replyNote": "Wir antworten hier und per E-Mail."
+    },
+    "error": {
+      "send": "Senden fehlgeschlagen. Bitte versuchen Sie es erneut.",
+      "upload": "{file} wurde nicht hochgeladen. Bitte versuchen Sie es erneut."
     }
   },
   "auth": {
@@ -447,7 +532,16 @@
     "findBusiness": "Unternehmen suchen…",
     "noResultsFor": "Keine Ergebnisse für „{q}“",
     "unreadN": "{n, plural, one {# ungelesen} other {# ungelesen}}",
-    "accessStopped": "Zugriff gesperrt"
+    "accessStopped": "Zugriff gesperrt",
+    "upload": {
+      "dropFiles": "Dateien hierher ziehen oder",
+      "browse": "auf dem Gerät auswählen",
+      "dropNow": "Zum Hochladen loslassen",
+      "maxSize": "Bis zu {size} pro Datei",
+      "remove": "Entfernen",
+      "retry": "Erneut versuchen",
+      "uploaded": "Hochgeladen"
+    }
   },
   "hub": {
     "chooseBusiness": {
@@ -468,7 +562,8 @@
       "teamShort": "Team",
       "roles": "Rollen und Zugriff",
       "plan": "Abonnement und Verbrauch",
-      "planShort": "Abonnement"
+      "planShort": "Abonnement",
+      "help": "Hilfe"
     },
     "team": {
       "title": "Team",
@@ -850,7 +945,13 @@
     "support": {
       "reply": {
         "title": "Neue Antwort auf Ihre Anfrage",
-        "body": "„{subject}“ · {author}, Ventora-Systems-Team"
+        "body": "„{subject}“ · {author}, Ventora-Systems-Team",
+        "action": "Anfrage ansehen"
+      },
+      "autoClose": {
+        "title": "Ihre Anfrage wird morgen geschlossen",
+        "body": "„{subject}“ ({ref}) wird morgen automatisch geschlossen, wenn Sie uns nicht mehr schreiben.",
+        "action": "Anfrage ansehen"
       }
     },
     "request": {
@@ -962,6 +1063,23 @@
         "eyebrowApps": "{business} · Apps",
         "why": "Sie erhalten diese E-Mail, weil Sie Inhaber von {business} in Ventora Systems sind.",
         "upgrade": "Wenn das öfter passiert, fragen Sie unter Abonnement und Verbrauch ein anderes Abonnement an."
+      },
+      "supportReply": {
+        "subject": "Sie haben eine neue Antwort auf Ihre Anfrage",
+        "preheader": "{author} aus dem Ventora-Systems-Team hat auf „{subject}“ geantwortet.",
+        "eyebrow": "{businessName} · Support",
+        "title": "Sie haben eine neue Antwort auf Ihre Anfrage",
+        "lead": "{author} aus dem Ventora-Systems-Team hat auf „{subject}“ ({ref}) geantwortet.",
+        "body": "Sie lesen die Antwort in Ventora Systems und können dort antworten, bei Bedarf mit Anhängen.",
+        "cta": "Anfrage ansehen",
+        "why": "Sie erhalten diese E-Mail, weil Sie diese Anfrage in Ventora Systems eröffnet haben."
+      },
+      "supportAutoClose": {
+        "subject": "Ihre Anfrage wird morgen geschlossen",
+        "preheader": "„{subject}“ wird am {closesAt} automatisch geschlossen, wenn Sie uns nicht mehr schreiben.",
+        "title": "Ihre Anfrage wird morgen geschlossen",
+        "lead": "Das Ventora-Systems-Team hat auf „{subject}“ ({ref}) geantwortet, und wir haben seit 6 Tagen nichts mehr von Ihnen gehört.",
+        "body": "Wenn das Problem gelöst ist, müssen Sie nichts tun: Die Anfrage wird am {closesAt} automatisch geschlossen. Wenn Sie noch Hilfe brauchen, antworten Sie uns in Ventora Systems; Sie können sie auch nach dem Schließen wieder eröffnen."
       }
     },
     "prefs": {
@@ -1326,6 +1444,7 @@
         "desc": "Wenn ein Kontingent des Abonnements 80 % überschreitet, erhält der Inhaber die Verbrauchsmitteilung (dieselbe wie unter „Abonnement und Verbrauch“)."
       }
     },
-    "sentN": "{n} Nachrichten gesendet"
+    "sentN": "{n} Nachrichten gesendet",
+    "askBody": "Anfrage gesendet aus Unternehmen · Automatisierungen."
   }
 }

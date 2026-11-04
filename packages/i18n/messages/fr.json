@@ -179,6 +179,91 @@
         "closedAuto": "Fermée automatiquement"
       },
       "empty": "Aucune session de support pour l’instant."
+    },
+    "title": "Assistance",
+    "lead": "Écrivez-nous quand quelque chose ne fonctionne pas ou si vous avez une question. Nous répondons sous un jour ouvré.",
+    "list": {
+      "title": "Mes demandes",
+      "col": {
+        "subject": "Objet",
+        "app": "Application",
+        "updated": "Mise à jour",
+        "status": "État",
+        "from": "Envoyée par"
+      },
+      "titleBusiness": "Les demandes de l’entreprise"
+    },
+    "status": {
+      "newReply": "Nouvelle réponse",
+      "inProgress": "En cours",
+      "resolved": "Résolue"
+    },
+    "new": {
+      "title": "Nouvelle demande",
+      "app": "Application",
+      "appHelp": "Nous l’avons remplie d’après la page d’où vous venez.",
+      "subject": "Objet",
+      "subjectPlaceholder": "Ex. : Les rappels n’arrivent pas aux clients",
+      "what": "Que s’est-il passé ?",
+      "whatHelp": "Dites-nous ce que vous avez essayé et ce que vous avez vu. Une capture d’écran aide.",
+      "urgency": "C’est urgent ?",
+      "urgencyHelp": "« Ça me bloque » signifie que vous ne pouvez pas travailler du tout tant que ce n’est pas réglé.",
+      "urgencyLabel": "Urgence",
+      "normal": "Normal",
+      "blocking": "Ça me bloque",
+      "send": "Envoyer",
+      "appPlatform": "Hub (compte, abonnement, équipe)",
+      "error": {
+        "required": "Remplissez ce champ."
+      }
+    },
+    "attachments": "Pièces jointes",
+    "attachmentsHint": "PNG, JPG ou PDF",
+    "sent": {
+      "title": "Nous avons bien reçu votre message.",
+      "body": "Nous vous répondrons ici et par e-mail sous un jour ouvré."
+    },
+    "empty": {
+      "title": "Vous n’avez aucune demande",
+      "body": "Si quelque chose ne fonctionne pas, écrivez-nous d’ici."
+    },
+    "thread": {
+      "meta": "{app} · ouverte le {date} · {ref}",
+      "you": "Vous",
+      "team": "Équipe Ventora Systems",
+      "reply": "Votre réponse",
+      "attachHint": "PNG, JPG ou PDF, 10 Mo maximum chacun",
+      "send": "Envoyer la réponse",
+      "sending": "Envoi…",
+      "error": {
+        "empty": "Écrivez un message avant d’envoyer.",
+        "size": "{file} dépasse 10 Mo. Envoyez un fichier plus petit.",
+        "type": "{file} n’est pas un PNG, JPG ou PDF."
+      },
+      "download": "Télécharger {file}",
+      "history": "Historique de l’état",
+      "h": {
+        "opened": "Vous avez ouvert la demande",
+        "inProgress": "En cours · {name}",
+        "newReply": "Nouvelle réponse de {name}",
+        "resolved": "Résolue · {name}",
+        "reopened": "Vous avez rouvert la demande",
+        "openedBy": "{name} a ouvert la demande",
+        "reopenedBy": "{name} a rouvert la demande",
+        "autoClosed": "Fermée automatiquement après 7 jours sans réponse"
+      },
+      "resolvedNote": "Cette demande est résolue. Si le problème revient, vous pouvez la rouvrir.",
+      "reopen": "Rouvrir la demande",
+      "reopenLabel": "Que s’est-il passé de nouveau ?",
+      "reopenHelp": "Une fois envoyée, la demande repasse « En cours ».",
+      "reopenSubmit": "Rouvrir et envoyer",
+      "reopened": "Nous avons rouvert la demande.",
+      "cancel": "Annuler",
+      "replyNote": "Nous vous répondons ici et par e-mail."
+    },
+    "error": {
+      "send": "Envoi impossible. Réessayez.",
+      "upload": "{file} n’a pas été chargé. Réessayez."
     }
   },
   "auth": {
@@ -447,7 +532,16 @@
     "findBusiness": "Rechercher une entreprise…",
     "noResultsFor": "Aucun résultat pour « {q} »",
     "unreadN": "{n, plural, one {# non lue} other {# non lues}}",
-    "accessStopped": "Accès suspendu"
+    "accessStopped": "Accès suspendu",
+    "upload": {
+      "dropFiles": "Glissez vos fichiers ici ou",
+      "browse": "choisissez-les sur votre appareil",
+      "dropNow": "Déposez pour envoyer",
+      "maxSize": "Jusqu’à {size} par fichier",
+      "remove": "Retirer",
+      "retry": "Réessayer",
+      "uploaded": "Envoyé"
+    }
   },
   "hub": {
     "chooseBusiness": {
@@ -468,7 +562,8 @@
       "teamShort": "Équipe",
       "roles": "Rôles et accès",
       "plan": "Abonnement et consommation",
-      "planShort": "Abonnement"
+      "planShort": "Abonnement",
+      "help": "Aide"
     },
     "team": {
       "title": "Équipe",
@@ -850,7 +945,13 @@
     "support": {
       "reply": {
         "title": "Nouvelle réponse à votre demande",
-        "body": "« {subject} » · {author}, équipe Ventora Systems"
+        "body": "« {subject} » · {author}, équipe Ventora Systems",
+        "action": "Voir la demande"
+      },
+      "autoClose": {
+        "title": "Votre demande sera fermée demain",
+        "body": "« {subject} » ({ref}) sera fermée automatiquement demain, sauf si vous nous écrivez.",
+        "action": "Voir la demande"
       }
     },
     "request": {
@@ -962,6 +1063,23 @@
         "eyebrowApps": "{business} · Applications",
         "why": "Vous recevez cet e-mail parce que vous êtes le propriétaire de {business} dans Ventora Systems.",
         "upgrade": "Si cela arrive souvent, demandez un autre abonnement dans Abonnement et consommation."
+      },
+      "supportReply": {
+        "subject": "Vous avez une nouvelle réponse à votre demande",
+        "preheader": "{author}, de l’équipe Ventora Systems, a répondu à « {subject} ».",
+        "eyebrow": "{businessName} · Assistance",
+        "title": "Vous avez une nouvelle réponse à votre demande",
+        "lead": "{author}, de l’équipe Ventora Systems, a répondu à « {subject} » ({ref}).",
+        "body": "Vous pouvez lire la réponse dans Ventora Systems et y répondre, avec des pièces jointes si besoin.",
+        "cta": "Voir la demande",
+        "why": "Vous recevez cet e-mail parce que vous avez ouvert cette demande dans Ventora Systems."
+      },
+      "supportAutoClose": {
+        "subject": "Votre demande sera fermée demain",
+        "preheader": "« {subject} » sera fermée automatiquement le {closesAt}, sauf si vous nous écrivez.",
+        "title": "Votre demande sera fermée demain",
+        "lead": "L’équipe Ventora Systems a répondu à « {subject} » ({ref}) et nous n’avons rien reçu de votre part depuis 6 jours.",
+        "body": "Si le problème est résolu, vous n’avez rien à faire : la demande sera fermée automatiquement le {closesAt}. Si vous avez encore besoin d’aide, répondez-nous dans Ventora Systems ; vous pourrez aussi la rouvrir après sa fermeture."
       }
     },
     "prefs": {
@@ -1326,6 +1444,7 @@
         "desc": "Quand un quota de l’abonnement dépasse 80 %, le propriétaire reçoit la notification de consommation (la même que dans « Abonnement et consommation »)."
       }
     },
-    "sentN": "{n} messages envoyés"
+    "sentN": "{n} messages envoyés",
+    "askBody": "Demande envoyée depuis Entreprise · Automatisations."
   }
 }

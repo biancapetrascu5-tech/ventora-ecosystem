@@ -4,6 +4,7 @@ import './access-config';
 import { headers } from 'next/headers';
 import { authorize, PLATFORM_APPLICATION_ID } from '@ventora/access';
 import { getSession } from '@ventora/identity';
+import { createSupportRequest, newSupportRequestId, resolveSupportActor } from '@ventora/support';
 import {
   getAutomationsForHub,
   setAutomationSetting,
@@ -16,8 +17,8 @@ import { reportActionError } from './report-error';
    oprirea nu există aici (D-WF-3): doar Founder, iar workflows_rw nu are drept de scriere pe
    activări. Setările afacerii (S116-D22) se scriu prin core/workflows.
 
-   „Cere pornirea” / „Cere o schimbare”: solicitarea de suport vine cu Lotul 4.6 (#61, încă
-   neîmbinat). PLACEHOLDER (raportul 4.10): până atunci butoanele deschid un e-mail către echipă. */
+   „Cere pornirea” / „Cere o schimbare”: o solicitare de suport (Lotul 4.6), în aplicația
+   automatizării (EasyBook sau Hub); echipa răspunde la Suport și pe e-mail. */
 
 export type HubAutomationsData =
   | { member: true }
@@ -35,8 +36,6 @@ export type HubAutomationsData =
         settings: BusinessSettings;
       }[];
       messagesThisMonth: number;
-      /** PLACEHOLDER până la 4.6: adresa la care scriu „Cere pornirea” / „Cere o schimbare”. */
-      supportEmail: string;
     };
 
 async function context() {
@@ -65,7 +64,6 @@ export async function readAutomations(): Promise<HubAutomationsData | null> {
         settings: a.settings,
       })),
       messagesThisMonth: data.messagesThisMonth,
-      supportEmail: process.env.EMAIL_REPLY_TO || 'support@ventorasystems.com',
     };
   } catch (err) {
     reportActionError('readAutomations', err);
@@ -85,6 +83,30 @@ export async function saveAutomationSetting(
     return { ok: true };
   } catch (err) {
     reportActionError('saveAutomationSetting', err);
+    return { ok: false };
+  }
+}
+
+/** „Cere pornirea” / „Cere o schimbare”: o solicitare de suport, cu textele în limba persoanei. */
+export async function askAutomation(input: {
+  booking: boolean;
+  subject: string;
+  description: string;
+}): Promise<{ ok: boolean; ref?: string }> {
+  try {
+    const session = await getSession(await headers());
+    if (!session?.token) return { ok: false };
+    const actor = await resolveSupportActor(session.token);
+    const { ref } = await createSupportRequest(actor, {
+      id: newSupportRequestId(),
+      applicationId: input.booking ? 'booking' : 'platform',
+      subject: input.subject,
+      description: input.description,
+      urgency: 'normal',
+    });
+    return { ok: true, ref };
+  } catch (err) {
+    reportActionError('askAutomation', err);
     return { ok: false };
   }
 }

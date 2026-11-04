@@ -73,7 +73,7 @@ export function FounderShellDemo({
   bottomItems?: string[];
   searchLabel?: string;
   notifications?: NotificationData[];
-  /** S116: „Afaceri” fără badge în preview-urile noi. */
+  /** S116: „Afaceri” fără badge în preview-urile noi (Suport, Prezentare, Automatizări). */
   businessesBadge?: boolean;
 }) {
   const sections = businessesBadge
