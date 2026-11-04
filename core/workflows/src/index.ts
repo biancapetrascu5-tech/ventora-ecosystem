@@ -24,6 +24,7 @@ export {
 } from './engine';
 export {
   activateWorkflow,
+  codeFromName,
   listActivationsForFounder,
   listDefinitionsForFounder,
   listExecutionsForFounder,
@@ -36,6 +37,14 @@ export {
   type DefinitionSummary,
   type ExecutionLogRow,
 } from './founder';
+export {
+  getAutomationsForHub,
+  setAutomationSetting,
+  type BusinessSettings,
+  type HubAutomation,
+  type HubAutomations,
+  type HubContext,
+} from './hub';
 export { STEP_HANDLERS, type StepContext, type StepHandler, type StepOutcome } from './steps';
 export {
   CONDITION_CODES,
@@ -45,6 +54,7 @@ export {
   STEP_TEMPLATES,
   TRIGGERS,
   TRIGGER_CODES,
+  V1_AUTOMATIONS,
   availableEventTypes,
   triggersForEvent,
   validateDefinition,

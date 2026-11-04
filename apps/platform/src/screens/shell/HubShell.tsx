@@ -55,6 +55,7 @@ const ROUTES: Route[] = [
   { id: 'echipa', href: '/admin/team' },
   { id: 'roluri', href: '/admin/access' },
   { id: 'abonament', href: '/admin/plan' },
+  { id: 'automatizari', href: '/admin/automations' },
 ];
 
 function activeFor(pathname: string): string | undefined {
@@ -64,6 +65,7 @@ function activeFor(pathname: string): string | undefined {
 export function useHubNav(manager: boolean): NavSection[] {
   const nav = useTranslations('hub.nav');
   const account = useTranslations('account');
+  const automations = useTranslations('automations');
   const sections: NavSection[] = [
     {
       label: account('title'),
@@ -83,13 +85,20 @@ export function useHubNav(manager: boolean): NavSection[] {
           icon: 'users',
           href: '/admin/team',
         },
-        { id: 'roluri', label: nav('roles'), icon: 'key', href: '/admin/access' },
+        { id: 'roluri', label: nav('roles'), icon: 'key-round', href: '/admin/access' },
         {
           id: 'abonament',
           label: nav('plan'),
           short: nav('planShort'),
           icon: 'credit-card',
           href: '/admin/plan',
+        },
+        // Lotul 4.10 (S116, S120): după „Abonament și consum”, doar owner și admin
+        {
+          id: 'automatizari',
+          label: automations('nav'),
+          icon: 'refresh-cw',
+          href: '/admin/automations',
         },
       ],
     });

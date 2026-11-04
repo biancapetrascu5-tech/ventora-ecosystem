@@ -848,3 +848,9 @@ Decizia fondatoarei: numele vizibil e „Ventora Systems”, peste tot; „Vento
 
 - **FounderBundles — 2.0.2:** cardul are padding de SheetSection (space-6; space-4 pe telefon); rândul de sus și tabelul de versiuni au aceeași grilă (cele trei blocuri încep la „Versiune”, „Lunar” și „Afaceri”); între titlu și „{n} afaceri îl au”, space-2. Preview, README.
 - **FounderNewBusiness — 1.0.2:** „Începe cu 14 zile de probă” centrat pe căsuța „Bundle”. Preview, README.
+
+## 2026-11-04 · S120 — Spine-ul la zi în preview-uri
+
+- **Founder și Growth — preview 1.0.x+1:** „Suport” (badge 3) după „Cereri”; „Automatizări” primul în „Sistem”: FounderApps, FounderBackupCodes, FounderBundles, FounderBusiness, FounderBusinessActions, FounderBusinessBilling, FounderBusinessSms, FounderBusinesses, FounderDiscounts, FounderNewBusiness, FounderOwnerRecovery, FounderPacks, FounderPlanEditor, FounderRequests, FounderSupportSession, FounderUsage, GrowthAudiences, GrowthCampaignEditor, GrowthCampaigns, GrowthControl, GrowthOfferEditor, GrowthOffers, GrowthResults.
+- **Hub — preview 1.0.x+1:** „Automatizări” după „Abonament și consum” (RO, DE, IT): HubAccount, HubAccountSecurity, HubAddonPurchase, HubAdminAccess, HubAdminPlan, HubAdminTeam, HubPlanBilling, HubSupport, HubSupportSession, HubSupportThread, HubTeamInvite, HubTeamMemberActions.
+- Fără alte schimbări; ecranele S116 și S118 aveau deja intrările.

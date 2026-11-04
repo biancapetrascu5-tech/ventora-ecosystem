@@ -2,13 +2,15 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { Pool, type PoolClient } from 'pg';
 import { closeAuditPools } from '@ventora/audit';
 import { closeCommercialPools, commitQuota, reserveQuota } from '@ventora/commercial';
-import { Conflict, InvalidInput, QuotaExceeded } from '@ventora/errors';
+import { Conflict, Forbidden, InvalidInput, QuotaExceeded } from '@ventora/errors';
 import { founderAuth } from '@ventora/identity';
 import { ConsumerRegistry, dispatchOutbox } from '@ventora/integrations';
 import {
   activateWorkflow,
   activationExists,
   closeWorkflowsPools,
+  getAutomationsForHub,
+  setAutomationSetting,
   listActivationsForFounder,
   listDefinitionsForFounder,
   listExecutionsForFounder,
@@ -736,5 +738,101 @@ describe('Lot 4.10 — the engine on the quota event (S116-D21)', () => {
     await expect(
       setEnginePaused({ founderHeaders: founderHeaders(), paused: true }),
     ).rejects.toBeInstanceOf(InvalidInput);
+  });
+});
+
+describe('Lot 4.10 — the Hub (HubAutomations: read only, the own settings of the business)', () => {
+  it('owner and admin see the automations, on or off, and the messages of the month; a member is refused', async () => {
+    const b = await business({ 'workflows.active': 2, 'booking.appointments': 10 });
+    await activateWorkflow({
+      founderHeaders: founderHeaders(),
+      organizationId: b.organizationId,
+      definitionId: quotaDefinitionId,
+      reason: 'Hub',
+    });
+    await consume(b.organizationId, 8);
+    await dispatchCommercial(b.organizationId);
+    await runPendingExecutions({ limit: 100 });
+
+    const owner = { organizationId: b.organizationId, userId: b.ownerId, role: 'owner' };
+    const hub = await getAutomationsForHub(owner);
+    expect(hub.messagesThisMonth).toBe(3);
+    const quota = hub.automations.find((a) => a.definitionId === quotaDefinitionId)!;
+    expect(quota).toMatchObject({
+      on: true,
+      lastSentCount: 3,
+      trigger: 'commercial.quota_threshold',
+    });
+    expect(quota.lastSentAt).toBeTruthy();
+    expect(hub.automations.find((a) => a.definitionId === unavailableDefinitionId)).toMatchObject({
+      on: false,
+      lastSentAt: null,
+    });
+    const admin = { organizationId: b.organizationId, userId: b.adminId, role: 'admin' };
+    expect((await getAutomationsForHub(admin)).messagesThisMonth).toBe(3);
+    await expect(
+      getAutomationsForHub({
+        organizationId: b.organizationId,
+        userId: b.memberId,
+        role: 'member',
+      }),
+    ).rejects.toBeInstanceOf(Forbidden);
+    // another business sees nothing of these runs
+    const other = await business({ 'workflows.active': 1 });
+    const theirs = await getAutomationsForHub({
+      organizationId: other.organizationId,
+      userId: other.ownerId,
+      role: 'owner',
+    });
+    expect(theirs.messagesThisMonth).toBe(0);
+    expect(theirs.automations.every((a) => !a.on)).toBe(true);
+  });
+
+  it('the business sets its own weeks and discount (S116-D22), within the limits; a member cannot', async () => {
+    const b = await business({ 'workflows.active': 1 });
+    const owner = { organizationId: b.organizationId, userId: b.ownerId, role: 'owner' };
+    await setAutomationSetting(owner, {
+      definitionId: quotaDefinitionId,
+      settings: { reactivationWeeks: 8 },
+    });
+    await setAutomationSetting(owner, {
+      definitionId: quotaDefinitionId,
+      settings: { birthdayDiscountPercent: 15 },
+    });
+    const [row] = await q(
+      `SELECT settings, updated_by_user_id::text AS by FROM workflows.business_setting
+        WHERE organization_id = $1 AND definition_id = $2`,
+      [b.organizationId, quotaDefinitionId],
+    );
+    expect(row).toEqual({
+      settings: { reactivationWeeks: 8, birthdayDiscountPercent: 15 },
+      by: b.ownerId,
+    });
+    await expect(
+      setAutomationSetting(owner, {
+        definitionId: quotaDefinitionId,
+        settings: { reactivationWeeks: 99 },
+      }),
+    ).rejects.toBeInstanceOf(InvalidInput);
+    await expect(
+      setAutomationSetting(owner, {
+        definitionId: quotaDefinitionId,
+        settings: { birthdayDiscountPercent: 80 },
+      }),
+    ).rejects.toBeInstanceOf(InvalidInput);
+    await expect(
+      setAutomationSetting(
+        { organizationId: b.organizationId, userId: b.memberId, role: 'member' },
+        { definitionId: quotaDefinitionId, settings: { reactivationWeeks: 4 } },
+      ),
+    ).rejects.toBeInstanceOf(Forbidden);
+    // the CHECK refuses an unknown key even for a writer that skips the contract
+    await expect(
+      q(
+        `UPDATE workflows.business_setting SET settings = settings || '{"sql": 1}'::jsonb
+          WHERE organization_id = $1`,
+        [b.organizationId],
+      ),
+    ).rejects.toMatchObject({ code: '23514' });
   });
 });

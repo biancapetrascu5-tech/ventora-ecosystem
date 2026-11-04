@@ -3,7 +3,7 @@
 // FX_NAV + FX_App din preview-urile Founder (FounderBackupCodes, FounderSupportSession,
 // FounderOwnerRecovery): Spine cu navigația Founder, ContextBar cu căutarea, notificările, contul.
 // S111: „Cereri” după „Consum”; S117: „Model comercial” — Aplicații, Bundle-uri, Pachete în plus,
-// Reduceri; căutarea „…un bundle…”.
+// Reduceri; căutarea „…un bundle…”. S120: „Suport” după „Cereri”, „Automatizări” primul în „Sistem”.
 import type { ReactNode } from 'react';
 import {
   AccountMenu,
@@ -12,6 +12,7 @@ import {
   NotificationsPanel,
   Spine,
   type NavSection,
+  type NotificationData,
 } from '@ventora/ui';
 import { ACCOUNT_RO, CONTEXTBAR_RO, NOTIF_RO, SPINE_RO } from './labels';
 import { FX_NOTIFS, FX_USER } from './founder-data';
@@ -24,6 +25,7 @@ export const FX_NAV: NavSection[] = [
       { id: 'afaceri', label: 'Afaceri', icon: 'building-2', badge: 3 },
       { id: 'consum', label: 'Consum', icon: 'chart-column' },
       { id: 'cereri', label: 'Cereri', icon: 'inbox', badge: 2 },
+      { id: 'suport', label: 'Suport', icon: 'life-buoy', badge: 3 },
     ],
   },
   {
@@ -48,6 +50,7 @@ export const FX_NAV: NavSection[] = [
   {
     label: 'Sistem',
     items: [
+      { id: 'automatizari', label: 'Automatizări', icon: 'refresh-cw' },
       { id: 'jurnal', label: 'Jurnal', icon: 'history' },
       { id: 'setari', label: 'Setări', icon: 'settings' },
     ],
@@ -58,11 +61,27 @@ export function FounderShellDemo({
   active,
   title,
   children,
+  bottomItems = ['afaceri', 'consum', 'campanii', 'control'],
+  searchLabel = 'Caută o afacere, un bundle sau o campanie',
+  notifications = FX_NOTIFS,
+  businessesBadge = true,
 }: {
   active?: string;
   title?: string;
   children: ReactNode;
+  /** S116 (FounderAutomations, FounderSupportInbox): alte intrări jos și altă căutare. */
+  bottomItems?: string[];
+  searchLabel?: string;
+  notifications?: NotificationData[];
+  /** S116: „Afaceri” fără badge în preview-urile noi. */
+  businessesBadge?: boolean;
 }) {
+  const sections = businessesBadge
+    ? FX_NAV
+    : FX_NAV.map((sec) => ({
+        ...sec,
+        items: sec.items.map((i) => (i.id === 'afaceri' ? { ...i, badge: undefined } : i)),
+      }));
   return (
     <AppShell
       height="100%"
@@ -70,10 +89,10 @@ export function FounderShellDemo({
         <Spine
           hub
           appName="Founder"
-          sections={FX_NAV}
+          sections={sections}
           activeId={active}
           onBackToHub={noop}
-          bottomItems={['afaceri', 'consum', 'campanii', 'control']}
+          bottomItems={bottomItems}
           labels={SPINE_RO}
         />
       }
@@ -81,8 +100,8 @@ export function FounderShellDemo({
         <ContextBar
           title={title}
           onSearch={noop}
-          searchLabel="Caută o afacere, un bundle sau o campanie"
-          notifications={<NotificationsPanel items={FX_NOTIFS} labels={NOTIF_RO} />}
+          searchLabel={searchLabel}
+          notifications={<NotificationsPanel items={notifications} labels={NOTIF_RO} />}
           account={<AccountMenu user={FX_USER} labels={ACCOUNT_RO} />}
           labels={CONTEXTBAR_RO}
         />

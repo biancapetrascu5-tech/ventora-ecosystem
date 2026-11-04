@@ -87,6 +87,20 @@ function mapDbError(err: unknown, field: string): never {
 
 // ── The builder ────────────────────────────────────────────────────────────────────────────
 
+/** „Mulțumire după programare” → `multumire-dupa-programare-3f2a`. */
+export function codeFromName(name: string): string {
+  const slug = name
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, 50)
+    .replace(/-+$/, '');
+  const suffix = crypto.randomUUID().slice(0, 4);
+  return /^[a-z]/.test(slug) ? `${slug}-${suffix}` : `a-${suffix}`;
+}
+
 /**
  * „Salvează automatizarea”: a new automation (version 1) or a new version of one; the businesses
  * that have it on get the new version from their next run. Only the whitelist (S116-D19).
@@ -98,7 +112,8 @@ export async function saveDefinition(
   const name = text('name', params.name, 200);
   const def = validateDefinition(params);
   const existingId = params.definitionId ? uuid('definitionId', params.definitionId) : null;
-  const code = existingId ? null : params.code?.trim();
+  // the builder has only „Numele”: without a code, one is made from the name (stable afterwards)
+  const code = existingId ? null : params.code?.trim() || codeFromName(name);
   if (!existingId && (!code || !CODE_RE.test(code))) throw new InvalidInput('code');
 
   return withFounderTx(null, async (client, exec) => {

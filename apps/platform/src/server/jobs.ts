@@ -12,6 +12,11 @@ import {
 } from '@ventora/notifications';
 import { invitationNewLinkRequestedConsumer } from '@ventora/organizations';
 import {
+  freeStoppedQuota,
+  runPendingExecutions,
+  workflowsTriggerConsumer,
+} from '@ventora/workflows';
+import {
   ConsumerRegistry,
   JobRegistry,
   consoleJobErrorReporter,
@@ -63,7 +68,9 @@ export const platformConsumers = new ConsumerRegistry()
   // Lot 3.5: plata refuzată → owner-ul (S115: payment.pack, payment.renewal, payment.retry)
   .register(billingPaymentFailedConsumer)
   // Lotul 3.7: „Recomandă” / „Anunță proprietarul” → notificarea owner-ului, în Hub
-  .register(ownerNotifiedConsumer);
+  .register(ownerNotifiedConsumer)
+  // Lotul 4.10: motorul de automatizări — evenimentul unui declanșator → execuția din jurnal
+  .register(workflowsTriggerConsumer);
 
 /*
  * Lot 4.5: notificările Fazei 3 (S115) se trimit cu un singur apel, notifyBillingInTx
@@ -134,6 +141,28 @@ export const platformJobs = new JobRegistry()
         );
       }
       return report;
+    },
+  })
+  // Lotul 4.10: execuțiile automatizărilor (fiecare în contextul afacerii ei) și unitățile din
+  // workflows.active rămase neeliberate după o oprire (D-WF-4). O execuție a cărei tranzacție
+  // eșuează rămâne în așteptare; job-ul eșuează (Sentry, reîncercare), celelalte rămân făcute.
+  .register({
+    id: 'workflows.run',
+    owner: 'Lot 4.10',
+    description: 'Execuțiile automatizărilor și eliberarea cotei după oprire',
+    trigger: { cron: '* * * * *' },
+    run: async () => {
+      const runs = await runPendingExecutions();
+      const freed = await freeStoppedQuota();
+      const errors = [...runs.errors, ...freed.errors];
+      if (errors.length) {
+        throw new AggregateError(
+          errors.map((e) => e.error),
+          `[workflows] ${errors.length} not handled: ` +
+            errors.map((e) => ('executionId' in e ? e.executionId : e.activationId)).join(', '),
+        );
+      }
+      return { ...runs, errors: 0, freed: freed.freed };
     },
   })
   // Declarate; logica vine în lotul fiecăruia, cu platformJobs.attach(id, run).

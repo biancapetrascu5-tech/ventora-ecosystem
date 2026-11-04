@@ -1275,5 +1275,57 @@
       "label": "Evenimente create",
       "resource": "evenimente create"
     }
+  },
+  "automations": {
+    "nav": "Automatizări",
+    "title": "Automatizări",
+    "lead": "Mesajele pe care Ventora Systems le trimite automat pentru afacerea ta. Le pornește sau le oprește echipa Ventora Systems, la cererea ta.",
+    "usage": "Mesaje automate în {month}",
+    "usageHelp": "Se numără doar mesajele trimise. Execuțiile sărite nu consumă.",
+    "on": "Pornită",
+    "off": "Oprită",
+    "last": "Ultima trimitere: {when} · {n} mesaje",
+    "never": "Nu a trimis încă nimic",
+    "who": "Pornirea și oprirea le face echipa Ventora Systems. Scrie-ne dacă vrei o schimbare.",
+    "ask": "Cere o schimbare",
+    "askOn": "Cere pornirea",
+    "askSent": "Am primit cererea. Îți răspundem la Suport și pe e-mail.",
+    "yourSetting": "Setarea ta",
+    "weeks": "{n} săptămâni",
+    "discount": "Reducere în mesaj",
+    "discountNone": "Fără reducere",
+    "reminderNote": "Reamintirea de dinaintea programării nu e aici: o setezi în EasyBook · Setări · Reamintiri.",
+    "empty": {
+      "title": "Nicio automatizare pornită",
+      "body": "Îți spunem ce se potrivește afacerii tale și le pornim noi. Scrie-ne la Suport."
+    },
+    "memberNote": "Automatizările le văd proprietarul și adminii.",
+    "a": {
+      "thanks": {
+        "name": "Mulțumire după programare",
+        "desc": "La 2 ore după o programare încheiată, clientul primește un e-mail de mulțumire cu cererea de recenzie."
+      },
+      "winback": {
+        "name": "Reactivarea clientului inactiv",
+        "desc": "Clientul care nu a mai venit de {n} săptămâni primește o invitație să facă o programare."
+      },
+      "birthday": {
+        "name": "La mulți ani",
+        "desc": "De ziua lui, clientul primește un mesaj de la salon, cu o reducere dacă alegi una."
+      },
+      "risk": {
+        "name": "Alertă: client cu „Risc ridicat”",
+        "desc": "Proprietarul primește o notificare și un e-mail când un client ajunge la „Risc ridicat”."
+      },
+      "digest": {
+        "name": "Rezumatul zilei",
+        "desc": "Dimineața la 7:00, fiecare membru primește pe e-mail programările lui din ziua respectivă."
+      },
+      "quota": {
+        "name": "Limita aproape atinsă",
+        "desc": "Când o cotă din abonament trece de 80%, proprietarul primește notificarea de consum (aceeași ca în „Abonament și consum”)."
+      }
+    },
+    "sentN": "{n} mesaje trimise"
   }
 }

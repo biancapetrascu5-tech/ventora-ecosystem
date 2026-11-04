@@ -275,3 +275,59 @@ export const REASON_CODES = [
   'step.failed', // a step threw; „Rulează din nou” retries only the steps not sent
 ] as const;
 export type ReasonCode = (typeof REASON_CODES)[number];
+
+/**
+ * D4-24: the six v1 automations, as drawn in FounderAutomations. Their codes are the keys of
+ * `automations.a.<code>.*` (6 languages), so the Hub shows them in the reader's language; an
+ * automation built later in Founder shows the name it was given. Created once, idempotently, by
+ * `scripts/seed-workflows.ts`; changed afterwards only from the builder (new versions).
+ */
+export const V1_AUTOMATIONS: readonly (DefinitionInput & { code: string; name: string })[] = [
+  {
+    code: 'thanks',
+    name: 'Mulțumire după programare',
+    trigger: 'booking.appointment_completed',
+    delayMinutes: 120,
+    conditions: ['recipient_has_email', 'recipient_accepts_messages', 'not_sent_in_30_days'],
+    steps: [{ kind: 'email.client', template: 'thanks' }],
+  },
+  {
+    code: 'winback',
+    name: 'Reactivarea clientului inactiv',
+    trigger: 'booking.client_inactive',
+    triggerParams: { at: '10:00' },
+    conditions: ['recipient_has_email', 'recipient_accepts_messages'],
+    steps: [{ kind: 'email.client', template: 'winback' }],
+  },
+  {
+    code: 'birthday',
+    name: 'La mulți ani',
+    trigger: 'booking.client_birthday',
+    triggerParams: { at: '09:00' },
+    conditions: ['recipient_has_email', 'recipient_accepts_messages'],
+    steps: [{ kind: 'email.client', template: 'birthday' }],
+  },
+  {
+    code: 'risk',
+    name: 'Alertă: client cu „Risc ridicat”',
+    trigger: 'booking.high_risk',
+    steps: [
+      { kind: 'notification.hub', template: 'high_risk' },
+      { kind: 'email.owner', template: 'high_risk' },
+    ],
+  },
+  {
+    code: 'digest',
+    name: 'Rezumatul zilei',
+    trigger: 'booking.daily_digest',
+    triggerParams: { at: '07:00' },
+    steps: [{ kind: 'email.member', template: 'daily_digest' }],
+  },
+  {
+    code: 'quota',
+    name: 'Limita aproape atinsă',
+    trigger: 'commercial.quota_threshold',
+    triggerParams: { thresholds: [80] },
+    steps: [{ kind: 'notification.hub', template: 'quota_limit' }],
+  },
+];
