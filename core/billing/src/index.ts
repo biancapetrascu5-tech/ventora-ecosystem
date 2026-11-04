@@ -31,7 +31,11 @@ export {
   WebhookSignatureError,
   type WebhookOutcome,
 } from './webhook';
-export { billingPaymentFailedConsumer } from './notify';
+export {
+  billingPaymentFailedConsumer,
+  billingInvoiceIssuedConsumer,
+  billingDisputeAlertConsumer,
+} from './notify';
 // Lot 3.6: the invoice of every payment (SmartBill), the storno, the Founder reads
 export {
   invoiceIssueConsumer,
@@ -67,11 +71,20 @@ export {
   DEFAULT_VAT_MENTION,
   type SmartBillConfig,
 } from './smartbill';
+export {
+  getInvoiceDownloadPath,
+  openInvoiceLink,
+  signInvoiceToken,
+  verifyInvoiceToken,
+  InvoiceLinkRefused,
+  type InvoiceLinkClaims,
+} from './invoice-links';
 export { TestInvoiceProvider, type TestInvoiceDocument } from './test-invoice-provider';
 export {
   listFailedPaymentsForFounder,
   listOpenDisputesForFounder,
   listInvoicesNeedingAttentionForFounder,
+  stripeDisputeUrl,
   type FounderFailedPayment,
   type FounderOpenDispute,
   type FounderInvoiceAttention,

@@ -41,6 +41,12 @@ import {
   type DiscountTarget,
   type DiscountValue,
 } from '@ventora/commercial';
+import {
+  listFailedPaymentsForFounder,
+  listInvoicesNeedingAttentionForFounder,
+  listOpenDisputesForFounder,
+  stripeDisputeUrl,
+} from '@ventora/billing';
 import { getFounderNames } from '@ventora/identity';
 import { listBusinessesForFounder } from '@ventora/access';
 import { reportActionError } from './report-error';
@@ -729,8 +735,9 @@ export type ExpiringData = {
    bucată. Venitul lunar recurent (decizia fondatoarei, 04.11.2026): abonamentele active, fără
    cele în probă — următoarea factură (bundle-ul, aplicațiile la bucată, pachetele lunare, după
    reducerile care o ating), anualul împărțit la 12; lei și euro separat, fără conversie și fără
-   schimbarea față de luna trecută. Plățile eșuate și disputele vin în Lotul 3.6; suportul, după
-   Lotul 4.6. */
+   schimbarea față de luna trecută. Lotul 3.6: plățile eșuate (facturile de abonament refuzate și
+   încă neplătite, cu suma de încasat), disputele Stripe deschise (cu termenul) și facturile care
+   nu s-au emis (D-3.6-4), din core/billing. Suportul, după Lotul 4.6. */
 export type OverviewData = {
   generatedAt: string;
   businesses: { total: number; active: number; newThisMonth: number };
@@ -748,6 +755,37 @@ export type OverviewData = {
     planName: string | null;
     applications: string[];
   }[];
+  /** Lotul 3.6: plățile de încasat, cea mai nouă întâi. */
+  failedPayments: {
+    id: string;
+    organizationId: string;
+    business: string;
+    amountMinor: number;
+    currency: 'RON' | 'EUR';
+    /** Următoarea încercare Stripe; null: Stripe nu mai încearcă. */
+    nextAttemptAt: string | null;
+    failedAt: string;
+  }[];
+  /** Lotul 3.6: disputele deschise, cu termenul de răspuns și linkul Stripe. */
+  disputes: {
+    id: string;
+    organizationId: string;
+    business: string;
+    amountMinor: number;
+    currency: 'RON' | 'EUR';
+    evidenceDueBy: string | null;
+    url: string;
+  }[];
+  /** Lotul 3.6 (D-3.6-4): facturile neemise după 3 încercări sau eșuate. */
+  invoices: {
+    id: string;
+    organizationId: string;
+    business: string;
+    status: 'pending' | 'failed';
+    amountMinor: number;
+    currency: 'RON' | 'EUR';
+    attempts: number;
+  }[];
 };
 
 const NEAR_LIMIT_PCT = 80;
@@ -757,12 +795,15 @@ export async function readOverview(): Promise<OverviewData | null> {
   try {
     const h = await founderHeaders();
     const now = new Date();
-    const [list, subs, requests, expiring, usage] = await Promise.all([
+    const [list, subs, requests, expiring, usage, failed, disputes, unissued] = await Promise.all([
       listBusinessesForFounder({ founderHeaders: h }),
       listSubscriptionsForFounder({ founderHeaders: h }),
       readRequests(),
       listExpiringOverridesForFounder({ founderHeaders: h }),
       readBusinessUsage(),
+      listFailedPaymentsForFounder({ founderHeaders: h }),
+      listOpenDisputesForFounder({ founderHeaders: h }),
+      listInvoicesNeedingAttentionForFounder({ founderHeaders: h }),
     ]);
     if (!requests || !usage) return null;
     const names = Object.fromEntries(list.map((b) => [b.id, b.name]));
@@ -851,6 +892,33 @@ export async function readOverview(): Promise<OverviewData | null> {
                 : 'active',
         planName: plan.get(b.id) ?? null,
         applications: recentLines[i]!,
+      })),
+      failedPayments: failed.map((f) => ({
+        id: f.paymentId,
+        organizationId: f.organizationId,
+        business: names[f.organizationId] ?? '',
+        amountMinor: f.amountMinor,
+        currency: f.currency,
+        nextAttemptAt: f.nextAttemptAt?.toISOString() ?? null,
+        failedAt: f.failedAt.toISOString(),
+      })),
+      disputes: disputes.map((d) => ({
+        id: d.disputeId,
+        organizationId: d.organizationId,
+        business: names[d.organizationId] ?? '',
+        amountMinor: d.amountMinor,
+        currency: d.currency,
+        evidenceDueBy: d.evidenceDueBy?.toISOString() ?? null,
+        url: stripeDisputeUrl(d.disputeId),
+      })),
+      invoices: unissued.map((x) => ({
+        id: x.invoiceId,
+        organizationId: x.organizationId,
+        business: names[x.organizationId] ?? '',
+        status: x.status,
+        amountMinor: x.amountMinor,
+        currency: x.currency,
+        attempts: x.attempts,
       })),
     };
   } catch (err) {

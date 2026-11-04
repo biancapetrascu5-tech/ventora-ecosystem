@@ -6,7 +6,7 @@ import { useLocale, useTranslations } from 'next-intl';
 import { APPS, APP_IDS, Notice, PageHeader, Toast, type AppName, type IconName } from '@ventora/ui';
 import { useIsPhone } from '@ventora/screens';
 import type { BillingRefusal } from '@/server/billing-actions';
-import { requestPack, tellOwner, type PlanData } from '@/server/plan-actions';
+import { invoiceDownload, requestPack, tellOwner, type PlanData } from '@/server/plan-actions';
 import { CardDialog } from './CardDialog';
 import { dayBefore, quotaSlug, useDays, useMoney } from './format';
 import { LimitDialog } from './LimitDialog';
@@ -78,6 +78,16 @@ export function PlanScreen({ data }: { data: PlanData }) {
   };
   const usageOf = (key: string) => summary.quotas.find((q) => q.key === key);
   const failed = () => setToast({ tone: 'danger', title: t('sendFailed') });
+
+  // Lotul 3.6: „Descarcă PDF” — linkul semnat (5 minute), cerut abia la apăsare
+  const download = async (invoiceId: string | undefined) => {
+    const link = invoiceId ? await invoiceDownload(invoiceId) : null;
+    if (!link) {
+      setToast({ tone: 'danger', title: t('downloadFailed') });
+      return;
+    }
+    window.location.assign(link.path);
+  };
 
   // ---- cumpărarea: direct cu cardul sau „Cere activare” (D3-7)
   const account = data.billing;
@@ -291,10 +301,11 @@ export function PlanScreen({ data }: { data: PlanData }) {
     };
   });
 
-  // ---- facturile: plățile; factura vine cu Lotul 3.6 („Factura se emite”)
+  // ---- facturile (Lotul 3.6): fiecare plată cu factura ei; „Factura se emite” până la emitere
   const invoiceRows = (data.payments ?? []).map((p) => ({
     id: p.id,
-    number: '—',
+    invoiceId: p.invoice?.id,
+    number: p.invoice?.number ?? '—',
     what:
       p.kind === 'subscription'
         ? t('forSubscription')
@@ -362,7 +373,14 @@ export function PlanScreen({ data }: { data: PlanData }) {
         }}
         packs={{ rows: packRows }}
         invoices={
-          data.payments ? { rows: invoiceRows, withDate: true, empty: t('noPayments') } : undefined
+          data.payments
+            ? {
+                rows: invoiceRows,
+                withDate: true,
+                empty: t('noPayments'),
+                onDownload: (row) => void download(row.invoiceId),
+              }
+            : undefined
         }
       />
 

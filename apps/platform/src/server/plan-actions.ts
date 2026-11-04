@@ -4,7 +4,13 @@ import './access-config';
 import './billing-config';
 import { headers } from 'next/headers';
 import { authorize, getTeamOwnerName, PLATFORM_APPLICATION_ID } from '@ventora/access';
-import { getBillingAccount, listPayments, type PaymentRow, type SavedCard } from '@ventora/billing';
+import {
+  getBillingAccount,
+  getInvoiceDownloadPath,
+  listPayments,
+  type PaymentRow,
+  type SavedCard,
+} from '@ventora/billing';
 import {
   createCommercialRequest,
   getActivePacks,
@@ -28,8 +34,8 @@ import { reportActionError } from './report-error';
    owner. Afacerea vine din sesiune prin authorize(), niciodată din client; totul se citește din
    contractele core/commercial și core/billing.
 
-   Facturile vin în Lotul 3.6 (SmartBill): până atunci lista arată plățile, fiecare cu „Factura se
-   emite” (`PaymentRow.invoice` e null; vezi core/billing/src/history.ts). */
+   Facturile (Lotul 3.6, SmartBill): fiecare plată cu factura ei; până la emitere, „Factura se
+   emite” (`PaymentRow.invoice` e null). „Descarcă PDF” cere un link semnat (invoiceDownload). */
 
 export type PlanData = {
   /** Poate cumpăra (owner, `billing.purchase`). */
@@ -146,5 +152,25 @@ export async function tellOwner(
   } catch (err) {
     reportActionError('tellOwner', err);
     return { ok: false };
+  }
+}
+
+/**
+ * Lotul 3.6 — „Descarcă PDF”: linkul semnat al unei facturi emise a afacerii (5 minute), doar
+ * pentru owner (`billing.purchase`, D3-8, verificat pe server). null: refuzat sau negăsit.
+ */
+export async function invoiceDownload(invoiceId: string): Promise<{ path: string } | null> {
+  try {
+    const session = await getSession(await headers());
+    if (!session) return null;
+    const buyer = await authorize({
+      sessionToken: session.token,
+      applicationId: PLATFORM_APPLICATION_ID,
+      permission: 'billing.purchase',
+    });
+    return { path: await getInvoiceDownloadPath(buyer, invoiceId) };
+  } catch (err) {
+    reportActionError('invoiceDownload', err);
+    return null;
   }
 }

@@ -83,6 +83,8 @@ export type PlanInvoiceRow = {
   amount: string;
   /** Lotul 3.6: factura încă nu e emisă („Factura se emite”). */
   pending: boolean;
+  /** Lotul 3.6: factura emisă, pentru „Descarcă PDF”. */
+  invoiceId?: string;
 };
 
 export type PlanViewProps = {
@@ -112,7 +114,13 @@ export type PlanViewProps = {
    * Doar owner-ul. `withDate`: coloana „Data” și „Descarcă” lângă „Plătită” (HubAdminPlan);
    * fără ele, ca în HubPlanBilling.
    */
-  invoices?: { rows: PlanInvoiceRow[]; withDate?: boolean; empty?: string };
+  invoices?: {
+    rows: PlanInvoiceRow[];
+    withDate?: boolean;
+    empty?: string;
+    /** Lotul 3.6: „Descarcă PDF” (linkul semnat). */
+    onDownload?: (row: PlanInvoiceRow) => void;
+  };
 };
 
 export function PlanView({
@@ -309,6 +317,7 @@ export function PlanView({
                           label={t('downloadPdf')}
                           variant="quiet"
                           size="sm"
+                          onPress={invoices.onDownload ? () => invoices.onDownload!(r) : undefined}
                         />
                       </span>
                     ) : (
@@ -318,7 +327,17 @@ export function PlanView({
               ]}
               rows={invoices.rows}
               rowKey={(r) => r.id}
-              rowActions={(r) => (r.pending ? [] : [{ label: t('downloadPdf'), icon: 'download' }])}
+              rowActions={(r) =>
+                r.pending
+                  ? []
+                  : [
+                      {
+                        label: t('downloadPdf'),
+                        icon: 'download',
+                        onClick: invoices.onDownload ? () => invoices.onDownload!(r) : undefined,
+                      },
+                    ]
+              }
               empty={invoices.empty}
             />
           </SheetSection>

@@ -1,5 +1,6 @@
 import * as Sentry from '@sentry/nextjs';
-import { setBillingErrorReporter } from '@ventora/billing';
+import { setBillingErrorReporter, setInvoiceApplicationNames } from '@ventora/billing';
+import { APPS } from '@ventora/ui/apps';
 import { summarizeError } from '@ventora/errors';
 import { safeErrorForSentry } from './report-error';
 
@@ -19,3 +20,8 @@ setBillingErrorReporter((where, error, context) => {
     extra: { purchaseId: context.purchaseId },
   });
 });
+
+/* Lotul 3.6: numele aplicației pe factură și în e-mailul ei („EasyBook · noiembrie”), din același
+   loc ca în Hub; id-ul rămâne când aplicația nu are nume. Furnizorul de facturi (SmartBill) se
+   ia din mediu (SMARTBILL_*), în core/billing; fără el, facturile rămân pending. */
+setInvoiceApplicationNames((id) => APPS[id]?.name ?? id);

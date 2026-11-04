@@ -5,8 +5,14 @@ import { closeAuditPools } from '@ventora/audit';
 import { closeCommercialPools } from '@ventora/commercial';
 import { founderAuth } from '@ventora/identity';
 import { ConsumerRegistry, dispatchOutbox } from '@ventora/integrations';
+import { CaptureEmailAdapter, setEmailChannel } from '@ventora/notifications';
 import {
+  billingDisputeAlertConsumer,
+  billingInvoiceIssuedConsumer,
   closeBillingPools,
+  getInvoiceDownloadPath,
+  InvoiceLinkRefused,
+  openInvoiceLink,
   handleStripeWebhook,
   invoiceIssueConsumer,
   issueInvoice,
@@ -221,6 +227,22 @@ async function dispatch() {
   });
 }
 
+/** Etapa 2: the platform's billing consumers (the invoice's e-mail, the dispute alert). */
+async function dispatchAll() {
+  return dispatchOutbox({
+    pool: appPool,
+    source: { schema: 'billing', moduleRole: 'billing_rw' },
+    registry: new ConsumerRegistry()
+      .register(invoiceIssueConsumer)
+      .register(billingInvoiceIssuedConsumer)
+      .register(billingDisputeAlertConsumer),
+    limit: 100,
+  });
+}
+
+const mail = new CaptureEmailAdapter();
+const ALERTS = 'alerts-l36@test.local';
+
 const invoiceOf = async (paymentId: string) =>
   (
     await q(`SELECT * FROM billing.invoice WHERE payment_id = $1 AND kind = 'invoice'`, [paymentId])
@@ -235,6 +257,9 @@ beforeAll(async () => {
   process.env.STRIPE_WEBHOOK_SECRET = SECRET;
   setStripeGatewayForTests(fake);
   setInvoiceProviderForTests(provider);
+  setEmailChannel(mail);
+  process.env.FOUNDER_ALERTS_EMAIL = ALERTS;
+  process.env.FILES_LINK_SECRET ??= 'l36-invoice-link-secret-for-tests-0001'; // gitleaks:allow
   versionId = await bundle();
   addonId = await packAddon();
   founder = await createFounder();
@@ -243,6 +268,7 @@ beforeAll(async () => {
 afterAll(async () => {
   setStripeGatewayForTests(null);
   setInvoiceProviderForTests(null);
+  setEmailChannel(null);
   admin.release();
   await adminPool.end();
   await appPool.end();
@@ -693,5 +719,167 @@ describe('Lot 3.6 — isolation between businesses (T1/T2)', () => {
     }
     // issuing in the wrong business's context finds nothing
     expect(await issueInvoice(a.organizationId, id)).toBe('skipped');
+  });
+});
+
+describe('Lot 3.6 · Etapa 2 — the e-mail, the alert, the signed link', () => {
+  it('an issued invoice → „Factura {number} e emisă” (S115), once, in the app and by e-mail', async () => {
+    const b = await business('Salon Email');
+    const paymentId = await paidPack(b, 2);
+    await dispatchAll();
+    const { id } = (await invoiceOf(paymentId))!;
+    expect(await issueInvoice(b.organizationId, id)).toBe('issued');
+    await dispatchAll();
+    await dispatchAll();
+    const issued = (await invoiceOf(paymentId))!;
+    const notes = await q(
+      `SELECT type, params FROM notifications.notification WHERE organization_id = $1 AND type LIKE 'billing.invoice.%'`,
+      [b.organizationId],
+    );
+    expect(notes).toHaveLength(1);
+    expect(notes[0]).toMatchObject({
+      type: 'billing.invoice.pack',
+      params: {
+        business: 'Salon Email',
+        number: `TST-${issued.number}`,
+        amount: { type: 'money', amountMinor: 9800, currency: 'RON' },
+        item: { type: 'key', key: 'billing.have.pack', params: { name: '500 SMS' } },
+      },
+    });
+    expect(issued.emailed_at).not.toBeNull();
+  });
+
+  it('a renewal invoice → invoice.card, with the plan and the saved card', async () => {
+    const b = await business('Salon Card');
+    const customer = (
+      await q(
+        `SELECT stripe_customer_id FROM billing.billing_customer WHERE organization_id = $1`,
+        [b.organizationId],
+      )
+    )[0]!.stripe_customer_id;
+    await send('invoice.paid', {
+      id: 'in_l36_card_' + b.organizationId.slice(0, 8),
+      object: 'invoice',
+      customer,
+      currency: 'ron',
+      amount_due: 34900,
+      amount_paid: 34900,
+      attempt_count: 1,
+      next_payment_attempt: null,
+    });
+    await dispatchAll();
+    const [p] = await q(
+      `SELECT id FROM billing.payment WHERE organization_id = $1 AND kind = 'subscription'`,
+      [b.organizationId],
+    );
+    expect(await issueInvoice(b.organizationId, (await invoiceOf(p!.id))!.id)).toBe('issued');
+    await dispatchAll();
+    const [note] = await q(
+      `SELECT type, params FROM notifications.notification WHERE organization_id = $1 AND type LIKE 'billing.invoice.%'`,
+      [b.organizationId],
+    );
+    expect(note).toMatchObject({
+      type: 'billing.invoice.card',
+      params: {
+        what: { type: 'key', key: 'billing.have.bundle', params: { name: 'Business' } },
+        brand: 'Visa',
+        last4: '4242',
+      },
+    });
+  });
+
+  it('a dispute → the alert e-mail to FOUNDER_ALERTS_EMAIL, with the deadline and the Stripe link', async () => {
+    const b = await business('Agenția Dispută');
+    const res = await purchase(b.ctx, { kind: 'addon', addonId });
+    const [row] = await q(`SELECT stripe_payment_intent_id FROM billing.purchase WHERE id = $1`, [
+      res.purchaseId,
+    ]);
+    const pi = fake.paymentIntents.get(row!.stripe_payment_intent_id)!;
+    const disputeId = 'dp_l36_alert_' + b.organizationId.slice(0, 8);
+    await send('charge.dispute.created', {
+      id: disputeId,
+      object: 'dispute',
+      charge: pi.chargeId,
+      payment_intent: pi.id,
+      amount: 4900,
+      currency: 'ron',
+      reason: 'fraudulent',
+      status: 'needs_response',
+      evidence_details: { due_by: Math.floor(Date.parse('2026-11-20T21:59:00Z') / 1000) },
+    });
+    mail.clear();
+    await dispatchAll();
+    await dispatchAll();
+    const sent = mail.to(ALERTS);
+    expect(sent).toHaveLength(1);
+    // the amount and the date use non-breaking spaces (Intl)
+    const plain = (x: string | undefined) => (x ?? '').replace(/[  ]/g, ' ');
+    expect(plain(sent[0]!.subject)).toBe('Dispută Stripe · Agenția Dispută · 49 lei');
+    expect(plain(sent[0]!.text)).toContain('20 noiembrie 2026, 23:59 EET');
+    expect(sent[0]!.html).toContain(`https://dashboard.stripe.com/test/disputes/${disputeId}`);
+  });
+
+  it('without FOUNDER_ALERTS_EMAIL the alert fails and is retried (not lost)', async () => {
+    const b = await business();
+    const res = await purchase(b.ctx, { kind: 'addon', addonId });
+    const [row] = await q(`SELECT stripe_payment_intent_id FROM billing.purchase WHERE id = $1`, [
+      res.purchaseId,
+    ]);
+    const pi = fake.paymentIntents.get(row!.stripe_payment_intent_id)!;
+    await send('charge.dispute.created', {
+      id: 'dp_l36_noaddr_' + b.organizationId.slice(0, 8),
+      object: 'dispute',
+      charge: pi.chargeId,
+      payment_intent: pi.id,
+      amount: 4900,
+      currency: 'ron',
+      reason: 'general',
+      status: 'needs_response',
+    });
+    delete process.env.FOUNDER_ALERTS_EMAIL;
+    try {
+      await dispatchAll();
+    } finally {
+      process.env.FOUNDER_ALERTS_EMAIL = ALERTS;
+    }
+    const [event] = await q(
+      `SELECT status, attempts, last_error FROM billing.outbox_events
+        WHERE type = 'billing.dispute.opened' AND organization_id = $1`,
+      [b.organizationId],
+    );
+    expect(event).toMatchObject({ status: 'pending', attempts: 1 });
+    expect(event!.last_error).toContain('FOUNDER_ALERTS_EMAIL');
+  });
+
+  it('„Descarcă PDF”: a signed link for the owner, the PDF from the provider; another business, a forged or expired link → refused', async () => {
+    const b = await business();
+    const other = await business();
+    const paymentId = await paidPack(b);
+    await dispatch();
+    const { id } = (await invoiceOf(paymentId))!;
+    // not issued yet: no link
+    await expect(getInvoiceDownloadPath(b.ctx, id)).rejects.toThrow();
+    expect(await issueInvoice(b.organizationId, id)).toBe('issued');
+    const path = await getInvoiceDownloadPath(b.ctx, id);
+    expect(path).toMatch(/^\/invoices\/[\w-]+\.[\w-]+$/);
+    const token = path.split('/')[2]!;
+    const issued = (await invoiceOf(paymentId))!;
+    const opened = await openInvoiceLink(token);
+    expect(new TextDecoder().decode(opened.pdf.slice(0, 5))).toBe('%PDF-');
+    expect(opened.fileName).toBe(`factura-TST-${issued.number}.pdf`);
+    // the other business asks for this invoice: not found
+    await expect(getInvoiceDownloadPath(other.ctx, id)).rejects.toThrow();
+    // a forged token
+    const [body, sig] = token.split('.');
+    await expect(openInvoiceLink(`${body}x.${sig}`)).rejects.toBeInstanceOf(InvoiceLinkRefused);
+    // expired: after 5 minutes
+    await expect(openInvoiceLink(token, new Date(Date.now() + 6 * 60_000))).rejects.toMatchObject({
+      reason: 'expired',
+      status: 410,
+    });
+    // a support session does not download for the business
+    await expect(
+      getInvoiceDownloadPath({ ...b.ctx, actor: 'support' as unknown as 'user' }, id),
+    ).rejects.toThrow();
   });
 });

@@ -272,3 +272,40 @@ export function renderSupportSessionOpened(params: {
     company: m.common.company,
   });
 }
+
+/**
+ * Lot 3.6: a customer disputed a charge (Stripe). For the Ventora team only (Founder is Romanian,
+ * S57), at the address of FOUNDER_ALERTS_EMAIL; the button opens the dispute in Stripe.
+ */
+export function renderFounderDisputeAlert(params: {
+  business: string;
+  /** Already formatted: „49 lei”. */
+  amount: string;
+  reason: string;
+  evidenceDueBy: Date | null;
+  stripeUrl: string;
+}): RenderedEmail {
+  const locale: Locale = CANONICAL_LOCALE;
+  const m = emailMessages(locale);
+  const t = m.founderDisputeAlert;
+  const vars = { business: params.business, amount: params.amount, reason: params.reason };
+  const subject = fill(t.subject, vars);
+  const deadline = params.evidenceDueBy
+    ? fill(t.deadline, {
+        date: `${formatDate(params.evidenceDueBy, locale)}, ${formatTimeWithZone(params.evidenceDueBy, locale)}`,
+      })
+    : t.noDeadline;
+  return renderOperationalEmail({
+    lang: locale,
+    subject,
+    preheader: fill(t.lead, vars),
+    eyebrow: t.eyebrow,
+    title: t.title,
+    lead: [fill(t.lead, vars), deadline],
+    button: { label: t.button, href: params.stripeUrl },
+    after: [t.next],
+    signature: '',
+    why: t.why,
+    company: m.common.company,
+  });
+}

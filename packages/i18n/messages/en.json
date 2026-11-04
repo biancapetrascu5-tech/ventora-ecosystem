@@ -146,6 +146,17 @@
       "close": "You can close it at any time in Ventora Systems, from the support session banner.",
       "notRequested": "If you didn't ask for help, close the session and write to us at {supportEmail}.",
       "footer": "You're receiving this email because you're the owner of {businessName} in Ventora Systems."
+    },
+    "founderDisputeAlert": {
+      "subject": "Stripe dispute · {business} · {amount}",
+      "eyebrow": "Alert for the Ventora team",
+      "title": "A customer disputed a payment",
+      "lead": "{business} has an open dispute in Stripe for {amount}. Reason given by the bank: {reason}.",
+      "deadline": "Deadline to respond in Stripe: {date}.",
+      "noDeadline": "Stripe has not given a response deadline yet.",
+      "next": "The decision is manual: open the dispute in Stripe and submit the evidence before the deadline.",
+      "button": "Respond in Stripe",
+      "why": "You receive this email because your address gets the Ventora Systems team alerts."
     }
   },
   "support": {
@@ -670,7 +681,8 @@
       "cardError": "We couldn’t save the card. Please try again.",
       "cardUnavailable": "Card payments aren’t available right now. Please try later.",
       "paymentProcessing": "The bank is still processing the payment. The pack turns on as soon as it goes through.",
-      "sendFailed": "We couldn’t send it. Please try again."
+      "sendFailed": "We couldn’t send it. Please try again.",
+      "downloadFailed": "We couldn’t download the invoice. Try again."
     },
     "apps": {
       "bar": "All apps",

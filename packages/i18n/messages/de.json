@@ -146,6 +146,17 @@
       "close": "Sie können sie jederzeit in Ventora Systems über den Hinweis zur Support-Sitzung beenden.",
       "notRequested": "Wenn Sie keine Hilfe angefordert haben, beenden Sie die Sitzung und schreiben Sie uns an {supportEmail}.",
       "footer": "Sie erhalten diese E-Mail, weil Sie Inhaber des Unternehmens {businessName} in Ventora Systems sind."
+    },
+    "founderDisputeAlert": {
+      "subject": "Stripe-Streitfall · {business} · {amount}",
+      "eyebrow": "Hinweis für das Ventora-Team",
+      "title": "Ein Kunde hat eine Zahlung angefochten",
+      "lead": "{business} hat einen offenen Streitfall in Stripe über {amount}. Von der Bank angegebener Grund: {reason}.",
+      "deadline": "Antwortfrist in Stripe: {date}.",
+      "noDeadline": "Stripe hat noch keine Antwortfrist angegeben.",
+      "next": "Die Entscheidung ist manuell: Öffne den Streitfall in Stripe und reiche die Nachweise vor Ablauf der Frist ein.",
+      "button": "In Stripe antworten",
+      "why": "Du erhältst diese E-Mail, weil deine Adresse die Hinweise des Ventora-Systems-Teams bekommt."
     }
   },
   "support": {
@@ -670,7 +681,8 @@
       "cardError": "Die Karte konnte nicht gespeichert werden. Bitte versuchen Sie es erneut.",
       "cardUnavailable": "Kartenzahlung ist gerade nicht verfügbar. Bitte versuchen Sie es später.",
       "paymentProcessing": "Die Bank bearbeitet die Zahlung noch. Das Paket wird aktiviert, sobald sie durch ist.",
-      "sendFailed": "Das konnte nicht gesendet werden. Bitte versuchen Sie es erneut."
+      "sendFailed": "Das konnte nicht gesendet werden. Bitte versuchen Sie es erneut.",
+      "downloadFailed": "Die Rechnung konnte nicht heruntergeladen werden. Versuche es noch einmal."
     },
     "apps": {
       "bar": "Alle Apps",

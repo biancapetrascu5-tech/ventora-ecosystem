@@ -637,17 +637,30 @@
         "mrr": "Venit lunar recurent",
         "mrrEur": "și {amount} în euro",
         "trial": "Afaceri în probă",
-        "trialHint": "{n} se încheie în 3 zile"
+        "trialHint": "{n} se încheie în 3 zile",
+        "failed": "Plăți eșuate",
+        "failedHint": "{amount} de încasat"
       },
       "attention": {
         "title": "Au nevoie de tine",
         "requests": "{n, plural, one {# cerere nouă din Hub} few {# cereri noi din Hub} other {# de cereri noi din Hub}}",
         "requestsAction": "Deschide cererile",
+        "failed": "Plata nu a trecut: {business}",
+        "failedMeta": "{amount} · următoarea încercare: {date}",
+        "failedMetaLast": "{amount} · Stripe nu mai încearcă",
+        "failedAction": "Deschide plățile",
+        "invoice": "Factura nu s-a emis · {business}",
+        "invoiceMeta": "{amount} · verifică în SmartBill",
+        "invoiceMetaPending": "{amount} · {n} încercări, reîncercăm",
         "exception": "Excepția expiră pe {date}: {business}",
         "exceptionMeta": "{what} · adăugată de {who}",
         "extend": "Prelungește",
+        "dispute": "Dispută Stripe: {business}",
+        "disputeMeta": "{amount} · răspunzi până pe {date}",
+        "disputeMetaNoDate": "{amount} · fără termen încă",
+        "disputeAction": "Răspunde în Stripe",
         "allGood": "Nimic nu te așteaptă",
-        "allGoodBody": "Nicio cerere nouă, nicio excepție care expiră în 7 zile."
+        "allGoodBody": "Nicio cerere nouă, nicio plată eșuată, nicio excepție care expiră în 7 zile și nicio dispută."
       },
       "limits": {
         "title": "Aproape de limite",

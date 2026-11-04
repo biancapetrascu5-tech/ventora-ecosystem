@@ -146,6 +146,17 @@
       "close": "Vous pouvez la fermer à tout moment dans Ventora Systems, depuis le bandeau de la session de support.",
       "notRequested": "Si vous n’avez pas demandé d’aide, fermez la session et écrivez-nous à {supportEmail}.",
       "footer": "Vous recevez cet e-mail parce que vous êtes propriétaire de l’entreprise {businessName} dans Ventora Systems."
+    },
+    "founderDisputeAlert": {
+      "subject": "Litige Stripe · {business} · {amount}",
+      "eyebrow": "Alerte pour l’équipe Ventora",
+      "title": "Un client a contesté un paiement",
+      "lead": "{business} a un litige ouvert dans Stripe pour {amount}. Motif indiqué par la banque : {reason}.",
+      "deadline": "Date limite de réponse dans Stripe : {date}.",
+      "noDeadline": "Stripe n’a pas encore indiqué de date limite.",
+      "next": "La décision est manuelle : ouvrez le litige dans Stripe et envoyez les preuves avant la date limite.",
+      "button": "Répondre dans Stripe",
+      "why": "Vous recevez cet e-mail parce que votre adresse reçoit les alertes de l’équipe Ventora Systems."
     }
   },
   "support": {
@@ -670,7 +681,8 @@
       "cardError": "Nous n’avons pas pu enregistrer la carte. Réessayez.",
       "cardUnavailable": "Le paiement par carte n’est pas disponible pour le moment. Réessayez plus tard.",
       "paymentProcessing": "La banque traite encore le paiement. Le pack s’active dès qu’il est accepté.",
-      "sendFailed": "Nous n’avons pas pu l’envoyer. Réessayez."
+      "sendFailed": "Nous n’avons pas pu l’envoyer. Réessayez.",
+      "downloadFailed": "Nous n’avons pas pu télécharger la facture. Réessayez."
     },
     "apps": {
       "bar": "Toutes les applications",

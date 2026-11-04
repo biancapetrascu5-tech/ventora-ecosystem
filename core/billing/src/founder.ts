@@ -9,6 +9,17 @@ import { INVOICE_ALERT_ATTEMPTS } from './invoices';
  * and amounts: the business's name comes from core/organizations, in the Founder app.
  */
 
+/**
+ * „Răspunde în Stripe”: the dispute in the Stripe dashboard — the test one until the live keys
+ * (sk_live_ / pk_live_) are set.
+ */
+export function stripeDisputeUrl(disputeId: string): string {
+  const live = [process.env.STRIPE_SECRET_KEY, process.env.STRIPE_PUBLISHABLE_KEY].some((k) =>
+    (k ?? '').includes('_live_'),
+  );
+  return `https://dashboard.stripe.com/${live ? '' : 'test/'}disputes/${encodeURIComponent(disputeId)}`;
+}
+
 type FounderParams = { founderHeaders: Headers; limit?: number };
 
 export interface FounderFailedPayment {

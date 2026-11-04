@@ -21,14 +21,16 @@ import { useIsPhone } from '../../screens/hooks';
 import { useTableLabels } from '../BusinessesView';
 import businessStyles from '../business.module.css';
 import s from './commercial.module.css';
-import { amount, count, currencySuffix, money } from './money';
+import { amount, count, currencySuffix, money, type Currency } from './money';
 
 /* FounderOverview (S118): „Prezentare”, prima pagină după intrare — salutul după ora zilei,
    cifrele, „Au nevoie de tine” (cererile noi din Hub, excepțiile care expiră în 7 zile cu
    „Prelungește”), afacerile peste 80% dintr-o limită și ultimele afaceri create; totul în regulă,
    prima zi, eroare la încărcare. Venitul lunar recurent: doar valoarea, fără schimbarea față de
-   luna trecută (decizia 04.11.2026). Plățile eșuate și disputele (Lotul 3.6) și suportul (Lotul
-   4.6) lipsesc, nu apar goale. Doar română (S57). */
+   luna trecută (decizia 04.11.2026). Lotul 3.6: cardul „Plăți eșuate” (attention, cu suma de
+   încasat), plata eșuată și disputa Stripe (danger) și factura neemisă (attention, D-3.6-4, text
+   provizoriu) în „Au nevoie de tine”. Suportul (Lotul 4.6) lipsește, nu apare gol. Doar română
+   (S57). */
 
 export type OverviewState = 'ready' | 'first' | 'error';
 
@@ -63,6 +65,38 @@ export type OverviewRecentRow = {
   status: 'invited' | 'trial' | 'active' | 'suspended';
 };
 
+export type OverviewFailedPayment = {
+  id: string;
+  organizationId: string;
+  business: string;
+  amountMinor: number;
+  currency: Currency;
+  /** „5 noiembrie, 09:00”; null: Stripe nu mai încearcă. */
+  next: string | null;
+  /** „ieri” */
+  when: string;
+};
+
+export type OverviewDispute = {
+  id: string;
+  business: string;
+  amountMinor: number;
+  currency: Currency;
+  /** „12 noiembrie”; null: Stripe n-a dat încă termenul. */
+  due: string | null;
+  url: string;
+};
+
+export type OverviewInvoiceIssue = {
+  id: string;
+  organizationId: string;
+  business: string;
+  amountMinor: number;
+  currency: Currency;
+  status: 'pending' | 'failed';
+  attempts: number;
+};
+
 export type OverviewData = {
   stats: {
     active: number;
@@ -77,6 +111,10 @@ export type OverviewData = {
   exceptions: OverviewException[];
   limits: OverviewLimitRow[];
   recent: OverviewRecentRow[];
+  /** Lotul 3.6 */
+  failedPayments: OverviewFailedPayment[];
+  disputes: OverviewDispute[];
+  invoices: OverviewInvoiceIssue[];
 };
 
 const PILL: Record<OverviewRecentRow['status'], ['neutral' | 'done', IconName]> = {
@@ -104,6 +142,7 @@ export function OverviewView({
   onExtend,
   onOpenUsage,
   onOpenBusiness,
+  onOpenStripe,
   onAllBusinesses,
   onNewBusiness,
   onRetry,
@@ -120,6 +159,8 @@ export function OverviewView({
   onExtend: (id: string) => void;
   onOpenUsage: () => void;
   onOpenBusiness: (id: string) => void;
+  /** Lotul 3.6: „Răspunde în Stripe” (disputa în Stripe, în altă filă). */
+  onOpenStripe: (url: string) => void;
   onAllBusinesses: () => void;
   onNewBusiness: () => void;
   onRetry: () => void;
@@ -182,6 +223,35 @@ export function OverviewView({
             },
           ]
         : []),
+      ...data.failedPayments.map((f) => ({
+        id: `pay:${f.id}`,
+        icon: 'circle-x' as const,
+        tone: 'danger' as const,
+        title: t('attention.failed', { business: f.business }),
+        meta: f.next
+          ? t('attention.failedMeta', { amount: money(f.amountMinor, f.currency), date: f.next })
+          : t('attention.failedMetaLast', { amount: money(f.amountMinor, f.currency) }),
+        time: f.when,
+        actions: [
+          { label: t('attention.failedAction'), onPress: () => onOpenBusiness(f.organizationId) },
+        ],
+      })),
+      ...data.invoices.map((x) => ({
+        id: `inv:${x.id}`,
+        icon: 'file-text' as const,
+        tone: 'attention' as const,
+        title: t('attention.invoice', { business: x.business }),
+        meta:
+          x.status === 'failed'
+            ? t('attention.invoiceMeta', { amount: money(x.amountMinor, x.currency) })
+            : t('attention.invoiceMetaPending', {
+                amount: money(x.amountMinor, x.currency),
+                n: x.attempts,
+              }),
+        actions: [
+          { label: t('attention.failedAction'), onPress: () => onOpenBusiness(x.organizationId) },
+        ],
+      })),
       ...data.exceptions.map((x) => ({
         id: x.id,
         icon: 'clock' as const,
@@ -196,8 +266,31 @@ export function OverviewView({
           },
         ],
       })),
+      ...data.disputes.map((d) => ({
+        id: `dis:${d.id}`,
+        icon: 'triangle-alert' as const,
+        tone: 'danger' as const,
+        title: t('attention.dispute', { business: d.business }),
+        meta: d.due
+          ? t('attention.disputeMeta', { amount: money(d.amountMinor, d.currency), date: d.due })
+          : t('attention.disputeMetaNoDate', { amount: money(d.amountMinor, d.currency) }),
+        actions: [
+          {
+            label: t('attention.disputeAction'),
+            icon: 'external-link' as const,
+            onPress: () => onOpenStripe(d.url),
+          },
+        ],
+      })),
     ];
     const st = data.stats;
+    // „Plăți eșuate”: câte și suma de încasat, lei și euro separat (fără conversie)
+    const toCollect = { RON: 0, EUR: 0 };
+    for (const f of data.failedPayments) toCollect[f.currency] += f.amountMinor;
+    const failedHint = (['RON', 'EUR'] as const)
+      .filter((c) => toCollect[c])
+      .map((c) => money(toCollect[c], c))
+      .join(' + ');
     body = (
       <div className={s.stack6}>
         <div className={stats}>
@@ -229,6 +322,13 @@ export function OverviewView({
             label={t('stat.trial')}
             value={count(st.trial)}
             hint={st.trialEnding ? t('stat.trialHint', { n: st.trialEnding }) : undefined}
+          />
+          <Stat
+            label={t('stat.failed')}
+            value={count(data.failedPayments.length)}
+            tone={data.failedPayments.length ? 'attention' : 'neutral'}
+            icon={data.failedPayments.length ? 'circle-x' : undefined}
+            hint={failedHint ? t('stat.failedHint', { amount: failedHint }) : undefined}
           />
         </div>
         <div className={phone ? `${s.xGrid} ${s.xGridMob}` : s.xGrid}>

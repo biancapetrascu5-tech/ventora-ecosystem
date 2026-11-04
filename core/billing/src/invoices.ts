@@ -69,6 +69,11 @@ export function setInvoiceApplicationNames(names: (applicationId: string) => str
   appNameOf = names;
 }
 
+/** The application's name as it appears on the invoice and in its e-mail. */
+export function invoiceAppName(applicationId: string): string {
+  return appNameOf(applicationId);
+}
+
 /**
  * Who the invoice is for. D3-17 (DECIS: a): the billing details are entered by Founder when the
  * business is created — that profile does not exist yet (see the 3.6 report): until it does, the
