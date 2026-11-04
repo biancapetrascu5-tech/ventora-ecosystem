@@ -36,6 +36,9 @@ export type AuditTargetType =
   | 'purchase'
   | 'billing_subscription'
   | 'dispute'
+  // Lot 3.6: the invoices of the payments
+  | 'payment'
+  | 'invoice'
   // Lot 4.10: the workflow engine (core/workflows)
   | 'workflow_definition'
   | 'workflow_activation'

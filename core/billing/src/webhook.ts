@@ -4,6 +4,7 @@ import { BillingDisputeOpenedV1 } from '@ventora/contracts';
 import { writeOutboxEvent } from '@ventora/db-kit';
 import { recordCardInTx } from './account';
 import { withBillingModule, withBillingWrite } from './db';
+import { refundInTx } from './invoices';
 import { activateIfPaid, applyPaymentIntentInTx } from './purchases';
 import {
   currencyOf,
@@ -181,6 +182,10 @@ async function effectInTx(
     case 'invoice.payment_failed':
       await invoiceInTx(client, organizationId, event.type, o);
       return false;
+    case 'charge.refunded':
+      // Lot 3.6 (D3-10): a full refund made by Founder in Stripe → the storno of the invoice
+      await refundInTx(client, exec, organizationId, o);
+      return false;
     case 'charge.dispute.created':
       await disputeInTx(client, exec, organizationId, o, true);
       return true;
@@ -223,12 +228,28 @@ async function disputeInTx(
   const currency = currencyOf(String(d.currency));
   const reason = String(d.reason ?? 'general').slice(0, 64);
   const status = String(d.status ?? 'needs_response').slice(0, 32);
+  // Lot 3.6: the deadline to answer in Stripe (Founder · Prezentare, „Răspunde în Stripe”)
+  const dueBy = Number((d.evidence_details as { due_by?: number } | null | undefined)?.due_by);
+  const evidenceDueBy = Number.isFinite(dueBy) && dueBy > 0 ? new Date(dueBy * 1000) : null;
   await client.query(
     `INSERT INTO billing.dispute
-       (stripe_dispute_id, organization_id, stripe_charge_id, amount_minor, currency, reason, status)
-     VALUES ($1, $2, $3, $4, $5, $6, $7)
-     ON CONFLICT (stripe_dispute_id) DO UPDATE SET status = EXCLUDED.status, updated_at = now()`,
-    [id, organizationId, str(d.charge) ?? 'unknown', amountMinor, currency, reason, status],
+       (stripe_dispute_id, organization_id, stripe_charge_id, amount_minor, currency, reason, status,
+        evidence_due_by)
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+     ON CONFLICT (stripe_dispute_id) DO UPDATE
+       SET status = EXCLUDED.status,
+           evidence_due_by = COALESCE(EXCLUDED.evidence_due_by, billing.dispute.evidence_due_by),
+           updated_at = now()`,
+    [
+      id,
+      organizationId,
+      str(d.charge) ?? 'unknown',
+      amountMinor,
+      currency,
+      reason,
+      status,
+      evidenceDueBy,
+    ],
   );
   if (!opened) return;
   await appendAuditEventInTx(exec, {

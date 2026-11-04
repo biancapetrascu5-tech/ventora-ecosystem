@@ -72,6 +72,18 @@ export interface EmailMessages {
     notRequested: string;
     footer: string;
   };
+  // Lot 3.6: the dispute alert for the Ventora Systems team (FOUNDER_ALERTS_EMAIL); texts to validate
+  founderDisputeAlert: {
+    subject: string;
+    eyebrow: string;
+    title: string;
+    lead: string;
+    deadline: string;
+    noDeadline: string;
+    next: string;
+    button: string;
+    why: string;
+  };
 }
 
 type Catalog = { email?: EmailMessages };

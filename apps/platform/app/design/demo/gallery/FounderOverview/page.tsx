@@ -10,8 +10,10 @@ import c from '../_shared/founderCommercial.module.css';
 
 // preview.html (S118) → Board „Founder — Prezentare” → 1 · Zi obișnuită (Desktop · 1280, H 1450);
 // ?state=ok | first | error → cadrele 2–4; ?w=390 → cadrul Telefon (H 2500). Venitul lunar
-// recurent fără schimbarea față de luna trecută (decizia 04.11.2026); fără cardul „Plăți eșuate”
-// și fără rândurile suport / plată eșuată / dispută (Lotul 3.6, Lotul 4.6).
+// recurent fără schimbarea față de luna trecută (decizia 04.11.2026). Lotul 3.6: cardul „Plăți
+// eșuate” (2 · 898 lei de încasat), plata eșuată (Fitness Atlas) și disputa (Agenția Nord Studio);
+// fără rândul de suport (Lotul 4.6). ?invoice=1: și rândul „Factura nu s-a emis” (D-3.6-4, fără
+// design încă).
 const DATA: OverviewViewData = {
   stats: {
     active: 52,
@@ -70,12 +72,57 @@ const DATA: OverviewViewData = {
       status: 'active',
     },
   ],
+  failedPayments: [
+    {
+      id: 'pay',
+      organizationId: '3',
+      business: 'Fitness Atlas',
+      amountMinor: 44_900,
+      currency: 'RON',
+      next: 'mâine, 09:00',
+      when: 'ieri',
+    },
+    {
+      id: 'pay2',
+      organizationId: '5',
+      business: 'Studio Pilates Arc',
+      amountMinor: 44_900,
+      currency: 'RON',
+      next: '7 noiembrie, 09:00',
+      when: 'acum 2 zile',
+    },
+  ],
+  disputes: [
+    {
+      id: 'dis',
+      business: 'Agenția Nord Studio',
+      amountMinor: 129_000,
+      currency: 'RON',
+      due: '12 noiembrie',
+      url: 'https://dashboard.stripe.com/test/disputes/dp_demo',
+    },
+  ],
+  invoices: [],
 };
+const INVOICE: OverviewViewData['invoices'] = [
+  {
+    id: 'inv',
+    organizationId: '2',
+    business: 'Salon Aurora',
+    amountMinor: 4_900,
+    currency: 'RON',
+    status: 'pending',
+    attempts: 3,
+  },
+];
 const OK: OverviewViewData = {
   ...DATA,
   requests: { n: 0, meta: '' },
   exceptions: [],
   limits: DATA.limits.slice(0, 1),
+  failedPayments: [],
+  disputes: [],
+  invoices: [],
 };
 const H = { ready: 1450, ok: 1300, first: 700, error: 700 };
 const M = { ready: 2500, ok: 2200, first: 900, error: 900 };
@@ -83,7 +130,7 @@ const M = { ready: 2500, ok: 2200, first: 900, error: 900 };
 export default function FounderOverviewGallery({
   searchParams,
 }: {
-  searchParams: Promise<{ state?: string; w?: string }>;
+  searchParams: Promise<{ state?: string; w?: string; invoice?: string }>;
 }) {
   if (process.env.NODE_ENV !== 'development') notFound();
   const sp = use(searchParams);
@@ -105,11 +152,12 @@ export default function FounderOverviewGallery({
               greeting="Bună dimineața, Bianca"
               lead="Miercuri, 4 noiembrie. Ce s-a schimbat de ieri și ce te așteaptă."
               updated="Actualizat la 09:41"
-              data={key === 'ok' ? OK : DATA}
+              data={key === 'ok' ? OK : sp.invoice === '1' ? { ...DATA, invoices: INVOICE } : DATA}
               onOpenRequests={noop}
               onExtend={noop}
               onOpenUsage={noop}
               onOpenBusiness={noop}
+              onOpenStripe={noop}
               onAllBusinesses={noop}
               onNewBusiness={noop}
               onRetry={noop}

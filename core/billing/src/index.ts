@@ -31,7 +31,64 @@ export {
   WebhookSignatureError,
   type WebhookOutcome,
 } from './webhook';
-export { billingPaymentFailedConsumer } from './notify';
+export {
+  billingPaymentFailedConsumer,
+  billingInvoiceIssuedConsumer,
+  billingDisputeAlertConsumer,
+} from './notify';
+// Lot 3.6: the invoice of every payment (SmartBill), the storno, the Founder reads
+export {
+  invoiceIssueConsumer,
+  issueInvoice,
+  runInvoiceIssueJob,
+  setInvoiceApplicationNames,
+  setInvoiceBuyerResolver,
+  romanianDate,
+  romanianMonth,
+  INVOICE_ALERT_ATTEMPTS,
+  type IssueOutcome,
+  type InvoiceBuyerResolver,
+  type InvoiceSummary,
+} from './invoices';
+export {
+  getInvoiceProvider,
+  setInvoiceProviderFactory,
+  setInvoiceProviderForTests,
+  InvoiceProviderError,
+  UnconfiguredInvoiceProvider,
+  type InvoiceProvider,
+  type InvoiceProviderName,
+  type InvoiceBuyer,
+  type InvoiceLine,
+  type IssueInvoiceInput,
+  type IssuedDocument,
+  type ReverseInvoiceInput,
+  type InvoiceErrorKind,
+} from './invoice-provider';
+export {
+  SmartBillInvoiceProvider,
+  smartBillConfigFromEnv,
+  DEFAULT_VAT_MENTION,
+  type SmartBillConfig,
+} from './smartbill';
+export {
+  getInvoiceDownloadPath,
+  openInvoiceLink,
+  signInvoiceToken,
+  verifyInvoiceToken,
+  InvoiceLinkRefused,
+  type InvoiceLinkClaims,
+} from './invoice-links';
+export { TestInvoiceProvider, type TestInvoiceDocument } from './test-invoice-provider';
+export {
+  listFailedPaymentsForFounder,
+  listOpenDisputesForFounder,
+  listInvoicesNeedingAttentionForFounder,
+  stripeDisputeUrl,
+  type FounderFailedPayment,
+  type FounderOpenDispute,
+  type FounderInvoiceAttention,
+} from './founder';
 export {
   getStripeGateway,
   setStripeGatewayForTests,

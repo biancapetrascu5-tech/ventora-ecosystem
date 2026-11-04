@@ -146,6 +146,17 @@
       "close": "Puedes cerrarla cuando quieras en Ventora Systems, desde el aviso de la sesión de soporte.",
       "notRequested": "Si no has pedido ayuda, cierra la sesión y escríbenos a {supportEmail}.",
       "footer": "Recibes este correo porque eres el propietario del negocio {businessName} en Ventora Systems."
+    },
+    "founderDisputeAlert": {
+      "subject": "Disputa de Stripe · {business} · {amount}",
+      "eyebrow": "Alerta para el equipo de Ventora Systems",
+      "title": "Un cliente ha disputado un pago",
+      "lead": "{business} tiene una disputa abierta en Stripe por {amount}. Motivo indicado por el banco: {reason}.",
+      "deadline": "Plazo para responder en Stripe: {date}.",
+      "noDeadline": "Stripe todavía no ha indicado un plazo de respuesta.",
+      "next": "La decisión es manual: abre la disputa en Stripe y envía las pruebas antes del plazo.",
+      "button": "Responder en Stripe",
+      "why": "Recibes este correo porque tu dirección recibe las alertas del equipo de Ventora Systems."
     }
   },
   "support": {
@@ -670,7 +681,8 @@
       "cardError": "No hemos podido guardar la tarjeta. Inténtalo de nuevo.",
       "cardUnavailable": "El pago con tarjeta no está disponible ahora. Inténtalo más tarde.",
       "paymentProcessing": "El banco todavía está procesando el pago. El paquete se activa en cuanto se complete.",
-      "sendFailed": "No hemos podido enviarlo. Inténtalo de nuevo."
+      "sendFailed": "No hemos podido enviarlo. Inténtalo de nuevo.",
+      "downloadFailed": "No hemos podido descargar la factura. Inténtalo de nuevo."
     },
     "apps": {
       "bar": "Todas las aplicaciones",

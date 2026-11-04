@@ -146,6 +146,17 @@
       "close": "Può chiuderla in qualsiasi momento in Ventora Systems, dal banner della sessione di supporto.",
       "notRequested": "Se non ha chiesto assistenza, chiuda la sessione e ci scriva a {supportEmail}.",
       "footer": "Riceve questa e-mail perché è il titolare dell’attività {businessName} in Ventora Systems."
+    },
+    "founderDisputeAlert": {
+      "subject": "Contestazione Stripe · {business} · {amount}",
+      "eyebrow": "Avviso per il team Ventora Systems",
+      "title": "Un cliente ha contestato un pagamento",
+      "lead": "{business} ha una contestazione aperta in Stripe per {amount}. Motivo indicato dalla banca: {reason}.",
+      "deadline": "Scadenza per rispondere in Stripe: {date}.",
+      "noDeadline": "Stripe non ha ancora indicato una scadenza.",
+      "next": "La decisione è manuale: apri la contestazione in Stripe e invia le prove prima della scadenza.",
+      "button": "Rispondi in Stripe",
+      "why": "Ricevi questa email perché il tuo indirizzo riceve gli avvisi del team Ventora Systems."
     }
   },
   "support": {
@@ -670,7 +681,8 @@
       "cardError": "Non è stato possibile salvare la carta. Riprovi.",
       "cardUnavailable": "Il pagamento con carta non è disponibile ora. Riprovi più tardi.",
       "paymentProcessing": "La banca sta ancora elaborando il pagamento. Il pacchetto si attiva appena va a buon fine.",
-      "sendFailed": "Non è stato possibile inviarlo. Riprovi."
+      "sendFailed": "Non è stato possibile inviarlo. Riprovi.",
+      "downloadFailed": "Non siamo riusciti a scaricare la fattura. Riprova."
     },
     "apps": {
       "bar": "Tutte le app",

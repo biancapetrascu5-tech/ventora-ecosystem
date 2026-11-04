@@ -5,9 +5,9 @@ import { pgExecutor, type AuditSqlExecutor } from '@ventora/audit';
 // on app_runtime (DATABASE_URL). No generated Prisma client.
 const _pools = new Map<string, Pool>();
 
-function getPool(): Pool {
-  const url = process.env.DATABASE_URL;
-  if (!url) throw new Error('[billing] DATABASE_URL is not set');
+function getPool(env: 'DATABASE_URL' | 'DATABASE_URL_FOUNDER' = 'DATABASE_URL'): Pool {
+  const url = process.env[env];
+  if (!url) throw new Error(`[billing] ${env} is not set`);
   let pool = _pools.get(url);
   if (!pool) {
     // max: 1 — the serverless cap of every module (ARCHITECTURE §6.2)
@@ -63,6 +63,28 @@ export async function withBillingRead<T>(
   fn: (client: PoolClient) => Promise<T>,
 ): Promise<T> {
   return inTransaction('BEGIN READ ONLY', organizationId, fn);
+}
+
+/**
+ * Lot 3.6 — Founder · Prezentare across businesses: founder_runtime itself (DATABASE_URL_FOUNDER),
+ * no module role, read only — it can only call the SECURITY DEFINER functions granted to it
+ * (billing.founder_*), as in core/commercial and core/support.
+ */
+export async function withBillingFounderList<T>(
+  fn: (client: PoolClient) => Promise<T>,
+): Promise<T> {
+  const client = await getPool('DATABASE_URL_FOUNDER').connect();
+  try {
+    await client.query('BEGIN READ ONLY');
+    const result = await fn(client);
+    await client.query('COMMIT');
+    return result;
+  } catch (err) {
+    await client.query('ROLLBACK').catch(() => {});
+    throw err;
+  } finally {
+    client.release();
+  }
 }
 
 /**

@@ -1,6 +1,13 @@
 import * as Sentry from '@sentry/nextjs';
 import { Pool } from 'pg';
-import { billingPaymentFailedConsumer, runStripeReconcileJob } from '@ventora/billing';
+import {
+  billingDisputeAlertConsumer,
+  billingInvoiceIssuedConsumer,
+  billingPaymentFailedConsumer,
+  invoiceIssueConsumer,
+  runInvoiceIssueJob,
+  runStripeReconcileJob,
+} from '@ventora/billing';
 import { ownerNotifiedConsumer, runQuotaReconciliationJob } from '@ventora/commercial';
 import './billing-config';
 import { summarizeError } from '@ventora/errors';
@@ -74,6 +81,11 @@ export const platformConsumers = new ConsumerRegistry()
   .register(invitationNewLinkRequestedConsumer)
   // Lot 3.5: plata refuzată → owner-ul (S115: payment.pack, payment.renewal, payment.retry)
   .register(billingPaymentFailedConsumer)
+  // Lotul 3.6: plata reușită → factura (pending); factura emisă → „Factura … e emisă” (S115);
+  // disputa deschisă → e-mail pe FOUNDER_ALERTS_EMAIL
+  .register(invoiceIssueConsumer)
+  .register(billingInvoiceIssuedConsumer)
+  .register(billingDisputeAlertConsumer)
   // Lotul 3.7: „Recomandă” / „Anunță proprietarul” → notificarea owner-ului, în Hub
   .register(ownerNotifiedConsumer)
   // Lotul 4.10: motorul de automatizări — evenimentul unui declanșator → execuția din jurnal
@@ -202,11 +214,26 @@ export const platformJobs = new JobRegistry()
     description: 'Finalul perioadei de probă',
     trigger: { cron: '0 4 * * *' },
   })
+  // Lotul 3.6: emiterea facturilor SmartBill și reîncercarea lor, în fiecare minut (prima emitere
+  // vine imediat după dispecer, care scrie factura pending); fiecare factură în contextul afacerii
+  // ei, una câte una (SmartBill: 30 de apeluri / 10 s). O factură care aruncă face job-ul să eșueze
+  // (Sentry, reîncercare); cele refuzate sau incerte trec în failed și apar în Founder.
   .register({
     id: 'commercial.invoice-retry',
     owner: 'Lot 3.6',
-    description: 'Reîncercarea facturilor SmartBill',
-    trigger: { cron: '*/30 * * * *' },
+    description: 'Emiterea și reîncercarea facturilor SmartBill',
+    trigger: { cron: '* * * * *' },
+    run: async () => {
+      const report = await runInvoiceIssueJob();
+      if (report.errors.length) {
+        throw new AggregateError(
+          report.errors.map((e) => e.error),
+          `[billing] ${report.errors.length} of ${report.due} invoices not handled: ` +
+            report.errors.map((e) => e.invoiceId).join(', '),
+        );
+      }
+      return report;
+    },
   })
   .register({
     id: 'commercial.price-change-notice',

@@ -87,6 +87,7 @@ model Payment {
   occurredAt            DateTime  @map("occurred_at") @db.Timestamptz
   createdAt             DateTime  @default(now()) @map("created_at") @db.Timestamptz
   purchase              Purchase? @relation(fields: [purchaseId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  invoices              Invoice[]
 
   @@index([organizationId, occurredAt], map: "payment_organization_id_occurred_at_idx")
   @@map("payment")
@@ -131,11 +132,51 @@ model Dispute {
   currency        String   @db.VarChar(3)
   reason          String   @db.VarChar(64)
   status          String   @db.VarChar(32)
+  /// Lot 3.6: termenul de răspuns din Stripe (evidence_details.due_by).
+  evidenceDueBy   DateTime? @map("evidence_due_by") @db.Timestamptz
   createdAt       DateTime @default(now()) @map("created_at") @db.Timestamptz
   updatedAt       DateTime @default(now()) @map("updated_at") @db.Timestamptz
 
   @@index([organizationId], map: "dispute_organization_id_idx")
   @@map("dispute")
+  @@schema("billing")
+}
+
+/// Lot 3.6: factura unei plăți (SmartBill) sau stornarea ei. Indexurile unice parțiale (o
+/// factură pe plată, numărul pe serie) și cel al job-ului sunt doar în migrare.
+model Invoice {
+  id                 String    @id @db.Uuid
+  organizationId     String    @map("organization_id") @db.Uuid
+  kind               String    @default("invoice") @db.VarChar(8)
+  paymentId          String?   @map("payment_id") @db.Uuid
+  reversesInvoiceId  String?   @unique(map: "invoice_reverses_invoice_id_key") @map("reverses_invoice_id") @db.Uuid
+  provider           String    @db.VarChar(16)
+  status             String    @default("pending") @db.VarChar(8)
+  series             String?   @db.VarChar(16)
+  number             String?   @db.VarChar(32)
+  providerDocumentId String?   @map("provider_document_id") @db.VarChar(64)
+  issueDate          DateTime? @map("issue_date") @db.Date
+  amountMinor        BigInt    @map("amount_minor")
+  currency           String    @db.VarChar(3)
+  lines              Json?
+  buyer              Json?
+  efacturaStatus     String?   @map("efactura_status") @db.VarChar(16)
+  attempts           Int       @default(0)
+  nextAttemptAt      DateTime  @default(now()) @map("next_attempt_at") @db.Timestamptz
+  claimedUntil       DateTime? @map("claimed_until") @db.Timestamptz
+  lastError          String?   @map("last_error") @db.VarChar(500)
+  failedAt           DateTime? @map("failed_at") @db.Timestamptz
+  issuedAt           DateTime? @map("issued_at") @db.Timestamptz
+  emailedAt          DateTime? @map("emailed_at") @db.Timestamptz
+  createdAt          DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt          DateTime  @default(now()) @map("updated_at") @db.Timestamptz
+
+  payment  Payment? @relation(fields: [paymentId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  reverses Invoice? @relation("InvoiceStorno", fields: [reversesInvoiceId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  storno   Invoice? @relation("InvoiceStorno")
+
+  @@index([organizationId, createdAt], map: "invoice_organization_id_created_at_idx")
+  @@map("invoice")
   @@schema("billing")
 }
 

@@ -839,7 +839,10 @@ describe('Lot 3.5 — isolation between businesses (T1/T2) and no card data', ()
     const columns = await q(
       `SELECT table_name, column_name FROM information_schema.columns WHERE table_schema = 'billing'`,
     );
-    const names = columns.map((c) => `${c.table_name}.${c.column_name}`);
+    // Lot 3.6: invoice.number is the invoice's number from SmartBill, not a card's
+    const names = columns
+      .map((c) => `${c.table_name}.${c.column_name}`)
+      .filter((n) => n !== 'invoice.number');
     expect(names.filter((n) => /(number|pan|cvc|cvv|card_?number|fingerprint)/i.test(n))).toEqual(
       [],
     );

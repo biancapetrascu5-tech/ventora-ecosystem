@@ -20,7 +20,8 @@ import { ExceptionFlow, type ExceptionTarget } from './ExceptionFlow';
 import { useQuotaText } from './labels';
 
 /* „Prezentare” (FounderOverview, S118): salutul după ora zilei și data de azi, în română;
-   cifrele (cu venitul lunar recurent), „Au nevoie de tine” (cererile noi, excepțiile care expiră în 7 zile, cu „Prelungește”
+   cifrele (cu venitul lunar recurent și plățile eșuate), „Au nevoie de tine” (cererile noi, plățile
+   eșuate, facturile neemise, excepțiile care expiră în 7 zile, cu „Prelungește”, disputele Stripe
    și ExceptionFlow din Lotul 3.4), afacerile aproape de limite și cele create recent. Fără afaceri
    — „prima zi”; fără date — eroarea cu „Încearcă din nou”. */
 
@@ -59,6 +60,13 @@ export function OverviewScreen({
   const lead = t('lead', { date: today.charAt(0).toLocaleUpperCase('ro') + today.slice(1) });
   const inDays = new Intl.RelativeTimeFormat('ro', { numeric: 'auto' });
   const appName = (k: string) => APPS[k as AppName]?.name ?? k;
+  // începutul zilei în fusul Founder-ului (pentru „ieri”, „acum 2 zile”)
+  const startOfDay = (d: Date) => {
+    const [y, m, day] = fmt({ year: 'numeric', month: '2-digit', day: '2-digit' }, d)
+      .split('.')
+      .map(Number);
+    return Date.UTC(y!, m! - 1, day!);
+  };
 
   const data: OverviewViewData | undefined = overview
     ? {
@@ -106,6 +114,32 @@ export function OverviewScreen({
           created: dates.day(new Date(b.createdAt)),
           status: b.status,
         })),
+        // Lotul 3.6: plățile de încasat, disputele Stripe, facturile neemise
+        failedPayments: overview.failedPayments.map((f) => ({
+          id: f.id,
+          organizationId: f.organizationId,
+          business: f.business,
+          amountMinor: f.amountMinor,
+          currency: f.currency,
+          next: f.nextAttemptAt
+            ? `${fmt({ day: 'numeric', month: 'long' }, new Date(f.nextAttemptAt))}, ${dates.time(new Date(f.nextAttemptAt))}`
+            : null,
+          when: inDays.format(
+            -Math.max(0, Math.floor((startOfDay(now) - startOfDay(new Date(f.failedAt))) / DAY_MS)),
+            'day',
+          ),
+        })),
+        disputes: overview.disputes.map((d) => ({
+          id: d.id,
+          business: d.business,
+          amountMinor: d.amountMinor,
+          currency: d.currency,
+          due: d.evidenceDueBy
+            ? fmt({ day: 'numeric', month: 'long' }, new Date(d.evidenceDueBy))
+            : null,
+          url: d.url,
+        })),
+        invoices: overview.invoices,
       }
     : undefined;
 
@@ -131,6 +165,7 @@ export function OverviewScreen({
         }}
         onOpenUsage={() => router.push('/usage')}
         onOpenBusiness={(id) => router.push(`/businesses/${id}`)}
+        onOpenStripe={(url) => window.open(url, '_blank', 'noopener,noreferrer')}
         onAllBusinesses={() => router.push('/businesses')}
         onNewBusiness={() => router.push('/businesses/new')}
         onRetry={() => router.refresh()}

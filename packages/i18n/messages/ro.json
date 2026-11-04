@@ -146,6 +146,17 @@
       "close": "O poți închide oricând din Ventora Systems, din bannerul sesiunii de suport.",
       "notRequested": "Dacă nu ai cerut ajutor, închide sesiunea și scrie-ne la {supportEmail}.",
       "footer": "Primești acest e-mail pentru că ești proprietarul afacerii {businessName} în Ventora Systems."
+    },
+    "founderDisputeAlert": {
+      "subject": "Dispută Stripe · {business} · {amount}",
+      "eyebrow": "Alertă pentru echipa Ventora Systems",
+      "title": "Un client a contestat o plată",
+      "lead": "{business} are o dispută deschisă în Stripe pentru {amount}. Motivul dat de bancă: {reason}.",
+      "deadline": "Termenul de răspuns în Stripe: {date}.",
+      "noDeadline": "Stripe nu a dat încă un termen de răspuns.",
+      "next": "Decizia e manuală: deschide disputa în Stripe și trimite dovezile înainte de termen.",
+      "button": "Răspunde în Stripe",
+      "why": "Primești acest e-mail pentru că adresa ta primește alertele echipei Ventora Systems."
     }
   },
   "support": {
@@ -670,7 +681,8 @@
       "cardError": "Nu am putut salva cardul. Încearcă din nou.",
       "cardUnavailable": "Plata cu cardul nu e disponibilă acum. Încearcă mai târziu.",
       "paymentProcessing": "Banca încă procesează plata. Pachetul se activează imediat ce plata trece.",
-      "sendFailed": "Nu am putut trimite. Încearcă din nou."
+      "sendFailed": "Nu am putut trimite. Încearcă din nou.",
+      "downloadFailed": "Nu am putut descărca factura. Încearcă din nou."
     },
     "apps": {
       "bar": "Toate aplicațiile",

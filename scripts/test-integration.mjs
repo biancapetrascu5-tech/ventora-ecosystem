@@ -229,7 +229,11 @@ try {
   console.log('\n[test:integration] billing...');
   runPkg('@ventora/billing', 'test:integration', {
     DATABASE_URL_TEST: `postgresql://app_runtime:${TEST_DB.appPw}@localhost:${PG}/${TEST_DB.accessDb}`,
+    // Lot 3.6: citirile Founder (Prezentare), pe founder_runtime, cu sesiune Founder
+    DATABASE_URL_FOUNDER_TEST: `postgresql://founder_runtime:${TEST_DB.founderPw}@localhost:${PG}/${TEST_DB.accessDb}`,
     DATABASE_URL_ADMIN_TEST: ADMIN_ACCESS,
+    BETTER_AUTH_SECRET: TEST_DB.betterAuthSecret,
+    FOUNDER_AUTH_SECRET: TEST_DB.founderAuthSecret,
   });
 
   // --- Lot 4.10: motorul de automatizări (drift, teste pe baza access, după registrul real) ---
