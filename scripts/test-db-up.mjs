@@ -4,7 +4,7 @@
  * Rulat de `pnpm test:db:up` și de `pnpm test:integration`.
  */
 import { execSync } from 'node:child_process';
-import { readFileSync } from 'node:fs';
+import { readdirSync, readFileSync } from 'node:fs';
 import { existsSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { ROOT, TEST_ENV, composeCmd, composeEnv } from './test-db-config.mjs';
@@ -18,6 +18,8 @@ export const TEST_DB = {
   identityDb: 'ventora_identity_test',
   orgDb: 'ventora_org_test',
   accessDb: 'ventora_access_test',
+  // D3-1: the pricing seed on a clean base (no prices yet), apart from the commercial tests
+  pricingDb: 'ventora_pricing_test',
   appPw: 'app_runtime_test_pw', // gitleaks:allow
   founderPw: 'founder_runtime_test_pw', // gitleaks:allow
   betterAuthSecret: 'ventora-test-better-auth-secret-00000001',
@@ -104,6 +106,7 @@ for (const db of [
   TEST_DB.identityDb,
   TEST_DB.orgDb,
   TEST_DB.accessDb,
+  TEST_DB.pricingDb,
   'shadow_identity_diff',
   'shadow_founder_diff',
   'shadow_org_diff',
@@ -392,6 +395,26 @@ psql(
    END $$;
    ALTER ROLE founder_runtime WITH PASSWORD '${TEST_DB.founderPw}';`,
 );
+
+// D3-1: a clean base for scripts/seed-pricing.ts — identity, founder and audit (the Founder session and
+// its audit rows), then every commercial migration, in the order of the CI commercial job
+console.log(
+  '[test:db:up] Configurez pricing DB (D3-1: identity + founder + audit + commercial)...',
+);
+for (const migration of [
+  'core/identity/prisma/identity/migrations/20261025000001_identity_init/migration.sql',
+  'core/identity/prisma/identity/migrations/20261027000002_session_active_org/migration.sql',
+  'core/identity/prisma/founder/migrations/20261025000001_founder_init/migration.sql',
+  'core/audit/prisma/migrations/20261028000001_audit_init/migration.sql',
+  'core/identity/prisma/identity/migrations/20261028000004_founder_owner_recovery/migration.sql',
+  'core/identity/prisma/identity/migrations/20261029000006_lot26_open_last_organization/migration.sql',
+  ...readdirSync(join(ROOT, 'core/commercial/prisma/migrations'), { withFileTypes: true })
+    .filter((d) => d.isDirectory())
+    .map((d) => `core/commercial/prisma/migrations/${d.name}/migration.sql`)
+    .sort(),
+]) {
+  psqlFile(TEST_DB.pricingDb, join(ROOT, migration));
+}
 
 console.log('[test:db:up] Pornesc pgbouncer-test...');
 run(composeCmd(DOCKER, 'up -d pgbouncer-test'), { cwd: ROOT });

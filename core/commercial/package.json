@@ -12,7 +12,8 @@
     "db:migrate": "prisma migrate deploy --config prisma7.config.ts",
     "test": "vitest run",
     "test:integration": "vitest run --config vitest.integration.config.ts",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.pricing.json",
+    "test:pricing": "vitest run --config vitest.pricing.config.ts"
   },
   "dependencies": {
     "@ventora/audit": "workspace:*",

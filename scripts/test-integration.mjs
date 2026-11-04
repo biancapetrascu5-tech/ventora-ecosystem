@@ -32,6 +32,7 @@ function runPkg(filter, script, env = {}) {
 const ADMIN_IDENTITY = `postgresql://postgres:test@localhost:${PG}/${TEST_DB.identityDb}`;
 const ADMIN_ORG = `postgresql://postgres:test@localhost:${PG}/${TEST_DB.orgDb}`;
 const ADMIN_ACCESS = `postgresql://postgres:test@localhost:${PG}/${TEST_DB.accessDb}`;
+const ADMIN_PRICING = `postgresql://postgres:test@localhost:${PG}/${TEST_DB.pricingDb}`;
 const SHADOW_IDENTITY = `postgresql://postgres:test@localhost:${PG}/shadow_identity_diff`;
 const SHADOW_FOUNDER = `postgresql://postgres:test@localhost:${PG}/shadow_founder_diff`;
 const SHADOW_ORG = `postgresql://postgres:test@localhost:${PG}/shadow_org_diff`;
@@ -211,6 +212,17 @@ try {
   runPkg('@ventora/billing', 'test:integration', {
     DATABASE_URL_TEST: `postgresql://app_runtime:${TEST_DB.appPw}@localhost:${PG}/${TEST_DB.accessDb}`,
     DATABASE_URL_ADMIN_TEST: ADMIN_ACCESS,
+  });
+
+  // --- D3-1: scripts/seed-pricing.ts pe o bază curată (registrul real, fără prețuri) ---
+  console.log('\n[test:integration] prețurile D3-1 (seed-pricing, bază curată)...');
+  run('pnpm tsx scripts/sync-commercial-registry.ts', { DIRECT_URL: ADMIN_PRICING });
+  runPkg('@ventora/commercial', 'test:pricing', {
+    DATABASE_URL_TEST: `postgresql://app_runtime:${TEST_DB.appPw}@localhost:${PG}/${TEST_DB.pricingDb}`,
+    DATABASE_URL_FOUNDER_TEST: `postgresql://founder_runtime:${TEST_DB.founderPw}@localhost:${PG}/${TEST_DB.pricingDb}`,
+    DATABASE_URL_ADMIN_TEST: ADMIN_PRICING,
+    BETTER_AUTH_SECRET: TEST_DB.betterAuthSecret,
+    FOUNDER_AUTH_SECRET: TEST_DB.founderAuthSecret,
   });
 
   console.log('\n[test:integration] Toate testele au trecut.');
