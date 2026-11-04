@@ -11,6 +11,7 @@ import {
   Spine,
   type NavSection,
   type NotificationData,
+  useThemeChoice,
 } from '@ventora/ui';
 import { authApi } from '@ventora/screens';
 
@@ -76,6 +77,7 @@ export function FounderShell({
 }) {
   const router = useRouter();
   const ui = useTranslations('ui');
+  const themeChoice = useThemeChoice();
   const nav = useFounderNav(requestsBadge).map((sec) => ({
     ...sec,
     items: sec.items.map((i) =>
@@ -149,6 +151,8 @@ export function FounderShell({
           account={
             <AccountMenu
               user={user}
+              theme={themeChoice.theme}
+              onThemeChange={themeChoice.onThemeChange}
               onSignOut={async () => {
                 await authApi.signOut();
                 router.replace('/sign-in');

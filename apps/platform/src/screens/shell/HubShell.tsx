@@ -16,6 +16,7 @@ import {
   type AppName,
   type NavSection,
   type NotificationData,
+  useThemeChoice,
 } from '@ventora/ui';
 import { authApi, useWhen } from '@ventora/screens';
 import { rememberLocale } from '@/i18n/locale';
@@ -168,6 +169,7 @@ export function HubShell({
   const pathname = usePathname();
   const locale = useLocale();
   const ui = useTranslations('ui');
+  const themeChoice = useThemeChoice();
   const roles = useTranslations('roles');
   const nav = useHubNav(data.manager);
   const active = activeFor(pathname);
@@ -286,6 +288,8 @@ export function HubShell({
                 await authApi.signOut();
                 router.replace('/sign-in');
               }}
+              theme={themeChoice.theme}
+              onThemeChange={themeChoice.onThemeChange}
               locale={locale}
               onLocaleChange={(code) => {
                 rememberLocale(code);

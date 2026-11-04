@@ -4,6 +4,7 @@ import '@ventora/tokens/business/typography.css';
 import './globals.css';
 import type { Metadata } from 'next';
 import { NextIntlClientProvider } from 'next-intl';
+import { ThemeScript, VentoraProvider } from '@ventora/ui';
 import { getLocale } from 'next-intl/server';
 
 export const metadata: Metadata = {
@@ -13,9 +14,14 @@ export const metadata: Metadata = {
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const locale = await getLocale();
   return (
-    <html lang={locale}>
+    <html lang={locale} suppressHydrationWarning>
+      <head>
+        <ThemeScript />
+      </head>
       <body>
-        <NextIntlClientProvider>{children}</NextIntlClientProvider>
+        <VentoraProvider>
+          <NextIntlClientProvider>{children}</NextIntlClientProvider>
+        </VentoraProvider>
       </body>
     </html>
   );

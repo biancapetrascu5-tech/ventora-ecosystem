@@ -1,7 +1,8 @@
 // Provider
 export { VentoraProvider } from './provider/VentoraProvider';
-export { useTheme } from './provider/useTheme';
+export { useTheme, useThemeChoice } from './provider/useTheme';
 export type { Theme } from './provider/ThemeContext';
+export { ThemeScript, THEME_INIT_SCRIPT, THEME_STORAGE_KEY } from './provider/ThemeScript';
 
 // Hooks
 export { useHotkey } from './provider/useHotkey';

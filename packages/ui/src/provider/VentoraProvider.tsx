@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, type ReactNode } from 'react';
 import { ThemeContext, type Theme } from './ThemeContext';
+import { THEME_STORAGE_KEY } from './ThemeScript';
 import { _registerToastDispatch, type ToastOptions } from '../hooks/useToast';
 import { Toast, type ToastTone } from '../Toast/Toast';
 
@@ -18,15 +19,21 @@ let _toastId = 0;
 
 export function VentoraProvider({ children, defaultTheme = 'auto' }: VentoraProviderProps) {
   const [theme, setThemeState] = useState<Theme>(defaultTheme);
+  // Până se citește tema salvată nu atingem <html>: ThemeScript a pus-o deja înainte de randare.
+  const [loaded, setLoaded] = useState(false);
   const [resolvedTheme, setResolvedTheme] = useState<'light' | 'dark'>('light');
   const [toasts, setToasts] = useState<ActiveToast[]>([]);
 
   useEffect(() => {
-    const stored = (typeof localStorage !== 'undefined' &&
-      localStorage.getItem('vt-theme')) as Theme | null;
-    if (stored && ['light', 'dark', 'auto'].includes(stored)) {
-      setThemeState(stored);
+    try {
+      const stored = localStorage.getItem(THEME_STORAGE_KEY) as Theme | null;
+      if (stored && ['light', 'dark', 'auto'].includes(stored)) {
+        setThemeState(stored);
+      }
+    } catch {
+      // localStorage blocat (mod privat, setări): rămâne tema implicită
     }
+    setLoaded(true);
   }, []);
 
   useEffect(() => {
@@ -43,13 +50,14 @@ export function VentoraProvider({ children, defaultTheme = 'auto' }: VentoraProv
   }, [theme]);
 
   useEffect(() => {
+    if (!loaded) return;
     const html = document.documentElement;
     if (theme === 'auto') {
       html.removeAttribute('data-theme');
     } else {
       html.setAttribute('data-theme', theme);
     }
-  }, [theme]);
+  }, [theme, loaded]);
 
   useEffect(() => {
     return _registerToastDispatch((opts: ToastOptions) => {
@@ -67,7 +75,7 @@ export function VentoraProvider({ children, defaultTheme = 'auto' }: VentoraProv
   const setTheme = useCallback((next: Theme) => {
     setThemeState(next);
     try {
-      localStorage.setItem('vt-theme', next);
+      localStorage.setItem(THEME_STORAGE_KEY, next);
     } catch {
       // ignore
     }
