@@ -17,8 +17,8 @@
         "reason": "Motiv",
         "reasonHelp": "Îl văd proprietarul și adminii afacerii, în banner și în lista sesiunilor. Între 10 și 1.000 de caractere.",
         "reasonError": "Scrie de ce ai nevoie de acces, în cel puțin 10 caractere.",
-        "ticket": "Referința cererii",
-        "ticketHelp": "Din cererea primită pe support@ventorasystems.com.",
+        "ticket": "Referința solicitării",
+        "ticketHelp": "Solicitarea afacerii din Suport, de forma VS-2026-0142.",
         "ticketError": "Scrie referința cererii.",
         "duration": "Durata",
         "durationHelp": "Implicit 1 oră, cel mult 4 ore. Sesiunea se închide singură la final.",
@@ -29,7 +29,8 @@
         "duration30": "30 de minute",
         "duration60": "1 oră",
         "duration120": "2 ore",
-        "duration240": "4 ore"
+        "duration240": "4 ore",
+        "ticketInvalid": "Afacerea nu are o solicitare cu această referință."
       }
     },
     "recovery": {
@@ -102,7 +103,8 @@
       "requests": "Cereri",
       "apps": "Aplicații",
       "discounts": "Reduceri",
-      "bundles": "Bundle-uri"
+      "bundles": "Bundle-uri",
+      "support": "Suport"
     },
     "shell": {
       "search": "Caută o afacere, un bundle sau o campanie"
@@ -892,6 +894,96 @@
         "since": "Din"
       },
       "limitsMonthly": "Limite pe lună, și la plata anuală"
+    },
+    "inbox": {
+      "nav": "Suport",
+      "title": "Solicitări de suport",
+      "lead": "Ce trimit afacerile din Hub, la „Suport”. Răspunsul tău apare în Hub și pleacă pe e-mail.",
+      "filter": {
+        "open": "Deschise",
+        "progress": "În lucru",
+        "closed": "Închise",
+        "app": "Aplicația",
+        "appAll": "Toate aplicațiile",
+        "business": "Afacerea",
+        "businessAll": "Toate afacerile"
+      },
+      "search": "Caută după subiect sau referință",
+      "col": {
+        "subject": "Subiect",
+        "business": "Afacerea",
+        "app": "Aplicația",
+        "last": "Ultimul mesaj",
+        "status": "Stare"
+      },
+      "status": {
+        "open": "Deschisă",
+        "progress": "În lucru",
+        "closed": "Închisă"
+      },
+      "blocking": "Mă blochează",
+      "fromClient": "{name}, {when}",
+      "fromTeam": "Echipa, {when}",
+      "emptyOpen": {
+        "title": "Nicio solicitare deschisă",
+        "body": "Când o afacere scrie din Hub, solicitarea apare aici."
+      },
+      "emptyFilter": {
+        "title": "Nicio solicitare pentru filtrele alese",
+        "body": "Schimbă aplicația, afacerea sau starea.",
+        "clear": "Șterge filtrele"
+      },
+      "back": "Solicitări de suport",
+      "meta": "{business} · {app} · deschisă pe {date} · {ref}",
+      "client": "Afacerea",
+      "reply": "Răspunsul echipei",
+      "replyHelp": "Apare în Hub, în solicitare, și pleacă pe e-mail la {name}.",
+      "attachments": "Atașamente",
+      "attachHint": "PNG, JPEG sau PDF, cel mult 10 MB fiecare.",
+      "send": "Trimite răspunsul",
+      "sendClose": "Trimite și închide",
+      "sent": "Răspunsul a plecat. {name} îl vede în Hub și pe e-mail.",
+      "error": {
+        "empty": "Scrie un răspuns înainte să trimiți.",
+        "size": "{file} are peste 10 MB. Atașează un fișier mai mic.",
+        "type": "{file} nu e PNG, JPEG sau PDF.",
+        "send": "Nu am putut trimite răspunsul. Încearcă din nou.",
+        "status": "Nu am putut schimba starea. Încearcă din nou.",
+        "upload": "{file} nu s-a încărcat. Încearcă din nou."
+      },
+      "side": {
+        "status": "Starea",
+        "markProgress": "Marchează „În lucru”",
+        "close": "Închide solicitarea",
+        "openBiz": "Deschide afacerea",
+        "session": "Deschide o sesiune de suport",
+        "owner": "Proprietar",
+        "plan": "Abonament",
+        "sent": "Trimisă de"
+      },
+      "closedNote": "Solicitarea e închisă. Afacerea o poate redeschide din Hub; atunci revine în „Deschise”.",
+      "closed": "Am închis solicitarea. {name} o vede în Hub ca „Rezolvat”.",
+      "map": "În Hub: Deschisă → „În lucru” · răspunsul tău → „Răspuns nou” · Închisă → „Rezolvat”.",
+      "overdue": "{n} peste termen",
+      "overdueRow": "Peste termen",
+      "fromRole": "{business} · {role}",
+      "sentBy": "{name} ({role})",
+      "planMembers": "{plan} · {n, plural, one {# membru} few {# membri} other {# de membri}}",
+      "noPlan": "Fără abonament",
+      "closedAuto": "Solicitarea s-a închis automat după 7 zile fără răspuns de la afacere. Afacerea o poate redeschide din Hub.",
+      "markedProgress": "Am marcat solicitarea „În lucru”.",
+      "role": {
+        "owner": "proprietar",
+        "admin": "administrator",
+        "member": "membru",
+        "external_collaborator": "colaborator extern",
+        "application_manager": "manager de aplicație",
+        "former": "nu mai e în afacere"
+      },
+      "open": "Deschide",
+      "download": "Descarcă {file}",
+      "appPlatform": "Hub",
+      "filterLabel": "Stare"
     }
   }
 }

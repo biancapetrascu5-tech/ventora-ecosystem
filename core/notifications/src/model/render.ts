@@ -41,6 +41,8 @@ export function templateKeys(template: NotificationTemplate): string[] {
           template.email.leadKey,
           ...template.email.nextKeys,
           template.email.whyKey,
+          template.email.titleKey,
+          template.email.preheaderKey,
         ]
       : []),
   ].filter((k): k is string => !!k);

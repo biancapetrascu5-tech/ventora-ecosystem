@@ -1,6 +1,6 @@
 'use client';
 
-import type { ReactNode } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import {
@@ -14,6 +14,7 @@ import {
   useThemeChoice,
 } from '@ventora/ui';
 import { authApi } from '@ventora/screens';
+import { readSupportOpenCount } from '@/server/support-inbox-actions';
 
 /* Shell-ul Founder Control Center (FX_App din preview-urile Founder): Spine cu navigația Founder,
    ContextBar cu notificările și contul. Spine-ul arată doar intrările care au ecran: Lotul 2.8
@@ -22,7 +23,7 @@ import { authApi } from '@ventora/screens';
    Campanii și Sistem apar cu ecranele lor. Căutarea (paleta de
    comenzi) n-are încă sursă. */
 
-export function useFounderNav(requestsBadge?: number): NavSection[] {
+export function useFounderNav(requestsBadge?: number, supportBadge?: number): NavSection[] {
   const t = useTranslations('founder.nav');
   return [
     {
@@ -36,6 +37,14 @@ export function useFounderNav(requestsBadge?: number): NavSection[] {
           icon: 'inbox',
           href: '/requests',
           ...(requestsBadge ? { badge: requestsBadge } : {}),
+        },
+        // Lotul 4.6 (S116, D4-14 b): după „Cereri”, cu numărul solicitărilor deschise
+        {
+          id: 'suport',
+          label: t('support'),
+          icon: 'life-buoy',
+          href: '/support',
+          ...(supportBadge ? { badge: supportBadge } : {}),
         },
       ],
     },
@@ -64,6 +73,7 @@ export function FounderShell({
   notifications = [],
   businessesBadge,
   requestsBadge,
+  supportBadge,
   children,
 }: {
   active?: string;
@@ -73,12 +83,25 @@ export function FounderShell({
   businessesBadge?: number;
   /** „Cereri · {n}”: cererile noi din Hub. */
   requestsBadge?: number;
+  /** „Suport · {n}”: solicitările deschise; fără el, shell-ul îl citește singur. */
+  supportBadge?: number;
   children: ReactNode;
 }) {
   const router = useRouter();
   const ui = useTranslations('ui');
   const themeChoice = useThemeChoice();
-  const nav = useFounderNav(requestsBadge).map((sec) => ({
+  const [fetchedSupport, setFetchedSupport] = useState(0);
+  useEffect(() => {
+    if (supportBadge !== undefined) return;
+    let live = true;
+    void readSupportOpenCount().then((n) => {
+      if (live) setFetchedSupport(n);
+    });
+    return () => {
+      live = false;
+    };
+  }, [supportBadge]);
+  const nav = useFounderNav(requestsBadge, supportBadge ?? fetchedSupport).map((sec) => ({
     ...sec,
     items: sec.items.map((i) =>
       i.id === 'afaceri' && businessesBadge ? { ...i, badge: businessesBadge } : i,
@@ -105,7 +128,7 @@ export function FounderShell({
           appName="Founder"
           sections={nav}
           activeId={active}
-          bottomItems={['azi', 'afaceri', 'consum', 'cereri']}
+          bottomItems={['azi', 'afaceri', 'cereri', 'suport']}
           labels={{
             backToHub: ui('backToHub'),
             expandMenu: ui('expandMenu'),

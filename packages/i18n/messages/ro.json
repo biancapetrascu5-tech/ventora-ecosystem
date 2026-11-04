@@ -179,6 +179,91 @@
         "closedAuto": "Închisă automat"
       },
       "empty": "Nicio sesiune de suport până acum."
+    },
+    "title": "Suport",
+    "lead": "Scrie-ne când ceva nu merge sau ai o întrebare. Îți răspundem în cel mult o zi lucrătoare.",
+    "list": {
+      "title": "Solicitările mele",
+      "col": {
+        "subject": "Subiect",
+        "app": "Aplicație",
+        "updated": "Actualizat",
+        "status": "Stare",
+        "from": "Trimisă de"
+      },
+      "titleBusiness": "Solicitările afacerii"
+    },
+    "status": {
+      "newReply": "Răspuns nou",
+      "inProgress": "În lucru",
+      "resolved": "Rezolvat"
+    },
+    "new": {
+      "title": "Solicitare nouă",
+      "app": "Aplicația",
+      "appHelp": "Am completat-o după pagina de unde ai pornit.",
+      "subject": "Subiect",
+      "subjectPlaceholder": "Ex.: Reamintirile nu ajung la clienți",
+      "what": "Ce s-a întâmplat?",
+      "whatHelp": "Spune-ne ce ai încercat și ce ai văzut. O captură de ecran ajută.",
+      "urgency": "Cât de urgent e?",
+      "urgencyHelp": "„Mă blochează” înseamnă că nu poți lucra deloc până se rezolvă.",
+      "urgencyLabel": "Urgență",
+      "normal": "Normal",
+      "blocking": "Mă blochează",
+      "send": "Trimite",
+      "appPlatform": "Hub (cont, abonament, echipă)",
+      "error": {
+        "required": "Completează acest câmp."
+      }
+    },
+    "attachments": "Atașamente",
+    "attachmentsHint": "PNG, JPG sau PDF",
+    "sent": {
+      "title": "Am primit mesajul.",
+      "body": "Îți răspundem aici și pe e-mail, în cel mult o zi lucrătoare."
+    },
+    "empty": {
+      "title": "Nu ai nicio solicitare",
+      "body": "Dacă ceva nu merge, scrie-ne de aici."
+    },
+    "thread": {
+      "meta": "{app} · deschisă pe {date} · {ref}",
+      "you": "Tu",
+      "team": "Echipa Ventora Systems",
+      "reply": "Răspunsul tău",
+      "attachHint": "PNG, JPG sau PDF, cel mult 10 MB fiecare",
+      "send": "Trimite răspunsul",
+      "sending": "Se trimite…",
+      "error": {
+        "empty": "Scrie un mesaj înainte să trimiți.",
+        "size": "{file} are peste 10 MB. Trimite un fișier mai mic.",
+        "type": "{file} nu e PNG, JPG sau PDF."
+      },
+      "download": "Descarcă {file}",
+      "history": "Istoricul stării",
+      "h": {
+        "opened": "Ai deschis solicitarea",
+        "inProgress": "În lucru · {name}",
+        "newReply": "Răspuns nou de la {name}",
+        "resolved": "Rezolvat · {name}",
+        "reopened": "Ai redeschis solicitarea",
+        "openedBy": "{name} a deschis solicitarea",
+        "reopenedBy": "{name} a redeschis solicitarea",
+        "autoClosed": "Închisă automat după 7 zile fără răspuns"
+      },
+      "resolvedNote": "Solicitarea e rezolvată. Dacă problema a revenit, o poți redeschide.",
+      "reopen": "Redeschide solicitarea",
+      "reopenLabel": "Ce s-a întâmplat din nou?",
+      "reopenHelp": "Când trimiți, solicitarea trece înapoi în „În lucru”.",
+      "reopenSubmit": "Redeschide și trimite",
+      "reopened": "Am redeschis solicitarea.",
+      "cancel": "Renunță",
+      "replyNote": "Îți răspundem aici și pe e-mail."
+    },
+    "error": {
+      "send": "Nu am putut trimite. Încearcă din nou.",
+      "upload": "{file} nu s-a încărcat. Încearcă din nou."
     }
   },
   "auth": {
@@ -447,7 +532,16 @@
     "findBusiness": "Caută o afacere…",
     "noResultsFor": "Niciun rezultat pentru „{q}”",
     "unreadN": "{n, plural, one {# necitită} few {# necitite} other {# de necitite}}",
-    "accessStopped": "Acces oprit"
+    "accessStopped": "Acces oprit",
+    "upload": {
+      "dropFiles": "Trage fișierele aici sau",
+      "browse": "alege-le de pe dispozitiv",
+      "dropNow": "Dă drumul ca să încarci",
+      "maxSize": "Până la {size} de fiecare fișier",
+      "remove": "Elimină",
+      "retry": "Încearcă din nou",
+      "uploaded": "Încărcat"
+    }
   },
   "hub": {
     "chooseBusiness": {
@@ -468,7 +562,8 @@
       "teamShort": "Echipă",
       "roles": "Roluri și acces",
       "plan": "Abonament și consum",
-      "planShort": "Abonament"
+      "planShort": "Abonament",
+      "help": "Ajutor"
     },
     "team": {
       "title": "Echipa",
@@ -850,7 +945,13 @@
     "support": {
       "reply": {
         "title": "Răspuns nou la solicitarea ta",
-        "body": "„{subject}” · {author}, echipa Ventora Systems"
+        "body": "„{subject}” · {author}, echipa Ventora Systems",
+        "action": "Vezi solicitarea"
+      },
+      "autoClose": {
+        "title": "Solicitarea ta se închide mâine",
+        "body": "„{subject}” ({ref}) se închide automat mâine, dacă nu ne mai scrii.",
+        "action": "Vezi solicitarea"
       }
     },
     "request": {
@@ -962,6 +1063,23 @@
         "eyebrowApps": "{business} · Aplicații",
         "why": "Primești acest e-mail pentru că ești proprietarul afacerii {business} în Ventora Systems.",
         "upgrade": "Dacă ți se întâmplă des, cere alt abonament din Abonament și consum."
+      },
+      "supportReply": {
+        "subject": "Ai un răspuns nou la solicitarea ta",
+        "preheader": "{author} din echipa Ventora Systems ți-a răspuns la „{subject}”.",
+        "eyebrow": "{businessName} · Suport",
+        "title": "Ai un răspuns nou la solicitarea ta",
+        "lead": "{author} din echipa Ventora Systems a răspuns la „{subject}” ({ref}).",
+        "body": "Răspunsul îl citești în Ventora Systems, unde poți și să răspunzi, cu atașamente dacă e nevoie.",
+        "cta": "Vezi solicitarea",
+        "why": "Primești acest e-mail pentru că ai deschis această solicitare în Ventora Systems."
+      },
+      "supportAutoClose": {
+        "subject": "Solicitarea ta se închide mâine",
+        "preheader": "„{subject}” se închide automat pe {closesAt}, dacă nu ne mai scrii.",
+        "title": "Solicitarea ta se închide mâine",
+        "lead": "Echipa Ventora Systems ți-a răspuns la „{subject}” ({ref}), iar de 6 zile nu am mai primit nimic de la tine.",
+        "body": "Dacă problema s-a rezolvat, nu trebuie să faci nimic: solicitarea se închide singură pe {closesAt}. Dacă mai ai nevoie de ajutor, răspunde-ne în Ventora Systems; o poți redeschide și după ce se închide."
       }
     },
     "prefs": {

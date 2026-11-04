@@ -25,7 +25,8 @@ export const REASON_MAX = 1000;
 export const TICKET_MAX = 255;
 export const DURATIONS = ['30', '60', '120', '240'] as const;
 
-export type OpenFormState = 'idle' | 'errors' | 'exists' | 'loading';
+/** Lot 4.6 (S-4 = a): 'ticketInvalid' — the reference is not a request of this business. */
+export type OpenFormState = 'idle' | 'errors' | 'exists' | 'loading' | 'ticketInvalid';
 
 export function OpenSupportDialog({
   state = 'idle',
@@ -59,7 +60,7 @@ export function OpenSupportDialog({
   const ui = useTranslations('ui');
   const errs = state === 'errors';
   const reasonErr = errs && reason.trim().length < REASON_MIN;
-  const ticketErr = errs && !ticket.trim();
+  const ticketErr = (errs && !ticket.trim()) || state === 'ticketInvalid';
   return (
     <Dialog
       inline={inline}
@@ -123,7 +124,13 @@ export function OpenSupportDialog({
           isRequired
           requiredLabel={ui('required')}
           hint={ticketErr ? undefined : t('ticketHelp')}
-          error={ticketErr ? t('ticketError') : undefined}
+          error={
+            state === 'ticketInvalid'
+              ? t('ticketInvalid')
+              : ticketErr
+                ? t('ticketError')
+                : undefined
+          }
         >
           {(field) => (
             <Input

@@ -10,7 +10,7 @@ export {
   deleteFile,
   closeFilesPool,
 } from './files';
-export type { FilesContext, FileOwner, FileInfo, FileStatus } from './files';
+export type { FilesContext, FilesConnection, FileOwner, FileInfo, FileStatus } from './files';
 export {
   ALLOWED_CONTENT_TYPES,
   MAX_FILE_BYTES,

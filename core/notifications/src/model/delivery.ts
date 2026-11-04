@@ -96,9 +96,9 @@ export function renderNotificationEmail(
     return renderOperationalEmail({
       lang: locale,
       subject: text(e.subjectKey, { title }),
-      preheader: body ?? title,
+      preheader: e.preheaderKey ? text(e.preheaderKey) : (body ?? title),
       eyebrow: text(e.eyebrowKey),
-      title,
+      title: e.titleKey ? text(e.titleKey) : title,
       lead: [text(e.leadKey), ...e.nextKeys.map((k) => text(k))],
       ...(row.action_url && action
         ? { button: { label: action, href: `${platformUrl()}${row.action_url}` } }

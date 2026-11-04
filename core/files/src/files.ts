@@ -36,7 +36,15 @@ export interface FilesContext {
   /** From authorize(). */
   organizationId: string;
   userId: string;
+  /**
+   * Lot 4.6 (S-5 = b): 'founder' — the Ventora team (FounderSupportInbox), on founder_runtime
+   * (DATABASE_URL_FOUNDER) as files_founder: only the files of support requests, in the
+   * organization of the transaction, no deletion. Default 'app': app_runtime as files_rw.
+   */
+  connection?: FilesConnection;
 }
+
+export type FilesConnection = 'app' | 'founder';
 
 export interface FileOwner {
   module: string;
@@ -62,22 +70,30 @@ export interface FileInfo {
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const SOURCE_APP = 'platform';
 
-let _pool: Pool | null = null;
+const _pools = new Map<FilesConnection, Pool>();
 
-function pool(): Pool {
-  if (!_pool) {
-    const url = process.env.DATABASE_URL;
-    if (!url) throw new Error('[files] DATABASE_URL is not set');
+const CONNECTIONS = {
+  app: { env: 'DATABASE_URL', role: 'files_rw' },
+  founder: { env: 'DATABASE_URL_FOUNDER', role: 'files_founder' },
+} as const;
+
+function pool(connection: FilesConnection): Pool {
+  let p = _pools.get(connection);
+  if (!p) {
+    const name = CONNECTIONS[connection].env;
+    const url = process.env[name];
+    if (!url) throw new Error(`[files] ${name} is not set`);
     // max: 1 — the serverless cap of every module (ARCHITECTURE §6.2)
-    _pool = new Pool({ connectionString: url, max: 1, connectionTimeoutMillis: 10_000 });
+    p = new Pool({ connectionString: url, max: 1, connectionTimeoutMillis: 10_000 });
+    _pools.set(connection, p);
   }
-  return _pool;
+  return p;
 }
 
 export async function closeFilesPool(): Promise<void> {
-  const p = _pool;
-  _pool = null;
-  await p?.end();
+  const pools = [..._pools.values()];
+  _pools.clear();
+  await Promise.all(pools.map((p) => p.end()));
 }
 
 function checkContext(ctx: FilesContext): void {
@@ -85,14 +101,19 @@ function checkContext(ctx: FilesContext): void {
   if (!UUID.test(ctx.userId ?? '')) throw new InvalidInput('userId');
 }
 
+/** A transaction in one organization's context: a FilesContext (its connection) or an id (app). */
 async function inOrganization<T>(
-  organizationId: string,
+  target: string | FilesContext,
   fn: (client: PoolClient) => Promise<T>,
 ): Promise<T> {
-  const client = await pool().connect();
+  const organizationId = typeof target === 'string' ? target : target.organizationId;
+  const connection = typeof target === 'string' ? 'app' : (target.connection ?? 'app');
+  if (connection !== 'app' && connection !== 'founder') throw new InvalidInput('connection');
+  const client = await pool(connection).connect();
   try {
     await client.query('BEGIN');
-    await client.query('SET LOCAL ROLE files_rw');
+    // the role is one of the two constants above, never from input
+    await client.query(`SET LOCAL ROLE ${CONNECTIONS[connection].role}`);
     await client.query(`SELECT set_config('app.organization_id', $1, true)`, [organizationId]);
     const result = await fn(client);
     await client.query('COMMIT');
@@ -183,7 +204,7 @@ export async function requestUpload(
   const fileId = uuidv7();
   const key = storageKey(ctx.organizationId, fileId);
   const expiresAt = new Date(Date.now() + UPLOAD_WINDOW_SECONDS * 1000);
-  return inOrganization(ctx.organizationId, async (client) => {
+  return inOrganization(ctx, async (client) => {
     await client.query(
       `INSERT INTO files.file
          (id, organization_id, owner_module, owner_resource_type, owner_resource_id, name,
@@ -217,7 +238,7 @@ export async function requestUpload(
 export async function confirmUpload(ctx: FilesContext, fileId: string): Promise<FileInfo> {
   checkContext(ctx);
   const storage = await getStorageAdapter();
-  const outcome = await inOrganization(ctx.organizationId, async (client) => {
+  const outcome = await inOrganization(ctx, async (client) => {
     const row = await findRow(client, fileId, true);
     if (row.uploaded_by_user_id !== ctx.userId) throw new ResourceNotFound('File not found');
     if (row.status === 'ready') return { ok: true as const, row };
@@ -265,7 +286,7 @@ export async function getDownloadLink(
   if (!Number.isInteger(seconds) || seconds < 1 || seconds > DOWNLOAD_LINK_SECONDS) {
     throw new InvalidInput('expiresInSeconds');
   }
-  const row = await inOrganization(ctx.organizationId, (client) => findRow(client, fileId));
+  const row = await inOrganization(ctx, (client) => findRow(client, fileId));
   if (row.status !== 'ready') throw new ResourceNotFound('File not found');
   const now = options.now ?? new Date();
   const expiresAt = Math.floor(now.getTime() / 1000) + seconds;
@@ -298,14 +319,14 @@ export async function openDownloadLink(token: string, now: Date = new Date()): P
 
 export async function getFile(ctx: FilesContext, fileId: string): Promise<FileInfo> {
   checkContext(ctx);
-  return toInfo(await inOrganization(ctx.organizationId, (client) => findRow(client, fileId)));
+  return toInfo(await inOrganization(ctx, (client) => findRow(client, fileId)));
 }
 
 /** The ready files of an owner (a request, a message…), oldest first. */
 export async function listFiles(ctx: FilesContext, owner: FileOwner): Promise<FileInfo[]> {
   checkContext(ctx);
   checkOwner(owner);
-  return inOrganization(ctx.organizationId, async (client) => {
+  return inOrganization(ctx, async (client) => {
     const { rows } = await client.query<Row>(
       `SELECT ${COLUMNS} FROM files.file
         WHERE owner_module = $1 AND owner_resource_type = $2 AND owner_resource_id = $3
@@ -320,7 +341,7 @@ export async function listFiles(ctx: FilesContext, owner: FileOwner): Promise<Fi
 /** The space the organization's ready files take (for the storage quota, F3). */
 export async function storageUsedBytes(ctx: FilesContext): Promise<number> {
   checkContext(ctx);
-  return inOrganization(ctx.organizationId, async (client) => {
+  return inOrganization(ctx, async (client) => {
     const { rows } = await client.query<{ total: string }>(
       `SELECT COALESCE(sum(size_bytes), 0)::text AS total FROM files.file WHERE status = 'ready'`,
     );
@@ -332,7 +353,7 @@ export async function storageUsedBytes(ctx: FilesContext): Promise<number> {
 export async function deleteFile(ctx: FilesContext, fileId: string): Promise<void> {
   checkContext(ctx);
   const storage = await getStorageAdapter();
-  const row = await inOrganization(ctx.organizationId, async (client) => {
+  const row = await inOrganization(ctx, async (client) => {
     const current = await findRow(client, fileId, true);
     if (current.status === 'deleted') return null;
     const { rows } = await client.query<Row>(

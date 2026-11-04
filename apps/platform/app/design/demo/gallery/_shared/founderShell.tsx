@@ -24,6 +24,8 @@ export const FX_NAV: NavSection[] = [
       { id: 'afaceri', label: 'Afaceri', icon: 'building-2', badge: 3 },
       { id: 'consum', label: 'Consum', icon: 'chart-column' },
       { id: 'cereri', label: 'Cereri', icon: 'inbox', badge: 2 },
+      // S116 (Lotul 4.6): „Suport” după „Cereri”, cu numărul solicitărilor deschise
+      { id: 'suport', label: 'Suport', icon: 'life-buoy', badge: 3 },
     ],
   },
   {
@@ -58,10 +60,13 @@ export function FounderShellDemo({
   active,
   title,
   children,
+  bottomItems = ['afaceri', 'consum', 'campanii', 'control'],
 }: {
   active?: string;
   title?: string;
   children: ReactNode;
+  /** Bara de jos pe telefon (S116 Suport: Afaceri, Cereri, Suport). */
+  bottomItems?: string[];
 }) {
   return (
     <AppShell
@@ -73,7 +78,7 @@ export function FounderShellDemo({
           sections={FX_NAV}
           activeId={active}
           onBackToHub={noop}
-          bottomItems={['afaceri', 'consum', 'campanii', 'control']}
+          bottomItems={bottomItems}
           labels={SPINE_RO}
         />
       }

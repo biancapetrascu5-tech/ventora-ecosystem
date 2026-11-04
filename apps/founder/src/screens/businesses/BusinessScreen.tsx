@@ -75,6 +75,7 @@ export function BusinessScreen({
   initialTab = 'overview',
   openException = false,
   purchaseFailed = false,
+  openSupportFor,
 }: {
   user: { name: string };
   data: BusinessPageData;
@@ -85,6 +86,8 @@ export function BusinessScreen({
   openException?: boolean;
   /** „Afacere nouă”: afacerea s-a creat, abonamentul nu (business-actions). */
   purchaseFailed?: boolean;
+  /** Lotul 4.6: „Deschide o sesiune de suport” din FounderSupportInbox, cu referința solicitării. */
+  openSupportFor?: string;
 }) {
   const router = useRouter();
   const t = useTranslations('founder.business');
@@ -96,7 +99,7 @@ export function BusinessScreen({
   const b = data.business;
   const suspended = b.status === 'suspended';
 
-  const [supportOpen, setSupportOpen] = useState(false);
+  const [supportOpen, setSupportOpen] = useState(!!openSupportFor);
   const [recoveryOpen, setRecoveryOpen] = useState(false);
   const [suspendOpen, setSuspendOpen] = useState(false);
   const [reactivateOpen, setReactivateOpen] = useState(false);
@@ -231,6 +234,7 @@ export function BusinessScreen({
       organizationName={b.name}
       opening={supportOpen}
       onOpeningChange={setSupportOpen}
+      initialTicket={openSupportFor}
     >
       <FounderShell active="afaceri" title={b.name} user={user} requestsBadge={requestsBadge}>
         <BusinessView
