@@ -95,7 +95,7 @@ function BundleCard({
   const t = useTranslations('founder.bundles');
   const p = useTranslations('founder.plans.col');
   return (
-    <div className={s.fbCard}>
+    <div className={phone ? `${s.fbCard} ${s.fbCardMob}` : s.fbCard}>
       <div className={s.fbHead}>
         <div className={s.fbStack1}>
           <div className={s.fbTitle}>
@@ -160,6 +160,15 @@ function BundleCard({
       </div>
       <div className={s.fbTw}>
         <table className={s.fbVer}>
+          {!phone && (
+            <colgroup>
+              <col className={s.fbColSixth} />
+              <col className={s.fbColSixth} />
+              <col className={s.fbColSixth} />
+              <col className={s.fbColSixth} />
+              <col className={s.fbColThird} />
+            </colgroup>
+          )}
           <thead>
             <tr>
               <th className="caption" scope="col">

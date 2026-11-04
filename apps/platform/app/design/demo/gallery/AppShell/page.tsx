@@ -16,7 +16,7 @@ import { Bar, noop, SECTIONS } from '../_shared/shell';
 import { DATATABLE_RO, SPINE_RO, USAGE_RO } from '../_shared/labels';
 import f from '../_shared/frames.module.css';
 
-// preview.html → Demo → Frame({ th: "light", label: "peste 1024px: Spine întins" }) → Box(100%) → Shell(SL.ro)
+// preview.html → Demo → Frame({ th: "light", label: "peste 1024px: Spine întins · „Restrânge meniul” jos (S118)" }) → Box(100%) → Shell(SL.ro)
 type Row = {
   id: number;
   client: string;
@@ -116,7 +116,8 @@ export default function AppShellGalleryPage() {
         {(['light', 'dark'] as const).map((th) => (
           <section key={th} className={f.thf} data-gallery-frame data-theme={th}>
             <p className={`caption ${f.thl}`}>
-              {th === 'dark' ? 'Dark' : 'Light'} · peste 1024px: Spine întins
+              {th === 'dark' ? 'Dark' : 'Light'} · peste 1024px: Spine întins · „Restrânge meniul”
+              jos (S118)
             </p>
             <div style={BOX}>
               <Shell />

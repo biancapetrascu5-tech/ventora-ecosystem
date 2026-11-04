@@ -283,15 +283,17 @@ html,body{min-height:100%}
 .fb-inc{margin:0;padding-inline-start:var(--space-5);display:flex;flex-direction:column;gap:var(--space-0-5)}
 .fb-cell{display:flex;flex-direction:column;gap:var(--space-0-5)}
 .fb-cell>span{white-space:nowrap}
-.fb-card{display:flex;flex-direction:column;gap:var(--space-4)}
+.fb-card{display:flex;flex-direction:column;gap:var(--space-4);padding:var(--space-6);box-sizing:border-box}
+.fb-card.m{padding:var(--space-4)}
 .fb-head{display:flex;align-items:flex-start;justify-content:space-between;gap:var(--space-3);flex-wrap:wrap}
 .fb-title{display:flex;align-items:center;gap:var(--space-2);flex-wrap:wrap}
 .fb-acts{display:flex;gap:var(--space-2);flex-wrap:wrap}
-.fb-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--space-4)}
+.fb-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--space-4) 0}
+.fb-grid>div{padding-inline-end:var(--space-3);min-width:0}
 .fb-grid.m{grid-template-columns:1fr}
 .fb-k{color:var(--ink-muted);margin:0 0 var(--space-1)}
 .fb-strike{text-decoration:line-through;color:var(--ink-muted)}
-.fb-ver{width:100%;border-collapse:collapse}
+.fb-ver{width:100%;border-collapse:collapse;table-layout:fixed}
 .fb-ver th{text-align:start;color:var(--ink-muted);font-weight:inherit;padding:var(--space-2) var(--space-3) var(--space-2) 0;border-bottom:var(--border-width) solid var(--line)}
 .fb-ver td{padding:var(--space-2) var(--space-3) var(--space-2) 0;border-bottom:var(--border-width) solid var(--line);vertical-align:top}
 .fb-ver tr:last-child td{border-bottom:0}
@@ -739,9 +741,9 @@ function statusText(b) { return b.status === "selling" ? tf("founder.bundles.sta
 function BundleCard({ b, mode, stopped }) {
   const mob = mode === "mobile", cur = b.versions[0], sepM = sum(b.apps, 0), sepE = sum(b.apps, 2);
   const status = stopped ? "stopped" : b.status, bb = stopped ? Object.assign({}, b, { status: "stopped", stopped: "3 nov." }) : b;
-  return h("div", { className: "sheetlike fb-card" },
+  return h("div", { className: "sheetlike fb-card" + (mob ? " m" : "") },
     h("div", { className: "fb-head" },
-      h("div", { className: "d0", style: { gap: "var(--space-1)" } }, h("div", { className: "fb-title" }, h("span", { className: "heading" }, b.name), h(V.StatusPill, { tone: ST[status][0], icon: ST[status][1] }, statusText(bb))),
+      h("div", { className: "d0", style: { gap: "var(--space-2)" } }, h("div", { className: "fb-title" }, h("span", { className: "heading" }, b.name), h(V.StatusPill, { tone: ST[status][0], icon: ST[status][1] }, statusText(bb))),
         h("p", { className: "body-small muted", style: { margin: 0 } }, status !== "stopped" ? tf("founder.bundles.available", { period: b.avail }) + " · " : "", tfn("founder.bundles.bizTotal", { count: bizCount(b) }))),
       h("div", { className: "fb-acts" },
         status === "selling" ? h(V.Button, { size: "sm", variant: "quiet", icon: "lock" }, tf("founder.bundles.stop")) : null,
@@ -759,6 +761,7 @@ function BundleCard({ b, mode, stopped }) {
           h("li", null, tf("founder.bundles.seatsLine", { bundle: b.seats, total: BASE_SEATS + b.seats })),
           h("li", null, b.setup ? tf("founder.bundles.setupLine", { amount: lei(b.setup[0]), sep: lei(sumSetup(b.apps, 0)) }) : tf("founder.bundles.noSetup"))))),
     h("div", { className: "fb-tw" }, h("table", { className: "fb-ver" },
+      mob ? null : h("colgroup", null, h("col", { style: { width: "16.667%" } }), h("col", { style: { width: "16.667%" } }), h("col", { style: { width: "16.667%" } }), h("col", { style: { width: "16.667%" } }), h("col", { style: { width: "33.333%" } })),
       h("thead", null, h("tr", null, [tf("founder.plans.col.version"), tf("founder.bundles.col.sale"), tf("founder.plans.col.monthly"), mob ? null : tf("founder.plans.col.annual"), tf("founder.plans.col.businesses")].filter(Boolean).map((t) => h("th", { key: t, className: "caption", scope: "col" }, t)))),
       h("tbody", null, b.versions.map((v) => h("tr", { key: v.v },
         h("td", { className: "body-strong" }, h("span", { className: "fb-title" }, v.v, v.cur && status !== "stopped" ? h(V.StatusPill, { size: "sm", tone: status === "selling" ? "done" : "neutral" }, status === "selling" ? tf("founder.bundles.ver.now") : tf("founder.bundles.ver.next")) : h(V.StatusPill, { size: "sm", tone: "neutral" }, tf("founder.bundles.ver.ended")))),

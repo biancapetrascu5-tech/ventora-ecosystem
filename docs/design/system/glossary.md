@@ -109,6 +109,23 @@ Decizia fondatoarei din 1 noiembrie 2026: numele vizibil e „Ventora Systems”
 | anulată | cancelled | annulé | cancelada | abgesagt | annullato |  |
 | nu a venit | no-show | absent | no se presentó | nicht erschienen | non presentato | Nu „neprezentare”. |
 | blocat | blocked | bloqué | bloqueado | blockiert | bloccato | Interval în care nu se poate rezerva. |
+| așteaptă plata | awaiting payment | en attente de paiement | pendiente de pago | wartet auf Zahlung | in attesa di pagamento | Starea programării cu avans neplătit încă (S116, D-B-11). Ora e păstrată 15 minute. |
+| avans | deposit | acompte | señal | Anzahlung | acconto | Plătit online la rezervare, prin Stripe, în contul salonului. Nu „garanție”, nu „depozit”. |
+| politica salonului pentru avans | the salon’s deposit policy | politique d’acompte du salon | política de la señal del salón | Anzahlungsregeln des Salons | regole del salone sull’acconto | Arătată înainte de plată: când se rambursează, când rămâne la salon. |
+| risc ridicat | high risk | risque élevé | riesgo alto | hohes Risiko | rischio alto | Nota din fișa clientului după programări la care nu a venit (S116). Clientul nu o vede. |
+| cod de verificare | verification code | code de vérification | código de verificación | Bestätigungscode | codice di verifica | Cele 6 cifre din e-mail la rezervarea online. Expiră în 10 minute. |
+| câmpuri medicale | health fields | champs médicaux | campos médicos | Gesundheitsfelder | campi sanitari | Opționale, doar cu consimțământ explicit. Nu „date medicale” în interfață. |
+| consimțământ / retragerea consimțământului | consent / consent withdrawal | consentement / retrait du consentement | consentimiento / retirada del consentimiento | Einwilligung / Widerruf der Einwilligung | consenso / revoca del consenso | Cu data. Retragerea șterge răspunsurile. |
+
+## Automatizări și suport
+
+| RO | EN | FR | ES | DE | IT | Regulă |
+| --- | --- | --- | --- | --- | --- | --- |
+| automatizare | automation | automatisation | automatización | Automatisierung | automazione | Pornită sau oprită doar din Founder (D4-24). În Hub: „Pornită” / „Oprită”. |
+| declanșator / condiție / pas | trigger / condition / step | déclencheur / condition / étape | disparador / condición / paso | Auslöser / Bedingung / Schritt | trigger / condizione / passo | Doar din lista albă. |
+| execuție reușită / eșuată / sărită | run succeeded / failed / skipped | exécution réussie / échouée / ignorée | ejecución correcta / fallida / omitida | Ausführung erfolgreich / fehlgeschlagen / übersprungen | esecuzione riuscita / non riuscita / saltata | Sărită = o condiție nu era adevărată; jurnalul spune care. |
+| mesaje automate | automated messages | messages automatiques | mensajes automáticos | automatische Nachrichten | messaggi automatici | Ce numără UsageMeter-ul automatizărilor: doar mesajele trimise. |
+| solicitare (de suport) | support request | demande d’assistance | solicitud de soporte | Supportanfrage | richiesta di assistenza | În Founder: Deschisă / În lucru / Închisă; în Hub: În lucru / Răspuns nou / Rezolvat. |
 
 ## SMS și telefonul afacerii
 

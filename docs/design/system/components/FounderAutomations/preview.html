@@ -1,0 +1,784 @@
+<!-- @dsCard group="Founder" height=27134 width=2620 page -->
+<!doctype html>
+<html lang="ro">
+<head><meta charset="utf-8"><title>FounderAutomations — Ventora Systems</title>
+<style>
+html,body{min-height:100%}
+.d{display:flex;flex-direction:column;gap:var(--space-4);padding:var(--space-4);box-sizing:border-box}
+.d0{display:flex;flex-direction:column;gap:var(--space-4);min-width:0}
+.r{display:flex;flex-wrap:wrap;gap:var(--space-3);align-items:center}
+.l{color:var(--ink-muted);width:calc(var(--space-16) + var(--space-6));flex:none}
+.g2{display:grid;grid-template-columns:repeat(auto-fit,minmax(var(--search-width),1fr));gap:var(--space-4) var(--space-6);align-items:start}
+.frame{border:var(--border-width) solid var(--line);border-radius:var(--radius-md);background:var(--sheet);box-sizing:border-box}
+.phone{width:390px;height:600px;flex:none;border:var(--border-width) solid var(--line-strong);border-radius:var(--radius-xl);overflow:hidden;box-sizing:border-box}
+.tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(var(--app-tile-width),1fr));gap:var(--space-4)}
+.icons{display:grid;grid-template-columns:repeat(auto-fill,minmax(calc(var(--app-tile-width) - var(--space-12)),1fr));gap:var(--space-2)}
+.ic{display:flex;align-items:center;gap:var(--space-2);color:var(--ink);padding:var(--space-1);min-width:0}
+.ic .caption{color:var(--ink-muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:0}
+.panel{display:flex;flex-direction:column;gap:var(--space-3);padding:var(--space-6);background:var(--sheet);color:var(--ink)}
+.lab{color:var(--ink-muted);margin-top:var(--space-2)}
+.fam{display:grid;grid-template-columns:repeat(5,1fr);gap:var(--space-4) var(--space-2)}
+.famcell,.sz,.papp{display:flex;flex-direction:column;align-items:center;gap:var(--space-1);color:var(--ink-secondary)}
+.gcell{display:flex;flex-direction:column;align-items:center;gap:var(--space-2);color:var(--ink-secondary)}
+.gwrap{position:relative;width:240px;height:240px}
+.gover{position:absolute;inset:0}
+.gwrap--sm{width:64px;height:64px;display:inline-block}
+.gwrap--sm .key{stroke-width:.5}
+.gl{stroke:var(--attention);stroke-width:.06;opacity:.55}
+.gl--major{stroke-width:.12;opacity:.9}
+.key{fill:none;stroke:var(--done);stroke-width:.18}
+.key--plate{stroke:var(--attention);stroke-dasharray:.6 .4}
+.key--diag{stroke-dasharray:.5 .5}
+.rules{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--space-6);color:var(--ink)}
+.rules .body-small{color:var(--ink-muted);margin-top:var(--space-1)}
+.ctx{display:flex;flex-direction:column;background:var(--canvas);color:var(--ink);padding:var(--space-4);gap:var(--space-4)}
+.ctxrow{display:flex;gap:var(--space-4);align-items:flex-start}
+.launch{flex:1;min-width:0;background:var(--canvas);padding:var(--space-4) var(--space-6);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg)}
+.tiles3{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--space-3)}
+.spinebox{height:250px;display:flex;border:var(--border-width) solid var(--line);border-radius:var(--radius-lg);overflow:hidden;background:var(--canvas)}
+.phone2{width:300px;border:var(--border-width) solid var(--line-strong);border-radius:var(--radius-xl);background:var(--canvas);padding-bottom:var(--space-4)}
+.pgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--space-4) var(--space-1);padding:0 var(--space-3)}
+.browser{display:flex;gap:var(--space-1);background:var(--sunken);padding:var(--space-2) var(--space-2) 0;border-radius:var(--radius-md) var(--radius-md) 0 0;border:var(--border-width) solid var(--line)}
+.btab{display:inline-flex;align-items:center;gap:var(--space-2);padding:var(--space-2) var(--space-3);border-radius:var(--radius-sm) var(--radius-sm) 0 0;color:var(--ink-secondary);min-width:160px}
+.btab.on{background:var(--sheet);color:var(--ink)}
+.muted{color:var(--ink-muted)}.center{text-align:center}
+.scr{display:flex;flex-direction:column;gap:var(--space-3);padding:var(--space-6);background:var(--sheet);color:var(--ink)}
+.scr-row{display:flex;gap:var(--space-6);align-items:flex-start;margin-top:var(--space-3)}
+.scr-lab{color:var(--ink-muted);margin-bottom:var(--space-2)}
+.scr-d,.scr-t,.scr-m{position:relative;overflow:hidden;border:var(--border-width) solid var(--line-strong);background:var(--canvas);color:var(--ink);box-sizing:border-box}
+.scr-d{width:1280px;border-radius:var(--radius-lg)}
+.scr-m{width:390px;border-radius:var(--radius-xl)}
+.scr-t{width:820px;border-radius:var(--radius-xl)}
+.wrap.tablet .tiles4{grid-template-columns:repeat(3,1fr)}
+.wrap.tablet{padding:var(--space-6) var(--space-5)}
+.sup.tablet{grid-template-columns:1fr}
+.paymethod{display:flex;flex-direction:column;gap:var(--space-2);margin-top:var(--space-4);padding-top:var(--space-4);border-top:var(--border-width) solid var(--line);max-width:480px}
+.modal-demo{position:absolute;inset:0;background:var(--scrim);display:flex;align-items:center;justify-content:center;padding:var(--space-6);z-index:var(--z-overlay)}
+.modal-demo.mobile{align-items:flex-end;padding:0}
+.modal-demo .v-dialog{max-height:none}
+.dlggrid{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--space-6);align-items:start}
+.dlggrid .v-dialog{width:auto}
+.today{display:flex;flex-direction:column;gap:var(--space-6)}
+.today.mobile{gap:var(--space-4)}.today.mobile .greet{padding:0 var(--space-4)}
+.today-grid{display:grid;grid-template-columns:minmax(0,2fr) minmax(320px,1fr);gap:var(--space-6);align-items:start}
+.today.tablet .today-grid,.today.mobile .today-grid{grid-template-columns:1fr}
+.today.tablet .today-side,.today.mobile .today-side{order:-1}
+.today-main{display:flex;flex-direction:column;gap:var(--space-6);min-width:0}
+.today.mobile .sec,.today.mobile .sechead{padding:0 var(--space-4)}
+.today.mobile .sheetlike,.today.mobile .nowcard{border-radius:0;border-left:0;border-right:0}
+.nowcards{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:var(--space-3)}
+.nowcard{display:flex;flex-direction:column;gap:var(--space-3);padding:var(--space-4);background:var(--sheet);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg)}
+.sechead{display:flex;justify-content:space-between;align-items:center;gap:var(--space-3);margin-bottom:var(--space-3);flex-wrap:wrap}
+.sec .v-badge{vertical-align:middle;margin-left:var(--space-1)}
+.reslist{list-style:none;margin:0 0 var(--space-3);padding:0;display:flex;flex-direction:column}
+.reslist li{display:flex;flex-direction:column;gap:2px;padding:var(--space-3) 0;border-bottom:var(--border-width) solid var(--line)}
+.reslist li:last-child{border-bottom:0}
+.stth{background:var(--canvas);color:var(--ink);padding:var(--space-6);border-radius:var(--radius-lg)}
+.stgrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--space-5) var(--space-4);align-items:start}
+@media (max-width:1100px){.stgrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:640px){.stgrid{grid-template-columns:minmax(0,1fr)}.stgrid>.stc{grid-column:auto!important}}
+.stc{display:flex;flex-direction:column;gap:var(--space-2);min-width:0}
+.stc-box{background:var(--sheet);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg);padding:var(--space-4);min-width:0}
+.stc-box .v-dialog{width:100%;box-shadow:none}
+.stc-box .v-toast{width:100%;box-sizing:border-box}
+.slotcol{display:flex;flex-direction:column;gap:var(--space-3);padding:var(--space-4);background:var(--canvas);border-radius:var(--radius-lg);color:var(--ink)}
+.recogrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--space-5);align-items:start}
+.toastdemo{position:fixed;right:var(--space-6);bottom:var(--space-6);width:var(--panel-width);z-index:var(--z-toast)}
+.appdet{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:var(--space-6);align-items:start}
+.wrap.tablet .appdet,.wrap.mobile .appdet{grid-template-columns:1fr}
+.appdet-main,.appdet-side{display:flex;flex-direction:column;gap:var(--space-5);padding:var(--space-6)}
+.wrap.mobile .appdet-main,.wrap.mobile .appdet-side{padding:var(--space-4)}
+.appdet-side{gap:var(--space-3)}
+.appdet-why{padding:var(--space-4);background:var(--sunken);border-radius:var(--radius-md)}
+.appdet-why .body{margin-top:var(--space-1)}
+.appdet-list{list-style:none;margin:var(--space-2) 0 0;padding:0;display:flex;flex-direction:column;gap:var(--space-2)}
+.appdet-list li{display:flex;gap:var(--space-2);align-items:flex-start}
+.appdet-list svg{flex:none;margin-top:2px;color:var(--ink-muted)}
+.seclist{display:flex;flex-direction:column;background:var(--sheet);border-top:var(--border-width) solid var(--line);border-bottom:var(--border-width) solid var(--line)}
+.secitem{display:flex;align-items:center;gap:var(--space-3);min-height:var(--touch-target);padding:var(--space-3) var(--space-4);background:none;border:0;border-top:var(--border-width) solid var(--line);color:var(--ink);text-align:left;font:inherit;cursor:pointer}
+.secitem .biz-text{flex:1}
+.inv-email{display:flex;flex-direction:column;gap:2px}
+.daylinks .v-link{font-weight:500}
+.rows2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--space-2)}
+.wrap.tablet .rows2{grid-template-columns:1fr}
+.unsaved{position:absolute;left:0;right:0;bottom:0;display:flex;align-items:center;justify-content:space-between;gap:var(--space-3);padding:var(--space-3) var(--space-6);background:var(--raised);border-top:var(--border-width) solid var(--line-strong);box-shadow:var(--shadow-2);z-index:var(--z-sticky);flex-wrap:wrap}
+.scr-d .unsaved{left:var(--spine-width)}
+.scr-t .unsaved{left:var(--spine-width-collapsed)}
+.scr-m .unsaved{bottom:var(--bottomnav-height);padding:var(--space-3) var(--space-4)}
+.axb{display:flex;flex-direction:column;gap:var(--space-6);min-width:0}
+.axb.mobile{gap:var(--space-4)}
+.axsplit{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:var(--space-6);align-items:start}
+.axb.tablet .axsplit,.axb.mobile .axsplit{grid-template-columns:1fr}
+.axb.tablet .axside,.axb.mobile .axside{order:-1}
+.axstack{display:flex;flex-direction:column;gap:var(--space-6);min-width:0}
+.axstack .axside{order:-1}
+.axb .axside.axafter{order:0}
+.logosets{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(420px,100%),1fr));gap:var(--space-4)}
+.logoset{display:flex;flex-direction:column;gap:var(--space-4);padding:var(--space-6);min-width:0;background:var(--sheet);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg);color:var(--ink)}
+.favtab{display:inline-flex;align-items:center;gap:var(--space-2);padding:var(--space-2) var(--space-3);border-radius:var(--radius-sm) var(--radius-sm) 0 0;background:var(--canvas);color:var(--ink-secondary);border:var(--border-width) solid var(--line);border-bottom:0}
+.axb.mobile .axside.axafter{padding:0 var(--space-4)}
+.axb.mobile .sechead,.axb.mobile>div>h2.heading{padding:0 var(--space-4)}
+.axb.mobile .fxplans{padding:0 var(--space-4)}
+.axb.mobile>.v-notice{margin:0 var(--space-4)}
+.axside{display:flex;flex-direction:column;gap:var(--space-3);min-width:0}
+.axside .v-badge{vertical-align:middle;margin-left:var(--space-1)}
+.axb.mobile .axside .heading{padding:0}
+.axcharts{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:var(--space-4)}
+.axb.mobile .axcharts{grid-template-columns:1fr}
+.axb.mobile .v-stats{grid-template-columns:1fr 1fr}
+.stockcell{display:grid;grid-template-columns:auto;gap:2px;min-width:120px}
+.stockbar{position:relative;display:block;height:4px;border-radius:var(--radius-full);background:var(--selected);max-width:140px}
+.stockbar>span{position:absolute;left:0;top:0;bottom:0;border-radius:inherit;background:var(--ink-secondary)}
+.stockbar.is-attention>span{background:var(--attention-mark)}
+.stockbar.is-danger>span{background:var(--danger)}
+.stockbar>i{position:absolute;top:-3px;bottom:-3px;width:2px;margin-left:-1px;background:var(--ink-muted);border-radius:1px}
+.glo{background:var(--sheet);color:var(--ink);gap:var(--space-6);padding:var(--space-6)}
+.glo-lead{max-width:760px;margin-top:var(--space-2)}
+.glo-rules{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:var(--space-4) var(--space-6)}
+.glo-rules .body-small{margin-top:var(--space-1)}
+.glo-sec{display:flex;flex-direction:column;gap:var(--space-2)}
+.glo-t{width:100%;border-collapse:collapse;table-layout:fixed}
+.glo-t th{text-align:left;color:var(--ink-muted);padding:var(--space-2) var(--space-3);border-bottom:var(--border-width) solid var(--line-strong)}
+.glo-t th:last-child{width:30%}
+.glo-t td{padding:var(--space-2) var(--space-3);border-bottom:var(--border-width) solid var(--line);vertical-align:top;overflow-wrap:anywhere}
+.glo-dec{display:inline-flex;align-items:center;gap:var(--space-1);margin-left:var(--space-2);padding:0 var(--space-2);border-radius:var(--radius-full);background:var(--attention-soft);color:var(--attention-ink);white-space:nowrap}
+.calbar{display:flex;justify-content:space-between;align-items:center;gap:var(--space-3);flex-wrap:wrap;margin-bottom:var(--space-3)}
+.calbar-date{margin-left:var(--space-2);white-space:nowrap}
+.calwrap.mobile{padding:0 var(--space-4)}
+.staffpick{margin-bottom:var(--space-3);max-width:var(--search-width)}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:var(--space-2) var(--space-4);margin:0}
+.kv dt{color:var(--ink-muted);padding-top:var(--space-0-5)}.kv dd{margin:0;color:var(--ink)}
+.hist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:var(--space-2);color:var(--ink-secondary)}
+.hist .muted{margin-right:var(--space-2)}
+.newgrid{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:var(--space-6);align-items:start}
+.newgrid.tablet,.newgrid.mobile{grid-template-columns:1fr}
+.newgrid.mobile{padding-bottom:var(--space-16)}
+.sumcard{position:sticky;top:0;display:flex;flex-direction:column;gap:var(--space-3);padding:var(--space-5);background:var(--sheet);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg)}
+.newgrid.mobile .sumcard{border-radius:0;border-left:0;border-right:0}
+.sumtotal{display:flex;justify-content:space-between;align-items:baseline;padding-top:var(--space-3);border-top:var(--border-width) solid var(--line)}
+.stickybar{position:absolute;left:0;right:0;bottom:var(--bottomnav-height);display:flex;gap:var(--space-2);justify-content:flex-end;padding:var(--space-3) var(--space-4);background:var(--sheet);border-top:var(--border-width) solid var(--line);z-index:var(--z-sticky)}
+.stickybar .v-btn--primary{flex:1}
+.hours{display:flex;flex-direction:column}
+.hrow{display:flex;align-items:center;justify-content:space-between;gap:var(--space-4);padding:var(--space-2) 0;border-bottom:var(--border-width) solid var(--line);min-height:var(--touch-target);flex-wrap:wrap}
+.hrow .v-toggle{min-width:160px}
+.hrange{display:inline-flex;align-items:center;gap:var(--space-2)}
+.hrange .v-datepicker{width:120px}
+.auth{min-height:100%;display:flex;flex-direction:column;background:var(--canvas);color:var(--ink)}
+.auth-top{display:flex;justify-content:space-between;align-items:center;padding:var(--space-4) var(--space-6)}
+.auth.mobile .auth-top{padding:var(--space-3) var(--space-4)}
+.auth-main{flex:1;display:flex;align-items:flex-start;justify-content:center;padding:var(--space-12) var(--space-4)}
+.auth.mobile .auth-main{padding:var(--space-2) 0 0;align-items:stretch}
+.auth-card{width:400px;background:var(--sheet);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg);padding:var(--space-10);display:flex;flex-direction:column;gap:var(--space-4);box-sizing:border-box}
+.auth-card.wide{width:480px}
+.auth.mobile .auth-card{width:100%;border-radius:0;border-left:0;border-right:0;border-bottom:0;padding:var(--space-6) var(--space-4)}
+.auth-head{display:flex;flex-direction:column;gap:var(--space-1);margin-bottom:var(--space-2)}
+.auth-note{display:flex;gap:var(--space-2);padding-top:var(--space-4);border-top:var(--border-width) solid var(--line);color:var(--ink-muted)}
+.auth-note .v-icon{margin-top:var(--space-0-5)}
+.auth-foot{padding:var(--space-4) var(--space-6);color:var(--ink-muted);text-align:center}
+.auth.mobile .auth-foot{display:none}
+.inv-head{display:flex;gap:var(--space-3);align-items:center}
+.inv-mark{width:var(--space-12);height:var(--space-12);border-radius:var(--radius-md);background:var(--neutral-soft);display:inline-flex;align-items:center;justify-content:center;font-weight:700;color:var(--ink);flex:none;box-shadow:inset 0 0 0 var(--border-width) var(--line-strong)}
+.inv-mark.sm{width:var(--space-10);height:var(--space-10)}
+.inv-role{display:flex;flex-direction:column;gap:var(--space-2);padding:var(--space-3) var(--space-4);background:var(--sunken);border-radius:var(--radius-sm)}
+.inv-app{display:inline-flex;gap:var(--space-1);align-items:center;color:var(--ink-secondary);margin-right:var(--space-2)}
+.reqs{list-style:none;margin:calc(var(--space-2) * -1) 0 0;padding:0;display:flex;flex-direction:column;gap:var(--space-1)}
+.req{display:flex;gap:var(--space-2);align-items:center;color:var(--ink-muted)}.req.ok{color:var(--done-ink)}
+.choose{width:560px;display:flex;flex-direction:column;gap:var(--space-4)}
+.auth.mobile .choose{width:auto;padding:var(--space-4)}
+.biz-list{display:flex;flex-direction:column;background:var(--sheet);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg);overflow:hidden}
+.biz{appearance:none;display:flex;align-items:center;gap:var(--space-3);padding:var(--space-4);border:0;border-bottom:var(--border-width) solid var(--line);background:transparent;color:var(--ink);text-align:start;font-family:inherit;cursor:pointer;min-height:var(--touch-target)}
+.biz:last-child{border-bottom:0}.biz:hover{background:var(--state-hover)}
+.biz-text{flex:1;min-width:0;display:flex;flex-direction:column;gap:var(--space-0-5);align-items:flex-start}
+.frame-rel{position:relative;height:100%}
+.wrap{max-width:1120px;width:100%;margin:0 auto;padding:var(--space-6) var(--space-6) var(--space-10);display:flex;flex-direction:column;gap:var(--space-8);box-sizing:border-box}
+.wrap.mobile{padding:var(--space-4);gap:var(--space-6)}
+.greet{display:flex;flex-direction:column;gap:var(--space-2)}
+.sec{margin-bottom:var(--space-3)}
+.tiles4{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--space-4)}
+.mgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--space-3) var(--space-1)}
+.rows{display:flex;flex-direction:column;background:var(--sheet);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg);overflow:hidden}
+.sheetlike{background:var(--sheet);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg)}
+.g2f{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(260px,100%),1fr));gap:var(--space-4) var(--space-6)}
+.nrow{display:grid;grid-template-columns:1fr repeat(3,var(--control-lg));align-items:center;padding:var(--space-2) 0;border-bottom:var(--border-width) solid var(--line);gap:var(--space-4)}
+.nrow>span:not(:first-child){display:flex;justify-content:center;text-align:center}
+.nhead{color:var(--ink-muted)}
+.secrow{display:flex;align-items:center;justify-content:space-between;gap:var(--space-4);padding:var(--space-3) 0;border-bottom:var(--border-width) solid var(--line);flex-wrap:wrap}
+.appsrow{display:inline-flex;gap:var(--space-1);align-items:center;flex-wrap:wrap}
+.mx-row{display:grid;grid-template-columns:minmax(320px,1.8fr) repeat(4,1fr);align-items:center;padding:var(--space-3) var(--space-6);border-bottom:var(--border-width) solid var(--line);gap:var(--space-2)}
+.mx-head{background:var(--sunken);color:var(--ink-secondary);border-radius:var(--radius-lg) var(--radius-lg) 0 0}
+.mx-c{display:flex;flex-direction:column;align-items:center;text-align:center}
+.mx-app{display:flex;align-items:center;gap:var(--space-3);flex-wrap:wrap}
+.mx-foot{padding:var(--space-4) var(--space-6)}
+.mrow{display:flex;align-items:center;gap:var(--space-3);padding:var(--space-3) var(--space-4);border-bottom:var(--border-width) solid var(--line);color:var(--ink-secondary)}.mrow:last-child{border-bottom:0}
+.plan{display:flex;justify-content:space-between;align-items:center;gap:var(--space-4);flex-wrap:wrap}
+.numeric-inline{font-weight:600;color:var(--ink)}
+.usage-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:var(--space-6)}
+.sup{display:grid;grid-template-columns:1.5fr 1fr;gap:var(--space-6);align-items:start}
+.lframes{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--space-4)}
+.lframe{position:relative;height:220px;border:var(--border-width) solid var(--line-strong);border-radius:var(--radius-lg);overflow:hidden;background:var(--canvas)}
+.lframe-tiles{display:flex;gap:var(--space-3);padding:var(--space-4)}
+.lstage{position:relative;height:240px;border:var(--border-width) solid var(--line-strong);border-radius:var(--radius-lg);overflow:hidden;background:var(--canvas);padding:var(--space-4)}
+.lstage-grid{display:grid;grid-template-columns:repeat(6,96px);gap:var(--space-2)}
+.fxcard{display:flex;flex-direction:column;gap:var(--space-2);padding:var(--space-5)}
+.fxapps{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:var(--space-3) var(--space-4)}
+.fxmail{display:flex;flex-direction:column;gap:var(--space-3);padding:var(--space-5);border:var(--border-width) solid var(--line);border-radius:var(--radius-md);background:var(--canvas);color:var(--ink)}
+.fxmail-btn{align-self:flex-start;padding:var(--space-2) var(--space-4);border-radius:var(--radius-md);background:var(--primary);color:var(--on-primary);font-weight:600}
+.fxplans{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:var(--space-4)}
+.fxplan{display:flex;flex-direction:column;gap:var(--space-3);padding:var(--space-5)}
+.fxlim{margin:0;padding-left:var(--space-5);color:var(--ink-secondary);display:flex;flex-direction:column;gap:var(--space-1)}
+.fxver{width:100%;border-collapse:collapse}
+.fxver th{text-align:left;color:var(--ink-muted);font-weight:500;padding:var(--space-1) 0;border-bottom:var(--border-width) solid var(--line)}
+.fxver td{padding:var(--space-2) 0;border-bottom:var(--border-width) solid var(--line);color:var(--ink)}
+.fxver td .v-pill{margin-left:var(--space-2);vertical-align:middle}
+.fxlimits{display:flex;flex-direction:column}
+.fxlimits-row{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(60px,.6fr) minmax(120px,1fr);gap:var(--space-3);align-items:center;padding:var(--space-2) 0;border-bottom:var(--border-width) solid var(--line);color:var(--ink)}
+.fxlimits-row .v-icon{color:var(--done-ink,var(--ink-secondary));flex:none}
+.fxlimits-head{padding-top:0}
+.fxlink{color:var(--ink);text-decoration:underline;text-underline-offset:2px;font-weight:600;display:inline-flex;align-items:center;min-height:24px;min-width:24px}
+@media (pointer:coarse),(max-width:767px){.fxlink{min-height:44px;min-width:44px}}
+.fxlim-new{display:flex;align-items:center;gap:var(--space-2);min-width:0}
+.fxlim-new .v-control{flex:1 1 80px;min-width:0}
+.fxdelta{display:inline-flex;align-items:center;gap:var(--space-1);color:var(--done-ink);flex:none}
+.fxdelta--down{color:var(--attention-ink)}
+.fxplan .v-btn{align-self:flex-start}
+.fxcost{margin-top:var(--space-4);display:flex;flex-direction:column;gap:var(--space-1);padding:var(--space-4);border-radius:var(--radius-md);background:var(--sunken);color:var(--ink)}
+.fxlangs{display:flex;flex-direction:column}
+.fxlang{display:grid;grid-template-columns:32px minmax(0,1fr) auto auto;gap:var(--space-3);align-items:center;padding:var(--space-2) 0;border-bottom:var(--border-width) solid var(--line);color:var(--ink)}
+.fxlang-text{color:var(--ink-secondary);overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.fxframe{display:flex;flex-direction:column;gap:var(--space-2);padding:var(--space-3);border:var(--border-width) solid var(--line);border-radius:var(--radius-md);background:var(--canvas);color:var(--ink)}
+.fxframe .caption{color:var(--ink-muted)}
+@container (max-width:420px){.fxlang{grid-template-columns:32px minmax(0,1fr) auto}.fxlang .v-iconbtn{display:none}}
+.ss-overlay{position:absolute;inset:0;background:var(--scrim);display:flex;align-items:center;justify-content:center;padding:var(--space-6);z-index:var(--z-overlay)}
+.ss-toast{position:absolute;right:var(--space-6);bottom:var(--space-6);width:var(--panel-width);z-index:var(--z-toast)}
+.ss-toast.m{left:var(--space-4);right:var(--space-4);bottom:calc(var(--space-16) + var(--space-4));width:auto}
+.st-frame{position:relative;height:100%}
+.st-body{padding:0 var(--space-6) var(--space-6)}
+.st-body.m{padding:0 0 var(--space-6)}
+.st-grid{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:var(--space-6);align-items:start}
+.st-grid.m{grid-template-columns:1fr;gap:var(--space-4)}
+.st-thread{display:flex;flex-direction:column;gap:var(--space-3)}
+.st-msg{border:var(--border-width) solid var(--line);border-radius:var(--radius-lg);background:var(--sheet);padding:var(--space-4);display:flex;flex-direction:column;gap:var(--space-2)}
+.st-msg.team{background:var(--raised)}
+.st-msg.m{border-radius:0;border-left:0;border-right:0}
+.st-head{display:flex;align-items:center;gap:var(--space-2);flex-wrap:wrap}
+.st-head .st-time{margin-left:auto;color:var(--ink-muted)}
+.st-msg p{margin:0}
+.st-files{display:flex;flex-wrap:wrap;gap:var(--space-2);margin-top:var(--space-1)}
+.st-file{display:inline-flex;align-items:center;gap:var(--space-2);padding:var(--space-1) var(--space-1) var(--space-1) var(--space-3);border:var(--border-width) solid var(--line);border-radius:var(--radius-md);background:var(--sheet)}
+.st-compose{display:flex;flex-direction:column;gap:var(--space-4)}
+.st-hist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:var(--space-3)}
+.st-hist li{display:flex;gap:var(--space-2);align-items:flex-start}
+.st-hist .v-icon{flex:none;margin-top:2px;color:var(--ink-muted)}
+.st-hist p{margin:0}
+.st-note{display:flex;gap:var(--space-2);align-items:flex-start;color:var(--ink-secondary)}
+.st-note p{margin:0}
+/* SMS · Setări */
+.sms-sec{color:var(--ink-secondary);margin:0}
+.sms-np{display:flex;flex-wrap:wrap;align-items:center;gap:var(--space-2) var(--space-3);margin-top:var(--space-3)}
+.sms-np .body-small{flex:1 1 280px}
+.sms-phone{display:flex;gap:var(--space-3);align-items:flex-start;padding-bottom:var(--space-4);border-bottom:var(--border-width) solid var(--line);margin-bottom:var(--space-4)}
+.sms-phone__ic{display:inline-flex;align-items:center;justify-content:center;flex:none;width:var(--control-lg);height:var(--control-lg);border-radius:var(--radius-md);background:var(--neutral-soft);color:var(--ink-secondary)}
+.sms-phone__text{display:flex;flex-direction:column;gap:var(--space-1);min-width:0;flex:1}
+.sms-phone__text p{margin:0}
+.sms-phone__name{display:flex;align-items:center;gap:var(--space-1)}
+.sms-meta{display:flex;flex-wrap:wrap;gap:var(--space-1) var(--space-4);color:var(--ink-secondary)}
+.sms-meta>span{display:inline-flex;align-items:center;gap:var(--space-1)}
+.sms-stats{margin:var(--space-4) 0;grid-template-columns:repeat(4,minmax(0,1fr))}
+.sms-cap p{margin:0}
+.sms-cap{display:flex;flex-direction:column;gap:var(--space-1)}
+.sms-actions{display:flex;flex-wrap:wrap;gap:var(--space-2);margin-top:var(--space-4)}
+.sms-actions.is-col{flex-direction:column}
+.sms-pad{padding:0 var(--space-6) var(--space-6)}
+.v-sheet-section + .sms-pad,.sms-pad{margin-top:var(--space-2)}
+.v-notice{margin-bottom:var(--space-2)}
+.sms-states{display:flex;flex-direction:column;gap:var(--space-4);padding:var(--space-6);background:var(--canvas);color:var(--ink)}
+.sms-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--space-6);align-items:start}
+.sms-grid.mobile{grid-template-columns:repeat(4,390px)}
+.sms-box{display:flex;flex-direction:column;gap:var(--space-2);min-width:0}
+.sms-boxlab{margin:0;color:var(--ink-muted)}
+.sms-boxbody{border:var(--border-width) solid var(--line-strong);border-radius:var(--radius-lg);overflow:hidden;background:var(--canvas)}
+.sms-boxbody > .v-dialog{margin:var(--space-6) auto}
+.sms-langs{display:flex;flex-direction:column;gap:var(--space-4);padding:var(--space-6);background:var(--canvas);color:var(--ink)}
+.sms-langrow{display:flex;gap:var(--space-6);align-items:flex-start}
+.sms-lang{display:flex;flex-direction:column;gap:var(--space-2)}
+.sms-langframe{border:var(--border-width) solid var(--line-strong);border-radius:var(--radius-lg);overflow:hidden;background:var(--canvas)}
+.sms-langframe.t{width:820px}.sms-langframe.m{width:390px}
+.sms-stats.is-mob{grid-template-columns:1fr 1fr}
+.sms-reco{display:flex;flex-wrap:wrap;align-items:center;gap:var(--space-2) var(--space-3);margin-top:var(--space-3)}
+.sms-check{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:var(--space-3)}
+.sms-check li{display:flex;gap:var(--space-3);align-items:flex-start;color:var(--ink-secondary)}
+.sms-check li>svg,.sms-check li>.v-icon{flex:none;color:var(--ink);margin-top:2px}
+.sms-check .body-strong{color:var(--ink)}
+/* SMS · notificări și e-mail */
+.n-blank{min-height:200px}
+.n-grid{display:grid;grid-template-columns:repeat(4,420px);gap:var(--space-6);align-items:start}
+.n-pane{padding:var(--space-4);background:var(--canvas)}
+.n-pane .v-notifs--inline{width:100%}
+.n-pane.m{width:390px;box-sizing:border-box;padding:var(--space-2)}
+.em-grid{display:grid;grid-template-columns:repeat(3,640px) 430px;gap:var(--space-6);align-items:start}
+.em{background:var(--canvas);color:var(--ink);font-family:var(--font-sans)}
+.em p{margin:0}
+.em-inbox{padding:var(--space-3) var(--space-4);background:var(--raised);border-bottom:var(--border-width) solid var(--line);display:flex;flex-direction:column;gap:2px}
+.em-mute{color:var(--ink-secondary)}
+.em-canvas{padding:var(--space-6) var(--space-4)}
+.em-card{background:var(--raised);border-radius:var(--radius-lg);border:var(--border-width) solid var(--line);overflow:hidden}
+.em-head{padding:var(--space-5) var(--space-6);border-bottom:var(--border-width) solid var(--line)}
+.em-body{padding:var(--space-6);display:flex;flex-direction:column;gap:var(--space-3)}
+.em-eyebrow{text-transform:uppercase;letter-spacing:.06em}
+.em-title{margin:0;font-size:22px;line-height:28px}
+.em-list{margin:0;padding-left:var(--space-5);display:flex;flex-direction:column;gap:var(--space-1)}
+.em-btn{align-self:flex-start;display:inline-block;padding:var(--space-3) var(--space-5);border-radius:var(--radius-md);background:var(--primary);color:var(--on-primary,#fff);text-decoration:none;margin:var(--space-2) 0}
+.em-code{font-size:32px;line-height:40px;font-weight:600;letter-spacing:.12em}
+.em-foot{padding:var(--space-4) var(--space-6) 0;display:flex;flex-direction:column;gap:var(--space-1)}
+.em[style*="390"] .em-canvas{padding:var(--space-4) var(--space-2)}
+.em[style*="390"] .em-body,.em[style*="390"] .em-head{padding-left:var(--space-4);padding-right:var(--space-4)}
+.em[style*="390"] .em-btn{align-self:stretch;text-align:center}
+.n-pop{position:absolute;top:56px;right:16px;width:400px;z-index:20;box-shadow:var(--shadow-3);border-radius:var(--radius-lg);overflow:hidden;background:var(--raised);max-height:calc(100% - 72px);overflow-y:auto}
+.n-pop.mobile{left:0;right:0;top:56px;width:auto;border-radius:0;max-height:calc(100% - 56px)}
+.n-pop{width:auto}
+.n-pop.mobile .v-notifs,.n-pane.m .v-notifs{width:100%;max-width:100%;box-sizing:border-box}
+.em-grid{grid-template-columns:repeat(2,640px) repeat(2,640px)}
+.n-prefs{display:flex;flex-direction:column;gap:var(--space-4)}
+.n-lock{display:flex;gap:var(--space-1);align-items:flex-start;margin:calc(var(--space-2) * -1) 0 0 52px}
+.n-lock>svg{flex:none;margin-top:3px}
+.em-grid{grid-template-columns:repeat(3,640px)}
+.req{display:flex;gap:var(--space-2);align-items:center;color:var(--ink-muted)}
+.req.ok{color:var(--done-ink)}
+.sms-langframe.t{width:820px}
+.sms-langframe.m{width:390px}
+.tfa-code input{letter-spacing:.12em}
+.tfa-done{display:flex;align-items:center;gap:var(--space-2);color:var(--ink-secondary)}
+.tfa-done .v-icon{flex:none;color:var(--ink)}
+.tfa-once{font-weight:600;color:var(--ink)}
+.tfa-codes{list-style:none;margin:0;padding:var(--space-4);display:grid;grid-template-columns:1fr 1fr;gap:var(--space-2) var(--space-6);background:var(--raised);border:var(--border-width) solid var(--line);border-radius:var(--radius-md);font-size:var(--text-body-size,15px);letter-spacing:.06em;color:var(--ink)}
+.tfa-row{display:flex;flex-wrap:wrap;gap:var(--space-2)}
+.tfa-row>*{flex:1 1 0}
+.tfa-scrgroup{display:flex;flex-direction:column}
+.tfa-grouplab{margin:var(--space-6) 0 0}
+.sms-langframe.tfa-d{width:1280px}
+.sms-langframe>.v-auth{flex:1}
+.sms-langframe{display:flex;flex-direction:column}
+.ss-frame{display:flex;flex-direction:column;height:100%;position:relative}
+.ss-frame>.ss-body{flex:1;min-height:0;position:relative;display:flex;flex-direction:column}
+.ss-frame>.ss-body>*{flex:1;min-height:0}
+.ss-bar{display:flex;gap:var(--space-3);align-items:center;padding:var(--space-2) var(--space-4);background:var(--sunken);border-bottom:var(--border-width) solid var(--line-strong);color:var(--ink);flex:none}
+.ss-bar.attention{background:var(--attention-soft)}
+.ss-bar.attention>.v-icon{color:var(--attention-ink)}
+.ss-bar>.v-icon{flex:none;color:var(--ink-secondary)}
+.ss-txt{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.ss-txt p{margin:0}
+.ss-line{display:flex;flex-wrap:wrap;gap:0 var(--space-3)}
+.ss-meta{color:var(--ink-secondary)}
+.ss-bar.m{align-items:flex-start;padding:var(--space-3) var(--space-4)}
+.ss-bar.m .ss-act{margin-top:var(--space-2)}
+.ss-overlay.m{align-items:flex-end;padding:0}
+.ss-overlay .v-dialog{max-height:none}
+.ss-toast.m{left:var(--space-4);right:var(--space-4);bottom:var(--space-4);width:auto}
+.ss-states{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--space-6);align-items:start}
+.ss-pad{padding:var(--space-6);display:flex;flex-direction:column;gap:var(--space-4);background:var(--canvas)}
+.ss-form{display:flex;flex-direction:column;gap:var(--space-4)}
+.ss-form p{margin:0}
+.ss-rule{display:flex;gap:var(--space-2);align-items:flex-start;margin:0;color:var(--ink-secondary)}
+.ss-rule.ok{color:var(--done-ink)}
+.ss-rule .v-icon{flex:none;margin-top:2px}
+.ss-list{margin:0;padding-left:var(--space-5);display:flex;flex-direction:column;gap:var(--space-1)}
+.sms-langframe{border:var(--border-width) solid var(--line-strong);border-radius:var(--radius-lg);overflow:hidden;background:var(--canvas);color:var(--ink);display:flex;flex-direction:column}
+.sms-langframe>*{flex:1;min-height:0}
+.x-frame{position:relative;height:100%;display:flex;flex-direction:column}
+.x-frame>*{flex:1;min-height:0}
+.x-overlay{position:absolute;inset:0;background:var(--scrim);display:flex;align-items:center;justify-content:center;padding:var(--space-6);z-index:var(--z-overlay)}
+.x-overlay.m{align-items:flex-end;padding:0}
+.x-overlay .v-dialog{max-height:none}
+.x-toast{position:absolute;right:var(--space-6);bottom:var(--space-6);width:var(--panel-width);z-index:var(--z-toast)}
+.x-toast.m{left:var(--space-4);right:var(--space-4);bottom:var(--space-4);width:auto}
+.x-link{color:var(--ink);text-decoration:underline;text-underline-offset:2px}
+.fp-cell{display:flex;flex-direction:column;gap:var(--space-0-5)}
+.fp-save{color:var(--ink-muted)}
+.fp-ver td{vertical-align:top}
+.fp-prices{display:grid;grid-template-columns:1fr 1fr;gap:var(--space-4)}
+.fp-prices.m{grid-template-columns:1fr}
+.fp-sub{margin:0 0 var(--space-2)}
+.fp-list.fxplans{grid-template-columns:1fr}
+.fp-cell>span{white-space:nowrap}
+.fp-ver{width:100%}
+.fa-act{display:flex;flex-direction:column;align-items:flex-end;gap:var(--space-1);text-align:end;max-width:280px}
+/*S117css*/
+.fb-apps{display:flex;flex-wrap:wrap;gap:var(--space-2) var(--space-4)}
+.fb-app{display:inline-flex;align-items:center;gap:var(--space-2);white-space:nowrap}
+.fb-inc{margin:0;padding-inline-start:var(--space-5);display:flex;flex-direction:column;gap:var(--space-0-5)}
+.fb-cell{display:flex;flex-direction:column;gap:var(--space-0-5)}
+.fb-cell>span{white-space:nowrap}
+.fb-card{display:flex;flex-direction:column;gap:var(--space-4)}
+.fb-head{display:flex;align-items:flex-start;justify-content:space-between;gap:var(--space-3);flex-wrap:wrap}
+.fb-title{display:flex;align-items:center;gap:var(--space-2);flex-wrap:wrap}
+.fb-acts{display:flex;gap:var(--space-2);flex-wrap:wrap}
+.fb-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--space-4)}
+.fb-grid.m{grid-template-columns:1fr}
+.fb-k{color:var(--ink-muted);margin:0 0 var(--space-1)}
+.fb-strike{text-decoration:line-through;color:var(--ink-muted)}
+.fb-ver{width:100%;border-collapse:collapse}
+.fb-ver th{text-align:start;color:var(--ink-muted);font-weight:inherit;padding:var(--space-2) var(--space-3) var(--space-2) 0;border-bottom:var(--border-width) solid var(--line)}
+.fb-ver td{padding:var(--space-2) var(--space-3) var(--space-2) 0;border-bottom:var(--border-width) solid var(--line);vertical-align:top}
+.fb-ver tr:last-child td{border-bottom:0}
+.fb-tw{overflow-x:auto}
+.fb-sum{display:flex;flex-direction:column;gap:var(--space-2);padding:var(--space-3);border-radius:var(--radius-sm);background:var(--sunken)}
+.fb-line{display:flex;justify-content:space-between;gap:var(--space-4)}
+.fb-line>span:last-child{white-space:nowrap}
+.fb-line.tot{padding-top:var(--space-2);border-top:var(--border-width) solid var(--line)}
+.fb-period{display:grid;grid-template-columns:1fr 1fr;gap:var(--space-4)}
+.fb-period.m{grid-template-columns:1fr}
+.fb-applist{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--space-2) var(--space-6)}
+.fb-applist.m{grid-template-columns:1fr}
+.fb-applab{display:inline-flex;align-items:center;gap:var(--space-2)}
+.muted{color:var(--ink-muted)}
+.x-dd{display:inline-flex;align-items:center;gap:var(--space-1);padding:var(--space-0-5) var(--space-2);border-radius:var(--radius-sm);background:var(--attention-soft);color:var(--attention-ink);font-weight:600;flex-wrap:wrap}
+.x-dd-t{font-weight:400;color:var(--ink)}
+.x-ddnote{display:flex;flex-direction:column;gap:var(--space-2);padding:var(--space-3) var(--space-4);border:var(--border-width) dashed var(--line-strong);border-radius:var(--radius-md);background:var(--sheet);color:var(--ink)}
+.x-ddnote p{margin:0}
+.pb{min-height:100%;background:var(--canvas);color:var(--ink);display:flex;flex-direction:column}
+.pb-head{display:flex;align-items:center;justify-content:space-between;gap:var(--space-4);padding:var(--space-4) var(--space-8);border-bottom:var(--border-width) solid var(--line);background:var(--sheet)}
+.pb.m .pb-head{padding:var(--space-3) var(--space-4)}
+.pb-brand{display:flex;align-items:center;gap:var(--space-3);min-width:0}
+.pb-brand p{margin:0}
+.pb-main{display:flex;justify-content:center;gap:var(--space-8);padding:var(--space-8) var(--space-8) var(--space-6);align-items:flex-start}
+.pb.m .pb-main{padding:var(--space-4) 0}
+.pb-card{width:100%;max-width:560px;display:flex;flex-direction:column;gap:var(--space-4);background:var(--sheet);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg);padding:var(--space-6);box-sizing:border-box}
+.pb.m .pb-card{max-width:none;border-radius:0;border-left:0;border-right:0;padding:var(--space-4)}
+.pb-aside{width:320px;flex:none;position:sticky;top:var(--space-6)}
+.pb-title{margin:0}
+.pb-step{display:flex;flex-direction:column;gap:var(--space-1)}
+.pb-step p{margin:0}
+.pb-list{display:flex;flex-direction:column;gap:var(--space-2)}
+.pb-opt{display:flex;align-items:center;gap:var(--space-3);padding:var(--space-3) var(--space-4);border:var(--border-width) solid var(--line);border-radius:var(--radius-md);background:var(--canvas)}
+.pb-opt>.v-radio,.pb-opt>label{flex:1;min-width:0}
+.pb-opt.on{border-color:var(--primary);background:var(--selected)}
+.pb-acts{display:flex;justify-content:space-between;gap:var(--space-3);align-items:center;margin-top:var(--space-2)}
+.pb-acts.m{flex-direction:column-reverse;align-items:stretch}
+.pb-acts>:only-child{margin-left:auto}
+.pb-acts.m>:only-child{margin-left:0}
+.pb-sum{display:flex;flex-direction:column;gap:var(--space-3);padding:var(--space-5);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg);background:var(--sheet)}
+.pb-sum p{margin:0}
+.pb-sum.c{padding:var(--space-3) var(--space-4);background:var(--raised);border-radius:var(--radius-md)}
+.pb-days{display:flex;gap:var(--space-2);overflow:hidden}
+.pb-cal{align-self:flex-start}
+.pb-form{display:flex;flex-direction:column;gap:var(--space-4)}
+.pb-form p{margin:0}
+.pb-captcha{display:flex;align-items:center;gap:var(--space-3);padding:var(--space-3) var(--space-4);border:var(--border-width) dashed var(--line-strong);border-radius:var(--radius-md);background:var(--raised);color:var(--ink-secondary)}
+.pb-captcha.err{border-style:solid;border-color:var(--danger)}
+.pb-health{border:var(--border-width) solid var(--line);border-radius:var(--radius-md);padding:var(--space-4);margin:0;display:flex;flex-direction:column;gap:var(--space-3);min-width:0}
+.pb-health legend{padding:0 var(--space-1)}
+.pb-health p{margin:0}
+.pb-code{max-width:240px}
+.pb-held{display:flex;align-items:center;gap:var(--space-2);color:var(--ink-secondary)}
+.pb-done{display:flex;flex-direction:column;gap:var(--space-4);align-items:flex-start}
+.pb-done h1,.pb-done p{margin:0}
+.pb-doneic{display:inline-flex;width:56px;height:56px;border-radius:50%;align-items:center;justify-content:center;background:var(--done-soft);color:var(--done-ink)}
+.pb-doneic.p{background:var(--raised);color:var(--ink-secondary)}
+.pb-doneic.bad{background:var(--danger-soft);color:var(--danger-ink)}
+.pb-donesum{display:flex;flex-direction:column;gap:var(--space-2);align-self:stretch}
+.pb-foot{text-align:center;margin:auto 0 var(--space-4);padding:var(--space-4) var(--space-4) 0}
+.pb-pay{display:flex;flex-direction:column;gap:var(--space-3)}
+.pb-pay p{margin:0}
+.pb-rule{display:flex;gap:var(--space-2);align-items:flex-start;margin:0}
+.pb-rule .v-icon{flex:none;margin-top:2px;color:var(--ink-secondary)}
+.x-body{padding:0 0 var(--space-8);display:flex;flex-direction:column;gap:var(--space-6)}
+.x-body.m{padding:0 0 var(--space-8);gap:var(--space-4)}
+.x-body.m>.v-notice,.x-body.m>.x-pad{margin:0 var(--space-4)}
+.x-grid{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:var(--space-6);align-items:start}
+.x-grid.m{grid-template-columns:1fr;gap:var(--space-4)}
+.x-col{display:flex;flex-direction:column;gap:var(--space-4);min-width:0}
+.x-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--space-3)}
+.x-body.m .x-stats{grid-template-columns:1fr 1fr;padding:0 var(--space-4)}
+.x-row{display:flex;gap:var(--space-2);align-items:center;flex-wrap:wrap}
+.x-stack{display:flex;flex-direction:column;gap:var(--space-3)}
+.x-stack p{margin:0}
+.x-line{display:flex;gap:var(--space-2);align-items:flex-start;color:var(--ink-secondary)}
+.x-line p{margin:0}
+.x-line .v-icon{flex:none;margin-top:2px}
+.x-field{display:flex;align-items:center;gap:var(--space-3);padding:var(--space-3) var(--space-4);border:var(--border-width) solid var(--line);border-radius:var(--radius-md);background:var(--canvas)}
+.x-field>div{flex:1;min-width:0}
+.x-field p{margin:0}
+.x-flow{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:var(--space-3)}
+.x-tr{width:100%;border-collapse:collapse}
+.x-tr th,.x-tr td{text-align:left;padding:var(--space-2) var(--space-3);border-bottom:var(--border-width) solid var(--line);vertical-align:top}
+.x-tr th{color:var(--ink-muted)}
+.em-kv{background:var(--sheet);border-radius:var(--radius-md);padding:var(--space-3) var(--space-4)}
+.em-salon{display:flex;align-items:center;gap:var(--space-2)}
+.em-salon p{margin:0}
+
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script>
+const V = window.Ventora;
+const { useState } = React;
+const h = React.createElement;
+const mount = (el) => ReactDOM.createRoot(document.getElementById("root")).render(h(V.LocaleProvider, { locale: "ro" }, el));
+/* keys: D = { ro: {...}, en: {...}, ... } — the same object as the i18n file */
+const mkT = (D) => (lang, key, vars) => { let s = (D[lang] && D[lang][key]) || D.ro[key] || key; if (vars) for (const k in vars) s = s.split("{" + k + "}").join(vars[k]); return s; };
+const noop = () => {};
+let __u = 0;
+const uid = () => "u" + (++__u);
+const ORGS = [{ id: "aurora", name: "Salon Aurora", role: "Proprietar" }, { id: "dentis", name: "Clinica Dentis Sibiu", role: "Recepție" }, { id: "nord", name: "Agenția Nord Studio", role: "Manager de proiect" }];
+const ORGS_L = {
+  de: [{ id: "aurora", name: "Salon Aurora", role: "Inhaber" }, { id: "dentis", name: "Clinica Dentis Sibiu", role: "Empfang" }],
+  it: [{ id: "aurora", name: "Salon Aurora", role: "Titolare" }, { id: "dentis", name: "Clinica Dentis Sibiu", role: "Reception" }]
+};
+const NOTIFS = [
+  { id: 1, title: "Programare nouă de la Ana Popescu", body: "Joi, 5 nov., 14:30 · Tuns", app: "EasyBook", time: "acum 5 min", person: "Ana Popescu" },
+  { id: 2, title: "Avans primit: 50 lei", body: "Cristina Dobre · Vopsit · vineri, 6 nov.", app: "EasyBook", time: "acum 1 oră", icon: "wallet" },
+  { id: 3, title: "Dan Stoica are acum „Risc ridicat”", body: "A doua programare la care nu a venit, în ultimele 6 luni", app: "EasyBook", time: "ieri", icon: "triangle-alert", read: true }
+];
+const NOTIFS_L = {
+  de: [{ id: 1, title: "Neuer Termin von Anna Schmidt", body: "Do., 5. Nov., 14:30 · Haarschnitt", app: "EasyBook", time: "vor 5 Min.", person: "Anna Schmidt" }],
+  it: [{ id: 1, title: "Nuovo appuntamento di Anna Russo", body: "gio 5 nov., 14:30 · Taglio", app: "EasyBook", time: "5 min fa", person: "Anna Russo" }]
+};
+const USER = { name: "Bianca Petrașcu", email: "bianca@salonaurora.ro" };
+const isL = (lang) => lang === "de" || lang === "it";
+/* ---- Hub settings shell ---- */
+const HUB_SECTIONS = {
+  ro: [
+    { label: "Contul tău", items: [{ id: "profil", label: "Profil și preferințe", short: "Profil", icon: "circle-user" }, { id: "securitate", label: "Securitate", icon: "shield" }] },
+    { label: "Afacerea", items: [{ id: "echipa", label: "Echipă și invitații", short: "Echipă", icon: "users" }, { id: "roluri", label: "Roluri și acces", icon: "key-round" }, { id: "abonament", label: "Abonament și consum", short: "Abonament", icon: "credit-card" }, { id: "automatizari", label: "Automatizări", icon: "refresh-cw" }] },
+    { label: "Ajutor", items: [{ id: "suport", label: "Suport", icon: "life-buoy", badge: 1 }] }
+  ],
+  de: [
+    { label: "Ihr Konto", items: [{ id: "profil", label: "Profil und Einstellungen", short: "Profil", icon: "circle-user" }, { id: "securitate", label: "Sicherheit", icon: "shield" }] },
+    { label: "Unternehmen", items: [{ id: "echipa", label: "Team und Einladungen", short: "Team", icon: "users" }, { id: "roluri", label: "Rollen und Zugriff", short: "Rollen", icon: "key-round" }, { id: "abonament", label: "Abonnement und Verbrauch", short: "Abonnement", icon: "credit-card" }, { id: "automatizari", label: "Automatisierungen", short: "Automatik", icon: "refresh-cw" }] },
+    { label: "Hilfe", items: [{ id: "suport", label: "Support", icon: "life-buoy", badge: 1 }] }
+  ],
+  it: [
+    { label: "Il Suo account", items: [{ id: "profil", label: "Profilo e preferenze", short: "Profilo", icon: "circle-user" }, { id: "securitate", label: "Sicurezza", icon: "shield" }] },
+    { label: "Attività", items: [{ id: "echipa", label: "Team e inviti", short: "Team", icon: "users" }, { id: "roluri", label: "Ruoli e accesso", short: "Ruoli", icon: "key-round" }, { id: "abonament", label: "Abbonamento e utilizzo", short: "Abbonamento", icon: "credit-card" }, { id: "automatizari", label: "Automazioni", icon: "refresh-cw" }] },
+    { label: "Aiuto", items: [{ id: "suport", label: "Assistenza", icon: "life-buoy", badge: 1 }] }
+  ]
+};
+function HubSettings({ active, title, children, lang = "ro" }) {
+  const L = isL(lang) ? lang : "ro";
+  return h(V.AppShell, {
+    height: "100%",
+    spine: h(V.Spine, { hub: true, sections: HUB_SECTIONS[L], activeId: active, onBackToHub: noop, bottomItems: ["profil", "echipa", "abonament", "suport"] }),
+    contextBar: h(V.ContextBar, { title, org: h(V.OrgSwitcher, { orgs: isL(lang) ? ORGS_L[lang] : ORGS, currentId: "aurora" }), onSearch: noop,
+      notifications: h(V.NotificationsPanel, { items: isL(lang) ? NOTIFS_L[lang] : NOTIFS }), account: h(V.AccountMenu, { user: USER, orgs: ORGS, currentOrgId: "aurora", onCatalog: noop }) })
+  }, children);
+}
+/* ---- EasyBook shell ---- */
+const BK_SECTIONS = {
+  ro: [
+    { items: [{ id: "azi", label: "Azi", icon: "house" }, { id: "calendar", label: "Calendar", icon: "calendar" }, { id: "programari", label: "Programări", icon: "list", badge: 3 }] },
+    { label: "Gestionare", items: [{ id: "clienti", label: "Clienți", icon: "users" }, { id: "servicii", label: "Servicii", icon: "boxes" }, { id: "angajati", label: "Echipa", icon: "contact" }] },
+    { label: "Afacere", items: [{ id: "rapoarte", label: "Rapoarte", icon: "chart-column" }, { id: "setari", label: "Setări", icon: "settings" }] }
+  ],
+  de: [
+    { items: [{ id: "azi", label: "Heute", icon: "house" }, { id: "calendar", label: "Kalender", icon: "calendar" }, { id: "programari", label: "Termine", icon: "list", badge: 3 }] },
+    { label: "Verwaltung", items: [{ id: "clienti", label: "Kunden", icon: "users" }, { id: "servicii", label: "Leistungen", icon: "boxes" }, { id: "angajati", label: "Team", icon: "contact" }] },
+    { label: "Unternehmen", items: [{ id: "rapoarte", label: "Berichte", icon: "chart-column" }, { id: "setari", label: "Einstellungen", icon: "settings" }] }
+  ],
+  it: [
+    { items: [{ id: "azi", label: "Oggi", icon: "house" }, { id: "calendar", label: "Calendario", icon: "calendar" }, { id: "programari", label: "Appuntamenti", icon: "list", badge: 3 }] },
+    { label: "Gestione", items: [{ id: "clienti", label: "Clienti", icon: "users" }, { id: "servicii", label: "Servizi", icon: "boxes" }, { id: "angajati", label: "Team", icon: "contact" }] },
+    { label: "Attività", items: [{ id: "rapoarte", label: "Report", icon: "chart-column" }, { id: "setari", label: "Impostazioni", icon: "settings" }] }
+  ]
+};
+const BK_USAGE = { ro: "Programări în noiembrie", de: "Termine im November", it: "Appuntamenti a novembre" };
+function BookingApp({ active, title, children, lang = "ro", footer }) {
+  const L = isL(lang) ? lang : "ro";
+  return h(V.AppShell, {
+    height: "100%",
+    spine: h(V.Spine, { app: "booking", sections: BK_SECTIONS[L], activeId: active, onBackToHub: noop, bottomItems: ["azi", "calendar", "programari", "clienti"],
+      footer: footer === false ? null : h(V.UsageMeter, { compact: true, label: BK_USAGE[L], used: 312, limit: 1e3 }) }),
+    contextBar: h(V.ContextBar, { title: title || "EasyBook", org: h(V.OrgSwitcher, { orgs: isL(lang) ? ORGS_L[lang] : ORGS, currentId: "aurora" }), onSearch: noop,
+      notifications: h(V.NotificationsPanel, { items: isL(lang) ? NOTIFS_L[lang] : NOTIFS }), account: h(V.AccountMenu, { user: USER, orgs: ORGS, currentOrgId: "aurora", onCatalog: noop }) })
+  }, children);
+}
+/* ---- Founder shell: "Suport" after "Cereri", "Automatizări" in "Sistem" ---- */
+const FX_NAV = [
+  { items: [{ id: "azi", label: "Prezentare", short: "Prezentare", icon: "house" }, { id: "afaceri", label: "Afaceri", icon: "building-2" }, { id: "consum", label: "Consum", icon: "chart-column" }, { id: "cereri", label: "Cereri", icon: "inbox", badge: 2 }, { id: "suport", label: "Suport", icon: "life-buoy", badge: 3 }] },
+  { label: "Model comercial", items: [{ id: "aplicatii", label: "Aplicații", icon: "layout-grid" }, { id: "bundles", label: "Bundle-uri", icon: "boxes" }, { id: "pachete", label: "Pachete în plus", short: "Pachete", icon: "package" }, { id: "reduceri", label: "Reduceri", icon: "percent" }] },
+  { label: "Growth", items: [{ id: "oferte", label: "Oferte", icon: "ticket" }, { id: "campanii", label: "Campanii", icon: "megaphone" }, { id: "audiente", label: "Audiențe", icon: "users" }, { id: "rezultate", label: "Rezultate", icon: "chart-line" }, { id: "control", label: "Control", icon: "sliders-horizontal" }] },
+  { label: "Sistem", items: [{ id: "automatizari", label: "Automatizări", icon: "refresh-cw" }, { id: "jurnal", label: "Jurnal", icon: "history" }, { id: "setari", label: "Setări", icon: "settings" }] }
+];
+const FX_NOTIFS = [
+  { id: 1, title: "Solicitare nouă de la Salon Aurora", body: "EasyBook · Avansul nu apare în fișa clientului", app: "Suport", time: "acum 12 min", icon: "life-buoy" },
+  { id: 2, title: "„Rezumatul zilei” a eșuat de 3 ori", body: "Fitness Atlas · adresa unui membru respinge e-mailurile", app: "Automatizări", time: "azi, 07:05", icon: "triangle-alert" }
+];
+function FX_App({ active, title, children, bottom }) {
+  return h(V.AppShell, {
+    height: "100%",
+    spine: h(V.Spine, { hub: true, appName: "Founder", sections: FX_NAV, activeId: active, onBackToHub: noop, bottomItems: bottom || ["afaceri", "cereri", "suport", "automatizari"] }),
+    contextBar: h(V.ContextBar, { title, onSearch: noop, searchLabel: "Caută o afacere, o solicitare sau o automatizare", notifications: h(V.NotificationsPanel, { items: FX_NOTIFS }), account: h(V.AccountMenu, { user: { name: "Bianca Petrașcu", email: "bianca@ventorasystems.com" } }) })
+  }, children);
+}
+const AX_Body = ({ mode, children }) => h("div", { className: "axb " + mode }, children);
+/* ---- frames ---- */
+function Board({ title, notes, items, dH = 900, mH = 1000 }) {
+  return h("div", { className: "scr" },
+    h("p", { className: "heading" }, title),
+    notes ? h("p", { className: "caption muted" }, notes.join(" · ")) : null,
+    items.map(([lab, render, D = dH, M = mH]) => h("div", { key: lab, className: "tfa-scrgroup" },
+      h("p", { className: "subheading tfa-grouplab" }, lab),
+      ["light", "dark"].map((th) => h("div", { className: "scr-row", key: th },
+        [["desktop", "Desktop · 1280", "scr-d", D], ["mobile", "Telefon · 390", "scr-m", M]].map(([m, l, cls, H]) => h("div", { key: m },
+          h("p", { className: "caption scr-lab" }, l, " · ", th === "light" ? "Light" : "Dark"),
+          h("div", { className: cls, "data-theme": th, style: { height: H, position: "relative", overflow: "hidden" } }, render(m, th)))))))));
+}
+/* main view in German at 1280 and Italian at 390 (and the other way round in dark) */
+function LocTest({ title, items }) {
+  return h("div", { className: "scr" },
+    h("p", { className: "heading" }, title || "Test cu etichete în germană și italiană"),
+    h("p", { className: "caption muted" }, "Același ecran, cu textele traduse, ca să vedem că etichetele mai lungi încap. Toate cele 6 limbi sunt în fișierul i18n."),
+    h("div", { className: "scr-row" }, items.map(([lab, lang, mode, th, H, el]) => h("div", { key: lab },
+      h("p", { className: "caption scr-lab" }, lab),
+      h("div", { className: mode === "mobile" ? "scr-m" : "scr-d", "data-theme": th, lang, style: { height: H, position: "relative", overflow: "hidden" } }, h(V.LocaleProvider, { locale: lang }, el))))));
+}
+const Overlay = ({ mode, children }) => h("div", { className: "ss-overlay" + (mode === "mobile" ? " m" : "") }, children);
+const ToastAt = ({ mode, title, description, tone = "done" }) => h("div", { className: "ss-toast" + (mode === "mobile" ? " m" : "") }, h(V.Toast, { tone, title, description, onDismiss: noop }));
+const Box = ({ label, children, cls }) => h("div", { className: "sms-box" + (cls ? " " + cls : "") }, h("p", { className: "caption sms-boxlab" }, label), h("div", { className: "sms-boxbody" }, children));
+const DD = ({ tag, children }) => h("span", { className: "x-dd caption" }, h(V.Icon, { name: "lightbulb", size: 14 }), "DE DECIS", tag ? " · " + tag : "", children ? h("span", { className: "x-dd-t" }, children) : null);
+/* ---- the single operational e-mail template (S3) ---- */
+function Mail({ m, w = 600 }) {
+  return h("div", { className: "em", "data-theme": "light", style: { width: w } },
+    h("div", { className: "em-inbox" },
+      h("p", { className: "caption em-mute" }, m.fromLabel + ": " + m.from + " · " + m.toLabel + ": " + m.to),
+      h("p", { className: "body-strong em-subj" }, m.subject),
+      h("p", { className: "body-small em-mute" }, m.pre)),
+    h("div", { className: "em-canvas" },
+      h("div", { className: "em-card" },
+        h("div", { className: "em-head" }, m.head || h(V.Logo, { size: 24, title: "Ventora Systems" })),
+        h("div", { className: "em-body" },
+          m.eyebrow ? h("p", { className: "caption em-mute em-eyebrow" }, m.eyebrow) : null,
+          h("h1", { className: "heading em-title" }, m.title),
+          m.code ? h("p", { className: "em-code v-num" }, m.code) : null,
+          m.greet ? h("p", { className: "body" }, m.greet) : null,
+          m.lead ? h("p", { className: "body" }, m.lead) : null,
+          m.kv ? h("dl", { className: "kv em-kv" }, m.kv.map(([k, v]) => h(React.Fragment, { key: k }, h("dt", { className: "caption" }, k), h("dd", { className: "body" }, v)))) : null,
+          m.extra ? m.extra.map((x, i) => h("p", { key: i, className: "body" }, x)) : null,
+          m.cta ? h("a", { className: "em-btn body-strong", href: "#" }, m.cta) : null,
+          m.cta2 ? h("a", { className: "v-link body-small", href: "#" }, m.cta2) : null,
+          m.after ? h("p", { className: "body-small em-mute" }, m.after) : null)),
+      h("div", { className: "em-foot" },
+        m.why ? h("p", { className: "caption em-mute" }, m.why) : null,
+        h("p", { className: "caption em-mute" }, m.foot))));
+}
+
+const FA = {"ro": {"founder.automations.nav": "Automatizări", "founder.automations.title": "Automatizări", "founder.automations.lead": "Construiești automatizarea din lista albă: un declanșator, condiții, pași. O pornești sau o oprești pentru fiecare afacere; fiecare schimbare intră în jurnal.", "founder.automations.col.name": "Automatizarea", "founder.automations.col.trigger": "Declanșator", "founder.automations.col.active": "Pornită la", "founder.automations.col.runs": "Execuții, 30 de zile", "founder.automations.col.failed": "Eșuate", "founder.automations.activeN": "{n} afaceri", "founder.automations.new": "Automatizare nouă", "founder.automations.edit": "Editează", "founder.automations.log": "Vezi jurnalul", "founder.automations.perBusiness": "Pornește pentru afaceri", "founder.automations.builder.title": "Editează automatizarea", "founder.automations.builder.name": "Numele", "founder.automations.builder.trigger": "1 · Declanșator", "founder.automations.builder.triggerHelp": "Doar evenimentele din lista albă.", "founder.automations.builder.delay": "Când", "founder.automations.builder.conditions": "2 · Condiții", "founder.automations.builder.conditionsHelp": "Toate trebuie să fie adevărate. Dacă una nu e, execuția se sare și jurnalul spune de ce.", "founder.automations.builder.steps": "3 · Pași", "founder.automations.builder.stepsHelp": "Pașii doar trimit mesaje sau notificări; nu schimbă date în aplicații.", "founder.automations.builder.addStep": "Adaugă un pas", "founder.automations.builder.whitelist": "Lista albă", "founder.automations.builder.whitelistBody": "Declanșatoare, condiții și pași aprobați. Ce nu e în listă nu apare în meniuri.", "founder.automations.builder.notInList": "„Șterge clientul” nu e în lista albă.", "founder.automations.builder.save": "Salvează automatizarea", "founder.automations.builder.test": "Trimite un test pe adresa mea", "founder.automations.builder.version": "Afacerile care o au pornită primesc versiunea nouă de la următoarea execuție.", "founder.automations.biz.title": "Pornită la afaceri", "founder.automations.biz.col.business": "Afacerea", "founder.automations.biz.col.state": "Stare", "founder.automations.biz.col.setting": "Setarea afacerii", "founder.automations.biz.col.since": "De când", "founder.automations.biz.turnOn": "Pornește…", "founder.automations.biz.turnOff": "Oprește…", "founder.automations.biz.onTitle": "Pornești „{name}” pentru {business}?", "founder.automations.biz.offTitle": "Oprești „{name}” pentru {business}?", "founder.automations.biz.onBody": "Primele mesaje pleacă la următorul declanșator. Proprietarul vede automatizarea ca „Pornită” în Hub.", "founder.automations.biz.offBody": "Nu mai pleacă mesaje de acum. Ce s-a trimis rămâne în jurnal.", "founder.automations.biz.reason": "Motiv", "founder.automations.biz.reasonHelp": "Intră în jurnalul afacerii, cu numele tău și ora.", "founder.automations.biz.ticket": "Referința cererii", "founder.automations.biz.ticketHelp": "Opțional: solicitarea din Suport, dacă afacerea a cerut.", "founder.automations.biz.on": "Am pornit automatizarea pentru {business}. Am trecut-o în jurnal.", "founder.automations.biz.audit": "{who} a pornit-o pe {date} · motiv: {reason}", "founder.automations.runs.title": "Jurnalul execuțiilor", "founder.automations.runs.all": "Toate", "founder.automations.runs.ok": "Reușite", "founder.automations.runs.failed": "Eșuate", "founder.automations.runs.skipped": "Sărite", "founder.automations.runs.col.when": "Când", "founder.automations.runs.col.automation": "Automatizarea", "founder.automations.runs.col.business": "Afacerea", "founder.automations.runs.col.for": "Pentru", "founder.automations.runs.col.result": "Rezultat", "founder.automations.runs.col.reason": "Motivul", "founder.automations.runs.st.ok": "Reușită", "founder.automations.runs.st.failed": "Eșuată", "founder.automations.runs.st.skipped": "Sărită", "founder.automations.runs.retry": "Rulează din nou", "founder.automations.runs.empty": "Nicio execuție pentru filtrele alese", "founder.automations.usage": "Mesaje automate în noiembrie · {business}"}};
+const AU = {"ro": {"automations.nav": "Automatizări", "automations.title": "Automatizări", "automations.lead": "Mesajele pe care Ventora Systems le trimite automat pentru afacerea ta. Le pornește sau le oprește echipa Ventora Systems, la cererea ta.", "automations.usage": "Mesaje automate în noiembrie", "automations.usageHelp": "Se numără doar mesajele trimise. Execuțiile sărite nu consumă.", "automations.on": "Pornită", "automations.off": "Oprită", "automations.last": "Ultima trimitere: {when} · {n} mesaje", "automations.never": "Nu a trimis încă nimic", "automations.who": "Pornirea și oprirea le face echipa Ventora Systems. Scrie-ne dacă vrei o schimbare.", "automations.ask": "Cere o schimbare", "automations.askOn": "Cere pornirea", "automations.askSent": "Am primit cererea. Îți răspundem la Suport și pe e-mail.", "automations.yourSetting": "Setarea ta", "automations.weeks": "{n} săptămâni", "automations.discount": "Reducere în mesaj", "automations.discountNone": "Fără reducere", "automations.reminderNote": "Reamintirea de dinaintea programării nu e aici: o setezi în EasyBook · Setări · Reamintiri.", "automations.empty.title": "Nicio automatizare pornită", "automations.empty.body": "Îți spunem ce se potrivește afacerii tale și le pornim noi. Scrie-ne la Suport.", "automations.memberNote": "Automatizările le văd proprietarul și adminii.", "automations.a.thanks.name": "Mulțumire după programare", "automations.a.thanks.desc": "La 2 ore după o programare încheiată, clientul primește un e-mail de mulțumire cu cererea de recenzie.", "automations.a.winback.name": "Reactivarea clientului inactiv", "automations.a.winback.desc": "Clientul care nu a mai venit de {n} săptămâni primește o invitație să facă o programare.", "automations.a.birthday.name": "La mulți ani", "automations.a.birthday.desc": "De ziua lui, clientul primește un mesaj de la salon, cu o reducere dacă alegi una.", "automations.a.risk.name": "Alertă: client cu „Risc ridicat”", "automations.a.risk.desc": "Proprietarul primește o notificare și un e-mail când un client ajunge la „Risc ridicat”.", "automations.a.digest.name": "Rezumatul zilei", "automations.a.digest.desc": "Dimineața la 7:00, fiecare membru primește pe e-mail programările lui din ziua respectivă.", "automations.a.quota.name": "Limita aproape atinsă", "automations.a.quota.desc": "Când o cotă din abonament trece de 80%, proprietarul primește notificarea de consum (aceeași ca în „Abonament și consum”)."}, "en": {"automations.nav": "Automations", "automations.title": "Automations", "automations.lead": "The messages Ventora Systems sends automatically for your business. The Ventora Systems team turns them on or off when you ask.", "automations.usage": "Automated messages in November", "automations.usageHelp": "Only messages sent count. Skipped runs don’t.", "automations.on": "On", "automations.off": "Off", "automations.last": "Last sent: {when} · {n} messages", "automations.never": "Nothing sent yet", "automations.who": "The Ventora Systems team turns them on and off. Write to us if you want a change.", "automations.ask": "Ask for a change", "automations.askOn": "Ask to turn on", "automations.askSent": "We’ve got your request. We’ll reply in Support and by email.", "automations.yourSetting": "Your setting", "automations.weeks": "{n} weeks", "automations.discount": "Discount in the message", "automations.discountNone": "No discount", "automations.reminderNote": "The reminder before an appointment isn’t here: set it in EasyBook · Settings · Reminders.", "automations.empty.title": "No automations turned on", "automations.empty.body": "We’ll tell you what suits your business and turn it on for you. Write to us in Support.", "automations.memberNote": "Owners and admins see automations.", "automations.a.thanks.name": "Thank-you after the appointment", "automations.a.thanks.desc": "2 hours after a completed appointment, the client gets a thank-you email asking for a review.", "automations.a.winback.name": "Win back inactive clients", "automations.a.winback.desc": "A client who hasn’t been in for {n} weeks gets an invitation to book.", "automations.a.birthday.name": "Happy birthday", "automations.a.birthday.desc": "On their birthday, the client gets a message from the salon, with a discount if you choose one.", "automations.a.risk.name": "Alert: “High risk” client", "automations.a.risk.desc": "The owner gets a notification and an email when a client reaches “High risk”.", "automations.a.digest.name": "Daily summary", "automations.a.digest.desc": "At 7:00 each morning, every member gets their appointments for the day by email.", "automations.a.quota.name": "Limit almost reached", "automations.a.quota.desc": "When a plan quota passes 80%, the owner gets the usage notification (the same as in “Plan and usage”)."}, "fr": {"automations.nav": "Automatisations", "automations.title": "Automatisations", "automations.lead": "Les messages que Ventora Systems envoie automatiquement pour votre entreprise. L’équipe Ventora Systems les active ou les désactive à votre demande.", "automations.usage": "Messages automatiques en novembre", "automations.usageHelp": "Seuls les messages envoyés comptent. Les exécutions ignorées ne comptent pas.", "automations.on": "Activée", "automations.off": "Désactivée", "automations.last": "Dernier envoi : {when} · {n} messages", "automations.never": "Rien envoyé pour l’instant", "automations.who": "L’équipe Ventora Systems les active et les désactive. Écrivez-nous si vous souhaitez un changement.", "automations.ask": "Demander un changement", "automations.askOn": "Demander l’activation", "automations.askSent": "Nous avons reçu votre demande. Nous répondons dans Support et par e-mail.", "automations.yourSetting": "Votre réglage", "automations.weeks": "{n} semaines", "automations.discount": "Réduction dans le message", "automations.discountNone": "Sans réduction", "automations.reminderNote": "Le rappel avant un rendez-vous n’est pas ici : réglez-le dans EasyBook · Réglages · Rappels.", "automations.empty.title": "Aucune automatisation activée", "automations.empty.body": "Nous vous disons ce qui convient à votre entreprise et l’activons pour vous. Écrivez-nous dans Support.", "automations.memberNote": "Le propriétaire et les admins voient les automatisations.", "automations.a.thanks.name": "Remerciement après le rendez-vous", "automations.a.thanks.desc": "2 heures après un rendez-vous terminé, le client reçoit un e-mail de remerciement avec une demande d’avis.", "automations.a.winback.name": "Relance des clients inactifs", "automations.a.winback.desc": "Le client qui n’est pas venu depuis {n} semaines reçoit une invitation à prendre rendez-vous.", "automations.a.birthday.name": "Joyeux anniversaire", "automations.a.birthday.desc": "Le jour de son anniversaire, le client reçoit un message du salon, avec une réduction si vous en choisissez une.", "automations.a.risk.name": "Alerte : client « Risque élevé »", "automations.a.risk.desc": "Le propriétaire reçoit une notification et un e-mail quand un client passe en « Risque élevé ».", "automations.a.digest.name": "Résumé du jour", "automations.a.digest.desc": "Chaque matin à 7 h, chaque membre reçoit par e-mail ses rendez-vous du jour.", "automations.a.quota.name": "Limite presque atteinte", "automations.a.quota.desc": "Quand un quota de l’abonnement dépasse 80 %, le propriétaire reçoit la notification de consommation (la même que dans « Abonnement et consommation »)."}, "es": {"automations.nav": "Automatizaciones", "automations.title": "Automatizaciones", "automations.lead": "Los mensajes que Ventora Systems envía automáticamente para tu negocio. El equipo de Ventora Systems los activa o desactiva cuando lo pides.", "automations.usage": "Mensajes automáticos en noviembre", "automations.usageHelp": "Solo cuentan los mensajes enviados. Las ejecuciones omitidas no consumen.", "automations.on": "Activada", "automations.off": "Desactivada", "automations.last": "Último envío: {when} · {n} mensajes", "automations.never": "Aún no ha enviado nada", "automations.who": "El equipo de Ventora Systems las activa y desactiva. Escríbenos si quieres un cambio.", "automations.ask": "Pedir un cambio", "automations.askOn": "Pedir que se active", "automations.askSent": "Hemos recibido tu solicitud. Te respondemos en Soporte y por correo.", "automations.yourSetting": "Tu ajuste", "automations.weeks": "{n} semanas", "automations.discount": "Descuento en el mensaje", "automations.discountNone": "Sin descuento", "automations.reminderNote": "El recordatorio antes de una cita no está aquí: se ajusta en EasyBook · Ajustes · Recordatorios.", "automations.empty.title": "Ninguna automatización activada", "automations.empty.body": "Te decimos qué encaja con tu negocio y lo activamos nosotros. Escríbenos en Soporte.", "automations.memberNote": "Las automatizaciones las ven el propietario y los admins.", "automations.a.thanks.name": "Agradecimiento tras la cita", "automations.a.thanks.desc": "2 horas después de una cita terminada, el cliente recibe un correo de agradecimiento con la petición de reseña.", "automations.a.winback.name": "Reactivar clientes inactivos", "automations.a.winback.desc": "El cliente que no ha venido en {n} semanas recibe una invitación para reservar.", "automations.a.birthday.name": "Feliz cumpleaños", "automations.a.birthday.desc": "En su cumpleaños, el cliente recibe un mensaje del salón, con un descuento si eliges uno.", "automations.a.risk.name": "Alerta: cliente con «Riesgo alto»", "automations.a.risk.desc": "El propietario recibe una notificación y un correo cuando un cliente llega a «Riesgo alto».", "automations.a.digest.name": "Resumen del día", "automations.a.digest.desc": "Cada mañana a las 7:00, cada miembro recibe por correo sus citas del día.", "automations.a.quota.name": "Límite casi alcanzado", "automations.a.quota.desc": "Cuando una cuota de la suscripción pasa del 80 %, el propietario recibe la notificación de consumo (la misma que en «Suscripción y consumo»)."}, "de": {"automations.nav": "Automatisierungen", "automations.title": "Automatisierungen", "automations.lead": "Die Nachrichten, die Ventora Systems automatisch für Ihr Unternehmen sendet. Das Ventora-Systems-Team schaltet sie auf Ihren Wunsch ein oder aus.", "automations.usage": "Automatische Nachrichten im November", "automations.usageHelp": "Es zählen nur gesendete Nachrichten. Übersprungene Ausführungen zählen nicht.", "automations.on": "Aktiv", "automations.off": "Aus", "automations.last": "Zuletzt gesendet: {when} · {n} Nachrichten", "automations.never": "Noch nichts gesendet", "automations.who": "Ein- und Ausschalten übernimmt das Ventora-Systems-Team. Schreiben Sie uns, wenn Sie etwas ändern möchten.", "automations.ask": "Änderung anfragen", "automations.askOn": "Einschalten anfragen", "automations.askSent": "Ihre Anfrage ist eingegangen. Wir antworten im Support und per E-Mail.", "automations.yourSetting": "Ihre Einstellung", "automations.weeks": "{n} Wochen", "automations.discount": "Rabatt in der Nachricht", "automations.discountNone": "Kein Rabatt", "automations.reminderNote": "Die Erinnerung vor einem Termin ist nicht hier: Sie stellen sie in EasyBook · Einstellungen · Erinnerungen ein.", "automations.empty.title": "Keine Automatisierung aktiv", "automations.empty.body": "Wir sagen Ihnen, was zu Ihrem Unternehmen passt, und schalten es ein. Schreiben Sie uns im Support.", "automations.memberNote": "Automatisierungen sehen Inhaber und Admins.", "automations.a.thanks.name": "Dank nach dem Termin", "automations.a.thanks.desc": "2 Stunden nach einem erledigten Termin erhält der Kunde eine Dankes-E-Mail mit der Bitte um eine Bewertung.", "automations.a.winback.name": "Inaktive Kunden zurückgewinnen", "automations.a.winback.desc": "Ein Kunde, der seit {n} Wochen nicht da war, erhält eine Einladung zur Buchung.", "automations.a.birthday.name": "Alles Gute zum Geburtstag", "automations.a.birthday.desc": "An seinem Geburtstag erhält der Kunde eine Nachricht vom Salon, mit Rabatt, wenn Sie einen wählen.", "automations.a.risk.name": "Meldung: Kunde mit „Hohes Risiko“", "automations.a.risk.desc": "Der Inhaber erhält eine Mitteilung und eine E-Mail, wenn ein Kunde „Hohes Risiko“ erreicht.", "automations.a.digest.name": "Tagesübersicht", "automations.a.digest.desc": "Jeden Morgen um 7:00 Uhr erhält jedes Mitglied seine Termine des Tages per E-Mail.", "automations.a.quota.name": "Limit fast erreicht", "automations.a.quota.desc": "Wenn ein Kontingent des Abonnements 80 % überschreitet, erhält der Inhaber die Verbrauchsmitteilung (dieselbe wie unter „Abonnement und Verbrauch“)."}, "it": {"automations.nav": "Automazioni", "automations.title": "Automazioni", "automations.lead": "I messaggi che Ventora Systems invia automaticamente per la Sua attività. Il team Ventora Systems li attiva o disattiva su Sua richiesta.", "automations.usage": "Messaggi automatici a novembre", "automations.usageHelp": "Contano solo i messaggi inviati. Le esecuzioni saltate non consumano.", "automations.on": "Attiva", "automations.off": "Disattivata", "automations.last": "Ultimo invio: {when} · {n} messaggi", "automations.never": "Non ha ancora inviato nulla", "automations.who": "Le attiva e disattiva il team Ventora Systems. Ci scriva se desidera una modifica.", "automations.ask": "Chiedi una modifica", "automations.askOn": "Chiedi l’attivazione", "automations.askSent": "Abbiamo ricevuto la richiesta. Le rispondiamo in Assistenza e via e-mail.", "automations.yourSetting": "La Sua impostazione", "automations.weeks": "{n} settimane", "automations.discount": "Sconto nel messaggio", "automations.discountNone": "Nessuno sconto", "automations.reminderNote": "Il promemoria prima di un appuntamento non è qui: lo imposta in EasyBook · Impostazioni · Promemoria.", "automations.empty.title": "Nessuna automazione attiva", "automations.empty.body": "Le diciamo cosa si adatta alla Sua attività e lo attiviamo noi. Ci scriva in Assistenza.", "automations.memberNote": "Le automazioni le vedono il titolare e gli admin.", "automations.a.thanks.name": "Ringraziamento dopo l’appuntamento", "automations.a.thanks.desc": "2 ore dopo un appuntamento concluso, il cliente riceve un’e-mail di ringraziamento con la richiesta di recensione.", "automations.a.winback.name": "Riattivare i clienti inattivi", "automations.a.winback.desc": "Il cliente che non viene da {n} settimane riceve un invito a prenotare.", "automations.a.birthday.name": "Buon compleanno", "automations.a.birthday.desc": "Il giorno del compleanno il cliente riceve un messaggio dal salone, con uno sconto se ne sceglie uno.", "automations.a.risk.name": "Avviso: cliente «Rischio alto»", "automations.a.risk.desc": "Il titolare riceve una notifica e un’e-mail quando un cliente arriva a «Rischio alto».", "automations.a.digest.name": "Riepilogo del giorno", "automations.a.digest.desc": "Ogni mattina alle 7:00 ogni membro riceve via e-mail i suoi appuntamenti del giorno.", "automations.a.quota.name": "Limite quasi raggiunto", "automations.a.quota.desc": "Quando una quota dell’abbonamento supera l’80%, il titolare riceve la notifica di consumo (la stessa di «Abbonamento e utilizzo»)."}};
+/* D4-23, D4-24 — Founder · Automatizări: the builder (whitelist only), per-business on/off with audit, the run log. Romanian only (S57). */
+const T = (k, v) => mkT(FA)("ro", k, v);
+const A = (k, v) => mkT(AU)("ro", k, v);
+const AUTOS = [
+  ["thanks", "Programarea trece în „Încheiată” · după 2 ore", "EasyBook", 38, "4.210", "1,2%"],
+  ["winback", "Zilnic, 10:00 · clienți fără programare de {n} săptămâni", "EasyBook", 21, "1.880", "0,4%"],
+  ["birthday", "Zilnic, 09:00 · ziua de naștere a clientului", "EasyBook", 17, "940", "0,8%"],
+  ["risk", "Clientul ajunge la „Risc ridicat”", "EasyBook", 44, "126", "0%"],
+  ["digest", "Zilnic, 07:00 · pentru fiecare membru cu programări", "EasyBook", 29, "6.320", "2,1%"],
+  ["quota", "O cotă din abonament trece de 80%", "Hub", 52, "212", "0%"]
+];
+function List({ mode }) {
+  return h(FX_App, { active: "automatizari", title: T("founder.automations.nav") },
+    h(V.PageHeader, { title: T("founder.automations.title"), description: T("founder.automations.lead"), actions: h(V.Button, { variant: "primary", icon: "plus" }, T("founder.automations.new")) }),
+    h(AX_Body, { mode }, h(V.DataTable, { caption: T("founder.automations.title"), rows: AUTOS.map((a, i) => ({ id: i, a })), onRowClick: noop,
+      rowActions: () => [{ label: T("founder.automations.edit"), icon: "pencil" }, { label: T("founder.automations.perBusiness"), icon: "building-2" }, { label: T("founder.automations.log"), icon: "history" }], columns: [
+        { key: "name", header: T("founder.automations.col.name"), primary: true, render: (r) => h("span", { style: { display: "flex", flexDirection: "column" } }, A("automations.a." + r.a[0] + ".name"), h("span", { className: "caption muted" }, r.a[2])) },
+        { key: "trigger", header: T("founder.automations.col.trigger"), secondary: true, render: (r) => r.a[1].replace("{n}", "X") },
+        { key: "active", header: T("founder.automations.col.active"), optional: true, render: (r) => T("founder.automations.activeN", { n: r.a[3] }) },
+        { key: "runs", header: T("founder.automations.col.runs"), optional: true, align: "end", render: (r) => r.a[4] },
+        { key: "failed", header: T("founder.automations.col.failed"), trailing: true, align: "end", render: (r) => r.a[5] }] })));
+}
+const Line = ({ icon, title, sub, more }) => h("div", { className: "x-field" }, h(V.Icon, { name: icon, size: 16 }), h("div", null, h("p", { className: "body-strong" }, title), sub ? h("p", { className: "caption muted" }, sub) : null), more || null);
+const MoreBtn = () => h(V.Menu, { items: [{ label: "Editează", icon: "pencil" }, { separator: true }, { label: "Șterge", icon: "trash-2", destructive: true }], trigger: h(V.IconButton, { icon: "ellipsis-vertical", label: "Mai multe acțiuni" }) });
+const STEPS_WL = [{ label: "Trimite e-mail clientului", icon: "mail" }, { label: "Trimite e-mail membrului", icon: "mail" }, { label: "Trimite e-mail proprietarului", icon: "mail" }, { label: "Trimite notificare în Hub", icon: "bell" }];
+function Builder({ mode, menuOpen }) {
+  const mob = mode === "mobile";
+  const main = h("div", { className: "x-col" },
+    h(V.Sheet, null,
+      h(V.SheetSection, null, h(V.FormField, { label: T("founder.automations.builder.name") }, h(V.Input, { defaultValue: A("automations.a.thanks.name") }))),
+      h(V.SheetSection, { title: T("founder.automations.builder.trigger"), description: T("founder.automations.builder.triggerHelp") }, h("div", { className: mob ? "x-stack" : "x-row" },
+        h("div", { style: { flex: "1 1 260px" } }, h(V.FormField, { label: "Evenimentul" }, h(V.Select, { value: "done", options: [{ value: "done", label: "EasyBook · Programarea trece în „Încheiată”" }, { value: "noshow", label: "EasyBook · Clientul nu a venit" }, { value: "risk", label: "EasyBook · Clientul ajunge la „Risc ridicat”" }, { value: "daily", label: "Zilnic, la o oră" }, { value: "quota", label: "Hub · O cotă trece de un prag" }] }))),
+        h("div", { style: { flex: "0 1 200px" } }, h(V.FormField, { label: T("founder.automations.builder.delay") }, h(V.Select, { value: "2h", options: [{ value: "0", label: "Imediat" }, { value: "2h", label: "După 2 ore" }, { value: "1d", label: "După o zi" }] }))))),
+      h(V.SheetSection, { title: T("founder.automations.builder.conditions"), description: T("founder.automations.builder.conditionsHelp") }, h("div", { className: "x-stack" },
+        h(Line, { icon: "check", title: "Clientul are adresă de e-mail", more: h(MoreBtn) }),
+        h(Line, { icon: "check", title: "Clientul acceptă mesaje de la salon", sub: "Nu s-a dezabonat", more: h(MoreBtn) }),
+        h(Line, { icon: "check", title: "Nu a primit același mesaj în ultimele 30 de zile", more: h(MoreBtn) }),
+        h("div", null, h(V.Button, { size: "sm", variant: "secondary", icon: "plus" }, "Adaugă o condiție")))),
+      h(V.SheetSection, { title: T("founder.automations.builder.steps"), description: T("founder.automations.builder.stepsHelp") }, h("div", { className: "x-stack" },
+        h(Line, { icon: "mail", title: "1 · Trimite e-mail clientului", sub: "Șablon „Mulțumim pentru vizită” · cu butonul „Lasă o recenzie” (linkul de recenzii al salonului)", more: h(MoreBtn) }),
+        h("div", null, h(V.Menu, { defaultOpen: !!menuOpen, header: h("p", { className: "caption muted", style: { margin: 0, padding: "var(--space-2) var(--space-3)" } }, T("founder.automations.builder.whitelist")), items: STEPS_WL, trigger: h(V.Button, { size: "sm", variant: "secondary", icon: "plus" }, T("founder.automations.builder.addStep")) }))))),
+    h("div", { className: "x-row" }, h(V.Button, { variant: "primary", icon: "check", block: mob }, T("founder.automations.builder.save")), h(V.Button, { variant: "quiet", icon: "send", block: mob }, T("founder.automations.builder.test"))),
+    h("p", { className: "caption muted" }, T("founder.automations.builder.version")));
+  const side = h(V.Sheet, null, h(V.SheetSection, { title: T("founder.automations.builder.whitelist"), description: T("founder.automations.builder.whitelistBody") }, h("div", { className: "x-stack" },
+    h("p", { className: "subheading" }, "Declanșatoare"), h("ul", { className: "hist body-small" }, ["Programarea trece în „Încheiată”", "Clientul nu a venit", "Clientul ajunge la „Risc ridicat”", "Zilnic, la o oră", "Ziua de naștere a clientului", "O cotă trece de un prag"].map((x) => h("li", { key: x }, x))),
+    h("p", { className: "subheading" }, "Pași"), h("ul", { className: "hist body-small" }, STEPS_WL.map((x) => h("li", { key: x.label }, x.label))),
+    h("div", { className: "x-ddnote" }, h(DD, { tag: "lista albă" }), h("p", { className: "body-small" }, "Recomand ca v1 să aibă doar pașii de mai sus (mesaje, nicio schimbare de date). Lista se aprobă înainte de import.")))));
+  return h(FX_App, { active: "automatizari", title: T("founder.automations.nav") },
+    h(V.PageHeader, { title: T("founder.automations.builder.title"), breadcrumbs: [{ label: T("founder.automations.title"), href: "#" }] }),
+    h("div", { className: "x-body" + (mob ? " m" : "") }, h("div", { className: "x-grid" + (mob ? " m" : "") }, main, mob ? h("div", { style: { padding: "0 var(--space-4)" } }, side) : side)));
+}
+const BIZ = [
+  { id: 1, biz: "Salon Aurora", on: true, setting: "Reducere 10%", since: "1 nov.", by: "Bianca Petrașcu" },
+  { id: 2, biz: "Clinica Dentis Sibiu", on: true, setting: "Fără reducere", since: "28 oct.", by: "Mihai Ionescu" },
+  { id: 3, biz: "Fitness Atlas", on: false, setting: "—", since: "—" },
+  { id: 4, biz: "Agenția Nord Studio", on: false, setting: "—", since: "—" }
+];
+function PerBiz({ mode, overlay, toast, rows }) {
+  const name = A("automations.a.birthday.name");
+  return h("div", { className: "frame-rel" },
+    h(FX_App, { active: "automatizari", title: T("founder.automations.nav") },
+      h(V.PageHeader, { title: name, breadcrumbs: [{ label: T("founder.automations.title"), href: "#" }], description: A("automations.a.birthday.desc") }),
+      h(AX_Body, { mode }, h("div", { className: "x-stack" },
+        h("h2", { className: "heading", style: { margin: 0 } }, T("founder.automations.biz.title")),
+        h(V.DataTable, { caption: T("founder.automations.biz.title"), rows: rows || BIZ, rowActions: (r) => [{ label: r.on ? T("founder.automations.biz.turnOff") : T("founder.automations.biz.turnOn"), icon: r.on ? "x" : "check" }, { label: T("founder.automations.log"), icon: "history" }], columns: [
+          { key: "biz", header: T("founder.automations.biz.col.business"), primary: true, render: (r) => h("span", { style: { display: "flex", flexDirection: "column" } }, r.biz, r.on ? h("span", { className: "caption muted" }, T("founder.automations.biz.audit", { who: r.by, date: r.since, reason: r.id === 1 ? "cerut în VS-2026-0150" : "pachet de lansare" })) : null) },
+          { key: "setting", header: T("founder.automations.biz.col.setting"), optional: true },
+          { key: "since", header: T("founder.automations.biz.col.since"), secondary: true },
+          { key: "on", header: T("founder.automations.biz.col.state"), trailing: true, render: (r) => h(V.StatusPill, { tone: r.on ? "done" : "neutral", icon: r.on ? "check" : "circle" }, A(r.on ? "automations.on" : "automations.off")) }] }),
+        h(V.UsageMeter, { label: T("founder.automations.usage", { business: "Salon Aurora" }), used: 1640, limit: 2000 })))),
+    overlay ? h(Overlay, { mode }, overlay) : null,
+    toast ? h(ToastAt, { mode, title: toast }) : null);
+}
+const OnDlg = ({ mode }) => h(V.Dialog, { open: true, inline: true, className: mode === "mobile" ? "v-dialog--sheet" : undefined, title: T("founder.automations.biz.onTitle", { name: A("automations.a.birthday.name"), business: "Fitness Atlas" }), description: T("founder.automations.biz.onBody"),
+  footer: h(React.Fragment, null, h(V.Button, { variant: "quiet" }, "Renunță"), h(V.Button, { variant: "primary", icon: "check" }, "Pornește")) },
+  h("div", { className: "x-stack" },
+    h(V.FormField, { label: T("founder.automations.biz.reason"), required: true, helper: T("founder.automations.biz.reasonHelp") }, h(V.Textarea, { rows: 3, defaultValue: "Proprietara a cerut-o la telefon; reducerea o alege ea din Hub." })),
+    h(V.FormField, { label: T("founder.automations.biz.ticket"), optional: true, helper: T("founder.automations.biz.ticketHelp") }, h(V.Input, { defaultValue: "VS-2026-0188" }))));
+const RUNS = [
+  { id: 1, when: "azi, 13:02", a: "thanks", biz: "Salon Aurora", for: "Elena Georgescu", st: "ok", why: "E-mail trimis" },
+  { id: 2, when: "azi, 12:40", a: "thanks", biz: "Salon Aurora", for: "Paul Stan", st: "skipped", why: "Clientul nu are adresă de e-mail" },
+  { id: 3, when: "azi, 10:00", a: "winback", biz: "Clinica Dentis Sibiu", for: "34 de clienți", st: "ok", why: "34 de e-mailuri trimise" },
+  { id: 4, when: "azi, 09:50", a: "risk", biz: "Salon Aurora", for: "Bianca Petrașcu", st: "ok", why: "Dan Stoica · notificare și e-mail" },
+  { id: 5, when: "azi, 09:00", a: "birthday", biz: "Salon Aurora", for: "Ana Popescu", st: "skipped", why: "Clientul s-a dezabonat de la mesajele salonului" },
+  { id: 6, when: "azi, 07:05", a: "digest", biz: "Fitness Atlas", for: "Radu Matei", st: "failed", why: "Adresa respinge e-mailurile (cutie plină). Încercăm din nou mâine." },
+  { id: 7, when: "azi, 07:00", a: "digest", biz: "Salon Aurora", for: "4 membri", st: "ok", why: "4 e-mailuri trimise" },
+  { id: 8, when: "ieri, 18:20", a: "thanks", biz: "Agenția Nord Studio", for: "Mara Pop", st: "skipped", why: "Limita de mesaje automate a afacerii e atinsă" }
+];
+const RPILL = { ok: ["done", "check"], failed: ["danger", "circle-x"], skipped: ["neutral", "arrow-right"] };
+function Runs({ mode, filter = "all" }) {
+  const rows = RUNS.filter((r) => filter === "all" || r.st === filter);
+  return h(FX_App, { active: "automatizari", title: T("founder.automations.nav") },
+    h(V.PageHeader, { title: T("founder.automations.runs.title"), breadcrumbs: [{ label: T("founder.automations.title"), href: "#" }] }),
+    h(AX_Body, { mode }, h("div", { className: "x-stack" },
+      h("div", { className: "x-row", style: { padding: mode === "mobile" ? "0 var(--space-4)" : 0 } }, h(V.SegmentedControl, { label: "Rezultat", value: filter, options: ["all", "ok", "failed", "skipped"].map((v) => ({ value: v, label: T("founder.automations.runs." + v) })) })),
+      rows.length ? h(V.DataTable, { caption: T("founder.automations.runs.title"), rows, rowActions: (r) => r.st === "failed" ? [{ label: T("founder.automations.runs.retry"), icon: "refresh-cw" }, { label: "Deschide afacerea", icon: "building-2" }] : [{ label: "Deschide afacerea", icon: "building-2" }], columns: [
+        { key: "a", header: T("founder.automations.runs.col.automation"), primary: true, render: (r) => A("automations.a." + r.a + ".name") },
+        { key: "biz", header: T("founder.automations.runs.col.business"), secondary: true },
+        { key: "for", header: T("founder.automations.runs.col.for"), optional: true },
+        { key: "why", header: T("founder.automations.runs.col.reason"), optional: true, muted: true },
+        { key: "when", header: T("founder.automations.runs.col.when"), secondary: true },
+        { key: "st", header: T("founder.automations.runs.col.result"), trailing: true, render: (r) => h(V.StatusPill, { tone: RPILL[r.st][0], icon: RPILL[r.st][1] }, T("founder.automations.runs.st." + r.st)) }] })
+        : h(V.EmptyState, { icon: "history", title: T("founder.automations.runs.empty") }))));
+}
+mount(h(Board, { title: "Founder — Automatizări (D4-23, D4-24)", notes: ["Constructorul: declanșator → condiții → pași, doar din lista albă", "Pornirea și oprirea, per afacere, doar din Founder, cu motiv în jurnal", "Jurnalul execuțiilor: reușită / eșuată / sărită, cu motivul", "Cele 6 automatizări v1 ca exemple reale", "Reminderul de dinaintea programării ține de EasyBook, nu de automatizări", "Doar în română (S57); chei founder.automations.* în i18n/founder-automations.json, numele în i18n/automations.json"], dH: 900, mH: 1300, items: [
+  ["1 · Lista celor 6 automatizări v1", (m) => h(List, { mode: m })],
+  ["2 · Constructorul: „Mulțumire după programare”", (m) => h(Builder, { mode: m }), 1350, 2700],
+  ["3 · „Adaugă un pas”: doar pașii din lista albă", (m) => h(Builder, { mode: m, menuOpen: true }), 1350, 2700],
+  ["4 · „La mulți ani”: la ce afaceri e pornită, cu auditul", (m) => h(PerBiz, { mode: m })],
+  ["5 · „Pornește…”: motivul intră în jurnal", (m) => h(PerBiz, { mode: m, overlay: h(OnDlg, { mode: m }) })],
+  ["6 · Pornită", (m) => h(PerBiz, { mode: m, rows: BIZ.map((r) => r.id === 3 ? Object.assign({}, r, { on: true, setting: "Fără reducere", since: "4 nov.", by: "Bianca Petrașcu" }) : r), toast: T("founder.automations.biz.on", { business: "Fitness Atlas" }) })],
+  ["7 · Jurnalul execuțiilor", (m) => h(Runs, { mode: m }), 900, 1500],
+  ["8 · Doar cele eșuate: „Rulează din nou”", (m) => h(Runs, { mode: m, filter: "failed" }), 700, 900]] }));
+
+</script>
+</body>
+</html>

@@ -150,7 +150,6 @@ export {
   ExceptionsSection,
   PlanCardContent,
   ExceptionDialog,
-  OverviewView,
   useUsageLabels,
 } from './founder/commercial/BusinessCommercial';
 export type {
@@ -159,6 +158,14 @@ export type {
   ExceptionFormValues,
   ExceptionFormErrors,
 } from './founder/commercial/BusinessCommercial';
+export { OverviewView, greetingPart } from './founder/commercial/OverviewView';
+export type {
+  OverviewState,
+  OverviewData as OverviewViewData,
+  OverviewException,
+  OverviewLimitRow,
+  OverviewRecentRow,
+} from './founder/commercial/OverviewView';
 export { default as commercialStyles } from './founder/commercial/commercial.module.css';
 
 // Lot 4.6: Suport — HubSupport, HubSupportThread (Hub, 6 limbi), FounderSupportInbox (Founder, RO)

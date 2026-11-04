@@ -796,3 +796,55 @@ Decizia fondatoarei: numele vizibil e „Ventora Systems”, peste tot; „Vento
 - **Cover:** logo-ul cu „SYSTEMS” centrat.
 - **README:** Logo, `assets/Logos/README.md`, README („Logo”).
 
+
+## 2026-11-04 · S116 — pilotul Booking, suportul în Founder, automatizările, textele aplicațiilor
+
+### Componente noi (1.0.0)
+- **BookingPublic** — pagina publică de rezervare: serviciu, cu cine, ziua și ora, datele cu verificarea anti-robot, codul din e-mail; fără loc liber, nimic liber în 30 de zile, ora luată între timp, erori, confirmată / cerere trimisă. Câmpurile medicale opționale (cadrele 8b–8c).
+- **BookingDeposit** — avansul prin Stripe: suma și politica înainte de plată, 3-D Secure, eșuat, plătit, „Așteaptă plata”, expirat.
+- **BookingStatuses** — cele 7 stări D-B-11, StatusPill pentru fiecare, BookingDetail în fiecare stare, cu tranzițiile permise.
+- **BookingClientCard** — fișa clientului: istoricul, nota „Risc ridicat”, vederea membrului, ștergerea notei cu motiv.
+- **BookingPayments** — Setări · Plăți și avans: Stripe Connect (neconectat, în verificare, activ, cu probleme), avansul, rambursarea, deconectarea.
+- **BookingHealthFields** — câmpurile medicale: setările, fișa, retragerea consimțământului (de salon sau de client), cine le vede.
+- **BookingClientEmails** — codul de verificare, confirmarea, reminderul, anularea (client / salon), modificarea, avansul primit, avansul rambursat.
+- **FounderSupportInbox** — Founder · Suport: lista cu filtre, firul, răspunsul echipei cu atașamente, stările goale. Doar RO.
+- **FounderAutomations** — constructorul din lista albă, pornirea per afacere cu audit, jurnalul execuțiilor. Doar RO.
+- **HubAutomations** — automatizările afacerii, fără pornire/oprire, cu UsageMeter.
+- **HubAppTexts** — numele și descrierile celor 15 aplicații, în 6 limbi.
+
+### Componente schimbate
+- **AppTile — 1.1.0:** `onDetails` pe un card blocat arată „Vezi detaliile” și fără recomandare (decizia 3.7); acțiunea de acces trece lângă el, discret (`.v-apptile__act2`). `bundle.js`, `bundle.css`, `index.d.ts`, preview, README.
+- **HubSupportThread — 1.0.1:** „Îți răspundem aici și pe e-mail.” sub butonul de trimitere.
+- **StatusPill, BookingDetail — 1.0.1:** README: maparea celor 7 stări, trimitere la BookingStatuses.
+- **Spine Founder** (în ecranele noi): „Suport” după „Cereri”, „Automatizări” în „Sistem”. **Spine Hub:** „Automatizări” în „Afacerea”. Celelalte preview-uri le primesc la import.
+- **Glosar:** avans, așteaptă plata, politica salonului pentru avans, risc ridicat, cod de verificare, câmpuri medicale, consimțământ; secțiunea nouă „Automatizări și suport”.
+- **Logo e-mail:** `ventora-logo-email-2x.png` refăcut din `ventora-logo.svg` (V și S peach), id nou în `design-system.json`.
+
+### i18n
+- Noi: `booking.json`, `automations.json`, `apps.json` (6 limbi), `founder-automations.json` (RO).
+- `founder-support.json`: `founder.inbox.*` (RO). `support.json`: `support.thread.replyNote` (6 limbi).
+
+### Curățenie
+- `manifest.json` refăcut după starea de acum (165 de componente; FounderPlans scos, 45 adăugate) și `api/components/FounderPlans.md` scos. Pagina le regenerează oricum la următoarea salvare.
+
+## 2026-11-04 · S116 — deciziile fondatoarei
+
+- **README (registrul de decizii):** rândul nou S116-D, cu deciziile D1–D22, toate ca recomandările din ecrane, și cele trei puncte de confirmat cu avocatul (accesul la nota „Risc ridicat”, avansul nerambursabil, termenul de păstrare a câmpurilor medicale).
+- **README-urile componentelor — 1.0.1:** BookingPublic, BookingDeposit, BookingStatuses, BookingClientCard, BookingPayments, BookingHealthFields, BookingClientEmails, FounderSupportInbox, FounderAutomations, HubAutomations: „DE DECIS” devine „Decided (S116, 4 Nov. 2026)”, cu id-ul fiecărei decizii; StatusPill trimite la S116-D8. Ecranele nu se schimbă.
+
+## 2026-11-04 · S118 — Founder · Prezentare și „Restrânge meniul” jos
+
+### Componente noi
+- **FounderOverview** (1.0.0) — Founder · „Prezentare”: cifrele, „Au nevoie de tine”, afacerile aproape de limite, afacerile create recent; totul în regulă, prima zi, eroare la încărcare. Doar RO.
+
+### Componente schimbate
+- **Spine — 1.2.0:** controlul de restrângere nu mai e cerculețul de pe marginea antetului; e un element jos, sub footer: chevron-left + „Restrânge meniul” (cheia existentă `collapseMenu`). Restrâns, doar chevron-right, cu numele „Extinde meniul” (`expandMenu`). Iconița grid din antet rămâne. Între 768 și 1023px controlul rămâne ascuns. `bundle.js`, `bundle.css` (`.v-spine__bottom`; regulile vechi `.v-spine__collapse` cu poziționare absolută, scoase), preview, README.
+- **AppShell — 1.0.1:** README și etichetele din preview.
+
+### i18n
+- Nou: `founder-overview.json` (RO).
+
+## 2026-11-04 · S119 — FounderBundles și FounderNewBusiness, aliniere
+
+- **FounderBundles — 2.0.2:** cardul are padding de SheetSection (space-6; space-4 pe telefon); rândul de sus și tabelul de versiuni au aceeași grilă (cele trei blocuri încep la „Versiune”, „Lunar” și „Afaceri”); între titlu și „{n} afaceri îl au”, space-2. Preview, README.
+- **FounderNewBusiness — 1.0.2:** „Începe cu 14 zile de probă” centrat pe căsuța „Bundle”. Preview, README.

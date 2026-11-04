@@ -15,3 +15,5 @@ One support request in the Hub (S111), opened from "Solicitările mele" (HubSupp
 **E-mail.** A new reply from the team sends E-7 "Ai un răspuns nou la solicitarea ta" (BookingSmsNotifications, cards 13–16) and the notification "Răspuns nou la solicitarea ta" (`notifications.support.reply.*`).
 
 Shown at 1280 and 390, in light and dark, with a German and Italian test.
+
+**The team's reply (S116, D4-14 b).** Under "Trimite răspunsul": "Îți răspundem aici și pe e-mail." (`support.thread.replyNote`, 6 languages). The team answers from Founder · Suport (FounderSupportInbox); its reply shows here as "Răspuns nou".

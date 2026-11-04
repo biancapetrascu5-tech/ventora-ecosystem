@@ -127,6 +127,7 @@ import {
   Percent,
   CalendarClock,
   CalendarOff,
+  Timer,
 } from 'lucide-react';
 
 export const ICON_REGISTRY = {
@@ -263,6 +264,9 @@ export const ICON_REGISTRY = {
   // S117: starea bundle-urilor („Programat”, „Vânzare oprită”)
   'calendar-clock': CalendarClock,
   'calendar-off': CalendarOff,
+  // S118: FounderOverview — „În probă” și „Încearcă din nou”, cu numele din bundle
+  timer: Timer,
+  'refresh-cw': RefreshCw,
 } as const satisfies Record<string, LucideIcon>;
 
 export type IconName = keyof typeof ICON_REGISTRY;

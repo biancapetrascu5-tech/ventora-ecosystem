@@ -5,3 +5,5 @@ EasyBook — an appointment's detail in a Drawer over the list: status, when, se
 Shown at 1280 (desktop), 820 (tablet portrait) and 390 (phone), in light and dark, built only from the system's components.
 
 After the product review: the main button follows the state (unconfirmed → "Confirmă", in progress → "Încasează", done → "Programează din nou", with client, service and person filled in); the history shows the last 3 events, then "Vezi tot istoricul".
+
+**The 7 states (S116, D-B-11).** The footer and the "…" menu offer only the transitions allowed from the current state; the full map and a drawer per state are in BookingStatuses.

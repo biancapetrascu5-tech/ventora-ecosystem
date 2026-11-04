@@ -624,10 +624,64 @@
     },
     "overview": {
       "title": "Prezentare",
-      "lead": "Ce cere atenția echipei Ventora Systems azi.",
-      "expiring": "O excepție expiră pe {date}",
-      "extend": "Prelungește",
-      "empty": "Nicio excepție nu expiră în următoarele 7 zile."
+      "greeting": {
+        "morning": "Bună dimineața, {name}",
+        "day": "Bună ziua, {name}",
+        "evening": "Bună seara, {name}"
+      },
+      "lead": "{date}. Ce s-a schimbat de ieri și ce te așteaptă.",
+      "updated": "Actualizat la {time}",
+      "stat": {
+        "active": "Afaceri active",
+        "activeDelta": "noi în {month}",
+        "mrr": "Venit lunar recurent",
+        "mrrEur": "și {amount} în euro",
+        "trial": "Afaceri în probă",
+        "trialHint": "{n} se încheie în 3 zile"
+      },
+      "attention": {
+        "title": "Au nevoie de tine",
+        "requests": "{n, plural, one {# cerere nouă din Hub} few {# cereri noi din Hub} other {# de cereri noi din Hub}}",
+        "requestsAction": "Deschide cererile",
+        "exception": "Excepția expiră pe {date}: {business}",
+        "exceptionMeta": "{what} · adăugată de {who}",
+        "extend": "Prelungește",
+        "allGood": "Nimic nu te așteaptă",
+        "allGoodBody": "Nicio cerere nouă, nicio excepție care expiră în 7 zile."
+      },
+      "limits": {
+        "title": "Aproape de limite",
+        "lead": "Afacerile care au trecut de 80% dintr-o limită în luna aceasta.",
+        "usage": "{limit} · {used} din {max}",
+        "more": "Vezi toate în Consum",
+        "none": "Nicio afacere peste 80%."
+      },
+      "recent": {
+        "title": "Afaceri create recent",
+        "col": {
+          "business": "Afacerea",
+          "bundle": "Bundle sau aplicații",
+          "created": "Creată",
+          "status": "Stare"
+        },
+        "status": {
+          "trial": "În probă",
+          "active": "Activă",
+          "invited": "Proprietarul n-a intrat încă",
+          "suspended": "Suspendată"
+        },
+        "all": "Vezi toate afacerile"
+      },
+      "first": {
+        "title": "Nicio afacere încă",
+        "body": "Când creezi prima afacere, aici apar cifrele, ce te așteaptă și consumul.",
+        "action": "Afacere nouă"
+      },
+      "error": {
+        "title": "Nu am putut încărca prezentarea",
+        "body": "Cifrele și listele nu s-au încărcat. Datele afacerilor nu sunt afectate.",
+        "retry": "Încearcă din nou"
+      }
     },
     "quota": {
       "platform_members": {
