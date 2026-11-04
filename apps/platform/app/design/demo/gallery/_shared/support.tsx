@@ -17,7 +17,7 @@ import {
   type SupportMessageData,
 } from '@ventora/screens';
 import { HubSettings } from './hubSettings';
-import { FX_NAV_SUPPORT, FounderShellDemo } from './founderShell';
+import { FounderShellDemo } from './founderShell';
 import { noop } from './shell';
 import f from './frames.module.css';
 import { RoIntl } from './ScreenFrames';
@@ -205,7 +205,7 @@ export function FounderInboxFrame() {
       active="suport"
       title="Suport"
       bottomItems={FOUNDER_BOTTOM}
-      sections={FX_NAV_SUPPORT}
+      businessesBadge={false}
     >
       <FounderSupportInboxView
         mob={phone}
@@ -245,7 +245,7 @@ export function FounderThreadFrame() {
       active="suport"
       title="Suport"
       bottomItems={FOUNDER_BOTTOM}
-      sections={FX_NAV_SUPPORT}
+      businessesBadge={false}
     >
       <FounderSupportThreadView
         mob={phone}

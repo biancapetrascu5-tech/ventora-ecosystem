@@ -1393,5 +1393,58 @@
       "label": "Events created",
       "resource": "events created"
     }
+  },
+  "automations": {
+    "nav": "Automations",
+    "title": "Automations",
+    "lead": "The messages Ventora Systems sends automatically for your business. The Ventora Systems team turns them on or off when you ask.",
+    "usage": "Automated messages in {month}",
+    "usageHelp": "Only messages sent count. Skipped runs don’t.",
+    "on": "On",
+    "off": "Off",
+    "last": "Last sent: {when} · {n} messages",
+    "never": "Nothing sent yet",
+    "who": "The Ventora Systems team turns them on and off. Write to us if you want a change.",
+    "ask": "Ask for a change",
+    "askOn": "Ask to turn on",
+    "askSent": "We’ve got your request. We’ll reply in Support and by email.",
+    "yourSetting": "Your setting",
+    "weeks": "{n} weeks",
+    "discount": "Discount in the message",
+    "discountNone": "No discount",
+    "reminderNote": "The reminder before an appointment isn’t here: set it in EasyBook · Settings · Reminders.",
+    "empty": {
+      "title": "No automations turned on",
+      "body": "We’ll tell you what suits your business and turn it on for you. Write to us in Support."
+    },
+    "memberNote": "Owners and admins see automations.",
+    "a": {
+      "thanks": {
+        "name": "Thank-you after the appointment",
+        "desc": "2 hours after a completed appointment, the client gets a thank-you email asking for a review."
+      },
+      "winback": {
+        "name": "Win back inactive clients",
+        "desc": "A client who hasn’t been in for {n} weeks gets an invitation to book."
+      },
+      "birthday": {
+        "name": "Happy birthday",
+        "desc": "On their birthday, the client gets a message from the salon, with a discount if you choose one."
+      },
+      "risk": {
+        "name": "Alert: “High risk” client",
+        "desc": "The owner gets a notification and an email when a client reaches “High risk”."
+      },
+      "digest": {
+        "name": "Daily summary",
+        "desc": "At 7:00 each morning, every member gets their appointments for the day by email."
+      },
+      "quota": {
+        "name": "Limit almost reached",
+        "desc": "When a plan quota passes 80%, the owner gets the usage notification (the same as in “Plan and usage”)."
+      }
+    },
+    "sentN": "{n} messages sent",
+    "askBody": "Request sent from Business · Automations."
   }
 }

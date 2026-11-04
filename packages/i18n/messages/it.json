@@ -1393,5 +1393,58 @@
       "label": "Eventi creati",
       "resource": "eventi creati"
     }
+  },
+  "automations": {
+    "nav": "Automazioni",
+    "title": "Automazioni",
+    "lead": "I messaggi che Ventora Systems invia automaticamente per la Sua attività. Il team Ventora Systems li attiva o disattiva su Sua richiesta.",
+    "usage": "Messaggi automatici a {month}",
+    "usageHelp": "Contano solo i messaggi inviati. Le esecuzioni saltate non consumano.",
+    "on": "Attiva",
+    "off": "Disattivata",
+    "last": "Ultimo invio: {when} · {n} messaggi",
+    "never": "Non ha ancora inviato nulla",
+    "who": "Le attiva e disattiva il team Ventora Systems. Ci scriva se desidera una modifica.",
+    "ask": "Chiedi una modifica",
+    "askOn": "Chiedi l’attivazione",
+    "askSent": "Abbiamo ricevuto la richiesta. Le rispondiamo in Assistenza e via e-mail.",
+    "yourSetting": "La Sua impostazione",
+    "weeks": "{n} settimane",
+    "discount": "Sconto nel messaggio",
+    "discountNone": "Nessuno sconto",
+    "reminderNote": "Il promemoria prima di un appuntamento non è qui: lo imposta in EasyBook · Impostazioni · Promemoria.",
+    "empty": {
+      "title": "Nessuna automazione attiva",
+      "body": "Le diciamo cosa si adatta alla Sua attività e lo attiviamo noi. Ci scriva in Assistenza."
+    },
+    "memberNote": "Le automazioni le vedono il titolare e gli admin.",
+    "a": {
+      "thanks": {
+        "name": "Ringraziamento dopo l’appuntamento",
+        "desc": "2 ore dopo un appuntamento concluso, il cliente riceve un’e-mail di ringraziamento con la richiesta di recensione."
+      },
+      "winback": {
+        "name": "Riattivare i clienti inattivi",
+        "desc": "Il cliente che non viene da {n} settimane riceve un invito a prenotare."
+      },
+      "birthday": {
+        "name": "Buon compleanno",
+        "desc": "Il giorno del compleanno il cliente riceve un messaggio dal salone, con uno sconto se ne sceglie uno."
+      },
+      "risk": {
+        "name": "Avviso: cliente «Rischio alto»",
+        "desc": "Il titolare riceve una notifica e un’e-mail quando un cliente arriva a «Rischio alto»."
+      },
+      "digest": {
+        "name": "Riepilogo del giorno",
+        "desc": "Ogni mattina alle 7:00 ogni membro riceve via e-mail i suoi appuntamenti del giorno."
+      },
+      "quota": {
+        "name": "Limite quasi raggiunto",
+        "desc": "Quando una quota dell’abbonamento supera l’80%, il titolare riceve la notifica di consumo (la stessa di «Abbonamento e utilizzo»)."
+      }
+    },
+    "sentN": "{n} messaggi inviati",
+    "askBody": "Richiesta inviata da Attività · Automazioni."
   }
 }

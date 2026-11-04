@@ -1393,5 +1393,58 @@
       "label": "Erstellte Veranstaltungen",
       "resource": "erstellte Veranstaltungen"
     }
+  },
+  "automations": {
+    "nav": "Automatisierungen",
+    "title": "Automatisierungen",
+    "lead": "Die Nachrichten, die Ventora Systems automatisch für Ihr Unternehmen sendet. Das Ventora-Systems-Team schaltet sie auf Ihren Wunsch ein oder aus.",
+    "usage": "Automatische Nachrichten im {month}",
+    "usageHelp": "Es zählen nur gesendete Nachrichten. Übersprungene Ausführungen zählen nicht.",
+    "on": "Aktiv",
+    "off": "Aus",
+    "last": "Zuletzt gesendet: {when} · {n} Nachrichten",
+    "never": "Noch nichts gesendet",
+    "who": "Ein- und Ausschalten übernimmt das Ventora-Systems-Team. Schreiben Sie uns, wenn Sie etwas ändern möchten.",
+    "ask": "Änderung anfragen",
+    "askOn": "Einschalten anfragen",
+    "askSent": "Ihre Anfrage ist eingegangen. Wir antworten im Support und per E-Mail.",
+    "yourSetting": "Ihre Einstellung",
+    "weeks": "{n} Wochen",
+    "discount": "Rabatt in der Nachricht",
+    "discountNone": "Kein Rabatt",
+    "reminderNote": "Die Erinnerung vor einem Termin ist nicht hier: Sie stellen sie in EasyBook · Einstellungen · Erinnerungen ein.",
+    "empty": {
+      "title": "Keine Automatisierung aktiv",
+      "body": "Wir sagen Ihnen, was zu Ihrem Unternehmen passt, und schalten es ein. Schreiben Sie uns im Support."
+    },
+    "memberNote": "Automatisierungen sehen Inhaber und Admins.",
+    "a": {
+      "thanks": {
+        "name": "Dank nach dem Termin",
+        "desc": "2 Stunden nach einem erledigten Termin erhält der Kunde eine Dankes-E-Mail mit der Bitte um eine Bewertung."
+      },
+      "winback": {
+        "name": "Inaktive Kunden zurückgewinnen",
+        "desc": "Ein Kunde, der seit {n} Wochen nicht da war, erhält eine Einladung zur Buchung."
+      },
+      "birthday": {
+        "name": "Alles Gute zum Geburtstag",
+        "desc": "An seinem Geburtstag erhält der Kunde eine Nachricht vom Salon, mit Rabatt, wenn Sie einen wählen."
+      },
+      "risk": {
+        "name": "Meldung: Kunde mit „Hohes Risiko“",
+        "desc": "Der Inhaber erhält eine Mitteilung und eine E-Mail, wenn ein Kunde „Hohes Risiko“ erreicht."
+      },
+      "digest": {
+        "name": "Tagesübersicht",
+        "desc": "Jeden Morgen um 7:00 Uhr erhält jedes Mitglied seine Termine des Tages per E-Mail."
+      },
+      "quota": {
+        "name": "Limit fast erreicht",
+        "desc": "Wenn ein Kontingent des Abonnements 80 % überschreitet, erhält der Inhaber die Verbrauchsmitteilung (dieselbe wie unter „Abonnement und Verbrauch“)."
+      }
+    },
+    "sentN": "{n} Nachrichten gesendet",
+    "askBody": "Anfrage gesendet aus Unternehmen · Automatisierungen."
   }
 }

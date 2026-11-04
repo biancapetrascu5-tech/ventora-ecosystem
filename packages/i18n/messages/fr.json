@@ -1393,5 +1393,58 @@
       "label": "Événements créés",
       "resource": "événements créés"
     }
+  },
+  "automations": {
+    "nav": "Automatisations",
+    "title": "Automatisations",
+    "lead": "Les messages que Ventora Systems envoie automatiquement pour votre entreprise. L’équipe Ventora Systems les active ou les désactive à votre demande.",
+    "usage": "Messages automatiques en {month}",
+    "usageHelp": "Seuls les messages envoyés comptent. Les exécutions ignorées ne comptent pas.",
+    "on": "Activée",
+    "off": "Désactivée",
+    "last": "Dernier envoi : {when} · {n} messages",
+    "never": "Rien envoyé pour l’instant",
+    "who": "L’équipe Ventora Systems les active et les désactive. Écrivez-nous si vous souhaitez un changement.",
+    "ask": "Demander un changement",
+    "askOn": "Demander l’activation",
+    "askSent": "Nous avons reçu votre demande. Nous répondons dans Support et par e-mail.",
+    "yourSetting": "Votre réglage",
+    "weeks": "{n} semaines",
+    "discount": "Réduction dans le message",
+    "discountNone": "Sans réduction",
+    "reminderNote": "Le rappel avant un rendez-vous n’est pas ici : réglez-le dans EasyBook · Réglages · Rappels.",
+    "empty": {
+      "title": "Aucune automatisation activée",
+      "body": "Nous vous disons ce qui convient à votre entreprise et l’activons pour vous. Écrivez-nous dans Support."
+    },
+    "memberNote": "Le propriétaire et les admins voient les automatisations.",
+    "a": {
+      "thanks": {
+        "name": "Remerciement après le rendez-vous",
+        "desc": "2 heures après un rendez-vous terminé, le client reçoit un e-mail de remerciement avec une demande d’avis."
+      },
+      "winback": {
+        "name": "Relance des clients inactifs",
+        "desc": "Le client qui n’est pas venu depuis {n} semaines reçoit une invitation à prendre rendez-vous."
+      },
+      "birthday": {
+        "name": "Joyeux anniversaire",
+        "desc": "Le jour de son anniversaire, le client reçoit un message du salon, avec une réduction si vous en choisissez une."
+      },
+      "risk": {
+        "name": "Alerte : client « Risque élevé »",
+        "desc": "Le propriétaire reçoit une notification et un e-mail quand un client passe en « Risque élevé »."
+      },
+      "digest": {
+        "name": "Résumé du jour",
+        "desc": "Chaque matin à 7 h, chaque membre reçoit par e-mail ses rendez-vous du jour."
+      },
+      "quota": {
+        "name": "Limite presque atteinte",
+        "desc": "Quand un quota de l’abonnement dépasse 80 %, le propriétaire reçoit la notification de consommation (la même que dans « Abonnement et consommation »)."
+      }
+    },
+    "sentN": "{n} messages envoyés",
+    "askBody": "Demande envoyée depuis Entreprise · Automatisations."
   }
 }

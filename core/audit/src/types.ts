@@ -35,7 +35,12 @@ export type AuditTargetType =
   | 'payment_method'
   | 'purchase'
   | 'billing_subscription'
-  | 'dispute';
+  | 'dispute'
+  // Lot 4.10: the workflow engine (core/workflows)
+  | 'workflow_definition'
+  | 'workflow_activation'
+  | 'workflow_execution'
+  | 'workflow_engine';
 
 export type AuditEvent = {
   category: AuditCategory;

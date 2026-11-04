@@ -168,6 +168,23 @@ export type {
 } from './founder/commercial/OverviewView';
 export { default as commercialStyles } from './founder/commercial/commercial.module.css';
 
+// Lotul 4.10 — FounderAutomations (S116)
+export {
+  AutomationsListView,
+  AutomationBuilderView,
+  AutomationBusinessesView,
+  TurnOnOffDialog,
+  RunsView,
+} from './founder/automations/AutomationsView';
+export type {
+  AutomationListRow,
+  BuilderLine,
+  BuilderOption,
+  BusinessActivationRow,
+  RunFilter,
+  RunRow,
+  RunStatus,
+} from './founder/automations/AutomationsView';
 // Lot 4.6: Suport — HubSupport, HubSupportThread (Hub, 6 limbi), FounderSupportInbox (Founder, RO)
 export {
   HubSupportView,

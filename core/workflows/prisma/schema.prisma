@@ -1,0 +1,153 @@
+// Schema "workflows" (Lot 4.10) — folosită pentru garda de drift (prisma migrate diff) și
+// prisma migrate deploy. Codul nu folosește un client Prisma generat (ca în core/files): rulează pe
+// pg, cu SET LOCAL ROLE workflows_rw (Hub, job-uri) sau workflows_founder (Founder).
+// CHECK-urile (lista albă, S116-D19), triggerele, rolurile, grant-urile, RLS, indecșii parțiali și
+// funcțiile SECURITY DEFINER sunt doar în migrare.
+
+datasource db {
+  provider = "postgresql"
+  schemas  = ["workflows"]
+}
+
+/// O automatizare construită în Founder (D-WF-2), comună tuturor afacerilor.
+model Definition {
+  id                 String   @id @db.Uuid
+  code               String   @unique(map: "definition_code_key") @db.VarChar(64)
+  name               String   @db.VarChar(200)
+  currentVersion     Int      @default(1) @map("current_version")
+  createdByFounderId String   @map("created_by_founder_id") @db.Uuid
+  createdAt          DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt          DateTime @default(now()) @map("updated_at") @db.Timestamptz
+
+  versions        DefinitionVersion[]
+  activations     Activation[]
+  businessSetting BusinessSetting[]
+  executions      Execution[]
+
+  @@map("definition")
+  @@schema("workflows")
+}
+
+/// O versiune imuabilă: declanșatorul, întârzierea, condițiile, pașii (lista albă).
+model DefinitionVersion {
+  definitionId       String   @map("definition_id") @db.Uuid
+  version            Int
+  triggerType        String   @map("trigger_type") @db.VarChar(64)
+  triggerParams      Json     @default("{}") @map("trigger_params")
+  delayMinutes       Int      @default(0) @map("delay_minutes")
+  conditions         String[] @default([])
+  steps              Json
+  createdByFounderId String   @map("created_by_founder_id") @db.Uuid
+  createdAt          DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  definition Definition @relation(fields: [definitionId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "definition_version_definition_id_fkey")
+
+  @@id([definitionId, version], map: "definition_version_pkey")
+  @@map("definition_version")
+  @@schema("workflows")
+}
+
+/// Pornirea unei automatizări pentru o afacere (doar Founder), până la oprire.
+model Activation {
+  id                   String    @id @db.Uuid
+  organizationId       String    @map("organization_id") @db.Uuid
+  definitionId         String    @map("definition_id") @db.Uuid
+  status               String    @default("active") @db.VarChar(16)
+  quotaOperationId     String    @unique(map: "activation_quota_operation_id_key") @map("quota_operation_id") @db.VarChar(128)
+  quotaFreedAt         DateTime? @map("quota_freed_at") @db.Timestamptz
+  activatedAt          DateTime  @default(now()) @map("activated_at") @db.Timestamptz
+  activatedByFounderId String    @map("activated_by_founder_id") @db.Uuid
+  activationReason     String    @map("activation_reason")
+  activationSupportRef String?   @map("activation_support_ref") @db.VarChar(64)
+  stoppedAt            DateTime? @map("stopped_at") @db.Timestamptz
+  stoppedByFounderId   String?   @map("stopped_by_founder_id") @db.Uuid
+  stopReason           String?   @map("stop_reason")
+  stopSupportRef       String?   @map("stop_support_ref") @db.VarChar(64)
+
+  definition Definition  @relation(fields: [definitionId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "activation_definition_id_fkey")
+  executions Execution[]
+
+  @@index([definitionId, status], map: "activation_definition_id_idx")
+  @@map("activation")
+  @@schema("workflows")
+}
+
+/// Setările afacerii (S116-D22), scrise din Hub de owner și admini.
+model BusinessSetting {
+  organizationId  String   @map("organization_id") @db.Uuid
+  definitionId    String   @map("definition_id") @db.Uuid
+  settings        Json     @default("{}")
+  updatedByUserId String   @map("updated_by_user_id") @db.Uuid
+  updatedAt       DateTime @default(now()) @map("updated_at") @db.Timestamptz
+
+  definition Definition @relation(fields: [definitionId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "business_setting_definition_id_fkey")
+
+  @@id([organizationId, definitionId], map: "business_setting_pkey")
+  @@map("business_setting")
+  @@schema("workflows")
+}
+
+/// O execuție: reușită / eșuată / sărită, cu motivul și mesajele trimise (S116-D20).
+model Execution {
+  id                String    @id @db.Uuid
+  organizationId    String    @map("organization_id") @db.Uuid
+  activationId      String    @map("activation_id") @db.Uuid
+  definitionId      String    @map("definition_id") @db.Uuid
+  definitionVersion Int?      @map("definition_version")
+  runKey            String    @map("run_key") @db.VarChar(255)
+  triggerType       String    @map("trigger_type") @db.VarChar(64)
+  triggerEventId    String?   @map("trigger_event_id") @db.Uuid
+  triggerPayload    Json      @default("{}") @map("trigger_payload")
+  subjectType       String?   @map("subject_type") @db.VarChar(32)
+  subjectId         String?   @map("subject_id") @db.VarChar(255)
+  status            String    @default("pending") @db.VarChar(16)
+  reasonCode        String?   @map("reason_code") @db.VarChar(64)
+  messagesSent      Int       @default(0) @map("messages_sent")
+  attempts          Int       @default(0)
+  availableAt       DateTime  @default(now()) @map("available_at") @db.Timestamptz
+  startedAt         DateTime? @map("started_at") @db.Timestamptz
+  finishedAt        DateTime? @map("finished_at") @db.Timestamptz
+  createdAt         DateTime  @default(now()) @map("created_at") @db.Timestamptz
+
+  activation Activation      @relation(fields: [activationId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "execution_activation_id_fkey")
+  definition Definition      @relation(fields: [definitionId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "execution_definition_id_fkey")
+  steps      ExecutionStep[]
+
+  @@unique([activationId, runKey], map: "execution_activation_id_run_key_key")
+  @@index([organizationId, createdAt], map: "execution_organization_id_created_at_idx")
+  @@index([definitionId, createdAt], map: "execution_definition_id_created_at_idx")
+  @@map("execution")
+  @@schema("workflows")
+}
+
+/// Un pas al unei execuții; un pas trimis nu se mai trimite.
+model ExecutionStep {
+  executionId    String   @map("execution_id") @db.Uuid
+  stepIndex      Int      @map("step_index")
+  organizationId String   @map("organization_id") @db.Uuid
+  kind           String   @db.VarChar(32)
+  template       String   @db.VarChar(64)
+  status         String   @db.VarChar(16)
+  messagesSent   Int      @default(0) @map("messages_sent")
+  reasonCode     String?  @map("reason_code") @db.VarChar(64)
+  createdAt      DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt      DateTime @default(now()) @map("updated_at") @db.Timestamptz
+
+  execution Execution @relation(fields: [executionId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "execution_step_execution_id_fkey")
+
+  @@id([executionId, stepIndex], map: "execution_step_pkey")
+  @@map("execution_step")
+  @@schema("workflows")
+}
+
+/// Oprirea centrală a motorului (un singur rând).
+model EngineControl {
+  id                 Int      @id @default(1) @db.SmallInt
+  paused             Boolean  @default(false)
+  reason             String?
+  changedByFounderId String?  @map("changed_by_founder_id") @db.Uuid
+  changedAt          DateTime @default(now()) @map("changed_at") @db.Timestamptz
+
+  @@map("engine_control")
+  @@schema("workflows")
+}
