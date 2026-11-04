@@ -386,6 +386,10 @@ for (const migration of [
   'core/support/prisma/migrations/20261104000001_support_init/migration.sql',
   // Lot 4.10: motorul de automatizări (schema workflows, workflows_rw / workflows_founder)
   'core/workflows/prisma/migrations/20261104000003_workflows_init/migration.sql',
+  // Lot 3.8: perioada de probă, neplata, cererile cu implementare (commercial); profilul de
+  // facturare, plata prin transfer, factura neemisă, rolul billing_founder (billing)
+  'core/commercial/prisma/migrations/20261104000020_commercial_lifecycle/migration.sql',
+  'core/billing/prisma/migrations/20261104000021_billing_lifecycle/migration.sql',
 ]) {
   psqlFile(TEST_DB.accessDb, join(ROOT, migration));
 }

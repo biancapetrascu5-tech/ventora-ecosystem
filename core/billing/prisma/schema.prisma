@@ -59,6 +59,8 @@ model Purchase {
   commercialRef         String?   @map("commercial_ref") @db.Uuid
   activatedAt           DateTime? @map("activated_at") @db.Timestamptz
   createdByUserId       String    @map("created_by_user_id") @db.Uuid
+  /// Lot 3.8: implementarea unei cereri, plătită cu cardul (kind = 'setup').
+  setupRequestId        String?   @map("setup_request_id") @db.Uuid
   createdAt             DateTime  @default(now()) @map("created_at") @db.Timestamptz
   updatedAt             DateTime  @default(now()) @map("updated_at") @db.Timestamptz
 
@@ -86,6 +88,9 @@ model Payment {
   nextAttemptAt         DateTime? @map("next_attempt_at") @db.Timestamptz
   occurredAt            DateTime  @map("occurred_at") @db.Timestamptz
   createdAt             DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  /// Lot 3.8: încasarea prin transfer (kind = 'transfer'), confirmată de echipă.
+  receivedOn            DateTime? @map("received_on") @db.Date
+  confirmedByFounderId  String?   @map("confirmed_by_founder_id") @db.Uuid
   purchase              Purchase? @relation(fields: [purchaseId], references: [id], onDelete: Restrict, onUpdate: Cascade)
   invoices              Invoice[]
 
@@ -116,6 +121,8 @@ model BillingSubscription {
   currentPeriodEnd     DateTime? @map("current_period_end") @db.Timestamptz
   cancelAtPeriodEnd    Boolean   @default(false) @map("cancel_at_period_end")
   lastEventAt          DateTime? @map("last_event_at") @db.Timestamptz
+  /// Lot 3.8 (D3-11): termenul de plată pentru transfer, pe afacere.
+  paymentTermsDays     Int       @default(14) @map("payment_terms_days") @db.SmallInt
   createdAt            DateTime  @default(now()) @map("created_at") @db.Timestamptz
   updatedAt            DateTime  @default(now()) @map("updated_at") @db.Timestamptz
 
@@ -125,17 +132,17 @@ model BillingSubscription {
 
 /// Disputa (chargeback): decizia rămâne manuală, la Founder.
 model Dispute {
-  stripeDisputeId String   @id @map("stripe_dispute_id") @db.VarChar(255)
-  organizationId  String   @map("organization_id") @db.Uuid
-  stripeChargeId  String   @map("stripe_charge_id") @db.VarChar(255)
-  amountMinor     BigInt   @map("amount_minor")
-  currency        String   @db.VarChar(3)
-  reason          String   @db.VarChar(64)
-  status          String   @db.VarChar(32)
+  stripeDisputeId String    @id @map("stripe_dispute_id") @db.VarChar(255)
+  organizationId  String    @map("organization_id") @db.Uuid
+  stripeChargeId  String    @map("stripe_charge_id") @db.VarChar(255)
+  amountMinor     BigInt    @map("amount_minor")
+  currency        String    @db.VarChar(3)
+  reason          String    @db.VarChar(64)
+  status          String    @db.VarChar(32)
   /// Lot 3.6: termenul de răspuns din Stripe (evidence_details.due_by).
   evidenceDueBy   DateTime? @map("evidence_due_by") @db.Timestamptz
-  createdAt       DateTime @default(now()) @map("created_at") @db.Timestamptz
-  updatedAt       DateTime @default(now()) @map("updated_at") @db.Timestamptz
+  createdAt       DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt       DateTime  @default(now()) @map("updated_at") @db.Timestamptz
 
   @@index([organizationId], map: "dispute_organization_id_idx")
   @@map("dispute")
@@ -145,31 +152,43 @@ model Dispute {
 /// Lot 3.6: factura unei plăți (SmartBill) sau stornarea ei. Indexurile unice parțiale (o
 /// factură pe plată, numărul pe serie) și cel al job-ului sunt doar în migrare.
 model Invoice {
-  id                 String    @id @db.Uuid
-  organizationId     String    @map("organization_id") @db.Uuid
-  kind               String    @default("invoice") @db.VarChar(8)
-  paymentId          String?   @map("payment_id") @db.Uuid
-  reversesInvoiceId  String?   @unique(map: "invoice_reverses_invoice_id_key") @map("reverses_invoice_id") @db.Uuid
-  provider           String    @db.VarChar(16)
-  status             String    @default("pending") @db.VarChar(8)
-  series             String?   @db.VarChar(16)
-  number             String?   @db.VarChar(32)
-  providerDocumentId String?   @map("provider_document_id") @db.VarChar(64)
-  issueDate          DateTime? @map("issue_date") @db.Date
-  amountMinor        BigInt    @map("amount_minor")
-  currency           String    @db.VarChar(3)
-  lines              Json?
-  buyer              Json?
-  efacturaStatus     String?   @map("efactura_status") @db.VarChar(16)
-  attempts           Int       @default(0)
-  nextAttemptAt      DateTime  @default(now()) @map("next_attempt_at") @db.Timestamptz
-  claimedUntil       DateTime? @map("claimed_until") @db.Timestamptz
-  lastError          String?   @map("last_error") @db.VarChar(500)
-  failedAt           DateTime? @map("failed_at") @db.Timestamptz
-  issuedAt           DateTime? @map("issued_at") @db.Timestamptz
-  emailedAt          DateTime? @map("emailed_at") @db.Timestamptz
-  createdAt          DateTime  @default(now()) @map("created_at") @db.Timestamptz
-  updatedAt          DateTime  @default(now()) @map("updated_at") @db.Timestamptz
+  id                       String    @id @db.Uuid
+  organizationId           String    @map("organization_id") @db.Uuid
+  kind                     String    @default("invoice") @db.VarChar(8)
+  paymentId                String?   @map("payment_id") @db.Uuid
+  reversesInvoiceId        String?   @unique(map: "invoice_reverses_invoice_id_key") @map("reverses_invoice_id") @db.Uuid
+  provider                 String    @db.VarChar(16)
+  status                   String    @default("pending") @db.VarChar(8)
+  series                   String?   @db.VarChar(16)
+  number                   String?   @db.VarChar(32)
+  providerDocumentId       String?   @map("provider_document_id") @db.VarChar(64)
+  issueDate                DateTime? @map("issue_date") @db.Date
+  amountMinor              BigInt    @map("amount_minor")
+  currency                 String    @db.VarChar(3)
+  lines                    Json?
+  buyer                    Json?
+  efacturaStatus           String?   @map("efactura_status") @db.VarChar(16)
+  attempts                 Int       @default(0)
+  nextAttemptAt            DateTime  @default(now()) @map("next_attempt_at") @db.Timestamptz
+  claimedUntil             DateTime? @map("claimed_until") @db.Timestamptz
+  lastError                String?   @map("last_error") @db.VarChar(500)
+  failedAt                 DateTime? @map("failed_at") @db.Timestamptz
+  issuedAt                 DateTime? @map("issued_at") @db.Timestamptz
+  emailedAt                DateTime? @map("emailed_at") @db.Timestamptz
+  /// Lot 3.8: charge (plata întâi, cardul) / transfer (factura întâi, cu scadența).
+  collection               String    @default("charge") @db.VarChar(8)
+  dueOn                    DateTime? @map("due_on") @db.Date
+  periodStart              DateTime? @map("period_start") @db.Date
+  setupRequestId           String?   @map("setup_request_id") @db.Uuid
+  paidOn                   DateTime? @map("paid_on") @db.Date
+  paidConfirmedByFounderId String?   @map("paid_confirmed_by_founder_id") @db.Uuid
+  /// Lot 3.8 (D-3.6-5): emisă manual / reîncercată de echipă.
+  manualReason             String?   @map("manual_reason")
+  manualByFounderId        String?   @map("manual_by_founder_id") @db.Uuid
+  retriedAt                DateTime? @map("retried_at") @db.Timestamptz
+  retriedByFounderId       String?   @map("retried_by_founder_id") @db.Uuid
+  createdAt                DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt                DateTime  @default(now()) @map("updated_at") @db.Timestamptz
 
   payment  Payment? @relation(fields: [paymentId], references: [id], onDelete: Restrict, onUpdate: Cascade)
   reverses Invoice? @relation("InvoiceStorno", fields: [reversesInvoiceId], references: [id], onDelete: Restrict, onUpdate: Cascade)
@@ -177,6 +196,29 @@ model Invoice {
 
   @@index([organizationId, createdAt], map: "invoice_organization_id_created_at_idx")
   @@map("invoice")
+  @@schema("billing")
+}
+
+/// Lot 3.8 (D-3.6-1): datele pe care se emit facturile afacerii; le scrie doar echipa
+/// (billing_founder), owner-ul le citește. CUI-ul românesc e verificat în baza de date
+/// (billing.ro_cui_valid); CHECK-urile sunt doar în migrare.
+model BillingProfile {
+  organizationId     String   @id @map("organization_id") @db.Uuid
+  entityType         String   @map("entity_type") @db.VarChar(8)
+  name               String   @db.VarChar(255)
+  country            String   @default("RO") @db.VarChar(2)
+  taxId              String?  @map("tax_id") @db.VarChar(20)
+  regCom             String?  @map("reg_com") @db.VarChar(32)
+  street             String   @db.VarChar(255)
+  city               String   @db.VarChar(128)
+  county             String?  @db.VarChar(128)
+  email              String   @db.VarChar(255)
+  createdByFounderId String   @map("created_by_founder_id") @db.Uuid
+  updatedByFounderId String   @map("updated_by_founder_id") @db.Uuid
+  createdAt          DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt          DateTime @default(now()) @map("updated_at") @db.Timestamptz
+
+  @@map("billing_profile")
   @@schema("billing")
 }
 

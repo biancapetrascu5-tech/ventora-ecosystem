@@ -106,3 +106,12 @@ export {
 } from './stripe';
 export { setBillingErrorReporter, type BillingErrorReporter } from './report';
 export { closeBillingPools } from './db';
+// Lot 3.8 (D-3.6-1): the checks of the billing profile (the same rules as the database)
+export {
+  checkRomanianCui,
+  checkForeignVatCode,
+  checkRegCom,
+  isRomanianVatPayer,
+  normalizeTaxId,
+  type CuiCheck,
+} from './billing-profile';
