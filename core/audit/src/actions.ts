@@ -97,6 +97,14 @@ export const AuditActions = {
   billingPurchaseFailed: 'billing.purchase_failed', // outcome failure: nothing activated
   billingSubscriptionCreated: 'billing.subscription_created', // the subscription in Stripe Billing
   billingDisputeOpened: 'billing.dispute_opened', // chargeback: Founder decides, by hand
+  // Lot 4.10 — the workflow engine (category founder): only Founder builds, starts and stops
+  // (D-WF-2); the reason and the support reference go in the business's log
+  workflowDefinitionSaved: 'workflows.definition_saved', // a new automation or a new version
+  workflowActivated: 'workflows.activated',
+  workflowStopped: 'workflows.stopped',
+  workflowExecutionRetried: 'workflows.execution_retried', // „Rulează din nou”
+  workflowEnginePaused: 'workflows.engine_paused', // the central stop
+  workflowEngineResumed: 'workflows.engine_resumed',
 } as const;
 
 export type AuditAction = (typeof AuditActions)[keyof typeof AuditActions];

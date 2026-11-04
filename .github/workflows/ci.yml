@@ -495,6 +495,33 @@ jobs:
           DATABASE_URL_TEST: postgresql://app_runtime:${{ env.APP_PW }}@localhost:5435/ventora_access_test
           DATABASE_URL_ADMIN_TEST: postgresql://postgres:test@localhost:5435/ventora_access_test
         run: pnpm --filter @ventora/billing test:integration
+      # Lot 4.10: the workflow engine (schema workflows, roles workflows_rw / workflows_founder)
+      - name: Apply workflows migrations
+        run: |
+          PSQL="psql postgresql://postgres:test@localhost:5435/ventora_access_test -v ON_ERROR_STOP=1"
+          for f in core/workflows/prisma/migrations/*/migration.sql; do
+            echo "Applying $f"
+            $PSQL -f "$f"
+          done
+      - name: Verify workflows schema matches migrations
+        run: |
+          psql postgresql://postgres:test@localhost:5435/ventora_access_test -c "CREATE DATABASE shadow_workflows_diff"
+          SHADOW_DATABASE_URL="postgresql://postgres:test@localhost:5435/shadow_workflows_diff" \
+          pnpm --filter @ventora/workflows exec prisma migrate diff \
+            --from-migrations ./prisma/migrations \
+            --to-schema ./prisma/schema.prisma \
+            --exit-code \
+            --config prisma7.config.ts
+        env:
+          DATABASE_URL: postgresql://postgres:test@localhost:5435/ventora_access_test
+      - name: Run workflows integration tests
+        env:
+          DATABASE_URL_TEST: postgresql://app_runtime:${{ env.APP_PW }}@localhost:5435/ventora_access_test
+          DATABASE_URL_FOUNDER_TEST: postgresql://founder_runtime:${{ env.FOUNDER_PW }}@localhost:5435/ventora_access_test
+          DATABASE_URL_ADMIN_TEST: postgresql://postgres:test@localhost:5435/ventora_access_test
+          BETTER_AUTH_SECRET: ${{ env.BETTER_AUTH_SECRET }}
+          FOUNDER_AUTH_SECRET: ${{ env.FOUNDER_AUTH_SECRET }}
+        run: pnpm --filter @ventora/workflows test:integration
 
   integration-tests-audit:
     name: Integration tests (audit — TA)

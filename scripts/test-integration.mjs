@@ -2,8 +2,8 @@
 /**
  * Rulează toate testele de integrare local, identic cu CI:
  *   1. Pornește DB-ul de test
- *   2. Verifică garda de drift (prisma migrate diff --exit-code): identity, founder, organizations, audit, access, notifications, files, commercial, billing
- *   3. Rulează testele de integrare (db-kit, audit, identity, organizations, integrations, access, notifications, files, commercial, booking, billing)
+ *   2. Verifică garda de drift (prisma migrate diff --exit-code): identity, founder, organizations, audit, access, notifications, files, commercial, billing, workflows
+ *   3. Rulează testele de integrare (db-kit, audit, identity, organizations, integrations, access, notifications, files, commercial, booking, billing, workflows)
  *      și sincronizarea registrului comercial de două ori (a doua nu trebuie să schimbe nimic)
  *   4. Oprește DB-ul (indiferent de rezultat)
  *
@@ -42,6 +42,7 @@ const SHADOW_COMMERCIAL = `postgresql://postgres:test@localhost:${PG}/shadow_com
 const SHADOW_NOTIFICATIONS = `postgresql://postgres:test@localhost:${PG}/shadow_notifications_diff`;
 const SHADOW_FILES = `postgresql://postgres:test@localhost:${PG}/shadow_files_diff`;
 const SHADOW_BILLING = `postgresql://postgres:test@localhost:${PG}/shadow_billing_diff`;
+const SHADOW_WORKFLOWS = `postgresql://postgres:test@localhost:${PG}/shadow_workflows_diff`;
 
 let exitCode = 0;
 
@@ -212,6 +213,22 @@ try {
   runPkg('@ventora/billing', 'test:integration', {
     DATABASE_URL_TEST: `postgresql://app_runtime:${TEST_DB.appPw}@localhost:${PG}/${TEST_DB.accessDb}`,
     DATABASE_URL_ADMIN_TEST: ADMIN_ACCESS,
+  });
+
+  // --- Lot 4.10: motorul de automatizări (drift, teste pe baza access, după registrul real) ---
+  console.log('[test:integration] Verificare drift workflows schema...');
+  runPkg(
+    '@ventora/workflows',
+    `exec prisma migrate diff --from-migrations ./prisma/migrations --to-schema ./prisma/schema.prisma --exit-code --config prisma7.config.ts`,
+    { DATABASE_URL: ADMIN_ACCESS, SHADOW_DATABASE_URL: SHADOW_WORKFLOWS },
+  );
+  console.log('\n[test:integration] workflows...');
+  runPkg('@ventora/workflows', 'test:integration', {
+    DATABASE_URL_TEST: `postgresql://app_runtime:${TEST_DB.appPw}@localhost:${PG}/${TEST_DB.accessDb}`,
+    DATABASE_URL_FOUNDER_TEST: `postgresql://founder_runtime:${TEST_DB.founderPw}@localhost:${PG}/${TEST_DB.accessDb}`,
+    DATABASE_URL_ADMIN_TEST: ADMIN_ACCESS,
+    BETTER_AUTH_SECRET: TEST_DB.betterAuthSecret,
+    FOUNDER_AUTH_SECRET: TEST_DB.founderAuthSecret,
   });
 
   // --- D3-1: scripts/seed-pricing.ts pe o bază curată (registrul real, fără prețuri) ---
