@@ -118,6 +118,7 @@ export function NewBusinessView({
                 <div className={phone ? `${cs.prices} ${cs.pricesMob}` : cs.prices}>
                   <FormField label={n('currency')} isRequired hint={n('currencyHelp')}>
                     <SegmentedControl
+                      className={cs.segFit}
                       aria-label={n('currency')}
                       value={buy.currency}
                       onChange={(v) => set({ currency: v as 'RON' | 'EUR' })}
@@ -129,6 +130,7 @@ export function NewBusinessView({
                   </FormField>
                   <FormField label={n('billing')} isRequired hint={n('billingHelp')}>
                     <SegmentedControl
+                      className={cs.segFit}
                       aria-label={n('billing')}
                       value={buy.interval}
                       onChange={(v) => set({ interval: v as 'month' | 'year' })}
@@ -152,9 +154,11 @@ export function NewBusinessView({
                       ]}
                     />
                   </FormField>
-                  <Toggle isSelected={buy.trial} onChange={(on) => set({ trial: on })}>
-                    {t('trial')}
-                  </Toggle>
+                  <div className={cs.trialCell}>
+                    <Toggle isSelected={buy.trial} onChange={(on) => set({ trial: on })}>
+                      {t('trial')}
+                    </Toggle>
+                  </div>
                 </div>
                 {bundle && <BundleApps apps={bundle.apps} />}
                 <div className={cs.stack2}>

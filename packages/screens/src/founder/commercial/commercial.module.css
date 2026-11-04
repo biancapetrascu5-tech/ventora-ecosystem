@@ -523,3 +523,66 @@
 .helpBelow {
   margin: 0 0 var(--space-3) !important;
 }
+
+/* FounderNewBusiness: „Moneda afacerii” / „Plata” cât butoanele — SegmentedControl fără `block`
+   (README) nu se întinde nici în coloana FormField; comutatorul probei jos în celulă, ca în
+   preview (div cu display flex, alignItems flex-end) */
+.segFit {
+  align-self: flex-start;
+}
+.trialCell {
+  display: flex;
+  align-items: flex-end;
+}
+
+/* FounderOverview (S118): .fo-stats, .fo-lim, .fo-sk, .x-grid (400px în dreapta), .x-col,
+   .x-stack; pe telefon corpul are 16px pe margini */
+.foStats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--space-3);
+}
+.foStatsMob {
+  grid-template-columns: 1fr 1fr;
+}
+.foLim {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+.foSk {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-4);
+  border: var(--border-width) solid var(--line);
+  border-radius: var(--radius-lg);
+  background: var(--sheet);
+}
+.xGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 400px;
+  gap: var(--space-6);
+  align-items: start;
+}
+.xGridMob {
+  grid-template-columns: 1fr;
+  gap: var(--space-4);
+}
+.xCol {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  min-width: 0;
+}
+.xStack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+.xStack p {
+  margin: 0;
+}
+.padPhone {
+  padding: 0 var(--space-4);
+}

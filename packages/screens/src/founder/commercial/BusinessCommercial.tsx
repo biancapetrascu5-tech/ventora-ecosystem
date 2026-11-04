@@ -11,7 +11,6 @@ import {
   FormField,
   Input,
   Notice,
-  PageHeader,
   Select,
   Sheet,
   SheetSection,
@@ -316,42 +315,5 @@ export function ExceptionDialog({
         </div>
       </div>
     </Dialog>
-  );
-}
-
-/** „Prezentare” (ARCHITECTURE §8.5): excepțiile care expiră în 7 zile, cu „Prelungește”. */
-export function OverviewView({
-  expiring,
-  onExtend,
-}: {
-  expiring: { id: string; title: string; body: string }[];
-  onExtend: (id: string) => void;
-}) {
-  const t = useTranslations('founder.overview');
-  return (
-    <>
-      <PageHeader title={t('title')} description={t('lead')} />
-      <div className={businessStyles.axb}>
-        {expiring.length ? (
-          expiring.map((x) => (
-            <Notice
-              key={x.id}
-              tone="attention"
-              icon="clock"
-              title={x.title}
-              actions={
-                <Button size="sm" onPress={() => onExtend(x.id)}>
-                  {t('extend')}
-                </Button>
-              }
-            >
-              {x.body}
-            </Notice>
-          ))
-        ) : (
-          <p className="body muted">{t('empty')}</p>
-        )}
-      </div>
-    </>
   );
 }

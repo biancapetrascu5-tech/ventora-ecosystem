@@ -60,7 +60,8 @@
     "email.supportReply.lead": "{author} din echipa Ventora Systems a răspuns la „{subject}” ({ref}).",
     "email.supportReply.body": "Răspunsul îl citești în Ventora Systems, unde poți și să răspunzi, cu atașamente dacă e nevoie.",
     "email.supportReply.cta": "Vezi solicitarea",
-    "email.supportReply.why": "Primești acest e-mail pentru că ai deschis această solicitare în Ventora Systems."
+    "email.supportReply.why": "Primești acest e-mail pentru că ai deschis această solicitare în Ventora Systems.",
+    "support.thread.replyNote": "Îți răspundem aici și pe e-mail."
   },
   "en": {
     "support.title": "Support",
@@ -123,7 +124,8 @@
     "email.supportReply.lead": "{author} from the Ventora Systems team replied to “{subject}” ({ref}).",
     "email.supportReply.body": "You can read the reply in Ventora Systems and answer there, with attachments if you need them.",
     "email.supportReply.cta": "View request",
-    "email.supportReply.why": "You're receiving this email because you opened this request in Ventora Systems."
+    "email.supportReply.why": "You're receiving this email because you opened this request in Ventora Systems.",
+    "support.thread.replyNote": "We reply here and by email."
   },
   "fr": {
     "support.title": "Assistance",
@@ -186,7 +188,8 @@
     "email.supportReply.lead": "{author}, de l’équipe Ventora Systems, a répondu à « {subject} » ({ref}).",
     "email.supportReply.body": "Vous pouvez lire la réponse dans Ventora Systems et y répondre, avec des pièces jointes si besoin.",
     "email.supportReply.cta": "Voir la demande",
-    "email.supportReply.why": "Vous recevez cet e-mail parce que vous avez ouvert cette demande dans Ventora Systems."
+    "email.supportReply.why": "Vous recevez cet e-mail parce que vous avez ouvert cette demande dans Ventora Systems.",
+    "support.thread.replyNote": "Nous vous répondons ici et par e-mail."
   },
   "es": {
     "support.title": "Soporte",
@@ -249,7 +252,8 @@
     "email.supportReply.lead": "{author}, del equipo de Ventora Systems, ha respondido a «{subject}» ({ref}).",
     "email.supportReply.body": "Puedes leer la respuesta en Ventora Systems y contestar allí, con archivos adjuntos si hace falta.",
     "email.supportReply.cta": "Ver solicitud",
-    "email.supportReply.why": "Recibes este correo porque abriste esta solicitud en Ventora Systems."
+    "email.supportReply.why": "Recibes este correo porque abriste esta solicitud en Ventora Systems.",
+    "support.thread.replyNote": "Te respondemos aquí y por correo."
   },
   "de": {
     "support.title": "Support",
@@ -312,7 +316,8 @@
     "email.supportReply.lead": "{author} aus dem Ventora-Systems-Team hat auf „{subject}“ ({ref}) geantwortet.",
     "email.supportReply.body": "Sie lesen die Antwort in Ventora Systems und können dort antworten, bei Bedarf mit Anhängen.",
     "email.supportReply.cta": "Anfrage ansehen",
-    "email.supportReply.why": "Sie erhalten diese E-Mail, weil Sie diese Anfrage in Ventora Systems eröffnet haben."
+    "email.supportReply.why": "Sie erhalten diese E-Mail, weil Sie diese Anfrage in Ventora Systems eröffnet haben.",
+    "support.thread.replyNote": "Wir antworten hier und per E-Mail."
   },
   "it": {
     "support.title": "Assistenza",
@@ -375,6 +380,7 @@
     "email.supportReply.lead": "{author} del team Ventora Systems ha risposto a „{subject}” ({ref}).",
     "email.supportReply.body": "Può leggere la risposta in Ventora Systems e rispondere lì, con allegati se serve.",
     "email.supportReply.cta": "Vedi la richiesta",
-    "email.supportReply.why": "Riceve questa e-mail perché ha aperto questa richiesta in Ventora Systems."
+    "email.supportReply.why": "Riceve questa e-mail perché ha aperto questa richiesta in Ventora Systems.",
+    "support.thread.replyNote": "Le rispondiamo qui e via e-mail."
   }
 }

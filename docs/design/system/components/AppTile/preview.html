@@ -1,4 +1,4 @@
-<!-- @dsCard group="Hub" height=5840 width=1100 -->
+<!-- @dsCard group="Hub" height=8090 width=1100 -->
 <!doctype html>
 <html lang="ro">
 <head><meta charset="utf-8"><title>AppTile — Ventora Systems</title>
@@ -300,6 +300,19 @@ function Set({ L, compact }) {
         h(V.AppTile, { layout: "icon", app: "crm", description: L.d.crm, onOpen: noop }),
         h(V.AppTile, { layout: "icon", app: "contracts", description: L.ct, onOpen: noop }))));
 }
+function Details({ th, de }) {
+  const L = de ? { lab: "„Details ansehen“ ohne Empfehlung (S116)", d: "Termine, Kalender und Erinnerungen" } : { lab: "„Vezi detaliile” fără recomandare (S116, decizia 3.7): butonul rămâne și când nu există recomandare; acțiunea de acces trece lângă el, discret", d: "" };
+  return h(Frame, { th, label: de ? "Deutsch" : undefined }, h(React.Fragment, null,
+    h("p", { className: "caption lab" }, L.lab),
+    h("div", { className: "tiles" },
+      h(V.AppTile, { app: "marketing", access: "notInPlan", onDetails: noop, onWriteUs: noop }),
+      h(V.AppTile, { app: "analytics", access: "notInRole", grantedBy: "Bianca Petrașcu", onDetails: noop, onRequestAccess: noop }),
+      h(V.AppTile, { app: "events", access: "notInPlan", onDetails: noop }),
+      h(V.AppTile, { app: "inventory", access: "notInPlan", recommendation: { reason: de ? "Passt zu EasyBook." : "Se potrivește cu EasyBook: vezi ce produse se termină.", cost: "49 lei" }, onDetails: noop, onDismiss: noop, onRemindLater: noop })),
+    h("div", { className: "sheetlike", style: { padding: "var(--space-2) var(--space-4)", display: "flex", flexDirection: "column" } },
+      h(V.AppTile, { layout: "row", app: "contracts", access: "notInPlan", onDetails: noop, onWriteUs: noop }),
+      h(V.AppTile, { layout: "row", app: "assets", access: "notInRole", grantedBy: "Bianca Petrașcu", onDetails: noop, onRequestAccess: noop }))));
+}
 function Demo() {
   return h("div", { className: "d" },
     h(Frame, { th: "light" }, h(Set, { L: T.ro })),
@@ -307,7 +320,8 @@ function Demo() {
     h(Frame, { th: "light", label: "Deutsch" }, h(DE, null, h(Set, { L: T.de }))),
     h(Frame, { th: "light", label: "Italiano" }, h(IT, null, h(Set, { L: T.it }))),
     h(Frame, { th: "dark", label: "Deutsch" }, h(DE, null, h(Set, { L: T.de, compact: true }))),
-    h(Frame, { th: "dark", label: "Italiano" }, h(IT, null, h(Set, { L: T.it, compact: true }))));
+    h(Frame, { th: "dark", label: "Italiano" }, h(IT, null, h(Set, { L: T.it, compact: true }))),
+    h(Details, { th: "light" }), h(Details, { th: "dark" }), h(DE, null, h(Details, { th: "light", de: true })));
 }
 mount(h(Demo, null));
 </script>

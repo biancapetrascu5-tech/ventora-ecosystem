@@ -1,4 +1,4 @@
-<!-- @dsCard group="Shell" height=2132 width=1100 -->
+<!-- @dsCard group="Shell" height=2890 width=1100 -->
 <!doctype html>
 <html lang="ro">
 <head><meta charset="utf-8"><title>Spine — Ventora Systems</title>
@@ -369,6 +369,9 @@ const Q_SpPair = ({ sections, active, meter }) => Qh("div", { className: "r", st
   Qh(Q_Box, null, Qh(V.Spine, { app: "booking", sections, activeId: active, collapsed: true, onBackToHub: () => {} })));
 function Q_Extra() {
   return Qh("div", { className: "qwrap" },
+    Qh(Q_Sec, { title: "S118 · „Restrânge meniul” jos, în meniul lateral; restrâns, doar săgeata spre dreapta („Extinde meniul”). Iconița grid din antet rămâne." }, Qh(Q_Pair, null, Qh("div", { className: "r", style: { alignItems: "flex-start", flexWrap: "nowrap" } },
+      Qh(Q_Box, null, Qh(V.Spine, { hub: true, appName: "Founder", sections: [{ items: [{ id: "azi", label: "Prezentare", icon: "house" }, { id: "afaceri", label: "Afaceri", icon: "building-2" }, { id: "cereri", label: "Cereri", icon: "inbox", badge: 2 }] }, { label: "Sistem", items: [{ id: "jurnal", label: "Jurnal", icon: "history" }, { id: "setari", label: "Setări", icon: "settings" }] }], activeId: "azi", onBackToHub: () => {} })),
+      Qh(Q_Box, null, Qh(V.Spine, { hub: true, appName: "Founder", sections: [{ items: [{ id: "azi", label: "Prezentare", icon: "house" }, { id: "afaceri", label: "Afaceri", icon: "building-2" }, { id: "cereri", label: "Cereri", icon: "inbox", badge: 2 }] }, { label: "Sistem", items: [{ id: "jurnal", label: "Jurnal", icon: "history" }, { id: "setari", label: "Setări", icon: "settings" }] }], activeId: "azi", collapsed: true, onBackToHub: () => {} }))))),
     Qh(Q_Sec, { title: "Light / Dark · element activ, insignă, element indisponibil, restrâns" }, Qh(Q_Pair, null, Qh(Q_SpPair, { sections: Q_SEC_RO, active: "programari", meter: "Programări" }))),
     Qh(Q_Sec, { title: "DE / IT" }, Qh(Q_Loc, {
       de: Qh(Q_SpPair, { sections: Q_SEC_DE, active: "kunden", meter: "Termine" }),

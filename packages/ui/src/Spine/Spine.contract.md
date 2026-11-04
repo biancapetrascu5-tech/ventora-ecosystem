@@ -5,7 +5,7 @@
 **Status:** CONFIRMAT
 
 ## Scop
-Navigarea laterală principală. Expanded (232px) pe desktop, collapsed (64px) cu toggle, bottom nav fix pe mobile (<640px).
+Navigarea laterală principală. Expanded (232px) pe desktop, collapsed (64px) cu „Restrânge meniul” jos, sub subsol (Spine 1.2.0, S118; restrâns: doar chevron-right, „Extinde meniul”), bottom nav fix pe mobile (<640px).
 
 ## Props
 | Prop | Tip | Default | Descriere |

@@ -62,6 +62,23 @@ describe('Spine', () => {
     expect(onCollapsedChange).toHaveBeenCalledWith(true);
   });
 
+  // Spine 1.2.0 (S118): controlul e jos, după listă, nu în antet; restrâns, „Extinde meniul”.
+  it('puts the collapse control at the bottom, named „Extinde meniul” when collapsed', () => {
+    const { container, rerender } = render(
+      <Spine appName="EasyBook" labels={labels} sections={sections} collapsed={false} />,
+    );
+    const nav = container.querySelector('[data-spine]')!;
+    const toggle = within(nav as HTMLElement).getByRole('button', { name: 'Restrânge meniul' });
+    expect(toggle.getAttribute('aria-expanded')).toBe('true');
+    expect(toggle.hasAttribute('title')).toBe(false);
+    expect(nav.lastElementChild!.contains(toggle)).toBe(true);
+    expect(nav.firstElementChild!.contains(toggle)).toBe(false);
+    rerender(<Spine appName="EasyBook" labels={labels} sections={sections} collapsed />);
+    const collapsed = within(nav as HTMLElement).getByRole('button', { name: 'Extinde meniul' });
+    expect(collapsed.getAttribute('title')).toBe('Extinde meniul');
+    expect(collapsed.getAttribute('aria-expanded')).toBe('false');
+  });
+
   it('has no axe violations', async () => {
     const { container } = render(
       <Spine appName="EasyBook" labels={labels} sections={sections} activeId="home" />,
