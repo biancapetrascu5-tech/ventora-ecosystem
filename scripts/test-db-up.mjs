@@ -373,6 +373,8 @@ for (const migration of [
   'core/notifications/prisma/migrations/20261101000009_notification_preference_topic/migration.sql',
   // Lot 4.7: fișierele (schema files, rolul files_rw, outbox-ul modulului)
   'core/files/prisma/migrations/20261101000011_files_init/migration.sql',
+  // Lot 4.6 (S-5 = b): files_founder, atașamentele echipei la solicitările de suport
+  'core/files/prisma/migrations/20261104000002_files_founder_upload/migration.sql',
   // Lot 3.5: core/billing (schema billing, rolul billing_rw, outbox)
   'core/billing/prisma/migrations/20261101000013_billing_init/migration.sql',
   // Lot 3.5b (D3-26): limitele liniilor de aplicație, fotografiate la creare
