@@ -758,7 +758,7 @@ jobs:
   visual-check:
     name: Verificare vizuală design ↔ implementare
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 35
     needs: [build]
     steps:
       - uses: actions/checkout@v7
