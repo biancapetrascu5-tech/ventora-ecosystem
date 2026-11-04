@@ -87,8 +87,15 @@ export function makeIdentityClient(connectionString: string): IdentityBaseClient
 
 export function makeFounderClient(connectionString: string): FounderBaseClient {
   const safeRole = validateRole('founder_identity_rw');
-  const pool = new Pool({ connectionString, max: 1 });
-  const base = new FounderBaseClient({ adapter: new PrismaPg(pool) });
+  // Every operation is an interactive transaction (BEGIN, SET LOCAL ROLE, query, COMMIT), about
+  // 300–600 ms through the Supabase pooler. With max: 1 the session checks of one Founder page
+  // (Promise.all) queued past Prisma's default maxWait of 2 s → P2028 (decision 04.11.2026).
+  // Few Founder users: 5 per instance; the Vercel budget rule is in ARCHITECTURE §6.2.
+  const pool = new Pool({ connectionString, max: 5 });
+  const base = new FounderBaseClient({
+    adapter: new PrismaPg(pool),
+    transactionOptions: { maxWait: 5000 },
+  });
   const extended = base.$extends({
     query: {
       $allModels: {
