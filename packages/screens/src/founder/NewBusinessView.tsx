@@ -155,9 +155,16 @@ export function NewBusinessView({
                     />
                   </FormField>
                   <div className={cs.trialCell}>
-                    <Toggle isSelected={buy.trial} onChange={(on) => set({ trial: on })}>
-                      {t('trial')}
-                    </Toggle>
+                    {!phone && (
+                      <div className={cs.trialTop} aria-hidden="true">
+                        <span className="caption">{'\u00a0'}</span>
+                      </div>
+                    )}
+                    <div className={cs.trialBox}>
+                      <Toggle isSelected={buy.trial} onChange={(on) => set({ trial: on })}>
+                        {t('trial')}
+                      </Toggle>
+                    </div>
                   </div>
                 </div>
                 {bundle && <BundleApps apps={bundle.apps} />}

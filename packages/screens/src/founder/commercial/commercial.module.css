@@ -375,11 +375,16 @@
   white-space: nowrap;
 }
 .fbCard {
-  /* preview-ul S117 nu are padding pe card (.sheetlike.fb-card): DE VALIDAT la Design */
+  /* S119: padding de SheetSection (space-6; space-4 pe telefon) */
   composes: sheetlike;
   display: flex;
   flex-direction: column;
   gap: var(--space-4);
+  padding: var(--space-6);
+  box-sizing: border-box;
+}
+.fbCardMob {
+  padding: var(--space-4);
 }
 .fbCard p {
   margin: 0;
@@ -402,10 +407,16 @@
   gap: var(--space-2);
   flex-wrap: wrap;
 }
+/* S119: aceeași grilă ca tabelul de versiuni (colgroup 1/6 · 1/6 · 1/6 · 1/6 · 1/3): blocurile
+   încep la „Versiune”, „Lunar” și „Afaceri”; spațiul dintre ele e padding-ul celulelor */
 .fbGrid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: var(--space-4);
+  gap: var(--space-4) 0;
+}
+.fbGrid > div {
+  padding-inline-end: var(--space-3);
+  min-width: 0;
 }
 .fbGridMob {
   grid-template-columns: 1fr;
@@ -417,6 +428,13 @@
 .fbVer {
   width: 100%;
   border-collapse: collapse;
+  table-layout: fixed;
+}
+.fbColSixth {
+  width: 16.667%;
+}
+.fbColThird {
+  width: 33.333%;
 }
 .fbVer th {
   text-align: start;
@@ -481,7 +499,7 @@
 .fbStack1 {
   display: flex;
   flex-direction: column;
-  gap: var(--space-1);
+  gap: var(--space-2);
   min-width: 0;
 }
 
@@ -525,14 +543,25 @@
 }
 
 /* FounderNewBusiness: „Moneda afacerii” / „Plata” cât butoanele — SegmentedControl fără `block`
-   (README) nu se întinde nici în coloana FormField; comutatorul probei jos în celulă, ca în
-   preview (div cu display flex, alignItems flex-end) */
+   (README) nu se întinde nici în coloana FormField. S119: comutatorul probei centrat pe căsuța
+   „Bundle” — un rând gol cât eticheta (doar desktop), apoi înălțimea controlului */
 .segFit {
   align-self: flex-start;
 }
 .trialCell {
   display: flex;
-  align-items: flex-end;
+  flex-direction: column;
+  gap: var(--space-1);
+  align-self: start;
+  min-width: 0;
+}
+.trialTop {
+  display: flex;
+}
+.trialBox {
+  min-height: var(--control-md);
+  display: flex;
+  align-items: center;
 }
 
 /* FounderOverview (S118): .fo-stats, .fo-lim, .fo-sk, .x-grid (400px în dreapta), .x-col,

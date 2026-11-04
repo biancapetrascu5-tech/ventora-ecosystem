@@ -843,3 +843,8 @@ Decizia fondatoarei: numele vizibil e „Ventora Systems”, peste tot; „Vento
 
 ### i18n
 - Nou: `founder-overview.json` (RO).
+
+## 2026-11-04 · S119 — FounderBundles și FounderNewBusiness, aliniere
+
+- **FounderBundles — 2.0.2:** cardul are padding de SheetSection (space-6; space-4 pe telefon); rândul de sus și tabelul de versiuni au aceeași grilă (cele trei blocuri încep la „Versiune”, „Lunar” și „Afaceri”); între titlu și „{n} afaceri îl au”, space-2. Preview, README.
+- **FounderNewBusiness — 1.0.2:** „Începe cu 14 zile de probă” centrat pe căsuța „Bundle”. Preview, README.
