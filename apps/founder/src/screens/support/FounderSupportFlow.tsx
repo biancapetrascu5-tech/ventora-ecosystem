@@ -23,10 +23,13 @@ export function FounderSupportFlow({
   organizationName,
   opening,
   onOpeningChange,
+  initialTicket,
   children,
 }: {
   organizationId: string;
   organizationName: string;
+  /** Lotul 4.6: din FounderSupportInbox, referința solicitării (S-4 = a). */
+  initialTicket?: string;
   opening: boolean;
   onOpeningChange: (open: boolean) => void;
   children: ReactNode;
@@ -34,7 +37,7 @@ export function FounderSupportFlow({
   const format = useFormatter();
   const phone = useIsPhone();
   const [reason, setReason] = useState('');
-  const [ticket, setTicket] = useState('');
+  const [ticket, setTicket] = useState(initialTicket ?? '');
   const [duration, setDuration] = useState('60');
   const [form, setForm] = useState<OpenFormState>('idle');
   const [existing, setExisting] = useState<{ founderName: string; expiresAt: string } | null>(null);
@@ -73,7 +76,8 @@ export function FounderSupportFlow({
       // Lot 2.6 · G: cine are sesiunea deschisă și până când
       setExisting(res.existing);
       setForm('exists');
-    } else setForm(res.reason === 'invalid' ? 'errors' : 'idle');
+    } else if (res.reason === 'ticket') setForm('ticketInvalid');
+    else setForm(res.reason === 'invalid' ? 'errors' : 'idle');
   }
 
   async function close() {

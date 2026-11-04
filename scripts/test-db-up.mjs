@@ -116,6 +116,7 @@ for (const db of [
   'shadow_notifications_diff',
   'shadow_files_diff',
   'shadow_billing_diff',
+  'shadow_support_diff',
 ]) {
   psql('postgres', `DROP DATABASE IF EXISTS ${db}; CREATE DATABASE ${db};`);
 }
@@ -372,10 +373,14 @@ for (const migration of [
   'core/notifications/prisma/migrations/20261101000009_notification_preference_topic/migration.sql',
   // Lot 4.7: fișierele (schema files, rolul files_rw, outbox-ul modulului)
   'core/files/prisma/migrations/20261101000011_files_init/migration.sql',
+  // Lot 4.6 (S-5 = b): files_founder, atașamentele echipei la solicitările de suport
+  'core/files/prisma/migrations/20261104000002_files_founder_upload/migration.sql',
   // Lot 3.5: core/billing (schema billing, rolul billing_rw, outbox)
   'core/billing/prisma/migrations/20261101000013_billing_init/migration.sql',
   // Lot 3.5b (D3-26): limitele liniilor de aplicație, fotografiate la creare
   'core/commercial/prisma/migrations/20261103000001_commercial_app_quota_snapshot/migration.sql',
+  // Lot 4.6: solicitările de suport (schema support, rolurile support_rw / support_founder, outbox)
+  'core/support/prisma/migrations/20261104000001_support_init/migration.sql',
 ]) {
   psqlFile(TEST_DB.accessDb, join(ROOT, migration));
 }

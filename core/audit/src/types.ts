@@ -13,6 +13,8 @@ export type AuditTargetType =
   | 'organization'
   | 'founder_user'
   | 'support_session'
+  // Lot 4.6: the support requests (category support)
+  | 'support_request'
   // Lot 3.2: the commercial model (category commercial)
   | 'plan'
   | 'plan_version'

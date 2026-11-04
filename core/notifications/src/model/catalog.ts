@@ -8,6 +8,7 @@
 
 import { BILLING_TEMPLATES } from './billing';
 import { OWNER_NOTICE_TEMPLATES } from './owner-notice';
+import { SUPPORT_TEMPLATES } from './support';
 import { isSecurityTopic, topicCategory, type NotificationTopic } from './topics';
 import type { NotificationParams, NotificationValueType } from './values';
 
@@ -65,6 +66,12 @@ export interface NotificationEmailKeys {
   /** The paragraphs after the lead: what happens next. */
   nextKeys: readonly string[];
   whyKey: string;
+  /**
+   * Lot 4.6 (E-7): the e-mail's own heading and preheader, when the design gives them (otherwise
+   * the in-app title and text).
+   */
+  titleKey?: string;
+  preheaderKey?: string;
 }
 
 export const NOTIFICATION_TEMPLATES: readonly NotificationTemplate[] = [
@@ -82,6 +89,8 @@ export const NOTIFICATION_TEMPLATES: readonly NotificationTemplate[] = [
   ...BILLING_TEMPLATES,
   // Lot 3.7: „Recomandă” / „Anunță proprietarul” from the Hub, to the owner, in the app only
   ...OWNER_NOTICE_TEMPLATES,
+  // Lot 4.6: the support requests — „Răspuns nou” (E-7) and the automatic closing (S116-D18)
+  ...SUPPORT_TEMPLATES,
 ];
 
 export class NotificationCatalog {

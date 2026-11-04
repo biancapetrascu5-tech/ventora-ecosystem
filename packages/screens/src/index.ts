@@ -167,3 +167,40 @@ export type {
   OverviewRecentRow,
 } from './founder/commercial/OverviewView';
 export { default as commercialStyles } from './founder/commercial/commercial.module.css';
+
+// Lot 4.6: Suport — HubSupport, HubSupportThread (Hub, 6 limbi), FounderSupportInbox (Founder, RO)
+export {
+  HubSupportView,
+  NewRequestForm,
+  HUB_PILL,
+  useUploadLabels,
+} from './support/HubSupportView';
+export type {
+  HubSupportRow,
+  HubStatusKey,
+  NewRequestValues,
+  NewRequestErrors,
+} from './support/HubSupportView';
+export { HubSupportThreadView } from './support/HubSupportThreadView';
+export type { ComposerState, ComposerHandlers } from './support/HubSupportThreadView';
+export { FounderSupportInboxView, FOUNDER_PILL } from './support/FounderSupportInboxView';
+export type { FounderInboxRow, FounderGroup } from './support/FounderSupportInboxView';
+export { FounderSupportThreadView } from './support/FounderSupportThreadView';
+export type { FounderThreadSide } from './support/FounderSupportThreadView';
+export {
+  SupportMsg,
+  SupportHistory,
+  useSupportUploads,
+  fileIcon,
+  sizeLabel,
+  SUPPORT_ACCEPT,
+  SUPPORT_MAX_BYTES,
+} from './support/parts';
+export type {
+  SupportMessageData,
+  SupportHistoryData,
+  SupportFileData,
+  StartUpload,
+  FinishUpload,
+} from './support/parts';
+export { default as supportStyles } from './support/support.module.css';

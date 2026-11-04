@@ -12,6 +12,11 @@ import {
 } from '@ventora/notifications';
 import { invitationNewLinkRequestedConsumer } from '@ventora/organizations';
 import {
+  runSupportAutoCloseJob,
+  supportAutoCloseWarningConsumer,
+  supportReplyConsumer,
+} from '@ventora/support';
+import {
   ConsumerRegistry,
   JobRegistry,
   consoleJobErrorReporter,
@@ -41,6 +46,8 @@ const OUTBOX_SOURCES: readonly OutboxSource[] = [
   { schema: 'files', moduleRole: 'files_rw' },
   // Lot 3.5: plățile (billing.payment.succeeded / failed, billing.dispute.opened)
   { schema: 'billing', moduleRole: 'billing_rw' },
+  // Lot 4.6: support.reply.posted (Founder) și support.request.auto_close_warning (job-ul)
+  { schema: 'support', moduleRole: 'support_rw' },
 ];
 
 // app_runtime (DATABASE_URL), creat la prima rulare: nu la build și nu în codul de request.
@@ -63,7 +70,10 @@ export const platformConsumers = new ConsumerRegistry()
   // Lot 3.5: plata refuzată → owner-ul (S115: payment.pack, payment.renewal, payment.retry)
   .register(billingPaymentFailedConsumer)
   // Lotul 3.7: „Recomandă” / „Anunță proprietarul” → notificarea owner-ului, în Hub
-  .register(ownerNotifiedConsumer);
+  .register(ownerNotifiedConsumer)
+  // Lotul 4.6: „Răspuns nou la solicitarea ta” + E-7; avertizarea cu o zi înainte de închidere
+  .register(supportReplyConsumer)
+  .register(supportAutoCloseWarningConsumer);
 
 /*
  * Lot 4.5: notificările Fazei 3 (S115) se trimit cu un singur apel, notifyBillingInTx
@@ -131,6 +141,26 @@ export const platformJobs = new JobRegistry()
           report.failed.map((f) => f.error),
           `[billing] ${report.failed.length} of ${report.checked} businesses not reconciled: ` +
             report.failed.map((f) => f.organizationId).join(', '),
+        );
+      }
+      return report;
+    },
+  })
+  // Lotul 4.6 (S116-D18): o solicitare fără răspuns de la afacere 7 zile după răspunsul echipei
+  // se închide singură; cu o zi înainte, persoana primește avertizarea (outbox → notificarea).
+  // Fiecare solicitare în contextul afacerii ei; una care eșuează nu le oprește pe celelalte.
+  .register({
+    id: 'support.auto-close',
+    owner: 'Lot 4.6',
+    description: 'Închiderea automată a solicitărilor de suport (7 zile) și avertizarea',
+    trigger: { cron: '*/15 * * * *' },
+    run: async () => {
+      const report = await runSupportAutoCloseJob();
+      if (report.failed.length) {
+        throw new AggregateError(
+          report.failed.map((f) => f.error),
+          `[support] ${report.failed.length} requests not handled: ` +
+            report.failed.map((f) => f.requestId).join(', '),
         );
       }
       return report;

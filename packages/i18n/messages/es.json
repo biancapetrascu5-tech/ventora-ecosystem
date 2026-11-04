@@ -179,6 +179,91 @@
         "closedAuto": "Cerrada automáticamente"
       },
       "empty": "Todavía no hay sesiones de soporte."
+    },
+    "title": "Soporte",
+    "lead": "Escríbenos cuando algo no funcione o tengas una pregunta. Te respondemos en un día laborable como máximo.",
+    "list": {
+      "title": "Mis solicitudes",
+      "col": {
+        "subject": "Asunto",
+        "app": "Aplicación",
+        "updated": "Actualizada",
+        "status": "Estado",
+        "from": "Enviada por"
+      },
+      "titleBusiness": "Solicitudes del negocio"
+    },
+    "status": {
+      "newReply": "Respuesta nueva",
+      "inProgress": "En curso",
+      "resolved": "Resuelta"
+    },
+    "new": {
+      "title": "Solicitud nueva",
+      "app": "Aplicación",
+      "appHelp": "La hemos rellenado según la página de la que vienes.",
+      "subject": "Asunto",
+      "subjectPlaceholder": "Ej.: Los recordatorios no llegan a los clientes",
+      "what": "¿Qué ha pasado?",
+      "whatHelp": "Cuéntanos qué intentaste y qué viste. Una captura de pantalla ayuda.",
+      "urgency": "¿Qué urgencia tiene?",
+      "urgencyHelp": "«Me bloquea» significa que no puedes trabajar nada hasta que se resuelva.",
+      "urgencyLabel": "Urgencia",
+      "normal": "Normal",
+      "blocking": "Me bloquea",
+      "send": "Enviar",
+      "appPlatform": "Hub (cuenta, suscripción, equipo)",
+      "error": {
+        "required": "Completa este campo."
+      }
+    },
+    "attachments": "Archivos adjuntos",
+    "attachmentsHint": "PNG, JPG o PDF",
+    "sent": {
+      "title": "Hemos recibido tu mensaje.",
+      "body": "Te responderemos aquí y por correo en un día laborable como máximo."
+    },
+    "empty": {
+      "title": "No tienes solicitudes",
+      "body": "Si algo no funciona, escríbenos desde aquí."
+    },
+    "thread": {
+      "meta": "{app} · abierta el {date} · {ref}",
+      "you": "Tú",
+      "team": "Equipo de Ventora Systems",
+      "reply": "Tu respuesta",
+      "attachHint": "PNG, JPG o PDF, hasta 10 MB cada uno",
+      "send": "Enviar respuesta",
+      "sending": "Enviando…",
+      "error": {
+        "empty": "Escribe un mensaje antes de enviar.",
+        "size": "{file} supera los 10 MB. Envía un archivo más pequeño.",
+        "type": "{file} no es PNG, JPG ni PDF."
+      },
+      "download": "Descargar {file}",
+      "history": "Historial del estado",
+      "h": {
+        "opened": "Abriste la solicitud",
+        "inProgress": "En curso · {name}",
+        "newReply": "Respuesta nueva de {name}",
+        "resolved": "Resuelta · {name}",
+        "reopened": "Reabriste la solicitud",
+        "openedBy": "{name} abrió la solicitud",
+        "reopenedBy": "{name} reabrió la solicitud",
+        "autoClosed": "Cerrada automáticamente tras 7 días sin respuesta"
+      },
+      "resolvedNote": "Esta solicitud está resuelta. Si el problema vuelve, puedes reabrirla.",
+      "reopen": "Reabrir solicitud",
+      "reopenLabel": "¿Qué ha vuelto a pasar?",
+      "reopenHelp": "Al enviarla, la solicitud vuelve a «En curso».",
+      "reopenSubmit": "Reabrir y enviar",
+      "reopened": "Hemos reabierto la solicitud.",
+      "cancel": "Cancelar",
+      "replyNote": "Te respondemos aquí y por correo."
+    },
+    "error": {
+      "send": "No pudimos enviarlo. Inténtalo de nuevo.",
+      "upload": "{file} no se subió. Inténtalo de nuevo."
     }
   },
   "auth": {
@@ -447,7 +532,16 @@
     "findBusiness": "Buscar un negocio…",
     "noResultsFor": "Sin resultados para «{q}»",
     "unreadN": "{n, plural, one {# sin leer} other {# sin leer}}",
-    "accessStopped": "Acceso pausado"
+    "accessStopped": "Acceso pausado",
+    "upload": {
+      "dropFiles": "Arrastra los archivos aquí o",
+      "browse": "elígelos en tu dispositivo",
+      "dropNow": "Suelta para subir",
+      "maxSize": "Hasta {size} por archivo",
+      "remove": "Quitar",
+      "retry": "Reintentar",
+      "uploaded": "Subido"
+    }
   },
   "hub": {
     "chooseBusiness": {
@@ -468,7 +562,8 @@
       "teamShort": "Equipo",
       "roles": "Roles y acceso",
       "plan": "Plan y uso",
-      "planShort": "Plan"
+      "planShort": "Plan",
+      "help": "Ayuda"
     },
     "team": {
       "title": "Equipo",
@@ -850,7 +945,13 @@
     "support": {
       "reply": {
         "title": "Respuesta nueva a tu solicitud",
-        "body": "«{subject}» · {author}, equipo de Ventora Systems"
+        "body": "«{subject}» · {author}, equipo de Ventora Systems",
+        "action": "Ver la solicitud"
+      },
+      "autoClose": {
+        "title": "Tu solicitud se cierra mañana",
+        "body": "«{subject}» ({ref}) se cierra automáticamente mañana si no nos escribes.",
+        "action": "Ver la solicitud"
       }
     },
     "request": {
@@ -962,6 +1063,23 @@
         "eyebrowApps": "{business} · Aplicaciones",
         "why": "Recibes este correo porque eres el propietario de {business} en Ventora Systems.",
         "upgrade": "Si te pasa a menudo, solicita otro plan en Plan y consumo."
+      },
+      "supportReply": {
+        "subject": "Tienes una respuesta nueva a tu solicitud",
+        "preheader": "{author}, del equipo de Ventora Systems, ha respondido a «{subject}».",
+        "eyebrow": "{businessName} · Soporte",
+        "title": "Tienes una respuesta nueva a tu solicitud",
+        "lead": "{author}, del equipo de Ventora Systems, ha respondido a «{subject}» ({ref}).",
+        "body": "Puedes leer la respuesta en Ventora Systems y contestar allí, con archivos adjuntos si hace falta.",
+        "cta": "Ver solicitud",
+        "why": "Recibes este correo porque abriste esta solicitud en Ventora Systems."
+      },
+      "supportAutoClose": {
+        "subject": "Tu solicitud se cierra mañana",
+        "preheader": "«{subject}» se cierra automáticamente el {closesAt} si no nos escribes.",
+        "title": "Tu solicitud se cierra mañana",
+        "lead": "El equipo de Ventora Systems respondió a «{subject}» ({ref}) y no hemos sabido nada de ti en 6 días.",
+        "body": "Si el problema está resuelto, no tienes que hacer nada: la solicitud se cierra sola el {closesAt}. Si aún necesitas ayuda, respóndenos en Ventora Systems; también puedes reabrirla después de que se cierre."
       }
     },
     "prefs": {

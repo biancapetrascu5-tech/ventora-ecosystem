@@ -179,6 +179,91 @@
         "closedAuto": "Closed automatically"
       },
       "empty": "No support sessions yet."
+    },
+    "title": "Support",
+    "lead": "Write to us when something isn't working or you have a question. We reply within one working day.",
+    "list": {
+      "title": "My requests",
+      "col": {
+        "subject": "Subject",
+        "app": "App",
+        "updated": "Updated",
+        "status": "Status",
+        "from": "Sent by"
+      },
+      "titleBusiness": "Your business’s requests"
+    },
+    "status": {
+      "newReply": "New reply",
+      "inProgress": "In progress",
+      "resolved": "Resolved"
+    },
+    "new": {
+      "title": "New request",
+      "app": "App",
+      "appHelp": "We filled it in from the page you came from.",
+      "subject": "Subject",
+      "subjectPlaceholder": "E.g. Reminders aren't reaching clients",
+      "what": "What happened?",
+      "whatHelp": "Tell us what you tried and what you saw. A screenshot helps.",
+      "urgency": "How urgent is it?",
+      "urgencyHelp": "“Blocking me” means you can't work at all until it's fixed.",
+      "urgencyLabel": "Urgency",
+      "normal": "Normal",
+      "blocking": "Blocking me",
+      "send": "Send",
+      "appPlatform": "Hub (account, subscription, team)",
+      "error": {
+        "required": "Fill in this field."
+      }
+    },
+    "attachments": "Attachments",
+    "attachmentsHint": "PNG, JPG or PDF",
+    "sent": {
+      "title": "We've got your message.",
+      "body": "We'll reply here and by email within one working day."
+    },
+    "empty": {
+      "title": "You have no requests",
+      "body": "If something isn't working, write to us from here."
+    },
+    "thread": {
+      "meta": "{app} · opened on {date} · {ref}",
+      "you": "You",
+      "team": "Ventora Systems team",
+      "reply": "Your reply",
+      "attachHint": "PNG, JPG or PDF, up to 10 MB each",
+      "send": "Send reply",
+      "sending": "Sending…",
+      "error": {
+        "empty": "Write a message before you send.",
+        "size": "{file} is over 10 MB. Send a smaller file.",
+        "type": "{file} isn't a PNG, JPG or PDF."
+      },
+      "download": "Download {file}",
+      "history": "Status history",
+      "h": {
+        "opened": "You opened the request",
+        "inProgress": "In progress · {name}",
+        "newReply": "New reply from {name}",
+        "resolved": "Resolved · {name}",
+        "reopened": "You reopened the request",
+        "openedBy": "{name} opened the request",
+        "reopenedBy": "{name} reopened the request",
+        "autoClosed": "Closed automatically after 7 days without a reply"
+      },
+      "resolvedNote": "This request is resolved. If the problem is back, you can reopen it.",
+      "reopen": "Reopen request",
+      "reopenLabel": "What happened again?",
+      "reopenHelp": "When you send it, the request goes back to “In progress”.",
+      "reopenSubmit": "Reopen and send",
+      "reopened": "We've reopened the request.",
+      "cancel": "Cancel",
+      "replyNote": "We reply here and by email."
+    },
+    "error": {
+      "send": "We couldn’t send it. Try again.",
+      "upload": "{file} didn’t upload. Try again."
     }
   },
   "auth": {
@@ -447,7 +532,16 @@
     "findBusiness": "Find a business…",
     "noResultsFor": "No results for “{q}”",
     "unreadN": "{n, plural, one {# unread} other {# unread}}",
-    "accessStopped": "Access paused"
+    "accessStopped": "Access paused",
+    "upload": {
+      "dropFiles": "Drag files here or",
+      "browse": "choose them from your device",
+      "dropNow": "Drop to upload",
+      "maxSize": "Up to {size} per file",
+      "remove": "Remove",
+      "retry": "Try again",
+      "uploaded": "Uploaded"
+    }
   },
   "hub": {
     "chooseBusiness": {
@@ -468,7 +562,8 @@
       "teamShort": "Team",
       "roles": "Roles and access",
       "plan": "Plan and usage",
-      "planShort": "Plan"
+      "planShort": "Plan",
+      "help": "Help"
     },
     "team": {
       "title": "Team",
@@ -850,7 +945,13 @@
     "support": {
       "reply": {
         "title": "New reply to your request",
-        "body": "“{subject}” · {author}, Ventora Systems team"
+        "body": "“{subject}” · {author}, Ventora Systems team",
+        "action": "View request"
+      },
+      "autoClose": {
+        "title": "Your request closes tomorrow",
+        "body": "“{subject}” ({ref}) closes automatically tomorrow unless you write to us.",
+        "action": "View request"
       }
     },
     "request": {
@@ -962,6 +1063,23 @@
         "eyebrowApps": "{business} · Apps",
         "why": "You’re getting this email because you’re the owner of {business} in Ventora Systems.",
         "upgrade": "If this happens often, request another plan in Plan and usage."
+      },
+      "supportReply": {
+        "subject": "You have a new reply to your request",
+        "preheader": "{author} from the Ventora Systems team replied to “{subject}”.",
+        "eyebrow": "{businessName} · Support",
+        "title": "You have a new reply to your request",
+        "lead": "{author} from the Ventora Systems team replied to “{subject}” ({ref}).",
+        "body": "You can read the reply in Ventora Systems and answer there, with attachments if you need them.",
+        "cta": "View request",
+        "why": "You're receiving this email because you opened this request in Ventora Systems."
+      },
+      "supportAutoClose": {
+        "subject": "Your request closes tomorrow",
+        "preheader": "“{subject}” closes automatically on {closesAt} unless you write to us.",
+        "title": "Your request closes tomorrow",
+        "lead": "The Ventora Systems team replied to “{subject}” ({ref}) and we haven’t heard from you for 6 days.",
+        "body": "If the problem is solved, you don’t need to do anything: the request closes by itself on {closesAt}. If you still need help, reply in Ventora Systems; you can also reopen it after it closes."
       }
     },
     "prefs": {

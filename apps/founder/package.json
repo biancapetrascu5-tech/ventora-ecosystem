@@ -19,6 +19,7 @@
     "@ventora/i18n": "workspace:*",
     "@ventora/identity": "workspace:*",
     "@ventora/screens": "workspace:*",
+    "@ventora/support": "workspace:*",
     "@ventora/tokens": "workspace:*",
     "@ventora/ui": "workspace:*",
     "next": "^16.0.0",

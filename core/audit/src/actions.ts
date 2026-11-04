@@ -57,6 +57,15 @@ export const AuditActions = {
   supportActionDenied: 'support.action_denied', // E39
   ownerRecoveryPerformed: 'support.owner_recovery_performed', // E40
   ownerRecoveryNotified: 'support.owner_recovery_notified', // E41
+  // Lot 4.6 — the support requests (category support): the business in the Hub, the team in
+  // Founder · Suport, the automatic closing (S116-D18)
+  supportRequestCreated: 'support.request_created',
+  supportRequestReplied: 'support.request_replied', // the business
+  supportRequestReopened: 'support.request_reopened', // the business, from the Hub
+  supportTeamReplied: 'support.team_replied', // the team, from Founder
+  supportRequestMarkedInProgress: 'support.request_marked_in_progress',
+  supportRequestClosed: 'support.request_closed', // the team
+  supportRequestAutoClosed: 'support.request_auto_closed', // the job (S116-D18)
   // Lot 3.2 — the commercial model, every Founder write (category commercial, required; §8.5)
   commercialPlanCreated: 'commercial.plan_created',
   commercialVersionCreated: 'commercial.version_created',
