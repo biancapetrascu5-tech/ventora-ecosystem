@@ -25,6 +25,7 @@
  */
 
 import {
+  closeCommercialPools,
   createAddon,
   createPlan,
   createPlanVersion,
@@ -519,7 +520,8 @@ async function main() {
     }
     throw err;
   } finally {
-    const { closeCommercialPools } = await import('../core/commercial/src/index.js');
+    // the static import above: a dynamic import of the index here failed under tsx
+    // („@ventora/contracts” without QuotaOverLimitV1), so every run exited 1 after correct writes
     await closeCommercialPools();
   }
 }

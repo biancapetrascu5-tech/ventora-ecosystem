@@ -268,6 +268,13 @@ Fiecare aplicație are o stare înregistrată în `docs/checklists/<app>.md` și
 
 > **Notă implementare — pool `pg` în serverless:** `connection_limit` din URL și `pgbouncer=true` controlează Supavisor, nu pool-ul intern al clientului `pg`. Pe Vercel, fiecare Function invocation rulează în propriul proces; `pg` folosește implicit `max: 10`. Cu `max: 1` setat explicit în `db.ts`, fiecare proces deține cel mult o conexiune spre Supavisor — potrivit pentru serverless și în limita instanței de staging (60 directe / 200 pooler).
 
+> **Mărimea pool-ului pe Vercel (decizie, 04.11.2026).** Regula este **instanțe concurente × `Pool max` ≤ limita de clienți a pooler-ului Supabase** (azi 200 pe staging), adunată pe toate aplicațiile care folosesc același proiect.
+> - **Founder** (`makeFounderClient`) folosește acum `max: 5` și `transactionOptions: { maxWait: 5000 }`.
+>   - Motivul: fiecare operație e o tranzacție interactivă (`SET LOCAL ROLE`) de 300–600 ms prin pooler.
+>   - Cu `max: 1`, verificările de sesiune ale unei pagini Founder, făcute în paralel, stăteau la coadă peste `maxWait` = 2 s, iar Prisma dădea P2028.
+>   - Founder are puțini utilizatori, deci puține instanțe.
+> - **Hub** (`makeIdentityClient`) rămâne la `max: 1`. **Punct deschis pentru Lotul 3.9:** valoarea pentru Hub se alege după numărul de instanțe concurente estimat pe Vercel, cu aceeași regulă.
+
 **De ce nu A și nu B** (măsurat în E4, 200 de conexiuni concurente):
 
 | Variantă | Rezultat | Motiv de respingere |
