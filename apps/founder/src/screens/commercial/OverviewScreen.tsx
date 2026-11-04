@@ -20,7 +20,7 @@ import { ExceptionFlow, type ExceptionTarget } from './ExceptionFlow';
 import { useQuotaText } from './labels';
 
 /* „Prezentare” (FounderOverview, S118): salutul după ora zilei și data de azi, în română;
-   cifrele, „Au nevoie de tine” (cererile noi, excepțiile care expiră în 7 zile, cu „Prelungește”
+   cifrele (cu venitul lunar recurent), „Au nevoie de tine” (cererile noi, excepțiile care expiră în 7 zile, cu „Prelungește”
    și ExceptionFlow din Lotul 3.4), afacerile aproape de limite și cele create recent. Fără afaceri
    — „prima zi”; fără date — eroarea cu „Încearcă din nou”. */
 
@@ -66,6 +66,7 @@ export function OverviewScreen({
           active: overview.businesses.active,
           newThisMonth: overview.businesses.newThisMonth,
           month: fmt({ month: 'long' }, now),
+          mrr: overview.mrr,
           trial: overview.trials.total,
           trialEnding: overview.trials.endingIn3Days,
         },

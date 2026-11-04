@@ -723,14 +723,19 @@ export type ExpiringData = {
   expiresAt: string;
 };
 
-/* FounderOverview (S118): cifrele care au sursă (afacerile active și cele noi din lună, proba
-   pe tot abonamentul), cererile noi, excepțiile care expiră în 7 zile (cu cine le-a adăugat),
+/* FounderOverview (S118): cifrele (afacerile active și cele noi din lună, venitul lunar
+   recurent, proba pe tot abonamentul), cererile noi, excepțiile care expiră în 7 zile (cu cine le-a adăugat),
    afacerile peste 80% dintr-o limită și ultimele 4 afaceri create, cu bundle-ul și aplicațiile la
-   bucată. Venitul lunar recurent, plățile eșuate și disputele n-au încă citire în Founder
-   (NECESITĂ DECIZIE în raportul 04.11); suportul intră după Lotul 4.6. */
+   bucată. Venitul lunar recurent (decizia fondatoarei, 04.11.2026): abonamentele active, fără
+   cele în probă — următoarea factură (bundle-ul, aplicațiile la bucată, pachetele lunare, după
+   reducerile care o ating), anualul împărțit la 12; lei și euro separat, fără conversie și fără
+   schimbarea față de luna trecută. Plățile eșuate și disputele vin în Lotul 3.6; suportul, după
+   Lotul 4.6. */
 export type OverviewData = {
   generatedAt: string;
   businesses: { total: number; active: number; newThisMonth: number };
+  /** Venitul lunar recurent, în unități minore, pe monedă. */
+  mrr: { RON: number; EUR: number };
   trials: { total: number; endingIn3Days: number };
   requests: { business: string; targetType: RequestData['targetType']; item: string }[];
   expiring: (ExpiringData & { by: string })[];
@@ -772,7 +777,8 @@ export async function readOverview(): Promise<OverviewData | null> {
     const recent = [...list]
       .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
       .slice(0, RECENT);
-    const [founders, recentLines] = await Promise.all([
+    const paying = subs.filter((x) => x.status === 'active');
+    const [founders, recentLines, invoices] = await Promise.all([
       getFounderNames(expiring.map((o) => o.createdByFounderId)),
       Promise.all(
         recent.map((b) =>
@@ -781,7 +787,17 @@ export async function readOverview(): Promise<OverviewData | null> {
           ),
         ),
       ),
+      Promise.all(
+        paying.map((x) =>
+          getBusinessCommercialForFounder({ founderHeaders: h, organizationId: x.organizationId }),
+        ),
+      ),
     ]);
+    const mrr = { RON: 0, EUR: 0 };
+    paying.forEach((x, i) => {
+      const total = invoices[i]!.nextInvoice?.totalMinor ?? 0;
+      mrr[x.currency] += x.interval === 'year' ? total / 12 : total;
+    });
     return {
       generatedAt: now.toISOString(),
       businesses: {
@@ -789,6 +805,7 @@ export async function readOverview(): Promise<OverviewData | null> {
         active: active.length,
         newThisMonth: active.filter((b) => b.createdAt.toISOString().slice(0, 7) === month).length,
       },
+      mrr: { RON: Math.round(mrr.RON), EUR: Math.round(mrr.EUR) },
       trials: {
         total: trialing.size,
         endingIn3Days: [...trialing.values()].filter(

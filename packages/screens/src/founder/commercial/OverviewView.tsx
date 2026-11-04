@@ -21,13 +21,14 @@ import { useIsPhone } from '../../screens/hooks';
 import { useTableLabels } from '../BusinessesView';
 import businessStyles from '../business.module.css';
 import s from './commercial.module.css';
-import { count } from './money';
+import { amount, count, currencySuffix, money } from './money';
 
 /* FounderOverview (S118): „Prezentare”, prima pagină după intrare — salutul după ora zilei,
    cifrele, „Au nevoie de tine” (cererile noi din Hub, excepțiile care expiră în 7 zile cu
    „Prelungește”), afacerile peste 80% dintr-o limită și ultimele afaceri create; totul în regulă,
-   prima zi, eroare la încărcare. Rândurile fără sursă încă (suportul, plățile eșuate, disputele) și
-   cifrele „Venit lunar recurent” / „Plăți eșuate” lipsesc, nu apar goale. Doar română (S57). */
+   prima zi, eroare la încărcare. Venitul lunar recurent: doar valoarea, fără schimbarea față de
+   luna trecută (decizia 04.11.2026). Plățile eșuate și disputele (Lotul 3.6) și suportul (Lotul
+   4.6) lipsesc, nu apar goale. Doar română (S57). */
 
 export type OverviewState = 'ready' | 'first' | 'error';
 
@@ -67,6 +68,8 @@ export type OverviewData = {
     active: number;
     newThisMonth: number;
     month: string;
+    /** Venitul lunar recurent, în unități minore: lei și euro separat, fără conversie. */
+    mrr: { RON: number; EUR: number };
     trial: number;
     trialEnding: number;
   };
@@ -82,6 +85,9 @@ const PILL: Record<OverviewRecentRow['status'], ['neutral' | 'done', IconName]> 
   active: ['done', 'check'],
   suspended: ['neutral', 'lock'],
 };
+
+/** Cifra din card fără bani: „18.940” (anualul împărțit la 12 lasă zecimale). */
+const roundUnits = (minor: number) => Math.round(minor / 100) * 100;
 
 /** „dimineața” până la 12, „ziua” până la 18, apoi „seara” (ora din fusul dat). */
 export function greetingPart(hour: number): 'morning' | 'day' | 'evening' {
@@ -206,6 +212,16 @@ export function OverviewView({
                     direction: 'up',
                     good: true,
                   }
+                : undefined
+            }
+          />
+          <Stat
+            label={t('stat.mrr')}
+            value={amount(roundUnits(st.mrr.RON))}
+            unit={currencySuffix('RON')}
+            hint={
+              st.mrr.EUR
+                ? t('stat.mrrEur', { amount: money(roundUnits(st.mrr.EUR), 'EUR') })
                 : undefined
             }
           />

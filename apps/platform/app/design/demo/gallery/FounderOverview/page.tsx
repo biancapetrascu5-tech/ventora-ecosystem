@@ -9,11 +9,18 @@ import { noop } from '../_shared/shell';
 import c from '../_shared/founderCommercial.module.css';
 
 // preview.html (S118) → Board „Founder — Prezentare” → 1 · Zi obișnuită (Desktop · 1280, H 1450);
-// ?state=ok | first | error → cadrele 2–4; ?w=390 → cadrul Telefon (H 2500). Fără rândurile care n-au încă sursă în Founder
-// (suportul, plata eșuată, disputa) și fără cifrele „Venit lunar recurent” / „Plăți eșuate”
-// (NECESITĂ DECIZIE în raportul 04.11).
+// ?state=ok | first | error → cadrele 2–4; ?w=390 → cadrul Telefon (H 2500). Venitul lunar
+// recurent fără schimbarea față de luna trecută (decizia 04.11.2026); fără cardul „Plăți eșuate”
+// și fără rândurile suport / plată eșuată / dispută (Lotul 3.6, Lotul 4.6).
 const DATA: OverviewViewData = {
-  stats: { active: 52, newThisMonth: 4, month: 'noiembrie', trial: 7, trialEnding: 2 },
+  stats: {
+    active: 52,
+    newThisMonth: 4,
+    month: 'noiembrie',
+    mrr: { RON: 1_894_000, EUR: 0 },
+    trial: 7,
+    trialEnding: 2,
+  },
   requests: { n: 2, meta: 'Salon Aurora · Business Plus; Clinica Dentis Sibiu · domeniu propriu' },
   exceptions: [
     {

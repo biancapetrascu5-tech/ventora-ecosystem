@@ -632,6 +632,8 @@
       "stat": {
         "active": "Afaceri active",
         "activeDelta": "noi în {month}",
+        "mrr": "Venit lunar recurent",
+        "mrrEur": "și {amount} în euro",
         "trial": "Afaceri în probă",
         "trialHint": "{n} se încheie în 3 zile"
       },
