@@ -4,6 +4,7 @@ import '@ventora/tokens/business/typography.css';
 import './globals.css';
 import type { Metadata } from 'next';
 import { NextIntlClientProvider } from 'next-intl';
+import { ThemeScript, VentoraProvider } from '@ventora/ui';
 
 export const metadata: Metadata = {
   title: 'Founder · Ventora Systems',
@@ -11,9 +12,14 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="ro">
+    <html lang="ro" suppressHydrationWarning>
+      <head>
+        <ThemeScript />
+      </head>
       <body>
-        <NextIntlClientProvider>{children}</NextIntlClientProvider>
+        <VentoraProvider>
+          <NextIntlClientProvider>{children}</NextIntlClientProvider>
+        </VentoraProvider>
       </body>
     </html>
   );
