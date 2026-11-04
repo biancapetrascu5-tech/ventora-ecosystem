@@ -149,7 +149,7 @@
     },
     "founderDisputeAlert": {
       "subject": "Disputa de Stripe · {business} · {amount}",
-      "eyebrow": "Alerta para el equipo de Ventora",
+      "eyebrow": "Alerta para el equipo de Ventora Systems",
       "title": "Un cliente ha disputado un pago",
       "lead": "{business} tiene una disputa abierta en Stripe por {amount}. Motivo indicado por el banco: {reason}.",
       "deadline": "Plazo para responder en Stripe: {date}.",

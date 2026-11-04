@@ -149,7 +149,7 @@
     },
     "founderDisputeAlert": {
       "subject": "Stripe dispute · {business} · {amount}",
-      "eyebrow": "Alert for the Ventora team",
+      "eyebrow": "Alert for the Ventora Systems team",
       "title": "A customer disputed a payment",
       "lead": "{business} has an open dispute in Stripe for {amount}. Reason given by the bank: {reason}.",
       "deadline": "Deadline to respond in Stripe: {date}.",

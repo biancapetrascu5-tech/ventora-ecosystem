@@ -274,7 +274,7 @@ export function renderSupportSessionOpened(params: {
 }
 
 /**
- * Lot 3.6: a customer disputed a charge (Stripe). For the Ventora team only (Founder is Romanian,
+ * Lot 3.6: a customer disputed a charge (Stripe). For the Ventora Systems team only (Founder is Romanian,
  * S57), at the address of FOUNDER_ALERTS_EMAIL; the button opens the dispute in Stripe.
  */
 export function renderFounderDisputeAlert(params: {

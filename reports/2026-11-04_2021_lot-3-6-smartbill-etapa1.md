@@ -100,7 +100,7 @@ După merge, **din `main` actualizat**, cu `DIRECT_URL`:
 - **D-3.6-5 — Cum rezolvă Founder o factură `failed` — NECESITĂ DECIZIE.** Azi doar o vede. „Reîncearcă” / „Am emis-o manual (seria, numărul)” cer o scriere din Founder (o funcție SECURITY DEFINER nouă sau un rol `billing_founder`) și design. Până atunci: corectura prin migrare de date aprobată.
 - **D-3.6-6 — Rambursarea parțială — NECESITĂ DECIZIE.** Rambursarea integrală (din Stripe, `charge.refunded`) face stornarea automat; cea parțială e doar auditată și raportată (Sentry), fără storno. Varianta: storno + factură nouă pentru rest.
 - **D-3.6-7 — Plățile eșuate pe „Prezentare” — PROPUS.** Doar facturile de abonament neplătite (bani de încasat). O cumpărare refuzată din Hub nu apare: nu s-a activat nimic și nu e nimic de încasat.
-- **D-3.6-8 — Liniile facturii de abonament — PROPUS.** O singură linie „Abonament {bundle} · {luna}” cu totalul plătit (după reduceri), ca în glosar; anual: „· {anul}”. Aplicațiile, pachetele lunare și reducerile nu apar separat (ar cere liniile facturii Stripe, cu proratări). Fără bundle: „Abonament Ventora · {luna}”.
+- **D-3.6-8 — Liniile facturii de abonament — PROPUS.** O singură linie „Abonament {bundle} · {luna}” cu totalul plătit (după reduceri), ca în glosar; anual: „· {anul}”. Aplicațiile, pachetele lunare și reducerile nu apar separat (ar cere liniile facturii Stripe, cu proratări). Fără bundle: „Abonament Ventora Systems · {luna}”.
 
 ## 7. Abateri de la plan
 

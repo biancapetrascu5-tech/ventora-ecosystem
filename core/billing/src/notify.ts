@@ -158,7 +158,7 @@ export const billingInvoiceIssuedConsumer = {
         what = {
           type: 'key',
           key: 'billing.have.bundle',
-          params: { name: terms?.bundle?.planName?.trim() || 'Ventora' },
+          params: { name: terms?.bundle?.planName?.trim() || 'Ventora Systems' },
         };
       }
       kind = 'invoice.card';

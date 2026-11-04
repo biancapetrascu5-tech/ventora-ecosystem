@@ -72,7 +72,7 @@ export interface EmailMessages {
     notRequested: string;
     footer: string;
   };
-  // Lot 3.6: the dispute alert for the Ventora team (FOUNDER_ALERTS_EMAIL); texts to validate
+  // Lot 3.6: the dispute alert for the Ventora Systems team (FOUNDER_ALERTS_EMAIL); texts to validate
   founderDisputeAlert: {
     subject: string;
     eyebrow: string;

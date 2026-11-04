@@ -149,7 +149,7 @@
     },
     "founderDisputeAlert": {
       "subject": "Litige Stripe · {business} · {amount}",
-      "eyebrow": "Alerte pour l’équipe Ventora",
+      "eyebrow": "Alerte pour l’équipe Ventora Systems",
       "title": "Un client a contesté un paiement",
       "lead": "{business} a un litige ouvert dans Stripe pour {amount}. Motif indiqué par la banque : {reason}.",
       "deadline": "Date limite de réponse dans Stripe : {date}.",

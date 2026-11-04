@@ -85,7 +85,7 @@ export type InvoiceBuyerResolver = (
 ) => Promise<InvoiceBuyer>;
 
 const defaultBuyer: InvoiceBuyerResolver = async (tx, organizationId) => ({
-  name: (await organizationNameInTx(tx, organizationId)) || 'Client Ventora',
+  name: (await organizationNameInTx(tx, organizationId)) || 'Client',
   vatCode: null,
   regCom: null,
   address: null,
@@ -195,7 +195,7 @@ async function linesOf(
   const paidOn = romanianDate(p.occurred_at);
   if (p.kind === 'subscription') {
     const terms = await getBillingTerms(organizationId);
-    const plan = terms?.bundle?.planName?.trim() || 'Ventora';
+    const plan = terms?.bundle?.planName?.trim() || 'Ventora Systems';
     const period =
       terms?.subscription.interval === 'year'
         ? String(new Date(p.occurred_at).getFullYear())

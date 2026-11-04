@@ -218,7 +218,7 @@ export class SmartBillInvoiceProvider implements InvoiceProvider {
       useStock: false,
       sendEmail: false,
       mentions: c.vatMention,
-      observations: `Ventora ${input.reference}`,
+      observations: `Ventora Systems ${input.reference}`,
     };
     if (input.paid) {
       body.payment = { value: money(input.paid.amountMinor), type: 'Card', isCash: false };

@@ -149,7 +149,7 @@
     },
     "founderDisputeAlert": {
       "subject": "Dispută Stripe · {business} · {amount}",
-      "eyebrow": "Alertă pentru echipa Ventora",
+      "eyebrow": "Alertă pentru echipa Ventora Systems",
       "title": "Un client a contestat o plată",
       "lead": "{business} are o dispută deschisă în Stripe pentru {amount}. Motivul dat de bancă: {reason}.",
       "deadline": "Termenul de răspuns în Stripe: {date}.",
