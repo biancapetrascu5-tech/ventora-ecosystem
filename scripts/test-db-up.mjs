@@ -116,6 +116,7 @@ for (const db of [
   'shadow_notifications_diff',
   'shadow_files_diff',
   'shadow_billing_diff',
+  'shadow_support_diff',
 ]) {
   psql('postgres', `DROP DATABASE IF EXISTS ${db}; CREATE DATABASE ${db};`);
 }
@@ -376,6 +377,8 @@ for (const migration of [
   'core/billing/prisma/migrations/20261101000013_billing_init/migration.sql',
   // Lot 3.5b (D3-26): limitele liniilor de aplicație, fotografiate la creare
   'core/commercial/prisma/migrations/20261103000001_commercial_app_quota_snapshot/migration.sql',
+  // Lot 4.6: solicitările de suport (schema support, rolurile support_rw / support_founder, outbox)
+  'core/support/prisma/migrations/20261104000001_support_init/migration.sql',
 ]) {
   psqlFile(TEST_DB.accessDb, join(ROOT, migration));
 }
