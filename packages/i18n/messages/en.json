@@ -466,7 +466,9 @@
       "business": "Business",
       "team": "Team and invitations",
       "teamShort": "Team",
-      "roles": "Roles and access"
+      "roles": "Roles and access",
+      "plan": "Plan and usage",
+      "planShort": "Plan"
     },
     "team": {
       "title": "Team",
@@ -534,6 +536,97 @@
     },
     "home": {
       "soon": "Your business’s apps will appear here."
+    },
+    "plan": {
+      "title": "Plan and usage",
+      "lead": "What your business’s plan includes, how much you’ve used this month, what you can buy on top and your invoices.",
+      "yours": "Your plan",
+      "status": {
+        "active": "Active",
+        "trialing": "On free trial",
+        "past_due": "Payment overdue"
+      },
+      "cardFor": "Card for purchases",
+      "noCard": "You haven’t saved a card yet. Until you add one, we activate extra packs on request.",
+      "packs": "Extra packs",
+      "packsLead": "You buy them directly with the business’s card. The ones marked “On request only” we activate for you.",
+      "buy": "Buy · {price}",
+      "buySeats": "Buy extra seats",
+      "buySms": "Buy extra SMS",
+      "perMonth": "per month, paid with your plan",
+      "invoices": "Invoices",
+      "invoicesLead": "Your plan and every purchase each have their own invoice.",
+      "col": {
+        "invoice": "Invoice",
+        "for": "For",
+        "date": "Date",
+        "amount": "Amount",
+        "status": "Status"
+      },
+      "paid": "Paid",
+      "downloadPdf": "Download PDF",
+      "forSubscription": "Plan",
+      "forPack": "Extra pack · {name}",
+      "noPayments": "No payments yet.",
+      "noSubscription": "Your business doesn’t have a plan yet. Write to us and we’ll start it.",
+      "requestSentBody": "The Ventora Systems team can see it now. You’ll get a notification when the pack is active.",
+      "saveCard": "Save card",
+      "cardSaved": "Card saved.",
+      "cardError": "We couldn’t save the card. Please try again.",
+      "cardUnavailable": "Card payments aren’t available right now. Please try later.",
+      "paymentProcessing": "The bank is still processing the payment. The pack turns on as soon as it goes through.",
+      "sendFailed": "We couldn’t send it. Please try again."
+    },
+    "apps": {
+      "bar": "All apps",
+      "title": "All Ventora Systems apps",
+      "lead": "{total} apps that work together. {have} are in your plan; for the others, see what they do, what they cost and whether there’s a free trial.",
+      "search": "Search for an app or what you want to do",
+      "searchLabel": "Search",
+      "only": "Only the ones you don’t have",
+      "inPlan": "in your plan",
+      "group": {
+        "clients": "Appointments and clients",
+        "team": "Team",
+        "operations": "Operations",
+        "money": "Money and documents",
+        "projects": "Projects and data",
+        "community": "Community"
+      },
+      "desc": {
+        "booking": "Appointments, calendar and reminders",
+        "crm": "Clients, history and opportunities",
+        "marketing": "Campaigns and automatic reminders",
+        "portal": "Your business page for clients",
+        "hr": "Team, attendance and time off",
+        "shifts": "Shifts and cover",
+        "inventory": "Stock, orders and suppliers",
+        "assets": "Equipment, servicing and warranties",
+        "events": "Events, tickets and guests",
+        "finance": "Invoices, due dates and overdue payments",
+        "contracts": "Contracts, signatures and deadlines",
+        "documents": "Documents and templates",
+        "projects": "Projects, tasks and deadlines",
+        "analytics": "Your business’s numbers, by month and service",
+        "network": "The community of Ventora Systems businesses"
+      }
+    },
+    "app": {
+      "does": "What it does",
+      "links": "Works with",
+      "paid": "Billed",
+      "paidValue": "With your plan",
+      "recommend": "Recommend the app",
+      "decider": "Goes to {who} (owner).",
+      "active": "The app is active. You’ll find it among your apps.",
+      "content": {
+        "marketing": {
+          "lead": "Campaigns and automatic reminders for your clients.",
+          "f1": "SMS and email campaigns to groups of clients",
+          "f2": "Come-back reminders, triggered by the last appointment",
+          "f3": "Results: how many opened, how many booked"
+        }
+      }
     }
   },
   "roles": {
@@ -634,7 +727,8 @@
       "finalPrice": "Final price, no VAT is added."
     },
     "packs": {
-      "validUntil": "valid until {date}"
+      "validUntil": "valid until {date}",
+      "usageNote": "You've used {used} of {limit} this month."
     },
     "prorate": {
       "today": "Today: {amount}, prorated until {date}",
@@ -648,6 +742,13 @@
       "pack": "{name} · extra pack",
       "noPacks": "No extra packs.",
       "included": "Included"
+    },
+    "purchase": {
+      "successPending": "The pack is active and your limit is already higher.",
+      "invoicePending": "We'll email you the invoice as soon as it's issued, usually within a few minutes."
+    },
+    "invoices": {
+      "pending": "Invoice being issued"
     }
   },
   "catalog": {
@@ -1021,6 +1122,158 @@
         "action": "View invoice"
       },
       "upgradeAction": "Request another plan"
+    },
+    "ownerNotice": {
+      "application": {
+        "title": "{name} recommends {app}",
+        "body": "See what the app does and what it costs. Only you can turn it on.",
+        "action": "See the app"
+      },
+      "addon": {
+        "title": "{name} asks for an extra pack: {pack}",
+        "body": "Only you can buy extra packs, from Plan and usage.",
+        "action": "See the packs"
+      },
+      "quota": {
+        "title": "{name} let you know about the {resource} limit",
+        "body": "The business is close to the limit or has reached it. Nothing is lost; only you can buy extra packs.",
+        "action": "See usage"
+      }
+    }
+  },
+  "pay": {
+    "expires": "expires {date}",
+    "changeCard": "Change card",
+    "addCard": "Add a card",
+    "stripeSlot": "Secure Stripe form: card number, expiry, CVC",
+    "saveCard": "Keep the card for future payments",
+    "processingHint": "Don’t close this window. It only takes a few seconds.",
+    "paySuccessHint": "Your limit is already higher. We’ve also emailed you the invoice.",
+    "paySuccessHintPending": "The pack is active and your limit is already higher.",
+    "invoicePending": "We’ll email you the invoice as soon as it’s issued, usually within a few minutes.",
+    "before": "Before",
+    "after": "Now",
+    "invoiceIssued": "We’ve issued invoice {nr}",
+    "seeInvoice": "See invoice",
+    "payFailed": "The payment didn’t go through",
+    "noMoneyTaken": "Nothing was charged to your card.",
+    "whatYouCanDo": "What you can do",
+    "tryAgain": "Try again",
+    "useOtherCard": "Use another card",
+    "callBank": "If it happens again, call your bank: they sometimes block new online payments.",
+    "processing": "Processing your payment…",
+    "paySuccess": "Payment successful",
+    "payAmount": "Pay {amount}",
+    "done": "Done",
+    "cancel": "Cancel",
+    "quantity": "Quantity",
+    "decrease": "Decrease quantity",
+    "increase": "Increase quantity",
+    "total": "Total",
+    "payToday": "You pay today",
+    "prorateToday": "Today: {amount}, prorated until {date}",
+    "prorateThen": "Then {amount} a month, with your plan.",
+    "finalPrice": "Final price, no VAT is added.",
+    "payWith": "You pay by card",
+    "cardExpiring": "Your card expires this month. You can pay with it now or change it.",
+    "noCardSaved": "Your business has no saved card yet.",
+    "close": "Close",
+    "chooseOption": "Choose what suits you",
+    "nothingLost": "Nothing you have is lost.",
+    "decides": "Goes to {who}.",
+    "recommendSent": "We’ve sent your recommendation to {who}.",
+    "recommendSend": "Recommend",
+    "continueBtn": "Continue",
+    "back": "Back",
+    "youActivate": "What you turn on",
+    "whenLabel": "When",
+    "priceLabel": "Price",
+    "setupCost": "Setup cost",
+    "noneCost": "None",
+    "planRequestNote": "You pay nothing now. We’ll confirm the new plan and its price before it starts, within one working day.",
+    "trialNoCard": "No card needed. At the end the app pauses, your data stays, and continuing is your choice.",
+    "upgrade": "Request a different plan",
+    "startTrial": "Start the free trial",
+    "activating": "Turning it on…",
+    "trialActive": "Your free trial has started",
+    "setupOnce": "Setup, one-time",
+    "prorateMaint": "Maintenance: {amount}, prorated until {date}",
+    "addonIncludes": "Includes",
+    "access_available": "Available",
+    "access_unavailable": "Temporarily unavailable",
+    "access_notInRole": "Not in your role",
+    "access_notInPlan": "Not in your plan",
+    "hint_unavailable": "We’re working on it. It’ll be back soon.",
+    "hint_notInRole": "Your role doesn’t include this app. {who} can give you access.",
+    "hint_notInRoleNoOne": "Your role doesn’t include this app. The business owner can give you access.",
+    "hint_notInPlan": "It isn’t included in your business’s plan. Write to us and we’ll turn it on.",
+    "requestAccess": "Request access",
+    "writeUs": "Write to us",
+    "seeStatus": "See status",
+    "openApp": "Open {app}",
+    "seeDetails": "See details",
+    "recommendation": "Recommendation",
+    "moreOptions": "More options",
+    "remindLater": "Remind me later",
+    "remindWeek": "In a week",
+    "remindMonth": "In a month",
+    "notInterested": "Not interested",
+    "onRequestOnly": "On request only",
+    "requestActivation": "Request activation",
+    "notifyOwner": "Tell the owner"
+  },
+  "quota": {
+    "platform_members": {
+      "label": "Team seats",
+      "resource": "team seats"
+    },
+    "platform_locations": {
+      "label": "Locations",
+      "resource": "locations"
+    },
+    "booking_appointments": {
+      "label": "Appointments",
+      "resource": "appointments"
+    },
+    "booking_sms_devices": {
+      "label": "SMS phones",
+      "resource": "SMS phones"
+    },
+    "messaging_sms": {
+      "label": "SMS",
+      "resource": "SMS"
+    },
+    "messaging_email": {
+      "label": "Emails to clients",
+      "resource": "emails to clients"
+    },
+    "marketing_campaigns": {
+      "label": "Campaigns",
+      "resource": "campaigns"
+    },
+    "documents_storage": {
+      "label": "Document storage",
+      "resource": "document storage"
+    },
+    "workflows_active": {
+      "label": "Active automations",
+      "resource": "active automations"
+    },
+    "funnel_pages_published": {
+      "label": "Published pages",
+      "resource": "published pages"
+    },
+    "ai_analyses": {
+      "label": "AI analyses",
+      "resource": "AI analyses"
+    },
+    "events_active": {
+      "label": "Published events",
+      "resource": "published events"
+    },
+    "events_created": {
+      "label": "Events created",
+      "resource": "events created"
     }
   }
 }

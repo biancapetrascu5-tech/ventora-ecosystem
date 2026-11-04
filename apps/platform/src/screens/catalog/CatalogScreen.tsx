@@ -11,6 +11,7 @@ import {
   type CatalogBundleCard,
 } from './CatalogBundlesView';
 import s from './catalog.module.css';
+import { useLimits } from './useLimits';
 
 /* HubCatalogBundles (Lotul 3.4, S117 / D3-24): textele catalogului din datele afacerii. Prețurile
    sunt în moneda afacerii, cu cifrele scrise în limba persoanei (D3-2). O limită fără text în Hub
@@ -20,17 +21,9 @@ const isApp = (id: string): id is AppName => (APP_IDS as string[]).includes(id);
 
 const GROUPING = { useGrouping: 'always' } as unknown as Intl.NumberFormatOptions;
 
-const LIMIT_KEYS: Record<string, 'appointments' | 'sms' | 'emails' | 'campaigns'> = {
-  'booking.appointments': 'appointments',
-  'messaging.sms': 'sms',
-  'messaging.email': 'emails',
-  'marketing.campaigns': 'campaigns',
-};
-const STORAGE_KEY = 'documents.storage';
-
 export function CatalogScreen({ data }: { data: CatalogData }) {
   const t = useTranslations('catalog');
-  const lim = useTranslations('limits');
+  const limits = useLimits();
   const seats = useTranslations('seats');
   const have = useTranslations('billing.have');
   const ui = useTranslations('ui');
@@ -53,13 +46,6 @@ export function CatalogScreen({ data }: { data: CatalogData }) {
     new Intl.DateTimeFormat(locale, { day: 'numeric', month: 'long', timeZone: 'UTC' }).format(
       new Date(`${iso}T00:00:00Z`),
     );
-  const limits = (quotas: Record<string, number | null>) =>
-    Object.entries(quotas).flatMap(([key, value]) => {
-      if (value === null) return [];
-      if (key === STORAGE_KEY) return [lim('storage', { amount: `${value} GB` })];
-      const k = LIMIT_KEYS[key];
-      return k ? [lim(k, { count: value })] : [];
-    });
   const appName = (id: string) => (isApp(id) ? APPS[id]?.name : undefined) ?? id;
   const setup = (minor: number) =>
     minor > 0 ? t('setup', { amount: money(minor) }) : t('noSetup');

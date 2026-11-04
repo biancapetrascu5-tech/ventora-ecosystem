@@ -49,6 +49,9 @@ export type { NotificationValue, NotificationParams, NotificationValueType } fro
 // Lot 4.5: the Phase 3 notifications (S115)
 export { BILLING_TEMPLATES, BILLING_KINDS, billingType } from './model/billing';
 export type { BillingKind, BillingTemplateId } from './model/billing';
+// Lot 3.7: „Recomandă” / „Anunță proprietarul”
+export { OWNER_NOTICE_TEMPLATES, ownerNoticeType } from './model/owner-notice';
+export type { OwnerNoticeKind } from './model/owner-notice';
 export { sendNotification } from './model/send';
 export type { SendNotificationInput, SendNotificationResult } from './model/send';
 export {

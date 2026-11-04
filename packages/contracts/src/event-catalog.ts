@@ -152,6 +152,29 @@ export const CommercialRequestDecidedV1 = defineEvent({
     .strict(),
 });
 
+/**
+ * `commercial.owner.notified` v1 (Lot 3.7): someone in the business who cannot buy (an admin or a
+ * member, D3-8) pressed „Recomandă” on an application or „Anunță proprietarul” on a pack or a
+ * limit. The owner gets a notification in the Hub (its consumer, core/organizations), so an event
+ * without one is a mistake (dead letter). `day` makes the same person asking for the same thing
+ * twice in a day one notification.
+ */
+export const CommercialOwnerNotifiedV1 = defineEvent({
+  type: 'commercial.owner.notified',
+  version: 1,
+  sourceApp: 'platform',
+  growthSafe: false,
+  withoutConsumer: 'dead_letter',
+  schema: z
+    .object({
+      userId: z.uuid(),
+      targetType: z.enum(['application', 'addon', 'quota']),
+      targetId: z.string().min(1).max(128),
+      day: z.iso.date(),
+    })
+    .strict(),
+});
+
 const billingPayment = {
   paymentId: z.uuid(),
   /** `purchase`: a pack or an application bought from the Hub; `subscription`: an invoice of the subscription. */
@@ -261,6 +284,7 @@ export const EVENT_CATALOG: readonly EventDefinition[] = [
   QuotaThresholdV1 as EventDefinition,
   QuotaOverLimitV1 as EventDefinition,
   CommercialRequestDecidedV1 as EventDefinition,
+  CommercialOwnerNotifiedV1 as EventDefinition,
   BillingPaymentSucceededV1 as EventDefinition,
   BillingPaymentFailedV1 as EventDefinition,
   BillingDisputeOpenedV1 as EventDefinition,

@@ -5,12 +5,15 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
 import {
   AccountMenu,
+  APP_IDS,
+  APPS,
   AppShell,
   ContextBar,
   Logo,
   NotificationsPanel,
   OrgSwitcher,
   Spine,
+  type AppName,
   type NavSection,
   type NotificationData,
 } from '@ventora/ui';
@@ -22,8 +25,8 @@ import { markBellRead, openBellItem, readBell, type Bell } from '@/server/notifi
 
 /* Shell-ul Hub (HubSettings din preview-urile ecranelor Hub, Lot 2.8): Spine cu „Contul tău”,
    „Afacerea” și „Ajutor”, ContextBar cu afacerea, notificările și contul. Navigația arată doar
-   intrările care au ecran: „Profil și preferințe”, „Abonament și consum” și „Suport” apar odată
-   cu ecranele lor; „Afacerea” doar pentru owner și admin.
+   intrările care au ecran: „Profil și preferințe” și „Suport” apar odată cu ecranele lor;
+   „Abonament și consum” din Lotul 3.7; „Afacerea” doar pentru owner și admin.
    Lot 4.4: clopoțelul are sursa reală (core/notifications): ultimele 30 de zile (D4-11), numără
    doar operaționalele necitite (D4-5); deschiderea duce la acțiunea notificării. */
 
@@ -40,10 +43,17 @@ export type HubShellData = {
 
 type Route = { id: string; href: string };
 
+/** /applications/<id> → numele aplicației (CampaignKit), titlul barei în HubCatalogApp. */
+function appNameOf(pathname: string): string | undefined {
+  const id = pathname.split('/')[2] ?? '';
+  return (APP_IDS as string[]).includes(id) ? APPS[id as AppName]?.name : undefined;
+}
+
 const ROUTES: Route[] = [
   { id: 'securitate', href: '/account' },
   { id: 'echipa', href: '/admin/team' },
   { id: 'roluri', href: '/admin/access' },
+  { id: 'abonament', href: '/admin/plan' },
 ];
 
 function activeFor(pathname: string): string | undefined {
@@ -73,6 +83,13 @@ export function useHubNav(manager: boolean): NavSection[] {
           href: '/admin/team',
         },
         { id: 'roluri', label: nav('roles'), icon: 'key', href: '/admin/access' },
+        {
+          id: 'abonament',
+          label: nav('plan'),
+          short: nav('planShort'),
+          icon: 'credit-card',
+          href: '/admin/plan',
+        },
       ],
     });
   }
@@ -154,9 +171,15 @@ export function HubShell({
   const roles = useTranslations('roles');
   const nav = useHubNav(data.manager);
   const active = activeFor(pathname);
-  // S117: catalogul (HubCatalogBundles) se deschide fără Spine, cu sigla în bară.
-  const catalog = pathname === '/catalog' || pathname.startsWith('/catalog/');
-  const catalogTitle = useTranslations('catalog.bundles')('title');
+  // S117: catalogul (HubCatalogBundles, HubCatalog, HubCatalogApp) se deschide fără Spine, cu
+  // sigla în bară; titlul barei e al paginii.
+  const under = (base: string) => pathname === base || pathname.startsWith(`${base}/`);
+  const catalog = under('/catalog') || under('/applications');
+  const bundlesTitle = useTranslations('catalog.bundles')('title');
+  const appsTitle = useTranslations('hub.apps')('bar');
+  const appTitle =
+    under('/applications') && pathname !== '/applications' ? appNameOf(pathname) : undefined;
+  const catalogTitle = under('/applications') ? (appTitle ?? appsTitle) : bundlesTitle;
   // Titlul din ContextBar (se vede doar pe telefon): numele paginii active din Spine.
   const pageTitle =
     title ??
@@ -191,7 +214,7 @@ export function HubShell({
             sections={nav}
             activeId={active}
             onBackToHub={() => go('/')}
-            bottomItems={['securitate', 'echipa', 'roluri']}
+            bottomItems={['securitate', 'echipa', 'abonament']}
             labels={{
               backToHub: ui('backToHub'),
               expandMenu: ui('expandMenu'),

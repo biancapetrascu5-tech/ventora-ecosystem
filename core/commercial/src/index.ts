@@ -114,12 +114,14 @@ export {
 } from './quota';
 export {
   createCommercialRequest,
+  notifyOwner,
   listRequestsForFounder,
   resolveRequest,
   refuseRequest,
   REQUEST_REASON_MAX,
   type RequestActor,
   type RequestKind,
+  type OwnerNoticeTarget,
   type RequestStatus,
   type RequestTargetType,
   type CommercialRequestRow,
@@ -161,6 +163,8 @@ export {
 export {
   getCatalogForOrg,
   getSeatsBreakdown,
+  getActivePacks,
+  type ActivePack,
   type SeatsBreakdown,
   type Catalog,
   type CatalogBundle,
@@ -177,3 +181,5 @@ export {
   type BillingDiscount,
 } from './purchases';
 export { closeCommercialPools, type CommercialConnection } from './db';
+// Lot 3.7: „Recomandă” / „Anunță proprietarul” → the owner's notification
+export { ownerNotifiedConsumer, quotaResourceKey } from './notify';

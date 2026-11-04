@@ -207,6 +207,10 @@ export const ADDON_RO: AddonPurchaseLabels = {
   payToday: 'Plătești azi',
   prorateToday: (amount, date) => `Azi: ${amount}, proporțional până pe ${date}`,
   prorateThen: (amount) => `Apoi ${amount} pe lună, odată cu abonamentul.`,
+  // S117 (HubAppActivation): implementarea, mentenanța proporțională, „Include”
+  setupOnce: 'Implementare, o singură dată',
+  prorateMaint: (amount, date) => `Mentenanța: ${amount}, proporțional până pe ${date}`,
+  addonIncludes: 'Include',
   finalPrice: 'Prețul e final, nu se adaugă TVA.',
   payWith: 'Plătești cu cardul',
   cardExpiring: 'Cardul expiră luna aceasta. Poți plăti cu el acum sau îl schimbi.',

@@ -1,5 +1,5 @@
 import type { PoolClient } from 'pg';
-import { CommercialRequestDecidedV1 } from '@ventora/contracts';
+import { CommercialOwnerNotifiedV1, CommercialRequestDecidedV1 } from '@ventora/contracts';
 import { Conflict, Forbidden, InvalidInput, ResourceNotFound } from '@ventora/errors';
 import { AuditActions, appendAuditEventInTx, pgExecutor } from '@ventora/audit';
 import { writeOutboxEvent } from '@ventora/db-kit';
@@ -264,4 +264,53 @@ export async function refuseRequest(params: {
     throw new InvalidInput('reason', `A reason of at most ${REQUEST_REASON_MAX} characters`);
   }
   await decide(params, 'refused', reason);
+}
+
+export type OwnerNoticeTarget = 'application' | 'addon' | 'quota';
+
+/**
+ * Lot 3.7 — „Recomandă” (an application) and „Anunță proprietarul” (a pack, a limit) from the
+ * Hub: someone who cannot buy (D3-8: an admin or a member) tells the owner. Nothing is bought or
+ * asked of the Ventora team; the owner gets a notification in the Hub (the consumer of
+ * `commercial.owner.notified`, core/organizations). `actor` comes from authorize(); the target is
+ * checked here like a request's: an application the business does not have, a pack it can take,
+ * a limit of its subscription.
+ */
+export async function notifyOwner(
+  actor: RequestActor,
+  input: { targetType: OwnerNoticeTarget; targetId: string },
+): Promise<void> {
+  const organizationId = uuid('organizationId', actor.organizationId);
+  const userId = uuid('userId', actor.userId);
+  if (actor.actor !== 'user' || actor.role === 'owner') {
+    throw new Forbidden('The owner buys or asks; the others tell the owner');
+  }
+  const targetId = String(input.targetId ?? '').trim();
+  if (!targetId || targetId.length > 128) throw new InvalidInput('targetId');
+
+  await withOrganizationWrite(organizationId, async (client) => {
+    if (input.targetType === 'application' || input.targetType === 'addon') {
+      await checkTarget(client, organizationId, 'activation', input.targetType, targetId);
+    } else if (input.targetType === 'quota') {
+      // a limit the business has: limited (an unlimited one never reaches the owner) and above 0
+      const { quotas } = await computeEntitlementsInTx(client, organizationId, null);
+      const limit = quotas[targetId];
+      if (typeof limit !== 'number' || limit <= 0) {
+        throw new InvalidInput('targetId', 'Not a limit of the business');
+      }
+    } else {
+      throw new InvalidInput('targetType');
+    }
+    await writeOutboxEvent(client, 'commercial', CommercialOwnerNotifiedV1, {
+      organizationId,
+      sourceApp: CommercialOwnerNotifiedV1.sourceApp,
+      resourceId: targetId,
+      payload: {
+        userId,
+        targetType: input.targetType,
+        targetId,
+        day: new Date().toISOString().slice(0, 10),
+      },
+    });
+  });
 }

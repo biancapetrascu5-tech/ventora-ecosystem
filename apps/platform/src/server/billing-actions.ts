@@ -15,7 +15,7 @@ import {
   type PurchaseResult,
   type SavedCard,
 } from '@ventora/billing';
-import type { PurchaseItem } from '@ventora/commercial';
+import { billingPeriod, calendarDate, type PurchaseItem } from '@ventora/commercial';
 import { Forbidden, InvalidInput, ResourceNotFound } from '@ventora/errors';
 import { getSession } from '@ventora/identity';
 import { reportActionError } from './report-error';
@@ -23,8 +23,8 @@ import { reportActionError } from './report-error';
 /* Lotul 3.5 — plățile cu cardul din Hub (ARCHITECTURE §8.6, D-COM-6). Doar cine are
    `billing.purchase` (D3-8: owner-ul) salvează cardul și cumpără; afacerea vine din sesiune prin
    authorize(), niciodată din client, iar prețul se citește pe server. Ecranele care le folosesc
-   (HubAdminPlan, cumpărarea unui pachet, activarea unei aplicații) vin în Lotul 3.7; aici sunt
-   contractele lor și Stripe.js (src/billing/stripe-client.ts).
+   (Lotul 3.7): HubAdminPlan și cumpărarea unui pachet (screens/plan), activarea unei aplicații
+   (screens/apps); Stripe.js e în src/billing/stripe-client.ts.
 
    Erorile neașteptate merg în jurnal și în Sentry (reportActionError); refuzurile așteptate
    (la cerere, plată manuală, fără card) se întorc ca motiv, pentru „Cere activare”. */
@@ -108,7 +108,12 @@ export async function confirmCard(
   }
 }
 
-/** Cât se plătește acum (și, pentru o linie a abonamentului, de la factura următoare). */
+/**
+ * Cât se plătește acum (și, pentru o linie a abonamentului, de la factura următoare). Lotul 3.7:
+ * `until` e ziua până la care se plătește proporțional (următoarea plată a abonamentului); o
+ * aplicație se poate previzualiza și fără card salvat (`card: null`), pentru dialogul care
+ * salvează cardul în Stripe Elements înainte de plată.
+ */
 export async function previewBuy(item: PurchaseItem): Promise<
   | {
       ok: true;
@@ -117,11 +122,14 @@ export async function previewBuy(item: PurchaseItem): Promise<
       setupMinor: number;
       currency: 'RON' | 'EUR';
       card: { brand: string; last4: string } | null;
+      until: string | null;
     }
   | Refused
 > {
   try {
-    const p = await previewPurchase(await buyer(), item);
+    const p = await previewPurchase(await buyer(), item, {
+      withoutCard: item.kind === 'application',
+    });
     return {
       ok: true,
       amountDueMinor: p.amountDueMinor,
@@ -129,6 +137,12 @@ export async function previewBuy(item: PurchaseItem): Promise<
       setupMinor: p.quote.setupMinor,
       currency: p.quote.currency,
       card: p.card,
+      until: p.quote.recurring
+        ? billingPeriod(
+            { startedOn: p.quote.startedOn, interval: p.quote.interval },
+            calendarDate(new Date()),
+          ).end
+        : null,
     };
   } catch (err) {
     return refusal('previewBuy', err);

@@ -7,6 +7,8 @@ export {
   type SavedCard,
 } from './account';
 export { confirmCardSetup } from './cards';
+// Lot 3.7: the payments under „Facturi” (the invoice itself: Lot 3.6)
+export { listPayments, PAYMENTS_LISTED, type PaymentRow } from './history';
 export {
   previewPurchase,
   purchase,

@@ -1,0 +1,219 @@
+/* HubAdminPlan / HubPlanBilling (preview.html): .plan, .appsrow, .paymethod, .usage-grid, .rows,
+   .mrow, .biz-text, Have117 (fundal sunken) și .pb-lines (chenar). Doar token-uri. */
+
+.plan {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+}
+
+.planHead {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.planHeadInline {
+  gap: 0;
+}
+
+.nameRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.amount {
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.payLines {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.appsrow {
+  display: inline-flex;
+  gap: var(--space-1);
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.m0 {
+  margin: 0;
+}
+
+.notice {
+  margin-top: var(--space-4);
+}
+
+.have {
+  margin-top: var(--space-5);
+  max-width: 620px;
+}
+
+.haveTitle {
+  margin: 0 0 var(--space-2);
+}
+
+.linesSunken {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  border-radius: var(--radius-sm);
+  background: var(--sunken);
+}
+
+.linesBordered {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  border: var(--border-width) solid var(--line);
+  border-radius: var(--radius-md);
+  padding: var(--space-3) var(--space-4);
+}
+
+.line {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+.linesBordered .line {
+  align-items: baseline;
+}
+
+.line > span:last-child {
+  white-space: nowrap;
+}
+
+.lineText {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-0-5);
+  min-width: 0;
+}
+
+.total {
+  padding-top: var(--space-2);
+  border-top: var(--border-width) solid var(--line);
+}
+
+.linesBordered .total {
+  margin-top: var(--space-1);
+}
+
+.keep {
+  margin: var(--space-2) 0 0;
+}
+
+.paymethod {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin-top: var(--space-4);
+  padding-top: var(--space-4);
+  border-top: var(--border-width) solid var(--line);
+  max-width: 480px;
+}
+
+.noCard {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.phoneUpgrade {
+  display: flex;
+  margin-top: var(--space-4);
+}
+
+.usageGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: var(--space-6);
+}
+
+.meterCol {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.growth {
+  margin-bottom: var(--space-4);
+  max-width: 560px;
+}
+
+.rows {
+  display: flex;
+  flex-direction: column;
+  background: var(--sheet);
+  border: var(--border-width) solid var(--line);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.mrow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border-bottom: var(--border-width) solid var(--line);
+  color: var(--ink-secondary);
+}
+
+.mrow:last-child {
+  border-bottom: 0;
+}
+
+.bizText {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-0-5);
+  align-items: flex-start;
+}
+
+.statusCell {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.toast {
+  position: fixed;
+  right: var(--space-6);
+  bottom: var(--space-6);
+  z-index: var(--z-overlay);
+  max-width: 420px;
+}
+
+/* .modal-demo din preview: dialogul peste ecran, doar în galerie */
+.modalDemo {
+  position: absolute;
+  inset: 0;
+  background: var(--scrim);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-6);
+  z-index: var(--z-overlay);
+}
+
+.frame {
+  position: relative;
+  height: 100%;
+}

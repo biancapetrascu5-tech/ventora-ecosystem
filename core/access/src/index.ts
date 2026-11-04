@@ -56,6 +56,7 @@ export {
 export type { FounderBusiness } from './businesses';
 export {
   listTeamMembers,
+  getTeamOwnerName,
   listTeamInvitations,
   resendTeamInvitation,
   revokeTeamInvitation,

@@ -91,6 +91,27 @@ export async function listTeamMembers(params: { sessionToken: string }): Promise
 }
 
 /**
+ * Lot 3.7: numele owner-ului afacerii active, pentru „Pachetele în plus le poate cumpăra doar
+ * {who} (proprietar)” și „Ajunge la {who} (proprietar).” Pentru orice membru al afacerii (nu doar
+ * owner și admin): doar numele, fără adresă. null dacă afacerea nu are încă un owner activ.
+ */
+export async function getTeamOwnerName(params: { sessionToken: string }): Promise<string | null> {
+  const ctx = await authorize({
+    sessionToken: params.sessionToken,
+    applicationId: PLATFORM_APPLICATION_ID,
+  });
+  const org = await resolveOrgContext({ userId: ctx.userId, organizationId: ctx.organizationId });
+  const memberships = (await listMembers(org)) as {
+    userId: string;
+    role: string;
+    status: string;
+  }[];
+  const owner = memberships.find((m) => m.role === 'owner' && m.status === 'active');
+  if (!owner) return null;
+  return (await getUserById(owner.userId))?.name ?? null;
+}
+
+/**
  * Invitațiile în așteptare și cele expirate de cel mult 30 de zile (P6), cele mai noi primele,
  * cu marcajul `newLinkRequestedAt` („a cerut o invitație nouă”, Lot 2.7 · C).
  */
