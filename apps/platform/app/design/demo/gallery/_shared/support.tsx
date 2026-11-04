@@ -17,7 +17,7 @@ import {
   type SupportMessageData,
 } from '@ventora/screens';
 import { HubSettings } from './hubSettings';
-import { FounderShellDemo } from './founderShell';
+import { FX_NAV_SUPPORT, FounderShellDemo } from './founderShell';
 import { noop } from './shell';
 import f from './frames.module.css';
 import { RoIntl } from './ScreenFrames';
@@ -201,7 +201,12 @@ const FOUNDER_BOTTOM = ['afaceri', 'cereri', 'suport'];
 export function FounderInboxFrame() {
   const phone = useIsPhone();
   return (
-    <FounderShellDemo active="suport" title="Suport" bottomItems={FOUNDER_BOTTOM}>
+    <FounderShellDemo
+      active="suport"
+      title="Suport"
+      bottomItems={FOUNDER_BOTTOM}
+      sections={FX_NAV_SUPPORT}
+    >
       <FounderSupportInboxView
         mob={phone}
         rows={INBOX}
@@ -236,7 +241,12 @@ export function FounderInboxFrame() {
 export function FounderThreadFrame() {
   const phone = useIsPhone();
   return (
-    <FounderShellDemo active="suport" title="Suport" bottomItems={FOUNDER_BOTTOM}>
+    <FounderShellDemo
+      active="suport"
+      title="Suport"
+      bottomItems={FOUNDER_BOTTOM}
+      sections={FX_NAV_SUPPORT}
+    >
       <FounderSupportThreadView
         mob={phone}
         subject="Avansul nu apare în fișa clientului"
