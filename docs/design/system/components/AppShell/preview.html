@@ -375,8 +375,8 @@ const Box = ({ w, children }) => h("div", { style: { width: w, maxWidth: "100%",
 const Pair = ({ children }) => h("div", { style: { display: "flex", gap: "var(--space-4)", alignItems: "flex-start", flexWrap: "wrap" } }, children);
 function Demo() {
   return h("div", { className: "d" },
-    h(Frame, { th: "light", label: "peste 1024px: Spine întins" }, h(Box, { w: "100%" }, h(Shell, { L: SL.ro }))),
-    h(Frame, { th: "dark", label: "peste 1024px: Spine întins" }, h(Box, { w: "100%" }, h(Shell, { L: SL.ro }))),
+    h(Frame, { th: "light", label: "peste 1024px: Spine întins · „Restrânge meniul” jos (S118)" }, h(Box, { w: "100%" }, h(Shell, { L: SL.ro }))),
+    h(Frame, { th: "dark", label: "peste 1024px: Spine întins · „Restrânge meniul” jos (S118)" }, h(Box, { w: "100%" }, h(Shell, { L: SL.ro }))),
     h(Pair, null,
       h(Frame, { th: "light", label: "768–1023px: Spine pe iconuri" }, h(Box, { w: 820 }, h(Shell, { L: SL.ro }))),
       h(Frame, { th: "dark", label: "sub 768px: bara de jos" }, h(Box, { w: 390 }, h(Shell, { L: SL.ro, mobile: true })))),

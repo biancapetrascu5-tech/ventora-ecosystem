@@ -193,34 +193,25 @@
   margin: 0 var(--space-3);
 }
 
+/* .v-spine__bottom (Spine 1.2.0, S118): „Restrânge meniul” ca element, jos, sub subsol */
+.bottom {
+  padding: var(--space-2) var(--space-3) var(--space-3);
+  border-top: var(--border-width) solid var(--line);
+  margin-top: auto;
+}
+
+.foot + .bottom {
+  border-top: 0;
+  padding-top: 0;
+}
+
 .collapse {
-  appearance: none;
-  position: absolute;
-  top: var(--space-4);
-  right: calc(var(--space-3) * -1);
-  z-index: 2;
-  width: var(--space-6);
-  height: var(--space-6);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-  border-radius: var(--radius-full);
-  border: var(--border-width) solid var(--line-strong);
-  background: var(--sheet);
   color: var(--ink-secondary);
-  cursor: pointer;
 }
 
-.collapse::after {
-  content: '';
-  position: absolute;
-  inset: calc((var(--touch-target) - var(--space-6)) / -2);
-}
-
-.collapse:hover {
-  color: var(--ink);
-  border-color: var(--control-border);
+.isCollapsed .bottom {
+  border-top: var(--border-width) solid var(--line);
+  padding-top: var(--space-2);
 }
 
 .isCollapsed {
@@ -362,8 +353,10 @@
   .spine:not(.sheet) .hub,
   .spine:not(.sheet) .seclabel,
   .spine:not(.sheet) .foot,
-  .spine:not(.sheet) .item .badge,
-  .spine:not(.sheet) .collapse {
+  .spine:not(.sheet) .item .badge {
+    display: none;
+  }
+  .spine:not(.sheet) .bottom {
     display: none;
   }
   .spine:not(.sheet) .item,

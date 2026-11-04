@@ -723,23 +723,138 @@ export type ExpiringData = {
   expiresAt: string;
 };
 
-export async function readExpiringExceptions(): Promise<ExpiringData[] | null> {
+/* FounderOverview (S118): cifrele (afacerile active și cele noi din lună, venitul lunar
+   recurent, proba pe tot abonamentul), cererile noi, excepțiile care expiră în 7 zile (cu cine le-a adăugat),
+   afacerile peste 80% dintr-o limită și ultimele 4 afaceri create, cu bundle-ul și aplicațiile la
+   bucată. Venitul lunar recurent (decizia fondatoarei, 04.11.2026): abonamentele active, fără
+   cele în probă — următoarea factură (bundle-ul, aplicațiile la bucată, pachetele lunare, după
+   reducerile care o ating), anualul împărțit la 12; lei și euro separat, fără conversie și fără
+   schimbarea față de luna trecută. Plățile eșuate și disputele vin în Lotul 3.6; suportul, după
+   Lotul 4.6. */
+export type OverviewData = {
+  generatedAt: string;
+  businesses: { total: number; active: number; newThisMonth: number };
+  /** Venitul lunar recurent, în unități minore, pe monedă. */
+  mrr: { RON: number; EUR: number };
+  trials: { total: number; endingIn3Days: number };
+  requests: { business: string; targetType: RequestData['targetType']; item: string }[];
+  expiring: (ExpiringData & { by: string })[];
+  limits: { organizationId: string; business: string; key: string; used: number; limit: number }[];
+  recent: {
+    id: string;
+    name: string;
+    createdAt: string;
+    status: 'invited' | 'trial' | 'active' | 'suspended';
+    planName: string | null;
+    applications: string[];
+  }[];
+};
+
+const NEAR_LIMIT_PCT = 80;
+const RECENT = 4;
+
+export async function readOverview(): Promise<OverviewData | null> {
   try {
     const h = await founderHeaders();
-    const [rows, names] = await Promise.all([
+    const now = new Date();
+    const [list, subs, requests, expiring, usage] = await Promise.all([
+      listBusinessesForFounder({ founderHeaders: h }),
+      listSubscriptionsForFounder({ founderHeaders: h }),
+      readRequests(),
       listExpiringOverridesForFounder({ founderHeaders: h }),
-      businessNames(h),
+      readBusinessUsage(),
     ]);
-    return rows.map((r) => ({
-      id: r.id,
-      organizationId: r.organizationId,
-      business: names[r.organizationId]?.name ?? '',
-      quotaKey: r.quotaKey,
-      limit: r.limit,
-      expiresAt: r.expiresAt.toISOString(),
-    }));
+    if (!requests || !usage) return null;
+    const names = Object.fromEntries(list.map((b) => [b.id, b.name]));
+    const trialing = new Map(
+      subs
+        .filter((x) => x.status === 'trialing' && x.trialEndsAt && x.trialEndsAt > now)
+        .map((x) => [x.organizationId, x.trialEndsAt!]),
+    );
+    const plan = new Map(subs.map((x) => [x.organizationId, x.planName]));
+    const month = now.toISOString().slice(0, 7);
+    const active = list.filter((b) => b.status === 'active');
+    const recent = [...list]
+      .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
+      .slice(0, RECENT);
+    const paying = subs.filter((x) => x.status === 'active');
+    const [founders, recentLines, invoices] = await Promise.all([
+      getFounderNames(expiring.map((o) => o.createdByFounderId)),
+      Promise.all(
+        recent.map((b) =>
+          getBusinessCommercialForFounder({ founderHeaders: h, organizationId: b.id }).then((c) =>
+            c.lines.filter((l) => l.type === 'application').map((l) => l.key),
+          ),
+        ),
+      ),
+      Promise.all(
+        paying.map((x) =>
+          getBusinessCommercialForFounder({ founderHeaders: h, organizationId: x.organizationId }),
+        ),
+      ),
+    ]);
+    const mrr = { RON: 0, EUR: 0 };
+    paying.forEach((x, i) => {
+      const total = invoices[i]!.nextInvoice?.totalMinor ?? 0;
+      mrr[x.currency] += x.interval === 'year' ? total / 12 : total;
+    });
+    return {
+      generatedAt: now.toISOString(),
+      businesses: {
+        total: list.length,
+        active: active.length,
+        newThisMonth: active.filter((b) => b.createdAt.toISOString().slice(0, 7) === month).length,
+      },
+      mrr: { RON: Math.round(mrr.RON), EUR: Math.round(mrr.EUR) },
+      trials: {
+        total: trialing.size,
+        endingIn3Days: [...trialing.values()].filter(
+          (d) => d.getTime() - now.getTime() <= 3 * 86_400_000,
+        ).length,
+      },
+      requests: requests
+        .filter((r) => r.status === 'new')
+        .map((r) => ({ business: r.business, targetType: r.targetType, item: r.item })),
+      expiring: expiring.map((o) => ({
+        id: o.id,
+        organizationId: o.organizationId,
+        business: names[o.organizationId] ?? '',
+        quotaKey: o.quotaKey,
+        limit: o.limit,
+        expiresAt: o.expiresAt.toISOString(),
+        by: founders[o.createdByFounderId] ?? '',
+      })),
+      limits: usage
+        .flatMap((u) =>
+          u.quotas
+            .filter((q) => q.limit && (q.used / q.limit) * 100 >= NEAR_LIMIT_PCT)
+            .map((q) => ({
+              organizationId: u.organizationId,
+              business: u.business,
+              key: q.key,
+              used: q.used,
+              limit: q.limit!,
+            })),
+        )
+        .sort((a, b) => b.used / b.limit - a.used / a.limit),
+      recent: recent.map((b, i) => ({
+        id: b.id,
+        name: b.name,
+        createdAt: b.createdAt.toISOString(),
+        status:
+          b.status === 'suspended'
+            ? 'suspended'
+            : !b.owner
+              ? 'invited'
+              : trialing.has(b.id)
+                ? 'trial'
+                : 'active',
+        planName: plan.get(b.id) ?? null,
+        applications: recentLines[i]!,
+      })),
+    };
   } catch (err) {
-    reportActionError('readExpiringExceptions', err);
+    reportActionError('readOverview', err);
     return null;
   }
 }

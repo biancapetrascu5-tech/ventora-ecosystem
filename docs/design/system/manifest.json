@@ -1,6 +1,6 @@
 {
   "manifestVersion": 3,
-  "name": "Ventora",
+  "name": "Ventora Systems",
   "namespace": "Ventora",
   "files": [
     "assets/App icons/README.md",
@@ -19,17 +19,32 @@
     "components/AppStates/README.md",
     "components/AppTile/README.md",
     "components/AttentionList/README.md",
+    "components/AuthLayout/README.md",
     "components/Avatar/README.md",
     "components/Badge/README.md",
     "components/BarChart/README.md",
+    "components/BillingNotifications/README.md",
     "components/BookingCalendar/README.md",
+    "components/BookingClientCard/README.md",
+    "components/BookingClientEmails/README.md",
+    "components/BookingDeposit/README.md",
     "components/BookingDetail/README.md",
+    "components/BookingHealthFields/README.md",
     "components/BookingLimit/README.md",
     "components/BookingList/README.md",
     "components/BookingNew/README.md",
+    "components/BookingPayments/README.md",
+    "components/BookingPublic/README.md",
     "components/BookingSettings/README.md",
+    "components/BookingSmsConnect/README.md",
+    "components/BookingSmsExtraPhone/README.md",
+    "components/BookingSmsList/README.md",
+    "components/BookingSmsMessages/README.md",
+    "components/BookingSmsNotifications/README.md",
     "components/BookingSmsSettings/README.md",
+    "components/BookingSmsToday/README.md",
     "components/BookingStates/README.md",
+    "components/BookingStatuses/README.md",
     "components/BookingToday/README.md",
     "components/BrandZone/README.md",
     "components/Button/README.md",
@@ -50,13 +65,27 @@
     "components/FileUpload/README.md",
     "components/FinanceDue/README.md",
     "components/FormField/README.md",
+    "components/FounderApps/README.md",
+    "components/FounderAutomations/README.md",
+    "components/FounderBackupCodes/README.md",
+    "components/FounderBundles/README.md",
     "components/FounderBusiness/README.md",
+    "components/FounderBusinessActions/README.md",
+    "components/FounderBusinessBilling/README.md",
+    "components/FounderBusinessSms/README.md",
     "components/FounderBusinesses/README.md",
+    "components/FounderDiscounts/README.md",
     "components/FounderNewBusiness/README.md",
+    "components/FounderOwnerRecovery/README.md",
     "components/FounderPacks/README.md",
+    "components/FounderPasswordReset/README.md",
     "components/FounderPlanEditor/README.md",
-    "components/FounderPlans/README.md",
+    "components/FounderRequests/README.md",
+    "components/FounderSignIn/README.md",
     "components/FounderStates/README.md",
+    "components/FounderSupportInbox/README.md",
+    "components/FounderSupportSession/README.md",
+    "components/FounderTwoFactor/README.md",
     "components/FounderUsage/README.md",
     "components/Glosar/README.md",
     "components/GrowthAudiences/README.md",
@@ -69,20 +98,34 @@
     "components/GrowthSlot/README.md",
     "components/HrAttendance/README.md",
     "components/HubAccount/README.md",
+    "components/HubAccountSecurity/README.md",
     "components/HubAddonPurchase/README.md",
     "components/HubAdminAccess/README.md",
     "components/HubAdminPlan/README.md",
     "components/HubAdminTeam/README.md",
+    "components/HubAppActivation/README.md",
+    "components/HubAppTexts/README.md",
+    "components/HubAutomations/README.md",
+    "components/HubBusinessSuspended/README.md",
     "components/HubCatalog/README.md",
     "components/HubCatalogApp/README.md",
+    "components/HubCatalogBundles/README.md",
     "components/HubChooseBusiness/README.md",
     "components/HubEmpty/README.md",
     "components/HubInvite/README.md",
     "components/HubLauncher/README.md",
+    "components/HubPasswordReset/README.md",
+    "components/HubPlanBilling/README.md",
     "components/HubRecommendation/README.md",
     "components/HubSignIn/README.md",
     "components/HubStates/README.md",
     "components/HubSupport/README.md",
+    "components/HubSupportSession/README.md",
+    "components/HubSupportThread/README.md",
+    "components/HubTeamInvite/README.md",
+    "components/HubTeamMemberActions/README.md",
+    "components/HubTwoFactorSetup/README.md",
+    "components/HubTwoFactorVerify/README.md",
     "components/Icon/README.md",
     "components/IconButton/README.md",
     "components/Input/README.md",
@@ -113,6 +156,7 @@
     "components/Sheet/README.md",
     "components/Skeleton/README.md",
     "components/SlotPicker/README.md",
+    "components/SmsAppDownload/README.md",
     "components/Spine/README.md",
     "components/Stat/README.md",
     "components/StatusDot/README.md",
@@ -138,14 +182,14 @@
   ],
   "libraries": [
     {
+      "global": "React",
       "name": "react",
-      "version": "18",
-      "global": "React"
+      "version": "18"
     },
     {
+      "global": "ReactDOM",
       "name": "react-dom",
-      "version": "18",
-      "global": "ReactDOM"
+      "version": "18"
     }
   ],
   "components": [
@@ -242,7 +286,7 @@
     {
       "name": "Kanban",
       "group": "Data",
-      "summary": "Cards in stages — the CRM pipeline, the Projects board."
+      "summary": "Cards in stages — the ClientDesk pipeline, the TaskBoard board."
     },
     {
       "name": "Timeline",
@@ -327,7 +371,7 @@
     {
       "name": "AttentionList",
       "group": "Feedback",
-      "summary": "\"Au nevoie de tine\" — the few things that need a person now, each with its own action, at the top of every app's Today screen."
+      "summary": "\"Au nevoie de tine\": the few things that need a person, each with its own action, at the top of every app's Today screen."
     },
     {
       "name": "Skeleton",
@@ -342,7 +386,7 @@
     {
       "name": "UsageMeter",
       "group": "Feedback",
-      "summary": "Consumption against a plan limit, shown calmly: used, what is left, a warning near the limit, a controlled block at the limit, and the upgrade."
+      "summary": "Consumption against a subscription limit, shown calmly: what is used, what is left, a warning near the limit and a controlled block at the limit."
     },
     {
       "name": "Kbd",
@@ -357,7 +401,7 @@
     {
       "name": "ThemeSwitcher",
       "group": "Preferences",
-      "summary": "Light / Dark / System — the three options every Ventora surface offers."
+      "summary": "Light / Dark / System — the three options every Ventora Systems surface offers."
     },
     {
       "name": "LanguageSwitcher",
@@ -367,7 +411,7 @@
     {
       "name": "AppShell",
       "group": "Shell",
-      "summary": "The frame of every app: Spine on the left, ContextBar on top, the content (PageHeader + Sheet) in the middle — and a bottom nav under 640px."
+      "summary": "The frame of every app: Spine on the left, ContextBar on top, the content (PageHeader + Sheet) in the middle — and a bottom nav under 768px."
     },
     {
       "name": "Spine",
@@ -392,12 +436,12 @@
     {
       "name": "Logo",
       "group": "Hub",
-      "summary": "The official Ventora logo files, embedded exactly as supplied: the mark, and the full logo with its own \"VENTORA\" wordmark."
+      "summary": "The official Ventora Systems logo files, embedded exactly as supplied: the mark, and the logo with its own \"VENTORA SYSTEMS\" wordmark, on one line or on two."
     },
     {
       "name": "AppIcon",
       "group": "Hub",
-      "summary": "One of the fifteen Ventora app icons — a navy plate with off-white shapes and a single peach part, drawn on a shared 48-unit grid as an echo of the Ventora mar…"
+      "summary": "One of the fifteen Ventora Systems app icons — a navy plate with off-white shapes and a single peach part, drawn on a shared 48-unit grid as an echo of the Ven…"
     },
     {
       "name": "AppTile",
@@ -490,15 +534,21 @@
       "summary": "Portal in the business launcher: not an app the business works in, but its page for clients — shown as its own card under the AppDock, never as one more icon."
     },
     {
+      "name": "AuthLayout",
+      "group": "Hub",
+      "summary": "The sign-in page as a component (R-2F9).",
+      "page": true
+    },
+    {
       "name": "AnalyticsDashboard",
       "group": "Ecrane aplicații",
-      "summary": "Analytics — Overview: four Stat tiles with change against last year, revenue per month over 12 months (grey comparison, October still running in peach), revenu…",
+      "summary": "DataView — Overview: four Stat tiles with change against last year, revenue per month over 12 months (grey comparison, October still running in peach), revenue…",
       "page": true
     },
     {
       "name": "AppIconContext",
       "group": "Hub",
-      "summary": "The app icons where they live, in light and dark: browser tabs (favicon at 16px), the Hub launcher with \"Aplicațiile tale\" and \"Alte aplicații Ventora\", the Sp…",
+      "summary": "The app icons where they live, in light and dark: browser tabs (favicon at 16px), the Hub launcher with \"Aplicațiile tale\" and \"Alte aplicații Ventora Systems\"…",
       "page": true
     },
     {
@@ -510,72 +560,156 @@
     {
       "name": "AppStates",
       "group": "Ecrane aplicații",
-      "summary": "The states that complete the Stage 4 screens, with the approved copy: CRM (empty pipeline, empty stage, moved, lost with an optional reason, stages chosen by t…",
+      "summary": "The states that complete the Stage 4 screens, with the approved copy: ClientDesk (empty pipeline, empty stage, moved, lost with an optional reason, stages chos…",
+      "page": true
+    },
+    {
+      "name": "BillingNotifications",
+      "group": "Ecrane Hub",
+      "summary": "The Phase 3 notifications (S115), all operational: in the bell's panel (title, short text, action) and by e-mail, in the single operational template (S3), from…",
       "page": true
     },
     {
       "name": "BookingCalendar",
       "group": "Ecrane Booking",
-      "summary": "Booking — Calendar with Schedule: resources (one column per person), week (today marked, Sunday closed) and day (pick the person).",
+      "summary": "EasyBook — Calendar with Schedule: resources (one column per person), week (today marked, Sunday closed) and day (pick the person).",
+      "page": true
+    },
+    {
+      "name": "BookingClientCard",
+      "group": "Ecrane Booking",
+      "summary": "EasyBook — the client card in the Hub (S116 c): the appointment history with each status, the behaviour note \"Risc ridicat\" after repeated no-shows, and who se…",
+      "page": true
+    },
+    {
+      "name": "BookingClientEmails",
+      "group": "Ecrane Booking",
+      "summary": "EasyBook — the e-mails from the business to its clients, in the single operational template (S3) (S116 g): confirmation, reminder before the appointment, cance…",
+      "page": true
+    },
+    {
+      "name": "BookingDeposit",
+      "group": "Ecrane Booking",
+      "summary": "EasyBook — the deposit through Stripe inside the public booking (S116 b): the amount, what is left to pay at the salon and the salon's deposit policy are shown…",
       "page": true
     },
     {
       "name": "BookingDetail",
       "group": "Ecrane Booking",
-      "summary": "Booking — an appointment's detail in a Drawer over the list: status, when, service, person, client, the attention notice with its actions, team notes and histo…",
+      "summary": "EasyBook — an appointment's detail in a Drawer over the list: status, when, service, person, client, the attention notice with its actions, team notes and hist…",
+      "page": true
+    },
+    {
+      "name": "BookingHealthFields",
+      "group": "Ecrane Booking",
+      "summary": "EasyBook — optional health fields with explicit consent (S116 e): the salon configures them, the client fills them only with a separate, unchecked consent, con…",
       "page": true
     },
     {
       "name": "BookingLimit",
       "group": "Ecrane Booking",
-      "summary": "Booking — the monthly appointment limit reached when creating an appointment: existing ones stay editable; the owner buys more right there or requests a plan c…",
+      "summary": "EasyBook — the monthly appointment limit reached when creating an appointment: existing ones stay editable; the owner buys more right there or requests a plan…",
       "page": true
     },
     {
       "name": "BookingList",
       "group": "Ecrane Booking",
-      "summary": "Booking — the appointments list: search, period, person and status filters with removable filter pills, sorting, selection with the bulk bar (confirm, send rem…",
+      "summary": "EasyBook — the appointments list: search, period, person and status filters with removable filter pills, sorting, selection with the bulk bar (confirm, send re…",
       "page": true
     },
     {
       "name": "BookingNew",
       "group": "Ecrane Booking",
-      "summary": "Booking — creating an appointment: client (search or new), service and person, date and the SlotPicker of free times, notes and confirmation/reminder options,…",
+      "summary": "EasyBook — creating an appointment: client (search or new), service and person, date and the SlotPicker of free times, notes and confirmation/reminder options,…",
+      "page": true
+    },
+    {
+      "name": "BookingPayments",
+      "group": "Ecrane Booking",
+      "summary": "EasyBook — Settings · \"Plăți și avans\" (S116 d): the salon's Stripe Connect account in 4 states and the deposit.",
+      "page": true
+    },
+    {
+      "name": "BookingPublic",
+      "group": "Ecrane Booking",
+      "summary": "EasyBook — the public booking page for the end client, phone first (S116 a): service → who → day and time → details with the anti-robot check → the code from t…",
       "page": true
     },
     {
       "name": "BookingSettings",
       "group": "Ecrane Booking",
-      "summary": "Booking — app settings: opening hours per day (toggle + time range), booking rules (notice, free cancellation, buffer, confirmation mode), automatic reminders…",
+      "summary": "EasyBook — app settings: opening hours per day (toggle + time range), booking rules (notice, free cancellation, buffer, confirmation mode), automatic reminders…",
+      "page": true
+    },
+    {
+      "name": "BookingSmsConnect",
+      "group": "Ecrane Booking",
+      "summary": "EasyBook — connecting the business phone (SPEC_ECRANE_SMS §2).",
+      "page": true
+    },
+    {
+      "name": "BookingSmsExtraPhone",
+      "group": "Ecrane Booking",
+      "summary": "EasyBook — the extra phone (SPEC_ECRANE_SMS §6): \"Conectează alt telefon\" when the phone included in the plan is already connected opens the existing UpgradeDi…",
+      "page": true
+    },
+    {
+      "name": "BookingSmsList",
+      "group": "Ecrane Booking",
+      "summary": "EasyBook — the list of messages sent to clients (SPEC_ECRANE_SMS §5): Settings · Trimitere SMS · \"Vezi toate mesajele\", also opened from the four numbers in Se…",
+      "page": true
+    },
+    {
+      "name": "BookingSmsMessages",
+      "group": "Ecrane Booking",
+      "summary": "EasyBook — the messages sent to the client, on an appointment's detail (SPEC_ECRANE_SMS §3).",
+      "page": true
+    },
+    {
+      "name": "BookingSmsNotifications",
+      "group": "Ecrane Booking",
+      "summary": "The operational notifications for the business phone (SPEC_ECRANE_SMS §7): in the bell's panel (Hub and every app) and by e-mail.",
       "page": true
     },
     {
       "name": "BookingSmsSettings",
       "group": "Ecrane Booking",
-      "summary": "Booking — Settings · \"Trimitere SMS\": how the business's SMS leave (Ventora, the business phone, or off), the business phone's live state, what happens when th…",
+      "summary": "EasyBook — Settings · \"Trimitere SMS\": how the business's SMS leave (Ventora Systems, the business phone, or off), the business phone's live state, what happen…",
+      "page": true
+    },
+    {
+      "name": "BookingSmsToday",
+      "group": "Ecrane Booking",
+      "summary": "EasyBook — Today with the SMS alerts in \"Au nevoie de tine\" (SPEC_ECRANE_SMS §4).",
       "page": true
     },
     {
       "name": "BookingStates",
       "group": "Ecrane Booking",
-      "summary": "The states that complete the Booking screens, with the approved copy: empty day, nothing that needs you, loading error, appointment marked done (with undo); fi…",
+      "summary": "The states that complete the EasyBook screens, with the approved copy: empty day, nothing that needs you, loading error, appointment marked done (with undo); f…",
+      "page": true
+    },
+    {
+      "name": "BookingStatuses",
+      "group": "Ecrane Booking",
+      "summary": "EasyBook — the 7 states of an appointment (D-B-11) with their StatusPill, and the transitions BookingDetail allows from each one (S116 f).",
       "page": true
     },
     {
       "name": "BookingToday",
       "group": "Ecrane Booking",
-      "summary": "Booking — Today: greeting and the day's sentence, \"Au nevoie de tine\" (unconfirmed appointments, unpaid visits, reschedule requests, each with its action), the…",
+      "summary": "EasyBook — Today: greeting and the day's sentence, \"Au nevoie de tine\" (unconfirmed appointments, unpaid visits, reschedule requests, each with its action), th…",
       "page": true
     },
     {
       "name": "CatalogRecommendation",
       "group": "Comercial",
-      "summary": "A recommended app in the launcher (\"Alte aplicații Ventora\") and in the catalog: the existing AppTile with its access state, plus the \"Recomandare\" label, the…"
+      "summary": "A recommended app in the launcher (\"Alte aplicații Ventora Systems\") and in the catalog: the existing AppTile with its access state, plus the \"Recomandare\" lab…"
     },
     {
       "name": "CommercialPreferences",
       "group": "Comercial",
-      "summary": "Account settings → Notifications → \"Recomandări Ventora\": in-app recommendations on or off; e-mail switched off and locked with \"Disponibil în curând\"; and a n…"
+      "summary": "Account settings → Notifications → \"Recomandări Ventora Systems\": in-app recommendations on or off; e-mail switched off and locked with \"Disponibil în curând\";…"
     },
     {
       "name": "CommercialStates",
@@ -586,13 +720,37 @@
     {
       "name": "CrmPipeline",
       "group": "Ecrane aplicații",
-      "summary": "CRM — Pipeline: open opportunities by stage with each stage's value, the next step on every card (peach only when it is today or overdue), \"Câștigate în octomb…",
+      "summary": "ClientDesk — Pipeline: open opportunities by stage with each stage's value, the next step on every card (peach only when it is today or overdue), \"Câștigate în…",
       "page": true
     },
     {
       "name": "FinanceDue",
       "group": "Ecrane aplicații",
-      "summary": "Finance — Due and overdue: what is still to be collected, overdue (peach, with the oldest age), due in 7 days, collected this month with its change; \"Au nevoie…",
+      "summary": "MoneyDesk — Due and overdue: what is still to be collected, overdue (peach, with the oldest age), due in 7 days, collected this month with its change; \"Au nevo…",
+      "page": true
+    },
+    {
+      "name": "FounderApps",
+      "group": "Founder",
+      "summary": "Founder · \"Aplicații\" (S113), a new Spine entry under \"Model comercial\": the apps a business can add to its plan, with the monthly price in lei and in euro, th…",
+      "page": true
+    },
+    {
+      "name": "FounderAutomations",
+      "group": "Founder",
+      "summary": "Founder · \"Automatizări\" (D4-23, D4-24): the builder (trigger → conditions → steps, whitelist only), turning an automation on or off per business with a reason…",
+      "page": true
+    },
+    {
+      "name": "FounderBackupCodes",
+      "group": "Founder",
+      "summary": "\"Coduri de rezervă\" in Founder Control Center (S84): one minimal page in the Founder shell, opened by \"Generează coduri noi\" from the toast after a sign-in wit…",
+      "page": true
+    },
+    {
+      "name": "FounderBundles",
+      "group": "Founder",
+      "summary": "Founder · \"Bundle-uri\" (formerly FounderPlans, renamed after S117: there are no \"plans\" any more).",
       "page": true
     },
     {
@@ -602,9 +760,33 @@
       "page": true
     },
     {
+      "name": "FounderBusinessActions",
+      "group": "Founder",
+      "summary": "One business in Founder (S112), completing FounderBusiness:",
+      "page": true
+    },
+    {
+      "name": "FounderBusinessBilling",
+      "group": "Founder",
+      "summary": "The commercial part of one business in Founder Control Center (S111): the \"Plăți și facturi\" tab of FounderBusiness.",
+      "page": true
+    },
+    {
+      "name": "FounderBusinessSms",
+      "group": "Founder",
+      "summary": "Founder — one business, with the section \"SMS de pe numărul propriu\" (SPEC_ECRANE_SMS §8): in the Prezentare tab of FounderBusiness, under the exceptions.",
+      "page": true
+    },
+    {
       "name": "FounderBusinesses",
       "group": "Founder",
-      "summary": "Founder Control Center: every Ventora business with plan version, apps, highest usage, client-since and status.",
+      "summary": "Founder Control Center: every Ventora Systems business with plan version, apps, highest usage, client-since and status.",
+      "page": true
+    },
+    {
+      "name": "FounderDiscounts",
+      "group": "Founder",
+      "summary": "Discounts (S113).",
       "page": true
     },
     {
@@ -614,27 +796,63 @@
       "page": true
     },
     {
+      "name": "FounderOwnerRecovery",
+      "group": "Founder",
+      "summary": "Recovering an owner's access (Lotul 2.5c, docs/ops/PROCEDURA-RECUPERARE-OWNER.md), from the business page (S95; FounderBusiness → \"Mai multe\" → \"Recuperează ac…",
+      "page": true
+    },
+    {
       "name": "FounderPacks",
       "group": "Founder",
       "summary": "Catalogue of \"Pachete în plus\": price, periodicity, setup cost, plans where available, direct purchase or on request.",
       "page": true
     },
     {
-      "name": "FounderPlanEditor",
+      "name": "FounderPasswordReset",
       "group": "Founder",
-      "summary": "Draft of a new plan version with the differences from the current one marked, the price, apps and available \"Pachete în plus\".",
+      "summary": "A new password from \"Ai uitat parola?\" in Founder Control Center: the same screens and states as HubPasswordReset, on AuthLayout with brand=\"founder\" (S63).",
       "page": true
     },
     {
-      "name": "FounderPlans",
+      "name": "FounderPlanEditor",
       "group": "Founder",
-      "summary": "Plans with versions: price, limits, apps, and how many businesses sit on each version.",
+      "summary": "Draft of a new bundle version (a new offer, opened from FounderBundles) with the differences from the current one marked, the price, apps and available \"Pachet…",
+      "page": true
+    },
+    {
+      "name": "FounderRequests",
+      "group": "Founder",
+      "summary": "\"Cereri din Hub\" in Founder Control Center (S111): what businesses asked for from the Hub — \"Cere activare\" (a pack marked \"Doar la cerere\", any pack without a…",
+      "page": true
+    },
+    {
+      "name": "FounderSignIn",
+      "group": "Founder",
+      "summary": "Signing in to Founder Control Center (S101).",
       "page": true
     },
     {
       "name": "FounderStates",
       "group": "Founder",
       "summary": "States for Stage 5: invitation sent, add exception, publish a plan version, global stop confirmation, publish blocked until RO texts are approved, campaign sto…",
+      "page": true
+    },
+    {
+      "name": "FounderSupportInbox",
+      "group": "Founder",
+      "summary": "Founder · \"Suport\" (lotul 4.6, D4-14 b): the requests businesses send from the Hub, the thread and the team's reply.",
+      "page": true
+    },
+    {
+      "name": "FounderSupportSession",
+      "group": "Founder",
+      "summary": "The support session in Founder Control Center (Lotul 2.5c), from the business page (S95) (FounderBusiness → \"Mai multe\" → \"Deschide o sesiune de suport\").",
+      "page": true
+    },
+    {
+      "name": "FounderTwoFactor",
+      "group": "Founder",
+      "summary": "Two-step sign-in in Founder Control Center: the same screens as HubTwoFactorSetup and HubTwoFactorVerify, with the Founder mark: AuthLayout with brand=\"founder…",
       "page": true
     },
     {
@@ -694,13 +912,19 @@
     {
       "name": "HrAttendance",
       "group": "Ecrane aplicații",
-      "summary": "HR — Attendance: who is at work now (peach, the only \"now\"), lateness this week, leave, hours worked; \"Au nevoie de tine\" (leave to approve, a missing clock-ou…",
+      "summary": "TeamSpace — Attendance: who is at work now (peach, the only \"now\"), lateness this week, leave, hours worked; \"Au nevoie de tine\" (leave to approve, a missing c…",
       "page": true
     },
     {
       "name": "HubAccount",
       "group": "Ecrane Hub",
-      "summary": "Account settings in the Hub shell: profile, preferences (theme, language), notifications per channel, security (password, two-step sign-in, active sessions).",
+      "summary": "Account settings in the Hub shell: profile, preferences (theme, language), notifications, security (password, two-step sign-in, active sessions).",
+      "page": true
+    },
+    {
+      "name": "HubAccountSecurity",
+      "group": "Ecrane Hub",
+      "summary": "Contul tău · Securitate in the Hub (Faza 2): changing the password, and two-step sign-in for a member who doesn't have it on.",
       "page": true
     },
     {
@@ -728,15 +952,45 @@
       "page": true
     },
     {
+      "name": "HubAppActivation",
+      "group": "Ecrane Hub",
+      "summary": "Activating an app from HubCatalogApp (S113).",
+      "page": true
+    },
+    {
+      "name": "HubAppTexts",
+      "group": "Ecrane Hub",
+      "summary": "The texts of the 15 apps (S116, point 4): the name (no \"Ventora\" in front), the catalog's short description and the \"Vezi detaliile\" description, in the 6 lang…",
+      "page": true
+    },
+    {
+      "name": "HubAutomations",
+      "group": "Ecrane Hub",
+      "summary": "Hub · Afacerea · \"Automatizări\" (D4-23, D4-24): the business sees which automations it has, with the last sending, and the UsageMeter of automated messages; it…",
+      "page": true
+    },
+    {
+      "name": "HubBusinessSuspended",
+      "group": "Ecrane Hub",
+      "summary": "A business suspended by the Ventora Systems team, as the person sees it in the Hub (S112).",
+      "page": true
+    },
+    {
       "name": "HubCatalog",
       "group": "Comercial",
-      "summary": "Hub — the full catalog: all 15 Ventora apps, grouped by category (Programări și clienți, Echipă, Operațiuni, Bani și documente, Proiecte și date, Comunitate),…",
+      "summary": "Hub — the full catalog: all 15 Ventora Systems apps, grouped by category (Programări și clienți, Echipă, Operațiuni, Bani și documente, Proiecte și date, Comun…",
       "page": true
     },
     {
       "name": "HubCatalogApp",
       "group": "Comercial",
       "summary": "Hub — one app's catalog page: what it does, what it connects to, why it is recommended for this business, and on the side the price, how it is paid, the setup…",
+      "page": true
+    },
+    {
+      "name": "HubCatalogBundles",
+      "group": "Comercial",
+      "summary": "Hub catalog — the bundles available now (S117).",
       "page": true
     },
     {
@@ -754,7 +1008,7 @@
     {
       "name": "HubInvite",
       "group": "Ecrane Hub",
-      "summary": "Accepting an invitation and setting the password: who invited you, the business and your role, the apps you will get, live password requirements (lime when met…",
+      "summary": "Accepting an invitation and setting the password, on AuthLayout with wide (S63): who invited you, the business and your role, the apps you will get, live passw…",
       "page": true
     },
     {
@@ -764,15 +1018,27 @@
       "page": true
     },
     {
+      "name": "HubPasswordReset",
+      "group": "Ecrane Hub",
+      "summary": "A new password from \"Ai uitat parola?\", on AuthLayout (S63), like HubSignIn.",
+      "page": true
+    },
+    {
+      "name": "HubPlanBilling",
+      "group": "Ecrane Hub",
+      "summary": "HubAdminPlan · how the business pays (S113): \"Plătești lunar: 349 lei\" or \"Plătești anual: 3.490 lei · economisești 698 lei\", with \"Următoarea plată\".",
+      "page": true
+    },
+    {
       "name": "HubSignIn",
       "group": "Ecrane Hub",
-      "summary": "Sign-in, invitation only (direction B): a brand panel on 46% of the width (logo, \"Afacerea ta. Într-un singur loc.\" in display-xl; the title \"Bine ai revenit\"…",
+      "summary": "Sign-in, invitation only (direction B).",
       "page": true
     },
     {
       "name": "HubStates",
       "group": "Ecrane Hub",
-      "summary": "The states that complete the Hub screens, with the approved copy: sign-in in progress, too many attempts, offline; invitation request sent, cancelled, already…",
+      "summary": "The states that complete the Hub screens, with the approved copy: sign-in in progress, too many attempts (15 minutes, S102), offline; invitation request sent,…",
       "page": true
     },
     {
@@ -782,9 +1048,45 @@
       "page": true
     },
     {
+      "name": "HubSupportSession",
+      "group": "Ecrane Hub",
+      "summary": "The support session in the Hub (Lotul 2.5c): while someone from the Ventora Systems team has read-only access to a business, every member sees a banner; owner…",
+      "page": true
+    },
+    {
+      "name": "HubSupportThread",
+      "group": "Ecrane Hub",
+      "summary": "One support request in the Hub (S111), opened from \"Solicitările mele\" (HubSupport).",
+      "page": true
+    },
+    {
+      "name": "HubTeamInvite",
+      "group": "Ecrane Hub",
+      "summary": "\"Invită o persoană\" from HubAdminTeam (S112): a dialog (a bottom sheet on the phone) with the e-mail address, the role — Membru (uses the apps chosen below) or…",
+      "page": true
+    },
+    {
+      "name": "HubTeamMemberActions",
+      "group": "Ecrane Hub",
+      "summary": "HubAdminTeam · a member's menu (S114).",
+      "page": true
+    },
+    {
+      "name": "HubTwoFactorSetup",
+      "group": "Ecrane Hub",
+      "summary": "Turning on two-step sign-in.",
+      "page": true
+    },
+    {
+      "name": "HubTwoFactorVerify",
+      "group": "Ecrane Hub",
+      "summary": "Two-step check at sign-in, after the password.",
+      "page": true
+    },
+    {
       "name": "InventoryStock",
       "group": "Ecrane aplicații",
-      "summary": "Inventory — Stock with alerts: a peach Notice that names what ran out and what depends on it, with \"Pregătește comanda\"; each product's stock as a number and a…",
+      "summary": "StockDesk — Stock with alerts: a peach Notice that names what ran out and what depends on it, with \"Pregătește comanda\"; each product's stock as a number and a…",
       "page": true
     },
     {
@@ -796,13 +1098,19 @@
     {
       "name": "ProjectsBoard",
       "group": "Ecrane aplicații",
-      "summary": "Projects — Board: one project's tasks by stage with tag, people, sub-task progress and due date (peach only for today or late).",
+      "summary": "TaskBoard — Board: one project's tasks by stage with tag, people, sub-task progress and due date (peach only for today or late).",
       "page": true
     },
     {
       "name": "ProjectsTimeline",
       "group": "Ecrane aplicații",
-      "summary": "Projects — Timeline: the project's stages across weeks with the peach today line, a late stage in peach, the launch as a milestone, and one sentence under it s…",
+      "summary": "TaskBoard — Timeline: the project's stages across weeks with the peach today line, a late stage in peach, the launch as a milestone, and one sentence under it…",
+      "page": true
+    },
+    {
+      "name": "SmsAppDownload",
+      "group": "Ecrane Booking",
+      "summary": "The public download page of the Ventora Systems phone app (SPEC_ECRANE_SMS §9), at app.ventora-hub.com/telefon — no account needed.",
       "page": true
     }
   ],
@@ -816,7 +1124,18 @@
         "ventora-mark-dark.svg",
         "favicon.svg",
         "ventora-logo-dark.svg",
+        "ventora-logo-stacked.svg",
+        "ventora-logo-stacked-dark.svg",
+        "ventora-logo-stacked-small.svg",
+        "ventora-logo-stacked-small-dark.svg",
+        "ventora-logo-email-2x.png",
         "README.md"
+      ],
+      "files": [
+        {
+          "path": "assets/Logos/ventora-logo-email-2x.png",
+          "id": "142f45ecb647fa03e9c1d29748be105e"
+        }
       ]
     },
     {
@@ -1489,8 +1808,14 @@
         "id": "8e1cb7528c85fcd6fcd9709161071865",
         "bytes": 721,
         "type": "image/svg+xml"
+      },
+      "assets/Logos/ventora-logo-email-2x.png": {
+        "store": "blob",
+        "id": "142f45ecb647fa03e9c1d29748be105e",
+        "bytes": 13509,
+        "type": "image/png"
       }
     },
-    "blobBytesUsed": 44567
+    "blobBytesUsed": 58076
   }
 }

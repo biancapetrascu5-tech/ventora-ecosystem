@@ -29,7 +29,7 @@ export interface NavSection {
 export interface SpineLabels {
   /** S.backToHub — butonul aplicației și primul rând din „Mai multe”. */
   backToHub?: string;
-  /** S.expandMenu / S.collapseMenu — butonul rotund de pe margine. */
+  /** S.collapseMenu — „Restrânge meniul” jos; S.expandMenu — numele chevron-ului, restrâns (S118). */
   expandMenu?: string;
   collapseMenu?: string;
   /** S.more — ultimul buton din bara de jos. */
@@ -127,7 +127,7 @@ function Item({
 }
 
 /* Spine din bundle.js: aplicația în antet (înapoi la Hub), secțiuni cu titlu, element activ cu marcaj
-   peach, insigne, subsol, buton rotund de restrângere; sub 768px devine bara de jos + „Mai multe”. */
+   peach, insigne, subsol, „Restrânge meniul” jos (Spine 1.2.0, S118); sub 768px devine bara de jos + „Mai multe”. */
 export function Spine({
   app,
   appName = '',
@@ -162,7 +162,6 @@ export function Spine({
   // bundle.js: numele accesibil al Hub-ului e „Hub” (MARCA-1), nu marca
   // eslint-disable-next-line i18next/no-literal-string -- numele produsului, ca în bundle
   const name = appName || (hub ? 'Hub' : '');
-  const toggleLabel = isCollapsed ? labels?.expandMenu : labels?.collapseMenu;
 
   return (
     <>
@@ -216,16 +215,19 @@ export function Spine({
           ))}
         </div>
         {footer && <div className={styles.foot}>{footer}</div>}
-        <button
-          type="button"
-          className={styles.collapse}
-          onClick={() => setCollapsed(!isCollapsed)}
-          aria-label={toggleLabel}
-          title={toggleLabel}
-          aria-expanded={!isCollapsed}
-        >
-          <Icon icon={isCollapsed ? 'chevron-right' : 'chevron-left'} size={16} />
-        </button>
+        <div className={styles.bottom}>
+          <button
+            type="button"
+            className={cn(styles.item, styles.collapse)}
+            onClick={() => setCollapsed(!isCollapsed)}
+            aria-label={isCollapsed ? labels?.expandMenu : undefined}
+            title={isCollapsed ? labels?.expandMenu : undefined}
+            aria-expanded={!isCollapsed}
+          >
+            <Icon icon={isCollapsed ? 'chevron-right' : 'chevron-left'} size={20} />
+            <span className={cn(styles.label, 'body')}>{labels?.collapseMenu}</span>
+          </button>
+        </div>
       </nav>
 
       <nav className={styles.bottomnav} aria-label={name}>

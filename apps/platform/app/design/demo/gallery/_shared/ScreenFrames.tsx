@@ -29,10 +29,13 @@ export function DesktopFrames({
   height,
   render,
   founder,
+  width,
 }: {
   title: string;
   height: number;
   founder?: boolean;
+  /** 390: cadrul „Telefon” (.scr-m) în locul celui de 1280, pentru capturile la telefon. */
+  width?: number;
   render: (theme: 'light' | 'dark') => ReactNode;
 }) {
   return (
@@ -44,13 +47,14 @@ export function DesktopFrames({
             <div className={f.scrRow} key={th}>
               <div>
                 <p className={`caption ${f.scrLab}`}>
-                  Desktop · 1280 · {th === 'light' ? 'Light' : 'Dark'}
+                  {width === 390 ? 'Telefon · 390' : 'Desktop · 1280'} ·{' '}
+                  {th === 'light' ? 'Light' : 'Dark'}
                 </p>
                 <div
                   className={`${f.scr} ${f.scrD}`}
                   data-gallery-frame
                   data-theme={th}
-                  style={{ height }}
+                  style={width ? { height, width, borderRadius: 'var(--radius-xl)' } : { height }}
                 >
                   {render(th)}
                 </div>

@@ -566,9 +566,6 @@ button.v-control.is-open { outline: var(--focus-ring-width) solid var(--focus-ri
 .v-spine__item.is-disabled { color: var(--ink-disabled); cursor: not-allowed; }
 .v-spine__label { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .v-spine__foot { padding: var(--space-3); border-top: var(--border-width) solid var(--line); margin: 0 var(--space-3); padding-left: 0; padding-right: 0; }
-.v-spine__collapse { appearance: none; position: absolute; top: var(--space-4); right: calc(var(--space-3) * -1); z-index: 2; width: var(--space-6); height: var(--space-6); display: inline-flex; align-items: center; justify-content: center; border-radius: var(--radius-full); border: var(--border-width) solid var(--line-strong); background: var(--sheet); color: var(--ink-secondary); cursor: pointer; }
-.v-spine__collapse::after { content: ''; position: absolute; inset: calc((var(--touch-target) - var(--space-6)) / -2); } /* 44px hit area */
-.v-spine__collapse:hover { color: var(--ink); border-color: var(--control-border); }
 .v-spine.is-collapsed { width: var(--spine-width-collapsed); }
 .v-spine.is-collapsed .v-spine__label, .v-spine.is-collapsed .v-spine__appname, .v-spine.is-collapsed .v-spine__hub, .v-spine.is-collapsed .v-spine__seclabel, .v-spine.is-collapsed .v-spine__foot, .v-spine.is-collapsed .v-spine__item .v-badge { display: none; }
 .v-spine.is-collapsed .v-spine__item, .v-spine.is-collapsed .v-spine__app { justify-content: center; padding: 0; }
@@ -1338,3 +1335,13 @@ a.v-btn { box-sizing: border-box; }
 /* Ventora Systems (01.11.2026): the stacked logo where the horizontal one does not fit — the sign-in panel under 1024px and the phone band */
 .v-auth__logo--narrow{display:none}
 @container (max-width: 1023px){.v-auth__logo--wide{display:none}.v-auth__logo--narrow{display:inline-flex}}
+
+/* S116 point 5: the quiet access action next to "Vezi detaliile" on a locked tile without a recommendation */
+.v-apptile--row .v-apptile__act2 { flex: none; align-self: center; }
+
+/* S118: "Restrânge meniul" at the bottom of the Spine */
+.v-spine__bottom { padding: var(--space-2) var(--space-3) var(--space-3); border-top: var(--border-width) solid var(--line); margin-top: auto; }
+.v-spine__foot + .v-spine__bottom { border-top: 0; padding-top: 0; }
+.v-spine__collapse { color: var(--ink-secondary); }
+@container shell (max-width: 1023px) { .v-spine:not(.v-spine--sheet) .v-spine__bottom { display: none; } }
+.v-spine.is-collapsed .v-spine__bottom { border-top: var(--border-width) solid var(--line); padding-top: var(--space-2); }
