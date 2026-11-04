@@ -111,6 +111,14 @@ export const AuditActions = {
   billingInvoiceIssued: 'billing.invoice_issued',
   billingInvoiceFailed: 'billing.invoice_failed', // outcome failure: nothing issued, or uncertain
   billingPaymentRefunded: 'billing.payment_refunded',
+  // Lot 4.10 — the workflow engine (category founder): only Founder builds, starts and stops
+  // (D-WF-2); the reason and the support reference go in the business's log
+  workflowDefinitionSaved: 'workflows.definition_saved', // a new automation or a new version
+  workflowActivated: 'workflows.activated',
+  workflowStopped: 'workflows.stopped',
+  workflowExecutionRetried: 'workflows.execution_retried', // „Rulează din nou”
+  workflowEnginePaused: 'workflows.engine_paused', // the central stop
+  workflowEngineResumed: 'workflows.engine_resumed',
 } as const;
 
 export type AuditAction = (typeof AuditActions)[keyof typeof AuditActions];

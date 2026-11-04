@@ -104,7 +104,8 @@
       "apps": "Aplicații",
       "discounts": "Reduceri",
       "bundles": "Bundle-uri",
-      "support": "Suport"
+      "support": "Suport",
+      "automations": "Automatizări"
     },
     "shell": {
       "search": "Caută o afacere, un bundle sau o campanie"
@@ -1051,6 +1052,190 @@
       "download": "Descarcă {file}",
       "appPlatform": "Hub",
       "filterLabel": "Stare"
+    },
+    "automations": {
+      "nav": "Automatizări",
+      "title": "Automatizări",
+      "lead": "Construiești automatizarea din lista albă: un declanșator, condiții, pași. O pornești sau o oprești pentru fiecare afacere; fiecare schimbare intră în jurnal.",
+      "col": {
+        "name": "Automatizarea",
+        "trigger": "Declanșator",
+        "active": "Pornită la",
+        "runs": "Execuții, 30 de zile",
+        "failed": "Eșuate"
+      },
+      "activeN": "{n} afaceri",
+      "new": "Automatizare nouă",
+      "edit": "Editează",
+      "log": "Vezi jurnalul",
+      "perBusiness": "Pornește pentru afaceri",
+      "builder": {
+        "title": "Editează automatizarea",
+        "name": "Numele",
+        "trigger": "1 · Declanșator",
+        "triggerHelp": "Doar evenimentele din lista albă.",
+        "delay": "Când",
+        "conditions": "2 · Condiții",
+        "conditionsHelp": "Toate trebuie să fie adevărate. Dacă una nu e, execuția se sare și jurnalul spune de ce.",
+        "steps": "3 · Pași",
+        "stepsHelp": "Pașii doar trimit mesaje sau notificări; nu schimbă date în aplicații.",
+        "addStep": "Adaugă un pas",
+        "whitelist": "Lista albă",
+        "whitelistBody": "Declanșatoare, condiții și pași aprobați. Ce nu e în listă nu apare în meniuri.",
+        "notInList": "„Șterge clientul” nu e în lista albă.",
+        "save": "Salvează automatizarea",
+        "test": "Trimite un test pe adresa mea",
+        "version": "Afacerile care o au pornită primesc versiunea nouă de la următoarea execuție.",
+        "newTitle": "Automatizare nouă",
+        "event": "Evenimentul",
+        "at": "Ora",
+        "thresholds": "Pragul",
+        "addCondition": "Adaugă o condiție",
+        "triggers": "Declanșatoare",
+        "stepList": "Pași",
+        "saved": "Am salvat automatizarea.",
+        "testSoon": "Trimiterea de test vine cu șabloanele EasyBook.",
+        "stepN": "{n} · {step}"
+      },
+      "biz": {
+        "title": "Pornită la afaceri",
+        "col": {
+          "business": "Afacerea",
+          "state": "Stare",
+          "setting": "Setarea afacerii",
+          "since": "De când"
+        },
+        "turnOn": "Pornește…",
+        "turnOff": "Oprește…",
+        "onTitle": "Pornești „{name}” pentru {business}?",
+        "offTitle": "Oprești „{name}” pentru {business}?",
+        "onBody": "Primele mesaje pleacă la următorul declanșator. Proprietarul vede automatizarea ca „Pornită” în Hub.",
+        "offBody": "Nu mai pleacă mesaje de acum. Ce s-a trimis rămâne în jurnal.",
+        "reason": "Motiv",
+        "reasonHelp": "Intră în jurnalul afacerii, cu numele tău și ora.",
+        "ticket": "Referința cererii",
+        "ticketHelp": "Opțional: solicitarea din Suport, dacă afacerea a cerut.",
+        "on": "Am pornit automatizarea pentru {business}. Am trecut-o în jurnal.",
+        "audit": "{who} a pornit-o pe {date} · motiv: {reason}",
+        "off": "Am oprit automatizarea pentru {business}. Am trecut-o în jurnal.",
+        "overQuota": "Afacerea a atins limita de automatizări active. Mărește limita din pagina afacerii.",
+        "settingDiscount": "Reducere {n}%",
+        "settingNoDiscount": "Fără reducere",
+        "settingWeeks": "{n} săptămâni",
+        "auditOff": "{who} a oprit-o pe {date} · motiv: {reason}"
+      },
+      "runs": {
+        "title": "Jurnalul execuțiilor",
+        "all": "Toate",
+        "ok": "Reușite",
+        "failed": "Eșuate",
+        "skipped": "Sărite",
+        "col": {
+          "when": "Când",
+          "automation": "Automatizarea",
+          "business": "Afacerea",
+          "for": "Pentru",
+          "result": "Rezultat",
+          "reason": "Motivul"
+        },
+        "st": {
+          "ok": "Reușită",
+          "failed": "Eșuată",
+          "skipped": "Sărită"
+        },
+        "retry": "Rulează din nou",
+        "empty": "Nicio execuție pentru filtrele alese",
+        "sentN": "{n} mesaje trimise",
+        "pending": "În așteptare",
+        "for": {
+          "owner": "{name}"
+        },
+        "retried": "Am pus execuția din nou la rând."
+      },
+      "usage": "Mesaje automate în {month} · {business}",
+      "app": {
+        "booking": "EasyBook",
+        "platform": "Hub"
+      },
+      "more": "Mai multe acțiuni",
+      "remove": "Șterge",
+      "cancel": "Renunță",
+      "turnOnShort": "Pornește",
+      "turnOffShort": "Oprește",
+      "openBusiness": "Deschide afacerea",
+      "result": "Rezultat",
+      "never": "—",
+      "delay": {
+        "0": "Imediat",
+        "120": "După 2 ore",
+        "1440": "După o zi"
+      },
+      "trigger": {
+        "booking_appointment_completed": "EasyBook · Programarea trece în „Încheiată”",
+        "booking_no_show": "EasyBook · Clientul nu a venit",
+        "booking_high_risk": "EasyBook · Clientul ajunge la „Risc ridicat”",
+        "booking_client_inactive": "EasyBook · Clienți fără programare de câteva săptămâni",
+        "booking_client_birthday": "EasyBook · Ziua de naștere a clientului",
+        "booking_daily_digest": "Zilnic, la o oră",
+        "commercial_quota_threshold": "Hub · O cotă trece de un prag"
+      },
+      "wl": {
+        "booking_appointment_completed": "Programarea trece în „Încheiată”",
+        "booking_no_show": "Clientul nu a venit",
+        "booking_high_risk": "Clientul ajunge la „Risc ridicat”",
+        "booking_client_inactive": "Clienți fără programare de câteva săptămâni",
+        "booking_client_birthday": "Ziua de naștere a clientului",
+        "booking_daily_digest": "Zilnic, la o oră",
+        "commercial_quota_threshold": "O cotă trece de un prag"
+      },
+      "sum": {
+        "booking_appointment_completed": "Programarea trece în „Încheiată”",
+        "booking_appointment_completed_delay": "Programarea trece în „Încheiată” · {delay}",
+        "booking_no_show": "Clientul nu a venit",
+        "booking_high_risk": "Clientul ajunge la „Risc ridicat”",
+        "booking_client_inactive": "Zilnic, {at} · clienți fără programare de X săptămâni",
+        "booking_client_birthday": "Zilnic, {at} · ziua de naștere a clientului",
+        "booking_daily_digest": "Zilnic, {at} · pentru fiecare membru cu programări",
+        "commercial_quota_threshold": "O cotă din abonament trece de {threshold}%"
+      },
+      "delayLower": {
+        "120": "după 2 ore",
+        "1440": "după o zi"
+      },
+      "cond": {
+        "recipient_has_email": "Clientul are adresă de e-mail",
+        "recipient_accepts_messages": "Clientul acceptă mesaje de la salon",
+        "recipient_accepts_messagesSub": "Nu s-a dezabonat",
+        "not_sent_in_30_days": "Nu a primit același mesaj în ultimele 30 de zile"
+      },
+      "step": {
+        "email_client": "Trimite e-mail clientului",
+        "email_member": "Trimite e-mail membrului",
+        "email_owner": "Trimite e-mail proprietarului",
+        "notification_hub": "Trimite notificare în Hub"
+      },
+      "tpl": {
+        "thanks": "Șablon „Mulțumim pentru vizită” · cu butonul „Lasă o recenzie” (linkul de recenzii al salonului)",
+        "winback": "Șablon „Ne-a fost dor de tine” · cu linkul de rezervare",
+        "birthday": "Șablon „La mulți ani” · cu reducerea aleasă de salon, dacă are",
+        "daily_digest": "Programările membrului din ziua respectivă",
+        "high_risk": "Clientul și programările la care nu a venit",
+        "quota_limit": "Notificarea de consum, aceeași ca în „Abonament și consum”"
+      },
+      "reason": {
+        "automation_stopped": "Automatizarea a fost oprită între timp",
+        "engine_paused": "Motorul de automatizări era oprit",
+        "condition_recipient_has_email": "Clientul nu are adresă de e-mail",
+        "condition_recipient_accepts_messages": "Clientul s-a dezabonat de la mesajele salonului",
+        "condition_not_sent_in_30_days": "A primit același mesaj în ultimele 30 de zile",
+        "no_recipient": "Nu are cui să trimită",
+        "already_sent": "Mesajul a plecat deja",
+        "stock_quota_no_period": "Cota nu se resetează lunar",
+        "message_limit_reached": "Limita de mesaje automate a afacerii e atinsă",
+        "step_unavailable": "Pasul vine cu EasyBook",
+        "step_failed": "Trimiterea a eșuat"
+      },
+      "error": "Nu am putut salva schimbarea. Încearcă din nou."
     }
   }
 }

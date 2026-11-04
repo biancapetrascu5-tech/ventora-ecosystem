@@ -1,5 +1,6 @@
 'use client';
-// HUB_SECTIONS + HubSettings din preview-urile ecranelor Hub (Contul tău, Administrare)
+// HUB_SECTIONS + HubSettings din preview-urile ecranelor Hub (Contul tău, Administrare);
+// S120: „Automatizări” după „Abonament și consum”
 import type { ReactNode } from 'react';
 import { AppShell, Spine, type NavSection } from '@ventora/ui';
 import { Bar, noop } from './shell';
@@ -17,8 +18,9 @@ export const HUB_SECTIONS: NavSection[] = [
     label: 'Afacerea',
     items: [
       { id: 'echipa', label: 'Echipă și invitații', short: 'Echipă', icon: 'users' },
-      { id: 'roluri', label: 'Roluri și acces', icon: 'key' },
+      { id: 'roluri', label: 'Roluri și acces', icon: 'key-round' },
       { id: 'abonament', label: 'Abonament și consum', short: 'Abonament', icon: 'credit-card' },
+      { id: 'automatizari', label: 'Automatizări', icon: 'refresh-cw' },
     ],
   },
   { label: 'Ajutor', items: [{ id: 'suport', label: 'Suport', icon: 'life-buoy', badge: 1 }] },

@@ -1405,5 +1405,58 @@
       "label": "Eventos creados",
       "resource": "eventos creados"
     }
+  },
+  "automations": {
+    "nav": "Automatizaciones",
+    "title": "Automatizaciones",
+    "lead": "Los mensajes que Ventora Systems envía automáticamente para tu negocio. El equipo de Ventora Systems los activa o desactiva cuando lo pides.",
+    "usage": "Mensajes automáticos en {month}",
+    "usageHelp": "Solo cuentan los mensajes enviados. Las ejecuciones omitidas no consumen.",
+    "on": "Activada",
+    "off": "Desactivada",
+    "last": "Último envío: {when} · {n} mensajes",
+    "never": "Aún no ha enviado nada",
+    "who": "El equipo de Ventora Systems las activa y desactiva. Escríbenos si quieres un cambio.",
+    "ask": "Pedir un cambio",
+    "askOn": "Pedir que se active",
+    "askSent": "Hemos recibido tu solicitud. Te respondemos en Soporte y por correo.",
+    "yourSetting": "Tu ajuste",
+    "weeks": "{n} semanas",
+    "discount": "Descuento en el mensaje",
+    "discountNone": "Sin descuento",
+    "reminderNote": "El recordatorio antes de una cita no está aquí: se ajusta en EasyBook · Ajustes · Recordatorios.",
+    "empty": {
+      "title": "Ninguna automatización activada",
+      "body": "Te decimos qué encaja con tu negocio y lo activamos nosotros. Escríbenos en Soporte."
+    },
+    "memberNote": "Las automatizaciones las ven el propietario y los admins.",
+    "a": {
+      "thanks": {
+        "name": "Agradecimiento tras la cita",
+        "desc": "2 horas después de una cita terminada, el cliente recibe un correo de agradecimiento con la petición de reseña."
+      },
+      "winback": {
+        "name": "Reactivar clientes inactivos",
+        "desc": "El cliente que no ha venido en {n} semanas recibe una invitación para reservar."
+      },
+      "birthday": {
+        "name": "Feliz cumpleaños",
+        "desc": "En su cumpleaños, el cliente recibe un mensaje del salón, con un descuento si eliges uno."
+      },
+      "risk": {
+        "name": "Alerta: cliente con «Riesgo alto»",
+        "desc": "El propietario recibe una notificación y un correo cuando un cliente llega a «Riesgo alto»."
+      },
+      "digest": {
+        "name": "Resumen del día",
+        "desc": "Cada mañana a las 7:00, cada miembro recibe por correo sus citas del día."
+      },
+      "quota": {
+        "name": "Límite casi alcanzado",
+        "desc": "Cuando una cuota de la suscripción pasa del 80 %, el propietario recibe la notificación de consumo (la misma que en «Suscripción y consumo»)."
+      }
+    },
+    "sentN": "{n} mensajes enviados",
+    "askBody": "Solicitud enviada desde Negocio · Automatizaciones."
   }
 }

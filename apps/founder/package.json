@@ -23,6 +23,7 @@
     "@ventora/support": "workspace:*",
     "@ventora/tokens": "workspace:*",
     "@ventora/ui": "workspace:*",
+    "@ventora/workflows": "workspace:*",
     "next": "^16.0.0",
     "next-intl": "4.14.9",
     "react": "^19.0.0",

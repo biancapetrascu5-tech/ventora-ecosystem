@@ -38,7 +38,12 @@ export type AuditTargetType =
   | 'dispute'
   // Lot 3.6: the invoices of the payments
   | 'payment'
-  | 'invoice';
+  | 'invoice'
+  // Lot 4.10: the workflow engine (core/workflows)
+  | 'workflow_definition'
+  | 'workflow_activation'
+  | 'workflow_execution'
+  | 'workflow_engine';
 
 export type AuditEvent = {
   category: AuditCategory;

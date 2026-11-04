@@ -1,0 +1,151 @@
+/* HubAutomations (S116, preview.html): .x-body, .x-stack, .x-row, .x-field, .x-line. Valorile sunt doar
+   token-uri. Aceleași clase ca FounderAutomations (packages/screens/src/founder/automations). */
+
+.body {
+  padding: 0 0 var(--space-8);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+.bodyM {
+  gap: var(--space-4);
+}
+.pad {
+  padding: 0 var(--space-4);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 340px;
+  gap: var(--space-6);
+  align-items: start;
+}
+.gridM {
+  grid-template-columns: 1fr;
+  gap: var(--space-4);
+}
+
+.col {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  min-width: 0;
+}
+
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+.stack p {
+  margin: 0;
+}
+.stack2 {
+  gap: var(--space-2);
+}
+
+.row {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+  flex-wrap: wrap;
+}
+.rowStack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.field {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border: var(--border-width) solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--canvas);
+}
+.field p {
+  margin: 0;
+}
+.field > div {
+  flex: 1;
+  min-width: 0;
+}
+.fieldTop {
+  align-items: flex-start;
+}
+
+.line {
+  display: flex;
+  gap: var(--space-2);
+  align-items: flex-start;
+  color: var(--ink-secondary);
+  margin: 0;
+}
+.line > :first-child {
+  flex: none;
+  margin-top: 2px;
+}
+
+.hist {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  color: var(--ink-secondary);
+}
+
+.nameCell {
+  display: flex;
+  flex-direction: column;
+}
+
+.muted {
+  color: var(--ink-muted);
+}
+.secondary {
+  color: var(--ink-secondary);
+}
+
+.heading {
+  margin: 0;
+}
+
+.narrow {
+  max-width: 240px;
+}
+
+.triggerMain {
+  flex: 1 1 260px;
+}
+.triggerWhen {
+  flex: 0 1 200px;
+}
+
+.menuHeader {
+  margin: 0;
+  padding: var(--space-2) var(--space-3);
+}
+
+/* Toast-ul și Dialog-ul din cadru (.ss-toast, .ss-overlay din preview) */
+.frame {
+  position: relative;
+  height: 100%;
+}
+
+/* .v-notice din preview.html: space-2 sub notă */
+.notice {
+  margin-bottom: var(--space-2);
+}
+
+/* .ss-toast din preview.html: toastul „Am primit cererea…” */
+.toast {
+  position: fixed;
+  right: var(--space-6);
+  bottom: var(--space-6);
+  width: var(--panel-width);
+  z-index: var(--z-toast);
+}
