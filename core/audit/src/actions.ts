@@ -106,6 +106,11 @@ export const AuditActions = {
   billingPurchaseFailed: 'billing.purchase_failed', // outcome failure: nothing activated
   billingSubscriptionCreated: 'billing.subscription_created', // the subscription in Stripe Billing
   billingDisputeOpened: 'billing.dispute_opened', // chargeback: Founder decides, by hand
+  // Lot 3.6 — the invoices (SmartBill): issued, refused / uncertain (Founder checks), and the
+  // full refund made by Founder in Stripe (D3-10), which asks for the storno
+  billingInvoiceIssued: 'billing.invoice_issued',
+  billingInvoiceFailed: 'billing.invoice_failed', // outcome failure: nothing issued, or uncertain
+  billingPaymentRefunded: 'billing.payment_refunded',
 } as const;
 
 export type AuditAction = (typeof AuditActions)[keyof typeof AuditActions];

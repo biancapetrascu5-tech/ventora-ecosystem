@@ -377,6 +377,8 @@ for (const migration of [
   'core/files/prisma/migrations/20261104000002_files_founder_upload/migration.sql',
   // Lot 3.5: core/billing (schema billing, rolul billing_rw, outbox)
   'core/billing/prisma/migrations/20261101000013_billing_init/migration.sql',
+  // Lot 3.6: facturile (invoice), termenul disputei, citirile Founder (founder_runtime)
+  'core/billing/prisma/migrations/20261104000010_billing_invoices/migration.sql',
   // Lot 3.5b (D3-26): limitele liniilor de aplicație, fotografiate la creare
   'core/commercial/prisma/migrations/20261103000001_commercial_app_quota_snapshot/migration.sql',
   // Lot 4.6: solicitările de suport (schema support, rolurile support_rw / support_founder, outbox)

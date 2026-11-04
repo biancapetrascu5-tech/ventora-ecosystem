@@ -1,14 +1,14 @@
 import { InvalidInput } from '@ventora/errors';
 import { withBillingRead } from './db';
+import { invoicesOfPaymentsInTx } from './invoices';
 
 /*
  * Lot 3.7 — the payments shown under „Facturi” in HubAdminPlan: every payment that went through
  * (a pack or an application bought from the Hub, a renewal of the subscription), newest first.
  *
- * The invoice itself comes with Lot 3.6 (SmartBill): until then each row has `invoice: null` and
- * the Hub shows the design's „Factura se emite” (billing.invoices.pending, S111). 3.6 fills
- * `invoice` here from its `invoice` table, linked to the payment (one payment = one invoice), and
- * the Hub then shows the number, „Plătită” and „Descarcă PDF” (a signed link).
+ * Lot 3.6 fills `invoice` from the `invoice` table (one payment = one invoice): null until it is
+ * issued — the Hub shows the design's „Factura se emite” (billing.invoices.pending, S111) — then
+ * the number, „Plătită” and „Descarcă PDF” (a signed link).
  *
  * Read in the business's context (RLS), as billing_rw, with the grants of Lot 3.5.
  */
@@ -29,7 +29,7 @@ export interface PaymentRow {
   /** When it was paid (ISO). */
   paidAt: string;
   /** Lot 3.6: the invoice of this payment; null until it is issued („Factura se emite”). */
-  invoice: { number: string } | null;
+  invoice: { id: string; number: string } | null;
 }
 
 export async function listPayments(ctx: { organizationId: string }): Promise<PaymentRow[]> {
@@ -54,6 +54,10 @@ export async function listPayments(ctx: { organizationId: string }): Promise<Pay
         LIMIT $1`,
       [PAYMENTS_LISTED],
     );
+    const invoices = await invoicesOfPaymentsInTx(
+      client,
+      rows.map((r) => r.id),
+    );
     return rows.map((r) => ({
       id: r.id,
       kind: r.kind,
@@ -64,7 +68,10 @@ export async function listPayments(ctx: { organizationId: string }): Promise<Pay
       amountMinor: Number(r.amount_minor),
       currency: r.currency,
       paidAt: r.occurred_at.toISOString(),
-      invoice: null,
+      invoice: (() => {
+        const i = invoices.get(r.id);
+        return i?.status === 'issued' ? { id: i.id, number: `${i.series}-${i.number}` } : null;
+      })(),
     }));
   });
 }

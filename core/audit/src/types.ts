@@ -35,7 +35,10 @@ export type AuditTargetType =
   | 'payment_method'
   | 'purchase'
   | 'billing_subscription'
-  | 'dispute';
+  | 'dispute'
+  // Lot 3.6: the invoices of the payments
+  | 'payment'
+  | 'invoice';
 
 export type AuditEvent = {
   category: AuditCategory;

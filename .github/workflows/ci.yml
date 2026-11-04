@@ -520,7 +520,11 @@ jobs:
       - name: Run billing integration tests
         env:
           DATABASE_URL_TEST: postgresql://app_runtime:${{ env.APP_PW }}@localhost:5435/ventora_access_test
+          # Lot 3.6: the Founder reads (Prezentare) run on founder_runtime, with a Founder session
+          DATABASE_URL_FOUNDER_TEST: postgresql://founder_runtime:${{ env.FOUNDER_PW }}@localhost:5435/ventora_access_test
           DATABASE_URL_ADMIN_TEST: postgresql://postgres:test@localhost:5435/ventora_access_test
+          BETTER_AUTH_SECRET: ${{ env.BETTER_AUTH_SECRET }}
+          FOUNDER_AUTH_SECRET: ${{ env.FOUNDER_AUTH_SECRET }}
         run: pnpm --filter @ventora/billing test:integration
 
   integration-tests-audit:

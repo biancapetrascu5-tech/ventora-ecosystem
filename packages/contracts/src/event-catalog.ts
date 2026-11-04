@@ -281,6 +281,29 @@ export const BillingDisputeOpenedV1 = defineEvent({
     .strict(),
 });
 
+/**
+ * `billing.invoice.issued` v1 (Lot 3.6): the invoice of a payment (or its storno) was issued by the
+ * invoice provider (SmartBill). Its consumer sends „Ți-am trimis factura” (S115 invoice.card /
+ * invoice.pack) through core/notifications; until it is registered, the event is marked
+ * delivered. Only ids, the kind and the amount.
+ */
+export const BillingInvoiceIssuedV1 = defineEvent({
+  type: 'billing.invoice.issued',
+  version: 1,
+  sourceApp: 'platform',
+  growthSafe: false,
+  withoutConsumer: 'complete',
+  schema: z
+    .object({
+      invoiceId: z.uuid(),
+      kind: z.enum(['invoice', 'storno']),
+      paymentId: z.uuid().nullable(),
+      amountMinor: z.number().int().nonnegative(),
+      currency: z.enum(['RON', 'EUR']),
+    })
+    .strict(),
+});
+
 /** Ce au în comun evenimentele de fișier (Lot 4.7): id-uri, proprietarul, tipul și mărimea. */
 const filePayload = z
   .object({
@@ -327,6 +350,7 @@ export const EVENT_CATALOG: readonly EventDefinition[] = [
   BillingPaymentSucceededV1 as EventDefinition,
   BillingPaymentFailedV1 as EventDefinition,
   BillingDisputeOpenedV1 as EventDefinition,
+  BillingInvoiceIssuedV1 as EventDefinition,
   FileUploadedV1 as EventDefinition,
   FileDeletedV1 as EventDefinition,
   SupportReplyPostedV1 as EventDefinition,

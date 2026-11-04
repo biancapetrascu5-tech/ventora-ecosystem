@@ -522,6 +522,9 @@ importers:
       '@ventora/errors':
         specifier: workspace:*
         version: link:../../packages/errors
+      '@ventora/identity':
+        specifier: workspace:*
+        version: link:../identity
       '@ventora/notifications':
         specifier: workspace:*
         version: link:../notifications
@@ -541,9 +544,6 @@ importers:
       '@types/pg':
         specifier: ^8.0.0
         version: 8.23.1
-      '@ventora/identity':
-        specifier: workspace:*
-        version: link:../identity
       '@ventora/integrations':
         specifier: workspace:*
         version: link:../integrations
