@@ -7,36 +7,59 @@
  * by FOUNDER_EMAIL (category founder, workflows.definition_saved), in the same transaction.
  * Nothing is started for any business: starting is done from Founder, with a reason.
  *
- * Run after `prisma migrate deploy` of core/workflows, with DIRECT_URL (the runtime roles cannot
- * write definitions without a Founder session). On staging only from an up-to-date `main`, with an
- * approved plan (CLAUDE.md, rule 11).
+ * Decision of 04.11.2026 (variant A, no new GRANT): on Supabase `postgres` cannot SET ROLE
+ * audit_writer, so the script writes as a Founder write does —
+ *   - DIRECT_URL (read only): the Founder's id from founder_identity.users (founder_runtime has
+ *     no right on that schema);
+ *   - DATABASE_URL_FOUNDER: founder_runtime, SET LOCAL ROLE workflows_founder for the
+ *     definitions, and the audit row through appendAuditEventInTx (audit_writer).
  *
- *   DIRECT_URL=… FOUNDER_EMAIL=… pnpm tsx scripts/seed-workflows.ts [--expect-noop]
+ * Run after `prisma migrate deploy` of core/workflows. On staging only from an up-to-date `main`,
+ * with an approved plan (CLAUDE.md, rule 11).
+ *
+ *   DIRECT_URL=… DATABASE_URL_FOUNDER=… FOUNDER_EMAIL=… pnpm tsx scripts/seed-workflows.ts [--expect-noop]
  */
 
 import { Pool } from 'pg';
 import { AuditActions, appendAuditEventInTx, pgExecutor } from '../core/audit/src/index.js';
 import { V1_AUTOMATIONS, validateDefinition } from '../core/workflows/src/whitelist.js';
 
-async function main() {
-  const connectionString = process.env.DIRECT_URL;
-  if (!connectionString) throw new Error('DIRECT_URL must be set');
-  const email = process.env.FOUNDER_EMAIL?.trim().toLowerCase();
-  if (!email) throw new Error('FOUNDER_EMAIL must be set (the Founder the audit rows are on)');
-  const expectNoop = process.argv.includes('--expect-noop');
+function required(name: string): string {
+  const value = process.env[name]?.trim();
+  if (!value) throw new Error(`${name} must be set`);
+  return value;
+}
 
-  const pool = new Pool({ connectionString, max: 1 });
+/** The Founder's id, read only, as the owner of the database (DIRECT_URL). */
+async function founderIdOf(email: string): Promise<string> {
+  const pool = new Pool({ connectionString: required('DIRECT_URL'), max: 1 });
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN READ ONLY');
+    const { rows } = await client.query<{ id: string }>(
+      `SELECT id FROM founder_identity.users WHERE lower(email) = $1`,
+      [email],
+    );
+    if (!rows[0]) throw new Error(`No Founder with the e-mail ${email}`);
+    return rows[0].id;
+  } finally {
+    await client.query('ROLLBACK').catch(() => {});
+    client.release();
+    await pool.end();
+  }
+}
+
+async function main() {
+  const email = required('FOUNDER_EMAIL').toLowerCase();
+  const expectNoop = process.argv.includes('--expect-noop');
+  const founderId = await founderIdOf(email);
+
+  const pool = new Pool({ connectionString: required('DATABASE_URL_FOUNDER'), max: 1 });
   const client = await pool.connect();
   const created: string[] = [];
   try {
     await client.query('BEGIN');
-    const founder = await client.query<{ id: string }>(
-      `SELECT id FROM founder_identity.users WHERE lower(email) = $1`,
-      [email],
-    );
-    if (!founder.rows[0]) throw new Error(`No Founder with the e-mail ${email}`);
-    const founderId = founder.rows[0].id;
-
+    await client.query('SET LOCAL ROLE workflows_founder');
     for (const a of V1_AUTOMATIONS) {
       const def = validateDefinition(a);
       const exists = await client.query(`SELECT 1 FROM workflows.definition WHERE code = $1`, [
@@ -64,6 +87,7 @@ async function main() {
           founderId,
         ],
       );
+      // audit_writer for the row, then back to workflows_founder (as the Founder contracts)
       await appendAuditEventInTx(pgExecutor(client), {
         category: 'founder',
         action: AuditActions.workflowDefinitionSaved,
