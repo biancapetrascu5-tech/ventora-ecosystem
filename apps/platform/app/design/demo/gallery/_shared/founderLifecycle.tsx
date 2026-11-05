@@ -19,6 +19,13 @@ import c from './founderCommercial.module.css';
 /* Lotul 3.8 (S121): primul cadru din FounderBillingProfile, FounderInvoiceNotIssued și
    FounderSetupRequests, cu vederile din @ventora/screens și exemplele din preview.html. */
 
+/* Shell-ul din preview-urile S121 (ca S116): fără badge pe „Afaceri”, alte intrări jos și altă căutare. */
+const S121_SHELL = {
+  bottomItems: ['afaceri', 'cereri', 'suport', 'automatizari'],
+  searchLabel: 'Caută o afacere, o solicitare sau o automatizare',
+  businessesBadge: false,
+};
+
 const TABS = [
   { id: 'o', label: 'Prezentare' },
   { id: 'c', label: 'Consum' },
@@ -69,10 +76,11 @@ const PAID: InvoiceHistoryRow[] = [
 function BizFrame({ children, phone }: { children: ReactNode; phone?: boolean }) {
   return (
     <div className={c.xFrame}>
-      <FounderShellDemo active="afaceri" title="Afaceri">
+      <FounderShellDemo active="afaceri" title="Afaceri" {...S121_SHELL}>
         <BusinessView
           phone={!!phone}
           name="Salon Aurora"
+          status={{ tone: 'done', icon: 'check', label: 'Activă' }}
           meta="Business · v2 · 12 membri · din ianuarie 2025"
           menu={[]}
           onMenuAction={noop}
@@ -102,7 +110,8 @@ export function FounderBillingProfileFrame({ phone }: { phone?: boolean }) {
 export function FounderInvoiceNotIssuedFrame({ phone }: { phone?: boolean }) {
   const rows: InvoiceHistoryRow[] = [
     {
-      id: 1,
+      // id unic: 1 e deja al lui PAID[0] (cheie duplicată, două rânduri active).
+      id: 'ni',
       date: '4 nov.',
       what: 'Implementare CampaignKit',
       amount: '600 lei',
@@ -123,7 +132,7 @@ export function FounderInvoiceNotIssuedFrame({ phone }: { phone?: boolean }) {
         onManual={noop}
         onEditProfile={noop}
       />
-      <InvoiceHistorySection rows={rows} activeRow={1} onRetry={noop} onManual={noop} />
+      <InvoiceHistorySection rows={rows} activeRow="ni" onRetry={noop} onManual={noop} />
     </BizFrame>
   );
 }
@@ -199,7 +208,7 @@ export function FounderSetupRequestsFrame({ phone }: { phone?: boolean }) {
   return (
     <div className={c.ssFrame}>
       <div className={c.ssBody}>
-        <FounderShellDemo active="cereri" title="Cereri">
+        <FounderShellDemo active="cereri" title="Cereri" {...S121_SHELL}>
           <PageHeader
             title="Cereri din Hub"
             description={
@@ -208,7 +217,7 @@ export function FounderSetupRequestsFrame({ phone }: { phone?: boolean }) {
                 : 'Ce au cerut afacerile din Hub: activarea unui pachet sau a unei aplicații, ori alt abonament.'
             }
           />
-          <div style={{ padding: phone ? '0 var(--space-4)' : '0 var(--space-8)' }}>
+          <div style={{ padding: phone ? '0 var(--space-4)' : 0 }}>
             <SetupRequestsList rows={SETUP} onOpen={noop} onOpenBusiness={noop} />
           </div>
         </FounderShellDemo>
