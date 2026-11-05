@@ -10,6 +10,7 @@ import { invoiceDownload, requestPack, tellOwner, type PlanData } from '@/server
 import { CardDialog } from './CardDialog';
 import { dayBefore, quotaSlug, useDays, useMoney } from './format';
 import { LimitDialog } from './LimitDialog';
+import { HubLifecycleSection } from './HubLifecycleSection';
 import { PlanView, type PlanHaveRow, type PlanMeter, type PlanPackRow } from './PlanView';
 import { PurchaseDialog, type PurchaseTarget } from './PurchaseDialog';
 import s from './plan.module.css';
@@ -381,6 +382,18 @@ export function PlanScreen({ data }: { data: PlanData }) {
                 onDownload: (row) => void download(row.invoiceId),
               }
             : undefined
+        }
+        after={
+          <HubLifecycleSection
+            owner={data.owner}
+            profile={data.profile}
+            setup={data.setup}
+            money={(minor) => money.minor(minor)}
+            longDay={(d) => days.long(d)}
+            closeLabel={ui('close')}
+            phone={phone}
+            onToast={setToast}
+          />
         }
       />
 

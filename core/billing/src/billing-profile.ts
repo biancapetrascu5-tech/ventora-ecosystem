@@ -46,7 +46,7 @@ export function checkForeignVatCode(input: string): boolean {
 /**
  * Nr. Reg. Com. as on the certificate: the classic form J32/1234/2019 (J, F or C, the county
  * code, the number, the year) or the single-string form of the registrations made since 2024
- * (J2024012345320). DE VALIDAT TEHNIC (Lot 3.8 report): the database only checks the characters.
+ * (J2024012345320). The database checks the same two forms for a Romanian company (N12).
  */
 export function checkRegCom(input: string): boolean {
   const value = input.replace(/\s+/g, '').toUpperCase();

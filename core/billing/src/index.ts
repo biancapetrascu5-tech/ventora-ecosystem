@@ -35,6 +35,8 @@ export {
   billingPaymentFailedConsumer,
   billingInvoiceIssuedConsumer,
   billingDisputeAlertConsumer,
+  commercialTrialEndingConsumer,
+  commercialSetupNoticeConsumer,
 } from './notify';
 // Lot 3.6: the invoice of every payment (SmartBill), the storno, the Founder reads
 export {
@@ -115,3 +117,36 @@ export {
   normalizeTaxId,
   type CuiCheck,
 } from './billing-profile';
+// Lot 3.8: the billing profile, manual payment, the invoice not issued, the implementation
+export {
+  validateBillingProfile,
+  getBillingProfileForFounder,
+  saveBillingProfile,
+  getBillingProfile,
+  getPaymentSettingsForFounder,
+  setPaymentSettings,
+  runTransferInvoiceJob,
+  runTransferOverdueJob,
+  confirmTransferReceipt,
+  transferReceiptConsumer,
+  retryInvoice,
+  markInvoiceManual,
+  listInvoicesForFounder,
+  runSubscriptionTrialJob,
+  paySetupRequest,
+  createSetupTransferInvoice,
+  refundSetupRequest,
+  getSavedCardLast4ForFounder,
+  BillingProfileInvalid,
+  PAYMENT_TERMS_MIN,
+  PAYMENT_TERMS_MAX,
+  PAYMENT_TERMS_DEFAULT,
+  MANUAL_REASON_MIN,
+  type BillingProfileInput,
+  type BillingProfile,
+  type BillingProfileError,
+  type PaymentSettings,
+  type FounderInvoiceRow,
+} from './lifecycle';
+export { profileBuyerInTx } from './invoices';
+export type { RecordPaymentInput } from './invoice-provider';

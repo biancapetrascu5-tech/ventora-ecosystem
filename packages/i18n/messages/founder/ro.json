@@ -524,7 +524,8 @@
       "refused": "Am refuzat cererea. {name} primește motivul în Hub.",
       "emptyTitle": "Nicio cerere nouă",
       "emptyBody": "Când o afacere cere o activare sau alt abonament din Hub, apare aici.",
-      "error": "Nu am putut salva schimbările. Verifică internetul și încearcă din nou."
+      "error": "Nu am putut salva schimbările. Verifică internetul și încearcă din nou.",
+      "setupTitle": "Cereri cu implementare"
     },
     "billing": {
       "tab": "Plăți și facturi",
@@ -534,7 +535,76 @@
       "renews": "se reînnoiește pe {date}",
       "noPlan": "Afacerea nu are încă un abonament.",
       "monthlyStrong": "Plătește lunar: {amount}",
-      "annualStrong": "Plătește anual: {amount}"
+      "annualStrong": "Plătește anual: {amount}",
+      "history": {
+        "title": "Istoricul cumpărărilor",
+        "lead": "Abonamentul și fiecare pachet în plus, cu factura lor. Cele mai noi sus."
+      },
+      "col": {
+        "date": "Data",
+        "what": "Ce",
+        "amount": "Sumă",
+        "method": "Plata",
+        "invoice": "Factura",
+        "status": "Stare"
+      },
+      "method": {
+        "card": "Card ···· {last4}",
+        "transfer": "Transfer bancar"
+      },
+      "status": {
+        "paid": "Plătită",
+        "refunded": "Rambursată",
+        "pending": "Așteaptă plata",
+        "storno": "Stornare",
+        "invoicePending": "Factura se emite",
+        "notIssued": "Nu s-a emis",
+        "manual": "Emisă manual"
+      },
+      "action": {
+        "viewInvoice": "Vezi factura",
+        "refund": "Rambursează…",
+        "confirm": "Confirmă încasarea…"
+      },
+      "empty": "Nicio cumpărare până acum.",
+      "transfer": {
+        "title": "Confirmă încasarea pentru {invoice}",
+        "lead": "{what} · {amount}",
+        "date": "Data încasării",
+        "amount": "Suma încasată",
+        "amountHelp": "Exact cum apare în extrasul de cont.",
+        "diff": "Suma diferă de factură ({amount}). Confirmă doar dacă ai primit toată suma; altfel lasă factura în așteptare.",
+        "effect": "Factura devine „Plătită”, iar abonamentul merge mai departe fără întrerupere. Acțiunea intră în jurnal.",
+        "submit": "Confirmă încasarea",
+        "cancel": "Renunță",
+        "done": "Am confirmat încasarea pentru {invoice}."
+      },
+      "notIssued": {
+        "title": "Factura pentru {what} nu s-a emis",
+        "body": "Plata de {amount} a trecut pe {date}, dar e-Factura a respins factura: {reason} Afacerea nu a primit factura.",
+        "reason": "CUI-ul cumpărătorului nu e valid.",
+        "retry": "Reîncearcă",
+        "manual": "Am emis-o manual…",
+        "fixFirst": "Corectează întâi datele de facturare, apoi reîncearcă.",
+        "retrying": "Se reîncearcă…",
+        "retryFailed": "Nici a doua oară nu s-a emis: {reason} Încearcă după ce corectezi datele sau emite-o manual.",
+        "retryOk": "Factura s-a emis: {invoice}. Afacerea o primește pe e-mail."
+      },
+      "manualIssue": {
+        "title": "Ai emis manual factura pentru {business}?",
+        "lead": "{what} · {amount} · plătită pe {date}",
+        "series": "Seria",
+        "number": "Numărul",
+        "date": "Data emiterii",
+        "reason": "Motiv",
+        "reasonHelp": "De ce ai emis-o în afara sistemului. Intră în jurnalul afacerii.",
+        "reasonError": "Scrie motivul, în cel puțin 10 caractere.",
+        "effect": "Rândul trece în „Emisă manual”, cu seria și numărul. Factura o trimiți tu afacerii, din programul de facturare.",
+        "submit": "Marchează emisă manual",
+        "done": "Am trecut factura {invoice} ca emisă manual.",
+        "duplicate": "Seria și numărul {invoice} există deja la altă factură.",
+        "failed": "Schimbarea nu s-a salvat. Încearcă din nou."
+      }
     },
     "discounts": {
       "nav": "Reduceri",
@@ -661,7 +731,10 @@
         "disputeMetaNoDate": "{amount} · fără termen încă",
         "disputeAction": "Răspunde în Stripe",
         "allGood": "Nimic nu te așteaptă",
-        "allGoodBody": "Nicio cerere nouă, nicio plată eșuată, nicio excepție care expiră în 7 zile și nicio dispută."
+        "allGoodBody": "Nicio cerere nouă, nicio plată eșuată, nicio excepție care expiră în 7 zile și nicio dispută.",
+        "invoiceFailed": "Factura nu s-a emis · {business}",
+        "invoiceFailedMeta": "{amount} · plătită pe {date} · {reason}",
+        "invoiceFailedAction": "Deschide plățile"
       },
       "limits": {
         "title": "Aproape de limite",
@@ -1236,6 +1309,126 @@
         "step_failed": "Trimiterea a eșuat"
       },
       "error": "Nu am putut salva schimbarea. Încearcă din nou."
+    },
+    "billingProfile": {
+      "title": "Date de facturare",
+      "lead": "Pe aceste date emitem facturile afacerii. O schimbare se vede de la următoarea factură; cele emise rămân cum sunt.",
+      "type": "Factura se emite pe",
+      "company": "Persoană juridică",
+      "person": "Persoană fizică",
+      "companyName": "Denumirea firmei",
+      "companyNameHelp": "Exact ca în certificatul de înregistrare.",
+      "personName": "Nume și prenume",
+      "cui": "CUI",
+      "cuiHelp": "Cu „RO” în față doar dacă firma e plătitoare de TVA.",
+      "cuiErrFormat": "CUI-ul are între 2 și 10 cifre, cu sau fără „RO” în față.",
+      "cuiErrCheck": "CUI-ul nu e valid: cifra de control nu se potrivește. Verifică-l în certificatul de înregistrare.",
+      "cuiOk": "CUI valid",
+      "taxIdForeign": "Cod de TVA",
+      "taxIdForeignHelp": "Pentru firmele din afara României, cu prefixul țării (de ex. DE123456789). Nu îl verificăm după regula CUI.",
+      "regComForeign": "Nr. de înregistrare",
+      "regCom": "Nr. Reg. Com.",
+      "regComHelp": "Ex.: J32/1234/2019",
+      "regComErr": "Scrie numărul ca în certificat, de ex. J32/1234/2019.",
+      "street": "Strada și numărul",
+      "city": "Oraș",
+      "county": "Județ",
+      "region": "Regiune",
+      "country": "Țară",
+      "email": "E-mail pentru facturi",
+      "emailHelp": "Aici pleacă facturile. Poate fi altul decât al proprietarului.",
+      "required": "Completează {field}.",
+      "personNote": "Pentru o persoană fizică nu cerem CNP: factura se emite pe nume și adresă.",
+      "card": "Factura se emite pe",
+      "edit": "Editează datele de facturare",
+      "save": "Salvează datele",
+      "cancel": "Renunță",
+      "saved": "Am salvat datele de facturare. Se folosesc de la următoarea factură.",
+      "changeAsked": "{name} a cerut din Hub o schimbare a datelor de facturare",
+      "changeAskedBody": "„{text}” · {ref}",
+      "openRequest": "Deschide solicitarea",
+      "reason": "Motivul schimbării",
+      "reasonHelp": "Intră în jurnalul afacerii. Proprietarul primește un e-mail cu datele noi.",
+      "address": "Adresa",
+      "empty": "Datele de facturare nu sunt completate. Până atunci, factura se emite pe numele afacerii.",
+      "fieldCompanyName": "denumirea firmei",
+      "fieldPersonName": "numele și prenumele",
+      "fieldStreet": "strada și numărul",
+      "fieldCity": "orașul",
+      "fieldCounty": "județul",
+      "fieldEmail": "e-mailul pentru facturi",
+      "fieldReason": "motivul schimbării",
+      "vatCodeErr": "Scrie codul de TVA cu prefixul țării, de ex. DE123456789.",
+      "saveFailed": "Schimbarea nu s-a salvat. Încearcă din nou."
+    },
+    "setup": {
+      "title": "Cereri cu implementare",
+      "type": "Implementare",
+      "st": {
+        "requested": "Cerută",
+        "accepted": "Acceptată de client",
+        "confirmed": "Confirmată de echipă",
+        "paid": "Plătită",
+        "inProgress": "În lucru",
+        "live": "Pornită",
+        "cancelled": "Anulată",
+        "refunded": "Rambursată"
+      },
+      "next": {
+        "requested": "Trimite oferta afacerii",
+        "offerSent": "Oferta a plecat pe {date}. Așteaptă acceptul clientului.",
+        "accepted": "Confirmă data de început",
+        "confirmed": "Așteaptă plata implementării ({amount}).",
+        "paid": "Începe lucrul",
+        "inProgress": "Pornește aplicația",
+        "live": "Pornită pe {date}. Abonamentul aplicației a început în aceeași zi.",
+        "cancelled": "Anulată pe {date} · {reason}",
+        "refunded": "Anulată și rambursată pe {date} · {amount}"
+      },
+      "action": {
+        "sendOffer": "Trimite oferta",
+        "confirm": "Confirmă",
+        "resendPay": "Retrimite linkul de plată",
+        "start": "Începe lucrul",
+        "goLive": "Pornește aplicația",
+        "cancel": "Anulează cererea…",
+        "cancelRefund": "Anulează și rambursează…",
+        "open": "Deschide"
+      },
+      "offer": {
+        "setup": "Implementare",
+        "maintenance": "Mentenanță",
+        "start": "Data estimată de pornire",
+        "note": "Mesaj pentru client"
+      },
+      "detail": {
+        "steps": "Pașii",
+        "amounts": "Ce plătește",
+        "setupLine": "Implementare: {amount}, o singură dată, înainte de lucru",
+        "maintLine": "Mentenanță: {amount} pe lună, din ziua în care pornește aplicația",
+        "subStart": "Abonamentul aplicației începe pe {date}",
+        "subStartTbd": "Abonamentul aplicației începe în ziua în care o pornești",
+        "maintLineYear": "Mentenanță: {amount} pe an, din ziua în care pornește aplicația"
+      },
+      "goLive": {
+        "title": "Pornești {app} pentru {business}?",
+        "body": "Aplicația apare în Hub pentru proprietar și membrii cu acces. Abonamentul ei începe azi, {date}: {amount} pe lună, prima plată acum, proporțional până la data de reînnoire.",
+        "submit": "Pornește aplicația",
+        "done": "{app} a pornit pentru {business}. Proprietarul primește o notificare și un e-mail."
+      },
+      "cancel": {
+        "title": "Anulezi cererea de implementare pentru {business}?",
+        "refundLine": "Plata de {amount} se rambursează pe cardul ···· {last4}, cu factură de stornare.",
+        "noPay": "Nu s-a plătit nimic, deci nu e nimic de rambursat.",
+        "reason": "Motiv",
+        "reasonHelp": "Proprietarul vede motivul în Hub și pe e-mail.",
+        "submit": "Anulează cererea",
+        "submitRefund": "Anulează și rambursează {amount}",
+        "back": "Renunță",
+        "refundTransfer": "Plata de {amount} s-a făcut prin transfer: emitem factura de stornare, iar banii îi trimiți tu înapoi, prin transfer."
+      },
+      "more": "Mai multe acțiuni",
+      "failed": "Schimbarea nu s-a salvat. Încearcă din nou."
     }
   }
 }

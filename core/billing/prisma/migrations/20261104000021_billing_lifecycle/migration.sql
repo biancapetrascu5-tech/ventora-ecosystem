@@ -105,7 +105,11 @@ CREATE TABLE "billing"."billing_profile" (
   CONSTRAINT "billing_profile_identity" CHECK (
     ("entity_type" = 'person' AND "tax_id" IS NULL AND "reg_com" IS NULL)
     OR ("entity_type" = 'company' AND "country" = 'RO' AND "tax_id" IS NOT NULL
-      AND billing.ro_cui_valid("tax_id") AND "reg_com" IS NOT NULL)
+      AND billing.ro_cui_valid("tax_id") AND "reg_com" IS NOT NULL
+      -- N12 (05.11.2026): forma clasică J32/1234/2019 sau cea unică, de după 2024 (J2024012345320);
+      -- aceeași regulă ca checkRegCom din core/billing (valoarea vine fără spații, cu majuscule)
+      AND ("reg_com" ~ '^[JFC](0?[1-9]|[1-4][0-9]|5[0-2])/[0-9]{1,7}/(19|20)[0-9]{2}$'
+        OR "reg_com" ~ '^[JFC](19|20)[0-9]{2}[0-9]{6,9}$'))
     OR ("entity_type" = 'company' AND "country" <> 'RO'
       AND "tax_id" ~ '^[A-Z]{2}[0-9A-Z+*.]{2,13}$' AND left("tax_id", 2) <> 'RO')
   ),

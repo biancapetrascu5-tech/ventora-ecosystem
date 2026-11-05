@@ -3,6 +3,7 @@ import {
   type InvoiceProvider,
   type IssueInvoiceInput,
   type IssuedDocument,
+  type RecordPaymentInput,
   type ReverseInvoiceInput,
 } from './invoice-provider';
 
@@ -13,6 +14,11 @@ import {
  *   POST /invoice/v2       the invoice, issued as paid by card („încasată”)
  *   POST /invoice/reverse  the storno of an invoice
  *   GET  /invoice/pdf      the PDF (Accept must not be application/pdf: 406)
+ *   POST /payment          Lot 3.8 (N16): the receipt of a transfer invoice („Ordin plata”).
+ *                          DE VALIDAT TEHNIC: the spec page (api.smartbill.ro, rendered in the
+ *                          browser) could not be read by the agent; the body follows the V1
+ *                          receipt shape and the call runs only with SMARTBILL_RECORD_PAYMENTS=1,
+ *                          after one check on the test account.
  *
  * V1 answers with `errorText`: empty = success. Rate limit: 30 calls / 10 s per token (blocked
  * for 10 minutes beyond it) — the job issues one at a time.
@@ -42,6 +48,8 @@ export interface SmartBillConfig {
   measuringUnit: string;
   /** Only for a VAT payer, or when the accountant asks for an explicit 0% rate. */
   tax: { name: string; percentage: number } | null;
+  /** Lot 3.8 (N16): record transfer receipts in SmartBill (off until validated on the test account). */
+  recordPayments?: boolean;
   baseUrl?: string;
   fetch?: typeof fetch;
   timeoutMs?: number;
@@ -69,6 +77,7 @@ export function smartBillConfigFromEnv(
       taxName && taxPct && !Number.isNaN(Number(taxPct))
         ? { name: taxName, percentage: Number(taxPct) }
         : null,
+    recordPayments: env.SMARTBILL_RECORD_PAYMENTS?.trim() === '1',
   };
 }
 
@@ -224,6 +233,8 @@ export class SmartBillInvoiceProvider implements InvoiceProvider {
       body.payment = { value: money(input.paid.amountMinor), type: 'Card', isCash: false };
       body.paymentDate = input.paid.date;
     }
+    // Lot 3.8: a transfer invoice, unpaid, with its due date (D3-11)
+    if (input.dueDate) body.dueDate = input.dueDate;
     return this.postDocument('/invoice/v2', body);
   }
 
@@ -234,6 +245,75 @@ export class SmartBillInvoiceProvider implements InvoiceProvider {
       number: input.number,
       issueDate: input.issueDate,
     });
+  }
+
+  /** Lot 3.8 (N16): the receipt of a transfer invoice; skipped until SMARTBILL_RECORD_PAYMENTS=1. */
+  async recordPayment(input: RecordPaymentInput): Promise<{ number: string | null }> {
+    if (!this.config.recordPayments) {
+      throw new InvoiceProviderError(
+        'retryable',
+        'SmartBill receipts are off (SMARTBILL_RECORD_PAYMENTS)',
+      );
+    }
+    const b = input.buyer;
+    const client: Record<string, unknown> = {
+      name: b.name,
+      country: b.country,
+      isTaxPayer: b.isTaxPayer,
+      saveToDb: false,
+    };
+    if (b.vatCode) client.vatCode = b.vatCode;
+    if (b.address) client.address = b.address;
+    if (b.city) client.city = b.city;
+    if (b.county) client.county = b.county;
+    const res = await this.call('/payment', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+      body: JSON.stringify({
+        companyVatCode: this.config.cif,
+        client,
+        issueDate: input.date,
+        currency: input.currency,
+        precision: 2,
+        value: money(input.amountMinor),
+        isDraft: false,
+        type: 'Ordin plata',
+        isCash: false,
+        useInvoiceDetails: false,
+        invoicesList: [{ seriesName: input.series, number: input.number }],
+        observation: `Ventora Systems ${input.reference}`,
+      }),
+    });
+    if (
+      res.status === 429 ||
+      res.status === 502 ||
+      res.status === 503 ||
+      res.status === 401 ||
+      res.status === 403
+    ) {
+      throw new InvoiceProviderError('retryable', `SmartBill HTTP ${res.status}`, res.status);
+    }
+    let json: Record<string, unknown> = {};
+    try {
+      json = (await res.json()) as Record<string, unknown>;
+    } catch {
+      throw new InvoiceProviderError(
+        'ambiguous',
+        `SmartBill HTTP ${res.status}: unreadable answer`,
+        res.status,
+      );
+    }
+    const errorText = typeof json.errorText === 'string' ? json.errorText.trim() : '';
+    if (errorText || res.status >= 400) {
+      throw new InvoiceProviderError(
+        res.status >= 500 ? 'ambiguous' : 'rejected',
+        `SmartBill: ${(errorText || `HTTP ${res.status}`).slice(0, 400)}`,
+        res.status,
+      );
+    }
+    return {
+      number: json.number === undefined || json.number === null ? null : String(json.number),
+    };
   }
 
   async fetchPdf(series: string, number: string): Promise<Uint8Array> {

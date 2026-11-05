@@ -156,7 +156,16 @@
     "notifications.prefs.reco.inAppDesc": "Le vezi în pagini și în notificări, la secțiunea Recomandări.",
     "notifications.prefs.reco.soon": "Disponibil în curând",
     "notifications.prefs.reco.note": "Mesajele despre limitele contului tău rămân active, pentru că sunt informații despre cont, nu recomandări.",
-    "notifications.prefs.saved": "Am salvat preferințele."
+    "notifications.prefs.saved": "Am salvat preferințele.",
+    "notifications.support.reply.action": "Vezi solicitarea",
+    "notifications.support.autoClose.title": "Solicitarea ta se închide mâine",
+    "notifications.support.autoClose.body": "„{subject}” ({ref}) se închide automat mâine, dacă nu ne răspunzi până atunci.",
+    "notifications.support.autoClose.action": "Vezi solicitarea",
+    "notifications.email.supportAutoClose.subject": "Solicitarea ta se închide mâine",
+    "notifications.email.supportAutoClose.preheader": "„{subject}” se închide automat pe {closesAt}, dacă nu ne răspunzi până atunci.",
+    "notifications.email.supportAutoClose.title": "Solicitarea ta se închide mâine",
+    "notifications.email.supportAutoClose.lead": "Echipa Ventora Systems ți-a răspuns la „{subject}” ({ref}), iar de 6 zile nu ne-ai mai scris.",
+    "notifications.email.supportAutoClose.body": "Dacă problema s-a rezolvat, nu trebuie să faci nimic: solicitarea se închide singură pe {closesAt}. Dacă mai ai nevoie de ajutor, răspunde-ne în Hub, la Suport; o poți redeschide și după ce se închide."
   },
   "en": {
     "notifications.title": "Notifications",
@@ -315,7 +324,16 @@
     "notifications.prefs.reco.inAppDesc": "You see them on pages and in notifications, under Recommendations.",
     "notifications.prefs.reco.soon": "Coming soon",
     "notifications.prefs.reco.note": "Messages about your account’s limits stay on, because they’re account information, not recommendations.",
-    "notifications.prefs.saved": "Preferences saved."
+    "notifications.prefs.saved": "Preferences saved.",
+    "notifications.support.reply.action": "View request",
+    "notifications.support.autoClose.title": "Your request closes tomorrow",
+    "notifications.support.autoClose.body": "“{subject}” ({ref}) closes automatically tomorrow unless you reply before then.",
+    "notifications.support.autoClose.action": "View request",
+    "notifications.email.supportAutoClose.subject": "Your request closes tomorrow",
+    "notifications.email.supportAutoClose.preheader": "“{subject}” closes automatically on {closesAt} unless you reply before then.",
+    "notifications.email.supportAutoClose.title": "Your request closes tomorrow",
+    "notifications.email.supportAutoClose.lead": "The Ventora Systems team replied to “{subject}” ({ref}), and you haven’t written to us for 6 days.",
+    "notifications.email.supportAutoClose.body": "If the problem is solved, you don’t need to do anything: the request closes by itself on {closesAt}. If you still need help, reply in the Hub, under Support; you can also reopen it after it closes."
   },
   "fr": {
     "notifications.title": "Notifications",
@@ -474,7 +492,16 @@
     "notifications.prefs.reco.inAppDesc": "Vous les voyez dans les pages et dans les notifications, à la rubrique Recommandations.",
     "notifications.prefs.reco.soon": "Bientôt disponible",
     "notifications.prefs.reco.note": "Les messages sur les limites de votre compte restent actifs, car ce sont des informations sur le compte, pas des recommandations.",
-    "notifications.prefs.saved": "Préférences enregistrées."
+    "notifications.prefs.saved": "Préférences enregistrées.",
+    "notifications.support.reply.action": "Voir la demande",
+    "notifications.support.autoClose.title": "Votre demande sera fermée demain",
+    "notifications.support.autoClose.body": "« {subject} » ({ref}) sera fermée automatiquement demain, sauf si vous nous répondez d’ici là.",
+    "notifications.support.autoClose.action": "Voir la demande",
+    "notifications.email.supportAutoClose.subject": "Votre demande sera fermée demain",
+    "notifications.email.supportAutoClose.preheader": "« {subject} » sera fermée automatiquement le {closesAt}, sauf si vous nous répondez d’ici là.",
+    "notifications.email.supportAutoClose.title": "Votre demande sera fermée demain",
+    "notifications.email.supportAutoClose.lead": "L’équipe Ventora Systems a répondu à « {subject} » ({ref}) et vous ne nous avez pas écrit depuis 6 jours.",
+    "notifications.email.supportAutoClose.body": "Si le problème est résolu, vous n’avez rien à faire : la demande sera fermée automatiquement le {closesAt}. Si vous avez encore besoin d’aide, répondez-nous dans le Hub, rubrique Support ; vous pourrez aussi la rouvrir après sa fermeture."
   },
   "es": {
     "notifications.title": "Notificaciones",
@@ -633,7 +660,16 @@
     "notifications.prefs.reco.inAppDesc": "Las ves en las páginas y en las notificaciones, en Recomendaciones.",
     "notifications.prefs.reco.soon": "Disponible pronto",
     "notifications.prefs.reco.note": "Los mensajes sobre los límites de tu cuenta siguen activos, porque son información de la cuenta, no recomendaciones.",
-    "notifications.prefs.saved": "Preferencias guardadas."
+    "notifications.prefs.saved": "Preferencias guardadas.",
+    "notifications.support.reply.action": "Ver la solicitud",
+    "notifications.support.autoClose.title": "Tu solicitud se cierra mañana",
+    "notifications.support.autoClose.body": "«{subject}» ({ref}) se cierra automáticamente mañana si no nos respondes antes.",
+    "notifications.support.autoClose.action": "Ver la solicitud",
+    "notifications.email.supportAutoClose.subject": "Tu solicitud se cierra mañana",
+    "notifications.email.supportAutoClose.preheader": "«{subject}» se cierra automáticamente el {closesAt} si no nos respondes antes.",
+    "notifications.email.supportAutoClose.title": "Tu solicitud se cierra mañana",
+    "notifications.email.supportAutoClose.lead": "El equipo de Ventora Systems respondió a «{subject}» ({ref}) y no nos has escrito en 6 días.",
+    "notifications.email.supportAutoClose.body": "Si el problema está resuelto, no tienes que hacer nada: la solicitud se cierra sola el {closesAt}. Si aún necesitas ayuda, respóndenos en el Hub, en Soporte; también puedes reabrirla después de que se cierre."
   },
   "de": {
     "notifications.title": "Benachrichtigungen",
@@ -792,7 +828,16 @@
     "notifications.prefs.reco.inAppDesc": "Sie sehen sie auf den Seiten und in den Benachrichtigungen unter Empfehlungen.",
     "notifications.prefs.reco.soon": "Bald verfügbar",
     "notifications.prefs.reco.note": "Nachrichten zu den Limits Ihres Kontos bleiben aktiv, denn sie sind Kontoinformationen, keine Empfehlungen.",
-    "notifications.prefs.saved": "Einstellungen gespeichert."
+    "notifications.prefs.saved": "Einstellungen gespeichert.",
+    "notifications.support.reply.action": "Anfrage ansehen",
+    "notifications.support.autoClose.title": "Ihre Anfrage wird morgen geschlossen",
+    "notifications.support.autoClose.body": "„{subject}“ ({ref}) wird morgen automatisch geschlossen, wenn Sie bis dahin nicht antworten.",
+    "notifications.support.autoClose.action": "Anfrage ansehen",
+    "notifications.email.supportAutoClose.subject": "Ihre Anfrage wird morgen geschlossen",
+    "notifications.email.supportAutoClose.preheader": "„{subject}“ wird am {closesAt} automatisch geschlossen, wenn Sie bis dahin nicht antworten.",
+    "notifications.email.supportAutoClose.title": "Ihre Anfrage wird morgen geschlossen",
+    "notifications.email.supportAutoClose.lead": "Das Ventora-Systems-Team hat auf „{subject}“ ({ref}) geantwortet, und Sie haben uns seit 6 Tagen nicht mehr geschrieben.",
+    "notifications.email.supportAutoClose.body": "Wenn das Problem gelöst ist, müssen Sie nichts tun: Die Anfrage wird am {closesAt} automatisch geschlossen. Wenn Sie noch Hilfe brauchen, antworten Sie uns im Hub unter Support; Sie können sie auch nach dem Schließen erneut öffnen."
   },
   "it": {
     "notifications.title": "Notifiche",
@@ -951,6 +996,15 @@
     "notifications.prefs.reco.inAppDesc": "Le vede nelle pagine e nelle notifiche, nella sezione Raccomandazioni.",
     "notifications.prefs.reco.soon": "Disponibile a breve",
     "notifications.prefs.reco.note": "I messaggi sui limiti del Suo account restano attivi, perché sono informazioni sull’account, non raccomandazioni.",
-    "notifications.prefs.saved": "Preferenze salvate."
+    "notifications.prefs.saved": "Preferenze salvate.",
+    "notifications.support.reply.action": "Vedi la richiesta",
+    "notifications.support.autoClose.title": "La Sua richiesta si chiude domani",
+    "notifications.support.autoClose.body": "«{subject}» ({ref}) si chiude automaticamente domani, se non ci risponde prima.",
+    "notifications.support.autoClose.action": "Vedi la richiesta",
+    "notifications.email.supportAutoClose.subject": "La Sua richiesta si chiude domani",
+    "notifications.email.supportAutoClose.preheader": "«{subject}» si chiude automaticamente il {closesAt}, se non ci risponde prima.",
+    "notifications.email.supportAutoClose.title": "La Sua richiesta si chiude domani",
+    "notifications.email.supportAutoClose.lead": "Il team Ventora Systems ha risposto a «{subject}» ({ref}) e da 6 giorni non ci ha più scritto.",
+    "notifications.email.supportAutoClose.body": "Se il problema è risolto, non deve fare nulla: la richiesta si chiude da sola il {closesAt}. Se ha ancora bisogno di aiuto, ci risponda nell’Hub, in Assistenza; può anche riaprirla dopo la chiusura."
   }
 }

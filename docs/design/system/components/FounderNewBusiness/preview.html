@@ -1,4 +1,4 @@
-<!-- @dsCard group="Founder" height=11228 width=2620 page -->
+<!-- @dsCard group="Founder" height=21700 width=2620 page -->
 <!doctype html>
 <html lang="ro">
 <head><meta charset="utf-8"><title>FounderNewBusiness — Ventora Systems</title>
@@ -306,6 +306,11 @@ html,body{min-height:100%}
 .fb-applist.m{grid-template-columns:1fr}
 .fb-applab{display:inline-flex;align-items:center;gap:var(--space-2)}
 
+.x-stack{display:flex;flex-direction:column;gap:var(--space-3)}
+.x-stack p{margin:0}
+.x-row{display:flex;gap:var(--space-2);align-items:center;flex-wrap:wrap}
+.x-line{display:flex;gap:var(--space-2);align-items:flex-start;color:var(--ink-secondary)}
+.x-line .v-icon{flex:none;margin-top:2px}
 </style>
 </head>
 <body>
@@ -751,7 +756,39 @@ function Summary({ c }) {
     h("div", { className: "fb-line" }, h("span", { className: "body-small muted" }, tf("founder.new.setupOnce")), h("span", { className: "body-small muted v-num" }, L.setup ? money(L.setup, c.cur) : tf("founder.apps.none"))),
     h("div", { className: "fb-line" }, h("span", { className: "body-small muted" }, tf("founder.new.seats")), h("span", { className: "body-small muted v-num" }, String(L.seats))));
 }
-function FNew({ mode, v = "a" }) {
+
+/* S121 · D-3.6-1: "Date de facturare" (keys founder.billingProfile.* in i18n/founder-commercial.json) */
+const FCB = {"ro": {"founder.billingProfile.title": "Date de facturare", "founder.billingProfile.lead": "Pe aceste date emitem facturile afacerii. O schimbare se vede de la următoarea factură; cele emise rămân cum sunt.", "founder.billingProfile.type": "Factura se emite pe", "founder.billingProfile.company": "Persoană juridică", "founder.billingProfile.person": "Persoană fizică", "founder.billingProfile.companyName": "Denumirea firmei", "founder.billingProfile.companyNameHelp": "Exact ca în certificatul de înregistrare.", "founder.billingProfile.personName": "Nume și prenume", "founder.billingProfile.cui": "CUI", "founder.billingProfile.cuiHelp": "Cu „RO” în față doar dacă firma e plătitoare de TVA.", "founder.billingProfile.cuiErrFormat": "CUI-ul are între 2 și 10 cifre, cu sau fără „RO” în față.", "founder.billingProfile.cuiErrCheck": "CUI-ul nu e valid: cifra de control nu se potrivește. Verifică-l în certificatul de înregistrare.", "founder.billingProfile.cuiOk": "CUI valid", "founder.billingProfile.taxIdForeign": "Cod de TVA", "founder.billingProfile.taxIdForeignHelp": "Pentru firmele din afara României, cu prefixul țării (de ex. DE123456789). Nu îl verificăm după regula CUI.", "founder.billingProfile.regComForeign": "Nr. de înregistrare", "founder.billingProfile.regCom": "Nr. Reg. Com.", "founder.billingProfile.regComHelp": "Ex.: J32/1234/2019", "founder.billingProfile.regComErr": "Scrie numărul ca în certificat, de ex. J32/1234/2019.", "founder.billingProfile.street": "Strada și numărul", "founder.billingProfile.city": "Oraș", "founder.billingProfile.county": "Județ", "founder.billingProfile.region": "Regiune", "founder.billingProfile.country": "Țară", "founder.billingProfile.email": "E-mail pentru facturi", "founder.billingProfile.emailHelp": "Aici pleacă facturile. Poate fi altul decât al proprietarului.", "founder.billingProfile.required": "Completează {field}.", "founder.billingProfile.personNote": "Pentru o persoană fizică nu cerem CNP: factura se emite pe nume și adresă.", "founder.billingProfile.card": "Factura se emite pe", "founder.billingProfile.edit": "Editează datele de facturare", "founder.billingProfile.save": "Salvează datele", "founder.billingProfile.cancel": "Renunță", "founder.billingProfile.saved": "Am salvat datele de facturare. Se folosesc de la următoarea factură.", "founder.billingProfile.changeAsked": "{name} a cerut din Hub o schimbare a datelor de facturare", "founder.billingProfile.changeAskedBody": "„{text}” · {ref}", "founder.billingProfile.openRequest": "Deschide solicitarea", "founder.billingProfile.reason": "Motivul schimbării", "founder.billingProfile.reasonHelp": "Intră în jurnalul afacerii. Proprietarul primește un e-mail cu datele noi."}};
+const T = (k, v) => { let s = FCB.ro[k] || k; if (v) for (const x in v) s = s.split("{" + x + "}").join(v[x]); return s; };
+const NBILL = {
+  a: { type: "company", name: "Studio Lumina SRL", cui: "41829376", reg: "J32/2204/2021", street: "Str. Avram Iancu 8", city: "Sibiu", county: "Sibiu", country: "România", email: "contabilitate@studiolumina.ro" },
+  b: { type: "company", name: "Atelier Nord GmbH", cui: "DE298765431", reg: "HRB 245871", street: "Leopoldstraße 41", city: "München", county: "Bayern", country: "Germania", email: "rechnung@ateliernord.de" } };
+const PROFILE_PJ = NBILL.a;
+/* The billing-profile form (D-3.6-1), RO — used in the business's edit drawer and in "Afacere nouă" */
+const COUNTIES = ["Alba", "Arad", "Argeș", "Bacău", "Bihor", "Brașov", "Cluj", "Constanța", "Iași", "Sibiu", "Timiș", "București"];
+function BillingForm({ p = PROFILE_PJ, errors, mob, reason }) {
+  const t = T, e = errors || {};
+  const co = p.type === "company", ro = p.country === "România";
+  return h("div", { className: "x-stack" },
+    h("div", { style: { alignSelf: "flex-start" } }, h(V.SegmentedControl, { label: t("founder.billingProfile.type"), value: p.type, options: [{ value: "company", label: t("founder.billingProfile.company") }, { value: "person", label: t("founder.billingProfile.person") }] })),
+    h("div", { className: "g2f" + (mob ? " m" : "") },
+      co ? h(V.FormField, { label: t("founder.billingProfile.companyName"), required: true, helper: e.name ? undefined : t("founder.billingProfile.companyNameHelp"), error: e.name ? t("founder.billingProfile.required", { field: "denumirea firmei" }) : undefined }, h(V.Input, { defaultValue: e.name ? "" : p.name, invalid: !!e.name }))
+        : h(V.FormField, { label: t("founder.billingProfile.personName"), required: true }, h(V.Input, { defaultValue: p.name })),
+      co && !ro ? h(V.FormField, { label: t("founder.billingProfile.taxIdForeign"), required: true, helper: t("founder.billingProfile.taxIdForeignHelp") }, h(V.Input, { defaultValue: p.cui })) : null,
+      co && ro ? h(V.FormField, { label: t("founder.billingProfile.cui"), required: true, helper: e.cui ? undefined : t("founder.billingProfile.cuiHelp"), error: e.cui === "check" ? t("founder.billingProfile.cuiErrCheck") : e.cui === "format" ? t("founder.billingProfile.cuiErrFormat") : undefined },
+        h(V.Input, { defaultValue: e.cui === "check" ? "41829373" : e.cui === "format" ? "RO 418-293" : p.cui, invalid: !!e.cui, suffix: e.cui ? undefined : h("span", { className: "x-row caption", style: { color: "var(--done-ink)", gap: "var(--space-1)" } }, h(V.Icon, { name: "circle-check", size: 14 }), t("founder.billingProfile.cuiOk")) })) : null,
+      co && !ro ? h(V.FormField, { label: t("founder.billingProfile.regComForeign"), optional: true }, h(V.Input, { defaultValue: p.reg })) : null,
+      co && ro ? h(V.FormField, { label: t("founder.billingProfile.regCom"), required: true, helper: e.reg ? undefined : t("founder.billingProfile.regComHelp"), error: e.reg ? t("founder.billingProfile.regComErr") : undefined }, h(V.Input, { defaultValue: e.reg ? "1187/2019" : p.reg, invalid: !!e.reg })) : null,
+      h(V.FormField, { label: t("founder.billingProfile.street"), required: true }, h(V.Input, { defaultValue: p.street })),
+      h(V.FormField, { label: t("founder.billingProfile.city"), required: true }, h(V.Input, { defaultValue: p.city })),
+      ro ? h(V.FormField, { label: t("founder.billingProfile.county"), required: true }, h(V.Select, { value: p.county, options: COUNTIES.map((c) => ({ value: c, label: c })) })) : h(V.FormField, { label: t("founder.billingProfile.region"), optional: true }, h(V.Input, { defaultValue: p.county })),
+      h(V.FormField, { label: t("founder.billingProfile.country"), required: true }, h(V.Select, { value: p.country, options: ["România", "Germania", "Italia", "Franța", "Spania", "Republica Moldova"].map((c) => ({ value: c, label: c })) })),
+      h(V.FormField, { label: t("founder.billingProfile.email"), required: true, helper: e.email ? undefined : t("founder.billingProfile.emailHelp"), error: e.email ? t("founder.billingProfile.required", { field: "e-mailul pentru facturi" }) : undefined }, h(V.Input, { type: "email", icon: "mail", defaultValue: e.email ? "" : p.email, invalid: !!e.email }))),
+    co ? null : h("p", { className: "x-line body-small" }, h(V.Icon, { name: "info", size: 16 }), t("founder.billingProfile.personNote")),
+    reason ? h(V.FormField, { label: t("founder.billingProfile.reason"), required: true, helper: t("founder.billingProfile.reasonHelp") }, h(V.Textarea, { rows: 2, defaultValue: "Sediul se mută de la 1 decembrie (VS-2026-0191)." })) : null);
+}
+
+function FNew({ mode, v = "a", errors }) {
   const mob = mode === "mobile", c = NB[v], b = c.bundle && BUN(c.bundle), L = lines(c);
   const opts = [{ value: "", label: tf("founder.new.noBundle") }].concat(BUNDLES.filter((x) => x.status === "selling").map((x) => { const p = x.versions[0].p, ix = c.bill === "annual" ? (c.cur === "eur" ? 3 : 1) : (c.cur === "eur" ? 2 : 0);
     return { value: x.id, label: x.name + " · " + x.versions[0].v, description: tf(c.bill === "annual" ? "founder.new.perYear" : "founder.new.perMonth", { amount: money(p[ix], c.cur) }) }; }));
@@ -763,9 +800,9 @@ function FNew({ mode, v = "a" }) {
       h(V.Sheet, null,
         h(V.SheetSection, { title: "Afacerea" }, h("div", { className: "g2f" },
           h(V.FormField, { label: "Numele afacerii", required: true }, h(V.Input, { defaultValue: c.name })),
-          h(V.FormField, { label: "CUI", optional: true }, h(V.Input, { placeholder: "Ex.: RO12345678" })),
           h(V.FormField, { label: "Oraș", required: true }, h(V.Input, { defaultValue: c.city })),
           h(V.FormField, { label: "Limba implicită", required: true, helper: "Fiecare om își poate schimba limba din contul lui." }, h(V.Select, { defaultValue: c.lang, options: [{ value: "ro", label: "Română" }, { value: "en", label: "English" }, { value: "fr", label: "Français" }, { value: "es", label: "Español" }, { value: "de", label: "Deutsch" }, { value: "it", label: "Italiano" }] })))),
+        h(V.SheetSection, { title: T("founder.billingProfile.title"), description: T("founder.billingProfile.lead") }, h(BillingForm, { p: NBILL[v], mob, errors: errors })),
         h(V.SheetSection, { title: tf("founder.new.buy.title"), description: tf("founder.new.buy.desc") },
           h("div", { className: "g2f" },
             h(V.FormField, { label: tf("founder.new.currency"), required: true, helper: tf("founder.new.currencyHelp") }, h(V.SegmentedControl, { label: tf("founder.new.currency"), defaultValue: c.cur, options: [{ value: "lei", label: tf("founder.pricing.lei") }, { value: "eur", label: tf("founder.pricing.euro") }] })),
@@ -792,9 +829,11 @@ function FNew({ mode, v = "a" }) {
     mob ? h("div", { className: "stickybar" }, h(V.Button, { variant: "quiet" }, "Renunță"), h(V.Button, { variant: "primary", icon: "send" }, "Creează și trimite")) : null);
 }
 mount(h("div", null,
-  h(Screens, { title: "Founder — Afacere nouă: bundle, aplicații la bucată, moneda, lunar sau anual (S117)", notes: ["Bundle, aplicații la bucată sau amândouă", "Aplicațiile din bundle nu se mai pot adăuga separat", "Implementarea se plătește o singură dată, la prima factură", "Invitația spune ce primește și cât plătește"], desktopH: 1500, tabletH: 2300, mobileH: 2700, render: (m) => h(FNew, { mode: m }) }),
+  h(Screens, { title: "Founder — Afacere nouă: bundle, aplicații la bucată, moneda, lunar sau anual (S117)", notes: ["Bundle, aplicații la bucată sau amândouă", "Aplicațiile din bundle nu se mai pot adăuga separat", "Implementarea se plătește o singură dată, la prima factură", "Invitația spune ce primește și cât plătește"], desktopH: 2020, tabletH: 2500, mobileH: 3220, render: (m) => h(FNew, { mode: m }) }),
   h(Board, { title: "Fără bundle: doar aplicații la bucată, în euro, cu plată anuală", notes: ["Prețurile în euro sunt cele introduse pe aplicații, fără conversie"], items: [
-    ["1 · Euro · anual · trei aplicații la bucată", (m) => h(FNew, { mode: m, v: "b" }), 1500, 2700]] })));
+    ["1 · Euro · anual · trei aplicații la bucată · firmă din Germania (cod de TVA, fără regula CUI)", (m) => h(FNew, { mode: m, v: "b" }), 2100, 3600]] }),
+  h(Board, { title: "Date de facturare: validarea (S121, D-3.6-1)", notes: ["CUI: format RO și cifra de control", "Nr. Reg. Com. ca în certificat", "Persoană fizică: fără CUI și fără CNP"], items: [
+    ["1 · Erori: cifra de control, Nr. Reg. Com., e-mail lipsă", (m) => h(FNew, { mode: m, errors: { cui: "check", reg: true, email: true } }), 2100, 3700]] })));
 
 </script>
 </body>

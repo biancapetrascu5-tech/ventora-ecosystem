@@ -51,6 +51,20 @@ export interface IssueInvoiceInput {
   lines: InvoiceLine[];
   /** The card payment it is for: the invoice is issued as paid („încasată”). */
   paid: { amountMinor: number; date: string } | null;
+  /** Lot 3.8: a transfer invoice's due date (YYYY-MM-DD); null for one paid by card. */
+  dueDate?: string | null;
+}
+
+/** Lot 3.8 (N16): a transfer received for an issued invoice, recorded with the provider. */
+export interface RecordPaymentInput {
+  reference: string;
+  series: string;
+  number: string;
+  /** YYYY-MM-DD, the day the money arrived. */
+  date: string;
+  amountMinor: number;
+  currency: InvoiceCurrency;
+  buyer: InvoiceBuyer;
 }
 
 export interface IssuedDocument {
@@ -87,6 +101,11 @@ export interface InvoiceProvider {
   reverse(input: ReverseInvoiceInput): Promise<IssuedDocument>;
   /** The PDF of an issued invoice, served to the Hub through a signed link (never a public one). */
   fetchPdf(series: string, number: string): Promise<Uint8Array>;
+  /**
+   * Lot 3.8 (N16): the receipt („încasare”) of a transfer invoice. Optional: a provider without
+   * it leaves the receipt to be recorded by hand in its own interface.
+   */
+  recordPayment?(input: RecordPaymentInput): Promise<{ number: string | null }>;
 }
 
 /** No provider configured: nothing is issued, every attempt waits (`retryable`). */

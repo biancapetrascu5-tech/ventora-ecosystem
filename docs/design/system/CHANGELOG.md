@@ -854,3 +854,24 @@ Decizia fondatoarei: numele vizibil e „Ventora Systems”, peste tot; „Vento
 - **Founder și Growth — preview 1.0.x+1:** „Suport” (badge 3) după „Cereri”; „Automatizări” primul în „Sistem”: FounderApps, FounderBackupCodes, FounderBundles, FounderBusiness, FounderBusinessActions, FounderBusinessBilling, FounderBusinessSms, FounderBusinesses, FounderDiscounts, FounderNewBusiness, FounderOwnerRecovery, FounderPacks, FounderPlanEditor, FounderRequests, FounderSupportSession, FounderUsage, GrowthAudiences, GrowthCampaignEditor, GrowthCampaigns, GrowthControl, GrowthOfferEditor, GrowthOffers, GrowthResults.
 - **Hub — preview 1.0.x+1:** „Automatizări” după „Abonament și consum” (RO, DE, IT): HubAccount, HubAccountSecurity, HubAddonPurchase, HubAdminAccess, HubAdminPlan, HubAdminTeam, HubPlanBilling, HubSupport, HubSupportSession, HubSupportThread, HubTeamInvite, HubTeamMemberActions.
 - Fără alte schimbări; ecranele S116 și S118 aveau deja intrările.
+
+## 2026-11-04 · S121 — datele de facturare, factura neemisă, cererile cu implementare, texte validate
+
+### Componente noi (1.0.0)
+- **FounderBillingProfile** — datele de facturare ale afacerii în „Plăți și facturi” (D-3.6-1): cardul „Factura se emite pe”, schimbarea cerută din Hub, editarea (juridică / fizică, firmă din afara României), erorile CUI și Nr. Reg. Com., salvat. Doar RO.
+- **FounderInvoiceNotIssued** — factura care nu s-a emis (D-3.6-4/5): „Nu s-a emis”, „Reîncearcă” (se reîncearcă, nici a doua oară, a reușit), „Am emis-o manual…” cu Dialog și erori, „Emisă manual”. Doar RO.
+- **FounderSetupRequests** — cererile cu implementare (3.8, propus): rândul în listă, detaliul pe fiecare stare, oferta, pornirea, anularea cu rambursare. Doar RO.
+- **HubBillingProfile** — Abonament și consum · „Date de facturare”, doar citire, „Cere o schimbare”, vederea membrului. 6 limbi.
+- **HubSetupRequest** — ce vede proprietarul la fiecare pas al cererii cu implementare, cu data de la care curge abonamentul. 6 limbi.
+
+### Componente schimbate
+- **FounderNewBusiness — 1.1.0:** secțiunea „Date de facturare” înaintea lui „Ce cumpără” (același formular ca în FounderBillingProfile); „CUI” mutat din „Afacerea” aici; al doilea board, cu o firmă din Germania; board nou cu erorile. Preview, README.
+- **FounderOverview — 1.0.2:** rândul „Factura nu s-a emis · {afacere}” (peach) în „Au nevoie de tine”. Preview, README.
+- **FounderBusinessBilling, FounderRequests, HubPlanBilling — 1.0.x+1:** README, cu trimitere la ecranele noi care le completează.
+
+### Texte (`i18n/`)
+- `founder-commercial.json` (RO): `founder.billingProfile.*`, `founder.billing.status.notIssued`, `founder.billing.status.manual`, `founder.billing.notIssued.*`, `founder.billing.manualIssue.*`, `founder.setup.*`.
+- `founder-overview.json` (RO): `founder.overview.attention.invoiceFailed*`.
+- `commercial.json` (6 limbi): `billing.profile.*`, `billing.issuer`, `billing.vatNote` (propunere, de confirmat cu contabilul), `billing.setup.*`.
+- Textele scrise de agenți, validate: `support.json`, `team.json`, `notifications.json`, `automations.json` (6 limbi); `founder-support.json`, `founder-automations.json` (RO). Ce s-a schimbat față de textele agenților: „Mesajul nu a plecat” / „Răspunsul nu a plecat” / „Schimbarea nu s-a salvat” în locul lui „Nu am putut…”; „solicitare” în loc de „cerere” la suport; „Fără răspuns de peste o zi lucrătoare” în loc de „Peste termen”; „admin” ca în glosar; „pornite” în loc de „active” la automatizări; motivele din jurnalul automatizărilor reformulate; închiderea automată a solicitării („dacă nu ne răspunzi până atunci”, „răspunde-ne în Hub, la Suport”); DE: „Abonnement”, „hat die Anfrage gestellt”, „erneut geöffnet”; IT: ghilimele «».
+

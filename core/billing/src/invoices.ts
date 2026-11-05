@@ -75,26 +75,81 @@ export function invoiceAppName(applicationId: string): string {
 }
 
 /**
- * Who the invoice is for. D3-17 (DECIS: a): the billing details are entered by Founder when the
- * business is created — that profile does not exist yet (see the 3.6 report): until it does, the
- * buyer is the business's name, in Romania, without CUI.
+ * Who the invoice is for. D3-17 (DECIS: a) / D-3.6-1 (Lot 3.8): the billing profile the team
+ * enters in Founder (`billing.billing_profile`), photographed at the first attempt (and again on
+ * „Reîncearcă”). Without a profile, the business's name, in Romania, without CUI.
  */
 export type InvoiceBuyerResolver = (
   tx: PoolClient,
   organizationId: string,
 ) => Promise<InvoiceBuyer>;
 
-const defaultBuyer: InvoiceBuyerResolver = async (tx, organizationId) => ({
-  name: (await organizationNameInTx(tx, organizationId)) || 'Client',
-  vatCode: null,
-  regCom: null,
-  address: null,
-  city: null,
-  county: null,
-  country: 'Romania',
-  email: null,
-  isTaxPayer: false,
-});
+const COUNTRY_NAMES: Record<string, string> = {
+  RO: 'Romania',
+  DE: 'Germany',
+  AT: 'Austria',
+  BG: 'Bulgaria',
+  FR: 'France',
+  IT: 'Italy',
+  ES: 'Spain',
+  HU: 'Hungary',
+  MD: 'Moldova',
+  NL: 'Netherlands',
+  BE: 'Belgium',
+  PL: 'Poland',
+  CZ: 'Czechia',
+  GB: 'United Kingdom',
+};
+
+/** Lot 3.8: the buyer from the billing profile, in the transaction's organization (RLS). */
+export async function profileBuyerInTx(
+  tx: Pick<PoolClient, 'query'>,
+): Promise<InvoiceBuyer | null> {
+  const { rows } = await tx.query<{
+    entity_type: 'company' | 'person';
+    name: string;
+    country: string;
+    tax_id: string | null;
+    reg_com: string | null;
+    street: string;
+    city: string;
+    county: string | null;
+    email: string;
+  }>(
+    `SELECT entity_type, name, country, tax_id, reg_com, street, city, county, email
+       FROM billing.billing_profile LIMIT 1`,
+  );
+  const p = rows[0];
+  if (!p) return null;
+  return {
+    name: p.name,
+    vatCode: p.tax_id,
+    regCom: p.reg_com,
+    address: p.street,
+    city: p.city,
+    county: p.county,
+    country: COUNTRY_NAMES[p.country] ?? p.country,
+    email: p.email,
+    // „RO” in front of the CUI: a VAT payer in Romania; abroad, a VAT code is a VAT payer
+    isTaxPayer:
+      p.entity_type === 'company' &&
+      !!p.tax_id &&
+      (p.country !== 'RO' || p.tax_id.startsWith('RO')),
+  };
+}
+
+const defaultBuyer: InvoiceBuyerResolver = async (tx, organizationId) =>
+  (await profileBuyerInTx(tx)) ?? {
+    name: (await organizationNameInTx(tx, organizationId)) || 'Client',
+    vatCode: null,
+    regCom: null,
+    address: null,
+    city: null,
+    county: null,
+    country: 'Romania',
+    email: null,
+    isTaxPayer: false,
+  };
 
 let buyerOf: InvoiceBuyerResolver = defaultBuyer;
 
@@ -143,12 +198,15 @@ interface InvoiceRow {
   payment_id: string | null;
   reverses_invoice_id: string | null;
   provider: string;
-  status: 'pending' | 'issued' | 'failed';
+  status: 'pending' | 'issued' | 'failed' | 'manual';
   series: string | null;
   number: string | null;
   issue_date: string | null;
   amount_minor: string;
   currency: InvoiceCurrency;
+  /** Lot 3.8: `transfer` — issued first, with its due date, paid when the team confirms it. */
+  collection: 'charge' | 'transfer';
+  due_on: string | null;
   lines: InvoiceLine[] | null;
   buyer: InvoiceBuyer | null;
   attempts: number;
@@ -157,7 +215,8 @@ interface InvoiceRow {
 }
 
 const COLUMNS = `id, organization_id, kind, payment_id, reverses_invoice_id, provider, status, series,
-  number, issue_date::text AS issue_date, amount_minor::text AS amount_minor, currency, lines, buyer,
+  number, issue_date::text AS issue_date, amount_minor::text AS amount_minor, currency,
+  collection, due_on::text AS due_on, lines, buyer,
   attempts, next_attempt_at, claimed_until`;
 
 interface Snapshot {
@@ -175,7 +234,7 @@ async function linesOf(
     kind: 'purchase' | 'subscription';
     amount_minor: string;
     occurred_at: Date;
-    purchase_kind: 'addon' | 'application' | null;
+    purchase_kind: 'addon' | 'application' | 'setup' | null;
     item_name: string | null;
     application_id: string | null;
     packs: number | null;
@@ -211,7 +270,7 @@ async function linesOf(
   const setup = Math.min(Number(p.setup_minor ?? 0), amount);
   const rest = amount - setup;
   const lines: InvoiceLine[] = [];
-  if (p.purchase_kind === 'application' && p.application_id) {
+  if ((p.purchase_kind === 'application' || p.purchase_kind === 'setup') && p.application_id) {
     const app = appNameOf(p.application_id);
     if (rest > 0 || setup === 0) {
       lines.push({ name: `${app} · ${month}`, code: 'VNT-APP', quantity: 1, unitMinor: rest });
@@ -377,7 +436,7 @@ export async function issueInvoice(
       ],
     );
     let paidOn: string | null = null;
-    if (row.kind === 'invoice') {
+    if (row.kind === 'invoice' && row.payment_id) {
       const { rows: pay } = await client.query<{ occurred_at: Date }>(
         `SELECT occurred_at FROM billing.payment WHERE id = $1`,
         [row.payment_id],
@@ -407,7 +466,12 @@ export async function issueInvoice(
             currency: row.currency,
             buyer: row.buyer!,
             lines: row.lines!,
-            paid: { amountMinor: Number(row.amount_minor), date: claim.paidOn ?? issueDate },
+            // a transfer invoice is issued unpaid, with its due date (D3-11)
+            paid:
+              row.collection === 'transfer'
+                ? null
+                : { amountMinor: Number(row.amount_minor), date: claim.paidOn ?? issueDate },
+            dueDate: row.collection === 'transfer' ? row.due_on : null,
           });
   } catch (err) {
     const kind = err instanceof InvoiceProviderError ? err.kind : 'ambiguous';
@@ -578,7 +642,7 @@ export interface InvoiceSummary {
   id: string;
   paymentId: string | null;
   kind: 'invoice' | 'storno';
-  status: 'pending' | 'issued' | 'failed';
+  status: 'pending' | 'issued' | 'failed' | 'manual';
   series: string | null;
   number: string | null;
   issueDate: string | null;
@@ -596,7 +660,7 @@ export async function invoicesOfPaymentsInTx(
     id: string;
     payment_id: string;
     kind: 'invoice' | 'storno';
-    status: 'pending' | 'issued' | 'failed';
+    status: 'pending' | 'issued' | 'failed' | 'manual';
     series: string | null;
     number: string | null;
     issue_date: string | null;

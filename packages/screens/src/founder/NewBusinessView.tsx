@@ -1,5 +1,6 @@
 'use client';
 
+import type { ReactNode } from 'react';
 import { useTranslations } from 'next-intl';
 import {
   APPS,
@@ -60,6 +61,7 @@ export function NewBusinessView({
   state,
   buy,
   offer,
+  billing,
   onNameChange,
   onEmailChange,
   onBuyChange,
@@ -73,6 +75,8 @@ export function NewBusinessView({
   state: NewBusinessState;
   buy?: NewBusinessBuy;
   offer?: NewBusinessOffer;
+  /** S121 (1.1.0): „Date de facturare”, înaintea lui „Ce cumpără” (formularul comun). */
+  billing?: ReactNode;
   onNameChange: (v: string) => void;
   onEmailChange: (v: string) => void;
   onBuyChange?: (b: NewBusinessBuy) => void;
@@ -83,6 +87,7 @@ export function NewBusinessView({
   const n = useTranslations('founder.new');
   const p = useTranslations('founder.pricing');
   const nav = useTranslations('founder.nav');
+  const bp = useTranslations('founder.billingProfile');
   const phone = useIsPhone();
   const set = (patch: Partial<NewBusinessBuy>) => buy && onBuyChange?.({ ...buy, ...patch });
   const bundle = buy && offer?.bundles.find((x) => x.value === buy.bundleId);
@@ -112,6 +117,11 @@ export function NewBusinessView({
               <Input value={name} onChange={(e) => onNameChange(e.target.value)} />
             </FormField>
           </SheetSection>
+          {billing ? (
+            <SheetSection title={bp('title')} description={bp('lead')}>
+              {billing}
+            </SheetSection>
+          ) : null}
           {buy && offer && (
             <SheetSection title={n('buy.title')} description={n('buy.desc')}>
               <div className={cs.stack}>

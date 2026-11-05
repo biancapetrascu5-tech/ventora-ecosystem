@@ -51,6 +51,9 @@
     "founder.overview.error.title": "Nu am putut încărca prezentarea",
     "founder.overview.error.body": "Cifrele și listele nu s-au încărcat. Datele afacerilor nu sunt afectate.",
     "founder.overview.error.retry": "Încearcă din nou",
-    "founder.overview.updated": "Actualizat la {time}"
+    "founder.overview.updated": "Actualizat la {time}",
+    "founder.overview.attention.invoiceFailed": "Factura nu s-a emis · {business}",
+    "founder.overview.attention.invoiceFailedMeta": "{amount} · plătită pe {date} · {reason}",
+    "founder.overview.attention.invoiceFailedAction": "Deschide plățile"
   }
 }

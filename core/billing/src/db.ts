@@ -94,3 +94,30 @@ export async function withBillingFounderList<T>(
 export async function withBillingModule<T>(fn: (client: PoolClient) => Promise<T>): Promise<T> {
   return inTransaction('BEGIN', null, fn);
 }
+
+/**
+ * Lot 3.8 — a Founder write in billing, as billing_founder on founder_runtime
+ * (DATABASE_URL_FOUNDER), in one business's context (RLS): the billing profile, the payment
+ * method, the transfer receipt, „Reîncearcă” / „Am emis-o manual”. The audit row goes in the same
+ * transaction through `exec`. `readOnly` for the Founder reads of one business.
+ */
+export async function withBillingFounder<T>(
+  organizationId: string,
+  fn: (client: PoolClient, exec: AuditSqlExecutor) => Promise<T>,
+  opts: { readOnly?: boolean } = {},
+): Promise<T> {
+  const client = await getPool('DATABASE_URL_FOUNDER').connect();
+  try {
+    await client.query(opts.readOnly ? 'BEGIN READ ONLY' : 'BEGIN');
+    await client.query('SET LOCAL ROLE billing_founder');
+    await client.query(`SELECT set_config('app.organization_id', $1, true)`, [organizationId]);
+    const result = await fn(client, pgExecutor(client));
+    await client.query('COMMIT');
+    return result;
+  } catch (err) {
+    await client.query('ROLLBACK').catch(() => {});
+    throw err;
+  } finally {
+    client.release();
+  }
+}

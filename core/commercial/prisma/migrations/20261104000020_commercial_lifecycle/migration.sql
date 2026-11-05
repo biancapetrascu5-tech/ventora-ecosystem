@@ -152,6 +152,8 @@ GRANT EXECUTE ON FUNCTION commercial.trials_to_remind(INTEGER) TO commercial_rw;
 -- server. read_only_at: când afacerea a trecut pe doar citire și export (job-ul, după grație).
 -- Cazul se închide la plată (paid), de echipă (founder, cu motiv) sau la anularea abonamentului
 -- (canceled). source_ref: factura Stripe (in_…) sau factura de transfer din billing (id-ul ei).
+-- N4 (decizia 05.11.2026): proba pe tot abonamentul se încheie fără card și fără plată manuală →
+-- cauza „trial”, cu grația 0 (doar citire imediat); source_ref: id-ul abonamentului.
 CREATE TABLE "commercial"."dunning" (
     "id" UUID NOT NULL DEFAULT gen_random_uuid(),
     "organization_id" UUID NOT NULL,
@@ -170,7 +172,7 @@ CREATE TABLE "commercial"."dunning" (
     "created_at" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "dunning_pkey" PRIMARY KEY ("id"),
-    CONSTRAINT "dunning_cause" CHECK ("cause" IN ('card', 'transfer')),
+    CONSTRAINT "dunning_cause" CHECK ("cause" IN ('card', 'transfer', 'trial')),
     CONSTRAINT "dunning_amount" CHECK ("amount_minor" >= 0),
     CONSTRAINT "dunning_currency" CHECK ("currency" IN ('RON', 'EUR')),
     CONSTRAINT "dunning_grace" CHECK ("grace_ends_at" >= "overdue_since"),
@@ -215,7 +217,8 @@ BEGIN
       RAISE EXCEPTION 'dunning cannot start in the future' USING ERRCODE = 'P0001', HINT = 'dunning_future';
     END IF;
     NEW.created_at := now();
-    NEW.grace_ends_at := NEW.overdue_since + INTERVAL '14 days';
+    NEW.grace_ends_at := NEW.overdue_since
+      + CASE WHEN NEW.cause = 'trial' THEN INTERVAL '0 days' ELSE INTERVAL '14 days' END;
     NEW.read_only_at := NULL;
     NEW.resolved_at := NULL;
     NEW.resolution := NULL;
@@ -320,6 +323,69 @@ BEGIN
     EXECUTE 'GRANT EXECUTE ON FUNCTION commercial.founder_list_dunning(INTEGER) TO founder_runtime';
   END IF;
 END $$;
+
+-- N4 (05.11.2026): proba pe tot abonamentul (bifa din FounderNewBusiness) la termen. Job-ul
+-- (commercial_rw, care nu scrie abonamentul) vede abonamentele ajunse la termen și le încheie
+-- printr-o funcție îngustă: abonamentul trece pe „active”; fără card și fără plată manuală
+-- (p_payment_ready = false, hotărât de billing) se deschide și cazul de neplată „trial”, cu grația
+-- 0. Idempotentă: un abonament care nu mai e „trialing” sau nu e la termen nu se schimbă.
+CREATE OR REPLACE FUNCTION commercial.subscription_trials_due(p_limit INTEGER)
+RETURNS TABLE (subscription_id UUID, organization_id UUID)
+LANGUAGE sql
+STABLE
+SECURITY DEFINER
+SET search_path = pg_catalog, pg_temp
+AS $$
+  SELECT s.id, s.organization_id
+    FROM commercial.subscription s
+   WHERE s.status = 'trialing' AND s.canceled_at IS NULL AND s.trial_ends_at <= now()
+   ORDER BY s.trial_ends_at, s.id
+   LIMIT LEAST(GREATEST(COALESCE(p_limit, 1), 1), 500);
+$$;
+
+CREATE OR REPLACE FUNCTION commercial.end_subscription_trial(
+  p_subscription_id UUID,
+  p_payment_ready BOOLEAN
+)
+RETURNS TABLE (ended BOOLEAN, dunning_id UUID)
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = pg_catalog, pg_temp
+AS $$
+DECLARE
+  sub RECORD;
+  new_dunning UUID;
+BEGIN
+  SELECT s.id, s.organization_id, s.currency, s.trial_ends_at INTO sub
+    FROM commercial.subscription s
+   WHERE s.id = p_subscription_id AND s.status = 'trialing' AND s.canceled_at IS NULL
+     AND s.trial_ends_at <= now()
+     -- doar în contextul afacerii setat de apelant (aceeași regulă ca RLS)
+     AND s.organization_id = NULLIF(current_setting('app.organization_id', true), '')::uuid
+   FOR UPDATE;
+  IF sub.id IS NULL THEN
+    RETURN QUERY SELECT false, NULL::uuid;
+    RETURN;
+  END IF;
+  UPDATE commercial.subscription SET status = 'active', updated_at = now() WHERE id = sub.id;
+  IF NOT COALESCE(p_payment_ready, false) THEN
+    INSERT INTO commercial.dunning
+      (organization_id, subscription_id, cause, source_ref, amount_minor, currency, overdue_since,
+       grace_ends_at)
+    VALUES (sub.organization_id, sub.id, 'trial', sub.id::text, 0, sub.currency,
+            LEAST(sub.trial_ends_at, now()), now())
+    ON CONFLICT DO NOTHING
+    RETURNING id INTO new_dunning;
+    -- grația 0: doar citire de acum (dunning_guard pune momentul)
+    UPDATE commercial.dunning SET read_only_at = now() WHERE id = new_dunning;
+  END IF;
+  RETURN QUERY SELECT true, new_dunning;
+END $$;
+
+REVOKE ALL ON FUNCTION commercial.subscription_trials_due(INTEGER) FROM PUBLIC;
+REVOKE ALL ON FUNCTION commercial.end_subscription_trial(UUID, BOOLEAN) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION commercial.subscription_trials_due(INTEGER) TO commercial_rw;
+GRANT EXECUTE ON FUNCTION commercial.end_subscription_trial(UUID, BOOLEAN) TO commercial_rw;
 
 -- ════════════════════════════════════════════════════════════════════════════════════════════
 -- 3. Cererile cu implementare (FounderSetupRequests / HubSetupRequest, S121)
@@ -504,6 +570,11 @@ BEGIN
     writable := ARRAY['setup_minor', 'maintenance_minor', 'maintenance_interval', 'estimated_start_on',
                       'offer_note', 'offer_sent_at', 'offer_sent_by_founder_id'];
     NEW.offer_sent_at := now();
+    -- N8 (05.11.2026): mentenanța are periodicitatea abonamentului afacerii
+    SELECT s.interval INTO NEW.maintenance_interval
+      FROM commercial.subscription s
+     WHERE s.organization_id = OLD.organization_id AND s.canceled_at IS NULL
+     ORDER BY s.started_on DESC LIMIT 1;
   -- acceptarea clientului
   ELSIF OLD.status = 'requested' AND NEW.status = 'accepted' AND is_rw THEN
     IF OLD.offer_sent_at IS NULL THEN

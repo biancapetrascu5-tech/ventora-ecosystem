@@ -103,7 +103,7 @@ export async function subscriptionIncludedMembersInTx(
   return rows[0]?.included_members ?? 0;
 }
 
-/** A trial on the whole subscription that has ended includes nothing until Lot 3.8 decides. */
+/** A trial on the whole subscription past its term includes nothing until the job ends it (Lot 3.8, N4: active, read-only without a payment ready). */
 function planIncluded(sub: LiveSubscription, at: At): boolean {
   if (sub.status === 'canceled') return false;
   if (sub.status === 'trialing') {

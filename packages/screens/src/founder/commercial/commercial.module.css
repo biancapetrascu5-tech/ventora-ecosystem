@@ -615,3 +615,11 @@
 .padPhone {
   padding: 0 var(--space-4);
 }
+
+/* Lotul 3.8: „Cereri cu implementare” sub cererile din Hub (FounderSetupRequests). */
+.setupSection {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-6) var(--space-8);
+}

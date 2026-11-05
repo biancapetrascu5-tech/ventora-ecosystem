@@ -1,6 +1,7 @@
 'use server';
 
 import { headers } from 'next/headers';
+import { saveBillingProfile, type BillingProfileInput } from '@ventora/billing';
 import {
   createBusinessAsFounder,
   getBusinessPageForFounder,
@@ -130,6 +131,8 @@ export async function createBusiness(
   name: string,
   ownerEmail: string,
   purchase?: NewBusinessPurchase,
+  /** Lotul 3.8 (S121): datele de facturare, salvate după creare (fără motiv: prima dată). */
+  profile?: BillingProfileInput,
 ): Promise<CreateResult> {
   const h = await headers();
   let organizationId: string;
@@ -141,6 +144,14 @@ export async function createBusiness(
       return { ok: false, field: 'email' };
     reportActionError('createBusiness', err);
     return { ok: false };
+  }
+  if (profile) {
+    try {
+      await saveBillingProfile({ founderHeaders: h, organizationId, profile, reason: null });
+    } catch (err) {
+      // the business exists: the data is completed on its page („Plăți și facturi”)
+      reportActionError('createBusinessProfile', err);
+    }
   }
   if (!purchase) return { ok: true, organizationId };
   try {

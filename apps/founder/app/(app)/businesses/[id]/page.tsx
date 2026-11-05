@@ -7,6 +7,7 @@ import {
   readNewRequestsCount,
   readQuotaKeys,
 } from '@/server/commercial-actions';
+import { readBillingTab } from '@/server/lifecycle-actions';
 import { BusinessScreen, type BusinessTab } from '@/screens/businesses/BusinessScreen';
 
 export const dynamic = 'force-dynamic';
@@ -34,10 +35,11 @@ export default async function BusinessRoute({
   const sp = await searchParams;
   const data = await readBusinessPage(id);
   if (!data) notFound();
-  const [commercial, quotas, requestsBadge] = await Promise.all([
+  const [commercial, quotas, requestsBadge, lifecycle] = await Promise.all([
     readBusinessCommercial(id),
     readQuotaKeys(),
     readNewRequestsCount(),
+    readBillingTab(id),
   ]);
   return (
     <BusinessScreen
@@ -46,6 +48,7 @@ export default async function BusinessRoute({
       commercial={commercial}
       quotas={quotas ?? []}
       requestsBadge={requestsBadge}
+      lifecycle={lifecycle}
       initialTab={TABS.includes(sp.tab as BusinessTab) ? (sp.tab as BusinessTab) : 'overview'}
       openException={sp.exception === '1'}
       purchaseFailed={sp.purchaseFailed === '1'}

@@ -163,6 +163,11 @@ export interface StripeGateway {
     idempotencyKey: string;
   }): Promise<PaymentIntentState>;
   retrievePaymentIntent(id: string): Promise<PaymentIntentState>;
+  /**
+   * Lot 3.8: the whole payment back to the card (a request with implementation cancelled after
+   * the payment, before going live). The storno follows from `charge.refunded` (Lot 3.6).
+   */
+  refundPaymentIntent(paymentIntentId: string, idempotencyKey: string): Promise<{ id: string }>;
   ensurePrice(spec: PriceSpec): Promise<string>;
   ensureCoupon(spec: CouponSpec): Promise<string>;
   createSubscription(input: CreateSubscriptionInput): Promise<SubscriptionState>;
@@ -346,6 +351,14 @@ export class SdkStripeGateway implements StripeGateway {
 
   async retrievePaymentIntent(id: string) {
     return piState(await this.stripe.paymentIntents.retrieve(id));
+  }
+
+  async refundPaymentIntent(paymentIntentId: string, idempotencyKey: string) {
+    const refund = await this.stripe.refunds.create(
+      { payment_intent: paymentIntentId },
+      { idempotencyKey },
+    );
+    return { id: refund.id };
   }
 
   async ensurePrice(spec: PriceSpec): Promise<string> {

@@ -13,3 +13,5 @@ Founder · "Prezentare", the first page after sign-in: the numbers that matter t
 **States.** All good ("Nimic nu te așteaptă", failed payments 0); the first day ("Nicio afacere încă" + "Afacere nouă"); loading error (Notice `danger`, "Încearcă din nou", skeleton cards; "Datele afacerilor nu sunt afectate.").
 
 Shown at 1280 and 390, in light and dark, with the Spine's "Restrânge meniul" at the bottom (S118).
+
+**Invoice not issued (S121, D-3.6-4).** "Au nevoie de tine" gets the row "Factura nu s-a emis · {business}" (peach): amount, payment date, the reason from e-Factura, "Deschide plățile". Keys `founder.overview.attention.invoiceFailed*`.

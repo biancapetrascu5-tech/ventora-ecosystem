@@ -32,7 +32,8 @@
     "automations.a.digest.name": "Rezumatul zilei",
     "automations.a.digest.desc": "Dimineața la 7:00, fiecare membru primește pe e-mail programările lui din ziua respectivă.",
     "automations.a.quota.name": "Limita aproape atinsă",
-    "automations.a.quota.desc": "Când o cotă din abonament trece de 80%, proprietarul primește notificarea de consum (aceeași ca în „Abonament și consum”)."
+    "automations.a.quota.desc": "Când o cotă din abonament trece de 80%, proprietarul primește notificarea de consum (aceeași ca în „Abonament și consum”).",
+    "automations.askBody": "Solicitare trimisă din Hub · Afacerea · Automatizări."
   },
   "en": {
     "automations.nav": "Automations",
@@ -67,7 +68,8 @@
     "automations.a.digest.name": "Daily summary",
     "automations.a.digest.desc": "At 7:00 each morning, every member gets their appointments for the day by email.",
     "automations.a.quota.name": "Limit almost reached",
-    "automations.a.quota.desc": "When a plan quota passes 80%, the owner gets the usage notification (the same as in “Plan and usage”)."
+    "automations.a.quota.desc": "When a plan quota passes 80%, the owner gets the usage notification (the same as in “Plan and usage”).",
+    "automations.askBody": "Request sent from Hub · Business · Automations."
   },
   "fr": {
     "automations.nav": "Automatisations",
@@ -102,7 +104,8 @@
     "automations.a.digest.name": "Résumé du jour",
     "automations.a.digest.desc": "Chaque matin à 7 h, chaque membre reçoit par e-mail ses rendez-vous du jour.",
     "automations.a.quota.name": "Limite presque atteinte",
-    "automations.a.quota.desc": "Quand un quota de l’abonnement dépasse 80 %, le propriétaire reçoit la notification de consommation (la même que dans « Abonnement et consommation »)."
+    "automations.a.quota.desc": "Quand un quota de l’abonnement dépasse 80 %, le propriétaire reçoit la notification de consommation (la même que dans « Abonnement et consommation »).",
+    "automations.askBody": "Demande envoyée depuis Hub · Entreprise · Automatisations."
   },
   "es": {
     "automations.nav": "Automatizaciones",
@@ -137,7 +140,8 @@
     "automations.a.digest.name": "Resumen del día",
     "automations.a.digest.desc": "Cada mañana a las 7:00, cada miembro recibe por correo sus citas del día.",
     "automations.a.quota.name": "Límite casi alcanzado",
-    "automations.a.quota.desc": "Cuando una cuota de la suscripción pasa del 80 %, el propietario recibe la notificación de consumo (la misma que en «Suscripción y consumo»)."
+    "automations.a.quota.desc": "Cuando una cuota de la suscripción pasa del 80 %, el propietario recibe la notificación de consumo (la misma que en «Suscripción y consumo»).",
+    "automations.askBody": "Solicitud enviada desde Hub · Negocio · Automatizaciones."
   },
   "de": {
     "automations.nav": "Automatisierungen",
@@ -172,7 +176,8 @@
     "automations.a.digest.name": "Tagesübersicht",
     "automations.a.digest.desc": "Jeden Morgen um 7:00 Uhr erhält jedes Mitglied seine Termine des Tages per E-Mail.",
     "automations.a.quota.name": "Limit fast erreicht",
-    "automations.a.quota.desc": "Wenn ein Kontingent des Abonnements 80 % überschreitet, erhält der Inhaber die Verbrauchsmitteilung (dieselbe wie unter „Abonnement und Verbrauch“)."
+    "automations.a.quota.desc": "Wenn ein Kontingent des Abonnements 80 % überschreitet, erhält der Inhaber die Verbrauchsmitteilung (dieselbe wie unter „Abonnement und Verbrauch“).",
+    "automations.askBody": "Anfrage gesendet aus Hub · Unternehmen · Automatisierungen."
   },
   "it": {
     "automations.nav": "Automazioni",
@@ -207,6 +212,7 @@
     "automations.a.digest.name": "Riepilogo del giorno",
     "automations.a.digest.desc": "Ogni mattina alle 7:00 ogni membro riceve via e-mail i suoi appuntamenti del giorno.",
     "automations.a.quota.name": "Limite quasi raggiunto",
-    "automations.a.quota.desc": "Quando una quota dell’abbonamento supera l’80%, il titolare riceve la notifica di consumo (la stessa di «Abbonamento e utilizzo»)."
+    "automations.a.quota.desc": "Quando una quota dell’abbonamento supera l’80%, il titolare riceve la notifica di consumo (la stessa di «Abbonamento e utilizzo»).",
+    "automations.askBody": "Richiesta inviata da Hub · Attività · Automazioni."
   }
 }

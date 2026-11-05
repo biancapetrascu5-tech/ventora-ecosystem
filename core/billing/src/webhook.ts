@@ -1,4 +1,5 @@
 import type { PoolClient } from 'pg';
+import { openDunning, resolveDunningPaid } from '@ventora/commercial';
 import { AuditActions, appendAuditEventInTx, type AuditSqlExecutor } from '@ventora/audit';
 import { BillingDisputeOpenedV1 } from '@ventora/contracts';
 import { writeOutboxEvent } from '@ventora/db-kit';
@@ -209,7 +210,36 @@ async function afterCommit(organizationId: string, event: StripeEventEnvelope): 
   } else if (event.type === 'setup_intent.succeeded') {
     // a card saved: the subscription is charged with it from now on (D3-4)
     await reconcileSubscription(organizationId);
+  } else if (event.type === 'invoice.payment_failed' || event.type === 'invoice.paid') {
+    await dunningAfterInvoice(organizationId, event);
   }
+}
+
+/**
+ * Lot 3.8 (D3-12, N5): Stripe gave up on an invoice (`next_payment_attempt` null after the last
+ * retry; the account is set to leave the subscription past-due) → the non-payment case, from the
+ * event's time; 14 days of grace. A paid invoice closes the case of that invoice (and a `trial`
+ * case: the business pays now). Both idempotent.
+ */
+async function dunningAfterInvoice(
+  organizationId: string,
+  event: StripeEventEnvelope,
+): Promise<void> {
+  const o = event.object;
+  const invoiceId = String(o.id);
+  if (event.type === 'invoice.paid') {
+    if (Number(o.amount_paid) > 0) await resolveDunningPaid(organizationId, invoiceId);
+    return;
+  }
+  if (o.next_payment_attempt || !Number(o.amount_due)) return;
+  await openDunning({
+    organizationId,
+    cause: 'card',
+    sourceRef: invoiceId,
+    amountMinor: Number(o.amount_due),
+    currency: String(o.currency).toUpperCase() === 'EUR' ? 'EUR' : 'RON',
+    overdueSince: new Date(event.created * 1000),
+  });
 }
 
 /**

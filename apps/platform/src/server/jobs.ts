@@ -4,11 +4,22 @@ import {
   billingDisputeAlertConsumer,
   billingInvoiceIssuedConsumer,
   billingPaymentFailedConsumer,
+  commercialSetupNoticeConsumer,
+  commercialTrialEndingConsumer,
   invoiceIssueConsumer,
   runInvoiceIssueJob,
   runStripeReconcileJob,
+  runSubscriptionTrialJob,
+  runTransferInvoiceJob,
+  runTransferOverdueJob,
+  transferReceiptConsumer,
 } from '@ventora/billing';
-import { ownerNotifiedConsumer, runQuotaReconciliationJob } from '@ventora/commercial';
+import {
+  ownerNotifiedConsumer,
+  runDunningGraceJob,
+  runQuotaReconciliationJob,
+  runTrialJob,
+} from '@ventora/commercial';
 import './billing-config';
 import { summarizeError } from '@ventora/errors';
 import { getNotificationContactsInTx } from '@ventora/identity';
@@ -92,7 +103,27 @@ export const platformConsumers = new ConsumerRegistry()
   .register(workflowsTriggerConsumer)
   // Lotul 4.6: „Răspuns nou la solicitarea ta” + E-7; avertizarea cu o zi înainte de închidere
   .register(supportReplyConsumer)
-  .register(supportAutoCloseWarningConsumer);
+  .register(supportAutoCloseWarningConsumer)
+  // Lotul 3.8 (N16): încasarea prin transfer, confirmată în Founder → încasarea în SmartBill
+  .register(transferReceiptConsumer)
+  // Lotul 3.8: „Perioada de probă se încheie” (S115 trial.ending), implementarea de plătit
+  // (setup.accepted) și aplicația pornită (setup.started)
+  .register(commercialTrialEndingConsumer)
+  .register(commercialSetupNoticeConsumer);
+
+/** Un raport de job cu erori → job-ul eșuează (Sentry, reîncercare); restul rămâne făcut. */
+function failOnErrors<T extends { errors: Array<{ error: unknown }> }>(
+  label: string,
+  report: T,
+): T {
+  if (report.errors.length) {
+    throw new AggregateError(
+      report.errors.map((e) => e.error),
+      `[${label}] ${report.errors.length} not handled`,
+    );
+  }
+  return report;
+}
 
 /*
  * Lot 4.5: notificările Fazei 3 (S115) se trimit cu un singur apel, notifyBillingInTx
@@ -208,11 +239,50 @@ export const platformJobs = new JobRegistry()
     },
   })
   // Declarate; logica vine în lotul fiecăruia, cu platformJobs.attach(id, run).
+  // Lotul 3.8 (D3-5): proba unei aplicații se încheie la termen (datele rămân), cu reminderul cu
+  // 3 zile înainte (commercial.trial.ending); proba pe tot abonamentul (N4): activ cu card sau
+  // transfer, altfel doar citire. Din oră în oră, ca termenul (now() + 14 zile) să nu aștepte o zi.
   .register({
     id: 'commercial.trial-end',
     owner: 'Lot 3.8',
     description: 'Finalul perioadei de probă',
-    trigger: { cron: '0 4 * * *' },
+    trigger: { cron: '7 * * * *' },
+    run: async () => {
+      const apps = failOnErrors('commercial.trial', await runTrialJob());
+      const subs = failOnErrors('billing.subscription-trial', await runSubscriptionTrialJob());
+      return { ...apps, errors: 0, subscriptions: { ...subs, errors: 0 } };
+    },
+  })
+  // Lotul 3.8 (D3-12): după cele 14 zile de grație, afacerea trece pe doar citire și export.
+  .register({
+    id: 'commercial.dunning-grace',
+    owner: 'Lot 3.8',
+    description: 'Neplata: doar citire după perioada de grație',
+    trigger: { cron: '17 * * * *' },
+    run: async () => ({
+      ...failOnErrors('commercial.dunning', await runDunningGraceJob()),
+      errors: 0,
+    }),
+  })
+  // Lotul 3.8 (D3-11): factura de transfer a fiecărei perioade (emisă întâi, cu scadența), apoi
+  // restanța: factura emisă, neîncasată după scadență → cazul de neplată. Zilnic, dimineața.
+  .register({
+    id: 'billing.transfer-invoices',
+    owner: 'Lot 3.8',
+    description: 'Facturile de transfer și restanțele',
+    trigger: { cron: '0 6 * * *' },
+    run: async () => {
+      const invoices = await runTransferInvoiceJob();
+      const overdue = await runTransferOverdueJob();
+      const errors = [...invoices.errors, ...overdue.errors];
+      if (errors.length) {
+        throw new AggregateError(
+          errors.map((e) => e.error),
+          `[billing] ${errors.length} transfer invoices not handled`,
+        );
+      }
+      return { invoices: invoices.created, overdue: overdue.opened };
+    },
   })
   // Lotul 3.6: emiterea facturilor SmartBill și reîncercarea lor, în fiecare minut (prima emitere
   // vine imediat după dispecer, care scrie factura pending); fiecare factură în contextul afacerii

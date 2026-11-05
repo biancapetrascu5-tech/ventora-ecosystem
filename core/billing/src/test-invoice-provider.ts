@@ -4,6 +4,7 @@ import {
   type InvoiceProvider,
   type IssueInvoiceInput,
   type IssuedDocument,
+  type RecordPaymentInput,
   type ReverseInvoiceInput,
 } from './invoice-provider';
 
@@ -60,6 +61,20 @@ export class TestInvoiceProvider implements InvoiceProvider {
       throw new InvoiceProviderError('rejected', 'test provider: invoice not found');
     }
     return this.take('storno', input);
+  }
+
+  /** Lot 3.8: the receipts recorded (N16). */
+  readonly payments: RecordPaymentInput[] = [];
+
+  async recordPayment(input: RecordPaymentInput): Promise<{ number: string | null }> {
+    this.calls++;
+    const failure = this.failures.shift();
+    if (failure) throw new InvoiceProviderError(failure, `test provider: ${failure}`);
+    if (!this.documents.some((d) => d.series === input.series && d.number === input.number)) {
+      throw new InvoiceProviderError('rejected', 'test provider: invoice not found');
+    }
+    this.payments.push(input);
+    return { number: String(this.payments.length) };
   }
 
   async fetchPdf(series: string, number: string): Promise<Uint8Array> {
