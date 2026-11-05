@@ -1,18 +1,22 @@
+import type { DataAttestation } from './restricted-data';
+
+/**
+ * One analysis, started by a user. The system prompt and the model come only from the database
+ * (§12.4): the caller sends the user's text, which never goes into the system prompt.
+ */
 export interface AiCompletionParams {
   organizationId: string;
   applicationId: string;
   userId: string;
   promptKey: string;
   userMessage: string;
-  /** Overrides the system prompt from DB, if set. */
-  systemPromptOverride?: string;
-  /** Overrides the model slug from DB, if set. */
-  modelSlugOverride?: string;
-  maxTokens?: number;
+  /** Required until the lawyer's opinion (restricted-data.ts). */
+  dataAttestation: DataAttestation;
   temperature?: number;
 }
 
 export interface AiCompletionResult {
+  operationId: string;
   content: string;
   modelSlug: string;
   inputTokens: number;
@@ -31,13 +35,6 @@ export interface AiModelConfig {
   costPerOutputTokenRon: number;
 }
 
-export interface AiSystemPrompt {
-  promptKey: string;
-  applicationId: string;
-  modelSlug: string;
-  content: string;
-}
-
 export interface AiUsageRecord {
   id: string;
   organizationId: string;
@@ -45,15 +42,9 @@ export interface AiUsageRecord {
   userId: string;
   modelSlug: string;
   promptKey: string;
+  operationId: string;
   inputTokens: number;
   outputTokens: number;
   costRon: number;
   createdAt: Date;
-}
-
-export interface AiCostLimit {
-  organizationId: string | null;
-  period: 'month';
-  limitRon: number;
-  enabled: boolean;
 }

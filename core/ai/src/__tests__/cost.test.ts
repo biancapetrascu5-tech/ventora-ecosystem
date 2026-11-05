@@ -3,51 +3,39 @@ import { computeCostRon, currentPeriod } from '../cost';
 import type { AiModelConfig } from '../types';
 
 const MODEL: AiModelConfig = {
-  slug: 'gpt-4o-mini',
+  slug: 'gpt-4o',
   provider: 'openai',
-  providerModelId: 'gpt-4o-mini',
-  displayName: 'GPT-4o Mini',
+  providerModelId: 'gpt-4o',
+  displayName: 'GPT-4o',
   maxInputTokens: 128_000,
   maxOutputTokens: 16_384,
-  costPerInputTokenRon: 0.000_000_745,
-  costPerOutputTokenRon: 0.000_002_98,
+  costPerInputTokenRon: 0.0000118795,
+  costPerOutputTokenRon: 0.000047518,
 };
 
 describe('computeCostRon', () => {
-  it('computes cost for zero tokens', () => {
+  it('is zero for zero tokens', () => {
     expect(computeCostRon(MODEL, 0, 0)).toBe(0);
   });
 
-  it('computes cost for typical usage', () => {
-    const cost = computeCostRon(MODEL, 1000, 500);
-    const expected = 1000 * 0.000_000_745 + 500 * 0.000_002_98;
-    expect(cost).toBeCloseTo(expected, 10);
-  });
-
-  it('computes cost for large input', () => {
-    const cost = computeCostRon(MODEL, 100_000, 1000);
-    expect(cost).toBeGreaterThan(0);
-    expect(cost).toBe(100_000 * MODEL.costPerInputTokenRon + 1000 * MODEL.costPerOutputTokenRon);
+  it('1M input + 1M output tokens = the per-million prices in lei', () => {
+    expect(computeCostRon(MODEL, 1_000_000, 1_000_000)).toBeCloseTo(11.8795 + 47.518, 8);
   });
 });
 
-describe('currentPeriod', () => {
-  it('returns current year and month', () => {
-    const period = currentPeriod();
-    expect(period.year).toBeGreaterThanOrEqual(2026);
-    expect(period.month).toBeGreaterThanOrEqual(1);
-    expect(period.month).toBeLessThanOrEqual(12);
+describe('currentPeriod (Europe/Bucharest)', () => {
+  it('the month changes at midnight in Bucharest, not in UTC (winter time, UTC+2)', () => {
+    // 2026-10-31 23:59:59 Bucharest = 21:59:59Z; 2026-11-01 00:00 Bucharest = 22:00Z
+    expect(currentPeriod(new Date('2026-10-31T21:59:59Z'))).toEqual({ year: 2026, month: 10 });
+    expect(currentPeriod(new Date('2026-10-31T22:00:00Z'))).toEqual({ year: 2026, month: 11 });
   });
 
-  it('returns period for a specific date', () => {
-    const period = currentPeriod(new Date('2026-03-15T00:00:00Z'));
-    expect(period.year).toBe(2026);
-    expect(period.month).toBe(3);
+  it('summer time (UTC+3): 1 July starts at 30 June 21:00Z', () => {
+    expect(currentPeriod(new Date('2026-06-30T20:59:59Z'))).toEqual({ year: 2026, month: 6 });
+    expect(currentPeriod(new Date('2026-06-30T21:00:00Z'))).toEqual({ year: 2026, month: 7 });
   });
 
-  it('handles year boundary', () => {
-    const period = currentPeriod(new Date('2027-01-01T00:00:00Z'));
-    expect(period.year).toBe(2027);
-    expect(period.month).toBe(1);
+  it('year boundary', () => {
+    expect(currentPeriod(new Date('2026-12-31T22:00:00Z'))).toEqual({ year: 2027, month: 1 });
   });
 });

@@ -18,9 +18,11 @@
     "@ventora/contracts": "workspace:*",
     "@ventora/db-kit": "workspace:*",
     "@ventora/errors": "workspace:*",
+    "@ventora/quota": "workspace:*",
     "pg": "^8.0.0"
   },
   "devDependencies": {
+    "@ventora/commercial": "workspace:*",
     "@types/node": "^22.0.0",
     "@types/pg": "^8.0.0",
     "prisma": "^7.0.0",

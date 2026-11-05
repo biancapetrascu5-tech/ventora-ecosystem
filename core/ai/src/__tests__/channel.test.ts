@@ -9,8 +9,13 @@ afterEach(() => {
 
 describe('channel', () => {
   it('returns UnconfiguredAiProvider when no OPENAI_API_KEY', () => {
-    const provider = getAiProvider();
-    expect(provider).toBeInstanceOf(UnconfiguredAiProvider);
+    const saved = process.env.OPENAI_API_KEY;
+    delete process.env.OPENAI_API_KEY;
+    try {
+      expect(getAiProvider()).toBeInstanceOf(UnconfiguredAiProvider);
+    } finally {
+      if (saved !== undefined) process.env.OPENAI_API_KEY = saved;
+    }
   });
 
   it('allows overriding the provider', () => {

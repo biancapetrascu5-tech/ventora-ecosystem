@@ -118,6 +118,7 @@ for (const db of [
   'shadow_billing_diff',
   'shadow_workflows_diff',
   'shadow_support_diff',
+  'shadow_ai_diff',
 ]) {
   psql('postgres', `DROP DATABASE IF EXISTS ${db}; CREATE DATABASE ${db};`);
 }
@@ -390,6 +391,8 @@ for (const migration of [
   // facturare, plata prin transfer, factura neemisă, rolul billing_founder (billing)
   'core/commercial/prisma/migrations/20261104000020_commercial_lifecycle/migration.sql',
   'core/billing/prisma/migrations/20261104000021_billing_lifecycle/migration.sql',
+  // Lot 4.9: infrastructura AI (schema ai, rolurile ai_rw / ai_founder)
+  'core/ai/prisma/migrations/20261104100001_ai_init/migration.sql',
 ]) {
   psqlFile(TEST_DB.accessDb, join(ROOT, migration));
 }
