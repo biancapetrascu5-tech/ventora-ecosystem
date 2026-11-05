@@ -68,7 +68,8 @@ function couponSpec(d: BillingDiscount) {
 }
 
 interface Desired {
-  items: Array<SubscriptionItemSpec & { prepaid: boolean }>;
+  /** `invoiceNow`: started by „Pornește aplicația” (E3), its first days are charged at once. */
+  items: Array<SubscriptionItemSpec & { prepaid: boolean; invoiceNow?: boolean }>;
   couponIds: string[];
 }
 
@@ -122,6 +123,7 @@ async function desiredOf(client: PoolClient, terms: Terms): Promise<Desired> {
       quantity: 1,
       couponIds: coupons.get(r) ?? [],
       prepaid: a.purchased,
+      invoiceNow: a.fromSetup,
     });
   }
   if (sub.interval === 'month' && terms.packs.length) {
@@ -230,7 +232,7 @@ export async function reconcileSubscription(organizationId: string): Promise<Rec
       if (!desired.items.length) return 'unchanged';
       const { billingCycleAnchor, trialEnd } = anchorFor(terms.subscription);
       const spec = {
-        items: desired.items.map(({ prepaid: _p, ...i }) => i),
+        items: desired.items.map(({ prepaid: _p, invoiceNow: _n, ...i }) => i),
         couponIds: desired.couponIds,
         billingCycleAnchor,
         trialEnd,
@@ -297,10 +299,12 @@ export async function reconcileSubscription(organizationId: string): Promise<Rec
     if (!add.length && !remove.length && !change.length && !coupons && !sub.cancelAtPeriodEnd) {
       return 'unchanged';
     }
-    // lines paid at the purchase start without proration; the others are prorated (D3-7)
-    const strip = ({ prepaid: _p, ...i }: Desired['items'][number]) => i;
+    // lines paid at the purchase start without proration; the others are prorated (D3-7): on the
+    // next invoice, or invoiced now for an application started by „Pornește aplicația” (E3)
+    const strip = ({ prepaid: _p, invoiceNow: _n, ...i }: Desired['items'][number]) => i;
     const prepaid = add.filter((i) => i.prepaid).map(strip);
-    const prorate = add.filter((i) => !i.prepaid).map(strip);
+    const prorate = add.filter((i) => !i.prepaid && !i.invoiceNow).map(strip);
+    const invoiceNow = add.filter((i) => !i.prepaid && i.invoiceNow).map(strip);
     let updated: SubscriptionState = sub;
     updated = await gateway.updateSubscription(sub.id, {
       add: prepaid,
@@ -316,6 +320,15 @@ export async function reconcileSubscription(organizationId: string): Promise<Rec
         remove: [],
         change: [],
         prorateAdded: true,
+      });
+    }
+    if (invoiceNow.length) {
+      updated = await gateway.updateSubscription(sub.id, {
+        add: invoiceNow,
+        remove: [],
+        change: [],
+        prorateAdded: true,
+        invoiceNow: true,
       });
     }
     await mirrorInTx(client, updated, null);

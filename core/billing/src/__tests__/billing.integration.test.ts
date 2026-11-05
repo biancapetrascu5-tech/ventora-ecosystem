@@ -685,6 +685,59 @@ describe('Lot 3.5 — the subscription in Stripe Billing: invoices, retries, cou
     expect(fake.subscriptions.get(bs!.stripe_subscription_id)!.couponIds).toEqual([]);
   });
 
+  it('E3 (3.9a): an application started by „Pornește aplicația” → its first days invoiced now (always_invoice); a line added by Founder stays on the next invoice', async () => {
+    const b = await business();
+    await saveCard(b);
+    const [sub] = await q(`SELECT id FROM commercial.subscription WHERE organization_id = $1`, [
+      b.organizationId,
+    ]);
+    const line = async () =>
+      (
+        await q(
+          `INSERT INTO commercial.subscription_application
+             (organization_id, subscription_id, application_id, currency, interval, amount_minor,
+              source, created_by_founder_id)
+           VALUES ($1, $2, 'crm', 'RON', 'month', 6900, 'request', $3) RETURNING id`,
+          [b.organizationId, sub!.id, founderId],
+        )
+      )[0]!.id as string;
+    // a line added by Founder (or a request handled): prorated on the next invoice (D3-7)
+    const founderLine = await line();
+    let before = fake.calls.length;
+    expect(await reconcileSubscription(b.organizationId)).toBe('updated');
+    expect(fake.calls.slice(before)).toContain('updateSubscription:prorate');
+    expect(fake.calls.slice(before)).not.toContain('updateSubscription:invoiceNow');
+    await q(
+      `UPDATE commercial.subscription_application SET ended_at = now(), ended_by_founder_id = $2 WHERE id = $1`,
+      [founderLine, founderId],
+    );
+    await reconcileSubscription(b.organizationId);
+    // the line of a setup request gone live (Lot 3.8), as goLiveSetup leaves it
+    const setupLine = await line();
+    const u = newUuid();
+    await admin.query('BEGIN');
+    await admin.query(`SET LOCAL session_replication_role = replica`);
+    await admin.query(
+      `INSERT INTO commercial.setup_request
+         (organization_id, application_id, currency, status, requested_by_user_id,
+          setup_minor, maintenance_minor, maintenance_interval, estimated_start_on,
+          offer_sent_at, offer_sent_by_founder_id, accepted_at, accepted_by_user_id,
+          start_on, confirmed_at, confirmed_by_founder_id, paid_at, payment_method, payment_ref,
+          paid_minor, work_started_at, work_started_by_founder_id, live_at, live_by_founder_id,
+          subscription_application_id)
+       VALUES ($1, 'crm', 'RON', 'live', $2, 30000, 6900, 'month', current_date,
+               now(), $3, now(), $2, current_date, now(), $3, now(), 'card', $4, 30000,
+               now(), $3, now(), $3, $5)`,
+      [b.organizationId, b.ownerId, founderId, u, setupLine],
+    );
+    await admin.query('COMMIT');
+    before = fake.calls.length;
+    expect(await reconcileSubscription(b.organizationId)).toBe('updated');
+    expect(fake.calls.slice(before)).toContain('updateSubscription:invoiceNow');
+    expect(fake.calls.slice(before)).not.toContain('updateSubscription:prorate');
+    expect(await reconcileSubscription(b.organizationId)).toBe('unchanged');
+  });
+
   it('canceled in Ventora → Stripe stops at the end of the paid period (D3-10)', async () => {
     const b = await business();
     await saveCard(b);

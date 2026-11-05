@@ -4,7 +4,32 @@
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
-      "outputs": [".next/**", "!.next/cache/**", "dist/**"]
+      "outputs": [".next/**", "!.next/cache/**", "dist/**", "generated/**"],
+      "env": ["NEXT_PUBLIC_*", "APP_ENV", "SENTRY_DSN"],
+      "passThroughEnv": [
+        "DATABASE_URL",
+        "DATABASE_URL_FOUNDER",
+        "DIRECT_URL",
+        "BETTER_AUTH_SECRET",
+        "FOUNDER_AUTH_SECRET",
+        "STRIPE_SECRET_KEY",
+        "STRIPE_PUBLISHABLE_KEY",
+        "STRIPE_WEBHOOK_SECRET",
+        "SMARTBILL_*",
+        "SUPABASE_URL",
+        "SUPABASE_SERVICE_ROLE_KEY",
+        "FILES_BUCKET",
+        "FILES_LINK_SECRET",
+        "FOUNDER_ALERTS_EMAIL",
+        "RESEND_API_KEY",
+        "EMAIL_FROM",
+        "EMAIL_REPLY_TO",
+        "INNGEST_EVENT_KEY",
+        "INNGEST_SIGNING_KEY",
+        "COMMERCIAL_POOL_MAX",
+        "SENTRY_AUTH_TOKEN",
+        "ENABLE_EXPERIMENTAL_COREPACK"
+      ]
     },
     "@ventora/tokens#build": {
       "dependsOn": [],

@@ -329,6 +329,10 @@ export interface BillingTerms {
     amountMinor: number;
     /** Bought from the Hub: the days left of the period were paid at the purchase. */
     purchased: boolean;
+    /** Started by „Pornește aplicația” (a setup request, Lot 3.8): E3, the first days billed now. */
+    fromSetup: boolean;
+    /** When the line started (ISO): the transfer invoice bills the days before its first period. */
+    startedAt: string;
   }>;
   /** The monthly packs bought from the Hub (Founder's grants are not billed, see the report). */
   packs: Array<{ grantId: string; addonId: string; purchaseId: string; packs: number }>;
@@ -359,10 +363,14 @@ export async function getBillingTerms(organizationId: string): Promise<BillingTe
       interval: BillingInterval;
       amount_minor: string;
       source: string;
+      from_setup: boolean;
+      started_at: Date;
     }>(
-      `SELECT id, application_id, interval, amount_minor, source
-         FROM commercial.subscription_application
-        WHERE subscription_id = $1 AND ended_at IS NULL ORDER BY created_at, id`,
+      `SELECT a.id, a.application_id, a.interval, a.amount_minor, a.source, a.created_at AS started_at,
+              EXISTS (SELECT 1 FROM commercial.setup_request r
+                       WHERE r.subscription_application_id = a.id) AS from_setup
+         FROM commercial.subscription_application a
+        WHERE a.subscription_id = $1 AND a.ended_at IS NULL ORDER BY a.created_at, a.id`,
       [sub.id],
     );
     const packs = await client.query<{
@@ -401,6 +409,8 @@ export async function getBillingTerms(organizationId: string): Promise<BillingTe
         interval: a.interval,
         amountMinor: Number(a.amount_minor),
         purchased: a.source === 'purchase',
+        fromSetup: a.from_setup,
+        startedAt: a.started_at.toISOString(),
       })),
       packs: packs.rows.map((p) => ({
         grantId: p.id,
