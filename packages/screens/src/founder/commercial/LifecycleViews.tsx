@@ -614,7 +614,7 @@ export function InvoiceHistorySection({
             rows={rows}
             columns={columns}
             activeRow={activeRow}
-            rowActions={actions}
+            rowActions={rows.some((r) => actions(r).length > 0) ? actions : undefined}
             labels={labels}
             locale="ro"
           />

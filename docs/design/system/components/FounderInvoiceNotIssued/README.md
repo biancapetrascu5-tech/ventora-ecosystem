@@ -9,3 +9,5 @@ An invoice that was not issued (D-3.6-4, D-3.6-5, S121): the payment went throug
 **Issued by hand.** A Dialog "Ai emis manual factura pentru {business}?": what, amount, payment date; "Seria", "Numărul", "Data emiterii", "Motiv" (required, at least 10 characters, into the business log); what happens next. Errors: a series and number already used, a reason too short. Done: status "Emisă manual" (neutral) with the series and number; Toast "Am trecut factura {invoice} ca emisă manual."
 
 Shown at 1280 and 390, light and dark.
+
+**Aligned with FounderBusiness and FounderDiscounts (S122).** Breadcrumb "Afaceri › Salon Aurora" (not on a phone); the tabs sit in the PageHeader, as in FounderDiscounts. The purchase history is the standard DataTable of InvoiceHistorySection, automatic widths: "Ce" (primary), "Data" (secondary), "Sumă" (right-aligned, optional), "Factura" (optional), "Stare" (trailing). Paid rows have no actions; only "Nu s-a emis" has "Reîncearcă" and "Am emis-o manual…".
