@@ -15,10 +15,9 @@ import {
  *   POST /invoice/reverse  the storno of an invoice
  *   GET  /invoice/pdf      the PDF (Accept must not be application/pdf: 406)
  *   POST /payment          Lot 3.8 (N16): the receipt of a transfer invoice („Ordin plata”).
- *                          DE VALIDAT TEHNIC: the spec page (api.smartbill.ro, rendered in the
- *                          browser) could not be read by the agent; the body follows the V1
- *                          receipt shape and the call runs only with SMARTBILL_RECORD_PAYMENTS=1,
- *                          after one check on the test account.
+ *                          Validated on the test account (E7, Lot 3.9a, 05.11.2026): a transfer
+ *                          invoice issued unpaid, then this receipt → `paymentstatus` paid. The
+ *                          call runs only with SMARTBILL_RECORD_PAYMENTS=1.
  *
  * V1 answers with `errorText`: empty = success. Rate limit: 30 calls / 10 s per token (blocked
  * for 10 minutes beyond it) — the job issues one at a time.
@@ -247,7 +246,10 @@ export class SmartBillInvoiceProvider implements InvoiceProvider {
     });
   }
 
-  /** Lot 3.8 (N16): the receipt of a transfer invoice; skipped until SMARTBILL_RECORD_PAYMENTS=1. */
+  /**
+   * Lot 3.8 (N16): the receipt of a transfer invoice; skipped until SMARTBILL_RECORD_PAYMENTS=1.
+   * E7 (3.9a): validated on the SmartBill test account (TST 0002: unpaid → paid, 05.11.2026).
+   */
   async recordPayment(input: RecordPaymentInput): Promise<{ number: string | null }> {
     if (!this.config.recordPayments) {
       throw new InvoiceProviderError(
@@ -311,9 +313,9 @@ export class SmartBillInvoiceProvider implements InvoiceProvider {
         res.status,
       );
     }
-    return {
-      number: json.number === undefined || json.number === null ? null : String(json.number),
-    };
+    // E7 (3.9a, the test account): a bank-transfer receipt comes back with an empty number
+    const number = json.number === undefined || json.number === null ? '' : String(json.number);
+    return { number: number.trim() || null };
   }
 
   async fetchPdf(series: string, number: string): Promise<Uint8Array> {

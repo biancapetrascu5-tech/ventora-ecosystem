@@ -20,10 +20,12 @@ import {
   startApplicationTrial,
   startSetupWork,
   getSetupOfferDefaults,
+  billingPeriod,
 } from '@ventora/commercial';
 import { founderAuth } from '@ventora/identity';
 import { ConsumerRegistry, dispatchOutbox } from '@ventora/integrations';
 import {
+  billingInvoiceIssuedConsumer,
   BillingProfileInvalid,
   closeBillingPools,
   confirmTransferReceipt,
@@ -512,6 +514,83 @@ describe('plata manuală prin transfer', () => {
     expect(provider.payments.at(-1)).toMatchObject({ amountMinor: 34900, date: today() });
     const listed = await listInvoicesForFounder(founderParams(b.org));
     expect(listed[0]).toMatchObject({ collection: 'transfer', paidOn: today(), status: 'issued' });
+  });
+
+  it('E6 (3.9a): factura de transfer emisă → „Factura {number} e emisă” cu scadența (invoice.transfer), o dată', async () => {
+    const b = await business();
+    await setPaymentSettings({ ...founderParams(b.org), method: 'manual', paymentTermsDays: 10 });
+    await runTransferInvoiceJob();
+    const [inv] = await q(
+      `SELECT id, due_on::text AS due FROM billing.invoice WHERE organization_id = $1 AND collection = 'transfer'`,
+      [b.org],
+    );
+    expect(await issueInvoice(b.org, inv!.id)).toBe('issued');
+    const dispatchIssued = () =>
+      dispatchOutbox({
+        pool: appPool,
+        source: { schema: 'billing', moduleRole: 'billing_rw' },
+        registry: new ConsumerRegistry().register(billingInvoiceIssuedConsumer),
+        limit: 200,
+      });
+    await dispatchIssued();
+    await dispatchIssued();
+    const notes = await q(
+      `SELECT type, params FROM notifications.notification WHERE organization_id = $1 AND type LIKE 'billing.invoice.%'`,
+      [b.org],
+    );
+    expect(notes).toHaveLength(1);
+    const [issued] = await q(
+      `SELECT series, number, emailed_at FROM billing.invoice WHERE id = $1`,
+      [inv!.id],
+    );
+    expect(notes[0]).toMatchObject({
+      type: 'billing.invoice.transfer',
+      params: {
+        number: `${issued!.series}-${issued!.number}`,
+        amount: { type: 'money', amountMinor: 34900, currency: 'RON' },
+        what: { type: 'key', key: 'billing.have.bundle', params: { name: 'Business' } },
+        due: { type: 'date', date: inv!.due },
+      },
+    });
+    expect(issued!.emailed_at).not.toBeNull();
+  });
+
+  it('E3 (3.9a): o aplicație pornită după factura perioadei → pe factura următoare, zilele ei ca linie separată', async () => {
+    const b = await business();
+    await setPaymentSettings({ ...founderParams(b.org), method: 'manual', paymentTermsDays: 14 });
+    await runTransferInvoiceJob();
+    // „Pornește aplicația” today, after this period's invoice (as goLiveSetup leaves the line)
+    await q(
+      `INSERT INTO commercial.subscription_application
+         (organization_id, subscription_id, application_id, currency, interval, amount_minor,
+          source, created_by_founder_id)
+       VALUES ($1, $2, $3, 'RON', 'month', 9900, 'request', $4)`,
+      [b.org, b.subscriptionId, APP, founderId],
+    );
+    const current = billingPeriod({ startedOn: addDays(today(), -10), interval: 'month' }, today());
+    await runTransferInvoiceJob({ now: new Date(`${current.end}T09:00:00+02:00`) });
+    const invoices = await q(
+      `SELECT period_start::text AS ps, amount_minor, lines FROM billing.invoice
+        WHERE organization_id = $1 AND collection = 'transfer' ORDER BY period_start`,
+      [b.org],
+    );
+    expect(invoices.map((i) => i.ps)).toEqual([current.start, current.end]);
+    const day = (d: string) => Date.parse(`${d}T00:00:00Z`) / 86_400_000;
+    const days = day(current.end) - day(today());
+    const part = Math.round((9900 * days) / (day(current.end) - day(current.start)));
+    const next = invoices[1]!;
+    expect(next.lines).toEqual([
+      expect.objectContaining({ code: 'VNT-SUB', unitMinor: 34900 }),
+      expect.objectContaining({ code: 'VNT-APP', unitMinor: 9900 }),
+      expect.objectContaining({
+        code: 'VNT-APP',
+        unitMinor: part,
+        name: expect.stringContaining(`${days} zile din`),
+      }),
+    ]);
+    expect(Number(next.amount_minor)).toBe(34900 + 9900 + part);
+    // the first invoice had neither: the application was not there yet
+    expect(Number(invoices[0]!.amount_minor)).toBe(34900);
   });
 
   it('după scadență: cazul de neplată de a doua zi; încasarea îl închide', async () => {

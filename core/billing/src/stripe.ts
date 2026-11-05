@@ -128,6 +128,11 @@ export interface UpdateSubscriptionInput {
   couponIds?: string[];
   /** Lines the customer has not paid for yet start with a prorated amount on the next invoice. */
   prorateAdded: boolean;
+  /**
+   * E3 (05.11.2026): the prorated amount is invoiced and charged now (`always_invoice`), not on
+   * the next invoice: an application started by „Pornește aplicația”. Needs `prorateAdded`.
+   */
+  invoiceNow?: boolean;
   cancelAtPeriodEnd?: boolean;
 }
 
@@ -469,7 +474,11 @@ export class SdkStripeGateway implements StripeGateway {
       ...(input.cancelAtPeriodEnd !== undefined
         ? { cancel_at_period_end: input.cancelAtPeriodEnd }
         : {}),
-      proration_behavior: input.prorateAdded ? 'create_prorations' : 'none',
+      proration_behavior: !input.prorateAdded
+        ? 'none'
+        : input.invoiceNow
+          ? 'always_invoice'
+          : 'create_prorations',
       expand: SUB_EXPAND,
     });
     return subState(sub);

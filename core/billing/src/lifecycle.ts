@@ -388,9 +388,57 @@ export async function setPaymentSettings(params: {
 }
 
 /** The lines of a period's transfer invoice and its total; null when it cannot be priced. */
+type TransferTerms = NonNullable<Awaited<ReturnType<typeof getBillingTerms>>>;
+
+/** A line's days before the period being invoiced (E3): billed once, as a separate line. */
+interface CatchUpLine {
+  lineId: string;
+  applicationId: string;
+  days: number;
+  amountMinor: number;
+  label: string;
+}
+
+const dayCount = (from: string, to: string) =>
+  Math.round((Date.parse(`${to}T00:00:00Z`) - Date.parse(`${from}T00:00:00Z`)) / 86_400_000);
+
+/**
+ * E3 (05.11.2026), transfer: an application that started during the previous period, after
+ * that period's invoice was made (for instance by „Pornește aplicația”), was not on it. Its days
+ * up to the new period go on the new invoice as a separate line, prorated by day. Nothing before
+ * a first invoice (the trial, or a business new on transfer): only the period itself is billed.
+ */
+export function catchUpLines(
+  terms: TransferTerms,
+  period: { start: string },
+  previous: { start: string; invoicedAt: Date } | null,
+): CatchUpLine[] {
+  if (!previous) return [];
+  const total = dayCount(previous.start, period.start);
+  if (total <= 0) return [];
+  const label =
+    terms.subscription.interval === 'year'
+      ? previous.start.slice(0, 4)
+      : romanianMonth(new Date(`${previous.start}T12:00:00Z`));
+  const out: CatchUpLine[] = [];
+  for (const a of terms.applications) {
+    const startedAt = new Date(a.startedAt);
+    if (startedAt <= previous.invoicedAt) continue;
+    const from = romanianDate(startedAt);
+    if (from >= period.start) continue;
+    const days = dayCount(from < previous.start ? previous.start : from, period.start);
+    const amountMinor = Math.round((a.amountMinor * days) / total);
+    if (days > 0 && amountMinor > 0) {
+      out.push({ lineId: a.lineId, applicationId: a.applicationId, days, amountMinor, label });
+    }
+  }
+  return out;
+}
+
 function periodLines(
-  terms: NonNullable<Awaited<ReturnType<typeof getBillingTerms>>>,
+  terms: TransferTerms,
   periodStart: string,
+  catchUp: CatchUpLine[] = [],
 ): { lines: InvoiceLine[]; totalMinor: number } | { refused: 'discount' } {
   // only „forever” discounts are certain on every invoice; once / repeating need their first
   // invoice, which a transfer business does not have in Stripe (NECESITĂ DECIZIE, Lot 3.8 report)
@@ -417,15 +465,24 @@ function periodLines(
       unitMinor: a.amountMinor,
     });
   }
-  // the discounts folded into the lines (a line's on its line; the subscription's spread)
+  for (const c of catchUp) {
+    lines.push({
+      lineId: c.lineId,
+      name: `${invoiceAppName(c.applicationId)} · ${c.days} ${c.days === 1 ? 'zi' : 'zile'} din ${c.label}`,
+      code: 'VNT-APP',
+      quantity: 1,
+      unitMinor: c.amountMinor,
+    });
+  }
+  // the discounts folded into the lines (a line's on its lines; the subscription's spread)
   for (const d of terms.discounts.filter((x) => x.scope !== 'subscription')) {
-    const line = lines.find((l) => l.lineId === d.lineId);
-    if (!line) continue;
-    const off =
-      d.kind === 'percent'
-        ? Math.round((line.unitMinor * (d.percentOff ?? 0)) / 100)
-        : (d.amountOffMinor ?? 0);
-    line.unitMinor -= Math.min(off, line.unitMinor);
+    for (const line of lines.filter((l) => l.lineId === d.lineId)) {
+      const off =
+        d.kind === 'percent'
+          ? Math.round((line.unitMinor * (d.percentOff ?? 0)) / 100)
+          : (d.amountOffMinor ?? 0);
+      line.unitMinor -= Math.min(off, line.unitMinor);
+    }
   }
   for (const d of terms.discounts.filter((x) => x.scope === 'subscription')) {
     const sum = lines.reduce((s, l) => s + l.unitMinor, 0);
@@ -476,7 +533,33 @@ export async function runTransferInvoiceJob(opts: { limit?: number; now?: Date }
         { startedOn: terms.subscription.startedOn, interval: terms.subscription.interval },
         today,
       );
-      const priced = periodLines(terms, period.start);
+      // E3: the days of a line started after the previous period's invoice, as a separate line
+      const previous =
+        period.start > terms.subscription.startedOn
+          ? billingPeriod(
+              {
+                startedOn: terms.subscription.startedOn,
+                interval: terms.subscription.interval,
+              },
+              addDays(period.start, -1),
+            )
+          : null;
+      const invoicedAt = previous
+        ? await withBillingRead(r.organization_id, async (client) => {
+            const { rows: prev } = await client.query<{ created_at: Date }>(
+              `SELECT created_at FROM billing.invoice
+                WHERE kind = 'invoice' AND collection = 'transfer' AND period_start = $1::date`,
+              [previous.start],
+            );
+            return prev[0]?.created_at ?? null;
+          })
+        : null;
+      const catchUp = catchUpLines(
+        terms,
+        period,
+        previous && invoicedAt ? { start: previous.start, invoicedAt } : null,
+      );
+      const priced = periodLines(terms, period.start, catchUp);
       if ('refused' in priced) {
         errors.push({
           organizationId: r.organization_id,

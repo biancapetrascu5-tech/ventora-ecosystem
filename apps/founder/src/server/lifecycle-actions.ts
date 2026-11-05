@@ -1,6 +1,7 @@
 'use server';
 
 import { headers } from 'next/headers';
+import './billing-config';
 import {
   cancelSetupByFounder,
   confirmSetup,

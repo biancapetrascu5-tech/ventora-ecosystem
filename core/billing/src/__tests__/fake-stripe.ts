@@ -254,7 +254,9 @@ export class FakeStripe implements StripeGateway {
     input: UpdateSubscriptionInput,
   ): Promise<SubscriptionState> {
     const sub = this.subscriptions.get(subId)!;
-    this.calls.push(`updateSubscription:${input.prorateAdded ? 'prorate' : 'none'}`);
+    this.calls.push(
+      `updateSubscription:${input.prorateAdded ? (input.invoiceNow ? 'invoiceNow' : 'prorate') : 'none'}`,
+    );
     sub.items = sub.items.filter((i) => !input.remove.includes(i.id));
     for (const c of input.change) {
       const item = sub.items.find((i) => i.id === c.itemId)!;

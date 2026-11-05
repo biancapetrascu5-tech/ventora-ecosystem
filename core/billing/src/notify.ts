@@ -1,4 +1,4 @@
-import { calendarDate, getBillingTerms } from '@ventora/commercial';
+import { calendarDate, getBillingTerms, listSetupRequests } from '@ventora/commercial';
 import {
   BillingDisputeOpenedV1,
   BillingInvoiceIssuedV1,
@@ -103,8 +103,12 @@ export const billingInvoiceIssuedConsumer = {
   handles: [{ type: BillingInvoiceIssuedV1.type, version: BillingInvoiceIssuedV1.version }],
   async handle(envelope: Envelope, tx: SqlClient): Promise<void> {
     const p = BillingInvoiceIssuedV1.parse(envelope.payload);
-    if (p.kind !== 'invoice' || !p.paymentId) return;
+    if (p.kind !== 'invoice') return;
     const organizationId = envelope.organizationId;
+    if (!p.paymentId) {
+      await notifyTransferInvoice(tx, organizationId, p.invoiceId, envelope.eventId);
+      return;
+    }
     const { rows } = await tx.query(
       `SELECT i.series, i.number, i.amount_minor::text AS amount_minor, i.currency,
               p.kind AS payment_kind, u.kind AS purchase_kind, u.item_name, u.application_id
@@ -182,6 +186,74 @@ export const billingInvoiceIssuedConsumer = {
     );
   },
 };
+
+/**
+ * E6 (Lot 3.9a): „Factura {number} e emisă” for an invoice paid by bank transfer (S115
+ * invoice.transfer), with its due date: the invoice of a period, or of an implementation
+ * (Lot 3.8). Issued without a payment, so the card branch above does not see it.
+ */
+async function notifyTransferInvoice(
+  tx: SqlClient,
+  organizationId: string,
+  invoiceId: string,
+  eventId: string,
+): Promise<void> {
+  const { rows } = await tx.query(
+    `SELECT i.series, i.number, i.amount_minor::text AS amount_minor, i.currency,
+            i.due_on::text AS due_on, i.setup_request_id
+       FROM billing.invoice i
+      WHERE i.id = $1::uuid AND i.status = 'issued' AND i.collection = 'transfer'
+        AND i.due_on IS NOT NULL`,
+    [invoiceId],
+  );
+  const inv = rows[0] as
+    | {
+        series: string;
+        number: string;
+        amount_minor: string;
+        currency: 'RON' | 'EUR';
+        due_on: string;
+        setup_request_id: string | null;
+      }
+    | undefined;
+  if (!inv) return;
+  const business = (await organizationNameInTx(tx, organizationId)) ?? '';
+  let what: NotificationParams[string];
+  const setup = inv.setup_request_id
+    ? (await listSetupRequests(organizationId)).find((r) => r.id === inv.setup_request_id)
+    : undefined;
+  if (setup) {
+    what = {
+      type: 'key',
+      key: 'billing.setup.title',
+      params: { app: invoiceAppName(setup.applicationId) },
+    };
+  } else {
+    const terms = await getBillingTerms(organizationId);
+    what = {
+      type: 'key',
+      key: 'billing.have.bundle',
+      params: { name: terms?.bundle?.planName?.trim() || 'Ventora Systems' },
+    };
+  }
+  await notifyBillingInTx(tx, {
+    organizationId,
+    kind: 'invoice.transfer',
+    idempotencyKey: eventId,
+    params: {
+      business,
+      number: `${inv.series}-${inv.number}`,
+      amount: { type: 'money', amountMinor: Number(inv.amount_minor), currency: inv.currency },
+      what,
+      due: { type: 'date', date: inv.due_on },
+    },
+  });
+  await tx.query(
+    `UPDATE billing.invoice SET emailed_at = COALESCE(emailed_at, now()), updated_at = now()
+      WHERE id = $1::uuid`,
+    [invoiceId],
+  );
+}
 
 /*
  * Lot 3.6 — the dispute alert (decision on the 3.5 report): `billing.dispute.opened` → an e-mail
