@@ -1,0 +1,87 @@
+// Schema "ai" — garda de drift (prisma migrate diff) și prisma migrate deploy.
+// Runtime-ul nu folosește un client Prisma generat: tabelele se accesează prin ai_rw / ai_founder
+// cu SET LOCAL ROLE (D-DB-1 C), ca în core/commercial. CHECK-urile, NULLS NOT DISTINCT, RLS,
+// rolurile, grant-urile și funcțiile sunt doar în migrare.
+
+datasource db {
+  provider = "postgresql"
+  schemas  = ["ai"]
+}
+
+/// Modelele AI ale platformei (le scrie doar echipa; dezactivare cu enabled = false).
+model Model {
+  id                    String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  slug                  String   @unique(map: "models_slug_key") @db.VarChar(64)
+  provider              String   @db.VarChar(32)
+  providerModelId       String   @map("provider_model_id") @db.VarChar(128)
+  displayName           String   @map("display_name") @db.VarChar(128)
+  maxInputTokens        Int      @map("max_input_tokens")
+  maxOutputTokens       Int      @map("max_output_tokens")
+  costPerInputTokenRon  Decimal  @map("cost_per_input_token_ron") @db.Decimal(14, 12)
+  costPerOutputTokenRon Decimal  @map("cost_per_output_token_ron") @db.Decimal(14, 12)
+  enabled               Boolean  @default(true)
+  createdAt             DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt             DateTime @default(now()) @map("updated_at") @db.Timestamptz
+
+  prompts SystemPrompt[]
+
+  @@map("models")
+  @@schema("ai")
+}
+
+/// Prompturile de sistem (§12.4): organization_id NULL = implicitul platformei.
+model SystemPrompt {
+  id              String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  organizationId  String?  @map("organization_id") @db.Uuid
+  applicationId   String   @map("application_id") @db.VarChar(64)
+  promptKey       String   @map("prompt_key") @db.VarChar(128)
+  modelSlug       String   @map("model_slug") @db.VarChar(64)
+  content         String
+  maxOutputTokens Int      @default(1024) @map("max_output_tokens")
+  enabled         Boolean  @default(true)
+  createdAt       DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt       DateTime @default(now()) @map("updated_at") @db.Timestamptz
+
+  model Model @relation(fields: [modelSlug], references: [slug])
+
+  // NULLS NOT DISTINCT în migrare: un singur prompt global pe aplicație și cheie
+  @@unique([organizationId, applicationId, promptKey], map: "system_prompts_scope_key")
+  @@map("system_prompts")
+  @@schema("ai")
+}
+
+/// Consumul: un rând pe analiză reușită (append-only).
+model UsageRecord {
+  id             String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  organizationId String   @map("organization_id") @db.Uuid
+  applicationId  String   @map("application_id") @db.VarChar(64)
+  userId         String   @map("user_id") @db.Uuid
+  modelSlug      String   @map("model_slug") @db.VarChar(64)
+  promptKey      String   @map("prompt_key") @db.VarChar(128)
+  operationId    String   @unique(map: "usage_records_operation_id_key") @map("operation_id") @db.VarChar(128)
+  inputTokens    Int      @map("input_tokens")
+  outputTokens   Int      @map("output_tokens")
+  costRon        Decimal  @map("cost_ron") @db.Decimal(14, 8)
+  createdAt      DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  @@index([organizationId, createdAt], map: "usage_records_org_created_idx")
+  @@index([createdAt], map: "usage_records_created_idx")
+  @@map("usage_records")
+  @@schema("ai")
+}
+
+/// Plafoanele de cost în lei pe lună: global (organization_id NULL) și pe organizație.
+model CostLimit {
+  id             String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  organizationId String?  @map("organization_id") @db.Uuid
+  period         String   @default("month") @db.VarChar(16)
+  limitRon       Decimal  @map("limit_ron") @db.Decimal(10, 2)
+  enabled        Boolean  @default(true)
+  createdAt      DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt      DateTime @default(now()) @map("updated_at") @db.Timestamptz
+
+  // NULLS NOT DISTINCT în migrare: un singur plafon global pe perioadă
+  @@unique([organizationId, period], map: "cost_limits_scope_key")
+  @@map("cost_limits")
+  @@schema("ai")
+}

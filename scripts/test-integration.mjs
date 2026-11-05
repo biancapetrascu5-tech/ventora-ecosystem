@@ -2,8 +2,8 @@
 /**
  * Rulează toate testele de integrare local, identic cu CI:
  *   1. Pornește DB-ul de test
- *   2. Verifică garda de drift (prisma migrate diff --exit-code): identity, founder, organizations, audit, access, notifications, files, support, commercial, billing, workflows
- *   3. Rulează testele de integrare (db-kit, audit, identity, organizations, integrations, access, notifications, files, support, commercial, booking, billing, workflows)
+ *   2. Verifică garda de drift (prisma migrate diff --exit-code): identity, founder, organizations, audit, access, notifications, files, support, commercial, billing, workflows, ai
+ *   3. Rulează testele de integrare (db-kit, audit, identity, organizations, integrations, access, notifications, files, support, commercial, booking, billing, workflows, ai)
  *      și sincronizarea registrului comercial de două ori (a doua nu trebuie să schimbe nimic)
  *   4. Oprește DB-ul (indiferent de rezultat)
  *
@@ -44,6 +44,7 @@ const SHADOW_FILES = `postgresql://postgres:test@localhost:${PG}/shadow_files_di
 const SHADOW_BILLING = `postgresql://postgres:test@localhost:${PG}/shadow_billing_diff`;
 const SHADOW_WORKFLOWS = `postgresql://postgres:test@localhost:${PG}/shadow_workflows_diff`;
 const SHADOW_SUPPORT = `postgresql://postgres:test@localhost:${PG}/shadow_support_diff`;
+const SHADOW_AI = `postgresql://postgres:test@localhost:${PG}/shadow_ai_diff`;
 
 let exitCode = 0;
 
@@ -250,6 +251,20 @@ try {
     DATABASE_URL_ADMIN_TEST: ADMIN_ACCESS,
     BETTER_AUTH_SECRET: TEST_DB.betterAuthSecret,
     FOUNDER_AUTH_SECRET: TEST_DB.founderAuthSecret,
+  });
+
+  // --- Lot 4.9: infrastructura AI (drift, teste pe baza access, cu cota reală ai.analyses) ---
+  console.log('[test:integration] Verificare drift ai schema...');
+  runPkg(
+    '@ventora/ai',
+    `exec prisma migrate diff --from-migrations ./prisma/migrations --to-schema ./prisma/schema.prisma --exit-code --config prisma7.config.ts`,
+    { DATABASE_URL: ADMIN_ACCESS, SHADOW_DATABASE_URL: SHADOW_AI },
+  );
+  console.log('\n[test:integration] ai...');
+  runPkg('@ventora/ai', 'test:integration', {
+    DATABASE_URL_TEST: `postgresql://app_runtime:${TEST_DB.appPw}@localhost:${PG}/${TEST_DB.accessDb}`,
+    DATABASE_URL_FOUNDER_TEST: `postgresql://founder_runtime:${TEST_DB.founderPw}@localhost:${PG}/${TEST_DB.accessDb}`,
+    DATABASE_URL_ADMIN_TEST: ADMIN_ACCESS,
   });
 
   // --- D3-1: scripts/seed-pricing.ts pe o bază curată (registrul real, fără prețuri) ---
