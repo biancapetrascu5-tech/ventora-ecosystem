@@ -111,6 +111,30 @@ export const AuditActions = {
   billingInvoiceIssued: 'billing.invoice_issued',
   billingInvoiceFailed: 'billing.invoice_failed', // outcome failure: nothing issued, or uncertain
   billingPaymentRefunded: 'billing.payment_refunded',
+  // Lot 3.8 — the commercial life cycle: the trial, non-payment (D3-12), the requests with
+  // implementation (S121), the billing profile (D-3.6-1), manual payment (D3-11), the invoice
+  // not issued (D-3.6-5)
+  commercialTrialStarted: 'commercial.trial_started', // the owner, from the Hub (D3-5)
+  commercialTrialEnded: 'commercial.trial_ended', // the job: expired, data kept
+  commercialSubscriptionTrialEnded: 'commercial.subscription_trial_ended', // N4
+  commercialDunningOpened: 'commercial.dunning_opened',
+  commercialDunningReadOnly: 'commercial.dunning_read_only', // after the grace
+  commercialDunningResolved: 'commercial.dunning_resolved',
+  commercialSetupRequested: 'commercial.setup_requested',
+  commercialSetupOfferSent: 'commercial.setup_offer_sent',
+  commercialSetupAccepted: 'commercial.setup_accepted',
+  commercialSetupConfirmed: 'commercial.setup_confirmed',
+  commercialSetupPaid: 'commercial.setup_paid',
+  commercialSetupWorkStarted: 'commercial.setup_work_started',
+  commercialSetupLive: 'commercial.setup_live',
+  commercialSetupCancelled: 'commercial.setup_cancelled',
+  commercialSetupRefunded: 'commercial.setup_refunded',
+  billingProfileSaved: 'billing.profile_saved', // with the reason, in the business's log
+  billingPaymentMethodSet: 'billing.payment_method_set', // card / transfer, the payment terms
+  billingTransferInvoiced: 'billing.transfer_invoiced',
+  billingTransferReceived: 'billing.transfer_received', // Founder confirms the receipt
+  billingInvoiceRetried: 'billing.invoice_retried', // „Reîncearcă”
+  billingInvoiceManual: 'billing.invoice_manual', // „Am emis-o manual”
   // Lot 4.10 — the workflow engine (category founder): only Founder builds, starts and stops
   // (D-WF-2); the reason and the support reference go in the business's log
   workflowDefinitionSaved: 'workflows.definition_saved', // a new automation or a new version

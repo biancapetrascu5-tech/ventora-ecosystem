@@ -187,6 +187,16 @@ export class FakeStripe implements StripeGateway {
     return { ...pi };
   }
 
+  refunds: Array<{ id: string; paymentIntentId: string }> = [];
+
+  async refundPaymentIntent(paymentIntentId: string, idempotencyKey: string) {
+    const found = this.refunds.find((r) => r.id === `re_${idempotencyKey}`);
+    if (found) return { id: found.id };
+    const refund = { id: `re_${idempotencyKey}`, paymentIntentId };
+    this.refunds.push(refund);
+    return { id: refund.id };
+  }
+
   async retrievePaymentIntent(piId: string) {
     const pi = this.paymentIntents.get(piId);
     if (!pi) throw Object.assign(new Error('No such payment_intent'), { statusCode: 404 });

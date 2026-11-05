@@ -2,6 +2,7 @@ import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { getFounderSession } from '@ventora/identity';
 import { readRequests } from '@/server/commercial-actions';
+import { readSetupRequests } from '@/server/lifecycle-actions';
 import { RequestsScreen } from '@/screens/commercial/RequestsScreen';
 
 export const dynamic = 'force-dynamic';
@@ -10,7 +11,7 @@ export const dynamic = 'force-dynamic';
 export default async function RequestsRoute() {
   const session = await getFounderSession(await headers());
   if (!session) redirect('/sign-in');
-  const requests = await readRequests();
+  const [requests, setup] = await Promise.all([readRequests(), readSetupRequests()]);
   if (!requests) throw new Error('[founder] requests unavailable');
-  return <RequestsScreen user={{ name: session.name }} requests={requests} />;
+  return <RequestsScreen user={{ name: session.name }} requests={requests} setup={setup ?? []} />;
 }

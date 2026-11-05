@@ -29,6 +29,8 @@ import { FounderSupportFlow } from '../support/FounderSupportFlow';
 import { OwnerRecoveryFlow } from '../recovery/OwnerRecoveryFlow';
 import { businessStatus } from './status';
 import s from './business-screen.module.css';
+import type { BillingTabData } from '@/server/lifecycle-actions';
+import { LifecycleBilling } from './LifecycleBilling';
 
 /* FounderBusiness (Lot 2.8): antetul, „Mai multe acțiuni” → sesiunea de suport (FounderSupportFlow)
    și recuperarea proprietarului (OwnerRecoveryFlow), pe afacerea paginii (S95); suspendarea cu
@@ -76,10 +78,13 @@ export function BusinessScreen({
   openException = false,
   purchaseFailed = false,
   openSupportFor,
+  lifecycle = null,
 }: {
   user: { name: string };
   data: BusinessPageData;
   commercial: BusinessCommercialData | null;
+  /** Lotul 3.8: datele de facturare, plata, facturile („Plăți și facturi”). */
+  lifecycle?: BillingTabData | null;
   quotas: QuotaInfo[];
   requestsBadge: number;
   initialTab?: BusinessTab;
@@ -298,6 +303,14 @@ export function BusinessScreen({
                 business={b.name}
                 c={commercial}
                 onDone={setToast}
+                history={
+                  <LifecycleBilling
+                    organizationId={b.id}
+                    business={b.name}
+                    data={lifecycle}
+                    onDone={setToast}
+                  />
+                }
               />
             ) : undefined
           }

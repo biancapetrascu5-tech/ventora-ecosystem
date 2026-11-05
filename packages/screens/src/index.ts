@@ -224,3 +224,30 @@ export type {
   FinishUpload,
 } from './support/parts';
 export { default as supportStyles } from './support/support.module.css';
+// Lotul 3.8 (S121): datele de facturare, factura neemisă, cererile cu implementare
+export {
+  BillingProfileCard,
+  BillingProfileForm,
+  BillingProfileDrawer,
+  InvoiceNotIssuedNotice,
+  InvoiceHistorySection,
+  ManualIssueDialog,
+  SetupPill,
+  SetupRequestsList,
+  SetupRequestDrawer,
+  SetupGoLiveDialog,
+  SetupCancelDialog,
+  RO_COUNTIES,
+  PROFILE_COUNTRIES,
+  countryName,
+} from './founder/commercial/LifecycleViews';
+export type {
+  BillingProfileValues,
+  BillingProfileErrors,
+  InvoiceHistoryRow,
+  InvoiceHistoryStatus,
+  ManualIssueValues,
+  SetupState,
+  SetupRow,
+  SetupOfferValues,
+} from './founder/commercial/LifecycleViews';

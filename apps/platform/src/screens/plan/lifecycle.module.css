@@ -1,0 +1,120 @@
+/* Lotul 3.8 (S121): HubBillingProfile, HubSetupRequest — clasele din preview.html (.kv, .x-stack,
+   .x-line, .su-steps), aceleași valori ca în @ventora/screens. */
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+.stack p {
+  margin: 0;
+}
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+.kv {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--space-2) var(--space-4);
+  margin: 0;
+}
+.kv dt {
+  color: var(--ink-muted);
+  padding-top: var(--space-0-5);
+}
+.kv dd {
+  margin: 0;
+  color: var(--ink);
+}
+.g2f {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-4);
+}
+.g2fm {
+  grid-template-columns: 1fr;
+}
+.line {
+  display: flex;
+  gap: var(--space-2);
+  align-items: flex-start;
+  color: var(--ink-secondary);
+}
+.line p {
+  margin: 0;
+}
+.line :global(.v-icon) {
+  flex: none;
+  margin-top: 2px;
+}
+.start {
+  align-self: flex-start;
+}
+.ok {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  color: var(--done-ink);
+}
+.steps {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.step {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+}
+.stepDone {
+  color: var(--ink);
+}
+.stepTodo {
+  color: var(--ink-muted);
+}
+.hist {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  color: var(--ink-secondary);
+}
+.suSteps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+.suSteps li {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--ink-muted);
+}
+.suSteps li.done {
+  color: var(--ink-secondary);
+}
+.suSteps li.done :global(.v-icon) {
+  color: var(--done-ink);
+}
+.suSteps li.cur {
+  color: var(--ink);
+  font-weight: 600;
+}
+.suSteps li.cur :global(.v-icon) {
+  color: var(--attention-ink);
+}
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+}

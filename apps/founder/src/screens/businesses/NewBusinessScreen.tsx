@@ -15,6 +15,13 @@ import {
 import { createBusiness } from '@/server/business-actions';
 import type { BundlesData } from '@/server/commercial-actions';
 import { FounderShell } from '../shell/FounderShell';
+import {
+  BillingProfileForm,
+  type BillingProfileErrors,
+  type BillingProfileValues,
+} from '@ventora/screens';
+import { checkRomanianCui } from '@ventora/billing/billing-profile';
+import { checkProfile, toProfileInput } from './LifecycleBilling';
 import { MEMBERS, appPrice, currentOffer, priceOf } from '../commercial/bundleText';
 
 /* „Afacere nouă” (Lot 2.8; S117 / D3-24): createBusinessAsFounder — afacerea și invitația
@@ -39,6 +46,19 @@ export function NewBusinessScreen({
   const [email, setEmail] = useState('');
   const [problem, setProblem] = useState<'empty' | 'format' | null>(null);
   const [state, setState] = useState<NewBusinessState>('idle');
+  // Lotul 3.8 (S121): „Date de facturare”, cu aceleași reguli ca serverul
+  const [profile, setProfile] = useState<BillingProfileValues>({
+    type: 'company',
+    name: '',
+    taxId: '',
+    regCom: '',
+    street: '',
+    city: '',
+    county: '',
+    country: 'RO',
+    email: '',
+  });
+  const [profileErrors, setProfileErrors] = useState<BillingProfileErrors>({});
   const [buy, setBuy] = useState<NewBusinessBuy>({
     currency: 'RON',
     interval: 'month',
@@ -115,7 +135,9 @@ export function NewBusinessScreen({
   async function submit() {
     const p = emailProblem(email);
     setProblem(p);
-    if (p || !name.trim()) return;
+    const pe = checkProfile(profile);
+    setProfileErrors(pe);
+    if (p || !name.trim() || Object.keys(pe).length) return;
     setState('pending');
     const res = await createBusiness(
       name.trim(),
@@ -129,6 +151,7 @@ export function NewBusinessScreen({
             trial: buy.trial,
           }
         : undefined,
+      toProfileInput(profile),
     );
     if (res.ok) {
       router.push(
@@ -151,6 +174,14 @@ export function NewBusinessScreen({
         state={state}
         buy={catalog ? buy : undefined}
         offer={offer}
+        billing={
+          <BillingProfileForm
+            values={profile}
+            errors={profileErrors}
+            onChange={setProfile}
+            cuiOk={profile.country === 'RO' && checkRomanianCui(profile.taxId) === 'ok'}
+          />
+        }
         onBuyChange={setBuy}
         onNameChange={setName}
         onEmailChange={(v) => {

@@ -340,6 +340,109 @@ export const FileDeletedV1 = defineEvent({
   schema: filePayload,
 });
 
+/**
+ * Lot 3.8 — `commercial.trial.ending` v1 (D3-5): a trial ends in 3 days; the owner is reminded
+ * once (the job sets `reminder_sent_at` in the same transaction). Delivery: the F4 consumer.
+ */
+export const CommercialTrialEndingV1 = defineEvent({
+  type: 'commercial.trial.ending',
+  version: 1,
+  sourceApp: 'platform',
+  growthSafe: false,
+  withoutConsumer: 'complete',
+  schema: z
+    .object({
+      trialId: z.uuid(),
+      kind: z.enum(['application', 'feature']),
+      applicationId: z.string().min(1).nullable(),
+      endsAt: z.iso.datetime({ offset: true }),
+    })
+    .strict(),
+});
+
+/**
+ * Lot 3.8 — `commercial.dunning.changed` v1 (D3-12): a non-payment case opened, went read-only
+ * after the grace, or was resolved. The owner is told (Hub notice, F4 e-mail).
+ */
+export const CommercialDunningChangedV1 = defineEvent({
+  type: 'commercial.dunning.changed',
+  version: 1,
+  sourceApp: 'platform',
+  growthSafe: false,
+  withoutConsumer: 'complete',
+  schema: z
+    .object({
+      dunningId: z.uuid(),
+      cause: z.enum(['card', 'transfer', 'trial']),
+      state: z.enum(['opened', 'read_only', 'resolved']),
+    })
+    .strict(),
+});
+
+/**
+ * Lot 3.8 — `commercial.setup_request.changed` v1 (S121): a request with implementation moved
+ * on; the owner sees it in the Hub and by e-mail (the offer, the start date, live, cancelled with
+ * the reason, refunded).
+ */
+export const CommercialSetupRequestChangedV1 = defineEvent({
+  type: 'commercial.setup_request.changed',
+  version: 1,
+  sourceApp: 'founder',
+  growthSafe: false,
+  withoutConsumer: 'complete',
+  schema: z
+    .object({
+      setupRequestId: z.uuid(),
+      applicationId: z.string().min(1),
+      status: z.enum([
+        'requested',
+        'accepted',
+        'confirmed',
+        'paid',
+        'in_progress',
+        'live',
+        'cancelled',
+        'refunded',
+      ]),
+      offerSent: z.boolean(),
+    })
+    .strict(),
+});
+
+/**
+ * Lot 3.8 — `billing.profile.changed` v1 (D-3.6-1): the Ventora team saved the business's billing
+ * data; the owner gets an e-mail with the new data (read from the profile, not from the event).
+ */
+export const BillingProfileChangedV1 = defineEvent({
+  type: 'billing.profile.changed',
+  version: 1,
+  sourceApp: 'founder',
+  growthSafe: false,
+  withoutConsumer: 'complete',
+  schema: z.object({ changedByFounderId: z.uuid(), created: z.boolean() }).strict(),
+});
+
+/**
+ * Lot 3.8 — `billing.transfer.received` v1 (D3-11): the team confirmed a transfer for an issued
+ * invoice. Its consumer records the receipt in SmartBill (N16).
+ */
+export const BillingTransferReceivedV1 = defineEvent({
+  type: 'billing.transfer.received',
+  version: 1,
+  sourceApp: 'founder',
+  growthSafe: false,
+  withoutConsumer: 'complete',
+  schema: z
+    .object({
+      invoiceId: z.uuid(),
+      paymentId: z.uuid(),
+      amountMinor: z.number().int().nonnegative(),
+      currency: z.enum(['RON', 'EUR']),
+      receivedOn: z.iso.date(),
+    })
+    .strict(),
+});
+
 export const EVENT_CATALOG: readonly EventDefinition[] = [
   InvitationNewLinkRequestedV1 as EventDefinition,
   SubscriptionVersionChangeScheduledV1 as EventDefinition,
@@ -351,6 +454,11 @@ export const EVENT_CATALOG: readonly EventDefinition[] = [
   BillingPaymentFailedV1 as EventDefinition,
   BillingDisputeOpenedV1 as EventDefinition,
   BillingInvoiceIssuedV1 as EventDefinition,
+  CommercialTrialEndingV1 as EventDefinition,
+  CommercialDunningChangedV1 as EventDefinition,
+  CommercialSetupRequestChangedV1 as EventDefinition,
+  BillingProfileChangedV1 as EventDefinition,
+  BillingTransferReceivedV1 as EventDefinition,
   FileUploadedV1 as EventDefinition,
   FileDeletedV1 as EventDefinition,
   SupportReplyPostedV1 as EventDefinition,

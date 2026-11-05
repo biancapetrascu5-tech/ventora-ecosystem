@@ -39,6 +39,11 @@ export type AuditTargetType =
   // Lot 3.6: the invoices of the payments
   | 'payment'
   | 'invoice'
+  // Lot 3.8: the commercial life cycle
+  | 'trial'
+  | 'dunning'
+  | 'setup_request'
+  | 'billing_profile'
   // Lot 4.10: the workflow engine (core/workflows)
   | 'workflow_definition'
   | 'workflow_activation'

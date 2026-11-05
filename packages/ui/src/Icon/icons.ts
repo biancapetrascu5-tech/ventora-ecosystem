@@ -49,6 +49,7 @@ import {
   Folder,
   Image,
   FileText,
+  FileCheck,
   Lock,
   Unlock,
   Key,
@@ -181,6 +182,8 @@ export const ICON_REGISTRY = {
   folder: Folder,
   image: Image,
   'file-text': FileText,
+  // Lotul 3.8 (S121): „Am emis-o manual…”, „Emisă manual”
+  'file-check': FileCheck,
   lock: Lock,
   unlock: Unlock,
   key: Key,

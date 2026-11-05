@@ -121,6 +121,8 @@ export type PlanViewProps = {
     /** Lotul 3.6: „Descarcă PDF” (linkul semnat). */
     onDownload?: (row: PlanInvoiceRow) => void;
   };
+  /** Lotul 3.8 (S121): „Date de facturare” și cererile cu implementare, sub abonament. */
+  after?: ReactNode;
 };
 
 export function PlanView({
@@ -133,6 +135,7 @@ export function PlanView({
   usage,
   packs,
   invoices,
+  after,
 }: PlanViewProps) {
   const t = useTranslations('hub.plan');
   const pay = useTranslations('pay');
@@ -343,6 +346,7 @@ export function PlanView({
           </SheetSection>
         )}
       </Sheet>
+      {after}
     </>
   );
 }

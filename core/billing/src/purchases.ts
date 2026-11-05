@@ -4,6 +4,7 @@ import {
   activatePurchasedAddon,
   activatePurchasedApplication,
   billingPeriod,
+  markSetupPaid,
   calendarDate,
   getBillingTerms,
   getPurchaseQuote,
@@ -234,7 +235,9 @@ export async function confirmPurchase(
 
 type PurchaseRow = {
   id: string;
-  kind: 'addon' | 'application';
+  /** Lot 3.8: `setup` — the implementation of a request (S121), paid once. */
+  kind: 'addon' | 'application' | 'setup';
+  setup_request_id: string | null;
   addon_id: string | null;
   application_id: string | null;
   packs: number;
@@ -255,7 +258,7 @@ async function readPurchase(
   forUpdate = false,
 ): Promise<PurchaseRow | null> {
   const { rows } = await client.query<PurchaseRow>(
-    `SELECT id, kind, addon_id, application_id, packs, currency, price_minor, setup_minor,
+    `SELECT id, kind, addon_id, application_id, setup_request_id, packs, currency, price_minor, setup_minor,
             recurring, status, stripe_payment_intent_id, failure_code, failure_message,
             created_by_user_id
        FROM billing.purchase WHERE id = $1${forUpdate ? ' FOR UPDATE' : ''}`,
@@ -523,26 +526,37 @@ export async function activateIfPaid(
 ): Promise<{ activated: boolean; recurring: boolean }> {
   const row = await withBillingRead(organizationId, (client) => readPurchase(client, purchaseId));
   if (!row || row.status !== 'paid') return { activated: false, recurring: false };
+  if (row.kind === 'setup') {
+    // the request goes `paid` (once; a request no longer `confirmed` stays as it is)
+    await markSetupPaid({
+      organizationId,
+      setupRequestId: row.setup_request_id!,
+      paymentRef: purchaseId,
+      amountMinor: Number(row.setup_minor),
+    });
+  }
   const ref =
-    row.kind === 'addon'
-      ? (
-          await activatePurchasedAddon({
-            organizationId,
-            purchaseId,
-            addonId: row.addon_id!,
-            packs: row.packs,
-          })
-        ).grantId
-      : (
-          await activatePurchasedApplication({
-            organizationId,
-            purchaseId,
-            applicationId: row.application_id!,
-            currency: row.currency,
-            interval: await intervalOf(organizationId),
-            amountMinor: Number(row.price_minor),
-          })
-        ).lineId;
+    row.kind === 'setup'
+      ? row.setup_request_id!
+      : row.kind === 'addon'
+        ? (
+            await activatePurchasedAddon({
+              organizationId,
+              purchaseId,
+              addonId: row.addon_id!,
+              packs: row.packs,
+            })
+          ).grantId
+        : (
+            await activatePurchasedApplication({
+              organizationId,
+              purchaseId,
+              applicationId: row.application_id!,
+              currency: row.currency,
+              interval: await intervalOf(organizationId),
+              amountMinor: Number(row.price_minor),
+            })
+          ).lineId;
   return withBillingWrite(organizationId, async (client, exec) => {
     const { rowCount } = await client.query(
       `UPDATE billing.purchase SET status = 'succeeded', activated_at = now(), commercial_ref = $2,

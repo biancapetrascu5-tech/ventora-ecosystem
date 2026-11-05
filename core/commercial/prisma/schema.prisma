@@ -19,13 +19,14 @@ model Application {
   createdAt      DateTime  @default(now()) @map("created_at") @db.Timestamptz
   updatedAt      DateTime  @default(now()) @map("updated_at") @db.Timestamptz
 
-  features    FeatureKey[]
-  quotas      QuotaKey[]
-  versionApps PlanVersionApplication[]
-  trials      Trial[]
-  prices      ApplicationPrice[]
-  included    ApplicationQuota[]
-  lines       SubscriptionApplication[]
+  features      FeatureKey[]
+  quotas        QuotaKey[]
+  versionApps   PlanVersionApplication[]
+  trials        Trial[]
+  prices        ApplicationPrice[]
+  included      ApplicationQuota[]
+  lines         SubscriptionApplication[]
+  setupRequests SetupRequest[]
 
   @@map("application")
   @@schema("commercial")
@@ -82,12 +83,12 @@ model QuotaKey {
 
 /// Planul („abonamentul” în Hub, D1): numele intern și versiunile lui.
 model Plan {
-  id                 String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  code               String   @unique(map: "plan_code_key") @db.VarChar(64)
-  name               String   @db.VarChar(128)
-  createdByFounderId String   @map("created_by_founder_id") @db.Uuid
-  createdAt          DateTime @default(now()) @map("created_at") @db.Timestamptz
-  updatedAt          DateTime @default(now()) @map("updated_at") @db.Timestamptz
+  id                 String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  code               String    @unique(map: "plan_code_key") @db.VarChar(64)
+  name               String    @db.VarChar(128)
+  createdByFounderId String    @map("created_by_founder_id") @db.Uuid
+  createdAt          DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt          DateTime  @default(now()) @map("updated_at") @db.Timestamptz
   /// D3-24: „Oprește vânzarea” pe bundle
   salesStoppedAt     DateTime? @map("sales_stopped_at") @db.Timestamptz
 
@@ -237,27 +238,28 @@ model BillingAccount {
 
 /// Organizația → versiunea exactă; ziua de ancorare = ziua de start (D3-3).
 model Subscription {
-  id                 String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  organizationId     String      @map("organization_id") @db.Uuid
-  planVersionId      String?     @map("plan_version_id") @db.Uuid
-  interval           String      @db.VarChar(8)
-  currency           String      @db.VarChar(3)
-  startedOn          DateTime    @map("started_on") @db.Date
-  anchorDay          Int         @map("anchor_day") @db.SmallInt
-  status             String      @db.VarChar(16)
-  trialEndsAt        DateTime?   @map("trial_ends_at") @db.Timestamptz
-  canceledAt         DateTime?   @map("canceled_at") @db.Timestamptz
-  createdByFounderId String      @map("created_by_founder_id") @db.Uuid
-  createdAt          DateTime    @default(now()) @map("created_at") @db.Timestamptz
-  updatedAt          DateTime    @default(now()) @map("updated_at") @db.Timestamptz
+  id                 String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  organizationId     String       @map("organization_id") @db.Uuid
+  planVersionId      String?      @map("plan_version_id") @db.Uuid
+  interval           String       @db.VarChar(8)
+  currency           String       @db.VarChar(3)
+  startedOn          DateTime     @map("started_on") @db.Date
+  anchorDay          Int          @map("anchor_day") @db.SmallInt
+  status             String       @db.VarChar(16)
+  trialEndsAt        DateTime?    @map("trial_ends_at") @db.Timestamptz
+  canceledAt         DateTime?    @map("canceled_at") @db.Timestamptz
+  createdByFounderId String       @map("created_by_founder_id") @db.Uuid
+  createdAt          DateTime     @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt          DateTime     @default(now()) @map("updated_at") @db.Timestamptz
   /// D3-25: locurile în echipă incluse, fotografiate din setare la creare (trigger); 0 pentru cele de dinainte de Lotul 3.4.
-  includedMembers    Int         @default(0) @map("included_members")
+  includedMembers    Int          @default(0) @map("included_members")
   version            PlanVersion? @relation(fields: [planVersionId], references: [id], onDelete: Restrict, onUpdate: Cascade)
 
   changes      SubscriptionChange[]
   addonGrants  AddonGrant[]
   applications SubscriptionApplication[]
   discounts    Discount[]
+  dunnings     Dunning[]
 
   @@index([organizationId], map: "subscription_organization_id_idx")
   @@map("subscription")
@@ -347,8 +349,9 @@ model SubscriptionApplication {
   subscription       Subscription @relation(fields: [subscriptionId], references: [id])
   application        Application  @relation(fields: [applicationId], references: [id])
 
-  discounts Discount[]
-  quotas    SubscriptionApplicationQuota[]
+  discounts    Discount[]
+  quotas       SubscriptionApplicationQuota[]
+  setupRequest SetupRequest?
 
   @@index([organizationId], map: "subscription_application_organization_id_idx")
   @@map("subscription_application")
@@ -457,6 +460,10 @@ model Trial {
   endsAt         DateTime     @map("ends_at") @db.Timestamptz
   endedAt        DateTime?    @map("ended_at") @db.Timestamptz
   createdAt      DateTime     @default(now()) @map("created_at") @db.Timestamptz
+  /// Lot 3.8: expired / converted / canceled (trigger trial_guard).
+  endReason      String?      @map("end_reason") @db.VarChar(16)
+  /// Lot 3.8: reminderul commercial.trial.ending, o singură dată.
+  reminderSentAt DateTime?    @map("reminder_sent_at") @db.Timestamptz
   application    Application? @relation(fields: [applicationId], references: [id])
   feature        FeatureKey?  @relation(fields: [featureKey], references: [key])
 
@@ -590,5 +597,82 @@ model SubscriptionApplicationQuota {
   @@id([subscriptionApplicationId, quotaKey])
   @@index([organizationId], map: "subscription_application_quota_organization_id_idx")
   @@map("subscription_application_quota")
+  @@schema("commercial")
+}
+
+// ── Lot 3.8 · commercial_lifecycle ──────────────────────────────────────────────────────────
+
+/// Neplata (D3-12): un caz deschis pe afacere; grația de 14 zile de la overdue_since (trigger),
+/// apoi doar citire și export (read_only_at), până la plată sau închiderea de către Founder.
+/// Indexurile unice parțiale (un caz deschis, o factură un caz) și cel al job-ului sunt doar în migrare.
+model Dunning {
+  id                  String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  organizationId      String       @map("organization_id") @db.Uuid
+  subscriptionId      String       @map("subscription_id") @db.Uuid
+  cause               String       @db.VarChar(16)
+  sourceRef           String       @map("source_ref") @db.VarChar(255)
+  amountMinor         BigInt       @map("amount_minor")
+  currency            String       @db.VarChar(3)
+  overdueSince        DateTime     @map("overdue_since") @db.Timestamptz
+  graceEndsAt         DateTime     @map("grace_ends_at") @db.Timestamptz
+  readOnlyAt          DateTime?    @map("read_only_at") @db.Timestamptz
+  resolvedAt          DateTime?    @map("resolved_at") @db.Timestamptz
+  resolution          String?      @db.VarChar(16)
+  resolvedByFounderId String?      @map("resolved_by_founder_id") @db.Uuid
+  resolveReason       String?      @map("resolve_reason")
+  createdAt           DateTime     @default(now()) @map("created_at") @db.Timestamptz
+  subscription        Subscription @relation(fields: [subscriptionId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+
+  @@unique([organizationId, cause, sourceRef], map: "dunning_source_key")
+  @@index([organizationId], map: "dunning_organization_id_idx")
+  @@map("dunning")
+  @@schema("commercial")
+}
+
+/// Cererea cu implementare (FounderSetupRequests / HubSetupRequest, S121): cerută → acceptată de
+/// client → confirmată de echipă → plătită → în lucru → pornită, plus anulată / rambursată.
+/// Trecerile, pe rol, le impune trigger-ul setup_request_guard; o cerere deschisă pe aplicație (index parțial, în migrare).
+model SetupRequest {
+  id                        String                   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  organizationId            String                   @map("organization_id") @db.Uuid
+  applicationId             String                   @map("application_id") @db.VarChar(64)
+  currency                  String                   @db.VarChar(3)
+  status                    String                   @default("requested") @db.VarChar(16)
+  requestedByUserId         String                   @map("requested_by_user_id") @db.Uuid
+  createdAt                 DateTime                 @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt                 DateTime                 @default(now()) @map("updated_at") @db.Timestamptz
+  setupMinor                BigInt?                  @map("setup_minor")
+  maintenanceMinor          BigInt?                  @map("maintenance_minor")
+  maintenanceInterval       String?                  @map("maintenance_interval") @db.VarChar(8)
+  estimatedStartOn          DateTime?                @map("estimated_start_on") @db.Date
+  offerNote                 String?                  @map("offer_note")
+  offerSentAt               DateTime?                @map("offer_sent_at") @db.Timestamptz
+  offerSentByFounderId      String?                  @map("offer_sent_by_founder_id") @db.Uuid
+  acceptedAt                DateTime?                @map("accepted_at") @db.Timestamptz
+  acceptedByUserId          String?                  @map("accepted_by_user_id") @db.Uuid
+  startOn                   DateTime?                @map("start_on") @db.Date
+  confirmedAt               DateTime?                @map("confirmed_at") @db.Timestamptz
+  confirmedByFounderId      String?                  @map("confirmed_by_founder_id") @db.Uuid
+  paidAt                    DateTime?                @map("paid_at") @db.Timestamptz
+  paymentMethod             String?                  @map("payment_method") @db.VarChar(8)
+  paymentRef                String?                  @map("payment_ref") @db.Uuid
+  paidMinor                 BigInt?                  @map("paid_minor")
+  workStartedAt             DateTime?                @map("work_started_at") @db.Timestamptz
+  workStartedByFounderId    String?                  @map("work_started_by_founder_id") @db.Uuid
+  liveAt                    DateTime?                @map("live_at") @db.Timestamptz
+  liveByFounderId           String?                  @map("live_by_founder_id") @db.Uuid
+  subscriptionApplicationId String?                  @unique(map: "setup_request_subscription_application_id_key") @map("subscription_application_id") @db.Uuid
+  cancelledAt               DateTime?                @map("cancelled_at") @db.Timestamptz
+  cancelledBy               String?                  @map("cancelled_by") @db.VarChar(8)
+  cancelledById             String?                  @map("cancelled_by_id") @db.Uuid
+  cancelReason              String?                  @map("cancel_reason")
+  refundedAt                DateTime?                @map("refunded_at") @db.Timestamptz
+  refundRef                 String?                  @map("refund_ref") @db.VarChar(255)
+  application               Application              @relation(fields: [applicationId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  line                      SubscriptionApplication? @relation(fields: [subscriptionApplicationId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+
+  @@index([organizationId], map: "setup_request_organization_id_idx")
+  @@index([status, createdAt], map: "setup_request_status_created_at_idx")
+  @@map("setup_request")
   @@schema("commercial")
 }

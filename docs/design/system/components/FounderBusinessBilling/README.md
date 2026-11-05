@@ -13,3 +13,5 @@ The commercial part of one business in Founder Control Center (S111): the "Plă�
 Shown at 1280 and 390, in light and dark.
 
 **Discounts (S113).** The tab gets "Reduceri active" with "Adaugă o reducere" and "Încheie reducerea" in the row menu; drawn in FounderDiscounts. Discounts apply to the next invoices; issued invoices never change.
+
+**Billing data and invoices not issued (S121).** The tab gets the card "Factura se emite pe" with "Editează datele de facturare" (drawn in FounderBillingProfile) and the status "Nu s-a emis", with "Reîncearcă" and "Am emis-o manual…" (drawn in FounderInvoiceNotIssued; status "Emisă manual").

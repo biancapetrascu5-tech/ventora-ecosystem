@@ -3,12 +3,15 @@ import {
   BillingDisputeOpenedV1,
   BillingInvoiceIssuedV1,
   BillingPaymentFailedV1,
+  CommercialSetupRequestChangedV1,
+  CommercialTrialEndingV1,
 } from '@ventora/contracts';
 import {
   sendFounderDisputeAlert,
   type NotificationParams,
   type SqlClient,
 } from '@ventora/notifications';
+import type { OutboxSqlClient } from '@ventora/db-kit';
 import { notifyBillingInTx, organizationNameInTx } from '@ventora/organizations';
 import { brandLabel } from './account';
 import { invoiceAppName } from './invoices';
@@ -209,6 +212,97 @@ export const billingDisputeAlertConsumer = {
       livemode: [process.env.STRIPE_SECRET_KEY, process.env.STRIPE_PUBLISHABLE_KEY].some((k) =>
         (k ?? '').includes('_live_'),
       ),
+    });
+  },
+};
+
+/*
+ * Lot 3.8 — the owner's notifications of the life cycle (S115 templates, through
+ * notifyBillingInTx): „Perioada de probă pentru {app} se încheie pe {date}” (commercial.trial.ending,
+ * the job, 3 days before), „Cererea pentru {app} e acceptată” (the team confirmed: pay the
+ * implementation) and „{app} e pornită” (live). These events come from core/commercial's outbox:
+ * the consumer's transaction is commercial_rw's, which reads the price and the request.
+ */
+export const commercialTrialEndingConsumer = {
+  name: 'notifications.commercial-trial-ending',
+  handles: [{ type: CommercialTrialEndingV1.type, version: CommercialTrialEndingV1.version }],
+  async handle(
+    envelope: { eventId: string; organizationId: string; payload: unknown },
+    tx: OutboxSqlClient,
+  ): Promise<void> {
+    const p = CommercialTrialEndingV1.parse(envelope.payload);
+    if (p.kind !== 'application' || !p.applicationId) return;
+    const organizationId = envelope.organizationId;
+    const { rows } = await tx.query(
+      `SELECT p.amount_minor::text AS amount_minor, p.currency
+         FROM commercial.application_price p
+         JOIN commercial.subscription s ON s.currency = p.currency AND s.canceled_at IS NULL
+        WHERE p.application_id = $1 AND p.kind = 'month'
+        ORDER BY s.started_on DESC LIMIT 1`,
+      [p.applicationId],
+    );
+    const price = rows[0] as { amount_minor: string; currency: 'RON' | 'EUR' } | undefined;
+    await notifyBillingInTx(tx, {
+      organizationId,
+      kind: 'trial.ending',
+      idempotencyKey: envelope.eventId,
+      params: {
+        business: (await organizationNameInTx(tx, organizationId)) ?? '',
+        app: invoiceAppName(p.applicationId),
+        date: { type: 'date', date: calendarDate(new Date(p.endsAt)) },
+        ...(price
+          ? {
+              price: {
+                type: 'money',
+                amountMinor: Number(price.amount_minor),
+                currency: price.currency,
+              },
+            }
+          : {}),
+      },
+    });
+  },
+};
+
+export const commercialSetupNoticeConsumer = {
+  name: 'notifications.commercial-setup',
+  handles: [
+    {
+      type: CommercialSetupRequestChangedV1.type,
+      version: CommercialSetupRequestChangedV1.version,
+    },
+  ],
+  async handle(
+    envelope: { eventId: string; organizationId: string; payload: unknown },
+    tx: OutboxSqlClient,
+  ): Promise<void> {
+    const p = CommercialSetupRequestChangedV1.parse(envelope.payload);
+    if (p.status !== 'confirmed' && p.status !== 'live') return;
+    const organizationId = envelope.organizationId;
+    const { rows } = await tx.query(
+      `SELECT setup_minor::text AS setup_minor, maintenance_minor::text AS maintenance_minor, currency
+         FROM commercial.setup_request WHERE id = $1::uuid`,
+      [p.setupRequestId],
+    );
+    const r = rows[0] as
+      | { setup_minor: string | null; maintenance_minor: string | null; currency: 'RON' | 'EUR' }
+      | undefined;
+    if (!r) return;
+    const money = (v: string | null) => ({
+      type: 'money' as const,
+      amountMinor: Number(v ?? 0),
+      currency: r.currency,
+    });
+    await notifyBillingInTx(tx, {
+      organizationId,
+      kind: p.status === 'confirmed' ? 'setup.accepted' : 'setup.started',
+      idempotencyKey: envelope.eventId,
+      params: {
+        business: (await organizationNameInTx(tx, organizationId)) ?? '',
+        app: invoiceAppName(p.applicationId),
+        setup: money(r.setup_minor),
+        price: money(r.maintenance_minor),
+      },
     });
   },
 };

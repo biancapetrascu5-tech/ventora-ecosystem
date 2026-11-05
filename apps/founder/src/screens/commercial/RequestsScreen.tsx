@@ -17,7 +17,9 @@ import {
   refuseRequestWithReason,
   type RequestData,
 } from '@/server/commercial-actions';
+import type { SetupListData } from '@/server/lifecycle-actions';
 import { FounderShell } from '../shell/FounderShell';
+import { SetupRequestsPanel } from './SetupRequestsPanel';
 
 /* FounderRequests (Lotul 3.4, S111): cererile din Hub. „Marchează rezolvată” după schimbarea
    făcută în pagina afacerii; „Refuză…” cu motivul pe care cel care a cerut îl vede în Hub
@@ -26,9 +28,12 @@ import { FounderShell } from '../shell/FounderShell';
 export function RequestsScreen({
   user,
   requests,
+  setup = [],
 }: {
   user: { name: string };
   requests: RequestData[];
+  /** Lotul 3.8: cererile cu implementare (FounderSetupRequests). */
+  setup?: SetupListData[];
 }) {
   const router = useRouter();
   const t = useTranslations('founder.requests');
@@ -99,6 +104,12 @@ export function RequestsScreen({
           setRefusing(find(row));
         }}
       />
+      {setup.length ? (
+        <div className={cs.setupSection}>
+          <h2 className="subheading">{t('setupTitle')}</h2>
+          <SetupRequestsPanel rows={setup} onToast={setToast} />
+        </div>
+      ) : null}
       <DialogTrigger isOpen={!!refusing} onOpenChange={(o) => !o && setRefusing(null)}>
         {refusing ? (
           <RefuseRequestDialog

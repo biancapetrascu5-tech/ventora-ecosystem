@@ -61,7 +61,16 @@
     "email.supportReply.body": "Răspunsul îl citești în Ventora Systems, unde poți și să răspunzi, cu atașamente dacă e nevoie.",
     "email.supportReply.cta": "Vezi solicitarea",
     "email.supportReply.why": "Primești acest e-mail pentru că ai deschis această solicitare în Ventora Systems.",
-    "support.thread.replyNote": "Îți răspundem aici și pe e-mail."
+    "support.thread.replyNote": "Îți răspundem aici și pe e-mail.",
+    "support.list.col.from": "Trimisă de",
+    "support.list.titleBusiness": "Solicitările afacerii",
+    "support.new.appPlatform": "Hub (cont, abonament, echipă)",
+    "support.new.error.required": "Completează acest câmp.",
+    "support.thread.h.openedBy": "{name} a deschis solicitarea",
+    "support.thread.h.reopenedBy": "{name} a redeschis solicitarea",
+    "support.thread.h.autoClosed": "Închisă automat după 7 zile fără răspuns",
+    "support.error.send": "Mesajul nu a plecat. Încearcă din nou.",
+    "support.error.upload": "{file} nu s-a încărcat. Încearcă din nou."
   },
   "en": {
     "support.title": "Support",
@@ -125,7 +134,16 @@
     "email.supportReply.body": "You can read the reply in Ventora Systems and answer there, with attachments if you need them.",
     "email.supportReply.cta": "View request",
     "email.supportReply.why": "You're receiving this email because you opened this request in Ventora Systems.",
-    "support.thread.replyNote": "We reply here and by email."
+    "support.thread.replyNote": "We reply here and by email.",
+    "support.list.col.from": "Sent by",
+    "support.list.titleBusiness": "Your business’s requests",
+    "support.new.appPlatform": "Hub (account, subscription, team)",
+    "support.new.error.required": "Fill in this field.",
+    "support.thread.h.openedBy": "{name} opened the request",
+    "support.thread.h.reopenedBy": "{name} reopened the request",
+    "support.thread.h.autoClosed": "Closed automatically after 7 days without a reply",
+    "support.error.send": "Your message wasn’t sent. Try again.",
+    "support.error.upload": "{file} didn’t upload. Try again."
   },
   "fr": {
     "support.title": "Assistance",
@@ -189,7 +207,16 @@
     "email.supportReply.body": "Vous pouvez lire la réponse dans Ventora Systems et y répondre, avec des pièces jointes si besoin.",
     "email.supportReply.cta": "Voir la demande",
     "email.supportReply.why": "Vous recevez cet e-mail parce que vous avez ouvert cette demande dans Ventora Systems.",
-    "support.thread.replyNote": "Nous vous répondons ici et par e-mail."
+    "support.thread.replyNote": "Nous vous répondons ici et par e-mail.",
+    "support.list.col.from": "Envoyée par",
+    "support.list.titleBusiness": "Les demandes de l’entreprise",
+    "support.new.appPlatform": "Hub (compte, abonnement, équipe)",
+    "support.new.error.required": "Remplissez ce champ.",
+    "support.thread.h.openedBy": "{name} a ouvert la demande",
+    "support.thread.h.reopenedBy": "{name} a rouvert la demande",
+    "support.thread.h.autoClosed": "Fermée automatiquement après 7 jours sans réponse",
+    "support.error.send": "Votre message n’est pas parti. Réessayez.",
+    "support.error.upload": "{file} n’a pas été chargé. Réessayez."
   },
   "es": {
     "support.title": "Soporte",
@@ -253,7 +280,16 @@
     "email.supportReply.body": "Puedes leer la respuesta en Ventora Systems y contestar allí, con archivos adjuntos si hace falta.",
     "email.supportReply.cta": "Ver solicitud",
     "email.supportReply.why": "Recibes este correo porque abriste esta solicitud en Ventora Systems.",
-    "support.thread.replyNote": "Te respondemos aquí y por correo."
+    "support.thread.replyNote": "Te respondemos aquí y por correo.",
+    "support.list.col.from": "Enviada por",
+    "support.list.titleBusiness": "Solicitudes del negocio",
+    "support.new.appPlatform": "Hub (cuenta, suscripción, equipo)",
+    "support.new.error.required": "Completa este campo.",
+    "support.thread.h.openedBy": "{name} abrió la solicitud",
+    "support.thread.h.reopenedBy": "{name} reabrió la solicitud",
+    "support.thread.h.autoClosed": "Cerrada automáticamente tras 7 días sin respuesta",
+    "support.error.send": "El mensaje no se envió. Inténtalo de nuevo.",
+    "support.error.upload": "{file} no se subió. Inténtalo de nuevo."
   },
   "de": {
     "support.title": "Support",
@@ -317,7 +353,16 @@
     "email.supportReply.body": "Sie lesen die Antwort in Ventora Systems und können dort antworten, bei Bedarf mit Anhängen.",
     "email.supportReply.cta": "Anfrage ansehen",
     "email.supportReply.why": "Sie erhalten diese E-Mail, weil Sie diese Anfrage in Ventora Systems eröffnet haben.",
-    "support.thread.replyNote": "Wir antworten hier und per E-Mail."
+    "support.thread.replyNote": "Wir antworten hier und per E-Mail.",
+    "support.list.col.from": "Gesendet von",
+    "support.list.titleBusiness": "Anfragen des Unternehmens",
+    "support.new.appPlatform": "Hub (Konto, Abonnement, Team)",
+    "support.new.error.required": "Bitte füllen Sie dieses Feld aus.",
+    "support.thread.h.openedBy": "{name} hat die Anfrage gestellt",
+    "support.thread.h.reopenedBy": "{name} hat die Anfrage erneut geöffnet",
+    "support.thread.h.autoClosed": "Nach 7 Tagen ohne Antwort automatisch geschlossen",
+    "support.error.send": "Ihre Nachricht wurde nicht gesendet. Bitte versuchen Sie es erneut.",
+    "support.error.upload": "{file} wurde nicht hochgeladen. Bitte versuchen Sie es erneut."
   },
   "it": {
     "support.title": "Assistenza",
@@ -381,6 +426,15 @@
     "email.supportReply.body": "Può leggere la risposta in Ventora Systems e rispondere lì, con allegati se serve.",
     "email.supportReply.cta": "Vedi la richiesta",
     "email.supportReply.why": "Riceve questa e-mail perché ha aperto questa richiesta in Ventora Systems.",
-    "support.thread.replyNote": "Le rispondiamo qui e via e-mail."
+    "support.thread.replyNote": "Le rispondiamo qui e via e-mail.",
+    "support.list.col.from": "Inviata da",
+    "support.list.titleBusiness": "Richieste dell’attività",
+    "support.new.appPlatform": "Hub (account, abbonamento, team)",
+    "support.new.error.required": "Compili questo campo.",
+    "support.thread.h.openedBy": "{name} ha aperto la richiesta",
+    "support.thread.h.reopenedBy": "{name} ha riaperto la richiesta",
+    "support.thread.h.autoClosed": "Chiusa automaticamente dopo 7 giorni senza risposta",
+    "support.error.send": "Il messaggio non è partito. Riprovi.",
+    "support.error.upload": "{file} non è stato caricato. Riprovi."
   }
 }

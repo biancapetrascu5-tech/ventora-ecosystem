@@ -9,3 +9,5 @@
 **Refuse.** A Dialog "Refuzi cererea de la {business}?" with what was asked, and "Motiv" (required); the person who asked sees it in the Hub notification (`notifications.request.refused.*`).
 
 Shown at 1280 and 390, in light and dark.
+
+**Requests with implementation (S121, lot 3.8, proposed).** A new request type "Implementare", with its states, detail and actions, drawn in FounderSetupRequests.

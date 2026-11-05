@@ -433,7 +433,7 @@
       "files": {
         "ventora-logo-email-2x.png": {
           "name": "ventora-logo-email-2x.png",
-          "blob": "a6feffc13c851ddc707e96cbe1738267",
+          "blob": "142f45ecb647fa03e9c1d29748be105e",
           "size": 13509,
           "type": "image/png"
         }
@@ -472,10 +472,10 @@
     "App~20icons"
   ],
   "lastChange": {
-    "at": "2026-11-03T09:27:09Z",
+    "at": "2026-11-04T19:59:28Z",
     "by": "Bianca Petrașcu",
     "via": "Claude",
-    "note": "Logo pe două rânduri: „SYSTEMS” mai mic (62%), centrat sub „VENTORA” (varianta C); sub 32px, varianta mică cu „SYSTEMS” la mărime întreagă"
+    "note": "S121: datele de facturare (D-3.6-1), factura neemisă (D-3.6-4/5), cererile cu implementare (3.8, propus), textele agenților validate — 5 ecrane noi, FounderNewBusiness și FounderOverview schimbate"
   },
   "layout": "files",
   "libraries": [

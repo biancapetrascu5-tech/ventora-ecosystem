@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, type ReactNode } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { APP_IDS, DialogTrigger, type AppName } from '@ventora/ui';
@@ -247,11 +247,14 @@ export function BillingTab({
   business,
   c,
   onDone,
+  history,
 }: {
   organizationId: string;
   business: string;
   c: C | null;
   onDone: (text: string) => void;
+  /** Lotul 3.8: datele de facturare și istoricul facturilor, sub reduceri. */
+  history?: ReactNode;
 }) {
   const router = useRouter();
   const t = useTranslations('founder.discounts');
@@ -425,6 +428,7 @@ export function BillingTab({
         }
         discounts={text.discounts}
         canAdd={!!sub}
+        history={history}
         onAdd={openAdd}
         onEdit={openEdit}
         onEnd={(r) => {
