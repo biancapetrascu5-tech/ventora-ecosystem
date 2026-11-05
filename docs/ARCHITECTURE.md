@@ -273,7 +273,14 @@ Fiecare aplicație are o stare înregistrată în `docs/checklists/<app>.md` și
 >   - Motivul: fiecare operație e o tranzacție interactivă (`SET LOCAL ROLE`) de 300–600 ms prin pooler.
 >   - Cu `max: 1`, verificările de sesiune ale unei pagini Founder, făcute în paralel, stăteau la coadă peste `maxWait` = 2 s, iar Prisma dădea P2028.
 >   - Founder are puțini utilizatori, deci puține instanțe.
-> - **Hub** (`makeIdentityClient`) rămâne la `max: 1`. **Punct deschis pentru Lotul 3.9:** valoarea pentru Hub se alege după numărul de instanțe concurente estimat pe Vercel, cu aceeași regulă.
+> - **Hub** (`makeIdentityClient`): `max: 3` și `maxWait: 5000` (Lotul 3.9b, 05.11.2026, PROPUS în PR).
+>   - Motivul: proiectele Vercel rulează cu Fluid compute, deci o instanță servește mai multe cereri deodată, iar cererile împart pool-ul. Cu `max: 1`, patru verificări de sesiune simultane depășesc deja `maxWait` = 2 s.
+>   - Bugetul, pe staging (200 de clienți în pooler):
+>     - o instanță `platform` deschide cel mult 12 pool-uri de câte 1 (`organizations`, `access` ×2, `ai`, `audit`, `billing`, `commercial`, `files`, `notifications`, `support`, `workflows`, job-urile) plus Hub-ul, deci **15** cu `max: 3`;
+>     - o instanță `founder` deschide cel mult **13** (5 identitate + 8 module);
+>     - rezervă 20 pentru migrări, scripturi și sesiunile echipei.
+>   - Rezultatul: 2 instanțe Founder × 13 = 26, iar (200 − 20 − 26) / 15 = **10 instanțe `platform` concurente**. Estimarea pentru staging și primele afaceri e de 1–2 instanțe pe regiune.
+>   - Când numărul de instanțe estimat se apropie de limită, se reduce numărul pool-urilor pe instanță (un pool comun pentru `app_runtime`), nu `max`-ul Hub-ului.
 
 **De ce nu A și nu B** (măsurat în E4, 200 de conexiuni concurente):
 
