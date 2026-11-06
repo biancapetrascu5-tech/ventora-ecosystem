@@ -1,0 +1,92 @@
+// Schema "booking" (Lot B.1; D-B1-3 = a: modules/booking/prisma/) — folosită pentru garda de drift
+// (prisma migrate diff) și prisma migrate deploy. Codul nu folosește un client Prisma generat (ca în
+// core/support): rulează pe pg, cu SET LOCAL ROLE booking_rw și app.organization_id.
+// CHECK-urile, indecșii unici parțiali pe nume, triggerele, rolul, grant-urile, RLS și funcțiile
+// outbox sunt doar în migrare.
+
+datasource db {
+  provider = "postgresql"
+  schemas  = ["booking"]
+}
+
+/// O categorie din catalogul de servicii („Categorii de servicii”).
+model ServiceCategory {
+  id               String    @id @db.Uuid
+  organizationId   String    @map("organization_id") @db.Uuid
+  name             String    @db.VarChar(80)
+  sortOrder        Int       @default(0) @map("sort_order")
+  archivedAt       DateTime? @map("archived_at") @db.Timestamptz
+  archivedByUserId String?   @map("archived_by_user_id") @db.Uuid
+  createdByUserId  String    @map("created_by_user_id") @db.Uuid
+  createdAt        DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt        DateTime  @default(now()) @map("updated_at") @db.Timestamptz
+
+  services Service[]
+
+  @@index([organizationId, sortOrder], map: "service_category_organization_id_sort_idx")
+  @@map("service_category")
+  @@schema("booking")
+}
+
+/// Un serviciu: durata (fixă sau variabilă), prețul (fix, „de la”, interval), moneda, capacitatea.
+model Service {
+  id                 String    @id @db.Uuid
+  organizationId     String    @map("organization_id") @db.Uuid
+  categoryId         String?   @map("category_id") @db.Uuid
+  name               String    @db.VarChar(120)
+  description        String?
+  durationMinutes    Int       @map("duration_minutes")
+  durationMaxMinutes Int?      @map("duration_max_minutes")
+  priceKind          String    @default("fixed") @map("price_kind") @db.VarChar(8)
+  priceMinor         Int       @map("price_minor")
+  priceMaxMinor      Int?      @map("price_max_minor")
+  currency           String    @default("RON") @db.Char(3)
+  capacity           Int       @default(1)
+  bookableOnline     Boolean   @default(true) @map("bookable_online")
+  sortOrder          Int       @default(0) @map("sort_order")
+  archivedAt         DateTime? @map("archived_at") @db.Timestamptz
+  archivedByUserId   String?   @map("archived_by_user_id") @db.Uuid
+  createdByUserId    String    @map("created_by_user_id") @db.Uuid
+  createdAt          DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt          DateTime  @default(now()) @map("updated_at") @db.Timestamptz
+
+  category ServiceCategory? @relation(fields: [categoryId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "service_category_id_fkey")
+
+  @@index([organizationId, categoryId, sortOrder], map: "service_organization_id_category_sort_idx")
+  @@index([categoryId], map: "service_category_id_idx")
+  @@map("service")
+  @@schema("booking")
+}
+
+model OutboxEvent {
+  eventId        String    @id @map("event_id") @db.Uuid
+  type           String    @db.VarChar(128)
+  version        Int
+  occurredAt     DateTime  @map("occurred_at") @db.Timestamptz
+  organizationId String    @map("organization_id") @db.Uuid
+  sourceApp      String    @map("source_app") @db.VarChar(64)
+  resourceId     String    @map("resource_id") @db.VarChar(255)
+  correlationId  String?   @map("correlation_id") @db.VarChar(255)
+  payload        Json
+  status         String    @default("pending") @db.VarChar(16)
+  attempts       Int       @default(0)
+  availableAt    DateTime  @default(now()) @map("available_at") @db.Timestamptz
+  lastError      String?   @map("last_error")
+  failedAt       DateTime? @map("failed_at") @db.Timestamptz
+  dispatchedAt   DateTime? @map("dispatched_at") @db.Timestamptz
+  createdAt      DateTime  @default(now()) @map("created_at") @db.Timestamptz
+
+  @@map("outbox_events")
+  @@schema("booking")
+}
+
+model ProcessedEvent {
+  consumer       String   @db.VarChar(128)
+  eventId        String   @map("event_id") @db.Uuid
+  organizationId String   @map("organization_id") @db.Uuid
+  processedAt    DateTime @default(now()) @map("processed_at") @db.Timestamptz
+
+  @@id([consumer, eventId])
+  @@map("processed_events")
+  @@schema("booking")
+}

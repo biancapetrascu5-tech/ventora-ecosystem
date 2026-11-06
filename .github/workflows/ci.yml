@@ -418,6 +418,25 @@ jobs:
             echo "Applying $f"
             $PSQL -f "$f"
           done
+      # Lot B.1: the booking schema (role booking_rw, the service catalog, outbox), after audit (C.0b)
+      - name: Apply booking migrations
+        run: |
+          PSQL="psql postgresql://postgres:test@localhost:5435/ventora_access_test -v ON_ERROR_STOP=1"
+          for f in modules/booking/prisma/migrations/*/migration.sql; do
+            echo "Applying $f"
+            $PSQL -f "$f"
+          done
+      - name: Verify booking schema matches migrations
+        run: |
+          psql postgresql://postgres:test@localhost:5435/ventora_access_test -c "CREATE DATABASE shadow_booking_diff"
+          SHADOW_DATABASE_URL="postgresql://postgres:test@localhost:5435/shadow_booking_diff" \
+          pnpm --filter @ventora/booking exec prisma migrate diff \
+            --from-migrations ./prisma/migrations \
+            --to-schema ./prisma/schema.prisma \
+            --exit-code \
+            --config prisma7.config.ts
+        env:
+          DATABASE_URL: postgresql://postgres:test@localhost:5435/ventora_access_test
       - name: Sync permissions
         run: pnpm tsx scripts/sync-permissions.ts
         env:

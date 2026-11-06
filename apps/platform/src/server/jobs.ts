@@ -71,6 +71,8 @@ const OUTBOX_SOURCES: readonly OutboxSource[] = [
   { schema: 'billing', moduleRole: 'billing_rw' },
   // Lot 4.6: support.reply.posted (Founder) și support.request.auto_close_warning (job-ul)
   { schema: 'support', moduleRole: 'support_rw' },
+  // Lot B.1: booking.service.archived (fără consumator încă: se marchează livrat)
+  { schema: 'booking', moduleRole: 'booking_rw' },
 ];
 
 // app_runtime (DATABASE_URL), creat la prima rulare: nu la build și nu în codul de request.
