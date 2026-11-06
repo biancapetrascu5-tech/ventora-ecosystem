@@ -150,6 +150,10 @@ psqlFile(
   TEST_DB.identityDb,
   join(ROOT, 'core/audit/prisma/migrations/20261028000001_audit_init/migration.sql'),
 );
+psqlFile(
+  TEST_DB.identityDb,
+  join(ROOT, 'core/audit/prisma/migrations/20261106000002_audit_category_booking/migration.sql'),
+);
 
 // M4 (2.5c) după founder: GRANT EXECUTE către founder_runtime
 console.log('[test:db:up] Aplic migrarea identity #3 (founder owner recovery)...');
@@ -270,6 +274,10 @@ psqlFile(
   TEST_DB.orgDb,
   join(ROOT, 'core/audit/prisma/migrations/20261028000001_audit_init/migration.sql'),
 );
+psqlFile(
+  TEST_DB.orgDb,
+  join(ROOT, 'core/audit/prisma/migrations/20261106000002_audit_category_booking/migration.sql'),
+);
 
 console.log('[test:db:up] Creez rolurile app_runtime și founder_runtime în organizations DB...');
 psql(
@@ -329,6 +337,10 @@ psqlFile(
 psqlFile(
   TEST_DB.accessDb,
   join(ROOT, 'core/audit/prisma/migrations/20261028000001_audit_init/migration.sql'),
+);
+psqlFile(
+  TEST_DB.accessDb,
+  join(ROOT, 'core/audit/prisma/migrations/20261106000002_audit_category_booking/migration.sql'),
 );
 // Lot 2.5c: M2 (support_session), M3 (organizations), M4 (identity) — după audit și founder
 for (const migration of [
@@ -423,6 +435,7 @@ for (const migration of [
   'core/identity/prisma/identity/migrations/20261027000002_session_active_org/migration.sql',
   'core/identity/prisma/founder/migrations/20261025000001_founder_init/migration.sql',
   'core/audit/prisma/migrations/20261028000001_audit_init/migration.sql',
+  'core/audit/prisma/migrations/20261106000002_audit_category_booking/migration.sql',
   'core/identity/prisma/identity/migrations/20261028000004_founder_owner_recovery/migration.sql',
   'core/identity/prisma/identity/migrations/20261029000006_lot26_open_last_organization/migration.sql',
   ...readdirSync(join(ROOT, 'core/commercial/prisma/migrations'), { withFileTypes: true })

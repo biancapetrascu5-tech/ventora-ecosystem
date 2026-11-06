@@ -1,5 +1,12 @@
 export type AuditCategory =
-  'identity' | 'organization' | 'access' | 'support' | 'founder' | 'commercial';
+  | 'identity'
+  | 'organization'
+  | 'access'
+  | 'support'
+  | 'founder'
+  | 'commercial'
+  // Lot C.0b: the Booking application (B.1: the service catalog)
+  | 'booking';
 
 export type AuditOutcome = 'success' | 'failure' | 'denied';
 
@@ -48,7 +55,10 @@ export type AuditTargetType =
   | 'workflow_definition'
   | 'workflow_activation'
   | 'workflow_execution'
-  | 'workflow_engine';
+  | 'workflow_engine'
+  // Lot C.0b / B.1: the Booking service catalog (category booking)
+  | 'booking_service'
+  | 'booking_service_category';
 
 export type AuditEvent = {
   category: AuditCategory;
