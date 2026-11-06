@@ -1,6 +1,7 @@
 # BOOKING (EasyBook) — Planul primei aplicații
 
 **Status:** PROPUS (31.10.2026). Deciziile D-B-1…14 sunt **DECISE** de fondatoare pe 31.10.2026 (§7); planul în ansamblu așteaptă aprobarea.
+**Actualizat 06.11.2026:** deciziile fondatoarei despre SMS (D-SMS-8, B.17 în pilot, B.18–B.22-SMS, D-SMS-7), WhatsApp și casa de marcat (§7.1b).
 **Referințe:**
 - `ARCHITECTURE.md` v0.4.9: §3, §5, §5.1–5.2, §6.4–6.5, §8.1–8.5, §11.2–11.6, §12, §13.2, §15.3–15.4, §17.1;
 - `checklists/01-booking.md` (66 de funcționalități confirmate);
@@ -49,8 +50,10 @@ Booking (numele afișat EasyBook, D-UX-4) e prima aplicație a ecosistemului (D-
 - plățile pe programare (Stripe Connect);
 - rapoartele.
 
-**Pilotul (§5, D-B-12)** include deja pagina publică cu captcha, avansul pentru clienții cu „Risc ridicat” prin Stripe Connect și câmpurile medicale. Rămân pe dinafară:
-- **SMS-ul de pe numărul propriu** (7 funcționalități): așteaptă E-SMS-1 și validarea juridică (D-SMS-7);
+**Pilotul (§5, D-B-12)** include deja pagina publică cu captcha, avansul pentru clienții cu „Risc ridicat” prin Stripe Connect și câmpurile medicale. Din 06.11.2026 intră și **reminderul SMS prin SMSLink**, de pe numărul scurt comun (B.17, D-SMS-8). Rămân pe dinafară:
+- **SMS-ul de pe numărul propriu** (7 funcționalități, B.18–B.22-SMS): după E-SMS-1. Validarea juridică (D-SMS-7) se obține înainte de lansare;
+- **WhatsApp:** lot separat, după pilot și după verificarea Meta Business;
+- **casa de marcat cu AMEF:** nu intră în v1. Experimentul E-AMEF vine după pilot;
 - **integrările opționale** (6 funcționalități): așteaptă aplicațiile partenere. Până atunci, Booking rămâne `Pilot`, fără integrări goale (D-B-13).
 
 ---
@@ -61,6 +64,8 @@ Booking (numele afișat EasyBook, D-UX-4) e prima aplicație a ecosistemului (D-
 - **Workflow engine-ul** (D-WF-1…5, Lotul 4.10). Automatizările Booking sunt **setări ale modulului** (D-WF-6): afacerea le pornește, le oprește și le configurează în limitele date de Ventora.
 - **Portal-ul** (aplicația B2C, recenziile, loialitatea). Portal poate iniția o programare **doar prin Booking** (brief §17); Booking nu construiește nimic din Portal.
 - **Gateway-ul și aplicația Android de trimitere SMS:** se aleg prin E-SMS-1 (D-SMS-2). Aici intră doar legarea lor, după experiment.
+- **WhatsApp** (decizia din 06.11.2026): un lot separat, după pilot, după verificarea contului Meta Business. Nu face parte din loturile B.*.
+- **Casa de marcat cu AMEF** (decizia din 06.11.2026): nu intră în v1. Încasările din B.21 sunt evidențe în Booking, nu bonuri fiscale. Integrarea se evaluează prin experimentul **E-AMEF**, după pilot.
 - **Asistentul AI ca produs:** faza lui e de stabilit după F4 (D-AI-5). Aici intră doar locul lui în Booking (Etapa 6).
 - **Domeniul propriu al salonului pentru pagina publică:** mai târziu, ca pachet (D-B-5).
 - **Migrarea datelor din Hub-ul vechi:** nu există (D-MIG-1).
@@ -326,19 +331,21 @@ Câte un lot de 1–2 h, în ordinea propusă:
 - **Dependențe:** B.13.
 - **Estimare:** 1 h.
 
-#### Lot B.17 — SMS prin furnizorul Ventora
+#### Lot B.17 — SMS prin furnizorul Ventora [Pilot]
 - **Ce intră:**
   - **adaptorul `SMS_PROVIDER`** în `core/messaging` (PR Core separat), prin interfața `SmsChannel` din 4.3 (D4-26 = a);
   - **textul normalizat** GSM-7, fără diacritice, ≤ 160 de caractere (D-SMS-10);
   - **cota** `messaging.sms`;
   - **reminderul SMS** din `BookingSettings`.
-- **Dependențe:** D-SMS-8 (SMSLink sau Twilio), 4.3.
+- **Furnizorul (D-SMS-8, DECIS 06.11.2026):** **SMSLink**, cu **numărul scurt comun** al furnizorului. Nu se cere un număr sau un expeditor alfanumeric propriu pentru fiecare salon.
+- **Dependențe:** 4.3 (în `main`). Contul SMSLink și cheile se pun de fondatoare în `.env.local` și Vercel.
 - **Migrări:** `messaging_init`.
 - **Estimare:** 2 h × 2.
 
 #### Loturile B.18–B.22 — SMS de pe numărul propriu (cele 7 funcționalități D-SMS-9)
 Sunt sărite cât timp lipsesc condițiile de mai jos.
-- **Condiții:** E-SMS-1 + ADR-ul cu gateway-ul ales (D-SMS-2); D-SMS-7 pentru lansare; prețurile D-SMS-4.
+- **Condiții (06.11.2026):** încep **după E-SMS-1** și după ADR-ul cu gateway-ul ales (D-SMS-2). Prețurile vin din D-SMS-4. Validarea juridică (D-SMS-7) se obține **înainte de lansare**, nu înainte de dezvoltare.
+- **Numerotarea:** B.21-SMS și B.22-SMS sunt alte loturi decât B.21 (încasările) și B.22 (Stripe Connect) din Etapa 4.
 - **Loturile:**
   - **B.18:** `ANDROID_SIM` și dispozitivele (QR de unică folosință, credențiala revocabilă E9, cota `booking.sms.devices`);
   - **B.19:** stările mesajelor, fără duplicate, eșalonarea și plafonul pe dispozitiv;
@@ -427,8 +434,10 @@ Sunt sărite cât timp lipsesc condițiile de mai jos.
 | **B.6**, din designul aprobat | **B.11:** designul paginii publice; cheile Turnstile |
 | — | **B.13–B.16:** 4.3 (livrarea), 4.4 pentru B.15 |
 | — | **B.22:** 3.5 (SDK-ul Stripe) sau PR Core, Connect activat, URL public (3.9), avizul juridic |
-| — | **B.17:** D-SMS-8 + 4.3 |
-| — | **B.18–B.22-SMS:** E-SMS-1, ADR gateway, D-SMS-7, D-SMS-4 |
+| **B.17** (D-SMS-8 decis: SMSLink, numărul scurt comun; 4.3 în `main`), după contul SMSLink | — |
+| — | **B.18–B.22-SMS:** E-SMS-1, ADR gateway, D-SMS-4; D-SMS-7 înainte de lansare |
+| — | **WhatsApp:** după pilot și după verificarea Meta Business (lot separat) |
+| — | **Casa de marcat (AMEF):** nu în v1; experimentul E-AMEF după pilot |
 | — | **C.1 / B.10:** după pilot |
 | — | **B.25–B.30:** aplicațiile partenere (D-B-13) |
 | — | **B.31:** 4.9, D-AI-5 |
@@ -443,9 +452,10 @@ Sunt sărite cât timp lipsesc condițiile de mai jos.
 - **câmpurile medicale** (B.8), cu date de test până la avizul avocatului;
 - **pagina publică cu captcha și limite** (B.11);
 - **avansul pentru „Risc ridicat”** prin Stripe Connect (B.22, partea de avans);
-- **confirmarea și reminderul pe e-mail**, în limba clientului (B.13).
+- **confirmarea și reminderul pe e-mail**, în limba clientului (B.13);
+- **reminderul SMS prin SMSLink**, de pe numărul scurt comun (B.17, D-SMS-8, 06.11.2026).
 
-**Ce nu intră:** SMS, rapoarte, Excel, recurente, clase, pachete, locații multiple, resurse, formulare personalizate, coduri promoționale, integrări, AI.
+**Ce nu intră:** SMS-ul de pe numărul propriu (B.18–B.22-SMS), WhatsApp, casa de marcat cu AMEF, rapoarte, Excel, recurente, clase, pachete, locații multiple, resurse, formulare personalizate, coduri promoționale, integrări, AI.
 
 **Condiții:**
 - **URL public** (3.9): ruta publică și webhook-urile Stripe;
@@ -453,6 +463,7 @@ Sunt sărite cât timp lipsesc condițiile de mai jos.
 - **Stripe Connect** activat pe contul Ventora, cu contul de test al salonului pilot;
 - **abonamentul afacerii pilot**, cu acordul fondatoarei (D3-1);
 - **cheile Turnstile**;
+- **contul SMSLink** și cheile lui (B.17);
 - **designul** ecranelor marcate ** în §2.2;
 - **avizul avocatului** înainte de date medicale reale și înainte de folosirea notei pe clienți reali (§6).
 
@@ -467,8 +478,9 @@ Sunt sărite cât timp lipsesc condițiile de mai jos.
 | B.11 (6) | 6 |
 | B.22, partea de avans (4–6) | 4–6 |
 | B.13 (4) | 4 |
+| B.17 (2 × 2) | 4 |
 | Închiderea pilotului: T1–T10 pe ce intră (2) | 2 |
-| **Total** | **≈ 41–45 de ore**, adică ~25 de loturi |
+| **Total** | **≈ 45–49 de ore**, adică ~27 de loturi |
 
 Nu sunt incluse așteptarea deciziilor, designul care lipsește și condițiile externe de mai sus.
 
@@ -488,7 +500,9 @@ Nu sunt incluse așteptarea deciziilor, designul care lipsește și condițiile 
 | **Volumul:** 66 de funcționalități, ~50 de loturi | Pilotul întâi (§5); loturi de 1–2 h; checklistul rămâne integral în scope |
 | **Designul lipsă** pentru mai mult de jumătate din funcționalități | Comanda de design pe etape (§2.2), cu cele ** întâi |
 | **Dependențe neînchise din F3 / F4:** URL public, Stripe, abonamente, notificări | Pilotul le cere explicit (§5) |
-| **SMS:** E-SMS-1 poate pica; condițiile operatorilor | Procedura din `SMS_NUMAR_PROPRIU.md` §7 |
+| **SMS:** E-SMS-1 poate pica; condițiile operatorilor | Procedura din `SMS_NUMAR_PROPRIU.md` §7. Pilotul nu depinde de E-SMS-1: reminderul merge prin SMSLink (B.17). |
+| **WhatsApp:** verificarea Meta Business poate dura sau poate fi refuzată | Lot separat, după pilot; nimic din pilot nu depinde de ea |
+| **Casa de marcat:** saloanele care încasează numerar sau cu cardul la locație au obligații AMEF | Nu în v1: Booking ține evidența încasării, bonul rămâne pe casa salonului. E-AMEF după pilot. |
 | **Livrarea e-mailurilor către clienți** (spam, cota `messaging.email`) | Domeniul verificat, DMARC (§11.6); cota vizibilă |
 | **Staging fără abonamente** (`AppNotEnabled`) | Abonament de test marcat ca atare, cu acordul fondatoarei |
 
@@ -544,14 +558,23 @@ Nu sunt incluse așteptarea deciziilor, designul care lipsește și condițiile 
 | D-B-13 | **a:** Booking rămâne `Pilot` până există aplicațiile partenere; fără integrări goale. | B.25–B.30, §9 |
 | D-B-14 | Câmpuri medicale din prima, construite corect: separate, criptate, vizibile doar rolurilor autorizate, jurnal pentru fiecare citire, bifa de consimțământ (cu data și versiunea textului), active doar pe afacerile marcate medicale. Date medicale reale doar după avizul avocatului. | B.8 |
 
+### 7.1b DECIS (fondatoarea, 06.11.2026)
+
+| # | Decizie | Unde se aplică |
+|---|---|---|
+| D-SMS-8 | **SMSLink**, cu numărul scurt comun al furnizorului. | B.17 |
+| B.17 în pilot | Reminderul SMS prin SMSLink intră în pilot. | §5, B.17 |
+| B.18–B.22-SMS | SMS-ul de pe numărul propriu începe după E-SMS-1 (și ADR-ul gateway-ului, D-SMS-2). | B.18–B.22-SMS |
+| D-SMS-7 | Validarea juridică SMS se obține înainte de lansare. | Lansarea (§9) |
+| WhatsApp | Lot separat, după pilot, după verificarea Meta Business. | După pilot |
+| Casa de marcat | Fără AMEF în v1. Experimentul **E-AMEF** după pilot. | B.21 (doar evidența), după pilot |
+
 ### 7.2 NECESITĂ DECIZIE (rămase)
 
 | # | Blochează | Întrebare | Variante | Recomandare |
 |---|---|---|---|---|
 | D-B-15 | B.7 (nota) | **Ponderile notei și pragurile etichetelor** („De încredere”, „Atenție”, „Risc ridicat”, „Client nou”) | Valori numerice propuse la lot, aprobate de fondatoare | Propunerea vine cu B.7, cu exemple de clienți reali anonimizați; nu se ghicește acum. |
 | D-B-16 | B.8 | **Cine marchează o afacere „medicală”** | a) Founder, pe afacere (un câmp în `core/organizations` sau o funcționalitate pe plan); b) salonul, la configurare | **a**: marcajul activează date de categorie specială și trebuie controlat de echipa Ventora. |
-| D-SMS-7 | B.18–B.22-SMS (lansarea) | Validarea juridică SMS | — | Existentă (ARCHITECTURE §17.1). |
-| D-SMS-8 | B.17 | Furnizorul SMS (SMSLink sau Twilio) | — | Existentă; „înainte de primul SMS” (D4-26). |
 | D-SMS-4 | B.18 (comercial) | Prețurile telefoanelor | — | Existentă. |
 | D-ROAD-1 | B.25–B.30 | Ordinea aplicațiilor după Booking | — | Existentă (§15.3). |
 
@@ -598,5 +621,5 @@ Din ARCHITECTURE §5.2, §13.2 și brief §56:
    - securitatea multi-tenant;
    - teste, documentație (`modules/booking/CLAUDE.md`), observabilitate (erorile în Sentry, cu organizația);
    - fără dependențe comerciale ascunse.
-4. **Avizele juridice din §6.2** obținute înainte de lansarea comercială: profilarea, plățile Connect, subcontractorul captcha, datele medicale, SMS-ul.
+4. **Avizele juridice din §6.2** obținute înainte de lansarea comercială: profilarea, plățile Connect, subcontractorul captcha, datele medicale, SMS-ul (D-SMS-7, înainte de lansare).
 5. **Ciclul de viață (§5.2):** `In development` → `Internal testing` (după B.32) → `Pilot` (afacerile din pilot) → `Production ready`.
