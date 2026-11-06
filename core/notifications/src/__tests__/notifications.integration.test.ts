@@ -488,12 +488,14 @@ run('Lot 4.3 — notifications: the model and the delivery', () => {
     expect(prefs.email.bookings).toBe(true);
     expect(prefs.recommendations.inApp).toBe(false);
 
-    // fixed: security (S83), operational in the app (D4-6), recommendations by e-mail (D-GRW-8)
+    // fixed: security (S83), operational in the app (D4-6), recommendations by e-mail (D-GRW-8),
+    // the news by e-mail (D4-30 a, „Disponibil în curând”)
     for (const bad of [
       { topic: 'password', channel: 'email' },
       { topic: 'supportSession', channel: 'email' },
       { topic: 'phone', channel: 'in_app' },
       { topic: 'recommendations', channel: 'email' },
+      { topic: 'news', channel: 'email' },
       { topic: 'phone', channel: 'sms' },
       { topic: 'unknown', channel: 'email' },
     ]) {

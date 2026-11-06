@@ -56,7 +56,9 @@ describe('the catalog', () => {
     expect(isChangeable('password', 'email')).toBe(false);
     expect(isChangeable('recommendations', 'in_app')).toBe(true);
     expect(isChangeable('recommendations', 'email')).toBe(false);
-    expect(isChangeable('news', 'email')).toBe(true);
+    // D4-30 a: „Noutăți de la Ventora” pe e-mail, „Disponibil în curând”, nu se poate porni
+    expect(isChangeable('news', 'in_app')).toBe(true);
+    expect(isChangeable('news', 'email')).toBe(false);
     expect(defaultEnabled('news', 'email')).toBe(false);
     expect(defaultEnabled('bookings', 'email')).toBe(true);
     expect(defaultCatalog.get('billing.limit.owner80', 1)?.topic).toBe('limits');

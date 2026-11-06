@@ -33,7 +33,8 @@ export const topicCategory = (t: NotificationTopic): NotificationCategory =>
 export function isChangeable(topic: string, channel: string): boolean {
   if (isEmailTopic(topic)) return channel === 'email';
   if (topic === 'recommendations') return channel === 'in_app'; // e-mail: D-GRW-8
-  if (topic === 'news') return channel === 'in_app' || channel === 'email';
+  // D4-30 a: „Noutăți” pe e-mail, „Disponibil în curând” (e-mailul comercial e blocat, D-GRW-8)
+  if (topic === 'news') return channel === 'in_app';
   return false;
 }
 
