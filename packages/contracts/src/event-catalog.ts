@@ -443,6 +443,26 @@ export const BillingTransferReceivedV1 = defineEvent({
     .strict(),
 });
 
+/**
+ * `booking.service.archived` v1 (Lot B.1, ARCHITECTURE §6.4 c): a service of the catalog was
+ * archived; it is no longer offered for new appointments, the old ones keep it. The owner module
+ * publishes the archiving; no consumer yet (integrations later), so it is marked delivered.
+ */
+export const BookingServiceArchivedV1 = defineEvent({
+  type: 'booking.service.archived',
+  version: 1,
+  sourceApp: 'platform',
+  growthSafe: false,
+  withoutConsumer: 'complete',
+  schema: z
+    .object({
+      serviceId: z.uuid(),
+      name: z.string().min(1).max(120),
+      archivedAt: z.iso.datetime({ offset: true }),
+    })
+    .strict(),
+});
+
 export const EVENT_CATALOG: readonly EventDefinition[] = [
   InvitationNewLinkRequestedV1 as EventDefinition,
   SubscriptionVersionChangeScheduledV1 as EventDefinition,
@@ -463,6 +483,7 @@ export const EVENT_CATALOG: readonly EventDefinition[] = [
   FileDeletedV1 as EventDefinition,
   SupportReplyPostedV1 as EventDefinition,
   SupportAutoCloseWarningV1 as EventDefinition,
+  BookingServiceArchivedV1 as EventDefinition,
 ];
 
 /** Definiția unui eveniment după tip și versiune; null dacă nu e în catalog. */

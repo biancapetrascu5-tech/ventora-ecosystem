@@ -120,6 +120,8 @@ ventora/
 
 Tooling propus: pnpm workspaces + Turborepo, TypeScript strict.
 
+> **Notă (06.11.2026, D-B1-3 = a, Lotul B.1):** schema și migrațiile unui modul stau în `modules/<app>/prisma/` (`schema.prisma` pentru garda de drift, `migrations/`, `prisma7.config.ts` în rădăcina modulului), la fel ca în toate pachetele `core/*` și în scripturile de test. `db/` din arborele de mai sus a fost numele inițial. Primul modul așezat așa: `modules/booking`.
+
 ### 3.1 Deployment-uri
 
 **Status: PROPUS**

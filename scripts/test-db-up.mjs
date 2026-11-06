@@ -119,6 +119,7 @@ for (const db of [
   'shadow_workflows_diff',
   'shadow_support_diff',
   'shadow_ai_diff',
+  'shadow_booking_diff',
 ]) {
   psql('postgres', `DROP DATABASE IF EXISTS ${db}; CREATE DATABASE ${db};`);
 }
@@ -415,6 +416,8 @@ for (const migration of [
   'core/billing/prisma/migrations/20261104000021_billing_lifecycle/migration.sql',
   // Lot 4.9: infrastructura AI (schema ai, rolurile ai_rw / ai_founder)
   'core/ai/prisma/migrations/20261104100001_ai_init/migration.sql',
+  // Lot B.1: schema booking (rolul booking_rw, catalogul de servicii, outbox), după audit (C.0b)
+  'modules/booking/prisma/migrations/20261106000003_booking_init/migration.sql',
 ]) {
   psqlFile(TEST_DB.accessDb, join(ROOT, migration));
 }
