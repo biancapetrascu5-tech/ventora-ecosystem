@@ -21,3 +21,5 @@ Shown at 1280 and 390, light and dark.
 **DE DECIS (S121).**
 - **A person without CNP.** Recommendation: the invoice is issued on name and address, no CNP asked (drawn this way). To confirm with the accountant.
 - **Foreign VAT code.** Recommendation: kept with the country prefix, not checked now (no VIES); a VIES check can come later.
+
+**Aligned with FounderBusiness and FounderDiscounts (S122).** Breadcrumb "Afaceri › Salon Aurora" (not on a phone); the tabs sit in the PageHeader, as in FounderDiscounts. The purchase history is the standard DataTable of InvoiceHistorySection, automatic widths: "Ce" (primary), "Data" (secondary), "Sumă" (right-aligned, optional), "Factura" (optional), "Stare" (trailing). Paid rows have no actions; only "Nu s-a emis" has "Reîncearcă" and "Am emis-o manual…".

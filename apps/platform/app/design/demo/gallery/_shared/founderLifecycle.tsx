@@ -16,7 +16,7 @@ import { FounderShellDemo } from './founderShell';
 import { noop } from './shell';
 import c from './founderCommercial.module.css';
 
-/* Lotul 3.8 (S121): primul cadru din FounderBillingProfile, FounderInvoiceNotIssued și
+/* Lotul 3.8 (S121, aliniat în S122: filele în PageHeader, „Afaceri › Salon Aurora”): primul cadru din FounderBillingProfile, FounderInvoiceNotIssued și
    FounderSetupRequests, cu vederile din @ventora/screens și exemplele din preview.html. */
 
 /* Shell-ul din preview-urile S121 (ca S116): fără badge pe „Afaceri”, alte intrări jos și altă căutare. */
@@ -29,7 +29,7 @@ const S121_SHELL = {
 const TABS = [
   { id: 'o', label: 'Prezentare' },
   { id: 'c', label: 'Consum' },
-  { id: 'e', label: 'Excepții' },
+  { id: 'e', label: 'Excepții', count: 2 },
   { id: 'f', label: 'Plăți și facturi' },
   { id: 'j', label: 'Jurnal' },
 ];
@@ -76,7 +76,7 @@ const PAID: InvoiceHistoryRow[] = [
 function BizFrame({ children, phone }: { children: ReactNode; phone?: boolean }) {
   return (
     <div className={c.xFrame}>
-      <FounderShellDemo active="afaceri" title="Afaceri" {...S121_SHELL}>
+      <FounderShellDemo active="afaceri" title="Salon Aurora" {...S121_SHELL}>
         <BusinessView
           phone={!!phone}
           name="Salon Aurora"
@@ -86,7 +86,7 @@ function BizFrame({ children, phone }: { children: ReactNode; phone?: boolean })
           onMenuAction={noop}
           owner={null}
           recent={[]}
-          tabs={<Tabs label="Afacerea" defaultSelectedKey="f" items={TABS} />}
+          tabs={<Tabs label="Afacere" defaultSelectedKey="f" items={TABS} />}
           full={
             <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
               {children}

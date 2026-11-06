@@ -875,3 +875,8 @@ Decizia fondatoarei: numele vizibil e „Ventora Systems”, peste tot; „Vento
 - `commercial.json` (6 limbi): `billing.profile.*`, `billing.issuer`, `billing.vatNote` (propunere, de confirmat cu contabilul), `billing.setup.*`.
 - Textele scrise de agenți, validate: `support.json`, `team.json`, `notifications.json`, `automations.json` (6 limbi); `founder-support.json`, `founder-automations.json` (RO). Ce s-a schimbat față de textele agenților: „Mesajul nu a plecat” / „Răspunsul nu a plecat” / „Schimbarea nu s-a salvat” în locul lui „Nu am putut…”; „solicitare” în loc de „cerere” la suport; „Fără răspuns de peste o zi lucrătoare” în loc de „Peste termen”; „admin” ca în glosar; „pornite” în loc de „active” la automatizări; motivele din jurnalul automatizărilor reformulate; închiderea automată a solicitării („dacă nu ne răspunzi până atunci”, „răspunde-ne în Hub, la Suport”); DE: „Abonnement”, „hat die Anfrage gestellt”, „erneut geöffnet”; IT: ghilimele «».
 
+## 2026-11-05 · S122 — FounderBillingProfile și FounderInvoiceNotIssued, aliniere
+
+- **FounderBillingProfile, FounderInvoiceNotIssued — 1.0.1:** breadcrumb „Afaceri › Salon Aurora” (fără, pe telefon) și filele în PageHeader, ca în FounderBusiness și FounderDiscounts; contextul de pe telefon arată numele afacerii. Tabelul cumpărărilor: coloanele lui InvoiceHistorySection, lățimi automate. Fără „Vezi factura” și „Rambursează” pe rândurile plătite; acțiuni doar pe „Nu s-a emis”. Preview, README.
+- Fără alte schimbări.
+
