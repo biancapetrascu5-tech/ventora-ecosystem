@@ -22,6 +22,9 @@ import {
   listInvitations,
   invitationNewLinkRequestedConsumer,
   notifyBillingInTx,
+  getOrganizationTimeZone,
+  isValidTimeZone,
+  DEFAULT_TIME_ZONE,
 } from '../index.js';
 import type { OrgContext } from '../index.js';
 import { closeAuditPools } from '@ventora/audit';
@@ -1725,5 +1728,139 @@ describe('Lot 4.5 — the Phase 3 notifications: one contract call per event (S1
       await pool.end();
     }
     await adminQuery(`DELETE FROM organizations.organization WHERE id = $1`, [team.organizationId]);
+  });
+});
+
+// Lot C.0 (D-B-4 a; D-C0-1 c): the business time zone — a column with a default, a trigger that
+// refuses unknown names, read through getOrganizationTimeZone under RLS (org_rw on app_runtime).
+describe('Lot C.0 — the business time zone', () => {
+  async function insertOrg(timeZone?: string) {
+    const id = newUuid();
+    if (timeZone === undefined) {
+      await adminQuery(
+        `INSERT INTO organizations.organization(id, slug, name, created_via, updated_at)
+         VALUES($1, $2, 'TZ Test', 'founder', NOW())`,
+        [id, `tz-${id.slice(0, 8)}`],
+      );
+    } else {
+      await adminQuery(
+        `INSERT INTO organizations.organization(id, slug, name, created_via, time_zone, updated_at)
+         VALUES($1, $2, 'TZ Test', 'founder', $3, NOW())`,
+        [id, `tz-${id.slice(0, 8)}`, timeZone],
+      );
+    }
+    return id;
+  }
+  const created: string[] = [];
+  afterAll(async () => {
+    if (created.length > 0) {
+      await adminQuery(`DELETE FROM organizations.organization WHERE id = ANY($1::uuid[])`, [
+        created,
+      ]);
+    }
+  });
+
+  it('a business created through Founder starts in Europe/Bucharest', async () => {
+    const result = await createOrganizationAsFounder(
+      { founderId: newUuid() },
+      { name: 'TZ Founder Org', slug: `tz-f-${Date.now()}`, ownerEmail: 'tz-owner@test.com' },
+    );
+    created.push(result.organizationId);
+    const rows = await adminQuery(
+      `SELECT time_zone FROM organizations.organization WHERE id = $1`,
+      [result.organizationId],
+    );
+    expect(rows[0].time_zone).toBe('Europe/Bucharest');
+    expect(DEFAULT_TIME_ZONE).toBe('Europe/Bucharest');
+  });
+
+  it('a row written without the column (as before the migration) gets the default', async () => {
+    const id = await insertOrg();
+    created.push(id);
+    const rows = await adminQuery(
+      `SELECT time_zone FROM organizations.organization WHERE id = $1`,
+      [id],
+    );
+    expect(rows[0].time_zone).toBe('Europe/Bucharest');
+  });
+
+  it('the trigger accepts a known IANA name and refuses an unknown or empty one (23514)', async () => {
+    const id = await insertOrg('Europe/Berlin');
+    created.push(id);
+    await adminQuery(
+      `UPDATE organizations.organization SET time_zone = 'Europe/Lisbon' WHERE id = $1`,
+      [id],
+    );
+    for (const bad of ['Mars/Phobos', '']) {
+      await expect(
+        adminQuery(`UPDATE organizations.organization SET time_zone = $2 WHERE id = $1`, [id, bad]),
+      ).rejects.toMatchObject({ code: '23514' });
+      await expect(insertOrg(bad)).rejects.toMatchObject({ code: '23514' });
+    }
+    const rows = await adminQuery(
+      `SELECT time_zone FROM organizations.organization WHERE id = $1`,
+      [id],
+    );
+    expect(rows[0].time_zone).toBe('Europe/Lisbon');
+  });
+
+  it('the trigger also guards writes made as org_rw (the runtime role)', async () => {
+    const id = await insertOrg();
+    created.push(id);
+    const pool = new Pool({ connectionString: process.env.DATABASE_URL ?? '' });
+    const client = await pool.connect();
+    try {
+      await client.query('BEGIN');
+      await client.query('SET LOCAL ROLE org_rw');
+      await client.query(`SELECT set_config('app.organization_id', $1, true)`, [id]);
+      await expect(
+        client.query(
+          `UPDATE organizations.organization SET time_zone = 'Nowhere/City' WHERE id = $1`,
+          [id],
+        ),
+      ).rejects.toMatchObject({ code: '23514' });
+      await client.query('ROLLBACK');
+    } finally {
+      client.release();
+      await pool.end();
+    }
+  });
+
+  it('getOrganizationTimeZone reads the business of the context only (T1 / T2)', async () => {
+    const a = await insertOrg('Europe/Berlin');
+    const b = await insertOrg();
+    created.push(a, b);
+    expect(await getOrganizationTimeZone({ organizationId: a })).toBe('Europe/Berlin');
+    expect(await getOrganizationTimeZone({ organizationId: b })).toBe('Europe/Bucharest');
+    await expect(getOrganizationTimeZone({ organizationId: newUuid() })).rejects.toBeInstanceOf(
+      NotMemberError,
+    );
+
+    // RLS directly: with B's context, org_rw does not see A's row
+    const pool = new Pool({ connectionString: process.env.DATABASE_URL ?? '' });
+    const client = await pool.connect();
+    try {
+      await client.query('BEGIN');
+      await client.query('SET LOCAL ROLE org_rw');
+      await client.query(`SELECT set_config('app.organization_id', $1, true)`, [b]);
+      const { rows } = await client.query(
+        `SELECT time_zone FROM organizations.organization WHERE id = $1`,
+        [a],
+      );
+      expect(rows).toHaveLength(0);
+      await client.query('ROLLBACK');
+    } finally {
+      client.release();
+      await pool.end();
+    }
+  });
+
+  it('isValidTimeZone follows the IANA names the runtime knows', () => {
+    expect(isValidTimeZone('Europe/Bucharest')).toBe(true);
+    expect(isValidTimeZone('America/New_York')).toBe(true);
+    expect(isValidTimeZone('UTC')).toBe(true);
+    expect(isValidTimeZone('Mars/Phobos')).toBe(false);
+    expect(isValidTimeZone('')).toBe(false);
+    expect(isValidTimeZone('x'.repeat(65))).toBe(false);
   });
 });
