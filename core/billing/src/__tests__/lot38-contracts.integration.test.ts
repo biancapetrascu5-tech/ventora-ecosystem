@@ -4,6 +4,7 @@ import { Pool, type PoolClient } from 'pg';
 import { closeAuditPools } from '@ventora/audit';
 import {
   acceptSetupOffer,
+  cancelSetupByFounder,
   cancelSetupByOwner,
   closeCommercialPools,
   confirmSetup,
@@ -13,6 +14,7 @@ import {
   listSetupRequests,
   openDunning,
   requestSetup,
+  resolveDunningByFounder,
   resolveDunningPaid,
   runDunningGraceJob,
   runTrialJob,
@@ -203,6 +205,29 @@ type Owner = { organizationId: string; userId: string; role: string; actor: 'use
 
 const founderParams = (org: string) => ({ founderHeaders: founder.headers(), organizationId: org });
 
+/** F3 · O-6: the audit rows of one Founder action on one target. */
+async function auditRows(org: string, action: string, targetId: string) {
+  return q(
+    `SELECT actor_type, actor_id, founder_id, metadata FROM audit.audit_log
+      WHERE organization_id = $1 AND action = $2 AND target_id = $3 ORDER BY created_at, id`,
+    [org, action, targetId],
+  );
+}
+
+/** Exactly one row, written by the Founder session (actor = founder_id), with this metadata. */
+async function expectFounderAudit(
+  org: string,
+  action: string,
+  targetId: string,
+  metadata: Record<string, unknown> = {},
+) {
+  const rows = await auditRows(org, action, targetId);
+  expect(rows, action).toHaveLength(1);
+  expect(rows[0]).toMatchObject({ actor_type: 'founder', metadata });
+  expect(rows[0]!.founder_id).toBeTruthy();
+  expect(rows[0]!.actor_id).toBe(rows[0]!.founder_id);
+}
+
 const ROMANIAN_COMPANY = {
   entityType: 'company' as const,
   name: 'Salon Ana SRL',
@@ -379,6 +404,29 @@ describe('finalul probei pe tot abonamentul (N4) și neplata (D3-12)', () => {
     expect(await resolveDunningPaid(b.org, `in_${RUN}_1`)).toBe(true);
     expect(await isReadOnly(b.org)).toBe(false);
   });
+
+  it('F3 · O-6: echipa închide cazul de mână, cu motiv; un singur rând de audit, pe caz', async () => {
+    const b = await business();
+    const { dunningId } = await openDunning({
+      organizationId: b.org,
+      cause: 'card',
+      sourceRef: `in_${RUN}_founder`,
+      amountMinor: 34900,
+      currency: 'RON',
+      overdueSince: new Date(),
+    });
+    await expect(
+      resolveDunningByFounder({ ...founderParams(b.org), dunningId, reason: 'scurt' }),
+    ).rejects.toMatchObject({ name: 'InvalidInput' });
+    const reason = 'A plătit cash la sediu, chitanța 12.';
+    await resolveDunningByFounder({ ...founderParams(b.org), dunningId, reason });
+    expect(await getOpenDunning(b.org)).toBeNull();
+    await expectFounderAudit(b.org, 'commercial.dunning_resolved', dunningId, {
+      cause: 'card',
+      resolution: 'founder',
+      reason,
+    });
+  });
 });
 
 // ── 3. the billing profile (D-3.6-1, N12) ───────────────────────────────────────────────────
@@ -470,6 +518,10 @@ describe('plata manuală prin transfer', () => {
     const b = await business();
     await saveBillingProfile({ ...founderParams(b.org), profile: ROMANIAN_COMPANY, reason: null });
     await setPaymentSettings({ ...founderParams(b.org), method: 'manual', paymentTermsDays: 30 });
+    await expectFounderAudit(b.org, 'billing.payment_method_set', b.org, {
+      method: 'manual',
+      paymentTermsDays: 30,
+    });
     await runTransferInvoiceJob();
     await runTransferInvoiceJob();
     const invoices = await q(
@@ -507,6 +559,12 @@ describe('plata manuală prin transfer', () => {
     await expect(
       confirmTransferReceipt({ ...founderParams(b.org), invoiceId: inv.id, receivedOn: today() }),
     ).rejects.toThrow(/invoice_paid/);
+    // one row: the refused second confirmation writes none
+    await expectFounderAudit(b.org, 'billing.transfer_received', inv.id, {
+      receivedOn: today(),
+      amountMinor: 34900,
+      currency: 'RON',
+    });
     // N16: the receipt in SmartBill (here the test provider), through the outbox
     const before = provider.payments.length;
     await dispatchBilling();
@@ -647,6 +705,7 @@ describe('factura neemisă', () => {
     const { b, invoiceId } = await failedInvoice();
     await saveBillingProfile({ ...founderParams(b.org), profile: ROMANIAN_COMPANY, reason: null });
     expect(await retryInvoice({ ...founderParams(b.org), invoiceId })).toBe('issued');
+    await expectFounderAudit(b.org, 'billing.invoice_retried', invoiceId);
     const doc = provider.documents.at(-1)!.input as { buyer: { name: string } };
     expect(doc.buyer.name).toBe('Salon Ana SRL');
   });
@@ -681,6 +740,14 @@ describe('factura neemisă', () => {
       one.invoiceId,
     ]);
     expect(row).toMatchObject({ status: 'manual', series: 'T38M' });
+    // the refused attempts (short reason, number used) write nothing
+    await expectFounderAudit(one.b.org, 'billing.invoice_manual', one.invoiceId, {
+      series: 'T38M',
+      number: `${RUN}1`,
+      issueDate: today(),
+      reason: 'e-Factura a refuzat, emisă din SmartBill',
+    });
+    expect(await auditRows(two.b.org, 'billing.invoice_manual', two.invoiceId)).toHaveLength(0);
   });
 });
 
@@ -714,6 +781,10 @@ describe('cererile cu implementare', () => {
     await confirmSetup({ ...step, startOn: addDays(today(), 7) });
     const { invoiceId } = await createSetupTransferInvoice(step);
     expect(invoiceId).toBeTruthy();
+    await expectFounderAudit(b.org, 'billing.transfer_invoiced', invoiceId!, {
+      setupRequestId: id,
+      amountMinor: 120000,
+    });
     expect(await issueInvoice(b.org, invoiceId!)).toBe('issued');
     const doc = provider.documents.at(-1)!.input as {
       lines: Array<{ name: string; unitMinor: number }>;
@@ -753,6 +824,29 @@ describe('cererile cu implementare', () => {
     ]);
   });
 
+  it('F3 · O-6: echipa anulează cererea înainte de plată, cu motiv; rândul de audit e al ei', async () => {
+    const b = await business();
+    const { setupRequestId } = await requestSetup(b.owner, APP);
+    const step = { ...founderParams(b.org), setupRequestId };
+    await sendSetupOffer({
+      ...step,
+      offer: { setupMinor: 150000, maintenanceMinor: 9900, estimatedStartOn: addDays(today(), 3) },
+    });
+    await expect(cancelSetupByFounder({ ...step, reason: '  ' })).rejects.toMatchObject({
+      name: 'InvalidInput',
+    });
+    const cancelled = await cancelSetupByFounder({
+      ...step,
+      reason: 'Aplicația nu se potrivește afacerii.',
+    });
+    expect(cancelled.status).toBe('cancelled');
+    await expectFounderAudit(b.org, 'commercial.setup_cancelled', setupRequestId, {
+      applicationId: APP,
+      status: 'cancelled',
+      reason: 'Aplicația nu se potrivește afacerii.',
+    });
+  });
+
   it('owner-ul refuză oferta; echipa rambursează transferul cu storno până la pornire', async () => {
     const b = await business();
     const first = await requestSetup(b.owner, APP);
@@ -790,6 +884,22 @@ describe('cererile cu implementare', () => {
       [invoiceId],
     );
     expect(storno).toMatchObject({ kind: 'storno', amount_minor: '150000' });
+    // F3 · O-6 (07.11.2026): the storno's own billing row, as the card's, and the request's row
+    const [{ id: stornoId }] = (await q(
+      `SELECT id FROM billing.invoice WHERE reverses_invoice_id = $1`,
+      [invoiceId],
+    )) as [{ id: string }];
+    await expectFounderAudit(b.org, 'billing.transfer_refunded', stornoId, {
+      stornoInvoiceId: stornoId,
+      reversesInvoiceId: invoiceId,
+      setupRequestId: second.setupRequestId,
+      amountMinor: 150000,
+      currency: 'RON',
+    });
+    await expectFounderAudit(b.org, 'commercial.setup_refunded', second.setupRequestId, {
+      reason: 'Clientul renunță înainte de pornire',
+      refundRef: stornoId,
+    });
     // after the refund (closed), nothing more
     await expect(goLiveSetup(step)).rejects.toThrow();
   });
