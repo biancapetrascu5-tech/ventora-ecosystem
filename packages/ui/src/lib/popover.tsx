@@ -4,6 +4,7 @@ import {
   useCallback,
   useEffect,
   useLayoutEffect,
+  useMemo,
   useRef,
   useState,
   type CSSProperties,
@@ -72,17 +73,29 @@ export function useAnchor(
   return { popRef, style };
 }
 
-/* useOutside din bundle.js: închide la apăsare în afara ancorei și a listei. */
+/**
+ * Închide la un clic în afara elementelor date. Întoarce două handlere React de pus pe lista
+ * deschisă: React propagă evenimentele prin portaluri pe arborele componentelor, deci un clic într-un
+ * meniu deschis din această listă (alt portal, de ex. limbile din meniul contului) ajunge la ele și
+ * nu mai e „în afară” (Lotul 4.11: altfel lista copil dispărea la mousedown, înainte de clic).
+ */
 export function useOutside(
   refs: RefObject<HTMLElement | null>[],
   handler: () => void,
   active: boolean,
-) {
+): { onMouseDown: () => void; onTouchStart: () => void } {
   const h = useRef(handler);
   h.current = handler;
+  const inside = useRef(false);
   useEffect(() => {
     if (!active) return;
+    inside.current = false;
     const on = (e: Event) => {
+      // React (rădăcina) vede evenimentul înaintea documentului
+      if (inside.current) {
+        inside.current = false;
+        return;
+      }
       const t = e.target as Node;
       for (const r of refs) if (r.current?.contains(t)) return;
       h.current();
@@ -96,6 +109,12 @@ export function useOutside(
     // refs sunt obiecte stabile (useRef)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [active]);
+  return useMemo(() => {
+    const mark = () => {
+      inside.current = true;
+    };
+    return { onMouseDown: mark, onTouchStart: mark };
+  }, []);
 }
 
 /* Portal din bundle.js: lista ia tema locului din care se deschide (.v-portal-theme). */
