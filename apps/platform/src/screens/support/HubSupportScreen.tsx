@@ -14,7 +14,7 @@ import {
   type NewRequestErrors,
   type NewRequestValues,
 } from '@ventora/screens';
-import { SUPPORT_APPLICATIONS, isSupportApplication } from '@ventora/support/apps';
+import { SUPPORT_APPLICATIONS, initialSupportApplication } from '@ventora/support/apps';
 import {
   finishSupportAttachment,
   sendSupportRequest,
@@ -78,7 +78,7 @@ export function HubSupportScreen({
   const apps = useAppOptions();
   const appName = useAppName();
   const empty: NewRequestValues = {
-    applicationId: initialApp && isSupportApplication(initialApp) ? initialApp : 'platform',
+    applicationId: initialSupportApplication(initialApp),
     subject: '',
     description: '',
     urgency: 'normal',

@@ -19,7 +19,7 @@ import {
   useThemeChoice,
 } from '@ventora/ui';
 import { authApi, useWhen } from '@ventora/screens';
-import { supportApplicationFor } from '@ventora/support/apps';
+import { supportHref } from '@ventora/support/apps';
 import { rememberLocale } from '@/i18n/locale';
 import { switchBusiness } from '@/server/shell-actions';
 import { keepLocale } from '@/server/locale-actions';
@@ -314,13 +314,8 @@ export function HubShell({
               onOrgChange={change}
               onProfile={() => go('/account')}
               // Lotul 4.6 (S-3): HubSupport, cu aplicația paginii de pornire precompletată
-              onSupport={() =>
-                go(
-                  pathname.startsWith('/support')
-                    ? '/support'
-                    : `/support?app=${supportApplicationFor(pathname)}`,
-                )
-              }
+              // (Lotul 4.11: testat din fiecare rută (hub), core/support hub-routes.test.ts)
+              onSupport={() => go(supportHref(pathname))}
               onSignOut={async () => {
                 await authApi.signOut();
                 router.replace('/sign-in');

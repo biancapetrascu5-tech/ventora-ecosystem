@@ -45,3 +45,19 @@ export function supportApplicationFor(pathname: string): SupportApplication {
     ? candidate
     : 'platform';
 }
+
+/**
+ * AccountMenu → „Suport” (Lotul 4.11, criteriul 4): din orice pagină a Hub-ului, formularul cu
+ * aplicația paginii (`?app=`); din paginile de suport, lista.
+ */
+export function supportHref(pathname: string): string {
+  const path = pathname.split(/[?#]/)[0]!;
+  return path === '/support' || path.startsWith('/support/')
+    ? '/support'
+    : `/support?app=${supportApplicationFor(path)}`;
+}
+
+/** HubSupport: `?app=` → aplicația cererii noi; ce nu e o aplicație cunoscută → Hub (platform). */
+export function initialSupportApplication(app: string | null | undefined): SupportApplication {
+  return app && isSupportApplication(app) ? app : 'platform';
+}
