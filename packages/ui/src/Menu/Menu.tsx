@@ -100,7 +100,8 @@ export function Menu({
     .filter((i) => i >= 0);
   const [active, setActive] = useState(-1);
 
-  useOutside([anchor, popRef], () => setOpen(false), open);
+  // Lotul 4.11: un meniu deschis din acesta (portal) nu e „în afară” (vezi useOutside)
+  const insideHandlers = useOutside([anchor, popRef], () => setOpen(false), open);
 
   useEffect(() => {
     if (!open) return;
@@ -198,6 +199,7 @@ export function Menu({
             className={cn(styles.menu, className)}
             style={{ ...style, width }}
             onKeyDown={onKey}
+            {...insideHandlers}
             aria-activedescendant={active >= 0 ? `${menuId}-${active}` : undefined}
           >
             {header}
