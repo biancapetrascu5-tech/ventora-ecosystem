@@ -2,6 +2,7 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import crypto from 'node:crypto';
 import { Pool } from 'pg';
 import {
+  AuditActions,
   closeAuditPools,
   readAuditLogAsFounder,
   readOrganizationAuditLog,
@@ -351,6 +352,15 @@ describe('TA.11 — invalid input rejected by the database', () => {
     await expect(
       writeAuditEvent(event({ metadata: { blob: 'x'.repeat(9000) } }), { mode: 'required' }),
     ).rejects.toThrow(/exceeds 8192 bytes/);
+  });
+
+  // Lot C.0b: the Booking application has its own category (B.1, the service catalog)
+  it('category booking → accepted', async () => {
+    const id = await writeAuditEvent(
+      event({ category: 'booking', action: AuditActions.bookingServiceCreated }),
+      { mode: 'required' },
+    );
+    expect(id).toBeTruthy();
   });
 
   it('invalid category → CHECK violation', async () => {

@@ -143,6 +143,16 @@ export const AuditActions = {
   workflowExecutionRetried: 'workflows.execution_retried', // „Rulează din nou”
   workflowEnginePaused: 'workflows.engine_paused', // the central stop
   workflowEngineResumed: 'workflows.engine_resumed',
+  // Lot C.0b / B.1 — the Booking service catalog (category booking, required): the business's
+  // owner, admin or application manager (booking:settings), in the same transaction as the write
+  bookingServiceCreated: 'booking.service_created',
+  bookingServiceUpdated: 'booking.service_updated',
+  bookingServiceArchived: 'booking.service_archived',
+  bookingServiceRestored: 'booking.service_restored',
+  bookingServiceCategoryCreated: 'booking.service_category_created',
+  bookingServiceCategoryUpdated: 'booking.service_category_updated',
+  bookingServiceCategoryArchived: 'booking.service_category_archived',
+  bookingServiceCategoryRestored: 'booking.service_category_restored',
 } as const;
 
 export type AuditAction = (typeof AuditActions)[keyof typeof AuditActions];
