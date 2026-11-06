@@ -63,8 +63,9 @@ const envSchema = z
 
     /**
      * Serviciul de job-uri (Inngest, Lot 4.2, D4-3). Doar în .env.local și Vercel; fără ele,
-     * local, clientul folosește serverul de dezvoltare (inngest-cli dev). Devin obligatorii în
-     * production odată cu contul Inngest (Lotul 4.11).
+     * local, clientul folosește serverul de dezvoltare (inngest-cli dev). În production sunt
+     * obligatorii doar pentru aplicația care servește job-urile (`platform`), prin
+     * `jobsEnvIssues` (Lotul 4.11); `founder` și `portal` nu au rută Inngest.
      */
     INNGEST_EVENT_KEY: emptyAsUnset(z.string().min(1).optional()),
     INNGEST_SIGNING_KEY: emptyAsUnset(z.string().min(1).optional()),
@@ -122,6 +123,33 @@ export function parseEnv(
     return { success: false, fieldErrors };
   }
   return { success: true, data: result.data };
+}
+
+/**
+ * Lotul 4.11: aplicația care servește job-urile (`platform`, ruta `/api/inngest`) nu pornește în
+ * production fără cheile Inngest. Fără cheia de semnare, ruta ar accepta apeluri nesemnate sau
+ * le-ar refuza pe toate; fără cheia de evenimente, primul `send` ar eșua abia la rulare.
+ * Mesajele numesc doar variabila, niciodată valoarea.
+ */
+export function jobsEnvIssues(raw: RawEnv): Array<{ path: string; message: string }> {
+  if ((raw.NODE_ENV ?? 'development') !== 'production') return [];
+  return (['INNGEST_SIGNING_KEY', 'INNGEST_EVENT_KEY'] as const)
+    .filter((key) => !raw[key])
+    .map((key) => ({
+      path: key,
+      message: `${key} este obligatoriu în production pentru aplicația cu job-uri (platform).`,
+    }));
+}
+
+/** Apelat la pornirea `platform`, după validarea comună; aruncă dacă lipsește o cheie. */
+export function assertJobsEnv(raw: RawEnv = process.env): void {
+  const issues = jobsEnvIssues(raw);
+  if (issues.length === 0) return;
+  console.error('Variabile de mediu invalide:');
+  console.error(
+    JSON.stringify(Object.fromEntries(issues.map((i) => [i.path, [i.message]])), null, 2),
+  );
+  throw new Error('Configurare invalida. Verificati .env.local fata de .env.example.');
 }
 
 /**
