@@ -7,7 +7,9 @@
 export async function register() {
   if (process.env.NEXT_RUNTIME === 'nodejs') {
     try {
-      await import('@ventora/config');
+      const { assertJobsEnv } = await import('@ventora/config');
+      // Lotul 4.11: platform servește job-urile (/api/inngest), deci cere cheile Inngest în production
+      assertJobsEnv();
     } catch (error) {
       console.error(
         '\n[platform] Pornire refuzata:',

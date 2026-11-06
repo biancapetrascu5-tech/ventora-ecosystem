@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { parseEnv } from '../index';
+import { jobsEnvIssues, parseEnv } from '../index';
 
 const PROD = {
   NODE_ENV: 'production',
@@ -61,5 +61,42 @@ describe('B-7 — Resend key', () => {
     expect(Object.keys(errorsOf({ ...PROD, EMAIL_REPLY_TO: 'not-an-address' }))).toContain(
       'EMAIL_REPLY_TO',
     );
+  });
+});
+
+describe('Lotul 4.11 — cheile Inngest pentru aplicația cu job-uri', () => {
+  const JOBS = {
+    ...PROD,
+    INNGEST_SIGNING_KEY: 'signkey-not-real',
+    INNGEST_EVENT_KEY: 'eventkey-not-real',
+  };
+  const paths = (raw: Record<string, string | undefined>) => jobsEnvIssues(raw).map((i) => i.path);
+
+  it('production cu ambele chei → fără probleme', () => {
+    expect(paths(JOBS)).toEqual([]);
+  });
+
+  it('production fără una dintre chei (sau goală) → o numește, fără valoare', () => {
+    expect(paths({ ...JOBS, INNGEST_SIGNING_KEY: undefined })).toEqual(['INNGEST_SIGNING_KEY']);
+    expect(paths({ ...JOBS, INNGEST_EVENT_KEY: '' })).toEqual(['INNGEST_EVENT_KEY']);
+    const messages = jobsEnvIssues({ ...JOBS, INNGEST_EVENT_KEY: undefined }).map((i) => i.message);
+    expect(messages.join(' ')).not.toContain('signkey-not-real');
+  });
+
+  it('staging (APP_ENV=staging) le cere la fel: job-urile rulează și acolo', () => {
+    expect(paths({ ...PROD, APP_ENV: 'staging' })).toEqual([
+      'INNGEST_SIGNING_KEY',
+      'INNGEST_EVENT_KEY',
+    ]);
+  });
+
+  it('development și test → opționale (serverul de dezvoltare)', () => {
+    expect(paths({ NODE_ENV: 'development' })).toEqual([]);
+    expect(paths({ NODE_ENV: 'test' })).toEqual([]);
+    expect(paths({})).toEqual([]);
+  });
+
+  it('validarea comună (founder, portal) nu le cere', () => {
+    expect(parseEnv(PROD).success).toBe(true);
   });
 });
