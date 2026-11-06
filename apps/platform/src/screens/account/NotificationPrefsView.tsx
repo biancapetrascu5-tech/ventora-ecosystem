@@ -8,7 +8,7 @@ import styles from './notification-prefs.module.css';
    În aplicație, operaționalele sunt mereu pornite (coloana „Mereu”, fără comutator); pe e-mail,
    un comutator pe fiecare subiect; securitatea „Nu se pot opri”; fără coloana SMS. „Recomandări
    Ventora” (în aplicație; e-mail „Disponibil în curând”, D-GRW-8) și „Noutăți de la Ventora”
-   (e-mail oprit până îl pornește persoana) stau separat. Pe telefon, aceeași logică, ca listă. */
+   (e-mail „Disponibil în curând”, D4-30 a) stau separat. Pe telefon, aceeași logică, ca listă. */
 
 export const PREF_EMAIL_TOPICS = [
   'bookings',
@@ -160,12 +160,9 @@ export function NotificationPrefs({
           >
             {t('news.inApp')}
           </Toggle>
-          <Toggle
-            description={t('news.emailDesc')}
-            isSelected={value.news.email}
-            onChange={set({ topic: 'news', channel: 'email' })}
-            labelPosition={lp}
-          >
+          {/* D4-30 a (fondatoarea, 01.11.2026): e-mailul comercial e blocat central (D-GRW-8),
+              deci „Pe e-mail” apare ca la Recomandări: „Disponibil în curând”, dezactivat. */}
+          <Toggle description={t('reco.soon')} isDisabled labelPosition={lp}>
             {t('news.email')}
           </Toggle>
         </div>
