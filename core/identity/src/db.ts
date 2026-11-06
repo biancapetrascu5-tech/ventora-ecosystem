@@ -26,11 +26,17 @@ const RAW_METHODS = new Set<PropertyKey>([
 
 export function makeIdentityClient(connectionString: string): IdentityBaseClient {
   const safeRole = validateRole('identity_rw');
-  // max: 1 because connection_limit in the URL controls pgbouncer, not this pool.
-  // On Vercel each function invocation is its own process; a small cap keeps
-  // concurrent connections within Supabase staging limits (60 direct / 200 pooler).
-  const pool = new Pool({ connectionString, max: 1 });
-  const base = new IdentityBaseClient({ adapter: new PrismaPg(pool) });
+  // connection_limit in the URL controls pgbouncer, not this pool. Vercel runs the Hub with Fluid
+  // compute: one instance serves several requests at once and they share this pool. Every
+  // operation is an interactive transaction (SET LOCAL ROLE) of 300–600 ms through the pooler, so
+  // with max: 1 four parallel session checks already queue past Prisma's default maxWait of 2 s
+  // (P2028, as in Founder on 04.11.2026). Lot 3.9b: 3 per instance, maxWait 5 s; the budget
+  // (instances × the sum of the pools ≤ the pooler's client limit) is in ARCHITECTURE §6.2.
+  const pool = new Pool({ connectionString, max: 3 });
+  const base = new IdentityBaseClient({
+    adapter: new PrismaPg(pool),
+    transactionOptions: { maxWait: 5000 },
+  });
   const extended = base.$extends({
     query: {
       $allModels: {
