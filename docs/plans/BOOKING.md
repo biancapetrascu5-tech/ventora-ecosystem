@@ -2,6 +2,7 @@
 
 **Status:** PROPUS (31.10.2026). Deciziile D-B-1…14 sunt **DECISE** de fondatoare pe 31.10.2026 (§7); planul în ansamblu așteaptă aprobarea.
 **Actualizat 06.11.2026:** deciziile fondatoarei despre SMS (D-SMS-8, B.17 în pilot, B.18–B.22-SMS, D-SMS-7), WhatsApp și casa de marcat (§7.1b).
+**Actualizat 06.11.2026:** §2.2 cu componentele de design existente.
 **Referințe:**
 - `ARCHITECTURE.md` v0.4.9: §3, §5, §5.1–5.2, §6.4–6.5, §8.1–8.5, §11.2–11.6, §12, §13.2, §15.3–15.4, §17.1;
 - `checklists/01-booking.md` (66 de funcționalități confirmate);
@@ -102,20 +103,26 @@ Booking (numele afișat EasyBook, D-UX-4) e prima aplicație a ecosistemului (D-
 | `BookingSettings` | Programul pe zile, regulile (preaviz, anulare gratuită, pauză între programări, modul de confirmare), reamintirile cu estimarea SMS, **Resursele** (camere, echipamente, spații), taxa de anulare târzie |
 | `BookingLimit` | Limita lunară de programări atinsă: `UpgradeDialog`, programarea în curs păstrată |
 | `BookingStates` | Stările goale, de eroare și de prim contact |
+| `BookingStatuses` | Cele 7 stări ale programării (D-B-11) cu `StatusPill` și tranzițiile permise din fiecare în `BookingDetail`; corectarea unei stări finale în 24 de ore, de proprietar sau admin, cu motiv |
+| `BookingClientCard` | Fișa clientului: statistici (vizite, neprezentări, anulări târzii, încasat în total), istoricul programărilor (`DataTable`, cu sumă și stare), eticheta „Risc ridicat” cu motivul și datele, ștergerea notei cu motiv în jurnal, alerta pentru proprietar, cine vede ce (membrul vede doar programările lui) |
+| `BookingHealthFields` | Câmpurile medicale opționale: configurarea în Setări (câmpuri, servicii, cine vede răspunsurile), secțiunea separată din pagina publică cu bifa de consimțământ, afișarea pe fișa clientului, retragerea consimțământului (de salon sau din e-mail) cu ștergerea răspunsurilor; textul juridic e provizoriu |
+| `BookingPublic` | Pagina publică de rezervare, întâi pe telefon: serviciu → cu cine → zi și oră → date, cu verificarea anti-robot (Cloudflare Turnstile, slot neutru) → codul din e-mail → confirmat; ora ținută 10 minute; e-mailul verificat reținut 90 de zile pe dispozitiv; stările de eroare și „Am trimis cererea salonului” |
+| `BookingDeposit` | Pasul de avans prin Stripe în rezervarea publică: suma, ce rămâne de plată la salon, politica salonului cu bifa, formularul de card în `StripeSlot`, ora ținută 15 minute; stările: 3-D Secure, eșuată, plătită, „Așteaptă plata”, expirată |
+| `BookingPayments` | Setări · „Plăți și avans”: contul Stripe Connect al salonului în 4 stări (neconectat, în verificare, activ, cu probleme); avansul (sumă fixă sau procent, pe servicii, obligatoriu pentru „Risc ridicat”); politica de rambursare a avansului |
+| `BookingClientEmails` | E-mailurile către clienții afacerii, în șablonul operațional unic: confirmare, reamintire, anulare (de client / de salon), mutare, avans primit, avans rambursat, codul de verificare din pagina publică |
 | `BookingSms*` (7), `SmsAppDownload`, `FounderBusinessSms` | Tot fluxul SMS de pe numărul propriu (`SPEC_ECRANE_SMS.md` §1–§9) |
 | Comune | `Schedule`, `SlotPicker`, `Agenda`, `DataTable`, `UsageMeter`, `UpgradeDialog`, `NotificationsPanel`, `AttentionList`, `Badge`, `StatusPill` |
 
 **Lipsește din design** (de cerut în Claude Design înainte de lotul respectiv; ** = necesar pentru pilot):
 - **catalogul de servicii**, cu categorii, durate, prețuri, servicii cu durată sau preț variabil și capacitate simultană **;
 - **programul membrilor**: pauze, zile libere, excepții **;
-- **fișa clientului**: istoricul programărilor și al încasărilor, **eticheta notei de comportament cu motivul**, lista de clienți blocați **;
-- **câmpurile medicale**: formularul separat, bifa de consimțământ, vizibilitatea pe roluri, jurnalul citirilor **;
-- **pagina publică de rezervare** (`/r/<afacere>`): captcha, verificarea opțională a e-mailului, pasul de avans pentru „Risc ridicat”, plus pagina clientului pentru anulare / mutare **;
-- **conectarea contului Stripe Connect al salonului** și **plata avansului** **;
+- **fișa clientului**: istoricul încasărilor (`BookingClientCard` arată doar suma pe programare și totalul încasat), lista de clienți blocați **;
+- **câmpurile medicale**: jurnalul citirilor **;
+- **pagina publică de rezervare** (`/r/<afacere>`): pagina clientului pentru anulare / mutare (în `BookingClientEmails` există doar linkul) **;
 - **programările recurente, cele cu mai multe servicii, listele de așteptare, clasele / grupurile, pachetele de ședințe**;
 - **mai multe locații**: alegerea locației în calendar și la rezervare;
 - **formularele personalizate** la rezervare;
-- **încasările**: depozite, rambursări, solduri restante, istoricul financiar pe programare, coduri promoționale;
+- **încasările**: rambursările înregistrate din Hub, solduri restante, istoricul financiar pe programare, coduri promoționale (avansul și politica lui de rambursare sunt în `BookingDeposit` și `BookingPayments`);
 - **rapoartele**: ocupare, venituri, anulări / neprezentări, performanță;
 - **automatizările predefinite** și **șabloanele de mesaje**: follow-up, recenzii, notificări interne;
 - **asistentul AI** în Booking.
@@ -431,7 +438,7 @@ Sunt sărite cât timp lipsesc condițiile de mai jos.
 | Poate porni acum | Așteaptă |
 |---|---|
 | **B.1, C.0, B.2–B.7, B.9, B.21** (deciziile de bază sunt luate) | **B.8:** marcajul afacerii medicale (D-B-16); date reale după avizul avocatului |
-| **B.6**, din designul aprobat | **B.11:** designul paginii publice; cheile Turnstile |
+| **B.6**, din designul aprobat | **B.11:** designul paginii clientului pentru anulare / mutare; cheile Turnstile |
 | — | **B.13–B.16:** 4.3 (livrarea), 4.4 pentru B.15 |
 | — | **B.22:** 3.5 (SDK-ul Stripe) sau PR Core, Connect activat, URL public (3.9), avizul juridic |
 | **B.17** (D-SMS-8 decis: SMSLink, numărul scurt comun; 4.3 în `main`), după contul SMSLink | — |
