@@ -1,5 +1,12 @@
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import pg from 'pg';
+import { CANONICAL_LOCALE, SUPPORTED_LOCALES, type Locale } from '@ventora/i18n';
+import ro from '@ventora/i18n/messages/ro.json';
+import en from '@ventora/i18n/messages/en.json';
+import fr from '@ventora/i18n/messages/fr.json';
+import es from '@ventora/i18n/messages/es.json';
+import de from '@ventora/i18n/messages/de.json';
+import it_ from '@ventora/i18n/messages/it.json';
 import { InvalidInput, ResourceNotFound } from '@ventora/errors';
 import {
   NotificationCatalog,
@@ -62,6 +69,10 @@ const ACTIVITY: NotificationTemplate = {
   group: 'activity',
   rateLimit: undefined,
 };
+/** Titlul șablonului PHONE în catalogul unei limbi (subiectul e-mailului). */
+const MESSAGES = { ro, en, fr, es, de, it: it_ } as Record<Locale, typeof ro>;
+const titleIn = (locale: Locale) => MESSAGES[locale].notifications.sms.disconnected.title;
+
 const catalog = new NotificationCatalog([PHONE, SECURITY, LIMITED, OFFER, ACTIVITY]);
 const PARAMS = { n: '6', time: '18:00' };
 
@@ -265,6 +276,39 @@ run('Lot 4.3 — notifications: the model and the delivery', () => {
     expect(subjects[de.slice(0, 8)]).not.toBe('Telefonul afacerii e deconectat');
     expect((await deliver(ok.channel)).sent).toBe(0);
     expect(ok.sent).toHaveLength(2);
+  });
+
+  // Lotul 4.11, criteriul de ieșire 3 (FAZA-4 §8): drumul complet, de la trimitere la e-mail, în
+  // fiecare dintre cele 6 limbi: subiectul e titlul din catalogul limbii destinatarului, iar
+  // e-mailul e marcat cu limba lui. Fără limbă salvată → limba canonică (ro).
+  it('criteriul 3 — fiecare destinatar primește e-mailul în limba lui, pe toate cele 6 limbi', async () => {
+    const org = crypto.randomUUID();
+    const people = SUPPORTED_LOCALES.map((locale) => ({ id: crypto.randomUUID(), locale }));
+    const unset = crypto.randomUUID();
+    await send(org, {
+      type: PHONE.type,
+      version: 1,
+      recipientUserIds: [...people.map((p) => p.id), unset],
+      idempotencyKey: 'l6',
+      params: PARAMS,
+    });
+    const ok = channel();
+    const report = await deliver(
+      ok.channel,
+      Object.fromEntries(people.map((p) => [p.id, p.locale])),
+    );
+    expect(report.sent).toBe(people.length + 1);
+    const byTo = new Map(ok.sent.map((m) => [m.to, m]));
+    for (const p of people) {
+      const mail = byTo.get(`${p.id.slice(0, 8)}@example.com`);
+      expect(mail?.subject, p.locale).toBe(titleIn(p.locale));
+      expect(mail?.html, p.locale).toContain(`<html lang="${p.locale}">`);
+    }
+    const fallback = byTo.get(`${unset.slice(0, 8)}@example.com`);
+    expect(fallback?.subject).toBe(titleIn(CANONICAL_LOCALE));
+    expect(fallback?.html).toContain(`<html lang="${CANONICAL_LOCALE}">`);
+    // titlurile diferă de la o limbă la alta: testul nu trece cu textul românesc peste tot
+    expect(new Set(people.map((p) => titleIn(p.locale))).size).toBe(SUPPORTED_LOCALES.length);
   });
 
   it('a provider failure is retried, then marked failed, without a duplicate', async () => {
