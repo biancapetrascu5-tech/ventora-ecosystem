@@ -625,6 +625,43 @@ export async function getOrganization(ctx: OrgContext) {
   return result;
 }
 
+/** Lot C.0 (D-B-4 a): the time zone every business starts with; per location later (C.1). */
+export const DEFAULT_TIME_ZONE = 'Europe/Bucharest';
+
+/**
+ * Lot C.0: whether `timeZone` is an IANA name the runtime knows. The database refuses an unknown
+ * name on its own (trigger organization_time_zone_guard); this is the same rule for a future
+ * setter (D-C0-1 = c: none in the pilot) and for the modules that format times.
+ */
+export function isValidTimeZone(timeZone: string): boolean {
+  if (typeof timeZone !== 'string' || timeZone.length === 0 || timeZone.length > 64) return false;
+  try {
+    new Intl.DateTimeFormat('en-US', { timeZone });
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Lot C.0 (D-B-4 a; ARCHITECTURE §6.4 b): the business's time zone, read under RLS as org_rw.
+ * `ctx` is the tenant context from authorize() (modules) or resolveOrgContext (core): only its
+ * organizationId is used, never an id from client input. A business that is not visible in this
+ * context gives NotMemberError, like getOrganization.
+ */
+export async function getOrganizationTimeZone(ctx: { organizationId: string }): Promise<string> {
+  const db = getOrgDb();
+  const result = await db.$transaction(async (tx: any) => {
+    await tx.$executeRaw`SELECT set_config('app.organization_id', ${ctx.organizationId}, true)`;
+    return tx.organization.findUnique({
+      where: { id: ctx.organizationId },
+      select: { timeZone: true },
+    });
+  });
+  if (!result) throw new NotMemberError();
+  return result.timeZone;
+}
+
 // B1: uses ctx.organizationId exclusively — orgId param removed.
 export async function getMembership(ctx: OrgContext, userId: string) {
   const db = getOrgDb();

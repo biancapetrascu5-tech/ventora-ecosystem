@@ -66,6 +66,9 @@ model Organization {
   status               OrganizationStatus @default(active)
   suspendedAt          DateTime?          @map("suspended_at") @db.Timestamptz
   suspendedByFounderId String?            @map("suspended_by_founder_id") @db.Uuid
+  // Lot C.0 (D-B-4 a): the business's time zone, IANA; the trigger organization_time_zone_guard
+  // (migration only) refuses an unknown name. Per location later (C.1).
+  timeZone             String             @default("Europe/Bucharest") @map("time_zone") @db.VarChar(64)
   createdAt            DateTime           @default(now()) @map("created_at") @db.Timestamptz
   updatedAt            DateTime           @updatedAt @map("updated_at") @db.Timestamptz
 

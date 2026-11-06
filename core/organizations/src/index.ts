@@ -16,6 +16,10 @@ export {
   getInvitationByToken,
   requestNewInvitationLink,
   getOrganization,
+  // Lot C.0: the business time zone
+  getOrganizationTimeZone,
+  isValidTimeZone,
+  DEFAULT_TIME_ZONE,
   getMembership,
   listMembers,
   inviteMember,
