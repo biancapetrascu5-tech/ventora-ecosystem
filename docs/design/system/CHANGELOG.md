@@ -880,3 +880,14 @@ Decizia fondatoarei: numele vizibil e „Ventora Systems”, peste tot; „Vento
 - **FounderBillingProfile, FounderInvoiceNotIssued — 1.0.1:** breadcrumb „Afaceri › Salon Aurora” (fără, pe telefon) și filele în PageHeader, ca în FounderBusiness și FounderDiscounts; contextul de pe telefon arată numele afacerii. Tabelul cumpărărilor: coloanele lui InvoiceHistorySection, lățimi automate. Fără „Vezi factura” și „Rambursează” pe rândurile plătite; acțiuni doar pe „Nu s-a emis”. Preview, README.
 - Fără alte schimbări.
 
+## 2026-11-06 · S123 — EasyBook · catalogul de servicii
+
+### Componente noi (1.0.0)
+- **BookingServices** — Setări · „Servicii”: lista pe categorii (în ordinea lor) și „Fără categorie”; formularul de serviciu (durată fixă sau variabilă, preț fix / „de la” / interval, lei sau euro, clienți în același timp, „Se poate rezerva online”); erorile (nume duplicat, durată invalidă); categorie nouă, redenumire, ordinea categoriilor; arhivare și restaurare, filtrul „Arhivate”, categoria cu servicii active care nu se poate arhiva; stările goale. 1280, 820 și 390, light și dark.
+
+### Componente schimbate
+- **BookingSettings — 1.0.x+1:** README, cu trimitere la BookingServices pentru tabul „Servicii”.
+
+### Texte (`i18n/`)
+- `booking.json`: `booking.services.*`, doar în română deocamdată (celelalte limbi vin la traducere).
+
