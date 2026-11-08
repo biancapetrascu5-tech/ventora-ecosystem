@@ -418,6 +418,8 @@ for (const migration of [
   'core/ai/prisma/migrations/20261104100001_ai_init/migration.sql',
   // Lot B.1: schema booking (rolul booking_rw, catalogul de servicii, outbox), după audit (C.0b)
   'modules/booking/prisma/migrations/20261106000003_booking_init/migration.sql',
+  // Lot B.2: the members in the calendar and their schedule (business_hours, staff_*)
+  'modules/booking/prisma/migrations/20261108000001_booking_staff/migration.sql',
 ]) {
   psqlFile(TEST_DB.accessDb, join(ROOT, migration));
 }

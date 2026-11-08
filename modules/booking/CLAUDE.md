@@ -49,3 +49,15 @@ Booking (numele afișat EasyBook) e prima aplicație. Planul: `docs/plans/BOOKIN
   - Triggerul `service_guard` ține serviciul într-o categorie activă a aceleiași afaceri.
 - **`listBookableServices`** (intern) e sursa pentru programarea nouă (B.4 / B.5 / BookingNew).
   - Ce durată blochează calendarul la durata variabilă se decide în B.4 / B.5.
+
+## Membrii în calendar și programul lor (B.2, design S124)
+- **Cine e în calendar** (D-B-1, D-B2-1 = a): membrii activi owner / admin / member care au EasyBook, citit prin `getMemberApplicationAccess` (`@ventora/access`, C.2).
+  - **Din Hub, nu din EasyBook** (S124): `listStaff` aduce calendarul la zi cu echipa. Nu există „adaugă” sau „scoate” în modul.
+  - Un membru plecat rămâne în `staff_member` cu `archived_at` și numele copiat (`keep_snapshot`).
+  - B.4 cheamă `staffEligibility()` la fiecare programare nouă (D-B2-6 = a).
+- **Timpul:** orele sunt minute locale (0–1440, pași de 5), datele sunt `DATE` locale. Momentele exacte se calculează în Postgres, cu `AT TIME ZONE <fusul afacerii>` (C.0). Niciodată ore UTC stocate pentru program.
+- **Programul membrului nu depășește programul afacerii** (S124):
+  - la salvare se refuză cu `before_open` / `after_close` / `business_closed`;
+  - când se schimbă programul afacerii, intervalele se taie (`setBusinessHours` → `affected`).
+- **Nimic din B.2 nu anulează programări** (S124): doar avertismente, din B.4.
+- **Motivul concediului** e doar pentru owner și admin. Nu intră în audit.

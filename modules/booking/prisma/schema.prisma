@@ -58,6 +58,112 @@ model Service {
   @@schema("booking")
 }
 
+/// Lot B.2: the business's week (BookingSettings · „Program de lucru”), one interval per day.
+model BusinessHours {
+  organizationId  String   @map("organization_id") @db.Uuid
+  weekday         Int      @db.SmallInt
+  isOpen          Boolean  @map("is_open")
+  opensAtMin      Int?     @map("opens_at_min") @db.SmallInt
+  closesAtMin     Int?     @map("closes_at_min") @db.SmallInt
+  updatedByUserId String   @map("updated_by_user_id") @db.Uuid
+  createdAt       DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt       DateTime @default(now()) @map("updated_at") @db.Timestamptz
+
+  @@id([organizationId, weekday])
+  @@map("business_hours")
+  @@schema("booking")
+}
+
+/// Lot B.2: a member of the business in the calendar (D-B-1); display_name = keep_snapshot (§6.4 d).
+model StaffMember {
+  id               String    @id @db.Uuid
+  organizationId   String    @map("organization_id") @db.Uuid
+  userId           String    @map("user_id") @db.Uuid
+  displayName      String    @map("display_name") @db.VarChar(120)
+  scheduleMode     String    @default("business") @map("schedule_mode") @db.VarChar(8)
+  bookableOnline   Boolean   @default(true) @map("bookable_online")
+  sortOrder        Int       @default(0) @map("sort_order")
+  archivedAt       DateTime? @map("archived_at") @db.Timestamptz
+  archivedByUserId String?   @map("archived_by_user_id") @db.Uuid
+  createdByUserId  String?   @map("created_by_user_id") @db.Uuid
+  createdAt        DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt        DateTime  @default(now()) @map("updated_at") @db.Timestamptz
+
+  weeklyHours  StaffWeeklyHours[]
+  dayOverrides StaffDayOverride[]
+  timeOff      StaffTimeOff[]
+
+  @@index([organizationId, sortOrder], map: "staff_member_organization_id_sort_idx")
+  @@map("staff_member")
+  @@schema("booking")
+}
+
+/// Lot B.2: the member's own week, at most two intervals a day (D-B2-3 = a).
+model StaffWeeklyHours {
+  staffMemberId  String   @map("staff_member_id") @db.Uuid
+  weekday        Int      @db.SmallInt
+  organizationId String   @map("organization_id") @db.Uuid
+  isWorking      Boolean  @map("is_working")
+  start1Min      Int?     @map("start1_min") @db.SmallInt
+  end1Min        Int?     @map("end1_min") @db.SmallInt
+  start2Min      Int?     @map("start2_min") @db.SmallInt
+  end2Min        Int?     @map("end2_min") @db.SmallInt
+  createdAt      DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt      DateTime @default(now()) @map("updated_at") @db.Timestamptz
+
+  staffMember StaffMember @relation(fields: [staffMemberId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "staff_weekly_hours_staff_member_id_fkey")
+
+  @@id([staffMemberId, weekday])
+  @@index([organizationId], map: "staff_weekly_hours_organization_id_idx")
+  @@map("staff_weekly_hours")
+  @@schema("booking")
+}
+
+/// Lot B.2: one date that replaces the member's week.
+model StaffDayOverride {
+  id               String    @id @db.Uuid
+  organizationId   String    @map("organization_id") @db.Uuid
+  staffMemberId    String    @map("staff_member_id") @db.Uuid
+  onDate           DateTime  @map("on_date") @db.Date
+  isWorking        Boolean   @map("is_working")
+  start1Min        Int?      @map("start1_min") @db.SmallInt
+  end1Min          Int?      @map("end1_min") @db.SmallInt
+  start2Min        Int?      @map("start2_min") @db.SmallInt
+  end2Min          Int?      @map("end2_min") @db.SmallInt
+  archivedAt       DateTime? @map("archived_at") @db.Timestamptz
+  archivedByUserId String?   @map("archived_by_user_id") @db.Uuid
+  createdByUserId  String    @map("created_by_user_id") @db.Uuid
+  createdAt        DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt        DateTime  @default(now()) @map("updated_at") @db.Timestamptz
+
+  staffMember StaffMember @relation(fields: [staffMemberId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "staff_day_override_staff_member_id_fkey")
+
+  @@index([staffMemberId, onDate], map: "staff_day_override_staff_date_idx")
+  @@map("staff_day_override")
+  @@schema("booking")
+}
+
+/// Lot B.2: leave, a range of days; the reason only for the owner and the admins (S124).
+model StaffTimeOff {
+  id               String    @id @db.Uuid
+  organizationId   String    @map("organization_id") @db.Uuid
+  staffMemberId    String    @map("staff_member_id") @db.Uuid
+  startsOn         DateTime  @map("starts_on") @db.Date
+  endsOn           DateTime  @map("ends_on") @db.Date
+  reason           String?   @db.VarChar(200)
+  archivedAt       DateTime? @map("archived_at") @db.Timestamptz
+  archivedByUserId String?   @map("archived_by_user_id") @db.Uuid
+  createdByUserId  String    @map("created_by_user_id") @db.Uuid
+  createdAt        DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt        DateTime  @default(now()) @map("updated_at") @db.Timestamptz
+
+  staffMember StaffMember @relation(fields: [staffMemberId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "staff_time_off_staff_member_id_fkey")
+
+  @@index([staffMemberId, startsOn], map: "staff_time_off_staff_starts_idx")
+  @@map("staff_time_off")
+  @@schema("booking")
+}
+
 model OutboxEvent {
   eventId        String    @id @map("event_id") @db.Uuid
   type           String    @db.VarChar(128)

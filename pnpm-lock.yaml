@@ -977,6 +977,12 @@ importers:
       '@ventora/errors':
         specifier: workspace:*
         version: link:../../packages/errors
+      '@ventora/identity':
+        specifier: workspace:*
+        version: link:../../core/identity
+      '@ventora/organizations':
+        specifier: workspace:*
+        version: link:../../core/organizations
       '@ventora/quota':
         specifier: workspace:*
         version: link:../../core/quota

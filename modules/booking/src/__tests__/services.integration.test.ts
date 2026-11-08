@@ -743,11 +743,17 @@ describe('B.1 — the role and the grants (§2.3)', () => {
       `SELECT c.relname, c.relrowsecurity FROM pg_class c JOIN pg_namespace n ON n.oid = c.relnamespace
         WHERE n.nspname = 'booking' AND c.relkind = 'r' ORDER BY 1`,
     );
+    // every new table of the schema is listed here on purpose (B.2: business_hours, staff_*)
     expect(tables.map((t) => t.relname)).toEqual([
+      'business_hours',
       'outbox_events',
       'processed_events',
       'service',
       'service_category',
+      'staff_day_override',
+      'staff_member',
+      'staff_time_off',
+      'staff_weekly_hours',
     ]);
     for (const t of tables) {
       expect(t.relrowsecurity, t.relname).toBe(true);
