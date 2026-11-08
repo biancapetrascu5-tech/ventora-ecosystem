@@ -47,6 +47,9 @@ import {
   Bookmark,
   File,
   Folder,
+  FolderPlus,
+  Archive,
+  ArchiveRestore,
   Image,
   FileText,
   FileCheck,
@@ -180,6 +183,10 @@ export const ICON_REGISTRY = {
   bookmark: Bookmark,
   file: File,
   folder: Folder,
+  // Lot B.1-UI (S123, BookingServices): „Categorie nouă”, „Arhivează”, „Restaurează”
+  'folder-plus': FolderPlus,
+  archive: Archive,
+  'archive-restore': ArchiveRestore,
   image: Image,
   'file-text': FileText,
   // Lotul 3.8 (S121): „Am emis-o manual…”, „Emisă manual”
