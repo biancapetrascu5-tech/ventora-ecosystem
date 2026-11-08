@@ -14,8 +14,8 @@
  *  4. pentru fiecare cod, un test de integrare trebuie să verifice rândul de audit (valoarea
  *     codului apare într-un `*.integration.test.ts` din cele două module).
  *
- * Golurile găsite la 06.11.2026 sunt în KNOWN_GAPS și în raportul O-6; nu se repară aici. Când
- * un gol se repară, intrarea lui devine învechită și testul cere scoaterea ei.
+ * Golurile găsite la 06.11.2026 (raportul O-6) sunt reparate (07.11.2026): KNOWN_GAPS e goală.
+ * Un gol nou se repară, nu se adaugă aici fără decizia fondatoarei.
  */
 import { readdirSync, readFileSync } from 'node:fs';
 import path from 'node:path';
@@ -76,7 +76,8 @@ const WRITES: Record<string, Code[]> = {
   markInvoiceManual: ['billingInvoiceManual'],
   createSetupTransferInvoice: ['billingTransferInvoiced'],
   // „Anulează și rambursează”: rambursarea (Stripe sau storno), apoi refundSetupByFounder
-  refundSetupRequest: ['commercialSetupRefunded'],
+  // pe transfer și stornoul, cu rândul lui în billing (decizia 07.11.2026)
+  refundSetupRequest: ['commercialSetupRefunded', 'billingTransferRefunded'],
 };
 
 /** Citiri: verifică sesiunea Founder, nu scriu. */
@@ -125,24 +126,13 @@ const PURE = new Set([
 ]);
 
 /**
- * Golurile găsite la 06.11.2026 (raportul O-6). Nu se repară în PR-ul gardului.
+ * Golurile găsite la 06.11.2026 (raportul O-6), reparate pe 07.11.2026: lista e goală.
  * `noAudit`: scrierea nu emite codul. `untested`: codul e emis, dar niciun test de integrare
  * nu verifică rândul de audit.
  */
 const KNOWN_GAPS: { noAudit: string[]; untested: Code[] } = {
   noAudit: [],
-  untested: [
-    'billingInvoiceManual', // markInvoiceManual
-    'billingInvoiceRetried', // retryInvoice
-    'billingPaymentMethodSet', // setPaymentSettings
-    'billingTransferInvoiced', // createSetupTransferInvoice
-    'billingTransferReceived', // confirmTransferReceipt
-    'commercialAddonGrantEnded', // endAddonGrant
-    'commercialCurrencySet', // setBusinessCurrency
-    'commercialDunningResolved', // resolveDunningByFounder
-    'commercialSetupCancelled', // cancelSetupByFounder
-    'commercialSetupRefunded', // refundSetupByFounder, refundSetupRequest
-  ],
+  untested: [],
 };
 
 // ── Citirea surselor ───────────────────────────────────────────────────────────────────────

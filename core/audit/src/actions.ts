@@ -135,6 +135,9 @@ export const AuditActions = {
   billingTransferReceived: 'billing.transfer_received', // Founder confirms the receipt
   billingInvoiceRetried: 'billing.invoice_retried', // „Reîncearcă”
   billingInvoiceManual: 'billing.invoice_manual', // „Am emis-o manual”
+  // F3 · O-6 (decizia 07.11.2026): the storno of a setup paid by transfer, written by Founder's
+  // refund, in the same transaction (the card's storno is billing.payment_refunded, from Stripe)
+  billingTransferRefunded: 'billing.transfer_refunded',
   // Lot 4.10 — the workflow engine (category founder): only Founder builds, starts and stops
   // (D-WF-2); the reason and the support reference go in the business's log
   workflowDefinitionSaved: 'workflows.definition_saved', // a new automation or a new version

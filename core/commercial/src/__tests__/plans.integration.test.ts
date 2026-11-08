@@ -22,6 +22,7 @@ import {
   createOverride,
   createPlan,
   createPlanVersion,
+  endAddonGrant,
   endOverride,
   extendOverride,
   getEffectiveEntitlements,
@@ -355,6 +356,15 @@ describe('Lot 3.2 — the business currency and the subscription (D3-2, D3-3)', 
       organizationId: org,
       currency: 'EUR',
     });
+    // F3 · O-6: the audit row, on the business, with the currency
+    const currencyRows = await q(
+      `SELECT actor_type, organization_id, metadata FROM audit.audit_log
+        WHERE action = 'commercial.currency_set' AND founder_id = $1 AND target_id = $2`,
+      [founderId, org],
+    );
+    expect(currencyRows).toEqual([
+      { actor_type: 'founder', organization_id: org, metadata: { currency: 'EUR' } },
+    ]);
     await expect(
       assignSubscription({
         founderHeaders: founderHeaders(),
@@ -610,6 +620,17 @@ describe('Lot 3.2 — getEffectiveEntitlements', () => {
     expect((await listAddonsForOrg(org)).map((o) => o.quotaKey)).toEqual(['platform.members']);
     expect(await auditCount('commercial.addon_granted')).toBeGreaterThanOrEqual(2);
     expect(await auditCount('commercial.addon_sales_stopped', once.addonId)).toBe(1);
+    // F3 · O-6: ending a granted add-on, once, with its audit row; a second end writes nothing
+    await endAddonGrant({
+      founderHeaders: founderHeaders(),
+      organizationId: org,
+      grantId: g1.grantId,
+    });
+    await expect(
+      endAddonGrant({ founderHeaders: founderHeaders(), organizationId: org, grantId: g1.grantId }),
+    ).rejects.toThrow();
+    expect(await auditCount('commercial.addon_grant_ended', g1.grantId)).toBe(1);
+    expect((await getEffectiveEntitlements(org)).quotas['platform.members']).toBe(10);
   });
 
   it('trials (D3-5): an application for 14 days; the whole subscription only from Founder', async () => {

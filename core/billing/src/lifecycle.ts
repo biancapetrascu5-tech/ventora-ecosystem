@@ -1177,7 +1177,7 @@ export async function refundSetupRequest(params: {
   setupRequestId: string;
   reason: string;
 }): Promise<SetupRequestRow> {
-  await requireFounderSession(params.founderHeaders);
+  const founder = await requireFounderSession(params.founderHeaders);
   const organizationId = uuid('organizationId', params.organizationId);
   const req = await getSetupRequestForFounder(params);
   if (req.status !== 'paid' && req.status !== 'in_progress')
@@ -1201,18 +1201,40 @@ export async function refundSetupRequest(params: {
     if (!pi) throw new Conflict('setup_payment_missing');
     refundRef = (await getStripeGateway().refundPaymentIntent(pi, `setup-refund-${req.id}`)).id;
   } else {
-    refundRef = await withBillingWrite(organizationId, async (client) => {
-      const { rows } = await client.query<{ id: string }>(
+    refundRef = await withBillingWrite(organizationId, async (client, exec) => {
+      const { rows } = await client.query<{ id: string; amount_minor: string; currency: string }>(
         `INSERT INTO billing.invoice
            (id, organization_id, kind, payment_id, reverses_invoice_id, provider, amount_minor, currency)
          SELECT $1, i.organization_id, 'storno', i.payment_id, i.id, i.provider, i.amount_minor, i.currency
            FROM billing.invoice i
           WHERE i.id = $2 AND i.kind = 'invoice'
          ON CONFLICT (reverses_invoice_id) DO NOTHING
-         RETURNING id`,
+         RETURNING id, amount_minor, currency`,
         [uuidv7(), req.paymentRef],
       );
-      if (rows[0]) return rows[0].id;
+      if (rows[0]) {
+        // F3 · O-6 (07.11.2026): the storno has its own billing row, as the card's
+        // (billing.payment_refunded); only when written now — a retry finds it and adds none
+        await appendAuditEventInTx(exec, {
+          category: 'commercial',
+          action: AuditActions.billingTransferRefunded,
+          outcome: 'success',
+          actorType: 'founder',
+          actorId: founder.userId,
+          founderId: founder.userId,
+          organizationId,
+          targetType: 'invoice',
+          targetId: rows[0].id,
+          metadata: {
+            stornoInvoiceId: rows[0].id,
+            reversesInvoiceId: req.paymentRef,
+            setupRequestId: req.id,
+            amountMinor: Number(rows[0].amount_minor),
+            currency: rows[0].currency,
+          },
+        });
+        return rows[0].id;
+      }
       const found = await client.query<{ id: string }>(
         `SELECT id FROM billing.invoice WHERE reverses_invoice_id = $1`,
         [req.paymentRef],
