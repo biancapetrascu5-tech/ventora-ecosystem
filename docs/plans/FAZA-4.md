@@ -1,6 +1,6 @@
 # FAZA 4 — Servicii de platformă
 
-**Status:** APROBAT (fondatoarea, 30.10.2026).
+**Status:** **ÎNCHIS** (fondatoarea, 08.11.2026). Aprobat pe 30.10.2026. Criteriile de ieșire și ce rămâne deschis: §9.
 **Referințe:** `ARCHITECTURE.md` v0.4.6 din `main` și v0.4.7 de pe `feat/faza-2-ecrane` (PR #24: §15.1 „Obligații lăsate de F2 pentru F4”). Plus §4, §11.2–11.6, §12.3–12.4, §13.2 (T6), §15, §17.1. Apoi `docs/plans/FAZA-3.md` (PR #25), `SMS_NUMAR_PROPRIU.md`, `GROWTH_ENGINE.md`, `VENTORA_MASTER_BRIEF.md` (§33–39) și `docs/design/system`.
 **Depinde de:** Faza 2 închisă, inclusiv Lotul 2.8 (shell-ul Hub și Founder, HubAdminTeam; definit în FAZA-3.md).
 **Merge în paralel cu:** Faza 3 (ARCHITECTURE §15.2: „F3 și F4 merg în paralel după F2”).
@@ -585,3 +585,36 @@ Faza 4 se închide doar când:
 9. Ecranele F4 au capturile `_design` / `_impl` în raport (regula 12).
 10. CI e verde pe toate joburile.
 11. Întrebările juridice din §6 sunt trimise (nu neapărat primite). Nicio dată reală nu trece prin serviciile noi înainte de răspuns.
+
+---
+
+## 9. Închiderea (08.11.2026)
+
+Verificarea e în raportul de închidere a Fazei 4 (Lotul 4.11, 06.11.2026). Pe Vercel au rulat Inngest (11 funcții), T6 și criteriul 5.
+
+| # | Criteriul (§8) | Starea |
+|---|---|---|
+| 1 | Migrările F4 pe bază curată, fără drift | Îndeplinit: garda de drift în CI; pe staging, 42 de migrări, identice cu `main` |
+| 2 | T6 verde | Îndeplinit în CI și pe Vercel |
+| 3 | Notificarea în limba destinatarului, 6 limbi | Îndeplinit (#79) |
+| 4 | Suport din orice aplicație | Îndeplinit (#79) |
+| 5 | `invitation.new_link_requested` → notificare operațională, fără e-mail | Îndeplinit, verificat pe Vercel |
+| 6 | Clopoțelul Hub, doar operaționalele | Îndeplinit |
+| 7 | Șabloanele F3; job-urile F3 prin serviciul de job-uri | Îndeplinit; job-urile rulează pe Vercel |
+| 8 | `i18n:check` în CI | Îndeplinit |
+| 9 | Capturile `_design` / `_impl` ale ecranelor F4 | Îndeplinit, în rapoartele loturilor |
+| 10 | CI verde | Îndeplinit |
+| 11 | Întrebările juridice §6 trimise; nicio dată reală prin serviciile noi | **Îndeplinit:** întrebările au fost trimise avocatului pe 08.11.2026. Până la răspuns, nicio dată reală nu trece prin Inngest, Supabase Storage sau OpenAI |
+
+**Rămân deschise după închidere:**
+- **D4-18 (retenția)** și **D4-20 (DPA-ul și procesarea în UE pentru OpenAI)** rămân **provizorii**. Se închid cu răspunsul avocatului (§6, întrebările 3 și 4).
+- **E-mailul „Răspuns nou la solicitarea ta”, în ro și en** (VS-2026-0003 și VS-2026-0004, pe staging): **de confirmat de fondatoare**. Trebuie răspunsul ei din Founder; apoi se verifică livrarea și limba fiecărui e-mail.
+- **Webhook-ul Resend pentru starea livrării (D4-10):** după 4.11, lot separat.
+- **Golurile de design de după F4:**
+  - pagina cu istoricul notificărilor (D4-11);
+  - ecranele AI din Founder;
+  - ecranul dead-letter din Founder;
+  - clopoțelul Founder;
+  - previzualizarea fișierelor și șablonul PDF;
+  - cheile i18n ale notificărilor și suportului, exportate în `docs/design/system/i18n/`.
+- **Traducerile netraduse** (D4-27): de exemplu `notifications.invitation.newLinkRequested.title`, cu textul românesc în en / fr / es / de / it. Rămân marcate netraduse până la un traducător, înainte de lansare.
