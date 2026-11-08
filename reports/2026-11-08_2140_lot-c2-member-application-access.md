@@ -53,5 +53,5 @@ getMemberApplicationAccess(ctx, userId, applicationId): Promise<
 
 ## Ce urmează
 
-- **B.2:** folosește contractul prin `staffEligibility()`, la adăugarea în calendar și, din B.4, la fiecare programare nouă (D-B2-6 = a).
+- **B.2:** folosește contractul prin `staffEligibility()`, când aduce calendarul la zi cu echipa (S124) și, din B.4, la fiecare programare nouă (D-B2-6 = a).
 - **Staging:** nimic aplicat, iar C.2 nu are migrare.
