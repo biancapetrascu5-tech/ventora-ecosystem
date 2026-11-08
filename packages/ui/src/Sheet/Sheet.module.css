@@ -50,4 +50,15 @@
     border-left: 0;
     border-right: 0;
   }
+  /* bundle.css: .v-sheet--padded { padding: var(--space-4); } (S123, BookingServices la 390) */
+  .padded {
+    padding: var(--space-4);
+  }
+}
+
+/* bundle.css, @container shell (768–1023px): tableta portret */
+@container shell (min-width: 768px) and (max-width: 1023px) {
+  .padded {
+    padding: var(--space-5);
+  }
 }
