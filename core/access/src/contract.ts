@@ -18,6 +18,7 @@ import {
 } from '@ventora/identity';
 import {
   resolveOrgContext,
+  getMembership,
   acceptInvitation,
   getInvitationByToken,
   isOwnerOfAnyOrganization,
@@ -342,6 +343,52 @@ export async function countApplicationAccess(
     });
   }
   return counts;
+}
+
+/**
+ * Lot C.2 (BOOKING B.2, D-B2-1 = a): what another member of the caller's business may do in an
+ * application, by the same rule as authorize() steps 2 and 4: the membership in this business and
+ * its status; owner and admin have every application implicitly (ADR-0004), any other role only
+ * with its application_access row. The business is the one of the authorized context (from the
+ * session, never from input); a user of another business, or no user at all, is `not_member`.
+ * Booking uses it to put in the calendar only people who see their appointments in EasyBook.
+ */
+export type MemberApplicationAccess =
+  | { status: 'not_member' }
+  | { status: 'suspended'; role: MembershipRole }
+  | { status: 'active'; role: MembershipRole; hasAccess: boolean; roleInApp: string | null };
+
+export async function getMemberApplicationAccess(
+  ctx: Pick<TenantContext, 'userId' | 'organizationId'>,
+  userId: string,
+  applicationId: string,
+): Promise<MemberApplicationAccess> {
+  assertUuid(userId, 'userId');
+  // the caller's own membership, re-checked: the OrgContext of its business (RLS on it)
+  let orgCtx: Awaited<ReturnType<typeof resolveOrgContext>>;
+  try {
+    orgCtx = await resolveOrgContext({ userId: ctx.userId, organizationId: ctx.organizationId });
+  } catch (err) {
+    // as authorize(): a suspended organization stays itself, anything else is NotMember
+    if (err instanceof OrganizationSuspended) throw err;
+    throw new NotMember();
+  }
+  const membership = (await getMembership(orgCtx, userId)) as {
+    role: MembershipRole;
+    status: 'active' | 'suspended';
+  } | null;
+  if (!membership) return { status: 'not_member' };
+  if (membership.status !== 'active') return { status: 'suspended', role: membership.role };
+  if (IMPLICIT_ACCESS_ROLES.has(membership.role)) {
+    return { status: 'active', role: membership.role, hasAccess: true, roleInApp: null };
+  }
+  const access = await _checkApplicationAccess(ctx.organizationId, userId, applicationId);
+  return {
+    status: 'active',
+    role: membership.role,
+    hasAccess: access.hasAccess,
+    roleInApp: access.roleInApp,
+  };
 }
 
 /**
