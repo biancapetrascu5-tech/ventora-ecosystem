@@ -11,7 +11,13 @@ Booking (numele afișat EasyBook) e prima aplicație. Planul: `docs/plans/BOOKIN
   - accesul la date: `pg` brut, prin `withBookingTx` (`db.ts`);
   - logica domeniului;
   - validarea.
-- **`src/ui/` și `messages/{ro,en,fr,es,de,it}.json`:** apar cu primul ecran (B.6 / lotul UI al catalogului, după design).
+- **`src/ui/`** (Lotul B.1-UI): ecranele modulului, construite doar din `@ventora/ui`, doar cod de client, importate ca `@ventora/booking/ui`.
+  - Componentele primesc doar props: pagina din `apps/platform` și galeria desenează aceleași componente.
+  - `pnpm lint` le verifică (`eslint.config.mjs`): fără texte literale, fără `<select>` nativ, componentele comune doar din `@ventora/ui`.
+- **`messages/{ro,en,fr,es,de,it}.json`:** namespace-ul `booking` (ARCHITECTURE §744), legat în `apps/platform/src/i18n/request.ts` și verificat de `pnpm i18n:check`.
+  - Cheile `booking.services.*` vin din designul S123; en / fr / es / de / it au textul românesc, netradus (S123-10).
+- **`package.json` „exports”:** `.` (contractul), `./ui`, `./messages/*`. O aplicație nu poate importa `src/server`.
+- **Importurile interne** sunt fără extensie, ca în `core/*`: Turbopack nu rezolvă `./x.js` spre `x.ts` când modulul e transpilat de platformă.
 
 ## Reguli obligatorii
 1. **Proprietar unic (§6.4 a).** Doar acest modul scrie în schema `booking`.
@@ -48,7 +54,8 @@ Booking (numele afișat EasyBook) e prima aplicație. Planul: `docs/plans/BOOKIN
   - O categorie cu servicii active nu se arhivează.
   - Triggerul `service_guard` ține serviciul într-o categorie activă a aceleiași afaceri.
 - **`listBookableServices`** (intern) e sursa pentru programarea nouă (B.4 / B.5 / BookingNew).
-  - Ce durată blochează calendarul la durata variabilă se decide în B.4 / B.5.
+  - Durata variabilă (S123-3, decis 08.11.2026): online se ține liber maximul; echipa îl poate scurta în programare. Se implementează în B.4 / B.5.
+  - „Clienți în același timp” per membru al echipei (S123-6): se decide la B.4.
 
 ## Membrii în calendar și programul lor (B.2, design S124)
 - **Cine e în calendar** (D-B-1, D-B2-1 = a): membrii activi owner / admin / member care au EasyBook, citit prin `getMemberApplicationAccess` (`@ventora/access`, C.2).

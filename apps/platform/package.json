@@ -15,6 +15,7 @@
     "@stripe/stripe-js": "10.1.0",
     "@ventora/access": "workspace:*",
     "@ventora/billing": "workspace:*",
+    "@ventora/booking": "workspace:*",
     "@ventora/commercial": "workspace:*",
     "@ventora/config": "workspace:*",
     "@ventora/contracts": "workspace:*",

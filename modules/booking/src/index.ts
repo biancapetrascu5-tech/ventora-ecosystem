@@ -1,3 +1,3 @@
-export * from './contract/index.js';
-export { manifest } from './manifest.js';
-export type { BookingPermission } from './manifest.js';
+export * from './contract/index';
+export { manifest } from './manifest';
+export type { BookingPermission } from './manifest';

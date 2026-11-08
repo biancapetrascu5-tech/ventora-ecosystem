@@ -11,6 +11,8 @@ const nextConfig: NextConfig = {
     '@ventora/i18n',
     '@ventora/tokens',
     '@ventora/screens',
+    // Lot B.1-UI: the module's screens (src/ui, CSS modules) and messages
+    '@ventora/booking',
   ],
 };
 

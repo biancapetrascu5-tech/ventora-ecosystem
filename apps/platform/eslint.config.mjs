@@ -36,6 +36,13 @@ const eslintConfig = [
               from: { element: { type: 'app' } },
               allow: { to: { element: { type: 'package' } } },
             },
+            // Lot B.1-UI (ARCHITECTURE §3): an application uses a module only through its public
+            // entries, the ones in the module's package.json "exports" ("." = src/contract,
+            // "./ui" = src/ui, "./messages/*"); src/server cannot be imported (not exported).
+            {
+              from: { element: { type: 'app' } },
+              allow: { to: { element: { type: 'module' } } },
+            },
           ],
         },
       ],

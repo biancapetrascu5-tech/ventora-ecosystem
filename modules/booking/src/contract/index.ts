@@ -1,12 +1,12 @@
 // The public API of the booking module (ARCHITECTURE §3): the only import allowed from outside.
 // Lot 2.3 / 3.3: the proof contract of the appointments (stubs until B.4).
-export { listAppointments, createAppointment, getAppointment } from './appointments.js';
+export { listAppointments, createAppointment, getAppointment } from './appointments';
 export type {
   Appointment,
   ListAppointmentsParams,
   CreateAppointmentParams,
   GetAppointmentParams,
-} from './appointments.js';
+} from './appointments';
 // Lot B.1: the service catalog
 export {
   listServices,
@@ -21,7 +21,7 @@ export {
   archiveServiceCategory,
   restoreServiceCategory,
   reorderServiceCategories,
-} from './services.js';
+} from './services';
 export type {
   Service,
   ServiceCategory,
@@ -38,7 +38,7 @@ export type {
   UpdateServiceCategoryParams,
   ServiceCategoryIdParams,
   ReorderServiceCategoriesParams,
-} from './services.js';
+} from './services';
 // Lot B.2: the members in the calendar and their schedule (design S124, BookingTeamSchedule)
 export {
   getBusinessHours,
@@ -54,7 +54,7 @@ export {
   updateStaffTimeOff,
   archiveStaffTimeOff,
   getStaffAvailability,
-} from './staff.js';
+} from './staff';
 export type {
   AvailabilityDay,
   BusinessDay,
@@ -85,4 +85,4 @@ export type {
   UpdateStaffTimeOffParams,
   StaffTimeOffIdParams,
   GetStaffAvailabilityParams,
-} from './staff.js';
+} from './staff';
