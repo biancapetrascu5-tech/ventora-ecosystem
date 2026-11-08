@@ -497,7 +497,8 @@ describe('B.1 — the role and the grants (§2.3)', () => {
       client.release();
     }
     for (const sql of [
-      `SELECT 1 FROM support.support_request LIMIT 1`,
+      // only schemas the CI access job has migrated before this step (support comes later)
+      `SELECT 1 FROM access.application_access LIMIT 1`,
       `SELECT 1 FROM organizations.organization LIMIT 1`,
       `SELECT 1 FROM commercial.subscription LIMIT 1`,
     ]) {

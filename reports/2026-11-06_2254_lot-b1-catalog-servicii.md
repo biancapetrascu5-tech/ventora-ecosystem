@@ -104,6 +104,26 @@
 
 **Pe scurt:** fiecare pachet a trecut cel puțin o dată, complet, cu codul final B.1. Căderile din rulările 2 și 3 sunt opriri ale procesului vitest pe Windows (0xC0000409), nu teste picate. Aceeași cădere a apărut și la Lotul 3.9b, în `core/access`. CI-ul (Linux) e verificarea finală.
 
+## Corecție după CI (2026-11-08, run 42304025709, jobul T3)
+**Ce a picat:** un singur test B.1, la pasul „Run access integration tests”: `app_runtime alone sees nothing; booking_rw sees no other schema` (36 din 37 trecute).
+- Testul verifica faptul că `booking_rw` nu are acces la `support.support_request` și se aștepta la eroarea `42501` (permisiune refuzată).
+- În CI a primit „relation does not exist”, adică tabelul nu exista încă.
+
+**Cauza:**
+- În jobul T3, testele booking rulează în pasul access, iar migrările `support` se aplică abia mai târziu, la pasul „Apply support migrations”.
+- Local, `test-db-up` aplică toate migrările de la început, de aceea testul trecea local. Eroarea nu se putea reproduce local.
+
+**Corecția:** testul folosește acum `access.application_access`, un tabel migrat înainte de pasul access. Celelalte două verificări (`organizations`, `commercial`) rămân la fel.
+- Verificarea e la fel de strictă: `booking_rw` nu are `USAGE` pe schema `access`, deci primește `42501`.
+- Nu s-a schimbat cod de producție, migrări sau CI; doar fișierul de test.
+
+**Rulat local după corecție:** `pnpm test:integration` complet, exit 0.
+- **access:** 160 din 160.
+- **booking:** 37 din 37, cu drift curat.
+- **restul pachetelor:** verzi, inclusiv `test:pricing` (7 din 7).
+
+Prima rulare locală după rebase a picat la `organizations`, pe testul C.0 `getOrganizationTimeZone`, cu `PrismaClientValidationError` (`timeZone` necunoscut). Clientul Prisma din worktree fusese generat înainte de rebase. După `pnpm -r run generate`, a trecut. Nu era o problemă de cod.
+
 ## Ce a rămas deschis
 - **Staging:** nimic aplicat. Planul de staging vine după merge-ul #84, #85 și B.1:
   - `prisma migrate deploy` din `main` actualizat, cu `DIRECT_URL`, pentru `organizations`, `audit`, `booking`;
