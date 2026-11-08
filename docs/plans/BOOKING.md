@@ -3,6 +3,7 @@
 **Status:** PROPUS (31.10.2026). Deciziile D-B-1…14 sunt **DECISE** de fondatoare pe 31.10.2026 (§7); planul în ansamblu așteaptă aprobarea.
 **Actualizat 06.11.2026:** deciziile fondatoarei despre SMS (D-SMS-8, B.17 în pilot, B.18–B.22-SMS, D-SMS-7), WhatsApp și casa de marcat (§7.1b).
 **Actualizat 06.11.2026:** §2.2 cu componentele de design existente.
+**Actualizat 08.11.2026:** designul catalogului de servicii (S123, `BookingServices`), Lotul B.1-UI și deciziile fondatoarei despre catalog (§7.1c).
 **Referințe:**
 - `ARCHITECTURE.md` v0.4.9: §3, §5, §5.1–5.2, §6.4–6.5, §8.1–8.5, §11.2–11.6, §12, §13.2, §15.3–15.4, §17.1;
 - `checklists/01-booking.md` (66 de funcționalități confirmate);
@@ -101,6 +102,7 @@ Booking (numele afișat EasyBook, D-UX-4) e prima aplicație a ecosistemului (D-
 | `BookingNew` | Programarea nouă: serviciu → oră (`SlotPicker`, „Oricine e liber”) → client; rezumat și preț; opțiunile de confirmare și reamintire |
 | `BookingDetail` | Detaliul în `Drawer`: stare, client, istoric, note; butonul principal după stare („Confirmă”, „Încasează”, „Programează din nou”) |
 | `BookingSettings` | Programul pe zile, regulile (preaviz, anulare gratuită, pauză între programări, modul de confirmare), reamintirile cu estimarea SMS, **Resursele** (camere, echipamente, spații), taxa de anulare târzie |
+| `BookingServices` (S123) | Setări · „Servicii”, catalogul de servicii: categoriile în ordinea lor și „Fără categorie”; formularul (durată fixă sau variabilă, preț fix / „de la” / interval, lei sau euro, clienți în același timp, „Se poate rezerva online”); erorile; categorie nouă, redenumire, ordinea categoriilor; arhivare și restaurare, filtrul „Arhivate”; stările goale. Textele `booking.services.*` doar în română |
 | `BookingLimit` | Limita lunară de programări atinsă: `UpgradeDialog`, programarea în curs păstrată |
 | `BookingStates` | Stările goale, de eroare și de prim contact |
 | `BookingStatuses` | Cele 7 stări ale programării (D-B-11) cu `StatusPill` și tranzițiile permise din fiecare în `BookingDetail`; corectarea unei stări finale în 24 de ore, de proprietar sau admin, cu motiv |
@@ -114,7 +116,6 @@ Booking (numele afișat EasyBook, D-UX-4) e prima aplicație a ecosistemului (D-
 | Comune | `Schedule`, `SlotPicker`, `Agenda`, `DataTable`, `UsageMeter`, `UpgradeDialog`, `NotificationsPanel`, `AttentionList`, `Badge`, `StatusPill` |
 
 **Lipsește din design** (de cerut în Claude Design înainte de lotul respectiv; ** = necesar pentru pilot):
-- **catalogul de servicii**, cu categorii, durate, prețuri, servicii cu durată sau preț variabil și capacitate simultană **;
 - **programul membrilor**: pauze, zile libere, excepții **;
 - **fișa clientului**: istoricul încasărilor (`BookingClientCard` arată doar suma pe programare și totalul încasat), lista de clienți blocați **;
 - **câmpurile medicale**: jurnalul citirilor **;
@@ -143,9 +144,24 @@ Booking (numele afișat EasyBook, D-UX-4) e prima aplicație a ecosistemului (D-
   - tabelele `service_category` și `service` (durată, preț, durată sau preț variabil, capacitate simultană, arhivare);
   - contractele: listare, creare, editare, arhivare (ARCHITECTURE §6.4 c: fără ștergere fizică);
   - structura modulului din §3.
-- **Dependențe:** —. **Migrări:** `booking_init`. **Ecrane:** designul lipsește.
+- **Dependențe:** —. **Migrări:** `booking_init`. **Ecrane:** `BookingServices` (S123), în Lotul B.1-UI.
+- **Corecturile S123 (§7.1c), în PR-ul B.1 (#86), înainte de merge:**
+  - **C1:** restaurarea unui serviciu dintr-o categorie arhivată îl mută în „Fără categorie” (`category_id = NULL`, în același `UPDATE`), în loc de `Conflict('service_category_archived')`;
+  - **C2:** durata, de la 5 minute la 8 ore (480), în validare și în CHECK-urile migrării;
+  - **C4:** contractul `reorderServiceCategories`: toată ordinea categoriilor într-o tranzacție, cu auditul `booking.service_category_updated` pe fiecare categorie mutată.
 - **Gata când:** T1 și T2 pe `service`; un serviciu arhivat nu mai apare la programare nouă, dar rămâne pe programările vechi.
 - **Estimare:** 2 h.
+
+#### Lot B.1-UI — Ecranul catalogului de servicii (`BookingServices`) [Pilot]
+- **Ce intră:**
+  - **shell-ul EasyBook** în `apps/platform`: `AppShell`, `Spine` cu secțiunile din design, `ContextBar`, `UsageMeter` (`booking.appointments`). Fără aplicația activă, trimite la `/applications/booking`;
+  - **pagina** `/booking/settings/services`, tabul „Servicii” din Setări. Intrarea „Servicii” din Spine deschide aceeași pagină (S123-1); `/booking/services`, `/booking` și `/booking/settings` trimit la ea până la B.6;
+  - **ecranul** în `modules/booking/src/ui/services/`, doar din `packages/ui`; acțiunile pe contractele B.1;
+  - **textele** `booking.services.*` în `modules/booking/messages/`, primul modul cu mesaje proprii: legarea în `apps/platform/src/i18n/request.ts` și în `pnpm i18n:check`;
+  - **galeria** `BookingServices`, cu cele 15 cadre din preview, și componenta în `enforced`.
+- **Dependențe:** B.1 îmbinat, cu corecturile C1, C2, C4.
+- **Gata când:** cele 60 de perechi `_design` / `_impl` (15 cadre × 1280 / 390 × light / dark) sub 2%; acțiunile nu înghit erorile; regula pre-push completă.
+- **Estimare:** 3–4 h.
 
 #### Lot C.0 — Fusul orar al afacerii (Core, PR separat) [Pilot]
 - **Ce intră:** fusul orar pe afacere în `core/organizations`, implicit `Europe/Bucharest` (D-B-4), citit prin contract; pe locație mai târziu (C.1).
@@ -186,7 +202,10 @@ Booking (numele afișat EasyBook, D-UX-4) e prima aplicație a ecosistemului (D-
   - **resolverul de reconciliere** înregistrat (Lotul 3.3);
   - **auditul** schimbărilor;
   - **evenimentele** `booking.appointment.created` / `changed` / `cancelled` / `no_show` / `completed` în outbox, în catalogul din `packages/contracts`;
-  - **intervalele blocate** (indisponibilitate).
+  - **intervalele blocate** (indisponibilitate);
+  - **de decis aici (S123-6):** „Clienți în același timp” per membru al echipei (de exemplu două cliente la o manichiuristă), nu pe toată afacerea. Azi `capacity` stă pe serviciu (1–100); se decide dacă semnificația devine per membru și dacă e nevoie de migrare;
+  - **durata variabilă (S123-3):** programarea online ține durata maximă; echipa o poate scurta în programare;
+  - **arhivarea unui serviciu:** contractul care numără programările viitoare, pentru rândul „Are {n} programări viitoare” din `BookingServices`.
 - **Dependențe:** B.1, B.2.
 - **Migrări:** `booking_appointments`.
 - **Gata când:**
@@ -200,7 +219,8 @@ Booking (numele afișat EasyBook, D-UX-4) e prima aplicație a ecosistemului (D-
 - **Ce intră:**
   - calculul intervalelor libere: programul membrului, excepțiile, programările existente, resursele, pauza dintre programări, preavizul, fusul afacerii;
   - „Primul loc liber” și „Oricine e liber”;
-  - folosit și de pagina publică.
+  - folosit și de pagina publică;
+  - la serviciile cu durată variabilă, locul liber se calculează pe durata maximă (S123-3).
 - **Dependențe:** B.2, B.4 (B.3 dacă salonul are resurse).
 - **Gata când:** cazurile-limită au teste: zi închisă, pauză, resursă ocupată, schimbarea orei, preaviz.
 - **Estimare:** 2 h.
@@ -378,6 +398,7 @@ Sunt sărite cât timp lipsesc condițiile de mai jos.
   - **plata merge în contul salonului**, cu **comision Ventora opțional** pe plată, setat din Founder;
   - **programarea în „așteaptă plata”** → plata → „confirmată”; la eșec sau expirare, anularea și eliberarea intervalului (saga, §6.4 g);
   - **pasul de plată** doar când salonul cere avans (D-PN-6) sau când clientul are „Risc ridicat” (D-B-6);
+  - **moneda (S123-2):** avansul se încasează în moneda serviciului, chiar dacă afacerea folosește cealaltă monedă;
   - **webhook-urile** Connect idempotente și testate;
   - **taxa de anulare târzie** și **taxa de neprezentare** (după pilot).
 - **Dependențe:**
@@ -575,6 +596,21 @@ Nu sunt incluse așteptarea deciziilor, designul care lipsește și condițiile 
 | D-SMS-7 | Validarea juridică SMS se obține înainte de lansare. | Lansarea (§9) |
 | WhatsApp | Lot separat, după pilot, după verificarea Meta Business. | După pilot |
 | Casa de marcat | Fără AMEF în v1. Experimentul **E-AMEF** după pilot. | B.21 (doar evidența), după pilot |
+
+### 7.1c DECIS (fondatoarea, 08.11.2026): catalogul de servicii (S123)
+
+| # | Decizie | Unde se aplică |
+|---|---|---|
+| S123-1 | O singură pagină: intrarea „Servicii” din Spine deschide aceeași pagină ca Setări · „Servicii”. | B.1-UI |
+| S123-2 | Moneda serviciului pornește de la moneda afacerii (S113). Un serviciu în cealaltă monedă se afișează și se încasează în moneda lui. Precizează D-B1-2 (moneda pe serviciu). | B.1-UI, B.22 |
+| S123-3 | Durata variabilă: online se rezervă durata maximă; echipa o poate scurta în programare. | B.4, B.5 |
+| S123-4 | Numele sunt unice între serviciile active ale afacerii; restaurarea unui serviciu cu nume deja luat dă eroarea de nume duplicat (`err.nameDuplicate`). | B.1, B.1-UI |
+| S123-5 | Restaurarea unui serviciu dintr-o categorie arhivată îl mută în „Fără categorie”; categoria rămâne arhivată. | B.1 (C1), B.1-UI |
+| S123-6 | „Clienți în același timp” per membru al echipei: se decide la B.4. | B.4 |
+| S123-7 | Durata unui serviciu: de la 5 minute la 8 ore, în pași de 5 minute. | B.1 (C2) |
+| S123-8 | Pagina catalogului e doar pentru cine are `booking:settings` (owner, admin, application_manager). | B.1-UI |
+| S123-9 | Intrările din Spine și tabele încă neconstruite apar ca în design și răspund 404 până la loturile lor. | B.1-UI, B.6 |
+| S123-10 | Textele în en / fr / es / de / it: textul românesc, marcat netradus, până la traducere. | B.1-UI |
 
 ### 7.2 NECESITĂ DECIZIE (rămase)
 
