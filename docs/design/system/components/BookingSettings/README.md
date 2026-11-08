@@ -9,3 +9,5 @@ Shown at 1280 (desktop), 820 (tablet portrait) and 390 (phone), in light and dar
 After the product review: a fixed bar "Ai schimbări nesalvate" with "Salvează schimbările" appears as soon as something changes; the SMS reminder shows its estimate ("Aproximativ 420 de SMS-uri pe lună, la programul de acum."); new businesses start with the 24-hour SMS reminder on.
 
 **Servicii (S123).** The "Servicii" tab is the services catalogue, drawn in BookingServices: categories and their order, "Fără categorie", the service form, archive and restore.
+
+**Programul echipei și Resurse (S124).** A new tab "Programul echipei" (after "Servicii"), drawn in BookingTeamSchedule; the "Resurse" tab with its list and the resource form, drawn in BookingResources. The tab row gets "Programul echipei" at import.
