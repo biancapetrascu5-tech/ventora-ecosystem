@@ -18,6 +18,7 @@ import {
   getService,
   listServiceCategories,
   listServices,
+  reorderServiceCategories,
   restoreService,
   restoreServiceCategory,
   updateService,
@@ -331,16 +332,13 @@ describe('B.1 — archiving and restoring (§6.4 c)', () => {
     });
     expect(archived.archivedAt).toBeInstanceOf(Date);
 
-    // no new service in it, no restoring a service into it, no moving a service into it
+    // no new service in it, no moving a service into it (restoring: see the C1 test below)
     const err = await createService({
       sessionToken: ownerA.token,
       ...serviceBody('Gel nou', { categoryId: category.id }),
     }).catch((e: unknown) => e);
     expect(err).toBeInstanceOf(InvalidInput);
     expect((err as InvalidInput).field).toBe('categoryId');
-    await expect(
-      restoreService({ sessionToken: ownerA.token, serviceId: service.id }),
-    ).rejects.toThrow('service_category_archived');
     const other = await createService({ sessionToken: ownerA.token, ...serviceBody('Gel lac') });
     await expect(
       updateService({
@@ -350,14 +348,246 @@ describe('B.1 — archiving and restoring (§6.4 c)', () => {
       }),
     ).rejects.toThrow(InvalidInput);
 
-    // the category comes back, then the service can too
+    // the category comes back, then a service can be moved into it again
     await restoreServiceCategory({ sessionToken: ownerA.token, categoryId: category.id });
     expect(
-      (await restoreService({ sessionToken: ownerA.token, serviceId: service.id })).archivedAt,
-    ).toBeNull();
+      (
+        await updateService({
+          sessionToken: ownerA.token,
+          serviceId: other.id,
+          ...serviceBody('Gel lac', { categoryId: category.id }),
+        })
+      ).categoryId,
+    ).toBe(category.id);
     await expect(
       createServiceCategory({ sessionToken: ownerA.token, name: 'UNGHII' }),
     ).rejects.toThrow('service_category_name_taken');
+  });
+
+  it('C1: restoring a service whose category is archived brings it back in „Fără categorie”, audited', async () => {
+    const category = await createServiceCategory({ sessionToken: ownerA.token, name: 'C1 cat' });
+    const service = await createService({
+      sessionToken: ownerA.token,
+      ...serviceBody('C1 serviciu', { categoryId: category.id }),
+    });
+    await archiveService({ sessionToken: ownerA.token, serviceId: service.id });
+    await archiveServiceCategory({ sessionToken: ownerA.token, categoryId: category.id });
+
+    const restored = await restoreService({ sessionToken: ownerA.token, serviceId: service.id });
+    expect(restored.archivedAt).toBeNull();
+    expect(restored.categoryId).toBeNull();
+    expect(restored.categoryName).toBeNull();
+    // the category stays archived; the service is in the active list, without a category
+    const [cat] = await adminQuery<{ archived_at: Date | null }>(
+      `SELECT archived_at FROM booking.service_category WHERE id = $1`,
+      [category.id],
+    );
+    expect(cat!.archived_at).toBeInstanceOf(Date);
+    const active = await listServices({ sessionToken: ownerA.token });
+    expect(active.find((s) => s.id === service.id)?.categoryId).toBeNull();
+
+    // one audit row for the restore, with the category it left
+    const rows = await adminQuery<{ metadata: Record<string, unknown> }>(
+      `SELECT metadata FROM audit.audit_log
+        WHERE target_id = $1 AND action = 'booking.service_restored'`,
+      [service.id],
+    );
+    expect(rows).toHaveLength(1);
+    expect(rows[0]!.metadata).toEqual({
+      name: 'C1 serviciu',
+      movedToUncategorized: true,
+      previousCategoryId: category.id,
+      previousCategoryName: 'C1 cat',
+    });
+
+    // a service whose category is active keeps it, and the audit row has no extra fields
+    const kept = await createServiceCategory({ sessionToken: ownerA.token, name: 'C1 activă' });
+    const other = await createService({
+      sessionToken: ownerA.token,
+      ...serviceBody('C1 altul', { categoryId: kept.id }),
+    });
+    await archiveService({ sessionToken: ownerA.token, serviceId: other.id });
+    expect(
+      (await restoreService({ sessionToken: ownerA.token, serviceId: other.id })).categoryId,
+    ).toBe(kept.id);
+    const [otherRow] = await adminQuery<{ metadata: Record<string, unknown> }>(
+      `SELECT metadata FROM audit.audit_log
+        WHERE target_id = $1 AND action = 'booking.service_restored'`,
+      [other.id],
+    );
+    expect(otherRow!.metadata).toEqual({ name: 'C1 altul' });
+  });
+});
+
+describe('B.1 — C2: the duration is at most 8 hours (480 min)', () => {
+  it('the contract and the CHECK both refuse more than 480', async () => {
+    const ok = await createService({
+      sessionToken: ownerA.token,
+      ...serviceBody('C2 opt ore', { durationMinutes: 480 }),
+    });
+    expect(ok.durationMinutes).toBe(480);
+    for (const extra of [{ durationMinutes: 485 }, { durationMinutes: 720 }]) {
+      const err = await createService({
+        sessionToken: ownerA.token,
+        ...serviceBody('C2 prea lung', extra),
+      }).catch((e: unknown) => e);
+      expect(err).toBeInstanceOf(InvalidInput);
+      expect((err as InvalidInput).field).toBe('durationMinutes');
+    }
+    const errMax = await createService({
+      sessionToken: ownerA.token,
+      ...serviceBody('C2 max', { durationMinutes: 60, durationMaxMinutes: 485 }),
+    }).catch((e: unknown) => e);
+    expect(errMax).toBeInstanceOf(InvalidInput);
+    expect((errMax as InvalidInput).field).toBe('durationMaxMinutes');
+
+    // the database refuses too, whoever writes
+    const checks: Array<[string, string]> = [
+      [
+        `INSERT INTO booking.service
+           (id, organization_id, name, duration_minutes, price_minor, created_by_user_id)
+         VALUES (gen_random_uuid(), $1, 'C2 sql', 485, 0, $2)`,
+        'service_duration_check',
+      ],
+      [
+        `INSERT INTO booking.service
+           (id, organization_id, name, duration_minutes, duration_max_minutes, price_minor,
+            created_by_user_id)
+         VALUES (gen_random_uuid(), $1, 'C2 sql max', 60, 485, 0, $2)`,
+        'service_duration_max_check',
+      ],
+    ];
+    for (const [sql, constraint] of checks) {
+      await asBookingRw(orgA, async (client) => {
+        await expect(client.query(sql, [orgA, ownerA.userId]), sql).rejects.toMatchObject({
+          code: '23514',
+          constraint,
+        });
+      });
+    }
+  });
+});
+
+describe('B.1 — C4: reorderServiceCategories, the whole order in one transaction', () => {
+  let orgC: string;
+  let ownerC: { userId: string; token: string };
+  beforeAll(async () => {
+    orgC = await createOrg();
+    ownerC = await personWithRole(orgC, 'owner');
+  });
+  afterAll(async () => {
+    await adminQuery(`DELETE FROM booking.service_category WHERE organization_id = $1`, [orgC]);
+    await adminQuery(`DELETE FROM organizations.organization WHERE id = $1`, [orgC]);
+  });
+
+  it('sets the positions, audits only the categories that moved, refuses a stale or bad list', async () => {
+    const t = ownerC.token;
+    const a = await createServiceCategory({ sessionToken: t, name: 'A' });
+    const b = await createServiceCategory({ sessionToken: t, name: 'B', sortOrder: 1 });
+    const c = await createServiceCategory({ sessionToken: t, name: 'C', sortOrder: 2 });
+    const gone = await createServiceCategory({ sessionToken: t, name: 'Arhivată', sortOrder: 3 });
+    await archiveServiceCategory({ sessionToken: t, categoryId: gone.id });
+
+    // A stays at 0; C moves to 1, B to 2
+    const result = await reorderServiceCategories({
+      sessionToken: t,
+      categoryIds: [a.id, c.id, b.id],
+    });
+    expect(result.map((r) => [r.name, r.sortOrder])).toEqual([
+      ['A', 0],
+      ['C', 1],
+      ['B', 2],
+    ]);
+    expect((await listServiceCategories({ sessionToken: t })).map((r) => r.id)).toEqual([
+      a.id,
+      c.id,
+      b.id,
+    ]);
+
+    const audits = await adminQuery<{ target_id: string; metadata: Record<string, unknown> }>(
+      `SELECT target_id, metadata FROM audit.audit_log
+        WHERE organization_id = $1 AND action = 'booking.service_category_updated'`,
+      [orgC],
+    );
+    expect(audits.map((r) => r.target_id).sort()).toEqual([b.id, c.id].sort());
+    expect(audits.find((r) => r.target_id === c.id)!.metadata).toEqual({
+      name: 'C',
+      sortOrder: { from: 2, to: 1 },
+      reorder: true,
+    });
+
+    // stale: an active category missing, an archived one, an unknown id, another business's id
+    const fromA = await createServiceCategory({ sessionToken: ownerA.token, name: 'C4 din A' });
+    for (const categoryIds of [
+      [a.id, c.id],
+      [a.id, c.id, b.id, gone.id],
+      [a.id, c.id, uuid()],
+      [a.id, c.id, fromA.id],
+    ]) {
+      const err = await reorderServiceCategories({ sessionToken: t, categoryIds }).catch(
+        (e: unknown) => e,
+      );
+      expect(err).toBeInstanceOf(Conflict);
+      expect(String((err as Error).message)).toContain('service_category_order_stale');
+    }
+    // bad input: not a list, duplicates, not UUIDs
+    for (const categoryIds of [null, [a.id, a.id, b.id], ['x', c.id, b.id]]) {
+      const err = await reorderServiceCategories({
+        sessionToken: t,
+        categoryIds: categoryIds as never,
+      }).catch((e: unknown) => e);
+      expect(err).toBeInstanceOf(InvalidInput);
+      expect((err as InvalidInput).field).toBe('categoryIds');
+    }
+    // nothing changed by the refused calls
+    expect((await listServiceCategories({ sessionToken: t })).map((r) => r.sortOrder)).toEqual([
+      0, 1, 2,
+    ]);
+    const after = await adminQuery(
+      `SELECT 1 FROM audit.audit_log
+        WHERE organization_id = $1 AND action = 'booking.service_category_updated'`,
+      [orgC],
+    );
+    expect(after).toHaveLength(2);
+  });
+
+  it('a failed write rolls back the whole order (one transaction)', async () => {
+    const t = ownerC.token;
+    const before = await listServiceCategories({ sessionToken: t });
+    const ids = before.map((r) => r.id).reverse();
+    const auditsBefore = await adminQuery(
+      `SELECT 1 FROM audit.audit_log WHERE organization_id = $1`,
+      [orgC],
+    );
+    // [A, C, B] reversed is [B, C, A]: B moves first (0), C keeps 1, A (moving to 2) is refused
+    // by a trigger, for this test only, after B was already written
+    const victim = ids[ids.length - 1]!;
+    await adminQuery(`
+      CREATE OR REPLACE FUNCTION booking.c4_test_refuse() RETURNS trigger LANGUAGE plpgsql AS $$
+      BEGIN
+        IF NEW.id = '${victim}'::uuid THEN RAISE EXCEPTION 'c4 test refusal'; END IF;
+        RETURN NEW;
+      END $$`);
+    await adminQuery(
+      `CREATE TRIGGER c4_test_refuse BEFORE UPDATE ON booking.service_category
+         FOR EACH ROW EXECUTE FUNCTION booking.c4_test_refuse()`,
+    );
+    try {
+      await expect(reorderServiceCategories({ sessionToken: t, categoryIds: ids })).rejects.toThrow(
+        'c4 test refusal',
+      );
+    } finally {
+      await adminQuery(`DROP TRIGGER c4_test_refuse ON booking.service_category`);
+      await adminQuery(`DROP FUNCTION booking.c4_test_refuse()`);
+    }
+    expect((await listServiceCategories({ sessionToken: t })).map((r) => r.id)).toEqual(
+      before.map((r) => r.id),
+    );
+    const auditsAfter = await adminQuery(
+      `SELECT 1 FROM audit.audit_log WHERE organization_id = $1`,
+      [orgC],
+    );
+    expect(auditsAfter).toHaveLength(auditsBefore.length);
   });
 });
 
@@ -663,6 +893,16 @@ describe('B.1 — T3: the permission matrix from the manifest', () => {
           'booking:settings',
           () => restoreServiceCategory({ sessionToken: token, categoryId: seedCat.id }),
         ],
+        [
+          'booking:settings',
+          async () =>
+            reorderServiceCategories({
+              sessionToken: token,
+              categoryIds: (await listServiceCategories({ sessionToken: ownerA.token })).map(
+                (c) => c.id,
+              ),
+            }),
+        ],
       ];
       for (const [permission, call] of contracts) {
         if (allows(role, permission)) {
@@ -683,7 +923,7 @@ describe('B.1 — T4: Booking not active → AppNotEnabled on every new contract
     configureAccess({ entitlementProvider: { isEnabled: async () => true } });
   });
 
-  it('all eleven', async () => {
+  it('all twelve', async () => {
     const t = ownerA.token;
     const id = uuid();
     const calls: Array<() => Promise<unknown>> = [
@@ -698,6 +938,7 @@ describe('B.1 — T4: Booking not active → AppNotEnabled on every new contract
       () => updateServiceCategory({ sessionToken: t, categoryId: id, name: 'T4' }),
       () => archiveServiceCategory({ sessionToken: t, categoryId: id }),
       () => restoreServiceCategory({ sessionToken: t, categoryId: id }),
+      () => reorderServiceCategories({ sessionToken: t, categoryIds: [id] }),
     ];
     for (const call of calls) await expect(call()).rejects.toThrow(AppNotEnabled);
   });

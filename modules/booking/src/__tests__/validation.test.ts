@@ -34,16 +34,19 @@ describe('validateService', () => {
     });
   });
 
-  it('durations: 5–720, multiples of 5; the variable maximum above the minimum', () => {
+  it('durations: 5–480, multiples of 5; the variable maximum above the minimum', () => {
     expect(fieldOf(() => validateService({ ...base, durationMinutes: 0 }))).toBe('durationMinutes');
     expect(fieldOf(() => validateService({ ...base, durationMinutes: 4 }))).toBe('durationMinutes');
     expect(fieldOf(() => validateService({ ...base, durationMinutes: 33 }))).toBe(
       'durationMinutes',
     );
-    expect(fieldOf(() => validateService({ ...base, durationMinutes: 725 }))).toBe(
+    expect(fieldOf(() => validateService({ ...base, durationMinutes: 720 }))).toBe(
       'durationMinutes',
     );
-    expect(fieldOf(() => validateService({ ...base, durationMinutes: 720 }))).toBeNull();
+    expect(fieldOf(() => validateService({ ...base, durationMinutes: 480 }))).toBeNull();
+    expect(fieldOf(() => validateService({ ...base, durationMinutes: 485 }))).toBe(
+      'durationMinutes',
+    );
     expect(fieldOf(() => validateService({ ...base, durationMaxMinutes: 30 }))).toBe(
       'durationMaxMinutes',
     );

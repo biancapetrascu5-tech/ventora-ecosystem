@@ -87,10 +87,10 @@ CREATE TABLE "booking"."service" (
   CONSTRAINT "service_description_check"
     CHECK ("description" IS NULL OR char_length("description") <= 1000),
   CONSTRAINT "service_duration_check"
-    CHECK ("duration_minutes" BETWEEN 5 AND 720 AND "duration_minutes" % 5 = 0),
+    CHECK ("duration_minutes" BETWEEN 5 AND 480 AND "duration_minutes" % 5 = 0),
   CONSTRAINT "service_duration_max_check" CHECK (
     "duration_max_minutes" IS NULL
-    OR ("duration_max_minutes" > "duration_minutes" AND "duration_max_minutes" <= 720
+    OR ("duration_max_minutes" > "duration_minutes" AND "duration_max_minutes" <= 480
         AND "duration_max_minutes" % 5 = 0)
   ),
   CONSTRAINT "service_price_kind_check" CHECK ("price_kind" IN ('fixed', 'from', 'range')),
@@ -115,6 +115,8 @@ CREATE UNIQUE INDEX "service_active_name_key"
 
 -- A service stays in an active category of its own business, whoever writes: on insert, on a
 -- change of category and on restoring (an archived service may sit in a category archived later).
+-- (restoreService moves such a service to „Fără categorie” first, UI plan C1; the guard stays as
+-- the last line for any other writer.)
 -- SECURITY INVOKER: as booking_rw the lookup runs under RLS, so a category of another business is
 -- not found. FOR SHARE waits for an archiving in progress (archiveServiceCategory locks the
 -- category FOR UPDATE) and then sees its result, so the two cannot cross.

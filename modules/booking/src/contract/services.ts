@@ -8,6 +8,7 @@ import {
   getServiceInOrg,
   listServiceCategoriesInOrg,
   listServicesInOrg,
+  reorderServiceCategoriesInOrg,
   restoreServiceCategoryInOrg,
   restoreServiceInOrg,
   updateServiceCategoryInOrg,
@@ -23,7 +24,7 @@ import type { ServiceInputParams } from '../server/validation';
  * owner, admin, application_manager). The organization comes only from the session; an id of
  * another business answers ResourceNotFound (T1). Errors: InvalidInput (the field), Conflict
  * (service_name_taken, service_category_name_taken, service_category_not_empty,
- * service_category_archived), ResourceNotFound, Forbidden, AppNotEnabled.
+ * service_category_order_stale, service_category_archived on a race), ResourceNotFound, Forbidden, AppNotEnabled.
  */
 
 type Session = { sessionToken: string };
@@ -53,6 +54,7 @@ export type ListServiceCategoriesParams = Session & { includeArchived?: boolean 
 export type ServiceCategoryParams = Session & { name: string; sortOrder?: number };
 export type UpdateServiceCategoryParams = ServiceCategoryParams & { categoryId: string };
 export type ServiceCategoryIdParams = Session & { categoryId: string };
+export type ReorderServiceCategoriesParams = Session & { categoryIds: string[] };
 
 function serviceInput(params: ServiceInputParams): ServiceInputParams {
   return {
@@ -125,6 +127,17 @@ export async function updateServiceCategory(
     name: params.name,
     sortOrder: params.sortOrder,
   });
+}
+
+/**
+ * The full order of the active categories, in one transaction (UI plan C4). The list must hold
+ * exactly the active categories; otherwise Conflict service_category_order_stale (reload, retry).
+ */
+export async function reorderServiceCategories(
+  params: ReorderServiceCategoriesParams,
+): Promise<ServiceCategory[]> {
+  const ctx = await manage(params);
+  return reorderServiceCategoriesInOrg(ctx, params.categoryIds);
 }
 
 export async function archiveServiceCategory(

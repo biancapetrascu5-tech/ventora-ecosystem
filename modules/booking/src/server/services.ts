@@ -385,21 +385,52 @@ export async function archiveServiceInOrg(ctx: TenantContext, serviceId: string)
   });
 }
 
-/** Restores an archived service; its name must be free and its category active. */
+/**
+ * Restores an archived service; its name must be free. If its category was archived in the
+ * meantime, the service comes back in „Fără categorie” (category_id NULL, UI plan C1) and the
+ * audit row of the restore records the category it left. The service row is locked FOR UPDATE and
+ * its category FOR SHARE, so an archiving or a restore of the category cannot cross the decision.
+ */
 export async function restoreServiceInOrg(ctx: TenantContext, serviceId: string): Promise<Service> {
   const id = requireId(serviceId);
   try {
     return await withBookingTx(ctx.organizationId, async (client, exec) => {
-      const { rows } = await client.query<{ name: string }>(
-        `UPDATE booking.service
-            SET archived_at = NULL, archived_by_user_id = NULL
-          WHERE id = $1 AND archived_at IS NOT NULL
-          RETURNING name`,
-        [id],
-      );
-      if (rows[0]) {
+      const { rows: locked } = await client.query<{
+        name: string;
+        archived_at: Date | null;
+        category_id: string | null;
+      }>(`SELECT name, archived_at, category_id FROM booking.service WHERE id = $1 FOR UPDATE`, [
+        id,
+      ]);
+      const current = locked[0];
+      if (!current) throw new ResourceNotFound();
+      let category: { name: string; archived_at: Date | null } | undefined;
+      if (current.archived_at && current.category_id) {
+        const { rows } = await client.query<{ name: string; archived_at: Date | null }>(
+          `SELECT name, archived_at FROM booking.service_category WHERE id = $1 FOR SHARE`,
+          [current.category_id],
+        );
+        category = rows[0];
+      }
+      if (current.archived_at) {
+        // a category not found under RLS cannot happen (same-business FK + guard); treat it as gone
+        const leavesCategory =
+          current.category_id !== null && (category === undefined || category.archived_at !== null);
+        await client.query(
+          `UPDATE booking.service
+              SET archived_at = NULL, archived_by_user_id = NULL, category_id = $2
+            WHERE id = $1`,
+          [id, leavesCategory ? null : current.category_id],
+        );
         await audit(exec, ctx, AuditActions.bookingServiceRestored, 'booking_service', id, {
-          name: rows[0].name,
+          name: current.name,
+          ...(leavesCategory
+            ? {
+                movedToUncategorized: true,
+                previousCategoryId: current.category_id,
+                previousCategoryName: category?.name ?? null,
+              }
+            : {}),
         });
       }
       const service = await readService(client, id);
@@ -472,6 +503,67 @@ export async function updateServiceCategoryInOrg(
   } catch (err) {
     mapCategoryWriteError(err);
   }
+}
+
+/** At most this many categories in one reordering (the catalog of a pilot business is far smaller). */
+const MAX_REORDER = 200;
+
+/**
+ * Sets the order of all active categories at once (UI plan C4): `categoryIds` is the full list of
+ * the active categories, in the new order; each gets sort_order = its position. One transaction:
+ * the active categories are locked FOR UPDATE, so a category added, archived or restored in the
+ * meantime makes the list stale (Conflict service_category_order_stale) instead of half applied.
+ * One audit row booking.service_category_updated per category whose position changed.
+ */
+export async function reorderServiceCategoriesInOrg(
+  ctx: TenantContext,
+  categoryIds: unknown,
+): Promise<ServiceCategory[]> {
+  if (
+    !Array.isArray(categoryIds) ||
+    categoryIds.length > MAX_REORDER ||
+    !categoryIds.every(isUuid) ||
+    new Set(categoryIds.map((c) => c.toLowerCase())).size !== categoryIds.length
+  ) {
+    throw new InvalidInput('categoryIds');
+  }
+  const ids = categoryIds.map((c) => c.toLowerCase());
+  return withBookingTx(ctx.organizationId, async (client, exec) => {
+    const { rows: active } = await client.query<CategoryRow>(
+      `SELECT id, name, sort_order, archived_at, created_at, updated_at
+         FROM booking.service_category
+        WHERE archived_at IS NULL
+        ORDER BY id
+          FOR UPDATE`,
+    );
+    const byId = new Map(active.map((r) => [r.id, r]));
+    if (active.length !== ids.length || !ids.every((id) => byId.has(id))) {
+      throw new Conflict('service_category_order_stale');
+    }
+    for (const [position, id] of ids.entries()) {
+      const before = byId.get(id)!;
+      if (before.sort_order === position) continue;
+      await client.query(`UPDATE booking.service_category SET sort_order = $2 WHERE id = $1`, [
+        id,
+        position,
+      ]);
+      await audit(
+        exec,
+        ctx,
+        AuditActions.bookingServiceCategoryUpdated,
+        'booking_service_category',
+        id,
+        { name: before.name, sortOrder: { from: before.sort_order, to: position }, reorder: true },
+      );
+    }
+    const { rows } = await client.query<CategoryRow>(
+      `SELECT id, name, sort_order, archived_at, created_at, updated_at
+         FROM booking.service_category
+        WHERE archived_at IS NULL
+        ORDER BY sort_order, name, id`,
+    );
+    return rows.map(toCategory);
+  });
 }
 
 /**

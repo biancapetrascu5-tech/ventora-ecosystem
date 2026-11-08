@@ -17,7 +17,7 @@ export const LIMITS = {
   serviceName: 120,
   description: 1000,
   durationMin: 5,
-  durationMax: 720,
+  durationMax: 480, // 8 hours (UI plan C2)
   durationStep: 5,
   priceMax: 10_000_000,
   capacityMax: 100,

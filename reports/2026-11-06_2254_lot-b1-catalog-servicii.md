@@ -124,6 +124,53 @@
 
 Prima rulare locală după rebase a picat la `organizations`, pe testul C.0 `getOrganizationTimeZone`, cu `PrismaClientValidationError` (`timeZone` necunoscut). Clientul Prisma din worktree fusese generat înainte de rebase. După `pnpm -r run generate`, a trecut. Nu era o problemă de cod.
 
+## Schimbări din planul UI BookingServices (2026-11-08: C1, C2, C4)
+Făcute pe #86, înainte de merge. Migrarea `booking_init` nu e aplicată nicăieri, așa că am editat-o direct, fără o migrare nouă.
+
+**C1. Restaurarea unui serviciu dintr-o categorie arhivată.** Serviciul revine în „Fără categorie” (`category_id` NULL); categoria rămâne arhivată.
+- `restoreServiceInOrg` blochează rândul serviciului `FOR UPDATE` și categoria lui `FOR SHARE`, așa că o arhivare sau o restaurare a categoriei nu se poate încrucișa cu decizia.
+- **Auditul:** un singur rând `booking.service_restored`. Când serviciul pleacă din categorie, metadatele au în plus `movedToUncategorized: true`, `previousCategoryId` și `previousCategoryName`.
+- `service_guard` rămâne neschimbat, ca ultimă barieră pentru orice altă scriere.
+- **Conflictul `service_category_archived` la restaurare** nu mai apare în mod normal; maparea lui a rămas pentru o cursă neprevăzută.
+- **Teste:**
+  - testul nou C1 verifică serviciul fără categorie, categoria tot arhivată și metadatele exacte ale rândului de audit;
+  - verifică și cazul cu categorie activă, unde categoria se păstrează și rândul nu are câmpurile în plus;
+  - testul vechi „o categorie arhivată nu primește servicii” e adaptat.
+
+**C2. Durata maximă e 8 ore (480 de minute), nu 12.**
+- `service_duration_check` și `service_duration_max_check` din `booking_init` folosesc acum 480.
+- `LIMITS.durationMax = 480` în `validation.ts`, pe care îl folosesc contractele.
+- **Teste:**
+  - unitare: 480 trece, 485 și 720 se refuză;
+  - de integrare: contractul răspunde `InvalidInput` pe `durationMinutes` / `durationMaxMinutes`;
+  - de integrare: un INSERT direct ca `booking_rw` e refuzat de CHECK (`23514`, cu numele constrângerii).
+
+**C4. Contractul nou `reorderServiceCategories({ categoryIds })`** primește permisiunea `booking:settings`.
+- **Intrarea:** lista completă a categoriilor active, în ordinea nouă. Fiecare primește `sort_order` = poziția ei.
+- **O singură tranzacție:** categoriile active sunt blocate `FOR UPDATE`.
+  - O listă care nu conține exact categoriile active dă `Conflict('service_category_order_stale')` și nu schimbă nimic. Asta acoperă o categorie lipsă, una arhivată, un id necunoscut sau al altei afaceri.
+  - Dublurile, valorile care nu sunt UUID sau ce nu e listă dau `InvalidInput('categoryIds')`. Limita e de 200 de categorii.
+- **Auditul:** câte un rând `booking.service_category_updated` pentru fiecare categorie care și-a schimbat poziția. Metadatele sunt `name`, `sortOrder: { from, to }` și `reorder: true`.
+- **Teste:**
+  - poziții, ordinea citită, auditul doar pe categoriile mutate;
+  - listele învechite și intrarea greșită, fără efect;
+  - un UPDATE refuzat la mijloc anulează toată ordinea și auditul;
+  - matricea T3 cu contractul nou;
+  - T4, acum pe toate cele 12 contracte.
+- **Nu e nevoie de GRANT nou:** `UPDATE (sort_order)` pe `service_category` exista deja.
+
+**Comenzi rulate după C1, C2 și C4:**
+
+| Comandă | Rezultat |
+|---|---|
+| `pnpm format:check`, `lint`, `typecheck`, `test`, `build`, `i18n:check`, `guards:verify` | exit 0 |
+| `pnpm test:integration`, rularea 1 | Booking: 40 din 41. Testul de anulare C4 era greșit: categoria aleasă să pice își păstra poziția, deci nu primea UPDATE și nu pica nimic. Am corectat testul (ultima categorie mutată pică după ce prima a fost scrisă). Codul nu s-a schimbat. Toate pachetele dinainte de booking au trecut, inclusiv access 160 din 160. |
+| `pnpm test:integration`, rularea 2 | Procesul vitest pe Windows a ieșit cu codul `3221226505` (0xC0000409) în `organizations`, înainte de booking. Niciun test picat. |
+| `pnpm test:integration`, rularea 3 | Aceeași ieșire a procesului, de data asta în `access` (`lot28`), înainte de booking. Niciun test picat. |
+| Pașii booking din `test:integration`, rulați separat: aceeași pornire `test-db-up`, `sync-permissions`, `sync-commercial-registry`, drift `booking`, testele booking | Drift: „No difference detected”. **Booking: 41 din 41.** |
+
+**Concluzia rulărilor:** codul final al booking a trecut complet, iar access a trecut complet (160 din 160) în rularea 1. Căderile din rulările 2 și 3 sunt opririle cunoscute ale procesului vitest pe Windows, în pachete pe care aceste schimbări nu le ating. CI-ul (Linux) rămâne verificarea finală.
+
 ## Ce a rămas deschis
 - **Staging:** nimic aplicat. Planul de staging vine după merge-ul #84, #85 și B.1:
   - `prisma migrate deploy` din `main` actualizat, cu `DIRECT_URL`, pentru `organizations`, `audit`, `booking`;

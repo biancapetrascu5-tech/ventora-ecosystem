@@ -20,6 +20,7 @@ export {
   updateServiceCategory,
   archiveServiceCategory,
   restoreServiceCategory,
+  reorderServiceCategories,
 } from './services.js';
 export type {
   Service,
@@ -36,4 +37,5 @@ export type {
   ServiceCategoryParams,
   UpdateServiceCategoryParams,
   ServiceCategoryIdParams,
+  ReorderServiceCategoriesParams,
 } from './services.js';
