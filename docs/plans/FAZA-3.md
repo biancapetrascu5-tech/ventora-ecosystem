@@ -1,6 +1,6 @@
 # FAZA 3 — Sistemul comercial
 
-**Status:** ÎNCHIS (tehnic), 08.11.2026: criteriile 1–9 sunt îndeplinite cu dovadă în repo și CI (§8.1). **De confirmat de fondatoare:** F-3 (2FA pe Hub și Founder) și F-4 (plățile de test din Hub), pe URL-urile Vercel legate de staging.
+**Status:** ÎNCHIS (tehnic), 08.11.2026: criteriile 1–10 sunt îndeplinite (§8.1): 1–9 cu dovadă în repo și CI, 10 confirmat de fondatoare (întrebările juridice trimise avocatului pe 08.11.2026). **De confirmat de fondatoare:** F-3 (2FA pe Hub și Founder) și F-4 (plățile de test din Hub), pe URL-urile Vercel legate de staging.
 **Istoric:** APROBAT (fondatoarea, 30.10.2026). Deciziile D3-2–D3-9 și D3-11 trecute în §5 la 31.10.2026; seara, D3-10, D3-11 (termenul), D3-12, D3-13, D3-15–D3-19 și **D3-24 (modelul comercial: aplicații la bucată + bundle-uri)**, la Lotul 3.4; la 01.11.2026, **D3-25** (locurile incluse, fotografiate pe abonament) și precizările D3-24 (implementarea, Lotul 3.4 / 3.5); tot la 01.11.2026, **D3-26** (limitele aplicațiilor la bucată, fotografiate pe linie, Lotul 3.5b); 01–03.11.2026, deciziile pe raportul 3.5 (pachetele din Founder, disputele, setările Stripe).
 **Referințe:** `ARCHITECTURE.md` v0.4.6 (§4, §7.2, §8, §13.2, §14, §15, §16, §17.1, §17.23), `GROWTH_ENGINE.md`, `VENTORA_MASTER_BRIEF.md` (§12–14, §43), `docs/design/system` (ecranele comerciale, `glossary.md`, `patterns.md`)
 **Depinde de:** Faza 2 (identitate și acces), închisă, inclusiv Lotul 2.8 (shell-ul Hub și Founder, §3). Faza 1 (design system) e închisă.
@@ -736,7 +736,7 @@ Faza 3 se închide doar când:
 | 7 | `allAppsEnabledProvider` doar în teste | `grep` (raportul de închidere §1) | CONFIRMAT |
 | 8 | Capturile `_design` / `_impl` | O-5 (#83): 80 de perechi pentru 3.4 și 3.7 în `reports/2026-11-06_f3-o5-capturi/`; CommercialStates, HubBillingProfile și HubSetupRequest în `enforced` | CONFIRMAT |
 | 9 | CI verde pe toate joburile | Run 42496902448 pe `main` `5aafa53` (după #88): success | CONFIRMAT |
-| 10 | Validările juridice cerute; nicio plată reală | Nicio plată reală: Stripe e pe chei de test, SmartBill pe seria `TST`. Trimiterea întrebărilor din §6 e O-4. | Nicio plată reală: CONFIRMAT; trimiterea întrebărilor: O-4 |
+| 10 | Validările juridice cerute; nicio plată reală | Nicio plată reală: Stripe e pe chei de test, SmartBill pe seria `TST`. Întrebările din §6 au fost trimise avocatului pe 08.11.2026 (confirmarea fondatoarei; O-4 închis). Plățile reale rămân oprite până la răspuns. | CONFIRMAT |
 
 **De confirmat de fondatoare** (verificările din 3.9b, fără urmă pe stack-ul de staging la 06.11):
 
@@ -747,7 +747,6 @@ Faza 3 se închide doar când:
 
 **Rămân deschise după închidere** (din raportul de închidere §4, fără schimbare de status):
 - O-3: regiunea funcțiilor, doar `fra1`;
-- O-4: întrebările juridice și fiscale din §6;
 - O-7: `commercial.price-change-notice`;
 - O-8: pool comun pentru `app_runtime`, în F4;
 - O-9: `baseURL` pentru Better Auth.
