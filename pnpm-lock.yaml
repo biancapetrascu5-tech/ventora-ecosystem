@@ -965,28 +965,37 @@ importers:
       '@ventora/access':
         specifier: workspace:*
         version: link:../../core/access
+      '@ventora/audit':
+        specifier: workspace:*
+        version: link:../../core/audit
       '@ventora/contracts':
         specifier: workspace:*
         version: link:../../packages/contracts
+      '@ventora/db-kit':
+        specifier: workspace:*
+        version: link:../../packages/db-kit
       '@ventora/errors':
         specifier: workspace:*
         version: link:../../packages/errors
       '@ventora/quota':
         specifier: workspace:*
         version: link:../../core/quota
+      pg:
+        specifier: ^8.0.0
+        version: 8.23.1
     devDependencies:
+      '@types/node':
+        specifier: ^22.0.0
+        version: 22.20.5
       '@types/pg':
         specifier: ^8.0.0
         version: 8.23.1
       '@ventora/commercial':
         specifier: workspace:*
         version: link:../../core/commercial
-      '@ventora/db-kit':
-        specifier: workspace:*
-        version: link:../../packages/db-kit
-      pg:
-        specifier: ^8.0.0
-        version: 8.23.1
+      prisma:
+        specifier: ^7.0.0
+        version: 7.10.1(@types/node@22.20.5)(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(typescript@6.0.3)
       typescript:
         specifier: ^6.0.0
         version: 6.0.3

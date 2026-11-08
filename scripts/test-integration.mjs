@@ -2,7 +2,7 @@
 /**
  * Rulează toate testele de integrare local, identic cu CI:
  *   1. Pornește DB-ul de test
- *   2. Verifică garda de drift (prisma migrate diff --exit-code): identity, founder, organizations, audit, access, notifications, files, support, commercial, billing, workflows, ai
+ *   2. Verifică garda de drift (prisma migrate diff --exit-code): identity, founder, organizations, audit, access, notifications, files, support, commercial, booking, billing, workflows, ai
  *   3. Rulează testele de integrare (db-kit, audit, identity, organizations, integrations, access, notifications, files, support, commercial, booking, billing, workflows, ai)
  *      și sincronizarea registrului comercial de două ori (a doua nu trebuie să schimbe nimic)
  *   4. Oprește DB-ul (indiferent de rezultat)
@@ -45,6 +45,7 @@ const SHADOW_BILLING = `postgresql://postgres:test@localhost:${PG}/shadow_billin
 const SHADOW_WORKFLOWS = `postgresql://postgres:test@localhost:${PG}/shadow_workflows_diff`;
 const SHADOW_SUPPORT = `postgresql://postgres:test@localhost:${PG}/shadow_support_diff`;
 const SHADOW_AI = `postgresql://postgres:test@localhost:${PG}/shadow_ai_diff`;
+const SHADOW_BOOKING = `postgresql://postgres:test@localhost:${PG}/shadow_booking_diff`;
 
 let exitCode = 0;
 
@@ -210,7 +211,13 @@ try {
   run('pnpm tsx scripts/sync-commercial-registry.ts', { DIRECT_URL: ADMIN_ACCESS });
   run('pnpm tsx scripts/sync-commercial-registry.ts --expect-noop', { DIRECT_URL: ADMIN_ACCESS });
 
-  // --- Booking integration tests ---
+  // --- Booking integration tests (Lot B.1: drift pe schema booking, apoi testele) ---
+  console.log('[test:integration] Verificare drift booking schema...');
+  runPkg(
+    '@ventora/booking',
+    `exec prisma migrate diff --from-migrations ./prisma/migrations --to-schema ./prisma/schema.prisma --exit-code --config prisma7.config.ts`,
+    { DATABASE_URL: ADMIN_ACCESS, SHADOW_DATABASE_URL: SHADOW_BOOKING },
+  );
   console.log('\n[test:integration] booking...');
   runPkg('@ventora/booking', 'test:integration', {
     DATABASE_URL_TEST: `postgresql://app_runtime:${TEST_DB.appPw}@localhost:${PG}/${TEST_DB.accessDb}`,

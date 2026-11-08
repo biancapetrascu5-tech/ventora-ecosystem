@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { Pool } from 'pg';
-import { listAppointments, createAppointment, getAppointment } from '../contract.js';
+import { listAppointments, createAppointment, getAppointment } from '../contract/index.js';
 import { configureAccess } from '@ventora/access';
 import {
   NotAuthenticated,

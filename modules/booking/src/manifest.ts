@@ -6,13 +6,15 @@ export const manifest = {
     { name: 'booking:read', description: 'View appointments' },
     { name: 'booking:write', description: 'Create and update appointments' },
     { name: 'booking:admin', description: 'Manage booking settings and all appointments' },
+    // Lot B.1 (D-B1-1 = a): the service catalog and, from B.6d, BookingSettings
+    { name: 'booking:settings', description: 'Manage services and booking settings' },
   ],
   defaultGrants: {
     owner: '*',
     admin: '*',
     member: ['booking:read', 'booking:write'],
     external_collaborator: ['booking:read'],
-    application_manager: ['booking:read', 'booking:write', 'booking:admin'],
+    application_manager: ['booking:read', 'booking:write', 'booking:admin', 'booking:settings'],
   },
   // Lot 3.1 (ARCHITECTURE §8.4–8.5): keys synced into the commercial registry
   features: [
