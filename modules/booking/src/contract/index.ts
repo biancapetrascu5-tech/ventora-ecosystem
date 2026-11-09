@@ -1,11 +1,55 @@
 // The public API of the booking module (ARCHITECTURE §3): the only import allowed from outside.
-// Lot 2.3 / 3.3: the proof contract of the appointments (stubs until B.4).
-export { listAppointments, createAppointment, getAppointment } from './appointments';
+// Lot B.4a: the appointments, their 7 states, the blocked times, the clients, the booking rules
+// (they replace the proof contract of Lots 2.3 / 3.3)
+export {
+  createAppointment,
+  getAppointment,
+  listAppointmentHistory,
+  listAppointments,
+  moveAppointment,
+  updateAppointmentNote,
+  confirmAppointment,
+  startAppointment,
+  completeAppointment,
+  markNoShow,
+  cancelAppointment,
+  correctAppointmentStatus,
+  addTimeBlock,
+  updateTimeBlock,
+  archiveTimeBlock,
+  listTimeBlocks,
+  searchClients,
+  createClient,
+  updateClient,
+  getBookingSettings,
+  setBookingSettings,
+} from './appointments';
 export type {
   Appointment,
-  ListAppointmentsParams,
+  AppointmentDetail,
+  AppointmentHistoryItem,
+  AppointmentStatus,
+  BookingSettings,
+  Client,
+  ClientLocale,
+  TimeBlock,
   CreateAppointmentParams,
-  GetAppointmentParams,
+  AppointmentIdParams,
+  MoveAppointmentParams,
+  UpdateAppointmentNoteParams,
+  CancelAppointmentParams,
+  CorrectAppointmentStatusParams,
+  ListAppointmentsParams,
+  TimeBlockInputParams,
+  AddTimeBlockParams,
+  UpdateTimeBlockParams,
+  TimeBlockIdParams,
+  ListTimeBlocksParams,
+  SearchClientsParams,
+  ClientFields,
+  ClientParams,
+  UpdateClientParams,
+  SetBookingSettingsParams,
 } from './appointments';
 // Lot B.1: the service catalog
 export {

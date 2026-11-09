@@ -1115,3 +1115,52 @@ export async function getStaffAvailabilityInOrg(
 }
 
 export { ownDay };
+
+// ── B.4: the working intervals of one member on one local date ──────────────────────────────
+
+/**
+ * B.4 (D-B4-4 = a): the member's working intervals (local minutes) on one local date — leave,
+ * exception, own week or the business's, cut to the business hours — read inside the caller's
+ * transaction. An appointment outside them is refused; the team adds „Alt program” first (B.2).
+ */
+export async function staffDayIntervals(
+  client: PoolClient,
+  staffMemberId: string,
+  date: string,
+): Promise<Interval[]> {
+  const staff = await readStaff(client, staffMemberId);
+  const business = await readBusinessWeek(client);
+  const weekday = weekdayOf(date);
+  const weekly = (
+    await client.query<DayRow & { weekday: number }>(
+      `SELECT weekday, is_working, start1_min, end1_min, start2_min, end2_min
+         FROM booking.staff_weekly_hours WHERE staff_member_id = $1 AND weekday = $2`,
+      [staffMemberId, weekday],
+    )
+  ).rows;
+  const override = (
+    await client.query<DayRow>(
+      `SELECT is_working, start1_min, end1_min, start2_min, end2_min
+         FROM booking.staff_day_override
+        WHERE staff_member_id = $1 AND on_date = $2::date AND archived_at IS NULL`,
+      [staffMemberId, date],
+    )
+  ).rows[0];
+  const onLeave =
+    (
+      await client.query(
+        `SELECT 1 FROM booking.staff_time_off
+          WHERE staff_member_id = $1 AND archived_at IS NULL
+            AND starts_on <= $2::date AND ends_on >= $2::date`,
+        [staffMemberId, date],
+      )
+    ).rowCount! > 0;
+  return dayAvailability({
+    date,
+    business,
+    scheduleMode: staff.schedule_mode,
+    weekly: new Map(weekly.map((w) => [w.weekday, toWorkDay(w)])),
+    override: override ? toWorkDay(override) : undefined,
+    onLeave,
+  });
+}

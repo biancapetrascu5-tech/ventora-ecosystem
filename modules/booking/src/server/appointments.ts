@@ -1,0 +1,1558 @@
+import type { PoolClient } from 'pg';
+import { AuditActions, appendAuditEventInTx, type AuditSqlExecutor } from '@ventora/audit';
+import type { TenantContext } from '@ventora/access';
+import { uuidv7 } from '@ventora/db-kit';
+import { Conflict, Forbidden, InvalidInput, ResourceNotFound } from '@ventora/errors';
+import { getOrganizationTimeZone } from '@ventora/organizations';
+import { withBookingTx } from './db';
+import { staffDayIntervals, staffEligibility } from './staff';
+import { isUuid, LIMITS } from './validation';
+
+/*
+ * Lot B.4a — the appointments and their 7 states (BOOKING.md §3 B.4; plan
+ * reports/2026-11-09_2150_plan-booking-b4.md, approved 09.11.2026; design BookingStatuses, S116).
+ * Every write runs in one transaction as booking_rw with the organization of the authorized
+ * context, with its history row (D-B4-7) and its audit row (category booking, codes C.0d) in the
+ * same transaction. No physical delete.
+ *
+ * The rules that must hold whoever writes are in the database (booking_appointments): the allowed
+ * transitions, „Nu a venit” only after the start, the correction only between „Încheiată” and „Nu a
+ * venit” (D-B4-11 = a), no overlap for the same member (D-B4-2 = a: the member's row is locked and
+ * the overlaps counted; D-B4-3 = a: service.capacity clients at once for the same service). The
+ * contract checks the same first, so the screen gets a precise reason; a race that slips past it
+ * still meets the trigger (Conflict appointment_overlap / transition_not_allowed).
+ *
+ * B.4b adds the quota (booking.appointments), the reconciliation resolver, the outbox events and
+ * the counts for S124 and for the catalog.
+ */
+
+export const APPOINTMENT_STATUSES = [
+  'awaiting_payment',
+  'unconfirmed',
+  'confirmed',
+  'in_progress',
+  'completed',
+  'cancelled',
+  'no_show',
+] as const;
+export type AppointmentStatus = (typeof APPOINTMENT_STATUSES)[number];
+
+/** The states that hold the member's time (the others are final). */
+export const OCCUPYING: readonly AppointmentStatus[] = [
+  'awaiting_payment',
+  'unconfirmed',
+  'confirmed',
+  'in_progress',
+];
+const FINAL: readonly AppointmentStatus[] = ['completed', 'cancelled', 'no_show'];
+const MOVABLE: readonly AppointmentStatus[] = ['awaiting_payment', 'unconfirmed', 'confirmed'];
+
+/** BookingStatuses: what the drawer offers from each state (the trigger holds the same map). */
+const TRANSITIONS: Readonly<Record<AppointmentStatus, readonly AppointmentStatus[]>> = {
+  awaiting_payment: ['confirmed', 'cancelled'],
+  unconfirmed: ['confirmed', 'cancelled', 'no_show'],
+  confirmed: ['in_progress', 'cancelled', 'no_show'],
+  in_progress: ['completed'],
+  completed: [],
+  cancelled: [],
+  no_show: [],
+};
+
+/** S116-D9: a final state can be corrected within 24 hours, by the owner or an admin. */
+const CORRECTION_WINDOW_MS = 24 * 60 * 60 * 1000;
+const CORRECTORS = new Set(['owner', 'admin']);
+
+export const APPOINTMENT_LIMITS = {
+  teamNote: 1000,
+  correctionReason: 500,
+  blockReason: 200,
+  clientName: 120,
+  /** listAppointments / listTimeBlocks: at most this many days at once. */
+  listDays: 62,
+  listMax: 500,
+  clientSearchMax: 20,
+  historyPreview: 3,
+} as const;
+
+export const CLIENT_LOCALES = ['ro', 'en', 'fr', 'es', 'de', 'it'] as const;
+export type ClientLocale = (typeof CLIENT_LOCALES)[number];
+
+/** Who may change which appointments (D-B4-6 = a). */
+export type AppointmentScope = 'all' | 'own';
+
+// ── types ──────────────────────────────────────────────────────────────────────────────────
+
+export type BookingSettings = {
+  freeCancelHours: number;
+  confirmationMode: 'auto' | 'manual';
+  noticeMin: number;
+  bufferMin: number;
+  updatedAt: Date | null;
+};
+
+export type Client = {
+  id: string;
+  name: string;
+  phone: string | null;
+  email: string | null;
+  locale: ClientLocale;
+  archivedAt: Date | null;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+export type Appointment = {
+  id: string;
+  number: number;
+  staffMemberId: string;
+  serviceId: string;
+  clientId: string;
+  startsAt: Date;
+  endsAt: Date;
+  durationMinutes: number;
+  capacity: number;
+  status: AppointmentStatus;
+  statusChangedAt: Date;
+  serviceName: string;
+  staffDisplayName: string;
+  clientName: string;
+  price: {
+    kind: 'fixed' | 'from' | 'range';
+    minor: number;
+    maxMinor: number | null;
+    currency: 'RON' | 'EUR';
+  };
+  teamNote: string | null;
+  source: 'hub' | 'public';
+  cancellation: {
+    at: Date;
+    by: 'client' | 'business';
+    byUserId: string | null;
+    minutesBefore: number;
+    late: boolean;
+  } | null;
+  deposit: { minor: number; currency: 'RON' | 'EUR'; dueAt: Date } | null;
+  correction: { at: Date; byUserId: string; reason: string } | null;
+  createdByUserId: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+export type AppointmentHistoryItem = {
+  id: string;
+  kind: 'created' | 'status' | 'moved' | 'corrected' | 'updated';
+  fromStatus: AppointmentStatus | null;
+  toStatus: AppointmentStatus | null;
+  startsAt: Date | null;
+  endsAt: Date | null;
+  staffMemberId: string | null;
+  actorType: 'user' | 'client' | 'system';
+  actorUserId: string | null;
+  at: Date;
+};
+
+export type AppointmentDetail = {
+  appointment: Appointment;
+  /** BookingDetail: the last 3, then „Vezi tot istoricul”. */
+  history: AppointmentHistoryItem[];
+  historyCount: number;
+};
+
+export type TimeBlock = {
+  id: string;
+  staffMemberId: string;
+  startsAt: Date;
+  endsAt: Date;
+  reason: string | null;
+  archivedAt: Date | null;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+// ── rows ───────────────────────────────────────────────────────────────────────────────────
+
+type AppointmentRow = {
+  id: string;
+  number: number;
+  staff_member_id: string;
+  service_id: string;
+  client_id: string;
+  starts_at: Date;
+  ends_at: Date;
+  duration_minutes: number;
+  capacity: number;
+  status: AppointmentStatus;
+  status_changed_at: Date;
+  service_name: string;
+  staff_display_name: string;
+  client_name: string;
+  price_kind: 'fixed' | 'from' | 'range';
+  price_minor: number;
+  price_max_minor: number | null;
+  currency: 'RON' | 'EUR';
+  team_note: string | null;
+  source: 'hub' | 'public';
+  cancelled_at: Date | null;
+  cancelled_by: 'client' | 'business' | null;
+  cancelled_by_user_id: string | null;
+  cancel_minutes_before: number | null;
+  cancel_late: boolean | null;
+  deposit_minor: number | null;
+  deposit_currency: 'RON' | 'EUR' | null;
+  payment_due_at: Date | null;
+  corrected_at: Date | null;
+  corrected_by_user_id: string | null;
+  correction_reason: string | null;
+  created_by_user_id: string | null;
+  created_at: Date;
+  updated_at: Date;
+};
+
+const APPOINTMENT_COLUMNS = `id, number, staff_member_id, service_id, client_id, starts_at, ends_at,
+  duration_minutes, capacity, status, status_changed_at, service_name, staff_display_name,
+  client_name, price_kind, price_minor, price_max_minor, currency, team_note, source, cancelled_at,
+  cancelled_by, cancelled_by_user_id, cancel_minutes_before, cancel_late, deposit_minor,
+  deposit_currency, payment_due_at, corrected_at, corrected_by_user_id, correction_reason,
+  created_by_user_id, created_at, updated_at`;
+
+function toAppointment(r: AppointmentRow): Appointment {
+  return {
+    id: r.id,
+    number: r.number,
+    staffMemberId: r.staff_member_id,
+    serviceId: r.service_id,
+    clientId: r.client_id,
+    startsAt: r.starts_at,
+    endsAt: r.ends_at,
+    durationMinutes: r.duration_minutes,
+    capacity: r.capacity,
+    status: r.status,
+    statusChangedAt: r.status_changed_at,
+    serviceName: r.service_name,
+    staffDisplayName: r.staff_display_name,
+    clientName: r.client_name,
+    price: {
+      kind: r.price_kind,
+      minor: r.price_minor,
+      maxMinor: r.price_max_minor,
+      currency: r.currency,
+    },
+    teamNote: r.team_note,
+    source: r.source,
+    cancellation:
+      r.cancelled_at && r.cancelled_by && r.cancel_minutes_before !== null && r.cancel_late !== null
+        ? {
+            at: r.cancelled_at,
+            by: r.cancelled_by,
+            byUserId: r.cancelled_by_user_id,
+            minutesBefore: r.cancel_minutes_before,
+            late: r.cancel_late,
+          }
+        : null,
+    deposit:
+      r.deposit_minor !== null && r.deposit_currency && r.payment_due_at
+        ? { minor: r.deposit_minor, currency: r.deposit_currency, dueAt: r.payment_due_at }
+        : null,
+    correction:
+      r.corrected_at && r.corrected_by_user_id && r.correction_reason
+        ? { at: r.corrected_at, byUserId: r.corrected_by_user_id, reason: r.correction_reason }
+        : null,
+    createdByUserId: r.created_by_user_id,
+    createdAt: r.created_at,
+    updatedAt: r.updated_at,
+  };
+}
+
+type HistoryRow = {
+  id: string;
+  kind: AppointmentHistoryItem['kind'];
+  from_status: AppointmentStatus | null;
+  to_status: AppointmentStatus | null;
+  starts_at: Date | null;
+  ends_at: Date | null;
+  staff_member_id: string | null;
+  actor_type: AppointmentHistoryItem['actorType'];
+  actor_user_id: string | null;
+  created_at: Date;
+};
+
+function toHistory(r: HistoryRow): AppointmentHistoryItem {
+  return {
+    id: r.id,
+    kind: r.kind,
+    fromStatus: r.from_status,
+    toStatus: r.to_status,
+    startsAt: r.starts_at,
+    endsAt: r.ends_at,
+    staffMemberId: r.staff_member_id,
+    actorType: r.actor_type,
+    actorUserId: r.actor_user_id,
+    at: r.created_at,
+  };
+}
+
+type ClientRow = {
+  id: string;
+  name: string;
+  phone: string | null;
+  email: string | null;
+  locale: ClientLocale;
+  archived_at: Date | null;
+  created_at: Date;
+  updated_at: Date;
+};
+
+const CLIENT_COLUMNS = `id, name, phone, email, locale, archived_at, created_at, updated_at`;
+
+function toClient(r: ClientRow): Client {
+  return {
+    id: r.id,
+    name: r.name,
+    phone: r.phone,
+    email: r.email,
+    locale: r.locale,
+    archivedAt: r.archived_at,
+    createdAt: r.created_at,
+    updatedAt: r.updated_at,
+  };
+}
+
+type BlockRow = {
+  id: string;
+  staff_member_id: string;
+  starts_at: Date;
+  ends_at: Date;
+  reason: string | null;
+  archived_at: Date | null;
+  created_at: Date;
+  updated_at: Date;
+};
+
+const BLOCK_COLUMNS = `id, staff_member_id, starts_at, ends_at, reason, archived_at, created_at,
+  updated_at`;
+
+function toBlock(r: BlockRow): TimeBlock {
+  return {
+    id: r.id,
+    staffMemberId: r.staff_member_id,
+    startsAt: r.starts_at,
+    endsAt: r.ends_at,
+    reason: r.reason,
+    archivedAt: r.archived_at,
+    createdAt: r.created_at,
+    updatedAt: r.updated_at,
+  };
+}
+
+// ── helpers ────────────────────────────────────────────────────────────────────────────────
+
+function requireId(id: unknown): string {
+  // an id that is not a UUID cannot exist: the same answer as another business's id (T1)
+  if (!isUuid(id)) throw new ResourceNotFound();
+  return id;
+}
+
+type AuditTarget =
+  'booking_appointment' | 'booking_time_block' | 'booking_client' | 'booking_settings';
+
+function audit(
+  exec: AuditSqlExecutor,
+  ctx: TenantContext,
+  action: string,
+  targetType: AuditTarget,
+  targetId: string,
+  metadata: Record<string, unknown>,
+) {
+  return appendAuditEventInTx(exec, {
+    category: 'booking',
+    action,
+    outcome: 'success',
+    actorType: 'user',
+    actorId: ctx.userId,
+    organizationId: ctx.organizationId,
+    targetType,
+    targetId,
+    metadata,
+  });
+}
+
+function history(
+  client: PoolClient,
+  ctx: TenantContext,
+  appointmentId: string,
+  entry: {
+    kind: AppointmentHistoryItem['kind'];
+    from?: AppointmentStatus | null;
+    to?: AppointmentStatus | null;
+    startsAt?: Date | null;
+    endsAt?: Date | null;
+    staffMemberId?: string | null;
+  },
+) {
+  return client.query(
+    `INSERT INTO booking.appointment_history
+       (id, organization_id, appointment_id, kind, from_status, to_status, starts_at, ends_at,
+        staff_member_id, actor_type, actor_user_id)
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, 'user', $10)`,
+    [
+      uuidv7(),
+      ctx.organizationId,
+      appointmentId,
+      entry.kind,
+      entry.from ?? null,
+      entry.to ?? null,
+      entry.startsAt ?? null,
+      entry.endsAt ?? null,
+      entry.staffMemberId ?? null,
+      ctx.userId,
+    ],
+  );
+}
+
+type PgError = { code?: string; constraint?: string };
+
+/** The database's answer to a race the contract could not see, as the contract's own errors. */
+function translate(err: unknown): never {
+  const e = err as PgError;
+  if (e?.code === '23P01') throw new Conflict('appointment_overlap');
+  if (e?.code === '23514' && typeof (err as Error).message === 'string') {
+    const m = (err as Error).message;
+    if (m.includes('not an active member')) throw new Conflict('staff_member_removed');
+    if (m.includes('not allowed') || m.includes('not moved') || m.includes('no_show')) {
+      throw new Conflict('transition_not_allowed');
+    }
+  }
+  if (e?.code === '23505' && e.constraint === 'client_active_phone_key') {
+    throw new Conflict('client_phone_taken');
+  }
+  if (e?.code === '23505' && e.constraint === 'client_active_email_key') {
+    throw new Conflict('client_email_taken');
+  }
+  throw err;
+}
+
+async function tx<T>(
+  ctx: TenantContext,
+  fn: (client: PoolClient, exec: AuditSqlExecutor) => Promise<T>,
+  readOnly = false,
+): Promise<T> {
+  try {
+    return await withBookingTx(ctx.organizationId, fn, readOnly);
+  } catch (err) {
+    translate(err);
+  }
+}
+
+/** An instant from the caller: an ISO 8601 date-time with its offset (Z or ±hh:mm). */
+function requireInstant(field: string, value: unknown): Date {
+  if (value === undefined || value === null || value === '')
+    throw new InvalidInput(field, 'required');
+  if (
+    typeof value !== 'string' ||
+    !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2}(\.\d{1,3})?)?(Z|[+-]\d{2}:\d{2})$/.test(value)
+  ) {
+    throw new InvalidInput(field, 'invalid');
+  }
+  const d = new Date(value);
+  if (Number.isNaN(d.getTime())) throw new InvalidInput(field, 'invalid');
+  return d;
+}
+
+function normalizeOptionalText(field: string, value: unknown, max: number): string | null {
+  if (value === undefined || value === null) return null;
+  if (typeof value !== 'string') throw new InvalidInput(field, 'invalid');
+  const text = value.trim();
+  if (text.length > max) throw new InvalidInput(field, 'too_long');
+  return text.length > 0 ? text : null;
+}
+
+function requireDuration(value: unknown): number {
+  if (
+    typeof value !== 'number' ||
+    !Number.isInteger(value) ||
+    value < LIMITS.durationMin ||
+    value > LIMITS.durationMax ||
+    value % LIMITS.durationStep !== 0
+  ) {
+    throw new InvalidInput('durationMinutes', 'invalid');
+  }
+  return value;
+}
+
+/** The local date and minutes of an interval in the business time zone (one query, DST-safe). */
+async function localSpan(
+  client: PoolClient,
+  timeZone: string,
+  startsAt: Date,
+  endsAt: Date,
+): Promise<{ date: string; endDate: string; startMin: number; endMin: number; aligned: boolean }> {
+  const { rows } = await client.query<{
+    d: string;
+    ed: string;
+    sm: number;
+    em: number;
+    aligned: boolean;
+  }>(
+    `SELECT to_char(s, 'YYYY-MM-DD') AS d, to_char(e, 'YYYY-MM-DD') AS ed,
+            (extract(hour FROM s) * 60 + extract(minute FROM s))::int AS sm,
+            (extract(hour FROM e) * 60 + extract(minute FROM e))::int AS em,
+            (extract(second FROM s) = 0 AND extract(minute FROM s)::int % 5 = 0) AS aligned
+       FROM (SELECT ($1::timestamptz AT TIME ZONE $3) AS s,
+                    ($2::timestamptz AT TIME ZONE $3) AS e) t`,
+    [startsAt, endsAt, timeZone],
+  );
+  const r = rows[0]!;
+  // an end at local midnight closes the day before
+  const endMin = r.ed !== r.d && r.em === 0 ? 1440 : r.em;
+  const endDate = r.ed !== r.d && r.em === 0 ? r.d : r.ed;
+  return { date: r.d, endDate, startMin: r.sm, endMin, aligned: r.aligned };
+}
+
+/** D-B4-4 = a: the whole appointment inside one of the member's working intervals that day. */
+async function requireWithinSchedule(
+  client: PoolClient,
+  timeZone: string,
+  staffMemberId: string,
+  startsAt: Date,
+  endsAt: Date,
+) {
+  const span = await localSpan(client, timeZone, startsAt, endsAt);
+  if (!span.aligned) throw new InvalidInput('startsAt', 'invalid');
+  if (span.endDate !== span.date) throw new Conflict('staff_unavailable');
+  const intervals = await staffDayIntervals(client, staffMemberId, span.date);
+  const inside = intervals.some((i) => i.startMin <= span.startMin && span.endMin <= i.endMin);
+  if (!inside) throw new Conflict('staff_unavailable');
+}
+
+type StaffForBooking = {
+  id: string;
+  user_id: string;
+  display_name: string;
+  archived_at: Date | null;
+};
+
+async function readStaffForBooking(client: PoolClient, id: string): Promise<StaffForBooking> {
+  const { rows } = await client.query<StaffForBooking>(
+    `SELECT id, user_id, display_name, archived_at FROM booking.staff_member WHERE id = $1`,
+    [id],
+  );
+  if (!rows[0]) throw new ResourceNotFound();
+  return rows[0];
+}
+
+/** D-B2-6 = a: the member is in the calendar and still eligible (core/access), on every booking. */
+async function requireBookableStaff(ctx: TenantContext, staff: StaffForBooking) {
+  if (staff.archived_at) throw new Conflict('staff_member_removed');
+  const eligibility = await staffEligibility(ctx, staff.user_id);
+  if (eligibility !== 'eligible') throw new Conflict('staff_member_removed');
+}
+
+/** D-B4-6 = a: a member changes only the appointments where they are the member. */
+function requireScope(ctx: TenantContext, scope: AppointmentScope, staff: { user_id: string }) {
+  if (scope === 'own' && staff.user_id !== ctx.userId) throw new Forbidden();
+}
+
+async function readAppointment(
+  client: PoolClient,
+  id: string,
+  lock = false,
+): Promise<AppointmentRow & { staff_user_id: string }> {
+  const { rows } = await client.query<AppointmentRow & { staff_user_id: string }>(
+    `SELECT ${APPOINTMENT_COLUMNS.split(',')
+      .map((c) => `a.${c.trim()}`)
+      .join(', ')}, m.user_id AS staff_user_id
+       FROM booking.appointment a
+       JOIN booking.staff_member m ON m.id = a.staff_member_id
+      WHERE a.id = $1${lock ? ' FOR UPDATE OF a' : ''}`,
+    [id],
+  );
+  if (!rows[0]) throw new ResourceNotFound();
+  return rows[0];
+}
+
+// ── settings (D-B4-5) ──────────────────────────────────────────────────────────────────────
+
+export const DEFAULT_BOOKING_SETTINGS: Omit<BookingSettings, 'updatedAt'> = {
+  freeCancelHours: 24,
+  confirmationMode: 'auto',
+  noticeMin: 0,
+  bufferMin: 0,
+};
+
+async function readSettings(client: PoolClient): Promise<BookingSettings> {
+  const { rows } = await client.query<{
+    free_cancel_hours: number;
+    confirmation_mode: 'auto' | 'manual';
+    notice_min: number;
+    buffer_min: number;
+    updated_at: Date;
+  }>(`SELECT free_cancel_hours, confirmation_mode, notice_min, buffer_min, updated_at
+        FROM booking.settings`);
+  const r = rows[0];
+  if (!r) return { ...DEFAULT_BOOKING_SETTINGS, updatedAt: null };
+  return {
+    freeCancelHours: r.free_cancel_hours,
+    confirmationMode: r.confirmation_mode,
+    noticeMin: r.notice_min,
+    bufferMin: r.buffer_min,
+    updatedAt: r.updated_at,
+  };
+}
+
+export async function getBookingSettingsInOrg(ctx: TenantContext): Promise<BookingSettings> {
+  return tx(ctx, (client) => readSettings(client), true);
+}
+
+function intIn(field: string, value: unknown, min: number, max: number, step = 1): number {
+  if (
+    typeof value !== 'number' ||
+    !Number.isInteger(value) ||
+    value < min ||
+    value > max ||
+    value % step !== 0
+  ) {
+    throw new InvalidInput(field, 'invalid');
+  }
+  return value;
+}
+
+/** BookingSettings · the rules (screen in B.6d); a field left out keeps its value. */
+export async function setBookingSettingsInOrg(
+  ctx: TenantContext,
+  input: {
+    freeCancelHours?: unknown;
+    confirmationMode?: unknown;
+    noticeMin?: unknown;
+    bufferMin?: unknown;
+  },
+): Promise<BookingSettings> {
+  return tx(ctx, async (client, exec) => {
+    const current = await readSettings(client);
+    const next = {
+      freeCancelHours:
+        input.freeCancelHours === undefined
+          ? current.freeCancelHours
+          : intIn('freeCancelHours', input.freeCancelHours, 0, 720),
+      confirmationMode:
+        input.confirmationMode === undefined
+          ? current.confirmationMode
+          : input.confirmationMode === 'auto' || input.confirmationMode === 'manual'
+            ? input.confirmationMode
+            : (() => {
+                throw new InvalidInput('confirmationMode', 'invalid');
+              })(),
+      noticeMin:
+        input.noticeMin === undefined
+          ? current.noticeMin
+          : intIn('noticeMin', input.noticeMin, 0, 10080, 5),
+      bufferMin:
+        input.bufferMin === undefined
+          ? current.bufferMin
+          : intIn('bufferMin', input.bufferMin, 0, 120, 5),
+    };
+    await client.query(
+      `INSERT INTO booking.settings
+         (organization_id, free_cancel_hours, confirmation_mode, notice_min, buffer_min,
+          updated_by_user_id)
+       VALUES ($1, $2, $3, $4, $5, $6)
+       ON CONFLICT (organization_id) DO UPDATE
+         SET free_cancel_hours = EXCLUDED.free_cancel_hours,
+             confirmation_mode = EXCLUDED.confirmation_mode,
+             notice_min = EXCLUDED.notice_min,
+             buffer_min = EXCLUDED.buffer_min,
+             updated_by_user_id = EXCLUDED.updated_by_user_id`,
+      [
+        ctx.organizationId,
+        next.freeCancelHours,
+        next.confirmationMode,
+        next.noticeMin,
+        next.bufferMin,
+        ctx.userId,
+      ],
+    );
+    await audit(
+      exec,
+      ctx,
+      AuditActions.bookingSettingsUpdated,
+      'booking_settings',
+      ctx.organizationId,
+      {
+        ...next,
+      },
+    );
+    return readSettings(client);
+  });
+}
+
+// ── clients (D-B4-1 = a) ───────────────────────────────────────────────────────────────────
+
+export type ClientInput = {
+  name?: unknown;
+  phone?: unknown;
+  email?: unknown;
+  locale?: unknown;
+};
+
+function normalizePhone(value: unknown): string | null {
+  if (value === undefined || value === null || value === '') return null;
+  if (typeof value !== 'string') throw new InvalidInput('phone', 'invalid');
+  const phone = value.replace(/[\s().-]/g, '');
+  if (!/^\+[1-9][0-9]{6,14}$/.test(phone)) throw new InvalidInput('phone', 'invalid');
+  return phone;
+}
+
+function normalizeEmail(value: unknown): string | null {
+  if (value === undefined || value === null || value === '') return null;
+  if (typeof value !== 'string') throw new InvalidInput('email', 'invalid');
+  const email = value.trim().toLowerCase();
+  if (email.length > 254 || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
+    throw new InvalidInput('email', 'invalid');
+  }
+  return email;
+}
+
+function normalizeClient(input: ClientInput, current?: ClientRow) {
+  const name =
+    input.name === undefined && current
+      ? current.name
+      : (() => {
+          if (typeof input.name !== 'string') throw new InvalidInput('name', 'required');
+          const n = input.name.trim();
+          if (n.length < 1) throw new InvalidInput('name', 'required');
+          if (n.length > APPOINTMENT_LIMITS.clientName) throw new InvalidInput('name', 'too_long');
+          return n;
+        })();
+  const phone = input.phone === undefined && current ? current.phone : normalizePhone(input.phone);
+  const email = input.email === undefined && current ? current.email : normalizeEmail(input.email);
+  if (phone === null && email === null) throw new InvalidInput('phone', 'contact_required');
+  const locale =
+    input.locale === undefined
+      ? (current?.locale ?? 'ro')
+      : (CLIENT_LOCALES as readonly unknown[]).includes(input.locale)
+        ? (input.locale as ClientLocale)
+        : (() => {
+            throw new InvalidInput('locale', 'invalid');
+          })();
+  return { name, phone, email, locale };
+}
+
+async function insertClient(
+  client: PoolClient,
+  exec: AuditSqlExecutor,
+  ctx: TenantContext,
+  input: ClientInput,
+): Promise<ClientRow> {
+  const c = normalizeClient(input);
+  const { rows } = await client.query<ClientRow>(
+    `INSERT INTO booking.client (id, organization_id, name, phone, email, locale, created_by_user_id)
+     VALUES ($1, $2, $3, $4, $5, $6, $7)
+     RETURNING ${CLIENT_COLUMNS}`,
+    [uuidv7(), ctx.organizationId, c.name, c.phone, c.email, c.locale, ctx.userId],
+  );
+  const row = rows[0]!;
+  // no client data in the audit (name, phone, e-mail)
+  await audit(exec, ctx, AuditActions.bookingClientCreated, 'booking_client', row.id, {});
+  return row;
+}
+
+export async function createClientInOrg(ctx: TenantContext, input: ClientInput): Promise<Client> {
+  return tx(ctx, async (client, exec) => toClient(await insertClient(client, exec, ctx, input)));
+}
+
+export async function updateClientInOrg(
+  ctx: TenantContext,
+  clientId: unknown,
+  input: ClientInput,
+): Promise<Client> {
+  const id = requireId(clientId);
+  return tx(ctx, async (client, exec) => {
+    const current = (
+      await client.query<ClientRow>(
+        `SELECT ${CLIENT_COLUMNS} FROM booking.client WHERE id = $1 FOR UPDATE`,
+        [id],
+      )
+    ).rows[0];
+    if (!current) throw new ResourceNotFound();
+    if (current.archived_at) throw new Conflict('client_archived');
+    const c = normalizeClient(input, current);
+    const { rows } = await client.query<ClientRow>(
+      `UPDATE booking.client SET name = $2, phone = $3, email = $4, locale = $5
+        WHERE id = $1 RETURNING ${CLIENT_COLUMNS}`,
+      [id, c.name, c.phone, c.email, c.locale],
+    );
+    await audit(exec, ctx, AuditActions.bookingClientUpdated, 'booking_client', id, {
+      fields: Object.keys(input).filter((k) => (input as Record<string, unknown>)[k] !== undefined),
+    });
+    return toClient(rows[0]!);
+  });
+}
+
+/**
+ * The client field of BookingNew: with a query, the active clients whose name, phone or e-mail
+ * match; without one, „Clienți recenți” (the latest appointments first).
+ */
+export async function searchClientsInOrg(
+  ctx: TenantContext,
+  params: { query?: unknown; limit?: unknown },
+): Promise<Client[]> {
+  const limit =
+    params.limit === undefined
+      ? APPOINTMENT_LIMITS.clientSearchMax
+      : intIn('limit', params.limit, 1, APPOINTMENT_LIMITS.clientSearchMax);
+  const query = normalizeOptionalText('query', params.query, 120);
+  return tx(
+    ctx,
+    async (client) => {
+      if (!query) {
+        const { rows } = await client.query<ClientRow>(
+          `SELECT ${CLIENT_COLUMNS.split(',')
+            .map((c) => `c.${c.trim()}`)
+            .join(', ')}
+             FROM booking.client c
+             LEFT JOIN LATERAL (SELECT max(a.created_at) AS last FROM booking.appointment a
+                                 WHERE a.client_id = c.id) l ON true
+            WHERE c.archived_at IS NULL
+            ORDER BY l.last DESC NULLS LAST, c.created_at DESC, c.id
+            LIMIT $1`,
+          [limit],
+        );
+        return rows.map(toClient);
+      }
+      const like = '%' + query.replace(/[\\%_]/g, (m) => '\\' + m) + '%';
+      const digits = query.replace(/[^0-9]/g, '');
+      const { rows } = await client.query<ClientRow>(
+        `SELECT ${CLIENT_COLUMNS} FROM booking.client
+          WHERE archived_at IS NULL
+            AND (name ILIKE $1 OR email ILIKE $1 OR ($2 <> '' AND phone LIKE '%' || $2 || '%'))
+          ORDER BY name, id
+          LIMIT $3`,
+        [like, digits.length >= 3 ? digits : '', limit],
+      );
+      return rows.map(toClient);
+    },
+    true,
+  );
+}
+
+// ── appointments ───────────────────────────────────────────────────────────────────────────
+
+export type CreateAppointmentInput = {
+  /** Given by the caller (a UUID): a retry with the same id returns the same appointment. */
+  id: unknown;
+  staffMemberId: unknown;
+  serviceId: unknown;
+  clientId?: unknown;
+  /** A new client, created in the same transaction (when clientId is absent). */
+  client?: ClientInput;
+  startsAt: unknown;
+  /** S123-3: between the service's minimum and maximum; by default the maximum. */
+  durationMinutes?: unknown;
+  /** BookingNew: confirmed (default) or unconfirmed. */
+  confirmed?: unknown;
+  teamNote?: unknown;
+};
+
+type ServiceForBooking = {
+  id: string;
+  name: string;
+  duration_minutes: number;
+  duration_max_minutes: number | null;
+  price_kind: 'fixed' | 'from' | 'range';
+  price_minor: number;
+  price_max_minor: number | null;
+  currency: 'RON' | 'EUR';
+  capacity: number;
+  archived_at: Date | null;
+};
+
+class AlreadyCreated extends Error {}
+
+function sameRequest(
+  row: AppointmentRow,
+  req: { staffMemberId: string; serviceId: string; startsAt: Date },
+) {
+  return (
+    row.staff_member_id === req.staffMemberId &&
+    row.service_id === req.serviceId &&
+    row.starts_at.getTime() === req.startsAt.getTime()
+  );
+}
+
+/**
+ * „Programare nouă” (BookingNew): member, service, client (existing or new), start, duration,
+ * confirmed or not, note. Refused when the member is out of the calendar or no longer eligible
+ * (D-B2-6), the service is archived, the time is outside the member's schedule (D-B4-4) or
+ * overlaps (D-B4-2, D-B4-3). The quota is B.4b.
+ */
+export async function createAppointmentInOrg(
+  ctx: TenantContext,
+  scope: AppointmentScope,
+  input: CreateAppointmentInput,
+): Promise<Appointment> {
+  if (!isUuid(input.id)) throw new InvalidInput('id', 'invalid');
+  const id = input.id;
+  const staffMemberId = requireId(input.staffMemberId);
+  const serviceId = requireId(input.serviceId);
+  const startsAt = requireInstant('startsAt', input.startsAt);
+  const teamNote = normalizeOptionalText('teamNote', input.teamNote, APPOINTMENT_LIMITS.teamNote);
+  if (input.confirmed !== undefined && typeof input.confirmed !== 'boolean') {
+    throw new InvalidInput('confirmed', 'invalid');
+  }
+  const status: AppointmentStatus = input.confirmed === false ? 'unconfirmed' : 'confirmed';
+  if (input.clientId === undefined && input.client === undefined) {
+    throw new InvalidInput('clientId', 'required');
+  }
+  const clientId = input.clientId === undefined ? null : requireId(input.clientId);
+
+  // a retry of the same operation: the same appointment, nothing written twice
+  const existing = await findAppointment(ctx, id);
+  if (existing) {
+    if (!sameRequest(existing, { staffMemberId, serviceId, startsAt })) {
+      throw new Conflict('operation_reused');
+    }
+    return toAppointment(existing);
+  }
+
+  const staff = await tx(ctx, (client) => readStaffForBooking(client, staffMemberId), true);
+  requireScope(ctx, scope, staff);
+  await requireBookableStaff(ctx, staff);
+  const timeZone = await getOrganizationTimeZone(ctx);
+
+  try {
+    return await tx(ctx, async (client, exec) => {
+      const service = (
+        await client.query<ServiceForBooking>(
+          `SELECT id, name, duration_minutes, duration_max_minutes, price_kind, price_minor,
+                  price_max_minor, currency, capacity, archived_at
+             FROM booking.service WHERE id = $1`,
+          [serviceId],
+        )
+      ).rows[0];
+      if (!service) throw new ResourceNotFound();
+      if (service.archived_at) throw new Conflict('service_archived');
+      const max = service.duration_max_minutes ?? service.duration_minutes;
+      const duration =
+        input.durationMinutes === undefined ? max : requireDuration(input.durationMinutes);
+      if (duration < service.duration_minutes || duration > max) {
+        throw new InvalidInput('durationMinutes', 'invalid');
+      }
+      const endsAt = new Date(startsAt.getTime() + duration * 60_000);
+      await requireWithinSchedule(client, timeZone, staffMemberId, startsAt, endsAt);
+
+      let clientRow: ClientRow;
+      if (clientId) {
+        const found = (
+          await client.query<ClientRow>(
+            `SELECT ${CLIENT_COLUMNS} FROM booking.client WHERE id = $1`,
+            [clientId],
+          )
+        ).rows[0];
+        if (!found) throw new ResourceNotFound();
+        if (found.archived_at) throw new Conflict('client_archived');
+        clientRow = found;
+      } else {
+        clientRow = await insertClient(client, exec, ctx, input.client ?? {});
+      }
+
+      const number = (
+        await client.query<{ last_number: number }>(
+          `INSERT INTO booking.appointment_counter (organization_id, last_number) VALUES ($1, 1)
+           ON CONFLICT (organization_id)
+             DO UPDATE SET last_number = booking.appointment_counter.last_number + 1
+           RETURNING last_number`,
+          [ctx.organizationId],
+        )
+      ).rows[0]!.last_number;
+
+      const { rows } = await client.query<AppointmentRow>(
+        `INSERT INTO booking.appointment
+           (id, organization_id, number, staff_member_id, service_id, client_id, starts_at, ends_at,
+            duration_minutes, capacity, status, service_name, staff_display_name, client_name,
+            price_kind, price_minor, price_max_minor, currency, team_note, source,
+            created_by_user_id)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18,
+                 $19, 'hub', $20)
+         ON CONFLICT (id) DO NOTHING
+         RETURNING ${APPOINTMENT_COLUMNS}`,
+        [
+          id,
+          ctx.organizationId,
+          number,
+          staffMemberId,
+          serviceId,
+          clientRow.id,
+          startsAt,
+          endsAt,
+          duration,
+          service.capacity,
+          status,
+          service.name,
+          staff.display_name,
+          clientRow.name,
+          service.price_kind,
+          service.price_minor,
+          service.price_max_minor,
+          service.currency,
+          teamNote,
+          ctx.userId,
+        ],
+      );
+      // a concurrent retry got there first: roll this one back (no gap in the numbers)
+      if (!rows[0]) throw new AlreadyCreated();
+      const row = rows[0];
+      await history(client, ctx, id, {
+        kind: 'created',
+        to: status,
+        startsAt,
+        endsAt,
+        staffMemberId,
+      });
+      await audit(exec, ctx, AuditActions.bookingAppointmentCreated, 'booking_appointment', id, {
+        number,
+        staffMemberId,
+        serviceId,
+        clientId: clientRow.id,
+        startsAt: startsAt.toISOString(),
+        durationMinutes: duration,
+        status,
+      });
+      return toAppointment(row);
+    });
+  } catch (err) {
+    if (!(err instanceof AlreadyCreated)) throw err;
+    const again = await findAppointment(ctx, id);
+    if (!again || !sameRequest(again, { staffMemberId, serviceId, startsAt })) {
+      throw new Conflict('operation_reused');
+    }
+    return toAppointment(again);
+  }
+}
+
+async function findAppointment(ctx: TenantContext, id: string): Promise<AppointmentRow | null> {
+  return tx(
+    ctx,
+    async (client) =>
+      (
+        await client.query<AppointmentRow>(
+          `SELECT ${APPOINTMENT_COLUMNS} FROM booking.appointment WHERE id = $1`,
+          [id],
+        )
+      ).rows[0] ?? null,
+    true,
+  );
+}
+
+/** For the reconciliation of the quota (B.4b): does the appointment of this operation exist? */
+export async function appointmentExists(organizationId: string, id: string): Promise<boolean> {
+  if (!isUuid(id)) return false;
+  return withBookingTx(
+    organizationId,
+    async (client) =>
+      (await client.query(`SELECT 1 FROM booking.appointment WHERE id = $1`, [id])).rowCount! > 0,
+    true,
+  );
+}
+
+export type MoveAppointmentInput = {
+  startsAt?: unknown;
+  staffMemberId?: unknown;
+  durationMinutes?: unknown;
+};
+
+/**
+ * „Mută programarea”: another start, member or duration (S123-3: shortened by the team), with
+ * the same checks as a new one. Not from „În desfășurare” or a final state.
+ */
+export async function moveAppointmentInOrg(
+  ctx: TenantContext,
+  scope: AppointmentScope,
+  appointmentId: unknown,
+  input: MoveAppointmentInput,
+): Promise<Appointment> {
+  const id = requireId(appointmentId);
+  if (
+    input.startsAt === undefined &&
+    input.staffMemberId === undefined &&
+    input.durationMinutes === undefined
+  ) {
+    throw new InvalidInput('startsAt', 'required');
+  }
+  const current = await tx(ctx, (client) => readAppointment(client, id), true);
+  requireScope(ctx, scope, { user_id: current.staff_user_id });
+  if (!MOVABLE.includes(current.status)) throw new Conflict('appointment_final');
+
+  const startsAt =
+    input.startsAt === undefined ? current.starts_at : requireInstant('startsAt', input.startsAt);
+  const staffMemberId =
+    input.staffMemberId === undefined ? current.staff_member_id : requireId(input.staffMemberId);
+  const duration =
+    input.durationMinutes === undefined
+      ? current.duration_minutes
+      : requireDuration(input.durationMinutes);
+
+  let staff: StaffForBooking | null = null;
+  if (staffMemberId !== current.staff_member_id) {
+    staff = await tx(ctx, (client) => readStaffForBooking(client, staffMemberId), true);
+    requireScope(ctx, scope, staff);
+    await requireBookableStaff(ctx, staff);
+  }
+  const timeZone = await getOrganizationTimeZone(ctx);
+
+  return tx(ctx, async (client, exec) => {
+    const row = await readAppointment(client, id, true);
+    if (!MOVABLE.includes(row.status)) throw new Conflict('appointment_final');
+    const service = (
+      await client.query<{ duration_minutes: number; duration_max_minutes: number | null }>(
+        `SELECT duration_minutes, duration_max_minutes FROM booking.service WHERE id = $1`,
+        [row.service_id],
+      )
+    ).rows[0]!;
+    if (input.durationMinutes !== undefined) {
+      const max = service.duration_max_minutes ?? service.duration_minutes;
+      if (duration < service.duration_minutes || duration > max) {
+        throw new InvalidInput('durationMinutes', 'invalid');
+      }
+    }
+    const endsAt = new Date(startsAt.getTime() + duration * 60_000);
+    await requireWithinSchedule(client, timeZone, staffMemberId, startsAt, endsAt);
+    const { rows } = await client.query<AppointmentRow>(
+      `UPDATE booking.appointment
+          SET starts_at = $2, ends_at = $3, duration_minutes = $4, staff_member_id = $5,
+              staff_display_name = $6
+        WHERE id = $1
+        RETURNING ${APPOINTMENT_COLUMNS}`,
+      [
+        id,
+        startsAt,
+        endsAt,
+        duration,
+        staffMemberId,
+        staff ? staff.display_name : row.staff_display_name,
+      ],
+    );
+    await history(client, ctx, id, { kind: 'moved', startsAt, endsAt, staffMemberId });
+    await audit(exec, ctx, AuditActions.bookingAppointmentMoved, 'booking_appointment', id, {
+      from: {
+        startsAt: row.starts_at.toISOString(),
+        staffMemberId: row.staff_member_id,
+        durationMinutes: row.duration_minutes,
+      },
+      to: { startsAt: startsAt.toISOString(), staffMemberId, durationMinutes: duration },
+    });
+    return toAppointment(rows[0]!);
+  });
+}
+
+/** The team's note on the appointment (never shown to the client); the audit has no text. */
+export async function updateAppointmentNoteInOrg(
+  ctx: TenantContext,
+  scope: AppointmentScope,
+  appointmentId: unknown,
+  teamNote: unknown,
+): Promise<Appointment> {
+  const id = requireId(appointmentId);
+  const note = normalizeOptionalText('teamNote', teamNote, APPOINTMENT_LIMITS.teamNote);
+  return tx(ctx, async (client, exec) => {
+    const row = await readAppointment(client, id, true);
+    requireScope(ctx, scope, { user_id: row.staff_user_id });
+    const { rows } = await client.query<AppointmentRow>(
+      `UPDATE booking.appointment SET team_note = $2 WHERE id = $1 RETURNING ${APPOINTMENT_COLUMNS}`,
+      [id, note],
+    );
+    await history(client, ctx, id, { kind: 'updated' });
+    await audit(exec, ctx, AuditActions.bookingAppointmentUpdated, 'booking_appointment', id, {
+      fields: ['teamNote'],
+    });
+    return toAppointment(rows[0]!);
+  });
+}
+
+/** One of the transitions of BookingStatuses (confirm, start, complete, no-show). */
+export async function changeAppointmentStatusInOrg(
+  ctx: TenantContext,
+  scope: AppointmentScope,
+  appointmentId: unknown,
+  to: Exclude<AppointmentStatus, 'cancelled' | 'awaiting_payment' | 'unconfirmed'>,
+): Promise<Appointment> {
+  const id = requireId(appointmentId);
+  return tx(ctx, async (client, exec) => {
+    const row = await readAppointment(client, id, true);
+    requireScope(ctx, scope, { user_id: row.staff_user_id });
+    if (FINAL.includes(row.status)) throw new Conflict('appointment_final');
+    if (!TRANSITIONS[row.status].includes(to)) throw new Conflict('transition_not_allowed');
+    if (to === 'no_show') {
+      const started = (
+        await client.query<{ started: boolean }>(`SELECT now() >= $1::timestamptz AS started`, [
+          row.starts_at,
+        ])
+      ).rows[0]!.started;
+      if (!started) throw new Conflict('no_show_too_early');
+    }
+    const { rows } = await client.query<AppointmentRow>(
+      `UPDATE booking.appointment SET status = $2 WHERE id = $1 RETURNING ${APPOINTMENT_COLUMNS}`,
+      [id, to],
+    );
+    await history(client, ctx, id, { kind: 'status', from: row.status, to });
+    await audit(
+      exec,
+      ctx,
+      AuditActions.bookingAppointmentStatusChanged,
+      'booking_appointment',
+      id,
+      {
+        from: row.status,
+        to,
+      },
+    );
+    return toAppointment(rows[0]!);
+  });
+}
+
+/**
+ * „Anulează programarea”: by the business (from Hub) or by the client (the team records it; from
+ * B.11 the client's own page). The time is freed at once; how late is measured against the free
+ * cancellation of the business (D-B4-5). B.4b gives the quota unit back before the start.
+ */
+export async function cancelAppointmentInOrg(
+  ctx: TenantContext,
+  scope: AppointmentScope,
+  appointmentId: unknown,
+  by: unknown,
+): Promise<Appointment> {
+  const id = requireId(appointmentId);
+  if (by !== 'client' && by !== 'business') throw new InvalidInput('by', 'invalid');
+  return tx(ctx, async (client, exec) => {
+    const row = await readAppointment(client, id, true);
+    requireScope(ctx, scope, { user_id: row.staff_user_id });
+    if (FINAL.includes(row.status)) throw new Conflict('appointment_final');
+    if (!TRANSITIONS[row.status].includes('cancelled'))
+      throw new Conflict('transition_not_allowed');
+    const settings = await readSettings(client);
+    const { rows } = await client.query<AppointmentRow>(
+      `UPDATE booking.appointment
+          SET status = 'cancelled', cancelled_at = now(), cancelled_by = $2,
+              cancelled_by_user_id = $3,
+              cancel_minutes_before = floor(extract(epoch FROM (starts_at - now())) / 60)::int,
+              cancel_late = (starts_at - now()) < make_interval(hours => $4)
+        WHERE id = $1
+        RETURNING ${APPOINTMENT_COLUMNS}`,
+      [id, by, ctx.userId, settings.freeCancelHours],
+    );
+    const updated = rows[0]!;
+    await history(client, ctx, id, { kind: 'status', from: row.status, to: 'cancelled' });
+    await audit(exec, ctx, AuditActions.bookingAppointmentCancelled, 'booking_appointment', id, {
+      from: row.status,
+      by,
+      minutesBefore: updated.cancel_minutes_before,
+      late: updated.cancel_late,
+    });
+    return toAppointment(updated);
+  });
+}
+
+/**
+ * „Corectează starea…” (S116-D9, D-B4-11 = a): only the owner or an admin, within 24 hours of the
+ * final state, only between „Încheiată” and „Nu a venit”, with a reason kept in the history.
+ */
+export async function correctAppointmentStatusInOrg(
+  ctx: TenantContext,
+  appointmentId: unknown,
+  input: { status: unknown; reason: unknown },
+): Promise<Appointment> {
+  const id = requireId(appointmentId);
+  if (!CORRECTORS.has(ctx.role)) throw new Forbidden();
+  if (input.status !== 'completed' && input.status !== 'no_show') {
+    throw new InvalidInput('status', 'invalid');
+  }
+  const to = input.status;
+  const reason = normalizeOptionalText('reason', input.reason, APPOINTMENT_LIMITS.correctionReason);
+  if (!reason) throw new InvalidInput('reason', 'required');
+  return tx(ctx, async (client, exec) => {
+    const row = await readAppointment(client, id, true);
+    if (row.status === to || !(row.status === 'completed' || row.status === 'no_show')) {
+      throw new Conflict('transition_not_allowed');
+    }
+    const within = (
+      await client.query<{ within: boolean }>(
+        `SELECT now() - $1::timestamptz <= make_interval(secs => $2) AS within`,
+        [row.status_changed_at, CORRECTION_WINDOW_MS / 1000],
+      )
+    ).rows[0]!.within;
+    if (!within) throw new Conflict('correction_window_passed');
+    const { rows } = await client.query<AppointmentRow>(
+      `UPDATE booking.appointment
+          SET status = $2, corrected_at = now(), corrected_by_user_id = $3, correction_reason = $4
+        WHERE id = $1
+        RETURNING ${APPOINTMENT_COLUMNS}`,
+      [id, to, ctx.userId, reason],
+    );
+    await history(client, ctx, id, { kind: 'corrected', from: row.status, to });
+    // the reason stays on the appointment (the team's text), not in the audit metadata
+    await audit(
+      exec,
+      ctx,
+      AuditActions.bookingAppointmentStatusCorrected,
+      'booking_appointment',
+      id,
+      {
+        from: row.status,
+        to,
+      },
+    );
+    return toAppointment(rows[0]!);
+  });
+}
+
+/** BookingDetail: the appointment, the last 3 history rows and how many there are. */
+export async function getAppointmentInOrg(
+  ctx: TenantContext,
+  appointmentId: unknown,
+): Promise<AppointmentDetail> {
+  const id = requireId(appointmentId);
+  return tx(
+    ctx,
+    async (client) => {
+      const row = await readAppointment(client, id);
+      const items = (
+        await client.query<HistoryRow & { total: string }>(
+          `SELECT id, kind, from_status, to_status, starts_at, ends_at, staff_member_id, actor_type,
+                  actor_user_id, created_at, count(*) OVER () AS total
+             FROM booking.appointment_history WHERE appointment_id = $1
+            ORDER BY created_at DESC, id DESC
+            LIMIT $2`,
+          [id, APPOINTMENT_LIMITS.historyPreview],
+        )
+      ).rows;
+      return {
+        appointment: toAppointment(row),
+        history: items.map(toHistory),
+        historyCount: items[0] ? Number(items[0].total) : 0,
+      };
+    },
+    true,
+  );
+}
+
+/** „Vezi tot istoricul”. */
+export async function listAppointmentHistoryInOrg(
+  ctx: TenantContext,
+  appointmentId: unknown,
+): Promise<AppointmentHistoryItem[]> {
+  const id = requireId(appointmentId);
+  return tx(
+    ctx,
+    async (client) => {
+      await readAppointment(client, id);
+      const { rows } = await client.query<HistoryRow>(
+        `SELECT id, kind, from_status, to_status, starts_at, ends_at, staff_member_id, actor_type,
+                actor_user_id, created_at
+           FROM booking.appointment_history WHERE appointment_id = $1
+          ORDER BY created_at DESC, id DESC`,
+        [id],
+      );
+      return rows.map(toHistory);
+    },
+    true,
+  );
+}
+
+export type ListAppointmentsInput = {
+  from: unknown;
+  to: unknown;
+  staffMemberId?: unknown;
+  status?: unknown;
+  /** The number („1042” or „#1042”) or part of the client's name. */
+  query?: unknown;
+  limit?: unknown;
+  offset?: unknown;
+};
+
+function requireRange(fromRaw: unknown, toRaw: unknown): { from: Date; to: Date } {
+  const from = requireInstant('from', fromRaw);
+  const to = requireInstant('to', toRaw);
+  if (to.getTime() <= from.getTime()) throw new InvalidInput('to', 'order');
+  if (to.getTime() - from.getTime() > APPOINTMENT_LIMITS.listDays * 86_400_000) {
+    throw new InvalidInput('to', 'too_long');
+  }
+  return { from, to };
+}
+
+/**
+ * The appointments that touch [from, to) (at most 62 days), for BookingCalendar, BookingList and
+ * BookingToday: by member, state and search, by start then number, with paging. D-B4-6 = a: the
+ * whole team reads the business's calendar.
+ */
+export async function listAppointmentsInOrg(
+  ctx: TenantContext,
+  input: ListAppointmentsInput,
+): Promise<{ items: Appointment[]; total: number }> {
+  const { from, to } = requireRange(input.from, input.to);
+  const staffMemberId = input.staffMemberId === undefined ? null : requireId(input.staffMemberId);
+  let statuses: AppointmentStatus[] | null = null;
+  if (input.status !== undefined) {
+    if (
+      !Array.isArray(input.status) ||
+      input.status.length === 0 ||
+      !input.status.every((s) => (APPOINTMENT_STATUSES as readonly unknown[]).includes(s))
+    ) {
+      throw new InvalidInput('status', 'invalid');
+    }
+    statuses = input.status as AppointmentStatus[];
+  }
+  const query = normalizeOptionalText('query', input.query, 120);
+  const limit =
+    input.limit === undefined ? 100 : intIn('limit', input.limit, 1, APPOINTMENT_LIMITS.listMax);
+  const offset = input.offset === undefined ? 0 : intIn('offset', input.offset, 0, 1_000_000);
+  const numberQuery = query && /^#?\d{1,9}$/.test(query) ? Number(query.replace('#', '')) : null;
+  const like = query ? '%' + query.replace(/[\\%_]/g, (m) => '\\' + m) + '%' : null;
+
+  return tx(
+    ctx,
+    async (client) => {
+      const { rows } = await client.query<AppointmentRow & { total: string }>(
+        `SELECT ${APPOINTMENT_COLUMNS}, count(*) OVER () AS total
+           FROM booking.appointment
+          WHERE starts_at < $2 AND ends_at > $1
+            AND ($3::uuid IS NULL OR staff_member_id = $3)
+            AND ($4::text[] IS NULL OR status = ANY ($4))
+            AND ($5::text IS NULL OR client_name ILIKE $5 OR number = $6)
+          ORDER BY starts_at, number
+          LIMIT $7 OFFSET $8`,
+        [from, to, staffMemberId, statuses, like, numberQuery, limit, offset],
+      );
+      return { items: rows.map(toAppointment), total: rows[0] ? Number(rows[0].total) : 0 };
+    },
+    true,
+  );
+}
+
+// ── blocked times ──────────────────────────────────────────────────────────────────────────
+
+export type TimeBlockInput = { startsAt: unknown; endsAt: unknown; reason?: unknown };
+
+function validateBlock(input: TimeBlockInput) {
+  const startsAt = requireInstant('startsAt', input.startsAt);
+  const endsAt = requireInstant('endsAt', input.endsAt);
+  if (endsAt.getTime() <= startsAt.getTime()) throw new InvalidInput('endsAt', 'order');
+  if (endsAt.getTime() - startsAt.getTime() > 7 * 86_400_000)
+    throw new InvalidInput('endsAt', 'too_long');
+  if (startsAt.getTime() % 300_000 !== 0 || endsAt.getTime() % 300_000 !== 0) {
+    throw new InvalidInput('startsAt', 'invalid');
+  }
+  const reason = normalizeOptionalText('reason', input.reason, APPOINTMENT_LIMITS.blockReason);
+  return { startsAt, endsAt, reason };
+}
+
+/** A blocked time of a member (unavailable); refused over an appointment that still occupies. */
+export async function addTimeBlockInOrg(
+  ctx: TenantContext,
+  scope: AppointmentScope,
+  staffMemberId: unknown,
+  input: TimeBlockInput,
+): Promise<TimeBlock> {
+  const staffId = requireId(staffMemberId);
+  const b = validateBlock(input);
+  return tx(ctx, async (client, exec) => {
+    const staff = await readStaffForBooking(client, staffId);
+    requireScope(ctx, scope, staff);
+    if (staff.archived_at) throw new Conflict('staff_member_removed');
+    const id = uuidv7();
+    const { rows } = await client.query<BlockRow>(
+      `INSERT INTO booking.time_block
+         (id, organization_id, staff_member_id, starts_at, ends_at, reason, created_by_user_id)
+       VALUES ($1, $2, $3, $4, $5, $6, $7)
+       RETURNING ${BLOCK_COLUMNS}`,
+      [id, ctx.organizationId, staffId, b.startsAt, b.endsAt, b.reason, ctx.userId],
+    );
+    await audit(exec, ctx, AuditActions.bookingTimeBlockAdded, 'booking_time_block', id, {
+      staffMemberId: staffId,
+      startsAt: b.startsAt.toISOString(),
+      endsAt: b.endsAt.toISOString(),
+    });
+    return toBlock(rows[0]!);
+  });
+}
+
+async function readBlock(
+  client: PoolClient,
+  id: string,
+): Promise<BlockRow & { staff_user_id: string }> {
+  const { rows } = await client.query<BlockRow & { staff_user_id: string }>(
+    `SELECT b.id, b.staff_member_id, b.starts_at, b.ends_at, b.reason, b.archived_at, b.created_at,
+            b.updated_at, m.user_id AS staff_user_id
+       FROM booking.time_block b JOIN booking.staff_member m ON m.id = b.staff_member_id
+      WHERE b.id = $1 FOR UPDATE OF b`,
+    [id],
+  );
+  if (!rows[0]) throw new ResourceNotFound();
+  return rows[0];
+}
+
+export async function updateTimeBlockInOrg(
+  ctx: TenantContext,
+  scope: AppointmentScope,
+  timeBlockId: unknown,
+  input: TimeBlockInput,
+): Promise<TimeBlock> {
+  const id = requireId(timeBlockId);
+  const b = validateBlock(input);
+  return tx(ctx, async (client, exec) => {
+    const row = await readBlock(client, id);
+    requireScope(ctx, scope, { user_id: row.staff_user_id });
+    if (row.archived_at) throw new Conflict('time_block_archived');
+    const { rows } = await client.query<BlockRow>(
+      `UPDATE booking.time_block SET starts_at = $2, ends_at = $3, reason = $4
+        WHERE id = $1 RETURNING ${BLOCK_COLUMNS}`,
+      [id, b.startsAt, b.endsAt, b.reason],
+    );
+    await audit(exec, ctx, AuditActions.bookingTimeBlockUpdated, 'booking_time_block', id, {
+      startsAt: b.startsAt.toISOString(),
+      endsAt: b.endsAt.toISOString(),
+    });
+    return toBlock(rows[0]!);
+  });
+}
+
+/** Removes a blocked time (archived, §6.4 c); twice changes nothing. */
+export async function archiveTimeBlockInOrg(
+  ctx: TenantContext,
+  scope: AppointmentScope,
+  timeBlockId: unknown,
+): Promise<TimeBlock> {
+  const id = requireId(timeBlockId);
+  return tx(ctx, async (client, exec) => {
+    const row = await readBlock(client, id);
+    requireScope(ctx, scope, { user_id: row.staff_user_id });
+    if (row.archived_at) return toBlock(row);
+    const { rows } = await client.query<BlockRow>(
+      `UPDATE booking.time_block SET archived_at = now(), archived_by_user_id = $2
+        WHERE id = $1 RETURNING ${BLOCK_COLUMNS}`,
+      [id, ctx.userId],
+    );
+    await audit(exec, ctx, AuditActions.bookingTimeBlockArchived, 'booking_time_block', id, {});
+    return toBlock(rows[0]!);
+  });
+}
+
+/** The active blocked times that touch [from, to) (at most 62 days), for the calendar. */
+export async function listTimeBlocksInOrg(
+  ctx: TenantContext,
+  input: { from: unknown; to: unknown; staffMemberId?: unknown },
+): Promise<TimeBlock[]> {
+  const { from, to } = requireRange(input.from, input.to);
+  const staffMemberId = input.staffMemberId === undefined ? null : requireId(input.staffMemberId);
+  return tx(
+    ctx,
+    async (client) => {
+      const { rows } = await client.query<BlockRow>(
+        `SELECT ${BLOCK_COLUMNS} FROM booking.time_block
+          WHERE archived_at IS NULL AND starts_at < $2 AND ends_at > $1
+            AND ($3::uuid IS NULL OR staff_member_id = $3)
+          ORDER BY starts_at, id`,
+        [from, to, staffMemberId],
+      );
+      return rows.map(toBlock);
+    },
+    true,
+  );
+}

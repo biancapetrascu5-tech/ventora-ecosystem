@@ -69,3 +69,19 @@ Booking (numele afișat EasyBook) e prima aplicație. Planul: `docs/plans/BOOKIN
   - când se schimbă programul afacerii, intervalele se taie (`setBusinessHours` → `affected`).
 - **Nimic din B.2 nu anulează programări** (S124): doar avertismente, din B.4.
 - **Motivul concediului** e doar pentru owner și admin. Nu intră în audit.
+
+## Programările și cele 7 stări (B.4a, design BookingStatuses / S116)
+- **Stările** (D-B-11): `awaiting_payment`, `unconfirmed`, `confirmed`, `in_progress`, `completed`, `cancelled`, `no_show`. Pe ecran: „Încheiată”, „Nu a venit” (S116-D7). Finale: `completed`, `cancelled`, `no_show`.
+  - Tranzițiile permise sunt în `TRANSITIONS` (`server/appointments.ts`) **și** în trigger-ul `appointment_guard`. Le schimbi în ambele locuri, printr-o migrare nouă.
+  - „Nu a venit” doar după ora de început. „Corectează starea…” doar owner / admin, în 24 de ore, doar „Încheiată” ↔ „Nu a venit”, cu motiv (S116-D9, D-B4-11 = a).
+  - `awaiting_payment` există în model, dar nicio cale din B.4 nu o creează (avansul vine în B.22).
+- **Fără suprapuneri, în bază** (D-B4-2 = a): trigger-ul blochează rândul membrului (`booking.lock_active_staff`, `FOR UPDATE`) și numără ce se suprapune pe `[starts_at, ends_at)`. Fără `btree_gist`.
+  - **`service.capacity`** = câți clienți are același membru în același timp, **pentru același serviciu** (S123-6, D-B4-3 = a). Copiat pe programare (`capacity`). Un serviciu diferit sau un interval blocat nu se suprapun niciodată.
+  - Ocupă doar `awaiting_payment`, `unconfirmed`, `confirmed`, `in_progress`. O anulare eliberează intervalul imediat.
+- **Programul** (D-B4-4 = a): o programare trebuie să încapă într-un interval de lucru al membrului în ziua locală (`staffDayIntervals`). Altfel `Conflict('staff_unavailable')`; echipa adaugă întâi „Alt program” (B.2).
+- **Membrul** e verificat la fiecare programare nouă (`staffEligibility`, D-B2-6 = a). Programările unui membru scos rămân și își schimbă starea (S124).
+- **Cine ce face** (D-B4-6 = a): `booking:read` citește tot calendarul; `booking:write` creează și modifică, un `member` doar programările lui; cu `booking:admin` toate.
+- **Id-ul programării** îl dă apelantul: un retry cu același id întoarce aceeași programare (B.4b: e și `operationId`-ul cotei). Numărul uman vine din `appointment_counter`, fără goluri (D-B4-8).
+- **Copiile** (`keep_snapshot`): numele serviciului, al membrului, al clientului, prețul. Nu se actualizează când se schimbă originalul.
+- **Date personale:** clientul (nume, telefon, e-mail) și nota echipei **nu intră în audit**. Pe staging doar date de test, până la avizul avocatului și la handler-ul GDPR (B.7).
+- **Istoricul** din `BookingDetail` e `appointment_history` (doar INSERT), nu auditul (D-B4-7).

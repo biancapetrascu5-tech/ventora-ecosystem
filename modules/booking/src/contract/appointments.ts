@@ -1,103 +1,306 @@
-import { authorize } from '@ventora/access';
+import { authorize, checkRolePermission } from '@ventora/access';
 import type { TenantContext } from '@ventora/access';
-import { commitQuota, releaseQuota, reserveQuota } from '@ventora/quota';
+import {
+  addTimeBlockInOrg,
+  archiveTimeBlockInOrg,
+  cancelAppointmentInOrg,
+  changeAppointmentStatusInOrg,
+  correctAppointmentStatusInOrg,
+  createAppointmentInOrg,
+  createClientInOrg,
+  getAppointmentInOrg,
+  getBookingSettingsInOrg,
+  listAppointmentHistoryInOrg,
+  listAppointmentsInOrg,
+  listTimeBlocksInOrg,
+  moveAppointmentInOrg,
+  searchClientsInOrg,
+  setBookingSettingsInOrg,
+  updateAppointmentNoteInOrg,
+  updateClientInOrg,
+  updateTimeBlockInOrg,
+  type Appointment,
+  type AppointmentDetail,
+  type AppointmentHistoryItem,
+  type AppointmentScope,
+  type AppointmentStatus,
+  type BookingSettings,
+  type Client,
+  type ClientInput,
+  type ClientLocale,
+  type TimeBlock,
+} from '../server/appointments';
 
-// Lot 3.2: the EntitlementProvider is configured by the app that serves the module
-// (apps/*/src/server/access-config.ts, the commercial provider); tests set their own.
+/*
+ * Lot B.4a — the public contract of the appointments (design BookingStatuses, BookingNew,
+ * BookingDetail, BookingCalendar, BookingList; plan reports/2026-11-09_2150_plan-booking-b4.md).
+ * It replaces the proof contract of Lots 2.3 / 3.3. Every function starts with authorize()
+ * (application booking); the organization comes only from the session, and an id of another
+ * business answers ResourceNotFound (T1).
+ *
+ * Who does what (D-B4-6 = a): booking:read reads the business's calendar (the whole team);
+ * booking:write creates and changes appointments, a member only those where they are the member;
+ * with booking:admin (owner, admin, application_manager) all of them. „Corectează starea…” only
+ * for the owner or an admin (S116-D9). The booking rules need booking:settings.
+ *
+ * Errors: InvalidInput(field, reason); Conflict (appointment_overlap, staff_unavailable,
+ * staff_member_removed, service_archived, client_archived, client_phone_taken, client_email_taken,
+ * appointment_final, transition_not_allowed, no_show_too_early, correction_window_passed,
+ * operation_reused, time_block_archived); ResourceNotFound; Forbidden; AppNotEnabled.
+ */
 
-// Proof module — demonstrates authorize() integration in every public contract function.
-// Real booking data storage is out of scope for Lot 2.3.
+type Session = { sessionToken: string };
 
-export type Appointment = {
+function auth(params: Session, permission: string): Promise<TenantContext> {
+  return authorize({ sessionToken: params.sessionToken, applicationId: 'booking', permission });
+}
+
+const read = (params: Session) => auth(params, 'booking:read');
+
+/** booking:write, and whether the context changes all appointments or only its own (D-B4-6). */
+async function write(params: Session): Promise<{ ctx: TenantContext; scope: AppointmentScope }> {
+  const ctx = await auth(params, 'booking:write');
+  const all =
+    ctx.role !== 'support' && (await checkRolePermission(ctx.role, 'booking', 'booking:admin'));
+  return { ctx, scope: all ? 'all' : 'own' };
+}
+
+export type CreateAppointmentParams = Session & {
+  /** A UUID chosen by the caller; a retry with the same id returns the same appointment. */
   id: string;
-  organizationId: string;
-  title: string;
-  createdBy: string;
+  staffMemberId: string;
+  serviceId: string;
+  clientId?: string;
+  client?: { name: string; phone?: string | null; email?: string | null; locale?: ClientLocale };
+  /** ISO 8601 with offset, e.g. 2026-12-07T10:00:00+02:00. */
+  startsAt: string;
+  durationMinutes?: number;
+  confirmed?: boolean;
+  teamNote?: string | null;
+};
+export type AppointmentIdParams = Session & { appointmentId: string };
+export type MoveAppointmentParams = AppointmentIdParams & {
+  startsAt?: string;
+  staffMemberId?: string;
+  durationMinutes?: number;
+};
+export type UpdateAppointmentNoteParams = AppointmentIdParams & { teamNote: string | null };
+export type CancelAppointmentParams = AppointmentIdParams & { by: 'client' | 'business' };
+export type CorrectAppointmentStatusParams = AppointmentIdParams & {
+  status: 'completed' | 'no_show';
+  reason: string;
+};
+export type ListAppointmentsParams = Session & {
+  from: string;
+  to: string;
+  staffMemberId?: string;
+  status?: AppointmentStatus[];
+  query?: string;
+  limit?: number;
+  offset?: number;
+};
+export type TimeBlockInputParams = { startsAt: string; endsAt: string; reason?: string | null };
+export type AddTimeBlockParams = Session & TimeBlockInputParams & { staffMemberId: string };
+export type UpdateTimeBlockParams = Session & TimeBlockInputParams & { timeBlockId: string };
+export type TimeBlockIdParams = Session & { timeBlockId: string };
+export type ListTimeBlocksParams = Session & { from: string; to: string; staffMemberId?: string };
+export type SearchClientsParams = Session & { query?: string; limit?: number };
+export type ClientFields = {
+  name: string;
+  phone?: string | null;
+  email?: string | null;
+  locale?: ClientLocale;
+};
+export type ClientParams = Session & ClientFields;
+export type UpdateClientParams = Session & { clientId: string } & Partial<ClientFields>;
+export type SetBookingSettingsParams = Session & {
+  freeCancelHours?: number;
+  confirmationMode?: 'auto' | 'manual';
+  noticeMin?: number;
+  bufferMin?: number;
 };
 
-export type ListAppointmentsParams = {
-  sessionToken: string;
-};
+function clientInput(p: Partial<ClientFields>): ClientInput {
+  return { name: p.name, phone: p.phone, email: p.email, locale: p.locale };
+}
 
-export type CreateAppointmentParams = {
-  sessionToken: string;
-  title: string;
-};
+// ── appointments ───────────────────────────────────────────────────────────────────────────
 
-export type GetAppointmentParams = {
-  sessionToken: string;
-  appointmentId: string;
-};
+/** „Programare nouă” (BookingNew). */
+export async function createAppointment(params: CreateAppointmentParams): Promise<Appointment> {
+  const { ctx, scope } = await write(params);
+  return createAppointmentInOrg(ctx, scope, {
+    id: params.id,
+    staffMemberId: params.staffMemberId,
+    serviceId: params.serviceId,
+    clientId: params.clientId,
+    client: params.client ? clientInput(params.client) : undefined,
+    startsAt: params.startsAt,
+    durationMinutes: params.durationMinutes,
+    confirmed: params.confirmed,
+    teamNote: params.teamNote,
+  });
+}
 
+/** BookingDetail: the appointment and the last 3 history rows. */
+export async function getAppointment(params: AppointmentIdParams): Promise<AppointmentDetail> {
+  return getAppointmentInOrg(await read(params), params.appointmentId);
+}
+
+/** „Vezi tot istoricul”. */
+export async function listAppointmentHistory(
+  params: AppointmentIdParams,
+): Promise<AppointmentHistoryItem[]> {
+  return listAppointmentHistoryInOrg(await read(params), params.appointmentId);
+}
+
+/** BookingCalendar / BookingList / BookingToday: the appointments in [from, to), at most 62 days. */
 export async function listAppointments(
   params: ListAppointmentsParams,
-): Promise<{ ctx: TenantContext; appointments: Appointment[] }> {
-  const ctx = await authorize({
-    sessionToken: params.sessionToken,
-    applicationId: 'booking',
-    permission: 'booking:read',
+): Promise<{ items: Appointment[]; total: number }> {
+  return listAppointmentsInOrg(await read(params), {
+    from: params.from,
+    to: params.to,
+    staffMemberId: params.staffMemberId,
+    status: params.status,
+    query: params.query,
+    limit: params.limit,
+    offset: params.offset,
   });
-  // Real data query would go here
-  return { ctx, appointments: [] };
 }
 
-/**
- * Lot 3.3 (T5, ARCHITECTURE §8.3): creating an appointment consumes `booking.appointments` in two
- * steps — reserve before, commit after the appointment exists, release if creating fails. The
- * operation id is the appointment's own id, so the reconciliation can look it up. At the limit
- * only creating is blocked (QuotaExceeded); listing and reading go on (D3-6, brief §14).
- */
-export async function createAppointment(
-  params: CreateAppointmentParams,
-): Promise<{ ctx: TenantContext; appointment: Appointment }> {
-  const ctx = await authorize({
-    sessionToken: params.sessionToken,
-    applicationId: 'booking',
-    permission: 'booking:write',
+/** „Mută programarea”. */
+export async function moveAppointment(params: MoveAppointmentParams): Promise<Appointment> {
+  const { ctx, scope } = await write(params);
+  return moveAppointmentInOrg(ctx, scope, params.appointmentId, {
+    startsAt: params.startsAt,
+    staffMemberId: params.staffMemberId,
+    durationMinutes: params.durationMinutes,
   });
-  const id = crypto.randomUUID();
-  await reserveQuota(ctx, 'booking.appointments', 1, id);
-  try {
-    // Real booking storage would insert the appointment here, with `id`.
-    const appointment: Appointment = {
-      id,
-      organizationId: ctx.organizationId,
-      title: params.title,
-      createdBy: ctx.userId,
-    };
-    await commitQuota(ctx, id);
-    return { ctx, appointment };
-  } catch (err) {
-    await releaseQuota(ctx, id).catch((releaseErr: unknown) => {
-      console.error('[booking] createAppointment: releasing the quota failed', {
-        operationId: id,
-        error: releaseErr instanceof Error ? releaseErr.message : String(releaseErr),
-      });
-    });
-    throw err;
-  }
 }
 
-export async function getAppointment(
-  params: GetAppointmentParams,
-): Promise<{ ctx: TenantContext; appointment: Appointment }> {
-  const ctx = await authorize({
-    sessionToken: params.sessionToken,
-    applicationId: 'booking',
-    permission: 'booking:read',
-    resource: {
-      type: 'appointment',
-      id: params.appointmentId,
-      // Stub: real existence check queries booking DB under RLS.
-      // Returns false for unknown IDs — ResourceNotFound is thrown by authorize().
-      exists: async (_ctx) => params.appointmentId.length > 0,
-    },
-  });
-  const appointment: Appointment = {
-    id: params.appointmentId,
-    organizationId: ctx.organizationId,
-    title: 'Fetched appointment',
-    createdBy: ctx.userId,
-  };
-  return { ctx, appointment };
+export async function updateAppointmentNote(
+  params: UpdateAppointmentNoteParams,
+): Promise<Appointment> {
+  const { ctx, scope } = await write(params);
+  return updateAppointmentNoteInOrg(ctx, scope, params.appointmentId, params.teamNote);
 }
+
+/** „Confirmă”. */
+export async function confirmAppointment(params: AppointmentIdParams): Promise<Appointment> {
+  const { ctx, scope } = await write(params);
+  return changeAppointmentStatusInOrg(ctx, scope, params.appointmentId, 'confirmed');
+}
+
+/** „Începe”. */
+export async function startAppointment(params: AppointmentIdParams): Promise<Appointment> {
+  const { ctx, scope } = await write(params);
+  return changeAppointmentStatusInOrg(ctx, scope, params.appointmentId, 'in_progress');
+}
+
+/** „Încasează”: in B.4 only „Încheiată” (D-B4-10 = a); the payment is recorded from B.21. */
+export async function completeAppointment(params: AppointmentIdParams): Promise<Appointment> {
+  const { ctx, scope } = await write(params);
+  return changeAppointmentStatusInOrg(ctx, scope, params.appointmentId, 'completed');
+}
+
+/** „Marchează: nu a venit”, only after the start. */
+export async function markNoShow(params: AppointmentIdParams): Promise<Appointment> {
+  const { ctx, scope } = await write(params);
+  return changeAppointmentStatusInOrg(ctx, scope, params.appointmentId, 'no_show');
+}
+
+/** „Anulează programarea”, by the business or recorded for the client. */
+export async function cancelAppointment(params: CancelAppointmentParams): Promise<Appointment> {
+  const { ctx, scope } = await write(params);
+  return cancelAppointmentInOrg(ctx, scope, params.appointmentId, params.by);
+}
+
+/** „Corectează starea…” (S116-D9): owner or admin, 24 hours, „Încheiată” ↔ „Nu a venit”. */
+export async function correctAppointmentStatus(
+  params: CorrectAppointmentStatusParams,
+): Promise<Appointment> {
+  const { ctx } = await write(params);
+  return correctAppointmentStatusInOrg(ctx, params.appointmentId, {
+    status: params.status,
+    reason: params.reason,
+  });
+}
+
+// ── blocked times ──────────────────────────────────────────────────────────────────────────
+
+export async function addTimeBlock(params: AddTimeBlockParams): Promise<TimeBlock> {
+  const { ctx, scope } = await write(params);
+  return addTimeBlockInOrg(ctx, scope, params.staffMemberId, {
+    startsAt: params.startsAt,
+    endsAt: params.endsAt,
+    reason: params.reason,
+  });
+}
+
+export async function updateTimeBlock(params: UpdateTimeBlockParams): Promise<TimeBlock> {
+  const { ctx, scope } = await write(params);
+  return updateTimeBlockInOrg(ctx, scope, params.timeBlockId, {
+    startsAt: params.startsAt,
+    endsAt: params.endsAt,
+    reason: params.reason,
+  });
+}
+
+export async function archiveTimeBlock(params: TimeBlockIdParams): Promise<TimeBlock> {
+  const { ctx, scope } = await write(params);
+  return archiveTimeBlockInOrg(ctx, scope, params.timeBlockId);
+}
+
+export async function listTimeBlocks(params: ListTimeBlocksParams): Promise<TimeBlock[]> {
+  return listTimeBlocksInOrg(await read(params), {
+    from: params.from,
+    to: params.to,
+    staffMemberId: params.staffMemberId,
+  });
+}
+
+// ── clients ────────────────────────────────────────────────────────────────────────────────
+
+/** The client field of BookingNew („Clienți recenți” without a query). */
+export async function searchClients(params: SearchClientsParams): Promise<Client[]> {
+  return searchClientsInOrg(await read(params), { query: params.query, limit: params.limit });
+}
+
+export async function createClient(params: ClientParams): Promise<Client> {
+  const { ctx } = await write(params);
+  return createClientInOrg(ctx, clientInput(params));
+}
+
+export async function updateClient(params: UpdateClientParams): Promise<Client> {
+  const { ctx } = await write(params);
+  return updateClientInOrg(ctx, params.clientId, clientInput(params));
+}
+
+// ── booking rules (D-B4-5) ─────────────────────────────────────────────────────────────────
+
+export async function getBookingSettings(params: Session): Promise<BookingSettings> {
+  return getBookingSettingsInOrg(await read(params));
+}
+
+export async function setBookingSettings(
+  params: SetBookingSettingsParams,
+): Promise<BookingSettings> {
+  return setBookingSettingsInOrg(await auth(params, 'booking:settings'), {
+    freeCancelHours: params.freeCancelHours,
+    confirmationMode: params.confirmationMode,
+    noticeMin: params.noticeMin,
+    bufferMin: params.bufferMin,
+  });
+}
+
+export type {
+  Appointment,
+  AppointmentDetail,
+  AppointmentHistoryItem,
+  AppointmentStatus,
+  BookingSettings,
+  Client,
+  ClientLocale,
+  TimeBlock,
+};
