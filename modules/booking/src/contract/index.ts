@@ -23,7 +23,12 @@ export {
   updateClient,
   getBookingSettings,
   setBookingSettings,
+  countUpcomingAppointments,
 } from './appointments';
+// Lot B.4b: the refund of booking.appointments (consumer of booking.appointment.cancelled),
+// registered by the app that runs the outbox dispatcher
+export { bookingQuotaRefundConsumer } from '../server/quota';
+export type { BookingOutboxConsumer } from '../server/quota';
 export type {
   Appointment,
   AppointmentDetail,
@@ -50,6 +55,8 @@ export type {
   ClientParams,
   UpdateClientParams,
   SetBookingSettingsParams,
+  CountUpcomingAppointmentsParams,
+  UpcomingAppointments,
 } from './appointments';
 // Lot B.1: the service catalog
 export {
@@ -109,6 +116,8 @@ export type {
   StaffDayOverride,
   StaffEligibility,
   StaffList,
+  StaffListWithAppointments,
+  WithUpcomingAppointments,
   StaffListItem,
   StaffMember,
   StaffNext,

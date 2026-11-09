@@ -463,6 +463,124 @@ export const BookingServiceArchivedV1 = defineEvent({
     .strict(),
 });
 
+/*
+ * Lot B.4b (BOOKING.md B.4; plan reports/2026-11-09_2150_plan-booking-b4.md §6): the appointments.
+ * Only ids, states and instants: no client data (name, phone, e-mail) and no team note. The first
+ * consumer is the quota refund of the booking module (booking.appointment.cancelled); the others
+ * come with B.7 (the note), B.13 (e-mails), B.17 (SMS). Without a consumer they are delivered.
+ */
+const appointmentStatus = z.enum([
+  'awaiting_payment',
+  'unconfirmed',
+  'confirmed',
+  'in_progress',
+  'completed',
+  'cancelled',
+  'no_show',
+]);
+
+/** `booking.appointment.created` v1: a new appointment (Hub or, from B.11, the public page). */
+export const BookingAppointmentCreatedV1 = defineEvent({
+  type: 'booking.appointment.created',
+  version: 1,
+  sourceApp: 'platform',
+  growthSafe: false,
+  withoutConsumer: 'complete',
+  schema: z
+    .object({
+      appointmentId: z.uuid(),
+      number: z.number().int().positive(),
+      staffMemberId: z.uuid(),
+      serviceId: z.uuid(),
+      clientId: z.uuid(),
+      startsAt: z.iso.datetime({ offset: true }),
+      endsAt: z.iso.datetime({ offset: true }),
+      status: appointmentStatus,
+      source: z.enum(['hub', 'public']),
+    })
+    .strict(),
+});
+
+/** `booking.appointment.changed` v1: moved (time, member or duration). */
+export const BookingAppointmentChangedV1 = defineEvent({
+  type: 'booking.appointment.changed',
+  version: 1,
+  sourceApp: 'platform',
+  growthSafe: false,
+  withoutConsumer: 'complete',
+  schema: z
+    .object({
+      appointmentId: z.uuid(),
+      staffMemberId: z.uuid(),
+      startsAt: z.iso.datetime({ offset: true }),
+      endsAt: z.iso.datetime({ offset: true }),
+      previousStaffMemberId: z.uuid(),
+      previousStartsAt: z.iso.datetime({ offset: true }),
+    })
+    .strict(),
+});
+
+/**
+ * `booking.appointment.cancelled` v1: who cancelled and how late (D-B-11). `quotaRefund`: the
+ * cancellation came before the start, so the unit of booking.appointments goes back (refundable).
+ */
+export const BookingAppointmentCancelledV1 = defineEvent({
+  type: 'booking.appointment.cancelled',
+  version: 1,
+  sourceApp: 'platform',
+  growthSafe: false,
+  withoutConsumer: 'complete',
+  schema: z
+    .object({
+      appointmentId: z.uuid(),
+      staffMemberId: z.uuid(),
+      clientId: z.uuid(),
+      startsAt: z.iso.datetime({ offset: true }),
+      cancelledAt: z.iso.datetime({ offset: true }),
+      by: z.enum(['client', 'business']),
+      late: z.boolean(),
+      minutesBefore: z.number().int(),
+      quotaRefund: z.boolean(),
+    })
+    .strict(),
+});
+
+/** `booking.appointment.no_show` v1: „Nu a venit”; `corrected` when it came from a correction. */
+export const BookingAppointmentNoShowV1 = defineEvent({
+  type: 'booking.appointment.no_show',
+  version: 1,
+  sourceApp: 'platform',
+  growthSafe: false,
+  withoutConsumer: 'complete',
+  schema: z
+    .object({
+      appointmentId: z.uuid(),
+      staffMemberId: z.uuid(),
+      clientId: z.uuid(),
+      startsAt: z.iso.datetime({ offset: true }),
+      corrected: z.boolean(),
+    })
+    .strict(),
+});
+
+/** `booking.appointment.completed` v1: „Încheiată”; `corrected` when it came from a correction. */
+export const BookingAppointmentCompletedV1 = defineEvent({
+  type: 'booking.appointment.completed',
+  version: 1,
+  sourceApp: 'platform',
+  growthSafe: false,
+  withoutConsumer: 'complete',
+  schema: z
+    .object({
+      appointmentId: z.uuid(),
+      staffMemberId: z.uuid(),
+      clientId: z.uuid(),
+      startsAt: z.iso.datetime({ offset: true }),
+      corrected: z.boolean(),
+    })
+    .strict(),
+});
+
 export const EVENT_CATALOG: readonly EventDefinition[] = [
   InvitationNewLinkRequestedV1 as EventDefinition,
   SubscriptionVersionChangeScheduledV1 as EventDefinition,
@@ -484,6 +602,11 @@ export const EVENT_CATALOG: readonly EventDefinition[] = [
   SupportReplyPostedV1 as EventDefinition,
   SupportAutoCloseWarningV1 as EventDefinition,
   BookingServiceArchivedV1 as EventDefinition,
+  BookingAppointmentCreatedV1 as EventDefinition,
+  BookingAppointmentChangedV1 as EventDefinition,
+  BookingAppointmentCancelledV1 as EventDefinition,
+  BookingAppointmentNoShowV1 as EventDefinition,
+  BookingAppointmentCompletedV1 as EventDefinition,
 ];
 
 /** Definiția unui eveniment după tip și versiune; null dacă nu e în catalog. */
