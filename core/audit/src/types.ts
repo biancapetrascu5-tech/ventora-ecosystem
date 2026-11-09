@@ -58,7 +58,11 @@ export type AuditTargetType =
   | 'workflow_engine'
   // Lot C.0b / B.1: the Booking service catalog (category booking)
   | 'booking_service'
-  | 'booking_service_category';
+  | 'booking_service_category'
+  // Lot C.0c / B.2: the members in the calendar and their schedule (category booking)
+  | 'booking_business_hours'
+  | 'booking_staff_member'
+  | 'booking_staff_time_off';
 
 export type AuditEvent = {
   category: AuditCategory;

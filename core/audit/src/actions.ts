@@ -156,6 +156,17 @@ export const AuditActions = {
   bookingServiceCategoryUpdated: 'booking.service_category_updated',
   bookingServiceCategoryArchived: 'booking.service_category_archived',
   bookingServiceCategoryRestored: 'booking.service_category_restored',
+  // Lot C.0c / B.2 — the members in the calendar and their schedule (category booking, required),
+  // booking:settings; the day exceptions are booking.staff_schedule_updated with the date in metadata
+  bookingBusinessHoursUpdated: 'booking.business_hours_updated',
+  bookingStaffAdded: 'booking.staff_added',
+  bookingStaffUpdated: 'booking.staff_updated',
+  bookingStaffArchived: 'booking.staff_archived',
+  bookingStaffRestored: 'booking.staff_restored',
+  bookingStaffScheduleUpdated: 'booking.staff_schedule_updated',
+  bookingStaffTimeOffAdded: 'booking.staff_time_off_added',
+  bookingStaffTimeOffUpdated: 'booking.staff_time_off_updated',
+  bookingStaffTimeOffArchived: 'booking.staff_time_off_archived',
 } as const;
 
 export type AuditAction = (typeof AuditActions)[keyof typeof AuditActions];
