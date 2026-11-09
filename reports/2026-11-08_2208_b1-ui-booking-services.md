@@ -5,8 +5,8 @@
 | PR | Ramura | Commit | Stare |
 |---|---|---|---|
 | #94 (iconițele) | `feat/ui-icons-s123` | — | **ÎNCHIS** la cererea fondatoarei; ramura ștearsă, local și pe GitHub |
-| #98 (`Sheet`, `packages/ui`) | `fix/ui-sheet-padding` | `953fe61` | pushed, nemergiat |
-| PR ecran | `feat/b1-ui-booking-services`, construit peste `fix/ui-sheet-padding` | `92383b2` (S124 docs), `653fe84` (ecranul), commit-ul raportului | pushed, nemergiat |
+| #98 (`Sheet`, `packages/ui`) | `fix/ui-sheet-padding` | `953fe61` | **îmbinat** în main (`1e42532`) |
+| #99 (ecranul) | `feat/b1-ui-booking-services`, rebase pe main după #95–#98 (09.11) | `d6688a5` (S124 docs), `4bdf18f` (ecranul), `9461ae1` (raportul), `72d4ff1` (garda), commit-ul raportului | pushed, nemergiat |
 
 ## 1. Lista de bifat
 
@@ -86,10 +86,11 @@ Fiecare `BookingServices_<cadru>_<lățime>_<temă>_pair.png` are designul în s
 
 ## 5. Abateri și observații
 
-- **NECESITĂ DECIZIE: garda `boundaries` din `apps/platform/eslint.config.mjs`.** Regula permitea aplicației importuri doar din `packages/*`.
-  - Am adăugat o regulă: aplicația → modul.
-  - Intrările unui modul rămân cele din `exports`: `.` (contractul), `./ui`, `./messages/*`, deci `src/server` nu se poate importa.
-  - Altfel, ecranele din `modules/<app>/src/ui` (ARCHITECTURE §3) nu pot fi folosite.
+- **Garda `boundaries` din `apps/platform/eslint.config.mjs` — DECISĂ de fondatoare (09.11.2026):** aplicația poate importa din modul doar intrările din `exports` (`.`, `./ui`, `./messages/*`).
+  - `boundaries`: politica aplicație → modul.
+  - `no-restricted-imports` (`[module-entry-only]`): refuză orice altă cale `@ventora/booking/...` și orice cale relativă spre `modules/`.
+  - Verificat cu un fișier temporar: `@ventora/booking`, `/ui`, `/messages/ro.json` trec; `/src/server/...`, `/src/contract`, `/ui/services/format` și `../../../../modules/...` dau eroare (4/4).
+  - Notat în `modules/booking/CLAUDE.md`.
 - **PR separat pentru `Sheet` (`packages/ui`).** `.v-sheet--padded` din `bundle.css` are `padding: space-4` pe telefon și `space-5` pe tabletă; `Sheet.module.css` nu le avea.
   - Fără reparație, cadrul 1 la 390 era 3,25–6,51%.
   - Reparația era pe ramura iconițelor închisă; acum e singură, în PR-ul ei, conform regulii pachetelor comune.
@@ -112,3 +113,23 @@ Fiecare `BookingServices_<cadru>_<lățime>_<temă>_pair.png` are designul în s
   - `node scripts/visual-check.mjs --base http://localhost:3190 --only BookingServices` → „Toate 4 în prag” (0,09–0,1% după S124).
 - **Ramura `fix/ui-sheet-padding`:** lanțul pre-push → exit 0; `pnpm test:integration` → exit 0. `visual-check` complet → „Toate 444 în prag” (Sheet 0%, PageHeader 0–0,06%, AppShell 0,03–0,13%).
 - **#94, înainte de închidere:** prima rulare a integrării a picat într-un test billing („dunning cannot start in the future”), adică ceasul VM-ului Docker față de cel din Node. A doua rulare a trecut. Nu s-a repetat pe ramurile de acum.
+
+## 7. Rebase pe main (09.11.2026, după #95–#98)
+
+- `git rebase origin/main`: `953fe61` (Sheet) a fost sărit, fiind deja în main prin #98.
+- **Conflicte cu B.2 (#97), păstrate ambele părți:**
+  - `modules/booking/src/contract/index.ts`: exporturile B.2 (`./staff`) plus serviciile; importurile fără `.js` (regula Turbopack de mai sus).
+  - `modules/booking/CLAUDE.md`: secțiunea B.2 plus textele B.1-UI. Rândul vechi „Ce durată blochează calendarul… se decide în B.4 / B.5” e înlocuit de decizia S123-3 din 08.11, care îl acoperă.
+  - `package.json` și `pnpm-lock.yaml`: îmbinate automat; `pnpm install` nu a schimbat lock-ul.
+- Commit nou: garda de importuri (§5).
+- Comenzile după rebase: §8.
+
+## 8. Comenzile după rebase (09.11.2026)
+
+- `pnpm install` → lock-ul neschimbat.
+- `pnpm format:check && pnpm lint && pnpm typecheck && pnpm test && pnpm build && pnpm i18n:check` → **exit 0** (turbo 23/23 și 7/7; i18n: cele 6 limbi complete, ambele cataloage).
+- `pnpm test:integration` → **exit 0** la a treia rulare: 15 suite, toate trecute (billing 79 trecute și 3 sărite, commercial 94/94), fără erori neprinse.
+  - **Prima rulare:** a pornit în paralel cu `pnpm build`. Procesul vitest s-a oprit brusc în `core/billing` (`lot38-contracts`, codul Windows 0xC0000409). Nu a picat niciun test.
+  - **A doua rulare:** a rulat singură. Billing a trecut, dar o eroare neprinsă a oprit `core/workflows` după 2 din 13 teste. Mesajul complet nu l-am păstrat, pentru că filtrul de ieșire l-a tăiat.
+  - **A treia rulare:** a rulat singură, cu jurnalul complet, și a avut exit 0. Instabilitatea pare din mediul local. Merită urmărită dacă apare și în CI.
+- Garda `[module-entry-only]`: verificată cu un fișier temporar, 4 erori pe 4 căi interzise, 0 pe cele 3 intrări permise.
