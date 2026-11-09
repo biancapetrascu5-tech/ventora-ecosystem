@@ -713,7 +713,7 @@ const ARCH = [
   Object.assign(svc(23, "Împletituri de vară", 45, 0, "fixed", 90, 0, "RON", 1, true), { cat: "Pachete de vară", catArchived: true, at: "1 sept." })
 ];
 const ACTIVE_N = CATS.reduce((a, c) => a + c.items.length, 0) + NOCAT.length;
-const SET_TABS = [{ value: "general", label: "General" }, { value: "servicii", label: "Servicii" }, { value: "resurse", label: "Resurse" }, { value: "notif", label: "Reamintiri" }, { value: "sms", label: "Trimitere SMS" }, { value: "online", label: "Rezervări online" }];
+const SET_TABS = [{ value: "general", label: "General" }, { value: "servicii", label: "Servicii" }, { value: "echipa", label: "Programul echipei" }, { value: "resurse", label: "Resurse" }, { value: "notif", label: "Reamintiri" }, { value: "sms", label: "Trimitere SMS" }, { value: "online", label: "Rezervări online" }];
 
 /* ---- three sizes, light and dark ---- */
 function Board3({ title, notes, items, dH = 1200, tH = 1300, mH = 1500 }) {
@@ -737,19 +737,19 @@ const COLS = [
   { key: "cap", header: T("col.capacity"), optional: true, width: "168px", render: (r) => capTxt(r.cap) },
   { key: "online", header: T("col.online"), trailing: true, width: "152px", render: (r) => h(OnlinePill, { on: r.online }) }
 ];
-const ROW_ACTS = () => [{ label: T("action.edit"), icon: "pencil" }, { separator: true }, { label: T("action.archive"), icon: "archive" }];
-const catMenu = (c) => h(V.Menu, { items: [{ label: T("cat.rename"), icon: "pencil" }, { separator: true }, { label: T("cat.archive"), icon: "archive" }], trigger: h(V.IconButton, { icon: "ellipsis-vertical", label: T("more") + " · " + c.name }) });
+const ROW_ACTS = () => [{ label: T("action.edit"), icon: "pencil" }, { separator: true }, { label: T("action.archive") }];
+const catMenu = (c) => h(V.Menu, { items: [{ label: T("cat.rename"), icon: "pencil" }, { separator: true }, { label: T("cat.archive") }], trigger: h(V.IconButton, { icon: "ellipsis-vertical", label: T("more") + " · " + c.name }) });
 
 function Toolbar({ mode, archived, q, archN = ARCH.length }) {
   const mob = mode === "mobile", desk = mode === "desktop";
-  const more = h(V.Menu, { items: [desk ? null : { label: T("addCategory"), icon: "folder-plus" }, { label: T("order"), icon: "arrow-up-down" }].filter(Boolean), trigger: h(V.IconButton, { icon: "ellipsis-vertical", label: T("more"), size: "sm" }) });
+  const more = h(V.Menu, { items: [desk ? null : { label: T("addCategory"), icon: "folder" }, { label: T("order"), icon: "arrow-up-down" }].filter(Boolean), trigger: h(V.IconButton, { icon: "ellipsis-vertical", label: T("more"), size: "sm" }) });
   const search = h("div", { className: "sv-search" }, h(V.Input, { icon: "search", size: "sm", placeholder: T("search"), "aria-label": T("search"), defaultValue: q || "" }));
   const seg = h(V.SegmentedControl, { size: "sm", label: T("filter.label"), value: archived ? "arch" : "act", options: [{ value: "act", label: T("filter.active", { n: ACTIVE_N }) }, { value: "arch", label: T("filter.archived", { n: archN }) }] });
   const add = h(V.Button, { size: "sm", variant: "primary", icon: "plus" }, T("add"));
   if (mob) return h("div", { className: "sv-tools m" }, h("div", { className: "sv-line" }, search, more), h("div", { className: "sv-line" }, seg, h("span", { className: "sv-grow" }), add));
   return h("div", { className: "sv-tools" }, search, seg, h("span", { className: "sv-grow" }),
     desk ? h(V.Button, { size: "sm", variant: "quiet", icon: "arrow-up-down" }, T("order")) : null,
-    desk ? h(V.Button, { size: "sm", icon: "folder-plus" }, T("addCategory")) : null, add, desk ? null : more);
+    desk ? h(V.Button, { size: "sm", icon: "folder" }, T("addCategory")) : null, add, desk ? null : more);
 }
 function ActiveList() {
   return h(V.Sheet, null,
@@ -767,13 +767,13 @@ const ARCH_COLS = [
 ];
 function ArchivedList({ empty, restored }) {
   const rows = restored ? ARCH.filter((r) => !r.catArchived) : ARCH;
-  if (empty) return h(V.Sheet, null, h(V.SheetSection, null, h(V.EmptyState, { size: "sm", icon: "archive", title: T("emptyArchived.title"), description: T("emptyArchived.body") })));
+  if (empty) return h(V.Sheet, null, h(V.SheetSection, null, h(V.EmptyState, { size: "sm", icon: "folder", title: T("emptyArchived.title"), description: T("emptyArchived.body") })));
   return h(V.Sheet, null,
     h(V.SheetSection, { title: T("archived.title"), description: PL(rows.length, "count") + " · " + T("archived.lead") },
-      h(V.DataTable, { caption: T("archived.title"), columns: ARCH_COLS, rows, rowActions: () => [{ label: T("action.restore"), icon: "archive-restore" }] })),
+      h(V.DataTable, { caption: T("archived.title"), columns: ARCH_COLS, rows, rowActions: () => [{ label: T("action.restore"), icon: "rotate-ccw" }] })),
     h(V.SheetSection, { title: T("archived.categories"), description: T("archived.categoriesLead") },
       h(V.DataTable, { caption: T("archived.categories"), columns: [{ key: "name", header: T("cat.name"), primary: true }, { key: "n", header: T("title"), secondary: true }, { key: "at", header: T("col.archivedAt"), trailing: true, render: (r) => h("span", { className: "body-small muted" }, r.at) }],
-        rows: [{ id: 1, name: "Pachete de vară", n: restored ? T("archived.catCount.none") : PL(1, "archived.catCount"), at: "1 sept." }], rowActions: () => [{ label: T("cat.restore"), icon: "archive-restore" }] })));
+        rows: [{ id: 1, name: "Pachete de vară", n: restored ? T("archived.catCount.none") : PL(1, "archived.catCount"), at: "1 sept." }], rowActions: () => [{ label: T("cat.restore"), icon: "rotate-ccw" }] })));
 }
 function Page({ mode, archived, restored, empty, emptyArchived, overlay, drawer, toast, toastDesc }) {
   const mob = mode === "mobile";
@@ -826,7 +826,7 @@ function FormDrawer({ mode, s, cat, isNew, errors }) {
   const mob = mode === "mobile";
   return h(V.Drawer, { open: true, contained: true, layout: mob ? "full" : "auto", width: 520, onOpenChange: noop, title: isNew ? T("form.newTitle") : T("form.editTitle"), subtitle: isNew ? undefined : s.name,
     footer: h("div", { className: "sv-foot" + (mob ? " m" : "") },
-      isNew ? null : h(V.Button, { variant: "quiet", icon: "archive" }, T("form.archive")),
+      isNew ? null : h(V.Button, { variant: "quiet" }, T("form.archive")),
       h("span", { className: "sv-grow" }),
       h(V.Button, { variant: "quiet" }, T("form.cancel")),
       h(V.Button, { variant: "primary", icon: "check" }, isNew ? T("form.create") : T("form.save"))) },
@@ -852,7 +852,7 @@ function OrderDlg({ mode }) {
       h("li", { className: "is-fixed" }, h("span", { className: "caption muted sv-ix" }, h(V.Icon, { name: "lock", size: 14 })), h("span", { className: "body muted sv-on" }, T("uncategorized"), h("span", { className: "body-small" }, " · " + PL(2, "count"))))));
 }
 const ArchiveDlg = ({ mode }) => h(V.Dialog, { open: true, inline: true, className: dlgCls(mode), title: T("archive.title", { name: "Vopsit rădăcină" }), description: T("archive.body"),
-  footer: h(React.Fragment, null, h(V.Button, { variant: "quiet" }, T("form.cancel")), h(V.Button, { variant: "primary", icon: "archive" }, T("archive.submit"))) },
+  footer: h(React.Fragment, null, h(V.Button, { variant: "quiet" }, T("form.cancel")), h(V.Button, { variant: "primary" }, T("archive.submit"))) },
   h("p", { className: "x-line body-small" }, h(V.Icon, { name: "calendar", size: 16 }), T("archive.futureMany", { n: 3 })));
 const BlockedDlg = ({ mode }) => h(V.Dialog, { open: true, inline: true, className: dlgCls(mode), title: T("catArchive.blockedTitle", { name: "Păr" }), description: T("catArchive.blockedBody", { n: 5 }),
   footer: h(V.Button, { variant: "primary" }, T("catArchive.ok")) });

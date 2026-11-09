@@ -36,6 +36,33 @@ const eslintConfig = [
               from: { element: { type: 'app' } },
               allow: { to: { element: { type: 'package' } } },
             },
+            // Lot B.1-UI (ARCHITECTURE §3; decided 09.11.2026): an application may import a module,
+            // but only its package.json "exports" entries: "." (src/contract), "./ui" (src/ui) and
+            // "./messages/*". Every other path is refused by no-restricted-imports below.
+            {
+              from: { element: { type: 'app' } },
+              allow: { to: { element: { type: 'module' } } },
+            },
+          ],
+        },
+      ],
+      // The module entries (decided 09.11.2026): @ventora/<module>, @ventora/<module>/ui and
+      // @ventora/<module>/messages/<locale>.json only; never src/server, src/contract or a
+      // relative path into modules/.
+      'no-restricted-imports': [
+        'error',
+        {
+          patterns: [
+            {
+              regex: '^@ventora/booking/(?!ui$|messages/[a-z]{2}\.json$)',
+              message:
+                '[module-entry-only] Import a module only through its exports: ".", "./ui", "./messages/*".',
+            },
+            {
+              regex: '^(\.\./)+modules/',
+              message:
+                '[module-entry-only] Import a module only through its exports: ".", "./ui", "./messages/*".',
+            },
           ],
         },
       ],

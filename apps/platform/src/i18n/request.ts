@@ -21,6 +21,8 @@ async function resolveLocale(): Promise<Locale> {
 
 export default getRequestConfig(async () => {
   const locale = await resolveLocale();
-  const messages = (await import(`@ventora/i18n/messages/${locale}.json`)).default;
-  return { locale, messages, timeZone: 'Europe/Bucharest' };
+  const common = (await import(`@ventora/i18n/messages/${locale}.json`)).default;
+  // ARCHITECTURE §744: one namespace per module, from modules/<app>/messages (Lot B.1-UI: booking)
+  const booking = (await import(`@ventora/booking/messages/${locale}.json`)).default;
+  return { locale, messages: { ...common, booking }, timeZone: 'Europe/Bucharest' };
 });

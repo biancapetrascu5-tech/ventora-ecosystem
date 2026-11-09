@@ -23,3 +23,5 @@ Shown at 1280, 820 and 390, light and dark.
 - **Unique names.** Recommendation: unique among active services of the business; restoring a service whose name is taken shows the duplicate error.
 - **Clients at the same time.** Recommendation: per team member (two clients for one manicurist), not for the whole business.
 - **Restoring into an archived category.** Recommendation: it goes to "Fără categorie" (drawn this way), the category stays archived.
+
+**S124.** The tab row includes "Programul echipei"; icons that are not in the set were replaced (archive actions have no icon, restore uses `rotate-ccw`, "Categorie nouă" uses `folder`).

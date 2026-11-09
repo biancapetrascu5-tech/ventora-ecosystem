@@ -1,0 +1,185 @@
+/* BookingServices (S123): the classes of preview.html (sv-*, x-line, x-stack, g2f), 1:1 */
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  min-width: 0;
+}
+
+.tools {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2) var(--space-3);
+}
+.tools.m {
+  padding: 0 var(--space-4);
+  flex-direction: column;
+  align-items: stretch;
+}
+.line {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+}
+.search {
+  flex: 1 1 220px;
+  min-width: 0;
+  max-width: var(--search-width);
+}
+.line .search {
+  flex: 1 1 auto;
+  max-width: none;
+}
+.grow {
+  flex: 1 1 auto;
+}
+
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+.stack p {
+  margin: 0;
+}
+.xline {
+  display: flex;
+  gap: var(--space-2);
+  align-items: flex-start;
+  color: var(--ink-secondary);
+}
+.xline p {
+  margin: 0;
+}
+.xline :global(.v-icon),
+.xline > svg {
+  flex: none;
+  margin-top: 2px;
+}
+
+.fs {
+  border: 0;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  min-width: 0;
+}
+.fs legend {
+  padding: 0;
+  margin-bottom: var(--space-2);
+}
+.g2f {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-4);
+}
+.g2f.m {
+  grid-template-columns: 1fr;
+}
+.narrow {
+  max-width: calc(var(--search-width) / 1.5);
+}
+.start {
+  align-self: flex-start;
+}
+
+.foot {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  width: 100%;
+  flex-wrap: wrap;
+}
+.foot.m {
+  flex-direction: column-reverse;
+  align-items: stretch;
+}
+.foot.m .grow {
+  display: none;
+}
+
+.order {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  border: var(--border-width) solid var(--line);
+  border-radius: var(--radius-md);
+}
+.order li {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-height: var(--row-height);
+  padding: var(--space-1) var(--space-2) var(--space-1) var(--space-3);
+  border-bottom: var(--border-width) solid var(--line);
+}
+.order li:last-child {
+  border-bottom: 0;
+}
+.order li.moved {
+  background: var(--selected);
+}
+.ix {
+  width: var(--space-4);
+  text-align: center;
+  display: inline-flex;
+  justify-content: center;
+}
+.on {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+/* The page inside a frame (galeria) and the overlays drawn in it (preview.html: frame-rel,
+   ss-overlay, ss-toast) */
+.frame {
+  position: relative;
+  height: 100%;
+}
+.overlay {
+  position: absolute;
+  inset: 0;
+  background: var(--scrim);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-6);
+  z-index: var(--z-overlay);
+}
+.overlay :global(.v-dialog) {
+  max-height: none;
+}
+.overlay.m {
+  align-items: flex-end;
+  padding: 0;
+}
+.toast {
+  position: absolute;
+  right: var(--space-6);
+  bottom: var(--space-6);
+  width: var(--panel-width);
+  z-index: var(--z-toast);
+}
+.toast.m {
+  left: var(--space-4);
+  right: var(--space-4);
+  bottom: var(--space-4);
+  width: auto;
+}
+/* In the application the toast stays in the window */
+.toastFixed {
+  position: fixed;
+}
+.num {
+  font-variant-numeric: tabular-nums;
+}
+/* preview.html: .v-notice{margin-bottom:var(--space-2)} (the summary of the errors) */
+.notice {
+  margin-bottom: var(--space-2);
+}

@@ -1,0 +1,200 @@
+{
+  "nav": {
+    "today": "Azi",
+    "calendar": "Calendar",
+    "appointments": "Programări",
+    "manage": "Gestionare",
+    "clients": "Clienți",
+    "services": "Servicii",
+    "team": "Echipa",
+    "business": "Afacere",
+    "reports": "Rapoarte",
+    "settings": "Setări",
+    "usage": "Programări în {month}"
+  },
+  "settings": {
+    "title": "Setările EasyBook",
+    "tabs": {
+      "label": "Setări",
+      "general": "General",
+      "services": "Servicii",
+      "team": "Programul echipei",
+      "resources": "Resurse",
+      "reminders": "Reamintiri",
+      "sms": "Trimitere SMS",
+      "online": "Rezervări online"
+    }
+  },
+  "services": {
+    "title": "Servicii",
+    "lead": "Serviciile apar în programări și pe pagina de rezervări online, grupate pe categorii, în ordinea lor.",
+    "search": "Caută un serviciu",
+    "filter": {
+      "label": "Arată",
+      "active": "Active · {n}",
+      "archived": "Arhivate · {n}"
+    },
+    "add": "Serviciu nou",
+    "addCategory": "Categorie nouă",
+    "order": {
+      "label": "Ordinea categoriilor",
+      "title": "Ordinea categoriilor",
+      "lead": "Așa apar în programări și pe pagina de rezervări online. „Fără categorie” rămâne la final.",
+      "up": "Mută mai sus",
+      "down": "Mută mai jos",
+      "save": "Salvează ordinea",
+      "done": "Am salvat ordinea categoriilor."
+    },
+    "more": "Mai multe acțiuni",
+    "uncategorized": "Fără categorie",
+    "uncategorizedLead": "Apar la final, după categorii.",
+    "count": {
+      "one": "1 serviciu",
+      "few": "{n} servicii",
+      "many": "{n} de servicii"
+    },
+    "col": {
+      "name": "Serviciu",
+      "duration": "Durată",
+      "price": "Preț",
+      "capacity": "În același timp",
+      "online": "Rezervare",
+      "category": "Categorie",
+      "archivedAt": "Arhivat"
+    },
+    "online": {
+      "yes": "Online",
+      "no": "Doar de echipă"
+    },
+    "capacity": {
+      "one": "1 client",
+      "few": "Până la {n} clienți",
+      "many": "Până la {n} de clienți"
+    },
+    "duration": {
+      "fixed": "{n} min",
+      "range": "{min}–{max} min"
+    },
+    "price": {
+      "from": "de la {amount}",
+      "range": "{min}–{max}"
+    },
+    "action": {
+      "edit": "Editează",
+      "archive": "Arhivează",
+      "restore": "Restaurează"
+    },
+    "cat": {
+      "rename": "Redenumește",
+      "archive": "Arhivează categoria",
+      "restore": "Restaurează categoria",
+      "newTitle": "Categorie nouă",
+      "renameTitle": "Redenumește categoria",
+      "name": "Numele categoriei",
+      "nameHelp": "De exemplu: Păr, Unghii, Consultații.",
+      "renameHelp": "Serviciile rămân în ea. Noul nume apare și pe pagina de rezervări online.",
+      "create": "Adaugă categoria",
+      "save": "Salvează"
+    },
+    "form": {
+      "newTitle": "Serviciu nou",
+      "editTitle": "Editează serviciul",
+      "name": "Numele serviciului",
+      "nameHelp": "Așa îl văd clienții la rezervare și în reamintiri.",
+      "category": "Categorie",
+      "categoryNew": "Categorie nouă…",
+      "description": "Descriere",
+      "descriptionHelp": "Apare pe pagina de rezervări online, sub numele serviciului.",
+      "duration": "Durată",
+      "durationFixed": "Fixă",
+      "durationVariable": "Variabilă",
+      "durationValue": "Durata",
+      "durationMin": "Minimă",
+      "durationMax": "Maximă",
+      "durationHelp": "În pași de 5 minute, între 5 minute și 8 ore.",
+      "durationVariableHelp": "La rezervarea online se ține liber intervalul maxim. Echipa îl poate scurta în programare.",
+      "minutes": "min",
+      "price": "Preț",
+      "priceFixed": "Fix",
+      "priceFrom": "De la",
+      "priceRange": "Interval",
+      "priceAmount": "Suma",
+      "priceMin": "De la",
+      "priceMax": "Până la",
+      "priceFromHelp": "Clienții văd „de la {amount}”. Prețul final îl stabilești după vizită.",
+      "priceRangeHelp": "Clienții văd intervalul. Prețul final îl stabilești după vizită.",
+      "currency": "Moneda",
+      "currencyHelp": "Implicit, moneda afacerii.",
+      "capacity": "Clienți în același timp",
+      "capacityHelp": "1 înseamnă un client pe rând. Pune mai mult pentru grupuri sau când lucrați în paralel.",
+      "online": "Se poate rezerva online",
+      "onlineHelp": "Oprit: serviciul nu apare pe pagina de rezervări online; îl programează doar echipa.",
+      "save": "Salvează serviciul",
+      "create": "Adaugă serviciul",
+      "cancel": "Renunță",
+      "archive": "Arhivează serviciul"
+    },
+    "currency": {
+      "ron": "RON (lei)",
+      "eur": "EUR (€)"
+    },
+    "err": {
+      "nameRequired": "Scrie numele serviciului.",
+      "nameDuplicate": "Ai deja un serviciu numit „{name}”, în {category}. Alege alt nume.",
+      "durationStep": "Durata se alege în pași de 5 minute, de exemplu {a} sau {b} min.",
+      "durationLimits": "Durata e între 5 minute și 8 ore (480 min).",
+      "durationOrder": "Durata maximă trebuie să fie mai mare decât cea minimă.",
+      "priceOrder": "„Până la” trebuie să fie mai mare decât „De la”.",
+      "summary": "Corectează câmpurile marcate, apoi salvează.",
+      "catRequired": "Scrie numele categoriei.",
+      "catDuplicate": "Ai deja categoria „{name}”."
+    },
+    "archive": {
+      "title": "Arhivezi „{name}”?",
+      "body": "Nu mai apare la programări noi și nici pe pagina de rezervări online. Îl poți restaura oricând.",
+      "futureOne": "Are o programare viitoare: rămâne în calendar.",
+      "futureMany": "Are {n} programări viitoare: rămân în calendar.",
+      "submit": "Arhivează",
+      "done": "Am arhivat „{name}”. Îl găsești la „Arhivate”."
+    },
+    "catArchive": {
+      "blockedTitle": "Categoria „{name}” are servicii active",
+      "blockedBody": "O categorie se poate arhiva doar când nu mai are servicii active. Mută cele {n} servicii în altă categorie sau arhivează-le întâi.",
+      "ok": "Am înțeles",
+      "done": "Am arhivat categoria „{name}”."
+    },
+    "archived": {
+      "title": "Servicii arhivate",
+      "catArchived": "{category} (arhivată)",
+      "catCount": {
+        "none": "Fără servicii arhivate",
+        "one": "1 serviciu arhivat",
+        "few": "{n} servicii arhivate",
+        "many": "{n} de servicii arhivate"
+      },
+      "lead": "Nu apar la programări noi și nici online. Le poți restaura oricând.",
+      "categories": "Categorii arhivate",
+      "categoriesLead": "Le poți restaura cu tot cu numele și locul lor în ordine."
+    },
+    "restore": {
+      "done": "Am restaurat „{name}”. Se poate programa din nou.",
+      "toUncategorized": "Categoria „{category}” e arhivată, așa că serviciul se întoarce în „Fără categorie”."
+    },
+    "empty": {
+      "title": "Încă nu ai servicii",
+      "body": "Adaugă ce oferi, cu durata și prețul. Serviciile apar în programări și pe pagina de rezervări online.",
+      "action": "Adaugă primul serviciu"
+    },
+    "emptyArchived": {
+      "title": "Niciun serviciu arhivat",
+      "body": "Când arhivezi un serviciu, apare aici și îl poți restaura."
+    },
+    "noResults": "Niciun serviciu nu se potrivește cu „{q}”.",
+    "saved": "Am salvat serviciul „{name}”.",
+    "created": "Am adăugat „{name}” în {category}.",
+    "money": {
+      "RON": "{amount} lei",
+      "EUR": "{amount} €"
+    }
+  }
+}

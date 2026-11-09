@@ -891,3 +891,16 @@ Decizia fondatoarei: numele vizibil e „Ventora Systems”, peste tot; „Vento
 ### Texte (`i18n/`)
 - `booking.json`: `booking.services.*`, doar în română deocamdată (celelalte limbi vin la traducere).
 
+## 2026-11-08 · S124 — EasyBook · programul echipei și resursele
+
+### Componente noi (1.0.0)
+- **BookingTeamSchedule** — Setări · „Programul echipei” (pilot): membrii din calendar și cine nu mai e în echipă; programul săptămânal (cel mult două intervale pe zi, pauza dintre ele, limitele programului afacerii și erorile); excepții pe o dată (zi liberă, alt program, în afara programului afacerii); concedii (cu programări în perioadă, erori); salvat; starea goală.
+- **BookingResources** — Setări · „Resurse”: lista, resursă nouă, editare (serviciile care o cer, câte simultan), erori, arhivare, „Arhivate”, restaurare, starea goală.
+
+### Componente schimbate
+- **BookingServices — 1.0.1:** rândul de file are „Programul echipei”; iconițele care nu sunt în set (`archive`, `archive-restore`, `folder-plus`) au fost înlocuite: acțiunile de arhivare nu au iconiță, restaurarea folosește `rotate-ccw`, „Categorie nouă” folosește `folder`. Preview, README.
+- **BookingSettings — 1.0.x+1:** README, cu trimitere la BookingTeamSchedule și BookingResources.
+
+### Texte (`i18n/`)
+- `booking.json`: `booking.team.*`, `booking.resources.*`, doar în română deocamdată.
+

@@ -24,6 +24,7 @@ import { rememberLocale } from '@/i18n/locale';
 import { switchBusiness } from '@/server/shell-actions';
 import { keepLocale } from '@/server/locale-actions';
 import { markBellRead, openBellItem, readBell, type Bell } from '@/server/notification-actions';
+import { BOOKING_BOTTOM, bookingActive, useBookingNav } from '@/screens/booking/useBookingNav';
 
 /* Shell-ul Hub (HubSettings din preview-urile ecranelor Hub, Lot 2.8): Spine cu „Contul tău”,
    „Afacerea” și „Ajutor”, ContextBar cu afacerea, notificările și contul. Navigația arată doar
@@ -200,8 +201,12 @@ export function HubShell({
   const ui = useTranslations('ui');
   const themeChoice = useThemeChoice();
   const roles = useTranslations('roles');
-  const nav = useHubNav(data.manager, supportBadge);
-  const active = activeFor(pathname);
+  const hubNav = useHubNav(data.manager, supportBadge);
+  // Lot B.1-UI: under /booking the shell is EasyBook's (Spine app=booking, BK_SECTIONS, the meter)
+  const booking = pathname === '/booking' || pathname.startsWith('/booking/');
+  const bookingNav = useBookingNav(booking);
+  const nav = booking ? bookingNav.sections : hubNav;
+  const active = booking ? bookingActive(pathname) : activeFor(pathname);
   // S117: catalogul (HubCatalogBundles, HubCatalog, HubCatalogApp) se deschide fără Spine, cu
   // sigla în bară; titlul barei e al paginii.
   const under = (base: string) => pathname === base || pathname.startsWith(`${base}/`);
@@ -242,10 +247,12 @@ export function HubShell({
       spine={
         catalog ? undefined : (
           <Spine
+            app={booking ? 'booking' : undefined}
             sections={nav}
             activeId={active}
             onBackToHub={() => go('/')}
-            bottomItems={['securitate', 'echipa', 'abonament', 'suport']}
+            bottomItems={booking ? BOOKING_BOTTOM : ['securitate', 'echipa', 'abonament', 'suport']}
+            footer={booking ? bookingNav.footer : undefined}
             labels={{
               backToHub: ui('backToHub'),
               expandMenu: ui('expandMenu'),
