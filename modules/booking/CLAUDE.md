@@ -17,6 +17,7 @@ Booking (numele afișat EasyBook) e prima aplicație. Planul: `docs/plans/BOOKIN
 - **`messages/{ro,en,fr,es,de,it}.json`:** namespace-ul `booking` (ARCHITECTURE §744), legat în `apps/platform/src/i18n/request.ts` și verificat de `pnpm i18n:check`.
   - Cheile `booking.services.*` vin din designul S123; en / fr / es / de / it au textul românesc, netradus (S123-10).
 - **`package.json` „exports”:** `.` (contractul), `./ui`, `./messages/*`. O aplicație nu poate importa `src/server`.
+  - Garda din `apps/platform/eslint.config.mjs` (decisă 09.11.2026): aplicația importă din modul doar aceste trei intrări (`no-restricted-imports`, `[module-entry-only]`).
 - **Importurile interne** sunt fără extensie, ca în `core/*`: Turbopack nu rezolvă `./x.js` spre `x.ts` când modulul e transpilat de platformă.
 
 ## Reguli obligatorii
