@@ -62,7 +62,12 @@ export type AuditTargetType =
   // Lot C.0c / B.2: the members in the calendar and their schedule (category booking)
   | 'booking_business_hours'
   | 'booking_staff_member'
-  | 'booking_staff_time_off';
+  | 'booking_staff_time_off'
+  // Lot C.0d / B.4: the appointments, the blocked times, the clients, the booking rules
+  | 'booking_appointment'
+  | 'booking_time_block'
+  | 'booking_client'
+  | 'booking_settings';
 
 export type AuditEvent = {
   category: AuditCategory;
