@@ -504,6 +504,31 @@ describe('TA.11 — invalid input rejected by the database', () => {
     }
   });
 
+  // Lot C.0g: the B.8 codes pass audit.append_event with their targets
+  it('the B.8 codes (health fields) → accepted with their targets', async () => {
+    const pairs: Array<[string, string]> = [
+      [AuditActions.bookingMedicalFieldCreated, 'booking_medical_field'],
+      [AuditActions.bookingMedicalFieldUpdated, 'booking_medical_field'],
+      [AuditActions.bookingMedicalFieldArchived, 'booking_medical_field'],
+      [AuditActions.bookingMedicalConsentGiven, 'booking_client'],
+      [AuditActions.bookingMedicalConsentWithdrawn, 'booking_client'],
+      [AuditActions.bookingMedicalAnswersSaved, 'booking_client'],
+      [AuditActions.bookingMedicalRead, 'booking_client'],
+    ];
+    for (const [action, targetType] of pairs) {
+      const id = await writeAuditEvent(
+        event({
+          category: 'booking',
+          action,
+          targetType: targetType as never,
+          targetId: crypto.randomUUID(),
+        }),
+        { mode: 'required' },
+      );
+      expect(id, action).toBeTruthy();
+    }
+  });
+
   it('invalid category → CHECK violation', async () => {
     await expect(
       writeAuditEvent(event({ category: 'billing' as never }), { mode: 'required' }),
