@@ -203,6 +203,20 @@ Ordinea, după dependențe, e în §4. Condițiile externe și designul care lip
   - o persoană fără cont nu poate fi pusă în calendar.
 - **Estimare:** 2 h.
 
+#### Lot B.2b — Serviciile pe care le face fiecare membru (D-B5-6, decis 10.11.2026)
+- **Ce intră:**
+  - legătura serviciu ↔ membru: ce servicii face fiecare membru din calendar;
+  - implicit, un membru nou face toate serviciile (ca în B.5, până la acest lot);
+  - locurile libere (B.5) și „Oricine e liber” iau doar membrii care fac serviciul;
+  - `createAppointment` refuză un membru care nu face serviciul;
+  - arhivarea unui serviciu sau scoaterea unui membru păstrează programările.
+- **Dependențe:** B.1, B.2, B.5.
+- **Migrări:** `booking_staff_services`.
+- **Ecrane:** lipsesc din design. Le cere fondatoarea în Claude Design: unde se alege, pe membru (`BookingTeamSchedule`) sau pe serviciu (`BookingServices`).
+- **Gata când:** un membru care nu face serviciul nu apare la locurile libere și nu primește programarea; T1 / T2 pe tabelul nou.
+- **Estimare:** 1–2 h, după design.
+- **Înainte de primul salon de test** (§5).
+
 #### Lot B.3 — Resursele rezervabile și capacitatea
 - **Ce intră:** resursele (camere, echipamente, spații), legătura serviciu ↔ resurse, capacitatea simultană per serviciu.
 - **Dependențe:** B.1. Cota `booking.resources` e prevăzută, dar nedeclarată (FAZA-3, D3-14).
@@ -529,6 +543,7 @@ Intră înainte de primul salon de test (§7.1d).
 |---|---|---|---|
 | 1 | **B.4c** (consumatorul de rambursare a cotei, legat în platformă) → **B.5** (locurile libere) | B.4 | acum |
 | 2 | **B.3a** (catalogul resurselor) → **B.3b** (resursa pe programare, „fără suprapuneri” și pentru resurse, extinde B.5) | B.1, B.4, B.5 | după B.5 (designul: `BookingResources`) |
+| 2b | **B.2b** (serviciile fiecărui membru) | B.1, B.2, B.5 | după B.5 și după design; înainte de B.6c (`BookingNew`) |
 | 3 | **B.6a–d** (ecranele de lucru); coloanele de resurse din `BookingCalendar` după B.3b | B.4, B.5 (B.3b) | după B.5 |
 | 4 | **B.7** (fișa clientului, nota, blocații) | B.4 | acum; nota pe clienți reali după aviz |
 | 5 | **B.8** (câmpurile medicale) | B.7; D-B-16 | după D-B-16; date reale după aviz |
@@ -573,6 +588,7 @@ Intră înainte de primul salon de test (§7.1d).
 
 | Lot | Ce lipsește | Există deja |
 |---|---|---|
+| B.2b | tot: unde se alege ce servicii face un membru (pe membru sau pe serviciu) | `BookingTeamSchedule`, `BookingServices` |
 | B.3 | — | `BookingResources` (S124), Resursele din `BookingSettings` |
 | B.6 | — | `BookingToday`, `BookingCalendar`, `BookingList`, `BookingNew`, `BookingDetail`, `BookingSettings`, `BookingStates`, `BookingStatuses`, `BookingLimit` |
 | B.7 | istoricul încasărilor pe fișă, lista de clienți blocați | `BookingClientCard` |
@@ -594,7 +610,7 @@ Intră înainte de primul salon de test (§7.1d).
 | B.25–B.30 | setările fiecărei integrări (după aplicația parteneră) | — |
 | B.31 | asistentul în EasyBook | componentele AI comune (4.9) |
 
-**Ordinea comenzilor de design** urmează §4: B.9 și B.10, apoi pagina de anulare / mutare (B.11) și B.12, apoi B.14–B.16 și B.33, apoi B.21–B.23 și B.34, apoi B.24.
+**Ordinea comenzilor de design** urmează §4: B.2b (cerut de fondatoare), B.9 și B.10, apoi pagina de anulare / mutare (B.11) și B.12, apoi B.14–B.16 și B.33, apoi B.21–B.23 și B.34, apoi B.24.
 
 ### 5.3 Condițiile externe care rămân
 
@@ -620,6 +636,7 @@ Intră înainte de primul salon de test (§7.1d).
 | Loturi | Ore |
 |---|---|
 | B.4c (0,25), B.5 (2–2,5) | 2–3 |
+| B.2b (1–2) | 1–2 |
 | B.3a + B.3b | 3 |
 | B.6a–d | 6–8 |
 | B.7 (4), B.8 (4) | 8 |
@@ -635,7 +652,7 @@ Intră înainte de primul salon de test (§7.1d).
 | B.25–B.30 (6 × 1–2) | 6–12 |
 | B.31 (4, PROPUS) | 4 |
 | B.32 (2) | 2 |
-| **Total** | **≈ 90–110 ore**, adică ~65 de loturi |
+| **Total** | **≈ 91–112 ore**, adică ~66 de loturi |
 
 Nu sunt incluse așteptarea deciziilor, designul care lipsește, condițiile externe din §5.3 și experimentele (E-SMS-1, E-AMEF).
 
@@ -652,7 +669,7 @@ Nu sunt incluse așteptarea deciziilor, designul care lipsește, condițiile ext
 | **Nota de comportament percepută ca nedreaptă sau scăpată către client** | Opțională, pornită de salon; motivul afișat; vizibilă doar echipei; teste că nu iese pe rute publice sau în e-mailuri; anularea salonului nu contează |
 | **Scurgerea datelor medicale** | Criptare, permisiune separată, jurnal pe fiecare citire, consimțământ versionat, doar pe afacerile marcate (B.8); date reale doar după aviz |
 | **Plăți:** dispute, rambursări, comision | Webhook-uri idempotente; saga cu eliberarea intervalului; comisionul configurabil din Founder |
-| **Volumul:** 66 de funcționalități, ~65 de loturi înainte de primul salon de test | Ordinea după dependențe (§4); loturi de 1–2 h; un agent pe folder, în paralel unde se poate |
+| **Volumul:** 66 de funcționalități, ~66 de loturi înainte de primul salon de test | Ordinea după dependențe (§4); loturi de 1–2 h; un agent pe folder, în paralel unde se poate |
 | **Designul lipsă** pentru mai mult de jumătate din funcționalități | Comanda de design pe loturi, în ordinea din §5.2 |
 | **Dependențe neînchise din F3 / F4:** URL public, Stripe, abonamente, notificări | Cerute explicit în §5.3 |
 | **SMS:** E-SMS-1 poate pica; condițiile operatorilor | Procedura din `SMS_NUMAR_PROPRIU.md` §7; E-SMS-1 întâi pe telefonul fondatoarei. Reminderul merge oricum prin SMSLink (B.17). |
@@ -752,6 +769,7 @@ Nu sunt incluse așteptarea deciziilor, designul care lipsește, condițiile ext
 | WhatsApp | Intră înainte de primul salon de test, cu numărul de test Meta până la verificarea Ventora Systems. Înlocuiește „după pilot” din §7.1b. | B.33 |
 | E-AMEF | Intră înainte de primul salon de test: aplicația punte, testată întâi pe simulator. Înlocuiește „fără AMEF în v1” din §7.1b; bonul rămâne emis de casa salonului. | B.34 |
 | Avizul avocatului | Datele medicale și nota „Risc ridicat” pe clienți reali rămân după aviz. | B.7, B.8, B.22 |
+| D-B5-6 (planul B.5, aprobat 10.11.2026) | Legătura serviciu ↔ membru e un lot separat (B.2b), înainte de primul salon de test. Designul îl cere fondatoarea în Claude Design. Până atunci, orice membru din calendar face orice serviciu. | B.2b, B.5 |
 
 ### 7.2 NECESITĂ DECIZIE (rămase)
 
