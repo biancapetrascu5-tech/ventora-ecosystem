@@ -7,7 +7,7 @@ import { APPS } from '@ventora/ui';
 import { useIsPhone } from '@ventora/screens';
 import type { AppsData } from '@/server/catalog-actions';
 import { growthInteraction } from '@/server/growth-actions';
-import { useCostLine } from '../growth/GrowthRecommendation';
+import { useCostLine } from '../growth/cost';
 import { useMoney } from '../plan/format';
 import { AppsView, type AppsGroup } from './AppsView';
 import { APP_GROUPS } from './content';

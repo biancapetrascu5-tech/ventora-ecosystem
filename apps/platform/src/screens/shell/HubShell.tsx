@@ -28,7 +28,8 @@ import { keepLocale } from '@/server/locale-actions';
 import { markBellRead, openBellItem, readBell, type Bell } from '@/server/notification-actions';
 import { growthInteraction, readBellRecommendation } from '@/server/growth-actions';
 import type { GrowthSlotView } from '@/server/growth-slot';
-import { useCostLine } from '@/screens/growth/GrowthRecommendation';
+import { useCostLine } from '@/screens/growth/cost';
+import { GrowthUpgrade } from '@/screens/growth/GrowthUpgrade';
 import { BOOKING_BOTTOM, bookingActive, useBookingNav } from '@/screens/booking/useBookingNav';
 
 /* Shell-ul Hub (HubSettings din preview-urile ecranelor Hub, Lot 2.8): Spine cu „Contul tău”,
@@ -137,6 +138,7 @@ function useBell(initial: Bell, orgs: HubShellData['orgs']) {
   const [open, setOpen] = useState(false);
   // Lotul 5.9b: recomandarea Ventora, în secțiunea ei („Recomandări”), sub operaționale
   const [reco, setReco] = useState<GrowthSlotView | null>(null);
+  const [upgrading, setUpgrading] = useState<GrowthSlotView | null>(null);
   const recoCost = useCostLine(reco);
   // o listă nouă de la server (navigare, router.refresh) o înlocuiește pe cea de aici
   const [fromServer, setFromServer] = useState(initial);
@@ -189,9 +191,15 @@ function useBell(initial: Bell, orgs: HubShellData['orgs']) {
       if (!reco) return;
       interact('click');
       setOpen(false);
-      // opțiunile ofertei (UpgradeDialog în 5.9c); nicio activare fără confirmare
-      router.push(reco.app ? `/applications/${reco.app}` : '/admin/plan');
+      // UpgradeDialog la `options` (5.9c); nicio activare fără confirmare
+      setUpgrading(reco);
     },
+    upgrading,
+    closeUpgrade: () => setUpgrading(null),
+    continueUpgrade: (v: GrowthSlotView) =>
+      router.push(
+        v.app ? `/applications/${v.app}` : v.kind === 'addon' ? '/admin/plan' : '/catalog',
+      ),
     onDismissRecommendation: () => {
       interact('dismiss');
       setReco(null);
@@ -401,6 +409,14 @@ export function HubShell({
       }
     >
       {children}
+      {bell.upgrading && (
+        <GrowthUpgrade
+          view={bell.upgrading}
+          owner={data.orgs.find((o) => o.id === data.currentOrgId)?.role === 'owner'}
+          onContinue={bell.continueUpgrade}
+          onClose={bell.closeUpgrade}
+        />
+      )}
     </AppShell>
   );
 }

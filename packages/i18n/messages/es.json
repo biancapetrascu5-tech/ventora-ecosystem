@@ -785,6 +785,14 @@
         "pending": "Pendiente",
         "activated": "Activada",
         "declined": "Ahora no"
+      },
+      "trial": {
+        "when": "Hoy, durante {days} días",
+        "then": "Gratis, después {price}, solo si decides continuar",
+        "started": "Tienes {app} gratis hasta el {date}. Al final la aplicación se detiene y todo lo que hiciste en ella se conserva.",
+        "errorTitle": "El período de prueba no se ha iniciado",
+        "errorBody": "No ha cambiado nada. Vuelve a intentarlo en un momento.",
+        "open": "Abrir {app}"
       }
     }
   },
@@ -1455,7 +1463,82 @@
     "notInterested": "No me interesa",
     "onRequestOnly": "Solo bajo petición",
     "requestActivation": "Solicitar activación",
-    "notifyOwner": "Avisar al propietario"
+    "notifyOwner": "Avisar al propietario",
+    "seeApp": "Ver la aplicación",
+    "seeHow": "Ver cómo funciona",
+    "gotIt": "Entendido",
+    "reject": "Rechazar",
+    "fromTeam": "Recomendación del equipo",
+    "states": {
+      "search": {
+        "title": "Ninguna aplicación para «{q}»",
+        "body": "Pruebe otra palabra o escríbanos lo que necesita.",
+        "action": "Escríbanos"
+      },
+      "trialEnding": {
+        "title": "La prueba gratuita de {app} termina el {date}.",
+        "body": "Entonces se detiene sola; sus datos se conservan.",
+        "action": "Ver las opciones"
+      },
+      "trialEnded": {
+        "title": "La prueba gratuita de {app} ha terminado",
+        "body": "{app} se ha detenido. Sus datos se conservan; actívela cuando quiera continuar.",
+        "action": "Activar · {price}"
+      },
+      "notNow": "Ahora no",
+      "rejected": {
+        "title": "Hemos rechazado la recomendación.",
+        "body": "{member} ve «Ahora no» en su lista; no recibe notificación."
+      },
+      "activated": {
+        "title": "{owner} ha activado {app}.",
+        "body": "Su recomendación ya es una aplicación del equipo.",
+        "action": "Abrir {app}"
+      },
+      "member": {
+        "pending": "Pendiente",
+        "active": "Activada",
+        "notNow": "Ahora no",
+        "recommend": "Recomendar la aplicación",
+        "owner": "{owner} (propietario)"
+      }
+    },
+    "prefs": {
+      "title": "Recomendaciones de Ventora Systems",
+      "desc": "Sugerencias de aplicaciones y paquetes adicionales que encajan con lo que ya hace.",
+      "app": "En la aplicación",
+      "appD": "Las verá en las páginas y en las notificaciones, en la sección Recomendaciones.",
+      "mail": "Por correo electrónico",
+      "mailD": "Disponible pronto",
+      "notice": "Los mensajes sobre los límites de su cuenta siguen activos, porque son información de la cuenta, no recomendaciones."
+    },
+    "mine": {
+      "nav": "Mis recomendaciones",
+      "navShort": "Recomendaciones",
+      "title": "Mis recomendaciones",
+      "lead": "Las aplicaciones que recomendó al propietario y lo que respondió.",
+      "count": "Recomendaciones enviadas · {n}",
+      "countLead": "Solo usted y el propietario ven esta lista.",
+      "st": {
+        "pending": "Pendiente",
+        "active": "Activada",
+        "notNow": "Ahora no"
+      },
+      "asked": "Recomendada a {owner} el {date}",
+      "answer": "Respuesta de {owner}, {when}:",
+      "waiting": "El propietario aún no ha respondido. Recibirá una notificación cuando decida.",
+      "open": "Abrir {app}",
+      "rule": "Usted recomienda una aplicación del Catálogo; la decisión y el pago son del propietario. Una recomendación con «Ahora no» puede enviarse de nuevo pasados 30 días.",
+      "empty": {
+        "title": "Ninguna recomendación",
+        "body": "Cuando encuentre en el Catálogo una aplicación útil para el equipo, recomiéndela al propietario desde allí.",
+        "action": "Abrir el Catálogo"
+      },
+      "n": {
+        "active": "{owner} ha activado {app}",
+        "activeBody": "Su recomendación ya es una aplicación del equipo."
+      }
+    }
   },
   "quota": {
     "platform_members": {

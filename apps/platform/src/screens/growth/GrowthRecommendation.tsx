@@ -6,7 +6,8 @@ import { AppTile, GrowthSlot, RecommendationCard, Toast, type AccessState } from
 import type { GrowthSlotView } from '@/server/growth-slot';
 import { growthInteraction } from '@/server/growth-actions';
 import { useAppTileLabels } from '../labels';
-import { useMoney } from '../plan/format';
+import { GrowthUpgrade } from './GrowthUpgrade';
+import { useCostLine } from './cost';
 import styles from './growth.module.css';
 
 /*
@@ -14,29 +15,12 @@ import styles from './growth.module.css';
  *   - „Nu mă interesează” → recomandarea dispare, Toast „Am înțeles, nu-ți mai arătăm asta.” cu
  *     „Anulează” (anularea șterge suprimarea);
  *   - „Amintește-mi mai târziu” → „Bine, îți amintim peste o săptămână / o lună.” cu „Anulează”;
- *   - acțiunea principală nu activează nimic: deschide opțiunile (`onAction`), iar plata are
- *     pasul ei de confirmare (5.9c, D-GRW-10);
+ *   - acțiunea principală nu activează nimic: deschide UpgradeDialog la `options` (GrowthUpgrade,
+ *     5.9c), iar plata are pasul ei de confirmare (D-GRW-10);
  *   - pentru membru: doar „Recomandă aplicația”, niciodată o ofertă de cumpărare (P21).
  */
 
 const key = () => crypto.randomUUID();
-
-export function useCostLine(view: GrowthSlotView | null): string | null {
-  const t = useTranslations('hub.growth.cost');
-  const money = useMoney(view?.cost.currency ?? 'RON');
-  if (!view) return null;
-  const c = view.cost;
-  const amount = money.minor(c.amountMinor);
-  const price =
-    c.interval === 'month'
-      ? t('month', { amount })
-      : c.interval === 'year'
-        ? t('year', { amount })
-        : t('once', { amount });
-  const main = c.trial ? t('trial', { days: c.trial.days, price }) : price;
-  if (c.trial && !c.setupMinor) return main;
-  return `${main} · ${c.setupMinor ? t('setup', { amount: money.minor(c.setupMinor) }) : t('noSetup')}`;
-}
 
 type Hidden = { kind: 'dismiss' | 'snooze'; period?: 'week' | 'month' } | null;
 
@@ -120,8 +104,11 @@ export interface GrowthRecommendationProps {
   role: string;
   /** Cine decide (proprietarul), pentru membru. */
   decider?: string | null;
-  /** Deschide opțiunile ofertei (UpgradeDialog, pasul options); nu cumpără nimic. */
-  onOpenOptions: (view: GrowthSlotView) => void;
+  /**
+   * După „Continuă” din UpgradeDialog (5.9c): predă fluxului existent, care are confirmarea și
+   * plata lui (pagina aplicației, PurchaseDialog, cererea de abonament). Nu cumpără nimic.
+   */
+  onContinue: (view: GrowthSlotView) => void;
   /** `row`: pe rândul aplicației din „Alte aplicații” (AppTile); `card`: RecommendationCard. */
   layout?: 'row' | 'card';
   /** Starea aplicației pe rând (AppTile). */
@@ -140,7 +127,7 @@ function GrowthRecommendationInner({
   view,
   role,
   decider,
-  onOpenOptions,
+  onContinue,
   layout = 'card',
   access = 'notInPlan',
   tileClassName,
@@ -154,9 +141,10 @@ function GrowthRecommendationInner({
   const [recommended, setRecommended] = useState(false);
   const member = view.audience === 'member' || !(role === 'owner' || role === 'admin');
 
+  const [upgrade, setUpgrade] = useState(false);
   const open = () => {
     g.click();
-    onOpenOptions(view);
+    setUpgrade(true);
   };
   const remind = view.proactive ? g.snooze : undefined;
   const dismiss = view.proactive ? g.dismiss : undefined;
@@ -225,6 +213,15 @@ function GrowthRecommendationInner({
       <GrowthSlot label={pay('recommendation')} className={className}>
         {content}
       </GrowthSlot>
+      {upgrade && (
+        <GrowthUpgrade
+          view={view}
+          owner={role === 'owner'}
+          decider={decider}
+          onContinue={onContinue}
+          onClose={() => setUpgrade(false)}
+        />
+      )}
       {g.toast && g.hidden && (
         <GestureToast hidden={g.hidden} onUndo={() => void g.undo()} onClose={g.closeToast} />
       )}

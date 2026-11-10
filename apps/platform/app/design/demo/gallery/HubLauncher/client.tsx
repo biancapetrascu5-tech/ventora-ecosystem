@@ -31,6 +31,7 @@ function data(noData: boolean, reco: boolean): LauncherData {
     ownerName: 'Bianca Petrașcu',
     timeZone: 'Europe/Bucharest',
     appointmentsToday: noData ? null : 8,
+    trialEnding: null,
     recommendation: reco
       ? {
           slotId: 'hub.launcher.other',

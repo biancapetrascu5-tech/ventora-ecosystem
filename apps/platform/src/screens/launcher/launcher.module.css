@@ -261,3 +261,9 @@
 .recoCard {
   margin-bottom: var(--space-4);
 }
+
+/* Lotul 5.9d — proba pe sfârșite (CommercialStates), sub „Aplicațiile tale” */
+.trial {
+  position: relative;
+  z-index: 1;
+}

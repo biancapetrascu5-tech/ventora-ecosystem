@@ -785,6 +785,14 @@
         "pending": "Pending",
         "activated": "Activated",
         "declined": "Not now"
+      },
+      "trial": {
+        "when": "Today, for {days} days",
+        "then": "Free, then {price}, only if you choose to continue",
+        "started": "You have {app} free until {date}. At the end the app pauses, and everything you did in it stays.",
+        "errorTitle": "The trial didn't start",
+        "errorBody": "Nothing changed. Try again in a little while.",
+        "open": "Open {app}"
       }
     }
   },
@@ -1455,7 +1463,82 @@
     "notInterested": "Not interested",
     "onRequestOnly": "On request only",
     "requestActivation": "Request activation",
-    "notifyOwner": "Tell the owner"
+    "notifyOwner": "Tell the owner",
+    "seeApp": "See the app",
+    "seeHow": "See how it works",
+    "gotIt": "Got it",
+    "reject": "Decline",
+    "fromTeam": "Recommended by your team",
+    "states": {
+      "search": {
+        "title": "No app for “{q}”",
+        "body": "Try another word, or tell us what you need.",
+        "action": "Write to us"
+      },
+      "trialEnding": {
+        "title": "The free trial of {app} ends on {date}.",
+        "body": "It then stops on its own; your data stays.",
+        "action": "See the options"
+      },
+      "trialEnded": {
+        "title": "The free trial of {app} has ended",
+        "body": "{app} has stopped. Your data stays; turn it on whenever you want to continue.",
+        "action": "Turn on · {price}"
+      },
+      "notNow": "Not now",
+      "rejected": {
+        "title": "We declined the recommendation.",
+        "body": "{member} sees “Not now” in their list; they get no notification."
+      },
+      "activated": {
+        "title": "{owner} turned on {app}.",
+        "body": "Your recommendation is now one of the team’s apps.",
+        "action": "Open {app}"
+      },
+      "member": {
+        "pending": "Pending",
+        "active": "Turned on",
+        "notNow": "Not now",
+        "recommend": "Recommend the app",
+        "owner": "{owner} (owner)"
+      }
+    },
+    "prefs": {
+      "title": "Ventora Systems recommendations",
+      "desc": "Suggestions for apps and add-on packs that fit what you already do.",
+      "app": "In the app",
+      "appD": "You see them on pages and in notifications, under Recommendations.",
+      "mail": "By email",
+      "mailD": "Coming soon",
+      "notice": "Messages about your account’s limits stay on, because they are account information, not recommendations."
+    },
+    "mine": {
+      "nav": "My recommendations",
+      "navShort": "Recommendations",
+      "title": "My recommendations",
+      "lead": "The apps you recommended to the owner and what they answered.",
+      "count": "Recommendations sent · {n}",
+      "countLead": "Only you and the owner see this list.",
+      "st": {
+        "pending": "Pending",
+        "active": "Turned on",
+        "notNow": "Not now"
+      },
+      "asked": "Recommended to {owner} on {date}",
+      "answer": "{owner}’s answer, {when}:",
+      "waiting": "The owner hasn’t answered yet. You’ll get a notification when they decide.",
+      "open": "Open {app}",
+      "rule": "You recommend an app from the Catalog; the decision and the payment stay with the owner. A recommendation answered “Not now” can be sent again after 30 days.",
+      "empty": {
+        "title": "No recommendations",
+        "body": "When you find an app in the Catalog that would help the team, recommend it to the owner from there.",
+        "action": "Open the Catalog"
+      },
+      "n": {
+        "active": "{owner} turned on {app}",
+        "activeBody": "Your recommendation is now one of the team’s apps."
+      }
+    }
   },
   "quota": {
     "platform_members": {

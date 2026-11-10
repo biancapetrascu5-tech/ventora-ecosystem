@@ -785,6 +785,14 @@
         "pending": "In attesa",
         "activated": "Attivata",
         "declined": "Non ora"
+      },
+      "trial": {
+        "when": "Oggi, per {days} giorni",
+        "then": "Gratis, poi {price}, solo se sceglie di continuare",
+        "started": "Ha {app} gratis fino al {date}. Alla fine l'applicazione si ferma e tutto ciò che vi ha fatto rimane.",
+        "errorTitle": "Il periodo di prova non è iniziato",
+        "errorBody": "Non è cambiato nulla. Riprovi tra poco.",
+        "open": "Apri {app}"
       }
     }
   },
@@ -1455,7 +1463,82 @@
     "notInterested": "Non mi interessa",
     "onRequestOnly": "Solo su richiesta",
     "requestActivation": "Richiedi attivazione",
-    "notifyOwner": "Avvisa il titolare"
+    "notifyOwner": "Avvisa il titolare",
+    "seeApp": "Vedi l’app",
+    "seeHow": "Scopri come funziona",
+    "gotIt": "Ho capito",
+    "reject": "Rifiuta",
+    "fromTeam": "Suggerimento dal team",
+    "states": {
+      "search": {
+        "title": "Nessuna app per «{q}»",
+        "body": "Provi un’altra parola o ci scriva di cosa ha bisogno.",
+        "action": "Ci scriva"
+      },
+      "trialEnding": {
+        "title": "La prova gratuita di {app} termina il {date}.",
+        "body": "Poi si ferma da sola; i dati restano.",
+        "action": "Vedi le opzioni"
+      },
+      "trialEnded": {
+        "title": "La prova gratuita di {app} è terminata",
+        "body": "{app} si è fermata. I dati restano; può attivarla quando vuole per continuare.",
+        "action": "Attiva · {price}"
+      },
+      "notNow": "Non ora",
+      "rejected": {
+        "title": "Abbiamo rifiutato la raccomandazione.",
+        "body": "{member} vede «Non ora» nel suo elenco; non riceve notifiche."
+      },
+      "activated": {
+        "title": "{owner} ha attivato {app}.",
+        "body": "La Sua raccomandazione ora è un’app del team.",
+        "action": "Apri {app}"
+      },
+      "member": {
+        "pending": "In attesa",
+        "active": "Attivata",
+        "notNow": "Non ora",
+        "recommend": "Consiglia l’app",
+        "owner": "{owner} (titolare)"
+      }
+    },
+    "prefs": {
+      "title": "Raccomandazioni Ventora Systems",
+      "desc": "Suggerimenti su app e pacchetti extra adatti a ciò che fa già.",
+      "app": "Nell’app",
+      "appD": "Le vede nelle pagine e nelle notifiche, nella sezione Raccomandazioni.",
+      "mail": "Via e-mail",
+      "mailD": "Disponibile a breve",
+      "notice": "I messaggi sui limiti del Suo account restano attivi, perché sono informazioni sull’account, non raccomandazioni."
+    },
+    "mine": {
+      "nav": "Le mie raccomandazioni",
+      "navShort": "Raccomandazioni",
+      "title": "Le mie raccomandazioni",
+      "lead": "Le app che ha consigliato al titolare e la sua risposta.",
+      "count": "Raccomandazioni inviate · {n}",
+      "countLead": "Solo Lei e il titolare vedete questo elenco.",
+      "st": {
+        "pending": "In attesa",
+        "active": "Attivata",
+        "notNow": "Non ora"
+      },
+      "asked": "Consigliata a {owner} il {date}",
+      "answer": "Risposta di {owner}, {when}:",
+      "waiting": "Il titolare non ha ancora risposto. Riceverà una notifica quando decide.",
+      "open": "Apri {app}",
+      "rule": "Lei consiglia un’app dal Catalogo; la decisione e il pagamento restano al titolare. Una raccomandazione con «Non ora» si può rinviare dopo 30 giorni.",
+      "empty": {
+        "title": "Nessuna raccomandazione",
+        "body": "Quando trova nel Catalogo un’app utile al team, la consigli al titolare da lì.",
+        "action": "Apri il Catalogo"
+      },
+      "n": {
+        "active": "{owner} ha attivato {app}",
+        "activeBody": "La Sua raccomandazione ora è un’app del team."
+      }
+    }
   },
   "quota": {
     "platform_members": {

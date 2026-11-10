@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { AppName } from '@ventora/ui';
-import { computeLauncherApps } from '../launcher-state';
+import { computeLauncherApps, trialEnding } from '../launcher-state';
 
 // Lotul 5.1 (D5-3 = a) — cele 4 stări din launcher, din drepturile comerciale, probe și rol.
 
@@ -111,5 +111,28 @@ describe('computeLauncherApps (Lot 5.1)', () => {
       now: NOW,
     });
     expect(r).toEqual([{ app: 'marketing', state: 'available' }]);
+  });
+});
+
+describe('trialEnding (5.9d)', () => {
+  const now = new Date('2026-11-10T10:00:00Z');
+  const day = 86_400_000;
+  const trial = (applicationId: string, inDays: number, endedAt: Date | null = null) => ({
+    kind: 'application' as const,
+    applicationId,
+    endsAt: new Date(now.getTime() + inDays * day),
+    endedAt,
+  });
+
+  it('cea mai apropiată probă care se încheie în cel mult 3 zile', () => {
+    const r = trialEnding([trial('marketing', 2.5), trial('crm', 1)], ['marketing', 'crm'], now);
+    expect(r?.app).toBe('crm');
+  });
+
+  it('nu: peste 3 zile, deja încheiată, oprită sau aplicație neafișată', () => {
+    expect(trialEnding([trial('crm', 4)], ['crm'], now)).toBeNull();
+    expect(trialEnding([trial('crm', -1)], ['crm'], now)).toBeNull();
+    expect(trialEnding([trial('crm', 1, now)], ['crm'], now)).toBeNull();
+    expect(trialEnding([trial('crm', 1)], ['booking'], now)).toBeNull();
   });
 });

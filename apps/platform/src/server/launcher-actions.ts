@@ -15,7 +15,7 @@ import { getSession } from '@ventora/identity';
 import type { AppName } from '@ventora/ui';
 import { APP_GROUPS } from '@/screens/apps/content';
 import { reportActionError } from './report-error';
-import { computeLauncherApps, type LauncherApp } from './launcher-state';
+import { computeLauncherApps, trialEnding, type LauncherApp } from './launcher-state';
 import { readGrowthSlot, type GrowthSlotView } from './growth-slot';
 
 /*
@@ -41,6 +41,8 @@ export interface LauncherData {
   appointmentsToday: number | null;
   /** Slotul Growth din „Alte aplicații” (5.9a, `hub.launcher.other`); null: gol. */
   recommendation: GrowthSlotView | null;
+  /** 5.9d (CommercialStates): proba care se încheie în cel mult 3 zile; doar pentru owner / admin. */
+  trialEnding: { app: AppName; endsAt: string } | null;
 }
 
 /** Ora 00:00 a zilei `date` (YYYY-MM-DD) în fusul `timeZone`, ca instant UTC. */
@@ -140,7 +142,24 @@ export async function readLauncher(): Promise<LauncherData | null> {
       ? await readGrowthSlot(ctx, 'hub.launcher.other')
       : null;
 
-    return { apps, role: ctx.role, ownerName, timeZone, appointmentsToday, recommendation };
+    const ending =
+      ctx.role === 'owner' || ctx.role === 'admin'
+        ? trialEnding(
+            trials,
+            apps.filter((a) => a.state === 'available').map((a) => a.app),
+            now,
+          )
+        : null;
+
+    return {
+      apps,
+      role: ctx.role,
+      ownerName,
+      timeZone,
+      appointmentsToday,
+      recommendation,
+      trialEnding: ending ? { app: ending.app, endsAt: ending.endsAt.toISOString() } : null,
+    };
   } catch (err) {
     reportActionError('readLauncher', err);
     return null;

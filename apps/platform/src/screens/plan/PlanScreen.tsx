@@ -382,7 +382,7 @@ export function PlanScreen({ data }: { data: PlanData }) {
               view={data.recommendation}
               role={data.owner ? 'owner' : 'member'}
               decider={data.ownerName}
-              onOpenOptions={(v) => {
+              onContinue={(v) => {
                 const o = v.addonCode ? data.offers.find((x) => x.code === v.addonCode) : null;
                 if (o) openPack(o);
                 else router.push(v.app ? `/applications/${v.app}` : '/catalog');

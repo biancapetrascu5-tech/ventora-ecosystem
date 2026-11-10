@@ -13,6 +13,7 @@ import {
   BrandZone,
   Button,
   EmptyState,
+  Notice,
   type AppName,
   type DockApp,
 } from '@ventora/ui';
@@ -34,8 +35,9 @@ import styles from './launcher.module.css';
    (AppTile cu recomandare) sau, pentru un pachet / abonament, un RecommendationCard deasupra
    rândurilor; gol = nimic desenat. */
 
-/** Unde se văd opțiunile ofertei până la UpgradeDialog (5.9c): pagina aplicației sau abonamentul. */
-const optionsHref = (v: GrowthSlotView) => (v.app ? `/applications/${v.app}` : '/admin/plan');
+/** După UpgradeDialog (5.9c): fluxul existent cu confirmarea lui — aplicația, pachetele sau bundle-urile. */
+const continueHref = (v: GrowthSlotView) =>
+  v.app ? `/applications/${v.app}` : v.kind === 'addon' ? '/admin/plan' : '/catalog';
 
 /** Unde se deschide o aplicație disponibilă: EasyBook are rutele lui; restul, pagina din catalog. */
 const appHref = (app: AppName) => (app === 'booking' ? '/booking' : `/applications/${app}`);
@@ -71,6 +73,7 @@ export function LauncherScreen({ data, userName, businessName, now }: LauncherSc
   const t = useTranslations('hub.launcher');
   const desc = useTranslations('hub.apps.desc');
   const labels = useAppTileLabels();
+  const pay = useTranslations('pay');
   const [launch, setLaunch] = useState<{
     app: AppName;
     name: string;
@@ -92,13 +95,19 @@ export function LauncherScreen({ data, userName, businessName, now }: LauncherSc
       hourCycle: 'h23',
     }).format(at),
   );
+  const endDate = (iso: string) =>
+    new Intl.DateTimeFormat(locale, {
+      timeZone: data.timeZone,
+      day: 'numeric',
+      month: 'long',
+    }).format(new Date(iso));
   const firstName = userName.trim().split(/\s+/)[0] ?? userName;
 
   const available = data.apps.filter((a) => a.state === 'available');
   const others = data.apps.filter((a) => a.state !== 'available');
   const reco = data.recommendation;
   const recoOnRow = reco?.app && others.some((a) => a.app === reco.app) ? reco.app : null;
-  const openOptions = (v: GrowthSlotView) => router.push(optionsHref(v));
+  const openOptions = (v: GrowthSlotView) => router.push(continueHref(v));
   const empty = available.length === 0;
   const dock: DockApp[] = available.map((a) => ({ app: a.app, description: desc(a.app) }));
 
@@ -158,6 +167,27 @@ export function LauncherScreen({ data, userName, businessName, now }: LauncherSc
         ) : (
           <>
             {sechead(styles.secheadMobile)}
+            {data.trialEnding && (
+              <Notice
+                tone="attention"
+                className={styles.trial}
+                title={pay('states.trialEnding.title', {
+                  app: APPS[data.trialEnding.app]?.name ?? data.trialEnding.app,
+                  date: endDate(data.trialEnding.endsAt),
+                })}
+                actions={
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    onClick={() => router.push(`/applications/${data.trialEnding!.app}`)}
+                  >
+                    {pay('states.trialEnding.action')}
+                  </Button>
+                }
+              >
+                {pay('states.trialEnding.body')}
+              </Notice>
+            )}
             <div className={styles.mine}>
               <AppDock
                 apps={dock}
@@ -183,7 +213,7 @@ export function LauncherScreen({ data, userName, businessName, now }: LauncherSc
                 view={reco}
                 role={data.role}
                 decider={data.ownerName}
-                onOpenOptions={openOptions}
+                onContinue={openOptions}
                 className={styles.recoCard}
               />
             )}
@@ -195,7 +225,7 @@ export function LauncherScreen({ data, userName, businessName, now }: LauncherSc
                     view={reco}
                     role={data.role}
                     decider={data.ownerName}
-                    onOpenOptions={openOptions}
+                    onContinue={openOptions}
                     layout="row"
                     access={a.state}
                     tileClassName={styles.row}
