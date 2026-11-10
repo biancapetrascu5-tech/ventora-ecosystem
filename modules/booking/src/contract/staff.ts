@@ -33,6 +33,12 @@ import {
   type StoppedPair,
 } from '../server/staff-services';
 import {
+  listStaffServiceTermsInOrg,
+  setStaffServiceTermsInOrg,
+  type EffectiveTerms,
+  type StaffServiceTerms,
+} from '../server/terms';
+import {
   countUpcomingAppointmentsInOrg,
   countUpcomingByStaffInOrg,
   type UpcomingAppointments,
@@ -277,5 +283,51 @@ export async function setStaffServices(
   return setStaffServicesInOrg(ctx, params.staffMemberId, {
     allServices: params.allServices,
     serviceIds: params.serviceIds,
+  });
+}
+
+export type ListStaffServiceTermsParams = Session & { serviceId?: string; staffMemberId?: string };
+export type SetStaffServiceTermsParams = Session & {
+  staffMemberId: string;
+  serviceId: string;
+  /** null / absent: the service's. */
+  durationMinutes?: number | null;
+  durationMaxMinutes?: number | null;
+  price?: { kind: 'fixed' | 'from' | 'range'; minor: number; maxMinor?: number | null } | null;
+};
+
+/** B.2c: the members' own duration and price, for one service or one member. booking:read. */
+export async function listStaffServiceTerms(
+  params: ListStaffServiceTermsParams,
+): Promise<StaffServiceTerms[]> {
+  const ctx = await authorize({
+    sessionToken: params.sessionToken,
+    applicationId: 'booking',
+    permission: 'booking:read',
+  });
+  return listStaffServiceTermsInOrg(ctx, {
+    serviceId: params.serviceId,
+    staffMemberId: params.staffMemberId,
+  });
+}
+
+/**
+ * B.2c: a member's own duration and / or price for a service (a senior stylist charges more).
+ * booking:settings. All null → back to the service's. The member must do the service (B.2b).
+ */
+export async function setStaffServiceTerms(
+  params: SetStaffServiceTermsParams,
+): Promise<{ terms: StaffServiceTerms | null; effective: EffectiveTerms }> {
+  const ctx = await authorize({
+    sessionToken: params.sessionToken,
+    applicationId: 'booking',
+    permission: 'booking:settings',
+  });
+  return setStaffServiceTermsInOrg(ctx, {
+    staffMemberId: params.staffMemberId,
+    serviceId: params.serviceId,
+    durationMinutes: params.durationMinutes,
+    durationMaxMinutes: params.durationMaxMinutes,
+    price: params.price,
   });
 }

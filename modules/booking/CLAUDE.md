@@ -154,3 +154,14 @@ Booking (numele afișat EasyBook) e prima aplicație. Planul: `docs/plans/BOOKIN
   - `moveAppointment` spre alt membru verifică la fel; același membru își poate muta în timp programările păstrate;
   - locurile libere și „Oricine e liber” iau doar membrii care fac serviciul.
 - **Un membru fără niciun serviciu** (recepția) e permis.
+
+## Durata și prețul pe membru (B.2c)
+- **`staff_service_terms`:** pentru o pereche (membru, serviciu), durata (minimă și maximă) și / sau prețul (fel, sumă, sumă maximă). O coloană NULL păstrează valoarea serviciului. Moneda, capacitatea și resursele rămân ale serviciului.
+- **Termenii efectivi** (`server/terms.ts`, `effective`):
+  - durata minimă = a membrului ?? a serviciului;
+  - durata maximă = a membrului ?? maximul serviciului ?? minimul;
+  - prețul = al membrului, dacă e pus întreg, altfel al serviciului.
+- **Programarea** (`createAppointment`) ia durata implicită și copia prețului de la membrul ales. O durată cerută în afara limitelor lui → `InvalidInput('durationMinutes')`. La „Oricine e liber”, un membru care nu permite durata cerută e sărit.
+- **Locurile libere:** fiecare membru are durata lui. Pentru un membru anume, `durationMinutes` din răspuns e a lui; la „Oricine e liber” e a serviciului.
+- **Contractele:** `listStaffServiceTerms` (`booking:read`) și `setStaffServiceTerms` (`booking:settings`); totul NULL înseamnă înapoi la valorile serviciului. Membrul trebuie să facă serviciul (B.2b). Auditul: `booking.staff_updated`, cu `serviceId` și `terms`.
+- **Ecranele lipsesc din S129** (BOOKING.md §5.2): prețul și durata pe membru în `BookingServices`, `BookingTeamSchedule`, `BookingNew`, `BookingPublic`.

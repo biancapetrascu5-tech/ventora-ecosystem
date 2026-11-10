@@ -55,6 +55,7 @@ model Service {
   appointments Appointment[]
   resources    ServiceResource[]
   staff        StaffService[]
+  staffTerms   StaffServiceTerms[]
 
   @@index([organizationId, categoryId, sortOrder], map: "service_organization_id_category_sort_idx")
   @@index([categoryId], map: "service_category_id_idx")
@@ -100,6 +101,7 @@ model StaffMember {
   appointments Appointment[]
   timeBlocks   TimeBlock[]
   services     StaffService[]
+  serviceTerms StaffServiceTerms[]
 
   @@index([organizationId, sortOrder], map: "staff_member_organization_id_sort_idx")
   @@map("staff_member")
@@ -424,5 +426,30 @@ model StaffService {
   @@index([staffMemberId], map: "staff_service_staff_member_id_idx")
   @@index([serviceId], map: "staff_service_service_id_idx")
   @@map("staff_service")
+  @@schema("booking")
+}
+
+/// Lot B.2c: a member's own duration and / or price for a service; NULL = the service's.
+model StaffServiceTerms {
+  id                 String    @id @db.Uuid
+  organizationId     String    @map("organization_id") @db.Uuid
+  staffMemberId      String    @map("staff_member_id") @db.Uuid
+  serviceId          String    @map("service_id") @db.Uuid
+  durationMinutes    Int?      @map("duration_minutes")
+  durationMaxMinutes Int?      @map("duration_max_minutes")
+  priceKind          String?   @map("price_kind") @db.VarChar(8)
+  priceMinor         Int?      @map("price_minor")
+  priceMaxMinor      Int?      @map("price_max_minor")
+  archivedAt         DateTime? @map("archived_at") @db.Timestamptz
+  archivedByUserId   String?   @map("archived_by_user_id") @db.Uuid
+  createdByUserId    String    @map("created_by_user_id") @db.Uuid
+  createdAt          DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt          DateTime  @default(now()) @map("updated_at") @db.Timestamptz
+
+  staffMember StaffMember @relation(fields: [staffMemberId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "staff_service_terms_staff_member_id_fkey")
+  service     Service     @relation(fields: [serviceId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "staff_service_terms_service_id_fkey")
+
+  @@index([serviceId], map: "staff_service_terms_service_id_idx")
+  @@map("staff_service_terms")
   @@schema("booking")
 }

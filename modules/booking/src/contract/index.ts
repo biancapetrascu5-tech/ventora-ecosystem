@@ -169,3 +169,7 @@ export { setStaffServices } from './staff';
 export type { SetStaffServicesParams } from './staff';
 export type { DoneBy, MemberServices, StoppedPair } from '../server/staff-services';
 export type { DoneByInput } from '../server/services';
+// Lot B.2c: the duration and the price of a service for one member
+export { listStaffServiceTerms, setStaffServiceTerms } from './staff';
+export type { ListStaffServiceTermsParams, SetStaffServiceTermsParams } from './staff';
+export type { EffectiveTerms, StaffServiceTerms } from '../server/terms';
