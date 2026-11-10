@@ -309,3 +309,40 @@ export function renderFounderDisputeAlert(params: {
     company: m.common.company,
   });
 }
+
+/**
+ * Lot 5.8 (P22, D5-11 b): a Growth campaign stopped by itself above the 5 % disturbance threshold.
+ * To the Ventora team (FOUNDER_ALERTS_EMAIL), in Romanian like the other team alerts, until the
+ * Founder bell exists (D4-29).
+ */
+export function renderFounderGrowthStopAlert(params: {
+  campaign: string;
+  /** Already formatted: „6,0 %”. */
+  rate: string;
+  disturbing: number;
+  impressions: number;
+  founderUrl: string;
+}): RenderedEmail {
+  const locale: Locale = CANONICAL_LOCALE;
+  const m = emailMessages(locale);
+  const t = m.founderGrowthStopAlert;
+  const vars = {
+    campaign: params.campaign,
+    rate: params.rate,
+    disturbing: String(params.disturbing),
+    impressions: String(params.impressions),
+  };
+  return renderOperationalEmail({
+    lang: locale,
+    subject: fill(t.subject, vars),
+    preheader: fill(t.lead, vars),
+    eyebrow: t.eyebrow,
+    title: t.title,
+    lead: [fill(t.lead, vars)],
+    button: { label: t.button, href: params.founderUrl },
+    after: [t.next],
+    signature: '',
+    why: t.why,
+    company: m.common.company,
+  });
+}

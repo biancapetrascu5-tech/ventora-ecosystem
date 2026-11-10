@@ -157,6 +157,15 @@
       "next": "Die Entscheidung ist manuell: Öffne den Streitfall in Stripe und reiche die Nachweise vor Ablauf der Frist ein.",
       "button": "In Stripe antworten",
       "why": "Du erhältst diese E-Mail, weil deine Adresse die Hinweise des Ventora-Systems-Teams bekommt."
+    },
+    "founderGrowthStopAlert": {
+      "subject": "Growth · die Kampagne „{campaign}“ hat sich selbst gestoppt",
+      "eyebrow": "Hinweis für das Team von Ventora Systems",
+      "title": "Eine Growth-Kampagne hat die Störschwelle überschritten",
+      "lead": "Die Kampagne „{campaign}“ hatte {rate} Ablehnungen und Abmeldungen pro Anzeige ({disturbing} von {impressions}), über der Schwelle von 5 %. Wir haben sie gestoppt.",
+      "next": "Der Neustart ist manuell: Prüfe Angebot, Zielgruppe und Texte in Founder · Growth, bevor du sie wieder startest.",
+      "button": "Growth · Steuerung öffnen",
+      "why": "Du erhältst diese E-Mail, weil deine Adresse die Hinweise des Teams von Ventora Systems bekommt."
     }
   },
   "support": {

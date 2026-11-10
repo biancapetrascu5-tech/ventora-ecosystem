@@ -157,6 +157,15 @@
       "next": "La decisión es manual: abre la disputa en Stripe y envía las pruebas antes del plazo.",
       "button": "Responder en Stripe",
       "why": "Recibes este correo porque tu dirección recibe las alertas del equipo de Ventora Systems."
+    },
+    "founderGrowthStopAlert": {
+      "subject": "Growth · la campaña «{campaign}» se detuvo sola",
+      "eyebrow": "Alerta para el equipo de Ventora Systems",
+      "title": "Una campaña de Growth superó el umbral de molestia",
+      "lead": "La campaña «{campaign}» tuvo {rate} de rechazos y desactivaciones por impresión ({disturbing} de {impressions}), por encima del umbral del 5 %. La hemos detenido.",
+      "next": "El reinicio es manual: revisa la oferta, la audiencia y los textos en Founder · Growth antes de volver a activarla.",
+      "button": "Abrir Growth · Control",
+      "why": "Recibes este correo porque tu dirección recibe las alertas del equipo de Ventora Systems."
     }
   },
   "support": {

@@ -322,6 +322,9 @@ export const AuditActions = {
   crmImportCancelled: 'crm.import_cancelled',
   // decision of 11.11.2026: a contact 30 days in the bin is anonymised by the job (actor system)
   crmContactAnonymized: 'crm.contact_anonymized',
+  // Lot 5.8 — Growth Engine (category founder, like the workflow engine): the automatic stop of a
+  // campaign above the 5 % disturbance threshold (P22), by the system; the numbers in metadata
+  growthCampaignAutoStopped: 'growth.campaign_auto_stopped',
 } as const;
 
 export type AuditAction = (typeof AuditActions)[keyof typeof AuditActions];

@@ -84,6 +84,16 @@ export interface EmailMessages {
     button: string;
     why: string;
   };
+  // Lot 5.8 (P22, D5-11 b): the automatic stop of a Growth campaign, to the Ventora team
+  founderGrowthStopAlert: {
+    subject: string;
+    eyebrow: string;
+    title: string;
+    lead: string;
+    next: string;
+    button: string;
+    why: string;
+  };
 }
 
 type Catalog = { email?: EmailMessages };
