@@ -24,7 +24,6 @@ import {
   type CategoryGroup,
   type FormErrors,
   type OrderItem,
-  type ScreenMode,
   type ServiceForm,
 } from '@ventora/booking/ui';
 import {
@@ -39,6 +38,7 @@ import {
   type ActionError,
   type ServicesPageData,
 } from '@/server/booking-services-actions';
+import { useMode } from './useMode';
 
 /* Lot B.1-UI — EasyBook · Setări · „Servicii” (BookingServices, S123): the state and the actions
    of the page. The screen itself is in modules/booking/src/ui (the same components as the gallery);
@@ -66,24 +66,6 @@ type Dialog =
   | { kind: 'archive'; id: string; name: string; busy: boolean }
   | { kind: 'blocked'; name: string; count: number };
 type ToastState = { title: string; description?: string; tone: 'done' | 'danger' };
-
-/** desktop ≥ 1024, tablet ≥ 768 (the AppShell breakpoints), phone below. */
-function useMode(): ScreenMode {
-  const [mode, setMode] = useState<ScreenMode>('desktop');
-  useEffect(() => {
-    const desk = window.matchMedia('(min-width: 1024px)');
-    const tab = window.matchMedia('(min-width: 768px)');
-    const update = () => setMode(desk.matches ? 'desktop' : tab.matches ? 'tablet' : 'mobile');
-    update();
-    desk.addEventListener('change', update);
-    tab.addEventListener('change', update);
-    return () => {
-      desk.removeEventListener('change', update);
-      tab.removeEventListener('change', update);
-    };
-  }, []);
-  return mode;
-}
 
 const FIELD_OF: Record<string, keyof FormErrors> = {
   name: 'name',

@@ -24,6 +24,7 @@ export {
 export {
   BookingSettingsHeader,
   ServicesToast,
+  SettingsToast,
   SETTINGS_TABS,
   type SettingsTab,
 } from './services/BookingSettingsHeader';
@@ -40,3 +41,35 @@ export {
   type ServiceInput,
 } from './services/format';
 export { default as servicesStyles } from './services/services.module.css';
+// Lot B.2-UI: EasyBook · Setări · „Programul echipei” (BookingTeamSchedule, S124)
+export {
+  BookingTeamView,
+  type BookingTeamViewProps,
+  type TeamMemberRow,
+  type RemovedMemberRow,
+  type LeftWithBookings,
+} from './team/BookingTeamView';
+export {
+  StaffScheduleDrawer,
+  type StaffScheduleDrawerProps,
+  type OverrideRow,
+  type TimeOffRow,
+} from './team/StaffScheduleDrawer';
+export { ExceptionDialog, TimeOffDialog, type BookingsInRange } from './team/TeamDialogs';
+export { useTeamTexts, type StaffNextData } from './team/team-texts';
+export {
+  businessOf,
+  dayForm,
+  dayInput,
+  leaveDays,
+  validateDay,
+  validateTimeOff,
+  validateWeek,
+  weekdayOfDate,
+  WEEKDAYS,
+  type BusinessDayData,
+  type DayError,
+  type DayForm,
+  type IntervalData,
+  type WeekForm,
+} from './team/team-format';

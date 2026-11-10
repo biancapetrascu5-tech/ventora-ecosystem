@@ -1,0 +1,104 @@
+/* BookingTeamSchedule (S124): the classes of preview.html (ts-*), 1:1. The common ones (sv-body,
+   x-stack, x-line, g2f, sv-foot, the frame, the overlay, the toast) are in services.module.css. */
+.pad {
+  padding: 0 var(--space-4);
+}
+.person {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-width: 0;
+}
+.pname {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.next {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+  flex-wrap: nowrap;
+}
+.drawer {
+  gap: var(--space-6);
+}
+.sec {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-width: 0;
+}
+.sec h3,
+.sec p {
+  margin: 0;
+}
+.sechead {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+.week {
+  display: flex;
+  flex-direction: column;
+  margin-top: var(--space-2);
+  border-top: var(--border-width) solid var(--line);
+}
+.day {
+  display: grid;
+  grid-template-columns: calc(var(--space-16) + var(--space-12)) minmax(0, 1fr);
+  gap: var(--space-3);
+  align-items: start;
+  padding: var(--space-3) 0;
+  border-bottom: var(--border-width) solid var(--line);
+}
+.day.m {
+  grid-template-columns: 1fr;
+  gap: var(--space-2);
+}
+.dayhead {
+  padding-top: var(--space-1);
+}
+.daybody {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-width: 0;
+}
+.closed .daybody {
+  padding-top: var(--space-1);
+}
+.ivs {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2) var(--space-4);
+}
+.iv {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+.ivfield {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+.time {
+  width: calc(var(--space-16) * 2);
+}
+.meta {
+  margin: 0;
+}
+.err {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  margin: 0;
+  color: var(--danger-ink);
+}
+.start {
+  align-self: flex-start;
+}

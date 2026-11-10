@@ -13,9 +13,11 @@ Booking (numele afișat EasyBook) e prima aplicație. Planul: `docs/plans/BOOKIN
   - validarea.
 - **`src/ui/`** (Lotul B.1-UI): ecranele modulului, construite doar din `@ventora/ui`, doar cod de client, importate ca `@ventora/booking/ui`.
   - Componentele primesc doar props: pagina din `apps/platform` și galeria desenează aceleași componente.
+  - `services/`: BookingServices (B.1-UI). `team/`: BookingTeamSchedule, „Programul echipei” (B.2-UI). Validarea din `team/team-format.ts` urmează `server/schedule.ts` în aceeași ordine; testul `team-ui-format.test.ts` le compară.
   - `pnpm lint` le verifică (`eslint.config.mjs`): fără texte literale, fără `<select>` nativ, componentele comune doar din `@ventora/ui`.
 - **`messages/{ro,en,fr,es,de,it}.json`:** namespace-ul `booking` (ARCHITECTURE §744), legat în `apps/platform/src/i18n/request.ts` și verificat de `pnpm i18n:check`.
   - Cheile `booking.services.*` vin din designul S123; en / fr / es / de / it au textul românesc, netradus (S123-10).
+  - Cheile `booking.team.*` vin din designul S124, plus cele 4 aprobate pe 09.11.2026 (`team.day.{1..7}`, `team.businessClosedDay`, `team.err.failed`, `team.err.removed`); tot netraduse în celelalte limbi.
 - **`package.json` „exports”:** `.` (contractul), `./ui`, `./messages/*`. O aplicație nu poate importa `src/server`.
   - Garda din `apps/platform/eslint.config.mjs` (decisă 09.11.2026): aplicația importă din modul doar aceste trei intrări (`no-restricted-imports`, `[module-entry-only]`).
 - **Importurile interne** sunt fără extensie, ca în `core/*`: Turbopack nu rezolvă `./x.js` spre `x.ts` când modulul e transpilat de platformă.
