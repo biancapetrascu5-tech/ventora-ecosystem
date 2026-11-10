@@ -958,10 +958,13 @@ export async function updateStaffTimeOffInOrg(
     const before = found[0];
     if (!before) throw new ResourceNotFound();
     if (before.archived_at) throw new Conflict('staff_time_off_cancelled');
+    // C1: a reason that is not sent stays as it is (a manager who does not see it keeps it).
+    const keepReason = params.reason === undefined;
     const { rows } = await client.query<TimeOffRow>(
-      `UPDATE booking.staff_time_off SET starts_on = $2::date, ends_on = $3::date, reason = $4
+      `UPDATE booking.staff_time_off SET starts_on = $2::date, ends_on = $3::date,
+              reason = CASE WHEN $5::boolean THEN reason ELSE $4 END
         WHERE id = $1 RETURNING ${TIME_OFF_COLUMNS}`,
-      [id, t.startsOn, t.endsOn, t.reason],
+      [id, t.startsOn, t.endsOn, t.reason, keepReason],
     );
     await audit(exec, ctx, AuditActions.bookingStaffTimeOffUpdated, 'booking_staff_time_off', id, {
       staffMemberId: before.staff_member_id,
