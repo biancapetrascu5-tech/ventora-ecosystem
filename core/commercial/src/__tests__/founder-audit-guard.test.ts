@@ -209,10 +209,20 @@ const FOUNDER_MARK = /\bfounderHeaders\b|\bFounderParams\b|\bFounderStep\b/;
 
 function importedByFounderApp(): Set<string> {
   const names = new Set<string>();
-  const dir = path.join(ROOT, 'apps/founder');
-  for (const e of readdirSync(dir, { withFileTypes: true, recursive: true })) {
-    if (!e.isFile() || !/\.tsx?$/.test(e.name) || e.parentPath.includes('node_modules')) continue;
-    const src = readFileSync(path.join(e.parentPath, e.name), 'utf8');
+  // A walk that never enters node_modules or .next: on Windows the pnpm links are junctions,
+  // which `readdirSync({ recursive })` follows, through every workspace package's node_modules
+  const files: string[] = [];
+  const walk = (dir: string) => {
+    for (const e of readdirSync(dir, { withFileTypes: true })) {
+      if (e.name === 'node_modules' || e.name.startsWith('.')) continue;
+      const full = path.join(dir, e.name);
+      if (e.isDirectory()) walk(full);
+      else if (e.isFile() && /\.tsx?$/.test(e.name)) files.push(full);
+    }
+  };
+  walk(path.join(ROOT, 'apps/founder'));
+  for (const file of files) {
+    const src = readFileSync(file, 'utf8');
     for (const m of src.matchAll(
       /import\s*\{([^}]*)\}\s*from\s*'@ventora\/(?:commercial|billing)'/g,
     )) {
