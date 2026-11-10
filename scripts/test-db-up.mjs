@@ -70,6 +70,33 @@ function psql(db, sql) {
   );
 }
 
+/**
+ * Every migration of every application module (`modules/<app>/prisma/migrations/<timestamp>_<name>/
+ * migration.sql`), in the order of the timestamp in the folder name; on the same timestamp, by the
+ * full name. A module's own migrations keep their order; the modules depend only on Core (applied
+ * before them), never on each other.
+ */
+function moduleMigrations() {
+  const found = [];
+  const modulesDir = join(ROOT, 'modules');
+  for (const app of readdirSync(modulesDir, { withFileTypes: true })) {
+    if (!app.isDirectory()) continue;
+    const dir = join(modulesDir, app.name, 'prisma', 'migrations');
+    if (!existsSync(dir)) continue;
+    for (const m of readdirSync(dir, { withFileTypes: true })) {
+      if (m.isDirectory() && existsSync(join(dir, m.name, 'migration.sql'))) {
+        found.push({
+          name: m.name,
+          path: `modules/${app.name}/prisma/migrations/${m.name}/migration.sql`,
+        });
+      }
+    }
+  }
+  return found
+    .sort((a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : a.path < b.path ? -1 : 1))
+    .map((f) => f.path);
+}
+
 function psqlFile(db, filePath) {
   psql(db, readFileSync(filePath, 'utf8'));
 }
@@ -430,20 +457,11 @@ for (const migration of [
   'core/billing/prisma/migrations/20261104000021_billing_lifecycle/migration.sql',
   // Lot 4.9: infrastructura AI (schema ai, rolurile ai_rw / ai_founder)
   'core/ai/prisma/migrations/20261104100001_ai_init/migration.sql',
-  // Lot B.1: schema booking (rolul booking_rw, catalogul de servicii, outbox), după audit (C.0b)
-  'modules/booking/prisma/migrations/20261106000003_booking_init/migration.sql',
-  // Lot B.2: the members in the calendar and their schedule (business_hours, staff_*)
-  'modules/booking/prisma/migrations/20261108000001_booking_staff/migration.sql',
-  // Lot B.4a: the appointments, the clients, the booking rules, the blocked times
-  'modules/booking/prisma/migrations/20261109000001_booking_appointments/migration.sql',
   // Lot 5.5: Growth Engine v1 (schema growth, rolurile growth_rw / growth_founder)
   'core/growth/prisma/migrations/20261110000001_growth_init/migration.sql',
-  // Lot B.3a: the bookable resources and the services that need them
-  'modules/booking/prisma/migrations/20261110000001_booking_resources/migration.sql',
-  // Lot CR.1: schema crm (rolul crm_rw, setările afacerii, outbox)
-  'modules/crm/prisma/migrations/20261110000001_crm_init/migration.sql',
-  // Lot B.3b: the resources an appointment uses
-  'modules/booking/prisma/migrations/20261110000002_booking_appointment_resources/migration.sql',
+  // Aplicațiile (modules/*): găsite singure, după tot Core-ul (booking, crm și cele care vin).
+  // Un lot de modul nu mai atinge acest fișier.
+  ...moduleMigrations(),
 ]) {
   psqlFile(TEST_DB.accessDb, join(ROOT, migration));
 }
