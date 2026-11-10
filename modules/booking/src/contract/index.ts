@@ -195,3 +195,7 @@ export type {
   ClientCard,
   ClientCardAppointment,
 } from '../server/clients';
+// Lot B.7b: the behaviour note (S139; only „Risc ridicat”, never outside EasyBook)
+export { getBehaviorNoteSettings, setBehaviorNoteSettings, removeBehaviorNote } from './clients';
+export type { SetBehaviorNoteSettingsParams, RemoveBehaviorNoteParams } from './clients';
+export type { BehaviorNote, BehaviorNoteSettings } from '../server/behavior';

@@ -180,3 +180,12 @@ Booking (numele afișat EasyBook) e prima aplicație. Planul: `docs/plans/BOOKIN
 - **Ștergerea GDPR** (`eraseClient` → `booking.erase_client`, `SECURITY DEFINER`, `EXECUTE` doar pentru `booking_rw`, D-B7-1 = a): e singura cale de a schimba copia numelui de pe programări. Anonimizează clientul și clienții îmbinați în el, copiile numelui, notele echipei de pe programările lor și motivele blocărilor. Programările rămân.
 - **REGULĂ (fondatoarea, 10.11.2026):** orice lot care adaugă date personale ale clientului (B.8 câmpurile medicale, B.12 răspunsurile la formulare, încasările, mesajele, nota de comportament) extinde `booking.erase_client` și testul de ștergere (`clients-migration.integration.test.ts`), ca după „Client șters” să nu rămână nimic.
 - **Evenimentele pentru ClientDesk** (D-CRM-9): `booking.client.created` / `updated` / `merged` / `erased`, doar cu id-uri și momente.
+
+## Nota de comportament (B.7b, design S139)
+- **O singură etichetă,** „Risc ridicat”: N neprezentări (2 sau 3) în ultimele M luni (3, 6 sau 12), implicit 2 în 6. Anulările la timp nu contează; ceilalți clienți nu au etichetă. Se socotesc și neprezentările clienților îmbinați în el.
+- **Oprită implicit.** Pornirea pune `behavior_note_since = now()`, deci contează doar neprezentările de atunci; oprirea face să dispară toate etichetele.
+- **Se calculează la citire** (`behaviorNoteOf`): dispare singură după M luni fără neprezentări. Scoaterea de pe fișă (`removeBehaviorNote`, `booking:admin`, motiv de 10–500 de caractere în `client_note_removal`) lasă să conteze doar neprezentările de după ea.
+- **Cine o vede:** doar owner, admin și application_manager (`getClientCard.behaviorNote`); pentru ceilalți e `null`.
+- **Nu iese niciodată din EasyBook:** niciun eveniment, nimic în `listClientAppointments` sau în rutele publice, e-mailuri, SMS. Avansul online (B.11 / B.22) citește `isHighRisk`.
+- **Alerta către owner** cere un șablon în `core/notifications` și un consumator; vine într-un PR separat.
+- **`erase_client`** anonimizează și motivele scoaterii notei (regula din B.7a).
