@@ -22,7 +22,7 @@ import type { Interval } from './schedule';
  * 2 or more, the start of each appointment of the same service (to share it). Grid times from the
  * interval starts that are taken stay in the list, not available (the design shows them struck
  * through); the others are listed only when free. B.3b adds the resources as more `busy` rows,
- * each with its own capacity (D-B5-8 = a).
+ * each with its own capacity (D-B5-8 = a): `rules.resources` (B.3b).
  */
 
 /** Something that holds the member's time on the date (local minutes, cut to the date). */
@@ -41,6 +41,14 @@ export type SlotRules = {
   bufferMin: number;
   /** No start before this minute of the date (null = none; > 1440 = the whole date is past). */
   earliestMin: number | null;
+  /**
+   * B.3b (D-B5-8 = a): the resources the service needs, each with its units and what already uses
+   * it that date (any member). A start needs a free unit in every one of them.
+   */
+  resources?: ReadonlyArray<{
+    units: number;
+    busy: ReadonlyArray<{ startMin: number; endMin: number }>;
+  }>;
 };
 
 export type MemberSlot = { startMin: number; available: boolean };
@@ -69,7 +77,12 @@ export function isFreeAt(
     }
     if (overlaps(t - rules.bufferMin, end + rules.bufferMin, b.startMin, b.endMin)) return false;
   }
-  return shared < rules.capacity;
+  if (shared >= rules.capacity) return false;
+  for (const r of rules.resources ?? []) {
+    const used = r.busy.filter((b) => overlaps(t, end, b.startMin, b.endMin)).length;
+    if (used >= r.units) return false;
+  }
+  return true;
 }
 
 /** The member's start times on the date, in order (D-B5-1 = a). */
@@ -93,6 +106,8 @@ export function memberSlots(
     chain(after, extra);
     if (b.serviceId === rules.serviceId && rules.capacity > 1) chain(b.startMin, extra);
   }
+  // B.3b: right after a use of a resource ends, a unit may be free again
+  for (const r of rules.resources ?? []) for (const b of r.busy) chain(b.endMin, extra);
   const out: MemberSlot[] = [];
   for (const t of new Set([...grid, ...extra])) {
     // a start before the earliest is not listed at all (past, or inside the notice)

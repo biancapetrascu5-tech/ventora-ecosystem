@@ -129,3 +129,12 @@ Booking (numele afișat EasyBook) e prima aplicație. Planul: `docs/plans/BOOKIN
 - **Ce nu intră:**
   - oamenii de pe resursă (D-B3-1): designul S124 nu-i mai are, iar cine face ce vine cu B.2b;
   - unitățile cerute pe serviciu: o programare ia mereu o unitate.
+
+## Resursa pe programare (B.3b)
+- **`appointment_resource`** (doar INSERT): o programare ia o unitate din fiecare resursă activă pe care o cere serviciul ei (`requiredResources`), în aceeași tranzacție. O resursă arhivată nu se cere (S124).
+- **„Două programări nu folosesc aceeași resursă în același timp, nici la cereri paralele”** e o regulă a bazei, fără `btree_gist` (D-B4-2 = a). `booking.check_resource_free` blochează rândul resursei (`FOR UPDATE`) și numără programările care ocupă, o folosesc și se suprapun, față de `units`.
+  - **La o folosire nouă:** triggerul `appointment_resource_guard`.
+  - **La o mutare:** triggerul `appointment_resource_recheck`, AFTER UPDATE, după blocarea membrului.
+  - **Refuzul:** 23P01 cu hint `resource` → `Conflict('resource_unavailable')`. „Oricine e liber” nu trece la alt membru pentru o resursă plină.
+- **O programare anulată sau încheiată** nu mai ține unitatea, fiindcă se numără după stare.
+- **Locurile libere** (D-B5-8 = a): `rules.resources` din `slots.ts`, o oră cere o unitate liberă în fiecare resursă. `getAppointment` întoarce `resourceIds`.

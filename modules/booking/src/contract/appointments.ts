@@ -52,7 +52,8 @@ registerAppointmentsQuotaResolver();
  * Errors: InvalidInput(field, reason); Conflict (appointment_overlap, staff_unavailable,
  * staff_member_removed, service_archived, client_archived, client_phone_taken, client_email_taken,
  * appointment_final, transition_not_allowed, no_show_too_early, correction_window_passed,
- * operation_reused, time_block_archived); ResourceNotFound; Forbidden; AppNotEnabled.
+ * operation_reused, time_block_archived, resource_unavailable (B.3b: no free unit of a resource the
+ * service needs)); ResourceNotFound; Forbidden; AppNotEnabled.
  */
 
 type Session = { sessionToken: string };

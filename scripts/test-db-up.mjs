@@ -430,6 +430,8 @@ for (const migration of [
   'modules/booking/prisma/migrations/20261110000001_booking_resources/migration.sql',
   // Lot CR.1: schema crm (rolul crm_rw, setările afacerii, outbox)
   'modules/crm/prisma/migrations/20261110000001_crm_init/migration.sql',
+  // Lot B.3b: the resources an appointment uses
+  'modules/booking/prisma/migrations/20261110000002_booking_appointment_resources/migration.sql',
 ]) {
   psqlFile(TEST_DB.accessDb, join(ROOT, migration));
 }
