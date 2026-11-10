@@ -21,6 +21,7 @@ import {
   runTrialJob,
 } from '@ventora/commercial';
 import './billing-config';
+import { bookingQuotaRefundConsumer } from '@ventora/booking';
 import { summarizeError } from '@ventora/errors';
 import { getNotificationContactsInTx } from '@ventora/identity';
 import {
@@ -71,7 +72,8 @@ const OUTBOX_SOURCES: readonly OutboxSource[] = [
   { schema: 'billing', moduleRole: 'billing_rw' },
   // Lot 4.6: support.reply.posted (Founder) și support.request.auto_close_warning (job-ul)
   { schema: 'support', moduleRole: 'support_rw' },
-  // Lot B.1: booking.service.archived (fără consumator încă: se marchează livrat)
+  // Lot B.1: booking.service.archived (fără consumator încă: se marchează livrat); B.4b:
+  // booking.appointment.* (cancelled → rambursarea cotei; restul fără consumator încă)
   { schema: 'booking', moduleRole: 'booking_rw' },
 ];
 
@@ -111,7 +113,10 @@ export const platformConsumers = new ConsumerRegistry()
   // Lotul 3.8: „Perioada de probă se încheie” (S115 trial.ending), implementarea de plătit
   // (setup.accepted) și aplicația pornită (setup.started)
   .register(commercialTrialEndingConsumer)
-  .register(commercialSetupNoticeConsumer);
+  .register(commercialSetupNoticeConsumer)
+  // Lotul B.4b (legat în B.4c): o programare anulată înainte de început → unitatea
+  // booking.appointments înapoi (refundQuota, idempotent: o a doua livrare nu mai dă nimic)
+  .register(bookingQuotaRefundConsumer);
 
 /** Un raport de job cu erori → job-ul eșuează (Sentry, reîncercare); restul rămâne făcut. */
 function failOnErrors<T extends { errors: Array<{ error: unknown }> }>(
