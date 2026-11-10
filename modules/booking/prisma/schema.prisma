@@ -50,7 +50,8 @@ model Service {
   createdAt          DateTime  @default(now()) @map("created_at") @db.Timestamptz
   updatedAt          DateTime  @default(now()) @map("updated_at") @db.Timestamptz
 
-  category ServiceCategory? @relation(fields: [categoryId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "service_category_id_fkey")
+  category     ServiceCategory? @relation(fields: [categoryId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "service_category_id_fkey")
+  appointments Appointment[]
 
   @@index([organizationId, categoryId, sortOrder], map: "service_organization_id_category_sort_idx")
   @@index([categoryId], map: "service_category_id_idx")
@@ -92,6 +93,8 @@ model StaffMember {
   weeklyHours  StaffWeeklyHours[]
   dayOverrides StaffDayOverride[]
   timeOff      StaffTimeOff[]
+  appointments Appointment[]
+  timeBlocks   TimeBlock[]
 
   @@index([organizationId, sortOrder], map: "staff_member_organization_id_sort_idx")
   @@map("staff_member")
@@ -194,5 +197,145 @@ model ProcessedEvent {
 
   @@id([consumer, eventId])
   @@map("processed_events")
+  @@schema("booking")
+}
+
+/// Lot B.4a: the booking rules of the business (D-B4-5); one row, written on the first save.
+model Settings {
+  organizationId   String   @id @map("organization_id") @db.Uuid
+  freeCancelHours  Int      @default(24) @map("free_cancel_hours") @db.SmallInt
+  confirmationMode String   @default("auto") @map("confirmation_mode") @db.VarChar(6)
+  noticeMin        Int      @default(0) @map("notice_min") @db.SmallInt
+  bufferMin        Int      @default(0) @map("buffer_min") @db.SmallInt
+  updatedByUserId  String   @map("updated_by_user_id") @db.Uuid
+  createdAt        DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt        DateTime @default(now()) @map("updated_at") @db.Timestamptz
+
+  @@map("settings")
+  @@schema("booking")
+}
+
+/// Lot B.4a: the client of the business, minimal (D-B4-1); B.7 adds the note, the blocked list, GDPR.
+model Client {
+  id               String    @id @db.Uuid
+  organizationId   String    @map("organization_id") @db.Uuid
+  name             String    @db.VarChar(120)
+  phone            String?   @db.VarChar(16)
+  email            String?   @db.VarChar(254)
+  locale           String    @default("ro") @db.VarChar(2)
+  archivedAt       DateTime? @map("archived_at") @db.Timestamptz
+  archivedByUserId String?   @map("archived_by_user_id") @db.Uuid
+  createdByUserId  String?   @map("created_by_user_id") @db.Uuid
+  createdAt        DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt        DateTime  @default(now()) @map("updated_at") @db.Timestamptz
+
+  appointments Appointment[]
+
+  @@index([organizationId, name], map: "client_organization_id_name_idx")
+  @@map("client")
+  @@schema("booking")
+}
+
+/// Lot B.4a: the last human number of the business (D-B4-8).
+model AppointmentCounter {
+  organizationId String @id @map("organization_id") @db.Uuid
+  lastNumber     Int    @map("last_number")
+
+  @@map("appointment_counter")
+  @@schema("booking")
+}
+
+/// Lot B.4a: an appointment and its state (D-B-11, S116); the copies are keep_snapshot (§6.4 d).
+model Appointment {
+  id                  String    @id @db.Uuid
+  organizationId      String    @map("organization_id") @db.Uuid
+  number              Int
+  staffMemberId       String    @map("staff_member_id") @db.Uuid
+  serviceId           String    @map("service_id") @db.Uuid
+  clientId            String    @map("client_id") @db.Uuid
+  startsAt            DateTime  @map("starts_at") @db.Timestamptz
+  endsAt              DateTime  @map("ends_at") @db.Timestamptz
+  durationMinutes     Int       @map("duration_minutes") @db.SmallInt
+  capacity            Int       @db.SmallInt
+  status              String    @db.VarChar(16)
+  statusChangedAt     DateTime  @default(now()) @map("status_changed_at") @db.Timestamptz
+  serviceName         String    @map("service_name") @db.VarChar(120)
+  staffDisplayName    String    @map("staff_display_name") @db.VarChar(120)
+  clientName          String    @map("client_name") @db.VarChar(120)
+  priceKind           String    @map("price_kind") @db.VarChar(8)
+  priceMinor          Int       @map("price_minor")
+  priceMaxMinor       Int?      @map("price_max_minor")
+  currency            String    @db.Char(3)
+  teamNote            String?   @map("team_note") @db.VarChar(1000)
+  source              String    @default("hub") @db.VarChar(6)
+  cancelledAt         DateTime? @map("cancelled_at") @db.Timestamptz
+  cancelledBy         String?   @map("cancelled_by") @db.VarChar(8)
+  cancelledByUserId   String?   @map("cancelled_by_user_id") @db.Uuid
+  cancelMinutesBefore Int?      @map("cancel_minutes_before")
+  cancelLate          Boolean?  @map("cancel_late")
+  depositMinor        Int?      @map("deposit_minor")
+  depositCurrency     String?   @map("deposit_currency") @db.Char(3)
+  paymentDueAt        DateTime? @map("payment_due_at") @db.Timestamptz
+  correctedAt         DateTime? @map("corrected_at") @db.Timestamptz
+  correctedByUserId   String?   @map("corrected_by_user_id") @db.Uuid
+  correctionReason    String?   @map("correction_reason") @db.VarChar(500)
+  createdByUserId     String?   @map("created_by_user_id") @db.Uuid
+  createdAt           DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt           DateTime  @default(now()) @map("updated_at") @db.Timestamptz
+
+  staffMember StaffMember          @relation(fields: [staffMemberId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "appointment_staff_member_id_fkey")
+  service     Service              @relation(fields: [serviceId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "appointment_service_id_fkey")
+  client      Client               @relation(fields: [clientId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "appointment_client_id_fkey")
+  history     AppointmentHistory[]
+
+  @@unique([organizationId, number], map: "appointment_organization_id_number_key")
+  @@index([organizationId, startsAt], map: "appointment_organization_id_starts_idx")
+  @@index([staffMemberId, startsAt], map: "appointment_staff_member_id_starts_idx")
+  @@index([clientId, startsAt], map: "appointment_client_id_starts_idx")
+  @@index([serviceId, startsAt], map: "appointment_service_id_starts_idx")
+  @@map("appointment")
+  @@schema("booking")
+}
+
+/// Lot B.4a: what happened to an appointment (D-B4-7), insert only; shown in BookingDetail.
+model AppointmentHistory {
+  id             String    @id @db.Uuid
+  organizationId String    @map("organization_id") @db.Uuid
+  appointmentId  String    @map("appointment_id") @db.Uuid
+  kind           String    @db.VarChar(10)
+  fromStatus     String?   @map("from_status") @db.VarChar(16)
+  toStatus       String?   @map("to_status") @db.VarChar(16)
+  startsAt       DateTime? @map("starts_at") @db.Timestamptz
+  endsAt         DateTime? @map("ends_at") @db.Timestamptz
+  staffMemberId  String?   @map("staff_member_id") @db.Uuid
+  actorType      String    @map("actor_type") @db.VarChar(6)
+  actorUserId    String?   @map("actor_user_id") @db.Uuid
+  createdAt      DateTime  @default(now()) @map("created_at") @db.Timestamptz
+
+  appointment Appointment @relation(fields: [appointmentId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "appointment_history_appointment_id_fkey")
+
+  @@index([appointmentId, createdAt], map: "appointment_history_appointment_id_idx")
+  @@map("appointment_history")
+  @@schema("booking")
+}
+
+/// Lot B.4a: a blocked time of a member (unavailable); no client, no quota.
+model TimeBlock {
+  id               String    @id @db.Uuid
+  organizationId   String    @map("organization_id") @db.Uuid
+  staffMemberId    String    @map("staff_member_id") @db.Uuid
+  startsAt         DateTime  @map("starts_at") @db.Timestamptz
+  endsAt           DateTime  @map("ends_at") @db.Timestamptz
+  reason           String?   @db.VarChar(200)
+  archivedAt       DateTime? @map("archived_at") @db.Timestamptz
+  archivedByUserId String?   @map("archived_by_user_id") @db.Uuid
+  createdByUserId  String    @map("created_by_user_id") @db.Uuid
+  createdAt        DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt        DateTime  @default(now()) @map("updated_at") @db.Timestamptz
+
+  staffMember StaffMember @relation(fields: [staffMemberId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "time_block_staff_member_id_fkey")
+
+  @@index([staffMemberId, startsAt], map: "time_block_staff_member_id_starts_idx")
+  @@map("time_block")
   @@schema("booking")
 }

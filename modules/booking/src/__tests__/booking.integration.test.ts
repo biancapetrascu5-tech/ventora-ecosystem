@@ -1,14 +1,8 @@
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { Pool } from 'pg';
-import { listAppointments, createAppointment, getAppointment } from '../contract/index.js';
+import { listAppointments, getBookingSettings, setBookingSettings } from '../contract/index.js';
 import { configureAccess } from '@ventora/access';
-import {
-  NotAuthenticated,
-  NotMember,
-  AppNotEnabled,
-  Forbidden,
-  QuotaExceeded,
-} from '@ventora/errors';
+import { NotAuthenticated, NotMember, AppNotEnabled, Forbidden } from '@ventora/errors';
 
 const adminPool = new Pool({
   connectionString: process.env.DIRECT_URL || process.env.DATABASE_URL,
@@ -27,6 +21,9 @@ async function adminQuery(sql: string, params: unknown[] = []) {
 function newUuid() {
   return crypto.randomUUID();
 }
+
+// Lot B.4a: listAppointments reads a window of at most 62 days
+const RANGE = { from: '2026-12-01T00:00:00Z', to: '2026-12-08T00:00:00Z' };
 
 async function createUser(email: string, twoFactorEnabled = false) {
   const id = newUuid();
@@ -171,7 +168,7 @@ afterAll(async () => {
 
 describe('T3.1 — no session → NotAuthenticated', () => {
   it('listAppointments with invalid token', async () => {
-    await expect(listAppointments({ sessionToken: 'not-a-real-token' })).rejects.toThrow(
+    await expect(listAppointments({ sessionToken: 'not-a-real-token', ...RANGE })).rejects.toThrow(
       NotAuthenticated,
     );
   });
@@ -179,7 +176,9 @@ describe('T3.1 — no session → NotAuthenticated', () => {
 
 describe('T3.2 — no active org → NotMember', () => {
   it('listAppointments with no active org in session', async () => {
-    await expect(listAppointments({ sessionToken: noOrgToken })).rejects.toThrow(NotMember);
+    await expect(listAppointments({ sessionToken: noOrgToken, ...RANGE })).rejects.toThrow(
+      NotMember,
+    );
   });
 });
 
@@ -192,7 +191,9 @@ describe('T3.3 — app disabled → AppNotEnabled', () => {
   });
 
   it('listAppointments when entitlement provider denies booking', async () => {
-    await expect(listAppointments({ sessionToken: ownerToken })).rejects.toThrow(AppNotEnabled);
+    await expect(listAppointments({ sessionToken: ownerToken, ...RANGE })).rejects.toThrow(
+      AppNotEnabled,
+    );
   });
 });
 
@@ -219,112 +220,43 @@ describe('T4 — AppNotEnabled comes from the subscription (commercialEntitlemen
   });
 
   it('a business without booking in its subscription gets AppNotEnabled', async () => {
-    await expect(listAppointments({ sessionToken: withoutBookingToken })).rejects.toThrow(
+    await expect(listAppointments({ sessionToken: withoutBookingToken, ...RANGE })).rejects.toThrow(
       AppNotEnabled,
     );
   });
 
   it('a business with booking in its subscription passes', async () => {
-    const result = await listAppointments({ sessionToken: ownerToken });
-    expect(result.ctx.role).toBe('owner');
+    const result = await listAppointments({ sessionToken: ownerToken, ...RANGE });
+    expect(result).toEqual({ items: [], total: 0 });
   });
 });
 
-// Lot 3.3 — T5 on the probe module: creating an appointment consumes booking.appointments.
-describe('T5 — at the limit only creating is blocked; an add-on raises it at the next request', () => {
-  let org: string;
-  let token: string;
-  let subscriptionId: string;
-  let grantId: string;
+// Lot 3.3 — T5 (the quota of booking.appointments) moved to the real appointments in B.4b.
 
-  beforeAll(async () => {
-    const { commercialEntitlementProvider } = await import('@ventora/commercial');
-    configureAccess({ entitlementProvider: commercialEntitlementProvider });
-    org = await createOrg();
-    const owner = await createUser(`booking-t5-${newUuid()}@test.local`, true);
-    await createMembership(org, owner, 'owner');
-    token = await createSession(owner, org);
-    subscriptionId = await subscribe(
-      org,
-      await publishedVersion(['booking'], { 'booking.appointments': 2 }),
-    );
-  });
-  afterAll(async () => {
-    configureAccess({ entitlementProvider: { isEnabled: async () => true } });
-    await adminQuery(`DELETE FROM organizations.organization WHERE id = $1`, [org]);
-  });
-
-  it('2 of 2: the third appointment is refused (QuotaExceeded); listing still works', async () => {
-    await createAppointment({ sessionToken: token, title: 'Unu' });
-    await createAppointment({ sessionToken: token, title: 'Doi' });
-    await expect(createAppointment({ sessionToken: token, title: 'Trei' })).rejects.toThrow(
-      QuotaExceeded,
-    );
-    // the refused one left nothing reserved
-    const [c] = (
-      await adminQuery(
-        `SELECT used, reserved FROM commercial.usage_counter WHERE organization_id = $1`,
-        [org],
-      )
-    ).rows;
-    expect(c).toEqual({ used: '2', reserved: '0' });
-    expect((await listAppointments({ sessionToken: token })).appointments).toEqual([]);
-  });
-
-  it('an add-on bought (3 more) raises the limit at the next request', async () => {
-    const [{ id: addonId }] = (
-      await adminQuery(
-        `INSERT INTO commercial.addon (code, name, quota_key, quantity, validity, created_by_founder_id)
-         VALUES ($1, '3 programări', 'booking.appointments', 3, 'monthly', $2) RETURNING id`,
-        [`t5-${newUuid().slice(0, 8)}`, founder],
-      )
-    ).rows;
-    grantId = (
-      await adminQuery(
-        // Lot 3.5: a pack bought carries its purchase (core/billing)
-        `INSERT INTO commercial.addon_grant (organization_id, addon_id, subscription_id, recurring, source, purchase_id)
-         VALUES ($1, $2, $3, true, 'purchase', $4) RETURNING id`,
-        [org, addonId, subscriptionId, newUuid()],
-      )
-    ).rows[0].id;
-    const created = await createAppointment({ sessionToken: token, title: 'Trei' });
-    expect(created.appointment.title).toBe('Trei');
-  });
-
-  it('after a downgrade (the add-on ends): creating is blocked, listing and reading go on', async () => {
-    await adminQuery(`UPDATE commercial.addon_grant SET ended_at = now() WHERE id = $1`, [grantId]);
-    // 3 used, limit 2 again: nothing is deleted, only creating stops
-    await expect(createAppointment({ sessionToken: token, title: 'Patru' })).rejects.toThrow(
-      QuotaExceeded,
-    );
-    expect((await listAppointments({ sessionToken: token })).ctx.role).toBe('owner');
-    const read = await getAppointment({ sessionToken: token, appointmentId: newUuid() });
-    expect(read.ctx.organizationId).toBe(org);
-  });
-});
 describe('T3.4 — owner has booking:read permission (implicit)', () => {
   it('owner can list appointments', async () => {
-    const result = await listAppointments({ sessionToken: ownerToken });
-    expect(result.ctx.role).toBe('owner');
-    expect(result.appointments).toEqual([]);
+    const result = await listAppointments({ sessionToken: ownerToken, ...RANGE });
+    expect(result.items).toEqual([]);
   });
 });
 
-describe('T3.5 — admin has booking:write permission (implicit)', () => {
-  it('admin can create appointment', async () => {
-    const result = await createAppointment({
-      sessionToken: adminToken,
-      title: 'Test Appointment',
-    });
-    expect(result.ctx.role).toBe('admin');
-    expect(result.appointment.title).toBe('Test Appointment');
+describe('T3.5 — admin has booking:settings permission (implicit)', () => {
+  it('admin can change the booking rules', async () => {
+    const saved = await setBookingSettings({ sessionToken: adminToken, freeCancelHours: 12 });
+    expect(saved.freeCancelHours).toBe(12);
   });
 });
 
 describe('T3.6 — member with per-user access can read', () => {
-  it('member with booking application_access row can list appointments', async () => {
-    const result = await listAppointments({ sessionToken: memberToken });
-    expect(result.ctx.role).toBe('member');
+  it('member with booking application_access row can read the rules and the calendar', async () => {
+    expect((await getBookingSettings({ sessionToken: memberToken })).freeCancelHours).toBe(12);
+    expect((await listAppointments({ sessionToken: memberToken, ...RANGE })).total).toBe(0);
+  });
+
+  it('member cannot change the booking rules (booking:settings)', async () => {
+    await expect(
+      setBookingSettings({ sessionToken: memberToken, freeCancelHours: 1 }),
+    ).rejects.toThrow(Forbidden);
   });
 });
 

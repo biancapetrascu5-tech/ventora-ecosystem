@@ -420,6 +420,8 @@ for (const migration of [
   'modules/booking/prisma/migrations/20261106000003_booking_init/migration.sql',
   // Lot B.2: the members in the calendar and their schedule (business_hours, staff_*)
   'modules/booking/prisma/migrations/20261108000001_booking_staff/migration.sql',
+  // Lot B.4a: the appointments, the clients, the booking rules, the blocked times
+  'modules/booking/prisma/migrations/20261109000001_booking_appointments/migration.sql',
 ]) {
   psqlFile(TEST_DB.accessDb, join(ROOT, migration));
 }
