@@ -235,10 +235,21 @@ model Client {
   createdByUserId  String?   @map("created_by_user_id") @db.Uuid
   createdAt        DateTime  @default(now()) @map("created_at") @db.Timestamptz
   updatedAt        DateTime  @default(now()) @map("updated_at") @db.Timestamptz
+  /// B.7a (D-B7-2): merged into another client (archived, with a link to the one kept)
+  mergedIntoClientId String?   @map("merged_into_client_id") @db.Uuid
+  mergedAt           DateTime? @map("merged_at") @db.Timestamptz
+  mergedByUserId     String?   @map("merged_by_user_id") @db.Uuid
+  /// B.7a (D-B7-1): erased (GDPR), written only by booking.erase_client
+  erasedAt           DateTime? @map("erased_at") @db.Timestamptz
+  erasedByUserId     String?   @map("erased_by_user_id") @db.Uuid
 
   appointments Appointment[]
+  mergedInto   Client?       @relation("ClientMerge", fields: [mergedIntoClientId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "client_merged_into_client_id_fkey")
+  mergedFrom   Client[]      @relation("ClientMerge")
+  blocks       ClientBlock[]
 
   @@index([organizationId, name], map: "client_organization_id_name_idx")
+  @@index([mergedIntoClientId], map: "client_merged_into_client_id_idx")
   @@map("client")
   @@schema("booking")
 }
@@ -451,5 +462,24 @@ model StaffServiceTerms {
 
   @@index([serviceId], map: "staff_service_terms_service_id_idx")
   @@map("staff_service_terms")
+  @@schema("booking")
+}
+
+/// Lot B.7a: a block of a client (S125), with its internal reason; unblocking closes it.
+model ClientBlock {
+  id                String    @id @db.Uuid
+  organizationId    String    @map("organization_id") @db.Uuid
+  clientId          String    @map("client_id") @db.Uuid
+  reason            String    @db.VarChar(500)
+  blockedAt         DateTime  @default(now()) @map("blocked_at") @db.Timestamptz
+  blockedByUserId   String    @map("blocked_by_user_id") @db.Uuid
+  unblockedAt       DateTime? @map("unblocked_at") @db.Timestamptz
+  unblockedByUserId String?   @map("unblocked_by_user_id") @db.Uuid
+  updatedAt         DateTime  @default(now()) @map("updated_at") @db.Timestamptz
+
+  client Client @relation(fields: [clientId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "client_block_client_id_fkey")
+
+  @@index([clientId], map: "client_block_client_id_idx")
+  @@map("client_block")
   @@schema("booking")
 }

@@ -173,3 +173,25 @@ export type { DoneByInput } from '../server/services';
 export { listStaffServiceTerms, setStaffServiceTerms } from './staff';
 export type { ListStaffServiceTermsParams, SetStaffServiceTermsParams } from './staff';
 export type { EffectiveTerms, StaffServiceTerms } from '../server/terms';
+// Lot B.7a: the client card, the blocked clients, the merge, the GDPR erasure (ClientDesk: D-CRM-9)
+export {
+  getClientCard,
+  listClientAppointments,
+  listBlockedClients,
+  blockClient,
+  unblockClient,
+  mergeClients,
+  eraseClient,
+} from './clients';
+export type {
+  ClientIdParams,
+  ListClientAppointmentsParams,
+  BlockClientParams,
+  MergeClientsParams,
+} from './clients';
+export type {
+  BlockedClient,
+  ClientBlock,
+  ClientCard,
+  ClientCardAppointment,
+} from '../server/clients';

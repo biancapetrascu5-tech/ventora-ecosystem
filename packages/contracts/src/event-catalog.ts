@@ -583,6 +583,58 @@ export const BookingAppointmentCompletedV1 = defineEvent({
 });
 
 /*
+ * Lot B.7a — the client of Booking, for ClientDesk (D-CRM-9, CRM.md CR.12; plan
+ * reports/2026-11-10_1745_plan-booking-b7.md). Only ids and moments: never the name, the phone, the
+ * e-mail, the locale, a note, a block or the behaviour note (S139: it never leaves EasyBook).
+ */
+
+/** `booking.client.created` v1: a client of the business, from the team or the public page. */
+export const BookingClientCreatedV1 = defineEvent({
+  type: 'booking.client.created',
+  version: 1,
+  sourceApp: 'platform',
+  growthSafe: false,
+  withoutConsumer: 'complete',
+  schema: z.object({ clientId: z.uuid(), createdAt: z.iso.datetime({ offset: true }) }).strict(),
+});
+
+/** `booking.client.updated` v1: the client's details changed (which ones is not said). */
+export const BookingClientUpdatedV1 = defineEvent({
+  type: 'booking.client.updated',
+  version: 1,
+  sourceApp: 'platform',
+  growthSafe: false,
+  withoutConsumer: 'complete',
+  schema: z.object({ clientId: z.uuid(), updatedAt: z.iso.datetime({ offset: true }) }).strict(),
+});
+
+/** `booking.client.merged` v1: `mergedClientId` is archived, its history shows on `keptClientId`. */
+export const BookingClientMergedV1 = defineEvent({
+  type: 'booking.client.merged',
+  version: 1,
+  sourceApp: 'platform',
+  growthSafe: false,
+  withoutConsumer: 'complete',
+  schema: z
+    .object({
+      keptClientId: z.uuid(),
+      mergedClientId: z.uuid(),
+      mergedAt: z.iso.datetime({ offset: true }),
+    })
+    .strict(),
+});
+
+/** `booking.client.erased` v1: the GDPR erasure (D-B7-1); the consumers erase their copies too. */
+export const BookingClientErasedV1 = defineEvent({
+  type: 'booking.client.erased',
+  version: 1,
+  sourceApp: 'platform',
+  growthSafe: false,
+  withoutConsumer: 'complete',
+  schema: z.object({ clientId: z.uuid(), erasedAt: z.iso.datetime({ offset: true }) }).strict(),
+});
+
+/*
  * Lot 5.0 — Growth Engine v1 (FAZA-5.md, D5-7, GROWTH_ENGINE §2.3, §2.7). Semnalele și conversiile
  * sunt `growthSafe`: doar id-uri și chei, fără sume, nume sau conținut. Venitul atribuit se citește
  * din core/billing la raportare, nu vine în eveniment. Emițătorii vin în Lotul 5.7; până atunci,
@@ -719,6 +771,10 @@ export const EVENT_CATALOG: readonly EventDefinition[] = [
   BookingAppointmentCancelledV1 as EventDefinition,
   BookingAppointmentNoShowV1 as EventDefinition,
   BookingAppointmentCompletedV1 as EventDefinition,
+  BookingClientCreatedV1 as EventDefinition,
+  BookingClientUpdatedV1 as EventDefinition,
+  BookingClientMergedV1 as EventDefinition,
+  BookingClientErasedV1 as EventDefinition,
   CommercialFeatureLockedClickedV1 as EventDefinition,
   IntegrationTargetMissingV1 as EventDefinition,
   CommercialAddonPurchasedV1 as EventDefinition,

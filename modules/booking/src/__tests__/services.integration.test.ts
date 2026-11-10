@@ -752,6 +752,7 @@ describe('B.1 — the role and the grants (§2.3)', () => {
       'appointment_resource',
       'business_hours',
       'client',
+      'client_block',
       'outbox_events',
       'processed_events',
       'resource',

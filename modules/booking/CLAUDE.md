@@ -165,3 +165,18 @@ Booking (numele afișat EasyBook) e prima aplicație. Planul: `docs/plans/BOOKIN
 - **Locurile libere:** fiecare membru are durata lui. Pentru un membru anume, `durationMinutes` din răspuns e a lui; la „Oricine e liber” e a serviciului.
 - **Contractele:** `listStaffServiceTerms` (`booking:read`) și `setStaffServiceTerms` (`booking:settings`); totul NULL înseamnă înapoi la valorile serviciului. Membrul trebuie să facă serviciul (B.2b). Auditul: `booking.staff_updated`, cu `serviceId` și `terms`.
 - **Ecranele lipsesc din S129** (BOOKING.md §5.2): prețul și durata pe membru în `BookingServices`, `BookingTeamSchedule`, `BookingNew`, `BookingPublic`.
+
+## Fișa clientului, blocații, îmbinarea, ștergerea GDPR (B.7a)
+- **Fișa** (`getClientCard`): clientul, statisticile pe 12 luni, ultimele programări (și ale clienților îmbinați în el, marcate `fromClientId`) și blocarea deschisă. Motivul blocării îl văd doar owner-ul, adminii și application_manager (S125).
+- **Blocarea** (`client_block`, `booking:admin`, D-B7-3 = a):
+  - motivul are 10–500 de caractere și rămâne după deblocare (jurnalul afacerii); auditul ține doar lungimea lui;
+  - o singură blocare deschisă pe client;
+  - echipa poate programa un client blocat (D-B7-4 = a); online e refuzat (B.11).
+- **Îmbinarea** (`mergeClients`, S139, D-B7-2 = a):
+  - dublura se arhivează cu `merged_into_client_id`; programările ei își păstrează `client_id` (protejat) și apar pe fișa clientului păstrat;
+  - blocarea câștigă;
+  - `fillEmpty` completează doar câmpurile goale.
+  - Consimțământul de marketing („cel mai strict”) intră odată cu câmpul lui.
+- **Ștergerea GDPR** (`eraseClient` → `booking.erase_client`, `SECURITY DEFINER`, `EXECUTE` doar pentru `booking_rw`, D-B7-1 = a): e singura cale de a schimba copia numelui de pe programări. Anonimizează clientul și clienții îmbinați în el, copiile numelui, notele echipei de pe programările lor și motivele blocărilor. Programările rămân.
+- **REGULĂ (fondatoarea, 10.11.2026):** orice lot care adaugă date personale ale clientului (B.8 câmpurile medicale, B.12 răspunsurile la formulare, încasările, mesajele, nota de comportament) extinde `booking.erase_client` și testul de ștergere (`clients-migration.integration.test.ts`), ca după „Client șters” să nu rămână nimic.
+- **Evenimentele pentru ClientDesk** (D-CRM-9): `booking.client.created` / `updated` / `merged` / `erased`, doar cu id-uri și momente.

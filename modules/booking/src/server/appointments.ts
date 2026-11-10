@@ -7,6 +7,8 @@ import {
   BookingAppointmentCompletedV1,
   BookingAppointmentCreatedV1,
   BookingAppointmentNoShowV1,
+  BookingClientCreatedV1,
+  BookingClientUpdatedV1,
 } from '@ventora/contracts';
 import { uuidv7, writeOutboxEvent } from '@ventora/db-kit';
 import { Conflict, Forbidden, InvalidInput, ResourceNotFound } from '@ventora/errors';
@@ -773,6 +775,13 @@ async function insertClient(
   const row = rows[0]!;
   // no client data in the audit (name, phone, e-mail)
   await audit(exec, ctx, AuditActions.bookingClientCreated, 'booking_client', row.id, {});
+  // B.7a (D-CRM-9): for ClientDesk, only the id
+  await writeOutboxEvent(client, 'booking', BookingClientCreatedV1, {
+    organizationId: ctx.organizationId,
+    sourceApp: 'platform',
+    resourceId: row.id,
+    payload: { clientId: row.id, createdAt: row.created_at.toISOString() },
+  });
   return row;
 }
 
@@ -803,6 +812,13 @@ export async function updateClientInOrg(
     );
     await audit(exec, ctx, AuditActions.bookingClientUpdated, 'booking_client', id, {
       fields: Object.keys(input).filter((k) => (input as Record<string, unknown>)[k] !== undefined),
+    });
+    // B.7a (D-CRM-9): for ClientDesk, only the id
+    await writeOutboxEvent(client, 'booking', BookingClientUpdatedV1, {
+      organizationId: ctx.organizationId,
+      sourceApp: 'platform',
+      resourceId: id,
+      payload: { clientId: id, updatedAt: rows[0]!.updated_at.toISOString() },
     });
     return toClient(rows[0]!);
   });
