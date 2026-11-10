@@ -527,6 +527,25 @@ Intră înainte de primul salon de test (§7.1d).
   - un dispozitiv revocat nu mai preia nimic.
 - **Estimare (PROPUS):** 2 h × 3, după experiment.
 
+#### Lot B.35 — Sloturile Growth din Booking (D5-18, decis 10.11.2026)
+- **De ce aici:** planul F5 (`docs/plans/FAZA-5.md`, D5-18 = a) lasă manifestul Booking și ecranul „Azi” agentului care lucrează pe `modules/booking`. F5 dă contractul (Lotul 5.0) și componenta slotului; Booking le pune la locul lor.
+- **Ce intră:**
+  - **în manifestul Booking**, câmpurile `placements` și `growthSignals` din `ApplicationManifest` (5.0), cu sloturile `booking.today.aside` și `booking.limit.dialog`;
+  - **`booking.today.aside`:** coloana cu slot din `BookingToday`;
+  - **`booking.limit.dialog`:** slotul din `BookingLimit`, în `UpgradeDialog`;
+  - **semnalele Booking**, dacă 5.0 le cere: doar cele `growthSafe`, fără date personale (D5-7).
+- **Dependențe:**
+  - **contractul F5 publicat**, adică Lotul 5.0 îmbinat;
+  - **componenta slotului** de la F5;
+  - **ecranele** `BookingToday` (B.6b) și `BookingLimit` (B.6c). Dacă ajung înaintea lor, lotul pune doar manifestul, iar sloturile intră odată cu ecranele;
+  - **ordinea:** după B.5, B.3a și B.3b.
+- **Fără migrare.**
+- **Gata când:**
+  - manifestul are cele două sloturi și trece testul de manifest;
+  - un slot gol nu schimbă ecranul;
+  - semnalele nu au date personale (testul de gardă din 5.0).
+- **Estimare:** 1 h.
+
 ### Funcțiile comune Ventora (din checklist)
 
 | Funcționalitate | Unde se face |
@@ -566,6 +585,7 @@ Intră înainte de primul salon de test (§7.1d).
 | 15 | **B.24** (rapoartele, exportul, Excel) | B.4, B.21 (B.3, B.10 pentru ocupare pe resurse și locații) | după B.21 |
 | 16 | **B.25–B.30** (integrările) | aplicațiile partenere (D-B-13) | D-B-17 |
 | 17 | **B.31** (asistentul AI) | 4.9, D-AI-5 | după D-AI-5 |
+| 17b | **B.35** (sloturile Growth: `booking.today.aside`, `booking.limit.dialog`) | Lotul 5.0 (contractul F5) și componenta slotului; B.6b / B.6c pentru ecrane | după B.5, B.3a, B.3b și după 5.0 (D5-18) |
 | 18 | **B.32** (închiderea: T1–T10 pe tot) | toate | la final |
 
 **În paralel**, unde nu se ating aceleași fișiere: B.7 cu B.6 (un agent pe ecrane, altul pe domeniu), B.13–B.16 cu B.21, B.17 cu B.9. Un agent pe folder, ca până acum.
@@ -658,8 +678,9 @@ Intră înainte de primul salon de test (§7.1d).
 | B.24 (5) | 5 |
 | B.25–B.30 (6 × 1–2) | 6–12 |
 | B.31 (4, PROPUS) | 4 |
+| B.35 (1) | 1 |
 | B.32 (2) | 2 |
-| **Total** | **≈ 92–114 ore**, adică ~66 de loturi |
+| **Total** | **≈ 93–115 ore**, adică ~67 de loturi |
 
 Nu sunt incluse așteptarea deciziilor, designul care lipsește, condițiile externe din §5.3 și experimentele (E-SMS-1, E-AMEF).
 
@@ -676,7 +697,7 @@ Nu sunt incluse așteptarea deciziilor, designul care lipsește, condițiile ext
 | **Nota de comportament percepută ca nedreaptă sau scăpată către client** | Opțională, pornită de salon; motivul afișat; vizibilă doar echipei; teste că nu iese pe rute publice sau în e-mailuri; anularea salonului nu contează |
 | **Scurgerea datelor medicale** | Criptare, permisiune separată, jurnal pe fiecare citire, consimțământ versionat, doar pe afacerile marcate (B.8); date reale doar după aviz |
 | **Plăți:** dispute, rambursări, comision | Webhook-uri idempotente; saga cu eliberarea intervalului; comisionul configurabil din Founder |
-| **Volumul:** 66 de funcționalități, ~66 de loturi înainte de primul salon de test | Ordinea după dependențe (§4); loturi de 1–2 h; un agent pe folder, în paralel unde se poate |
+| **Volumul:** 66 de funcționalități, ~67 de loturi înainte de primul salon de test | Ordinea după dependențe (§4); loturi de 1–2 h; un agent pe folder, în paralel unde se poate |
 | **Designul lipsă** pentru mai mult de jumătate din funcționalități | Comanda de design pe loturi, în ordinea din §5.2 |
 | **Dependențe neînchise din F3 / F4:** URL public, Stripe, abonamente, notificări | Cerute explicit în §5.3 |
 | **SMS:** E-SMS-1 poate pica; condițiile operatorilor | Procedura din `SMS_NUMAR_PROPRIU.md` §7; E-SMS-1 întâi pe telefonul fondatoarei. Reminderul merge oricum prin SMSLink (B.17). |
