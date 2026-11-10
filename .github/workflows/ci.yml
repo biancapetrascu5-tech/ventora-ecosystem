@@ -437,6 +437,20 @@ jobs:
             --config prisma7.config.ts
         env:
           DATABASE_URL: postgresql://postgres:test@localhost:5435/ventora_access_test
+      # Lot CR.1: the crm schema (role crm_rw, the business settings, outbox), after booking
+      - name: Apply crm migrations
+        run: |
+          PSQL="psql postgresql://postgres:test@localhost:5435/ventora_access_test -v ON_ERROR_STOP=1"
+          for f in modules/crm/prisma/migrations/*/migration.sql; do
+            echo "Applying $f"
+            $PSQL -f "$f"
+          done
+      - name: Verify crm schema matches migrations
+        run: |
+          psql postgresql://postgres:test@localhost:5435/ventora_access_test -c "CREATE DATABASE shadow_crm_diff"
+          SHADOW_DATABASE_URL="postgresql://postgres:test@localhost:5435/shadow_crm_diff"           pnpm --filter @ventora/crm exec prisma migrate diff             --from-migrations ./prisma/migrations             --to-schema ./prisma/schema.prisma             --exit-code             --config prisma7.config.ts
+        env:
+          DATABASE_URL: postgresql://postgres:test@localhost:5435/ventora_access_test
       - name: Sync permissions
         run: pnpm tsx scripts/sync-permissions.ts
         env:
@@ -461,6 +475,7 @@ jobs:
         run: |
           pnpm --filter @ventora/access test:integration
           pnpm --filter @ventora/booking test:integration
+          pnpm --filter @ventora/crm test:integration
       - name: Verify notifications schema matches migrations
         run: |
           psql postgresql://postgres:test@localhost:5435/ventora_access_test -c "CREATE DATABASE shadow_notifications_diff"
