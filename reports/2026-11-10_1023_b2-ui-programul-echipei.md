@@ -5,8 +5,8 @@
 | PR | Ramura | Commit | Stare |
 |---|---|---|---|
 | #102 (C2, `plane`) | `fix/ui-icon-plane` | `9e042b5` | îmbinat |
-| #105 (C1, motivul concediului) | `fix/b2-time-off-reason-keep` | `a45aeae` | pushed, nemergiat |
-| PR-ul ecranului | `feat/b2-ui-team-schedule`, **peste C1**, către `main` | `1e06617` (ecranul), commit-ul raportului | pushed, nemergiat; **depinde de #105** |
+| #105 (C1, motivul concediului) | `fix/b2-time-off-reason-keep`, rebazat pe `main` după #103 / #104 | `29c0239` | pushed, nemergiat |
+| #106 (ecranul) | `feat/b2-ui-team-schedule`, **peste C1 rebazat**, către `main` | `e345290` (ecranul), raportul | pushed, nemergiat; **depinde de #105** |
 
 ## 1. Lista de bifat
 
@@ -113,3 +113,32 @@ Fiecare `BookingTeamSchedule_<cadru>_<lățime>_<temă>_pair.png` are designul �
 - `pnpm test:integration` → **exit 0**: booking 105/105, billing 79 trecute și 3 sărite, commercial 94/94; restul suitelor trec, fără erori neprinse.
 - `node scripts/visual-check.mjs --base http://localhost:3190 --only BookingTeamSchedule` → „Toate 4 în prag” (0,14–0,16%).
 - `team-ui-format.test.ts` → 16/16.
+
+## 7. Rebase după B.4a / B.4b (#103, #104), 10.11.2026
+
+- **C1:** `git rebase origin/main`.
+  - Conflictul din `modules/booking/src/contract/staff.ts` e rezolvat păstrând ambele schimbări:
+    - din B.4b, numărul de programări (`upcomingAppointments`) întors de `updateStaffTimeOff`;
+    - din C1, comentariul despre motivul netrimis.
+  - Schimbarea C1 din `server/staff.ts` s-a aplicat fără conflict.
+- **Ecranul:** `git rebase --onto fix/b2-time-off-reason-keep a45aeae`, fără conflicte.
+  - `modules/booking/CLAUDE.md` le păstrează pe amândouă: rândurile B.2-UI din „Structura” și secțiunile B.4a / B.4b.
+- **Codul ecranului e compatibil cu B.4.** Contractele doar adaugă `upcomingAppointments` la excepție, concediu și `listStaff.removed`.
+  - Ecranul nu le folosește încă: numărul de programări vechi și Notice-urile rămân doar în galerie.
+  - Legarea lor e un pas următor, care nu face parte din acest PR.
+- **Comenzile pe C1:**
+  - **lanțul pre-push:**
+    - prima rulare: exit 1, pe tipurile vechi din `apps/platform/.next`, rămase de la ramura ecranului;
+    - după ștergerea `.next`: **exit 0**.
+  - **`pnpm test:integration`:**
+    - **rularea 1:** crash al procesului vitest în `organizations` (Windows 0xC0000409);
+    - **rularea 2:** billing „dunning cannot start in the future”, ceasul Docker față de Node;
+    - **rularea 3:** Docker Desktop a căzut („unable to start”). L-am repornit cu `docker desktop restart`, apoi `pnpm test:db:down`;
+    - **rularea 4: exit 0** (booking 126/126, billing 79 trecute și 3 sărite).
+- **Comenzile pe ecran:**
+  - lanțul pre-push: **exit 0**;
+  - **`pnpm test:integration`:**
+    - **rularea 1:** crash vitest în `access`;
+    - **rularea 2:** crash vitest în `identity`. Memoria liberă era 2,7 GB din 15,7;
+    - **rularea 3: exit 0** (booking 142/142, billing 79 trecute și 3 sărite, commercial 94/94).
+  - Niciun test nu a picat pe codul C1 sau pe ecran. Erorile au fost crash-uri ale procesului de test, testul instabil billing și căderea Docker.
