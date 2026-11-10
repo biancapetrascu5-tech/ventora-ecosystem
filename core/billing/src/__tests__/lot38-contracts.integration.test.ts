@@ -305,6 +305,23 @@ describe('perioada de probă (D3-5, N3)', () => {
     const b = await business();
     const t = await startApplicationTrial(b.owner, APP_TRIAL);
     expect((t.endsAt.getTime() - t.startsAt.getTime()) / 86_400_000).toBe(14);
+    // Lot 5.7 (GROWTH §2.7): the conversion event, once, with the trial
+    const started = await q(
+      `SELECT payload FROM commercial.outbox_events
+        WHERE type = 'commercial.trial.started' AND organization_id = $1`,
+      [b.org],
+    );
+    expect(started).toEqual([
+      {
+        payload: {
+          trialId: t.id,
+          kind: 'application',
+          applicationId: APP_TRIAL,
+          featureKey: null,
+          endsAt: t.endsAt.toISOString(),
+        },
+      },
+    ]);
     await expect(startApplicationTrial(b.owner, APP_TRIAL)).rejects.toThrow(/trial_used|active/);
     await expect(startApplicationTrial({ ...b.owner, role: 'member' }, APP)).rejects.toMatchObject({
       name: 'Forbidden',
