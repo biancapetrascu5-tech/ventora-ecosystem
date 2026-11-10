@@ -25,6 +25,14 @@
 | `pnpm format:check`, `lint`, `guards:verify` | exit 0 |
 | `pnpm test:integration` complet | **exit 0**, „Toate testele au trecut”: audit 39, identity 98, organizations 47, integrations 13, access 164, notifications 12, files 13, support 17, commercial 95, booking 200, crm 17, billing 79 (+3 sărite), workflows 13, ai 11, growth 34, prețurile 7 |
 
+## Rebase pe `main` (după #124 B.3b și #120 C.4)
+
+- **Conflictul:** doar lista migrărilor. Rândurile booking B.3a / B.3b și crm, scrise de mână, au dispărut; în locul lor e `...moduleMigrations()`. Migrarea Core nouă `audit_category_crm` (C.4) rămâne explicită.
+- **Ce se găsește acum** (6 migrări): booking `booking_init`, `booking_staff`, `booking_appointments`, `booking_resources`, `booking_appointment_resources` și crm `crm_init`.
+- **Verificările:**
+  - `format:check`: exit 0;
+  - `test:integration` complet: audit 40, identity 98, organizations 47, integrations 13, access 164, notifications 12, files 13, support 17, commercial 95 au trecut. La booking, după 200 de teste trecute din 211, inclusiv testele B.3b (deci migrarea lui a fost găsită și aplicată), workerul vitest s-a închis pe Windows (`0xC0000409`). **Decide CI-ul.**
+
 ## Ce urmează
 
 - **#126 (B.2b) și #127 (B.2c):** după merge-ul acestui PR, la rebase nu mai au conflict în `test-db-up.mjs`. Rândurile lor din listă dispar.
