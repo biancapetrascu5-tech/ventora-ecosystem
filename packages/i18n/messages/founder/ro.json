@@ -1503,7 +1503,13 @@
         "cereAltAbonament": "Cere alt abonament",
         "ciorna": "Ciornă",
         "duplica": "Duplică",
-        "opresteOferta": "Oprește oferta"
+        "opresteOferta": "Oprește oferta",
+        "lead": "Ce poate recomanda Ventora Systems. Costurile vin din modelul comercial; textele trec prin aprobare în fiecare limbă.",
+        "addon": "Pachet în plus",
+        "review": "În revizuire",
+        "stopped": "Oprită",
+        "tryFree": "Încearcă gratuit",
+        "textsOf": "{n} din {total}"
       },
       "offerEditor": {
         "ceOfera": "Ce oferă",
@@ -1518,7 +1524,24 @@
         "texte": "Texte",
         "editeazaTextul": "Editează textul ",
         "previzualizare": "Previzualizare",
-        "veziCeAduceFiecare": "Vezi ce aduce fiecare serviciu"
+        "veziCeAduceFiecare": "Vezi ce aduce fiecare serviciu",
+        "actionTry": "Încearcă gratuit {days} zile",
+        "actionHelp": "Duce mereu în UpgradeDialog; nimic nu se activează dintr-un click.",
+        "costNote": "Le schimbi din Planuri și Pachete în plus, nu de aici, ca prețul să fie același peste tot.",
+        "noPrice": "Obiectul nu are preț în vânzare acum: oferta nu apare nicăieri.",
+        "textsLead": "Campania se publică doar cu textele în română aprobate. Într-o limbă fără text aprobat, oferta nu apare deloc; nu folosim altă limbă în locul ei.",
+        "notWritten": "Încă nu e scris.",
+        "stateLangs": "{state} · {n} din 6 limbi aprobate",
+        "error": "N-am putut salva. Nu s-a schimbat nimic.",
+        "archiveActive": "Oferta are campanii active. Oprește-le întâi.",
+        "approvedToast": "Am aprobat textul.",
+        "savedToast": "Am salvat ciorna.",
+        "publish": "Publică oferta",
+        "saveDraft": "Salvează ciorna",
+        "approve": "Aprobă",
+        "original": "Originalul în română",
+        "titleLabel": "Titlul",
+        "bodyLabel": "Textul"
       },
       "campaigns": {
         "campanieNoua": "Campanie nouă",
@@ -1736,6 +1759,14 @@
         "hub_plan_packs": "Abonament și consum",
         "hub_catalog_apps": "Catalog · Toate aplicațiile",
         "hub_limit_dialog": "Limita atinsă"
+      },
+      "cost": {
+        "month": "{amount} pe lună",
+        "year": "{amount} pe an",
+        "once": "{amount}, o singură dată",
+        "trial": "Gratuit {days} zile. Apoi {price}, doar dacă alegi să continui.",
+        "setup": "Implementare: {amount}, o singură dată.",
+        "noSetup": "Fără cost de implementare."
       }
     },
     "notifications": {

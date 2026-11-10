@@ -2,8 +2,23 @@
 
 import { headers } from 'next/headers';
 import { getFounderNames } from '@ventora/identity';
+import type { GrowthLocale } from '@ventora/contracts';
 import {
+  listAddonsForFounder,
+  listApplicationsForFounder,
+  listPlansForFounder,
+} from '@ventora/commercial';
+import {
+  approveOfferText,
+  archiveOffer,
+  createOffer,
   getGrowthControlForFounder,
+  listOffersForFounder,
+  publishOffer,
+  saveOfferText,
+  updateOfferTarget,
+  type FounderOffer,
+  type FounderOfferTarget,
   listCampaignsForFounder,
   listGrowthLogForFounder,
   restartCampaign,
@@ -138,5 +153,147 @@ export async function growthCaps(caps: {
     return { ok: true };
   } catch (err) {
     return fail('growthCaps', err);
+  }
+}
+
+// ── Oferte și textele lor (5.10a) ─────────────────────────────────────────────────────────
+
+export type GrowthCatalogData = {
+  applications: { id: string; name: string; monthMinor: number | null; setupMinor: number }[];
+  addons: {
+    code: string;
+    name: string;
+    priceMinor: number | null;
+    setupMinor: number;
+    monthly: boolean;
+    onSale: boolean;
+  }[];
+  versions: { id: string; label: string; monthMinor: number | null; onSale: boolean }[];
+};
+
+export type GrowthOffersData = { offers: FounderOffer[]; catalog: GrowthCatalogData };
+
+/** Ofertele, cu textele, și obiectele comerciale (prețurile în lei: costul afișat vine de aici). */
+export async function readGrowthOffers(): Promise<GrowthOffersData | null> {
+  try {
+    const founderHeaders = await headers();
+    const [offers, apps, addons, plans] = await Promise.all([
+      listOffersForFounder({ founderHeaders }),
+      listApplicationsForFounder({ founderHeaders }),
+      listAddonsForFounder({ founderHeaders }),
+      listPlansForFounder({ founderHeaders }),
+    ]);
+    return {
+      offers,
+      catalog: {
+        applications: apps.map((a) => ({
+          id: a.id,
+          name: a.name,
+          monthMinor:
+            a.prices.find((p) => p.currency === 'RON' && p.kind === 'month')?.amountMinor ?? null,
+          setupMinor:
+            a.prices.find((p) => p.currency === 'RON' && p.kind === 'setup')?.amountMinor ?? 0,
+        })),
+        addons: addons.map((a) => {
+          const ron = a.prices.find((p) => p.currency === 'RON');
+          return {
+            code: a.code,
+            name: a.name,
+            priceMinor: ron?.amountMinor ?? null,
+            setupMinor: ron?.setupMinor ?? 0,
+            monthly: a.validity === 'monthly',
+            onSale: a.salesStoppedAt === null,
+          };
+        }),
+        versions: plans.flatMap((p) =>
+          p.versions
+            .filter((v) => v.publishedAt !== null)
+            .map((v) => ({
+              id: v.id,
+              label: `${p.name} · v${v.number}`,
+              monthMinor:
+                v.terms.prices.find((x) => x.currency === 'RON' && x.kind === 'month')
+                  ?.amountMinor ?? null,
+              onSale: p.salesStoppedAt === null,
+            })),
+        ),
+      },
+    };
+  } catch (err) {
+    reportActionError('readGrowthOffers', err);
+    return null;
+  }
+}
+
+export async function growthCreateOffer(
+  target: FounderOfferTarget,
+): Promise<ActionResult & { id?: string }> {
+  try {
+    const code = `oferta-${crypto.randomUUID().slice(0, 8)}`;
+    const { id } = await createOffer({ founderHeaders: await headers(), code, target });
+    return { ok: true, id };
+  } catch (err) {
+    return fail('growthCreateOffer', err);
+  }
+}
+
+export async function growthUpdateOffer(
+  offerId: string,
+  target: FounderOfferTarget,
+): Promise<ActionResult> {
+  try {
+    await updateOfferTarget({ founderHeaders: await headers(), offerId, target });
+    return { ok: true };
+  } catch (err) {
+    return fail('growthUpdateOffer', err);
+  }
+}
+
+export async function growthSaveText(input: {
+  offerId: string;
+  locale: GrowthLocale;
+  title: string;
+  body: string;
+  approve?: boolean;
+}): Promise<ActionResult> {
+  try {
+    const founderHeaders = await headers();
+    await saveOfferText({ founderHeaders, ...input });
+    if (input.approve) {
+      await approveOfferText({ founderHeaders, offerId: input.offerId, locale: input.locale });
+    }
+    return { ok: true };
+  } catch (err) {
+    return fail('growthSaveText', err);
+  }
+}
+
+export async function growthApproveText(
+  offerId: string,
+  locale: GrowthLocale,
+): Promise<ActionResult> {
+  try {
+    await approveOfferText({ founderHeaders: await headers(), offerId, locale });
+    return { ok: true };
+  } catch (err) {
+    return fail('growthApproveText', err);
+  }
+}
+
+export async function growthPublishOffer(offerId: string): Promise<ActionResult> {
+  try {
+    await publishOffer({ founderHeaders: await headers(), offerId });
+    return { ok: true };
+  } catch (err) {
+    return fail('growthPublishOffer', err);
+  }
+}
+
+export async function growthArchiveOffer(offerId: string): Promise<ActionResult> {
+  try {
+    await archiveOffer({ founderHeaders: await headers(), offerId });
+    return { ok: true };
+  } catch (err) {
+    return fail('growthArchiveOffer', err);
   }
 }

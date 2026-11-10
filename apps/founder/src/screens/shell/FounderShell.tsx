@@ -67,6 +67,7 @@ export function useFounderNav(requestsBadge?: number, supportBadge?: number): Na
     {
       label: t('growth'),
       items: [
+        { id: 'oferte', label: t('growthOffers'), icon: 'ticket', href: '/growth/offers' },
         {
           id: 'control',
           label: t('growthControl'),

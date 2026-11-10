@@ -260,3 +260,16 @@ export type {
   GrowthStopTarget,
   GrowthSwitchRow,
 } from './founder/growth/GrowthControlView';
+export { GrowthOffersView } from './founder/growth/GrowthOffersView';
+export type {
+  GrowthOfferKind,
+  GrowthOfferRow,
+  GrowthOfferState,
+} from './founder/growth/GrowthOffersView';
+export { GrowthOfferEditorView } from './founder/growth/GrowthOfferEditorView';
+export type {
+  GrowthOfferPreview,
+  GrowthOfferTextRow,
+  GrowthOfferType,
+  GrowthTextState,
+} from './founder/growth/GrowthOfferEditorView';
