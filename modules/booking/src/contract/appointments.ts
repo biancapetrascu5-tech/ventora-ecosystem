@@ -74,7 +74,8 @@ async function write(params: Session): Promise<{ ctx: TenantContext; scope: Appo
 export type CreateAppointmentParams = Session & {
   /** A UUID chosen by the caller; a retry with the same id returns the same appointment. */
   id: string;
-  staffMemberId: string;
+  /** A member's id, or 'any' („Oricine e liber”, B.5: the system chooses the member). */
+  staffMemberId: string | 'any';
   serviceId: string;
   clientId?: string;
   client?: { name: string; phone?: string | null; email?: string | null; locale?: ClientLocale };

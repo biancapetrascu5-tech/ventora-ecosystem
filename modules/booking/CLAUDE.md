@@ -91,3 +91,29 @@ Booking (numele afișat EasyBook) e prima aplicație. Planul: `docs/plans/BOOKIN
 - **Rambursarea** unei anulări înainte de început o face consumatorul `bookingQuotaRefundConsumer` al lui `booking.appointment.cancelled` (`quotaRefund: true`); `refundQuota` e idempotent. Aplicația care rulează dispecerul outbox îl înregistrează (`apps/platform/src/server/jobs.ts`, după ce platforma depinde de `@ventora/booking`).
 - **Evenimentele** `booking.appointment.created` / `changed` / `cancelled` / `no_show` / `completed` (v1, `packages/contracts`) se scriu în tranzacția schimbării. Doar id-uri, stări și momente: fără datele clientului și fără nota echipei. O corectare scrie evenimentul stării noi, cu `corrected: true`.
 - **Numărătorile** (`countUpcomingAppointments`, plus `upcomingAppointments` în `setStaffDayOverride` / `addStaffTimeOff` / `updateStaffTimeOff` și în `listStaff.removed`): doar programările care ocupă, de acum înainte. Nimic nu se anulează (S124).
+
+## Locurile libere (B.5, design BookingNew / BookingCalendar / BookingPublic)
+- **Calculul** e funcția pură `server/slots.ts`, în minute locale pe fiecare dată, ca B.2. `server/availability.ts` citește totul într-o tranzacție `readOnly`:
+  - fusul afacerii;
+  - serviciul, membrii din calendar încă eligibili (D-B2-6) și zilele lor (`staffLocalDays`, aceeași regulă ca `createAppointment`, D-B4-4);
+  - programările care ocupă și intervalele blocate;
+  - `notice_min` și `buffer_min`.
+  - Minutele locale devin momente în Postgres (`AT TIME ZONE`). O oră care nu există (primăvara) nu se oferă; una dublă (toamna) se oferă o dată.
+- **Un loc liber** pentru membrul M:
+  - încape într-un interval al zilei;
+  - nu atinge un interval blocat și nicio programare la alt serviciu;
+  - la același serviciu: mai puține suprapuneri decât `capacity`. Se numără orice suprapunere, ca în trigger;
+  - păstrează pauza (`buffer_min`, D-B5-2) față de orice programare pe care nu o împarte; la marginile programului nu se cere pauză;
+  - nu e în trecut, iar online respectă preavizul (D-B5-3).
+- **Grila** (D-B5-1 = a): din durată în durată, de la începutul fiecărui interval și imediat după fiecare programare sau interval blocat (plus pauza). Orele ocupate de pe grilă rămân în listă, `available: false`, doar la un singur membru.
+- **„Oricine e liber”** (D-B5-4 = a): reuniunea orelor libere. `staffMemberIds` e în ordinea alegerii: cele mai puține programări în acea zi, apoi ordinea din echipă.
+  - `createAppointment({ staffMemberId: 'any' })` îi încearcă pe rând, fiecare cu un savepoint, în aceeași tranzacție și cu aceeași rezervare de cotă. O cerere paralelă care a luat ora (23P01) trece la următorul. Nimeni → `Conflict('appointment_overlap')`.
+  - Un `member` (scope `own`) nu poate folosi `'any'`.
+- **Contractele** (`booking:read`): `getFreeSlots` (cel mult 7 zile) și `findFirstFreeSlot` (până la 62 de zile; `null` dacă nu e nimic).
+  - Regulile echipei: de acum înainte, fără preaviz, durata între minim și maxim.
+  - **Online** (`mode: 'online'`, pentru B.11, din contextul paginii publice): preavizul, doar servicii și membri `bookable_online`, durata maximă (S123-3), 30 de zile (D-B5-5).
+- **Pauza și preavizul nu se impun la salvarea echipei** (D-B5-2, D-B5-3): doar în listare. Pagina publică le verifică la salvare (B.11).
+- **Ce urmează:**
+  - B.3b adaugă resursele ca „ocupări” în plus (D-B5-8);
+  - B.2b filtrează membrii după serviciile pe care le fac (D-B5-6). Până atunci, orice membru face orice serviciu;
+  - B.10 dă fusul locației.
