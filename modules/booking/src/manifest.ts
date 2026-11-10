@@ -8,17 +8,30 @@ export const manifest = {
     { name: 'booking:admin', description: 'Manage booking settings and all appointments' },
     // Lot B.1 (D-B1-1 = a): the service catalog and, from B.6d, BookingSettings
     { name: 'booking:settings', description: 'Manage services and booking settings' },
+    // Lot B.8 (D-B-14): the health answers of the clients, read and written; every read is logged
+    { name: 'booking:medical', description: 'View and record the health answers of the clients' },
   ],
   defaultGrants: {
     owner: '*',
     admin: '*',
     member: ['booking:read', 'booking:write'],
     external_collaborator: ['booking:read'],
-    application_manager: ['booking:read', 'booking:write', 'booking:admin', 'booking:settings'],
+    application_manager: [
+      'booking:read',
+      'booking:write',
+      'booking:admin',
+      'booking:settings',
+      'booking:medical',
+    ],
   },
   // Lot 3.1 (ARCHITECTURE §8.4–8.5): keys synced into the commercial registry
   features: [
     { key: 'booking.sms.ownNumber', description: 'SMS reminders from the own phone (D-SMS-4)' },
+    // Lot B.8 (D-B-16 = a, proposed): the business is marked medical by Founder (health fields)
+    {
+      key: 'booking.medical',
+      description: 'Health fields on the client card (medical businesses)',
+    },
   ],
   quotas: [
     {

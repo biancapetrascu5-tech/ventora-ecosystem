@@ -253,6 +253,8 @@ model Client {
   mergedFrom   Client[]      @relation("ClientMerge")
   blocks       ClientBlock[]
   noteRemovals ClientNoteRemoval[]
+  medicalConsents MedicalConsent[]
+  medicalAnswers  MedicalAnswer[]
 
   @@index([organizationId, name], map: "client_organization_id_name_idx")
   @@index([mergedIntoClientId], map: "client_merged_into_client_id_idx")
@@ -503,5 +505,68 @@ model ClientNoteRemoval {
 
   @@index([clientId, removedAt], map: "client_note_removal_client_id_idx")
   @@map("client_note_removal")
+  @@schema("booking")
+}
+
+/// Lot B.8: a health field of the business (D-B-14), only on businesses marked medical.
+model MedicalField {
+  id               String    @id @db.Uuid
+  organizationId   String    @map("organization_id") @db.Uuid
+  label            String    @db.VarChar(160)
+  kind             String    @db.VarChar(8)
+  options          Json?
+  serviceIds       String[]  @map("service_ids") @db.Uuid
+  required         Boolean   @default(false)
+  sortOrder        Int       @default(0) @map("sort_order")
+  archivedAt       DateTime? @map("archived_at") @db.Timestamptz
+  archivedByUserId String?   @map("archived_by_user_id") @db.Uuid
+  createdByUserId  String    @map("created_by_user_id") @db.Uuid
+  createdAt        DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt        DateTime  @default(now()) @map("updated_at") @db.Timestamptz
+
+  answers MedicalAnswer[]
+
+  @@index([organizationId, sortOrder], map: "medical_field_organization_id_sort_idx")
+  @@map("medical_field")
+  @@schema("booking")
+}
+
+/// Lot B.8: the client's consent to the health fields (the version of the text, withdrawable).
+model MedicalConsent {
+  id                String    @id @db.Uuid
+  organizationId    String    @map("organization_id") @db.Uuid
+  clientId          String    @map("client_id") @db.Uuid
+  textVersion       String    @map("text_version") @db.VarChar(32)
+  givenAt           DateTime  @default(now()) @map("given_at") @db.Timestamptz
+  source            String    @db.VarChar(6)
+  recordedByUserId  String?   @map("recorded_by_user_id") @db.Uuid
+  withdrawnAt       DateTime? @map("withdrawn_at") @db.Timestamptz
+  withdrawnBy       String?   @map("withdrawn_by") @db.VarChar(8)
+  withdrawnByUserId String?   @map("withdrawn_by_user_id") @db.Uuid
+
+  client Client @relation(fields: [clientId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "medical_consent_client_id_fkey")
+
+  @@index([clientId], map: "medical_consent_client_id_idx")
+  @@map("medical_consent")
+  @@schema("booking")
+}
+
+/// Lot B.8: one answer per client and field, encrypted by the application (AES-256-GCM).
+model MedicalAnswer {
+  id              String    @id @db.Uuid
+  organizationId  String    @map("organization_id") @db.Uuid
+  clientId        String    @map("client_id") @db.Uuid
+  fieldId         String    @map("field_id") @db.Uuid
+  valueEncrypted  Bytes?    @map("value_encrypted")
+  wipedAt         DateTime? @map("wiped_at") @db.Timestamptz
+  updatedByUserId String?   @map("updated_by_user_id") @db.Uuid
+  createdAt       DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt       DateTime  @default(now()) @map("updated_at") @db.Timestamptz
+
+  client Client       @relation(fields: [clientId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "medical_answer_client_id_fkey")
+  field  MedicalField @relation(fields: [fieldId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "medical_answer_field_id_fkey")
+
+  @@unique([clientId, fieldId], map: "medical_answer_client_id_field_id_key")
+  @@map("medical_answer")
   @@schema("booking")
 }

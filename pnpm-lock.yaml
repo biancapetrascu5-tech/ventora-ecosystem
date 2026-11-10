@@ -1017,6 +1017,9 @@ importers:
       '@ventora/audit':
         specifier: workspace:*
         version: link:../../core/audit
+      '@ventora/commercial':
+        specifier: workspace:*
+        version: link:../../core/commercial
       '@ventora/contracts':
         specifier: workspace:*
         version: link:../../packages/contracts
@@ -1063,9 +1066,6 @@ importers:
       '@types/react-dom':
         specifier: ^19.0.0
         version: 19.3.0(@types/react@19.3.0)
-      '@ventora/commercial':
-        specifier: workspace:*
-        version: link:../../core/commercial
       eslint:
         specifier: ^9.0.0
         version: 9.39.5(jiti@2.7.0)(supports-color@8.1.1)
