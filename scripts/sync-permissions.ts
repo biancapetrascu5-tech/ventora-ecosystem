@@ -11,6 +11,7 @@
 
 import { Pool } from 'pg';
 import { manifest as bookingManifest } from '../modules/booking/src/manifest.js';
+import { manifest as crmManifest } from '../modules/crm/src/manifest.js';
 import { platformManifest } from '../core/access/src/platform-manifest.js';
 
 type Manifest = {
@@ -19,7 +20,7 @@ type Manifest = {
   defaultGrants: Record<string, readonly string[] | '*'>;
 };
 
-const MANIFESTS: Manifest[] = [platformManifest, bookingManifest];
+const MANIFESTS: Manifest[] = [platformManifest, bookingManifest, crmManifest];
 
 async function main() {
   const connectionString = process.env.DIRECT_URL ?? process.env.DATABASE_URL;

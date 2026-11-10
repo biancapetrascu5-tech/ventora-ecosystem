@@ -82,7 +82,13 @@ export const APPS: readonly AppPricing[] = [
     prices: prices([195, 39], [495, 99]),
     quotas: { 'booking.appointments': 1000 },
   },
-  { id: 'crm', name: 'ClientDesk', prices: prices([195, 39], [495, 99]), quotas: {} },
+  {
+    id: 'crm',
+    name: 'ClientDesk',
+    prices: prices([195, 39], [495, 99]),
+    // Lot CR.0: the limits approved in PRETURI-2027.md, now that the manifest declares the keys
+    quotas: { 'crm.contacts': 3000, 'crm.pipelines': 2 },
+  },
   { id: 'finance', name: 'MoneyDesk', prices: prices([225, 45], [495, 99]), quotas: {} },
   { id: 'hr', name: 'TeamSpace', prices: prices([245, 49], [745, 149]), quotas: {} },
   { id: 'shifts', name: 'ShiftPlan', prices: prices([145, 29], [395, 79]), quotas: {} },
