@@ -96,3 +96,13 @@ Testele B.4a au primit un abonament cu `booking.appointments` pentru afacerile d
 - **După B.1-UI:** înregistrarea consumatorului în `apps/platform` (punctul 1).
 - **B.5:** locurile libere. **B.6:** ecranele.
 - **Staging:** nimic aplicat. Planul de staging pentru `booking_appointments` vine după merge-ul C.0d, B.4a și B.4b.
+
+## Rebase peste B.4a rebazat (10.11.2026)
+
+- **Ce s-a făcut:** ramura e refăcută prin rebase (nu merge) peste `feat/b4a-booking-appointments`, rebazat pe `main` `fefe7e3`. Commit-ul de merge vechi a dispărut, istoria e liniară.
+- **Conflictul:** doar `src/contract/index.ts`. Am păstrat exporturile B.4b (`countUpcomingAppointments`, `bookingQuotaRefundConsumer`), fără extensie, ca în `main`.
+- **Verificările, refăcute:**
+  - `format:check`, `lint`, `typecheck`, `test`, `build`, `i18n:check`, `guards:verify`: exit 0.
+  - `test:integration` complet, prima rulare: booking 125/125. Suita billing s-a oprit pe `lot38`: workerul vitest s-a închis pe Windows (0xC0000409). Codul billing nu e atins.
+  - `test:integration` complet, a doua rulare: **exit 0**. Booking **125/125**, billing 79 (+3 sărite), drift curat.
+- **Decis 10.11.2026:** abaterea de la punctul 1 e acceptată. Legarea consumatorului în `apps/platform/src/server/jobs.ts` intră într-un PR mic imediat după B.4b, înainte de B.6.
