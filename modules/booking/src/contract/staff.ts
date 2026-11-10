@@ -207,6 +207,7 @@ export async function addStaffTimeOff(
   return withLeaveAppointments(ctx, saved);
 }
 
+/** C1: `reason` left out (undefined) keeps the saved reason; `null` or "" clears it. */
 export async function updateStaffTimeOff(
   params: UpdateStaffTimeOffParams,
 ): Promise<WithUpcomingAppointments<StaffTimeOff>> {

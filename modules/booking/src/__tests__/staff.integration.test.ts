@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { Pool, type PoolClient } from 'pg';
-import { configureAccess } from '@ventora/access';
+import { configureAccess, type TenantContext } from '@ventora/access';
 import {
   AppNotEnabled,
   Conflict,
@@ -25,6 +25,7 @@ import {
 } from '../contract/index.js';
 import { manifest } from '../manifest.js';
 import { closeBookingPool } from '../server/db.js';
+import { updateStaffTimeOffInOrg } from '../server/staff.js';
 
 /*
  * Lot B.2 on a real Postgres (plan reports/2026-11-08_2007_plan-booking-b2-b3.md §1.6, aligned to
@@ -640,6 +641,58 @@ describe('B.2 — the schedule (S124) and the availability', () => {
     expect(await reasonFor(t)).toBe('Motiv personal');
     expect(await reasonFor(admin.token)).toBe('Motiv personal');
     expect(await reasonFor(member.token)).toBeNull();
+  });
+
+  it('C1: a reason that is not sent stays as it is; null clears it', async () => {
+    // An application manager has booking:settings but does not see the reason (S124). The role is
+    // not in organizations.MembershipRole yet, so its context goes straight to the server function.
+    const managerId = await createUser('Mara Manager', false);
+    const manager: TenantContext = {
+      userId: managerId,
+      organizationId: org,
+      membershipId: null,
+      role: 'application_manager',
+      applicationId: 'booking',
+      actor: 'user',
+    };
+    const leave = await addStaffTimeOff({
+      sessionToken: t,
+      staffMemberId: staffId,
+      startsOn: '2027-01-11',
+      endsOn: '2027-01-13',
+      reason: 'Operație',
+    });
+    // the manager moves the dates without the reason: the owner's reason stays
+    const moved = await updateStaffTimeOffInOrg(manager, leave.id, {
+      startsOn: '2027-01-12',
+      endsOn: '2027-01-14',
+    });
+    expect(moved.reason).toBeNull(); // the manager does not see it
+    const stored = async () =>
+      (
+        await adminQuery<{ starts_on: string; reason: string | null }>(
+          `SELECT starts_on::text, reason FROM booking.staff_time_off WHERE id = $1`,
+          [leave.id],
+        )
+      )[0]!;
+    expect(await stored()).toEqual({ starts_on: '2027-01-12', reason: 'Operație' });
+    // the owner, the same without the reason; then null clears it
+    await updateStaffTimeOff({
+      sessionToken: t,
+      timeOffId: leave.id,
+      startsOn: '2027-01-12',
+      endsOn: '2027-01-15',
+    });
+    expect((await stored()).reason).toBe('Operație');
+    const cleared = await updateStaffTimeOff({
+      sessionToken: t,
+      timeOffId: leave.id,
+      startsOn: '2027-01-12',
+      endsOn: '2027-01-15',
+      reason: null,
+    });
+    expect(cleared.reason).toBeNull();
+    expect((await stored()).reason).toBeNull();
   });
 
   it('a leave: „Până la” not before „De la”, at most 366 days, real dates, a reason of at most 200', async () => {
