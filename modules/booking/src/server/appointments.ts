@@ -15,6 +15,7 @@ import { commitQuota, releaseQuota, reserveQuota } from '@ventora/quota';
 import { withBookingTx } from './db';
 import { staffFreeAtInOrg } from './availability';
 import { requiredResources } from './resources';
+import { doesService, staffForService } from './staff-services';
 import { staffDayIntervals, staffEligibility } from './staff';
 import { isUuid, LIMITS } from './validation';
 
@@ -964,6 +965,9 @@ export async function createAppointmentInOrg(
         true,
       );
       if (archived) throw new Conflict('service_archived');
+      // B.2b (S129): a service nobody does can't be booked
+      const doing = await tx(ctx, (client) => staffForService(client, serviceId), true);
+      if (doing.length === 0) throw new Conflict('service_unassigned');
       throw new Conflict('appointment_overlap');
     }
     candidates = await tx(
@@ -1009,6 +1013,10 @@ export async function createAppointmentInOrg(
       // B.3b: the active resources the service needs (an archived one is not required, S124)
       const resources = await requiredResources(client, serviceId);
       if (choice !== 'any') {
+        // B.2b (S129): the member must do the service
+        if (!(await doesService(client, choice, serviceId))) {
+          throw new Conflict('staff_not_for_service');
+        }
         await requireWithinSchedule(client, timeZone, choice, startsAt, endsAt);
       }
 
@@ -1273,6 +1281,14 @@ export async function moveAppointmentInOrg(
       }
     }
     const endsAt = new Date(startsAt.getTime() + duration * 60_000);
+    // B.2b (S129): moved to another member, that member must do the service (the same member keeps
+    // the appointments of a service they stopped doing, and can move them in time)
+    if (
+      staffMemberId !== row.staff_member_id &&
+      !(await doesService(client, staffMemberId, row.service_id))
+    ) {
+      throw new Conflict('staff_not_for_service');
+    }
     await requireWithinSchedule(client, timeZone, staffMemberId, startsAt, endsAt);
     const { rows } = await client.query<AppointmentRow>(
       `UPDATE booking.appointment

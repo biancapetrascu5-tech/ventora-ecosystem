@@ -162,3 +162,10 @@ export type {
   ReorderResourcesParams,
 } from './resources';
 export type { Resource, ResourceKind } from '../server/resources';
+// Lot B.2b: who does each service (design S129)
+export { setServiceStaff } from './services';
+export type { SetServiceStaffParams } from './services';
+export { setStaffServices } from './staff';
+export type { SetStaffServicesParams } from './staff';
+export type { DoneBy, MemberServices, StoppedPair } from '../server/staff-services';
+export type { DoneByInput } from '../server/services';

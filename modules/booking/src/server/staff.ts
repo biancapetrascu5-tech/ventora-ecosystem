@@ -5,6 +5,7 @@ import { uuidv7 } from '@ventora/db-kit';
 import { Conflict, InvalidInput, ResourceNotFound } from '@ventora/errors';
 import { getUserById } from '@ventora/identity';
 import { getOrganizationTimeZone, listMembers, resolveOrgContext } from '@ventora/organizations';
+import { servicesOfMembers, type MemberServices } from './staff-services';
 import { withBookingTx } from './db';
 import { isUuid } from './validation';
 import {
@@ -79,6 +80,8 @@ export type StaffListItem = StaffMember & {
   /** The week as the calendar takes it: the member's own week (or the business's), cut to it. */
   week: Array<{ weekday: number; intervals: Interval[] }>;
   next: StaffNext;
+  /** B.2b (S129) the „Servicii” column and section: „Toate”, „6 din 14”, „Niciunul”. */
+  services: MemberServices;
 };
 
 export type StaffList = {
@@ -566,6 +569,7 @@ export async function listStaffInOrg(ctx: TenantContext): Promise<StaffList> {
         )
       ).rows;
 
+      const services = await servicesOfMembers(client, ids);
       const members: StaffListItem[] = active.map((r) => {
         const own = new Map<number, WorkDay>(
           weekly.filter((w) => w.staff_member_id === r.id).map((w) => [w.weekday, toWorkDay(w)]),
@@ -598,7 +602,13 @@ export async function listStaffInOrg(ctx: TenantContext): Promise<StaffList> {
             ? { kind: 'other', date: o.on_date, intervals: day.intervals }
             : { kind: 'off', date: o.on_date };
         }
-        return { ...toStaff(r), role: roles.get(r.user_id) ?? 'member', week, next };
+        return {
+          ...toStaff(r),
+          role: roles.get(r.user_id) ?? 'member',
+          week,
+          next,
+          services: services.get(r.id) ?? { allServices: true, serviceIds: [], activeTotal: 0 },
+        };
       });
       const removed = rows
         .filter((r) => r.archived_at)

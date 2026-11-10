@@ -28,6 +28,11 @@ import {
 } from '../server/staff';
 import type { BusinessDay, Interval, ScheduleError, WorkDay } from '../server/schedule';
 import {
+  setStaffServicesInOrg,
+  type MemberServices,
+  type StoppedPair,
+} from '../server/staff-services';
+import {
   countUpcomingAppointmentsInOrg,
   countUpcomingByStaffInOrg,
   type UpcomingAppointments,
@@ -99,6 +104,13 @@ export type TimeOffInput = { startsOn: string; endsOn: string; reason?: string |
 export type AddStaffTimeOffParams = Session & TimeOffInput & { staffMemberId: string };
 export type UpdateStaffTimeOffParams = Session & TimeOffInput & { timeOffId: string };
 export type StaffTimeOffIdParams = Session & { timeOffId: string };
+export type SetStaffServicesParams = Session & {
+  staffMemberId: string;
+  /** „Toate serviciile” (including services added later). */
+  allServices: boolean;
+  /** The services ticked one by one (when not allServices); empty is allowed (S129, reception). */
+  serviceIds?: string[];
+};
 export type GetStaffAvailabilityParams = Session & {
   from: string;
   to: string;
@@ -249,3 +261,21 @@ export type {
   StaffTimeOff,
   WorkDay,
 };
+
+/**
+ * B.2b (S129) „Servicii”, from the member side (BookingTeamSchedule drawer). booking:settings. The
+ * answer lists the services the member stopped doing, with their future appointments (kept).
+ */
+export async function setStaffServices(
+  params: SetStaffServicesParams,
+): Promise<{ services: MemberServices; stopped: StoppedPair[] }> {
+  const ctx = await authorize({
+    sessionToken: params.sessionToken,
+    applicationId: 'booking',
+    permission: 'booking:settings',
+  });
+  return setStaffServicesInOrg(ctx, params.staffMemberId, {
+    allServices: params.allServices,
+    serviceIds: params.serviceIds,
+  });
+}

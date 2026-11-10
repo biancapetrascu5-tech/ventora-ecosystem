@@ -992,6 +992,8 @@ describe('B.2 — the grants (plan §1.4)', () => {
       'schedule_mode',
       'bookable_online',
       'sort_order',
+      // B.2b: „Toate serviciile”
+      'all_services',
       'archived_at',
       'archived_by_user_id',
       'updated_at',

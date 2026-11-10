@@ -138,3 +138,19 @@ Booking (numele afișat EasyBook) e prima aplicație. Planul: `docs/plans/BOOKIN
   - **Refuzul:** 23P01 cu hint `resource` → `Conflict('resource_unavailable')`. „Oricine e liber” nu trece la alt membru pentru o resursă plină.
 - **O programare anulată sau încheiată** nu mai ține unitatea, fiindcă se numără după stare.
 - **Locurile libere** (D-B5-8 = a): `rules.resources` din `slots.ts`, o oră cere o unitate liberă în fiecare resursă. `getAppointment` întoarce `resourceIds`.
+
+## Cine face fiecare serviciu (B.2b, design S129)
+- **Un membru M face serviciul S** dacă:
+  - `S.all_staff` („Toată echipa”, inclusiv membrii care intră mai târziu), sau
+  - `M.all_services` („Toate serviciile”, inclusiv serviciile adăugate mai târziu), sau
+  - există un rând activ `staff_service` (M, S), bifat individual.
+  - Condiția SQL comună e `DOES_SERVICE` (`server/staff-services.ts`).
+- **Implicit, toți fac tot:** ambele flag-uri pornesc `true`, iar un membru nou primește toate serviciile (S129, cu Notice în ecran).
+- **Un serviciu nou** primește bifați pe cei care fac deja servicii din categoria lui (`addDefaultStaffInTx`); „Fără categorie” nu bifează pe nimeni. Completarea implicită doar adaugă bife, nu ia nimănui „Toate serviciile”.
+- **Ambele părți editează aceeași legătură** (`setServiceStaff`, `setStaffServices`, sau `doneBy` în `createService` / `updateService`). O pereche debifată dintr-un flag transformă flag-ul în bife pentru tot restul, ca să nu se schimbe nimic altceva.
+- **Răspunsul** listează perechile oprite, cu programările viitoare (`stopped`); programările rămân (S129).
+- **Efectele:**
+  - `createAppointment` refuză un membru care nu face serviciul (`staff_not_for_service`) și un serviciu pe care nu-l face nimeni (`service_unassigned`);
+  - `moveAppointment` spre alt membru verifică la fel; același membru își poate muta în timp programările păstrate;
+  - locurile libere și „Oricine e liber” iau doar membrii care fac serviciul.
+- **Un membru fără niciun serviciu** (recepția) e permis.

@@ -213,9 +213,33 @@ Ordinea, după dependențe, e în §4. Condițiile externe și designul care lip
   - arhivarea unui serviciu sau scoaterea unui membru păstrează programările.
 - **Dependențe:** B.1, B.2, B.5.
 - **Migrări:** `booking_staff_services`.
-- **Ecrane:** lipsesc din design. Le cere fondatoarea în Claude Design: unde se alege, pe membru (`BookingTeamSchedule`) sau pe serviciu (`BookingServices`).
+- **Ecrane:** designul S129, din ambele părți: „Cine îl face” în `BookingServices` și „Servicii” în `BookingTeamSchedule`.
+- **Deciziile S129, aprobate pe 10.11.2026:**
+  - un serviciu pe care nu-l face nimeni rămâne în listă, cu avertisment; e ascuns online, iar calendarul nu-l programează. Salvarea e permisă, cu Notice;
+  - „Toată echipa” include și membrii care intră mai târziu; „Toate serviciile” include și serviciile adăugate mai târziu;
+  - la un serviciu nou sunt bifați cei care fac deja servicii din aceeași categorie; „Fără categorie” nu bifează pe nimeni;
+  - un membru nou primește toate serviciile, cu Notice; un membru fără niciun serviciu e permis (recepția);
+  - când un membru nu mai face un serviciu, programările lui viitoare pentru acel serviciu rămân, cu avertisment și link.
 - **Gata când:** un membru care nu face serviciul nu apare la locurile libere și nu primește programarea; T1 / T2 pe tabelul nou.
-- **Estimare:** 1–2 h, după design.
+- **Estimare:** 1–2 h.
+- **Înainte de primul salon de test** (§5).
+
+#### Lot B.2c — Durata și prețul pe membru (propus 10.11.2026)
+- **De ce:** de exemplu, un stilist senior e mai scump sau lucrează mai repede. S129 recomanda „nu pentru pilot”, dar fondatoarea a cerut lotul separat, după B.2b.
+- **Ce intră:**
+  - **o suprascriere opțională pe pereche (membru, serviciu):** durata (minimă și, la durata variabilă, maximă) și prețul (fel, sumă, sumă maximă). Moneda rămâne a serviciului (S123-2);
+  - **ce rămâne neschimbat:** fără suprascriere se folosesc durata și prețul serviciului; capacitatea și resursele rămân ale serviciului;
+  - **la programare:** durata implicită și copia prețului (`keep_snapshot`) vin de la membrul ales. La „Oricine e liber”, prețul și durata se fixează după membrul ales la salvare;
+  - **locurile libere:** fiecare membru are durata lui. La „Oricine e liber”, orele se calculează pe membru;
+  - **pagina publică (B.11):** prețul afișat la „Cu cine” e al membrului; la „Oricine e liber”, „de la” cel mai mic.
+- **Dependențe:** B.2b.
+- **Migrări:** `booking_staff_service_terms` (tabel nou pe pereche, cu RLS și GRANT-uri ca la celelalte tabele `booking`).
+- **Ecrane:** lipsesc din S129. Trebuie cerute în Claude Design:
+  - în `BookingServices`, formularul serviciului: „Preț și durată diferite pe membru”, câte un rând pe membru bifat la „Cine îl face”;
+  - în `BookingTeamSchedule`, secțiunea „Servicii”: prețul și durata pe serviciu, dacă diferă;
+  - `BookingNew` și `BookingPublic`: prețul și durata membrului ales.
+- **Gata când:** un membru cu suprascriere primește programarea cu durata și prețul lui; locurile libere folosesc durata lui; fără suprascriere nu se schimbă nimic; T1 / T2 pe tabelul nou.
+- **Estimare:** 1–2 h; ecranele după design.
 - **Înainte de primul salon de test** (§5).
 
 #### Lot B.3 — Resursele rezervabile și capacitatea
@@ -569,7 +593,8 @@ Intră înainte de primul salon de test (§7.1d).
 |---|---|---|---|
 | 1 | **B.4c** (consumatorul de rambursare a cotei, legat în platformă) → **B.5** (locurile libere) | B.4 | acum |
 | 2 | **B.3a** (catalogul resurselor) → **B.3b** (resursa pe programare, „fără suprapuneri” și pentru resurse, extinde B.5) | B.1, B.4, B.5 | după B.5 (designul: `BookingResources`) |
-| 2b | **B.2b** (serviciile fiecărui membru) | B.1, B.2, B.5 | după B.5 și după design; înainte de B.6c (`BookingNew`) |
+| 2b | **B.2b** (serviciile fiecărui membru) | B.1, B.2, B.5 | după B.3b (design S129); înainte de B.6c (`BookingNew`) |
+| 2c | **B.2c** (durata și prețul pe membru) | B.2b | după B.2b; ecranele după design |
 | 3 | **B.6a–d** (ecranele de lucru); coloanele de resurse din `BookingCalendar` după B.3b | B.4, B.5 (B.3b) | după B.5 |
 | 4 | **B.7** (fișa clientului, nota, blocații) | B.4 | acum; nota pe clienți reali după aviz |
 | 5 | **B.8** (câmpurile medicale) | B.7; D-B-16 | după D-B-16; date reale după aviz |
@@ -615,7 +640,8 @@ Intră înainte de primul salon de test (§7.1d).
 
 | Lot | Ce lipsește | Există deja |
 |---|---|---|
-| B.2b | tot: unde se alege ce servicii face un membru (pe membru sau pe serviciu) | `BookingTeamSchedule`, `BookingServices` |
+| B.2b | — | S129: `BookingServices` („Cine îl face”), `BookingTeamSchedule` („Servicii”), `BookingNew`, `BookingPublic` |
+| B.2c | prețul și durata pe membru în formularul serviciului, în secțiunea „Servicii” a membrului și în `BookingNew` / `BookingPublic` | S129 (fără prețul pe membru) |
 | B.3 | — | `BookingResources` (S124), Resursele din `BookingSettings` |
 | B.6 | — | `BookingToday`, `BookingCalendar`, `BookingList`, `BookingNew`, `BookingDetail`, `BookingSettings`, `BookingStates`, `BookingStatuses`, `BookingLimit` |
 | B.7 | istoricul încasărilor pe fișă, lista de clienți blocați | `BookingClientCard` |
@@ -637,7 +663,7 @@ Intră înainte de primul salon de test (§7.1d).
 | B.25–B.30 | setările fiecărei integrări (după aplicația parteneră) | — |
 | B.31 | asistentul în EasyBook | componentele AI comune (4.9) |
 
-**Ordinea comenzilor de design** urmează §4: B.2b (cerut de fondatoare), B.9 și B.10, apoi pagina de anulare / mutare (B.11) și B.12, apoi B.14–B.16 și B.33, apoi B.21–B.23 și B.34, apoi B.24.
+**Ordinea comenzilor de design** urmează §4: B.2c (B.2b e primit, S129), B.9 și B.10, apoi pagina de anulare / mutare (B.11) și B.12, apoi B.14–B.16 și B.33, apoi B.21–B.23 și B.34, apoi B.24.
 
 ### 5.3 Condițiile externe care rămân
 
@@ -664,6 +690,7 @@ Intră înainte de primul salon de test (§7.1d).
 |---|---|
 | B.4c (0,25), B.5 (2–2,5) | 2–3 |
 | B.2b (1–2) | 1–2 |
+| B.2c (1–2) | 1–2 |
 | B.3a + B.3b | 3 |
 | B.6a–d | 6–8 |
 | B.7 (4 + 1–2 pentru ClientDesk), B.8 (4) | 9–10 |
@@ -680,7 +707,7 @@ Intră înainte de primul salon de test (§7.1d).
 | B.31 (4, PROPUS) | 4 |
 | B.35 (1) | 1 |
 | B.32 (2) | 2 |
-| **Total** | **≈ 93–115 ore**, adică ~67 de loturi |
+| **Total** | **≈ 94–117 ore**, adică ~68 de loturi |
 
 Nu sunt incluse așteptarea deciziilor, designul care lipsește, condițiile externe din §5.3 și experimentele (E-SMS-1, E-AMEF).
 
@@ -697,7 +724,7 @@ Nu sunt incluse așteptarea deciziilor, designul care lipsește, condițiile ext
 | **Nota de comportament percepută ca nedreaptă sau scăpată către client** | Opțională, pornită de salon; motivul afișat; vizibilă doar echipei; teste că nu iese pe rute publice sau în e-mailuri; anularea salonului nu contează |
 | **Scurgerea datelor medicale** | Criptare, permisiune separată, jurnal pe fiecare citire, consimțământ versionat, doar pe afacerile marcate (B.8); date reale doar după aviz |
 | **Plăți:** dispute, rambursări, comision | Webhook-uri idempotente; saga cu eliberarea intervalului; comisionul configurabil din Founder |
-| **Volumul:** 66 de funcționalități, ~67 de loturi înainte de primul salon de test | Ordinea după dependențe (§4); loturi de 1–2 h; un agent pe folder, în paralel unde se poate |
+| **Volumul:** 66 de funcționalități, ~68 de loturi înainte de primul salon de test | Ordinea după dependențe (§4); loturi de 1–2 h; un agent pe folder, în paralel unde se poate |
 | **Designul lipsă** pentru mai mult de jumătate din funcționalități | Comanda de design pe loturi, în ordinea din §5.2 |
 | **Dependențe neînchise din F3 / F4:** URL public, Stripe, abonamente, notificări | Cerute explicit în §5.3 |
 | **SMS:** E-SMS-1 poate pica; condițiile operatorilor | Procedura din `SMS_NUMAR_PROPRIU.md` §7; E-SMS-1 întâi pe telefonul fondatoarei. Reminderul merge oricum prin SMSLink (B.17). |
