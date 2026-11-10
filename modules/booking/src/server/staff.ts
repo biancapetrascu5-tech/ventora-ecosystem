@@ -1026,65 +1026,14 @@ export async function getStaffAvailabilityInOrg(
   return withBookingTx(
     ctx.organizationId,
     async (client) => {
-      const business = await readBusinessWeek(client);
-      const staff = (
-        await client.query<StaffRow>(
-          `SELECT ${STAFF_COLUMNS} FROM booking.staff_member
-            WHERE archived_at IS NULL ${only ? 'AND id = $1' : ''}
-            ORDER BY sort_order, display_name, id`,
-          only ? [only] : [],
-        )
-      ).rows;
+      const staff = await readCalendarStaff(client, only);
       if (only && staff.length === 0) throw new ResourceNotFound();
-      const ids = staff.map((s) => s.id);
-      const weekly = (
-        await client.query<DayRow & { staff_member_id: string; weekday: number }>(
-          `SELECT staff_member_id, weekday, is_working, start1_min, end1_min, start2_min, end2_min
-             FROM booking.staff_weekly_hours WHERE staff_member_id = ANY($1::uuid[])`,
-          [ids],
-        )
-      ).rows;
-      const overrides = (
-        await client.query<OverrideRow>(
-          `SELECT ${OVERRIDE_COLUMNS} FROM booking.staff_day_override
-            WHERE staff_member_id = ANY($1::uuid[]) AND archived_at IS NULL
-              AND on_date BETWEEN $2::date AND $3::date`,
-          [ids, from, to],
-        )
-      ).rows;
-      const leaves = (
-        await client.query<TimeOffRow>(
-          `SELECT ${TIME_OFF_COLUMNS} FROM booking.staff_time_off
-            WHERE staff_member_id = ANY($1::uuid[]) AND archived_at IS NULL
-              AND starts_on <= $3::date AND ends_on >= $2::date`,
-          [ids, from, to],
-        )
-      ).rows;
-
-      const local: Array<{ staffMemberId: string; date: string; intervals: Interval[] }> = [];
-      for (const s of staff) {
-        const week = new Map<number, WorkDay>(
-          weekly.filter((w) => w.staff_member_id === s.id).map((w) => [w.weekday, toWorkDay(w)]),
-        );
-        for (const date of eachDate(from, to)) {
-          const o = overrides.find((x) => x.staff_member_id === s.id && x.on_date === date);
-          const onLeave = leaves.some(
-            (l) => l.staff_member_id === s.id && l.starts_on <= date && l.ends_on >= date,
-          );
-          local.push({
-            staffMemberId: s.id,
-            date,
-            intervals: dayAvailability({
-              date,
-              business,
-              scheduleMode: s.schedule_mode,
-              weekly: week,
-              override: o ? toWorkDay(o) : undefined,
-              onLeave,
-            }),
-          });
-        }
-      }
+      const local = await staffLocalDays(
+        client,
+        staff.map((s) => ({ id: s.id, scheduleMode: s.scheduleMode })),
+        from,
+        to,
+      );
 
       // local (date, minute) → instant in the business time zone, in one query
       const dates: string[] = [];
@@ -1118,6 +1067,102 @@ export async function getStaffAvailabilityInOrg(
 }
 
 export { ownDay };
+
+// ── B.5: the members in the calendar and their local days (shared with the free slots) ────
+
+/** A member in the calendar, as the availability and the free slots (B.5) need it. */
+export type CalendarStaff = {
+  id: string;
+  userId: string;
+  displayName: string;
+  scheduleMode: 'business' | 'custom';
+  bookableOnline: boolean;
+  sortOrder: number;
+};
+
+/** The members in the calendar (not archived), or one of them, in the team's order. */
+export async function readCalendarStaff(
+  client: PoolClient,
+  only: string | null,
+): Promise<CalendarStaff[]> {
+  const { rows } = await client.query<StaffRow>(
+    `SELECT ${STAFF_COLUMNS} FROM booking.staff_member
+      WHERE archived_at IS NULL ${only ? 'AND id = $1' : ''}
+      ORDER BY sort_order, display_name, id`,
+    only ? [only] : [],
+  );
+  return rows.map((r) => ({
+    id: r.id,
+    userId: r.user_id,
+    displayName: r.display_name,
+    scheduleMode: r.schedule_mode,
+    bookableOnline: r.bookable_online,
+    sortOrder: r.sort_order,
+  }));
+}
+
+/**
+ * The local working intervals of these members on every date from `from` to `to` (plan B.2 §1.3:
+ * leave, exception, own week or the business's, cut to the business hours), in 5 queries.
+ */
+export async function staffLocalDays(
+  client: PoolClient,
+  staff: ReadonlyArray<{ id: string; scheduleMode: 'business' | 'custom' }>,
+  from: string,
+  to: string,
+): Promise<Array<{ staffMemberId: string; date: string; intervals: Interval[] }>> {
+  const business = await readBusinessWeek(client);
+  const ids = staff.map((s) => s.id);
+  const weekly = (
+    await client.query<DayRow & { staff_member_id: string; weekday: number }>(
+      `SELECT staff_member_id, weekday, is_working, start1_min, end1_min, start2_min, end2_min
+         FROM booking.staff_weekly_hours WHERE staff_member_id = ANY($1::uuid[])`,
+      [ids],
+    )
+  ).rows;
+  const overrides = (
+    await client.query<OverrideRow>(
+      `SELECT ${OVERRIDE_COLUMNS} FROM booking.staff_day_override
+        WHERE staff_member_id = ANY($1::uuid[]) AND archived_at IS NULL
+          AND on_date BETWEEN $2::date AND $3::date`,
+      [ids, from, to],
+    )
+  ).rows;
+  const leaves = (
+    await client.query<TimeOffRow>(
+      `SELECT ${TIME_OFF_COLUMNS} FROM booking.staff_time_off
+        WHERE staff_member_id = ANY($1::uuid[]) AND archived_at IS NULL
+          AND starts_on <= $3::date AND ends_on >= $2::date`,
+      [ids, from, to],
+    )
+  ).rows;
+
+  const local: Array<{ staffMemberId: string; date: string; intervals: Interval[] }> = [];
+  for (const s of staff) {
+    const week = new Map<number, WorkDay>(
+      weekly.filter((w) => w.staff_member_id === s.id).map((w) => [w.weekday, toWorkDay(w)]),
+    );
+    for (const date of eachDate(from, to)) {
+      const o = overrides.find((x) => x.staff_member_id === s.id && x.on_date === date);
+      const onLeave = leaves.some(
+        (l) => l.staff_member_id === s.id && l.starts_on <= date && l.ends_on >= date,
+      );
+      local.push({
+        staffMemberId: s.id,
+        date,
+        intervals: dayAvailability({
+          date,
+          business,
+          scheduleMode: s.scheduleMode,
+          weekly: week,
+          override: o ? toWorkDay(o) : undefined,
+          onLeave,
+        }),
+      });
+    }
+  }
+  return local;
+}
 
 // ── B.4: the working intervals of one member on one local date ──────────────────────────────
 

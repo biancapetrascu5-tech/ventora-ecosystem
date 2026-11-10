@@ -13,6 +13,7 @@ import { Conflict, Forbidden, InvalidInput, ResourceNotFound } from '@ventora/er
 import { getOrganizationTimeZone } from '@ventora/organizations';
 import { commitQuota, releaseQuota, reserveQuota } from '@ventora/quota';
 import { withBookingTx } from './db';
+import { staffFreeAtInOrg } from './availability';
 import { staffDayIntervals, staffEligibility } from './staff';
 import { isUuid, LIMITS } from './validation';
 
@@ -852,6 +853,7 @@ export async function searchClientsInOrg(
 export type CreateAppointmentInput = {
   /** Given by the caller (a UUID): a retry with the same id returns the same appointment. */
   id: unknown;
+  /** A member's id, or 'any' („Oricine e liber”, B.5: the system chooses, D-B5-4). */
   staffMemberId: unknown;
   serviceId: unknown;
   clientId?: unknown;
@@ -882,10 +884,10 @@ class AlreadyCreated extends Error {}
 
 function sameRequest(
   row: AppointmentRow,
-  req: { staffMemberId: string; serviceId: string; startsAt: Date },
+  req: { staffMemberId: string | 'any'; serviceId: string; startsAt: Date },
 ) {
   return (
-    row.staff_member_id === req.staffMemberId &&
+    (req.staffMemberId === 'any' || row.staff_member_id === req.staffMemberId) &&
     row.service_id === req.serviceId &&
     row.starts_at.getTime() === req.startsAt.getTime()
   );
@@ -896,6 +898,12 @@ function sameRequest(
  * confirmed or not, note. Refused when the member is out of the calendar or no longer eligible
  * (D-B2-6), the service is archived, the time is outside the member's schedule (D-B4-4) or
  * overlaps (D-B4-2, D-B4-3). The quota is B.4b.
+ *
+ * B.5 („Oricine e liber”, D-B5-4 = a): staffMemberId 'any' → the members free at that time for the
+ * service (the free-slot rules of the team), fewest appointments that day first, then the team's
+ * order. Each is tried under a savepoint in the same transaction and with the same quota
+ * reservation; a parallel request that took the time (23P01) moves on to the next one. Nobody left
+ * → Conflict('appointment_overlap'). A member (scope own) chooses themselves, not 'any'.
  */
 export async function createAppointmentInOrg(
   ctx: TenantContext,
@@ -904,7 +912,8 @@ export async function createAppointmentInOrg(
 ): Promise<Appointment> {
   if (!isUuid(input.id)) throw new InvalidInput('id', 'invalid');
   const id = input.id;
-  const staffMemberId = requireId(input.staffMemberId);
+  const choice: string | 'any' =
+    input.staffMemberId === 'any' ? 'any' : requireId(input.staffMemberId);
   const serviceId = requireId(input.serviceId);
   const startsAt = requireInstant('startsAt', input.startsAt);
   const teamNote = normalizeOptionalText('teamNote', input.teamNote, APPOINTMENT_LIMITS.teamNote);
@@ -920,7 +929,7 @@ export async function createAppointmentInOrg(
   // a retry of the same operation: the same appointment, nothing written twice
   const existing = await findAppointment(ctx, id);
   if (existing) {
-    if (!sameRequest(existing, { staffMemberId, serviceId, startsAt })) {
+    if (!sameRequest(existing, { staffMemberId: choice, serviceId, startsAt })) {
       throw new Conflict('operation_reused');
     }
     // a process stopped after the transaction: finish the quota step (idempotent)
@@ -928,9 +937,45 @@ export async function createAppointmentInOrg(
     return toAppointment(existing);
   }
 
-  const staff = await tx(ctx, (client) => readStaffForBooking(client, staffMemberId), true);
-  requireScope(ctx, scope, staff);
-  await requireBookableStaff(ctx, staff);
+  let candidates: StaffForBooking[];
+  if (choice === 'any') {
+    if (scope === 'own') throw new Forbidden();
+    const free = await staffFreeAtInOrg(ctx, {
+      serviceId,
+      startsAt,
+      durationMinutes: input.durationMinutes,
+    });
+    if (free.length === 0) {
+      // the precise reason for an archived service; otherwise nobody is free at that time
+      const archived = await tx(
+        ctx,
+        async (client) =>
+          (
+            await client.query<{ archived_at: Date | null }>(
+              `SELECT archived_at FROM booking.service WHERE id = $1`,
+              [serviceId],
+            )
+          ).rows[0]?.archived_at,
+        true,
+      );
+      if (archived) throw new Conflict('service_archived');
+      throw new Conflict('appointment_overlap');
+    }
+    candidates = await tx(
+      ctx,
+      async (client) => {
+        const rows: StaffForBooking[] = [];
+        for (const staffId of free) rows.push(await readStaffForBooking(client, staffId));
+        return rows;
+      },
+      true,
+    );
+  } else {
+    const staff = await tx(ctx, (client) => readStaffForBooking(client, choice), true);
+    requireScope(ctx, scope, staff);
+    await requireBookableStaff(ctx, staff);
+    candidates = [staff];
+  }
   const timeZone = await getOrganizationTimeZone(ctx);
 
   // the quota first: at the limit nothing is written (QuotaExceeded; BookingLimit keeps the form)
@@ -956,7 +1001,9 @@ export async function createAppointmentInOrg(
         throw new InvalidInput('durationMinutes', 'invalid');
       }
       const endsAt = new Date(startsAt.getTime() + duration * 60_000);
-      await requireWithinSchedule(client, timeZone, staffMemberId, startsAt, endsAt);
+      if (choice !== 'any') {
+        await requireWithinSchedule(client, timeZone, choice, startsAt, endsAt);
+      }
 
       let clientRow: ClientRow;
       if (clientId) {
@@ -973,18 +1020,23 @@ export async function createAppointmentInOrg(
         clientRow = await insertClient(client, exec, ctx, input.client ?? {});
       }
 
-      const number = (
-        await client.query<{ last_number: number }>(
-          `INSERT INTO booking.appointment_counter (organization_id, last_number) VALUES ($1, 1)
+      const insertAppointmentRow = async (
+        db: PoolClient,
+        staffMemberId: string,
+        displayName: string,
+      ): Promise<{ number: number; row: AppointmentRow | undefined }> => {
+        const number = (
+          await db.query<{ last_number: number }>(
+            `INSERT INTO booking.appointment_counter (organization_id, last_number) VALUES ($1, 1)
            ON CONFLICT (organization_id)
              DO UPDATE SET last_number = booking.appointment_counter.last_number + 1
            RETURNING last_number`,
-          [ctx.organizationId],
-        )
-      ).rows[0]!.last_number;
+            [ctx.organizationId],
+          )
+        ).rows[0]!.last_number;
 
-      const { rows } = await client.query<AppointmentRow>(
-        `INSERT INTO booking.appointment
+        const { rows } = await db.query<AppointmentRow>(
+          `INSERT INTO booking.appointment
            (id, organization_id, number, staff_member_id, service_id, client_id, starts_at, ends_at,
             duration_minutes, capacity, status, service_name, staff_display_name, client_name,
             price_kind, price_minor, price_max_minor, currency, team_note, source,
@@ -993,65 +1045,92 @@ export async function createAppointmentInOrg(
                  $19, 'hub', $20)
          ON CONFLICT (id) DO NOTHING
          RETURNING ${APPOINTMENT_COLUMNS}`,
-        [
-          id,
-          ctx.organizationId,
-          number,
-          staffMemberId,
-          serviceId,
-          clientRow.id,
+          [
+            id,
+            ctx.organizationId,
+            number,
+            staffMemberId,
+            serviceId,
+            clientRow.id,
+            startsAt,
+            endsAt,
+            duration,
+            service.capacity,
+            status,
+            service.name,
+            displayName,
+            clientRow.name,
+            service.price_kind,
+            service.price_minor,
+            service.price_max_minor,
+            service.currency,
+            teamNote,
+            ctx.userId,
+          ],
+        );
+        return { number, row: rows[0] };
+      };
+
+      // „Oricine e liber”: the next member when the time was taken in the meantime (D-B5-4)
+      for (const staff of candidates) {
+        const staffMemberId = staff.id;
+        if (choice === 'any') await client.query('SAVEPOINT pick_staff');
+        let inserted: { number: number; row: AppointmentRow | undefined };
+        try {
+          if (choice === 'any') {
+            await requireWithinSchedule(client, timeZone, staffMemberId, startsAt, endsAt);
+          }
+          inserted = await insertAppointmentRow(client, staffMemberId, staff.display_name);
+        } catch (err) {
+          const code = (err as { code?: string })?.code;
+          const taken =
+            code === '23P01' || (err instanceof Conflict && err.message === 'staff_unavailable');
+          if (choice === 'any' && taken) {
+            await client.query('ROLLBACK TO SAVEPOINT pick_staff');
+            continue;
+          }
+          throw err;
+        }
+        const { number } = inserted;
+        // a concurrent retry got there first: roll this one back (no gap in the numbers)
+        if (!inserted.row) throw new AlreadyCreated();
+        const row = inserted.row;
+        await history(client, ctx, id, {
+          kind: 'created',
+          to: status,
           startsAt,
           endsAt,
-          duration,
-          service.capacity,
-          status,
-          service.name,
-          staff.display_name,
-          clientRow.name,
-          service.price_kind,
-          service.price_minor,
-          service.price_max_minor,
-          service.currency,
-          teamNote,
-          ctx.userId,
-        ],
-      );
-      // a concurrent retry got there first: roll this one back (no gap in the numbers)
-      if (!rows[0]) throw new AlreadyCreated();
-      const row = rows[0];
-      await history(client, ctx, id, {
-        kind: 'created',
-        to: status,
-        startsAt,
-        endsAt,
-        staffMemberId,
-      });
-      await audit(exec, ctx, AuditActions.bookingAppointmentCreated, 'booking_appointment', id, {
-        number,
-        staffMemberId,
-        serviceId,
-        clientId: clientRow.id,
-        startsAt: startsAt.toISOString(),
-        durationMinutes: duration,
-        status,
-      });
-      await writeOutboxEvent(client, 'booking', BookingAppointmentCreatedV1, {
-        organizationId: ctx.organizationId,
-        sourceApp: 'platform',
-        resourceId: id,
-        payload: {
-          appointmentId: id,
+          staffMemberId,
+        });
+        await audit(exec, ctx, AuditActions.bookingAppointmentCreated, 'booking_appointment', id, {
           number,
           staffMemberId,
           serviceId,
           clientId: clientRow.id,
           startsAt: startsAt.toISOString(),
-          endsAt: endsAt.toISOString(),
+          durationMinutes: duration,
           status,
-          source: 'hub',
-        },
-      });
-      return toAppointment(row);
+        });
+        await writeOutboxEvent(client, 'booking', BookingAppointmentCreatedV1, {
+          organizationId: ctx.organizationId,
+          sourceApp: 'platform',
+          resourceId: id,
+          payload: {
+            appointmentId: id,
+            number,
+            staffMemberId,
+            serviceId,
+            clientId: clientRow.id,
+            startsAt: startsAt.toISOString(),
+            endsAt: endsAt.toISOString(),
+            status,
+            source: 'hub',
+          },
+        });
+        return toAppointment(row);
+      }
+      // nobody was free any more
+      throw new Conflict('appointment_overlap');
     });
   } catch (err) {
     if (!(err instanceof AlreadyCreated)) {
@@ -1061,7 +1140,7 @@ export async function createAppointmentInOrg(
     }
     // a concurrent retry of the same operation wrote it; it commits the shared reservation
     const again = await findAppointment(ctx, id);
-    if (!again || !sameRequest(again, { staffMemberId, serviceId, startsAt })) {
+    if (!again || !sameRequest(again, { staffMemberId: choice, serviceId, startsAt })) {
       throw new Conflict('operation_reused');
     }
     return toAppointment(again);

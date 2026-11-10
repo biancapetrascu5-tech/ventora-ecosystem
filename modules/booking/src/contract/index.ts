@@ -139,3 +139,7 @@ export type {
   StaffTimeOffIdParams,
   GetStaffAvailabilityParams,
 } from './staff';
+// Lot B.5: the free slots, „Primul loc liber”, „Oricine e liber” (createAppointment accepts 'any')
+export { getFreeSlots, findFirstFreeSlot } from './availability';
+export type { GetFreeSlotsParams, FindFirstFreeSlotParams } from './availability';
+export type { FreeSlot, FreeSlotDay, FreeSlots, FirstFreeSlot } from '../server/availability';
