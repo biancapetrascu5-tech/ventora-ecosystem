@@ -63,6 +63,18 @@ export function useFounderNav(requestsBadge?: number, supportBadge?: number): Na
         { id: 'reduceri', label: t('discounts'), icon: 'percent', href: '/discounts' },
       ],
     },
+    // Lotul 5.10 (S136): Growth — intrările apar odată cu ecranele lor (Control mai întâi)
+    {
+      label: t('growth'),
+      items: [
+        {
+          id: 'control',
+          label: t('growthControl'),
+          icon: 'sliders-horizontal',
+          href: '/growth/control',
+        },
+      ],
+    },
     // Lotul 4.10 (S116, S120): „Automatizări” primul în „Sistem”; Jurnal și Setări vin cu ecranele lor
     {
       label: t('system'),

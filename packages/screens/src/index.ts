@@ -251,3 +251,12 @@ export type {
   SetupRow,
   SetupOfferValues,
 } from './founder/commercial/LifecycleViews';
+
+// Lotul 5.10 — Founder · Growth & Campaigns
+export { GrowthControlView } from './founder/growth/GrowthControlView';
+export type {
+  GrowthCaps,
+  GrowthLogRow,
+  GrowthStopTarget,
+  GrowthSwitchRow,
+} from './founder/growth/GrowthControlView';
