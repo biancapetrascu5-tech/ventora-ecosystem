@@ -150,7 +150,14 @@ describe('CR.1 — the role crm_rw and the schema', () => {
         WHERE n.nspname = 'crm' AND c.relkind = 'r' ORDER BY 1`,
     );
     // every new table of the schema is listed here on purpose
-    expect(tables.map((t) => t.relname)).toEqual(['outbox_events', 'processed_events', 'settings']);
+    // CR.2: company, contact
+    expect(tables.map((t) => t.relname)).toEqual([
+      'company',
+      'contact',
+      'outbox_events',
+      'processed_events',
+      'settings',
+    ]);
     for (const t of tables) {
       expect(t.relrowsecurity, t.relname).toBe(true);
       const policies = await adminQuery<{ qual: string | null; with_check: string | null }>(

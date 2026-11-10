@@ -1096,6 +1096,9 @@ importers:
       '@ventora/errors':
         specifier: workspace:*
         version: link:../../packages/errors
+      '@ventora/quota':
+        specifier: workspace:*
+        version: link:../../core/quota
       pg:
         specifier: ^8.0.0
         version: 8.23.1

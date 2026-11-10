@@ -23,6 +23,65 @@ model Settings {
   @@schema("crm")
 }
 
+/// Lot CR.2: a company (S130: one company per contact).
+model Company {
+  id              String    @id @db.Uuid
+  organizationId  String    @map("organization_id") @db.Uuid
+  name            String    @db.VarChar(160)
+  taxId           String?   @map("tax_id") @db.VarChar(12)
+  industry        String?   @db.VarChar(80)
+  address         String?   @db.VarChar(300)
+  website         String?   @db.VarChar(200)
+  phone           String?   @db.VarChar(16)
+  email           String?   @db.VarChar(254)
+  ownerUserId     String?   @map("owner_user_id") @db.Uuid
+  deletedAt       DateTime? @map("deleted_at") @db.Timestamptz
+  deletedByUserId String?   @map("deleted_by_user_id") @db.Uuid
+  createdByUserId String    @map("created_by_user_id") @db.Uuid
+  createdAt       DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt       DateTime  @default(now()) @map("updated_at") @db.Timestamptz
+
+  contacts Contact[]
+
+  @@map("company")
+  @@schema("crm")
+}
+
+/// Lot CR.2: a contact; in the 30-day bin when deleted_at is set (S130).
+model Contact {
+  id               String    @id @db.Uuid
+  organizationId   String    @map("organization_id") @db.Uuid
+  name             String    @db.VarChar(160)
+  phone            String?   @db.VarChar(16)
+  phoneAlt         String?   @map("phone_alt") @db.VarChar(16)
+  email            String?   @db.VarChar(254)
+  emailAlt         String?   @map("email_alt") @db.VarChar(254)
+  locale           String    @default("ro") @db.VarChar(2)
+  birthday         DateTime? @db.Date
+  address          String?   @db.VarChar(300)
+  source           String    @default("manual") @db.VarChar(12)
+  companyId        String?   @map("company_id") @db.Uuid
+  companyRole      String?   @map("company_role") @db.VarChar(80)
+  isCompanyPrimary Boolean   @default(false) @map("is_company_primary")
+  ownerUserId      String?   @map("owner_user_id") @db.Uuid
+  note             String?   @db.VarChar(1000)
+  quotaOperationId String?   @map("quota_operation_id") @db.VarChar(128)
+  deletedAt        DateTime? @map("deleted_at") @db.Timestamptz
+  deletedByUserId  String?   @map("deleted_by_user_id") @db.Uuid
+  createdByUserId  String?   @map("created_by_user_id") @db.Uuid
+  createdAt        DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt        DateTime  @default(now()) @map("updated_at") @db.Timestamptz
+
+  company Company? @relation(fields: [companyId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "contact_company_id_fkey")
+
+  @@index([organizationId, phone], map: "contact_organization_id_phone_idx")
+  @@index([organizationId, email], map: "contact_organization_id_email_idx")
+  @@index([organizationId, ownerUserId], map: "contact_organization_id_owner_idx")
+  @@index([companyId], map: "contact_company_id_idx")
+  @@map("contact")
+  @@schema("crm")
+}
+
 model OutboxEvent {
   eventId        String    @id @map("event_id") @db.Uuid
   type           String    @db.VarChar(128)

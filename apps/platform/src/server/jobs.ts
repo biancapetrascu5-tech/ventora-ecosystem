@@ -76,6 +76,8 @@ const OUTBOX_SOURCES: readonly OutboxSource[] = [
   // Lot B.1: booking.service.archived (fără consumator încă: se marchează livrat); B.4b:
   // booking.appointment.* (cancelled → rambursarea cotei; restul fără consumator încă)
   { schema: 'booking', moduleRole: 'booking_rw' },
+  // Lot CR.2: crm.contact.* / crm.company.* (no consumer yet: delivered)
+  { schema: 'crm', moduleRole: 'crm_rw' },
 ];
 
 // app_runtime (DATABASE_URL), creat la prima rulare: nu la build și nu în codul de request.

@@ -1,4 +1,28 @@
 // The public contract of ClientDesk, the only import allowed from outside the module
-// (`@ventora/crm`). Lot CR.1: the preferences of the business; the records come with CR.2 onwards.
+// (`@ventora/crm`). CR.1: the preferences; CR.2: the contacts and the companies.
 export { getCrmSettings } from './settings';
 export type { CrmSettings } from './settings';
+export {
+  assignContact,
+  createCompany,
+  createContact,
+  deleteCompany,
+  deleteContact,
+  getCompany,
+  getContact,
+  listCompanies,
+  listContacts,
+  lookupCompanyByCui,
+  restoreCompany,
+  restoreContact,
+  setContactCompany,
+  updateCompany,
+  updateContact,
+} from './contacts';
+export type {
+  AnafLookup,
+  Company,
+  Contact,
+  CreateContactParams,
+  ListContactsParams,
+} from './contacts';

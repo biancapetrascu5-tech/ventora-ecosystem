@@ -28,3 +28,15 @@ CRM (numele afișat ClientDesk) e a doua aplicație, în pachetul cu EasyBook (D
 8. **Auditul** se scrie în aceeași tranzacție, fără date personale în metadate. Codurile de audit noi intră în `core/audit`, într-un PR Core separat.
 9. **Evenimentele** se scriu în `crm.outbox_events`, în aceeași tranzacție; tipurile sunt în `packages/contracts`, prin PR separat.
 10. **O migrare nouă** se adaugă în `scripts/test-db-up.mjs` și în bucla din `ci.yml`.
+
+## Contactele și companiile (CR.2, design S130)
+- **`crm.contact`:** o singură companie pe contact (`company_id`, rolul, „Principal”, unul pe companie). Sursa e setul fix S130; `form`, `import` și `easybook` le scriu loturile lor, niciodată de mână.
+- **Cine vede:** cu `crm:admin` tot; un membru doar ce i-a fost atribuit și ce e neatribuit („Ia contactul”). Companiile le vede oricine are `crm:read`.
+- **Coșul (S130):** „Șterge” pune `deleted_at`; restaurarea e posibilă 30 de zile. Golirea după 30 de zile nu există încă: e NECESITĂ DECIZIE (ștergere fizică sau anonimizare).
+- **Contactul din EasyBook:** numele, telefonul, e-mailul și limba sunt doar în citire, iar contactul nu se șterge din ClientDesk (CHECK). Nu ține unitate de cotă.
+- **Cota `crm.contacts`:** rezervare (`crm.contact:<id>`), tranzacție, confirmare; eliberare la eșec; resolver-ul `contactQuotaHeld`. „Șterge” eliberează unitatea, restaurarea rezervă alta.
+- **ANAF** (`lookupCompanyByCui`): doar completează formularul, fără stocare. Adresa serviciului se configurează (`ANAF_TVA_URL`); e DE VALIDAT TEHNIC.
+- **Consimțământul de marketing** nu vine niciodată din bifa rezervării EasyBook (decizia din 10.11.2026). E o bifă separată, nebifată, pe canal, cu textul și data.
+  - Nu se construiește în acest modul: consimțământul (e-mail, SMS, WhatsApp), istoricul lui și lista de suprimare stau în `core/consent` (lotul C.5, agentul F5, rolul `consent_rw`). CR.14 îl folosește; dacă C.5 nu e gata, CR.14 așteaptă.
+- **Formularele publice (CR.17):** motorul se construiește o singură dată, în packages/Core, comun cu CampaignKit (MK.14). O trimitere ajunge în aplicațiile active ale afacerii: lead în ClientDesk, contact de marketing în CampaignKit.
+- **E-mailul ClientDesk:** domeniul propriu al afacerii (SPF / DKIM) e o opțiune de acum (design S134).
