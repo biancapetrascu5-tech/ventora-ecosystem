@@ -115,3 +115,12 @@ Gardul B.1 care numără tabelele schemei `booking` are cele 6 tabele noi. `scri
 - **B.4b** (PR separat, din această ramură): cota, resolverul, evenimentele, numărătorile pentru S124 și pentru catalog, T5 / T6.
 - **Ecranele:** B.6.
 - **Staging:** nimic aplicat. Planul de staging pentru `booking_appointments` vine după merge-ul C.0d, B.4a și B.4b.
+
+## Rebase pe `main` (10.11.2026)
+
+- **De ce:** după #99 (B.1-UI) și #101 (C.0d), PR-ul avea conflict cu `main`. Ramura e rebazată pe `main` `fefe7e3`.
+- **Conflictul:** doar `src/contract/index.ts`. Am păstrat exporturile B.4a, cu importurile interne fără extensie, ca în `main` (regula Turbopack din B.1-UI, `CLAUDE.md`). `CLAUDE.md` s-a îmbinat singur, cu secțiunile B.1-UI și B.4a; „Clienți în același timp” e trecut acum ca decis (D-B4-3).
+- **Verificările, refăcute:**
+  - `format:check`, `lint`, `typecheck`, `test`, `i18n:check`, `guards:verify`: exit 0.
+  - `build`: exit 0 la a doua rulare. Prima s-a oprit după „Compiled successfully”: procesul Next s-a închis pe Windows (0xC0000409).
+  - `test:integration` complet: **exit 0**. Booking **115/115** (103 + testele intrate cu B.1-UI), drift curat pe toate schemele.
