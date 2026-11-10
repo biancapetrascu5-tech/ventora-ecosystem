@@ -119,3 +119,13 @@ Booking (numele afișat EasyBook) e prima aplicație. Planul: `docs/plans/BOOKIN
   - B.3b adaugă resursele ca „ocupări” în plus (D-B5-8);
   - B.2b filtrează membrii după serviciile pe care le fac (D-B5-6). Până atunci, orice membru face orice serviciu;
   - B.10 dă fusul locației.
+
+## Resursele (B.3a, design S124 BookingResources)
+- **`resource`:** o cameră, un spațiu sau un echipament (`kind`: `room` / `space` / `equipment`, cele trei tipuri fixe din S124). `units` = „Câte programări simultan” (1–50). Numele e unic între resursele active, fără diferență de majuscule.
+- **`service_resource`:** „Servicii care o cer”. O programare pentru un astfel de serviciu are nevoie de o unitate liberă din resursă (B.3b). Contractul primește lista completă (`serviceIds`): adaugă ce lipsește, arhivează ce a fost scos. O legătură nu se șterge.
+- **Arhivarea** (S124, recomandarea din design): resursa iese din calendar și nu mai poate fi aleasă pentru servicii. Serviciile care o cer rămân legate și se programează fără ea cât e arhivată; după restaurare o cer din nou.
+- **Triggerul `service_resource_guard`:** o legătură nouă sau readusă unește un serviciu activ și o resursă activă ale aceleiași afaceri, oricine scrie.
+- **Drepturile:** citire cu `booking:read`, scriere cu `booking:settings`. Auditul: `booking.resource_*` (C.0e), ținta `booking_resource`.
+- **Ce nu intră:**
+  - oamenii de pe resursă (D-B3-1): designul S124 nu-i mai are, iar cine face ce vine cu B.2b;
+  - unitățile cerute pe serviciu: o programare ia mereu o unitate.

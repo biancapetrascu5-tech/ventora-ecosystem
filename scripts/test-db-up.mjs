@@ -425,6 +425,8 @@ for (const migration of [
   'modules/booking/prisma/migrations/20261109000001_booking_appointments/migration.sql',
   // Lot 5.5: Growth Engine v1 (schema growth, rolurile growth_rw / growth_founder)
   'core/growth/prisma/migrations/20261110000001_growth_init/migration.sql',
+  // Lot B.3a: the bookable resources and the services that need them
+  'modules/booking/prisma/migrations/20261110000001_booking_resources/migration.sql',
 ]) {
   psqlFile(TEST_DB.accessDb, join(ROOT, migration));
 }
