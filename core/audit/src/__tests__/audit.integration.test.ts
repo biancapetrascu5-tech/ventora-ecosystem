@@ -363,6 +363,34 @@ describe('TA.11 — invalid input rejected by the database', () => {
     expect(id).toBeTruthy();
   });
 
+  // Lot C.4: the ClientDesk application has its own category (CR.2, contacts and companies)
+  it('category crm and the C.4 codes and targets → accepted', async () => {
+    const cases: [string, string][] = [
+      [AuditActions.crmContactCreated, 'crm_contact'],
+      [AuditActions.crmContactUpdated, 'crm_contact'],
+      [AuditActions.crmContactOwnerChanged, 'crm_contact'],
+      [AuditActions.crmContactDeleted, 'crm_contact'],
+      [AuditActions.crmContactRestored, 'crm_contact'],
+      [AuditActions.crmCompanyCreated, 'crm_company'],
+      [AuditActions.crmCompanyUpdated, 'crm_company'],
+      [AuditActions.crmCompanyDeleted, 'crm_company'],
+      [AuditActions.crmCompanyRestored, 'crm_company'],
+      [AuditActions.crmSettingsUpdated, 'crm_settings'],
+    ];
+    for (const [action, targetType] of cases) {
+      const id = await writeAuditEvent(
+        event({
+          category: 'crm',
+          action,
+          targetType: targetType as never,
+          targetId: crypto.randomUUID(),
+        }),
+        { mode: 'required' },
+      );
+      expect(id, action).toBeTruthy();
+    }
+  });
+
   // Lot C.0c: the B.2 codes and targets pass audit.append_event (action format, target length)
   it('the B.2 codes (members in the calendar, schedule) → accepted with their targets', async () => {
     const pairs: Array<[string, string]> = [

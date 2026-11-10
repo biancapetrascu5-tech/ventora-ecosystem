@@ -189,6 +189,20 @@ export const AuditActions = {
   bookingResourceUpdated: 'booking.resource_updated',
   bookingResourceArchived: 'booking.resource_archived',
   bookingResourceRestored: 'booking.resource_restored',
+  // Lot C.4 / CR.2 — the ClientDesk contacts and companies (category crm, required), in the same
+  // transaction as the write. No personal data in the rows (name, phone, e-mail, note, birthday):
+  // only ids, the changed field names, the owner and the company. „Șterge” moves to the 30-day
+  // bin (S130): crm.contact_deleted / crm.company_deleted; restoring from it is *_restored.
+  crmContactCreated: 'crm.contact_created',
+  crmContactUpdated: 'crm.contact_updated',
+  crmContactOwnerChanged: 'crm.contact_owner_changed',
+  crmContactDeleted: 'crm.contact_deleted',
+  crmContactRestored: 'crm.contact_restored',
+  crmCompanyCreated: 'crm.company_created',
+  crmCompanyUpdated: 'crm.company_updated',
+  crmCompanyDeleted: 'crm.company_deleted',
+  crmCompanyRestored: 'crm.company_restored',
+  crmSettingsUpdated: 'crm.settings_updated',
 } as const;
 
 export type AuditAction = (typeof AuditActions)[keyof typeof AuditActions];

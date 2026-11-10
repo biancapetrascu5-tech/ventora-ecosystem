@@ -6,7 +6,9 @@ export type AuditCategory =
   | 'founder'
   | 'commercial'
   // Lot C.0b: the Booking application (B.1: the service catalog)
-  | 'booking';
+  | 'booking'
+  // Lot C.4: the ClientDesk application (CR.2: contacts and companies)
+  | 'crm';
 
 export type AuditOutcome = 'success' | 'failure' | 'denied';
 
@@ -69,7 +71,11 @@ export type AuditTargetType =
   | 'booking_client'
   | 'booking_settings'
   // Lot C.0e / B.3: the bookable resources (rooms, spaces, equipment)
-  | 'booking_resource';
+  | 'booking_resource'
+  // Lot C.4 / CR.2: the ClientDesk contacts, companies and preferences (category crm)
+  | 'crm_contact'
+  | 'crm_company'
+  | 'crm_settings';
 
 export type AuditEvent = {
   category: AuditCategory;
