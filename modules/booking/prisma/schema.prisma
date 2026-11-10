@@ -255,6 +255,7 @@ model Client {
   noteRemovals ClientNoteRemoval[]
   medicalConsents MedicalConsent[]
   medicalAnswers  MedicalAnswer[]
+  payments        AppointmentPayment[]
 
   @@index([organizationId, name], map: "client_organization_id_name_idx")
   @@index([mergedIntoClientId], map: "client_merged_into_client_id_idx")
@@ -313,6 +314,7 @@ model Appointment {
   service     Service              @relation(fields: [serviceId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "appointment_service_id_fkey")
   client      Client               @relation(fields: [clientId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "appointment_client_id_fkey")
   history     AppointmentHistory[]
+  payments    AppointmentPayment[]
   resources   AppointmentResource[]
 
   @@unique([organizationId, number], map: "appointment_organization_id_number_key")
@@ -568,5 +570,31 @@ model MedicalAnswer {
 
   @@unique([clientId, fieldId], map: "medical_answer_client_id_field_id_key")
   @@map("medical_answer")
+  @@schema("booking")
+}
+
+/// Lot B.21: a payment or a refund on an appointment (insert only; a mistake → a refund).
+model AppointmentPayment {
+  id                String    @id @db.Uuid
+  organizationId    String    @map("organization_id") @db.Uuid
+  appointmentId     String    @map("appointment_id") @db.Uuid
+  clientId          String    @map("client_id") @db.Uuid
+  kind              String    @db.VarChar(8)
+  amountMinor       Int       @map("amount_minor")
+  currency          String    @db.Char(3)
+  method            String    @db.VarChar(8)
+  note              String?   @db.VarChar(500)
+  refundOfPaymentId String?   @map("refund_of_payment_id") @db.Uuid
+  recordedAt        DateTime  @default(now()) @map("recorded_at") @db.Timestamptz
+  recordedByUserId  String    @map("recorded_by_user_id") @db.Uuid
+
+  appointment Appointment          @relation(fields: [appointmentId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "appointment_payment_appointment_id_fkey")
+  client      Client               @relation(fields: [clientId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "appointment_payment_client_id_fkey")
+  refundOf    AppointmentPayment?  @relation("PaymentRefund", fields: [refundOfPaymentId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "appointment_payment_refund_of_fkey")
+  refunds     AppointmentPayment[] @relation("PaymentRefund")
+
+  @@index([appointmentId, recordedAt], map: "appointment_payment_appointment_id_idx")
+  @@index([clientId, recordedAt], map: "appointment_payment_client_id_idx")
+  @@map("appointment_payment")
   @@schema("booking")
 }

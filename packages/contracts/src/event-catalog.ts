@@ -634,6 +634,31 @@ export const BookingClientErasedV1 = defineEvent({
   schema: z.object({ clientId: z.uuid(), erasedAt: z.iso.datetime({ offset: true }) }).strict(),
 });
 
+/**
+ * `booking.payment.recorded` v1 (Lot B.21, C-B-2): a payment or a refund recorded on an appointment
+ * („Încasează”), for Finance. Ids, the amount, the currency, the method: never the client's name or
+ * the note.
+ */
+export const BookingPaymentRecordedV1 = defineEvent({
+  type: 'booking.payment.recorded',
+  version: 1,
+  sourceApp: 'platform',
+  growthSafe: false,
+  withoutConsumer: 'complete',
+  schema: z
+    .object({
+      paymentId: z.uuid(),
+      appointmentId: z.uuid(),
+      clientId: z.uuid(),
+      kind: z.enum(['payment', 'refund']),
+      amountMinor: z.number().int().positive(),
+      currency: z.enum(['RON', 'EUR']),
+      method: z.enum(['cash', 'card', 'transfer', 'other']),
+      recordedAt: z.iso.datetime({ offset: true }),
+    })
+    .strict(),
+});
+
 /*
  * Lot 5.0 — Growth Engine v1 (FAZA-5.md, D5-7, GROWTH_ENGINE §2.3, §2.7). Semnalele și conversiile
  * sunt `growthSafe`: doar id-uri și chei, fără sume, nume sau conținut. Venitul atribuit se citește
@@ -878,6 +903,7 @@ export const EVENT_CATALOG: readonly EventDefinition[] = [
   BookingClientUpdatedV1 as EventDefinition,
   BookingClientMergedV1 as EventDefinition,
   BookingClientErasedV1 as EventDefinition,
+  BookingPaymentRecordedV1 as EventDefinition,
   CommercialFeatureLockedClickedV1 as EventDefinition,
   IntegrationTargetMissingV1 as EventDefinition,
   CommercialAddonPurchasedV1 as EventDefinition,

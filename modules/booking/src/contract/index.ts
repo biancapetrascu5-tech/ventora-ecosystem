@@ -226,3 +226,17 @@ export type {
   MedicalField,
   MedicalFieldKind,
 } from '../server/medical';
+// Lot B.21: the payments of an appointment, without a provider (C-B-2: booking.payment.recorded)
+export {
+  recordPayment,
+  recordRefund,
+  getAppointmentPayments,
+  getClientPaymentTotals,
+} from './payments';
+export type {
+  RecordPaymentParams,
+  RecordRefundParams,
+  AppointmentPaymentsParams,
+  ClientPaymentTotalsParams,
+} from './payments';
+export type { AppointmentBalance, AppointmentPayment, PaymentMethod } from '../server/payments';
