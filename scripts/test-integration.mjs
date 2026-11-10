@@ -2,8 +2,8 @@
 /**
  * Rulează toate testele de integrare local, identic cu CI:
  *   1. Pornește DB-ul de test
- *   2. Verifică garda de drift (prisma migrate diff --exit-code): identity, founder, organizations, audit, access, notifications, files, support, commercial, booking, billing, workflows, ai
- *   3. Rulează testele de integrare (db-kit, audit, identity, organizations, integrations, access, notifications, files, support, commercial, booking, billing, workflows, ai)
+ *   2. Verifică garda de drift (prisma migrate diff --exit-code): identity, founder, organizations, audit, access, notifications, files, support, commercial, booking, billing, workflows, ai, growth
+ *   3. Rulează testele de integrare (db-kit, audit, identity, organizations, integrations, access, notifications, files, support, commercial, booking, billing, workflows, ai, growth)
  *      și sincronizarea registrului comercial de două ori (a doua nu trebuie să schimbe nimic)
  *   4. Oprește DB-ul (indiferent de rezultat)
  *
@@ -46,6 +46,7 @@ const SHADOW_WORKFLOWS = `postgresql://postgres:test@localhost:${PG}/shadow_work
 const SHADOW_SUPPORT = `postgresql://postgres:test@localhost:${PG}/shadow_support_diff`;
 const SHADOW_AI = `postgresql://postgres:test@localhost:${PG}/shadow_ai_diff`;
 const SHADOW_BOOKING = `postgresql://postgres:test@localhost:${PG}/shadow_booking_diff`;
+const SHADOW_GROWTH = `postgresql://postgres:test@localhost:${PG}/shadow_growth_diff`;
 
 let exitCode = 0;
 
@@ -273,6 +274,23 @@ try {
     DATABASE_URL_FOUNDER_TEST: `postgresql://founder_runtime:${TEST_DB.founderPw}@localhost:${PG}/${TEST_DB.accessDb}`,
     DATABASE_URL_ADMIN_TEST: ADMIN_ACCESS,
   });
+
+  // --- Lot 5.5: Growth Engine v1 (drift, teste pe baza access, apoi registrul real de două ori) ---
+  console.log('[test:integration] Verificare drift growth schema...');
+  runPkg(
+    '@ventora/growth',
+    `exec prisma migrate diff --from-migrations ./prisma/migrations --to-schema ./prisma/schema.prisma --exit-code --config prisma7.config.ts`,
+    { DATABASE_URL: ADMIN_ACCESS, SHADOW_DATABASE_URL: SHADOW_GROWTH },
+  );
+  console.log('\n[test:integration] growth...');
+  runPkg('@ventora/growth', 'test:integration', {
+    DATABASE_URL_TEST: `postgresql://app_runtime:${TEST_DB.appPw}@localhost:${PG}/${TEST_DB.accessDb}`,
+    DATABASE_URL_FOUNDER_TEST: `postgresql://founder_runtime:${TEST_DB.founderPw}@localhost:${PG}/${TEST_DB.accessDb}`,
+    DATABASE_URL_ADMIN_TEST: ADMIN_ACCESS,
+  });
+  console.log('\n[test:integration] sloturile Growth (sync-growth-registry, de două ori)...');
+  run('pnpm tsx scripts/sync-growth-registry.ts', { DIRECT_URL: ADMIN_ACCESS });
+  run('pnpm tsx scripts/sync-growth-registry.ts --expect-noop', { DIRECT_URL: ADMIN_ACCESS });
 
   // --- D3-1: scripts/seed-pricing.ts pe o bază curată (registrul real, fără prețuri) ---
   console.log('\n[test:integration] prețurile D3-1 (seed-pricing, bază curată)...');

@@ -120,6 +120,7 @@ for (const db of [
   'shadow_support_diff',
   'shadow_ai_diff',
   'shadow_booking_diff',
+  'shadow_growth_diff',
 ]) {
   psql('postgres', `DROP DATABASE IF EXISTS ${db}; CREATE DATABASE ${db};`);
 }
@@ -422,6 +423,8 @@ for (const migration of [
   'modules/booking/prisma/migrations/20261108000001_booking_staff/migration.sql',
   // Lot B.4a: the appointments, the clients, the booking rules, the blocked times
   'modules/booking/prisma/migrations/20261109000001_booking_appointments/migration.sql',
+  // Lot 5.5: Growth Engine v1 (schema growth, rolurile growth_rw / growth_founder)
+  'core/growth/prisma/migrations/20261110000001_growth_init/migration.sql',
 ]) {
   psqlFile(TEST_DB.accessDb, join(ROOT, migration));
 }

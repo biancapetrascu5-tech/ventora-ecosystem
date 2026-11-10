@@ -1,0 +1,259 @@
+// Schema "growth" (Lot 5.5) — folosită pentru garda de drift (prisma migrate diff) și
+// prisma migrate deploy. Codul nu folosește un client Prisma generat (ca în core/workflows): rulează
+// pe pg, cu SET LOCAL ROLE growth_rw (Hub, job-uri) sau growth_founder (Founder).
+// CHECK-urile (lista albă, plafoanele P25), triggerele, rolurile, grant-urile, RLS și funcțiile
+// SECURITY DEFINER sunt doar în migrare.
+
+datasource db {
+  provider = "postgresql"
+  schemas  = ["growth"]
+}
+
+/// Registrul sloturilor (manifestele + Hub), sincronizat la deploy; oprirea pe slot.
+model Placement {
+  id                 String    @id @db.VarChar(128)
+  applicationId      String    @map("application_id") @db.VarChar(64)
+  kind               String    @db.VarChar(16)
+  userInitiated      Boolean   @default(false) @map("user_initiated")
+  critical           Boolean   @default(false)
+  retiredAt          DateTime? @map("retired_at") @db.Timestamptz
+  stopped            Boolean   @default(false)
+  stopReason         String?   @map("stop_reason")
+  stoppedByFounderId String?   @map("stopped_by_founder_id") @db.Uuid
+  stoppedAt          DateTime? @map("stopped_at") @db.Timestamptz
+  syncedAt           DateTime  @default(now()) @map("synced_at") @db.Timestamptz
+
+  campaigns   CampaignSlot[]
+  impressions Impression[]
+
+  @@map("placement")
+  @@schema("growth")
+}
+
+/// O ofertă: tipul și obiectul din core/commercial (fără prețuri proprii).
+model Offer {
+  id                 String   @id @db.Uuid
+  code               String   @unique(map: "offer_code_key") @db.VarChar(64)
+  type               String   @db.VarChar(32)
+  applicationId      String?  @map("application_id") @db.VarChar(64)
+  planVersionId      String?  @map("plan_version_id") @db.Uuid
+  addonCode          String?  @map("addon_code") @db.VarChar(64)
+  featureKey         String?  @map("feature_key") @db.VarChar(128)
+  trialDays          Int?     @map("trial_days")
+  status             String   @default("draft") @db.VarChar(16)
+  createdByFounderId String   @map("created_by_founder_id") @db.Uuid
+  createdAt          DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt          DateTime @default(now()) @map("updated_at") @db.Timestamptz
+
+  texts        OfferText[]
+  campaigns    Campaign[]
+  impressions  Impression[]
+  suppressions Suppression[]
+  conversions  Conversion[]
+
+  @@map("offer")
+  @@schema("growth")
+}
+
+/// Textul unei oferte într-o limbă, cu aprobarea lui (P20).
+model OfferText {
+  offerId             String    @map("offer_id") @db.Uuid
+  locale              String    @db.VarChar(2)
+  title               String    @db.VarChar(48)
+  body                String    @db.VarChar(300)
+  status              String    @default("draft") @db.VarChar(16)
+  approvedByFounderId String?   @map("approved_by_founder_id") @db.Uuid
+  approvedAt          DateTime? @map("approved_at") @db.Timestamptz
+  updatedByFounderId  String    @map("updated_by_founder_id") @db.Uuid
+  updatedAt           DateTime  @default(now()) @map("updated_at") @db.Timestamptz
+
+  offer Offer @relation(fields: [offerId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "offer_text_offer_id_fkey")
+
+  @@id([offerId, locale], map: "offer_text_pkey")
+  @@map("offer_text")
+  @@schema("growth")
+}
+
+/// O audiență salvată: doar regula din lista albă (P23).
+model Audience {
+  id                 String    @id @db.Uuid
+  name               String    @db.VarChar(120)
+  rule               Json
+  archivedAt         DateTime? @map("archived_at") @db.Timestamptz
+  createdByFounderId String    @map("created_by_founder_id") @db.Uuid
+  createdAt          DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt          DateTime  @default(now()) @map("updated_at") @db.Timestamptz
+
+  campaigns Campaign[]
+
+  @@map("audience")
+  @@schema("growth")
+}
+
+/// O campanie automată (semnal) sau programată (perioadă).
+model Campaign {
+  id                    String    @id @db.Uuid
+  name                  String    @db.VarChar(120)
+  offerId               String    @map("offer_id") @db.Uuid
+  mode                  String    @db.VarChar(16)
+  signalType            String?   @map("signal_type") @db.VarChar(128)
+  signalVersion         Int?      @map("signal_version")
+  startsAt              DateTime? @map("starts_at") @db.Timestamptz
+  endsAt                DateTime? @map("ends_at") @db.Timestamptz
+  audienceId            String?   @map("audience_id") @db.Uuid
+  rule                  Json
+  audienceRole          String    @default("buyer") @map("audience_role") @db.VarChar(8)
+  priority              Int       @default(50)
+  maxImpressionsPerUser Int?      @map("max_impressions_per_user")
+  status                String    @default("draft") @db.VarChar(16)
+  publishedAt           DateTime? @map("published_at") @db.Timestamptz
+  stoppedAt             DateTime? @map("stopped_at") @db.Timestamptz
+  stopReason            String?   @map("stop_reason") @db.VarChar(32)
+  stopNote              String?   @map("stop_note")
+  stoppedByFounderId    String?   @map("stopped_by_founder_id") @db.Uuid
+  createdByFounderId    String    @map("created_by_founder_id") @db.Uuid
+  createdAt             DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt             DateTime  @default(now()) @map("updated_at") @db.Timestamptz
+
+  offer       Offer          @relation(fields: [offerId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "campaign_offer_id_fkey")
+  audience    Audience?      @relation(fields: [audienceId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "campaign_audience_id_fkey")
+  slots       CampaignSlot[]
+  impressions Impression[]
+  conversions Conversion[]
+
+  @@index([offerId], map: "campaign_offer_id_idx")
+  @@index([status, mode], map: "campaign_status_idx")
+  @@map("campaign")
+  @@schema("growth")
+}
+
+/// Sloturile unei campanii.
+model CampaignSlot {
+  campaignId String @map("campaign_id") @db.Uuid
+  slotId     String @map("slot_id") @db.VarChar(128)
+
+  campaign Campaign  @relation(fields: [campaignId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "campaign_slot_campaign_id_fkey")
+  slot     Placement @relation(fields: [slotId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "campaign_slot_slot_id_fkey")
+
+  @@id([campaignId, slotId], map: "campaign_slot_pkey")
+  @@index([slotId], map: "campaign_slot_slot_id_idx")
+  @@map("campaign_slot")
+  @@schema("growth")
+}
+
+/// Oprirea globală și plafoanele globale (un singur rând).
+model Control {
+  id                  Int      @id @default(1) @db.SmallInt
+  paused              Boolean  @default(true)
+  pauseReason         String?  @map("pause_reason")
+  dailyPerUser        Int      @default(1) @map("daily_per_user")
+  weeklyPerUser       Int      @default(3) @map("weekly_per_user")
+  dismissCooldownDays Int      @default(30) @map("dismiss_cooldown_days")
+  changedByFounderId  String?  @map("changed_by_founder_id") @db.Uuid
+  changedAt           DateTime @default(now()) @map("changed_at") @db.Timestamptz
+
+  @@map("control")
+  @@schema("growth")
+}
+
+/// O afișare: ce, unde, cui, în ce limbă.
+model Impression {
+  id             String   @id @db.Uuid
+  organizationId String   @map("organization_id") @db.Uuid
+  userId         String   @map("user_id") @db.Uuid
+  campaignId     String   @map("campaign_id") @db.Uuid
+  offerId        String   @map("offer_id") @db.Uuid
+  slotId         String   @map("slot_id") @db.VarChar(128)
+  locale         String   @db.VarChar(2)
+  proactive      Boolean
+  audienceRole   String   @map("audience_role") @db.VarChar(8)
+  shownAt        DateTime @default(now()) @map("shown_at") @db.Timestamptz
+
+  campaign     Campaign      @relation(fields: [campaignId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "impression_campaign_id_fkey")
+  offer        Offer         @relation(fields: [offerId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "impression_offer_id_fkey")
+  slot         Placement     @relation(fields: [slotId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "impression_slot_id_fkey")
+  interactions Interaction[]
+
+  @@index([userId, shownAt], map: "impression_user_id_shown_at_idx")
+  @@index([campaignId, shownAt], map: "impression_campaign_id_shown_at_idx")
+  @@index([organizationId, shownAt], map: "impression_organization_id_shown_at_idx")
+  @@map("impression")
+  @@schema("growth")
+}
+
+/// Click, „Nu mă interesează”, „Amintește-mi”, „Recomandă”, „Anulează”.
+model Interaction {
+  id             String    @id @db.Uuid
+  organizationId String    @map("organization_id") @db.Uuid
+  userId         String    @map("user_id") @db.Uuid
+  impressionId   String    @map("impression_id") @db.Uuid
+  kind           String    @db.VarChar(16)
+  idempotencyKey String    @unique(map: "interaction_idempotency_key_key") @map("idempotency_key") @db.VarChar(128)
+  snoozeUntil    DateTime? @map("snooze_until") @db.Timestamptz
+  createdAt      DateTime  @default(now()) @map("created_at") @db.Timestamptz
+
+  impression  Impression   @relation(fields: [impressionId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "interaction_impression_id_fkey")
+  conversions Conversion[]
+
+  @@index([impressionId], map: "interaction_impression_id_idx")
+  @@index([organizationId, createdAt], map: "interaction_organization_id_created_at_idx")
+  @@map("interaction")
+  @@schema("growth")
+}
+
+/// O ofertă ascunsă unei persoane până la un termen.
+model Suppression {
+  organizationId String   @map("organization_id") @db.Uuid
+  userId         String   @map("user_id") @db.Uuid
+  offerId        String   @map("offer_id") @db.Uuid
+  reason         String   @db.VarChar(16)
+  until          DateTime @db.Timestamptz
+  createdAt      DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt      DateTime @default(now()) @map("updated_at") @db.Timestamptz
+
+  offer Offer @relation(fields: [offerId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "suppression_offer_id_fkey")
+
+  @@id([organizationId, userId, offerId], map: "suppression_pkey")
+  @@map("suppression")
+  @@schema("growth")
+}
+
+/// Un semnal growthSafe primit (campaniile automate).
+model SignalHit {
+  id             String   @id @db.Uuid
+  organizationId String   @map("organization_id") @db.Uuid
+  userId         String?  @map("user_id") @db.Uuid
+  eventId        String   @unique(map: "signal_hit_event_id_key") @map("event_id") @db.Uuid
+  eventType      String   @map("event_type") @db.VarChar(128)
+  eventVersion   Int      @map("event_version")
+  payload        Json     @default("{}")
+  receivedAt     DateTime @default(now()) @map("received_at") @db.Timestamptz
+  expiresAt      DateTime @map("expires_at") @db.Timestamptz
+
+  @@index([organizationId, eventType, expiresAt], map: "signal_hit_organization_id_event_type_idx")
+  @@map("signal_hit")
+  @@schema("growth")
+}
+
+/// O conversie atribuită unui click din ultimele 7 zile (P24).
+model Conversion {
+  id                 String   @id @db.Uuid
+  organizationId     String   @map("organization_id") @db.Uuid
+  campaignId         String   @map("campaign_id") @db.Uuid
+  offerId            String   @map("offer_id") @db.Uuid
+  clickInteractionId String   @map("click_interaction_id") @db.Uuid
+  eventId            String   @unique(map: "conversion_event_id_key") @map("event_id") @db.Uuid
+  eventType          String   @map("event_type") @db.VarChar(128)
+  convertedAt        DateTime @map("converted_at") @db.Timestamptz
+  revenueMinor       BigInt?  @map("revenue_minor")
+  currency           String?  @db.VarChar(3)
+  createdAt          DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  campaign Campaign    @relation(fields: [campaignId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "conversion_campaign_id_fkey")
+  offer    Offer       @relation(fields: [offerId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "conversion_offer_id_fkey")
+  click    Interaction @relation(fields: [clickInteractionId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "conversion_click_interaction_id_fkey")
+
+  @@index([campaignId, convertedAt], map: "conversion_campaign_id_converted_at_idx")
+  @@map("conversion")
+  @@schema("growth")
+}
