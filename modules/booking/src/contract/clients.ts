@@ -12,6 +12,12 @@ import {
   type ClientCard,
   type ClientCardAppointment,
 } from '../server/clients';
+import {
+  getBehaviorNoteSettingsInOrg,
+  removeBehaviorNoteInOrg,
+  setBehaviorNoteSettingsInOrg,
+  type BehaviorNoteSettings,
+} from '../server/behavior';
 
 /*
  * Lot B.7a — the public contract of the client card (plan reports/2026-11-10_1745_plan-booking-b7.md,
@@ -100,4 +106,37 @@ export async function eraseClient(
   params: ClientIdParams,
 ): Promise<{ appointmentsAnonymized: number }> {
   return eraseClientInOrg(await auth(params, 'booking:admin'), params.clientId);
+}
+
+// ── B.7b: the behaviour note (S139) ─────────────────────────────────────────────────────────
+
+export type SetBehaviorNoteSettingsParams = Session & {
+  enabled?: boolean;
+  noShows?: 2 | 3;
+  months?: 3 | 6 | 12;
+};
+export type RemoveBehaviorNoteParams = Session & { clientId: string; reason: string };
+
+/** Setări › General · „Nota de comportament” (booking:read). */
+export async function getBehaviorNoteSettings(params: Session): Promise<BehaviorNoteSettings> {
+  return getBehaviorNoteSettingsInOrg(await auth(params, 'booking:read'));
+}
+
+/** Turn the note on / off and set the rule (booking:settings). */
+export async function setBehaviorNoteSettings(
+  params: SetBehaviorNoteSettingsParams,
+): Promise<BehaviorNoteSettings> {
+  return setBehaviorNoteSettingsInOrg(await auth(params, 'booking:settings'), {
+    enabled: params.enabled,
+    noShows: params.noShows,
+    months: params.months,
+  });
+}
+
+/** „Șterge nota” from the card, with a reason (booking:admin). */
+export async function removeBehaviorNote(params: RemoveBehaviorNoteParams): Promise<void> {
+  return removeBehaviorNoteInOrg(await auth(params, 'booking:admin'), {
+    clientId: params.clientId,
+    reason: params.reason,
+  });
 }

@@ -214,6 +214,11 @@ model Settings {
   confirmationMode String   @default("auto") @map("confirmation_mode") @db.VarChar(6)
   noticeMin        Int      @default(0) @map("notice_min") @db.SmallInt
   bufferMin        Int      @default(0) @map("buffer_min") @db.SmallInt
+  /// B.7b (S139): the behaviour note, off by default
+  behaviorNoteEnabled Boolean   @default(false) @map("behavior_note_enabled")
+  behaviorNoteNoShows Int       @default(2) @map("behavior_note_no_shows") @db.SmallInt
+  behaviorNoteMonths  Int       @default(6) @map("behavior_note_months") @db.SmallInt
+  behaviorNoteSince   DateTime? @map("behavior_note_since") @db.Timestamptz
   updatedByUserId  String   @map("updated_by_user_id") @db.Uuid
   createdAt        DateTime @default(now()) @map("created_at") @db.Timestamptz
   updatedAt        DateTime @default(now()) @map("updated_at") @db.Timestamptz
@@ -247,6 +252,7 @@ model Client {
   mergedInto   Client?       @relation("ClientMerge", fields: [mergedIntoClientId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "client_merged_into_client_id_fkey")
   mergedFrom   Client[]      @relation("ClientMerge")
   blocks       ClientBlock[]
+  noteRemovals ClientNoteRemoval[]
 
   @@index([organizationId, name], map: "client_organization_id_name_idx")
   @@index([mergedIntoClientId], map: "client_merged_into_client_id_idx")
@@ -481,5 +487,21 @@ model ClientBlock {
 
   @@index([clientId], map: "client_block_client_id_idx")
   @@map("client_block")
+  @@schema("booking")
+}
+
+/// Lot B.7b: a removal of the behaviour note from the card, with its reason (insert only).
+model ClientNoteRemoval {
+  id              String   @id @db.Uuid
+  organizationId  String   @map("organization_id") @db.Uuid
+  clientId        String   @map("client_id") @db.Uuid
+  reason          String   @db.VarChar(500)
+  removedAt       DateTime @default(now()) @map("removed_at") @db.Timestamptz
+  removedByUserId String   @map("removed_by_user_id") @db.Uuid
+
+  client Client @relation(fields: [clientId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "client_note_removal_client_id_fkey")
+
+  @@index([clientId, removedAt], map: "client_note_removal_client_id_idx")
+  @@map("client_note_removal")
   @@schema("booking")
 }

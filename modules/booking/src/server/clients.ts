@@ -4,6 +4,7 @@ import type { TenantContext } from '@ventora/access';
 import { BookingClientErasedV1, BookingClientMergedV1 } from '@ventora/contracts';
 import { uuidv7, writeOutboxEvent } from '@ventora/db-kit';
 import { Conflict, InvalidInput, ResourceNotFound } from '@ventora/errors';
+import { behaviorNoteOf, type BehaviorNote } from './behavior';
 import { withBookingTx } from './db';
 import { isUuid } from './validation';
 
@@ -69,6 +70,11 @@ export type ClientCard = {
   stats: { visits: number; noShows: number; lateCancellations: number; upcoming: number };
   recent: ClientCardAppointment[];
   block: ClientBlock | null;
+  /**
+   * B.7b (S139) „Risc ridicat”, only for the owner, the admins and the application manager (null for
+   * the others, and when the note is off or the client has no label).
+   */
+  behaviorNote: BehaviorNote | null;
   /** The clients merged into this one (archived, with a link). */
   mergedClientIds: string[];
 };
@@ -205,6 +211,7 @@ export async function getClientCardInOrg(
               reason: seesReasons ? block.reason : null,
             }
           : null,
+        behaviorNote: seesReasons ? await behaviorNoteOf(client, id) : null,
         mergedClientIds: family.filter((f) => f !== id),
       };
     },
