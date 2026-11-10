@@ -390,6 +390,36 @@ describe('TA.11 — invalid input rejected by the database', () => {
     }
   });
 
+  // Lot C.0d: the B.4 codes and targets pass audit.append_event (action format, target length)
+  it('the B.4 codes (appointments, blocked times, clients, rules) → accepted with their targets', async () => {
+    const pairs: Array<[string, string]> = [
+      [AuditActions.bookingAppointmentCreated, 'booking_appointment'],
+      [AuditActions.bookingAppointmentUpdated, 'booking_appointment'],
+      [AuditActions.bookingAppointmentMoved, 'booking_appointment'],
+      [AuditActions.bookingAppointmentStatusChanged, 'booking_appointment'],
+      [AuditActions.bookingAppointmentCancelled, 'booking_appointment'],
+      [AuditActions.bookingAppointmentStatusCorrected, 'booking_appointment'],
+      [AuditActions.bookingTimeBlockAdded, 'booking_time_block'],
+      [AuditActions.bookingTimeBlockUpdated, 'booking_time_block'],
+      [AuditActions.bookingTimeBlockArchived, 'booking_time_block'],
+      [AuditActions.bookingClientCreated, 'booking_client'],
+      [AuditActions.bookingClientUpdated, 'booking_client'],
+      [AuditActions.bookingSettingsUpdated, 'booking_settings'],
+    ];
+    for (const [action, targetType] of pairs) {
+      const id = await writeAuditEvent(
+        event({
+          category: 'booking',
+          action,
+          targetType: targetType as never,
+          targetId: crypto.randomUUID(),
+        }),
+        { mode: 'required' },
+      );
+      expect(id, action).toBeTruthy();
+    }
+  });
+
   it('invalid category → CHECK violation', async () => {
     await expect(
       writeAuditEvent(event({ category: 'billing' as never }), { mode: 'required' }),

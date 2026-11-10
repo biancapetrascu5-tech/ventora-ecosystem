@@ -167,6 +167,21 @@ export const AuditActions = {
   bookingStaffTimeOffAdded: 'booking.staff_time_off_added',
   bookingStaffTimeOffUpdated: 'booking.staff_time_off_updated',
   bookingStaffTimeOffArchived: 'booking.staff_time_off_archived',
+  // Lot C.0d / B.4 — the appointments, the blocked times, the clients and the booking rules
+  // (category booking, required). No client data in the rows (name, phone, e-mail, team note):
+  // only ids, states and instants
+  bookingAppointmentCreated: 'booking.appointment_created',
+  bookingAppointmentUpdated: 'booking.appointment_updated',
+  bookingAppointmentMoved: 'booking.appointment_moved',
+  bookingAppointmentStatusChanged: 'booking.appointment_status_changed',
+  bookingAppointmentCancelled: 'booking.appointment_cancelled',
+  bookingAppointmentStatusCorrected: 'booking.appointment_status_corrected',
+  bookingTimeBlockAdded: 'booking.time_block_added',
+  bookingTimeBlockUpdated: 'booking.time_block_updated',
+  bookingTimeBlockArchived: 'booking.time_block_archived',
+  bookingClientCreated: 'booking.client_created',
+  bookingClientUpdated: 'booking.client_updated',
+  bookingSettingsUpdated: 'booking.settings_updated',
 } as const;
 
 export type AuditAction = (typeof AuditActions)[keyof typeof AuditActions];
