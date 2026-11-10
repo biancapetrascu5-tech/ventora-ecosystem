@@ -5,6 +5,7 @@
 **Actualizat 06.11.2026:** §2.2 cu componentele de design existente.
 **Actualizat 08.11.2026:** designul catalogului de servicii (S123, `BookingServices`), Lotul B.1-UI și deciziile fondatoarei despre catalog (§7.1c).
 **Actualizat 10.11.2026:** decizia fondatoarei (§7.1d): nu mai există un pilot restrâns. **EasyBook se face complet înainte de primul salon de test** (§5), inclusiv SMS-ul de pe numărul salonului, WhatsApp și E-AMEF. §0, §1, §3 (loturile noi B.33, B.34), §4 (ordinea după dependențe) și §5 (designul care lipsește, condițiile externe) sunt rescrise.
+**Actualizat 10.11.2026 (planul ClientDesk, `CRM.md`):** B.7 primește evenimentele clientului, îmbinarea clienților și lista programărilor unui client (D-CRM-9); biblioteca Excel e `exceljs` (D-CRM-7, D-B-8); B.25 (integrarea cu CRM) e lotul CR.12 din `CRM.md`.
 **Referințe:**
 - `ARCHITECTURE.md` v0.4.9: §3, §5, §5.1–5.2, §6.4–6.5, §8.1–8.5, §11.2–11.6, §12, §13.2, §15.3–15.4, §17.1;
 - `checklists/01-booking.md` (66 de funcționalități confirmate);
@@ -282,6 +283,11 @@ Construite doar din `packages/ui`, în Light / Dark × 6 limbi, cu T7, T8 și T1
   - **Afișarea:** o etichetă, „De încredere”, „Atenție”, „Risc ridicat” sau „Client nou”, cu motivul. E vizibilă **doar echipei salonului**, niciodată clientului: nu apare pe pagina publică și nu intră în e-mailuri.
   - **Lista de clienți blocați** (restricțiile pentru abuzuri).
   - **GDPR:** ștergerea și anonimizarea la cerere, prin handler-ul modulului (§6.4 e).
+  - **Pentru ClientDesk (D-CRM-9, decis 10.11.2026; `CRM.md` CR.12):**
+    - evenimentele clientului: `booking.client.created`, `updated`, `merged`, `erased` (v1, `packages/contracts`), doar cu id-uri, fără nume, telefon sau notă;
+    - **îmbinarea a doi clienți** în contractul Booking (`mergeClients`): programările, istoricul și nota trec pe clientul păstrat, iar cel pierdut rămâne arhivat, cu legătură spre cel păstrat; auditată;
+    - contractul `listClientAppointments` (citire, `booking:read`), pentru istoricul din ClientDesk;
+    - nota de comportament, lista de blocați și datele medicale **nu ies** prin aceste evenimente și contracte (test).
 - **Dependențe:** B.4; avizul juridic pentru profilare (§6).
 - **Migrări:** `booking_clients`.
 - **Ecrane:** câmpul de client din `BookingNew`; fișa, eticheta și lista de blocați lipsesc din design.
@@ -290,7 +296,7 @@ Construite doar din `packages/ui`, în Light / Dark × 6 limbi, cu T7, T8 și T1
   - cu nota oprită, nu se calculează și nu se afișează nimic;
   - nicio rută publică și niciun e-mail nu conțin eticheta (test);
   - un client blocat nu poate rezerva online.
-- **Estimare:** 2 h × 2 (fișa și blocații; nota).
+- **Estimare:** 2 h × 2 (fișa și blocații; nota) + 1–2 h pentru evenimente, îmbinare și `listClientAppointments` (D-CRM-9).
 - **De stabilit la lot, cu fondatoarea:** ponderile exacte și pragurile etichetelor (D-B-15).
 
 #### Lot B.8 — Câmpurile medicale
@@ -463,12 +469,13 @@ Intră înainte de primul salon de test (§7.1d).
 #### Lot B.24 — Rapoartele operaționale și exportul
 - **Ce intră:**
   - **rapoartele:** gradul de ocupare și disponibilitatea, veniturile asociate programărilor, anulările și neprezentările, performanța serviciilor și a membrilor;
-  - **exportul:** CSV, apoi Excel cu o bibliotecă aprobată (D-B-8).
-- **Dependențe:** B.4, B.21; biblioteca Excel (de aprobat în acest lot); designul lipsește.
+  - **exportul:** CSV, apoi Excel cu `exceljs` (D-B-8, D-CRM-7).
+- **Dependențe:** B.4, B.21; `exceljs` (aprobat 10.11.2026, D-CRM-7); designul lipsește.
 - **Estimare:** 2 h × 2 + 1 h pentru Excel.
 
 #### Loturile B.25–B.30 — Integrările opționale
 - **Ce intră:** CRM, Finance, Marketing, Analytics, Portal, Inventory, câte una pe lot, fiecare cu varianta „fără integrare” testată (T4).
+- **B.25 (CRM)** e lotul **CR.12** din `CRM.md`, construit în planul ClientDesk, după B.7 (D-CRM-0, D-CRM-9). Restul rămân după D-B-17.
 - **Dependențe:** contractul public al aplicației partenere. **Fără integrări goale (D-B-13):** un lot pornește doar când aplicația parteneră există. Portal doar prin Booking (brief §17).
 - **Din 10.11.2026:** sunt în lista de dinaintea primului salon de test (§7.1d). Aplicațiile partenere nu există încă, deci ce se întâmplă cu ele e **NECESITĂ DECIZIE** (D-B-17, §7.2).
 - **Estimare:** 1–2 h fiecare, după aplicația parteneră.
@@ -639,7 +646,7 @@ Intră înainte de primul salon de test (§7.1d).
 | B.2b (1–2) | 1–2 |
 | B.3a + B.3b | 3 |
 | B.6a–d | 6–8 |
-| B.7 (4), B.8 (4) | 8 |
+| B.7 (4 + 1–2 pentru ClientDesk), B.8 (4) | 9–10 |
 | C.1 (2), B.10 (1–2) | 3–4 |
 | B.9a–e (5 × 1–2) | 5–10 |
 | B.11 (6), B.12 (1–2) | 7–8 |
@@ -652,7 +659,7 @@ Intră înainte de primul salon de test (§7.1d).
 | B.25–B.30 (6 × 1–2) | 6–12 |
 | B.31 (4, PROPUS) | 4 |
 | B.32 (2) | 2 |
-| **Total** | **≈ 91–112 ore**, adică ~66 de loturi |
+| **Total** | **≈ 92–114 ore**, adică ~66 de loturi |
 
 Nu sunt incluse așteptarea deciziilor, designul care lipsește, condițiile externe din §5.3 și experimentele (E-SMS-1, E-AMEF).
 
@@ -726,7 +733,7 @@ Nu sunt incluse așteptarea deciziilor, designul care lipsește, condițiile ext
 | D-B-5 | **a:** pagina publică în `platform` (`app.ventora-hub.com/r/<afacere>`); domeniul propriu mai târziu, ca pachet. | B.11 |
 | D-B-6 | Limită pe IP și pe client + lista de clienți blocați + verificarea e-mailului (opțională, de salon) + **captcha din prima: Cloudflare Turnstile** (pachet nou, aprobat); **avans obligatoriu pentru clienții cu „Risc ridicat”**. | B.11, B.22 |
 | D-B-7 | **Stripe Connect:** contul salonului; comision Ventora opțional pe plată. | B.22 |
-| D-B-8 | **a:** CSV, apoi Excel cu o bibliotecă aprobată, în etapa de rapoarte. | B.24 |
+| D-B-8 | **a:** CSV, apoi Excel cu o bibliotecă aprobată, în etapa de rapoarte. Biblioteca: `exceljs` (D-CRM-7, 10.11.2026). | B.24 |
 | D-B-9 | **a:** cererea de recenzie la linkul salonului (de ex. Google), doar după programare finalizată; Portal mai târziu. | B.16 |
 | D-B-10 | **a:** mesajele către client în limba aleasă de el (implicit limba salonului). | B.7, B.13 |
 | D-B-11 | Stările: neconfirmată, confirmată, în desfășurare, finalizată, anulată (cu cine și cât de târziu), neprezentare, așteaptă plata (cu avansul); finale: finalizată, anulată, neprezentare. | B.4 |

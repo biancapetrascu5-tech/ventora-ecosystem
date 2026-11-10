@@ -1,6 +1,6 @@
 # CRM (ClientDesk) — Planul celei de-a doua aplicații
 
-**Status:** PROPUS (10.11.2026). Așteaptă aprobarea fondatoarei; deciziile din §7.2 sunt NECESITĂ DECIZIE.
+**Status:** **APROBAT** de fondatoare (10.11.2026), cu deciziile D-CRM-1…19 (§7.1). Rămân deschise doar D-CRM-17 (la lotul CR.10), avizul din D-CRM-19 și prețurile mesajelor (la CR.14).
 **Sursa:** decizia fondatoarei din 10.11.2026 (§7.1): **primul pachet dat unui salon de test e EasyBook + ClientDesk, ambele complete**. Pachetul corespunde bundle-ului „Programări” din `PRETURI-2027.md`.
 **Referințe:**
 - `checklists/02-crm.md`: cele 66 de funcționalități confirmate, care sunt cerința de produs;
@@ -81,7 +81,7 @@ Pentru primul salon de test, ClientDesk vine împreună cu EasyBook, în bundle-
 - **Funnel-urile și landing page-urile:** doar Founder (D-FUN-1). ClientDesk are doar formularele simple de lead (D-FUN-7).
 - **Recomandările comerciale ale Ventora către afacere:** Growth Engine, Core (§8.7). ClientDesk doar declară sloturi și semnale (CR.0, §3).
 - **Înregistrarea apelurilor și telefonia:** nu sunt în checklist. Un apel se notează, nu se înregistrează.
-- **Funcționalități în afara celor 66:** regula checklist-ului interzice să se adauge sau să se scoată fără decizia fondatorilor. Propunerile specifice afacerilor de servicii sunt marcate separat (§2.3) și nu se construiesc fără decizie.
+- **Funcționalități în afara celor 66:** regula checklist-ului interzice să se adauge sau să se scoată fără decizia fondatorilor. Singurele adăugiri sunt cele patru confirmate pe 10.11.2026 (D-CRM-18, §2.3).
 
 ---
 
@@ -131,11 +131,11 @@ Fiecare funcționalitate are lotul ei în §3. Lista de mai jos e checklist-ul, 
 | Integrări | 9 | Booking (EasyBook), Marketing, Finance, Projects, Contracts, Analytics, Portal, formulare publice, API / webhooks | CR.12, CR.17, C.3 + CR.18, CR.19–CR.24 |
 | Funcții comune Ventora | 7 | AI, Support, roluri, jurnal, setări, multi-utilizator, izolare | CR.25, „Funcțiile comune”, CR.26 |
 
-**Propuneri specifice afacerilor de servicii, care NU sunt în checklist (NECESITĂ DECIZIE D-CRM-18; nu se construiesc fără ea):**
-- ziua de naștere a clientului, cu reminder;
-- starea de ciclu de viață a clientului (nou, recurent, inactiv de N luni), calculată din programări;
-- „clienți care nu au mai venit de N zile”, ca segment predefinit;
-- consimțământul de marketing pe canal (e-mail / SMS), ca registru. Acesta poate fi impus de lege pentru comunicările comerciale (§6.2), caz în care intră obligatoriu în CR.14.
+**Adăugiri confirmate (D-CRM-18 = a, 10.11.2026), în afara celor 66** (trecute în `checklists/02-crm.md`, „Adăugiri și observații confirmate”):
+- **ziua de naștere a clientului**, cu reminder: câmpul în CR.2, automatizarea în CR.13;
+- **ciclul de viață al clientului** (nou, recurent, inactiv de N luni), calculat din programări: CR.12;
+- **„clienți care nu au mai venit de N zile”**, ca segment predefinit: CR.4, cu datele din CR.12;
+- **registrul de consimțământ pe canal** (e-mail / SMS): CR.14, obligatoriu pentru orice mesaj comercial.
 
 ---
 
@@ -182,7 +182,7 @@ Fiecare funcționalitate are lotul ei în §3. Lista de mai jos e checklist-ul, 
 
 #### Lot CR.2 — Contactele și companiile
 - **Ce intră:**
-  - **contactul (persoană):** nume, telefoane, e-mailuri, limbă, adresă, sursă, responsabil, note scurte, arhivare și restaurare;
+  - **contactul (persoană):** nume, telefoane, e-mailuri, limbă, adresă, **ziua de naștere** (D-CRM-18), sursă, responsabil, note scurte, arhivare și restaurare;
   - **compania:** nume, CUI opțional, adresă, site;
   - **legătura persoane ↔ companii:** mai multe persoane într-o firmă, cu rolul fiecăreia;
   - căutarea pe nume, telefon și e-mail;
@@ -211,7 +211,8 @@ Fiecare funcționalitate are lotul ei în §3. Lista de mai jos e checklist-ul, 
     - dinamice: reguli peste câmpuri, etichete, activitate și programări (cu EasyBook);
     - statice: o listă aleasă;
   - numărul estimat de contacte;
-  - folosirea în listă, export și secvențe.
+  - folosirea în listă, export și secvențe;
+  - **segmentul predefinit „nu au mai venit de N zile”** (D-CRM-18), activ cu EasyBook, după CR.12.
   - Cine deține segmentul de campanie: D-CRM-5.
 - **Migrări:** `crm_segments`.
 - **Estimare:** 2 h.
@@ -341,6 +342,7 @@ Fiecare ecran e construit doar din `@ventora/ui`, cu componentele în `modules/c
     - din `booking.appointment.*` (au `clientId`);
     - detaliile (serviciu, membru, stare) citite prin contractul Booking la afișare, nu copiate;
   - **„Programare nouă” din fișa contactului:** prin contractul Booking; creează clientul EasyBook dacă lipsește;
+  - **ciclul de viață al clientului** (D-CRM-18): nou, recurent, inactiv de N luni, calculat din programări la fiecare eveniment și zilnic (job); N îl alege afacerea;
   - **ce nu trece niciodată în ClientDesk:** nota de comportament, lista de blocați, datele medicale, motivul concediilor (test);
   - **ștergerea GDPR** a clientului în EasyBook anonimizează legătura și istoricul programărilor în ClientDesk (D-CRM-19);
   - **câmpurile venite din EasyBook** (nume, telefon, e-mail, limbă) sunt doar în citire în ClientDesk, cu „Editează în EasyBook” (D-CRM-1 = a);
@@ -350,7 +352,7 @@ Fiecare ecran e construit doar din `@ventora/ui`, cu componentele în `modules/c
   - CR.2, CR.6;
   - contractul Booking `listClientAppointments`, nou, în B.7 sau aici.
 - **Migrări:** `crm_contact_source`.
-- **Estimare:** 4–5 h.
+- **Estimare:** 5–6 h (cu ciclul de viață).
 
 ### Etapa 4 — Automatizările și comunicările
 
@@ -363,6 +365,7 @@ Fiecare ecran e construit doar din `@ventora/ui`, cu componentele în `modules/c
     - reguli de atribuire: pe rând între membri, pe sursă;
     - follow-up automat după N zile fără activitate;
     - acțiuni la câștigat / pierdut: sarcină, notificare, „Programează” cu EasyBook activ;
+    - reminder de ziua de naștere a clientului (D-CRM-18);
   - **lista lor**, în modelul `HubAutomations`;
   - fiecare rulare, auditată.
 - **Dependențe:** CR.7–CR.9; 4.2, 4.10.
@@ -377,14 +380,18 @@ Fiecare ecran e construit doar din `@ventora/ui`, cu componentele în `modules/c
     - prin `notifications`, niciodată direct printr-un canal (§11.5);
     - expeditorul „{business} prin ClientDesk” <noreply@ventora-hub.com>, cu răspunsul la e-mailul afacerii (ca S116-D17);
     - mesajul intră în istoric;
-    - cota `messaging.email` (D-CRM-6);
+    - cota `messaging.email`: **500 de e-mailuri pe lună incluse în ClientDesk** (D-CRM-6); prețul pachetelor în plus se confirmă în `PRETURI-2027.md` la acest lot;
   - **consimțământul de marketing pe canal** și dezabonarea, cu linkul în fiecare mesaj comercial (§6.2):
     - fără consimțământ, nu pleacă niciun mesaj comercial (test);
     - mesajele despre o cerere a clientului rămân posibile;
-  - **SMS:** vezi D-CRM-6. Telefonul salonului (`ANDROID_SIM`) acceptă doar mesaje operaționale (D-SMS-6), deci nu se folosește aici.
-- **Dependențe:** CR.2, CR.6; 4.3–4.5; Resend pe staging; avizul (§6.2).
-- **Migrări:** `crm_messages`.
-- **Estimare:** 4 h.
+  - **SMS de la început** (D-CRM-6):
+    - doar prin SMSLink (`SMS_PROVIDER`), doar cu consimțământul pe canalul SMS;
+    - consumă pachetul de SMS al afacerii (`messaging.sms`); prețurile se confirmă în `PRETURI-2027.md` la acest lot;
+    - telefonul salonului (`ANDROID_SIM`) nu se folosește aici: acceptă doar mesaje operaționale (D-SMS-6);
+  - **registrul de consimțământ pe canal** (D-CRM-18): canalul, starea, textul și versiunea, data, sursa (formular, import, manual, EasyBook), retragerea; fiecare schimbare în istoric.
+- **Dependențe:** CR.2, CR.6; 4.3–4.5; Resend pe staging; contul SMSLink (B.17); avizul (§6.2).
+- **Migrări:** `crm_messages`, `crm_consent`.
+- **Estimare:** 5–6 h (e-mail, SMS, registrul de consimțământ).
 
 #### Lot CR.15 — Secvențele automate către leaduri
 - **Ce intră:**
@@ -395,6 +402,7 @@ Fiecare ecran e construit doar din `@ventora/ui`, cu componentele în `modules/c
     - la mutarea dealului;
     - manual („A răspuns”). Nu există încă e-mail de intrare, deci un răspuns nu e detectat automat;
   - **plafoane** pe zi și pe contact;
+  - **pașii pe e-mail sau pe SMS** (D-CRM-6), fiecare doar cu consimțământul pe canalul lui;
   - **job-ul de trimitere**, idempotent, cu cheie deterministă;
   - **starea fiecărui contact** în secvență.
 - **Dependențe:** CR.13, CR.14.
@@ -509,8 +517,8 @@ Fiecare ecran e construit doar din `@ventora/ui`, cu componentele în `modules/c
 | 13 | **CR.25** (AI) | D-AI-5 | după D-AI-5 |
 | 14 | **CR.26** (închiderea) | toate | la final |
 
-**În paralel cu EasyBook:**
-- ClientDesk merge într-un worktree separat (regula 10), pe ramurile lui.
+**În paralel cu EasyBook (D-CRM-12 = a):**
+- ClientDesk îl construiește agentul din worktree-ul `ventora-ecosystem-ui`, separat de worktree-urile EasyBook (regula 10), pe ramurile lui.
 - Domeniul CR.1–CR.11 nu atinge `modules/booking`, deci poate merge în paralel cu B.5–B.11.
 - Singurul punct comun e CR.12, care așteaptă B.7. B.7 trebuie să includă evenimentele clientului și fuziunea, pentru D-CRM-9.
 
@@ -565,7 +573,7 @@ Fiecare ecran e construit doar din `@ventora/ui`, cu componentele în `modules/c
 | **B.7 în EasyBook**, cu evenimentele clientului și fuziunea | CR.12 | planul Booking |
 | **URL-ul public** (3.9) și **cheile Turnstile** | CR.17 | Faza 3, fondatoarea |
 | **Resend pe staging** | CR.14, CR.15 | fondatoarea |
-| **Biblioteca Excel aprobată** (D-B-8, D-CRM-7) | CR.11, CR.16 | fondatoarea |
+| **Contul SMSLink** și cheile lui (ca B.17) | CR.14, CR.15 | fondatoarea |
 | **Abonamentul de test** cu bundle-ul „Programări” | tot ce consumă cote | fondatoarea (D3-1) |
 | **D-AI-5** | CR.25 | fondatoarea |
 | **Designul** din §5.2 | loturile respective | Claude Design |
@@ -580,21 +588,21 @@ Fiecare ecran e construit doar din `@ventora/ui`, cu componentele în `modules/c
 | CR.8 (3), CR.9 (3–4), CR.10 (2) | 8–9 |
 | CR.11 (3–4 + 1 Excel) | 4–5 |
 | CR-UI.1–9 | 16–20 |
-| CR.12 (EasyBook ↔ ClientDesk) | 4–5 |
-| CR.13 (4–5), CR.14 (4), CR.15 (3–4) | 11–13 |
+| CR.12 (EasyBook ↔ ClientDesk, cu ciclul de viață) | 5–6 |
+| CR.13 (4–5), CR.14 (5–6), CR.15 (3–4) | 12–15 |
 | CR.16 (6–8) | 6–8 |
 | CR.17 (4–5) | 4–5 |
 | C.3 (6–8), CR.18 (3) | 9–11 |
 | CR.25 (4, PROPUS) | 4 |
 | Support (1), CR.26 (2) | 3 |
-| **Total** | **≈ 87–105 ore**, adică ~55 de loturi |
+| **Total** | **≈ 89–109 ore**, adică ~55 de loturi |
 
 **Nu sunt incluse:**
 - CR.19–CR.24 (6–12 h, după aplicațiile partenere);
 - așteptarea deciziilor și a designului;
 - condițiile externe.
 
-**Cu EasyBook (≈ 91–112 ore rămase, `BOOKING.md` §5.4), pachetul are ≈ 180–215 ore.** Cu doi agenți în worktree-uri separate, durata calendaristică scade, dar orele rămân aceleași.
+**Cu EasyBook (≈ 92–114 ore rămase, `BOOKING.md` §5.4), pachetul are ≈ 181–223 ore.** Cu doi agenți în worktree-uri separate, durata calendaristică scade, dar orele rămân aceleași.
 
 ---
 
@@ -612,7 +620,7 @@ Fiecare ecran e construit doar din `@ventora/ui`, cu componentele în `modules/c
 | **Duplicatele la legarea clienților existenți** | Potrivirea exactă pe telefon / e-mail; restul propuse, nu îmbinate |
 | **Spam pe formularele publice** | Turnstile, limite pe IP și pe formular; leadurile nu consumă cota de contacte (D-CRM-3) |
 | **API-ul extern: chei scăpate, abuz** | Hash, scope-uri, expirare, revocare, rate limiting, jurnalul livrărilor (C.3) |
-| **Volumul:** EasyBook + ClientDesk ≈ 180–215 ore | Loturi de 1–2 h; două worktree-uri în paralel; ordinea din §4 |
+| **Volumul:** EasyBook + ClientDesk ≈ 181–223 ore | Loturi de 1–2 h; două worktree-uri în paralel; ordinea din §4 |
 | **Designul lipsă** pentru aproape tot ClientDesk | Comanda de design din §5.2, cu CR-UI.1–3 primele |
 | **Livrarea e-mailurilor** (spam, reputația domeniului) | Expeditorul Ventora verificat (DMARC, §11.6), plafoane pe secvențe |
 
@@ -656,6 +664,26 @@ Fiecare ecran e construit doar din `@ventora/ui`, cu componentele în `modules/c
 | # | Decizie | Unde se aplică |
 |---|---|---|
 | D-CRM-0 | Primul pachet dat unui salon de test e **EasyBook + ClientDesk, ambele complete**. | §0, §5 |
+| D-CRM-1 | **a:** EasyBook e sursa datelor de contact ale clientului venit din EasyBook. În ClientDesk sunt doar în citire, cu „Editează în EasyBook”. ClientDesk adaugă etichete, câmpuri, notițe, sarcini, dealuri. | CR.12, CR-UI.3 |
+| D-CRM-2 | **c:** legătura automată e o setare a afacerii, pornită implicit. | CR.12 |
+| D-CRM-3 | **a:** leadul e o intrare separată (căsuța de leaduri), convertită în contact + deal. Nu consumă cota de contacte. | CR.8 |
+| D-CRM-4 | **a:** cota `crm.contacts` (3.000) numără doar contactele create în ClientDesk (manual, import, formular, conversie); cele aduse din EasyBook nu. De revăzut înainte de lansarea comercială. | CR.0, CR.2, CR.12 |
+| D-CRM-5 | **a:** segmentul ClientDesk e o listă salvată pentru lucru și export. CampaignKit îl poate folosi ca audiență prin integrare și rămâne proprietarul audiențelor de campanie. | CR.4, CR.19 |
+| D-CRM-6 | **E-mail + SMS de la început.** SMS-ul doar prin SMSLink, doar cu consimțământ pe canal. Cota propusă: **500 de e-mailuri pe lună incluse** în ClientDesk; SMS-ul din pachetul de SMS al afacerii. Prețurile se confirmă în `PRETURI-2027.md` la CR.14. | CR.14, CR.15 |
+| D-CRM-7 | **a:** `exceljs`, și pentru EasyBook (D-B-8, B.24). | CR.11, CR.16, B.24 |
+| D-CRM-8 | **a:** în v1 doar potrivirea exactă (telefon, e-mail, nume normalizat), fără extensii Postgres. | CR.5 |
+| D-CRM-9 | **a:** B.7 adaugă îmbinarea clienților în contractul Booking, iar ClientDesk o cheamă. Completarea e trecută în `BOOKING.md` (B.7). | CR.5, CR.12, B.7 |
+| D-CRM-10 | **a:** API-ul extern se construiește în pachet, după propunerea din ARCHITECTURE §11.4: chei pe organizație cu hash și scope-uri, rate limiting, HMAC, jurnalul livrărilor, `/api/v1`. | C.3, CR.18 |
+| D-CRM-11 | **a:** salonul de test pornește fără integrările cu aplicații care nu există. Fiecare intră când aplicația parteneră există (D-B-13). | CR.19–CR.24 |
+| D-CRM-12 | **a:** ClientDesk se construiește în paralel cu EasyBook, într-un worktree separat, de acest agent. | §4 |
+| D-CRM-13 | **a:** serviciile pe deal vin din catalogul EasyBook când e activ, plus elemente libere cu preț. | CR.9 |
+| D-CRM-14 | **a:** formularul public e în `platform`, la `/f/<formular>`. | CR.17 |
+| D-CRM-15 | **a:** owner, admin și managerul de aplicație văd tot. Un membru vede contactele, leadurile și dealurile atribuite lui și pe cele neatribuite. Doar cine are `crm:export` exportă. | CR.0 |
+| D-CRM-16 | **a:** biblioteca de șabloane e scrisă de Ventora în 6 limbi; afacerea completează doar câmpurile marcate. | CR.14 |
+| D-CRM-17 | Ponderile implicite ale scoring-ului se propun **la lotul CR.10**, cu exemple. | CR.10 |
+| D-CRM-18 | **a:** intră ziua de naștere, ciclul de viață al clientului și segmentul „nu au mai venit de N zile”, **plus registrul de consimțământ pe canal** (§2.3). | CR.2, CR.4, CR.12, CR.13, CR.14 |
+| D-CRM-19 | **a, după aviz:** o cerere de ștergere în EasyBook anonimizează și contactul ClientDesk legat, și invers. | CR.12 |
+| D-ROAD-1 (parțial) | ClientDesk e a doua aplicație, după EasyBook. Restul ordinii rămâne deschis. | — |
 
 **Deja decise în alte documente și preluate aici:**
 - **D-B-2:** Booking are clientul lui; CRM îl leagă prin integrare.
@@ -667,30 +695,13 @@ Fiecare ecran e construit doar din `@ventora/ui`, cu componentele în `modules/c
 - **E1:** etapele alese de afacere, cu setul implicit.
 - **D-PN-5:** din Network doar prin acțiune autorizată.
 
-### 7.2 NECESITĂ DECIZIE
+### 7.2 Rămase deschise
 
-| # | Blochează | Întrebare | Variante | Recomandare |
-|---|---|---|---|---|
-| D-CRM-1 | CR.12, CR-UI.3 | **Cine e sursa datelor de contact** ale unui client care vine din EasyBook | a) EasyBook: în ClientDesk sunt doar în citire, cu „Editează în EasyBook”; ClientDesk adaugă etichete, câmpuri, notițe, sarcini, dealuri; b) ClientDesk devine proprietarul clientului, iar EasyBook îl referă (redeschide D-B-2); c) sincronizare în ambele sensuri | **a**: păstrează D-B-2, o singură sursă, fără conflicte de sincronizare. EasyBook rămâne complet și singur. |
-| D-CRM-2 | CR.12 | **Legătura automată** când ambele aplicații sunt active | a) automat, pentru toți clienții, inclusiv cei existenți; b) doar la cerere, client cu client; c) setare a afacerii, pornită implicit | **c**: salonul din bundle nu ține două liste, dar poate opri legătura. |
-| D-CRM-3 | CR.8 | **Leadul**: intrare separată sau starea unui contact | a) intrare separată (căsuța de leaduri), convertită în contact + deal; nu consumă cota de contacte; b) un contact cu starea „lead” | **a**: respectă entitățile din ARCHITECTURE §5 și conversia din checklist; leadurile nevalidate și spam-ul nu umplu lista de clienți și nici cota. |
-| D-CRM-4 | CR.0, CR.12 | **Cota `crm.contacts` (3.000)**: se numără și contactele venite din EasyBook? Ce se întâmplă la limită? | a) se numără doar contactele create în ClientDesk (manual, import, formular, conversie); cele din EasyBook nu; b) se numără toate; la limită, legătura cu EasyBook se oprește, cu un anunț și un pachet „+1.000 contacte” (preț nou); c) se numără toate, iar legătura nu se oprește niciodată (contactele EasyBook trec peste limită) | **a**: un salon cu 4.000 de clienți în EasyBook nu poate fi blocat fără să rupă legătura, iar clientul e deja plătit prin EasyBook. De revăzut înainte de lansarea comercială. |
-| D-CRM-5 | CR.4, CR.19 | **Segmentele** (C-CRM-1): ARCHITECTURE §5 dă Marketing-ului `Segment`, checklist-ul CRM cere segmente | a) segmentul ClientDesk e o listă salvată pentru lucru și export; CampaignKit îl poate folosi ca audiență prin integrare și rămâne proprietarul audiențelor de campanie; b) segmentele doar în CampaignKit | **a**: acoperă checklist-ul fără să dubleze campaniile. |
-| D-CRM-6 | CR.14, CR.15 | **Canalele și cota mesajelor din ClientDesk** | a) doar e-mail în primul pachet, cu o cotă `messaging.email` pentru ClientDesk (de exemplu 500 / lună, preț nou) sau împărțită cu bundle-ul; SMS mai târziu, prin SMSLink, doar cu consimțământ; b) e-mail + SMS prin SMSLink de la început; c) e-mail fără cotă | **a**: `PRETURI-2027.md` nu dă ClientDesk-ului e-mailuri (doar CampaignKit are 2.000), iar telefonul salonului nu poate trimite mesaje comerciale (D-SMS-6). Cantitatea și prețul le decide fondatoarea. |
-| D-CRM-7 | CR.11, CR.16, B.24 | **Biblioteca Excel** (aceeași decizie ca D-B-8) | a) `exceljs` (MIT); b) SheetJS; c) doar CSV | **a**, aprobată o singură dată, pentru EasyBook și ClientDesk. |
-| D-CRM-8 | CR.5 | **Duplicatele după nume asemănător** | a) în v1 doar potrivirea exactă (telefon, e-mail, nume normalizat), fără extensii Postgres; b) extensiile `pg_trgm` și `unaccent` acum (Supabase le are) | **a** pentru primul salon; **b** după ce vedem duplicatele reale din import. |
-| D-CRM-9 | CR.5, CR.12, B.7 | **Îmbinarea a două contacte legate de doi clienți EasyBook diferiți** | a) B.7 adaugă îmbinarea clienților în contractul Booking, iar ClientDesk o cheamă; b) ClientDesk refuză îmbinarea în acest caz | **a**: altfel duplicatele din EasyBook nu se pot curăța niciodată. Cere o completare a lui B.7 în `BOOKING.md`. |
-| D-CRM-10 | C.3, CR.18 | **API-ul extern**: confirmarea propunerii din ARCHITECTURE §11.4 (chei pe organizație cu hash și scope-uri, rate limiting, HMAC, jurnal, `/api/v1`) și dacă intră în pachetul primului salon | a) da, construit în pachet (checklist-ul îl cere); b) după primul salon | **a**: „complet” cuprinde API-ul, iar stratul servește și Analytics, Assets, Network. |
-| D-CRM-11 | CR.19–CR.24 | **Integrările cu aplicații care nu există** (Marketing, Finance, Projects, Contracts, Analytics, Portal) | a) salonul de test pornește fără ele; fiecare intră când aplicația parteneră există (D-B-13); b) se așteaptă aplicațiile partenere; c) integrări goale | **a**, ca D-B-17. |
-| D-CRM-12 | §4 | **Lucrul în paralel cu EasyBook** | a) ClientDesk într-un worktree separat, în paralel cu B.5–B.11; b) după EasyBook | **a**: domeniul CR.1–CR.11 nu atinge `modules/booking`. |
-| D-CRM-13 | CR.9 | **Serviciile pe deal** | a) catalogul EasyBook când e activ, plus elemente libere cu preț; b) o listă proprie ClientDesk | **a**: fără două cataloage de servicii la salon. |
-| D-CRM-14 | CR.17 | **Ruta formularului public** | a) în `platform`, ca `/f/<formular>`; b) pe domeniul afacerii (ca funnel-urile, D-FUN-1) | **a** acum; **b** rămâne pentru funnel-urile Founder. |
-| D-CRM-15 | CR.0 | **Cine vede ce** | a) owner, admin, manager de aplicație: tot; membru: contactele, leadurile și dealurile atribuite lui și cele neatribuite; doar `crm:export` exportă; b) toți membrii văd tot | **a**: aceeași logică ca D-B4-6 în EasyBook; exportul e o permisiune separată (risc de scurgere). |
-| D-CRM-16 | CR.14 | **„Șabloane de mesaje controlate de Ventora”**: ce poate schimba afacerea | a) biblioteca scrisă de Ventora în 6 limbi; afacerea completează doar câmpurile marcate (salut, semnătură, ofertă); b) afacerea scrie liber, pornind de la șablon | **a**: e sensul din checklist și protejează reputația expeditorului Ventora. |
-| D-CRM-17 | CR.10 | **Ponderile implicite ale scoring-ului** | Propuse la lot, cu exemple | Ca D-B-15: nu se ghicesc acum. |
-| D-CRM-18 | §2.3 | **Propunerile pentru afacerile de servicii** care nu sunt în checklist (ziua de naștere, ciclul de viață al clientului, „nu a mai venit de N zile”) | a) intră în checklist, ca adăugiri confirmate; b) nu acum | Decizia fondatoarei. Consimțământul pe canal intră oricum, dacă îl cere avizul. |
-| D-CRM-19 | CR.12 | **Ștergerea la cerere**, când clientul există în ambele aplicații | a) o cerere în EasyBook anonimizează și contactul ClientDesk legat (și invers); b) fiecare aplicație separat | **a**, după aviz (§6.2, întrebarea 8): o persoană, un singur drept de ștergere. |
-| D-ROAD-1 | — | Ordinea aplicațiilor după Booking | — | **Se închide pentru ClientDesk** prin D-CRM-0: e a doua aplicație. Restul ordinii rămâne deschis. |
+| # | Blochează | Ce | Când |
+|---|---|---|---|
+| D-CRM-17 | CR.10 | Ponderile implicite ale scoring-ului | Propunerea vine cu lotul CR.10 |
+| D-CRM-19 | CR.12 (ștergerea) | Avizul avocatului (§6.2, întrebarea 8) | Înainte de date reale |
+| Prețurile mesajelor | CR.14 | Pachetele de e-mailuri în plus și prețul SMS pentru ClientDesk, în `PRETURI-2027.md` | La lotul CR.14 |
 
 ---
 
@@ -698,13 +709,13 @@ Fiecare ecran e construit doar din `@ventora/ui`, cu componentele în `modules/c
 
 | # | Subiect | Sursa A | Sursa B | Stare |
 |---|---|---|---|---|
-| C-CRM-1 | Segmentele | ARCHITECTURE §5: Marketing deține `Segment` | Checklist CRM: „Etichete, categorii și segmente” | **NECESITĂ DECIZIE** (D-CRM-5) |
+| C-CRM-1 | Segmentele | ARCHITECTURE §5: Marketing deține `Segment` | Checklist CRM: „Etichete, categorii și segmente” | **Rezolvat (D-CRM-5 = a)** |
 | C-CRM-2 | Clientul | ARCHITECTURE §5: CRM deține clientul ca relație comercială | D-B-2: Booking are clientul lui | Rezolvat de D-B-2; legătura e D-CRM-1 / D-CRM-2 |
-| C-CRM-3 | E-mailurile din ClientDesk | Checklist: șabloane și secvențe de comunicare | `PRETURI-2027.md`: ClientDesk fără `messaging.email` | **NECESITĂ DECIZIE** (D-CRM-6) |
-| C-CRM-4 | Ce numără limita „3.000 de contacte” | `PRETURI-2027.md` | D-B-2 (clienții EasyBook) și leadurile | **NECESITĂ DECIZIE** (D-CRM-4, D-CRM-3) |
+| C-CRM-3 | E-mailurile din ClientDesk | Checklist: șabloane și secvențe de comunicare | `PRETURI-2027.md`: ClientDesk fără `messaging.email` | **Rezolvat (D-CRM-6):** 500 de e-mailuri / lună incluse; prețurile la CR.14 |
+| C-CRM-4 | Ce numără limita „3.000 de contacte” | `PRETURI-2027.md` | D-B-2 (clienții EasyBook) și leadurile | **Rezolvat (D-CRM-4 = a, D-CRM-3 = a):** doar contactele create în ClientDesk |
 | C-CRM-5 | Formularele de lead | D-FUN-7: în CampaignKit **sau** ClientDesk | Checklist CRM: „Formulare publice pentru captarea leadurilor” | Nu e o contradicție: ClientDesk le are acum (CR.17); CampaignKit le poate folosi prin integrare. De confirmat la planul CampaignKit. |
-| C-CRM-6 | SMS-ul în secvențe | Checklist: „secvențe automate de comunicare” | D-SMS-6: `ANDROID_SIM` doar operațional | Secvențele merg pe e-mail (D-CRM-6); SMS-ul comercial doar prin furnizor, cu consimțământ |
-| C-CRM-7 | Starea API-ului extern | Brief §35: CRM confirmat | ARCHITECTURE §11.4: implementarea PROPUS | **NECESITĂ DECIZIE** (D-CRM-10) |
+| C-CRM-6 | SMS-ul în secvențe | Checklist: „secvențe automate de comunicare” | D-SMS-6: `ANDROID_SIM` doar operațional | **Rezolvat (D-CRM-6):** SMS-ul comercial doar prin SMSLink, cu consimțământ pe canal |
+| C-CRM-7 | Starea API-ului extern | Brief §35: CRM confirmat | ARCHITECTURE §11.4: implementarea PROPUS | **Rezolvat (D-CRM-10 = a):** propunerea din §11.4 se construiește în pachet |
 
 ---
 

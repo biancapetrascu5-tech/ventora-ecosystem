@@ -102,4 +102,9 @@ Nicio excludere declarată în checklistul confirmat.
 
 ## Adăugiri și observații confirmate
 
-Nicio adăugire suplimentară declarată în checklist.
+Adăugiri confirmate de fondatoare pe 10.11.2026 (D-CRM-18, `plans/CRM.md` §2.3), în afara celor 66:
+
+- [ ] Ziua de naștere a clientului, cu reminder
+- [ ] Ciclul de viață al clientului (nou, recurent, inactiv de N luni), calculat din programări
+- [ ] Segmentul predefinit „clienți care nu au mai venit de N zile”
+- [ ] Registrul de consimțământ pe canal (e-mail / SMS)
