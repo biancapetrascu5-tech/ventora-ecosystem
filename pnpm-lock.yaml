@@ -311,6 +311,9 @@ importers:
       '@ventora/files':
         specifier: workspace:*
         version: link:../../core/files
+      '@ventora/growth':
+        specifier: workspace:*
+        version: link:../../core/growth
       '@ventora/i18n':
         specifier: workspace:*
         version: link:../../packages/i18n
@@ -694,6 +697,9 @@ importers:
       '@ventora/contracts':
         specifier: workspace:*
         version: link:../../packages/contracts
+      '@ventora/db-kit':
+        specifier: workspace:*
+        version: link:../../packages/db-kit
       '@ventora/notifications':
         specifier: workspace:*
         version: link:../notifications
@@ -710,9 +716,9 @@ importers:
       '@types/pg':
         specifier: ^8.0.0
         version: 8.23.1
-      '@ventora/db-kit':
+      '@ventora/integrations':
         specifier: workspace:*
-        version: link:../../packages/db-kit
+        version: link:../integrations
       prisma:
         specifier: ^7.0.0
         version: 7.10.1(@types/node@22.20.5)(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(typescript@6.0.3)
@@ -722,6 +728,9 @@ importers:
       vitest:
         specifier: ^5.0.5
         version: 5.0.5(@opentelemetry/api@1.10.0)(@types/node@22.20.5)(jsdom@26.1.0(supports-color@8.1.1))(vite@8.3.5(@types/node@22.20.5)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))
+      zod:
+        specifier: ^4.0.0
+        version: 4.6.7
 
   core/identity:
     dependencies:

@@ -17,6 +17,7 @@
   "dependencies": {
     "@ventora/commercial": "workspace:*",
     "@ventora/contracts": "workspace:*",
+    "@ventora/db-kit": "workspace:*",
     "@ventora/notifications": "workspace:*",
     "@ventora/organizations": "workspace:*",
     "pg": "^8.0.0"
@@ -24,9 +25,10 @@
   "devDependencies": {
     "@types/node": "^22.0.0",
     "@types/pg": "^8.0.0",
-    "@ventora/db-kit": "workspace:*",
+    "@ventora/integrations": "workspace:*",
     "prisma": "^7.0.0",
     "typescript": "^6.0.0",
-    "vitest": "^5.0.5"
+    "vitest": "^5.0.5",
+    "zod": "^4.0.0"
   }
 }

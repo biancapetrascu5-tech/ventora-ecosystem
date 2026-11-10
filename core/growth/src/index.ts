@@ -40,3 +40,11 @@ export {
   type SlotLogger,
   type SlotRequest,
 } from './service';
+export {
+  GROWTH_CONVERSIONS,
+  GROWTH_SIGNALS,
+  defineGrowthConsumer,
+  growthConversionConsumer,
+  growthSignalConsumer,
+  recordFeatureLockedClick,
+} from './signals';
