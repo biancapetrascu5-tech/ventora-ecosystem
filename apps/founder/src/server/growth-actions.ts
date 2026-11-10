@@ -2,7 +2,7 @@
 
 import { headers } from 'next/headers';
 import { getFounderNames } from '@ventora/identity';
-import type { GrowthLocale } from '@ventora/contracts';
+import { EVENT_CATALOG, type GrowthLocale } from '@ventora/contracts';
 import {
   listAddonsForFounder,
   listApplicationsForFounder,
@@ -11,12 +11,16 @@ import {
 import {
   approveOfferText,
   archiveOffer,
+  createCampaign,
   createOffer,
   getGrowthControlForFounder,
   listOffersForFounder,
+  publishCampaign,
   publishOffer,
   saveOfferText,
+  updateCampaign,
   updateOfferTarget,
+  type FounderCampaignInput,
   type FounderOffer,
   type FounderOfferTarget,
   listCampaignsForFounder,
@@ -295,5 +299,60 @@ export async function growthArchiveOffer(offerId: string): Promise<ActionResult>
     return { ok: true };
   } catch (err) {
     return fail('growthArchiveOffer', err);
+  }
+}
+
+// ── Campanii (5.10b) ──────────────────────────────────────────────────────────────────────
+
+export type GrowthCampaignsData = {
+  campaigns: FounderCampaign[];
+  offers: FounderOffer[];
+  catalog: GrowthCatalogData;
+  placements: GrowthPlacementView[];
+  control: GrowthControlView;
+  /** Semnalele permise (evenimentele growthSafe din catalog), tipul și versiunea. */
+  signals: { type: string; version: number }[];
+};
+
+export async function readGrowthCampaigns(): Promise<GrowthCampaignsData | null> {
+  try {
+    const founderHeaders = await headers();
+    const [campaigns, offersData, ctl] = await Promise.all([
+      listCampaignsForFounder({ founderHeaders }),
+      readGrowthOffers(),
+      getGrowthControlForFounder({ founderHeaders }),
+    ]);
+    if (!offersData) return null;
+    return {
+      campaigns,
+      offers: offersData.offers,
+      catalog: offersData.catalog,
+      placements: ctl.placements,
+      control: ctl.control,
+      signals: EVENT_CATALOG.filter((e) => e.growthSafe).map((e) => ({
+        type: e.type,
+        version: e.version,
+      })),
+    };
+  } catch (err) {
+    reportActionError('readGrowthCampaigns', err);
+    return null;
+  }
+}
+
+export async function growthSaveCampaign(
+  campaignId: string | null,
+  campaign: FounderCampaignInput,
+  publish: boolean,
+): Promise<ActionResult & { id?: string }> {
+  try {
+    const founderHeaders = await headers();
+    let id = campaignId;
+    if (id) await updateCampaign({ founderHeaders, campaignId: id, campaign });
+    else id = (await createCampaign({ founderHeaders, campaign })).id;
+    if (publish) await publishCampaign({ founderHeaders, campaignId: id });
+    return { ok: true, id };
+  } catch (err) {
+    return fail('growthSaveCampaign', err);
   }
 }

@@ -114,3 +114,65 @@
 .frame > p {
   margin: 0;
 }
+
+/* GrowthCampaignEditor (preview: .frame-rel, .fxapps, .r, .unsaved) */
+.frameRel {
+  position: relative;
+  min-height: 100%;
+}
+
+.gap {
+  margin-top: var(--space-4);
+}
+
+.apps {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: var(--space-3) var(--space-4);
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  align-items: center;
+}
+
+.grow {
+  flex: 1 1 160px;
+  min-width: 0;
+}
+
+.unsaved {
+  position: fixed;
+  left: var(--spine-width);
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-6);
+  background: var(--raised);
+  border-top: var(--border-width) solid var(--line-strong);
+  box-shadow: var(--shadow-2);
+  z-index: var(--z-sticky);
+  flex-wrap: wrap;
+}
+
+.unsaved[data-mode='mobile'] {
+  left: 0;
+  bottom: var(--bottomnav-height);
+  padding: var(--space-3) var(--space-4);
+}
+
+/* loc sub conținut, ca bara fixă să nu acopere ultimul câmp */
+.body:has(+ .unsaved) {
+  padding-bottom: calc(var(--control-md) + var(--space-8));
+}
+
+.unsavedActions {
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: nowrap;
+}

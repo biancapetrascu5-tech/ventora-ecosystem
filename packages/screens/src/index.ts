@@ -273,3 +273,11 @@ export type {
   GrowthOfferType,
   GrowthTextState,
 } from './founder/growth/GrowthOfferEditorView';
+export { GrowthCampaignsView } from './founder/growth/GrowthCampaignsView';
+export type { GrowthCampaignRow, GrowthCampaignState } from './founder/growth/GrowthCampaignsView';
+export { GrowthCampaignEditorView } from './founder/growth/GrowthCampaignEditorView';
+export type {
+  GrowthCampaignForm,
+  GrowthCampaignMode,
+  GrowthCampaignPreview,
+} from './founder/growth/GrowthCampaignEditorView';

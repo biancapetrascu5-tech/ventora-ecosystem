@@ -1547,7 +1547,12 @@
         "campanieNoua": "Campanie nouă",
         "sloturi": "Sloturi",
         "veziRezultatele": "Vezi rezultatele",
-        "opresteCampania": "Oprește campania"
+        "opresteCampania": "Oprește campania",
+        "lead": "Cine vede o ofertă, unde și când. Plafoanele globale se aplică tuturor.",
+        "draft": "Ciornă",
+        "stopped": "Oprită",
+        "modeSignal": "Automat · {signal}",
+        "modeScheduled": "Programat · {from}–{to}"
       },
       "campaignEditor": {
         "automatLaUnSemnal": "Automat, la un semnal",
@@ -1567,7 +1572,22 @@
         "previzualizarePeSlot": "Previzualizare pe slot",
         "launcher": "Launcher",
         "salveazaCiorna": "Salvează ciorna",
-        "publicaSchimbarile": "Publică schimbările"
+        "publicaSchimbarile": "Publică schimbările",
+        "candPorneste": "Când pornește",
+        "scheduled": "Programat, într-o perioadă",
+        "nameLabel": "Numele campaniei",
+        "priorityHelp": "1 câștigă când două campanii vor același slot.",
+        "capsNote": "Cel mult {daily, plural, one {o recomandare} few {# recomandări} other {# de recomandări}} pe zi și {weekly} pe săptămână pentru fiecare om; după „Nu mă interesează”, {cooldown} de zile pauză. Peste 5% deranj, campania se oprește singură și primești o notificare. Le schimbi din Control.",
+        "overlapTitle": "{slot} e folosit și de „{name}”",
+        "overlapBody": "Pentru afacerile din ambele audiențe câștigă campania cu prioritatea mai mică (aici: {priority}).",
+        "roApproved": "Textele în română sunt aprobate",
+        "roMissing": "Textele în română nu sunt aprobate încă: campania se salvează doar ca ciornă.",
+        "fieldError": "Verifică acest câmp.",
+        "saved": "Am salvat campania.",
+        "published": "Am publicat campania.",
+        "error": "N-am putut salva. Nu s-a schimbat nimic.",
+        "new": "Campanie nouă",
+        "stopFromList": "Oprită din lista campaniilor."
       },
       "audiences": {
         "audiente": "Audiențe",
@@ -1767,6 +1787,52 @@
         "trial": "Gratuit {days} zile. Apoi {price}, doar dacă alegi să continui.",
         "setup": "Implementare: {amount}, o singură dată.",
         "noSetup": "Fără cost de implementare."
+      },
+      "rules": {
+        "matchLabel": "Afacerea trebuie să îndeplinească",
+        "matchAll": "Toate condițiile",
+        "matchAny": "Oricare dintre ele",
+        "ruleN": "Condiția {n}",
+        "criterion": "Criteriu",
+        "operator": "Condiție",
+        "value": "Valoare",
+        "removeCondition": "Șterge condiția",
+        "addCondition": "Adaugă o condiție",
+        "eligibleN": "{n, plural, one {Aproximativ # afacere eligibilă} few {Aproximativ # afaceri eligibile} other {Aproximativ # de afaceri eligibile}}",
+        "op": {
+          "includes": "include",
+          "excludes": "nu include",
+          "is": "este",
+          "is_not": "nu este",
+          "gte": "peste",
+          "lte": "sub"
+        },
+        "unitDays": "zile",
+        "unitPeople": "persoane",
+        "locales": {
+          "ro": "Română",
+          "en": "English",
+          "fr": "Français",
+          "es": "Español",
+          "de": "Deutsch",
+          "it": "Italiano"
+        },
+        "countries": {
+          "RO": "România",
+          "MD": "Moldova",
+          "IT": "Italia",
+          "DE": "Germania"
+        }
+      },
+      "signals": {
+        "commercial_quota_threshold": "Consum peste un prag",
+        "commercial_trial_ending": "Perioada de probă se încheie în curând",
+        "commercial_feature_locked_clicked": "A apăsat pe o funcție care nu e în abonament",
+        "integration_target_missing": "Integrare lipsă: are o aplicație, nu are aplicația legată",
+        "commercial_addon_purchased": "A cumpărat un pachet în plus",
+        "commercial_application_activated": "A activat o aplicație",
+        "commercial_trial_started": "A început o perioadă de probă",
+        "commercial_subscription_changed": "Și-a schimbat abonamentul"
       }
     },
     "notifications": {
