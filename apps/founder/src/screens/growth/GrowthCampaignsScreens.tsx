@@ -13,7 +13,8 @@ import {
   type GrowthCampaignRow,
   type GrowthCampaignState,
 } from '@ventora/screens';
-import { campaignOverlaps, type FounderCampaign, type FounderOffer } from '@ventora/growth';
+import type { FounderCampaign, FounderOffer } from '@ventora/growth';
+import { campaignOverlaps } from '@ventora/growth/overlaps';
 import { growthSaveCampaign, growthStop, type GrowthCampaignsData } from '@/server/growth-actions';
 import { FounderShell } from '../shell/FounderShell';
 import { useSlotLabel } from './GrowthControlScreen';
