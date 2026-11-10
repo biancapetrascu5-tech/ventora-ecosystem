@@ -67,7 +67,9 @@ export type AuditTargetType =
   | 'booking_appointment'
   | 'booking_time_block'
   | 'booking_client'
-  | 'booking_settings';
+  | 'booking_settings'
+  // Lot C.0e / B.3: the bookable resources (rooms, spaces, equipment)
+  | 'booking_resource';
 
 export type AuditEvent = {
   category: AuditCategory;
