@@ -691,6 +691,9 @@ importers:
 
   core/growth:
     dependencies:
+      '@ventora/audit':
+        specifier: workspace:*
+        version: link:../audit
       '@ventora/commercial':
         specifier: workspace:*
         version: link:../commercial
@@ -700,6 +703,12 @@ importers:
       '@ventora/db-kit':
         specifier: workspace:*
         version: link:../../packages/db-kit
+      '@ventora/errors':
+        specifier: workspace:*
+        version: link:../../packages/errors
+      '@ventora/identity':
+        specifier: workspace:*
+        version: link:../identity
       '@ventora/notifications':
         specifier: workspace:*
         version: link:../notifications

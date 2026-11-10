@@ -93,7 +93,13 @@ export type AuditTargetType =
   | 'crm_pipeline'
   | 'crm_stage'
   | 'crm_deal'
-  | 'crm_loss_reason';
+  | 'crm_loss_reason'
+  // Lot 5.10: Founder · Growth & Campaigns (core/growth, category founder)
+  | 'growth_offer'
+  | 'growth_audience'
+  | 'growth_campaign'
+  | 'growth_placement'
+  | 'growth_control';
 
 export type AuditEvent = {
   category: AuditCategory;
