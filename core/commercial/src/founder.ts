@@ -1,6 +1,9 @@
 import type { PoolClient } from 'pg';
 import type { BillingInterval, Currency, PurchaseMode } from '@ventora/contracts';
-import { SubscriptionVersionChangeScheduledV1 } from '@ventora/contracts';
+import {
+  CommercialApplicationActivatedV1,
+  SubscriptionVersionChangeScheduledV1,
+} from '@ventora/contracts';
 import { Conflict, InvalidInput, ResourceNotFound } from '@ventora/errors';
 import {
   AuditActions,
@@ -1201,6 +1204,13 @@ export async function addApplicationToSubscription(
       )
       .catch((err) => mapDbError(err, 'applicationId'));
     const lineId = rows[0]!.id;
+    // Lot 5.7 (GROWTH §2.7): an application turned on by the team („Cere activare” solved)
+    await writeOutboxEvent(client, 'commercial', CommercialApplicationActivatedV1, {
+      organizationId,
+      sourceApp: CommercialApplicationActivatedV1.sourceApp,
+      resourceId: lineId,
+      payload: { applicationId: params.applicationId, via: 'request' },
+    });
     await audit(exec, founder.userId, {
       action: AuditActions.commercialApplicationLineAdded,
       targetType: 'subscription_application',

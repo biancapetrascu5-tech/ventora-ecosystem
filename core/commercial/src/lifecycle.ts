@@ -3,6 +3,7 @@ import {
   CommercialDunningChangedV1,
   CommercialSetupRequestChangedV1,
   CommercialTrialEndingV1,
+  CommercialTrialStartedV1,
 } from '@ventora/contracts';
 import { Conflict, Forbidden, InvalidInput, ResourceNotFound } from '@ventora/errors';
 import {
@@ -157,6 +158,19 @@ export async function startApplicationTrial(
       )
       .catch(mapLifecycleError);
     const trial = rows[0]!;
+    // Lot 5.7 (GROWTH §2.7): the conversion event — the owner confirmed the trial explicitly
+    await writeOutboxEvent(client, 'commercial', CommercialTrialStartedV1, {
+      organizationId,
+      sourceApp: CommercialTrialStartedV1.sourceApp,
+      resourceId: trial.id,
+      payload: {
+        trialId: trial.id,
+        kind: trial.kind,
+        applicationId: trial.application_id,
+        featureKey: trial.feature_key,
+        endsAt: trial.ends_at.toISOString(),
+      },
+    });
     await appendAuditEventInTx(pgExecutor(client), {
       category: 'commercial',
       action: AuditActions.commercialTrialStarted,

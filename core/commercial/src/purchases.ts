@@ -1,5 +1,7 @@
 import type { PoolClient } from 'pg';
 import type { BillingInterval, Currency, PurchaseMode } from '@ventora/contracts';
+import { CommercialAddonPurchasedV1, CommercialApplicationActivatedV1 } from '@ventora/contracts';
+import { writeOutboxEvent } from '@ventora/db-kit';
 import { Conflict, InvalidInput, ResourceNotFound } from '@ventora/errors';
 import { priceOf } from './classify';
 import { withOrganizationRead, withOrganizationWrite } from './db';
@@ -203,8 +205,8 @@ export async function activatePurchasedAddon(params: {
     if (existing) return { grantId: existing, created: false };
     const sub = await liveSubscription(client);
     if (!sub) throw new InvalidInput('organizationId', 'The business has no subscription');
-    const addon = await client.query<{ validity: string }>(
-      `SELECT validity FROM commercial.addon WHERE id = $1`,
+    const addon = await client.query<{ validity: string; code: string }>(
+      `SELECT validity, code FROM commercial.addon WHERE id = $1`,
       [addonId],
     );
     if (!addon.rows[0]) throw new ResourceNotFound('Add-on not found');
@@ -228,7 +230,16 @@ export async function activatePurchasedAddon(params: {
         purchaseId,
       ],
     );
-    if (rows[0]) return { grantId: rows[0].id, created: true };
+    if (rows[0]) {
+      // Lot 5.7 (GROWTH §2.7): the conversion event, with the grant (ids only, no amount)
+      await writeOutboxEvent(client, 'commercial', CommercialAddonPurchasedV1, {
+        organizationId,
+        sourceApp: CommercialAddonPurchasedV1.sourceApp,
+        resourceId: rows[0].id,
+        payload: { purchaseId, addonCode: addon.rows[0].code, quantity: params.packs },
+      });
+      return { grantId: rows[0].id, created: true };
+    }
     return { grantId: (await grantOf(client, purchaseId))!, created: false };
   });
 }
@@ -282,7 +293,16 @@ export async function activatePurchasedApplication(params: {
         purchaseId,
       ],
     );
-    if (rows[0]) return { lineId: rows[0].id, created: true };
+    if (rows[0]) {
+      // Lot 5.7 (GROWTH §2.7): the conversion event, with the line (no amount)
+      await writeOutboxEvent(client, 'commercial', CommercialApplicationActivatedV1, {
+        organizationId,
+        sourceApp: CommercialApplicationActivatedV1.sourceApp,
+        resourceId: rows[0].id,
+        payload: { applicationId: params.applicationId, via: 'purchase' },
+      });
+      return { lineId: rows[0].id, created: true };
+    }
     return { lineId: (await lineOf(client, purchaseId))!, created: false };
   });
 }

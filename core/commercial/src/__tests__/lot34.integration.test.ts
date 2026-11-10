@@ -6,6 +6,7 @@ import { closeAuditPools } from '@ventora/audit';
 import { founderAuth } from '@ventora/identity';
 import {
   APPLICATIONS,
+  activatePurchasedAddon,
   activatePurchasedApplication,
   addApplicationToSubscription,
   assignSubscription,
@@ -1238,6 +1239,23 @@ describe('Lot 3.5b — D3-26: an application line keeps the limits it was create
     const c = await business(versionId);
     const lc = await requestLine(c);
 
+    // Lot 5.7 (GROWTH §2.7): the conversion event, once, in the same transaction as the line —
+    // „request” when the team turns it on, „purchase” when bought from the Hub (no amount)
+    const activated = await q(
+      `SELECT organization_id, payload FROM commercial.outbox_events
+        WHERE type = 'commercial.application.activated' AND organization_id = ANY($1::uuid[])`,
+      [[a, b]],
+    );
+    expect(activated).toHaveLength(2);
+    expect(activated.find((r) => r.organization_id === a)?.payload).toEqual({
+      applicationId: 'crm',
+      via: 'request',
+    });
+    expect(activated.find((r) => r.organization_id === b)?.payload).toEqual({
+      applicationId: 'crm',
+      via: 'purchase',
+    });
+
     for (const org of [a, b, c]) expect(await sms(org)).toBe(1300);
     const snap = await q(
       `SELECT subscription_application_id AS line, quota_key, limit_value
@@ -1343,5 +1361,50 @@ describe('Lot 3.5b — D3-26: an application line keeps the limits it was create
         ).rejects.toThrow(/permission denied/);
       });
     }
+  });
+});
+
+describe('Lot 5.7 — the conversion events of a purchase (GROWTH §2.7)', () => {
+  it('a pack bought: commercial.addon.purchased once, with the code and the packs, no amount', async () => {
+    const { versionId } = await plan();
+    const org = await business(versionId);
+    const code = `l57-sms-${newUuid().slice(0, 6)}`;
+    const { addonId } = await createAddon({
+      founderHeaders: founderHeaders(),
+      code,
+      name: 'SMS în plus',
+      quotaKey: 'platform.members',
+      quantity: 5,
+      validity: 'current_month',
+      purchaseMode: 'direct',
+      prices: [{ currency: 'RON', amountMinor: 4900, setupMinor: 0 }],
+      eligiblePlanIds: [
+        (await q(`SELECT plan_id FROM commercial.plan_version WHERE id = $1`, [versionId]))[0]!
+          .plan_id,
+      ],
+    });
+    const purchaseId = newUuid();
+    const first = await activatePurchasedAddon({
+      organizationId: org,
+      purchaseId,
+      addonId,
+      packs: 2,
+    });
+    const again = await activatePurchasedAddon({
+      organizationId: org,
+      purchaseId,
+      addonId,
+      packs: 2,
+    });
+    expect(first.created).toBe(true);
+    expect(again.created).toBe(false);
+    const events = await q(
+      `SELECT resource_id, payload FROM commercial.outbox_events
+        WHERE type = 'commercial.addon.purchased' AND organization_id = $1`,
+      [org],
+    );
+    expect(events).toEqual([
+      { resource_id: first.grantId, payload: { purchaseId, addonCode: code, quantity: 2 } },
+    ]);
   });
 });
