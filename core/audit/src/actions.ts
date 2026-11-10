@@ -189,6 +189,13 @@ export const AuditActions = {
   bookingResourceUpdated: 'booking.resource_updated',
   bookingResourceArchived: 'booking.resource_archived',
   bookingResourceRestored: 'booking.resource_restored',
+  // Lot C.0f / B.7 — the client card (category booking, required): blocking (booking:admin, with
+  // the reason length only, never its text), the merge of two clients (D-B7-2: ids only) and the
+  // GDPR erasure (D-B7-1: the client id, no data of the client)
+  bookingClientBlocked: 'booking.client_blocked',
+  bookingClientUnblocked: 'booking.client_unblocked',
+  bookingClientMerged: 'booking.client_merged',
+  bookingClientErased: 'booking.client_erased',
   // Lot C.4 / CR.2 — the ClientDesk contacts and companies (category crm, required), in the same
   // transaction as the write. No personal data in the rows (name, phone, e-mail, note, birthday):
   // only ids, the changed field names, the owner and the company. „Șterge” moves to the 30-day
