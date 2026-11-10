@@ -35,8 +35,12 @@ export interface GrowthPlacement {
  * @see docs/GROWTH_ENGINE.md §2.3
  */
 export interface GrowthSignalDeclaration {
-  /** Tipul evenimentului din catalogul de evenimente, format: `<app>.<entity>.<action>.v<n>` */
-  eventType: string;
+  /**
+   * Tipul și versiunea evenimentului, ca în catalog (`event-catalog.ts`): tipul `<entitate>.<acțiune>`,
+   * versiunea separat (Lot 5.0: aliniat cu plicul din Lot 4.1).
+   */
+  type: string;
+  version: number;
   /**
    * Semnalul este marcat growthSafe: payload fără date sensibile.
    * Niciodată: date ale clienților finali, sume, angajați, documente.

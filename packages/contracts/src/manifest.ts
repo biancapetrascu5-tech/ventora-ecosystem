@@ -1,3 +1,5 @@
+import type { GrowthPlacement, GrowthSignalDeclaration } from './growth';
+
 /**
  * Lot 3.1 (ARCHITECTURE §8.4): what an application manifest declares. The keys of features and
  * quotas are synced into the commercial registry at deploy (scripts/sync-commercial-registry.ts);
@@ -44,4 +46,11 @@ export interface ApplicationManifest {
   defaultGrants: Readonly<Record<string, readonly string[] | '*'>>;
   features?: readonly FeatureDeclaration[];
   quotas?: readonly QuotaDeclaration[];
+  /**
+   * D-GRW-3, Lot 5.0: locurile unde Growth Engine poate afișa o recomandare (GROWTH_ENGINE §2.2).
+   * Aplicația nu știe ce apare în ele; fără sloturi = `[]`. Validate cu `validateManifestGrowth`.
+   */
+  placements?: readonly GrowthPlacement[];
+  /** D-GRW-3, Lot 5.0: evenimentele `growthSafe` din catalog pe care aplicația le emite ca semnale. */
+  growthSignals?: readonly GrowthSignalDeclaration[];
 }

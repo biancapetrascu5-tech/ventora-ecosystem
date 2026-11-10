@@ -343,12 +343,13 @@ export const FileDeletedV1 = defineEvent({
 /**
  * Lot 3.8 — `commercial.trial.ending` v1 (D3-5): a trial ends in 3 days; the owner is reminded
  * once (the job sets `reminder_sent_at` in the same transaction). Delivery: the F4 consumer.
+ * Lot 5.0 (D5-7): also a Growth signal — the payload has only ids, the kind and the end date.
  */
 export const CommercialTrialEndingV1 = defineEvent({
   type: 'commercial.trial.ending',
   version: 1,
   sourceApp: 'platform',
-  growthSafe: false,
+  growthSafe: true,
   withoutConsumer: 'complete',
   schema: z
     .object({
@@ -581,6 +582,117 @@ export const BookingAppointmentCompletedV1 = defineEvent({
     .strict(),
 });
 
+/*
+ * Lot 5.0 — Growth Engine v1 (FAZA-5.md, D5-7, GROWTH_ENGINE §2.3, §2.7). Semnalele și conversiile
+ * sunt `growthSafe`: doar id-uri și chei, fără sume, nume sau conținut. Venitul atribuit se citește
+ * din core/billing la raportare, nu vine în eveniment. Emițătorii vin în Lotul 5.7; până atunci,
+ * fără consumator, evenimentele se marchează livrate.
+ */
+
+/**
+ * `commercial.feature.locked_clicked` v1: persoana a apăsat pe o funcționalitate blocată (componenta
+ * comună). Semnal cerut de persoană: slotul care urmează e `userInitiated`, deci fără plafoane.
+ */
+export const CommercialFeatureLockedClickedV1 = defineEvent({
+  type: 'commercial.feature.locked_clicked',
+  version: 1,
+  sourceApp: 'platform',
+  growthSafe: true,
+  withoutConsumer: 'complete',
+  schema: z
+    .object({
+      userId: z.uuid(),
+      applicationId: z.string().min(1).nullable(),
+      featureKey: z.string().min(1),
+    })
+    .strict(),
+});
+
+/**
+ * `integration.target_missing` v1: o aplicație declară că o integrare ar fi utilă, dar aplicația
+ * țintă nu e activă (cross-sell, GROWTH §2.3). Doar declarat în v1 (D5-7): primul emițător real
+ * vine cu a doua aplicație.
+ */
+export const IntegrationTargetMissingV1 = defineEvent({
+  type: 'integration.target_missing',
+  version: 1,
+  sourceApp: 'platform',
+  growthSafe: true,
+  withoutConsumer: 'complete',
+  schema: z
+    .object({
+      sourceApplicationId: z.string().min(1),
+      targetApplicationId: z.string().min(1),
+      integrationKey: z.string().min(1),
+    })
+    .strict(),
+});
+
+/** `commercial.addon.purchased` v1 (conversie): afacerea a cumpărat un pachet în plus. */
+export const CommercialAddonPurchasedV1 = defineEvent({
+  type: 'commercial.addon.purchased',
+  version: 1,
+  sourceApp: 'platform',
+  growthSafe: true,
+  withoutConsumer: 'complete',
+  schema: z
+    .object({
+      purchaseId: z.uuid(),
+      addonCode: z.string().min(1),
+      quantity: z.number().int().positive(),
+    })
+    .strict(),
+});
+
+/** `commercial.application.activated` v1 (conversie): o aplicație a intrat în abonament. */
+export const CommercialApplicationActivatedV1 = defineEvent({
+  type: 'commercial.application.activated',
+  version: 1,
+  sourceApp: 'platform',
+  growthSafe: true,
+  withoutConsumer: 'complete',
+  schema: z
+    .object({
+      applicationId: z.string().min(1),
+      via: z.enum(['purchase', 'request', 'trial_conversion']),
+    })
+    .strict(),
+});
+
+/** `commercial.trial.started` v1 (conversie): a pornit o perioadă de probă, confirmată explicit. */
+export const CommercialTrialStartedV1 = defineEvent({
+  type: 'commercial.trial.started',
+  version: 1,
+  sourceApp: 'platform',
+  growthSafe: true,
+  withoutConsumer: 'complete',
+  schema: z
+    .object({
+      trialId: z.uuid(),
+      kind: z.enum(['application', 'feature']),
+      applicationId: z.string().min(1).nullable(),
+      featureKey: z.string().min(1).nullable(),
+      endsAt: z.iso.datetime({ offset: true }),
+    })
+    .strict(),
+});
+
+/** `commercial.subscription.changed` v1 (conversie): abonamentul a trecut pe alt plan / bundle. */
+export const CommercialSubscriptionChangedV1 = defineEvent({
+  type: 'commercial.subscription.changed',
+  version: 1,
+  sourceApp: 'platform',
+  growthSafe: true,
+  withoutConsumer: 'complete',
+  schema: z
+    .object({
+      subscriptionId: z.uuid(),
+      fromPlanVersionId: z.uuid().nullable(),
+      toPlanVersionId: z.uuid().nullable(),
+    })
+    .strict(),
+});
+
 export const EVENT_CATALOG: readonly EventDefinition[] = [
   InvitationNewLinkRequestedV1 as EventDefinition,
   SubscriptionVersionChangeScheduledV1 as EventDefinition,
@@ -607,6 +719,12 @@ export const EVENT_CATALOG: readonly EventDefinition[] = [
   BookingAppointmentCancelledV1 as EventDefinition,
   BookingAppointmentNoShowV1 as EventDefinition,
   BookingAppointmentCompletedV1 as EventDefinition,
+  CommercialFeatureLockedClickedV1 as EventDefinition,
+  IntegrationTargetMissingV1 as EventDefinition,
+  CommercialAddonPurchasedV1 as EventDefinition,
+  CommercialApplicationActivatedV1 as EventDefinition,
+  CommercialTrialStartedV1 as EventDefinition,
+  CommercialSubscriptionChangedV1 as EventDefinition,
 ];
 
 /** Definiția unui eveniment după tip și versiune; null dacă nu e în catalog. */
