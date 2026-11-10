@@ -180,7 +180,8 @@ jobs:
           psql postgresql://postgres:test@localhost:5433/ventora_identity_test \
             -v ON_ERROR_STOP=1 \
             -f core/audit/prisma/migrations/20261028000001_audit_init/migration.sql \
-            -f core/audit/prisma/migrations/20261106000002_audit_category_booking/migration.sql
+            -f core/audit/prisma/migrations/20261106000002_audit_category_booking/migration.sql \
+            -f core/audit/prisma/migrations/20261110000003_audit_category_crm/migration.sql
       - name: Set runtime role passwords and start pgbouncer
         run: |
           APP_PW=$(openssl rand -hex 32)
@@ -301,7 +302,8 @@ jobs:
           psql postgresql://postgres:test@localhost:5434/ventora_org_test \
             -v ON_ERROR_STOP=1 \
             -f core/audit/prisma/migrations/20261028000001_audit_init/migration.sql \
-            -f core/audit/prisma/migrations/20261106000002_audit_category_booking/migration.sql
+            -f core/audit/prisma/migrations/20261106000002_audit_category_booking/migration.sql \
+            -f core/audit/prisma/migrations/20261110000003_audit_category_crm/migration.sql
       - name: Run organizations integration tests
         env:
           DATABASE_URL_TEST: postgresql://app_runtime:${{ env.APP_PW }}@localhost:5434/ventora_org_test
@@ -393,7 +395,8 @@ jobs:
           psql postgresql://postgres:test@localhost:5435/ventora_access_test \
             -v ON_ERROR_STOP=1 \
             -f core/audit/prisma/migrations/20261028000001_audit_init/migration.sql \
-            -f core/audit/prisma/migrations/20261106000002_audit_category_booking/migration.sql
+            -f core/audit/prisma/migrations/20261106000002_audit_category_booking/migration.sql \
+            -f core/audit/prisma/migrations/20261110000003_audit_category_crm/migration.sql
       # Lot 3.2: T4 in booking reads the subscription through the real provider (commercial)
       - name: Apply commercial migrations
         run: |
@@ -695,7 +698,8 @@ jobs:
           psql postgresql://postgres:test@localhost:5436/ventora_audit_test \
             -v ON_ERROR_STOP=1 \
             -f core/audit/prisma/migrations/20261028000001_audit_init/migration.sql \
-            -f core/audit/prisma/migrations/20261106000002_audit_category_booking/migration.sql
+            -f core/audit/prisma/migrations/20261106000002_audit_category_booking/migration.sql \
+            -f core/audit/prisma/migrations/20261110000003_audit_category_crm/migration.sql
       - name: Run audit integration tests
         env:
           DATABASE_URL_TEST: postgresql://app_runtime:${{ env.APP_PW }}@localhost:5436/ventora_audit_test
@@ -763,6 +767,7 @@ jobs:
                    core/identity/prisma/founder/migrations/20261025000001_founder_init/migration.sql \
                    core/audit/prisma/migrations/20261028000001_audit_init/migration.sql \
                    core/audit/prisma/migrations/20261106000002_audit_category_booking/migration.sql \
+                   core/audit/prisma/migrations/20261110000003_audit_category_crm/migration.sql \
                    core/identity/prisma/identity/migrations/20261028000004_founder_owner_recovery/migration.sql \
                    core/identity/prisma/identity/migrations/20261029000006_lot26_open_last_organization/migration.sql; do
             echo "Applying $f"
@@ -805,6 +810,7 @@ jobs:
                    core/identity/prisma/founder/migrations/20261025000001_founder_init/migration.sql \
                    core/audit/prisma/migrations/20261028000001_audit_init/migration.sql \
                    core/audit/prisma/migrations/20261106000002_audit_category_booking/migration.sql \
+                   core/audit/prisma/migrations/20261110000003_audit_category_crm/migration.sql \
                    core/identity/prisma/identity/migrations/20261028000004_founder_owner_recovery/migration.sql \
                    core/identity/prisma/identity/migrations/20261029000006_lot26_open_last_organization/migration.sql \
                    core/commercial/prisma/migrations/*/migration.sql; do
