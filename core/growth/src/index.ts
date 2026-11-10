@@ -12,3 +12,31 @@ export {
   type PlacementSource,
   type PlacementSyncResult,
 } from './registry';
+export {
+  decide,
+  matchRule,
+  ownsTarget,
+  slotCampaigns,
+  type CatalogCampaign,
+  type CatalogOffer,
+  type CatalogPlacement,
+  type CatalogSnapshot,
+  type Candidate,
+  type DecideInput,
+  type DecideResult,
+  type GrowthRole,
+  type NoneReason,
+  type PersonState,
+  type SubjectFacts,
+} from './decide';
+export { commercialPorts, type GrowthPorts } from './ports';
+export {
+  clearGrowthCache,
+  getSlotContent,
+  loadCatalog,
+  recordInteraction,
+  type InteractionKind,
+  type InteractionRequest,
+  type SlotLogger,
+  type SlotRequest,
+} from './service';

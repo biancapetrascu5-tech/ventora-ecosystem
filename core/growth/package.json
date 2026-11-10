@@ -15,7 +15,10 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@ventora/commercial": "workspace:*",
     "@ventora/contracts": "workspace:*",
+    "@ventora/notifications": "workspace:*",
+    "@ventora/organizations": "workspace:*",
     "pg": "^8.0.0"
   },
   "devDependencies": {
