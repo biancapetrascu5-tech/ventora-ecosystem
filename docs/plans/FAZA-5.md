@@ -1,6 +1,6 @@
 # FAZA 5 — Hub + Growth Engine v1
 
-**Status:** **PROPUS** (agentul F5, 10.11.2026). Nimic nu începe fără aprobarea fondatoarei (CLAUDE.md, regula 7).
+**Status:** **APROBAT** (fondatoarea, 10.11.2026), cu toate recomandările D5-1…D5-20 (§5). Loturile merg în ordinea din §3.14, fiecare cu PR-ul și raportul lui; ecranele fără design așteaptă designul; nimic pe staging și fără merge din partea agentului; după fiecare lot cu migrare, agentul se oprește pentru verificarea SQL-ului.
 **Referințe:** `ARCHITECTURE.md` v0.4.6: §8.7 (Growth Engine), §10.10 (măsurarea, D-PX-2), §15.1 (F5), §15.2, §17.1 (D-GRW-1…16, D-PX-2, D-PX-3, D-COM-7). Apoi `docs/GROWTH_ENGINE.md`, `docs/design/SPEC_COMPONENTE_COMERCIALE.md`, `DESIGN_RULES.md` §14–15, `docs/design/system/patterns.md` („Comercial”, „Founder Control Center și Growth”, „Măsurare comună”), `docs/design/reviews/founder-growth.md` (P16–P27) și `docs/plans/FAZA-4.md` (modelul acestui plan).
 **Depinde de:** F1, F2, F3 și F4, toate închise. Entitlements, cote, plăți (F3); outbox, job-uri, notificări (F4).
 **Merge în paralel cu:** Booking (agentul main) și ecranele / planul CRM (agentul UI). Fișierele comune sunt la §3.15.
@@ -31,7 +31,7 @@ La finalul Fazei 5:
   - afișările, interacțiunile și conversiile atribuite în 7 zile.
 - **Componentele comerciale primesc date reale:** `GrowthSlot`, `RecommendationCard`, `HubRecommendation`, `CatalogRecommendation`, `UpgradeDialog` și `DiscoveryTooltip`. Nicio activare plătită nu se face dintr-un click: confirmarea e mereu un pas separat, în fluxurile de plată care există deja.
 - **Founder primește secțiunea Growth:** Oferte, Campanii, Audiențe, Rezultate și Control, după designul existent.
-- **Măsurarea experienței de produs (D-PX-2), recomandarea mea:** evenimente proprii în Postgres și un panou în Founder. **De confirmat de fondatoare** (D5-1).
+- **Măsurarea experienței de produs (D-PX-2): DECIS** (D5-1 = a, 10.11.2026): evenimente proprii în Postgres și un panou în Founder.
 
 ---
 
@@ -448,7 +448,7 @@ Sesiunile de suport rămân pe aceeași pagină sau se mută, după design.
 
 ### Lot 5.12 — Măsurarea experienței de produs (D-PX-2)
 
-**Recomandarea mea (de confirmat de fondatoare, D5-1): evenimente proprii în Postgres și un panou în Founder.**
+**DECIS (D5-1 = a, fondatoarea, 10.11.2026): evenimente proprii în Postgres și un panou în Founder.**
 - Fără pachete și furnizori noi și fără date trimise în afara bazei din UE.
 - Fără cookie-uri sau stocare pe dispozitiv: evenimentele se trimit de la server sau prin acțiuni de server.
 - Volumul de la început e mic. Dacă devine prea mare, se poate trece la PostHog UE fără să se schimbe helper-ul.
@@ -549,26 +549,26 @@ Ordonate după lotul pe care îl blochează.
 
 | # | Blochează | Întrebare | Variante | Recomandare |
 |---|---|---|---|---|
-| D5-1 | 5.12 (și ARCHITECTURE §10.10, „înainte de F5”) | **D-PX-2: instrumentul de analytics de produs** | a) evenimente proprii în Postgres + panou în Founder; b) PostHog cloud UE; c) PostHog self-hosted; d) alt serviciu | **a.** Fără furnizor nou, fără date în afara bazei, fără cookie-uri, deci mai puține întrebări juridice. Helper-ul comun permite trecerea la b mai târziu. **De confirmat de fondatoare.** |
-| D5-2 | 5.5, 5.8, 5.12 | **Roluri noi și GRANT-uri** | `growth_rw` (Hub: citire de catalog, scriere de afișări / interacțiuni pe organizație), rolul Founder pe `growth` (scrierea catalogului), `analytics_rw`, eventual `notifications_founder` (D4-29) | Aprobare explicită înaintea fiecărei migrări, cu lista exactă de GRANT-uri în PR. |
-| D5-3 | 5.1 | **Cele 4 stări din launcher** (C-F5-6) | a) `available` / `notInRole` / `notInPlan` / `unavailable` (trial încheiat, pauză, oprit din Founder), ca `AccessBadge`; b) altă împărțire (de ex. „în probă” ca stare separată) | **a**, cu trialul activ ca `available` plus o etichetă de durată, după `CommercialStates`. |
-| D5-4 | 5.6, 5.9 | **Adminul fără drept de cumpărare** (C-F5-5): D-GRW-7 îi dă recomandările proactive, iar D3-8 spune că doar owner-ul cumpără | a) adminul vede recomandarea proactivă cu acțiunea „Recomandă” către owner; b) proactivele doar pentru owner | **a**: respectă D-GRW-7 și D3-8. Adminul cu drept de cumpărare, dacă va exista, vede acțiunile owner-ului. |
-| D5-5 | 5.10c | **Audiențele în v1** (C-F5-1) | a) da, simple (reguli salvate din lista albă, pragul de 5), ca în design și P23; b) după D-GRW-5 | **a**. Designul și P23 sunt aprobate; segmentele avansate rămân după D-GRW-5. |
-| D5-6 | 5.10a | **Ecranul „Traduceri”** (GROWTH §4, C-F5-2) | a) fără ecran separat: starea în GrowthOffers și editor, ca în design; b) ecran separat, cu design nou | **a**. |
-| D5-7 | 5.0, 5.7 | **Semnalele v1** | a) `quota.threshold`, `feature.locked_clicked`, `trial.ending`, plus `integration.target_missing` doar declarat; b) și `org.onboarding.milestone` / `app.usage.pattern` | **a**. Situațiile cu intenție clară (GROWTH §5.3). Cele agregate cer date reale. |
-| D5-8 | 5.8 | **Minimul de afișări înainte de oprirea automată la 5%** | a) 100 de afișări pe campanie; b) fără minim | **a**. Fără minim, 1 respingere la 10 afișări ar opri o campanie. Pragul de 5% rămâne neschimbat. |
-| D5-9 | 5.6 | **„Efect practic imediat” la oprire** | a) cache în proces de cel mult 5 secunde, citit din Postgres; b) Redis / pub-sub (pachet și serviciu noi) | **a**. Fără pachet nou; testul verifică cele 5 secunde. |
-| D5-10 | 5.6 | **Plafoanele pentru o persoană din mai multe afaceri** | a) pe persoană, global (în toate afacerile); b) pe persoană și afacere | **a**: varianta mai strictă, cum spune GROWTH §2.5 („global, în toate sloturile”). |
-| D5-11 | 5.8 | **Unde ajunge notificarea de oprire automată** (P22). Clopoțelul Founder (D4-29) n-a fost construit și n-are design | a) clopoțelul Founder în 5.8, cu `notifications_founder` și design; b) provizoriu: e-mail operațional către adresa echipei + Anunț în GrowthResults / Control | **a**, cu b până la design. |
-| D5-12 | 5.7 | **Atribuirea și venitul** | a) ultimul click din 7 zile, o conversie pe click, venit = prima plată fără TVA; b) altă regulă | **a**, afișată lângă cifră (P24). |
-| D5-13 | 5.2 | **Tema salvată pe persoană** | a) în `UserPreference`, lângă limbă; b) rămâne în `localStorage` | **a**. |
-| D5-14 | 5.4 | **Cum se citește „end-to-end în Light/Dark × 6 limbi”** și jobul nou din CI | a) fluxurile funcționale complete în română, plus pe fiecare ecran trecerea prin 2 teme × 6 limbi (randare, chei, depășiri, contrast, capturi); b) fiecare flux complet de 12 ori | **a**. Aceeași acoperire a riscului, la o fracțiune din timpul CI. Jobul modifică `ci.yml` (PR separat). |
-| D5-15 | 5.1 | **„Reordonează” în launcher** | a) amânat; b) în 5.1, cu tabel nou | **a**. |
-| D5-16 | 5.1 | **Cardul Portal** (`PortalPresence`) înainte de Portal | a) ascuns până există Portal; b) un card „în curând” | **a**. Fără promisiuni în produs. |
-| D5-17 | 5.1 | **Fraza zilei cu chip-uri** | a) v1 doar salutul + o frază neutră; chip-urile vin prin contractul „azi” al fiecărei aplicații, începând cu Booking, după D5-18; b) chip-urile Booking în 5.1 | **a**. |
-| D5-18 | 5.11 | **Sloturile Booking** (`booking.today.aside`, `booking.limit.dialog`): manifestul și „Azi” sunt ale agentului main | a) F5 îi dă contractul (5.0) și componenta, iar agentul main le pune în Booking, într-un lot B; b) F5 face un PR mic pe `modules/booking` | **a**. Un singur agent per folder. |
-| D5-19 | 5.9, 5.10 | **D-PX-3: review complet sau prescurtat** pentru ecranele F5 | a) complet pe launcher, sloturi, UpgradeDialog și ecranele Growth; prescurtat pe profil și HubAdminAccess; b) complet peste tot | **a**, ca propunerea din §10.10. |
-| D5-20 | 5.9 (prima campanie) | **Prima campanie reală** | a) pachetele în plus la limită (SMS / locuri în echipă peste 80%); cross-sell-ul (Booking → CampaignKit / CRM) doar când aplicația țintă se vinde; b) altă campanie | **a**. GROWTH §5.2 propune cross-sell-ul Booking → CRM / Marketing, dar acele aplicații nu există încă. |
+| D5-1 | 5.12 (și ARCHITECTURE §10.10, „înainte de F5”) | **D-PX-2: instrumentul de analytics de produs** | a) evenimente proprii în Postgres + panou în Founder; b) PostHog cloud UE; c) PostHog self-hosted; d) alt serviciu | **DECIS: a** (fondatoarea, 10.11.2026). Fără furnizor nou, fără date în afara bazei, fără cookie-uri, deci mai puține întrebări juridice. Helper-ul comun permite trecerea la b mai târziu. |
+| D5-2 | 5.5, 5.8, 5.12 | **Roluri noi și GRANT-uri** | `growth_rw` (Hub: citire de catalog, scriere de afișări / interacțiuni pe organizație), rolul Founder pe `growth` (scrierea catalogului), `analytics_rw`, eventual `notifications_founder` (D4-29) | **DECIS** (fondatoarea, 10.11.2026): fiecare rol nou și GRANT-urile lui vin în PR-ul migrării, cu lista exactă; staging-ul doar după aprobarea fondatoarei. |
+| D5-3 | 5.1 | **Cele 4 stări din launcher** (C-F5-6) | a) `available` / `notInRole` / `notInPlan` / `unavailable` (trial încheiat, pauză, oprit din Founder), ca `AccessBadge`; b) altă împărțire (de ex. „în probă” ca stare separată) | **DECIS: a** (fondatoarea, 10.11.2026). Cu trialul activ ca `available` plus o etichetă de durată, după `CommercialStates`. |
+| D5-4 | 5.6, 5.9 | **Adminul fără drept de cumpărare** (C-F5-5): D-GRW-7 îi dă recomandările proactive, iar D3-8 spune că doar owner-ul cumpără | a) adminul vede recomandarea proactivă cu acțiunea „Recomandă” către owner; b) proactivele doar pentru owner | **DECIS: a** (fondatoarea, 10.11.2026). Respectă D-GRW-7 și D3-8. Adminul cu drept de cumpărare, dacă va exista, vede acțiunile owner-ului. |
+| D5-5 | 5.10c | **Audiențele în v1** (C-F5-1) | a) da, simple (reguli salvate din lista albă, pragul de 5), ca în design și P23; b) după D-GRW-5 | **DECIS: a** (fondatoarea, 10.11.2026). Designul și P23 sunt aprobate; segmentele avansate rămân după D-GRW-5. |
+| D5-6 | 5.10a | **Ecranul „Traduceri”** (GROWTH §4, C-F5-2) | a) fără ecran separat: starea în GrowthOffers și editor, ca în design; b) ecran separat, cu design nou | **DECIS: a** (fondatoarea, 10.11.2026). |
+| D5-7 | 5.0, 5.7 | **Semnalele v1** | a) `quota.threshold`, `feature.locked_clicked`, `trial.ending`, plus `integration.target_missing` doar declarat; b) și `org.onboarding.milestone` / `app.usage.pattern` | **DECIS: a** (fondatoarea, 10.11.2026). Situațiile cu intenție clară (GROWTH §5.3). Cele agregate cer date reale. |
+| D5-8 | 5.8 | **Minimul de afișări înainte de oprirea automată la 5%** | a) 100 de afișări pe campanie; b) fără minim | **DECIS: a (minim 100 de afișări)** (fondatoarea, 10.11.2026). Fără minim, 1 respingere la 10 afișări ar opri o campanie. Pragul de 5% rămâne neschimbat. |
+| D5-9 | 5.6 | **„Efect practic imediat” la oprire** | a) cache în proces de cel mult 5 secunde, citit din Postgres; b) Redis / pub-sub (pachet și serviciu noi) | **DECIS: a** (fondatoarea, 10.11.2026). Fără pachet nou; testul verifică cele 5 secunde. |
+| D5-10 | 5.6 | **Plafoanele pentru o persoană din mai multe afaceri** | a) pe persoană, global (în toate afacerile); b) pe persoană și afacere | **DECIS: a** (fondatoarea, 10.11.2026). Varianta mai strictă, cum spune GROWTH §2.5 („global, în toate sloturile”). |
+| D5-11 | 5.8 | **Unde ajunge notificarea de oprire automată** (P22). Clopoțelul Founder (D4-29) n-a fost construit și n-are design | a) clopoțelul Founder în 5.8, cu `notifications_founder` și design; b) provizoriu: e-mail operațional către adresa echipei + Anunț în GrowthResults / Control | **DECIS: a, cu b până la design** (fondatoarea, 10.11.2026). |
+| D5-12 | 5.7 | **Atribuirea și venitul** | a) ultimul click din 7 zile, o conversie pe click, venit = prima plată fără TVA; b) altă regulă | **DECIS: a** (fondatoarea, 10.11.2026). Afișată lângă cifră (P24). |
+| D5-13 | 5.2 | **Tema salvată pe persoană** | a) în `UserPreference`, lângă limbă; b) rămâne în `localStorage` | **DECIS: a** (fondatoarea, 10.11.2026). |
+| D5-14 | 5.4 | **Cum se citește „end-to-end în Light/Dark × 6 limbi”** și jobul nou din CI | a) fluxurile funcționale complete în română, plus pe fiecare ecran trecerea prin 2 teme × 6 limbi (randare, chei, depășiri, contrast, capturi); b) fiecare flux complet de 12 ori | **DECIS: a** (fondatoarea, 10.11.2026). Aceeași acoperire a riscului, la o fracțiune din timpul CI. Jobul modifică `ci.yml` (PR separat). |
+| D5-15 | 5.1 | **„Reordonează” în launcher** | a) amânat; b) în 5.1, cu tabel nou | **DECIS: a** (fondatoarea, 10.11.2026). |
+| D5-16 | 5.1 | **Cardul Portal** (`PortalPresence`) înainte de Portal | a) ascuns până există Portal; b) un card „în curând” | **DECIS: a** (fondatoarea, 10.11.2026). Fără promisiuni în produs. |
+| D5-17 | 5.1 | **Fraza zilei cu chip-uri** | a) v1 doar salutul + o frază neutră; chip-urile vin prin contractul „azi” al fiecărei aplicații, începând cu Booking, după D5-18; b) chip-urile Booking în 5.1 | **DECIS: a** (fondatoarea, 10.11.2026). |
+| D5-18 | 5.11 | **Sloturile Booking** (`booking.today.aside`, `booking.limit.dialog`): manifestul și „Azi” sunt ale agentului main | a) F5 îi dă contractul (5.0) și componenta, iar agentul main le pune în Booking, într-un lot B; b) F5 face un PR mic pe `modules/booking` | **DECIS: a: sloturile Booking le pune agentul main** (fondatoarea, 10.11.2026). Un singur agent per folder. |
+| D5-19 | 5.9, 5.10 | **D-PX-3: review complet sau prescurtat** pentru ecranele F5 | a) complet pe launcher, sloturi, UpgradeDialog și ecranele Growth; prescurtat pe profil și HubAdminAccess; b) complet peste tot | **DECIS: a** (fondatoarea, 10.11.2026). Ca propunerea din §10.10. |
+| D5-20 | 5.9 (prima campanie) | **Prima campanie reală** | a) pachetele în plus la limită (SMS / locuri în echipă peste 80%); cross-sell-ul (Booking → CampaignKit / CRM) doar când aplicația țintă se vinde; b) altă campanie | **DECIS: a** (fondatoarea, 10.11.2026). GROWTH §5.2 propune cross-sell-ul Booking → CRM / Marketing, dar acele aplicații nu există încă. |
 | — | 5.9 | **D-COM-7** (schimbarea planului cu plată) | — | Rămâne „Cere alt abonament” până la decizie; nu blochează F5. |
 | — | 5.13 | **D-UX-2 / D4-27** (traducerile verificate) | — | Textele ofertelor în en / fr / es / de / it apar doar aprobate (P20). Fără traducător, ofertele apar doar în română, ceea ce e acceptabil. |
 
