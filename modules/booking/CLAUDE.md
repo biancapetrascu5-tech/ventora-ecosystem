@@ -210,3 +210,15 @@ Booking (numele afișat EasyBook) e prima aplicație. Planul: `docs/plans/BOOKIN
 - **Drepturile:** „Încasează” cere `booking:write` (un membru doar pe programările lui); rambursarea cere `booking:admin`.
 - **Evenimentul `booking.payment.recorded`** (C-B-2, pentru Finance) are id-uri, suma, moneda și metoda; niciodată nota sau numele. Auditul pune mișcarea pe `booking.appointment_updated`, fără notă.
 - **Doar evidență:** bonul fiscal rămâne pe casa salonului (E-AMEF e B.34). `erase_client` golește notele încasărilor; sumele rămân.
+
+## Rapoartele și exportul (B.24)
+- **`getBookingReport({ from, to })`** (date locale, cel mult 92 de zile, `booking:admin`):
+  - programările pe stări: încheiate, neprezentări, anulate de client / de salon, anulări târzii, cele care încă ocupă;
+  - venitul: netul încasărilor B.21 ale programărilor din perioadă, pe monedă, plus valoarea celor încheiate;
+  - pe membru: minutele rezervate față de minutele din programul lui (aceeași regulă ca la locurile libere), deci gradul de ocupare;
+  - pe serviciu: programările, încheiatele, neprezentările, anulările, venitul.
+- **`exportAppointmentsCsv`** (`booking:admin`):
+  - CSV UTF-8 cu BOM, în ora afacerii, cu netul încasat, cel mult 5000 de rânduri;
+  - filtrele: membru, stări;
+  - celulele care încep cu `= + - @` sunt neutralizate, ca să nu devină formule.
+- **Excel** (`exceljs`, D-B-8 / D-CRM-7) nu e încă în repo: un pachet nou, de adăugat într-un lot separat.

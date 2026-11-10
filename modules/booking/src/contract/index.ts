@@ -240,3 +240,7 @@ export type {
   ClientPaymentTotalsParams,
 } from './payments';
 export type { AppointmentBalance, AppointmentPayment, PaymentMethod } from '../server/payments';
+// Lot B.24: the operational reports and the CSV export (Excel: exceljs, a proposal)
+export { getBookingReport, exportAppointmentsCsv } from './reports';
+export type { BookingReportParams, ExportAppointmentsParams } from './reports';
+export type { BookingReport, MoneyByCurrency } from '../server/reports';
