@@ -643,6 +643,33 @@
     "home": {
       "soon": "Your business’s apps will appear here."
     },
+    "launcher": {
+      "greeting": {
+        "morning": "Good morning, {name}",
+        "day": "Good afternoon, {name}",
+        "evening": "Good evening, {name}"
+      },
+      "eyebrow": "{date} · {business}",
+      "sentence": {
+        "appointments": "You have <chip>{count, plural, one {one appointment} other {# appointments}}</chip> today.",
+        "plain": "Your apps are below; open the one you need.",
+        "noAppointments": "You have no appointments today."
+      },
+      "yourApps": "Your apps",
+      "others": {
+        "title": "Other Ventora Systems apps",
+        "lead": "You can’t open them right now. Each one says why and what you can do."
+      },
+      "seeAll": "See all Ventora Systems apps",
+      "launching": "Opening {app}",
+      "empty": {
+        "welcome": "Welcome to {business}. Your apps appear here as soon as you get access.",
+        "title": "You don’t have access to any app yet",
+        "body": "{owner} (owner) chooses which apps each role uses.",
+        "bodyNoOwner": "The business owner chooses which apps each role uses."
+      },
+      "trialEnded": "{app} has stopped. Your data stays; turn it on whenever you want to continue."
+    },
     "plan": {
       "title": "Plan and usage",
       "lead": "What your business’s plan includes, how much you’ve used this month, what you can buy on top and your invoices.",

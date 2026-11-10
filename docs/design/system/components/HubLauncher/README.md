@@ -11,3 +11,7 @@ Shown at 1280 (desktop), 820 (tablet portrait) and 390 (phone), in light and dar
 **Other Ventora Systems apps** are compact rows, name first. They can carry one catalog recommendation — a commercial slot, only for owners and admins, with "Nu mă interesează", the remind menu and the global caps (CampaignKit here) — and end with "Vezi toate aplicațiile Ventora Systems", which opens HubCatalog. Tab order goes through your apps and Portal before the commercial slot.
 
 **On phones (S66).** The header keeps only the logo (the mark), search as an icon, the bell and the avatar. The business switcher is in AccountMenu ("Afacerile tale", `orgsInMenu`). The section under the screens shows the menu open, in Light, Dark and German.
+
+**Without Portal (S136, 5.1, D5-16).** A business without a Portal page doesn't see the `PortalPresence` card at all: the dock stands alone, the other apps move up, no empty space is left.
+
+**The day's sentence (S136, D5-17).** No data chips, except "programări azi" when EasyBook is active ("Azi ai 8 programări."). When no active app gives data, a plain sentence: "Aplicațiile tale sunt mai jos; deschide-o pe cea de care ai nevoie." (and the dock cards have no data line either). Two new boards: "Fără Portal" and "Nicio aplicație care dă date".
