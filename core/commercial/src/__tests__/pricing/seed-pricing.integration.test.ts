@@ -191,7 +191,7 @@ describe('D3-1 — scripts/seed-pricing.ts, through the Founder contracts', () =
       'messaging.email': 2000,
     });
     expect(apps.get('analytics')!.quotas).toEqual({ 'ai.analyses': 20 });
-    expect(apps.get('crm')!.quotas).toEqual({});
+    expect(apps.get('crm')!.quotas).toEqual({ 'crm.contacts': 3000, 'crm.pipelines': 2 });
     // Portal and Network are outside the list
     expect(apps.get('portal')?.prices ?? []).toEqual([]);
     expect(apps.get('network')?.prices ?? []).toEqual([]);
@@ -229,6 +229,8 @@ describe('D3-1 — scripts/seed-pricing.ts, through the Founder contracts', () =
       'platform.members': 2,
       'platform.locations': 1,
       'booking.appointments': 1000,
+      'crm.contacts': 3000,
+      'crm.pipelines': 2,
     });
     const complet = plans.find((p) => p.code === 'complet')!.versions[0]!.terms;
     expect(complet.applications).toHaveLength(13);

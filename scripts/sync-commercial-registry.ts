@@ -11,10 +11,11 @@
 
 import { Pool } from 'pg';
 import { manifest as bookingManifest } from '../modules/booking/src/manifest.js';
+import { manifest as crmManifest } from '../modules/crm/src/manifest.js';
 import { platformManifest } from '../core/access/src/platform-manifest.js';
 import { APPLICATIONS, isNoop, syncRegistry } from '../core/commercial/src/index.js';
 
-const MANIFESTS = [platformManifest, bookingManifest];
+const MANIFESTS = [platformManifest, bookingManifest, crmManifest];
 
 async function main() {
   const connectionString = process.env.DIRECT_URL ?? process.env.DATABASE_URL;
