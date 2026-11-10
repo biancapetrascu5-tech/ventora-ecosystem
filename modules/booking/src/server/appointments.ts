@@ -16,6 +16,7 @@ import { withBookingTx } from './db';
 import { staffFreeAtInOrg } from './availability';
 import { requiredResources } from './resources';
 import { doesService, staffForService } from './staff-services';
+import { durationWithin, effectiveTermsFor, type EffectiveTerms } from './terms';
 import { staffDayIntervals, staffEligibility } from './staff';
 import { isUuid, LIMITS } from './validation';
 
@@ -1003,13 +1004,14 @@ export async function createAppointmentInOrg(
       ).rows[0];
       if (!service) throw new ResourceNotFound();
       if (service.archived_at) throw new Conflict('service_archived');
-      const max = service.duration_max_minutes ?? service.duration_minutes;
-      const duration =
-        input.durationMinutes === undefined ? max : requireDuration(input.durationMinutes);
-      if (duration < service.duration_minutes || duration > max) {
-        throw new InvalidInput('durationMinutes', 'invalid');
-      }
-      const endsAt = new Date(startsAt.getTime() + duration * 60_000);
+      if (input.durationMinutes !== undefined) requireDuration(input.durationMinutes);
+      // B.2c: each member's own duration and price for the service (the service's by default)
+      const terms = await effectiveTermsFor(
+        client,
+        serviceId,
+        service,
+        candidates.map((c) => c.id),
+      );
       // B.3b: the active resources the service needs (an archived one is not required, S124)
       const resources = await requiredResources(client, serviceId);
       if (choice !== 'any') {
@@ -1017,7 +1019,15 @@ export async function createAppointmentInOrg(
         if (!(await doesService(client, choice, serviceId))) {
           throw new Conflict('staff_not_for_service');
         }
-        await requireWithinSchedule(client, timeZone, choice, startsAt, endsAt);
+        const own = durationWithin(terms.get(choice)!, input.durationMinutes);
+        if (own === null) throw new InvalidInput('durationMinutes', 'invalid');
+        await requireWithinSchedule(
+          client,
+          timeZone,
+          choice,
+          startsAt,
+          new Date(startsAt.getTime() + own * 60_000),
+        );
       }
 
       let clientRow: ClientRow;
@@ -1039,6 +1049,9 @@ export async function createAppointmentInOrg(
         db: PoolClient,
         staffMemberId: string,
         displayName: string,
+        duration: number,
+        endsAt: Date,
+        price: EffectiveTerms,
       ): Promise<{ number: number; row: AppointmentRow | undefined }> => {
         const number = (
           await db.query<{ last_number: number }>(
@@ -1075,9 +1088,9 @@ export async function createAppointmentInOrg(
             service.name,
             displayName,
             clientRow.name,
-            service.price_kind,
-            service.price_minor,
-            service.price_max_minor,
+            price.priceKind,
+            price.priceMinor,
+            price.priceMaxMinor,
             service.currency,
             teamNote,
             ctx.userId,
@@ -1099,13 +1112,26 @@ export async function createAppointmentInOrg(
       // „Oricine e liber”: the next member when the time was taken in the meantime (D-B5-4)
       for (const staff of candidates) {
         const staffMemberId = staff.id;
+        const own = terms.get(staffMemberId)!;
+        const chosen = durationWithin(own, input.durationMinutes);
+        // „Oricine e liber”: a member whose bounds don't allow the duration asked is skipped
+        if (chosen === null) continue;
+        const duration = chosen;
+        const endsAt = new Date(startsAt.getTime() + duration * 60_000);
         if (choice === 'any') await client.query('SAVEPOINT pick_staff');
         let inserted: { number: number; row: AppointmentRow | undefined };
         try {
           if (choice === 'any') {
             await requireWithinSchedule(client, timeZone, staffMemberId, startsAt, endsAt);
           }
-          inserted = await insertAppointmentRow(client, staffMemberId, staff.display_name);
+          inserted = await insertAppointmentRow(
+            client,
+            staffMemberId,
+            staff.display_name,
+            duration,
+            endsAt,
+            own,
+          );
         } catch (err) {
           const pg = err as PgError;
           // the member's time was taken; a resource with no free unit is the same for everyone

@@ -7,6 +7,7 @@ import { daysBetween, eachDate, requireLocalDate, type Interval } from './schedu
 import { ceilToStep, hhmm, isFreeAt, memberSlots, type Busy, type SlotRules } from './slots';
 import { requiredResources } from './resources';
 import { staffForService } from './staff-services';
+import { durationWithin, effectiveTermsFor } from './terms';
 import { readCalendarStaff, staffEligibility, staffLocalDays, type CalendarStaff } from './staff';
 import { isUuid, LIMITS } from './validation';
 
@@ -79,6 +80,9 @@ type ServiceRow = {
   id: string;
   duration_minutes: number;
   duration_max_minutes: number | null;
+  price_kind: 'fixed' | 'from' | 'range';
+  price_minor: number;
+  price_max_minor: number | null;
   capacity: number;
   bookable_online: boolean;
   archived_at: Date | null;
@@ -142,7 +146,8 @@ function piecesByDate(
 
 async function readService(client: PoolClient, id: string): Promise<ServiceRow> {
   const { rows } = await client.query<ServiceRow>(
-    `SELECT id, duration_minutes, duration_max_minutes, capacity, bookable_online, archived_at
+    `SELECT id, duration_minutes, duration_max_minutes, price_kind, price_minor, price_max_minor,
+            capacity, bookable_online, archived_at
        FROM booking.service WHERE id = $1`,
     [id],
   );
@@ -215,8 +220,31 @@ async function load(
     ctx.organizationId,
     async (client) => {
       const service = await readService(client, serviceId);
-      const durationMinutes = durationFor(service, query.mode, query.durationMinutes);
-      const staff = await candidateStaff(ctx, client, serviceId, choice, query.mode);
+      const candidates = await candidateStaff(ctx, client, serviceId, choice, query.mode);
+      // B.2c: each member's own duration (the service's by default); online always the maximum
+      const terms = await effectiveTermsFor(
+        client,
+        serviceId,
+        service,
+        candidates.map((c) => c.id),
+      );
+      const durationOf = new Map<string, number>();
+      for (const c of candidates) {
+        const t = terms.get(c.id)!;
+        const d =
+          query.mode === 'online' ? t.durationMax : durationWithin(t, query.durationMinutes);
+        if (d === null) {
+          // one member asked for directly: outside their bounds is an error; „any” skips them
+          if (choice !== 'any') throw new InvalidInput('durationMinutes', 'invalid');
+          continue;
+        }
+        durationOf.set(c.id, d);
+      }
+      const durationMinutes =
+        choice === 'any'
+          ? durationFor(service, query.mode, query.durationMinutes)
+          : (durationOf.get(choice) ?? durationFor(service, query.mode, query.durationMinutes));
+      const staff = candidates.filter((c) => durationOf.has(c.id));
       // an archived service has no slots; online, neither one not bookable online
       const closed =
         service.archived_at !== null || (query.mode === 'online' && !service.bookable_online);
@@ -326,7 +354,7 @@ async function load(
           load: loadOf.get(key) ?? 0,
           rules: {
             serviceId,
-            durationMin: durationMinutes,
+            durationMin: durationOf.get(d.staffMemberId) ?? durationMinutes,
             capacity: service.capacity,
             bufferMin: settings.buffer_min,
             earliestMin: d.date < e.date ? 1441 : d.date === e.date ? earliestMinute : null,

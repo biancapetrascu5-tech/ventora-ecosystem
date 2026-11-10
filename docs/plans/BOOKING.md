@@ -240,6 +240,7 @@ Ordinea, după dependențe, e în §4. Condițiile externe și designul care lip
   - `BookingNew` și `BookingPublic`: prețul și durata membrului ales.
 - **Gata când:** un membru cu suprascriere primește programarea cu durata și prețul lui; locurile libere folosesc durata lui; fără suprascriere nu se schimbă nimic; T1 / T2 pe tabelul nou.
 - **Estimare:** 1–2 h; ecranele după design.
+- **Stare (10.11.2026):** logica și API-ul sunt făcute (`staff_service_terms`, `listStaffServiceTerms`, `setStaffServiceTerms`); ecranele așteaptă designul de mai sus.
 - **Înainte de primul salon de test** (§5).
 
 #### Lot B.3 — Resursele rezervabile și capacitatea
