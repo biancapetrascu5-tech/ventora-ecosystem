@@ -1,6 +1,6 @@
 # Lotul B.8 — Câmpurile medicale
 
-**Data:** 10.11.2026 (lucru peste noapte) · **Ramura:** `feat/b8-booking-medical`, din B.7b (#134), cu C.0g (#135) aplicat peste · **Sursa:** BOOKING.md §3 B.8 (D-B-14), designul `BookingHealthFields`. **Doar date de test.** Date medicale reale doar după avizul avocatului (§6).
+**Data:** 10.11.2026 (lucru peste noapte) · **Ramura:** `feat/b8-booking-medical`, din `main` (cu B.7a #133 și B.7b #134 îmbinate), cu C.0g (#135) aplicat peste · **Sursa:** BOOKING.md §3 B.8 (D-B-14), designul `BookingHealthFields`. **Doar date de test.** Date medicale reale doar după avizul avocatului (§6).
 
 ## Pe scurt
 
