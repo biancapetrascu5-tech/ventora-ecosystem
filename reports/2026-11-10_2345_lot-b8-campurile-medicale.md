@@ -54,7 +54,11 @@
 | Comandă | Rezultat |
 |---|---|
 | `pnpm --filter @ventora/booking typecheck` | exit 0 |
-| testele booking (unitare și integrare) | **NERULATE local:** calculatorul avea ~250 MB liberi (alte sesiuni și containere pornite), iar ultima rulare de integrare (C.0g) a fost oprită de Claude Code pentru memorie puțină. **Decide CI-ul** |
+| `medical-crypto.test.ts` | 3/3 |
+| Pașii booking din `test:integration` (când memoria a permis, ~1,4 GB liberi) | drift curat; booking **259/259** (21 de fișiere), inclusiv cele 8 teste B.8 |
+| `test:integration` complet | nerulat local (memoria; rularea C.0g a fost oprită de Claude Code). **Decide CI-ul** |
+
+**Corectura din rularea locală:** fixture-ul punea `booking.medical` pe un plan deja publicat, ceea ce baza refuză. Testul folosește acum un override pe afacere, exact calea D-B-16 (Founder pornește funcționalitatea pe o singură afacere).
 
 ## Întrebări
 

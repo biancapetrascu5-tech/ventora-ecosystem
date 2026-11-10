@@ -156,12 +156,15 @@ let A: { org: string; owner: Person; member: Person };
 let B: { org: string; owner: Person };
 let clientA: string;
 
-/** Founder marks the business medical: the feature booking.medical on its plan (D-B-16 = a). */
+/**
+ * Founder marks the business medical (D-B-16 = a): a feature override on the business — the way
+ * Founder turns a feature on for one business, without changing its published plan.
+ */
 async function markMedical(org: string) {
   await adminQuery(
-    `INSERT INTO commercial.plan_version_feature (plan_version_id, feature_key)
-     SELECT plan_version_id, 'booking.medical' FROM commercial.subscription WHERE organization_id = $1`,
-    [org],
+    `INSERT INTO commercial.override (organization_id, kind, feature_key, reason, created_by_founder_id, expires_at)
+     VALUES ($1, 'feature', 'booking.medical', 'B.8 test: afacere medicală', $2, now() + interval '30 days')`,
+    [org, founder],
   );
 }
 
@@ -185,6 +188,9 @@ beforeAll(async () => {
 
 afterAll(async () => {
   configureAccess({ entitlementProvider: { isEnabled: async () => true } });
+  await adminQuery(`DELETE FROM commercial.override WHERE organization_id = ANY($1::uuid[])`, [
+    orgs,
+  ]);
   for (const table of [
     'medical_answer',
     'medical_consent',
