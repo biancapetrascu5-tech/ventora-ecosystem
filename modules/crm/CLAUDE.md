@@ -40,3 +40,12 @@ CRM (numele afișat ClientDesk) e a doua aplicație, în pachetul cu EasyBook (D
   - Nu se construiește în acest modul: consimțământul (e-mail, SMS, WhatsApp), istoricul lui și lista de suprimare stau în `core/consent` (lotul C.5, agentul F5, rolul `consent_rw`). CR.14 îl folosește; dacă C.5 nu e gata, CR.14 așteaptă.
 - **Formularele publice (CR.17):** motorul se construiește o singură dată, în packages/Core, comun cu CampaignKit (MK.14). O trimitere ajunge în aplicațiile active ale afacerii: lead în ClientDesk, contact de marketing în CampaignKit.
 - **E-mailul ClientDesk:** domeniul propriu al afacerii (SPF / DKIM) e o opțiune de acum (design S134).
+
+## Câmpurile proprii (CR.3, design S132)
+- **`crm.custom_field`:** cel mult 30 active pe afacere (numărate sub un lock tranzacțional), administrate cu `crm:settings`.
+  - Tipul se blochează după ce câmpul are valori.
+  - O opțiune de listă folosită nu se poate scoate.
+  - Coșul păstrează câmpul 30 de zile, cu valorile lui; cât stă în coș, valorile sunt ascunse.
+- **Valorile:** `custom_values` (jsonb) pe `contact` și `company`, validate la fiecare scriere față de definițiile active. Auditul primește doar id-urile câmpurilor, niciodată valorile.
+- **Câmpurile obligatorii** se cer doar la crearea de mână a unui contact sau a unei companii, niciodată pe contactele vechi sau pe cele din EasyBook (S132). O valoare obligatorie nu se poate șterge.
+- **Fără câmpuri pentru date medicale** (S132): ecranul setărilor o spune. Serverul nu o poate impune.

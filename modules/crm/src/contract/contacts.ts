@@ -7,6 +7,7 @@ import {
   listContactsInOrg,
   restoreContactInOrg,
   setContactCompanyInOrg,
+  setContactCustomValuesInOrg,
   updateContactInOrg,
   type Contact,
   type ContactInput,
@@ -19,12 +20,23 @@ import {
   getCompanyInOrg,
   listCompaniesInOrg,
   restoreCompanyInOrg,
+  setCompanyCustomValuesInOrg,
   updateCompanyInOrg,
   type Company,
   type CompanyInput,
 } from '../server/companies';
 import { lookupCompanyByCui as lookup, type AnafLookup } from '../server/anaf';
 import { registerContactsQuotaResolver } from '../server/quota';
+import {
+  createCustomFieldInOrg,
+  deleteCustomFieldInOrg,
+  listCustomFieldsInOrg,
+  restoreCustomFieldInOrg,
+  updateCustomFieldInOrg,
+  type CustomField,
+  type CustomValues,
+  type FieldTarget,
+} from '../server/custom-fields';
 
 /*
  * Lot CR.2 — the public contract of the contacts and the companies (design S130). Every function
@@ -45,7 +57,7 @@ type Session = { sessionToken: string };
 
 async function access(
   params: Session,
-  permission: 'crm:read' | 'crm:write',
+  permission: 'crm:read' | 'crm:write' | 'crm:settings',
 ): Promise<{ ctx: TenantContext; scope: ContactScope }> {
   const ctx = await authorize({
     sessionToken: params.sessionToken,
@@ -65,6 +77,8 @@ export type CreateContactParams = Session &
     companyId?: unknown;
     companyRole?: unknown;
     isCompanyPrimary?: unknown;
+    /** CR.3: { fieldId: value }; the required contact fields must be there (S132). */
+    customValues?: unknown;
   };
 
 /** „Contact nou”: takes one unit of crm.contacts (QuotaExceeded at the limit, S130). */
@@ -127,7 +141,7 @@ export async function listContacts(
 // ── companies ──────────────────────────────────────────────────────────────────────────────────
 
 export async function createCompany(
-  params: Session & CompanyInput & { ownerUserId?: unknown },
+  params: Session & CompanyInput & { ownerUserId?: unknown; customValues?: unknown },
 ): Promise<Company> {
   const { ctx, scope } = await access(params, 'crm:write');
   return createCompanyInOrg(ctx, scope, params);
@@ -168,4 +182,69 @@ export async function lookupCompanyByCui(params: Session & { taxId: string }): P
   return lookup(params.taxId);
 }
 
-export type { Contact, Company, AnafLookup, ListContactsParams };
+// ── CR.3: the business's own fields (S132) ─────────────────────────────────────────────────────
+
+/** The fields, in their order (crm:read: the contact card and the list show them). */
+export async function listCustomFields(
+  params: Session & { includeDeleted?: boolean; target?: FieldTarget },
+): Promise<CustomField[]> {
+  const { ctx } = await access(params, 'crm:read');
+  return listCustomFieldsInOrg(ctx, params);
+}
+
+type FieldInput = {
+  name?: unknown;
+  type?: unknown;
+  options?: unknown;
+  appliesTo?: unknown;
+  isRequired?: unknown;
+  showInList?: unknown;
+  inImport?: unknown;
+  sortOrder?: unknown;
+};
+
+/** „Câmp nou”: at most 30 active (Conflict custom_fields_limit). crm:settings. */
+export async function createCustomField(params: Session & FieldInput): Promise<CustomField> {
+  const { ctx } = await access(params, 'crm:settings');
+  return createCustomFieldInOrg(ctx, params);
+}
+
+/** The type changes only while the field has no values (Conflict custom_field_type_locked). */
+export async function updateCustomField(
+  params: Session & FieldInput & { fieldId: string },
+): Promise<CustomField> {
+  const { ctx } = await access(params, 'crm:settings');
+  return updateCustomFieldInOrg(ctx, params.fieldId, params);
+}
+
+/** Into the 30-day bin with its values. */
+export async function deleteCustomField(
+  params: Session & { fieldId: string },
+): Promise<CustomField> {
+  const { ctx } = await access(params, 'crm:settings');
+  return deleteCustomFieldInOrg(ctx, params.fieldId);
+}
+
+export async function restoreCustomField(
+  params: Session & { fieldId: string },
+): Promise<CustomField> {
+  const { ctx } = await access(params, 'crm:settings');
+  return restoreCustomFieldInOrg(ctx, params.fieldId);
+}
+
+/** The own fields of a contact: { fieldId: value | null }. crm:write, the contacts rule. */
+export async function setContactCustomValues(
+  params: Session & { contactId: string; values: Record<string, unknown> },
+): Promise<Contact> {
+  const { ctx, scope } = await access(params, 'crm:write');
+  return setContactCustomValuesInOrg(ctx, scope, params.contactId, params.values);
+}
+
+export async function setCompanyCustomValues(
+  params: Session & { companyId: string; values: Record<string, unknown> },
+): Promise<Company> {
+  const { ctx } = await access(params, 'crm:write');
+  return setCompanyCustomValuesInOrg(ctx, params.companyId, params.values);
+}
+
+export type { Contact, Company, AnafLookup, ListContactsParams, CustomField, CustomValues };

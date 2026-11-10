@@ -150,10 +150,11 @@ describe('CR.1 — the role crm_rw and the schema', () => {
         WHERE n.nspname = 'crm' AND c.relkind = 'r' ORDER BY 1`,
     );
     // every new table of the schema is listed here on purpose
-    // CR.2: company, contact
+    // CR.2: company, contact; CR.3: custom_field
     expect(tables.map((t) => t.relname)).toEqual([
       'company',
       'contact',
+      'custom_field',
       'outbox_events',
       'processed_events',
       'settings',

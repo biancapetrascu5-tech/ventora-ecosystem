@@ -40,8 +40,12 @@ model Company {
   createdByUserId String    @map("created_by_user_id") @db.Uuid
   createdAt       DateTime  @default(now()) @map("created_at") @db.Timestamptz
   updatedAt       DateTime  @default(now()) @map("updated_at") @db.Timestamptz
+  /// CR.3: the business's own fields, { "<field id>": value }
+  customValues    Json      @default("{}") @map("custom_values")
 
   contacts Contact[]
+
+  @@index([customValues(ops: JsonbPathOps)], type: Gin, map: "company_custom_values_idx")
 
   @@map("company")
   @@schema("crm")
@@ -71,6 +75,8 @@ model Contact {
   createdByUserId  String?   @map("created_by_user_id") @db.Uuid
   createdAt        DateTime  @default(now()) @map("created_at") @db.Timestamptz
   updatedAt        DateTime  @default(now()) @map("updated_at") @db.Timestamptz
+  /// CR.3: the business's own fields, { "<field id>": value }
+  customValues     Json      @default("{}") @map("custom_values")
 
   company Company? @relation(fields: [companyId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "contact_company_id_fkey")
 
@@ -78,7 +84,31 @@ model Contact {
   @@index([organizationId, email], map: "contact_organization_id_email_idx")
   @@index([organizationId, ownerUserId], map: "contact_organization_id_owner_idx")
   @@index([companyId], map: "contact_company_id_idx")
+  @@index([customValues(ops: JsonbPathOps)], type: Gin, map: "contact_custom_values_idx")
   @@map("contact")
+  @@schema("crm")
+}
+
+/// Lot CR.3: a field of the business (S132: at most 30; the type locked once there are values).
+model CustomField {
+  id              String    @id @db.Uuid
+  organizationId  String    @map("organization_id") @db.Uuid
+  name            String    @db.VarChar(60)
+  fieldType       String    @map("field_type") @db.VarChar(8)
+  options         Json?
+  appliesTo       String[]  @map("applies_to")
+  isRequired      Boolean   @default(false) @map("is_required")
+  showInList      Boolean   @default(false) @map("show_in_list")
+  inImport        Boolean   @default(true) @map("in_import")
+  sortOrder       Int       @default(0) @map("sort_order")
+  deletedAt       DateTime? @map("deleted_at") @db.Timestamptz
+  deletedByUserId String?   @map("deleted_by_user_id") @db.Uuid
+  createdByUserId String    @map("created_by_user_id") @db.Uuid
+  createdAt       DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt       DateTime  @default(now()) @map("updated_at") @db.Timestamptz
+
+  @@index([organizationId, sortOrder], map: "custom_field_organization_id_sort_idx")
+  @@map("custom_field")
   @@schema("crm")
 }
 

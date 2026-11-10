@@ -10,6 +10,7 @@ import {
 import { uuidv7, writeOutboxEvent } from '@ventora/db-kit';
 import { Conflict, Forbidden, InvalidInput, ResourceNotFound } from '@ventora/errors';
 import { withCrmTx } from './db';
+import { validateCustomValues, type CustomValues } from './custom-fields';
 import {
   LIMITS,
   likePattern,
@@ -47,6 +48,8 @@ export type Company = {
   deletedAt: Date | null;
   createdAt: Date;
   updatedAt: Date;
+  /** CR.3: the business's own fields, only of the active fields. */
+  customValues: CustomValues;
 };
 
 export type CompanyInput = {
@@ -73,11 +76,16 @@ type CompanyRow = {
   deleted_at: Date | null;
   created_at: Date;
   updated_at: Date;
+  custom_values: CustomValues;
 };
 
 const COLUMNS = `c.id, c.name, c.tax_id, c.industry, c.address, c.website, c.phone, c.email,
   c.owner_user_id, c.deleted_at, c.created_at, c.updated_at,
-  (SELECT count(*) FROM crm.contact p WHERE p.company_id = c.id AND p.deleted_at IS NULL) AS contacts_count`;
+  (SELECT count(*) FROM crm.contact p WHERE p.company_id = c.id AND p.deleted_at IS NULL) AS contacts_count,
+  (SELECT COALESCE(jsonb_object_agg(e.key, e.value), '{}'::jsonb)
+     FROM jsonb_each(c.custom_values) AS e
+    WHERE EXISTS (SELECT 1 FROM crm.custom_field f
+                   WHERE f.id::text = e.key AND f.deleted_at IS NULL)) AS custom_values`;
 
 function toCompany(r: CompanyRow): Company {
   return {
@@ -94,6 +102,7 @@ function toCompany(r: CompanyRow): Company {
     deletedAt: r.deleted_at,
     createdAt: r.created_at,
     updatedAt: r.updated_at,
+    customValues: r.custom_values ?? {},
   };
 }
 
@@ -179,19 +188,22 @@ async function ownerFor(ctx: TenantContext, scope: ContactScope, value: unknown)
 export async function createCompanyInOrg(
   ctx: TenantContext,
   scope: ContactScope,
-  input: CompanyInput & { ownerUserId?: unknown },
+  input: CompanyInput & { ownerUserId?: unknown; customValues?: unknown },
 ): Promise<Company> {
   const name = requiredText('name', input.name, LIMITS.companyName);
   const d = details(input);
   const owner = await ownerFor(ctx, scope, input.ownerUserId);
   const id = uuidv7();
   return withCrmTx(ctx.organizationId, async (client, exec) => {
+    const custom = await validateCustomValues(client, 'company', input.customValues, {
+      required: true,
+    });
     await client
       .query(
         `INSERT INTO crm.company
            (id, organization_id, name, tax_id, industry, address, website, phone, email,
-            owner_user_id, created_by_user_id)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)`,
+            owner_user_id, created_by_user_id, custom_values)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12::jsonb)`,
         [
           id,
           ctx.organizationId,
@@ -204,10 +216,14 @@ export async function createCompanyInOrg(
           d.email ?? null,
           owner,
           ctx.userId,
+          JSON.stringify(custom.set),
         ],
       )
       .catch(mapTaxId);
-    await audit(exec, ctx, AuditActions.crmCompanyCreated, id, { ownerUserId: owner });
+    await audit(exec, ctx, AuditActions.crmCompanyCreated, id, {
+      ownerUserId: owner,
+      customFieldIds: Object.keys(custom.set),
+    });
     await emit(client, ctx, CrmCompanyCreatedV1, id, { companyId: id, ownerUserId: owner });
     return toCompany(await readCompany(client, id));
   });
@@ -248,6 +264,38 @@ export async function updateCompanyInOrg(
       .catch(mapTaxId);
     await audit(exec, ctx, AuditActions.crmCompanyUpdated, id, { fields });
     await emit(client, ctx, CrmCompanyUpdatedV1, id, { companyId: id, fields });
+    return toCompany(await readCompany(client, id));
+  });
+}
+
+/** CR.3: the business's own fields of a company, { fieldId: value | null }. */
+export async function setCompanyCustomValuesInOrg(
+  ctx: TenantContext,
+  companyId: string,
+  values: unknown,
+): Promise<Company> {
+  const id = requireId('companyId', companyId);
+  if (values === undefined || values === null) throw new InvalidInput('values', 'required');
+  return withCrmTx(ctx.organizationId, async (client, exec) => {
+    const before = await readCompany(client, id, true);
+    if (before.deleted_at) throw new Conflict('company_deleted');
+    const custom = await validateCustomValues(client, 'company', values);
+    if (custom.fields.length === 0) return toCompany(before);
+    const required = await client.query<{ id: string }>(
+      `SELECT id FROM crm.custom_field
+        WHERE deleted_at IS NULL AND is_required AND 'company' = ANY(applies_to) AND id::text = ANY($1::text[])`,
+      [custom.unset],
+    );
+    if (required.rows[0]) throw new InvalidInput(`customValues.${required.rows[0].id}`, 'required');
+    await client.query(
+      `UPDATE crm.company SET custom_values = (custom_values || $2::jsonb) - $3::text[] WHERE id = $1`,
+      [id, JSON.stringify(custom.set), custom.unset],
+    );
+    await audit(exec, ctx, AuditActions.crmCompanyUpdated, id, {
+      fields: ['custom_values'],
+      customFieldIds: custom.fields,
+    });
+    await emit(client, ctx, CrmCompanyUpdatedV1, id, { companyId: id, fields: ['custom_values'] });
     return toCompany(await readCompany(client, id));
   });
 }

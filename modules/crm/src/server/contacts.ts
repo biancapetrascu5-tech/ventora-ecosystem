@@ -11,6 +11,7 @@ import { uuidv7, writeOutboxEvent } from '@ventora/db-kit';
 import { Conflict, Forbidden, InvalidInput, ResourceNotFound } from '@ventora/errors';
 import { commitQuota, freeStockQuota, releaseQuota, reserveQuota } from '@ventora/quota';
 import { withCrmTx } from './db';
+import { validateCustomValues, type CustomValues } from './custom-fields';
 import {
   LIMITS,
   likePattern,
@@ -72,6 +73,8 @@ export type Contact = {
   deletedAt: Date | null;
   createdAt: Date;
   updatedAt: Date;
+  /** CR.3: the business's own fields, { fieldId: value }, only of the active fields. */
+  customValues: CustomValues;
 };
 
 export type ContactInput = {
@@ -106,11 +109,16 @@ type ContactRow = {
   deleted_at: Date | null;
   created_at: Date;
   updated_at: Date;
+  custom_values: CustomValues;
 };
 
 const COLUMNS = `id, name, phone, phone_alt, email, email_alt, locale, to_char(birthday, 'YYYY-MM-DD') AS birthday,
   address, source, company_id, company_role, is_company_primary, owner_user_id, note,
-  quota_operation_id, deleted_at, created_at, updated_at`;
+  quota_operation_id, deleted_at, created_at, updated_at,
+  (SELECT COALESCE(jsonb_object_agg(e.key, e.value), '{}'::jsonb)
+     FROM jsonb_each(contact.custom_values) AS e
+    WHERE EXISTS (SELECT 1 FROM crm.custom_field f
+                   WHERE f.id::text = e.key AND f.deleted_at IS NULL)) AS custom_values`;
 
 function toContact(r: ContactRow): Contact {
   return {
@@ -133,6 +141,7 @@ function toContact(r: ContactRow): Contact {
     deletedAt: r.deleted_at,
     createdAt: r.created_at,
     updatedAt: r.updated_at,
+    customValues: r.custom_values ?? {},
   };
 }
 
@@ -249,6 +258,8 @@ export async function createContactInOrg(
     companyId?: unknown;
     companyRole?: unknown;
     isCompanyPrimary?: unknown;
+    /** CR.3: { fieldId: value }; the required contact fields must be there (S132). */
+    customValues?: unknown;
   },
 ): Promise<Contact> {
   const name = requiredText('name', input.name, LIMITS.name);
@@ -272,14 +283,17 @@ export async function createContactInOrg(
   let created: Contact;
   try {
     created = await withCrmTx(ctx.organizationId, async (client, exec) => {
+      const custom = await validateCustomValues(client, 'contact', input.customValues, {
+        required: true,
+      });
       if (companyId && primary) await clearPrimary(client, companyId, id);
       const { rows } = await client
         .query<ContactRow>(
           `INSERT INTO crm.contact
              (id, organization_id, name, phone, phone_alt, email, email_alt, locale, birthday,
               address, source, company_id, company_role, is_company_primary, owner_user_id, note,
-              quota_operation_id, created_by_user_id)
-           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9::date, $10, $11, $12, $13, $14, $15, $16, $17, $18)
+              quota_operation_id, created_by_user_id, custom_values)
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9::date, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19::jsonb)
            RETURNING ${COLUMNS}`,
           [
             id,
@@ -300,6 +314,7 @@ export async function createContactInOrg(
             d.note ?? null,
             operationId,
             ctx.userId,
+            JSON.stringify(custom.set),
           ],
         )
         .catch(mapGuard);
@@ -307,6 +322,7 @@ export async function createContactInOrg(
         source,
         companyId,
         ownerUserId: owner,
+        customFieldIds: Object.keys(custom.set),
       });
       await emit(client, ctx, CrmContactCreatedV1, id, {
         contactId: id,
@@ -443,6 +459,45 @@ export async function setContactCompanyInOrg(
   });
 }
 
+/**
+ * CR.3: the business's own fields of a contact, { fieldId: value | null } (null clears). Allowed on
+ * an EasyBook contact too (ClientDesk data, D-CRM-1). A required field cannot be cleared; it is not
+ * demanded on contacts that never had it (old or EasyBook contacts, S132).
+ */
+export async function setContactCustomValuesInOrg(
+  ctx: TenantContext,
+  scope: ContactScope,
+  contactId: string,
+  values: unknown,
+): Promise<Contact> {
+  const id = requireId('contactId', contactId);
+  if (values === undefined || values === null) throw new InvalidInput('values', 'required');
+  return withCrmTx(ctx.organizationId, async (client, exec) => {
+    const before = await readContact(client, id, true);
+    if (!visible(ctx, scope, before)) throw new Forbidden();
+    if (before.deleted_at) throw new Conflict('contact_deleted');
+    const custom = await validateCustomValues(client, 'contact', values);
+    if (custom.fields.length === 0) return toContact(before);
+    const required = await client.query<{ id: string }>(
+      `SELECT id FROM crm.custom_field
+        WHERE deleted_at IS NULL AND is_required AND 'contact' = ANY(applies_to) AND id::text = ANY($1::text[])`,
+      [custom.unset],
+    );
+    if (required.rows[0]) throw new InvalidInput(`customValues.${required.rows[0].id}`, 'required');
+    const { rows } = await client.query<ContactRow>(
+      `UPDATE crm.contact SET custom_values = (custom_values || $2::jsonb) - $3::text[]
+        WHERE id = $1 RETURNING ${COLUMNS}`,
+      [id, JSON.stringify(custom.set), custom.unset],
+    );
+    await audit(exec, ctx, AuditActions.crmContactUpdated, id, {
+      fields: ['custom_values'],
+      customFieldIds: custom.fields,
+    });
+    await emit(client, ctx, CrmContactUpdatedV1, id, { contactId: id, fields: ['custom_values'] });
+    return toContact(rows[0]!);
+  });
+}
+
 // ── the bin ────────────────────────────────────────────────────────────────────────────────────
 
 /** „Șterge”: into the 30-day bin (S130). A contact from EasyBook is never deleted here. */
@@ -553,6 +608,8 @@ export type ListContactsParams = {
   companyId?: unknown;
   /** true: the bin (S130). */
   deleted?: unknown;
+  /** CR.3: { fieldId: value } — contacts whose own field has exactly that value. */
+  custom?: unknown;
   limit?: unknown;
   offset?: unknown;
 };
@@ -575,6 +632,19 @@ export async function listContactsInOrg(
     if (params.owner === 'me') where.push(`owner_user_id = ${arg(ctx.userId)}`);
     else if (params.owner === 'unassigned') where.push('owner_user_id IS NULL');
     else where.push(`owner_user_id = ${arg(requireId('owner', params.owner))}`);
+  }
+  if (params.custom !== undefined && params.custom !== null) {
+    const c = params.custom as Record<string, unknown>;
+    if (typeof c !== 'object' || Array.isArray(c)) throw new InvalidInput('custom', 'invalid');
+    const filter: Record<string, unknown> = {};
+    for (const [k, v] of Object.entries(c)) {
+      requireId('custom', k);
+      if (!['string', 'number', 'boolean'].includes(typeof v))
+        throw new InvalidInput('custom', 'invalid');
+      filter[k] = v;
+    }
+    if (Object.keys(filter).length > 0)
+      where.push(`custom_values @> ${arg(JSON.stringify(filter))}::jsonb`);
   }
   if (params.companyId !== undefined)
     where.push(`company_id = ${arg(requireId('companyId', params.companyId))}`);
