@@ -27,6 +27,18 @@ import {
   type StaffTimeOff,
 } from '../server/staff';
 import type { BusinessDay, Interval, ScheduleError, WorkDay } from '../server/schedule';
+import {
+  countUpcomingAppointmentsInOrg,
+  countUpcomingByStaffInOrg,
+  type UpcomingAppointments,
+} from '../server/appointments';
+
+/** B.4b (S124): the warning data of an exception or a leave; nothing is cancelled. */
+export type WithUpcomingAppointments<T> = T & { upcomingAppointments: UpcomingAppointments };
+/** B.4b (S124): „… nu mai e în echipă, dar are {n} programări viitoare”. */
+export type StaffListWithAppointments = Omit<StaffList, 'removed'> & {
+  removed: Array<StaffList['removed'][number] & { upcomingAppointments: number }>;
+};
 
 /*
  * Lot B.2 — the public contract of the members in the calendar and their schedule (design S124,
@@ -109,8 +121,17 @@ export async function setBusinessHours(
 }
 
 /** „Programul echipei”: the members in the calendar and the ones no longer in the team. */
-export async function listStaff(params: Session): Promise<StaffList> {
-  return listStaffInOrg(await read(params));
+export async function listStaff(params: Session): Promise<StaffListWithAppointments> {
+  const ctx = await read(params);
+  const list = await listStaffInOrg(ctx);
+  const counts = await countUpcomingByStaffInOrg(
+    ctx,
+    list.removed.map((m) => m.id),
+  );
+  return {
+    ...list,
+    removed: list.removed.map((m) => ({ ...m, upcomingAppointments: counts.get(m.id) ?? 0 })),
+  };
 }
 
 export async function updateStaffMember(params: UpdateStaffMemberParams): Promise<StaffMember> {
@@ -140,12 +161,18 @@ export async function setStaffWeeklyHours(
 /** „Adaugă o excepție”: „Zi liberă” or „Alt program” on one date. */
 export async function setStaffDayOverride(
   params: SetStaffDayOverrideParams,
-): Promise<StaffDayOverride> {
-  return setStaffDayOverrideInOrg(await manage(params), params.staffMemberId, {
+): Promise<WithUpcomingAppointments<StaffDayOverride>> {
+  const ctx = await manage(params);
+  const saved = await setStaffDayOverrideInOrg(ctx, params.staffMemberId, {
     date: params.date,
     isWorking: params.isWorking,
     intervals: params.intervals,
   });
+  const upcomingAppointments = await countUpcomingAppointmentsInOrg(ctx, {
+    staffMemberId: params.staffMemberId,
+    fromDate: params.date,
+  });
+  return { ...saved, upcomingAppointments };
 }
 
 /** „Șterge excepția”. */
@@ -159,13 +186,33 @@ function timeOffInput(params: TimeOffInput): TimeOffInput {
   return { startsOn: params.startsOn, endsOn: params.endsOn, reason: params.reason };
 }
 
-/** „Adaugă un concediu”. */
-export async function addStaffTimeOff(params: AddStaffTimeOffParams): Promise<StaffTimeOff> {
-  return addStaffTimeOffInOrg(await manage(params), params.staffMemberId, timeOffInput(params));
+async function withLeaveAppointments(
+  ctx: Awaited<ReturnType<typeof manage>>,
+  saved: StaffTimeOff,
+): Promise<WithUpcomingAppointments<StaffTimeOff>> {
+  const upcomingAppointments = await countUpcomingAppointmentsInOrg(ctx, {
+    staffMemberId: saved.staffMemberId,
+    fromDate: saved.startsOn,
+    toDate: saved.endsOn,
+  });
+  return { ...saved, upcomingAppointments };
 }
 
-export async function updateStaffTimeOff(params: UpdateStaffTimeOffParams): Promise<StaffTimeOff> {
-  return updateStaffTimeOffInOrg(await manage(params), params.timeOffId, timeOffInput(params));
+/** „Adaugă un concediu”; the answer says how many appointments fall in it (S124). */
+export async function addStaffTimeOff(
+  params: AddStaffTimeOffParams,
+): Promise<WithUpcomingAppointments<StaffTimeOff>> {
+  const ctx = await manage(params);
+  const saved = await addStaffTimeOffInOrg(ctx, params.staffMemberId, timeOffInput(params));
+  return withLeaveAppointments(ctx, saved);
+}
+
+export async function updateStaffTimeOff(
+  params: UpdateStaffTimeOffParams,
+): Promise<WithUpcomingAppointments<StaffTimeOff>> {
+  const ctx = await manage(params);
+  const saved = await updateStaffTimeOffInOrg(ctx, params.timeOffId, timeOffInput(params));
+  return withLeaveAppointments(ctx, saved);
 }
 
 /** „Anulează concediul”. */

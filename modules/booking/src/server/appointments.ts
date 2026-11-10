@@ -1,9 +1,17 @@
 import type { PoolClient } from 'pg';
 import { AuditActions, appendAuditEventInTx, type AuditSqlExecutor } from '@ventora/audit';
 import type { TenantContext } from '@ventora/access';
-import { uuidv7 } from '@ventora/db-kit';
+import {
+  BookingAppointmentCancelledV1,
+  BookingAppointmentChangedV1,
+  BookingAppointmentCompletedV1,
+  BookingAppointmentCreatedV1,
+  BookingAppointmentNoShowV1,
+} from '@ventora/contracts';
+import { uuidv7, writeOutboxEvent } from '@ventora/db-kit';
 import { Conflict, Forbidden, InvalidInput, ResourceNotFound } from '@ventora/errors';
 import { getOrganizationTimeZone } from '@ventora/organizations';
+import { commitQuota, releaseQuota, reserveQuota } from '@ventora/quota';
 import { withBookingTx } from './db';
 import { staffDayIntervals, staffEligibility } from './staff';
 import { isUuid, LIMITS } from './validation';
@@ -22,9 +30,14 @@ import { isUuid, LIMITS } from './validation';
  * contract checks the same first, so the screen gets a precise reason; a race that slips past it
  * still meets the trigger (Conflict appointment_overlap / transition_not_allowed).
  *
- * B.4b adds the quota (booking.appointments), the reconciliation resolver, the outbox events and
- * the counts for S124 and for the catalog.
+ * B.4b: the quota booking.appointments (plan §5, ARCHITECTURE §6.4 g–h, §8.3) — reserve with the
+ * appointment's id as operationId, the transaction, commit; release when the transaction fails;
+ * the reconciliation resolver (appointmentExists) settles a process stopped between the steps.
+ * The outbox events booking.appointment.* are written in the same transaction (T6); the refund of
+ * a cancellation before the start is done by the consumer of booking.appointment.cancelled.
  */
+
+export const APPOINTMENTS_QUOTA_KEY = 'booking.appointments';
 
 export const APPOINTMENT_STATUSES = [
   'awaiting_payment',
@@ -910,6 +923,8 @@ export async function createAppointmentInOrg(
     if (!sameRequest(existing, { staffMemberId, serviceId, startsAt })) {
       throw new Conflict('operation_reused');
     }
+    // a process stopped after the transaction: finish the quota step (idempotent)
+    await settleQuota(ctx, id, 'commit');
     return toAppointment(existing);
   }
 
@@ -918,8 +933,12 @@ export async function createAppointmentInOrg(
   await requireBookableStaff(ctx, staff);
   const timeZone = await getOrganizationTimeZone(ctx);
 
+  // the quota first: at the limit nothing is written (QuotaExceeded; BookingLimit keeps the form)
+  await reserveQuota(ctx, APPOINTMENTS_QUOTA_KEY, 1, id);
+
+  let created: Appointment;
   try {
-    return await tx(ctx, async (client, exec) => {
+    created = await tx(ctx, async (client, exec) => {
       const service = (
         await client.query<ServiceForBooking>(
           `SELECT id, name, duration_minutes, duration_max_minutes, price_kind, price_minor,
@@ -1016,15 +1035,56 @@ export async function createAppointmentInOrg(
         durationMinutes: duration,
         status,
       });
+      await writeOutboxEvent(client, 'booking', BookingAppointmentCreatedV1, {
+        organizationId: ctx.organizationId,
+        sourceApp: 'platform',
+        resourceId: id,
+        payload: {
+          appointmentId: id,
+          number,
+          staffMemberId,
+          serviceId,
+          clientId: clientRow.id,
+          startsAt: startsAt.toISOString(),
+          endsAt: endsAt.toISOString(),
+          status,
+          source: 'hub',
+        },
+      });
       return toAppointment(row);
     });
   } catch (err) {
-    if (!(err instanceof AlreadyCreated)) throw err;
+    if (!(err instanceof AlreadyCreated)) {
+      // nothing was written: the reserved unit goes back
+      await settleQuota(ctx, id, 'release');
+      throw err;
+    }
+    // a concurrent retry of the same operation wrote it; it commits the shared reservation
     const again = await findAppointment(ctx, id);
     if (!again || !sameRequest(again, { staffMemberId, serviceId, startsAt })) {
       throw new Conflict('operation_reused');
     }
     return toAppointment(again);
+  }
+  await settleQuota(ctx, id, 'commit');
+  return created;
+}
+
+/**
+ * The second step of the quota saga. A failure is logged, not thrown: the appointment (or its
+ * absence) is the truth, and the reconciliation job settles the reservation from it.
+ */
+async function settleQuota(ctx: TenantContext, id: string, step: 'commit' | 'release') {
+  try {
+    if (step === 'commit') await commitQuota(ctx, id);
+    else await releaseQuota(ctx, id);
+  } catch (err) {
+    // ResourceNotFound: no reservation (an appointment from before B.4b); Conflict: already settled
+    if (err instanceof ResourceNotFound || err instanceof Conflict) return;
+    console.error(`[booking] ${step} of the quota failed; the reconciliation settles it`, {
+      operationId: id,
+      error: err instanceof Error ? err.message : String(err),
+    });
   }
 }
 
@@ -1131,6 +1191,19 @@ export async function moveAppointmentInOrg(
       ],
     );
     await history(client, ctx, id, { kind: 'moved', startsAt, endsAt, staffMemberId });
+    await writeOutboxEvent(client, 'booking', BookingAppointmentChangedV1, {
+      organizationId: ctx.organizationId,
+      sourceApp: 'platform',
+      resourceId: id,
+      payload: {
+        appointmentId: id,
+        staffMemberId,
+        startsAt: startsAt.toISOString(),
+        endsAt: endsAt.toISOString(),
+        previousStaffMemberId: row.staff_member_id,
+        previousStartsAt: row.starts_at.toISOString(),
+      },
+    });
     await audit(exec, ctx, AuditActions.bookingAppointmentMoved, 'booking_appointment', id, {
       from: {
         startsAt: row.starts_at.toISOString(),
@@ -1167,6 +1240,28 @@ export async function updateAppointmentNoteInOrg(
   });
 }
 
+/** booking.appointment.completed / no_show, in the transaction of the change (T6). */
+async function finalEvent(
+  client: PoolClient,
+  ctx: TenantContext,
+  row: AppointmentRow,
+  corrected: boolean,
+) {
+  const payload = {
+    appointmentId: row.id,
+    staffMemberId: row.staff_member_id,
+    clientId: row.client_id,
+    startsAt: row.starts_at.toISOString(),
+    corrected,
+  };
+  const base = { organizationId: ctx.organizationId, sourceApp: 'platform', resourceId: row.id };
+  if (row.status === 'completed') {
+    await writeOutboxEvent(client, 'booking', BookingAppointmentCompletedV1, { ...base, payload });
+  } else if (row.status === 'no_show') {
+    await writeOutboxEvent(client, 'booking', BookingAppointmentNoShowV1, { ...base, payload });
+  }
+}
+
 /** One of the transitions of BookingStatuses (confirm, start, complete, no-show). */
 export async function changeAppointmentStatusInOrg(
   ctx: TenantContext,
@@ -1193,6 +1288,7 @@ export async function changeAppointmentStatusInOrg(
       [id, to],
     );
     await history(client, ctx, id, { kind: 'status', from: row.status, to });
+    await finalEvent(client, ctx, rows[0]!, false);
     await audit(
       exec,
       ctx,
@@ -1240,6 +1336,23 @@ export async function cancelAppointmentInOrg(
     );
     const updated = rows[0]!;
     await history(client, ctx, id, { kind: 'status', from: row.status, to: 'cancelled' });
+    await writeOutboxEvent(client, 'booking', BookingAppointmentCancelledV1, {
+      organizationId: ctx.organizationId,
+      sourceApp: 'platform',
+      resourceId: id,
+      payload: {
+        appointmentId: id,
+        staffMemberId: updated.staff_member_id,
+        clientId: updated.client_id,
+        startsAt: updated.starts_at.toISOString(),
+        cancelledAt: updated.cancelled_at!.toISOString(),
+        by,
+        late: updated.cancel_late!,
+        minutesBefore: updated.cancel_minutes_before!,
+        // before the start the unit of booking.appointments goes back (refundable)
+        quotaRefund: updated.cancelled_at!.getTime() < updated.starts_at.getTime(),
+      },
+    });
     await audit(exec, ctx, AuditActions.bookingAppointmentCancelled, 'booking_appointment', id, {
       from: row.status,
       by,
@@ -1287,6 +1400,7 @@ export async function correctAppointmentStatusInOrg(
       [id, to, ctx.userId, reason],
     );
     await history(client, ctx, id, { kind: 'corrected', from: row.status, to });
+    await finalEvent(client, ctx, rows[0]!, true);
     // the reason stays on the appointment (the team's text), not in the audit metadata
     await audit(
       exec,
@@ -1552,6 +1666,83 @@ export async function listTimeBlocksInOrg(
         [from, to, staffMemberId],
       );
       return rows.map(toBlock);
+    },
+    true,
+  );
+}
+
+// ── B.4b: the upcoming appointments, for S124 and for the catalog ────────────────────────────
+
+export type UpcomingAppointments = {
+  /** The appointments that still occupy (not final) and start from now on. */
+  count: number;
+  /** Their local dates in the business time zone, without repeats, in order. */
+  dates: string[];
+};
+
+/**
+ * How many upcoming appointments (not final, from now on) a service, a member, or a member on
+ * some local dates has: „Are {n} programări viitoare” in BookingServices; „{name} are {n}
+ * programări pe {date}. Nu le anulăm…” for an exception or a leave and „… nu mai e în echipă, dar
+ * are {n} programări viitoare” in BookingTeamSchedule (S124). Nothing is cancelled.
+ */
+export async function countUpcomingAppointmentsInOrg(
+  ctx: TenantContext,
+  params: { serviceId?: unknown; staffMemberId?: unknown; fromDate?: unknown; toDate?: unknown },
+): Promise<UpcomingAppointments> {
+  const serviceId = params.serviceId === undefined ? null : requireId(params.serviceId);
+  const staffMemberId = params.staffMemberId === undefined ? null : requireId(params.staffMemberId);
+  if (!serviceId && !staffMemberId) throw new InvalidInput('staffMemberId', 'required');
+  const date = (field: string, v: unknown) => {
+    if (v === undefined) return null;
+    if (typeof v !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(v)) {
+      throw new InvalidInput(field, 'invalid');
+    }
+    return v;
+  };
+  const fromDate = date('fromDate', params.fromDate);
+  const toDate = date('toDate', params.toDate) ?? fromDate;
+  const timeZone = await getOrganizationTimeZone(ctx);
+  return tx(
+    ctx,
+    async (client) => {
+      const { rows } = await client.query<{ d: string; n: string }>(
+        `SELECT to_char((starts_at AT TIME ZONE $1)::date, 'YYYY-MM-DD') AS d, count(*) AS n
+           FROM booking.appointment
+          WHERE status = ANY ($2::text[]) AND starts_at >= now()
+            AND ($3::uuid IS NULL OR service_id = $3)
+            AND ($4::uuid IS NULL OR staff_member_id = $4)
+            AND ($5::date IS NULL OR (starts_at AT TIME ZONE $1)::date >= $5::date)
+            AND ($6::date IS NULL OR (starts_at AT TIME ZONE $1)::date <= $6::date)
+          GROUP BY 1 ORDER BY 1`,
+        [timeZone, OCCUPYING, serviceId, staffMemberId, fromDate, toDate],
+      );
+      return {
+        count: rows.reduce((sum, r) => sum + Number(r.n), 0),
+        dates: rows.map((r) => r.d),
+      };
+    },
+    true,
+  );
+}
+
+/** The upcoming appointments of several members at once (the removed ones of listStaff). */
+export async function countUpcomingByStaffInOrg(
+  ctx: TenantContext,
+  staffMemberIds: string[],
+): Promise<Map<string, number>> {
+  if (staffMemberIds.length === 0) return new Map();
+  return tx(
+    ctx,
+    async (client) => {
+      const { rows } = await client.query<{ staff_member_id: string; n: string }>(
+        `SELECT staff_member_id, count(*) AS n FROM booking.appointment
+          WHERE staff_member_id = ANY ($1::uuid[]) AND status = ANY ($2::text[])
+            AND starts_at >= now()
+          GROUP BY 1`,
+        [staffMemberIds, OCCUPYING],
+      );
+      return new Map(rows.map((r) => [r.staff_member_id, Number(r.n)]));
     },
     true,
   );

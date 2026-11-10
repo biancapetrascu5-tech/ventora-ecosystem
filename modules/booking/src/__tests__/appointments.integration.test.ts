@@ -137,6 +137,50 @@ async function pgCode(p: Promise<unknown>): Promise<string | undefined> {
   return e?.code;
 }
 
+// B.4b: creating consumes booking.appointments, so every test business has a subscription with it
+const founder = uuid();
+let planId: string | null = null;
+
+/** A published plan version with booking and this many appointments a month, and a subscription. */
+async function subscribe(organizationId: string, appointments: number | null = 1000) {
+  planId ??= (
+    await adminQuery<{ id: string }>(
+      `INSERT INTO commercial.plan (code, name, created_by_founder_id) VALUES ($1, 'B4', $2) RETURNING id`,
+      [`b4-${uuid().slice(0, 8)}`, founder],
+    )
+  )[0]!.id;
+  const [{ id }] = await adminQuery<{ id: string }>(
+    `INSERT INTO commercial.plan_version (plan_id, version_number, created_by_founder_id)
+     SELECT $1, COALESCE(max(version_number), 0) + 1, $2 FROM commercial.plan_version WHERE plan_id = $1
+     RETURNING id`,
+    [planId, founder],
+  );
+  await adminQuery(
+    `INSERT INTO commercial.plan_version_application (plan_version_id, application_id) VALUES ($1, 'booking')`,
+    [id],
+  );
+  await adminQuery(
+    `INSERT INTO commercial.plan_version_quota (plan_version_id, quota_key, limit_value)
+     VALUES ($1, 'booking.appointments', $2)`,
+    [id, appointments],
+  );
+  await adminQuery(
+    `INSERT INTO commercial.plan_version_price (plan_version_id, currency, kind, amount_minor)
+     VALUES ($1, 'RON', 'month', 100)`,
+    [id],
+  );
+  await adminQuery(
+    `UPDATE commercial.plan_version SET published_at = now(), published_by_founder_id = $2 WHERE id = $1`,
+    [id, founder],
+  );
+  await adminQuery(
+    `INSERT INTO commercial.subscription
+       (organization_id, plan_version_id, interval, currency, started_on, anchor_day, status, created_by_founder_id)
+     VALUES ($1, $2, 'month', 'RON', CURRENT_DATE, EXTRACT(DAY FROM CURRENT_DATE), 'active', $3)`,
+    [organizationId, id, founder],
+  );
+}
+
 /** Mon–Fri 09:00–18:00, the weekend closed. */
 const WEEK_9_18 = [1, 2, 3, 4, 5, 6, 7].map((weekday) =>
   weekday <= 5
@@ -187,6 +231,8 @@ beforeAll(async () => {
   };
   const orgB = await createOrg();
   B = { org: orgB, owner: await person(orgB, 'owner', 'Bogdan Owner') };
+  await subscribe(orgA);
+  await subscribe(orgB);
   await setBusinessHours({ sessionToken: A.owner.token, days: WEEK_9_18 });
   await setBusinessHours({ sessionToken: B.owner.token, days: WEEK_9_18 });
   const list = await listStaff({ sessionToken: A.owner.token });

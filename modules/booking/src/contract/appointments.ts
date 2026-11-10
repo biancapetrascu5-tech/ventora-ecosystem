@@ -6,6 +6,7 @@ import {
   cancelAppointmentInOrg,
   changeAppointmentStatusInOrg,
   correctAppointmentStatusInOrg,
+  countUpcomingAppointmentsInOrg,
   createAppointmentInOrg,
   createClientInOrg,
   getAppointmentInOrg,
@@ -29,7 +30,12 @@ import {
   type ClientInput,
   type ClientLocale,
   type TimeBlock,
+  type UpcomingAppointments,
 } from '../server/appointments';
+import { registerAppointmentsQuotaResolver } from '../server/quota';
+
+// B.4b: the reconciliation of booking.appointments knows this module as soon as it is loaded
+registerAppointmentsQuotaResolver();
 
 /*
  * Lot B.4a — the public contract of the appointments (design BookingStatuses, BookingNew,
@@ -113,6 +119,13 @@ export type ClientFields = {
 };
 export type ClientParams = Session & ClientFields;
 export type UpdateClientParams = Session & { clientId: string } & Partial<ClientFields>;
+export type CountUpcomingAppointmentsParams = Session & {
+  serviceId?: string;
+  staffMemberId?: string;
+  /** Local dates (YYYY-MM-DD) in the business time zone; `toDate` defaults to `fromDate`. */
+  fromDate?: string;
+  toDate?: string;
+};
 export type SetBookingSettingsParams = Session & {
   freeCancelHours?: number;
   confirmationMode?: 'auto' | 'manual';
@@ -277,6 +290,20 @@ export async function updateClient(params: UpdateClientParams): Promise<Client> 
   return updateClientInOrg(ctx, params.clientId, clientInput(params));
 }
 
+// ── B.4b: the upcoming appointments (S124, BookingServices) ─────────────────────────────────
+
+/** „Are {n} programări viitoare” (a service) / „{name} are {n} programări pe {date}” (S124). */
+export async function countUpcomingAppointments(
+  params: CountUpcomingAppointmentsParams,
+): Promise<UpcomingAppointments> {
+  return countUpcomingAppointmentsInOrg(await read(params), {
+    serviceId: params.serviceId,
+    staffMemberId: params.staffMemberId,
+    fromDate: params.fromDate,
+    toDate: params.toDate,
+  });
+}
+
 // ── booking rules (D-B4-5) ─────────────────────────────────────────────────────────────────
 
 export async function getBookingSettings(params: Session): Promise<BookingSettings> {
@@ -303,4 +330,5 @@ export type {
   Client,
   ClientLocale,
   TimeBlock,
+  UpcomingAppointments,
 };

@@ -85,3 +85,9 @@ Booking (numele afișat EasyBook) e prima aplicație. Planul: `docs/plans/BOOKIN
 - **Copiile** (`keep_snapshot`): numele serviciului, al membrului, al clientului, prețul. Nu se actualizează când se schimbă originalul.
 - **Date personale:** clientul (nume, telefon, e-mail) și nota echipei **nu intră în audit**. Pe staging doar date de test, până la avizul avocatului și la handler-ul GDPR (B.7).
 - **Istoricul** din `BookingDetail` e `appointment_history` (doar INSERT), nu auditul (D-B4-7).
+
+## Cota, evenimentele și numărătorile (B.4b)
+- **Cota `booking.appointments`** (saga, ARCHITECTURE §8.3): `reserveQuota` cu id-ul programării ca `operationId` → tranzacția → `commitQuota`; `releaseQuota` dacă tranzacția eșuează. Un pas 2 eșuat se doar jurnalizează: reconcilierea (resolverul `appointmentExists`, înregistrat la încărcarea contractului) decide din existența programării.
+- **Rambursarea** unei anulări înainte de început o face consumatorul `bookingQuotaRefundConsumer` al lui `booking.appointment.cancelled` (`quotaRefund: true`); `refundQuota` e idempotent. Aplicația care rulează dispecerul outbox îl înregistrează (`apps/platform/src/server/jobs.ts`, după ce platforma depinde de `@ventora/booking`).
+- **Evenimentele** `booking.appointment.created` / `changed` / `cancelled` / `no_show` / `completed` (v1, `packages/contracts`) se scriu în tranzacția schimbării. Doar id-uri, stări și momente: fără datele clientului și fără nota echipei. O corectare scrie evenimentul stării noi, cu `corrected: true`.
+- **Numărătorile** (`countUpcomingAppointments`, plus `upcomingAppointments` în `setStaffDayOverride` / `addStaffTimeOff` / `updateStaffTimeOff` și în `listStaff.removed`): doar programările care ocupă, de acum înainte. Nimic nu se anulează (S124).
