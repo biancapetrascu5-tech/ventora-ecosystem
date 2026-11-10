@@ -745,6 +745,109 @@ export const CommercialSubscriptionChangedV1 = defineEvent({
     .strict(),
 });
 
+// ── Lot CR.2: ClientDesk — the contacts and the companies (plans/CRM.md) ─────────────────────
+// Ids only: no name, phone, e-mail, note or birthday (the payload goes to webhooks in CR.18 and
+// may become a Growth signal). Without a consumer yet (CampaignKit, CR.12, CR.18): delivered.
+
+const crmContactSource = z.enum(['easybook', 'form', 'referral', 'event', 'import', 'manual']);
+
+/** `crm.contact.created` v1: a contact added in ClientDesk (ARCHITECTURE §5: CampaignKit consumes it). */
+export const CrmContactCreatedV1 = defineEvent({
+  type: 'crm.contact.created',
+  version: 1,
+  sourceApp: 'platform',
+  growthSafe: false,
+  withoutConsumer: 'complete',
+  schema: z
+    .object({
+      contactId: z.uuid(),
+      source: crmContactSource,
+      companyId: z.uuid().nullable(),
+      ownerUserId: z.uuid().nullable(),
+    })
+    .strict(),
+});
+
+/** `crm.contact.updated` v1: which fields changed (their names, not their values). */
+export const CrmContactUpdatedV1 = defineEvent({
+  type: 'crm.contact.updated',
+  version: 1,
+  sourceApp: 'platform',
+  growthSafe: false,
+  withoutConsumer: 'complete',
+  schema: z
+    .object({
+      contactId: z.uuid(),
+      fields: z.array(z.string().min(1).max(40)).min(1).max(30),
+    })
+    .strict(),
+});
+
+/** `crm.contact.deleted` v1: moved to the 30-day bin (S130). */
+export const CrmContactDeletedV1 = defineEvent({
+  type: 'crm.contact.deleted',
+  version: 1,
+  sourceApp: 'platform',
+  growthSafe: false,
+  withoutConsumer: 'complete',
+  schema: z.object({ contactId: z.uuid() }).strict(),
+});
+
+/** `crm.contact.restored` v1: back from the bin. */
+export const CrmContactRestoredV1 = defineEvent({
+  type: 'crm.contact.restored',
+  version: 1,
+  sourceApp: 'platform',
+  growthSafe: false,
+  withoutConsumer: 'complete',
+  schema: z.object({ contactId: z.uuid() }).strict(),
+});
+
+/** `crm.company.created` v1. */
+export const CrmCompanyCreatedV1 = defineEvent({
+  type: 'crm.company.created',
+  version: 1,
+  sourceApp: 'platform',
+  growthSafe: false,
+  withoutConsumer: 'complete',
+  schema: z.object({ companyId: z.uuid(), ownerUserId: z.uuid().nullable() }).strict(),
+});
+
+/** `crm.company.updated` v1: which fields changed. */
+export const CrmCompanyUpdatedV1 = defineEvent({
+  type: 'crm.company.updated',
+  version: 1,
+  sourceApp: 'platform',
+  growthSafe: false,
+  withoutConsumer: 'complete',
+  schema: z
+    .object({
+      companyId: z.uuid(),
+      fields: z.array(z.string().min(1).max(40)).min(1).max(30),
+    })
+    .strict(),
+});
+
+/** `crm.company.deleted` v1: moved to the 30-day bin. */
+export const CrmCompanyDeletedV1 = defineEvent({
+  type: 'crm.company.deleted',
+  version: 1,
+  sourceApp: 'platform',
+  growthSafe: false,
+  withoutConsumer: 'complete',
+  schema: z.object({ companyId: z.uuid() }).strict(),
+});
+
+/** `crm.company.restored` v1: back from the bin. */
+export const CrmCompanyRestoredV1 = defineEvent({
+  type: 'crm.company.restored',
+  version: 1,
+  sourceApp: 'platform',
+  growthSafe: false,
+  withoutConsumer: 'complete',
+  schema: z.object({ companyId: z.uuid() }).strict(),
+});
+
 export const EVENT_CATALOG: readonly EventDefinition[] = [
   InvitationNewLinkRequestedV1 as EventDefinition,
   SubscriptionVersionChangeScheduledV1 as EventDefinition,
@@ -781,6 +884,14 @@ export const EVENT_CATALOG: readonly EventDefinition[] = [
   CommercialApplicationActivatedV1 as EventDefinition,
   CommercialTrialStartedV1 as EventDefinition,
   CommercialSubscriptionChangedV1 as EventDefinition,
+  CrmContactCreatedV1 as EventDefinition,
+  CrmContactUpdatedV1 as EventDefinition,
+  CrmContactDeletedV1 as EventDefinition,
+  CrmContactRestoredV1 as EventDefinition,
+  CrmCompanyCreatedV1 as EventDefinition,
+  CrmCompanyUpdatedV1 as EventDefinition,
+  CrmCompanyDeletedV1 as EventDefinition,
+  CrmCompanyRestoredV1 as EventDefinition,
 ];
 
 /** Definiția unui eveniment după tip și versiune; null dacă nu e în catalog. */
