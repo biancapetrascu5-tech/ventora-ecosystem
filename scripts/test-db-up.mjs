@@ -121,6 +121,7 @@ for (const db of [
   'shadow_ai_diff',
   'shadow_booking_diff',
   'shadow_growth_diff',
+  'shadow_crm_diff',
 ]) {
   psql('postgres', `DROP DATABASE IF EXISTS ${db}; CREATE DATABASE ${db};`);
 }
@@ -427,6 +428,8 @@ for (const migration of [
   'core/growth/prisma/migrations/20261110000001_growth_init/migration.sql',
   // Lot B.3a: the bookable resources and the services that need them
   'modules/booking/prisma/migrations/20261110000001_booking_resources/migration.sql',
+  // Lot CR.1: schema crm (rolul crm_rw, setările afacerii, outbox)
+  'modules/crm/prisma/migrations/20261110000001_crm_init/migration.sql',
 ]) {
   psqlFile(TEST_DB.accessDb, join(ROOT, migration));
 }
