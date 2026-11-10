@@ -210,6 +210,25 @@ export const AuditActions = {
   crmCompanyDeleted: 'crm.company_deleted',
   crmCompanyRestored: 'crm.company_restored',
   crmSettingsUpdated: 'crm.settings_updated',
+  // Lot C.4b / CR.3 — the business's own fields (category crm, required, crm:settings): the
+  // definition only; a value set on a contact or a company is crm.contact_updated /
+  // crm.company_updated with the field ids in metadata, never the value
+  crmCustomFieldCreated: 'crm.custom_field_created',
+  crmCustomFieldUpdated: 'crm.custom_field_updated',
+  crmCustomFieldDeleted: 'crm.custom_field_deleted',
+  crmCustomFieldRestored: 'crm.custom_field_restored',
+  // Lot C.4b / CR.4 — tags and segments (category crm, required). Tagging a contact is
+  // crm.contact_tagged / crm.contact_untagged (in bulk: one row per contact); „Unește cu…” is
+  // crm.tag_merged with the target tag in metadata
+  crmTagCreated: 'crm.tag_created',
+  crmTagUpdated: 'crm.tag_updated',
+  crmTagMerged: 'crm.tag_merged',
+  crmTagDeleted: 'crm.tag_deleted',
+  crmContactTagged: 'crm.contact_tagged',
+  crmContactUntagged: 'crm.contact_untagged',
+  crmSegmentCreated: 'crm.segment_created',
+  crmSegmentUpdated: 'crm.segment_updated',
+  crmSegmentDeleted: 'crm.segment_deleted',
 } as const;
 
 export type AuditAction = (typeof AuditActions)[keyof typeof AuditActions];
