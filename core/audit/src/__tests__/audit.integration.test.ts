@@ -420,6 +420,27 @@ describe('TA.11 — invalid input rejected by the database', () => {
     }
   });
 
+  // Lot C.0e: the B.3 codes and target pass audit.append_event (action format, target length)
+  it('the B.3 codes (resources) → accepted with their target', async () => {
+    for (const action of [
+      AuditActions.bookingResourceCreated,
+      AuditActions.bookingResourceUpdated,
+      AuditActions.bookingResourceArchived,
+      AuditActions.bookingResourceRestored,
+    ]) {
+      const id = await writeAuditEvent(
+        event({
+          category: 'booking',
+          action,
+          targetType: 'booking_resource',
+          targetId: crypto.randomUUID(),
+        }),
+        { mode: 'required' },
+      );
+      expect(id, action).toBeTruthy();
+    }
+  });
+
   it('invalid category → CHECK violation', async () => {
     await expect(
       writeAuditEvent(event({ category: 'billing' as never }), { mode: 'required' }),

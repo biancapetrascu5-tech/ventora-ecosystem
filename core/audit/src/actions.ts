@@ -182,6 +182,13 @@ export const AuditActions = {
   bookingClientCreated: 'booking.client_created',
   bookingClientUpdated: 'booking.client_updated',
   bookingSettingsUpdated: 'booking.settings_updated',
+  // Lot C.0e / B.3 — the bookable resources (category booking, required, booking:settings): the
+  // catalog, the services that need a resource (in metadata: serviceIds), the order. The use of a
+  // resource by an appointment (B.3b) is in the appointment's own row (metadata: resourceIds)
+  bookingResourceCreated: 'booking.resource_created',
+  bookingResourceUpdated: 'booking.resource_updated',
+  bookingResourceArchived: 'booking.resource_archived',
+  bookingResourceRestored: 'booking.resource_restored',
 } as const;
 
 export type AuditAction = (typeof AuditActions)[keyof typeof AuditActions];
