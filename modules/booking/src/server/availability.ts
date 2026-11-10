@@ -6,6 +6,7 @@ import { withBookingTx } from './db';
 import { daysBetween, eachDate, requireLocalDate, type Interval } from './schedule';
 import { ceilToStep, hhmm, isFreeAt, memberSlots, type Busy, type SlotRules } from './slots';
 import { requiredResources } from './resources';
+import { staffForService } from './staff-services';
 import { readCalendarStaff, staffEligibility, staffLocalDays, type CalendarStaff } from './staff';
 import { isUuid, LIMITS } from './validation';
 
@@ -169,10 +170,17 @@ function durationFor(service: ServiceRow, mode: SlotMode, value: unknown): numbe
 async function candidateStaff(
   ctx: TenantContext,
   client: PoolClient,
+  serviceId: string,
   choice: string | 'any',
   mode: SlotMode,
 ): Promise<CalendarStaff[]> {
-  const staff = await readCalendarStaff(client, choice === 'any' ? null : choice);
+  const all = await readCalendarStaff(client, choice === 'any' ? null : choice);
+  // B.2b (S129): only the members who do the service; one who doesn't, asked for directly, is refused
+  const doing = new Set(await staffForService(client, serviceId));
+  if (choice !== 'any' && all.length > 0 && !doing.has(choice)) {
+    throw new Conflict('staff_not_for_service');
+  }
+  const staff = all.filter((s) => doing.has(s.id));
   if (choice !== 'any' && staff.length === 0) {
     const { rows } = await client.query(`SELECT 1 FROM booking.staff_member WHERE id = $1`, [
       choice,
@@ -208,7 +216,7 @@ async function load(
     async (client) => {
       const service = await readService(client, serviceId);
       const durationMinutes = durationFor(service, query.mode, query.durationMinutes);
-      const staff = await candidateStaff(ctx, client, choice, query.mode);
+      const staff = await candidateStaff(ctx, client, serviceId, choice, query.mode);
       // an archived service has no slots; online, neither one not bookable online
       const closed =
         service.archived_at !== null || (query.mode === 'online' && !service.bookable_online);

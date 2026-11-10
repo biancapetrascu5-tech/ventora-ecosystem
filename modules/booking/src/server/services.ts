@@ -6,6 +6,13 @@ import { uuidv7, writeOutboxEvent } from '@ventora/db-kit';
 import { Conflict, InvalidInput, ResourceNotFound } from '@ventora/errors';
 import { withBookingTx } from './db';
 import {
+  addDefaultStaffInTx,
+  doneByOf,
+  setServiceStaffInTx,
+  type DoneBy,
+  type StoppedPair,
+} from './staff-services';
+import {
   LIMITS,
   isUuid,
   normalizeName,
@@ -47,10 +54,17 @@ export type Service = {
   capacity: number;
   bookableOnline: boolean;
   sortOrder: number;
+  /** B.2b (S129) „Cine îl face”; nobody → the service can't be booked („Nu se poate rezerva”). */
+  doneBy: DoneBy;
   archivedAt: Date | null;
   createdAt: Date;
   updatedAt: Date;
+  /** B.2b, only after an update of „Cine îl face”: who stopped, with their future appointments. */
+  stopped?: StoppedPair[];
 };
+
+/** B.2b: „Cine îl face” in the service form; absent = a new service gets the S129 default. */
+export type DoneByInput = { allStaff: boolean; staffMemberIds?: string[] };
 
 type ServiceRow = {
   id: string;
@@ -67,6 +81,7 @@ type ServiceRow = {
   capacity: number;
   bookable_online: boolean;
   sort_order: number;
+  all_staff: boolean;
   archived_at: Date | null;
   created_at: Date;
   updated_at: Date;
@@ -85,7 +100,7 @@ const SERVICE_SELECT = `
   SELECT s.id, s.category_id, c.name AS category_name, s.name, s.description,
          s.duration_minutes, s.duration_max_minutes, s.price_kind, s.price_minor,
          s.price_max_minor, s.currency, s.capacity, s.bookable_online, s.sort_order,
-         s.archived_at, s.created_at, s.updated_at
+         s.all_staff, s.archived_at, s.created_at, s.updated_at
     FROM booking.service s
     LEFT JOIN booking.service_category c ON c.id = s.category_id`;
 
@@ -107,6 +122,7 @@ function toService(r: ServiceRow): Service {
     capacity: r.capacity,
     bookableOnline: r.bookable_online,
     sortOrder: r.sort_order,
+    doneBy: { allStaff: r.all_staff, staffMemberIds: [] },
     archivedAt: r.archived_at,
     createdAt: r.created_at,
     updatedAt: r.updated_at,
@@ -176,9 +192,18 @@ function audit(
   });
 }
 
+/** B.2b: „Cine îl face” filled in (the members in the calendar who do each service now). */
+async function withDoneBy(client: PoolClient, services: Service[]): Promise<Service[]> {
+  const doneBy = await doneByOf(
+    client,
+    services.map((x) => x.id),
+  );
+  return services.map((x) => ({ ...x, doneBy: doneBy.get(x.id) ?? x.doneBy }));
+}
+
 async function readService(client: PoolClient, id: string): Promise<Service | null> {
   const { rows } = await client.query<ServiceRow>(`${SERVICE_SELECT} WHERE s.id = $1`, [id]);
-  return rows[0] ? toService(rows[0]) : null;
+  return rows[0] ? (await withDoneBy(client, [toService(rows[0])]))[0]! : null;
 }
 
 function requireId(id: unknown): string {
@@ -200,7 +225,7 @@ export async function listServicesInOrg(
       const { rows } = await client.query<ServiceRow>(
         `${SERVICE_SELECT} ${where} ${SERVICE_ORDER}`,
       );
-      return rows.map(toService);
+      return withDoneBy(client, rows.map(toService));
     },
     true,
   );
@@ -250,6 +275,7 @@ export async function listServiceCategoriesInOrg(
 export async function createServiceInOrg(
   ctx: TenantContext,
   params: ServiceInputParams,
+  doneBy?: DoneByInput,
 ): Promise<Service> {
   const input = validateService(params);
   const id = uuidv7();
@@ -283,6 +309,14 @@ export async function createServiceInOrg(
         name: input.name,
         categoryId: input.categoryId,
       });
+      // B.2b (S129): the form's „Cine îl face”, or the members who already do services in its
+      // category („Fără categorie”: nobody ticked). The members with „Toate serviciile” do it
+      // anyway: the default only adds ticks, it never takes a member's flag away
+      if (doneBy) {
+        await setServiceStaffInTx(client, exec, ctx, id, doneBy);
+      } else {
+        await addDefaultStaffInTx(client, ctx, id, input.categoryId);
+      }
       return (await readService(client, id))!;
     });
   } catch (err) {
@@ -295,6 +329,7 @@ export async function updateServiceInOrg(
   ctx: TenantContext,
   serviceId: string,
   params: ServiceInputParams,
+  doneBy?: DoneByInput,
 ): Promise<Service> {
   const id = requireId(serviceId);
   const input = validateService(params);
@@ -346,7 +381,10 @@ export async function updateServiceInOrg(
         name: after.name,
         changed,
       });
-      return after;
+      if (doneBy === undefined) return after;
+      // B.2b: „Cine îl face” (an archived service keeps its links unchanged)
+      const stopped = await setServiceStaffInTx(client, exec, ctx, id, doneBy);
+      return { ...(await readService(client, id))!, stopped };
     });
   } catch (err) {
     mapServiceWriteError(err);

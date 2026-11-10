@@ -44,6 +44,7 @@ model Service {
   capacity           Int       @default(1)
   bookableOnline     Boolean   @default(true) @map("bookable_online")
   sortOrder          Int       @default(0) @map("sort_order")
+  allStaff           Boolean   @default(true) @map("all_staff")
   archivedAt         DateTime? @map("archived_at") @db.Timestamptz
   archivedByUserId   String?   @map("archived_by_user_id") @db.Uuid
   createdByUserId    String    @map("created_by_user_id") @db.Uuid
@@ -53,6 +54,7 @@ model Service {
   category     ServiceCategory? @relation(fields: [categoryId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "service_category_id_fkey")
   appointments Appointment[]
   resources    ServiceResource[]
+  staff        StaffService[]
 
   @@index([organizationId, categoryId, sortOrder], map: "service_organization_id_category_sort_idx")
   @@index([categoryId], map: "service_category_id_idx")
@@ -85,6 +87,7 @@ model StaffMember {
   scheduleMode     String    @default("business") @map("schedule_mode") @db.VarChar(8)
   bookableOnline   Boolean   @default(true) @map("bookable_online")
   sortOrder        Int       @default(0) @map("sort_order")
+  allServices      Boolean   @default(true) @map("all_services")
   archivedAt       DateTime? @map("archived_at") @db.Timestamptz
   archivedByUserId String?   @map("archived_by_user_id") @db.Uuid
   createdByUserId  String?   @map("created_by_user_id") @db.Uuid
@@ -96,6 +99,7 @@ model StaffMember {
   timeOff      StaffTimeOff[]
   appointments Appointment[]
   timeBlocks   TimeBlock[]
+  services     StaffService[]
 
   @@index([organizationId, sortOrder], map: "staff_member_organization_id_sort_idx")
   @@map("staff_member")
@@ -399,5 +403,26 @@ model AppointmentResource {
   @@unique([appointmentId, resourceId], map: "appointment_resource_appointment_id_resource_id_key")
   @@index([resourceId], map: "appointment_resource_resource_id_idx")
   @@map("appointment_resource")
+  @@schema("booking")
+}
+
+/// Lot B.2b: a member who does a service, ticked one by one (S129); removed by archiving.
+model StaffService {
+  id               String    @id @db.Uuid
+  organizationId   String    @map("organization_id") @db.Uuid
+  staffMemberId    String    @map("staff_member_id") @db.Uuid
+  serviceId        String    @map("service_id") @db.Uuid
+  archivedAt       DateTime? @map("archived_at") @db.Timestamptz
+  archivedByUserId String?   @map("archived_by_user_id") @db.Uuid
+  createdByUserId  String    @map("created_by_user_id") @db.Uuid
+  createdAt        DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt        DateTime  @default(now()) @map("updated_at") @db.Timestamptz
+
+  staffMember StaffMember @relation(fields: [staffMemberId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "staff_service_staff_member_id_fkey")
+  service     Service     @relation(fields: [serviceId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "staff_service_service_id_fkey")
+
+  @@index([staffMemberId], map: "staff_service_staff_member_id_idx")
+  @@index([serviceId], map: "staff_service_service_id_idx")
+  @@map("staff_service")
   @@schema("booking")
 }

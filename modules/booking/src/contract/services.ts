@@ -13,9 +13,11 @@ import {
   restoreServiceInOrg,
   updateServiceCategoryInOrg,
   updateServiceInOrg,
+  type DoneByInput,
   type Service,
   type ServiceCategory,
 } from '../server/services';
+import { setServiceStaffInOrg, type DoneBy, type StoppedPair } from '../server/staff-services';
 import type { ServiceInputParams } from '../server/validation';
 
 /*
@@ -47,8 +49,17 @@ function manage(params: Session): Promise<TenantContext> {
 
 export type ListServicesParams = Session & { includeArchived?: boolean };
 export type GetServiceParams = Session & { serviceId: string };
-export type CreateServiceParams = Session & ServiceInputParams;
-export type UpdateServiceParams = Session & ServiceInputParams & { serviceId: string };
+/** B.2b (S129): „Cine îl face” in the form; absent on create = the S129 default, on update = unchanged. */
+export type CreateServiceParams = Session & ServiceInputParams & { doneBy?: DoneByInput };
+export type UpdateServiceParams = Session &
+  ServiceInputParams & { serviceId: string; doneBy?: DoneByInput };
+export type SetServiceStaffParams = Session & {
+  serviceId: string;
+  /** „Toată echipa” (including members who join later). */
+  allStaff: boolean;
+  /** The members ticked one by one (when not allStaff); empty is allowed (S129). */
+  staffMemberIds?: string[];
+};
 export type ServiceIdParams = Session & { serviceId: string };
 export type ListServiceCategoriesParams = Session & { includeArchived?: boolean };
 export type ServiceCategoryParams = Session & { name: string; sortOrder?: number };
@@ -87,12 +98,26 @@ export async function getService(params: GetServiceParams): Promise<Service> {
 
 export async function createService(params: CreateServiceParams): Promise<Service> {
   const ctx = await manage(params);
-  return createServiceInOrg(ctx, serviceInput(params));
+  return createServiceInOrg(ctx, serviceInput(params), params.doneBy);
 }
 
 export async function updateService(params: UpdateServiceParams): Promise<Service> {
   const ctx = await manage(params);
-  return updateServiceInOrg(ctx, params.serviceId, serviceInput(params));
+  return updateServiceInOrg(ctx, params.serviceId, serviceInput(params), params.doneBy);
+}
+
+/**
+ * B.2b (S129) „Cine îl face”, from the service side. The answer lists the members who stopped
+ * doing it, with their future appointments (kept: the warning and the link).
+ */
+export async function setServiceStaff(
+  params: SetServiceStaffParams,
+): Promise<{ doneBy: DoneBy; stopped: StoppedPair[] }> {
+  const ctx = await manage(params);
+  return setServiceStaffInOrg(ctx, params.serviceId, {
+    allStaff: params.allStaff,
+    staffMemberIds: params.staffMemberIds,
+  });
 }
 
 export async function archiveService(params: ServiceIdParams): Promise<Service> {

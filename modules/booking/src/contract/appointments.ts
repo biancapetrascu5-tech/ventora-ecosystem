@@ -53,7 +53,8 @@ registerAppointmentsQuotaResolver();
  * staff_member_removed, service_archived, client_archived, client_phone_taken, client_email_taken,
  * appointment_final, transition_not_allowed, no_show_too_early, correction_window_passed,
  * operation_reused, time_block_archived, resource_unavailable (B.3b: no free unit of a resource the
- * service needs)); ResourceNotFound; Forbidden; AppNotEnabled.
+ * service needs), staff_not_for_service and service_unassigned (B.2b, S129)); ResourceNotFound;
+ * Forbidden; AppNotEnabled.
  */
 
 type Session = { sessionToken: string };

@@ -744,7 +744,7 @@ describe('B.1 — the role and the grants (§2.3)', () => {
         WHERE n.nspname = 'booking' AND c.relkind = 'r' ORDER BY 1`,
     );
     // every new table of the schema is listed here on purpose (B.2: business_hours, staff_*;
-    // B.4a: appointment*, client, settings, time_block; B.3a: resource, service_resource; B.3b: appointment_resource)
+    // B.4a: appointment*, client, settings, time_block; B.3a: resource, service_resource; B.3b: appointment_resource; B.2b: staff_service)
     expect(tables.map((t) => t.relname)).toEqual([
       'appointment',
       'appointment_counter',
@@ -761,6 +761,7 @@ describe('B.1 — the role and the grants (§2.3)', () => {
       'settings',
       'staff_day_override',
       'staff_member',
+      'staff_service',
       'staff_time_off',
       'staff_weekly_hours',
       'time_block',
