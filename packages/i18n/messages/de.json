@@ -761,6 +761,31 @@
           "f3": "Ergebnisse: wie viele geöffnet und wie viele gebucht haben"
         }
       }
+    },
+    "growth": {
+      "cost": {
+        "month": "{amount} pro Monat",
+        "year": "{amount} pro Jahr",
+        "once": "{amount}, einmalig",
+        "trial": "{days} Tage kostenlos. Danach {price}, nur wenn Sie sich für die Fortsetzung entscheiden.",
+        "setup": "Einrichtung {amount}, einmalig",
+        "noSetup": "ohne Einrichtungskosten"
+      },
+      "toast": {
+        "dismissed": "Verstanden, wir zeigen Ihnen das nicht mehr.",
+        "snoozedWeek": "Gut, wir erinnern Sie in einer Woche.",
+        "snoozedMonth": "Gut, wir erinnern Sie in einem Monat."
+      },
+      "actions": {
+        "seeOptions": "Optionen ansehen",
+        "tryFree": "{days} Tage kostenlos testen",
+        "recommendApp": "App empfehlen"
+      },
+      "status": {
+        "pending": "Ausstehend",
+        "activated": "Aktiviert",
+        "declined": "Nicht jetzt"
+      }
     }
   },
   "roles": {

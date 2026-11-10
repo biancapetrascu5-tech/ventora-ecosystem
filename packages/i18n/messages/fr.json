@@ -761,6 +761,31 @@
           "f3": "Résultats : combien ont ouvert, combien ont réservé"
         }
       }
+    },
+    "growth": {
+      "cost": {
+        "month": "{amount} par mois",
+        "year": "{amount} par an",
+        "once": "{amount}, une seule fois",
+        "trial": "Gratuit pendant {days} jours. Ensuite {price}, uniquement si vous choisissez de continuer.",
+        "setup": "mise en place {amount}, une seule fois",
+        "noSetup": "sans frais de mise en place"
+      },
+      "toast": {
+        "dismissed": "Compris, nous ne vous le montrerons plus.",
+        "snoozedWeek": "Entendu, nous vous le rappellerons dans une semaine.",
+        "snoozedMonth": "Entendu, nous vous le rappellerons dans un mois."
+      },
+      "actions": {
+        "seeOptions": "Voir les options",
+        "tryFree": "Essayer gratuitement {days} jours",
+        "recommendApp": "Recommander l'application"
+      },
+      "status": {
+        "pending": "En attente",
+        "activated": "Activée",
+        "declined": "Pas maintenant"
+      }
     }
   },
   "roles": {

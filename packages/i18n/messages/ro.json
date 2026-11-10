@@ -761,6 +761,31 @@
           "f3": "Rezultate: câți au deschis, câți au rezervat"
         }
       }
+    },
+    "growth": {
+      "cost": {
+        "month": "{amount} pe lună",
+        "year": "{amount} pe an",
+        "once": "{amount}, o singură dată",
+        "trial": "Gratuit {days} zile. Apoi {price}, doar dacă alegi să continui.",
+        "setup": "implementare {amount}, o singură dată",
+        "noSetup": "fără cost de implementare"
+      },
+      "toast": {
+        "dismissed": "Am înțeles, nu-ți mai arătăm asta.",
+        "snoozedWeek": "Bine, îți amintim peste o săptămână.",
+        "snoozedMonth": "Bine, îți amintim peste o lună."
+      },
+      "actions": {
+        "seeOptions": "Vezi opțiunile",
+        "tryFree": "Încearcă gratuit {days} zile",
+        "recommendApp": "Recomandă aplicația"
+      },
+      "status": {
+        "pending": "În așteptare",
+        "activated": "Activată",
+        "declined": "Nu acum"
+      }
     }
   },
   "roles": {

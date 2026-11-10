@@ -761,6 +761,31 @@
           "f3": "Risultati: quanti hanno aperto, quanti hanno prenotato"
         }
       }
+    },
+    "growth": {
+      "cost": {
+        "month": "{amount} al mese",
+        "year": "{amount} all'anno",
+        "once": "{amount}, una sola volta",
+        "trial": "Gratis per {days} giorni. Poi {price}, solo se sceglie di continuare.",
+        "setup": "implementazione {amount}, una sola volta",
+        "noSetup": "senza costi di implementazione"
+      },
+      "toast": {
+        "dismissed": "Capito, non Le mostreremo più questo.",
+        "snoozedWeek": "Bene, Glielo ricorderemo tra una settimana.",
+        "snoozedMonth": "Bene, Glielo ricorderemo tra un mese."
+      },
+      "actions": {
+        "seeOptions": "Vedi le opzioni",
+        "tryFree": "Prova gratis per {days} giorni",
+        "recommendApp": "Consiglia l'applicazione"
+      },
+      "status": {
+        "pending": "In attesa",
+        "activated": "Attivata",
+        "declined": "Non ora"
+      }
     }
   },
   "roles": {

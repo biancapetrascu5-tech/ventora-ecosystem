@@ -1,0 +1,16 @@
+/* Lotul 5.9a — Toast-ul după „Nu mă interesează” / „Amintește-mi mai târziu” (ca în echipă). */
+.toast {
+  position: fixed;
+  right: var(--space-6);
+  bottom: var(--space-6);
+  width: var(--panel-width);
+  max-width: calc(100vw - 2 * var(--space-4));
+  z-index: var(--z-toast);
+}
+
+@container shell (max-width: 767px) {
+  .toast {
+    right: var(--space-4);
+    bottom: var(--space-4);
+  }
+}

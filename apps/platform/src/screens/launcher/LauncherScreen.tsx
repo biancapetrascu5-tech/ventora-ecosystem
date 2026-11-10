@@ -17,6 +17,8 @@ import {
   type DockApp,
 } from '@ventora/ui';
 import type { LauncherData } from '@/server/launcher-actions';
+import type { GrowthSlotView } from '@/server/growth-slot';
+import { GrowthRecommendation } from '../growth/GrowthRecommendation';
 import { useAppTileLabels } from '../labels';
 import styles from './launcher.module.css';
 
@@ -28,7 +30,12 @@ import styles from './launcher.module.css';
    - „Alte aplicații Ventora Systems”: starea fiecăreia (D5-3) și ce poate face persoana;
    - fără nicio aplicație disponibilă: HubEmpty (fără „Cere acces” până la designul notificării
      către proprietar).
-   Slotul Growth pe una dintre „Alte aplicații” vine în 5.9. */
+   Slotul Growth (5.9a, `hub.launcher.other`): pe rândul aplicației recomandate din „Alte aplicații”
+   (AppTile cu recomandare) sau, pentru un pachet / abonament, un RecommendationCard deasupra
+   rândurilor; gol = nimic desenat. */
+
+/** Unde se văd opțiunile ofertei până la UpgradeDialog (5.9c): pagina aplicației sau abonamentul. */
+const optionsHref = (v: GrowthSlotView) => (v.app ? `/applications/${v.app}` : '/admin/plan');
 
 /** Unde se deschide o aplicație disponibilă: EasyBook are rutele lui; restul, pagina din catalog. */
 const appHref = (app: AppName) => (app === 'booking' ? '/booking' : `/applications/${app}`);
@@ -89,6 +96,9 @@ export function LauncherScreen({ data, userName, businessName, now }: LauncherSc
 
   const available = data.apps.filter((a) => a.state === 'available');
   const others = data.apps.filter((a) => a.state !== 'available');
+  const reco = data.recommendation;
+  const recoOnRow = reco?.app && others.some((a) => a.app === reco.app) ? reco.app : null;
+  const openOptions = (v: GrowthSlotView) => router.push(optionsHref(v));
   const empty = available.length === 0;
   const dock: DockApp[] = available.map((a) => ({ app: a.app, description: desc(a.app) }));
 
@@ -168,32 +178,55 @@ export function LauncherScreen({ data, userName, businessName, now }: LauncherSc
               {t('others.title')}
             </h2>
             <p className={`body ${styles.intro}`}>{t('others.lead')}</p>
+            {reco && !recoOnRow && (
+              <GrowthRecommendation
+                view={reco}
+                role={data.role}
+                decider={data.ownerName}
+                onOpenOptions={openOptions}
+                className={styles.recoCard}
+              />
+            )}
             <div className={styles.rows}>
-              {others.map((a) => (
-                <AppTile
-                  key={a.app}
-                  app={a.app}
-                  layout="row"
-                  access={a.state}
-                  labels={labels}
-                  grantedBy={data.ownerName ?? undefined}
-                  reason={
-                    a.reason === 'trialEnded'
-                      ? t('trialEnded', { app: APPS[a.app]?.name ?? a.app })
-                      : undefined
-                  }
-                  onSeeStatus={
-                    a.state === 'unavailable'
-                      ? () => router.push(`/applications/${a.app}`)
-                      : undefined
-                  }
-                  onWriteUs={
-                    a.state === 'notInPlan'
-                      ? () => router.push(`/applications/${a.app}`)
-                      : undefined
-                  }
-                />
-              ))}
+              {others.map((a) =>
+                a.app === recoOnRow ? (
+                  <GrowthRecommendation
+                    key={a.app}
+                    view={reco}
+                    role={data.role}
+                    decider={data.ownerName}
+                    onOpenOptions={openOptions}
+                    layout="row"
+                    access={a.state}
+                    tileClassName={styles.row}
+                  />
+                ) : (
+                  <AppTile
+                    key={a.app}
+                    app={a.app}
+                    className={styles.row}
+                    layout="row"
+                    access={a.state}
+                    labels={labels}
+                    grantedBy={data.ownerName ?? undefined}
+                    reason={
+                      a.reason === 'trialEnded'
+                        ? t('trialEnded', { app: APPS[a.app]?.name ?? a.app })
+                        : undefined
+                    }
+                    onSeeStatus={
+                      a.state === 'unavailable'
+                        ? () => router.push(`/applications/${a.app}`)
+                        : undefined
+                    }
+                    onWriteUs={
+                      a.state === 'notInPlan'
+                        ? () => router.push(`/applications/${a.app}`)
+                        : undefined
+                    }
+                  />
+                ),
+              )}
             </div>
             <div className={styles.seeAll}>
               <Button

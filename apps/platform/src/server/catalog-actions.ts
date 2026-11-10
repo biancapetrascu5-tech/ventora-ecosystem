@@ -12,6 +12,7 @@ import {
   type Catalog,
 } from '@ventora/commercial';
 import { getSession } from '@ventora/identity';
+import { readGrowthSlot, type GrowthSlotView } from './growth-slot';
 import { reportActionError } from './report-error';
 
 /* HubCatalogBundles (Lotul 3.4, S117 / D3-24): catalogul afacerii active — bundle-urile în vânzare,
@@ -70,10 +71,12 @@ export type AppsData = Catalog & {
   bundleName: string | null;
   /** Doar pentru owner: cardul salvat, plata manuală și cheia publică Stripe. */
   billing: { card: SavedCard | null; manualPayment: boolean; publishableKey: string | null } | null;
+  /** Lotul 5.9a: slotul Growth din catalog (`hub.catalog.apps`, cerut de persoană); null: gol. */
+  recommendation: GrowthSlotView | null;
 };
 
 /** null: fără sesiune, fără afacere activă sau afacere suspendată → pagina dă 404. */
-export async function readApps(): Promise<AppsData | null> {
+export async function readApps(opts: { recommendation?: boolean } = {}): Promise<AppsData | null> {
   const session = await getSession(await headers());
   if (!session) return null;
   try {
@@ -99,7 +102,12 @@ export async function readApps(): Promise<AppsData | null> {
         publishableKey: process.env.STRIPE_PUBLISHABLE_KEY ?? null,
       };
     }
-    return { ...catalog, owner, ownerName, bundleName: seats.bundleName, billing };
+    // Growth nu blochează niciodată catalogul: orice eroare = fără recomandare (§8.7)
+    // doar pe lista „Toate aplicațiile”: afișarea se înregistrează unde se vede
+    const recommendation = opts.recommendation
+      ? await readGrowthSlot(ctx, 'hub.catalog.apps', { userInitiated: true })
+      : null;
+    return { ...catalog, owner, ownerName, bundleName: seats.bundleName, billing, recommendation };
   } catch (err) {
     reportActionError('readApps', err);
     return null;

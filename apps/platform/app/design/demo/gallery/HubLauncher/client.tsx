@@ -11,10 +11,11 @@ import c from '../_shared/founderCommercial.module.css';
 /* HubLauncher 1.1.0 (S136) → planșele „Fără Portal” (EasyBook activ: „Azi ai 8 programări.”) și
    „Nicio aplicație care dă date” (fraza simplă). Aceleași aplicații ca în preview: cele 7 ale
    afacerii în dock, apoi StockDesk (indisponibilă), DataView (nu e în rol), CampaignKit și Network
-   (nu sunt în abonament). Slotul comercial pe CampaignKit vine cu Growth (5.9). */
+   (nu sunt în abonament). `?board=reco` (5.9a): slotul Growth pe rândul CampaignKit, ca în primul
+   cadru al preview-ului (CatalogRecommendation). */
 const MINE = ['booking', 'crm', 'hr', 'finance', 'projects', 'shifts', 'documents'] as const;
 
-function data(noData: boolean): LauncherData {
+function data(noData: boolean, reco: boolean): LauncherData {
   return {
     apps: [
       ...MINE.filter((a) => !noData || a !== 'booking').map((app) => ({
@@ -30,10 +31,30 @@ function data(noData: boolean): LauncherData {
     ownerName: 'Bianca Petrașcu',
     timeZone: 'Europe/Bucharest',
     appointmentsToday: noData ? null : 8,
+    recommendation: reco
+      ? {
+          slotId: 'hub.launcher.other',
+          contentId: '00000000-0000-4000-8000-000000000001',
+          proactive: true,
+          audience: 'buyer',
+          title: 'CampaignKit',
+          body: 'Se potrivește cu EasyBook: trimite automat reamintiri și campanii clienților tăi.',
+          app: 'marketing',
+          kind: 'app_activation',
+          addonCode: null,
+          cost: {
+            currency: 'RON',
+            amountMinor: 4900,
+            interval: 'month',
+            setupMinor: null,
+            trial: null,
+          },
+        }
+      : null,
   };
 }
 
-export function HubLauncherFrame({ noData }: { noData?: boolean }) {
+export function HubLauncherFrame({ noData, reco }: { noData?: boolean; reco?: boolean }) {
   return (
     <div className={c.xFrame}>
       <AppShell
@@ -45,7 +66,7 @@ export function HubLauncherFrame({ noData }: { noData?: boolean }) {
         }
       >
         <LauncherScreen
-          data={data(!!noData)}
+          data={data(!!noData, !!reco)}
           userName="Bianca Petrașcu"
           businessName="Salon Aurora"
           now="2026-10-25T07:00:00.000Z"

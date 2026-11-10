@@ -147,13 +147,13 @@
 
 /* AppTile, layout row (preview: .lb-other .v-apptile--row): iconul de 36, numele și eticheta pe un
    rând, explicația dedesubt, acțiunea în dreapta. */
-.lb .rows > * {
+.lb .row {
   gap: var(--space-3);
   padding: var(--space-3) var(--space-4);
   min-height: 0;
 }
 
-.lb .rows > * > svg {
+.lb .row > svg {
   width: 36px;
   height: 36px;
   flex: none;
@@ -161,7 +161,7 @@
   margin-top: 2px;
 }
 
-.lb .rows > * > div {
+.lb .row > div {
   flex-direction: row;
   flex-wrap: wrap;
   align-items: center;
@@ -169,14 +169,14 @@
   row-gap: 2px;
 }
 
-.lb .rows > * > div > span:first-child {
+.lb .row > div > span:first-child {
   font-size: 16px;
   line-height: 24px;
   font-weight: 600;
   color: var(--ink);
 }
 
-.lb .rows > * > div > span:nth-child(n + 3) {
+.lb .row > div > span:nth-child(n + 3) {
   flex-basis: 100%;
   font-size: 14px;
   line-height: 20px;
@@ -243,16 +243,21 @@
     margin-top: 0;
   }
 
-  .lb .rows > * {
+  .lb .row {
     flex-wrap: wrap;
     row-gap: var(--space-2);
   }
 
-  .lb .rows > * > div {
+  .lb .row > div {
     flex: 1 1 calc(100% - 48px);
   }
 
-  .lb .rows > * > button {
+  .lb .row > button {
     margin-left: 48px;
   }
+}
+
+/* Lotul 5.9a — recomandarea Growth pentru un pachet / abonament, deasupra rândurilor */
+.recoCard {
+  margin-bottom: var(--space-4);
 }

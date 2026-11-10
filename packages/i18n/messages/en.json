@@ -761,6 +761,31 @@
           "f3": "Results: how many opened, how many booked"
         }
       }
+    },
+    "growth": {
+      "cost": {
+        "month": "{amount} a month",
+        "year": "{amount} a year",
+        "once": "{amount}, one time",
+        "trial": "Free for {days} days. Then {price}, only if you choose to continue.",
+        "setup": "setup {amount}, one time",
+        "noSetup": "no setup cost"
+      },
+      "toast": {
+        "dismissed": "Got it, we won't show you this again.",
+        "snoozedWeek": "Sure, we'll remind you in a week.",
+        "snoozedMonth": "Sure, we'll remind you in a month."
+      },
+      "actions": {
+        "seeOptions": "See the options",
+        "tryFree": "Try free for {days} days",
+        "recommendApp": "Recommend the app"
+      },
+      "status": {
+        "pending": "Pending",
+        "activated": "Activated",
+        "declined": "Not now"
+      }
     }
   },
   "roles": {

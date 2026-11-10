@@ -16,6 +16,7 @@ import type { AppName } from '@ventora/ui';
 import { APP_GROUPS } from '@/screens/apps/content';
 import { reportActionError } from './report-error';
 import { computeLauncherApps, type LauncherApp } from './launcher-state';
+import { readGrowthSlot, type GrowthSlotView } from './growth-slot';
 
 /*
  * Lotul 5.1 (FAZA-5, D5-3 = a) — HubLauncher: starea fiecărei aplicații, calculată pe server, din
@@ -38,6 +39,8 @@ export interface LauncherData {
   timeZone: string;
   /** Programările de azi în EasyBook (ale persoanei, după regulile EasyBook); null: fără EasyBook. */
   appointmentsToday: number | null;
+  /** Slotul Growth din „Alte aplicații” (5.9a, `hub.launcher.other`); null: gol. */
+  recommendation: GrowthSlotView | null;
 }
 
 /** Ora 00:00 a zilei `date` (YYYY-MM-DD) în fusul `timeZone`, ca instant UTC. */
@@ -132,7 +135,12 @@ export async function readLauncher(): Promise<LauncherData | null> {
       }
     }
 
-    return { apps, role: ctx.role, ownerName, timeZone, appointmentsToday };
+    // Growth nu blochează niciodată launcher-ul: orice eroare = slot gol (§8.7)
+    const recommendation = apps.some((a) => a.state !== 'available')
+      ? await readGrowthSlot(ctx, 'hub.launcher.other')
+      : null;
+
+    return { apps, role: ctx.role, ownerName, timeZone, appointmentsToday, recommendation };
   } catch (err) {
     reportActionError('readLauncher', err);
     return null;
