@@ -12,6 +12,7 @@ import {
   ContextBar,
   Logo,
   NotificationsPanel,
+  type HubRecommendationData,
   OrgSwitcher,
   Spine,
   type AppName,
@@ -25,6 +26,9 @@ import { rememberLocale } from '@/i18n/locale';
 import { switchBusiness } from '@/server/shell-actions';
 import { keepLocale } from '@/server/locale-actions';
 import { markBellRead, openBellItem, readBell, type Bell } from '@/server/notification-actions';
+import { growthInteraction, readBellRecommendation } from '@/server/growth-actions';
+import type { GrowthSlotView } from '@/server/growth-slot';
+import { useCostLine } from '@/screens/growth/GrowthRecommendation';
 import { BOOKING_BOTTOM, bookingActive, useBookingNav } from '@/screens/booking/useBookingNav';
 
 /* Shell-ul Hub (HubSettings din preview-urile ecranelor Hub, Lot 2.8): Spine cu „Contul tău”,
@@ -131,6 +135,9 @@ function useBell(initial: Bell, orgs: HubShellData['orgs']) {
   const when = useWhen();
   const [bell, setBell] = useState(initial);
   const [open, setOpen] = useState(false);
+  // Lotul 5.9b: recomandarea Ventora, în secțiunea ei („Recomandări”), sub operaționale
+  const [reco, setReco] = useState<GrowthSlotView | null>(null);
+  const recoCost = useCostLine(reco);
   // o listă nouă de la server (navigare, router.refresh) o înlocuiește pe cea de aici
   const [fromServer, setFromServer] = useState(initial);
   if (fromServer !== initial) {
@@ -151,6 +158,18 @@ function useBell(initial: Bell, orgs: HubShellData['orgs']) {
     app: orgName(i.organizationId),
     time: when(new Date(i.createdAt)),
   }));
+  const recommendations: HubRecommendationData[] = reco
+    ? [
+        {
+          id: reco.contentId,
+          ...(reco.app ? { app: reco.app } : { icon: 'package' as const }),
+          title: reco.title,
+          body: reco.audience === 'member' || !recoCost ? reco.body : `${reco.body} ${recoCost}`,
+        },
+      ]
+    : [];
+  const interact = (kind: 'click' | 'dismiss') =>
+    reco && void growthInteraction({ contentId: reco.contentId, kind, key: crypto.randomUUID() });
   const markRead = (pred: (id: string) => boolean) =>
     setBell((b) => ({ items: b.items.map((i) => (pred(i.id) ? { ...i, read: true } : i)) }));
 
@@ -160,7 +179,22 @@ function useBell(initial: Bell, orgs: HubShellData['orgs']) {
     onOpenChange: (o: boolean) => {
       setOpen(o);
       // la fiecare deschidere, lista de acum
-      if (o) void readBell().then(setBell);
+      if (o) {
+        void readBell().then(setBell);
+        void readBellRecommendation().then(setReco);
+      }
+    },
+    recommendations,
+    onOpenRecommendation: () => {
+      if (!reco) return;
+      interact('click');
+      setOpen(false);
+      // opțiunile ofertei (UpgradeDialog în 5.9c); nicio activare fără confirmare
+      router.push(reco.app ? `/applications/${reco.app}` : '/admin/plan');
+    },
+    onDismissRecommendation: () => {
+      interact('dismiss');
+      setReco(null);
     },
     onOpenItem: async (n: NotificationData) => {
       markRead((id) => id === String(n.id));
@@ -296,6 +330,9 @@ export function HubShell({
                 onOpenItem={bell.onOpenItem}
                 onMarkAllRead={bell.onMarkAllRead}
                 onSettings={bell.onSettings}
+                recommendations={bell.recommendations}
+                onOpenRecommendation={bell.onOpenRecommendation}
+                onDismissRecommendation={bell.onDismissRecommendation}
                 countCategory="operational"
                 labels={{
                   notifications: ui('notifications'),

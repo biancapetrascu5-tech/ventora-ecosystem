@@ -5,6 +5,7 @@ import { headers } from 'next/headers';
 import { authorize, PLATFORM_APPLICATION_ID } from '@ventora/access';
 import { recordInteraction } from '@ventora/growth';
 import { getSession } from '@ventora/identity';
+import { readGrowthSlot, type GrowthSlotView } from './growth-slot';
 import { reportActionError } from './report-error';
 
 /*
@@ -43,5 +44,25 @@ export async function growthInteraction(input: GrowthInteractionInput): Promise<
   } catch (err) {
     reportActionError('growthInteraction', err);
     return { ok: false };
+  }
+}
+
+/**
+ * Lotul 5.9b — recomandarea Ventora din clopoțel (`hub.notifications.recommendations`), citită la
+ * deschiderea panoului: afișarea se înregistrează doar când persoana o poate vedea. Clopoțelul
+ * continuă să numere doar operaționalele (D4-5). null: gol, Growth oprit sau în eroare.
+ */
+export async function readBellRecommendation(): Promise<GrowthSlotView | null> {
+  const session = await getSession(await headers());
+  if (!session) return null;
+  try {
+    const ctx = await authorize({
+      sessionToken: session.token,
+      applicationId: PLATFORM_APPLICATION_ID,
+    });
+    return await readGrowthSlot(ctx, 'hub.notifications.recommendations');
+  } catch (err) {
+    reportActionError('readBellRecommendation', err);
+    return null;
   }
 }

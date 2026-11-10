@@ -49,13 +49,14 @@ describe('Growth: niciun slot în fluxurile critice', () => {
     expect(offenders).toEqual([]);
   });
 
-  it('slotul se citește doar pe server, din locurile v1 (launcher, abonament, catalog)', () => {
+  it('slotul se citește doar pe server, din locurile v1 (launcher, abonament, catalog, clopoțelul)', () => {
     const readers = all
       .filter((p) => /\breadGrowthSlot\(/.test(readFileSync(p, 'utf8')))
       .map(rel)
       .sort();
     expect(readers).toEqual([
       'src/server/catalog-actions.ts',
+      'src/server/growth-actions.ts',
       'src/server/growth-slot.ts',
       'src/server/launcher-actions.ts',
       'src/server/plan-actions.ts',
