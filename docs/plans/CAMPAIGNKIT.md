@@ -1,6 +1,6 @@
 # CampaignKit (Marketing) — Planul celei de-a treia aplicații
 
-**Status:** **PROPUS** (agentul F5, 10.11.2026). Nimic nu începe fără aprobarea fondatoarei.
+**Status:** **APROBAT** (fondatoarea, 10.11.2026), cu deciziile D-CK-1…17 (§7.1). Rămâne deschisă doar D-CK-18 (prețurile pachetelor), la MK.0 / MK.9. **Nicio campanie reală către clienți până la avizul avocatului (§6.2); până atunci, doar date de test.**
 **Sursa:** decizia fondatoarei din 10.11.2026 (D-ROAD-1): **a treia aplicație, după EasyBook și ClientDesk, e CampaignKit**: campanii pe e-mail și SMS, audiențe.
 **Referințe:**
 - `checklists/09-marketing-campaigns.md`: cele **109 funcționalități** confirmate (cerința de produs), cu o excludere explicită (API / webhooks) și nota din „Adăugiri” despre limite și campaniile în plus;
@@ -131,7 +131,7 @@ Interpretarea pentru o afacere de servicii e **PROPUS**; textul checklist-ului n
 | Social Media Content Planner | 11 | Calendarul editorial, postările, drafturile, biblioteca media, aprobările, mai multe platforme, previzualizarea, colaborarea, sugestiile AI; publicarea automată și rapoartele **doar prin integrări oficiale** | MK.15, MK.16 |
 | A/B Testing & Optimization | 7 | A/B pe subiect și pe conținut, compararea, câștigătorul automat, recomandările, intervalele de trimitere. **A/B pe landing pages: funnel builder-ul** | MK.17; 1 în planul funnel builder-ului |
 | Analytics & Reports | 10 | Dashboard, livrare, deschideri / click-uri, conversii (programări, leaduri), campanii, audiențe, costuri și cost pe lead, automatizări, comparații, export CSV / Excel / PDF | MK.18 |
-| Consent, Privacy & Compliance | 9 | Consimțământul, dezabonarea, suprimarea, istoricul, preferințele pe canal, ștergerea și restricționarea, retenția, auditul comunicărilor, verificarea permisiunii înainte de trimitere | C.4 / MK.5, MK.9, MK.19 |
+| Consent, Privacy & Compliance | 9 | Consimțământul, dezabonarea, suprimarea, istoricul, preferințele pe canal, ștergerea și restricționarea, retenția, auditul comunicărilor, verificarea permisiunii înainte de trimitere | C.5 / MK.5, MK.9, MK.19 |
 | Integrations | 8 | ClientDesk, EasyBook (acum); Events, Portal, Analytics, Finance (când există, D-B-13); sincronizarea audiențelor; conectorii sociali (MK.16) | MK.20, MK.21; restul după aplicații |
 | Funcții comune Ventora | 7 | AI, suport, roluri, jurnal, setări, multi-utilizator, izolare | MK.23, „Funcțiile comune”, MK.24 |
 
@@ -150,7 +150,7 @@ Interpretarea pentru o afacere de servicii e **PROPUS**; textul checklist-ului n
   - T5 pe cote;
   - T6 pe evenimente;
   - toate pe rolul real `app_runtime`.
-- **Trimiterile reale** (e-mail, SMS către persoane reale) sunt blocate printr-un comutator de mediu până la avizul juridic (§6.2) și la Vercel (webhook-urile).
+- **Trimiterile reale** (e-mail, SMS către persoane reale) sunt blocate printr-un comutator de mediu până la avizul juridic (§6.2) și la Vercel (webhook-urile). **Până la aviz, doar date de test** (D-CK-17).
 
 ### Etapa 0 — Pregătirea
 
@@ -166,8 +166,8 @@ Interpretarea pentru o afacere de servicii e **PROPUS**; textul checklist-ului n
 - **Dependențe:** D-CK-3, D-CK-4.
 - **Estimare:** 1–2 h.
 
-#### Lot C.4 — Consimțământul comun (Core, PR separat; dacă D-CK-1 = a)
-- **Ce intră:** `core/consent`, schema `consent`, rolul `consent_rw` (**rol nou: aprobarea fondatoarei**):
+#### Lot C.5 — Consimțământul comun (Core, PR separat; D-CK-1 = a)
+- **Ce intră:** `core/consent`, schema `consent`, rolul `consent_rw` (**rol nou, APROBAT de fondatoare** pe 10.11.2026; GRANT-urile și RLS se revizuiesc în PR-ul migrării):
   - registrul pe persoană vizată (contactul afacerii), canal (`email` / `sms`) și scop (`marketing`);
   - starea, textul și versiunea, data, sursa (formular, import, manual, EasyBook, ClientDesk), dovada (IP trunchiat);
   - retragerea;
@@ -175,7 +175,7 @@ Interpretarea pentru o afacere de servicii e **PROPUS**; textul checklist-ului n
 - **Lista de suprimare a afacerii:** hash-ul adresei / numărului, ca dezabonarea să țină și după ștergere (GDPR art. 17, 21).
 - **Contractul:** `canSend(orgId, channel, address)`, `recordConsent`, `withdraw`, `suppressionCheck`.
 - Folosit de ClientDesk (CR.14, care renunță la `crm_consent`), CampaignKit și, mai târziu, EasyBook.
-- **Dependențe:** D-CK-1; coordonarea cu agentul ClientDesk, înainte de CR.14.
+- **Dependențe:** D-CK-1 = a. **Se face ÎNAINTE de CR.14 din ClientDesk** (CR.14 folosește contractul `core/consent` în loc de `crm_consent`); coordonarea cu agentul ClientDesk.
 - **Migrări:** `consent_init`.
 - **Estimare:** 3–4 h.
 
@@ -222,8 +222,8 @@ Interpretarea pentru o afacere de servicii e **PROPUS**; textul checklist-ului n
   - **pagina publică de dezabonare** (`/u/<token>`, fără autentificare): un click, confirmare, alegerea canalelor;
   - linkul în fiecare e-mail comercial; „STOP” în SMS, după regulile SMSLink;
   - lista de suprimare;
-  - istoricul consimțămintelor (prin C.4 sau local, după D-CK-1).
-- **Dependențe:** C.4 sau D-CK-1 = b.
+  - istoricul consimțămintelor, prin C.5.
+- **Dependențe:** C.5.
 - **Estimare:** 3 h.
 
 ### Etapa 2 — Campaniile și mesajele
@@ -262,10 +262,19 @@ Interpretarea pentru o afacere de servicii e **PROPUS**; textul checklist-ului n
   - **cotele:**
     - rezervarea înainte de trimitere, confirmarea la predare, eliberarea la eșec (§8.3);
     - peste limită, trimiterea se oprește și se oferă pachetul (`AddonPurchase`);
-  - expeditorul gestionat de Ventora (D-CK-6), cu Reply-To-ul afacerii;
+  - expeditorul gestionat de Ventora (D-CK-6 = a + c): subdomeniul de marketing Ventora cu Reply-To-ul afacerii sau, când afacerea l-a verificat, **domeniul ei propriu** (MK.9b);
   - **totul trece prin `core/notifications`** (categoria `commercial`, în numele afacerii), niciodată direct prin adaptor.
 - **Dependențe:** MK.5–MK.7; D-CK-6, D-CK-7.
 - **Estimare:** 4–5 h.
+
+#### Lot MK.9b — Domeniul propriu al afacerii (D-CK-6 = c)
+- **Ce intră:**
+  - afacerea adaugă domeniul ei; CampaignKit arată înregistrările DNS de pus (SPF, DKIM, DMARC recomandat);
+  - verificarea prin furnizor (Resend: domeniu verificat), cu starea „În verificare / Verificat / Eroare”;
+  - după verificare, campaniile pleacă de pe domeniul afacerii; altfel, de pe subdomeniul de marketing Ventora;
+  - reverificarea periodică (job); la eșec, întoarcerea automată pe subdomeniul Ventora și notificarea owner-ului.
+- **Dependențe:** MK.9; contul Resend cu domenii multiple (D-CK-7).
+- **Estimare:** 2–3 h.
 
 #### Lot MK.10 — Campaniile SMS
 - **Ce intră:**
@@ -281,7 +290,7 @@ Interpretarea pentru o afacere de servicii e **PROPUS**; textul checklist-ului n
 - **Ce intră:**
   - **webhook-urile Resend** (livrat, respins, plângere) și ale SMSLink (raportul de livrare);
   - **click-urile:** prin linkuri de redirecționare, semnate;
-  - **deschiderile** (pixel): **doar dacă D-CK-8 le permite**;
+  - **deschiderile** (pixel): **oprite până la aviz** (D-CK-8 = a);
   - eșecurile: un bounce dur sau o plângere suprimă automat adresa.
 - **Dependențe:** MK.9; **proiectul Vercel** (URL public, D4-10); D-CK-8.
 - **Estimare:** 4–5 h.
@@ -315,8 +324,8 @@ Interpretarea pentru o afacere de servicii e **PROPUS**; textul checklist-ului n
   - sursa leadului (UTM);
   - încorporarea (`<script>` / `iframe`);
   - trimiterea către ClientDesk dacă e activ;
-  - contactul de marketing cu consimțământul dovedit (C.4).
-  - Motorul formularelor e comun cu ClientDesk CR.17 (D-CK-13).
+  - contactul de marketing cu consimțământul dovedit (C.5).
+  - **Motorul formularelor e comun** (D-CK-13 = a): construit de ClientDesk în CR.17, în `packages` / Core (nu în `modules/crm`); CampaignKit îl folosește.
 - **Estimare:** 2–3 h (cu motorul din CR.17 refolosit).
 
 ### Etapa 5 — Planificarea postărilor
@@ -332,7 +341,8 @@ Interpretarea pentru o afacere de servicii e **PROPUS**; textul checklist-ului n
 
 #### Lot MK.16 — Publicarea automată și rapoartele postărilor (D-CK-10)
 - **Ce intră:**
-  - conectorii oficiali (Meta pentru Facebook / Instagram, apoi alții), cu OAuth-ul afacerii;
+  - **conectorul Meta (Facebook / Instagram) se construiește acum** (D-CK-10; fondatoarea a cerut verificarea Meta Business), cu OAuth-ul afacerii;
+  - ceilalți conectori, pe rând, fiecare după aprobarea platformei lui; până atunci, pentru ele, calendarul fără publicare automată;
   - publicarea automată unde API-ul o permite;
   - rapoartele postărilor conectate.
 - **Dependențe:** D-CK-10; conturile de dezvoltator și **aprobarea aplicației** la fiecare platformă (verificarea Meta); avizul juridic; Vercel.
@@ -343,7 +353,7 @@ Interpretarea pentru o afacere de servicii e **PROPUS**; textul checklist-ului n
 #### Lot MK.17 — A/B pe subiect și conținut
 - **Ce intră:**
   - variantele (2–4) pe un eșantion;
-  - compararea și **alegerea automată a câștigătoarei** după un criteriu (click-uri; deschideri doar dacă D-CK-8 le permite);
+  - compararea și **alegerea automată a câștigătoarei** după un criteriu (click-urile; deschiderile doar după aviz, D-CK-8 = a);
   - **avertisment pentru eșantion prea mic** (ca Growth §2.8);
   - recomandările de optimizare;
   - analiza celor mai bune intervale de trimitere, din istoricul afacerii.
@@ -429,21 +439,23 @@ Interpretarea pentru o afacere de servicii e **PROPUS**; textul checklist-ului n
 
 ## 4. Ordinea loturilor, după dependențe
 
+**Cine și când (D-CK-17 = b):** CampaignKit se construiește **de acum, în paralel cu ClientDesk**, de agentul F5, după loturile rămase din Faza 5, în worktree-ul lui. Până la avizul avocatului, doar date de test.
+
 | # | Loturi | Depind de | Când |
 |---|---|---|---|
-| 1 | MK.0, C.4 | D-CK-1, D-CK-3, D-CK-4 | după aprobarea planului; C.4 înainte de CR.14 (ClientDesk) |
-| 2 | MK.1 → MK.2 → MK.3, MK.4 → MK.5 | C.4 | — |
-| 3 | MK.6 → MK.7 → MK.8 → MK.9 → MK.10 | MK.5; B.17 (SMSLink); D-CK-6, D-CK-7, D-CK-9 | trimiteri reale doar după aviz |
-| 4 | MK.11, MK.17 | MK.9; Vercel (D4-10); D-CK-8 | după proiectul Vercel |
+| 1 | **C.5** (consimțământul comun, Core, PR separat) | D-CK-1 = a; rolul `consent_rw` (aprobat) | **primul**, după loturile rămase din Faza 5; **înainte de CR.14** din ClientDesk |
+| 2 | MK.0 → MK.1 → MK.2 → MK.3, MK.4 → MK.5 | C.5 (pentru MK.5); D-CK-3, D-CK-4 | în paralel cu ClientDesk |
+| 3 | MK.6 → MK.7 → MK.8 → MK.9 → MK.9b, MK.10 | MK.5; B.17 (SMSLink); subdomeniul de marketing (D-CK-6) | trimiteri doar cu date de test până la aviz |
+| 4 | MK.11, MK.17 | MK.9; Vercel (D4-10) | după proiectul Vercel |
 | 5 | MK.12, MK.13 | MK.9; D-CK-12 | — |
-| 6 | MK.14 | CR.17 (motorul formularelor); D-CK-13 | — |
-| 7 | MK.15 → MK.16 | D-CK-10; aprobarea platformelor | MK.16 poate rămâne în urmă fără să blocheze restul |
+| 6 | MK.14 | **motorul de formulare din CR.17** (ClientDesk, D-CK-13) | după CR.17 |
+| 7 | MK.15 → MK.16 (Meta) | verificarea Meta Business; Vercel | ceilalți conectori după aprobarea fiecărei platforme |
 | 8 | MK.18, MK.19 | MK.9–MK.13 | — |
 | 9 | MK.20, MK.21 | ClientDesk CR.4 / CR.8, EasyBook B.7 | — |
 | 10 | MK-UI.x | designul (§5.2) | în paralel cu domeniul, ecran cu ecran |
 | 11 | MK.23, MK.24 | toate | — |
 
-**Paralelismul** (D-CK-17): CampaignKit într-un worktree separat, cu propriul agent. Pachetele comune (`core/notifications`, `core/consent`, `packages/contracts`, `packages/ui`) se schimbă doar în PR-uri separate (ARCHITECTURE §15.3).
+**Paralelismul:** CampaignKit în worktree-ul agentului F5, pe branch-urile lui. Pachetele comune (`core/notifications`, `core/consent`, `packages/contracts`, `packages/ui`, motorul de formulare) se schimbă doar în PR-uri separate (ARCHITECTURE §15.3), coordonate cu agentul ClientDesk.
 
 ---
 
@@ -454,7 +466,7 @@ Interpretarea pentru o afacere de servicii e **PROPUS**; textul checklist-ului n
 Toate loturile din §3, mai puțin:
 - landing pages, șabloanele lor și A/B pe landing pages: 3 funcționalități, în planul funnel builder-ului (D-CK-11);
 - integrările cu Events, Portal, Analytics, Finance, până există aplicațiile (D-CK-16);
-- conectorii sociali (MK.16), dacă D-CK-10 = b.
+- conectorii sociali în afară de Meta, până la aprobarea fiecărei platforme (D-CK-10).
 
 ### 5.2 Designul care lipsește, pe loturi
 
@@ -482,7 +494,9 @@ Toate loturile din §3, mai puțin:
 | **Avizul avocatului** (§6.2) | orice trimitere reală (MK.9–MK.13), importul (MK.3), deschiderile (MK.11), conectorii sociali (MK.16) | fondatoarea, cu avocatul |
 | **Proiectul Vercel** (URL public) | webhook-urile Resend și SMSLink (MK.11), dezabonarea publică pe domeniul real, formularele încorporate | fondatoarea |
 | **Contul SMSLink** și cheile lui (B.17) | MK.10 | fondatoarea |
-| **Domeniul / subdomeniul de trimitere pentru marketing** (D-CK-6), cu SPF, DKIM, DMARC | MK.9 | fondatoarea |
+| **Subdomeniul de marketing** (D-CK-6, APROBAT; numele exact la configurare), cu SPF, DKIM, DMARC | MK.9 | fondatoarea |
+| **Domeniul propriu al afacerii** (D-CK-6 = c): înregistrările DNS puse de afacere | MK.9b | afacerea |
+| **Verificarea Meta Business** și aprobarea aplicației Meta | MK.16 (Meta) | fondatoarea (cerută) |
 | **Planul Resend** potrivit volumului de marketing (D-CK-7) | MK.9 | fondatoarea |
 | **Conturile de dezvoltator și aprobarea aplicației** la Meta și la celelalte platforme | MK.16 | fondatoarea |
 
@@ -490,9 +504,9 @@ Toate loturile din §3, mai puțin:
 
 | Loturi | Ore |
 |---|---|
-| MK.0 (1–2), C.4 (3–4) | 4–6 |
+| MK.0 (1–2), C.5 (3–4) | 4–6 |
 | MK.1 (1–2), MK.2 (3), MK.3 (2–3), MK.4 (3–4), MK.5 (3) | 12–15 |
-| MK.6 (3–4), MK.7 (5–6), MK.8 (2), MK.9 (4–5), MK.10 (2–3) | 16–20 |
+| MK.6 (3–4), MK.7 (5–6), MK.8 (2), MK.9 (4–5), MK.9b (2–3), MK.10 (2–3) | 18–23 |
 | MK.11 (4–5), MK.12 (3) | 7–8 |
 | MK.13 (4–5), MK.14 (2–3) | 6–8 |
 | MK.15 (4–5), MK.16 (6–10) | 10–15 |
@@ -500,7 +514,7 @@ Toate loturile din §3, mai puțin:
 | MK.20 (3), MK.21 (3) | 6 |
 | MK-UI.x | 12–16 |
 | MK.23 (2–3), MK.24 (2) | 4–5 |
-| **Total** | **≈ 88–113 ore**, adică ~45 de loturi |
+| **Total** | **≈ 90–116 ore**, adică ~46 de loturi |
 
 Nu sunt incluse:
 - așteptarea deciziilor, a designului și a avizului;
@@ -563,28 +577,38 @@ Aceasta nu e consultanță juridică. Sunt întrebările de pus specialistului.
 
 ---
 
-## 7. NECESITĂ DECIZIE
+## 7. Deciziile
 
-| # | Blochează | Întrebare | Variante | Recomandare |
+### 7.1 DECIS (fondatoarea, 10.11.2026)
+
+| # | Blochează | Întrebare | Variante | Decizia |
 |---|---|---|---|---|
-| D-CK-1 | C.4, MK.5, **CR.14 (ClientDesk)** | **Unde stă consimțământul pe canal** (C-CK-1) | a) un serviciu Core comun (`core/consent`), folosit de ClientDesk, CampaignKit și EasyBook; b) fiecare aplicație cu registrul ei (CR.14 are `crm_consent`) | **a.** O persoană care se dezabonează în CampaignKit nu trebuie să primească mesaje comerciale din ClientDesk. Cere schimbarea lui CR.14 înainte să fie construit (coordonare cu agentul ClientDesk) și un rol nou (`consent_rw`). |
-| D-CK-2 | MK.2 | **Contactele CampaignKit** | a) registrul propriu de contacte de marketing, cu legătură opțională spre contactul ClientDesk / clientul EasyBook (id, nu copie); b) doar contactele ClientDesk | **a.** CampaignKit funcționează singur (T4), iar ARCHITECTURE §5 nu-i dă contactul CRM. Datele sursă rămân în aplicația lor (ca D-CRM-1). |
-| D-CK-3 | MK.0, MK.6 | **Cota de campanii** (C-CK-3, nota din checklist) | a) de stoc: 20 de campanii programate sau active în același timp, cu pachetul „+10 campanii” cumpărabil; b) de flux: 20 pe lună | **a**, ca în `PRETURI-2027.md` („20 active”). Textul `limits.campaigns` („pe lună”) se corectează. Prețul pachetului: de stabilit în `PRETURI-2027.md`. |
-| D-CK-4 | MK.0, MK.9 | **`messaging.email` comun cu ClientDesk** (500 + 2.000) | a) o singură cheie, cu limitele însumate din aplicațiile active; b) chei separate (`crm.email`, `marketing.email`) | **a**, ca SMS-ul (un singur pachet al afacerii). **DE VALIDAT TEHNIC:** cum însumează `core/commercial` aceeași cheie declarată de două aplicații. |
-| D-CK-5 | MK.10 | **SMS-ul de marketing** | a) doar SMSLink, din pachetul afacerii, numărul scurt comun, GSM-7; b) și expeditor alfanumeric pe afacere | **a** (B.17, D-SMS-6, D-SMS-10). Expeditorul propriu ar cere înregistrare pe afacere, cost și timp. |
-| D-CK-6 | MK.9 | **Identitatea expeditorului** | a) „{Afacere} prin CampaignKit” de pe un **subdomeniu de marketing separat** (de ex. `mail.ventora-hub.com`), cu Reply-To-ul afacerii; b) aceeași adresă ca e-mailurile tranzacționale; c) domeniul propriu al afacerii | **a** în v1; c mai târziu, ca opțiune. Separarea apără livrarea e-mailurilor tranzacționale. **Un subdomeniu nou cere aprobarea fondatoarei** (ARCHITECTURE §14). |
-| D-CK-7 | MK.9 | **Furnizorul pentru e-mailul de marketing** | a) Resend, cu cheie și domeniu separate pentru marketing, după verificarea condițiilor și a planului; b) un furnizor specializat de marketing | **a.** Același adaptor (`EmailChannel`), fără pachet nou. **DE VALIDAT:** termenii Resend pentru e-mailul în masă și costul la volum. |
-| D-CK-8 | MK.11, MK.17 | **Urmărirea deschiderilor** (pixelul) | a) click-urile prin redirecționare; deschiderile oprite până la aviz, apoi doar cu informare / consimțământ; b) deschiderile pornite implicit | **a.** Checklist-ul spune „unde este posibil”. Fără aviz, A/B-ul alege câștigătorul după click-uri. |
-| D-CK-9 | MK.7 | **Editorul de e-mail** | a) editor propriu pe blocuri, din `packages/ui`, cu randarea HTML în cod propriu; b) o bibliotecă de editor (pachet nou, licență) | **a**, dacă blocurile din MK.7 ajung. Orice pachet nou (de ex. pentru randarea HTML de e-mail) se cere separat (regula 3). |
-| D-CK-10 | MK.16 | **Conectorii sociali** | a) planificatorul fără publicare automată la început; conectorii intră după decizie, pe rând (întâi Meta), cu aprobarea platformei și aviz; b) conectorii de la început | **a.** Aprobarea platformelor durează săptămâni și nu depinde de noi. „Fără integrări goale”. |
-| D-CK-11 | §1, §5.1 | **Landing pages și A/B pe landing pages** | a) în planul funnel builder-ului (Founder, D-FUN-1), cu faza lui; b) în CampaignKit | **a.** E deja decis cine le construiește (D-FUN-1). Rămâne de decis doar faza funnel builder-ului. |
-| D-CK-12 | MK.13 | **Automatizările suprapuse** (C-CK-7): reactivarea și ziua de naștere există în motor (D4-24, Founder), în ClientDesk CR.13 (reminder pentru echipă) și în checklist-ul CampaignKit (mesaj către client) | a) mesajele de marketing către clienți sunt ale CampaignKit când e activ; automatizarea echivalentă din motor nu mai trimite (verificare la execuție); ClientDesk păstrează doar reminderele interne; b) fiecare rămâne cum e | **a**, cu cheia comună de deduplicare pe (contact, ocazie, zi). |
-| D-CK-13 | MK.14, **CR.17** | **Formularele de lead** (C-CRM-5, „de confirmat la planul CampaignKit”) | a) un singur motor de formulare (construit o dată, în CR.17), folosit de ClientDesk și de CampaignKit, cu rezultatul trimis aplicațiilor active; b) două motoare | **a.** Motorul în `packages` / Core, nu în `modules/crm` (independența aplicațiilor). De anunțat agentului ClientDesk înainte de CR.17. |
-| D-CK-14 | MK.6 | **Aprobarea internă** | a) setare a afacerii: obligatorie pentru membri, opțională pentru owner / admin; b) mereu obligatorie | **a.** |
-| D-CK-15 | MK.9, MK.10 | **Plafonul de frecvență și intervalul orar** | a) implicit cel mult 2 mesaje comerciale pe săptămână pe contact și SMS doar între 9:00 și 20:00 (ora afacerii), configurabile în limite; b) fără valori implicite | **a.** Valorile exacte după aviz (§6.2, întrebarea 9). |
-| D-CK-16 | MK.20+ | **Integrările cu aplicații care nu există** (Events, Portal, Analytics, Finance) | a) intră când există aplicația (D-B-13); b) altfel | **a.** |
-| D-CK-17 | §4 | **Când și cine construiește CampaignKit** | a) după ce EasyBook + ClientDesk sunt la salonul de test, cu C.4 și D-CK-13 decise acum (ating CR.14 și CR.17); un worktree și un agent separate; b) în paralel, de acum | **a.** C.4 și motorul formularelor trebuie hotărâte înainte de CR.14 / CR.17, ca să nu se construiască de două ori. |
-| D-CK-18 | MK.0 | **Prețurile pachetelor** (campanii, e-mailuri, SMS-uri pentru marketing) | — | De propus în `PRETURI-2027.md` la MK.0 / MK.9; decizia fondatoarei. |
+| D-CK-1 | C.5, MK.5, **CR.14 (ClientDesk)** | **Unde stă consimțământul pe canal** (C-CK-1) | a) un serviciu Core comun (`core/consent`), folosit de ClientDesk, CampaignKit și EasyBook; b) fiecare aplicație cu registrul ei (CR.14 are `crm_consent`) | **DECIS: a** (fondatoarea, 10.11.2026). Serviciul comun `core/consent` (Lotul C.5, PR Core separat), folosit de ClientDesk, CampaignKit și EasyBook. Rolul nou `consent_rw` e **APROBAT**. C.5 se face **înainte de CR.14** din ClientDesk. |
+| D-CK-2 | MK.2 | **Contactele CampaignKit** | a) registrul propriu de contacte de marketing, cu legătură opțională spre contactul ClientDesk / clientul EasyBook (id, nu copie); b) doar contactele ClientDesk | **DECIS: a** (fondatoarea, 10.11.2026). Registrul propriu de contacte de marketing, cu legătura opțională (id, nu copie) spre ClientDesk / EasyBook. |
+| D-CK-3 | MK.0, MK.6 | **Cota de campanii** (C-CK-3, nota din checklist) | a) de stoc: 20 de campanii programate sau active în același timp, cu pachetul „+10 campanii” cumpărabil; b) de flux: 20 pe lună | **DECIS: a** (fondatoarea, 10.11.2026). Cota de stoc: 20 de campanii programate sau active în același timp, cu pachetul „+10 campanii”; textul `limits.campaigns` se corectează. Prețul pachetului: D-CK-18. |
+| D-CK-4 | MK.0, MK.9 | **`messaging.email` comun cu ClientDesk** (500 + 2.000) | a) o singură cheie, cu limitele însumate din aplicațiile active; b) chei separate (`crm.email`, `marketing.email`) | **DECIS: a** (fondatoarea, 10.11.2026). O singură cheie `messaging.email`, cu limitele însumate. **DE VALIDAT TEHNIC** la MK.0: cum însumează `core/commercial` aceeași cheie din două aplicații. |
+| D-CK-5 | MK.10 | **SMS-ul de marketing** | a) doar SMSLink, din pachetul afacerii, numărul scurt comun, GSM-7; b) și expeditor alfanumeric pe afacere | **DECIS: a** (fondatoarea, 10.11.2026). Doar SMSLink, din pachetul afacerii, numărul scurt comun, GSM-7. |
+| D-CK-6 | MK.9 | **Identitatea expeditorului** | a) „{Afacere} prin CampaignKit” de pe un **subdomeniu de marketing separat** (de ex. `mail.ventora-hub.com`), cu Reply-To-ul afacerii; b) aceeași adresă ca e-mailurile tranzacționale; c) domeniul propriu al afacerii | **DECIS: a + c** (fondatoarea, 10.11.2026). Subdomeniul separat de marketing (**APROBAT**; numele exact la configurare), cu Reply-To-ul afacerii, **plus domeniul propriu al afacerii (SPF / DKIM) ca opțiune de acum** (Lotul MK.9b). |
+| D-CK-7 | MK.9 | **Furnizorul pentru e-mailul de marketing** | a) Resend, cu cheie și domeniu separate pentru marketing, după verificarea condițiilor și a planului; b) un furnizor specializat de marketing | **DECIS: a** (fondatoarea, 10.11.2026). Resend, cu cheie și domeniu separate pentru marketing. **DE VALIDAT:** termenii pentru e-mailul în masă și costul la volum. |
+| D-CK-8 | MK.11, MK.17 | **Urmărirea deschiderilor** (pixelul) | a) click-urile prin redirecționare; deschiderile oprite până la aviz, apoi doar cu informare / consimțământ; b) deschiderile pornite implicit | **DECIS: a** (fondatoarea, 10.11.2026). Click-urile prin redirecționare; deschiderile oprite până la aviz. |
+| D-CK-9 | MK.7 | **Editorul de e-mail** | a) editor propriu pe blocuri, din `packages/ui`, cu randarea HTML în cod propriu; b) o bibliotecă de editor (pachet nou, licență) | **DECIS: a** (fondatoarea, 10.11.2026). Editor propriu pe blocuri; orice pachet nou se cere separat (regula 3). |
+| D-CK-10 | MK.16 | **Conectorii sociali** | a) planificatorul fără publicare automată la început; conectorii intră după decizie, pe rând (întâi Meta), cu aprobarea platformei și aviz; b) conectorii de la început | **DECIS, ajustat** (fondatoarea, 10.11.2026). **Conectorul Meta (Facebook / Instagram) se construiește acum** (verificarea Meta Business e cerută). Ceilalți conectori, pe rând, după aprobarea fiecărei platforme. Până atunci, calendarul de postări fără publicare automată. |
+| D-CK-11 | §1, §5.1 | **Landing pages și A/B pe landing pages** | a) în planul funnel builder-ului (Founder, D-FUN-1), cu faza lui; b) în CampaignKit | **DECIS: a** (fondatoarea, 10.11.2026). Landing pages și A/B pe landing pages: în planul funnel builder-ului. |
+| D-CK-12 | MK.13 | **Automatizările suprapuse** (C-CK-7): reactivarea și ziua de naștere există în motor (D4-24, Founder), în ClientDesk CR.13 (reminder pentru echipă) și în checklist-ul CampaignKit (mesaj către client) | a) mesajele de marketing către clienți sunt ale CampaignKit când e activ; automatizarea echivalentă din motor nu mai trimite (verificare la execuție); ClientDesk păstrează doar reminderele interne; b) fiecare rămâne cum e | **DECIS: a** (fondatoarea, 10.11.2026). Mesajele de marketing către clienți sunt ale CampaignKit când e activ; cheia comună de deduplicare pe (contact, ocazie, zi). |
+| D-CK-13 | MK.14, **CR.17** | **Formularele de lead** (C-CRM-5, „de confirmat la planul CampaignKit”) | a) un singur motor de formulare (construit o dată, în CR.17), folosit de ClientDesk și de CampaignKit, cu rezultatul trimis aplicațiilor active; b) două motoare | **DECIS: a** (fondatoarea, 10.11.2026). Un singur motor de formulare, în `packages` / Core, nu în `modules/crm`. Îl construiește ClientDesk în CR.17; CampaignKit îl folosește în MK.14. |
+| D-CK-14 | MK.6 | **Aprobarea internă** | a) setare a afacerii: obligatorie pentru membri, opțională pentru owner / admin; b) mereu obligatorie | **DECIS: a** (fondatoarea, 10.11.2026). |
+| D-CK-15 | MK.9, MK.10 | **Plafonul de frecvență și intervalul orar** | a) implicit cel mult 2 mesaje comerciale pe săptămână pe contact și SMS doar între 9:00 și 20:00 (ora afacerii), configurabile în limite; b) fără valori implicite | **DECIS: a** (fondatoarea, 10.11.2026). Valorile implicite (2 pe săptămână, SMS între 9:00 și 20:00), configurabile în limite; valorile exacte după aviz. |
+| D-CK-16 | MK.20+ | **Integrările cu aplicații care nu există** (Events, Portal, Analytics, Finance) | a) intră când există aplicația (D-B-13); b) altfel | **DECIS: a** (fondatoarea, 10.11.2026). |
+| D-CK-17 | §4 | **Când și cine construiește CampaignKit** | a) după ce EasyBook + ClientDesk sunt la salonul de test, cu C.5 și D-CK-13 decise acum (ating CR.14 și CR.17); un worktree și un agent separate; b) în paralel, de acum | **DECIS: b** (fondatoarea, 10.11.2026). CampaignKit se construiește **de acum, în paralel**, de agentul F5 (după loturile rămase din Faza 5), în worktree-ul lui. Nicio campanie reală către clienți până la avizul avocatului (§6.2); doar date de test. |
+| D-CK-18 | MK.0 | **Prețurile pachetelor** (campanii, e-mailuri, SMS-uri pentru marketing) | — | **Rămâne deschisă:** decizia fondatoarei la MK.0 / MK.9. |
+
+### 7.2 Rămase deschise
+
+| # | Blochează | Ce | Când |
+|---|---|---|---|
+| D-CK-18 | MK.0, MK.9 | Prețurile pachetelor (campanii, e-mailuri, SMS-uri pentru marketing), în `PRETURI-2027.md` | Decizia fondatoarei la MK.0 / MK.9 |
+| D-CK-4 (tehnic) | MK.0 | Însumarea aceleiași chei de cotă din două aplicații | DE VALIDAT TEHNIC la MK.0 |
+| D-CK-7 (furnizor) | MK.9 | Termenii Resend pentru e-mailul în masă și costul | DE VALIDAT la MK.9 |
 
 ---
 
@@ -592,13 +616,13 @@ Aceasta nu e consultanță juridică. Sunt întrebările de pus specialistului.
 
 | # | Subiect | Sursa A | Sursa B | Stare |
 |---|---|---|---|---|
-| C-CK-1 | **Unde stă consimțământul** | CRM.md CR.14: `crm_consent`, în ClientDesk | Checklist-ul CampaignKit: „Gestionarea consimțământului”, „Istoric al consimțămintelor”; o persoană are un singur răspuns pe canal la aceeași afacere | NECESITĂ DECIZIE (D-CK-1) |
+| C-CK-1 | **Unde stă consimțământul** | CRM.md CR.14: `crm_consent`, în ClientDesk | Checklist-ul CampaignKit: „Gestionarea consimțământului”, „Istoric al consimțămintelor”; o persoană are un singur răspuns pe canal la aceeași afacere | **Rezolvat (D-CK-1 = a):** `core/consent`, Lotul C.5 |
 | C-CK-2 | **Segmentele** | ARCHITECTURE §5: Marketing deține `Segment` | ClientDesk are segmente (CR.4) | Rezolvat de D-CRM-5: segmentul ClientDesk e o listă de lucru; CampaignKit deține audiențele de campanie și le poate folosi pe cele din ClientDesk |
-| C-CK-3 | **Cota de campanii** | `PRETURI-2027.md`: „20 active” (stoc) | `limits.campaigns` în i18n: „{n} campanii pe lună” (flux); nota din checklist: „pot să plătească pentru campanii în plus” | NECESITĂ DECIZIE (D-CK-3) |
-| C-CK-4 | **Formularele de lead** | D-FUN-7: în CampaignKit **sau** ClientDesk | CRM.md CR.17: formularele în ClientDesk; checklist-ul CampaignKit: 8 funcționalități de formulare | NECESITĂ DECIZIE (D-CK-13) |
+| C-CK-3 | **Cota de campanii** | `PRETURI-2027.md`: „20 active” (stoc) | `limits.campaigns` în i18n: „{n} campanii pe lună” (flux); nota din checklist: „pot să plătească pentru campanii în plus” | **Rezolvat (D-CK-3 = a):** cota de stoc |
+| C-CK-4 | **Formularele de lead** | D-FUN-7: în CampaignKit **sau** ClientDesk | CRM.md CR.17: formularele în ClientDesk; checklist-ul CampaignKit: 8 funcționalități de formulare | **Rezolvat (D-CK-13 = a):** un singur motor, în CR.17 |
 | C-CK-5 | **Landing pages** | Checklist-ul CampaignKit: „Pagini de destinație”, „Șabloane”, „A/B pe landing pages” | D-FUN-1: doar Founder, în funnel builder; faza: NECESITĂ DECIZIE | Rezolvat de D-FUN-1 cine le face; rămâne faza (D-CK-11) |
 | C-CK-6 | **„E-mailul comercial e dezactivat”** | ARCHITECTURE §8.7, D-GRW-8: e-mailul comercial blocat central în `core/notifications` | CampaignKit trimite e-mailuri comerciale ale afacerii către clienții ei | Nu e o contradicție de fond: D-GRW-8 privește Ventora → afaceri. **Tehnic, blocarea din `send.ts` trebuie să distingă** între comercialul Ventora și comercialul afacerii (MK.9); de confirmat la MK.9 |
-| C-CK-7 | **Reactivarea și ziua de naștere** | D4-24: automatizări în motor, construite de Founder | Checklist-ul CampaignKit: automatizări predefinite ale modulului; CRM.md CR.13: ziua de naștere | NECESITĂ DECIZIE (D-CK-12) |
+| C-CK-7 | **Reactivarea și ziua de naștere** | D4-24: automatizări în motor, construite de Founder | Checklist-ul CampaignKit: automatizări predefinite ale modulului; CRM.md CR.13: ziua de naștere | **Rezolvat (D-CK-12 = a)** |
 | C-CK-8 | **SMS de marketing** (C-F4-14) | Checklist-ul CampaignKit: campanii SMS | D-SMS-6: `ANDROID_SIM` doar operațional | Rezolvat ca la D-CRM-6: SMS-ul de marketing doar prin SMSLink (D-CK-5) |
 | C-CK-9 | **API și webhooks** | Checklist-ul CampaignKit: „Funcționalități excluse: API / Webhooks” | ClientDesk construiește API-ul extern (C.3, D-CRM-10) | Nu e o contradicție: CampaignKit nu expune API. Webhook-urile **primite** de la Resend / SMSLink (MK.11) sunt infrastructură, nu API pentru clienți |
 
