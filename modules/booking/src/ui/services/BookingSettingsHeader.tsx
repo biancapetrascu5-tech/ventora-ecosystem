@@ -5,8 +5,9 @@ import { PageHeader, Tabs, Toast } from '@ventora/ui';
 import type { ScreenMode } from './BookingServicesView';
 import s from './services.module.css';
 
-/* EasyBook · Setări (BookingSettings / BookingServices, S123): the page header with the tabs.
-   Only „Servicii” has a screen; the other tabs open their routes (404 until their lots, S123-9). */
+/* EasyBook · Setări (BookingSettings / BookingServices, S123; BookingTeamSchedule, S124): the page
+   header with the tabs. „Servicii” and „Programul echipei” have screens; the other tabs open their
+   routes (404 until their lots, S123-9). */
 
 export const SETTINGS_TABS = [
   'general',
@@ -22,10 +23,13 @@ export type SettingsTab = (typeof SETTINGS_TABS)[number];
 export function BookingSettingsHeader({
   mode,
   tab = 'services',
+  description,
   onTabChange,
 }: {
   mode: ScreenMode;
   tab?: SettingsTab;
+  /** The lead of the tab (hidden on a phone); „Servicii” by default. */
+  description?: string;
   onTabChange?: (tab: SettingsTab) => void;
 }) {
   const t = useTranslations('booking.settings');
@@ -33,7 +37,7 @@ export function BookingSettingsHeader({
   return (
     <PageHeader
       title={t('title')}
-      description={mode === 'mobile' ? undefined : services('lead')}
+      description={mode === 'mobile' ? undefined : (description ?? services('lead'))}
       tabs={
         <Tabs
           label={t('tabs.label')}
@@ -47,7 +51,7 @@ export function BookingSettingsHeader({
 }
 
 /** A confirmation toast: inside the frame in the gallery, fixed in the window in the application. */
-export function ServicesToast({
+export function SettingsToast({
   mode,
   tone = 'done',
   title,
@@ -76,3 +80,6 @@ export function ServicesToast({
     </div>
   );
 }
+
+/** B.1-UI name of SettingsToast. */
+export const ServicesToast = SettingsToast;

@@ -16,7 +16,8 @@ export const BOOKING_ROUTES: { id: string; href: string }[] = [
   { id: 'programari', href: '/booking/appointments' },
   { id: 'clienti', href: '/booking/clients' },
   { id: 'servicii', href: '/booking/settings/services' },
-  { id: 'angajati', href: '/booking/team' },
+  // B.2-UI (decision 2): „Echipa” opens Setări · „Programul echipei”
+  { id: 'angajati', href: '/booking/settings/team' },
   { id: 'rapoarte', href: '/booking/reports' },
   { id: 'setari', href: '/booking/settings' },
 ];
@@ -68,7 +69,8 @@ export function useBookingNav(enabled: boolean): {
       items: [
         item('clienti', t('clients'), 'users'),
         item('servicii', t('services'), 'boxes'),
-        item('angajati', t('team'), 'contact'),
+        // decision 3: „Echipa” (Setări · „Programul echipei”) only for booking:settings
+        ...(shell?.canSettings === false ? [] : [item('angajati', t('team'), 'contact')]),
       ],
     },
     {

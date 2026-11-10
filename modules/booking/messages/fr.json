@@ -196,5 +196,126 @@
       "RON": "{amount} lei",
       "EUR": "{amount} €"
     }
+  },
+  "team": {
+    "tab": "Programul echipei",
+    "title": "Programul echipei",
+    "lead": "Cine apare în calendar și când primește programări. Programul unui membru nu poate depăși programul afacerii.",
+    "business": "Programul afacerii: {text}",
+    "businessEdit": "Schimbă-l în General",
+    "col": {
+      "member": "Membru",
+      "week": "Program săptămânal",
+      "next": "Urmează"
+    },
+    "next": {
+      "leave": "Concediu {from}–{to}",
+      "off": "Liber {date}",
+      "other": "{date}: {time}",
+      "none": "Nimic programat"
+    },
+    "action": {
+      "edit": "Editează programul",
+      "exception": "Adaugă o excepție",
+      "leave": "Adaugă un concediu"
+    },
+    "more": "Mai multe acțiuni",
+    "inactive": {
+      "title": "Nu mai sunt în echipă",
+      "lead": "Nu apar în calendar și nu mai primesc programări. Programările lor vechi rămân în istoric și în rapoarte.",
+      "since": "Scos din calendar pe {date}",
+      "past": {
+        "one": "1 programare veche",
+        "few": "{n} programări vechi",
+        "many": "{n} de programări vechi"
+      },
+      "future": {
+        "title": "{name} nu mai e în echipă, dar are {n} programări viitoare",
+        "body": "Nu le-am anulat. Mută-le la alt membru sau anunță clienții.",
+        "action": "Vezi programările"
+      },
+      "why": "Membrii intră și ies din echipă din Hub · Echipă și invitații."
+    },
+    "drawer": {
+      "subtitle": "Program săptămânal, excepții și concedii"
+    },
+    "week": {
+      "title": "Program săptămânal",
+      "lead": "Cel mult două intervale pe zi; golul dintre ele e pauza.",
+      "closed": "Afacerea e închisă",
+      "dayOff": "Liber",
+      "from": "De la",
+      "to": "Până la",
+      "addInterval": "Al doilea interval",
+      "removeInterval": "Scoate al doilea interval",
+      "break": "Pauză {from}–{to}",
+      "businessDay": "Afacerea: {from}–{to}"
+    },
+    "err": {
+      "beforeOpen": "Afacerea deschide {day} la {time}. Intervalul poate începe cel mai devreme la {time}.",
+      "afterClose": "Afacerea închide {day} la {time}. Intervalul se poate termina cel târziu la {time}.",
+      "overlap": "Al doilea interval trebuie să înceapă după ce se termină primul.",
+      "order": "Ora de sfârșit trebuie să fie după ora de început.",
+      "summary": "Programul depășește programul afacerii în {n} zile. Corectează intervalele marcate.",
+      "leaveOrder": "„Până la” nu poate fi înainte de „De la”.",
+      "leaveFrom": "Alege prima zi de concediu.",
+      "failed": "Nu am putut salva. Încearcă din nou.",
+      "removed": "{name} nu mai e în echipă."
+    },
+    "exc": {
+      "title": "Excepții pe o dată",
+      "lead": "O zi liberă sau alt program decât cel obișnuit, doar pentru data aceea.",
+      "add": "Adaugă o excepție",
+      "off": "Zi liberă",
+      "other": "Alt program",
+      "date": "Data",
+      "kind": "Ce se schimbă",
+      "empty": "Nicio excepție.",
+      "dialogTitle": "Excepție pe o dată",
+      "dialogLead": "Pentru {name}. Programul obișnuit rămâne la fel în celelalte zile.",
+      "save": "Salvează excepția",
+      "bookingsOne": "{name} are o programare pe {date}. Nu o anulăm: mut-o din calendar sau anunță clientul.",
+      "bookingsMany": "{name} are {n} programări pe {date}. Nu le anulăm: mută-le din calendar sau anunță clienții.",
+      "remove": "Șterge excepția",
+      "edit": "Editează"
+    },
+    "leave": {
+      "title": "Concedii",
+      "lead": "În zilele de concediu membrul nu apare liber în calendar.",
+      "add": "Adaugă un concediu",
+      "from": "De la",
+      "to": "Până la",
+      "reason": "Motiv",
+      "reasonHelp": "Îl văd doar proprietarul și adminii. În calendar apare doar „Concediu”.",
+      "dialogTitle": "Concediu",
+      "save": "Salvează concediul",
+      "empty": "Niciun concediu programat.",
+      "days": {
+        "one": "1 zi",
+        "few": "{n} zile",
+        "many": "{n} de zile"
+      },
+      "badge": "Concediu",
+      "cancel": "Anulează concediul",
+      "bookingsMany": "{name} are {n} programări între {from} și {to}. Nu le anulăm: mută-le din calendar sau anunță clienții."
+    },
+    "save": "Salvează programul",
+    "cancel": "Renunță",
+    "saved": "Am salvat programul. Calendarul arată de acum noile intervale.",
+    "empty": {
+      "title": "Încă nu e nimeni în calendar",
+      "body": "Membrii echipei apar aici după ce primesc acces la EasyBook din Hub. Apoi le stabilești programul.",
+      "action": "Deschide Echipă și invitații"
+    },
+    "day": {
+      "1": "Lun",
+      "2": "Mar",
+      "3": "Mie",
+      "4": "Joi",
+      "5": "Vin",
+      "6": "Sâm",
+      "7": "Dum"
+    },
+    "businessClosedDay": "{day} închis"
   }
 }

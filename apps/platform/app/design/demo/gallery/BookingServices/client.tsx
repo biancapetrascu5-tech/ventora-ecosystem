@@ -3,7 +3,6 @@
 
 import type { ReactNode } from 'react';
 import { NextIntlClientProvider } from 'next-intl';
-import { AppShell, Spine, UsageMeter, type NavSection } from '@ventora/ui';
 import {
   ArchiveServiceDialog,
   BookingServicesView,
@@ -25,8 +24,8 @@ import {
 } from '@ventora/booking/ui';
 import ro from '@ventora/i18n/messages/ro.json';
 import bookingRo from '@ventora/booking/messages/ro.json';
-import { Bar, noop } from '../_shared/shell';
-import { SPINE_RO } from '../_shared/labels';
+import { noop } from '../_shared/shell';
+import { BookingApp } from '../_shared/booking-shell';
 import f from '../_shared/frames.module.css';
 
 /* BookingServices (S123) in the gallery: the 15 frames of preview.html, each at 1280 / 820 / 390,
@@ -34,54 +33,6 @@ import f from '../_shared/frames.module.css';
    application (modules/booking/src/ui); only the data and the open dialogs are fixed here. */
 
 const MESSAGES = { ...ro, booking: bookingRo };
-
-// preview.html BK_SECTIONS (ro)
-const BK_SECTIONS: NavSection[] = [
-  {
-    items: [
-      { id: 'azi', label: 'Azi', icon: 'house' },
-      { id: 'calendar', label: 'Calendar', icon: 'calendar' },
-      { id: 'programari', label: 'Programări', icon: 'list', badge: 3 },
-    ],
-  },
-  {
-    label: 'Gestionare',
-    items: [
-      { id: 'clienti', label: 'Clienți', icon: 'users' },
-      { id: 'servicii', label: 'Servicii', icon: 'boxes' },
-      { id: 'angajati', label: 'Echipa', icon: 'contact' },
-    ],
-  },
-  {
-    label: 'Afacere',
-    items: [
-      { id: 'rapoarte', label: 'Rapoarte', icon: 'chart-column' },
-      { id: 'setari', label: 'Setări', icon: 'settings' },
-    ],
-  },
-];
-
-function BookingApp({ children }: { children: ReactNode }) {
-  return (
-    <AppShell
-      height="100%"
-      spine={
-        <Spine
-          app="booking"
-          labels={SPINE_RO}
-          sections={BK_SECTIONS}
-          activeId="setari"
-          onBackToHub={noop}
-          bottomItems={['azi', 'calendar', 'programari', 'clienti']}
-          footer={<UsageMeter compact label="Programări în noiembrie" used={312} limit={1000} />}
-        />
-      }
-      contextBar={<Bar title="Setări" hub />}
-    >
-      {children}
-    </AppShell>
-  );
-}
 
 // preview.html svc(id, name, d, dmax, pk, p, pmax, cur, cap, online) — prices in lei, here in bani
 let seq = 0;
