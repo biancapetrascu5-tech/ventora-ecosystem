@@ -143,3 +143,22 @@ export type {
 export { getFreeSlots, findFirstFreeSlot } from './availability';
 export type { GetFreeSlotsParams, FindFirstFreeSlotParams } from './availability';
 export type { FreeSlot, FreeSlotDay, FreeSlots, FirstFreeSlot } from '../server/availability';
+// Lot B.3a: the bookable resources (design S124 BookingResources)
+export {
+  listResources,
+  getResource,
+  createResource,
+  updateResource,
+  archiveResource,
+  restoreResource,
+  reorderResources,
+} from './resources';
+export type {
+  ResourceFields,
+  ListResourcesParams,
+  ResourceIdParams,
+  CreateResourceParams,
+  UpdateResourceParams,
+  ReorderResourcesParams,
+} from './resources';
+export type { Resource, ResourceKind } from '../server/resources';

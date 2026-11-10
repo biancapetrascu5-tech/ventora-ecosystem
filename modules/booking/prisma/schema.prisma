@@ -52,6 +52,7 @@ model Service {
 
   category     ServiceCategory? @relation(fields: [categoryId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "service_category_id_fkey")
   appointments Appointment[]
+  resources    ServiceResource[]
 
   @@index([organizationId, categoryId, sortOrder], map: "service_organization_id_category_sort_idx")
   @@index([categoryId], map: "service_category_id_idx")
@@ -337,5 +338,47 @@ model TimeBlock {
 
   @@index([staffMemberId, startsAt], map: "time_block_staff_member_id_starts_idx")
   @@map("time_block")
+  @@schema("booking")
+}
+
+/// Lot B.3a: a bookable resource (room, space, equipment); units = how many appointments at once.
+model Resource {
+  id               String    @id @db.Uuid
+  organizationId   String    @map("organization_id") @db.Uuid
+  name             String    @db.VarChar(80)
+  kind             String    @db.VarChar(9)
+  units            Int       @default(1) @db.SmallInt
+  sortOrder        Int       @default(0) @map("sort_order")
+  archivedAt       DateTime? @map("archived_at") @db.Timestamptz
+  archivedByUserId String?   @map("archived_by_user_id") @db.Uuid
+  createdByUserId  String    @map("created_by_user_id") @db.Uuid
+  createdAt        DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt        DateTime  @default(now()) @map("updated_at") @db.Timestamptz
+
+  services ServiceResource[]
+
+  @@index([organizationId, sortOrder], map: "resource_organization_id_sort_idx")
+  @@map("resource")
+  @@schema("booking")
+}
+
+/// Lot B.3a: a service that needs a resource („Servicii care o cer”); removed by archiving.
+model ServiceResource {
+  id               String    @id @db.Uuid
+  organizationId   String    @map("organization_id") @db.Uuid
+  serviceId        String    @map("service_id") @db.Uuid
+  resourceId       String    @map("resource_id") @db.Uuid
+  archivedAt       DateTime? @map("archived_at") @db.Timestamptz
+  archivedByUserId String?   @map("archived_by_user_id") @db.Uuid
+  createdByUserId  String    @map("created_by_user_id") @db.Uuid
+  createdAt        DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt        DateTime  @default(now()) @map("updated_at") @db.Timestamptz
+
+  service  Service  @relation(fields: [serviceId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "service_resource_service_id_fkey")
+  resource Resource @relation(fields: [resourceId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "service_resource_resource_id_fkey")
+
+  @@index([serviceId], map: "service_resource_service_id_idx")
+  @@index([resourceId], map: "service_resource_resource_id_idx")
+  @@map("service_resource")
   @@schema("booking")
 }
