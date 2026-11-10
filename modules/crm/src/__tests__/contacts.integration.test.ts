@@ -757,13 +757,14 @@ describe('CR.2 — T1 / T2 / T3', () => {
   it('T3: an external collaborator reads and writes nothing', async () => {
     const b = await business();
     const ext = await person(b.org, 'external_collaborator');
-    for (const p of [
-      listContacts({ sessionToken: ext.token }),
-      createContact({ sessionToken: ext.token, name: 'X' }),
-      listCompanies({ sessionToken: ext.token }),
-      createCompany({ sessionToken: ext.token, name: 'X' }),
+    // one call at a time: a rejection must not wait unhandled while another is awaited
+    for (const call of [
+      () => listContacts({ sessionToken: ext.token }),
+      () => createContact({ sessionToken: ext.token, name: 'X' }),
+      () => listCompanies({ sessionToken: ext.token }),
+      () => createCompany({ sessionToken: ext.token, name: 'X' }),
     ]) {
-      await expect(p).rejects.toBeInstanceOf(Forbidden);
+      await expect(call()).rejects.toBeInstanceOf(Forbidden);
     }
   });
 
