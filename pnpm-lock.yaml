@@ -688,9 +688,18 @@ importers:
 
   core/growth:
     dependencies:
+      '@ventora/commercial':
+        specifier: workspace:*
+        version: link:../commercial
       '@ventora/contracts':
         specifier: workspace:*
         version: link:../../packages/contracts
+      '@ventora/notifications':
+        specifier: workspace:*
+        version: link:../notifications
+      '@ventora/organizations':
+        specifier: workspace:*
+        version: link:../organizations
       pg:
         specifier: ^8.0.0
         version: 8.23.1
