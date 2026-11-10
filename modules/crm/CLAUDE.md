@@ -49,3 +49,15 @@ CRM (numele afișat ClientDesk) e a doua aplicație, în pachetul cu EasyBook (D
 - **Valorile:** `custom_values` (jsonb) pe `contact` și `company`, validate la fiecare scriere față de definițiile active. Auditul primește doar id-urile câmpurilor, niciodată valorile.
 - **Câmpurile obligatorii** se cer doar la crearea de mână a unui contact sau a unei companii, niciodată pe contactele vechi sau pe cele din EasyBook (S132). O valoare obligatorie nu se poate șterge.
 - **Fără câmpuri pentru date medicale** (S132): ecranul setărilor o spune. Serverul nu o poate impune.
+
+## Etichetele și segmentele (CR.4, design S130 / S132)
+- **Etichetele:** `crm.tag` și coloana `contact.tag_ids` (uuid[], cel mult 50), fără tabel de legătură, deci fără `DELETE`.
+  - Cine are `crm:settings` creează, redenumește, unește („Unește cu…”: contactele și regulile segmentelor trec pe ținta lui) și șterge (eticheta dispare de pe contacte și din reguli).
+  - Etichetarea, în bloc de cel mult 200, urmează regula contactelor.
+- **Segmentele:** `crm.segment`, cu regulile în jsonb, evaluate la fiecare citire (se actualizează singure).
+  - Criteriile sunt doar cele S130 existente acum: sursă, etichetă, responsabil, data adăugării, companie, ziua de naștere.
+  - Starea clientului, ultima vizită și consimțământul vin cu CR.12 / CR.14. Nota EasyBook și datele de sănătate nu sunt niciodată criterii.
+  - „Doar eu” îl vede doar autorul. Un segment îl schimbă autorul sau cine are `crm:admin`.
+- **Segmentul predefinit** „N-au mai venit de N zile” (`kind = 'lapsed'`): îl creează ClientDesk la prima citire.
+  - Se schimbă doar zilele (`settings.lapsed_segment_days`, 7–365, `crm:settings`).
+  - Numărul lui așteaptă vizitele din EasyBook (CR.12).

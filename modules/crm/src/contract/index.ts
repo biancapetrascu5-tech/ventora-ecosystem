@@ -4,6 +4,19 @@ export { getCrmSettings } from './settings';
 export type { CrmSettings } from './settings';
 export {
   assignContact,
+  countSegment,
+  createSegment,
+  createTag,
+  deleteSegment,
+  deleteTag,
+  getSegment,
+  listSegments,
+  listTags,
+  mergeTag,
+  setLapsedSegmentDays,
+  tagContacts,
+  updateSegment,
+  updateTag,
   createCompany,
   createContact,
   createCustomField,
@@ -34,4 +47,7 @@ export type {
   CustomField,
   CustomValues,
   ListContactsParams,
+  Segment,
+  SegmentRule,
+  Tag,
 } from './contacts';
