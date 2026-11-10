@@ -129,6 +129,7 @@ import {
   CalendarClock,
   CalendarOff,
   Timer,
+  Plane,
 } from 'lucide-react';
 
 export const ICON_REGISTRY = {
@@ -270,6 +271,8 @@ export const ICON_REGISTRY = {
   // S118: FounderOverview — „În probă” și „Încearcă din nou”, cu numele din bundle
   timer: Timer,
   'refresh-cw': RefreshCw,
+  // S124: BookingTeamSchedule — „Adaugă un concediu” și „Concediu 16–20 nov.”, cu numele din bundle
+  plane: Plane,
 } as const satisfies Record<string, LucideIcon>;
 
 export type IconName = keyof typeof ICON_REGISTRY;
