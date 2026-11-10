@@ -22,6 +22,7 @@ import {
 } from '@ventora/commercial';
 import './billing-config';
 import { bookingQuotaRefundConsumer } from '@ventora/booking';
+import { growthConversionConsumer, growthSignalConsumer } from '@ventora/growth';
 import { summarizeError } from '@ventora/errors';
 import { getNotificationContactsInTx } from '@ventora/identity';
 import {
@@ -116,7 +117,11 @@ export const platformConsumers = new ConsumerRegistry()
   .register(commercialSetupNoticeConsumer)
   // Lotul B.4b (legat în B.4c): o programare anulată înainte de început → unitatea
   // booking.appointments înapoi (refundQuota, idempotent: o a doua livrare nu mai dă nimic)
-  .register(bookingQuotaRefundConsumer);
+  .register(bookingQuotaRefundConsumer)
+  // Lotul 5.7 (FAZA-5): semnalele growthSafe → campaniile automate; conversiile (pachet cumpărat,
+  // aplicație pornită, probă pornită) atribuite click-ului din ultimele 7 zile (P24)
+  .register(growthSignalConsumer)
+  .register(growthConversionConsumer);
 
 /** Un raport de job cu erori → job-ul eșuează (Sentry, reîncercare); restul rămâne făcut. */
 function failOnErrors<T extends { errors: Array<{ error: unknown }> }>(
