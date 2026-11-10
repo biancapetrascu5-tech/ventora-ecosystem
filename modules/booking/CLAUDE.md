@@ -56,7 +56,7 @@ Booking (numele afișat EasyBook) e prima aplicație. Planul: `docs/plans/BOOKIN
   - Triggerul `service_guard` ține serviciul într-o categorie activă a aceleiași afaceri.
 - **`listBookableServices`** (intern) e sursa pentru programarea nouă (B.4 / B.5 / BookingNew).
   - Durata variabilă (S123-3, decis 08.11.2026): online se ține liber maximul; echipa îl poate scurta în programare. Se implementează în B.4 / B.5.
-  - „Clienți în același timp” per membru al echipei (S123-6): se decide la B.4.
+  - „Clienți în același timp” per membru al echipei (S123-6): decis la B.4 (D-B4-3 = a), vezi secțiunea B.4a.
 
 ## Membrii în calendar și programul lor (B.2, design S124)
 - **Cine e în calendar** (D-B-1, D-B2-1 = a): membrii activi owner / admin / member care au EasyBook, citit prin `getMemberApplicationAccess` (`@ventora/access`, C.2).
