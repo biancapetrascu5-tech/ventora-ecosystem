@@ -4,6 +4,7 @@
 **Actualizat 06.11.2026:** deciziile fondatoarei despre SMS (D-SMS-8, B.17 în pilot, B.18–B.22-SMS, D-SMS-7), WhatsApp și casa de marcat (§7.1b).
 **Actualizat 06.11.2026:** §2.2 cu componentele de design existente.
 **Actualizat 08.11.2026:** designul catalogului de servicii (S123, `BookingServices`), Lotul B.1-UI și deciziile fondatoarei despre catalog (§7.1c).
+**Actualizat 10.11.2026:** decizia fondatoarei (§7.1d): nu mai există un pilot restrâns. **EasyBook se face complet înainte de primul salon de test** (§5), inclusiv SMS-ul de pe numărul salonului, WhatsApp și E-AMEF. §0, §1, §3 (loturile noi B.33, B.34), §4 (ordinea după dependențe) și §5 (designul care lipsește, condițiile externe) sunt rescrise.
 **Referințe:**
 - `ARCHITECTURE.md` v0.4.9: §3, §5, §5.1–5.2, §6.4–6.5, §8.1–8.5, §11.2–11.6, §12, §13.2, §15.3–15.4, §17.1;
 - `checklists/01-booking.md` (66 de funcționalități confirmate);
@@ -52,11 +53,23 @@ Booking (numele afișat EasyBook, D-UX-4) e prima aplicație a ecosistemului (D-
 - plățile pe programare (Stripe Connect);
 - rapoartele.
 
-**Pilotul (§5, D-B-12)** include deja pagina publică cu captcha, avansul pentru clienții cu „Risc ridicat” prin Stripe Connect și câmpurile medicale. Din 06.11.2026 intră și **reminderul SMS prin SMSLink**, de pe numărul scurt comun (B.17, D-SMS-8). Rămân pe dinafară:
-- **SMS-ul de pe numărul propriu** (7 funcționalități, B.18–B.22-SMS): după E-SMS-1. Validarea juridică (D-SMS-7) se obține înainte de lansare;
-- **WhatsApp:** lot separat, după pilot și după verificarea Meta Business;
-- **casa de marcat cu AMEF:** nu intră în v1. Experimentul E-AMEF vine după pilot;
-- **integrările opționale** (6 funcționalități): așteaptă aplicațiile partenere. Până atunci, Booking rămâne `Pilot`, fără integrări goale (D-B-13).
+**EasyBook complet înainte de primul salon de test (§5, D-B-12 actualizat 10.11.2026).** Nu mai există un pilot restrâns. Înainte ca primul salon de test să folosească EasyBook, se construiesc toate loturile din §3:
+- **ce era deja în pilot:** ecranele de lucru, fișa clientului cu nota, câmpurile medicale, pagina publică cu captcha, e-mailul și SMS-ul prin SMSLink;
+- **intrate acum:**
+  - resursele (B.3) și programările complexe (B.9);
+  - locațiile (C.1 / B.10);
+  - formularele personalizate (B.12);
+  - restul automatizărilor (B.14–B.16);
+  - **SMS-ul de pe numărul salonului** (B.18–B.22-SMS), testat întâi pe telefonul fondatoarei;
+  - încasările (B.21) și **Stripe Connect complet** (B.22: avansuri, depozite, taxa de anulare târzie și de neprezentare);
+  - codurile promoționale (B.23), rapoartele și exportul (B.24);
+  - integrările (B.25–B.30) și asistentul AI (B.31);
+  - **WhatsApp** (B.33), cu numărul de test Meta până la verificarea Ventora Systems;
+  - **E-AMEF** (B.34): aplicația punte spre casa de marcat, testată întâi pe simulator.
+
+**Rămân legate de avizul avocatului** (§6.2): datele medicale reale și nota „Risc ridicat” pe clienți reali. Până atunci, pe salonul de test se folosesc date de test.
+
+Ordinea, după dependențe, e în §4. Condițiile externe și designul care lipsește sunt în §5.
 
 ---
 
@@ -65,9 +78,13 @@ Booking (numele afișat EasyBook, D-UX-4) e prima aplicație a ecosistemului (D-
 - **Plata abonamentului Ventora** (Stripe, SmartBill, planuri): Faza 3 (`core/billing`), nu Booking. Booking doar consumă cotele și dreptul efectiv.
 - **Workflow engine-ul** (D-WF-1…5, Lotul 4.10). Automatizările Booking sunt **setări ale modulului** (D-WF-6): afacerea le pornește, le oprește și le configurează în limitele date de Ventora.
 - **Portal-ul** (aplicația B2C, recenziile, loialitatea). Portal poate iniția o programare **doar prin Booking** (brief §17); Booking nu construiește nimic din Portal.
-- **Gateway-ul și aplicația Android de trimitere SMS:** se aleg prin E-SMS-1 (D-SMS-2). Aici intră doar legarea lor, după experiment.
-- **WhatsApp** (decizia din 06.11.2026): un lot separat, după pilot, după verificarea contului Meta Business. Nu face parte din loturile B.*.
-- **Casa de marcat cu AMEF** (decizia din 06.11.2026): nu intră în v1. Încasările din B.21 sunt evidențe în Booking, nu bonuri fiscale. Integrarea se evaluează prin experimentul **E-AMEF**, după pilot.
+- **Gateway-ul și aplicația Android de trimitere SMS:** se aleg prin E-SMS-1 (D-SMS-2), rulat întâi pe telefonul fondatoarei. Aici intră legarea lor (B.18–B.22-SMS).
+- **Aplicațiile partenere** (CRM, Finance, Marketing, Analytics, Portal, Inventory): au planurile lor. B.25–B.30 leagă doar Booking de contractul lor public (D-B-13, D-B-17).
+- **Casa de marcat însăși:** Ventora nu emite bonuri fiscale. B.34 (E-AMEF) trimite încasarea din B.21 către casa de marcat a salonului, printr-o aplicație punte. Bonul îl emite casa salonului.
+
+**Intrate în plan pe 10.11.2026 (§7.1d)**, înainte excluse:
+- **WhatsApp:** acum Lotul B.33;
+- **E-AMEF:** acum Lotul B.34.
 - **Asistentul AI ca produs:** faza lui e de stabilit după F4 (D-AI-5). Aici intră doar locul lui în Booking (Etapa 6).
 - **Domeniul propriu al salonului pentru pagina publică:** mai târziu, ca pachet (D-B-5).
 - **Migrarea datelor din Hub-ul vechi:** nu există (D-MIG-1).
@@ -115,30 +132,33 @@ Booking (numele afișat EasyBook, D-UX-4) e prima aplicație a ecosistemului (D-
 | `BookingSms*` (7), `SmsAppDownload`, `FounderBusinessSms` | Tot fluxul SMS de pe numărul propriu (`SPEC_ECRANE_SMS.md` §1–§9) |
 | Comune | `Schedule`, `SlotPicker`, `Agenda`, `DataTable`, `UsageMeter`, `UpgradeDialog`, `NotificationsPanel`, `AttentionList`, `Badge`, `StatusPill` |
 
-**Lipsește din design** (de cerut în Claude Design înainte de lotul respectiv; ** = necesar pentru pilot):
-- **programul membrilor**: pauze, zile libere, excepții **;
-- **fișa clientului**: istoricul încasărilor (`BookingClientCard` arată doar suma pe programare și totalul încasat), lista de clienți blocați **;
-- **câmpurile medicale**: jurnalul citirilor **;
-- **pagina publică de rezervare** (`/r/<afacere>`): pagina clientului pentru anulare / mutare (în `BookingClientEmails` există doar linkul) **;
+**Primite după 06.11.2026:** `BookingTeamSchedule` (S124, programul membrilor), `BookingResources` (S124, resursele).
+
+**Lipsește din design** (de cerut în Claude Design înainte de lotul respectiv; lista pe loturi, cu ordinea, e în §5.2):
+- **fișa clientului**: istoricul încasărilor (`BookingClientCard` arată doar suma pe programare și totalul încasat), lista de clienți blocați;
+- **câmpurile medicale**: jurnalul citirilor;
+- **pagina publică de rezervare** (`/r/<afacere>`): pagina clientului pentru anulare / mutare (în `BookingClientEmails` există doar linkul);
 - **programările recurente, cele cu mai multe servicii, listele de așteptare, clasele / grupurile, pachetele de ședințe**;
 - **mai multe locații**: alegerea locației în calendar și la rezervare;
 - **formularele personalizate** la rezervare;
 - **încasările**: rambursările înregistrate din Hub, solduri restante, istoricul financiar pe programare, coduri promoționale (avansul și politica lui de rambursare sunt în `BookingDeposit` și `BookingPayments`);
 - **rapoartele**: ocupare, venituri, anulări / neprezentări, performanță;
 - **automatizările predefinite** și **șabloanele de mesaje**: follow-up, recenzii, notificări interne;
-- **asistentul AI** în Booking.
+- **asistentul AI** în Booking;
+- **WhatsApp**: conectarea numărului, șabloanele, opțiunea clientului (B.33);
+- **casa de marcat (E-AMEF)**: legarea casei, aplicația punte, starea bonului (B.34).
 
 ---
 
 ## 3. Loturile
 
-**Estimările sunt în ore reale măsurate:** 1–2 ore pe lot, cu CI, după viteza loturilor 3.3, 4.1 și 4.2. Un lot mai mare se împarte. Fiecare lot are teste (T1–T2 pe tabelele noi, T3 pe permisiunile noi, T5 unde consumă cote, T6 unde emite evenimente), contracte pe rolurile de runtime și chei i18n în 6 limbi. **[Pilot]** marchează loturile din pilot (§5).
+**Estimările sunt în ore reale măsurate:** 1–2 ore pe lot, cu CI, după viteza loturilor 3.3, 4.1 și 4.2. Un lot mai mare se împarte. Fiecare lot are teste (T1–T2 pe tabelele noi, T3 pe permisiunile noi, T5 unde consumă cote, T6 unde emite evenimente), contracte pe rolurile de runtime și chei i18n în 6 limbi. Din 10.11.2026 toate loturile intră înainte de primul salon de test (§5); marcajul „[Pilot]” a fost scos.
 
 **Regula pachetelor comune (§15.3):** o schimbare în `core/*` sau `packages/ui` intră într-un PR separat, cu testele tuturor modulelor. Loturile `C.*` sunt asemenea PR-uri.
 
 ### Etapa 1 — Calendar, servicii, disponibilitate, programări
 
-#### Lot B.1 — Schema `booking` și catalogul de servicii [Pilot]
+#### Lot B.1 — Schema `booking` și catalogul de servicii
 - **Ce intră:**
   - migrarea `booking_init`: schema, rolul `booking_rw` (`NOINHERIT`), membru al lui `app_runtime`, RLS cu `USING` + `WITH CHECK`;
   - tabelele `service_category` și `service` (durată, preț, durată sau preț variabil, capacitate simultană, arhivare);
@@ -152,7 +172,7 @@ Booking (numele afișat EasyBook, D-UX-4) e prima aplicație a ecosistemului (D-
 - **Gata când:** T1 și T2 pe `service`; un serviciu arhivat nu mai apare la programare nouă, dar rămâne pe programările vechi.
 - **Estimare:** 2 h.
 
-#### Lot B.1-UI — Ecranul catalogului de servicii (`BookingServices`) [Pilot]
+#### Lot B.1-UI — Ecranul catalogului de servicii (`BookingServices`)
 - **Ce intră:**
   - **shell-ul EasyBook** în `apps/platform`: `AppShell`, `Spine` cu secțiunile din design, `ContextBar`, `UsageMeter` (`booking.appointments`). Fără aplicația activă, trimite la `/applications/booking`;
   - **pagina** `/booking/settings/services`, tabul „Servicii” din Setări. Intrarea „Servicii” din Spine deschide aceeași pagină (S123-1); `/booking/services`, `/booking` și `/booking/settings` trimit la ea până la B.6;
@@ -163,12 +183,12 @@ Booking (numele afișat EasyBook, D-UX-4) e prima aplicație a ecosistemului (D-
 - **Gata când:** cele 60 de perechi `_design` / `_impl` (15 cadre × 1280 / 390 × light / dark) sub 2%; acțiunile nu înghit erorile; regula pre-push completă.
 - **Estimare:** 3–4 h.
 
-#### Lot C.0 — Fusul orar al afacerii (Core, PR separat) [Pilot]
+#### Lot C.0 — Fusul orar al afacerii (Core, PR separat)
 - **Ce intră:** fusul orar pe afacere în `core/organizations`, implicit `Europe/Bucharest` (D-B-4), citit prin contract; pe locație mai târziu (C.1).
 - **Migrări:** `organizations_timezone`.
 - **Estimare:** 1 h.
 
-#### Lot B.2 — Membrii în calendar și programul lor [Pilot]
+#### Lot B.2 — Membrii în calendar și programul lor
 - **Ce intră:**
   - **În calendar apar doar membrii afacerii, cu cont** (D-B-1). Fiecare ocupă un loc în echipă (`platform.members`): o decizie comercială, intenționată. Membrul e validat prin contractul `core/organizations` (§6.4 b).
   - Programul săptămânal pe membru, pauzele, zilele libere, excepțiile pe dată.
@@ -190,7 +210,7 @@ Booking (numele afișat EasyBook, D-UX-4) e prima aplicație a ecosistemului (D-
 - **Gata când:** două programări nu folosesc aceeași resursă în același timp, nici la cereri paralele.
 - **Estimare:** 1–2 h.
 
-#### Lot B.4 — Programările și cele 7 stări [Pilot]
+#### Lot B.4 — Programările și cele 7 stări
 - **Ce intră:**
   - **`appointment`**, cu numărul uman unic pe afacere (§6.5);
   - **stările (D-B-11):** neconfirmată, confirmată, în desfășurare, finalizată, anulată, neprezentare, așteaptă plata;
@@ -215,7 +235,7 @@ Booking (numele afișat EasyBook, D-UX-4) e prima aplicație a ecosistemului (D-
   - anularea eliberează intervalul și cota.
 - **Estimare:** 2 h × 2 (B.4a modelul și stările; B.4b concurența, cota, evenimentele).
 
-#### Lot B.5 — Locurile libere [Pilot]
+#### Lot B.5 — Locurile libere
 - **Ce intră:**
   - calculul intervalelor libere: programul membrului, excepțiile, programările existente, resursele, pauza dintre programări, preavizul, fusul afacerii;
   - „Primul loc liber” și „Oricine e liber”;
@@ -225,7 +245,7 @@ Booking (numele afișat EasyBook, D-UX-4) e prima aplicație a ecosistemului (D-
 - **Gata când:** cazurile-limită au teste: zi închisă, pauză, resursă ocupată, schimbarea orei, preaviz.
 - **Estimare:** 2 h.
 
-#### Lot B.6 — Ecranele de lucru (din designul aprobat) [Pilot]
+#### Lot B.6 — Ecranele de lucru (din designul aprobat)
 Construite doar din `packages/ui`, în Light / Dark × 6 limbi, cu T7, T8 și T10; acțiunile nu înghit erorile:
 - **B.6a:** `BookingCalendar` + `BookingDetail` (2 h);
 - **B.6b:** `BookingToday` + `BookingList` + `BookingStates` (2 h);
@@ -234,7 +254,7 @@ Construite doar din `packages/ui`, în Light / Dark × 6 limbi, cu T7, T8 și T1
 
 **Dependențe:** B.4, B.5; shell-ul aplicațiilor din Hub (2.8).
 
-#### Lot B.7 — Fișa clientului și nota de comportament [Pilot]
+#### Lot B.7 — Fișa clientului și nota de comportament
 - **Ce intră (D-B-2):**
   - **Booking are clientul lui:** nume, telefon, e-mail, limba aleasă (D-B-10). CRM îl leagă mai târziu, prin integrare.
   - **Fișa clientului:** istoricul programărilor, istoricul încasărilor (după B.21) și **nota de comportament**.
@@ -259,7 +279,7 @@ Construite doar din `packages/ui`, în Light / Dark × 6 limbi, cu T7, T8 și T1
 - **Estimare:** 2 h × 2 (fișa și blocații; nota).
 - **De stabilit la lot, cu fondatoarea:** ponderile exacte și pragurile etichetelor (D-B-15).
 
-#### Lot B.8 — Câmpurile medicale [Pilot]
+#### Lot B.8 — Câmpurile medicale
 - **Ce intră (D-B-14):**
   - **câmpuri separate** de restul fișei;
   - **criptate**;
@@ -267,7 +287,7 @@ Construite doar din `packages/ui`, în Light / Dark × 6 limbi, cu T7, T8 și T1
   - **jurnal pentru fiecare citire** (audit);
   - **bifa de consimțământ** a clientului, cu data și versiunea textului;
   - **active doar pe afacerile marcate medicale** (D-B-16).
-- **Date medicale reale doar după avizul avocatului** (§6). Până atunci, pilotul folosește date de test.
+- **Date medicale reale doar după avizul avocatului** (§6). Până atunci, salonul de test folosește date de test.
 - **Dependențe:** B.7; marcajul afacerii (D-B-16).
 - **Migrări:** `booking_medical`.
 - **Gata când:**
@@ -301,7 +321,7 @@ Câte un lot de 1–2 h, în ordinea propusă:
 
 ### Etapa 2 — Rezervare publică
 
-#### Lot B.11 — Pagina publică de rezervare [Pilot]
+#### Lot B.11 — Pagina publică de rezervare
 - **Ce intră:**
   - **pagina publică** în `platform`, la `app.ventora-hub.com/r/<afacere>`, plus linkurile directe pe serviciu și pe membru (D-B-5); domeniul propriu mai târziu, ca pachet;
   - **rezervarea fără cont**, cu confirmarea automată a rezervării;
@@ -330,7 +350,7 @@ Câte un lot de 1–2 h, în ordinea propusă:
 
 ### Etapa 3 — Remindere și automatizări
 
-#### Lot B.13 — Confirmarea și reminderul pe e-mail, în limba clientului [Pilot]
+#### Lot B.13 — Confirmarea și reminderul pe e-mail, în limba clientului
 - **Ce intră:**
   - **automatizările predefinite** (setări ale modulului, D-WF-6): confirmarea și reminderul pe e-mail, pornite, oprite și configurate în limitele Ventora;
   - **șabloanele controlate de Ventora**, **în limba aleasă de client**, implicit limba salonului (D-B-10);
@@ -358,7 +378,7 @@ Câte un lot de 1–2 h, în ordinea propusă:
 - **Dependențe:** B.13.
 - **Estimare:** 1 h.
 
-#### Lot B.17 — SMS prin furnizorul Ventora [Pilot]
+#### Lot B.17 — SMS prin furnizorul Ventora
 - **Ce intră:**
   - **adaptorul `SMS_PROVIDER`** în `core/messaging` (PR Core separat), prin interfața `SmsChannel` din 4.3 (D4-26 = a);
   - **textul normalizat** GSM-7, fără diacritice, ≤ 160 de caractere (D-SMS-10);
@@ -370,8 +390,13 @@ Câte un lot de 1–2 h, în ordinea propusă:
 - **Estimare:** 2 h × 2.
 
 #### Loturile B.18–B.22 — SMS de pe numărul propriu (cele 7 funcționalități D-SMS-9)
-Sunt sărite cât timp lipsesc condițiile de mai jos.
-- **Condiții (06.11.2026):** încep **după E-SMS-1** și după ADR-ul cu gateway-ul ales (D-SMS-2). Prețurile vin din D-SMS-4. Validarea juridică (D-SMS-7) se obține **înainte de lansare**, nu înainte de dezvoltare.
+Intră înainte de primul salon de test (§7.1d).
+- **Condiții (actualizat 10.11.2026):**
+  - **E-SMS-1 rulat întâi pe telefonul fondatoarei**: trimiterile, stările și cazurile din `SMS_NUMAR_PROPRIU.md` §7;
+  - ADR-ul cu gateway-ul ales (D-SMS-2);
+  - prețurile din D-SMS-4;
+  - validarea juridică (D-SMS-7), **înainte de lansare**, nu înainte de dezvoltare.
+- **Salonul de test** trimite de pe numărul lui doar după ce fluxul a mers pe telefonul fondatoarei.
 - **Numerotarea:** B.21-SMS și B.22-SMS sunt alte loturi decât B.21 (încasările) și B.22 (Stripe Connect) din Etapa 4.
 - **Loturile:**
   - **B.18:** `ANDROID_SIM` și dispozitivele (QR de unică folosință, credențiala revocabilă E9, cota `booking.sms.devices`);
@@ -392,7 +417,7 @@ Sunt sărite cât timp lipsesc condițiile de mai jos.
 - **Migrări:** `booking_payments`.
 - **Estimare:** 2 h.
 
-#### Lot B.22 — Stripe Connect: avansurile, depozitele, taxa de anulare / neprezentare [Pilot: avansul pentru „Risc ridicat”]
+#### Lot B.22 — Stripe Connect: avansurile, depozitele, taxa de anulare / neprezentare
 - **Ce intră (D-B-7):**
   - **Stripe Connect:** contul Stripe al salonului, conectat din `BookingSettings`, de owner;
   - **plata merge în contul salonului**, cu **comision Ventora opțional** pe plată, setat din Founder;
@@ -400,7 +425,7 @@ Sunt sărite cât timp lipsesc condițiile de mai jos.
   - **pasul de plată** doar când salonul cere avans (D-PN-6) sau când clientul are „Risc ridicat” (D-B-6);
   - **moneda (S123-2):** avansul se încasează în moneda serviciului, chiar dacă afacerea folosește cealaltă monedă;
   - **webhook-urile** Connect idempotente și testate;
-  - **taxa de anulare târzie** și **taxa de neprezentare** (după pilot).
+  - **taxa de anulare târzie** și **taxa de neprezentare** (intră acum, §7.1d).
 - **Dependențe:**
   - B.4, B.11;
   - Lotul 3.5 (SDK-ul Stripe și modelul de webhook, `core/billing`), sau un PR Core separat dacă Booking ajunge întâi;
@@ -413,7 +438,7 @@ Sunt sărite cât timp lipsesc condițiile de mai jos.
   - avansul expirat eliberează intervalul;
   - plata ajunge în contul salonului, cu comisionul corect;
   - un salon fără cont conectat nu poate cere avans.
-- **Estimare:** 2 h × 3 (conectarea contului; plata avansului și saga; webhook-urile și comisionul).
+- **Estimare:** 2 h × 3 (conectarea contului; plata avansului și saga; webhook-urile și comisionul) + 2 h pentru taxa de anulare târzie și de neprezentare.
 
 #### Lot B.23 — Coduri promoționale și reduceri
 - **Dependențe:** B.21; designul lipsește.
@@ -431,6 +456,7 @@ Sunt sărite cât timp lipsesc condițiile de mai jos.
 #### Loturile B.25–B.30 — Integrările opționale
 - **Ce intră:** CRM, Finance, Marketing, Analytics, Portal, Inventory, câte una pe lot, fiecare cu varianta „fără integrare” testată (T4).
 - **Dependențe:** contractul public al aplicației partenere. **Fără integrări goale (D-B-13):** un lot pornește doar când aplicația parteneră există. Portal doar prin Booking (brief §17).
+- **Din 10.11.2026:** sunt în lista de dinaintea primului salon de test (§7.1d). Aplicațiile partenere nu există încă, deci ce se întâmplă cu ele e **NECESITĂ DECIZIE** (D-B-17, §7.2).
 - **Estimare:** 1–2 h fiecare, după aplicația parteneră.
 
 ### Etapa 6 — AI contextual
@@ -438,6 +464,47 @@ Sunt sărite cât timp lipsesc condițiile de mai jos.
 #### Lot B.31 — Asistentul AI în Booking
 - **Ce intră:** prin `authorize()`, cu card de confirmare înainte de orice scriere și audit marcat „prin asistent” (D-AI-1…4). Nu vede câmpurile medicale fără permisiunea `booking:medical`.
 - **Dependențe:** 4.9, D-AI-5, cota `ai.analyses`.
+- **Estimare (PROPUS, 10.11.2026):** 2 h × 2; se precizează după D-AI-5.
+
+### Etapa 7 — Canale și casa de marcat (intrate pe 10.11.2026)
+
+#### Lot B.33 — WhatsApp
+- **Ce intră:**
+  - **adaptorul WhatsApp** în `core/messaging`, ca alt canal în modelul de notificări (D4-7: un canal nou fără schimbarea modelului), printr-un PR Core separat;
+  - **mesajele către client:** confirmarea, reminderul, anularea, mutarea. Se trimit doar ca șabloane aprobate de Meta, în limba clientului (D-B-10);
+  - **opțiunea clientului:** WhatsApp sau SMS / e-mail, cu acordul păstrat;
+  - **cota:** o cheie nouă, `messaging.whatsapp`, în registrul comercial (Faza 3), sau contorizare în `messaging.sms`. **NECESITĂ DECIZIE** la lot;
+  - **stările mesajelor**, fără duplicate (T6), ca la SMS.
+- **Până la verificarea Ventora Systems în Meta Business:** dezvoltarea și testele merg pe **numărul de test Meta**, doar către numerele adăugate ca destinatari de test (telefonul fondatoarei). După verificare, numărul real și șabloanele aprobate.
+- **Dependențe:** B.13 (șabloanele și automatizările); 4.3; contul Meta Business; designul lipsește.
+- **De decis la lot:**
+  - API-ul: WhatsApp Cloud API direct sau un furnizor (BSP);
+  - dacă e nevoie de un pachet nou (de aprobat). Cloud API merge și prin HTTP simplu.
+- **Migrări:** `messaging_whatsapp` (în `core/messaging`).
+- **Gata când:**
+  - un reminder pleacă o singură dată, pe canalul ales;
+  - un client fără acord pentru WhatsApp primește pe celălalt canal;
+  - pe numărul de test, mesajul ajunge pe telefonul fondatoarei.
+- **Estimare (PROPUS):** 2 h × 3 (adaptorul și stările; șabloanele și opțiunea clientului; legarea din Booking și ecranele).
+
+#### Lot B.34 — Casa de marcat (E-AMEF, aplicația punte)
+- **Ce intră:**
+  - **experimentul E-AMEF:** o încasare din Booking („Încasează”, B.21) ajunge la casa de marcat a salonului. Bonul fiscal îl emite casa, nu Ventora;
+  - **aplicația punte:** rulează lângă casa de marcat (pe calculatorul sau telefonul salonului). Preia încasările din Booking printr-o credențială revocabilă a dispozitivului, ca la B.18, și le trimite la casă prin protocolul producătorului;
+  - **starea bonului pe încasare:** trimis, emis sau eșuat, fără dublare la reîncercare (T6);
+  - **întâi pe simulatorul producătorului**, apoi pe o casă reală, la salonul de test.
+- **Dependențe:** B.21; designul lipsește.
+- **De decis la lot (NECESITĂ DECIZIE):**
+  - producătorul / modelul de casă și protocolul (ADR, ca D-SMS-2);
+  - platforma aplicației punte (Windows, Android);
+  - pachetele noi (de aprobat).
+- **Validare:** obligațiile fiscale (ANAF, legislația AMEF) se verifică cu avocatul sau cu contabilul **înainte de folosirea pe o casă reală** (§6.2).
+- **Migrări:** `booking_fiscal` (starea bonului pe încasare, dispozitivele punte).
+- **Gata când:**
+  - pe simulator, o încasare dă un bon, o singură dată, chiar la reîncercare;
+  - o casă deconectată lasă încasarea „neemisă”, vizibilă în Booking;
+  - un dispozitiv revocat nu mai preia nimic.
+- **Estimare (PROPUS):** 2 h × 3, după experiment.
 
 ### Funcțiile comune Ventora (din checklist)
 
@@ -454,63 +521,123 @@ Sunt sărite cât timp lipsesc condițiile de mai jos.
 
 ---
 
-## 4. Ce poate porni imediat și ce așteaptă
+## 4. Ordinea loturilor, după dependențe (actualizat 10.11.2026)
 
-| Poate porni acum | Așteaptă |
-|---|---|
-| **B.1, C.0, B.2–B.7, B.9, B.21** (deciziile de bază sunt luate) | **B.8:** marcajul afacerii medicale (D-B-16); date reale după avizul avocatului |
-| **B.6**, din designul aprobat | **B.11:** designul paginii clientului pentru anulare / mutare; cheile Turnstile |
-| — | **B.13–B.16:** 4.3 (livrarea), 4.4 pentru B.15 |
-| — | **B.22:** 3.5 (SDK-ul Stripe) sau PR Core, Connect activat, URL public (3.9), avizul juridic |
-| **B.17** (D-SMS-8 decis: SMSLink, numărul scurt comun; 4.3 în `main`), după contul SMSLink | — |
-| — | **B.18–B.22-SMS:** E-SMS-1, ADR gateway, D-SMS-4; D-SMS-7 înainte de lansare |
-| — | **WhatsApp:** după pilot și după verificarea Meta Business (lot separat) |
-| — | **Casa de marcat (AMEF):** nu în v1; experimentul E-AMEF după pilot |
-| — | **C.1 / B.10:** după pilot |
-| — | **B.25–B.30:** aplicațiile partenere (D-B-13) |
-| — | **B.31:** 4.9, D-AI-5 |
+**Făcute** (în `main`, 10.11.2026): B.1, B.1-UI, C.0 (cu C.0b–C.0d, codurile de audit), B.2, B.4a, B.4b. Staging: B.1 și B.2 aplicate; `booking_appointments` (B.4) în curs.
+
+| # | Loturile | Depind de | Poate porni |
+|---|---|---|---|
+| 1 | **B.4c** (consumatorul de rambursare a cotei, legat în platformă) → **B.5** (locurile libere) | B.4 | acum |
+| 2 | **B.3a** (catalogul resurselor) → **B.3b** (resursa pe programare, „fără suprapuneri” și pentru resurse, extinde B.5) | B.1, B.4, B.5 | după B.5 (designul: `BookingResources`) |
+| 3 | **B.6a–d** (ecranele de lucru); coloanele de resurse din `BookingCalendar` după B.3b | B.4, B.5 (B.3b) | după B.5 |
+| 4 | **B.7** (fișa clientului, nota, blocații) | B.4 | acum; nota pe clienți reali după aviz |
+| 5 | **B.8** (câmpurile medicale) | B.7; D-B-16 | după D-B-16; date reale după aviz |
+| 6 | **C.1** (locațiile, Core) → **B.10** (locația pe membru, resursă, programare; fusul pe locație) | C.0, B.2, B.3b | după B.3b; înainte de B.11, ca pagina publică să aleagă locația |
+| 7 | **B.9a–e** (mai multe servicii, recurente, liste de așteptare, grupuri, pachete) | B.4–B.7, B.5 | după B.7; design |
+| 8 | **B.11** (pagina publică) → **B.12** (formularele personalizate) | B.5, B.7, B.10 (B.9 pentru serviciile multiple online); B.22 pentru avans | după B.10; design (pagina de anulare / mutare) |
+| 9 | **B.13** (e-mailul) → **B.14** (follow-up, șabloane) → **B.15** (notificări interne) → **B.16** (recenzia) | B.4, B.7; 4.3, 4.4 | după B.7 |
+| 10 | **B.17** (SMS prin SMSLink) | 4.3 | după contul SMSLink |
+| 11 | **B.18 → B.19 → B.20 → B.21-SMS → B.22-SMS** (SMS de pe numărul salonului) | B.17; E-SMS-1 pe telefonul fondatoarei; ADR gateway | după E-SMS-1 |
+| 12 | **B.33** (WhatsApp) | B.13; contul Meta Business | după B.13, pe numărul de test Meta |
+| 13 | **B.21** (încasările) → **B.22** (Stripe Connect complet) → **B.23** (coduri promoționale) | B.4, B.11; 3.5, 3.9 | B.21 acum; B.22 după B.11 și Connect activat |
+| 14 | **B.34** (E-AMEF, aplicația punte) | B.21 | după B.21, pe simulator |
+| 15 | **B.24** (rapoartele, exportul, Excel) | B.4, B.21 (B.3, B.10 pentru ocupare pe resurse și locații) | după B.21 |
+| 16 | **B.25–B.30** (integrările) | aplicațiile partenere (D-B-13) | D-B-17 |
+| 17 | **B.31** (asistentul AI) | 4.9, D-AI-5 | după D-AI-5 |
+| 18 | **B.32** (închiderea: T1–T10 pe tot) | toate | la final |
+
+**În paralel**, unde nu se ating aceleași fișiere: B.7 cu B.6 (un agent pe ecrane, altul pe domeniu), B.13–B.16 cu B.21, B.17 cu B.9. Un agent pe folder, ca până acum.
 
 ---
 
-## 5. Pilotul (D-B-12, DECIS)
+## 5. EasyBook complet înainte de primul salon de test (D-B-12, actualizat 10.11.2026)
 
-**Ce intră:**
-- **ecranele de lucru:** servicii (B.1), membri cu program (C.0, B.2), programări cu cele 7 stări (B.4), locuri libere (B.5), `BookingToday` / `BookingCalendar` / `BookingList` / `BookingNew` / `BookingDetail` / `BookingSettings` (B.6);
-- **fișa clientului cu nota de comportament** și lista de blocați (B.7);
-- **câmpurile medicale** (B.8), cu date de test până la avizul avocatului;
-- **pagina publică cu captcha și limite** (B.11);
-- **avansul pentru „Risc ridicat”** prin Stripe Connect (B.22, partea de avans);
-- **confirmarea și reminderul pe e-mail**, în limba clientului (B.13);
-- **reminderul SMS prin SMSLink**, de pe numărul scurt comun (B.17, D-SMS-8, 06.11.2026).
+**Decizia (10.11.2026):** nu se mai face un pilot restrâns. Primul salon de test primește EasyBook cu toate loturile din §3 (ordinea din §4). Excepțiile țin doar de avize și de conturi externe (§5.3).
 
-**Ce nu intră:** SMS-ul de pe numărul propriu (B.18–B.22-SMS), WhatsApp, casa de marcat cu AMEF, rapoarte, Excel, recurente, clase, pachete, locații multiple, resurse, formulare personalizate, coduri promoționale, integrări, AI.
+### 5.1 Ce intră
 
-**Condiții:**
-- **URL public** (3.9): ruta publică și webhook-urile Stripe;
-- **Resend pe staging:** cheile API;
-- **Stripe Connect** activat pe contul Ventora, cu contul de test al salonului pilot;
-- **abonamentul afacerii pilot**, cu acordul fondatoarei (D3-1);
-- **cheile Turnstile**;
-- **contul SMSLink** și cheile lui (B.17);
-- **designul** ecranelor marcate ** în §2.2;
-- **avizul avocatului** înainte de date medicale reale și înainte de folosirea notei pe clienți reali (§6).
+- **Programările:** servicii (B.1), echipa și programul (C.0, B.2), resursele (B.3), programările cu cele 7 stări (B.4), locurile libere (B.5), ecranele (B.6), programările complexe (B.9), locațiile (C.1, B.10).
+- **Clientul:** fișa, nota de comportament și blocații (B.7), câmpurile medicale (B.8).
+- **Rezervarea publică:** pagina cu captcha și limite (B.11), formularele personalizate (B.12).
+- **Mesajele:**
+  - e-mailul (B.13–B.16);
+  - SMS prin SMSLink (B.17);
+  - **SMS de pe numărul salonului** (B.18–B.22-SMS), testat întâi pe telefonul fondatoarei;
+  - **WhatsApp** (B.33), pe numărul de test Meta până la verificarea Ventora Systems.
+- **Banii:** încasările (B.21), **Stripe Connect complet** (B.22: avans, depozit, taxa de anulare târzie și de neprezentare), codurile promoționale (B.23), **E-AMEF** (B.34), întâi pe simulator.
+- **Restul:** rapoartele și exportul (B.24), integrările (B.25–B.30, D-B-17), asistentul AI (B.31), închiderea T1–T10 (B.32).
 
-**Estimare, în ore reale:**
+**Doar cu date de test până la avizul avocatului:** datele medicale (B.8) și nota „Risc ridicat” pe clienți reali (B.7), cu avansul obligatoriu legat de ea (B.22).
+
+### 5.2 Designul care lipsește, pe loturi
+
+| Lot | Ce lipsește | Există deja |
+|---|---|---|
+| B.3 | — | `BookingResources` (S124), Resursele din `BookingSettings` |
+| B.6 | — | `BookingToday`, `BookingCalendar`, `BookingList`, `BookingNew`, `BookingDetail`, `BookingSettings`, `BookingStates`, `BookingStatuses`, `BookingLimit` |
+| B.7 | istoricul încasărilor pe fișă, lista de clienți blocați | `BookingClientCard` |
+| B.8 | jurnalul citirilor | `BookingHealthFields` |
+| B.9a–e | tot: mai multe servicii, recurente, liste de așteptare, grupuri / clase, pachete | — |
+| B.10 | alegerea locației în calendar, la programare și pe pagina publică; locația pe membru și pe resursă | — |
+| B.11 | pagina clientului pentru anulare / mutare | `BookingPublic`, linkul din `BookingClientEmails` |
+| B.12 | tot: definirea câmpurilor, afișarea la rezervare și pe programare | — |
+| B.14 | automatizările predefinite și șabloanele de mesaje (follow-up, modificare) | `BookingClientEmails` (confirmare, reamintire, anulare, mutare) |
+| B.15 | setările notificărilor interne pentru EasyBook | `NotificationsPanel` |
+| B.16 | setarea linkului de recenzie și mesajul | — |
+| B.18–B.22-SMS | — | `BookingSms*` (7), `SmsAppDownload`, `FounderBusinessSms` |
+| B.33 | tot: conectarea numărului, opțiunea clientului, starea mesajelor, setările | — |
+| B.21 | rambursările înregistrate, soldurile restante, istoricul financiar pe programare | „Încasează” din `BookingDetail` |
+| B.22 | taxa de neprezentare; ecranul taxei reținute | `BookingPayments`, `BookingDeposit`, taxa de anulare târzie din `BookingSettings` |
+| B.23 | tot | — |
+| B.34 | tot: legarea casei, aplicația punte (ecranele ei), starea bonului pe încasare | — |
+| B.24 | tot: ocupare, venituri, anulări / neprezentări, performanță, exportul | — |
+| B.25–B.30 | setările fiecărei integrări (după aplicația parteneră) | — |
+| B.31 | asistentul în EasyBook | componentele AI comune (4.9) |
+
+**Ordinea comenzilor de design** urmează §4: B.9 și B.10, apoi pagina de anulare / mutare (B.11) și B.12, apoi B.14–B.16 și B.33, apoi B.21–B.23 și B.34, apoi B.24.
+
+### 5.3 Condițiile externe care rămân
+
+| Condiția | Pentru | Cine |
+|---|---|---|
+| **Avizul avocatului** (§6.2): datele medicale, nota pe clienți reali, plățile Connect, Turnstile, SMS (D-SMS-7, înainte de lansare), WhatsApp, E-AMEF | B.7, B.8, B.22, B.11, B.18–B.22-SMS, B.33, B.34 | fondatoarea, cu avocatul |
+| **URL public** (3.9): ruta publică și webhook-urile (Stripe, Meta) | B.11, B.22, B.33 | Faza 3 |
+| **Resend pe staging:** cheile API | B.13–B.16 | fondatoarea |
+| **Stripe Connect** activat pe contul Ventora, cu contul de test al salonului; SDK-ul Stripe (3.5) | B.22 | fondatoarea; 3.5 |
+| **Abonamentul afacerii de test**, cu acordul fondatoarei (D3-1) | tot ce consumă cote | fondatoarea |
+| **Cheile Turnstile** | B.11 | fondatoarea |
+| **Contul SMSLink** și cheile lui | B.17 | fondatoarea |
+| **E-SMS-1 pe telefonul fondatoarei**, ADR-ul gateway-ului (D-SMS-2), prețurile (D-SMS-4) | B.18–B.22-SMS | fondatoarea + experimentul |
+| **Contul Meta Business**, numărul de test Meta cu telefonul fondatoarei ca destinatar; **verificarea Ventora Systems** înainte de numărul real; șabloanele aprobate de Meta | B.33 | fondatoarea |
+| **Casa de marcat:** producătorul, simulatorul și documentația protocolului; o casă reală la salonul de test; validarea fiscală | B.34 | fondatoarea + salonul de test |
+| **Marcajul afacerii medicale** (D-B-16) și ponderile notei (D-B-15) | B.8, B.7 | fondatoarea |
+| **Aplicațiile partenere** (D-B-13, D-B-17) | B.25–B.30 | planurile lor |
+| **D-AI-5** (faza asistentului) și 4.9 | B.31 | fondatoarea |
+| **Designul** din §5.2 | loturile respective | Claude Design |
+
+### 5.4 Estimare, în ore reale (ce a rămas, după B.4)
 
 | Loturi | Ore |
 |---|---|
-| B.1 (2), C.0 (1), B.2 (2) | 5 |
-| B.4 (4), B.5 (2) | 6 |
+| B.4c (0,25), B.5 (2–2,5) | 2–3 |
+| B.3a + B.3b | 3 |
 | B.6a–d | 6–8 |
 | B.7 (4), B.8 (4) | 8 |
-| B.11 (6) | 6 |
-| B.22, partea de avans (4–6) | 4–6 |
-| B.13 (4) | 4 |
-| B.17 (2 × 2) | 4 |
-| Închiderea pilotului: T1–T10 pe ce intră (2) | 2 |
-| **Total** | **≈ 45–49 de ore**, adică ~27 de loturi |
+| C.1 (2), B.10 (1–2) | 3–4 |
+| B.9a–e (5 × 1–2) | 5–10 |
+| B.11 (6), B.12 (1–2) | 7–8 |
+| B.13 (4), B.14 (2), B.15 (1), B.16 (1) | 8 |
+| B.17 (4), B.18–B.22-SMS (5 × 1–2) | 9–14 |
+| B.33 WhatsApp (6, PROPUS) | 6 |
+| B.21 (2), B.22 complet (8), B.23 (1–2) | 11–12 |
+| B.34 E-AMEF (6, PROPUS) | 6 |
+| B.24 (5) | 5 |
+| B.25–B.30 (6 × 1–2) | 6–12 |
+| B.31 (4, PROPUS) | 4 |
+| B.32 (2) | 2 |
+| **Total** | **≈ 90–110 ore**, adică ~65 de loturi |
 
-Nu sunt incluse așteptarea deciziilor, designul care lipsește și condițiile externe de mai sus.
+Nu sunt incluse așteptarea deciziilor, designul care lipsește, condițiile externe din §5.3 și experimentele (E-SMS-1, E-AMEF).
 
 ---
 
@@ -525,16 +652,16 @@ Nu sunt incluse așteptarea deciziilor, designul care lipsește și condițiile 
 | **Nota de comportament percepută ca nedreaptă sau scăpată către client** | Opțională, pornită de salon; motivul afișat; vizibilă doar echipei; teste că nu iese pe rute publice sau în e-mailuri; anularea salonului nu contează |
 | **Scurgerea datelor medicale** | Criptare, permisiune separată, jurnal pe fiecare citire, consimțământ versionat, doar pe afacerile marcate (B.8); date reale doar după aviz |
 | **Plăți:** dispute, rambursări, comision | Webhook-uri idempotente; saga cu eliberarea intervalului; comisionul configurabil din Founder |
-| **Volumul:** 66 de funcționalități, ~50 de loturi | Pilotul întâi (§5); loturi de 1–2 h; checklistul rămâne integral în scope |
-| **Designul lipsă** pentru mai mult de jumătate din funcționalități | Comanda de design pe etape (§2.2), cu cele ** întâi |
-| **Dependențe neînchise din F3 / F4:** URL public, Stripe, abonamente, notificări | Pilotul le cere explicit (§5) |
-| **SMS:** E-SMS-1 poate pica; condițiile operatorilor | Procedura din `SMS_NUMAR_PROPRIU.md` §7. Pilotul nu depinde de E-SMS-1: reminderul merge prin SMSLink (B.17). |
-| **WhatsApp:** verificarea Meta Business poate dura sau poate fi refuzată | Lot separat, după pilot; nimic din pilot nu depinde de ea |
-| **Casa de marcat:** saloanele care încasează numerar sau cu cardul la locație au obligații AMEF | Nu în v1: Booking ține evidența încasării, bonul rămâne pe casa salonului. E-AMEF după pilot. |
+| **Volumul:** 66 de funcționalități, ~65 de loturi înainte de primul salon de test | Ordinea după dependențe (§4); loturi de 1–2 h; un agent pe folder, în paralel unde se poate |
+| **Designul lipsă** pentru mai mult de jumătate din funcționalități | Comanda de design pe loturi, în ordinea din §5.2 |
+| **Dependențe neînchise din F3 / F4:** URL public, Stripe, abonamente, notificări | Cerute explicit în §5.3 |
+| **SMS:** E-SMS-1 poate pica; condițiile operatorilor | Procedura din `SMS_NUMAR_PROPRIU.md` §7; E-SMS-1 întâi pe telefonul fondatoarei. Reminderul merge oricum prin SMSLink (B.17). |
+| **WhatsApp:** verificarea Ventora Systems în Meta Business poate dura sau poate fi refuzată | B.33 se dezvoltă și se testează pe numărul de test Meta; e-mailul și SMS-ul nu depind de WhatsApp |
+| **Casa de marcat:** saloanele care încasează numerar sau cu cardul la locație au obligații AMEF | B.34: bonul îl emite casa salonului, prin aplicația punte; întâi pe simulator; validarea fiscală înainte de o casă reală |
 | **Livrarea e-mailurilor către clienți** (spam, cota `messaging.email`) | Domeniul verificat, DMARC (§11.6); cota vizibilă |
 | **Staging fără abonamente** (`AppNotEnabled`) | Abonament de test marcat ca atare, cu acordul fondatoarei |
 
-### 6.2 Întrebări pentru avocat (înainte de pilotul cu date reale)
+### 6.2 Întrebări pentru avocat (înainte de date reale pe salonul de test)
 
 1. **Nota de comportament (profilare, GDPR art. 22 și 21):**
    - care e temeiul legal: interesul legitim al salonului, cu testul de echilibru?
@@ -562,6 +689,10 @@ Nu sunt incluse așteptarea deciziilor, designul care lipsește și condițiile 
    - ce tipuri de afaceri pot fi „marcate medicale”;
    - păstrarea și ștergerea.
 5. **SMS** (deja D-SMS-7): condițiile operatorilor și baza legală pentru remindere.
+6. **WhatsApp (B.33):**
+   - Meta ca persoană împuternicită și transferul în afara UE;
+   - acordul clientului pentru mesaje pe WhatsApp.
+7. **Casa de marcat (B.34):** obligațiile fiscale ale salonului și ale Ventora, când încasarea pleacă din Booking spre AMEF (cu un contabil).
 
 ---
 
@@ -582,7 +713,7 @@ Nu sunt incluse așteptarea deciziilor, designul care lipsește și condițiile 
 | D-B-9 | **a:** cererea de recenzie la linkul salonului (de ex. Google), doar după programare finalizată; Portal mai târziu. | B.16 |
 | D-B-10 | **a:** mesajele către client în limba aleasă de el (implicit limba salonului). | B.7, B.13 |
 | D-B-11 | Stările: neconfirmată, confirmată, în desfășurare, finalizată, anulată (cu cine și cât de târziu), neprezentare, așteaptă plata (cu avansul); finale: finalizată, anulată, neprezentare. | B.4 |
-| D-B-12 | Pilotul din §5. | §5 |
+| D-B-12 | Pilotul din §5. **Înlocuit pe 10.11.2026 (§7.1d):** EasyBook complet înainte de primul salon de test. | §5 |
 | D-B-13 | **a:** Booking rămâne `Pilot` până există aplicațiile partenere; fără integrări goale. | B.25–B.30, §9 |
 | D-B-14 | Câmpuri medicale din prima, construite corect: separate, criptate, vizibile doar rolurilor autorizate, jurnal pentru fiecare citire, bifa de consimțământ (cu data și versiunea textului), active doar pe afacerile marcate medicale. Date medicale reale doar după avizul avocatului. | B.8 |
 
@@ -612,6 +743,16 @@ Nu sunt incluse așteptarea deciziilor, designul care lipsește și condițiile 
 | S123-9 | Intrările din Spine și tabele încă neconstruite apar ca în design și răspund 404 până la loturile lor. | B.1-UI, B.6 |
 | S123-10 | Textele în en / fr / es / de / it: textul românesc, marcat netradus, până la traducere. | B.1-UI |
 
+### 7.1d DECIS (fondatoarea, 10.11.2026): EasyBook complet
+
+| # | Decizie | Unde se aplică |
+|---|---|---|
+| D-B-12 (actualizat) | Nu se mai face un pilot restrâns. EasyBook se face complet înainte de primul salon de test. Intră și: B.3, B.9, C.1 / B.10, B.12, B.14–B.16, B.18–B.22-SMS, B.21, B.22 complet, B.23, B.24, B.25–B.30, B.31, WhatsApp (B.33), E-AMEF (B.34). | §0, §4, §5 |
+| SMS de pe numărul salonului | Testat întâi pe telefonul fondatoarei (E-SMS-1), apoi la salonul de test. Înlocuiește „după pilot” din §7.1b. | B.18–B.22-SMS |
+| WhatsApp | Intră înainte de primul salon de test, cu numărul de test Meta până la verificarea Ventora Systems. Înlocuiește „după pilot” din §7.1b. | B.33 |
+| E-AMEF | Intră înainte de primul salon de test: aplicația punte, testată întâi pe simulator. Înlocuiește „fără AMEF în v1” din §7.1b; bonul rămâne emis de casa salonului. | B.34 |
+| Avizul avocatului | Datele medicale și nota „Risc ridicat” pe clienți reali rămân după aviz. | B.7, B.8, B.22 |
+
 ### 7.2 NECESITĂ DECIZIE (rămase)
 
 | # | Blochează | Întrebare | Variante | Recomandare |
@@ -620,6 +761,9 @@ Nu sunt incluse așteptarea deciziilor, designul care lipsește și condițiile 
 | D-B-16 | B.8 | **Cine marchează o afacere „medicală”** | a) Founder, pe afacere (un câmp în `core/organizations` sau o funcționalitate pe plan); b) salonul, la configurare | **a**: marcajul activează date de categorie specială și trebuie controlat de echipa Ventora. |
 | D-SMS-4 | B.18 (comercial) | Prețurile telefoanelor | — | Existentă. |
 | D-ROAD-1 | B.25–B.30 | Ordinea aplicațiilor după Booking | — | Existentă (§15.3). |
+| D-B-17 | B.25–B.30, primul salon de test | **Integrările**, intrate în lista de dinaintea primului salon (§7.1d), cer aplicațiile partenere, care nu există (D-B-13: fără integrări goale) | a) salonul de test pornește fără B.25–B.30; fiecare integrare intră când aplicația parteneră există (rămâne D-B-13); b) se construiesc întâi aplicațiile partenere (CRM, Finance…), iar salonul de test așteaptă; c) integrări goale, cu varianta „fără integrare” | **a**: celelalte loturi nu depind de ele, iar D-B-13 rămâne valabil. „Complet” înseamnă tot ce nu depinde de o altă aplicație |
+| WA-1 | B.33 | Cota pentru WhatsApp | a) cheie nouă `messaging.whatsapp` (registrul comercial, Faza 3); b) contorizat în `messaging.sms` | De propus la B.33, cu prețurile Meta |
+| AMEF-1 | B.34 | Producătorul / modelul casei de marcat și platforma aplicației punte | ADR după experiment | De propus după E-AMEF pe simulator |
 
 ---
 
@@ -634,7 +778,7 @@ Nu sunt incluse așteptarea deciziilor, designul care lipsește și condițiile 
 | C-B-5 | Limbile | Brief §56: 5 limbi | ARCHITECTURE: 6 limbi (§17.7) | Se respectă 6. |
 | C-B-6 | Numărul de funcționalități | Brief §17: 59 | Checklist: 66 (D-SMS-9) | Checklistul are prioritate. |
 | C-B-7 | Unde rezervă clienții | `PortalPresence`: programări în Portal | Checklist Booking: pagina publică | **Rezolvat (D-B-5):** `/r/<afacere>` în `platform`; Portal mai târziu, doar prin Booking. |
-| C-B-8 | Taxa de anulare târzie | `BookingSettings`: „se reține {suma}” | Cere card sau avans | **Rezolvat (D-B-7):** prin Stripe Connect (B.22), după pilot. |
+| C-B-8 | Taxa de anulare târzie | `BookingSettings`: „se reține {suma}” | Cere card sau avans | **Rezolvat (D-B-7):** prin Stripe Connect (B.22), înainte de primul salon de test (§7.1d). |
 | C-B-9 | Cota de resurse | `booking.resources` „mai târziu” (D3-14) | `BookingSettings` are Resurse | Fără cotă, resursele sunt nelimitate până la declarare. |
 | C-B-10 | Persoanele din calendar | Design `BookingCalendar`: „o coloană pe persoană” | D-B-1: doar membri cu cont | Nu e o contradicție: designul nu cere persoane fără cont. Coloanele sunt membrii. |
 
@@ -665,4 +809,4 @@ Din ARCHITECTURE §5.2, §13.2 și brief §56:
    - teste, documentație (`modules/booking/CLAUDE.md`), observabilitate (erorile în Sentry, cu organizația);
    - fără dependențe comerciale ascunse.
 4. **Avizele juridice din §6.2** obținute înainte de lansarea comercială: profilarea, plățile Connect, subcontractorul captcha, datele medicale, SMS-ul (D-SMS-7, înainte de lansare).
-5. **Ciclul de viață (§5.2):** `In development` → `Internal testing` (după B.32) → `Pilot` (afacerile din pilot) → `Production ready`.
+5. **Ciclul de viață (§5.2):** `In development` → `Internal testing` (după B.32) → `Pilot` (starea din ARCHITECTURE §5.2: primul salon de test și următoarele) → `Production ready`. Starea `Pilot` nu mai înseamnă un pilot restrâns ca funcționalități (§7.1d).
