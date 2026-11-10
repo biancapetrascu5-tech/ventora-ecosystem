@@ -14,6 +14,7 @@ import { getOrganizationTimeZone } from '@ventora/organizations';
 import { commitQuota, releaseQuota, reserveQuota } from '@ventora/quota';
 import { withBookingTx } from './db';
 import { staffFreeAtInOrg } from './availability';
+import { requiredResources } from './resources';
 import { staffDayIntervals, staffEligibility } from './staff';
 import { isUuid, LIMITS } from './validation';
 
@@ -170,6 +171,8 @@ export type AppointmentDetail = {
   /** BookingDetail: the last 3, then „Vezi tot istoricul”. */
   history: AppointmentHistoryItem[];
   historyCount: number;
+  /** B.3b: the resources the appointment uses (one unit each). */
+  resourceIds: string[];
 };
 
 export type TimeBlock = {
@@ -423,11 +426,13 @@ function history(
   );
 }
 
-type PgError = { code?: string; constraint?: string };
+type PgError = { code?: string; constraint?: string; hint?: string };
 
 /** The database's answer to a race the contract could not see, as the contract's own errors. */
 function translate(err: unknown): never {
   const e = err as PgError;
+  // B.3b: no free unit of a resource the service needs (check_resource_free, hint 'resource')
+  if (e?.code === '23P01' && e.hint === 'resource') throw new Conflict('resource_unavailable');
   if (e?.code === '23P01') throw new Conflict('appointment_overlap');
   if (e?.code === '23514' && typeof (err as Error).message === 'string') {
     const m = (err as Error).message;
@@ -1001,6 +1006,8 @@ export async function createAppointmentInOrg(
         throw new InvalidInput('durationMinutes', 'invalid');
       }
       const endsAt = new Date(startsAt.getTime() + duration * 60_000);
+      // B.3b: the active resources the service needs (an archived one is not required, S124)
+      const resources = await requiredResources(client, serviceId);
       if (choice !== 'any') {
         await requireWithinSchedule(client, timeZone, choice, startsAt, endsAt);
       }
@@ -1068,6 +1075,16 @@ export async function createAppointmentInOrg(
             ctx.userId,
           ],
         );
+        // B.3b: one unit of every resource, in the same transaction (the trigger checks it)
+        if (rows[0]) {
+          for (const r of resources) {
+            await db.query(
+              `INSERT INTO booking.appointment_resource (id, organization_id, appointment_id, resource_id)
+               VALUES ($1, $2, $3, $4)`,
+              [uuidv7(), ctx.organizationId, id, r.id],
+            );
+          }
+        }
         return { number, row: rows[0] };
       };
 
@@ -1082,9 +1099,11 @@ export async function createAppointmentInOrg(
           }
           inserted = await insertAppointmentRow(client, staffMemberId, staff.display_name);
         } catch (err) {
-          const code = (err as { code?: string })?.code;
+          const pg = err as PgError;
+          // the member's time was taken; a resource with no free unit is the same for everyone
           const taken =
-            code === '23P01' || (err instanceof Conflict && err.message === 'staff_unavailable');
+            (pg?.code === '23P01' && pg.hint !== 'resource') ||
+            (err instanceof Conflict && err.message === 'staff_unavailable');
           if (choice === 'any' && taken) {
             await client.query('ROLLBACK TO SAVEPOINT pick_staff');
             continue;
@@ -1110,6 +1129,7 @@ export async function createAppointmentInOrg(
           startsAt: startsAt.toISOString(),
           durationMinutes: duration,
           status,
+          ...(resources.length ? { resourceIds: resources.map((r) => r.id) } : {}),
         });
         await writeOutboxEvent(client, 'booking', BookingAppointmentCreatedV1, {
           organizationId: ctx.organizationId,
@@ -1516,10 +1536,18 @@ export async function getAppointmentInOrg(
           [id, APPOINTMENT_LIMITS.historyPreview],
         )
       ).rows;
+      const resourceIds = (
+        await client.query<{ resource_id: string }>(
+          `SELECT resource_id FROM booking.appointment_resource
+            WHERE appointment_id = $1 ORDER BY resource_id`,
+          [id],
+        )
+      ).rows.map((r) => r.resource_id);
       return {
         appointment: toAppointment(row),
         history: items.map(toHistory),
         historyCount: items[0] ? Number(items[0].total) : 0,
+        resourceIds,
       };
     },
     true,

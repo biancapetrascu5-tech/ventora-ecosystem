@@ -5,6 +5,7 @@ import { getOrganizationTimeZone } from '@ventora/organizations';
 import { withBookingTx } from './db';
 import { daysBetween, eachDate, requireLocalDate, type Interval } from './schedule';
 import { ceilToStep, hhmm, isFreeAt, memberSlots, type Busy, type SlotRules } from './slots';
+import { requiredResources } from './resources';
 import { readCalendarStaff, staffEligibility, staffLocalDays, type CalendarStaff } from './staff';
 import { isUuid, LIMITS } from './validation';
 
@@ -280,6 +281,33 @@ async function load(
         }
       }
 
+      // B.3b (D-B5-8 = a): the resources the service needs and what uses them (any member)
+      const resources = await requiredResources(client, serviceId);
+      const resourceBusy = new Map<string, Array<{ startMin: number; endMin: number }>>();
+      if (resources.length > 0) {
+        const uses = (
+          await client.query<{ resource_id: string; ls: string; le: string }>(
+            `SELECT ar.resource_id,
+                    to_char(a.starts_at AT TIME ZONE $4, 'YYYY-MM-DD"T"HH24:MI') AS ls,
+                    to_char(a.ends_at AT TIME ZONE $4, 'YYYY-MM-DD"T"HH24:MI') AS le
+               FROM booking.appointment_resource ar
+               JOIN booking.appointment a ON a.id = ar.appointment_id
+              WHERE ar.resource_id = ANY($1::uuid[]) AND a.status = ANY($5::text[])
+                AND a.starts_at < (($3::date + 2)::timestamp AT TIME ZONE $4)
+                AND a.ends_at > (($2::date - 1)::timestamp AT TIME ZONE $4)`,
+            [resources.map((r) => r.id), from, to, timeZone, OCCUPYING],
+          )
+        ).rows;
+        for (const u of uses) {
+          for (const p of piecesByDate(u.ls, u.le, from, to)) {
+            const key = `${u.resource_id}|${p.date}`;
+            const list = resourceBusy.get(key) ?? [];
+            list.push({ startMin: p.startMin, endMin: p.endMin });
+            resourceBusy.set(key, list);
+          }
+        }
+      }
+
       const days: MemberDay[] = local.map((d) => {
         const key = `${d.staffMemberId}|${d.date}`;
         return {
@@ -294,6 +322,10 @@ async function load(
             capacity: service.capacity,
             bufferMin: settings.buffer_min,
             earliestMin: d.date < e.date ? 1441 : d.date === e.date ? earliestMinute : null,
+            resources: resources.map((r) => ({
+              units: r.units,
+              busy: resourceBusy.get(`${r.id}|${d.date}`) ?? [],
+            })),
           },
         };
       });
@@ -529,7 +561,8 @@ export async function staffFreeAtInOrg(
   );
   // a past time stays allowed for the team, as for a chosen member (B.4a)
   const free = loaded.days.filter((d) =>
-    isFreeAt(d.intervals, d.busy, { ...d.rules, earliestMin: null }, local.minute),
+    // the resources are checked when the appointment is written (Conflict resource_unavailable)
+    isFreeAt(d.intervals, d.busy, { ...d.rules, earliestMin: null, resources: [] }, local.minute),
   );
   const loadOf = new Map(free.map((d) => [d.staffMemberId, d.load]));
   return byLoad(

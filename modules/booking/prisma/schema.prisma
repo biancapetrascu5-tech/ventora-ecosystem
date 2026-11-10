@@ -288,6 +288,7 @@ model Appointment {
   service     Service              @relation(fields: [serviceId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "appointment_service_id_fkey")
   client      Client               @relation(fields: [clientId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "appointment_client_id_fkey")
   history     AppointmentHistory[]
+  resources   AppointmentResource[]
 
   @@unique([organizationId, number], map: "appointment_organization_id_number_key")
   @@index([organizationId, startsAt], map: "appointment_organization_id_starts_idx")
@@ -355,7 +356,8 @@ model Resource {
   createdAt        DateTime  @default(now()) @map("created_at") @db.Timestamptz
   updatedAt        DateTime  @default(now()) @map("updated_at") @db.Timestamptz
 
-  services ServiceResource[]
+  services     ServiceResource[]
+  appointments AppointmentResource[]
 
   @@index([organizationId, sortOrder], map: "resource_organization_id_sort_idx")
   @@map("resource")
@@ -380,5 +382,22 @@ model ServiceResource {
   @@index([serviceId], map: "service_resource_service_id_idx")
   @@index([resourceId], map: "service_resource_resource_id_idx")
   @@map("service_resource")
+  @@schema("booking")
+}
+
+/// Lot B.3b: a resource used by an appointment (one unit); insert only.
+model AppointmentResource {
+  id             String   @id @db.Uuid
+  organizationId String   @map("organization_id") @db.Uuid
+  appointmentId  String   @map("appointment_id") @db.Uuid
+  resourceId     String   @map("resource_id") @db.Uuid
+  createdAt      DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  appointment Appointment @relation(fields: [appointmentId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "appointment_resource_appointment_id_fkey")
+  resource    Resource    @relation(fields: [resourceId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "appointment_resource_resource_id_fkey")
+
+  @@unique([appointmentId, resourceId], map: "appointment_resource_appointment_id_resource_id_key")
+  @@index([resourceId], map: "appointment_resource_resource_id_idx")
+  @@map("appointment_resource")
   @@schema("booking")
 }
