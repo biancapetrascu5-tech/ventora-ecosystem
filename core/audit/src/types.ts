@@ -75,7 +75,11 @@ export type AuditTargetType =
   // Lot C.4 / CR.2: the ClientDesk contacts, companies and preferences (category crm)
   | 'crm_contact'
   | 'crm_company'
-  | 'crm_settings';
+  | 'crm_settings'
+  // Lot C.4b / CR.3–CR.4: the own fields, the tags, the segments (category crm)
+  | 'crm_custom_field'
+  | 'crm_tag'
+  | 'crm_segment';
 
 export type AuditEvent = {
   category: AuditCategory;

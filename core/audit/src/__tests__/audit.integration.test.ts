@@ -376,6 +376,20 @@ describe('TA.11 — invalid input rejected by the database', () => {
       [AuditActions.crmCompanyDeleted, 'crm_company'],
       [AuditActions.crmCompanyRestored, 'crm_company'],
       [AuditActions.crmSettingsUpdated, 'crm_settings'],
+      // C.4b / CR.3–CR.4
+      [AuditActions.crmCustomFieldCreated, 'crm_custom_field'],
+      [AuditActions.crmCustomFieldUpdated, 'crm_custom_field'],
+      [AuditActions.crmCustomFieldDeleted, 'crm_custom_field'],
+      [AuditActions.crmCustomFieldRestored, 'crm_custom_field'],
+      [AuditActions.crmTagCreated, 'crm_tag'],
+      [AuditActions.crmTagUpdated, 'crm_tag'],
+      [AuditActions.crmTagMerged, 'crm_tag'],
+      [AuditActions.crmTagDeleted, 'crm_tag'],
+      [AuditActions.crmContactTagged, 'crm_contact'],
+      [AuditActions.crmContactUntagged, 'crm_contact'],
+      [AuditActions.crmSegmentCreated, 'crm_segment'],
+      [AuditActions.crmSegmentUpdated, 'crm_segment'],
+      [AuditActions.crmSegmentDeleted, 'crm_segment'],
     ];
     for (const [action, targetType] of cases) {
       const id = await writeAuditEvent(
