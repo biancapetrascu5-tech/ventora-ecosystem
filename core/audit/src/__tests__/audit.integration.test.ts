@@ -390,6 +390,9 @@ describe('TA.11 — invalid input rejected by the database', () => {
       [AuditActions.crmSegmentCreated, 'crm_segment'],
       [AuditActions.crmSegmentUpdated, 'crm_segment'],
       [AuditActions.crmSegmentDeleted, 'crm_segment'],
+      // Lot C.5: the consent recorded / withdrawn by a team member
+      [AuditActions.crmConsentRecorded, 'crm_contact'],
+      [AuditActions.crmConsentWithdrawn, 'crm_contact'],
       // C.4c / CR.5–CR.9
       [AuditActions.crmContactMerged, 'crm_contact'],
       [AuditActions.crmDuplicateDismissed, 'crm_duplicate'],
