@@ -282,3 +282,29 @@ export type {
   ManageState,
   MoveRefusal,
 } from './manage';
+
+// Lot B.12: the questions at booking (BookingCustomForms, S127)
+export {
+  listFormQuestions,
+  createFormQuestion,
+  updateFormQuestion,
+  archiveFormQuestion,
+  reorderFormQuestions,
+  getAppointmentAnswers,
+  saveAppointmentAnswers,
+} from './forms';
+export type {
+  FormQuestionFields,
+  ListFormQuestionsParams,
+  CreateFormQuestionParams,
+  UpdateFormQuestionParams,
+  FormQuestionIdParams,
+  ReorderFormQuestionsParams,
+  AppointmentAnswersParams,
+  SaveAppointmentAnswersParams,
+  AppointmentAnswer,
+  FormAnswerValue,
+  FormQuestion,
+  FormQuestionKind,
+} from './forms';
+export type { PublicFormQuestion } from '../server/forms';

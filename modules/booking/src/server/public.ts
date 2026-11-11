@@ -8,6 +8,15 @@ import { deliverEmail } from '@ventora/notifications';
 import { findPublicOrganization, listLocations } from '@ventora/organizations';
 import { makePublicContext } from './actor';
 import {
+  activeQuestions,
+  questionsForService,
+  toPublicQuestion,
+  validateAnswers,
+  writeAnswers,
+  type FormAnswer,
+  type PublicFormQuestion,
+} from './forms';
+import {
   createAppointmentInOrg,
   getBookingSettingsInOrg,
   normalizePublicContact,
@@ -125,6 +134,11 @@ export type PublicBookingPage = {
     /** The members bookable online who do it, in the team's order. */
     staff: Array<{ id: string; displayName: string }>;
   }>;
+  /**
+   * B.12: the salon's questions, in order („Câteva întrebări de la salon”); the page shows at the
+   * details step only those of the chosen service (serviceIds null = every service).
+   */
+  questions: PublicFormQuestion[];
 };
 
 export async function getPublicBookingPage(slug: unknown): Promise<PublicBookingPage> {
@@ -185,11 +199,18 @@ export async function getPublicBookingPage(slug: unknown): Promise<PublicBooking
     },
     true,
   );
+  const shown = new Set(services.map((s) => s.id));
+  const questions = (
+    await withBookingTx(p.ctx.organizationId, (client) => activeQuestions(client), true)
+  )
+    .filter((q) => q.serviceIds === null || q.serviceIds.some((id) => shown.has(id)))
+    .map(toPublicQuestion);
   return {
     name: p.name,
     timeZone: p.timeZone,
     locations: locations.map((l) => ({ id: l.id, name: l.name, address: l.address })),
     services,
+    questions,
   };
 }
 
@@ -227,6 +248,8 @@ export type StartPublicBookingInput = {
   email: unknown;
   locale?: unknown;
   message?: unknown;
+  /** B.12: the answers to the questions of the service ({ questionId, value }). */
+  answers?: unknown;
   /** The Turnstile token from the page. */
   captchaToken: unknown;
   /** The caller's IP, from the request (never from the body). */
@@ -278,7 +301,8 @@ export async function settleExpired(client: PoolClient): Promise<number> {
   const res = await client.query(
     `UPDATE booking.public_hold
         SET state = 'expired', settled_at = now(),
-            client_name = NULL, client_phone = NULL, client_email = NULL, message = NULL
+            client_name = NULL, client_phone = NULL, client_email = NULL, message = NULL,
+            answers = NULL
       WHERE state = 'pending' AND expires_at <= now()`,
   );
   return res.rowCount ?? 0;
@@ -293,7 +317,8 @@ export async function settle(
   await client.query(
     `UPDATE booking.public_hold
         SET state = $2, appointment_id = $3, settled_at = now(),
-            client_name = NULL, client_phone = NULL, client_email = NULL, message = NULL
+            client_name = NULL, client_phone = NULL, client_email = NULL, message = NULL,
+            answers = NULL
       WHERE id = $1 AND state = 'pending'`,
     [holdId, state, appointmentId],
   );
@@ -416,6 +441,17 @@ export async function startPublicBooking(
     .flatMap((d) => d.slots)
     .find((s) => s.available && s.startsAt.getTime() === startsAt.getTime());
   if (!slot) throw new Conflict('slot_taken');
+  // B.12: the answers to the questions of this service (a required one left empty: InvalidInput)
+  const serviceId = input.serviceId as string;
+  const answers = validateAnswers(
+    await withBookingTx(
+      ctx.organizationId,
+      (client) => questionsForService(client, serviceId, 'public'),
+      true,
+    ),
+    input.answers,
+    true,
+  );
   const staffMemberId =
     input.staffMemberId === 'any' ? slot.staffMemberIds?.[0] : (input.staffMemberId as string);
   if (!staffMemberId) throw new Conflict('slot_taken');
@@ -450,7 +486,8 @@ export async function startPublicBooking(
     await client.query(
       `UPDATE booking.public_hold
           SET state = 'expired', settled_at = now(),
-              client_name = NULL, client_phone = NULL, client_email = NULL, message = NULL
+              client_name = NULL, client_phone = NULL, client_email = NULL, message = NULL,
+            answers = NULL
         WHERE email_hash = $1 AND state = 'pending'`,
       [emailHash],
     );
@@ -458,9 +495,9 @@ export async function startPublicBooking(
       `INSERT INTO booking.public_hold
          (id, organization_id, staff_member_id, service_id, location_id, starts_at, ends_at,
           duration_minutes, client_name, client_phone, client_email, client_locale, message,
-          email_hash, ip_hash, code_hash, expires_at)
+          email_hash, ip_hash, code_hash, expires_at, answers)
        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16,
-               now() + make_interval(mins => $17))
+               now() + make_interval(mins => $17), $18)
        RETURNING expires_at`,
       [
         holdId,
@@ -480,6 +517,7 @@ export async function startPublicBooking(
         ipHash,
         codeHash(holdId, code),
         PUBLIC_LIMITS.holdMinutes,
+        answers.length > 0 ? JSON.stringify(answers) : null,
       ],
     );
     return rows[0]!;
@@ -505,6 +543,8 @@ export type HoldRow = {
   client_email: string | null;
   client_locale: ClientLocale;
   message: string | null;
+  /** B.12: the answers, while pending */
+  answers: FormAnswer[] | null;
   /** null only for a move hold (B.11b), never read here */
   code_hash: string | null;
   attempts: number;
@@ -515,8 +555,8 @@ export type HoldRow = {
 };
 
 const HOLD_COLUMNS = `id, staff_member_id, service_id, location_id, starts_at, client_name,
-  client_phone, client_email, client_locale, message, code_hash, attempts, sends, last_sent_at,
-  expires_at, state`;
+  client_phone, client_email, client_locale, message, answers, code_hash, attempts, sends,
+  last_sent_at, expires_at, state`;
 
 function requireHoldId(value: unknown): string {
   if (!isUuid(value)) throw new ResourceNotFound();
@@ -630,6 +670,10 @@ export async function verifyPublicBooking(
     throw err;
   }
   const manageToken = await withBookingTx(ctx.organizationId, async (c) => {
+    // B.12: the answers go to the booking before the hold (and its copy of them) is wiped
+    if (hold.answers?.length) {
+      await writeAnswers(c, ctx.organizationId, appointment.id, hold.answers, { source: 'client' });
+    }
     await settle(c, holdId, 'confirmed', appointment.id);
     return issueManageToken(c, ctx.organizationId, appointment.id);
   });

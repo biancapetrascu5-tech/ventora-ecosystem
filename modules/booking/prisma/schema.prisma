@@ -324,6 +324,7 @@ model Appointment {
   resources   AppointmentResource[]
   manageTokens ManageToken[]
   moveHolds   PublicHold[]
+  answers     AppointmentAnswer[]
 
   @@unique([organizationId, number], map: "appointment_organization_id_number_key")
   @@unique([organizationId, id], map: "appointment_organization_id_id_key")
@@ -642,6 +643,8 @@ model PublicHold {
   createdAt       DateTime  @default(now()) @map("created_at") @db.Timestamptz
   /// B.11b: the booking being moved by its client (the old time stays theirs until they confirm)
   moveAppointmentId String? @map("move_appointment_id") @db.Uuid
+  /// B.12: the answers to the questions, while the hold is pending (wiped when it settles)
+  answers           Json?
 
   staffMember     StaffMember  @relation(fields: [staffMemberId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "public_hold_staff_member_id_fkey")
   service         Service      @relation(fields: [serviceId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "public_hold_service_id_fkey")
@@ -667,5 +670,54 @@ model ManageToken {
 
   @@index([appointmentId], map: "manage_token_appointment_id_idx")
   @@map("manage_token")
+  @@schema("booking")
+}
+
+/// Lot B.12: the questions at booking (BookingCustomForms, S127)
+model FormQuestion {
+  id               String    @id @db.Uuid
+  organizationId   String    @map("organization_id") @db.Uuid
+  label            String    @db.VarChar(160)
+  kind             String    @db.VarChar(10)
+  options          Json?
+  helpText         String?   @map("help_text") @db.VarChar(240)
+  serviceIds       String[]  @map("service_ids") @db.Uuid
+  required         Boolean   @default(false)
+  inHub            Boolean   @default(false) @map("in_hub")
+  sortOrder        Int       @default(0) @map("sort_order")
+  archivedAt       DateTime? @map("archived_at") @db.Timestamptz
+  archivedByUserId String?   @map("archived_by_user_id") @db.Uuid
+  createdByUserId  String    @map("created_by_user_id") @db.Uuid
+  createdAt        DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt        DateTime  @default(now()) @map("updated_at") @db.Timestamptz
+
+  answers AppointmentAnswer[]
+
+  @@unique([organizationId, id], map: "form_question_organization_id_id_key")
+  @@index([organizationId, sortOrder], map: "form_question_organization_id_sort_idx")
+  @@map("form_question")
+  @@schema("booking")
+}
+
+/// Lot B.12: one answer per booking and question (wiped by the GDPR erasure)
+model AppointmentAnswer {
+  id              String    @id @db.Uuid
+  organizationId  String    @map("organization_id") @db.Uuid
+  appointmentId   String    @map("appointment_id") @db.Uuid
+  questionId      String    @map("question_id") @db.Uuid
+  questionLabel   String    @map("question_label") @db.VarChar(160)
+  value           Json?
+  source          String    @db.VarChar(6)
+  updatedByUserId String?   @map("updated_by_user_id") @db.Uuid
+  wipedAt         DateTime? @map("wiped_at") @db.Timestamptz
+  createdAt       DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt       DateTime  @default(now()) @map("updated_at") @db.Timestamptz
+
+  appointment Appointment  @relation(fields: [organizationId, appointmentId], references: [organizationId, id], onDelete: Restrict, onUpdate: Restrict, map: "appointment_answer_appointment_fkey")
+  question    FormQuestion @relation(fields: [organizationId, questionId], references: [organizationId, id], onDelete: Restrict, onUpdate: Restrict, map: "appointment_answer_question_fkey")
+
+  @@unique([appointmentId, questionId], map: "appointment_answer_appointment_id_question_id_key")
+  @@index([questionId], map: "appointment_answer_question_id_idx")
+  @@map("appointment_answer")
   @@schema("booking")
 }

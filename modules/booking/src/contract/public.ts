@@ -16,7 +16,7 @@ import type { FreeSlots } from '../server/availability';
  * Lot B.11a — the public contract of the booking page (app.ventora-hub.com/r/<slug>), without a
  * session: the business comes only from the slug. The route passes the caller's IP from the
  * request, never from the body. Errors: ResourceNotFound (slug, hold); InvalidInput (captcha,
- * name / phone / email / message, startsAt, code: invalid | wrong:<tries left>); Conflict
+ * name / phone / email / message, startsAt, answers (B.12), code: invalid | wrong:<tries left>); Conflict
  * (slot_taken — also for a blocked client, who is never told why —, rate_limited, code_expired,
  * too_many_attempts, resend_too_soon, too_many_sends, email_not_delivered); QuotaExceeded.
  */
@@ -41,6 +41,8 @@ export type StartPublicBookingParams = {
   email: string;
   locale?: 'ro' | 'en' | 'fr' | 'es' | 'de' | 'it';
   message?: string | null;
+  /** B.12: the answers to the questions of the service; a required one left empty → InvalidInput. */
+  answers?: Array<{ questionId: string; value: string | string[] | number | null }>;
   captchaToken: string;
   ip: string | null;
 };
