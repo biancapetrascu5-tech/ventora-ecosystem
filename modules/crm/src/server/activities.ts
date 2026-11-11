@@ -473,8 +473,8 @@ export async function createActivityInOrg(
           meeting_place, participant_user_ids, outcome, status, done_at, done_by_user_id,
           created_by_user_id)
        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10::date, $11, $12, $13, $14, $15, $16,
-               $17::uuid[], $18, $19, CASE WHEN $19 = 'done' THEN now() END,
-               CASE WHEN $19 = 'done' THEN $20::uuid END, $20)
+               $17::uuid[], $18, $19::varchar, CASE WHEN $19::varchar = 'done' THEN now() END,
+               CASE WHEN $19::varchar = 'done' THEN $20::uuid END, $20)
        RETURNING ${ACTIVITY_COLUMNS}`,
       [
         uuidv7(),
