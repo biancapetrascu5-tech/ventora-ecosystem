@@ -22,6 +22,7 @@ import {
 } from '@ventora/commercial';
 import './billing-config';
 import { bookingQuotaRefundConsumer, runPublicHoldCleanupJob } from '@ventora/booking';
+import { runCrmBinJob } from '@ventora/crm';
 import {
   growthConversionConsumer,
   growthSignalConsumer,
@@ -284,6 +285,25 @@ export const platformJobs = new JobRegistry()
         );
       }
       return { ...report, failed: 0 };
+    },
+  })
+  // ClientDesk (decizia din 11.11.2026): un contact cu peste 30 de zile în coș se anonimizează, ca
+  // booking.erase_client; fiecare în contextul afacerii lui; unul care eșuează nu le oprește pe celelalte.
+  .register({
+    id: 'crm.bin-anonymize',
+    owner: 'CRM coș',
+    description: 'Anonimizarea contactelor ClientDesk după 30 de zile în coș',
+    trigger: { cron: '30 3 * * *' },
+    run: async () => {
+      const report = await runCrmBinJob();
+      if (report.failed.length) {
+        throw new AggregateError(
+          report.failed.map((f) => f.error),
+          `[crm] ${report.failed.length} contacts not anonymised: ` +
+            report.failed.map((f) => f.contactId).join(', '),
+        );
+      }
+      return report;
     },
   })
   // Declarate; logica vine în lotul fiecăruia, cu platformJobs.attach(id, run).
