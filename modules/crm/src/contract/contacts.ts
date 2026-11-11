@@ -44,6 +44,25 @@ import {
 } from '../server/attachments';
 import { getTimelineInOrg, type TimelineItem } from '../server/timeline';
 import {
+  assignLeadInOrg,
+  convertLeadInOrg,
+  countLeadsInOrg,
+  createLeadInOrg,
+  deleteLeadInOrg,
+  disqualifyLeadInOrg,
+  getLeadInOrg,
+  listLeadsInOrg,
+  reopenLeadInOrg,
+  setLeadStateInOrg,
+  updateLeadInOrg,
+  type DisqualifyReason,
+  type Lead,
+  type LeadInput,
+  type LeadSource,
+  type LeadState,
+  type ListLeadsParams,
+} from '../server/leads';
+import {
   createActivityInOrg,
   deleteActivityInOrg,
   getActivityInOrg,
@@ -562,7 +581,93 @@ export async function listActivities(params: Session & ListActivitiesParams): Pr
   return listActivitiesInOrg(ctx, scope, params);
 }
 
+// ── CR.8: the leads (D-CRM-3, S131) ───────────────────────────────────────────────────────────
+
+/** „Lead nou”: no unit of crm.contacts until converted. */
+export async function createLead(
+  params: Session & LeadInput & { ownerUserId?: unknown },
+): Promise<Lead> {
+  const { ctx, scope } = await access(params, 'crm:write');
+  return createLeadInOrg(ctx, scope, params);
+}
+
+export async function updateLead(params: Session & LeadInput & { leadId: string }): Promise<Lead> {
+  const { ctx, scope } = await access(params, 'crm:write');
+  return updateLeadInOrg(ctx, scope, params.leadId, params);
+}
+
+/** „Responsabil” / „Ia leadul”. */
+export async function assignLead(
+  params: Session & { leadId: string; ownerUserId: string | null },
+): Promise<Lead> {
+  const { ctx, scope } = await access(params, 'crm:write');
+  return assignLeadInOrg(ctx, scope, params.leadId, params.ownerUserId);
+}
+
+/** „Contactat” / „Calificat” / „Nou”. */
+export async function setLeadState(
+  params: Session & { leadId: string; state: unknown },
+): Promise<Lead> {
+  const { ctx, scope } = await access(params, 'crm:write');
+  return setLeadStateInOrg(ctx, scope, params.leadId, params.state);
+}
+
+export async function disqualifyLead(
+  params: Session & { leadId: string; reason: unknown; note?: unknown },
+): Promise<Lead> {
+  const { ctx, scope } = await access(params, 'crm:write');
+  return disqualifyLeadInOrg(ctx, scope, params.leadId, params);
+}
+
+/** „Redeschide leadul”. */
+export async function reopenLead(params: Session & { leadId: string }): Promise<Lead> {
+  const { ctx, scope } = await access(params, 'crm:write');
+  return reopenLeadInOrg(ctx, scope, params.leadId);
+}
+
+/** „Convertește”: a new contact (QuotaExceeded at the limit) or the existing `contactId`. */
+export async function convertLead(
+  params: Session & {
+    leadId: string;
+    contactId?: unknown;
+    name?: unknown;
+    phone?: unknown;
+    email?: unknown;
+  },
+): Promise<{ lead: Lead; contact: { id: string; created: boolean } }> {
+  const { ctx, scope } = await access(params, 'crm:write');
+  return convertLeadInOrg(ctx, scope, params.leadId, params);
+}
+
+export async function deleteLead(params: Session & { leadId: string }): Promise<Lead> {
+  const { ctx, scope } = await access(params, 'crm:write');
+  return deleteLeadInOrg(ctx, scope, params.leadId);
+}
+
+export async function getLead(params: Session & { leadId: string }): Promise<Lead> {
+  const { ctx, scope } = await access(params, 'crm:read');
+  return getLeadInOrg(ctx, scope, params.leadId);
+}
+
+export async function listLeads(params: Session & ListLeadsParams): Promise<Lead[]> {
+  const { ctx, scope } = await access(params, 'crm:read');
+  return listLeadsInOrg(ctx, scope, params);
+}
+
+export async function countLeads(
+  params: Session & Omit<ListLeadsParams, 'tab' | 'limit' | 'offset'>,
+): Promise<{ open: number; qualified: number; closed: number }> {
+  const { ctx, scope } = await access(params, 'crm:read');
+  return countLeadsInOrg(ctx, scope, params);
+}
+
 export type {
+  DisqualifyReason,
+  Lead,
+  LeadInput,
+  LeadSource,
+  LeadState,
+  ListLeadsParams,
   Activity,
   ActivityInput,
   ActivityKind,
