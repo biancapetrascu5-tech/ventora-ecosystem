@@ -101,6 +101,8 @@ export type AuditTargetType =
   // Lot C.4d / CR.11 (category crm)
   | 'crm_export'
   | 'crm_import'
+  // Lot C.4f: a file of core/files (in the category of its owner module)
+  | 'file'
   // Lot 5.10: Founder · Growth & Campaigns (core/growth, category founder)
   | 'growth_offer'
   | 'growth_audience'

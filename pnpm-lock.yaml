@@ -691,6 +691,9 @@ importers:
 
   core/files:
     dependencies:
+      '@ventora/audit':
+        specifier: workspace:*
+        version: link:../audit
       '@ventora/contracts':
         specifier: workspace:*
         version: link:../../packages/contracts

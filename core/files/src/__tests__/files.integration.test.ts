@@ -10,6 +10,8 @@ import {
   closeFilesPool,
   confirmUpload,
   deleteFile,
+  deleteFileAsSystem,
+  deleteOwnerFilesAsSystem,
   getDownloadLink,
   getFile,
   listFiles,
@@ -304,6 +306,124 @@ describe('C.4e — a CSV, only for the ClientDesk import', () => {
     await expect(insert('support', 'ticket')).rejects.toMatchObject({ code: '23514' });
     await expect(insert('crm', 'contact')).rejects.toMatchObject({ code: '23514' });
     await expect(insert('crm', 'import')).resolves.toBeDefined();
+  });
+});
+
+describe('C.4f — the deletion of the jobs (no person), with the audit', () => {
+  const CSV = new TextEncoder().encode('nume,telefon\nIon,0722000000\n');
+  const importOwner = () => ({ module: 'crm', resourceType: 'import', resourceId: randomUUID() });
+
+  async function csvFile(owner: { module: string; resourceType: string; resourceId: string }) {
+    const { fileId } = await requestUpload(ALICE, {
+      owner,
+      name: 'clienti Popescu.csv',
+      contentType: 'text/csv',
+      sizeBytes: CSV.length,
+    });
+    storage.put(keyOf(ORG_A, fileId), CSV, 'text/csv');
+    return fileId;
+  }
+
+  const auditOf = (fileId: string) =>
+    q(
+      `SELECT category, action, actor_type, actor_id, organization_id::text AS org, target_type,
+              metadata
+         FROM audit.audit_log WHERE target_id = $1 ORDER BY created_at`,
+      [fileId],
+    );
+
+  it('every file of an owner: deleted, file.deleted only for the ready ones, bytes out, audited', async () => {
+    const owner = importOwner();
+    const ready = await csvFile(owner);
+    await confirmUpload(ALICE, ready);
+    const pending = await csvFile(owner);
+
+    expect(await deleteOwnerFilesAsSystem(ORG_A, owner, 'crm_import_finished')).toBe(2);
+    for (const id of [ready, pending]) {
+      expect((await getFile(ALICE, id)).status).toBe('deleted');
+      expect(storage.objects.has(keyOf(ORG_A, id))).toBe(false);
+    }
+    const events = await q(
+      `SELECT resource_id AS id, type FROM files.outbox_events
+        WHERE resource_id = ANY($1::text[]) ORDER BY type`,
+      [[ready, pending]],
+    );
+    expect(events).toEqual([
+      { id: ready, type: 'file.deleted' },
+      { id: ready, type: 'file.uploaded' },
+    ]);
+    const [audit] = await auditOf(ready);
+    expect(audit).toEqual({
+      category: 'crm',
+      action: 'file.deleted_by_system',
+      actor_type: 'system',
+      actor_id: null,
+      org: ORG_A,
+      target_type: 'file',
+      metadata: {
+        reason: 'crm_import_finished',
+        ownerModule: 'crm',
+        ownerResourceType: 'import',
+        ownerResourceId: owner.resourceId,
+        contentType: 'text/csv',
+        sizeBytes: CSV.length,
+        previousStatus: 'ready',
+      },
+    });
+    expect(JSON.stringify(audit)).not.toContain('Popescu'); // never the name
+    expect((await auditOf(pending))[0]).toMatchObject({ metadata: { previousStatus: 'pending' } });
+    // a second run finds nothing and writes nothing
+    expect(await deleteOwnerFilesAsSystem(ORG_A, owner, 'crm_import_finished')).toBe(0);
+    expect(await auditOf(ready)).toHaveLength(1);
+  });
+
+  it('one file: only for its owner module, only in its organization, once', async () => {
+    const fileId = await csvFile(importOwner());
+    await confirmUpload(ALICE, fileId);
+    await expect(
+      deleteFileAsSystem(ORG_A, { fileId, module: 'support', reason: 'support_closed' }),
+    ).rejects.toBeInstanceOf(ResourceNotFound);
+    await expect(
+      deleteFileAsSystem(ORG_B, { fileId, module: 'crm', reason: 'crm_import_expired' }),
+    ).rejects.toBeInstanceOf(ResourceNotFound);
+    expect((await getFile(ALICE, fileId)).status).toBe('ready');
+    expect(await auditOf(fileId)).toEqual([]);
+
+    expect(
+      await deleteFileAsSystem(ORG_A, { fileId, module: 'crm', reason: 'crm_import_expired' }),
+    ).toBe(true);
+    expect(
+      await deleteFileAsSystem(ORG_A, { fileId, module: 'crm', reason: 'crm_import_expired' }),
+    ).toBe(false);
+    expect(await auditOf(fileId)).toHaveLength(1);
+    await expect(getDownloadLink(ALICE, fileId)).rejects.toBeInstanceOf(ResourceNotFound);
+  });
+
+  it('the support attachments are logged in the support category', async () => {
+    const owner = { module: 'support', resourceType: 'ticket', resourceId: randomUUID() };
+    const { fileId } = await requestUpload(ALICE, {
+      owner,
+      name: 'x.png',
+      contentType: 'image/png',
+      sizeBytes: PNG.length,
+    });
+    storage.put(keyOf(ORG_A, fileId), PNG, 'image/png');
+    await confirmUpload(ALICE, fileId);
+    expect(await deleteOwnerFilesAsSystem(ORG_A, owner, 'support_retention')).toBe(1);
+    expect((await auditOf(fileId))[0]).toMatchObject({ category: 'support', actor_type: 'system' });
+  });
+
+  it('an unknown module, a bad reason or organization are refused before anything', async () => {
+    const owner = { module: 'growth', resourceType: 'x', resourceId: 'y' };
+    await expect(deleteOwnerFilesAsSystem(ORG_A, owner, 'cleanup')).rejects.toBeInstanceOf(
+      InvalidInput,
+    );
+    await expect(
+      deleteOwnerFilesAsSystem(ORG_A, importOwner(), 'Bad Reason'),
+    ).rejects.toBeInstanceOf(InvalidInput);
+    await expect(
+      deleteOwnerFilesAsSystem('not-a-uuid', importOwner(), 'cleanup'),
+    ).rejects.toBeInstanceOf(InvalidInput);
   });
 });
 

@@ -2,6 +2,7 @@ import { Pool, type PoolClient } from 'pg';
 import { Conflict, InvalidInput, ResourceNotFound } from '@ventora/errors';
 import { uuidv7, writeOutboxEvent } from '@ventora/db-kit';
 import { FileDeletedV1, FileUploadedV1 } from '@ventora/contracts';
+import { AuditActions, appendAuditEventInTx, pgExecutor, type AuditCategory } from '@ventora/audit';
 import {
   DOWNLOAD_LINK_SECONDS,
   STORAGE_URL_SECONDS,
@@ -30,6 +31,8 @@ import { getStorageAdapter } from './storage';
  *   getDownloadLink→ our signed, expiring link (links.ts) to a ready file;
  *   openDownloadLink → what /files/<token> does: verifies the link, then a short storage URL;
  *   deleteFile     → deleted + file.deleted, the bytes removed from the storage.
+ *   deleteFileAsSystem / deleteOwnerFilesAsSystem (C.4f) → the same deletion for the jobs
+ *                    (no person), logged in the audit of the owner module.
  */
 
 export interface FilesContext {
@@ -372,4 +375,121 @@ export async function deleteFile(ctx: FilesContext, fileId: string): Promise<voi
     return rows[0]!;
   });
   if (row) await storage.remove(row.storage_key);
+}
+
+/*
+ * Lot C.4f (review of 11.11.2026): the deletion of the jobs, with no person behind it — the
+ * attachments of a contact anonymised after 30 days in the bin, the CSV of a ClientDesk import
+ * once it is finished, cancelled or 7 days old. As deleteFile: the row becomes `deleted` (never a
+ * DELETE), file.deleted for a ready file, the bytes out of the storage; and one audit row per file,
+ * in the same transaction, actor `system`, in the category of the owner module. It runs as
+ * files_rw in the organization's context (RLS): no new role, no new grant.
+ */
+
+/** The audit category of each owner module that may ask for a system deletion. */
+const OWNER_AUDIT_CATEGORY: Readonly<Record<string, AuditCategory>> = {
+  crm: 'crm',
+  support: 'support',
+  booking: 'booking',
+};
+
+const REASON_RE = /^[a-z][a-z0-9_]{2,47}$/;
+
+function checkSystemDeletion(
+  organizationId: string,
+  module: string,
+  reason: string,
+): AuditCategory {
+  if (!UUID.test(organizationId ?? '')) throw new InvalidInput('organizationId');
+  const category = OWNER_AUDIT_CATEGORY[module];
+  if (!category) throw new InvalidInput('owner.module');
+  if (!REASON_RE.test(reason ?? '')) throw new InvalidInput('reason');
+  return category;
+}
+
+/** In the caller's transaction: deleted, file.deleted if it was ready, the audit row. */
+async function markDeletedBySystem(
+  client: PoolClient,
+  current: Row,
+  category: AuditCategory,
+  reason: string,
+): Promise<void> {
+  await client.query(`UPDATE files.file SET status = 'deleted', deleted_at = now() WHERE id = $1`, [
+    current.id,
+  ]);
+  if (current.status === 'ready') {
+    await writeOutboxEvent(client, 'files', FileDeletedV1, {
+      organizationId: current.organization_id,
+      sourceApp: SOURCE_APP,
+      resourceId: current.id,
+      payload: eventPayload(current),
+    });
+  }
+  // never the name of the file: it may hold personal data
+  await appendAuditEventInTx(pgExecutor(client), {
+    category,
+    action: AuditActions.fileDeletedBySystem,
+    outcome: 'success',
+    actorType: 'system',
+    organizationId: current.organization_id,
+    targetType: 'file',
+    targetId: current.id,
+    metadata: {
+      reason,
+      ownerModule: current.owner_module,
+      ownerResourceType: current.owner_resource_type,
+      ownerResourceId: current.owner_resource_id,
+      contentType: current.content_type,
+      sizeBytes: Number(current.size_bytes),
+      previousStatus: current.status,
+    },
+  });
+}
+
+/**
+ * One file, for a job of its owner module: `module` must be the file's owner (a ClientDesk job
+ * cannot delete a support attachment). Already deleted → false, nothing written.
+ */
+export async function deleteFileAsSystem(
+  organizationId: string,
+  input: { fileId: string; module: string; reason: string },
+): Promise<boolean> {
+  const category = checkSystemDeletion(organizationId, input.module, input.reason);
+  const storage = await getStorageAdapter();
+  const key = await inOrganization(organizationId, async (client) => {
+    const current = await findRow(client, input.fileId, true);
+    if (current.owner_module !== input.module) throw new ResourceNotFound('File not found');
+    if (current.status === 'deleted') return null;
+    await markDeletedBySystem(client, current, category, input.reason);
+    return current.storage_key;
+  });
+  if (key === null) return false;
+  await storage.remove(key);
+  return true;
+}
+
+/** Every file of an owner (pending, ready or rejected), for a job; how many were deleted. */
+export async function deleteOwnerFilesAsSystem(
+  organizationId: string,
+  owner: FileOwner,
+  reason: string,
+): Promise<number> {
+  checkOwner(owner);
+  const category = checkSystemDeletion(organizationId, owner.module, reason);
+  const storage = await getStorageAdapter();
+  const keys = await inOrganization(organizationId, async (client) => {
+    const { rows } = await client.query<Row>(
+      `SELECT ${COLUMNS} FROM files.file
+        WHERE owner_module = $1 AND owner_resource_type = $2 AND owner_resource_id = $3
+          AND status <> 'deleted'
+        ORDER BY created_at, id
+        FOR UPDATE`,
+      [owner.module, owner.resourceType, owner.resourceId],
+    );
+    for (const row of rows) await markDeletedBySystem(client, row, category, reason);
+    return rows.map((r) => r.storage_key);
+  });
+  // the deletions are committed first; the bytes go after (a failed removal is reported)
+  for (const key of keys) await storage.remove(key);
+  return keys.length;
 }

@@ -8,6 +8,8 @@ export {
   listFiles,
   storageUsedBytes,
   deleteFile,
+  deleteFileAsSystem,
+  deleteOwnerFilesAsSystem,
   closeFilesPool,
 } from './files';
 export type { FilesContext, FilesConnection, FileOwner, FileInfo, FileStatus } from './files';
