@@ -15,6 +15,9 @@ model Settings {
   bookingLinkEnabled  Boolean  @default(true) @map("booking_link_enabled")
   /// CR.4: the days of the predefined segment „N-au mai venit” (S130: 60, 7–365).
   lapsedSegmentDays   Int      @default(60) @map("lapsed_segment_days") @db.SmallInt
+  /// CR.10: the lead score switch and the minimum budget
+  leadScoringEnabled  Boolean  @default(true) @map("lead_scoring_enabled")
+  leadMinBudgetMinor  BigInt?  @map("lead_min_budget_minor")
   updatedByUserId     String   @map("updated_by_user_id") @db.Uuid
   createdAt           DateTime @default(now()) @map("created_at") @db.Timestamptz
   updatedAt           DateTime @default(now()) @map("updated_at") @db.Timestamptz
@@ -337,6 +340,9 @@ model Lead {
   closedAt           DateTime? @map("closed_at") @db.Timestamptz
   closedByUserId     String?   @map("closed_by_user_id") @db.Uuid
   convertedContactId String?   @map("converted_contact_id") @db.Uuid
+  /// CR.10: the score signals
+  askedPrice         Boolean   @default(false) @map("asked_price")
+  offerOpenedAt      DateTime? @map("offer_opened_at") @db.Timestamptz
   deletedAt          DateTime? @map("deleted_at") @db.Timestamptz
   deletedByUserId    String?   @map("deleted_by_user_id") @db.Uuid
   createdByUserId    String?   @map("created_by_user_id") @db.Uuid

@@ -18,6 +18,7 @@ import {
   listLeads,
   reopenLead,
   setLeadState,
+  setLeadScoring,
   updateLead,
 } from '../contract/index';
 import { closeCrmPool } from '../server/db';
@@ -401,5 +402,50 @@ describe('CR.8 — the leads', () => {
     expect(
       await refusal(setLeadState({ sessionToken: a.t, leadId: lead.id, state: 'contacted' })),
     ).toBe('lead_deleted');
+  });
+});
+
+describe('CR.10 — the lead score (D-CRM-17 = the S131 rules)', () => {
+  it('the points and reasons, the minimum budget, sorting by score, the switch', async () => {
+    const b = await business();
+    const hot = await createLead({
+      sessionToken: b.t,
+      name: 'Recomandat',
+      source: 'referral',
+      phone: '0722111222',
+      budgetMinor: 50000,
+      eventDate: '2027-05-01',
+      askedPrice: true,
+    });
+    expect(hot.score).toEqual({
+      score: 65,
+      reasons: [
+        { key: 'referral', points: 20 },
+        { key: 'asked_price', points: 15 },
+        { key: 'has_budget', points: 15 },
+        { key: 'has_date', points: 10 },
+        { key: 'has_phone', points: 5 },
+      ],
+    });
+    const cold = await createLead({ sessionToken: b.t, name: 'Rece' });
+    expect(cold.score).toEqual({ score: 0, reasons: [] });
+    const mid = await createLead({ sessionToken: b.t, name: 'Mediu', phone: '0733000111' });
+
+    const byScore = await listLeads({ sessionToken: b.t, sort: 'score' });
+    expect(byScore.map((l) => l.id)).toEqual([hot.id, mid.id, cold.id]);
+
+    const member = await person(b.org, 'member');
+    expect(await refusal(setLeadScoring({ sessionToken: member.token, enabled: false }))).toBe(
+      'Forbidden',
+    );
+    await setLeadScoring({ sessionToken: b.t, minBudgetMinor: 80000 });
+    expect((await getLead({ sessionToken: b.t, leadId: hot.id })).score!.score).toBe(55);
+    const off = await setLeadScoring({ sessionToken: b.t, enabled: false });
+    expect(off).toMatchObject({ leadScoringEnabled: false, leadMinBudgetMinor: 80000 });
+    expect((await getLead({ sessionToken: b.t, leadId: hot.id })).score).toBeNull();
+    // the reason is updated on every change of the lead
+    await setLeadScoring({ sessionToken: b.t, enabled: true });
+    const upd = await updateLead({ sessionToken: b.t, leadId: cold.id, askedPrice: true });
+    expect(upd.score).toEqual({ score: 15, reasons: [{ key: 'asked_price', points: 15 }] });
   });
 });

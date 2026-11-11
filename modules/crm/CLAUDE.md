@@ -142,3 +142,16 @@ CRM (numele afișat ClientDesk) e a doua aplicație, în pachetul cu EasyBook (D
   - Fișierul e UTF-8 cu BOM. Celulele care încep cu = + - @ primesc un apostrof în față (injecția în CSV).
 - **Auditul `crm.exported`** (C.4d) are entitatea, numărul de rânduri și cheile filtrelor, fără date.
 - **Excel** cere pachetul `exceljs` (D-CRM-7): propunere. Importul vine cu CR.11b.
+
+## Scorul leadurilor (CR.10, D-CRM-17 decisă 11.11 = regulile S131)
+- **Regulile:**
+  - +20 a deschis oferta (`offer_opened_at`, setat de CR.14);
+  - +20 recomandare;
+  - +15 a cerut prețul (`asked_price`);
+  - +15 are buget;
+  - +10 are o dată;
+  - +5 are telefon;
+  - −10 buget sub minim (`settings.lead_min_budget_minor`).
+- **Calculul:** suma, între 0 și 100, cu motivele afișate. Fără AI.
+  - Se calculează la fiecare citire (`scoring.ts`), deci nu e nevoie de job. Lista se poate sorta după scor (`scoreSql`, aceleași reguli).
+- **Comutatorul:** `settings.lead_scoring_enabled` (`setLeadScoring`, `crm:settings`). Oprit înseamnă scor `null`.

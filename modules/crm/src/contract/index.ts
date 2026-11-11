@@ -1,6 +1,6 @@
 // The public contract of ClientDesk, the only import allowed from outside the module
 // (`@ventora/crm`). CR.1: the preferences; CR.2: the contacts and the companies.
-export { getCrmSettings } from './settings';
+export { getCrmSettings, setLeadScoring } from './settings';
 export type { CrmSettings } from './settings';
 export {
   assignContact,
@@ -100,6 +100,8 @@ export type {
   CreateContactParams,
   CustomField,
   CustomValues,
+  LeadScore,
+  ScoreReason,
   ExportEntity,
   ExportParams,
   Board,

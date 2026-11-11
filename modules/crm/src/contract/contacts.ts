@@ -853,6 +853,7 @@ export async function exportCsv(
   return exportCsvInOrg(ctx, scope, params);
 }
 
+export type { LeadScore, ScoreReason } from '../server/scoring';
 export type {
   ExportEntity,
   ExportParams,
