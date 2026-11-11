@@ -1038,7 +1038,7 @@
   "limits": {
     "appointments": "{count, plural, one {# programare} few {# programări} other {# de programări}} pe lună",
     "sms": "{count, plural, one {# SMS} other {# SMS}} pe lună",
-    "campaigns": "{count, plural, one {# campanie} few {# campanii} other {# de campanii}} pe lună",
+    "campaigns": "{count, plural, one {# campanie} few {# campanii} other {# de campanii}} active în același timp",
     "emails": "{count, plural, one {# e-mail} few {# e-mailuri} other {# de e-mailuri}} pe lună",
     "clients": "{count, plural, one {# client} few {# clienți} other {# de clienți}}",
     "invoices": "{count, plural, one {# factură} few {# facturi} other {# de facturi}} pe lună",

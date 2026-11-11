@@ -11,6 +11,7 @@
 
 import { Pool } from 'pg';
 import { manifest as bookingManifest } from '../modules/booking/src/manifest.js';
+import { manifest as marketingManifest } from '../modules/marketing/src/manifest.js';
 import { platformManifest } from '../core/access/src/platform-manifest.js';
 import {
   HUB_PLACEMENT_SOURCE,
@@ -18,7 +19,7 @@ import {
   syncPlacements,
 } from '../core/growth/src/index.js';
 
-const SOURCES = [HUB_PLACEMENT_SOURCE, platformManifest, bookingManifest];
+const SOURCES = [HUB_PLACEMENT_SOURCE, platformManifest, bookingManifest, marketingManifest];
 
 async function main() {
   const connectionString = process.env.DIRECT_URL ?? process.env.DATABASE_URL;
