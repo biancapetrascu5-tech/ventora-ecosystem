@@ -2,8 +2,8 @@
 /**
  * Rulează toate testele de integrare local, identic cu CI:
  *   1. Pornește DB-ul de test
- *   2. Verifică garda de drift (prisma migrate diff --exit-code): identity, founder, organizations, audit, access, notifications, files, support, commercial, booking, crm, billing, workflows, ai, growth
- *   3. Rulează testele de integrare (db-kit, audit, identity, organizations, integrations, access, notifications, files, support, commercial, booking, crm, billing, workflows, ai, growth)
+ *   2. Verifică garda de drift (prisma migrate diff --exit-code): identity, founder, organizations, audit, access, notifications, files, support, commercial, booking, crm, billing, workflows, ai, growth, consent
+ *   3. Rulează testele de integrare (db-kit, audit, identity, organizations, integrations, access, notifications, files, support, commercial, booking, crm, billing, workflows, ai, growth, consent)
  *      și sincronizarea registrului comercial de două ori (a doua nu trebuie să schimbe nimic)
  *   4. Oprește DB-ul (indiferent de rezultat)
  *
@@ -49,6 +49,7 @@ const SHADOW_AI = `postgresql://postgres:test@localhost:${PG}/shadow_ai_diff`;
 const SHADOW_BOOKING = `postgresql://postgres:test@localhost:${PG}/shadow_booking_diff`;
 const SHADOW_GROWTH = `postgresql://postgres:test@localhost:${PG}/shadow_growth_diff`;
 const SHADOW_CRM = `postgresql://postgres:test@localhost:${PG}/shadow_crm_diff`;
+const SHADOW_CONSENT = `postgresql://postgres:test@localhost:${PG}/shadow_consent_diff`;
 
 let exitCode = 0;
 
@@ -312,6 +313,19 @@ try {
   console.log('\n[test:integration] sloturile Growth (sync-growth-registry, de două ori)...');
   run('pnpm tsx scripts/sync-growth-registry.ts', { DIRECT_URL: ADMIN_ACCESS });
   run('pnpm tsx scripts/sync-growth-registry.ts --expect-noop', { DIRECT_URL: ADMIN_ACCESS });
+
+  // --- Lot C.5: the shared consent (drift, tests on the access base, consent_rw) ---
+  console.log('[test:integration] Verificare drift consent schema...');
+  runPkg(
+    '@ventora/consent',
+    `exec prisma migrate diff --from-migrations ./prisma/migrations --to-schema ./prisma/schema.prisma --exit-code --config prisma7.config.ts`,
+    { DATABASE_URL: ADMIN_ACCESS, SHADOW_DATABASE_URL: SHADOW_CONSENT },
+  );
+  console.log('\n[test:integration] consent...');
+  runPkg('@ventora/consent', 'test:integration', {
+    DATABASE_URL_TEST: `postgresql://app_runtime:${TEST_DB.appPw}@localhost:${PG}/${TEST_DB.accessDb}`,
+    DATABASE_URL_ADMIN_TEST: ADMIN_ACCESS,
+  });
 
   // --- D3-1: scripts/seed-pricing.ts pe o bază curată (registrul real, fără prețuri) ---
   console.log('\n[test:integration] prețurile D3-1 (seed-pricing, bază curată)...');

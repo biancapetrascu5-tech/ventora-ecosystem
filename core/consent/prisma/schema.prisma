@@ -1,0 +1,48 @@
+// Schema "consent" (Lot C.5) — folosită pentru garda de drift (prisma migrate diff) și
+// prisma migrate deploy. Codul nu folosește un client Prisma generat: rulează pe pg, cu
+// SET LOCAL ROLE consent_rw. CHECK-urile, triggerele (doar adăugare, suprimarea), view-ul
+// consent_state, rolul, grant-urile și RLS sunt doar în migrare.
+
+datasource db {
+  provider = "postgresql"
+  schemas  = ["consent"]
+}
+
+/// Registrul consimțămintelor: doar adăugare.
+model ConsentEvent {
+  id             String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  organizationId String   @map("organization_id") @db.Uuid
+  subjectType    String   @map("subject_type") @db.VarChar(32)
+  subjectId      String   @map("subject_id") @db.Uuid
+  channel        String   @db.VarChar(16)
+  purpose        String   @default("marketing") @db.VarChar(16)
+  state          String   @db.VarChar(16)
+  addressHash    String   @map("address_hash") @db.VarChar(64)
+  source         String   @db.VarChar(24)
+  text           String?
+  textVersion    String?  @map("text_version") @db.VarChar(64)
+  reason         String?
+  proofFileId    String?  @map("proof_file_id") @db.Uuid
+  ipTruncated    String?  @map("ip_truncated") @db.VarChar(64)
+  actorUserId    String?  @map("actor_user_id") @db.Uuid
+  createdAt      DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  @@index([organizationId, subjectType, subjectId, channel, purpose, createdAt(sort: Desc)], map: "consent_event_subject_idx")
+  @@index([organizationId, channel, addressHash, createdAt(sort: Desc)], map: "consent_event_address_idx")
+  @@map("consent_event")
+  @@schema("consent")
+}
+
+/// Lista de suprimare a afacerii: doar hash-ul adresei.
+model Suppression {
+  organizationId String   @map("organization_id") @db.Uuid
+  channel        String   @db.VarChar(16)
+  addressHash    String   @map("address_hash") @db.VarChar(64)
+  reason         String   @db.VarChar(16)
+  origin         String   @db.VarChar(32)
+  createdAt      DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  @@id([organizationId, channel, addressHash])
+  @@map("suppression")
+  @@schema("consent")
+}

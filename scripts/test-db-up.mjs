@@ -149,6 +149,7 @@ for (const db of [
   'shadow_booking_diff',
   'shadow_growth_diff',
   'shadow_crm_diff',
+  'shadow_consent_diff',
 ]) {
   psql('postgres', `DROP DATABASE IF EXISTS ${db}; CREATE DATABASE ${db};`);
 }
@@ -473,6 +474,8 @@ for (const migration of [
   'core/growth/prisma/migrations/20261110000001_growth_init/migration.sql',
   // Lot 5.8: the automatic stop (opt_out, activated_at, the disturbance functions)
   'core/growth/prisma/migrations/20261110000002_growth_auto_stop/migration.sql',
+  // Lot C.5: the shared consent (schema consent, role consent_rw), after audit
+  'core/consent/prisma/migrations/20261111000001_consent_init/migration.sql',
   // Aplicațiile (modules/*): găsite singure, după tot Core-ul (booking, crm și cele care vin).
   // Un lot de modul nu mai atinge acest fișier.
   ...moduleMigrations(),
