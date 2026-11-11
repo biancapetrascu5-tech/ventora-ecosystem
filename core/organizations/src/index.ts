@@ -36,6 +36,22 @@ export {
   listOrganizationsAsFounderInTx,
   setOrganizationStatusInTx,
 } from './contract';
+// Lot C.1: the business's locations (the quota platform.locations is passed by the caller)
+export {
+  listLocations,
+  getActiveLocation,
+  createLocation,
+  updateLocation,
+  archiveLocation,
+  locationQuotaResolver,
+  LOCATIONS_QUOTA_KEY,
+  LOCATION_NAME_MAX,
+  LOCATION_ADDRESS_MAX,
+  type Location,
+  type LocationQuota,
+  type CreateLocationInput,
+  type UpdateLocationInput,
+} from './locations';
 // Lot 4.3: notifications to the business's managers; the first real consumer
 export {
   listManagersInTx,

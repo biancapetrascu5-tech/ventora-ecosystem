@@ -20,6 +20,8 @@ export type AuditTargetType =
   | 'invitation'
   | 'membership'
   | 'organization'
+  // Lot C.1: a location of the business (category organization)
+  | 'location'
   | 'founder_user'
   | 'support_session'
   // Lot 4.6: the support requests (category support)
