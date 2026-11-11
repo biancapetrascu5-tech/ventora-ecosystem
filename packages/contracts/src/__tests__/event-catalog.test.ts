@@ -5,6 +5,9 @@ import {
   InvitationNewLinkRequestedV1,
   OrganizationCreatedV1,
   UserLocaleChangedV1,
+  OrganizationMemberAddedV1,
+  OrganizationMemberRemovedV1,
+  OrganizationMemberRoleChangedV1,
   defineEvent,
   findEventDefinition,
 } from '../index';
@@ -74,6 +77,33 @@ describe('event catalog (Lot 4.1)', () => {
     }
     expect(() =>
       UserLocaleChangedV1.parse({ userId: 'u_1', locale: 'ro', email: 'a@b.ro' }),
+    ).toThrow();
+  });
+
+  it('organization.member_* v1: only ids and the role, nothing personal (5.10c)', () => {
+    for (const def of [OrganizationMemberAddedV1, OrganizationMemberRemovedV1]) {
+      expect(findEventDefinition(def.type, 1)).toBe(def);
+      expect(def.growthSafe).toBe(false);
+      expect(def.parse({ membershipId: ID, userId: ID, role: 'admin' })).toEqual({
+        membershipId: ID,
+        userId: ID,
+        role: 'admin',
+      });
+      expect(() => def.parse({ membershipId: ID, userId: ID, role: 'guest' })).toThrow();
+      expect(() =>
+        def.parse({ membershipId: ID, userId: ID, role: 'member', email: 'a@b.ro' }),
+      ).toThrow();
+    }
+    expect(
+      OrganizationMemberRoleChangedV1.parse({
+        membershipId: ID,
+        userId: ID,
+        fromRole: 'member',
+        toRole: 'admin',
+      }),
+    ).toMatchObject({ fromRole: 'member', toRole: 'admin' });
+    expect(() =>
+      OrganizationMemberRoleChangedV1.parse({ membershipId: ID, userId: ID, toRole: 'admin' }),
     ).toThrow();
   });
 
