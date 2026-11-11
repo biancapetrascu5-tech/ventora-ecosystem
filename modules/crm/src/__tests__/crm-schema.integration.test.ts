@@ -157,6 +157,7 @@ describe('CR.1 — the role crm_rw and the schema', () => {
       'contact_merge',
       'custom_field',
       'duplicate_dismissal',
+      'note',
       'outbox_events',
       'processed_events',
       'segment',

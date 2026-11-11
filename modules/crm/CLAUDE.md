@@ -71,4 +71,18 @@ CRM (numele afișat ClientDesk) e a doua aplicație, în pachetul cu EasyBook (D
   - Doi clienți EasyBook se îmbină doar în EasyBook. Când unul vine din EasyBook, el rămâne, cu datele lui de bază.
   - Contactul pierdut ajunge în coș, cu `merged_into_id`; unitatea lui de cotă se eliberează, iar îmbinarea rămâne în `contact_merge`.
 - **Anularea îmbinării** (30 de zile, S132) e doar o propunere. Un contact îmbinat nu se restaurează.
-- **Notițele, activitățile, deal-urile și fișierele** contactului pierdut trec pe cel păstrat odată cu loturile lor (CR.6–CR.9).
+- **Notițele și fișierele** contactului pierdut sunt pe cel păstrat de la CR.6. Activitățile și deal-urile trec odată cu loturile lor (CR.7–CR.9).
+
+## Notițele, comentariile, fișierele și istoricul (CR.6, design S130)
+- **`crm.note`:** `kind` note | comment, pe un contact sau o companie (lead și deal vin cu CR.8 / CR.9).
+  - Textul își păstrează rândurile și are 1–5 000 de caractere.
+  - Autorul editează („editat”). Autorul sau cine are `crm:admin` șterge, doar în coș.
+  - Restaurarea unei notițe nu există: ar cere un cod de audit nou (propunere).
+- **Mențiunile:** cel mult 20, doar oameni care văd înregistrarea (S130): membru activ cu acces la ClientDesk; pe un contact atribuit, responsabilul sau cineva cu `crm:admin`.
+  - Notificarea lor așteaptă șabloanele din `core/notifications` (un PR Core, propunere).
+- **Fișierele:** prin `core/files` (`crm` / `contact` | `company` / id), fără tabel `crm`. PNG, JPEG sau PDF, până la 10 MB.
+  - Încarcă oricine scrie pe înregistrare. Șterge cel care a încărcat sau cineva cu `crm:admin`.
+  - Auditul se scrie imediat după tranzacția din `core/files`.
+- **Istoricul** (`getTimeline`): notițele, comentariile și fișierele, cele mai noi întâi. Al unui contact include fișierele contactelor îmbinate în el.
+  - Schimbările de câmpuri cer un filtru pe țintă în `core/audit` (propunere).
+- **La îmbinare,** notițele trec pe contactul păstrat: `UPDATE(subject_id)`, singura scriere a lui `subject_id`.
