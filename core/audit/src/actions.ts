@@ -315,6 +315,11 @@ export const AuditActions = {
   crmLossReasonCreated: 'crm.loss_reason_created',
   crmLossReasonUpdated: 'crm.loss_reason_updated',
   crmLossReasonDeleted: 'crm.loss_reason_deleted',
+  // Lot C.4d / CR.11: the export (who, what, how many rows; never the data) and the import jobs
+  crmExported: 'crm.exported',
+  crmImportStarted: 'crm.import_started',
+  crmImportCompleted: 'crm.import_completed',
+  crmImportCancelled: 'crm.import_cancelled',
 } as const;
 
 export type AuditAction = (typeof AuditActions)[keyof typeof AuditActions];
