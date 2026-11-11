@@ -187,6 +187,44 @@ model Note {
   @@schema("crm")
 }
 
+/// Lot CR.7: tasks, logged calls / meetings / e-mails, reminders (S131); bin, no delete.
+model Activity {
+  id                  String    @id @db.Uuid
+  organizationId      String    @map("organization_id") @db.Uuid
+  kind                String    @db.VarChar(8)
+  title               String    @db.VarChar(200)
+  note                String?   @db.VarChar(2000)
+  priority            String    @default("normal") @db.VarChar(6)
+  subjectType         String?   @map("subject_type") @db.VarChar(7)
+  subjectId           String?   @map("subject_id") @db.Uuid
+  ownerUserId         String    @map("owner_user_id") @db.Uuid
+  dueOn               DateTime? @map("due_on") @db.Date
+  dueAt               DateTime? @map("due_at") @db.Timestamptz
+  durationMinutes     Int?      @map("duration_minutes")
+  remindBeforeMinutes Int?      @map("remind_before_minutes")
+  remindAt            DateTime? @map("remind_at") @db.Timestamptz
+  remindedAt          DateTime? @map("reminded_at") @db.Timestamptz
+  callResult          String?   @map("call_result") @db.VarChar(12)
+  meetingPlace        String?   @map("meeting_place") @db.VarChar(6)
+  participantUserIds  String[]  @default([]) @map("participant_user_ids") @db.Uuid
+  outcome             String?   @db.VarChar(500)
+  status              String    @default("open") @db.VarChar(4)
+  doneAt              DateTime? @map("done_at") @db.Timestamptz
+  doneByUserId        String?   @map("done_by_user_id") @db.Uuid
+  deletedAt           DateTime? @map("deleted_at") @db.Timestamptz
+  deletedByUserId     String?   @map("deleted_by_user_id") @db.Uuid
+  createdByUserId     String    @map("created_by_user_id") @db.Uuid
+  createdAt           DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt           DateTime  @default(now()) @map("updated_at") @db.Timestamptz
+
+  @@index([organizationId, ownerUserId, status, dueOn], map: "activity_owner_due_idx")
+  @@index([organizationId, dueAt], map: "activity_due_at_idx")
+  @@index([organizationId, subjectType, subjectId], map: "activity_subject_idx")
+  @@index([remindAt], map: "activity_remind_idx")
+  @@map("activity")
+  @@schema("crm")
+}
+
 /// Lot CR.5: „Nu sunt duplicate” (S132); undone_at instead of a delete.
 model DuplicateDismissal {
   id              String    @id @db.Uuid

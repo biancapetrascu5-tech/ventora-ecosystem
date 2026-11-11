@@ -94,22 +94,24 @@ export async function mergedFamily(client: PoolClient, contactId: string): Promi
 }
 
 /**
- * S130: only people who see the record can be mentioned — an active member with access to
- * ClientDesk; on an assigned contact, its owner or someone with crm:admin.
+ * S130: only people who see the record can be mentioned (CR.6), own a task or take part in a
+ * meeting (CR.7) — an active member with access to ClientDesk; on an assigned contact, its owner or
+ * someone with crm:admin. No record (a standalone task): any active member with access.
  */
 export async function requireMentionable(
   ctx: TenantContext,
-  subject: Subject,
+  subject: Subject | null,
   userIds: string[],
+  field = 'mentions',
 ): Promise<void> {
   for (const userId of userIds) {
     const access = await getMemberApplicationAccess(ctx, userId, 'crm');
     if (access.status !== 'active' || !access.hasAccess) {
-      throw new InvalidInput('mentions', 'not_member');
+      throw new InvalidInput(field, 'not_member');
     }
-    if (subject.type !== 'contact' || subject.ownerUserId === null) continue;
+    if (!subject || subject.type !== 'contact' || subject.ownerUserId === null) continue;
     if (userId === subject.ownerUserId) continue;
     if (!(await checkRolePermission(access.role, 'crm', 'crm:admin')))
-      throw new InvalidInput('mentions', 'cannot_see');
+      throw new InvalidInput(field, 'cannot_see');
   }
 }
