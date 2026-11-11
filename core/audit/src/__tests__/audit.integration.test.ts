@@ -598,6 +598,32 @@ describe('TA.11 — invalid input rejected by the database', () => {
     }
   });
 
+  // Lot C.0i: the CampaignKit category (approved 11.11.2026); the CHECK has the complete list
+  it('category marketing → accepted (the complete list of categories)', async () => {
+    const id = await writeAuditEvent(
+      event({ category: 'marketing', action: 'marketing.settings_updated' }),
+      { mode: 'required' },
+    );
+    expect(id).toBeTruthy();
+    const { rows } = await adminPool.query<{ def: string }>(
+      `SELECT pg_get_constraintdef(oid) AS def FROM pg_constraint
+        WHERE conname = 'audit_log_category_check'`,
+    );
+    for (const c of [
+      'identity',
+      'organization',
+      'access',
+      'support',
+      'founder',
+      'commercial',
+      'booking',
+      'crm',
+      'marketing',
+    ]) {
+      expect(rows[0]!.def, c).toContain(`'${c}'`);
+    }
+  });
+
   it('invalid category → CHECK violation', async () => {
     await expect(
       writeAuditEvent(event({ category: 'billing' as never }), { mode: 'required' }),
