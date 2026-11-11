@@ -20,6 +20,8 @@ export {
   getOrganizationTimeZone,
   isValidTimeZone,
   DEFAULT_TIME_ZONE,
+  // Lot 5.10c: the business country (organization.created v1)
+  DEFAULT_COUNTRY,
   getMembership,
   listMembers,
   inviteMember,

@@ -3,6 +3,7 @@ import { z } from 'zod';
 import {
   EVENT_CATALOG,
   InvitationNewLinkRequestedV1,
+  OrganizationCreatedV1,
   defineEvent,
   findEventDefinition,
 } from '../index';
@@ -42,6 +43,22 @@ describe('event catalog (Lot 4.1)', () => {
       InvitationNewLinkRequestedV1,
     );
     expect(findEventDefinition('invitation.new_link_requested', 2)).toBeNull();
+  });
+
+  it('organization.created v1: only the id and an ISO country code, nothing personal (5.10c)', () => {
+    const def = findEventDefinition('organization.created', 1);
+    expect(def).toBe(OrganizationCreatedV1);
+    expect(OrganizationCreatedV1.growthSafe).toBe(false);
+    expect(OrganizationCreatedV1.parse({ organizationId: ID, country: 'RO' })).toEqual({
+      organizationId: ID,
+      country: 'RO',
+    });
+    for (const country of ['ro', 'ROU', 'R', '', 'R0']) {
+      expect(() => OrganizationCreatedV1.parse({ organizationId: ID, country })).toThrow();
+    }
+    expect(() =>
+      OrganizationCreatedV1.parse({ organizationId: ID, country: 'RO', name: 'Salon' }),
+    ).toThrow();
   });
 
   it('defineEvent refuses a malformed type or version', () => {
