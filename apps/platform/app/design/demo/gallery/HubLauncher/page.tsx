@@ -14,12 +14,13 @@ export default async function HubLauncherGallery({
   const sp = await searchParams;
   const phone = sp.w === '390';
   const noData = sp.board === 'noData';
+  const reco = sp.board === 'reco';
   return (
     <DesktopFrames
-      title={noData ? 'Nicio aplicație care dă date' : 'Fără Portal'}
+      title={noData ? 'Nicio aplicație care dă date' : reco ? 'Recomandare' : 'Fără Portal'}
       height={phone ? 1760 : 1200}
       width={phone ? 390 : undefined}
-      render={() => <HubLauncherFrame noData={noData} />}
+      render={() => <HubLauncherFrame noData={noData} reco={reco} />}
     />
   );
 }

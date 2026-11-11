@@ -6,13 +6,18 @@ import { useTranslations } from 'next-intl';
 import { APPS } from '@ventora/ui';
 import { useIsPhone } from '@ventora/screens';
 import type { AppsData } from '@/server/catalog-actions';
+import { growthInteraction } from '@/server/growth-actions';
+import { useCostLine } from '../growth/cost';
 import { useMoney } from '../plan/format';
 import { AppsView, type AppsGroup } from './AppsView';
 import { APP_GROUPS } from './content';
 
 /* Lotul 3.7 — HubCatalog din datele afacerii: deținute („în abonament”, se deschid) și celelalte
    (descrierea și mentenanța în moneda afacerii, „Vezi detaliile” → HubCatalogApp; fără preț în
-   moneda afacerii: „Scrie-ne” → Suport). Fără Growth (S111): fără recomandări. */
+   moneda afacerii: „Scrie-ne” → Suport). Lotul 5.9a: slotul Growth `hub.catalog.apps`
+   (CatalogRecommendation) pune eticheta „Recomandare”, motivul și costul pe AppTile-ul aplicației
+   recomandate, doar dacă afacerea n-o are; e cerut de persoană, deci fără „Nu mă interesează”.
+   Costul îl vede doar cine decide (owner); „Vezi detaliile” deschide pagina aplicației. */
 
 export function AppsScreen({ data }: { data: AppsData }) {
   const router = useRouter();
@@ -21,6 +26,8 @@ export function AppsScreen({ data }: { data: AppsData }) {
   const catalog = useTranslations('catalog');
   const ui = useTranslations('ui');
   const money = useMoney(data.currency);
+  const reco = data.recommendation;
+  const recoCost = useCostLine(reco);
   const [query, setQuery] = useState('');
   const [onlyMissing, setOnlyMissing] = useState(false);
 
@@ -49,7 +56,23 @@ export function AppsScreen({ data }: { data: AppsData }) {
               ? `${desc}. ${catalog('bundles.price', { amount: money.minor(entry.monthMinor ?? 0) })}`
               : `${desc}.`,
           onOpen: owned ? () => router.push(`/applications/${app}`) : undefined,
-          onDetails: !owned && priced ? () => router.push(`/applications/${app}`) : undefined,
+          recommendation:
+            !owned && reco?.app === app
+              ? { reason: reco.body, ...(data.owner && recoCost ? { cost: recoCost } : {}) }
+              : undefined,
+          onDetails:
+            !owned && (priced || reco?.app === app)
+              ? () => {
+                  if (reco?.app === app) {
+                    void growthInteraction({
+                      contentId: reco.contentId,
+                      kind: 'click',
+                      key: crypto.randomUUID(),
+                    });
+                  }
+                  router.push(`/applications/${app}`);
+                }
+              : undefined,
           onWriteUs: !owned && !priced ? () => router.push('/support') : undefined,
         };
       })

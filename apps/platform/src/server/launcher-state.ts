@@ -61,3 +61,31 @@ export async function computeLauncherApps(input: {
   }
   return out;
 }
+
+/** Zilele dinainte de final în care launcher-ul anunță proba (CommercialStates, „se încheie pe …”). */
+export const TRIAL_ENDING_DAYS = 3;
+
+/**
+ * Lotul 5.9d — proba unei aplicații care se încheie în cel mult 3 zile (cea mai apropiată), dintre
+ * aplicațiile date (cele disponibile persoanei). null: nicio probă pe sfârșite.
+ */
+export function trialEnding(
+  trials: readonly LauncherTrial[],
+  apps: readonly AppName[],
+  now: Date,
+): { app: AppName; endsAt: Date } | null {
+  const limit = now.getTime() + TRIAL_ENDING_DAYS * 86_400_000;
+  const shown = new Set<string>(apps);
+  const soon = trials
+    .filter(
+      (t) =>
+        t.kind === 'application' &&
+        t.applicationId !== null &&
+        shown.has(t.applicationId) &&
+        t.endedAt === null &&
+        t.endsAt.getTime() > now.getTime() &&
+        t.endsAt.getTime() <= limit,
+    )
+    .sort((a, b) => a.endsAt.getTime() - b.endsAt.getTime())[0];
+  return soon ? { app: soon.applicationId as AppName, endsAt: soon.endsAt } : null;
+}

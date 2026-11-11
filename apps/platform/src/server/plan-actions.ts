@@ -37,6 +37,7 @@ import {
 import type { AddonOffer, SubscriptionSummary } from '@ventora/contracts';
 import { getSession } from '@ventora/identity';
 import { createSupportRequest, resolveSupportActor } from '@ventora/support';
+import { readGrowthSlot, type GrowthSlotView } from './growth-slot';
 import { reportActionError } from './report-error';
 
 /* Lotul 3.7 — HubAdminPlan („Abonament și consum”, S111 / S113 / S117). Pentru owner și admin
@@ -66,6 +67,8 @@ export type PlanData = {
   profile: (Omit<BillingProfile, 'createdAt' | 'updatedAt'> & { updatedAt: string }) | null;
   /** Lotul 3.8 (S121), doar pentru owner: cererile cu implementare, cele mai noi primele. */
   setup: SetupData[] | null;
+  /** Lotul 5.9a: slotul Growth din „Pachete în plus” (`hub.plan.packs`); null: gol. */
+  recommendation: GrowthSlotView | null;
 };
 
 export type SetupData = Omit<
@@ -167,6 +170,8 @@ export async function readPlan(): Promise<PlanData | null> {
       payments,
       profile,
       setup,
+      // Growth nu blochează niciodată pagina: orice eroare = slot gol (§8.7)
+      recommendation: await readGrowthSlot(ctx, 'hub.plan.packs'),
     };
   } catch (err) {
     reportActionError('readPlan', err);

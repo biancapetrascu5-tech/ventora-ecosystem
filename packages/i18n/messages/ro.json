@@ -761,6 +761,39 @@
           "f3": "Rezultate: câți au deschis, câți au rezervat"
         }
       }
+    },
+    "growth": {
+      "cost": {
+        "month": "{amount} pe lună",
+        "year": "{amount} pe an",
+        "once": "{amount}, o singură dată",
+        "trial": "Gratuit {days} zile. Apoi {price}, doar dacă alegi să continui.",
+        "setup": "implementare {amount}, o singură dată",
+        "noSetup": "fără cost de implementare"
+      },
+      "toast": {
+        "dismissed": "Am înțeles, nu-ți mai arătăm asta.",
+        "snoozedWeek": "Bine, îți amintim peste o săptămână.",
+        "snoozedMonth": "Bine, îți amintim peste o lună."
+      },
+      "actions": {
+        "seeOptions": "Vezi opțiunile",
+        "tryFree": "Încearcă gratuit {days} zile",
+        "recommendApp": "Recomandă aplicația"
+      },
+      "status": {
+        "pending": "În așteptare",
+        "activated": "Activată",
+        "declined": "Nu acum"
+      },
+      "trial": {
+        "when": "Azi, pentru {days} zile",
+        "then": "Gratuit, apoi {price}, doar dacă alegi să continui",
+        "started": "Ai {app} gratuit până pe {date}. La final aplicația se oprește, iar tot ce ai lucrat în ea rămâne.",
+        "errorTitle": "Perioada de probă n-a pornit",
+        "errorBody": "Nu s-a schimbat nimic. Încearcă din nou peste puțin timp.",
+        "open": "Deschide {app}"
+      }
     }
   },
   "roles": {
@@ -1430,7 +1463,82 @@
     "notInterested": "Nu mă interesează",
     "onRequestOnly": "Doar la cerere",
     "requestActivation": "Cere activare",
-    "notifyOwner": "Anunță proprietarul"
+    "notifyOwner": "Anunță proprietarul",
+    "seeApp": "Vezi aplicația",
+    "seeHow": "Vezi cum funcționează",
+    "gotIt": "Am înțeles",
+    "reject": "Respinge",
+    "fromTeam": "Recomandare de la echipă",
+    "states": {
+      "search": {
+        "title": "Nicio aplicație pentru „{q}”",
+        "body": "Încearcă alt cuvânt sau scrie-ne ce ai nevoie.",
+        "action": "Scrie-ne"
+      },
+      "trialEnding": {
+        "title": "Perioada de probă pentru {app} se încheie pe {date}.",
+        "body": "Atunci se oprește singură; datele rămân.",
+        "action": "Vezi opțiunile"
+      },
+      "trialEnded": {
+        "title": "Perioada de probă pentru {app} s-a încheiat",
+        "body": "{app} s-a oprit. Datele rămân; o activezi oricând vrei să continui.",
+        "action": "Activează · {price}"
+      },
+      "notNow": "Nu acum",
+      "rejected": {
+        "title": "Am respins recomandarea.",
+        "body": "{member} vede „Nu acum” în lista ei; nu primește notificare."
+      },
+      "activated": {
+        "title": "{owner} a activat {app}.",
+        "body": "Recomandarea ta e acum o aplicație a echipei.",
+        "action": "Deschide {app}"
+      },
+      "member": {
+        "pending": "În așteptare",
+        "active": "Activată",
+        "notNow": "Nu acum",
+        "recommend": "Recomandă aplicația",
+        "owner": "{owner} (proprietar)"
+      }
+    },
+    "prefs": {
+      "title": "Recomandări Ventora Systems",
+      "desc": "Sugestii despre aplicații și pachete în plus care se potrivesc cu ce faci deja.",
+      "app": "În aplicație",
+      "appD": "Le vezi în pagini și în notificări, la secțiunea Recomandări.",
+      "mail": "Pe e-mail",
+      "mailD": "Disponibil în curând",
+      "notice": "Mesajele despre limitele contului tău rămân active, pentru că sunt informații despre cont, nu recomandări."
+    },
+    "mine": {
+      "nav": "Recomandările mele",
+      "navShort": "Recomandări",
+      "title": "Recomandările mele",
+      "lead": "Aplicațiile pe care le-ai recomandat proprietarului și ce a răspuns.",
+      "count": "Recomandări trimise · {n}",
+      "countLead": "Doar tu și proprietarul vedeți această listă.",
+      "st": {
+        "pending": "În așteptare",
+        "active": "Activată",
+        "notNow": "Nu acum"
+      },
+      "asked": "Recomandată lui {owner} pe {date}",
+      "answer": "Răspunsul lui {owner}, {when}:",
+      "waiting": "Proprietarul n-a răspuns încă. Primești o notificare când decide.",
+      "open": "Deschide {app}",
+      "rule": "Recomanzi o aplicație din Catalog; decizia și plata rămân la proprietar. O recomandare cu „Nu acum” poate fi trimisă din nou după 30 de zile.",
+      "empty": {
+        "title": "Nicio recomandare",
+        "body": "Când găsești în Catalog o aplicație utilă echipei, o recomanzi proprietarului de acolo.",
+        "action": "Deschide Catalogul"
+      },
+      "n": {
+        "active": "{owner} a activat {app}",
+        "activeBody": "Recomandarea ta e acum o aplicație a echipei."
+      }
+    }
   },
   "quota": {
     "platform_members": {

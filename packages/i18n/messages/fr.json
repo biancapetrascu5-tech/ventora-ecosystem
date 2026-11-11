@@ -761,6 +761,39 @@
           "f3": "Résultats : combien ont ouvert, combien ont réservé"
         }
       }
+    },
+    "growth": {
+      "cost": {
+        "month": "{amount} par mois",
+        "year": "{amount} par an",
+        "once": "{amount}, une seule fois",
+        "trial": "Gratuit pendant {days} jours. Ensuite {price}, uniquement si vous choisissez de continuer.",
+        "setup": "mise en place {amount}, une seule fois",
+        "noSetup": "sans frais de mise en place"
+      },
+      "toast": {
+        "dismissed": "Compris, nous ne vous le montrerons plus.",
+        "snoozedWeek": "Entendu, nous vous le rappellerons dans une semaine.",
+        "snoozedMonth": "Entendu, nous vous le rappellerons dans un mois."
+      },
+      "actions": {
+        "seeOptions": "Voir les options",
+        "tryFree": "Essayer gratuitement {days} jours",
+        "recommendApp": "Recommander l'application"
+      },
+      "status": {
+        "pending": "En attente",
+        "activated": "Activée",
+        "declined": "Pas maintenant"
+      },
+      "trial": {
+        "when": "Aujourd'hui, pour {days} jours",
+        "then": "Gratuit, puis {price}, uniquement si vous choisissez de continuer",
+        "started": "Vous avez {app} gratuitement jusqu'au {date}. À la fin, l'application s'arrête et tout ce que vous y avez fait est conservé.",
+        "errorTitle": "La période d'essai n'a pas démarré",
+        "errorBody": "Rien n'a changé. Réessayez dans un instant.",
+        "open": "Ouvrir {app}"
+      }
     }
   },
   "roles": {
@@ -1430,7 +1463,82 @@
     "notInterested": "Ça ne m’intéresse pas",
     "onRequestOnly": "Sur demande uniquement",
     "requestActivation": "Demander l’activation",
-    "notifyOwner": "Prévenir le propriétaire"
+    "notifyOwner": "Prévenir le propriétaire",
+    "seeApp": "Voir l’application",
+    "seeHow": "Voir comment ça marche",
+    "gotIt": "Compris",
+    "reject": "Refuser",
+    "fromTeam": "Recommandation de l’équipe",
+    "states": {
+      "search": {
+        "title": "Aucune application pour « {q} »",
+        "body": "Essayez un autre mot ou écrivez-nous ce dont vous avez besoin.",
+        "action": "Écrivez-nous"
+      },
+      "trialEnding": {
+        "title": "L’essai gratuit de {app} se termine le {date}.",
+        "body": "Elle s’arrête alors d’elle-même ; vos données restent.",
+        "action": "Voir les options"
+      },
+      "trialEnded": {
+        "title": "L’essai gratuit de {app} est terminé",
+        "body": "{app} s’est arrêtée. Vos données restent ; activez-la quand vous voulez continuer.",
+        "action": "Activer · {price}"
+      },
+      "notNow": "Pas maintenant",
+      "rejected": {
+        "title": "Nous avons refusé la recommandation.",
+        "body": "{member} voit « Pas maintenant » dans sa liste ; aucune notification n’est envoyée."
+      },
+      "activated": {
+        "title": "{owner} a activé {app}.",
+        "body": "Votre recommandation est désormais une application de l’équipe.",
+        "action": "Ouvrir {app}"
+      },
+      "member": {
+        "pending": "En attente",
+        "active": "Activée",
+        "notNow": "Pas maintenant",
+        "recommend": "Recommander l’application",
+        "owner": "{owner} (propriétaire)"
+      }
+    },
+    "prefs": {
+      "title": "Recommandations Ventora Systems",
+      "desc": "Des suggestions d’applications et de packs supplémentaires adaptés à ce que vous faites déjà.",
+      "app": "Dans l’application",
+      "appD": "Vous les voyez dans les pages et dans les notifications, rubrique Recommandations.",
+      "mail": "Par e-mail",
+      "mailD": "Bientôt disponible",
+      "notice": "Les messages sur les limites de votre compte restent actifs, car ce sont des informations de compte, pas des recommandations."
+    },
+    "mine": {
+      "nav": "Mes recommandations",
+      "navShort": "Recommandations",
+      "title": "Mes recommandations",
+      "lead": "Les applications que vous avez recommandées au propriétaire et sa réponse.",
+      "count": "Recommandations envoyées · {n}",
+      "countLead": "Seuls vous et le propriétaire voyez cette liste.",
+      "st": {
+        "pending": "En attente",
+        "active": "Activée",
+        "notNow": "Pas maintenant"
+      },
+      "asked": "Recommandée à {owner} le {date}",
+      "answer": "Réponse de {owner}, {when} :",
+      "waiting": "Le propriétaire n’a pas encore répondu. Vous recevrez une notification dès sa décision.",
+      "open": "Ouvrir {app}",
+      "rule": "Vous recommandez une application depuis le Catalogue ; la décision et le paiement restent au propriétaire. Une recommandation refusée par « Pas maintenant » peut être renvoyée après 30 jours.",
+      "empty": {
+        "title": "Aucune recommandation",
+        "body": "Quand vous trouvez dans le Catalogue une application utile à l’équipe, recommandez-la au propriétaire depuis là.",
+        "action": "Ouvrir le Catalogue"
+      },
+      "n": {
+        "active": "{owner} a activé {app}",
+        "activeBody": "Votre recommandation est désormais une application de l’équipe."
+      }
+    }
   },
   "quota": {
     "platform_members": {

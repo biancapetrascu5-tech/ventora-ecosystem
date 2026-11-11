@@ -761,6 +761,39 @@
           "f3": "Ergebnisse: wie viele geöffnet und wie viele gebucht haben"
         }
       }
+    },
+    "growth": {
+      "cost": {
+        "month": "{amount} pro Monat",
+        "year": "{amount} pro Jahr",
+        "once": "{amount}, einmalig",
+        "trial": "{days} Tage kostenlos. Danach {price}, nur wenn Sie sich für die Fortsetzung entscheiden.",
+        "setup": "Einrichtung {amount}, einmalig",
+        "noSetup": "ohne Einrichtungskosten"
+      },
+      "toast": {
+        "dismissed": "Verstanden, wir zeigen Ihnen das nicht mehr.",
+        "snoozedWeek": "Gut, wir erinnern Sie in einer Woche.",
+        "snoozedMonth": "Gut, wir erinnern Sie in einem Monat."
+      },
+      "actions": {
+        "seeOptions": "Optionen ansehen",
+        "tryFree": "{days} Tage kostenlos testen",
+        "recommendApp": "App empfehlen"
+      },
+      "status": {
+        "pending": "Ausstehend",
+        "activated": "Aktiviert",
+        "declined": "Nicht jetzt"
+      },
+      "trial": {
+        "when": "Heute, für {days} Tage",
+        "then": "Kostenlos, danach {price}, nur wenn Sie sich für die Fortsetzung entscheiden",
+        "started": "Sie haben {app} kostenlos bis zum {date}. Danach wird die App angehalten, und alles, was Sie darin erstellt haben, bleibt erhalten.",
+        "errorTitle": "Der Testzeitraum wurde nicht gestartet",
+        "errorBody": "Es hat sich nichts geändert. Versuchen Sie es in Kürze erneut.",
+        "open": "{app} öffnen"
+      }
     }
   },
   "roles": {
@@ -1430,7 +1463,82 @@
     "notInterested": "Kein Interesse",
     "onRequestOnly": "Nur auf Anfrage",
     "requestActivation": "Aktivierung anfragen",
-    "notifyOwner": "Inhaber benachrichtigen"
+    "notifyOwner": "Inhaber benachrichtigen",
+    "seeApp": "App ansehen",
+    "seeHow": "So funktioniert es",
+    "gotIt": "Verstanden",
+    "reject": "Ablehnen",
+    "fromTeam": "Empfehlung aus dem Team",
+    "states": {
+      "search": {
+        "title": "Keine App für „{q}“",
+        "body": "Versuchen Sie ein anderes Wort oder schreiben Sie uns, was Sie brauchen.",
+        "action": "Schreiben Sie uns"
+      },
+      "trialEnding": {
+        "title": "Der kostenlose Test von {app} endet am {date}.",
+        "body": "Dann stoppt die App von selbst; Ihre Daten bleiben erhalten.",
+        "action": "Optionen ansehen"
+      },
+      "trialEnded": {
+        "title": "Der kostenlose Test von {app} ist beendet",
+        "body": "{app} wurde gestoppt. Ihre Daten bleiben erhalten; Sie können die App jederzeit aktivieren, um weiterzumachen.",
+        "action": "Aktivieren · {price}"
+      },
+      "notNow": "Nicht jetzt",
+      "rejected": {
+        "title": "Wir haben die Empfehlung abgelehnt.",
+        "body": "{member} sieht „Nicht jetzt“ in der eigenen Liste; es gibt keine Benachrichtigung."
+      },
+      "activated": {
+        "title": "{owner} hat {app} aktiviert.",
+        "body": "Ihre Empfehlung ist jetzt eine App des Teams.",
+        "action": "{app} öffnen"
+      },
+      "member": {
+        "pending": "Wartet",
+        "active": "Aktiviert",
+        "notNow": "Nicht jetzt",
+        "recommend": "App empfehlen",
+        "owner": "{owner} (Inhaber)"
+      }
+    },
+    "prefs": {
+      "title": "Ventora-Systems-Empfehlungen",
+      "desc": "Vorschläge zu Apps und Zusatzpaketen, die zu dem passen, was Sie bereits nutzen.",
+      "app": "In der App",
+      "appD": "Sie sehen sie auf den Seiten und in den Benachrichtigungen, im Bereich Empfehlungen.",
+      "mail": "Per E-Mail",
+      "mailD": "Bald verfügbar",
+      "notice": "Nachrichten zu den Limits Ihres Kontos bleiben aktiv, weil sie Kontoinformationen sind, keine Empfehlungen."
+    },
+    "mine": {
+      "nav": "Meine Empfehlungen",
+      "navShort": "Empfehlungen",
+      "title": "Meine Empfehlungen",
+      "lead": "Die Apps, die Sie dem Inhaber empfohlen haben, und seine Antwort.",
+      "count": "Gesendete Empfehlungen · {n}",
+      "countLead": "Nur Sie und der Inhaber sehen diese Liste.",
+      "st": {
+        "pending": "Wartet",
+        "active": "Aktiviert",
+        "notNow": "Nicht jetzt"
+      },
+      "asked": "Am {date} an {owner} empfohlen",
+      "answer": "Antwort von {owner}, {when}:",
+      "waiting": "Der Inhaber hat noch nicht geantwortet. Sie werden benachrichtigt, sobald er entscheidet.",
+      "open": "{app} öffnen",
+      "rule": "Sie empfehlen eine App aus dem Katalog; Entscheidung und Zahlung liegen beim Inhaber. Eine Empfehlung mit „Nicht jetzt“ können Sie nach 30 Tagen erneut senden.",
+      "empty": {
+        "title": "Keine Empfehlungen",
+        "body": "Wenn Sie im Katalog eine App finden, die dem Team hilft, empfehlen Sie sie dort dem Inhaber.",
+        "action": "Katalog öffnen"
+      },
+      "n": {
+        "active": "{owner} hat {app} aktiviert",
+        "activeBody": "Ihre Empfehlung ist jetzt eine App des Teams."
+      }
+    }
   },
   "quota": {
     "platform_members": {

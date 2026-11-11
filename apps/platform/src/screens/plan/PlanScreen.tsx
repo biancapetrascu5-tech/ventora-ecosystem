@@ -13,10 +13,13 @@ import { LimitDialog } from './LimitDialog';
 import { HubLifecycleSection } from './HubLifecycleSection';
 import { PlanView, type PlanHaveRow, type PlanMeter, type PlanPackRow } from './PlanView';
 import { PurchaseDialog, type PurchaseTarget } from './PurchaseDialog';
+import { GrowthRecommendation } from '../growth/GrowthRecommendation';
 import s from './plan.module.css';
 
-/* Lotul 3.7 — HubAdminPlan din datele afacerii (S111 / S113 / S117). Fără Growth Engine (S111):
-   fără GrowthSlot și fără recomandări; pachetul care rezolvă un consum de peste 80% urcă primul și
+/* Lotul 3.7 — HubAdminPlan din datele afacerii (S111 / S113 / S117). Lotul 5.9a: slotul Growth se
+   întoarce în „Pachete în plus” (`hub.plan.packs`); gol = nimic, ca în S111. „Vezi opțiunile” pe un
+   pachet deschide PurchaseDialog (cu confirmarea lui); adminul nu cumpără (D3-8), deci vede
+   recomandarea ca membru: o trimite owner-ului. Pachetul care rezolvă un consum de peste 80% urcă primul și
    spune cât s-a folosit. Prețurile, în moneda afacerii (D3-2). Doar owner-ul cumpără (D3-8);
    adminul anunță owner-ul. */
 
@@ -372,7 +375,21 @@ export function PlanScreen({ data }: { data: PlanData }) {
           description: billing('plan.reset', { date: days.long(summary.quotaPeriod.end) }),
           meters,
         }}
-        packs={{ rows: packRows }}
+        packs={{
+          rows: packRows,
+          growth: data.recommendation ? (
+            <GrowthRecommendation
+              view={data.recommendation}
+              role={data.owner ? 'owner' : 'member'}
+              decider={data.ownerName}
+              onContinue={(v) => {
+                const o = v.addonCode ? data.offers.find((x) => x.code === v.addonCode) : null;
+                if (o) openPack(o);
+                else router.push(v.app ? `/applications/${v.app}` : '/catalog');
+              }}
+            />
+          ) : undefined,
+        }}
         invoices={
           data.payments
             ? {
