@@ -155,3 +155,11 @@ CRM (numele afișat ClientDesk) e a doua aplicație, în pachetul cu EasyBook (D
 - **Calculul:** suma, între 0 și 100, cu motivele afișate. Fără AI.
   - Se calculează la fiecare citire (`scoring.ts`), deci nu e nevoie de job. Lista se poate sorta după scor (`scoreSql`, aceleași reguli).
 - **Comutatorul:** `settings.lead_scoring_enabled` (`setLeadScoring`, `crm:settings`). Oprit înseamnă scor `null`.
+
+## Sursele de lead (CR.8b, decizia din 11.11 = S132)
+- **`crm.lead_source`:**
+  - sursele predefinite (pe cheie, scrise o dată pe afacere) se redenumesc sau se ascund, dar nu se șterg (CHECK);
+  - sursele proprii ale afacerii se adaugă (cel mult 30), se redenumesc și se șterg (în coș).
+- **Pe lead:** `source = 'custom'` cu `source_id`.
+  - Sursa se alege cu `pickSource`: o cheie predefinită care nu e ascunsă și nu e `form`, sau id-ul unei surse proprii active.
+  - Sursa existentă a unui lead se păstrează, chiar dacă e `form`.

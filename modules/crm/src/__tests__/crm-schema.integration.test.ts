@@ -152,7 +152,7 @@ describe('CR.1 — the role crm_rw and the schema', () => {
     // every new table of the schema is listed here on purpose
     // CR.2: company, contact; CR.3: custom_field; CR.4: segment, tag; CR.5: contact_merge,
     // duplicate_dismissal; CR.6: note; CR.7: activity; CR.8: lead;
-    // CR.9: deal, deal_stage_change, loss_reason, pipeline, stage
+    // CR.9: deal, deal_stage_change, loss_reason, pipeline, stage; CR.8b: lead_source
     expect(tables.map((t) => t.relname)).toEqual([
       'activity',
       'company',
@@ -163,6 +163,7 @@ describe('CR.1 — the role crm_rw and the schema', () => {
       'deal_stage_change',
       'duplicate_dismissal',
       'lead',
+      'lead_source',
       'loss_reason',
       'note',
       'outbox_events',

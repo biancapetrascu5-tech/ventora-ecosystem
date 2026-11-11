@@ -43,6 +43,13 @@ import {
   type Attachment,
 } from '../server/attachments';
 import { getTimelineInOrg, type TimelineItem } from '../server/timeline';
+import {
+  createLeadSourceInOrg,
+  deleteLeadSourceInOrg,
+  listLeadSourcesInOrg,
+  updateLeadSourceInOrg,
+  type LeadSourceDef,
+} from '../server/lead-sources';
 import { exportCsvInOrg, type ExportEntity, type ExportParams } from '../server/export';
 import {
   createDealInOrg,
@@ -853,6 +860,36 @@ export async function exportCsv(
   return exportCsvInOrg(ctx, scope, params);
 }
 
+// ── CR.8b: the lead sources (S132) ────────────────────────────────────────────────────────────
+
+/** The built-in sources and the business's own (hidden ones flagged). */
+export async function listLeadSources(params: Session): Promise<LeadSourceDef[]> {
+  const { ctx } = await access(params, 'crm:read');
+  return listLeadSourcesInOrg(ctx);
+}
+
+export async function createLeadSource(
+  params: Session & { label: unknown },
+): Promise<LeadSourceDef> {
+  const { ctx } = await access(params, 'crm:settings');
+  return createLeadSourceInOrg(ctx, params);
+}
+
+/** Rename or hide; a built-in one is never deleted. */
+export async function updateLeadSource(
+  params: Session & { sourceId: string; label?: unknown; hidden?: unknown },
+): Promise<LeadSourceDef> {
+  const { ctx } = await access(params, 'crm:settings');
+  return updateLeadSourceInOrg(ctx, params.sourceId, params);
+}
+
+/** Only the business's own sources. */
+export async function deleteLeadSource(params: Session & { sourceId: string }): Promise<void> {
+  const { ctx } = await access(params, 'crm:settings');
+  return deleteLeadSourceInOrg(ctx, params.sourceId);
+}
+
+export type { LeadSourceDef };
 export type { LeadScore, ScoreReason } from '../server/scoring';
 export type {
   ExportEntity,

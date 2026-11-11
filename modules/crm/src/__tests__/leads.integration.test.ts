@@ -19,6 +19,10 @@ import {
   reopenLead,
   setLeadState,
   setLeadScoring,
+  createLeadSource,
+  deleteLeadSource,
+  listLeadSources,
+  updateLeadSource,
   updateLead,
 } from '../contract/index';
 import { closeCrmPool } from '../server/db';
@@ -158,7 +162,15 @@ beforeAll(() => {
 });
 
 afterAll(async () => {
-  for (const table of ['activity', 'note', 'lead', 'contact', 'company', 'settings']) {
+  for (const table of [
+    'activity',
+    'note',
+    'lead',
+    'lead_source',
+    'contact',
+    'company',
+    'settings',
+  ]) {
     await adminQuery(`DELETE FROM crm.${table} WHERE organization_id = ANY($1::uuid[])`, [orgs]);
   }
   await adminQuery(`DELETE FROM crm.outbox_events WHERE organization_id = ANY($1::uuid[])`, [orgs]);
@@ -447,5 +459,77 @@ describe('CR.10 — the lead score (D-CRM-17 = the S131 rules)', () => {
     await setLeadScoring({ sessionToken: b.t, enabled: true });
     const upd = await updateLead({ sessionToken: b.t, leadId: cold.id, askedPrice: true });
     expect(upd.score).toEqual({ score: 15, reasons: [{ key: 'asked_price', points: 15 }] });
+  });
+});
+
+describe('CR.8b — the lead sources (S132, decision of 11.11)', () => {
+  it('built-in ones renamed / hidden, never deleted; the business adds and deletes its own', async () => {
+    const b = await business();
+    const builtin = await listLeadSources({ sessionToken: b.t });
+    expect(builtin.map((s) => s.key)).toEqual([
+      'form',
+      'phone',
+      'email',
+      'referral',
+      'event',
+      'manual',
+    ]);
+    const phone = builtin.find((s) => s.key === 'phone')!;
+    const event = builtin.find((s) => s.key === 'event')!;
+    expect(await refusal(deleteLeadSource({ sessionToken: b.t, sourceId: phone.id }))).toBe(
+      'source_builtin',
+    );
+    const renamed = await updateLeadSource({
+      sessionToken: b.t,
+      sourceId: phone.id,
+      label: 'Sună la salon',
+    });
+    expect(renamed).toMatchObject({ key: 'phone', label: 'Sună la salon' });
+    await updateLeadSource({ sessionToken: b.t, sourceId: event.id, hidden: true });
+    expect(await refusal(createLead({ sessionToken: b.t, name: 'X', source: 'event' }))).toBe(
+      'source:hidden',
+    );
+
+    const insta = await createLeadSource({ sessionToken: b.t, label: 'Instagram' });
+    const lead = await createLead({ sessionToken: b.t, name: 'Din Instagram', source: insta.id });
+    expect(lead).toMatchObject({ source: 'custom', sourceId: insta.id });
+    expect((await listLeads({ sessionToken: b.t, source: insta.id })).map((l) => l.id)).toEqual([
+      lead.id,
+    ]);
+    const moved = await updateLead({ sessionToken: b.t, leadId: lead.id, source: 'phone' });
+    expect(moved).toMatchObject({ source: 'phone', sourceId: null });
+
+    await deleteLeadSource({ sessionToken: b.t, sourceId: insta.id });
+    expect((await listLeadSources({ sessionToken: b.t })).map((s) => s.id)).not.toContain(insta.id);
+    expect(await refusal(createLead({ sessionToken: b.t, name: 'Y', source: insta.id }))).toBe(
+      'source:invalid',
+    );
+    const member = await person(b.org, 'member');
+    expect(await refusal(createLeadSource({ sessionToken: member.token, label: 'Z' }))).toBe(
+      'Forbidden',
+    );
+  });
+
+  it('a lead never gets the source of another business (composite key, review 11.11)', async () => {
+    const a = await business();
+    const b = await business();
+    const theirs = await createLeadSource({ sessionToken: b.t, label: 'Doar la B' });
+    // through the contract: B's source is not visible from A (RLS)
+    expect(await refusal(createLead({ sessionToken: a.t, name: 'X', source: theirs.id }))).toBe(
+      'source:invalid',
+    );
+    // in the database, even around RLS: the composite key refuses it (23503)
+    const lead = await createLead({ sessionToken: a.t, name: 'Al lui A', source: 'phone' });
+    await expect(
+      adminQuery(`UPDATE crm.lead SET source = 'custom', source_id = $2 WHERE id = $1`, [
+        lead.id,
+        theirs.id,
+      ]),
+    ).rejects.toMatchObject({ code: '23503' });
+    const ours = await createLeadSource({ sessionToken: a.t, label: 'La A' });
+    await adminQuery(`UPDATE crm.lead SET source = 'custom', source_id = $2 WHERE id = $1`, [
+      lead.id,
+      ours.id,
+    ]);
   });
 });

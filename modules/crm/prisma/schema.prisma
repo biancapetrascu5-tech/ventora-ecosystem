@@ -320,6 +320,28 @@ model DealStageChange {
   @@schema("crm")
 }
 
+/// Lot CR.8b: the lead sources (S132): built-in ones renamed / hidden, the business's own deleted.
+model LeadSource {
+  id              String    @id @db.Uuid
+  organizationId  String    @map("organization_id") @db.Uuid
+  key             String?   @db.VarChar(8)
+  label           String?   @db.VarChar(60)
+  hidden          Boolean   @default(false)
+  sortOrder       Int       @default(0) @map("sort_order")
+  deletedAt       DateTime? @map("deleted_at") @db.Timestamptz
+  deletedByUserId String?   @map("deleted_by_user_id") @db.Uuid
+  createdByUserId String?   @map("created_by_user_id") @db.Uuid
+  createdAt       DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt       DateTime  @default(now()) @map("updated_at") @db.Timestamptz
+
+  leads Lead[]
+
+  @@unique([organizationId, id], map: "lead_source_organization_id_id_key")
+  @@index([organizationId], map: "lead_source_organization_id_idx")
+  @@map("lead_source")
+  @@schema("crm")
+}
+
 /// Lot CR.8: the leads (D-CRM-3, S131), apart from the contacts; bin, no delete.
 model Lead {
   id                 String    @id @db.Uuid
@@ -329,6 +351,8 @@ model Lead {
   email              String?   @db.VarChar(254)
   request            String?   @db.VarChar(5000)
   source             String    @default("manual") @db.VarChar(8)
+  /// CR.8b: the business's own source (source = 'custom')
+  sourceId           String?   @map("source_id") @db.Uuid
   referredBy         String?   @map("referred_by") @db.VarChar(160)
   budgetMinor        BigInt?   @map("budget_minor")
   currency           String    @default("RON") @db.VarChar(3)
@@ -351,7 +375,9 @@ model Lead {
 
   convertedContact Contact? @relation(fields: [convertedContactId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "lead_converted_contact_id_fkey")
   deals            Deal[]
+  ownSource        LeadSource? @relation(fields: [organizationId, sourceId], references: [organizationId, id], onDelete: Restrict, onUpdate: Restrict, map: "lead_source_id_fkey")
 
+  @@index([sourceId], map: "lead_source_id_idx")
   @@index([organizationId, state, createdAt(sort: Desc)], map: "lead_organization_id_state_idx")
   @@index([organizationId, ownerUserId], map: "lead_organization_id_owner_idx")
   @@index([organizationId, phone], map: "lead_organization_id_phone_idx")
