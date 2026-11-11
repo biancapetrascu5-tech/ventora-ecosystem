@@ -10,10 +10,9 @@ export default defineConfig({
     env: {
       DATABASE_URL: process.env.DATABASE_URL_TEST ?? process.env.DATABASE_URL ?? '',
       DIRECT_URL: process.env.DATABASE_URL_ADMIN_TEST ?? process.env.DIRECT_URL ?? '',
-      // Lot B.8: a test-only key for the health answers (32 bytes, not a secret); the
-      // real key lives only in .env.local / Vercel
-      BOOKING_MEDICAL_KEY:
-        process.env.BOOKING_MEDICAL_KEY_TEST ?? 'dGVzdC1vbmx5LWtleS1ib29raW5nLW1lZGljYWwtMzI=',
+      // Lot B.8: the health-answer key for the tests, generated per run by test:integration
+      // (locally) and by CI; no value in the code. The real key lives only in .env.local / Vercel
+      BOOKING_MEDICAL_KEY: process.env.BOOKING_MEDICAL_KEY_TEST ?? '',
     },
   },
 });

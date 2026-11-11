@@ -10,6 +10,7 @@
  * Folosit de `pnpm test:integration`.
  */
 import { execSync } from 'node:child_process';
+import { randomBytes } from 'node:crypto';
 import { ROOT, composeCmd } from './test-db-config.mjs';
 
 // Pornire DB (import efectuează setup-ul complet)
@@ -227,6 +228,9 @@ try {
     DATABASE_URL: `postgresql://app_runtime:${TEST_DB.appPw}@localhost:${PG}/${TEST_DB.accessDb}`,
     BETTER_AUTH_SECRET: TEST_DB.betterAuthSecret,
     FOUNDER_AUTH_SECRET: TEST_DB.founderAuthSecret,
+    // Lot B.8: the health-answer key for the tests, generated per run (never in the code)
+    BOOKING_MEDICAL_KEY_TEST:
+      process.env.BOOKING_MEDICAL_KEY_TEST ?? randomBytes(32).toString('base64'),
   });
 
   // --- CRM integration tests (Lot CR.1: drift pe schema crm, apoi testele) ---
