@@ -1139,6 +1139,9 @@ importers:
       '@ventora/errors':
         specifier: workspace:*
         version: link:../../packages/errors
+      '@ventora/files':
+        specifier: workspace:*
+        version: link:../../core/files
       '@ventora/quota':
         specifier: workspace:*
         version: link:../../core/quota

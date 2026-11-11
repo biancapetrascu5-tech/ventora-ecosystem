@@ -26,7 +26,9 @@ import { normalizeEmail, normalizePhone, optionalText, requireId, LIMITS } from 
  *   - The chosen fields come from the merged contact; tags are joined; own fields missing on the
  *     kept contact are filled; the merged contact goes to the bin with merged_into_id, its unit of
  *     crm.contacts is freed, a log row is written (contact_merge). Undo: proposal (S132, 30 days).
- *   - Notes, activities, deals and files of the merged contact move with their lots (CR.6–CR.9).
+ *     CR.6: its notes and comments move onto the kept contact; its files show in the kept one's
+ *     history.
+ *   - Activities, tasks and deals of the merged contact move with their lots (CR.7–CR.9).
  */
 
 export type DuplicateReason = 'phone' | 'email' | 'name';
@@ -357,6 +359,12 @@ export async function mergeContactsInOrg(
         if (err.code === '23514') throw new Conflict('company_deleted');
         throw err;
       });
+    // CR.6: the notes and comments follow the contact that stays; its files are found through
+    // merged_into_id (timeline.ts), core/files keeps their owner
+    await client.query(
+      `UPDATE crm.note SET subject_id = $1 WHERE subject_type = 'contact' AND subject_id = $2`,
+      [keepId, mergeId],
+    );
     const mergeRowId = uuidv7();
     await client.query(
       `INSERT INTO crm.contact_merge (id, organization_id, kept_contact_id, merged_contact_id, fields_from_merged, created_by_user_id)
