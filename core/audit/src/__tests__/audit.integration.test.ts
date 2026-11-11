@@ -431,6 +431,12 @@ describe('TA.11 — invalid input rejected by the database', () => {
       [AuditActions.crmLossReasonCreated, 'crm_loss_reason'],
       [AuditActions.crmLossReasonUpdated, 'crm_loss_reason'],
       [AuditActions.crmLossReasonDeleted, 'crm_loss_reason'],
+      // C.4d / CR.11
+      [AuditActions.crmExported, 'crm_export'],
+      [AuditActions.crmImportStarted, 'crm_import'],
+      [AuditActions.crmImportCompleted, 'crm_import'],
+      [AuditActions.crmImportCancelled, 'crm_import'],
+      [AuditActions.crmContactAnonymized, 'crm_contact'],
     ];
     for (const [action, targetType] of cases) {
       const id = await writeAuditEvent(

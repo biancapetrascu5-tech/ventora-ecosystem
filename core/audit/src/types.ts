@@ -96,6 +96,9 @@ export type AuditTargetType =
   | 'crm_stage'
   | 'crm_deal'
   | 'crm_loss_reason'
+  // Lot C.4d / CR.11 (category crm)
+  | 'crm_export'
+  | 'crm_import'
   // Lot 5.10: Founder · Growth & Campaigns (core/growth, category founder)
   | 'growth_offer'
   | 'growth_audience'
