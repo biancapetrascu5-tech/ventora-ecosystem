@@ -10,14 +10,14 @@ import { requireId } from './validation';
 
 /*
  * Lot CR.6 — the record a note, a comment or a file belongs to (its „subject”), and who may see it.
- * Contact and lead (CR.8): with crm:admin every one, otherwise the own and the unassigned ones
- * (D-CRM-15). Company: every member with crm:read. Deal comes with CR.9.
+ * Contact, lead (CR.8) and deal (CR.9): with crm:admin every one, otherwise the own and the
+ * unassigned ones (D-CRM-15). Company: every member with crm:read.
  *
  * A merged contact (CR.5) is in the bin with merged_into_id: its files stay its own in core/files,
  * so a file of it is reached through the contact that stayed (followMerge).
  */
 
-export const SUBJECT_TYPES = ['contact', 'company', 'lead'] as const;
+export const SUBJECT_TYPES = ['contact', 'company', 'lead', 'deal'] as const;
 export type SubjectType = (typeof SUBJECT_TYPES)[number];
 
 export type Subject = {
@@ -32,8 +32,6 @@ const FOLLOW_MAX = 20;
 
 export function requireSubjectType(value: unknown): SubjectType {
   if ((SUBJECT_TYPES as readonly unknown[]).includes(value)) return value as SubjectType;
-  // deal: valid in the tables, not yet in ClientDesk (CR.9)
-  if (value === 'deal') throw new InvalidInput('subjectType', 'not_available');
   throw new InvalidInput('subjectType', 'invalid');
 }
 
@@ -59,10 +57,12 @@ export async function readSubject(
     if (options.write && rows[0].deleted_at) throw new Conflict('company_deleted');
     return { type, id, ownerUserId: null, deleted: rows[0].deleted_at !== null };
   }
-  if (type === 'lead') {
-    // CR.8: a lead is seen as a contact is (D-CRM-15): crm:admin, its owner, or unassigned
+  if (type === 'lead' || type === 'deal') {
+    // CR.8 / CR.9: a lead and a deal are seen as a contact is (D-CRM-15): crm:admin, its owner,
+    // or unassigned; the table is one of the two constants, never from input
+    const table = type === 'lead' ? 'crm.lead' : 'crm.deal';
     const { rows } = await client.query<{ owner_user_id: string | null; deleted_at: Date | null }>(
-      `SELECT owner_user_id, deleted_at FROM crm.lead WHERE id = $1`,
+      `SELECT owner_user_id, deleted_at FROM ${table} WHERE id = $1`,
       [id],
     );
     const row = rows[0];
@@ -70,7 +70,7 @@ export async function readSubject(
     if (scope !== 'all' && row.owner_user_id !== null && row.owner_user_id !== ctx.userId) {
       throw new Forbidden();
     }
-    if (options.write && row.deleted_at) throw new Conflict('lead_deleted');
+    if (options.write && row.deleted_at) throw new Conflict(`${type}_deleted`);
     return { type, id, ownerUserId: row.owner_user_id, deleted: row.deleted_at !== null };
   }
   for (let hop = 0; ; hop++) {
