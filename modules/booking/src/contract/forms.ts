@@ -3,12 +3,15 @@ import type { TenantContext } from '@ventora/access';
 import {
   archiveFormQuestionInOrg,
   createFormQuestionInOrg,
+  getAnswerPhotoLinkInOrg,
   getAppointmentAnswersInOrg,
+  getClientLastAnswersInOrg,
   listFormQuestionsInOrg,
   reorderFormQuestionsInOrg,
   saveAppointmentAnswersInOrg,
   updateFormQuestionInOrg,
   type AppointmentAnswer,
+  type ClientLastAnswer,
   type FormAnswerValue,
   type FormQuestion,
   type FormQuestionKind,
@@ -40,6 +43,8 @@ export type FormQuestionFields = {
   serviceIds?: string[] | null;
   required?: boolean;
   inHub?: boolean;
+  /** „Clientul poate adăuga o poză” (S127). */
+  allowsPhoto?: boolean;
   sortOrder?: number;
 };
 export type ListFormQuestionsParams = Session & { includeArchived?: boolean };
@@ -102,4 +107,31 @@ export async function saveAppointmentAnswers(
   );
 }
 
-export type { AppointmentAnswer, FormAnswerValue, FormQuestion, FormQuestionKind };
+/** The photo of an answer (S127): a signed link valid 10 minutes (booking:read). */
+export async function getAnswerPhotoLink(
+  params: Session & { appointmentId: string; questionId: string },
+): Promise<{ url: string; expiresAt: Date }> {
+  return getAnswerPhotoLinkInOrg(
+    await auth(params, 'booking:read'),
+    params.appointmentId,
+    params.questionId,
+  );
+}
+
+/**
+ * The client card (S127): the last answer to each question; only the owner, the admins and the
+ * application manager (booking:admin).
+ */
+export async function getClientLastAnswers(
+  params: Session & { clientId: string },
+): Promise<ClientLastAnswer[]> {
+  return getClientLastAnswersInOrg(await auth(params, 'booking:admin'), params.clientId);
+}
+
+export type {
+  AppointmentAnswer,
+  ClientLastAnswer,
+  FormAnswerValue,
+  FormQuestion,
+  FormQuestionKind,
+};

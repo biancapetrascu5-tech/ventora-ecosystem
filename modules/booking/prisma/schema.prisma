@@ -645,6 +645,8 @@ model PublicHold {
   moveAppointmentId String? @map("move_appointment_id") @db.Uuid
   /// B.12: the answers to the questions, while the hold is pending (wiped when it settles)
   answers           Json?
+  /// B.12: a photo was asked for on this hold (the cleanup job deletes those not moved to a booking)
+  hasPhotos         Boolean   @default(false) @map("has_photos")
 
   staffMember     StaffMember  @relation(fields: [staffMemberId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "public_hold_staff_member_id_fkey")
   service         Service      @relation(fields: [serviceId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "public_hold_service_id_fkey")
@@ -684,6 +686,7 @@ model FormQuestion {
   serviceIds       String[]  @map("service_ids") @db.Uuid
   required         Boolean   @default(false)
   inHub            Boolean   @default(false) @map("in_hub")
+  allowsPhoto      Boolean   @default(false) @map("allows_photo")
   sortOrder        Int       @default(0) @map("sort_order")
   archivedAt       DateTime? @map("archived_at") @db.Timestamptz
   archivedByUserId String?   @map("archived_by_user_id") @db.Uuid
@@ -707,6 +710,9 @@ model AppointmentAnswer {
   questionId      String    @map("question_id") @db.Uuid
   questionLabel   String    @map("question_label") @db.VarChar(160)
   value           Json?
+  /// the optional photo: files.file.id (core/files; another schema, no FK)
+  photoFileId     String?   @map("photo_file_id") @db.Uuid
+  photoDeletedAt  DateTime? @map("photo_deleted_at") @db.Timestamptz
   source          String    @db.VarChar(6)
   updatedByUserId String?   @map("updated_by_user_id") @db.Uuid
   wipedAt         DateTime? @map("wiped_at") @db.Timestamptz

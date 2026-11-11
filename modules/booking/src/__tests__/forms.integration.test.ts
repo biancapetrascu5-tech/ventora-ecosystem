@@ -4,17 +4,22 @@ import { configureAccess } from '@ventora/access';
 import { closeAuditPools } from '@ventora/audit';
 import { Conflict, Forbidden, InvalidInput, ResourceNotFound } from '@ventora/errors';
 import { CaptureEmailAdapter, setEmailChannel } from '@ventora/notifications';
+import { MemoryStorageAdapter, closeFilesPool, setStorageAdapter } from '@ventora/files';
 import {
   archiveFormQuestion,
   configurePublicBooking,
   createFormQuestion,
   createService,
   eraseClient,
+  confirmPublicAnswerPhoto,
+  getAnswerPhotoLink,
   getAppointmentAnswers,
+  getClientLastAnswers,
   getPublicBookingPage,
   listFormQuestions,
   listStaff,
   reorderFormQuestions,
+  requestPublicAnswerPhoto,
   saveAppointmentAnswers,
   setBusinessHours,
   startPublicBooking,
@@ -22,6 +27,10 @@ import {
   verifyPublicBooking,
 } from '../contract/index.js';
 import { closeBookingPool } from '../server/db.js';
+import { runPublicHoldCleanupJob } from '../server/public-cleanup.js';
+
+const storage = new MemoryStorageAdapter();
+const JPEG = Uint8Array.from([0xff, 0xd8, 0xff, 0xe0, 0, 16, 0x4a, 0x46, 0x49, 0x46]);
 
 /*
  * Lot B.12 on a real Postgres: the questions at booking (BookingCustomForms, S127). The salon's
@@ -226,6 +235,9 @@ async function start(
 }
 
 beforeAll(async () => {
+  setStorageAdapter(storage);
+  process.env.FILES_LINK_SECRET = 'integration-files-link-secret-0123456789';
+  process.env.NEXT_PUBLIC_PLATFORM_URL = 'https://hub.example.test';
   configureAccess({ entitlementProvider: { isEnabled: async () => true } });
   configurePublicBooking({ captcha: async (token) => token === 'ok' });
   const orgA = await createOrg();
@@ -290,6 +302,11 @@ afterAll(async () => {
     [orgs],
   );
   await adminQuery(`DELETE FROM organizations.organization WHERE id = ANY($1::uuid[])`, [orgs]);
+  for (const table of ['outbox_events', 'file']) {
+    await adminQuery(`DELETE FROM files.${table} WHERE organization_id = ANY($1::uuid[])`, [orgs]);
+  }
+  setStorageAdapter(null);
+  await closeFilesPool();
   await closeBookingPool();
   await closeAuditPools();
   await runtimePool.end();
@@ -311,6 +328,26 @@ async function asBookingRw<T>(organizationId: string, fn: (client: PoolClient) =
     await client.query('ROLLBACK').catch(() => {});
     client.release();
   }
+}
+
+/** The photo of a question on a pending hold, as the page does it: link, bytes, confirm. */
+async function photo(holdId: string, questionId: string, bytes = JPEG, slug = A.slug) {
+  const { fileId } = await requestPublicAnswerPhoto({
+    slug,
+    holdId,
+    questionId,
+    name: 'look.jpg',
+    contentType: 'image/jpeg',
+    sizeBytes: bytes.length,
+  });
+  storage.put(`${A.org}/${fileId}`, bytes, 'image/jpeg');
+  return confirmPublicAnswerPhoto({ slug, holdId, fileId });
+}
+
+async function fileStatus(fileId: string) {
+  return (
+    await adminQuery<{ status: string }>(`SELECT status FROM files.file WHERE id = $1`, [fileId])
+  )[0]?.status;
 }
 
 const q = (fields: Record<string, unknown>) =>
@@ -352,6 +389,7 @@ describe('B.12 — the questions (Setări)', () => {
       serviceIds: [svcA],
       required: true,
       inHub: true,
+      allowsPhoto: true,
     });
     qPick = pick.id;
     expect(pick).toMatchObject({
@@ -360,6 +398,7 @@ describe('B.12 — the questions (Setări)', () => {
       serviceIds: [svcA],
       required: true,
       inHub: true,
+      allowsPhoto: true,
       archivedAt: null,
     });
     qOther = (await q({ label: 'Doar la vopsit', kind: 'long_text', serviceIds: [svc2] })).id;
@@ -416,11 +455,13 @@ describe('B.12 — the questions (Setări)', () => {
     const page = await getPublicBookingPage({ slug: A.slug });
     expect(page.questions.map((x) => x.id)).toEqual(order);
     expect(page.questions[0]).not.toHaveProperty('inHub');
+    expect(page.questions[0]).toMatchObject({ id: qPick, allowsPhoto: true });
   });
 });
 
 describe('B.12 — the answers on the public page and on the booking', () => {
   let appointmentId: string;
+  let photoId: string;
 
   it('a required question left empty: „Răspundeți la această întrebare.”; wrong values refused', async () => {
     expect(await refusal(start(A.slug, 9, visitor(), { answers: [] }))).toBe(
@@ -474,6 +515,25 @@ describe('B.12 — the answers on the public page and on the booking', () => {
       [hold.holdId],
     );
     expect(pending!.answers).toHaveLength(3);
+    // S127: the optional photo, only for a question that allows it, on this pending hold
+    expect(await refusal(photo(hold.holdId, qColor))).toBe('questionId:invalid');
+    await expect(
+      requestPublicAnswerPhoto({
+        slug: A.slug,
+        holdId: hold.holdId,
+        questionId: qPick,
+        name: 'a.pdf',
+        contentType: 'application/pdf',
+        sizeBytes: 100,
+      }),
+    ).rejects.toBeInstanceOf(InvalidInput);
+    // T1: the hold of A is not found through the slug of B
+    expect(await errorOf(photo(hold.holdId, qPick, JPEG, B.slug))).toBeInstanceOf(ResourceNotFound);
+    const shot = await photo(hold.holdId, qPick);
+    expect(shot.questionId).toBe(qPick);
+    photoId = shot.fileId;
+    // one per question
+    expect(await refusal(photo(hold.holdId, qPick))).toBe('file_exists');
     const res = await verifyPublicBooking({
       slug: A.slug,
       holdId: hold.holdId,
@@ -493,6 +553,7 @@ describe('B.12 — the answers on the public page and on the booking', () => {
         label: 'Lungimea părului',
         kind: 'choice',
         value: 'Lung',
+        hasPhoto: true,
         source: 'client',
       },
       {
@@ -500,12 +561,35 @@ describe('B.12 — the answers on the public page and on the booking', () => {
         label: 'Ce culoare doriți?',
         kind: 'short_text',
         value: 'Blond cenușiu',
+        hasPhoto: false,
         source: 'client',
       },
-      { questionId: qNum, label: 'Câți ani aveți?', kind: 'number', value: 41, source: 'client' },
+      {
+        questionId: qNum,
+        label: 'Câți ani aveți?',
+        kind: 'number',
+        value: 41,
+        hasPhoto: false,
+        source: 'client',
+      },
       // optional, left empty: „Fără răspuns”
-      { questionId: qFirst, label: 'Prima vizită?', kind: 'yes_no', value: null, source: null },
+      {
+        questionId: qFirst,
+        label: 'Prima vizită?',
+        kind: 'yes_no',
+        value: null,
+        hasPhoto: false,
+        source: null,
+      },
     ]);
+    const link = await getAnswerPhotoLink({
+      sessionToken: A.owner.token,
+      appointmentId,
+      questionId: qPick,
+    });
+    expect(link.url).toContain('/files/');
+    // a photo after the code: the hold is no longer pending
+    expect(await refusal(photo(hold.holdId, qPick))).toBe('code_expired');
   });
 
   it('an edit of the question does not change what the client answered', async () => {
@@ -576,6 +660,55 @@ describe('B.12 — the answers on the public page and on the booking', () => {
     ).rejects.toMatchObject({ code: '23503' });
   });
 
+  it('the cleanup job deletes the photos of an expired hold and keeps those on a booking', async () => {
+    const { hold } = await start(A.slug, 13, visitor(), {
+      answers: [
+        { questionId: qPick, value: 'Scurt' },
+        { questionId: qColor, value: 'Negru' },
+      ],
+    });
+    const lost = await photo(hold.holdId, qPick);
+    await adminQuery(
+      `UPDATE booking.public_hold SET expires_at = now() - interval '1 minute' WHERE id = $1`,
+      [hold.holdId],
+    );
+    const report = await runPublicHoldCleanupJob();
+    expect(report.failed).toEqual([]);
+    expect(report.photosDeleted).toBeGreaterThanOrEqual(1);
+    expect(await fileStatus(lost.fileId)).toBe('deleted');
+    expect(storage.objects.has(`${A.org}/${lost.fileId}`)).toBe(false);
+    // the photo moved to the confirmed booking stays
+    expect(await fileStatus(photoId)).toBe('ready');
+    const left = await adminQuery<{ n: number }>(
+      `SELECT count(*)::int AS n FROM booking.public_hold
+        WHERE organization_id = $1 AND has_photos`,
+      [A.org],
+    );
+    expect(left[0]!.n).toBe(0);
+  });
+
+  it('the client card: the last answer to each question, only for booking:admin', async () => {
+    const [{ client_id }] = await adminQuery<{ client_id: string }>(
+      `SELECT client_id FROM booking.appointment WHERE id = $1`,
+      [appointmentId],
+    );
+    const last = await getClientLastAnswers({ sessionToken: A.owner.token, clientId: client_id });
+    expect(last.map((a) => [a.questionId, a.value, a.hasPhoto])).toEqual([
+      [qPick, 'Lung', true],
+      [qColor, 'Blond cenușiu', false],
+      [qFirst, 'yes', false],
+      [qNum, 41, false],
+    ]);
+    expect(last.every((a) => a.appointmentId === appointmentId)).toBe(true);
+    const member = await person(A.org, 'member', 'Mia Membru');
+    expect(
+      await errorOf(getClientLastAnswers({ sessionToken: member.token, clientId: client_id })),
+    ).toBeInstanceOf(Forbidden);
+    expect(
+      await errorOf(getClientLastAnswers({ sessionToken: B.owner.token, clientId: client_id })),
+    ).toBeInstanceOf(ResourceNotFound);
+  });
+
   it('no DELETE for booking_rw; the answers are wiped by the GDPR erasure', async () => {
     await asBookingRw(A.org, async (c) => {
       await expect(
@@ -593,7 +726,46 @@ describe('B.12 — the answers on the public page and on the booking', () => {
       `SELECT client_id FROM booking.appointment WHERE id = $1`,
       [appointmentId],
     );
-    await eraseClient({ sessionToken: A.owner.token, clientId: client_id });
+    const erased = await eraseClient({ sessionToken: A.owner.token, clientId: client_id });
+    // S127: the client's photos marked by erase_client and deleted through core/files
+    expect(erased.photosPending).toBe(0);
+    expect(await fileStatus(photoId)).toBe('deleted');
+    const [marked] = await adminQuery<{ deleted: boolean }>(
+      `SELECT photo_deleted_at IS NOT NULL AS deleted FROM booking.appointment_answer
+        WHERE appointment_id = $1 AND question_id = $2`,
+      [appointmentId, qPick],
+    );
+    expect(marked!.deleted).toBe(true);
+    expect(
+      await errorOf(
+        getAnswerPhotoLink({ sessionToken: A.owner.token, appointmentId, questionId: qPick }),
+      ),
+    ).toBeInstanceOf(ResourceNotFound);
+    expect(
+      await getClientLastAnswers({ sessionToken: A.owner.token, clientId: client_id }),
+    ).toEqual([]);
+    // C.4f: one deletion path, an audit row `system` per photo (category booking, reason client_erased)
+    const audit = await adminQuery<{ n: number }>(
+      `SELECT count(*)::int AS n FROM audit.audit_log
+        WHERE action = 'file.deleted_by_system' AND target_id = $1
+          AND metadata->>'reason' = 'client_erased'`,
+      [photoId],
+    );
+    expect(audit[0]!.n).toBe(1);
+    // a photo still marked (the storage refused it at the erasure): the cleanup job retries it
+    await adminQuery(
+      `UPDATE booking.appointment_answer SET photo_deleted_at = NULL
+        WHERE appointment_id = $1 AND question_id = $2`,
+      [appointmentId, qPick],
+    );
+    const retry = await runPublicHoldCleanupJob();
+    expect(retry.failed).toEqual([]);
+    const [again] = await adminQuery<{ deleted: boolean }>(
+      `SELECT photo_deleted_at IS NOT NULL AS deleted FROM booking.appointment_answer
+        WHERE appointment_id = $1 AND question_id = $2`,
+      [appointmentId, qPick],
+    );
+    expect(again!.deleted).toBe(true);
     const rows = await adminQuery<{ value: unknown; wiped: boolean }>(
       `SELECT value, wiped_at IS NOT NULL AS wiped FROM booking.appointment_answer
         WHERE appointment_id = $1`,

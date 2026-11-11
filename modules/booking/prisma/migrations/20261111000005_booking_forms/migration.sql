@@ -14,8 +14,18 @@
 --   public_hold       → the answers given on the public page wait in the hold (answers) while it is
 --                       pending, like the message; settling the hold wipes them.
 --
--- Additive: two tables, one column on public_hold (its two CHECKs recreated with it), erase_client
--- recreated with its previous body plus the answers. RLS (USING + WITH CHECK), grants only to
+-- The optional photo (the founder's decision at S127, 11.11.2026): a question may let the client add
+-- a photo (allows_photo, „Clientul poate adăuga o poză”). The photo is a file of core/files (PNG /
+-- JPEG, at most 10 MB): on the public page an anonymous upload bound to the pending hold (C.4g), at
+-- most one per question and 5 per hold; on the booking, appointment_answer.photo_file_id. The photos
+-- of a hold that expires or is refused are deleted by booking.public-hold-cleanup (has_photos tells
+-- it which holds to look at), through the system deletion of core/files (C.4f). The GDPR erasure
+-- marks the client's photos (the answer wiped, photo_deleted_at still NULL); the application then
+-- deletes them the same way, and the job retries the ones still marked.
+--
+-- Additive: two tables, two columns on public_hold (its two CHECKs recreated with them),
+-- public_hold_cleanup_due and erase_client recreated with their previous bodies plus the photos and
+-- the answers. RLS (USING + WITH CHECK), grants only to
 -- booking_rw, no DELETE. No new role, no new audit category or code (booking.settings_updated), no
 -- package.
 
@@ -33,6 +43,8 @@ CREATE TABLE "booking"."form_question" (
     "required"            BOOLEAN      NOT NULL DEFAULT false,
     -- „Apare și când echipa face programarea din Hub”
     "in_hub"              BOOLEAN      NOT NULL DEFAULT false,
+    -- „Clientul poate adăuga o poză” (S127): an optional photo with the answer
+    "allows_photo"        BOOLEAN      NOT NULL DEFAULT false,
     "sort_order"          INTEGER      NOT NULL DEFAULT 0,
     "archived_at"         TIMESTAMPTZ,
     "archived_by_user_id" UUID,
@@ -72,6 +84,10 @@ CREATE TABLE "booking"."appointment_answer" (
     -- a string (text, yes / no, choice, date), an array of strings (several choices) or a number;
     -- NULL once wiped
     "value"              JSONB,
+    -- the optional photo (core/files, files.file.id; another schema, so no FK); kept after the
+    -- erasure until the file is deleted (photo_deleted_at)
+    "photo_file_id"      UUID,
+    "photo_deleted_at"   TIMESTAMPTZ,
     -- client: the public page; team: from the Hub
     "source"             VARCHAR(6)   NOT NULL,
     "updated_by_user_id" UUID,
@@ -86,10 +102,14 @@ CREATE TABLE "booking"."appointment_answer" (
       REFERENCES "booking"."form_question"("organization_id", "id") ON DELETE RESTRICT ON UPDATE RESTRICT,
     CONSTRAINT "appointment_answer_label_check"
       CHECK (char_length("question_label") BETWEEN 1 AND 160),
+    -- a live answer has a value or a photo (or both); a wiped one has no value
     CONSTRAINT "appointment_answer_value_check" CHECK (
-      ("value" IS NULL) = ("wiped_at" IS NOT NULL)
+      (("wiped_at" IS NULL AND ("value" IS NOT NULL OR "photo_file_id" IS NOT NULL))
+       OR ("wiped_at" IS NOT NULL AND "value" IS NULL))
       AND ("value" IS NULL OR jsonb_typeof("value") IN ('string', 'array', 'number'))
     ),
+    CONSTRAINT "appointment_answer_photo_check"
+      CHECK ("photo_deleted_at" IS NULL OR "photo_file_id" IS NOT NULL),
     CONSTRAINT "appointment_answer_source_check" CHECK (
       ("source" = 'client' AND "updated_by_user_id" IS NULL)
       OR ("source" = 'team' AND "updated_by_user_id" IS NOT NULL)
@@ -125,13 +145,16 @@ CREATE POLICY booking_rw_appointment_answer ON "booking"."appointment_answer"
 REVOKE ALL ON "booking"."form_question", "booking"."appointment_answer" FROM PUBLIC;
 GRANT SELECT, INSERT ON "booking"."form_question", "booking"."appointment_answer" TO booking_rw;
 GRANT UPDATE ("label", "kind", "options", "help_text", "service_ids", "required", "in_hub",
-              "sort_order", "archived_at", "archived_by_user_id", "updated_at")
+              "allows_photo", "sort_order", "archived_at", "archived_by_user_id", "updated_at")
   ON "booking"."form_question" TO booking_rw;
-GRANT UPDATE ("question_label", "value", "source", "updated_by_user_id", "wiped_at", "updated_at")
+GRANT UPDATE ("question_label", "value", "photo_file_id", "photo_deleted_at", "source",
+              "updated_by_user_id", "wiped_at", "updated_at")
   ON "booking"."appointment_answer" TO booking_rw;
 
 -- public_hold: the answers wait in the hold while it is pending (personal data, like the message)
 ALTER TABLE "booking"."public_hold" ADD COLUMN "answers" JSONB;
+-- a photo was asked for on this hold: the cleanup job deletes the photos not moved to a booking
+ALTER TABLE "booking"."public_hold" ADD COLUMN "has_photos" BOOLEAN NOT NULL DEFAULT false;
 ALTER TABLE "booking"."public_hold"
   ADD CONSTRAINT "public_hold_answers_check"
     CHECK ("answers" IS NULL OR jsonb_typeof("answers") = 'array');
@@ -149,10 +172,44 @@ ALTER TABLE "booking"."public_hold"
     ("move_appointment_id" IS NULL AND "code_hash" IS NOT NULL)
     OR ("move_appointment_id" IS NOT NULL AND "code_hash" IS NULL
         AND "client_name" IS NULL AND "client_phone" IS NULL AND "client_email" IS NULL
-        AND "message" IS NULL AND "answers" IS NULL
+        AND "message" IS NULL AND "answers" IS NULL AND NOT "has_photos"
         AND ("appointment_id" IS NULL OR "appointment_id" = "move_appointment_id"))
   );
-GRANT UPDATE ("answers") ON "booking"."public_hold" TO booking_rw;
+GRANT UPDATE ("answers", "has_photos") ON "booking"."public_hold" TO booking_rw;
+
+-- The job booking.public-hold-cleanup also deletes the photos of the settled holds (expired,
+-- refused, or confirmed with photos not moved to the booking) and retries the photos of erased
+-- clients still marked: the businesses with such rows are added to its list (only ids). The same function as in booking_manage plus that branch; CREATE OR
+-- REPLACE keeps its grant (EXECUTE only booking_rw).
+CREATE OR REPLACE FUNCTION booking.public_hold_cleanup_due(p_limit INTEGER)
+RETURNS TABLE (organization_id UUID)
+LANGUAGE sql
+STABLE
+SECURITY DEFINER
+SET search_path = pg_catalog, pg_temp
+AS $$
+  SELECT q.organization_id FROM (
+    SELECT h.organization_id
+      FROM booking.public_hold h
+     WHERE (h.state = 'pending' AND h.expires_at <= now())
+        OR ((h.email_hash IS NOT NULL OR h.ip_hash IS NOT NULL)
+            AND h.created_at < now() - INTERVAL '24 hours')
+        OR (h.has_photos AND h.state <> 'pending')
+    UNION
+    -- the photos of erased clients still marked (the storage refused them at the erasure)
+    SELECT q.organization_id
+      FROM booking.appointment_answer q
+     WHERE q.wiped_at IS NOT NULL AND q.photo_file_id IS NOT NULL AND q.photo_deleted_at IS NULL
+    UNION
+    SELECT t.organization_id
+      FROM booking.manage_token t
+      JOIN booking.appointment a
+        ON a.organization_id = t.organization_id AND a.id = t.appointment_id
+     WHERE t.revoked_at IS NULL AND a.ends_at < now() - INTERVAL '30 days'
+  ) q
+   ORDER BY q.organization_id
+   LIMIT LEAST(GREATEST(COALESCE(p_limit, 1), 1), 500);
+$$;
 
 -- ── the GDPR erasure, extended (the founder's rule of 10.11.2026) ────────────────────────────
 -- The same function as in booking_manage, plus the answers to the questions of the client's bookings.
@@ -234,7 +291,8 @@ BEGIN
        SELECT a.id FROM booking.appointment a
         WHERE a.organization_id = v_org AND a.client_id = ANY (v_ids));
 
-  -- B.12: the answers to the salon's questions, wiped
+  -- B.12: the answers to the salon's questions, wiped; their photos marked (photo_file_id kept,
+  -- photo_deleted_at NULL) for the deletion through core/files
   UPDATE booking.appointment_answer q
      SET value = NULL, wiped_at = now()
    WHERE q.organization_id = v_org AND q.wiped_at IS NULL

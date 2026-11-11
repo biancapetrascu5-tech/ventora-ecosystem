@@ -3,6 +3,8 @@ import {
   getPublicBookingPage as pageInOrg,
   getPublicFreeSlots as slotsInOrg,
   resendPublicBookingCode as resendInOrg,
+  requestPublicAnswerPhoto as requestPhotoInOrg,
+  confirmPublicAnswerPhoto as confirmPhotoInOrg,
   startPublicBooking as startInOrg,
   verifyPublicBooking as verifyInOrg,
   type CaptchaVerifier,
@@ -77,6 +79,31 @@ export function resendPublicBookingCode(params: {
   holdId: string;
 }): Promise<{ expiresAt: Date }> {
   return resendInOrg(params.slug, params);
+}
+
+/**
+ * B.12 (S127): the upload link for the optional photo of a question, only on a pending hold of the
+ * business (after the anti-robot check of startPublicBooking): PNG / JPEG, at most 10 MB, one per
+ * question, 5 per hold.
+ */
+export function requestPublicAnswerPhoto(params: {
+  slug: string;
+  holdId: string;
+  questionId: string;
+  name: string;
+  contentType: string;
+  sizeBytes: number;
+}): Promise<{ fileId: string; uploadUrl: string; expiresAt: Date }> {
+  return requestPhotoInOrg(params.slug, params);
+}
+
+/** After the upload: the photo checked by its content; it goes to the booking with the code. */
+export function confirmPublicAnswerPhoto(params: {
+  slug: string;
+  holdId: string;
+  fileId: string;
+}): Promise<{ fileId: string; questionId: string }> {
+  return confirmPhotoInOrg(params.slug, params);
 }
 
 export { configurePublicBooking };

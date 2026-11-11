@@ -256,6 +256,8 @@ export {
   verifyPublicBooking,
   resendPublicBookingCode,
   configurePublicBooking,
+  requestPublicAnswerPhoto,
+  confirmPublicAnswerPhoto,
 } from './public';
 export type {
   PublicSlotsParams,
@@ -292,6 +294,8 @@ export {
   reorderFormQuestions,
   getAppointmentAnswers,
   saveAppointmentAnswers,
+  getAnswerPhotoLink,
+  getClientLastAnswers,
 } from './forms';
 export type {
   FormQuestionFields,
@@ -303,6 +307,7 @@ export type {
   AppointmentAnswersParams,
   SaveAppointmentAnswersParams,
   AppointmentAnswer,
+  ClientLastAnswer,
   FormAnswerValue,
   FormQuestion,
   FormQuestionKind,

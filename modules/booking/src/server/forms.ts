@@ -3,6 +3,7 @@ import { AuditActions, appendAuditEventInTx, type AuditSqlExecutor } from '@vent
 import type { TenantContext } from '@ventora/access';
 import { uuidv7 } from '@ventora/db-kit';
 import { Forbidden, InvalidInput, ResourceNotFound } from '@ventora/errors';
+import { deleteFileAsSystem, getDownloadLink } from '@ventora/files';
 import { withBookingTx } from './db';
 import { isUuid } from './validation';
 import { hubOnly } from './actor';
@@ -14,10 +15,13 @@ import { hubOnly } from './actor';
  * team answers from the Hub only the questions marked „Apare și când echipa face programarea din
  * Hub”. The answers live on the booking, with the text of the question as it was asked.
  *
- * Health questions never go here (B.8, separate consent). S127, proposed (DE DECIS): no file
- * uploads; at most 5 questions per service; the answers stay on the booking. The changes of the
- * questions are logged as booking.settings_updated (no new audit code); the answers never go to
- * the log, only which questions.
+ * Health questions never go here (B.8, separate consent). S127, decided by the founder (11.11.2026):
+ * at most 5 questions per service, with an optional photo (a question with „Clientul poate adăuga o
+ * poză”; the photo is a file of core/files, PNG / JPEG up to 10 MB, bound to the answer); the
+ * answers stay on the booking and the last answer to each question is shown on the client card, only
+ * to the owner, the admins and the application manager (booking:admin). The changes of the questions
+ * are logged as booking.settings_updated (no new audit code); the answers never go to the log, only
+ * which questions (approved 11.11.2026).
  */
 
 export const FORM_LIMITS = {
@@ -57,6 +61,8 @@ export type FormQuestion = {
   required: boolean;
   /** „Apare și când echipa face programarea din Hub”. */
   inHub: boolean;
+  /** „Clientul poate adăuga o poză” (S127): an optional photo with the answer. */
+  allowsPhoto: boolean;
   sortOrder: number;
   archivedAt: Date | null;
 };
@@ -64,7 +70,7 @@ export type FormQuestion = {
 /** The question as the public page shows it (no archive, no Hub flag). */
 export type PublicFormQuestion = Pick<
   FormQuestion,
-  'id' | 'label' | 'kind' | 'options' | 'helpText' | 'serviceIds' | 'required'
+  'id' | 'label' | 'kind' | 'options' | 'helpText' | 'serviceIds' | 'required' | 'allowsPhoto'
 >;
 
 /** yes / no as 'yes' | 'no'; a date as YYYY-MM-DD; several choices as the chosen options. */
@@ -78,7 +84,21 @@ export type AppointmentAnswer = {
   label: string;
   kind: FormQuestionKind;
   value: FormAnswerValue | null;
+  /** An optional photo (S127): its link comes from getAnswerPhotoLink. */
+  hasPhoto: boolean;
   source: 'client' | 'team' | null;
+};
+
+/** The client card (booking:admin): the last answer to each question, from the client's bookings. */
+export type ClientLastAnswer = {
+  questionId: string;
+  label: string;
+  kind: FormQuestionKind;
+  value: FormAnswerValue | null;
+  hasPhoto: boolean;
+  appointmentId: string;
+  /** When the booking was (its start). */
+  startsAt: Date;
 };
 
 type QuestionRow = {
@@ -90,12 +110,13 @@ type QuestionRow = {
   service_ids: string[] | null;
   required: boolean;
   in_hub: boolean;
+  allows_photo: boolean;
   sort_order: number;
   archived_at: Date | null;
 };
 
 const QUESTION_COLUMNS = `id, label, kind, options, help_text, service_ids, required, in_hub,
-  sort_order, archived_at`;
+  allows_photo, sort_order, archived_at`;
 
 function toQuestion(r: QuestionRow): FormQuestion {
   return {
@@ -107,6 +128,7 @@ function toQuestion(r: QuestionRow): FormQuestion {
     serviceIds: r.service_ids,
     required: r.required,
     inHub: r.in_hub,
+    allowsPhoto: r.allows_photo,
     sortOrder: r.sort_order,
     archivedAt: r.archived_at,
   };
@@ -121,6 +143,7 @@ export function toPublicQuestion(q: FormQuestion): PublicFormQuestion {
     helpText: q.helpText,
     serviceIds: q.serviceIds,
     required: q.required,
+    allowsPhoto: q.allowsPhoto,
   };
 }
 
@@ -160,6 +183,7 @@ export type FormQuestionInput = {
   serviceIds?: unknown;
   required?: unknown;
   inHub?: unknown;
+  allowsPhoto?: unknown;
   sortOrder?: unknown;
 };
 
@@ -214,6 +238,9 @@ function validateQuestion(input: FormQuestionInput) {
   if (input.inHub !== undefined && typeof input.inHub !== 'boolean') {
     throw new InvalidInput('inHub', 'invalid');
   }
+  if (input.allowsPhoto !== undefined && typeof input.allowsPhoto !== 'boolean') {
+    throw new InvalidInput('allowsPhoto', 'invalid');
+  }
   const sortOrder = input.sortOrder;
   if (
     sortOrder !== undefined &&
@@ -232,6 +259,7 @@ function validateQuestion(input: FormQuestionInput) {
     serviceIds,
     required: input.required === true,
     inHub: input.inHub === true,
+    allowsPhoto: input.allowsPhoto === true,
     sortOrder: sortOrder as number | undefined,
   };
 }
@@ -331,8 +359,8 @@ export async function createFormQuestionInOrg(
     const { rows } = await client.query<QuestionRow>(
       `INSERT INTO booking.form_question
          (id, organization_id, label, kind, options, help_text, service_ids, required, in_hub,
-          sort_order, created_by_user_id)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING ${QUESTION_COLUMNS}`,
+          sort_order, created_by_user_id, allows_photo)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING ${QUESTION_COLUMNS}`,
       [
         id,
         ctx.organizationId,
@@ -345,6 +373,7 @@ export async function createFormQuestionInOrg(
         q.inHub,
         Math.min(sortOrder, 1_000_000),
         ctx.userId,
+        q.allowsPhoto,
       ],
     );
     await audit(exec, ctx, { formQuestion: { op: 'created', id, kind: q.kind } });
@@ -374,7 +403,7 @@ export async function updateFormQuestionInOrg(
     const { rows } = await client.query<QuestionRow>(
       `UPDATE booking.form_question
           SET label = $2, kind = $3, options = $4, help_text = $5, service_ids = $6, required = $7,
-              in_hub = $8, sort_order = COALESCE($9, sort_order)
+              in_hub = $8, sort_order = COALESCE($9, sort_order), allows_photo = $10
         WHERE id = $1 RETURNING ${QUESTION_COLUMNS}`,
       [
         id,
@@ -386,6 +415,7 @@ export async function updateFormQuestionInOrg(
         q.required,
         q.inHub,
         q.sortOrder ?? null,
+        q.allowsPhoto,
       ],
     );
     await audit(exec, ctx, { formQuestion: { op: 'updated', id, kind: q.kind } });
@@ -580,6 +610,29 @@ export function validateAnswers(
   return out;
 }
 
+/**
+ * The photos given on the public page (S127), moved to the booking with the answers: one per
+ * question, in the same row as the answer (a photo without a written answer is an answer too).
+ */
+export async function writePhotos(
+  client: PoolClient,
+  organizationId: string,
+  appointmentId: string,
+  photos: Array<{ questionId: string; label: string; fileId: string }>,
+): Promise<void> {
+  for (const p of photos) {
+    await client.query(
+      `INSERT INTO booking.appointment_answer
+         (id, organization_id, appointment_id, question_id, question_label, photo_file_id, source)
+       VALUES ($1, $2, $3, $4, $5, $6, 'client')
+       ON CONFLICT (appointment_id, question_id) DO UPDATE
+         SET photo_file_id = EXCLUDED.photo_file_id
+       WHERE booking.appointment_answer.wiped_at IS NULL`,
+      [uuidv7(), organizationId, appointmentId, p.questionId, p.label, p.fileId],
+    );
+  }
+}
+
 /** Writes the answers of a booking (one row per question; a new answer replaces the old one). */
 export async function writeAnswers(
   client: PoolClient,
@@ -659,9 +712,11 @@ export async function getAppointmentAnswersInOrg(
           question_label: string;
           kind: FormQuestionKind;
           value: FormAnswerValue | null;
+          has_photo: boolean;
           source: 'client' | 'team';
         }>(
-          `SELECT a.question_id, a.question_label, q.kind, a.value, a.source
+          `SELECT a.question_id, a.question_label, q.kind, a.value, a.source,
+                  (a.photo_file_id IS NOT NULL AND a.wiped_at IS NULL) AS has_photo
              FROM booking.appointment_answer a
              JOIN booking.form_question q ON q.id = a.question_id
             WHERE a.appointment_id = $1
@@ -681,13 +736,15 @@ export async function getAppointmentAnswersInOrg(
           label: a.question_label,
           kind: a.kind,
           value: a.value,
-          source: a.value === null ? null : a.source,
+          hasPhoto: a.has_photo,
+          source: a.value === null && !a.has_photo ? null : a.source,
         })),
         ...empty.map((q) => ({
           questionId: q.id,
           label: q.label,
           kind: q.kind,
           value: null,
+          hasPhoto: false,
           source: null,
         })),
       ];
@@ -734,4 +791,140 @@ export async function saveAppointmentAnswersInOrg(
     );
   });
   return getAppointmentAnswersInOrg(ctx, appointmentId);
+}
+
+// ── the photos (S127) ───────────────────────────────────────────────────────────────────────
+
+/** The owner of a photo in core/files: the hold (public page) and the question. */
+export function photoOwner(holdId: string, questionId: string) {
+  return { module: 'booking', resourceType: 'answer_photo', resourceId: `${holdId}:${questionId}` };
+}
+
+/** A signed, expiring link to the photo of an answer (booking:read), for the booking detail. */
+export async function getAnswerPhotoLinkInOrg(
+  ctx: TenantContext,
+  appointmentIdRaw: unknown,
+  questionIdRaw: unknown,
+): Promise<{ url: string; expiresAt: Date }> {
+  hubOnly(ctx);
+  const appointmentId = requireId(appointmentIdRaw);
+  const questionId = requireId(questionIdRaw);
+  const fileId = await withBookingTx(
+    ctx.organizationId,
+    async (client) =>
+      (
+        await client.query<{ photo_file_id: string }>(
+          `SELECT photo_file_id FROM booking.appointment_answer
+            WHERE appointment_id = $1 AND question_id = $2 AND photo_file_id IS NOT NULL
+              AND wiped_at IS NULL AND photo_deleted_at IS NULL`,
+          [appointmentId, questionId],
+        )
+      ).rows[0]?.photo_file_id,
+    true,
+  );
+  if (!fileId) throw new ResourceNotFound();
+  return getDownloadLink({ organizationId: ctx.organizationId, userId: ctx.userId }, fileId);
+}
+
+/**
+ * After the GDPR erasure (booking.erase_client marks the photos: the answer wiped, the file id kept):
+ * each marked photo deleted by the system deletion of core/files (C.4f, reason client_erased, an
+ * audit row `system`), then photo_deleted_at. `clientId` null = every marked photo of the business
+ * (the cleanup job retries those the storage refused). Returns how many were deleted and how many
+ * remain marked.
+ */
+export async function deleteMarkedPhotos(
+  organizationId: string,
+  clientId: string | null,
+): Promise<{ deleted: number; pending: number }> {
+  const marked = await withBookingTx(
+    organizationId,
+    async (client) =>
+      (
+        await client.query<{ id: string; photo_file_id: string }>(
+          `SELECT q.id, q.photo_file_id FROM booking.appointment_answer q
+             JOIN booking.appointment a ON a.id = q.appointment_id
+             JOIN booking.client c ON c.id = a.client_id
+            WHERE ($1::uuid IS NULL OR c.id = $1 OR c.merged_into_client_id = $1)
+              AND q.wiped_at IS NOT NULL AND q.photo_file_id IS NOT NULL
+              AND q.photo_deleted_at IS NULL
+            LIMIT 500`,
+          [clientId],
+        )
+      ).rows,
+    true,
+  );
+  let deleted = 0;
+  for (const m of marked) {
+    try {
+      await deleteFileAsSystem(organizationId, {
+        fileId: m.photo_file_id,
+        module: 'booking',
+        reason: 'client_erased',
+      });
+    } catch (err) {
+      if (!(err instanceof ResourceNotFound)) continue; // stays marked, retried by the job
+    }
+    await withBookingTx(organizationId, (client) =>
+      client.query(
+        `UPDATE booking.appointment_answer SET photo_deleted_at = now()
+          WHERE id = $1 AND photo_deleted_at IS NULL`,
+        [m.id],
+      ),
+    );
+    deleted += 1;
+  }
+  return { deleted, pending: marked.length - deleted };
+}
+
+// ── the client card (S127: the last answer to each question; booking:admin) ──────────────────
+
+export async function getClientLastAnswersInOrg(
+  ctx: TenantContext,
+  clientIdRaw: unknown,
+): Promise<ClientLastAnswer[]> {
+  hubOnly(ctx);
+  const clientId = requireId(clientIdRaw);
+  return withBookingTx(
+    ctx.organizationId,
+    async (client) => {
+      const found = (await client.query(`SELECT 1 FROM booking.client WHERE id = $1`, [clientId]))
+        .rows[0];
+      if (!found) throw new ResourceNotFound();
+      // the bookings of the client and of the cards merged into it; a wiped answer is not shown
+      const { rows } = await client.query<{
+        question_id: string;
+        question_label: string;
+        kind: FormQuestionKind;
+        value: FormAnswerValue | null;
+        has_photo: boolean;
+        appointment_id: string;
+        starts_at: Date;
+      }>(
+        `SELECT l.* FROM (
+           SELECT DISTINCT ON (q.question_id)
+                  q.question_id, q.question_label, f.kind, q.value,
+                  (q.photo_file_id IS NOT NULL) AS has_photo,
+                  a.id AS appointment_id, a.starts_at, f.sort_order, f.created_at
+             FROM booking.appointment_answer q
+             JOIN booking.appointment a ON a.id = q.appointment_id
+             JOIN booking.client c ON c.id = a.client_id
+             JOIN booking.form_question f ON f.id = q.question_id
+            WHERE (c.id = $1 OR c.merged_into_client_id = $1) AND q.wiped_at IS NULL
+            ORDER BY q.question_id, a.starts_at DESC, q.updated_at DESC) l
+          ORDER BY l.sort_order, l.created_at, l.question_id`,
+        [clientId],
+      );
+      return rows.map((r) => ({
+        questionId: r.question_id,
+        label: r.question_label,
+        kind: r.kind,
+        value: r.value,
+        hasPhoto: r.has_photo,
+        appointmentId: r.appointment_id,
+        startsAt: r.starts_at,
+      }));
+    },
+    true,
+  );
 }
