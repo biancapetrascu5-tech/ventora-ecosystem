@@ -18,6 +18,7 @@ import { withBookingTx } from './db';
 import { staffFreeAtInOrg } from './availability';
 import { requiredResources } from './resources';
 import { locationFilter } from './locations';
+import { actorUserId, isPublicContext } from './actor';
 import { doesService, staffForService } from './staff-services';
 import { durationWithin, effectiveTermsFor, type EffectiveTerms } from './terms';
 import { staffDayIntervals, staffEligibility } from './staff';
@@ -393,8 +394,9 @@ function audit(
     category: 'booking',
     action,
     outcome: 'success',
-    actorType: 'user',
-    actorId: ctx.userId,
+    // B.11a: the client on the public page has no account
+    actorType: isPublicContext(ctx) ? 'anonymous' : 'user',
+    actorId: actorUserId(ctx),
     organizationId: ctx.organizationId,
     targetType,
     targetId,
@@ -419,7 +421,7 @@ function history(
     `INSERT INTO booking.appointment_history
        (id, organization_id, appointment_id, kind, from_status, to_status, starts_at, ends_at,
         staff_member_id, actor_type, actor_user_id)
-     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, 'user', $10)`,
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)`,
     [
       uuidv7(),
       ctx.organizationId,
@@ -430,7 +432,8 @@ function history(
       entry.startsAt ?? null,
       entry.endsAt ?? null,
       entry.staffMemberId ?? null,
-      ctx.userId,
+      isPublicContext(ctx) ? 'client' : 'user',
+      actorUserId(ctx),
     ],
   );
 }
@@ -767,6 +770,55 @@ function normalizeClient(input: ClientInput, current?: ClientRow) {
   return { name, phone, email, locale };
 }
 
+/** B.11a: the contact the public page checks before anything (name, phone and e-mail required). */
+export function normalizePublicContact(input: ClientInput) {
+  const c = normalizeClient(input);
+  if (c.email === null) throw new InvalidInput('email', 'required');
+  if (c.phone === null) throw new InvalidInput('phone', 'required');
+  return c as { name: string; phone: string; email: string; locale: ClientLocale };
+}
+
+/**
+ * B.11a: the active client of the public page — the one with this e-mail, otherwise with this
+ * phone (their card is not changed from the public page); a new one when `create` and none exists.
+ * `blocked`: an open block (B.7a) on that client, which the page never tells the client about.
+ */
+export async function publicClientInOrg(
+  ctx: TenantContext,
+  input: ClientInput,
+  create: boolean,
+): Promise<{ id: string | null; blocked: boolean }> {
+  const c = normalizePublicContact(input);
+  return tx(
+    ctx,
+    async (client, exec) => {
+      const found = (
+        await client.query<{ id: string }>(
+          `SELECT id FROM booking.client
+          WHERE archived_at IS NULL AND (lower(email) = $1 OR lower(phone) = lower($2))
+          ORDER BY (lower(email) = $1) DESC, created_at
+          LIMIT 1`,
+          [c.email, c.phone],
+        )
+      ).rows[0];
+      if (found) {
+        const blocked =
+          (
+            await client.query(
+              `SELECT 1 FROM booking.client_block WHERE client_id = $1 AND unblocked_at IS NULL`,
+              [found.id],
+            )
+          ).rows.length > 0;
+        return { id: found.id, blocked };
+      }
+      if (!create) return { id: null, blocked: false };
+      const row = await insertClient(client, exec, ctx, c);
+      return { id: row.id, blocked: false };
+    },
+    !create,
+  );
+}
+
 async function insertClient(
   client: PoolClient,
   exec: AuditSqlExecutor,
@@ -778,7 +830,7 @@ async function insertClient(
     `INSERT INTO booking.client (id, organization_id, name, phone, email, locale, created_by_user_id)
      VALUES ($1, $2, $3, $4, $5, $6, $7)
      RETURNING ${CLIENT_COLUMNS}`,
-    [uuidv7(), ctx.organizationId, c.name, c.phone, c.email, c.locale, ctx.userId],
+    [uuidv7(), ctx.organizationId, c.name, c.phone, c.email, c.locale, actorUserId(ctx)],
   );
   const row = rows[0]!;
   // no client data in the audit (name, phone, e-mail)
@@ -1111,7 +1163,7 @@ export async function createAppointmentInOrg(
             price_kind, price_minor, price_max_minor, currency, team_note, source,
             created_by_user_id, location_id)
          VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18,
-                 $19, 'hub', $20, $21)
+                 $19, $22, $20, $21)
          ON CONFLICT (id) DO NOTHING
          RETURNING ${APPOINTMENT_COLUMNS}`,
           [
@@ -1134,8 +1186,9 @@ export async function createAppointmentInOrg(
             price.priceMaxMinor,
             service.currency,
             teamNote,
-            ctx.userId,
+            actorUserId(ctx),
             locationId,
+            isPublicContext(ctx) ? 'public' : 'hub',
           ],
         );
         // B.3b: one unit of every resource, in the same transaction (the trigger checks it)

@@ -244,3 +244,21 @@ export type { AppointmentBalance, AppointmentPayment, PaymentMethod } from '../s
 export { getBookingReport, exportAppointmentsCsv } from './reports';
 export type { BookingReportParams, ExportAppointmentsParams } from './reports';
 export type { BookingReport, MoneyByCurrency } from '../server/reports';
+
+// Lot B.11a: the public booking page (no session; the business from the slug)
+export {
+  getPublicBookingPage,
+  getPublicFreeSlots,
+  startPublicBooking,
+  verifyPublicBooking,
+  resendPublicBookingCode,
+  configurePublicBooking,
+} from './public';
+export type {
+  PublicSlotsParams,
+  StartPublicBookingParams,
+  CaptchaVerifier,
+  PublicBookingPage,
+  PublicBookingResult,
+  PublicHoldResult,
+} from './public';

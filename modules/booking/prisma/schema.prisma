@@ -56,6 +56,7 @@ model Service {
   resources    ServiceResource[]
   staff        StaffService[]
   staffTerms   StaffServiceTerms[]
+  publicHolds  PublicHold[]
 
   @@index([organizationId, categoryId, sortOrder], map: "service_organization_id_category_sort_idx")
   @@index([categoryId], map: "service_category_id_idx")
@@ -104,6 +105,7 @@ model StaffMember {
   timeBlocks   TimeBlock[]
   services     StaffService[]
   serviceTerms StaffServiceTerms[]
+  publicHolds  PublicHold[]
 
   @@index([organizationId, sortOrder], map: "staff_member_organization_id_sort_idx")
   @@map("staff_member")
@@ -603,5 +605,42 @@ model AppointmentPayment {
   @@index([appointmentId, recordedAt], map: "appointment_payment_appointment_id_idx")
   @@index([clientId, recordedAt], map: "appointment_payment_client_id_idx")
   @@map("appointment_payment")
+  @@schema("booking")
+}
+
+/// Lot B.11a: a public booking attempt — the time held 10 minutes until the e-mail code is entered.
+/// Migration only: the CHECKs (state, attempts, sends, a settled hold keeps no personal data).
+model PublicHold {
+  id              String    @id @db.Uuid
+  organizationId  String    @map("organization_id") @db.Uuid
+  staffMemberId   String    @map("staff_member_id") @db.Uuid
+  serviceId       String    @map("service_id") @db.Uuid
+  locationId      String?   @map("location_id") @db.Uuid
+  startsAt        DateTime  @map("starts_at") @db.Timestamptz
+  endsAt          DateTime  @map("ends_at") @db.Timestamptz
+  durationMinutes Int       @map("duration_minutes")
+  clientName      String?   @map("client_name") @db.VarChar(120)
+  clientPhone     String?   @map("client_phone") @db.VarChar(32)
+  clientEmail     String?   @map("client_email") @db.VarChar(254)
+  clientLocale    String    @default("ro") @map("client_locale") @db.VarChar(5)
+  message         String?   @db.VarChar(500)
+  emailHash       String    @map("email_hash") @db.Char(64)
+  ipHash          String    @map("ip_hash") @db.Char(64)
+  codeHash        String    @map("code_hash") @db.Char(64)
+  attempts        Int       @default(0) @db.SmallInt
+  sends           Int       @default(1) @db.SmallInt
+  lastSentAt      DateTime  @default(now()) @map("last_sent_at") @db.Timestamptz
+  expiresAt       DateTime  @map("expires_at") @db.Timestamptz
+  state           String    @default("pending") @db.VarChar(9)
+  appointmentId   String?   @map("appointment_id") @db.Uuid
+  settledAt       DateTime? @map("settled_at") @db.Timestamptz
+  createdAt       DateTime  @default(now()) @map("created_at") @db.Timestamptz
+
+  staffMember StaffMember @relation(fields: [staffMemberId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "public_hold_staff_member_id_fkey")
+  service     Service     @relation(fields: [serviceId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "public_hold_service_id_fkey")
+
+  @@index([staffMemberId, startsAt], map: "public_hold_staff_member_id_starts_idx")
+  @@index([organizationId, createdAt], map: "public_hold_organization_id_created_idx")
+  @@map("public_hold")
   @@schema("booking")
 }

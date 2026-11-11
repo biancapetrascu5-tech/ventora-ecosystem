@@ -25,11 +25,12 @@
     "@ventora/db-kit": "workspace:*",
     "@ventora/errors": "workspace:*",
     "@ventora/identity": "workspace:*",
+    "@ventora/notifications": "workspace:*",
     "@ventora/organizations": "workspace:*",
     "@ventora/quota": "workspace:*",
-    "pg": "^8.0.0",
     "@ventora/ui": "workspace:*",
-    "next-intl": "4.14.9"
+    "next-intl": "4.14.9",
+    "pg": "^8.0.0"
   },
   "devDependencies": {
     "@types/pg": "^8.0.0",

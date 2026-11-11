@@ -316,7 +316,21 @@ async function load(
              FROM booking.time_block b
             WHERE b.staff_member_id = ANY($1::uuid[]) AND b.archived_at IS NULL
               AND b.starts_at < (($3::date + 2)::timestamp AT TIME ZONE $4)
-              AND b.ends_at > (($2::date - 1)::timestamp AT TIME ZONE $4)`,
+              AND b.ends_at > (($2::date - 1)::timestamp AT TIME ZONE $4)
+           ${
+             // B.11a: online, a time held for another client (10 minutes, until the e-mail code)
+             query.mode === 'online'
+               ? `UNION ALL
+           SELECT h.staff_member_id, NULL,
+                  to_char(h.starts_at AT TIME ZONE $4, 'YYYY-MM-DD"T"HH24:MI'),
+                  to_char(h.ends_at AT TIME ZONE $4, 'YYYY-MM-DD"T"HH24:MI')
+             FROM booking.public_hold h
+            WHERE h.staff_member_id = ANY($1::uuid[]) AND h.state = 'pending'
+              AND h.expires_at > now()
+              AND h.starts_at < (($3::date + 2)::timestamp AT TIME ZONE $4)
+              AND h.ends_at > (($2::date - 1)::timestamp AT TIME ZONE $4)`
+               : ''
+           }`,
           [ids, from, to, timeZone, OCCUPYING],
         )
       ).rows;
