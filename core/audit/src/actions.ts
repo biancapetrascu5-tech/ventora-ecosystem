@@ -320,6 +320,8 @@ export const AuditActions = {
   crmImportStarted: 'crm.import_started',
   crmImportCompleted: 'crm.import_completed',
   crmImportCancelled: 'crm.import_cancelled',
+  // decision of 11.11.2026: a contact 30 days in the bin is anonymised by the job (actor system)
+  crmContactAnonymized: 'crm.contact_anonymized',
 } as const;
 
 export type AuditAction = (typeof AuditActions)[keyof typeof AuditActions];
