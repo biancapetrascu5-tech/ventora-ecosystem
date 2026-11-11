@@ -22,6 +22,8 @@
     "@prisma/client": "^7.0.0",
     "@prisma/client-runtime-utils": "^7.0.0",
     "@ventora/audit": "workspace:*",
+    "@ventora/contracts": "workspace:*",
+    "@ventora/db-kit": "workspace:*",
     "@ventora/errors": "workspace:*",
     "@ventora/i18n": "workspace:*",
     "@ventora/notifications": "workspace:*",
@@ -31,7 +33,6 @@
   "devDependencies": {
     "@types/node": "^22.0.0",
     "@types/pg": "^8.0.0",
-    "@ventora/db-kit": "workspace:*",
     "@ventora/organizations": "workspace:*",
     "prisma": "^7.0.0",
     "typescript": "^6.0.0",

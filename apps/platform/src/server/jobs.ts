@@ -83,6 +83,8 @@ const OUTBOX_SOURCES: readonly OutboxSource[] = [
   { schema: 'booking', moduleRole: 'booking_rw' },
   // Lot CR.2: crm.contact.* / crm.company.* (no consumer yet: delivered)
   { schema: 'crm', moduleRole: 'crm_rw' },
+  // Lot 5.10c: user.locale_changed (no consumer yet: delivered; the Growth aggregates will read it)
+  { schema: 'identity', moduleRole: 'identity_rw' },
 ];
 
 // app_runtime (DATABASE_URL), creat la prima rulare: nu la build și nu în codul de request.

@@ -895,6 +895,27 @@ export const OrganizationCreatedV1 = defineEvent({
     .strict(),
 });
 
+/**
+ * `user.locale_changed` v1 (Lot 5.10c, decizia din 11.11.2026): o persoană și-a schimbat limba
+ * (una din cele 6: ro / en / fr / es / de / it). Îl scrie `setUserLocale` în outbox-ul identity,
+ * câte un rând pe fiecare afacere a persoanei (plicul poartă afacerea), doar când limba chiar se
+ * schimbă. Agregatele zilnice Growth îl vor consuma; până atunci se marchează livrat. Doar
+ * id-ul persoanei și codul limbii. Nu e semnal Growth (lista D5-7 rămâne neschimbată).
+ */
+export const UserLocaleChangedV1 = defineEvent({
+  type: 'user.locale_changed',
+  version: 1,
+  sourceApp: 'platform',
+  growthSafe: false,
+  withoutConsumer: 'complete',
+  schema: z
+    .object({
+      userId: z.string().min(1).max(64),
+      locale: z.enum(['ro', 'en', 'fr', 'es', 'de', 'it']),
+    })
+    .strict(),
+});
+
 export const EVENT_CATALOG: readonly EventDefinition[] = [
   InvitationNewLinkRequestedV1 as EventDefinition,
   SubscriptionVersionChangeScheduledV1 as EventDefinition,
@@ -941,6 +962,7 @@ export const EVENT_CATALOG: readonly EventDefinition[] = [
   CrmCompanyDeletedV1 as EventDefinition,
   CrmCompanyRestoredV1 as EventDefinition,
   OrganizationCreatedV1 as EventDefinition,
+  UserLocaleChangedV1 as EventDefinition,
 ];
 
 /** Definiția unui eveniment după tip și versiune; null dacă nu e în catalog. */

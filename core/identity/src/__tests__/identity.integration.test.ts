@@ -19,6 +19,7 @@ import {
 } from '../contracts';
 import { setSessionActiveOrganization } from '../contract';
 import { getNotificationContactsInTx, getUserLocale, setUserLocale } from '../preferences';
+import { UserLocaleChangedV1 } from '@ventora/contracts';
 import { bootstrapFounderAccount } from '../bootstrap-founder';
 import { closeAuditPools, hashEmail } from '@ventora/audit';
 import type { OrgContext } from '@ventora/organizations';
@@ -2924,6 +2925,130 @@ describe('Lot 4.3 — UserPreference: the language of the notifications (D4-8)',
       // and gives the caller its role back
       const { rows } = await client.query('SELECT current_user::text AS role');
       expect(rows[0].role).toBe('app_runtime');
+      await client.query('ROLLBACK');
+    } finally {
+      client.release();
+      await pool.end();
+    }
+  });
+});
+
+describe('5.10c — the identity outbox and user.locale_changed v1', () => {
+  const ORG_A = '00000000-0000-4000-8000-0000000510ca';
+  const ORG_B = '00000000-0000-4000-8000-0000000510cb';
+
+  async function withAdmin<T>(fn: (pool: Pool) => Promise<T>): Promise<T> {
+    const pool = new Pool({ connectionString: requireTestEnv('DATABASE_URL_ADMIN_TEST'), max: 1 });
+    try {
+      return await fn(pool);
+    } finally {
+      await pool.end();
+    }
+  }
+
+  async function localeEvents(userId: string) {
+    return withAdmin(async (pool) => {
+      const { rows } = await pool.query(
+        `SELECT type, version, source_app, resource_id, organization_id::text AS organization_id,
+                status, payload
+           FROM identity.outbox_events
+          WHERE type = 'user.locale_changed' AND resource_id = $1
+          ORDER BY organization_id`,
+        [userId],
+      );
+      return rows;
+    });
+  }
+
+  it('a real change writes one event per business, with only the id and the locale', async () => {
+    const u = await signUp(`loc-510c-a-${Date.now()}@test.com`, 'Pass1234!x', 'Ana Pop');
+    const result = await setUserLocale(u.user.id, 'fr', [ORG_B, ORG_A, ORG_A]);
+    expect(result).toEqual({ changed: true });
+    const events = await localeEvents(u.user.id);
+    expect(events.map((e) => e.organization_id)).toEqual([ORG_A, ORG_B]);
+    for (const e of events) {
+      expect(e).toMatchObject({
+        type: 'user.locale_changed',
+        version: 1,
+        source_app: 'platform',
+        resource_id: u.user.id,
+        status: 'pending',
+      });
+      expect(e.payload).toEqual({ userId: u.user.id, locale: 'fr' });
+      expect(UserLocaleChangedV1.parse(e.payload)).toEqual(e.payload);
+      expect(JSON.stringify(e.payload)).not.toMatch(/Ana|@test\.com/);
+    }
+  });
+
+  it('the same locale again writes nothing; a new one writes again', async () => {
+    const u = await signUp(`loc-510c-b-${Date.now()}@test.com`, 'Pass1234!x');
+    await setUserLocale(u.user.id, 'de', [ORG_A]);
+    expect(await setUserLocale(u.user.id, 'de', [ORG_A])).toEqual({ changed: false });
+    expect(await localeEvents(u.user.id)).toHaveLength(1);
+    await setUserLocale(u.user.id, 'it', [ORG_A]);
+    const events = await localeEvents(u.user.id);
+    expect(events.map((e) => e.payload.locale).sort()).toEqual(['de', 'it']);
+    expect(await getUserLocale(u.user.id)).toBe('it');
+  });
+
+  it('without businesses only the preference is kept; bad input writes nothing', async () => {
+    const u = await signUp(`loc-510c-c-${Date.now()}@test.com`, 'Pass1234!x');
+    expect(await setUserLocale(u.user.id, 'es')).toEqual({ changed: true });
+    expect(await getUserLocale(u.user.id)).toBe('es');
+    expect(await localeEvents(u.user.id)).toHaveLength(0);
+    await expect(setUserLocale(u.user.id, 'xx', [ORG_A])).rejects.toThrow();
+    await expect(setUserLocale(u.user.id, 'en', ['not-a-uuid'])).rejects.toThrow();
+    expect(await getUserLocale(u.user.id)).toBe('es');
+    expect(await localeEvents(u.user.id)).toHaveLength(0);
+  });
+
+  it('identity_rw: no DELETE on the outbox; RLS per business (no context → 0 rows)', async () => {
+    const u = await signUp(`loc-510c-d-${Date.now()}@test.com`, 'Pass1234!x');
+    await setUserLocale(u.user.id, 'en', [ORG_A]);
+    const privileges = await withAdmin(async (pool) => {
+      const { rows } = await pool.query(
+        `SELECT has_table_privilege('identity_rw', 'identity.outbox_events', 'DELETE') AS del_out,
+                has_table_privilege('identity_rw', 'identity.processed_events', 'DELETE') AS del_proc,
+                has_table_privilege('identity_rw', 'identity.processed_events', 'UPDATE') AS upd_proc,
+                has_table_privilege('identity_rw', 'identity.outbox_events', 'INSERT') AS ins_out,
+                (SELECT relrowsecurity FROM pg_class WHERE oid = 'identity.outbox_events'::regclass)
+                  AS rls`,
+      );
+      return rows[0];
+    });
+    expect(privileges).toEqual({
+      del_out: false,
+      del_proc: false,
+      upd_proc: false,
+      ins_out: true,
+      rls: true,
+    });
+
+    const pool = new Pool({ connectionString: DB_URL, max: 1 });
+    const client = await pool.connect();
+    try {
+      await client.query('BEGIN');
+      await client.query('SET LOCAL ROLE identity_rw');
+      const none = await client.query(
+        `SELECT 1 FROM identity.outbox_events WHERE resource_id = $1`,
+        [u.user.id],
+      );
+      expect(none.rows).toHaveLength(0);
+      await client.query(`SELECT set_config('app.organization_id', $1, true)`, [ORG_B]);
+      const other = await client.query(
+        `SELECT 1 FROM identity.outbox_events WHERE resource_id = $1`,
+        [u.user.id],
+      );
+      expect(other.rows).toHaveLength(0);
+      await client.query(`SELECT set_config('app.organization_id', $1, true)`, [ORG_A]);
+      const own = await client.query(
+        `SELECT 1 FROM identity.outbox_events WHERE resource_id = $1`,
+        [u.user.id],
+      );
+      expect(own.rows).toHaveLength(1);
+      await expect(
+        client.query(`DELETE FROM identity.outbox_events WHERE resource_id = $1`, [u.user.id]),
+      ).rejects.toMatchObject({ code: '42501' });
       await client.query('ROLLBACK');
     } finally {
       client.release();
