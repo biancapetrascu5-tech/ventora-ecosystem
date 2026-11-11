@@ -308,6 +308,8 @@ describe('CR.1 — getCrmSettings', () => {
     expect(await getCrmSettings({ sessionToken: tokens.owner })).toEqual({
       bookingLinkEnabled: true,
       lapsedSegmentDays: 60,
+      leadScoringEnabled: true,
+      leadMinBudgetMinor: null,
       saved: false,
     });
   });
@@ -322,6 +324,8 @@ describe('CR.1 — getCrmSettings', () => {
       expect(await getCrmSettings({ sessionToken: tokens.admin })).toEqual({
         bookingLinkEnabled: false,
         lapsedSegmentDays: 120,
+        leadScoringEnabled: true,
+        leadMinBudgetMinor: null,
         saved: true,
       });
       // organization B: nothing saved, the defaults

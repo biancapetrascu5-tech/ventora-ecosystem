@@ -7,9 +7,11 @@ import { withCrmTx } from './db';
 import { createContactInOrg, type Contact, type ContactScope } from './contacts';
 import { createDealInOrg } from './deals';
 import { readSubject, requireMentionable } from './subjects';
+import { scoreLead, scoreSql, type LeadScore } from './scoring';
 import {
   LIMITS,
   isUuid,
+  optionalBoolean,
   likePattern,
   normalizeEmail,
   normalizePhone,
@@ -93,6 +95,12 @@ export type Lead = {
   closedAt: Date | null;
   closedByUserId: string | null;
   convertedContactId: string | null;
+  /** CR.10: „a cerut prețul” (+15). */
+  askedPrice: boolean;
+  /** CR.10: „a deschis oferta” (+20), set by the e-mail tracking (CR.14). */
+  offerOpenedAt: Date | null;
+  /** CR.10: the score and its reasons; null when the business switched scoring off. */
+  score: LeadScore | null;
   deletedAt: Date | null;
   createdAt: Date;
   updatedAt: Date;
@@ -116,6 +124,10 @@ type LeadRow = {
   closed_at: Date | null;
   closed_by_user_id: string | null;
   converted_contact_id: string | null;
+  asked_price: boolean;
+  offer_opened_at: Date | null;
+  scoring_enabled: boolean;
+  min_budget: string | null;
   deleted_at: Date | null;
   created_at: Date;
   updated_at: Date;
@@ -124,6 +136,9 @@ type LeadRow = {
 const COLUMNS = `l.id, l.name, l.phone, l.email, l.request, l.source, l.referred_by, l.budget_minor,
   l.currency, to_char(l.event_date, 'YYYY-MM-DD') AS event_date, l.owner_user_id, l.state,
   l.disqualify_reason, l.disqualify_note, l.closed_at, l.closed_by_user_id, l.converted_contact_id,
+  l.asked_price, l.offer_opened_at,
+  COALESCE((SELECT s.lead_scoring_enabled FROM crm.settings s), true) AS scoring_enabled,
+  (SELECT s.lead_min_budget_minor FROM crm.settings s) AS min_budget,
   l.deleted_at, l.created_at, l.updated_at`;
 
 function toLead(r: LeadRow): Lead {
@@ -145,6 +160,22 @@ function toLead(r: LeadRow): Lead {
     closedAt: r.closed_at,
     closedByUserId: r.closed_by_user_id,
     convertedContactId: r.converted_contact_id,
+    askedPrice: r.asked_price,
+    offerOpenedAt: r.offer_opened_at,
+    score: scoreLead(
+      {
+        offerOpenedAt: r.offer_opened_at,
+        source: r.source,
+        askedPrice: r.asked_price,
+        budgetMinor: r.budget_minor === null ? null : Number(r.budget_minor),
+        eventDate: r.event_date,
+        phone: r.phone,
+      },
+      {
+        enabled: r.scoring_enabled,
+        minBudgetMinor: r.min_budget === null ? null : Number(r.min_budget),
+      },
+    ),
     deletedAt: r.deleted_at,
     createdAt: r.created_at,
     updatedAt: r.updated_at,
@@ -200,6 +231,8 @@ export type LeadInput = {
   referredBy?: unknown;
   budgetMinor?: unknown;
   eventDate?: unknown;
+  /** CR.10: „a cerut prețul”. */
+  askedPrice?: unknown;
 };
 
 function details(input: LeadInput) {
@@ -210,6 +243,7 @@ function details(input: LeadInput) {
     referredBy: optionalText('referredBy', input.referredBy, LIMITS.name),
     budgetMinor: normalizeBudget(input.budgetMinor),
     eventDate: normalizeDay('eventDate', input.eventDate),
+    askedPrice: optionalBoolean('askedPrice', input.askedPrice),
   };
 }
 
@@ -291,8 +325,8 @@ export async function createLeadInOrg(
     const { rows } = await client.query<LeadRow>(
       `INSERT INTO crm.lead AS l
          (id, organization_id, name, phone, email, request, source, referred_by, budget_minor,
-          event_date, owner_user_id, created_by_user_id)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10::date, $11, $12)
+          event_date, owner_user_id, created_by_user_id, asked_price)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10::date, $11, $12, $13)
        RETURNING ${COLUMNS}`,
       [
         id,
@@ -307,6 +341,7 @@ export async function createLeadInOrg(
         d.eventDate ?? null,
         owner,
         ctx.userId,
+        d.askedPrice ?? false,
       ],
     );
     await audit(exec, ctx, AuditActions.crmLeadCreated, id, { source, ownerUserId: owner });
@@ -323,6 +358,7 @@ const DETAIL_COLUMNS = {
   referredBy: 'referred_by',
   budgetMinor: 'budget_minor',
   eventDate: 'event_date',
+  askedPrice: 'asked_price',
 } as const;
 
 /** The details of the lead; only the fields sent. A converted lead is closed: no change. */
@@ -637,6 +673,8 @@ export type ListLeadsParams = {
   owner?: unknown;
   /** Open leads with no note or activity (or arrival) for at least N days. */
   idleDays?: unknown;
+  /** 'newest' (default) or 'score' (CR.10; the highest first). */
+  sort?: unknown;
   limit?: unknown;
   offset?: unknown;
 };
@@ -707,13 +745,21 @@ export async function listLeadsInOrg(
     if (!states || typeof params.tab !== 'string') throw new InvalidInput('tab', 'invalid');
     where.push(`l.state = ANY(${arg(states)}::text[])`);
   }
+  if (params.sort !== undefined && params.sort !== 'newest' && params.sort !== 'score') {
+    throw new InvalidInput('sort', 'invalid');
+  }
+  // CR.10: by score (the S131 rules in SQL), the newest among equals
+  const order =
+    params.sort === 'score'
+      ? `${scoreSql('(SELECT s.lead_min_budget_minor FROM crm.settings s)')} DESC,`
+      : '';
   return withCrmTx(
     ctx.organizationId,
     async (client) => {
       const { rows } = await client.query<LeadRow>(
         `SELECT ${COLUMNS} FROM crm.lead l
           WHERE ${where.join(' AND ')}
-          ORDER BY l.created_at DESC, l.id DESC
+          ORDER BY ${order} l.created_at DESC, l.id DESC
           LIMIT ${arg(limit)} OFFSET ${arg(offset)}`,
         args,
       );
