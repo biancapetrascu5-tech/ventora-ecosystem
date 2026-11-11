@@ -126,9 +126,17 @@ Scris pe 2026-11-11, înainte de /clear. Main la `aebcac4`, adică merge-ul #162
 - trebuie adăugate în listele explicite din `scripts/test-db-up.mjs` (bazele organizations și access) și din `.github/workflows/ci.yml` (jobul T1 + T2);
 - modulele (`modules/*`) sunt descoperite automat.
 
-## 6. Scratchpad
+## 6. Scripturile de test (copiate din scratchpad)
 
-Folderul: `C:\Users\bianc\AppData\Local\Temp\claude\9519414f725d5b3e\c7f94be4-3271-48e2-bcd4-06a1dc83f056\scratchpad`. Se pierde la închiderea sesiunii; mută ce trebuie păstrat.
+**Calea nouă:** `C:\Projects\ventora-handoff\scratch\`. Folderul e local și necomis (doar pe disc, nu în git). Conține `b4-only.mjs`, `b-files.mjs`, `org-only.mjs`, `growth-only.mjs`, `chain.sh` și `fixtures.ts.txt`.
+
+**Cum le rulezi:** din worktree-ul pe care îl testezi, de exemplu:
+
+```
+WT=C:/Projects/ventora-b11 DOCKER_PATH=... node C:/Projects/ventora-handoff/scratch/b-files.mjs
+```
+
+Scratchpad-ul vechi (`C:\Users\bianc\AppData\Local\Temp\claude\9519414f725d5b3e\c7f94be4-3271-48e2-bcd4-06a1dc83f056\scratchpad`) se pierde la închiderea sesiunii. Restul fișierelor de acolo (loguri, corpuri de PR și de teste) sunt doar referință și nu au fost copiate.
 
 | Fișier | Ce face |
 |---|---|
