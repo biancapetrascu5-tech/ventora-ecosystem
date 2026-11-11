@@ -643,6 +643,33 @@
     "home": {
       "soon": "Les applications de votre entreprise apparaîtront ici."
     },
+    "launcher": {
+      "greeting": {
+        "morning": "Bonjour, {name}",
+        "day": "Bonjour, {name}",
+        "evening": "Bonsoir, {name}"
+      },
+      "eyebrow": "{date} · {business}",
+      "sentence": {
+        "appointments": "Vous avez <chip>{count, plural, one {un rendez-vous} other {# rendez-vous}}</chip> aujourd’hui.",
+        "plain": "Vos applications sont ci-dessous ; ouvrez celle dont vous avez besoin.",
+        "noAppointments": "Vous n’avez aucun rendez-vous aujourd’hui."
+      },
+      "yourApps": "Vos applications",
+      "others": {
+        "title": "Autres applications Ventora Systems",
+        "lead": "Vous ne pouvez pas les ouvrir pour l’instant. Chacune indique pourquoi et ce que vous pouvez faire."
+      },
+      "seeAll": "Voir toutes les applications Ventora Systems",
+      "launching": "Ouverture de {app}",
+      "empty": {
+        "welcome": "Bienvenue chez {business}. Vos applications apparaissent ici dès que vous avez accès.",
+        "title": "Vous n’avez encore accès à aucune application",
+        "body": "{owner} (propriétaire) choisit les applications de chaque rôle.",
+        "bodyNoOwner": "Le propriétaire de l’entreprise choisit les applications de chaque rôle."
+      },
+      "trialEnded": "{app} s’est arrêtée. Vos données restent ; activez-la quand vous voulez continuer."
+    },
     "plan": {
       "title": "Abonnement et consommation",
       "lead": "Ce que comprend l’abonnement de l’entreprise, ce que vous avez utilisé ce mois-ci, ce que vous pouvez acheter en plus et vos factures.",

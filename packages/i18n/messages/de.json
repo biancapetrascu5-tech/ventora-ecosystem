@@ -643,6 +643,33 @@
     "home": {
       "soon": "Die Apps Ihres Unternehmens erscheinen hier."
     },
+    "launcher": {
+      "greeting": {
+        "morning": "Guten Morgen, {name}",
+        "day": "Guten Tag, {name}",
+        "evening": "Guten Abend, {name}"
+      },
+      "eyebrow": "{date} · {business}",
+      "sentence": {
+        "appointments": "Heute haben Sie <chip>{count, plural, one {einen Termin} other {# Termine}}</chip>.",
+        "plain": "Ihre Apps finden Sie unten; öffnen Sie die, die Sie brauchen.",
+        "noAppointments": "Heute haben Sie keine Termine."
+      },
+      "yourApps": "Ihre Apps",
+      "others": {
+        "title": "Weitere Apps von Ventora Systems",
+        "lead": "Sie können sie gerade nicht öffnen. Bei jeder steht, warum und was Sie tun können."
+      },
+      "seeAll": "Alle Apps von Ventora Systems ansehen",
+      "launching": "{app} wird geöffnet",
+      "empty": {
+        "welcome": "Willkommen bei {business}. Ihre Apps erscheinen hier, sobald Sie Zugriff erhalten.",
+        "title": "Sie haben noch keinen Zugriff auf eine App",
+        "body": "{owner} (Inhaber) wählt, welche Apps jede Rolle nutzt.",
+        "bodyNoOwner": "Der Inhaber des Unternehmens wählt, welche Apps jede Rolle nutzt."
+      },
+      "trialEnded": "{app} wurde angehalten. Ihre Daten bleiben erhalten; aktivieren Sie sie, wann immer Sie weitermachen möchten."
+    },
     "plan": {
       "title": "Abonnement und Verbrauch",
       "lead": "Was das Abonnement des Unternehmens umfasst, wie viel Sie diesen Monat verbraucht haben, was Sie dazukaufen können und Ihre Rechnungen.",

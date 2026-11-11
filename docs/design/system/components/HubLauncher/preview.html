@@ -1,4 +1,4 @@
-<!-- @dsCard group="Ecrane Hub" height=4480 width=2620 page -->
+<!-- @dsCard group="Ecrane Hub" height=11918 width=2620 page -->
 <!doctype html>
 <html lang="ro">
 <head><meta charset="utf-8"><title>HubLauncher — Ventora Systems</title>
@@ -445,11 +445,11 @@ function Chevrons({ cls }) {
     [40, 72, 104].map((y) => React.createElement("polyline", { key: y, points: `32,${y} 88,${y + 80} 144,${y}` })),
     React.createElement("polyline", { points: "48,168 88,224 128,168" }));
 }
-function Launcher({ mode, empty }) {
+function Launcher({ mode, empty, noPortal, noData }) {
   const h = React.createElement;
   const [run, setRun] = useState(null);
   const mob = mode === "mobile";
-  const apps = MINE.filter(([a]) => a !== "portal").map(([a, d, b]) => ({ app: a, description: d, badge: b, live: LIVE[a] && { text: LIVE[a][0], attention: !!LIVE[a][1] } }));
+  const apps = MINE.filter(([a]) => a !== "portal" && !(noData && a === "booking")).map(([a, d, b]) => ({ app: a, description: d, badge: b, live: !noData && LIVE[a] && { text: LIVE[a][0], attention: !!LIVE[a][1] } }));
   const openDock = (e, app, name, launch) => setRun(Object.assign({ app, name }, launch));
   const openPortal = (e) => {
     const card = e.currentTarget.closest(".v-portalcard"), ic = card.querySelector(".v-appicon");
@@ -464,20 +464,21 @@ function Launcher({ mode, empty }) {
         h("h1", { className: "display-hub" }, "Bună dimineața, Bianca"),
         empty
           ? h("p", { className: "lead lb-day" }, "Bine ai venit în Salon Aurora. Aplicațiile apar aici imediat ce primești acces.")
-          : h("p", { className: "lead lb-day" }, "Azi ai ", chip("booking", "8 programări"), ", ", chip("finance", "2 facturi scadente", true), " și ", chip("hr", "o cerere de concediu", true), " de aprobat.")),
+          : noData ? h("p", { className: "lead lb-day" }, "Aplicațiile tale sunt mai jos; deschide-o pe cea de care ai nevoie.")
+          : h("p", { className: "lead lb-day" }, "Azi ai ", chip("booking", "8 programări"), ".")),
       mob ? null : h(Chevrons, { cls: "lb-chev" })),
     !empty && !mob ? sechead : null);
   const other = h("section", { className: "lb-other" },
     h("h2", { className: "display-m sec" }, "Alte aplicații Ventora Systems"),
     h("p", { className: "body lb-other__intro" }, "Nu le poți deschide acum. La fiecare scrie de ce și ce poți face."),
-    h("div", { className: "rows" }, OTHER.map(([a, s]) => RECO_FOR(a)
+    h("div", { className: "rows" }, OTHER.map(([a, s]) => !noData && RECO_FOR(a)
       ? h(V.GrowthSlot, { key: a, label: "Recomandare" }, h(V.AppTile, { app: a, access: s, layout: "row", recommendation: RECO_FOR(a), onDetails: () => {}, onDismiss: () => {}, onRemindLater: () => {} }))
       : h(V.AppTile, { key: a, app: a, access: s, layout: "row", grantedBy: "Bianca Petrașcu", onRequestAccess: () => {}, onWriteUs: () => {}, onSeeStatus: () => {} }))),
     h("div", { style: { marginTop: "var(--space-4)" } }, h(V.Button, { variant: "quiet", icon: "layout-grid", iconEnd: "arrow-right" }, "Vezi toate aplicațiile Ventora Systems")));
   const body = empty
     ? [h("div", { key: "e", className: "sheetlike lb-empty" }, h(V.EmptyState, { icon: "layout-grid", title: "Nu ai încă acces la nicio aplicație", description: "Bianca Petrașcu (proprietar) alege ce aplicații folosește fiecare rol. Putem trimite noi cererea ta.", actions: h(React.Fragment, null, h(V.Button, { variant: "primary", icon: "send" }, "Cere acces"), h(V.Button, { variant: "quiet" }, "Scrie-ne")) }), h("p", { className: "body-small muted center", style: { paddingBottom: "var(--space-6)" } }, "Între timp, alege-ți fotografia și limba din ", h("a", { className: "v-link", href: "#" }, "Contul tău"), "."))]
     : [mob ? h("div", { key: "s" }, sechead) : null,
-       h("div", { key: "d", className: "lb-mine" }, h(V.AppDock, { apps, onOpen: openDock }), h(V.PortalPresence, { compact: mode !== "desktop", onManage: openPortal, previewHref: "#" })),
+       h("div", { key: "d", className: "lb-mine" }, h(V.AppDock, { apps, onOpen: openDock }), noPortal ? null : h(V.PortalPresence, { compact: mode !== "desktop", onManage: openPortal, previewHref: "#" })),
        h(React.Fragment, { key: "o" }, other)];
   return h("div", { className: "frame-rel lb " + mode },
     h(V.AppShell, { height: "100%", contextBar: h(V.BrandZone, null, h(HubBar, null)) },
@@ -505,6 +506,8 @@ function PhoneHeader({ th, lang }) {
           })))));
 }
 mount(React.createElement("div", null, /* @__PURE__ */ React.createElement(Screens, { title: "Launcher — treci cu mouse-ul peste o aplicație ca să vezi fișa ei; apasă ca s-o deschizi", notes: ["CampaignKit e un slot comercial: doar pentru proprietar și admin, cel mult unul, cu „Nu mă interesează” și „Amintește-mi mai târziu”, sub plafoanele globale", "Portal are cardul lui: pagina afacerii pentru clienți, nu o aplicație în care lucrezi"], desktopH: 1200, tabletH: 1560, mobileH: 1760, render: (m) => /* @__PURE__ */ React.createElement(Launcher, { mode: m }) }),
+  React.createElement(Screens, { title: "Fără Portal (S136, 5.1, D5-16): afacerea nu are pagină în Portal — cardul Portal lipsește cu totul, aplicațiile urcă în locul lui, fără gol", notes: ["Fraza zilei: doar „programări azi”, pentru că EasyBook e activ; fără alte chip-uri de date"], desktopH: 1200, tabletH: 1560, mobileH: 1760, render: (m) => React.createElement(Launcher, { mode: m, noPortal: true }) }),
+  React.createElement(Screens, { title: "Nicio aplicație care dă date (S136, D5-17): fraza zilei e o propoziție simplă, fără chip-uri", notes: ["Fără EasyBook activ nu apare nicio cifră în bandă; nici rândurile cu date din fișele aplicațiilor"], desktopH: 1200, tabletH: 1560, mobileH: 1760, render: (m) => React.createElement(Launcher, { mode: m, noData: true, noPortal: true }) }),
   React.createElement("div", { className: "scr" },
     React.createElement("p", { className: "heading" }, "Antetul pe telefon (sub 600px): logo, căutare, clopoțel, avatar; selectorul de afacere e în meniul contului"),
     React.createElement("div", { className: "scr-row" }, React.createElement(PhoneHeader, { th: "light" }), React.createElement(PhoneHeader, { th: "dark" }), React.createElement(PhoneHeader, { th: "light", lang: "de" })))));

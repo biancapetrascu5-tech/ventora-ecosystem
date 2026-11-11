@@ -643,6 +643,33 @@
     "home": {
       "soon": "Aplicațiile afacerii tale vor apărea aici."
     },
+    "launcher": {
+      "greeting": {
+        "morning": "Bună dimineața, {name}",
+        "day": "Bună ziua, {name}",
+        "evening": "Bună seara, {name}"
+      },
+      "eyebrow": "{date} · {business}",
+      "sentence": {
+        "appointments": "Azi ai <chip>{count, plural, one {o programare} few {# programări} other {# de programări}}</chip>.",
+        "plain": "Aplicațiile tale sunt mai jos; deschide-o pe cea de care ai nevoie.",
+        "noAppointments": "Azi nu ai programări."
+      },
+      "yourApps": "Aplicațiile tale",
+      "others": {
+        "title": "Alte aplicații Ventora Systems",
+        "lead": "Nu le poți deschide acum. La fiecare scrie de ce și ce poți face."
+      },
+      "seeAll": "Vezi toate aplicațiile Ventora Systems",
+      "launching": "Se deschide {app}",
+      "empty": {
+        "welcome": "Bine ai venit în {business}. Aplicațiile apar aici imediat ce primești acces.",
+        "title": "Nu ai încă acces la nicio aplicație",
+        "body": "{owner} (proprietar) alege ce aplicații folosește fiecare rol.",
+        "bodyNoOwner": "Proprietarul afacerii alege ce aplicații folosește fiecare rol."
+      },
+      "trialEnded": "{app} s-a oprit. Datele rămân; o activezi oricând vrei să continui."
+    },
     "plan": {
       "title": "Abonament și consum",
       "lead": "Ce include abonamentul afacerii, cât ai folosit luna aceasta, ce poți cumpăra în plus și facturile tale.",

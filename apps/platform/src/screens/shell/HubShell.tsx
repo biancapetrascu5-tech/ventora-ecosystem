@@ -4,6 +4,7 @@ import { useState, type ReactNode } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
 import {
+  BrandZone,
   AccountMenu,
   APP_IDS,
   APPS,
@@ -211,6 +212,9 @@ export function HubShell({
   // sigla în bară; titlul barei e al paginii.
   const under = (base: string) => pathname === base || pathname.startsWith(`${base}/`);
   const catalog = under('/catalog') || under('/applications');
+  // Lotul 5.1 (HubLauncher 1.1.0): pagina principală e launcher-ul — fără Spine, sigla în bară,
+  // bara pe banda de brand (ca în preview).
+  const home = pathname === '/';
   const bundlesTitle = useTranslations('catalog.bundles')('title');
   const appsTitle = useTranslations('hub.apps')('bar');
   const appTitle =
@@ -245,7 +249,7 @@ export function HubShell({
     <AppShell
       height="100%"
       spine={
-        catalog ? undefined : (
+        catalog || home ? undefined : (
           <Spine
             app={booking ? 'booking' : undefined}
             sections={nav}
@@ -265,99 +269,106 @@ export function HubShell({
         )
       }
       contextBar={
-        <ContextBar
-          title={pageTitle}
-          leading={catalog ? <Logo size={32} /> : undefined}
-          org={
-            orgs.length > 0 ? (
-              <OrgSwitcher
-                orgs={orgs}
-                currentId={data.currentOrgId ?? undefined}
-                onChange={change}
-                labels={orgLabels}
+        <BrandBar on={home}>
+          <ContextBar
+            title={pageTitle}
+            leading={catalog || home ? <Logo size={32} /> : undefined}
+            org={
+              orgs.length > 0 ? (
+                <OrgSwitcher
+                  orgs={orgs}
+                  currentId={data.currentOrgId ?? undefined}
+                  onChange={change}
+                  labels={orgLabels}
+                />
+              ) : undefined
+            }
+            labels={{
+              search: ui('search'),
+              searchPlaceholder: ui('searchPlaceholder'),
+              create: ui('create'),
+            }}
+            notifications={
+              <NotificationsPanel
+                items={bell.items}
+                open={bell.open}
+                onOpenChange={bell.onOpenChange}
+                onOpenItem={bell.onOpenItem}
+                onMarkAllRead={bell.onMarkAllRead}
+                onSettings={bell.onSettings}
+                countCategory="operational"
+                labels={{
+                  notifications: ui('notifications'),
+                  unreadN: (n) => ui('unreadN', { n }),
+                  markAllRead: ui('markAllRead'),
+                  notificationSettings: ui('notificationSettings'),
+                  all: ui('all'),
+                  unread: ui('unread'),
+                  noNotifications: ui('noNotifications'),
+                  noNotificationsHint: ui('noNotificationsHint'),
+                  operational: ui('operational'),
+                  activity: ui('activity'),
+                  recommendations: ui('recommendations'),
+                  recommendation: ui('recommendation'),
+                  fromTeam: ui('fromTeam'),
+                  seeApp: ui('seeApp'),
+                  reject: ui('reject'),
+                  seeDetails: ui('seeDetails'),
+                  notInterested: ui('notInterested'),
+                }}
               />
-            ) : undefined
-          }
-          labels={{
-            search: ui('search'),
-            searchPlaceholder: ui('searchPlaceholder'),
-            create: ui('create'),
-          }}
-          notifications={
-            <NotificationsPanel
-              items={bell.items}
-              open={bell.open}
-              onOpenChange={bell.onOpenChange}
-              onOpenItem={bell.onOpenItem}
-              onMarkAllRead={bell.onMarkAllRead}
-              onSettings={bell.onSettings}
-              countCategory="operational"
-              labels={{
-                notifications: ui('notifications'),
-                unreadN: (n) => ui('unreadN', { n }),
-                markAllRead: ui('markAllRead'),
-                notificationSettings: ui('notificationSettings'),
-                all: ui('all'),
-                unread: ui('unread'),
-                noNotifications: ui('noNotifications'),
-                noNotificationsHint: ui('noNotificationsHint'),
-                operational: ui('operational'),
-                activity: ui('activity'),
-                recommendations: ui('recommendations'),
-                recommendation: ui('recommendation'),
-                fromTeam: ui('fromTeam'),
-                seeApp: ui('seeApp'),
-                reject: ui('reject'),
-                seeDetails: ui('seeDetails'),
-                notInterested: ui('notInterested'),
-              }}
-            />
-          }
-          account={
-            <AccountMenu
-              user={data.user}
-              orgs={orgs}
-              currentOrgId={data.currentOrgId ?? undefined}
-              onOrgChange={change}
-              onProfile={() => go('/account')}
-              // Lotul 4.6 (S-3): HubSupport, cu aplicația paginii de pornire precompletată
-              // (Lotul 4.11: testat din fiecare rută (hub), core/support hub-routes.test.ts)
-              onSupport={() => go(supportHref(pathname))}
-              onSignOut={async () => {
-                await authApi.signOut();
-                router.replace('/sign-in');
-              }}
-              theme={themeChoice.theme}
-              onThemeChange={themeChoice.onThemeChange}
-              locale={locale}
-              onLocaleChange={(code) => {
-                rememberLocale(code);
-                // D4-8: the notifications follow the language chosen here
-                void keepLocale(code);
-                router.refresh();
-              }}
-              labels={{
-                account: ui('account'),
-                yourBusinesses: ui('yourBusinesses'),
-                theme: ui('theme'),
-                language: ui('language'),
-                allApps: ui('allApps'),
-                support: ui('support'),
-                signOut: ui('signOut'),
-                themeSwitcher: {
+            }
+            account={
+              <AccountMenu
+                user={data.user}
+                orgs={orgs}
+                currentOrgId={data.currentOrgId ?? undefined}
+                onOrgChange={change}
+                onProfile={() => go('/account')}
+                // Lotul 4.6 (S-3): HubSupport, cu aplicația paginii de pornire precompletată
+                // (Lotul 4.11: testat din fiecare rută (hub), core/support hub-routes.test.ts)
+                onSupport={() => go(supportHref(pathname))}
+                onSignOut={async () => {
+                  await authApi.signOut();
+                  router.replace('/sign-in');
+                }}
+                theme={themeChoice.theme}
+                onThemeChange={themeChoice.onThemeChange}
+                locale={locale}
+                onLocaleChange={(code) => {
+                  rememberLocale(code);
+                  // D4-8: the notifications follow the language chosen here
+                  void keepLocale(code);
+                  router.refresh();
+                }}
+                labels={{
+                  account: ui('account'),
+                  yourBusinesses: ui('yourBusinesses'),
                   theme: ui('theme'),
-                  light: ui('themeLight'),
-                  dark: ui('themeDark'),
-                  system: ui('themeSystem'),
-                },
-                orgSwitcher: orgLabels,
-              }}
-            />
-          }
-        />
+                  language: ui('language'),
+                  allApps: ui('allApps'),
+                  support: ui('support'),
+                  signOut: ui('signOut'),
+                  themeSwitcher: {
+                    theme: ui('theme'),
+                    light: ui('themeLight'),
+                    dark: ui('themeDark'),
+                    system: ui('themeSystem'),
+                  },
+                  orgSwitcher: orgLabels,
+                }}
+              />
+            }
+          />
+        </BrandBar>
       }
     >
       {children}
     </AppShell>
   );
+}
+
+/** Lotul 5.1: bara de sus pe banda de brand doar pe launcher (HubLauncher 1.1.0). */
+function BrandBar({ on, children }: { on: boolean; children: ReactNode }) {
+  return on ? <BrandZone>{children}</BrandZone> : <>{children}</>;
 }
