@@ -534,8 +534,9 @@ export const manifest = {
   permissions: ['marketing.campaign.create', /* ... */],
   features: ['marketing.sms', 'marketing.automations' /* ... */],
   quotas: [{
-    key: 'marketing.campaigns', kind: 'flow', unit: 'campaign',
-    period: 'month', overflow: 'block', refundable: true,
+    // D-CK-3 = a (10.11.2026): stoc — campaniile programate sau active în același timp
+    key: 'marketing.campaigns', kind: 'stock', unit: 'campaign',
+    period: null, overflow: 'block', refundable: false,
   }],
   events: { emits: ['marketing.campaign.sent.v1'], consumes: ['crm.contact.created.v1'] },
 }
