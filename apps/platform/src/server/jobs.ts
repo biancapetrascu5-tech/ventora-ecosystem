@@ -21,7 +21,7 @@ import {
   runTrialJob,
 } from '@ventora/commercial';
 import './billing-config';
-import { bookingQuotaRefundConsumer } from '@ventora/booking';
+import { bookingQuotaRefundConsumer, runPublicHoldCleanupJob } from '@ventora/booking';
 import {
   growthConversionConsumer,
   growthSignalConsumer,
@@ -263,6 +263,27 @@ export const platformJobs = new JobRegistry()
         );
       }
       return report;
+    },
+  })
+  // Lotul B.11a (review #164): rezervările publice nefinalizate se închid chiar dacă afacerea nu mai
+  // primește nicio cerere publică (datele personale șterse), iar hash-urile e-mailului și ale IP-ului
+  // devin NULL după 24 de ore. Fiecare afacere în contextul ei; una care eșuează nu le oprește pe
+  // celelalte, iar job-ul eșuează (Sentry, reîncercare).
+  .register({
+    id: 'booking.public-hold-cleanup',
+    owner: 'Lot B.11a',
+    description: 'Rezervările publice expirate și hash-urile mai vechi de 24 de ore',
+    trigger: { cron: '*/10 * * * *' },
+    run: async () => {
+      const report = await runPublicHoldCleanupJob();
+      if (report.failed.length) {
+        throw new AggregateError(
+          report.failed.map((f) => f.error),
+          `[booking] ${report.failed.length} of ${report.businesses} businesses not cleaned: ` +
+            report.failed.map((f) => f.organizationId).join(', '),
+        );
+      }
+      return { ...report, failed: 0 };
     },
   })
   // Declarate; logica vine în lotul fiecăruia, cu platformJobs.attach(id, run).

@@ -7,6 +7,7 @@ import { Conflict, InvalidInput, ResourceNotFound } from '@ventora/errors';
 import { behaviorNoteOf, type BehaviorNote } from './behavior';
 import { withBookingTx } from './db';
 import { isUuid } from './validation';
+import { hubOnly } from './actor';
 
 /*
  * Lot B.7a — the client card (BOOKING.md §3 B.7; plan reports/2026-11-10_1745_plan-booking-b7.md,
@@ -154,6 +155,7 @@ export async function getClientCardInOrg(
   clientId: unknown,
   seesReasons: boolean,
 ): Promise<ClientCard> {
+  hubOnly(ctx);
   const id = requireId(clientId);
   return withBookingTx(
     ctx.organizationId,
@@ -261,6 +263,7 @@ export async function listClientAppointmentsInOrg(
   ctx: TenantContext,
   params: { clientId: unknown; limit?: unknown; offset?: unknown },
 ): Promise<{ items: ClientCardAppointment[]; total: number }> {
+  hubOnly(ctx);
   const id = requireId(params.clientId);
   const limit = params.limit === undefined ? 50 : params.limit;
   const offset = params.offset === undefined ? 0 : params.offset;
@@ -299,6 +302,7 @@ export async function listBlockedClientsInOrg(
   ctx: TenantContext,
   seesReasons: boolean,
 ): Promise<BlockedClient[]> {
+  hubOnly(ctx);
   return withBookingTx(
     ctx.organizationId,
     async (client) => {
@@ -352,6 +356,7 @@ export async function blockClientInOrg(
   ctx: TenantContext,
   params: { clientId: unknown; reason: unknown },
 ): Promise<void> {
+  hubOnly(ctx);
   const id = requireId(params.clientId);
   const reason = requireReason(params.reason);
   await withBookingTx(ctx.organizationId, async (client, exec) => {
@@ -371,6 +376,7 @@ export async function blockClientInOrg(
 
 /** „Deblochează”: the block is closed; its reason stays (the business log, S125). */
 export async function unblockClientInOrg(ctx: TenantContext, clientId: unknown): Promise<void> {
+  hubOnly(ctx);
   const id = requireId(clientId);
   await withBookingTx(ctx.organizationId, async (client, exec) => {
     await readClient(client, id, true);
@@ -394,6 +400,7 @@ export async function mergeClientsInOrg(
   ctx: TenantContext,
   params: { keepClientId: unknown; mergeClientId: unknown; fillEmpty?: unknown },
 ): Promise<{ keptClientId: string; mergedClientId: string }> {
+  hubOnly(ctx);
   const keepId = requireId(params.keepClientId);
   const mergeId = requireId(params.mergeClientId);
   if (keepId === mergeId) throw new InvalidInput('mergeClientId', 'invalid');
@@ -488,6 +495,7 @@ export async function eraseClientInOrg(
   ctx: TenantContext,
   clientId: unknown,
 ): Promise<{ appointmentsAnonymized: number }> {
+  hubOnly(ctx);
   const id = requireId(clientId);
   return withBookingTx(ctx.organizationId, async (client, exec) => {
     const row = await readClient(client, id);

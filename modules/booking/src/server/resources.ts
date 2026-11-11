@@ -6,6 +6,7 @@ import { Conflict, InvalidInput, ResourceNotFound } from '@ventora/errors';
 import { withBookingTx } from './db';
 import { bookingLocation } from './locations';
 import { isUuid, normalizeName, normalizeSortOrder } from './validation';
+import { hubOnly } from './actor';
 
 /*
  * Lot B.3a — the bookable resources (BOOKING.md §3 B.3; plan
@@ -239,6 +240,7 @@ export async function listResourcesInOrg(
   ctx: TenantContext,
   options: { includeArchived?: unknown } = {},
 ): Promise<Resource[]> {
+  hubOnly(ctx);
   if (options.includeArchived !== undefined && typeof options.includeArchived !== 'boolean') {
     throw new InvalidInput('includeArchived');
   }
@@ -257,6 +259,7 @@ export async function listResourcesInOrg(
 }
 
 export async function getResourceInOrg(ctx: TenantContext, resourceId: unknown): Promise<Resource> {
+  hubOnly(ctx);
   const id = requireId(resourceId);
   return withBookingTx(
     ctx.organizationId,
@@ -272,6 +275,7 @@ export async function createResourceInOrg(
   ctx: TenantContext,
   input: ResourceInput,
 ): Promise<Resource> {
+  hubOnly(ctx);
   const name = normalizeName('name', input.name, RESOURCE_LIMITS.name);
   const kind = requireKind(input.kind);
   const units = requireUnits(input.units);
@@ -310,6 +314,7 @@ export async function updateResourceInOrg(
   resourceId: unknown,
   input: ResourceInput,
 ): Promise<Resource> {
+  hubOnly(ctx);
   const id = requireId(resourceId);
   const name = normalizeName('name', input.name, RESOURCE_LIMITS.name);
   const kind = requireKind(input.kind);
@@ -357,6 +362,7 @@ export async function archiveResourceInOrg(
   ctx: TenantContext,
   resourceId: unknown,
 ): Promise<Resource> {
+  hubOnly(ctx);
   const id = requireId(resourceId);
   return withBookingTx(ctx.organizationId, async (client, exec) => {
     const before = await readResource(client, id, true);
@@ -380,6 +386,7 @@ export async function restoreResourceInOrg(
   ctx: TenantContext,
   resourceId: unknown,
 ): Promise<Resource> {
+  hubOnly(ctx);
   const id = requireId(resourceId);
   try {
     return await withBookingTx(ctx.organizationId, async (client, exec) => {
@@ -403,6 +410,7 @@ export async function reorderResourcesInOrg(
   ctx: TenantContext,
   resourceIds: unknown,
 ): Promise<Resource[]> {
+  hubOnly(ctx);
   if (
     !Array.isArray(resourceIds) ||
     resourceIds.length > RESOURCE_LIMITS.reorderMax ||

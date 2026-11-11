@@ -6,6 +6,7 @@ import { Conflict, InvalidInput, ResourceNotFound } from '@ventora/errors';
 import { withBookingTx } from './db';
 import { doesService } from './staff-services';
 import { isUuid, LIMITS, type PriceKind } from './validation';
+import { hubOnly } from './actor';
 
 /*
  * Lot B.2c — the duration and the price of a service for one member (BOOKING.md §3 B.2c, proposed
@@ -195,6 +196,7 @@ export async function listStaffServiceTermsInOrg(
   ctx: TenantContext,
   filter: { serviceId?: unknown; staffMemberId?: unknown },
 ): Promise<StaffServiceTerms[]> {
+  hubOnly(ctx);
   const serviceId = filter.serviceId === undefined ? null : requireId(filter.serviceId);
   const staffMemberId = filter.staffMemberId === undefined ? null : requireId(filter.staffMemberId);
   if (!serviceId && !staffMemberId) throw new InvalidInput('serviceId', 'required');
@@ -229,6 +231,7 @@ export async function setStaffServiceTermsInOrg(
     price?: unknown;
   },
 ): Promise<{ terms: StaffServiceTerms | null; effective: EffectiveTerms }> {
+  hubOnly(ctx);
   const staffMemberId = requireId(input.staffMemberId);
   const serviceId = requireId(input.serviceId);
   const durationMinutes = optionalDuration('durationMinutes', input.durationMinutes);

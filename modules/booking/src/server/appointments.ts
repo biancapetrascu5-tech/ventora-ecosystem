@@ -18,6 +18,7 @@ import { withBookingTx } from './db';
 import { staffFreeAtInOrg } from './availability';
 import { requiredResources } from './resources';
 import { locationFilter } from './locations';
+import { actorUserId, isPublicContext, hubOnly } from './actor';
 import { doesService, staffForService } from './staff-services';
 import { durationWithin, effectiveTermsFor, type EffectiveTerms } from './terms';
 import { staffDayIntervals, staffEligibility } from './staff';
@@ -393,8 +394,9 @@ function audit(
     category: 'booking',
     action,
     outcome: 'success',
-    actorType: 'user',
-    actorId: ctx.userId,
+    // B.11a: the client on the public page has no account
+    actorType: isPublicContext(ctx) ? 'anonymous' : 'user',
+    actorId: actorUserId(ctx),
     organizationId: ctx.organizationId,
     targetType,
     targetId,
@@ -419,7 +421,7 @@ function history(
     `INSERT INTO booking.appointment_history
        (id, organization_id, appointment_id, kind, from_status, to_status, starts_at, ends_at,
         staff_member_id, actor_type, actor_user_id)
-     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, 'user', $10)`,
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)`,
     [
       uuidv7(),
       ctx.organizationId,
@@ -430,7 +432,8 @@ function history(
       entry.startsAt ?? null,
       entry.endsAt ?? null,
       entry.staffMemberId ?? null,
-      ctx.userId,
+      isPublicContext(ctx) ? 'client' : 'user',
+      actorUserId(ctx),
     ],
   );
 }
@@ -657,6 +660,7 @@ export async function setBookingSettingsInOrg(
     bufferMin?: unknown;
   },
 ): Promise<BookingSettings> {
+  hubOnly(ctx);
   return tx(ctx, async (client, exec) => {
     const current = await readSettings(client);
     const next = {
@@ -767,6 +771,55 @@ function normalizeClient(input: ClientInput, current?: ClientRow) {
   return { name, phone, email, locale };
 }
 
+/** B.11a: the contact the public page checks before anything (name, phone and e-mail required). */
+export function normalizePublicContact(input: ClientInput) {
+  const c = normalizeClient(input);
+  if (c.email === null) throw new InvalidInput('email', 'required');
+  if (c.phone === null) throw new InvalidInput('phone', 'required');
+  return c as { name: string; phone: string; email: string; locale: ClientLocale };
+}
+
+/**
+ * B.11a: the active client of the public page — the one with this e-mail, otherwise with this
+ * phone (their card is not changed from the public page); a new one when `create` and none exists.
+ * `blocked`: an open block (B.7a) on that client, which the page never tells the client about.
+ */
+export async function publicClientInOrg(
+  ctx: TenantContext,
+  input: ClientInput,
+  create: boolean,
+): Promise<{ id: string | null; blocked: boolean }> {
+  const c = normalizePublicContact(input);
+  return tx(
+    ctx,
+    async (client, exec) => {
+      const found = (
+        await client.query<{ id: string }>(
+          `SELECT id FROM booking.client
+          WHERE archived_at IS NULL AND (lower(email) = $1 OR lower(phone) = lower($2))
+          ORDER BY (lower(email) = $1) DESC, created_at
+          LIMIT 1`,
+          [c.email, c.phone],
+        )
+      ).rows[0];
+      if (found) {
+        const blocked =
+          (
+            await client.query(
+              `SELECT 1 FROM booking.client_block WHERE client_id = $1 AND unblocked_at IS NULL`,
+              [found.id],
+            )
+          ).rows.length > 0;
+        return { id: found.id, blocked };
+      }
+      if (!create) return { id: null, blocked: false };
+      const row = await insertClient(client, exec, ctx, c);
+      return { id: row.id, blocked: false };
+    },
+    !create,
+  );
+}
+
 async function insertClient(
   client: PoolClient,
   exec: AuditSqlExecutor,
@@ -778,7 +831,7 @@ async function insertClient(
     `INSERT INTO booking.client (id, organization_id, name, phone, email, locale, created_by_user_id)
      VALUES ($1, $2, $3, $4, $5, $6, $7)
      RETURNING ${CLIENT_COLUMNS}`,
-    [uuidv7(), ctx.organizationId, c.name, c.phone, c.email, c.locale, ctx.userId],
+    [uuidv7(), ctx.organizationId, c.name, c.phone, c.email, c.locale, actorUserId(ctx)],
   );
   const row = rows[0]!;
   // no client data in the audit (name, phone, e-mail)
@@ -794,6 +847,7 @@ async function insertClient(
 }
 
 export async function createClientInOrg(ctx: TenantContext, input: ClientInput): Promise<Client> {
+  hubOnly(ctx);
   return tx(ctx, async (client, exec) => toClient(await insertClient(client, exec, ctx, input)));
 }
 
@@ -802,6 +856,7 @@ export async function updateClientInOrg(
   clientId: unknown,
   input: ClientInput,
 ): Promise<Client> {
+  hubOnly(ctx);
   const id = requireId(clientId);
   return tx(ctx, async (client, exec) => {
     const current = (
@@ -840,6 +895,7 @@ export async function searchClientsInOrg(
   ctx: TenantContext,
   params: { query?: unknown; limit?: unknown },
 ): Promise<Client[]> {
+  hubOnly(ctx);
   const limit =
     params.limit === undefined
       ? APPOINTMENT_LIMITS.clientSearchMax
@@ -1111,7 +1167,7 @@ export async function createAppointmentInOrg(
             price_kind, price_minor, price_max_minor, currency, team_note, source,
             created_by_user_id, location_id)
          VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18,
-                 $19, 'hub', $20, $21)
+                 $19, $22, $20, $21)
          ON CONFLICT (id) DO NOTHING
          RETURNING ${APPOINTMENT_COLUMNS}`,
           [
@@ -1134,8 +1190,9 @@ export async function createAppointmentInOrg(
             price.priceMaxMinor,
             service.currency,
             teamNote,
-            ctx.userId,
+            actorUserId(ctx),
             locationId,
+            isPublicContext(ctx) ? 'public' : 'hub',
           ],
         );
         // B.3b: one unit of every resource, in the same transaction (the trigger checks it)
@@ -1315,6 +1372,7 @@ export async function moveAppointmentInOrg(
   appointmentId: unknown,
   input: MoveAppointmentInput,
 ): Promise<Appointment> {
+  hubOnly(ctx);
   const id = requireId(appointmentId);
   if (
     input.startsAt === undefined &&
@@ -1421,6 +1479,7 @@ export async function updateAppointmentNoteInOrg(
   appointmentId: unknown,
   teamNote: unknown,
 ): Promise<Appointment> {
+  hubOnly(ctx);
   const id = requireId(appointmentId);
   const note = normalizeOptionalText('teamNote', teamNote, APPOINTMENT_LIMITS.teamNote);
   return tx(ctx, async (client, exec) => {
@@ -1467,6 +1526,7 @@ export async function changeAppointmentStatusInOrg(
   appointmentId: unknown,
   to: Exclude<AppointmentStatus, 'cancelled' | 'awaiting_payment' | 'unconfirmed'>,
 ): Promise<Appointment> {
+  hubOnly(ctx);
   const id = requireId(appointmentId);
   return tx(ctx, async (client, exec) => {
     const row = await readAppointment(client, id, true);
@@ -1513,6 +1573,7 @@ export async function cancelAppointmentInOrg(
   appointmentId: unknown,
   by: unknown,
 ): Promise<Appointment> {
+  hubOnly(ctx);
   const id = requireId(appointmentId);
   if (by !== 'client' && by !== 'business') throw new InvalidInput('by', 'invalid');
   return tx(ctx, async (client, exec) => {
@@ -1570,6 +1631,7 @@ export async function correctAppointmentStatusInOrg(
   appointmentId: unknown,
   input: { status: unknown; reason: unknown },
 ): Promise<Appointment> {
+  hubOnly(ctx);
   const id = requireId(appointmentId);
   if (!CORRECTORS.has(ctx.role)) throw new Forbidden();
   if (input.status !== 'completed' && input.status !== 'no_show') {
@@ -1620,6 +1682,7 @@ export async function getAppointmentInOrg(
   ctx: TenantContext,
   appointmentId: unknown,
 ): Promise<AppointmentDetail> {
+  hubOnly(ctx);
   const id = requireId(appointmentId);
   return tx(
     ctx,
@@ -1658,6 +1721,7 @@ export async function listAppointmentHistoryInOrg(
   ctx: TenantContext,
   appointmentId: unknown,
 ): Promise<AppointmentHistoryItem[]> {
+  hubOnly(ctx);
   const id = requireId(appointmentId);
   return tx(
     ctx,
@@ -1708,6 +1772,7 @@ export async function listAppointmentsInOrg(
   ctx: TenantContext,
   input: ListAppointmentsInput,
 ): Promise<{ items: Appointment[]; total: number }> {
+  hubOnly(ctx);
   const { from, to } = requireRange(input.from, input.to);
   const staffMemberId = input.staffMemberId === undefined ? null : requireId(input.staffMemberId);
   // B.10: the calendar of one location (with the appointments that have none, so none is hidden)
@@ -1775,6 +1840,7 @@ export async function addTimeBlockInOrg(
   staffMemberId: unknown,
   input: TimeBlockInput,
 ): Promise<TimeBlock> {
+  hubOnly(ctx);
   const staffId = requireId(staffMemberId);
   const b = validateBlock(input);
   return tx(ctx, async (client, exec) => {
@@ -1819,6 +1885,7 @@ export async function updateTimeBlockInOrg(
   timeBlockId: unknown,
   input: TimeBlockInput,
 ): Promise<TimeBlock> {
+  hubOnly(ctx);
   const id = requireId(timeBlockId);
   const b = validateBlock(input);
   return tx(ctx, async (client, exec) => {
@@ -1844,6 +1911,7 @@ export async function archiveTimeBlockInOrg(
   scope: AppointmentScope,
   timeBlockId: unknown,
 ): Promise<TimeBlock> {
+  hubOnly(ctx);
   const id = requireId(timeBlockId);
   return tx(ctx, async (client, exec) => {
     const row = await readBlock(client, id);
@@ -1864,6 +1932,7 @@ export async function listTimeBlocksInOrg(
   ctx: TenantContext,
   input: { from: unknown; to: unknown; staffMemberId?: unknown },
 ): Promise<TimeBlock[]> {
+  hubOnly(ctx);
   const { from, to } = requireRange(input.from, input.to);
   const staffMemberId = input.staffMemberId === undefined ? null : requireId(input.staffMemberId);
   return tx(
@@ -1901,6 +1970,7 @@ export async function countUpcomingAppointmentsInOrg(
   ctx: TenantContext,
   params: { serviceId?: unknown; staffMemberId?: unknown; fromDate?: unknown; toDate?: unknown },
 ): Promise<UpcomingAppointments> {
+  hubOnly(ctx);
   const serviceId = params.serviceId === undefined ? null : requireId(params.serviceId);
   const staffMemberId = params.staffMemberId === undefined ? null : requireId(params.staffMemberId);
   if (!serviceId && !staffMemberId) throw new InvalidInput('staffMemberId', 'required');
@@ -1942,6 +2012,7 @@ export async function countUpcomingByStaffInOrg(
   ctx: TenantContext,
   staffMemberIds: string[],
 ): Promise<Map<string, number>> {
+  hubOnly(ctx);
   if (staffMemberIds.length === 0) return new Map();
   return tx(
     ctx,

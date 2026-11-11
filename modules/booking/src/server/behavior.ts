@@ -5,6 +5,7 @@ import { uuidv7 } from '@ventora/db-kit';
 import { Conflict, InvalidInput, ResourceNotFound } from '@ventora/errors';
 import { withBookingTx } from './db';
 import { isUuid } from './validation';
+import { hubOnly } from './actor';
 
 /*
  * Lot B.7b — the behaviour note (BOOKING.md §3 B.7; design S139 BookingBehaviorNote; the founder's
@@ -97,6 +98,7 @@ export async function isHighRisk(client: PoolClient, clientId: string): Promise<
 export async function getBehaviorNoteSettingsInOrg(
   ctx: TenantContext,
 ): Promise<BehaviorNoteSettings> {
+  hubOnly(ctx);
   return withBookingTx(ctx.organizationId, (client) => readNoteSettings(client), true);
 }
 
@@ -108,6 +110,7 @@ export async function setBehaviorNoteSettingsInOrg(
   ctx: TenantContext,
   input: { enabled?: unknown; noShows?: unknown; months?: unknown },
 ): Promise<BehaviorNoteSettings> {
+  hubOnly(ctx);
   if (input.enabled !== undefined && typeof input.enabled !== 'boolean') {
     throw new InvalidInput('enabled', 'invalid');
   }
@@ -164,6 +167,7 @@ export async function removeBehaviorNoteInOrg(
   ctx: TenantContext,
   params: { clientId: unknown; reason: unknown },
 ): Promise<void> {
+  hubOnly(ctx);
   if (!isUuid(params.clientId)) throw new ResourceNotFound();
   const clientId = params.clientId;
   if (typeof params.reason !== 'string') throw new InvalidInput('reason', 'invalid');

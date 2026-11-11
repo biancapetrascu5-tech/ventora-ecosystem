@@ -5,6 +5,7 @@ import { uuidv7 } from '@ventora/db-kit';
 import { Conflict, InvalidInput, ResourceNotFound } from '@ventora/errors';
 import { withBookingTx } from './db';
 import { isUuid } from './validation';
+import { hubOnly } from './actor';
 
 /*
  * Lot B.2b — who does each service (BOOKING.md §3 B.2b, D-B5-6 = a; design S129: BookingServices
@@ -396,6 +397,7 @@ export async function setServiceStaffInOrg(
   serviceId: unknown,
   input: { allStaff?: unknown; staffMemberIds?: unknown },
 ): Promise<{ doneBy: DoneBy; stopped: StoppedPair[] }> {
+  hubOnly(ctx);
   if (!isUuid(serviceId)) throw new ResourceNotFound();
   return withBookingTx(ctx.organizationId, async (client, exec) => {
     const stopped = await setServiceStaffInTx(client, exec, ctx, serviceId, input);
@@ -408,6 +410,7 @@ export async function setStaffServicesInOrg(
   staffMemberId: unknown,
   input: { allServices?: unknown; serviceIds?: unknown },
 ): Promise<{ services: MemberServices; stopped: StoppedPair[] }> {
+  hubOnly(ctx);
   if (!isUuid(staffMemberId)) throw new ResourceNotFound();
   return withBookingTx(ctx.organizationId, async (client, exec) => {
     const stopped = await setStaffServicesInTx(client, exec, ctx, staffMemberId, input);

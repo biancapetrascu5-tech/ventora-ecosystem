@@ -6,6 +6,7 @@ import { uuidv7, writeOutboxEvent } from '@ventora/db-kit';
 import { Conflict, Forbidden, InvalidInput, ResourceNotFound } from '@ventora/errors';
 import { withBookingTx } from './db';
 import { isUuid } from './validation';
+import { hubOnly } from './actor';
 
 /*
  * Lot B.21 — the payments of an appointment, without a provider (BOOKING.md §3 B.21): „Încasează”,
@@ -237,6 +238,7 @@ export async function recordPaymentInOrg(
   scope: 'all' | 'own',
   params: { appointmentId: unknown; amountMinor: unknown; method: unknown; note?: unknown },
 ): Promise<{ payment: AppointmentPayment; balance: AppointmentBalance }> {
+  hubOnly(ctx);
   const appointmentId = requireId(params.appointmentId);
   const amount = requireAmount(params.amountMinor);
   const method = requireMethod(params.method);
@@ -271,6 +273,7 @@ export async function recordRefundInOrg(
     refundOfPaymentId?: unknown;
   },
 ): Promise<{ payment: AppointmentPayment; balance: AppointmentBalance }> {
+  hubOnly(ctx);
   const appointmentId = requireId(params.appointmentId);
   const amount = requireAmount(params.amountMinor);
   const method = requireMethod(params.method);
@@ -312,6 +315,7 @@ export async function getAppointmentPaymentsInOrg(
   ctx: TenantContext,
   appointmentIdRaw: unknown,
 ): Promise<{ payments: AppointmentPayment[]; balance: AppointmentBalance }> {
+  hubOnly(ctx);
   const appointmentId = requireId(appointmentIdRaw);
   return withBookingTx(
     ctx.organizationId,
@@ -333,6 +337,7 @@ export async function clientPaymentTotalsInOrg(
   ctx: TenantContext,
   clientIdRaw: unknown,
 ): Promise<Array<{ currency: 'RON' | 'EUR'; netMinor: number; payments: number }>> {
+  hubOnly(ctx);
   const clientId = requireId(clientIdRaw);
   return withBookingTx(
     ctx.organizationId,

@@ -30,6 +30,7 @@ import {
   type Interval,
   type WorkDay,
 } from './schedule';
+import { hubOnly } from './actor';
 
 /*
  * Lot B.2 — the members in the calendar and their schedule (BOOKING.md §3 B.2; plan
@@ -377,6 +378,7 @@ async function syncStaffWithTeam(ctx: TenantContext): Promise<Map<string, string
 // ── the business's week ─────────────────────────────────────────────────────────────────────
 
 export async function getBusinessHoursInOrg(ctx: TenantContext): Promise<BusinessDay[]> {
+  hubOnly(ctx);
   return withBookingTx(ctx.organizationId, (client) => readBusinessWeek(client), true);
 }
 
@@ -407,6 +409,7 @@ export async function setBusinessHoursInOrg(
   ctx: TenantContext,
   days: unknown,
 ): Promise<BusinessHoursSaved> {
+  hubOnly(ctx);
   const week = validateBusinessWeek(days);
   const timeZone = await getOrganizationTimeZone(ctx);
   return withBookingTx(ctx.organizationId, async (client, exec) => {
@@ -533,6 +536,7 @@ export async function setBusinessHoursInOrg(
  * with their role, their week and what comes next, and the members no longer in the team.
  */
 export async function listStaffInOrg(ctx: TenantContext): Promise<StaffList> {
+  hubOnly(ctx);
   const roles = await syncStaffWithTeam(ctx);
   const timeZone = await getOrganizationTimeZone(ctx);
   return withBookingTx(
@@ -631,6 +635,7 @@ export async function updateStaffMemberInOrg(
   staffMemberId: string,
   params: { bookableOnline?: unknown; scheduleMode?: unknown; locationId?: unknown },
 ): Promise<StaffMember> {
+  hubOnly(ctx);
   const id = requireId(staffMemberId);
   // B.10: an active location of the business (checked through core/organizations), or null
   const locationId =
@@ -683,6 +688,7 @@ export async function reorderStaffInOrg(
   ctx: TenantContext,
   staffMemberIds: unknown,
 ): Promise<StaffMember[]> {
+  hubOnly(ctx);
   if (
     !Array.isArray(staffMemberIds) ||
     staffMemberIds.length > MAX_REORDER ||
@@ -760,6 +766,7 @@ export async function getStaffScheduleInOrg(
   staffMemberId: string,
   params: { from?: unknown },
 ): Promise<StaffSchedule> {
+  hubOnly(ctx);
   const id = requireId(staffMemberId);
   const from = params.from === undefined ? null : requireLocalDate('from', params.from);
   const timeZone = from ? null : await getOrganizationTimeZone(ctx);
@@ -805,6 +812,7 @@ export async function setStaffWeeklyHoursInOrg(
   staffMemberId: string,
   days: unknown,
 ): Promise<StaffSchedule> {
+  hubOnly(ctx);
   const id = requireId(staffMemberId);
   await withBookingTx(ctx.organizationId, async (client, exec) => {
     const staff = await readActiveStaff(client, id);
@@ -842,6 +850,7 @@ export async function setStaffDayOverrideInOrg(
   staffMemberId: string,
   params: { date: unknown; isWorking: unknown; intervals?: unknown },
 ): Promise<StaffDayOverride> {
+  hubOnly(ctx);
   const id = requireId(staffMemberId);
   const date = requireLocalDate('date', params.date);
   const day = validateWorkDay('day', { isWorking: params.isWorking, intervals: params.intervals });
@@ -891,6 +900,7 @@ export async function archiveStaffDayOverrideInOrg(
   ctx: TenantContext,
   overrideId: string,
 ): Promise<StaffDayOverride> {
+  hubOnly(ctx);
   const id = requireId(overrideId);
   return withBookingTx(ctx.organizationId, async (client, exec) => {
     const { rows } = await client.query<OverrideRow & { archived_at: Date | null }>(
@@ -935,6 +945,7 @@ export async function addStaffTimeOffInOrg(
   staffMemberId: string,
   params: TimeOffParams,
 ): Promise<StaffTimeOff> {
+  hubOnly(ctx);
   const id = requireId(staffMemberId);
   const t = validateTimeOff(params);
   return withBookingTx(ctx.organizationId, async (client, exec) => {
@@ -968,6 +979,7 @@ export async function updateStaffTimeOffInOrg(
   timeOffId: string,
   params: TimeOffParams,
 ): Promise<StaffTimeOff> {
+  hubOnly(ctx);
   const id = requireId(timeOffId);
   const t = validateTimeOff(params);
   return withBookingTx(ctx.organizationId, async (client, exec) => {
@@ -1000,6 +1012,7 @@ export async function archiveStaffTimeOffInOrg(
   ctx: TenantContext,
   timeOffId: string,
 ): Promise<StaffTimeOff> {
+  hubOnly(ctx);
   const id = requireId(timeOffId);
   return withBookingTx(ctx.organizationId, async (client, exec) => {
     const { rows: found } = await client.query<TimeOffRow>(
@@ -1035,6 +1048,7 @@ export async function getStaffAvailabilityInOrg(
   ctx: TenantContext,
   params: { from: unknown; to: unknown; staffMemberId?: unknown },
 ): Promise<AvailabilityDay[]> {
+  hubOnly(ctx);
   const from = requireLocalDate('from', params.from);
   const to = requireLocalDate('to', params.to);
   const span = daysBetween(from, to);
