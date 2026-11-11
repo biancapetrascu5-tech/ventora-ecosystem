@@ -2,8 +2,8 @@
 /**
  * Rulează toate testele de integrare local, identic cu CI:
  *   1. Pornește DB-ul de test
- *   2. Verifică garda de drift (prisma migrate diff --exit-code): identity, founder, organizations, audit, access, notifications, files, support, commercial, booking, crm, billing, workflows, ai, growth, consent
- *   3. Rulează testele de integrare (db-kit, audit, identity, organizations, integrations, access, notifications, files, support, commercial, booking, crm, billing, workflows, ai, growth, consent)
+ *   2. Verifică garda de drift (prisma migrate diff --exit-code): identity, founder, organizations, audit, access, notifications, files, support, commercial, booking, crm, billing, workflows, ai, growth, consent, marketing
+ *   3. Rulează testele de integrare (db-kit, audit, identity, organizations, integrations, access, notifications, files, support, commercial, booking, crm, billing, workflows, ai, growth, consent, marketing)
  *      și sincronizarea registrului comercial de două ori (a doua nu trebuie să schimbe nimic)
  *   4. Oprește DB-ul (indiferent de rezultat)
  *
@@ -49,6 +49,7 @@ const SHADOW_AI = `postgresql://postgres:test@localhost:${PG}/shadow_ai_diff`;
 const SHADOW_BOOKING = `postgresql://postgres:test@localhost:${PG}/shadow_booking_diff`;
 const SHADOW_GROWTH = `postgresql://postgres:test@localhost:${PG}/shadow_growth_diff`;
 const SHADOW_CRM = `postgresql://postgres:test@localhost:${PG}/shadow_crm_diff`;
+const SHADOW_MARKETING = `postgresql://postgres:test@localhost:${PG}/shadow_marketing_diff`;
 const SHADOW_CONSENT = `postgresql://postgres:test@localhost:${PG}/shadow_consent_diff`;
 
 let exitCode = 0;
@@ -243,6 +244,22 @@ try {
   );
   console.log('\n[test:integration] crm...');
   runPkg('@ventora/crm', 'test:integration', {
+    DATABASE_URL_TEST: `postgresql://app_runtime:${TEST_DB.appPw}@localhost:${PG}/${TEST_DB.accessDb}`,
+    DATABASE_URL_ADMIN_TEST: ADMIN_ACCESS,
+    DATABASE_URL: `postgresql://app_runtime:${TEST_DB.appPw}@localhost:${PG}/${TEST_DB.accessDb}`,
+    BETTER_AUTH_SECRET: TEST_DB.betterAuthSecret,
+    FOUNDER_AUTH_SECRET: TEST_DB.founderAuthSecret,
+  });
+
+  // --- Lot MK.1: CampaignKit (drift pe schema marketing, apoi testele) ---
+  console.log('[test:integration] Verificare drift marketing schema...');
+  runPkg(
+    '@ventora/marketing',
+    `exec prisma migrate diff --from-migrations ./prisma/migrations --to-schema ./prisma/schema.prisma --exit-code --config prisma7.config.ts`,
+    { DATABASE_URL: ADMIN_ACCESS, SHADOW_DATABASE_URL: SHADOW_MARKETING },
+  );
+  console.log('\n[test:integration] marketing...');
+  runPkg('@ventora/marketing', 'test:integration', {
     DATABASE_URL_TEST: `postgresql://app_runtime:${TEST_DB.appPw}@localhost:${PG}/${TEST_DB.accessDb}`,
     DATABASE_URL_ADMIN_TEST: ADMIN_ACCESS,
     DATABASE_URL: `postgresql://app_runtime:${TEST_DB.appPw}@localhost:${PG}/${TEST_DB.accessDb}`,

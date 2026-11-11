@@ -106,7 +106,9 @@ export type AuditTargetType =
   | 'growth_audience'
   | 'growth_campaign'
   | 'growth_placement'
-  | 'growth_control';
+  | 'growth_control'
+  // Lot MK.1: CampaignKit (category marketing)
+  | 'marketing_settings';
 
 export type AuditEvent = {
   category: AuditCategory;

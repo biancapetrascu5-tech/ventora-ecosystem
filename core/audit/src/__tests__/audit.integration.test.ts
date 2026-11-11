@@ -624,6 +624,20 @@ describe('TA.11 — invalid input rejected by the database', () => {
     }
   });
 
+  // Lot MK.1: the CampaignKit settings code passes audit.append_event with its target
+  it('the MK.1 code (CampaignKit settings) → accepted with its target', async () => {
+    const id = await writeAuditEvent(
+      event({
+        category: 'marketing',
+        action: AuditActions.marketingSettingsUpdated,
+        targetType: 'marketing_settings',
+        targetId: crypto.randomUUID(),
+      }),
+      { mode: 'required' },
+    );
+    expect(id).toBeTruthy();
+  });
+
   it('invalid category → CHECK violation', async () => {
     await expect(
       writeAuditEvent(event({ category: 'billing' as never }), { mode: 'required' }),

@@ -1,0 +1,33 @@
+// Schema "marketing" (Lot MK.1; modules/marketing/prisma/, ca la crm) — folosită pentru garda de
+// drift (prisma migrate diff) și prisma migrate deploy. Codul nu folosește un client Prisma generat:
+// rulează pe pg, cu SET LOCAL ROLE marketing_rw și app.organization_id.
+// CHECK-urile, triggerele, rolul, grant-urile și RLS sunt doar în migrare.
+
+datasource db {
+  provider = "postgresql"
+  schemas  = ["marketing"]
+}
+
+/// Lot MK.1: the CampaignKit settings of a business (CampaignKitSettings, S139); one row.
+model Settings {
+  organizationId  String   @id @map("organization_id") @db.Uuid
+  senderName      String?  @map("sender_name") @db.VarChar(80)
+  replyTo         String?  @map("reply_to") @db.VarChar(254)
+  /// D-CK-15 = a: at most 2 marketing messages in 7 days per person (1–4 in 7–30).
+  capMessages     Int      @default(2) @map("cap_messages") @db.SmallInt
+  capDays         Int      @default(7) @map("cap_days") @db.SmallInt
+  /// D-CK-15: SMS only between 9:00 and 20:00 (minutes from midnight, Romania's time).
+  smsFromMinute   Int      @default(540) @map("sms_from_minute") @db.SmallInt
+  smsToMinute     Int      @default(1200) @map("sms_to_minute") @db.SmallInt
+  skipSunday      Boolean  @default(true) @map("skip_sunday")
+  skipSaturday    Boolean  @default(false) @map("skip_saturday")
+  skipHolidays    Boolean  @default(true) @map("skip_holidays")
+  /// D-CK-14 = a: members' campaigns go through approval.
+  memberApproval  Boolean  @default(true) @map("member_approval")
+  updatedByUserId String   @map("updated_by_user_id") @db.Uuid
+  createdAt       DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt       DateTime @default(now()) @map("updated_at") @db.Timestamptz
+
+  @@map("settings")
+  @@schema("marketing")
+}

@@ -149,6 +149,7 @@ for (const db of [
   'shadow_booking_diff',
   'shadow_growth_diff',
   'shadow_crm_diff',
+  'shadow_marketing_diff',
   'shadow_consent_diff',
 ]) {
   psql('postgres', `DROP DATABASE IF EXISTS ${db}; CREATE DATABASE ${db};`);

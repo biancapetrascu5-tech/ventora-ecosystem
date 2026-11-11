@@ -1179,19 +1179,46 @@ importers:
 
   modules/marketing:
     dependencies:
+      '@ventora/access':
+        specifier: workspace:*
+        version: link:../../core/access
+      '@ventora/audit':
+        specifier: workspace:*
+        version: link:../../core/audit
       '@ventora/contracts':
         specifier: workspace:*
         version: link:../../packages/contracts
+      '@ventora/errors':
+        specifier: workspace:*
+        version: link:../../packages/errors
+      pg:
+        specifier: ^8.0.0
+        version: 8.23.1
     devDependencies:
       '@types/node':
         specifier: ^22.0.0
         version: 22.20.5
-      '@ventora/access':
+      '@types/pg':
+        specifier: ^8.0.0
+        version: 8.23.1
+      '@ventora/commercial':
         specifier: workspace:*
-        version: link:../../core/access
+        version: link:../../core/commercial
+      '@ventora/db-kit':
+        specifier: workspace:*
+        version: link:../../packages/db-kit
+      '@ventora/identity':
+        specifier: workspace:*
+        version: link:../../core/identity
+      '@ventora/organizations':
+        specifier: workspace:*
+        version: link:../../core/organizations
       eslint:
         specifier: ^9.0.0
         version: 9.39.5(jiti@2.7.0)(supports-color@8.1.1)
+      prisma:
+        specifier: ^7.0.0
+        version: 7.10.1(@types/node@22.20.5)(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(typescript@6.0.3)
       typescript:
         specifier: ^6.0.0
         version: 6.0.3

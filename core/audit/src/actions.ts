@@ -327,6 +327,9 @@ export const AuditActions = {
   // the history; a public form or the unsubscribe page writes no row. Never the address or the text
   crmConsentRecorded: 'crm.consent_recorded',
   crmConsentWithdrawn: 'crm.consent_withdrawn',
+  // Lot MK.1 — CampaignKit (category marketing, required, in the same transaction): the settings
+  // of the business, with the changed field names only (never the sender name or the address)
+  marketingSettingsUpdated: 'marketing.settings_updated',
   // Lot 5.8 — Growth Engine (category founder, like the workflow engine): the automatic stop of a
   // campaign above the 5 % disturbance threshold (P22), by the system; the numbers in metadata
   growthCampaignAutoStopped: 'growth.campaign_auto_stopped',
