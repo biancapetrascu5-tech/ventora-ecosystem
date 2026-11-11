@@ -86,3 +86,17 @@ CRM (numele afișat ClientDesk) e a doua aplicație, în pachetul cu EasyBook (D
 - **Istoricul** (`getTimeline`): notițele, comentariile și fișierele, cele mai noi întâi. Al unui contact include fișierele contactelor îmbinate în el.
   - Schimbările de câmpuri cer un filtru pe țintă în `core/audit` (propunere).
 - **La îmbinare,** notițele trec pe contactul păstrat: `UPDATE(subject_id)`, singura scriere a lui `subject_id`.
+
+## Activitățile, sarcinile, reminderele, calendarul (CR.7, design S131)
+- **`crm.activity`:** `kind` task | call | meeting | email | reminder.
+  - Înregistrarea legată (contact / companie; lead și deal cu CR.8 / CR.9) e opțională: o sarcină poate sta singură.
+  - Termenul e ziua (`due_on`), cu ora opțională (`due_at`). Doar activitățile cu oră apar în calendar.
+- **Responsabilul:** creatorul, implicit. Poate fi orice membru care vede înregistrarea. Notificarea atribuirii așteaptă șabloanele din `core/notifications`.
+- **Cine vede o activitate:** cu `crm:admin`, oricine. Altfel responsabilul, creatorul și cine vede înregistrarea.
+  - **Cine o schimbă, o bifează sau o șterge (în coș):** responsabilul, creatorul sau `crm:admin`.
+- **Reminderul:** la oră, cu 15 minute, o oră sau o zi înainte. Cere ora; `remind_at` se recalculează la mutare, iar `reminded_at` se golește.
+  - Trimiterea (job-ul) așteaptă șabloanele: propunere.
+- **Apelul, întâlnirea și e-mailul** se înregistrează ca făcute, dacă nu vin cu `done: false`.
+  - Activitățile făcute intră în istoricul înregistrării.
+  - Sarcinile întârziate rămân întârziate până sunt bifate sau mutate (S131).
+- **La îmbinare,** activitățile trec pe contactul păstrat (`UPDATE(subject_id)`).

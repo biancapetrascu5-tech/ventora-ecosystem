@@ -4,6 +4,12 @@ export { getCrmSettings } from './settings';
 export type { CrmSettings } from './settings';
 export {
   assignContact,
+  createActivity,
+  deleteActivity,
+  getActivity,
+  listActivities,
+  setActivityDone,
+  updateActivity,
   createNote,
   deleteAttachment,
   deleteNote,
@@ -60,6 +66,10 @@ export type {
   CreateContactParams,
   CustomField,
   CustomValues,
+  Activity,
+  ActivityInput,
+  ActivityKind,
+  ListActivitiesParams,
   Attachment,
   Note,
   NoteKind,
