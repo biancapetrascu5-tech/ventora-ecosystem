@@ -1,35 +1,28 @@
 # HANDOFF — agentul Booking (EasyBook)
 
-Scris pe 2026-11-11, înainte de /clear. Main la `aebcac4`, adică merge-ul #162.
+Actualizat pe 2026-11-11, la ~15:40, la închiderea zilei. Main la `6b6d3e0` (merge-ul #174; #164 și #174 sunt pe main).
 
-## 1. PR-urile deschise, în ordinea de merge
+## 1. PR-urile deschise și ce e doar local
 
-| PR | Lot | Bază | SQL de revizuit | CI |
+| Ce | Ramura / worktree | Local | GitHub | Stare |
 |---|---|---|---|---|
-| **#138** | B.24: rapoartele operaționale și exportul CSV | `main` | — | 16 pass, 1 pending (verificarea vizuală) |
-| **#157** | B.10: locațiile în Booking (membru, resursă, programare, filtrele pe locație) | `main` | **da**: `modules/booking/prisma/migrations/20261111000002_booking_locations` | 16 pass, 1 pending (verificarea vizuală) |
-| **#164** | B.11a: rezervarea publică (pagina, ora ținută 10 min, codul pe e-mail, Turnstile pe server) | `feat/b10-booking-locations` (#157) | **da**: `core/organizations/.../20261111000002_organizations_public_lookup` și `modules/booking/.../20261111000003_booking_public` | doar 3 verificări, ca PR în lanț; full CI rulează după ce #157 intră și #164 e rebazat pe main |
+| **#176** C.4g — încărcarea anonimă în `core/files` (poza clientului la rezervare) | `feat/c4g-files-public-upload` / `C:\Projects\ventora-c4g` | `73ecfc0` | `73ecfc0` (pushed) | **SQL aprobat de Bianca** (review 11.11). Baza `main`. Urmează rebase peste C.4f, vezi §3 |
+| **B.12** — întrebările la rezervare + poza + ultimul răspuns pe fișa clientului | `feat/b12-booking-custom-forms` / `C:\Projects\ventora-b12` | `eaeb020` | **nepushed** (doar local, peste #176) | gata și testat local; **nu se împinge** până nu e #176 rebazat peste C.4f (decizia Biancăi) |
 
-**După fiecare merge:** rebazezi următorul PR pe main (fetch + rebase, nu merge), schimbi baza în `main` și faci push, ca să ruleze full CI.
+**PR-uri deschise ale mele:** doar #176 (limita e 3).
 
-**Îmbinate azi:**
-- #135 (C.0g), #136 (B.8), #137 (B.21);
-- #143 (cheia medicală de test generată la rulare);
-- #144 (C.0h, codurile de audit pentru încasări);
-- #146 (C.1, locațiile în `core/organizations`);
-- #162 (fix(main) după #150).
+**Îmbinate pe 11.11:** #138 (B.24), #157 (B.10), #164 (B.11a), #174 (B.11b).
 
 ## 2. Worktree-urile active (un agent pe folder)
 
 | Worktree | Ramura | Stare |
 |---|---|---|
-| `C:\Projects\ventora-b24` | `feat/b24-booking-reports` | curat, sincronizat cu origin (#138) |
-| `C:\Projects\ventora-b10` | `feat/b10-booking-locations` | curat, sincronizat (#157) |
-| `C:\Projects\ventora-b11` | `feat/b11a-booking-public` | curat, sincronizat (#164) |
+| `C:\Projects\ventora-c4g` | `feat/c4g-files-public-upload` | curat, sincronizat (#176) |
+| `C:\Projects\ventora-b12` | `feat/b12-booking-custom-forms` | curat, commit local, fără upstream |
 | `C:\Projects\ventora-handoff` | `docs/handoff-booking` | acest fișier |
 
-**Worktree-uri rămase, care se pot șterge:**
-- ramuri îmbinate: `ventora-b21`, `ventora-c0h`, `ventora-c1`, `ventora-medkey`, `ventora-fix`, `ventora-b8`, `ventora-c0g`, `ventora-b7a`, `ventora-b7b`, `ventora-b2b`, `ventora-b2c`;
+**Worktree-uri care se pot șterge:**
+- ramuri îmbinate: `ventora-b11` (#164), `ventora-b11b` (#174), `ventora-b24`, `ventora-b10`, `ventora-b21`, `ventora-c0h`, `ventora-c1`, `ventora-medkey`, `ventora-fix`, `ventora-b8`, `ventora-c0g`, `ventora-b7a`, `ventora-b7b`, `ventora-b2b`, `ventora-b2c`;
 - planuri: `ventora-plan-*`, `ventora-booking-b1`.
 
 **Excepții:**
@@ -37,25 +30,61 @@ Scris pe 2026-11-11, înainte de /clear. Main la `aebcac4`, adică merge-ul #162
 - `ventora-lot-3.6` și `ventora-lot-4.6` au PNG-uri în `reports/`, deci nu se șterg fără verificare.
 - **Nu atinge `C:\Projects\ventora-ecosystem-ui`** (agentul UI). Citirea designurilor din `docs/design/_incoming/latest` e permisă.
 
-## 3. Lotul curent și următoarele
+## 3. Ce urmează mâine (în ordine)
 
-**Următorul lot:** B.11b, linkul clientului pentru anulare și mutare. Se face pe o ramură peste `feat/b11a-booking-public`.
-- Va avea o migrare (tokenurile de gestionare, doar ca hash), deci PR cu prefixul „[SQL de revizuit]”.
-- Designul: `BookingPublic`, `BookingClientManage`, `BookingClientEmails`.
+**1. După ce #175 (C.4f, agentul UI) intră pe main** (era planificat la valul de 18:00 pe 11.11; verifică întâi cu `gh pr view 175`):
+- rebazezi #176 peste main. Conflictele așteptate: `core/files/src/files.ts`, `index.ts`, `__tests__/files.integration.test.ts`. **Păstrezi ce e pe main și adaugi încărcarea anonimă.**
+- **înlocuiești `deleteAnonymousFiles`** cu ștergerea de sistem din C.4f, ca să rămână o singură cale de ștergere în `core/files`:
+  - `deleteFileAsSystem(orgId, { fileId, module: 'booking', reason })`;
+  - `deleteOwnerFilesAsSystem(orgId, owner, reason)`;
+  - ambele scriu audit `system` în categoria modulului, iar `booking` e deja în `OWNER_AUDIT_CATEGORY`;
+  - `listAnonymousFiles` rămâne (citire).
+- în C.4f, `toInfo` (folosit de `readFileAsSystem`) aruncă pentru un rând anonim (ResourceNotFound), ceea ce e în regulă;
+- testele: `files-only.mjs` (`files` + crm `notes`, cu `WITH_CONSUMERS=1`), apoi booking local, apoi `push --force-with-lease`.
 
-**Ordinea cerută de Bianca după aceea:**
-1. B.12, formularele personalizate (design `BookingCustomForms`, S127);
-2. B.9, programările complexe (S126: `BookingRecurring`, `BookingMultiService`, `BookingWaitlist`, `BookingClasses`, `BookingPackages`), câte un sublot B.9a–e;
-3. B.13, e-mailurile automate (`BookingClientEmails`; ține cont de C.5 `core/consent`, lucrat de alt agent, #155);
-4. B.23, codurile promoționale (S127, `BookingPromoCodes`);
-5. lotul mic `exceljs` (dependență nouă aprobată) + exportul Excel în B.24.
+**2. B.12 peste noul #176:**
+- rebase;
+- în `modules/booking/src/server/public-cleanup.ts` (`cleanHoldPhotos`): în loc de `deleteAnonymousFiles`, `listAnonymousFiles` + `deleteFileAsSystem` pe fiecare fișier nepăstrat (reason, de ex. `public_hold_expired`);
+- în `server/forms.ts` (`deleteErasedPhotosInOrg`): poate folosi tot `deleteFileAsSystem` (reason `client_erased`), iar jobul de curățare poate reîncerca pozele marcate (`wiped_at` setat, `photo_deleted_at` NULL). Așa dispare dependența de C.4f notată în raportul B.12. Actualizezi raportul (secțiunea „Dependența de C.4f” și lista de bifat).
+- testele lotului (`b-files.mjs`: forms, public-booking, services, manage-booking, clients; apoi `b4-only.mjs`), lanțul de verificări;
+- push și PR **„[SQL de revizuit] B.12 …”** cu baza `feat/c4g-files-public-upload` (#176), sau `main` dacă #176 a intrat între timp. Îi trimiți Biancăi numărul.
+
+**3. Ordinea cerută de Bianca după B.12:**
+1. B.9, programările complexe (S126: `BookingRecurring`, `BookingMultiService`, `BookingWaitlist`, `BookingClasses`, `BookingPackages`), câte un sublot B.9a–e;
+2. B.13, e-mailurile automate (`BookingClientEmails`; ține cont de C.5 `core/consent`, #155);
+3. B.23, codurile promoționale (S127, `BookingPromoCodes`);
+4. lotul mic `exceljs` (dependență nouă aprobată) + exportul Excel în B.24.
 
 **Lucruri mici în așteptare:**
-- B.21 folosește încă `booking.appointment_updated` cu `metadata.payment`. Trebuie trecut la codurile C.0h, adică `booking.payment_recorded` și `booking.payment_refunded`, care sunt acum pe main. Se poate face într-un lot booking următor.
+- B.21 folosește încă `booking.appointment_updated` cu `metadata.payment`. Trebuie trecut la codurile C.0h, adică `booking.payment_recorded` și `booking.payment_refunded`.
 - **Alerta „Risc ridicat” către owner** se face ca job intern Booking (decizia Biancăi). Nu e implementată încă.
 - **B.10b** (locația pe zilele membrului, S126) și telefonul locației așteaptă decizia de pe #157.
+- **Lotul UI `BookingCustomForms`** (aprobat ca lot separat).
+
+**B.12 pe scurt** (detaliile în `reports/2026-11-11_1500_lot-b12-intrebari-la-rezervare.md`, în commit):
+- migrarea `modules/booking/prisma/migrations/20261111000005_booking_forms`, care conține:
+  - `form_question` (cu `allows_photo`);
+  - `appointment_answer` (`photo_file_id`, `photo_deleted_at`, FK compuse);
+  - `public_hold.answers` / `has_photos`;
+  - `public_hold_cleanup_due` și `erase_client` recreate;
+- `server/forms.ts`, `contract/forms.ts`, pașii publici `requestPublicAnswerPhoto` / `confirmPublicAnswerPhoto`;
+- `getClientLastAnswers` (booking:admin);
+- CI: testele booking mutate după migrările `files`;
+- `@ventora/files` adăugat ca legătură de workspace în `modules/booking/package.json`;
+- local: integrarea booking 316/316.
 
 ## 4. Deciziile Biancăi pe care le aplic
+
+**B.12 / S127 (11.11):**
+- max. 5 întrebări pe serviciu;
+- **poza e opțională**, prin `core/files` (PNG / JPEG, 10 MB), legată de răspuns, cu bifa „Clientul poate adăuga o poză” pe întrebare;
+- încărcarea anonimă e permisă doar pe un hold public existent, `pending`, al afacerii (după Turnstile, pe același hold): 1 poză / întrebare, 5 / hold;
+- pozele holdurilor expirate sau refuzate le șterge jobul de curățare, pe calea de ștergere de sistem;
+- **fără GRANT nou în `core/files`**; dacă apare nevoia, NECESITĂ DECIZIE;
+- „ultimul răspuns pe fișa clientului”: doar owner / admin / application_manager (`booking:admin`), acoperit de `erase_client`;
+- **auditul B.12 e aprobat:** `booking.settings_updated` / `booking.appointment_updated`, doar cu id-uri;
+- UI-ul `BookingCustomForms` se face într-un lot separat (aprobat);
+- **#176 (C.4g): SQL aprobat.** C.4f (#175) intră primul; apoi #176 se rebazează și trece pe ștergerea de sistem din C.4f.
 
 **Date medicale (B.8):**
 - **D-B-16:** afacerea medicală e marcată prin funcția `booking.medical`, pornită de Founder (override de tip `feature`).
@@ -84,6 +113,23 @@ Scris pe 2026-11-11, înainte de /clear. Main la `aebcac4`, adică merge-ul #162
 **GDPR:** orice lot care adaugă date personale ale clientului extinde `booking.erase_client` și testul de ștergere.
 
 ## 5. Reguli de lucru
+
+**Reguli noi de azi (Bianca, 11.11):**
+- pauza la PR-uri noi s-a ridicat;
+- **cel mult 3 PR-uri deschise ale mele în același timp**;
+- **testele de integrare ale lotului se rulează local înainte de push**;
+- rebase și `push --force-with-lease` pe ramurile mele, fără să întreb;
+- merge-urile le face Bianca pe valuri, la 10, 14 și 18;
+- la închiderea zilei (~16:00): nu mai pornesc operații lungi, totul e commit-uit, push doar la ce e gata și verificat, handoff actualizat, `git status` curat.
+
+**Reguli noi de la Bianca (11.11, 12:22).** Au prioritate și înlocuiesc regula de dimineață despre testele de integrare.
+1. **Lanțuri scurte:** cel mult 3 PR-uri neîmbinate unul peste altul. PR-urile Core separate, cu baza main, nu intră în calcul. Când sunt deja 3, lotul următor se pregătește local, cu commit, dar fără push și fără PR, până intră PR-urile de dedesubt. Un lanț care are deja mai mult de 3 rămâne așa, dar nu se mai lungește.
+2. **Testele de integrare înainte de fiecare push:** se rulează local doar testele lotului (modulul meu și pachetele Core atinse), nu toată suita. Suita completă o rulează CI-ul.
+   - pentru booking: `scratch/b-files.mjs` și `scratch/b4-only.mjs`;
+   - pentru alte module: un script echivalent, necomis;
+   - dacă Docker nu are memorie, raportez și las CI-ul să decidă.
+3. **Rebase și push --force-with-lease** pe ramurile mele de lucru, fără să întreb; niciodată pe main. Dacă push-ul e blocat de permisiuni, îi dau Biancăi comanda exactă, cu `cd` în folderul corect, ca s-o ruleze cu „!”.
+4. **Merge-urile** le face Bianca pe valuri, la 10, 14 și 18. Între valuri lucrez înainte, fără să aștept CI-ul sau merge-ul. Verific CI-ul o singură dată, la câteva minute după push, și repar dacă pică.
 
 **Comunicare și statusuri:**
 - Vorbesc în română.
@@ -122,13 +168,15 @@ Scris pe 2026-11-11, înainte de /clear. Main la `aebcac4`, adică merge-ul #162
 - `erase_client` e SECURITY DEFINER; fiecare migrare îl recreează cu corpul anterior plus datele noi.
 - Evenimentele din outbox conțin doar id-uri.
 
+**Capcană pentru migrări noi în `core/files`:** trebuie adăugate în lista explicită din `scripts/test-db-up.mjs`. CI-ul aplică migrările `files` prin glob.
+
 **Capcane pentru migrări noi în `core/organizations`:**
 - trebuie adăugate în listele explicite din `scripts/test-db-up.mjs` (bazele organizations și access) și din `.github/workflows/ci.yml` (jobul T1 + T2);
 - modulele (`modules/*`) sunt descoperite automat.
 
 ## 6. Scripturile de test (copiate din scratchpad)
 
-**Calea nouă:** `C:\Projects\ventora-handoff\scratch\`. Folderul e local și necomis (doar pe disc, nu în git). Conține `b4-only.mjs`, `b-files.mjs`, `org-only.mjs`, `growth-only.mjs`, `chain.sh` și `fixtures.ts.txt`.
+**Calea nouă:** `C:\Projects\ventora-handoff\scratch\`. Folderul e local și necomis (doar pe disc, nu în git). Conține `b4-only.mjs`, `b-files.mjs`, `org-only.mjs`, `growth-only.mjs`, `files-only.mjs` (nou: garda de drift și integrarea `files`; cu `WITH_CONSUMERS=1` și crm `notes`), `chain.sh` și `fixtures.ts.txt`.
 
 **Cum le rulezi:** din worktree-ul pe care îl testezi, de exemplu:
 
