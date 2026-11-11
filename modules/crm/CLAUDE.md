@@ -167,3 +167,8 @@ CRM (numele afișat ClientDesk) e a doua aplicație, în pachetul cu EasyBook (D
 - **Pe lead:** `source = 'custom'` cu `source_id`.
   - Sursa se alege cu `pickSource`: o cheie predefinită care nu e ascunsă și nu e `form`, sau id-ul unei surse proprii active.
   - Sursa existentă a unui lead se păstrează, chiar dacă e `form`.
+
+## Importul (CR.11b, partea 1)
+- **`previewContactImport`** (`crm:import`, cel mult 5 MB): citește CSV-ul (BOM, separator `,` sau `;`, RFC 4180), sugerează sau verifică maparea coloanelor și validează fiecare rând cu regulile de la „Contact nou”.
+  - Întoarce erorile (rândul, câmpul, motivul) și duplicatele din fișier. Nu scrie nimic.
+- **Job-ul de import** (cota verificată înainte, sari / actualizează / creează, raportul, anularea) așteaptă calea fișierului prin `core/files`, care acceptă azi doar PNG / JPEG / PDF (NECESITĂ DECIZIE: un PR Core pentru `text/csv`). Excel vine după `exceljs` de pe main.
