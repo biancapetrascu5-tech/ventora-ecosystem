@@ -206,6 +206,11 @@ export const AuditActions = {
   bookingMedicalConsentWithdrawn: 'booking.medical_consent_withdrawn',
   bookingMedicalAnswersSaved: 'booking.medical_answers_saved',
   bookingMedicalRead: 'booking.medical_read',
+  // Lot C.0h / B.21 — the payments on an appointment (category booking, required; target
+  // booking_appointment). Metadata: the payment id, kind, amount, currency and method; never the
+  // note or the client's name
+  bookingPaymentRecorded: 'booking.payment_recorded',
+  bookingPaymentRefunded: 'booking.payment_refunded',
   // Lot C.4 / CR.2 — the ClientDesk contacts and companies (category crm, required), in the same
   // transaction as the write. No personal data in the rows (name, phone, e-mail, note, birthday):
   // only ids, the changed field names, the owner and the company. „Șterge” moves to the 30-day

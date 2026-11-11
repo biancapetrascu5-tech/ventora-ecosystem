@@ -570,6 +570,25 @@ describe('TA.11 — invalid input rejected by the database', () => {
     }
   });
 
+  // Lot C.0h: the B.21 payment codes pass audit.append_event on the appointment
+  it('the B.21 codes (payments) → accepted on booking_appointment', async () => {
+    for (const action of [
+      AuditActions.bookingPaymentRecorded,
+      AuditActions.bookingPaymentRefunded,
+    ]) {
+      const id = await writeAuditEvent(
+        event({
+          category: 'booking',
+          action,
+          targetType: 'booking_appointment',
+          targetId: crypto.randomUUID(),
+        }),
+        { mode: 'required' },
+      );
+      expect(id, action).toBeTruthy();
+    }
+  });
+
   it('invalid category → CHECK violation', async () => {
     await expect(
       writeAuditEvent(event({ category: 'billing' as never }), { mode: 'required' }),
