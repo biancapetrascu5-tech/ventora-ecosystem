@@ -18,7 +18,7 @@ import { withBookingTx } from './db';
 import { staffFreeAtInOrg } from './availability';
 import { requiredResources } from './resources';
 import { locationFilter } from './locations';
-import { actorUserId, isPublicContext, hubOnly } from './actor';
+import { actorUserId, clientOnly, isPublicContext, hubOnly } from './actor';
 import { doesService, staffForService } from './staff-services';
 import { durationWithin, effectiveTermsFor, type EffectiveTerms } from './terms';
 import { staffDayIntervals, staffEligibility } from './staff';
@@ -1373,6 +1373,28 @@ export async function moveAppointmentInOrg(
   input: MoveAppointmentInput,
 ): Promise<Appointment> {
   hubOnly(ctx);
+  return moveAppointment(ctx, scope, appointmentId, input);
+}
+
+/**
+ * B.11b: the client moves their own booking from their page (server/manage.ts, after the token, the
+ * online rules and the held time were checked). Only a public context; only the time.
+ */
+export async function moveAppointmentByClient(
+  ctx: TenantContext,
+  appointmentId: string,
+  startsAt: string,
+): Promise<Appointment> {
+  clientOnly(ctx);
+  return moveAppointment(ctx, 'all', appointmentId, { startsAt });
+}
+
+async function moveAppointment(
+  ctx: TenantContext,
+  scope: AppointmentScope,
+  appointmentId: unknown,
+  input: MoveAppointmentInput,
+): Promise<Appointment> {
   const id = requireId(appointmentId);
   if (
     input.startsAt === undefined &&
@@ -1574,6 +1596,24 @@ export async function cancelAppointmentInOrg(
   by: unknown,
 ): Promise<Appointment> {
   hubOnly(ctx);
+  return cancelAppointment(ctx, scope, appointmentId, by);
+}
+
+/** B.11b: the client cancels their own booking from their page (server/manage.ts). */
+export async function cancelAppointmentByClient(
+  ctx: TenantContext,
+  appointmentId: string,
+): Promise<Appointment> {
+  clientOnly(ctx);
+  return cancelAppointment(ctx, 'all', appointmentId, 'client');
+}
+
+async function cancelAppointment(
+  ctx: TenantContext,
+  scope: AppointmentScope,
+  appointmentId: unknown,
+  by: unknown,
+): Promise<Appointment> {
   const id = requireId(appointmentId);
   if (by !== 'client' && by !== 'business') throw new InvalidInput('by', 'invalid');
   return tx(ctx, async (client, exec) => {
@@ -1591,7 +1631,8 @@ export async function cancelAppointmentInOrg(
               cancel_late = (starts_at - now()) < make_interval(hours => $4)
         WHERE id = $1
         RETURNING ${APPOINTMENT_COLUMNS}`,
-      [id, by, ctx.userId, settings.freeCancelHours],
+      // B.11b: the client on their own page has no user id
+      [id, by, actorUserId(ctx), settings.freeCancelHours],
     );
     const updated = rows[0]!;
     await history(client, ctx, id, { kind: 'status', from: row.status, to: 'cancelled' });

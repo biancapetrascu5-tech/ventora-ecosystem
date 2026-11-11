@@ -10,17 +10,20 @@ import { settleExpired } from './public';
  * Each run, for each business with something to clean (booking.public_hold_cleanup_due: only ids,
  * across RLS), in that business's own context (withBookingTx: booking_rw + app.organization_id):
  *   - the pending holds whose 10 minutes passed → 'expired', personal data wiped (settleExpired);
- *   - email_hash and ip_hash set to NULL on the rows older than 24 hours.
+ *   - email_hash and ip_hash set to NULL on the rows older than 24 hours;
+ *   - B.11b (review #174): the clients' links revoked 30 days after their booking (revoked_at).
  * No DELETE, no withSystemContext, no audit (no personal action: housekeeping). One business that
  * fails does not stop the others; the job then fails (Sentry, retry), the rest stays done.
  */
 
-export const PUBLIC_CLEANUP = { businessesPerRun: 500, hashHours: 24 } as const;
+export const PUBLIC_CLEANUP = { businessesPerRun: 500, hashHours: 24, linkDays: 30 } as const;
 
 export type PublicHoldCleanupReport = {
   businesses: number;
   expired: number;
   hashesCleared: number;
+  /** B.11b (review #174): the clients' links revoked 30 days after their booking. */
+  linksRevoked: number;
   failed: Array<{ organizationId: string; error: unknown }>;
 };
 
@@ -38,6 +41,7 @@ export async function runPublicHoldCleanupJob(): Promise<PublicHoldCleanupReport
     businesses: due.length,
     expired: 0,
     hashesCleared: 0,
+    linksRevoked: 0,
     failed: [],
   };
   for (const { organization_id: organizationId } of due) {
@@ -52,10 +56,21 @@ export async function runPublicHoldCleanupJob(): Promise<PublicHoldCleanupReport
               AND (email_hash IS NOT NULL OR ip_hash IS NOT NULL)`,
           [PUBLIC_CLEANUP.hashHours],
         );
-        return { expired, cleared: cleared.rowCount ?? 0 };
+        const linkFilter = { endedBefore: `${PUBLIC_CLEANUP.linkDays} days` };
+        guardBulkOp('booking.manage_token.revoke_old', linkFilter);
+        const revoked = await client.query(
+          `UPDATE booking.manage_token t SET revoked_at = now()
+            WHERE t.revoked_at IS NULL
+              AND t.appointment_id IN (
+                SELECT a.id FROM booking.appointment a
+                 WHERE a.ends_at < now() - make_interval(days => $1))`,
+          [PUBLIC_CLEANUP.linkDays],
+        );
+        return { expired, cleared: cleared.rowCount ?? 0, revoked: revoked.rowCount ?? 0 };
       });
       report.expired += done.expired;
       report.hashesCleared += done.cleared;
+      report.linksRevoked += done.revoked;
     } catch (error) {
       report.failed.push({ organizationId, error });
     }
