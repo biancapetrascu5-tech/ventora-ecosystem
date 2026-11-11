@@ -199,3 +199,30 @@ export type {
 export { getBehaviorNoteSettings, setBehaviorNoteSettings, removeBehaviorNote } from './clients';
 export type { SetBehaviorNoteSettingsParams, RemoveBehaviorNoteParams } from './clients';
 export type { BehaviorNote, BehaviorNoteSettings } from '../server/behavior';
+// Lot B.8: the health fields (D-B-14; only on businesses marked medical)
+export {
+  listMedicalFields,
+  createMedicalField,
+  updateMedicalField,
+  archiveMedicalField,
+  recordMedicalConsent,
+  saveMedicalAnswers,
+  getMedicalAnswers,
+  withdrawMedicalConsent,
+} from './medical';
+export type {
+  MedicalFieldFields,
+  ListMedicalFieldsParams,
+  CreateMedicalFieldParams,
+  UpdateMedicalFieldParams,
+  MedicalFieldIdParams,
+  RecordMedicalConsentParams,
+  SaveMedicalAnswersParams,
+  MedicalClientParams,
+} from './medical';
+export type {
+  MedicalAnswers,
+  MedicalConsent,
+  MedicalField,
+  MedicalFieldKind,
+} from '../server/medical';

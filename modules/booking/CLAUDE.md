@@ -189,3 +189,15 @@ Booking (numele afișat EasyBook) e prima aplicație. Planul: `docs/plans/BOOKIN
 - **Nu iese niciodată din EasyBook:** niciun eveniment, nimic în `listClientAppointments` sau în rutele publice, e-mailuri, SMS. Avansul online (B.11 / B.22) citește `isHighRisk`.
 - **Alerta către owner** cere un șablon în `core/notifications` și un consumator; vine într-un PR separat.
 - **`erase_client`** anonimizează și motivele scoaterii notei (regula din B.7a).
+
+## Câmpurile medicale (B.8, D-B-14, design BookingHealthFields)
+- **Doar pe afacerile marcate medicale:** funcționalitatea `booking.medical` din registrul comercial, pornită de Founder pe afacere (D-B-16 = a, propus). Fără ea, contractele răspund `FeatureNotIncluded`: câmpurile nu există.
+- **Tabelele:**
+  - `medical_field`: câmpurile cerute; tipurile `text`, `yes_no`, `choice`; pentru ce servicii;
+  - `medical_consent`: versiunea textului și data; o singură consimțire activă pe client;
+  - `medical_answer`: un răspuns pe client și câmp.
+- **Răspunsurile sunt criptate de aplicație** (`medical-crypto.ts`, AES-256-GCM cu `node:crypto`, AAD = client:câmp). Cheia e `BOOKING_MEDICAL_KEY` (32 de octeți, base64), doar în `.env.local` / Vercel; în teste, o cheie de test. Baza nu vede niciodată valoarea în clar.
+- **Permisiunea `booking:medical`:** owner, admin, application_manager (T3). Fiecare citire a răspunsurilor lasă un rând de audit (`booking.medical_read`, C.0g), fără valori.
+- **Fără consimțământ nu se salvează nimic.** Retragerea golește răspunsurile (`value_encrypted = NULL`, `wiped_at`): nu se șterge niciun rând.
+- **`erase_client`** golește răspunsurile și retrage consimțămintele (regula din B.7a).
+- **Date medicale reale doar după avizul avocatului** (§6); până atunci, date de test.

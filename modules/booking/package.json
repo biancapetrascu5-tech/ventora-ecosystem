@@ -20,6 +20,7 @@
   "dependencies": {
     "@ventora/access": "workspace:*",
     "@ventora/audit": "workspace:*",
+    "@ventora/commercial": "workspace:*",
     "@ventora/contracts": "workspace:*",
     "@ventora/db-kit": "workspace:*",
     "@ventora/errors": "workspace:*",
@@ -31,7 +32,6 @@
     "next-intl": "4.14.9"
   },
   "devDependencies": {
-    "@ventora/commercial": "workspace:*",
     "@types/pg": "^8.0.0",
     "typescript": "^6.0.0",
     "vitest": "^5.0.5",
