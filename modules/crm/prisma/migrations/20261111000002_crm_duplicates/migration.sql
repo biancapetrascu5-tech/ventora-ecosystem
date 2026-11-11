@@ -22,10 +22,14 @@ IMMUTABLE
 PARALLEL SAFE
 SET search_path = pg_catalog, pg_temp
 AS $$
+  -- the title first (it may hold a hyphen or a dot), then hyphens, dots and apostrophes are
+  -- dropped (Mureș-an = Mureșan), then any other run of signs is one space
   SELECT btrim(regexp_replace(
     regexp_replace(
-      translate(lower(coalesce(p_name, '')), 'ăâîșşțţáéíóúàèìòùäëïöüçñ', 'aaissttaeiouaeiouaeioucn'),
-      '^(dl|dna|d-na|d-l|dra|dr|ing|prof|av)\.?\s+', ''),
+      regexp_replace(
+        translate(lower(coalesce(p_name, '')), 'ăâîșşțţáéíóúàèìòùäëïöüçñ', 'aaissttaeiouaeiouaeioucn'),
+        '^(dl|dna|d-na|d-l|dra|dr|ing|prof|av)\.?\s+', ''),
+      '[-.'']+', '', 'g'),
     '[^a-z0-9]+', ' ', 'g'));
 $$;
 
