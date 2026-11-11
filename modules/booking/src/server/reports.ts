@@ -1,6 +1,7 @@
 import type { TenantContext } from '@ventora/access';
 import { InvalidInput, ResourceNotFound } from '@ventora/errors';
 import { getOrganizationTimeZone } from '@ventora/organizations';
+import { hubOnly } from './actor';
 import { withBookingTx } from './db';
 import { daysBetween, requireLocalDate } from './schedule';
 import { readCalendarStaff, staffLocalDays } from './staff';
@@ -90,6 +91,7 @@ export async function getBookingReportInOrg(
   ctx: TenantContext,
   params: { from: unknown; to: unknown },
 ): Promise<BookingReport> {
+  hubOnly(ctx);
   const { from, to } = requireRange(params.from, params.to);
   const timeZone = await getOrganizationTimeZone(ctx);
   return withBookingTx(
@@ -268,6 +270,7 @@ export async function exportAppointmentsCsvInOrg(
   ctx: TenantContext,
   params: { from: unknown; to: unknown; staffMemberId?: unknown; status?: unknown },
 ): Promise<{ filename: string; csv: string; rows: number }> {
+  hubOnly(ctx);
   const { from, to } = requireRange(params.from, params.to);
   const staffId =
     params.staffMemberId === undefined
