@@ -14,6 +14,7 @@ export {
   consentHistory,
   consentStates,
   recordConsent,
+  recordConsentFromPublicToken,
   suppress,
   suppressionCheck,
   withdraw,
@@ -27,3 +28,10 @@ export {
   type SuppressionReason,
 } from './consent';
 export { closeConsentPools } from './db';
+export {
+  PUBLIC_CONSENT_PURPOSES,
+  issuePublicConsentToken,
+  verifyPublicConsentToken,
+  type PublicConsentClaims,
+  type PublicConsentPurpose,
+} from './public-token';

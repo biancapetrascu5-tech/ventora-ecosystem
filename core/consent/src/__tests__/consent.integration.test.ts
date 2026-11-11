@@ -6,7 +6,9 @@ import {
   closeConsentPools,
   consentHistory,
   consentStates,
+  issuePublicConsentToken,
   recordConsent,
+  recordConsentFromPublicToken,
   suppress,
   suppressionCheck,
   withdraw,
@@ -114,34 +116,41 @@ describe('consent — suppression', () => {
   it('after an unsubscribe the business cannot subscribe the address again; the person can', async () => {
     const subject = { type: 'crm_contact' as const, id: newUuid() };
     const address = `ion-${subject.id.slice(0, 6)}@example.ro`;
-    const given = (source: 'manual' | 'form_confirmed') =>
+    const given = () =>
       recordConsent({
         organizationId: ORG_A,
         subject,
         channel: 'email',
         address,
-        source,
+        source: 'manual',
         text: TEXT,
         textVersion: 'v1',
         reason: 'La recepție',
       });
-    await given('manual');
-    await withdraw({
-      organizationId: ORG_A,
-      subject,
-      channel: 'email',
-      address,
-      source: 'preferences',
-      origin: 'public',
-    });
+    const token = (purpose: 'form_confirmed' | 'preferences') =>
+      issuePublicConsentToken({
+        organizationId: ORG_A,
+        subject,
+        channel: 'email',
+        address,
+        purpose,
+      });
+    await given();
+    // the person, on the preferences page
+    await recordConsentFromPublicToken({ token: token('preferences'), state: 'withdrawn' });
     expect(
       (await suppressionCheck({ organizationId: ORG_A, channel: 'email', address })).suppressed,
     ).toBe(true);
 
     // the business: refused (CONFLICT), in the database as well
-    expect(await pgCode(given('manual'))).toBe('CONFLICT');
+    expect(await pgCode(given())).toBe('CONFLICT');
     // the person, from the confirmed form: subscribed again, out of the list
-    await given('form_confirmed');
+    await recordConsentFromPublicToken({
+      token: token('form_confirmed'),
+      state: 'given',
+      text: TEXT,
+      textVersion: 'v1',
+    });
     expect(
       (await suppressionCheck({ organizationId: ORG_A, channel: 'email', address })).suppressed,
     ).toBe(false);
@@ -172,12 +181,15 @@ describe('consent — suppression', () => {
     expect(check).toMatchObject({ suppressed: true, reason: 'bounced' });
     // a bounce is not lifted by a new consent (only an unsubscribe is): still suppressed
     const subject = { type: 'marketing_contact' as const, id: newUuid() };
-    await recordConsent({
-      organizationId: ORG_A,
-      subject,
-      channel: 'sms',
-      address,
-      source: 'form_confirmed',
+    await recordConsentFromPublicToken({
+      token: issuePublicConsentToken({
+        organizationId: ORG_A,
+        subject,
+        channel: 'sms',
+        address,
+        purpose: 'form_confirmed',
+      }),
+      state: 'given',
       text: TEXT,
       textVersion: 'v1',
     });
@@ -331,7 +343,12 @@ describe('consent — the audit of a team member', () => {
       text: TEXT,
       textVersion: 'v1',
     };
-    await recordConsent({ ...base, source: 'form_confirmed' });
+    await recordConsentFromPublicToken({
+      token: issuePublicConsentToken({ ...base, purpose: 'form_confirmed' }),
+      state: 'given',
+      text: TEXT,
+      textVersion: 'v1',
+    });
     const { rows } = await adminPool.query(
       `SELECT 1 FROM audit.audit_log WHERE organization_id = $1 AND target_id = $2`,
       [ORG_A, subject.id],
@@ -352,6 +369,77 @@ describe('consent — the audit of a team member', () => {
           actorUserId: newUuid(),
           audit: 'crm',
         }),
+      ),
+    ).toBe('INVALID_INPUT');
+  });
+});
+
+// Decision 11.11.2026: form_confirmed / preferences only from the public flows, with the token
+describe('consent — the public sources', () => {
+  it('the business cannot write form_confirmed or preferences: the contract and the database refuse', async () => {
+    const subject = { type: 'crm_contact' as const, id: newUuid() };
+    const address = `pub-${subject.id.slice(0, 6)}@example.ro`;
+    const base = { organizationId: ORG_A, subject, channel: 'email' as const, address };
+    for (const source of ['form_confirmed', 'preferences']) {
+      expect(
+        await pgCode(
+          recordConsent({
+            ...base,
+            source: source as never,
+            text: TEXT,
+            textVersion: 'v1',
+            reason: 'x',
+          }),
+        ),
+        source,
+      ).toBe('INVALID_INPUT');
+    }
+    expect(await pgCode(withdraw({ ...base, source: 'preferences' as never, origin: 'crm' }))).toBe(
+      'INVALID_INPUT',
+    );
+    // and a row written past the contract, with a team member as actor: refused by the CHECK
+    const code = await pgCode(
+      withConsentTx(ORG_A, (client) =>
+        client.query(
+          `INSERT INTO consent.consent_event (organization_id, subject_type, subject_id, channel,
+             state, address_hash, source, text, text_version, actor_user_id)
+           VALUES ($1, 'crm_contact', $2, 'email', 'given', $3, 'preferences', 'x', 'v1', $4)`,
+          [ORG_A, subject.id, addressHash(ORG_A, 'email', address), newUuid()],
+        ),
+      ),
+    );
+    expect(code).toBe('23514');
+  });
+
+  it('a forged, altered or expired token is refused', async () => {
+    const subject = { type: 'marketing_contact' as const, id: newUuid() };
+    const t = issuePublicConsentToken({
+      organizationId: ORG_A,
+      subject,
+      channel: 'email',
+      address: `tok-${subject.id.slice(0, 6)}@example.ro`,
+      purpose: 'preferences',
+    });
+    const [body, mac] = t.split('.');
+    const otherOrg = Buffer.from(
+      JSON.stringify({ ...JSON.parse(Buffer.from(body!, 'base64url').toString()), o: ORG_B }),
+    ).toString('base64url');
+    for (const bad of [`${otherOrg}.${mac}`, `${body}.${'A'.repeat(mac!.length)}`, 'x.y', '']) {
+      expect(await pgCode(recordConsentFromPublicToken({ token: bad, state: 'withdrawn' }))).toBe(
+        'INVALID_INPUT',
+      );
+    }
+    const old = issuePublicConsentToken({
+      organizationId: ORG_A,
+      subject,
+      channel: 'email',
+      address: 'old@example.ro',
+      purpose: 'form_confirmed',
+      now: new Date(Date.now() - 8 * 86_400_000),
+    });
+    expect(
+      await pgCode(
+        recordConsentFromPublicToken({ token: old, state: 'given', text: TEXT, textVersion: 'v1' }),
       ),
     ).toBe('INVALID_INPUT');
   });

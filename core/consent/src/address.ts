@@ -19,7 +19,8 @@ export class ConsentKeyMissing extends Error {
   }
 }
 
-function hashKey(): Buffer {
+/** The 32-byte key (also the root of the public token's signing key, public-token.ts). */
+export function hashKey(): Buffer {
   const raw = process.env.CONSENT_HASH_KEY;
   if (!raw) throw new ConsentKeyMissing();
   const k = Buffer.from(raw, 'base64');

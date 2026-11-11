@@ -62,6 +62,10 @@ CREATE TABLE "consent"."consent_event" (
                                        'crm', 'preferences')),
   CONSTRAINT "consent_event_given_reason" CHECK (
     "state" <> 'given' OR "source" NOT IN ('import', 'manual') OR "reason" IS NOT NULL),
+  -- Decision 11.11.2026: the public sources come only from the token flows, never from a team
+  -- member (the contract refuses them too; this holds for a row written past the contract)
+  CONSTRAINT "consent_event_public_source" CHECK (
+    "source" NOT IN ('form_confirmed', 'preferences') OR "actor_user_id" IS NULL),
   CONSTRAINT "consent_event_withdrawn_source" CHECK (
     "state" <> 'withdrawn' OR "source" IN ('manual', 'preferences', 'unsubscribe', 'sms_stop',
                                            'bounce', 'spam_report', 'crm', 'booking'))

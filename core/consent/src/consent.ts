@@ -3,6 +3,7 @@ import { Conflict, InvalidInput } from '@ventora/errors';
 import type { PoolClient } from 'pg';
 import { addressHash, CONSENT_CHANNELS, truncateIp, type ConsentChannel } from './address';
 import { withConsentTx } from './db';
+import { verifyPublicConsentToken } from './public-token';
 
 /*
  * Lot C.5 — the shared consent (plans/CAMPAIGNKIT.md, D-CK-1 = a). Used by ClientDesk (CR.14,
@@ -35,20 +36,16 @@ export type ConsentSubjectType = (typeof CONSENT_SUBJECT_TYPES)[number];
 
 export type ConsentSubject = { type: ConsentSubjectType; id: string };
 
-export const CONSENT_GIVEN_SOURCES = [
-  'form',
-  'form_confirmed',
-  'import',
-  'manual',
-  'booking',
-  'crm',
-  'preferences',
-] as const;
+/**
+ * What a business's contract may write (decision 11.11.2026): `form_confirmed` and `preferences`
+ * are not here, they come only from the public flows with a signed token
+ * (recordConsentFromPublicToken).
+ */
+export const CONSENT_GIVEN_SOURCES = ['form', 'import', 'manual', 'booking', 'crm'] as const;
 export type ConsentGivenSource = (typeof CONSENT_GIVEN_SOURCES)[number];
 
 export const CONSENT_WITHDRAW_SOURCES = [
   'manual',
-  'preferences',
   'unsubscribe',
   'sms_stop',
   'crm',
@@ -158,11 +155,6 @@ export async function consentStates(input: {
   return out;
 }
 
-/**
- * "Given": the text and its version are required; an import or a manual record also needs the
- * reason (ClientDeskConsent). A suppressed address can only be subscribed again by the person
- * (form_confirmed / preferences); otherwise CONFLICT (the database refuses it too).
- */
 /** Who calls on behalf of a team member: the application whose audit category gets the row. */
 export type ConsentAuditApp = 'crm';
 
@@ -203,6 +195,11 @@ async function auditRow(
   });
 }
 
+/**
+ * "Given": the text and its version are required; an import or a manual record also needs the
+ * reason (ClientDeskConsent). A suppressed address can only be subscribed again by the person
+ * (form_confirmed / preferences, recordConsentFromPublicToken); otherwise CONFLICT (the database refuses it too).
+ */
 export async function recordConsent(input: {
   organizationId: string;
   subject: ConsentSubject;
@@ -430,4 +427,57 @@ export async function consentHistory(input: {
     actorUserId: r.actor_user_id,
     createdAt: r.created_at,
   }));
+}
+
+/**
+ * The public flows only (decision 11.11.2026): the confirmation link of a form (`form_confirmed`,
+ * "given") and the preferences page (`preferences`, "given" or "withdrawn"), with the signed token
+ * the person received. No team member, no session: the token is the proof. A "withdrawn" also puts
+ * the address into the suppression list; a "given" from here is the only way out of an
+ * unsubscribe (release_suppression).
+ */
+export async function recordConsentFromPublicToken(input: {
+  token: string;
+  state: 'given' | 'withdrawn';
+  /** Required for "given": the exact text the person saw and its version. */
+  text?: string | null;
+  textVersion?: string | null;
+  ip?: string | null;
+}): Promise<void> {
+  const claims = verifyPublicConsentToken(input.token);
+  if (input.state !== 'given' && input.state !== 'withdrawn') throw new InvalidInput('state');
+  if (claims.purpose === 'form_confirmed' && input.state !== 'given') {
+    throw new InvalidInput('state');
+  }
+  const consentText = text('text', input.text, 4000);
+  const version = text('textVersion', input.textVersion, 64);
+  if (input.state === 'given' && (!consentText || !version)) throw new InvalidInput('text');
+  await withConsentTx(claims.organizationId, async (client) => {
+    await client.query(
+      `INSERT INTO consent.consent_event
+         (organization_id, subject_type, subject_id, channel, purpose, state, address_hash,
+          source, text, text_version, ip_truncated, actor_user_id)
+       VALUES ($1, $2, $3, $4, 'marketing', $5, $6, $7, $8, $9, $10, NULL)`,
+      [
+        claims.organizationId,
+        claims.subject.type,
+        claims.subject.id,
+        claims.channel,
+        input.state,
+        claims.addressHash,
+        claims.purpose,
+        input.state === 'given' ? consentText : null,
+        input.state === 'given' ? version : null,
+        truncateIp(input.ip),
+      ],
+    );
+    if (input.state === 'withdrawn') {
+      await client.query(
+        `INSERT INTO consent.suppression (organization_id, channel, address_hash, reason, origin)
+         VALUES ($1, $2, $3, 'unsubscribed', 'public')
+         ON CONFLICT DO NOTHING`,
+        [claims.organizationId, claims.channel, claims.addressHash],
+      );
+    }
+  });
 }
