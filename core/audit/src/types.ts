@@ -72,6 +72,8 @@ export type AuditTargetType =
   | 'booking_settings'
   // Lot C.0e / B.3: the bookable resources (rooms, spaces, equipment)
   | 'booking_resource'
+  // Lot C.0g / B.8: a health field of the business (the answers target booking_client)
+  | 'booking_medical_field'
   // Lot C.4 / CR.2: the ClientDesk contacts, companies and preferences (category crm)
   | 'crm_contact'
   | 'crm_company'

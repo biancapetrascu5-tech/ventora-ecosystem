@@ -196,6 +196,16 @@ export const AuditActions = {
   bookingClientUnblocked: 'booking.client_unblocked',
   bookingClientMerged: 'booking.client_merged',
   bookingClientErased: 'booking.client_erased',
+  // Lot C.0g / B.8 — the health fields (D-B-14; category booking, required). Every read of a
+  // client's answers leaves a row (booking.medical_read); never the answers in the metadata, only
+  // ids and which fields
+  bookingMedicalFieldCreated: 'booking.medical_field_created',
+  bookingMedicalFieldUpdated: 'booking.medical_field_updated',
+  bookingMedicalFieldArchived: 'booking.medical_field_archived',
+  bookingMedicalConsentGiven: 'booking.medical_consent_given',
+  bookingMedicalConsentWithdrawn: 'booking.medical_consent_withdrawn',
+  bookingMedicalAnswersSaved: 'booking.medical_answers_saved',
+  bookingMedicalRead: 'booking.medical_read',
   // Lot C.4 / CR.2 — the ClientDesk contacts and companies (category crm, required), in the same
   // transaction as the write. No personal data in the rows (name, phone, e-mail, note, birthday):
   // only ids, the changed field names, the owner and the company. „Șterge” moves to the 30-day
