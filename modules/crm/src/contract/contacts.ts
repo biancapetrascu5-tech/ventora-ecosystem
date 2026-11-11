@@ -27,6 +27,16 @@ import {
   type CompanyInput,
 } from '../server/companies';
 import { lookupCompanyByCui as lookup, type AnafLookup } from '../server/anaf';
+import {
+  cancelImportJobInOrg,
+  createImportUploadInOrg,
+  getImportJobInOrg,
+  importErrorsCsvInOrg,
+  listImportJobsInOrg,
+  previewImportJobInOrg,
+  startImportJobInOrg,
+  type ImportJob,
+} from '../server/import-job';
 import { registerContactsQuotaResolver } from '../server/quota';
 import {
   createNoteInOrg,
@@ -909,6 +919,62 @@ export async function previewContactImport(
 }
 
 export type { ImportPreview };
+
+// ── CR.11b (part 2): the import job (crm:import) ───────────────────────────────────────────────
+
+/** „Importă”, step 1: a draft import and the link the browser uploads the CSV to (≤ 10 MB). */
+export async function createContactImport(
+  params: Session & { name: unknown; sizeBytes: unknown },
+): Promise<{ jobId: string; fileId: string; uploadUrl: string; expiresAt: Date }> {
+  const { ctx } = await access(params, 'crm:import');
+  return createImportUploadInOrg(ctx, params);
+}
+
+/** Step 2: the upload confirmed, every row checked (the mapping suggested unless given). */
+export async function previewContactImportJob(
+  params: Session & { jobId: unknown; mapping?: unknown },
+): Promise<ImportPreview> {
+  const { ctx, scope } = await access(params, 'crm:import');
+  return previewImportJobInOrg(ctx, scope, params.jobId, params.mapping);
+}
+
+/** Step 3: the mapping and skip / update / create; the quota checked first (T5); queued. */
+export async function startContactImport(
+  params: Session & { jobId: unknown; mapping: unknown; duplicates: unknown },
+): Promise<ImportJob> {
+  const { ctx, scope } = await access(params, 'crm:import');
+  return startImportJobInOrg(ctx, scope, params.jobId, params);
+}
+
+/** The progress and the errors of one import. */
+export async function getContactImport(params: Session & { jobId: unknown }): Promise<ImportJob> {
+  const { ctx, scope } = await access(params, 'crm:import');
+  return getImportJobInOrg(ctx, scope, params.jobId);
+}
+
+export async function listContactImports(params: Session): Promise<ImportJob[]> {
+  const { ctx, scope } = await access(params, 'crm:import');
+  return listImportJobsInOrg(ctx, scope);
+}
+
+/** „Descarcă raportul erorilor”: row, field, reason (no cell values). */
+export async function contactImportErrorsCsv(
+  params: Session & { jobId: unknown },
+): Promise<string> {
+  const { ctx, scope } = await access(params, 'crm:import');
+  return importErrorsCsvInOrg(ctx, scope, params.jobId);
+}
+
+/** „Anulează importul”: the contacts it created go to the bin; the updated ones stay. */
+export async function cancelContactImport(
+  params: Session & { jobId: unknown },
+): Promise<{ job: ImportJob; archived: number }> {
+  const { ctx, scope } = await access(params, 'crm:import');
+  return cancelImportJobInOrg(ctx, scope, params.jobId);
+}
+
+export type { ImportJob };
+export type { DuplicateMode, ImportState } from '../server/import-job';
 export type { LeadScore, ScoreReason } from '../server/scoring';
 export type {
   ExportEntity,

@@ -89,6 +89,8 @@ model Contact {
   mergedIntoId     String?   @map("merged_into_id") @db.Uuid
   /// the 30-day bin: anonymised by the job (decision of 11.11.2026)
   anonymizedAt     DateTime? @map("anonymized_at") @db.Timestamptz
+  /// CR.11b: the import job that created it (a cancel moves it to the bin)
+  importJobId      String?   @map("import_job_id") @db.Uuid
 
   company Company? @relation(fields: [companyId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "contact_company_id_fkey")
   mergedInto      Contact?  @relation("ContactMerge", fields: [mergedIntoId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "contact_merged_into_id_fkey")
@@ -99,6 +101,7 @@ model Contact {
   mergesMerged    ContactMerge[]       @relation("MergeMerged")
   leads           Lead[]
   deals           Deal[]
+  importJob       ImportJob? @relation(fields: [organizationId, importJobId], references: [organizationId, id], onDelete: Restrict, onUpdate: Restrict, map: "contact_import_job_id_fkey")
 
   @@index([organizationId, phone], map: "contact_organization_id_phone_idx")
   @@index([organizationId, email], map: "contact_organization_id_email_idx")
@@ -110,6 +113,7 @@ model Contact {
   @@index([organizationId, phoneAlt], map: "contact_organization_id_phone_alt_idx")
   @@index([organizationId, emailAlt], map: "contact_organization_id_email_alt_idx")
   @@index([mergedIntoId], map: "contact_merged_into_id_idx")
+  @@index([importJobId], map: "contact_import_job_id_idx")
   @@map("contact")
   @@schema("crm")
 }
@@ -493,5 +497,40 @@ model ProcessedEvent {
 
   @@id([consumer, eventId])
   @@map("processed_events")
+  @@schema("crm")
+}
+
+/// Lot CR.11b (part 2): a CSV import of contacts (S132); the file in core/files (crm / import / id).
+model ImportJob {
+  id                String    @id @db.Uuid
+  organizationId    String    @map("organization_id") @db.Uuid
+  fileId            String    @map("file_id") @db.Uuid
+  mapping           Json      @default("{}")
+  duplicateMode     String    @default("skip") @map("duplicate_mode") @db.VarChar(6)
+  scope             String    @default("own") @db.VarChar(3)
+  state             String    @default("draft") @db.VarChar(9)
+  failure           String?   @db.VarChar(16)
+  totalRows         Int       @default(0) @map("total_rows")
+  nextRow           Int       @default(0) @map("next_row")
+  createdCount      Int       @default(0) @map("created_count")
+  updatedCount      Int       @default(0) @map("updated_count")
+  skippedCount      Int       @default(0) @map("skipped_count")
+  errorCount        Int       @default(0) @map("error_count")
+  errors            Json      @default("[]")
+  leaseUntil        DateTime? @map("lease_until") @db.Timestamptz
+  fileDeletedAt     DateTime? @map("file_deleted_at") @db.Timestamptz
+  createdByUserId   String    @map("created_by_user_id") @db.Uuid
+  startedAt         DateTime? @map("started_at") @db.Timestamptz
+  finishedAt        DateTime? @map("finished_at") @db.Timestamptz
+  cancelledAt       DateTime? @map("cancelled_at") @db.Timestamptz
+  cancelledByUserId String?   @map("cancelled_by_user_id") @db.Uuid
+  createdAt         DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt         DateTime  @default(now()) @map("updated_at") @db.Timestamptz
+
+  contacts Contact[]
+
+  @@unique([organizationId, id], map: "import_job_organization_id_id_key")
+  @@index([organizationId, createdAt(sort: Desc)], map: "import_job_organization_id_created_at_idx")
+  @@map("import_job")
   @@schema("crm")
 }

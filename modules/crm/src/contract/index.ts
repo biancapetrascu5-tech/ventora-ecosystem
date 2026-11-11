@@ -4,10 +4,20 @@ export { getCrmSettings, setLeadScoring } from './settings';
 // the 30-day bin (decision of 11.11.2026): the platform job, never request code
 export { runCrmBinJob } from '../server/bin';
 export type { BinJobReport } from '../server/bin';
+// CR.11b: the import job (every minute), never request code
+export { runCrmImportJob } from '../server/import-job';
+export type { ImportRunReport } from '../server/import-job';
 export type { CrmSettings } from './settings';
 export {
   assignContact,
   previewContactImport,
+  cancelContactImport,
+  contactImportErrorsCsv,
+  createContactImport,
+  getContactImport,
+  listContactImports,
+  previewContactImportJob,
+  startContactImport,
   createLeadSource,
   deleteLeadSource,
   listLeadSources,
@@ -109,6 +119,9 @@ export type {
   CustomField,
   CustomValues,
   ImportPreview,
+  ImportJob,
+  DuplicateMode,
+  ImportState,
   LeadSourceDef,
   LeadScore,
   ScoreReason,

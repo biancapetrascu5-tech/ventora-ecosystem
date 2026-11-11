@@ -171,4 +171,21 @@ CRM (numele afișat ClientDesk) e a doua aplicație, în pachetul cu EasyBook (D
 ## Importul (CR.11b, partea 1)
 - **`previewContactImport`** (`crm:import`, cel mult 5 MB): citește CSV-ul (BOM, separator `,` sau `;`, RFC 4180), sugerează sau verifică maparea coloanelor și validează fiecare rând cu regulile de la „Contact nou”.
   - Întoarce erorile (rândul, câmpul, motivul) și duplicatele din fișier. Nu scrie nimic.
-- **Job-ul de import** (cota verificată înainte, sari / actualizează / creează, raportul, anularea) așteaptă calea fișierului prin `core/files`, care acceptă azi doar PNG / JPEG / PDF (NECESITĂ DECIZIE: un PR Core pentru `text/csv`). Excel vine după `exceljs` de pe main.
+
+## Importul (CR.11b, partea 2: job-ul)
+- **`crm.import_job`:** fișierul e în `core/files` (`crm` / `import` / id-ul job-ului, `text/csv` doar pentru acest proprietar, C.4e).
+  - Job-ul ține maparea, alegerea pentru contactele existente (`skip` / `update` / `create`), progresul (`next_row` și contoarele) și erorile.
+  - Erorile au rândul, câmpul și motivul, niciodată valoarea celulei; se păstrează cam primele 500.
+  - Un lease împiedică două rulări să lucreze pe același job.
+- **Pașii:** `createContactImport` (link de încărcare), `previewContactImportJob` (confirmă încărcarea, citește fișierul, verifică rândurile), `startContactImport`.
+  - La start se verifică cota `crm.contacts` pentru contactele pe care le-ar crea (T5): rândurile valide care nu se potrivesc cu nimeni, sau toate, la `create`.
+- **Job-ul platformei `crm.import`** (în fiecare minut) rulează `runCrmImportJob`. Job-urile scadente le listează `crm.import_jobs_due` (`SECURITY DEFINER`, doar id-uri, aprobabilă de coordonator după regula din 11.11).
+  - Fiecare job rulează în contextul afacerii lui, cu cel mult 500 de rânduri pe rulare și un rând pe tranzacție. Continuă de la rândul următor.
+  - Contactul creat are sursa `import` și `import_job_id`, cu unitatea de cotă ca la crearea de mână. Câmpurile proprii obligatorii nu se cer (S132).
+  - Rândurile se scriu ca persoana care a pornit importul, cu vizibilitatea ei.
+  - Cota atinsă între timp oprește job-ul (`failed: quota`); contactele create rămân.
+  - **La `update`:** contactul din EasyBook își păstrează numele, telefonul, e-mailul și limba. `companyRole` nu se importă încă (cere legătura cu firma).
+- **Anularea** (și după final): contactele create ajung în coș, iar cele actualizate rămân cum sunt.
+- **CSV-ul** se șterge din `core/files` (C.4f, auditat acolo) după final, anulare sau eșec și, oricum, după 7 zile (un draft vechi devine `failed: expired`).
+- **Auditul:** `crm.import_started` / `crm.import_completed` (`failure` cu outcome failure) / `crm.import_cancelled`, doar numere.
+- **Excel** vine după ce `exceljs` intră pe main.
