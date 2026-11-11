@@ -322,6 +322,8 @@ model Appointment {
   history     AppointmentHistory[]
   payments    AppointmentPayment[]
   resources   AppointmentResource[]
+  manageTokens ManageToken[]
+  moveHolds   PublicHold[]
 
   @@unique([organizationId, number], map: "appointment_organization_id_number_key")
   @@index([organizationId, startsAt], map: "appointment_organization_id_starts_idx")
@@ -627,7 +629,8 @@ model PublicHold {
   /// review #164: set to NULL after 24 hours (booking.public-hold-cleanup)
   emailHash       String?   @map("email_hash") @db.Char(64)
   ipHash          String?   @map("ip_hash") @db.Char(64)
-  codeHash        String    @map("code_hash") @db.Char(64)
+  /// B.11b: null for a move (the token is the proof)
+  codeHash        String?   @map("code_hash") @db.Char(64)
   attempts        Int       @default(0) @db.SmallInt
   sends           Int       @default(1) @db.SmallInt
   lastSentAt      DateTime  @default(now()) @map("last_sent_at") @db.Timestamptz
@@ -636,12 +639,32 @@ model PublicHold {
   appointmentId   String?   @map("appointment_id") @db.Uuid
   settledAt       DateTime? @map("settled_at") @db.Timestamptz
   createdAt       DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  /// B.11b: the booking being moved by its client (the old time stays theirs until they confirm)
+  moveAppointmentId String? @map("move_appointment_id") @db.Uuid
 
-  staffMember StaffMember @relation(fields: [staffMemberId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "public_hold_staff_member_id_fkey")
-  service     Service     @relation(fields: [serviceId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "public_hold_service_id_fkey")
+  staffMember     StaffMember  @relation(fields: [staffMemberId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "public_hold_staff_member_id_fkey")
+  service         Service      @relation(fields: [serviceId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "public_hold_service_id_fkey")
+  moveAppointment Appointment? @relation(fields: [moveAppointmentId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "public_hold_move_appointment_id_fkey")
 
   @@index([staffMemberId, startsAt], map: "public_hold_staff_member_id_starts_idx")
+  @@index([moveAppointmentId], map: "public_hold_move_appointment_id_idx")
   @@index([organizationId, createdAt], map: "public_hold_organization_id_created_idx")
   @@map("public_hold")
+  @@schema("booking")
+}
+
+/// Lot B.11b: the client's link for moving or cancelling a booking (S125); only the SHA-256 of the token.
+model ManageToken {
+  id             String    @id @db.Uuid
+  organizationId String    @map("organization_id") @db.Uuid
+  appointmentId  String    @map("appointment_id") @db.Uuid
+  tokenHash      String    @unique(map: "manage_token_token_hash_key") @map("token_hash") @db.Char(64)
+  createdAt      DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  revokedAt      DateTime? @map("revoked_at") @db.Timestamptz
+
+  appointment Appointment @relation(fields: [appointmentId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "manage_token_appointment_id_fkey")
+
+  @@index([appointmentId], map: "manage_token_appointment_id_idx")
+  @@map("manage_token")
   @@schema("booking")
 }

@@ -265,3 +265,20 @@ export type {
   PublicBookingResult,
   PublicHoldResult,
 } from './public';
+
+// Lot B.11b: the client's page for moving or cancelling (no session; the slug and the token)
+export {
+  getManagedBooking,
+  getManagedFreeSlots,
+  startManagedMove,
+  confirmManagedMove,
+  cancelManagedBooking,
+} from './manage';
+export type {
+  ManagedBooking,
+  ManagedCancel,
+  ManagedChange,
+  ManagedMoveHold,
+  ManageState,
+  MoveRefusal,
+} from './manage';

@@ -78,6 +78,11 @@ export type SlotQuery = {
    * there or everywhere, and the resources standing there or everywhere. undefined = all.
    */
   locationId?: string;
+  /**
+   * B.11b: the booking its client is moving (an id already checked): its own time and its own
+   * move hold do not count as taken.
+   */
+  ignoreAppointmentId?: string;
 };
 
 // ── loading ─────────────────────────────────────────────────────────────────────────────────
@@ -308,6 +313,7 @@ async function load(
                   to_char(a.ends_at AT TIME ZONE $4, 'YYYY-MM-DD"T"HH24:MI') AS le
              FROM booking.appointment a
             WHERE a.staff_member_id = ANY($1::uuid[]) AND a.status = ANY($5::text[])
+              AND a.id IS DISTINCT FROM $6::uuid
               AND a.starts_at < (($3::date + 2)::timestamp AT TIME ZONE $4)
               AND a.ends_at > (($2::date - 1)::timestamp AT TIME ZONE $4)
            UNION ALL
@@ -327,12 +333,12 @@ async function load(
                   to_char(h.ends_at AT TIME ZONE $4, 'YYYY-MM-DD"T"HH24:MI')
              FROM booking.public_hold h
             WHERE h.staff_member_id = ANY($1::uuid[]) AND h.state = 'pending'
-              AND h.expires_at > now()
+              AND h.expires_at > now() AND h.move_appointment_id IS DISTINCT FROM $6::uuid
               AND h.starts_at < (($3::date + 2)::timestamp AT TIME ZONE $4)
               AND h.ends_at > (($2::date - 1)::timestamp AT TIME ZONE $4)`
                : ''
            }`,
-          [ids, from, to, timeZone, OCCUPYING],
+          [ids, from, to, timeZone, OCCUPYING, query.ignoreAppointmentId ?? null],
         )
       ).rows;
 
@@ -364,9 +370,17 @@ async function load(
                FROM booking.appointment_resource ar
                JOIN booking.appointment a ON a.id = ar.appointment_id
               WHERE ar.resource_id = ANY($1::uuid[]) AND a.status = ANY($5::text[])
+                AND a.id IS DISTINCT FROM $6::uuid
                 AND a.starts_at < (($3::date + 2)::timestamp AT TIME ZONE $4)
                 AND a.ends_at > (($2::date - 1)::timestamp AT TIME ZONE $4)`,
-            [resources.map((r) => r.id), from, to, timeZone, OCCUPYING],
+            [
+              resources.map((r) => r.id),
+              from,
+              to,
+              timeZone,
+              OCCUPYING,
+              query.ignoreAppointmentId ?? null,
+            ],
           )
         ).rows;
         for (const u of uses) {

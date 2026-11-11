@@ -19,6 +19,7 @@ import { getFreeSlotsInOrg, type FreeSlots } from './availability';
 import { isHighRisk } from './behavior';
 import { withBookingTx } from './db';
 import { locationFilter } from './locations';
+import { issueManageToken } from './manage-token';
 import { isUuid } from './validation';
 
 /*
@@ -83,10 +84,10 @@ export function configurePublicBooking(opts: { captcha?: CaptchaVerifier }): voi
 
 // ── the context of the page ─────────────────────────────────────────────────────────────────
 
-type PublicPlace = { ctx: TenantContext; name: string; timeZone: string };
+export type PublicPlace = { ctx: TenantContext; name: string; timeZone: string };
 
 /** The business of the slug, when it is active, has an owner and has Booking; else not found. */
-async function place(slug: unknown): Promise<PublicPlace> {
+export async function place(slug: unknown): Promise<PublicPlace> {
   const org = await findPublicOrganization(slug);
   if (!org || !org.ownerUserId) throw new ResourceNotFound();
   if (!(await commercialEntitlementProvider.isEnabled(org.organizationId, 'booking'))) {
@@ -99,7 +100,7 @@ async function place(slug: unknown): Promise<PublicPlace> {
   };
 }
 
-const sha256 = (text: string) => crypto.createHash('sha256').update(text).digest('hex');
+export const sha256 = (text: string) => crypto.createHash('sha256').update(text).digest('hex');
 const codeHash = (holdId: string, code: string) => sha256(`${holdId}:${code}`);
 
 function newCode(): string {
@@ -241,7 +242,7 @@ export type PublicHoldResult = {
 
 const ISO_RE = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2}(\.\d{1,3})?)?(Z|[+-]\d{2}:\d{2})$/;
 
-function requireStart(value: unknown): Date {
+export function requireStart(value: unknown): Date {
   if (typeof value !== 'string' || !ISO_RE.test(value))
     throw new InvalidInput('startsAt', 'invalid');
   const d = new Date(value);
@@ -249,11 +250,11 @@ function requireStart(value: unknown): Date {
   return d;
 }
 
-function localDate(at: Date, timeZone: string): string {
+export function localDate(at: Date, timeZone: string): string {
   return new Intl.DateTimeFormat('en-CA', { timeZone }).format(at);
 }
 
-function nextDate(date: string): string {
+export function nextDate(date: string): string {
   const d = new Date(`${date}T12:00:00Z`);
   d.setUTCDate(d.getUTCDate() + 1);
   return d.toISOString().slice(0, 10);
@@ -283,7 +284,7 @@ export async function settleExpired(client: PoolClient): Promise<number> {
   return res.rowCount ?? 0;
 }
 
-async function settle(
+export async function settle(
   client: PoolClient,
   holdId: string,
   state: 'confirmed' | 'expired' | 'refused',
@@ -493,7 +494,7 @@ export async function startPublicBooking(
   return { holdId, staffMemberId, startsAt, expiresAt: hold.expires_at };
 }
 
-type HoldRow = {
+export type HoldRow = {
   id: string;
   staff_member_id: string;
   service_id: string;
@@ -504,7 +505,8 @@ type HoldRow = {
   client_email: string | null;
   client_locale: ClientLocale;
   message: string | null;
-  code_hash: string;
+  /** null only for a move hold (B.11b), never read here */
+  code_hash: string | null;
   attempts: number;
   sends: number;
   last_sent_at: Date;
@@ -527,6 +529,11 @@ export type PublicBookingResult = {
   /** „confirmed” (automatic confirmation) or „unconfirmed” (sent to the salon). */
   status: 'confirmed' | 'unconfirmed';
   startsAt: Date;
+  /**
+   * B.11b: the client's link for moving or cancelling (/r/<slug>/m/<token>), shown once: only its
+   * SHA-256 is kept.
+   */
+  manageToken: string;
 };
 
 export async function verifyPublicBooking(
@@ -544,7 +551,8 @@ export async function verifyPublicBooking(
   const checked = await withBookingTx(ctx.organizationId, async (client) => {
     const hold = (
       await client.query<HoldRow>(
-        `SELECT ${HOLD_COLUMNS} FROM booking.public_hold WHERE id = $1 FOR UPDATE`,
+        `SELECT ${HOLD_COLUMNS} FROM booking.public_hold
+          WHERE id = $1 AND move_appointment_id IS NULL FOR UPDATE`,
         [holdId],
       )
     ).rows[0];
@@ -556,7 +564,7 @@ export async function verifyPublicBooking(
     }
     const ok = crypto.timingSafeEqual(
       Buffer.from(codeHash(holdId, code)),
-      Buffer.from(hold.code_hash),
+      Buffer.from(hold.code_hash ?? ''.padEnd(64, '-')),
     );
     if (!ok) {
       const attempts = hold.attempts + 1;
@@ -621,12 +629,16 @@ export async function verifyPublicBooking(
     }
     throw err;
   }
-  await withBookingTx(ctx.organizationId, (c) => settle(c, holdId, 'confirmed', appointment.id));
+  const manageToken = await withBookingTx(ctx.organizationId, async (c) => {
+    await settle(c, holdId, 'confirmed', appointment.id);
+    return issueManageToken(c, ctx.organizationId, appointment.id);
+  });
   return {
     appointmentId: appointment.id,
     number: appointment.number,
     status: confirmed ? 'confirmed' : 'unconfirmed',
     startsAt: appointment.startsAt,
+    manageToken,
   };
 }
 
@@ -640,7 +652,8 @@ export async function resendPublicBookingCode(
   const result = await withBookingTx(p.ctx.organizationId, async (client) => {
     const hold = (
       await client.query<HoldRow>(
-        `SELECT ${HOLD_COLUMNS} FROM booking.public_hold WHERE id = $1 FOR UPDATE`,
+        `SELECT ${HOLD_COLUMNS} FROM booking.public_hold
+          WHERE id = $1 AND move_appointment_id IS NULL FOR UPDATE`,
         [holdId],
       )
     ).rows[0];

@@ -45,3 +45,8 @@ export function actorUserId(ctx: TenantContext): string | null {
 export function hubOnly(ctx: TenantContext): void {
   if (publicContexts.has(ctx)) throw new Forbidden();
 }
+
+/** B.11b: the steps of the client's own page accept only a public context. */
+export function clientOnly(ctx: TenantContext): void {
+  if (!publicContexts.has(ctx)) throw new Forbidden();
+}

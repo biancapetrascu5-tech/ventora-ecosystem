@@ -755,6 +755,8 @@ describe('B.1 — the role and the grants (§2.3)', () => {
       'client',
       'client_block',
       'client_note_removal',
+      // B.11b: the client's links
+      'manage_token',
       'medical_answer',
       'medical_consent',
       'medical_field',
