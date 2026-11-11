@@ -51,6 +51,7 @@ describe('Growth: niciun slot în fluxurile critice', () => {
 
   it('slotul se citește doar pe server, din locurile v1 (launcher, abonament, catalog, clopoțelul)', () => {
     const readers = all
+      .filter((p) => !rel(p).includes('/__tests__/'))
       .filter((p) => /\breadGrowthSlot\(/.test(readFileSync(p, 'utf8')))
       .map(rel)
       .sort();
