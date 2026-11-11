@@ -150,14 +150,16 @@ describe('CR.1 — the role crm_rw and the schema', () => {
         WHERE n.nspname = 'crm' AND c.relkind = 'r' ORDER BY 1`,
     );
     // every new table of the schema is listed here on purpose
-    // CR.2: company, contact; CR.3: custom_field
+    // CR.2: company, contact; CR.3: custom_field; CR.4: segment, tag
     expect(tables.map((t) => t.relname)).toEqual([
       'company',
       'contact',
       'custom_field',
       'outbox_events',
       'processed_events',
+      'segment',
       'settings',
+      'tag',
     ]);
     for (const t of tables) {
       expect(t.relrowsecurity, t.relname).toBe(true);
@@ -194,7 +196,7 @@ describe('CR.1 — the role crm_rw and the schema', () => {
       // the columns a business may change
       await asCrmRw(orgA, async (client) => {
         const r = await client.query(
-          `UPDATE crm.settings SET booking_link_enabled = false, inactive_after_months = 3,
+          `UPDATE crm.settings SET booking_link_enabled = false, lapsed_segment_days = 90,
                   updated_by_user_id = $1::uuid`,
           [uuid()],
         );
@@ -205,12 +207,12 @@ describe('CR.1 — the role crm_rw and the schema', () => {
     }
   });
 
-  it('inactive_after_months stays between 1 and 36', async () => {
-    for (const n of [0, 37]) {
+  it('lapsed_segment_days stays between 7 and 365 (S130, since CR.4)', async () => {
+    for (const n of [6, 366]) {
       await asCrmRw(orgA, async (client) => {
         await expect(
           client.query(
-            `INSERT INTO crm.settings (organization_id, inactive_after_months, updated_by_user_id)
+            `INSERT INTO crm.settings (organization_id, lapsed_segment_days, updated_by_user_id)
              VALUES ($1::uuid, $2, $3::uuid)`,
             [orgA, n, uuid()],
           ),
@@ -290,24 +292,24 @@ describe('CR.1 — T1 / T2: the organizations stay apart', () => {
 });
 
 describe('CR.1 — getCrmSettings', () => {
-  it('the defaults until the first save: the EasyBook link on (D-CRM-2), inactive after 6 months', async () => {
+  it('the defaults until the first save: the EasyBook link on (D-CRM-2), the predefined segment at 60 days', async () => {
     expect(await getCrmSettings({ sessionToken: tokens.owner })).toEqual({
       bookingLinkEnabled: true,
-      inactiveAfterMonths: 6,
+      lapsedSegmentDays: 60,
       saved: false,
     });
   });
 
   it('the saved row of its own business only', async () => {
     await adminQuery(
-      `INSERT INTO crm.settings (organization_id, booking_link_enabled, inactive_after_months, updated_by_user_id)
-       VALUES ($1::uuid, false, 12, $2::uuid)`,
+      `INSERT INTO crm.settings (organization_id, booking_link_enabled, lapsed_segment_days, updated_by_user_id)
+       VALUES ($1::uuid, false, 120, $2::uuid)`,
       [orgA, uuid()],
     );
     try {
       expect(await getCrmSettings({ sessionToken: tokens.admin })).toEqual({
         bookingLinkEnabled: false,
-        inactiveAfterMonths: 12,
+        lapsedSegmentDays: 120,
         saved: true,
       });
       // organization B: nothing saved, the defaults

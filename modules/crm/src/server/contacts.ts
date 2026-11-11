@@ -12,6 +12,7 @@ import { Conflict, Forbidden, InvalidInput, ResourceNotFound } from '@ventora/er
 import { commitQuota, freeStockQuota, releaseQuota, reserveQuota } from '@ventora/quota';
 import { withCrmTx } from './db';
 import { validateCustomValues, type CustomValues } from './custom-fields';
+import { rulesSql, type SegmentRule } from './segments';
 import {
   LIMITS,
   likePattern,
@@ -75,6 +76,8 @@ export type Contact = {
   updatedAt: Date;
   /** CR.3: the business's own fields, { fieldId: value }, only of the active fields. */
   customValues: CustomValues;
+  /** CR.4: the tags of the contact. */
+  tagIds: string[];
 };
 
 export type ContactInput = {
@@ -110,11 +113,12 @@ type ContactRow = {
   created_at: Date;
   updated_at: Date;
   custom_values: CustomValues;
+  tag_ids: string[];
 };
 
 const COLUMNS = `id, name, phone, phone_alt, email, email_alt, locale, to_char(birthday, 'YYYY-MM-DD') AS birthday,
   address, source, company_id, company_role, is_company_primary, owner_user_id, note,
-  quota_operation_id, deleted_at, created_at, updated_at,
+  quota_operation_id, deleted_at, created_at, updated_at, tag_ids,
   (SELECT COALESCE(jsonb_object_agg(e.key, e.value), '{}'::jsonb)
      FROM jsonb_each(contact.custom_values) AS e
     WHERE EXISTS (SELECT 1 FROM crm.custom_field f
@@ -142,6 +146,7 @@ function toContact(r: ContactRow): Contact {
     createdAt: r.created_at,
     updatedAt: r.updated_at,
     customValues: r.custom_values ?? {},
+    tagIds: r.tag_ids ?? [],
   };
 }
 
@@ -610,6 +615,10 @@ export type ListContactsParams = {
   deleted?: unknown;
   /** CR.3: { fieldId: value } — contacts whose own field has exactly that value. */
   custom?: unknown;
+  /** CR.4: the contacts carrying this tag. */
+  tagId?: unknown;
+  /** CR.4: the contacts a segment matches now (its rules; a member still sees only theirs). */
+  segmentId?: unknown;
   limit?: unknown;
   offset?: unknown;
 };
@@ -646,6 +655,8 @@ export async function listContactsInOrg(
     if (Object.keys(filter).length > 0)
       where.push(`custom_values @> ${arg(JSON.stringify(filter))}::jsonb`);
   }
+  if (params.tagId !== undefined)
+    where.push(`${arg(requireId('tagId', params.tagId))}::uuid = ANY(tag_ids)`);
   if (params.companyId !== undefined)
     where.push(`company_id = ${arg(requireId('companyId', params.companyId))}`);
   if (params.q !== undefined && params.q !== null && params.q !== '') {
@@ -664,10 +675,32 @@ export async function listContactsInOrg(
       );
     }
   }
-  const sql = where.join(' AND ');
+  const segmentId =
+    params.segmentId === undefined ? null : requireId('segmentId', params.segmentId);
   return withCrmTx(
     ctx.organizationId,
     async (client) => {
+      if (segmentId) {
+        const seg = await client.query<{
+          rules: SegmentRule[];
+          match: 'all' | 'any';
+          kind: string;
+          visibility: string;
+          created_by_user_id: string | null;
+          deleted_at: Date | null;
+        }>(
+          `SELECT rules, match, kind, visibility, created_by_user_id, deleted_at FROM crm.segment WHERE id = $1`,
+          [segmentId],
+        );
+        const s = seg.rows[0];
+        if (!s || s.deleted_at || (s.visibility === 'me' && s.created_by_user_id !== ctx.userId)) {
+          throw new ResourceNotFound();
+        }
+        // the predefined segment needs the visits from EasyBook (CR.12)
+        if (s.kind === 'lapsed') throw new Conflict('segment_unavailable');
+        where.push(rulesSql(s.rules, s.match, arg, ctx.userId));
+      }
+      const sql = where.join(' AND ');
       const total = await client.query<{ n: string }>(
         `SELECT count(*) AS n FROM crm.contact WHERE ${sql}`,
         args,

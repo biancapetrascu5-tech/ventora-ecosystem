@@ -13,8 +13,8 @@ model Settings {
   organizationId      String   @id @map("organization_id") @db.Uuid
   /// D-CRM-2 = c: the automatic EasyBook link, on by default.
   bookingLinkEnabled  Boolean  @default(true) @map("booking_link_enabled")
-  /// D-CRM-18: „inactiv de N luni” in the client lifecycle (1–36).
-  inactiveAfterMonths Int      @default(6) @map("inactive_after_months") @db.SmallInt
+  /// CR.4: the days of the predefined segment „N-au mai venit” (S130: 60, 7–365).
+  lapsedSegmentDays   Int      @default(60) @map("lapsed_segment_days") @db.SmallInt
   updatedByUserId     String   @map("updated_by_user_id") @db.Uuid
   createdAt           DateTime @default(now()) @map("created_at") @db.Timestamptz
   updatedAt           DateTime @default(now()) @map("updated_at") @db.Timestamptz
@@ -77,6 +77,8 @@ model Contact {
   updatedAt        DateTime  @default(now()) @map("updated_at") @db.Timestamptz
   /// CR.3: the business's own fields, { "<field id>": value }
   customValues     Json      @default("{}") @map("custom_values")
+  /// CR.4: the tags of the contact
+  tagIds           String[]  @default([]) @map("tag_ids") @db.Uuid
 
   company Company? @relation(fields: [companyId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "contact_company_id_fkey")
 
@@ -85,6 +87,7 @@ model Contact {
   @@index([organizationId, ownerUserId], map: "contact_organization_id_owner_idx")
   @@index([companyId], map: "contact_company_id_idx")
   @@index([customValues(ops: JsonbPathOps)], type: Gin, map: "contact_custom_values_idx")
+  @@index([tagIds], type: Gin, map: "contact_tag_ids_idx")
   @@map("contact")
   @@schema("crm")
 }
@@ -109,6 +112,42 @@ model CustomField {
 
   @@index([organizationId, sortOrder], map: "custom_field_organization_id_sort_idx")
   @@map("custom_field")
+  @@schema("crm")
+}
+
+/// Lot CR.4: a tag of the business (S132).
+model Tag {
+  id              String    @id @db.Uuid
+  organizationId  String    @map("organization_id") @db.Uuid
+  name            String    @db.VarChar(40)
+  color           String    @default("neutral") @db.VarChar(16)
+  deletedAt       DateTime? @map("deleted_at") @db.Timestamptz
+  deletedByUserId String?   @map("deleted_by_user_id") @db.Uuid
+  createdByUserId String    @map("created_by_user_id") @db.Uuid
+  createdAt       DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt       DateTime  @default(now()) @map("updated_at") @db.Timestamptz
+
+  @@map("tag")
+  @@schema("crm")
+}
+
+/// Lot CR.4: a saved segment (S130); the rules are evaluated on every read.
+model Segment {
+  id              String    @id @db.Uuid
+  organizationId  String    @map("organization_id") @db.Uuid
+  name            String    @db.VarChar(80)
+  rules           Json      @default("[]")
+  match           String    @default("all") @db.VarChar(3)
+  visibility      String    @default("team") @db.VarChar(4)
+  kind            String    @default("custom") @db.VarChar(6)
+  deletedAt       DateTime? @map("deleted_at") @db.Timestamptz
+  deletedByUserId String?   @map("deleted_by_user_id") @db.Uuid
+  createdByUserId String?   @map("created_by_user_id") @db.Uuid
+  createdAt       DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt       DateTime  @default(now()) @map("updated_at") @db.Timestamptz
+
+  @@index([organizationId], map: "segment_organization_id_idx")
+  @@map("segment")
   @@schema("crm")
 }
 

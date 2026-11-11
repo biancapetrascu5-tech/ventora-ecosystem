@@ -28,6 +28,26 @@ import {
 import { lookupCompanyByCui as lookup, type AnafLookup } from '../server/anaf';
 import { registerContactsQuotaResolver } from '../server/quota';
 import {
+  createTagInOrg,
+  deleteTagInOrg,
+  listTagsInOrg,
+  mergeTagInOrg,
+  tagContactsInOrg,
+  updateTagInOrg,
+  type Tag,
+} from '../server/tags';
+import {
+  countSegmentInOrg,
+  createSegmentInOrg,
+  deleteSegmentInOrg,
+  getSegmentInOrg,
+  listSegmentsInOrg,
+  setLapsedSegmentDaysInOrg,
+  updateSegmentInOrg,
+  type Segment,
+  type SegmentRule,
+} from '../server/segments';
+import {
   createCustomFieldInOrg,
   deleteCustomFieldInOrg,
   listCustomFieldsInOrg,
@@ -247,4 +267,108 @@ export async function setCompanyCustomValues(
   return setCompanyCustomValuesInOrg(ctx, params.companyId, params.values);
 }
 
-export type { Contact, Company, AnafLookup, ListContactsParams, CustomField, CustomValues };
+// ── CR.4: tags and segments (S130, S132) ───────────────────────────────────────────────────────
+
+export async function listTags(params: Session): Promise<Tag[]> {
+  const { ctx } = await access(params, 'crm:read');
+  return listTagsInOrg(ctx);
+}
+
+/** A tag (crm:settings, S132 „Etichete și surse”). */
+export async function createTag(
+  params: Session & { name?: unknown; color?: unknown },
+): Promise<Tag> {
+  const { ctx } = await access(params, 'crm:settings');
+  return createTagInOrg(ctx, params);
+}
+
+export async function updateTag(
+  params: Session & { tagId: string; name?: unknown; color?: unknown },
+): Promise<Tag> {
+  const { ctx } = await access(params, 'crm:settings');
+  return updateTagInOrg(ctx, params.tagId, params);
+}
+
+/** „Unește cu…”: the contacts and the segment rules move to `intoTagId`. */
+export async function mergeTag(
+  params: Session & { tagId: string; intoTagId: string },
+): Promise<Tag> {
+  const { ctx } = await access(params, 'crm:settings');
+  return mergeTagInOrg(ctx, params.tagId, params.intoTagId);
+}
+
+export async function deleteTag(params: Session & { tagId: string }): Promise<Tag> {
+  const { ctx } = await access(params, 'crm:settings');
+  return deleteTagInOrg(ctx, params.tagId);
+}
+
+/** „Etichetă” on one contact or in bulk (≤ 200): the contacts rule (D-CRM-15). */
+export async function tagContacts(
+  params: Session & { contactIds: string[]; add?: string[]; remove?: string[] },
+): Promise<{ updated: number }> {
+  const { ctx, scope } = await access(params, 'crm:write');
+  return tagContactsInOrg(ctx, scope, params);
+}
+
+export async function listSegments(params: Session): Promise<Segment[]> {
+  const { ctx } = await access(params, 'crm:read');
+  return listSegmentsInOrg(ctx);
+}
+
+export async function getSegment(params: Session & { segmentId: string }): Promise<Segment> {
+  const { ctx } = await access(params, 'crm:read');
+  return getSegmentInOrg(ctx, params.segmentId);
+}
+
+/** „Se potrivesc acum: N contacte” — a saved segment or rules not saved yet. */
+export async function countSegment(
+  params: Session & { segmentId?: string; rules?: unknown; match?: unknown },
+): Promise<{ count: number | null; available: boolean }> {
+  const { ctx, scope } = await access(params, 'crm:read');
+  return countSegmentInOrg(ctx, scope, params);
+}
+
+/** „Salvează ca segment” (crm:write; „Toată echipa” by default). */
+export async function createSegment(
+  params: Session & { name?: unknown; rules?: unknown; match?: unknown; visibility?: unknown },
+): Promise<Segment> {
+  const { ctx } = await access(params, 'crm:write');
+  return createSegmentInOrg(ctx, params);
+}
+
+/** The author or crm:admin. */
+export async function updateSegment(
+  params: Session & {
+    segmentId: string;
+    name?: unknown;
+    rules?: unknown;
+    match?: unknown;
+    visibility?: unknown;
+  },
+): Promise<Segment> {
+  const { ctx, scope } = await access(params, 'crm:write');
+  return updateSegmentInOrg(ctx, scope, params.segmentId, params);
+}
+
+export async function deleteSegment(params: Session & { segmentId: string }): Promise<void> {
+  const { ctx, scope } = await access(params, 'crm:write');
+  return deleteSegmentInOrg(ctx, scope, params.segmentId);
+}
+
+/** The days of „N-au mai venit de N zile” (7–365), a business setting. */
+export async function setLapsedSegmentDays(params: Session & { days: number }): Promise<number> {
+  const { ctx } = await access(params, 'crm:settings');
+  return setLapsedSegmentDaysInOrg(ctx, params.days);
+}
+
+export type {
+  Contact,
+  Company,
+  AnafLookup,
+  ListContactsParams,
+  CustomField,
+  CustomValues,
+  Tag,
+  Segment,
+  SegmentRule,
+};
