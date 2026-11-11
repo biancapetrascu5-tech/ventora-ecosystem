@@ -201,3 +201,12 @@ Booking (numele afișat EasyBook) e prima aplicație. Planul: `docs/plans/BOOKIN
 - **Fără consimțământ nu se salvează nimic.** Retragerea golește răspunsurile (`value_encrypted = NULL`, `wiped_at`): nu se șterge niciun rând.
 - **`erase_client`** golește răspunsurile și retrage consimțămintele (regula din B.7a).
 - **Date medicale reale doar după avizul avocatului** (§6); până atunci, date de test.
+
+## Încasările pe programare (B.21, fără furnizor)
+- **`appointment_payment`** (doar INSERT): o mișcare, plată sau rambursare, cu suma, moneda programării și metoda (`cash`, `card`, `transfer`, `other`). O greșeală se corectează cu o rambursare, niciodată prin schimbarea rândului.
+- **Triggerul `appointment_payment_guard`** blochează rândul programării și verifică moneda și clientul ei. O rambursare nu poate depăși ce s-a încasat (`refund_exceeds_paid`).
+- **Soldul** (`getAppointmentPayments`): încasat, rambursat, net, iar la preț fix și ce mai e de plată (la „de la” / interval, salonul stabilește suma finală).
+- **Fișa clientului** (`getClientPaymentTotals`): netul pe monedă, cu clienții îmbinați.
+- **Drepturile:** „Încasează” cere `booking:write` (un membru doar pe programările lui); rambursarea cere `booking:admin`.
+- **Evenimentul `booking.payment.recorded`** (C-B-2, pentru Finance) are id-uri, suma, moneda și metoda; niciodată nota sau numele. Auditul pune mișcarea pe `booking.appointment_updated`, fără notă.
+- **Doar evidență:** bonul fiscal rămâne pe casa salonului (E-AMEF e B.34). `erase_client` golește notele încasărilor; sumele rămân.
