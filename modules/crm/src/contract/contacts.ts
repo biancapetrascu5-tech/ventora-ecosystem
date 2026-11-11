@@ -28,6 +28,23 @@ import {
 import { lookupCompanyByCui as lookup, type AnafLookup } from '../server/anaf';
 import { registerContactsQuotaResolver } from '../server/quota';
 import {
+  createNoteInOrg,
+  deleteNoteInOrg,
+  listMyMentionsInOrg,
+  updateNoteInOrg,
+  type Note,
+  type NoteKind,
+} from '../server/notes';
+import {
+  deleteAttachmentInOrg,
+  finishAttachmentUploadInOrg,
+  getAttachmentLinkInOrg,
+  startAttachmentUploadInOrg,
+  type Attachment,
+} from '../server/attachments';
+import { getTimelineInOrg, type TimelineItem } from '../server/timeline';
+import { page } from '../server/validation';
+import {
   checkDuplicatesInOrg,
   dismissDuplicateInOrg,
   listDuplicatesInOrg,
@@ -409,7 +426,91 @@ export async function mergeContacts(
   return mergeContactsInOrg(ctx, params);
 }
 
+// ── CR.6: notes, comments, files, the history (S130 „Un singur istoric”) ──────────────────────
+
+/** „Notiță” / „Comentariu” on a contact or a company; mentions only people who see it. */
+export async function createNote(
+  params: Session & {
+    subjectType: unknown;
+    subjectId: unknown;
+    kind?: unknown;
+    body: unknown;
+    mentions?: unknown;
+  },
+): Promise<Note> {
+  const { ctx, scope } = await access(params, 'crm:write');
+  return createNoteInOrg(ctx, scope, params);
+}
+
+/** The author edits the text or the mentions. */
+export async function updateNote(
+  params: Session & { noteId: string; body?: unknown; mentions?: unknown },
+): Promise<Note> {
+  const { ctx, scope } = await access(params, 'crm:write');
+  return updateNoteInOrg(ctx, scope, params.noteId, params);
+}
+
+/** The author or crm:admin; into the bin. */
+export async function deleteNote(params: Session & { noteId: string }): Promise<Note> {
+  const { ctx, scope } = await access(params, 'crm:write');
+  return deleteNoteInOrg(ctx, scope, params.noteId);
+}
+
+/** The notes that mention the caller, on records they see. */
+export async function listMyMentions(
+  params: Session & { limit?: unknown; offset?: unknown },
+): Promise<Note[]> {
+  const { ctx, scope } = await access(params, 'crm:read');
+  return listMyMentionsInOrg(ctx, scope, page(params));
+}
+
+/** „Fișiere”: a signed upload URL (PNG, JPEG, PDF, ≤ 10 MB). */
+export async function startAttachmentUpload(
+  params: Session & {
+    subjectType: unknown;
+    subjectId: unknown;
+    name: string;
+    contentType: string;
+    sizeBytes: number;
+  },
+): Promise<{ fileId: string; uploadUrl: string; expiresAt: Date }> {
+  const { ctx, scope } = await access(params, 'crm:write');
+  return startAttachmentUploadInOrg(ctx, scope, params);
+}
+
+/** After the upload: the real bytes are checked; ready or refused. */
+export async function finishAttachmentUpload(
+  params: Session & { fileId: string },
+): Promise<Attachment> {
+  const { ctx, scope } = await access(params, 'crm:write');
+  return finishAttachmentUploadInOrg(ctx, scope, params.fileId);
+}
+
+/** A signed link, valid 10 minutes. */
+export async function getAttachmentLink(params: Session & { fileId: string }): Promise<string> {
+  const { ctx, scope } = await access(params, 'crm:read');
+  return getAttachmentLinkInOrg(ctx, scope, params.fileId);
+}
+
+/** The uploader or crm:admin. */
+export async function deleteAttachment(params: Session & { fileId: string }): Promise<void> {
+  const { ctx, scope } = await access(params, 'crm:write');
+  return deleteAttachmentInOrg(ctx, scope, params.fileId);
+}
+
+/** „Un singur istoric”: notes, comments and files, newest first. */
+export async function getTimeline(
+  params: Session & { subjectType: unknown; subjectId: unknown; limit?: unknown; offset?: unknown },
+): Promise<{ items: TimelineItem[]; hasMore: boolean }> {
+  const { ctx, scope } = await access(params, 'crm:read');
+  return getTimelineInOrg(ctx, scope, params);
+}
+
 export type {
+  Attachment,
+  Note,
+  NoteKind,
+  TimelineItem,
   DuplicatePair,
   DuplicateReason,
   Contact,
