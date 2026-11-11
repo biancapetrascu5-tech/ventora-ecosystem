@@ -7,6 +7,7 @@ export type { BinJobReport } from '../server/bin';
 export type { CrmSettings } from './settings';
 export {
   assignContact,
+  previewContactImport,
   createLeadSource,
   deleteLeadSource,
   listLeadSources,
@@ -107,6 +108,7 @@ export type {
   CreateContactParams,
   CustomField,
   CustomValues,
+  ImportPreview,
   LeadSourceDef,
   LeadScore,
   ScoreReason,

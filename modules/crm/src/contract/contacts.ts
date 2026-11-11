@@ -1,4 +1,5 @@
 import { authorize, checkRolePermission, type TenantContext } from '@ventora/access';
+import { InvalidInput } from '@ventora/errors';
 import {
   assignContactInOrg,
   createContactInOrg,
@@ -51,6 +52,7 @@ import {
   type LeadSourceDef,
 } from '../server/lead-sources';
 import { exportCsvInOrg, type ExportEntity, type ExportParams } from '../server/export';
+import { previewImport, type ImportPreview } from '../server/import-csv';
 import {
   createDealInOrg,
   createLossReasonInOrg,
@@ -174,7 +176,7 @@ type Session = { sessionToken: string };
 
 async function access(
   params: Session,
-  permission: 'crm:read' | 'crm:write' | 'crm:settings' | 'crm:admin' | 'crm:export',
+  permission: 'crm:read' | 'crm:write' | 'crm:settings' | 'crm:admin' | 'crm:export' | 'crm:import',
 ): Promise<{ ctx: TenantContext; scope: ContactScope }> {
   const ctx = await authorize({
     sessionToken: params.sessionToken,
@@ -890,6 +892,23 @@ export async function deleteLeadSource(params: Session & { sourceId: string }): 
 }
 
 export type { LeadSourceDef };
+
+// ── CR.11b (part 1): the import preview (crm:import) ──────────────────────────────────────────
+
+const IMPORT_MAX_CHARS = 5 * 1024 * 1024;
+
+/** „Importă”, step 2: the mapping (suggested unless given) and every row checked; nothing written. */
+export async function previewContactImport(
+  params: Session & { csv: string; mapping?: unknown },
+): Promise<ImportPreview> {
+  await access(params, 'crm:import');
+  if (typeof params.csv !== 'string' || params.csv.length > IMPORT_MAX_CHARS) {
+    throw new InvalidInput('file', 'too_large');
+  }
+  return previewImport(params.csv, params.mapping);
+}
+
+export type { ImportPreview };
 export type { LeadScore, ScoreReason } from '../server/scoring';
 export type {
   ExportEntity,
