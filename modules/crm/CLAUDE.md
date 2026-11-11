@@ -36,7 +36,7 @@ CRM (numele afișat ClientDesk) e a doua aplicație, în pachetul cu EasyBook (D
   - După 30 de zile contactul se anonimizează (decizia din 11.11, ca `booking.erase_client`); nu se șterge.
   - Job-ul `crm.bin-anonymize` rulează zilnic la 03:30 și apelează `runCrmBinJob`. Contactele scadente le listează `crm.bin_expired_contacts` (`SECURITY DEFINER`, doar id-uri, `EXECUTE` pentru `crm_rw`).
   - Fiecare contact se anonimizează în contextul afacerii lui: contactul, notițele și activitățile lui, leadurile convertite în el. Rămâne `anonymized_at`.
-  - Fișierele din `core/files` nu se șterg încă: lipsește o cale de ștergere din job în `core/files` (propunere).
+  - Fișierele contactului și ale leadurilor convertite în el se șterg întâi, prin `core/files` (C.4f: `deleteOwnerFilesAsSystem`, auditat acolo). Un eșec lasă contactul pentru rularea următoare.
 - **Contactul din EasyBook:** numele, telefonul, e-mailul și limba sunt doar în citire, iar contactul nu se șterge din ClientDesk (CHECK). Nu ține unitate de cotă.
 - **Cota `crm.contacts`:** rezervare (`crm.contact:<id>`), tranzacție, confirmare; eliberare la eșec; resolver-ul `contactQuotaHeld`. „Șterge” eliberează unitatea, restaurarea rezervă alta.
 - **ANAF** (`lookupCompanyByCui`): doar completează formularul, fără stocare. Adresa serviciului se configurează (`ANAF_TVA_URL`); e DE VALIDAT TEHNIC.

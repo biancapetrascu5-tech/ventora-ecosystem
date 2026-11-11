@@ -9,10 +9,13 @@ import {
   createLead,
   createNote,
   deleteContact,
+  finishAttachmentUpload,
+  startAttachmentUpload,
   restoreContact,
   runCrmBinJob,
 } from '../contract/index';
 import { closeCrmPool } from '../server/db';
+import { closeFilesPool, MemoryStorageAdapter, setStorageAdapter } from '@ventora/files';
 
 /*
  * The 30-day bin on a real Postgres (decision of 11.11.2026): the job anonymises, never deletes;
@@ -126,8 +129,28 @@ async function refusal(p: Promise<unknown>): Promise<string> {
   return 'ok';
 }
 
+const storage = new MemoryStorageAdapter();
+const PNG = Uint8Array.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0, 0, 0, 13, 1, 2]);
+
+async function attach(t: string, org: string, subjectType: 'contact' | 'lead', subjectId: string) {
+  const { fileId } = await startAttachmentUpload({
+    sessionToken: t,
+    subjectType,
+    subjectId,
+    name: 'scan.png',
+    contentType: 'image/png',
+    sizeBytes: PNG.length,
+  });
+  storage.put(`${org}/${fileId}`, PNG, 'image/png');
+  await finishAttachmentUpload({ sessionToken: t, fileId });
+  return fileId;
+}
+
 beforeAll(() => {
   configureAccess({ entitlementProvider: { isEnabled: async () => true } });
+  setStorageAdapter(storage);
+  process.env.FILES_LINK_SECRET = 'integration-crm-link-secret-0123456789abcdef';
+  process.env.NEXT_PUBLIC_PLATFORM_URL = 'https://hub.example.test';
 });
 
 afterAll(async () => {
@@ -148,6 +171,12 @@ afterAll(async () => {
     [orgs],
   );
   await adminQuery(`DELETE FROM organizations.organization WHERE id = ANY($1::uuid[])`, [orgs]);
+  await adminQuery(`DELETE FROM files.outbox_events WHERE organization_id = ANY($1::uuid[])`, [
+    orgs,
+  ]);
+  await adminQuery(`DELETE FROM files.file WHERE organization_id = ANY($1::uuid[])`, [orgs]);
+  setStorageAdapter(null);
+  await closeFilesPool();
   await closeCrmPool();
   await adminPool.end();
 });
@@ -183,7 +212,10 @@ describe('the 30-day bin (decision of 11.11.2026): anonymised, never deleted', (
       subjectId: contact.id,
       outcome: 'A spus ceva privat',
     });
+    const contactFile = await attach(b.t, b.org, 'contact', contact.id);
+    const leadFile = await attach(b.t, b.org, 'lead', lead.id);
     const recent = await createContact({ sessionToken: b.t, name: 'Șters ieri' });
+    const recentFile = await attach(b.t, b.org, 'contact', recent.id);
     const keepOther = await createContact({ sessionToken: other.t, name: 'Altă afacere' });
     for (const c of [contact.id, recent.id])
       await deleteContact({ sessionToken: b.t, contactId: c });
@@ -240,8 +272,20 @@ describe('the 30-day bin (decision of 11.11.2026): anonymised, never deleted', (
       [b.org],
     );
     expect(audit).toEqual([
-      { actor_type: 'system', metadata: { leads: 1, notes: 2, activities: 1 } },
+      { actor_type: 'system', metadata: { leads: 1, notes: 2, activities: 1, files: 2 } },
     ]);
+    // C.4f: the files of the contact and of its lead are deleted, bytes out; the recent one's stay
+    const files = await adminQuery<{ id: string; status: string }>(
+      `SELECT id::text, status FROM files.file WHERE id = ANY($1::uuid[]) ORDER BY id`,
+      [[contactFile, leadFile, recentFile]],
+    );
+    expect(Object.fromEntries(files.map((f) => [f.id, f.status]))).toEqual({
+      [contactFile]: 'deleted',
+      [leadFile]: 'deleted',
+      [recentFile]: 'ready',
+    });
+    expect(storage.objects.has(`${b.org}/${contactFile}`)).toBe(false);
+    expect(storage.objects.has(`${b.org}/${recentFile}`)).toBe(true);
     // a second run has nothing more for it
     await runCrmBinJob();
     const again = await adminQuery(
