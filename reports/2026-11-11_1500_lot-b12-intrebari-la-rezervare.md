@@ -1,6 +1,6 @@
 # Lot B.12 — întrebările la rezervare (backend)
 
-Data: 2026-11-11. Baza ramurii: `feat/c4g-files-public-upload` (#176, C.4g, peste `main` `6b6d3e0`). PR-ul B.12 e în lanț peste #176.
+Data: 2026-11-11, rebazat pe 12.11. Baza ramurii: `feat/c4g-files-public-upload` (#176, C.4g, `a55d451`, peste `main` `e76be1c` cu C.4f). PR-ul B.12 e în lanț peste #176.
 
 **SQL de revizuit:** `modules/booking/prisma/migrations/20261111000005_booking_forms`.
 
@@ -22,8 +22,8 @@ Data: 2026-11-11. Baza ramurii: `feat/c4g-files-public-upload` (#176, C.4g, pest
 | `getAnswerPhotoLink` (booking:read) | Linkul semnat, valabil 10 minute, către poza unui răspuns |
 | `saveAppointmentAnswers` (booking:write) | Echipa răspunde din Hub doar la întrebările marcate „Apare și … din Hub”. Un membru fără booking:admin poate răspunde doar pe programările lui |
 | `getClientLastAnswers` (**booking:admin**: owner, admin, application_manager) | Fișa clientului (S127): ultimul răspuns la fiecare întrebare, din programările clientului și ale fișelor unite cu el; răspunsurile șterse nu apar |
-| `booking.public-hold-cleanup` | Șterge și pozele holdurilor închise (expirate, refuzate, sau confirmate cu poze nemutate pe programare) prin `deleteAnonymousFiles` (C.4g); le păstrează pe cele de pe programare |
-| `eraseClient` | `erase_client` marchează pozele (răspunsul șters, `photo_file_id` păstrat, `photo_deleted_at` NULL). Apoi aplicația le șterge prin `core/files` (`deleteFile`, în numele persoanei care face ștergerea) și pune `photo_deleted_at`. Câte au rămas: `photosPending` |
+| `booking.public-hold-cleanup` | Șterge și pozele holdurilor închise (expirate, refuzate, sau confirmate cu poze nemutate pe programare), fișier cu fișier, prin ștergerea de sistem din C.4f (`deleteFileAsSystem`, motivul `public_hold_settled`, audit `system`); le păstrează pe cele de pe programare. Reîncearcă și pozele clienților șterși rămase marcate |
+| `eraseClient` | `erase_client` marchează pozele (răspunsul șters, `photo_file_id` păstrat, `photo_deleted_at` NULL). Apoi aplicația le șterge prin ștergerea de sistem din C.4f (`deleteFileAsSystem`, motivul `client_erased`, audit `system`) și pune `photo_deleted_at`. Câte au rămas: `photosPending`; le reîncearcă jobul |
 
 **Tipurile de răspuns:**
 - text scurt (≤ 200) și text lung (≤ 2000);
@@ -44,7 +44,7 @@ Data: 2026-11-11. Baza ramurii: `feat/c4g-files-public-upload` (#176, C.4g, pest
 | `booking.form_question` | Întrebările, cu `allows_photo`. CHECK-uri pe tip și variante, text, ajutor, ordine, arhivare. Index unic `(organization_id, id)` pentru FK-ul compus |
 | `booking.appointment_answer` | Un răspuns pe programare și întrebare. FK-uri compuse pe `(organization_id, …)` către programare și întrebare (afacerea e garantată de bază, ca în review-ul #174). `value` JSONB (string / array / număr); `photo_file_id` (fără FK: altă schemă) și `photo_deleted_at`. Un răspuns activ are valoare sau poză; unul șters nu are valoare |
 | `public_hold` | `answers` (JSONB, cât timp holdul e `pending`) și `has_photos` (pe acest hold s-a cerut o poză). `public_hold_settled_check` și `public_hold_move_check` sunt recreate (un hold de mutare nu are nici răspunsuri, nici poze) |
-| `public_hold_cleanup_due` | Recreată cu ramura „holduri închise cu `has_photos`” |
+| `public_hold_cleanup_due` | Recreată cu ramurile „holduri închise cu `has_photos`” și „poze marcate de ștergerea clientului, încă neșterse” |
 | `erase_client` | Recreat cu corpul din `booking_manage`, la care se adaugă ștergerea răspunsurilor și marcarea pozelor, pentru programările clientului |
 | RLS | `USING` + `WITH CHECK` pe ambele tabele noi |
 | GRANT-uri | Doar `booking_rw`: SELECT, INSERT și UPDATE pe coloane (inclusiv coloanele noi ale `public_hold`: `answers`, `has_photos`). Fără DELETE. **Niciun GRANT nou în `core/files`** |
@@ -65,10 +65,9 @@ Data: 2026-11-11. Baza ramurii: `feat/c4g-files-public-upload` (#176, C.4g, pest
 | Auditul | `settings_updated` / `appointment_updated`, doar cu id-uri: aprobat | — |
 | UI | Lot UI separat: aprobat | — |
 
-## Dependența de C.4f
+## Ștergerea pozelor: o singură cale (C.4f)
 
-- **Ștergerea pozelor la `eraseClient`:** se face imediat, cu persoana care face ștergerea (`deleteFile`), deci nu depinde de C.4f.
-- **O poză pe care stocarea o refuză la ștergere:** rămâne marcată (`photosPending` > 0) și se reîncearcă la un nou `eraseClient`. **Reîncercarea automată, fără persoană (din job), depinde de C.4f** (ștergerea de sistem generală în `core/files`, la agentul UI). C.4g acoperă doar pozele anonime ale holdurilor.
+După review-ul #176, toate ștergerile de poze trec prin ștergerea de sistem din C.4f (`deleteFileAsSystem`), cu un rând de audit `file.deleted_by_system` în categoria `booking`. Asta acoperă holdurile închise, `eraseClient` și reîncercarea din job. Dependența de C.4f notată ieri a dispărut: C.4f e pe main.
 
 ## Lista de bifat
 
@@ -85,28 +84,26 @@ Data: 2026-11-11. Baza ramurii: `feat/c4g-files-public-upload` (#176, C.4g, pest
 | T1, RLS, fără DELETE, FK compus | migrarea | „T1…”, „no DELETE…”, `services` (lista tabelelor cu RLS) |
 | Limita de 5 / serviciu (S127) | `checkLimits` | „S127…: at most 5 questions per service” |
 | **Corectura 1:** poza opțională prin `core/files`, doar pe holdul pending al afacerii, PNG / JPEG, 10 MB, 1 / întrebare, 5 / hold | `server/public.ts`, C.4g | „the answers wait in the hold…” (întrebare fără poză refuzată, PDF refuzat, T1 pe slug, `file_exists`, după cod `code_expired`, linkul de descărcare) + `core/files` „C.4g” |
-| **Corectura 1:** pozele unui hold expirat / refuzat șterse de job; cele de pe programare păstrate | `server/public-cleanup.ts` | „the cleanup job deletes the photos…” |
-| **Corectura 1:** `erase_client` marchează pozele; ștergerea prin `core/files` | migrarea, `deleteErasedPhotosInOrg` | „…wiped by the GDPR erasure” (fișier `deleted`, `photo_deleted_at`, link refuzat) |
+| **Corectura 1:** pozele unui hold expirat / refuzat șterse de job (calea de sistem C.4f); cele de pe programare păstrate | `server/public-cleanup.ts` | „the cleanup job deletes the photos…” |
+| **Corectura 1:** `erase_client` marchează pozele; ștergerea prin `core/files` (calea de sistem C.4f), reîncercată de job | migrarea, `deleteMarkedPhotos` | „…wiped by the GDPR erasure” (fișier `deleted`, `photo_deleted_at`, link refuzat, audit `file.deleted_by_system` cu `client_erased`, reîncercarea din job) |
 | **Corectura 1:** fără GRANT nou în `core/files` | C.4g | — |
 | **Corectura 2:** ultimul răspuns pe fișa clientului, doar booking:admin, acoperit de `erase_client` | `getClientLastAnswersInOrg`, `contract/forms.ts` | „the client card…” (membru → Forbidden, T1) + „…GDPR erasure” (lista goală) |
 | Câmpurile medicale doar prin B.8 | — (nu există tip medical) | — |
 | UI: constructorul, editorul, pasul public, detaliul, fișa | — | **NEFĂCUT**: lot UI separat (aprobat), cu capturi `_design` / `_impl` (regula 12) |
 | Poza adăugată de echipă din Hub | — | **NEFĂCUT**: decizia cere poza clientului; din Hub poza doar se vede (`getAnswerPhotoLink`) |
-| Reîncercarea automată a ștergerii pozelor după `eraseClient` | — | **NEFĂCUT**: depinde de C.4f |
 
 ## Abateri de la plan
 
 - **Doar backend.** Planul spune „tot: definirea câmpurilor, afișarea la rezervare și pe programare”. UI-ul e lot separat (aprobat).
 - **Lanț peste PR-ul Core #176** (C.4g), cerut de Bianca pentru încărcarea anonimă.
+- **Suita booking completă (`b4-only`) nu s-a mai rulat la rebase-ul de pe 12.11** (decizia Biancăi: doar testele lotului; suita completă o rulează CI-ul). Pe 11.11 trecuse 316/316.
 
 ## Verificări rulate local
 
-- `b-files.mjs` (forms, public-booking, services, manage-booking, clients): toate trec. `public-booking` a căzut o dată cu 0xC0000409 (worker vitest pe Windows) și a trecut la rerulare: 13/13;
-- `b4-only.mjs` (toată integrarea booking): 27 de fișiere, **316/316**;
-- `files-only.mjs` pe C.4g (#176): `files` 22/22, crm `notes` 9/9;
-- `pnpm format:check`, `lint`, `typecheck`, `test`, `build`, `i18n:check`, `guards:verify`: toate cu exit 0.
+- **12.11, după rebase:** `b-files.mjs` (forms, public-booking, services, manage-booking): 4 fișiere, **62/62**, cu garda de drift Prisma booking;
+- **11.11:** `b4-only.mjs` (toată integrarea booking): 27 de fișiere, **316/316**;
+- `pnpm format:check`, `lint`, `typecheck`, `test`, `build`, `i18n:check`, `guards:verify`: toate exit 0.
 
 ## Ce rămâne deschis
 
 - Lotul UI `BookingCustomForms`.
-- C.4f: reîncercarea automată a ștergerii pozelor marcate; rebase după C.4f, dacă intră înainte.
