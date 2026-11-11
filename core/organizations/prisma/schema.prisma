@@ -75,6 +75,8 @@ model Organization {
   settings    OrganizationSetting[]
   memberships Membership[]
   invitations Invitation[]
+  // Lot C.1: the business's locations
+  locations   Location[]
 
   @@map("organization")
   @@schema("organizations")
@@ -175,5 +177,26 @@ model ProcessedEvent {
 
   @@id([consumer, eventId])
   @@map("processed_events")
+  @@schema("organizations")
+}
+
+// Lot C.1 (D-B-3 a, D-B-4 a): a location of the business, with its own time zone. Migration only:
+// the CHECKs on name / address, the unique active name (expression index), the time zone guard,
+// the archived guard (an archived location is final) and the narrow grants to org_rw.
+model Location {
+  id              String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  organizationId  String    @map("organization_id") @db.Uuid
+  name            String    @db.VarChar(120)
+  address         String?   @db.VarChar(500)
+  timeZone        String    @default("Europe/Bucharest") @map("time_zone") @db.VarChar(64)
+  archivedAt      DateTime? @map("archived_at") @db.Timestamptz
+  createdByUserId String    @map("created_by_user_id") @db.Uuid
+  createdAt       DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt       DateTime  @updatedAt @map("updated_at") @db.Timestamptz
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId])
+  @@map("location")
   @@schema("organizations")
 }

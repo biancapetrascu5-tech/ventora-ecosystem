@@ -42,6 +42,11 @@ export const AuditActions = {
   membershipAccessRestored: 'membership.access_restored', // Lot 2.9b — „Redă accesul”
   membershipRemoved: 'membership.removed', // Lot 2.9b — „Elimină din afacere”
   applicationAccessUpdated: 'application_access.updated', // Lot 2.9b — „Acces la aplicații”
+  // Lot C.1 — the business's locations (category organization, required, in the same
+  // transaction). Metadata: the changed field names; never the address
+  locationCreated: 'location.created',
+  locationUpdated: 'location.updated',
+  locationArchived: 'location.archived',
   authorizeTwoFactorRequired: 'authorize.two_factor_required', // E29
   // §2.4 Founder (category founder). E30 = Founder variants of E1–E19, see founderAction().
   founderUserAdded: 'founder.user_added', // E31
