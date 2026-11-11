@@ -4,8 +4,8 @@ on:
   push:
     branches: [main, develop]
     paths-ignore: ['docs/**', '**/*.md', 'screenshots/**', 'reports/**']
+  # Toate PR-urile, inclusiv cele în lanț (baza = ramura lotului anterior), decizia din 11.11.2026
   pull_request:
-    branches: [main, develop]
     paths-ignore: ['docs/**', '**/*.md', 'screenshots/**', 'reports/**']
 
 # Un push nou pe același branch / PR anulează rularea veche (economie de minute).
