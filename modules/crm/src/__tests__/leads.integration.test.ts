@@ -330,7 +330,13 @@ describe('CR.8 — the leads', () => {
       subjectId: out.contact.id,
     });
     const ids = tl.items.map((i) =>
-      i.type === 'activity' ? i.activity.id : i.type === 'file' ? i.file.id : i.note.id,
+      i.type === 'activity'
+        ? i.activity.id
+        : i.type === 'file'
+          ? i.file.id
+          : i.type === 'stage'
+            ? i.change.toStageId
+            : i.note.id,
     );
     expect(ids.sort()).toEqual([note.id, call.id].sort());
     expect(await refusal(convertLead({ sessionToken: b.t, leadId: lead.id }))).toBe('lead_closed');

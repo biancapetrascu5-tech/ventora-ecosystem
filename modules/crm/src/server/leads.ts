@@ -5,6 +5,7 @@ import { uuidv7 } from '@ventora/db-kit';
 import { Conflict, Forbidden, InvalidInput, ResourceNotFound } from '@ventora/errors';
 import { withCrmTx } from './db';
 import { createContactInOrg, type Contact, type ContactScope } from './contacts';
+import { createDealInOrg } from './deals';
 import { readSubject, requireMentionable } from './subjects';
 import {
   LIMITS,
@@ -31,7 +32,7 @@ import {
  *   contact's when it is one of the contact sources, otherwise manual) or „Leagă leadul de
  *   contactul existent” (S131, the default when a duplicate exists). The lead is closed in the same
  *   transaction as the new contact; it stays linked, its notes, tasks and files show in the
- *   contact's history. The deal at conversion comes with CR.9.
+ *   contact's history. CR.9: „Creează și un deal” right after, with the budget as its value.
  * - Leads with no activity for N days: `idleDays` on the list (the last note or activity, or the
  *   arrival).
  * - Sources: the fixed S131 set; configurable sources are NECESITĂ DECIZIE. The score and the
@@ -502,8 +503,15 @@ export async function convertLeadInOrg(
   ctx: TenantContext,
   scope: ContactScope,
   leadId: string,
-  input: { contactId?: unknown; name?: unknown; phone?: unknown; email?: unknown },
-): Promise<{ lead: Lead; contact: { id: string; created: boolean } }> {
+  input: {
+    contactId?: unknown;
+    name?: unknown;
+    phone?: unknown;
+    email?: unknown;
+    /** CR.9: „Creează și un deal” (S131): its title, pipeline and stage; the lead's budget as value. */
+    deal?: { title?: unknown; pipelineId?: unknown; stageId?: unknown } | null;
+  },
+): Promise<{ lead: Lead; contact: { id: string; created: boolean }; dealId: string | null }> {
   const id = requireId('leadId', leadId);
   const lead = await withCrmTx(
     ctx.organizationId,
@@ -523,7 +531,8 @@ export async function convertLeadInOrg(
       await readSubject(client, ctx, scope, 'contact', contactId, { write: true });
       return closeAsConverted(client, exec, ctx, scope, id, contactId, true);
     });
-    return { lead: toLead(closed), contact: { id: contactId, created: false } };
+    const dealId = await dealFromLead(ctx, scope, lead, contactId, input.deal);
+    return { lead: toLead(closed), contact: { id: contactId, created: false }, dealId };
   }
 
   let closed: LeadRow | undefined;
@@ -543,7 +552,43 @@ export async function convertLeadInOrg(
       },
     },
   );
-  return { lead: toLead(closed!), contact: { id: contact.id, created: true } };
+  const dealId = await dealFromLead(ctx, scope, lead, contact.id, input.deal);
+  return { lead: toLead(closed!), contact: { id: contact.id, created: true }, dealId };
+}
+
+/**
+ * After the conversion (its own transaction: the lead is converted even if the deal is refused,
+ * and the error says why): the deal on the contact, linked to the lead, the budget as its value.
+ */
+async function dealFromLead(
+  ctx: TenantContext,
+  scope: ContactScope,
+  lead: LeadRow,
+  contactId: string,
+  deal: { title?: unknown; pipelineId?: unknown; stageId?: unknown } | null | undefined,
+): Promise<string | null> {
+  if (!deal) return null;
+  const title = deal.title === undefined ? lead.name : deal.title;
+  const budget = lead.budget_minor === null ? null : Number(lead.budget_minor);
+  const created = await createDealInOrg(ctx, scope, {
+    title,
+    contactId,
+    leadId: lead.id,
+    pipelineId: deal.pipelineId,
+    stageId: deal.stageId,
+    currency: lead.currency === 'EUR' ? 'EUR' : 'RON',
+    items: budget
+      ? [
+          {
+            name: typeof title === 'string' ? title : lead.name,
+            quantity: 1,
+            unitPriceMinor: budget,
+          },
+        ]
+      : [],
+    ownerUserId: lead.owner_user_id ?? ctx.userId,
+  });
+  return created.id;
 }
 
 /** „Șterge”: into the bin (a converted lead stays: it is the contact's history). */
