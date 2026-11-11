@@ -154,7 +154,9 @@ describe('CR.1 — the role crm_rw and the schema', () => {
     expect(tables.map((t) => t.relname)).toEqual([
       'company',
       'contact',
+      'contact_merge',
       'custom_field',
+      'duplicate_dismissal',
       'outbox_events',
       'processed_events',
       'segment',

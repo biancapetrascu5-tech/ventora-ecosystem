@@ -78,6 +78,8 @@ export type Contact = {
   customValues: CustomValues;
   /** CR.4: the tags of the contact. */
   tagIds: string[];
+  /** CR.5: merged into this contact (in the bin); the screen opens the one that stayed. */
+  mergedIntoId: string | null;
 };
 
 export type ContactInput = {
@@ -114,11 +116,12 @@ type ContactRow = {
   updated_at: Date;
   custom_values: CustomValues;
   tag_ids: string[];
+  merged_into_id: string | null;
 };
 
 const COLUMNS = `id, name, phone, phone_alt, email, email_alt, locale, to_char(birthday, 'YYYY-MM-DD') AS birthday,
   address, source, company_id, company_role, is_company_primary, owner_user_id, note,
-  quota_operation_id, deleted_at, created_at, updated_at, tag_ids,
+  quota_operation_id, deleted_at, created_at, updated_at, tag_ids, merged_into_id,
   (SELECT COALESCE(jsonb_object_agg(e.key, e.value), '{}'::jsonb)
      FROM jsonb_each(contact.custom_values) AS e
     WHERE EXISTS (SELECT 1 FROM crm.custom_field f
@@ -147,6 +150,7 @@ function toContact(r: ContactRow): Contact {
     updatedAt: r.updated_at,
     customValues: r.custom_values ?? {},
     tagIds: r.tag_ids ?? [],
+    mergedIntoId: r.merged_into_id,
   };
 }
 
@@ -552,6 +556,8 @@ export async function restoreContactInOrg(
   const current = await withCrmTx(ctx.organizationId, (client) => readContact(client, id), true);
   if (!visible(ctx, scope, current)) throw new Forbidden();
   if (!current.deleted_at) throw new Conflict('contact_not_deleted');
+  // CR.5: a merged contact comes back only through the undo of the merge (proposal, S132)
+  if (current.merged_into_id) throw new Conflict('contact_merged');
   if (Date.now() - current.deleted_at.getTime() > LIMITS.binDays * 86_400_000) {
     throw new Conflict('bin_expired');
   }

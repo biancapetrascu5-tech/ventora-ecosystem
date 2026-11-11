@@ -79,8 +79,18 @@ model Contact {
   customValues     Json      @default("{}") @map("custom_values")
   /// CR.4: the tags of the contact
   tagIds           String[]  @default([]) @map("tag_ids") @db.Uuid
+  /// CR.5: the normalised name (crm.name_key, kept by a trigger)
+  nameKey          String    @default("") @map("name_key")
+  /// CR.5: merged into this contact (in the bin)
+  mergedIntoId     String?   @map("merged_into_id") @db.Uuid
 
   company Company? @relation(fields: [companyId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "contact_company_id_fkey")
+  mergedInto      Contact?  @relation("ContactMerge", fields: [mergedIntoId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "contact_merged_into_id_fkey")
+  mergedFrom      Contact[] @relation("ContactMerge")
+  dismissalsA     DuplicateDismissal[] @relation("DismissalA")
+  dismissalsB     DuplicateDismissal[] @relation("DismissalB")
+  mergesKept      ContactMerge[]       @relation("MergeKept")
+  mergesMerged    ContactMerge[]       @relation("MergeMerged")
 
   @@index([organizationId, phone], map: "contact_organization_id_phone_idx")
   @@index([organizationId, email], map: "contact_organization_id_email_idx")
@@ -88,6 +98,10 @@ model Contact {
   @@index([companyId], map: "contact_company_id_idx")
   @@index([customValues(ops: JsonbPathOps)], type: Gin, map: "contact_custom_values_idx")
   @@index([tagIds], type: Gin, map: "contact_tag_ids_idx")
+  @@index([organizationId, nameKey], map: "contact_organization_id_name_key_idx")
+  @@index([organizationId, phoneAlt], map: "contact_organization_id_phone_alt_idx")
+  @@index([organizationId, emailAlt], map: "contact_organization_id_email_alt_idx")
+  @@index([mergedIntoId], map: "contact_merged_into_id_idx")
   @@map("contact")
   @@schema("crm")
 }
@@ -148,6 +162,42 @@ model Segment {
 
   @@index([organizationId], map: "segment_organization_id_idx")
   @@map("segment")
+  @@schema("crm")
+}
+
+/// Lot CR.5: „Nu sunt duplicate” (S132); undone_at instead of a delete.
+model DuplicateDismissal {
+  id              String    @id @db.Uuid
+  organizationId  String    @map("organization_id") @db.Uuid
+  contactAId      String    @map("contact_a_id") @db.Uuid
+  contactBId      String    @map("contact_b_id") @db.Uuid
+  createdByUserId String    @map("created_by_user_id") @db.Uuid
+  createdAt       DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  undoneAt        DateTime? @map("undone_at") @db.Timestamptz
+  undoneByUserId  String?   @map("undone_by_user_id") @db.Uuid
+
+  contactA Contact @relation("DismissalA", fields: [contactAId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "duplicate_dismissal_contact_a_fkey")
+  contactB Contact @relation("DismissalB", fields: [contactBId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "duplicate_dismissal_contact_b_fkey")
+
+  @@map("duplicate_dismissal")
+  @@schema("crm")
+}
+
+/// Lot CR.5: the log of the merges (INSERT + SELECT only).
+model ContactMerge {
+  id               String   @id @db.Uuid
+  organizationId   String   @map("organization_id") @db.Uuid
+  keptContactId    String   @map("kept_contact_id") @db.Uuid
+  mergedContactId  String   @map("merged_contact_id") @db.Uuid
+  fieldsFromMerged String[] @default([]) @map("fields_from_merged")
+  createdByUserId  String   @map("created_by_user_id") @db.Uuid
+  createdAt        DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  kept   Contact @relation("MergeKept", fields: [keptContactId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "contact_merge_kept_fkey")
+  merged Contact @relation("MergeMerged", fields: [mergedContactId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "contact_merge_merged_fkey")
+
+  @@index([keptContactId], map: "contact_merge_kept_idx")
+  @@map("contact_merge")
   @@schema("crm")
 }
 
