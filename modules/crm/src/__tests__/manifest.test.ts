@@ -18,11 +18,11 @@ describe('crm manifest', () => {
     ]);
   });
 
-  it('D-CRM-15: owner and admin everything; the application manager every permission', () => {
+  it('D-CRM-15: owner and admin everything; the application manager all but the export (11.11, S130)', () => {
     expect(grants.owner).toBe('*');
     expect(grants.admin).toBe('*');
     expect([...(grants.application_manager as readonly string[])].sort()).toEqual(
-      [...names].sort(),
+      names.filter((n) => n !== 'crm:export').sort(),
     );
   });
 

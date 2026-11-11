@@ -4,6 +4,7 @@ export { getCrmSettings } from './settings';
 export type { CrmSettings } from './settings';
 export {
   assignContact,
+  exportCsv,
   createDeal,
   createLossReason,
   createPipeline,
@@ -99,6 +100,8 @@ export type {
   CreateContactParams,
   CustomField,
   CustomValues,
+  ExportEntity,
+  ExportParams,
   Board,
   Deal,
   DealInput,

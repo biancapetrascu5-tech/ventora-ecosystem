@@ -10,6 +10,9 @@ import type { ApplicationManifest } from '@ventora/contracts';
  * contacts, leads and deals assigned to them and the unassigned ones (filtered in the contracts,
  * from CR.2); only crm:export exports, only crm:import imports. An external collaborator gets
  * nothing: the commercial relationship is private to the business.
+ *
+ * Decision of 11.11.2026 (S130): exporting is for the owner and the admin only — the application
+ * manager runs ClientDesk but does not take its data out of it.
  */
 export const manifest = {
   applicationId: 'crm',
@@ -29,14 +32,7 @@ export const manifest = {
     admin: '*',
     member: ['crm:read', 'crm:write'],
     external_collaborator: [],
-    application_manager: [
-      'crm:read',
-      'crm:write',
-      'crm:admin',
-      'crm:settings',
-      'crm:import',
-      'crm:export',
-    ],
+    application_manager: ['crm:read', 'crm:write', 'crm:admin', 'crm:settings', 'crm:import'],
   },
   quotas: [
     {

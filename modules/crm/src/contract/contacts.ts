@@ -43,6 +43,7 @@ import {
   type Attachment,
 } from '../server/attachments';
 import { getTimelineInOrg, type TimelineItem } from '../server/timeline';
+import { exportCsvInOrg, type ExportEntity, type ExportParams } from '../server/export';
 import {
   createDealInOrg,
   createLossReasonInOrg,
@@ -166,7 +167,7 @@ type Session = { sessionToken: string };
 
 async function access(
   params: Session,
-  permission: 'crm:read' | 'crm:write' | 'crm:settings' | 'crm:admin',
+  permission: 'crm:read' | 'crm:write' | 'crm:settings' | 'crm:admin' | 'crm:export',
 ): Promise<{ ctx: TenantContext; scope: ContactScope }> {
   const ctx = await authorize({
     sessionToken: params.sessionToken,
@@ -842,7 +843,19 @@ export async function getBoard(
   return getBoardInOrg(ctx, scope, params);
 }
 
+// ── CR.11a: the export (crm:export) ───────────────────────────────────────────────────────────
+
+/** CSV of contacts / companies / leads / deals / activities, with the list's filters (≤ 10 000). */
+export async function exportCsv(
+  params: Session & ExportParams,
+): Promise<{ fileName: string; contentType: string; rows: number; csv: string }> {
+  const { ctx, scope } = await access(params, 'crm:export');
+  return exportCsvInOrg(ctx, scope, params);
+}
+
 export type {
+  ExportEntity,
+  ExportParams,
   Board,
   Deal,
   DealInput,

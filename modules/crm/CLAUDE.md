@@ -136,3 +136,9 @@ CRM (numele afișat ClientDesk) e a doua aplicație, în pachetul cu EasyBook (D
 - **La conversia unui lead,** „Creează și un deal” pune bugetul leadului ca valoare.
 - **La îmbinarea contactelor,** dealurile trec pe contactul păstrat.
 - **Evenimentele `crm.deal.*`** cer tipuri în `packages/contracts` (propunere).
+
+## Exportul (CR.11a)
+- **`exportCsv`:** doar cu `crm:export`, doar ce vede persoana, cu filtrele listei (inclusiv segmentul), cel mult 10 000 de rânduri.
+  - Fișierul e UTF-8 cu BOM. Celulele care încep cu = + - @ primesc un apostrof în față (injecția în CSV).
+- **Auditul `crm.exported`** (C.4d) are entitatea, numărul de rânduri și cheile filtrelor, fără date.
+- **Excel** cere pachetul `exceljs` (D-CRM-7): propunere. Importul vine cu CR.11b.
