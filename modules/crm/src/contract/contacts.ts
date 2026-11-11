@@ -28,6 +28,15 @@ import {
 import { lookupCompanyByCui as lookup, type AnafLookup } from '../server/anaf';
 import { registerContactsQuotaResolver } from '../server/quota';
 import {
+  checkDuplicatesInOrg,
+  dismissDuplicateInOrg,
+  listDuplicatesInOrg,
+  mergeContactsInOrg,
+  restoreDuplicateInOrg,
+  type DuplicatePair,
+  type DuplicateReason,
+} from '../server/duplicates';
+import {
   createTagInOrg,
   deleteTagInOrg,
   listTagsInOrg,
@@ -77,7 +86,7 @@ type Session = { sessionToken: string };
 
 async function access(
   params: Session,
-  permission: 'crm:read' | 'crm:write' | 'crm:settings',
+  permission: 'crm:read' | 'crm:write' | 'crm:settings' | 'crm:admin',
 ): Promise<{ ctx: TenantContext; scope: ContactScope }> {
   const ctx = await authorize({
     sessionToken: params.sessionToken,
@@ -361,7 +370,48 @@ export async function setLapsedSegmentDays(params: Session & { days: number }): 
   return setLapsedSegmentDaysInOrg(ctx, params.days);
 }
 
+// ── CR.5: duplicates and merge (S132) ──────────────────────────────────────────────────────────
+
+/** The pairs (phone, e-mail, normalised name); a member sees only pairs of contacts they see. */
+export async function listDuplicates(
+  params: Session & { reason?: DuplicateReason; contactId?: string },
+): Promise<DuplicatePair[]> {
+  const { ctx, scope } = await access(params, 'crm:read');
+  return listDuplicatesInOrg(ctx, scope, params);
+}
+
+/** The warning while adding a contact: up to 5 visible matches. */
+export async function checkDuplicates(
+  params: Session & { name?: unknown; phone?: unknown; email?: unknown },
+): Promise<{ contactId: string; reasons: DuplicateReason[] }[]> {
+  const { ctx, scope } = await access(params, 'crm:read');
+  return checkDuplicatesInOrg(ctx, scope, params);
+}
+
+/** „Nu sunt duplicate” (crm:admin); returns the id to undo it. */
+export async function dismissDuplicate(
+  params: Session & { contactAId: string; contactBId: string },
+): Promise<string> {
+  const { ctx } = await access(params, 'crm:admin');
+  return dismissDuplicateInOrg(ctx, params.contactAId, params.contactBId);
+}
+
+export async function restoreDuplicate(params: Session & { dismissalId: string }): Promise<void> {
+  const { ctx } = await access(params, 'crm:admin');
+  return restoreDuplicateInOrg(ctx, params.dismissalId);
+}
+
+/** „Îmbină” (crm:admin): `mergeId` disappears into `keepId`; `fromMerged`: the fields taken from it. */
+export async function mergeContacts(
+  params: Session & { keepId: string; mergeId: string; fromMerged?: string[] },
+): Promise<{ keptId: string; mergedId: string }> {
+  const { ctx } = await access(params, 'crm:admin');
+  return mergeContactsInOrg(ctx, params);
+}
+
 export type {
+  DuplicatePair,
+  DuplicateReason,
   Contact,
   Company,
   AnafLookup,
