@@ -61,3 +61,14 @@ CRM (numele afișat ClientDesk) e a doua aplicație, în pachetul cu EasyBook (D
 - **Segmentul predefinit** „N-au mai venit de N zile” (`kind = 'lapsed'`): îl creează ClientDesk la prima citire.
   - Se schimbă doar zilele (`settings.lapsed_segment_days`, 7–365, `crm:settings`).
   - Numărul lui așteaptă vizitele din EasyBook (CR.12).
+
+## Duplicatele și îmbinarea (CR.5, design S132; D-CRM-8 = a, D-CRM-9 = a)
+- **Perechile:** același telefon (principal sau al doilea), același e-mail sau același nume normalizat.
+  - Numele normalizat e `contact.name_key`, calculat de `crm.name_key()` și ținut la zi de un trigger.
+  - Perechile se calculează live. „Nu sunt duplicate” se poate anula (`undone_at`).
+  - Un membru vede doar perechile cu ambele contacte vizibile pentru el.
+- **Îmbinarea și „Nu sunt duplicate”** cer `crm:admin`.
+  - Doi clienți EasyBook se îmbină doar în EasyBook. Când unul vine din EasyBook, el rămâne, cu datele lui de bază.
+  - Contactul pierdut ajunge în coș, cu `merged_into_id`; unitatea lui de cotă se eliberează, iar îmbinarea rămâne în `contact_merge`.
+- **Anularea îmbinării** (30 de zile, S132) e doar o propunere. Un contact îmbinat nu se restaurează.
+- **Notițele, activitățile, deal-urile și fișierele** contactului pierdut trec pe cel păstrat odată cu loturile lor (CR.6–CR.9).

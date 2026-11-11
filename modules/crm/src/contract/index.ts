@@ -4,6 +4,11 @@ export { getCrmSettings } from './settings';
 export type { CrmSettings } from './settings';
 export {
   assignContact,
+  checkDuplicates,
+  dismissDuplicate,
+  listDuplicates,
+  mergeContacts,
+  restoreDuplicate,
   countSegment,
   createSegment,
   createTag,
@@ -46,6 +51,8 @@ export type {
   CreateContactParams,
   CustomField,
   CustomValues,
+  DuplicatePair,
+  DuplicateReason,
   ListContactsParams,
   Segment,
   SegmentRule,
