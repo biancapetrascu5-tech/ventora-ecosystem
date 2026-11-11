@@ -241,6 +241,72 @@ describe('Lot 4.7 — the upload, checked on the server', () => {
   });
 });
 
+describe('C.4e — a CSV, only for the ClientDesk import', () => {
+  const IMPORT_OWNER = { module: 'crm', resourceType: 'import', resourceId: 'job-1' };
+  const CSV = new TextEncoder().encode('\uFEFFnume,telefon,email\r\nIon,0722000000,ion@x.ro\r\n');
+
+  it('crm / import: ask → upload → confirm gives a ready CSV and file.uploaded', async () => {
+    const { fileId } = await requestUpload(ALICE, {
+      owner: IMPORT_OWNER,
+      name: 'clienti.csv',
+      contentType: 'text/csv',
+      sizeBytes: CSV.length,
+    });
+    storage.put(keyOf(ORG_A, fileId), CSV, 'text/csv');
+    const info = await confirmUpload(ALICE, fileId);
+    expect(info).toMatchObject({ contentType: 'text/csv', status: 'ready', owner: IMPORT_OWNER });
+    const [event] = await q(`SELECT payload FROM files.outbox_events WHERE resource_id = $1`, [
+      fileId,
+    ]);
+    expect(event.payload).toMatchObject({ contentType: 'text/csv', ownerModule: 'crm' });
+  });
+
+  it('a CSV for any other owner is refused before any link; no row is written', async () => {
+    const before = await q(`SELECT count(*)::int AS n FROM files.file WHERE organization_id = $1`, [
+      ORG_A,
+    ]);
+    await expect(
+      requestUpload(ALICE, {
+        owner: OWNER,
+        name: 'x.csv',
+        contentType: 'text/csv',
+        sizeBytes: CSV.length,
+      }),
+    ).rejects.toBeInstanceOf(InvalidInput);
+    const after = await q(`SELECT count(*)::int AS n FROM files.file WHERE organization_id = $1`, [
+      ORG_A,
+    ]);
+    expect(after).toEqual(before);
+  });
+
+  it('an HTML page declared as a CSV is refused after the upload and removed', async () => {
+    const { fileId } = await requestUpload(ALICE, {
+      owner: IMPORT_OWNER,
+      name: 'clienti.csv',
+      contentType: 'text/csv',
+      sizeBytes: HTML.length,
+    });
+    storage.put(keyOf(ORG_A, fileId), HTML, 'text/csv');
+    await expect(confirmUpload(ALICE, fileId)).rejects.toThrow(/type_mismatch/);
+    expect((await getFile(ALICE, fileId)).status).toBe('rejected');
+    expect(storage.objects.has(keyOf(ORG_A, fileId))).toBe(false);
+  });
+
+  it('the database refuses a CSV outside crm / import (CHECK)', async () => {
+    const insert = (module: string, resourceType: string) =>
+      q(
+        `INSERT INTO files.file (id, organization_id, owner_module, owner_resource_type,
+           owner_resource_id, name, storage_key, content_type, size_bytes,
+           uploaded_by_user_id, upload_expires_at)
+         VALUES ($1, $2, $3, $4, 'r', 'n', $5, 'text/csv', 10, $6, now())`,
+        [randomUUID(), ORG_A, module, resourceType, randomUUID(), randomUUID()],
+      );
+    await expect(insert('support', 'ticket')).rejects.toMatchObject({ code: '23514' });
+    await expect(insert('crm', 'contact')).rejects.toMatchObject({ code: '23514' });
+    await expect(insert('crm', 'import')).resolves.toBeDefined();
+  });
+});
+
 describe('T1 / T2 — a file of organization A cannot be reached from B', () => {
   let fileA: string;
 

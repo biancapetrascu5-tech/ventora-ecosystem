@@ -7,7 +7,7 @@ import {
   cleanFileName,
   sniffContentType,
 } from '../index';
-import { checkOwner, checkStoredFile } from '../policy';
+import { checkOwner, checkStoredFile, mayKeepCsv } from '../policy';
 
 export const PNG = Uint8Array.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0, 0, 0, 13]);
 export const JPG = Uint8Array.from([0xff, 0xd8, 0xff, 0xe0, 0, 16]);
@@ -56,6 +56,81 @@ describe('D4-17: PNG, JPG or PDF, up to 10 MB', () => {
           sizeBytes: html.length,
           head: html,
         },
+      ),
+    ).toBe('type_mismatch');
+  });
+});
+
+describe('C.4e: a CSV, only for the ClientDesk import', () => {
+  const IMPORT = { module: 'crm', resourceType: 'import' };
+  const enc = (text: string) => new TextEncoder().encode(text);
+
+  it('text/csv is declared only with the crm / import owner', () => {
+    expect(() =>
+      checkDeclaredFile({ contentType: 'text/csv', sizeBytes: 10, owner: IMPORT }),
+    ).not.toThrow();
+    expect(() => checkDeclaredFile({ contentType: 'text/csv', sizeBytes: 10 })).toThrow(
+      InvalidInput,
+    );
+    for (const owner of [
+      { module: 'support', resourceType: 'ticket' },
+      { module: 'crm', resourceType: 'contact' },
+      { module: 'booking', resourceType: 'import' },
+    ]) {
+      expect(() => checkDeclaredFile({ contentType: 'text/csv', sizeBytes: 10, owner })).toThrow(
+        /ClientDesk import/,
+      );
+    }
+    expect(() =>
+      checkDeclaredFile({ contentType: 'text/csv', sizeBytes: MAX_FILE_BYTES + 1, owner: IMPORT }),
+    ).toThrow(/10 MB/);
+    // the other types stay as they were, whatever the owner
+    expect(() =>
+      checkDeclaredFile({ contentType: 'image/png', sizeBytes: 10, owner: IMPORT }),
+    ).not.toThrow();
+    expect(mayKeepCsv(IMPORT)).toBe(true);
+    expect(mayKeepCsv({ module: 'crm', resourceType: 'imports' })).toBe(false);
+  });
+
+  it('the first bytes of a CSV are UTF-8 text, with or without a BOM', () => {
+    expect(sniffContentType(enc('nume,telefon,email\r\n'))).toBe('text/csv');
+    expect(sniffContentType(enc('\uFEFFNume;Telefon\n'))).toBe('text/csv');
+    expect(sniffContentType(enc('"Ștefan"\t"0722'))).toBe('text/csv');
+    // the head may cut the last character in two
+    expect(sniffContentType(enc('nume,Ș').subarray(0, 6))).toBe('text/csv');
+  });
+
+  it('markup, binaries, UTF-16 and control characters are not a CSV', () => {
+    expect(sniffContentType(enc('<html><script>'))).toBeNull();
+    expect(sniffContentType(enc('  \n<svg onload=x>'))).toBeNull();
+    expect(sniffContentType(Uint8Array.from([0x50, 0x4b, 0x03, 0x04, 0x14, 0]))).toBeNull(); // .xlsx
+    expect(sniffContentType(Uint8Array.from([0x1f, 0x8b, 0x08, 0]))).toBeNull(); // gzip
+    expect(sniffContentType(Uint8Array.from([0xff, 0xfe, 0x6e, 0x00, 0x75, 0x00]))).toBeNull();
+    expect(sniffContentType(enc('nume\u0000,x'))).toBeNull();
+    expect(sniffContentType(enc('nume\u001b[31m'))).toBeNull();
+    expect(sniffContentType(Uint8Array.from([0xef, 0xbb, 0xbf]))).toBeNull(); // only a BOM
+    expect(sniffContentType(enc(' '.repeat(16)))).toBeNull(); // only blanks
+    expect(sniffContentType(Uint8Array.from([0x6e, 0xc3, 0x28]))).toBeNull(); // invalid UTF-8
+  });
+
+  it('a text file declared as an image or a PDF is still refused, and the reverse', () => {
+    const csv = enc('nume,telefon\n');
+    expect(
+      checkStoredFile(
+        { contentType: 'text/csv', sizeBytes: csv.length },
+        { sizeBytes: csv.length, head: csv },
+      ),
+    ).toBeNull();
+    expect(
+      checkStoredFile(
+        { contentType: 'image/png', sizeBytes: csv.length },
+        { sizeBytes: csv.length, head: csv },
+      ),
+    ).toBe('type_mismatch');
+    expect(
+      checkStoredFile(
+        { contentType: 'text/csv', sizeBytes: PNG.length },
+        { sizeBytes: PNG.length, head: PNG },
       ),
     ).toBe('type_mismatch');
   });

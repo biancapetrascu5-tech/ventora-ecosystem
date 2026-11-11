@@ -311,7 +311,8 @@ const filePayload = z
     ownerModule: z.string().min(1),
     ownerResourceType: z.string().min(1),
     ownerResourceId: z.string().min(1),
-    contentType: z.enum(['image/png', 'image/jpeg', 'application/pdf']),
+    // C.4e: text/csv doar pentru importul ClientDesk (crm / import); fără consumatori, rămâne v1
+    contentType: z.enum(['image/png', 'image/jpeg', 'application/pdf', 'text/csv']),
     sizeBytes: z.number().int().positive(),
   })
   .strict();

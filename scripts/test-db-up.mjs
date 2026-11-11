@@ -451,6 +451,8 @@ for (const migration of [
   'core/files/prisma/migrations/20261101000011_files_init/migration.sql',
   // Lot 4.6 (S-5 = b): files_founder, atașamentele echipei la solicitările de suport
   'core/files/prisma/migrations/20261104000002_files_founder_upload/migration.sql',
+  // Lot C.4e: text/csv, doar pentru fișierul de import ClientDesk (crm / import)
+  'core/files/prisma/migrations/20261111000010_files_csv_import/migration.sql',
   // Lot 3.5: core/billing (schema billing, rolul billing_rw, outbox)
   'core/billing/prisma/migrations/20261101000013_billing_init/migration.sql',
   // Lot 3.6: facturile (invoice), termenul disputei, citirile Founder (founder_runtime)

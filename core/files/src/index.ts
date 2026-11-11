@@ -13,6 +13,8 @@ export {
 export type { FilesContext, FilesConnection, FileOwner, FileInfo, FileStatus } from './files';
 export {
   ALLOWED_CONTENT_TYPES,
+  CSV_OWNER,
+  mayKeepCsv,
   MAX_FILE_BYTES,
   ATTACHMENT_RETENTION_DAYS,
   UPLOAD_WINDOW_SECONDS,
