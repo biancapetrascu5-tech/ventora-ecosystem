@@ -333,7 +333,9 @@ async function load(
                   to_char(h.ends_at AT TIME ZONE $4, 'YYYY-MM-DD"T"HH24:MI')
              FROM booking.public_hold h
             WHERE h.staff_member_id = ANY($1::uuid[]) AND h.state = 'pending'
-              AND h.expires_at > now() AND h.move_appointment_id IS DISTINCT FROM $6::uuid
+              AND h.expires_at > now()
+              -- a move ignores only its own hold; without one ($6 NULL) every hold counts
+              AND ($6::uuid IS NULL OR h.move_appointment_id IS DISTINCT FROM $6::uuid)
               AND h.starts_at < (($3::date + 2)::timestamp AT TIME ZONE $4)
               AND h.ends_at > (($2::date - 1)::timestamp AT TIME ZONE $4)`
                : ''

@@ -464,6 +464,26 @@ describe('B.11b — moving', () => {
     ).toBeInstanceOf(ResourceNotFound);
   });
 
+  it('while moving, a time held for another client (public page) still blocks', async () => {
+    const mine = await book(13);
+    // another visitor holds 14:30 on the public page (pending, 10 minutes)
+    await start(A.slug, 14, visitor(), {}, 30);
+    const held = (await slotsAround(mine.manageToken, at(14, 30))).find(
+      (s) => s.startsAt.getTime() === at(14, 30).getTime(),
+    );
+    expect(held?.available ?? false).toBe(false);
+    expect(
+      await refusal(
+        startManagedMove({
+          slug: A.slug,
+          token: mine.manageToken,
+          startsAt: iso(at(14, 30)),
+          ip: null,
+        }),
+      ),
+    ).toBe('slot_taken');
+  });
+
   it('a time taken by someone else, or the same time: refused', async () => {
     const mine = await book(9, 30);
     await book(10, 30);
