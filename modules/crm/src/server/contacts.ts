@@ -270,10 +270,18 @@ export async function createContactInOrg(
     /** CR.3: { fieldId: value }; the required contact fields must be there (S132). */
     customValues?: unknown;
   },
+  /**
+   * Internal, never from a contract's input: the source a lot writes itself (CR.8 the lead's
+   * conversion: form…), and work in the same transaction (the lead closed with its contact).
+   */
+  options: {
+    systemSource?: ContactSource;
+    inTx?: (client: PoolClient, exec: AuditSqlExecutor, contact: Contact) => Promise<void>;
+  } = {},
 ): Promise<Contact> {
   const name = requiredText('name', input.name, LIMITS.name);
   const d = details(input);
-  const source = normalizeSource(input.source);
+  const source = options.systemSource ?? normalizeSource(input.source);
   // the creator by default; null = „Neatribuit”
   const owner =
     input.ownerUserId === undefined ? ctx.userId : await ownerFor(ctx, scope, input.ownerUserId);
@@ -339,7 +347,9 @@ export async function createContactInOrg(
         companyId,
         ownerUserId: owner,
       });
-      return toContact(rows[0]!);
+      const contact = toContact(rows[0]!);
+      if (options.inTx) await options.inTx(client, exec, contact);
+      return contact;
     });
   } catch (err) {
     await releaseQuota(ctx, operationId).catch(() => {});

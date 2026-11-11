@@ -100,3 +100,19 @@ CRM (numele afișat ClientDesk) e a doua aplicație, în pachetul cu EasyBook (D
   - Activitățile făcute intră în istoricul înregistrării.
   - Sarcinile întârziate rămân întârziate până sunt bifate sau mutate (S131).
 - **La îmbinare,** activitățile trec pe contactul păstrat (`UPDATE(subject_id)`).
+
+## Leadurile (CR.8, D-CRM-3, design S131)
+- **`crm.lead`:** separat de contacte; nu ține unitate din `crm.contacts` până la conversie.
+  - Sursele sunt setul fix S131: `form` (scris doar de formulare, CR.17), telefon, e-mail, recomandare, eveniment, manual. Sursele configurabile sunt NECESITĂ DECIZIE.
+- **Cine vede:** ca la contacte (D-CRM-15): `crm:admin` tot; un membru leadurile lui și pe cele neatribuite („Ia leadul”).
+  - Notițele, activitățile și fișierele merg și pe lead.
+- **Stările:** new / contacted / qualified.
+  - „Descalifică” cere un motiv S131 și închide leadul. „Redeschide” îl aduce înapoi în new.
+- **„Convertește”:**
+  - **cu un contact nou:** contactul ia o unitate, iar `createContactInOrg` cu `systemSource` + `inTx` închide leadul în aceeași tranzacție;
+  - **„Leagă de contactul existent”:** leadul se leagă fără unitate nouă.
+  - Leadul convertit rămâne legat. Istoricul contactului include notițele, activitățile făcute și fișierele leadului.
+  - Un lead convertit nu se șterge.
+- **Leadurile fără activitate:** `idleDays` (ultima notiță, activitate sau sosirea).
+- **De decis (S131):** scorul și ștergerea automată a celor descalificate.
+- **Evenimentele `crm.lead.*`** cer tipuri în `packages/contracts` (PR separat, propunere).

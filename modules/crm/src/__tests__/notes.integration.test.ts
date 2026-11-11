@@ -220,7 +220,7 @@ describe('CR.6 — notes and comments', () => {
     expect(await refusal(createNote({ ...base, body: '   ' }))).toBe('body:required');
     expect(await refusal(createNote({ ...base, body: 'x'.repeat(5001) }))).toBe('body:too_long');
     expect(await refusal(createNote({ ...base, body: 'x', kind: 'email' }))).toBe('kind:invalid');
-    expect(await refusal(createNote({ ...base, subjectType: 'lead', body: 'x' }))).toBe(
+    expect(await refusal(createNote({ ...base, subjectType: 'deal', body: 'x' }))).toBe(
       'subjectType:not_available',
     );
     expect(await auditCount(b.org, 'crm.note_created', n.id)).toBe(1);

@@ -91,6 +91,7 @@ model Contact {
   dismissalsB     DuplicateDismissal[] @relation("DismissalB")
   mergesKept      ContactMerge[]       @relation("MergeKept")
   mergesMerged    ContactMerge[]       @relation("MergeMerged")
+  leads           Lead[]
 
   @@index([organizationId, phone], map: "contact_organization_id_phone_idx")
   @@index([organizationId, email], map: "contact_organization_id_email_idx")
@@ -184,6 +185,43 @@ model Note {
   @@index([organizationId, subjectType, subjectId, createdAt(sort: Desc)], map: "note_subject_idx")
   @@index([mentions], type: Gin, map: "note_mentions_idx")
   @@map("note")
+  @@schema("crm")
+}
+
+/// Lot CR.8: the leads (D-CRM-3, S131), apart from the contacts; bin, no delete.
+model Lead {
+  id                 String    @id @db.Uuid
+  organizationId     String    @map("organization_id") @db.Uuid
+  name               String    @db.VarChar(160)
+  phone              String?   @db.VarChar(16)
+  email              String?   @db.VarChar(254)
+  request            String?   @db.VarChar(5000)
+  source             String    @default("manual") @db.VarChar(8)
+  referredBy         String?   @map("referred_by") @db.VarChar(160)
+  budgetMinor        BigInt?   @map("budget_minor")
+  currency           String    @default("RON") @db.VarChar(3)
+  eventDate          DateTime? @map("event_date") @db.Date
+  ownerUserId        String?   @map("owner_user_id") @db.Uuid
+  state              String    @default("new") @db.VarChar(12)
+  disqualifyReason   String?   @map("disqualify_reason") @db.VarChar(11)
+  disqualifyNote     String?   @map("disqualify_note") @db.VarChar(500)
+  closedAt           DateTime? @map("closed_at") @db.Timestamptz
+  closedByUserId     String?   @map("closed_by_user_id") @db.Uuid
+  convertedContactId String?   @map("converted_contact_id") @db.Uuid
+  deletedAt          DateTime? @map("deleted_at") @db.Timestamptz
+  deletedByUserId    String?   @map("deleted_by_user_id") @db.Uuid
+  createdByUserId    String?   @map("created_by_user_id") @db.Uuid
+  createdAt          DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt          DateTime  @default(now()) @map("updated_at") @db.Timestamptz
+
+  convertedContact Contact? @relation(fields: [convertedContactId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "lead_converted_contact_id_fkey")
+
+  @@index([organizationId, state, createdAt(sort: Desc)], map: "lead_organization_id_state_idx")
+  @@index([organizationId, ownerUserId], map: "lead_organization_id_owner_idx")
+  @@index([organizationId, phone], map: "lead_organization_id_phone_idx")
+  @@index([organizationId, email], map: "lead_organization_id_email_idx")
+  @@index([convertedContactId], map: "lead_converted_contact_id_idx")
+  @@map("lead")
   @@schema("crm")
 }
 
