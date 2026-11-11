@@ -165,6 +165,28 @@ model Segment {
   @@schema("crm")
 }
 
+/// Lot CR.6: the notes and the internal comments (S130 „Un singur istoric”); bin, no delete.
+model Note {
+  id              String    @id @db.Uuid
+  organizationId  String    @map("organization_id") @db.Uuid
+  kind            String    @db.VarChar(7)
+  subjectType     String    @map("subject_type") @db.VarChar(7)
+  subjectId       String    @map("subject_id") @db.Uuid
+  body            String
+  mentions        String[]  @default([]) @db.Uuid
+  editedAt        DateTime? @map("edited_at") @db.Timestamptz
+  deletedAt       DateTime? @map("deleted_at") @db.Timestamptz
+  deletedByUserId String?   @map("deleted_by_user_id") @db.Uuid
+  createdByUserId String    @map("created_by_user_id") @db.Uuid
+  createdAt       DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt       DateTime  @default(now()) @map("updated_at") @db.Timestamptz
+
+  @@index([organizationId, subjectType, subjectId, createdAt(sort: Desc)], map: "note_subject_idx")
+  @@index([mentions], type: Gin, map: "note_mentions_idx")
+  @@map("note")
+  @@schema("crm")
+}
+
 /// Lot CR.5: „Nu sunt duplicate” (S132); undone_at instead of a delete.
 model DuplicateDismissal {
   id              String    @id @db.Uuid
