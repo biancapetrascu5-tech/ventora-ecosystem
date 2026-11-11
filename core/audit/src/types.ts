@@ -8,7 +8,9 @@ export type AuditCategory =
   // Lot C.0b: the Booking application (B.1: the service catalog)
   | 'booking'
   // Lot C.4: the ClientDesk application (CR.2: contacts and companies)
-  | 'crm';
+  | 'crm'
+  // Lot C.0i: the CampaignKit application (MK.1: the sender settings, then campaigns, audiences)
+  | 'marketing';
 
 export type AuditOutcome = 'success' | 'failure' | 'denied';
 
