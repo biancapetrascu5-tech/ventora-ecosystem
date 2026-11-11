@@ -28,6 +28,13 @@ export class MemoryStorageAdapter implements StorageAdapter {
     return { sizeBytes: object.bytes.length, head: object.bytes.subarray(0, 16) };
   }
 
+  async read(key: string, maxBytes: number): Promise<Uint8Array | null> {
+    const object = this.objects.get(key);
+    if (!object) return null;
+    if (object.bytes.length > maxBytes) throw new Error('[files] storage read: object too large');
+    return object.bytes.slice();
+  }
+
   async remove(key: string): Promise<void> {
     this.objects.delete(key);
     this.removed.push(key);

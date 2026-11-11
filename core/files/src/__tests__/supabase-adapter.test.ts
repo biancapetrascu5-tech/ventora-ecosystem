@@ -92,6 +92,38 @@ describe('SupabaseStorageAdapter', () => {
     expect(full?.head).toHaveLength(16);
   });
 
+  it('read (C.4f): the whole object; missing → null; over the limit → refused', async () => {
+    const body = new TextEncoder().encode('nume,telefon\nIon,0722\n');
+    const { a, calls } = adapter(
+      () => new Response(body, { status: 200, headers: { 'content-length': String(body.length) } }),
+    );
+    expect(await a.read('org/file', 1000)).toEqual(body);
+    expect(calls[0]!.url).toContain('/object/authenticated/ventora-files/org/file');
+    expect(header(calls[0]!, 'range')).toBeNull();
+    expect(header(calls[0]!, 'authorization')).toBe(`Bearer ${KEY}`);
+    expect(await adapter(() => new Response('{}', { status: 404 })).a.read('x/y', 10)).toBeNull();
+    // a declared length over the limit, and a body that grows past it without one
+    await expect(
+      adapter(() => new Response(body, { headers: { 'content-length': '999999' } })).a.read(
+        'x/y',
+        100,
+      ),
+    ).rejects.toThrow(/too large/);
+    const stream = new ReadableStream({
+      start(c) {
+        c.enqueue(new Uint8Array(60));
+        c.enqueue(new Uint8Array(60));
+        c.close();
+      },
+    });
+    await expect(adapter(() => new Response(stream)).a.read('x/y', 100)).rejects.toThrow(
+      /too large/,
+    );
+    await expect(
+      adapter(() => new Response('boom', { status: 500 })).a.read('x/y', 100),
+    ).rejects.toThrow(/HTTP 500/);
+  });
+
   it('remove: DELETE on the bucket with the key; a provider error is not swallowed', async () => {
     const { a, calls } = adapter(() => Response.json([]));
     await a.remove('org/file');

@@ -333,6 +333,8 @@ export const AuditActions = {
   // Lot 5.8 — Growth Engine (category founder, like the workflow engine): the automatic stop of a
   // campaign above the 5 % disturbance threshold (P22), by the system; the numbers in metadata
   growthCampaignAutoStopped: 'growth.campaign_auto_stopped',
+  // Lot C.4f: a job deleted a file (core/files), in the category of the owner module
+  fileDeletedBySystem: 'file.deleted_by_system',
 } as const;
 
 export type AuditAction = (typeof AuditActions)[keyof typeof AuditActions];
