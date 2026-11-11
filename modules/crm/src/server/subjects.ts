@@ -10,20 +10,20 @@ import { requireId } from './validation';
 
 /*
  * Lot CR.6 — the record a note, a comment or a file belongs to (its „subject”), and who may see it.
- * Contact: with crm:admin every one, otherwise the own and the unassigned ones (D-CRM-15). Company:
- * every member with crm:read. Lead and deal come with CR.8 / CR.9.
+ * Contact and lead (CR.8): with crm:admin every one, otherwise the own and the unassigned ones
+ * (D-CRM-15). Company: every member with crm:read. Deal comes with CR.9.
  *
  * A merged contact (CR.5) is in the bin with merged_into_id: its files stay its own in core/files,
  * so a file of it is reached through the contact that stayed (followMerge).
  */
 
-export const SUBJECT_TYPES = ['contact', 'company'] as const;
+export const SUBJECT_TYPES = ['contact', 'company', 'lead'] as const;
 export type SubjectType = (typeof SUBJECT_TYPES)[number];
 
 export type Subject = {
   type: SubjectType;
   id: string;
-  /** The contact's owner; null for an unassigned contact and for a company. */
+  /** The contact's or the lead's owner; null when unassigned and for a company. */
   ownerUserId: string | null;
   deleted: boolean;
 };
@@ -32,8 +32,8 @@ const FOLLOW_MAX = 20;
 
 export function requireSubjectType(value: unknown): SubjectType {
   if ((SUBJECT_TYPES as readonly unknown[]).includes(value)) return value as SubjectType;
-  // lead / deal: valid in the table, not yet in ClientDesk (CR.8 / CR.9)
-  if (value === 'lead' || value === 'deal') throw new InvalidInput('subjectType', 'not_available');
+  // deal: valid in the tables, not yet in ClientDesk (CR.9)
+  if (value === 'deal') throw new InvalidInput('subjectType', 'not_available');
   throw new InvalidInput('subjectType', 'invalid');
 }
 
@@ -58,6 +58,20 @@ export async function readSubject(
     if (!rows[0]) throw new ResourceNotFound();
     if (options.write && rows[0].deleted_at) throw new Conflict('company_deleted');
     return { type, id, ownerUserId: null, deleted: rows[0].deleted_at !== null };
+  }
+  if (type === 'lead') {
+    // CR.8: a lead is seen as a contact is (D-CRM-15): crm:admin, its owner, or unassigned
+    const { rows } = await client.query<{ owner_user_id: string | null; deleted_at: Date | null }>(
+      `SELECT owner_user_id, deleted_at FROM crm.lead WHERE id = $1`,
+      [id],
+    );
+    const row = rows[0];
+    if (!row) throw new ResourceNotFound();
+    if (scope !== 'all' && row.owner_user_id !== null && row.owner_user_id !== ctx.userId) {
+      throw new Forbidden();
+    }
+    if (options.write && row.deleted_at) throw new Conflict('lead_deleted');
+    return { type, id, ownerUserId: row.owner_user_id, deleted: row.deleted_at !== null };
   }
   for (let hop = 0; ; hop++) {
     const { rows } = await client.query<{
@@ -109,7 +123,7 @@ export async function requireMentionable(
     if (access.status !== 'active' || !access.hasAccess) {
       throw new InvalidInput(field, 'not_member');
     }
-    if (!subject || subject.type !== 'contact' || subject.ownerUserId === null) continue;
+    if (!subject || subject.type === 'company' || subject.ownerUserId === null) continue;
     if (userId === subject.ownerUserId) continue;
     if (!(await checkRolePermission(access.role, 'crm', 'crm:admin')))
       throw new InvalidInput(field, 'cannot_see');

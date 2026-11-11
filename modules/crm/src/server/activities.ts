@@ -750,19 +750,25 @@ export async function listActivitiesInOrg(
   );
 }
 
-/** The done activities of a record, for its history (timeline.ts). */
+/**
+ * The done activities of a record, for its history (timeline.ts); `leadIds`: the leads converted
+ * into it (CR.8), whose history the contact carries.
+ */
 export async function doneActivitiesOf(
   client: PoolClient,
   type: SubjectType,
   subjectId: string,
   limit: number,
+  leadIds: string[] = [],
 ): Promise<Activity[]> {
   const { rows } = await client.query<ActivityRow>(
     `SELECT ${ACTIVITY_COLUMNS} FROM crm.activity
-      WHERE subject_type = $1 AND subject_id = $2 AND status = 'done' AND deleted_at IS NULL
+      WHERE ((subject_type = $1 AND subject_id = $2)
+             OR (subject_type = 'lead' AND subject_id = ANY($4::uuid[])))
+        AND status = 'done' AND deleted_at IS NULL
       ORDER BY done_at DESC, id DESC
       LIMIT $3`,
-    [type, subjectId, limit],
+    [type, subjectId, limit, leadIds],
   );
   return rows.map(toActivity);
 }
