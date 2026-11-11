@@ -3,6 +3,7 @@ import { listFiles } from '@ventora/files';
 import { withCrmTx } from './db';
 import type { ContactScope } from './contacts';
 import { doneActivitiesOf, type Activity } from './activities';
+import { stageChangesOf, type StageChange } from './deals';
 import { CRM_FILE_MODULE, toAttachment, type Attachment } from './attachments';
 import { NOTE_COLUMNS, toNote, type Note, type NoteRow } from './notes';
 import { mergedFamily, readSubject, requireSubjectType } from './subjects';
@@ -19,7 +20,8 @@ import { page } from './validation';
 export type TimelineItem =
   | { type: 'note' | 'comment'; at: Date; note: Note }
   | { type: 'file'; at: Date; file: Attachment }
-  | { type: 'activity'; at: Date; activity: Activity };
+  | { type: 'activity'; at: Date; activity: Activity }
+  | { type: 'stage'; at: Date; change: StageChange };
 
 export async function getTimelineInOrg(
   ctx: TenantContext,
@@ -30,7 +32,7 @@ export async function getTimelineInOrg(
   const { limit, offset } = page(params);
   const want = offset + limit + 1;
 
-  const { notes, activities, owners } = await withCrmTx(
+  const { notes, activities, owners, moves } = await withCrmTx(
     ctx.organizationId,
     async (client) => {
       const subject = await readSubject(client, ctx, scope, type, params.subjectId);
@@ -60,7 +62,9 @@ export async function getTimelineInOrg(
         ...ids.map((id) => ({ resourceType: type, resourceId: id })),
         ...leadIds.map((id) => ({ resourceType: 'lead', resourceId: id })),
       ];
-      return { notes: rows.map(toNote), activities: done, owners };
+      // CR.9: a deal's moves between stages
+      const moves = type === 'deal' ? await stageChangesOf(client, subject.id) : [];
+      return { notes: rows.map(toNote), activities: done, owners, moves };
     },
     true,
   );
@@ -86,6 +90,7 @@ export async function getTimelineInOrg(
       at: a.doneAt ?? a.createdAt,
       activity: a,
     })),
+    ...moves.map((m) => ({ type: 'stage' as const, at: m.changedAt, change: m })),
   ].sort((a, b) => b.at.getTime() - a.at.getTime());
 
   return { items: items.slice(offset, offset + limit), hasMore: items.length > offset + limit };

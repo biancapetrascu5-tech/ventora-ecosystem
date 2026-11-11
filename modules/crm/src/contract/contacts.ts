@@ -44,6 +44,38 @@ import {
 } from '../server/attachments';
 import { getTimelineInOrg, type TimelineItem } from '../server/timeline';
 import {
+  createDealInOrg,
+  createLossReasonInOrg,
+  createPipelineInOrg,
+  createStageInOrg,
+  deleteDealInOrg,
+  deleteLossReasonInOrg,
+  deletePipelineInOrg,
+  deleteStageInOrg,
+  getBoardInOrg,
+  getDealInOrg,
+  listDealsInOrg,
+  listLossReasonsInOrg,
+  listPipelinesInOrg,
+  loseDealInOrg,
+  moveDealInOrg,
+  reopenDealInOrg,
+  reorderStagesInOrg,
+  updateDealInOrg,
+  updateLossReasonInOrg,
+  updatePipelineInOrg,
+  updateStageInOrg,
+  winDealInOrg,
+  type Board,
+  type Deal,
+  type DealInput,
+  type DealItem,
+  type ListDealsParams,
+  type LossReason,
+  type Pipeline,
+  type Stage,
+} from '../server/deals';
+import {
   assignLeadInOrg,
   convertLeadInOrg,
   countLeadsInOrg,
@@ -633,8 +665,10 @@ export async function convertLead(
     name?: unknown;
     phone?: unknown;
     email?: unknown;
+    /** CR.9: „Creează și un deal”. */
+    deal?: { title?: unknown; pipelineId?: unknown; stageId?: unknown } | null;
   },
-): Promise<{ lead: Lead; contact: { id: string; created: boolean } }> {
+): Promise<{ lead: Lead; contact: { id: string; created: boolean }; dealId: string | null }> {
   const { ctx, scope } = await access(params, 'crm:write');
   return convertLeadInOrg(ctx, scope, params.leadId, params);
 }
@@ -661,7 +695,162 @@ export async function countLeads(
   return countLeadsInOrg(ctx, scope, params);
 }
 
+// ── CR.9: pipelines, stages, loss reasons (crm:settings) and deals (S131) ─────────────────────
+
+/** The pipelines with their stages; the default one is created at the first read. */
+export async function listPipelines(params: Session): Promise<Pipeline[]> {
+  const { ctx } = await access(params, 'crm:read');
+  return listPipelinesInOrg(ctx);
+}
+
+/** „Pipeline nou”: one unit of crm.pipelines (QuotaExceeded at the plan's limit). */
+export async function createPipeline(
+  params: Session & { name: unknown; stages?: unknown },
+): Promise<Pipeline> {
+  const { ctx } = await access(params, 'crm:settings');
+  return createPipelineInOrg(ctx, params);
+}
+
+export async function updatePipeline(
+  params: Session & { pipelineId: string; name?: unknown; isDefault?: unknown },
+): Promise<Pipeline> {
+  const { ctx } = await access(params, 'crm:settings');
+  return updatePipelineInOrg(ctx, params.pipelineId, params);
+}
+
+export async function deletePipeline(params: Session & { pipelineId: string }): Promise<void> {
+  const { ctx } = await access(params, 'crm:settings');
+  return deletePipelineInOrg(ctx, params.pipelineId);
+}
+
+export async function createStage(
+  params: Session & { pipelineId: string; name: unknown; probability?: unknown },
+): Promise<Stage> {
+  const { ctx } = await access(params, 'crm:settings');
+  return createStageInOrg(ctx, params.pipelineId, params);
+}
+
+export async function updateStage(
+  params: Session & { stageId: string; name?: unknown; probability?: unknown },
+): Promise<Stage> {
+  const { ctx } = await access(params, 'crm:settings');
+  return updateStageInOrg(ctx, params.stageId, params);
+}
+
+export async function reorderStages(
+  params: Session & { pipelineId: string; stageIds: unknown },
+): Promise<Stage[]> {
+  const { ctx } = await access(params, 'crm:settings');
+  return reorderStagesInOrg(ctx, params.pipelineId, params.stageIds);
+}
+
+export async function deleteStage(params: Session & { stageId: string }): Promise<void> {
+  const { ctx } = await access(params, 'crm:settings');
+  return deleteStageInOrg(ctx, params.stageId);
+}
+
+export async function listLossReasons(params: Session): Promise<LossReason[]> {
+  const { ctx } = await access(params, 'crm:read');
+  return listLossReasonsInOrg(ctx);
+}
+
+export async function createLossReason(params: Session & { label: unknown }): Promise<LossReason> {
+  const { ctx } = await access(params, 'crm:settings');
+  return createLossReasonInOrg(ctx, params);
+}
+
+export async function updateLossReason(
+  params: Session & { lossReasonId: string; label: unknown },
+): Promise<LossReason> {
+  const { ctx } = await access(params, 'crm:settings');
+  return updateLossReasonInOrg(ctx, params.lossReasonId, params);
+}
+
+export async function deleteLossReason(params: Session & { lossReasonId: string }): Promise<void> {
+  const { ctx } = await access(params, 'crm:settings');
+  return deleteLossReasonInOrg(ctx, params.lossReasonId);
+}
+
+/** „Deal nou”. */
+export async function createDeal(
+  params: Session &
+    DealInput & {
+      pipelineId?: unknown;
+      stageId?: unknown;
+      ownerUserId?: unknown;
+      leadId?: unknown;
+    },
+): Promise<Deal> {
+  const { ctx, scope } = await access(params, 'crm:write');
+  return createDealInOrg(ctx, scope, params);
+}
+
+export async function updateDeal(
+  params: Session & DealInput & { dealId: string; ownerUserId?: unknown },
+): Promise<Deal> {
+  const { ctx, scope } = await access(params, 'crm:write');
+  return updateDealInOrg(ctx, scope, params.dealId, params);
+}
+
+/** The kanban move; the probability follows the stage. */
+export async function moveDeal(
+  params: Session & { dealId: string; stageId: unknown },
+): Promise<Deal> {
+  const { ctx, scope } = await access(params, 'crm:write');
+  return moveDealInOrg(ctx, scope, params.dealId, params.stageId);
+}
+
+export async function winDeal(
+  params: Session & { dealId: string; valueMinor?: unknown; closedOn?: unknown; note?: unknown },
+): Promise<Deal> {
+  const { ctx, scope } = await access(params, 'crm:write');
+  return winDealInOrg(ctx, scope, params.dealId, params);
+}
+
+export async function loseDeal(
+  params: Session & { dealId: string; lossReasonId?: unknown; closedOn?: unknown; note?: unknown },
+): Promise<Deal> {
+  const { ctx, scope } = await access(params, 'crm:write');
+  return loseDealInOrg(ctx, scope, params.dealId, params);
+}
+
+export async function reopenDeal(params: Session & { dealId: string }): Promise<Deal> {
+  const { ctx, scope } = await access(params, 'crm:write');
+  return reopenDealInOrg(ctx, scope, params.dealId);
+}
+
+export async function deleteDeal(params: Session & { dealId: string }): Promise<Deal> {
+  const { ctx, scope } = await access(params, 'crm:write');
+  return deleteDealInOrg(ctx, scope, params.dealId);
+}
+
+export async function getDeal(params: Session & { dealId: string }): Promise<Deal> {
+  const { ctx, scope } = await access(params, 'crm:read');
+  return getDealInOrg(ctx, scope, params.dealId);
+}
+
+export async function listDeals(params: Session & ListDealsParams): Promise<Deal[]> {
+  const { ctx, scope } = await access(params, 'crm:read');
+  return listDealsInOrg(ctx, scope, params);
+}
+
+/** The kanban header: per stage, the open total and its weighted value, won this month. */
+export async function getBoard(
+  params: Session & { pipelineId: unknown; who?: unknown },
+): Promise<Board> {
+  const { ctx, scope } = await access(params, 'crm:read');
+  return getBoardInOrg(ctx, scope, params);
+}
+
 export type {
+  Board,
+  Deal,
+  DealInput,
+  DealItem,
+  ListDealsParams,
+  LossReason,
+  Pipeline,
+  Stage,
   DisqualifyReason,
   Lead,
   LeadInput,

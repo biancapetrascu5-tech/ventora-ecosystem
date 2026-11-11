@@ -28,7 +28,7 @@ import { normalizeEmail, normalizePhone, optionalText, requireId, LIMITS } from 
  *     crm.contacts is freed, a log row is written (contact_merge). Undo: proposal (S132, 30 days).
  *     CR.6: its notes and comments move onto the kept contact; its files show in the kept one's
  *     history.
- *   - CR.7: its activities and tasks move too. Deals move with CR.9.
+ *   - CR.7 / CR.9: its activities, tasks and deals move too.
  */
 
 export type DuplicateReason = 'phone' | 'email' | 'name';
@@ -370,6 +370,11 @@ export async function mergeContactsInOrg(
       `UPDATE crm.activity SET subject_id = $1 WHERE subject_type = 'contact' AND subject_id = $2`,
       [keepId, mergeId],
     );
+    // CR.9: and its deals
+    await client.query(`UPDATE crm.deal SET contact_id = $1 WHERE contact_id = $2`, [
+      keepId,
+      mergeId,
+    ]);
     const mergeRowId = uuidv7();
     await client.query(
       `INSERT INTO crm.contact_merge (id, organization_id, kept_contact_id, merged_contact_id, fields_from_merged, created_by_user_id)

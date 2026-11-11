@@ -116,3 +116,23 @@ CRM (numele afișat ClientDesk) e a doua aplicație, în pachetul cu EasyBook (D
 - **Leadurile fără activitate:** `idleDays` (ultima notiță, activitate sau sosirea).
 - **De decis (S131):** scorul și ștergerea automată a celor descalificate.
 - **Evenimentele `crm.lead.*`** cer tipuri în `packages/contracts` (PR separat, propunere).
+
+## Pipeline-urile și dealurile (CR.9, D-CRM-13, design S131)
+- **`crm.pipeline`:** cota de stoc `crm.pipelines` (S131: 2): rezervare, scriere, confirmare; eliberare la ștergere; resolver-ul `pipelineQuotaHeld`.
+  - Pipeline-ul implicit („Vânzări”, cheia `sales`) se creează la prima citire, cu etapele din glosar. La limita 0 nu există niciunul.
+  - Nu se șterge pipeline-ul implicit și nici unul cu dealuri deschise.
+- **`crm.stage`:** etapele deschise, cu probabilitatea implicită. „Câștigat” și „Pierdut” sunt starea dealului, nu etape.
+  - O etapă cu dealuri deschise nu se șterge. Un pipeline păstrează cel puțin o etapă.
+- **`crm.loss_reason`:** motivele implicite S131 (pe cheie), scrise o dată pe afacere; afacerea le redenumește, adaugă și scoate.
+  - Pipeline-urile, etapele și motivele cer `crm:settings`.
+- **`crm.deal`:**
+  - **Cine vede:** ca la contacte.
+  - **Contactul și / sau compania** trebuie să fie vizibile.
+  - **Elementele** sunt libere, cu preț (jsonb, fără `DELETE`). Serviciile EasyBook vin cu CR.12. Valoarea e suma elementelor.
+  - **Probabilitatea** pornește din etapă și o urmează la mutare. Fiecare mutare intră în `deal_stage_change` și în istoric.
+  - **Închiderea:** câștigat (valoarea finală, ziua, de ce), pierdut (motiv obligatoriu), redeschis; coșul.
+- **„Blocat de N zile”:** `lastMovedAt` (ultima mutare sau activitate pe deal) și `stuckDays` pe listă.
+- **Tabloul:** pe etapă, totalul deschis, ponderatul și câștigatele din luna curentă, pe monedă.
+- **La conversia unui lead,** „Creează și un deal” pune bugetul leadului ca valoare.
+- **La îmbinarea contactelor,** dealurile trec pe contactul păstrat.
+- **Evenimentele `crm.deal.*`** cer tipuri în `packages/contracts` (propunere).

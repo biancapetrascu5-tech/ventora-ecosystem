@@ -44,6 +44,7 @@ model Company {
   customValues    Json      @default("{}") @map("custom_values")
 
   contacts Contact[]
+  deals    Deal[]
 
   @@index([customValues(ops: JsonbPathOps)], type: Gin, map: "company_custom_values_idx")
 
@@ -92,6 +93,7 @@ model Contact {
   mergesKept      ContactMerge[]       @relation("MergeKept")
   mergesMerged    ContactMerge[]       @relation("MergeMerged")
   leads           Lead[]
+  deals           Deal[]
 
   @@index([organizationId, phone], map: "contact_organization_id_phone_idx")
   @@index([organizationId, email], map: "contact_organization_id_email_idx")
@@ -188,6 +190,133 @@ model Note {
   @@schema("crm")
 }
 
+/// Lot CR.9: the pipelines (stock quota crm.pipelines; S131: 2), one is the default.
+model Pipeline {
+  id               String    @id @db.Uuid
+  organizationId   String    @map("organization_id") @db.Uuid
+  key              String?   @db.VarChar(12)
+  name             String?   @db.VarChar(60)
+  isDefault        Boolean   @default(false) @map("is_default")
+  sortOrder        Int       @default(0) @map("sort_order")
+  quotaOperationId String?   @map("quota_operation_id") @db.VarChar(80)
+  deletedAt        DateTime? @map("deleted_at") @db.Timestamptz
+  deletedByUserId  String?   @map("deleted_by_user_id") @db.Uuid
+  createdByUserId  String?   @map("created_by_user_id") @db.Uuid
+  createdAt        DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt        DateTime  @default(now()) @map("updated_at") @db.Timestamptz
+
+  stages Stage[]
+  deals  Deal[]
+
+  @@index([organizationId], map: "pipeline_organization_id_idx")
+  @@map("pipeline")
+  @@schema("crm")
+}
+
+/// Lot CR.9: the open stages of a pipeline, with their default probability.
+model Stage {
+  id              String    @id @db.Uuid
+  organizationId  String    @map("organization_id") @db.Uuid
+  pipelineId      String    @map("pipeline_id") @db.Uuid
+  key             String?   @db.VarChar(16)
+  name            String?   @db.VarChar(40)
+  sortOrder       Int       @default(0) @map("sort_order")
+  probability     Int       @default(0)
+  deletedAt       DateTime? @map("deleted_at") @db.Timestamptz
+  deletedByUserId String?   @map("deleted_by_user_id") @db.Uuid
+  createdAt       DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt       DateTime  @default(now()) @map("updated_at") @db.Timestamptz
+
+  pipeline Pipeline @relation(fields: [pipelineId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "stage_pipeline_id_fkey")
+  deals    Deal[]
+
+  @@index([pipelineId, sortOrder], map: "stage_pipeline_id_idx")
+  @@map("stage")
+  @@schema("crm")
+}
+
+/// Lot CR.9: the loss reasons of the business (S131 defaults by key).
+model LossReason {
+  id              String    @id @db.Uuid
+  organizationId  String    @map("organization_id") @db.Uuid
+  key             String?   @db.VarChar(12)
+  label           String?   @db.VarChar(80)
+  sortOrder       Int       @default(0) @map("sort_order")
+  deletedAt       DateTime? @map("deleted_at") @db.Timestamptz
+  deletedByUserId String?   @map("deleted_by_user_id") @db.Uuid
+  createdAt       DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt       DateTime  @default(now()) @map("updated_at") @db.Timestamptz
+
+  deals Deal[]
+
+  @@index([organizationId], map: "loss_reason_organization_id_idx")
+  @@map("loss_reason")
+  @@schema("crm")
+}
+
+/// Lot CR.9: the deals (S131); items in jsonb (free items now, EasyBook services with CR.12).
+model Deal {
+  id              String    @id @db.Uuid
+  organizationId  String    @map("organization_id") @db.Uuid
+  pipelineId      String    @map("pipeline_id") @db.Uuid
+  stageId         String    @map("stage_id") @db.Uuid
+  title           String    @db.VarChar(160)
+  contactId       String?   @map("contact_id") @db.Uuid
+  companyId       String?   @map("company_id") @db.Uuid
+  leadId          String?   @map("lead_id") @db.Uuid
+  currency        String    @default("RON") @db.VarChar(3)
+  items           Json      @default("[]")
+  valueMinor      BigInt    @default(0) @map("value_minor")
+  probability     Int       @default(0)
+  expectedCloseOn DateTime? @map("expected_close_on") @db.Date
+  ownerUserId     String?   @map("owner_user_id") @db.Uuid
+  status          String    @default("open") @db.VarChar(4)
+  stageChangedAt  DateTime  @default(now()) @map("stage_changed_at") @db.Timestamptz
+  wonValueMinor   BigInt?   @map("won_value_minor")
+  closedOn        DateTime? @map("closed_on") @db.Date
+  closeNote       String?   @map("close_note") @db.VarChar(500)
+  lossReasonId    String?   @map("loss_reason_id") @db.Uuid
+  closedAt        DateTime? @map("closed_at") @db.Timestamptz
+  closedByUserId  String?   @map("closed_by_user_id") @db.Uuid
+  deletedAt       DateTime? @map("deleted_at") @db.Timestamptz
+  deletedByUserId String?   @map("deleted_by_user_id") @db.Uuid
+  createdByUserId String    @map("created_by_user_id") @db.Uuid
+  createdAt       DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt       DateTime  @default(now()) @map("updated_at") @db.Timestamptz
+
+  pipeline     Pipeline          @relation(fields: [pipelineId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "deal_pipeline_id_fkey")
+  stage        Stage             @relation(fields: [stageId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "deal_stage_id_fkey")
+  contact      Contact?          @relation(fields: [contactId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "deal_contact_id_fkey")
+  company      Company?          @relation(fields: [companyId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "deal_company_id_fkey")
+  lead         Lead?             @relation(fields: [leadId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "deal_lead_id_fkey")
+  lossReason   LossReason?       @relation(fields: [lossReasonId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "deal_loss_reason_id_fkey")
+  stageChanges DealStageChange[]
+
+  @@index([organizationId, pipelineId, status, stageId], map: "deal_pipeline_idx")
+  @@index([contactId], map: "deal_contact_id_idx")
+  @@index([companyId], map: "deal_company_id_idx")
+  @@index([organizationId, ownerUserId], map: "deal_owner_idx")
+  @@map("deal")
+  @@schema("crm")
+}
+
+/// Lot CR.9: the history of a deal's moves (INSERT + SELECT only).
+model DealStageChange {
+  id              String   @id @db.Uuid
+  organizationId  String   @map("organization_id") @db.Uuid
+  dealId          String   @map("deal_id") @db.Uuid
+  fromStageId     String?  @map("from_stage_id") @db.Uuid
+  toStageId       String   @map("to_stage_id") @db.Uuid
+  changedByUserId String   @map("changed_by_user_id") @db.Uuid
+  changedAt       DateTime @default(now()) @map("changed_at") @db.Timestamptz
+
+  deal Deal @relation(fields: [dealId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "deal_stage_change_deal_id_fkey")
+
+  @@index([dealId, changedAt], map: "deal_stage_change_deal_id_idx")
+  @@map("deal_stage_change")
+  @@schema("crm")
+}
+
 /// Lot CR.8: the leads (D-CRM-3, S131), apart from the contacts; bin, no delete.
 model Lead {
   id                 String    @id @db.Uuid
@@ -215,6 +344,7 @@ model Lead {
   updatedAt          DateTime  @default(now()) @map("updated_at") @db.Timestamptz
 
   convertedContact Contact? @relation(fields: [convertedContactId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "lead_converted_contact_id_fkey")
+  deals            Deal[]
 
   @@index([organizationId, state, createdAt(sort: Desc)], map: "lead_organization_id_state_idx")
   @@index([organizationId, ownerUserId], map: "lead_organization_id_owner_idx")
