@@ -37,8 +37,9 @@ import { isUuid } from './validation';
  *   cancelManagedBooking   cancelled by the client; late when inside the free cancellation
  *
  * T1: the business comes only from the slug; the token is looked up in that business's context, so
- * a token of business A is not found through business B's slug. A revoked token (GDPR erasure), an
- * unknown or malformed one: not found.
+ * a token of business A is not found through business B's slug. A revoked token (GDPR erasure, or
+ * 30 days after the booking, by the job booking.public-hold-cleanup), an unknown or malformed one:
+ * not found. From the start of the booking on, the page shows only the details ('over').
  *
  * The rules of S125 (DE DECIS; the recommendations of the design, PROPUS until the founder decides):
  *   - changes online until 2 hours before; after that only by phone ('too_late');
@@ -184,7 +185,8 @@ function judge(
   let state: ManageState;
   if (b.status === 'cancelled') state = 'cancelled';
   else if (!['awaiting_payment', 'unconfirmed', 'confirmed'].includes(b.status)) state = 'over';
-  else if (b.ends_at.getTime() <= now) state = 'over';
+  // review #174: from the start on, the page shows only the details (no move, no cancel)
+  else if (start <= now) state = 'over';
   else if (start - now < MANAGE_LIMITS.onlineCutoffHours * HOUR) state = 'too_late';
   else if (!b.online) state = 'online_closed';
   else state = 'open';

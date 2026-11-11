@@ -21,6 +21,7 @@ import {
   verifyPublicBooking,
 } from '../contract/index.js';
 import { closeBookingPool } from '../server/db.js';
+import { runPublicHoldCleanupJob } from '../server/public-cleanup.js';
 
 /*
  * Lot B.11b on a real Postgres: the client's page for moving or cancelling, without a session. The
@@ -602,5 +603,85 @@ describe('B.11b — cancelling and the states', () => {
       [done.appointmentId],
     );
     expect(t).toEqual({ revoked: true });
+  });
+});
+
+describe('B.11b — review #174', () => {
+  it('from the start on: only the details, no move and no cancel', async () => {
+    const done = await book(6, 30);
+    await adminQuery(
+      `UPDATE booking.appointment
+          SET starts_at = now() - interval '10 minutes', ends_at = now() + interval '20 minutes'
+        WHERE id = $1`,
+      [done.appointmentId],
+    );
+    const page = await getManagedBooking({ slug: A.slug, token: done.manageToken });
+    expect(page).toMatchObject({ state: 'over', canMove: false, canCancel: false });
+    expect(page.appointment.serviceName).toBe('Tuns');
+    expect(await refusal(cancelManagedBooking({ slug: A.slug, token: done.manageToken }))).toBe(
+      'over',
+    );
+    expect(
+      await refusal(
+        startManagedMove({
+          slug: A.slug,
+          token: done.manageToken,
+          startsAt: iso(at(13)),
+          ip: null,
+        }),
+      ),
+    ).toBe('over');
+    expect((await appointmentRow(done.appointmentId)).status).toBe('confirmed');
+  });
+
+  it('the job revokes a link 30 days after its booking (no DELETE); a newer link stays', async () => {
+    const old = await book(6);
+    const recent = await book(12);
+    await adminQuery(
+      `UPDATE booking.appointment
+          SET starts_at = now() - interval '31 days',
+              ends_at = now() - interval '31 days' + interval '30 minutes'
+        WHERE id = $1`,
+      [old.appointmentId],
+    );
+    const report = await runPublicHoldCleanupJob();
+    expect(report.failed).toEqual([]);
+    expect(report.linksRevoked).toBeGreaterThanOrEqual(1);
+    expect(
+      await errorOf(getManagedBooking({ slug: A.slug, token: old.manageToken })),
+    ).toBeInstanceOf(ResourceNotFound);
+    const rows = await adminQuery<{ appointment_id: string; revoked: boolean }>(
+      `SELECT appointment_id, revoked_at IS NOT NULL AS revoked FROM booking.manage_token
+        WHERE appointment_id = ANY($1::uuid[])`,
+      [[old.appointmentId, recent.appointmentId]],
+    );
+    expect(rows.find((r) => r.appointment_id === old.appointmentId)?.revoked).toBe(true);
+    expect(rows.find((r) => r.appointment_id === recent.appointmentId)?.revoked).toBe(false);
+    expect((await getManagedBooking({ slug: A.slug, token: recent.manageToken })).state).toBe(
+      'open',
+    );
+  });
+
+  it('a link or a move hold can point only to a booking of the same business (composite FK)', async () => {
+    const done = await book(17, 30);
+    const err1 = await errorOf(
+      adminQuery(
+        `INSERT INTO booking.manage_token (id, organization_id, appointment_id, token_hash)
+         VALUES ($1, $2, $3, $4)`,
+        [uuid(), B.org, done.appointmentId, 'f'.repeat(64)],
+      ),
+    );
+    expect((err1 as { code?: string }).code).toBe('23503');
+    const err2 = await errorOf(
+      adminQuery(
+        `INSERT INTO booking.public_hold
+           (id, organization_id, staff_member_id, service_id, starts_at, ends_at, duration_minutes,
+            move_appointment_id, expires_at)
+         VALUES ($1, $2, $3, $4, now() + interval '3 days', now() + interval '3 days 30 minutes',
+                 30, $5, now() + interval '10 minutes')`,
+        [uuid(), B.org, staffA, svcA, done.appointmentId],
+      ),
+    );
+    expect((err2 as { code?: string }).code).toBe('23503');
   });
 });

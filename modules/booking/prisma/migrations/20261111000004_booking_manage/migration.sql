@@ -6,7 +6,9 @@
 --   manage_token → one row per link given out (the public page after the code; later each e-mail of
 --                  B.13 may give its own). The token is never stored, only its SHA-256; it stays
 --                  valid while the booking exists (it survives a move: S125 „the link”). Revoked by
---                  the GDPR erasure (erase_client) and never deleted.
+--                  the GDPR erasure (erase_client) and 30 days after the booking (the job
+--                  booking.public-hold-cleanup); never deleted. From the start of the booking on,
+--                  the page shows only the details (no move, no cancel).
 --   public_hold  → a hold may now be a move: move_appointment_id = the booking being moved; such a
 --                  hold has no code (the token is the proof) and no personal data. The old time stays
 --                  the client's until they confirm (S125 „Move”).
@@ -14,6 +16,10 @@
 -- Additive: one table, two columns' rules on public_hold, erase_client recreated with its previous
 -- body plus the tokens. RLS (USING + WITH CHECK), grants only to booking_rw, no DELETE. No new role,
 -- no new audit category, no package.
+
+-- Review #174: a link and a move hold point to a booking of the same business, guaranteed by the
+-- database (composite FKs on (organization_id, appointment id)); the target needs this key.
+CREATE UNIQUE INDEX "appointment_organization_id_id_key" ON "booking"."appointment"("organization_id", "id");
 
 -- CreateTable
 CREATE TABLE "booking"."manage_token" (
@@ -25,8 +31,8 @@ CREATE TABLE "booking"."manage_token" (
     "revoked_at"      TIMESTAMPTZ,
 
     CONSTRAINT "manage_token_pkey" PRIMARY KEY ("id"),
-    CONSTRAINT "manage_token_appointment_id_fkey" FOREIGN KEY ("appointment_id")
-      REFERENCES "booking"."appointment"("id") ON DELETE RESTRICT ON UPDATE RESTRICT
+    CONSTRAINT "manage_token_appointment_fkey" FOREIGN KEY ("organization_id", "appointment_id")
+      REFERENCES "booking"."appointment"("organization_id", "id") ON DELETE RESTRICT ON UPDATE RESTRICT
 );
 
 CREATE UNIQUE INDEX "manage_token_token_hash_key" ON "booking"."manage_token"("token_hash");
@@ -47,8 +53,8 @@ GRANT UPDATE ("revoked_at") ON "booking"."manage_token" TO booking_rw;
 ALTER TABLE "booking"."public_hold" ADD COLUMN "move_appointment_id" UUID;
 ALTER TABLE "booking"."public_hold" ALTER COLUMN "code_hash" DROP NOT NULL;
 ALTER TABLE "booking"."public_hold"
-  ADD CONSTRAINT "public_hold_move_appointment_id_fkey" FOREIGN KEY ("move_appointment_id")
-    REFERENCES "booking"."appointment"("id") ON DELETE RESTRICT ON UPDATE RESTRICT;
+  ADD CONSTRAINT "public_hold_move_appointment_fkey" FOREIGN KEY ("organization_id", "move_appointment_id")
+    REFERENCES "booking"."appointment"("organization_id", "id") ON DELETE RESTRICT ON UPDATE RESTRICT;
 ALTER TABLE "booking"."public_hold"
   ADD CONSTRAINT "public_hold_move_check" CHECK (
     ("move_appointment_id" IS NULL AND "code_hash" IS NOT NULL)
@@ -58,6 +64,33 @@ ALTER TABLE "booking"."public_hold"
         AND ("appointment_id" IS NULL OR "appointment_id" = "move_appointment_id"))
   );
 CREATE INDEX "public_hold_move_appointment_id_idx" ON "booking"."public_hold"("move_appointment_id");
+
+-- Review #174: the job booking.public-hold-cleanup also revokes the links 30 days after their
+-- booking; the businesses with such links are added to its list (only ids). CREATE OR REPLACE keeps
+-- the grant of booking_public (EXECUTE only booking_rw): no new grant.
+CREATE OR REPLACE FUNCTION booking.public_hold_cleanup_due(p_limit INTEGER)
+RETURNS TABLE (organization_id UUID)
+LANGUAGE sql
+STABLE
+SECURITY DEFINER
+SET search_path = pg_catalog, pg_temp
+AS $$
+  SELECT q.organization_id FROM (
+    SELECT h.organization_id
+      FROM booking.public_hold h
+     WHERE (h.state = 'pending' AND h.expires_at <= now())
+        OR ((h.email_hash IS NOT NULL OR h.ip_hash IS NOT NULL)
+            AND h.created_at < now() - INTERVAL '24 hours')
+    UNION
+    SELECT t.organization_id
+      FROM booking.manage_token t
+      JOIN booking.appointment a
+        ON a.organization_id = t.organization_id AND a.id = t.appointment_id
+     WHERE t.revoked_at IS NULL AND a.ends_at < now() - INTERVAL '30 days'
+  ) q
+   ORDER BY q.organization_id
+   LIMIT LEAST(GREATEST(COALESCE(p_limit, 1), 1), 500);
+$$;
 
 -- ── the GDPR erasure, extended (the founder's rule of 10.11.2026) ────────────────────────────
 -- The same function as in booking_payments, plus the client's links: revoked, so the page of an
