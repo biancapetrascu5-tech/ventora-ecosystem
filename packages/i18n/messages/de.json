@@ -1038,7 +1038,7 @@
   "limits": {
     "appointments": "{count, plural, one {# Termin} other {# Termine}} pro Monat",
     "sms": "{count, plural, one {# SMS} other {# SMS}} pro Monat",
-    "campaigns": "{count, plural, one {# Kampagne} other {# Kampagnen}} pro Monat",
+    "campaigns": "{count, plural, one {# Kampagne} other {# Kampagnen}} gleichzeitig aktiv",
     "emails": "{count, plural, one {# E-Mail} other {# E-Mails}} pro Monat",
     "clients": "{count, plural, one {# Kunde} other {# Kunden}}",
     "invoices": "{count, plural, one {# Rechnung} other {# Rechnungen}} pro Monat",

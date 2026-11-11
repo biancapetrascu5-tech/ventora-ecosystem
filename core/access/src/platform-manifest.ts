@@ -31,8 +31,9 @@ export const platformManifest = {
   features: [],
   // Lot 3.1 (D3-14): the initial quotas that no module of this repo owns yet — the platform's
   // own (members, locations), the Core services (messaging, workflows, funnel, ai) and the
-  // applications without a module (documents, marketing, events). When a module arrives, its
-  // manifest takes the key over; the registry sync moves the owner, the key stays.
+  // applications without a module (documents, events). When a module arrives, its manifest takes
+  // the key over; the registry sync moves the owner, the key stays (MK.0: marketing.campaigns
+  // moved to modules/marketing, as a stock quota, D-CK-3 = a).
   // Synced by scripts/sync-commercial-registry.ts.
   quotas: [
     {
@@ -70,16 +71,6 @@ export const platformManifest = {
       overflow: 'block',
       refundable: false,
       description: "Emails to the business's customers",
-    },
-    {
-      key: 'marketing.campaigns',
-      kind: 'flow',
-      unit: 'campaign',
-      period: 'month',
-      overflow: 'block',
-      // ARCHITECTURE §8.3: a campaign cancelled before sending gives its unit back
-      refundable: true,
-      description: 'Campaigns (what counts as consumed stays D-MKT-1)',
     },
     {
       key: 'documents.storage',
