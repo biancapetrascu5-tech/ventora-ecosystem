@@ -81,7 +81,19 @@ export type AuditTargetType =
   // Lot C.4b / CR.3–CR.4: the own fields, the tags, the segments (category crm)
   | 'crm_custom_field'
   | 'crm_tag'
-  | 'crm_segment';
+  | 'crm_segment'
+  // Lot C.4c / CR.5–CR.9 (category crm)
+  | 'crm_duplicate'
+  | 'crm_note'
+  | 'crm_attachment'
+  | 'crm_activity'
+  | 'crm_task'
+  | 'crm_lead'
+  | 'crm_lead_source'
+  | 'crm_pipeline'
+  | 'crm_stage'
+  | 'crm_deal'
+  | 'crm_loss_reason';
 
 export type AuditEvent = {
   category: AuditCategory;
