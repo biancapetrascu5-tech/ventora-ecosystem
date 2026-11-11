@@ -7,9 +7,9 @@ Actualizat pe 2026-11-12. Main la `e76be1c` (merge-ul #175, C.4f).
 | PR | Ramura / worktree | HEAD | Bază | Stare |
 |---|---|---|---|---|
 | **#176** C.4g — încărcarea anonimă în `core/files` | `feat/c4g-files-public-upload` / `C:\Projects\ventora-c4g` | `a55d451` (pushed) | `main` | SQL aprobat. Rebazat peste C.4f; `deleteAnonymousFiles` scoasă, ștergerea pozelor trece prin `deleteFileAsSystem` / `deleteOwnerFilesAsSystem` (C.4f). Local: `files` 27/27, crm `notes` 9/9, lanțul de verificări verde |
-| **#179** [SQL de revizuit] B.12 — întrebările la rezervare, poza, ultimul răspuns pe fișa clientului | `feat/b12-booking-custom-forms` / `C:\Projects\ventora-b12` | `3a2c375` (pushed) | `feat/c4g-files-public-upload` (#176) | așteaptă review-ul migrării `…20261111000005_booking_forms`. Local: `b-files` 62/62, lanțul de verificări verde |
+| **#179** [SQL de revizuit] B.12 — întrebările la rezervare, poza, ultimul răspuns pe fișa clientului | `feat/b12-booking-custom-forms` / `C:\Projects\ventora-b12` | `3a2c375` (pushed) | `feat/c4g-files-public-upload` (#176) | **SQL aprobat de coordonator (12.11).** Local: `b-files` 62/62, lanțul de verificări verde |
 
-**După merge-ul #176:** rebazezi #179 pe `main`, schimbi baza în `main`, apoi `push --force-with-lease`.
+**După merge-ul #176:** verifici o singură dată dacă #179 are conflict cu `main` (`gh pr view 179 --json mergeable`). Dacă are, faci rebase pe `main` și `push --force-with-lease`. Baza PR-ului o schimbi în `main` dacă GitHub n-a făcut-o singur.
 
 **Îmbinate:** #138 (B.24), #157 (B.10), #164 (B.11a), #174 (B.11b), #175 (C.4f, agentul UI).
 
@@ -46,7 +46,7 @@ Actualizat pe 2026-11-12. Main la `e76be1c` (merge-ul #175, C.4f).
 - B.21 folosește încă `booking.appointment_updated` cu `metadata.payment`. Trebuie trecut la codurile C.0h, adică `booking.payment_recorded` și `booking.payment_refunded`.
 - **Alerta „Risc ridicat” către owner** se face ca job intern Booking (decizia Biancăi). Nu e implementată încă.
 - **B.10b** (locația pe zilele membrului, S126) și telefonul locației așteaptă decizia de pe #157.
-- **Lotul UI `BookingCustomForms`** (aprobat ca lot separat).
+- **Lotul UI `BookingCustomForms`** (aprobat ca lot separat). **Cerință (Bianca, 12.11):** în constructorul de întrebări apare un text vizibil „Nu puneți aici întrebări despre sănătate; folosiți câmpurile medicale” (cheie `booking.forms.*`, doar în română deocamdată).
 
 **B.12 pe scurt** (detaliile în `reports/2026-11-11_1500_lot-b12-intrebari-la-rezervare.md`, în commit):
 - migrarea `modules/booking/prisma/migrations/20261111000005_booking_forms`, care conține:
