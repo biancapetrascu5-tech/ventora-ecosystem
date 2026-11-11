@@ -69,7 +69,7 @@ Am corectat și `cancelled_by_user_id`: în contextul public nu mai scrie id-ul 
 
 ## Testele
 
-`manage-booking.integration.test.ts` are 11 teste:
+`manage-booking.integration.test.ts` are 10 teste:
 - **tokenul:** apare o singură dată și se păstrează doar ca hash. Pagina arată programarea și politica (`freeUntil` = start − 24 h, `onlineUntil` = start − 2 h);
 - **T1 și formele greșite:** un token necunoscut, cu formă greșită sau cerut prin slug-ul altei afaceri dă not found, iar anularea prin slug-ul B nu schimbă nimic;
 - **mutarea:**
