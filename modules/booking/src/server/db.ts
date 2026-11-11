@@ -48,3 +48,24 @@ export async function withBookingTx<T>(
     client.release();
   }
 }
+
+/**
+ * As booking_rw, without an organization (RLS: no rows): only for the internal jobs, to call a
+ * SECURITY DEFINER function that gives the ids of the businesses to visit; the work itself is done
+ * in withBookingTx, business by business. Never in the code of a request.
+ */
+export async function withBookingJobTx<T>(fn: (client: PoolClient) => Promise<T>): Promise<T> {
+  const client = await getPool().connect();
+  try {
+    await client.query('BEGIN READ ONLY');
+    await client.query(`SET LOCAL ROLE ${MODULE_ROLE}`);
+    const result = await fn(client);
+    await client.query('COMMIT');
+    return result;
+  } catch (err) {
+    await client.query('ROLLBACK').catch(() => {});
+    throw err;
+  } finally {
+    client.release();
+  }
+}

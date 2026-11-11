@@ -28,6 +28,9 @@ export {
 // Lot B.4b: the refund of booking.appointments (consumer of booking.appointment.cancelled),
 // registered by the app that runs the outbox dispatcher
 export { bookingQuotaRefundConsumer } from '../server/quota';
+// Review #164: the internal job that closes the expired public holds and clears the old hashes
+export { runPublicHoldCleanupJob } from '../server/public-cleanup';
+export type { PublicHoldCleanupReport } from '../server/public-cleanup';
 export type { BookingOutboxConsumer } from '../server/quota';
 export type {
   Appointment,

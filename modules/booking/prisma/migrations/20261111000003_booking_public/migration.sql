@@ -9,10 +9,16 @@
 -- and to send the code, and are wiped (with the name and the message) in the same UPDATE that
 -- settles the hold (confirmed, expired, refused; the CHECK public_hold_settled_check holds it).
 -- erase_client is not concerned: a hold is never linked to a client, and a settled one keeps no
--- personal data. A pending hold left behind is settled (and wiped) at the next public request.
+-- personal data. A pending hold left behind is settled (and wiped) at the next public request, and
+-- in any case by the internal Booking job (booking.public-hold-cleanup, every 10 minutes).
+--
+-- email_hash and ip_hash (review #164): a plain SHA-256 of an e-mail or an IP can be guessed, so
+-- they live only as long as the limits need them (10 an hour per IP, 5 a day per e-mail): the job
+-- sets both to NULL on the rows older than 24 hours. No key, no secret.
 --
 -- Additive: one table, RLS (USING + WITH CHECK), grants only to booking_rw (SELECT, INSERT and
--- UPDATE of the state columns; no DELETE). No new role, no new audit category, no package.
+-- UPDATE of the state columns and of the two hashes; no DELETE). One SECURITY DEFINER function for
+-- the job (only ids). No new role, no new audit category, no package.
 
 CREATE TABLE "booking"."public_hold" (
     "id"                UUID         NOT NULL,
@@ -28,8 +34,8 @@ CREATE TABLE "booking"."public_hold" (
     "client_email"      VARCHAR(254),
     "client_locale"     VARCHAR(5)   NOT NULL DEFAULT 'ro',
     "message"           VARCHAR(500),
-    "email_hash"        CHAR(64)     NOT NULL,
-    "ip_hash"           CHAR(64)     NOT NULL,
+    "email_hash"        CHAR(64),
+    "ip_hash"           CHAR(64),
     "code_hash"         CHAR(64)     NOT NULL,
     "attempts"          SMALLINT     NOT NULL DEFAULT 0,
     "sends"             SMALLINT     NOT NULL DEFAULT 1,
@@ -73,5 +79,27 @@ REVOKE ALL ON "booking"."public_hold" FROM PUBLIC;
 GRANT SELECT, INSERT ON "booking"."public_hold" TO booking_rw;
 GRANT UPDATE ("code_hash", "attempts", "sends", "last_sent_at", "expires_at", "state",
               "appointment_id", "settled_at", "client_name", "client_phone", "client_email",
-              "message")
+              "message", "email_hash", "ip_hash")
   ON "booking"."public_hold" TO booking_rw;
+
+-- The internal Booking job (review #164): the businesses with something to clean, across RLS (only
+-- the ids; the job then works in each business's own context, as booking_rw). Same pattern as
+-- support.auto_close_due.
+CREATE OR REPLACE FUNCTION booking.public_hold_cleanup_due(p_limit INTEGER)
+RETURNS TABLE (organization_id UUID)
+LANGUAGE sql
+STABLE
+SECURITY DEFINER
+SET search_path = pg_catalog, pg_temp
+AS $$
+  SELECT DISTINCT h.organization_id
+    FROM booking.public_hold h
+   WHERE (h.state = 'pending' AND h.expires_at <= now())
+      OR ((h.email_hash IS NOT NULL OR h.ip_hash IS NOT NULL)
+          AND h.created_at < now() - INTERVAL '24 hours')
+   ORDER BY h.organization_id
+   LIMIT LEAST(GREATEST(COALESCE(p_limit, 1), 1), 500);
+$$;
+
+REVOKE ALL ON FUNCTION booking.public_hold_cleanup_due(INTEGER) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION booking.public_hold_cleanup_due(INTEGER) TO booking_rw;

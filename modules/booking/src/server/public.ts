@@ -3,6 +3,7 @@ import type { PoolClient } from 'pg';
 import type { TenantContext } from '@ventora/access';
 import { commercialEntitlementProvider } from '@ventora/commercial';
 import { Conflict, InvalidInput, ResourceNotFound } from '@ventora/errors';
+import { guardBulkOp } from '@ventora/db-kit';
 import { deliverEmail } from '@ventora/notifications';
 import { findPublicOrganization, listLocations } from '@ventora/organizations';
 import { makePublicContext } from './actor';
@@ -267,14 +268,19 @@ function normalizeMessage(value: unknown): string | null {
   return m;
 }
 
-/** A pending hold whose 10 minutes passed: expired, its personal data wiped. */
-async function settleExpired(client: PoolClient): Promise<void> {
-  await client.query(
+/**
+ * The pending holds whose 10 minutes passed: expired, their personal data wiped. Called at each
+ * public request and by the job booking.public-hold-cleanup; returns how many.
+ */
+export async function settleExpired(client: PoolClient): Promise<number> {
+  guardBulkOp('booking.public_hold.settle_expired', { state: 'pending', expired: true });
+  const res = await client.query(
     `UPDATE booking.public_hold
         SET state = 'expired', settled_at = now(),
             client_name = NULL, client_phone = NULL, client_email = NULL, message = NULL
       WHERE state = 'pending' AND expires_at <= now()`,
   );
+  return res.rowCount ?? 0;
 }
 
 async function settle(
@@ -377,8 +383,11 @@ export async function startPublicBooking(
   const limited = await withBookingTx(ctx.organizationId, async (client) => {
     await settleExpired(client);
     const { rows } = await client.query<{ ip: number; email: number }>(
-      `SELECT count(*) FILTER (WHERE ip_hash = $1 AND created_at > now() - interval '1 hour')::int AS ip,
-              count(*) FILTER (WHERE email_hash = $2 AND created_at > now() - interval '1 day')::int AS email
+      // only the rows that still have their hashes (the job sets them to NULL after 24 hours)
+      `SELECT count(*) FILTER (WHERE ip_hash IS NOT NULL AND ip_hash = $1
+                                 AND created_at > now() - interval '1 hour')::int AS ip,
+              count(*) FILTER (WHERE email_hash IS NOT NULL AND email_hash = $2
+                                 AND created_at > now() - interval '1 day')::int AS email
          FROM booking.public_hold
         WHERE created_at > now() - interval '1 day'`,
       [ipHash, emailHash],

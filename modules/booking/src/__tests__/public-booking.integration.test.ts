@@ -2,7 +2,7 @@ import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { Pool } from 'pg';
 import { configureAccess } from '@ventora/access';
 import { closeAuditPools } from '@ventora/audit';
-import { Conflict, InvalidInput, ResourceNotFound } from '@ventora/errors';
+import { Conflict, Forbidden, InvalidInput, ResourceNotFound } from '@ventora/errors';
 import { CaptureEmailAdapter, setEmailChannel } from '@ventora/notifications';
 import {
   blockClient,
@@ -19,6 +19,13 @@ import {
   verifyPublicBooking,
 } from '../contract/index.js';
 import { closeBookingPool } from '../server/db.js';
+import { makePublicContext } from '../server/actor.js';
+import { listAppointmentsInOrg, moveAppointmentInOrg } from '../server/appointments.js';
+import { getFreeSlotsInOrg } from '../server/availability.js';
+import { eraseClientInOrg } from '../server/clients.js';
+import { recordPaymentInOrg } from '../server/payments.js';
+import { runPublicHoldCleanupJob } from '../server/public-cleanup.js';
+import { createServiceInOrg } from '../server/services.js';
 
 /*
  * Lot B.11a on a real Postgres: the public booking page, without a session. The business comes
@@ -457,6 +464,102 @@ describe('B.11a — protection and T1', () => {
         verifyPublicBooking({ slug: B.slug, holdId: hold.holdId, code: lastCode(who.email) }),
       ),
     ).toBeInstanceOf(ResourceNotFound);
+  });
+});
+
+describe('review #164 — the job booking.public-hold-cleanup', () => {
+  it('an expired hold with no other public request: expired, no personal data, after the job', async () => {
+    const { hold } = await start(A.slug, 6, visitor(), {}, 30);
+    await adminQuery(
+      `UPDATE booking.public_hold SET expires_at = now() - interval '1 second' WHERE id = $1`,
+      [hold.holdId],
+    );
+    const report = await runPublicHoldCleanupJob();
+    expect(report.failed).toEqual([]);
+    expect(report.expired).toBeGreaterThanOrEqual(1);
+    const [row] = await adminQuery(
+      `SELECT state, settled_at IS NOT NULL AS settled, client_name, client_phone, client_email,
+              message
+         FROM booking.public_hold WHERE id = $1`,
+      [hold.holdId],
+    );
+    expect(row).toEqual({
+      state: 'expired',
+      settled: true,
+      client_name: null,
+      client_phone: null,
+      client_email: null,
+      message: null,
+    });
+  });
+
+  it('the hashes older than 24 hours become NULL; the newer ones stay (and still count)', async () => {
+    const old = await start(A.slug, 16, visitor(), {}, 30);
+    const fresh = await start(A.slug, 13, visitor(), {}, 30);
+    await adminQuery(
+      `UPDATE booking.public_hold SET created_at = now() - interval '25 hours' WHERE id = $1`,
+      [old.hold.holdId],
+    );
+    const report = await runPublicHoldCleanupJob();
+    expect(report.failed).toEqual([]);
+    const rows = await adminQuery<{
+      id: string;
+      email_hash: string | null;
+      ip_hash: string | null;
+    }>(`SELECT id, email_hash, ip_hash FROM booking.public_hold WHERE id = ANY($1::uuid[])`, [
+      [old.hold.holdId, fresh.hold.holdId],
+    ]);
+    const byId = new Map(rows.map((r) => [r.id, r]));
+    expect(byId.get(old.hold.holdId)).toMatchObject({ email_hash: null, ip_hash: null });
+    expect(byId.get(fresh.hold.holdId)!.email_hash).toMatch(/^[0-9a-f]{64}$/);
+    expect(byId.get(fresh.hold.holdId)!.ip_hash).toMatch(/^[0-9a-f]{64}$/);
+  });
+});
+
+describe('review #164 — the public context can call only the public steps', () => {
+  it('the Hub’s steps refuse a context made by makePublicContext', async () => {
+    const done = await start(A.slug, 7, visitor(), {}, 30).then(({ hold, who }) =>
+      verifyPublicBooking({ slug: A.slug, holdId: hold.holdId, code: lastCode(who.email) }),
+    );
+    const [{ client_id: clientId }] = await adminQuery<{ client_id: string }>(
+      `SELECT client_id FROM booking.appointment WHERE id = $1`,
+      [done.appointmentId],
+    );
+    const ctx = makePublicContext(A.org, A.owner.userId);
+    const refused = [
+      createServiceInOrg(ctx, { name: 'Vopsit', durationMinutes: 60, priceMinor: 1 } as never),
+      moveAppointmentInOrg(ctx, 'all', done.appointmentId, { startsAt: iso(at(8, 30)) }),
+      recordPaymentInOrg(ctx, 'all', {
+        appointmentId: done.appointmentId,
+        amountMinor: 100,
+        method: 'cash',
+      }),
+      eraseClientInOrg(ctx, clientId),
+      listAppointmentsInOrg(ctx, { from: iso(at(0)), to: iso(at(23)) } as never),
+    ];
+    for (const p of refused) expect(await errorOf(p)).toBeInstanceOf(Forbidden);
+    // nothing happened: same time, no payment, the client not erased
+    const [a] = await adminQuery<{ starts_at: Date; client_name: string }>(
+      `SELECT starts_at, client_name FROM booking.appointment WHERE id = $1`,
+      [done.appointmentId],
+    );
+    expect(a!.starts_at.getTime()).toBe(at(7, 30).getTime());
+    expect(a!.client_name).not.toBe('Client șters');
+    const payments = await adminQuery(
+      `SELECT 1 FROM booking.appointment_payment WHERE appointment_id = $1`,
+      [done.appointmentId],
+    );
+    expect(payments).toHaveLength(0);
+    // a public step still works with the same context
+    const date = localDate(at(9));
+    const slots = await getFreeSlotsInOrg(ctx, {
+      serviceId: svcA,
+      staffMemberId: staffA,
+      from: date,
+      to: nextDate(date),
+      mode: 'online',
+    });
+    expect(slots.days.length).toBeGreaterThan(0);
   });
 });
 

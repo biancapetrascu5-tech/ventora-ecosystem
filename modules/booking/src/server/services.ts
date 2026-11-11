@@ -22,6 +22,7 @@ import {
   type PriceKind,
   type ServiceInputParams,
 } from './validation';
+import { hubOnly } from './actor';
 
 /*
  * Lot B.1 — the service catalog (BOOKING.md §3 B.1; ARCHITECTURE §6.4 c). Every call runs in one
@@ -218,6 +219,7 @@ export async function listServicesInOrg(
   ctx: TenantContext,
   options: { includeArchived?: boolean } = {},
 ): Promise<Service[]> {
+  hubOnly(ctx);
   return withBookingTx(
     ctx.organizationId,
     async (client) => {
@@ -241,6 +243,7 @@ export async function listBookableServices(ctx: TenantContext): Promise<Service[
 
 /** One service, archived or not (old appointments keep showing it). */
 export async function getServiceInOrg(ctx: TenantContext, serviceId: string): Promise<Service> {
+  hubOnly(ctx);
   const id = requireId(serviceId);
   const service = await withBookingTx(
     ctx.organizationId,
@@ -255,6 +258,7 @@ export async function listServiceCategoriesInOrg(
   ctx: TenantContext,
   options: { includeArchived?: boolean } = {},
 ): Promise<ServiceCategory[]> {
+  hubOnly(ctx);
   return withBookingTx(
     ctx.organizationId,
     async (client) => {
@@ -277,6 +281,7 @@ export async function createServiceInOrg(
   params: ServiceInputParams,
   doneBy?: DoneByInput,
 ): Promise<Service> {
+  hubOnly(ctx);
   const input = validateService(params);
   const id = uuidv7();
   try {
@@ -331,6 +336,7 @@ export async function updateServiceInOrg(
   params: ServiceInputParams,
   doneBy?: DoneByInput,
 ): Promise<Service> {
+  hubOnly(ctx);
   const id = requireId(serviceId);
   const input = validateService(params);
   try {
@@ -393,6 +399,7 @@ export async function updateServiceInOrg(
 
 /** Archives a service (§6.4 c) and publishes booking.service.archived; twice changes nothing. */
 export async function archiveServiceInOrg(ctx: TenantContext, serviceId: string): Promise<Service> {
+  hubOnly(ctx);
   const id = requireId(serviceId);
   return withBookingTx(ctx.organizationId, async (client, exec) => {
     const { rows } = await client.query<{ archived_at: Date; name: string }>(
@@ -430,6 +437,7 @@ export async function archiveServiceInOrg(ctx: TenantContext, serviceId: string)
  * its category FOR SHARE, so an archiving or a restore of the category cannot cross the decision.
  */
 export async function restoreServiceInOrg(ctx: TenantContext, serviceId: string): Promise<Service> {
+  hubOnly(ctx);
   const id = requireId(serviceId);
   try {
     return await withBookingTx(ctx.organizationId, async (client, exec) => {
@@ -486,6 +494,7 @@ export async function createServiceCategoryInOrg(
   ctx: TenantContext,
   params: { name: string; sortOrder?: number },
 ): Promise<ServiceCategory> {
+  hubOnly(ctx);
   const name = normalizeName('name', params.name, LIMITS.categoryName);
   const sortOrder = normalizeSortOrder(params.sortOrder);
   const id = uuidv7();
@@ -517,6 +526,7 @@ export async function updateServiceCategoryInOrg(
   categoryId: string,
   params: { name: string; sortOrder?: number },
 ): Promise<ServiceCategory> {
+  hubOnly(ctx);
   const id = requireId(categoryId);
   const name = normalizeName('name', params.name, LIMITS.categoryName);
   const sortOrder = normalizeSortOrder(params.sortOrder);
@@ -557,6 +567,7 @@ export async function reorderServiceCategoriesInOrg(
   ctx: TenantContext,
   categoryIds: unknown,
 ): Promise<ServiceCategory[]> {
+  hubOnly(ctx);
   if (
     !Array.isArray(categoryIds) ||
     categoryIds.length > MAX_REORDER ||
@@ -613,6 +624,7 @@ export async function archiveServiceCategoryInOrg(
   ctx: TenantContext,
   categoryId: string,
 ): Promise<ServiceCategory> {
+  hubOnly(ctx);
   const id = requireId(categoryId);
   return withBookingTx(ctx.organizationId, async (client, exec) => {
     const { rows: locked } = await client.query<CategoryRow>(
@@ -650,6 +662,7 @@ export async function restoreServiceCategoryInOrg(
   ctx: TenantContext,
   categoryId: string,
 ): Promise<ServiceCategory> {
+  hubOnly(ctx);
   const id = requireId(categoryId);
   try {
     return await withBookingTx(ctx.organizationId, async (client, exec) => {

@@ -7,6 +7,7 @@ import { Conflict, InvalidInput, ResourceNotFound } from '@ventora/errors';
 import { withBookingTx } from './db';
 import { decryptAnswer, encryptAnswer } from './medical-crypto';
 import { isUuid } from './validation';
+import { hubOnly } from './actor';
 
 /*
  * Lot B.8 — the health fields (BOOKING.md §3 B.8, D-B-14; design BookingHealthFields). Only on the
@@ -173,6 +174,7 @@ export async function listMedicalFieldsInOrg(
   ctx: TenantContext,
   includeArchived = false,
 ): Promise<MedicalField[]> {
+  hubOnly(ctx);
   await requireMedical(ctx);
   return withBookingTx(
     ctx.organizationId,
@@ -192,6 +194,7 @@ export async function createMedicalFieldInOrg(
   ctx: TenantContext,
   input: FieldInput,
 ): Promise<MedicalField> {
+  hubOnly(ctx);
   await requireMedical(ctx);
   const f = validateField(input);
   return withBookingTx(ctx.organizationId, async (client, exec) => {
@@ -224,6 +227,7 @@ export async function updateMedicalFieldInOrg(
   fieldId: unknown,
   input: FieldInput,
 ): Promise<MedicalField> {
+  hubOnly(ctx);
   await requireMedical(ctx);
   const id = requireId(fieldId);
   const f = validateField(input);
@@ -254,6 +258,7 @@ export async function archiveMedicalFieldInOrg(
   ctx: TenantContext,
   fieldId: unknown,
 ): Promise<MedicalField> {
+  hubOnly(ctx);
   await requireMedical(ctx);
   const id = requireId(fieldId);
   return withBookingTx(ctx.organizationId, async (client, exec) => {
@@ -310,6 +315,7 @@ export async function recordMedicalConsentInOrg(
   ctx: TenantContext,
   params: { clientId: unknown; textVersion: unknown },
 ): Promise<MedicalConsent> {
+  hubOnly(ctx);
   await requireMedical(ctx);
   const clientId = requireId(params.clientId);
   if (
@@ -363,6 +369,7 @@ export async function saveMedicalAnswersInOrg(
   ctx: TenantContext,
   params: { clientId: unknown; answers: unknown },
 ): Promise<void> {
+  hubOnly(ctx);
   await requireMedical(ctx);
   const clientId = requireId(params.clientId);
   if (
@@ -412,6 +419,7 @@ export async function getMedicalAnswersInOrg(
   ctx: TenantContext,
   clientIdRaw: unknown,
 ): Promise<MedicalAnswers> {
+  hubOnly(ctx);
   await requireMedical(ctx);
   const clientId = requireId(clientIdRaw);
   return withBookingTx(ctx.organizationId, async (client, exec) => {
@@ -447,6 +455,7 @@ export async function withdrawMedicalConsentInOrg(
   ctx: TenantContext,
   clientIdRaw: unknown,
 ): Promise<void> {
+  hubOnly(ctx);
   await requireMedical(ctx);
   const clientId = requireId(clientIdRaw);
   await withBookingTx(ctx.organizationId, async (client, exec) => {

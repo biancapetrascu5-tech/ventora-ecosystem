@@ -624,8 +624,9 @@ model PublicHold {
   clientEmail     String?   @map("client_email") @db.VarChar(254)
   clientLocale    String    @default("ro") @map("client_locale") @db.VarChar(5)
   message         String?   @db.VarChar(500)
-  emailHash       String    @map("email_hash") @db.Char(64)
-  ipHash          String    @map("ip_hash") @db.Char(64)
+  /// review #164: set to NULL after 24 hours (booking.public-hold-cleanup)
+  emailHash       String?   @map("email_hash") @db.Char(64)
+  ipHash          String?   @map("ip_hash") @db.Char(64)
   codeHash        String    @map("code_hash") @db.Char(64)
   attempts        Int       @default(0) @db.SmallInt
   sends           Int       @default(1) @db.SmallInt

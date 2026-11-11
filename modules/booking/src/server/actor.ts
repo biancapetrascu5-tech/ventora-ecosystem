@@ -1,4 +1,5 @@
 import type { TenantContext } from '@ventora/access';
+import { Forbidden } from '@ventora/errors';
 
 /*
  * Lot B.11a — who writes: a Hub user (authorize()) or the client on the public page. The public
@@ -34,4 +35,13 @@ export function isPublicContext(ctx: TenantContext): boolean {
 /** The user id to store (created_by_user_id, actor_user_id): null for the public page. */
 export function actorUserId(ctx: TenantContext): string | null {
   return isPublicContext(ctx) ? null : ctx.userId;
+}
+
+/**
+ * Review #164 (point 3): the Hub's steps refuse a public context, so the public page can call only
+ * the public steps (the page, the free times, the client, the appointment). The context asks as the
+ * owner only to read whether a member may take appointments (core/access); DE VALIDAT TEHNIC.
+ */
+export function hubOnly(ctx: TenantContext): void {
+  if (publicContexts.has(ctx)) throw new Forbidden();
 }

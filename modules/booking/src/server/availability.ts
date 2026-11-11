@@ -10,6 +10,7 @@ import { staffForService } from './staff-services';
 import { durationWithin, effectiveTermsFor } from './terms';
 import { readCalendarStaff, staffEligibility, staffLocalDays, type CalendarStaff } from './staff';
 import { isUuid, LIMITS } from './validation';
+import { hubOnly } from './actor';
 
 /*
  * Lot B.5 — the free slots (BOOKING.md §3 B.5; plan reports/2026-11-10_1115_plan-booking-b5.md,
@@ -545,6 +546,7 @@ export async function findFirstFreeSlotInOrg(
   ctx: TenantContext,
   query: SlotQuery & { from?: unknown },
 ): Promise<FirstFreeSlot | null> {
+  hubOnly(ctx);
   const timeZone = await getOrganizationTimeZone(ctx);
   const today = await localToday(ctx, timeZone);
   const fromRaw = query.from === undefined ? today : requireLocalDate('from', query.from);

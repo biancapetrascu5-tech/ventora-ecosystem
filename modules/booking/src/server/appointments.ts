@@ -18,7 +18,7 @@ import { withBookingTx } from './db';
 import { staffFreeAtInOrg } from './availability';
 import { requiredResources } from './resources';
 import { locationFilter } from './locations';
-import { actorUserId, isPublicContext } from './actor';
+import { actorUserId, isPublicContext, hubOnly } from './actor';
 import { doesService, staffForService } from './staff-services';
 import { durationWithin, effectiveTermsFor, type EffectiveTerms } from './terms';
 import { staffDayIntervals, staffEligibility } from './staff';
@@ -660,6 +660,7 @@ export async function setBookingSettingsInOrg(
     bufferMin?: unknown;
   },
 ): Promise<BookingSettings> {
+  hubOnly(ctx);
   return tx(ctx, async (client, exec) => {
     const current = await readSettings(client);
     const next = {
@@ -846,6 +847,7 @@ async function insertClient(
 }
 
 export async function createClientInOrg(ctx: TenantContext, input: ClientInput): Promise<Client> {
+  hubOnly(ctx);
   return tx(ctx, async (client, exec) => toClient(await insertClient(client, exec, ctx, input)));
 }
 
@@ -854,6 +856,7 @@ export async function updateClientInOrg(
   clientId: unknown,
   input: ClientInput,
 ): Promise<Client> {
+  hubOnly(ctx);
   const id = requireId(clientId);
   return tx(ctx, async (client, exec) => {
     const current = (
@@ -892,6 +895,7 @@ export async function searchClientsInOrg(
   ctx: TenantContext,
   params: { query?: unknown; limit?: unknown },
 ): Promise<Client[]> {
+  hubOnly(ctx);
   const limit =
     params.limit === undefined
       ? APPOINTMENT_LIMITS.clientSearchMax
@@ -1368,6 +1372,7 @@ export async function moveAppointmentInOrg(
   appointmentId: unknown,
   input: MoveAppointmentInput,
 ): Promise<Appointment> {
+  hubOnly(ctx);
   const id = requireId(appointmentId);
   if (
     input.startsAt === undefined &&
@@ -1474,6 +1479,7 @@ export async function updateAppointmentNoteInOrg(
   appointmentId: unknown,
   teamNote: unknown,
 ): Promise<Appointment> {
+  hubOnly(ctx);
   const id = requireId(appointmentId);
   const note = normalizeOptionalText('teamNote', teamNote, APPOINTMENT_LIMITS.teamNote);
   return tx(ctx, async (client, exec) => {
@@ -1520,6 +1526,7 @@ export async function changeAppointmentStatusInOrg(
   appointmentId: unknown,
   to: Exclude<AppointmentStatus, 'cancelled' | 'awaiting_payment' | 'unconfirmed'>,
 ): Promise<Appointment> {
+  hubOnly(ctx);
   const id = requireId(appointmentId);
   return tx(ctx, async (client, exec) => {
     const row = await readAppointment(client, id, true);
@@ -1566,6 +1573,7 @@ export async function cancelAppointmentInOrg(
   appointmentId: unknown,
   by: unknown,
 ): Promise<Appointment> {
+  hubOnly(ctx);
   const id = requireId(appointmentId);
   if (by !== 'client' && by !== 'business') throw new InvalidInput('by', 'invalid');
   return tx(ctx, async (client, exec) => {
@@ -1623,6 +1631,7 @@ export async function correctAppointmentStatusInOrg(
   appointmentId: unknown,
   input: { status: unknown; reason: unknown },
 ): Promise<Appointment> {
+  hubOnly(ctx);
   const id = requireId(appointmentId);
   if (!CORRECTORS.has(ctx.role)) throw new Forbidden();
   if (input.status !== 'completed' && input.status !== 'no_show') {
@@ -1673,6 +1682,7 @@ export async function getAppointmentInOrg(
   ctx: TenantContext,
   appointmentId: unknown,
 ): Promise<AppointmentDetail> {
+  hubOnly(ctx);
   const id = requireId(appointmentId);
   return tx(
     ctx,
@@ -1711,6 +1721,7 @@ export async function listAppointmentHistoryInOrg(
   ctx: TenantContext,
   appointmentId: unknown,
 ): Promise<AppointmentHistoryItem[]> {
+  hubOnly(ctx);
   const id = requireId(appointmentId);
   return tx(
     ctx,
@@ -1761,6 +1772,7 @@ export async function listAppointmentsInOrg(
   ctx: TenantContext,
   input: ListAppointmentsInput,
 ): Promise<{ items: Appointment[]; total: number }> {
+  hubOnly(ctx);
   const { from, to } = requireRange(input.from, input.to);
   const staffMemberId = input.staffMemberId === undefined ? null : requireId(input.staffMemberId);
   // B.10: the calendar of one location (with the appointments that have none, so none is hidden)
@@ -1828,6 +1840,7 @@ export async function addTimeBlockInOrg(
   staffMemberId: unknown,
   input: TimeBlockInput,
 ): Promise<TimeBlock> {
+  hubOnly(ctx);
   const staffId = requireId(staffMemberId);
   const b = validateBlock(input);
   return tx(ctx, async (client, exec) => {
@@ -1872,6 +1885,7 @@ export async function updateTimeBlockInOrg(
   timeBlockId: unknown,
   input: TimeBlockInput,
 ): Promise<TimeBlock> {
+  hubOnly(ctx);
   const id = requireId(timeBlockId);
   const b = validateBlock(input);
   return tx(ctx, async (client, exec) => {
@@ -1897,6 +1911,7 @@ export async function archiveTimeBlockInOrg(
   scope: AppointmentScope,
   timeBlockId: unknown,
 ): Promise<TimeBlock> {
+  hubOnly(ctx);
   const id = requireId(timeBlockId);
   return tx(ctx, async (client, exec) => {
     const row = await readBlock(client, id);
@@ -1917,6 +1932,7 @@ export async function listTimeBlocksInOrg(
   ctx: TenantContext,
   input: { from: unknown; to: unknown; staffMemberId?: unknown },
 ): Promise<TimeBlock[]> {
+  hubOnly(ctx);
   const { from, to } = requireRange(input.from, input.to);
   const staffMemberId = input.staffMemberId === undefined ? null : requireId(input.staffMemberId);
   return tx(
@@ -1954,6 +1970,7 @@ export async function countUpcomingAppointmentsInOrg(
   ctx: TenantContext,
   params: { serviceId?: unknown; staffMemberId?: unknown; fromDate?: unknown; toDate?: unknown },
 ): Promise<UpcomingAppointments> {
+  hubOnly(ctx);
   const serviceId = params.serviceId === undefined ? null : requireId(params.serviceId);
   const staffMemberId = params.staffMemberId === undefined ? null : requireId(params.staffMemberId);
   if (!serviceId && !staffMemberId) throw new InvalidInput('staffMemberId', 'required');
@@ -1995,6 +2012,7 @@ export async function countUpcomingByStaffInOrg(
   ctx: TenantContext,
   staffMemberIds: string[],
 ): Promise<Map<string, number>> {
+  hubOnly(ctx);
   if (staffMemberIds.length === 0) return new Map();
   return tx(
     ctx,
