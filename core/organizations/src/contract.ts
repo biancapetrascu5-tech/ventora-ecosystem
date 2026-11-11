@@ -35,6 +35,7 @@ import {
 } from '@ventora/notifications';
 import { writeOutboxEvent } from '@ventora/db-kit';
 import { InvitationNewLinkRequestedV1 } from '@ventora/contracts';
+import { InvalidInput } from '@ventora/errors';
 
 // E21–E25 are best_effort (D2): the organization operation never fails because of the audit write.
 async function auditBestEffort(event: AuditEvent): Promise<void> {
@@ -109,6 +110,10 @@ async function sendInvitationEmail(
     );
   }
 }
+
+// Lot 5.10c: the business's country, ISO 3166-1 alpha-2 (the CHECK organization_country_check)
+export const DEFAULT_COUNTRY = 'RO';
+const COUNTRY_RE = /^[A-Z]{2}$/;
 
 // Slug: 2–63 lowercase alphanumeric / hyphens, no leading/trailing hyphen
 const SLUG_RE = /^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$/;
@@ -218,10 +223,14 @@ export async function resolveOrgContext(params: {
 // founder_create_organization is SECURITY DEFINER — caller needs EXECUTE, not org_rw.
 export async function createOrganizationAsFounder(
   ctx: FounderContext,
-  params: { name: string; slug: string; ownerEmail: string },
+  params: { name: string; slug: string; ownerEmail: string; country?: string },
 ): Promise<{ organizationId: string; invitationToken: string }> {
   const name = params.name.trim();
   if (!name || name.length > 255) throw new InvalidNameError();
+
+  // Lot 5.10c (decision 11.11.2026): ISO 3166-1 alpha-2, default RO; the CHECK refuses the rest
+  const country = (params.country ?? DEFAULT_COUNTRY).trim().toUpperCase();
+  if (!COUNTRY_RE.test(country)) throw new InvalidInput('country', 'country:invalid');
 
   if (!SLUG_RE.test(params.slug)) throw new InvalidSlugError();
   if (RESERVED_SLUGS.has(params.slug)) throw new ReservedSlugError();
@@ -237,6 +246,7 @@ export async function createOrganizationAsFounder(
     slug: params.slug,
     ownerEmail,
     tokenHash,
+    country,
   });
 
   // E-4, after the commit: an email that cannot leave never undoes the organization.
@@ -429,17 +439,18 @@ export async function setOrganizationStatusInTx(
 
 async function createOrganizationTx(
   ctx: FounderContext,
-  params: { name: string; slug: string; ownerEmail: string; tokenHash: string },
+  params: { name: string; slug: string; ownerEmail: string; tokenHash: string; country: string },
 ): Promise<{ organizationId: string; invitationId: string }> {
   const { name, ownerEmail, tokenHash } = params;
   return withFounderClient(async (client) => {
     try {
-      // E20 (mode required, D2): organization + invitation + audit row in one transaction
+      // E20 (mode required, D2): organization + invitation + organization.created (outbox, 5.10c)
+      // + audit row in one transaction
       await client.query('BEGIN');
       const { rows } = await client.query<{ organization_id: string; invitation_id: string }>(
         `SELECT organization_id, invitation_id
-       FROM organizations.founder_create_organization($1, $2, $3, $4, $5::uuid)`,
-        [name, params.slug, ownerEmail, tokenHash, ctx.founderId],
+       FROM organizations.founder_create_organization($1, $2, $3, $4, $5::uuid, $6)`,
+        [name, params.slug, ownerEmail, tokenHash, ctx.founderId, params.country],
       );
       if (!rows[0]) throw new Error('[organizations] founder_create_organization returned no rows');
       await appendAuditEventInTx(pgExecutor(client), {

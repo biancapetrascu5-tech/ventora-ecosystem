@@ -297,6 +297,7 @@ jobs:
           $PSQL -v ON_ERROR_STOP=1 -f core/organizations/prisma/migrations/20261106000001_organizations_timezone/migration.sql
           $PSQL -v ON_ERROR_STOP=1 -f core/organizations/prisma/migrations/20261111000001_organizations_locations/migration.sql
           $PSQL -v ON_ERROR_STOP=1 -f core/organizations/prisma/migrations/20261111000002_organizations_public_lookup/migration.sql
+          $PSQL -v ON_ERROR_STOP=1 -f core/organizations/prisma/migrations/20261111000003_organizations_country/migration.sql
           # Lot 4.3: the first consumer (invitation.new_link_requested) writes notifications
           $PSQL -v ON_ERROR_STOP=1 -f core/notifications/prisma/migrations/20261101000008_notifications_init/migration.sql
           $PSQL -v ON_ERROR_STOP=1 -f core/notifications/prisma/migrations/20261101000009_notification_preference_topic/migration.sql

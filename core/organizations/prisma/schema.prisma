@@ -69,6 +69,9 @@ model Organization {
   // Lot C.0 (D-B-4 a): the business's time zone, IANA; the trigger organization_time_zone_guard
   // (migration only) refuses an unknown name. Per location later (C.1).
   timeZone             String             @default("Europe/Bucharest") @map("time_zone") @db.VarChar(64)
+  // Lot 5.10c (decision 11.11.2026): ISO 3166-1 alpha-2, default RO; CHECK organization_country_check
+  // (migration only) accepts two capital letters. Sent in organization.created v1
+  country              String             @default("RO") @db.Char(2)
   createdAt            DateTime           @default(now()) @map("created_at") @db.Timestamptz
   updatedAt            DateTime           @updatedAt @map("updated_at") @db.Timestamptz
 

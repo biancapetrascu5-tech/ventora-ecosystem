@@ -874,6 +874,27 @@ export const CrmCompanyRestoredV1 = defineEvent({
   schema: z.object({ companyId: z.uuid() }).strict(),
 });
 
+/**
+ * `organization.created` v1 (Lot 5.10c, decizia din 11.11.2026): o afacere nouă, cu țara ei
+ * (ISO 3166-1 alpha-2, implicit RO). Îl scrie în outbox funcția
+ * `organizations.founder_create_organization`, în aceeași tranzacție cu afacerea. Agregatele
+ * zilnice Growth îl vor consuma; până atunci nu are consumator și se marchează livrat. Doar id-ul și
+ * țara, fără date personale. Nu e semnal Growth (lista D5-7 rămâne neschimbată).
+ */
+export const OrganizationCreatedV1 = defineEvent({
+  type: 'organization.created',
+  version: 1,
+  sourceApp: 'platform',
+  growthSafe: false,
+  withoutConsumer: 'complete',
+  schema: z
+    .object({
+      organizationId: z.uuid(),
+      country: z.string().regex(/^[A-Z]{2}$/),
+    })
+    .strict(),
+});
+
 export const EVENT_CATALOG: readonly EventDefinition[] = [
   InvitationNewLinkRequestedV1 as EventDefinition,
   SubscriptionVersionChangeScheduledV1 as EventDefinition,
@@ -919,6 +940,7 @@ export const EVENT_CATALOG: readonly EventDefinition[] = [
   CrmCompanyUpdatedV1 as EventDefinition,
   CrmCompanyDeletedV1 as EventDefinition,
   CrmCompanyRestoredV1 as EventDefinition,
+  OrganizationCreatedV1 as EventDefinition,
 ];
 
 /** Definiția unui eveniment după tip și versiune; null dacă nu e în catalog. */

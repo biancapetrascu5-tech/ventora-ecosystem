@@ -25,11 +25,12 @@ import {
   getOrganizationTimeZone,
   isValidTimeZone,
   DEFAULT_TIME_ZONE,
+  DEFAULT_COUNTRY,
 } from '../index.js';
 import type { OrgContext } from '../index.js';
 import { closeAuditPools } from '@ventora/audit';
 import { UUID_V7, writeOutboxEvent } from '@ventora/db-kit';
-import { QuotaThresholdV1 } from '@ventora/contracts';
+import { OrganizationCreatedV1, QuotaThresholdV1 } from '@ventora/contracts';
 import { InvalidInput } from '@ventora/errors';
 import {
   BILLING_KINDS,
@@ -136,6 +137,121 @@ describe('T2.2 createOrganizationAsFounder', () => {
     await adminQuery(`DELETE FROM organizations.organization WHERE id = $1`, [
       result.organizationId,
     ]);
+  });
+});
+
+// Lot 5.10c (decision 11.11.2026): the country, and organization.created v1 in the same transaction
+describe('5.10c — the country and organization.created', () => {
+  async function createdEvents(organizationId: string) {
+    return adminQuery(
+      `SELECT type, version, source_app, resource_id, organization_id::text AS organization_id,
+              status, payload
+         FROM organizations.outbox_events
+        WHERE type = 'organization.created' AND organization_id = $1::uuid`,
+      [organizationId],
+    );
+  }
+
+  it('default RO: the column and exactly one event with only the id and the country', async () => {
+    const { organizationId } = await createOrganizationAsFounder(
+      { founderId: newUuid() },
+      { name: 'Country default', slug: `country-ro-${Date.now()}`, ownerEmail: 'o@test.com' },
+    );
+    try {
+      const [org] = await adminQuery(
+        `SELECT country FROM organizations.organization WHERE id = $1`,
+        [organizationId],
+      );
+      expect(org.country).toBe(DEFAULT_COUNTRY);
+      expect(DEFAULT_COUNTRY).toBe('RO');
+      const events = await createdEvents(organizationId);
+      expect(events).toHaveLength(1);
+      expect(events[0]).toMatchObject({
+        type: 'organization.created',
+        version: 1,
+        source_app: 'platform',
+        resource_id: organizationId,
+        organization_id: organizationId,
+        status: 'pending',
+      });
+      expect(events[0].payload).toEqual({ organizationId, country: 'RO' });
+      // the payload is exactly the contract (strict: nothing else, nothing personal)
+      expect(OrganizationCreatedV1.parse(events[0].payload)).toEqual(events[0].payload);
+      expect(JSON.stringify(events[0].payload)).not.toContain('o@test.com');
+    } finally {
+      await adminQuery(`DELETE FROM organizations.organization WHERE id = $1`, [organizationId]);
+    }
+  });
+
+  it('a given country is stored upper case and sent in the event', async () => {
+    const { organizationId } = await createOrganizationAsFounder(
+      { founderId: newUuid() },
+      {
+        name: 'Country IT',
+        slug: `country-it-${Date.now()}`,
+        ownerEmail: 'o@test.com',
+        country: 'it',
+      },
+    );
+    try {
+      const [org] = await adminQuery(
+        `SELECT country FROM organizations.organization WHERE id = $1`,
+        [organizationId],
+      );
+      expect(org.country).toBe('IT');
+      const events = await createdEvents(organizationId);
+      expect(events.map((e) => e.payload)).toEqual([{ organizationId, country: 'IT' }]);
+    } finally {
+      await adminQuery(`DELETE FROM organizations.organization WHERE id = $1`, [organizationId]);
+    }
+  });
+
+  it('an invalid country is refused before anything is written', async () => {
+    const slug = `country-bad-${Date.now()}`;
+    for (const country of ['ROU', 'R', '1A', 'R-']) {
+      await expect(
+        createOrganizationAsFounder(
+          { founderId: newUuid() },
+          { name: 'Country bad', slug, ownerEmail: 'o@test.com', country },
+        ),
+      ).rejects.toBeInstanceOf(InvalidInput);
+    }
+    expect(
+      await adminQuery(`SELECT id FROM organizations.organization WHERE slug = $1`, [slug]),
+    ).toHaveLength(0);
+  });
+
+  it('the CHECK refuses anything but two capital letters, whoever writes', async () => {
+    const { organizationId } = await createOrganizationAsFounder(
+      { founderId: newUuid() },
+      { name: 'Country check', slug: `country-chk-${Date.now()}`, ownerEmail: 'o@test.com' },
+    );
+    try {
+      for (const bad of ['ro', 'R1', '  ']) {
+        await expect(
+          adminQuery(`UPDATE organizations.organization SET country = $2 WHERE id = $1`, [
+            organizationId,
+            bad,
+          ]),
+        ).rejects.toMatchObject({ code: '23514' });
+      }
+    } finally {
+      await adminQuery(`DELETE FROM organizations.organization WHERE id = $1`, [organizationId]);
+    }
+  });
+
+  it('founder_runtime gets no right on the outbox: only the function writes the event', async () => {
+    const [row] = await adminQuery(
+      `SELECT has_table_privilege('founder_runtime', 'organizations.outbox_events', 'INSERT') AS ins,
+              has_table_privilege('founder_runtime', 'organizations.outbox_events', 'SELECT') AS sel,
+              has_function_privilege('founder_runtime',
+                'organizations.founder_create_organization(text, text, text, text, uuid, text)',
+                'EXECUTE') AS exec_new,
+              to_regprocedure(
+                'organizations.founder_create_organization(text, text, text, text, uuid)'
+              ) IS NULL AS old_dropped`,
+    );
+    expect(row).toEqual({ ins: false, sel: false, exec_new: true, old_dropped: true });
   });
 });
 
@@ -603,6 +719,15 @@ describe('T3.7 — organization audit events', () => {
 
   it('E20 required — audit write fails → organization is not created', async () => {
     const slug = `audit-e20-fail-${Date.now()}`;
+    const countCreated = async () =>
+      Number(
+        (
+          await adminQuery(
+            `SELECT count(*) AS n FROM organizations.outbox_events WHERE type = 'organization.created'`,
+          )
+        )[0].n,
+      );
+    const eventsBefore = await countCreated();
     await adminQuery(`ALTER FUNCTION ${APPEND_EVENT_SIGNATURE} RENAME TO append_event_disabled`);
     try {
       await expect(
@@ -620,6 +745,8 @@ describe('T3.7 — organization audit events', () => {
       slug,
     ]);
     expect(orgs).toHaveLength(0);
+    // 5.10c: organization.created rolls back with the organization (same transaction)
+    expect(await countCreated()).toBe(eventsBefore);
   });
 
   it('E21 / E22 / E23 — invite, resend, revoke', async () => {
