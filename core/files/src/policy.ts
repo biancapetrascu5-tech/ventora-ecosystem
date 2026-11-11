@@ -5,10 +5,27 @@ import { InvalidInput } from '@ventora/errors';
  * malware scanning until Documents. Checked on the server twice: when the upload link is asked
  * for (the declared type and size) and after the upload (the real size and the first bytes), so a
  * client that lies about the file is refused anyway. The database repeats the limits (CHECK).
+ *
+ * Lot C.4e (the founder, 11.11.2026: CR.11b reads the import file through core/files): text/csv
+ * too, but ONLY for the ClientDesk import (`crm` / `import`), never as an attachment. A CSV has
+ * no signature, so its first bytes must look like UTF-8 text: no control characters, no binary
+ * signature, no markup. The importer reads the whole file again and refuses what is not CSV.
  */
 
-export const ALLOWED_CONTENT_TYPES = ['image/png', 'image/jpeg', 'application/pdf'] as const;
+export const ALLOWED_CONTENT_TYPES = [
+  'image/png',
+  'image/jpeg',
+  'application/pdf',
+  'text/csv',
+] as const;
 export type AllowedContentType = (typeof ALLOWED_CONTENT_TYPES)[number];
+
+/** The only owner that may keep a CSV (C.4e): the import file of ClientDesk (CR.11b). */
+export const CSV_OWNER = { module: 'crm', resourceType: 'import' } as const;
+
+export function mayKeepCsv(owner: { module: string; resourceType: string }): boolean {
+  return owner.module === CSV_OWNER.module && owner.resourceType === CSV_OWNER.resourceType;
+}
 
 /** 10 MB (FileUpload: „Maximum 10 MB per fișier”). */
 export const MAX_FILE_BYTES = 10 * 1024 * 1024;
@@ -31,10 +48,20 @@ export function isAllowedContentType(value: string): value is AllowedContentType
   return (ALLOWED_CONTENT_TYPES as readonly string[]).includes(value);
 }
 
-/** The declared type and size, before any link is given. */
-export function checkDeclaredFile(input: { contentType: string; sizeBytes: number }): void {
+/**
+ * The declared type and size, before any link is given. A CSV needs its owner (C.4e): without
+ * one, or for any other owner, it is refused like any other type outside D4-17.
+ */
+export function checkDeclaredFile(input: {
+  contentType: string;
+  sizeBytes: number;
+  owner?: { module: string; resourceType: string };
+}): void {
   if (!isAllowedContentType(input.contentType)) {
     throw new InvalidInput('contentType', 'Only PNG, JPG or PDF files (D4-17)');
+  }
+  if (input.contentType === 'text/csv' && !(input.owner && mayKeepCsv(input.owner))) {
+    throw new InvalidInput('contentType', 'A CSV is accepted only for the ClientDesk import');
   }
   if (!Number.isSafeInteger(input.sizeBytes) || input.sizeBytes <= 0) {
     throw new InvalidInput('sizeBytes');
@@ -50,7 +77,30 @@ export function sniffContentType(head: Uint8Array): AllowedContentType | null {
   if (starts(0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a)) return 'image/png';
   if (starts(0xff, 0xd8, 0xff)) return 'image/jpeg';
   if (starts(0x25, 0x50, 0x44, 0x46, 0x2d)) return 'application/pdf'; // %PDF-
+  if (looksLikeCsvText(head)) return 'text/csv';
   return null;
+}
+
+/**
+ * C.4e: the first bytes of a CSV — UTF-8 (an optional BOM), only printable characters, tabs and
+ * line ends, and not markup (`<`), so an HTML page, an SVG, a ZIP (an .xlsx), a UTF-16 file or
+ * any binary is not a CSV. The last character may be cut by the end of the head.
+ */
+function looksLikeCsvText(head: Uint8Array): boolean {
+  const bom = head[0] === 0xef && head[1] === 0xbb && head[2] === 0xbf ? 3 : 0;
+  const bytes = head.subarray(bom);
+  if (bytes.length === 0) return false;
+  let text: string;
+  try {
+    text = new TextDecoder('utf-8', { fatal: true }).decode(bytes, { stream: true });
+  } catch {
+    return false;
+  }
+  // eslint-disable-next-line no-control-regex
+  if (/[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f]/.test(text)) return false;
+  // only blanks could hide markup after the head
+  const start = text.trimStart();
+  return start.length > 0 && !start.startsWith('<');
 }
 
 /** Why a stored file is refused after the upload, or null when it is what was declared. */
