@@ -760,6 +760,8 @@ describe('B.1 — the role and the grants (§2.3)', () => {
       'medical_field',
       'outbox_events',
       'processed_events',
+      // B.11a: the public booking holds
+      'public_hold',
       'resource',
       'service',
       'service_category',
