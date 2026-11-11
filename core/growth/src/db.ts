@@ -78,6 +78,14 @@ export function withAppCatalogTx<T>(fn: (client: PoolClient) => Promise<T>): Pro
   return inTransaction('app', { organizationId: null, readOnly: true }, fn);
 }
 
+/**
+ * The jobs across businesses (the automatic stop, Lot 5.8), as growth_rw, no organization: they
+ * see only the catalog and act through the SECURITY DEFINER functions granted to growth_rw.
+ */
+export function withAppJobTx<T>(fn: (client: PoolClient) => Promise<T>): Promise<T> {
+  return inTransaction('app', { organizationId: null }, fn);
+}
+
 /** Founder: the catalog (null) or one business, as growth_founder. */
 export function withFounderTx<T>(
   organizationId: string | null,

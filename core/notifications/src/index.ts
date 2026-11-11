@@ -23,11 +23,12 @@ export {
   renderOwnerRecovery,
   renderSupportSessionOpened,
   renderFounderDisputeAlert,
+  renderFounderGrowthStopAlert,
 } from './templates/index';
 export type { RenderedEmail, MembershipRoleName } from './templates/index';
 export { sendOwnerRecoveryNotice } from './owner-recovery';
 export { sendSupportSessionNotice } from './support-session';
-export { sendFounderDisputeAlert } from './founder-alerts';
+export { sendFounderDisputeAlert, sendFounderGrowthStopAlert } from './founder-alerts';
 // Lot 4.3: the notification model, the templates, sending and delivery
 export { NotificationCatalog, NOTIFICATION_TEMPLATES, defaultCatalog } from './model/catalog';
 export type {

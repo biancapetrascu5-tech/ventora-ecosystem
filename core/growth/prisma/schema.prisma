@@ -107,6 +107,7 @@ model Campaign {
   maxImpressionsPerUser Int?      @map("max_impressions_per_user")
   status                String    @default("draft") @db.VarChar(16)
   publishedAt           DateTime? @map("published_at") @db.Timestamptz
+  activatedAt           DateTime? @map("activated_at") @db.Timestamptz
   stoppedAt             DateTime? @map("stopped_at") @db.Timestamptz
   stopReason            String?   @map("stop_reason") @db.VarChar(32)
   stopNote              String?   @map("stop_note")

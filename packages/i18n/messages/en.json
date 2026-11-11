@@ -157,6 +157,15 @@
       "next": "The decision is manual: open the dispute in Stripe and submit the evidence before the deadline.",
       "button": "Respond in Stripe",
       "why": "You receive this email because your address gets the Ventora Systems team alerts."
+    },
+    "founderGrowthStopAlert": {
+      "subject": "Growth · the campaign “{campaign}” stopped by itself",
+      "eyebrow": "Alert for the Ventora Systems team",
+      "title": "A Growth campaign went above the disturbance threshold",
+      "lead": "The campaign “{campaign}” had {rate} dismissals and opt-outs per impression ({disturbing} of {impressions}), above the 5% threshold. We stopped it.",
+      "next": "Restarting is manual: check the offer, the audience and the texts in Founder · Growth before you start it again.",
+      "button": "Open Growth · Control",
+      "why": "You receive this e-mail because your address gets the Ventora Systems team alerts."
     }
   },
   "support": {

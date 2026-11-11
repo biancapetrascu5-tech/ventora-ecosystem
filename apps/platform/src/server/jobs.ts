@@ -22,7 +22,11 @@ import {
 } from '@ventora/commercial';
 import './billing-config';
 import { bookingQuotaRefundConsumer } from '@ventora/booking';
-import { growthConversionConsumer, growthSignalConsumer } from '@ventora/growth';
+import {
+  growthConversionConsumer,
+  growthSignalConsumer,
+  runGrowthAutoStopJob,
+} from '@ventora/growth';
 import { summarizeError } from '@ventora/errors';
 import { getNotificationContactsInTx } from '@ventora/identity';
 import {
@@ -166,6 +170,15 @@ export const platformJobs = new JobRegistry()
   .register(
     outboxDispatchJob({ pool: jobsPool, sources: OUTBOX_SOURCES, consumers: platformConsumers }),
   )
+  // Lotul 5.8 (P22, D5-8): campaniile Growth peste 5% deranj (cel puțin 100 de afișări) se opresc
+  // singure; oprirea e auditată, iar echipa primește e-mailul pe FOUNDER_ALERTS_EMAIL (D5-11 b)
+  .register({
+    id: 'growth.auto-stop',
+    owner: 'Lot 5.8',
+    description: 'Oprirea automată a campaniilor Growth peste pragul de deranjare',
+    trigger: { cron: '*/15 * * * *' },
+    run: async () => failOnErrors('growth.auto-stop', await runGrowthAutoStopJob()),
+  })
   // Lotul 3.3: rezervările rămase după 15 minute, fiecare în contextul organizației din rândul ei
   // (ARCHITECTURE §8.3); o rezervare nereconciliată face job-ul să eșueze (Sentry, reîncercare).
   .register({

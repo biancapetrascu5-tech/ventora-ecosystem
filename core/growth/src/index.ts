@@ -79,3 +79,11 @@ export {
   type GrowthControlView,
   type GrowthPlacementView,
 } from './founder';
+export {
+  recordOptOut,
+  runGrowthAutoStopJob,
+  type AutoStopReport,
+  type AutoStopped,
+  type GrowthStopAlert,
+} from './autostop';
+export { withAppJobTx } from './db';

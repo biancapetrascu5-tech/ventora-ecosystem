@@ -469,6 +469,8 @@ for (const migration of [
   'core/ai/prisma/migrations/20261104100001_ai_init/migration.sql',
   // Lot 5.5: Growth Engine v1 (schema growth, rolurile growth_rw / growth_founder)
   'core/growth/prisma/migrations/20261110000001_growth_init/migration.sql',
+  // Lot 5.8: the automatic stop (opt_out, activated_at, the disturbance functions)
+  'core/growth/prisma/migrations/20261110000002_growth_auto_stop/migration.sql',
   // Aplicațiile (modules/*): găsite singure, după tot Core-ul (booking, crm și cele care vin).
   // Un lot de modul nu mai atinge acest fișier.
   ...moduleMigrations(),

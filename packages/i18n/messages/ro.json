@@ -157,6 +157,15 @@
       "next": "Decizia e manuală: deschide disputa în Stripe și trimite dovezile înainte de termen.",
       "button": "Răspunde în Stripe",
       "why": "Primești acest e-mail pentru că adresa ta primește alertele echipei Ventora Systems."
+    },
+    "founderGrowthStopAlert": {
+      "subject": "Growth · campania „{campaign}” s-a oprit singură",
+      "eyebrow": "Alertă pentru echipa Ventora Systems",
+      "title": "O campanie Growth a depășit pragul de deranjare",
+      "lead": "Campania „{campaign}” a avut {rate} de respingeri și opriri din preferințe la afișări ({disturbing} din {impressions}), peste pragul de 5 %. Am oprit-o.",
+      "next": "Repornirea e manuală: verifică oferta, audiența și textele în Founder · Growth înainte să o pornești din nou.",
+      "button": "Deschide Growth · Control",
+      "why": "Primești acest e-mail pentru că adresa ta primește alertele echipei Ventora Systems."
     }
   },
   "support": {
