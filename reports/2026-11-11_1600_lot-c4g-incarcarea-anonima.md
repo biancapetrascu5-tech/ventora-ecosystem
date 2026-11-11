@@ -63,7 +63,9 @@ C.4f (#175) a intrat primul pe main. Rebase-ul a avut conflicte în `files.ts`: 
 
 ## Verificări rulate local
 
-VERIF_C4G
+- `files-only.mjs` (după rebase-ul peste C.4f): garda de drift `files` OK; integrarea `files` **27/27** (C.4f + C.4g); crm `notes` (atașamentele prin core/files) **9/9**;
+- suita booking nu s-a mai rulat pe #176 (decizia Biancăi, 12.11: lotul atinge doar `core/files`; CI-ul o rulează);
+- `pnpm format:check`, `lint`, `typecheck`, `test`, `build`, `i18n:check`, `guards:verify`: toate exit 0.
 
 ## Abateri
 
