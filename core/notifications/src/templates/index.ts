@@ -312,7 +312,7 @@ export function renderFounderDisputeAlert(params: {
 
 /**
  * Lot 5.8 (P22, D5-11 b): a Growth campaign stopped by itself above the 5 % disturbance threshold.
- * To the Ventora team (FOUNDER_ALERTS_EMAIL), in Romanian like the other team alerts, until the
+ * To the Ventora Systems team (FOUNDER_ALERTS_EMAIL), in Romanian like the other team alerts, until the
  * Founder bell exists (D4-29).
  */
 export function renderFounderGrowthStopAlert(params: {
