@@ -1,24 +1,24 @@
 # HANDOFF — agentul Booking (EasyBook)
 
-Actualizat pe 2026-11-11, la ~15:40, la închiderea zilei. Main la `6b6d3e0` (merge-ul #174; #164 și #174 sunt pe main).
+Actualizat pe 2026-11-12. Main la `e76be1c` (merge-ul #175, C.4f).
 
-## 1. PR-urile deschise și ce e doar local
+## 1. PR-urile deschise
 
-| Ce | Ramura / worktree | Local | GitHub | Stare |
+| PR | Ramura / worktree | HEAD | Bază | Stare |
 |---|---|---|---|---|
-| **#176** C.4g — încărcarea anonimă în `core/files` (poza clientului la rezervare) | `feat/c4g-files-public-upload` / `C:\Projects\ventora-c4g` | `73ecfc0` | `73ecfc0` (pushed) | **SQL aprobat de Bianca** (review 11.11). Baza `main`. Urmează rebase peste C.4f, vezi §3 |
-| **B.12** — întrebările la rezervare + poza + ultimul răspuns pe fișa clientului | `feat/b12-booking-custom-forms` / `C:\Projects\ventora-b12` | `eaeb020` | **nepushed** (doar local, peste #176) | gata și testat local; **nu se împinge** până nu e #176 rebazat peste C.4f (decizia Biancăi) |
+| **#176** C.4g — încărcarea anonimă în `core/files` | `feat/c4g-files-public-upload` / `C:\Projects\ventora-c4g` | `a55d451` (pushed) | `main` | SQL aprobat. Rebazat peste C.4f; `deleteAnonymousFiles` scoasă, ștergerea pozelor trece prin `deleteFileAsSystem` / `deleteOwnerFilesAsSystem` (C.4f). Local: `files` 27/27, crm `notes` 9/9, lanțul de verificări verde |
+| **#179** [SQL de revizuit] B.12 — întrebările la rezervare, poza, ultimul răspuns pe fișa clientului | `feat/b12-booking-custom-forms` / `C:\Projects\ventora-b12` | `3a2c375` (pushed) | `feat/c4g-files-public-upload` (#176) | așteaptă review-ul migrării `…20261111000005_booking_forms`. Local: `b-files` 62/62, lanțul de verificări verde |
 
-**PR-uri deschise ale mele:** doar #176 (limita e 3).
+**După merge-ul #176:** rebazezi #179 pe `main`, schimbi baza în `main`, apoi `push --force-with-lease`.
 
-**Îmbinate pe 11.11:** #138 (B.24), #157 (B.10), #164 (B.11a), #174 (B.11b).
+**Îmbinate:** #138 (B.24), #157 (B.10), #164 (B.11a), #174 (B.11b), #175 (C.4f, agentul UI).
 
 ## 2. Worktree-urile active (un agent pe folder)
 
 | Worktree | Ramura | Stare |
 |---|---|---|
 | `C:\Projects\ventora-c4g` | `feat/c4g-files-public-upload` | curat, sincronizat (#176) |
-| `C:\Projects\ventora-b12` | `feat/b12-booking-custom-forms` | curat, commit local, fără upstream |
+| `C:\Projects\ventora-b12` | `feat/b12-booking-custom-forms` | curat, sincronizat (#179) |
 | `C:\Projects\ventora-handoff` | `docs/handoff-booking` | acest fișier |
 
 **Worktree-uri care se pot șterge:**
@@ -30,26 +30,13 @@ Actualizat pe 2026-11-11, la ~15:40, la închiderea zilei. Main la `6b6d3e0` (me
 - `ventora-lot-3.6` și `ventora-lot-4.6` au PNG-uri în `reports/`, deci nu se șterg fără verificare.
 - **Nu atinge `C:\Projects\ventora-ecosystem-ui`** (agentul UI). Citirea designurilor din `docs/design/_incoming/latest` e permisă.
 
-## 3. Ce urmează mâine (în ordine)
+## 3. Ce urmează
 
-**1. După ce #175 (C.4f, agentul UI) intră pe main** (era planificat la valul de 18:00 pe 11.11; verifică întâi cu `gh pr view 175`):
-- rebazezi #176 peste main. Conflictele așteptate: `core/files/src/files.ts`, `index.ts`, `__tests__/files.integration.test.ts`. **Păstrezi ce e pe main și adaugi încărcarea anonimă.**
-- **înlocuiești `deleteAnonymousFiles`** cu ștergerea de sistem din C.4f, ca să rămână o singură cale de ștergere în `core/files`:
-  - `deleteFileAsSystem(orgId, { fileId, module: 'booking', reason })`;
-  - `deleteOwnerFilesAsSystem(orgId, owner, reason)`;
-  - ambele scriu audit `system` în categoria modulului, iar `booking` e deja în `OWNER_AUDIT_CATEGORY`;
-  - `listAnonymousFiles` rămâne (citire).
-- în C.4f, `toInfo` (folosit de `readFileAsSystem`) aruncă pentru un rând anonim (ResourceNotFound), ceea ce e în regulă;
-- testele: `files-only.mjs` (`files` + crm `notes`, cu `WITH_CONSUMERS=1`), apoi booking local, apoi `push --force-with-lease`.
+**1.** Review-ul și corecturile pentru #176 și #179. După merge-ul #176, rebazezi #179 pe `main`.
 
-**2. B.12 peste noul #176:**
-- rebase;
-- în `modules/booking/src/server/public-cleanup.ts` (`cleanHoldPhotos`): în loc de `deleteAnonymousFiles`, `listAnonymousFiles` + `deleteFileAsSystem` pe fiecare fișier nepăstrat (reason, de ex. `public_hold_expired`);
-- în `server/forms.ts` (`deleteErasedPhotosInOrg`): poate folosi tot `deleteFileAsSystem` (reason `client_erased`), iar jobul de curățare poate reîncerca pozele marcate (`wiped_at` setat, `photo_deleted_at` NULL). Așa dispare dependența de C.4f notată în raportul B.12. Actualizezi raportul (secțiunea „Dependența de C.4f” și lista de bifat).
-- testele lotului (`b-files.mjs`: forms, public-booking, services, manage-booking, clients; apoi `b4-only.mjs`), lanțul de verificări;
-- push și PR **„[SQL de revizuit] B.12 …”** cu baza `feat/c4g-files-public-upload` (#176), sau `main` dacă #176 a intrat între timp. Îi trimiți Biancăi numărul.
+**2.** Lotul următor, cu cel mult 3 PR-uri deschise.
 
-**3. Ordinea cerută de Bianca după B.12:**
+**Ordinea cerută de Bianca după B.12:**
 1. B.9, programările complexe (S126: `BookingRecurring`, `BookingMultiService`, `BookingWaitlist`, `BookingClasses`, `BookingPackages`), câte un sublot B.9a–e;
 2. B.13, e-mailurile automate (`BookingClientEmails`; ține cont de C.5 `core/consent`, #155);
 3. B.23, codurile promoționale (S127, `BookingPromoCodes`);
@@ -84,7 +71,7 @@ Actualizat pe 2026-11-11, la ~15:40, la închiderea zilei. Main la `6b6d3e0` (me
 - „ultimul răspuns pe fișa clientului”: doar owner / admin / application_manager (`booking:admin`), acoperit de `erase_client`;
 - **auditul B.12 e aprobat:** `booking.settings_updated` / `booking.appointment_updated`, doar cu id-uri;
 - UI-ul `BookingCustomForms` se face într-un lot separat (aprobat);
-- **#176 (C.4g): SQL aprobat.** C.4f (#175) intră primul; apoi #176 se rebazează și trece pe ștergerea de sistem din C.4f.
+- **#176 (C.4g): SQL aprobat.** Rebazat peste C.4f: o singură cale de ștergere în `core/files` (`deleteFileAsSystem` / `deleteOwnerFilesAsSystem`). B.12 o folosește pentru holdurile închise (`public_hold_settled`), pentru `eraseClient` (`client_erased`) și pentru reîncercarea din job.
 
 **Date medicale (B.8):**
 - **D-B-16:** afacerea medicală e marcată prin funcția `booking.medical`, pornită de Founder (override de tip `feature`).
@@ -113,6 +100,14 @@ Actualizat pe 2026-11-11, la ~15:40, la închiderea zilei. Main la `6b6d3e0` (me
 **GDPR:** orice lot care adaugă date personale ale clientului extinde `booking.erase_client` și testul de ștergere.
 
 ## 5. Reguli de lucru
+
+**Reguli pentru Docker și memorie (Bianca, 12.11; memoria laptopului e la limită):**
+- înainte de orice test cu Docker: `docker ps`. Dacă rulează containerele altui worktree (`ventora-test-…`), aștepți 5 minute și verifici din nou. Nu pornești testele în același timp cu alt agent;
+- după fiecare rulare oprești containerele tale (`pnpm test:db:down`, cu `DOCKER_PATH`);
+- **suitele complete (toată integrarea unui modul, de ex. `b4-only.mjs`) nu se rulează local**: le rulează CI-ul. Local rulezi doar testele lotului (`b-files.mjs` cu `FILES=…`, `files-only.mjs`);
+- un PR care atinge doar `core/files` nu mai rulează local suita booking;
+- pașii lungi (lanțul de verificări) se rulează pas cu pas, în prim-plan: o comandă din fundal poate fi oprită de Claude Code când memoria e mică. Dacă se întâmplă, nu repornești singur: raportezi;
+- dacă Docker Desktop e oprit (după somnul laptopului), îl pornești doar cu ≥ 2–3 GB liberi.
 
 **Reguli noi de azi (Bianca, 11.11):**
 - pauza la PR-uri noi s-a ridicat;
