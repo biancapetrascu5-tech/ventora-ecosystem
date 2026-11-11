@@ -964,6 +964,26 @@ export const OrganizationMemberRoleChangedV1 = defineEvent({
     .strict(),
 });
 
+/**
+ * `commercial.application.stopped` v1 (Lot 5.10c, decizia din 10:41): o aplicație a ieșit din
+ * abonament (linia încheiată de echipă, `endApplicationLine`; rămâne în istoric). Scris în
+ * aceeași tranzacție cu încheierea liniei. Agregatele Growth îl vor consuma; până atunci se
+ * marchează livrat. Doar aplicația, fără date personale sau sume. Nu e semnal Growth.
+ */
+export const CommercialApplicationStoppedV1 = defineEvent({
+  type: 'commercial.application.stopped',
+  version: 1,
+  sourceApp: 'platform',
+  growthSafe: false,
+  withoutConsumer: 'complete',
+  schema: z
+    .object({
+      applicationId: z.string().min(1),
+      via: z.enum(['founder']),
+    })
+    .strict(),
+});
+
 export const EVENT_CATALOG: readonly EventDefinition[] = [
   InvitationNewLinkRequestedV1 as EventDefinition,
   SubscriptionVersionChangeScheduledV1 as EventDefinition,
@@ -1014,6 +1034,7 @@ export const EVENT_CATALOG: readonly EventDefinition[] = [
   OrganizationMemberAddedV1 as EventDefinition,
   OrganizationMemberRemovedV1 as EventDefinition,
   OrganizationMemberRoleChangedV1 as EventDefinition,
+  CommercialApplicationStoppedV1 as EventDefinition,
 ];
 
 /** Definiția unui eveniment după tip și versiune; null dacă nu e în catalog. */

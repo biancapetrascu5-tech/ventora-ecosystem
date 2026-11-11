@@ -2,6 +2,7 @@ import type { PoolClient } from 'pg';
 import type { BillingInterval, Currency, PurchaseMode } from '@ventora/contracts';
 import {
   CommercialApplicationActivatedV1,
+  CommercialApplicationStoppedV1,
   SubscriptionVersionChangeScheduledV1,
 } from '@ventora/contracts';
 import { Conflict, InvalidInput, ResourceNotFound } from '@ventora/errors';
@@ -1235,13 +1236,21 @@ export async function endApplicationLine(
   const organizationId = uuid('organizationId', params.organizationId);
   const lineId = uuid('lineId', params.lineId);
   await withFounderWrite(organizationId, async (client, exec) => {
-    const { rowCount } = await client.query(
+    const { rows: endedLine } = await client.query<{ application_id: string }>(
       `UPDATE commercial.subscription_application
           SET ended_at = CURRENT_TIMESTAMP, ended_by_founder_id = $2
-        WHERE id = $1 AND ended_at IS NULL`,
+        WHERE id = $1 AND ended_at IS NULL
+        RETURNING application_id`,
       [lineId, founder.userId],
     );
-    if (!rowCount) throw new ResourceNotFound('Active application line not found');
+    if (!endedLine[0]) throw new ResourceNotFound('Active application line not found');
+    // Lot 5.10c: commercial.application.stopped v1, in the same transaction (only the application)
+    await writeOutboxEvent(client, 'commercial', CommercialApplicationStoppedV1, {
+      organizationId,
+      sourceApp: CommercialApplicationStoppedV1.sourceApp,
+      resourceId: lineId,
+      payload: { applicationId: endedLine[0].application_id, via: 'founder' },
+    });
     const ended = await client.query<{ id: string }>(
       `UPDATE commercial.discount SET ended_at = CURRENT_TIMESTAMP, ended_by_founder_id = $2
         WHERE subscription_application_id = $1 AND ended_at IS NULL RETURNING id`,
