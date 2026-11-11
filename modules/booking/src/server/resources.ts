@@ -4,6 +4,7 @@ import type { TenantContext } from '@ventora/access';
 import { uuidv7 } from '@ventora/db-kit';
 import { Conflict, InvalidInput, ResourceNotFound } from '@ventora/errors';
 import { withBookingTx } from './db';
+import { bookingLocation } from './locations';
 import { isUuid, normalizeName, normalizeSortOrder } from './validation';
 
 /*
@@ -36,6 +37,8 @@ export type Resource = {
   /** „Câte programări simultan”. */
   units: number;
   sortOrder: number;
+  /** B.10: the location it stands at; null = every location. */
+  locationId: string | null;
   /** „Servicii care o cer”: the active services linked to it, in the catalog's order. */
   services: Array<{ id: string; name: string }>;
   archivedAt: Date | null;
@@ -50,6 +53,8 @@ export type ResourceInput = {
   /** The complete list of the services that need it (absent: unchanged on update, none on create). */
   serviceIds?: unknown;
   sortOrder?: unknown;
+  /** B.10: an active location id or null; on update, undefined keeps it. */
+  locationId?: unknown;
 };
 
 type ResourceRow = {
@@ -58,12 +63,14 @@ type ResourceRow = {
   kind: ResourceKind;
   units: number;
   sort_order: number;
+  location_id: string | null;
   archived_at: Date | null;
   created_at: Date;
   updated_at: Date;
 };
 
-const RESOURCE_COLUMNS = `id, name, kind, units, sort_order, archived_at, created_at, updated_at`;
+const RESOURCE_COLUMNS = `id, name, kind, units, sort_order, location_id, archived_at, created_at,
+  updated_at`;
 
 function requireId(id: unknown): string {
   // an id that is not a UUID cannot exist: the same answer as another business's id (T1)
@@ -164,6 +171,7 @@ async function toResources(client: PoolClient, rows: ResourceRow[]): Promise<Res
     kind: r.kind,
     units: r.units,
     sortOrder: r.sort_order,
+    locationId: r.location_id,
     services: services.get(r.id) ?? [],
     archivedAt: r.archived_at,
     createdAt: r.created_at,
@@ -269,15 +277,17 @@ export async function createResourceInOrg(
   const units = requireUnits(input.units);
   const serviceIds = input.serviceIds === undefined ? [] : requireServiceIds(input.serviceIds);
   const sortOrder = normalizeSortOrder(input.sortOrder);
+  const locationId =
+    input.locationId === undefined ? null : await bookingLocation(ctx, input.locationId);
   try {
     return await withBookingTx(ctx.organizationId, async (client, exec) => {
       const id = uuidv7();
       const { rows } = await client.query<ResourceRow>(
         `INSERT INTO booking.resource (id, organization_id, name, kind, units, sort_order,
-                                       created_by_user_id)
-         VALUES ($1, $2, $3, $4, $5, $6, $7)
+                                       location_id, created_by_user_id)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
          RETURNING ${RESOURCE_COLUMNS}`,
-        [id, ctx.organizationId, name, kind, units, sortOrder, ctx.userId],
+        [id, ctx.organizationId, name, kind, units, sortOrder, locationId, ctx.userId],
       );
       await setServices(client, ctx, id, serviceIds);
       await audit(exec, ctx, AuditActions.bookingResourceCreated, id, {
@@ -285,6 +295,7 @@ export async function createResourceInOrg(
         kind,
         units,
         serviceIds,
+        ...(locationId ? { locationId } : {}),
       });
       return (await toResources(client, rows))[0]!;
     });
@@ -304,15 +315,18 @@ export async function updateResourceInOrg(
   const kind = requireKind(input.kind);
   const units = requireUnits(input.units);
   const serviceIds = input.serviceIds === undefined ? null : requireServiceIds(input.serviceIds);
+  const locationId =
+    input.locationId === undefined ? undefined : await bookingLocation(ctx, input.locationId);
   try {
     return await withBookingTx(ctx.organizationId, async (client, exec) => {
       const before = await readResource(client, id, true);
       // an archived resource cannot be chosen for services (S124)
       if (before.archived_at && serviceIds !== null) throw new Conflict('resource_archived');
+      const location = locationId === undefined ? before.location_id : locationId;
       const { rows } = await client.query<ResourceRow>(
-        `UPDATE booking.resource SET name = $2, kind = $3, units = $4
+        `UPDATE booking.resource SET name = $2, kind = $3, units = $4, location_id = $5
           WHERE id = $1 RETURNING ${RESOURCE_COLUMNS}`,
-        [id, name, kind, units],
+        [id, name, kind, units, location],
       );
       const links =
         serviceIds === null
@@ -323,6 +337,7 @@ export async function updateResourceInOrg(
         ...(before.name !== name ? { nameChanged: true } : {}),
         ...(before.kind !== kind ? { kind: { from: before.kind, to: kind } } : {}),
         ...(before.units !== units ? { units: { from: before.units, to: units } } : {}),
+        ...(before.location_id !== location ? { locationChanged: true } : {}),
         ...(links.added.length ? { servicesAdded: links.added } : {}),
         ...(links.removed.length ? { servicesRemoved: links.removed } : {}),
       });
@@ -429,18 +444,24 @@ export async function reorderResourcesInOrg(
 
 // ── for B.3b and B.5 ────────────────────────────────────────────────────────────────────────
 
-/** The active resources an appointment for this service needs (archived ones are skipped). */
+/**
+ * The active resources an appointment for this service needs (archived ones are skipped). B.10: at
+ * a location, only the ones standing there or everywhere (location_id null); without a location
+ * (a business with one site, a member who works everywhere) all of them, as before.
+ */
 export async function requiredResources(
   client: PoolClient,
   serviceId: string,
+  locationId: string | null = null,
 ): Promise<Array<{ id: string; units: number }>> {
   const { rows } = await client.query<{ id: string; units: number }>(
     `SELECT r.id, r.units
        FROM booking.service_resource l
        JOIN booking.resource r ON r.id = l.resource_id
       WHERE l.service_id = $1 AND l.archived_at IS NULL AND r.archived_at IS NULL
+        AND ($2::uuid IS NULL OR r.location_id IS NULL OR r.location_id = $2::uuid)
       ORDER BY r.id`,
-    [serviceId],
+    [serviceId, locationId],
   );
   return rows;
 }

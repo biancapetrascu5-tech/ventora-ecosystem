@@ -994,6 +994,8 @@ describe('B.2 — the grants (plan §1.4)', () => {
       'sort_order',
       // B.2b: „Toate serviciile”
       'all_services',
+      // B.10: the member's location
+      'location_id',
       'archived_at',
       'archived_by_user_id',
       'updated_at',

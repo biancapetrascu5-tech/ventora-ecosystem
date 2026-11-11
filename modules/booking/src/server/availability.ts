@@ -72,6 +72,11 @@ export type SlotQuery = {
   staffMemberId: unknown;
   durationMinutes?: unknown;
   mode: SlotMode;
+  /**
+   * B.10: an active location already checked (server/locations.ts): only the members who work
+   * there or everywhere, and the resources standing there or everywhere. undefined = all.
+   */
+  locationId?: string;
 };
 
 // ── loading ─────────────────────────────────────────────────────────────────────────────────
@@ -178,8 +183,16 @@ async function candidateStaff(
   serviceId: string,
   choice: string | 'any',
   mode: SlotMode,
+  locationId?: string,
 ): Promise<CalendarStaff[]> {
-  const all = await readCalendarStaff(client, choice === 'any' ? null : choice);
+  const everyone = await readCalendarStaff(client, choice === 'any' ? null : choice);
+  // B.10: a member of another location, asked for directly, is refused; „any” skips them
+  const all = locationId
+    ? everyone.filter((s) => s.locationId === null || s.locationId === locationId)
+    : everyone;
+  if (choice !== 'any' && everyone.length > 0 && all.length === 0) {
+    throw new Conflict('staff_other_location');
+  }
   // B.2b (S129): only the members who do the service; one who doesn't, asked for directly, is refused
   const doing = new Set(await staffForService(client, serviceId));
   if (choice !== 'any' && all.length > 0 && !doing.has(choice)) {
@@ -220,7 +233,14 @@ async function load(
     ctx.organizationId,
     async (client) => {
       const service = await readService(client, serviceId);
-      const candidates = await candidateStaff(ctx, client, serviceId, choice, query.mode);
+      const candidates = await candidateStaff(
+        ctx,
+        client,
+        serviceId,
+        choice,
+        query.mode,
+        query.locationId,
+      );
       // B.2c: each member's own duration (the service's by default); online always the maximum
       const terms = await effectiveTermsFor(
         client,
@@ -318,7 +338,7 @@ async function load(
       }
 
       // B.3b (D-B5-8 = a): the resources the service needs and what uses them (any member)
-      const resources = await requiredResources(client, serviceId);
+      const resources = await requiredResources(client, serviceId, query.locationId ?? null);
       const resourceBusy = new Map<string, Array<{ startMin: number; endMin: number }>>();
       if (resources.length > 0) {
         const uses = (
@@ -565,7 +585,7 @@ export async function findFirstFreeSlotInOrg(
  */
 export async function staffFreeAtInOrg(
   ctx: TenantContext,
-  query: { serviceId: string; startsAt: Date; durationMinutes?: unknown },
+  query: { serviceId: string; startsAt: Date; durationMinutes?: unknown; locationId?: string },
 ): Promise<string[]> {
   const timeZone = await getOrganizationTimeZone(ctx);
   const at = await withBookingTx(
@@ -591,6 +611,7 @@ export async function staffFreeAtInOrg(
       staffMemberId: 'any',
       durationMinutes: query.durationMinutes,
       mode: 'team',
+      locationId: query.locationId,
     },
     local.date,
     local.date,

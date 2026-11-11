@@ -46,6 +46,8 @@ export type ResourceFields = {
   units: number;
   /** „Servicii care o cer”: the complete list (on update, absent = unchanged). */
   serviceIds?: string[];
+  /** B.10: where it stands (an active location); null = every location; on update absent = kept. */
+  locationId?: string | null;
 };
 export type ListResourcesParams = Session & { includeArchived?: boolean };
 export type ResourceIdParams = Session & { resourceId: string };
@@ -70,6 +72,7 @@ export async function createResource(params: CreateResourceParams): Promise<Reso
     units: params.units,
     serviceIds: params.serviceIds,
     sortOrder: params.sortOrder,
+    locationId: params.locationId,
   });
 }
 
@@ -80,6 +83,7 @@ export async function updateResource(params: UpdateResourceParams): Promise<Reso
     kind: params.kind,
     units: params.units,
     serviceIds: params.serviceIds,
+    locationId: params.locationId,
   });
 }
 
