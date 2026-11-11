@@ -8,6 +8,7 @@ import { createContactInOrg, type Contact, type ContactScope } from './contacts'
 import { createDealInOrg } from './deals';
 import { readSubject, requireMentionable } from './subjects';
 import { scoreLead, scoreSql, type LeadScore } from './scoring';
+import { pickSource } from './lead-sources';
 import {
   LIMITS,
   isUuid,
@@ -43,7 +44,16 @@ import {
  *   (a separate PR, proposal); the audit is here (ids, source, state, never the request's text).
  */
 
-export const LEAD_SOURCES = ['form', 'phone', 'email', 'referral', 'event', 'manual'] as const;
+/** CR.8b: 'custom' = the business's own source (lead.source_id). */
+export const LEAD_SOURCES = [
+  'form',
+  'phone',
+  'email',
+  'referral',
+  'event',
+  'manual',
+  'custom',
+] as const;
 export type LeadSource = (typeof LEAD_SOURCES)[number];
 /** What a person picks when adding a lead by hand: `form` is written by the forms (CR.17). */
 export const MANUAL_LEAD_SOURCES: readonly LeadSource[] = [
@@ -74,6 +84,7 @@ const CONTACT_SOURCE: Record<LeadSource, ContactSource> = {
   phone: 'manual',
   email: 'manual',
   manual: 'manual',
+  custom: 'manual',
 };
 
 export type Lead = {
@@ -83,6 +94,8 @@ export type Lead = {
   email: string | null;
   request: string | null;
   source: LeadSource;
+  /** CR.8b: the business's own source when `source` is 'custom'. */
+  sourceId: string | null;
   referredBy: string | null;
   budgetMinor: number | null;
   currency: string;
@@ -113,6 +126,7 @@ type LeadRow = {
   email: string | null;
   request: string | null;
   source: LeadSource;
+  source_id: string | null;
   referred_by: string | null;
   budget_minor: string | null;
   currency: string;
@@ -133,7 +147,7 @@ type LeadRow = {
   updated_at: Date;
 };
 
-const COLUMNS = `l.id, l.name, l.phone, l.email, l.request, l.source, l.referred_by, l.budget_minor,
+const COLUMNS = `l.id, l.name, l.phone, l.email, l.request, l.source, l.source_id, l.referred_by, l.budget_minor,
   l.currency, to_char(l.event_date, 'YYYY-MM-DD') AS event_date, l.owner_user_id, l.state,
   l.disqualify_reason, l.disqualify_note, l.closed_at, l.closed_by_user_id, l.converted_contact_id,
   l.asked_price, l.offer_opened_at,
@@ -149,6 +163,7 @@ function toLead(r: LeadRow): Lead {
     email: r.email,
     request: r.request,
     source: r.source,
+    sourceId: r.source_id,
     referredBy: r.referred_by,
     budgetMinor: r.budget_minor === null ? null : Number(r.budget_minor),
     currency: r.currency,
@@ -316,17 +331,21 @@ export async function createLeadInOrg(
 ): Promise<Lead> {
   const name = requiredText('name', input.name, LIMITS.name);
   const d = details(input);
-  const source =
-    input.source === undefined ? 'manual' : oneOf('source', MANUAL_LEAD_SOURCES, input.source);
   const owner =
     input.ownerUserId === undefined ? ctx.userId : await ownerFor(ctx, scope, input.ownerUserId);
   return withCrmTx(ctx.organizationId, async (client, exec) => {
     const id = uuidv7();
+    // CR.8b: a built-in source (not hidden, not `form`) or the business's own
+    const picked =
+      input.source === undefined
+        ? { source: 'manual', sourceId: null }
+        : await pickSource(client, ctx, input.source);
+    const source = picked.source;
     const { rows } = await client.query<LeadRow>(
       `INSERT INTO crm.lead AS l
          (id, organization_id, name, phone, email, request, source, referred_by, budget_minor,
-          event_date, owner_user_id, created_by_user_id, asked_price)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10::date, $11, $12, $13)
+          event_date, owner_user_id, created_by_user_id, asked_price, source_id)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10::date, $11, $12, $13, $14)
        RETURNING ${COLUMNS}`,
       [
         id,
@@ -342,6 +361,7 @@ export async function createLeadInOrg(
         owner,
         ctx.userId,
         d.askedPrice ?? false,
+        picked.sourceId,
       ],
     );
     await audit(exec, ctx, AuditActions.crmLeadCreated, id, { source, ownerUserId: owner });
@@ -373,25 +393,31 @@ export async function updateLeadInOrg(
   const values: Partial<Record<keyof typeof DETAIL_COLUMNS, unknown>> = {
     ...d,
     name: input.name === undefined ? undefined : requiredText('name', input.name, LIMITS.name),
-    source: input.source === undefined ? undefined : oneOf('source', LEAD_SOURCES, input.source),
   };
   const fields = (Object.keys(DETAIL_COLUMNS) as (keyof typeof DETAIL_COLUMNS)[]).filter(
-    (k) => values[k] !== undefined,
+    (k) => k !== 'source' && values[k] !== undefined,
   );
-  if (!fields.length) throw new InvalidInput('name', 'required');
+  if (!fields.length && input.source === undefined) throw new InvalidInput('name', 'required');
   return withCrmTx(ctx.organizationId, async (client, exec) => {
     const row = await writableLead(client, ctx, scope, id);
     if (row.state === 'converted') throw new Conflict('lead_converted');
-    // `form` stays the forms' (CR.17): a person keeps it or picks a manual source
-    if (values.source === 'form' && row.source !== 'form') {
-      throw new InvalidInput('source', 'invalid');
-    }
+    const params: unknown[] = fields.map((k) => values[k]);
     const sets = fields.map(
       (k, i) => `${DETAIL_COLUMNS[k]} = $${i + 2}${k === 'eventDate' ? '::date' : ''}`,
     );
+    // CR.8b: the same source stays (even `form`, the forms' own); a new one is picked as at creation
+    const unchanged =
+      input.source === row.source || (row.source === 'custom' && input.source === row.source_id);
+    if (input.source !== undefined && !unchanged) {
+      const picked = await pickSource(client, ctx, input.source);
+      params.push(picked.source, picked.sourceId);
+      sets.push(`source = $${params.length}`, `source_id = $${params.length + 1}`);
+      fields.push('source');
+    }
+    if (!sets.length) return toLead(row);
     const { rows } = await client.query<LeadRow>(
       `UPDATE crm.lead l SET ${sets.join(', ')} WHERE l.id = $1 RETURNING ${COLUMNS}`,
-      [id, ...fields.map((k) => values[k])],
+      [id, ...params],
     );
     await audit(exec, ctx, AuditActions.crmLeadUpdated, id, {
       fields: fields.map((k) => DETAIL_COLUMNS[k]),
@@ -714,7 +740,10 @@ function filters(ctx: TenantContext, scope: ContactScope, params: ListLeadsParam
   }
   if (params.state !== undefined)
     where.push(`l.state = ${arg(oneOf('state', LEAD_STATES, params.state))}`);
-  if (params.source !== undefined) {
+  if (params.source !== undefined && isUuid(params.source)) {
+    // CR.8b: the business's own source
+    where.push(`l.source_id = ${arg(params.source)}::uuid`);
+  } else if (params.source !== undefined) {
     where.push(`l.source = ${arg(oneOf('source', LEAD_SOURCES, params.source))}`);
   }
   if (params.owner === 'me') where.push(`l.owner_user_id = ${arg(ctx.userId)}::uuid`);

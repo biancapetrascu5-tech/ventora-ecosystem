@@ -4,6 +4,10 @@ export { getCrmSettings, setLeadScoring } from './settings';
 export type { CrmSettings } from './settings';
 export {
   assignContact,
+  createLeadSource,
+  deleteLeadSource,
+  listLeadSources,
+  updateLeadSource,
   exportCsv,
   createDeal,
   createLossReason,
@@ -100,6 +104,7 @@ export type {
   CreateContactParams,
   CustomField,
   CustomValues,
+  LeadSourceDef,
   LeadScore,
   ScoreReason,
   ExportEntity,

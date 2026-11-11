@@ -178,6 +178,7 @@ afterAll(async () => {
     'pipeline',
     'contact_merge',
     'lead',
+    'lead_source',
     'contact',
     'company',
     'settings',
