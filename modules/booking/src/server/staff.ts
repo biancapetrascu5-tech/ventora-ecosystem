@@ -7,6 +7,7 @@ import { getUserById } from '@ventora/identity';
 import { getOrganizationTimeZone, listMembers, resolveOrgContext } from '@ventora/organizations';
 import { servicesOfMembers, type MemberServices } from './staff-services';
 import { withBookingTx } from './db';
+import { bookingLocation } from './locations';
 import { isUuid } from './validation';
 import {
   DEFAULT_BUSINESS_WEEK,
@@ -62,6 +63,8 @@ export type StaffMember = {
   scheduleMode: 'business' | 'custom';
   bookableOnline: boolean;
   sortOrder: number;
+  /** B.10: the location the member works at; null = every location (or a single-site business). */
+  locationId: string | null;
   /** „Scos din calendar pe {date}” when set. */
   archivedAt: Date | null;
   createdAt: Date;
@@ -139,6 +142,7 @@ type StaffRow = {
   schedule_mode: 'business' | 'custom';
   bookable_online: boolean;
   sort_order: number;
+  location_id: string | null;
   archived_at: Date | null;
   created_at: Date;
   updated_at: Date;
@@ -153,7 +157,7 @@ type DayRow = {
 };
 
 const STAFF_COLUMNS = `id, user_id, display_name, schedule_mode, bookable_online, sort_order,
-  archived_at, created_at, updated_at`;
+  location_id, archived_at, created_at, updated_at`;
 
 function toStaff(r: StaffRow): StaffMember {
   return {
@@ -163,6 +167,7 @@ function toStaff(r: StaffRow): StaffMember {
     scheduleMode: r.schedule_mode,
     bookableOnline: r.bookable_online,
     sortOrder: r.sort_order,
+    locationId: r.location_id,
     archivedAt: r.archived_at,
     createdAt: r.created_at,
     updatedAt: r.updated_at,
@@ -624,9 +629,12 @@ export async function listStaffInOrg(ctx: TenantContext): Promise<StaffList> {
 export async function updateStaffMemberInOrg(
   ctx: TenantContext,
   staffMemberId: string,
-  params: { bookableOnline?: unknown; scheduleMode?: unknown },
+  params: { bookableOnline?: unknown; scheduleMode?: unknown; locationId?: unknown },
 ): Promise<StaffMember> {
   const id = requireId(staffMemberId);
+  // B.10: an active location of the business (checked through core/organizations), or null
+  const locationId =
+    params.locationId === undefined ? undefined : await bookingLocation(ctx, params.locationId);
   if (params.bookableOnline !== undefined && typeof params.bookableOnline !== 'boolean') {
     throw new InvalidInput('bookableOnline', 'invalid');
   }
@@ -650,14 +658,16 @@ export async function updateStaffMemberInOrg(
       );
       if ((rows[0]?.n ?? 0) < 7) throw new InvalidInput('scheduleMode', 'invalid');
     }
+    const location = locationId === undefined ? before.location_id : locationId;
     const changed: string[] = [];
     if (bookableOnline !== before.bookable_online) changed.push('bookableOnline');
     if (scheduleMode !== before.schedule_mode) changed.push('scheduleMode');
+    if (location !== before.location_id) changed.push('locationId');
     if (changed.length === 0) return toStaff(before);
     const { rows } = await client.query<StaffRow>(
-      `UPDATE booking.staff_member SET bookable_online = $2, schedule_mode = $3
+      `UPDATE booking.staff_member SET bookable_online = $2, schedule_mode = $3, location_id = $4
         WHERE id = $1 RETURNING ${STAFF_COLUMNS}`,
-      [id, bookableOnline, scheduleMode],
+      [id, bookableOnline, scheduleMode, location],
     );
     await audit(exec, ctx, AuditActions.bookingStaffUpdated, 'booking_staff_member', id, {
       changed,
@@ -1088,6 +1098,8 @@ export type CalendarStaff = {
   scheduleMode: 'business' | 'custom';
   bookableOnline: boolean;
   sortOrder: number;
+  /** B.10: null = every location. */
+  locationId: string | null;
 };
 
 /** The members in the calendar (not archived), or one of them, in the team's order. */
@@ -1108,6 +1120,7 @@ export async function readCalendarStaff(
     scheduleMode: r.schedule_mode,
     bookableOnline: r.bookable_online,
     sortOrder: r.sort_order,
+    locationId: r.location_id,
   }));
 }
 

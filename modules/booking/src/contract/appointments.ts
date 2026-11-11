@@ -86,6 +86,8 @@ export type CreateAppointmentParams = Session & {
   durationMinutes?: number;
   confirmed?: boolean;
   teamNote?: string | null;
+  /** B.10: for a member who works everywhere, or „any” at one location. */
+  locationId?: string;
 };
 export type AppointmentIdParams = Session & { appointmentId: string };
 export type MoveAppointmentParams = AppointmentIdParams & {
@@ -107,6 +109,8 @@ export type ListAppointmentsParams = Session & {
   query?: string;
   limit?: number;
   offset?: number;
+  /** B.10: the calendar of one location (with the appointments that have none). */
+  locationId?: string;
 };
 export type TimeBlockInputParams = { startsAt: string; endsAt: string; reason?: string | null };
 export type AddTimeBlockParams = Session & TimeBlockInputParams & { staffMemberId: string };
@@ -155,6 +159,7 @@ export async function createAppointment(params: CreateAppointmentParams): Promis
     durationMinutes: params.durationMinutes,
     confirmed: params.confirmed,
     teamNote: params.teamNote,
+    locationId: params.locationId,
   });
 }
 
@@ -180,6 +185,7 @@ export async function listAppointments(
     staffMemberId: params.staffMemberId,
     status: params.status,
     query: params.query,
+    locationId: params.locationId,
     limit: params.limit,
     offset: params.offset,
   });

@@ -5,6 +5,7 @@ import {
   type FirstFreeSlot,
   type FreeSlots,
 } from '../server/availability';
+import { locationFilter } from '../server/locations';
 
 /*
  * Lot B.5 — the public contract of the free slots (design BookingNew `SlotPicker` / „Oricine e
@@ -37,6 +38,8 @@ export type GetFreeSlotsParams = Session & {
   to: string;
   /** Between the service's minimum and maximum; by default the maximum (S123-3). */
   durationMinutes?: number;
+  /** B.10: one location (an active one); by default all. */
+  locationId?: string;
 };
 
 export type FindFirstFreeSlotParams = Session & {
@@ -45,11 +48,15 @@ export type FindFirstFreeSlotParams = Session & {
   /** Local date to search from; by default today. The search stops 62 days from today. */
   from?: string;
   durationMinutes?: number;
+  /** B.10: one location (an active one); by default all. */
+  locationId?: string;
 };
 
 /** BookingNew: the start times of a service with a member or „Oricine e liber”, day by day. */
 export async function getFreeSlots(params: GetFreeSlotsParams): Promise<FreeSlots> {
-  return getFreeSlotsInOrg(await read(params), {
+  const ctx = await read(params);
+  return getFreeSlotsInOrg(ctx, {
+    locationId: await locationFilter(ctx, params.locationId),
     serviceId: params.serviceId,
     staffMemberId: params.staffMemberId,
     from: params.from,
@@ -63,7 +70,9 @@ export async function getFreeSlots(params: GetFreeSlotsParams): Promise<FreeSlot
 export async function findFirstFreeSlot(
   params: FindFirstFreeSlotParams,
 ): Promise<FirstFreeSlot | null> {
-  return findFirstFreeSlotInOrg(await read(params), {
+  const ctx = await read(params);
+  return findFirstFreeSlotInOrg(ctx, {
+    locationId: await locationFilter(ctx, params.locationId),
     serviceId: params.serviceId,
     staffMemberId: params.staffMemberId,
     from: params.from,

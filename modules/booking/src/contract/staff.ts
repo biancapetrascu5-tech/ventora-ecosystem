@@ -96,6 +96,8 @@ export type UpdateStaffMemberParams = Session & {
   staffMemberId: string;
   bookableOnline?: boolean;
   scheduleMode?: 'business' | 'custom';
+  /** B.10: where the member works (an active location); null = every location. */
+  locationId?: string | null;
 };
 export type ReorderStaffParams = Session & { staffMemberIds: string[] };
 export type GetStaffScheduleParams = Session & { staffMemberId: string; from?: string };
@@ -156,6 +158,7 @@ export async function updateStaffMember(params: UpdateStaffMemberParams): Promis
   return updateStaffMemberInOrg(await manage(params), params.staffMemberId, {
     bookableOnline: params.bookableOnline,
     scheduleMode: params.scheduleMode,
+    locationId: params.locationId,
   });
 }
 

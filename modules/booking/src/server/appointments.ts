@@ -17,6 +17,7 @@ import { commitQuota, releaseQuota, reserveQuota } from '@ventora/quota';
 import { withBookingTx } from './db';
 import { staffFreeAtInOrg } from './availability';
 import { requiredResources } from './resources';
+import { locationFilter } from './locations';
 import { doesService, staffForService } from './staff-services';
 import { durationWithin, effectiveTermsFor, type EffectiveTerms } from './terms';
 import { staffDayIntervals, staffEligibility } from './staff';
@@ -123,6 +124,8 @@ export type Client = {
 export type Appointment = {
   id: string;
   number: number;
+  /** B.10: where it takes place; null in a business with one site / a member everywhere. */
+  locationId: string | null;
   staffMemberId: string;
   serviceId: string;
   clientId: string;
@@ -198,6 +201,7 @@ type AppointmentRow = {
   staff_member_id: string;
   service_id: string;
   client_id: string;
+  location_id: string | null;
   starts_at: Date;
   ends_at: Date;
   duration_minutes: number;
@@ -234,7 +238,7 @@ const APPOINTMENT_COLUMNS = `id, number, staff_member_id, service_id, client_id,
   client_name, price_kind, price_minor, price_max_minor, currency, team_note, source, cancelled_at,
   cancelled_by, cancelled_by_user_id, cancel_minutes_before, cancel_late, deposit_minor,
   deposit_currency, payment_due_at, corrected_at, corrected_by_user_id, correction_reason,
-  created_by_user_id, created_at, updated_at`;
+  created_by_user_id, created_at, updated_at, location_id`;
 
 function toAppointment(r: AppointmentRow): Appointment {
   return {
@@ -243,6 +247,7 @@ function toAppointment(r: AppointmentRow): Appointment {
     staffMemberId: r.staff_member_id,
     serviceId: r.service_id,
     clientId: r.client_id,
+    locationId: r.location_id,
     startsAt: r.starts_at,
     endsAt: r.ends_at,
     durationMinutes: r.duration_minutes,
@@ -551,12 +556,15 @@ type StaffForBooking = {
   id: string;
   user_id: string;
   display_name: string;
+  /** B.10: null = every location. */
+  location_id: string | null;
   archived_at: Date | null;
 };
 
 async function readStaffForBooking(client: PoolClient, id: string): Promise<StaffForBooking> {
   const { rows } = await client.query<StaffForBooking>(
-    `SELECT id, user_id, display_name, archived_at FROM booking.staff_member WHERE id = $1`,
+    `SELECT id, user_id, display_name, location_id, archived_at
+       FROM booking.staff_member WHERE id = $1`,
     [id],
   );
   if (!rows[0]) throw new ResourceNotFound();
@@ -888,6 +896,12 @@ export type CreateAppointmentInput = {
   /** BookingNew: confirmed (default) or unconfirmed. */
   confirmed?: unknown;
   teamNote?: unknown;
+  /**
+   * B.10: the location, for a member who works everywhere (or „any” at one location). A member
+   * with a location gives it to the appointment; another location for them is
+   * Conflict('staff_other_location').
+   */
+  locationId?: unknown;
 };
 
 type ServiceForBooking = {
@@ -948,6 +962,7 @@ export async function createAppointmentInOrg(
     throw new InvalidInput('clientId', 'required');
   }
   const clientId = input.clientId === undefined ? null : requireId(input.clientId);
+  const requestedLocation = await locationFilter(ctx, input.locationId);
 
   // a retry of the same operation: the same appointment, nothing written twice
   const existing = await findAppointment(ctx, id);
@@ -967,6 +982,7 @@ export async function createAppointmentInOrg(
       serviceId,
       startsAt,
       durationMinutes: input.durationMinutes,
+      locationId: requestedLocation,
     });
     if (free.length === 0) {
       // the precise reason for an archived service; otherwise nobody is free at that time
@@ -1000,6 +1016,9 @@ export async function createAppointmentInOrg(
     const staff = await tx(ctx, (client) => readStaffForBooking(client, choice), true);
     requireScope(ctx, scope, staff);
     await requireBookableStaff(ctx, staff);
+    if (requestedLocation && staff.location_id && staff.location_id !== requestedLocation) {
+      throw new Conflict('staff_other_location');
+    }
     candidates = [staff];
   }
   const timeZone = await getOrganizationTimeZone(ctx);
@@ -1028,8 +1047,6 @@ export async function createAppointmentInOrg(
         service,
         candidates.map((c) => c.id),
       );
-      // B.3b: the active resources the service needs (an archived one is not required, S124)
-      const resources = await requiredResources(client, serviceId);
       if (choice !== 'any') {
         // B.2b (S129): the member must do the service
         if (!(await doesService(client, choice, serviceId))) {
@@ -1068,7 +1085,15 @@ export async function createAppointmentInOrg(
         duration: number,
         endsAt: Date,
         price: EffectiveTerms,
-      ): Promise<{ number: number; row: AppointmentRow | undefined }> => {
+        locationId: string | null,
+      ): Promise<{
+        number: number;
+        row: AppointmentRow | undefined;
+        resources: Array<{ id: string; units: number }>;
+      }> => {
+        // B.3b: the active resources the service needs (an archived one is not required, S124);
+        // B.10: at the appointment's location, the ones standing there or everywhere
+        const resources = await requiredResources(db, serviceId, locationId);
         const number = (
           await db.query<{ last_number: number }>(
             `INSERT INTO booking.appointment_counter (organization_id, last_number) VALUES ($1, 1)
@@ -1084,9 +1109,9 @@ export async function createAppointmentInOrg(
            (id, organization_id, number, staff_member_id, service_id, client_id, starts_at, ends_at,
             duration_minutes, capacity, status, service_name, staff_display_name, client_name,
             price_kind, price_minor, price_max_minor, currency, team_note, source,
-            created_by_user_id)
+            created_by_user_id, location_id)
          VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18,
-                 $19, 'hub', $20)
+                 $19, 'hub', $20, $21)
          ON CONFLICT (id) DO NOTHING
          RETURNING ${APPOINTMENT_COLUMNS}`,
           [
@@ -1110,6 +1135,7 @@ export async function createAppointmentInOrg(
             service.currency,
             teamNote,
             ctx.userId,
+            locationId,
           ],
         );
         // B.3b: one unit of every resource, in the same transaction (the trigger checks it)
@@ -1122,7 +1148,7 @@ export async function createAppointmentInOrg(
             );
           }
         }
-        return { number, row: rows[0] };
+        return { number, row: rows[0], resources };
       };
 
       // „Oricine e liber”: the next member when the time was taken in the meantime (D-B5-4)
@@ -1132,10 +1158,19 @@ export async function createAppointmentInOrg(
         const chosen = durationWithin(own, input.durationMinutes);
         // „Oricine e liber”: a member whose bounds don't allow the duration asked is skipped
         if (chosen === null) continue;
+        // B.10: the member's location, otherwise the one asked for (a member who works everywhere)
+        if (requestedLocation && staff.location_id && staff.location_id !== requestedLocation) {
+          continue;
+        }
+        const locationId = staff.location_id ?? requestedLocation ?? null;
         const duration = chosen;
         const endsAt = new Date(startsAt.getTime() + duration * 60_000);
         if (choice === 'any') await client.query('SAVEPOINT pick_staff');
-        let inserted: { number: number; row: AppointmentRow | undefined };
+        let inserted: {
+          number: number;
+          row: AppointmentRow | undefined;
+          resources: Array<{ id: string; units: number }>;
+        };
         try {
           if (choice === 'any') {
             await requireWithinSchedule(client, timeZone, staffMemberId, startsAt, endsAt);
@@ -1147,6 +1182,7 @@ export async function createAppointmentInOrg(
             duration,
             endsAt,
             own,
+            locationId,
           );
         } catch (err) {
           const pg = err as PgError;
@@ -1160,7 +1196,7 @@ export async function createAppointmentInOrg(
           }
           throw err;
         }
-        const { number } = inserted;
+        const { number, resources } = inserted;
         // a concurrent retry got there first: roll this one back (no gap in the numbers)
         if (!inserted.row) throw new AlreadyCreated();
         const row = inserted.row;
@@ -1180,6 +1216,7 @@ export async function createAppointmentInOrg(
           durationMinutes: duration,
           status,
           ...(resources.length ? { resourceIds: resources.map((r) => r.id) } : {}),
+          ...(locationId ? { locationId } : {}),
         });
         await writeOutboxEvent(client, 'booking', BookingAppointmentCreatedV1, {
           organizationId: ctx.organizationId,
@@ -1304,6 +1341,10 @@ export async function moveAppointmentInOrg(
     staff = await tx(ctx, (client) => readStaffForBooking(client, staffMemberId), true);
     requireScope(ctx, scope, staff);
     await requireBookableStaff(ctx, staff);
+    // B.10: the appointment keeps its location; a member of another location can't take it
+    if (current.location_id && staff.location_id && staff.location_id !== current.location_id) {
+      throw new Conflict('staff_other_location');
+    }
   }
   const timeZone = await getOrganizationTimeZone(ctx);
 
@@ -1644,6 +1685,8 @@ export type ListAppointmentsInput = {
   query?: unknown;
   limit?: unknown;
   offset?: unknown;
+  /** B.10: one location (an active one), with the appointments that have none. */
+  locationId?: unknown;
 };
 
 function requireRange(fromRaw: unknown, toRaw: unknown): { from: Date; to: Date } {
@@ -1667,6 +1710,8 @@ export async function listAppointmentsInOrg(
 ): Promise<{ items: Appointment[]; total: number }> {
   const { from, to } = requireRange(input.from, input.to);
   const staffMemberId = input.staffMemberId === undefined ? null : requireId(input.staffMemberId);
+  // B.10: the calendar of one location (with the appointments that have none, so none is hidden)
+  const locationId = (await locationFilter(ctx, input.locationId)) ?? null;
   let statuses: AppointmentStatus[] | null = null;
   if (input.status !== undefined) {
     if (
@@ -1695,9 +1740,10 @@ export async function listAppointmentsInOrg(
             AND ($3::uuid IS NULL OR staff_member_id = $3)
             AND ($4::text[] IS NULL OR status = ANY ($4))
             AND ($5::text IS NULL OR client_name ILIKE $5 OR number = $6)
+            AND ($9::uuid IS NULL OR location_id IS NULL OR location_id = $9)
           ORDER BY starts_at, number
           LIMIT $7 OFFSET $8`,
-        [from, to, staffMemberId, statuses, like, numberQuery, limit, offset],
+        [from, to, staffMemberId, statuses, like, numberQuery, limit, offset, locationId],
       );
       return { items: rows.map(toAppointment), total: rows[0] ? Number(rows[0].total) : 0 };
     },

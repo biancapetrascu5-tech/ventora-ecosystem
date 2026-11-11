@@ -89,6 +89,8 @@ model StaffMember {
   bookableOnline   Boolean   @default(true) @map("bookable_online")
   sortOrder        Int       @default(0) @map("sort_order")
   allServices      Boolean   @default(true) @map("all_services")
+  // Lot B.10: the location (core/organizations, checked through the contract; no FK across modules)
+  locationId       String?   @map("location_id") @db.Uuid
   archivedAt       DateTime? @map("archived_at") @db.Timestamptz
   archivedByUserId String?   @map("archived_by_user_id") @db.Uuid
   createdByUserId  String?   @map("created_by_user_id") @db.Uuid
@@ -309,6 +311,8 @@ model Appointment {
   createdByUserId     String?   @map("created_by_user_id") @db.Uuid
   createdAt           DateTime  @default(now()) @map("created_at") @db.Timestamptz
   updatedAt           DateTime  @default(now()) @map("updated_at") @db.Timestamptz
+  // Lot B.10: where it takes place (fixed at creation)
+  locationId          String?   @map("location_id") @db.Uuid
 
   staffMember StaffMember          @relation(fields: [staffMemberId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "appointment_staff_member_id_fkey")
   service     Service              @relation(fields: [serviceId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "appointment_service_id_fkey")
@@ -322,6 +326,7 @@ model Appointment {
   @@index([staffMemberId, startsAt], map: "appointment_staff_member_id_starts_idx")
   @@index([clientId, startsAt], map: "appointment_client_id_starts_idx")
   @@index([serviceId, startsAt], map: "appointment_service_id_starts_idx")
+  @@index([locationId, startsAt], map: "appointment_location_id_starts_idx")
   @@map("appointment")
   @@schema("booking")
 }
@@ -377,6 +382,8 @@ model Resource {
   kind             String    @db.VarChar(9)
   units            Int       @default(1) @db.SmallInt
   sortOrder        Int       @default(0) @map("sort_order")
+  // Lot B.10: where it stands; null = every location
+  locationId       String?   @map("location_id") @db.Uuid
   archivedAt       DateTime? @map("archived_at") @db.Timestamptz
   archivedByUserId String?   @map("archived_by_user_id") @db.Uuid
   createdByUserId  String    @map("created_by_user_id") @db.Uuid
