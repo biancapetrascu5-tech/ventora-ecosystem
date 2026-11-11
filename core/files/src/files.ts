@@ -4,6 +4,9 @@ import { uuidv7, writeOutboxEvent } from '@ventora/db-kit';
 import { FileDeletedV1, FileUploadedV1 } from '@ventora/contracts';
 import { AuditActions, appendAuditEventInTx, pgExecutor, type AuditCategory } from '@ventora/audit';
 import {
+  ANONYMOUS_CONTENT_TYPES,
+  ANONYMOUS_FILES_PER_KEY,
+  ANONYMOUS_FILES_PER_OWNER,
   DOWNLOAD_LINK_SECONDS,
   MAX_FILE_BYTES,
   STORAGE_URL_SECONDS,
@@ -35,6 +38,15 @@ import { getStorageAdapter } from './storage';
  *   deleteFileAsSystem / deleteOwnerFilesAsSystem (C.4f) → the same deletion for the jobs
  *                    (no person), logged in the audit of the owner module;
  *   readFileAsSystem (C.4f) → the bytes of a ready file, for a job of its owner module.
+ *
+ * Lot C.4g (the founder, 11.11.2026, S127): the anonymous upload, for the client's optional photo
+ * on the public booking page (no account). The file has no person, only the `anonymousKey` given by
+ * the owner module (Booking: the id of the public hold), which checks before calling that the key
+ * is valid (a pending hold of that business, after Turnstile). Only PNG / JPEG, at most one file per
+ * owner and 5 per key. The files of an expired or refused hold are deleted by the module's cleanup
+ * job through the system deletion of C.4f (deleteFileAsSystem / deleteOwnerFilesAsSystem): one
+ * deletion path in core/files. getFile / listFiles keep showing only the files of a person; an
+ * anonymous file is reached by its id (getDownloadLink, deleteFile, the system deletion).
  */
 
 export interface FilesContext {
@@ -142,7 +154,8 @@ type Row = {
   size_bytes: string;
   storage_key: string;
   status: FileStatus;
-  uploaded_by_user_id: string;
+  uploaded_by_user_id: string | null;
+  anonymous_key: string | null;
   upload_expires_at: Date;
   created_at: Date;
   ready_at: Date | null;
@@ -150,9 +163,11 @@ type Row = {
 
 const COLUMNS = `id::text, organization_id::text, owner_module, owner_resource_type,
   owner_resource_id, name, content_type, size_bytes::text, storage_key, status,
-  uploaded_by_user_id::text, upload_expires_at, created_at, ready_at`;
+  uploaded_by_user_id::text, anonymous_key::text, upload_expires_at, created_at, ready_at`;
 
 function toInfo(r: Row): FileInfo {
+  // an anonymous file has no person: not a FileInfo (C.4g)
+  if (r.uploaded_by_user_id === null) throw new ResourceNotFound('File not found');
   return {
     id: r.id,
     organizationId: r.organization_id,
@@ -242,10 +257,20 @@ export async function requestUpload(
  */
 export async function confirmUpload(ctx: FilesContext, fileId: string): Promise<FileInfo> {
   checkContext(ctx);
+  return toInfo(await confirmRow(ctx, fileId, (row) => row.uploaded_by_user_id === ctx.userId));
+}
+
+/** The check of what arrived, for a person's upload and for an anonymous one (C.4g). */
+async function confirmRow(
+  target: string | FilesContext,
+  fileId: string,
+  isAuthor: (row: Row) => boolean,
+): Promise<Row> {
+  const organizationId = typeof target === 'string' ? target : target.organizationId;
   const storage = await getStorageAdapter();
-  const outcome = await inOrganization(ctx, async (client) => {
+  const outcome = await inOrganization(target, async (client) => {
     const row = await findRow(client, fileId, true);
-    if (row.uploaded_by_user_id !== ctx.userId) throw new ResourceNotFound('File not found');
+    if (!isAuthor(row)) throw new ResourceNotFound('File not found');
     if (row.status === 'ready') return { ok: true as const, row };
     if (row.status !== 'pending') throw new Conflict(`The file is ${row.status}`);
     const reason =
@@ -265,7 +290,7 @@ export async function confirmUpload(ctx: FilesContext, fileId: string): Promise<
     );
     const ready = rows[0]!;
     await writeOutboxEvent(client, 'files', FileUploadedV1, {
-      organizationId: ctx.organizationId,
+      organizationId,
       sourceApp: SOURCE_APP,
       resourceId: ready.id,
       payload: eventPayload(ready),
@@ -277,7 +302,7 @@ export async function confirmUpload(ctx: FilesContext, fileId: string): Promise<
     await storage.remove(outcome.row.storage_key);
     throw new InvalidInput('file', `The uploaded file was refused: ${outcome.reason}`);
   }
-  return toInfo(outcome.row);
+  return outcome.row;
 }
 
 /** A signed, expiring link to a ready file of the organization in context. */
@@ -322,6 +347,7 @@ export async function openDownloadLink(token: string, now: Date = new Date()): P
   return storage.signDownload(row.storage_key, STORAGE_URL_SECONDS, row.name);
 }
 
+/** A person's file (an anonymous one is not found here: it has no person, C.4g). */
 export async function getFile(ctx: FilesContext, fileId: string): Promise<FileInfo> {
   checkContext(ctx);
   return toInfo(await inOrganization(ctx, (client) => findRow(client, fileId)));
@@ -335,7 +361,7 @@ export async function listFiles(ctx: FilesContext, owner: FileOwner): Promise<Fi
     const { rows } = await client.query<Row>(
       `SELECT ${COLUMNS} FROM files.file
         WHERE owner_module = $1 AND owner_resource_type = $2 AND owner_resource_id = $3
-          AND status = 'ready'
+          AND status = 'ready' AND anonymous_key IS NULL
         ORDER BY created_at, id`,
       [owner.module, owner.resourceType, owner.resourceId],
     );
@@ -517,4 +543,130 @@ export async function deleteOwnerFilesAsSystem(
   // the deletions are committed first; the bytes go after (a failed removal is reported)
   for (const key of keys) await storage.remove(key);
   return keys.length;
+}
+
+// ── C.4g: the anonymous upload (the client's photo on the public booking page) ───────────────
+
+/** The owner module and the key it vouches for (Booking: a pending public hold of the business). */
+export interface AnonymousFilesContext {
+  organizationId: string;
+  anonymousKey: string;
+}
+
+export interface AnonymousFileInfo {
+  id: string;
+  owner: FileOwner;
+  name: string;
+  contentType: 'image/png' | 'image/jpeg';
+  sizeBytes: number;
+  status: FileStatus;
+  createdAt: Date;
+  readyAt: Date | null;
+}
+
+function checkAnonymousContext(ctx: AnonymousFilesContext): void {
+  if (!UUID.test(ctx.organizationId ?? '')) throw new InvalidInput('organizationId');
+  if (!UUID.test(ctx.anonymousKey ?? '')) throw new InvalidInput('anonymousKey');
+}
+
+function toAnonymousInfo(r: Row): AnonymousFileInfo {
+  return {
+    id: r.id,
+    owner: {
+      module: r.owner_module,
+      resourceType: r.owner_resource_type,
+      resourceId: r.owner_resource_id,
+    },
+    name: r.name,
+    contentType: r.content_type as 'image/png' | 'image/jpeg',
+    sizeBytes: Number(r.size_bytes),
+    status: r.status,
+    createdAt: r.created_at,
+    readyAt: r.ready_at,
+  };
+}
+
+/**
+ * An upload without a person: only PNG / JPEG up to 10 MB, at most one live file (pending or ready)
+ * per owner and ANONYMOUS_FILES_PER_KEY per key. The caller has checked the key (a pending public
+ * hold of this business, after Turnstile); core/files does not know what the key is.
+ * Conflict: file_exists (the owner has one), too_many_files (the key has 5).
+ */
+export async function requestAnonymousUpload(
+  ctx: AnonymousFilesContext,
+  input: { owner: FileOwner; name: string; contentType: string; sizeBytes: number },
+): Promise<{ fileId: string; uploadUrl: string; expiresAt: Date }> {
+  checkAnonymousContext(ctx);
+  checkOwner(input.owner);
+  if (!(ANONYMOUS_CONTENT_TYPES as readonly string[]).includes(input.contentType)) {
+    throw new InvalidInput('contentType', 'Only PNG or JPG images');
+  }
+  checkDeclaredFile(input);
+  const name = cleanFileName(input.name);
+  const storage = await getStorageAdapter();
+  const fileId = uuidv7();
+  const key = storageKey(ctx.organizationId, fileId);
+  const expiresAt = new Date(Date.now() + UPLOAD_WINDOW_SECONDS * 1000);
+  return inOrganization(ctx.organizationId, async (client) => {
+    // the files of one key are counted one transaction at a time
+    await client.query(`SELECT pg_advisory_xact_lock(hashtext('files.anonymous:' || $1))`, [
+      ctx.anonymousKey,
+    ]);
+    const { rows } = await client.query<{ key: number; owner: number }>(
+      `SELECT count(*)::int AS key,
+              count(*) FILTER (WHERE owner_module = $2 AND owner_resource_type = $3
+                                 AND owner_resource_id = $4)::int AS owner
+         FROM files.file
+        WHERE anonymous_key = $1 AND status IN ('pending', 'ready')`,
+      [ctx.anonymousKey, input.owner.module, input.owner.resourceType, input.owner.resourceId],
+    );
+    if (rows[0]!.owner >= ANONYMOUS_FILES_PER_OWNER) throw new Conflict('file_exists');
+    if (rows[0]!.key >= ANONYMOUS_FILES_PER_KEY) throw new Conflict('too_many_files');
+    await client.query(
+      `INSERT INTO files.file
+         (id, organization_id, owner_module, owner_resource_type, owner_resource_id, name,
+          content_type, size_bytes, storage_key, status, anonymous_key, upload_expires_at)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, 'pending', $10, $11)`,
+      [
+        fileId,
+        ctx.organizationId,
+        input.owner.module,
+        input.owner.resourceType,
+        input.owner.resourceId,
+        name,
+        input.contentType,
+        input.sizeBytes,
+        key,
+        ctx.anonymousKey,
+        expiresAt,
+      ],
+    );
+    const { url } = await storage.signUpload(key, input.contentType);
+    return { fileId, uploadUrl: url, expiresAt };
+  });
+}
+
+/** After the anonymous upload: the same checks as confirmUpload; the author is the key. */
+export async function confirmAnonymousUpload(
+  ctx: AnonymousFilesContext,
+  fileId: string,
+): Promise<AnonymousFileInfo> {
+  checkAnonymousContext(ctx);
+  return toAnonymousInfo(
+    await confirmRow(ctx.organizationId, fileId, (row) => row.anonymous_key === ctx.anonymousKey),
+  );
+}
+
+/** The live files of a key (pending or ready), oldest first. */
+export async function listAnonymousFiles(ctx: AnonymousFilesContext): Promise<AnonymousFileInfo[]> {
+  checkAnonymousContext(ctx);
+  return inOrganization(ctx.organizationId, async (client) => {
+    const { rows } = await client.query<Row>(
+      `SELECT ${COLUMNS} FROM files.file
+        WHERE anonymous_key = $1 AND status IN ('pending', 'ready')
+        ORDER BY created_at, id`,
+      [ctx.anonymousKey],
+    );
+    return rows.map(toAnonymousInfo);
+  });
 }

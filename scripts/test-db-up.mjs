@@ -477,6 +477,8 @@ for (const migration of [
   'core/files/prisma/migrations/20261104000002_files_founder_upload/migration.sql',
   // Lot C.4e: text/csv, doar pentru fișierul de import ClientDesk (crm / import)
   'core/files/prisma/migrations/20261111000010_files_csv_import/migration.sql',
+  // Lot C.4g: the anonymous upload (the client's photo on the public booking page, S127)
+  'core/files/prisma/migrations/20261111000020_files_anonymous_upload/migration.sql',
   // Lot 3.5: core/billing (schema billing, rolul billing_rw, outbox)
   'core/billing/prisma/migrations/20261101000013_billing_init/migration.sql',
   // Lot 3.6: facturile (invoice), termenul disputei, citirile Founder (founder_runtime)

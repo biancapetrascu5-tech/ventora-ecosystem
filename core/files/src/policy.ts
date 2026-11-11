@@ -27,6 +27,13 @@ export function mayKeepCsv(owner: { module: string; resourceType: string }): boo
   return owner.module === CSV_OWNER.module && owner.resourceType === CSV_OWNER.resourceType;
 }
 
+/** C.4g: an anonymous upload (the client's photo on the public booking page) is only an image. */
+export const ANONYMOUS_CONTENT_TYPES = ['image/png', 'image/jpeg'] as const;
+/** C.4g: at most one live anonymous file per owner (a question)… */
+export const ANONYMOUS_FILES_PER_OWNER = 1;
+/** …and 5 per key (a public hold). */
+export const ANONYMOUS_FILES_PER_KEY = 5;
+
 /** 10 MB (FileUpload: „Maximum 10 MB per fișier”). */
 export const MAX_FILE_BYTES = 10 * 1024 * 1024;
 
