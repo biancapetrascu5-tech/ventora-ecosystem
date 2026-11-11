@@ -122,17 +122,14 @@ export function GrowthControlView({
       <PageHeader title={t('control')} description={mode === 'mobile' ? undefined : t('lead')} />
       <div className={s.body} data-mode={mode}>
         <Sheet>
-          <SheetSection
-            title={t('oprireGlobala')}
-            description={t('opresteToateRecomandarileVentora')}
-          >
+          <SheetSection title={t('oprireGlobala')} description={t('opresteToateRecomandarile')}>
             <Toggle
               isSelected={!paused}
               onChange={(v) => toggle({ kind: 'global' }, !paused, v)}
               labelPosition={labelPosition}
               description={describe(!paused, t('globalOffNote'), [t('pornite'), t('oprite')])}
             >
-              {t('recomandarileVentoraSystems')}
+              {t('recomandarileSistemului')}
             </Toggle>
           </SheetSection>
           {campaigns.length > 0 && (

@@ -1606,8 +1606,8 @@
       "control": {
         "control": "Control",
         "oprireGlobala": "Oprire globală",
-        "opresteToateRecomandarileVentora": "Oprește toate recomandările Ventora Systems, pentru toate afacerile.",
-        "recomandarileVentoraSystems": "Recomandările Ventora Systems",
+        "opresteToateRecomandarile": "Oprește toate recomandările Ventora Systems, pentru toate afacerile.",
+        "recomandarileSistemului": "Recomandările Ventora Systems",
         "pornite": "Pornite",
         "oprite": "Oprite",
         "programata": "Programată",

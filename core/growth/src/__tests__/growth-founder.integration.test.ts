@@ -214,8 +214,13 @@ describe('Lot 5.10 — Founder · Growth', () => {
     expect(removed).toHaveLength(1);
     expect(removed[0]!.metadata).toEqual({ slotId: SLOT_B });
 
-    // stop by hand, restart only with „Ce ai schimbat”
+    // stop by hand, restart only with „Ce ai schimbat”; the edited RO text is approved again first
+    // (campaign_guard: a campaign never becomes active, nor restarts, on a draft Romanian text)
     await g.stopCampaign({ ...P, campaignId, note: 'Pauză' });
+    await expect(
+      g.restartCampaign({ ...P, campaignId, whatChanged: 'Am schimbat titlul.' }),
+    ).rejects.toThrow(/Romanian texts approved/);
+    await g.approveOfferText({ ...P, offerId, locale: 'ro' });
     await expect(g.restartCampaign({ ...P, campaignId, whatChanged: ' ' })).rejects.toMatchObject({
       field: 'whatChanged',
     });
