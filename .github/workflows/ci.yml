@@ -466,6 +466,9 @@ jobs:
         run: |
           echo "BETTER_AUTH_SECRET=$(openssl rand -hex 32)" >> $GITHUB_ENV
           echo "FOUNDER_AUTH_SECRET=$(openssl rand -hex 32)" >> $GITHUB_ENV
+          BMK="$(openssl rand -base64 32)"
+          echo "::add-mask::$BMK"
+          echo "BOOKING_MEDICAL_KEY_TEST=$BMK" >> $GITHUB_ENV
       - name: Run access integration tests
         env:
           DATABASE_URL_TEST: postgresql://app_runtime:${{ env.APP_PW }}@localhost:5435/ventora_access_test
@@ -475,6 +478,7 @@ jobs:
           DATABASE_URL_FOUNDER_TEST: postgresql://founder_runtime:${{ env.FOUNDER_PW }}@localhost:5435/ventora_access_test
           BETTER_AUTH_SECRET: ${{ env.BETTER_AUTH_SECRET }}
           FOUNDER_AUTH_SECRET: ${{ env.FOUNDER_AUTH_SECRET }}
+          BOOKING_MEDICAL_KEY_TEST: ${{ env.BOOKING_MEDICAL_KEY_TEST }}
         run: |
           pnpm --filter @ventora/access test:integration
           pnpm --filter @ventora/booking test:integration
