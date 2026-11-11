@@ -43,6 +43,18 @@ import {
   type Attachment,
 } from '../server/attachments';
 import { getTimelineInOrg, type TimelineItem } from '../server/timeline';
+import {
+  createActivityInOrg,
+  deleteActivityInOrg,
+  getActivityInOrg,
+  listActivitiesInOrg,
+  setActivityDoneInOrg,
+  updateActivityInOrg,
+  type Activity,
+  type ActivityInput,
+  type ActivityKind,
+  type ListActivitiesParams,
+} from '../server/activities';
 import { page } from '../server/validation';
 import {
   checkDuplicatesInOrg,
@@ -506,7 +518,55 @@ export async function getTimeline(
   return getTimelineInOrg(ctx, scope, params);
 }
 
+// ── CR.7: activities, tasks, reminders, the calendar (S131) ───────────────────────────────────
+
+/** „Activitate nouă” / „Înregistrează un apel”: optional record, owner, due day and time, reminder. */
+export async function createActivity(
+  params: Session &
+    ActivityInput & { kind: unknown; subjectType?: unknown; subjectId?: unknown; done?: unknown },
+): Promise<Activity> {
+  const { ctx, scope } = await access(params, 'crm:write');
+  return createActivityInOrg(ctx, scope, params);
+}
+
+/** The owner, the creator or crm:admin. */
+export async function updateActivity(
+  params: Session & ActivityInput & { activityId: string },
+): Promise<Activity> {
+  const { ctx, scope } = await access(params, 'crm:write');
+  return updateActivityInOrg(ctx, scope, params.activityId, params);
+}
+
+/** The tick („Făcut”) and its undo. */
+export async function setActivityDone(
+  params: Session & { activityId: string; done: boolean },
+): Promise<Activity> {
+  const { ctx, scope } = await access(params, 'crm:write');
+  return setActivityDoneInOrg(ctx, scope, params.activityId, params.done);
+}
+
+/** Into the bin: the owner, the creator or crm:admin. */
+export async function deleteActivity(params: Session & { activityId: string }): Promise<Activity> {
+  const { ctx, scope } = await access(params, 'crm:write');
+  return deleteActivityInOrg(ctx, scope, params.activityId);
+}
+
+export async function getActivity(params: Session & { activityId: string }): Promise<Activity> {
+  const { ctx, scope } = await access(params, 'crm:read');
+  return getActivityInOrg(ctx, scope, params.activityId);
+}
+
+/** „Activitățile mele” / „Toată echipa” / a member; the calendar with `timedOnly`. */
+export async function listActivities(params: Session & ListActivitiesParams): Promise<Activity[]> {
+  const { ctx, scope } = await access(params, 'crm:read');
+  return listActivitiesInOrg(ctx, scope, params);
+}
+
 export type {
+  Activity,
+  ActivityInput,
+  ActivityKind,
+  ListActivitiesParams,
   Attachment,
   Note,
   NoteKind,
