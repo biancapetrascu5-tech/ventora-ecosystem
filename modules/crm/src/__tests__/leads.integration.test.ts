@@ -509,4 +509,27 @@ describe('CR.8b — the lead sources (S132, decision of 11.11)', () => {
       'Forbidden',
     );
   });
+
+  it('a lead never gets the source of another business (composite key, review 11.11)', async () => {
+    const a = await business();
+    const b = await business();
+    const theirs = await createLeadSource({ sessionToken: b.t, label: 'Doar la B' });
+    // through the contract: B's source is not visible from A (RLS)
+    expect(await refusal(createLead({ sessionToken: a.t, name: 'X', source: theirs.id }))).toBe(
+      'source:invalid',
+    );
+    // in the database, even around RLS: the composite key refuses it (23503)
+    const lead = await createLead({ sessionToken: a.t, name: 'Al lui A', source: 'phone' });
+    await expect(
+      adminQuery(`UPDATE crm.lead SET source = 'custom', source_id = $2 WHERE id = $1`, [
+        lead.id,
+        theirs.id,
+      ]),
+    ).rejects.toMatchObject({ code: '23503' });
+    const ours = await createLeadSource({ sessionToken: a.t, label: 'La A' });
+    await adminQuery(`UPDATE crm.lead SET source = 'custom', source_id = $2 WHERE id = $1`, [
+      lead.id,
+      ours.id,
+    ]);
+  });
 });

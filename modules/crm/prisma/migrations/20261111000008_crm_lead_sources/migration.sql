@@ -32,6 +32,8 @@ CREATE TABLE "crm"."lead_source" (
 CREATE INDEX "lead_source_organization_id_idx" ON "crm"."lead_source" ("organization_id");
 -- the built-in ones are written once per business (ON CONFLICT)
 CREATE UNIQUE INDEX "lead_source_key_key" ON "crm"."lead_source" ("organization_id", "key") WHERE "key" IS NOT NULL;
+-- the target of the lead's composite key: a lead only gets a source of its own business (review 11.11)
+CREATE UNIQUE INDEX "lead_source_organization_id_id_key" ON "crm"."lead_source" ("organization_id", "id");
 
 CREATE TRIGGER lead_source_touch BEFORE UPDATE ON "crm"."lead_source"
   FOR EACH ROW EXECUTE FUNCTION crm.touch_updated_at();
@@ -48,8 +50,9 @@ ALTER TABLE "crm"."lead"
   ADD CONSTRAINT "lead_source_check"
     CHECK ("source" IN ('form', 'phone', 'email', 'referral', 'event', 'manual', 'custom')),
   ADD CONSTRAINT "lead_source_custom_check" CHECK (("source" = 'custom') = ("source_id" IS NOT NULL)),
-  ADD CONSTRAINT "lead_source_id_fkey" FOREIGN KEY ("source_id")
-    REFERENCES "crm"."lead_source" ("id") ON DELETE RESTRICT ON UPDATE RESTRICT;
+  -- composite: the source belongs to the lead's business (MATCH SIMPLE: no source, no check)
+  ADD CONSTRAINT "lead_source_id_fkey" FOREIGN KEY ("organization_id", "source_id")
+    REFERENCES "crm"."lead_source" ("organization_id", "id") ON DELETE RESTRICT ON UPDATE RESTRICT;
 CREATE INDEX "lead_source_id_idx" ON "crm"."lead" ("source_id");
 
 -- Grants: only crm_rw; no DELETE (§6.4 c)

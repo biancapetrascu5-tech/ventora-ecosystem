@@ -336,6 +336,7 @@ model LeadSource {
 
   leads Lead[]
 
+  @@unique([organizationId, id], map: "lead_source_organization_id_id_key")
   @@index([organizationId], map: "lead_source_organization_id_idx")
   @@map("lead_source")
   @@schema("crm")
@@ -374,7 +375,7 @@ model Lead {
 
   convertedContact Contact? @relation(fields: [convertedContactId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "lead_converted_contact_id_fkey")
   deals            Deal[]
-  ownSource        LeadSource? @relation(fields: [sourceId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "lead_source_id_fkey")
+  ownSource        LeadSource? @relation(fields: [organizationId, sourceId], references: [organizationId, id], onDelete: Restrict, onUpdate: Restrict, map: "lead_source_id_fkey")
 
   @@index([sourceId], map: "lead_source_id_idx")
   @@index([organizationId, state, createdAt(sort: Desc)], map: "lead_organization_id_state_idx")
