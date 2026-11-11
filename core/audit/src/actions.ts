@@ -194,6 +194,28 @@ export const AuditActions = {
   bookingResourceUpdated: 'booking.resource_updated',
   bookingResourceArchived: 'booking.resource_archived',
   bookingResourceRestored: 'booking.resource_restored',
+  // Lot 5.10 — Founder · Growth & Campaigns (category founder, like the workflow engine): every
+  // Founder write on the Growth catalog and its stops, in the same transaction as the write
+  growthOfferCreated: 'growth.offer_created',
+  growthOfferUpdated: 'growth.offer_updated',
+  growthOfferPublished: 'growth.offer_published',
+  growthOfferArchived: 'growth.offer_archived',
+  growthOfferTextSaved: 'growth.offer_text_saved', // a draft (by hand or an AI proposal)
+  growthOfferTextApproved: 'growth.offer_text_approved', // only the Founder owner approves (S136)
+  growthAudienceCreated: 'growth.audience_created',
+  growthAudienceUpdated: 'growth.audience_updated',
+  growthAudienceArchived: 'growth.audience_archived',
+  growthCampaignCreated: 'growth.campaign_created',
+  growthCampaignUpdated: 'growth.campaign_updated',
+  growthCampaignSlotRemoved: 'growth.campaign_slot_removed', // approved with 5.5: one row per slot
+  growthCampaignPublished: 'growth.campaign_published',
+  growthCampaignStopped: 'growth.campaign_stopped', // by hand (the kill switch per campaign)
+  growthCampaignRestarted: 'growth.campaign_restarted', // only by hand (P22), with what changed
+  growthPlacementStopped: 'growth.placement_stopped', // the kill switch per slot
+  growthPlacementResumed: 'growth.placement_resumed',
+  growthPaused: 'growth.paused', // the global kill switch
+  growthResumed: 'growth.resumed',
+  growthCapsChanged: 'growth.caps_changed', // the global caps (P25), before / after in metadata
   // Lot C.0f / B.7 — the client card (category booking, required): blocking (booking:admin, with
   // the reason length only, never its text), the merge of two clients (D-B7-2: ids only) and the
   // GDPR erasure (D-B7-1: the client id, no data of the client)

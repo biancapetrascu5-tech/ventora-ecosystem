@@ -6,7 +6,8 @@
   "main": "./src/index.ts",
   "types": "./src/index.ts",
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./overlaps": "./src/overlaps.ts"
   },
   "scripts": {
     "db:migrate": "prisma migrate deploy --config prisma7.config.ts",
@@ -15,9 +16,12 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@ventora/audit": "workspace:*",
     "@ventora/commercial": "workspace:*",
     "@ventora/contracts": "workspace:*",
     "@ventora/db-kit": "workspace:*",
+    "@ventora/errors": "workspace:*",
+    "@ventora/identity": "workspace:*",
     "@ventora/notifications": "workspace:*",
     "@ventora/organizations": "workspace:*",
     "pg": "^8.0.0"

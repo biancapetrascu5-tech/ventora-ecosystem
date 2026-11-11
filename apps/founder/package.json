@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start -p 3102",
     "lint": "eslint .",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
   },
   "dependencies": {
     "@sentry/nextjs": "^11.0.0",
@@ -17,6 +18,7 @@
     "@ventora/config": "workspace:*",
     "@ventora/contracts": "workspace:*",
     "@ventora/errors": "workspace:*",
+    "@ventora/growth": "workspace:*",
     "@ventora/i18n": "workspace:*",
     "@ventora/identity": "workspace:*",
     "@ventora/screens": "workspace:*",
@@ -37,6 +39,6 @@
     "eslint": "^9.0.0",
     "eslint-config-next": "^16.0.0",
     "typescript": "^6.0.0",
-    "vitest": "^2.1.0"
+    "vitest": "^5.0.5"
   }
 }

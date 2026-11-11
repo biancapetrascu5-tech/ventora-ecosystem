@@ -49,6 +49,8 @@ export interface SelectProps {
   state?: ForcedState;
   'aria-label'?: string;
   'aria-describedby'?: string;
+  /** Valoarea lungă trece pe cel mult două rânduri (.v-select--wrap). */
+  wrap?: boolean;
   className?: string;
 }
 
@@ -95,6 +97,7 @@ export function Select({
   state,
   'aria-label': ariaLabel,
   'aria-describedby': describedBy,
+  wrap,
   className,
 }: SelectProps) {
   const rootRef = useRef<HTMLDivElement>(null);
@@ -139,6 +142,7 @@ export function Select({
           className={cn(
             styles.trigger,
             styles[size],
+            wrap && styles.wrap,
             isInvalid && styles.isError,
             isDisabled && styles.isDisabled,
             forced(styles, state),
