@@ -32,7 +32,11 @@ CRM (numele afișat ClientDesk) e a doua aplicație, în pachetul cu EasyBook (D
 ## Contactele și companiile (CR.2, design S130)
 - **`crm.contact`:** o singură companie pe contact (`company_id`, rolul, „Principal”, unul pe companie). Sursa e setul fix S130; `form`, `import` și `easybook` le scriu loturile lor, niciodată de mână.
 - **Cine vede:** cu `crm:admin` tot; un membru doar ce i-a fost atribuit și ce e neatribuit („Ia contactul”). Companiile le vede oricine are `crm:read`.
-- **Coșul (S130):** „Șterge” pune `deleted_at`; restaurarea e posibilă 30 de zile. Golirea după 30 de zile nu există încă: e NECESITĂ DECIZIE (ștergere fizică sau anonimizare).
+- **Coșul (S130):** „Șterge” pune `deleted_at`; restaurarea e posibilă 30 de zile.
+  - După 30 de zile contactul se anonimizează (decizia din 11.11, ca `booking.erase_client`); nu se șterge.
+  - Job-ul `crm.bin-anonymize` rulează zilnic la 03:30 și apelează `runCrmBinJob`. Contactele scadente le listează `crm.bin_expired_contacts` (`SECURITY DEFINER`, doar id-uri, `EXECUTE` pentru `crm_rw`).
+  - Fiecare contact se anonimizează în contextul afacerii lui: contactul, notițele și activitățile lui, leadurile convertite în el. Rămâne `anonymized_at`.
+  - Fișierele din `core/files` nu se șterg încă: lipsește o cale de ștergere din job în `core/files` (propunere).
 - **Contactul din EasyBook:** numele, telefonul, e-mailul și limba sunt doar în citire, iar contactul nu se șterge din ClientDesk (CHECK). Nu ține unitate de cotă.
 - **Cota `crm.contacts`:** rezervare (`crm.contact:<id>`), tranzacție, confirmare; eliberare la eșec; resolver-ul `contactQuotaHeld`. „Șterge” eliberează unitatea, restaurarea rezervă alta.
 - **ANAF** (`lookupCompanyByCui`): doar completează formularul, fără stocare. Adresa serviciului se configurează (`ANAF_TVA_URL`); e DE VALIDAT TEHNIC.

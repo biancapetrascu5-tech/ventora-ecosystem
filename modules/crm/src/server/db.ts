@@ -48,3 +48,24 @@ export async function withCrmTx<T>(
     client.release();
   }
 }
+
+/**
+ * As crm_rw without an organization (RLS: no rows), read-only — only for the job listings that go
+ * through a SECURITY DEFINER function returning ids (crm.bin_expired_contacts). Never in request
+ * code: every write goes through withCrmTx, in one business's context.
+ */
+export async function withCrmModuleTx<T>(fn: (client: PoolClient) => Promise<T>): Promise<T> {
+  const client = await getPool().connect();
+  try {
+    await client.query('BEGIN READ ONLY');
+    await client.query(`SET LOCAL ROLE ${MODULE_ROLE}`);
+    const result = await fn(client);
+    await client.query('COMMIT');
+    return result;
+  } catch (err) {
+    await client.query('ROLLBACK').catch(() => {});
+    throw err;
+  } finally {
+    client.release();
+  }
+}

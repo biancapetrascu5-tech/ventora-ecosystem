@@ -1,6 +1,9 @@
 // The public contract of ClientDesk, the only import allowed from outside the module
 // (`@ventora/crm`). CR.1: the preferences; CR.2: the contacts and the companies.
 export { getCrmSettings, setLeadScoring } from './settings';
+// the 30-day bin (decision of 11.11.2026): the platform job, never request code
+export { runCrmBinJob } from '../server/bin';
+export type { BinJobReport } from '../server/bin';
 export type { CrmSettings } from './settings';
 export {
   assignContact,

@@ -308,6 +308,9 @@ importers:
       '@ventora/contracts':
         specifier: workspace:*
         version: link:../../packages/contracts
+      '@ventora/crm':
+        specifier: workspace:*
+        version: link:../../modules/crm
       '@ventora/errors':
         specifier: workspace:*
         version: link:../../packages/errors

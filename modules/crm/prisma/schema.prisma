@@ -87,6 +87,8 @@ model Contact {
   nameKey          String    @default("") @map("name_key")
   /// CR.5: merged into this contact (in the bin)
   mergedIntoId     String?   @map("merged_into_id") @db.Uuid
+  /// the 30-day bin: anonymised by the job (decision of 11.11.2026)
+  anonymizedAt     DateTime? @map("anonymized_at") @db.Timestamptz
 
   company Company? @relation(fields: [companyId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "contact_company_id_fkey")
   mergedInto      Contact?  @relation("ContactMerge", fields: [mergedIntoId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "contact_merged_into_id_fkey")
