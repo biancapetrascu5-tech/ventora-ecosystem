@@ -5,6 +5,7 @@ import { FileDeletedV1, FileUploadedV1 } from '@ventora/contracts';
 import { AuditActions, appendAuditEventInTx, pgExecutor, type AuditCategory } from '@ventora/audit';
 import {
   DOWNLOAD_LINK_SECONDS,
+  MAX_FILE_BYTES,
   STORAGE_URL_SECONDS,
   UPLOAD_WINDOW_SECONDS,
   checkDeclaredFile,
@@ -32,7 +33,8 @@ import { getStorageAdapter } from './storage';
  *   openDownloadLink → what /files/<token> does: verifies the link, then a short storage URL;
  *   deleteFile     → deleted + file.deleted, the bytes removed from the storage.
  *   deleteFileAsSystem / deleteOwnerFilesAsSystem (C.4f) → the same deletion for the jobs
- *                    (no person), logged in the audit of the owner module.
+ *                    (no person), logged in the audit of the owner module;
+ *   readFileAsSystem (C.4f) → the bytes of a ready file, for a job of its owner module.
  */
 
 export interface FilesContext {
@@ -466,6 +468,29 @@ export async function deleteFileAsSystem(
   if (key === null) return false;
   await storage.remove(key);
   return true;
+}
+
+/**
+ * C.4f: the content of a ready file, for a job of its owner module on the server (the ClientDesk
+ * import reads its CSV). Only `module`'s own files, in the organization's context (RLS); at most
+ * the 10 MB limit; what is stored must still be the size that was checked at the upload.
+ */
+export async function readFileAsSystem(
+  organizationId: string,
+  input: { fileId: string; module: string },
+): Promise<{ info: FileInfo; bytes: Uint8Array }> {
+  if (!UUID.test(organizationId ?? '')) throw new InvalidInput('organizationId');
+  if (!OWNER_AUDIT_CATEGORY[input.module]) throw new InvalidInput('owner.module');
+  const row = await inOrganization(organizationId, (client) => findRow(client, input.fileId));
+  if (row.owner_module !== input.module || row.status !== 'ready') {
+    throw new ResourceNotFound('File not found');
+  }
+  const storage = await getStorageAdapter();
+  const bytes = await storage.read(row.storage_key, MAX_FILE_BYTES);
+  if (!bytes || bytes.length !== Number(row.size_bytes)) {
+    throw new Conflict('The stored file is not the one that was uploaded');
+  }
+  return { info: toInfo(row), bytes };
 }
 
 /** Every file of an owner (pending, ready or rejected), for a job; how many were deleted. */

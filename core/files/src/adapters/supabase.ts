@@ -6,6 +6,7 @@ import { StorageNotConfiguredError, type StorageAdapter, type StoredObject } fro
  *   POST   /storage/v1/object/upload/sign/<bucket>/<key>  → a signed upload URL (PUT)
  *   POST   /storage/v1/object/sign/<bucket>/<key>         → a signed download URL
  *   GET    /storage/v1/object/authenticated/<bucket>/<key> with Range → size and first bytes
+ *   GET    /storage/v1/object/authenticated/<bucket>/<key>            → the whole object (C.4f)
  *   DELETE /storage/v1/object/<bucket>                      → remove
  * Server side, with the service key (SUPABASE_SERVICE_ROLE_KEY). The bucket is private and is
  * created by the founder (see the Lot 4.7 report); this code never creates buckets.
@@ -102,6 +103,24 @@ export class SupabaseStorageAdapter implements StorageAdapter {
     return { sizeBytes, head };
   }
 
+  async read(key: string, maxBytes: number): Promise<Uint8Array | null> {
+    const res = await this.fetchImpl(this.api(`/object/authenticated/${this.object(key)}`), {
+      method: 'GET',
+      headers: this.headers(),
+    });
+    if (res.status === 400 || res.status === 404) {
+      await res.body?.cancel();
+      return null;
+    }
+    if (!res.ok) return this.fail('read', res);
+    const length = Number(res.headers.get('content-length') ?? NaN);
+    if (Number.isFinite(length) && length > maxBytes) {
+      await res.body?.cancel();
+      throw new Error('[files] storage read: object too large');
+    }
+    return readAll(res, maxBytes);
+  }
+
   async remove(key: string): Promise<void> {
     const res = await this.fetchImpl(
       this.api(`/object/${encodeURIComponent(this.config.bucket)}`),
@@ -113,6 +132,32 @@ export class SupabaseStorageAdapter implements StorageAdapter {
     );
     if (!res.ok) return this.fail('remove', res);
   }
+}
+
+/** The whole body, stopped as soon as it passes `max` bytes. */
+async function readAll(res: Response, max: number): Promise<Uint8Array> {
+  if (!res.body) return new Uint8Array();
+  const reader = res.body.getReader();
+  const chunks: Uint8Array[] = [];
+  let total = 0;
+  try {
+    for (;;) {
+      const { done, value } = await reader.read();
+      if (done || !value) break;
+      total += value.length;
+      if (total > max) throw new Error('[files] storage read: object too large');
+      chunks.push(value);
+    }
+  } finally {
+    await reader.cancel().catch(() => {});
+  }
+  const out = new Uint8Array(total);
+  let at = 0;
+  for (const c of chunks) {
+    out.set(c, at);
+    at += c.length;
+  }
+  return out;
 }
 
 /** The first `n` bytes of the body, without reading the rest (a 200 may be the whole file). */

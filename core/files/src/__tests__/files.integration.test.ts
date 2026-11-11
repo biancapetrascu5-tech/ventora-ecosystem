@@ -12,6 +12,7 @@ import {
   deleteFile,
   deleteFileAsSystem,
   deleteOwnerFilesAsSystem,
+  readFileAsSystem,
   getDownloadLink,
   getFile,
   listFiles,
@@ -397,6 +398,31 @@ describe('C.4f — the deletion of the jobs (no person), with the audit', () => 
     ).toBe(false);
     expect(await auditOf(fileId)).toHaveLength(1);
     await expect(getDownloadLink(ALICE, fileId)).rejects.toBeInstanceOf(ResourceNotFound);
+  });
+
+  it('read: the bytes of a ready file, only for its owner module and organization', async () => {
+    const fileId = await csvFile(importOwner());
+    // pending: not readable yet
+    await expect(readFileAsSystem(ORG_A, { fileId, module: 'crm' })).rejects.toBeInstanceOf(
+      ResourceNotFound,
+    );
+    await confirmUpload(ALICE, fileId);
+    const { info, bytes } = await readFileAsSystem(ORG_A, { fileId, module: 'crm' });
+    expect(info).toMatchObject({ id: fileId, contentType: 'text/csv', status: 'ready' });
+    expect(new TextDecoder().decode(bytes)).toBe('nume,telefon\nIon,0722000000\n');
+    await expect(readFileAsSystem(ORG_A, { fileId, module: 'support' })).rejects.toBeInstanceOf(
+      ResourceNotFound,
+    );
+    await expect(readFileAsSystem(ORG_B, { fileId, module: 'crm' })).rejects.toBeInstanceOf(
+      ResourceNotFound,
+    );
+    // the stored bytes changed after the check: refused
+    storage.put(keyOf(ORG_A, fileId), new TextEncoder().encode('<html>'), 'text/csv');
+    await expect(readFileAsSystem(ORG_A, { fileId, module: 'crm' })).rejects.toThrow(/not the one/);
+    await deleteFileAsSystem(ORG_A, { fileId, module: 'crm', reason: 'crm_import_finished' });
+    await expect(readFileAsSystem(ORG_A, { fileId, module: 'crm' })).rejects.toBeInstanceOf(
+      ResourceNotFound,
+    );
   });
 
   it('the support attachments are logged in the support category', async () => {

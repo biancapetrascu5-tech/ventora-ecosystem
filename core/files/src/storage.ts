@@ -18,6 +18,11 @@ export interface StorageAdapter {
   signDownload(key: string, expiresInSeconds: number, downloadName: string): Promise<string>;
   /** What is really stored at `key`, or null when nothing is. */
   stat(key: string): Promise<StoredObject | null>;
+  /**
+   * C.4f: the whole object, for a job on the server (the ClientDesk import reads its CSV), or
+   * null when nothing is stored. More than `maxBytes` is refused without reading the rest.
+   */
+  read(key: string, maxBytes: number): Promise<Uint8Array | null>;
   remove(key: string): Promise<void>;
 }
 
