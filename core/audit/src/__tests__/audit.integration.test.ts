@@ -270,6 +270,101 @@ describe('TA.7 — RLS: an organization reads only its own rows', () => {
   });
 });
 
+describe('C.10 — the target filter: the history of one record', () => {
+  const orgA = crypto.randomUUID();
+  const orgB = crypto.randomUUID();
+  const contact = crypto.randomUUID();
+  const other = crypto.randomUUID();
+  const ids: Record<string, string> = {};
+
+  beforeAll(async () => {
+    const write = async (name: string, e: Partial<AuditEvent>) => {
+      ids[name] = (await writeAuditEvent(event({ category: 'crm', ...e }), { mode: 'required' }))!;
+    };
+    await write('created', {
+      organizationId: orgA,
+      action: 'crm.contact_created',
+      targetType: 'crm_contact',
+      targetId: contact,
+    });
+    await write('updated', {
+      organizationId: orgA,
+      action: 'crm.contact_updated',
+      targetType: 'crm_contact',
+      targetId: contact,
+      metadata: { fields: ['phone'] },
+    });
+    await write('otherContact', {
+      organizationId: orgA,
+      action: 'crm.contact_updated',
+      targetType: 'crm_contact',
+      targetId: other,
+    });
+    // the same target id in another organization, and another target type with the same id
+    await write('orgB', {
+      organizationId: orgB,
+      action: 'crm.contact_updated',
+      targetType: 'crm_contact',
+      targetId: contact,
+    });
+    await write('lead', {
+      organizationId: orgA,
+      action: 'crm.lead_updated',
+      targetType: 'crm_lead',
+      targetId: contact,
+    });
+  });
+
+  it('only the rows of that target, of the organization in context, newest first', async () => {
+    const rows = await readOrganizationAuditLog(orgA, {
+      target: { type: 'crm_contact', id: contact },
+    });
+    expect(rows.map((r) => r.id)).toEqual([ids.updated, ids.created]);
+    expect(rows[0]!.metadata).toEqual({ fields: ['phone'] });
+  });
+
+  it('with actions / category / limit / before', async () => {
+    const target = { type: 'crm_contact' as const, id: contact };
+    expect(
+      (await readOrganizationAuditLog(orgA, { target, actions: ['crm.contact_updated'] })).map(
+        (r) => r.id,
+      ),
+    ).toEqual([ids.updated]);
+    expect(await readOrganizationAuditLog(orgA, { target, category: 'booking' })).toEqual([]);
+    expect((await readOrganizationAuditLog(orgA, { target, limit: 1 })).map((r) => r.id)).toEqual([
+      ids.updated,
+    ]);
+    const [newest] = await readOrganizationAuditLog(orgA, { target, limit: 1 });
+    expect(
+      (await readOrganizationAuditLog(orgA, { target, before: newest!.createdAt })).map(
+        (r) => r.id,
+      ),
+    ).toEqual([ids.created]);
+    // the category alone: every crm row of the organization
+    expect(
+      (await readOrganizationAuditLog(orgA, { category: 'crm' })).map((r) => r.id).sort(),
+    ).toEqual([ids.created, ids.updated, ids.otherContact, ids.lead].sort());
+  });
+
+  it('a target needs its type and its id; a malformed one is refused before the query', async () => {
+    await expect(
+      readOrganizationAuditLog(orgA, { target: { type: 'crm_contact', id: '' } }),
+    ).rejects.toThrow(/target.id/);
+    await expect(
+      readOrganizationAuditLog(orgA, {
+        target: { type: "crm_contact' OR '1'='1" as never, id: contact },
+      }),
+    ).rejects.toThrow(/target.type/);
+  });
+
+  it('the index serves the read (organization, target type, target id, time)', async () => {
+    const { rows } = await adminPool.query(
+      `SELECT indexdef FROM pg_indexes WHERE schemaname = 'audit' AND indexname = 'audit_log_organization_id_target_idx'`,
+    );
+    expect(rows[0]?.indexdef).toMatch(/organization_id, target_type, target_id, created_at DESC/);
+  });
+});
+
 describe('TA.8 — Founder reads everything; app_runtime cannot become audit_founder_reader', () => {
   const orgA = crypto.randomUUID();
   const marker = crypto.randomUUID();

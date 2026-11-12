@@ -161,6 +161,18 @@ export type AuditLogEntry = {
 
 export type AuditLogFilters = {
   action?: string;
+  /**
+   * Lot C.10 (approved 11.11.2026): only these actions (for example the field changes of a
+   * record: crm.contact_updated, crm.contact_assigned…).
+   */
+  actions?: string[];
+  /** C.10: only one category (crm, booking…). */
+  category?: AuditCategory;
+  /**
+   * C.10: only the rows of one target — the history of a record (a ClientDesk contact, a lead,
+   * a deal). Both the type and the id; served by the index on (organization, target, time).
+   */
+  target?: { type: AuditTargetType; id: string };
   /** Rows strictly older than this (keyset pagination on created_at). */
   before?: Date;
   /** Default 50, max 200. */

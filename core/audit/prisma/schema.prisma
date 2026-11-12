@@ -32,6 +32,7 @@ model AuditLog {
   @@index([action, createdAt(sort: Desc)], map: "audit_log_action_created_at_idx")
   @@index([supportSessionId], map: "audit_log_support_session_id_idx")
   @@index([category, createdAt], map: "audit_log_category_created_at_idx")
+  @@index([organizationId, targetType, targetId, createdAt(sort: Desc)], map: "audit_log_organization_id_target_idx")
   @@map("audit_log")
   @@schema("audit")
 }
