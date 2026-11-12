@@ -59,6 +59,7 @@ model Service {
   staffTerms   StaffServiceTerms[]
   publicHolds  PublicHold[]
 
+  classSessions ClassSession[]
   @@index([organizationId, categoryId, sortOrder], map: "service_organization_id_category_sort_idx")
   @@index([categoryId], map: "service_category_id_idx")
   @@map("service")
@@ -109,6 +110,7 @@ model StaffMember {
   serviceTerms StaffServiceTerms[]
   publicHolds  PublicHold[]
 
+  classSessions ClassSession[]
   @@index([organizationId, sortOrder], map: "staff_member_organization_id_sort_idx")
   @@map("staff_member")
   @@schema("booking")
@@ -326,6 +328,8 @@ model Appointment {
   // Lot B.9b: the appointment's series and its place in it (both NULL for an appointment alone)
   seriesId            String?   @map("series_id") @db.Uuid
   seriesIndex         Int?      @map("series_index") @db.SmallInt
+  // Lot B.9d1: the class session of a participant
+  classSessionId      String?   @map("class_session_id") @db.Uuid
 
   staffMember StaffMember          @relation(fields: [staffMemberId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "appointment_staff_member_id_fkey")
   service     Service              @relation(fields: [serviceId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "appointment_service_id_fkey")
@@ -336,6 +340,7 @@ model Appointment {
   manageTokens ManageToken[]
   moveHolds   PublicHold[]
   answers     AppointmentAnswer[]
+  classSession ClassSession?        @relation(fields: [organizationId, classSessionId], references: [organizationId, id], onDelete: Restrict, onUpdate: Restrict, map: "appointment_class_session_fkey")
   series      AppointmentSeries?   @relation(fields: [organizationId, seriesId], references: [organizationId, id], onDelete: Restrict, onUpdate: Restrict, map: "appointment_series_fkey")
 
   @@unique([organizationId, number], map: "appointment_organization_id_number_key")
@@ -347,6 +352,7 @@ model Appointment {
   @@index([clientId, startsAt], map: "appointment_client_id_starts_idx")
   @@index([serviceId, startsAt], map: "appointment_service_id_starts_idx")
   @@index([locationId, startsAt], map: "appointment_location_id_starts_idx")
+  @@index([classSessionId], map: "appointment_class_session_id_idx")
   @@map("appointment")
   @@schema("booking")
 }
@@ -413,6 +419,7 @@ model Resource {
   services     ServiceResource[]
   appointments AppointmentResource[]
 
+  classSessions ClassSession[]
   @@index([organizationId, sortOrder], map: "resource_organization_id_sort_idx")
   @@map("resource")
   @@schema("booking")
@@ -765,5 +772,37 @@ model AppointmentSeries {
   @@unique([organizationId, id], map: "appointment_series_organization_id_id_key")
   @@index([clientId], map: "appointment_series_client_id_idx")
   @@map("appointment_series")
+  @@schema("booking")
+}
+
+// Lot B.9d1: a session of a class (BookingClasses, S126); its participants are appointments
+model ClassSession {
+  id                String        @id @db.Uuid
+  organizationId    String        @map("organization_id") @db.Uuid
+  serviceId         String        @map("service_id") @db.Uuid
+  staffMemberId     String        @map("staff_member_id") @db.Uuid
+  resourceId        String?       @map("resource_id") @db.Uuid
+  locationId        String?       @map("location_id") @db.Uuid
+  seats             Int           @db.SmallInt
+  startsAt          DateTime      @map("starts_at") @db.Timestamptz
+  endsAt            DateTime      @map("ends_at") @db.Timestamptz
+  status            String        @default("scheduled") @db.VarChar(10)
+  cancelledAt       DateTime?     @map("cancelled_at") @db.Timestamptz
+  cancelledByUserId String?       @map("cancelled_by_user_id") @db.Uuid
+  repeatGroupId     String?       @map("repeat_group_id") @db.Uuid
+  createdByUserId   String        @map("created_by_user_id") @db.Uuid
+  createdAt         DateTime      @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt         DateTime      @default(now()) @map("updated_at") @db.Timestamptz
+
+  service      Service       @relation(fields: [serviceId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "class_session_service_id_fkey")
+  staffMember  StaffMember   @relation(fields: [staffMemberId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "class_session_staff_member_id_fkey")
+  resource     Resource?     @relation(fields: [resourceId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "class_session_resource_id_fkey")
+  participants Appointment[]
+
+  @@unique([organizationId, id], map: "class_session_organization_id_id_key")
+  @@index([organizationId, startsAt], map: "class_session_organization_id_starts_idx")
+  @@index([staffMemberId, startsAt], map: "class_session_staff_member_id_starts_idx")
+  @@index([resourceId, startsAt], map: "class_session_resource_id_starts_idx")
+  @@map("class_session")
   @@schema("booking")
 }

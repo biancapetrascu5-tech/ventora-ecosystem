@@ -163,7 +163,8 @@ async function readBooking(client: PoolClient, id: string, lock = false): Promis
                FROM booking.appointment_payment p WHERE p.appointment_id = a.id) AS refunded,
             (s.archived_at IS NULL AND s.bookable_online
               AND m.archived_at IS NULL AND m.bookable_online) AS online,
-            (a.visit_id IS NOT NULL) AS in_visit,
+            -- B.9d1: a participant of a class too (changed by the team until B.9d2)
+            (a.visit_id IS NOT NULL OR a.class_session_id IS NOT NULL) AS in_visit,
             (SELECT count(*)::int FROM booking.appointment_history h
               WHERE h.appointment_id = a.id AND h.kind = 'moved' AND h.actor_type = 'client')
               AS client_moves,

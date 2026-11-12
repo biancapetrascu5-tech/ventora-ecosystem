@@ -164,6 +164,8 @@ export type Appointment = {
   visit: VisitRef | null;
   /** B.9b: an appointment of a recurring series („Se repetă · 3 din 8”); null otherwise. */
   series: SeriesRef | null;
+  /** B.9d1: a participant of a class session; null otherwise. */
+  classSessionId: string | null;
   createdByUserId: string | null;
   createdAt: Date;
   updatedAt: Date;
@@ -252,6 +254,7 @@ export type AppointmentRow = {
   break_after_minutes: number | null;
   series_id: string | null;
   series_index: number | null;
+  class_session_id: string | null;
 };
 
 export const APPOINTMENT_COLUMNS = `id, number, staff_member_id, service_id, client_id, starts_at, ends_at,
@@ -260,7 +263,7 @@ export const APPOINTMENT_COLUMNS = `id, number, staff_member_id, service_id, cli
   cancelled_by, cancelled_by_user_id, cancel_minutes_before, cancel_late, deposit_minor,
   deposit_currency, payment_due_at, corrected_at, corrected_by_user_id, correction_reason,
   created_by_user_id, created_at, updated_at, location_id, visit_id, visit_step, visit_steps,
-  break_after_minutes, series_id, series_index`;
+  break_after_minutes, series_id, series_index, class_session_id`;
 
 export function toAppointment(r: AppointmentRow): Appointment {
   return {
@@ -316,6 +319,7 @@ export function toAppointment(r: AppointmentRow): Appointment {
         : null,
     series:
       r.series_id && r.series_index !== null ? { id: r.series_id, index: r.series_index } : null,
+    classSessionId: r.class_session_id,
     createdByUserId: r.created_by_user_id,
     createdAt: r.created_at,
     updatedAt: r.updated_at,
@@ -1042,6 +1046,11 @@ export type AppointmentInsert = {
   visit: VisitRef | null;
   /** B.9b: the appointment's place in its series (absent = none). */
   series?: SeriesRef | null;
+  /**
+   * B.9d1: a participant of a class session — its capacity is the session's seats and it uses no
+   * resource of its own (the session holds the room).
+   */
+  classSession?: { id: string; seats: number } | null;
 };
 
 /**
@@ -1059,7 +1068,7 @@ export async function insertAppointmentRow(
 }> {
   // B.3b: the active resources the service needs (an archived one is not required, S124);
   // B.10: at the appointment's location, the ones standing there or everywhere
-  const resources = await requiredResources(db, v.service.id, v.locationId);
+  const resources = v.classSession ? [] : await requiredResources(db, v.service.id, v.locationId);
   const number = (
     await db.query<{ last_number: number }>(
       `INSERT INTO booking.appointment_counter (organization_id, last_number) VALUES ($1, 1)
@@ -1076,9 +1085,9 @@ export async function insertAppointmentRow(
         duration_minutes, capacity, status, service_name, staff_display_name, client_name,
         price_kind, price_minor, price_max_minor, currency, team_note, source,
         created_by_user_id, location_id, visit_id, visit_step, visit_steps, break_after_minutes,
-        series_id, series_index)
+        series_id, series_index, class_session_id)
      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18,
-             $19, $22, $20, $21, $23, $24, $25, $26, $27, $28)
+             $19, $22, $20, $21, $23, $24, $25, $26, $27, $28, $29)
      ON CONFLICT (id) DO NOTHING
      RETURNING ${APPOINTMENT_COLUMNS}`,
     [
@@ -1091,7 +1100,7 @@ export async function insertAppointmentRow(
       v.startsAt,
       v.endsAt,
       v.duration,
-      v.service.capacity,
+      v.classSession?.seats ?? v.service.capacity,
       v.status,
       v.service.name,
       v.staffDisplayName,
@@ -1110,6 +1119,7 @@ export async function insertAppointmentRow(
       v.visit ? v.visit.breakAfterMinutes : null,
       v.series?.id ?? null,
       v.series?.index ?? null,
+      v.classSession?.id ?? null,
     ],
   );
   // B.3b: one unit of every resource, in the same transaction (the trigger checks it)
@@ -1501,6 +1511,8 @@ async function moveAppointment(
   if (!MOVABLE.includes(current.status)) throw new Conflict('appointment_final');
   // B.9a (D-9a-1): a step of a visit is moved only by the team (moveVisit, or this step alone)
   if (isPublicContext(ctx) && current.visit_id) throw new Conflict('visit_managed_by_team');
+  // B.9d1: a participant keeps the session's time and member (cancel and add again instead)
+  if (current.class_session_id) throw new Conflict('class_participant');
 
   const startsAt =
     input.startsAt === undefined ? current.starts_at : requireInstant('startsAt', input.startsAt);
