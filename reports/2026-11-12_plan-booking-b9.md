@@ -85,6 +85,23 @@ CHECK-urile țin coloanele împreună. Fără tabel nou.
 
 **Ordinea:** după B.9b și B.9c, de care depinde.
 
+**Împărțirea (12.11):** B.9d are două părți:
+- **B.9d1**, cu baza `main`:
+  - sesiunile, participanții, calendarul;
+  - sala și membrul ocupate de sesiune, ca reguli ale bazei de date;
+  - anularea sesiunii;
+  - „Se repetă săptămânal”, ca grup de sesiuni.
+- **B.9d2**, după merge-ul #187 (B.9c):
+  - lista de așteptare automată a clasei (D-9d-2);
+  - rezervarea online a unui loc (D-9d-3).
+
+## B.FK — aceeași afacere pe toate legăturile (cerut de Bianca pe 12.11, după B.9d)
+
+Legăturile spre `client`, `service` și `staff_member` trebuie să garanteze aceeași afacere. Lotul acoperă tabelele noi (`appointment_series`, `waitlist_entry`, `waitlist_offer`, `class_session`) și pe cele vechi (`appointment`, `appointment_resource` și celelalte):
+- `UNIQUE (organization_id, id)` pe `client`, `service`, `staff_member` (și `resource`, unde lipsește);
+- FK-urile simple înlocuite cu FK compuse `(organization_id, …)`;
+- un test care refuză, la nivelul bazei de date, id-urile altei afaceri pe fiecare legătură.
+
 ## B.9e — pachetele de ședințe
 
 **Modelul:**
@@ -103,7 +120,7 @@ CHECK-urile țin coloanele împreună. Fără tabel nou.
 
 ## Ordinea și PR-urile
 
-**Ordinea:** B.9a → B.9b → B.9c → B.9d → B.9e. Câte un PR pe sublot, cu baza `main`, cel mult 3 PR-uri deschise.
+**Ordinea:** B.9a → B.9b → B.9c → B.9d1 → B.9d2 → B.FK → B.9e. Câte un PR pe sublot, cu baza `main`, cel mult 3 PR-uri deschise.
 
 **Testele locale:** doar testele lotului (`b-files.mjs`), cu regula pentru Docker din 12.11.
 

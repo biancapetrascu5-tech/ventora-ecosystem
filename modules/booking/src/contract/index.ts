@@ -340,3 +340,21 @@ export type {
 } from './series';
 export type { Series, SeriesFrequency, SeriesOccurrence, SeriesPreview } from '../server/series';
 export type { SeriesRef } from '../server/appointments';
+
+// Lot B.9d1: the classes (BookingClasses, S126)
+export {
+  createClassSessions,
+  listClassSessions,
+  getClassSession,
+  addClassParticipant,
+  markClassAttendance,
+  cancelClassSession,
+} from './classes';
+export type {
+  CreateClassSessionsParams,
+  ListClassSessionsParams,
+  ClassSessionIdParams,
+  AddClassParticipantParams,
+  MarkClassAttendanceParams,
+} from './classes';
+export type { ClassSession, ClassSessionDetail, ClassSessionStatus } from '../server/classes';

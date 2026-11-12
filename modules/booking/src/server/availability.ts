@@ -324,6 +324,15 @@ async function load(
             WHERE b.staff_member_id = ANY($1::uuid[]) AND b.archived_at IS NULL
               AND b.starts_at < (($3::date + 2)::timestamp AT TIME ZONE $4)
               AND b.ends_at > (($2::date - 1)::timestamp AT TIME ZONE $4)
+           UNION ALL
+           -- B.9d1: a scheduled class session holds its member (as a blocked time)
+           SELECT s.staff_member_id, NULL,
+                  to_char(s.starts_at AT TIME ZONE $4, 'YYYY-MM-DD"T"HH24:MI'),
+                  to_char(s.ends_at AT TIME ZONE $4, 'YYYY-MM-DD"T"HH24:MI')
+             FROM booking.class_session s
+            WHERE s.staff_member_id = ANY($1::uuid[]) AND s.status = 'scheduled'
+              AND s.starts_at < (($3::date + 2)::timestamp AT TIME ZONE $4)
+              AND s.ends_at > (($2::date - 1)::timestamp AT TIME ZONE $4)
            ${
              // B.11a: online, a time held for another client (10 minutes, until the e-mail code)
              query.mode === 'online'
@@ -374,7 +383,16 @@ async function load(
               WHERE ar.resource_id = ANY($1::uuid[]) AND a.status = ANY($5::text[])
                 AND a.id IS DISTINCT FROM $6::uuid
                 AND a.starts_at < (($3::date + 2)::timestamp AT TIME ZONE $4)
-                AND a.ends_at > (($2::date - 1)::timestamp AT TIME ZONE $4)`,
+                AND a.ends_at > (($2::date - 1)::timestamp AT TIME ZONE $4)
+             UNION ALL
+             -- B.9d1: a scheduled class session holds one unit of its room
+             SELECT s.resource_id,
+                    to_char(s.starts_at AT TIME ZONE $4, 'YYYY-MM-DD"T"HH24:MI'),
+                    to_char(s.ends_at AT TIME ZONE $4, 'YYYY-MM-DD"T"HH24:MI')
+               FROM booking.class_session s
+              WHERE s.resource_id = ANY($1::uuid[]) AND s.status = 'scheduled'
+                AND s.starts_at < (($3::date + 2)::timestamp AT TIME ZONE $4)
+                AND s.ends_at > (($2::date - 1)::timestamp AT TIME ZONE $4)`,
             [
               resources.map((r) => r.id),
               from,

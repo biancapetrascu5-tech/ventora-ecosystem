@@ -756,6 +756,8 @@ describe('B.1 — the role and the grants (§2.3)', () => {
       // B.9b: the recurring series
       'appointment_series',
       'business_hours',
+      // B.9d1: the class sessions
+      'class_session',
       'client',
       'client_block',
       'client_note_removal',
