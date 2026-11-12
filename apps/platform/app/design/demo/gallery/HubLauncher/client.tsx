@@ -32,6 +32,9 @@ function data(noData: boolean, reco: boolean): LauncherData {
     timeZone: 'Europe/Bucharest',
     appointmentsToday: noData ? null : 8,
     trialEnding: null,
+    accessRequest: null,
+    needsYou: [],
+    supportEmail: 'support@ventorasystems.com',
     recommendation: reco
       ? {
           slotId: 'hub.launcher.other',

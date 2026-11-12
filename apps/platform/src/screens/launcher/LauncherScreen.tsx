@@ -10,17 +10,20 @@ import {
   AppIcon,
   AppLaunch,
   AppTile,
+  AttentionList,
   BrandZone,
   Button,
-  EmptyState,
   Notice,
   type AppName,
   type DockApp,
 } from '@ventora/ui';
-import type { LauncherData } from '@/server/launcher-actions';
+import { useDates } from '@ventora/screens';
+import { requestAccess, type LauncherData } from '@/server/launcher-actions';
 import type { GrowthSlotView } from '@/server/growth-slot';
 import { GrowthRecommendation } from '../growth/GrowthRecommendation';
 import { useAppTileLabels } from '../labels';
+import { HubEmptyBody } from './HubEmptyBody';
+import { requestStateOf, type AccessRequestState } from './access-request-state';
 import styles from './launcher.module.css';
 
 /* Lotul 5.1 — HubLauncher 1.1.0 (S136) pe datele afacerii, pe structura preview-ului:
@@ -29,8 +32,10 @@ import styles from './launcher.module.css';
    - AppDock cu aplicațiile disponibile, peste marginea benzii; fără cardul Portal (D5-16) și fără
      „Reordonează” (D5-15);
    - „Alte aplicații Ventora Systems”: starea fiecăreia (D5-3) și ce poate face persoana;
-   - fără nicio aplicație disponibilă: HubEmpty (fără „Cere acces” până la designul notificării
-     către proprietar).
+   - fără nicio aplicație disponibilă: HubEmpty cu „Cere acces” (S146, lotul 5.1c), fără „Alte
+     aplicații” (ca în preview);
+   - owner / admin: „Au nevoie de tine” (S146), sub aplicații — cine a cerut acces și încă n-are
+     nicio aplicație, cu „Deschide Echipa”.
    Slotul Growth (5.9a, `hub.launcher.other`): pe rândul aplicației recomandate din „Alte aplicații”
    (AppTile cu recomandare) sau, pentru un pachet / abonament, un RecommendationCard deasupra
    rândurilor; gol = nimic desenat. */
@@ -65,15 +70,31 @@ export interface LauncherScreenProps {
   businessName: string;
   /** Momentul randării (din server), ca data și salutul să nu se schimbe la hidratare. */
   now: string;
+  /** Galeria /design: o stare trecătoare a cererii (sending / error / suspended). */
+  requestState?: AccessRequestState;
 }
 
-export function LauncherScreen({ data, userName, businessName, now }: LauncherScreenProps) {
+export function LauncherScreen({
+  data,
+  userName,
+  businessName,
+  now,
+  requestState,
+}: LauncherScreenProps) {
   const router = useRouter();
   const locale = useLocale();
   const t = useTranslations('hub.launcher');
   const desc = useTranslations('hub.apps.desc');
   const labels = useAppTileLabels();
   const pay = useTranslations('pay');
+  const team = useTranslations('team.accessRequest');
+  const attentionT = useTranslations('hub.attention');
+  const roles = useTranslations('roles');
+  const dates = useDates();
+  const [request, setRequest] = useState(data.accessRequest);
+  const [reqState, setReqState] = useState<AccessRequestState>(
+    requestState ?? requestStateOf(data.accessRequest, now),
+  );
   const [launch, setLaunch] = useState<{
     app: AppName;
     name: string;
@@ -109,6 +130,21 @@ export function LauncherScreen({ data, userName, businessName, now }: LauncherSc
   const recoOnRow = reco?.app && others.some((a) => a.app === reco.app) ? reco.app : null;
   const openOptions = (v: GrowthSlotView) => router.push(continueHref(v));
   const empty = available.length === 0;
+  const roleName = (r: string) => (roles.has(r) ? roles(r) : r);
+
+  async function ask() {
+    setReqState('sending');
+    const r = await requestAccess();
+    if (r.ok) {
+      setRequest(r.request);
+      setReqState('sent');
+    } else if (r.error === 'tooSoon') {
+      setRequest((prev) => (prev ? { ...prev, canResendAt: r.canResendAt } : prev));
+      setReqState('sent');
+    } else {
+      setReqState(r.error === 'suspended' ? 'suspended' : 'error');
+    }
+  }
   const dock: DockApp[] = available.map((a) => ({ app: a.app, description: desc(a.app) }));
 
   const day = empty
@@ -155,15 +191,15 @@ export function LauncherScreen({ data, userName, businessName, now }: LauncherSc
         </BrandZone>
 
         {empty ? (
-          <div className={styles.empty}>
-            <EmptyState
-              icon="layout-grid"
-              title={t('empty.title')}
-              description={
-                data.ownerName ? t('empty.body', { owner: data.ownerName }) : t('empty.bodyNoOwner')
-              }
-            />
-          </div>
+          <HubEmptyBody
+            state={reqState}
+            owner={data.ownerName}
+            business={businessName}
+            supportEmail={data.supportEmail}
+            sentOn={request ? dates.day(new Date(request.requestedAt)) : undefined}
+            resendOn={request ? dates.day(new Date(request.canResendAt)) : undefined}
+            onAsk={ask}
+          />
         ) : (
           <>
             {sechead(styles.secheadMobile)}
@@ -202,7 +238,38 @@ export function LauncherScreen({ data, userName, businessName, now }: LauncherSc
           </>
         )}
 
-        {others.length > 0 && (
+        {!empty && data.needsYou.length > 0 && (
+          <section className={styles.attention} aria-labelledby="launcher-attention">
+            <h2 id="launcher-attention" className="subheading">
+              {attentionT('title')}
+            </h2>
+            <AttentionList
+              items={data.needsYou.map((p) => ({
+                id: p.userId,
+                icon: 'key-round',
+                tone: 'attention',
+                title: team('title', { name: p.name }),
+                meta: p.again
+                  ? team('again', { date: dates.day(new Date(p.requestedAt)) })
+                  : team('meta', {
+                      role: roleName(p.role),
+                      date: dates.day(new Date(p.requestedAt)),
+                    }),
+                time: dates.time(new Date(p.requestedAt)),
+                actions: [
+                  {
+                    label: team('open'),
+                    icon: 'users',
+                    primary: true,
+                    onPress: () => router.push('/admin/team'),
+                  },
+                ],
+              }))}
+            />
+          </section>
+        )}
+
+        {!empty && others.length > 0 && (
           <section aria-labelledby="launcher-others">
             <h2 id="launcher-others" className={`display-m ${styles.sec}`}>
               {t('others.title')}
