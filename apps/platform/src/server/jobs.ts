@@ -22,7 +22,7 @@ import {
 } from '@ventora/commercial';
 import './billing-config';
 import { bookingQuotaRefundConsumer, runPublicHoldCleanupJob } from '@ventora/booking';
-import { runCrmBinJob } from '@ventora/crm';
+import { runCrmBinJob, runCrmImportJob } from '@ventora/crm';
 import {
   growthConversionConsumer,
   growthSignalConsumer,
@@ -301,6 +301,25 @@ export const platformJobs = new JobRegistry()
           report.failed.map((f) => f.error),
           `[crm] ${report.failed.length} contacts not anonymised: ` +
             report.failed.map((f) => f.contactId).join(', '),
+        );
+      }
+      return report;
+    },
+  })
+  // ClientDesk CR.11b: importurile de contacte, câte cel mult 500 de rânduri pe import la fiecare
+  // rulare; CSV-ul se șterge din core/files după final, anulare sau 7 zile (C.4f, auditat acolo).
+  .register({
+    id: 'crm.import',
+    owner: 'CRM import',
+    description: 'Importurile de contacte ClientDesk din CSV, pe rânduri, cu progres',
+    trigger: { cron: '* * * * *' },
+    run: async () => {
+      const report = await runCrmImportJob();
+      if (report.errors.length) {
+        throw new AggregateError(
+          report.errors.map((f) => f.error),
+          `[crm] ${report.errors.length} imports failed this run: ` +
+            report.errors.map((f) => f.jobId).join(', '),
         );
       }
       return report;

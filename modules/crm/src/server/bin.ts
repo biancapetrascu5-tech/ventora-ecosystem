@@ -1,4 +1,5 @@
 import { AuditActions, appendAuditEventInTx } from '@ventora/audit';
+import { deleteOwnerFilesAsSystem } from '@ventora/files';
 import { withCrmModuleTx, withCrmTx } from './db';
 
 /*
@@ -9,8 +10,9 @@ import { withCrmModuleTx, withCrmTx } from './db';
  * converted into it. Restoring stops at 30 days already (`bin_expired`). One that fails does not
  * stop the others; the job reports it.
  *
- * Not done here: the contact's files in core/files (a system deletion path there is missing:
- * proposal), the audit rows (they hold no personal data).
+ * The files of the contact and of the leads converted into it go first, through core/files (C.4f:
+ * deleted, bytes out of the storage, audited there): a failure leaves the contact for the next
+ * run. The audit rows stay (they hold no personal data).
  */
 
 export type BinJobReport = {
@@ -20,8 +22,39 @@ export type BinJobReport = {
 
 const MARK = '—';
 
+/** The files of the contact and of its converted leads (C.4f); how many were deleted. */
+async function deleteFiles(organizationId: string, contactId: string): Promise<number> {
+  const leadIds = await withCrmTx(
+    organizationId,
+    async (client) =>
+      (
+        await client.query<{ id: string }>(
+          `SELECT id::text FROM crm.lead WHERE converted_contact_id = $1`,
+          [contactId],
+        )
+      ).rows.map((r) => r.id),
+    true,
+  );
+  let deleted = 0;
+  for (const [resourceType, resourceId] of [
+    ['contact', contactId],
+    ...leadIds.map((id) => ['lead', id] as const),
+  ] as const) {
+    deleted += await deleteOwnerFilesAsSystem(
+      organizationId,
+      { module: 'crm', resourceType, resourceId },
+      'crm_contact_anonymized',
+    );
+  }
+  return deleted;
+}
+
 /** Anonymises one due contact in its business (nothing if restored or done meanwhile). */
-async function anonymize(organizationId: string, contactId: string): Promise<boolean> {
+async function anonymize(
+  organizationId: string,
+  contactId: string,
+  files: number,
+): Promise<boolean> {
   return withCrmTx(organizationId, async (client, exec) => {
     const { rows } = await client.query<{ deleted_at: Date | null; anonymized_at: Date | null }>(
       `SELECT deleted_at, anonymized_at FROM crm.contact WHERE id = $1 FOR UPDATE`,
@@ -71,6 +104,7 @@ async function anonymize(organizationId: string, contactId: string): Promise<boo
         leads: leadIds.length,
         notes: notes.rowCount ?? 0,
         activities: activities.rowCount ?? 0,
+        files,
       },
     });
     return true;
@@ -89,7 +123,8 @@ export async function runCrmBinJob(limit = 100): Promise<BinJobReport> {
   });
   for (const item of due) {
     try {
-      if (await anonymize(item.organization_id, item.id)) report.anonymized += 1;
+      const files = await deleteFiles(item.organization_id, item.id);
+      if (await anonymize(item.organization_id, item.id, files)) report.anonymized += 1;
     } catch (error) {
       report.failed.push({ contactId: item.id, organizationId: item.organization_id, error });
     }

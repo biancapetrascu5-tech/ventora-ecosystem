@@ -277,6 +277,8 @@ export async function createContactInOrg(
   options: {
     systemSource?: ContactSource;
     inTx?: (client: PoolClient, exec: AuditSqlExecutor, contact: Contact) => Promise<void>;
+    /** CR.11b: the required own fields are asked only when a person adds by hand (S132). */
+    requiredCustomFields?: boolean;
   } = {},
 ): Promise<Contact> {
   const name = requiredText('name', input.name, LIMITS.name);
@@ -301,7 +303,7 @@ export async function createContactInOrg(
   try {
     created = await withCrmTx(ctx.organizationId, async (client, exec) => {
       const custom = await validateCustomValues(client, 'contact', input.customValues, {
-        required: true,
+        required: options.requiredCustomFields ?? true,
       });
       if (companyId && primary) await clearPrimary(client, companyId, id);
       const { rows } = await client
