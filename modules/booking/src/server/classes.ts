@@ -6,7 +6,7 @@ import { uuidv7, writeOutboxEvent } from '@ventora/db-kit';
 import { Conflict, Forbidden, InvalidInput, ResourceNotFound } from '@ventora/errors';
 import { getOrganizationTimeZone } from '@ventora/organizations';
 import { reserveQuota } from '@ventora/quota';
-import { actorUserId, hubOnly } from './actor';
+import { actorUserId, hubOnly, isPublicContext } from './actor';
 import {
   AlreadyCreated,
   APPOINTMENT_COLUMNS,
@@ -42,6 +42,7 @@ import { locationFilter } from './locations';
 import { doesService } from './staff-services';
 import { durationWithin, effectiveTermsFor } from './terms';
 import { isUuid } from './validation';
+import { sessionWaitlist, type WaitlistEntry } from './waitlist';
 
 /*
  * Lot B.9d1 — classes and groups (design BookingClasses, S126; plan
@@ -60,8 +61,9 @@ import { isUuid } from './validation';
  *   markClassAttendance   „Marchează: a venit / nu a venit”;
  *   cancelClassSession    „Anulează sesiunea…”: every open participant cancelled (the quota unit
  *                         back before the start), the session cancelled.
- * „Anulează participarea” is cancelAppointment. The waiting list of a class (D-9d-2) and the online
- * booking (D-9d-3) are B.9d2.
+ * „Anulează participarea” is cancelAppointment. B.9d2 (server/class-waitlist.ts): the waiting list
+ * of a session (D-9d-2, automatic offers) and the online booking of a seat (D-9d-3). A pending offer
+ * and a pending online hold keep their seat: „Plin” counts them (seatsHeld).
  *
  * Audit (PROPUS, no new code): a session created or cancelled is booking.staff_schedule_updated on
  * the member (metadata kind class_session_created / class_session_cancelled, the ids); the
@@ -90,6 +92,10 @@ export type ClassSession = {
   seats: number;
   /** The participants that hold a seat (not cancelled, not „Nu a venit”). */
   seatsTaken: number;
+  /** B.9d2: the seats kept by a pending offer of the waiting list or a pending online booking. */
+  seatsHeld: number;
+  /** seats − taken − held (at least 0); „Plin” at 0. */
+  seatsLeft: number;
   full: boolean;
   startsAt: Date;
   endsAt: Date;
@@ -102,9 +108,11 @@ export type ClassSessionDetail = {
   session: ClassSession;
   /** In the order they were added; the cancelled ones too (marked by their state). */
   participants: Appointment[];
+  /** B.9d2: „Lista de așteptare”, in order (waiting or offered). */
+  waitlist: WaitlistEntry[];
 };
 
-type SessionRow = {
+export type SessionRow = {
   id: string;
   service_id: string;
   service_name: string;
@@ -116,6 +124,7 @@ type SessionRow = {
   location_id: string | null;
   seats: number;
   seats_taken: number;
+  seats_held: number;
   starts_at: Date;
   ends_at: Date;
   status: ClassSessionStatus;
@@ -123,7 +132,7 @@ type SessionRow = {
   created_at: Date;
 };
 
-const SESSION_SELECT = `
+export const SESSION_SELECT = `
   SELECT s.id, s.service_id, sv.name AS service_name, s.staff_member_id,
          m.display_name AS staff_display_name, m.user_id AS staff_user_id, s.resource_id,
          r.name AS resource_name, s.location_id, s.seats,
@@ -131,13 +140,18 @@ const SESSION_SELECT = `
            WHERE a.class_session_id = s.id
              AND a.status IN ('awaiting_payment', 'unconfirmed', 'confirmed', 'in_progress',
                               'completed')) AS seats_taken,
+         ((SELECT count(*)::int FROM booking.waitlist_offer o
+            WHERE o.class_session_id = s.id AND o.state = 'pending' AND o.expires_at > now())
+          + (SELECT count(*)::int FROM booking.public_hold h
+              WHERE h.class_session_id = s.id AND h.state = 'pending'
+                AND h.expires_at > now())) AS seats_held,
          s.starts_at, s.ends_at, s.status, s.repeat_group_id, s.created_at
     FROM booking.class_session s
     JOIN booking.service sv ON sv.id = s.service_id
     JOIN booking.staff_member m ON m.id = s.staff_member_id
     LEFT JOIN booking.resource r ON r.id = s.resource_id`;
 
-function toSession(r: SessionRow): ClassSession {
+export function toSession(r: SessionRow): ClassSession {
   return {
     id: r.id,
     serviceId: r.service_id,
@@ -149,7 +163,9 @@ function toSession(r: SessionRow): ClassSession {
     locationId: r.location_id,
     seats: r.seats,
     seatsTaken: r.seats_taken,
-    full: r.seats_taken >= r.seats,
+    seatsHeld: r.seats_held,
+    seatsLeft: Math.max(0, r.seats - r.seats_taken - r.seats_held),
+    full: r.seats_taken + r.seats_held >= r.seats,
     startsAt: r.starts_at,
     endsAt: r.ends_at,
     status: r.status,
@@ -158,7 +174,11 @@ function toSession(r: SessionRow): ClassSession {
   };
 }
 
-async function readSession(client: PoolClient, id: string, lock = false): Promise<SessionRow> {
+export async function readSession(
+  client: PoolClient,
+  id: string,
+  lock = false,
+): Promise<SessionRow> {
   const { rows } = await client.query<SessionRow>(
     `${SESSION_SELECT} WHERE s.id = $1${lock ? ' FOR UPDATE OF s' : ''}`,
     [id],
@@ -436,7 +456,11 @@ export async function getClassSessionInOrg(
           [sessionId],
         )
       ).rows.map(toAppointment);
-      return { session: toSession(session), participants };
+      return {
+        session: toSession(session),
+        participants,
+        waitlist: await sessionWaitlist(client, sessionId),
+      };
     },
     true,
   );
@@ -476,6 +500,64 @@ export async function addClassParticipantInOrg(
   if (input.clientId !== undefined && !isUuid(input.clientId)) throw new ResourceNotFound();
   const clientId = (input.clientId as string | undefined) ?? null;
 
+  const session = await tx(ctx, (client) => readSession(client, sessionId), true);
+  requireScope(ctx, scope, { user_id: session.staff_user_id });
+  return joinClassSession(ctx, sessionId, {
+    id,
+    clientId,
+    client: input.client,
+    status,
+    teamNote: null,
+  });
+}
+
+export type JoinClassSessionInput = {
+  id: string;
+  clientId: string | null;
+  client?: ClientInput;
+  status: AppointmentStatus;
+  teamNote: string | null;
+  /**
+   * B.9d2: the seat the caller already keeps — its own pending offer (accepted from the waiting
+   * list) or its own online hold (the code checked) — is not counted against it.
+   */
+  own?: { offerId?: string; holdId?: string };
+  /** B.9d2: in the audit (waitlistOfferId). */
+  auditExtra?: Record<string, string>;
+};
+
+/** The seats kept by pending offers and online holds, except the caller's own. */
+async function seatsHeldExcept(
+  client: PoolClient,
+  sessionId: string,
+  own: JoinClassSessionInput['own'],
+): Promise<number> {
+  return (
+    await client.query<{ n: number }>(
+      `SELECT ((SELECT count(*) FROM booking.waitlist_offer o
+                 WHERE o.class_session_id = $1 AND o.state = 'pending' AND o.expires_at > now()
+                   AND o.id IS DISTINCT FROM $2::uuid)
+             + (SELECT count(*) FROM booking.public_hold h
+                 WHERE h.class_session_id = $1 AND h.state = 'pending' AND h.expires_at > now()
+                   AND h.id IS DISTINCT FROM $3::uuid))::int AS n`,
+      [sessionId, own?.offerId ?? null, own?.holdId ?? null],
+    )
+  ).rows[0]!.n;
+}
+
+/**
+ * A participant of a session (the Hub's „Adaugă participant”; B.9d2: an offer accepted or an online
+ * booking): an appointment tied to the session (its member, service, time, location; capacity =
+ * the seats; no resource of its own), one quota unit. Full (the seats kept by others count):
+ * Conflict('class_full'); already holding a seat: Conflict('already_participant'). The caller checks
+ * who may do it (scope, public context).
+ */
+export async function joinClassSession(
+  ctx: TenantContext,
+  sessionId: string,
+  input: JoinClassSessionInput,
+): Promise<Appointment> {
+  const { id, clientId, status } = input;
   const existing = await findAppointment(ctx, id);
   if (existing) {
     if (existing.class_session_id !== sessionId) throw new Conflict('operation_reused');
@@ -483,9 +565,7 @@ export async function addClassParticipantInOrg(
     return toAppointment(existing);
   }
   const session = await tx(ctx, (client) => readSession(client, sessionId), true);
-  requireScope(ctx, scope, { user_id: session.staff_user_id });
   if (session.status !== 'scheduled') throw new Conflict('class_session_cancelled');
-  if (session.seats_taken >= session.seats) throw new Conflict('class_full');
 
   await reserveQuota(ctx, APPOINTMENTS_QUOTA_KEY, 1, id);
   let created: Appointment;
@@ -493,7 +573,9 @@ export async function addClassParticipantInOrg(
     created = await tx(ctx, async (client, exec) => {
       const s = await readSession(client, sessionId, true);
       if (s.status !== 'scheduled') throw new Conflict('class_session_cancelled');
-      if (s.seats_taken >= s.seats) throw new Conflict('class_full');
+      if (s.seats_taken + (await seatsHeldExcept(client, sessionId, input.own)) >= s.seats) {
+        throw new Conflict('class_full');
+      }
       let clientRow: ClientRow;
       if (clientId) {
         const found = (
@@ -541,7 +623,7 @@ export async function addClassParticipantInOrg(
           duration,
           status,
           price: terms,
-          teamNote: null,
+          teamNote: input.teamNote,
           locationId: s.location_id,
           visit: null,
           classSession: { id: sessionId, seats: s.seats },
@@ -569,6 +651,7 @@ export async function addClassParticipantInOrg(
         status,
         classSessionId: sessionId,
         ...(s.location_id ? { locationId: s.location_id } : {}),
+        ...input.auditExtra,
       });
       await writeOutboxEvent(client, 'booking', BookingAppointmentCreatedV1, {
         organizationId: ctx.organizationId,
@@ -583,7 +666,7 @@ export async function addClassParticipantInOrg(
           startsAt: s.starts_at.toISOString(),
           endsAt: s.ends_at.toISOString(),
           status,
-          source: 'hub',
+          source: isPublicContext(ctx) ? 'public' : 'hub',
         },
       });
       return toAppointment(inserted.row);
@@ -670,10 +753,23 @@ export async function cancelClassSessionInOrg(
         WHERE id = $1`,
       [sessionId, ctx.userId],
     );
+    // B.9d2: the waiting list of the session closes (the open offers withdrawn, their links stop)
+    await client.query(
+      `UPDATE booking.waitlist_offer SET state = 'withdrawn', closed_at = now()
+        WHERE class_session_id = $1 AND state = 'pending'`,
+      [sessionId],
+    );
+    const waitlistClosed = await client.query(
+      `UPDATE booking.waitlist_entry
+          SET status = 'removed', removed_at = now(), removed_by_user_id = $2, updated_at = now()
+        WHERE class_session_id = $1 AND status IN ('waiting', 'offered')`,
+      [sessionId, ctx.userId],
+    );
     await sessionAudit(exec, ctx, s.staff_member_id, {
       kind: 'class_session_cancelled',
       sessionId,
       participantsCancelled: open.length,
+      waitlistClosed: waitlistClosed.rowCount ?? 0,
     });
   });
   return getClassSessionInOrg(ctx, sessionId);

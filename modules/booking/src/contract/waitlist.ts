@@ -6,6 +6,8 @@ import {
   addToWaitlistInOrg,
   declineWaitlistOffer as declineInOrg,
   findWaitlistMatchesInOrg,
+  issueWaitlistOfferLinkInOrg,
+  offerFreedClassSeatsAfter,
   getWaitlistOffer as offerInOrg,
   listWaitlistInOrg,
   offerWaitlistSlotInOrg,
@@ -93,10 +95,28 @@ export async function listWaitlist(
   return listWaitlistInOrg(await auth(params, 'booking:read'), { status: params.status });
 }
 
-/** Off the list (an open offer is withdrawn). */
+/** Off the list (an open offer is withdrawn; B.9d2: its class seat goes to the next one). */
 export async function removeFromWaitlist(params: WaitlistEntryIdParams): Promise<WaitlistEntry> {
   const { ctx } = await write(params);
-  return removeFromWaitlistInOrg(ctx, params.entryId);
+  const removed = await removeFromWaitlistInOrg(ctx, params.entryId);
+  if (removed.classSessionId) {
+    await offerFreedClassSeatsAfter(ctx.organizationId, removed.classSessionId);
+  }
+  return removed;
+}
+
+export type WaitlistOfferIdParams = Session & { offerId: string };
+
+/**
+ * B.9d2: the link of a pending offer, issued again (a new token, shown only here; the old link stops
+ * working) — for the automatic offers of a class, which are made without a link, and for the e-mail
+ * of B.13. booking:write; a member only for their own time.
+ */
+export async function issueWaitlistOfferLink(
+  params: WaitlistOfferIdParams,
+): Promise<{ offerId: string; token: string; expiresAt: Date }> {
+  const { ctx, scope } = await write(params);
+  return issueWaitlistOfferLinkInOrg(ctx, scope, params.offerId);
 }
 
 /** „S-a eliberat … la Ioana Pavel”: the matching clients, in the order they were added. */

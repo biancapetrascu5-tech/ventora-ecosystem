@@ -252,6 +252,7 @@ export type { BookingReport, MoneyByCurrency } from '../server/reports';
 export {
   getPublicBookingPage,
   getPublicFreeSlots,
+  getPublicClassSessions,
   startPublicBooking,
   verifyPublicBooking,
   resendPublicBookingCode,
@@ -261,10 +262,12 @@ export {
 } from './public';
 export type {
   PublicSlotsParams,
+  PublicClassSessionsParams,
   StartPublicBookingParams,
   CaptchaVerifier,
   PublicBookingPage,
   PublicBookingResult,
+  PublicClassSession,
   PublicHoldResult,
 } from './public';
 
@@ -349,6 +352,7 @@ export {
   addClassParticipant,
   markClassAttendance,
   cancelClassSession,
+  addToClassWaitlist,
 } from './classes';
 export type {
   CreateClassSessionsParams,
@@ -356,6 +360,7 @@ export type {
   ClassSessionIdParams,
   AddClassParticipantParams,
   MarkClassAttendanceParams,
+  AddToClassWaitlistParams,
 } from './classes';
 export type { ClassSession, ClassSessionDetail, ClassSessionStatus } from '../server/classes';
 
@@ -369,6 +374,7 @@ export {
   getWaitlistOffer,
   acceptWaitlistOffer,
   declineWaitlistOffer,
+  issueWaitlistOfferLink,
 } from './waitlist';
 export type {
   AddToWaitlistParams,
@@ -377,6 +383,7 @@ export type {
   FindWaitlistMatchesParams,
   OfferWaitlistSlotParams,
   WaitlistOfferLinkParams,
+  WaitlistOfferIdParams,
 } from './waitlist';
 export { runWaitlistOfferJob } from '../server/waitlist';
 export type {
