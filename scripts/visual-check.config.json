@@ -130,7 +130,8 @@
     "HubBillingProfile",
     "HubSetupRequest",
     "BookingServices",
-    "BookingTeamSchedule"
+    "BookingTeamSchedule",
+    "BookingCalendar"
   ],
   "exceptions": {
     "BookingServices": "S146 a schimbat designul (pachete, preț pe membru); aliniere în lotul următor UI, excepția se scoate atunci"

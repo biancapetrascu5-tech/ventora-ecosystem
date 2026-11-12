@@ -29,7 +29,7 @@ import bookingRo from '@ventora/booking/messages/ro.json';
 import bookingDe from '@ventora/booking/messages/de.json';
 import bookingIt from '@ventora/booking/messages/it.json';
 import { Bar, SECTIONS, noop } from '../_shared/shell';
-import { SPINE_RO } from '../_shared/labels';
+import { SPINE_RO, USAGE_RO } from '../_shared/labels';
 import f from '../_shared/frames.module.css';
 
 /* BookingCalendar (B.6a) in the gallery: the frames of preview.html, in its order — the screens
@@ -453,12 +453,21 @@ function RoApp({ children }: { children: ReactNode }) {
       spine={
         <Spine
           app="booking"
+          appName="EasyBook"
           labels={SPINE_RO}
           sections={SECTIONS}
           activeId="calendar"
           onBackToHub={noop}
           bottomItems={['azi', 'calendar', 'programari', 'clienti']}
-          footer={<UsageMeter compact label="Programări în octombrie" used={862} limit={1000} />}
+          footer={
+            <UsageMeter
+              {...USAGE_RO}
+              compact
+              label="Programări în octombrie"
+              used={862}
+              limit={1000}
+            />
+          }
         />
       }
       contextBar={<Bar title="Calendar" />}
@@ -599,6 +608,7 @@ function LxApp({
       spine={
         <Spine
           app="booking"
+          appName="EasyBook"
           sections={x.sections}
           activeId="calendar"
           onBackToHub={noop}

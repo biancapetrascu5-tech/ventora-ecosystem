@@ -80,6 +80,7 @@ export {
   type FirstFreeResult,
   type StaffOption,
 } from './calendar/BookingCalendarView';
+export { FirstFreeDialog, type FirstFreeDialogProps } from './calendar/FirstFreeDialog';
 export { useCalendarTexts, type CalendarTexts } from './calendar/calendar-texts';
 export {
   activeCount,

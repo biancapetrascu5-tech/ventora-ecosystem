@@ -135,7 +135,7 @@ export function toEvents(
   return out;
 }
 
-/** The hours the grid shows: the business's opening, an hour before and after, at least 8–19. */
+/** The hours the grid shows: from an hour before the opening to the closing (rounded up), at least 8–19. */
 export function gridHours(open: { from: string; to: string } | null): { from: number; to: number } {
   if (!open) return { from: 8, to: 19 };
   const h = (s: string) => Number(s.slice(0, 2)) + (s.slice(3) === '00' ? 0 : 1);
