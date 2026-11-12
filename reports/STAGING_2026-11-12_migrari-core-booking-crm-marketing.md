@@ -174,7 +174,7 @@ Capturi complete „înainte” și „după” ale tabelelor scrise, comparate 
 | `sync-commercial-registry` | „applications: +0 ~1; features: +1; quotas: +2 ~1”. **+1 cheie de funcționalitate:** `booking.medical`. **+2 chei de cotă:** `crm.contacts`, `crm.pipelines` (stoc, `block`, nerambursabile). **Schimbate:** aplicația `platform` are acum numele „Hub” (era „Ventora Hub”), din manifest; cheia `marketing.campaigns` (vezi mai jos) |
 | `sync-growth-registry` | **+6 placements** (0 → 6): `hub.catalog.apps`, `hub.launcher.other`, `hub.limit.dialog`, `hub.notifications.recommendations`, `hub.plan.packs`, `marketing.dashboard.aside`. Toate active (`stopped = false`) |
 
-**DE VALIDAT (coordonatorul): `marketing.campaigns` și-a schimbat natura.**
+**`marketing.campaigns` și-a schimbat natura (decis: 20 rămâne, vezi mai jos).**
 - **Era:** aplicația `platform`, `flow`, lunară, rambursabilă.
 - **Acum:** aplicația `marketing`, `stock`, fără perioadă, nerambursabilă („Campaigns scheduled or active at the same time (D-CK-3)”), după #168.
 - **Consum:** niciunul pe staging (0 rezervări, 0 contoare, 0 evenimente).
@@ -183,6 +183,8 @@ Capturi complete „înainte” și „după” ale tabelelor scrise, comparate 
   - `commercial.plan_version_quota`, planul „Complet” v1 (publicat) = **20**.
 
   Valoarea 20 însemna „pe lună”; acum înseamnă „20 de campanii programate sau active simultan”. Dacă valoarea rămâne așa e o decizie de preț. Poate o atinge `seed-pricing` (decizia 5 = a).
+
+  **DECIS (coordonatorul, 12.11): limita rămâne 20.** Se potrivește cu decizia Biancăi de la S137 („20 de campanii active în Business”). Nu e nimic de schimbat pe staging.
 
 ## Pasul NEFĂCUT: `seed-pricing`
 
