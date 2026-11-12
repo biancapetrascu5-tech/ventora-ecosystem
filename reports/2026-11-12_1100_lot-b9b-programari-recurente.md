@@ -49,6 +49,7 @@ Data: 2026-11-12. Baza ramurii: `feat/b9a-booking-multi-service` (#182, `62539b1
 | Scope: un membru doar pentru el | `createSeriesInOrg` (`requireScope`) | „a member creates a series only for themselves” |
 | Clientul primește un singur e-mail cu schimbarea | — | **NEFĂCUT:** e-mailurile sunt B.13 |
 | Contractul public | `contract/series.ts`, `contract/index.ts` | toate testele trec prin contract |
+| RLS pe tabelul nou (lista din testul `services`) | migrarea | `services.integration.test.ts` („every table of the booking schema has RLS…”, cu `appointment_series`) |
 
 ## Abateri de la plan
 
@@ -62,6 +63,8 @@ Data: 2026-11-12. Baza ramurii: `feat/b9a-booking-multi-service` (#182, `62539b1
 - `docker ps` înainte: niciun container al altui worktree.
 - `b-files.mjs`, cu `FILES="series visits appointments-quota appointments.integration availability"`: 5 fișiere, **90/90**, cu garda de drift Prisma booking. Containerele au fost oprite la final. Suita booking completă o rulează CI-ul.
 - `pnpm format:check`, `lint`, `typecheck`, `test`, `build`, `i18n:check`, `guards:verify`: toate exit 0.
+
+- **Corectură după push:** lista tabelelor din `services.integration.test.ts` nu avea `appointment_series`. Am adăugat-o. `b-files` cu `services.integration`: 35/35; lanțul de verificări verde.
 
 ## Ce rămâne deschis
 
