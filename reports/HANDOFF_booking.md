@@ -6,7 +6,9 @@ Actualizat pe 2026-11-12, după-amiaza. Main la `95ac53c` (cu #184 B.9b, #190 B.
 
 | PR | Ramura / worktree | HEAD | Bază | Stare |
 |---|---|---|---|---|
-| **#187** [SQL de revizuit] B.9c — lista de așteptare | `feat/b9c-booking-waitlist` / `C:\Projects\ventora-b9c` | vezi raportul | `main` | **SQL aprobat.** Rebazat a treia oară, pe `95ac53c` (după #190). Migrarea redenumită `…20261112000005_booking_waitlist` (SQL identic), ca să ruleze după `…000004_booking_classes` |
+| **#187** [SQL de revizuit] B.9c — lista de așteptare | `feat/b9c-booking-waitlist` / `C:\Projects\ventora-b9c` | `3431b44` (pushed) | `main` | **SQL aprobat.** Rebazat a treia oară, pe `95ac53c` (după #190). Migrarea redenumită `…20261112000005_booking_waitlist` (SQL identic), ca să ruleze după `…000004_booking_classes` |
+| **#193** [SQL de revizuit] B.12b — pozele răspunsurilor se șterg la 30 de zile (S146) | `feat/b12b-booking-photo-retention` / `C:\Projects\ventora-b12b` | `b660763` (pushed) | `main` | Migrarea `…20261112000006_booking_photo_retention` (`public_hold_cleanup_due` recreată + index parțial). Local: 80/80, lanțul de verificări verde |
+| — (fără PR încă) B.9e — pachetele | `feat/b9e-booking-packages` / `C:\Projects\ventora-b9e` | `5c119a9` (pushed) | **#187** | Pornită din #187, fiindcă recreează `erase_client`. După merge-ul #187: rebase pe main, testele lotului, PR „[SQL de revizuit]”. Migrarea `…000007_booking_packages`. Local: 128/128, lanțul de verificări verde. D-9e-4 NECESITĂ DECIZIE (contabil) |
 
 **Deciziile B.9a / B.9b / B.9c sunt PROPUS** (planul `reports/2026-11-12_plan-booking-b9.md`, commit pe #182):
 - T-9a-1: cota, o unitate pe pas;
@@ -26,6 +28,8 @@ Actualizat pe 2026-11-12, după-amiaza. Main la `95ac53c` (cu #184 B.9b, #190 B.
 | Worktree | Ramura | Stare |
 |---|---|---|
 | `C:\Projects\ventora-b9c` | `feat/b9c-booking-waitlist` | curat, sincronizat (#187) |
+| `C:\Projects\ventora-b12b` | `feat/b12b-booking-photo-retention` | curat, sincronizat (#193) |
+| `C:\Projects\ventora-b9e` | `feat/b9e-booking-packages` | curat, sincronizat (fără PR încă) |
 | `C:\Projects\ventora-handoff` | `docs/handoff-booking` | acest fișier |
 
 **Worktree-uri care se pot șterge:**
@@ -39,7 +43,7 @@ Actualizat pe 2026-11-12, după-amiaza. Main la `95ac53c` (cu #184 B.9b, #190 B.
 
 ## 3. Ce urmează
 
-**1.** #187 (B.9c): **SQL aprobat**, rebazat după #190, intră la valul următor după CI.
+**1.** #187 (B.9c): **SQL aprobat**, rebazat după #190, intră la valul următor după CI. #193 (B.12b) așteaptă review-ul SQL. După #187: PR-ul B.9e (rebase pe main), apoi B.9d2.
 
 **2.** B.9d1 e îmbinat (#190). Ordinea cerută de Bianca pe 12.11, după #187: **lotul mic S146** (ștergerea pozelor la 30 de zile), apoi **B.9e**, în limita de 3 PR-uri. Rămân în plan:
 - **Lotul mic S146 (backend):** jobul de curățare șterge și pozele răspunsurilor (`appointment_answer.photo_file_id`) la 30 de zile după programare, prin ștergerea de sistem din `core/files`;
