@@ -99,6 +99,11 @@
   --type-display-hub-weight: 700;
   --type-display-hub-tracking: -0.03em;
   --type-display-hub-family: var(--font-display);
+  --type-display-hub-phone-size: 32px;
+  --type-display-hub-phone-line: 36px;
+  --type-display-hub-phone-weight: 700;
+  --type-display-hub-phone-tracking: -0.03em;
+  --type-display-hub-phone-family: var(--font-display);
   --type-display-l-size: 30px;
   --type-display-l-line: 36px;
   --type-display-l-weight: 700;
@@ -113,6 +118,10 @@
   --type-lead-line: 34px;
   --type-lead-weight: 400;
   --type-lead-family: var(--font-sans);
+  --type-lead-phone-size: 15px;
+  --type-lead-phone-line: 30px;
+  --type-lead-phone-weight: 400;
+  --type-lead-phone-family: var(--font-sans);
   --type-eyebrow-size: 12px;
   --type-eyebrow-line: 16px;
   --type-eyebrow-weight: 600;
