@@ -16,6 +16,7 @@ import {
 } from '@ventora/booking';
 import { getSession } from '@ventora/identity';
 import { getOrganizationTimeZone } from '@ventora/organizations';
+import { addDays, hhmm, instantsAround, localOf, weekdayOf } from './booking-time';
 import { reportActionError } from './report-error';
 
 /* Lot B.6a — EasyBook · Calendar (BookingCalendar). The business and the person come only from
@@ -79,34 +80,7 @@ async function sessionToken(): Promise<string | null> {
   return session?.token ?? null;
 }
 
-const pad = (n: number) => String(n).padStart(2, '0');
-const hhmm = (min: number) => `${pad(Math.floor(min / 60))}:${pad(min % 60)}`;
-
-/** An instant as the business's local day and „HH:MM”. */
-function localOf(at: Date, timeZone: string): { date: string; time: string } {
-  const parts = Object.fromEntries(
-    new Intl.DateTimeFormat('en-GB', {
-      timeZone,
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit',
-      hourCycle: 'h23',
-    })
-      .formatToParts(at)
-      .map((p) => [p.type, p.value]),
-  );
-  return {
-    date: `${parts.year}-${parts.month}-${parts.day}`,
-    time: `${parts.hour}:${parts.minute}`,
-  };
-}
-
 const ISO = /^\d{4}-\d{2}-\d{2}$/;
-const noonOf = (iso: string) => Date.parse(`${iso}T12:00:00Z`);
-const addDays = (iso: string, n: number) =>
-  new Date(noonOf(iso) + n * 86_400_000).toISOString().slice(0, 10);
 
 /** The days of a range, at most 7 (a week). */
 function daysOf(from: string, to: string): string[] {
@@ -138,11 +112,7 @@ async function readRange(
   timeZone: string,
   days: string[],
 ): Promise<CalendarRangeData> {
-  const first = days[0] as string;
-  const last = days[days.length - 1] as string;
-  // every zone is within ±14 h of UTC: the instants that can fall on these local days
-  const from = new Date(Date.parse(`${first}T00:00:00Z`) - 14 * 3_600_000).toISOString();
-  const to = new Date(Date.parse(`${addDays(last, 1)}T00:00:00Z`) + 14 * 3_600_000).toISOString();
+  const { from, to } = instantsAround(days[0] as string, days[days.length - 1] as string);
   const [list, blocks] = await Promise.all([
     listAppointments({ sessionToken: token, from, to, limit: 500 }),
     listTimeBlocks({ sessionToken: token, from, to }),
@@ -201,8 +171,7 @@ export async function readCalendarPage(): Promise<CalendarPage> {
   }
   const timeZone = await getOrganizationTimeZone({ organizationId });
   const here = localOf(new Date(), timeZone);
-  const weekday = ((new Date(noonOf(here.date)).getUTCDay() + 6) % 7) + 1;
-  const monday = addDays(here.date, 1 - weekday);
+  const monday = addDays(here.date, 1 - weekdayOf(here.date));
   const [staff, business, services, week] = await Promise.all([
     listStaff({ sessionToken: token }),
     getBusinessHours({ sessionToken: token }),

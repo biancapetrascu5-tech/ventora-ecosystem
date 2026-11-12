@@ -459,5 +459,76 @@
       "retry": "Reintentar"
     },
     "empty": "Aún no hay nadie en el calendario. Añade a las personas en Ajustes · Horario del equipo."
+  },
+  "today": {
+    "title": "Hoy",
+    "greeting": {
+      "morning": "Buenos días, {name}",
+      "day": "Buenas tardes, {name}",
+      "evening": "Buenas noches, {name}"
+    },
+    "sentence": {
+      "count": "Hoy tiene {count, plural, one {# cita} other {# citas}}.",
+      "none": "Hoy no tiene citas.",
+      "waiting": "{n, plural, one {Una espera la confirmación} =2 {Dos esperan la confirmación} other {# esperan la confirmación}}",
+      "free": "después de las {time} aún tiene {hours, plural, one {# hora libre} other {# horas libres}}",
+      "both": "{waiting}, y {free}.",
+      "one": "{text}."
+    },
+    "next": {
+      "title": "Próxima cita",
+      "meta": "{service} · {staff} · {time}"
+    },
+    "in": {
+      "min": "en {n} min",
+      "hours": "en {n} h"
+    },
+    "current": {
+      "title": "En curso",
+      "now": "Ahora",
+      "progress": "{from}–{to} · quedan {n} min",
+      "complete": "Marcar como finalizada",
+      "collect": "Cobrar"
+    },
+    "agenda": {
+      "title": "Agenda del día",
+      "staff": "Empleado",
+      "all": "Todo el equipo",
+      "empty": "Ninguna cita hoy."
+    },
+    "attn": {
+      "title": "Necesita su atención",
+      "more": "Ver todo ({n})",
+      "empty": "Nada pendiente ahora.",
+      "unconfirmed": "{client} no ha confirmado",
+      "unconfirmedMeta": "Hoy a las {time} · {service} · {staff}",
+      "confirm": "Confirmar",
+      "resend": "Reenviar el recordatorio",
+      "call": "Llamar",
+      "unpaid": "{client} aún debe {amount}",
+      "unpaidMeta": "De la visita del {date}",
+      "collect": "Cobrar",
+      "payLink": "Enviar enlace de pago",
+      "move": "{client} quiere mover la cita",
+      "moveMeta": "Del {from} al {to} · solicitud en línea",
+      "accept": "Aceptar",
+      "propose": "Proponer otra hora",
+      "when": "{day}, {time}"
+    },
+    "money": {
+      "RON": "{amount} lei",
+      "EUR": "{amount} €"
+    },
+    "toast": {
+      "confirmed": "La cita de {client} está confirmada.",
+      "completed": "La cita de {client} está finalizada.",
+      "undo": "Deshacer",
+      "undone": "Se deshizo el cambio.",
+      "failed": "No se guardó. Inténtelo de nuevo.",
+      "close": "Cerrar"
+    },
+    "err": {
+      "load": "No se pudo cargar el día."
+    }
   }
 }

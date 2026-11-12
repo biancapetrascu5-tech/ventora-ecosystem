@@ -2,20 +2,8 @@
 'use client';
 
 import type { ReactNode } from 'react';
-import { NextIntlClientProvider, useTranslations } from 'next-intl';
-import {
-  AccountMenu,
-  AppShell,
-  ContextBar,
-  NotificationsPanel,
-  OrgSwitcher,
-  Spine,
-  UsageMeter,
-  type NavSection,
-  type NotificationData,
-  type ScheduleColumn,
-  type ScheduleEvent,
-} from '@ventora/ui';
+import { NextIntlClientProvider } from 'next-intl';
+import { type ScheduleColumn, type ScheduleEvent } from '@ventora/ui';
 import {
   BookingCalendarView,
   useCalendarTexts,
@@ -28,8 +16,8 @@ import it from '@ventora/i18n/messages/it.json';
 import bookingRo from '@ventora/booking/messages/ro.json';
 import bookingDe from '@ventora/booking/messages/de.json';
 import bookingIt from '@ventora/booking/messages/it.json';
-import { Bar, SECTIONS, noop } from '../_shared/shell';
-import { SPINE_RO, USAGE_RO } from '../_shared/labels';
+import { noop } from '../_shared/shell';
+import { LxApp, RoApp } from '../_shared/easybook-shell';
 import f from '../_shared/frames.module.css';
 
 /* BookingCalendar (B.6a) in the gallery: the frames of preview.html, in its order — the screens
@@ -446,266 +434,6 @@ function FirstFree({ mode }: { mode: ScreenMode }) {
 
 /* ── the shells ─────────────────────────────────────────────────────────────────────────── */
 
-function RoApp({ children }: { children: ReactNode }) {
-  return (
-    <AppShell
-      height="100%"
-      spine={
-        <Spine
-          app="booking"
-          appName="EasyBook"
-          labels={SPINE_RO}
-          sections={SECTIONS}
-          activeId="calendar"
-          onBackToHub={noop}
-          bottomItems={['azi', 'calendar', 'programari', 'clienti']}
-          footer={
-            <UsageMeter
-              {...USAGE_RO}
-              compact
-              label="Programări în octombrie"
-              used={862}
-              limit={1000}
-            />
-          }
-        />
-      }
-      contextBar={<Bar title="Calendar" />}
-    >
-      {children}
-    </AppShell>
-  );
-}
-
-// preview.html LX.de / LX.it: the shell of the label test
-const LX_SHELL = {
-  de: {
-    sections: [
-      {
-        items: [
-          { id: 'azi', label: 'Heute', icon: 'house' },
-          { id: 'calendar', label: 'Kalender', icon: 'calendar' },
-          { id: 'programari', label: 'Termine', icon: 'list', badge: 3 },
-        ],
-      },
-      {
-        label: 'Verwaltung',
-        items: [
-          { id: 'clienti', label: 'Kunden', icon: 'users' },
-          { id: 'servicii', label: 'Leistungen', icon: 'boxes' },
-          { id: 'angajati', label: 'Mitarbeiter', icon: 'contact' },
-        ],
-      },
-      {
-        label: 'Unternehmen',
-        items: [
-          { id: 'rapoarte', label: 'Berichte', icon: 'chart-column' },
-          { id: 'setari', label: 'Einstellungen', icon: 'settings' },
-        ],
-      },
-    ] as NavSection[],
-    orgs: [
-      { id: 'aurora', name: 'Salon Aurora', role: 'Inhaber' },
-      { id: 'praxis', name: 'Zahnarztpraxis Dr. Müller', role: 'Empfang' },
-    ],
-    user: { name: 'Julia Becker', email: 'julia@salon-aurora.de' },
-    notifs: [
-      {
-        id: 1,
-        title: 'Neuer Termin von Anna Schmidt',
-        body: 'Do., 29. Okt., 14:30 · Haarschnitt',
-        app: 'EasyBook',
-        time: 'vor 5 Min.',
-        person: 'Anna Schmidt',
-      },
-      {
-        id: 2,
-        title: 'Rechnung 2026-114 ist seit 3 Tagen überfällig',
-        app: 'MoneyDesk',
-        time: 'vor 2 Std.',
-        icon: 'receipt',
-      },
-    ] as NotificationData[],
-    create: ['Termin', 'Kunde'],
-    usage: 'Termine im Oktober',
-  },
-  it: {
-    sections: [
-      {
-        items: [
-          { id: 'azi', label: 'Oggi', icon: 'house' },
-          { id: 'calendar', label: 'Calendario', icon: 'calendar' },
-          { id: 'programari', label: 'Appuntamenti', icon: 'list', badge: 3 },
-        ],
-      },
-      {
-        label: 'Gestione',
-        items: [
-          { id: 'clienti', label: 'Clienti', icon: 'users' },
-          { id: 'servicii', label: 'Servizi', icon: 'boxes' },
-          { id: 'angajati', label: 'Dipendenti', icon: 'contact' },
-        ],
-      },
-      {
-        label: 'Attività',
-        items: [
-          { id: 'rapoarte', label: 'Report', icon: 'chart-column' },
-          { id: 'setari', label: 'Impostazioni', icon: 'settings' },
-        ],
-      },
-    ] as NavSection[],
-    orgs: [
-      { id: 'aurora', name: 'Salon Aurora', role: 'Titolare' },
-      { id: 'studio', name: 'Studio Dentistico Rossi', role: 'Reception' },
-    ],
-    user: { name: 'Giulia Romano', email: 'giulia@salon-aurora.it' },
-    notifs: [
-      {
-        id: 1,
-        title: 'Nuovo appuntamento da Anna Russo',
-        body: 'gio 29 ott., 14:30 · Taglio',
-        app: 'EasyBook',
-        time: '5 min fa',
-        person: 'Anna Russo',
-      },
-      {
-        id: 2,
-        title: 'La fattura 2026-114 è scaduta da 3 giorni',
-        app: 'MoneyDesk',
-        time: '2 ore fa',
-        icon: 'receipt',
-      },
-    ] as NotificationData[],
-    create: ['Appuntamento', 'Cliente'],
-    usage: 'Appuntamenti a ottobre',
-  },
-};
-
-/* The label test's shell: the strings of the components from the platform catalogs (ui.*,
-   usageMeter.*) in that language, as HubShell passes them. */
-function LxApp({
-  lang,
-  title,
-  children,
-}: {
-  lang: 'de' | 'it';
-  title: string;
-  children: ReactNode;
-}) {
-  const ui = useTranslations('ui');
-  const um = useTranslations('usageMeter');
-  const x = LX_SHELL[lang];
-  const orgLabels = {
-    switchBusiness: ui('switchBusiness'),
-    yourBusinesses: ui('yourBusinesses'),
-    findBusiness: ui('findBusiness'),
-    noResultsFor: (q: string) => ui('noResultsFor', { q }),
-    accessStopped: ui('accessStopped'),
-  };
-  return (
-    <AppShell
-      height="100%"
-      spine={
-        <Spine
-          app="booking"
-          appName="EasyBook"
-          sections={x.sections}
-          activeId="calendar"
-          onBackToHub={noop}
-          bottomItems={['azi', 'calendar', 'programari', 'clienti']}
-          labels={{
-            backToHub: ui('backToHub'),
-            expandMenu: ui('expandMenu'),
-            collapseMenu: ui('collapseMenu'),
-            more: ui('more'),
-            close: ui('close'),
-            back: ui('back'),
-          }}
-          footer={
-            <UsageMeter
-              compact
-              label={x.usage}
-              used={862}
-              limit={1000}
-              locale={lang}
-              usedOfLabel={(a) => um('usedOf', a)}
-              leftLabel={(a) => um('left', a)}
-              nearLimitLabel={um('nearLimit')}
-              atLimitLabel={um('atLimit')}
-            />
-          }
-        />
-      }
-      contextBar={
-        <ContextBar
-          title={title}
-          org={<OrgSwitcher orgs={x.orgs} currentId="aurora" onChange={noop} labels={orgLabels} />}
-          onSearch={noop}
-          createItems={[
-            { id: 'appt', label: x.create[0]!, icon: 'calendar-check', shortcut: ['N'] },
-            { id: 'client', label: x.create[1]!, icon: 'user-plus' },
-          ]}
-          notifications={
-            <NotificationsPanel
-              items={x.notifs}
-              labels={{
-                notifications: ui('notifications'),
-                unreadN: (n) => ui('unreadN', { n }),
-                markAllRead: ui('markAllRead'),
-                notificationSettings: ui('notificationSettings'),
-                all: ui('all'),
-                unread: ui('unread'),
-                noNotifications: ui('noNotifications'),
-                noNotificationsHint: ui('noNotificationsHint'),
-                operational: ui('operational'),
-                activity: ui('activity'),
-                recommendations: ui('recommendations'),
-                recommendation: ui('recommendation'),
-                fromTeam: ui('fromTeam'),
-                seeApp: ui('seeApp'),
-                reject: ui('reject'),
-                seeDetails: ui('seeDetails'),
-                notInterested: ui('notInterested'),
-              }}
-            />
-          }
-          account={
-            <AccountMenu
-              user={x.user}
-              orgs={x.orgs}
-              currentOrgId="aurora"
-              onCatalog={noop}
-              labels={{
-                account: ui('account'),
-                yourBusinesses: ui('yourBusinesses'),
-                theme: ui('theme'),
-                language: ui('language'),
-                allApps: ui('allApps'),
-                support: ui('support'),
-                signOut: ui('signOut'),
-                themeSwitcher: {
-                  theme: ui('theme'),
-                  light: ui('themeLight'),
-                  dark: ui('themeDark'),
-                  system: ui('themeSystem'),
-                },
-                orgSwitcher: orgLabels,
-              }}
-            />
-          }
-          labels={{
-            search: ui('search'),
-            searchPlaceholder: ui('searchPlaceholder'),
-            create: ui('create'),
-          }}
-        />
-      }
-    >
-      {children}
-    </AppShell>
-  );
-}
-
 /* ── the frames ─────────────────────────────────────────────────────────────────────────── */
 
 type Theme = 'light' | 'dark';
@@ -779,7 +507,7 @@ function Board() {
         <div className={f.scrRow} key={th}>
           {(['desktop', 'tablet', 'mobile'] as const).map((m) => (
             <Frame key={m} lang="ro" mode={m} theme={th} height={SCREEN_H[m]} label="">
-              <RoApp>
+              <RoApp active="calendar" title="Calendar">
                 <Calendar mode={m} view={viewOf(m, th)} lang="ro" />
               </RoApp>
             </Frame>
@@ -790,12 +518,12 @@ function Board() {
       <p className="heading">Stare: „Primul loc liber” a găsit următoarea oră liberă</p>
       <div className={f.scrRow}>
         <Frame lang="ro" mode="desktop" theme="light" height={860} label="Română · ">
-          <RoApp>
+          <RoApp active="calendar" title="Calendar">
             <FirstFree mode="desktop" />
           </RoApp>
         </Frame>
         <Frame lang="ro" mode="mobile" theme="dark" height={1180} label="Română · ">
-          <RoApp>
+          <RoApp active="calendar" title="Calendar">
             <FirstFree mode="mobile" />
           </RoApp>
         </Frame>
@@ -836,7 +564,7 @@ function Board() {
 function LxCalendar({ lang, mode, theme }: { lang: 'de' | 'it'; mode: ScreenMode; theme: Theme }) {
   const c = useCalendarTexts();
   return (
-    <LxApp lang={lang} title={c.t('title')}>
+    <LxApp lang={lang} active="calendar" title={c.t('title')}>
       <LxView
         lang={lang}
         mode={mode}

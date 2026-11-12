@@ -459,5 +459,76 @@
       "retry": "Réessayer"
     },
     "empty": "Personne dans le calendrier pour l’instant. Ajoutez les personnes dans Réglages · Horaires de l’équipe."
+  },
+  "today": {
+    "title": "Aujourd'hui",
+    "greeting": {
+      "morning": "Bonjour, {name}",
+      "day": "Bon après-midi, {name}",
+      "evening": "Bonsoir, {name}"
+    },
+    "sentence": {
+      "count": "Vous avez {count, plural, one {# rendez-vous} other {# rendez-vous}} aujourd'hui.",
+      "none": "Vous n'avez aucun rendez-vous aujourd'hui.",
+      "waiting": "{n, plural, one {Un attend la confirmation} =2 {Deux attendent la confirmation} other {# attendent la confirmation}}",
+      "free": "après {time}, il vous reste {hours, plural, one {# heure libre} other {# heures libres}}",
+      "both": "{waiting}, et {free}.",
+      "one": "{text}."
+    },
+    "next": {
+      "title": "Prochain rendez-vous",
+      "meta": "{service} · {staff} · {time}"
+    },
+    "in": {
+      "min": "dans {n} min",
+      "hours": "dans {n} h"
+    },
+    "current": {
+      "title": "En cours",
+      "now": "Maintenant",
+      "progress": "{from}–{to} · encore {n} min",
+      "complete": "Marquer comme terminé",
+      "collect": "Encaisser"
+    },
+    "agenda": {
+      "title": "Programme du jour",
+      "staff": "Employé",
+      "all": "Toute l'équipe",
+      "empty": "Aucun rendez-vous aujourd'hui."
+    },
+    "attn": {
+      "title": "Vous attend",
+      "more": "Tout voir ({n})",
+      "empty": "Rien à traiter pour le moment.",
+      "unconfirmed": "{client} n'a pas confirmé",
+      "unconfirmedMeta": "Aujourd'hui à {time} · {service} · {staff}",
+      "confirm": "Confirmer",
+      "resend": "Renvoyer le rappel",
+      "call": "Appeler",
+      "unpaid": "{client} doit encore {amount}",
+      "unpaidMeta": "De la visite du {date}",
+      "collect": "Encaisser",
+      "payLink": "Envoyer un lien de paiement",
+      "move": "{client} veut déplacer le rendez-vous",
+      "moveMeta": "Du {from} au {to} · demande en ligne",
+      "accept": "Accepter",
+      "propose": "Proposer un autre horaire",
+      "when": "{day}, {time}"
+    },
+    "money": {
+      "RON": "{amount} lei",
+      "EUR": "{amount} €"
+    },
+    "toast": {
+      "confirmed": "Le rendez-vous de {client} est confirmé.",
+      "completed": "Le rendez-vous de {client} est terminé.",
+      "undo": "Annuler",
+      "undone": "La modification a été annulée.",
+      "failed": "Ce n'a pas été enregistré. Réessayez.",
+      "close": "Fermer"
+    },
+    "err": {
+      "load": "La journée n'a pas pu être chargée."
+    }
   }
 }

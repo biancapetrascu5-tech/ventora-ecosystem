@@ -459,5 +459,76 @@
       "retry": "Try again"
     },
     "empty": "Nobody in the calendar yet. Add people in Settings · Team schedule."
+  },
+  "today": {
+    "title": "Today",
+    "greeting": {
+      "morning": "Good morning, {name}",
+      "day": "Good afternoon, {name}",
+      "evening": "Good evening, {name}"
+    },
+    "sentence": {
+      "count": "You have {count, plural, one {# appointment} other {# appointments}} today.",
+      "none": "You have no appointments today.",
+      "waiting": "{n, plural, one {One is waiting for confirmation} =2 {Two are waiting for confirmation} other {# are waiting for confirmation}}",
+      "free": "after {time} you still have {hours, plural, one {# hour} other {# hours}} free",
+      "both": "{waiting}, and {free}.",
+      "one": "{text}."
+    },
+    "next": {
+      "title": "Next appointment",
+      "meta": "{service} · {staff} · {time}"
+    },
+    "in": {
+      "min": "in {n} min",
+      "hours": "in {n} h"
+    },
+    "current": {
+      "title": "In progress",
+      "now": "Now",
+      "progress": "{from}–{to} · {n} min left",
+      "complete": "Mark as completed",
+      "collect": "Take payment"
+    },
+    "agenda": {
+      "title": "Today's schedule",
+      "staff": "Team member",
+      "all": "Whole team",
+      "empty": "No appointments today."
+    },
+    "attn": {
+      "title": "Needs you",
+      "more": "See all ({n})",
+      "empty": "Nothing to handle right now.",
+      "unconfirmed": "{client} hasn’t confirmed",
+      "unconfirmedMeta": "Today at {time} · {service} · {staff}",
+      "confirm": "Confirm",
+      "resend": "Resend the reminder",
+      "call": "Call",
+      "unpaid": "{client} still owes {amount}",
+      "unpaidMeta": "From the visit on {date}",
+      "collect": "Take payment",
+      "payLink": "Send a payment link",
+      "move": "{client} wants to move the appointment",
+      "moveMeta": "From {from} to {to} · online request",
+      "accept": "Accept",
+      "propose": "Suggest another time",
+      "when": "{day}, {time}"
+    },
+    "money": {
+      "RON": "{amount} lei",
+      "EUR": "€{amount}"
+    },
+    "toast": {
+      "confirmed": "{client}'s appointment is confirmed.",
+      "completed": "{client}'s appointment is completed.",
+      "undo": "Undo",
+      "undone": "The change was undone.",
+      "failed": "It wasn't saved. Try again.",
+      "close": "Close"
+    },
+    "err": {
+      "load": "The day didn't load."
+    }
   }
 }

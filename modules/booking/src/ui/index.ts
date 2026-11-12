@@ -105,3 +105,13 @@ export {
   type CalendarBlock,
   type CalendarView,
 } from './calendar/calendar-format';
+// Lot B.6b: BookingToday („Azi”)
+export {
+  ATTENTION_MAX,
+  BookingTodayView,
+  type BookingTodayViewProps,
+  type TodayActions,
+  type TodayAttention,
+  type TodayCurrent,
+  type TodayNext,
+} from './today/BookingTodayView';

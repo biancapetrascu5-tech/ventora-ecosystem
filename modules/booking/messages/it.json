@@ -459,5 +459,76 @@
       "retry": "Riprova"
     },
     "empty": "Ancora nessuno nel calendario. Aggiunga le persone in Impostazioni · Orario del team."
+  },
+  "today": {
+    "title": "Oggi",
+    "greeting": {
+      "morning": "Buongiorno, {name}",
+      "day": "Buon pomeriggio, {name}",
+      "evening": "Buonasera, {name}"
+    },
+    "sentence": {
+      "count": "Oggi ha {count, plural, one {# appuntamento} other {# appuntamenti}}.",
+      "none": "Oggi non ha appuntamenti.",
+      "waiting": "{n, plural, one {Uno attende la conferma} =2 {Due attendono la conferma} other {# attendono la conferma}}",
+      "free": "dopo le {time} Le restano {hours, plural, one {# ora libera} other {# ore libere}}",
+      "both": "{waiting} e {free}.",
+      "one": "{text}."
+    },
+    "next": {
+      "title": "Prossimo appuntamento",
+      "meta": "{service} · {staff} · {time}"
+    },
+    "in": {
+      "min": "tra {n} min",
+      "hours": "tra {n} h"
+    },
+    "current": {
+      "title": "In corso",
+      "now": "Adesso",
+      "progress": "{from}–{to} · mancano {n} min",
+      "complete": "Segna come concluso",
+      "collect": "Incassa"
+    },
+    "agenda": {
+      "title": "Programma del giorno",
+      "staff": "Dipendente",
+      "all": "Tutto il team",
+      "empty": "Nessun appuntamento oggi."
+    },
+    "attn": {
+      "title": "In attesa di Lei",
+      "more": "Vedi tutti ({n})",
+      "empty": "Niente da fare per ora.",
+      "unconfirmed": "{client} non ha confermato",
+      "unconfirmedMeta": "Oggi alle {time} · {service} · {staff}",
+      "confirm": "Conferma",
+      "resend": "Invia di nuovo il promemoria",
+      "call": "Chiama",
+      "unpaid": "{client} deve ancora pagare {amount}",
+      "unpaidMeta": "Dalla visita del {date}",
+      "collect": "Incassa",
+      "payLink": "Invia link di pagamento",
+      "move": "{client} vuole spostare l’appuntamento",
+      "moveMeta": "Da {from} a {to} · richiesta online",
+      "accept": "Accetta",
+      "propose": "Proponi un altro orario",
+      "when": "{day} alle {time}"
+    },
+    "money": {
+      "RON": "{amount} lei",
+      "EUR": "{amount} €"
+    },
+    "toast": {
+      "confirmed": "L’appuntamento di {client} è confermato.",
+      "completed": "L’appuntamento di {client} è completato.",
+      "undo": "Annulla",
+      "undone": "Modifica annullata.",
+      "failed": "Non salvato. Riprova.",
+      "close": "Chiudi"
+    },
+    "err": {
+      "load": "Impossibile caricare la giornata."
+    }
   }
 }

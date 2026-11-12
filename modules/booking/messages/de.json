@@ -459,5 +459,76 @@
       "retry": "Erneut versuchen"
     },
     "empty": "Noch niemand im Kalender. Fügen Sie die Personen unter Einstellungen · Teamplan hinzu."
+  },
+  "today": {
+    "title": "Heute",
+    "greeting": {
+      "morning": "Guten Morgen, {name}",
+      "day": "Guten Tag, {name}",
+      "evening": "Guten Abend, {name}"
+    },
+    "sentence": {
+      "count": "Sie haben heute {count, plural, one {# Termin} other {# Termine}}.",
+      "none": "Sie haben heute keine Termine.",
+      "waiting": "{n, plural, one {Einer wartet auf Bestätigung} =2 {Zwei warten auf Bestätigung} other {# warten auf Bestätigung}}",
+      "free": "nach {time} haben Sie noch {hours, plural, one {# Stunde} other {# Stunden}} frei",
+      "both": "{waiting}, und {free}.",
+      "one": "{text}."
+    },
+    "next": {
+      "title": "Nächster Termin",
+      "meta": "{service} · {staff} · {time}"
+    },
+    "in": {
+      "min": "in {n} Min.",
+      "hours": "in {n} Std."
+    },
+    "current": {
+      "title": "Läuft",
+      "now": "Jetzt",
+      "progress": "{from}–{to} · noch {n} Min.",
+      "complete": "Als erledigt markieren",
+      "collect": "Kassieren"
+    },
+    "agenda": {
+      "title": "Tagesplan",
+      "staff": "Mitarbeiter",
+      "all": "Ganzes Team",
+      "empty": "Heute keine Termine."
+    },
+    "attn": {
+      "title": "Wartet auf Sie",
+      "more": "Alle ansehen ({n})",
+      "empty": "Im Moment ist nichts zu erledigen.",
+      "unconfirmed": "{client} hat nicht bestätigt",
+      "unconfirmedMeta": "Heute um {time} · {service} · {staff}",
+      "confirm": "Bestätigen",
+      "resend": "Erinnerung erneut senden",
+      "call": "Anrufen",
+      "unpaid": "{client} muss noch {amount} bezahlen",
+      "unpaidMeta": "Vom Besuch am {date}",
+      "collect": "Kassieren",
+      "payLink": "Zahlungslink senden",
+      "move": "{client} möchte den Termin verschieben",
+      "moveMeta": "Von {from}, auf {to} · Online-Antrag",
+      "accept": "Annehmen",
+      "propose": "Andere Uhrzeit vorschlagen",
+      "when": "{day}, {time}"
+    },
+    "money": {
+      "RON": "{amount} lei",
+      "EUR": "{amount} €"
+    },
+    "toast": {
+      "confirmed": "Der Termin von {client} ist bestätigt.",
+      "completed": "Der Termin von {client} ist erledigt.",
+      "undo": "Rückgängig",
+      "undone": "Die Änderung wurde rückgängig gemacht.",
+      "failed": "Nicht gespeichert. Bitte erneut versuchen.",
+      "close": "Schließen"
+    },
+    "err": {
+      "load": "Der Tag konnte nicht geladen werden."
+    }
   }
 }

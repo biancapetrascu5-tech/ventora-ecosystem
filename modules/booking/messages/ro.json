@@ -459,5 +459,76 @@
       "retry": "Încearcă din nou"
     },
     "empty": "Nu e încă nimeni în calendar. Adaugă oamenii în Setări · Programul echipei."
+  },
+  "today": {
+    "title": "Azi",
+    "greeting": {
+      "morning": "Bună dimineața, {name}",
+      "day": "Bună ziua, {name}",
+      "evening": "Bună seara, {name}"
+    },
+    "sentence": {
+      "count": "Azi ai {count, plural, one {o programare} few {# programări} other {# de programări}}.",
+      "none": "Azi nu ai programări.",
+      "waiting": "{n, plural, one {Una așteaptă confirmarea} =2 {Două așteaptă confirmarea} few {# așteaptă confirmarea} other {# așteaptă confirmarea}}",
+      "free": "după {time} mai ai {hours, plural, one {o oră liberă} few {# ore libere} other {# de ore libere}}",
+      "both": "{waiting}, iar {free}.",
+      "one": "{text}."
+    },
+    "next": {
+      "title": "Următoarea programare",
+      "meta": "{service} · {staff} · {time}"
+    },
+    "in": {
+      "min": "peste {n} min",
+      "hours": "peste {n} h"
+    },
+    "current": {
+      "title": "În desfășurare",
+      "now": "Acum",
+      "progress": "{from}–{to} · mai sunt {n} min",
+      "complete": "Marchează ca încheiată",
+      "collect": "Încasează"
+    },
+    "agenda": {
+      "title": "Programul zilei",
+      "staff": "Angajat",
+      "all": "Toată echipa",
+      "empty": "Nicio programare azi."
+    },
+    "attn": {
+      "title": "Au nevoie de tine",
+      "more": "Vezi toate ({n})",
+      "empty": "Nimic de rezolvat acum.",
+      "unconfirmed": "{client} nu a confirmat",
+      "unconfirmedMeta": "Azi la {time} · {service} · {staff}",
+      "confirm": "Confirmă",
+      "resend": "Retrimite reamintirea",
+      "call": "Sună",
+      "unpaid": "{client} mai are de plătit {amount}",
+      "unpaidMeta": "De la vizita din {date}",
+      "collect": "Încasează",
+      "payLink": "Trimite link de plată",
+      "move": "{client} vrea să mute programarea",
+      "moveMeta": "De {from}, pe {to} · cerere online",
+      "accept": "Acceptă",
+      "propose": "Propune altă oră",
+      "when": "{day}, {time}"
+    },
+    "money": {
+      "RON": "{amount} lei",
+      "EUR": "{amount} €"
+    },
+    "toast": {
+      "confirmed": "Programarea lui {client} e confirmată.",
+      "completed": "Programarea lui {client} e încheiată.",
+      "undo": "Anulează",
+      "undone": "Am anulat schimbarea.",
+      "failed": "Nu s-a salvat. Încearcă din nou.",
+      "close": "Închide"
+    },
+    "err": {
+      "load": "Ziua nu s-a încărcat."
+    }
   }
 }
