@@ -606,7 +606,7 @@ export async function cancelVisitInOrg(
     const open = rows.filter((r) => MOVABLE.includes(r.status));
     if (open.length === 0) throw new Conflict('appointment_final');
     const settings = await readSettings(client);
-    for (const r of open) await cancelRow(client, exec, ctx, r, by, settings, id);
+    for (const r of open) await cancelRow(client, exec, ctx, r, by, settings, { visitId: id });
     return toVisit(await readVisitRows(client, id));
   });
 }

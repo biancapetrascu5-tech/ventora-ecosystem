@@ -724,3 +724,114 @@ export async function visitStartOn(
   }
   return null;
 }
+
+// ── B.9b: the dates of a recurring series ─────────────────────────────────────────────────
+
+export type SeriesPointCheck = {
+  date: string;
+  minute: number;
+  available: boolean;
+  /** Why not: the time is taken, the member is on leave that day, the salon / member is closed. */
+  reason: 'taken' | 'staff_on_leave' | 'closed' | null;
+  /** „Mută la cea mai apropiată oră liberă” that day (local minute), or null. */
+  nearestMinute: number | null;
+  /** „Păstrează ora, cu alt membru”: the members free at that time, in the order of D-B5-4. */
+  otherStaffIds: string[];
+};
+
+/**
+ * BookingRecurring („2 din 8 date nu sunt libere”): for every local date and minute of a series,
+ * whether the member is free (the team rules of B.5, a past time allowed as for the team), and if
+ * not, why and what can be done. One load for the member and one for the team over the whole span.
+ */
+export async function checkSeriesPoints(
+  ctx: TenantContext,
+  query: {
+    serviceId: string;
+    staffMemberId: string;
+    durationMinutes?: unknown;
+    locationId?: string;
+    points: Array<{ date: string; minute: number }>;
+  },
+): Promise<SeriesPointCheck[]> {
+  if (query.points.length === 0) return [];
+  const dates = query.points.map((p) => p.date).sort();
+  const from = dates[0]!;
+  const to = dates[dates.length - 1]!;
+  const base = {
+    serviceId: query.serviceId,
+    durationMinutes: query.durationMinutes,
+    mode: 'team' as const,
+    locationId: query.locationId,
+  };
+  const member = await load(ctx, { ...base, staffMemberId: query.staffMemberId }, from, to);
+  const team = await load(ctx, { ...base, staffMemberId: 'any' }, from, to);
+  const leave = await withBookingTx(
+    ctx.organizationId,
+    async (client) =>
+      (
+        await client.query<{ d: string }>(
+          `SELECT to_char(d, 'YYYY-MM-DD') AS d
+             FROM booking.staff_time_off t,
+                  generate_series(GREATEST(t.starts_on, $2::date), LEAST(t.ends_on, $3::date),
+                                  interval '1 day') AS d
+            WHERE t.staff_member_id = $1 AND t.archived_at IS NULL
+              AND t.starts_on <= $3::date AND t.ends_on >= $2::date`,
+          [query.staffMemberId, from, to],
+        )
+      ).rows.map((r) => r.d),
+    true,
+  );
+  const onLeave = new Set(leave);
+  // a past time stays allowed for the team (B.4a); the resources count (B.3b)
+  const free = (d: MemberDay, t: number) =>
+    isFreeAt(d.intervals, d.busy, { ...d.rules, earliestMin: null }, t);
+  return query.points.map((p) => {
+    const day = member.days.find(
+      (d) => d.staffMemberId === query.staffMemberId && d.date === p.date,
+    );
+    const duration = day?.rules.durationMin ?? member.durationMinutes;
+    const open = day?.intervals.some(
+      (i) => i.startMin <= p.minute && p.minute + duration <= i.endMin,
+    );
+    const available = Boolean(day && free(day, p.minute));
+    let nearestMinute: number | null = null;
+    if (!available && day) {
+      for (const s of memberSlots(day.intervals, day.busy, { ...day.rules, earliestMin: null })) {
+        if (!s.available) continue;
+        if (
+          nearestMinute === null ||
+          Math.abs(s.startMin - p.minute) < Math.abs(nearestMinute - p.minute)
+        ) {
+          nearestMinute = s.startMin;
+        }
+      }
+    }
+    const others = available
+      ? []
+      : team.days.filter(
+          (d) => d.date === p.date && d.staffMemberId !== query.staffMemberId && free(d, p.minute),
+        );
+    const loadOf = new Map(others.map((d) => [d.staffMemberId, d.load]));
+    return {
+      date: p.date,
+      minute: p.minute,
+      available,
+      reason: available ? null : onLeave.has(p.date) ? 'staff_on_leave' : open ? 'taken' : 'closed',
+      nearestMinute,
+      otherStaffIds: byLoad(
+        team.staff.filter((s) => loadOf.has(s.id)),
+        (id) => loadOf.get(id) ?? 0,
+      ),
+    };
+  });
+}
+
+/** Local (date, minute) → instant for many points at once (null: the hour skipped in spring). */
+export async function localInstants(
+  ctx: TenantContext,
+  timeZone: string,
+  points: Array<{ date: string; minute: number }>,
+): Promise<Array<Date | null>> {
+  return toInstants(ctx, timeZone, points);
+}
