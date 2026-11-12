@@ -317,5 +317,102 @@
       "7": "Dum"
     },
     "businessClosedDay": "{day} închis"
+  },
+  "calendar": {
+    "title": "Calendar",
+    "summary": {
+      "appointmentsToday": "{count, plural, one {# appointment today} other {# appointments today}}",
+      "appointmentsDay": "{count, plural, one {# appointment} other {# appointments}}",
+      "staff": "{count, plural, one {# team member} other {# team members}}",
+      "open": "open {from}–{to}",
+      "closed": "closed"
+    },
+    "prevDay": "Previous day",
+    "nextDay": "Next day",
+    "prevWeek": "Previous week",
+    "nextWeek": "Next week",
+    "today": "Today",
+    "firstFree": "First free slot",
+    "viewLabel": "Calendar view",
+    "view": {
+      "day": "Day",
+      "week": "Week",
+      "res": "Resources"
+    },
+    "staffPick": "Team member",
+    "daySub": "{role} · {count, plural, one {# appointment} other {# appointments}}",
+    "closedDay": "Closed",
+    "date": {
+      "long": "{weekday}, {day} {month}",
+      "short": "{weekday}, {day} {month}",
+      "range": "{from}–{to} {month}",
+      "rangeMonths": "{from} {fromMonth} – {to} {month}",
+      "col": "{weekday} {day}"
+    },
+    "dayShort": {
+      "1": "Mon",
+      "2": "Tue",
+      "3": "Wed",
+      "4": "Thu",
+      "5": "Fri",
+      "6": "Sat",
+      "7": "Sun"
+    },
+    "dayCol": {
+      "1": "Mon",
+      "2": "Tue",
+      "3": "Wed",
+      "4": "Thu",
+      "5": "Fri",
+      "6": "Sat",
+      "7": "Sun"
+    },
+    "monthShort": {
+      "1": "Jan",
+      "2": "Feb",
+      "3": "Mar",
+      "4": "Apr",
+      "5": "May",
+      "6": "Jun",
+      "7": "Jul",
+      "8": "Aug",
+      "9": "Sep",
+      "10": "Oct",
+      "11": "Nov",
+      "12": "Dec"
+    },
+    "status": {
+      "done": "Completed",
+      "now": "In progress",
+      "confirmed": "Confirmed",
+      "unconfirmed": "Unconfirmed",
+      "cancelled": "Cancelled",
+      "noshow": "No-show",
+      "blocked": "Unavailable"
+    },
+    "block": {
+      "default": "Unavailable",
+      "leave": "Leave",
+      "off": "Day off"
+    },
+    "ff": {
+      "desc": "First free slot for {service} · searching from today",
+      "found": "Next free slot: {weekday}, {time}, with {staff}.",
+      "for": "For {service} ({minutes} min).",
+      "othersBusy": "{names} have no free slot on {weekday}.",
+      "otherBusy": "{names} has no free slot on {weekday}.",
+      "book": "Book here",
+      "more": "Search further",
+      "none": "No free slot for {service} in the next 30 days.",
+      "pickTitle": "First free slot",
+      "pickLabel": "Service",
+      "search": "Search",
+      "cancel": "Cancel"
+    },
+    "err": {
+      "load": "The calendar didn’t load.",
+      "retry": "Try again"
+    },
+    "empty": "Nobody in the calendar yet. Add people in Settings · Team schedule."
   }
 }

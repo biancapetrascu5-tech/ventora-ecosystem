@@ -317,5 +317,102 @@
       "7": "Dum"
     },
     "businessClosedDay": "{day} închis"
+  },
+  "calendar": {
+    "title": "Calendario",
+    "summary": {
+      "appointmentsToday": "{count, plural, one {# cita hoy} other {# citas hoy}}",
+      "appointmentsDay": "{count, plural, one {# cita} other {# citas}}",
+      "staff": "{count, plural, one {# empleado} other {# empleados}}",
+      "open": "abierto {from}–{to}",
+      "closed": "cerrado"
+    },
+    "prevDay": "Día anterior",
+    "nextDay": "Día siguiente",
+    "prevWeek": "Semana anterior",
+    "nextWeek": "Semana siguiente",
+    "today": "Hoy",
+    "firstFree": "Primer hueco libre",
+    "viewLabel": "Vista del calendario",
+    "view": {
+      "day": "Día",
+      "week": "Semana",
+      "res": "Recursos"
+    },
+    "staffPick": "Empleado",
+    "daySub": "{role} · {count, plural, one {# cita} other {# citas}}",
+    "closedDay": "Cerrado",
+    "date": {
+      "long": "{weekday}, {day} de {month}",
+      "short": "{weekday}, {day} {month}",
+      "range": "{from}–{to} de {month}",
+      "rangeMonths": "{from} de {fromMonth} – {to} de {month}",
+      "col": "{weekday} {day}"
+    },
+    "dayShort": {
+      "1": "lun",
+      "2": "mar",
+      "3": "mié",
+      "4": "jue",
+      "5": "vie",
+      "6": "sáb",
+      "7": "dom"
+    },
+    "dayCol": {
+      "1": "Lun",
+      "2": "Mar",
+      "3": "Mié",
+      "4": "Jue",
+      "5": "Vie",
+      "6": "Sáb",
+      "7": "Dom"
+    },
+    "monthShort": {
+      "1": "ene",
+      "2": "feb",
+      "3": "mar",
+      "4": "abr",
+      "5": "may",
+      "6": "jun",
+      "7": "jul",
+      "8": "ago",
+      "9": "sept",
+      "10": "oct",
+      "11": "nov",
+      "12": "dic"
+    },
+    "status": {
+      "done": "Finalizada",
+      "now": "En curso",
+      "confirmed": "Confirmada",
+      "unconfirmed": "Sin confirmar",
+      "cancelled": "Cancelada",
+      "noshow": "No se presentó",
+      "blocked": "No disponible"
+    },
+    "block": {
+      "default": "No disponible",
+      "leave": "Vacaciones",
+      "off": "Día libre"
+    },
+    "ff": {
+      "desc": "Primer hueco libre para {service} · buscando desde hoy",
+      "found": "Próximo hueco libre: {weekday}, {time}, con {staff}.",
+      "for": "Para {service} ({minutes} min).",
+      "othersBusy": "{names} no tienen hueco el {weekday}.",
+      "otherBusy": "{names} no tiene hueco el {weekday}.",
+      "book": "Reservar aquí",
+      "more": "Buscar más adelante",
+      "none": "No hay huecos libres para {service} en los próximos 30 días.",
+      "pickTitle": "Primer hueco libre",
+      "pickLabel": "Servicio",
+      "search": "Buscar",
+      "cancel": "Cancelar"
+    },
+    "err": {
+      "load": "El calendario no se ha cargado.",
+      "retry": "Reintentar"
+    },
+    "empty": "Aún no hay nadie en el calendario. Añade a las personas en Ajustes · Horario del equipo."
   }
 }

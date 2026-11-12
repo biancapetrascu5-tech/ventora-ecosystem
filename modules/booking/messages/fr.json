@@ -317,5 +317,102 @@
       "7": "Dum"
     },
     "businessClosedDay": "{day} închis"
+  },
+  "calendar": {
+    "title": "Calendrier",
+    "summary": {
+      "appointmentsToday": "{count, plural, one {# rendez-vous aujourd’hui} other {# rendez-vous aujourd’hui}}",
+      "appointmentsDay": "{count, plural, one {# rendez-vous} other {# rendez-vous}}",
+      "staff": "{count, plural, one {# collaborateur} other {# collaborateurs}}",
+      "open": "ouvert {from}–{to}",
+      "closed": "fermé"
+    },
+    "prevDay": "Jour précédent",
+    "nextDay": "Jour suivant",
+    "prevWeek": "Semaine précédente",
+    "nextWeek": "Semaine suivante",
+    "today": "Aujourd’hui",
+    "firstFree": "Premier créneau libre",
+    "viewLabel": "Vue du calendrier",
+    "view": {
+      "day": "Jour",
+      "week": "Semaine",
+      "res": "Ressources"
+    },
+    "staffPick": "Collaborateur",
+    "daySub": "{role} · {count, plural, one {# rendez-vous} other {# rendez-vous}}",
+    "closedDay": "Fermé",
+    "date": {
+      "long": "{weekday} {day} {month}",
+      "short": "{weekday} {day} {month}",
+      "range": "{from}–{to} {month}",
+      "rangeMonths": "{from} {fromMonth} – {to} {month}",
+      "col": "{weekday} {day}"
+    },
+    "dayShort": {
+      "1": "lun.",
+      "2": "mar.",
+      "3": "mer.",
+      "4": "jeu.",
+      "5": "ven.",
+      "6": "sam.",
+      "7": "dim."
+    },
+    "dayCol": {
+      "1": "Lun.",
+      "2": "Mar.",
+      "3": "Mer.",
+      "4": "Jeu.",
+      "5": "Ven.",
+      "6": "Sam.",
+      "7": "Dim."
+    },
+    "monthShort": {
+      "1": "janv.",
+      "2": "févr.",
+      "3": "mars",
+      "4": "avr.",
+      "5": "mai",
+      "6": "juin",
+      "7": "juil.",
+      "8": "août",
+      "9": "sept.",
+      "10": "oct.",
+      "11": "nov.",
+      "12": "déc."
+    },
+    "status": {
+      "done": "Terminé",
+      "now": "En cours",
+      "confirmed": "Confirmé",
+      "unconfirmed": "Non confirmé",
+      "cancelled": "Annulé",
+      "noshow": "Absent",
+      "blocked": "Indisponible"
+    },
+    "block": {
+      "default": "Indisponible",
+      "leave": "Congé",
+      "off": "Jour de repos"
+    },
+    "ff": {
+      "desc": "Premier créneau libre pour {service} · à partir d’aujourd’hui",
+      "found": "Prochain créneau libre : {weekday}, {time}, avec {staff}.",
+      "for": "Pour {service} ({minutes} min).",
+      "othersBusy": "{names} n’ont pas de créneau {weekday}.",
+      "otherBusy": "{names} n’a pas de créneau {weekday}.",
+      "book": "Réserver ici",
+      "more": "Chercher plus loin",
+      "none": "Aucun créneau libre pour {service} dans les 30 prochains jours.",
+      "pickTitle": "Premier créneau libre",
+      "pickLabel": "Prestation",
+      "search": "Chercher",
+      "cancel": "Annuler"
+    },
+    "err": {
+      "load": "Le calendrier ne s’est pas chargé.",
+      "retry": "Réessayer"
+    },
+    "empty": "Personne dans le calendrier pour l’instant. Ajoutez les personnes dans Réglages · Horaires de l’équipe."
   }
 }

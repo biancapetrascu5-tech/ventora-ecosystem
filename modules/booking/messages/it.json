@@ -317,5 +317,102 @@
       "7": "Dum"
     },
     "businessClosedDay": "{day} închis"
+  },
+  "calendar": {
+    "title": "Calendario",
+    "summary": {
+      "appointmentsToday": "{count, plural, one {# appuntamento oggi} other {# appuntamenti oggi}}",
+      "appointmentsDay": "{count, plural, one {# appuntamento} other {# appuntamenti}}",
+      "staff": "{count, plural, one {# dipendente} other {# dipendenti}}",
+      "open": "aperto {from}–{to}",
+      "closed": "chiuso"
+    },
+    "prevDay": "Giorno precedente",
+    "nextDay": "Giorno successivo",
+    "prevWeek": "Settimana precedente",
+    "nextWeek": "Settimana successiva",
+    "today": "Oggi",
+    "firstFree": "Primo posto libero",
+    "viewLabel": "Vista del calendario",
+    "view": {
+      "day": "Giorno",
+      "week": "Settimana",
+      "res": "Risorse"
+    },
+    "staffPick": "Dipendente",
+    "daySub": "{role} · {count, plural, one {# appuntamento} other {# appuntamenti}}",
+    "closedDay": "Chiuso",
+    "date": {
+      "long": "{weekday} {day} {month}",
+      "short": "{weekday} {day} {month}",
+      "range": "{from}–{to} {month}",
+      "rangeMonths": "{from} {fromMonth} – {to} {month}",
+      "col": "{weekday} {day}"
+    },
+    "dayShort": {
+      "1": "lun",
+      "2": "mar",
+      "3": "mer",
+      "4": "gio",
+      "5": "ven",
+      "6": "sab",
+      "7": "dom"
+    },
+    "dayCol": {
+      "1": "Lun",
+      "2": "Mar",
+      "3": "Mer",
+      "4": "Gio",
+      "5": "Ven",
+      "6": "Sab",
+      "7": "Dom"
+    },
+    "monthShort": {
+      "1": "gen.",
+      "2": "feb.",
+      "3": "mar.",
+      "4": "apr.",
+      "5": "mag.",
+      "6": "giu.",
+      "7": "lug.",
+      "8": "ago.",
+      "9": "set.",
+      "10": "ott.",
+      "11": "nov.",
+      "12": "dic."
+    },
+    "status": {
+      "done": "Concluso",
+      "now": "In corso",
+      "confirmed": "Confermato",
+      "unconfirmed": "Non confermato",
+      "cancelled": "Annullato",
+      "noshow": "Non presentato",
+      "blocked": "Non disponibile"
+    },
+    "block": {
+      "default": "Non disponibile",
+      "leave": "Ferie",
+      "off": "Giorno libero"
+    },
+    "ff": {
+      "desc": "Primo posto libero per {service} · cerca da oggi in poi",
+      "found": "Prossimo posto libero: {weekday}, {time}, con {staff}.",
+      "for": "Per {service} ({minutes} min).",
+      "othersBusy": "{names} non hanno posto {weekday}.",
+      "otherBusy": "{names} non ha posto {weekday}.",
+      "book": "Prenota qui",
+      "more": "Cerca oltre",
+      "none": "Nessun posto libero per {service} nei prossimi 30 giorni.",
+      "pickTitle": "Primo posto libero",
+      "pickLabel": "Servizio",
+      "search": "Cerca",
+      "cancel": "Annulla"
+    },
+    "err": {
+      "load": "Il calendario non è stato caricato.",
+      "retry": "Riprova"
+    },
+    "empty": "Ancora nessuno nel calendario. Aggiunga le persone in Impostazioni · Orario del team."
   }
 }

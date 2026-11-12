@@ -73,3 +73,27 @@ export {
   type IntervalData,
   type WeekForm,
 } from './team/team-format';
+// Lot B.6a: BookingCalendar (day, week, resources)
+export {
+  BookingCalendarView,
+  type BookingCalendarViewProps,
+  type FirstFreeResult,
+  type StaffOption,
+} from './calendar/BookingCalendarView';
+export { useCalendarTexts, type CalendarTexts } from './calendar/calendar-texts';
+export {
+  activeCount,
+  addDays,
+  dayColumn,
+  gridHours,
+  scheduleStatus,
+  stepDate,
+  toEvents,
+  weekDays,
+  weekdayOf,
+  weekStart,
+  type CalendarAppointment,
+  type CalendarAppointmentStatus,
+  type CalendarBlock,
+  type CalendarView,
+} from './calendar/calendar-format';

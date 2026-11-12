@@ -317,5 +317,102 @@
       "7": "Dum"
     },
     "businessClosedDay": "{day} închis"
+  },
+  "calendar": {
+    "title": "Kalender",
+    "summary": {
+      "appointmentsToday": "{count, plural, one {# Termin heute} other {# Termine heute}}",
+      "appointmentsDay": "{count, plural, one {# Termin} other {# Termine}}",
+      "staff": "{count} Mitarbeiter",
+      "open": "geöffnet {from}–{to}",
+      "closed": "geschlossen"
+    },
+    "prevDay": "Vorheriger Tag",
+    "nextDay": "Nächster Tag",
+    "prevWeek": "Vorherige Woche",
+    "nextWeek": "Nächste Woche",
+    "today": "Heute",
+    "firstFree": "Erster freier Termin",
+    "viewLabel": "Kalenderansicht",
+    "view": {
+      "day": "Tag",
+      "week": "Woche",
+      "res": "Ressourcen"
+    },
+    "staffPick": "Mitarbeiter",
+    "daySub": "{role} · {count, plural, one {# Termin} other {# Termine}}",
+    "closedDay": "Geschlossen",
+    "date": {
+      "long": "{weekday}, {day}. {month}",
+      "short": "{weekday}, {day}. {month}",
+      "range": "{from}.–{to}. {month}",
+      "rangeMonths": "{from}. {fromMonth} – {to}. {month}",
+      "col": "{weekday} {day}"
+    },
+    "dayShort": {
+      "1": "Mo.",
+      "2": "Di.",
+      "3": "Mi.",
+      "4": "Do.",
+      "5": "Fr.",
+      "6": "Sa.",
+      "7": "So."
+    },
+    "dayCol": {
+      "1": "Mo.",
+      "2": "Di.",
+      "3": "Mi.",
+      "4": "Do.",
+      "5": "Fr.",
+      "6": "Sa.",
+      "7": "So."
+    },
+    "monthShort": {
+      "1": "Jan.",
+      "2": "Feb.",
+      "3": "März",
+      "4": "Apr.",
+      "5": "Mai",
+      "6": "Juni",
+      "7": "Juli",
+      "8": "Aug.",
+      "9": "Sept.",
+      "10": "Okt.",
+      "11": "Nov.",
+      "12": "Dez."
+    },
+    "status": {
+      "done": "Erledigt",
+      "now": "Läuft",
+      "confirmed": "Bestätigt",
+      "unconfirmed": "Unbestätigt",
+      "cancelled": "Abgesagt",
+      "noshow": "Nicht erschienen",
+      "blocked": "Nicht verfügbar"
+    },
+    "block": {
+      "default": "Nicht verfügbar",
+      "leave": "Urlaub",
+      "off": "Freier Tag"
+    },
+    "ff": {
+      "desc": "Erster freier Termin für {service} · ab heute gesucht",
+      "found": "Nächster freier Termin: {weekday}, {time}, bei {staff}.",
+      "for": "Für {service} ({minutes} Min.).",
+      "othersBusy": "{names} haben am {weekday} keinen Platz.",
+      "otherBusy": "{names} hat am {weekday} keinen Platz.",
+      "book": "Hier buchen",
+      "more": "Weiter suchen",
+      "none": "In den nächsten 30 Tagen ist kein Termin für {service} frei.",
+      "pickTitle": "Erster freier Termin",
+      "pickLabel": "Leistung",
+      "search": "Suchen",
+      "cancel": "Abbrechen"
+    },
+    "err": {
+      "load": "Der Kalender konnte nicht geladen werden.",
+      "retry": "Erneut versuchen"
+    },
+    "empty": "Noch niemand im Kalender. Fügen Sie die Personen unter Einstellungen · Teamplan hinzu."
   }
 }
