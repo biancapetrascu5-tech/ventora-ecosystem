@@ -36,6 +36,7 @@ import {
 import { writeOutboxEvent } from '@ventora/db-kit';
 import {
   InvitationNewLinkRequestedV1,
+  OrganizationMemberAccessChangedV1,
   OrganizationMemberAddedV1,
   OrganizationMemberRemovedV1,
   OrganizationMemberRoleChangedV1,
@@ -1074,6 +1075,13 @@ export async function setMemberAccess(
     if (m.status === status) return { changed: false };
     await tx.$executeRaw`UPDATE organizations.membership SET status = ${status}::"organizations"."MembershipStatus", updated_at = now()
       WHERE id = ${m.id}::uuid`;
+    // 5.10c (3c): organization.member_access_changed v1, in the same transaction
+    await writeOutboxEvent(tx, 'organizations', OrganizationMemberAccessChangedV1, {
+      organizationId: ctx.organizationId,
+      sourceApp: OrganizationMemberAccessChangedV1.sourceApp,
+      resourceId: m.id,
+      payload: { membershipId: m.id, userId: targetUserId, role: m.role, access },
+    });
     await appendAuditEventInTx(
       prismaTxExecutor(tx),
       memberAudit(
