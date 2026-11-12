@@ -4,6 +4,7 @@ export type { MarketingSettings, MarketingSettingsInput } from './settings';
 export {
   createMarketingContact,
   dismissMarketingDuplicate,
+  eraseMarketingContact,
   getMarketingContact,
   getMarketingContactHistory,
   listMarketingContacts,

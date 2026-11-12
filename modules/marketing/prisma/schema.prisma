@@ -47,16 +47,20 @@ model Contact {
   bookingClientId String?   @map("booking_client_id") @db.Uuid
   archivedAt      DateTime? @map("archived_at") @db.Timestamptz
   mergedIntoId    String?   @map("merged_into_id") @db.Uuid
+  /// Review #192: the GDPR erasure (marketing.erase_contact); the personal data emptied
+  erasedAt        DateTime? @map("erased_at") @db.Timestamptz
+  erasedByUserId  String?   @map("erased_by_user_id") @db.Uuid
   createdByUserId String?   @map("created_by_user_id") @db.Uuid
   createdAt       DateTime  @default(now()) @map("created_at") @db.Timestamptz
   updatedAt       DateTime  @default(now()) @map("updated_at") @db.Timestamptz
 
-  mergedInto  Contact?             @relation("ContactMerge", fields: [mergedIntoId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "contact_merged_into_id_fkey")
+  mergedInto  Contact?             @relation("ContactMerge", fields: [organizationId, mergedIntoId], references: [organizationId, id], onDelete: Restrict, onUpdate: Restrict, map: "contact_merged_into_id_fkey")
   mergedFrom  Contact[]            @relation("ContactMerge")
   events      ContactEvent[]
   dismissedA  DuplicateDismissal[] @relation("DismissalA")
   dismissedB  DuplicateDismissal[] @relation("DismissalB")
 
+  @@unique([organizationId, id], map: "contact_organization_id_id_key")
   @@index([organizationId, email], map: "contact_email_idx")
   @@index([organizationId, phone], map: "contact_phone_idx")
   @@index([organizationId, createdAt(sort: Desc)], map: "contact_list_idx")
@@ -75,7 +79,7 @@ model ContactEvent {
   occurredAt     DateTime @default(now()) @map("occurred_at") @db.Timestamptz
   createdAt      DateTime @default(now()) @map("created_at") @db.Timestamptz
 
-  contact Contact @relation(fields: [contactId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "contact_event_contact_id_fkey")
+  contact Contact @relation(fields: [organizationId, contactId], references: [organizationId, id], onDelete: Restrict, onUpdate: Restrict, map: "contact_event_contact_id_fkey")
 
   @@index([organizationId, contactId, occurredAt(sort: Desc)], map: "contact_event_contact_idx")
   @@map("contact_event")
@@ -90,8 +94,8 @@ model DuplicateDismissal {
   dismissedByUserId String   @map("dismissed_by_user_id") @db.Uuid
   dismissedAt       DateTime @default(now()) @map("dismissed_at") @db.Timestamptz
 
-  contactA Contact @relation("DismissalA", fields: [contactAId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "duplicate_dismissal_a_fkey")
-  contactB Contact @relation("DismissalB", fields: [contactBId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "duplicate_dismissal_b_fkey")
+  contactA Contact @relation("DismissalA", fields: [organizationId, contactAId], references: [organizationId, id], onDelete: Restrict, onUpdate: Restrict, map: "duplicate_dismissal_a_fkey")
+  contactB Contact @relation("DismissalB", fields: [organizationId, contactBId], references: [organizationId, id], onDelete: Restrict, onUpdate: Restrict, map: "duplicate_dismissal_b_fkey")
 
   @@id([organizationId, contactAId, contactBId])
   @@map("duplicate_dismissal")

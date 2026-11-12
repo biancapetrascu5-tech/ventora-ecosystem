@@ -8,6 +8,11 @@
 --   contact_event       → istoricul interacțiunilor (trimis, livrat, deschis, click, dezabonat,
 --                         formular): doar adăugare, niciodată modificat sau șters
 --   duplicate_dismissal → „Nu sunt duplicate” pentru o pereche (potrivirea exactă, ca D-CRM-8)
+--   erase_contact()     → ștergerea GDPR (review #192): golește datele personale și marchează
+--                         contactul șters, fără DELETE, pe modelul booking.erase_client
+--
+-- Legăturile din schemă sunt compuse (afacere + id, review #192): un rând nu poate trimite la un
+-- contact al altei afaceri, nici dacă RLS ar fi ocolit.
 --
 -- Consimțământul NU stă aici: doar prin core/consent (C.5, MK.5). Fără DELETE (§6.4 c); fără UPDATE
 -- pe organization_id / id / created_*; RLS pe app.organization_id (D-SEC-1). Fără rol nou: doar
@@ -27,15 +32,23 @@ CREATE TABLE "marketing"."contact" (
   "booking_client_id"  UUID,
   "archived_at"        TIMESTAMPTZ,
   "merged_into_id"     UUID,
+  "erased_at"          TIMESTAMPTZ,
+  "erased_by_user_id"  UUID,
   "created_by_user_id" UUID,
   "created_at"         TIMESTAMPTZ  NOT NULL DEFAULT now(),
   "updated_at"         TIMESTAMPTZ  NOT NULL DEFAULT now(),
 
   CONSTRAINT "contact_pkey" PRIMARY KEY ("id"),
-  CONSTRAINT "contact_merged_into_id_fkey" FOREIGN KEY ("merged_into_id")
-    REFERENCES "marketing"."contact" ("id") ON DELETE RESTRICT ON UPDATE RESTRICT,
-  -- a marketing contact is reachable: an e-mail or a phone
-  CONSTRAINT "contact_reachable_check" CHECK ("email" IS NOT NULL OR "phone" IS NOT NULL),
+  -- the composite key every link of the schema points to (business + id)
+  CONSTRAINT "contact_organization_id_id_key" UNIQUE ("organization_id", "id"),
+  CONSTRAINT "contact_merged_into_id_fkey" FOREIGN KEY ("organization_id", "merged_into_id")
+    REFERENCES "marketing"."contact" ("organization_id", "id") ON DELETE RESTRICT ON UPDATE RESTRICT,
+  -- a marketing contact is reachable (an e-mail or a phone), unless it was erased (GDPR)
+  CONSTRAINT "contact_reachable_check"
+    CHECK ("erased_at" IS NOT NULL OR "email" IS NOT NULL OR "phone" IS NOT NULL),
+  CONSTRAINT "contact_erased_check" CHECK (
+    "erased_at" IS NULL OR ("name" IS NULL AND "email" IS NULL AND "phone" IS NULL
+      AND "tags" = '{}' AND "custom_fields" = '{}'::jsonb AND "erased_by_user_id" IS NOT NULL)),
   CONSTRAINT "contact_name_check"
     CHECK ("name" IS NULL OR char_length(btrim("name")) BETWEEN 1 AND 160),
   -- normalized in code (core/consent normalizeAddress): lower case; +<8–15 digits>
@@ -81,8 +94,8 @@ CREATE TABLE "marketing"."contact_event" (
   "created_at"      TIMESTAMPTZ  NOT NULL DEFAULT now(),
 
   CONSTRAINT "contact_event_pkey" PRIMARY KEY ("id"),
-  CONSTRAINT "contact_event_contact_id_fkey" FOREIGN KEY ("contact_id")
-    REFERENCES "marketing"."contact" ("id") ON DELETE RESTRICT ON UPDATE RESTRICT,
+  CONSTRAINT "contact_event_contact_id_fkey" FOREIGN KEY ("organization_id", "contact_id")
+    REFERENCES "marketing"."contact" ("organization_id", "id") ON DELETE RESTRICT ON UPDATE RESTRICT,
   CONSTRAINT "contact_event_kind_check"
     CHECK ("kind" IN ('sent', 'delivered', 'opened', 'clicked', 'unsubscribed', 'form')),
   CONSTRAINT "contact_event_channel_check"
@@ -101,10 +114,10 @@ CREATE TABLE "marketing"."duplicate_dismissal" (
   CONSTRAINT "duplicate_dismissal_pkey" PRIMARY KEY ("organization_id", "contact_a_id", "contact_b_id"),
   -- the pair is stored once, in order
   CONSTRAINT "duplicate_dismissal_order_check" CHECK ("contact_a_id" < "contact_b_id"),
-  CONSTRAINT "duplicate_dismissal_a_fkey" FOREIGN KEY ("contact_a_id")
-    REFERENCES "marketing"."contact" ("id") ON DELETE RESTRICT ON UPDATE RESTRICT,
-  CONSTRAINT "duplicate_dismissal_b_fkey" FOREIGN KEY ("contact_b_id")
-    REFERENCES "marketing"."contact" ("id") ON DELETE RESTRICT ON UPDATE RESTRICT
+  CONSTRAINT "duplicate_dismissal_a_fkey" FOREIGN KEY ("organization_id", "contact_a_id")
+    REFERENCES "marketing"."contact" ("organization_id", "id") ON DELETE RESTRICT ON UPDATE RESTRICT,
+  CONSTRAINT "duplicate_dismissal_b_fkey" FOREIGN KEY ("organization_id", "contact_b_id")
+    REFERENCES "marketing"."contact" ("organization_id", "id") ON DELETE RESTRICT ON UPDATE RESTRICT
 );
 
 -- RLS (D-SEC-1): USING + WITH CHECK on app.organization_id
@@ -132,3 +145,75 @@ GRANT UPDATE ("name", "email", "phone", "locale", "tags", "custom_fields", "crm_
   ON "marketing"."contact" TO marketing_rw;
 GRANT SELECT, INSERT ON "marketing"."contact_event", "marketing"."duplicate_dismissal"
   TO marketing_rw;
+
+-- ── The GDPR erasure (review #192), on the model of booking.erase_client ─────────────────────────
+-- Empties the personal data of the contact and of the contacts merged into it (name, e-mail,
+-- phone, tags, custom fields, locale, the ClientDesk / EasyBook links) and marks them erased, in
+-- the business of the transaction; no DELETE. The history keeps only kinds, channels and dates
+-- (no personal data) and stays. The suppression list of core/consent (only the hash) is not
+-- touched: an erased person stays unsubscribed. Returns how many contacts were erased (0 if done).
+CREATE OR REPLACE FUNCTION marketing.erase_contact(p_contact UUID, p_user UUID)
+RETURNS INTEGER
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = pg_catalog, pg_temp
+AS $$
+DECLARE
+  v_org UUID := NULLIF(current_setting('app.organization_id', true), '')::uuid;
+  v_erased TIMESTAMPTZ;
+  v_count INTEGER;
+BEGIN
+  IF v_org IS NULL THEN
+    RAISE EXCEPTION 'no organization in the transaction' USING ERRCODE = '42501';
+  END IF;
+  IF p_user IS NULL THEN
+    RAISE EXCEPTION 'the user who erases is required' USING ERRCODE = '23502';
+  END IF;
+
+  SELECT c.erased_at INTO v_erased
+    FROM marketing.contact c
+   WHERE c.id = p_contact AND c.organization_id = v_org AND c.merged_into_id IS NULL
+     FOR UPDATE;
+  IF NOT FOUND THEN
+    RAISE EXCEPTION 'contact % not found', p_contact USING ERRCODE = 'P0002';
+  END IF;
+  IF v_erased IS NOT NULL THEN
+    RETURN 0;
+  END IF;
+
+  UPDATE marketing.contact c
+     SET name = NULL, email = NULL, phone = NULL, locale = NULL, tags = '{}',
+         custom_fields = '{}'::jsonb, crm_contact_id = NULL, booking_client_id = NULL,
+         erased_at = now(), erased_by_user_id = p_user,
+         archived_at = COALESCE(c.archived_at, now())
+   WHERE c.organization_id = v_org
+     AND (c.id = p_contact OR c.merged_into_id = p_contact)
+     AND c.erased_at IS NULL;
+  GET DIAGNOSTICS v_count = ROW_COUNT;
+  RETURN v_count;
+END;
+$$;
+
+REVOKE ALL ON FUNCTION marketing.erase_contact(UUID, UUID) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION marketing.erase_contact(UUID, UUID) TO marketing_rw;
+
+-- An erased contact stays erased: no UPDATE brings the personal data back (whoever writes).
+CREATE OR REPLACE FUNCTION marketing.contact_erased_guard()
+RETURNS TRIGGER
+LANGUAGE plpgsql
+SECURITY INVOKER
+SET search_path = pg_catalog, pg_temp
+AS $$
+BEGIN
+  IF OLD.erased_at IS NOT NULL THEN
+    RAISE EXCEPTION 'an erased contact cannot be changed' USING ERRCODE = '23514';
+  END IF;
+  RETURN NEW;
+END;
+$$;
+
+REVOKE ALL ON FUNCTION marketing.contact_erased_guard() FROM PUBLIC;
+
+CREATE TRIGGER contact_erased_guard
+  BEFORE UPDATE ON "marketing"."contact"
+  FOR EACH ROW EXECUTE FUNCTION marketing.contact_erased_guard();

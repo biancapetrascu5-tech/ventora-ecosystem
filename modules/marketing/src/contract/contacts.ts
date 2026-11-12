@@ -2,6 +2,7 @@ import { authorize } from '@ventora/access';
 import {
   createContactInOrg,
   dismissDuplicateInOrg,
+  eraseContactInOrg,
   getContactHistoryInOrg,
   getContactInOrg,
   listContactsInOrg,
@@ -89,6 +90,21 @@ export async function mergeMarketingContacts(
   params: Session & { keepId: string; duplicateId: string },
 ): Promise<MarketingContact> {
   return mergeContactsInOrg(await write(params), params.keepId, params.duplicateId);
+}
+
+/**
+ * The GDPR erasure of a contact (review #192): irreversible, so marketing:settings (owner, admin,
+ * the application's manager), like booking:admin for erase_client. Audited.
+ */
+export async function eraseMarketingContact(
+  params: Session & { contactId: string },
+): Promise<{ erased: number }> {
+  const ctx = await authorize({
+    sessionToken: params.sessionToken,
+    applicationId: 'marketing',
+    permission: 'marketing:settings',
+  });
+  return eraseContactInOrg(ctx, params.contactId);
 }
 
 export type {

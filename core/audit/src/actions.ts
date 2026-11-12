@@ -337,6 +337,8 @@ export const AuditActions = {
   marketingContactArchived: 'marketing.contact_archived',
   marketingContactRestored: 'marketing.contact_restored',
   marketingContactMerged: 'marketing.contact_merged',
+  // review #192: the GDPR erasure (marketing.erase_contact); metadata: how many contacts
+  marketingContactErased: 'marketing.contact_erased',
   marketingDuplicateDismissed: 'marketing.duplicate_dismissed',
   // Lot 5.8 — Growth Engine (category founder, like the workflow engine): the automatic stop of a
   // campaign above the 5 % disturbance threshold (P22), by the system; the numbers in metadata

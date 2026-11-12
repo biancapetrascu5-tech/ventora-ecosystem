@@ -15,6 +15,8 @@ import { withMarketingTx } from './db';
  *   archived          instead of deleted (no DELETE, §6.4 c); restored
  *   merged            the duplicate points to the kept contact (merged_into_id); its history stays
  *                     and is shown with the kept one
+ *   erased            the GDPR erasure (review #192) through marketing.erase_contact: the personal
+ *                     data emptied, no DELETE; an erased contact cannot be changed any more
  *   history           sent / delivered / opened / clicked / unsubscribed / form; append-only,
  *                     written by the campaigns and forms (MK.9+, MK.14) through recordContactEvent
  *
@@ -71,6 +73,7 @@ export type MarketingContact = {
   bookingClientId: string | null;
   archivedAt: Date | null;
   mergedIntoId: string | null;
+  erasedAt: Date | null;
   createdAt: Date;
   updatedAt: Date;
 };
@@ -183,12 +186,13 @@ type ContactRow = {
   booking_client_id: string | null;
   archived_at: Date | null;
   merged_into_id: string | null;
+  erased_at: Date | null;
   created_at: Date;
   updated_at: Date;
 };
 
 const COLUMNS = `id, name, email, phone, locale, tags, custom_fields, source, crm_contact_id,
-  booking_client_id, archived_at, merged_into_id, created_at, updated_at`;
+  booking_client_id, archived_at, merged_into_id, erased_at, created_at, updated_at`;
 
 function fromRow(r: ContactRow): MarketingContact {
   return {
@@ -204,6 +208,7 @@ function fromRow(r: ContactRow): MarketingContact {
     bookingClientId: r.booking_client_id,
     archivedAt: r.archived_at,
     mergedIntoId: r.merged_into_id,
+    erasedAt: r.erased_at,
     createdAt: r.created_at,
     updatedAt: r.updated_at,
   };
@@ -249,6 +254,7 @@ async function lockActive(client: PoolClient, id: string): Promise<ContactRow> {
   );
   const row = rows[0];
   if (!row || row.merged_into_id) throw new ResourceNotFound('Marketing contact not found');
+  if (row.erased_at) throw new Conflict('contact_erased');
   return row;
 }
 
@@ -614,5 +620,37 @@ export async function mergeContactsInOrg(
       .catch(mapUnique);
     await audit(exec, ctx, AuditActions.marketingContactMerged, k.id, { mergedId: d.id });
     return fromRow(rows[0]!);
+  });
+}
+
+/**
+ * The GDPR erasure (review #192), through marketing.erase_contact: the contact and the contacts
+ * merged into it lose their personal data (name, e-mail, phone, tags, custom fields, locale, the
+ * links) and are marked erased; no DELETE. The history (kinds and dates only) stays; the
+ * suppression list of core/consent (only the hash) stays, so the person stays unsubscribed.
+ * Twice: nothing more.
+ */
+export async function eraseContactInOrg(
+  ctx: TenantContext,
+  contactId: string,
+): Promise<{ erased: number }> {
+  const id = assertId(contactId);
+  return withMarketingTx(ctx.organizationId, async (client, exec) => {
+    const { rows } = await client.query<ContactRow>(
+      `SELECT ${COLUMNS} FROM marketing.contact WHERE id = $1`,
+      [id],
+    );
+    const row = rows[0];
+    if (!row) throw new ResourceNotFound('Marketing contact not found');
+    if (row.merged_into_id) throw new Conflict('contact_merged');
+    if (row.erased_at) return { erased: 0 };
+    const n = (
+      await client.query<{ n: number }>(`SELECT marketing.erase_contact($1, $2) AS n`, [
+        id,
+        ctx.userId,
+      ])
+    ).rows[0]!.n;
+    await audit(exec, ctx, AuditActions.marketingContactErased, id, { contacts: n });
+    return { erased: n };
   });
 }
