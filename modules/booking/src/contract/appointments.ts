@@ -33,6 +33,7 @@ import {
   type UpcomingAppointments,
 } from '../server/appointments';
 import { registerAppointmentsQuotaResolver } from '../server/quota';
+import { offerFreedClassSeatsAfter } from '../server/waitlist';
 
 // B.4b: the reconciliation of booking.appointments knows this module as soon as it is loaded
 registerAppointmentsQuotaResolver();
@@ -238,7 +239,12 @@ export async function markNoShow(params: AppointmentIdParams): Promise<Appointme
 /** „Anulează programarea”, by the business or recorded for the client. */
 export async function cancelAppointment(params: CancelAppointmentParams): Promise<Appointment> {
   const { ctx, scope } = await write(params);
-  return cancelAppointmentInOrg(ctx, scope, params.appointmentId, params.by);
+  const cancelled = await cancelAppointmentInOrg(ctx, scope, params.appointmentId, params.by);
+  // B.9d2 (D-9d-2): the freed seat of a class goes to the first one on its waiting list
+  if (cancelled.classSessionId) {
+    await offerFreedClassSeatsAfter(ctx.organizationId, cancelled.classSessionId);
+  }
+  return cancelled;
 }
 
 /** „Corectează starea…” (S116-D9): owner or admin, 24 hours, „Încheiată” ↔ „Nu a venit”. */

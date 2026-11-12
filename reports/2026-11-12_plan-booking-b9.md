@@ -112,15 +112,19 @@ Legăturile spre `client`, `service` și `staff_member` trebuie să garanteze ac
 
 **DE DECIS (S126), PROPUS:**
 - **D-9e-1:** o ședință se consumă când programarea e marcată finalizată; neprezentarea sau anularea târzie consumă și ele; anularea la timp o dă înapoi;
-- **D-9e-2:** ședințele expirate se pierd; owner-ul poate prelungi un pachet manual, cu motiv jurnalizat;
+- **D-9e-2:** ședințele expirate se pierd; owner-ul poate prelungi un pachet manual, cu motiv jurnalizat. **Prelungirea doar pentru owner: CONFIRMAT** (fondatoarea, 12.11, #195);
 - **D-9e-3:** pachetele se vând doar la salon în pilot; vânzarea online, cu Stripe, mai târziu;
 - **D-9e-4, contabilitatea: NECESITĂ DECIZIE (contabil).** Pachetul se facturează la vânzare (avans), nu pe ședință. Până la confirmare, B.9e nu emite documente fiscale, ci doar încasarea (B.21).
 
 **GDPR:** `erase_client` anonimizează notele vânzărilor.
 
+**Auditul B.9e cu codurile existente (`booking.service_updated` / `client_updated` / `appointment_updated`): CONFIRMAT** (fondatoarea, 12.11). D-9e-4 rămâne NECESITĂ DECIZIE, la contabil: nu se emit documente fiscale pentru pachete până atunci.
+
 ## Ordinea și PR-urile
 
 **Ordinea:** B.9a → B.9b → B.9c → B.9d1 → B.9d2 → B.FK → B.9e. Câte un PR pe sublot, cu baza `main`, cel mult 3 PR-uri deschise.
+
+**Corectura din 12.11 (fondatoarea):** B.9e a intrat înaintea lui B.9d2 (abatere acceptată). Ordinea de acum: **B.9d2 → B.FK → B.13**.
 
 **Testele locale:** doar testele lotului (`b-files.mjs`), cu regula pentru Docker din 12.11.
 

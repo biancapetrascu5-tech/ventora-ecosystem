@@ -11,6 +11,7 @@ import {
   type ClassSession,
   type ClassSessionDetail,
 } from '../server/classes';
+import { addToClassWaitlistInOrg, type WaitlistEntry } from '../server/waitlist';
 
 /*
  * Lot B.9d1 — the contract of the classes (design BookingClasses, S126; plan
@@ -66,6 +67,20 @@ export type AddClassParticipantParams = ClassSessionIdParams & {
   confirmed?: boolean;
 };
 export type MarkClassAttendanceParams = Session & { appointmentId: string; attended: boolean };
+export type AddToClassWaitlistParams = ClassSessionIdParams & { id: string; clientId: string };
+
+/**
+ * B.9d2: „Lista de așteptare” of a full session (D-9d-2: the first one gets the offer when a seat
+ * frees up). Conflict: class_not_full, class_session_cancelled, class_session_started,
+ * client_archived, client_no_email, already_participant, already_waiting, operation_reused.
+ */
+export async function addToClassWaitlist(params: AddToClassWaitlistParams): Promise<WaitlistEntry> {
+  const { ctx, scope } = await write(params);
+  return addToClassWaitlistInOrg(ctx, scope, params.sessionId, {
+    id: params.id,
+    clientId: params.clientId,
+  });
+}
 
 /** „Sesiune nouă” (with „Se repetă săptămânal”). */
 export async function createClassSessions(

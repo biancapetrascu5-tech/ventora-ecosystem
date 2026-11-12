@@ -24,14 +24,18 @@ import {
   getBookingSettingsInOrg,
   normalizePublicContact,
   publicClientInOrg,
+  readSettings,
+  type Appointment,
   type ClientInput,
   type ClientLocale,
 } from './appointments';
 import { getFreeSlotsInOrg, type FreeSlots } from './availability';
 import { isHighRisk } from './behavior';
+import { joinClassSession, readSession, SESSION_SELECT, type SessionRow } from './classes';
 import { withBookingTx } from './db';
 import { locationFilter } from './locations';
 import { issueManageToken } from './manage-token';
+import { requireLocalDate } from './schedule';
 import { isUuid } from './validation';
 
 /*
@@ -49,6 +53,11 @@ import { isUuid } from './validation';
  *                          manual confirmation (or „Risc ridicat”, until the deposit of B.22)
  *                          gives „Neconfirmată”
  *   resendPublicBookingCode after 60 s, at most 3 sends
+ *
+ * B.9d2 (D-9d-3): a seat of a class session is booked online the same way (getPublicClassSessions,
+ * then startPublicBooking with classSessionId): the hold keeps one seat for its 10 minutes; closed
+ * when no seat is left („Plin”: Conflict class_full) or at the notice of the business, for a
+ * session cancelled, or a class or member no longer bookable online (Conflict class_closed).
  *
  * T1: the business comes only from the slug (findPublicOrganization: active businesses only); a
  * hold id of another business is not found (RLS on public_hold, in that business's context).
@@ -134,6 +143,11 @@ export type PublicBookingPage = {
     priceMinor: number;
     priceMaxMinor: number | null;
     currency: string;
+    /**
+     * B.9d2: a class (D-9d-1, „Clienți în același timp” > 1): the page offers its sessions
+     * (getPublicClassSessions) with the seats left.
+     */
+    isClass: boolean;
     /** The members bookable online who do it, in the team's order. */
     staff: Array<{ id: string; displayName: string }>;
   }>;
@@ -162,9 +176,10 @@ export async function getPublicBookingPage(slug: unknown): Promise<PublicBooking
           price_minor: number;
           price_max_minor: number | null;
           currency: string;
+          capacity: number;
         }>(
           `SELECT id, name, duration_minutes, duration_max_minutes, price_kind, price_minor,
-                  price_max_minor, currency
+                  price_max_minor, currency, capacity
              FROM booking.service
             WHERE archived_at IS NULL AND bookable_online
             ORDER BY sort_order, name, id`,
@@ -194,6 +209,7 @@ export async function getPublicBookingPage(slug: unknown): Promise<PublicBooking
           priceMinor: s.price_minor,
           priceMaxMinor: s.price_max_minor,
           currency: s.currency,
+          isClass: s.capacity > 1,
           staff: staff
             .filter((m) => m.service_id === s.id)
             .map((m) => ({ id: m.id, displayName: m.display_name })),
@@ -237,14 +253,130 @@ export async function getPublicFreeSlots(slug: unknown, q: PublicSlotQuery): Pro
   });
 }
 
+// ── B.9d2: the sessions of a class (D-9d-3) ─────────────────────────────────────────────────
+
+export const PUBLIC_CLASS_LIMITS = {
+  /** The same horizon as the free times online (D-B5-5). */
+  horizonDays: 30,
+  rangeDays: 31,
+} as const;
+
+export type PublicClassSession = {
+  id: string;
+  serviceId: string;
+  staffMemberId: string;
+  staffDisplayName: string;
+  locationId: string | null;
+  startsAt: Date;
+  endsAt: Date;
+  seats: number;
+  /** „2 locuri libere”; 0 = „Plin” (the seats held by an offer or another booking count). */
+  seatsLeft: number;
+};
+
+/**
+ * The sessions of a class bookable online, between two local dates (from included, to excluded,
+ * at most 31 days): scheduled, the class and the member bookable online, from the notice of the
+ * business up to 30 days ahead; at a location when one is given. Full ones are shown with 0 seats.
+ */
+export async function getPublicClassSessions(
+  slug: unknown,
+  q: { serviceId: unknown; from: unknown; to: unknown; locationId?: unknown },
+): Promise<PublicClassSession[]> {
+  const p = await place(slug);
+  if (!isUuid(q.serviceId)) throw new InvalidInput('serviceId', 'invalid');
+  const from = requireLocalDate('from', q.from);
+  const to = requireLocalDate('to', q.to);
+  if (to <= from) throw new InvalidInput('to', 'order');
+  if ((Date.parse(to) - Date.parse(from)) / 86_400_000 > PUBLIC_CLASS_LIMITS.rangeDays) {
+    throw new InvalidInput('to', 'too_long');
+  }
+  const locationId = await locationFilter(p.ctx, q.locationId);
+  return withBookingTx(
+    p.ctx.organizationId,
+    async (client) => {
+      const settings = await readSettings(client);
+      const { rows } = await client.query<SessionRow>(
+        `${SESSION_SELECT}
+          WHERE s.service_id = $1 AND s.status = 'scheduled'
+            AND sv.archived_at IS NULL AND sv.bookable_online
+            AND m.archived_at IS NULL AND m.bookable_online
+            AND s.starts_at >= now() + make_interval(mins => $2)
+            AND s.starts_at < now() + make_interval(days => $3)
+            AND (s.starts_at AT TIME ZONE $4)::date >= $5::date
+            AND (s.starts_at AT TIME ZONE $4)::date < $6::date
+            AND ($7::uuid IS NULL OR s.location_id IS NULL OR s.location_id = $7)
+          ORDER BY s.starts_at, s.id`,
+        [
+          q.serviceId,
+          settings.noticeMin,
+          PUBLIC_CLASS_LIMITS.horizonDays,
+          p.timeZone,
+          from,
+          to,
+          locationId ?? null,
+        ],
+      );
+      return rows.map((r) => ({
+        id: r.id,
+        serviceId: r.service_id,
+        staffMemberId: r.staff_member_id,
+        staffDisplayName: r.staff_display_name,
+        locationId: r.location_id,
+        startsAt: r.starts_at,
+        endsAt: r.ends_at,
+        seats: r.seats,
+        seatsLeft: Math.max(0, r.seats - r.seats_taken - r.seats_held),
+      }));
+    },
+    true,
+  );
+}
+
+/**
+ * A session a seat can be booked for online, read (and locked) in the caller's transaction:
+ * Conflict('class_closed') when cancelled, past the notice or the horizon, or no longer bookable
+ * online; Conflict('class_full') when no seat is left.
+ */
+async function openClassSession(
+  client: PoolClient,
+  sessionId: string,
+  lock: boolean,
+): Promise<SessionRow> {
+  const s = await readSession(client, sessionId, lock);
+  const settings = await readSettings(client);
+  const open = (
+    await client.query<{ ok: boolean }>(
+      `SELECT ($2::timestamptz >= now() + make_interval(mins => $3)
+               AND $2::timestamptz < now() + make_interval(days => $4)
+               AND EXISTS (SELECT 1 FROM booking.service sv
+                            WHERE sv.id = $1 AND sv.archived_at IS NULL AND sv.bookable_online)
+               AND EXISTS (SELECT 1 FROM booking.staff_member m
+                            WHERE m.id = $5 AND m.archived_at IS NULL AND m.bookable_online)) AS ok`,
+      [
+        s.service_id,
+        s.starts_at,
+        settings.noticeMin,
+        PUBLIC_CLASS_LIMITS.horizonDays,
+        s.staff_member_id,
+      ],
+    )
+  ).rows[0]!.ok;
+  if (s.status !== 'scheduled' || !open) throw new Conflict('class_closed');
+  if (s.seats_taken + s.seats_held >= s.seats) throw new Conflict('class_full');
+  return s;
+}
+
 // ── the hold and the code ───────────────────────────────────────────────────────────────────
 
 export type StartPublicBookingInput = {
   serviceId: unknown;
-  /** A member's id, or 'any' („Oricine e liber”). */
-  staffMemberId: unknown;
-  /** ISO 8601 with offset, one of the free times. */
-  startsAt: unknown;
+  /** A member's id, or 'any' („Oricine e liber”). Not used for a class session. */
+  staffMemberId?: unknown;
+  /** ISO 8601 with offset, one of the free times. Not used for a class session. */
+  startsAt?: unknown;
+  /** B.9d2: a seat of this class session (getPublicClassSessions) instead of a free time. */
+  classSessionId?: unknown;
   locationId?: unknown;
   name: unknown;
   phone: unknown;
@@ -386,6 +518,18 @@ async function sendCode(to: string, locale: ClientLocale, business: string, code
   return deliverEmail({ to, subject, html, text });
 }
 
+/** A new attempt of the same e-mail replaces its pending hold. */
+async function expireSameEmail(client: PoolClient, emailHash: string): Promise<void> {
+  await client.query(
+    `UPDATE booking.public_hold
+        SET state = 'expired', settled_at = now(),
+            client_name = NULL, client_phone = NULL, client_email = NULL, message = NULL,
+            answers = NULL
+      WHERE email_hash = $1 AND state = 'pending'`,
+    [emailHash],
+  );
+}
+
 export async function startPublicBooking(
   slug: unknown,
   input: StartPublicBookingInput,
@@ -403,7 +547,11 @@ export async function startPublicBooking(
     locale: input.locale,
   } as ClientInput);
   const message = normalizeMessage(input.message);
-  const startsAt = requireStart(input.startsAt);
+  const classSessionId =
+    input.classSessionId === undefined || input.classSessionId === null
+      ? null
+      : requireHoldId(input.classSessionId);
+  const startsAtInput = classSessionId ? null : requireStart(input.startsAt);
   const locationId = await locationFilter(ctx, input.locationId);
   const emailHash = sha256(contact.email);
   const ipHash = sha256(`${ctx.organizationId}:${input.ip ?? 'unknown'}`);
@@ -430,20 +578,51 @@ export async function startPublicBooking(
   // B.7a: a blocked client is refused without learning why (the same answer as a taken time)
   if ((await publicClientInOrg(ctx, contact, false)).blocked) throw new Conflict('slot_taken');
 
-  // the time must be one of the free online times (notice, horizon, held times, the rules)
-  const date = localDate(startsAt, p.timeZone);
-  const query = {
-    serviceId: input.serviceId,
-    from: date,
-    to: nextDate(date),
-    mode: 'online' as const,
-    locationId,
-  };
-  const slots = await getFreeSlotsInOrg(ctx, { ...query, staffMemberId: input.staffMemberId });
-  const slot = slots.days
-    .flatMap((d) => d.slots)
-    .find((s) => s.available && s.startsAt.getTime() === startsAt.getTime());
-  if (!slot) throw new Conflict('slot_taken');
+  let staffMemberId: string;
+  let startsAt: Date;
+  let endsAt: Date;
+  let durationMinutes: number;
+  let holdLocationId: string | null = locationId ?? null;
+  if (classSessionId) {
+    // B.9d2 (D-9d-3): a seat of a class session still open online
+    const session = await withBookingTx(
+      ctx.organizationId,
+      (client) => openClassSession(client, classSessionId, false),
+      true,
+    );
+    if (input.serviceId !== session.service_id) throw new InvalidInput('serviceId', 'invalid');
+    staffMemberId = session.staff_member_id;
+    startsAt = session.starts_at;
+    endsAt = session.ends_at;
+    durationMinutes = Math.round((endsAt.getTime() - startsAt.getTime()) / 60_000);
+    holdLocationId = session.location_id;
+  } else {
+    startsAt = startsAtInput!;
+    // the time must be one of the free online times (notice, horizon, held times, the rules)
+    const date = localDate(startsAt, p.timeZone);
+    const query = {
+      serviceId: input.serviceId,
+      from: date,
+      to: nextDate(date),
+      mode: 'online' as const,
+      locationId,
+    };
+    const slots = await getFreeSlotsInOrg(ctx, { ...query, staffMemberId: input.staffMemberId });
+    const slot = slots.days
+      .flatMap((d) => d.slots)
+      .find((s) => s.available && s.startsAt.getTime() === startsAt.getTime());
+    if (!slot) throw new Conflict('slot_taken');
+    const member =
+      input.staffMemberId === 'any' ? slot.staffMemberIds?.[0] : (input.staffMemberId as string);
+    if (!member) throw new Conflict('slot_taken');
+    staffMemberId = member;
+    // the member's own duration (online: the maximum, S123-3)
+    durationMinutes =
+      input.staffMemberId === 'any'
+        ? (await getFreeSlotsInOrg(ctx, { ...query, staffMemberId })).durationMinutes
+        : slots.durationMinutes;
+    endsAt = new Date(startsAt.getTime() + durationMinutes * 60_000);
+  }
   // B.12: the answers to the questions of this service (a required one left empty: InvalidInput)
   const serviceId = input.serviceId as string;
   const answers = validateAnswers(
@@ -455,25 +634,22 @@ export async function startPublicBooking(
     input.answers,
     true,
   );
-  const staffMemberId =
-    input.staffMemberId === 'any' ? slot.staffMemberIds?.[0] : (input.staffMemberId as string);
-  if (!staffMemberId) throw new Conflict('slot_taken');
-  // the member's own duration (online: the maximum, S123-3)
-  const durationMinutes =
-    input.staffMemberId === 'any'
-      ? (await getFreeSlotsInOrg(ctx, { ...query, staffMemberId })).durationMinutes
-      : slots.durationMinutes;
-  const endsAt = new Date(startsAt.getTime() + durationMinutes * 60_000);
 
   const holdId = crypto.randomUUID();
   const code = newCode();
   const hold = await withBookingTx(ctx.organizationId, async (client) => {
-    // one hold at a time per member: the member's row is the lock
-    await client.query(`SELECT 1 FROM booking.staff_member WHERE id = $1 FOR UPDATE`, [
-      staffMemberId,
-    ]);
-    const taken = await client.query(
-      `SELECT 1 FROM booking.public_hold
+    if (classSessionId) {
+      // B.9d2: a new attempt of the same e-mail gives back its seat first, then the session's
+      // lock and its seats (the seats kept by offers and other holds count)
+      await expireSameEmail(client, emailHash);
+      await openClassSession(client, classSessionId, true);
+    } else {
+      // one hold at a time per member: the member's row is the lock
+      await client.query(`SELECT 1 FROM booking.staff_member WHERE id = $1 FOR UPDATE`, [
+        staffMemberId,
+      ]);
+      const taken = await client.query(
+        `SELECT 1 FROM booking.public_hold
         WHERE staff_member_id = $1 AND state = 'pending' AND expires_at > now()
           AND starts_at < $3 AND ends_at > $2
        UNION ALL
@@ -482,32 +658,26 @@ export async function startPublicBooking(
           AND status IN ('awaiting_payment', 'unconfirmed', 'confirmed', 'in_progress')
           AND starts_at < $3 AND ends_at > $2
        LIMIT 1`,
-      [staffMemberId, startsAt, endsAt],
-    );
-    if (taken.rows.length > 0) return null;
-    // a new attempt of the same e-mail replaces its pending one
-    await client.query(
-      `UPDATE booking.public_hold
-          SET state = 'expired', settled_at = now(),
-              client_name = NULL, client_phone = NULL, client_email = NULL, message = NULL,
-            answers = NULL
-        WHERE email_hash = $1 AND state = 'pending'`,
-      [emailHash],
-    );
+        [staffMemberId, startsAt, endsAt],
+      );
+      if (taken.rows.length > 0) return null;
+      // a new attempt of the same e-mail replaces its pending one
+      await expireSameEmail(client, emailHash);
+    }
     const { rows } = await client.query<{ expires_at: Date }>(
       `INSERT INTO booking.public_hold
          (id, organization_id, staff_member_id, service_id, location_id, starts_at, ends_at,
           duration_minutes, client_name, client_phone, client_email, client_locale, message,
-          email_hash, ip_hash, code_hash, expires_at, answers)
+          email_hash, ip_hash, code_hash, expires_at, answers, class_session_id)
        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16,
-               now() + make_interval(mins => $17), $18)
+               now() + make_interval(mins => $17), $18, $19)
        RETURNING expires_at`,
       [
         holdId,
         ctx.organizationId,
         staffMemberId,
         input.serviceId,
-        locationId ?? null,
+        holdLocationId,
         startsAt,
         endsAt,
         durationMinutes,
@@ -521,6 +691,7 @@ export async function startPublicBooking(
         codeHash(holdId, code),
         PUBLIC_LIMITS.holdMinutes,
         answers.length > 0 ? JSON.stringify(answers) : null,
+        classSessionId,
       ],
     );
     return rows[0]!;
@@ -550,6 +721,8 @@ export type HoldRow = {
   answers: FormAnswer[] | null;
   /** null only for a move hold (B.11b), never read here */
   code_hash: string | null;
+  /** B.9d2: a seat of this class session */
+  class_session_id: string | null;
   attempts: number;
   sends: number;
   last_sent_at: Date;
@@ -559,7 +732,7 @@ export type HoldRow = {
 
 const HOLD_COLUMNS = `id, staff_member_id, service_id, location_id, starts_at, client_name,
   client_phone, client_email, client_locale, message, answers, code_hash, attempts, sends,
-  last_sent_at, expires_at, state`;
+  last_sent_at, expires_at, state, class_session_id`;
 
 function requireHoldId(value: unknown): string {
   if (!isUuid(value)) throw new ResourceNotFound();
@@ -650,25 +823,43 @@ export async function verifyPublicBooking(
   // D-B-6: „Risc ridicat” needs the deposit (B.22); until then the salon confirms it
   const confirmed = settings.confirmationMode === 'auto' && !highRisk;
 
-  let appointment;
+  let appointment: Appointment;
   try {
-    appointment = await createAppointmentInOrg(ctx, 'all', {
-      id: crypto.randomUUID(),
-      staffMemberId: hold.staff_member_id,
-      serviceId: hold.service_id,
-      clientId,
-      startsAt: hold.starts_at.toISOString(),
-      confirmed,
-      teamNote: hold.message,
-      ...(hold.location_id ? { locationId: hold.location_id } : {}),
-    });
+    appointment = hold.class_session_id
+      ? // B.9d2: the seat this hold keeps
+        await joinClassSession(ctx, hold.class_session_id, {
+          id: crypto.randomUUID(),
+          clientId,
+          status: confirmed ? 'confirmed' : 'unconfirmed',
+          teamNote: hold.message,
+          own: { holdId },
+        })
+      : await createAppointmentInOrg(ctx, 'all', {
+          id: crypto.randomUUID(),
+          staffMemberId: hold.staff_member_id,
+          serviceId: hold.service_id,
+          clientId,
+          startsAt: hold.starts_at.toISOString(),
+          confirmed,
+          teamNote: hold.message,
+          ...(hold.location_id ? { locationId: hold.location_id } : {}),
+        });
   } catch (err) {
     if (
       err instanceof Conflict &&
-      ['appointment_overlap', 'staff_unavailable', 'resource_unavailable'].includes(err.message)
+      [
+        'appointment_overlap',
+        'staff_unavailable',
+        'resource_unavailable',
+        'class_full',
+        'class_session_cancelled',
+      ].includes(err.message)
     ) {
       await withBookingTx(ctx.organizationId, (c) => settle(c, holdId, 'expired'));
       throw new Conflict('slot_taken');
+    }
+    if (err instanceof Conflict && err.message === 'already_participant') {
+      await withBookingTx(ctx.organizationId, (c) => settle(c, holdId, 'refused'));
     }
     throw err;
   }

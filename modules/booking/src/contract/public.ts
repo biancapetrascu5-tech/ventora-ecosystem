@@ -1,6 +1,7 @@
 import {
   configurePublicBooking,
   getPublicBookingPage as pageInOrg,
+  getPublicClassSessions as classSessionsInOrg,
   getPublicFreeSlots as slotsInOrg,
   resendPublicBookingCode as resendInOrg,
   requestPublicAnswerPhoto as requestPhotoInOrg,
@@ -10,6 +11,7 @@ import {
   type CaptchaVerifier,
   type PublicBookingPage,
   type PublicBookingResult,
+  type PublicClassSession,
   type PublicHoldResult,
 } from '../server/public';
 import type { FreeSlots } from '../server/availability';
@@ -21,6 +23,8 @@ import type { FreeSlots } from '../server/availability';
  * name / phone / email / message, startsAt, answers (B.12), code: invalid | wrong:<tries left>); Conflict
  * (slot_taken — also for a blocked client, who is never told why —, rate_limited, code_expired,
  * too_many_attempts, resend_too_soon, too_many_sends, email_not_delivered); QuotaExceeded.
+ * B.9d2 (a seat of a class session): Conflict class_full („Plin”), class_closed (cancelled, past
+ * the notice, no longer online), already_participant; InvalidInput serviceId (not the session's).
  */
 
 export type PublicSlotsParams = {
@@ -32,11 +36,24 @@ export type PublicSlotsParams = {
   locationId?: string;
 };
 
+export type PublicClassSessionsParams = {
+  slug: string;
+  serviceId: string;
+  /** Local dates (YYYY-MM-DD): from included, to excluded, at most 31 days. */
+  from: string;
+  to: string;
+  locationId?: string;
+};
+
 export type StartPublicBookingParams = {
   slug: string;
   serviceId: string;
-  staffMemberId: string | 'any';
-  startsAt: string;
+  /** Not used for a class session. */
+  staffMemberId?: string | 'any';
+  /** Not used for a class session. */
+  startsAt?: string;
+  /** B.9d2: a seat of this class session instead of a free time. */
+  classSessionId?: string;
   locationId?: string;
   name: string;
   phone: string;
@@ -59,7 +76,14 @@ export function getPublicFreeSlots(params: PublicSlotsParams): Promise<FreeSlots
   return slotsInOrg(params.slug, params);
 }
 
-/** „Trimite codul”: the time held 10 minutes, the code by e-mail. */
+/** B.9d2 (D-9d-3): the sessions of a class bookable online, with the seats left (0 = „Plin”). */
+export function getPublicClassSessions(
+  params: PublicClassSessionsParams,
+): Promise<PublicClassSession[]> {
+  return classSessionsInOrg(params.slug, params);
+}
+
+/** „Trimite codul”: the time (or B.9d2 a seat of a class) held 10 minutes, the code by e-mail. */
 export function startPublicBooking(params: StartPublicBookingParams): Promise<PublicHoldResult> {
   return startInOrg(params.slug, params);
 }
@@ -107,4 +131,10 @@ export function confirmPublicAnswerPhoto(params: {
 }
 
 export { configurePublicBooking };
-export type { CaptchaVerifier, PublicBookingPage, PublicBookingResult, PublicHoldResult };
+export type {
+  CaptchaVerifier,
+  PublicBookingPage,
+  PublicBookingResult,
+  PublicClassSession,
+  PublicHoldResult,
+};

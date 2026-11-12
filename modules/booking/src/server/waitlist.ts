@@ -12,6 +12,7 @@ import {
   type AppointmentScope,
 } from './appointments';
 import { staffFreeAtInOrg } from './availability';
+import { joinClassSession, readSession } from './classes';
 import { withBookingJobTx, withBookingTx } from './db';
 import { issueManageToken, manageTokenHash, parseManageToken } from './manage-token';
 import { place } from './public';
@@ -44,7 +45,23 @@ import { isUuid } from './validation';
  * ids, never the note); the booking made from an offer is the usual booking.appointment_created.
  * The job booking.waitlist-offers closes the expired offers and the ones whose time was taken (no
  * audit: housekeeping).
+ *
+ * Lot B.9d2 — the waiting list of a class session (design BookingClasses, S126). D-9d-2: automatic,
+ * unlike the general list: when a seat frees up, the first person waiting for that session gets the
+ * offer (offerFreedClassSeats: one offer per free seat, under the session's lock). A pending offer
+ * keeps its seat until it is accepted, declined or expires; then the next one gets it. The entries
+ * of a session are not in the general list and are never offered by hand. The automatic offer has
+ * no user (audit actor 'system'); its link is issued when it is sent (issueWaitlistOfferLinkInOrg,
+ * for B.13 or the team: a new token, the old link stops working). PROPUS: the offer is valid 2 hours
+ * and never after the start; no offer in the last 15 minutes before the start.
  */
+
+/** B.9d2 (PROPUS): the automatic offer of a seat of a class session. */
+export const CLASS_WAITLIST_LIMITS = {
+  offerMinutes: 120,
+  /** No offer any more this close to the start (the same 15 minutes in waitlist_offers_due). */
+  leadMinutes: 15,
+} as const;
 
 export const WAITLIST_LIMITS = {
   note: 500,
@@ -97,12 +114,14 @@ export type WaitlistEntry = {
   note: string | null;
   status: WaitlistEntryStatus;
   acceptedAppointmentId: string | null;
+  /** B.9d2: the class session the client waits for (automatic offers), or null (the general list). */
+  classSessionId: string | null;
   /** The last offer („Ofertă trimisă · până la 14:40”, „Oferta a expirat”), or null. */
   lastOffer: WaitlistOffer | null;
   createdAt: Date;
 };
 
-type EntryRow = {
+export type EntryRow = {
   id: string;
   client_id: string;
   client_name: string;
@@ -120,6 +139,7 @@ type EntryRow = {
   note: string | null;
   status: WaitlistEntryStatus;
   accepted_appointment_id: string | null;
+  class_session_id: string | null;
   created_at: Date;
   o_id: string | null;
   o_staff_member_id: string | null;
@@ -137,7 +157,7 @@ const ENTRY_SELECT = `
          c.email AS client_email, e.service_id, s.name AS service_name, e.staff_member_id,
          m.display_name AS staff_display_name, to_char(e.date_from, 'YYYY-MM-DD') AS date_from,
          to_char(e.date_to, 'YYYY-MM-DD') AS date_to, e.time_kind, e.from_minute, e.to_minute,
-         e.note, e.status, e.accepted_appointment_id, e.created_at,
+         e.note, e.status, e.accepted_appointment_id, e.class_session_id, e.created_at,
          o.id AS o_id, o.staff_member_id AS o_staff_member_id, o.starts_at AS o_starts_at,
          o.ends_at AS o_ends_at, o.expires_at AS o_expires_at, o.channel AS o_channel,
          o.state AS o_state, o.appointment_id AS o_appointment_id, o.created_at AS o_created_at
@@ -149,7 +169,7 @@ const ENTRY_SELECT = `
       SELECT * FROM booking.waitlist_offer x WHERE x.entry_id = e.id
        ORDER BY x.created_at DESC, x.id DESC LIMIT 1) o ON true`;
 
-function toEntry(r: EntryRow): WaitlistEntry {
+export function toEntry(r: EntryRow): WaitlistEntry {
   return {
     id: r.id,
     client: { id: r.client_id, name: r.client_name, phone: r.client_phone, email: r.client_email },
@@ -163,6 +183,7 @@ function toEntry(r: EntryRow): WaitlistEntry {
     note: r.note,
     status: r.status,
     acceptedAppointmentId: r.accepted_appointment_id,
+    classSessionId: r.class_session_id,
     lastOffer: r.o_id
       ? {
           id: r.o_id,
@@ -185,7 +206,7 @@ function requireId(field: string, id: unknown): string {
   return id;
 }
 
-function audit(
+export function audit(
   exec: AuditSqlExecutor,
   ctx: TenantContext,
   clientId: string,
@@ -204,7 +225,7 @@ function audit(
   });
 }
 
-async function readEntry(client: PoolClient, id: string, lock = false): Promise<EntryRow> {
+export async function readEntry(client: PoolClient, id: string, lock = false): Promise<EntryRow> {
   const { rows } = await client.query<EntryRow>(
     `${ENTRY_SELECT} WHERE e.id = $1${lock ? ' FOR UPDATE OF e' : ''}`,
     [id],
@@ -368,14 +389,14 @@ export async function listWaitlistInOrg(
     ctx.organizationId,
     async (client) => {
       const { rows } = await client.query<EntryRow>(
-        `${ENTRY_SELECT} WHERE e.status = ANY($1::text[])
+        `${ENTRY_SELECT} WHERE e.status = ANY($1::text[]) AND e.class_session_id IS NULL
           ORDER BY e.created_at, e.id LIMIT $2`,
         [statuses, WAITLIST_LIMITS.listMax],
       );
       const waiting = (
         await client.query<{ n: number }>(
           `SELECT count(*)::int AS n FROM booking.waitlist_entry
-            WHERE status IN ('waiting', 'offered')`,
+            WHERE status IN ('waiting', 'offered') AND class_session_id IS NULL`,
         )
       ).rows[0]!.n;
       return { items: rows.map(toEntry), waiting };
@@ -431,7 +452,7 @@ export async function findWaitlistMatchesInOrg(
       const local = await localOf(client, startsAt, timeZone);
       const { rows } = await client.query<EntryRow>(
         `${ENTRY_SELECT}
-          WHERE e.status = 'waiting'
+          WHERE e.status = 'waiting' AND e.class_session_id IS NULL
             AND (e.staff_member_id IS NULL OR e.staff_member_id = $1)
             AND e.date_from <= $2::date AND e.date_to >= $2::date
           ORDER BY e.created_at, e.id`,
@@ -510,6 +531,8 @@ export async function offerWaitlistSlotInOrg(
     (client) => readEntry(client, entryId),
     true,
   );
+  // B.9d2: the waiting list of a class is offered automatically (D-9d-2)
+  if (entry.class_session_id) throw new Conflict('class_waitlist_automatic');
   if (entry.status !== 'waiting') throw new Conflict('waitlist_entry_not_waiting');
   if (!entry.client_email) throw new Conflict('client_no_email');
   if (entry.staff_member_id && entry.staff_member_id !== staffMemberId) {
@@ -603,6 +626,7 @@ export type PublicWaitlistOffer = {
 type OfferRow = {
   id: string;
   entry_id: string;
+  class_session_id: string | null;
   client_id: string;
   service_id: string;
   service_name: string;
@@ -618,16 +642,22 @@ type OfferRow = {
 
 async function readOffer(client: PoolClient, token: string, lock = false): Promise<OfferRow> {
   const { rows } = await client.query<OfferRow>(
-    `SELECT o.id, o.entry_id, e.client_id, e.service_id, s.name AS service_name,
-            o.staff_member_id, m.display_name AS staff_display_name, o.starts_at, o.ends_at,
-            o.expires_at, o.state, (o.expires_at <= now()) AS expired,
-            EXISTS (
+    `SELECT o.id, o.entry_id, o.class_session_id, e.client_id, e.service_id,
+            s.name AS service_name, o.staff_member_id, m.display_name AS staff_display_name,
+            o.starts_at, o.ends_at, o.expires_at, o.state, (o.expires_at <= now()) AS expired,
+            CASE WHEN o.class_session_id IS NULL THEN EXISTS (
               SELECT 1 FROM booking.appointment a
                WHERE a.staff_member_id = o.staff_member_id
                  AND a.status IN ('awaiting_payment', 'unconfirmed', 'confirmed', 'in_progress')
                  AND a.id <> o.id
                  AND tstzrange(a.starts_at, a.ends_at, '[)') && tstzrange(o.starts_at, o.ends_at, '[)')
-            ) AS taken
+            )
+            -- B.9d2: a seat of a class is gone when the session was cancelled or started
+            ELSE EXISTS (
+              SELECT 1 FROM booking.class_session cs
+               WHERE cs.id = o.class_session_id
+                 AND (cs.status <> 'scheduled' OR cs.starts_at <= now())
+            ) END AS taken
        FROM booking.waitlist_offer o
        JOIN booking.waitlist_entry e ON e.id = o.entry_id
        JOIN booking.service s ON s.id = e.service_id
@@ -707,21 +737,41 @@ export async function acceptWaitlistOffer(
     await closeGone(ctx.organizationId, o.id, 'expired');
     throw new Conflict('offer_expired');
   }
+  if (o.class_session_id && o.taken) {
+    await closeGone(ctx.organizationId, o.id, 'taken');
+    throw new Conflict('slot_taken');
+  }
   const settings = await getBookingSettingsInOrg(ctx);
   let appointment;
   try {
-    appointment = await createAppointmentInOrg(ctx, 'all', {
-      id: o.id,
-      staffMemberId: o.staff_member_id,
-      serviceId: o.service_id,
-      clientId: o.client_id,
-      startsAt: o.starts_at.toISOString(),
-      confirmed: settings.confirmationMode === 'auto',
-    });
+    appointment = o.class_session_id
+      ? // B.9d2: a seat of the class session, the one this offer keeps
+        await joinClassSession(ctx, o.class_session_id, {
+          id: o.id,
+          clientId: o.client_id,
+          status: settings.confirmationMode === 'auto' ? 'confirmed' : 'unconfirmed',
+          teamNote: null,
+          own: { offerId: o.id },
+          auditExtra: { waitlistOfferId: o.id },
+        })
+      : await createAppointmentInOrg(ctx, 'all', {
+          id: o.id,
+          staffMemberId: o.staff_member_id,
+          serviceId: o.service_id,
+          clientId: o.client_id,
+          startsAt: o.starts_at.toISOString(),
+          confirmed: settings.confirmationMode === 'auto',
+        });
   } catch (err) {
     if (
       err instanceof Conflict &&
-      ['appointment_overlap', 'staff_unavailable', 'resource_unavailable'].includes(err.message)
+      [
+        'appointment_overlap',
+        'staff_unavailable',
+        'resource_unavailable',
+        'class_full',
+        'class_session_cancelled',
+      ].includes(err.message)
     ) {
       await closeGone(ctx.organizationId, o.id, 'taken');
       throw new Conflict('slot_taken');
@@ -753,11 +803,14 @@ export async function acceptWaitlistOffer(
   };
 }
 
-/** „Nu mai am nevoie”: the offer declined and the client off the list. */
+/**
+ * „Nu mai am nevoie”: the offer declined and the client off the list. B.9d2: the seat of a class goes
+ * at once to the next one waiting.
+ */
 export async function declineWaitlistOffer(slug: unknown, token: unknown): Promise<void> {
   const { p, token: t } = await resolveOffer(slug, token);
   const { ctx } = p;
-  await withBookingTx(ctx.organizationId, async (c, exec) => {
+  const sessionId = await withBookingTx(ctx.organizationId, async (c, exec) => {
     const o = await readOffer(c, t, true);
     if (o.state === 'accepted') throw new Conflict('offer_accepted');
     if (o.state === 'pending') {
@@ -779,7 +832,9 @@ export async function declineWaitlistOffer(slug: unknown, token: unknown): Promi
         offerId: o.id,
       });
     }
+    return o.class_session_id;
   });
+  if (sessionId) await offerFreedClassSeatsInOrg(ctx.organizationId, sessionId);
 }
 
 // ── the job booking.waitlist-offers ──────────────────────────────────────────────────────
@@ -788,6 +843,9 @@ export type WaitlistOfferJobReport = {
   businesses: number;
   expired: number;
   taken: number;
+  /** B.9d2: the automatic offers of class seats, and the entries of sessions cancelled or started. */
+  classOffers: number;
+  classClosed: number;
   failed: Array<{ organizationId: string; error: unknown }>;
 };
 
@@ -810,22 +868,29 @@ export async function runWaitlistOfferJob(): Promise<WaitlistOfferJobReport> {
     businesses: due.length,
     expired: 0,
     taken: 0,
+    classOffers: 0,
+    classClosed: 0,
     failed: [],
   };
   for (const { organization_id: organizationId } of due) {
     try {
-      const done = await withBookingTx(organizationId, async (client) => {
+      const done = await withBookingTx(organizationId, async (client, exec) => {
         guardBulkOp('booking.waitlist_offer.close', { state: 'pending' });
         const taken = await client.query<{ entry_id: string }>(
           `UPDATE booking.waitlist_offer o SET state = 'taken', closed_at = now()
             WHERE o.state = 'pending'
-              AND EXISTS (
+              AND ((o.class_session_id IS NULL AND EXISTS (
                 SELECT 1 FROM booking.appointment a
                  WHERE a.staff_member_id = o.staff_member_id
                    AND a.status IN ('awaiting_payment', 'unconfirmed', 'confirmed', 'in_progress')
                    AND a.id <> o.id
                    AND tstzrange(a.starts_at, a.ends_at, '[)')
-                       && tstzrange(o.starts_at, o.ends_at, '[)'))
+                       && tstzrange(o.starts_at, o.ends_at, '[)')))
+                -- B.9d2: the session cancelled or started
+                OR (o.class_session_id IS NOT NULL AND EXISTS (
+                  SELECT 1 FROM booking.class_session s
+                   WHERE s.id = o.class_session_id
+                     AND (s.status <> 'scheduled' OR s.starts_at <= now()))))
             RETURNING o.entry_id`,
         );
         const expired = await client.query<{ entry_id: string }>(
@@ -841,10 +906,40 @@ export async function runWaitlistOfferJob(): Promise<WaitlistOfferJobReport> {
             [entries],
           );
         }
-        return { taken: taken.rowCount ?? 0, expired: expired.rowCount ?? 0 };
+        // B.9d2: the entries of a session cancelled or started leave the list
+        guardBulkOp('booking.waitlist_entry.close_class', { classSessionOver: true });
+        const closed = await client.query(
+          `UPDATE booking.waitlist_entry e
+              SET status = 'removed', removed_at = now(), updated_at = now()
+             FROM booking.class_session s
+            WHERE s.id = e.class_session_id AND e.status IN ('waiting', 'offered')
+              AND (s.status <> 'scheduled' OR s.starts_at <= now())`,
+        );
+        // B.9d2 (D-9d-2): every free seat of a session still ahead goes to the next one waiting
+        const sessions = (
+          await client.query<{ id: string }>(
+            `SELECT DISTINCT s.id FROM booking.waitlist_entry e
+               JOIN booking.class_session s ON s.id = e.class_session_id
+              WHERE e.status = 'waiting' AND s.status = 'scheduled'
+                AND s.starts_at > now() + make_interval(mins => $1)`,
+            [CLASS_WAITLIST_LIMITS.leadMinutes],
+          )
+        ).rows;
+        let classOffers = 0;
+        for (const { id } of sessions) {
+          classOffers += (await offerFreedClassSeats(client, exec, organizationId, id)).length;
+        }
+        return {
+          taken: taken.rowCount ?? 0,
+          expired: expired.rowCount ?? 0,
+          classOffers,
+          classClosed: closed.rowCount ?? 0,
+        };
       });
       report.taken += done.taken;
       report.expired += done.expired;
+      report.classOffers += done.classOffers;
+      report.classClosed += done.classClosed;
     } catch (error) {
       report.failed.push({ organizationId, error });
     }
@@ -853,4 +948,260 @@ export async function runWaitlistOfferJob(): Promise<WaitlistOfferJobReport> {
     throw Object.assign(new Error('booking.waitlist-offers: some businesses failed'), { report });
   }
   return report;
+}
+
+// ── B.9d2: the waiting list of a class session ───────────────────────────────────────────
+
+/** „Lista de așteptare” of a session, in order (waiting or offered). */
+export async function sessionWaitlist(
+  client: PoolClient,
+  sessionId: string,
+): Promise<WaitlistEntry[]> {
+  const { rows } = await client.query<EntryRow>(
+    `${ENTRY_SELECT} WHERE e.class_session_id = $1 AND e.status IN ('waiting', 'offered')
+      ORDER BY e.created_at, e.id`,
+    [sessionId],
+  );
+  return rows.map(toEntry);
+}
+
+/**
+ * „Lista de așteptare” of a full session („Plin”): the client waits for this session (its member,
+ * service and day). Only when no seat is left (Conflict class_not_full: add the participant), for a
+ * session still ahead; the client needs an e-mail (the offer goes by e-mail, D-9c-3) and must not
+ * hold a seat or wait already. A retry with the same id returns the same entry.
+ */
+export async function addToClassWaitlistInOrg(
+  ctx: TenantContext,
+  scope: AppointmentScope,
+  sessionId: unknown,
+  input: { id: unknown; clientId: unknown },
+): Promise<WaitlistEntry> {
+  hubOnly(ctx);
+  if (!isUuid(sessionId)) throw new ResourceNotFound();
+  const id = requireId('id', input.id);
+  const clientId = requireId('clientId', input.clientId);
+  const timeZone = await getOrganizationTimeZone(ctx);
+  return withBookingTx(ctx.organizationId, async (client, exec) => {
+    const again = (
+      await client.query<{ class_session_id: string | null; client_id: string }>(
+        `SELECT class_session_id, client_id FROM booking.waitlist_entry WHERE id = $1`,
+        [id],
+      )
+    ).rows[0];
+    if (again) {
+      if (again.class_session_id !== sessionId || again.client_id !== clientId) {
+        throw new Conflict('operation_reused');
+      }
+      return toEntry(await readEntry(client, id));
+    }
+    const s = await readSession(client, sessionId, true);
+    if (scope === 'own' && s.staff_user_id !== ctx.userId) throw new Forbidden();
+    if (s.status !== 'scheduled') throw new Conflict('class_session_cancelled');
+    if (s.starts_at.getTime() <= Date.now()) throw new Conflict('class_session_started');
+    if (s.seats_taken + s.seats_held < s.seats) throw new Conflict('class_not_full');
+    const c = (
+      await client.query<{ archived_at: Date | null; email: string | null }>(
+        `SELECT archived_at, email FROM booking.client WHERE id = $1`,
+        [clientId],
+      )
+    ).rows[0];
+    if (!c) throw new ResourceNotFound();
+    if (c.archived_at) throw new Conflict('client_archived');
+    if (!c.email) throw new Conflict('client_no_email');
+    const seat = await client.query(
+      `SELECT 1 FROM booking.appointment
+        WHERE class_session_id = $1 AND client_id = $2
+          AND status IN ('awaiting_payment', 'unconfirmed', 'confirmed', 'in_progress',
+                         'completed')`,
+      [sessionId, clientId],
+    );
+    if (seat.rowCount! > 0) throw new Conflict('already_participant');
+    const day = (await localOf(client, s.starts_at, timeZone)).date;
+    try {
+      await client.query(
+        `INSERT INTO booking.waitlist_entry
+           (id, organization_id, client_id, service_id, staff_member_id, date_from, date_to,
+            time_kind, class_session_id, created_by_user_id)
+         VALUES ($1, $2, $3, $4, $5, $6, $6, 'any', $7, $8)`,
+        [
+          id,
+          ctx.organizationId,
+          clientId,
+          s.service_id,
+          s.staff_member_id,
+          day,
+          sessionId,
+          ctx.userId,
+        ],
+      );
+    } catch (err) {
+      const pg = err as { code?: string; constraint?: string };
+      if (pg?.code === '23505' && pg.constraint === 'waitlist_entry_class_session_client_key') {
+        throw new Conflict('already_waiting');
+      }
+      throw err;
+    }
+    await audit(exec, ctx, clientId, { waitlist: 'added', entryId: id, classSessionId: sessionId });
+    return toEntry(await readEntry(client, id));
+  });
+}
+
+/**
+ * D-9d-2: the free seats of a session (seats − participants − pending offers − pending online
+ * holds) offered to the first ones waiting, in order, one offer each, under the session's lock, in
+ * the caller's transaction. Not for a cancelled session, nor in the last 15 minutes before the start;
+ * a client without an e-mail (or archived) is skipped. The offer is valid 2 hours and never after
+ * the start; its link is issued when it is sent (issueWaitlistOfferLinkInOrg). A client whose offer
+ * expired goes after the others (they may get it again later). Returns the offers.
+ */
+export async function offerFreedClassSeats(
+  client: PoolClient,
+  exec: AuditSqlExecutor,
+  organizationId: string,
+  sessionId: string,
+): Promise<Array<{ entryId: string; offerId: string; clientId: string; clientName: string }>> {
+  const s = await readSession(client, sessionId, true);
+  if (s.status !== 'scheduled') return [];
+  const ahead = (
+    await client.query<{ ok: boolean }>(
+      `SELECT $1::timestamptz > now() + make_interval(mins => $2) AS ok`,
+      [s.starts_at, CLASS_WAITLIST_LIMITS.leadMinutes],
+    )
+  ).rows[0]!.ok;
+  const left = s.seats - s.seats_taken - s.seats_held;
+  if (!ahead || left <= 0) return [];
+  const next = (
+    await client.query<{ id: string; client_id: string; client_name: string }>(
+      `SELECT e.id, e.client_id, c.name AS client_name
+         FROM booking.waitlist_entry e
+         JOIN booking.client c ON c.id = e.client_id
+        WHERE e.class_session_id = $1 AND e.status = 'waiting'
+          AND c.archived_at IS NULL AND c.email IS NOT NULL
+        -- PROPUS: a client whose offer expired goes after those who have not had one yet
+        ORDER BY EXISTS (SELECT 1 FROM booking.waitlist_offer x
+                          WHERE x.entry_id = e.id AND x.state = 'expired'),
+                 e.created_at, e.id
+        LIMIT $2
+        FOR UPDATE OF e`,
+      [sessionId, left],
+    )
+  ).rows;
+  const made: Array<{ entryId: string; offerId: string; clientId: string; clientName: string }> =
+    [];
+  for (const e of next) {
+    const offerId = crypto.randomUUID();
+    // the token of the link is issued when it is sent; this one is never shown
+    const unsent = crypto.randomBytes(32).toString('base64url');
+    await client.query(
+      `INSERT INTO booking.waitlist_offer
+         (id, organization_id, entry_id, staff_member_id, starts_at, ends_at, expires_at, channel,
+          token_hash, created_by_user_id, class_session_id)
+       VALUES ($1, $2, $3, $4, $5, $6, LEAST(now() + make_interval(mins => $7), $5), 'email', $8,
+               NULL, $9)`,
+      [
+        offerId,
+        organizationId,
+        e.id,
+        s.staff_member_id,
+        s.starts_at,
+        s.ends_at,
+        CLASS_WAITLIST_LIMITS.offerMinutes,
+        manageTokenHash(unsent),
+        sessionId,
+      ],
+    );
+    await client.query(
+      `UPDATE booking.waitlist_entry SET status = 'offered', updated_at = now() WHERE id = $1`,
+      [e.id],
+    );
+    await appendAuditEventInTx(exec, {
+      category: 'booking',
+      action: AuditActions.bookingClientUpdated,
+      outcome: 'success',
+      actorType: 'system',
+      actorId: null,
+      organizationId,
+      targetType: 'booking_client',
+      targetId: e.client_id,
+      metadata: { waitlist: 'offered', entryId: e.id, offerId, classSessionId: sessionId },
+    });
+    made.push({ entryId: e.id, offerId, clientId: e.client_id, clientName: e.client_name });
+  }
+  return made;
+}
+
+/**
+ * After a seat of a session freed up (a participant cancelled, an entry with an offer removed):
+ * best effort — the cancellation is already done; if this fails, the job booking.waitlist-offers
+ * makes the offer on its next run.
+ */
+export async function offerFreedClassSeatsAfter(
+  organizationId: string,
+  sessionId: string,
+): Promise<void> {
+  try {
+    await offerFreedClassSeatsInOrg(organizationId, sessionId);
+  } catch (err) {
+    console.error('[booking] the offer of a freed class seat failed; the job makes it', {
+      organizationId,
+      sessionId,
+      err,
+    });
+  }
+}
+
+/** offerFreedClassSeats in its own transaction (after a cancellation, a removal, a decline). */
+export async function offerFreedClassSeatsInOrg(
+  organizationId: string,
+  sessionId: string,
+): Promise<Array<{ entryId: string; offerId: string; clientId: string; clientName: string }>> {
+  return withBookingTx(organizationId, (client, exec) =>
+    offerFreedClassSeats(client, exec, organizationId, sessionId),
+  );
+}
+
+/**
+ * The link of a pending offer, issued (again): a new token, shown only here; the old link stops
+ * working. For the e-mail of B.13 and for the team („Trimite din nou linkul”); a member only for
+ * their own time.
+ */
+export async function issueWaitlistOfferLinkInOrg(
+  ctx: TenantContext,
+  scope: AppointmentScope,
+  offerId: unknown,
+): Promise<{ offerId: string; token: string; expiresAt: Date }> {
+  hubOnly(ctx);
+  if (!isUuid(offerId)) throw new ResourceNotFound();
+  const token = crypto.randomBytes(32).toString('base64url');
+  return withBookingTx(ctx.organizationId, async (client, exec) => {
+    const o = (
+      await client.query<{
+        entry_id: string;
+        client_id: string;
+        state: WaitlistOfferState;
+        expires_at: Date;
+        expired: boolean;
+        staff_user_id: string;
+      }>(
+        `SELECT o.entry_id, e.client_id, o.state, o.expires_at, (o.expires_at <= now()) AS expired,
+                m.user_id AS staff_user_id
+           FROM booking.waitlist_offer o
+           JOIN booking.waitlist_entry e ON e.id = o.entry_id
+           JOIN booking.staff_member m ON m.id = o.staff_member_id
+          WHERE o.id = $1
+          FOR UPDATE OF o`,
+        [offerId],
+      )
+    ).rows[0];
+    if (!o) throw new ResourceNotFound();
+    if (scope === 'own' && o.staff_user_id !== ctx.userId) throw new Forbidden();
+    if (o.state !== 'pending' || o.expired) throw new Conflict('offer_closed');
+    await client.query(`UPDATE booking.waitlist_offer SET token_hash = $2 WHERE id = $1`, [
+      offerId,
+      manageTokenHash(token),
+    ]);
+    await audit(exec, ctx, o.client_id, { waitlist: 'link_issued', entryId: o.entry_id, offerId });
+    return { offerId, token, expiresAt: o.expires_at };
+  });
 }

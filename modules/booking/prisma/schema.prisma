@@ -678,10 +678,13 @@ model PublicHold {
   answers           Json?
   /// B.12: a photo was asked for on this hold (the cleanup job deletes those not moved to a booking)
   hasPhotos         Boolean   @default(false) @map("has_photos")
+  /// B.9d2: the online booking of a seat of this class session (the hold keeps the seat)
+  classSessionId    String?   @map("class_session_id") @db.Uuid
 
   staffMember     StaffMember  @relation(fields: [staffMemberId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "public_hold_staff_member_id_fkey")
   service         Service      @relation(fields: [serviceId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "public_hold_service_id_fkey")
   moveAppointment Appointment? @relation(fields: [organizationId, moveAppointmentId], references: [organizationId, id], onDelete: Restrict, onUpdate: Restrict, map: "public_hold_move_appointment_fkey")
+  classSession    ClassSession? @relation(fields: [organizationId, classSessionId], references: [organizationId, id], onDelete: Restrict, onUpdate: Restrict, map: "public_hold_class_session_fkey")
 
   @@index([staffMemberId, startsAt], map: "public_hold_staff_member_id_starts_idx")
   @@index([moveAppointmentId], map: "public_hold_move_appointment_id_idx")
@@ -810,6 +813,10 @@ model ClassSession {
   staffMember  StaffMember   @relation(fields: [staffMemberId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "class_session_staff_member_id_fkey")
   resource     Resource?     @relation(fields: [resourceId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "class_session_resource_id_fkey")
   participants Appointment[]
+  /// B.9d2: the waiting list of the session, its offers and the online holds of its seats
+  waitlistEntries WaitlistEntry[]
+  waitlistOffers  WaitlistOffer[]
+  publicHolds     PublicHold[]
 
   @@unique([organizationId, id], map: "class_session_organization_id_id_key")
   @@index([organizationId, startsAt], map: "class_session_organization_id_starts_idx")
@@ -820,7 +827,10 @@ model ClassSession {
 }
 
 // Lot B.9c: the waiting list (BookingWaitlist, S126); the open offer per entry is a partial
-// expression index left to the migration (waitlist_offer_pending_entry_key)
+// expression index left to the migration (waitlist_offer_pending_entry_key). B.9d2: the partial
+// indexes of the class sessions (waitlist_entry_class_session_created_idx,
+// waitlist_entry_class_session_client_key, waitlist_offer_class_session_idx,
+// public_hold_class_session_idx) are left to the migration too
 model WaitlistEntry {
   id                    String    @id @db.Uuid
   organizationId        String    @map("organization_id") @db.Uuid
@@ -837,6 +847,8 @@ model WaitlistEntry {
   acceptedAppointmentId String?   @map("accepted_appointment_id") @db.Uuid
   removedAt             DateTime? @map("removed_at") @db.Timestamptz
   removedByUserId       String?   @map("removed_by_user_id") @db.Uuid
+  /// B.9d2: the entry waits for this class session (automatic offers, D-9d-2)
+  classSessionId        String?   @map("class_session_id") @db.Uuid
   createdByUserId       String    @map("created_by_user_id") @db.Uuid
   createdAt             DateTime  @default(now()) @map("created_at") @db.Timestamptz
   updatedAt             DateTime  @default(now()) @map("updated_at") @db.Timestamptz
@@ -845,6 +857,7 @@ model WaitlistEntry {
   service     Service         @relation(fields: [serviceId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "waitlist_entry_service_id_fkey")
   staffMember StaffMember?    @relation(fields: [staffMemberId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "waitlist_entry_staff_member_id_fkey")
   appointment Appointment?    @relation(fields: [organizationId, acceptedAppointmentId], references: [organizationId, id], onDelete: Restrict, onUpdate: Restrict, map: "waitlist_entry_appointment_fkey")
+  classSession ClassSession?   @relation(fields: [organizationId, classSessionId], references: [organizationId, id], onDelete: Restrict, onUpdate: Restrict, map: "waitlist_entry_class_session_fkey")
   offers      WaitlistOffer[]
 
   @@unique([organizationId, id], map: "waitlist_entry_organization_id_id_key")
@@ -867,12 +880,15 @@ model WaitlistOffer {
   state           String    @default("pending") @db.VarChar(10)
   appointmentId   String?   @map("appointment_id") @db.Uuid
   closedAt        DateTime? @map("closed_at") @db.Timestamptz
-  createdByUserId String    @map("created_by_user_id") @db.Uuid
+  /// B.9d2: a seat of this class session; the automatic offer has no user
+  classSessionId  String?   @map("class_session_id") @db.Uuid
+  createdByUserId String?   @map("created_by_user_id") @db.Uuid
   createdAt       DateTime  @default(now()) @map("created_at") @db.Timestamptz
 
   entry       WaitlistEntry @relation(fields: [organizationId, entryId], references: [organizationId, id], onDelete: Restrict, onUpdate: Restrict, map: "waitlist_offer_entry_fkey")
   staffMember StaffMember   @relation(fields: [staffMemberId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "waitlist_offer_staff_member_id_fkey")
   appointment Appointment?  @relation(fields: [organizationId, appointmentId], references: [organizationId, id], onDelete: Restrict, onUpdate: Restrict, map: "waitlist_offer_appointment_fkey")
+  classSession ClassSession? @relation(fields: [organizationId, classSessionId], references: [organizationId, id], onDelete: Restrict, onUpdate: Restrict, map: "waitlist_offer_class_session_fkey")
 
   @@index([entryId], map: "waitlist_offer_entry_id_idx")
   @@index([staffMemberId, startsAt], map: "waitlist_offer_staff_member_id_starts_idx")
