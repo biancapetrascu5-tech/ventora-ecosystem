@@ -66,9 +66,13 @@ Data: 2026-11-12. Baza ramurii: `feat/b9a-booking-multi-service` (#182, `62539b1
 
 - **Corectură după push:** lista tabelelor din `services.integration.test.ts` nu avea `appointment_series`. Am adăugat-o. `b-files` cu `services.integration`: 35/35; lanțul de verificări verde.
 
+- **CI pe `9df6f42`** a picat la „Integration tests (access + booking + billing — T3)”: `services.integration.test.ts`, lista tabelelor cu RLS fără `appointment_series` (30 de tabele față de 29 așteptate). E repararea din `d04157e`.
+- **Rebase pe `main` `c4a9515`** (cu #182 B.9a și #178), fără conflicte. Baza PR-ului e acum `main`.
+  - Testele lotului după rebase, `b-files` cu `FILES="series visits services.integration appointments-quota appointments.integration"`: 96/97. A picat un test: în „50 parallel requests…” din `appointments-quota`, 18 cereri au primit altă eroare decât `appointment_overlap`, sub încărcarea locală a 6 fișiere în paralel. Rulat singur, `appointments-quota` trece 10/10. Testul nu atinge codul B.9b. Același test a trecut în CI pe `9df6f42` și local azi-dimineață.
+  - Lanțul de verificări: verde.
+
 ## Ce rămâne deschis
 
 - **Confirmarea deciziilor:** D-9b-1…3 sunt PROPUS.
 - **Lotul UI `BookingRecurring`** (separat).
 - **E-mailul către client la schimbare:** B.13.
-- **După merge-ul #182:** rebase pe `main`.
