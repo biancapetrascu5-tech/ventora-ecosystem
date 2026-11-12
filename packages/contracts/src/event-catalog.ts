@@ -984,6 +984,281 @@ export const CommercialApplicationStoppedV1 = defineEvent({
     .strict(),
 });
 
+// ── Lot C.8 (approved 11.11.2026): ClientDesk — the leads (CR.8) and the deals (CR.9) ──────────
+// As the contacts: ids, states and amounts only — never a name, phone, e-mail, request or note
+// (the payload goes to webhooks in CR.18 and to the automations in CR.13). No consumer yet.
+
+const fieldNames = z.array(z.string().min(1).max(40)).min(1).max(30);
+const crmLeadSource = z.enum(['form', 'phone', 'email', 'referral', 'event', 'manual', 'custom']);
+const crmLeadState = z.enum(['new', 'contacted', 'qualified']);
+const currency = z.string().regex(/^[A-Z]{3}$/);
+const amountMinor = z.number().int().nonnegative();
+
+/** `crm.lead.created` v1: a lead arrived (by hand, a form, the import…); `sourceId` for `custom`. */
+export const CrmLeadCreatedV1 = defineEvent({
+  type: 'crm.lead.created',
+  version: 1,
+  sourceApp: 'platform',
+  growthSafe: false,
+  withoutConsumer: 'complete',
+  schema: z
+    .object({
+      leadId: z.uuid(),
+      source: crmLeadSource,
+      sourceId: z.uuid().nullable(),
+      ownerUserId: z.uuid().nullable(),
+    })
+    .strict(),
+});
+
+/** `crm.lead.updated` v1: which fields changed (names only); a state change carries the new state. */
+export const CrmLeadUpdatedV1 = defineEvent({
+  type: 'crm.lead.updated',
+  version: 1,
+  sourceApp: 'platform',
+  growthSafe: false,
+  withoutConsumer: 'complete',
+  schema: z
+    .object({ leadId: z.uuid(), fields: fieldNames, state: crmLeadState.optional() })
+    .strict(),
+});
+
+/** `crm.lead.assigned` v1: the new owner, or nobody („Neatribuit”), and who assigned it. */
+export const CrmLeadAssignedV1 = defineEvent({
+  type: 'crm.lead.assigned',
+  version: 1,
+  sourceApp: 'platform',
+  growthSafe: false,
+  withoutConsumer: 'complete',
+  schema: z
+    .object({ leadId: z.uuid(), ownerUserId: z.uuid().nullable(), byUserId: z.uuid() })
+    .strict(),
+});
+
+/** `crm.lead.converted` v1: into a new or an existing contact, with the deal created at once, if any. */
+export const CrmLeadConvertedV1 = defineEvent({
+  type: 'crm.lead.converted',
+  version: 1,
+  sourceApp: 'platform',
+  growthSafe: false,
+  withoutConsumer: 'complete',
+  schema: z
+    .object({
+      leadId: z.uuid(),
+      contactId: z.uuid(),
+      newContact: z.boolean(),
+      dealId: z.uuid().nullable(),
+    })
+    .strict(),
+});
+
+/** `crm.lead.disqualified` v1: closed with a reason from S131 (the note never leaves ClientDesk). */
+export const CrmLeadDisqualifiedV1 = defineEvent({
+  type: 'crm.lead.disqualified',
+  version: 1,
+  sourceApp: 'platform',
+  growthSafe: false,
+  withoutConsumer: 'complete',
+  schema: z
+    .object({
+      leadId: z.uuid(),
+      reason: z.enum(['budget', 'no_reply', 'not_offered', 'competitor', 'spam', 'other']),
+    })
+    .strict(),
+});
+
+/** `crm.lead.deleted` v1: moved to the bin. */
+export const CrmLeadDeletedV1 = defineEvent({
+  type: 'crm.lead.deleted',
+  version: 1,
+  sourceApp: 'platform',
+  growthSafe: false,
+  withoutConsumer: 'complete',
+  schema: z.object({ leadId: z.uuid() }).strict(),
+});
+
+/** `crm.deal.created` v1: in a pipeline and a stage; the value is the sum of its items. */
+export const CrmDealCreatedV1 = defineEvent({
+  type: 'crm.deal.created',
+  version: 1,
+  sourceApp: 'platform',
+  growthSafe: false,
+  withoutConsumer: 'complete',
+  schema: z
+    .object({
+      dealId: z.uuid(),
+      pipelineId: z.uuid(),
+      stageId: z.uuid(),
+      contactId: z.uuid().nullable(),
+      companyId: z.uuid().nullable(),
+      leadId: z.uuid().nullable(),
+      ownerUserId: z.uuid().nullable(),
+      valueMinor: amountMinor,
+      currency,
+    })
+    .strict(),
+});
+
+/** `crm.deal.updated` v1: which fields changed (names only). */
+export const CrmDealUpdatedV1 = defineEvent({
+  type: 'crm.deal.updated',
+  version: 1,
+  sourceApp: 'platform',
+  growthSafe: false,
+  withoutConsumer: 'complete',
+  schema: z.object({ dealId: z.uuid(), fields: fieldNames }).strict(),
+});
+
+/** `crm.deal.stage_changed` v1: moved between the open stages of its pipeline. */
+export const CrmDealStageChangedV1 = defineEvent({
+  type: 'crm.deal.stage_changed',
+  version: 1,
+  sourceApp: 'platform',
+  growthSafe: false,
+  withoutConsumer: 'complete',
+  schema: z
+    .object({
+      dealId: z.uuid(),
+      pipelineId: z.uuid(),
+      fromStageId: z.uuid(),
+      toStageId: z.uuid(),
+    })
+    .strict(),
+});
+
+/** `crm.deal.won` v1: the final value and the day it was won. */
+export const CrmDealWonV1 = defineEvent({
+  type: 'crm.deal.won',
+  version: 1,
+  sourceApp: 'platform',
+  growthSafe: false,
+  withoutConsumer: 'complete',
+  schema: z
+    .object({
+      dealId: z.uuid(),
+      valueMinor: amountMinor,
+      currency,
+      wonOn: z.iso.date(),
+    })
+    .strict(),
+});
+
+/** `crm.deal.lost` v1: with its loss reason (the business's list, S131). */
+export const CrmDealLostV1 = defineEvent({
+  type: 'crm.deal.lost',
+  version: 1,
+  sourceApp: 'platform',
+  growthSafe: false,
+  withoutConsumer: 'complete',
+  schema: z.object({ dealId: z.uuid(), lossReasonId: z.uuid() }).strict(),
+});
+
+/** `crm.deal.reopened` v1: back to an open stage after won or lost. */
+export const CrmDealReopenedV1 = defineEvent({
+  type: 'crm.deal.reopened',
+  version: 1,
+  sourceApp: 'platform',
+  growthSafe: false,
+  withoutConsumer: 'complete',
+  schema: z.object({ dealId: z.uuid(), stageId: z.uuid() }).strict(),
+});
+
+/** `crm.deal.deleted` v1: moved to the bin. */
+export const CrmDealDeletedV1 = defineEvent({
+  type: 'crm.deal.deleted',
+  version: 1,
+  sourceApp: 'platform',
+  growthSafe: false,
+  withoutConsumer: 'complete',
+  schema: z.object({ dealId: z.uuid() }).strict(),
+});
+
+// ── C.8b (12.11.2026): what the ClientDesk notifications need (C.9: mention, reminder, assignment)
+// Ids only; a consumer of the outbox sends the notification (sendNotification, never a request).
+
+/** `crm.note.mentioned` v1: a note or comment mentioned these members (at most 20, CR.6). */
+export const CrmNoteMentionedV1 = defineEvent({
+  type: 'crm.note.mentioned',
+  version: 1,
+  sourceApp: 'platform',
+  growthSafe: false,
+  withoutConsumer: 'complete',
+  schema: z
+    .object({
+      noteId: z.uuid(),
+      subjectType: z.enum(['contact', 'company', 'lead', 'deal']),
+      subjectId: z.uuid(),
+      authorUserId: z.uuid(),
+      mentionedUserIds: z.array(z.uuid()).min(1).max(20),
+    })
+    .strict(),
+});
+
+/** `crm.activity.reminder_due` v1: the reminder of an activity is due (CR.7). */
+export const CrmActivityReminderDueV1 = defineEvent({
+  type: 'crm.activity.reminder_due',
+  version: 1,
+  sourceApp: 'platform',
+  growthSafe: false,
+  withoutConsumer: 'complete',
+  schema: z
+    .object({
+      activityId: z.uuid(),
+      ownerUserId: z.uuid(),
+      dueOn: z.iso.date(),
+      remindAt: z.iso.datetime(),
+    })
+    .strict(),
+});
+
+/** `crm.contact.assigned` v1. */
+export const CrmContactAssignedV1 = defineEvent({
+  type: 'crm.contact.assigned',
+  version: 1,
+  sourceApp: 'platform',
+  growthSafe: false,
+  withoutConsumer: 'complete',
+  schema: z
+    .object({ contactId: z.uuid(), ownerUserId: z.uuid().nullable(), byUserId: z.uuid() })
+    .strict(),
+});
+
+/** `crm.company.assigned` v1. */
+export const CrmCompanyAssignedV1 = defineEvent({
+  type: 'crm.company.assigned',
+  version: 1,
+  sourceApp: 'platform',
+  growthSafe: false,
+  withoutConsumer: 'complete',
+  schema: z
+    .object({ companyId: z.uuid(), ownerUserId: z.uuid().nullable(), byUserId: z.uuid() })
+    .strict(),
+});
+
+/** `crm.deal.assigned` v1. */
+export const CrmDealAssignedV1 = defineEvent({
+  type: 'crm.deal.assigned',
+  version: 1,
+  sourceApp: 'platform',
+  growthSafe: false,
+  withoutConsumer: 'complete',
+  schema: z
+    .object({ dealId: z.uuid(), ownerUserId: z.uuid().nullable(), byUserId: z.uuid() })
+    .strict(),
+});
+
+/** `crm.activity.assigned` v1. */
+export const CrmActivityAssignedV1 = defineEvent({
+  type: 'crm.activity.assigned',
+  version: 1,
+  sourceApp: 'platform',
+  growthSafe: false,
+  withoutConsumer: 'complete',
+  schema: z
+    .object({ activityId: z.uuid(), ownerUserId: z.uuid().nullable(), byUserId: z.uuid() })
+    .strict(),
+});
+
 export const EVENT_CATALOG: readonly EventDefinition[] = [
   InvitationNewLinkRequestedV1 as EventDefinition,
   SubscriptionVersionChangeScheduledV1 as EventDefinition,
@@ -1035,6 +1310,25 @@ export const EVENT_CATALOG: readonly EventDefinition[] = [
   OrganizationMemberRemovedV1 as EventDefinition,
   OrganizationMemberRoleChangedV1 as EventDefinition,
   CommercialApplicationStoppedV1 as EventDefinition,
+  CrmLeadCreatedV1 as EventDefinition,
+  CrmLeadUpdatedV1 as EventDefinition,
+  CrmLeadAssignedV1 as EventDefinition,
+  CrmLeadConvertedV1 as EventDefinition,
+  CrmLeadDisqualifiedV1 as EventDefinition,
+  CrmLeadDeletedV1 as EventDefinition,
+  CrmDealCreatedV1 as EventDefinition,
+  CrmDealUpdatedV1 as EventDefinition,
+  CrmDealStageChangedV1 as EventDefinition,
+  CrmDealWonV1 as EventDefinition,
+  CrmDealLostV1 as EventDefinition,
+  CrmDealReopenedV1 as EventDefinition,
+  CrmDealDeletedV1 as EventDefinition,
+  CrmNoteMentionedV1 as EventDefinition,
+  CrmActivityReminderDueV1 as EventDefinition,
+  CrmContactAssignedV1 as EventDefinition,
+  CrmCompanyAssignedV1 as EventDefinition,
+  CrmDealAssignedV1 as EventDefinition,
+  CrmActivityAssignedV1 as EventDefinition,
 ];
 
 /** Definiția unui eveniment după tip și versiune; null dacă nu e în catalog. */
