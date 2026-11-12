@@ -7,6 +7,7 @@
  */
 
 import { BILLING_TEMPLATES } from './billing';
+import { CLIENTDESK_TEMPLATES } from './clientdesk';
 import { OWNER_NOTICE_TEMPLATES } from './owner-notice';
 import { SUPPORT_TEMPLATES } from './support';
 import { isSecurityTopic, topicCategory, type NotificationTopic } from './topics';
@@ -91,6 +92,8 @@ export const NOTIFICATION_TEMPLATES: readonly NotificationTemplate[] = [
   ...OWNER_NOTICE_TEMPLATES,
   // Lot 4.6: the support requests — „Răspuns nou” (E-7) and the automatic closing (S116-D18)
   ...SUPPORT_TEMPLATES,
+  // Lot C.9: ClientDesk (mențiuni, remindere, atribuiri; subiectul clientdesk)
+  ...CLIENTDESK_TEMPLATES,
 ];
 
 export class NotificationCatalog {

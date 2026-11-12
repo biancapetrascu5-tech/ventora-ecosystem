@@ -1214,6 +1214,31 @@
         "title": "Votre demande sera fermée demain",
         "lead": "L’équipe Ventora Systems a répondu à « {subject} » ({ref}) et nous n’avons rien reçu de votre part depuis 6 jours.",
         "body": "Si le problème est résolu, vous n’avez rien à faire : la demande sera fermée automatiquement le {closesAt}. Si vous avez encore besoin d’aide, répondez-nous dans Ventora Systems ; vous pourrez aussi la rouvrir après sa fermeture."
+      },
+      "crm": {
+        "eyebrow": "{businessName} · ClientDesk",
+        "why": "Vous recevez cet e-mail parce que vous travaillez dans ClientDesk chez {businessName}."
+      },
+      "crmMention": {
+        "subject": "{author} vous a mentionné dans ClientDesk",
+        "preheader": "Un nouveau commentaire sur {record}.",
+        "title": "{author} vous a mentionné",
+        "lead": "{author} vous a mentionné dans un commentaire sur {record}.",
+        "body": "Lisez le commentaire dans ClientDesk, où vous pouvez aussi répondre."
+      },
+      "crmReminder": {
+        "subject": "Rappel : {title}",
+        "preheader": "Échéance : {dueOn}.",
+        "title": "Rappel : {title}",
+        "lead": "Vous avez une activité à échéance le {dueOn} : « {title} ».",
+        "body": "Retrouvez-la dans ClientDesk, où vous pouvez la cocher ou la déplacer."
+      },
+      "crmAssigned": {
+        "subject": "On vous a attribué {record} dans ClientDesk",
+        "preheader": "De la part de {author}.",
+        "title": "On vous a attribué {record}",
+        "lead": "{author} vous a attribué {record} dans ClientDesk.",
+        "body": "Retrouvez-le dans ClientDesk, dans votre liste."
       }
     },
     "prefs": {
@@ -1242,7 +1267,8 @@
         "support": "Réponses aux demandes d’assistance",
         "password": "Mot de passe du compte modifié",
         "twoFactor": "Connexion en deux étapes",
-        "supportSession": "Session d’assistance de l’équipe Ventora Systems"
+        "supportSession": "Session d’assistance de l’équipe Ventora Systems",
+        "clientdesk": "ClientDesk : mentions, rappels et attributions"
       },
       "news": {
         "title": "Nouveautés de Ventora Systems",
@@ -1390,6 +1416,30 @@
         "title": "{name} vous signale la limite de {resource}",
         "body": "L’entreprise approche de la limite ou l’a atteinte. Rien n’est perdu ; vous seul pouvez acheter des packs supplémentaires.",
         "action": "Voir la consommation"
+      }
+    },
+    "crm": {
+      "mention": {
+        "title": "{author} vous a mentionné",
+        "body": "{author} vous a mentionné dans un commentaire sur {record}.",
+        "action": "Voir le commentaire"
+      },
+      "reminder": {
+        "title": "Rappel : {title}",
+        "body": "Échéance : {dueOn}.",
+        "action": "Voir l’activité"
+      },
+      "assigned": {
+        "title": "On vous a attribué {record}",
+        "body": "{author} vous a attribué {record} dans ClientDesk.",
+        "action": "Ouvrir"
+      },
+      "record": {
+        "contact": "un contact",
+        "company": "une entreprise",
+        "lead": "un prospect",
+        "deal": "une affaire",
+        "activity": "une activité"
       }
     }
   },

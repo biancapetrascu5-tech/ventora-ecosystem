@@ -516,6 +516,8 @@ run('Lot 4.3 — notifications: the model and the delivery', () => {
         limits: true,
         leave: true,
         support: true,
+        // C.9: the ClientDesk row, on by default
+        clientdesk: true,
       },
       recommendations: { inApp: true },
       news: { inApp: true, email: false }, // S114b: news by e-mail off until turned on
