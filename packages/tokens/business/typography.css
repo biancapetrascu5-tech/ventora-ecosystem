@@ -16,6 +16,14 @@
   letter-spacing: var(--type-display-hub-tracking);
 }
 
+.display-hub-phone {
+  font-family: var(--font-display);
+  font-size: var(--type-display-hub-phone-size);
+  line-height: var(--type-display-hub-phone-line);
+  font-weight: var(--type-display-hub-phone-weight);
+  letter-spacing: var(--type-display-hub-phone-tracking);
+}
+
 .display-l {
   font-family: var(--font-display);
   font-size: var(--type-display-l-size);
@@ -37,6 +45,13 @@
   font-size: var(--type-lead-size);
   line-height: var(--type-lead-line);
   font-weight: var(--type-lead-weight);
+}
+
+.lead-phone {
+  font-family: var(--font-sans);
+  font-size: var(--type-lead-phone-size);
+  line-height: var(--type-lead-phone-line);
+  font-weight: var(--type-lead-phone-weight);
 }
 
 .eyebrow {

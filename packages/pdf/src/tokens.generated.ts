@@ -93,6 +93,13 @@ export const pdfTokens = {
       "fontWeight": 700,
       "letterSpacing": -0.9
     },
+    "display-hub-phone": {
+      "fontFamily": "Syne",
+      "fontSize": 24,
+      "lineHeight": 1.125,
+      "fontWeight": 700,
+      "letterSpacing": -0.72
+    },
     "display-l": {
       "fontFamily": "Syne",
       "fontSize": 22.5,
@@ -111,6 +118,13 @@ export const pdfTokens = {
       "fontFamily": "DM Sans",
       "fontSize": 13.5,
       "lineHeight": 1.889,
+      "fontWeight": 400,
+      "letterSpacing": 0
+    },
+    "lead-phone": {
+      "fontFamily": "DM Sans",
+      "fontSize": 11.25,
+      "lineHeight": 2,
       "fontWeight": 400,
       "letterSpacing": 0
     },

@@ -186,9 +186,11 @@ export type ZIndexToken =
 export type TypeToken =
   | 'display-xl'
   | 'display-hub'
+  | 'display-hub-phone'
   | 'display-l'
   | 'display-m'
   | 'lead'
+  | 'lead-phone'
   | 'eyebrow'
   | 'title'
   | 'heading'
