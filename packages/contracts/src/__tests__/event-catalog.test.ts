@@ -4,6 +4,7 @@ import {
   EVENT_CATALOG,
   InvitationNewLinkRequestedV1,
   OrganizationCreatedV1,
+  UserLocaleChangedV1,
   defineEvent,
   findEventDefinition,
 } from '../index';
@@ -58,6 +59,21 @@ describe('event catalog (Lot 4.1)', () => {
     }
     expect(() =>
       OrganizationCreatedV1.parse({ organizationId: ID, country: 'RO', name: 'Salon' }),
+    ).toThrow();
+  });
+
+  it('user.locale_changed v1: only the person id and one of the 6 locales (5.10c)', () => {
+    expect(findEventDefinition('user.locale_changed', 1)).toBe(UserLocaleChangedV1);
+    expect(UserLocaleChangedV1.growthSafe).toBe(false);
+    expect(UserLocaleChangedV1.parse({ userId: 'u_1', locale: 'fr' })).toEqual({
+      userId: 'u_1',
+      locale: 'fr',
+    });
+    for (const locale of ['RO', 'pt', '', 'ro-RO']) {
+      expect(() => UserLocaleChangedV1.parse({ userId: 'u_1', locale })).toThrow();
+    }
+    expect(() =>
+      UserLocaleChangedV1.parse({ userId: 'u_1', locale: 'ro', email: 'a@b.ro' }),
     ).toThrow();
   });
 

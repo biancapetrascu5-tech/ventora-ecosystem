@@ -1,6 +1,8 @@
 import { SUPPORTED_LOCALES, type Locale } from '@ventora/i18n';
 import type { AuditSqlExecutor } from '@ventora/audit';
 import { InvalidInput } from '@ventora/errors';
+import { UserLocaleChangedV1 } from '@ventora/contracts';
+import { writeOutboxEvent } from '@ventora/db-kit';
 import { getIdentityDb } from './db';
 
 /*
@@ -15,12 +17,45 @@ function isLocale(value: unknown): value is Locale {
   return typeof value === 'string' && (SUPPORTED_LOCALES as readonly string[]).includes(value);
 }
 
-export async function setUserLocale(userId: string, locale: string): Promise<void> {
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+/**
+ * Lot 5.10c (decision 11.11.2026): when the language really changes, `user.locale_changed` v1 goes
+ * to the identity outbox in the same transaction, one row per business of the person
+ * (`organizationIds`, from the organizations contract in the caller: identity reads no other
+ * schema). Only the person's id and the locale. Without businesses, only the preference is kept.
+ */
+export async function setUserLocale(
+  userId: string,
+  locale: string,
+  organizationIds: readonly string[] = [],
+): Promise<{ changed: boolean }> {
   if (!isLocale(locale)) throw new InvalidInput('locale');
-  await getIdentityDb().userPreference.upsert({
-    where: { userId },
-    create: { userId, locale },
-    update: { locale, updatedAt: new Date() },
+  const orgIds = [...new Set(organizationIds)];
+  if (orgIds.some((id) => !UUID_RE.test(id))) throw new InvalidInput('organizationIds');
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return getIdentityDb().$transaction(async (tx: any) => {
+    const before = await tx.userPreference.findUnique({
+      where: { userId },
+      select: { locale: true },
+    });
+    await tx.userPreference.upsert({
+      where: { userId },
+      create: { userId, locale },
+      update: { locale, updatedAt: new Date() },
+    });
+    if (before?.locale === locale) return { changed: false };
+    for (const organizationId of orgIds) {
+      // the outbox RLS is per business (like organizations): the row carries this business
+      await tx.$executeRaw`SELECT set_config('app.organization_id', ${organizationId}, true)`;
+      await writeOutboxEvent(tx, 'identity', UserLocaleChangedV1, {
+        organizationId,
+        sourceApp: 'platform',
+        resourceId: userId,
+        payload: { userId, locale },
+      });
+    }
+    return { changed: true };
   });
 }
 

@@ -795,6 +795,12 @@ importers:
       '@ventora/audit':
         specifier: workspace:*
         version: link:../audit
+      '@ventora/contracts':
+        specifier: workspace:*
+        version: link:../../packages/contracts
+      '@ventora/db-kit':
+        specifier: workspace:*
+        version: link:../../packages/db-kit
       '@ventora/errors':
         specifier: workspace:*
         version: link:../../packages/errors
@@ -817,9 +823,6 @@ importers:
       '@types/pg':
         specifier: ^8.0.0
         version: 8.23.1
-      '@ventora/db-kit':
-        specifier: workspace:*
-        version: link:../../packages/db-kit
       '@ventora/organizations':
         specifier: workspace:*
         version: link:../organizations

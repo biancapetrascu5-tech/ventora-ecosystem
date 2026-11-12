@@ -222,6 +222,14 @@ psqlFile(
     'core/identity/prisma/identity/migrations/20261101000007_user_preference/migration.sql',
   ),
 );
+console.log('[test:db:up] Aplic migrarea identity #6 (outbox-ul identity, 5.10c)...');
+psqlFile(
+  TEST_DB.identityDb,
+  join(
+    ROOT,
+    'core/identity/prisma/identity/migrations/20261111000001_identity_outbox/migration.sql',
+  ),
+);
 
 console.log('[test:db:up] Setez parolele rolurilor identity...');
 psql(
@@ -480,6 +488,8 @@ for (const migration of [
   'core/commercial/prisma/migrations/20261101000012_commercial_purchases/migration.sql',
   // Lot 4.3: UserPreference (limba) și notificările
   'core/identity/prisma/identity/migrations/20261101000007_user_preference/migration.sql',
+  // Lot 5.10c: outbox-ul identity (user.locale_changed)
+  'core/identity/prisma/identity/migrations/20261111000001_identity_outbox/migration.sql',
   'core/notifications/prisma/migrations/20261101000008_notifications_init/migration.sql',
   // Lot 4.4: preferințele pe subiect (rândurile din „Contul tău · Notificări”)
   'core/notifications/prisma/migrations/20261101000009_notification_preference_topic/migration.sql',
