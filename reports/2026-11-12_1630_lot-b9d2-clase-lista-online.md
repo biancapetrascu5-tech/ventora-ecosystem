@@ -89,6 +89,15 @@ Data: 2026-11-12.
 - **Fișierele vecine**, `FILES="appointments.integration packages forms clients.integration availability series payments appointment-resources"`: 8 fișiere, **116/116**. Suita completă o rulează CI-ul.
 - **Lanțul de verificări:** `pnpm format:check`, `lint`, `typecheck`, `test`, `build`, `i18n:check`, `guards:verify`: toate exit 0.
 
+## Rebase (12.11, seara)
+
+- **Rebazat pe `main` `ae0a133`** (cu #198, care a reparat main, și #191), fără conflicte; migrarea rămâne `…000008`.
+- **GRANT-ul `UPDATE ("token_hash")`** pe `waitlist_offer`: aprobat de fondatoare.
+- **Verificări:**
+  - lanțul pre-push: exit 0;
+  - `docker ps`, separat: niciun container;
+  - toată suita de integrare booking (`b-files`, `FILES="integration"`): 26 de fișiere, **304/304**, cu garda de drift.
+
 ## Ce rămâne deschis
 
 - Decizia de mai sus despre serviciile cu capacitate > 1.
