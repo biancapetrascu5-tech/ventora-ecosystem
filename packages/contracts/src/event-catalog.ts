@@ -1259,6 +1259,28 @@ export const CrmActivityAssignedV1 = defineEvent({
     .strict(),
 });
 
+/**
+ * `organization.member_access_changed` v1 (5.10c, PR 3c, decizia coordonatorului din 11.11):
+ * „Oprește accesul” / „Redă accesul”. Membership-ul rămâne (rolul, aplicațiile); doar accesul se
+ * oprește sau revine. Scris de `setMemberAccess` în aceeași tranzacție, doar la o schimbare reală.
+ * Agregatele Growth îl vor folosi ca să numere doar membrii activi. Doar id-uri, rolul și starea.
+ */
+export const OrganizationMemberAccessChangedV1 = defineEvent({
+  type: 'organization.member_access_changed',
+  version: 1,
+  sourceApp: 'platform',
+  growthSafe: false,
+  withoutConsumer: 'complete',
+  schema: z
+    .object({
+      membershipId: z.uuid(),
+      userId: z.uuid(),
+      role: MembershipRoleSchema,
+      access: z.enum(['stopped', 'active']),
+    })
+    .strict(),
+});
+
 export const EVENT_CATALOG: readonly EventDefinition[] = [
   InvitationNewLinkRequestedV1 as EventDefinition,
   SubscriptionVersionChangeScheduledV1 as EventDefinition,
@@ -1329,6 +1351,7 @@ export const EVENT_CATALOG: readonly EventDefinition[] = [
   CrmCompanyAssignedV1 as EventDefinition,
   CrmDealAssignedV1 as EventDefinition,
   CrmActivityAssignedV1 as EventDefinition,
+  OrganizationMemberAccessChangedV1 as EventDefinition,
 ];
 
 /** Definiția unui eveniment după tip și versiune; null dacă nu e în catalog. */

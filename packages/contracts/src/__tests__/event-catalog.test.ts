@@ -20,6 +20,7 @@ import {
   CrmActivityReminderDueV1,
   CrmContactAssignedV1,
   CrmDealAssignedV1,
+  OrganizationMemberAccessChangedV1,
   defineEvent,
   findEventDefinition,
 } from '../index';
@@ -269,6 +270,31 @@ describe('event catalog (Lot 4.1)', () => {
     expect(CrmLeadAssignedV1.parse({ leadId: ID, ownerUserId: ID, byUserId: ID })).toMatchObject({
       byUserId: ID,
     });
+  });
+
+  it('organization.member_access_changed v1: ids, the role and stopped / active (5.10c, 3c)', () => {
+    expect(findEventDefinition('organization.member_access_changed', 1)).toBe(
+      OrganizationMemberAccessChangedV1,
+    );
+    expect(OrganizationMemberAccessChangedV1.growthSafe).toBe(false);
+    for (const access of ['stopped', 'active'] as const) {
+      expect(
+        OrganizationMemberAccessChangedV1.parse({
+          membershipId: ID,
+          userId: ID,
+          role: 'member',
+          access,
+        }),
+      ).toMatchObject({ access });
+    }
+    expect(() =>
+      OrganizationMemberAccessChangedV1.parse({
+        membershipId: ID,
+        userId: ID,
+        role: 'member',
+        access: 'suspended',
+      }),
+    ).toThrow();
   });
 
   it('defineEvent refuses a malformed type or version', () => {

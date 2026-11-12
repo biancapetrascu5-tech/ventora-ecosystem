@@ -28,12 +28,14 @@ import {
   DEFAULT_COUNTRY,
   changeMemberRole,
   removeMember,
+  setMemberAccess,
 } from '../index.js';
 import type { OrgContext } from '../index.js';
 import { closeAuditPools } from '@ventora/audit';
 import { UUID_V7, writeOutboxEvent } from '@ventora/db-kit';
 import {
   OrganizationCreatedV1,
+  OrganizationMemberAccessChangedV1,
   OrganizationMemberAddedV1,
   OrganizationMemberRemovedV1,
   OrganizationMemberRoleChangedV1,
@@ -308,6 +310,10 @@ describe('5.10c — organization.member_* events', () => {
       expect(await changeMemberRole(ctx, memberId, 'admin')).toEqual({ changed: true });
       // the same role again changes nothing and writes nothing
       expect(await changeMemberRole(ctx, memberId, 'admin')).toEqual({ changed: false });
+      // 3c: access stopped, stopped again (nothing), restored
+      expect(await setMemberAccess(ctx, memberId, 'stopped')).toEqual({ changed: true });
+      expect(await setMemberAccess(ctx, memberId, 'stopped')).toEqual({ changed: false });
+      expect(await setMemberAccess(ctx, memberId, 'active')).toEqual({ changed: true });
       await removeMember(ctx, memberId);
 
       const events = await memberEvents(organizationId);
@@ -315,6 +321,8 @@ describe('5.10c — organization.member_* events', () => {
         'organization.member_added',
         'organization.member_added',
         'organization.member_role_changed',
+        'organization.member_access_changed',
+        'organization.member_access_changed',
         'organization.member_removed',
       ]);
       expect(events.every((e) => e.version === 1 && e.status === 'pending')).toBe(true);
@@ -338,12 +346,20 @@ describe('5.10c — organization.member_* events', () => {
         membershipId: memberMembership.id,
         userId: memberId,
         role: 'admin',
+        access: 'stopped',
       });
-      expect(events[3].resource_id).toBe(memberMembership.id);
+      expect(events[4].payload).toMatchObject({ access: 'active', role: 'admin' });
+      expect(OrganizationMemberAccessChangedV1.parse(events[4].payload)).toEqual(events[4].payload);
+      expect(events[5].payload).toEqual({
+        membershipId: memberMembership.id,
+        userId: memberId,
+        role: 'admin',
+      });
+      expect(events[5].resource_id).toBe(memberMembership.id);
       // exactly the contracts (strict), and nothing personal
       expect(OrganizationMemberAddedV1.parse(events[1].payload)).toEqual(events[1].payload);
       expect(OrganizationMemberRoleChangedV1.parse(events[2].payload)).toEqual(events[2].payload);
-      expect(OrganizationMemberRemovedV1.parse(events[3].payload)).toEqual(events[3].payload);
+      expect(OrganizationMemberRemovedV1.parse(events[5].payload)).toEqual(events[5].payload);
       expect(JSON.stringify(events.map((e) => e.payload))).not.toMatch(/@example\.com/);
     } finally {
       await adminQuery(`DELETE FROM organizations.organization WHERE id = $1`, [organizationId]);
