@@ -53,6 +53,7 @@ model Service {
 
   category     ServiceCategory? @relation(fields: [categoryId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "service_category_id_fkey")
   appointments Appointment[]
+  series       AppointmentSeries[]
   resources    ServiceResource[]
   staff        StaffService[]
   staffTerms   StaffServiceTerms[]
@@ -102,6 +103,7 @@ model StaffMember {
   dayOverrides StaffDayOverride[]
   timeOff      StaffTimeOff[]
   appointments Appointment[]
+  series       AppointmentSeries[]
   timeBlocks   TimeBlock[]
   services     StaffService[]
   serviceTerms StaffServiceTerms[]
@@ -253,6 +255,7 @@ model Client {
   erasedByUserId     String?   @map("erased_by_user_id") @db.Uuid
 
   appointments Appointment[]
+  series       AppointmentSeries[]
   mergedInto   Client?       @relation("ClientMerge", fields: [mergedIntoClientId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "client_merged_into_client_id_fkey")
   mergedFrom   Client[]      @relation("ClientMerge")
   blocks       ClientBlock[]
@@ -320,6 +323,9 @@ model Appointment {
   visitStep           Int?      @map("visit_step") @db.SmallInt
   visitSteps          Int?      @map("visit_steps") @db.SmallInt
   breakAfterMinutes   Int?      @map("break_after_minutes") @db.SmallInt
+  // Lot B.9b: the appointment's series and its place in it (both NULL for an appointment alone)
+  seriesId            String?   @map("series_id") @db.Uuid
+  seriesIndex         Int?      @map("series_index") @db.SmallInt
 
   staffMember StaffMember          @relation(fields: [staffMemberId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "appointment_staff_member_id_fkey")
   service     Service              @relation(fields: [serviceId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "appointment_service_id_fkey")
@@ -330,10 +336,12 @@ model Appointment {
   manageTokens ManageToken[]
   moveHolds   PublicHold[]
   answers     AppointmentAnswer[]
+  series      AppointmentSeries?   @relation(fields: [organizationId, seriesId], references: [organizationId, id], onDelete: Restrict, onUpdate: Restrict, map: "appointment_series_fkey")
 
   @@unique([organizationId, number], map: "appointment_organization_id_number_key")
   @@unique([organizationId, id], map: "appointment_organization_id_id_key")
   @@unique([organizationId, visitId, visitStep], map: "appointment_organization_id_visit_id_visit_step_key")
+  @@unique([organizationId, seriesId, seriesIndex], map: "appointment_organization_id_series_id_series_index_key")
   @@index([organizationId, startsAt], map: "appointment_organization_id_starts_idx")
   @@index([staffMemberId, startsAt], map: "appointment_staff_member_id_starts_idx")
   @@index([clientId, startsAt], map: "appointment_client_id_starts_idx")
@@ -731,5 +739,31 @@ model AppointmentAnswer {
   @@unique([appointmentId, questionId], map: "appointment_answer_appointment_id_question_id_key")
   @@index([questionId], map: "appointment_answer_question_id_idx")
   @@map("appointment_answer")
+  @@schema("booking")
+}
+
+// Lot B.9b: a recurring series (BookingRecurring, S126); its appointments carry series_id
+model AppointmentSeries {
+  id              String    @id @db.Uuid
+  organizationId  String    @map("organization_id") @db.Uuid
+  clientId        String    @map("client_id") @db.Uuid
+  serviceId       String    @map("service_id") @db.Uuid
+  staffMemberId   String    @map("staff_member_id") @db.Uuid
+  frequency       String    @db.VarChar(8)
+  startMinute     Int       @map("start_minute") @db.SmallInt
+  firstDate       DateTime  @map("first_date") @db.Date
+  untilDate       DateTime? @map("until_date") @db.Date
+  occurrenceCount Int?      @map("occurrence_count") @db.SmallInt
+  createdByUserId String?   @map("created_by_user_id") @db.Uuid
+  createdAt       DateTime  @default(now()) @map("created_at") @db.Timestamptz
+
+  client       Client        @relation(fields: [clientId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "appointment_series_client_id_fkey")
+  service      Service       @relation(fields: [serviceId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "appointment_series_service_id_fkey")
+  staffMember  StaffMember   @relation(fields: [staffMemberId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "appointment_series_staff_member_id_fkey")
+  appointments Appointment[]
+
+  @@unique([organizationId, id], map: "appointment_series_organization_id_id_key")
+  @@index([clientId], map: "appointment_series_client_id_idx")
+  @@map("appointment_series")
   @@schema("booking")
 }

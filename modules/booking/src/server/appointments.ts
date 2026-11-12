@@ -162,6 +162,8 @@ export type Appointment = {
   correction: { at: Date; byUserId: string; reason: string } | null;
   /** B.9a: a step of a visit with several services („1/3 · Vopsit rădăcină”); null otherwise. */
   visit: VisitRef | null;
+  /** B.9b: an appointment of a recurring series („Se repetă · 3 din 8”); null otherwise. */
+  series: SeriesRef | null;
   createdByUserId: string | null;
   createdAt: Date;
   updatedAt: Date;
@@ -169,6 +171,9 @@ export type Appointment = {
 
 /** B.9a: the place of an appointment in its visit; the pause after it is 0 on the last step. */
 export type VisitRef = { id: string; step: number; steps: number; breakAfterMinutes: number };
+
+/** B.9b: the place of an appointment in its series (getSeries gives the whole series). */
+export type SeriesRef = { id: string; index: number };
 
 export type AppointmentHistoryItem = {
   id: string;
@@ -245,6 +250,8 @@ export type AppointmentRow = {
   visit_step: number | null;
   visit_steps: number | null;
   break_after_minutes: number | null;
+  series_id: string | null;
+  series_index: number | null;
 };
 
 export const APPOINTMENT_COLUMNS = `id, number, staff_member_id, service_id, client_id, starts_at, ends_at,
@@ -253,7 +260,7 @@ export const APPOINTMENT_COLUMNS = `id, number, staff_member_id, service_id, cli
   cancelled_by, cancelled_by_user_id, cancel_minutes_before, cancel_late, deposit_minor,
   deposit_currency, payment_due_at, corrected_at, corrected_by_user_id, correction_reason,
   created_by_user_id, created_at, updated_at, location_id, visit_id, visit_step, visit_steps,
-  break_after_minutes`;
+  break_after_minutes, series_id, series_index`;
 
 export function toAppointment(r: AppointmentRow): Appointment {
   return {
@@ -307,6 +314,8 @@ export function toAppointment(r: AppointmentRow): Appointment {
             breakAfterMinutes: r.break_after_minutes ?? 0,
           }
         : null,
+    series:
+      r.series_id && r.series_index !== null ? { id: r.series_id, index: r.series_index } : null,
     createdByUserId: r.created_by_user_id,
     createdAt: r.created_at,
     updatedAt: r.updated_at,
@@ -534,7 +543,7 @@ export function requireDuration(value: unknown): number {
 }
 
 /** The local date and minutes of an interval in the business time zone (one query, DST-safe). */
-async function localSpan(
+export async function localSpan(
   client: PoolClient,
   timeZone: string,
   startsAt: Date,
@@ -1031,6 +1040,8 @@ export type AppointmentInsert = {
   locationId: string | null;
   /** B.9a: the step of a visit, or null. */
   visit: VisitRef | null;
+  /** B.9b: the appointment's place in its series (absent = none). */
+  series?: SeriesRef | null;
 };
 
 /**
@@ -1064,9 +1075,10 @@ export async function insertAppointmentRow(
        (id, organization_id, number, staff_member_id, service_id, client_id, starts_at, ends_at,
         duration_minutes, capacity, status, service_name, staff_display_name, client_name,
         price_kind, price_minor, price_max_minor, currency, team_note, source,
-        created_by_user_id, location_id, visit_id, visit_step, visit_steps, break_after_minutes)
+        created_by_user_id, location_id, visit_id, visit_step, visit_steps, break_after_minutes,
+        series_id, series_index)
      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18,
-             $19, $22, $20, $21, $23, $24, $25, $26)
+             $19, $22, $20, $21, $23, $24, $25, $26, $27, $28)
      ON CONFLICT (id) DO NOTHING
      RETURNING ${APPOINTMENT_COLUMNS}`,
     [
@@ -1096,6 +1108,8 @@ export async function insertAppointmentRow(
       v.visit?.step ?? null,
       v.visit?.steps ?? null,
       v.visit ? v.visit.breakAfterMinutes : null,
+      v.series?.id ?? null,
+      v.series?.index ?? null,
     ],
   );
   // B.3b: one unit of every resource, in the same transaction (the trigger checks it)
@@ -1703,7 +1717,7 @@ async function cancelAppointment(
     // B.9a (D-9a-1): a step of a visit is changed only by the team
     if (isPublicContext(ctx) && row.visit_id) throw new Conflict('visit_managed_by_team');
     const settings = await readSettings(client);
-    return toAppointment(await cancelRow(client, exec, ctx, row, by, settings, null));
+    return toAppointment(await cancelRow(client, exec, ctx, row, by, settings));
   });
 }
 
@@ -1719,7 +1733,8 @@ export async function cancelRow(
   row: AppointmentRow,
   by: 'client' | 'business',
   settings: BookingSettings,
-  visitId: string | null,
+  /** B.9a / B.9b: the visit or the series in the audit (visitId, seriesId). */
+  auditExtra: Record<string, string> = {},
 ): Promise<AppointmentRow> {
   const id = row.id;
   if (FINAL.includes(row.status)) throw new Conflict('appointment_final');
@@ -1759,7 +1774,7 @@ export async function cancelRow(
     by,
     minutesBefore: updated.cancel_minutes_before,
     late: updated.cancel_late,
-    ...(visitId ? { visitId } : {}),
+    ...auditExtra,
   });
   return updated;
 }

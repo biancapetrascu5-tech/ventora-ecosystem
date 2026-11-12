@@ -327,3 +327,16 @@ export type {
 export type { Visit } from '../server/visits';
 export type { VisitStart } from '../server/availability';
 export type { VisitRef } from '../server/appointments';
+
+// Lot B.9b: the recurring appointments (BookingRecurring, S126)
+export { previewSeries, createSeries, getSeries, moveSeries, cancelSeries } from './series';
+export type {
+  SeriesRuleParams,
+  PreviewSeriesParams,
+  CreateSeriesParams,
+  SeriesIdParams,
+  MoveSeriesParams,
+  CancelSeriesParams,
+} from './series';
+export type { Series, SeriesFrequency, SeriesOccurrence, SeriesPreview } from '../server/series';
+export type { SeriesRef } from '../server/appointments';
