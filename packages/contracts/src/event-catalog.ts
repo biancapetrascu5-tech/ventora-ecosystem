@@ -1023,14 +1023,16 @@ export const CrmLeadUpdatedV1 = defineEvent({
     .strict(),
 });
 
-/** `crm.lead.assigned` v1: the new owner, or nobody („Neatribuit”). */
+/** `crm.lead.assigned` v1: the new owner, or nobody („Neatribuit”), and who assigned it. */
 export const CrmLeadAssignedV1 = defineEvent({
   type: 'crm.lead.assigned',
   version: 1,
   sourceApp: 'platform',
   growthSafe: false,
   withoutConsumer: 'complete',
-  schema: z.object({ leadId: z.uuid(), ownerUserId: z.uuid().nullable() }).strict(),
+  schema: z
+    .object({ leadId: z.uuid(), ownerUserId: z.uuid().nullable(), byUserId: z.uuid() })
+    .strict(),
 });
 
 /** `crm.lead.converted` v1: into a new or an existing contact, with the deal created at once, if any. */
@@ -1171,6 +1173,92 @@ export const CrmDealDeletedV1 = defineEvent({
   schema: z.object({ dealId: z.uuid() }).strict(),
 });
 
+// ── C.8b (12.11.2026): what the ClientDesk notifications need (C.9: mention, reminder, assignment)
+// Ids only; a consumer of the outbox sends the notification (sendNotification, never a request).
+
+/** `crm.note.mentioned` v1: a note or comment mentioned these members (at most 20, CR.6). */
+export const CrmNoteMentionedV1 = defineEvent({
+  type: 'crm.note.mentioned',
+  version: 1,
+  sourceApp: 'platform',
+  growthSafe: false,
+  withoutConsumer: 'complete',
+  schema: z
+    .object({
+      noteId: z.uuid(),
+      subjectType: z.enum(['contact', 'company', 'lead', 'deal']),
+      subjectId: z.uuid(),
+      authorUserId: z.uuid(),
+      mentionedUserIds: z.array(z.uuid()).min(1).max(20),
+    })
+    .strict(),
+});
+
+/** `crm.activity.reminder_due` v1: the reminder of an activity is due (CR.7). */
+export const CrmActivityReminderDueV1 = defineEvent({
+  type: 'crm.activity.reminder_due',
+  version: 1,
+  sourceApp: 'platform',
+  growthSafe: false,
+  withoutConsumer: 'complete',
+  schema: z
+    .object({
+      activityId: z.uuid(),
+      ownerUserId: z.uuid(),
+      dueOn: z.iso.date(),
+      remindAt: z.iso.datetime(),
+    })
+    .strict(),
+});
+
+/** `crm.contact.assigned` v1. */
+export const CrmContactAssignedV1 = defineEvent({
+  type: 'crm.contact.assigned',
+  version: 1,
+  sourceApp: 'platform',
+  growthSafe: false,
+  withoutConsumer: 'complete',
+  schema: z
+    .object({ contactId: z.uuid(), ownerUserId: z.uuid().nullable(), byUserId: z.uuid() })
+    .strict(),
+});
+
+/** `crm.company.assigned` v1. */
+export const CrmCompanyAssignedV1 = defineEvent({
+  type: 'crm.company.assigned',
+  version: 1,
+  sourceApp: 'platform',
+  growthSafe: false,
+  withoutConsumer: 'complete',
+  schema: z
+    .object({ companyId: z.uuid(), ownerUserId: z.uuid().nullable(), byUserId: z.uuid() })
+    .strict(),
+});
+
+/** `crm.deal.assigned` v1. */
+export const CrmDealAssignedV1 = defineEvent({
+  type: 'crm.deal.assigned',
+  version: 1,
+  sourceApp: 'platform',
+  growthSafe: false,
+  withoutConsumer: 'complete',
+  schema: z
+    .object({ dealId: z.uuid(), ownerUserId: z.uuid().nullable(), byUserId: z.uuid() })
+    .strict(),
+});
+
+/** `crm.activity.assigned` v1. */
+export const CrmActivityAssignedV1 = defineEvent({
+  type: 'crm.activity.assigned',
+  version: 1,
+  sourceApp: 'platform',
+  growthSafe: false,
+  withoutConsumer: 'complete',
+  schema: z
+    .object({ activityId: z.uuid(), ownerUserId: z.uuid().nullable(), byUserId: z.uuid() })
+    .strict(),
+});
+
 export const EVENT_CATALOG: readonly EventDefinition[] = [
   InvitationNewLinkRequestedV1 as EventDefinition,
   SubscriptionVersionChangeScheduledV1 as EventDefinition,
@@ -1235,6 +1323,12 @@ export const EVENT_CATALOG: readonly EventDefinition[] = [
   CrmDealLostV1 as EventDefinition,
   CrmDealReopenedV1 as EventDefinition,
   CrmDealDeletedV1 as EventDefinition,
+  CrmNoteMentionedV1 as EventDefinition,
+  CrmActivityReminderDueV1 as EventDefinition,
+  CrmContactAssignedV1 as EventDefinition,
+  CrmCompanyAssignedV1 as EventDefinition,
+  CrmDealAssignedV1 as EventDefinition,
+  CrmActivityAssignedV1 as EventDefinition,
 ];
 
 /** Definiția unui eveniment după tip și versiune; null dacă nu e în catalog. */

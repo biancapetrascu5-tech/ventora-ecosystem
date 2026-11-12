@@ -15,6 +15,11 @@ import {
   CrmLeadCreatedV1,
   CrmLeadDisqualifiedV1,
   CrmLeadUpdatedV1,
+  CrmLeadAssignedV1,
+  CrmNoteMentionedV1,
+  CrmActivityReminderDueV1,
+  CrmContactAssignedV1,
+  CrmDealAssignedV1,
   defineEvent,
   findEventDefinition,
 } from '../index';
@@ -153,6 +158,8 @@ describe('event catalog (Lot 4.1)', () => {
       'crm.deal.lost',
       'crm.deal.reopened',
       'crm.deal.deleted',
+      // C.8b
+      'crm.deal.assigned',
     ]);
     for (const t of types) expect(findEventDefinition(t, 1)?.growthSafe).toBe(false);
 
@@ -207,6 +214,61 @@ describe('event catalog (Lot 4.1)', () => {
     expect(() =>
       CrmDealWonV1.parse({ dealId: ID, valueMinor: 100, currency: 'EUR', wonOn: '12.11.2026' }),
     ).toThrow();
+  });
+
+  it('C.8b: what the ClientDesk notifications need — mention, reminder, assignment (ids only)', () => {
+    for (const t of [
+      'crm.note.mentioned',
+      'crm.activity.reminder_due',
+      'crm.contact.assigned',
+      'crm.company.assigned',
+      'crm.deal.assigned',
+      'crm.activity.assigned',
+    ]) {
+      expect(findEventDefinition(t, 1)?.growthSafe).toBe(false);
+    }
+    const mention = {
+      noteId: ID,
+      subjectType: 'lead',
+      subjectId: ID,
+      authorUserId: ID,
+      mentionedUserIds: [ID],
+    };
+    expect(CrmNoteMentionedV1.parse(mention)).toEqual(mention);
+    expect(() => CrmNoteMentionedV1.parse({ ...mention, mentionedUserIds: [] })).toThrow();
+    expect(() =>
+      CrmNoteMentionedV1.parse({ ...mention, mentionedUserIds: Array(21).fill(ID) }),
+    ).toThrow();
+    expect(() => CrmNoteMentionedV1.parse({ ...mention, body: 'Sună-l pe Ion' })).toThrow();
+    expect(
+      CrmActivityReminderDueV1.parse({
+        activityId: ID,
+        ownerUserId: ID,
+        dueOn: '2026-11-20',
+        remindAt: '2026-11-20T08:45:00.000Z',
+      }),
+    ).toMatchObject({ dueOn: '2026-11-20' });
+    expect(() =>
+      CrmActivityReminderDueV1.parse({
+        activityId: ID,
+        ownerUserId: ID,
+        dueOn: '2026-11-20',
+        remindAt: '2026-11-20T08:45:00.000Z',
+        title: 'Sună',
+      }),
+    ).toThrow();
+    for (const def of [CrmContactAssignedV1, CrmDealAssignedV1]) {
+      const key = def === CrmContactAssignedV1 ? 'contactId' : 'dealId';
+      expect(def.parse({ [key]: ID, ownerUserId: null, byUserId: ID })).toEqual({
+        [key]: ID,
+        ownerUserId: null,
+        byUserId: ID,
+      });
+      expect(() => def.parse({ [key]: ID, ownerUserId: ID })).toThrow();
+    }
+    expect(CrmLeadAssignedV1.parse({ leadId: ID, ownerUserId: ID, byUserId: ID })).toMatchObject({
+      byUserId: ID,
+    });
   });
 
   it('defineEvent refuses a malformed type or version', () => {
