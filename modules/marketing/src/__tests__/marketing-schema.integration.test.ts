@@ -167,8 +167,13 @@ describe('MK.1 — the role marketing_rw and the schema', () => {
       `SELECT c.relname, c.relrowsecurity FROM pg_class c JOIN pg_namespace n ON n.oid = c.relnamespace
         WHERE n.nspname = 'marketing' AND c.relkind = 'r' ORDER BY 1`,
     );
-    // every new table of the schema is listed here on purpose
-    expect(tables.map((t) => t.relname)).toEqual(['settings']);
+    // every new table of the schema is listed here on purpose (MK.2: the contacts)
+    expect(tables.map((t) => t.relname)).toEqual([
+      'contact',
+      'contact_event',
+      'duplicate_dismissal',
+      'settings',
+    ]);
     for (const t of tables) {
       expect(t.relrowsecurity, t.relname).toBe(true);
       const policies = await adminQuery<{ qual: string | null; with_check: string | null }>(
