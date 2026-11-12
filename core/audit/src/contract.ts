@@ -12,6 +12,18 @@ import type {
 } from './types';
 
 const ROLE_RE = /^[a-z_][a-z0-9_]*$/;
+const TARGET_TYPE_RE = /^[a-z][a-z0-9_]{0,31}$/;
+
+/** C.10: a target filter has both its type and a non-empty id (never one alone). */
+function checkTarget(target: AuditLogFilters['target']): { type: string; id: string } | undefined {
+  if (target === undefined) return undefined;
+  if (!target || !TARGET_TYPE_RE.test(String(target.type ?? ''))) {
+    throw new Error('[audit] target.type is invalid');
+  }
+  const id = String(target.id ?? '');
+  if (id.length === 0 || id.length > 255) throw new Error('[audit] target.id is invalid');
+  return { type: target.type, id };
+}
 const DEFAULT_LIMIT = 50;
 const MAX_LIMIT = 200;
 
@@ -81,11 +93,17 @@ export async function writeAuditEvent(
  * Organization view of the log (app_runtime → audit_org_reader, RLS on app.organization_id).
  * Callers must have passed authorize() with `audit.log.read` — use listAuditLogs from
  * @ventora/access, not this function, in request code.
+ *
+ * Lot C.10: with `target` it is the history of one record. A module may read it for a record the
+ * person is allowed to see (its own authorize() and visibility rule, e.g. a ClientDesk contact's
+ * timeline): the rows of that target only, of the organization in context. The metadata never
+ * holds personal data (rule of every audit write), only ids and field names.
  */
 export async function readOrganizationAuditLog(
   organizationId: string,
   filters: AuditLogFilters = {},
 ): Promise<AuditLogEntry[]> {
+  const target = checkTarget(filters.target);
   return withAuditTransaction('app', async (exec) => {
     await exec.exec('SET LOCAL ROLE audit_org_reader');
     await exec.query(`SELECT set_config('app.organization_id', $1, true)`, [organizationId]);
@@ -95,9 +113,21 @@ export async function readOrganizationAuditLog(
         WHERE organization_id = $1::uuid
           AND ($2::text IS NULL OR action = $2)
           AND ($3::timestamptz IS NULL OR created_at < $3)
+          AND ($5::text[] IS NULL OR action = ANY($5::text[]))
+          AND ($6::text IS NULL OR category = $6)
+          AND ($7::text IS NULL OR (target_type = $7 AND target_id = $8))
         ORDER BY created_at DESC, id DESC
         LIMIT $4`,
-      [organizationId, filters.action ?? null, filters.before ?? null, clampLimit(filters.limit)],
+      [
+        organizationId,
+        filters.action ?? null,
+        filters.before ?? null,
+        clampLimit(filters.limit),
+        filters.actions ?? null,
+        filters.category ?? null,
+        target?.type ?? null,
+        target?.id ?? null,
+      ],
     );
     return rows.map(toEntry);
   });
