@@ -330,6 +330,16 @@ export const AuditActions = {
   // Lot MK.1 — CampaignKit (category marketing, required, in the same transaction): the settings
   // of the business, with the changed field names only (never the sender name or the address)
   marketingSettingsUpdated: 'marketing.settings_updated',
+  // Lot C.0j / MK.2 — the marketing contacts (category marketing): never the name, the address or
+  // the phone in metadata, only the changed field names, the source and the ids
+  marketingContactCreated: 'marketing.contact_created',
+  marketingContactUpdated: 'marketing.contact_updated',
+  marketingContactArchived: 'marketing.contact_archived',
+  marketingContactRestored: 'marketing.contact_restored',
+  marketingContactMerged: 'marketing.contact_merged',
+  // review #192: the GDPR erasure (marketing.erase_contact); metadata: how many contacts
+  marketingContactErased: 'marketing.contact_erased',
+  marketingDuplicateDismissed: 'marketing.duplicate_dismissed',
   // Lot 5.8 — Growth Engine (category founder, like the workflow engine): the automatic stop of a
   // campaign above the 5 % disturbance threshold (P22), by the system; the numbers in metadata
   growthCampaignAutoStopped: 'growth.campaign_auto_stopped',
