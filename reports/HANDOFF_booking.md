@@ -1,17 +1,15 @@
 # HANDOFF — agentul Booking (EasyBook)
 
-Actualizat pe 2026-11-12, ora 11. Main la `58f6ba3` (cu #176 C.4g, #179 B.12, #180).
+Actualizat pe 2026-11-12, ora 12. Main la `c4a9515` (cu #182 B.9a, #178).
 
 ## 1. PR-urile deschise
 
 | PR | Ramura / worktree | HEAD | Bază | Stare |
 |---|---|---|---|---|
-| **#182** [SQL de revizuit] B.9a — mai multe servicii într-o vizită | `feat/b9a-booking-multi-service` / `C:\Projects\ventora-b9a` | `62539b1` (pushed) | `main` | Așteaptă review-ul migrării `…20261112000001_booking_visits`. CI verde, inclusiv suita booking completă. Local: `b-files` 92/92, lanțul de verificări verde |
-| **#184** [SQL de revizuit] B.9b — programările recurente | `feat/b9b-booking-recurring` / `C:\Projects\ventora-b9b` | `9df6f42` (pushed) | `feat/b9a-booking-multi-service` (#182) | Așteaptă review-ul migrării `…20261112000002_booking_series`. Local: `b-files` 90/90, lanțul de verificări verde |
+| **#184** [SQL de revizuit] B.9b — programările recurente | `feat/b9b-booking-recurring` / `C:\Projects\ventora-b9b` | `f86320e` (pushed) | `main` | Rebazat pe `c4a9515`. CI-ul de pe `9df6f42` picase la lista tabelelor cu RLS din `services.integration.test.ts` (fără `appointment_series`), reparat în commitul de test. Local: testele lotului, lanțul de verificări verde |
+| **#187** [SQL de revizuit] B.9c — lista de așteptare | `feat/b9c-booking-waitlist` / `C:\Projects\ventora-b9c` | `56dd019` (pushed) | `main` | Așteaptă review-ul migrării `…20261112000003_booking_waitlist` (recreează `erase_client`). Local: `b-files` 73/73, lanțul de verificări verde |
 
-**După merge-ul #182:** rebazezi #184 pe `main`, schimbi baza în `main` dacă e nevoie, apoi `push --force-with-lease`.
-
-**Deciziile B.9a / B.9b sunt PROPUS** (planul `reports/2026-11-12_plan-booking-b9.md`, commit pe #182):
+**Deciziile B.9a / B.9b / B.9c sunt PROPUS** (planul `reports/2026-11-12_plan-booking-b9.md`, commit pe #182):
 - T-9a-1: cota, o unitate pe pas;
 - T-9a-2: fără „Oricine e liber” pe pas;
 - T-9a-3: 2–5 pași;
@@ -19,20 +17,21 @@ Actualizat pe 2026-11-12, ora 11. Main la `58f6ba3` (cu #176 C.4g, #179 B.12, #1
 - D-9a-2: vizitele nu apar pe pagina publică;
 - D-9b-1: max. 52 de programări sau 12 luni;
 - D-9b-2: lunar = aceeași zi a săptămânii;
-- D-9b-3: avansul pe fiecare programare (B.22).
+- D-9b-3: avansul pe fiecare programare (B.22);
+- D-9c-1…3: echipa alege, o ofertă o dată, doar e-mail în pilot; auditul listei ca `booking.client_updated` cu `metadata.waitlist`.
 
-**Îmbinate:** #138 (B.24), #157 (B.10), #164 (B.11a), #174 (B.11b), #175 (C.4f, agentul UI), #176 (C.4g), #179 (B.12).
+**Îmbinate:** #182 (B.9a), #138 (B.24), #157 (B.10), #164 (B.11a), #174 (B.11b), #175 (C.4f, agentul UI), #176 (C.4g), #179 (B.12).
 
 ## 2. Worktree-urile active (un agent pe folder)
 
 | Worktree | Ramura | Stare |
 |---|---|---|
-| `C:\Projects\ventora-b9a` | `feat/b9a-booking-multi-service` | curat, sincronizat (#182) |
 | `C:\Projects\ventora-b9b` | `feat/b9b-booking-recurring` | curat, sincronizat (#184) |
+| `C:\Projects\ventora-b9c` | `feat/b9c-booking-waitlist` | curat, sincronizat (#187) |
 | `C:\Projects\ventora-handoff` | `docs/handoff-booking` | acest fișier |
 
 **Worktree-uri care se pot șterge:**
-- ramuri îmbinate: `ventora-c4g` (#176), `ventora-b12` (#179), `ventora-b11` (#164), `ventora-b11b` (#174), `ventora-b24`, `ventora-b10`, `ventora-b21`, `ventora-c0h`, `ventora-c1`, `ventora-medkey`, `ventora-fix`, `ventora-b8`, `ventora-c0g`, `ventora-b7a`, `ventora-b7b`, `ventora-b2b`, `ventora-b2c`;
+- ramuri îmbinate: `ventora-b9a` (#182), `ventora-c4g` (#176), `ventora-b12` (#179), `ventora-b11` (#164), `ventora-b11b` (#174), `ventora-b24`, `ventora-b10`, `ventora-b21`, `ventora-c0h`, `ventora-c1`, `ventora-medkey`, `ventora-fix`, `ventora-b8`, `ventora-c0g`, `ventora-b7a`, `ventora-b7b`, `ventora-b2b`, `ventora-b2c`;
 - planuri: `ventora-plan-*`, `ventora-booking-b1`.
 
 **Excepții:**
@@ -42,9 +41,9 @@ Actualizat pe 2026-11-12, ora 11. Main la `58f6ba3` (cu #176 C.4g, #179 B.12, #1
 
 ## 3. Ce urmează
 
-**1.** Review-ul și corecturile pentru #182 și #184.
+**1.** Review-ul și corecturile pentru #184 și #187.
 
-**2.** B.9c (lista de așteptare), apoi B.9d (clasele) și B.9e (pachetele), cu cel mult 3 PR-uri deschise. B.9c recreează `erase_client` (nota din lista de așteptare). D-9e-4 (contabilitatea pachetelor) e NECESITĂ DECIZIE, la contabil.
+**2.** B.9d (clasele), apoi B.9e (pachetele), cu cel mult 3 PR-uri deschise. D-9e-4 (contabilitatea pachetelor) e NECESITĂ DECIZIE, la contabil.
 
 **Ordinea cerută de Bianca după B.12:**
 1. B.9, programările complexe (S126: `BookingRecurring`, `BookingMultiService`, `BookingWaitlist`, `BookingClasses`, `BookingPackages`), câte un sublot B.9a–e;
