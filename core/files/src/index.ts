@@ -12,10 +12,25 @@ export {
   deleteOwnerFilesAsSystem,
   readFileAsSystem,
   closeFilesPool,
+  // C.4g: the anonymous upload (the client's photo on the public booking page)
+  requestAnonymousUpload,
+  confirmAnonymousUpload,
+  listAnonymousFiles,
 } from './files';
-export type { FilesContext, FilesConnection, FileOwner, FileInfo, FileStatus } from './files';
+export type {
+  FilesContext,
+  FilesConnection,
+  FileOwner,
+  FileInfo,
+  FileStatus,
+  AnonymousFilesContext,
+  AnonymousFileInfo,
+} from './files';
 export {
   ALLOWED_CONTENT_TYPES,
+  ANONYMOUS_CONTENT_TYPES,
+  ANONYMOUS_FILES_PER_OWNER,
+  ANONYMOUS_FILES_PER_KEY,
   CSV_OWNER,
   mayKeepCsv,
   MAX_FILE_BYTES,

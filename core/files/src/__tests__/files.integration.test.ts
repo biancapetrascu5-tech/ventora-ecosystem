@@ -1,13 +1,14 @@
 import { randomUUID } from 'node:crypto';
 import { Client, Pool } from 'pg';
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
-import { InvalidInput, ResourceNotFound } from '@ventora/errors';
+import { Conflict, InvalidInput, ResourceNotFound } from '@ventora/errors';
 import { ConsumerRegistry, dispatchOutbox } from '@ventora/integrations';
 import {
   FileLinkRefused,
   MAX_FILE_BYTES,
   MemoryStorageAdapter,
   closeFilesPool,
+  confirmAnonymousUpload,
   confirmUpload,
   deleteFile,
   deleteFileAsSystem,
@@ -15,8 +16,10 @@ import {
   readFileAsSystem,
   getDownloadLink,
   getFile,
+  listAnonymousFiles,
   listFiles,
   openDownloadLink,
+  requestAnonymousUpload,
   requestUpload,
   setStorageAdapter,
   signDownloadToken,
@@ -594,3 +597,157 @@ describe('the file events go through the outbox dispatcher (Lot 4.1)', () => {
     expect(pending).toEqual([{ n: 0 }]);
   });
 });
+
+describe('C.4g — the anonymous upload (the client photo on the public booking page)', () => {
+  const HOLD = randomUUID();
+  const KEY = { organizationId: ORG_A, anonymousKey: HOLD };
+  const photoOwner = (question: string) => ({
+    module: 'booking',
+    resourceType: 'answer_photo',
+    resourceId: `${HOLD}:${question}`,
+  });
+  const JPEG = Uint8Array.from([0xff, 0xd8, 0xff, 0xe0, 0, 16, 0x4a, 0x46, 0x49, 0x46]);
+
+  async function anonymousUpload(question: string, bytes = JPEG, contentType = 'image/jpeg') {
+    const { fileId } = await requestAnonymousUpload(KEY, {
+      owner: photoOwner(question),
+      name: 'poza.jpg',
+      contentType,
+      sizeBytes: bytes.length,
+    });
+    storage.put(keyOf(ORG_A, fileId), bytes, contentType);
+    return { fileId, info: await confirmAnonymousUpload(KEY, fileId) };
+  }
+
+  it('ask → upload → confirm: ready, no person, the key as author; file.uploaded', async () => {
+    const { fileId, info } = await anonymousUpload('q1');
+    expect(info).toMatchObject({ id: fileId, contentType: 'image/jpeg', status: 'ready' });
+    const [row] = await q(
+      `SELECT uploaded_by_user_id, anonymous_key FROM files.file WHERE id = $1`,
+      [fileId],
+    );
+    expect(row).toEqual({ uploaded_by_user_id: null, anonymous_key: HOLD });
+    const events = await q(`SELECT type FROM files.outbox_events WHERE resource_id = $1`, [fileId]);
+    expect(events).toEqual([{ type: 'file.uploaded' }]);
+    // another key, or a person, cannot confirm it
+    await expect(
+      confirmAnonymousUpload({ organizationId: ORG_A, anonymousKey: randomUUID() }, fileId),
+    ).rejects.toBeInstanceOf(ResourceNotFound);
+    await expect(confirmUpload(ALICE, fileId)).rejects.toBeInstanceOf(ResourceNotFound);
+    // a person's reads do not show it; the Hub reaches it by its id (download link)
+    await expect(getFile(ALICE, fileId)).rejects.toBeInstanceOf(ResourceNotFound);
+    expect(await listFiles(ALICE, photoOwner('q1'))).toEqual([]);
+    expect((await getDownloadLink(ALICE, fileId)).url).toContain('/files/');
+    // T1: not from another organization
+    await expect(getDownloadLink(BOB, fileId)).rejects.toBeInstanceOf(ResourceNotFound);
+  });
+
+  it('only PNG / JPEG, checked by content; PDF refused before any link', async () => {
+    await expect(
+      requestAnonymousUpload(KEY, {
+        owner: photoOwner('pdf'),
+        name: 'a.pdf',
+        contentType: 'application/pdf',
+        sizeBytes: PDF.length,
+      }),
+    ).rejects.toBeInstanceOf(InvalidInput);
+    await expect(
+      requestAnonymousUpload(KEY, {
+        owner: photoOwner('big'),
+        name: 'a.png',
+        contentType: 'image/png',
+        sizeBytes: MAX_FILE_BYTES + 1,
+      }),
+    ).rejects.toBeInstanceOf(InvalidInput);
+    // an HTML page declared as a JPEG: refused after the upload, removed from the storage
+    const { fileId } = await requestAnonymousUpload(KEY, {
+      owner: photoOwner('html'),
+      name: 'poza.jpg',
+      contentType: 'image/jpeg',
+      sizeBytes: HTML.length,
+    });
+    storage.put(keyOf(ORG_A, fileId), HTML, 'image/jpeg');
+    await expect(confirmAnonymousUpload(KEY, fileId)).rejects.toBeInstanceOf(InvalidInput);
+    expect(storage.objects.has(keyOf(ORG_A, fileId))).toBe(false);
+  });
+
+  it('at most one live file per question and 5 per hold', async () => {
+    expect(await errorMessage(anonymousUpload('q1'))).toBe('file_exists');
+    // q1 is ready (first test); four more questions fit, the sixth file does not
+    for (const question of ['q2', 'q3', 'q4', 'q5']) await anonymousUpload(question);
+    expect(await errorMessage(anonymousUpload('q6'))).toBe('too_many_files');
+    expect((await listAnonymousFiles(KEY)).length).toBe(5);
+  });
+
+  it('the database: exactly one author; an anonymous file is only an image (CHECK)', async () => {
+    for (const [user, key, type] of [
+      [null, null, 'image/png'],
+      [randomUUID(), randomUUID(), 'image/png'],
+      [null, randomUUID(), 'application/pdf'],
+    ] as const) {
+      const id = randomUUID();
+      await expect(
+        q(
+          `INSERT INTO files.file (id, organization_id, owner_module, owner_resource_type,
+             owner_resource_id, name, content_type, size_bytes, storage_key, uploaded_by_user_id,
+             anonymous_key, upload_expires_at)
+           VALUES ($1::uuid, $2, 'booking', 'answer_photo', 'x', 'x', $3, 10, $1::text, $4::uuid, $5::uuid, now())`,
+          [id, ORG_A, type, user, key],
+        ),
+      ).rejects.toMatchObject({ code: '23514' });
+    }
+  });
+
+  it('the photos of a hold go through the system deletion of C.4f (one path), by file or by owner', async () => {
+    const live = await listAnonymousFiles(KEY);
+    const [keep, ...gone] = live;
+    for (const f of live) storage.put(keyOf(ORG_A, f.id), JPEG, 'image/jpeg');
+    // the module deletes what it does not keep, file by file (booking.public-hold-cleanup)
+    for (const f of gone) {
+      expect(
+        await deleteFileAsSystem(ORG_A, {
+          fileId: f.id,
+          module: 'booking',
+          reason: 'public_hold_expired',
+        }),
+      ).toBe(true);
+    }
+    expect((await listAnonymousFiles(KEY)).map((f) => f.id)).toEqual([keep!.id]);
+    for (const f of gone) {
+      expect(storage.objects.has(keyOf(ORG_A, f.id))).toBe(false);
+      const [row] = await q(`SELECT status FROM files.file WHERE id = $1`, [f.id]);
+      expect(row.status).toBe('deleted');
+    }
+    const deletedEvents = await q(
+      `SELECT count(*)::int AS n FROM files.outbox_events
+        WHERE type = 'file.deleted' AND resource_id = ANY($1::text[])`,
+      [gone.map((f) => f.id)],
+    );
+    expect(deletedEvents[0].n).toBe(gone.length);
+    // not from another module, not twice
+    await expect(
+      deleteFileAsSystem(ORG_A, { fileId: keep!.id, module: 'crm', reason: 'public_hold_expired' }),
+    ).rejects.toBeInstanceOf(ResourceNotFound);
+    expect(
+      await deleteFileAsSystem(ORG_A, {
+        fileId: gone[0]!.id,
+        module: 'booking',
+        reason: 'public_hold_expired',
+      }),
+    ).toBe(false);
+    // by owner (one question of the hold): the kept photo too, when the module asks for it
+    expect(await deleteOwnerFilesAsSystem(ORG_A, keep!.owner, 'client_erased')).toBe(1);
+    expect(await listAnonymousFiles(KEY)).toEqual([]);
+    expect(storage.objects.has(keyOf(ORG_A, keep!.id))).toBe(false);
+  });
+});
+
+async function errorMessage(p: Promise<unknown>): Promise<string> {
+  try {
+    await p;
+  } catch (e) {
+    if (e instanceof Conflict) return e.message;
+    throw e;
+  }
+  throw new Error('expected a Conflict');
+}

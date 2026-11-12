@@ -20,13 +20,17 @@ model File {
   sizeBytes         BigInt    @map("size_bytes")
   storageKey        String    @unique(map: "file_storage_key_key") @map("storage_key") @db.VarChar(512)
   status            String    @default("pending") @db.VarChar(16)
-  uploadedByUserId  String    @map("uploaded_by_user_id") @db.Uuid
+  /// C.4g: null pentru o încărcare anonimă (atunci are anonymous_key)
+  uploadedByUserId  String?   @map("uploaded_by_user_id") @db.Uuid
+  /// C.4g: cheia dată de modulul proprietar (Booking: id-ul holdului public)
+  anonymousKey      String?   @map("anonymous_key") @db.Uuid
   uploadExpiresAt   DateTime  @map("upload_expires_at") @db.Timestamptz
   readyAt           DateTime? @map("ready_at") @db.Timestamptz
   deletedAt         DateTime? @map("deleted_at") @db.Timestamptz
   createdAt         DateTime  @default(now()) @map("created_at") @db.Timestamptz
 
   @@index([organizationId, ownerModule, ownerResourceType, ownerResourceId], map: "file_organization_id_owner_idx")
+  @@index([organizationId, anonymousKey], map: "file_organization_id_anonymous_key_idx")
   @@map("file")
   @@schema("files")
 }
