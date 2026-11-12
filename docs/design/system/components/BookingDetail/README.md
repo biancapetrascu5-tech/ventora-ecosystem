@@ -7,3 +7,7 @@ Shown at 1280 (desktop), 820 (tablet portrait) and 390 (phone), in light and dar
 After the product review: the main button follows the state (unconfirmed → "Confirmă", in progress → "Încasează", done → "Programează din nou", with client, service and person filled in); the history shows the last 3 events, then "Vezi tot istoricul".
 
 **The 7 states (S116, D-B-11).** The footer and the "…" menu offer only the transitions allowed from the current state; the full map and a drawer per state are in BookingStatuses.
+
+**S126 (B.9).** A booking in a series ("Se repetă · 3 din 8", "doar aceasta / aceasta și următoarele / toate") in BookingRecurring; a booking with several services in BookingMultiService.
+
+**S127 (B.12, B.16).** "Răspunsuri la întrebări" (BookingCustomForms); "Plată" with paid, due and the payment history, "Încasează", refunds and the no-show fee (BookingMoney).

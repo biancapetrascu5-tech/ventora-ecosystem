@@ -9,3 +9,7 @@ EasyBook — the e-mails from the business to its clients, in the single operati
 **Decided (S116, 4 Nov. 2026).** S116-D17 · The sender is "{business} prin EasyBook" <noreply@ventora-hub.com>; replies go to the business's e-mail.
 
 Light only, as all e-mails; 600 and 390 wide; tests in DE, IT, EN, FR, ES.
+
+**S125 (B.11).** The link "Modificați sau anulați programarea" opens the client's page drawn in BookingClientManage.
+
+**S127 (B.13–B.15).** The texts can be edited in Setări · Mesaje, with variables and a preview (BookingMessageTemplates); the template itself doesn't change.

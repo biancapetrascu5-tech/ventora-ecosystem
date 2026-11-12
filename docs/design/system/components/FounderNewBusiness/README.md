@@ -9,3 +9,7 @@ New business + owner invitation in one step: business, plan (always the current 
 **Layout (S119).** "Începe cu 14 zile de probă" is centred on the height of the "Bundle" field's box, not on the line of its helper text.
 
 **Billing data (S121, D-3.6-1).** A section "Date de facturare" before "Ce cumpără", with the form shared with FounderBillingProfile: persoană juridică / fizică, company name, CUI checked for the RO format and control digit, Nr. Reg. Com., address, invoice e-mail. "CUI" moved here from "Afacerea". The second board has a company from Germany ("Cod de TVA", "Nr. de înregistrare"); a third board shows the errors. Keys `founder.billingProfile.*` in `i18n/founder-commercial.json`.
+
+**S146 · Țara (decision of 11 Nov.).** In "Afacerea": "Țara", a Combobox with search, default România, the ISO 3166-1 alpha-2 code stored; the option shows "Cod DE". Country names come from `Intl.DisplayNames` in the interface language, so there is no key per country. Keys `founder.country.*` in `i18n/founder.json` (6 languages). Not editable from the Hub for now. The third board shows the list open ("ger"), no match, and DE / IT.
+
+**DE DECIS (S146).** **Billing country.** Recommendation: the billing data's "Țară" is prefilled from the business's country and can differ (a company registered elsewhere).

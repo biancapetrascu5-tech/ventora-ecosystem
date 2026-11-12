@@ -1,21 +1,385 @@
-/* Ventora tokens — generated from tokens.json. Light on :root and [data-theme="light"], dark on [data-theme="dark"]; fonts from fonts/. */
-:root, [data-theme="light"] {--canvas: #F2F3F0;--sheet: #FFFFFF;--raised: #FFFFFF;--sunken: #F7F7F5;--selected: #E8EAF1;--state-hover: rgba(40, 40, 25, 0.05);--state-pressed: rgba(40, 40, 25, 0.09);--scrim: rgba(0, 12, 63, 0.32);--ink: #000C3F;--ink-secondary: #3D4566;--ink-muted: #5E6680;--ink-disabled: #9CA4B4;--line: #E4E5E2;--line-strong: #CFD2CC;--control-border: #80879A;--control-border-hover: #4F5672;--primary: #000C3F;--primary-hover: #17225A;--primary-pressed: #000726;--on-primary: #FFFFFF;--brand-navy: #000C3F;--brand-offwhite: #EFF0EE;--brand-surface: #000C3F;--brand-raised: #0D1A52;--on-brand: #F1EFEA;--on-brand-muted: #B5BAD0;--brand-line: rgba(241, 239, 234, 0.16);--brand-line-strong: rgba(241, 239, 234, 0.32);--brand-control-border: #6E7596;--attention: #FFAA75;--hover-accent: var(--attention);--on-attention: #000C3F;--attention-soft: #FFEDE1;--attention-ink: #9A4511;--attention-mark: #C95F1C;--done: #C5D86D;--on-done: #000C3F;--done-soft: #EFF4D6;--done-ink: #46580B;--done-mark: #677F10;--danger: #B3261E;--danger-hover: #911A11;--on-danger: #FFFFFF;--danger-soft: #FBE9E7;--danger-ink: #A61F15;--neutral-soft: #E8EAF1;--focus-ring: #000C3F;--skeleton: #E9EAE7;--skeleton-highlight: #F4F4F2;--avatar-bg: #E8EAF1;--tooltip-bg: #000C3F;--tooltip-ink: #FFFFFF;--appicon-plate: #000C3F;--appicon-edge: rgba(0, 12, 63, 0);--appicon-shape: #EFF0EE;--appicon-accent: #FFAA75;--appicon-plate-muted: #E8EAF1;--appicon-shape-muted: #5E6680;--appicon-accent-muted: #9CA4B4;--chart-1: #2F4AA6;--chart-2: #008A7E;--chart-3: #8A55C7;--chart-4: #C24A7C;--chart-5: #8C6D1E;--chart-compare: #7C849A;--chart-now: #C95F1C;--chart-grid: #E4E5E2;--chart-axis: #CFD2CC;--chart-label: #5E6680;--chart-seq-1: #DCE1F2;--chart-seq-2: #AEB9E2;--chart-seq-3: #7487C8;--chart-seq-4: #3E53A0;--chart-seq-5: #16266A;--shadow-1: 0 1px 2px rgba(0, 12, 63, 0.05);--shadow-2: 0 1px 2px rgba(0, 12, 63, 0.08), 0 16px 32px -12px rgba(0, 12, 63, 0.22);--shadow-tile-hover: 0 2px 4px rgba(0, 12, 63, 0.08), 0 22px 40px -12px rgba(0, 12, 63, 0.28);--shadow-3: 0 2px 4px rgba(0, 12, 63, 0.06), 0 24px 48px rgba(0, 12, 63, 0.16); color-scheme: light; }
-[data-theme="dark"] {--canvas: #0E0F11;--sheet: #16171A;--raised: #1E2024;--sunken: #121315;--selected: #2A2C31;--state-hover: rgba(255, 255, 255, 0.06);--state-pressed: rgba(255, 255, 255, 0.11);--scrim: rgba(0, 0, 0, 0.62);--ink: #F1EFEA;--ink-secondary: #C6C4BF;--ink-muted: #9C9A95;--ink-disabled: #5C5D61;--line: #2A2C30;--line-strong: #383B40;--control-border: #74777D;--control-border-hover: #9A9DA3;--primary: #F1EFEA;--primary-hover: #FFFFFF;--primary-pressed: #D8D6D0;--on-primary: #16171A;--brand-navy: #000C3F;--brand-offwhite: #EFF0EE;--brand-surface: #1B1D23;--brand-raised: #262930;--on-brand: #F1EFEA;--on-brand-muted: #A9A7A2;--brand-line: rgba(241, 239, 234, 0.12);--brand-line-strong: rgba(241, 239, 234, 0.24);--brand-control-border: #7A7D86;--attention: #FFAA75;--hover-accent: var(--attention);--on-attention: #000C3F;--attention-soft: #3A2A20;--attention-ink: #FFB98C;--attention-mark: #FFAA75;--done: #C5D86D;--on-done: #000C3F;--done-soft: #262C19;--done-ink: #D2E28B;--done-mark: #C5D86D;--danger: #FF8C7D;--danger-hover: #FFA699;--on-danger: #1A0A08;--danger-soft: #3A1D1B;--danger-ink: #FF9E91;--neutral-soft: #2A2C31;--focus-ring: #F1EFEA;--skeleton: #24262A;--skeleton-highlight: #2E3035;--avatar-bg: #2E3035;--tooltip-bg: #F1EFEA;--tooltip-ink: #16171A;--appicon-plate: #14205E;--appicon-edge: #2F3B7A;--appicon-shape: #EFF0EE;--appicon-accent: #FFAA75;--appicon-plate-muted: #2A2C31;--appicon-shape-muted: #9C9A95;--appicon-accent-muted: #5C5D61;--chart-1: #6A82DE;--chart-2: #16A091;--chart-3: #9A6FE0;--chart-4: #DA5F8A;--chart-5: #B08A2E;--chart-compare: #7A7D84;--chart-now: #FFAA75;--chart-grid: #2A2C30;--chart-axis: #383B40;--chart-label: #9C9A95;--chart-seq-1: #222739;--chart-seq-2: #2F3B69;--chart-seq-3: #4A5EA6;--chart-seq-4: #7A90DF;--chart-seq-5: #B7C4F3;--shadow-1: 0 1px 2px rgba(0, 0, 0, 0.5);--shadow-2: 0 1px 2px rgba(0, 0, 0, 0.5), 0 16px 32px -12px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.06);--shadow-tile-hover: 0 0 0 1px rgba(255, 255, 255, 0.1), 0 22px 40px -12px rgba(0, 0, 0, 0.85);--shadow-3: 0 2px 4px rgba(0, 0, 0, 0.4), 0 24px 48px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.06); color-scheme: dark; }
-:root {--space-0: 0px;--space-0-5: 2px;--space-1: 4px;--space-2: 8px;--space-3: 12px;--space-4: 16px;--space-5: 20px;--space-6: 24px;--space-8: 32px;--space-10: 40px;--space-12: 48px;--space-16: 64px;--radius-xs: 4px;--radius-sm: 6px;--radius-md: 8px;--radius-lg: 12px;--radius-xl: 18px;--radius-full: 9999px;--border-width: 1px;--border-width-control: 1.5px;--focus-ring-width: 2px;--focus-ring-offset: 2px;--marker-width: 3px;--control-sm: 28px;--control-md: 36px;--control-lg: 44px;--touch-target: 44px;--icon-sm: 16px;--icon-md: 20px;--icon-lg: 24px;--row-height: 44px;--row-height-dense: 36px;--spine-width: 232px;--spine-width-collapsed: 64px;--contextbar-height: 56px;--bottomnav-height: 64px;--drawer-width: 480px;--dialog-width: 480px;--dialog-width-wide: 720px;--app-tile-width: 168px;--popover-width: 300px;--panel-width: 400px;--datepicker-width: 296px;--timepicker-width: 160px;--menu-min-width: 200px;--menu-max-width: 360px;--cmdk-width: 640px;--popover-max-height: 320px;--panel-max-height: 560px;--search-width: 280px;--app-tile-min-height: 156px;--dock-icon: 64px;--dock-icon-compact: 48px;--dock-icon-phone: 56px;--dock-card-w: 264px;--dot-size: 6px;--breakpoint-phone: 360px;--breakpoint-tablet: 768px;--breakpoint-laptop: 1024px;--breakpoint-desktop: 1280px;--breakpoint-wide: 1920px;--content-max-width: 1440px;--drawer-width-tablet: 560px;--schedule-hour-height: 64px;--schedule-gutter: 56px;--chart-bar-max: 24px;--chart-line-width: 2px;--chart-marker: 8px;--chart-gap: 2px;--chart-height: 240px;--stat-value-size: 28px;--duration-instant: 80ms;--duration-intent: 120ms;--duration-fast: 140ms;--duration-base: 220ms;--duration-slow: 360ms;--duration-playful: 280ms;--duration-morph: 340ms;--duration-launch: 420ms;--ease-standard: cubic-bezier(0.2, 0, 0, 1);--ease-exit: cubic-bezier(0.4, 0, 1, 1);--ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);--z-sticky: 10;--z-shell: 20;--z-overlay: 40;--z-popover: 50;--z-toast: 60;--font-sans: "DM Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;--font-display: Syne, "DM Sans", ui-sans-serif, system-ui, sans-serif;}
-@font-face{font-family:'DM Sans';src:url('fonts/DMSans-Variable.woff2') format('woff2');font-weight:100 1000;font-style:normal;font-display:swap}
-@font-face{font-family:'DM Sans';src:url('fonts/DMSans-Italic-Variable.woff2') format('woff2');font-weight:100 1000;font-style:italic;font-display:swap}
-@font-face{font-family:'Syne';src:url('fonts/Syne-Variable.woff2') format('woff2');font-weight:400 800;font-style:normal;font-display:swap}
-.display-xl{font-family:var(--font-display);font-size:56px;line-height:58px;font-weight:700;letter-spacing:-0.035em;}
-.display-hub{font-family:var(--font-display);font-size:40px;line-height:46px;font-weight:700;letter-spacing:-0.03em;}
-.display-l{font-family:var(--font-display);font-size:30px;line-height:36px;font-weight:700;letter-spacing:-0.015em;}
-.display-m{font-family:var(--font-display);font-size:22px;line-height:28px;font-weight:600;letter-spacing:-0.01em;}
-.lead{font-family:var(--font-sans);font-size:18px;line-height:34px;font-weight:400;}
-.eyebrow{font-family:var(--font-sans);font-size:12px;line-height:16px;font-weight:600;letter-spacing:0.08em;}
-.title{font-family:var(--font-sans);font-size:20px;line-height:28px;font-weight:600;letter-spacing:-0.005em;}
-.heading{font-family:var(--font-sans);font-size:16px;line-height:24px;font-weight:600;}
-.subheading{font-family:var(--font-sans);font-size:14px;line-height:20px;font-weight:600;}
-.body{font-family:var(--font-sans);font-size:14px;line-height:20px;font-weight:400;}
-.body-strong{font-family:var(--font-sans);font-size:14px;line-height:20px;font-weight:500;}
-.body-small{font-family:var(--font-sans);font-size:13px;line-height:18px;font-weight:400;}
-.caption{font-family:var(--font-sans);font-size:12px;line-height:16px;font-weight:500;}
-.numeric{font-family:var(--font-sans);font-size:28px;line-height:32px;font-weight:600;letter-spacing:-0.01em;}
+/* Ventora — generated from tokens.json */
+:root, [data-theme="light"] {
+  --canvas: #f2f3f0; /* App background behind the Sheet; Hub page background; Spine and ContextBar ground. Brand off-white in light, near-black neutral in dark. Light lifted from #EFF0EE to #F2F3F0 in direction B (25 Oct 2026) so white sheets and the navy brand band separate cleanly. */
+  --sheet: #ffffff; /* The working surface (Sheet) with its hairline edge: tables, lists, forms, tiles, inputs. */
+  --raised: #ffffff; /* Floating layers: menus, popovers, dialogs, drawers, toasts, command palette. Lighter than sheet in dark so lift reads without heavy shadow. */
+  --sunken: #f7f7f5; /* Recessed areas on a Sheet: table header row, read-only and disabled fields, Kbd, segmented-control track. */
+  --selected: #e8eaf1; /* Selected rows, selected list options, the current Spine item, the range inside a date range. Neutral in both themes. */
+  --state-hover: rgba(40, 40, 25, 0.05); /* Neutral overlay painted on any interactive surface on hover (rows, quiet buttons, menu items). */
+  --state-pressed: rgba(40, 40, 25, 0.09); /* Neutral overlay painted on any interactive surface while pressed. */
+  --scrim: rgba(0, 12, 63, 0.32); /* Backdrop behind Dialog, Drawer and CommandPalette. */
+  --ink: #000c3f; /* Primary text and icons on canvas, sheet, raised, sunken and selected. Brand navy in light, warm off-white in dark. */
+  --ink-secondary: #3d4566; /* Secondary text: descriptions, table cells that are not the row's name, on every surface. Grey-navy in light, neutral warm grey in dark. */
+  --ink-muted: #5e6680; /* Meta text, helper text, placeholders, timestamps, inactive tab labels, on every surface. */
+  --ink-disabled: #9ca4b4; /* Disabled labels and icons only (exempt from contrast by WCAG). */
+  --line: #e4e5e2; /* Hairlines: dividers, table row rules, Sheet and card edges. Structure through lines, not boxes; never a control's only boundary. */
+  --line-strong: #cfd2cc; /* Section dividers, table header bottom rule, Kbd border, segmented-control track edge. */
+  --control-border: #80879a; /* Boundary of inputs, selects, checkboxes, radios, toggles, secondary buttons. Holds 3:1 on sheet, canvas and raised in both themes. */
+  --control-border-hover: #4f5672; /* Control boundary on hover. */
+  --primary: #000c3f; /* Primary action fill (one per view), checked checkbox/radio/toggle, selected day. Navy in light; warm off-white in dark, so it stays the strongest mark without a navy background. */
+  --primary-hover: #17225a; /* Primary fill on hover. */
+  --primary-pressed: #000726; /* Primary fill while pressed. */
+  --on-primary: #ffffff; /* Text and icons on a primary fill. */
+  --brand-navy: #000c3f; /* Fixed brand navy in both themes: marketing moments only. In dark it is never a surface; app icons use the appicon-* tokens. */
+  --brand-offwhite: #eff0ee; /* Fixed brand off-white in both themes: the logo plate in dark, white shapes on app icons. */
+  --brand-surface: #000c3f; /* Brand zone ground — Hub only: the launcher's bar and greeting band, the sign-in brand panel. Navy in light; a cool near-black in dark (navy is never a surface in dark). Never inside apps. Use through the BrandZone component. */
+  --brand-raised: #0d1a52; /* Chips and controls sitting on brand-surface (the day's sentence chips, the search field in the bar). */
+  --on-brand: #f1efea; /* Text and icons on brand-surface: 16.25:1 on navy, 14.66:1 in dark; 14.20:1 on brand-raised. */
+  --on-brand-muted: #b5bad0; /* Secondary text on brand-surface (the date eyebrow, the day's sentence, the © line): 9.69:1 light, 7.01:1 dark. */
+  --brand-line: rgba(241, 239, 234, 0.16); /* Hairlines and chip edges on brand-surface. Decoration only. */
+  --brand-line-strong: rgba(241, 239, 234, 0.32); /* The chevron pattern on the brand band and panel; hovered chip edges. Decoration only. */
+  --brand-control-border: #6e7596; /* Borders of controls on brand-surface (the bar's search field): 4.13:1 light, 4.10:1 dark. */
+  --attention: #ffaa75; /* Peach fill = now / needs your attention / you are here: the 'now' block, unread count, usage warning fill, active-item marker. Always with on-attention text. */
+  --hover-accent: var(--attention); /* The 3px peach line under the AppDock card while it is hovered or focused — 'you are here', never at rest. Decoration: lift and shadow carry the hover, the focus ring carries focus (1.87:1 on white is acceptable for that reason). */
+  --on-attention: #000c3f; /* Text and icons on an attention fill. */
+  --attention-soft: #ffede1; /* Tinted ground behind attention-ink text: attention pills, 'needs your attention' rows, warning banners. */
+  --attention-ink: #9a4511; /* Text and small icons that mean attention, on sheet, canvas, raised and attention-soft. */
+  --attention-mark: #c95f1c; /* Thin marks that mean now / you are here: the calendar now-line, Spine active bar, StatusDot 'now'. 3:1 on sheet and canvas. */
+  --done: #c5d86d; /* Lime fill = done / confirmed: completed step, confirmed check fill in progress steps. Always with on-done text. */
+  --on-done: #000c3f; /* Text and icons on a done fill. */
+  --done-soft: #eff4d6; /* Tinted ground behind done-ink text: confirmed pills, success toasts. */
+  --done-ink: #46580b; /* Text and small icons that mean done / confirmed, on sheet, canvas, raised and done-soft. */
+  --done-mark: #677f10; /* Thin marks that mean done: StatusDot 'confirmed', completed progress fill. 3:1 on sheet and canvas. */
+  --danger: #b3261e; /* Destructive actions and errors: destructive button fill, error border on fields, error text. */
+  --danger-hover: #911a11; /* Destructive fill on hover. */
+  --on-danger: #ffffff; /* Text and icons on a danger fill. */
+  --danger-soft: #fbe9e7; /* Tinted ground behind danger-ink text: error banners, failed pills. */
+  --danger-ink: #a61f15; /* Error messages and danger icons, on sheet, canvas, raised and danger-soft. */
+  --neutral-soft: #e8eaf1; /* Ground of neutral pills and badges (draft, inactive, the four access states). */
+  --focus-ring: #000c3f; /* Keyboard focus: 2px solid ring, 2px offset in the ground colour. 3:1 on every surface in both themes. */
+  --skeleton: #e9eae7; /* Skeleton blocks while loading. */
+  --skeleton-highlight: #f4f4f2; /* Moving highlight of the skeleton shimmer. */
+  --avatar-bg: #e8eaf1; /* Avatar initials ground; ink on it. */
+  --tooltip-bg: #000c3f; /* Tooltip ground (inverted). */
+  --tooltip-ink: #ffffff; /* Text on tooltip-bg. */
+  --appicon-plate: #000c3f; /* App-icon plate — the one place navy stays in dark: brand navy in light, a slightly lifted navy in dark so it reads on near-black. */
+  --appicon-edge: rgba(0, 12, 63, 0); /* Decorative hairline around the app-icon plate in dark; the shapes carry the meaning. */
+  --appicon-shape: #eff0ee; /* The white shapes of an app icon (brand off-white): 16:1 on the plate in light, 13:1 in dark. */
+  --appicon-accent: #ffaa75; /* The single peach part of each app icon. */
+  --appicon-plate-muted: #e8eaf1; /* Plate of an inactive app icon (no access). Neutral grey in both themes. */
+  --appicon-shape-muted: #5e6680; /* Shapes of an inactive app icon. */
+  --appicon-accent-muted: #9ca4b4; /* The peach part of an inactive app icon, turned grey so no inactive app signals attention. */
+  --chart-1: #2f4aa6; /* Categorical series 1 (blue). Assign in this fixed order, never cycled; a 6th series folds into 'Altele'. Validated for colour-blind separation (adjacent ΔE ≥ 10) and ≥ 3:1 on sheet and canvas in both themes. Never peach or lime: those keep their meaning. */
+  --chart-2: #008a7e; /* Categorical series 2 (teal). Assign in this fixed order, never cycled; a 6th series folds into 'Altele'. Validated for colour-blind separation (adjacent ΔE ≥ 10) and ≥ 3:1 on sheet and canvas in both themes. Never peach or lime: those keep their meaning. */
+  --chart-3: #8a55c7; /* Categorical series 3 (violet). Assign in this fixed order, never cycled; a 6th series folds into 'Altele'. Validated for colour-blind separation (adjacent ΔE ≥ 10) and ≥ 3:1 on sheet and canvas in both themes. Never peach or lime: those keep their meaning. */
+  --chart-4: #c24a7c; /* Categorical series 4 (rose). Assign in this fixed order, never cycled; a 6th series folds into 'Altele'. Validated for colour-blind separation (adjacent ΔE ≥ 10) and ≥ 3:1 on sheet and canvas in both themes. Never peach or lime: those keep their meaning. */
+  --chart-5: #8c6d1e; /* Categorical series 5 (ochre). Assign in this fixed order, never cycled; a 6th series folds into 'Altele'. Validated for colour-blind separation (adjacent ΔE ≥ 10) and ≥ 3:1 on sheet and canvas in both themes. Never peach or lime: those keep their meaning. */
+  --chart-compare: #7c849a; /* The comparison series: previous period, last year, average. Always grey, always secondary to the series it is compared with; 3:1 on sheet. */
+  --chart-now: #c95f1c; /* The current, still-running period in a time series (this month's bar, today's point). Peach keeps its meaning: now. */
+  --chart-grid: #e4e5e2; /* Gridlines: 1px, solid, recessive. */
+  --chart-axis: #cfd2cc; /* The baseline (zero line) of bars and the x axis. */
+  --chart-label: #5e6680; /* Axis ticks and secondary chart text. Values and legends use ink / ink-secondary, never the series colour. */
+  --chart-seq-1: #dce1f2; /* Sequential ramp (one hue, navy), step 1 = near zero. Heat grids, intensity. */
+  --chart-seq-2: #aeb9e2; /* Sequential ramp step 2. */
+  --chart-seq-3: #7487c8; /* Sequential ramp step 3. */
+  --chart-seq-4: #3e53a0; /* Sequential ramp step 4. */
+  --chart-seq-5: #16266a; /* Sequential ramp step 5 = the most. */
+  --shadow-1: 0 1px 2px rgba(0, 12, 63, 0.05); /* Hovered app tiles, sticky table header when scrolled. */
+  --shadow-2: 0 1px 2px rgba(0, 12, 63, 0.08), 0 16px 32px -12px rgba(0, 12, 63, 0.22); /* Menus, popovers, tooltips, toasts, date pickers. Also the AppDock sheet that sits over the brand band (direction B: deeper, tighter shadow). */
+  --shadow-tile-hover: 0 2px 4px rgba(0, 12, 63, 0.08), 0 22px 40px -12px rgba(0, 12, 63, 0.28); /* The AppDock card opened on hover, floating above the row. */
+  --shadow-3: 0 2px 4px rgba(0, 12, 63, 0.06), 0 24px 48px rgba(0, 12, 63, 0.16); /* Dialogs, drawers, command palette. */
+}
+[data-theme="dark"] {
+  --canvas: #0e0f11;
+  --sheet: #16171a;
+  --raised: #1e2024;
+  --sunken: #121315;
+  --selected: #2a2c31;
+  --state-hover: rgba(255, 255, 255, 0.06);
+  --state-pressed: rgba(255, 255, 255, 0.11);
+  --scrim: rgba(0, 0, 0, 0.62);
+  --ink: #f1efea;
+  --ink-secondary: #c6c4bf;
+  --ink-muted: #9c9a95;
+  --ink-disabled: #5c5d61;
+  --line: #2a2c30;
+  --line-strong: #383b40;
+  --control-border: #74777d;
+  --control-border-hover: #9a9da3;
+  --primary: #f1efea;
+  --primary-hover: #ffffff;
+  --primary-pressed: #d8d6d0;
+  --on-primary: #16171a;
+  --brand-navy: #000c3f;
+  --brand-offwhite: #eff0ee;
+  --brand-surface: #1b1d23;
+  --brand-raised: #262930;
+  --on-brand: #f1efea;
+  --on-brand-muted: #a9a7a2;
+  --brand-line: rgba(241, 239, 234, 0.12);
+  --brand-line-strong: rgba(241, 239, 234, 0.24);
+  --brand-control-border: #7a7d86;
+  --attention: #ffaa75;
+  --hover-accent: var(--attention);
+  --on-attention: #000c3f;
+  --attention-soft: #3a2a20;
+  --attention-ink: #ffb98c;
+  --attention-mark: #ffaa75;
+  --done: #c5d86d;
+  --on-done: #000c3f;
+  --done-soft: #262c19;
+  --done-ink: #d2e28b;
+  --done-mark: #c5d86d;
+  --danger: #ff8c7d;
+  --danger-hover: #ffa699;
+  --on-danger: #1a0a08;
+  --danger-soft: #3a1d1b;
+  --danger-ink: #ff9e91;
+  --neutral-soft: #2a2c31;
+  --focus-ring: #f1efea;
+  --skeleton: #24262a;
+  --skeleton-highlight: #2e3035;
+  --avatar-bg: #2e3035;
+  --tooltip-bg: #f1efea;
+  --tooltip-ink: #16171a;
+  --appicon-plate: #14205e;
+  --appicon-edge: #2f3b7a;
+  --appicon-shape: #eff0ee;
+  --appicon-accent: #ffaa75;
+  --appicon-plate-muted: #2a2c31;
+  --appicon-shape-muted: #9c9a95;
+  --appicon-accent-muted: #5c5d61;
+  --chart-1: #6a82de;
+  --chart-2: #16a091;
+  --chart-3: #9a6fe0;
+  --chart-4: #da5f8a;
+  --chart-5: #b08a2e;
+  --chart-compare: #7a7d84;
+  --chart-now: #ffaa75;
+  --chart-grid: #2a2c30;
+  --chart-axis: #383b40;
+  --chart-label: #9c9a95;
+  --chart-seq-1: #222739;
+  --chart-seq-2: #2f3b69;
+  --chart-seq-3: #4a5ea6;
+  --chart-seq-4: #7a90df;
+  --chart-seq-5: #b7c4f3;
+  --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.5);
+  --shadow-2: 0 1px 2px rgba(0, 0, 0, 0.5), 0 16px 32px -12px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.06);
+  --shadow-tile-hover: 0 0 0 1px rgba(255, 255, 255, 0.1), 0 22px 40px -12px rgba(0, 0, 0, 0.85);
+  --shadow-3: 0 2px 4px rgba(0, 0, 0, 0.4), 0 24px 48px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.06);
+}
+:root {
+  --space-0: 0px; /* No gap. */
+  --space-0-5: 2px; /* Icon-to-text nudges, focus-ring offset. */
+  --space-1: 4px; /* Tight gaps: pill padding, icon gaps inside controls. */
+  --space-2: 8px; /* Gap between related controls; table cell vertical padding. */
+  --space-3: 12px; /* Control horizontal padding; table cell horizontal padding. */
+  --space-4: 16px; /* Field-to-field gap; card padding; mobile page gutter. */
+  --space-5: 20px; /* Sheet inner padding on tablet. */
+  --space-6: 24px; /* Sheet inner padding on desktop; gap between sections in a form. */
+  --space-8: 32px; /* Gap between major page sections. */
+  --space-10: 40px; /* Empty-state padding; Hub section spacing. */
+  --space-12: 48px; /* Sign-in card padding; launcher top spacing. */
+  --space-16: 64px; /* Hero spacing on onboarding screens. */
+  --radius-xs: 4px; /* Checkbox, Kbd, small badges. */
+  --radius-sm: 6px; /* Buttons, inputs, selects, menu items, pills' inner chips. */
+  --radius-md: 8px; /* Menus, popovers, toasts, cards inside a Sheet. */
+  --radius-lg: 12px; /* Sheet, Dialog, Drawer edge, CommandPalette. */
+  --radius-xl: 18px; /* App tiles, the AppDock sheet and cards, the Portal card, app-icon plates. 18px since direction B (was 16px). */
+  --radius-full: 9999px; /* Pills, avatars, toggles, status dots. */
+  --border-width: 1px; /* Hairlines, Sheet and card edges, inputs, secondary buttons. */
+  --border-width-control: 1.5px; /* Checkbox, radio, toggle and upload-zone strokes. */
+  --focus-ring-width: 2px; /* Keyboard focus ring thickness. */
+  --focus-ring-offset: 2px; /* Gap between a control and its focus ring. */
+  --marker-width: 3px; /* Location markers: Spine active bar, bottom-nav active bar, active table row. */
+  --control-sm: 28px; /* Small controls inside dense tables and toolbars (desktop only). */
+  --control-md: 36px; /* Default height of buttons, inputs, selects, segmented controls. */
+  --control-lg: 44px; /* Large controls; every control on mobile / coarse pointers. */
+  --touch-target: 44px; /* Minimum hit area on touch devices. */
+  --icon-sm: 16px; /* Icons inside controls and table cells. */
+  --icon-md: 20px; /* Icons in Spine, ContextBar and empty states' small marks. */
+  --icon-lg: 24px; /* App icons in Spine and bottom nav. */
+  --row-height: 44px; /* Default DataTable row height. */
+  --row-height-dense: 36px; /* Dense DataTable row height. */
+  --spine-width: 232px; /* Expanded Spine width. */
+  --spine-width-collapsed: 64px; /* Collapsed Spine (icons only). */
+  --contextbar-height: 56px; /* ContextBar height. */
+  --bottomnav-height: 64px; /* Mobile bottom navigation height (plus safe area). */
+  --drawer-width: 480px; /* Drawer width on desktop; full screen below 640px. */
+  --dialog-width: 480px; /* Default Dialog width. */
+  --dialog-width-wide: 720px; /* Wide Dialog (forms with two columns). */
+  --app-tile-width: 168px; /* Minimum AppTile width in the launcher grid. */
+  --popover-width: 300px; /* Business switcher and other list popovers. */
+  --panel-width: 400px; /* Notifications panel and toast stack width. */
+  --datepicker-width: 296px; /* Calendar popover width (7 day columns of control-md). */
+  --timepicker-width: 160px; /* Time-slot list popover width. */
+  --menu-min-width: 200px; /* Minimum width of menus. */
+  --menu-max-width: 360px; /* Maximum width of menus. */
+  --cmdk-width: 640px; /* Command palette width. */
+  --popover-max-height: 320px; /* Max height of listboxes and menus before they scroll. */
+  --panel-max-height: 560px; /* Max height of the notifications panel. */
+  --search-width: 280px; /* ContextBar search field width on desktop. */
+  --app-tile-min-height: 156px; /* Minimum AppTile height so tiles align in the grid. */
+  --dock-icon: 64px; /* App icons in the launcher's AppDock row (desktop and tablet). */
+  --dock-icon-compact: 48px; /* The app icon inside the AppDock card opened on hover. */
+  --dock-icon-phone: 56px; /* App icons in the launcher's icon grid on phones. */
+  --dock-card-w: 264px; /* Width of the AppDock card an icon opens into on hover / focus. */
+  --dot-size: 6px; /* Dots inside pills, unread dots, avatar status. */
+  --breakpoint-phone: 360px; /* Smallest supported width (phones 360–430px). Below breakpoint-tablet: bottom navigation, full-screen drawers, one-column forms, tables as lists. */
+  --breakpoint-tablet: 768px; /* Tablet portrait (768–1023px): its own layout — Spine as an icon rail, no bottom nav, drawers as side sheets, two-column forms only where fields are short, search as an icon. */
+  --breakpoint-laptop: 1024px; /* Tablet landscape and small laptops (1024–1279px): expanded Spine, full ContextBar search, 3-column tile grids. */
+  --breakpoint-desktop: 1280px; /* Desktop (1280–1919px): the reference layout; 4-column tile grids, two-pane screens (list + form). */
+  --breakpoint-wide: 1920px; /* Wide screens (1920px+): nothing grows past content-max-width; the canvas takes the extra space. */
+  --content-max-width: 1440px; /* Maximum width of page content inside the shell (PageHeader, Sheets, tables), centred on wide screens. */
+  --drawer-width-tablet: 560px; /* Drawer width on tablet portrait — a side sheet, not full screen; leaves the list visible beside it. */
+  --schedule-hour-height: 64px; /* Height of one hour in the calendar grid (Schedule): a 15-minute slot is 16px, a 30-minute appointment shows its time and title. */
+  --schedule-gutter: 56px; /* Width of the hours column in the calendar grid. */
+  --chart-bar-max: 24px; /* Maximum bar/column thickness; leftover band space stays air. */
+  --chart-line-width: 2px; /* Series line thickness (round caps and joins). */
+  --chart-marker: 8px; /* Point and end-dot diameter, with a 2px ring in the surface colour. */
+  --chart-gap: 2px; /* Surface-coloured gap between touching bars and stacked segments. */
+  --chart-height: 240px; /* Default plot height of a dashboard chart; 200px on phones. */
+  --stat-value-size: 28px; /* Value size in a Stat tile (DM Sans 600, tabular figures). */
+  --duration-instant: 80ms; /* Hover and pressed colour changes. */
+  --duration-intent: 120ms; /* Hover intent: how long the pointer rests on an AppDock icon before its card opens (it closes at once). */
+  --duration-fast: 140ms; /* Menus, tooltips, toggles, checkbox ticks. */
+  --duration-base: 220ms; /* Drawers, dialogs, toasts entering. */
+  --duration-slow: 360ms; /* Skeleton shimmer step; the AppDock icons coming in on load (40ms apart). */
+  --duration-playful: 280ms; /* Small springy moves in the Hub only: the peach hover line, the dock badge. */
+  --duration-morph: 340ms; /* An AppDock icon opening into its card and closing back (Hub only). */
+  --duration-launch: 420ms; /* AppLaunch: the app's surface growing out of the tapped card, on ease-standard; the whole open takes about 850ms. */
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1); /* Default for anything that moves or resizes. */
+  --ease-exit: cubic-bezier(0.4, 0, 1, 1); /* Elements leaving the screen. */
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1); /* A small rebound — Hub only (AppDock entrance and hover card, the icon swelling when tapped). Never inside apps. */
+  --z-sticky: 10; /* Sticky table headers, bulk bar. */
+  --z-shell: 20; /* ContextBar, Spine, bottom nav. */
+  --z-overlay: 40; /* Drawer and Dialog with their scrim. */
+  --z-popover: 50; /* Menus, selects, date pickers, tooltips (above overlays). */
+  --z-toast: 60; /* Toasts, always on top. */
+  --font-sans: "DM Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-display: Syne, "DM Sans", ui-sans-serif, system-ui, sans-serif;
+  --text-display-xl: 700 56px/58px var(--font-display); /* The statement on the sign-in brand panel; onboarding hero. One per screen. Was 40/44 before direction B. */
+  --text-display-hub: 700 40px/46px var(--font-display); /* Hub only: the greeting on the launcher's brand band and the sign-in title. 32/36 on phones. Inside apps the greeting stays display-l (R-B7). */
+  --text-display-l: 700 30px/36px var(--font-display); /* The greeting on each app's Today screen. In the Hub (launcher, sign-in) the greeting and title use display-hub. */
+  --text-display-m: 600 22px/28px var(--font-display); /* Brand-led section titles on Hub screens (launcher sections, empty states). Never inside dense app screens. */
+  --text-lead: 400 18px/34px var(--font-sans); /* The day's sentence under the launcher greeting (its links are chips). 15/30 on phones. */
+  --text-eyebrow: 600 12px/16px var(--font-sans); /* The date and business above the launcher greeting, set in capitals (text-transform), on-brand-muted on the band. */
+  --text-title: 600 20px/28px var(--font-sans); /* PageHeader title and Dialog/Drawer titles. */
+  --text-heading: 600 16px/24px var(--font-sans); /* Section titles inside a Sheet, panel titles. */
+  --text-subheading: 600 14px/20px var(--font-sans); /* Group labels, card titles, table column headers. */
+  --text-body: 400 14px/20px var(--font-sans); /* Default text everywhere: table cells, form values, paragraphs. */
+  --text-body-strong: 500 14px/20px var(--font-sans); /* Emphasis inside body: the row's name, button labels, selected items. */
+  --text-body-small: 400 13px/18px var(--font-sans); /* Secondary lines under a name, meta rows, dense lists. */
+  --text-caption: 500 12px/16px var(--font-sans); /* Field labels in dense forms, helper and error text, pills, badges, tooltips. */
+  --text-numeric: 600 28px/32px var(--font-sans); /* Key figures (KPIs, usage totals). Always tabular figures. */
+}
+.display-xl {
+  font-family: var(--font-display);
+  font-size: 56px;
+  line-height: 58px;
+  font-weight: 700;
+  letter-spacing: -0.035em;
+}
+.display-hub {
+  font-family: var(--font-display);
+  font-size: 40px;
+  line-height: 46px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+.display-l {
+  font-family: var(--font-display);
+  font-size: 30px;
+  line-height: 36px;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+}
+.display-m {
+  font-family: var(--font-display);
+  font-size: 22px;
+  line-height: 28px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+.lead {
+  font-family: var(--font-sans);
+  font-size: 18px;
+  line-height: 34px;
+  font-weight: 400;
+  letter-spacing: 0;
+}
+.eyebrow {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+}
+.title {
+  font-family: var(--font-sans);
+  font-size: 20px;
+  line-height: 28px;
+  font-weight: 600;
+  letter-spacing: -0.005em;
+}
+.heading {
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: 600;
+  letter-spacing: 0;
+}
+.subheading {
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 600;
+  letter-spacing: 0;
+}
+.body {
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 400;
+  letter-spacing: 0;
+}
+.body-strong {
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 500;
+  letter-spacing: 0;
+}
+.body-small {
+  font-family: var(--font-sans);
+  font-size: 13px;
+  line-height: 18px;
+  font-weight: 400;
+  letter-spacing: 0;
+}
+.caption {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 500;
+  letter-spacing: 0;
+}
+.numeric {
+  font-family: var(--font-sans);
+  font-size: 28px;
+  line-height: 32px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+@font-face {
+  font-family: "DM Sans";
+  src: url("fonts/DMSans-Variable.woff2") format("woff2");
+  font-weight: 100 1000;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "DM Sans";
+  src: url("fonts/DMSans-Italic-Variable.woff2") format("woff2");
+  font-weight: 100 1000;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Syne";
+  src: url("fonts/Syne-Variable.woff2") format("woff2");
+  font-weight: 400 800;
+  font-style: normal;
+  font-display: swap;
+}

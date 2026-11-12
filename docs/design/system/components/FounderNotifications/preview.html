@@ -1,0 +1,976 @@
+<!-- @dsCard group="Founder" height=15086 width=2620 page -->
+<!doctype html>
+<html lang="ro">
+<head><meta charset="utf-8"><title>FounderNotifications — Ventora Systems</title>
+<style>
+html,body{min-height:100%}
+.d{display:flex;flex-direction:column;gap:var(--space-4);padding:var(--space-4);box-sizing:border-box}
+.d0{display:flex;flex-direction:column;gap:var(--space-4);min-width:0}
+.r{display:flex;flex-wrap:wrap;gap:var(--space-3);align-items:center}
+.l{color:var(--ink-muted);width:calc(var(--space-16) + var(--space-6));flex:none}
+.g2{display:grid;grid-template-columns:repeat(auto-fit,minmax(var(--search-width),1fr));gap:var(--space-4) var(--space-6);align-items:start}
+.frame{border:var(--border-width) solid var(--line);border-radius:var(--radius-md);background:var(--sheet);box-sizing:border-box}
+.phone{width:390px;height:600px;flex:none;border:var(--border-width) solid var(--line-strong);border-radius:var(--radius-xl);overflow:hidden;box-sizing:border-box}
+.tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(var(--app-tile-width),1fr));gap:var(--space-4)}
+.icons{display:grid;grid-template-columns:repeat(auto-fill,minmax(calc(var(--app-tile-width) - var(--space-12)),1fr));gap:var(--space-2)}
+.ic{display:flex;align-items:center;gap:var(--space-2);color:var(--ink);padding:var(--space-1);min-width:0}
+.ic .caption{color:var(--ink-muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:0}
+.panel{display:flex;flex-direction:column;gap:var(--space-3);padding:var(--space-6);background:var(--sheet);color:var(--ink)}
+.lab{color:var(--ink-muted);margin-top:var(--space-2)}
+.fam{display:grid;grid-template-columns:repeat(5,1fr);gap:var(--space-4) var(--space-2)}
+.famcell,.sz,.papp{display:flex;flex-direction:column;align-items:center;gap:var(--space-1);color:var(--ink-secondary)}
+.gcell{display:flex;flex-direction:column;align-items:center;gap:var(--space-2);color:var(--ink-secondary)}
+.gwrap{position:relative;width:240px;height:240px}
+.gover{position:absolute;inset:0}
+.gwrap--sm{width:64px;height:64px;display:inline-block}
+.gwrap--sm .key{stroke-width:.5}
+.gl{stroke:var(--attention);stroke-width:.06;opacity:.55}
+.gl--major{stroke-width:.12;opacity:.9}
+.key{fill:none;stroke:var(--done);stroke-width:.18}
+.key--plate{stroke:var(--attention);stroke-dasharray:.6 .4}
+.key--diag{stroke-dasharray:.5 .5}
+.rules{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--space-6);color:var(--ink)}
+.rules .body-small{color:var(--ink-muted);margin-top:var(--space-1)}
+.ctx{display:flex;flex-direction:column;background:var(--canvas);color:var(--ink);padding:var(--space-4);gap:var(--space-4)}
+.ctxrow{display:flex;gap:var(--space-4);align-items:flex-start}
+.launch{flex:1;min-width:0;background:var(--canvas);padding:var(--space-4) var(--space-6);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg)}
+.tiles3{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--space-3)}
+.spinebox{height:250px;display:flex;border:var(--border-width) solid var(--line);border-radius:var(--radius-lg);overflow:hidden;background:var(--canvas)}
+.phone2{width:300px;border:var(--border-width) solid var(--line-strong);border-radius:var(--radius-xl);background:var(--canvas);padding-bottom:var(--space-4)}
+.pgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--space-4) var(--space-1);padding:0 var(--space-3)}
+.browser{display:flex;gap:var(--space-1);background:var(--sunken);padding:var(--space-2) var(--space-2) 0;border-radius:var(--radius-md) var(--radius-md) 0 0;border:var(--border-width) solid var(--line)}
+.btab{display:inline-flex;align-items:center;gap:var(--space-2);padding:var(--space-2) var(--space-3);border-radius:var(--radius-sm) var(--radius-sm) 0 0;color:var(--ink-secondary);min-width:160px}
+.btab.on{background:var(--sheet);color:var(--ink)}
+.muted{color:var(--ink-muted)}.center{text-align:center}
+.scr{display:flex;flex-direction:column;gap:var(--space-3);padding:var(--space-6);background:var(--sheet);color:var(--ink)}
+.scr-row{display:flex;gap:var(--space-6);align-items:flex-start;margin-top:var(--space-3)}
+.scr-lab{color:var(--ink-muted);margin-bottom:var(--space-2)}
+.scr-d,.scr-t,.scr-m{position:relative;overflow:hidden;border:var(--border-width) solid var(--line-strong);background:var(--canvas);color:var(--ink);box-sizing:border-box}
+.scr-d{width:1280px;border-radius:var(--radius-lg)}
+.scr-m{width:390px;border-radius:var(--radius-xl)}
+.scr-t{width:820px;border-radius:var(--radius-xl)}
+.wrap.tablet .tiles4{grid-template-columns:repeat(3,1fr)}
+.wrap.tablet{padding:var(--space-6) var(--space-5)}
+.sup.tablet{grid-template-columns:1fr}
+.paymethod{display:flex;flex-direction:column;gap:var(--space-2);margin-top:var(--space-4);padding-top:var(--space-4);border-top:var(--border-width) solid var(--line);max-width:480px}
+.modal-demo{position:absolute;inset:0;background:var(--scrim);display:flex;align-items:center;justify-content:center;padding:var(--space-6);z-index:var(--z-overlay)}
+.modal-demo.mobile{align-items:flex-end;padding:0}
+.modal-demo .v-dialog{max-height:none}
+.dlggrid{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--space-6);align-items:start}
+.dlggrid .v-dialog{width:auto}
+.today{display:flex;flex-direction:column;gap:var(--space-6)}
+.today.mobile{gap:var(--space-4)}.today.mobile .greet{padding:0 var(--space-4)}
+.today-grid{display:grid;grid-template-columns:minmax(0,2fr) minmax(320px,1fr);gap:var(--space-6);align-items:start}
+.today.tablet .today-grid,.today.mobile .today-grid{grid-template-columns:1fr}
+.today.tablet .today-side,.today.mobile .today-side{order:-1}
+.today-main{display:flex;flex-direction:column;gap:var(--space-6);min-width:0}
+.today.mobile .sec,.today.mobile .sechead{padding:0 var(--space-4)}
+.today.mobile .sheetlike,.today.mobile .nowcard{border-radius:0;border-left:0;border-right:0}
+.nowcards{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:var(--space-3)}
+.nowcard{display:flex;flex-direction:column;gap:var(--space-3);padding:var(--space-4);background:var(--sheet);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg)}
+.sechead{display:flex;justify-content:space-between;align-items:center;gap:var(--space-3);margin-bottom:var(--space-3);flex-wrap:wrap}
+.sec .v-badge{vertical-align:middle;margin-left:var(--space-1)}
+.reslist{list-style:none;margin:0 0 var(--space-3);padding:0;display:flex;flex-direction:column}
+.reslist li{display:flex;flex-direction:column;gap:2px;padding:var(--space-3) 0;border-bottom:var(--border-width) solid var(--line)}
+.reslist li:last-child{border-bottom:0}
+.stth{background:var(--canvas);color:var(--ink);padding:var(--space-6);border-radius:var(--radius-lg)}
+.stgrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--space-5) var(--space-4);align-items:start}
+@media (max-width:1100px){.stgrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:640px){.stgrid{grid-template-columns:minmax(0,1fr)}.stgrid>.stc{grid-column:auto!important}}
+.stc{display:flex;flex-direction:column;gap:var(--space-2);min-width:0}
+.stc-box{background:var(--sheet);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg);padding:var(--space-4);min-width:0}
+.stc-box .v-dialog{width:100%;box-shadow:none}
+.stc-box .v-toast{width:100%;box-sizing:border-box}
+.slotcol{display:flex;flex-direction:column;gap:var(--space-3);padding:var(--space-4);background:var(--canvas);border-radius:var(--radius-lg);color:var(--ink)}
+.recogrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--space-5);align-items:start}
+.toastdemo{position:fixed;right:var(--space-6);bottom:var(--space-6);width:var(--panel-width);z-index:var(--z-toast)}
+.appdet{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:var(--space-6);align-items:start}
+.wrap.tablet .appdet,.wrap.mobile .appdet{grid-template-columns:1fr}
+.appdet-main,.appdet-side{display:flex;flex-direction:column;gap:var(--space-5);padding:var(--space-6)}
+.wrap.mobile .appdet-main,.wrap.mobile .appdet-side{padding:var(--space-4)}
+.appdet-side{gap:var(--space-3)}
+.appdet-why{padding:var(--space-4);background:var(--sunken);border-radius:var(--radius-md)}
+.appdet-why .body{margin-top:var(--space-1)}
+.appdet-list{list-style:none;margin:var(--space-2) 0 0;padding:0;display:flex;flex-direction:column;gap:var(--space-2)}
+.appdet-list li{display:flex;gap:var(--space-2);align-items:flex-start}
+.appdet-list svg{flex:none;margin-top:2px;color:var(--ink-muted)}
+.seclist{display:flex;flex-direction:column;background:var(--sheet);border-top:var(--border-width) solid var(--line);border-bottom:var(--border-width) solid var(--line)}
+.secitem{display:flex;align-items:center;gap:var(--space-3);min-height:var(--touch-target);padding:var(--space-3) var(--space-4);background:none;border:0;border-top:var(--border-width) solid var(--line);color:var(--ink);text-align:left;font:inherit;cursor:pointer}
+.secitem .biz-text{flex:1}
+.inv-email{display:flex;flex-direction:column;gap:2px}
+.daylinks .v-link{font-weight:500}
+.rows2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--space-2)}
+.wrap.tablet .rows2{grid-template-columns:1fr}
+.unsaved{position:absolute;left:0;right:0;bottom:0;display:flex;align-items:center;justify-content:space-between;gap:var(--space-3);padding:var(--space-3) var(--space-6);background:var(--raised);border-top:var(--border-width) solid var(--line-strong);box-shadow:var(--shadow-2);z-index:var(--z-sticky);flex-wrap:wrap}
+.scr-d .unsaved{left:var(--spine-width)}
+.scr-t .unsaved{left:var(--spine-width-collapsed)}
+.scr-m .unsaved{bottom:var(--bottomnav-height);padding:var(--space-3) var(--space-4)}
+.axb{display:flex;flex-direction:column;gap:var(--space-6);min-width:0}
+.axb.mobile{gap:var(--space-4)}
+.axsplit{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:var(--space-6);align-items:start}
+.axb.tablet .axsplit,.axb.mobile .axsplit{grid-template-columns:1fr}
+.axb.tablet .axside,.axb.mobile .axside{order:-1}
+.axstack{display:flex;flex-direction:column;gap:var(--space-6);min-width:0}
+.axstack .axside{order:-1}
+.axb .axside.axafter{order:0}
+.logosets{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(420px,100%),1fr));gap:var(--space-4)}
+.logoset{display:flex;flex-direction:column;gap:var(--space-4);padding:var(--space-6);min-width:0;background:var(--sheet);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg);color:var(--ink)}
+.favtab{display:inline-flex;align-items:center;gap:var(--space-2);padding:var(--space-2) var(--space-3);border-radius:var(--radius-sm) var(--radius-sm) 0 0;background:var(--canvas);color:var(--ink-secondary);border:var(--border-width) solid var(--line);border-bottom:0}
+.axb.mobile .axside.axafter{padding:0 var(--space-4)}
+.axb.mobile .sechead,.axb.mobile>div>h2.heading{padding:0 var(--space-4)}
+.axb.mobile .fxplans{padding:0 var(--space-4)}
+.axb.mobile>.v-notice{margin:0 var(--space-4)}
+.axside{display:flex;flex-direction:column;gap:var(--space-3);min-width:0}
+.axside .v-badge{vertical-align:middle;margin-left:var(--space-1)}
+.axb.mobile .axside .heading{padding:0}
+.axcharts{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:var(--space-4)}
+.axb.mobile .axcharts{grid-template-columns:1fr}
+.axb.mobile .v-stats{grid-template-columns:1fr 1fr}
+.stockcell{display:grid;grid-template-columns:auto;gap:2px;min-width:120px}
+.stockbar{position:relative;display:block;height:4px;border-radius:var(--radius-full);background:var(--selected);max-width:140px}
+.stockbar>span{position:absolute;left:0;top:0;bottom:0;border-radius:inherit;background:var(--ink-secondary)}
+.stockbar.is-attention>span{background:var(--attention-mark)}
+.stockbar.is-danger>span{background:var(--danger)}
+.stockbar>i{position:absolute;top:-3px;bottom:-3px;width:2px;margin-left:-1px;background:var(--ink-muted);border-radius:1px}
+.glo{background:var(--sheet);color:var(--ink);gap:var(--space-6);padding:var(--space-6)}
+.glo-lead{max-width:760px;margin-top:var(--space-2)}
+.glo-rules{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:var(--space-4) var(--space-6)}
+.glo-rules .body-small{margin-top:var(--space-1)}
+.glo-sec{display:flex;flex-direction:column;gap:var(--space-2)}
+.glo-t{width:100%;border-collapse:collapse;table-layout:fixed}
+.glo-t th{text-align:left;color:var(--ink-muted);padding:var(--space-2) var(--space-3);border-bottom:var(--border-width) solid var(--line-strong)}
+.glo-t th:last-child{width:30%}
+.glo-t td{padding:var(--space-2) var(--space-3);border-bottom:var(--border-width) solid var(--line);vertical-align:top;overflow-wrap:anywhere}
+.glo-dec{display:inline-flex;align-items:center;gap:var(--space-1);margin-left:var(--space-2);padding:0 var(--space-2);border-radius:var(--radius-full);background:var(--attention-soft);color:var(--attention-ink);white-space:nowrap}
+.calbar{display:flex;justify-content:space-between;align-items:center;gap:var(--space-3);flex-wrap:wrap;margin-bottom:var(--space-3)}
+.calbar-date{margin-left:var(--space-2);white-space:nowrap}
+.calwrap.mobile{padding:0 var(--space-4)}
+.staffpick{margin-bottom:var(--space-3);max-width:var(--search-width)}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:var(--space-2) var(--space-4);margin:0}
+.kv dt{color:var(--ink-muted);padding-top:var(--space-0-5)}.kv dd{margin:0;color:var(--ink)}
+.hist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:var(--space-2);color:var(--ink-secondary)}
+.hist .muted{margin-right:var(--space-2)}
+.newgrid{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:var(--space-6);align-items:start}
+.newgrid.tablet,.newgrid.mobile{grid-template-columns:1fr}
+.newgrid.mobile{padding-bottom:var(--space-16)}
+.sumcard{position:sticky;top:0;display:flex;flex-direction:column;gap:var(--space-3);padding:var(--space-5);background:var(--sheet);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg)}
+.newgrid.mobile .sumcard{border-radius:0;border-left:0;border-right:0}
+.sumtotal{display:flex;justify-content:space-between;align-items:baseline;padding-top:var(--space-3);border-top:var(--border-width) solid var(--line)}
+.stickybar{position:absolute;left:0;right:0;bottom:var(--bottomnav-height);display:flex;gap:var(--space-2);justify-content:flex-end;padding:var(--space-3) var(--space-4);background:var(--sheet);border-top:var(--border-width) solid var(--line);z-index:var(--z-sticky)}
+.stickybar .v-btn--primary{flex:1}
+.hours{display:flex;flex-direction:column}
+.hrow{display:flex;align-items:center;justify-content:space-between;gap:var(--space-4);padding:var(--space-2) 0;border-bottom:var(--border-width) solid var(--line);min-height:var(--touch-target);flex-wrap:wrap}
+.hrow .v-toggle{min-width:160px}
+.hrange{display:inline-flex;align-items:center;gap:var(--space-2)}
+.hrange .v-datepicker{width:120px}
+.auth{min-height:100%;display:flex;flex-direction:column;background:var(--canvas);color:var(--ink)}
+.auth-top{display:flex;justify-content:space-between;align-items:center;padding:var(--space-4) var(--space-6)}
+.auth.mobile .auth-top{padding:var(--space-3) var(--space-4)}
+.auth-main{flex:1;display:flex;align-items:flex-start;justify-content:center;padding:var(--space-12) var(--space-4)}
+.auth.mobile .auth-main{padding:var(--space-2) 0 0;align-items:stretch}
+.auth-card{width:400px;background:var(--sheet);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg);padding:var(--space-10);display:flex;flex-direction:column;gap:var(--space-4);box-sizing:border-box}
+.auth-card.wide{width:480px}
+.auth.mobile .auth-card{width:100%;border-radius:0;border-left:0;border-right:0;border-bottom:0;padding:var(--space-6) var(--space-4)}
+.auth-head{display:flex;flex-direction:column;gap:var(--space-1);margin-bottom:var(--space-2)}
+.auth-note{display:flex;gap:var(--space-2);padding-top:var(--space-4);border-top:var(--border-width) solid var(--line);color:var(--ink-muted)}
+.auth-note .v-icon{margin-top:var(--space-0-5)}
+.auth-foot{padding:var(--space-4) var(--space-6);color:var(--ink-muted);text-align:center}
+.auth.mobile .auth-foot{display:none}
+.inv-head{display:flex;gap:var(--space-3);align-items:center}
+.inv-mark{width:var(--space-12);height:var(--space-12);border-radius:var(--radius-md);background:var(--neutral-soft);display:inline-flex;align-items:center;justify-content:center;font-weight:700;color:var(--ink);flex:none;box-shadow:inset 0 0 0 var(--border-width) var(--line-strong)}
+.inv-mark.sm{width:var(--space-10);height:var(--space-10)}
+.inv-role{display:flex;flex-direction:column;gap:var(--space-2);padding:var(--space-3) var(--space-4);background:var(--sunken);border-radius:var(--radius-sm)}
+.inv-app{display:inline-flex;gap:var(--space-1);align-items:center;color:var(--ink-secondary);margin-right:var(--space-2)}
+.reqs{list-style:none;margin:calc(var(--space-2) * -1) 0 0;padding:0;display:flex;flex-direction:column;gap:var(--space-1)}
+.req{display:flex;gap:var(--space-2);align-items:center;color:var(--ink-muted)}.req.ok{color:var(--done-ink)}
+.choose{width:560px;display:flex;flex-direction:column;gap:var(--space-4)}
+.auth.mobile .choose{width:auto;padding:var(--space-4)}
+.biz-list{display:flex;flex-direction:column;background:var(--sheet);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg);overflow:hidden}
+.biz{appearance:none;display:flex;align-items:center;gap:var(--space-3);padding:var(--space-4);border:0;border-bottom:var(--border-width) solid var(--line);background:transparent;color:var(--ink);text-align:start;font-family:inherit;cursor:pointer;min-height:var(--touch-target)}
+.biz:last-child{border-bottom:0}.biz:hover{background:var(--state-hover)}
+.biz-text{flex:1;min-width:0;display:flex;flex-direction:column;gap:var(--space-0-5);align-items:flex-start}
+.frame-rel{position:relative;height:100%}
+.wrap{max-width:1120px;width:100%;margin:0 auto;padding:var(--space-6) var(--space-6) var(--space-10);display:flex;flex-direction:column;gap:var(--space-8);box-sizing:border-box}
+.wrap.mobile{padding:var(--space-4);gap:var(--space-6)}
+.greet{display:flex;flex-direction:column;gap:var(--space-2)}
+.sec{margin-bottom:var(--space-3)}
+.tiles4{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--space-4)}
+.mgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--space-3) var(--space-1)}
+.rows{display:flex;flex-direction:column;background:var(--sheet);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg);overflow:hidden}
+.sheetlike{background:var(--sheet);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg)}
+.g2f{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(260px,100%),1fr));gap:var(--space-4) var(--space-6)}
+.nrow{display:grid;grid-template-columns:1fr repeat(3,var(--control-lg));align-items:center;padding:var(--space-2) 0;border-bottom:var(--border-width) solid var(--line);gap:var(--space-4)}
+.nrow>span:not(:first-child){display:flex;justify-content:center;text-align:center}
+.nhead{color:var(--ink-muted)}
+.secrow{display:flex;align-items:center;justify-content:space-between;gap:var(--space-4);padding:var(--space-3) 0;border-bottom:var(--border-width) solid var(--line);flex-wrap:wrap}
+.appsrow{display:inline-flex;gap:var(--space-1);align-items:center;flex-wrap:wrap}
+.mx-row{display:grid;grid-template-columns:minmax(320px,1.8fr) repeat(4,1fr);align-items:center;padding:var(--space-3) var(--space-6);border-bottom:var(--border-width) solid var(--line);gap:var(--space-2)}
+.mx-head{background:var(--sunken);color:var(--ink-secondary);border-radius:var(--radius-lg) var(--radius-lg) 0 0}
+.mx-c{display:flex;flex-direction:column;align-items:center;text-align:center}
+.mx-app{display:flex;align-items:center;gap:var(--space-3);flex-wrap:wrap}
+.mx-foot{padding:var(--space-4) var(--space-6)}
+.mrow{display:flex;align-items:center;gap:var(--space-3);padding:var(--space-3) var(--space-4);border-bottom:var(--border-width) solid var(--line);color:var(--ink-secondary)}.mrow:last-child{border-bottom:0}
+.plan{display:flex;justify-content:space-between;align-items:center;gap:var(--space-4);flex-wrap:wrap}
+.numeric-inline{font-weight:600;color:var(--ink)}
+.usage-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:var(--space-6)}
+.sup{display:grid;grid-template-columns:1.5fr 1fr;gap:var(--space-6);align-items:start}
+.lframes{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--space-4)}
+.lframe{position:relative;height:220px;border:var(--border-width) solid var(--line-strong);border-radius:var(--radius-lg);overflow:hidden;background:var(--canvas)}
+.lframe-tiles{display:flex;gap:var(--space-3);padding:var(--space-4)}
+.lstage{position:relative;height:240px;border:var(--border-width) solid var(--line-strong);border-radius:var(--radius-lg);overflow:hidden;background:var(--canvas);padding:var(--space-4)}
+.lstage-grid{display:grid;grid-template-columns:repeat(6,96px);gap:var(--space-2)}
+.fxcard{display:flex;flex-direction:column;gap:var(--space-2);padding:var(--space-5)}
+.fxapps{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:var(--space-3) var(--space-4)}
+.fxmail{display:flex;flex-direction:column;gap:var(--space-3);padding:var(--space-5);border:var(--border-width) solid var(--line);border-radius:var(--radius-md);background:var(--canvas);color:var(--ink)}
+.fxmail-btn{align-self:flex-start;padding:var(--space-2) var(--space-4);border-radius:var(--radius-md);background:var(--primary);color:var(--on-primary);font-weight:600}
+.fxplans{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:var(--space-4)}
+.fxplan{display:flex;flex-direction:column;gap:var(--space-3);padding:var(--space-5)}
+.fxlim{margin:0;padding-left:var(--space-5);color:var(--ink-secondary);display:flex;flex-direction:column;gap:var(--space-1)}
+.fxver{width:100%;border-collapse:collapse}
+.fxver th{text-align:left;color:var(--ink-muted);font-weight:500;padding:var(--space-1) 0;border-bottom:var(--border-width) solid var(--line)}
+.fxver td{padding:var(--space-2) 0;border-bottom:var(--border-width) solid var(--line);color:var(--ink)}
+.fxver td .v-pill{margin-left:var(--space-2);vertical-align:middle}
+.fxlimits{display:flex;flex-direction:column}
+.fxlimits-row{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(60px,.6fr) minmax(120px,1fr);gap:var(--space-3);align-items:center;padding:var(--space-2) 0;border-bottom:var(--border-width) solid var(--line);color:var(--ink)}
+.fxlimits-row .v-icon{color:var(--done-ink,var(--ink-secondary));flex:none}
+.fxlimits-head{padding-top:0}
+.fxlink{color:var(--ink);text-decoration:underline;text-underline-offset:2px;font-weight:600;display:inline-flex;align-items:center;min-height:24px;min-width:24px}
+@media (pointer:coarse),(max-width:767px){.fxlink{min-height:44px;min-width:44px}}
+.fxlim-new{display:flex;align-items:center;gap:var(--space-2);min-width:0}
+.fxlim-new .v-control{flex:1 1 80px;min-width:0}
+.fxdelta{display:inline-flex;align-items:center;gap:var(--space-1);color:var(--done-ink);flex:none}
+.fxdelta--down{color:var(--attention-ink)}
+.fxplan .v-btn{align-self:flex-start}
+.fxcost{margin-top:var(--space-4);display:flex;flex-direction:column;gap:var(--space-1);padding:var(--space-4);border-radius:var(--radius-md);background:var(--sunken);color:var(--ink)}
+.fxlangs{display:flex;flex-direction:column}
+.fxlang{display:grid;grid-template-columns:32px minmax(0,1fr) auto auto;gap:var(--space-3);align-items:center;padding:var(--space-2) 0;border-bottom:var(--border-width) solid var(--line);color:var(--ink)}
+.fxlang-text{color:var(--ink-secondary);overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.fxframe{display:flex;flex-direction:column;gap:var(--space-2);padding:var(--space-3);border:var(--border-width) solid var(--line);border-radius:var(--radius-md);background:var(--canvas);color:var(--ink)}
+.fxframe .caption{color:var(--ink-muted)}
+@container (max-width:420px){.fxlang{grid-template-columns:32px minmax(0,1fr) auto}.fxlang .v-iconbtn{display:none}}
+.ss-overlay{position:absolute;inset:0;background:var(--scrim);display:flex;align-items:center;justify-content:center;padding:var(--space-6);z-index:var(--z-overlay)}
+.ss-toast{position:absolute;right:var(--space-6);bottom:var(--space-6);width:var(--panel-width);z-index:var(--z-toast)}
+.ss-toast.m{left:var(--space-4);right:var(--space-4);bottom:calc(var(--space-16) + var(--space-4));width:auto}
+.st-frame{position:relative;height:100%}
+.st-body{padding:0 var(--space-6) var(--space-6)}
+.st-body.m{padding:0 0 var(--space-6)}
+.st-grid{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:var(--space-6);align-items:start}
+.st-grid.m{grid-template-columns:1fr;gap:var(--space-4)}
+.st-thread{display:flex;flex-direction:column;gap:var(--space-3)}
+.st-msg{border:var(--border-width) solid var(--line);border-radius:var(--radius-lg);background:var(--sheet);padding:var(--space-4);display:flex;flex-direction:column;gap:var(--space-2)}
+.st-msg.team{background:var(--raised)}
+.st-msg.m{border-radius:0;border-left:0;border-right:0}
+.st-head{display:flex;align-items:center;gap:var(--space-2);flex-wrap:wrap}
+.st-head .st-time{margin-left:auto;color:var(--ink-muted)}
+.st-msg p{margin:0}
+.st-files{display:flex;flex-wrap:wrap;gap:var(--space-2);margin-top:var(--space-1)}
+.st-file{display:inline-flex;align-items:center;gap:var(--space-2);padding:var(--space-1) var(--space-1) var(--space-1) var(--space-3);border:var(--border-width) solid var(--line);border-radius:var(--radius-md);background:var(--sheet)}
+.st-compose{display:flex;flex-direction:column;gap:var(--space-4)}
+.st-hist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:var(--space-3)}
+.st-hist li{display:flex;gap:var(--space-2);align-items:flex-start}
+.st-hist .v-icon{flex:none;margin-top:2px;color:var(--ink-muted)}
+.st-hist p{margin:0}
+.st-note{display:flex;gap:var(--space-2);align-items:flex-start;color:var(--ink-secondary)}
+.st-note p{margin:0}
+/* SMS · Setări */
+.sms-sec{color:var(--ink-secondary);margin:0}
+.sms-np{display:flex;flex-wrap:wrap;align-items:center;gap:var(--space-2) var(--space-3);margin-top:var(--space-3)}
+.sms-np .body-small{flex:1 1 280px}
+.sms-phone{display:flex;gap:var(--space-3);align-items:flex-start;padding-bottom:var(--space-4);border-bottom:var(--border-width) solid var(--line);margin-bottom:var(--space-4)}
+.sms-phone__ic{display:inline-flex;align-items:center;justify-content:center;flex:none;width:var(--control-lg);height:var(--control-lg);border-radius:var(--radius-md);background:var(--neutral-soft);color:var(--ink-secondary)}
+.sms-phone__text{display:flex;flex-direction:column;gap:var(--space-1);min-width:0;flex:1}
+.sms-phone__text p{margin:0}
+.sms-phone__name{display:flex;align-items:center;gap:var(--space-1)}
+.sms-meta{display:flex;flex-wrap:wrap;gap:var(--space-1) var(--space-4);color:var(--ink-secondary)}
+.sms-meta>span{display:inline-flex;align-items:center;gap:var(--space-1)}
+.sms-stats{margin:var(--space-4) 0;grid-template-columns:repeat(4,minmax(0,1fr))}
+.sms-cap p{margin:0}
+.sms-cap{display:flex;flex-direction:column;gap:var(--space-1)}
+.sms-actions{display:flex;flex-wrap:wrap;gap:var(--space-2);margin-top:var(--space-4)}
+.sms-actions.is-col{flex-direction:column}
+.sms-pad{padding:0 var(--space-6) var(--space-6)}
+.v-sheet-section + .sms-pad,.sms-pad{margin-top:var(--space-2)}
+.v-notice{margin-bottom:var(--space-2)}
+.sms-states{display:flex;flex-direction:column;gap:var(--space-4);padding:var(--space-6);background:var(--canvas);color:var(--ink)}
+.sms-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--space-6);align-items:start}
+.sms-grid.mobile{grid-template-columns:repeat(4,390px)}
+.sms-box{display:flex;flex-direction:column;gap:var(--space-2);min-width:0}
+.sms-boxlab{margin:0;color:var(--ink-muted)}
+.sms-boxbody{border:var(--border-width) solid var(--line-strong);border-radius:var(--radius-lg);overflow:hidden;background:var(--canvas)}
+.sms-boxbody > .v-dialog{margin:var(--space-6) auto}
+.sms-langs{display:flex;flex-direction:column;gap:var(--space-4);padding:var(--space-6);background:var(--canvas);color:var(--ink)}
+.sms-langrow{display:flex;gap:var(--space-6);align-items:flex-start}
+.sms-lang{display:flex;flex-direction:column;gap:var(--space-2)}
+.sms-langframe{border:var(--border-width) solid var(--line-strong);border-radius:var(--radius-lg);overflow:hidden;background:var(--canvas)}
+.sms-langframe.t{width:820px}.sms-langframe.m{width:390px}
+.sms-stats.is-mob{grid-template-columns:1fr 1fr}
+.sms-reco{display:flex;flex-wrap:wrap;align-items:center;gap:var(--space-2) var(--space-3);margin-top:var(--space-3)}
+.sms-check{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:var(--space-3)}
+.sms-check li{display:flex;gap:var(--space-3);align-items:flex-start;color:var(--ink-secondary)}
+.sms-check li>svg,.sms-check li>.v-icon{flex:none;color:var(--ink);margin-top:2px}
+.sms-check .body-strong{color:var(--ink)}
+/* SMS · notificări și e-mail */
+.n-blank{min-height:200px}
+.n-grid{display:grid;grid-template-columns:repeat(4,420px);gap:var(--space-6);align-items:start}
+.n-pane{padding:var(--space-4);background:var(--canvas)}
+.n-pane .v-notifs--inline{width:100%}
+.n-pane.m{width:390px;box-sizing:border-box;padding:var(--space-2)}
+.em-grid{display:grid;grid-template-columns:repeat(3,640px) 430px;gap:var(--space-6);align-items:start}
+.em{background:var(--canvas);color:var(--ink);font-family:var(--font-sans)}
+.em p{margin:0}
+.em-inbox{padding:var(--space-3) var(--space-4);background:var(--raised);border-bottom:var(--border-width) solid var(--line);display:flex;flex-direction:column;gap:2px}
+.em-mute{color:var(--ink-secondary)}
+.em-canvas{padding:var(--space-6) var(--space-4)}
+.em-card{background:var(--raised);border-radius:var(--radius-lg);border:var(--border-width) solid var(--line);overflow:hidden}
+.em-head{padding:var(--space-5) var(--space-6);border-bottom:var(--border-width) solid var(--line)}
+.em-body{padding:var(--space-6);display:flex;flex-direction:column;gap:var(--space-3)}
+.em-eyebrow{text-transform:uppercase;letter-spacing:.06em}
+.em-title{margin:0;font-size:22px;line-height:28px}
+.em-list{margin:0;padding-left:var(--space-5);display:flex;flex-direction:column;gap:var(--space-1)}
+.em-btn{align-self:flex-start;display:inline-block;padding:var(--space-3) var(--space-5);border-radius:var(--radius-md);background:var(--primary);color:var(--on-primary,#fff);text-decoration:none;margin:var(--space-2) 0}
+.em-code{font-size:32px;line-height:40px;font-weight:600;letter-spacing:.12em}
+.em-foot{padding:var(--space-4) var(--space-6) 0;display:flex;flex-direction:column;gap:var(--space-1)}
+.em[style*="390"] .em-canvas{padding:var(--space-4) var(--space-2)}
+.em[style*="390"] .em-body,.em[style*="390"] .em-head{padding-left:var(--space-4);padding-right:var(--space-4)}
+.em[style*="390"] .em-btn{align-self:stretch;text-align:center}
+.n-pop{position:absolute;top:56px;right:16px;width:400px;z-index:20;box-shadow:var(--shadow-3);border-radius:var(--radius-lg);overflow:hidden;background:var(--raised);max-height:calc(100% - 72px);overflow-y:auto}
+.n-pop.mobile{left:0;right:0;top:56px;width:auto;border-radius:0;max-height:calc(100% - 56px)}
+.n-pop{width:auto}
+.n-pop.mobile .v-notifs,.n-pane.m .v-notifs{width:100%;max-width:100%;box-sizing:border-box}
+.em-grid{grid-template-columns:repeat(2,640px) repeat(2,640px)}
+.n-prefs{display:flex;flex-direction:column;gap:var(--space-4)}
+.n-lock{display:flex;gap:var(--space-1);align-items:flex-start;margin:calc(var(--space-2) * -1) 0 0 52px}
+.n-lock>svg{flex:none;margin-top:3px}
+.em-grid{grid-template-columns:repeat(3,640px)}
+.req{display:flex;gap:var(--space-2);align-items:center;color:var(--ink-muted)}
+.req.ok{color:var(--done-ink)}
+.sms-langframe.t{width:820px}
+.sms-langframe.m{width:390px}
+.tfa-code input{letter-spacing:.12em}
+.tfa-done{display:flex;align-items:center;gap:var(--space-2);color:var(--ink-secondary)}
+.tfa-done .v-icon{flex:none;color:var(--ink)}
+.tfa-once{font-weight:600;color:var(--ink)}
+.tfa-codes{list-style:none;margin:0;padding:var(--space-4);display:grid;grid-template-columns:1fr 1fr;gap:var(--space-2) var(--space-6);background:var(--raised);border:var(--border-width) solid var(--line);border-radius:var(--radius-md);font-size:var(--text-body-size,15px);letter-spacing:.06em;color:var(--ink)}
+.tfa-row{display:flex;flex-wrap:wrap;gap:var(--space-2)}
+.tfa-row>*{flex:1 1 0}
+.tfa-scrgroup{display:flex;flex-direction:column}
+.tfa-grouplab{margin:var(--space-6) 0 0}
+.sms-langframe.tfa-d{width:1280px}
+.sms-langframe>.v-auth{flex:1}
+.sms-langframe{display:flex;flex-direction:column}
+.ss-frame{display:flex;flex-direction:column;height:100%;position:relative}
+.ss-frame>.ss-body{flex:1;min-height:0;position:relative;display:flex;flex-direction:column}
+.ss-frame>.ss-body>*{flex:1;min-height:0}
+.ss-bar{display:flex;gap:var(--space-3);align-items:center;padding:var(--space-2) var(--space-4);background:var(--sunken);border-bottom:var(--border-width) solid var(--line-strong);color:var(--ink);flex:none}
+.ss-bar.attention{background:var(--attention-soft)}
+.ss-bar.attention>.v-icon{color:var(--attention-ink)}
+.ss-bar>.v-icon{flex:none;color:var(--ink-secondary)}
+.ss-txt{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.ss-txt p{margin:0}
+.ss-line{display:flex;flex-wrap:wrap;gap:0 var(--space-3)}
+.ss-meta{color:var(--ink-secondary)}
+.ss-bar.m{align-items:flex-start;padding:var(--space-3) var(--space-4)}
+.ss-bar.m .ss-act{margin-top:var(--space-2)}
+.ss-overlay.m{align-items:flex-end;padding:0}
+.ss-overlay .v-dialog{max-height:none}
+.ss-toast.m{left:var(--space-4);right:var(--space-4);bottom:var(--space-4);width:auto}
+.ss-states{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--space-6);align-items:start}
+.ss-pad{padding:var(--space-6);display:flex;flex-direction:column;gap:var(--space-4);background:var(--canvas)}
+.ss-form{display:flex;flex-direction:column;gap:var(--space-4)}
+.ss-form p{margin:0}
+.ss-rule{display:flex;gap:var(--space-2);align-items:flex-start;margin:0;color:var(--ink-secondary)}
+.ss-rule.ok{color:var(--done-ink)}
+.ss-rule .v-icon{flex:none;margin-top:2px}
+.ss-list{margin:0;padding-left:var(--space-5);display:flex;flex-direction:column;gap:var(--space-1)}
+.sms-langframe{border:var(--border-width) solid var(--line-strong);border-radius:var(--radius-lg);overflow:hidden;background:var(--canvas);color:var(--ink);display:flex;flex-direction:column}
+.sms-langframe>*{flex:1;min-height:0}
+.x-frame{position:relative;height:100%;display:flex;flex-direction:column}
+.x-frame>*{flex:1;min-height:0}
+.x-overlay{position:absolute;inset:0;background:var(--scrim);display:flex;align-items:center;justify-content:center;padding:var(--space-6);z-index:var(--z-overlay)}
+.x-overlay.m{align-items:flex-end;padding:0}
+.x-overlay .v-dialog{max-height:none}
+.x-toast{position:absolute;right:var(--space-6);bottom:var(--space-6);width:var(--panel-width);z-index:var(--z-toast)}
+.x-toast.m{left:var(--space-4);right:var(--space-4);bottom:var(--space-4);width:auto}
+.x-link{color:var(--ink);text-decoration:underline;text-underline-offset:2px}
+.fp-cell{display:flex;flex-direction:column;gap:var(--space-0-5)}
+.fp-save{color:var(--ink-muted)}
+.fp-ver td{vertical-align:top}
+.fp-prices{display:grid;grid-template-columns:1fr 1fr;gap:var(--space-4)}
+.fp-prices.m{grid-template-columns:1fr}
+.fp-sub{margin:0 0 var(--space-2)}
+.fp-list.fxplans{grid-template-columns:1fr}
+.fp-cell>span{white-space:nowrap}
+.fp-ver{width:100%}
+.fa-act{display:flex;flex-direction:column;align-items:flex-end;gap:var(--space-1);text-align:end;max-width:280px}
+/*S117css*/
+.fb-apps{display:flex;flex-wrap:wrap;gap:var(--space-2) var(--space-4)}
+.fb-app{display:inline-flex;align-items:center;gap:var(--space-2);white-space:nowrap}
+.fb-inc{margin:0;padding-inline-start:var(--space-5);display:flex;flex-direction:column;gap:var(--space-0-5)}
+.fb-cell{display:flex;flex-direction:column;gap:var(--space-0-5)}
+.fb-cell>span{white-space:nowrap}
+.fb-card{display:flex;flex-direction:column;gap:var(--space-4)}
+.fb-head{display:flex;align-items:flex-start;justify-content:space-between;gap:var(--space-3);flex-wrap:wrap}
+.fb-title{display:flex;align-items:center;gap:var(--space-2);flex-wrap:wrap}
+.fb-acts{display:flex;gap:var(--space-2);flex-wrap:wrap}
+.fb-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--space-4)}
+.fb-grid.m{grid-template-columns:1fr}
+.fb-k{color:var(--ink-muted);margin:0 0 var(--space-1)}
+.fb-strike{text-decoration:line-through;color:var(--ink-muted)}
+.fb-ver{width:100%;border-collapse:collapse}
+.fb-ver th{text-align:start;color:var(--ink-muted);font-weight:inherit;padding:var(--space-2) var(--space-3) var(--space-2) 0;border-bottom:var(--border-width) solid var(--line)}
+.fb-ver td{padding:var(--space-2) var(--space-3) var(--space-2) 0;border-bottom:var(--border-width) solid var(--line);vertical-align:top}
+.fb-ver tr:last-child td{border-bottom:0}
+.fb-tw{overflow-x:auto}
+.fb-sum{display:flex;flex-direction:column;gap:var(--space-2);padding:var(--space-3);border-radius:var(--radius-sm);background:var(--sunken)}
+.fb-line{display:flex;justify-content:space-between;gap:var(--space-4)}
+.fb-line>span:last-child{white-space:nowrap}
+.fb-line.tot{padding-top:var(--space-2);border-top:var(--border-width) solid var(--line)}
+.fb-period{display:grid;grid-template-columns:1fr 1fr;gap:var(--space-4)}
+.fb-period.m{grid-template-columns:1fr}
+.fb-applist{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--space-2) var(--space-6)}
+.fb-applist.m{grid-template-columns:1fr}
+.fb-applab{display:inline-flex;align-items:center;gap:var(--space-2)}
+.muted{color:var(--ink-muted)}
+.x-dd{display:inline-flex;align-items:center;gap:var(--space-1);padding:var(--space-0-5) var(--space-2);border-radius:var(--radius-sm);background:var(--attention-soft);color:var(--attention-ink);font-weight:600;flex-wrap:wrap}
+.x-dd-t{font-weight:400;color:var(--ink)}
+.x-ddnote{display:flex;flex-direction:column;gap:var(--space-2);padding:var(--space-3) var(--space-4);border:var(--border-width) dashed var(--line-strong);border-radius:var(--radius-md);background:var(--sheet);color:var(--ink)}
+.x-ddnote p{margin:0}
+.pb{min-height:100%;background:var(--canvas);color:var(--ink);display:flex;flex-direction:column}
+.pb-head{display:flex;align-items:center;justify-content:space-between;gap:var(--space-4);padding:var(--space-4) var(--space-8);border-bottom:var(--border-width) solid var(--line);background:var(--sheet)}
+.pb.m .pb-head{padding:var(--space-3) var(--space-4)}
+.pb-brand{display:flex;align-items:center;gap:var(--space-3);min-width:0}
+.pb-brand p{margin:0}
+.pb-main{display:flex;justify-content:center;gap:var(--space-8);padding:var(--space-8) var(--space-8) var(--space-6);align-items:flex-start}
+.pb.m .pb-main{padding:var(--space-4) 0}
+.pb-card{width:100%;max-width:560px;display:flex;flex-direction:column;gap:var(--space-4);background:var(--sheet);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg);padding:var(--space-6);box-sizing:border-box}
+.pb.m .pb-card{max-width:none;border-radius:0;border-left:0;border-right:0;padding:var(--space-4)}
+.pb-aside{width:320px;flex:none;position:sticky;top:var(--space-6)}
+.pb-title{margin:0}
+.pb-step{display:flex;flex-direction:column;gap:var(--space-1)}
+.pb-step p{margin:0}
+.pb-list{display:flex;flex-direction:column;gap:var(--space-2)}
+.pb-opt{display:flex;align-items:center;gap:var(--space-3);padding:var(--space-3) var(--space-4);border:var(--border-width) solid var(--line);border-radius:var(--radius-md);background:var(--canvas)}
+.pb-opt>.v-radio,.pb-opt>label{flex:1;min-width:0}
+.pb-opt.on{border-color:var(--primary);background:var(--selected)}
+.pb-acts{display:flex;justify-content:space-between;gap:var(--space-3);align-items:center;margin-top:var(--space-2)}
+.pb-acts.m{flex-direction:column-reverse;align-items:stretch}
+.pb-acts>:only-child{margin-left:auto}
+.pb-acts.m>:only-child{margin-left:0}
+.pb-sum{display:flex;flex-direction:column;gap:var(--space-3);padding:var(--space-5);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg);background:var(--sheet)}
+.pb-sum p{margin:0}
+.pb-sum.c{padding:var(--space-3) var(--space-4);background:var(--raised);border-radius:var(--radius-md)}
+.pb-days{display:flex;gap:var(--space-2);overflow:hidden}
+.pb-cal{align-self:flex-start}
+.pb-form{display:flex;flex-direction:column;gap:var(--space-4)}
+.pb-form p{margin:0}
+.pb-captcha{display:flex;align-items:center;gap:var(--space-3);padding:var(--space-3) var(--space-4);border:var(--border-width) dashed var(--line-strong);border-radius:var(--radius-md);background:var(--raised);color:var(--ink-secondary)}
+.pb-captcha.err{border-style:solid;border-color:var(--danger)}
+.pb-health{border:var(--border-width) solid var(--line);border-radius:var(--radius-md);padding:var(--space-4);margin:0;display:flex;flex-direction:column;gap:var(--space-3);min-width:0}
+.pb-health legend{padding:0 var(--space-1)}
+.pb-health p{margin:0}
+.pb-code{max-width:240px}
+.pb-held{display:flex;align-items:center;gap:var(--space-2);color:var(--ink-secondary)}
+.pb-done{display:flex;flex-direction:column;gap:var(--space-4);align-items:flex-start}
+.pb-done h1,.pb-done p{margin:0}
+.pb-doneic{display:inline-flex;width:56px;height:56px;border-radius:50%;align-items:center;justify-content:center;background:var(--done-soft);color:var(--done-ink)}
+.pb-doneic.p{background:var(--raised);color:var(--ink-secondary)}
+.pb-doneic.bad{background:var(--danger-soft);color:var(--danger-ink)}
+.pb-donesum{display:flex;flex-direction:column;gap:var(--space-2);align-self:stretch}
+.pb-foot{text-align:center;margin:auto 0 var(--space-4);padding:var(--space-4) var(--space-4) 0}
+.pb-pay{display:flex;flex-direction:column;gap:var(--space-3)}
+.pb-pay p{margin:0}
+.pb-rule{display:flex;gap:var(--space-2);align-items:flex-start;margin:0}
+.pb-rule .v-icon{flex:none;margin-top:2px;color:var(--ink-secondary)}
+.x-body{padding:0 0 var(--space-8);display:flex;flex-direction:column;gap:var(--space-6)}
+.x-body.m{padding:0 0 var(--space-8);gap:var(--space-4)}
+.x-body.m>.v-notice,.x-body.m>.x-pad{margin:0 var(--space-4)}
+.x-grid{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:var(--space-6);align-items:start}
+.x-grid.m{grid-template-columns:1fr;gap:var(--space-4)}
+.x-col{display:flex;flex-direction:column;gap:var(--space-4);min-width:0}
+.x-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--space-3)}
+.x-body.m .x-stats{grid-template-columns:1fr 1fr;padding:0 var(--space-4)}
+.x-row{display:flex;gap:var(--space-2);align-items:center;flex-wrap:wrap}
+.x-stack{display:flex;flex-direction:column;gap:var(--space-3)}
+.x-stack p{margin:0}
+.x-line{display:flex;gap:var(--space-2);align-items:flex-start;color:var(--ink-secondary)}
+.x-line p{margin:0}
+.x-line .v-icon{flex:none;margin-top:2px}
+.x-field{display:flex;align-items:center;gap:var(--space-3);padding:var(--space-3) var(--space-4);border:var(--border-width) solid var(--line);border-radius:var(--radius-md);background:var(--canvas)}
+.x-field>div{flex:1;min-width:0}
+.x-field p{margin:0}
+.x-flow{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:var(--space-3)}
+.x-tr{width:100%;border-collapse:collapse}
+.x-tr th,.x-tr td{text-align:left;padding:var(--space-2) var(--space-3);border-bottom:var(--border-width) solid var(--line);vertical-align:top}
+.x-tr th{color:var(--ink-muted)}
+.em-kv{background:var(--sheet);border-radius:var(--radius-md);padding:var(--space-3) var(--space-4)}
+.em-salon{display:flex;align-items:center;gap:var(--space-2)}
+.em-salon p{margin:0}
+.g2f{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--space-4)}
+.g2f.m{grid-template-columns:1fr}
+.su-steps{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:var(--space-2)}
+.su-steps li{display:flex;align-items:center;gap:var(--space-2);color:var(--ink-muted)}
+.su-steps li.done{color:var(--ink-secondary)}
+.su-steps li.done .v-icon{color:var(--done-ink)}
+.su-steps li.cur{color:var(--ink);font-weight:600}
+.su-steps li.cur .v-icon{color:var(--attention-ink)}
+.sv-body{display:flex;flex-direction:column;gap:var(--space-4);min-width:0}
+.sv-tools{display:flex;flex-wrap:wrap;align-items:center;gap:var(--space-2) var(--space-3)}
+.sv-tools.m{padding:0 var(--space-4);flex-direction:column;align-items:stretch}
+.sv-line{display:flex;align-items:center;gap:var(--space-2);min-width:0}
+.sv-line .sv-search{flex:1 1 auto;max-width:none}
+.sv-search{flex:1 1 220px;min-width:0;max-width:var(--search-width)}
+.sv-grow{flex:1 1 auto}
+.sv-fs{border:0;margin:0;padding:0;display:flex;flex-direction:column;gap:var(--space-3);min-width:0}
+.sv-fs legend{padding:0;margin-bottom:var(--space-2)}
+.sv-narrow{max-width:calc(var(--search-width) / 1.5)}
+.sv-foot{display:flex;align-items:center;gap:var(--space-2);width:100%;flex-wrap:wrap}
+.sv-order{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;border:var(--border-width) solid var(--line);border-radius:var(--radius-md)}
+.sv-order li{display:flex;align-items:center;gap:var(--space-3);min-height:var(--row-height);padding:var(--space-1) var(--space-2) var(--space-1) var(--space-3);border-bottom:var(--border-width) solid var(--line)}
+.sv-order li:last-child{border-bottom:0}
+.sv-order li.is-moved{background:var(--selected)}
+.sv-order .sv-ix{width:var(--space-4);text-align:center;display:inline-flex;justify-content:center}
+.sv-order .sv-on{flex:1 1 auto;min-width:0}
+.sv-foot.m{flex-direction:column-reverse;align-items:stretch}
+.sv-foot.m .sv-grow{display:none}
+/* S126 — BookingNew / Calendar layout, as in BookingNew and BookingCalendar */
+.newgrid{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:var(--space-6);align-items:start}
+.newgrid.tablet,.newgrid.mobile{grid-template-columns:1fr}
+.newgrid.mobile{padding-bottom:var(--space-16)}
+.newgrid.mobile .sumcard{border-radius:0;border-left:0;border-right:0}
+.sumcard{position:sticky;top:0;display:flex;flex-direction:column;gap:var(--space-3);padding:var(--space-5);background:var(--sheet);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg)}
+.sumcard p{margin:0}
+.sumtotal{display:flex;justify-content:space-between;align-items:baseline;padding-top:var(--space-3);border-top:var(--border-width) solid var(--line)}
+.stickybar{position:absolute;left:0;right:0;bottom:var(--bottomnav-height);display:flex;gap:var(--space-2);justify-content:flex-end;padding:var(--space-3) var(--space-4);background:var(--sheet);border-top:var(--border-width) solid var(--line);z-index:var(--z-sticky)}
+.stickybar .v-btn--primary{flex:1}
+.calbar{display:flex;justify-content:space-between;align-items:center;gap:var(--space-3);flex-wrap:wrap;margin-bottom:var(--space-3)}
+.calbar-date{margin-left:var(--space-2);white-space:nowrap}
+.calwrap.mobile{padding:0 var(--space-4)}
+.cx-rows{display:flex;flex-direction:column;border:var(--border-width) solid var(--line);border-radius:var(--radius-md)}
+.cx-rows>li{list-style:none;display:flex;align-items:center;gap:var(--space-3);padding:var(--space-3) var(--space-4);border-bottom:var(--border-width) solid var(--line);flex-wrap:wrap}
+.cx-rows>li:last-child{border-bottom:0}
+.cx-rows{margin:0;padding:0}
+.cx-grow{flex:1 1 auto;min-width:0}
+.cx-col{display:flex;flex-direction:column;min-width:0}
+.cx-pad{padding:0 var(--space-4)}
+.cx-gap{display:flex;align-items:center;gap:var(--space-2);color:var(--ink-secondary);padding:var(--space-1) var(--space-4)}
+.cx-tl{display:flex;flex-direction:column;gap:var(--space-2);margin:0;padding:0}
+.cx-tl li{list-style:none;display:grid;grid-template-columns:auto 1fr;gap:var(--space-2) var(--space-3);align-items:baseline}
+.cx-tl .v-num{white-space:nowrap}
+.scr-t .x-grid{grid-template-columns:1fr}
+.ts-err{display:flex;align-items:center;gap:var(--space-1);margin:0;color:var(--danger-ink)}
+.mu-step{display:flex;flex-direction:column;gap:var(--space-3);padding:var(--space-4);border:var(--border-width) solid var(--line);border-radius:var(--radius-md)}
+.mu-head{display:flex;align-items:center;gap:var(--space-2)}
+.mu-head .body-strong{flex:1 1 auto;min-width:0}
+.mu-gap{display:flex;align-items:center;gap:var(--space-2);padding-left:var(--space-4);color:var(--ink-secondary)}
+.pk-card{display:flex;flex-direction:column;gap:var(--space-2);padding:var(--space-4);border:var(--border-width) solid var(--line);border-radius:var(--radius-md)}
+.pk-card p{margin:0}
+.wl-msg{margin:0;padding:var(--space-3) var(--space-4);background:var(--raised);border-radius:var(--radius-md)}
+.x-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.mo-sum{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--space-3);margin:0}
+.mo-sum>div{display:flex;flex-direction:column;gap:var(--space-1);padding:var(--space-3);border:var(--border-width) solid var(--line);border-radius:var(--radius-md)}
+.mo-sum>div.is-due{background:var(--attention-soft,var(--raised));border-color:transparent}
+.mo-sum dd{margin:0}
+.mo-ind{padding-left:var(--space-10)}
+.mt-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:var(--space-6);align-items:start}
+.mt-grid.m{grid-template-columns:1fr}
+.mt-vars{display:flex;flex-wrap:wrap;align-items:center;gap:var(--space-2)}
+.mt-prev{position:sticky;top:0}
+.mt-mail .em{max-width:100%;box-sizing:border-box}
+.mt-sms{display:flex;flex-direction:column;align-items:flex-start;gap:var(--space-2);padding:var(--space-4);background:var(--raised);border-radius:var(--radius-md)}
+.mt-bubble{max-width:85%;padding:var(--space-3) var(--space-4);background:var(--sheet);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg) var(--radius-lg) var(--radius-lg) var(--radius-sm)}
+.pr-code{font-family:var(--font-mono,ui-monospace,monospace);letter-spacing:.04em}
+.pr-stats{padding:0!important}
+.rp-grid{display:grid;grid-template-columns:1fr 1fr;gap:var(--space-4)}
+.rp-grid.m{grid-template-columns:1fr}
+.rp-body{gap:var(--space-4)}
+.rp-body.m .x-stats{grid-template-columns:1fr 1fr;padding:0 var(--space-4)}
+.rp-up{color:var(--done-ink)}
+.rp-down{color:var(--danger-ink)}
+.in-ic{display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;border-radius:var(--radius-md);background:var(--raised);color:var(--ink-secondary);flex:none}
+.ai-card{display:flex;flex-direction:column;gap:var(--space-3);padding:var(--space-4) var(--space-5);background:var(--sheet);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg)}
+.ai-card p{margin:0}
+.ai-list{margin:0;padding-left:var(--space-5);display:flex;flex-direction:column;gap:var(--space-1)}
+.ai-ask{display:flex;gap:var(--space-2);width:100%;align-items:center}
+.ai-q{align-self:flex-end;max-width:85%;padding:var(--space-2) var(--space-4);background:var(--raised);border-radius:var(--radius-lg)}
+.wa-steps li{align-items:flex-start}
+.wa-n{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:var(--raised);color:var(--ink-secondary);flex:none}
+.fs-steps{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:var(--space-5)}
+.fs-step{display:flex;gap:var(--space-3);align-items:flex-start}
+.fs-step.done .wa-n{background:var(--done-soft);color:var(--done-ink)}
+.fs-ready{display:flex;flex-direction:column;gap:var(--space-3);margin-top:var(--space-5);padding:var(--space-4);border:var(--border-width) solid var(--line);border-radius:var(--radius-md)}
+/* S130 — ClientDesk */
+.cd-pad{padding:0 var(--space-4)}
+.cd-grow{flex:1 1 auto}
+.cd-foot{display:flex;align-items:center;gap:var(--space-2);width:100%;flex-wrap:wrap}
+.cd-foot.m{flex-direction:column-reverse;align-items:stretch}
+.cd-foot.m .cd-grow{display:none}
+.cd-name{display:inline-flex;align-items:center;gap:var(--space-3);min-width:0}
+.cd-namecol{display:flex;flex-direction:column;min-width:0}
+.cd-owner{display:inline-flex;align-items:center;gap:var(--space-2);min-width:0;white-space:nowrap}
+.cd-tags{gap:var(--space-1)}
+.cd-tools{display:flex;flex-wrap:wrap;align-items:center;gap:var(--space-2) var(--space-3)}
+.cd-tools.m{padding:0 var(--space-4);flex-direction:column;align-items:stretch}
+.cd-line{display:flex;align-items:center;gap:var(--space-2);min-width:0;flex-wrap:wrap}
+.cd-search{flex:1 1 220px;min-width:0;max-width:var(--search-width)}
+.cd-line .cd-search{max-width:none}
+.cd-chips{display:flex;flex-wrap:wrap;align-items:center;gap:var(--space-2)}
+.cd-chips.m{padding:0 var(--space-4)}
+.cd-grid{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:var(--space-6);align-items:start}
+.cd-grid.t,.cd-grid.m{grid-template-columns:1fr;gap:var(--space-4)}
+.cd-side{display:flex;flex-direction:column;gap:var(--space-4);min-width:0}
+.cd-feed{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.cd-fi{position:relative;display:grid;grid-template-columns:var(--space-8) minmax(0,1fr) auto;gap:var(--space-3);padding:0 0 var(--space-4)}
+.cd-fi:not(:last-child)::before{content:"";position:absolute;left:calc(var(--space-4) - var(--border-width) / 2);top:var(--space-8);bottom:0;border-left:var(--border-width) solid var(--line)}
+.cd-fic{width:var(--space-8);height:var(--space-8);border-radius:50%;display:inline-flex;align-items:center;justify-content:center;background:var(--sunken);color:var(--ink-secondary)}
+.cd-fbody{display:flex;flex-direction:column;gap:var(--space-1);min-width:0;padding-top:var(--space-1)}
+.cd-fbody p{margin:0}
+.cd-ftext.box{padding:var(--space-2) var(--space-3);border:var(--border-width) solid var(--line);border-radius:var(--radius-md);background:var(--sheet)}
+.cd-fwhen{padding-top:var(--space-1);white-space:nowrap}
+.cd-mention{color:var(--ink)}
+.cd-compose{display:flex;flex-direction:column;gap:var(--space-2)}
+.cd-compose .cd-line{justify-content:space-between}
+.cd-suggest{list-style:none;margin:0;padding:var(--space-1);border:var(--border-width) solid var(--line);border-radius:var(--radius-md);background:var(--sheet);box-shadow:var(--shadow-2);max-width:calc(var(--space-16) * 4)}
+.cd-suggest li{display:flex;align-items:center;gap:var(--space-2);padding:var(--space-1) var(--space-2);border-radius:var(--radius-sm)}
+.cd-suggest li.on{background:var(--selected)}
+.cd-file{display:flex;align-items:center;gap:var(--space-2);padding:var(--space-2) var(--space-3);border:var(--border-width) solid var(--line);border-radius:var(--radius-md)}
+.cd-acts{display:flex;flex-wrap:wrap;gap:var(--space-2)}
+.cd-acts.m{padding:0 var(--space-4)}
+.cd-ro{display:inline-flex;align-items:center;gap:var(--space-1)}
+.cd-colpick{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;border:var(--border-width) solid var(--line);border-radius:var(--radius-md)}
+.cd-colpick li{display:flex;align-items:center;gap:var(--space-2);padding:var(--space-2) var(--space-3);border-bottom:var(--border-width) solid var(--line)}
+.cd-colpick li:last-child{border-bottom:0}
+.cd-colpick .cd-grow{min-width:0}
+.cd-merge{display:grid;grid-template-columns:minmax(0,7rem) minmax(0,1fr) minmax(0,1fr);gap:var(--space-2) var(--space-3);align-items:center}
+.cd-merge.m{grid-template-columns:1fr}
+.cd-consent{display:flex;flex-direction:column;gap:var(--space-3)}
+.cd-consent>div{display:flex;flex-direction:column;gap:var(--space-1);padding-bottom:var(--space-3);border-bottom:var(--border-width) solid var(--line)}
+.cd-consent>div:last-child{border-bottom:0;padding-bottom:0}
+.cd-consent p{margin:0}
+.cd-sub{display:inline-flex;align-items:center;gap:var(--space-2);min-width:0;flex-wrap:wrap}
+.cd-today>li{flex-wrap:nowrap;align-items:flex-start}
+.cd-merge>*{min-width:0;overflow-wrap:anywhere}
+/* S131 — ClientDesk activities */
+.cd-acts-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.cd-act{display:flex;align-items:flex-start;justify-content:space-between;gap:var(--space-3);padding:var(--space-3) 0;border-bottom:var(--border-width) solid var(--line);flex-wrap:wrap}
+.cd-act:last-child{border-bottom:0}
+.cd-act>.v-checkbox,.cd-act>label{flex:1 1 280px;min-width:0}
+.cd-act.is-done .v-checkbox__label,.cd-act.is-done label{color:var(--ink-muted);text-decoration:line-through}
+.cd-actmeta{display:flex;align-items:center;gap:var(--space-3);flex-wrap:wrap;justify-content:flex-end;min-width:0}
+.cd-notif{position:absolute;top:calc(var(--space-12) + var(--space-2));right:var(--space-4);width:calc(var(--space-16) * 6);max-width:calc(100% - var(--space-8));z-index:var(--z-sticky);box-shadow:var(--shadow-3);border-radius:var(--radius-lg)}
+.cd-notif.m{left:var(--space-4);right:var(--space-4);width:auto;max-width:none}
+/* S132 — ClientDesk duplicates, import, settings */
+.cd-pairs{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.cd-pair{display:flex;flex-direction:column;gap:var(--space-2);padding:var(--space-3) 0;border-bottom:var(--border-width) solid var(--line)}
+.cd-pair:last-child{border-bottom:0}
+.cd-pairwho{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:var(--space-3);align-items:center;color:var(--ink-muted)}
+.cd-pairfoot{display:flex;justify-content:space-between;align-items:center;gap:var(--space-2);flex-wrap:wrap}
+.scr-m .cd-pairwho{grid-template-columns:1fr}
+.scr-m .cd-pairwho>.v-icon{display:none}
+.cd-stats3{grid-template-columns:repeat(3,minmax(0,1fr))!important;padding:0!important}
+.cd-stage{flex-wrap:nowrap}
+.cd-stage.m{flex-wrap:wrap}
+.cd-stagen{white-space:nowrap}
+/* S133 — ClientDesk automations, templates, e-mail, consent, sequences */
+.cd-tglsr .v-check__text{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.cd-autos{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.cd-auto{display:grid;grid-template-columns:var(--space-8) minmax(0,1fr) auto;gap:var(--space-3);align-items:center;padding:var(--space-3) 0;border-bottom:var(--border-width) solid var(--line)}
+.cd-auto:last-child{border-bottom:0}
+.cd-autobody{display:flex;flex-direction:column;gap:var(--space-1);min-width:0}
+.cd-autoend{display:flex;align-items:center;gap:var(--space-2)}
+.scr-m .cd-auto{grid-template-columns:var(--space-8) minmax(0,1fr)}
+.scr-m .cd-autoend{grid-column:2;justify-content:space-between}
+.cd-lock{display:flex;align-items:flex-start;gap:var(--space-2);padding:var(--space-3);border:var(--border-width) dashed var(--line);border-radius:var(--radius-md);background:var(--sunken)}
+.cd-lock p{margin:0}
+.cd-vars{display:flex;flex-wrap:wrap;gap:var(--space-2)}
+.cd-split{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:var(--space-6);align-items:start}
+.cd-split.m,.cd-split.t{grid-template-columns:1fr}
+.cd-mailwrap{display:flex;justify-content:center;overflow:hidden;padding:var(--space-4) 0}
+.cd-mailwrap .em{max-width:100%}
+.cd-steps{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.cd-step{display:grid;grid-template-columns:var(--space-8) minmax(0,1fr) auto;gap:var(--space-3);align-items:start;padding:var(--space-3) 0;border-bottom:var(--border-width) solid var(--line)}
+.cd-step:last-child{border-bottom:0}
+.cd-step.wait{padding:var(--space-2) 0}
+.cd-stepbody{display:flex;flex-direction:column;gap:var(--space-1);min-width:0}
+.cd-stepbody p{margin:0}
+.cd-stepend{display:flex;align-items:center;gap:var(--space-1)}
+.scr-m .cd-step{grid-template-columns:var(--space-8) minmax(0,1fr)}
+.scr-m .cd-stepend{grid-column:2}
+.cd-unsub{min-height:100%;height:100%;box-sizing:border-box;background:var(--canvas,var(--sunken));display:flex;flex-direction:column;align-items:center;padding:var(--space-8) var(--space-4)}
+.cd-unsubcard{width:100%;max-width:calc(var(--space-16) * 8);display:flex;flex-direction:column;gap:var(--space-4);padding:var(--space-6);background:var(--sheet);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg)}
+.cd-unsubcard h1,.cd-unsubcard p{margin:0}
+.cd-unsubbrand{display:flex;align-items:center;gap:var(--space-3)}
+/* S135 — Hub developer integrations */
+.ak-code{margin:0;padding:var(--space-3) var(--space-4);background:var(--sunken);border:var(--border-width) solid var(--line);border-radius:var(--radius-md);overflow:auto;font-family:var(--font-mono,ui-monospace,monospace);font-size:var(--text-caption,12px);line-height:1.6;color:var(--ink);white-space:pre}
+.ak-perm{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:var(--space-2) var(--space-4);align-items:center}
+.ak-perm .caption{text-align:center}
+.ak-secret{display:flex;gap:var(--space-2);align-items:center}
+.ak-secret>div{flex:1 1 auto;min-width:0}
+/* S136 — Faza 5 */
+.ft-langs{grid-template-columns:repeat(5,minmax(0,1fr))}
+.scr-t .ft-langs{grid-template-columns:repeat(3,minmax(0,1fr))}
+.x-body.m .ft-langs{grid-template-columns:1fr 1fr}
+.fn-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.fn-row{display:grid;grid-template-columns:var(--space-8) minmax(0,1fr) auto;gap:var(--space-3);align-items:center;padding:var(--space-3) 0;border-bottom:var(--border-width) solid var(--line)}
+.fn-row:last-child{border-bottom:0}
+.fn-row.is-unread .body-strong{color:var(--ink)}
+.scr-m .fn-row{grid-template-columns:var(--space-8) minmax(0,1fr)}
+.scr-m .fn-row>.v-btn{grid-column:2;justify-self:start}
+
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script>
+const V = window.Ventora;
+const { useState } = React;
+const h = React.createElement;
+const mount = (el) => ReactDOM.createRoot(document.getElementById("root")).render(h(V.LocaleProvider, { locale: "ro" }, el));
+/* keys: D = { ro: {...}, en: {...}, ... } — the same object as the i18n file */
+const mkT = (D) => (lang, key, vars) => { let s = (D[lang] && D[lang][key]) || D.ro[key] || key; if (vars) for (const k in vars) s = s.split("{" + k + "}").join(vars[k]); return s; };
+const noop = () => {};
+let __u = 0;
+const uid = () => "u" + (++__u);
+const ORGS = [{ id: "aurora", name: "Salon Aurora", role: "Proprietar" }, { id: "dentis", name: "Clinica Dentis Sibiu", role: "Recepție" }, { id: "nord", name: "Agenția Nord Studio", role: "Manager de proiect" }];
+const ORGS_L = {
+  de: [{ id: "aurora", name: "Salon Aurora", role: "Inhaber" }, { id: "dentis", name: "Clinica Dentis Sibiu", role: "Empfang" }],
+  it: [{ id: "aurora", name: "Salon Aurora", role: "Titolare" }, { id: "dentis", name: "Clinica Dentis Sibiu", role: "Reception" }]
+};
+const NOTIFS = [
+  { id: 1, title: "Programare nouă de la Ana Popescu", body: "Joi, 5 nov., 14:30 · Tuns", app: "EasyBook", time: "acum 5 min", person: "Ana Popescu" },
+  { id: 2, title: "Avans primit: 50 lei", body: "Cristina Dobre · Vopsit · vineri, 6 nov.", app: "EasyBook", time: "acum 1 oră", icon: "wallet" },
+  { id: 3, title: "Dan Stoica are acum „Risc ridicat”", body: "A doua programare la care nu a venit, în ultimele 6 luni", app: "EasyBook", time: "ieri", icon: "triangle-alert", read: true }
+];
+const NOTIFS_L = {
+  de: [{ id: 1, title: "Neuer Termin von Anna Schmidt", body: "Do., 5. Nov., 14:30 · Haarschnitt", app: "EasyBook", time: "vor 5 Min.", person: "Anna Schmidt" }],
+  it: [{ id: 1, title: "Nuovo appuntamento di Anna Russo", body: "gio 5 nov., 14:30 · Taglio", app: "EasyBook", time: "5 min fa", person: "Anna Russo" }]
+};
+const USER = { name: "Bianca Petrașcu", email: "bianca@salonaurora.ro" };
+const isL = (lang) => lang === "de" || lang === "it";
+/* ---- Hub settings shell ---- */
+const HUB_SECTIONS = {
+  ro: [
+    { label: "Contul tău", items: [{ id: "profil", label: "Profil și preferințe", short: "Profil", icon: "circle-user" }, { id: "securitate", label: "Securitate", icon: "shield" }] },
+    { label: "Afacerea", items: [{ id: "echipa", label: "Echipă și invitații", short: "Echipă", icon: "users" }, { id: "roluri", label: "Roluri și acces", icon: "key-round" }, { id: "abonament", label: "Abonament și consum", short: "Abonament", icon: "credit-card" }, { id: "automatizari", label: "Automatizări", icon: "refresh-cw" }] },
+    { label: "Ajutor", items: [{ id: "suport", label: "Suport", icon: "life-buoy", badge: 1 }] }
+  ],
+  de: [
+    { label: "Ihr Konto", items: [{ id: "profil", label: "Profil und Einstellungen", short: "Profil", icon: "circle-user" }, { id: "securitate", label: "Sicherheit", icon: "shield" }] },
+    { label: "Unternehmen", items: [{ id: "echipa", label: "Team und Einladungen", short: "Team", icon: "users" }, { id: "roluri", label: "Rollen und Zugriff", short: "Rollen", icon: "key-round" }, { id: "abonament", label: "Abonnement und Verbrauch", short: "Abonnement", icon: "credit-card" }, { id: "automatizari", label: "Automatisierungen", short: "Automatik", icon: "refresh-cw" }] },
+    { label: "Hilfe", items: [{ id: "suport", label: "Support", icon: "life-buoy", badge: 1 }] }
+  ],
+  it: [
+    { label: "Il Suo account", items: [{ id: "profil", label: "Profilo e preferenze", short: "Profilo", icon: "circle-user" }, { id: "securitate", label: "Sicurezza", icon: "shield" }] },
+    { label: "Attività", items: [{ id: "echipa", label: "Team e inviti", short: "Team", icon: "users" }, { id: "roluri", label: "Ruoli e accesso", short: "Ruoli", icon: "key-round" }, { id: "abonament", label: "Abbonamento e utilizzo", short: "Abbonamento", icon: "credit-card" }, { id: "automatizari", label: "Automazioni", icon: "refresh-cw" }] },
+    { label: "Aiuto", items: [{ id: "suport", label: "Assistenza", icon: "life-buoy", badge: 1 }] }
+  ]
+};
+function HubSettings({ active, title, children, lang = "ro" }) {
+  const L = isL(lang) ? lang : "ro";
+  return h(V.AppShell, {
+    height: "100%",
+    spine: h(V.Spine, { hub: true, sections: HUB_SECTIONS[L], activeId: active, onBackToHub: noop, bottomItems: ["profil", "echipa", "abonament", "suport"] }),
+    contextBar: h(V.ContextBar, { title, org: h(V.OrgSwitcher, { orgs: isL(lang) ? ORGS_L[lang] : ORGS, currentId: "aurora" }), onSearch: noop,
+      notifications: h(V.NotificationsPanel, { items: isL(lang) ? NOTIFS_L[lang] : NOTIFS }), account: h(V.AccountMenu, { user: USER, orgs: ORGS, currentOrgId: "aurora", onCatalog: noop }) })
+  }, children);
+}
+/* ---- EasyBook shell ---- */
+const BK_SECTIONS = {
+  ro: [
+    { items: [{ id: "azi", label: "Azi", icon: "house" }, { id: "calendar", label: "Calendar", icon: "calendar" }, { id: "programari", label: "Programări", icon: "list", badge: 3 }] },
+    { label: "Gestionare", items: [{ id: "clienti", label: "Clienți", icon: "users" }, { id: "servicii", label: "Servicii", icon: "boxes" }, { id: "angajati", label: "Echipa", icon: "contact" }] },
+    { label: "Afacere", items: [{ id: "rapoarte", label: "Rapoarte", icon: "chart-column" }, { id: "setari", label: "Setări", icon: "settings" }] }
+  ],
+  de: [
+    { items: [{ id: "azi", label: "Heute", icon: "house" }, { id: "calendar", label: "Kalender", icon: "calendar" }, { id: "programari", label: "Termine", icon: "list", badge: 3 }] },
+    { label: "Verwaltung", items: [{ id: "clienti", label: "Kunden", icon: "users" }, { id: "servicii", label: "Leistungen", icon: "boxes" }, { id: "angajati", label: "Team", icon: "contact" }] },
+    { label: "Unternehmen", items: [{ id: "rapoarte", label: "Berichte", icon: "chart-column" }, { id: "setari", label: "Einstellungen", icon: "settings" }] }
+  ],
+  it: [
+    { items: [{ id: "azi", label: "Oggi", icon: "house" }, { id: "calendar", label: "Calendario", icon: "calendar" }, { id: "programari", label: "Appuntamenti", icon: "list", badge: 3 }] },
+    { label: "Gestione", items: [{ id: "clienti", label: "Clienti", icon: "users" }, { id: "servicii", label: "Servizi", icon: "boxes" }, { id: "angajati", label: "Team", icon: "contact" }] },
+    { label: "Attività", items: [{ id: "rapoarte", label: "Report", icon: "chart-column" }, { id: "setari", label: "Impostazioni", icon: "settings" }] }
+  ]
+};
+const BK_USAGE = { ro: "Programări în noiembrie", de: "Termine im November", it: "Appuntamenti a novembre" };
+function BookingApp({ active, title, children, lang = "ro", footer }) {
+  const L = isL(lang) ? lang : "ro";
+  return h(V.AppShell, {
+    height: "100%",
+    spine: h(V.Spine, { app: "booking", sections: BK_SECTIONS[L], activeId: active, onBackToHub: noop, bottomItems: ["azi", "calendar", "programari", "clienti"],
+      footer: footer === false ? null : h(V.UsageMeter, { compact: true, label: BK_USAGE[L], used: 312, limit: 1e3 }) }),
+    contextBar: h(V.ContextBar, { title: title || "EasyBook", org: h(V.OrgSwitcher, { orgs: isL(lang) ? ORGS_L[lang] : ORGS, currentId: "aurora" }), onSearch: noop,
+      notifications: h(V.NotificationsPanel, { items: isL(lang) ? NOTIFS_L[lang] : NOTIFS }), account: h(V.AccountMenu, { user: USER, orgs: ORGS, currentOrgId: "aurora", onCatalog: noop }) })
+  }, children);
+}
+/* ---- Founder shell: "Suport" after "Cereri", "Automatizări" in "Sistem" ---- */
+const FX_NAV = [
+  { items: [{ id: "azi", label: "Prezentare", short: "Prezentare", icon: "house" }, { id: "afaceri", label: "Afaceri", icon: "building-2" }, { id: "consum", label: "Consum", icon: "chart-column" }, { id: "cereri", label: "Cereri", icon: "inbox", badge: 2 }, { id: "suport", label: "Suport", icon: "life-buoy", badge: 3 }] },
+  { label: "Model comercial", items: [{ id: "aplicatii", label: "Aplicații", icon: "layout-grid" }, { id: "bundles", label: "Bundle-uri", icon: "boxes" }, { id: "pachete", label: "Pachete în plus", short: "Pachete", icon: "package" }, { id: "reduceri", label: "Reduceri", icon: "percent" }] },
+  { label: "Growth", items: [{ id: "oferte", label: "Oferte", icon: "ticket" }, { id: "campanii", label: "Campanii", icon: "megaphone" }, { id: "audiente", label: "Audiențe", icon: "users" }, { id: "rezultate", label: "Rezultate", icon: "chart-line" }, { id: "control", label: "Control", icon: "sliders-horizontal" }] },
+  { label: "Sistem", items: [{ id: "automatizari", label: "Automatizări", icon: "refresh-cw" }, { id: "jurnal", label: "Jurnal", icon: "history" }, { id: "setari", label: "Setări", icon: "settings" }] }
+];
+const FX_NOTIFS = [
+  { id: 1, title: "Solicitare nouă de la Salon Aurora", body: "EasyBook · Avansul nu apare în fișa clientului", app: "Suport", time: "acum 12 min", icon: "life-buoy" },
+  { id: 2, title: "„Rezumatul zilei” a eșuat de 3 ori", body: "Fitness Atlas · adresa unui membru respinge e-mailurile", app: "Automatizări", time: "azi, 07:05", icon: "triangle-alert" }
+];
+function FX_App({ active, title, children, bottom }) {
+  return h(V.AppShell, {
+    height: "100%",
+    spine: h(V.Spine, { hub: true, appName: "Founder", sections: FX_NAV, activeId: active, onBackToHub: noop, bottomItems: bottom || ["afaceri", "cereri", "suport", "automatizari"] }),
+    contextBar: h(V.ContextBar, { title, onSearch: noop, searchLabel: "Caută o afacere, o solicitare sau o automatizare", notifications: h(V.NotificationsPanel, { items: FX_NOTIFS }), account: h(V.AccountMenu, { user: { name: "Bianca Petrașcu", email: "bianca@ventorasystems.com" } }) })
+  }, children);
+}
+const AX_Body = ({ mode, children }) => h("div", { className: "axb " + mode }, children);
+/* ---- frames ---- */
+function Board({ title, notes, items, dH = 900, mH = 1000 }) {
+  return h("div", { className: "scr" },
+    h("p", { className: "heading" }, title),
+    notes ? h("p", { className: "caption muted" }, notes.join(" · ")) : null,
+    items.map(([lab, render, D = dH, M = mH]) => h("div", { key: lab, className: "tfa-scrgroup" },
+      h("p", { className: "subheading tfa-grouplab" }, lab),
+      ["light", "dark"].map((th) => h("div", { className: "scr-row", key: th },
+        [["desktop", "Desktop · 1280", "scr-d", D], ["mobile", "Telefon · 390", "scr-m", M]].map(([m, l, cls, H]) => h("div", { key: m },
+          h("p", { className: "caption scr-lab" }, l, " · ", th === "light" ? "Light" : "Dark"),
+          h("div", { className: cls, "data-theme": th, style: { height: H, position: "relative", overflow: "hidden" } }, render(m, th)))))))));
+}
+/* main view in German at 1280 and Italian at 390 (and the other way round in dark) */
+function LocTest({ title, items }) {
+  return h("div", { className: "scr" },
+    h("p", { className: "heading" }, title || "Test cu etichete în germană și italiană"),
+    h("p", { className: "caption muted" }, "Același ecran, cu textele traduse, ca să vedem că etichetele mai lungi încap. Toate cele 6 limbi sunt în fișierul i18n."),
+    h("div", { className: "scr-row" }, items.map(([lab, lang, mode, th, H, el]) => h("div", { key: lab },
+      h("p", { className: "caption scr-lab" }, lab),
+      h("div", { className: mode === "mobile" ? "scr-m" : "scr-d", "data-theme": th, lang, style: { height: H, position: "relative", overflow: "hidden" } }, h(V.LocaleProvider, { locale: lang }, el))))));
+}
+const Overlay = ({ mode, children }) => h("div", { className: "ss-overlay" + (mode === "mobile" ? " m" : "") }, children);
+const ToastAt = ({ mode, title, description, tone = "done" }) => h("div", { className: "ss-toast" + (mode === "mobile" ? " m" : "") }, h(V.Toast, { tone, title, description, onDismiss: noop }));
+const Box = ({ label, children, cls }) => h("div", { className: "sms-box" + (cls ? " " + cls : "") }, h("p", { className: "caption sms-boxlab" }, label), h("div", { className: "sms-boxbody" }, children));
+const DD = ({ tag, children }) => h("span", { className: "x-dd caption" }, h(V.Icon, { name: "lightbulb", size: 14 }), "DE DECIS", tag ? " · " + tag : "", children ? h("span", { className: "x-dd-t" }, children) : null);
+/* ---- the single operational e-mail template (S3) ---- */
+function Mail({ m, w = 600 }) {
+  return h("div", { className: "em", "data-theme": "light", style: { width: w } },
+    h("div", { className: "em-inbox" },
+      h("p", { className: "caption em-mute" }, m.fromLabel + ": " + m.from + " · " + m.toLabel + ": " + m.to),
+      h("p", { className: "body-strong em-subj" }, m.subject),
+      h("p", { className: "body-small em-mute" }, m.pre)),
+    h("div", { className: "em-canvas" },
+      h("div", { className: "em-card" },
+        h("div", { className: "em-head" }, m.head || h(V.Logo, { size: 24, title: "Ventora Systems" })),
+        h("div", { className: "em-body" },
+          m.eyebrow ? h("p", { className: "caption em-mute em-eyebrow" }, m.eyebrow) : null,
+          h("h1", { className: "heading em-title" }, m.title),
+          m.code ? h("p", { className: "em-code v-num" }, m.code) : null,
+          m.greet ? h("p", { className: "body" }, m.greet) : null,
+          m.lead ? h("p", { className: "body" }, m.lead) : null,
+          m.kv ? h("dl", { className: "kv em-kv" }, m.kv.map(([k, v]) => h(React.Fragment, { key: k }, h("dt", { className: "caption" }, k), h("dd", { className: "body" }, v)))) : null,
+          m.extra ? m.extra.map((x, i) => h("p", { key: i, className: "body" }, x)) : null,
+          m.cta ? h("a", { className: "em-btn body-strong", href: "#" }, m.cta) : null,
+          m.cta2 ? h("a", { className: "v-link body-small", href: "#" }, m.cta2) : null,
+          m.after ? h("p", { className: "body-small em-mute" }, m.after) : null)),
+      h("div", { className: "em-foot" },
+        m.why ? h("p", { className: "caption em-mute" }, m.why) : null,
+        h("p", { className: "caption em-mute" }, m.foot))));
+}
+
+const FG = {"ro": {"founder.growth.common.cumpara": "Cumpără", "founder.growth.common.stare": "Stare", "founder.growth.common.dataview14ZileGratuit": "DataView, 14 zile gratuit", "founder.growth.common.perioadaDeProba": "Perioadă de probă", "founder.growth.common.clientdeskPentruClientiiDin": "ClientDesk pentru clienții din EasyBook", "founder.growth.common.veziOptiunile": "Vezi opțiunile", "founder.growth.common.oferte": "Oferte", "founder.growth.common.oferta": "Ofertă", "founder.growth.common.editeaza": "Editează", "founder.growth.common.activa": "Activă", "founder.growth.common.limba": "Limba", "founder.growth.common.mod": "Mod", "founder.growth.common.campanie": "Campanie", "founder.growth.common.deranj": "Deranj", "founder.growth.common.campanii": "Campanii", "founder.growth.common.abonamentSiConsum": "Abonament și consum", "founder.growth.common.easybookFaraClientdesk": "EasyBook fără ClientDesk", "founder.growth.common.smsPeste80": "SMS peste 80%", "founder.growth.common.peCampanie": "Pe campanie", "founder.growth.common.aplicatiiActive": "Aplicații active", "founder.growth.common.nuInclude": "nu include", "founder.growth.common.abonament": "Abonament", "founder.growth.common.nuEste": "nu este", "founder.growth.common.start": "Start", "founder.growth.common.business": "Business", "founder.growth.common.businessPlus": "Business Plus", "founder.growth.common.consum": "Consum", "founder.growth.common.vechimeaAfacerii": "Vechimea afacerii", "founder.growth.common.stadiulDeOnboarding": "Stadiul de onboarding", "founder.growth.common.activ": "Activ", "founder.growth.common.matur": "Matur", "founder.growth.common.rol": "Rol", "founder.growth.common.proprietar": "Proprietar", "founder.growth.common.admin": "Admin", "founder.growth.common.membru": "Membru", "founder.growth.common.limba2": "Limbă", "founder.growth.common.english": "English", "founder.growth.common.deutsch": "Deutsch", "founder.growth.common.italiano": "Italiano", "founder.growth.common.tara": "Țară", "founder.growth.common.moldova": "Moldova", "founder.growth.common.italia": "Italia", "founder.growth.common.germania": "Germania", "founder.growth.common.numarDeUtilizatori": "Număr de utilizatori", "founder.growth.common.aprobat": "Aprobat", "founder.growth.common.lipseste": "Lipsește", "founder.growth.common.dataviewDeBlackFriday": "DataView de Black Friday", "founder.growth.common.launcherNotificari": "Launcher, Notificări", "founder.growth.common.programata": "Programată", "founder.growth.common.campaignkitPentruSaloane": "CampaignKit pentru saloane", "founder.growth.common.opritaDeranjPestePrag": "Oprită: deranj peste prag", "founder.growth.offers.ofertaNoua": "Ofertă nouă", "founder.growth.offers.tip": "Tip", "founder.growth.offers.actiune": "Acțiune", "founder.growth.offers.texteAprobate": "Texte aprobate", "founder.growth.offers.aplicatie": "Aplicație", "founder.growth.offers.businessPlusPentruAfacerile": "Business Plus pentru afacerile la limită", "founder.growth.offers.abonament": "Abonament", "founder.growth.offers.cereAltAbonament": "Cere alt abonament", "founder.growth.offers.ciorna": "Ciornă", "founder.growth.offers.duplica": "Duplică", "founder.growth.offers.opresteOferta": "Oprește oferta", "founder.growth.offerEditor.ceOfera": "Ce oferă", "founder.growth.offerEditor.tipulOfertei": "Tipul ofertei", "founder.growth.offerEditor.activareaUneiAplicatii": "Activarea unei aplicații", "founder.growth.offerEditor.altAbonament": "Alt abonament", "founder.growth.offerEditor.pachetDeAplicatii": "Pachet de aplicații", "founder.growth.offerEditor.obiectul": "Obiectul", "founder.growth.offerEditor.actiunea": "Acțiunea", "founder.growth.offerEditor.costuriAfisateDinModelul": "Costuri afișate (din modelul comercial)", "founder.growth.offerEditor.gratuit14ZileApoi": "Gratuit 14 zile. Apoi 79 lei pe lună, doar dacă alegi să continui. Fără cost de implementare.", "founder.growth.offerEditor.texte": "Texte", "founder.growth.offerEditor.editeazaTextul": "Editează textul ", "founder.growth.offerEditor.previzualizare": "Previzualizare", "founder.growth.offerEditor.veziCeAduceFiecare": "Vezi ce aduce fiecare serviciu", "founder.growth.campaigns.campanieNoua": "Campanie nouă", "founder.growth.campaigns.sloturi": "Sloturi", "founder.growth.campaigns.veziRezultatele": "Vezi rezultatele", "founder.growth.campaigns.opresteCampania": "Oprește campania", "founder.growth.campaignEditor.automatLaUnSemnal": "Automat, la un semnal", "founder.growth.campaignEditor.semnalul": "Semnalul", "founder.growth.campaignEditor.integrareLipsaAreEasybook": "Integrare lipsă: are EasyBook, nu are ClientDesk", "founder.growth.campaignEditor.consumPesteUnPrag": "Consum peste un prag", "founder.growth.campaignEditor.stadiuDeOnboarding": "Stadiu de onboarding", "founder.growth.campaignEditor.perioada": "Perioada", "founder.growth.campaignEditor.oferta": "Oferta", "founder.growth.campaignEditor.undeApare": "Unde apare", "founder.growth.campaignEditor.launcherEFolositSi": "Launcher e folosit și de „Analytics de Black Friday”", "founder.growth.campaignEditor.cineOVede": "Cine o vede", "founder.growth.campaignEditor.doarCriteriilePermiseCriteriile": "Doar criteriile permise; criteriile sensibile nu există ca opțiune. Membrii pot primi doar „Recomandă aplicația”, niciodată o ofertă de cumpărare.", "founder.growth.campaignEditor.prioritateSiPlafoane": "Prioritate și plafoane", "founder.growth.campaignEditor.prioritate": "Prioritate", "founder.growth.campaignEditor.plafoaneleGlobaleSeAplica": "Plafoanele globale se aplică și aici", "founder.growth.campaignEditor.previzualizarePeSlot": "Previzualizare pe slot", "founder.growth.campaignEditor.launcher": "Launcher", "founder.growth.campaignEditor.salveazaCiorna": "Salvează ciorna", "founder.growth.campaignEditor.publicaSchimbarile": "Publică schimbările", "founder.growth.audiences.audiente": "Audiențe", "founder.growth.audiences.audientaNoua": "Audiență nouă", "founder.growth.audiences.audienta": "Audiență", "founder.growth.audiences.reguli": "Reguli", "founder.growth.audiences.afaceriEligibile": "Afaceri eligibile", "founder.growth.audiences.sub5": "Sub 5", "founder.growth.audiences.aproximativ": "aproximativ ", "founder.growth.audiences.1Campanie": "1 campanie", "founder.growth.audiences.saloaneNoi": "Saloane noi", "founder.growth.audiences.limbaItaliano": "Limba: Italiano", "founder.growth.audiences.pensiuniCuEventspace": "Pensiuni cu EventSpace", "founder.growth.audiences.nuSePoateFolosi": "Nu se poate folosi: sub 5 afaceri", "founder.growth.control.control": "Control", "founder.growth.control.oprireGlobala": "Oprire globală", "founder.growth.control.opresteToateRecomandarileVentora": "Oprește toate recomandările Ventora Systems, pentru toate afacerile.", "founder.growth.control.recomandarileVentoraSystems": "Recomandările Ventora Systems", "founder.growth.control.pornite": "Pornite", "founder.growth.control.oprite": "Oprite", "founder.growth.control.programata": "Programată", "founder.growth.control.peSlot": "Pe slot", "founder.growth.control.plafoaneGlobale": "Plafoane globale", "founder.growth.control.peZi": "Pe zi", "founder.growth.control.recomandari": "recomandări", "founder.growth.control.pauzaDupaNuMa": "Pauză după „Nu mă interesează”", "founder.growth.control.deZile": "de zile", "founder.growth.control.pragDeOprireAutomata": "Prag de oprire automată", "founder.growth.control.nuMaIntereseazaLa": "„Nu mă interesează” la 100 de afișări. Implicit 5%. La oprire primești o notificare.", "founder.growth.control.jurnalulModificarilor": "Jurnalul modificărilor", "founder.growth.control.jurnal": "Jurnal", "founder.growth.control.ceSASchimbat": "Ce s-a schimbat", "founder.growth.control.cine": "Cine", "founder.growth.control.opritaAutomatMarketingPentru": "Oprită automat: „Marketing pentru saloane” (deranj 6,2%)", "founder.growth.control.sistem": "Sistem", "founder.growth.results.rezultate": "Rezultate", "founder.growth.results.octombrieToateCampaniileRata": "Octombrie, toate campaniile. Rata de deranjare e semnalul care contează primul.", "founder.growth.results.perioada": "Perioadă", "founder.growth.results.luna": "Luna", "founder.growth.results.trimestrul": "Trimestrul", "founder.growth.results.marketingPentruSaloaneA": "„Marketing pentru saloane” a trecut de pragul de deranj", "founder.growth.results.rataDeDeranjare": "Rata de deranjare", "founder.growth.results.afisari": "Afișări", "founder.growth.results.clickUri": "Click-uri", "founder.growth.results.91DinAfisari": "9,1% din afișări", "founder.growth.results.conversii": "Conversii", "founder.growth.results.85DinClick": "8,5% din click-uri", "founder.growth.results.nuMaIntereseaza": "„Nu mă interesează”", "founder.growth.results.din12480De": "din 12.480 de afișări", "founder.growth.results.venitAtribuit": "Venit atribuit", "founder.growth.results.fataDeSeptembrie": "față de septembrie", "founder.growth.results.auOpritRecomandarile": "Au oprit recomandările", "founder.growth.results.dinPreferinteleContului": "din preferințele contului", "founder.growth.results.pragulDeOprireAutomata": "Pragul de oprire automată e 5%", "founder.growth.results.rataDeDeranjare2": "Rata de deranjare (%)", "founder.growth.results.venit": "Venit", "founder.growth.results.campaignkitPentruSaloane": "CampaignKit pentru saloane", "founder.growth.translations.lead": "Textele ofertelor și campaniilor, pe limbi. O ofertă pornește într-o limbă doar cu toate textele aprobate.", "founder.growth.translations.lang.ro": "Română", "founder.growth.translations.lang.en": "Engleză", "founder.growth.translations.lang.fr": "Franceză", "founder.growth.translations.lang.es": "Spaniolă", "founder.growth.translations.lang.de": "Germană", "founder.growth.translations.lang.it": "Italiană", "founder.growth.translations.ofTotal": "din {n} aprobate", "founder.growth.translations.drafts": "{n} ciorne de verificat", "founder.growth.translations.block.title": "„{offer}” nu pornește în {lang}", "founder.growth.translations.block.body": "{n} texte nu sunt aprobate. Afacerile cu interfața în italiană nu văd oferta până atunci.", "founder.growth.translations.block.action": "Tradu textele lipsă", "founder.growth.translations.f.lang": "Limba", "founder.growth.translations.f.state": "Starea", "founder.growth.translations.f.source": "Oferta sau campania", "founder.growth.translations.f.allSources": "Toate ofertele și campaniile", "founder.growth.translations.st.all": "Toate stările", "founder.growth.translations.st.missing": "Lipsește", "founder.growth.translations.st.draft": "Ciornă", "founder.growth.translations.st.approved": "Aprobată", "founder.growth.translations.aiAll": "Propune cu AI textele lipsă ({n})", "founder.growth.translations.count": "{lang} · {n} texte", "founder.growth.translations.col.text": "Text", "founder.growth.translations.col.ro": "Originalul (română)", "founder.growth.translations.col.tr": "Traducerea", "founder.growth.translations.col.state": "Stare", "founder.growth.translations.kind.offer": "Ofertă", "founder.growth.translations.kind.campaign": "Campanie", "founder.growth.translations.field.title": "Titlu", "founder.growth.translations.field.benefit": "Beneficiu", "founder.growth.translations.field.action": "Buton", "founder.growth.translations.act.edit": "Editează", "founder.growth.translations.ai": "Propune cu AI", "founder.growth.translations.approve": "Aprobă", "founder.growth.translations.aiMark": "Propunere AI · neverificată", "founder.growth.translations.aiRule": "Textele propuse cu AI rămân ciorne până când un om le citește și le aprobă. Nicio ofertă nu folosește o ciornă.", "founder.growth.translations.e.title": "{field} · {src}", "founder.growth.translations.e.sub": "Traducere în {lang}", "founder.growth.translations.e.prev": "Textul anterior", "founder.growth.translations.e.draft": "Salvează ciorna", "founder.growth.translations.e.original": "Originalul (română)", "founder.growth.translations.e.translation": "Traducerea ({lang})", "founder.growth.translations.e.limit": "{n} din {max} caractere", "founder.growth.translations.e.placeholder": "Scrie traducerea sau cere o propunere AI", "founder.growth.translations.e.aiTitle": "Propunere AI: citește înainte să aprobi", "founder.growth.translations.e.aiBody": "Verifică tonul („Lei” în italiană), prețurile în moneda afacerii și numele aplicațiilor, care nu se traduc.", "founder.growth.translations.e.aiAgain": "Altă propunere", "founder.growth.translations.e.where": "Unde apare", "founder.growth.translations.e.whereV": "RecommendationCard · EasyBook › Azi, Launcher", "founder.growth.translations.e.tone": "Ton", "founder.growth.translations.e.toneV": "Formal („Lei”), ca în restul interfeței italiene", "founder.growth.translations.e.history": "Istoric", "founder.growth.translations.e.historyAi": "Propus cu AI azi la 10:12; neaprobat", "founder.growth.translations.e.historyNone": "Niciun text încă", "founder.growth.translations.e.glossary": "Numele aplicațiilor, „Ventora Systems” și moneda nu se traduc.", "founder.growth.translations.s.title": "Pornești „{offer}”?", "founder.growth.translations.s.lead": "Oferta pornește doar în limbile cu toate textele aprobate.", "founder.growth.translations.s.ready": "Gata", "founder.growth.translations.s.missing": "{n} texte neaprobate", "founder.growth.translations.s.rule": "În franceză și italiană pornește singură când textele sunt aprobate.", "founder.growth.translations.s.fallback": "Nu arătăm oferta într-o altă limbă decât cea a interfeței afacerii.", "founder.growth.translations.s.submit": "Pornește în {n} limbi", "founder.growth.translations.cancel": "Renunță", "founder.growth.translations.approved": "Am aprobat textul în italiană", "founder.growth.translations.approvedDesc": "Mai sunt 2 texte până pornește oferta în italiană."}};
+const FO = {"ro": {"founder.nav.translations": "Traduceri", "founder.nav.analytics": "Analytics", "founder.notifications.title": "Notificări", "founder.notifications.lead": "Ce s-a întâmplat și are nevoie de tine: opriri automate, suport, facturi, cereri de configurare.", "founder.notifications.markAll": "Marchează toate ca citite", "founder.notifications.tab.unread": "Necitite · {n}", "founder.notifications.tab.all": "Toate", "founder.notifications.type": "Tip", "founder.notifications.type.all": "Toate tipurile", "founder.notifications.type.auto": "Oprire automată", "founder.notifications.type.support": "Suport", "founder.notifications.type.invoice": "Facturi", "founder.notifications.type.setup": "Configurare", "founder.notifications.new": "Nou", "founder.notifications.see": "Vezi", "founder.notifications.close": "Închide", "founder.notifications.cancel": "Renunță", "founder.notifications.t.min": "acum {n} min", "founder.notifications.t.today": "azi, {time}", "founder.notifications.t.yesterday": "ieri", "founder.notifications.n.auto": "Growth a oprit „Marketing pentru saloane”", "founder.notifications.n.autoBody": "Prea multe „Nu mă interesează”: 6,2% la 100 de afișări, peste pragul de 5%.", "founder.notifications.n.auto2": "Growth a oprit oferta „Business Plus pentru afacerile la limită”", "founder.notifications.n.auto2Body": "3 plângeri de la proprietari în 24 de ore.", "founder.notifications.n.auto3": "Growth a oprit „DataView de Black Friday”", "founder.notifications.n.auto3Body": "Bugetul de 200 de perioade de probă s-a terminat.", "founder.notifications.n.auto4": "Growth a oprit „SMS peste 80%”", "founder.notifications.n.auto4Body": "Eroare: oferta nu are preț în modelul comercial pentru „Start”.", "founder.notifications.n.support": "Solicitare nouă de la Salon Aurora", "founder.notifications.n.supportBody": "EasyBook · Avansul nu apare în fișa clientului · Mă blochează", "founder.notifications.n.invoice": "2 facturi nu s-au emis", "founder.notifications.n.invoiceBody": "SmartBill a respins datele de facturare pentru Fitness Atlas și Clinica Dentis Sibiu.", "founder.notifications.n.setup": "Cerere de configurare: Pensiunea Valea Verde", "founder.notifications.n.setupBody": "EventSpace cu implementare · oferta e de trimis", "founder.notifications.empty.title": "Nicio notificare", "founder.notifications.empty.body": "Când Growth oprește ceva sau o afacere are nevoie de tine, apare aici și în clopoțel.", "founder.notifications.a.title": "Oprire automată", "founder.notifications.a.sub": "Marketing pentru saloane · azi, 09:41", "founder.notifications.a.what": "Campania s-a oprit singură", "founder.notifications.a.whatBody": "Recomandarea nu mai apare la nicio afacere. Nimic nu s-a șters; statisticile rămân.", "founder.notifications.a.reason": "Motiv", "founder.notifications.a.reasonV": "„Nu mă interesează” la 6,2% din afișări (prag: 5%), la 1.240 de afișări", "founder.notifications.a.stopped": "Ce s-a oprit", "founder.notifications.a.stoppedV": "Campania „Marketing pentru saloane” · oferta „CampaignKit pentru saloane” rămâne activă în alte campanii", "founder.notifications.a.when": "Când", "founder.notifications.a.whenV": "Azi, 09:41", "founder.notifications.a.by": "Cine", "founder.notifications.a.byV": "Growth Engine (automat)", "founder.notifications.a.impact": "Afaceri care o vedeau", "founder.notifications.a.impactV": "312", "founder.notifications.a.reasonsTitle": "Când oprește Growth singur", "founder.notifications.a.reasonsLead": "Pragurile se schimbă în Growth › Control.", "founder.notifications.r.deranj": "Prea multe „Nu mă interesează”", "founder.notifications.r.deranjHelp": "Peste pragul de deranj, implicit 5% la 100 de afișări", "founder.notifications.r.complaints": "Plângeri", "founder.notifications.r.complaintsHelp": "3 plângeri de la proprietari în 24 de ore", "founder.notifications.r.budget": "Buget atins", "founder.notifications.r.budgetHelp": "Numărul de perioade de probă sau reduceri s-a terminat", "founder.notifications.r.error": "Eroare", "founder.notifications.r.errorHelp": "Oferta nu se mai potrivește cu modelul comercial (preț, aplicație, abonament)", "founder.notifications.a.seeCampaign": "Vezi campania", "founder.notifications.a.restart": "Repornește", "founder.notifications.a.log": "Oprirea și orice repornire intră în jurnalul Growth.", "founder.notifications.re.title": "Repornești „{name}”?", "founder.notifications.re.lead": "Recomandarea apare din nou la afacerile eligibile, sub plafoanele globale.", "founder.notifications.re.warn": "Pragul de deranj rămâne 5%", "founder.notifications.re.warnBody": "Dacă nu s-a schimbat nimic, campania se va opri din nou.", "founder.notifications.re.changed": "Ce ai schimbat", "founder.notifications.re.changedHelp": "Intră în jurnal, lângă oprire.", "founder.notifications.re.watch": "Anunță-mă dacă se oprește din nou", "founder.notifications.re.watchHelp": "Notificare în clopoțel și pe e-mail.", "founder.notifications.re.log": "Afacerile care au spus „Nu mă interesează” nu o mai văd 30 de zile, oricum.", "founder.notifications.re.submit": "Repornește", "founder.notifications.re.done": "Am repornit „Marketing pentru saloane”", "founder.notifications.re.doneDesc": "Prima afișare apare în următoarea oră.", "founder.analytics.lead": "Cum e folosit produsul: date agregate, fără cookie-uri de urmărire.", "founder.analytics.tab.product": "Produsul", "founder.analytics.tab.activation": "Activarea", "founder.analytics.tab.growth": "Sloturile Growth", "founder.analytics.privacy.title": "Fără cookie-uri de urmărire, niciodată per persoană", "founder.analytics.privacy.body": "Măsurăm pe server, pe afacere și pe aplicație, și arătăm doar totaluri. Grupurile cu mai puțin de 5 afaceri nu se arată. Nu vezi ce a făcut o persoană anume.", "founder.analytics.period": "Perioada", "founder.analytics.p.30d": "Ultimele 30 de zile", "founder.analytics.p.q": "Ultimele 3 luni", "founder.analytics.p.6m": "Ultimele 6 luni", "founder.analytics.p.y": "Anul acesta", "founder.analytics.app": "Aplicația", "founder.analytics.allApps": "Toate aplicațiile", "founder.analytics.plan": "Abonamentul", "founder.analytics.allPlans": "Toate abonamentele", "founder.analytics.vs": "față de luna trecută", "founder.analytics.now": "Acum", "founder.analytics.s.active": "Afaceri active", "founder.analytics.s.apps": "Aplicații pe afacere", "founder.analytics.s.appsHint": "în medie, active", "founder.analytics.s.ret": "Retenție la 3 luni", "founder.analytics.s.act": "Afaceri activate", "founder.analytics.s.actHint": "au ajuns la al doilea membru", "founder.analytics.c.active": "Afaceri active pe lună", "founder.analytics.c.activeDesc": "Activă = cel puțin o acțiune în ultimele 30 de zile.", "founder.analytics.c.activeS": "Active", "founder.analytics.c.payingS": "Cu abonament plătit", "founder.analytics.c.apps": "Aplicații activate", "founder.analytics.c.appsDesc": "Ce parte din afacerile active au aplicația.", "founder.analytics.c.features": "Adopția funcționalităților (EasyBook)", "founder.analytics.c.featuresDesc": "Ce parte din afacerile cu EasyBook le folosesc.", "founder.analytics.cohort.title": "Retenția pe cohortă", "founder.analytics.cohort.lead": "Afacerile înscrise într-o lună și câte sunt încă active după 1–5 luni.", "founder.analytics.cohort.col": "Cohorta", "founder.analytics.cohort.n": "{n} afaceri", "founder.analytics.cohort.m": "Luna {n}", "founder.analytics.f.title": "Funnel-ul activării", "founder.analytics.f.lead": "Din afacerile înscrise în ultimele 6 luni, câte au ajuns la fiecare pas.", "founder.analytics.f.s1": "Înregistrare", "founder.analytics.f.s2": "Prima programare", "founder.analytics.f.s3": "Al doilea membru", "founder.analytics.f.s4": "A doua aplicație", "founder.analytics.f.s5": "Abonament plătit", "founder.analytics.f.s6": "Activă după 3 luni", "founder.analytics.f.times": "Timpul până la fiecare pas", "founder.analytics.f.col.step": "Pasul", "founder.analytics.f.col.time": "Median", "founder.analytics.f.col.drop": "Pierdute la acest pas", "founder.analytics.f.t": "{n} zile", "founder.analytics.f.drop": "{n} pp", "founder.analytics.g.imp": "Afișări", "founder.analytics.g.clicks": "Click-uri", "founder.analytics.g.conv": "Conversii", "founder.analytics.g.notNow": "„Nu mă interesează”", "founder.analytics.g.ofImp": "{n} din afișări", "founder.analytics.g.ofClicks": "{n} din click-uri", "founder.analytics.g.byOffer": "Pe ofertă", "founder.analytics.g.byOfferLead": "Totaluri pe ofertă și slot; nu pe afacere.", "founder.analytics.g.col.offer": "Oferta", "founder.analytics.g.hidden": "Sub 5 afaceri", "founder.analytics.g.smallNote": "Unde sunt mai puțin de 5 afaceri, nu arătăm cifra, ca nimeni să nu poată fi recunoscut.", "founder.analytics.empty.title": "Încă nu sunt date", "founder.analytics.empty.body": "Primele cifre apar după primele afaceri active."}};
+const COM = {"ro": {"billing.purchase.successPending": "Pachetul e activ și limita a crescut deja.", "billing.purchase.invoicePending": "Factura ți-o trimitem pe e-mail imediat ce e emisă, de obicei în câteva minute.", "billing.invoices.pending": "Factura se emite", "billing.packs.usageNote": "Ai folosit {used} din {limit} luna aceasta.", "billing.profile.title": "Date de facturare", "billing.profile.issuedTo": "Factura se emite pe:", "billing.profile.company": "Persoană juridică", "billing.profile.person": "Persoană fizică", "billing.profile.cui": "CUI", "billing.profile.regCom": "Nr. Reg. Com.", "billing.profile.address": "Adresa", "billing.profile.email": "E-mail pentru facturi", "billing.profile.change": "Cere o schimbare", "billing.profile.changeHelp": "Datele le schimbă echipa Ventora Systems, ca facturile să rămână corecte. Schimbarea se vede de la următoarea factură.", "billing.profile.changeTitle": "Ce vrei să schimbi în datele de facturare?", "billing.profile.changeLabel": "Datele noi", "billing.profile.changeHint": "De exemplu: adresa nouă a sediului, alt e-mail pentru facturi sau facturi pe firmă în loc de persoană fizică.", "billing.profile.changeSend": "Trimite cererea", "billing.profile.changeCancel": "Renunță", "billing.profile.changeEmpty": "Scrie ce vrei să schimbăm.", "billing.profile.changeSent": "Am primit cererea. Îți răspundem la Suport și pe e-mail.", "billing.profile.pending": "Ai cerut o schimbare pe {date}. O facem în cel mult o zi lucrătoare.", "billing.profile.ownerOnly": "Datele de facturare le vede și le poate cere schimbate doar proprietarul.", "billing.issuer": "Facturile le emite Ventora Systems SRL, Sibiu.", "billing.vatNote": "Ventora Systems SRL nu este înregistrată în scopuri de TVA: prețurile nu conțin TVA.", "billing.setup.title": "Implementarea {app}", "billing.setup.st.requested": "Cerută", "billing.setup.st.offer": "Ai primit oferta", "billing.setup.st.accepted": "Ofertă acceptată", "billing.setup.st.confirmed": "De plătit", "billing.setup.st.paid": "Plătită", "billing.setup.st.inProgress": "În lucru", "billing.setup.st.live": "Pornită", "billing.setup.st.cancelled": "Anulată", "billing.setup.st.refunded": "Anulată și rambursată", "billing.setup.requested": "Am primit cererea pe {date}. Îți trimitem oferta în cel mult 2 zile lucrătoare.", "billing.setup.offer": "Implementare: {setup}, o singură dată. Mentenanță: {maint} pe lună, din ziua în care pornește aplicația. Pornire estimată: {start}.", "billing.setup.accept": "Accept oferta", "billing.setup.decline": "Renunț", "billing.setup.accepted": "Ai acceptat oferta. Echipa confirmă data de început în cel mult o zi lucrătoare.", "billing.setup.confirmed": "Echipa a confirmat: începem pe {date}, după plata implementării.", "billing.setup.pay": "Plătește {amount}", "billing.setup.paid": "Am primit {amount}. Începem lucrul pe {date}; factura a plecat pe e-mail.", "billing.setup.inProgress": "Lucrăm la {app}. Pornire estimată: {date}.", "billing.setup.live": "{app} a pornit pe {date}. Abonamentul aplicației a început în aceeași zi: {maint} pe lună, următoarea plată pe {next}.", "billing.setup.open": "Deschide {app}", "billing.setup.cancelled": "Cererea a fost anulată pe {date}: {reason} Nu s-a plătit nimic.", "billing.setup.refunded": "Cererea a fost anulată pe {date}: {reason} Ți-am rambursat {amount} pe cardul ···· {last4}, în 5–10 zile lucrătoare.", "billing.setup.subNote": "Abonamentul aplicației începe în ziua în care pornește, nu la plata implementării.", "billing.setup.steps": "Pașii", "recommendation": "Recomandare", "notInterested": "Nu mă interesează", "remindLater": "Amintește-mi mai târziu", "remindWeek": "Peste o săptămână", "remindMonth": "Peste o lună", "moreOptions": "Mai multe opțiuni", "nothingLost": "Nu se pierde nimic din ce ai.", "recommendSend": "Recomandă", "recommendSent": "Am trimis recomandarea către {who}.", "decides": "Ajunge la {who}.", "priceLabel": "Preț", "setupCost": "Cost de implementare", "noneCost": "Fără", "whenLabel": "Când", "youActivate": "Ce activezi", "seeApp": "Vezi aplicația", "seeDetails": "Vezi detaliile", "seeHow": "Vezi cum funcționează", "gotIt": "Am înțeles", "reject": "Respinge", "fromTeam": "Recomandare de la echipă", "chooseOption": "Alege ce ți se potrivește", "continueBtn": "Continuă", "payToday": "Plătești azi", "payWith": "Plătești cu cardul", "trialNoCard": "Nu ai nevoie de card. La final aplicația se oprește, datele rămân, iar continuarea e alegerea ta.", "planRequestNote": "Nu plătești nimic acum. Îți confirmăm noul abonament și prețul înainte să-l pornim, în cel mult o zi lucrătoare.", "noCardSaved": "Afacerea nu are încă un card salvat.", "states.search.title": "Nicio aplicație pentru „{q}”", "states.search.body": "Încearcă alt cuvânt sau scrie-ne ce ai nevoie.", "states.search.action": "Scrie-ne", "states.trialEnding.title": "Perioada de probă pentru {app} se încheie pe {date}.", "states.trialEnding.body": "Atunci se oprește singură; datele rămân.", "states.trialEnding.action": "Vezi opțiunile", "states.trialEnded.title": "Perioada de probă pentru {app} s-a încheiat", "states.trialEnded.body": "{app} s-a oprit. Datele rămân; o activezi oricând vrei să continui.", "states.trialEnded.action": "Activează · {price}", "states.notNow": "Nu acum", "states.rejected.title": "Am respins recomandarea.", "states.rejected.body": "{member} vede „Nu acum” în lista ei; nu primește notificare.", "states.activated.title": "{owner} a activat {app}.", "states.activated.body": "Recomandarea ta e acum o aplicație a echipei.", "states.activated.action": "Deschide {app}", "states.member.pending": "În așteptare", "states.member.active": "Activată", "states.member.notNow": "Nu acum", "states.member.recommend": "Recomandă aplicația", "states.member.owner": "{owner} (proprietar)", "prefs.title": "Recomandări Ventora Systems", "prefs.desc": "Sugestii despre aplicații și pachete în plus care se potrivesc cu ce faci deja.", "prefs.app": "În aplicație", "prefs.appD": "Le vezi în pagini și în notificări, la secțiunea Recomandări.", "prefs.mail": "Pe e-mail", "prefs.mailD": "Disponibil în curând", "prefs.notice": "Mesajele despre limitele contului tău rămân active, pentru că sunt informații despre cont, nu recomandări.", "mine.nav": "Recomandările mele", "mine.navShort": "Recomandări", "mine.title": "Recomandările mele", "mine.lead": "Aplicațiile pe care le-ai recomandat proprietarului și ce a răspuns.", "mine.count": "Recomandări trimise · {n}", "mine.countLead": "Doar tu și proprietarul vedeți această listă.", "mine.st.pending": "În așteptare", "mine.st.active": "Activată", "mine.st.notNow": "Nu acum", "mine.asked": "Recomandată lui {owner} pe {date}", "mine.answer": "Răspunsul lui {owner}, {when}:", "mine.waiting": "Proprietarul n-a răspuns încă. Primești o notificare când decide.", "mine.open": "Deschide {app}", "mine.rule": "Recomanzi o aplicație din Catalog; decizia și plata rămân la proprietar. O recomandare cu „Nu acum” poate fi trimisă din nou după 30 de zile.", "mine.empty.title": "Nicio recomandare", "mine.empty.body": "Când găsești în Catalog o aplicație utilă echipei, o recomanzi proprietarului de acolo.", "mine.empty.action": "Deschide Catalogul", "mine.n.active": "{owner} a activat {app}", "mine.n.activeBody": "Recomandarea ta e acum o aplicație a echipei."}, "en": {"billing.purchase.successPending": "The pack is active and your limit is already higher.", "billing.purchase.invoicePending": "We'll email you the invoice as soon as it's issued, usually within a few minutes.", "billing.invoices.pending": "Invoice being issued", "billing.packs.usageNote": "You've used {used} of {limit} this month.", "billing.profile.title": "Billing details", "billing.profile.issuedTo": "Invoices are issued to:", "billing.profile.company": "Company", "billing.profile.person": "Individual", "billing.profile.cui": "Tax ID (CUI)", "billing.profile.regCom": "Trade register no.", "billing.profile.address": "Address", "billing.profile.email": "Email for invoices", "billing.profile.change": "Ask for a change", "billing.profile.changeHelp": "The Ventora Systems team changes these details so your invoices stay correct. The change applies from the next invoice.", "billing.profile.changeTitle": "What would you like to change in your billing details?", "billing.profile.changeLabel": "The new details", "billing.profile.changeHint": "For example: a new registered address, another email for invoices, or invoices to a company instead of an individual.", "billing.profile.changeSend": "Send request", "billing.profile.changeCancel": "Cancel", "billing.profile.changeEmpty": "Tell us what to change.", "billing.profile.changeSent": "We’ve got your request. We’ll reply in Support and by email.", "billing.profile.pending": "You asked for a change on {date}. We’ll make it within one working day.", "billing.profile.ownerOnly": "Only the owner sees the billing details and can ask to change them.", "billing.issuer": "Invoices are issued by Ventora Systems SRL, Sibiu.", "billing.vatNote": "Ventora Systems SRL is not registered for VAT: prices do not include VAT.", "billing.setup.title": "{app} implementation", "billing.setup.st.requested": "Requested", "billing.setup.st.offer": "Offer received", "billing.setup.st.accepted": "Offer accepted", "billing.setup.st.confirmed": "To pay", "billing.setup.st.paid": "Paid", "billing.setup.st.inProgress": "In progress", "billing.setup.st.live": "Live", "billing.setup.st.cancelled": "Cancelled", "billing.setup.st.refunded": "Cancelled and refunded", "billing.setup.requested": "We received your request on {date}. We’ll send you an offer within 2 working days.", "billing.setup.offer": "Implementation: {setup}, once. Maintenance: {maint} per month, from the day the app goes live. Estimated go-live: {start}.", "billing.setup.accept": "Accept the offer", "billing.setup.decline": "Decline", "billing.setup.accepted": "You accepted the offer. The team will confirm the start date within one working day.", "billing.setup.confirmed": "The team confirmed: we start on {date}, once the implementation is paid.", "billing.setup.pay": "Pay {amount}", "billing.setup.paid": "We’ve received {amount}. We start on {date}; the invoice has been emailed.", "billing.setup.inProgress": "We’re setting up {app}. Estimated go-live: {date}.", "billing.setup.live": "{app} went live on {date}. Its subscription started the same day: {maint} per month, next payment on {next}.", "billing.setup.open": "Open {app}", "billing.setup.cancelled": "The request was cancelled on {date}: {reason} Nothing was paid.", "billing.setup.refunded": "The request was cancelled on {date}: {reason} We’ve refunded {amount} to card ···· {last4}, within 5–10 working days.", "billing.setup.subNote": "The app’s subscription starts the day it goes live, not when the implementation is paid.", "billing.setup.steps": "Steps", "recommendation": "Recommendation", "notInterested": "Not interested", "remindLater": "Remind me later", "remindWeek": "In a week", "remindMonth": "In a month", "moreOptions": "More options", "nothingLost": "Nothing you have is lost.", "recommendSend": "Recommend", "recommendSent": "We’ve sent your recommendation to {who}.", "decides": "Goes to {who}.", "priceLabel": "Price", "setupCost": "Setup cost", "noneCost": "None", "whenLabel": "When", "youActivate": "What you turn on", "seeApp": "See the app", "seeDetails": "See details", "seeHow": "See how it works", "gotIt": "Got it", "reject": "Decline", "fromTeam": "Recommended by your team", "chooseOption": "Choose what suits you", "continueBtn": "Continue", "payToday": "You pay today", "payWith": "You pay by card", "trialNoCard": "No card needed. At the end the app pauses, your data stays, and continuing is your choice.", "planRequestNote": "You pay nothing now. We’ll confirm the new plan and its price before it starts, within one working day.", "noCardSaved": "Your business has no saved card yet.", "states.search.title": "No app for “{q}”", "states.search.body": "Try another word, or tell us what you need.", "states.search.action": "Write to us", "states.trialEnding.title": "The free trial of {app} ends on {date}.", "states.trialEnding.body": "It then stops on its own; your data stays.", "states.trialEnding.action": "See the options", "states.trialEnded.title": "The free trial of {app} has ended", "states.trialEnded.body": "{app} has stopped. Your data stays; turn it on whenever you want to continue.", "states.trialEnded.action": "Turn on · {price}", "states.notNow": "Not now", "states.rejected.title": "We declined the recommendation.", "states.rejected.body": "{member} sees “Not now” in their list; they get no notification.", "states.activated.title": "{owner} turned on {app}.", "states.activated.body": "Your recommendation is now one of the team’s apps.", "states.activated.action": "Open {app}", "states.member.pending": "Pending", "states.member.active": "Turned on", "states.member.notNow": "Not now", "states.member.recommend": "Recommend the app", "states.member.owner": "{owner} (owner)", "prefs.title": "Ventora Systems recommendations", "prefs.desc": "Suggestions for apps and add-on packs that fit what you already do.", "prefs.app": "In the app", "prefs.appD": "You see them on pages and in notifications, under Recommendations.", "prefs.mail": "By email", "prefs.mailD": "Coming soon", "prefs.notice": "Messages about your account’s limits stay on, because they are account information, not recommendations.", "mine.nav": "My recommendations", "mine.navShort": "Recommendations", "mine.title": "My recommendations", "mine.lead": "The apps you recommended to the owner and what they answered.", "mine.count": "Recommendations sent · {n}", "mine.countLead": "Only you and the owner see this list.", "mine.st.pending": "Pending", "mine.st.active": "Turned on", "mine.st.notNow": "Not now", "mine.asked": "Recommended to {owner} on {date}", "mine.answer": "{owner}’s answer, {when}:", "mine.waiting": "The owner hasn’t answered yet. You’ll get a notification when they decide.", "mine.open": "Open {app}", "mine.rule": "You recommend an app from the Catalog; the decision and the payment stay with the owner. A recommendation answered “Not now” can be sent again after 30 days.", "mine.empty.title": "No recommendations", "mine.empty.body": "When you find an app in the Catalog that would help the team, recommend it to the owner from there.", "mine.empty.action": "Open the Catalog", "mine.n.active": "{owner} turned on {app}", "mine.n.activeBody": "Your recommendation is now one of the team’s apps."}, "fr": {"billing.purchase.successPending": "Le pack est actif et votre limite a déjà augmenté.", "billing.purchase.invoicePending": "Nous vous enverrons la facture par e-mail dès qu’elle sera émise, en général en quelques minutes.", "billing.invoices.pending": "Facture en cours d’émission", "billing.packs.usageNote": "Vous avez utilisé {used} sur {limit} ce mois-ci.", "billing.profile.title": "Coordonnées de facturation", "billing.profile.issuedTo": "Les factures sont émises au nom de :", "billing.profile.company": "Personne morale", "billing.profile.person": "Personne physique", "billing.profile.cui": "Identifiant fiscal (CUI)", "billing.profile.regCom": "N° au registre du commerce", "billing.profile.address": "Adresse", "billing.profile.email": "E-mail pour les factures", "billing.profile.change": "Demander une modification", "billing.profile.changeHelp": "L’équipe Ventora Systems modifie ces données pour que vos factures restent exactes. La modification s’applique à la prochaine facture.", "billing.profile.changeTitle": "Que souhaitez-vous modifier dans vos coordonnées de facturation ?", "billing.profile.changeLabel": "Les nouvelles données", "billing.profile.changeHint": "Par exemple : nouvelle adresse du siège, autre e-mail pour les factures, ou factures au nom d’une société plutôt que d’une personne.", "billing.profile.changeSend": "Envoyer la demande", "billing.profile.changeCancel": "Annuler", "billing.profile.changeEmpty": "Indiquez ce que nous devons modifier.", "billing.profile.changeSent": "Nous avons reçu votre demande. Nous répondons dans Support et par e-mail.", "billing.profile.pending": "Vous avez demandé une modification le {date}. Nous la faisons sous un jour ouvré.", "billing.profile.ownerOnly": "Seul le propriétaire voit les coordonnées de facturation et peut en demander la modification.", "billing.issuer": "Les factures sont émises par Ventora Systems SRL, Sibiu.", "billing.vatNote": "Ventora Systems SRL n’est pas assujettie à la TVA : les prix ne comprennent pas de TVA.", "billing.setup.title": "Mise en place de {app}", "billing.setup.st.requested": "Demandée", "billing.setup.st.offer": "Offre reçue", "billing.setup.st.accepted": "Offre acceptée", "billing.setup.st.confirmed": "À payer", "billing.setup.st.paid": "Payée", "billing.setup.st.inProgress": "En cours", "billing.setup.st.live": "En service", "billing.setup.st.cancelled": "Annulée", "billing.setup.st.refunded": "Annulée et remboursée", "billing.setup.requested": "Nous avons reçu votre demande le {date}. Nous vous envoyons une offre sous 2 jours ouvrés.", "billing.setup.offer": "Mise en place : {setup}, une seule fois. Maintenance : {maint} par mois, à partir du jour de mise en service. Mise en service prévue : {start}.", "billing.setup.accept": "Accepter l’offre", "billing.setup.decline": "Refuser", "billing.setup.accepted": "Vous avez accepté l’offre. L’équipe confirme la date de début sous un jour ouvré.", "billing.setup.confirmed": "L’équipe a confirmé : nous commençons le {date}, après le paiement de la mise en place.", "billing.setup.pay": "Payer {amount}", "billing.setup.paid": "Nous avons reçu {amount}. Nous commençons le {date} ; la facture est partie par e-mail.", "billing.setup.inProgress": "Nous mettons en place {app}. Mise en service prévue : {date}.", "billing.setup.live": "{app} est en service depuis le {date}. Son abonnement a commencé le même jour : {maint} par mois, prochain paiement le {next}.", "billing.setup.open": "Ouvrir {app}", "billing.setup.cancelled": "La demande a été annulée le {date} : {reason} Rien n’a été payé.", "billing.setup.refunded": "La demande a été annulée le {date} : {reason} Nous vous avons remboursé {amount} sur la carte ···· {last4}, sous 5 à 10 jours ouvrés.", "billing.setup.subNote": "L’abonnement de l’application commence le jour de sa mise en service, pas au paiement de la mise en place.", "billing.setup.steps": "Étapes", "recommendation": "Recommandation", "notInterested": "Ça ne m’intéresse pas", "remindLater": "Me le rappeler plus tard", "remindWeek": "Dans une semaine", "remindMonth": "Dans un mois", "moreOptions": "Plus d’options", "nothingLost": "Rien de ce que vous avez n’est perdu.", "recommendSend": "Recommander", "recommendSent": "Nous avons envoyé votre recommandation à {who}.", "decides": "Envoyé à {who}.", "priceLabel": "Prix", "setupCost": "Frais de mise en service", "noneCost": "Aucun", "whenLabel": "Quand", "youActivate": "Ce que vous activez", "seeApp": "Voir l’application", "seeDetails": "Voir les détails", "seeHow": "Voir comment ça marche", "gotIt": "Compris", "reject": "Refuser", "fromTeam": "Recommandation de l’équipe", "chooseOption": "Choisissez ce qui vous convient", "continueBtn": "Continuer", "payToday": "Vous payez aujourd’hui", "payWith": "Vous payez par carte", "trialNoCard": "Aucune carte n’est nécessaire. À la fin, l’application s’arrête, vos données restent et la suite est votre choix.", "planRequestNote": "Vous ne payez rien maintenant. Nous vous confirmons le nouvel abonnement et son prix avant de l’activer, sous un jour ouvré.", "noCardSaved": "Votre entreprise n’a pas encore de carte enregistrée.", "states.search.title": "Aucune application pour « {q} »", "states.search.body": "Essayez un autre mot ou écrivez-nous ce dont vous avez besoin.", "states.search.action": "Écrivez-nous", "states.trialEnding.title": "L’essai gratuit de {app} se termine le {date}.", "states.trialEnding.body": "Elle s’arrête alors d’elle-même ; vos données restent.", "states.trialEnding.action": "Voir les options", "states.trialEnded.title": "L’essai gratuit de {app} est terminé", "states.trialEnded.body": "{app} s’est arrêtée. Vos données restent ; activez-la quand vous voulez continuer.", "states.trialEnded.action": "Activer · {price}", "states.notNow": "Pas maintenant", "states.rejected.title": "Nous avons refusé la recommandation.", "states.rejected.body": "{member} voit « Pas maintenant » dans sa liste ; aucune notification n’est envoyée.", "states.activated.title": "{owner} a activé {app}.", "states.activated.body": "Votre recommandation est désormais une application de l’équipe.", "states.activated.action": "Ouvrir {app}", "states.member.pending": "En attente", "states.member.active": "Activée", "states.member.notNow": "Pas maintenant", "states.member.recommend": "Recommander l’application", "states.member.owner": "{owner} (propriétaire)", "prefs.title": "Recommandations Ventora Systems", "prefs.desc": "Des suggestions d’applications et de packs supplémentaires adaptés à ce que vous faites déjà.", "prefs.app": "Dans l’application", "prefs.appD": "Vous les voyez dans les pages et dans les notifications, rubrique Recommandations.", "prefs.mail": "Par e-mail", "prefs.mailD": "Bientôt disponible", "prefs.notice": "Les messages sur les limites de votre compte restent actifs, car ce sont des informations de compte, pas des recommandations.", "mine.nav": "Mes recommandations", "mine.navShort": "Recommandations", "mine.title": "Mes recommandations", "mine.lead": "Les applications que vous avez recommandées au propriétaire et sa réponse.", "mine.count": "Recommandations envoyées · {n}", "mine.countLead": "Seuls vous et le propriétaire voyez cette liste.", "mine.st.pending": "En attente", "mine.st.active": "Activée", "mine.st.notNow": "Pas maintenant", "mine.asked": "Recommandée à {owner} le {date}", "mine.answer": "Réponse de {owner}, {when} :", "mine.waiting": "Le propriétaire n’a pas encore répondu. Vous recevrez une notification dès sa décision.", "mine.open": "Ouvrir {app}", "mine.rule": "Vous recommandez une application depuis le Catalogue ; la décision et le paiement restent au propriétaire. Une recommandation refusée par « Pas maintenant » peut être renvoyée après 30 jours.", "mine.empty.title": "Aucune recommandation", "mine.empty.body": "Quand vous trouvez dans le Catalogue une application utile à l’équipe, recommandez-la au propriétaire depuis là.", "mine.empty.action": "Ouvrir le Catalogue", "mine.n.active": "{owner} a activé {app}", "mine.n.activeBody": "Votre recommandation est désormais une application de l’équipe."}, "es": {"billing.purchase.successPending": "El paquete está activo y tu límite ya ha aumentado.", "billing.purchase.invoicePending": "Te enviaremos la factura por correo en cuanto se emita, normalmente en unos minutos.", "billing.invoices.pending": "Factura en emisión", "billing.packs.usageNote": "Has usado {used} de {limit} este mes.", "billing.profile.title": "Datos de facturación", "billing.profile.issuedTo": "Las facturas se emiten a nombre de:", "billing.profile.company": "Persona jurídica", "billing.profile.person": "Persona física", "billing.profile.cui": "CIF (CUI)", "billing.profile.regCom": "N.º de registro mercantil", "billing.profile.address": "Dirección", "billing.profile.email": "Correo para facturas", "billing.profile.change": "Pedir un cambio", "billing.profile.changeHelp": "El equipo de Ventora Systems cambia estos datos para que tus facturas sigan siendo correctas. El cambio se aplica desde la próxima factura.", "billing.profile.changeTitle": "¿Qué quieres cambiar en tus datos de facturación?", "billing.profile.changeLabel": "Los datos nuevos", "billing.profile.changeHint": "Por ejemplo: la nueva dirección de la sede, otro correo para facturas o facturas a nombre de una empresa en lugar de una persona.", "billing.profile.changeSend": "Enviar la solicitud", "billing.profile.changeCancel": "Cancelar", "billing.profile.changeEmpty": "Escribe qué quieres que cambiemos.", "billing.profile.changeSent": "Hemos recibido tu solicitud. Te respondemos en Soporte y por correo.", "billing.profile.pending": "Pediste un cambio el {date}. Lo hacemos en un día laborable como máximo.", "billing.profile.ownerOnly": "Solo el propietario ve los datos de facturación y puede pedir que se cambien.", "billing.issuer": "Las facturas las emite Ventora Systems SRL, Sibiu.", "billing.vatNote": "Ventora Systems SRL no está registrada a efectos del IVA: los precios no incluyen IVA.", "billing.setup.title": "Implementación de {app}", "billing.setup.st.requested": "Solicitada", "billing.setup.st.offer": "Oferta recibida", "billing.setup.st.accepted": "Oferta aceptada", "billing.setup.st.confirmed": "Pendiente de pago", "billing.setup.st.paid": "Pagada", "billing.setup.st.inProgress": "En curso", "billing.setup.st.live": "Activa", "billing.setup.st.cancelled": "Cancelada", "billing.setup.st.refunded": "Cancelada y reembolsada", "billing.setup.requested": "Recibimos tu solicitud el {date}. Te enviamos la oferta en 2 días laborables como máximo.", "billing.setup.offer": "Implementación: {setup}, una sola vez. Mantenimiento: {maint} al mes, desde el día en que la aplicación se activa. Activación estimada: {start}.", "billing.setup.accept": "Aceptar la oferta", "billing.setup.decline": "Rechazar", "billing.setup.accepted": "Aceptaste la oferta. El equipo confirma la fecha de inicio en un día laborable como máximo.", "billing.setup.confirmed": "El equipo lo confirmó: empezamos el {date}, tras el pago de la implementación.", "billing.setup.pay": "Pagar {amount}", "billing.setup.paid": "Hemos recibido {amount}. Empezamos el {date}; la factura se ha enviado por correo.", "billing.setup.inProgress": "Estamos implementando {app}. Activación estimada: {date}.", "billing.setup.live": "{app} se activó el {date}. Su suscripción empezó el mismo día: {maint} al mes, próximo pago el {next}.", "billing.setup.open": "Abrir {app}", "billing.setup.cancelled": "La solicitud se canceló el {date}: {reason} No se pagó nada.", "billing.setup.refunded": "La solicitud se canceló el {date}: {reason} Te hemos devuelto {amount} a la tarjeta ···· {last4}, en 5–10 días laborables.", "billing.setup.subNote": "La suscripción de la aplicación empieza el día en que se activa, no al pagar la implementación.", "billing.setup.steps": "Pasos", "recommendation": "Recomendación", "notInterested": "No me interesa", "remindLater": "Recordármelo más tarde", "remindWeek": "Dentro de una semana", "remindMonth": "Dentro de un mes", "moreOptions": "Más opciones", "nothingLost": "No pierdes nada de lo que tienes.", "recommendSend": "Recomendar", "recommendSent": "Hemos enviado tu recomendación a {who}.", "decides": "Llega a {who}.", "priceLabel": "Precio", "setupCost": "Coste de puesta en marcha", "noneCost": "Ninguno", "whenLabel": "Cuándo", "youActivate": "Qué activas", "seeApp": "Ver la aplicación", "seeDetails": "Ver detalles", "seeHow": "Ver cómo funciona", "gotIt": "Entendido", "reject": "Rechazar", "fromTeam": "Recomendación del equipo", "chooseOption": "Elige lo que mejor te encaje", "continueBtn": "Continuar", "payToday": "Pagas hoy", "payWith": "Pagas con tarjeta", "trialNoCard": "No necesitas tarjeta. Al final la aplicación se detiene, tus datos se quedan y continuar es decisión tuya.", "planRequestNote": "No pagas nada ahora. Te confirmamos el nuevo plan y su precio antes de activarlo, en un día laborable como máximo.", "noCardSaved": "Tu negocio aún no tiene una tarjeta guardada.", "states.search.title": "Ninguna aplicación para «{q}»", "states.search.body": "Pruebe otra palabra o escríbanos lo que necesita.", "states.search.action": "Escríbanos", "states.trialEnding.title": "La prueba gratuita de {app} termina el {date}.", "states.trialEnding.body": "Entonces se detiene sola; sus datos se conservan.", "states.trialEnding.action": "Ver las opciones", "states.trialEnded.title": "La prueba gratuita de {app} ha terminado", "states.trialEnded.body": "{app} se ha detenido. Sus datos se conservan; actívela cuando quiera continuar.", "states.trialEnded.action": "Activar · {price}", "states.notNow": "Ahora no", "states.rejected.title": "Hemos rechazado la recomendación.", "states.rejected.body": "{member} ve «Ahora no» en su lista; no recibe notificación.", "states.activated.title": "{owner} ha activado {app}.", "states.activated.body": "Su recomendación ya es una aplicación del equipo.", "states.activated.action": "Abrir {app}", "states.member.pending": "Pendiente", "states.member.active": "Activada", "states.member.notNow": "Ahora no", "states.member.recommend": "Recomendar la aplicación", "states.member.owner": "{owner} (propietario)", "prefs.title": "Recomendaciones de Ventora Systems", "prefs.desc": "Sugerencias de aplicaciones y paquetes adicionales que encajan con lo que ya hace.", "prefs.app": "En la aplicación", "prefs.appD": "Las verá en las páginas y en las notificaciones, en la sección Recomendaciones.", "prefs.mail": "Por correo electrónico", "prefs.mailD": "Disponible pronto", "prefs.notice": "Los mensajes sobre los límites de su cuenta siguen activos, porque son información de la cuenta, no recomendaciones.", "mine.nav": "Mis recomendaciones", "mine.navShort": "Recomendaciones", "mine.title": "Mis recomendaciones", "mine.lead": "Las aplicaciones que recomendó al propietario y lo que respondió.", "mine.count": "Recomendaciones enviadas · {n}", "mine.countLead": "Solo usted y el propietario ven esta lista.", "mine.st.pending": "Pendiente", "mine.st.active": "Activada", "mine.st.notNow": "Ahora no", "mine.asked": "Recomendada a {owner} el {date}", "mine.answer": "Respuesta de {owner}, {when}:", "mine.waiting": "El propietario aún no ha respondido. Recibirá una notificación cuando decida.", "mine.open": "Abrir {app}", "mine.rule": "Usted recomienda una aplicación del Catálogo; la decisión y el pago son del propietario. Una recomendación con «Ahora no» puede enviarse de nuevo pasados 30 días.", "mine.empty.title": "Ninguna recomendación", "mine.empty.body": "Cuando encuentre en el Catálogo una aplicación útil para el equipo, recomiéndela al propietario desde allí.", "mine.empty.action": "Abrir el Catálogo", "mine.n.active": "{owner} ha activado {app}", "mine.n.activeBody": "Su recomendación ya es una aplicación del equipo."}, "de": {"billing.purchase.successPending": "Das Paket ist aktiv und Ihr Limit ist bereits erhöht.", "billing.purchase.invoicePending": "Wir schicken Ihnen die Rechnung per E-Mail, sobald sie ausgestellt ist – meist innerhalb weniger Minuten.", "billing.invoices.pending": "Rechnung wird ausgestellt", "billing.packs.usageNote": "Sie haben diesen Monat {used} von {limit} verbraucht.", "billing.profile.title": "Rechnungsdaten", "billing.profile.issuedTo": "Rechnungen werden ausgestellt auf:", "billing.profile.company": "Unternehmen", "billing.profile.person": "Privatperson", "billing.profile.cui": "Steuernummer (CUI)", "billing.profile.regCom": "Handelsregisternummer", "billing.profile.address": "Adresse", "billing.profile.email": "E-Mail für Rechnungen", "billing.profile.change": "Änderung anfragen", "billing.profile.changeHelp": "Diese Daten ändert das Ventora-Systems-Team, damit Ihre Rechnungen korrekt bleiben. Die Änderung gilt ab der nächsten Rechnung.", "billing.profile.changeTitle": "Was möchten Sie an Ihren Rechnungsdaten ändern?", "billing.profile.changeLabel": "Die neuen Daten", "billing.profile.changeHint": "Zum Beispiel: neue Firmenadresse, eine andere E-Mail für Rechnungen oder Rechnungen auf ein Unternehmen statt auf eine Privatperson.", "billing.profile.changeSend": "Anfrage senden", "billing.profile.changeCancel": "Abbrechen", "billing.profile.changeEmpty": "Schreiben Sie, was wir ändern sollen.", "billing.profile.changeSent": "Ihre Anfrage ist eingegangen. Wir antworten im Support und per E-Mail.", "billing.profile.pending": "Sie haben am {date} eine Änderung angefragt. Wir erledigen sie innerhalb eines Werktags.", "billing.profile.ownerOnly": "Nur der Inhaber sieht die Rechnungsdaten und kann eine Änderung anfragen.", "billing.issuer": "Rechnungen stellt Ventora Systems SRL, Sibiu, aus.", "billing.vatNote": "Ventora Systems SRL ist nicht für die Umsatzsteuer registriert: Die Preise enthalten keine Umsatzsteuer.", "billing.setup.title": "Einrichtung von {app}", "billing.setup.st.requested": "Angefragt", "billing.setup.st.offer": "Angebot erhalten", "billing.setup.st.accepted": "Angebot angenommen", "billing.setup.st.confirmed": "Zu bezahlen", "billing.setup.st.paid": "Bezahlt", "billing.setup.st.inProgress": "In Arbeit", "billing.setup.st.live": "Aktiv", "billing.setup.st.cancelled": "Abgebrochen", "billing.setup.st.refunded": "Abgebrochen und erstattet", "billing.setup.requested": "Ihre Anfrage ist am {date} eingegangen. Wir senden Ihnen innerhalb von 2 Werktagen ein Angebot.", "billing.setup.offer": "Einrichtung: {setup}, einmalig. Wartung: {maint} pro Monat, ab dem Tag, an dem die App startet. Voraussichtlicher Start: {start}.", "billing.setup.accept": "Angebot annehmen", "billing.setup.decline": "Ablehnen", "billing.setup.accepted": "Sie haben das Angebot angenommen. Das Team bestätigt das Startdatum innerhalb eines Werktags.", "billing.setup.confirmed": "Das Team hat bestätigt: Wir beginnen am {date}, nach Zahlung der Einrichtung.", "billing.setup.pay": "{amount} bezahlen", "billing.setup.paid": "Wir haben {amount} erhalten. Wir beginnen am {date}; die Rechnung ist per E-Mail unterwegs.", "billing.setup.inProgress": "Wir richten {app} ein. Voraussichtlicher Start: {date}.", "billing.setup.live": "{app} ist seit {date} aktiv. Das Abonnement begann am selben Tag: {maint} pro Monat, nächste Zahlung am {next}.", "billing.setup.open": "{app} öffnen", "billing.setup.cancelled": "Die Anfrage wurde am {date} abgebrochen: {reason} Es wurde nichts bezahlt.", "billing.setup.refunded": "Die Anfrage wurde am {date} abgebrochen: {reason} Wir haben {amount} auf die Karte ···· {last4} erstattet, innerhalb von 5–10 Werktagen.", "billing.setup.subNote": "Das Abonnement der App beginnt am Tag des Starts, nicht mit der Zahlung der Einrichtung.", "billing.setup.steps": "Schritte", "recommendation": "Empfehlung", "notInterested": "Kein Interesse", "remindLater": "Später erinnern", "remindWeek": "In einer Woche", "remindMonth": "In einem Monat", "moreOptions": "Weitere Optionen", "nothingLost": "Es geht nichts verloren.", "recommendSend": "Empfehlen", "recommendSent": "Ihre Empfehlung ist an {who} gegangen.", "decides": "Geht an {who}.", "priceLabel": "Preis", "setupCost": "Einrichtungsgebühr", "noneCost": "Keine", "whenLabel": "Wann", "youActivate": "Was Sie aktivieren", "seeApp": "App ansehen", "seeDetails": "Details ansehen", "seeHow": "So funktioniert es", "gotIt": "Verstanden", "reject": "Ablehnen", "fromTeam": "Empfehlung aus dem Team", "chooseOption": "Wählen Sie, was passt", "continueBtn": "Weiter", "payToday": "Heute zu zahlen", "payWith": "Sie zahlen mit Karte", "trialNoCard": "Keine Karte nötig. Am Ende pausiert die App, Ihre Daten bleiben, und ob Sie weitermachen, entscheiden Sie.", "planRequestNote": "Sie zahlen jetzt nichts. Wir bestätigen das neue Abonnement und den Preis vor dem Start, innerhalb eines Werktags.", "noCardSaved": "Ihr Unternehmen hat noch keine gespeicherte Karte.", "states.search.title": "Keine App für „{q}“", "states.search.body": "Versuchen Sie ein anderes Wort oder schreiben Sie uns, was Sie brauchen.", "states.search.action": "Schreiben Sie uns", "states.trialEnding.title": "Der kostenlose Test von {app} endet am {date}.", "states.trialEnding.body": "Dann stoppt die App von selbst; Ihre Daten bleiben erhalten.", "states.trialEnding.action": "Optionen ansehen", "states.trialEnded.title": "Der kostenlose Test von {app} ist beendet", "states.trialEnded.body": "{app} wurde gestoppt. Ihre Daten bleiben erhalten; Sie können die App jederzeit aktivieren, um weiterzumachen.", "states.trialEnded.action": "Aktivieren · {price}", "states.notNow": "Nicht jetzt", "states.rejected.title": "Wir haben die Empfehlung abgelehnt.", "states.rejected.body": "{member} sieht „Nicht jetzt“ in der eigenen Liste; es gibt keine Benachrichtigung.", "states.activated.title": "{owner} hat {app} aktiviert.", "states.activated.body": "Ihre Empfehlung ist jetzt eine App des Teams.", "states.activated.action": "{app} öffnen", "states.member.pending": "Wartet", "states.member.active": "Aktiviert", "states.member.notNow": "Nicht jetzt", "states.member.recommend": "App empfehlen", "states.member.owner": "{owner} (Inhaber)", "prefs.title": "Ventora-Systems-Empfehlungen", "prefs.desc": "Vorschläge zu Apps und Zusatzpaketen, die zu dem passen, was Sie bereits nutzen.", "prefs.app": "In der App", "prefs.appD": "Sie sehen sie auf den Seiten und in den Benachrichtigungen, im Bereich Empfehlungen.", "prefs.mail": "Per E-Mail", "prefs.mailD": "Bald verfügbar", "prefs.notice": "Nachrichten zu den Limits Ihres Kontos bleiben aktiv, weil sie Kontoinformationen sind, keine Empfehlungen.", "mine.nav": "Meine Empfehlungen", "mine.navShort": "Empfehlungen", "mine.title": "Meine Empfehlungen", "mine.lead": "Die Apps, die Sie dem Inhaber empfohlen haben, und seine Antwort.", "mine.count": "Gesendete Empfehlungen · {n}", "mine.countLead": "Nur Sie und der Inhaber sehen diese Liste.", "mine.st.pending": "Wartet", "mine.st.active": "Aktiviert", "mine.st.notNow": "Nicht jetzt", "mine.asked": "Am {date} an {owner} empfohlen", "mine.answer": "Antwort von {owner}, {when}:", "mine.waiting": "Der Inhaber hat noch nicht geantwortet. Sie werden benachrichtigt, sobald er entscheidet.", "mine.open": "{app} öffnen", "mine.rule": "Sie empfehlen eine App aus dem Katalog; Entscheidung und Zahlung liegen beim Inhaber. Eine Empfehlung mit „Nicht jetzt“ können Sie nach 30 Tagen erneut senden.", "mine.empty.title": "Keine Empfehlungen", "mine.empty.body": "Wenn Sie im Katalog eine App finden, die dem Team hilft, empfehlen Sie sie dort dem Inhaber.", "mine.empty.action": "Katalog öffnen", "mine.n.active": "{owner} hat {app} aktiviert", "mine.n.activeBody": "Ihre Empfehlung ist jetzt eine App des Teams."}, "it": {"billing.purchase.successPending": "Il pacchetto è attivo e il limite è già aumentato.", "billing.purchase.invoicePending": "Le invieremo la fattura via e-mail appena viene emessa, di solito entro pochi minuti.", "billing.invoices.pending": "Fattura in emissione", "billing.packs.usageNote": "Ha usato {used} su {limit} questo mese.", "billing.profile.title": "Dati di fatturazione", "billing.profile.issuedTo": "Le fatture sono intestate a:", "billing.profile.company": "Persona giuridica", "billing.profile.person": "Persona fisica", "billing.profile.cui": "Codice fiscale (CUI)", "billing.profile.regCom": "N. registro imprese", "billing.profile.address": "Indirizzo", "billing.profile.email": "E-mail per le fatture", "billing.profile.change": "Chiedi una modifica", "billing.profile.changeHelp": "Questi dati li modifica il team Ventora Systems, perché le fatture restino corrette. La modifica vale dalla prossima fattura.", "billing.profile.changeTitle": "Cosa desidera modificare nei dati di fatturazione?", "billing.profile.changeLabel": "I nuovi dati", "billing.profile.changeHint": "Ad esempio: il nuovo indirizzo della sede, un’altra e-mail per le fatture o fatture intestate a una società invece che a una persona.", "billing.profile.changeSend": "Invia la richiesta", "billing.profile.changeCancel": "Annulla", "billing.profile.changeEmpty": "Scriva cosa dobbiamo modificare.", "billing.profile.changeSent": "Abbiamo ricevuto la richiesta. Le rispondiamo in Assistenza e via e-mail.", "billing.profile.pending": "Ha chiesto una modifica il {date}. La facciamo entro un giorno lavorativo.", "billing.profile.ownerOnly": "Solo il titolare vede i dati di fatturazione e può chiederne la modifica.", "billing.issuer": "Le fatture sono emesse da Ventora Systems SRL, Sibiu.", "billing.vatNote": "Ventora Systems SRL non è registrata ai fini IVA: i prezzi non includono l’IVA.", "billing.setup.title": "Implementazione di {app}", "billing.setup.st.requested": "Richiesta", "billing.setup.st.offer": "Offerta ricevuta", "billing.setup.st.accepted": "Offerta accettata", "billing.setup.st.confirmed": "Da pagare", "billing.setup.st.paid": "Pagata", "billing.setup.st.inProgress": "In corso", "billing.setup.st.live": "Attiva", "billing.setup.st.cancelled": "Annullata", "billing.setup.st.refunded": "Annullata e rimborsata", "billing.setup.requested": "Abbiamo ricevuto la richiesta il {date}. Le inviamo l’offerta entro 2 giorni lavorativi.", "billing.setup.offer": "Implementazione: {setup}, una tantum. Manutenzione: {maint} al mese, dal giorno in cui l’app parte. Avvio previsto: {start}.", "billing.setup.accept": "Accetto l’offerta", "billing.setup.decline": "Rinuncio", "billing.setup.accepted": "Ha accettato l’offerta. Il team conferma la data di inizio entro un giorno lavorativo.", "billing.setup.confirmed": "Il team ha confermato: iniziamo il {date}, dopo il pagamento dell’implementazione.", "billing.setup.pay": "Paga {amount}", "billing.setup.paid": "Abbiamo ricevuto {amount}. Iniziamo il {date}; la fattura è stata inviata via e-mail.", "billing.setup.inProgress": "Stiamo implementando {app}. Avvio previsto: {date}.", "billing.setup.live": "{app} è attiva dal {date}. L’abbonamento è iniziato lo stesso giorno: {maint} al mese, prossimo pagamento il {next}.", "billing.setup.open": "Apri {app}", "billing.setup.cancelled": "La richiesta è stata annullata il {date}: {reason} Non è stato pagato nulla.", "billing.setup.refunded": "La richiesta è stata annullata il {date}: {reason} Le abbiamo rimborsato {amount} sulla carta ···· {last4}, entro 5–10 giorni lavorativi.", "billing.setup.subNote": "L’abbonamento dell’app inizia il giorno in cui parte, non al pagamento dell’implementazione.", "billing.setup.steps": "Passaggi", "recommendation": "Raccomandazione", "notInterested": "Non mi interessa", "remindLater": "Ricordamelo più tardi", "remindWeek": "Tra una settimana", "remindMonth": "Tra un mese", "moreOptions": "Altre opzioni", "nothingLost": "Nulla di ciò che ha va perso.", "recommendSend": "Consiglia", "recommendSent": "Abbiamo inviato il suggerimento a {who}.", "decides": "Arriva a {who}.", "priceLabel": "Prezzo", "setupCost": "Costo di attivazione", "noneCost": "Nessuno", "whenLabel": "Quando", "youActivate": "Cosa attiva", "seeApp": "Vedi l’app", "seeDetails": "Vedi dettagli", "seeHow": "Scopri come funziona", "gotIt": "Ho capito", "reject": "Rifiuta", "fromTeam": "Suggerimento dal team", "chooseOption": "Scelga ciò che fa per Lei", "continueBtn": "Continua", "payToday": "Paga oggi", "payWith": "Paga con carta", "trialNoCard": "Non serve una carta. Alla fine l’app si ferma, i dati restano e continuare è una Sua scelta.", "planRequestNote": "Ora non paga nulla. Le confermiamo il nuovo abbonamento e il prezzo prima di attivarlo, entro un giorno lavorativo.", "noCardSaved": "La Sua attività non ha ancora una carta salvata.", "states.search.title": "Nessuna app per «{q}»", "states.search.body": "Provi un’altra parola o ci scriva di cosa ha bisogno.", "states.search.action": "Ci scriva", "states.trialEnding.title": "La prova gratuita di {app} termina il {date}.", "states.trialEnding.body": "Poi si ferma da sola; i dati restano.", "states.trialEnding.action": "Vedi le opzioni", "states.trialEnded.title": "La prova gratuita di {app} è terminata", "states.trialEnded.body": "{app} si è fermata. I dati restano; può attivarla quando vuole per continuare.", "states.trialEnded.action": "Attiva · {price}", "states.notNow": "Non ora", "states.rejected.title": "Abbiamo rifiutato la raccomandazione.", "states.rejected.body": "{member} vede «Non ora» nel suo elenco; non riceve notifiche.", "states.activated.title": "{owner} ha attivato {app}.", "states.activated.body": "La Sua raccomandazione ora è un’app del team.", "states.activated.action": "Apri {app}", "states.member.pending": "In attesa", "states.member.active": "Attivata", "states.member.notNow": "Non ora", "states.member.recommend": "Consiglia l’app", "states.member.owner": "{owner} (titolare)", "prefs.title": "Raccomandazioni Ventora Systems", "prefs.desc": "Suggerimenti su app e pacchetti extra adatti a ciò che fa già.", "prefs.app": "Nell’app", "prefs.appD": "Le vede nelle pagine e nelle notifiche, nella sezione Raccomandazioni.", "prefs.mail": "Via e-mail", "prefs.mailD": "Disponibile a breve", "prefs.notice": "I messaggi sui limiti del Suo account restano attivi, perché sono informazioni sull’account, non raccomandazioni.", "mine.nav": "Le mie raccomandazioni", "mine.navShort": "Raccomandazioni", "mine.title": "Le mie raccomandazioni", "mine.lead": "Le app che ha consigliato al titolare e la sua risposta.", "mine.count": "Raccomandazioni inviate · {n}", "mine.countLead": "Solo Lei e il titolare vedete questo elenco.", "mine.st.pending": "In attesa", "mine.st.active": "Attivata", "mine.st.notNow": "Non ora", "mine.asked": "Consigliata a {owner} il {date}", "mine.answer": "Risposta di {owner}, {when}:", "mine.waiting": "Il titolare non ha ancora risposto. Riceverà una notifica quando decide.", "mine.open": "Apri {app}", "mine.rule": "Lei consiglia un’app dal Catalogo; la decisione e il pagamento restano al titolare. Una raccomandazione con «Non ora» si può rinviare dopo 30 giorni.", "mine.empty.title": "Nessuna raccomandazione", "mine.empty.body": "Quando trova nel Catalogo un’app utile al team, la consigli al titolare da lì.", "mine.empty.action": "Apri il Catalogo", "mine.n.active": "{owner} ha attivato {app}", "mine.n.activeBody": "La Sua raccomandazione ora è un’app del team."}};
+/* S136 — shared by the Faza 5 screens: the three-size board, helpers, the Founder shell with "Traduceri" under Growth. Keys founder.growth.* (i18n/founder-growth.json), founder.notifications.*, founder.analytics.* (i18n/founder.json), commercial.* (i18n/commercial.json). */
+const G = (k, v) => mkT(FG)("ro", "founder.growth." + k, v);
+const F = (k, v) => mkT(FO)("ro", "founder." + k, v);
+const CM = (k, v, lang) => mkT(COM)(lang || "ro", k, v);
+const dlgCls = (mode) => mode === "mobile" ? "v-dialog--sheet" : undefined;
+const Info = ({ children, icon = "info" }) => h("p", { className: "x-line body-small" }, h(V.Icon, { name: icon, size: 16 }), children);
+const KVL = ({ rows }) => h("dl", { className: "kv" }, rows.filter(Boolean).map(([k, v]) => h(React.Fragment, { key: k }, h("dt", { className: "caption" }, k), h("dd", { className: "body-small" }, v))));
+const Pad = ({ mode, children }) => h("div", { className: mode === "mobile" ? "cd-pad" : undefined }, children);
+const Foot = ({ mode, left, children }) => h("div", { className: "cd-foot" + (mode === "mobile" ? " m" : "") }, left || null, h("span", { className: "cd-grow" }), children);
+const Dlg = ({ mode, title, description, footer, children }) => h(V.Dialog, { open: true, inline: true, className: dlgCls(mode), title, description, footer }, children);
+const Drw = ({ mode, title, subtitle, footer, children, width = 600 }) => h(V.Drawer, { open: true, contained: true, layout: mode === "mobile" ? "full" : "auto", width, onOpenChange: noop, title, subtitle, footer }, h("div", { className: "x-stack" }, children));
+function Board3({ title, notes, items, dH = 1200, tH = 1300, mH = 1500 }) {
+  return h("div", { className: "scr" },
+    h("p", { className: "heading" }, title),
+    notes ? h("p", { className: "caption muted" }, notes.join(" · ")) : null,
+    items.map(([lab, render, D = dH, Tt = tH, M = mH]) => h("div", { key: lab, className: "tfa-scrgroup" },
+      h("p", { className: "subheading tfa-grouplab" }, lab),
+      ["light", "dark"].map((th) => h("div", { className: "scr-row", key: th },
+        [["desktop", "Desktop · 1280", "scr-d", D], ["tablet", "Tabletă portret · 820", "scr-t", Tt], ["mobile", "Telefon · 390", "scr-m", M]].map(([m, l, cls, H]) => h("div", { key: m },
+          h("p", { className: "caption scr-lab" }, l, " · ", th === "light" ? "Light" : "Dark"),
+          h("div", { className: cls, "data-theme": th, style: { height: H, position: "relative", overflow: "hidden" } }, render(m, th)))))))));
+}
+/* Founder shell: FX_NAV with "Traduceri" and "Analytics" added */
+const FX_NAV2 = FX_NAV.map((s) => s.label === "Growth" ? Object.assign({}, s, { items: [...s.items.slice(0, 3), { id: "traduceri", label: F("nav.translations"), icon: "globe" }, ...s.items.slice(3)] }) : s.label === "Sistem" ? s : s)
+  .map((s, i) => i === 0 ? Object.assign({}, s, { items: [...s.items, { id: "analytics", label: F("nav.analytics"), icon: "chart-line" }] }) : s);
+const FX_NOTIFS2 = [
+  { id: 1, title: F("notifications.n.auto"), body: F("notifications.n.autoBody"), app: "Growth", time: F("notifications.t.min", { n: 8 }), icon: "triangle-alert" },
+  { id: 2, title: F("notifications.n.support"), body: F("notifications.n.supportBody"), app: F("notifications.type.support"), time: F("notifications.t.min", { n: 12 }), icon: "life-buoy" },
+  { id: 3, title: F("notifications.n.invoice"), body: F("notifications.n.invoiceBody"), app: F("notifications.type.invoice"), time: F("notifications.t.today", { time: "09:10" }), icon: "receipt" },
+  { id: 4, title: F("notifications.n.setup"), body: F("notifications.n.setupBody"), app: F("notifications.type.setup"), time: F("notifications.t.yesterday"), icon: "wrench", read: true }
+];
+function FxPage({ mode, active, title, header, children, drawer, overlay, toast, toastDesc, notifOpen }) {
+  const mob = mode === "mobile";
+  return h("div", { className: "frame-rel" },
+    h(V.AppShell, { height: "100%",
+      spine: h(V.Spine, { hub: true, appName: "Founder", sections: FX_NAV2, activeId: active, onBackToHub: noop, bottomItems: ["afaceri", "cereri", "suport", active] }),
+      contextBar: h(V.ContextBar, { title, onSearch: noop, notifications: h(V.NotificationsPanel, { items: FX_NOTIFS2 }), account: h(V.AccountMenu, { user: { name: "Bianca Petrașcu", email: "bianca@ventorasystems.com" } }) }) },
+      header ? h(V.PageHeader, header) : null,
+      h("div", { className: "x-body" + (mob ? " m" : "") }, children)),
+    drawer || null,
+    notifOpen ? h("div", { className: "cd-notif" + (mob ? " m" : "") }, notifOpen) : null,
+    overlay ? h(Overlay, { mode }, overlay) : null,
+    toast ? h(ToastAt, { mode, title: toast, description: toastDesc }) : null);
+}
+
+/* S136 · Founder — the bell and the automatic stop (P22, 5.8, D5-11): the notification when the Growth Engine stops a campaign or an offer on its own (too many "Nu acum", complaints, budget reached, an error) — the text, the reason, what stopped, "Vezi", "Repornește" with confirmation; FounderNotifications on NotificationsPanel: auto-stops, support requests, unissued invoices, setup requests; unread / read, filters, empty. RO only for now; keys founder.notifications.* in i18n/founder.json. */
+const NT = (k, v) => F("notifications." + k, v);
+const ALL = [
+  { id: 1, type: "auto", icon: "triangle-alert", t: NT("n.auto"), b: NT("n.autoBody"), w: NT("t.min", { n: 8 }), unread: true },
+  { id: 2, type: "support", icon: "life-buoy", t: NT("n.support"), b: NT("n.supportBody"), w: NT("t.min", { n: 12 }), unread: true },
+  { id: 3, type: "invoice", icon: "receipt", t: NT("n.invoice"), b: NT("n.invoiceBody"), w: NT("t.today", { time: "09:10" }), unread: true },
+  { id: 4, type: "auto", icon: "triangle-alert", t: NT("n.auto2"), b: NT("n.auto2Body"), w: NT("t.today", { time: "07:30" }), unread: true },
+  { id: 5, type: "setup", icon: "wrench", t: NT("n.setup"), b: NT("n.setupBody"), w: NT("t.yesterday") },
+  { id: 6, type: "auto", icon: "triangle-alert", t: NT("n.auto3"), b: NT("n.auto3Body"), w: "7 nov." },
+  { id: 7, type: "auto", icon: "triangle-alert", t: NT("n.auto4"), b: NT("n.auto4Body"), w: "5 nov." }
+];
+function Page({ mode, unreadOnly, empty, drawer, overlay, toast, toastDesc, bell }) {
+  const mob = mode === "mobile";
+  const rows = empty ? [] : unreadOnly ? ALL.filter((r) => r.unread) : ALL;
+  return h(FxPage, { mode, active: "azi", title: NT("title"), drawer, overlay, toast, toastDesc,
+    notifOpen: bell ? h(V.NotificationsPanel, { inline: true, items: FX_NOTIFS2, onMarkAllRead: noop, onSettings: noop }) : null,
+    header: { title: NT("title"), description: mob ? undefined : NT("lead"), actions: mob ? undefined : h(V.Button, { variant: "quiet", icon: "check-check" }, NT("markAll")),
+      tabs: h(V.Tabs, { label: NT("title"), value: unreadOnly ? "unread" : "all", items: [{ value: "unread", label: NT("tab.unread", { n: 4 }) }, { value: "all", label: NT("tab.all") }] }) } },
+    h("div", { className: "cd-tools" + (mob ? " m" : "") }, h("div", { style: { width: mob ? "100%" : 220 } }, h(V.Select, { size: "sm", "aria-label": NT("type"), value: "all", options: ["all", "auto", "support", "invoice", "setup"].map((v) => ({ value: v, label: NT("type." + v) })) }))),
+    empty ? h(V.Sheet, null, h(V.SheetSection, null, h(V.EmptyState, { icon: "bell", title: NT("empty.title"), description: NT("empty.body") })))
+      : h(V.Sheet, null, h(V.SheetSection, null, h("ul", { className: "fn-list" }, rows.map((r) => h("li", { key: r.id, className: "fn-row" + (r.unread ? " is-unread" : "") },
+        h("span", { className: "cd-fic", "aria-hidden": true }, h(V.Icon, { name: r.icon, size: 16 })),
+        h("div", { className: "cd-autobody" }, h("span", { className: "x-row" }, h("span", { className: "body-strong" }, r.t), r.unread ? h(V.Badge, null, NT("new")) : null), h("span", { className: "body-small muted" }, r.b), h("span", { className: "caption muted" }, NT("type." + r.type) + " · " + r.w)),
+        h(V.Button, { size: "sm", variant: "secondary", iconEnd: "arrow-right" }, NT("see"))))))));
+}
+const REASONS = [["deranj", "n.auto"], ["complaints", "n.auto2"], ["budget", "n.auto3"], ["error", "n.auto4"]];
+function AutoDrawer({ mode }) {
+  return h(Drw, { mode, width: 620, title: NT("a.title"), subtitle: NT("a.sub"),
+    footer: h(Foot, { mode, left: h(V.Button, { variant: "quiet", iconEnd: "arrow-right" }, NT("a.seeCampaign")) }, h(V.Button, { variant: "secondary" }, NT("close")), h(V.Button, { variant: "primary", icon: "refresh-cw" }, NT("a.restart"))) },
+    h(V.Notice, { tone: "attention", icon: "triangle-alert", title: NT("a.what") }, NT("a.whatBody")),
+    h(KVL, { rows: [[NT("a.reason"), NT("a.reasonV")], [NT("a.stopped"), NT("a.stoppedV")], [NT("a.when"), NT("a.whenV")], [NT("a.by"), NT("a.byV")], [NT("a.impact"), NT("a.impactV")]] }),
+    h(V.Sheet, null, h(V.SheetSection, { title: NT("a.reasonsTitle"), description: NT("a.reasonsLead") }, h("ul", { className: "cx-rows" }, REASONS.map(([k]) => h("li", { key: k }, h("div", { className: "cx-col cx-grow" }, h("span", { className: "body-strong" }, NT("r." + k)), h("span", { className: "caption muted" }, NT("r." + k + "Help")))))))),
+    h(Info, null, NT("a.log")));
+}
+const RestartDlg = ({ mode }) => h(Dlg, { mode, title: NT("re.title", { name: "Marketing pentru saloane" }), description: NT("re.lead"),
+  footer: h(React.Fragment, null, h(V.Button, { variant: "quiet" }, NT("cancel")), h(V.Button, { variant: "primary", icon: "refresh-cw" }, NT("re.submit"))) },
+  h("div", { className: "x-stack" },
+    h(V.Notice, { tone: "attention", icon: "triangle-alert", title: NT("re.warn") }, NT("re.warnBody")),
+    h(V.FormField, { label: NT("re.changed"), required: true, helper: NT("re.changedHelp") }, h(V.Textarea, { rows: 2, defaultValue: "Am scos launcherul din sloturi și am scurtat textul; rămâne doar „Abonament și consum”." })),
+    h(V.Checkbox, { label: NT("re.watch"), description: NT("re.watchHelp"), defaultChecked: true }),
+    h(Info, null, NT("re.log"))));
+mount(h(Board3, { title: "Founder — clopoțelul și oprirea automată (S136, P22, 5.8, D5-11)", notes: ["Growth Engine oprește singur o campanie sau o ofertă: deranj, plângeri, buget atins, eroare", "Notificarea: ce s-a oprit, de ce, „Vezi”, „Repornește” cu confirmare", "Clopoțelul Founder: opriri automate, solicitări de suport, facturi neemise, cereri de configurare", "Doar în română deocamdată; chei founder.notifications.* în i18n/founder.json"], items: [
+  ["1 · Clopoțelul Founder, deschis", (m) => h(Page, { mode: m, unreadOnly: true, bell: true }), 710, 720, 1000],
+  ["2 · Notificările: necitite, cu filtre", (m) => h(Page, { mode: m, unreadOnly: true }), 710, 720, 1000],
+  ["3 · Toate, citite și necitite", (m) => h(Page, { mode: m }), 970, 990, 1420],
+  ["4 · Oprire automată: ce s-a oprit și de ce", (m) => h(Page, { mode: m, unreadOnly: true, drawer: h(AutoDrawer, { mode: m }) }), 810, 810, 1020],
+  ["5 · „Repornește”, cu confirmare", (m) => h(Page, { mode: m, unreadOnly: true, overlay: h(RestartDlg, { mode: m }) }), 710, 720, 1000],
+  ["6 · Repornită", (m) => h(Page, { mode: m, unreadOnly: true, toast: NT("re.done"), toastDesc: NT("re.doneDesc") }), 710, 720, 1000],
+  ["7 · Nicio notificare", (m) => h(Page, { mode: m, empty: true }), 580, 600, 580]] }));
+
+</script>
+</body>
+</html>

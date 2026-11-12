@@ -16,3 +16,9 @@ EasyBook — the client card in the Hub (S116 c): the appointment history with e
 **To confirm with the lawyer.** The client's access to the note "Risc ridicat" (right of access to profiling).
 
 Shown at 1280 and 390, in light and dark, with a DE/IT test.
+
+**S125 (B.7).** The tab "Încasări" next to "Programări" (BookingClientPayments) and "Blochează clientul…" in the menu, with the salon's list of blocked clients (BookingBlockedClients). The new texts are Romanian only for now.
+
+**S126 (B.9).** "Pachete": sessions used and left, "Vinde un pachet…" (BookingPackages).
+
+**S139 (B.7).** "Îmbină cu alt client" (BookingClientMerge). The behaviour note "Risc ridicat" appears only when "Nota de comportament" is on in Setări › General — off by default (BookingBehaviorNote).
