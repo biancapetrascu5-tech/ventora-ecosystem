@@ -143,6 +143,15 @@ async function saveCard(
 
 /** Every pending `commercial.owner.notified` of the business, delivered; other events wait. */
 async function dispatchCommercial(organizationId: string) {
+  // The full local run shares one database: other suites leave pending commercial events, and the
+  // dispatcher reads at most 100 per call (outbox_pending), so this business's could wait behind
+  // them. The test sets the other businesses' pending events aside first (as the Growth tests do);
+  // the dispatcher and the job are unchanged.
+  await q(
+    `UPDATE commercial.outbox_events SET status = 'dispatched', dispatched_at = now()
+      WHERE status = 'pending' AND organization_id <> $1`,
+    [organizationId],
+  );
   await dispatchOutbox({
     pool: appPool,
     source: { schema: 'commercial', moduleRole: 'commercial_rw' },
