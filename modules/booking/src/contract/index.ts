@@ -358,3 +358,33 @@ export type {
   MarkClassAttendanceParams,
 } from './classes';
 export type { ClassSession, ClassSessionDetail, ClassSessionStatus } from '../server/classes';
+
+// Lot B.9c: the waiting list (BookingWaitlist, S126) and its internal job
+export {
+  addToWaitlist,
+  listWaitlist,
+  removeFromWaitlist,
+  findWaitlistMatches,
+  offerWaitlistSlot,
+  getWaitlistOffer,
+  acceptWaitlistOffer,
+  declineWaitlistOffer,
+} from './waitlist';
+export type {
+  AddToWaitlistParams,
+  ListWaitlistParams,
+  WaitlistEntryIdParams,
+  FindWaitlistMatchesParams,
+  OfferWaitlistSlotParams,
+  WaitlistOfferLinkParams,
+} from './waitlist';
+export { runWaitlistOfferJob } from '../server/waitlist';
+export type {
+  PublicWaitlistOffer,
+  WaitlistEntry,
+  WaitlistEntryStatus,
+  WaitlistOffer,
+  WaitlistOfferJobReport,
+  WaitlistOfferState,
+  WaitlistTimeKind,
+} from '../server/waitlist';
