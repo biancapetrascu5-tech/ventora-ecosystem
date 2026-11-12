@@ -8,6 +8,7 @@ import {
   OrganizationMemberAddedV1,
   OrganizationMemberRemovedV1,
   OrganizationMemberRoleChangedV1,
+  CommercialApplicationStoppedV1,
   defineEvent,
   findEventDefinition,
 } from '../index';
@@ -104,6 +105,27 @@ describe('event catalog (Lot 4.1)', () => {
     ).toMatchObject({ fromRole: 'member', toRole: 'admin' });
     expect(() =>
       OrganizationMemberRoleChangedV1.parse({ membershipId: ID, userId: ID, toRole: 'admin' }),
+    ).toThrow();
+  });
+
+  it('commercial.application.stopped v1: only the application and how (5.10c)', () => {
+    expect(findEventDefinition('commercial.application.stopped', 1)).toBe(
+      CommercialApplicationStoppedV1,
+    );
+    expect(CommercialApplicationStoppedV1.growthSafe).toBe(false);
+    expect(CommercialApplicationStoppedV1.parse({ applicationId: 'crm', via: 'founder' })).toEqual({
+      applicationId: 'crm',
+      via: 'founder',
+    });
+    expect(() =>
+      CommercialApplicationStoppedV1.parse({ applicationId: '', via: 'founder' }),
+    ).toThrow();
+    expect(() =>
+      CommercialApplicationStoppedV1.parse({
+        applicationId: 'crm',
+        via: 'founder',
+        amountMinor: 1,
+      }),
     ).toThrow();
   });
 

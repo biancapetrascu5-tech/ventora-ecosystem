@@ -996,6 +996,26 @@ describe('D3-21 — applications added to a subscription are recurring lines', (
     ).rejects.toThrow(/no year price in RON/);
     await endApplicationLine({ founderHeaders: founderHeaders(), organizationId: org, lineId });
     expect((await getEffectiveEntitlements(org)).applications).toEqual(['booking']);
+    // Lot 5.10c: commercial.application.stopped v1, once, in the same transaction
+    const stopped = await q(
+      `SELECT version, resource_id, payload FROM commercial.outbox_events
+        WHERE type = 'commercial.application.stopped' AND organization_id = $1::uuid`,
+      [org],
+    );
+    expect(stopped).toEqual([
+      { version: 1, resource_id: lineId, payload: { applicationId: 'crm', via: 'founder' } },
+    ]);
+    // ending it again is refused and writes nothing more
+    await expect(
+      endApplicationLine({ founderHeaders: founderHeaders(), organizationId: org, lineId }),
+    ).rejects.toThrow(/Active application line not found/);
+    expect(
+      await q(
+        `SELECT 1 FROM commercial.outbox_events
+          WHERE type = 'commercial.application.stopped' AND organization_id = $1::uuid`,
+        [org],
+      ),
+    ).toHaveLength(1);
     expect(await auditCount('commercial.application_line_added', lineId)).toBe(1);
     expect(await auditCount('commercial.application_line_ended', lineId)).toBe(1);
     expect(await auditCount('commercial.application_prices_set', 'crm')).toBeGreaterThan(0);
