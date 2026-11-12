@@ -9,6 +9,12 @@ import {
   OrganizationMemberRemovedV1,
   OrganizationMemberRoleChangedV1,
   CommercialApplicationStoppedV1,
+  CrmDealCreatedV1,
+  CrmDealWonV1,
+  CrmLeadConvertedV1,
+  CrmLeadCreatedV1,
+  CrmLeadDisqualifiedV1,
+  CrmLeadUpdatedV1,
   defineEvent,
   findEventDefinition,
 } from '../index';
@@ -126,6 +132,80 @@ describe('event catalog (Lot 4.1)', () => {
         via: 'founder',
         amountMinor: 1,
       }),
+    ).toThrow();
+  });
+
+  it('crm.lead.* / crm.deal.* v1 (C.8): in the catalog, ids and states only, never personal data', () => {
+    const types = EVENT_CATALOG.map((d) => d.type).filter(
+      (t) => t.startsWith('crm.lead.') || t.startsWith('crm.deal.'),
+    );
+    expect(types).toEqual([
+      'crm.lead.created',
+      'crm.lead.updated',
+      'crm.lead.assigned',
+      'crm.lead.converted',
+      'crm.lead.disqualified',
+      'crm.lead.deleted',
+      'crm.deal.created',
+      'crm.deal.updated',
+      'crm.deal.stage_changed',
+      'crm.deal.won',
+      'crm.deal.lost',
+      'crm.deal.reopened',
+      'crm.deal.deleted',
+    ]);
+    for (const t of types) expect(findEventDefinition(t, 1)?.growthSafe).toBe(false);
+
+    expect(
+      CrmLeadCreatedV1.parse({ leadId: ID, source: 'custom', sourceId: ID, ownerUserId: null }),
+    ).toMatchObject({ source: 'custom' });
+    // nothing personal passes: the schemas are strict
+    expect(() =>
+      CrmLeadCreatedV1.parse({
+        leadId: ID,
+        source: 'phone',
+        sourceId: null,
+        ownerUserId: null,
+        phone: '+40722000000',
+      }),
+    ).toThrow();
+    expect(() => CrmLeadUpdatedV1.parse({ leadId: ID, fields: [] })).toThrow();
+    expect(CrmLeadUpdatedV1.parse({ leadId: ID, fields: ['state'], state: 'qualified' })).toEqual({
+      leadId: ID,
+      fields: ['state'],
+      state: 'qualified',
+    });
+    expect(() =>
+      CrmLeadUpdatedV1.parse({ leadId: ID, fields: ['state'], state: 'converted' }),
+    ).toThrow();
+    expect(() =>
+      CrmLeadDisqualifiedV1.parse({ leadId: ID, reason: 'spam', note: 'nu răspunde' }),
+    ).toThrow();
+    expect(
+      CrmLeadConvertedV1.parse({ leadId: ID, contactId: ID, newContact: true, dealId: null }),
+    ).toMatchObject({ newContact: true });
+
+    const deal = {
+      dealId: ID,
+      pipelineId: ID,
+      stageId: ID,
+      contactId: ID,
+      companyId: null,
+      leadId: null,
+      ownerUserId: null,
+      valueMinor: 150000,
+      currency: 'RON',
+    };
+    expect(CrmDealCreatedV1.parse(deal)).toEqual(deal);
+    for (const bad of [{ valueMinor: -1 }, { valueMinor: 1.5 }, { currency: 'ron' }]) {
+      expect(() => CrmDealCreatedV1.parse({ ...deal, ...bad })).toThrow();
+    }
+    expect(() => CrmDealCreatedV1.parse({ ...deal, title: 'Nunta Popescu' })).toThrow();
+    expect(
+      CrmDealWonV1.parse({ dealId: ID, valueMinor: 100, currency: 'EUR', wonOn: '2026-11-12' }),
+    ).toMatchObject({ wonOn: '2026-11-12' });
+    expect(() =>
+      CrmDealWonV1.parse({ dealId: ID, valueMinor: 100, currency: 'EUR', wonOn: '12.11.2026' }),
     ).toThrow();
   });
 
