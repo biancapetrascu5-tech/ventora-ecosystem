@@ -18,6 +18,7 @@
   "dependencies": {
     "@ventora/access": "workspace:*",
     "@ventora/audit": "workspace:*",
+    "@ventora/consent": "workspace:*",
     "@ventora/contracts": "workspace:*",
     "@ventora/errors": "workspace:*",
     "pg": "^8.0.0"

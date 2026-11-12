@@ -1200,6 +1200,9 @@ importers:
       '@ventora/audit':
         specifier: workspace:*
         version: link:../../core/audit
+      '@ventora/consent':
+        specifier: workspace:*
+        version: link:../../core/consent
       '@ventora/contracts':
         specifier: workspace:*
         version: link:../../packages/contracts
