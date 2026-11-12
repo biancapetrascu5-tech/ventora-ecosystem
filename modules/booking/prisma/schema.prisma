@@ -751,6 +751,8 @@ model AppointmentAnswer {
 
   @@unique([appointmentId, questionId], map: "appointment_answer_appointment_id_question_id_key")
   @@index([questionId], map: "appointment_answer_question_id_idx")
+  // B.12b (S146): the partial index on the photos not yet deleted is left to the migration
+  // (appointment_answer_photo_pending_idx)
   @@map("appointment_answer")
   @@schema("booking")
 }

@@ -716,7 +716,8 @@ export async function getAppointmentAnswersInOrg(
           source: 'client' | 'team';
         }>(
           `SELECT a.question_id, a.question_label, q.kind, a.value, a.source,
-                  (a.photo_file_id IS NOT NULL AND a.wiped_at IS NULL) AS has_photo
+                  (a.photo_file_id IS NOT NULL AND a.wiped_at IS NULL
+                   AND a.photo_deleted_at IS NULL) AS has_photo
              FROM booking.appointment_answer a
              JOIN booking.form_question q ON q.id = a.question_id
             WHERE a.appointment_id = $1
@@ -877,6 +878,57 @@ export async function deleteMarkedPhotos(
   return { deleted, pending: marked.length - deleted };
 }
 
+/** S146: the photos of the answers are kept 30 days after the booking. */
+export const ANSWER_PHOTO_RETENTION_DAYS = 30;
+
+/**
+ * S146 (the founder's decision of 12.11.2026): the photos of the answers whose booking ended more
+ * than 30 days ago, deleted by the system deletion of core/files (C.4f, reason photo_retention, an
+ * audit row `system`), then photo_deleted_at; the answer itself stays. For the cleanup job; at most
+ * 500 per run and business. A photo the storage refuses stays for the next run; one already gone
+ * from core/files is only marked.
+ */
+export async function deleteExpiredAnswerPhotos(
+  organizationId: string,
+): Promise<{ deleted: number; pending: number }> {
+  const due = await withBookingTx(
+    organizationId,
+    async (client) =>
+      (
+        await client.query<{ id: string; photo_file_id: string }>(
+          `SELECT q.id, q.photo_file_id FROM booking.appointment_answer q
+             JOIN booking.appointment a ON a.id = q.appointment_id
+            WHERE q.photo_file_id IS NOT NULL AND q.photo_deleted_at IS NULL
+              AND a.ends_at < now() - make_interval(days => $1)
+            LIMIT 500`,
+          [ANSWER_PHOTO_RETENTION_DAYS],
+        )
+      ).rows,
+    true,
+  );
+  let deleted = 0;
+  for (const d of due) {
+    try {
+      await deleteFileAsSystem(organizationId, {
+        fileId: d.photo_file_id,
+        module: 'booking',
+        reason: 'photo_retention',
+      });
+    } catch (err) {
+      if (!(err instanceof ResourceNotFound)) continue; // stays, retried by the next run
+    }
+    await withBookingTx(organizationId, (client) =>
+      client.query(
+        `UPDATE booking.appointment_answer SET photo_deleted_at = now()
+          WHERE id = $1 AND photo_deleted_at IS NULL`,
+        [d.id],
+      ),
+    );
+    deleted += 1;
+  }
+  return { deleted, pending: due.length - deleted };
+}
+
 // ── the client card (S127: the last answer to each question; booking:admin) ──────────────────
 
 export async function getClientLastAnswersInOrg(
@@ -904,7 +956,7 @@ export async function getClientLastAnswersInOrg(
         `SELECT l.* FROM (
            SELECT DISTINCT ON (q.question_id)
                   q.question_id, q.question_label, f.kind, q.value,
-                  (q.photo_file_id IS NOT NULL) AS has_photo,
+                  (q.photo_file_id IS NOT NULL AND q.photo_deleted_at IS NULL) AS has_photo,
                   a.id AS appointment_id, a.starts_at, f.sort_order, f.created_at
              FROM booking.appointment_answer q
              JOIN booking.appointment a ON a.id = q.appointment_id
