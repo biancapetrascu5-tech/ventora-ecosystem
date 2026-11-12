@@ -4,7 +4,7 @@ Data: 2026-11-12. Baza ramurii: `main` `c4a9515` (cu #182 B.9a, #178). Ramura: `
 
 **Design:** `BookingWaitlist` (S126). **Planul:** `reports/2026-11-12_plan-booking-b9.md` (PROPUS).
 
-**SQL de revizuit:** `modules/booking/prisma/migrations/20261112000003_booking_waitlist/migration.sql`
+**SQL de revizuit:** `modules/booking/prisma/migrations/20261112000005_booking_waitlist/migration.sql`
 
 ## Ce face
 
@@ -70,6 +70,12 @@ Data: 2026-11-12. Baza ramurii: `main` `c4a9515` (cu #182 B.9a, #178). Ramura: `
   - conflicte în `schema.prisma` (relațiile și modelul `AppointmentSeries` lângă cele ale listei) și în `contract/index.ts` (exporturile B.9b și B.9c); le-am păstrat pe amândouă;
   - lista tabelelor cu RLS s-a îmbinat singură (`appointment_series` și `waitlist_*`);
   - testele lotului: 73/73, cu garda de drift; lanțul de verificări: verde.
+
+- **Al treilea rebase**, pe `main` `95ac53c` (cu #190 B.9d1):
+  - conflicte în `schema.prisma` (modelul `ClassSession` lângă modelele listei) și în `contract/index.ts` (exporturile B.9d1 și B.9c); le-am păstrat pe amândouă. Lista tabelelor cu RLS s-a îmbinat singură (`class_session` și `waitlist_*`);
+  - **abatere:** migrarea a fost redenumită din `20261112000003_booking_waitlist` în `20261112000005_booking_waitlist`, ca să ruleze după `20261112000004_booking_classes`, care e deja pe main. SQL-ul aprobat nu s-a schimbat (aceleași 279 de rânduri);
+  - `docker ps` arăta containerul altui worktree (`ventora-mk2`): am așteptat 5 minute și am verificat din nou, separat, înainte de teste;
+  - testele lotului, plus `classes`: 7 fișiere, 81/81; lanțul de verificări: verde.
 
 ## Ce rămâne deschis
 
