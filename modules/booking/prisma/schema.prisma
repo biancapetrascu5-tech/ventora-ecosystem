@@ -54,6 +54,7 @@ model Service {
   category     ServiceCategory? @relation(fields: [categoryId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "service_category_id_fkey")
   appointments Appointment[]
   series       AppointmentSeries[]
+  waitlistEntries WaitlistEntry[]
   resources    ServiceResource[]
   staff        StaffService[]
   staffTerms   StaffServiceTerms[]
@@ -105,6 +106,8 @@ model StaffMember {
   timeOff      StaffTimeOff[]
   appointments Appointment[]
   series       AppointmentSeries[]
+  waitlistEntries WaitlistEntry[]
+  waitlistOffers  WaitlistOffer[]
   timeBlocks   TimeBlock[]
   services     StaffService[]
   serviceTerms StaffServiceTerms[]
@@ -258,6 +261,7 @@ model Client {
 
   appointments Appointment[]
   series       AppointmentSeries[]
+  waitlistEntries WaitlistEntry[]
   mergedInto   Client?       @relation("ClientMerge", fields: [mergedIntoClientId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "client_merged_into_client_id_fkey")
   mergedFrom   Client[]      @relation("ClientMerge")
   blocks       ClientBlock[]
@@ -342,6 +346,8 @@ model Appointment {
   answers     AppointmentAnswer[]
   classSession ClassSession?        @relation(fields: [organizationId, classSessionId], references: [organizationId, id], onDelete: Restrict, onUpdate: Restrict, map: "appointment_class_session_fkey")
   series      AppointmentSeries?   @relation(fields: [organizationId, seriesId], references: [organizationId, id], onDelete: Restrict, onUpdate: Restrict, map: "appointment_series_fkey")
+  waitlistEntries WaitlistEntry[]
+  waitlistOffers  WaitlistOffer[]
 
   @@unique([organizationId, number], map: "appointment_organization_id_number_key")
   @@unique([organizationId, id], map: "appointment_organization_id_id_key")
@@ -804,5 +810,66 @@ model ClassSession {
   @@index([staffMemberId, startsAt], map: "class_session_staff_member_id_starts_idx")
   @@index([resourceId, startsAt], map: "class_session_resource_id_starts_idx")
   @@map("class_session")
+  @@schema("booking")
+}
+
+// Lot B.9c: the waiting list (BookingWaitlist, S126); the open offer per entry is a partial
+// expression index left to the migration (waitlist_offer_pending_entry_key)
+model WaitlistEntry {
+  id                    String    @id @db.Uuid
+  organizationId        String    @map("organization_id") @db.Uuid
+  clientId              String    @map("client_id") @db.Uuid
+  serviceId             String    @map("service_id") @db.Uuid
+  staffMemberId         String?   @map("staff_member_id") @db.Uuid
+  dateFrom              DateTime  @map("date_from") @db.Date
+  dateTo                DateTime  @map("date_to") @db.Date
+  timeKind              String    @map("time_kind") @db.VarChar(10)
+  fromMinute            Int?      @map("from_minute") @db.SmallInt
+  toMinute              Int?      @map("to_minute") @db.SmallInt
+  note                  String?   @db.VarChar(500)
+  status                String    @default("waiting") @db.VarChar(10)
+  acceptedAppointmentId String?   @map("accepted_appointment_id") @db.Uuid
+  removedAt             DateTime? @map("removed_at") @db.Timestamptz
+  removedByUserId       String?   @map("removed_by_user_id") @db.Uuid
+  createdByUserId       String    @map("created_by_user_id") @db.Uuid
+  createdAt             DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt             DateTime  @default(now()) @map("updated_at") @db.Timestamptz
+
+  client      Client          @relation(fields: [clientId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "waitlist_entry_client_id_fkey")
+  service     Service         @relation(fields: [serviceId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "waitlist_entry_service_id_fkey")
+  staffMember StaffMember?    @relation(fields: [staffMemberId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "waitlist_entry_staff_member_id_fkey")
+  appointment Appointment?    @relation(fields: [organizationId, acceptedAppointmentId], references: [organizationId, id], onDelete: Restrict, onUpdate: Restrict, map: "waitlist_entry_appointment_fkey")
+  offers      WaitlistOffer[]
+
+  @@unique([organizationId, id], map: "waitlist_entry_organization_id_id_key")
+  @@index([organizationId, status, createdAt], map: "waitlist_entry_organization_id_status_created_idx")
+  @@index([clientId], map: "waitlist_entry_client_id_idx")
+  @@map("waitlist_entry")
+  @@schema("booking")
+}
+
+model WaitlistOffer {
+  id              String    @id @db.Uuid
+  organizationId  String    @map("organization_id") @db.Uuid
+  entryId         String    @map("entry_id") @db.Uuid
+  staffMemberId   String    @map("staff_member_id") @db.Uuid
+  startsAt        DateTime  @map("starts_at") @db.Timestamptz
+  endsAt          DateTime  @map("ends_at") @db.Timestamptz
+  expiresAt       DateTime  @map("expires_at") @db.Timestamptz
+  channel         String    @db.VarChar(5)
+  tokenHash       String    @unique(map: "waitlist_offer_token_hash_key") @map("token_hash") @db.Char(64)
+  state           String    @default("pending") @db.VarChar(10)
+  appointmentId   String?   @map("appointment_id") @db.Uuid
+  closedAt        DateTime? @map("closed_at") @db.Timestamptz
+  createdByUserId String    @map("created_by_user_id") @db.Uuid
+  createdAt       DateTime  @default(now()) @map("created_at") @db.Timestamptz
+
+  entry       WaitlistEntry @relation(fields: [organizationId, entryId], references: [organizationId, id], onDelete: Restrict, onUpdate: Restrict, map: "waitlist_offer_entry_fkey")
+  staffMember StaffMember   @relation(fields: [staffMemberId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "waitlist_offer_staff_member_id_fkey")
+  appointment Appointment?  @relation(fields: [organizationId, appointmentId], references: [organizationId, id], onDelete: Restrict, onUpdate: Restrict, map: "waitlist_offer_appointment_fkey")
+
+  @@index([entryId], map: "waitlist_offer_entry_id_idx")
+  @@index([staffMemberId, startsAt], map: "waitlist_offer_staff_member_id_starts_idx")
+  @@map("waitlist_offer")
   @@schema("booking")
 }

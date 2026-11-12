@@ -784,6 +784,9 @@ describe('B.1 — the role and the grants (§2.3)', () => {
       'staff_time_off',
       'staff_weekly_hours',
       'time_block',
+      // B.9c: the waiting list
+      'waitlist_entry',
+      'waitlist_offer',
     ]);
     for (const t of tables) {
       expect(t.relrowsecurity, t.relname).toBe(true);
