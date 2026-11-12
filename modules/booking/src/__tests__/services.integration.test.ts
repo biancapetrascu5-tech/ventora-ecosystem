@@ -747,6 +747,8 @@ describe('B.1 — the role and the grants (§2.3)', () => {
     // B.4a: appointment*, client, settings, time_block; B.3a: resource, service_resource; B.3b: appointment_resource; B.2b: staff_service; B.2c: staff_service_terms)
     expect(tables.map((t) => t.relname)).toEqual([
       'appointment',
+      // B.12: the answers to the salon's questions
+      'appointment_answer',
       'appointment_counter',
       'appointment_history',
       'appointment_payment',
@@ -755,6 +757,8 @@ describe('B.1 — the role and the grants (§2.3)', () => {
       'client',
       'client_block',
       'client_note_removal',
+      // B.12: the salon's questions
+      'form_question',
       // B.11b: the client's links
       'manage_token',
       'medical_answer',

@@ -7,6 +7,18 @@ import { guardBulkOp } from '@ventora/db-kit';
 import { deliverEmail } from '@ventora/notifications';
 import { findPublicOrganization, listLocations } from '@ventora/organizations';
 import { makePublicContext } from './actor';
+import { confirmAnonymousUpload, listAnonymousFiles, requestAnonymousUpload } from '@ventora/files';
+import {
+  activeQuestions,
+  photoOwner,
+  questionsForService,
+  toPublicQuestion,
+  validateAnswers,
+  writeAnswers,
+  writePhotos,
+  type FormAnswer,
+  type PublicFormQuestion,
+} from './forms';
 import {
   createAppointmentInOrg,
   getBookingSettingsInOrg,
@@ -125,6 +137,11 @@ export type PublicBookingPage = {
     /** The members bookable online who do it, in the team's order. */
     staff: Array<{ id: string; displayName: string }>;
   }>;
+  /**
+   * B.12: the salon's questions, in order („Câteva întrebări de la salon”); the page shows at the
+   * details step only those of the chosen service (serviceIds null = every service).
+   */
+  questions: PublicFormQuestion[];
 };
 
 export async function getPublicBookingPage(slug: unknown): Promise<PublicBookingPage> {
@@ -185,11 +202,18 @@ export async function getPublicBookingPage(slug: unknown): Promise<PublicBooking
     },
     true,
   );
+  const shown = new Set(services.map((s) => s.id));
+  const questions = (
+    await withBookingTx(p.ctx.organizationId, (client) => activeQuestions(client), true)
+  )
+    .filter((q) => q.serviceIds === null || q.serviceIds.some((id) => shown.has(id)))
+    .map(toPublicQuestion);
   return {
     name: p.name,
     timeZone: p.timeZone,
     locations: locations.map((l) => ({ id: l.id, name: l.name, address: l.address })),
     services,
+    questions,
   };
 }
 
@@ -227,6 +251,8 @@ export type StartPublicBookingInput = {
   email: unknown;
   locale?: unknown;
   message?: unknown;
+  /** B.12: the answers to the questions of the service ({ questionId, value }). */
+  answers?: unknown;
   /** The Turnstile token from the page. */
   captchaToken: unknown;
   /** The caller's IP, from the request (never from the body). */
@@ -278,7 +304,8 @@ export async function settleExpired(client: PoolClient): Promise<number> {
   const res = await client.query(
     `UPDATE booking.public_hold
         SET state = 'expired', settled_at = now(),
-            client_name = NULL, client_phone = NULL, client_email = NULL, message = NULL
+            client_name = NULL, client_phone = NULL, client_email = NULL, message = NULL,
+            answers = NULL
       WHERE state = 'pending' AND expires_at <= now()`,
   );
   return res.rowCount ?? 0;
@@ -293,7 +320,8 @@ export async function settle(
   await client.query(
     `UPDATE booking.public_hold
         SET state = $2, appointment_id = $3, settled_at = now(),
-            client_name = NULL, client_phone = NULL, client_email = NULL, message = NULL
+            client_name = NULL, client_phone = NULL, client_email = NULL, message = NULL,
+            answers = NULL
       WHERE id = $1 AND state = 'pending'`,
     [holdId, state, appointmentId],
   );
@@ -416,6 +444,17 @@ export async function startPublicBooking(
     .flatMap((d) => d.slots)
     .find((s) => s.available && s.startsAt.getTime() === startsAt.getTime());
   if (!slot) throw new Conflict('slot_taken');
+  // B.12: the answers to the questions of this service (a required one left empty: InvalidInput)
+  const serviceId = input.serviceId as string;
+  const answers = validateAnswers(
+    await withBookingTx(
+      ctx.organizationId,
+      (client) => questionsForService(client, serviceId, 'public'),
+      true,
+    ),
+    input.answers,
+    true,
+  );
   const staffMemberId =
     input.staffMemberId === 'any' ? slot.staffMemberIds?.[0] : (input.staffMemberId as string);
   if (!staffMemberId) throw new Conflict('slot_taken');
@@ -450,7 +489,8 @@ export async function startPublicBooking(
     await client.query(
       `UPDATE booking.public_hold
           SET state = 'expired', settled_at = now(),
-              client_name = NULL, client_phone = NULL, client_email = NULL, message = NULL
+              client_name = NULL, client_phone = NULL, client_email = NULL, message = NULL,
+            answers = NULL
         WHERE email_hash = $1 AND state = 'pending'`,
       [emailHash],
     );
@@ -458,9 +498,9 @@ export async function startPublicBooking(
       `INSERT INTO booking.public_hold
          (id, organization_id, staff_member_id, service_id, location_id, starts_at, ends_at,
           duration_minutes, client_name, client_phone, client_email, client_locale, message,
-          email_hash, ip_hash, code_hash, expires_at)
+          email_hash, ip_hash, code_hash, expires_at, answers)
        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16,
-               now() + make_interval(mins => $17))
+               now() + make_interval(mins => $17), $18)
        RETURNING expires_at`,
       [
         holdId,
@@ -480,6 +520,7 @@ export async function startPublicBooking(
         ipHash,
         codeHash(holdId, code),
         PUBLIC_LIMITS.holdMinutes,
+        answers.length > 0 ? JSON.stringify(answers) : null,
       ],
     );
     return rows[0]!;
@@ -505,6 +546,8 @@ export type HoldRow = {
   client_email: string | null;
   client_locale: ClientLocale;
   message: string | null;
+  /** B.12: the answers, while pending */
+  answers: FormAnswer[] | null;
   /** null only for a move hold (B.11b), never read here */
   code_hash: string | null;
   attempts: number;
@@ -515,8 +558,8 @@ export type HoldRow = {
 };
 
 const HOLD_COLUMNS = `id, staff_member_id, service_id, location_id, starts_at, client_name,
-  client_phone, client_email, client_locale, message, code_hash, attempts, sends, last_sent_at,
-  expires_at, state`;
+  client_phone, client_email, client_locale, message, answers, code_hash, attempts, sends,
+  last_sent_at, expires_at, state`;
 
 function requireHoldId(value: unknown): string {
   if (!isUuid(value)) throw new ResourceNotFound();
@@ -629,7 +672,14 @@ export async function verifyPublicBooking(
     }
     throw err;
   }
+  // B.12 (S127): the photos uploaded on this hold, ready, for questions of the service that allow one
+  const photos = await holdPhotos(ctx.organizationId, holdId, hold.service_id);
   const manageToken = await withBookingTx(ctx.organizationId, async (c) => {
+    // B.12: the answers go to the booking before the hold (and its copy of them) is wiped
+    if (hold.answers?.length) {
+      await writeAnswers(c, ctx.organizationId, appointment.id, hold.answers, { source: 'client' });
+    }
+    if (photos.length) await writePhotos(c, ctx.organizationId, appointment.id, photos);
     await settle(c, holdId, 'confirmed', appointment.id);
     return issueManageToken(c, ctx.organizationId, appointment.id);
   });
@@ -686,4 +736,119 @@ export async function resendPublicBookingCode(
   const sent = await sendCode(result.email, result.locale, p.name, code);
   if (sent.status !== 'sent') throw new Conflict('email_not_delivered');
   return { expiresAt: result.expiresAt };
+}
+
+// ── B.12 (S127): the optional photo of an answer, on the public page ─────────────────────────
+
+/**
+ * The hold the photo is for: a pending public hold of this business (not a move), still in its 10
+ * minutes — it exists only after the anti-robot check of startPublicBooking. And the question: an
+ * active question of the hold's service that allows a photo. Marks the hold (has_photos) so the
+ * cleanup job deletes its photos if it is never confirmed.
+ */
+async function photoHold(
+  organizationId: string,
+  holdIdRaw: unknown,
+  questionIdRaw: unknown | null,
+): Promise<{ holdId: string; serviceId: string }> {
+  const holdId = requireHoldId(holdIdRaw);
+  return withBookingTx(organizationId, async (client) => {
+    const hold = (
+      await client.query<{ service_id: string; state: string; expires_at: Date }>(
+        `SELECT service_id, state, expires_at FROM booking.public_hold
+          WHERE id = $1 AND move_appointment_id IS NULL FOR UPDATE`,
+        [holdId],
+      )
+    ).rows[0];
+    if (!hold) throw new ResourceNotFound();
+    if (hold.state !== 'pending' || hold.expires_at.getTime() <= Date.now()) {
+      throw new Conflict('code_expired');
+    }
+    if (questionIdRaw !== null) {
+      const ok = (await questionsForService(client, hold.service_id, 'public')).some(
+        (q) => q.id === questionIdRaw && q.allowsPhoto,
+      );
+      if (!ok) throw new InvalidInput('questionId', 'invalid');
+      await client.query(`UPDATE booking.public_hold SET has_photos = true WHERE id = $1`, [
+        holdId,
+      ]);
+    }
+    return { holdId, serviceId: hold.service_id };
+  });
+}
+
+/**
+ * „Adaugă o poză”: the upload link for the photo of one question (PNG / JPEG, at most 10 MB, one per
+ * question, 5 per hold — core/files, C.4g). Errors: InvalidInput (questionId, contentType,
+ * sizeBytes, name); Conflict (code_expired, file_exists, too_many_files); ResourceNotFound.
+ */
+export async function requestPublicAnswerPhoto(
+  slug: unknown,
+  input: {
+    holdId: unknown;
+    questionId: unknown;
+    name: unknown;
+    contentType: unknown;
+    sizeBytes: unknown;
+  },
+): Promise<{ fileId: string; uploadUrl: string; expiresAt: Date }> {
+  const { ctx } = await place(slug);
+  const { holdId } = await photoHold(ctx.organizationId, input.holdId, input.questionId);
+  if (typeof input.name !== 'string') throw new InvalidInput('name', 'invalid');
+  if (typeof input.contentType !== 'string') throw new InvalidInput('contentType', 'invalid');
+  if (typeof input.sizeBytes !== 'number') throw new InvalidInput('sizeBytes', 'invalid');
+  return requestAnonymousUpload(
+    { organizationId: ctx.organizationId, anonymousKey: holdId },
+    {
+      owner: photoOwner(holdId, input.questionId as string),
+      name: input.name,
+      contentType: input.contentType,
+      sizeBytes: input.sizeBytes,
+    },
+  );
+}
+
+/** After the upload: the photo is checked by its content (core/files); refused → InvalidInput. */
+export async function confirmPublicAnswerPhoto(
+  slug: unknown,
+  input: { holdId: unknown; fileId: unknown },
+): Promise<{ fileId: string; questionId: string }> {
+  const { ctx } = await place(slug);
+  const { holdId } = await photoHold(ctx.organizationId, input.holdId, null);
+  if (!isUuid(input.fileId)) throw new ResourceNotFound();
+  const info = await confirmAnonymousUpload(
+    { organizationId: ctx.organizationId, anonymousKey: holdId },
+    input.fileId,
+  );
+  return { fileId: info.id, questionId: info.owner.resourceId.split(':')[1]! };
+}
+
+/** The ready photos of a hold, for the questions of its service that (still) allow one. */
+async function holdPhotos(
+  organizationId: string,
+  holdId: string,
+  serviceId: string,
+): Promise<Array<{ questionId: string; label: string; fileId: string }>> {
+  const files = (await listAnonymousFiles({ organizationId, anonymousKey: holdId })).filter(
+    (f) => f.status === 'ready',
+  );
+  if (files.length === 0) return [];
+  const questions = await withBookingTx(
+    organizationId,
+    (client) => questionsForService(client, serviceId, 'public'),
+    true,
+  );
+  const out: Array<{ questionId: string; label: string; fileId: string }> = [];
+  for (const q of questions) {
+    if (!q.allowsPhoto) continue;
+    const owner = photoOwner(holdId, q.id);
+    const f = files.find(
+      (x) =>
+        x.owner.module === owner.module &&
+        x.owner.resourceType === owner.resourceType &&
+        x.owner.resourceId === owner.resourceId,
+    );
+    if (f) out.push({ questionId: q.id, label: q.label, fileId: f.id });
+  }
+  return out;
 }

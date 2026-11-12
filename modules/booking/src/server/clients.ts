@@ -5,6 +5,7 @@ import { BookingClientErasedV1, BookingClientMergedV1 } from '@ventora/contracts
 import { uuidv7, writeOutboxEvent } from '@ventora/db-kit';
 import { Conflict, InvalidInput, ResourceNotFound } from '@ventora/errors';
 import { behaviorNoteOf, type BehaviorNote } from './behavior';
+import { deleteMarkedPhotos } from './forms';
 import { withBookingTx } from './db';
 import { isUuid } from './validation';
 import { hubOnly } from './actor';
@@ -494,10 +495,10 @@ export async function mergeClientsInOrg(
 export async function eraseClientInOrg(
   ctx: TenantContext,
   clientId: unknown,
-): Promise<{ appointmentsAnonymized: number }> {
+): Promise<{ appointmentsAnonymized: number; photosPending: number }> {
   hubOnly(ctx);
   const id = requireId(clientId);
-  return withBookingTx(ctx.organizationId, async (client, exec) => {
+  const erased = await withBookingTx(ctx.organizationId, async (client, exec) => {
     const row = await readClient(client, id);
     if (row.merged_into_client_id) throw new Conflict('client_merged');
     if (row.erased_at) return { appointmentsAnonymized: 0 };
@@ -516,4 +517,8 @@ export async function eraseClientInOrg(
     });
     return { appointmentsAnonymized: n };
   });
+  // B.12 (S127): the photos marked by erase_client, deleted by the system deletion of core/files
+  // (C.4f); the ones the storage refuses stay marked and the cleanup job retries them
+  const photos = await deleteMarkedPhotos(ctx.organizationId, id);
+  return { ...erased, photosPending: photos.pending };
 }

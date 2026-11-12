@@ -1078,6 +1078,9 @@ importers:
       '@ventora/errors':
         specifier: workspace:*
         version: link:../../packages/errors
+      '@ventora/files':
+        specifier: workspace:*
+        version: link:../../core/files
       '@ventora/identity':
         specifier: workspace:*
         version: link:../../core/identity

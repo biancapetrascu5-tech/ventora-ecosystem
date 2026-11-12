@@ -537,7 +537,6 @@ jobs:
           BOOKING_MEDICAL_KEY_TEST: ${{ env.BOOKING_MEDICAL_KEY_TEST }}
         run: |
           pnpm --filter @ventora/access test:integration
-          pnpm --filter @ventora/booking test:integration
           pnpm --filter @ventora/marketing test:integration
       - name: Verify notifications schema matches migrations
         run: |
@@ -579,6 +578,18 @@ jobs:
           DATABASE_URL_TEST: postgresql://app_runtime:${{ env.APP_PW }}@localhost:5435/ventora_access_test
           DATABASE_URL_ADMIN_TEST: postgresql://postgres:test@localhost:5435/ventora_access_test
         run: pnpm --filter @ventora/files test:integration
+      # Lot B.12: the photos of the answers go through core/files — the booking tests run after its
+      # migrations (as crm, CR.6)
+      - name: Run booking integration tests
+        env:
+          DATABASE_URL_TEST: postgresql://app_runtime:${{ env.APP_PW }}@localhost:5435/ventora_access_test
+          DATABASE_URL_ADMIN_TEST: postgresql://postgres:test@localhost:5435/ventora_access_test
+          DATABASE_URL: postgresql://app_runtime:${{ env.APP_PW }}@localhost:5435/ventora_access_test
+          DATABASE_URL_FOUNDER_TEST: postgresql://founder_runtime:${{ env.FOUNDER_PW }}@localhost:5435/ventora_access_test
+          BETTER_AUTH_SECRET: ${{ env.BETTER_AUTH_SECRET }}
+          FOUNDER_AUTH_SECRET: ${{ env.FOUNDER_AUTH_SECRET }}
+          BOOKING_MEDICAL_KEY_TEST: ${{ env.BOOKING_MEDICAL_KEY_TEST }}
+        run: pnpm --filter @ventora/booking test:integration
       # Lot CR.6: the crm attachments go through core/files — the crm tests run after its migrations
       - name: Run crm integration tests
         env:

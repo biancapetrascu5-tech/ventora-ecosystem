@@ -104,7 +104,7 @@ export async function mergeClients(
 /** The GDPR erasure of a client (D-B7-1 = a); also the module's handler for Core (§6.4 e). */
 export async function eraseClient(
   params: ClientIdParams,
-): Promise<{ appointmentsAnonymized: number }> {
+): Promise<{ appointmentsAnonymized: number; photosPending: number }> {
   return eraseClientInOrg(await auth(params, 'booking:admin'), params.clientId);
 }
 

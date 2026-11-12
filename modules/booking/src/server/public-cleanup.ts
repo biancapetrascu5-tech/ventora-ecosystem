@@ -1,4 +1,6 @@
 import { guardBulkOp } from '@ventora/db-kit';
+import { deleteFileAsSystem, listAnonymousFiles } from '@ventora/files';
+import { deleteMarkedPhotos } from './forms';
 import { withBookingJobTx, withBookingTx } from './db';
 import { settleExpired } from './public';
 
@@ -11,12 +13,21 @@ import { settleExpired } from './public';
  * across RLS), in that business's own context (withBookingTx: booking_rw + app.organization_id):
  *   - the pending holds whose 10 minutes passed → 'expired', personal data wiped (settleExpired);
  *   - email_hash and ip_hash set to NULL on the rows older than 24 hours;
- *   - B.11b (review #174): the clients' links revoked 30 days after their booking (revoked_at).
+ *   - B.11b (review #174): the clients' links revoked 30 days after their booking (revoked_at);
+ *   - B.12 (S127): the photos of the settled holds (expired, refused, or confirmed with photos not
+ *     moved to the booking) deleted through the system deletion of core/files (deleteFileAsSystem,
+ *     C.4f: one deletion path, an audit row `system` per file), then has_photos = false; and the
+ *     photos of erased clients still marked (photo_deleted_at NULL), deleted the same way.
  * No DELETE, no withSystemContext, no audit (no personal action: housekeeping). One business that
  * fails does not stop the others; the job then fails (Sentry, retry), the rest stays done.
  */
 
-export const PUBLIC_CLEANUP = { businessesPerRun: 500, hashHours: 24, linkDays: 30 } as const;
+export const PUBLIC_CLEANUP = {
+  businessesPerRun: 500,
+  hashHours: 24,
+  linkDays: 30,
+  photoHoldsPerBusiness: 200,
+} as const;
 
 export type PublicHoldCleanupReport = {
   businesses: number;
@@ -24,6 +35,8 @@ export type PublicHoldCleanupReport = {
   hashesCleared: number;
   /** B.11b (review #174): the clients' links revoked 30 days after their booking. */
   linksRevoked: number;
+  /** B.12: the photos deleted (settled holds, not moved to a booking; erased clients, retried). */
+  photosDeleted: number;
   failed: Array<{ organizationId: string; error: unknown }>;
 };
 
@@ -42,6 +55,7 @@ export async function runPublicHoldCleanupJob(): Promise<PublicHoldCleanupReport
     expired: 0,
     hashesCleared: 0,
     linksRevoked: 0,
+    photosDeleted: 0,
     failed: [],
   };
   for (const { organization_id: organizationId } of due) {
@@ -71,9 +85,55 @@ export async function runPublicHoldCleanupJob(): Promise<PublicHoldCleanupReport
       report.expired += done.expired;
       report.hashesCleared += done.cleared;
       report.linksRevoked += done.revoked;
+      report.photosDeleted += await cleanHoldPhotos(organizationId);
+      report.photosDeleted += (await deleteMarkedPhotos(organizationId, null)).deleted;
     } catch (error) {
       report.failed.push({ organizationId, error });
     }
   }
   return report;
+}
+
+/**
+ * B.12 (S127): the settled holds with photos. A confirmed hold keeps the photos moved to its booking;
+ * every other photo of the hold (expired, refused, or not moved) is deleted by the system deletion of
+ * core/files (C.4f), file by file. One hold that fails stays marked for the next run.
+ */
+async function cleanHoldPhotos(organizationId: string): Promise<number> {
+  const holds = await withBookingTx(
+    organizationId,
+    async (client) =>
+      (
+        await client.query<{ id: string; keep: string[] }>(
+          `SELECT h.id,
+                  COALESCE(array_agg(q.photo_file_id) FILTER (WHERE q.photo_file_id IS NOT NULL),
+                           '{}') AS keep
+             FROM booking.public_hold h
+             LEFT JOIN booking.appointment_answer q
+               ON q.appointment_id = h.appointment_id AND q.photo_deleted_at IS NULL
+            WHERE h.has_photos AND h.state <> 'pending'
+            GROUP BY h.id
+            LIMIT $1`,
+          [PUBLIC_CLEANUP.photoHoldsPerBusiness],
+        )
+      ).rows,
+    true,
+  );
+  let deleted = 0;
+  for (const h of holds) {
+    const files = await listAnonymousFiles({ organizationId, anonymousKey: h.id });
+    for (const f of files) {
+      if (h.keep.includes(f.id)) continue;
+      const done = await deleteFileAsSystem(organizationId, {
+        fileId: f.id,
+        module: 'booking',
+        reason: 'public_hold_settled',
+      });
+      if (done) deleted += 1;
+    }
+    await withBookingTx(organizationId, (client) =>
+      client.query(`UPDATE booking.public_hold SET has_photos = false WHERE id = $1`, [h.id]),
+    );
+  }
+  return deleted;
 }

@@ -256,6 +256,8 @@ export {
   verifyPublicBooking,
   resendPublicBookingCode,
   configurePublicBooking,
+  requestPublicAnswerPhoto,
+  confirmPublicAnswerPhoto,
 } from './public';
 export type {
   PublicSlotsParams,
@@ -282,3 +284,32 @@ export type {
   ManageState,
   MoveRefusal,
 } from './manage';
+
+// Lot B.12: the questions at booking (BookingCustomForms, S127)
+export {
+  listFormQuestions,
+  createFormQuestion,
+  updateFormQuestion,
+  archiveFormQuestion,
+  reorderFormQuestions,
+  getAppointmentAnswers,
+  saveAppointmentAnswers,
+  getAnswerPhotoLink,
+  getClientLastAnswers,
+} from './forms';
+export type {
+  FormQuestionFields,
+  ListFormQuestionsParams,
+  CreateFormQuestionParams,
+  UpdateFormQuestionParams,
+  FormQuestionIdParams,
+  ReorderFormQuestionsParams,
+  AppointmentAnswersParams,
+  SaveAppointmentAnswersParams,
+  AppointmentAnswer,
+  ClientLastAnswer,
+  FormAnswerValue,
+  FormQuestion,
+  FormQuestionKind,
+} from './forms';
+export type { PublicFormQuestion } from '../server/forms';
