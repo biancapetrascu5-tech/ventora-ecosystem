@@ -19,6 +19,7 @@ import { staffFreeAtInOrg } from './availability';
 import { requiredResources } from './resources';
 import { locationFilter } from './locations';
 import { actorUserId, clientOnly, isPublicContext, hubOnly } from './actor';
+import { reservePackageSession } from './packages';
 import { doesService, staffForService } from './staff-services';
 import { durationWithin, effectiveTermsFor, type EffectiveTerms } from './terms';
 import { staffDayIntervals, staffEligibility } from './staff';
@@ -482,6 +483,8 @@ export function translate(err: unknown): never {
   // B.3b: no free unit of a resource the service needs (check_resource_free, hint 'resource')
   if (e?.code === '23P01' && e.hint === 'resource') throw new Conflict('resource_unavailable');
   if (e?.code === '23P01') throw new Conflict('appointment_overlap');
+  // B.9e: the package rules of the database (package_use_guard), e.g. „Din pachet” at the booking
+  if (e?.code === '23514' && e.hint?.startsWith('package_')) throw new Conflict(e.hint);
   if (e?.code === '23514' && typeof (err as Error).message === 'string') {
     const m = (err as Error).message;
     if (m.includes('not an active member')) throw new Conflict('staff_member_removed');
@@ -995,6 +998,8 @@ export type CreateAppointmentInput = {
   /** BookingNew: confirmed (default) or unconfirmed. */
   confirmed?: unknown;
   teamNote?: unknown;
+  /** B.9e „Plata: Din pachet”: one session of this sale reserved on the appointment. */
+  packageSaleId?: unknown;
   /**
    * B.10: the location, for a member who works everywhere (or „any” at one location). A member
    * with a location gives it to the appointment; another location for them is
@@ -1167,6 +1172,10 @@ export async function createAppointmentInOrg(
     throw new InvalidInput('clientId', 'required');
   }
   const clientId = input.clientId === undefined ? null : requireId(input.clientId);
+  const packageSaleId =
+    input.packageSaleId === undefined || input.packageSaleId === null
+      ? null
+      : requireId(input.packageSaleId);
   const requestedLocation = await locationFilter(ctx, input.locationId);
 
   // a retry of the same operation: the same appointment, nothing written twice
@@ -1357,6 +1366,10 @@ export async function createAppointmentInOrg(
         // a concurrent retry got there first: roll this one back (no gap in the numbers)
         if (!inserted.row) throw new AlreadyCreated();
         const row = inserted.row;
+        // B.9e: „Din pachet” in the same transaction (the database holds the package's rules)
+        if (packageSaleId) {
+          await reservePackageSession(client, ctx, timeZone, row, packageSaleId);
+        }
         await history(client, ctx, id, {
           kind: 'created',
           to: status,
@@ -1374,6 +1387,7 @@ export async function createAppointmentInOrg(
           status,
           ...(resources.length ? { resourceIds: resources.map((r) => r.id) } : {}),
           ...(locationId ? { locationId } : {}),
+          ...(packageSaleId ? { packageSaleId } : {}),
         });
         await writeOutboxEvent(client, 'booking', BookingAppointmentCreatedV1, {
           organizationId: ctx.organizationId,

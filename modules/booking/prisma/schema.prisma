@@ -61,6 +61,8 @@ model Service {
   publicHolds  PublicHold[]
 
   classSessions ClassSession[]
+  packages      Package[]
+  packageSales  PackageSale[]
   @@index([organizationId, categoryId, sortOrder], map: "service_organization_id_category_sort_idx")
   @@index([categoryId], map: "service_category_id_idx")
   @@map("service")
@@ -262,6 +264,7 @@ model Client {
   appointments Appointment[]
   series       AppointmentSeries[]
   waitlistEntries WaitlistEntry[]
+  packageSales PackageSale[]
   mergedInto   Client?       @relation("ClientMerge", fields: [mergedIntoClientId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "client_merged_into_client_id_fkey")
   mergedFrom   Client[]      @relation("ClientMerge")
   blocks       ClientBlock[]
@@ -348,6 +351,7 @@ model Appointment {
   series      AppointmentSeries?   @relation(fields: [organizationId, seriesId], references: [organizationId, id], onDelete: Restrict, onUpdate: Restrict, map: "appointment_series_fkey")
   waitlistEntries WaitlistEntry[]
   waitlistOffers  WaitlistOffer[]
+  packageUses     PackageUse[]
 
   @@unique([organizationId, number], map: "appointment_organization_id_number_key")
   @@unique([organizationId, id], map: "appointment_organization_id_id_key")
@@ -871,5 +875,81 @@ model WaitlistOffer {
   @@index([entryId], map: "waitlist_offer_entry_id_idx")
   @@index([staffMemberId, startsAt], map: "waitlist_offer_staff_member_id_starts_idx")
   @@map("waitlist_offer")
+  @@schema("booking")
+}
+
+// Lot B.9e: the packages of sessions (BookingPackages, S126); the open use per appointment is a
+// partial index left to the migration (package_use_open_appointment_key)
+model Package {
+  id               String    @id @db.Uuid
+  organizationId   String    @map("organization_id") @db.Uuid
+  serviceId        String    @map("service_id") @db.Uuid
+  name             String    @db.VarChar(80)
+  sessions         Int       @db.SmallInt
+  validityMonths   Int?      @map("validity_months") @db.SmallInt
+  priceMinor       Int       @map("price_minor")
+  currency         String    @db.Char(3)
+  archivedAt       DateTime? @map("archived_at") @db.Timestamptz
+  archivedByUserId String?   @map("archived_by_user_id") @db.Uuid
+  createdByUserId  String    @map("created_by_user_id") @db.Uuid
+  createdAt        DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt        DateTime  @default(now()) @map("updated_at") @db.Timestamptz
+
+  service Service       @relation(fields: [serviceId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "package_service_id_fkey")
+  sales   PackageSale[]
+
+  @@unique([organizationId, id], map: "package_organization_id_id_key")
+  @@index([serviceId], map: "package_service_id_idx")
+  @@map("package")
+  @@schema("booking")
+}
+
+model PackageSale {
+  id               String    @id @db.Uuid
+  organizationId   String    @map("organization_id") @db.Uuid
+  packageId        String    @map("package_id") @db.Uuid
+  clientId         String    @map("client_id") @db.Uuid
+  serviceId        String    @map("service_id") @db.Uuid
+  packageName      String    @map("package_name") @db.VarChar(80)
+  sessions         Int       @db.SmallInt
+  priceMinor       Int       @map("price_minor")
+  currency         String    @db.Char(3)
+  method           String    @db.VarChar(8)
+  validFrom        DateTime  @map("valid_from") @db.Date
+  validUntil       DateTime? @map("valid_until") @db.Date
+  note             String?   @db.VarChar(500)
+  extendedAt       DateTime? @map("extended_at") @db.Timestamptz
+  extendedByUserId String?   @map("extended_by_user_id") @db.Uuid
+  extensionReason  String?   @map("extension_reason") @db.VarChar(300)
+  soldByUserId     String    @map("sold_by_user_id") @db.Uuid
+  soldAt           DateTime  @default(now()) @map("sold_at") @db.Timestamptz
+
+  package Package      @relation(fields: [organizationId, packageId], references: [organizationId, id], onDelete: Restrict, onUpdate: Restrict, map: "package_sale_package_fkey")
+  client  Client       @relation(fields: [clientId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "package_sale_client_id_fkey")
+  service Service      @relation(fields: [serviceId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "package_sale_service_id_fkey")
+  uses    PackageUse[]
+
+  @@unique([organizationId, id], map: "package_sale_organization_id_id_key")
+  @@index([clientId, soldAt], map: "package_sale_client_id_idx")
+  @@index([packageId], map: "package_sale_package_id_idx")
+  @@map("package_sale")
+  @@schema("booking")
+}
+
+model PackageUse {
+  id              String    @id @db.Uuid
+  organizationId  String    @map("organization_id") @db.Uuid
+  saleId          String    @map("sale_id") @db.Uuid
+  appointmentId   String    @map("appointment_id") @db.Uuid
+  state           String    @default("reserved") @db.VarChar(8)
+  createdByUserId String?   @map("created_by_user_id") @db.Uuid
+  createdAt       DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  settledAt       DateTime? @map("settled_at") @db.Timestamptz
+
+  sale        PackageSale @relation(fields: [organizationId, saleId], references: [organizationId, id], onDelete: Restrict, onUpdate: Restrict, map: "package_use_sale_fkey")
+  appointment Appointment @relation(fields: [organizationId, appointmentId], references: [organizationId, id], onDelete: Restrict, onUpdate: Restrict, map: "package_use_appointment_fkey")
+
+  @@index([saleId], map: "package_use_sale_id_idx")
+  @@map("package_use")
   @@schema("booking")
 }

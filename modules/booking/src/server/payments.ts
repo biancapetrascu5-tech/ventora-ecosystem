@@ -7,6 +7,7 @@ import { Conflict, Forbidden, InvalidInput, ResourceNotFound } from '@ventora/er
 import { withBookingTx } from './db';
 import { isUuid } from './validation';
 import { hubOnly } from './actor';
+import { appointmentPackageSale } from './packages';
 
 /*
  * Lot B.21 — the payments of an appointment, without a provider (BOOKING.md §3 B.21): „Încasează”,
@@ -46,6 +47,8 @@ export type AppointmentBalance = {
   netMinor: number;
   /** Fixed price: what is still due; „de la” / interval: null (the salon sets the final amount). */
   outstandingMinor: number | null;
+  /** B.9e „Din pachet”: the sale it is paid from; then nothing is outstanding. */
+  packageSaleId: string | null;
 };
 
 const METHODS: readonly PaymentMethod[] = ['cash', 'card', 'transfer', 'other'];
@@ -121,6 +124,7 @@ async function balanceOf(
   const paid = Number(rows[0]!.paid);
   const refunded = Number(rows[0]!.refunded);
   const net = paid - refunded;
+  const packageSaleId = await appointmentPackageSale(client, a.id);
   return {
     appointmentId: a.id,
     currency: a.currency.trim() as 'RON' | 'EUR',
@@ -129,7 +133,12 @@ async function balanceOf(
     paidMinor: paid,
     refundedMinor: refunded,
     netMinor: net,
-    outstandingMinor: a.price_kind === 'fixed' ? Math.max(0, a.price_minor - net) : null,
+    outstandingMinor: packageSaleId
+      ? 0
+      : a.price_kind === 'fixed'
+        ? Math.max(0, a.price_minor - net)
+        : null,
+    packageSaleId,
   };
 }
 

@@ -88,6 +88,8 @@ export type CreateAppointmentParams = Session & {
   teamNote?: string | null;
   /** B.10: for a member who works everywhere, or „any” at one location. */
   locationId?: string;
+  /** B.9e „Plata: Din pachet”: a sale of the client for this service (listClientPackages). */
+  packageSaleId?: string | null;
 };
 export type AppointmentIdParams = Session & { appointmentId: string };
 export type MoveAppointmentParams = AppointmentIdParams & {
@@ -160,6 +162,7 @@ export async function createAppointment(params: CreateAppointmentParams): Promis
     confirmed: params.confirmed,
     teamNote: params.teamNote,
     locationId: params.locationId,
+    packageSaleId: params.packageSaleId,
   });
 }
 
