@@ -66,6 +66,11 @@ Data: 2026-11-12. Baza ramurii: `main` `c4a9515` (cu #182 B.9a, #178). Ramura: `
 - **Lanțul de verificări:** `pnpm format:check`, `lint`, `typecheck`, `test`, `build`, `i18n:check`, `guards:verify`: toate exit 0, după rebase.
 - **La rebase:** un conflict în `contract/index.ts`, cu exporturile B.9a și B.9c adăugate la final; le-am păstrat pe amândouă. Apoi am rulat `pnpm install --frozen-lockfile` pentru legătura nouă de workspace din #178, fără pachete noi.
 
+- **Al doilea rebase**, pe `main` `5945a2d` (cu #184 B.9b):
+  - conflicte în `schema.prisma` (relațiile și modelul `AppointmentSeries` lângă cele ale listei) și în `contract/index.ts` (exporturile B.9b și B.9c); le-am păstrat pe amândouă;
+  - lista tabelelor cu RLS s-a îmbinat singură (`appointment_series` și `waitlist_*`);
+  - testele lotului: 73/73, cu garda de drift; lanțul de verificări: verde.
+
 ## Ce rămâne deschis
 
 - Confirmarea deciziilor D-9c-1…3, a auditului și a intervalelor.
