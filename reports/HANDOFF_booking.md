@@ -1,13 +1,12 @@
 # HANDOFF — agentul Booking (EasyBook)
 
-Actualizat pe 2026-11-12, după-amiaza. Main la `a628d05` (cu #187 B.9c, #190 B.9d1).
+Actualizat pe 2026-11-12, după-amiaza. Main la `64fd239` (cu #193 B.12b, #195 B.9e).
 
 ## 1. PR-urile deschise
 
 | PR | Ramura / worktree | HEAD | Bază | Stare |
 |---|---|---|---|---|
-| **#193** [SQL de revizuit] B.12b — pozele răspunsurilor se șterg la 30 de zile (S146) | `feat/b12b-booking-photo-retention` / `C:\Projects\ventora-b12b` | `b660763` (pushed) | `main` | Migrarea `…20261112000006_booking_photo_retention` (`public_hold_cleanup_due` recreată + index parțial). Local: 80/80, lanțul de verificări verde |
-| **#195** [SQL de revizuit] B.9e — pachetele | `feat/b9e-booking-packages` / `C:\Projects\ventora-b9e` | `2365109` (pushed) | `main` | Rebazat pe `a628d05`. Migrarea `…000007_booking_packages` (recreează `erase_client`). Local: 128/128, lanțul de verificări verde. D-9e-4 NECESITĂ DECIZIE (contabil) |
+| **#197** [SQL de revizuit] B.9d2 — lista de așteptare a clasei și rezervarea online | `feat/b9d2-booking-class-waitlist-online` / `C:\Projects\ventora-b9d2` | `e5f528b` (pushed) | `main` | Migrarea `…000008_booking_class_waitlist` (recreează `waitlist_offers_due`). Local: 82/82 + 116/116, lanțul de verificări verde. NECESITĂ DECIZIE: serviciile cu capacitate > 1 și ca oră obișnuită online |
 
 **Deciziile B.9a / B.9b / B.9c sunt PROPUS** (planul `reports/2026-11-12_plan-booking-b9.md`, commit pe #182):
 - T-9a-1: cota, o unitate pe pas;
@@ -20,18 +19,17 @@ Actualizat pe 2026-11-12, după-amiaza. Main la `a628d05` (cu #187 B.9c, #190 B.
 - D-9b-3: avansul pe fiecare programare (B.22);
 - D-9c-1…3: echipa alege, o ofertă o dată, doar e-mail în pilot; auditul listei ca `booking.client_updated` cu `metadata.waitlist`.
 
-**Îmbinate:** #187 (B.9c), #190 (B.9d1), #184 (B.9b), #182 (B.9a), #138 (B.24), #157 (B.10), #164 (B.11a), #174 (B.11b), #175 (C.4f, agentul UI), #176 (C.4g), #179 (B.12).
+**Îmbinate:** #193 (B.12b), #195 (B.9e), #187 (B.9c), #190 (B.9d1), #184 (B.9b), #182 (B.9a), #138 (B.24), #157 (B.10), #164 (B.11a), #174 (B.11b), #175 (C.4f, agentul UI), #176 (C.4g), #179 (B.12).
 
 ## 2. Worktree-urile active (un agent pe folder)
 
 | Worktree | Ramura | Stare |
 |---|---|---|
-| `C:\Projects\ventora-b12b` | `feat/b12b-booking-photo-retention` | curat, sincronizat (#193) |
-| `C:\Projects\ventora-b9e` | `feat/b9e-booking-packages` | curat, sincronizat (#195) |
+| `C:\Projects\ventora-b9d2` | `feat/b9d2-booking-class-waitlist-online` | curat, sincronizat (#197) |
 | `C:\Projects\ventora-handoff` | `docs/handoff-booking` | acest fișier |
 
 **Worktree-uri care se pot șterge:**
-- ramuri îmbinate: `ventora-b9c` (#187), `ventora-b9d` (#190), `ventora-b9b` (#184), `ventora-b9a` (#182), `ventora-c4g` (#176), `ventora-b12` (#179), `ventora-b11` (#164), `ventora-b11b` (#174), `ventora-b24`, `ventora-b10`, `ventora-b21`, `ventora-c0h`, `ventora-c1`, `ventora-medkey`, `ventora-fix`, `ventora-b8`, `ventora-c0g`, `ventora-b7a`, `ventora-b7b`, `ventora-b2b`, `ventora-b2c`;
+- ramuri îmbinate: `ventora-b12b` (#193), `ventora-b9e` (#195), `ventora-b9c` (#187), `ventora-b9d` (#190), `ventora-b9b` (#184), `ventora-b9a` (#182), `ventora-c4g` (#176), `ventora-b12` (#179), `ventora-b11` (#164), `ventora-b11b` (#174), `ventora-b24`, `ventora-b10`, `ventora-b21`, `ventora-c0h`, `ventora-c1`, `ventora-medkey`, `ventora-fix`, `ventora-b8`, `ventora-c0g`, `ventora-b7a`, `ventora-b7b`, `ventora-b2b`, `ventora-b2c`;
 - planuri: `ventora-plan-*`, `ventora-booking-b1`.
 
 **Excepții:**
@@ -41,13 +39,13 @@ Actualizat pe 2026-11-12, după-amiaza. Main la `a628d05` (cu #187 B.9c, #190 B.
 
 ## 3. Ce urmează
 
-**1.** #193 (B.12b) și #195 (B.9e) așteaptă review-ul SQL. Urmează B.9d2 (lista automată a clasei și rezervarea online), apoi B.FK, în limita de 3 PR-uri.
+**1.** #197 (B.9d2) așteaptă review-ul SQL. **Ordinea corectată de Bianca pe 12.11: B.9d2 → B.FK → B.13.** Urmează B.FK (cheile compuse pe client, serviciu și membru pentru tot booking-ul), apoi B.13.
 
-**2.** B.9d1 e îmbinat (#190). Ordinea cerută de Bianca pe 12.11, după #187: **lotul mic S146** (ștergerea pozelor la 30 de zile), apoi **B.9e**, în limita de 3 PR-uri. Rămân în plan:
-- **Lotul mic S146 (backend):** jobul de curățare șterge și pozele răspunsurilor (`appointment_answer.photo_file_id`) la 30 de zile după programare, prin ștergerea de sistem din `core/files`;
-- **B.9d2**, după #187: lista de așteptare automată a clasei și rezervarea online;
+**Deciziile fondatoarei pentru #195 (12.11):** prelungirea pachetului doar pentru owner — CONFIRMAT; auditul cu codurile existente — CONFIRMAT; abaterea de ordine (B.9e înaintea lui B.9d2) — acceptată. D-9e-4 rămâne NECESITĂ DECIZIE, la contabil: nu se emit documente fiscale pentru pachete până atunci.
+
+**2.** B.12b (#193) și B.9e (#195) sunt îmbinate; B.9d2 e #197. Rămân în plan:
 - **B.FK** (lot nou, cerut de Bianca pe 12.11, după B.9d): `UNIQUE (organization_id, id)` pe `client`, `service`, `staff_member` și FK compuse din tabelele noi (`appointment_series`, `waitlist_entry`, `waitlist_offer`, `class_session`) și din cele vechi, cu un test care refuză id-urile altei afaceri;
-- **B.9e:** pachetele. D-9e-4 (contabilitatea pachetelor) e NECESITĂ DECIZIE, la contabil.
+- B.FK acoperă și coloanele noi din B.9e (`package.service_id`, `package_sale.client_id` / `service_id`).
 
 **Ordinea cerută de Bianca după B.12:**
 1. B.9, programările complexe (S126: `BookingRecurring`, `BookingMultiService`, `BookingWaitlist`, `BookingClasses`, `BookingPackages`), câte un sublot B.9a–e;
