@@ -112,6 +112,9 @@ async function main() {
       for (const theme of config.themes) {
         const base = `${name}_${vp.width}_${theme}`;
         const r = { name, viewport: vp.width, theme, pct: null, ok: false, error: null };
+        // an exception approved by the founder: per frame (`Name_1280_light`) or for the whole
+        // component (`Name`); it also covers a size difference (a redrawn design, 12.11.2026)
+        const exception = config.exceptions?.[base] ?? config.exceptions?.[name];
         try {
           const design = await captureFrame(
             page,
@@ -136,11 +139,14 @@ async function main() {
           });
           await writeFile(path.join(OUT, `${base}_diff.png`), PNG.sync.write(diff));
           r.pct = Number(((n / (design.width * design.height)) * 100).toFixed(2));
-          const exception = config.exceptions?.[base];
           r.ok = r.pct <= config.maxDiffPercent || Boolean(exception);
           if (exception) r.exception = exception;
         } catch (err) {
           r.error = err.message;
+          if (exception && err.message.startsWith('dimensiuni diferite')) {
+            r.ok = true;
+            r.exception = exception;
+          }
         }
         results.push(r);
         const mark = r.ok ? '✓' : '✗';
@@ -158,7 +164,7 @@ async function main() {
     !r
       ? '—'
       : r.error
-        ? `✗ ${r.error}`
+        ? `${r.ok ? '✓' : '✗'} ${r.error}${r.exception ? ' (excepție)' : ''}`
         : `${r.ok ? '✓' : '✗'} ${r.pct}%${r.exception ? ' (excepție)' : ''}`;
   const md = [
     `# Verificare vizuală — prag ${config.maxDiffPercent}%`,
