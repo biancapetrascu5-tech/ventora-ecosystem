@@ -916,6 +916,54 @@ export const UserLocaleChangedV1 = defineEvent({
     .strict(),
 });
 
+const MembershipRoleSchema = z.enum(['owner', 'admin', 'member', 'external_collaborator']);
+
+/**
+ * `organization.member_added` v1 (Lot 5.10c, decizia din 10:41): o persoană a intrat în afacere
+ * (invitația acceptată), cu rolul ei. Scris de `acceptInvitation` în aceeași tranzacție cu
+ * membership-ul. Agregatele Growth îl vor consuma; până atunci se marchează livrat. Doar id-uri și
+ * rolul. Nu e semnal Growth.
+ */
+export const OrganizationMemberAddedV1 = defineEvent({
+  type: 'organization.member_added',
+  version: 1,
+  sourceApp: 'platform',
+  growthSafe: false,
+  withoutConsumer: 'complete',
+  schema: z
+    .object({ membershipId: z.uuid(), userId: z.uuid(), role: MembershipRoleSchema })
+    .strict(),
+});
+
+/** `organization.member_removed` v1 (5.10c): „Elimină din afacere”, cu rolul pe care îl avea. */
+export const OrganizationMemberRemovedV1 = defineEvent({
+  type: 'organization.member_removed',
+  version: 1,
+  sourceApp: 'platform',
+  growthSafe: false,
+  withoutConsumer: 'complete',
+  schema: z
+    .object({ membershipId: z.uuid(), userId: z.uuid(), role: MembershipRoleSchema })
+    .strict(),
+});
+
+/** `organization.member_role_changed` v1 (5.10c): rolul vechi și cel nou (admin ↔ member). */
+export const OrganizationMemberRoleChangedV1 = defineEvent({
+  type: 'organization.member_role_changed',
+  version: 1,
+  sourceApp: 'platform',
+  growthSafe: false,
+  withoutConsumer: 'complete',
+  schema: z
+    .object({
+      membershipId: z.uuid(),
+      userId: z.uuid(),
+      fromRole: MembershipRoleSchema,
+      toRole: MembershipRoleSchema,
+    })
+    .strict(),
+});
+
 export const EVENT_CATALOG: readonly EventDefinition[] = [
   InvitationNewLinkRequestedV1 as EventDefinition,
   SubscriptionVersionChangeScheduledV1 as EventDefinition,
@@ -963,6 +1011,9 @@ export const EVENT_CATALOG: readonly EventDefinition[] = [
   CrmCompanyRestoredV1 as EventDefinition,
   OrganizationCreatedV1 as EventDefinition,
   UserLocaleChangedV1 as EventDefinition,
+  OrganizationMemberAddedV1 as EventDefinition,
+  OrganizationMemberRemovedV1 as EventDefinition,
+  OrganizationMemberRoleChangedV1 as EventDefinition,
 ];
 
 /** Definiția unui eveniment după tip și versiune; null dacă nu e în catalog. */

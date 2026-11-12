@@ -34,7 +34,12 @@ import {
   type RenderedEmail,
 } from '@ventora/notifications';
 import { writeOutboxEvent } from '@ventora/db-kit';
-import { InvitationNewLinkRequestedV1 } from '@ventora/contracts';
+import {
+  InvitationNewLinkRequestedV1,
+  OrganizationMemberAddedV1,
+  OrganizationMemberRemovedV1,
+  OrganizationMemberRoleChangedV1,
+} from '@ventora/contracts';
 import { InvalidInput } from '@ventora/errors';
 
 // E21–E25 are best_effort (D2): the organization operation never fails because of the audit write.
@@ -848,6 +853,13 @@ export async function acceptInvitation(params: {
         },
         select: { id: true },
       });
+      // Lot 5.10c: organization.member_added v1, in the same transaction (only ids and the role)
+      await writeOutboxEvent(tx, 'organizations', OrganizationMemberAddedV1, {
+        organizationId: inv.organization_id,
+        sourceApp: OrganizationMemberAddedV1.sourceApp,
+        resourceId: membership.id as string,
+        payload: { membershipId: membership.id as string, userId: params.userId, role: inv.role },
+      });
 
       return {
         organizationId: inv.organization_id,
@@ -1028,6 +1040,13 @@ export async function changeMemberRole(
     if (m.role === role) return { changed: false };
     await tx.$executeRaw`UPDATE organizations.membership SET role = ${role}::"organizations"."MembershipRole", updated_at = now()
       WHERE id = ${m.id}::uuid`;
+    // Lot 5.10c: organization.member_role_changed v1, in the same transaction
+    await writeOutboxEvent(tx, 'organizations', OrganizationMemberRoleChangedV1, {
+      organizationId: ctx.organizationId,
+      sourceApp: OrganizationMemberRoleChangedV1.sourceApp,
+      resourceId: m.id,
+      payload: { membershipId: m.id, userId: targetUserId, fromRole: m.role, toRole: role },
+    });
     await appendAuditEventInTx(
       prismaTxExecutor(tx),
       memberAudit(ctx, AuditActions.membershipRoleChanged, targetUserId, {
@@ -1079,6 +1098,13 @@ export async function removeMember(ctx: OrgContext, targetUserId: string): Promi
   await db.$transaction(async (tx: any) => {
     const m = await managedMembership(tx, ctx, targetUserId);
     await tx.$executeRaw`DELETE FROM organizations.membership WHERE id = ${m.id}::uuid`;
+    // Lot 5.10c: organization.member_removed v1, in the same transaction, with the role it had
+    await writeOutboxEvent(tx, 'organizations', OrganizationMemberRemovedV1, {
+      organizationId: ctx.organizationId,
+      sourceApp: OrganizationMemberRemovedV1.sourceApp,
+      resourceId: m.id,
+      payload: { membershipId: m.id, userId: targetUserId, role: m.role },
+    });
     await appendAuditEventInTx(
       prismaTxExecutor(tx),
       memberAudit(ctx, AuditActions.membershipRemoved, targetUserId, { role: m.role }),

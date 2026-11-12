@@ -26,11 +26,19 @@ import {
   isValidTimeZone,
   DEFAULT_TIME_ZONE,
   DEFAULT_COUNTRY,
+  changeMemberRole,
+  removeMember,
 } from '../index.js';
 import type { OrgContext } from '../index.js';
 import { closeAuditPools } from '@ventora/audit';
 import { UUID_V7, writeOutboxEvent } from '@ventora/db-kit';
-import { OrganizationCreatedV1, QuotaThresholdV1 } from '@ventora/contracts';
+import {
+  OrganizationCreatedV1,
+  OrganizationMemberAddedV1,
+  OrganizationMemberRemovedV1,
+  OrganizationMemberRoleChangedV1,
+  QuotaThresholdV1,
+} from '@ventora/contracts';
 import { InvalidInput } from '@ventora/errors';
 import {
   BILLING_KINDS,
@@ -252,6 +260,131 @@ describe('5.10c — the country and organization.created', () => {
               ) IS NULL AS old_dropped`,
     );
     expect(row).toEqual({ ins: false, sel: false, exec_new: true, old_dropped: true });
+  });
+});
+
+// Lot 5.10c (decision of 10:41): member added / removed and role changed, in the same transaction
+describe('5.10c — organization.member_* events', () => {
+  async function memberEvents(organizationId: string) {
+    return adminQuery(
+      `SELECT type, version, resource_id, status, payload
+         FROM organizations.outbox_events
+        WHERE organization_id = $1::uuid AND type LIKE 'organization.member_%'
+        ORDER BY occurred_at, event_id`,
+      [organizationId],
+    );
+  }
+
+  it('accept → member_added; role change → member_role_changed; remove → member_removed', async () => {
+    const stamp = Date.now();
+    const ownerId = newUuid();
+    const memberId = newUuid();
+    const ownerEmail = `ev-owner-${stamp}@example.com`;
+    const memberEmail = `ev-member-${stamp}@example.com`;
+    const { organizationId, invitationToken } = await createOrganizationAsFounder(
+      { founderId: newUuid() },
+      { name: 'Member events', slug: `member-ev-${stamp}`, ownerEmail },
+    );
+    try {
+      await acceptInvitation({ token: invitationToken, userId: ownerId, userEmail: ownerEmail });
+      const ctx = await resolveOrgContext({ userId: ownerId, organizationId });
+      const { invitationToken: memberToken } = await inviteMember(ctx, {
+        email: memberEmail,
+        role: 'member',
+        inviterName: 'Owner',
+        organizationName: 'Member events',
+      });
+      await acceptInvitation({ token: memberToken, userId: memberId, userEmail: memberEmail });
+
+      const [ownerMembership] = await adminQuery(
+        `SELECT id FROM organizations.membership WHERE organization_id = $1 AND user_id = $2`,
+        [organizationId, ownerId],
+      );
+      const [memberMembership] = await adminQuery(
+        `SELECT id FROM organizations.membership WHERE organization_id = $1 AND user_id = $2`,
+        [organizationId, memberId],
+      );
+
+      expect(await changeMemberRole(ctx, memberId, 'admin')).toEqual({ changed: true });
+      // the same role again changes nothing and writes nothing
+      expect(await changeMemberRole(ctx, memberId, 'admin')).toEqual({ changed: false });
+      await removeMember(ctx, memberId);
+
+      const events = await memberEvents(organizationId);
+      expect(events.map((e) => e.type)).toEqual([
+        'organization.member_added',
+        'organization.member_added',
+        'organization.member_role_changed',
+        'organization.member_removed',
+      ]);
+      expect(events.every((e) => e.version === 1 && e.status === 'pending')).toBe(true);
+      expect(events[0].payload).toEqual({
+        membershipId: ownerMembership.id,
+        userId: ownerId,
+        role: 'owner',
+      });
+      expect(events[1].payload).toEqual({
+        membershipId: memberMembership.id,
+        userId: memberId,
+        role: 'member',
+      });
+      expect(events[2].payload).toEqual({
+        membershipId: memberMembership.id,
+        userId: memberId,
+        fromRole: 'member',
+        toRole: 'admin',
+      });
+      expect(events[3].payload).toEqual({
+        membershipId: memberMembership.id,
+        userId: memberId,
+        role: 'admin',
+      });
+      expect(events[3].resource_id).toBe(memberMembership.id);
+      // exactly the contracts (strict), and nothing personal
+      expect(OrganizationMemberAddedV1.parse(events[1].payload)).toEqual(events[1].payload);
+      expect(OrganizationMemberRoleChangedV1.parse(events[2].payload)).toEqual(events[2].payload);
+      expect(OrganizationMemberRemovedV1.parse(events[3].payload)).toEqual(events[3].payload);
+      expect(JSON.stringify(events.map((e) => e.payload))).not.toMatch(/@example\.com/);
+    } finally {
+      await adminQuery(`DELETE FROM organizations.organization WHERE id = $1`, [organizationId]);
+    }
+  });
+
+  it('a refused change writes no event (admin cannot make an admin)', async () => {
+    const stamp = Date.now();
+    const ownerId = newUuid();
+    const adminId = newUuid();
+    const otherId = newUuid();
+    const ownerEmail = `ev2-owner-${stamp}@example.com`;
+    const { organizationId, invitationToken } = await createOrganizationAsFounder(
+      { founderId: newUuid() },
+      { name: 'Member events 2', slug: `member-ev2-${stamp}`, ownerEmail },
+    );
+    try {
+      await acceptInvitation({ token: invitationToken, userId: ownerId, userEmail: ownerEmail });
+      const ownerCtx = await resolveOrgContext({ userId: ownerId, organizationId });
+      for (const [id, role] of [
+        [adminId, 'admin'],
+        [otherId, 'member'],
+      ] as const) {
+        const email = `ev2-${role}-${stamp}@example.com`;
+        const { invitationToken: t } = await inviteMember(ownerCtx, {
+          email,
+          role,
+          inviterName: 'Owner',
+          organizationName: 'Member events 2',
+        });
+        await acceptInvitation({ token: t, userId: id, userEmail: email });
+      }
+      const before = (await memberEvents(organizationId)).length;
+      const adminCtx = await resolveOrgContext({ userId: adminId, organizationId });
+      await expect(changeMemberRole(adminCtx, otherId, 'admin')).rejects.toBeInstanceOf(
+        ForbiddenError,
+      );
+      expect(await memberEvents(organizationId)).toHaveLength(before);
+    } finally {
+      await adminQuery(`DELETE FROM organizations.organization WHERE id = $1`, [organizationId]);
+    }
   });
 });
 
