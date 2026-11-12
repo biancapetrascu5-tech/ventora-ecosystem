@@ -1,6 +1,6 @@
 import { guardBulkOp } from '@ventora/db-kit';
 import { deleteFileAsSystem, listAnonymousFiles } from '@ventora/files';
-import { deleteMarkedPhotos } from './forms';
+import { deleteExpiredAnswerPhotos, deleteMarkedPhotos } from './forms';
 import { withBookingJobTx, withBookingTx } from './db';
 import { settleExpired } from './public';
 
@@ -17,7 +17,9 @@ import { settleExpired } from './public';
  *   - B.12 (S127): the photos of the settled holds (expired, refused, or confirmed with photos not
  *     moved to the booking) deleted through the system deletion of core/files (deleteFileAsSystem,
  *     C.4f: one deletion path, an audit row `system` per file), then has_photos = false; and the
- *     photos of erased clients still marked (photo_deleted_at NULL), deleted the same way.
+ *     photos of erased clients still marked (photo_deleted_at NULL), deleted the same way;
+ *   - B.12b (S146): the photos of the answers 30 days after the booking, deleted the same way
+ *     (reason photo_retention); the answer stays, without its photo.
  * No DELETE, no withSystemContext, no audit (no personal action: housekeeping). One business that
  * fails does not stop the others; the job then fails (Sentry, retry), the rest stays done.
  */
@@ -37,6 +39,8 @@ export type PublicHoldCleanupReport = {
   linksRevoked: number;
   /** B.12: the photos deleted (settled holds, not moved to a booking; erased clients, retried). */
   photosDeleted: number;
+  /** B.12b (S146): the photos of the answers deleted 30 days after the booking. */
+  photosExpired: number;
   failed: Array<{ organizationId: string; error: unknown }>;
 };
 
@@ -56,6 +60,7 @@ export async function runPublicHoldCleanupJob(): Promise<PublicHoldCleanupReport
     hashesCleared: 0,
     linksRevoked: 0,
     photosDeleted: 0,
+    photosExpired: 0,
     failed: [],
   };
   for (const { organization_id: organizationId } of due) {
@@ -87,6 +92,7 @@ export async function runPublicHoldCleanupJob(): Promise<PublicHoldCleanupReport
       report.linksRevoked += done.revoked;
       report.photosDeleted += await cleanHoldPhotos(organizationId);
       report.photosDeleted += (await deleteMarkedPhotos(organizationId, null)).deleted;
+      report.photosExpired += (await deleteExpiredAnswerPhotos(organizationId)).deleted;
     } catch (error) {
       report.failed.push({ organizationId, error });
     }

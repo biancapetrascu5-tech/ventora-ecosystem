@@ -776,4 +776,97 @@ describe('B.12 — the answers on the public page and on the booking', () => {
     const answers = await getAppointmentAnswers({ sessionToken: A.owner.token, appointmentId });
     expect(answers.every((a) => a.value === null)).toBe(true);
   });
+
+  it('S146: the photo of an answer is deleted 30 days after the booking; the answer stays', async () => {
+    const { hold, who } = await start(A.slug, 15, visitor(), {
+      answers: [
+        { questionId: qPick, value: 'Scurt' },
+        { questionId: qColor, value: 'Roșcat' },
+        { questionId: qNum, value: '30' },
+      ],
+    });
+    const shot = await photo(hold.holdId, qPick);
+    const { appointmentId: booked } = await verifyPublicBooking({
+      slug: A.slug,
+      holdId: hold.holdId,
+      code: lastCode(who.email),
+    });
+    const due = async () =>
+      (
+        await asBookingRw(A.org, (c) =>
+          c.query<{ organization_id: string }>(
+            `SELECT organization_id::text FROM booking.public_hold_cleanup_due(500)`,
+          ),
+        )
+      ).rows.map((r) => r.organization_id);
+
+    // a booking still to come (or ended less than 30 days ago): the photo stays
+    const first = await runPublicHoldCleanupJob();
+    expect(first.failed).toEqual([]);
+    expect(await fileStatus(shot.fileId)).toBe('ready');
+    expect(await due()).not.toContain(A.org);
+
+    // 31 days after the booking: the business is on the job's list (only ids), the photo deleted
+    await adminQuery(
+      `UPDATE booking.appointment
+          SET starts_at = now() - interval '31 days',
+              ends_at = now() - interval '31 days' + interval '30 minutes'
+        WHERE id = $1`,
+      [booked],
+    );
+    expect(await due()).toContain(A.org);
+    const report = await runPublicHoldCleanupJob();
+    expect(report.failed).toEqual([]);
+    expect(report.photosExpired).toBeGreaterThanOrEqual(1);
+    expect(await fileStatus(shot.fileId)).toBe('deleted');
+    expect(storage.objects.has(`${A.org}/${shot.fileId}`)).toBe(false);
+    expect(await due()).not.toContain(A.org);
+
+    // C.4f: one deletion path, an audit row `system` (category booking, reason photo_retention)
+    const audit = await adminQuery<{ n: number }>(
+      `SELECT count(*)::int AS n FROM audit.audit_log
+        WHERE action = 'file.deleted_by_system' AND target_id = $1
+          AND metadata->>'reason' = 'photo_retention'`,
+      [shot.fileId],
+    );
+    expect(audit[0]!.n).toBe(1);
+
+    // the answer stays, without its photo; the link is gone
+    const answers = await getAppointmentAnswers({
+      sessionToken: A.owner.token,
+      appointmentId: booked,
+    });
+    expect(answers.find((a) => a.questionId === qPick)).toMatchObject({
+      value: 'Scurt',
+      hasPhoto: false,
+    });
+    expect(
+      await errorOf(
+        getAnswerPhotoLink({
+          sessionToken: A.owner.token,
+          appointmentId: booked,
+          questionId: qPick,
+        }),
+      ),
+    ).toBeInstanceOf(ResourceNotFound);
+    const [{ client_id }] = await adminQuery<{ client_id: string }>(
+      `SELECT client_id FROM booking.appointment WHERE id = $1`,
+      [booked],
+    );
+    const last = await getClientLastAnswers({ sessionToken: A.owner.token, clientId: client_id });
+    expect(last.find((a) => a.questionId === qPick)).toMatchObject({
+      value: 'Scurt',
+      hasPhoto: false,
+    });
+
+    // a second run deletes nothing again
+    const again = await runPublicHoldCleanupJob();
+    expect(again.failed).toEqual([]);
+    const recount = await adminQuery<{ n: number }>(
+      `SELECT count(*)::int AS n FROM audit.audit_log
+        WHERE action = 'file.deleted_by_system' AND target_id = $1`,
+      [shot.fileId],
+    );
+    expect(recount[0]!.n).toBe(1);
+  });
 });
