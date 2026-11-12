@@ -803,6 +803,29 @@
         "errorBody": "Rien n'a changé. Réessayez dans un instant.",
         "open": "Ouvrir {app}"
       }
+    },
+    "empty": {
+      "title": "Vous n’avez encore accès à aucune application",
+      "desc": "{owner} (propriétaire) choisit les applications de chaque rôle. Nous transmettons votre demande.",
+      "ask": "Demander l’accès",
+      "write": "Nous écrire",
+      "sending": "Envoi de la demande…",
+      "sent": "Demande envoyée · {date}",
+      "sentDesc": "Votre demande est arrivée chez {owner} (propriétaire). Vous recevrez un e-mail dès que vous aurez accès.",
+      "resendOn": "Vous pourrez la renvoyer après le {date}.",
+      "resendReady": "7 jours ont passé depuis votre demande et vous n’avez toujours pas accès. Vous pouvez la renvoyer.",
+      "resend": "Renvoyer",
+      "lastSent": "Dernière demande : {date}",
+      "meanwhile": "En attendant, choisissez votre photo et votre langue dans {account}.",
+      "error": {
+        "title": "La demande n’est pas partie",
+        "body": "Vérifiez votre connexion et réessayez. Si cela ne marche toujours pas, écrivez-nous.",
+        "suspended": "Impossible d’envoyer la demande : l’accès à {business} est suspendu pour le moment. Pour en savoir plus, écrivez-nous à {email}."
+      },
+      "retry": "Réessayer"
+    },
+    "attention": {
+      "title": "À traiter"
     }
   },
   "roles": {
@@ -1441,6 +1464,13 @@
         "deal": "une affaire",
         "activity": "une activité"
       }
+    },
+    "access": {
+      "request": {
+        "title": "{name} demande l’accès aux applications",
+        "body": "Cette personne a le rôle {role} chez {business}, mais aucune application. Vous les choisissez dans Équipe et invitations.",
+        "action": "Ouvrir l’équipe"
+      }
     }
   },
   "pay": {
@@ -1705,5 +1735,14 @@
     },
     "sentN": "{n} messages envoyés",
     "askBody": "Demande envoyée depuis Entreprise · Automatisations."
+  },
+  "team": {
+    "accessRequest": {
+      "title": "{name} demande l’accès aux applications",
+      "meta": "{role} · aucune application · demandé le {date}",
+      "open": "Ouvrir l’équipe",
+      "again": "Nouvelle demande · {date}",
+      "badge": "Demande l’accès"
+    }
   }
 }

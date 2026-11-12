@@ -29,6 +29,10 @@ import {
   changeMemberRole,
   removeMember,
   setMemberAccess,
+  AccessRequestTooSoon,
+  getMyAccessRequest,
+  listAccessRequests,
+  requestApplicationAccess,
 } from '../index.js';
 import type { OrgContext } from '../index.js';
 import { closeAuditPools } from '@ventora/audit';
@@ -400,6 +404,146 @@ describe('5.10c — organization.member_* events', () => {
       expect(await memberEvents(organizationId)).toHaveLength(before);
     } finally {
       await adminQuery(`DELETE FROM organizations.organization WHERE id = $1`, [organizationId]);
+    }
+  });
+});
+
+// Lot 5.1c (S146 „Cere acces”): one row per person; again after 7 days; owner + admins notified
+describe('5.1c — Cere acces', () => {
+  async function businessWithMember(stamp: number) {
+    const ownerId = newUuid();
+    const adminId = newUuid();
+    const memberId = newUuid();
+    const ownerEmail = `ar-owner-${stamp}@example.com`;
+    const { organizationId, invitationToken } = await createOrganizationAsFounder(
+      { founderId: newUuid() },
+      { name: 'Salon Cerere', slug: `access-req-${stamp}`, ownerEmail },
+    );
+    await acceptInvitation({ token: invitationToken, userId: ownerId, userEmail: ownerEmail });
+    const ownerCtx = await resolveOrgContext({ userId: ownerId, organizationId });
+    for (const [id, role] of [
+      [adminId, 'admin'],
+      [memberId, 'member'],
+    ] as const) {
+      const email = `ar-${role}-${stamp}@example.com`;
+      const { invitationToken: t } = await inviteMember(ownerCtx, {
+        email,
+        role,
+        inviterName: 'Owner',
+        organizationName: 'Salon Cerere',
+      });
+      await acceptInvitation({ token: t, userId: id, userEmail: email });
+    }
+    return { organizationId, ownerId, adminId, memberId, ownerCtx };
+  }
+
+  it('a member asks: one row, the owner and the admin notified, audited; again → too soon', async () => {
+    const b = await businessWithMember(Date.now());
+    try {
+      const memberCtx = await resolveOrgContext({
+        userId: b.memberId,
+        organizationId: b.organizationId,
+      });
+      expect(await getMyAccessRequest(memberCtx)).toBeNull();
+      const sent = await requestApplicationAccess(memberCtx, { requesterName: 'Ana Pop' });
+      expect(sent.requestCount).toBe(1);
+      expect(sent.canResendAt.getTime() - sent.requestedAt.getTime()).toBe(7 * 86_400_000);
+
+      const notes = await adminQuery(
+        `SELECT recipient_user_id::text AS who, category, display_group, type, params, action_url
+           FROM notifications.notification
+          WHERE organization_id = $1 AND type = 'access.request' ORDER BY who`,
+        [b.organizationId],
+      );
+      expect(notes.map((r) => r.who).sort()).toEqual([b.ownerId, b.adminId].sort());
+      expect(notes[0]).toMatchObject({
+        category: 'operational',
+        display_group: 'activity',
+        params: {
+          name: 'Ana Pop',
+          role: { type: 'key', key: 'email.roles.member' },
+          business: 'Salon Cerere',
+        },
+      });
+      expect(notes[0].action_url).toContain('/admin/team');
+      const audit = await adminQuery(
+        `SELECT metadata FROM audit.audit_log
+          WHERE action = 'membership.access_requested' AND organization_id = $1::uuid`,
+        [b.organizationId],
+      );
+      expect(audit.map((a) => a.metadata)).toEqual([{ requestCount: 1 }]);
+
+      // again within 7 days: refused, nothing more written
+      await expect(
+        requestApplicationAccess(memberCtx, { requesterName: 'Ana Pop' }),
+      ).rejects.toBeInstanceOf(AccessRequestTooSoon);
+      const mine = await getMyAccessRequest(memberCtx);
+      expect(mine?.requestCount).toBe(1);
+
+      // owner / admin see it (one row per person)
+      const list = await listAccessRequests(b.ownerCtx);
+      expect(list).toHaveLength(1);
+      expect(list[0]).toMatchObject({ userId: b.memberId, role: 'member', requestCount: 1 });
+    } finally {
+      await adminQuery(`DELETE FROM organizations.organization WHERE id = $1`, [b.organizationId]);
+    }
+  });
+
+  it('after 7 days: the same row, new date, count 2 (one row per person)', async () => {
+    const b = await businessWithMember(Date.now() + 1);
+    try {
+      const memberCtx = await resolveOrgContext({
+        userId: b.memberId,
+        organizationId: b.organizationId,
+      });
+      await requestApplicationAccess(memberCtx, { requesterName: 'Ion' });
+      await adminQuery(
+        `UPDATE organizations.access_request
+            SET first_requested_at = now() - interval '8 days', requested_at = now() - interval '8 days'
+          WHERE organization_id = $1 AND user_id = $2`,
+        [b.organizationId, b.memberId],
+      );
+      const again = await requestApplicationAccess(memberCtx, { requesterName: 'Ion' });
+      expect(again.requestCount).toBe(2);
+      expect(again.requestedAt.getTime()).toBeGreaterThan(again.firstRequestedAt.getTime());
+      expect(await listAccessRequests(b.ownerCtx)).toHaveLength(1);
+      const notes = await adminQuery(
+        `SELECT 1 FROM notifications.notification
+          WHERE organization_id = $1 AND type = 'access.request'`,
+        [b.organizationId],
+      );
+      expect(notes).toHaveLength(4); // owner + admin, twice
+    } finally {
+      await adminQuery(`DELETE FROM organizations.organization WHERE id = $1`, [b.organizationId]);
+    }
+  });
+
+  it('owner / admin never ask; a member cannot list; a suspended business refuses', async () => {
+    const b = await businessWithMember(Date.now() + 2);
+    try {
+      await expect(
+        requestApplicationAccess(b.ownerCtx, { requesterName: 'Owner' }),
+      ).rejects.toBeInstanceOf(InvalidInput);
+      const memberCtx = await resolveOrgContext({
+        userId: b.memberId,
+        organizationId: b.organizationId,
+      });
+      await expect(listAccessRequests(memberCtx)).rejects.toBeInstanceOf(ForbiddenError);
+      await expect(
+        requestApplicationAccess(memberCtx, { requesterName: '  ' }),
+      ).rejects.toBeInstanceOf(InvalidInput);
+      await adminQuery(`UPDATE organizations.organization SET status = 'suspended' WHERE id = $1`, [
+        b.organizationId,
+      ]);
+      await expect(requestApplicationAccess(memberCtx, { requesterName: 'Ana' })).rejects.toThrow();
+      // org_rw: no DELETE, no UPDATE of the first date
+      const [g] = await adminQuery(
+        `SELECT has_table_privilege('org_rw', 'organizations.access_request', 'DELETE') AS del,
+                has_column_privilege('org_rw', 'organizations.access_request', 'first_requested_at', 'UPDATE') AS first_upd`,
+      );
+      expect(g).toEqual({ del: false, first_upd: false });
+    } finally {
+      await adminQuery(`DELETE FROM organizations.organization WHERE id = $1`, [b.organizationId]);
     }
   });
 });

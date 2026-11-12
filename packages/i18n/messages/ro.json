@@ -803,6 +803,29 @@
         "errorBody": "Nu s-a schimbat nimic. Încearcă din nou peste puțin timp.",
         "open": "Deschide {app}"
       }
+    },
+    "empty": {
+      "title": "Nu ai încă acces la nicio aplicație",
+      "desc": "{owner} (proprietar) alege ce aplicații folosește fiecare rol. Trimitem noi cererea ta.",
+      "ask": "Cere acces",
+      "write": "Scrie-ne",
+      "sending": "Se trimite cererea…",
+      "sent": "Cerere trimisă · {date}",
+      "sentDesc": "Cererea ta a ajuns la {owner} (proprietar). Primești un e-mail imediat ce ai acces.",
+      "resendOn": "O poți trimite din nou după {date}.",
+      "resendReady": "Au trecut 7 zile de la cerere și încă nu ai acces. O poți trimite din nou.",
+      "resend": "Trimite din nou",
+      "lastSent": "Ultima cerere: {date}",
+      "meanwhile": "Între timp, alege-ți fotografia și limba din {account}.",
+      "error": {
+        "title": "Cererea nu a plecat",
+        "body": "Verifică conexiunea și încearcă din nou. Dacă tot nu merge, scrie-ne.",
+        "suspended": "Nu putem trimite cererea: accesul la {business} e oprit momentan. Pentru detalii, scrie-ne la {email}."
+      },
+      "retry": "Încearcă din nou"
+    },
+    "attention": {
+      "title": "Au nevoie de tine"
     }
   },
   "roles": {
@@ -1441,6 +1464,13 @@
         "deal": "un deal",
         "activity": "o activitate"
       }
+    },
+    "access": {
+      "request": {
+        "title": "{name} cere acces la aplicații",
+        "body": "Are rolul {role} în {business}, dar nicio aplicație. Le alegi din Echipă și invitații.",
+        "action": "Deschide Echipa"
+      }
     }
   },
   "pay": {
@@ -1705,5 +1735,14 @@
     },
     "sentN": "{n} mesaje trimise",
     "askBody": "Cerere trimisă din Afacerea · Automatizări."
+  },
+  "team": {
+    "accessRequest": {
+      "title": "{name} cere acces la aplicații",
+      "meta": "{role} · fără nicio aplicație · a cerut pe {date}",
+      "open": "Deschide Echipa",
+      "again": "A cerut din nou · {date}",
+      "badge": "Cere acces"
+    }
   }
 }

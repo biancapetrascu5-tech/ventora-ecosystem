@@ -337,6 +337,14 @@ psqlFile(
     'core/organizations/prisma/migrations/20261111000003_organizations_country/migration.sql',
   ),
 );
+console.log('[test:db:up] Aplic migrarea organizations #12 (cererea de acces, 5.1c)...');
+psqlFile(
+  TEST_DB.orgDb,
+  join(
+    ROOT,
+    'core/organizations/prisma/migrations/20261112000001_organizations_access_request/migration.sql',
+  ),
+);
 
 console.log('[test:db:up] Aplic migrarea notifications (Lot 4.3, organizations DB)...');
 psqlFile(
@@ -477,6 +485,8 @@ for (const migration of [
   'core/organizations/prisma/migrations/20261111000002_organizations_public_lookup/migration.sql',
   // Lot 5.10c: țara afacerii și organization.created în outbox (founder_create_organization)
   'core/organizations/prisma/migrations/20261111000003_organizations_country/migration.sql',
+  // Lot 5.1c: „Cere acces” (organizations.access_request)
+  'core/organizations/prisma/migrations/20261112000001_organizations_access_request/migration.sql',
   // Lot 3.1: registrul comercial (commercial_rw → app_runtime, SELECT → founder_runtime)
   'core/commercial/prisma/migrations/20261101000001_commercial_init/migration.sql',
   // Lot 3.2: planuri, abonament, excepții (commercial_founder → founder_runtime)

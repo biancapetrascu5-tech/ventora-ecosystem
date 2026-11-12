@@ -803,6 +803,29 @@
         "errorBody": "Es hat sich nichts geändert. Versuchen Sie es in Kürze erneut.",
         "open": "{app} öffnen"
       }
+    },
+    "empty": {
+      "title": "Sie haben noch keinen Zugriff auf eine App",
+      "desc": "{owner} (Inhaber) legt fest, welche Apps jede Rolle nutzt. Wir leiten Ihre Anfrage weiter.",
+      "ask": "Zugriff anfragen",
+      "write": "Schreiben Sie uns",
+      "sending": "Anfrage wird gesendet…",
+      "sent": "Anfrage gesendet · {date}",
+      "sentDesc": "Ihre Anfrage ist bei {owner} (Inhaber) angekommen. Sie erhalten eine E-Mail, sobald Sie Zugriff haben.",
+      "resendOn": "Sie können sie nach dem {date} erneut senden.",
+      "resendReady": "Seit Ihrer Anfrage sind 7 Tage vergangen und Sie haben noch keinen Zugriff. Sie können sie erneut senden.",
+      "resend": "Erneut senden",
+      "lastSent": "Letzte Anfrage: {date}",
+      "meanwhile": "Wählen Sie in der Zwischenzeit Ihr Foto und Ihre Sprache unter {account}.",
+      "error": {
+        "title": "Die Anfrage wurde nicht gesendet",
+        "body": "Prüfen Sie Ihre Verbindung und versuchen Sie es erneut. Wenn es weiterhin nicht klappt, schreiben Sie uns.",
+        "suspended": "Wir können die Anfrage nicht senden: Der Zugriff auf {business} ist im Moment gesperrt. Für Einzelheiten schreiben Sie uns an {email}."
+      },
+      "retry": "Erneut versuchen"
+    },
+    "attention": {
+      "title": "Wartet auf Sie"
     }
   },
   "roles": {
@@ -1441,6 +1464,13 @@
         "deal": "ein Deal",
         "activity": "eine Aktivität"
       }
+    },
+    "access": {
+      "request": {
+        "title": "{name} fragt Zugriff auf Apps an",
+        "body": "Die Person hat die Rolle {role} in {business}, aber keine Apps. Sie wählen sie unter Team und Einladungen.",
+        "action": "Team öffnen"
+      }
     }
   },
   "pay": {
@@ -1705,5 +1735,14 @@
     },
     "sentN": "{n} Nachrichten gesendet",
     "askBody": "Anfrage gesendet aus Unternehmen · Automatisierungen."
+  },
+  "team": {
+    "accessRequest": {
+      "title": "{name} fragt Zugriff auf Apps an",
+      "meta": "{role} · keine Apps · angefragt am {date}",
+      "open": "Team öffnen",
+      "again": "Erneut angefragt · {date}",
+      "badge": "Fragt Zugriff an"
+    }
   }
 }

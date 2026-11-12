@@ -803,6 +803,29 @@
         "errorBody": "No ha cambiado nada. Vuelve a intentarlo en un momento.",
         "open": "Abrir {app}"
       }
+    },
+    "empty": {
+      "title": "Todavía no tienes acceso a ninguna aplicación",
+      "desc": "{owner} (propietario) elige qué aplicaciones usa cada rol. Nosotros enviamos tu solicitud.",
+      "ask": "Solicitar acceso",
+      "write": "Escríbenos",
+      "sending": "Enviando la solicitud…",
+      "sent": "Solicitud enviada · {date}",
+      "sentDesc": "Tu solicitud ha llegado a {owner} (propietario). Recibirás un correo en cuanto tengas acceso.",
+      "resendOn": "Podrás enviarla de nuevo después del {date}.",
+      "resendReady": "Han pasado 7 días desde tu solicitud y aún no tienes acceso. Puedes enviarla de nuevo.",
+      "resend": "Enviar de nuevo",
+      "lastSent": "Última solicitud: {date}",
+      "meanwhile": "Mientras tanto, elige tu foto y tu idioma en {account}.",
+      "error": {
+        "title": "La solicitud no se ha enviado",
+        "body": "Comprueba la conexión e inténtalo de nuevo. Si sigue sin funcionar, escríbenos.",
+        "suspended": "No podemos enviar la solicitud: el acceso a {business} está pausado por ahora. Para más detalles, escríbenos a {email}."
+      },
+      "retry": "Reintentar"
+    },
+    "attention": {
+      "title": "Pendiente de ti"
     }
   },
   "roles": {
@@ -1441,6 +1464,13 @@
         "deal": "una oportunidad",
         "activity": "una actividad"
       }
+    },
+    "access": {
+      "request": {
+        "title": "{name} solicita acceso a las aplicaciones",
+        "body": "Tiene el rol {role} en {business}, pero ninguna aplicación. Las eliges en Equipo e invitaciones.",
+        "action": "Abrir Equipo"
+      }
     }
   },
   "pay": {
@@ -1705,5 +1735,14 @@
     },
     "sentN": "{n} mensajes enviados",
     "askBody": "Solicitud enviada desde Negocio · Automatizaciones."
+  },
+  "team": {
+    "accessRequest": {
+      "title": "{name} solicita acceso a las aplicaciones",
+      "meta": "{role} · sin aplicaciones · solicitado el {date}",
+      "open": "Abrir Equipo",
+      "again": "Ha vuelto a solicitarlo · {date}",
+      "badge": "Solicita acceso"
+    }
   }
 }

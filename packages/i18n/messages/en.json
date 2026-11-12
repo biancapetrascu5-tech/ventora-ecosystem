@@ -803,6 +803,29 @@
         "errorBody": "Nothing changed. Try again in a little while.",
         "open": "Open {app}"
       }
+    },
+    "empty": {
+      "title": "You don’t have access to any app yet",
+      "desc": "{owner} (owner) chooses which apps each role uses. We’ll send your request.",
+      "ask": "Request access",
+      "write": "Write to us",
+      "sending": "Sending your request…",
+      "sent": "Request sent · {date}",
+      "sentDesc": "Your request has reached {owner} (owner). You’ll get an email as soon as you have access.",
+      "resendOn": "You can send it again after {date}.",
+      "resendReady": "It’s been 7 days since your request and you still don’t have access. You can send it again.",
+      "resend": "Send again",
+      "lastSent": "Last request: {date}",
+      "meanwhile": "Meanwhile, choose your photo and language in {account}.",
+      "error": {
+        "title": "Your request didn’t go through",
+        "body": "Check your connection and try again. If it still doesn’t work, write to us.",
+        "suspended": "We can’t send your request: access to {business} is paused for now. For details, write to us at {email}."
+      },
+      "retry": "Try again"
+    },
+    "attention": {
+      "title": "Needs you"
     }
   },
   "roles": {
@@ -1441,6 +1464,13 @@
         "deal": "a deal",
         "activity": "an activity"
       }
+    },
+    "access": {
+      "request": {
+        "title": "{name} is requesting access to apps",
+        "body": "They have the {role} role in {business}, but no apps. You choose them in Team and invitations.",
+        "action": "Open Team"
+      }
     }
   },
   "pay": {
@@ -1705,5 +1735,14 @@
     },
     "sentN": "{n} messages sent",
     "askBody": "Request sent from Business · Automations."
+  },
+  "team": {
+    "accessRequest": {
+      "title": "{name} is requesting access to apps",
+      "meta": "{role} · no apps · requested on {date}",
+      "open": "Open Team",
+      "again": "Asked again · {date}",
+      "badge": "Requests access"
+    }
   }
 }

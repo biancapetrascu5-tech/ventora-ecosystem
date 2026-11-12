@@ -80,6 +80,8 @@ model Organization {
   invitations Invitation[]
   // Lot C.1: the business's locations
   locations   Location[]
+  // Lot 5.1c: „Cere acces” (S146)
+  accessRequests AccessRequest[]
 
   @@map("organization")
   @@schema("organizations")
@@ -201,5 +203,21 @@ model Location {
 
   @@index([organizationId])
   @@map("location")
+  @@schema("organizations")
+}
+
+// Lot 5.1c (S146 „Cere acces”): one row per person and business; sent again after 7 days → the
+// same row with the new date. No DELETE; the CHECKs are in the migration.
+model AccessRequest {
+  organizationId   String   @map("organization_id") @db.Uuid
+  userId           String   @map("user_id") @db.Uuid
+  firstRequestedAt DateTime @default(now()) @map("first_requested_at") @db.Timestamptz
+  requestedAt      DateTime @default(now()) @map("requested_at") @db.Timestamptz
+  requestCount     Int      @default(1) @map("request_count")
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "access_request_organization_id_fkey")
+
+  @@id([organizationId, userId])
+  @@map("access_request")
   @@schema("organizations")
 }

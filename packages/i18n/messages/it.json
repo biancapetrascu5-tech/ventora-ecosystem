@@ -803,6 +803,29 @@
         "errorBody": "Non è cambiato nulla. Riprovi tra poco.",
         "open": "Apri {app}"
       }
+    },
+    "empty": {
+      "title": "Non ha ancora accesso a nessuna app",
+      "desc": "{owner} (titolare) sceglie quali app usa ogni ruolo. Inoltriamo noi la Sua richiesta.",
+      "ask": "Richiedi accesso",
+      "write": "Scrivici",
+      "sending": "Invio della richiesta…",
+      "sent": "Richiesta inviata · {date}",
+      "sentDesc": "La Sua richiesta è arrivata a {owner} (titolare). Riceverà un’e-mail appena avrà l’accesso.",
+      "resendOn": "Potrà inviarla di nuovo dopo il {date}.",
+      "resendReady": "Sono passati 7 giorni dalla richiesta e non ha ancora accesso. Può inviarla di nuovo.",
+      "resend": "Invia di nuovo",
+      "lastSent": "Ultima richiesta: {date}",
+      "meanwhile": "Nel frattempo, scelga la Sua foto e la lingua in {account}.",
+      "error": {
+        "title": "La richiesta non è partita",
+        "body": "Controlli la connessione e riprovi. Se ancora non funziona, ci scriva.",
+        "suspended": "Non possiamo inviare la richiesta: l’accesso a {business} è sospeso per il momento. Per i dettagli, ci scriva a {email}."
+      },
+      "retry": "Riprova"
+    },
+    "attention": {
+      "title": "In attesa di Lei"
     }
   },
   "roles": {
@@ -1441,6 +1464,13 @@
         "deal": "un’opportunità",
         "activity": "un’attività"
       }
+    },
+    "access": {
+      "request": {
+        "title": "{name} chiede l’accesso alle app",
+        "body": "Ha il ruolo {role} in {business}, ma nessuna app. Le sceglie in Team e inviti.",
+        "action": "Apri Team"
+      }
     }
   },
   "pay": {
@@ -1705,5 +1735,14 @@
     },
     "sentN": "{n} messaggi inviati",
     "askBody": "Richiesta inviata da Attività · Automazioni."
+  },
+  "team": {
+    "accessRequest": {
+      "title": "{name} chiede l’accesso alle app",
+      "meta": "{role} · nessuna app · richiesto il {date}",
+      "open": "Apri Team",
+      "again": "Ha chiesto di nuovo · {date}",
+      "badge": "Chiede accesso"
+    }
   }
 }
