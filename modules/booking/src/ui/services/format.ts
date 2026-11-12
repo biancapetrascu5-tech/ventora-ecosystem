@@ -45,7 +45,24 @@ export type ServiceForm = {
   currency: Currency;
   capacity: string;
   bookableOnline: boolean;
+  /** S129 „Cine îl face”: the whole team (including who joins later), or the members ticked. */
+  who: 'all' | string[];
+  /** S137–S138: a member's own duration and price; a member absent here takes the service's. */
+  terms: Record<string, MemberTermsForm>;
 };
+
+/** S138: a member's duration and price, as rich as the service's (B.2c). */
+export type MemberTermsForm = {
+  durationKind: DurationKind;
+  duration: string;
+  durationMax: string;
+  priceKind: PriceKind;
+  price: string;
+  priceMax: string;
+};
+
+/** A member of the team, in the „Cine îl face” list (S129). */
+export type TeamMember = { id: string; name: string; role: string };
 
 export type FieldError =
   | { field: 'name'; code: 'required' | 'duplicate' }
@@ -60,7 +77,9 @@ export type FieldError =
   | { field: 'priceMax'; code: 'order' }
   | { field: 'priceMax'; code: 'invalid' }
   | { field: 'capacity'; code: 'invalid' }
-  | { field: 'description'; code: 'invalid' };
+  | { field: 'description'; code: 'invalid' }
+  | { field: 'terms'; code: 'invalid'; staffId: string }
+  | { field: 'terms'; code: 'lowDeposit'; staffId: string };
 
 export type FormErrors = Partial<Record<FieldError['field'], FieldError>>;
 
@@ -103,9 +122,67 @@ export type ServiceInput = {
   bookableOnline: boolean;
 };
 
+/** The contract's input for a member's terms (setStaffServiceTerms); null = the service's. */
+export type MemberTermsInput = {
+  durationMinutes: number;
+  durationMaxMinutes: number;
+  price: { kind: PriceKind; minor: number; maxMinor: number | null };
+};
+
+/** A member's terms, or null when one of the fields is not valid. */
+export function memberTermsInput(t: MemberTermsForm): MemberTermsInput | null {
+  const d = duration('duration', t.duration);
+  if (typeof d !== 'number') return null;
+  let dMax = d;
+  if (t.durationKind === 'variable') {
+    const m = duration('durationMax', t.durationMax);
+    if (typeof m !== 'number' || m <= d) return null;
+    dMax = m;
+  }
+  const price = parseAmount(t.price);
+  if (price === null) return null;
+  let maxMinor: number | null = null;
+  if (t.priceKind === 'range') {
+    const m = parseAmount(t.priceMax);
+    if (m === null || m <= price) return null;
+    maxMinor = m;
+  }
+  return {
+    durationMinutes: d,
+    durationMaxMinutes: dMax,
+    price: { kind: t.priceKind, minor: price, maxMinor },
+  };
+}
+
+/** The members ticked: everyone with „Toată echipa”. */
+export const membersOf = (who: ServiceForm['who'], team: TeamMember[]) =>
+  who === 'all' ? team.map((m) => m.id) : who;
+
+/**
+ * S137: the first ticked member whose own lowest price is under the deposit (the deposit check
+ * uses the lowest price: „De la” or the start of the interval, S138). null when none.
+ */
+export function lowDepositMember(
+  form: ServiceForm,
+  team: TeamMember[],
+  depositMinor: number | null | undefined,
+): { staffId: string; priceMinor: number } | null {
+  if (!depositMinor) return null;
+  for (const id of membersOf(form.who, team)) {
+    const t = form.terms[id];
+    const p = t ? parseAmount(t.price) : null;
+    if (p !== null && p < depositMinor) return { staffId: id, priceMinor: p };
+  }
+  return null;
+}
+
 export function validateServiceForm(
   form: ServiceForm,
-): { ok: true; input: ServiceInput } | { ok: false; errors: FormErrors } {
+  team: TeamMember[] = [],
+  depositMinor?: number | null,
+):
+  | { ok: true; input: ServiceInput; terms: Record<string, MemberTermsInput> }
+  | { ok: false; errors: FormErrors } {
   const errors: FormErrors = {};
   const name = form.name.trim();
   if (!name || name.length > FORM_LIMITS.nameMax) errors.name = { field: 'name', code: 'required' };
@@ -140,9 +217,24 @@ export function validateServiceForm(
     errors.capacity = { field: 'capacity', code: 'invalid' };
   }
 
+  const terms: Record<string, MemberTermsInput> = {};
+  for (const id of membersOf(form.who, team)) {
+    const t = form.terms[id];
+    if (!t) continue;
+    const parsed = memberTermsInput(t);
+    if (!parsed) {
+      errors.terms = { field: 'terms', code: 'invalid', staffId: id };
+      break;
+    }
+    terms[id] = parsed;
+  }
+  const low = errors.terms ? null : lowDepositMember(form, team, depositMinor);
+  if (low) errors.terms = { field: 'terms', code: 'lowDeposit', staffId: low.staffId };
+
   if (Object.keys(errors).length > 0) return { ok: false, errors };
   return {
     ok: true,
+    terms,
     input: {
       categoryId: form.categoryId,
       name,
@@ -174,6 +266,8 @@ export function emptyServiceForm(currency: Currency, categoryId: string | null):
     currency,
     capacity: '1',
     bookableOnline: true,
+    who: [],
+    terms: {},
   };
 }
 
@@ -196,7 +290,37 @@ export type ServiceLike = {
   bookableOnline: boolean;
 };
 
-export function formFromService(s: ServiceLike): ServiceForm {
+/** A member's terms as the form shows them (the service's values for what the member doesn't set). */
+export function termsForm(
+  s: Pick<
+    ServiceLike,
+    'durationMinutes' | 'durationMaxMinutes' | 'priceKind' | 'priceMinor' | 'priceMaxMinor'
+  >,
+  t?: {
+    durationMinutes: number | null;
+    durationMaxMinutes: number | null;
+    price: { kind: PriceKind; minor: number; maxMinor: number | null } | null;
+  },
+): MemberTermsForm {
+  const d = t?.durationMinutes ?? s.durationMinutes;
+  const dMax = t ? (t.durationMaxMinutes ?? s.durationMaxMinutes) : s.durationMaxMinutes;
+  const price = t?.price ?? { kind: s.priceKind, minor: s.priceMinor, maxMinor: s.priceMaxMinor };
+  const variable = dMax !== null && dMax > d;
+  return {
+    durationKind: variable ? 'variable' : 'fixed',
+    duration: String(d),
+    durationMax: variable ? String(dMax) : '',
+    priceKind: price.kind,
+    price: amountText(price.minor),
+    priceMax: price.maxMinor === null ? '' : amountText(price.maxMinor),
+  };
+}
+
+export function formFromService(
+  s: ServiceLike,
+  who: ServiceForm['who'] = [],
+  terms: ServiceForm['terms'] = {},
+): ServiceForm {
   return {
     name: s.name,
     categoryId: s.categoryId,
@@ -210,7 +334,24 @@ export function formFromService(s: ServiceLike): ServiceForm {
     currency: s.currency,
     capacity: String(s.capacity),
     bookableOnline: s.bookableOnline,
+    who,
+    terms,
   };
+}
+
+/** S129: a new service starts with the members who already do services of its category. */
+export function membersOfCategory(
+  services: { categoryId: string | null; doneBy: 'all' | string[] }[],
+  categoryId: string | null,
+  team: TeamMember[],
+): ServiceForm['who'] {
+  if (categoryId === null) return [];
+  const ids = new Set<string>();
+  for (const x of services) {
+    if (x.categoryId !== categoryId) continue;
+    for (const id of membersOf(x.doneBy, team)) ids.add(id);
+  }
+  return team.map((m) => m.id).filter((id) => ids.has(id));
 }
 
 /** S123-4: the active service that already has this name (trim + case), for err.nameDuplicate. */

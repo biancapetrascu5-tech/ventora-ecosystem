@@ -36,10 +36,17 @@ export {
   findNameClash,
   matchesQuery,
   moveItem,
+  membersOf,
+  membersOfCategory,
+  termsForm,
+  type MemberTermsForm,
+  type MemberTermsInput,
   type ServiceForm,
   type FormErrors,
   type ServiceInput,
+  type TeamMember,
 } from './services/format';
+export { ServiceMembers, type ServiceMembersProps } from './services/ServiceMembers';
 export { default as servicesStyles } from './services/services.module.css';
 // Lot B.2-UI: EasyBook · Setări · „Programul echipei” (BookingTeamSchedule, S124)
 export {

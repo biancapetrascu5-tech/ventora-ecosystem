@@ -10,14 +10,18 @@ import {
   createServiceCategory,
   listServiceCategories,
   listServices,
+  listStaff,
+  listStaffServiceTerms,
   reorderServiceCategories,
   restoreService,
   restoreServiceCategory,
+  setStaffServiceTerms,
   updateService,
   updateServiceCategory,
   type Service,
   type ServiceCategory,
   type ServiceInputParams,
+  type StaffServiceTerms,
 } from '@ventora/booking';
 import { getCatalogForOrg, getUsage } from '@ventora/commercial';
 import { getSession } from '@ventora/identity';
@@ -27,7 +31,8 @@ import { reportActionError } from './report-error';
 /* Lot B.1-UI — EasyBook · Setări · „Servicii” (BookingServices, S123). The business and the
    person come only from the session; every call goes through the booking contracts, which start
    with authorize() (booking:read to read, booking:settings to write, D-B1-1). S123-8: the page is
-   only for booking:settings. The data reaches the screen without Date objects (ISO). */
+   only for booking:settings. The data reaches the screen without Date objects (ISO).
+   S129 / S137–S138 (B.2b, B.2c): who does each service and the members' own duration and price. */
 
 export type ServiceData = {
   id: string;
@@ -44,6 +49,16 @@ export type ServiceData = {
   bookableOnline: boolean;
   sortOrder: number;
   archivedAt: string | null;
+  /** S129 „Cine îl face”: the whole team, or the members (ids) who do it. */
+  doneBy: 'all' | string[];
+  /** S137–S138: the members' own duration and price (B.2c), by member id. */
+  terms: Record<string, TermsData>;
+};
+
+export type TermsData = {
+  durationMinutes: number | null;
+  durationMaxMinutes: number | null;
+  price: { kind: 'fixed' | 'from' | 'range'; minor: number; maxMinor: number | null } | null;
 };
 
 export type CategoryData = {
@@ -60,6 +75,8 @@ export type ServicesPageData = {
   currency: 'RON' | 'EUR';
   /** C.0: the dates of the archived rows are shown in the business's time zone. */
   timeZone: string;
+  /** S129: the members in the calendar, in the team's order (role = the role in Hub). */
+  team: { id: string; name: string; role: string }[];
 };
 
 export type ServicesPage =
@@ -68,7 +85,7 @@ export type ServicesPage =
   | { kind: 'notEnabled' }
   | { kind: 'forbidden' };
 
-const toService = (s: Service): ServiceData => ({
+const toService = (s: Service, terms: StaffServiceTerms[] = []): ServiceData => ({
   id: s.id,
   categoryId: s.categoryId,
   name: s.name,
@@ -83,6 +100,19 @@ const toService = (s: Service): ServiceData => ({
   bookableOnline: s.bookableOnline,
   sortOrder: s.sortOrder,
   archivedAt: s.archivedAt ? s.archivedAt.toISOString() : null,
+  doneBy: s.doneBy.allStaff ? 'all' : s.doneBy.staffMemberIds,
+  terms: Object.fromEntries(
+    terms
+      .filter((x) => x.serviceId === s.id)
+      .map((x) => [
+        x.staffMemberId,
+        {
+          durationMinutes: x.durationMinutes,
+          durationMaxMinutes: x.durationMaxMinutes,
+          price: x.price ? { ...x.price } : null,
+        },
+      ]),
+  ),
 });
 
 const toCategory = (c: ServiceCategory): CategoryData => ({
@@ -118,19 +148,22 @@ export async function readServicesPage(): Promise<ServicesPage> {
     reportActionError('booking.services.read', err, { quietIfExpected: true });
     return { kind: 'forbidden' };
   }
-  const [services, categories, catalog, timeZone] = await Promise.all([
+  const [services, categories, catalog, timeZone, staff, terms] = await Promise.all([
     listServices({ sessionToken: token, includeArchived: true }),
     listServiceCategories({ sessionToken: token, includeArchived: true }),
     getCatalogForOrg(organizationId),
     getOrganizationTimeZone({ organizationId }),
+    listStaff({ sessionToken: token }),
+    listStaffServiceTerms({ sessionToken: token }),
   ]);
   return {
     kind: 'ok',
     data: {
-      services: services.map(toService),
+      services: services.map((x) => toService(x, terms)),
       categories: categories.map(toCategory),
       currency: catalog.currency === 'EUR' ? 'EUR' : 'RON',
       timeZone,
+      team: staff.members.map((m) => ({ id: m.id, name: m.displayName, role: m.role })),
     },
   };
 }
@@ -209,17 +242,41 @@ async function run<T>(action: string, fn: (token: string) => Promise<T>): Promis
 
 export type ServiceFields = Omit<ServiceInputParams, 'sortOrder'> & { sortOrder?: number };
 
+/** A member's own terms to write; null = back to the service's values. */
+export type MemberTermsWrite = {
+  durationMinutes: number;
+  durationMaxMinutes: number;
+  price: { kind: 'fixed' | 'from' | 'range'; minor: number; maxMinor: number | null };
+} | null;
+
+/**
+ * The service, „Cine îl face” (S129) and the members' terms that changed (S137–S138). The terms
+ * are written after the service (B.2c: the member must do it), each through setStaffServiceTerms;
+ * a failure there leaves the service saved and is reported like any other.
+ */
 export async function saveService(
   serviceId: string | null,
   fields: ServiceFields,
+  doneBy: 'all' | string[],
+  terms: Record<string, MemberTermsWrite> = {},
 ): Promise<ActionResult<ServiceData>> {
-  return run('booking.services.save', async (sessionToken) =>
-    toService(
-      serviceId
-        ? await updateService({ sessionToken, serviceId, ...fields })
-        : await createService({ sessionToken, ...fields }),
-    ),
-  );
+  const done = doneBy === 'all' ? { allStaff: true } : { allStaff: false, staffMemberIds: doneBy };
+  return run('booking.services.save', async (sessionToken) => {
+    const saved = serviceId
+      ? await updateService({ sessionToken, serviceId, ...fields, doneBy: done })
+      : await createService({ sessionToken, ...fields, doneBy: done });
+    for (const [staffMemberId, t] of Object.entries(terms)) {
+      await setStaffServiceTerms({
+        sessionToken,
+        staffMemberId,
+        serviceId: saved.id,
+        durationMinutes: t ? t.durationMinutes : null,
+        durationMaxMinutes: t ? t.durationMaxMinutes : null,
+        price: t ? t.price : null,
+      });
+    }
+    return toService(saved, await listStaffServiceTerms({ sessionToken, serviceId: saved.id }));
+  });
 }
 
 export async function archiveServiceAction(serviceId: string): Promise<ActionResult<ServiceData>> {

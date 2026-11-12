@@ -1,12 +1,14 @@
 'use client';
 
 import {
+  AvatarGroup,
   Button,
   DataTable,
   EmptyState,
   IconButton,
   Input,
   Menu,
+  Notice,
   SegmentedControl,
   Sheet,
   SheetSection,
@@ -15,12 +17,15 @@ import {
   type DataTableColumn,
   type MenuEntry,
 } from '@ventora/ui';
+import type { TeamMember } from './format';
 import { useServiceTexts, useTableLabels, type ServiceRow } from './texts';
 import s from './services.module.css';
 
 /* BookingServices (S123): EasyBook · Setări · „Servicii” — the toolbar and the list (categories in
-   their order, then „Fără categorie”), or the archived services and categories. Only props: the
-   page (apps/platform) and the gallery both draw this component. */
+   their order, then „Fără categorie”), or the archived services and categories. S129: „Cine îl
+   face” in the list, „Nu se poate rezerva” and the Notice for a service nobody does. S137: „Diferă
+   pe membru” under the price. Only props: the page (apps/platform) and the gallery both draw this
+   component. */
 
 export type ScreenMode = 'desktop' | 'tablet' | 'mobile';
 
@@ -48,6 +53,10 @@ export type BookingServicesViewProps = {
   activeCount: number;
   archivedServices: ArchivedServiceRow[];
   archivedCategories: ArchivedCategoryRow[];
+  /** S129: the members in the calendar (the avatars of „Cine îl face”). */
+  team: TeamMember[];
+  /** S129 „Alege cine îl face”: opens the form of the service nobody does. */
+  onPickMembers?: (id: string) => void;
   /** Nothing yet, active or archived: the empty state without the toolbar. */
   empty?: boolean;
   onAdd?: () => void;
@@ -139,34 +148,66 @@ function Toolbar(p: BookingServicesViewProps) {
   );
 }
 
-function useColumns(): DataTableColumn<ServiceRow>[] {
+const nobody = (r: ServiceRow) => r.doneBy !== 'all' && r.doneBy.length === 0;
+
+function useColumns(team: TeamMember[]): DataTableColumn<ServiceRow>[] {
   const x = useServiceTexts();
   const { t } = x;
+  const nameOf = (id: string) => team.find((m) => m.id === id)?.name ?? '';
   return [
     { key: 'name', header: t('col.name'), primary: true, render: (r) => r.name },
-    { key: 'dur', header: t('col.duration'), secondary: true, width: '120px', render: x.duration },
+    { key: 'dur', header: t('col.duration'), secondary: true, width: '104px', render: x.duration },
     {
       key: 'price',
       header: t('col.price'),
       secondary: true,
       align: 'end',
-      width: '128px',
-      render: (r) => <span className={s.num}>{x.price(r)}</span>,
+      width: '112px',
+      render: (r) =>
+        r.varies ? (
+          <span className={s.pcell}>
+            <span className={s.num}>{x.price(r)}</span>
+            <span className="caption muted">{t('member.varies')}</span>
+          </span>
+        ) : (
+          <span className={s.num}>{x.price(r)}</span>
+        ),
     },
     {
       key: 'cap',
       header: t('col.capacity'),
       optional: true,
-      width: '168px',
+      width: '136px',
       render: (r) => x.capacity(r.capacity),
+    },
+    {
+      key: 'who',
+      header: t('col.members'),
+      secondary: true,
+      width: '144px',
+      render: (r) =>
+        r.doneBy === 'all' ? (
+          <span className="body-small">{t('members.all')}</span>
+        ) : r.doneBy.length === 0 ? (
+          <span className="body-small muted">{t('members.none')}</span>
+        ) : (
+          <span className={s.who}>
+            <AvatarGroup people={r.doneBy.map((id) => ({ name: nameOf(id) }))} max={3} size="sm" />
+            <span className="body-small">{x.members(r.doneBy.length)}</span>
+          </span>
+        ),
     },
     {
       key: 'online',
       header: t('col.online'),
       trailing: true,
-      width: '152px',
+      width: '168px',
       render: (r) =>
-        r.bookableOnline ? (
+        nobody(r) ? (
+          <StatusPill tone="attention" icon="circle-alert">
+            {t('online.blocked')}
+          </StatusPill>
+        ) : r.bookableOnline ? (
           <StatusPill tone="done" icon="globe">
             {t('online.yes')}
           </StatusPill>
@@ -183,7 +224,7 @@ function ActiveList(p: BookingServicesViewProps & { matches: (r: ServiceRow) => 
   const x = useServiceTexts();
   const { t } = x;
   const labels = useTableLabels();
-  const columns = useColumns();
+  const columns = useColumns(p.team);
   const rowActions = (r: ServiceRow): DataTableAction[] => [
     { label: t('action.edit'), icon: 'pencil', onClick: () => p.onEdit?.(r.id) },
     { separator: true },
@@ -207,54 +248,81 @@ function ActiveList(p: BookingServicesViewProps & { matches: (r: ServiceRow) => 
       </Sheet>
     );
   }
+  const unassigned = [...p.categories.flatMap((c) => c.services), ...p.uncategorized].find(nobody);
   return (
-    <Sheet>
-      {groups.map((c) => (
-        <SheetSection
-          key={c.id}
-          title={c.name}
-          description={x.count(c.services.length)}
-          actions={
-            <Menu
-              items={[
-                { id: 'rename', label: t('cat.rename'), icon: 'pencil' },
-                { separator: true },
-                { id: 'archive', label: t('cat.archive') },
-              ]}
-              onAction={(id) =>
-                id === 'rename' ? p.onRenameCategory?.(c.id) : p.onArchiveCategory?.(c.id)
-              }
-            >
-              <IconButton icon="ellipsis-vertical" label={`${t('more')} · ${c.name}`} />
-            </Menu>
-          }
-        >
-          {c.rows.length > 0 && (
+    <>
+      {unassigned && (
+        <div className={p.mode === 'mobile' ? s.pad : undefined}>
+          <Notice
+            className={s.notice}
+            tone="attention"
+            icon="users"
+            title={t('noMember.title', { name: unassigned.name })}
+          >
+            <div className={s.stack}>
+              <p>{t('noMember.body')}</p>
+              <div>
+                <Button
+                  size="sm"
+                  variant="secondary"
+                  icon="pencil"
+                  onPress={() => p.onPickMembers?.(unassigned.id)}
+                >
+                  {t('noMember.action')}
+                </Button>
+              </div>
+            </div>
+          </Notice>
+        </div>
+      )}
+      <Sheet>
+        {groups.map((c) => (
+          <SheetSection
+            key={c.id}
+            title={c.name}
+            description={x.count(c.services.length)}
+            actions={
+              <Menu
+                items={[
+                  { id: 'rename', label: t('cat.rename'), icon: 'pencil' },
+                  { separator: true },
+                  { id: 'archive', label: t('cat.archive') },
+                ]}
+                onAction={(id) =>
+                  id === 'rename' ? p.onRenameCategory?.(c.id) : p.onArchiveCategory?.(c.id)
+                }
+              >
+                <IconButton icon="ellipsis-vertical" label={`${t('more')} · ${c.name}`} />
+              </Menu>
+            }
+          >
+            {c.rows.length > 0 && (
+              <DataTable
+                caption={c.name}
+                columns={columns}
+                rows={c.rows}
+                rowActions={rowActions}
+                labels={labels}
+              />
+            )}
+          </SheetSection>
+        ))}
+        {loose.length > 0 && (
+          <SheetSection
+            title={t('uncategorized')}
+            description={`${x.count(p.uncategorized.length)} · ${t('uncategorizedLead')}`}
+          >
             <DataTable
-              caption={c.name}
+              caption={t('uncategorized')}
               columns={columns}
-              rows={c.rows}
+              rows={loose}
               rowActions={rowActions}
               labels={labels}
             />
-          )}
-        </SheetSection>
-      ))}
-      {loose.length > 0 && (
-        <SheetSection
-          title={t('uncategorized')}
-          description={`${x.count(p.uncategorized.length)} · ${t('uncategorizedLead')}`}
-        >
-          <DataTable
-            caption={t('uncategorized')}
-            columns={columns}
-            rows={loose}
-            rowActions={rowActions}
-            labels={labels}
-          />
-        </SheetSection>
-      )}
-    </Sheet>
+          </SheetSection>
+        )}
+      </Sheet>
+    </>
   );
 }
 
