@@ -7,6 +7,7 @@ Actualizat pe 2026-11-12, după-amiaza. Main la `64fd239` (cu #193 B.12b, #195 B
 | PR | Ramura / worktree | HEAD | Bază | Stare |
 |---|---|---|---|---|
 | **#197** [SQL de revizuit] B.9d2 — lista de așteptare a clasei și rezervarea online | `feat/b9d2-booking-class-waitlist-online` / `C:\Projects\ventora-b9d2` | `e5f528b` (pushed) | `main` | Migrarea `…000008_booking_class_waitlist` (recreează `waitlist_offers_due`). Local: 82/82 + 116/116, lanțul de verificări verde. NECESITĂ DECIZIE: serviciile cu capacitate > 1 și ca oră obișnuită online |
+| **#199** [SQL de revizuit] B.FK — cheile compuse pe toate legăturile | `feat/bfk-booking-composite-fks` / `C:\Projects\ventora-bfk` | `a907084` (pushed) | `main` | Migrarea `…000009_booking_composite_fks`: UNIQUE (organization_id, id) pe 7 tabele, 41 de FK simple → compuse. Local: suita booking 301/301, lanțul verde. Dacă intră înaintea #197, migrarea #197 devine `…000010` |
 
 **Deciziile B.9a / B.9b / B.9c sunt PROPUS** (planul `reports/2026-11-12_plan-booking-b9.md`, commit pe #182):
 - T-9a-1: cota, o unitate pe pas;
@@ -26,6 +27,7 @@ Actualizat pe 2026-11-12, după-amiaza. Main la `64fd239` (cu #193 B.12b, #195 B
 | Worktree | Ramura | Stare |
 |---|---|---|
 | `C:\Projects\ventora-b9d2` | `feat/b9d2-booking-class-waitlist-online` | curat, sincronizat (#197) |
+| `C:\Projects\ventora-bfk` | `feat/bfk-booking-composite-fks` | curat, sincronizat (#199) |
 | `C:\Projects\ventora-handoff` | `docs/handoff-booking` | acest fișier |
 
 **Worktree-uri care se pot șterge:**
@@ -39,7 +41,7 @@ Actualizat pe 2026-11-12, după-amiaza. Main la `64fd239` (cu #193 B.12b, #195 B
 
 ## 3. Ce urmează
 
-**1.** #197 (B.9d2) așteaptă review-ul SQL. **Ordinea corectată de Bianca pe 12.11: B.9d2 → B.FK → B.13.** Urmează B.FK (cheile compuse pe client, serviciu și membru pentru tot booking-ul), apoi B.13.
+**1.** #197 (B.9d2) și #199 (B.FK) așteaptă review-ul SQL. Main e roșu după #194 (tokenurile generate); reparația e #198. **După ce intră #198:** rebase #197 pe origin/main, regula pre-push + testele de integrare (întâi `docker ps`), push --force-with-lease (aprobat de Bianca). GRANT-ul `UPDATE(token_hash)` pe `waitlist_offer` (#197) e **aprobat de fondatoare**. Urmează **B.13**.
 
 **Deciziile fondatoarei pentru #195 (12.11):** prelungirea pachetului doar pentru owner — CONFIRMAT; auditul cu codurile existente — CONFIRMAT; abaterea de ordine (B.9e înaintea lui B.9d2) — acceptată. D-9e-4 rămâne NECESITĂ DECIZIE, la contabil: nu se emit documente fiscale pentru pachete până atunci.
 
