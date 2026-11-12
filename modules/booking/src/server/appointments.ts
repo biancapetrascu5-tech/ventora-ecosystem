@@ -65,11 +65,15 @@ export const OCCUPYING: readonly AppointmentStatus[] = [
   'confirmed',
   'in_progress',
 ];
-const FINAL: readonly AppointmentStatus[] = ['completed', 'cancelled', 'no_show'];
-const MOVABLE: readonly AppointmentStatus[] = ['awaiting_payment', 'unconfirmed', 'confirmed'];
+export const FINAL: readonly AppointmentStatus[] = ['completed', 'cancelled', 'no_show'];
+export const MOVABLE: readonly AppointmentStatus[] = [
+  'awaiting_payment',
+  'unconfirmed',
+  'confirmed',
+];
 
 /** BookingStatuses: what the drawer offers from each state (the trigger holds the same map). */
-const TRANSITIONS: Readonly<Record<AppointmentStatus, readonly AppointmentStatus[]>> = {
+export const TRANSITIONS: Readonly<Record<AppointmentStatus, readonly AppointmentStatus[]>> = {
   awaiting_payment: ['confirmed', 'cancelled'],
   unconfirmed: ['confirmed', 'cancelled', 'no_show'],
   confirmed: ['in_progress', 'cancelled', 'no_show'],
@@ -156,10 +160,15 @@ export type Appointment = {
   } | null;
   deposit: { minor: number; currency: 'RON' | 'EUR'; dueAt: Date } | null;
   correction: { at: Date; byUserId: string; reason: string } | null;
+  /** B.9a: a step of a visit with several services („1/3 · Vopsit rădăcină”); null otherwise. */
+  visit: VisitRef | null;
   createdByUserId: string | null;
   createdAt: Date;
   updatedAt: Date;
 };
+
+/** B.9a: the place of an appointment in its visit; the pause after it is 0 on the last step. */
+export type VisitRef = { id: string; step: number; steps: number; breakAfterMinutes: number };
 
 export type AppointmentHistoryItem = {
   id: string;
@@ -196,7 +205,7 @@ export type TimeBlock = {
 
 // ── rows ───────────────────────────────────────────────────────────────────────────────────
 
-type AppointmentRow = {
+export type AppointmentRow = {
   id: string;
   number: number;
   staff_member_id: string;
@@ -232,16 +241,21 @@ type AppointmentRow = {
   created_by_user_id: string | null;
   created_at: Date;
   updated_at: Date;
+  visit_id: string | null;
+  visit_step: number | null;
+  visit_steps: number | null;
+  break_after_minutes: number | null;
 };
 
-const APPOINTMENT_COLUMNS = `id, number, staff_member_id, service_id, client_id, starts_at, ends_at,
+export const APPOINTMENT_COLUMNS = `id, number, staff_member_id, service_id, client_id, starts_at, ends_at,
   duration_minutes, capacity, status, status_changed_at, service_name, staff_display_name,
   client_name, price_kind, price_minor, price_max_minor, currency, team_note, source, cancelled_at,
   cancelled_by, cancelled_by_user_id, cancel_minutes_before, cancel_late, deposit_minor,
   deposit_currency, payment_due_at, corrected_at, corrected_by_user_id, correction_reason,
-  created_by_user_id, created_at, updated_at, location_id`;
+  created_by_user_id, created_at, updated_at, location_id, visit_id, visit_step, visit_steps,
+  break_after_minutes`;
 
-function toAppointment(r: AppointmentRow): Appointment {
+export function toAppointment(r: AppointmentRow): Appointment {
   return {
     id: r.id,
     number: r.number,
@@ -284,6 +298,15 @@ function toAppointment(r: AppointmentRow): Appointment {
       r.corrected_at && r.corrected_by_user_id && r.correction_reason
         ? { at: r.corrected_at, byUserId: r.corrected_by_user_id, reason: r.correction_reason }
         : null,
+    visit:
+      r.visit_id && r.visit_step !== null && r.visit_steps !== null
+        ? {
+            id: r.visit_id,
+            step: r.visit_step,
+            steps: r.visit_steps,
+            breakAfterMinutes: r.break_after_minutes ?? 0,
+          }
+        : null,
     createdByUserId: r.created_by_user_id,
     createdAt: r.created_at,
     updatedAt: r.updated_at,
@@ -318,7 +341,7 @@ function toHistory(r: HistoryRow): AppointmentHistoryItem {
   };
 }
 
-type ClientRow = {
+export type ClientRow = {
   id: string;
   name: string;
   phone: string | null;
@@ -329,7 +352,7 @@ type ClientRow = {
   updated_at: Date;
 };
 
-const CLIENT_COLUMNS = `id, name, phone, email, locale, archived_at, created_at, updated_at`;
+export const CLIENT_COLUMNS = `id, name, phone, email, locale, archived_at, created_at, updated_at`;
 
 function toClient(r: ClientRow): Client {
   return {
@@ -382,7 +405,7 @@ function requireId(id: unknown): string {
 type AuditTarget =
   'booking_appointment' | 'booking_time_block' | 'booking_client' | 'booking_settings';
 
-function audit(
+export function audit(
   exec: AuditSqlExecutor,
   ctx: TenantContext,
   action: string,
@@ -404,7 +427,7 @@ function audit(
   });
 }
 
-function history(
+export function history(
   client: PoolClient,
   ctx: TenantContext,
   appointmentId: string,
@@ -438,10 +461,10 @@ function history(
   );
 }
 
-type PgError = { code?: string; constraint?: string; hint?: string };
+export type PgError = { code?: string; constraint?: string; hint?: string };
 
 /** The database's answer to a race the contract could not see, as the contract's own errors. */
-function translate(err: unknown): never {
+export function translate(err: unknown): never {
   const e = err as PgError;
   // B.3b: no free unit of a resource the service needs (check_resource_free, hint 'resource')
   if (e?.code === '23P01' && e.hint === 'resource') throw new Conflict('resource_unavailable');
@@ -462,7 +485,7 @@ function translate(err: unknown): never {
   throw err;
 }
 
-async function tx<T>(
+export async function tx<T>(
   ctx: TenantContext,
   fn: (client: PoolClient, exec: AuditSqlExecutor) => Promise<T>,
   readOnly = false,
@@ -475,7 +498,7 @@ async function tx<T>(
 }
 
 /** An instant from the caller: an ISO 8601 date-time with its offset (Z or ±hh:mm). */
-function requireInstant(field: string, value: unknown): Date {
+export function requireInstant(field: string, value: unknown): Date {
   if (value === undefined || value === null || value === '')
     throw new InvalidInput(field, 'required');
   if (
@@ -489,7 +512,7 @@ function requireInstant(field: string, value: unknown): Date {
   return d;
 }
 
-function normalizeOptionalText(field: string, value: unknown, max: number): string | null {
+export function normalizeOptionalText(field: string, value: unknown, max: number): string | null {
   if (value === undefined || value === null) return null;
   if (typeof value !== 'string') throw new InvalidInput(field, 'invalid');
   const text = value.trim();
@@ -497,7 +520,7 @@ function normalizeOptionalText(field: string, value: unknown, max: number): stri
   return text.length > 0 ? text : null;
 }
 
-function requireDuration(value: unknown): number {
+export function requireDuration(value: unknown): number {
   if (
     typeof value !== 'number' ||
     !Number.isInteger(value) ||
@@ -540,7 +563,7 @@ async function localSpan(
 }
 
 /** D-B4-4 = a: the whole appointment inside one of the member's working intervals that day. */
-async function requireWithinSchedule(
+export async function requireWithinSchedule(
   client: PoolClient,
   timeZone: string,
   staffMemberId: string,
@@ -555,7 +578,7 @@ async function requireWithinSchedule(
   if (!inside) throw new Conflict('staff_unavailable');
 }
 
-type StaffForBooking = {
+export type StaffForBooking = {
   id: string;
   user_id: string;
   display_name: string;
@@ -564,7 +587,10 @@ type StaffForBooking = {
   archived_at: Date | null;
 };
 
-async function readStaffForBooking(client: PoolClient, id: string): Promise<StaffForBooking> {
+export async function readStaffForBooking(
+  client: PoolClient,
+  id: string,
+): Promise<StaffForBooking> {
   const { rows } = await client.query<StaffForBooking>(
     `SELECT id, user_id, display_name, location_id, archived_at
        FROM booking.staff_member WHERE id = $1`,
@@ -575,18 +601,22 @@ async function readStaffForBooking(client: PoolClient, id: string): Promise<Staf
 }
 
 /** D-B2-6 = a: the member is in the calendar and still eligible (core/access), on every booking. */
-async function requireBookableStaff(ctx: TenantContext, staff: StaffForBooking) {
+export async function requireBookableStaff(ctx: TenantContext, staff: StaffForBooking) {
   if (staff.archived_at) throw new Conflict('staff_member_removed');
   const eligibility = await staffEligibility(ctx, staff.user_id);
   if (eligibility !== 'eligible') throw new Conflict('staff_member_removed');
 }
 
 /** D-B4-6 = a: a member changes only the appointments where they are the member. */
-function requireScope(ctx: TenantContext, scope: AppointmentScope, staff: { user_id: string }) {
+export function requireScope(
+  ctx: TenantContext,
+  scope: AppointmentScope,
+  staff: { user_id: string },
+) {
   if (scope === 'own' && staff.user_id !== ctx.userId) throw new Forbidden();
 }
 
-async function readAppointment(
+export async function readAppointment(
   client: PoolClient,
   id: string,
   lock = false,
@@ -613,7 +643,7 @@ export const DEFAULT_BOOKING_SETTINGS: Omit<BookingSettings, 'updatedAt'> = {
   bufferMin: 0,
 };
 
-async function readSettings(client: PoolClient): Promise<BookingSettings> {
+export async function readSettings(client: PoolClient): Promise<BookingSettings> {
   const { rows } = await client.query<{
     free_cancel_hours: number;
     confirmation_mode: 'auto' | 'manual';
@@ -820,7 +850,7 @@ export async function publicClientInOrg(
   );
 }
 
-async function insertClient(
+export async function insertClient(
   client: PoolClient,
   exec: AuditSqlExecutor,
   ctx: TenantContext,
@@ -960,7 +990,7 @@ export type CreateAppointmentInput = {
   locationId?: unknown;
 };
 
-type ServiceForBooking = {
+export type ServiceForBooking = {
   id: string;
   name: string;
   duration_minutes: number;
@@ -973,7 +1003,7 @@ type ServiceForBooking = {
   archived_at: Date | null;
 };
 
-class AlreadyCreated extends Error {}
+export class AlreadyCreated extends Error {}
 
 function sameRequest(
   row: AppointmentRow,
@@ -984,6 +1014,101 @@ function sameRequest(
     row.service_id === req.serviceId &&
     row.starts_at.getTime() === req.startsAt.getTime()
   );
+}
+
+export type AppointmentInsert = {
+  id: string;
+  staffMemberId: string;
+  staffDisplayName: string;
+  service: ServiceForBooking;
+  client: ClientRow;
+  startsAt: Date;
+  endsAt: Date;
+  duration: number;
+  status: AppointmentStatus;
+  price: EffectiveTerms;
+  teamNote: string | null;
+  locationId: string | null;
+  /** B.9a: the step of a visit, or null. */
+  visit: VisitRef | null;
+};
+
+/**
+ * One appointment row, its number and one unit of every resource the service needs (B.3b), in the
+ * caller's transaction. row undefined: the id exists already (a concurrent retry got there first).
+ */
+export async function insertAppointmentRow(
+  db: PoolClient,
+  ctx: TenantContext,
+  v: AppointmentInsert,
+): Promise<{
+  number: number;
+  row: AppointmentRow | undefined;
+  resources: Array<{ id: string; units: number }>;
+}> {
+  // B.3b: the active resources the service needs (an archived one is not required, S124);
+  // B.10: at the appointment's location, the ones standing there or everywhere
+  const resources = await requiredResources(db, v.service.id, v.locationId);
+  const number = (
+    await db.query<{ last_number: number }>(
+      `INSERT INTO booking.appointment_counter (organization_id, last_number) VALUES ($1, 1)
+       ON CONFLICT (organization_id)
+         DO UPDATE SET last_number = booking.appointment_counter.last_number + 1
+       RETURNING last_number`,
+      [ctx.organizationId],
+    )
+  ).rows[0]!.last_number;
+
+  const { rows } = await db.query<AppointmentRow>(
+    `INSERT INTO booking.appointment
+       (id, organization_id, number, staff_member_id, service_id, client_id, starts_at, ends_at,
+        duration_minutes, capacity, status, service_name, staff_display_name, client_name,
+        price_kind, price_minor, price_max_minor, currency, team_note, source,
+        created_by_user_id, location_id, visit_id, visit_step, visit_steps, break_after_minutes)
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18,
+             $19, $22, $20, $21, $23, $24, $25, $26)
+     ON CONFLICT (id) DO NOTHING
+     RETURNING ${APPOINTMENT_COLUMNS}`,
+    [
+      v.id,
+      ctx.organizationId,
+      number,
+      v.staffMemberId,
+      v.service.id,
+      v.client.id,
+      v.startsAt,
+      v.endsAt,
+      v.duration,
+      v.service.capacity,
+      v.status,
+      v.service.name,
+      v.staffDisplayName,
+      v.client.name,
+      v.price.priceKind,
+      v.price.priceMinor,
+      v.price.priceMaxMinor,
+      v.service.currency,
+      v.teamNote,
+      actorUserId(ctx),
+      v.locationId,
+      isPublicContext(ctx) ? 'public' : 'hub',
+      v.visit?.id ?? null,
+      v.visit?.step ?? null,
+      v.visit?.steps ?? null,
+      v.visit ? v.visit.breakAfterMinutes : null,
+    ],
+  );
+  // B.3b: one unit of every resource, in the same transaction (the trigger checks it)
+  if (rows[0]) {
+    for (const r of resources) {
+      await db.query(
+        `INSERT INTO booking.appointment_resource (id, organization_id, appointment_id, resource_id)
+         VALUES ($1, $2, $3, $4)`,
+        [uuidv7(), ctx.organizationId, v.id, r.id],
+      );
+    }
+  }
+  return { number, row: rows[0], resources };
 }
 
 /**
@@ -1134,7 +1259,7 @@ export async function createAppointmentInOrg(
         clientRow = await insertClient(client, exec, ctx, input.client ?? {});
       }
 
-      const insertAppointmentRow = async (
+      const insertRow = (
         db: PoolClient,
         staffMemberId: string,
         displayName: string,
@@ -1142,71 +1267,22 @@ export async function createAppointmentInOrg(
         endsAt: Date,
         price: EffectiveTerms,
         locationId: string | null,
-      ): Promise<{
-        number: number;
-        row: AppointmentRow | undefined;
-        resources: Array<{ id: string; units: number }>;
-      }> => {
-        // B.3b: the active resources the service needs (an archived one is not required, S124);
-        // B.10: at the appointment's location, the ones standing there or everywhere
-        const resources = await requiredResources(db, serviceId, locationId);
-        const number = (
-          await db.query<{ last_number: number }>(
-            `INSERT INTO booking.appointment_counter (organization_id, last_number) VALUES ($1, 1)
-           ON CONFLICT (organization_id)
-             DO UPDATE SET last_number = booking.appointment_counter.last_number + 1
-           RETURNING last_number`,
-            [ctx.organizationId],
-          )
-        ).rows[0]!.last_number;
-
-        const { rows } = await db.query<AppointmentRow>(
-          `INSERT INTO booking.appointment
-           (id, organization_id, number, staff_member_id, service_id, client_id, starts_at, ends_at,
-            duration_minutes, capacity, status, service_name, staff_display_name, client_name,
-            price_kind, price_minor, price_max_minor, currency, team_note, source,
-            created_by_user_id, location_id)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18,
-                 $19, $22, $20, $21)
-         ON CONFLICT (id) DO NOTHING
-         RETURNING ${APPOINTMENT_COLUMNS}`,
-          [
-            id,
-            ctx.organizationId,
-            number,
-            staffMemberId,
-            serviceId,
-            clientRow.id,
-            startsAt,
-            endsAt,
-            duration,
-            service.capacity,
-            status,
-            service.name,
-            displayName,
-            clientRow.name,
-            price.priceKind,
-            price.priceMinor,
-            price.priceMaxMinor,
-            service.currency,
-            teamNote,
-            actorUserId(ctx),
-            locationId,
-            isPublicContext(ctx) ? 'public' : 'hub',
-          ],
-        );
-        // B.3b: one unit of every resource, in the same transaction (the trigger checks it)
-        if (rows[0]) {
-          for (const r of resources) {
-            await db.query(
-              `INSERT INTO booking.appointment_resource (id, organization_id, appointment_id, resource_id)
-               VALUES ($1, $2, $3, $4)`,
-              [uuidv7(), ctx.organizationId, id, r.id],
-            );
-          }
-        }
-        return { number, row: rows[0], resources };
-      };
+      ) =>
+        insertAppointmentRow(db, ctx, {
+          id,
+          staffMemberId,
+          staffDisplayName: displayName,
+          service,
+          client: clientRow,
+          startsAt,
+          endsAt,
+          duration,
+          status,
+          price,
+          teamNote,
+          locationId,
+          visit: null,
+        });
 
       // „Oricine e liber”: the next member when the time was taken in the meantime (D-B5-4)
       for (const staff of candidates) {
@@ -1232,7 +1308,7 @@ export async function createAppointmentInOrg(
           if (choice === 'any') {
             await requireWithinSchedule(client, timeZone, staffMemberId, startsAt, endsAt);
           }
-          inserted = await insertAppointmentRow(
+          inserted = await insertRow(
             client,
             staffMemberId,
             staff.display_name,
@@ -1317,7 +1393,7 @@ export async function createAppointmentInOrg(
  * The second step of the quota saga. A failure is logged, not thrown: the appointment (or its
  * absence) is the truth, and the reconciliation job settles the reservation from it.
  */
-async function settleQuota(ctx: TenantContext, id: string, step: 'commit' | 'release') {
+export async function settleQuota(ctx: TenantContext, id: string, step: 'commit' | 'release') {
   try {
     if (step === 'commit') await commitQuota(ctx, id);
     else await releaseQuota(ctx, id);
@@ -1331,7 +1407,10 @@ async function settleQuota(ctx: TenantContext, id: string, step: 'commit' | 'rel
   }
 }
 
-async function findAppointment(ctx: TenantContext, id: string): Promise<AppointmentRow | null> {
+export async function findAppointment(
+  ctx: TenantContext,
+  id: string,
+): Promise<AppointmentRow | null> {
   return tx(
     ctx,
     async (client) =>
@@ -1406,6 +1485,8 @@ async function moveAppointment(
   const current = await tx(ctx, (client) => readAppointment(client, id), true);
   requireScope(ctx, scope, { user_id: current.staff_user_id });
   if (!MOVABLE.includes(current.status)) throw new Conflict('appointment_final');
+  // B.9a (D-9a-1): a step of a visit is moved only by the team (moveVisit, or this step alone)
+  if (isPublicContext(ctx) && current.visit_id) throw new Conflict('visit_managed_by_team');
 
   const startsAt =
     input.startsAt === undefined ? current.starts_at : requireInstant('startsAt', input.startsAt);
@@ -1619,48 +1700,68 @@ async function cancelAppointment(
   return tx(ctx, async (client, exec) => {
     const row = await readAppointment(client, id, true);
     requireScope(ctx, scope, { user_id: row.staff_user_id });
-    if (FINAL.includes(row.status)) throw new Conflict('appointment_final');
-    if (!TRANSITIONS[row.status].includes('cancelled'))
-      throw new Conflict('transition_not_allowed');
+    // B.9a (D-9a-1): a step of a visit is changed only by the team
+    if (isPublicContext(ctx) && row.visit_id) throw new Conflict('visit_managed_by_team');
     const settings = await readSettings(client);
-    const { rows } = await client.query<AppointmentRow>(
-      `UPDATE booking.appointment
-          SET status = 'cancelled', cancelled_at = now(), cancelled_by = $2,
-              cancelled_by_user_id = $3,
-              cancel_minutes_before = floor(extract(epoch FROM (starts_at - now())) / 60)::int,
-              cancel_late = (starts_at - now()) < make_interval(hours => $4)
-        WHERE id = $1
-        RETURNING ${APPOINTMENT_COLUMNS}`,
-      // B.11b: the client on their own page has no user id
-      [id, by, actorUserId(ctx), settings.freeCancelHours],
-    );
-    const updated = rows[0]!;
-    await history(client, ctx, id, { kind: 'status', from: row.status, to: 'cancelled' });
-    await writeOutboxEvent(client, 'booking', BookingAppointmentCancelledV1, {
-      organizationId: ctx.organizationId,
-      sourceApp: 'platform',
-      resourceId: id,
-      payload: {
-        appointmentId: id,
-        staffMemberId: updated.staff_member_id,
-        clientId: updated.client_id,
-        startsAt: updated.starts_at.toISOString(),
-        cancelledAt: updated.cancelled_at!.toISOString(),
-        by,
-        late: updated.cancel_late!,
-        minutesBefore: updated.cancel_minutes_before!,
-        // before the start the unit of booking.appointments goes back (refundable)
-        quotaRefund: updated.cancelled_at!.getTime() < updated.starts_at.getTime(),
-      },
-    });
-    await audit(exec, ctx, AuditActions.bookingAppointmentCancelled, 'booking_appointment', id, {
-      from: row.status,
-      by,
-      minutesBefore: updated.cancel_minutes_before,
-      late: updated.cancel_late,
-    });
-    return toAppointment(updated);
+    return toAppointment(await cancelRow(client, exec, ctx, row, by, settings, null));
   });
+}
+
+/**
+ * The cancellation of one appointment already read and locked, in the caller's transaction: the
+ * row, its history, the event booking.appointment.cancelled (the quota refund before the start)
+ * and its audit. B.9a: cancelVisit calls it for every step (visitId in the audit).
+ */
+export async function cancelRow(
+  client: PoolClient,
+  exec: AuditSqlExecutor,
+  ctx: TenantContext,
+  row: AppointmentRow,
+  by: 'client' | 'business',
+  settings: BookingSettings,
+  visitId: string | null,
+): Promise<AppointmentRow> {
+  const id = row.id;
+  if (FINAL.includes(row.status)) throw new Conflict('appointment_final');
+  if (!TRANSITIONS[row.status].includes('cancelled')) throw new Conflict('transition_not_allowed');
+  const { rows } = await client.query<AppointmentRow>(
+    `UPDATE booking.appointment
+        SET status = 'cancelled', cancelled_at = now(), cancelled_by = $2,
+            cancelled_by_user_id = $3,
+            cancel_minutes_before = floor(extract(epoch FROM (starts_at - now())) / 60)::int,
+            cancel_late = (starts_at - now()) < make_interval(hours => $4)
+      WHERE id = $1
+      RETURNING ${APPOINTMENT_COLUMNS}`,
+    // B.11b: the client on their own page has no user id
+    [id, by, actorUserId(ctx), settings.freeCancelHours],
+  );
+  const updated = rows[0]!;
+  await history(client, ctx, id, { kind: 'status', from: row.status, to: 'cancelled' });
+  await writeOutboxEvent(client, 'booking', BookingAppointmentCancelledV1, {
+    organizationId: ctx.organizationId,
+    sourceApp: 'platform',
+    resourceId: id,
+    payload: {
+      appointmentId: id,
+      staffMemberId: updated.staff_member_id,
+      clientId: updated.client_id,
+      startsAt: updated.starts_at.toISOString(),
+      cancelledAt: updated.cancelled_at!.toISOString(),
+      by,
+      late: updated.cancel_late!,
+      minutesBefore: updated.cancel_minutes_before!,
+      // before the start the unit of booking.appointments goes back (refundable)
+      quotaRefund: updated.cancelled_at!.getTime() < updated.starts_at.getTime(),
+    },
+  });
+  await audit(exec, ctx, AuditActions.bookingAppointmentCancelled, 'booking_appointment', id, {
+    from: row.status,
+    by,
+    minutesBefore: updated.cancel_minutes_before,
+    late: updated.cancel_late,
+    ...(visitId ? { visitId } : {}),
+  });
+  return updated;
 }
 
 /**

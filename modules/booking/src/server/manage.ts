@@ -47,6 +47,7 @@ import { isUuid } from './validation';
  *   - moving is free until the online cut-off, at most once online per booking ('moved_once');
  *   - a business with manual confirmation: no move online for now ('manual_confirmation'; the move
  *     as a request, with the old time kept until the salon confirms, is a later lot).
+ * B.9a: a step of a visit with several services is 'online_closed' (the team moves the visit).
  */
 
 export const MANAGE_LIMITS = {
@@ -145,6 +146,8 @@ type BookingRow = {
   paid: string;
   refunded: string;
   online: boolean;
+  /** B.9a: a step of a visit with several services. */
+  in_visit: boolean;
   client_moves: number;
   now: Date;
 };
@@ -160,6 +163,7 @@ async function readBooking(client: PoolClient, id: string, lock = false): Promis
                FROM booking.appointment_payment p WHERE p.appointment_id = a.id) AS refunded,
             (s.archived_at IS NULL AND s.bookable_online
               AND m.archived_at IS NULL AND m.bookable_online) AS online,
+            (a.visit_id IS NOT NULL) AS in_visit,
             (SELECT count(*)::int FROM booking.appointment_history h
               WHERE h.appointment_id = a.id AND h.kind = 'moved' AND h.actor_type = 'client')
               AS client_moves,
@@ -188,7 +192,8 @@ function judge(
   // review #174: from the start on, the page shows only the details (no move, no cancel)
   else if (start <= now) state = 'over';
   else if (start - now < MANAGE_LIMITS.onlineCutoffHours * HOUR) state = 'too_late';
-  else if (!b.online) state = 'online_closed';
+  // B.9a (D-9a-1, D-9a-2): a step of a visit is changed only by the team (by phone)
+  else if (!b.online || b.in_visit) state = 'online_closed';
   else state = 'open';
   const moveRefusal: MoveRefusal | null =
     state !== 'open'
