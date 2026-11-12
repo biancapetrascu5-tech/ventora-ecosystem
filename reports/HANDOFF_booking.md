@@ -41,9 +41,12 @@ Actualizat pe 2026-11-12, ora 12. Main la `c4a9515` (cu #182 B.9a, #178).
 
 ## 3. Ce urmează
 
-**1.** Review-ul și corecturile pentru #184 și #187.
+**1.** #184 (B.9b): **SQL aprobat** și îmbinat (main `5125712`). #187 (B.9c): **SQL aprobat**, intră la valul următor după CI.
 
-**2.** B.9d (clasele), apoi B.9e (pachetele), cu cel mult 3 PR-uri deschise. D-9e-4 (contabilitatea pachetelor) e NECESITĂ DECIZIE, la contabil.
+**2.** B.9d1, worktree `C:\Projects\ventora-b9d`, ramura `feat/b9d-booking-classes`: sesiunile, participanții, sala și membrul ocupate de sesiune. Urmează:
+- **B.9d2**, după #187: lista de așteptare automată a clasei și rezervarea online;
+- **B.FK** (lot nou, cerut de Bianca pe 12.11, după B.9d): `UNIQUE (organization_id, id)` pe `client`, `service`, `staff_member` și FK compuse din tabelele noi (`appointment_series`, `waitlist_entry`, `waitlist_offer`, `class_session`) și din cele vechi, cu un test care refuză id-urile altei afaceri;
+- **B.9e:** pachetele. D-9e-4 (contabilitatea pachetelor) e NECESITĂ DECIZIE, la contabil.
 
 **Ordinea cerută de Bianca după B.12:**
 1. B.9, programările complexe (S126: `BookingRecurring`, `BookingMultiService`, `BookingWaitlist`, `BookingClasses`, `BookingPackages`), câte un sublot B.9a–e;
