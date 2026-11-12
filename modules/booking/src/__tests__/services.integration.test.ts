@@ -769,6 +769,10 @@ describe('B.1 — the role and the grants (§2.3)', () => {
       'medical_consent',
       'medical_field',
       'outbox_events',
+      // B.9e: the packages of sessions
+      'package',
+      'package_sale',
+      'package_use',
       'processed_events',
       // B.11a: the public booking holds
       'public_hold',

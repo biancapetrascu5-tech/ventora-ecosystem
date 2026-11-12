@@ -388,3 +388,33 @@ export type {
   WaitlistOfferState,
   WaitlistTimeKind,
 } from '../server/waitlist';
+
+// Lot B.9e: the packages of sessions (BookingPackages, S126)
+export {
+  listPackages,
+  createPackage,
+  updatePackage,
+  archivePackage,
+  sellPackage,
+  extendPackageSale,
+  listClientPackages,
+  setAppointmentPackage,
+} from './packages';
+export type {
+  CreatePackageParams,
+  UpdatePackageParams,
+  PackageIdParams,
+  ListPackagesParams,
+  SellPackageParams,
+  ExtendPackageSaleParams,
+  ListClientPackagesParams,
+  SetAppointmentPackageParams,
+} from './packages';
+export type {
+  BookingPackage,
+  PackageSale,
+  PackageSaleStatus,
+  PackageUseItem,
+  PackagePaymentMethod,
+  PackageValidityMonths,
+} from '../server/packages';
