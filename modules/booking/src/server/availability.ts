@@ -659,3 +659,68 @@ export async function staffFreeAtInOrg(
     (id) => loadOf.get(id) ?? 0,
   );
 }
+
+// ── B.9a: the first start of a visit with several services ───────────────────────────────
+
+export type VisitStartStep = {
+  staffMemberId: string;
+  serviceId: string;
+  durationMinutes?: unknown;
+  /** The pause after the step (0 on the last one). */
+  breakAfterMinutes: number;
+};
+
+export type VisitStart = { date: string; time: string; startsAt: Date };
+
+/**
+ * „Folosește 11:15” (BookingMultiService): the first start on `date` (local, in the business time
+ * zone) at which every step fits — each step starts when the one before ends plus its pause, with
+ * its member free (schedule, appointments, blocked times, buffer, capacity, resources: the team
+ * rules of B.5, from now on). The steps are already checked by the caller. null: nothing that day.
+ */
+export async function visitStartOn(
+  ctx: TenantContext,
+  query: { date: string; steps: VisitStartStep[]; locationId?: string },
+): Promise<VisitStart | null> {
+  hubOnly(ctx);
+  const days: Array<{ day: MemberDay; duration: number; breakAfter: number }> = [];
+  for (const step of query.steps) {
+    const loaded = await load(
+      ctx,
+      {
+        serviceId: step.serviceId,
+        staffMemberId: step.staffMemberId,
+        durationMinutes: step.durationMinutes,
+        mode: 'team',
+        locationId: query.locationId,
+      },
+      query.date,
+      query.date,
+    );
+    const day = loaded.days.find(
+      (d) => d.staffMemberId === step.staffMemberId && d.date === query.date,
+    );
+    // an archived service, or a member who does not work that day: the visit does not fit
+    if (!day) return null;
+    days.push({ day, duration: day.rules.durationMin, breakAfter: step.breakAfterMinutes });
+  }
+  const total = days.reduce((sum, d) => sum + d.duration + d.breakAfter, 0);
+  for (let t = 0; t + total <= 1440; t += LIMITS.durationStep) {
+    let at = t;
+    let fits = true;
+    for (const { day, duration, breakAfter } of days) {
+      if (!isFreeAt(day.intervals, day.busy, day.rules, at)) {
+        fits = false;
+        break;
+      }
+      at += duration + breakAfter;
+    }
+    if (!fits) continue;
+    const timeZone = await getOrganizationTimeZone(ctx);
+    const [instant] = await toInstants(ctx, timeZone, [{ date: query.date, minute: t }]);
+    // the hour skipped in spring: try the next start
+    if (!instant) continue;
+    return { date: query.date, time: hhmm(t), startsAt: instant };
+  }
+  return null;
+}

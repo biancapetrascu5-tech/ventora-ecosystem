@@ -313,3 +313,17 @@ export type {
   FormQuestionKind,
 } from './forms';
 export type { PublicFormQuestion } from '../server/forms';
+
+// Lot B.9a: several services in one visit (BookingMultiService, S126)
+export { createVisit, getVisit, findVisitStart, moveVisit, cancelVisit } from './visits';
+export type {
+  CreateVisitParams,
+  VisitStepParams,
+  VisitIdParams,
+  MoveVisitParams,
+  CancelVisitParams,
+  FindVisitStartParams,
+} from './visits';
+export type { Visit } from '../server/visits';
+export type { VisitStart } from '../server/availability';
+export type { VisitRef } from '../server/appointments';

@@ -315,6 +315,11 @@ model Appointment {
   updatedAt           DateTime  @default(now()) @map("updated_at") @db.Timestamptz
   // Lot B.10: where it takes place (fixed at creation)
   locationId          String?   @map("location_id") @db.Uuid
+  // Lot B.9a: the step of a visit with several services (all four NULL for an appointment alone)
+  visitId             String?   @map("visit_id") @db.Uuid
+  visitStep           Int?      @map("visit_step") @db.SmallInt
+  visitSteps          Int?      @map("visit_steps") @db.SmallInt
+  breakAfterMinutes   Int?      @map("break_after_minutes") @db.SmallInt
 
   staffMember StaffMember          @relation(fields: [staffMemberId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "appointment_staff_member_id_fkey")
   service     Service              @relation(fields: [serviceId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "appointment_service_id_fkey")
@@ -328,6 +333,7 @@ model Appointment {
 
   @@unique([organizationId, number], map: "appointment_organization_id_number_key")
   @@unique([organizationId, id], map: "appointment_organization_id_id_key")
+  @@unique([organizationId, visitId, visitStep], map: "appointment_organization_id_visit_id_visit_step_key")
   @@index([organizationId, startsAt], map: "appointment_organization_id_starts_idx")
   @@index([staffMemberId, startsAt], map: "appointment_staff_member_id_starts_idx")
   @@index([clientId, startsAt], map: "appointment_client_id_starts_idx")
