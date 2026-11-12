@@ -1214,6 +1214,31 @@
         "title": "Your request closes tomorrow",
         "lead": "The Ventora Systems team replied to “{subject}” ({ref}) and we haven’t heard from you for 6 days.",
         "body": "If the problem is solved, you don’t need to do anything: the request closes by itself on {closesAt}. If you still need help, reply in Ventora Systems; you can also reopen it after it closes."
+      },
+      "crm": {
+        "eyebrow": "{businessName} · ClientDesk",
+        "why": "You receive this e-mail because you work in ClientDesk at {businessName}."
+      },
+      "crmMention": {
+        "subject": "{author} mentioned you in ClientDesk",
+        "preheader": "A new comment on {record}.",
+        "title": "{author} mentioned you",
+        "lead": "{author} mentioned you in a comment on {record}.",
+        "body": "Read the comment in ClientDesk, where you can also reply."
+      },
+      "crmReminder": {
+        "subject": "Reminder: {title}",
+        "preheader": "Due: {dueOn}.",
+        "title": "Reminder: {title}",
+        "lead": "You have an activity due on {dueOn}: “{title}”.",
+        "body": "Find it in ClientDesk, where you can tick it off or move it."
+      },
+      "crmAssigned": {
+        "subject": "You were assigned {record} in ClientDesk",
+        "preheader": "From {author}.",
+        "title": "You were assigned {record}",
+        "lead": "{author} assigned you {record} in ClientDesk.",
+        "body": "Find it in ClientDesk, in your list."
       }
     },
     "prefs": {
@@ -1242,7 +1267,8 @@
         "support": "Replies to support requests",
         "password": "Account password changed",
         "twoFactor": "Two-step sign-in",
-        "supportSession": "Ventora Systems team support session"
+        "supportSession": "Ventora Systems team support session",
+        "clientdesk": "ClientDesk: mentions, reminders and assignments"
       },
       "news": {
         "title": "News from Ventora Systems",
@@ -1390,6 +1416,30 @@
         "title": "{name} let you know about the {resource} limit",
         "body": "The business is close to the limit or has reached it. Nothing is lost; only you can buy extra packs.",
         "action": "See usage"
+      }
+    },
+    "crm": {
+      "mention": {
+        "title": "{author} mentioned you",
+        "body": "{author} mentioned you in a comment on {record}.",
+        "action": "View the comment"
+      },
+      "reminder": {
+        "title": "Reminder: {title}",
+        "body": "Due: {dueOn}.",
+        "action": "View the activity"
+      },
+      "assigned": {
+        "title": "You were assigned {record}",
+        "body": "{author} assigned you {record} in ClientDesk.",
+        "action": "Open"
+      },
+      "record": {
+        "contact": "a contact",
+        "company": "a company",
+        "lead": "a lead",
+        "deal": "a deal",
+        "activity": "an activity"
       }
     }
   },

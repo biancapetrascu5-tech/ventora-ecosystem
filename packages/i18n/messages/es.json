@@ -1214,6 +1214,31 @@
         "title": "Tu solicitud se cierra mañana",
         "lead": "El equipo de Ventora Systems respondió a «{subject}» ({ref}) y no hemos sabido nada de ti en 6 días.",
         "body": "Si el problema está resuelto, no tienes que hacer nada: la solicitud se cierra sola el {closesAt}. Si aún necesitas ayuda, respóndenos en Ventora Systems; también puedes reabrirla después de que se cierre."
+      },
+      "crm": {
+        "eyebrow": "{businessName} · ClientDesk",
+        "why": "Recibes este correo porque trabajas en ClientDesk en {businessName}."
+      },
+      "crmMention": {
+        "subject": "{author} te ha mencionado en ClientDesk",
+        "preheader": "Un comentario nuevo sobre {record}.",
+        "title": "{author} te ha mencionado",
+        "lead": "{author} te ha mencionado en un comentario sobre {record}.",
+        "body": "Lee el comentario en ClientDesk, donde también puedes responder."
+      },
+      "crmReminder": {
+        "subject": "Recordatorio: {title}",
+        "preheader": "Vence: {dueOn}.",
+        "title": "Recordatorio: {title}",
+        "lead": "Tienes una actividad que vence el {dueOn}: «{title}».",
+        "body": "La encuentras en ClientDesk, donde puedes marcarla o moverla."
+      },
+      "crmAssigned": {
+        "subject": "Se te ha asignado {record} en ClientDesk",
+        "preheader": "De {author}.",
+        "title": "Se te ha asignado {record}",
+        "lead": "{author} te ha asignado {record} en ClientDesk.",
+        "body": "Lo encuentras en ClientDesk, en tu lista."
       }
     },
     "prefs": {
@@ -1242,7 +1267,8 @@
         "support": "Respuestas a solicitudes de soporte",
         "password": "Contraseña de la cuenta cambiada",
         "twoFactor": "Inicio de sesión en dos pasos",
-        "supportSession": "Sesión de soporte del equipo de Ventora Systems"
+        "supportSession": "Sesión de soporte del equipo de Ventora Systems",
+        "clientdesk": "ClientDesk: menciones, recordatorios y asignaciones"
       },
       "news": {
         "title": "Novedades de Ventora Systems",
@@ -1390,6 +1416,30 @@
         "title": "{name} te avisa del límite de {resource}",
         "body": "El negocio está cerca del límite o lo ha alcanzado. No se pierde nada; solo tú puedes comprar paquetes extra.",
         "action": "Ver el uso"
+      }
+    },
+    "crm": {
+      "mention": {
+        "title": "{author} te ha mencionado",
+        "body": "{author} te ha mencionado en un comentario sobre {record}.",
+        "action": "Ver el comentario"
+      },
+      "reminder": {
+        "title": "Recordatorio: {title}",
+        "body": "Vence: {dueOn}.",
+        "action": "Ver la actividad"
+      },
+      "assigned": {
+        "title": "Se te ha asignado {record}",
+        "body": "{author} te ha asignado {record} en ClientDesk.",
+        "action": "Abrir"
+      },
+      "record": {
+        "contact": "un contacto",
+        "company": "una empresa",
+        "lead": "un lead",
+        "deal": "una oportunidad",
+        "activity": "una actividad"
       }
     }
   },

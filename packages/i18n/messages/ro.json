@@ -1214,6 +1214,31 @@
         "title": "Solicitarea ta se închide mâine",
         "lead": "Echipa Ventora Systems ți-a răspuns la „{subject}” ({ref}), iar de 6 zile nu am mai primit nimic de la tine.",
         "body": "Dacă problema s-a rezolvat, nu trebuie să faci nimic: solicitarea se închide singură pe {closesAt}. Dacă mai ai nevoie de ajutor, răspunde-ne în Ventora Systems; o poți redeschide și după ce se închide."
+      },
+      "crm": {
+        "eyebrow": "{businessName} · ClientDesk",
+        "why": "Primești acest e-mail pentru că lucrezi în ClientDesk la {businessName}."
+      },
+      "crmMention": {
+        "subject": "{author} te-a menționat în ClientDesk",
+        "preheader": "Un comentariu nou pe {record}.",
+        "title": "{author} te-a menționat",
+        "lead": "{author} te-a menționat într-un comentariu pe {record}.",
+        "body": "Comentariul îl citești în ClientDesk, unde îi poți și răspunde."
+      },
+      "crmReminder": {
+        "subject": "Reminder: {title}",
+        "preheader": "Termen: {dueOn}.",
+        "title": "Reminder: {title}",
+        "lead": "Ai o activitate cu termen pe {dueOn}: „{title}”.",
+        "body": "O găsești în ClientDesk, unde o poți bifa sau muta."
+      },
+      "crmAssigned": {
+        "subject": "Ți s-a atribuit {record} în ClientDesk",
+        "preheader": "De la {author}.",
+        "title": "Ți s-a atribuit {record}",
+        "lead": "{author} ți-a atribuit {record} în ClientDesk.",
+        "body": "Îl găsești în ClientDesk, în lista ta."
       }
     },
     "prefs": {
@@ -1242,7 +1267,8 @@
         "support": "Răspunsuri la solicitările de suport",
         "password": "Parola contului schimbată",
         "twoFactor": "Autentificarea în doi pași",
-        "supportSession": "Sesiunea de suport a echipei Ventora Systems"
+        "supportSession": "Sesiunea de suport a echipei Ventora Systems",
+        "clientdesk": "ClientDesk: mențiuni, remindere și atribuiri"
       },
       "news": {
         "title": "Noutăți de la Ventora Systems",
@@ -1390,6 +1416,30 @@
         "title": "{name} te anunță despre limita de {resource}",
         "body": "Afacerea se apropie de limită sau a atins-o. Nu se pierde nimic; pachetele în plus le poți cumpăra doar tu.",
         "action": "Vezi consumul"
+      }
+    },
+    "crm": {
+      "mention": {
+        "title": "{author} te-a menționat",
+        "body": "{author} te-a menționat într-un comentariu pe {record}.",
+        "action": "Vezi comentariul"
+      },
+      "reminder": {
+        "title": "Reminder: {title}",
+        "body": "Termen: {dueOn}.",
+        "action": "Vezi activitatea"
+      },
+      "assigned": {
+        "title": "Ți s-a atribuit {record}",
+        "body": "{author} ți-a atribuit {record} în ClientDesk.",
+        "action": "Deschide"
+      },
+      "record": {
+        "contact": "un contact",
+        "company": "o companie",
+        "lead": "un lead",
+        "deal": "un deal",
+        "activity": "o activitate"
       }
     }
   },

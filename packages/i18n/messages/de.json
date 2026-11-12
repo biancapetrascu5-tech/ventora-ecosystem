@@ -1214,6 +1214,31 @@
         "title": "Ihre Anfrage wird morgen geschlossen",
         "lead": "Das Ventora-Systems-Team hat auf „{subject}“ ({ref}) geantwortet, und wir haben seit 6 Tagen nichts mehr von Ihnen gehört.",
         "body": "Wenn das Problem gelöst ist, müssen Sie nichts tun: Die Anfrage wird am {closesAt} automatisch geschlossen. Wenn Sie noch Hilfe brauchen, antworten Sie uns in Ventora Systems; Sie können sie auch nach dem Schließen wieder eröffnen."
+      },
+      "crm": {
+        "eyebrow": "{businessName} · ClientDesk",
+        "why": "Du erhältst diese E-Mail, weil du bei {businessName} in ClientDesk arbeitest."
+      },
+      "crmMention": {
+        "subject": "{author} hat dich in ClientDesk erwähnt",
+        "preheader": "Ein neuer Kommentar zu {record}.",
+        "title": "{author} hat dich erwähnt",
+        "lead": "{author} hat dich in einem Kommentar zu {record} erwähnt.",
+        "body": "Lies den Kommentar in ClientDesk, wo du auch antworten kannst."
+      },
+      "crmReminder": {
+        "subject": "Erinnerung: {title}",
+        "preheader": "Fällig: {dueOn}.",
+        "title": "Erinnerung: {title}",
+        "lead": "Du hast eine Aktivität, die am {dueOn} fällig ist: „{title}“.",
+        "body": "Du findest sie in ClientDesk, wo du sie abhaken oder verschieben kannst."
+      },
+      "crmAssigned": {
+        "subject": "Dir wurde {record} in ClientDesk zugewiesen",
+        "preheader": "Von {author}.",
+        "title": "Dir wurde {record} zugewiesen",
+        "lead": "{author} hat dir {record} in ClientDesk zugewiesen.",
+        "body": "Du findest es in ClientDesk, in deiner Liste."
       }
     },
     "prefs": {
@@ -1242,7 +1267,8 @@
         "support": "Antworten auf Support-Anfragen",
         "password": "Kontopasswort geändert",
         "twoFactor": "Anmeldung in zwei Schritten",
-        "supportSession": "Support-Sitzung des Ventora-Systems-Teams"
+        "supportSession": "Support-Sitzung des Ventora-Systems-Teams",
+        "clientdesk": "ClientDesk: Erwähnungen, Erinnerungen und Zuweisungen"
       },
       "news": {
         "title": "Neues von Ventora Systems",
@@ -1390,6 +1416,30 @@
         "title": "{name} weist Sie auf das Limit für {resource} hin",
         "body": "Ihr Unternehmen ist nahe am Limit oder hat es erreicht. Es geht nichts verloren; Zusatzpakete können nur Sie kaufen.",
         "action": "Verbrauch ansehen"
+      }
+    },
+    "crm": {
+      "mention": {
+        "title": "{author} hat dich erwähnt",
+        "body": "{author} hat dich in einem Kommentar zu {record} erwähnt.",
+        "action": "Kommentar ansehen"
+      },
+      "reminder": {
+        "title": "Erinnerung: {title}",
+        "body": "Fällig: {dueOn}.",
+        "action": "Aktivität ansehen"
+      },
+      "assigned": {
+        "title": "Dir wurde {record} zugewiesen",
+        "body": "{author} hat dir {record} in ClientDesk zugewiesen.",
+        "action": "Öffnen"
+      },
+      "record": {
+        "contact": "ein Kontakt",
+        "company": "ein Unternehmen",
+        "lead": "ein Lead",
+        "deal": "ein Deal",
+        "activity": "eine Aktivität"
       }
     }
   },

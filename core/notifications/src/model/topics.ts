@@ -10,7 +10,16 @@ import type { NotificationCategory } from './catalog';
  *     and „Noutăți de la Ventora” (in-app switch; e-mail off until the person turns it on).
  */
 
-export const EMAIL_TOPICS = ['bookings', 'phone', 'billing', 'limits', 'leave', 'support'] as const;
+// C.9 (12.11.2026): `clientdesk`, the row „ClientDesk” (its screen row comes with its design)
+export const EMAIL_TOPICS = [
+  'bookings',
+  'phone',
+  'billing',
+  'limits',
+  'leave',
+  'support',
+  'clientdesk',
+] as const;
 export const SECURITY_TOPICS = ['password', 'twoFactor', 'supportSession'] as const;
 export const COMMERCIAL_TOPICS = ['recommendations', 'news'] as const;
 
