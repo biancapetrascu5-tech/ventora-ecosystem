@@ -5,3 +5,5 @@ ClientDesk — Pipeline: open opportunities by stage with each stage's value, th
 Shown at 1280 (desktop), 820 (tablet portrait) and 390 (phone), in light and dark, built only from the system's components.
 
 Stages are chosen by each business ("Editează etapele"), starting from a default set: Contact nou, Ofertă trimisă, Negociere, Câștigate, Pierdute.
+
+**S131 (CR-UI.5).** The full deals screen — the deal Drawer, won / lost with a reason, stuck deals, two pipelines — is ClientDeskDeals.

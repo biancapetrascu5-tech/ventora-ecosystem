@@ -1,0 +1,1016 @@
+<!-- @dsCard group="Ecrane ClientDesk" height=20574 width=2620 page -->
+<!doctype html>
+<html lang="ro">
+<head><meta charset="utf-8"><title>ClientDeskLeads — Ventora Systems</title>
+<style>
+html,body{min-height:100%}
+.d{display:flex;flex-direction:column;gap:var(--space-4);padding:var(--space-4);box-sizing:border-box}
+.d0{display:flex;flex-direction:column;gap:var(--space-4);min-width:0}
+.r{display:flex;flex-wrap:wrap;gap:var(--space-3);align-items:center}
+.l{color:var(--ink-muted);width:calc(var(--space-16) + var(--space-6));flex:none}
+.g2{display:grid;grid-template-columns:repeat(auto-fit,minmax(var(--search-width),1fr));gap:var(--space-4) var(--space-6);align-items:start}
+.frame{border:var(--border-width) solid var(--line);border-radius:var(--radius-md);background:var(--sheet);box-sizing:border-box}
+.phone{width:390px;height:600px;flex:none;border:var(--border-width) solid var(--line-strong);border-radius:var(--radius-xl);overflow:hidden;box-sizing:border-box}
+.tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(var(--app-tile-width),1fr));gap:var(--space-4)}
+.icons{display:grid;grid-template-columns:repeat(auto-fill,minmax(calc(var(--app-tile-width) - var(--space-12)),1fr));gap:var(--space-2)}
+.ic{display:flex;align-items:center;gap:var(--space-2);color:var(--ink);padding:var(--space-1);min-width:0}
+.ic .caption{color:var(--ink-muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:0}
+.panel{display:flex;flex-direction:column;gap:var(--space-3);padding:var(--space-6);background:var(--sheet);color:var(--ink)}
+.lab{color:var(--ink-muted);margin-top:var(--space-2)}
+.fam{display:grid;grid-template-columns:repeat(5,1fr);gap:var(--space-4) var(--space-2)}
+.famcell,.sz,.papp{display:flex;flex-direction:column;align-items:center;gap:var(--space-1);color:var(--ink-secondary)}
+.gcell{display:flex;flex-direction:column;align-items:center;gap:var(--space-2);color:var(--ink-secondary)}
+.gwrap{position:relative;width:240px;height:240px}
+.gover{position:absolute;inset:0}
+.gwrap--sm{width:64px;height:64px;display:inline-block}
+.gwrap--sm .key{stroke-width:.5}
+.gl{stroke:var(--attention);stroke-width:.06;opacity:.55}
+.gl--major{stroke-width:.12;opacity:.9}
+.key{fill:none;stroke:var(--done);stroke-width:.18}
+.key--plate{stroke:var(--attention);stroke-dasharray:.6 .4}
+.key--diag{stroke-dasharray:.5 .5}
+.rules{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--space-6);color:var(--ink)}
+.rules .body-small{color:var(--ink-muted);margin-top:var(--space-1)}
+.ctx{display:flex;flex-direction:column;background:var(--canvas);color:var(--ink);padding:var(--space-4);gap:var(--space-4)}
+.ctxrow{display:flex;gap:var(--space-4);align-items:flex-start}
+.launch{flex:1;min-width:0;background:var(--canvas);padding:var(--space-4) var(--space-6);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg)}
+.tiles3{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--space-3)}
+.spinebox{height:250px;display:flex;border:var(--border-width) solid var(--line);border-radius:var(--radius-lg);overflow:hidden;background:var(--canvas)}
+.phone2{width:300px;border:var(--border-width) solid var(--line-strong);border-radius:var(--radius-xl);background:var(--canvas);padding-bottom:var(--space-4)}
+.pgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--space-4) var(--space-1);padding:0 var(--space-3)}
+.browser{display:flex;gap:var(--space-1);background:var(--sunken);padding:var(--space-2) var(--space-2) 0;border-radius:var(--radius-md) var(--radius-md) 0 0;border:var(--border-width) solid var(--line)}
+.btab{display:inline-flex;align-items:center;gap:var(--space-2);padding:var(--space-2) var(--space-3);border-radius:var(--radius-sm) var(--radius-sm) 0 0;color:var(--ink-secondary);min-width:160px}
+.btab.on{background:var(--sheet);color:var(--ink)}
+.muted{color:var(--ink-muted)}.center{text-align:center}
+.scr{display:flex;flex-direction:column;gap:var(--space-3);padding:var(--space-6);background:var(--sheet);color:var(--ink)}
+.scr-row{display:flex;gap:var(--space-6);align-items:flex-start;margin-top:var(--space-3)}
+.scr-lab{color:var(--ink-muted);margin-bottom:var(--space-2)}
+.scr-d,.scr-t,.scr-m{position:relative;overflow:hidden;border:var(--border-width) solid var(--line-strong);background:var(--canvas);color:var(--ink);box-sizing:border-box}
+.scr-d{width:1280px;border-radius:var(--radius-lg)}
+.scr-m{width:390px;border-radius:var(--radius-xl)}
+.scr-t{width:820px;border-radius:var(--radius-xl)}
+.wrap.tablet .tiles4{grid-template-columns:repeat(3,1fr)}
+.wrap.tablet{padding:var(--space-6) var(--space-5)}
+.sup.tablet{grid-template-columns:1fr}
+.paymethod{display:flex;flex-direction:column;gap:var(--space-2);margin-top:var(--space-4);padding-top:var(--space-4);border-top:var(--border-width) solid var(--line);max-width:480px}
+.modal-demo{position:absolute;inset:0;background:var(--scrim);display:flex;align-items:center;justify-content:center;padding:var(--space-6);z-index:var(--z-overlay)}
+.modal-demo.mobile{align-items:flex-end;padding:0}
+.modal-demo .v-dialog{max-height:none}
+.dlggrid{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--space-6);align-items:start}
+.dlggrid .v-dialog{width:auto}
+.today{display:flex;flex-direction:column;gap:var(--space-6)}
+.today.mobile{gap:var(--space-4)}.today.mobile .greet{padding:0 var(--space-4)}
+.today-grid{display:grid;grid-template-columns:minmax(0,2fr) minmax(320px,1fr);gap:var(--space-6);align-items:start}
+.today.tablet .today-grid,.today.mobile .today-grid{grid-template-columns:1fr}
+.today.tablet .today-side,.today.mobile .today-side{order:-1}
+.today-main{display:flex;flex-direction:column;gap:var(--space-6);min-width:0}
+.today.mobile .sec,.today.mobile .sechead{padding:0 var(--space-4)}
+.today.mobile .sheetlike,.today.mobile .nowcard{border-radius:0;border-left:0;border-right:0}
+.nowcards{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:var(--space-3)}
+.nowcard{display:flex;flex-direction:column;gap:var(--space-3);padding:var(--space-4);background:var(--sheet);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg)}
+.sechead{display:flex;justify-content:space-between;align-items:center;gap:var(--space-3);margin-bottom:var(--space-3);flex-wrap:wrap}
+.sec .v-badge{vertical-align:middle;margin-left:var(--space-1)}
+.reslist{list-style:none;margin:0 0 var(--space-3);padding:0;display:flex;flex-direction:column}
+.reslist li{display:flex;flex-direction:column;gap:2px;padding:var(--space-3) 0;border-bottom:var(--border-width) solid var(--line)}
+.reslist li:last-child{border-bottom:0}
+.stth{background:var(--canvas);color:var(--ink);padding:var(--space-6);border-radius:var(--radius-lg)}
+.stgrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--space-5) var(--space-4);align-items:start}
+@media (max-width:1100px){.stgrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:640px){.stgrid{grid-template-columns:minmax(0,1fr)}.stgrid>.stc{grid-column:auto!important}}
+.stc{display:flex;flex-direction:column;gap:var(--space-2);min-width:0}
+.stc-box{background:var(--sheet);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg);padding:var(--space-4);min-width:0}
+.stc-box .v-dialog{width:100%;box-shadow:none}
+.stc-box .v-toast{width:100%;box-sizing:border-box}
+.slotcol{display:flex;flex-direction:column;gap:var(--space-3);padding:var(--space-4);background:var(--canvas);border-radius:var(--radius-lg);color:var(--ink)}
+.recogrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--space-5);align-items:start}
+.toastdemo{position:fixed;right:var(--space-6);bottom:var(--space-6);width:var(--panel-width);z-index:var(--z-toast)}
+.appdet{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:var(--space-6);align-items:start}
+.wrap.tablet .appdet,.wrap.mobile .appdet{grid-template-columns:1fr}
+.appdet-main,.appdet-side{display:flex;flex-direction:column;gap:var(--space-5);padding:var(--space-6)}
+.wrap.mobile .appdet-main,.wrap.mobile .appdet-side{padding:var(--space-4)}
+.appdet-side{gap:var(--space-3)}
+.appdet-why{padding:var(--space-4);background:var(--sunken);border-radius:var(--radius-md)}
+.appdet-why .body{margin-top:var(--space-1)}
+.appdet-list{list-style:none;margin:var(--space-2) 0 0;padding:0;display:flex;flex-direction:column;gap:var(--space-2)}
+.appdet-list li{display:flex;gap:var(--space-2);align-items:flex-start}
+.appdet-list svg{flex:none;margin-top:2px;color:var(--ink-muted)}
+.seclist{display:flex;flex-direction:column;background:var(--sheet);border-top:var(--border-width) solid var(--line);border-bottom:var(--border-width) solid var(--line)}
+.secitem{display:flex;align-items:center;gap:var(--space-3);min-height:var(--touch-target);padding:var(--space-3) var(--space-4);background:none;border:0;border-top:var(--border-width) solid var(--line);color:var(--ink);text-align:left;font:inherit;cursor:pointer}
+.secitem .biz-text{flex:1}
+.inv-email{display:flex;flex-direction:column;gap:2px}
+.daylinks .v-link{font-weight:500}
+.rows2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--space-2)}
+.wrap.tablet .rows2{grid-template-columns:1fr}
+.unsaved{position:absolute;left:0;right:0;bottom:0;display:flex;align-items:center;justify-content:space-between;gap:var(--space-3);padding:var(--space-3) var(--space-6);background:var(--raised);border-top:var(--border-width) solid var(--line-strong);box-shadow:var(--shadow-2);z-index:var(--z-sticky);flex-wrap:wrap}
+.scr-d .unsaved{left:var(--spine-width)}
+.scr-t .unsaved{left:var(--spine-width-collapsed)}
+.scr-m .unsaved{bottom:var(--bottomnav-height);padding:var(--space-3) var(--space-4)}
+.axb{display:flex;flex-direction:column;gap:var(--space-6);min-width:0}
+.axb.mobile{gap:var(--space-4)}
+.axsplit{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:var(--space-6);align-items:start}
+.axb.tablet .axsplit,.axb.mobile .axsplit{grid-template-columns:1fr}
+.axb.tablet .axside,.axb.mobile .axside{order:-1}
+.axstack{display:flex;flex-direction:column;gap:var(--space-6);min-width:0}
+.axstack .axside{order:-1}
+.axb .axside.axafter{order:0}
+.logosets{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(420px,100%),1fr));gap:var(--space-4)}
+.logoset{display:flex;flex-direction:column;gap:var(--space-4);padding:var(--space-6);min-width:0;background:var(--sheet);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg);color:var(--ink)}
+.favtab{display:inline-flex;align-items:center;gap:var(--space-2);padding:var(--space-2) var(--space-3);border-radius:var(--radius-sm) var(--radius-sm) 0 0;background:var(--canvas);color:var(--ink-secondary);border:var(--border-width) solid var(--line);border-bottom:0}
+.axb.mobile .axside.axafter{padding:0 var(--space-4)}
+.axb.mobile .sechead,.axb.mobile>div>h2.heading{padding:0 var(--space-4)}
+.axb.mobile .fxplans{padding:0 var(--space-4)}
+.axb.mobile>.v-notice{margin:0 var(--space-4)}
+.axside{display:flex;flex-direction:column;gap:var(--space-3);min-width:0}
+.axside .v-badge{vertical-align:middle;margin-left:var(--space-1)}
+.axb.mobile .axside .heading{padding:0}
+.axcharts{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:var(--space-4)}
+.axb.mobile .axcharts{grid-template-columns:1fr}
+.axb.mobile .v-stats{grid-template-columns:1fr 1fr}
+.stockcell{display:grid;grid-template-columns:auto;gap:2px;min-width:120px}
+.stockbar{position:relative;display:block;height:4px;border-radius:var(--radius-full);background:var(--selected);max-width:140px}
+.stockbar>span{position:absolute;left:0;top:0;bottom:0;border-radius:inherit;background:var(--ink-secondary)}
+.stockbar.is-attention>span{background:var(--attention-mark)}
+.stockbar.is-danger>span{background:var(--danger)}
+.stockbar>i{position:absolute;top:-3px;bottom:-3px;width:2px;margin-left:-1px;background:var(--ink-muted);border-radius:1px}
+.glo{background:var(--sheet);color:var(--ink);gap:var(--space-6);padding:var(--space-6)}
+.glo-lead{max-width:760px;margin-top:var(--space-2)}
+.glo-rules{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:var(--space-4) var(--space-6)}
+.glo-rules .body-small{margin-top:var(--space-1)}
+.glo-sec{display:flex;flex-direction:column;gap:var(--space-2)}
+.glo-t{width:100%;border-collapse:collapse;table-layout:fixed}
+.glo-t th{text-align:left;color:var(--ink-muted);padding:var(--space-2) var(--space-3);border-bottom:var(--border-width) solid var(--line-strong)}
+.glo-t th:last-child{width:30%}
+.glo-t td{padding:var(--space-2) var(--space-3);border-bottom:var(--border-width) solid var(--line);vertical-align:top;overflow-wrap:anywhere}
+.glo-dec{display:inline-flex;align-items:center;gap:var(--space-1);margin-left:var(--space-2);padding:0 var(--space-2);border-radius:var(--radius-full);background:var(--attention-soft);color:var(--attention-ink);white-space:nowrap}
+.calbar{display:flex;justify-content:space-between;align-items:center;gap:var(--space-3);flex-wrap:wrap;margin-bottom:var(--space-3)}
+.calbar-date{margin-left:var(--space-2);white-space:nowrap}
+.calwrap.mobile{padding:0 var(--space-4)}
+.staffpick{margin-bottom:var(--space-3);max-width:var(--search-width)}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:var(--space-2) var(--space-4);margin:0}
+.kv dt{color:var(--ink-muted);padding-top:var(--space-0-5)}.kv dd{margin:0;color:var(--ink)}
+.hist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:var(--space-2);color:var(--ink-secondary)}
+.hist .muted{margin-right:var(--space-2)}
+.newgrid{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:var(--space-6);align-items:start}
+.newgrid.tablet,.newgrid.mobile{grid-template-columns:1fr}
+.newgrid.mobile{padding-bottom:var(--space-16)}
+.sumcard{position:sticky;top:0;display:flex;flex-direction:column;gap:var(--space-3);padding:var(--space-5);background:var(--sheet);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg)}
+.newgrid.mobile .sumcard{border-radius:0;border-left:0;border-right:0}
+.sumtotal{display:flex;justify-content:space-between;align-items:baseline;padding-top:var(--space-3);border-top:var(--border-width) solid var(--line)}
+.stickybar{position:absolute;left:0;right:0;bottom:var(--bottomnav-height);display:flex;gap:var(--space-2);justify-content:flex-end;padding:var(--space-3) var(--space-4);background:var(--sheet);border-top:var(--border-width) solid var(--line);z-index:var(--z-sticky)}
+.stickybar .v-btn--primary{flex:1}
+.hours{display:flex;flex-direction:column}
+.hrow{display:flex;align-items:center;justify-content:space-between;gap:var(--space-4);padding:var(--space-2) 0;border-bottom:var(--border-width) solid var(--line);min-height:var(--touch-target);flex-wrap:wrap}
+.hrow .v-toggle{min-width:160px}
+.hrange{display:inline-flex;align-items:center;gap:var(--space-2)}
+.hrange .v-datepicker{width:120px}
+.auth{min-height:100%;display:flex;flex-direction:column;background:var(--canvas);color:var(--ink)}
+.auth-top{display:flex;justify-content:space-between;align-items:center;padding:var(--space-4) var(--space-6)}
+.auth.mobile .auth-top{padding:var(--space-3) var(--space-4)}
+.auth-main{flex:1;display:flex;align-items:flex-start;justify-content:center;padding:var(--space-12) var(--space-4)}
+.auth.mobile .auth-main{padding:var(--space-2) 0 0;align-items:stretch}
+.auth-card{width:400px;background:var(--sheet);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg);padding:var(--space-10);display:flex;flex-direction:column;gap:var(--space-4);box-sizing:border-box}
+.auth-card.wide{width:480px}
+.auth.mobile .auth-card{width:100%;border-radius:0;border-left:0;border-right:0;border-bottom:0;padding:var(--space-6) var(--space-4)}
+.auth-head{display:flex;flex-direction:column;gap:var(--space-1);margin-bottom:var(--space-2)}
+.auth-note{display:flex;gap:var(--space-2);padding-top:var(--space-4);border-top:var(--border-width) solid var(--line);color:var(--ink-muted)}
+.auth-note .v-icon{margin-top:var(--space-0-5)}
+.auth-foot{padding:var(--space-4) var(--space-6);color:var(--ink-muted);text-align:center}
+.auth.mobile .auth-foot{display:none}
+.inv-head{display:flex;gap:var(--space-3);align-items:center}
+.inv-mark{width:var(--space-12);height:var(--space-12);border-radius:var(--radius-md);background:var(--neutral-soft);display:inline-flex;align-items:center;justify-content:center;font-weight:700;color:var(--ink);flex:none;box-shadow:inset 0 0 0 var(--border-width) var(--line-strong)}
+.inv-mark.sm{width:var(--space-10);height:var(--space-10)}
+.inv-role{display:flex;flex-direction:column;gap:var(--space-2);padding:var(--space-3) var(--space-4);background:var(--sunken);border-radius:var(--radius-sm)}
+.inv-app{display:inline-flex;gap:var(--space-1);align-items:center;color:var(--ink-secondary);margin-right:var(--space-2)}
+.reqs{list-style:none;margin:calc(var(--space-2) * -1) 0 0;padding:0;display:flex;flex-direction:column;gap:var(--space-1)}
+.req{display:flex;gap:var(--space-2);align-items:center;color:var(--ink-muted)}.req.ok{color:var(--done-ink)}
+.choose{width:560px;display:flex;flex-direction:column;gap:var(--space-4)}
+.auth.mobile .choose{width:auto;padding:var(--space-4)}
+.biz-list{display:flex;flex-direction:column;background:var(--sheet);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg);overflow:hidden}
+.biz{appearance:none;display:flex;align-items:center;gap:var(--space-3);padding:var(--space-4);border:0;border-bottom:var(--border-width) solid var(--line);background:transparent;color:var(--ink);text-align:start;font-family:inherit;cursor:pointer;min-height:var(--touch-target)}
+.biz:last-child{border-bottom:0}.biz:hover{background:var(--state-hover)}
+.biz-text{flex:1;min-width:0;display:flex;flex-direction:column;gap:var(--space-0-5);align-items:flex-start}
+.frame-rel{position:relative;height:100%}
+.wrap{max-width:1120px;width:100%;margin:0 auto;padding:var(--space-6) var(--space-6) var(--space-10);display:flex;flex-direction:column;gap:var(--space-8);box-sizing:border-box}
+.wrap.mobile{padding:var(--space-4);gap:var(--space-6)}
+.greet{display:flex;flex-direction:column;gap:var(--space-2)}
+.sec{margin-bottom:var(--space-3)}
+.tiles4{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--space-4)}
+.mgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--space-3) var(--space-1)}
+.rows{display:flex;flex-direction:column;background:var(--sheet);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg);overflow:hidden}
+.sheetlike{background:var(--sheet);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg)}
+.g2f{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(260px,100%),1fr));gap:var(--space-4) var(--space-6)}
+.nrow{display:grid;grid-template-columns:1fr repeat(3,var(--control-lg));align-items:center;padding:var(--space-2) 0;border-bottom:var(--border-width) solid var(--line);gap:var(--space-4)}
+.nrow>span:not(:first-child){display:flex;justify-content:center;text-align:center}
+.nhead{color:var(--ink-muted)}
+.secrow{display:flex;align-items:center;justify-content:space-between;gap:var(--space-4);padding:var(--space-3) 0;border-bottom:var(--border-width) solid var(--line);flex-wrap:wrap}
+.appsrow{display:inline-flex;gap:var(--space-1);align-items:center;flex-wrap:wrap}
+.mx-row{display:grid;grid-template-columns:minmax(320px,1.8fr) repeat(4,1fr);align-items:center;padding:var(--space-3) var(--space-6);border-bottom:var(--border-width) solid var(--line);gap:var(--space-2)}
+.mx-head{background:var(--sunken);color:var(--ink-secondary);border-radius:var(--radius-lg) var(--radius-lg) 0 0}
+.mx-c{display:flex;flex-direction:column;align-items:center;text-align:center}
+.mx-app{display:flex;align-items:center;gap:var(--space-3);flex-wrap:wrap}
+.mx-foot{padding:var(--space-4) var(--space-6)}
+.mrow{display:flex;align-items:center;gap:var(--space-3);padding:var(--space-3) var(--space-4);border-bottom:var(--border-width) solid var(--line);color:var(--ink-secondary)}.mrow:last-child{border-bottom:0}
+.plan{display:flex;justify-content:space-between;align-items:center;gap:var(--space-4);flex-wrap:wrap}
+.numeric-inline{font-weight:600;color:var(--ink)}
+.usage-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:var(--space-6)}
+.sup{display:grid;grid-template-columns:1.5fr 1fr;gap:var(--space-6);align-items:start}
+.lframes{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--space-4)}
+.lframe{position:relative;height:220px;border:var(--border-width) solid var(--line-strong);border-radius:var(--radius-lg);overflow:hidden;background:var(--canvas)}
+.lframe-tiles{display:flex;gap:var(--space-3);padding:var(--space-4)}
+.lstage{position:relative;height:240px;border:var(--border-width) solid var(--line-strong);border-radius:var(--radius-lg);overflow:hidden;background:var(--canvas);padding:var(--space-4)}
+.lstage-grid{display:grid;grid-template-columns:repeat(6,96px);gap:var(--space-2)}
+.fxcard{display:flex;flex-direction:column;gap:var(--space-2);padding:var(--space-5)}
+.fxapps{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:var(--space-3) var(--space-4)}
+.fxmail{display:flex;flex-direction:column;gap:var(--space-3);padding:var(--space-5);border:var(--border-width) solid var(--line);border-radius:var(--radius-md);background:var(--canvas);color:var(--ink)}
+.fxmail-btn{align-self:flex-start;padding:var(--space-2) var(--space-4);border-radius:var(--radius-md);background:var(--primary);color:var(--on-primary);font-weight:600}
+.fxplans{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:var(--space-4)}
+.fxplan{display:flex;flex-direction:column;gap:var(--space-3);padding:var(--space-5)}
+.fxlim{margin:0;padding-left:var(--space-5);color:var(--ink-secondary);display:flex;flex-direction:column;gap:var(--space-1)}
+.fxver{width:100%;border-collapse:collapse}
+.fxver th{text-align:left;color:var(--ink-muted);font-weight:500;padding:var(--space-1) 0;border-bottom:var(--border-width) solid var(--line)}
+.fxver td{padding:var(--space-2) 0;border-bottom:var(--border-width) solid var(--line);color:var(--ink)}
+.fxver td .v-pill{margin-left:var(--space-2);vertical-align:middle}
+.fxlimits{display:flex;flex-direction:column}
+.fxlimits-row{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(60px,.6fr) minmax(120px,1fr);gap:var(--space-3);align-items:center;padding:var(--space-2) 0;border-bottom:var(--border-width) solid var(--line);color:var(--ink)}
+.fxlimits-row .v-icon{color:var(--done-ink,var(--ink-secondary));flex:none}
+.fxlimits-head{padding-top:0}
+.fxlink{color:var(--ink);text-decoration:underline;text-underline-offset:2px;font-weight:600;display:inline-flex;align-items:center;min-height:24px;min-width:24px}
+@media (pointer:coarse),(max-width:767px){.fxlink{min-height:44px;min-width:44px}}
+.fxlim-new{display:flex;align-items:center;gap:var(--space-2);min-width:0}
+.fxlim-new .v-control{flex:1 1 80px;min-width:0}
+.fxdelta{display:inline-flex;align-items:center;gap:var(--space-1);color:var(--done-ink);flex:none}
+.fxdelta--down{color:var(--attention-ink)}
+.fxplan .v-btn{align-self:flex-start}
+.fxcost{margin-top:var(--space-4);display:flex;flex-direction:column;gap:var(--space-1);padding:var(--space-4);border-radius:var(--radius-md);background:var(--sunken);color:var(--ink)}
+.fxlangs{display:flex;flex-direction:column}
+.fxlang{display:grid;grid-template-columns:32px minmax(0,1fr) auto auto;gap:var(--space-3);align-items:center;padding:var(--space-2) 0;border-bottom:var(--border-width) solid var(--line);color:var(--ink)}
+.fxlang-text{color:var(--ink-secondary);overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.fxframe{display:flex;flex-direction:column;gap:var(--space-2);padding:var(--space-3);border:var(--border-width) solid var(--line);border-radius:var(--radius-md);background:var(--canvas);color:var(--ink)}
+.fxframe .caption{color:var(--ink-muted)}
+@container (max-width:420px){.fxlang{grid-template-columns:32px minmax(0,1fr) auto}.fxlang .v-iconbtn{display:none}}
+.ss-overlay{position:absolute;inset:0;background:var(--scrim);display:flex;align-items:center;justify-content:center;padding:var(--space-6);z-index:var(--z-overlay)}
+.ss-toast{position:absolute;right:var(--space-6);bottom:var(--space-6);width:var(--panel-width);z-index:var(--z-toast)}
+.ss-toast.m{left:var(--space-4);right:var(--space-4);bottom:calc(var(--space-16) + var(--space-4));width:auto}
+.st-frame{position:relative;height:100%}
+.st-body{padding:0 var(--space-6) var(--space-6)}
+.st-body.m{padding:0 0 var(--space-6)}
+.st-grid{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:var(--space-6);align-items:start}
+.st-grid.m{grid-template-columns:1fr;gap:var(--space-4)}
+.st-thread{display:flex;flex-direction:column;gap:var(--space-3)}
+.st-msg{border:var(--border-width) solid var(--line);border-radius:var(--radius-lg);background:var(--sheet);padding:var(--space-4);display:flex;flex-direction:column;gap:var(--space-2)}
+.st-msg.team{background:var(--raised)}
+.st-msg.m{border-radius:0;border-left:0;border-right:0}
+.st-head{display:flex;align-items:center;gap:var(--space-2);flex-wrap:wrap}
+.st-head .st-time{margin-left:auto;color:var(--ink-muted)}
+.st-msg p{margin:0}
+.st-files{display:flex;flex-wrap:wrap;gap:var(--space-2);margin-top:var(--space-1)}
+.st-file{display:inline-flex;align-items:center;gap:var(--space-2);padding:var(--space-1) var(--space-1) var(--space-1) var(--space-3);border:var(--border-width) solid var(--line);border-radius:var(--radius-md);background:var(--sheet)}
+.st-compose{display:flex;flex-direction:column;gap:var(--space-4)}
+.st-hist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:var(--space-3)}
+.st-hist li{display:flex;gap:var(--space-2);align-items:flex-start}
+.st-hist .v-icon{flex:none;margin-top:2px;color:var(--ink-muted)}
+.st-hist p{margin:0}
+.st-note{display:flex;gap:var(--space-2);align-items:flex-start;color:var(--ink-secondary)}
+.st-note p{margin:0}
+/* SMS · Setări */
+.sms-sec{color:var(--ink-secondary);margin:0}
+.sms-np{display:flex;flex-wrap:wrap;align-items:center;gap:var(--space-2) var(--space-3);margin-top:var(--space-3)}
+.sms-np .body-small{flex:1 1 280px}
+.sms-phone{display:flex;gap:var(--space-3);align-items:flex-start;padding-bottom:var(--space-4);border-bottom:var(--border-width) solid var(--line);margin-bottom:var(--space-4)}
+.sms-phone__ic{display:inline-flex;align-items:center;justify-content:center;flex:none;width:var(--control-lg);height:var(--control-lg);border-radius:var(--radius-md);background:var(--neutral-soft);color:var(--ink-secondary)}
+.sms-phone__text{display:flex;flex-direction:column;gap:var(--space-1);min-width:0;flex:1}
+.sms-phone__text p{margin:0}
+.sms-phone__name{display:flex;align-items:center;gap:var(--space-1)}
+.sms-meta{display:flex;flex-wrap:wrap;gap:var(--space-1) var(--space-4);color:var(--ink-secondary)}
+.sms-meta>span{display:inline-flex;align-items:center;gap:var(--space-1)}
+.sms-stats{margin:var(--space-4) 0;grid-template-columns:repeat(4,minmax(0,1fr))}
+.sms-cap p{margin:0}
+.sms-cap{display:flex;flex-direction:column;gap:var(--space-1)}
+.sms-actions{display:flex;flex-wrap:wrap;gap:var(--space-2);margin-top:var(--space-4)}
+.sms-actions.is-col{flex-direction:column}
+.sms-pad{padding:0 var(--space-6) var(--space-6)}
+.v-sheet-section + .sms-pad,.sms-pad{margin-top:var(--space-2)}
+.v-notice{margin-bottom:var(--space-2)}
+.sms-states{display:flex;flex-direction:column;gap:var(--space-4);padding:var(--space-6);background:var(--canvas);color:var(--ink)}
+.sms-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--space-6);align-items:start}
+.sms-grid.mobile{grid-template-columns:repeat(4,390px)}
+.sms-box{display:flex;flex-direction:column;gap:var(--space-2);min-width:0}
+.sms-boxlab{margin:0;color:var(--ink-muted)}
+.sms-boxbody{border:var(--border-width) solid var(--line-strong);border-radius:var(--radius-lg);overflow:hidden;background:var(--canvas)}
+.sms-boxbody > .v-dialog{margin:var(--space-6) auto}
+.sms-langs{display:flex;flex-direction:column;gap:var(--space-4);padding:var(--space-6);background:var(--canvas);color:var(--ink)}
+.sms-langrow{display:flex;gap:var(--space-6);align-items:flex-start}
+.sms-lang{display:flex;flex-direction:column;gap:var(--space-2)}
+.sms-langframe{border:var(--border-width) solid var(--line-strong);border-radius:var(--radius-lg);overflow:hidden;background:var(--canvas)}
+.sms-langframe.t{width:820px}.sms-langframe.m{width:390px}
+.sms-stats.is-mob{grid-template-columns:1fr 1fr}
+.sms-reco{display:flex;flex-wrap:wrap;align-items:center;gap:var(--space-2) var(--space-3);margin-top:var(--space-3)}
+.sms-check{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:var(--space-3)}
+.sms-check li{display:flex;gap:var(--space-3);align-items:flex-start;color:var(--ink-secondary)}
+.sms-check li>svg,.sms-check li>.v-icon{flex:none;color:var(--ink);margin-top:2px}
+.sms-check .body-strong{color:var(--ink)}
+/* SMS · notificări și e-mail */
+.n-blank{min-height:200px}
+.n-grid{display:grid;grid-template-columns:repeat(4,420px);gap:var(--space-6);align-items:start}
+.n-pane{padding:var(--space-4);background:var(--canvas)}
+.n-pane .v-notifs--inline{width:100%}
+.n-pane.m{width:390px;box-sizing:border-box;padding:var(--space-2)}
+.em-grid{display:grid;grid-template-columns:repeat(3,640px) 430px;gap:var(--space-6);align-items:start}
+.em{background:var(--canvas);color:var(--ink);font-family:var(--font-sans)}
+.em p{margin:0}
+.em-inbox{padding:var(--space-3) var(--space-4);background:var(--raised);border-bottom:var(--border-width) solid var(--line);display:flex;flex-direction:column;gap:2px}
+.em-mute{color:var(--ink-secondary)}
+.em-canvas{padding:var(--space-6) var(--space-4)}
+.em-card{background:var(--raised);border-radius:var(--radius-lg);border:var(--border-width) solid var(--line);overflow:hidden}
+.em-head{padding:var(--space-5) var(--space-6);border-bottom:var(--border-width) solid var(--line)}
+.em-body{padding:var(--space-6);display:flex;flex-direction:column;gap:var(--space-3)}
+.em-eyebrow{text-transform:uppercase;letter-spacing:.06em}
+.em-title{margin:0;font-size:22px;line-height:28px}
+.em-list{margin:0;padding-left:var(--space-5);display:flex;flex-direction:column;gap:var(--space-1)}
+.em-btn{align-self:flex-start;display:inline-block;padding:var(--space-3) var(--space-5);border-radius:var(--radius-md);background:var(--primary);color:var(--on-primary,#fff);text-decoration:none;margin:var(--space-2) 0}
+.em-code{font-size:32px;line-height:40px;font-weight:600;letter-spacing:.12em}
+.em-foot{padding:var(--space-4) var(--space-6) 0;display:flex;flex-direction:column;gap:var(--space-1)}
+.em[style*="390"] .em-canvas{padding:var(--space-4) var(--space-2)}
+.em[style*="390"] .em-body,.em[style*="390"] .em-head{padding-left:var(--space-4);padding-right:var(--space-4)}
+.em[style*="390"] .em-btn{align-self:stretch;text-align:center}
+.n-pop{position:absolute;top:56px;right:16px;width:400px;z-index:20;box-shadow:var(--shadow-3);border-radius:var(--radius-lg);overflow:hidden;background:var(--raised);max-height:calc(100% - 72px);overflow-y:auto}
+.n-pop.mobile{left:0;right:0;top:56px;width:auto;border-radius:0;max-height:calc(100% - 56px)}
+.n-pop{width:auto}
+.n-pop.mobile .v-notifs,.n-pane.m .v-notifs{width:100%;max-width:100%;box-sizing:border-box}
+.em-grid{grid-template-columns:repeat(2,640px) repeat(2,640px)}
+.n-prefs{display:flex;flex-direction:column;gap:var(--space-4)}
+.n-lock{display:flex;gap:var(--space-1);align-items:flex-start;margin:calc(var(--space-2) * -1) 0 0 52px}
+.n-lock>svg{flex:none;margin-top:3px}
+.em-grid{grid-template-columns:repeat(3,640px)}
+.req{display:flex;gap:var(--space-2);align-items:center;color:var(--ink-muted)}
+.req.ok{color:var(--done-ink)}
+.sms-langframe.t{width:820px}
+.sms-langframe.m{width:390px}
+.tfa-code input{letter-spacing:.12em}
+.tfa-done{display:flex;align-items:center;gap:var(--space-2);color:var(--ink-secondary)}
+.tfa-done .v-icon{flex:none;color:var(--ink)}
+.tfa-once{font-weight:600;color:var(--ink)}
+.tfa-codes{list-style:none;margin:0;padding:var(--space-4);display:grid;grid-template-columns:1fr 1fr;gap:var(--space-2) var(--space-6);background:var(--raised);border:var(--border-width) solid var(--line);border-radius:var(--radius-md);font-size:var(--text-body-size,15px);letter-spacing:.06em;color:var(--ink)}
+.tfa-row{display:flex;flex-wrap:wrap;gap:var(--space-2)}
+.tfa-row>*{flex:1 1 0}
+.tfa-scrgroup{display:flex;flex-direction:column}
+.tfa-grouplab{margin:var(--space-6) 0 0}
+.sms-langframe.tfa-d{width:1280px}
+.sms-langframe>.v-auth{flex:1}
+.sms-langframe{display:flex;flex-direction:column}
+.ss-frame{display:flex;flex-direction:column;height:100%;position:relative}
+.ss-frame>.ss-body{flex:1;min-height:0;position:relative;display:flex;flex-direction:column}
+.ss-frame>.ss-body>*{flex:1;min-height:0}
+.ss-bar{display:flex;gap:var(--space-3);align-items:center;padding:var(--space-2) var(--space-4);background:var(--sunken);border-bottom:var(--border-width) solid var(--line-strong);color:var(--ink);flex:none}
+.ss-bar.attention{background:var(--attention-soft)}
+.ss-bar.attention>.v-icon{color:var(--attention-ink)}
+.ss-bar>.v-icon{flex:none;color:var(--ink-secondary)}
+.ss-txt{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.ss-txt p{margin:0}
+.ss-line{display:flex;flex-wrap:wrap;gap:0 var(--space-3)}
+.ss-meta{color:var(--ink-secondary)}
+.ss-bar.m{align-items:flex-start;padding:var(--space-3) var(--space-4)}
+.ss-bar.m .ss-act{margin-top:var(--space-2)}
+.ss-overlay.m{align-items:flex-end;padding:0}
+.ss-overlay .v-dialog{max-height:none}
+.ss-toast.m{left:var(--space-4);right:var(--space-4);bottom:var(--space-4);width:auto}
+.ss-states{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--space-6);align-items:start}
+.ss-pad{padding:var(--space-6);display:flex;flex-direction:column;gap:var(--space-4);background:var(--canvas)}
+.ss-form{display:flex;flex-direction:column;gap:var(--space-4)}
+.ss-form p{margin:0}
+.ss-rule{display:flex;gap:var(--space-2);align-items:flex-start;margin:0;color:var(--ink-secondary)}
+.ss-rule.ok{color:var(--done-ink)}
+.ss-rule .v-icon{flex:none;margin-top:2px}
+.ss-list{margin:0;padding-left:var(--space-5);display:flex;flex-direction:column;gap:var(--space-1)}
+.sms-langframe{border:var(--border-width) solid var(--line-strong);border-radius:var(--radius-lg);overflow:hidden;background:var(--canvas);color:var(--ink);display:flex;flex-direction:column}
+.sms-langframe>*{flex:1;min-height:0}
+.x-frame{position:relative;height:100%;display:flex;flex-direction:column}
+.x-frame>*{flex:1;min-height:0}
+.x-overlay{position:absolute;inset:0;background:var(--scrim);display:flex;align-items:center;justify-content:center;padding:var(--space-6);z-index:var(--z-overlay)}
+.x-overlay.m{align-items:flex-end;padding:0}
+.x-overlay .v-dialog{max-height:none}
+.x-toast{position:absolute;right:var(--space-6);bottom:var(--space-6);width:var(--panel-width);z-index:var(--z-toast)}
+.x-toast.m{left:var(--space-4);right:var(--space-4);bottom:var(--space-4);width:auto}
+.x-link{color:var(--ink);text-decoration:underline;text-underline-offset:2px}
+.fp-cell{display:flex;flex-direction:column;gap:var(--space-0-5)}
+.fp-save{color:var(--ink-muted)}
+.fp-ver td{vertical-align:top}
+.fp-prices{display:grid;grid-template-columns:1fr 1fr;gap:var(--space-4)}
+.fp-prices.m{grid-template-columns:1fr}
+.fp-sub{margin:0 0 var(--space-2)}
+.fp-list.fxplans{grid-template-columns:1fr}
+.fp-cell>span{white-space:nowrap}
+.fp-ver{width:100%}
+.fa-act{display:flex;flex-direction:column;align-items:flex-end;gap:var(--space-1);text-align:end;max-width:280px}
+/*S117css*/
+.fb-apps{display:flex;flex-wrap:wrap;gap:var(--space-2) var(--space-4)}
+.fb-app{display:inline-flex;align-items:center;gap:var(--space-2);white-space:nowrap}
+.fb-inc{margin:0;padding-inline-start:var(--space-5);display:flex;flex-direction:column;gap:var(--space-0-5)}
+.fb-cell{display:flex;flex-direction:column;gap:var(--space-0-5)}
+.fb-cell>span{white-space:nowrap}
+.fb-card{display:flex;flex-direction:column;gap:var(--space-4)}
+.fb-head{display:flex;align-items:flex-start;justify-content:space-between;gap:var(--space-3);flex-wrap:wrap}
+.fb-title{display:flex;align-items:center;gap:var(--space-2);flex-wrap:wrap}
+.fb-acts{display:flex;gap:var(--space-2);flex-wrap:wrap}
+.fb-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--space-4)}
+.fb-grid.m{grid-template-columns:1fr}
+.fb-k{color:var(--ink-muted);margin:0 0 var(--space-1)}
+.fb-strike{text-decoration:line-through;color:var(--ink-muted)}
+.fb-ver{width:100%;border-collapse:collapse}
+.fb-ver th{text-align:start;color:var(--ink-muted);font-weight:inherit;padding:var(--space-2) var(--space-3) var(--space-2) 0;border-bottom:var(--border-width) solid var(--line)}
+.fb-ver td{padding:var(--space-2) var(--space-3) var(--space-2) 0;border-bottom:var(--border-width) solid var(--line);vertical-align:top}
+.fb-ver tr:last-child td{border-bottom:0}
+.fb-tw{overflow-x:auto}
+.fb-sum{display:flex;flex-direction:column;gap:var(--space-2);padding:var(--space-3);border-radius:var(--radius-sm);background:var(--sunken)}
+.fb-line{display:flex;justify-content:space-between;gap:var(--space-4)}
+.fb-line>span:last-child{white-space:nowrap}
+.fb-line.tot{padding-top:var(--space-2);border-top:var(--border-width) solid var(--line)}
+.fb-period{display:grid;grid-template-columns:1fr 1fr;gap:var(--space-4)}
+.fb-period.m{grid-template-columns:1fr}
+.fb-applist{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--space-2) var(--space-6)}
+.fb-applist.m{grid-template-columns:1fr}
+.fb-applab{display:inline-flex;align-items:center;gap:var(--space-2)}
+.muted{color:var(--ink-muted)}
+.x-dd{display:inline-flex;align-items:center;gap:var(--space-1);padding:var(--space-0-5) var(--space-2);border-radius:var(--radius-sm);background:var(--attention-soft);color:var(--attention-ink);font-weight:600;flex-wrap:wrap}
+.x-dd-t{font-weight:400;color:var(--ink)}
+.x-ddnote{display:flex;flex-direction:column;gap:var(--space-2);padding:var(--space-3) var(--space-4);border:var(--border-width) dashed var(--line-strong);border-radius:var(--radius-md);background:var(--sheet);color:var(--ink)}
+.x-ddnote p{margin:0}
+.pb{min-height:100%;background:var(--canvas);color:var(--ink);display:flex;flex-direction:column}
+.pb-head{display:flex;align-items:center;justify-content:space-between;gap:var(--space-4);padding:var(--space-4) var(--space-8);border-bottom:var(--border-width) solid var(--line);background:var(--sheet)}
+.pb.m .pb-head{padding:var(--space-3) var(--space-4)}
+.pb-brand{display:flex;align-items:center;gap:var(--space-3);min-width:0}
+.pb-brand p{margin:0}
+.pb-main{display:flex;justify-content:center;gap:var(--space-8);padding:var(--space-8) var(--space-8) var(--space-6);align-items:flex-start}
+.pb.m .pb-main{padding:var(--space-4) 0}
+.pb-card{width:100%;max-width:560px;display:flex;flex-direction:column;gap:var(--space-4);background:var(--sheet);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg);padding:var(--space-6);box-sizing:border-box}
+.pb.m .pb-card{max-width:none;border-radius:0;border-left:0;border-right:0;padding:var(--space-4)}
+.pb-aside{width:320px;flex:none;position:sticky;top:var(--space-6)}
+.pb-title{margin:0}
+.pb-step{display:flex;flex-direction:column;gap:var(--space-1)}
+.pb-step p{margin:0}
+.pb-list{display:flex;flex-direction:column;gap:var(--space-2)}
+.pb-opt{display:flex;align-items:center;gap:var(--space-3);padding:var(--space-3) var(--space-4);border:var(--border-width) solid var(--line);border-radius:var(--radius-md);background:var(--canvas)}
+.pb-opt>.v-radio,.pb-opt>label{flex:1;min-width:0}
+.pb-opt.on{border-color:var(--primary);background:var(--selected)}
+.pb-acts{display:flex;justify-content:space-between;gap:var(--space-3);align-items:center;margin-top:var(--space-2)}
+.pb-acts.m{flex-direction:column-reverse;align-items:stretch}
+.pb-acts>:only-child{margin-left:auto}
+.pb-acts.m>:only-child{margin-left:0}
+.pb-sum{display:flex;flex-direction:column;gap:var(--space-3);padding:var(--space-5);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg);background:var(--sheet)}
+.pb-sum p{margin:0}
+.pb-sum.c{padding:var(--space-3) var(--space-4);background:var(--raised);border-radius:var(--radius-md)}
+.pb-days{display:flex;gap:var(--space-2);overflow:hidden}
+.pb-cal{align-self:flex-start}
+.pb-form{display:flex;flex-direction:column;gap:var(--space-4)}
+.pb-form p{margin:0}
+.pb-captcha{display:flex;align-items:center;gap:var(--space-3);padding:var(--space-3) var(--space-4);border:var(--border-width) dashed var(--line-strong);border-radius:var(--radius-md);background:var(--raised);color:var(--ink-secondary)}
+.pb-captcha.err{border-style:solid;border-color:var(--danger)}
+.pb-health{border:var(--border-width) solid var(--line);border-radius:var(--radius-md);padding:var(--space-4);margin:0;display:flex;flex-direction:column;gap:var(--space-3);min-width:0}
+.pb-health legend{padding:0 var(--space-1)}
+.pb-health p{margin:0}
+.pb-code{max-width:240px}
+.pb-held{display:flex;align-items:center;gap:var(--space-2);color:var(--ink-secondary)}
+.pb-done{display:flex;flex-direction:column;gap:var(--space-4);align-items:flex-start}
+.pb-done h1,.pb-done p{margin:0}
+.pb-doneic{display:inline-flex;width:56px;height:56px;border-radius:50%;align-items:center;justify-content:center;background:var(--done-soft);color:var(--done-ink)}
+.pb-doneic.p{background:var(--raised);color:var(--ink-secondary)}
+.pb-doneic.bad{background:var(--danger-soft);color:var(--danger-ink)}
+.pb-donesum{display:flex;flex-direction:column;gap:var(--space-2);align-self:stretch}
+.pb-foot{text-align:center;margin:auto 0 var(--space-4);padding:var(--space-4) var(--space-4) 0}
+.pb-pay{display:flex;flex-direction:column;gap:var(--space-3)}
+.pb-pay p{margin:0}
+.pb-rule{display:flex;gap:var(--space-2);align-items:flex-start;margin:0}
+.pb-rule .v-icon{flex:none;margin-top:2px;color:var(--ink-secondary)}
+.x-body{padding:0 0 var(--space-8);display:flex;flex-direction:column;gap:var(--space-6)}
+.x-body.m{padding:0 0 var(--space-8);gap:var(--space-4)}
+.x-body.m>.v-notice,.x-body.m>.x-pad{margin:0 var(--space-4)}
+.x-grid{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:var(--space-6);align-items:start}
+.x-grid.m{grid-template-columns:1fr;gap:var(--space-4)}
+.x-col{display:flex;flex-direction:column;gap:var(--space-4);min-width:0}
+.x-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--space-3)}
+.x-body.m .x-stats{grid-template-columns:1fr 1fr;padding:0 var(--space-4)}
+.x-row{display:flex;gap:var(--space-2);align-items:center;flex-wrap:wrap}
+.x-stack{display:flex;flex-direction:column;gap:var(--space-3)}
+.x-stack p{margin:0}
+.x-line{display:flex;gap:var(--space-2);align-items:flex-start;color:var(--ink-secondary)}
+.x-line p{margin:0}
+.x-line .v-icon{flex:none;margin-top:2px}
+.x-field{display:flex;align-items:center;gap:var(--space-3);padding:var(--space-3) var(--space-4);border:var(--border-width) solid var(--line);border-radius:var(--radius-md);background:var(--canvas)}
+.x-field>div{flex:1;min-width:0}
+.x-field p{margin:0}
+.x-flow{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:var(--space-3)}
+.x-tr{width:100%;border-collapse:collapse}
+.x-tr th,.x-tr td{text-align:left;padding:var(--space-2) var(--space-3);border-bottom:var(--border-width) solid var(--line);vertical-align:top}
+.x-tr th{color:var(--ink-muted)}
+.em-kv{background:var(--sheet);border-radius:var(--radius-md);padding:var(--space-3) var(--space-4)}
+.em-salon{display:flex;align-items:center;gap:var(--space-2)}
+.em-salon p{margin:0}
+.g2f{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--space-4)}
+.g2f.m{grid-template-columns:1fr}
+.su-steps{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:var(--space-2)}
+.su-steps li{display:flex;align-items:center;gap:var(--space-2);color:var(--ink-muted)}
+.su-steps li.done{color:var(--ink-secondary)}
+.su-steps li.done .v-icon{color:var(--done-ink)}
+.su-steps li.cur{color:var(--ink);font-weight:600}
+.su-steps li.cur .v-icon{color:var(--attention-ink)}
+.sv-body{display:flex;flex-direction:column;gap:var(--space-4);min-width:0}
+.sv-tools{display:flex;flex-wrap:wrap;align-items:center;gap:var(--space-2) var(--space-3)}
+.sv-tools.m{padding:0 var(--space-4);flex-direction:column;align-items:stretch}
+.sv-line{display:flex;align-items:center;gap:var(--space-2);min-width:0}
+.sv-line .sv-search{flex:1 1 auto;max-width:none}
+.sv-search{flex:1 1 220px;min-width:0;max-width:var(--search-width)}
+.sv-grow{flex:1 1 auto}
+.sv-fs{border:0;margin:0;padding:0;display:flex;flex-direction:column;gap:var(--space-3);min-width:0}
+.sv-fs legend{padding:0;margin-bottom:var(--space-2)}
+.sv-narrow{max-width:calc(var(--search-width) / 1.5)}
+.sv-foot{display:flex;align-items:center;gap:var(--space-2);width:100%;flex-wrap:wrap}
+.sv-order{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;border:var(--border-width) solid var(--line);border-radius:var(--radius-md)}
+.sv-order li{display:flex;align-items:center;gap:var(--space-3);min-height:var(--row-height);padding:var(--space-1) var(--space-2) var(--space-1) var(--space-3);border-bottom:var(--border-width) solid var(--line)}
+.sv-order li:last-child{border-bottom:0}
+.sv-order li.is-moved{background:var(--selected)}
+.sv-order .sv-ix{width:var(--space-4);text-align:center;display:inline-flex;justify-content:center}
+.sv-order .sv-on{flex:1 1 auto;min-width:0}
+.sv-foot.m{flex-direction:column-reverse;align-items:stretch}
+.sv-foot.m .sv-grow{display:none}
+/* S126 — BookingNew / Calendar layout, as in BookingNew and BookingCalendar */
+.newgrid{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:var(--space-6);align-items:start}
+.newgrid.tablet,.newgrid.mobile{grid-template-columns:1fr}
+.newgrid.mobile{padding-bottom:var(--space-16)}
+.newgrid.mobile .sumcard{border-radius:0;border-left:0;border-right:0}
+.sumcard{position:sticky;top:0;display:flex;flex-direction:column;gap:var(--space-3);padding:var(--space-5);background:var(--sheet);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg)}
+.sumcard p{margin:0}
+.sumtotal{display:flex;justify-content:space-between;align-items:baseline;padding-top:var(--space-3);border-top:var(--border-width) solid var(--line)}
+.stickybar{position:absolute;left:0;right:0;bottom:var(--bottomnav-height);display:flex;gap:var(--space-2);justify-content:flex-end;padding:var(--space-3) var(--space-4);background:var(--sheet);border-top:var(--border-width) solid var(--line);z-index:var(--z-sticky)}
+.stickybar .v-btn--primary{flex:1}
+.calbar{display:flex;justify-content:space-between;align-items:center;gap:var(--space-3);flex-wrap:wrap;margin-bottom:var(--space-3)}
+.calbar-date{margin-left:var(--space-2);white-space:nowrap}
+.calwrap.mobile{padding:0 var(--space-4)}
+.cx-rows{display:flex;flex-direction:column;border:var(--border-width) solid var(--line);border-radius:var(--radius-md)}
+.cx-rows>li{list-style:none;display:flex;align-items:center;gap:var(--space-3);padding:var(--space-3) var(--space-4);border-bottom:var(--border-width) solid var(--line);flex-wrap:wrap}
+.cx-rows>li:last-child{border-bottom:0}
+.cx-rows{margin:0;padding:0}
+.cx-grow{flex:1 1 auto;min-width:0}
+.cx-col{display:flex;flex-direction:column;min-width:0}
+.cx-pad{padding:0 var(--space-4)}
+.cx-gap{display:flex;align-items:center;gap:var(--space-2);color:var(--ink-secondary);padding:var(--space-1) var(--space-4)}
+.cx-tl{display:flex;flex-direction:column;gap:var(--space-2);margin:0;padding:0}
+.cx-tl li{list-style:none;display:grid;grid-template-columns:auto 1fr;gap:var(--space-2) var(--space-3);align-items:baseline}
+.cx-tl .v-num{white-space:nowrap}
+.scr-t .x-grid{grid-template-columns:1fr}
+.ts-err{display:flex;align-items:center;gap:var(--space-1);margin:0;color:var(--danger-ink)}
+.mu-step{display:flex;flex-direction:column;gap:var(--space-3);padding:var(--space-4);border:var(--border-width) solid var(--line);border-radius:var(--radius-md)}
+.mu-head{display:flex;align-items:center;gap:var(--space-2)}
+.mu-head .body-strong{flex:1 1 auto;min-width:0}
+.mu-gap{display:flex;align-items:center;gap:var(--space-2);padding-left:var(--space-4);color:var(--ink-secondary)}
+.pk-card{display:flex;flex-direction:column;gap:var(--space-2);padding:var(--space-4);border:var(--border-width) solid var(--line);border-radius:var(--radius-md)}
+.pk-card p{margin:0}
+.wl-msg{margin:0;padding:var(--space-3) var(--space-4);background:var(--raised);border-radius:var(--radius-md)}
+.x-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.mo-sum{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--space-3);margin:0}
+.mo-sum>div{display:flex;flex-direction:column;gap:var(--space-1);padding:var(--space-3);border:var(--border-width) solid var(--line);border-radius:var(--radius-md)}
+.mo-sum>div.is-due{background:var(--attention-soft,var(--raised));border-color:transparent}
+.mo-sum dd{margin:0}
+.mo-ind{padding-left:var(--space-10)}
+.mt-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:var(--space-6);align-items:start}
+.mt-grid.m{grid-template-columns:1fr}
+.mt-vars{display:flex;flex-wrap:wrap;align-items:center;gap:var(--space-2)}
+.mt-prev{position:sticky;top:0}
+.mt-mail .em{max-width:100%;box-sizing:border-box}
+.mt-sms{display:flex;flex-direction:column;align-items:flex-start;gap:var(--space-2);padding:var(--space-4);background:var(--raised);border-radius:var(--radius-md)}
+.mt-bubble{max-width:85%;padding:var(--space-3) var(--space-4);background:var(--sheet);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg) var(--radius-lg) var(--radius-lg) var(--radius-sm)}
+.pr-code{font-family:var(--font-mono,ui-monospace,monospace);letter-spacing:.04em}
+.pr-stats{padding:0!important}
+.rp-grid{display:grid;grid-template-columns:1fr 1fr;gap:var(--space-4)}
+.rp-grid.m{grid-template-columns:1fr}
+.rp-body{gap:var(--space-4)}
+.rp-body.m .x-stats{grid-template-columns:1fr 1fr;padding:0 var(--space-4)}
+.rp-up{color:var(--done-ink)}
+.rp-down{color:var(--danger-ink)}
+.in-ic{display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;border-radius:var(--radius-md);background:var(--raised);color:var(--ink-secondary);flex:none}
+.ai-card{display:flex;flex-direction:column;gap:var(--space-3);padding:var(--space-4) var(--space-5);background:var(--sheet);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg)}
+.ai-card p{margin:0}
+.ai-list{margin:0;padding-left:var(--space-5);display:flex;flex-direction:column;gap:var(--space-1)}
+.ai-ask{display:flex;gap:var(--space-2);width:100%;align-items:center}
+.ai-q{align-self:flex-end;max-width:85%;padding:var(--space-2) var(--space-4);background:var(--raised);border-radius:var(--radius-lg)}
+.wa-steps li{align-items:flex-start}
+.wa-n{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:var(--raised);color:var(--ink-secondary);flex:none}
+.fs-steps{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:var(--space-5)}
+.fs-step{display:flex;gap:var(--space-3);align-items:flex-start}
+.fs-step.done .wa-n{background:var(--done-soft);color:var(--done-ink)}
+.fs-ready{display:flex;flex-direction:column;gap:var(--space-3);margin-top:var(--space-5);padding:var(--space-4);border:var(--border-width) solid var(--line);border-radius:var(--radius-md)}
+/* S130 — ClientDesk */
+.cd-pad{padding:0 var(--space-4)}
+.cd-grow{flex:1 1 auto}
+.cd-foot{display:flex;align-items:center;gap:var(--space-2);width:100%;flex-wrap:wrap}
+.cd-foot.m{flex-direction:column-reverse;align-items:stretch}
+.cd-foot.m .cd-grow{display:none}
+.cd-name{display:inline-flex;align-items:center;gap:var(--space-3);min-width:0}
+.cd-namecol{display:flex;flex-direction:column;min-width:0}
+.cd-owner{display:inline-flex;align-items:center;gap:var(--space-2);min-width:0;white-space:nowrap}
+.cd-tags{gap:var(--space-1)}
+.cd-tools{display:flex;flex-wrap:wrap;align-items:center;gap:var(--space-2) var(--space-3)}
+.cd-tools.m{padding:0 var(--space-4);flex-direction:column;align-items:stretch}
+.cd-line{display:flex;align-items:center;gap:var(--space-2);min-width:0;flex-wrap:wrap}
+.cd-search{flex:1 1 220px;min-width:0;max-width:var(--search-width)}
+.cd-line .cd-search{max-width:none}
+.cd-chips{display:flex;flex-wrap:wrap;align-items:center;gap:var(--space-2)}
+.cd-chips.m{padding:0 var(--space-4)}
+.cd-grid{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:var(--space-6);align-items:start}
+.cd-grid.t,.cd-grid.m{grid-template-columns:1fr;gap:var(--space-4)}
+.cd-side{display:flex;flex-direction:column;gap:var(--space-4);min-width:0}
+.cd-feed{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.cd-fi{position:relative;display:grid;grid-template-columns:var(--space-8) minmax(0,1fr) auto;gap:var(--space-3);padding:0 0 var(--space-4)}
+.cd-fi:not(:last-child)::before{content:"";position:absolute;left:calc(var(--space-4) - var(--border-width) / 2);top:var(--space-8);bottom:0;border-left:var(--border-width) solid var(--line)}
+.cd-fic{width:var(--space-8);height:var(--space-8);border-radius:50%;display:inline-flex;align-items:center;justify-content:center;background:var(--sunken);color:var(--ink-secondary)}
+.cd-fbody{display:flex;flex-direction:column;gap:var(--space-1);min-width:0;padding-top:var(--space-1)}
+.cd-fbody p{margin:0}
+.cd-ftext.box{padding:var(--space-2) var(--space-3);border:var(--border-width) solid var(--line);border-radius:var(--radius-md);background:var(--sheet)}
+.cd-fwhen{padding-top:var(--space-1);white-space:nowrap}
+.cd-mention{color:var(--ink)}
+.cd-compose{display:flex;flex-direction:column;gap:var(--space-2)}
+.cd-compose .cd-line{justify-content:space-between}
+.cd-suggest{list-style:none;margin:0;padding:var(--space-1);border:var(--border-width) solid var(--line);border-radius:var(--radius-md);background:var(--sheet);box-shadow:var(--shadow-2);max-width:calc(var(--space-16) * 4)}
+.cd-suggest li{display:flex;align-items:center;gap:var(--space-2);padding:var(--space-1) var(--space-2);border-radius:var(--radius-sm)}
+.cd-suggest li.on{background:var(--selected)}
+.cd-file{display:flex;align-items:center;gap:var(--space-2);padding:var(--space-2) var(--space-3);border:var(--border-width) solid var(--line);border-radius:var(--radius-md)}
+.cd-acts{display:flex;flex-wrap:wrap;gap:var(--space-2)}
+.cd-acts.m{padding:0 var(--space-4)}
+.cd-ro{display:inline-flex;align-items:center;gap:var(--space-1)}
+.cd-colpick{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;border:var(--border-width) solid var(--line);border-radius:var(--radius-md)}
+.cd-colpick li{display:flex;align-items:center;gap:var(--space-2);padding:var(--space-2) var(--space-3);border-bottom:var(--border-width) solid var(--line)}
+.cd-colpick li:last-child{border-bottom:0}
+.cd-colpick .cd-grow{min-width:0}
+.cd-merge{display:grid;grid-template-columns:minmax(0,7rem) minmax(0,1fr) minmax(0,1fr);gap:var(--space-2) var(--space-3);align-items:center}
+.cd-merge.m{grid-template-columns:1fr}
+.cd-consent{display:flex;flex-direction:column;gap:var(--space-3)}
+.cd-consent>div{display:flex;flex-direction:column;gap:var(--space-1);padding-bottom:var(--space-3);border-bottom:var(--border-width) solid var(--line)}
+.cd-consent>div:last-child{border-bottom:0;padding-bottom:0}
+.cd-consent p{margin:0}
+.cd-sub{display:inline-flex;align-items:center;gap:var(--space-2);min-width:0;flex-wrap:wrap}
+.cd-today>li{flex-wrap:nowrap;align-items:flex-start}
+.cd-merge>*{min-width:0;overflow-wrap:anywhere}
+/* S131 — ClientDesk activities */
+.cd-acts-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.cd-act{display:flex;align-items:flex-start;justify-content:space-between;gap:var(--space-3);padding:var(--space-3) 0;border-bottom:var(--border-width) solid var(--line);flex-wrap:wrap}
+.cd-act:last-child{border-bottom:0}
+.cd-act>.v-checkbox,.cd-act>label{flex:1 1 280px;min-width:0}
+.cd-act.is-done .v-checkbox__label,.cd-act.is-done label{color:var(--ink-muted);text-decoration:line-through}
+.cd-actmeta{display:flex;align-items:center;gap:var(--space-3);flex-wrap:wrap;justify-content:flex-end;min-width:0}
+.cd-notif{position:absolute;top:calc(var(--space-12) + var(--space-2));right:var(--space-4);width:calc(var(--space-16) * 6);max-width:calc(100% - var(--space-8));z-index:var(--z-sticky);box-shadow:var(--shadow-3);border-radius:var(--radius-lg)}
+.cd-notif.m{left:var(--space-4);right:var(--space-4);width:auto;max-width:none}
+
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script>
+const V = window.Ventora;
+const { useState } = React;
+const h = React.createElement;
+const mount = (el) => ReactDOM.createRoot(document.getElementById("root")).render(h(V.LocaleProvider, { locale: "ro" }, el));
+/* keys: D = { ro: {...}, en: {...}, ... } — the same object as the i18n file */
+const mkT = (D) => (lang, key, vars) => { let s = (D[lang] && D[lang][key]) || D.ro[key] || key; if (vars) for (const k in vars) s = s.split("{" + k + "}").join(vars[k]); return s; };
+const noop = () => {};
+let __u = 0;
+const uid = () => "u" + (++__u);
+const ORGS = [{ id: "aurora", name: "Salon Aurora", role: "Proprietar" }, { id: "dentis", name: "Clinica Dentis Sibiu", role: "Recepție" }, { id: "nord", name: "Agenția Nord Studio", role: "Manager de proiect" }];
+const ORGS_L = {
+  de: [{ id: "aurora", name: "Salon Aurora", role: "Inhaber" }, { id: "dentis", name: "Clinica Dentis Sibiu", role: "Empfang" }],
+  it: [{ id: "aurora", name: "Salon Aurora", role: "Titolare" }, { id: "dentis", name: "Clinica Dentis Sibiu", role: "Reception" }]
+};
+const NOTIFS = [
+  { id: 1, title: "Programare nouă de la Ana Popescu", body: "Joi, 5 nov., 14:30 · Tuns", app: "EasyBook", time: "acum 5 min", person: "Ana Popescu" },
+  { id: 2, title: "Avans primit: 50 lei", body: "Cristina Dobre · Vopsit · vineri, 6 nov.", app: "EasyBook", time: "acum 1 oră", icon: "wallet" },
+  { id: 3, title: "Dan Stoica are acum „Risc ridicat”", body: "A doua programare la care nu a venit, în ultimele 6 luni", app: "EasyBook", time: "ieri", icon: "triangle-alert", read: true }
+];
+const NOTIFS_L = {
+  de: [{ id: 1, title: "Neuer Termin von Anna Schmidt", body: "Do., 5. Nov., 14:30 · Haarschnitt", app: "EasyBook", time: "vor 5 Min.", person: "Anna Schmidt" }],
+  it: [{ id: 1, title: "Nuovo appuntamento di Anna Russo", body: "gio 5 nov., 14:30 · Taglio", app: "EasyBook", time: "5 min fa", person: "Anna Russo" }]
+};
+const USER = { name: "Bianca Petrașcu", email: "bianca@salonaurora.ro" };
+const isL = (lang) => lang === "de" || lang === "it";
+/* ---- Hub settings shell ---- */
+const HUB_SECTIONS = {
+  ro: [
+    { label: "Contul tău", items: [{ id: "profil", label: "Profil și preferințe", short: "Profil", icon: "circle-user" }, { id: "securitate", label: "Securitate", icon: "shield" }] },
+    { label: "Afacerea", items: [{ id: "echipa", label: "Echipă și invitații", short: "Echipă", icon: "users" }, { id: "roluri", label: "Roluri și acces", icon: "key-round" }, { id: "abonament", label: "Abonament și consum", short: "Abonament", icon: "credit-card" }, { id: "automatizari", label: "Automatizări", icon: "refresh-cw" }] },
+    { label: "Ajutor", items: [{ id: "suport", label: "Suport", icon: "life-buoy", badge: 1 }] }
+  ],
+  de: [
+    { label: "Ihr Konto", items: [{ id: "profil", label: "Profil und Einstellungen", short: "Profil", icon: "circle-user" }, { id: "securitate", label: "Sicherheit", icon: "shield" }] },
+    { label: "Unternehmen", items: [{ id: "echipa", label: "Team und Einladungen", short: "Team", icon: "users" }, { id: "roluri", label: "Rollen und Zugriff", short: "Rollen", icon: "key-round" }, { id: "abonament", label: "Abonnement und Verbrauch", short: "Abonnement", icon: "credit-card" }, { id: "automatizari", label: "Automatisierungen", short: "Automatik", icon: "refresh-cw" }] },
+    { label: "Hilfe", items: [{ id: "suport", label: "Support", icon: "life-buoy", badge: 1 }] }
+  ],
+  it: [
+    { label: "Il Suo account", items: [{ id: "profil", label: "Profilo e preferenze", short: "Profilo", icon: "circle-user" }, { id: "securitate", label: "Sicurezza", icon: "shield" }] },
+    { label: "Attività", items: [{ id: "echipa", label: "Team e inviti", short: "Team", icon: "users" }, { id: "roluri", label: "Ruoli e accesso", short: "Ruoli", icon: "key-round" }, { id: "abonament", label: "Abbonamento e utilizzo", short: "Abbonamento", icon: "credit-card" }, { id: "automatizari", label: "Automazioni", icon: "refresh-cw" }] },
+    { label: "Aiuto", items: [{ id: "suport", label: "Assistenza", icon: "life-buoy", badge: 1 }] }
+  ]
+};
+function HubSettings({ active, title, children, lang = "ro" }) {
+  const L = isL(lang) ? lang : "ro";
+  return h(V.AppShell, {
+    height: "100%",
+    spine: h(V.Spine, { hub: true, sections: HUB_SECTIONS[L], activeId: active, onBackToHub: noop, bottomItems: ["profil", "echipa", "abonament", "suport"] }),
+    contextBar: h(V.ContextBar, { title, org: h(V.OrgSwitcher, { orgs: isL(lang) ? ORGS_L[lang] : ORGS, currentId: "aurora" }), onSearch: noop,
+      notifications: h(V.NotificationsPanel, { items: isL(lang) ? NOTIFS_L[lang] : NOTIFS }), account: h(V.AccountMenu, { user: USER, orgs: ORGS, currentOrgId: "aurora", onCatalog: noop }) })
+  }, children);
+}
+/* ---- EasyBook shell ---- */
+const BK_SECTIONS = {
+  ro: [
+    { items: [{ id: "azi", label: "Azi", icon: "house" }, { id: "calendar", label: "Calendar", icon: "calendar" }, { id: "programari", label: "Programări", icon: "list", badge: 3 }] },
+    { label: "Gestionare", items: [{ id: "clienti", label: "Clienți", icon: "users" }, { id: "servicii", label: "Servicii", icon: "boxes" }, { id: "angajati", label: "Echipa", icon: "contact" }] },
+    { label: "Afacere", items: [{ id: "rapoarte", label: "Rapoarte", icon: "chart-column" }, { id: "setari", label: "Setări", icon: "settings" }] }
+  ],
+  de: [
+    { items: [{ id: "azi", label: "Heute", icon: "house" }, { id: "calendar", label: "Kalender", icon: "calendar" }, { id: "programari", label: "Termine", icon: "list", badge: 3 }] },
+    { label: "Verwaltung", items: [{ id: "clienti", label: "Kunden", icon: "users" }, { id: "servicii", label: "Leistungen", icon: "boxes" }, { id: "angajati", label: "Team", icon: "contact" }] },
+    { label: "Unternehmen", items: [{ id: "rapoarte", label: "Berichte", icon: "chart-column" }, { id: "setari", label: "Einstellungen", icon: "settings" }] }
+  ],
+  it: [
+    { items: [{ id: "azi", label: "Oggi", icon: "house" }, { id: "calendar", label: "Calendario", icon: "calendar" }, { id: "programari", label: "Appuntamenti", icon: "list", badge: 3 }] },
+    { label: "Gestione", items: [{ id: "clienti", label: "Clienti", icon: "users" }, { id: "servicii", label: "Servizi", icon: "boxes" }, { id: "angajati", label: "Team", icon: "contact" }] },
+    { label: "Attività", items: [{ id: "rapoarte", label: "Report", icon: "chart-column" }, { id: "setari", label: "Impostazioni", icon: "settings" }] }
+  ]
+};
+const BK_USAGE = { ro: "Programări în noiembrie", de: "Termine im November", it: "Appuntamenti a novembre" };
+function BookingApp({ active, title, children, lang = "ro", footer }) {
+  const L = isL(lang) ? lang : "ro";
+  return h(V.AppShell, {
+    height: "100%",
+    spine: h(V.Spine, { app: "booking", sections: BK_SECTIONS[L], activeId: active, onBackToHub: noop, bottomItems: ["azi", "calendar", "programari", "clienti"],
+      footer: footer === false ? null : h(V.UsageMeter, { compact: true, label: BK_USAGE[L], used: 312, limit: 1e3 }) }),
+    contextBar: h(V.ContextBar, { title: title || "EasyBook", org: h(V.OrgSwitcher, { orgs: isL(lang) ? ORGS_L[lang] : ORGS, currentId: "aurora" }), onSearch: noop,
+      notifications: h(V.NotificationsPanel, { items: isL(lang) ? NOTIFS_L[lang] : NOTIFS }), account: h(V.AccountMenu, { user: USER, orgs: ORGS, currentOrgId: "aurora", onCatalog: noop }) })
+  }, children);
+}
+/* ---- Founder shell: "Suport" after "Cereri", "Automatizări" in "Sistem" ---- */
+const FX_NAV = [
+  { items: [{ id: "azi", label: "Prezentare", short: "Prezentare", icon: "house" }, { id: "afaceri", label: "Afaceri", icon: "building-2" }, { id: "consum", label: "Consum", icon: "chart-column" }, { id: "cereri", label: "Cereri", icon: "inbox", badge: 2 }, { id: "suport", label: "Suport", icon: "life-buoy", badge: 3 }] },
+  { label: "Model comercial", items: [{ id: "aplicatii", label: "Aplicații", icon: "layout-grid" }, { id: "bundles", label: "Bundle-uri", icon: "boxes" }, { id: "pachete", label: "Pachete în plus", short: "Pachete", icon: "package" }, { id: "reduceri", label: "Reduceri", icon: "percent" }] },
+  { label: "Growth", items: [{ id: "oferte", label: "Oferte", icon: "ticket" }, { id: "campanii", label: "Campanii", icon: "megaphone" }, { id: "audiente", label: "Audiențe", icon: "users" }, { id: "rezultate", label: "Rezultate", icon: "chart-line" }, { id: "control", label: "Control", icon: "sliders-horizontal" }] },
+  { label: "Sistem", items: [{ id: "automatizari", label: "Automatizări", icon: "refresh-cw" }, { id: "jurnal", label: "Jurnal", icon: "history" }, { id: "setari", label: "Setări", icon: "settings" }] }
+];
+const FX_NOTIFS = [
+  { id: 1, title: "Solicitare nouă de la Salon Aurora", body: "EasyBook · Avansul nu apare în fișa clientului", app: "Suport", time: "acum 12 min", icon: "life-buoy" },
+  { id: 2, title: "„Rezumatul zilei” a eșuat de 3 ori", body: "Fitness Atlas · adresa unui membru respinge e-mailurile", app: "Automatizări", time: "azi, 07:05", icon: "triangle-alert" }
+];
+function FX_App({ active, title, children, bottom }) {
+  return h(V.AppShell, {
+    height: "100%",
+    spine: h(V.Spine, { hub: true, appName: "Founder", sections: FX_NAV, activeId: active, onBackToHub: noop, bottomItems: bottom || ["afaceri", "cereri", "suport", "automatizari"] }),
+    contextBar: h(V.ContextBar, { title, onSearch: noop, searchLabel: "Caută o afacere, o solicitare sau o automatizare", notifications: h(V.NotificationsPanel, { items: FX_NOTIFS }), account: h(V.AccountMenu, { user: { name: "Bianca Petrașcu", email: "bianca@ventorasystems.com" } }) })
+  }, children);
+}
+const AX_Body = ({ mode, children }) => h("div", { className: "axb " + mode }, children);
+/* ---- frames ---- */
+function Board({ title, notes, items, dH = 900, mH = 1000 }) {
+  return h("div", { className: "scr" },
+    h("p", { className: "heading" }, title),
+    notes ? h("p", { className: "caption muted" }, notes.join(" · ")) : null,
+    items.map(([lab, render, D = dH, M = mH]) => h("div", { key: lab, className: "tfa-scrgroup" },
+      h("p", { className: "subheading tfa-grouplab" }, lab),
+      ["light", "dark"].map((th) => h("div", { className: "scr-row", key: th },
+        [["desktop", "Desktop · 1280", "scr-d", D], ["mobile", "Telefon · 390", "scr-m", M]].map(([m, l, cls, H]) => h("div", { key: m },
+          h("p", { className: "caption scr-lab" }, l, " · ", th === "light" ? "Light" : "Dark"),
+          h("div", { className: cls, "data-theme": th, style: { height: H, position: "relative", overflow: "hidden" } }, render(m, th)))))))));
+}
+/* main view in German at 1280 and Italian at 390 (and the other way round in dark) */
+function LocTest({ title, items }) {
+  return h("div", { className: "scr" },
+    h("p", { className: "heading" }, title || "Test cu etichete în germană și italiană"),
+    h("p", { className: "caption muted" }, "Același ecran, cu textele traduse, ca să vedem că etichetele mai lungi încap. Toate cele 6 limbi sunt în fișierul i18n."),
+    h("div", { className: "scr-row" }, items.map(([lab, lang, mode, th, H, el]) => h("div", { key: lab },
+      h("p", { className: "caption scr-lab" }, lab),
+      h("div", { className: mode === "mobile" ? "scr-m" : "scr-d", "data-theme": th, lang, style: { height: H, position: "relative", overflow: "hidden" } }, h(V.LocaleProvider, { locale: lang }, el))))));
+}
+const Overlay = ({ mode, children }) => h("div", { className: "ss-overlay" + (mode === "mobile" ? " m" : "") }, children);
+const ToastAt = ({ mode, title, description, tone = "done" }) => h("div", { className: "ss-toast" + (mode === "mobile" ? " m" : "") }, h(V.Toast, { tone, title, description, onDismiss: noop }));
+const Box = ({ label, children, cls }) => h("div", { className: "sms-box" + (cls ? " " + cls : "") }, h("p", { className: "caption sms-boxlab" }, label), h("div", { className: "sms-boxbody" }, children));
+const DD = ({ tag, children }) => h("span", { className: "x-dd caption" }, h(V.Icon, { name: "lightbulb", size: 14 }), "DE DECIS", tag ? " · " + tag : "", children ? h("span", { className: "x-dd-t" }, children) : null);
+/* ---- the single operational e-mail template (S3) ---- */
+function Mail({ m, w = 600 }) {
+  return h("div", { className: "em", "data-theme": "light", style: { width: w } },
+    h("div", { className: "em-inbox" },
+      h("p", { className: "caption em-mute" }, m.fromLabel + ": " + m.from + " · " + m.toLabel + ": " + m.to),
+      h("p", { className: "body-strong em-subj" }, m.subject),
+      h("p", { className: "body-small em-mute" }, m.pre)),
+    h("div", { className: "em-canvas" },
+      h("div", { className: "em-card" },
+        h("div", { className: "em-head" }, m.head || h(V.Logo, { size: 24, title: "Ventora Systems" })),
+        h("div", { className: "em-body" },
+          m.eyebrow ? h("p", { className: "caption em-mute em-eyebrow" }, m.eyebrow) : null,
+          h("h1", { className: "heading em-title" }, m.title),
+          m.code ? h("p", { className: "em-code v-num" }, m.code) : null,
+          m.greet ? h("p", { className: "body" }, m.greet) : null,
+          m.lead ? h("p", { className: "body" }, m.lead) : null,
+          m.kv ? h("dl", { className: "kv em-kv" }, m.kv.map(([k, v]) => h(React.Fragment, { key: k }, h("dt", { className: "caption" }, k), h("dd", { className: "body" }, v)))) : null,
+          m.extra ? m.extra.map((x, i) => h("p", { key: i, className: "body" }, x)) : null,
+          m.cta ? h("a", { className: "em-btn body-strong", href: "#" }, m.cta) : null,
+          m.cta2 ? h("a", { className: "v-link body-small", href: "#" }, m.cta2) : null,
+          m.after ? h("p", { className: "body-small em-mute" }, m.after) : null)),
+      h("div", { className: "em-foot" },
+        m.why ? h("p", { className: "caption em-mute" }, m.why) : null,
+        h("p", { className: "caption em-mute" }, m.foot))));
+}
+
+const CRM = {"ro": {"crm.nav.home": "Pagina principală", "crm.nav.homeShort": "Acasă", "crm.nav.contacts": "Contacte", "crm.nav.companies": "Companii", "crm.nav.leads": "Leaduri", "crm.nav.deals": "Dealuri", "crm.nav.activities": "Activități", "crm.nav.business": "Afacere", "crm.nav.reports": "Rapoarte", "crm.nav.settings": "Setări", "crm.usage.label": "Contacte în abonament", "crm.cancel": "Renunță", "crm.contact.new": "Contact nou", "crm.owner.none": "Neatribuit", "crm.act.task": "Sarcină", "crm.act.note": "Notiță", "crm.act.email": "E-mail", "crm.act.deal": "Deal nou", "crm.state.new": "Nou", "crm.state.back": "Recurent", "crm.state.idle": "Inactiv", "crm.state.newHelp": "Adăugat în ultimele 30 de zile, fără a doua vizită sau un deal încheiat.", "crm.state.backHelp": "Cel puțin două vizite sau dealuri încheiate în ultimele 12 luni.", "crm.state.idleHelp": "Nicio vizită, niciun deal și nicio activitate de 90 de zile.", "crm.src.form": "Formular site", "crm.src.referral": "Recomandare", "crm.src.event": "Eveniment", "crm.src.import": "Import CSV", "crm.src.manual": "Adăugat manual", "crm.home.title": "Pagina principală", "crm.home.hello": "Bună dimineața, {name}", "crm.home.lead": "Marți, 10 noiembrie · ce s-a schimbat la clienții, leadurile și dealurile tale", "crm.home.leadMember": "Marți, 10 noiembrie · contactele tale și cele neatribuite", "crm.home.memberNote": "Vezi contactele atribuite ție și pe cele neatribuite. Cifrele de mai jos sunt doar ale tale.", "crm.home.kpi.new": "Contacte noi în noiembrie", "crm.home.kpi.vs": "față de octombrie", "crm.home.kpi.leads": "Leaduri deschise", "crm.home.kpi.deals": "Dealuri în lucru", "crm.home.kpi.dealsValue": "în valoare de {amount}", "crm.home.kpi.late": "Sarcini restante", "crm.home.kpi.mine": "Contactele mele", "crm.home.needs.title": "Au nevoie de tine", "crm.home.needs.late": "Sarcini întârziate · {n}", "crm.home.needs.lateLead": "Trebuiau făcute până azi.", "crm.home.needs.leads": "Leaduri fără răspuns · {n}", "crm.home.needs.leadsLead": "Au scris și nu le-a răspuns nimeni de peste 24 de ore.", "crm.home.needs.stuck": "Dealuri blocate · {n}", "crm.home.needs.stuckLead": "Nicio mișcare de 14 zile în aceeași etapă.", "crm.home.needs.calmTitle": "Totul e la zi", "crm.home.needs.calmBody": "Nicio sarcină întârziată, niciun lead fără răspuns, niciun deal blocat.", "crm.home.late.t1": "Sună-l pe Mihai Stanciu pentru oferta Nord Studio", "crm.home.late.t1Meta": "Trebuia ieri · Bianca Petrașcu", "crm.home.late.t2": "Confirmă proba de coafură cu Andreea Vasile", "crm.home.late.t2Meta": "Trebuia vineri, 6 nov. · Ioana Pavel", "crm.home.late.t3": "Trimite contractul către Hotel Cibin", "crm.home.late.t3Meta": "Trebuia joi, 5 nov. · Bianca Petrașcu", "crm.home.leads.l1": "Raluca Toma a cerut o ofertă pentru botez", "crm.home.leads.l1Meta": "Formular site · acum 2 zile · neatribuit", "crm.home.leads.l2": "Atelier Verde întreabă de o colaborare", "crm.home.leads.l2Meta": "E-mail · acum 30 de ore · Radu Matei", "crm.home.stuck.d1": "Petrecere de Crăciun · Hotel Cibin · 6.200 lei", "crm.home.stuck.d1Meta": "„Ofertă trimisă” de 16 zile · Bianca Petrașcu", "crm.home.stuck.d2": "Abonament anual coafat · Maria Ionescu · 6.200 lei", "crm.home.stuck.d2Meta": "„Negociere” de 21 de zile · Ioana Pavel", "crm.home.act.done": "Gata", "crm.home.act.open": "Deschide", "crm.home.act.reply": "Răspunde", "crm.home.today.title": "Azi", "crm.home.today.a1": "Telefon: Andreea Vasile, proba de coafură", "crm.home.today.a2": "Întâlnire: Elena Marin, Hotel Cibin", "crm.home.today.a3": "E-mail: oferta pentru Clinica Dentis Sibiu", "crm.home.growth.label": "Recomandare", "crm.home.growth.title": "Adu înapoi clienții inactivi cu CampaignKit", "crm.home.growth.benefit": "Ai 286 de clienți care n-au mai venit de 60 de zile. CampaignKit le trimite un mesaj doar celor care au acceptat e-mailuri de marketing.", "crm.home.growth.cost": "49 lei pe lună · fără cost de implementare", "crm.home.growth.action": "Vezi opțiunile", "crm.home.first.title": "Încă nu ai contacte", "crm.home.first.body": "Adaugă primul contact sau importă-ți lista dintr-un fișier CSV. Leadurile și dealurile pornesc de la contacte.", "crm.home.first.add": "Adaugă un contact", "crm.home.first.import": "Importă din CSV", "crm.home.first.ebTitle": "Clienții din EasyBook apar aici singuri", "crm.home.first.ebBody": "Fiecare client care își face o programare în EasyBook devine contact în ClientDesk, marcat „EasyBook”. Nu se numără în limita de contacte.", "crm.contacts.lead": "{n} contacte, dintre care {eb} din EasyBook.", "crm.contacts.leadMember": "Contactele atribuite ție și cele neatribuite.", "crm.contacts.memberNote": "Vezi doar contactele atribuite ție și pe cele neatribuite. Celelalte nu apar în listă, în căutare sau în export.", "crm.contacts.tab.all": "Toate contactele", "crm.contacts.tab.segments": "Segmente", "crm.contacts.search": "Caută un contact", "crm.contacts.filters": "Filtre", "crm.contacts.filters.n": "Filtre · {n}", "crm.contacts.filters.show": "Arată {n} contacte", "crm.contacts.filters.tagsAny": "Oricare etichetă", "crm.contacts.filters.ownerAny": "Oricine", "crm.contacts.filters.ownerMe": "Eu", "crm.contacts.filters.saveHint": "Filtrele pe care le folosești des le poți salva ca segment.", "crm.contacts.columns": "Coloane", "crm.contacts.columns.title": "Coloanele listei", "crm.contacts.columns.lead": "Alege ce coloane vezi și în ce ordine. Se păstrează doar pentru tine.", "crm.contacts.columns.reset": "Revino la coloanele implicite", "crm.contacts.columns.save": "Aplică", "crm.contacts.columns.up": "Mută mai sus", "crm.contacts.columns.down": "Mută mai jos", "crm.contacts.import": "Importă", "crm.contacts.exportAll": "Exportă tot", "crm.contacts.more": "Mai multe", "crm.contacts.col.name": "Nume", "crm.contacts.col.phone": "Telefon", "crm.contacts.col.email": "E-mail", "crm.contacts.col.tags": "Etichete", "crm.contacts.col.state": "Starea clientului", "crm.contacts.col.owner": "Responsabil", "crm.contacts.col.source": "Sursă", "crm.contacts.col.company": "Companie", "crm.contacts.col.added": "Adăugat", "crm.contacts.col.lastVisit": "Ultima vizită", "crm.contacts.chip.state": "Stare: {v}", "crm.contacts.chip.source": "Sursă: {v}", "crm.contacts.chip.clear": "Șterge filtrele", "crm.contacts.saveSegment": "Salvează ca segment", "crm.contacts.count": "{n} contacte", "crm.contacts.countFiltered": "{n} contacte se potrivesc", "crm.contacts.countLead": "Cele mai noi întâi", "crm.contacts.act.open": "Deschide fișa", "crm.contacts.act.assign": "Schimbă responsabilul", "crm.contacts.act.tag": "Etichete", "crm.contacts.act.delete": "Șterge contactul", "crm.contacts.bulk.tag": "Etichetă", "crm.contacts.bulk.owner": "Responsabil", "crm.contacts.bulk.export": "Exportă", "crm.contacts.bulk.merge": "Îmbină", "crm.contacts.bulk.delete": "Șterge", "crm.contacts.bulkTag.title": "Etichete pentru {n} contacte", "crm.contacts.bulkTag.add": "Adaugă", "crm.contacts.bulkTag.remove": "Scoate", "crm.contacts.bulkTag.help": "Etichetele pe care le au deja rămân.", "crm.contacts.bulkTag.submit": "Adaugă etichetele", "crm.contacts.bulkOwner.title": "Responsabil pentru {n} contacte", "crm.contacts.bulkOwner.help": "Responsabilul vede contactul și primește sarcinile lui. Contactele din EasyBook rămân la fel în EasyBook.", "crm.contacts.bulkOwner.submit": "Schimbă responsabilul", "crm.contacts.merge.title": "Îmbină două contacte", "crm.contacts.merge.lead": "Rămâne un singur contact. Alege ce valoare păstrezi unde cele două diferă.", "crm.contacts.merge.other": "Celălalt contact", "crm.contacts.merge.fromEb": "din EasyBook", "crm.contacts.merge.same": "La fel", "crm.contacts.merge.history": "Istoricul, notițele, dealurile, etichetele și fișierele celor două se adună în contactul care rămâne.", "crm.contacts.merge.ebWins": "Când unul vine din EasyBook, numele, telefonul și e-mailul lui rămân; se schimbă doar în EasyBook.", "crm.contacts.merge.submit": "Îmbină contactele", "crm.contacts.exportReady": "Am pregătit exportul: {n} contacte", "crm.contacts.exportReadyDesc": "Fișierul CSV s-a descărcat. Exportul apare în jurnalul afacerii.", "crm.contacts.none.title": "Niciun contact pentru filtrele alese", "crm.contacts.none.body": "Scoate un filtru sau caută altfel.", "crm.contacts.empty.title": "Încă nu ai contacte", "crm.contacts.empty.body": "Adaugă un contact sau importă un fișier CSV. Clienții din EasyBook apar aici singuri, după prima programare.", "crm.contacts.limit.nearTitle": "Ai {n} din {limit} contacte", "crm.contacts.limit.nearBody": "Când ajungi la limită nu mai poți adăuga sau importa contacte. Clienții din EasyBook nu se numără.", "crm.contacts.limit.fullTitle": "Ai ajuns la limita de 3.000 de contacte", "crm.contacts.limit.fullBody": "Nu mai poți adăuga sau importa contacte. Clienții noi din EasyBook apar în continuare, pentru că nu se numără. Treci la un abonament mai mare sau șterge contactele de care nu mai ai nevoie.", "crm.contacts.limit.upgrade": "Vezi abonamentele", "crm.contacts.limit.ebFree": "Cele 1.312 contacte din EasyBook nu se numără în limită.", "crm.segments.title": "Segmente", "crm.segments.lead": "Filtre salvate. Lista fiecărui segment se actualizează singură.", "crm.segments.new": "Segment nou", "crm.segments.count": "{n} segmente", "crm.segments.countLead": "Numărul de contacte e cel de acum.", "crm.segments.col.name": "Segment", "crm.segments.col.rules": "Reguli", "crm.segments.col.count": "Contacte", "crm.segments.col.by": "Creat de", "crm.segments.live": "Se actualizează singur", "crm.segments.pre.name": "N-au mai venit de {days} de zile", "crm.segments.pre.rule": "Ultima vizită acum mai mult de {days} de zile", "crm.segments.pre.by": "ClientDesk", "crm.segments.pre.badge": "Predefinit", "crm.segments.pre.lead": "Clienții care au mai venit, dar nu de mult. Numărul de zile îl alegi tu.", "crm.segments.pre.days": "Câte zile", "crm.segments.pre.daysHelp": "Între 7 și 365.", "crm.segments.pre.list": "{n} contacte", "crm.segments.pre.consent": "{n} dintre ei au acceptat e-mailuri de marketing. O campanie ajunge doar la aceștia.", "crm.segments.r.idleEb": "Starea clientului este Inactiv și Sursa este EasyBook", "crm.segments.r.corp": "Eticheta Corporate și fără deal deschis", "crm.segments.r.brides": "Eticheta Mireasă, adăugat în ultimele 365 de zile, responsabil Ioana Pavel", "crm.segments.r.bday": "Ziua de naștere este luna aceasta", "crm.segments.match": "Se potrivesc acum: {n} contacte", "crm.segments.match.none": "Nu se potrivește niciun contact acum", "crm.segments.save.title": "Salvează ca segment", "crm.segments.save.submit": "Salvează segmentul", "crm.segments.f.name": "Numele segmentului", "crm.segments.f.rules": "Reguli", "crm.segments.f.rulesHelp": "Pornesc de la filtrele aplicate. Poți adăuga sau scoate condiții.", "crm.segments.f.who": "Cine îl vede", "crm.segments.f.whoMe": "Doar eu", "crm.segments.f.whoTeam": "Toată echipa", "crm.segments.f.live": "Contactele noi care se potrivesc intră singure în segment; cele care nu se mai potrivesc ies.", "crm.segments.f.never": "Nota „Risc ridicat”, clienții blocați și datele medicale din EasyBook nu pot fi folosite într-un segment.", "crm.segments.c.state": "Starea clientului", "crm.segments.c.source": "Sursă", "crm.segments.c.tag": "Etichetă", "crm.segments.c.owner": "Responsabil", "crm.segments.c.lastVisit": "Ultima vizită", "crm.segments.c.added": "Adăugat", "crm.segments.c.company": "Companie", "crm.segments.c.consent": "Consimțământ de marketing", "crm.segments.c.birthday": "Ziua de naștere", "crm.segments.op.is": "este", "crm.segments.op.isNot": "nu este", "crm.segments.op.has": "are", "crm.segments.op.hasNot": "nu are", "crm.segments.op.over": "acum mai mult de", "crm.segments.op.under": "acum mai puțin de", "crm.segments.op.within": "în ultimele", "crm.segments.op.before": "înainte de ultimele", "crm.segments.op.set": "are", "crm.segments.op.notSet": "nu are", "crm.segments.op.given": "dat pentru", "crm.segments.op.notGiven": "nedat pentru", "crm.segments.u.days": "zile", "crm.segments.v.any": "o companie", "crm.segments.v.email": "E-mail", "crm.segments.v.sms": "SMS", "crm.segments.v.thisMonth": "luna aceasta", "crm.segments.v.nextMonth": "luna viitoare", "crm.segments.act.open": "Deschide", "crm.segments.act.edit": "Editează", "crm.segments.act.days": "Schimbă zilele", "crm.segments.act.copy": "Fă o copie", "crm.segments.act.delete": "Șterge segmentul", "crm.segments.act.use": "Folosește segmentul", "crm.segments.act.export": "Exportă contactele", "crm.segments.act.campaign": "Campanie în CampaignKit", "crm.segments.edit.title": "Editează segmentul", "crm.segments.edit.save": "Salvează", "crm.segments.saved": "Am salvat segmentul „{name}”", "crm.segments.emptyTitle": "Nimeni nu se potrivește acum", "crm.segments.emptyBody": "Toți clienții au venit în ultimele 7 zile. Segmentul se umple singur când cineva nu mai vine.", "crm.companies.lead": "Firmele cu care lucrezi și oamenii tăi de contact de acolo.", "crm.companies.search": "Caută o companie sau un CUI", "crm.companies.new": "Companie nouă", "crm.companies.create": "Adaugă compania", "crm.companies.count": "{n} companii", "crm.companies.col.name": "Companie", "crm.companies.col.people": "Persoane", "crm.companies.col.deals": "Dealuri deschise", "crm.companies.col.owner": "Responsabil", "crm.companies.col.last": "Ultima activitate", "crm.companies.col.person": "Persoană", "crm.companies.dealsN.one": "{n} deal", "crm.companies.dealsN.few": "{n} dealuri", "crm.companies.dealsN.many": "{n} de dealuri", "crm.companies.last.d": "{d}", "crm.companies.f.hotel": "Hotel", "crm.companies.f.agency": "Agenție de evenimente", "crm.companies.f.clinic": "Clinică stomatologică", "crm.companies.f.florist": "Florărie", "crm.companies.act.open": "Deschide", "crm.companies.act.edit": "Editează", "crm.companies.act.delete": "Șterge compania", "crm.companies.act.main": "Fă-l contact principal", "crm.companies.act.role": "Schimbă rolul", "crm.companies.act.unlink": "Scoate din companie", "crm.companies.main": "Principal", "crm.companies.card.sub": "{field} · CUI {cui}", "crm.companies.card.people": "Persoane de contact · {n}", "crm.companies.card.history": "Istoric", "crm.companies.card.details": "Date despre companie", "crm.companies.card.deals": "Dealuri deschise · {n}", "crm.companies.k.name": "Numele companiei", "crm.companies.k.cui": "CUI", "crm.companies.k.cuiHelp": "Codul fiscal, cu sau fără RO.", "crm.companies.k.field": "Domeniu", "crm.companies.k.address": "Adresă", "crm.companies.k.web": "Site", "crm.companies.k.phone": "Telefon", "crm.companies.k.people": "Persoane de contact", "crm.companies.k.peopleHelp": "Contacte care există deja. Le poți lega și mai târziu.", "crm.companies.when.yesterday": "ieri", "crm.companies.feed.email": "E-mail trimis: contractul pentru nunți", "crm.companies.feed.emailMeta": "Către Elena Marin · deschis azi la 08:40", "crm.companies.feed.deal": "Deal nou: Nunți, sezonul 2027", "crm.companies.feed.dealMeta": "11.200 lei · etapa Negociere", "crm.companies.feed.comment": "Comentariu", "crm.companies.feed.commentText": "au cerut și machiaj pentru domnișoarele de onoare, îl pun în ofertă?", "crm.companies.feed.field": "Câmp schimbat", "crm.companies.feed.fieldMeta": "Responsabil: Neatribuit → Bianca Petrașcu", "crm.companies.link.action": "Leagă un contact", "crm.companies.link.title": "Leagă un contact de {company}", "crm.companies.link.contact": "Contact", "crm.companies.link.contactHelp": "Caută între contactele existente.", "crm.companies.link.role": "Rolul în companie", "crm.companies.link.main": "Contact principal", "crm.companies.link.mainHelp": "Apare primul în companie și în dealurile ei.", "crm.companies.link.one": "Un contact ține de o singură companie. Dacă era legat de alta, se mută aici, iar istoricul rămâne.", "crm.companies.link.submit": "Leagă contactul", "crm.companies.empty.title": "Încă nu ai companii", "crm.companies.empty.body": "Adaugă firmele cu care lucrezi și leagă-le de oamenii tăi de contact.", "crm.contact.sub": "Adăugat pe {date} · {source}", "crm.contact.subEb": "Client EasyBook din {date}", "crm.contact.history": "Istoric", "crm.contact.filter": "Ce arată istoricul", "crm.contact.filter.all": "Tot", "crm.contact.filter.notes": "Notițe și comentarii", "crm.contact.filter.emails": "E-mailuri", "crm.contact.filter.tasks": "Sarcini și activități", "crm.contact.filter.deals": "Dealuri", "crm.contact.filter.bookings": "Programări din EasyBook", "crm.contact.filter.changes": "Schimbări de câmpuri", "crm.contact.when.today": "azi, {time}", "crm.contact.when.yesterday": "ieri", "crm.contact.compose.label": "Notiță sau comentariu", "crm.contact.compose.note": "Notiță", "crm.contact.compose.comment": "Comentariu", "crm.contact.compose.notePh": "Scrie o notiță despre contact…", "crm.contact.compose.commentPh": "Scrie un comentariu; cu @ menționezi pe cineva din echipă…", "crm.contact.compose.fileText": "Poza de la proba de coafură, pentru ziua nunții.", "crm.contact.compose.mention": "Membri ai echipei", "crm.contact.compose.mentionHint": "Cine e menționat primește o notificare.", "crm.contact.compose.noteHint": "Notița o vede toată echipa care are acces la contact.", "crm.contact.compose.attach": "Atașează", "crm.contact.compose.removeFile": "Scoate fișierul", "crm.contact.compose.save": "Salvează notița", "crm.contact.compose.send": "Trimite comentariul", "crm.contact.file.warnTitle": "Nu atașa date medicale", "crm.contact.file.warnBody": "Analize, diagnostice, rețete sau alergii nu se pun în ClientDesk. Informațiile de sănătate pentru o programare rămân doar în EasyBook, unde le vede doar cine are voie.", "crm.contact.file.rule": "Fără date medicale în fișiere. PNG, JPG, PDF, cel mult 10 MB.", "crm.contact.feed.comment": "Comentariu", "crm.contact.feed.commentText": "o suni tu pentru proba de coafură? A cerut o zi de sâmbătă.", "crm.contact.feed.taskDone": "Sarcină făcută: trimite oferta pentru pachetul de mireasă", "crm.contact.feed.taskDoneMeta": "Terminată la 17:20", "crm.contact.feed.email": "E-mail trimis: oferta pentru ziua nunții", "crm.contact.feed.emailMeta": "Deschis de 2 ori · oferta-pachet-mireasa.pdf", "crm.contact.feed.deal": "Deal nou: Pachet mireasă", "crm.contact.feed.dealMeta": "2.600 lei · etapa Contact nou", "crm.contact.feed.note": "Notiță", "crm.contact.feed.noteText": "Vrea coafură și machiaj pentru ea și pentru mamă. Nunta e în Sibiu, la ora 15:00.", "crm.contact.feed.field": "Câmp schimbat", "crm.contact.feed.fieldMeta": "Data nunții: — → 12 iunie 2027", "crm.contact.feed.consent": "Consimțământ dat pentru e-mail", "crm.contact.feed.consentMeta": "Prin formularul de pe site, la 18:42", "crm.contact.feed.created": "Contact creat", "crm.contact.feed.createdMeta": "Din formularul de pe site", "crm.contact.feed.bookingNext": "Programare nouă în EasyBook: Vopsit rădăcină", "crm.contact.feed.bookingNextMeta": "Joi, 19 nov., 14:00 · Ioana Pavel · Confirmată · făcută online", "crm.contact.feed.noteC": "Preferă nuanța 6.3 și programările de după-amiază.", "crm.contact.feed.bookingDone": "Programare în EasyBook: Tuns damă", "crm.contact.feed.bookingDoneMeta": "12 oct., 11:00 · Ioana Pavel · Venită", "crm.contact.feed.emailC": "E-mail din EasyBook: reamintirea programării", "crm.contact.feed.emailCMeta": "Trimis automat cu 24 de ore înainte", "crm.contact.feed.consentOff": "Consimțământ retras pentru SMS", "crm.contact.feed.consentOffMeta": "La cererea clientei, telefonic", "crm.contact.feed.fieldC": "Câmp schimbat", "crm.contact.feed.fieldCMeta": "Etichete: + VIP", "crm.contact.s.contact": "Date de contact", "crm.contact.s.edit": "Editează datele", "crm.contact.s.fields": "Câmpurile afacerii", "crm.contact.s.fieldsEdit": "Editează câmpurile", "crm.contact.s.birthday": "Ziua de naștere", "crm.contact.s.consent": "Consimțământ de marketing", "crm.contact.s.files": "Fișiere · {n}", "crm.contact.s.files.one": "Fișiere · {n}", "crm.contact.s.files.few": "Fișiere · {n}", "crm.contact.s.files.many": "Fișiere · {n}", "crm.contact.k.name": "Nume", "crm.contact.k.phone": "Telefon", "crm.contact.k.email": "E-mail", "crm.contact.k.lang": "Limba", "crm.contact.k.company": "Companie", "crm.contact.k.source": "Sursă", "crm.contact.k.birthday": "Ziua de naștere", "crm.contact.f.wedding": "Data nunții", "crm.contact.f.hair": "Părul", "crm.contact.f.budget": "Buget", "crm.contact.f.how": "Cum a aflat de noi", "crm.contact.f.howSite": "Site", "crm.contact.fields.title": "Câmpurile afacerii", "crm.contact.fields.where": "Ce câmpuri are o fișă alegi în Setări › Câmpuri proprii.", "crm.contact.bday.remind": "Amintește-mi de ziua de naștere", "crm.contact.bday.remindHelp": "{name} primește o sarcină cu {n} zile înainte.", "crm.contact.bday.help": "Ziua și luna sunt de ajuns; anul e opțional.", "crm.contact.consent.lead": "Pentru oferte și noutăți. Mesajele despre programări nu au nevoie de el.", "crm.contact.ch.email": "E-mail", "crm.contact.ch.sms": "SMS", "crm.contact.consent.given": "Dat", "crm.contact.consent.none": "Nu e dat", "crm.contact.consent.withdrawn": "Retras", "crm.contact.consent.emailMeta": "2 nov. 2026, 18:42 · prin formularul de pe site · „Vreau să primesc oferte de la Salon Aurora.”", "crm.contact.consent.ebMeta": "12 mar. 2025 · bifat la programarea online din EasyBook", "crm.contact.consent.noneMeta": "Nu primește SMS-uri de marketing.", "crm.contact.consent.smsOffMeta": "Retras pe 3 oct. 2026 · telefonic · înregistrat de Ioana Pavel", "crm.contact.consent.withdraw": "Retrage", "crm.contact.consent.record": "Înregistrează consimțământul", "crm.contact.record.title": "Consimțământ pentru SMS", "crm.contact.record.lead": "Înregistrezi că {name} a acceptat SMS-uri de marketing.", "crm.contact.record.when": "Când", "crm.contact.record.how": "Cum", "crm.contact.record.proof": "Dovada", "crm.contact.record.proofHelp": "Ce a spus sau unde e formularul semnat.", "crm.contact.record.informed": "I-am spus că poate retrage oricând consimțământul", "crm.contact.record.log": "În istoric rămân cine l-a înregistrat și când.", "crm.contact.record.submit": "Înregistrează", "crm.contact.how.salon": "Verbal, la salon", "crm.contact.how.paper": "Formular pe hârtie", "crm.contact.how.online": "Formular online", "crm.contact.how.email": "Prin e-mail", "crm.contact.withdraw.title": "Retragi consimțământul pentru e-mail?", "crm.contact.withdraw.lead": "{name} nu mai primește e-mailuri de marketing. Mesajele despre programări continuă.", "crm.contact.withdraw.how": "Cum a cerut", "crm.contact.withdraw.after": "Contactul iese din campaniile pe e-mail, inclusiv din cele programate. Retragerea rămâne în istoric.", "crm.contact.withdraw.submit": "Retrage consimțământul", "crm.contact.whow.phone": "Telefonic", "crm.contact.whow.email": "Prin e-mail", "crm.contact.whow.salon": "La salon", "crm.contact.whow.link": "Din linkul de dezabonare", "crm.contact.eb.edit": "Editează în EasyBook", "crm.contact.eb.readonly": "Numele, telefonul, e-mailul și limba vin din EasyBook și se schimbă acolo.", "crm.contact.eb.bookings": "Programări în EasyBook", "crm.contact.eb.bookingsLead": "{n} programări în total", "crm.contact.eb.open": "Deschide în EasyBook", "crm.contact.eb.newBooking": "Programare nouă", "crm.contact.eb.col.when": "Când", "crm.contact.eb.col.service": "Serviciu", "crm.contact.eb.col.state": "Stare", "crm.contact.eb.lockTitle": "Datele de bază vin din EasyBook", "crm.contact.eb.lockBody": "Numele, telefonul, e-mailul și limba se schimbă în EasyBook, ca să rămână la fel în programări și în mesaje.", "crm.contact.edit.title": "Editează contactul", "crm.contact.edit.companyPh": "Fără companie", "crm.contact.save": "Salvează", "crm.contact.noAccess.title": "Contactul e atribuit altui membru al echipei", "crm.contact.noAccess.body": "Vezi doar contactele atribuite ție și pe cele neatribuite. Dacă trebuie să lucrezi cu el, cere-i proprietarului să ți-l atribuie.", "crm.contact.noAccess.back": "Înapoi la contacte", "crm.notif.n1": "Acum: sună-l pe Mihai Stanciu", "crm.notif.n1Body": "Sarcină · oferta Nord Studio · termen 10:00", "crm.notif.n1Time": "acum 1 min", "crm.notif.n2": "Lead nou: Raluca Toma", "crm.notif.n2Body": "Formular site · ofertă pentru botez · scor 45", "crm.notif.n2Time": "acum 2 ore", "crm.notif.n3": "Bianca Petrașcu te-a menționat", "crm.notif.n3Body": "Andreea Vasile · „o suni tu pentru proba de coafură?”", "crm.notif.n3Time": "azi, 09:12", "crm.leads.lead": "Cererile noi, înainte să devină contacte. Leadurile nu consumă limita de contacte.", "crm.leads.noLimit": "Leadurile nu se numără în limita de 3.000 de contacte. Devin contacte abia când le convertești.", "crm.leads.search": "Caută un lead", "crm.leads.new": "Lead nou", "crm.leads.f.open": "Deschise · {n}", "crm.leads.f.qualified": "Calificate · {n}", "crm.leads.f.closed": "Închise · {n}", "crm.leads.count": "{n} leaduri deschise", "crm.leads.countLead": "Cele cu scor mare întâi, apoi cele mai noi.", "crm.leads.col.lead": "Lead", "crm.leads.col.source": "Sursă", "crm.leads.col.score": "Scor", "crm.leads.col.owner": "Responsabil", "crm.leads.col.state": "Stare", "crm.leads.col.at": "Primit", "crm.leads.src.all": "Toate sursele", "crm.leads.src.form": "Formular", "crm.leads.src.phone": "Telefon", "crm.leads.src.email": "E-mail", "crm.leads.src.referral": "Recomandare", "crm.leads.src.event": "Eveniment", "crm.leads.src.manual": "Manual", "crm.leads.st.new": "Nou", "crm.leads.st.contacted": "Contactat", "crm.leads.st.qualified": "Calificat", "crm.leads.st.lost": "Descalificat", "crm.leads.st.converted": "Convertit", "crm.leads.need.l1": "Ofertă pentru botez, 30 de persoane", "crm.leads.need.l2": "Colaborare: aranjamente florale", "crm.leads.need.l3": "Coafat și machiaj pentru cununie", "crm.leads.need.l4": "Pachet mireasă, septembrie 2027", "crm.leads.need.l5": "Coafat pentru o gală, 25 de persoane", "crm.leads.need.l6": "Coafat la domiciliu", "crm.leads.why.l1": "+15 a cerut preț · +10 dată stabilită", "crm.leads.why.l2": "+20 a scris direct · +10 firmă", "crm.leads.why.l3": "+20 a deschis oferta · +15 buget", "crm.leads.why.l4": "+20 a deschis oferta · +20 recomandare", "crm.leads.why.l5": "+20 eveniment · +15 buget", "crm.leads.why.l6": "−10 buget sub prețul minim", "crm.leads.at.l1": "azi, 08:15", "crm.leads.at.l2": "ieri", "crm.leads.act.open": "Deschide", "crm.leads.act.contacted": "Marchează „Contactat”", "crm.leads.act.qualify": "Califică", "crm.leads.act.convert": "Convertește", "crm.leads.act.disqualify": "Descalifică", "crm.leads.reopen": "Redeschide leadul", "crm.leads.scoreBadge": "Scor {n}", "crm.leads.empty.title": "Nicio cerere nouă", "crm.leads.empty.body": "Cererile din formularul de pe site, apelurile și recomandările apar aici. Le poți adăuga și de mână.", "crm.leads.empty.form": "Formularul de pe site", "crm.leads.card.request": "Cererea", "crm.leads.card.requestText": "„Bună ziua! Cristina Dobre mi-a spus de dumneavoastră. Mă căsătoresc pe 18 septembrie 2027 și aș vrea coafură și machiaj pentru mine și pentru două domnișoare de onoare. Bugetul meu e în jur de 2.500 lei.”", "crm.leads.card.requestLost": "„Aș vrea coafat la domiciliu pentru o petrecere, în jur de 100 lei.”", "crm.leads.card.score": "Scor {n}", "crm.leads.card.scoreLead": "Din ce a făcut leadul și ce știm despre el.", "crm.leads.card.details": "Date", "crm.leads.r.opened": "A deschis oferta trimisă", "crm.leads.r.referral": "Recomandat de o clientă", "crm.leads.r.price": "A cerut prețul", "crm.leads.r.budget": "Are un buget", "crm.leads.r.date": "Are o dată stabilită", "crm.leads.r.phone": "A lăsat un telefon", "crm.leads.k.name": "Nume", "crm.leads.k.phone": "Telefon", "crm.leads.k.email": "E-mail", "crm.leads.k.source": "Sursă", "crm.leads.k.budget": "Buget", "crm.leads.k.date": "Data evenimentului", "crm.leads.when.today": "azi, {time}", "crm.leads.feed.open": "A deschis oferta", "crm.leads.feed.openMeta": "A treia oară", "crm.leads.feed.offer": "E-mail trimis: oferta pentru pachetul de mireasă", "crm.leads.feed.offerMeta": "oferta-mireasa-2027.pdf", "crm.leads.feed.call": "Apel · 8 min", "crm.leads.feed.callText": "Vrea o probă în iulie. Vine cu două domnișoare de onoare.", "crm.leads.feed.state": "Stare schimbată", "crm.leads.feed.stateMeta": "Contactat → Calificat", "crm.leads.feed.created": "Lead creat", "crm.leads.feed.createdMeta": "Formularul de pe site · recomandare de la Cristina Dobre", "crm.leads.feed.createdManual": "Adăugat manual de Bianca Petrașcu", "crm.leads.feed.lost": "Descalificat", "crm.leads.feed.lostMeta": "Motiv: buget sub prețul minim", "crm.leads.conv.title": "Convertește: {name}", "crm.leads.conv.lead": "Leadul devine contact și, dacă vrei, un deal în pipeline.", "crm.leads.conv.contact": "Contactul", "crm.leads.conv.withDeal": "Creează și un deal", "crm.leads.conv.dealName": "Numele dealului", "crm.leads.conv.value": "Valoare estimată", "crm.leads.conv.valueHelp": "Din bugetul declarat; o schimbi oricând.", "crm.leads.conv.stage": "Pipeline și etapă", "crm.leads.conv.keepTitle": "Ce se păstrează", "crm.leads.keep.history": "Istoricul: apelurile, e-mailurile, schimbările de stare", "crm.leads.keep.notes": "Notițele și comentariile", "crm.leads.keep.files": "Fișierele atașate", "crm.leads.keep.source": "Sursa și cine a recomandat", "crm.leads.keep.owner": "Responsabilul: Ioana Pavel", "crm.leads.conv.after": "Scorul rămâne doar pe lead. Leadul intră la „Închise”, cu starea „Convertit” și legătura spre contact.", "crm.leads.conv.submit": "Convertește", "crm.leads.conv.done": "{name} e acum contact", "crm.leads.conv.doneDesc": "Am creat și dealul în „Contact nou”. Contactul se numără în limită.", "crm.leads.dup.title": "Există deja un contact cu același telefon", "crm.leads.dup.lead": "Am găsit un contact cu telefonul {phone}.", "crm.leads.dup.existing": "client din martie 2026", "crm.leads.dup.view": "Vezi fișa", "crm.leads.dup.link": "Leagă leadul de contactul existent", "crm.leads.dup.linkHelp": "Istoricul leadului și dealul se adaugă la fișa existentă. Recomandat.", "crm.leads.dup.new": "Creează un contact nou", "crm.leads.dup.newHelp": "Rămân două fișe pentru aceeași persoană; le poți îmbina mai târziu.", "crm.leads.dup.eb": "Contactul vine din EasyBook: numele, telefonul și e-mailul lui rămân cum sunt.", "crm.leads.dup.submit": "Continuă", "crm.leads.lost.dlgTitle": "Descalifici leadul {name}?", "crm.leads.lost.reason": "Motivul", "crm.leads.lost.note": "Notiță", "crm.leads.lost.help": "Leadul trece la „Închise”. Îl poți redeschide oricând.", "crm.leads.lost.submit": "Descalifică", "crm.leads.lost.title": "Descalificat: {reason}", "crm.leads.lost.body": "De Bianca Petrașcu, pe 30 oct. Leadul nu mai apare în căsuța de leaduri deschise.", "crm.leads.reason.budget": "Buget sub prețul minim", "crm.leads.reason.noreply": "Nu răspunde", "crm.leads.reason.notfit": "Nu oferim ce cere", "crm.leads.reason.competitor": "A ales pe altcineva", "crm.leads.reason.spam": "Spam sau test", "crm.leads.reason.other": "Alt motiv", "crm.deals.wonNov": "Câștigate în noiembrie", "crm.deals.fromLead": "Din lead", "crm.deals.due.today": "Sună azi", "crm.deals.due.stuck": "Blocat de {n} zile", "crm.deals.pipeline": "Pipeline", "crm.deals.pipelines.manage": "Gestionează pipeline-urile…", "crm.deals.total": "{n} dealuri deschise · {value} · ponderat cu probabilitatea: {weighted}", "crm.deals.totalEv": "3 dealuri deschise · 34.400 lei", "crm.deals.editStages": "Editează etapele", "crm.deals.new": "Deal nou", "crm.deals.who": "Ale cui", "crm.deals.whoAll": "Toată echipa", "crm.deals.whoMe": "Doar ale mele", "crm.deals.stages": "Etape", "crm.deals.lost": "Pierdut", "crm.deals.won": "Câștigat", "crm.deals.stuck.title": "Nicio mișcare de {n} zile în „{stage}”", "crm.deals.stuck.body": "Ultima activitate: oferta trimisă pe 25 oct. Un deal fără mișcare 14 zile apare la „Au nevoie de tine”.", "crm.deals.stuck.task": "Programează un apel", "crm.deals.stuck.email": "Trimite un e-mail", "crm.deals.f.value": "Valoare", "crm.deals.f.valueHelp": "Suma serviciilor și a elementelor de mai jos.", "crm.deals.f.prob": "Probabilitate", "crm.deals.f.probHelp": "Pornește de la etapă; o poți schimba.", "crm.deals.f.close": "Data estimată a închiderii", "crm.deals.f.stage": "Etapa", "crm.deals.f.contact": "Contact", "crm.deals.f.company": "Companie", "crm.deals.f.owner": "Responsabil", "crm.deals.items": "Servicii și elemente", "crm.deals.addService": "Din catalogul EasyBook", "crm.deals.addFree": "Element liber", "crm.deals.free": "Liber", "crm.deals.col.item": "Ce", "crm.deals.col.qty": "Câte", "crm.deals.col.price": "Preț", "crm.deals.col.total": "Total", "crm.deals.col.qtyPrice": "Câte × preț", "crm.deals.act.editItem": "Editează", "crm.deals.act.removeItem": "Scoate", "crm.deals.ebNote": "Serviciile din EasyBook vin cu prețul din catalog; îl poți schimba doar pentru acest deal.", "crm.deals.noEb": "EasyBook nu e activ, deci nu există catalog de servicii. Adaugi elemente libere, cu prețul lor.", "crm.deals.feed.stage": "Etapă schimbată", "crm.deals.feed.stageMeta": "Ofertă trimisă → Negociere · probabilitate 60%", "crm.deals.feed.offer": "E-mail trimis: oferta pentru 2027", "crm.deals.feed.offerMeta": "Către Elena Marin · oferta-nunti-2027.pdf", "crm.deals.feed.call": "Apel · 15 min", "crm.deals.feed.callText": "Vor 6 nunți în 2027, cu coafat și machiaj pentru mireasă și 3 invitate.", "crm.deals.feed.created": "Deal creat", "crm.deals.feed.createdMeta": "Din fișa companiei Hotel Cibin", "crm.deals.wonDlg.title": "Câștigat: {name}", "crm.deals.wonDlg.value": "Valoarea finală", "crm.deals.wonDlg.date": "Data", "crm.deals.wonDlg.reason": "De ce am câștigat", "crm.deals.wonDlg.task": "Creează o sarcină pentru pasul următor", "crm.deals.wonDlg.taskHelp": "„Programează nunțile în EasyBook”, pentru Bianca Petrașcu, mâine.", "crm.deals.wonDlg.after": "Dealul trece în „Câștigate în noiembrie” și apare în rapoarte. Îl poți redeschide.", "crm.deals.wonDlg.submit": "Marchează câștigat", "crm.deals.why.price": "Prețul", "crm.deals.why.quality": "Calitatea", "crm.deals.why.rel": "Relația cu clientul", "crm.deals.why.speed": "Am răspuns repede", "crm.deals.why.other": "Alt motiv", "crm.deals.wonToast": "Câștigat: {name} · {value}", "crm.deals.wonToastDesc": "Am creat sarcina „Programează nunțile în EasyBook”.", "crm.deals.lostDlg.title": "Pierdut: {name}", "crm.deals.lostDlg.reason": "Motivul", "crm.deals.lostDlg.note": "Notiță", "crm.deals.lostDlg.again": "Revino la el pe", "crm.deals.lostDlg.againHelp": "Primești o sarcină în ziua aceea.", "crm.deals.lostDlg.after": "Dealul iese din pipeline și apare în rapoarte la „Pierdute”, cu motivul. Îl poți redeschide.", "crm.deals.lostDlg.submit": "Marchează pierdut", "crm.deals.lost.price": "Prețul", "crm.deals.lost.competitor": "A ales pe altcineva", "crm.deals.lost.noreply": "Nu mai răspunde", "crm.deals.lost.later": "Amânat", "crm.deals.lost.budget": "Fără buget", "crm.deals.lost.other": "Alt motiv", "crm.deals.pipelines.title": "Pipeline-uri", "crm.deals.pipelines.lead": "Fiecare pipeline are etapele lui. Dealurile se mută între ele din Drawer.", "crm.deals.pipelines.p1": "Contact nou · Ofertă trimisă · Negociere", "crm.deals.pipelines.p2": "Cerere · Vizită la locație · Contract trimis", "crm.deals.pipelines.default": "Implicit", "crm.deals.pipelines.limit": "Ai 2 din 2 pipeline-uri", "crm.deals.pipelines.limitBody": "Abonamentul tău permite două pipeline-uri. Ca să adaugi altul, șterge unul fără dealuri deschise.", "crm.deals.pipelines.new": "Pipeline nou", "crm.deals.pipelines.done": "Gata", "crm.activities.lead": "Ce ai de făcut: sarcini, apeluri, întâlniri și remindere.", "crm.activities.calLead": "Apelurile și întâlnirile, pe zile.", "crm.activities.tab.mine": "Activitățile mele", "crm.activities.tab.cal": "Calendar", "crm.activities.new": "Activitate nouă", "crm.activities.create": "Adaugă", "crm.activities.logCall": "Înregistrează un apel", "crm.activities.who": "Ale cui", "crm.activities.whoMe": "Ale mele", "crm.activities.whoAll": "Toată echipa", "crm.activities.kind": "Tip", "crm.activities.more": "Mai multe", "crm.activities.k.all": "Toate tipurile", "crm.activities.k.task": "Sarcină", "crm.activities.k.call": "Apel", "crm.activities.k.meeting": "Întâlnire", "crm.activities.k.reminder": "Reminder", "crm.activities.k.email": "E-mail", "crm.activities.g.late": "Întârziate · {n}", "crm.activities.g.lateLead": "Termenul a trecut.", "crm.activities.g.today": "Azi · {n}", "crm.activities.g.week": "Săptămâna asta · {n}", "crm.activities.due.yesterday": "Ieri, 16:00", "crm.activities.empty.title": "Nimic de făcut", "crm.activities.empty.body": "Nicio sarcină întârziată, nimic azi și nimic săptămâna asta.", "crm.activities.cal.lead": "Lead", "crm.activities.cal.atClient": "la client", "crm.activities.cal.visit": "Vizită la locație", "crm.activities.prev": "Înapoi", "crm.activities.next": "Înainte", "crm.activities.today": "Azi", "crm.activities.view": "Afișare", "crm.activities.day": "Zi", "crm.activities.week": "Săptămână", "crm.activities.dayLabel": "Marți, 10 noiembrie", "crm.activities.weekLabel": "9–13 noiembrie", "crm.activities.calNote": "Sarcinile fără oră nu apar în calendar; le găsești în „Activitățile mele”.", "crm.activities.f.kind": "Tip", "crm.activities.f.title": "Ce ai de făcut", "crm.activities.f.date": "Termen", "crm.activities.f.time": "Ora", "crm.activities.f.owner": "Responsabil", "crm.activities.f.link": "Legată de", "crm.activities.f.linkHelp": "Un contact, un lead, un deal sau o companie. Apare în istoricul lor.", "crm.activities.f.remind": "Reminder", "crm.activities.f.remindHelp": "Notificare în ClientDesk și pe telefon.", "crm.activities.f.note": "Notiță", "crm.activities.lk.contacts": "Contacte", "crm.activities.lk.leads": "Leaduri", "crm.activities.lk.deals": "Dealuri", "crm.activities.rem.0": "La termen", "crm.activities.rem.15": "Cu 15 minute înainte", "crm.activities.rem.60": "Cu o oră înainte", "crm.activities.rem.1440": "Cu o zi înainte", "crm.activities.rem.none": "Fără reminder", "crm.activities.call.title": "Înregistrează un apel", "crm.activities.call.lead": "{name} · {deal}", "crm.activities.call.result": "Rezultat", "crm.activities.call.dur": "Durată", "crm.activities.call.next": "Adaugă pasul următor", "crm.activities.call.nextHelp": "O sarcină nouă, legată de același deal.", "crm.activities.call.where": "Apelul apare în istoricul contactului și al dealului.", "crm.activities.call.submit": "Salvează apelul", "crm.activities.res.answered": "A răspuns", "crm.activities.res.noanswer": "Nu a răspuns", "crm.activities.res.voicemail": "Mesaj vocal", "crm.activities.res.wrong": "Număr greșit", "crm.activities.meet.title": "Înregistrează întâlnirea", "crm.activities.meet.lead": "{name} · {company}", "crm.activities.meet.people": "Participanți", "crm.activities.meet.where": "Unde", "crm.activities.meet.outcome": "Rezultat", "crm.activities.meet.where2": "Întâlnirea apare în istoricul companiei și al fiecărui participant.", "crm.activities.meet.submit": "Salvează întâlnirea", "crm.activities.where.client": "La client", "crm.activities.where.salon": "La salon", "crm.activities.where.online": "Online", "crm.activities.where.phone": "La telefon", "crm.activities.out.next": "Urmează un pas", "crm.activities.out.offer": "Trimitem ofertă", "crm.activities.out.won": "Am încheiat", "crm.activities.out.none": "Nimic deocamdată", "crm.activities.doneToast": "Bifat: „Sună-o pe Raluca Toma”", "crm.activities.doneToastDesc": "Apare în istoricul leadului. Ai 2 activități rămase azi."}};
+/* S130 — shared by the ClientDesk screens (CR-UI.1–3): the shell and its Spine, the three-size board, sample team, contacts and companies, the history feed. RO only for now; keys crm.* in i18n/crm.json. */
+const C = (k, v) => mkT(CRM)("ro", "crm." + k, v);
+const plural = (tr, n, base, v) => tr(base + (n === 1 ? ".one" : n === 0 || (n % 100 > 0 && n % 100 < 20) ? ".few" : ".many"), Object.assign({ n }, v || {}));
+const dlgCls = (mode) => mode === "mobile" ? "v-dialog--sheet" : undefined;
+const Info = ({ children, icon = "info" }) => h("p", { className: "x-line body-small" }, h(V.Icon, { name: icon, size: 16 }), children);
+const KVL = ({ rows }) => h("dl", { className: "kv" }, rows.filter(Boolean).map(([k, v]) => h(React.Fragment, { key: k }, h("dt", { className: "caption" }, k), h("dd", { className: "body-small" }, v))));
+
+/* ---- three sizes, light and dark ---- */
+function Board3({ title, notes, items, dH = 1200, tH = 1300, mH = 1500 }) {
+  return h("div", { className: "scr" },
+    h("p", { className: "heading" }, title),
+    notes ? h("p", { className: "caption muted" }, notes.join(" · ")) : null,
+    items.map(([lab, render, D = dH, Tt = tH, M = mH]) => h("div", { key: lab, className: "tfa-scrgroup" },
+      h("p", { className: "subheading tfa-grouplab" }, lab),
+      ["light", "dark"].map((th) => h("div", { className: "scr-row", key: th },
+        [["desktop", "Desktop · 1280", "scr-d", D], ["tablet", "Tabletă portret · 820", "scr-t", Tt], ["mobile", "Telefon · 390", "scr-m", M]].map(([m, l, cls, H]) => h("div", { key: m },
+          h("p", { className: "caption scr-lab" }, l, " · ", th === "light" ? "Light" : "Dark"),
+          h("div", { className: cls, "data-theme": th, style: { height: H, position: "relative", overflow: "hidden" } }, render(m, th)))))))));
+}
+
+/* ---- the ClientDesk shell ---- */
+const CD_NAV = [
+  { items: [{ id: "acasa", label: C("nav.home"), short: C("nav.homeShort"), icon: "house" }, { id: "contacte", label: C("nav.contacts"), icon: "users" }, { id: "companii", label: C("nav.companies"), icon: "building-2" }, { id: "leaduri", label: C("nav.leads"), icon: "target", badge: 2 }, { id: "dealuri", label: C("nav.deals"), icon: "kanban" }, { id: "activitati", label: C("nav.activities"), icon: "calendar-check", badge: 5 }] },
+  { label: C("nav.business"), items: [{ id: "rapoarte", label: C("nav.reports"), icon: "chart-column" }, { id: "setari", label: C("nav.settings"), icon: "settings" }] }
+];
+/* ClientDesk's own notifications: nothing from EasyBook's "Risc ridicat", blocked clients or health data */
+const CD_NOTIFS = [
+  { id: 1, title: C("notif.n1"), body: C("notif.n1Body"), app: "ClientDesk", time: C("notif.n1Time"), icon: "calendar-check" },
+  { id: 2, title: C("notif.n2"), body: C("notif.n2Body"), app: "ClientDesk", time: C("notif.n2Time"), icon: "target" },
+  { id: 3, title: C("notif.n3"), body: C("notif.n3Body"), app: "ClientDesk", time: C("notif.n3Time"), icon: "message-square", read: true }
+];
+function CdApp({ active, title, children, used = 828, notifOpen }) {
+  return h(V.AppShell, {
+    height: "100%",
+    spine: h(V.Spine, { app: "crm", sections: CD_NAV, activeId: active, onBackToHub: noop, bottomItems: ["acasa", "contacte", "dealuri", "activitati"],
+      footer: h(V.UsageMeter, { compact: true, label: C("usage.label"), used, limit: 3000 }) }),
+    contextBar: h(V.ContextBar, { title: title || "ClientDesk", org: h(V.OrgSwitcher, { orgs: ORGS, currentId: "aurora" }), onSearch: noop,
+      notifications: h(V.NotificationsPanel, { items: CD_NOTIFS }), account: h(V.AccountMenu, { user: USER, orgs: ORGS, currentOrgId: "aurora", onCatalog: noop }) })
+  }, children);
+}
+function CdPage({ mode, active, title, header, children, drawer, overlay, toast, toastDesc, toastTone, used, notifOpen }) {
+  const mob = mode === "mobile";
+  return h("div", { className: "frame-rel" },
+    h(CdApp, { active, title, used },
+      header ? h(V.PageHeader, header) : null,
+      h("div", { className: "x-body" + (mob ? " m" : "") }, children)),
+    drawer || null,
+    notifOpen ? h("div", { className: "cd-notif" + (mode === "mobile" ? " m" : "") }, h(V.NotificationsPanel, { inline: true, items: CD_NOTIFS })) : null,
+    overlay ? h(Overlay, { mode }, overlay) : null,
+    toast ? h(ToastAt, { mode, title: toast, description: toastDesc, tone: toastTone }) : null);
+}
+const Pad = ({ mode, children }) => h("div", { className: mode === "mobile" ? "cd-pad" : undefined }, children);
+const Foot = ({ mode, left, children }) => h("div", { className: "cd-foot" + (mode === "mobile" ? " m" : "") }, left || null, h("span", { className: "cd-grow" }), children);
+const CdDrawer = ({ mode, title, subtitle, footer, children, width = 520 }) => h(V.Drawer, { open: true, contained: true, layout: mode === "mobile" ? "full" : "auto", width, onOpenChange: noop, title, subtitle, footer }, h("div", { className: "x-stack" }, children));
+const Dlg = ({ mode, title, description, footer, children }) => h(V.Dialog, { open: true, inline: true, className: dlgCls(mode), title, description, footer }, children);
+
+/* ---- sample data ---- */
+const TEAM = [{ id: "bianca", name: "Bianca Petrașcu", role: "Proprietar" }, { id: "ioana", name: "Ioana Pavel", role: "Stilist" }, { id: "radu", name: "Radu Matei", role: "Stilist" }, { id: "mara", name: "Mara Enache", role: "Manichiuristă" }];
+const STATES = { new: ["neutral", "user-plus"], back: ["done", "refresh-cw"], idle: ["neutral", "clock"] };
+const StatePill = ({ s }) => h(V.StatusPill, { tone: STATES[s][0], icon: STATES[s][1] }, C("state." + s));
+const EbBadge = () => h(V.Badge, null, "EasyBook");
+const Tags = ({ tags }) => tags && tags.length ? h("span", { className: "x-row cd-tags" }, tags.map((t) => h(V.Badge, { key: t }, t))) : h("span", { className: "body-small muted" }, "—");
+const Owner = ({ name }) => name ? h("span", { className: "cd-owner" }, h(V.Avatar, { name, size: "sm" }), h("span", { className: "body-small" }, name)) : h("span", { className: "body-small muted" }, C("owner.none"));
+const CONTACTS = [
+  { id: 1, name: "Cristina Dobre", phone: "0742 220 118", email: "cristina.dobre@gmail.com", tags: ["VIP"], state: "back", owner: "Ioana Pavel", source: "EasyBook", added: "12 mar. 2025", eb: true },
+  { id: 2, name: "Andreea Vasile", phone: "0745 118 902", email: "andreea.vasile@yahoo.com", tags: ["Mireasă"], state: "new", owner: "Ioana Pavel", source: C("src.form"), added: "2 nov. 2026" },
+  { id: 3, name: "Mihai Stanciu", phone: "0723 400 115", email: "mihai@nordstudio.ro", tags: ["Corporate"], state: "new", owner: "Bianca Petrașcu", source: C("src.referral"), added: "28 oct. 2026", company: "Nord Studio" },
+  { id: 4, name: "Laura Stan", phone: "0751 330 284", email: "laura.stan@gmail.com", tags: [], state: "idle", owner: null, source: "EasyBook", added: "3 feb. 2025", eb: true },
+  { id: 5, name: "Dan Stoica", phone: "0744 310 552", email: "dan.stoica@outlook.com", tags: ["VIP"], state: "back", owner: "Radu Matei", source: "EasyBook", added: "19 ian. 2025", eb: true },
+  { id: 6, name: "Elena Marin", phone: "0733 902 441", email: "elena.marin@hotelcibin.ro", tags: ["Corporate", "Evenimente"], state: "back", owner: "Bianca Petrașcu", source: C("src.event"), added: "14 iun. 2026", company: "Hotel Cibin" },
+  { id: 7, name: "Paul Stan", phone: "0756 210 907", email: "paul.stan@gmail.com", tags: [], state: "idle", owner: null, source: "EasyBook", added: "8 apr. 2025", eb: true },
+  { id: 8, name: "Simona Pop", phone: "0722 615 330", email: "simona.pop@dentis.ro", tags: ["Corporate"], state: "new", owner: "Mara Enache", source: C("src.import"), added: "5 nov. 2026", company: "Clinica Dentis Sibiu" }
+];
+const NameCell = ({ r }) => h("span", { className: "cd-name" }, h(V.Avatar, { name: r.name, size: "sm" }), h("span", { className: "cd-namecol" }, h("span", { className: "body-strong" }, r.name), r.eb || r.company ? h("span", { className: "cd-sub" }, r.eb ? h(EbBadge) : null, r.company ? h("span", { className: "body-small muted" }, r.company) : null) : null));
+
+/* ---- the history feed (one list for notes, comments, activities, e-mails, deals, EasyBook bookings, field changes) ---- */
+const FEED_ICON = { comment: "message-square", note: "file-text", task: "calendar-check", email: "mail", deal: "handshake", booking: "calendar", field: "pencil", consent: "shield", created: "user-plus", file: "file", call: "phone" };
+function Feed({ items }) {
+  return h("ol", { className: "cd-feed" }, items.map((it, i) => h("li", { key: i, className: "cd-fi" },
+    h("span", { className: "cd-fic", "aria-hidden": true }, h(V.Icon, { name: FEED_ICON[it.t], size: 16 })),
+    h("div", { className: "cd-fbody" },
+      h("p", { className: "body-small cd-fhead" }, h("span", { className: "body-strong" }, it.title), it.who ? h("span", { className: "muted" }, " · " + it.who) : null),
+      it.text ? h("div", { className: "body-small cd-ftext" + (it.boxed ? " box" : "") }, it.text) : null,
+      it.meta ? h("p", { className: "caption muted" }, it.meta) : null),
+    h("span", { className: "caption muted cd-fwhen" }, it.when))));
+}
+const Mention = ({ name }) => h("span", { className: "cd-mention body-strong" }, "@" + name);
+
+/* S131 · ClientDesk — leads (CR-UI.4): the leads inbox, separate from contacts (leads don't count toward the contact limit); source, score with its reasons, owner, state (new, contacted, qualified, disqualified with a reason); the lead card; converting into a contact + deal (what is kept); a duplicate found when converting; a disqualified lead. RO only for now; keys crm.leads.* in i18n/crm.json. */
+const LD = (k, v) => C("leads." + k, v);
+const LST = { new: ["neutral", "circle-dot"], contacted: ["neutral", "phone"], qualified: ["done", "check"], lost: ["neutral", "x"], converted: ["done", "check-check"] };
+const LeadPill = ({ s }) => h(V.StatusPill, { tone: LST[s][0], icon: LST[s][1] }, LD("st." + s));
+const LEADS = [
+  { id: 1, name: "Raluca Toma", need: LD("need.l1"), src: "form", score: 45, why: LD("why.l1"), owner: null, st: "new", at: LD("at.l1") },
+  { id: 2, name: "Atelier Verde", need: LD("need.l2"), src: "email", score: 30, why: LD("why.l2"), owner: "Radu Matei", st: "new", at: LD("at.l2") },
+  { id: 3, name: "Corina Matei", need: LD("need.l3"), src: "phone", score: 70, why: LD("why.l3"), owner: "Ioana Pavel", st: "contacted", at: "6 nov." },
+  { id: 4, name: "Andreea Vasilescu", need: LD("need.l4"), src: "referral", score: 85, why: LD("why.l4"), owner: "Ioana Pavel", st: "qualified", at: "4 nov." },
+  { id: 5, name: "Grupul Sibiu Events", need: LD("need.l5"), src: "event", score: 60, why: LD("why.l5"), owner: "Bianca Petrașcu", st: "contacted", at: "3 nov." },
+  { id: 6, name: "Marius Pop", need: LD("need.l6"), src: "manual", score: 10, why: LD("why.l6"), owner: "Bianca Petrașcu", st: "lost", at: "28 oct." }
+];
+const Score = ({ n, why }) => h("span", { className: "cd-namecol" }, h("span", { className: "body-strong v-num" }, n), why ? h("span", { className: "caption muted" }, why) : null);
+const COLS = [
+  { key: "name", header: LD("col.lead"), primary: true, render: (r) => h("span", { className: "cd-name" }, h(V.Avatar, { name: r.name, size: "sm" }), h("span", { className: "cd-namecol" }, h("span", { className: "body-strong" }, r.name), h("span", { className: "body-small muted" }, r.need))) },
+  { key: "src", header: LD("col.source"), secondary: true, width: "112px", render: (r) => h("span", { className: "body-small" }, LD("src." + r.src)) },
+  { key: "score", header: LD("col.score"), optional: true, width: "176px", render: (r) => h(Score, { n: r.score, why: r.why }) },
+  { key: "owner", header: LD("col.owner"), optional: true, width: "152px", render: (r) => h(Owner, { name: r.owner }) },
+  { key: "st", header: LD("col.state"), secondary: true, width: "128px", render: (r) => h(LeadPill, { s: r.st }) },
+  { key: "at", header: LD("col.at"), trailing: true, width: "96px", render: (r) => h("span", { className: "body-small muted" }, r.at) }
+];
+function Inbox({ mode, empty, overlay, toast, toastDesc }) {
+  const mob = mode === "mobile";
+  const seg = h(V.SegmentedControl, { size: "sm", label: LD("col.state"), value: "open", options: [{ value: "open", label: LD("f.open", { n: 5 }) }, { value: "qualified", label: LD("f.qualified", { n: 1 }) }, { value: "closed", label: LD("f.closed", { n: 14 }) }] });
+  const src = h("div", { style: { width: mob ? "100%" : 180 } }, h(V.Select, { size: "sm", "aria-label": LD("col.source"), value: "all", options: ["all", "form", "phone", "email", "referral", "event", "manual"].map((v) => ({ value: v, label: v === "all" ? LD("src.all") : LD("src." + v) })) }));
+  const search = h("div", { className: "cd-search" }, h(V.Input, { icon: "search", size: "sm", placeholder: LD("search"), "aria-label": LD("search") }));
+  const add = h(V.Button, { size: "sm", variant: "primary", icon: "plus" }, LD("new"));
+  return h(CdPage, { mode, active: "leaduri", title: C("nav.leads"), overlay, toast, toastDesc, header: { title: C("nav.leads"), description: mob ? undefined : LD("lead") } },
+    h(Pad, { mode }, h(Info, { icon: "info" }, LD("noLimit"))),
+    empty ? null : mob ? h("div", { className: "cd-tools m" }, h("div", { className: "cd-line" }, search, add), seg, src)
+      : h("div", { className: "cd-tools" }, search, seg, src, h("span", { className: "cd-grow" }), add),
+    empty ? h(V.Sheet, null, h(V.SheetSection, null, h(V.EmptyState, { icon: "target", title: LD("empty.title"), description: LD("empty.body"), actions: h(React.Fragment, null, h(V.Button, { variant: "primary", icon: "plus" }, LD("new")), h(V.Button, { variant: "secondary", iconEnd: "external-link" }, LD("empty.form"))) })))
+      : h(V.Sheet, null, h(V.SheetSection, { title: LD("count", { n: 5 }), description: LD("countLead") }, h(V.DataTable, { caption: C("nav.leads"), columns: COLS, rows: LEADS.filter((r) => r.st !== "lost"), onRowClick: noop,
+        rowActions: () => [{ label: LD("act.open"), icon: "arrow-right" }, { label: LD("act.contacted"), icon: "phone" }, { label: LD("act.qualify"), icon: "check" }, { label: LD("act.convert"), icon: "user-plus" }, { separator: true }, { label: LD("act.disqualify"), icon: "x" }] }))));
+}
+const L4 = LEADS[3];
+const FEED = [
+  { t: "email", title: LD("feed.open"), when: LD("when.today", { time: "08:40" }), meta: LD("feed.openMeta") },
+  { t: "email", title: LD("feed.offer"), who: "Ioana Pavel", when: "6 nov.", meta: LD("feed.offerMeta") },
+  { t: "call", title: LD("feed.call"), who: "Ioana Pavel", when: "5 nov.", text: LD("feed.callText"), boxed: true },
+  { t: "field", title: LD("feed.state"), who: "Ioana Pavel", when: "5 nov.", meta: LD("feed.stateMeta") },
+  { t: "created", title: LD("feed.created"), when: "4 nov.", meta: LD("feed.createdMeta") }
+];
+const REASONS = [["+20", "r.opened"], ["+20", "r.referral"], ["+15", "r.price"], ["+15", "r.budget"], ["+10", "r.date"], ["+5", "r.phone"]];
+function Card({ mode, lost, overlay, toast }) {
+  const mob = mode === "mobile", desk = mode === "desktop", sz = mob ? "sm" : undefined;
+  const acts = lost ? [h(V.Button, { key: 1, variant: "secondary", icon: "rotate-ccw", size: sz }, LD("reopen"))]
+    : [h(V.Button, { key: 1, variant: "secondary", icon: "calendar-check", size: sz }, C("act.task")), h(V.Button, { key: 2, variant: "quiet", icon: "x", size: sz }, LD("act.disqualify")), h(V.Button, { key: 3, variant: "primary", icon: "user-plus", size: sz }, LD("act.convert"))];
+  const l = lost ? LEADS[5] : L4;
+  return h(CdPage, { mode, active: "leaduri", title: C("nav.leads"), overlay, toast,
+    header: { breadcrumbs: mob ? undefined : [{ label: C("nav.leads"), href: "#" }, { label: l.name }], title: l.name, description: l.need + " · " + LD("src." + l.src) + " · " + l.at,
+      meta: h("span", { className: "x-row" }, h(LeadPill, { s: l.st }), h(V.Badge, null, LD("scoreBadge", { n: l.score })), h(Owner, { name: l.owner })), actions: mob ? undefined : h(React.Fragment, null, acts) } },
+    mob ? h("div", { className: "cd-acts m" }, acts) : null,
+    lost ? h(Pad, { mode }, h(V.Notice, { tone: "neutral", icon: "x", title: LD("lost.title", { reason: LD("reason.budget") }) }, LD("lost.body"))) : null,
+    h("div", { className: "cd-grid" + (desk ? "" : mob ? " m" : " t") },
+      h(Pad, { mode }, h(V.Sheet, null,
+        h(V.SheetSection, { title: LD("card.request") }, h("p", { className: "body-small", style: { margin: 0 } }, lost ? LD("card.requestLost") : LD("card.requestText"))),
+        h(V.SheetSection, { title: C("contact.history") }, h(Feed, { items: lost ? [{ t: "field", title: LD("feed.lost"), who: "Bianca Petrașcu", when: "30 oct.", meta: LD("feed.lostMeta") }, { t: "created", title: LD("feed.created"), when: "28 oct.", meta: LD("feed.createdManual") }] : FEED })))),
+      h("div", { className: "cd-side" + (mob ? " cd-pad" : "") },
+        h(V.Sheet, null, h(V.SheetSection, { title: LD("card.score", { n: l.score }), description: LD("card.scoreLead") },
+          lost ? h("p", { className: "body-small muted", style: { margin: 0 } }, l.why) :
+          h("ul", { className: "cx-rows cd-today" }, REASONS.map(([p, k]) => h("li", { key: k }, h("span", { className: "body-strong v-num" }, p), h("span", { className: "body-small cx-grow" }, LD(k))))))),
+        h(V.Sheet, null, h(V.SheetSection, { title: LD("card.details") }, h(KVL, { rows: lost ? [[LD("k.phone"), "0745 330 117"], [LD("k.email"), "—"], [LD("k.source"), LD("src.manual")]] : [[LD("k.phone"), "0746 221 905"], [LD("k.email"), "andreea.vasilescu@gmail.com"], [LD("k.source"), LD("src.referral") + " · Cristina Dobre"], [LD("k.budget"), "2.500 lei"], [LD("k.date"), "18 septembrie 2027"]] }))))));
+}
+
+/* ---- convert ---- */
+const KEEP = ["keep.history", "keep.notes", "keep.files", "keep.source", "keep.owner"];
+const ConvertDlg = ({ mode }) => h(Dlg, { mode, title: LD("conv.title", { name: "Andreea Vasilescu" }), description: LD("conv.lead"),
+  footer: h(React.Fragment, null, h(V.Button, { variant: "quiet" }, C("cancel")), h(V.Button, { variant: "primary", icon: "user-plus" }, LD("conv.submit"))) },
+  h("div", { className: "x-stack" },
+    h("p", { className: "subheading", style: { margin: 0 } }, LD("conv.contact")),
+    h("div", { className: "g2f" + (mode === "mobile" ? " m" : "") }, h(V.FormField, { label: LD("k.name"), required: true }, h(V.Input, { defaultValue: "Andreea Vasilescu" })), h(V.FormField, { label: LD("k.phone") }, h(V.Input, { defaultValue: "0746 221 905" }))),
+    h(V.Checkbox, { label: LD("conv.withDeal"), checked: true, onChange: noop }),
+    h("div", { className: "g2f" + (mode === "mobile" ? " m" : "") },
+      h(V.FormField, { label: LD("conv.dealName"), required: true }, h(V.Input, { defaultValue: "Pachet mireasă · septembrie 2027" })),
+      h(V.FormField, { label: LD("conv.value"), helper: LD("conv.valueHelp") }, h(V.Input, { type: "number", defaultValue: "2500", suffix: h("span", { className: "body-small muted" }, "lei") }))),
+    h(V.FormField, { label: LD("conv.stage") }, h(V.Select, { value: "nou", options: [{ label: "Vânzări salon", options: [{ value: "nou", label: "Contact nou" }, { value: "oferta", label: "Ofertă trimisă" }, { value: "neg", label: "Negociere" }] }] })),
+    h("p", { className: "subheading", style: { margin: 0 } }, LD("conv.keepTitle")),
+    h("ul", { className: "x-stack", style: { listStyle: "none", margin: 0, padding: 0, gap: "var(--space-1)" } }, KEEP.map((k) => h("li", { key: k }, h(Info, { icon: "check" }, LD(k))))),
+    h(Info, { icon: "info" }, LD("conv.after"))));
+const DupDlg = ({ mode }) => {
+  const NM = React.useMemo(uid, []);
+  return h(Dlg, { mode, title: LD("dup.title"), description: LD("dup.lead", { phone: "0746 221 905" }),
+    footer: h(React.Fragment, null, h(V.Button, { variant: "quiet" }, C("cancel")), h(V.Button, { variant: "primary", icon: "check" }, LD("dup.submit"))) },
+    h("div", { className: "x-stack" },
+      h("div", { className: "cd-file" }, h(V.Avatar, { name: "Andreea Vasilescu", size: "sm" }), h("span", { className: "cd-namecol cd-grow" }, h("span", { className: "body-strong" }, "Andreea Vasilescu"), h("span", { className: "cd-sub" }, h(EbBadge), h("span", { className: "body-small muted" }, LD("dup.existing")))), h(V.Button, { size: "sm", variant: "quiet", iconEnd: "external-link" }, LD("dup.view"))),
+      h(V.Radio, { name: NM, checked: true, onChange: noop, label: LD("dup.link"), description: LD("dup.linkHelp") }),
+      h(V.Radio, { name: NM, checked: false, onChange: noop, label: LD("dup.new"), description: LD("dup.newHelp") }),
+      h(Info, { icon: "lock" }, LD("dup.eb"))));
+};
+const LostDlg = ({ mode }) => h(Dlg, { mode, title: LD("lost.dlgTitle", { name: "Marius Pop" }),
+  footer: h(React.Fragment, null, h(V.Button, { variant: "quiet" }, C("cancel")), h(V.Button, { variant: "primary", icon: "x" }, LD("lost.submit"))) },
+  h("div", { className: "x-stack" },
+    h(V.FormField, { label: LD("lost.reason"), required: true }, h(V.Select, { value: "budget", options: ["budget", "noreply", "notfit", "competitor", "spam", "other"].map((v) => ({ value: v, label: LD("reason." + v) })) })),
+    h(V.FormField, { label: LD("lost.note"), optional: true }, h(V.Textarea, { rows: 2, defaultValue: "Bugetul e sub prețul minim pentru coafat la domiciliu." })),
+    h(Info, null, LD("lost.help"))));
+mount(h(Board3, { title: "ClientDesk — leadurile (S131, CR-UI.4)", notes: ["Căsuța de leaduri, separată de contacte; leadurile nu consumă limita de contacte", "Sursa, scorul cu motivele, responsabilul, starea", "Conversia în contact + deal și ce se păstrează; duplicatul găsit la conversie", "Leadul descalificat, cu motivul", "Doar în română deocamdată; chei crm.* în i18n/crm.json"], items: [
+  ["1 · Căsuța de leaduri: sursa, scorul cu motivul, responsabilul, starea", (m) => h(Inbox, { mode: m }), 1110, 840, 1010],
+  ["2 · Fișa leadului: cererea, scorul pe motive, istoricul", (m) => h(Card, { mode: m }), 890, 1420, 1570],
+  ["3 · Conversia în contact + deal: ce se păstrează", (m) => h(Card, { mode: m, overlay: h(ConvertDlg, { mode: m }) }), 890, 1420, 1570],
+  ["4 · Duplicat găsit la conversie", (m) => h(Card, { mode: m, overlay: h(DupDlg, { mode: m }) }), 890, 1420, 1570],
+  ["5 · Convertit", (m) => h(Inbox, { mode: m, toast: LD("conv.done", { name: "Andreea Vasilescu" }), toastDesc: LD("conv.doneDesc") }), 1110, 840, 1010],
+  ["6 · Descalifică un lead: motivul", (m) => h(Inbox, { mode: m, overlay: h(LostDlg, { mode: m }) }), 1110, 840, 1010],
+  ["7 · Lead descalificat", (m) => h(Card, { mode: m, lost: true }), 680, 980, 1040],
+  ["8 · Nicio cerere nouă", (m) => h(Inbox, { mode: m, empty: true }), 560, 560, 640]] }));
+
+</script>
+</body>
+</html>

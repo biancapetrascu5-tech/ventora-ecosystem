@@ -11,3 +11,13 @@ After the product review: a fixed bar "Ai schimbări nesalvate" with "Salvează 
 **Servicii (S123).** The "Servicii" tab is the services catalogue, drawn in BookingServices: categories and their order, "Fără categorie", the service form, archive and restore.
 
 **Programul echipei și Resurse (S124).** A new tab "Programul echipei" (after "Servicii"), drawn in BookingTeamSchedule; the "Resurse" tab with its list and the resource form, drawn in BookingResources. The tab row gets "Programul echipei" at import.
+
+**S126 (B.9, B.10).** "Pachete de ședințe" inside "Servicii" (BookingPackages) and a "Locații" tab (BookingLocations).
+
+**S127.** Tabs proposed: General, Servicii, Programul echipei, Resurse, Mesaje (formerly Reamintiri; BookingMessageTemplates), Rezervări online (with "Întrebări la rezervare", BookingCustomForms), Plăți și avans, Promoții (BookingPromoCodes).
+
+**S128.** A ninth tab, "Integrări" (BookingIntegrations): calendars, WhatsApp (BookingWhatsApp), Stripe, the fiscal printer (BookingFiscal), Google and Meta links. The assistant's settings sit in "General" (BookingAssistant).
+
+**S139 (B.7).** "General" holds the "Nota de comportament" switch, off by default (BookingBehaviorNote).
+
+**S146.** The "Rezervări online" tab is drawn in BookingOnlineSettings.

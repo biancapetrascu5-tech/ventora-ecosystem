@@ -14,3 +14,15 @@ EasyBook — the public booking page for the end client, phone first (S116 a): s
 - S116-D3 · A verified e-mail is remembered on the same device for 90 days; returning clients skip the code.
 
 Shown at 1280 and 390, in light and dark, with DE/IT and EN/FR/ES tests.
+
+**S126 (B.9, B.10).** "Alegeți salonul" as the first step when the business has several locations (BookingLocations); the waiting-list offer page (BookingWaitlist).
+
+**S127 (B.12, B.21, B.23).** "Câteva întrebări de la salon" at the details step (BookingCustomForms), "Card pentru garanție" (BookingMoney), "Aveți un cod promoțional?" in the summary (BookingPromoCodes).
+
+**S129 (B.2b).** "Alegeți cu cine" lists only the members who do the chosen service, and "Oricine e liber" chooses among them; a service nobody does is not shown (drawn in BookingServices).
+
+**S137.** "Alegeți cu cine" shows each member's duration and price; "Oricine e liber" shows the range, and the summary says the price depends on who is free (`booking.public.anyoneRange`, 6 languages; drawn in BookingServices).
+
+**S138.** Members can have a variable duration and a "de la" / interval price: "75–120 min · 200–300 lei", "de la 260 lei" (`booking.public.priceFrom`), with "Prețul final se stabilește la salon, în intervalul afișat." (`booking.public.priceFinal`), 6 languages (drawn in BookingServices).
+
+**S146.** The photo upload on a question ("Adăugați o poză", B.12) is drawn in BookingCustomForms, frames 10–15; the link states after the start, expired and revoked (B.11b) in BookingClientManage, frames 15–17.

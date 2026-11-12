@@ -165,7 +165,10 @@
     "notifications.email.supportAutoClose.preheader": "„{subject}” se închide automat pe {closesAt}, dacă nu ne răspunzi până atunci.",
     "notifications.email.supportAutoClose.title": "Solicitarea ta se închide mâine",
     "notifications.email.supportAutoClose.lead": "Echipa Ventora Systems ți-a răspuns la „{subject}” ({ref}), iar de 6 zile nu ne-ai mai scris.",
-    "notifications.email.supportAutoClose.body": "Dacă problema s-a rezolvat, nu trebuie să faci nimic: solicitarea se închide singură pe {closesAt}. Dacă mai ai nevoie de ajutor, răspunde-ne în Hub, la Suport; o poți redeschide și după ce se închide."
+    "notifications.email.supportAutoClose.body": "Dacă problema s-a rezolvat, nu trebuie să faci nimic: solicitarea se închide singură pe {closesAt}. Dacă mai ai nevoie de ajutor, răspunde-ne în Hub, la Suport; o poți redeschide și după ce se închide.",
+    "notifications.access.request.title": "{name} cere acces la aplicații",
+    "notifications.access.request.body": "Are rolul {role} în {business}, dar nicio aplicație. Le alegi din Echipă și invitații.",
+    "notifications.access.request.action": "Deschide Echipa"
   },
   "en": {
     "notifications.title": "Notifications",
@@ -333,7 +336,10 @@
     "notifications.email.supportAutoClose.preheader": "“{subject}” closes automatically on {closesAt} unless you reply before then.",
     "notifications.email.supportAutoClose.title": "Your request closes tomorrow",
     "notifications.email.supportAutoClose.lead": "The Ventora Systems team replied to “{subject}” ({ref}), and you haven’t written to us for 6 days.",
-    "notifications.email.supportAutoClose.body": "If the problem is solved, you don’t need to do anything: the request closes by itself on {closesAt}. If you still need help, reply in the Hub, under Support; you can also reopen it after it closes."
+    "notifications.email.supportAutoClose.body": "If the problem is solved, you don’t need to do anything: the request closes by itself on {closesAt}. If you still need help, reply in the Hub, under Support; you can also reopen it after it closes.",
+    "notifications.access.request.title": "{name} is requesting access to apps",
+    "notifications.access.request.body": "They have the {role} role in {business}, but no apps. You choose them in Team and invitations.",
+    "notifications.access.request.action": "Open Team"
   },
   "fr": {
     "notifications.title": "Notifications",
@@ -501,7 +507,10 @@
     "notifications.email.supportAutoClose.preheader": "« {subject} » sera fermée automatiquement le {closesAt}, sauf si vous nous répondez d’ici là.",
     "notifications.email.supportAutoClose.title": "Votre demande sera fermée demain",
     "notifications.email.supportAutoClose.lead": "L’équipe Ventora Systems a répondu à « {subject} » ({ref}) et vous ne nous avez pas écrit depuis 6 jours.",
-    "notifications.email.supportAutoClose.body": "Si le problème est résolu, vous n’avez rien à faire : la demande sera fermée automatiquement le {closesAt}. Si vous avez encore besoin d’aide, répondez-nous dans le Hub, rubrique Support ; vous pourrez aussi la rouvrir après sa fermeture."
+    "notifications.email.supportAutoClose.body": "Si le problème est résolu, vous n’avez rien à faire : la demande sera fermée automatiquement le {closesAt}. Si vous avez encore besoin d’aide, répondez-nous dans le Hub, rubrique Support ; vous pourrez aussi la rouvrir après sa fermeture.",
+    "notifications.access.request.title": "{name} demande l’accès aux applications",
+    "notifications.access.request.body": "Cette personne a le rôle {role} chez {business}, mais aucune application. Vous les choisissez dans Équipe et invitations.",
+    "notifications.access.request.action": "Ouvrir l’équipe"
   },
   "es": {
     "notifications.title": "Notificaciones",
@@ -669,7 +678,10 @@
     "notifications.email.supportAutoClose.preheader": "«{subject}» se cierra automáticamente el {closesAt} si no nos respondes antes.",
     "notifications.email.supportAutoClose.title": "Tu solicitud se cierra mañana",
     "notifications.email.supportAutoClose.lead": "El equipo de Ventora Systems respondió a «{subject}» ({ref}) y no nos has escrito en 6 días.",
-    "notifications.email.supportAutoClose.body": "Si el problema está resuelto, no tienes que hacer nada: la solicitud se cierra sola el {closesAt}. Si aún necesitas ayuda, respóndenos en el Hub, en Soporte; también puedes reabrirla después de que se cierre."
+    "notifications.email.supportAutoClose.body": "Si el problema está resuelto, no tienes que hacer nada: la solicitud se cierra sola el {closesAt}. Si aún necesitas ayuda, respóndenos en el Hub, en Soporte; también puedes reabrirla después de que se cierre.",
+    "notifications.access.request.title": "{name} solicita acceso a las aplicaciones",
+    "notifications.access.request.body": "Tiene el rol {role} en {business}, pero ninguna aplicación. Las eliges en Equipo e invitaciones.",
+    "notifications.access.request.action": "Abrir Equipo"
   },
   "de": {
     "notifications.title": "Benachrichtigungen",
@@ -837,7 +849,10 @@
     "notifications.email.supportAutoClose.preheader": "„{subject}“ wird am {closesAt} automatisch geschlossen, wenn Sie bis dahin nicht antworten.",
     "notifications.email.supportAutoClose.title": "Ihre Anfrage wird morgen geschlossen",
     "notifications.email.supportAutoClose.lead": "Das Ventora-Systems-Team hat auf „{subject}“ ({ref}) geantwortet, und Sie haben uns seit 6 Tagen nicht mehr geschrieben.",
-    "notifications.email.supportAutoClose.body": "Wenn das Problem gelöst ist, müssen Sie nichts tun: Die Anfrage wird am {closesAt} automatisch geschlossen. Wenn Sie noch Hilfe brauchen, antworten Sie uns im Hub unter Support; Sie können sie auch nach dem Schließen erneut öffnen."
+    "notifications.email.supportAutoClose.body": "Wenn das Problem gelöst ist, müssen Sie nichts tun: Die Anfrage wird am {closesAt} automatisch geschlossen. Wenn Sie noch Hilfe brauchen, antworten Sie uns im Hub unter Support; Sie können sie auch nach dem Schließen erneut öffnen.",
+    "notifications.access.request.title": "{name} fragt Zugriff auf Apps an",
+    "notifications.access.request.body": "Die Person hat die Rolle {role} in {business}, aber keine Apps. Sie wählen sie unter Team und Einladungen.",
+    "notifications.access.request.action": "Team öffnen"
   },
   "it": {
     "notifications.title": "Notifiche",
@@ -1005,6 +1020,9 @@
     "notifications.email.supportAutoClose.preheader": "«{subject}» si chiude automaticamente il {closesAt}, se non ci risponde prima.",
     "notifications.email.supportAutoClose.title": "La Sua richiesta si chiude domani",
     "notifications.email.supportAutoClose.lead": "Il team Ventora Systems ha risposto a «{subject}» ({ref}) e da 6 giorni non ci ha più scritto.",
-    "notifications.email.supportAutoClose.body": "Se il problema è risolto, non deve fare nulla: la richiesta si chiude da sola il {closesAt}. Se ha ancora bisogno di aiuto, ci risponda nell’Hub, in Assistenza; può anche riaprirla dopo la chiusura."
+    "notifications.email.supportAutoClose.body": "Se il problema è risolto, non deve fare nulla: la richiesta si chiude da sola il {closesAt}. Se ha ancora bisogno di aiuto, ci risponda nell’Hub, in Assistenza; può anche riaprirla dopo la chiusura.",
+    "notifications.access.request.title": "{name} chiede l’accesso alle app",
+    "notifications.access.request.body": "Ha il ruolo {role} in {business}, ma nessuna app. Le sceglie in Team e inviti.",
+    "notifications.access.request.action": "Apri Team"
   }
 }

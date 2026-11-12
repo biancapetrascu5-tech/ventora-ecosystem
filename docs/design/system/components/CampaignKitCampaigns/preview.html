@@ -1,0 +1,1094 @@
+<!-- @dsCard group="Ecrane CampaignKit" height=24830 width=2620 page -->
+<!doctype html>
+<html lang="ro">
+<head><meta charset="utf-8"><title>CampaignKitCampaigns — Ventora Systems</title>
+<style>
+html,body{min-height:100%}
+.d{display:flex;flex-direction:column;gap:var(--space-4);padding:var(--space-4);box-sizing:border-box}
+.d0{display:flex;flex-direction:column;gap:var(--space-4);min-width:0}
+.r{display:flex;flex-wrap:wrap;gap:var(--space-3);align-items:center}
+.l{color:var(--ink-muted);width:calc(var(--space-16) + var(--space-6));flex:none}
+.g2{display:grid;grid-template-columns:repeat(auto-fit,minmax(var(--search-width),1fr));gap:var(--space-4) var(--space-6);align-items:start}
+.frame{border:var(--border-width) solid var(--line);border-radius:var(--radius-md);background:var(--sheet);box-sizing:border-box}
+.phone{width:390px;height:600px;flex:none;border:var(--border-width) solid var(--line-strong);border-radius:var(--radius-xl);overflow:hidden;box-sizing:border-box}
+.tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(var(--app-tile-width),1fr));gap:var(--space-4)}
+.icons{display:grid;grid-template-columns:repeat(auto-fill,minmax(calc(var(--app-tile-width) - var(--space-12)),1fr));gap:var(--space-2)}
+.ic{display:flex;align-items:center;gap:var(--space-2);color:var(--ink);padding:var(--space-1);min-width:0}
+.ic .caption{color:var(--ink-muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:0}
+.panel{display:flex;flex-direction:column;gap:var(--space-3);padding:var(--space-6);background:var(--sheet);color:var(--ink)}
+.lab{color:var(--ink-muted);margin-top:var(--space-2)}
+.fam{display:grid;grid-template-columns:repeat(5,1fr);gap:var(--space-4) var(--space-2)}
+.famcell,.sz,.papp{display:flex;flex-direction:column;align-items:center;gap:var(--space-1);color:var(--ink-secondary)}
+.gcell{display:flex;flex-direction:column;align-items:center;gap:var(--space-2);color:var(--ink-secondary)}
+.gwrap{position:relative;width:240px;height:240px}
+.gover{position:absolute;inset:0}
+.gwrap--sm{width:64px;height:64px;display:inline-block}
+.gwrap--sm .key{stroke-width:.5}
+.gl{stroke:var(--attention);stroke-width:.06;opacity:.55}
+.gl--major{stroke-width:.12;opacity:.9}
+.key{fill:none;stroke:var(--done);stroke-width:.18}
+.key--plate{stroke:var(--attention);stroke-dasharray:.6 .4}
+.key--diag{stroke-dasharray:.5 .5}
+.rules{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--space-6);color:var(--ink)}
+.rules .body-small{color:var(--ink-muted);margin-top:var(--space-1)}
+.ctx{display:flex;flex-direction:column;background:var(--canvas);color:var(--ink);padding:var(--space-4);gap:var(--space-4)}
+.ctxrow{display:flex;gap:var(--space-4);align-items:flex-start}
+.launch{flex:1;min-width:0;background:var(--canvas);padding:var(--space-4) var(--space-6);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg)}
+.tiles3{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--space-3)}
+.spinebox{height:250px;display:flex;border:var(--border-width) solid var(--line);border-radius:var(--radius-lg);overflow:hidden;background:var(--canvas)}
+.phone2{width:300px;border:var(--border-width) solid var(--line-strong);border-radius:var(--radius-xl);background:var(--canvas);padding-bottom:var(--space-4)}
+.pgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--space-4) var(--space-1);padding:0 var(--space-3)}
+.browser{display:flex;gap:var(--space-1);background:var(--sunken);padding:var(--space-2) var(--space-2) 0;border-radius:var(--radius-md) var(--radius-md) 0 0;border:var(--border-width) solid var(--line)}
+.btab{display:inline-flex;align-items:center;gap:var(--space-2);padding:var(--space-2) var(--space-3);border-radius:var(--radius-sm) var(--radius-sm) 0 0;color:var(--ink-secondary);min-width:160px}
+.btab.on{background:var(--sheet);color:var(--ink)}
+.muted{color:var(--ink-muted)}.center{text-align:center}
+.scr{display:flex;flex-direction:column;gap:var(--space-3);padding:var(--space-6);background:var(--sheet);color:var(--ink)}
+.scr-row{display:flex;gap:var(--space-6);align-items:flex-start;margin-top:var(--space-3)}
+.scr-lab{color:var(--ink-muted);margin-bottom:var(--space-2)}
+.scr-d,.scr-t,.scr-m{position:relative;overflow:hidden;border:var(--border-width) solid var(--line-strong);background:var(--canvas);color:var(--ink);box-sizing:border-box}
+.scr-d{width:1280px;border-radius:var(--radius-lg)}
+.scr-m{width:390px;border-radius:var(--radius-xl)}
+.scr-t{width:820px;border-radius:var(--radius-xl)}
+.wrap.tablet .tiles4{grid-template-columns:repeat(3,1fr)}
+.wrap.tablet{padding:var(--space-6) var(--space-5)}
+.sup.tablet{grid-template-columns:1fr}
+.paymethod{display:flex;flex-direction:column;gap:var(--space-2);margin-top:var(--space-4);padding-top:var(--space-4);border-top:var(--border-width) solid var(--line);max-width:480px}
+.modal-demo{position:absolute;inset:0;background:var(--scrim);display:flex;align-items:center;justify-content:center;padding:var(--space-6);z-index:var(--z-overlay)}
+.modal-demo.mobile{align-items:flex-end;padding:0}
+.modal-demo .v-dialog{max-height:none}
+.dlggrid{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--space-6);align-items:start}
+.dlggrid .v-dialog{width:auto}
+.today{display:flex;flex-direction:column;gap:var(--space-6)}
+.today.mobile{gap:var(--space-4)}.today.mobile .greet{padding:0 var(--space-4)}
+.today-grid{display:grid;grid-template-columns:minmax(0,2fr) minmax(320px,1fr);gap:var(--space-6);align-items:start}
+.today.tablet .today-grid,.today.mobile .today-grid{grid-template-columns:1fr}
+.today.tablet .today-side,.today.mobile .today-side{order:-1}
+.today-main{display:flex;flex-direction:column;gap:var(--space-6);min-width:0}
+.today.mobile .sec,.today.mobile .sechead{padding:0 var(--space-4)}
+.today.mobile .sheetlike,.today.mobile .nowcard{border-radius:0;border-left:0;border-right:0}
+.nowcards{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:var(--space-3)}
+.nowcard{display:flex;flex-direction:column;gap:var(--space-3);padding:var(--space-4);background:var(--sheet);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg)}
+.sechead{display:flex;justify-content:space-between;align-items:center;gap:var(--space-3);margin-bottom:var(--space-3);flex-wrap:wrap}
+.sec .v-badge{vertical-align:middle;margin-left:var(--space-1)}
+.reslist{list-style:none;margin:0 0 var(--space-3);padding:0;display:flex;flex-direction:column}
+.reslist li{display:flex;flex-direction:column;gap:2px;padding:var(--space-3) 0;border-bottom:var(--border-width) solid var(--line)}
+.reslist li:last-child{border-bottom:0}
+.stth{background:var(--canvas);color:var(--ink);padding:var(--space-6);border-radius:var(--radius-lg)}
+.stgrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--space-5) var(--space-4);align-items:start}
+@media (max-width:1100px){.stgrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:640px){.stgrid{grid-template-columns:minmax(0,1fr)}.stgrid>.stc{grid-column:auto!important}}
+.stc{display:flex;flex-direction:column;gap:var(--space-2);min-width:0}
+.stc-box{background:var(--sheet);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg);padding:var(--space-4);min-width:0}
+.stc-box .v-dialog{width:100%;box-shadow:none}
+.stc-box .v-toast{width:100%;box-sizing:border-box}
+.slotcol{display:flex;flex-direction:column;gap:var(--space-3);padding:var(--space-4);background:var(--canvas);border-radius:var(--radius-lg);color:var(--ink)}
+.recogrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--space-5);align-items:start}
+.toastdemo{position:fixed;right:var(--space-6);bottom:var(--space-6);width:var(--panel-width);z-index:var(--z-toast)}
+.appdet{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:var(--space-6);align-items:start}
+.wrap.tablet .appdet,.wrap.mobile .appdet{grid-template-columns:1fr}
+.appdet-main,.appdet-side{display:flex;flex-direction:column;gap:var(--space-5);padding:var(--space-6)}
+.wrap.mobile .appdet-main,.wrap.mobile .appdet-side{padding:var(--space-4)}
+.appdet-side{gap:var(--space-3)}
+.appdet-why{padding:var(--space-4);background:var(--sunken);border-radius:var(--radius-md)}
+.appdet-why .body{margin-top:var(--space-1)}
+.appdet-list{list-style:none;margin:var(--space-2) 0 0;padding:0;display:flex;flex-direction:column;gap:var(--space-2)}
+.appdet-list li{display:flex;gap:var(--space-2);align-items:flex-start}
+.appdet-list svg{flex:none;margin-top:2px;color:var(--ink-muted)}
+.seclist{display:flex;flex-direction:column;background:var(--sheet);border-top:var(--border-width) solid var(--line);border-bottom:var(--border-width) solid var(--line)}
+.secitem{display:flex;align-items:center;gap:var(--space-3);min-height:var(--touch-target);padding:var(--space-3) var(--space-4);background:none;border:0;border-top:var(--border-width) solid var(--line);color:var(--ink);text-align:left;font:inherit;cursor:pointer}
+.secitem .biz-text{flex:1}
+.inv-email{display:flex;flex-direction:column;gap:2px}
+.daylinks .v-link{font-weight:500}
+.rows2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--space-2)}
+.wrap.tablet .rows2{grid-template-columns:1fr}
+.unsaved{position:absolute;left:0;right:0;bottom:0;display:flex;align-items:center;justify-content:space-between;gap:var(--space-3);padding:var(--space-3) var(--space-6);background:var(--raised);border-top:var(--border-width) solid var(--line-strong);box-shadow:var(--shadow-2);z-index:var(--z-sticky);flex-wrap:wrap}
+.scr-d .unsaved{left:var(--spine-width)}
+.scr-t .unsaved{left:var(--spine-width-collapsed)}
+.scr-m .unsaved{bottom:var(--bottomnav-height);padding:var(--space-3) var(--space-4)}
+.axb{display:flex;flex-direction:column;gap:var(--space-6);min-width:0}
+.axb.mobile{gap:var(--space-4)}
+.axsplit{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:var(--space-6);align-items:start}
+.axb.tablet .axsplit,.axb.mobile .axsplit{grid-template-columns:1fr}
+.axb.tablet .axside,.axb.mobile .axside{order:-1}
+.axstack{display:flex;flex-direction:column;gap:var(--space-6);min-width:0}
+.axstack .axside{order:-1}
+.axb .axside.axafter{order:0}
+.logosets{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(420px,100%),1fr));gap:var(--space-4)}
+.logoset{display:flex;flex-direction:column;gap:var(--space-4);padding:var(--space-6);min-width:0;background:var(--sheet);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg);color:var(--ink)}
+.favtab{display:inline-flex;align-items:center;gap:var(--space-2);padding:var(--space-2) var(--space-3);border-radius:var(--radius-sm) var(--radius-sm) 0 0;background:var(--canvas);color:var(--ink-secondary);border:var(--border-width) solid var(--line);border-bottom:0}
+.axb.mobile .axside.axafter{padding:0 var(--space-4)}
+.axb.mobile .sechead,.axb.mobile>div>h2.heading{padding:0 var(--space-4)}
+.axb.mobile .fxplans{padding:0 var(--space-4)}
+.axb.mobile>.v-notice{margin:0 var(--space-4)}
+.axside{display:flex;flex-direction:column;gap:var(--space-3);min-width:0}
+.axside .v-badge{vertical-align:middle;margin-left:var(--space-1)}
+.axb.mobile .axside .heading{padding:0}
+.axcharts{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:var(--space-4)}
+.axb.mobile .axcharts{grid-template-columns:1fr}
+.axb.mobile .v-stats{grid-template-columns:1fr 1fr}
+.stockcell{display:grid;grid-template-columns:auto;gap:2px;min-width:120px}
+.stockbar{position:relative;display:block;height:4px;border-radius:var(--radius-full);background:var(--selected);max-width:140px}
+.stockbar>span{position:absolute;left:0;top:0;bottom:0;border-radius:inherit;background:var(--ink-secondary)}
+.stockbar.is-attention>span{background:var(--attention-mark)}
+.stockbar.is-danger>span{background:var(--danger)}
+.stockbar>i{position:absolute;top:-3px;bottom:-3px;width:2px;margin-left:-1px;background:var(--ink-muted);border-radius:1px}
+.glo{background:var(--sheet);color:var(--ink);gap:var(--space-6);padding:var(--space-6)}
+.glo-lead{max-width:760px;margin-top:var(--space-2)}
+.glo-rules{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:var(--space-4) var(--space-6)}
+.glo-rules .body-small{margin-top:var(--space-1)}
+.glo-sec{display:flex;flex-direction:column;gap:var(--space-2)}
+.glo-t{width:100%;border-collapse:collapse;table-layout:fixed}
+.glo-t th{text-align:left;color:var(--ink-muted);padding:var(--space-2) var(--space-3);border-bottom:var(--border-width) solid var(--line-strong)}
+.glo-t th:last-child{width:30%}
+.glo-t td{padding:var(--space-2) var(--space-3);border-bottom:var(--border-width) solid var(--line);vertical-align:top;overflow-wrap:anywhere}
+.glo-dec{display:inline-flex;align-items:center;gap:var(--space-1);margin-left:var(--space-2);padding:0 var(--space-2);border-radius:var(--radius-full);background:var(--attention-soft);color:var(--attention-ink);white-space:nowrap}
+.calbar{display:flex;justify-content:space-between;align-items:center;gap:var(--space-3);flex-wrap:wrap;margin-bottom:var(--space-3)}
+.calbar-date{margin-left:var(--space-2);white-space:nowrap}
+.calwrap.mobile{padding:0 var(--space-4)}
+.staffpick{margin-bottom:var(--space-3);max-width:var(--search-width)}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:var(--space-2) var(--space-4);margin:0}
+.kv dt{color:var(--ink-muted);padding-top:var(--space-0-5)}.kv dd{margin:0;color:var(--ink)}
+.hist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:var(--space-2);color:var(--ink-secondary)}
+.hist .muted{margin-right:var(--space-2)}
+.newgrid{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:var(--space-6);align-items:start}
+.newgrid.tablet,.newgrid.mobile{grid-template-columns:1fr}
+.newgrid.mobile{padding-bottom:var(--space-16)}
+.sumcard{position:sticky;top:0;display:flex;flex-direction:column;gap:var(--space-3);padding:var(--space-5);background:var(--sheet);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg)}
+.newgrid.mobile .sumcard{border-radius:0;border-left:0;border-right:0}
+.sumtotal{display:flex;justify-content:space-between;align-items:baseline;padding-top:var(--space-3);border-top:var(--border-width) solid var(--line)}
+.stickybar{position:absolute;left:0;right:0;bottom:var(--bottomnav-height);display:flex;gap:var(--space-2);justify-content:flex-end;padding:var(--space-3) var(--space-4);background:var(--sheet);border-top:var(--border-width) solid var(--line);z-index:var(--z-sticky)}
+.stickybar .v-btn--primary{flex:1}
+.hours{display:flex;flex-direction:column}
+.hrow{display:flex;align-items:center;justify-content:space-between;gap:var(--space-4);padding:var(--space-2) 0;border-bottom:var(--border-width) solid var(--line);min-height:var(--touch-target);flex-wrap:wrap}
+.hrow .v-toggle{min-width:160px}
+.hrange{display:inline-flex;align-items:center;gap:var(--space-2)}
+.hrange .v-datepicker{width:120px}
+.auth{min-height:100%;display:flex;flex-direction:column;background:var(--canvas);color:var(--ink)}
+.auth-top{display:flex;justify-content:space-between;align-items:center;padding:var(--space-4) var(--space-6)}
+.auth.mobile .auth-top{padding:var(--space-3) var(--space-4)}
+.auth-main{flex:1;display:flex;align-items:flex-start;justify-content:center;padding:var(--space-12) var(--space-4)}
+.auth.mobile .auth-main{padding:var(--space-2) 0 0;align-items:stretch}
+.auth-card{width:400px;background:var(--sheet);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg);padding:var(--space-10);display:flex;flex-direction:column;gap:var(--space-4);box-sizing:border-box}
+.auth-card.wide{width:480px}
+.auth.mobile .auth-card{width:100%;border-radius:0;border-left:0;border-right:0;border-bottom:0;padding:var(--space-6) var(--space-4)}
+.auth-head{display:flex;flex-direction:column;gap:var(--space-1);margin-bottom:var(--space-2)}
+.auth-note{display:flex;gap:var(--space-2);padding-top:var(--space-4);border-top:var(--border-width) solid var(--line);color:var(--ink-muted)}
+.auth-note .v-icon{margin-top:var(--space-0-5)}
+.auth-foot{padding:var(--space-4) var(--space-6);color:var(--ink-muted);text-align:center}
+.auth.mobile .auth-foot{display:none}
+.inv-head{display:flex;gap:var(--space-3);align-items:center}
+.inv-mark{width:var(--space-12);height:var(--space-12);border-radius:var(--radius-md);background:var(--neutral-soft);display:inline-flex;align-items:center;justify-content:center;font-weight:700;color:var(--ink);flex:none;box-shadow:inset 0 0 0 var(--border-width) var(--line-strong)}
+.inv-mark.sm{width:var(--space-10);height:var(--space-10)}
+.inv-role{display:flex;flex-direction:column;gap:var(--space-2);padding:var(--space-3) var(--space-4);background:var(--sunken);border-radius:var(--radius-sm)}
+.inv-app{display:inline-flex;gap:var(--space-1);align-items:center;color:var(--ink-secondary);margin-right:var(--space-2)}
+.reqs{list-style:none;margin:calc(var(--space-2) * -1) 0 0;padding:0;display:flex;flex-direction:column;gap:var(--space-1)}
+.req{display:flex;gap:var(--space-2);align-items:center;color:var(--ink-muted)}.req.ok{color:var(--done-ink)}
+.choose{width:560px;display:flex;flex-direction:column;gap:var(--space-4)}
+.auth.mobile .choose{width:auto;padding:var(--space-4)}
+.biz-list{display:flex;flex-direction:column;background:var(--sheet);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg);overflow:hidden}
+.biz{appearance:none;display:flex;align-items:center;gap:var(--space-3);padding:var(--space-4);border:0;border-bottom:var(--border-width) solid var(--line);background:transparent;color:var(--ink);text-align:start;font-family:inherit;cursor:pointer;min-height:var(--touch-target)}
+.biz:last-child{border-bottom:0}.biz:hover{background:var(--state-hover)}
+.biz-text{flex:1;min-width:0;display:flex;flex-direction:column;gap:var(--space-0-5);align-items:flex-start}
+.frame-rel{position:relative;height:100%}
+.wrap{max-width:1120px;width:100%;margin:0 auto;padding:var(--space-6) var(--space-6) var(--space-10);display:flex;flex-direction:column;gap:var(--space-8);box-sizing:border-box}
+.wrap.mobile{padding:var(--space-4);gap:var(--space-6)}
+.greet{display:flex;flex-direction:column;gap:var(--space-2)}
+.sec{margin-bottom:var(--space-3)}
+.tiles4{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--space-4)}
+.mgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--space-3) var(--space-1)}
+.rows{display:flex;flex-direction:column;background:var(--sheet);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg);overflow:hidden}
+.sheetlike{background:var(--sheet);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg)}
+.g2f{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(260px,100%),1fr));gap:var(--space-4) var(--space-6)}
+.nrow{display:grid;grid-template-columns:1fr repeat(3,var(--control-lg));align-items:center;padding:var(--space-2) 0;border-bottom:var(--border-width) solid var(--line);gap:var(--space-4)}
+.nrow>span:not(:first-child){display:flex;justify-content:center;text-align:center}
+.nhead{color:var(--ink-muted)}
+.secrow{display:flex;align-items:center;justify-content:space-between;gap:var(--space-4);padding:var(--space-3) 0;border-bottom:var(--border-width) solid var(--line);flex-wrap:wrap}
+.appsrow{display:inline-flex;gap:var(--space-1);align-items:center;flex-wrap:wrap}
+.mx-row{display:grid;grid-template-columns:minmax(320px,1.8fr) repeat(4,1fr);align-items:center;padding:var(--space-3) var(--space-6);border-bottom:var(--border-width) solid var(--line);gap:var(--space-2)}
+.mx-head{background:var(--sunken);color:var(--ink-secondary);border-radius:var(--radius-lg) var(--radius-lg) 0 0}
+.mx-c{display:flex;flex-direction:column;align-items:center;text-align:center}
+.mx-app{display:flex;align-items:center;gap:var(--space-3);flex-wrap:wrap}
+.mx-foot{padding:var(--space-4) var(--space-6)}
+.mrow{display:flex;align-items:center;gap:var(--space-3);padding:var(--space-3) var(--space-4);border-bottom:var(--border-width) solid var(--line);color:var(--ink-secondary)}.mrow:last-child{border-bottom:0}
+.plan{display:flex;justify-content:space-between;align-items:center;gap:var(--space-4);flex-wrap:wrap}
+.numeric-inline{font-weight:600;color:var(--ink)}
+.usage-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:var(--space-6)}
+.sup{display:grid;grid-template-columns:1.5fr 1fr;gap:var(--space-6);align-items:start}
+.lframes{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--space-4)}
+.lframe{position:relative;height:220px;border:var(--border-width) solid var(--line-strong);border-radius:var(--radius-lg);overflow:hidden;background:var(--canvas)}
+.lframe-tiles{display:flex;gap:var(--space-3);padding:var(--space-4)}
+.lstage{position:relative;height:240px;border:var(--border-width) solid var(--line-strong);border-radius:var(--radius-lg);overflow:hidden;background:var(--canvas);padding:var(--space-4)}
+.lstage-grid{display:grid;grid-template-columns:repeat(6,96px);gap:var(--space-2)}
+.fxcard{display:flex;flex-direction:column;gap:var(--space-2);padding:var(--space-5)}
+.fxapps{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:var(--space-3) var(--space-4)}
+.fxmail{display:flex;flex-direction:column;gap:var(--space-3);padding:var(--space-5);border:var(--border-width) solid var(--line);border-radius:var(--radius-md);background:var(--canvas);color:var(--ink)}
+.fxmail-btn{align-self:flex-start;padding:var(--space-2) var(--space-4);border-radius:var(--radius-md);background:var(--primary);color:var(--on-primary);font-weight:600}
+.fxplans{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:var(--space-4)}
+.fxplan{display:flex;flex-direction:column;gap:var(--space-3);padding:var(--space-5)}
+.fxlim{margin:0;padding-left:var(--space-5);color:var(--ink-secondary);display:flex;flex-direction:column;gap:var(--space-1)}
+.fxver{width:100%;border-collapse:collapse}
+.fxver th{text-align:left;color:var(--ink-muted);font-weight:500;padding:var(--space-1) 0;border-bottom:var(--border-width) solid var(--line)}
+.fxver td{padding:var(--space-2) 0;border-bottom:var(--border-width) solid var(--line);color:var(--ink)}
+.fxver td .v-pill{margin-left:var(--space-2);vertical-align:middle}
+.fxlimits{display:flex;flex-direction:column}
+.fxlimits-row{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(60px,.6fr) minmax(120px,1fr);gap:var(--space-3);align-items:center;padding:var(--space-2) 0;border-bottom:var(--border-width) solid var(--line);color:var(--ink)}
+.fxlimits-row .v-icon{color:var(--done-ink,var(--ink-secondary));flex:none}
+.fxlimits-head{padding-top:0}
+.fxlink{color:var(--ink);text-decoration:underline;text-underline-offset:2px;font-weight:600;display:inline-flex;align-items:center;min-height:24px;min-width:24px}
+@media (pointer:coarse),(max-width:767px){.fxlink{min-height:44px;min-width:44px}}
+.fxlim-new{display:flex;align-items:center;gap:var(--space-2);min-width:0}
+.fxlim-new .v-control{flex:1 1 80px;min-width:0}
+.fxdelta{display:inline-flex;align-items:center;gap:var(--space-1);color:var(--done-ink);flex:none}
+.fxdelta--down{color:var(--attention-ink)}
+.fxplan .v-btn{align-self:flex-start}
+.fxcost{margin-top:var(--space-4);display:flex;flex-direction:column;gap:var(--space-1);padding:var(--space-4);border-radius:var(--radius-md);background:var(--sunken);color:var(--ink)}
+.fxlangs{display:flex;flex-direction:column}
+.fxlang{display:grid;grid-template-columns:32px minmax(0,1fr) auto auto;gap:var(--space-3);align-items:center;padding:var(--space-2) 0;border-bottom:var(--border-width) solid var(--line);color:var(--ink)}
+.fxlang-text{color:var(--ink-secondary);overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.fxframe{display:flex;flex-direction:column;gap:var(--space-2);padding:var(--space-3);border:var(--border-width) solid var(--line);border-radius:var(--radius-md);background:var(--canvas);color:var(--ink)}
+.fxframe .caption{color:var(--ink-muted)}
+@container (max-width:420px){.fxlang{grid-template-columns:32px minmax(0,1fr) auto}.fxlang .v-iconbtn{display:none}}
+.ss-overlay{position:absolute;inset:0;background:var(--scrim);display:flex;align-items:center;justify-content:center;padding:var(--space-6);z-index:var(--z-overlay)}
+.ss-toast{position:absolute;right:var(--space-6);bottom:var(--space-6);width:var(--panel-width);z-index:var(--z-toast)}
+.ss-toast.m{left:var(--space-4);right:var(--space-4);bottom:calc(var(--space-16) + var(--space-4));width:auto}
+.st-frame{position:relative;height:100%}
+.st-body{padding:0 var(--space-6) var(--space-6)}
+.st-body.m{padding:0 0 var(--space-6)}
+.st-grid{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:var(--space-6);align-items:start}
+.st-grid.m{grid-template-columns:1fr;gap:var(--space-4)}
+.st-thread{display:flex;flex-direction:column;gap:var(--space-3)}
+.st-msg{border:var(--border-width) solid var(--line);border-radius:var(--radius-lg);background:var(--sheet);padding:var(--space-4);display:flex;flex-direction:column;gap:var(--space-2)}
+.st-msg.team{background:var(--raised)}
+.st-msg.m{border-radius:0;border-left:0;border-right:0}
+.st-head{display:flex;align-items:center;gap:var(--space-2);flex-wrap:wrap}
+.st-head .st-time{margin-left:auto;color:var(--ink-muted)}
+.st-msg p{margin:0}
+.st-files{display:flex;flex-wrap:wrap;gap:var(--space-2);margin-top:var(--space-1)}
+.st-file{display:inline-flex;align-items:center;gap:var(--space-2);padding:var(--space-1) var(--space-1) var(--space-1) var(--space-3);border:var(--border-width) solid var(--line);border-radius:var(--radius-md);background:var(--sheet)}
+.st-compose{display:flex;flex-direction:column;gap:var(--space-4)}
+.st-hist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:var(--space-3)}
+.st-hist li{display:flex;gap:var(--space-2);align-items:flex-start}
+.st-hist .v-icon{flex:none;margin-top:2px;color:var(--ink-muted)}
+.st-hist p{margin:0}
+.st-note{display:flex;gap:var(--space-2);align-items:flex-start;color:var(--ink-secondary)}
+.st-note p{margin:0}
+/* SMS · Setări */
+.sms-sec{color:var(--ink-secondary);margin:0}
+.sms-np{display:flex;flex-wrap:wrap;align-items:center;gap:var(--space-2) var(--space-3);margin-top:var(--space-3)}
+.sms-np .body-small{flex:1 1 280px}
+.sms-phone{display:flex;gap:var(--space-3);align-items:flex-start;padding-bottom:var(--space-4);border-bottom:var(--border-width) solid var(--line);margin-bottom:var(--space-4)}
+.sms-phone__ic{display:inline-flex;align-items:center;justify-content:center;flex:none;width:var(--control-lg);height:var(--control-lg);border-radius:var(--radius-md);background:var(--neutral-soft);color:var(--ink-secondary)}
+.sms-phone__text{display:flex;flex-direction:column;gap:var(--space-1);min-width:0;flex:1}
+.sms-phone__text p{margin:0}
+.sms-phone__name{display:flex;align-items:center;gap:var(--space-1)}
+.sms-meta{display:flex;flex-wrap:wrap;gap:var(--space-1) var(--space-4);color:var(--ink-secondary)}
+.sms-meta>span{display:inline-flex;align-items:center;gap:var(--space-1)}
+.sms-stats{margin:var(--space-4) 0;grid-template-columns:repeat(4,minmax(0,1fr))}
+.sms-cap p{margin:0}
+.sms-cap{display:flex;flex-direction:column;gap:var(--space-1)}
+.sms-actions{display:flex;flex-wrap:wrap;gap:var(--space-2);margin-top:var(--space-4)}
+.sms-actions.is-col{flex-direction:column}
+.sms-pad{padding:0 var(--space-6) var(--space-6)}
+.v-sheet-section + .sms-pad,.sms-pad{margin-top:var(--space-2)}
+.v-notice{margin-bottom:var(--space-2)}
+.sms-states{display:flex;flex-direction:column;gap:var(--space-4);padding:var(--space-6);background:var(--canvas);color:var(--ink)}
+.sms-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--space-6);align-items:start}
+.sms-grid.mobile{grid-template-columns:repeat(4,390px)}
+.sms-box{display:flex;flex-direction:column;gap:var(--space-2);min-width:0}
+.sms-boxlab{margin:0;color:var(--ink-muted)}
+.sms-boxbody{border:var(--border-width) solid var(--line-strong);border-radius:var(--radius-lg);overflow:hidden;background:var(--canvas)}
+.sms-boxbody > .v-dialog{margin:var(--space-6) auto}
+.sms-langs{display:flex;flex-direction:column;gap:var(--space-4);padding:var(--space-6);background:var(--canvas);color:var(--ink)}
+.sms-langrow{display:flex;gap:var(--space-6);align-items:flex-start}
+.sms-lang{display:flex;flex-direction:column;gap:var(--space-2)}
+.sms-langframe{border:var(--border-width) solid var(--line-strong);border-radius:var(--radius-lg);overflow:hidden;background:var(--canvas)}
+.sms-langframe.t{width:820px}.sms-langframe.m{width:390px}
+.sms-stats.is-mob{grid-template-columns:1fr 1fr}
+.sms-reco{display:flex;flex-wrap:wrap;align-items:center;gap:var(--space-2) var(--space-3);margin-top:var(--space-3)}
+.sms-check{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:var(--space-3)}
+.sms-check li{display:flex;gap:var(--space-3);align-items:flex-start;color:var(--ink-secondary)}
+.sms-check li>svg,.sms-check li>.v-icon{flex:none;color:var(--ink);margin-top:2px}
+.sms-check .body-strong{color:var(--ink)}
+/* SMS · notificări și e-mail */
+.n-blank{min-height:200px}
+.n-grid{display:grid;grid-template-columns:repeat(4,420px);gap:var(--space-6);align-items:start}
+.n-pane{padding:var(--space-4);background:var(--canvas)}
+.n-pane .v-notifs--inline{width:100%}
+.n-pane.m{width:390px;box-sizing:border-box;padding:var(--space-2)}
+.em-grid{display:grid;grid-template-columns:repeat(3,640px) 430px;gap:var(--space-6);align-items:start}
+.em{background:var(--canvas);color:var(--ink);font-family:var(--font-sans)}
+.em p{margin:0}
+.em-inbox{padding:var(--space-3) var(--space-4);background:var(--raised);border-bottom:var(--border-width) solid var(--line);display:flex;flex-direction:column;gap:2px}
+.em-mute{color:var(--ink-secondary)}
+.em-canvas{padding:var(--space-6) var(--space-4)}
+.em-card{background:var(--raised);border-radius:var(--radius-lg);border:var(--border-width) solid var(--line);overflow:hidden}
+.em-head{padding:var(--space-5) var(--space-6);border-bottom:var(--border-width) solid var(--line)}
+.em-body{padding:var(--space-6);display:flex;flex-direction:column;gap:var(--space-3)}
+.em-eyebrow{text-transform:uppercase;letter-spacing:.06em}
+.em-title{margin:0;font-size:22px;line-height:28px}
+.em-list{margin:0;padding-left:var(--space-5);display:flex;flex-direction:column;gap:var(--space-1)}
+.em-btn{align-self:flex-start;display:inline-block;padding:var(--space-3) var(--space-5);border-radius:var(--radius-md);background:var(--primary);color:var(--on-primary,#fff);text-decoration:none;margin:var(--space-2) 0}
+.em-code{font-size:32px;line-height:40px;font-weight:600;letter-spacing:.12em}
+.em-foot{padding:var(--space-4) var(--space-6) 0;display:flex;flex-direction:column;gap:var(--space-1)}
+.em[style*="390"] .em-canvas{padding:var(--space-4) var(--space-2)}
+.em[style*="390"] .em-body,.em[style*="390"] .em-head{padding-left:var(--space-4);padding-right:var(--space-4)}
+.em[style*="390"] .em-btn{align-self:stretch;text-align:center}
+.n-pop{position:absolute;top:56px;right:16px;width:400px;z-index:20;box-shadow:var(--shadow-3);border-radius:var(--radius-lg);overflow:hidden;background:var(--raised);max-height:calc(100% - 72px);overflow-y:auto}
+.n-pop.mobile{left:0;right:0;top:56px;width:auto;border-radius:0;max-height:calc(100% - 56px)}
+.n-pop{width:auto}
+.n-pop.mobile .v-notifs,.n-pane.m .v-notifs{width:100%;max-width:100%;box-sizing:border-box}
+.em-grid{grid-template-columns:repeat(2,640px) repeat(2,640px)}
+.n-prefs{display:flex;flex-direction:column;gap:var(--space-4)}
+.n-lock{display:flex;gap:var(--space-1);align-items:flex-start;margin:calc(var(--space-2) * -1) 0 0 52px}
+.n-lock>svg{flex:none;margin-top:3px}
+.em-grid{grid-template-columns:repeat(3,640px)}
+.req{display:flex;gap:var(--space-2);align-items:center;color:var(--ink-muted)}
+.req.ok{color:var(--done-ink)}
+.sms-langframe.t{width:820px}
+.sms-langframe.m{width:390px}
+.tfa-code input{letter-spacing:.12em}
+.tfa-done{display:flex;align-items:center;gap:var(--space-2);color:var(--ink-secondary)}
+.tfa-done .v-icon{flex:none;color:var(--ink)}
+.tfa-once{font-weight:600;color:var(--ink)}
+.tfa-codes{list-style:none;margin:0;padding:var(--space-4);display:grid;grid-template-columns:1fr 1fr;gap:var(--space-2) var(--space-6);background:var(--raised);border:var(--border-width) solid var(--line);border-radius:var(--radius-md);font-size:var(--text-body-size,15px);letter-spacing:.06em;color:var(--ink)}
+.tfa-row{display:flex;flex-wrap:wrap;gap:var(--space-2)}
+.tfa-row>*{flex:1 1 0}
+.tfa-scrgroup{display:flex;flex-direction:column}
+.tfa-grouplab{margin:var(--space-6) 0 0}
+.sms-langframe.tfa-d{width:1280px}
+.sms-langframe>.v-auth{flex:1}
+.sms-langframe{display:flex;flex-direction:column}
+.ss-frame{display:flex;flex-direction:column;height:100%;position:relative}
+.ss-frame>.ss-body{flex:1;min-height:0;position:relative;display:flex;flex-direction:column}
+.ss-frame>.ss-body>*{flex:1;min-height:0}
+.ss-bar{display:flex;gap:var(--space-3);align-items:center;padding:var(--space-2) var(--space-4);background:var(--sunken);border-bottom:var(--border-width) solid var(--line-strong);color:var(--ink);flex:none}
+.ss-bar.attention{background:var(--attention-soft)}
+.ss-bar.attention>.v-icon{color:var(--attention-ink)}
+.ss-bar>.v-icon{flex:none;color:var(--ink-secondary)}
+.ss-txt{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.ss-txt p{margin:0}
+.ss-line{display:flex;flex-wrap:wrap;gap:0 var(--space-3)}
+.ss-meta{color:var(--ink-secondary)}
+.ss-bar.m{align-items:flex-start;padding:var(--space-3) var(--space-4)}
+.ss-bar.m .ss-act{margin-top:var(--space-2)}
+.ss-overlay.m{align-items:flex-end;padding:0}
+.ss-overlay .v-dialog{max-height:none}
+.ss-toast.m{left:var(--space-4);right:var(--space-4);bottom:var(--space-4);width:auto}
+.ss-states{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--space-6);align-items:start}
+.ss-pad{padding:var(--space-6);display:flex;flex-direction:column;gap:var(--space-4);background:var(--canvas)}
+.ss-form{display:flex;flex-direction:column;gap:var(--space-4)}
+.ss-form p{margin:0}
+.ss-rule{display:flex;gap:var(--space-2);align-items:flex-start;margin:0;color:var(--ink-secondary)}
+.ss-rule.ok{color:var(--done-ink)}
+.ss-rule .v-icon{flex:none;margin-top:2px}
+.ss-list{margin:0;padding-left:var(--space-5);display:flex;flex-direction:column;gap:var(--space-1)}
+.sms-langframe{border:var(--border-width) solid var(--line-strong);border-radius:var(--radius-lg);overflow:hidden;background:var(--canvas);color:var(--ink);display:flex;flex-direction:column}
+.sms-langframe>*{flex:1;min-height:0}
+.x-frame{position:relative;height:100%;display:flex;flex-direction:column}
+.x-frame>*{flex:1;min-height:0}
+.x-overlay{position:absolute;inset:0;background:var(--scrim);display:flex;align-items:center;justify-content:center;padding:var(--space-6);z-index:var(--z-overlay)}
+.x-overlay.m{align-items:flex-end;padding:0}
+.x-overlay .v-dialog{max-height:none}
+.x-toast{position:absolute;right:var(--space-6);bottom:var(--space-6);width:var(--panel-width);z-index:var(--z-toast)}
+.x-toast.m{left:var(--space-4);right:var(--space-4);bottom:var(--space-4);width:auto}
+.x-link{color:var(--ink);text-decoration:underline;text-underline-offset:2px}
+.fp-cell{display:flex;flex-direction:column;gap:var(--space-0-5)}
+.fp-save{color:var(--ink-muted)}
+.fp-ver td{vertical-align:top}
+.fp-prices{display:grid;grid-template-columns:1fr 1fr;gap:var(--space-4)}
+.fp-prices.m{grid-template-columns:1fr}
+.fp-sub{margin:0 0 var(--space-2)}
+.fp-list.fxplans{grid-template-columns:1fr}
+.fp-cell>span{white-space:nowrap}
+.fp-ver{width:100%}
+.fa-act{display:flex;flex-direction:column;align-items:flex-end;gap:var(--space-1);text-align:end;max-width:280px}
+/*S117css*/
+.fb-apps{display:flex;flex-wrap:wrap;gap:var(--space-2) var(--space-4)}
+.fb-app{display:inline-flex;align-items:center;gap:var(--space-2);white-space:nowrap}
+.fb-inc{margin:0;padding-inline-start:var(--space-5);display:flex;flex-direction:column;gap:var(--space-0-5)}
+.fb-cell{display:flex;flex-direction:column;gap:var(--space-0-5)}
+.fb-cell>span{white-space:nowrap}
+.fb-card{display:flex;flex-direction:column;gap:var(--space-4)}
+.fb-head{display:flex;align-items:flex-start;justify-content:space-between;gap:var(--space-3);flex-wrap:wrap}
+.fb-title{display:flex;align-items:center;gap:var(--space-2);flex-wrap:wrap}
+.fb-acts{display:flex;gap:var(--space-2);flex-wrap:wrap}
+.fb-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--space-4)}
+.fb-grid.m{grid-template-columns:1fr}
+.fb-k{color:var(--ink-muted);margin:0 0 var(--space-1)}
+.fb-strike{text-decoration:line-through;color:var(--ink-muted)}
+.fb-ver{width:100%;border-collapse:collapse}
+.fb-ver th{text-align:start;color:var(--ink-muted);font-weight:inherit;padding:var(--space-2) var(--space-3) var(--space-2) 0;border-bottom:var(--border-width) solid var(--line)}
+.fb-ver td{padding:var(--space-2) var(--space-3) var(--space-2) 0;border-bottom:var(--border-width) solid var(--line);vertical-align:top}
+.fb-ver tr:last-child td{border-bottom:0}
+.fb-tw{overflow-x:auto}
+.fb-sum{display:flex;flex-direction:column;gap:var(--space-2);padding:var(--space-3);border-radius:var(--radius-sm);background:var(--sunken)}
+.fb-line{display:flex;justify-content:space-between;gap:var(--space-4)}
+.fb-line>span:last-child{white-space:nowrap}
+.fb-line.tot{padding-top:var(--space-2);border-top:var(--border-width) solid var(--line)}
+.fb-period{display:grid;grid-template-columns:1fr 1fr;gap:var(--space-4)}
+.fb-period.m{grid-template-columns:1fr}
+.fb-applist{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--space-2) var(--space-6)}
+.fb-applist.m{grid-template-columns:1fr}
+.fb-applab{display:inline-flex;align-items:center;gap:var(--space-2)}
+.muted{color:var(--ink-muted)}
+.x-dd{display:inline-flex;align-items:center;gap:var(--space-1);padding:var(--space-0-5) var(--space-2);border-radius:var(--radius-sm);background:var(--attention-soft);color:var(--attention-ink);font-weight:600;flex-wrap:wrap}
+.x-dd-t{font-weight:400;color:var(--ink)}
+.x-ddnote{display:flex;flex-direction:column;gap:var(--space-2);padding:var(--space-3) var(--space-4);border:var(--border-width) dashed var(--line-strong);border-radius:var(--radius-md);background:var(--sheet);color:var(--ink)}
+.x-ddnote p{margin:0}
+.pb{min-height:100%;background:var(--canvas);color:var(--ink);display:flex;flex-direction:column}
+.pb-head{display:flex;align-items:center;justify-content:space-between;gap:var(--space-4);padding:var(--space-4) var(--space-8);border-bottom:var(--border-width) solid var(--line);background:var(--sheet)}
+.pb.m .pb-head{padding:var(--space-3) var(--space-4)}
+.pb-brand{display:flex;align-items:center;gap:var(--space-3);min-width:0}
+.pb-brand p{margin:0}
+.pb-main{display:flex;justify-content:center;gap:var(--space-8);padding:var(--space-8) var(--space-8) var(--space-6);align-items:flex-start}
+.pb.m .pb-main{padding:var(--space-4) 0}
+.pb-card{width:100%;max-width:560px;display:flex;flex-direction:column;gap:var(--space-4);background:var(--sheet);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg);padding:var(--space-6);box-sizing:border-box}
+.pb.m .pb-card{max-width:none;border-radius:0;border-left:0;border-right:0;padding:var(--space-4)}
+.pb-aside{width:320px;flex:none;position:sticky;top:var(--space-6)}
+.pb-title{margin:0}
+.pb-step{display:flex;flex-direction:column;gap:var(--space-1)}
+.pb-step p{margin:0}
+.pb-list{display:flex;flex-direction:column;gap:var(--space-2)}
+.pb-opt{display:flex;align-items:center;gap:var(--space-3);padding:var(--space-3) var(--space-4);border:var(--border-width) solid var(--line);border-radius:var(--radius-md);background:var(--canvas)}
+.pb-opt>.v-radio,.pb-opt>label{flex:1;min-width:0}
+.pb-opt.on{border-color:var(--primary);background:var(--selected)}
+.pb-acts{display:flex;justify-content:space-between;gap:var(--space-3);align-items:center;margin-top:var(--space-2)}
+.pb-acts.m{flex-direction:column-reverse;align-items:stretch}
+.pb-acts>:only-child{margin-left:auto}
+.pb-acts.m>:only-child{margin-left:0}
+.pb-sum{display:flex;flex-direction:column;gap:var(--space-3);padding:var(--space-5);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg);background:var(--sheet)}
+.pb-sum p{margin:0}
+.pb-sum.c{padding:var(--space-3) var(--space-4);background:var(--raised);border-radius:var(--radius-md)}
+.pb-days{display:flex;gap:var(--space-2);overflow:hidden}
+.pb-cal{align-self:flex-start}
+.pb-form{display:flex;flex-direction:column;gap:var(--space-4)}
+.pb-form p{margin:0}
+.pb-captcha{display:flex;align-items:center;gap:var(--space-3);padding:var(--space-3) var(--space-4);border:var(--border-width) dashed var(--line-strong);border-radius:var(--radius-md);background:var(--raised);color:var(--ink-secondary)}
+.pb-captcha.err{border-style:solid;border-color:var(--danger)}
+.pb-health{border:var(--border-width) solid var(--line);border-radius:var(--radius-md);padding:var(--space-4);margin:0;display:flex;flex-direction:column;gap:var(--space-3);min-width:0}
+.pb-health legend{padding:0 var(--space-1)}
+.pb-health p{margin:0}
+.pb-code{max-width:240px}
+.pb-held{display:flex;align-items:center;gap:var(--space-2);color:var(--ink-secondary)}
+.pb-done{display:flex;flex-direction:column;gap:var(--space-4);align-items:flex-start}
+.pb-done h1,.pb-done p{margin:0}
+.pb-doneic{display:inline-flex;width:56px;height:56px;border-radius:50%;align-items:center;justify-content:center;background:var(--done-soft);color:var(--done-ink)}
+.pb-doneic.p{background:var(--raised);color:var(--ink-secondary)}
+.pb-doneic.bad{background:var(--danger-soft);color:var(--danger-ink)}
+.pb-donesum{display:flex;flex-direction:column;gap:var(--space-2);align-self:stretch}
+.pb-foot{text-align:center;margin:auto 0 var(--space-4);padding:var(--space-4) var(--space-4) 0}
+.pb-pay{display:flex;flex-direction:column;gap:var(--space-3)}
+.pb-pay p{margin:0}
+.pb-rule{display:flex;gap:var(--space-2);align-items:flex-start;margin:0}
+.pb-rule .v-icon{flex:none;margin-top:2px;color:var(--ink-secondary)}
+.x-body{padding:0 0 var(--space-8);display:flex;flex-direction:column;gap:var(--space-6)}
+.x-body.m{padding:0 0 var(--space-8);gap:var(--space-4)}
+.x-body.m>.v-notice,.x-body.m>.x-pad{margin:0 var(--space-4)}
+.x-grid{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:var(--space-6);align-items:start}
+.x-grid.m{grid-template-columns:1fr;gap:var(--space-4)}
+.x-col{display:flex;flex-direction:column;gap:var(--space-4);min-width:0}
+.x-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--space-3)}
+.x-body.m .x-stats{grid-template-columns:1fr 1fr;padding:0 var(--space-4)}
+.x-row{display:flex;gap:var(--space-2);align-items:center;flex-wrap:wrap}
+.x-stack{display:flex;flex-direction:column;gap:var(--space-3)}
+.x-stack p{margin:0}
+.x-line{display:flex;gap:var(--space-2);align-items:flex-start;color:var(--ink-secondary)}
+.x-line p{margin:0}
+.x-line .v-icon{flex:none;margin-top:2px}
+.x-field{display:flex;align-items:center;gap:var(--space-3);padding:var(--space-3) var(--space-4);border:var(--border-width) solid var(--line);border-radius:var(--radius-md);background:var(--canvas)}
+.x-field>div{flex:1;min-width:0}
+.x-field p{margin:0}
+.x-flow{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:var(--space-3)}
+.x-tr{width:100%;border-collapse:collapse}
+.x-tr th,.x-tr td{text-align:left;padding:var(--space-2) var(--space-3);border-bottom:var(--border-width) solid var(--line);vertical-align:top}
+.x-tr th{color:var(--ink-muted)}
+.em-kv{background:var(--sheet);border-radius:var(--radius-md);padding:var(--space-3) var(--space-4)}
+.em-salon{display:flex;align-items:center;gap:var(--space-2)}
+.em-salon p{margin:0}
+.g2f{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--space-4)}
+.g2f.m{grid-template-columns:1fr}
+.su-steps{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:var(--space-2)}
+.su-steps li{display:flex;align-items:center;gap:var(--space-2);color:var(--ink-muted)}
+.su-steps li.done{color:var(--ink-secondary)}
+.su-steps li.done .v-icon{color:var(--done-ink)}
+.su-steps li.cur{color:var(--ink);font-weight:600}
+.su-steps li.cur .v-icon{color:var(--attention-ink)}
+.sv-body{display:flex;flex-direction:column;gap:var(--space-4);min-width:0}
+.sv-tools{display:flex;flex-wrap:wrap;align-items:center;gap:var(--space-2) var(--space-3)}
+.sv-tools.m{padding:0 var(--space-4);flex-direction:column;align-items:stretch}
+.sv-line{display:flex;align-items:center;gap:var(--space-2);min-width:0}
+.sv-line .sv-search{flex:1 1 auto;max-width:none}
+.sv-search{flex:1 1 220px;min-width:0;max-width:var(--search-width)}
+.sv-grow{flex:1 1 auto}
+.sv-fs{border:0;margin:0;padding:0;display:flex;flex-direction:column;gap:var(--space-3);min-width:0}
+.sv-fs legend{padding:0;margin-bottom:var(--space-2)}
+.sv-narrow{max-width:calc(var(--search-width) / 1.5)}
+.sv-foot{display:flex;align-items:center;gap:var(--space-2);width:100%;flex-wrap:wrap}
+.sv-order{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;border:var(--border-width) solid var(--line);border-radius:var(--radius-md)}
+.sv-order li{display:flex;align-items:center;gap:var(--space-3);min-height:var(--row-height);padding:var(--space-1) var(--space-2) var(--space-1) var(--space-3);border-bottom:var(--border-width) solid var(--line)}
+.sv-order li:last-child{border-bottom:0}
+.sv-order li.is-moved{background:var(--selected)}
+.sv-order .sv-ix{width:var(--space-4);text-align:center;display:inline-flex;justify-content:center}
+.sv-order .sv-on{flex:1 1 auto;min-width:0}
+.sv-foot.m{flex-direction:column-reverse;align-items:stretch}
+.sv-foot.m .sv-grow{display:none}
+/* S126 — BookingNew / Calendar layout, as in BookingNew and BookingCalendar */
+.newgrid{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:var(--space-6);align-items:start}
+.newgrid.tablet,.newgrid.mobile{grid-template-columns:1fr}
+.newgrid.mobile{padding-bottom:var(--space-16)}
+.newgrid.mobile .sumcard{border-radius:0;border-left:0;border-right:0}
+.sumcard{position:sticky;top:0;display:flex;flex-direction:column;gap:var(--space-3);padding:var(--space-5);background:var(--sheet);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg)}
+.sumcard p{margin:0}
+.sumtotal{display:flex;justify-content:space-between;align-items:baseline;padding-top:var(--space-3);border-top:var(--border-width) solid var(--line)}
+.stickybar{position:absolute;left:0;right:0;bottom:var(--bottomnav-height);display:flex;gap:var(--space-2);justify-content:flex-end;padding:var(--space-3) var(--space-4);background:var(--sheet);border-top:var(--border-width) solid var(--line);z-index:var(--z-sticky)}
+.stickybar .v-btn--primary{flex:1}
+.calbar{display:flex;justify-content:space-between;align-items:center;gap:var(--space-3);flex-wrap:wrap;margin-bottom:var(--space-3)}
+.calbar-date{margin-left:var(--space-2);white-space:nowrap}
+.calwrap.mobile{padding:0 var(--space-4)}
+.cx-rows{display:flex;flex-direction:column;border:var(--border-width) solid var(--line);border-radius:var(--radius-md)}
+.cx-rows>li{list-style:none;display:flex;align-items:center;gap:var(--space-3);padding:var(--space-3) var(--space-4);border-bottom:var(--border-width) solid var(--line);flex-wrap:wrap}
+.cx-rows>li:last-child{border-bottom:0}
+.cx-rows{margin:0;padding:0}
+.cx-grow{flex:1 1 auto;min-width:0}
+.cx-col{display:flex;flex-direction:column;min-width:0}
+.cx-pad{padding:0 var(--space-4)}
+.cx-gap{display:flex;align-items:center;gap:var(--space-2);color:var(--ink-secondary);padding:var(--space-1) var(--space-4)}
+.cx-tl{display:flex;flex-direction:column;gap:var(--space-2);margin:0;padding:0}
+.cx-tl li{list-style:none;display:grid;grid-template-columns:auto 1fr;gap:var(--space-2) var(--space-3);align-items:baseline}
+.cx-tl .v-num{white-space:nowrap}
+.scr-t .x-grid{grid-template-columns:1fr}
+.ts-err{display:flex;align-items:center;gap:var(--space-1);margin:0;color:var(--danger-ink)}
+.mu-step{display:flex;flex-direction:column;gap:var(--space-3);padding:var(--space-4);border:var(--border-width) solid var(--line);border-radius:var(--radius-md)}
+.mu-head{display:flex;align-items:center;gap:var(--space-2)}
+.mu-head .body-strong{flex:1 1 auto;min-width:0}
+.mu-gap{display:flex;align-items:center;gap:var(--space-2);padding-left:var(--space-4);color:var(--ink-secondary)}
+.pk-card{display:flex;flex-direction:column;gap:var(--space-2);padding:var(--space-4);border:var(--border-width) solid var(--line);border-radius:var(--radius-md)}
+.pk-card p{margin:0}
+.wl-msg{margin:0;padding:var(--space-3) var(--space-4);background:var(--raised);border-radius:var(--radius-md)}
+.x-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.mo-sum{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--space-3);margin:0}
+.mo-sum>div{display:flex;flex-direction:column;gap:var(--space-1);padding:var(--space-3);border:var(--border-width) solid var(--line);border-radius:var(--radius-md)}
+.mo-sum>div.is-due{background:var(--attention-soft,var(--raised));border-color:transparent}
+.mo-sum dd{margin:0}
+.mo-ind{padding-left:var(--space-10)}
+.mt-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:var(--space-6);align-items:start}
+.mt-grid.m{grid-template-columns:1fr}
+.mt-vars{display:flex;flex-wrap:wrap;align-items:center;gap:var(--space-2)}
+.mt-prev{position:sticky;top:0}
+.mt-mail .em{max-width:100%;box-sizing:border-box}
+.mt-sms{display:flex;flex-direction:column;align-items:flex-start;gap:var(--space-2);padding:var(--space-4);background:var(--raised);border-radius:var(--radius-md)}
+.mt-bubble{max-width:85%;padding:var(--space-3) var(--space-4);background:var(--sheet);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg) var(--radius-lg) var(--radius-lg) var(--radius-sm)}
+.pr-code{font-family:var(--font-mono,ui-monospace,monospace);letter-spacing:.04em}
+.pr-stats{padding:0!important}
+.rp-grid{display:grid;grid-template-columns:1fr 1fr;gap:var(--space-4)}
+.rp-grid.m{grid-template-columns:1fr}
+.rp-body{gap:var(--space-4)}
+.rp-body.m .x-stats{grid-template-columns:1fr 1fr;padding:0 var(--space-4)}
+.rp-up{color:var(--done-ink)}
+.rp-down{color:var(--danger-ink)}
+.in-ic{display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;border-radius:var(--radius-md);background:var(--raised);color:var(--ink-secondary);flex:none}
+.ai-card{display:flex;flex-direction:column;gap:var(--space-3);padding:var(--space-4) var(--space-5);background:var(--sheet);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg)}
+.ai-card p{margin:0}
+.ai-list{margin:0;padding-left:var(--space-5);display:flex;flex-direction:column;gap:var(--space-1)}
+.ai-ask{display:flex;gap:var(--space-2);width:100%;align-items:center}
+.ai-q{align-self:flex-end;max-width:85%;padding:var(--space-2) var(--space-4);background:var(--raised);border-radius:var(--radius-lg)}
+.wa-steps li{align-items:flex-start}
+.wa-n{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:var(--raised);color:var(--ink-secondary);flex:none}
+.fs-steps{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:var(--space-5)}
+.fs-step{display:flex;gap:var(--space-3);align-items:flex-start}
+.fs-step.done .wa-n{background:var(--done-soft);color:var(--done-ink)}
+.fs-ready{display:flex;flex-direction:column;gap:var(--space-3);margin-top:var(--space-5);padding:var(--space-4);border:var(--border-width) solid var(--line);border-radius:var(--radius-md)}
+/* S130 — ClientDesk */
+.cd-pad{padding:0 var(--space-4)}
+.cd-grow{flex:1 1 auto}
+.cd-foot{display:flex;align-items:center;gap:var(--space-2);width:100%;flex-wrap:wrap}
+.cd-foot.m{flex-direction:column-reverse;align-items:stretch}
+.cd-foot.m .cd-grow{display:none}
+.cd-name{display:inline-flex;align-items:center;gap:var(--space-3);min-width:0}
+.cd-namecol{display:flex;flex-direction:column;min-width:0}
+.cd-owner{display:inline-flex;align-items:center;gap:var(--space-2);min-width:0;white-space:nowrap}
+.cd-tags{gap:var(--space-1)}
+.cd-tools{display:flex;flex-wrap:wrap;align-items:center;gap:var(--space-2) var(--space-3)}
+.cd-tools.m{padding:0 var(--space-4);flex-direction:column;align-items:stretch}
+.cd-line{display:flex;align-items:center;gap:var(--space-2);min-width:0;flex-wrap:wrap}
+.cd-search{flex:1 1 220px;min-width:0;max-width:var(--search-width)}
+.cd-line .cd-search{max-width:none}
+.cd-chips{display:flex;flex-wrap:wrap;align-items:center;gap:var(--space-2)}
+.cd-chips.m{padding:0 var(--space-4)}
+.cd-grid{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:var(--space-6);align-items:start}
+.cd-grid.t,.cd-grid.m{grid-template-columns:1fr;gap:var(--space-4)}
+.cd-side{display:flex;flex-direction:column;gap:var(--space-4);min-width:0}
+.cd-feed{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.cd-fi{position:relative;display:grid;grid-template-columns:var(--space-8) minmax(0,1fr) auto;gap:var(--space-3);padding:0 0 var(--space-4)}
+.cd-fi:not(:last-child)::before{content:"";position:absolute;left:calc(var(--space-4) - var(--border-width) / 2);top:var(--space-8);bottom:0;border-left:var(--border-width) solid var(--line)}
+.cd-fic{width:var(--space-8);height:var(--space-8);border-radius:50%;display:inline-flex;align-items:center;justify-content:center;background:var(--sunken);color:var(--ink-secondary)}
+.cd-fbody{display:flex;flex-direction:column;gap:var(--space-1);min-width:0;padding-top:var(--space-1)}
+.cd-fbody p{margin:0}
+.cd-ftext.box{padding:var(--space-2) var(--space-3);border:var(--border-width) solid var(--line);border-radius:var(--radius-md);background:var(--sheet)}
+.cd-fwhen{padding-top:var(--space-1);white-space:nowrap}
+.cd-mention{color:var(--ink)}
+.cd-compose{display:flex;flex-direction:column;gap:var(--space-2)}
+.cd-compose .cd-line{justify-content:space-between}
+.cd-suggest{list-style:none;margin:0;padding:var(--space-1);border:var(--border-width) solid var(--line);border-radius:var(--radius-md);background:var(--sheet);box-shadow:var(--shadow-2);max-width:calc(var(--space-16) * 4)}
+.cd-suggest li{display:flex;align-items:center;gap:var(--space-2);padding:var(--space-1) var(--space-2);border-radius:var(--radius-sm)}
+.cd-suggest li.on{background:var(--selected)}
+.cd-file{display:flex;align-items:center;gap:var(--space-2);padding:var(--space-2) var(--space-3);border:var(--border-width) solid var(--line);border-radius:var(--radius-md)}
+.cd-acts{display:flex;flex-wrap:wrap;gap:var(--space-2)}
+.cd-acts.m{padding:0 var(--space-4)}
+.cd-ro{display:inline-flex;align-items:center;gap:var(--space-1)}
+.cd-colpick{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;border:var(--border-width) solid var(--line);border-radius:var(--radius-md)}
+.cd-colpick li{display:flex;align-items:center;gap:var(--space-2);padding:var(--space-2) var(--space-3);border-bottom:var(--border-width) solid var(--line)}
+.cd-colpick li:last-child{border-bottom:0}
+.cd-colpick .cd-grow{min-width:0}
+.cd-merge{display:grid;grid-template-columns:minmax(0,7rem) minmax(0,1fr) minmax(0,1fr);gap:var(--space-2) var(--space-3);align-items:center}
+.cd-merge.m{grid-template-columns:1fr}
+.cd-consent{display:flex;flex-direction:column;gap:var(--space-3)}
+.cd-consent>div{display:flex;flex-direction:column;gap:var(--space-1);padding-bottom:var(--space-3);border-bottom:var(--border-width) solid var(--line)}
+.cd-consent>div:last-child{border-bottom:0;padding-bottom:0}
+.cd-consent p{margin:0}
+.cd-sub{display:inline-flex;align-items:center;gap:var(--space-2);min-width:0;flex-wrap:wrap}
+.cd-today>li{flex-wrap:nowrap;align-items:flex-start}
+.cd-merge>*{min-width:0;overflow-wrap:anywhere}
+/* S131 — ClientDesk activities */
+.cd-acts-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.cd-act{display:flex;align-items:flex-start;justify-content:space-between;gap:var(--space-3);padding:var(--space-3) 0;border-bottom:var(--border-width) solid var(--line);flex-wrap:wrap}
+.cd-act:last-child{border-bottom:0}
+.cd-act>.v-checkbox,.cd-act>label{flex:1 1 280px;min-width:0}
+.cd-act.is-done .v-checkbox__label,.cd-act.is-done label{color:var(--ink-muted);text-decoration:line-through}
+.cd-actmeta{display:flex;align-items:center;gap:var(--space-3);flex-wrap:wrap;justify-content:flex-end;min-width:0}
+.cd-notif{position:absolute;top:calc(var(--space-12) + var(--space-2));right:var(--space-4);width:calc(var(--space-16) * 6);max-width:calc(100% - var(--space-8));z-index:var(--z-sticky);box-shadow:var(--shadow-3);border-radius:var(--radius-lg)}
+.cd-notif.m{left:var(--space-4);right:var(--space-4);width:auto;max-width:none}
+/* S132 — ClientDesk duplicates, import, settings */
+.cd-pairs{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.cd-pair{display:flex;flex-direction:column;gap:var(--space-2);padding:var(--space-3) 0;border-bottom:var(--border-width) solid var(--line)}
+.cd-pair:last-child{border-bottom:0}
+.cd-pairwho{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:var(--space-3);align-items:center;color:var(--ink-muted)}
+.cd-pairfoot{display:flex;justify-content:space-between;align-items:center;gap:var(--space-2);flex-wrap:wrap}
+.scr-m .cd-pairwho{grid-template-columns:1fr}
+.scr-m .cd-pairwho>.v-icon{display:none}
+.cd-stats3{grid-template-columns:repeat(3,minmax(0,1fr))!important;padding:0!important}
+.cd-stage{flex-wrap:nowrap}
+.cd-stage.m{flex-wrap:wrap}
+.cd-stagen{white-space:nowrap}
+/* S133 — ClientDesk automations, templates, e-mail, consent, sequences */
+.cd-tglsr .v-check__text{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.cd-autos{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.cd-auto{display:grid;grid-template-columns:var(--space-8) minmax(0,1fr) auto;gap:var(--space-3);align-items:center;padding:var(--space-3) 0;border-bottom:var(--border-width) solid var(--line)}
+.cd-auto:last-child{border-bottom:0}
+.cd-autobody{display:flex;flex-direction:column;gap:var(--space-1);min-width:0}
+.cd-autoend{display:flex;align-items:center;gap:var(--space-2)}
+.scr-m .cd-auto{grid-template-columns:var(--space-8) minmax(0,1fr)}
+.scr-m .cd-autoend{grid-column:2;justify-content:space-between}
+.cd-lock{display:flex;align-items:flex-start;gap:var(--space-2);padding:var(--space-3);border:var(--border-width) dashed var(--line);border-radius:var(--radius-md);background:var(--sunken)}
+.cd-lock p{margin:0}
+.cd-vars{display:flex;flex-wrap:wrap;gap:var(--space-2)}
+.cd-split{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:var(--space-6);align-items:start}
+.cd-split.m,.cd-split.t{grid-template-columns:1fr}
+.cd-mailwrap{display:flex;justify-content:center;overflow:hidden;padding:var(--space-4) 0}
+.cd-mailwrap .em{max-width:100%}
+.cd-steps{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.cd-step{display:grid;grid-template-columns:var(--space-8) minmax(0,1fr) auto;gap:var(--space-3);align-items:start;padding:var(--space-3) 0;border-bottom:var(--border-width) solid var(--line)}
+.cd-step:last-child{border-bottom:0}
+.cd-step.wait{padding:var(--space-2) 0}
+.cd-stepbody{display:flex;flex-direction:column;gap:var(--space-1);min-width:0}
+.cd-stepbody p{margin:0}
+.cd-stepend{display:flex;align-items:center;gap:var(--space-1)}
+.scr-m .cd-step{grid-template-columns:var(--space-8) minmax(0,1fr)}
+.scr-m .cd-stepend{grid-column:2}
+.cd-unsub{min-height:100%;height:100%;box-sizing:border-box;background:var(--canvas,var(--sunken));display:flex;flex-direction:column;align-items:center;padding:var(--space-8) var(--space-4)}
+.cd-unsubcard{width:100%;max-width:calc(var(--space-16) * 8);display:flex;flex-direction:column;gap:var(--space-4);padding:var(--space-6);background:var(--sheet);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg)}
+.cd-unsubcard h1,.cd-unsubcard p{margin:0}
+.cd-unsubbrand{display:flex;align-items:center;gap:var(--space-3)}
+/* S135 — Hub developer integrations */
+.ak-code{margin:0;padding:var(--space-3) var(--space-4);background:var(--sunken);border:var(--border-width) solid var(--line);border-radius:var(--radius-md);overflow:auto;font-family:var(--font-mono,ui-monospace,monospace);font-size:var(--text-caption,12px);line-height:1.6;color:var(--ink);white-space:pre}
+.ak-perm{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:var(--space-2) var(--space-4);align-items:center}
+.ak-perm .caption{text-align:center}
+.ak-secret{display:flex;gap:var(--space-2);align-items:center}
+.ak-secret>div{flex:1 1 auto;min-width:0}
+/* S136 — Faza 5 */
+.ft-langs{grid-template-columns:repeat(5,minmax(0,1fr))}
+.scr-t .ft-langs{grid-template-columns:repeat(3,minmax(0,1fr))}
+.x-body.m .ft-langs{grid-template-columns:1fr 1fr}
+.fn-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.fn-row{display:grid;grid-template-columns:var(--space-8) minmax(0,1fr) auto;gap:var(--space-3);align-items:center;padding:var(--space-3) 0;border-bottom:var(--border-width) solid var(--line)}
+.fn-row:last-child{border-bottom:0}
+.fn-row.is-unread .body-strong{color:var(--ink)}
+.scr-m .fn-row{grid-template-columns:var(--space-8) minmax(0,1fr)}
+.scr-m .fn-row>.v-btn{grid-column:2;justify-self:start}
+/* S137 — CampaignKit */
+.mk-quota{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--space-6)}
+.mk-quota.t{grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--space-4)}
+.mk-quota.m{grid-template-columns:1fr;gap:var(--space-4)}
+.mk-meter{display:flex;flex-direction:column;gap:var(--space-1);min-width:0}
+.mk-dash{display:grid;grid-template-columns:minmax(0,3fr) minmax(0,2fr);gap:var(--space-4);align-items:start}
+.mk-steps{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:var(--space-2) var(--space-5)}
+.mk-steps li{display:flex;align-items:center;gap:var(--space-2);color:var(--ink-secondary)}
+.mk-stepn{width:var(--space-6);height:var(--space-6);border-radius:50%;display:inline-flex;align-items:center;justify-content:center;border:var(--border-width) solid var(--line);background:var(--sheet)}
+.mk-steps li.is-on{color:var(--ink)}
+.mk-steps li.is-on .mk-stepn{border-color:var(--primary);background:var(--primary);color:var(--on-primary)}
+.mk-steps li.is-done .mk-stepn{background:var(--selected);border-color:var(--selected);color:var(--ink)}
+.mk-flowfoot{display:flex;align-items:center;gap:var(--space-2);flex-wrap:wrap}
+.mk-flowfoot.m{flex-direction:column-reverse;align-items:stretch}
+.mk-flowfoot.m .cd-grow{display:none}
+.mk-est{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,2fr);gap:var(--space-4);padding:var(--space-4);border:var(--border-width) solid var(--line);border-radius:var(--radius-md);background:var(--sunken)}
+.newgrid.mobile .mk-est,.newgrid.tablet .mk-est{grid-template-columns:1fr}
+.mk-excl{display:grid;grid-template-columns:1fr auto;gap:var(--space-2) var(--space-4);margin:0}
+.mk-excl dt{display:flex;flex-direction:column;gap:2px}
+.mk-excl dd{margin:0;text-align:right}
+.mk-excl dt.body-strong,.mk-excl dd.body-strong{padding-top:var(--space-2);border-top:var(--border-width) solid var(--line)}
+.mk-contentcard{display:grid;grid-template-columns:auto minmax(0,1fr);gap:var(--space-4);align-items:center;padding:var(--space-3);border:var(--border-width) solid var(--line);border-radius:var(--radius-md)}
+.newgrid.mobile .mk-contentcard{grid-template-columns:1fr}
+.mk-contentcard .cd-mailwrap{padding:0;max-height:calc(var(--space-16) * 4);align-items:flex-start;border-radius:var(--radius-sm)}
+.mk-checks{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:var(--space-2)}
+.mk-palette{display:flex;flex-wrap:wrap;align-items:center;gap:var(--space-2)}
+.mk-ed{display:grid;grid-template-columns:minmax(0,1fr) calc(var(--space-16) * 5);gap:var(--space-4);align-items:start}
+.mk-ed.s{grid-template-columns:1fr}
+.mk-stage{display:flex;justify-content:center;background:var(--sunken);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg);overflow:hidden;min-width:0}
+.mk-canvas{max-width:100%}
+.mk-blk{position:relative;border-radius:var(--radius-sm);outline:var(--border-width) dashed transparent;outline-offset:var(--space-1)}
+.mk-blk:hover{outline-color:var(--line)}
+.mk-blk.is-sel{outline:2px solid var(--primary)}
+.mk-blk.is-err{outline:2px solid var(--danger)}
+.mk-blkbar{position:absolute;right:0;top:calc(var(--space-8) * -1 - var(--space-1));display:flex;gap:2px;padding:2px;background:var(--raised);border:var(--border-width) solid var(--line);border-radius:var(--radius-sm);box-shadow:var(--shadow-1);z-index:1}
+.mk-var{background:var(--selected);border-radius:var(--radius-sm);padding:0 var(--space-1)}
+.mk-img{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:var(--space-2);min-height:calc(var(--space-16) * 2);border-radius:var(--radius-md);background:var(--sunken);color:var(--ink-secondary);text-align:center;padding:var(--space-3)}
+.mk-cols{display:grid;grid-template-columns:1fr 1fr;gap:var(--space-4)}
+.mk-hr{border:0;border-top:var(--border-width) solid var(--line);margin:var(--space-2) 0}
+.mk-promo{display:flex;flex-direction:column;align-items:center;gap:var(--space-1);padding:var(--space-4);border:var(--border-width) dashed var(--line);border-radius:var(--radius-md);text-align:center}
+.mk-social{display:flex;align-items:center;gap:var(--space-2);justify-content:center}
+.mk-locked{position:relative}
+.mk-locked.is-sel{outline:2px solid var(--primary);outline-offset:-2px}
+.mk-lockt{display:inline-flex;align-items:center;gap:var(--space-1)}
+.em-head.mk-locked{display:flex;align-items:center;justify-content:space-between;gap:var(--space-2)}
+.mk-swatch{width:var(--space-4);height:var(--space-4);border-radius:var(--radius-sm);background:var(--primary);display:inline-block}
+.mk-gallery{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--space-3)}
+.mk-gallery.m{grid-template-columns:1fr 1fr}
+.mk-gcard{display:flex;flex-direction:column;gap:var(--space-2);padding:var(--space-3);border:var(--border-width) solid var(--line);border-radius:var(--radius-md);background:var(--sheet)}
+.mk-gthumb{display:flex;flex-direction:column;gap:var(--space-1);padding:var(--space-3);height:calc(var(--space-16) * 1.5);border-radius:var(--radius-sm);background:var(--sunken);box-sizing:border-box}
+.mk-gl{display:block;height:var(--space-1);border-radius:var(--radius-sm);background:var(--line);width:70%}
+.mk-gl.w{width:35%}
+.mk-gl.t{height:var(--space-2);width:80%}
+.mk-gl.i{height:var(--space-6);width:100%}
+.mk-gl.b{width:40%;height:var(--space-3);background:var(--primary);opacity:.6}
+/* S138 — CampaignKit set 2: the post calendar and the social preview */
+.mk-cal{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:var(--space-1)}
+.mk-dow{padding:0 var(--space-1)}
+.mk-day{min-height:calc(var(--space-16) * 1.75);display:flex;flex-direction:column;gap:var(--space-1);padding:var(--space-1);border:var(--border-width) solid var(--line);border-radius:var(--radius-sm);background:var(--sheet);min-width:0;box-sizing:border-box}
+.mk-day.out{background:var(--sunken);color:var(--ink-muted)}
+.mk-day.today{border-color:var(--primary)}
+.mk-day.today .mk-dnum{color:var(--primary);font-weight:600}
+.mk-post{display:flex;align-items:center;gap:var(--space-1);min-width:0;padding:2px var(--space-1);border-radius:var(--radius-sm);border:var(--border-width) solid var(--line);background:var(--raised);overflow:hidden}
+.mk-post.is-draft{border-style:dashed}
+.mk-post.is-published{background:var(--sunken);border-color:transparent}
+.mk-post.is-failed{border-color:var(--danger)}
+.mk-postn{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+.mk-net{flex:0 0 auto;padding:0 3px;border-radius:var(--radius-sm);background:var(--selected);color:var(--ink);font-weight:600}
+.mk-week{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:var(--space-2)}
+.mk-wcol{display:flex;flex-direction:column;gap:var(--space-1);min-height:calc(var(--space-16) * 3);padding:var(--space-2);border:var(--border-width) solid var(--line);border-radius:var(--radius-sm);min-width:0}
+.mk-wcol.today{border-color:var(--primary)}
+.mk-wcol .mk-post{flex-wrap:wrap}
+.mk-wcol .mk-postn{white-space:normal}
+.mk-spwrap{display:flex;justify-content:center;padding:var(--space-3);background:var(--sunken);border-radius:var(--radius-md)}
+.mk-sp{width:100%;max-width:calc(var(--space-16) * 6);display:flex;flex-direction:column;gap:var(--space-2);padding:var(--space-3);background:var(--raised);border:var(--border-width) solid var(--line);border-radius:var(--radius-md)}
+.mk-sp p{margin:0}
+.mk-sphead{display:flex;align-items:center;gap:var(--space-2)}
+.mk-spimg{min-height:calc(var(--space-16) * 2.5)}
+.mk-spimg.sq{aspect-ratio:4/5;min-height:0}
+
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script>
+const V = window.Ventora;
+const { useState } = React;
+const h = React.createElement;
+const mount = (el) => ReactDOM.createRoot(document.getElementById("root")).render(h(V.LocaleProvider, { locale: "ro" }, el));
+/* keys: D = { ro: {...}, en: {...}, ... } — the same object as the i18n file */
+const mkT = (D) => (lang, key, vars) => { let s = (D[lang] && D[lang][key]) || D.ro[key] || key; if (vars) for (const k in vars) s = s.split("{" + k + "}").join(vars[k]); return s; };
+const noop = () => {};
+let __u = 0;
+const uid = () => "u" + (++__u);
+const ORGS = [{ id: "aurora", name: "Salon Aurora", role: "Proprietar" }, { id: "dentis", name: "Clinica Dentis Sibiu", role: "Recepție" }, { id: "nord", name: "Agenția Nord Studio", role: "Manager de proiect" }];
+const ORGS_L = {
+  de: [{ id: "aurora", name: "Salon Aurora", role: "Inhaber" }, { id: "dentis", name: "Clinica Dentis Sibiu", role: "Empfang" }],
+  it: [{ id: "aurora", name: "Salon Aurora", role: "Titolare" }, { id: "dentis", name: "Clinica Dentis Sibiu", role: "Reception" }]
+};
+const NOTIFS = [
+  { id: 1, title: "Programare nouă de la Ana Popescu", body: "Joi, 5 nov., 14:30 · Tuns", app: "EasyBook", time: "acum 5 min", person: "Ana Popescu" },
+  { id: 2, title: "Avans primit: 50 lei", body: "Cristina Dobre · Vopsit · vineri, 6 nov.", app: "EasyBook", time: "acum 1 oră", icon: "wallet" },
+  { id: 3, title: "Dan Stoica are acum „Risc ridicat”", body: "A doua programare la care nu a venit, în ultimele 6 luni", app: "EasyBook", time: "ieri", icon: "triangle-alert", read: true }
+];
+const NOTIFS_L = {
+  de: [{ id: 1, title: "Neuer Termin von Anna Schmidt", body: "Do., 5. Nov., 14:30 · Haarschnitt", app: "EasyBook", time: "vor 5 Min.", person: "Anna Schmidt" }],
+  it: [{ id: 1, title: "Nuovo appuntamento di Anna Russo", body: "gio 5 nov., 14:30 · Taglio", app: "EasyBook", time: "5 min fa", person: "Anna Russo" }]
+};
+const USER = { name: "Bianca Petrașcu", email: "bianca@salonaurora.ro" };
+const isL = (lang) => lang === "de" || lang === "it";
+/* ---- Hub settings shell ---- */
+const HUB_SECTIONS = {
+  ro: [
+    { label: "Contul tău", items: [{ id: "profil", label: "Profil și preferințe", short: "Profil", icon: "circle-user" }, { id: "securitate", label: "Securitate", icon: "shield" }] },
+    { label: "Afacerea", items: [{ id: "echipa", label: "Echipă și invitații", short: "Echipă", icon: "users" }, { id: "roluri", label: "Roluri și acces", icon: "key-round" }, { id: "abonament", label: "Abonament și consum", short: "Abonament", icon: "credit-card" }, { id: "automatizari", label: "Automatizări", icon: "refresh-cw" }] },
+    { label: "Ajutor", items: [{ id: "suport", label: "Suport", icon: "life-buoy", badge: 1 }] }
+  ],
+  de: [
+    { label: "Ihr Konto", items: [{ id: "profil", label: "Profil und Einstellungen", short: "Profil", icon: "circle-user" }, { id: "securitate", label: "Sicherheit", icon: "shield" }] },
+    { label: "Unternehmen", items: [{ id: "echipa", label: "Team und Einladungen", short: "Team", icon: "users" }, { id: "roluri", label: "Rollen und Zugriff", short: "Rollen", icon: "key-round" }, { id: "abonament", label: "Abonnement und Verbrauch", short: "Abonnement", icon: "credit-card" }, { id: "automatizari", label: "Automatisierungen", short: "Automatik", icon: "refresh-cw" }] },
+    { label: "Hilfe", items: [{ id: "suport", label: "Support", icon: "life-buoy", badge: 1 }] }
+  ],
+  it: [
+    { label: "Il Suo account", items: [{ id: "profil", label: "Profilo e preferenze", short: "Profilo", icon: "circle-user" }, { id: "securitate", label: "Sicurezza", icon: "shield" }] },
+    { label: "Attività", items: [{ id: "echipa", label: "Team e inviti", short: "Team", icon: "users" }, { id: "roluri", label: "Ruoli e accesso", short: "Ruoli", icon: "key-round" }, { id: "abonament", label: "Abbonamento e utilizzo", short: "Abbonamento", icon: "credit-card" }, { id: "automatizari", label: "Automazioni", icon: "refresh-cw" }] },
+    { label: "Aiuto", items: [{ id: "suport", label: "Assistenza", icon: "life-buoy", badge: 1 }] }
+  ]
+};
+function HubSettings({ active, title, children, lang = "ro" }) {
+  const L = isL(lang) ? lang : "ro";
+  return h(V.AppShell, {
+    height: "100%",
+    spine: h(V.Spine, { hub: true, sections: HUB_SECTIONS[L], activeId: active, onBackToHub: noop, bottomItems: ["profil", "echipa", "abonament", "suport"] }),
+    contextBar: h(V.ContextBar, { title, org: h(V.OrgSwitcher, { orgs: isL(lang) ? ORGS_L[lang] : ORGS, currentId: "aurora" }), onSearch: noop,
+      notifications: h(V.NotificationsPanel, { items: isL(lang) ? NOTIFS_L[lang] : NOTIFS }), account: h(V.AccountMenu, { user: USER, orgs: ORGS, currentOrgId: "aurora", onCatalog: noop }) })
+  }, children);
+}
+/* ---- EasyBook shell ---- */
+const BK_SECTIONS = {
+  ro: [
+    { items: [{ id: "azi", label: "Azi", icon: "house" }, { id: "calendar", label: "Calendar", icon: "calendar" }, { id: "programari", label: "Programări", icon: "list", badge: 3 }] },
+    { label: "Gestionare", items: [{ id: "clienti", label: "Clienți", icon: "users" }, { id: "servicii", label: "Servicii", icon: "boxes" }, { id: "angajati", label: "Echipa", icon: "contact" }] },
+    { label: "Afacere", items: [{ id: "rapoarte", label: "Rapoarte", icon: "chart-column" }, { id: "setari", label: "Setări", icon: "settings" }] }
+  ],
+  de: [
+    { items: [{ id: "azi", label: "Heute", icon: "house" }, { id: "calendar", label: "Kalender", icon: "calendar" }, { id: "programari", label: "Termine", icon: "list", badge: 3 }] },
+    { label: "Verwaltung", items: [{ id: "clienti", label: "Kunden", icon: "users" }, { id: "servicii", label: "Leistungen", icon: "boxes" }, { id: "angajati", label: "Team", icon: "contact" }] },
+    { label: "Unternehmen", items: [{ id: "rapoarte", label: "Berichte", icon: "chart-column" }, { id: "setari", label: "Einstellungen", icon: "settings" }] }
+  ],
+  it: [
+    { items: [{ id: "azi", label: "Oggi", icon: "house" }, { id: "calendar", label: "Calendario", icon: "calendar" }, { id: "programari", label: "Appuntamenti", icon: "list", badge: 3 }] },
+    { label: "Gestione", items: [{ id: "clienti", label: "Clienti", icon: "users" }, { id: "servicii", label: "Servizi", icon: "boxes" }, { id: "angajati", label: "Team", icon: "contact" }] },
+    { label: "Attività", items: [{ id: "rapoarte", label: "Report", icon: "chart-column" }, { id: "setari", label: "Impostazioni", icon: "settings" }] }
+  ]
+};
+const BK_USAGE = { ro: "Programări în noiembrie", de: "Termine im November", it: "Appuntamenti a novembre" };
+function BookingApp({ active, title, children, lang = "ro", footer }) {
+  const L = isL(lang) ? lang : "ro";
+  return h(V.AppShell, {
+    height: "100%",
+    spine: h(V.Spine, { app: "booking", sections: BK_SECTIONS[L], activeId: active, onBackToHub: noop, bottomItems: ["azi", "calendar", "programari", "clienti"],
+      footer: footer === false ? null : h(V.UsageMeter, { compact: true, label: BK_USAGE[L], used: 312, limit: 1e3 }) }),
+    contextBar: h(V.ContextBar, { title: title || "EasyBook", org: h(V.OrgSwitcher, { orgs: isL(lang) ? ORGS_L[lang] : ORGS, currentId: "aurora" }), onSearch: noop,
+      notifications: h(V.NotificationsPanel, { items: isL(lang) ? NOTIFS_L[lang] : NOTIFS }), account: h(V.AccountMenu, { user: USER, orgs: ORGS, currentOrgId: "aurora", onCatalog: noop }) })
+  }, children);
+}
+/* ---- Founder shell: "Suport" after "Cereri", "Automatizări" in "Sistem" ---- */
+const FX_NAV = [
+  { items: [{ id: "azi", label: "Prezentare", short: "Prezentare", icon: "house" }, { id: "afaceri", label: "Afaceri", icon: "building-2" }, { id: "consum", label: "Consum", icon: "chart-column" }, { id: "cereri", label: "Cereri", icon: "inbox", badge: 2 }, { id: "suport", label: "Suport", icon: "life-buoy", badge: 3 }] },
+  { label: "Model comercial", items: [{ id: "aplicatii", label: "Aplicații", icon: "layout-grid" }, { id: "bundles", label: "Bundle-uri", icon: "boxes" }, { id: "pachete", label: "Pachete în plus", short: "Pachete", icon: "package" }, { id: "reduceri", label: "Reduceri", icon: "percent" }] },
+  { label: "Growth", items: [{ id: "oferte", label: "Oferte", icon: "ticket" }, { id: "campanii", label: "Campanii", icon: "megaphone" }, { id: "audiente", label: "Audiențe", icon: "users" }, { id: "rezultate", label: "Rezultate", icon: "chart-line" }, { id: "control", label: "Control", icon: "sliders-horizontal" }] },
+  { label: "Sistem", items: [{ id: "automatizari", label: "Automatizări", icon: "refresh-cw" }, { id: "jurnal", label: "Jurnal", icon: "history" }, { id: "setari", label: "Setări", icon: "settings" }] }
+];
+const FX_NOTIFS = [
+  { id: 1, title: "Solicitare nouă de la Salon Aurora", body: "EasyBook · Avansul nu apare în fișa clientului", app: "Suport", time: "acum 12 min", icon: "life-buoy" },
+  { id: 2, title: "„Rezumatul zilei” a eșuat de 3 ori", body: "Fitness Atlas · adresa unui membru respinge e-mailurile", app: "Automatizări", time: "azi, 07:05", icon: "triangle-alert" }
+];
+function FX_App({ active, title, children, bottom }) {
+  return h(V.AppShell, {
+    height: "100%",
+    spine: h(V.Spine, { hub: true, appName: "Founder", sections: FX_NAV, activeId: active, onBackToHub: noop, bottomItems: bottom || ["afaceri", "cereri", "suport", "automatizari"] }),
+    contextBar: h(V.ContextBar, { title, onSearch: noop, searchLabel: "Caută o afacere, o solicitare sau o automatizare", notifications: h(V.NotificationsPanel, { items: FX_NOTIFS }), account: h(V.AccountMenu, { user: { name: "Bianca Petrașcu", email: "bianca@ventorasystems.com" } }) })
+  }, children);
+}
+const AX_Body = ({ mode, children }) => h("div", { className: "axb " + mode }, children);
+/* ---- frames ---- */
+function Board({ title, notes, items, dH = 900, mH = 1000 }) {
+  return h("div", { className: "scr" },
+    h("p", { className: "heading" }, title),
+    notes ? h("p", { className: "caption muted" }, notes.join(" · ")) : null,
+    items.map(([lab, render, D = dH, M = mH]) => h("div", { key: lab, className: "tfa-scrgroup" },
+      h("p", { className: "subheading tfa-grouplab" }, lab),
+      ["light", "dark"].map((th) => h("div", { className: "scr-row", key: th },
+        [["desktop", "Desktop · 1280", "scr-d", D], ["mobile", "Telefon · 390", "scr-m", M]].map(([m, l, cls, H]) => h("div", { key: m },
+          h("p", { className: "caption scr-lab" }, l, " · ", th === "light" ? "Light" : "Dark"),
+          h("div", { className: cls, "data-theme": th, style: { height: H, position: "relative", overflow: "hidden" } }, render(m, th)))))))));
+}
+/* main view in German at 1280 and Italian at 390 (and the other way round in dark) */
+function LocTest({ title, items }) {
+  return h("div", { className: "scr" },
+    h("p", { className: "heading" }, title || "Test cu etichete în germană și italiană"),
+    h("p", { className: "caption muted" }, "Același ecran, cu textele traduse, ca să vedem că etichetele mai lungi încap. Toate cele 6 limbi sunt în fișierul i18n."),
+    h("div", { className: "scr-row" }, items.map(([lab, lang, mode, th, H, el]) => h("div", { key: lab },
+      h("p", { className: "caption scr-lab" }, lab),
+      h("div", { className: mode === "mobile" ? "scr-m" : "scr-d", "data-theme": th, lang, style: { height: H, position: "relative", overflow: "hidden" } }, h(V.LocaleProvider, { locale: lang }, el))))));
+}
+const Overlay = ({ mode, children }) => h("div", { className: "ss-overlay" + (mode === "mobile" ? " m" : "") }, children);
+const ToastAt = ({ mode, title, description, tone = "done" }) => h("div", { className: "ss-toast" + (mode === "mobile" ? " m" : "") }, h(V.Toast, { tone, title, description, onDismiss: noop }));
+const Box = ({ label, children, cls }) => h("div", { className: "sms-box" + (cls ? " " + cls : "") }, h("p", { className: "caption sms-boxlab" }, label), h("div", { className: "sms-boxbody" }, children));
+const DD = ({ tag, children }) => h("span", { className: "x-dd caption" }, h(V.Icon, { name: "lightbulb", size: 14 }), "DE DECIS", tag ? " · " + tag : "", children ? h("span", { className: "x-dd-t" }, children) : null);
+/* ---- the single operational e-mail template (S3) ---- */
+function Mail({ m, w = 600 }) {
+  return h("div", { className: "em", "data-theme": "light", style: { width: w } },
+    h("div", { className: "em-inbox" },
+      h("p", { className: "caption em-mute" }, m.fromLabel + ": " + m.from + " · " + m.toLabel + ": " + m.to),
+      h("p", { className: "body-strong em-subj" }, m.subject),
+      h("p", { className: "body-small em-mute" }, m.pre)),
+    h("div", { className: "em-canvas" },
+      h("div", { className: "em-card" },
+        h("div", { className: "em-head" }, m.head || h(V.Logo, { size: 24, title: "Ventora Systems" })),
+        h("div", { className: "em-body" },
+          m.eyebrow ? h("p", { className: "caption em-mute em-eyebrow" }, m.eyebrow) : null,
+          h("h1", { className: "heading em-title" }, m.title),
+          m.code ? h("p", { className: "em-code v-num" }, m.code) : null,
+          m.greet ? h("p", { className: "body" }, m.greet) : null,
+          m.lead ? h("p", { className: "body" }, m.lead) : null,
+          m.kv ? h("dl", { className: "kv em-kv" }, m.kv.map(([k, v]) => h(React.Fragment, { key: k }, h("dt", { className: "caption" }, k), h("dd", { className: "body" }, v)))) : null,
+          m.extra ? m.extra.map((x, i) => h("p", { key: i, className: "body" }, x)) : null,
+          m.cta ? h("a", { className: "em-btn body-strong", href: "#" }, m.cta) : null,
+          m.cta2 ? h("a", { className: "v-link body-small", href: "#" }, m.cta2) : null,
+          m.after ? h("p", { className: "body-small em-mute" }, m.after) : null)),
+      h("div", { className: "em-foot" },
+        m.why ? h("p", { className: "caption em-mute" }, m.why) : null,
+        h("p", { className: "caption em-mute" }, m.foot))));
+}
+
+const MK = {"ro": {"marketing.nav.dash": "Pagina principală", "marketing.nav.dashShort": "Acasă", "marketing.nav.campaigns": "Campanii", "marketing.nav.audiences": "Audiențe", "marketing.nav.contacts": "Contacte", "marketing.nav.forms": "Formulare", "marketing.nav.automations": "Automatizări", "marketing.nav.posts": "Calendar postări", "marketing.nav.business": "Afacere", "marketing.nav.reports": "Rapoarte", "marketing.nav.settings": "Setări", "marketing.usage.campaigns": "Campanii active și programate", "marketing.notif.n1": "„Oferte de iarnă la Salon Aurora” așteaptă aprobarea", "marketing.notif.n1Body": "Trimisă la aprobare de Ioana Pavel.", "marketing.notif.n1Time": "acum 25 min", "marketing.notif.n2": "Multe adrese respinse în „Import târg nunți”", "marketing.notif.n2Body": "8% din adrese nu există. Le-am trecut în lista de suprimare.", "marketing.notif.n2Time": "azi, 09:40", "marketing.notif.n3": "„Ne-a fost dor de dumneavoastră” s-a trimis", "marketing.notif.n3Body": "231 livrate din 238 · 11,2% click.", "marketing.notif.n3Time": "3 nov.", "marketing.off.title": "Trimiterile reale sunt oprite deocamdată", "marketing.off.body": "Poți pregăti campanii, să le trimiți la aprobare și să-ți trimiți teste. Nicio campanie nu pleacă la clienți până nu activăm trimiterile, după avizul juridic.", "marketing.off.button": "Trimiterile reale sunt oprite deocamdată", "marketing.growth.label": "Recomandare", "marketing.camp.new": "Campanie nouă", "marketing.st.draft": "Ciornă", "marketing.st.review": "În aprobare", "marketing.st.scheduled": "Programată", "marketing.st.sending": "Se trimite", "marketing.st.sent": "Trimisă", "marketing.st.paused": "Pe pauză", "marketing.st.stopped": "Oprită", "marketing.ch.email": "E-mail", "marketing.ch.sms": "SMS", "marketing.at.notYet": "Neprogramată", "marketing.res.sending": "Trimis {n}", "marketing.res.sent": "{d} livrate · {c} click · {u} dezabonări", "marketing.res.stopped": "Oprită după {n} trimise", "marketing.dash.lead": "Campaniile tale, cotele lunii și ce așteaptă după tine.", "marketing.dash.q.title": "Luna aceasta", "marketing.dash.q.lead": "Se resetează pe 1 decembrie.", "marketing.dash.q.campaigns": "Campanii active și programate", "marketing.dash.q.campaignsHint": "Din abonamentul Business.", "marketing.dash.q.campaignsNear": "Mai poți avea una. Campaniile trimise nu se numără.", "marketing.dash.q.email": "E-mailuri trimise", "marketing.dash.q.emailHint": "Cota e comună cu ClientDesk: aici intră și e-mailurile trimise din fișele contactelor.", "marketing.dash.q.sms": "SMS-uri trimise", "marketing.dash.q.smsHint": "Din pachetul de SMS al afacerii; pleacă prin SMSLink, de pe numărul scurt Ventora Systems.", "marketing.dash.todo.title": "Ce trebuie făcut", "marketing.dash.todo.review": "„{name}” așteaptă aprobarea ta", "marketing.dash.todo.reviewBody": "Trimisă de {who}, {when}.", "marketing.dash.todo.reviewAct": "Vezi campania", "marketing.dash.todo.bounce": "„{list}”: {n} adrese respinse", "marketing.dash.todo.bounceBody": "Adresele care nu există au trecut în lista de suprimare. Verifică de unde vine lista înainte s-o mai folosești.", "marketing.dash.todo.bounceAct": "Vezi lista", "marketing.dash.todo.paused": "„{name}” e pe pauză", "marketing.dash.todo.pausedBody": "Era programată pe 28 noiembrie. Reia-o sau oprește-o.", "marketing.dash.todo.pausedAct": "Vezi campania", "marketing.dash.todo.mine": "„{name}” e la aprobare", "marketing.dash.todo.mineBody": "O vede {owner}. Primești o notificare când o aprobă sau o respinge.", "marketing.dash.todo.mineAct": "Vezi campania", "marketing.dash.todo.draft": "„{name}” e încă ciornă", "marketing.dash.todo.draftBody": "Lipsesc conținutul și programarea.", "marketing.dash.todo.draftAct": "Continuă", "marketing.dash.res.title": "Ultimele rezultate", "marketing.dash.res.lead": "„{name}”, trimisă pe {date}.", "marketing.dash.res.report": "Vezi raportul", "marketing.dash.res.sent": "Trimise", "marketing.dash.res.delivered": "Livrate", "marketing.dash.res.deliveredHint": "{n} de e-mailuri", "marketing.dash.res.clicks": "Click", "marketing.dash.res.vs": "față de media ta", "marketing.dash.res.unsub": "Dezabonări", "marketing.dash.res.unsubHint": "{n} persoană", "marketing.dash.res.chart": "Click-uri pe lună", "marketing.dash.res.chartDesc": "Media campaniilor de e-mail trimise în fiecare lună.", "marketing.dash.next.title": "Urmează", "marketing.dash.growth.title": "500 de SMS în plus", "marketing.dash.growth.benefit": "Ai folosit 380 din 500 de SMS luna aceasta, iar campania programată pe 18 noiembrie are nevoie de 412.", "marketing.dash.growth.cost": "49 lei, o singură dată. Nu expiră la sfârșitul lunii.", "marketing.dash.growth.action": "Vezi opțiunile", "marketing.dash.near.title": "Ai 19 din 20 de campanii active și programate", "marketing.dash.near.body": "Când ajungi la 20, nu mai poți programa altele până nu se trimite sau nu oprești una. Ciornele nu se numără.", "marketing.dash.near.action": "Vezi abonamentele", "marketing.dash.memberNote": "Campaniile tale ajung la proprietar pentru aprobare. Cotele și pachetele le gestionează proprietarul.", "marketing.dash.empty.title": "Pregătește prima campanie", "marketing.dash.empty.body": "Alegi canalul, cui îi trimiți și ce scrii. Vezi câți o primesc înainte s-o programezi.", "marketing.dash.empty.action": "Creează prima campanie", "marketing.dash.empty.templates": "Pornește de la un șablon", "marketing.dash.empty.note": "Contactele vin din ClientDesk și EasyBook; primesc campanii doar cei care au dat acordul pentru mesaje comerciale.", "marketing.camp.lead": "Campaniile pe e-mail și SMS, cu starea și rezultatele lor.", "marketing.camp.search": "Caută o campanie", "marketing.camp.f.channel": "Canal", "marketing.camp.f.allChannels": "Toate canalele", "marketing.camp.f.state": "Stare", "marketing.camp.f.allStates": "Toate stările", "marketing.camp.f.period": "Perioadă", "marketing.camp.f.p30": "Ultimele 30 de zile", "marketing.camp.f.p90": "Ultimele 90 de zile", "marketing.camp.f.pAll": "Oricând", "marketing.camp.count": "Campanii · {n}", "marketing.camp.countFiltered": "{state} · {n}", "marketing.camp.col.name": "Campanie", "marketing.camp.col.channel": "Canal", "marketing.camp.col.state": "Stare", "marketing.camp.col.at": "Programată pe", "marketing.camp.col.results": "Rezultate", "marketing.camp.act.edit": "Editează", "marketing.camp.act.open": "Deschide", "marketing.camp.act.duplicate": "Duplică", "marketing.camp.act.pause": "Pune pe pauză", "marketing.camp.act.resume": "Reia", "marketing.camp.act.stop": "Oprește", "marketing.camp.act.delete": "Șterge ciorna", "marketing.camp.rule": "Campaniile membrilor trec pe la tine pentru aprobare. Ale tale și ale adminilor se programează direct.", "marketing.camp.ruleMember": "Campaniile tale ajung la proprietar pentru aprobare înainte să fie programate.", "marketing.camp.none.title": "Nicio campanie pentru „{q}”", "marketing.camp.none.body": "Încearcă alt cuvânt sau schimbă filtrele.", "marketing.camp.none.clear": "Șterge filtrele", "marketing.camp.cancel": "Renunță", "marketing.camp.dup.done": "Am creat „{name}”", "marketing.camp.dup.doneDesc": "E o ciornă cu același conținut și aceeași audiență. Alege când pleacă.", "marketing.camp.pause.title": "Pui pe pauză „{name}”?", "marketing.camp.pause.lead": "Nu pleacă la ora programată. O poți relua oricând înainte de data ei.", "marketing.camp.pause.submit": "Pune pe pauză", "marketing.camp.pause.note": "Dacă o reiei după data programată, alegi o oră nouă.", "marketing.camp.stop.title": "Oprești „{name}”?", "marketing.camp.stop.lead": "S-au trimis {sent}; restul de {left} nu mai pleacă.", "marketing.camp.stop.submit": "Oprește campania", "marketing.camp.stop.warn": "Nu se poate relua", "marketing.camp.stop.warnBody": "Mesajele deja trimise nu se pot retrage. Ca s-o trimiți celorlalți, duplic-o și programeaz-o din nou.", "marketing.camp.stop.note": "Oprirea intră în jurnalul campaniei, cu numele tău.", "marketing.camp.m.from": "De la", "marketing.camp.m.to": "Către", "marketing.camp.m.why": "Primiți acest e-mail pentru că v-ați abonat la noutățile Salon Aurora. Dezabonare", "marketing.camp.m.foot": "Salon Aurora SRL · CUI RO12345678 · Str. Nicolae Bălcescu 12, Sibiu", "marketing.camp.rv.sub": "Trimisă la aprobare de {who}, {when}", "marketing.camp.rv.title": "Așteaptă aprobarea ta", "marketing.camp.rv.body": "Dacă o aprobi, se programează pentru data aleasă. Dacă o respingi, scrii de ce; motivul ajunge la autor.", "marketing.camp.rv.audience": "Audiență", "marketing.camp.rv.audienceV": "Segmentul „Clienți activi”", "marketing.camp.rv.receive": "O primesc", "marketing.camp.rv.receiveV": "{n} persoane · {x} excluse (fără acord, suprimate, plafon)", "marketing.camp.rv.atV": "Joi, 19 noiembrie · 10:00", "marketing.camp.rv.subject": "Subiect", "marketing.camp.rv.checks": "Verificări", "marketing.camp.rv.checksV": "Toate în regulă", "marketing.camp.rv.test": "Trimite-mi un test", "marketing.camp.rv.reject": "Respinge", "marketing.camp.rv.approve": "Aprobă", "marketing.camp.rv.after": "Aprobată, campania așteaptă activarea trimiterilor; nu pleacă la clienți până atunci.", "marketing.camp.rv.done": "Ai aprobat „Oferte de iarnă la Salon Aurora”", "marketing.camp.rv.doneDesc": "{who} primește o notificare.", "marketing.camp.rj.title": "Respingi „{name}”?", "marketing.camp.rj.lead": "Campania se întoarce la {who} ca ciornă, cu motivul tău.", "marketing.camp.rj.reason": "De ce o respingi", "marketing.camp.rj.reasonHelp": "Scrie ce trebuie schimbat. Ajunge la autor în notificare și în campanie.", "marketing.camp.rj.submit": "Respinge campania", "marketing.camp.rj.note": "Respingerea intră în jurnalul campaniei.", "marketing.new.lead": "Pregătești campania pas cu pas; o salvezi ca ciornă oricând.", "marketing.new.steps": "Pașii campaniei", "marketing.new.stepOf": "Pasul {n} din {total} · {name}", "marketing.new.s.channel": "Canalul", "marketing.new.s.audience": "Audiența", "marketing.new.s.content": "Conținutul", "marketing.new.s.schedule": "Programarea", "marketing.new.s.review": "Verificarea", "marketing.new.summary": "Campania", "marketing.new.summaryEmpty": "Ce alegi apare aici.", "marketing.new.sumOff": "Nicio campanie nu pleacă la clienți până la activarea trimiterilor.", "marketing.new.k.channel": "Canal", "marketing.new.k.audience": "Audiență", "marketing.new.k.receive": "O primesc", "marketing.new.k.content": "Conținut", "marketing.new.k.when": "Când", "marketing.new.sum.email": "7 blocuri · subiect completat", "marketing.new.sum.sms": "1 SMS de persoană", "marketing.new.sum.when": "Joi, 19 noiembrie · 10:00", "marketing.new.sum.whenSms": "Vineri, 20 noiembrie · 10:00", "marketing.new.cancel": "Renunță", "marketing.new.back": "Înapoi", "marketing.new.next": "Continuă", "marketing.new.saveDraft": "Salvează ciorna", "marketing.new.ch.title": "Pe ce canal trimiți", "marketing.new.ch.name": "Numele campaniei", "marketing.new.ch.nameHelp": "Îl vede doar echipa. Pentru e-mail, subiectul îl alegi la conținut.", "marketing.new.ch.emailHelp": "Din cota de e-mail a lunii: mai ai {n}, comune cu ClientDesk.", "marketing.new.ch.smsHelp": "Prin SMSLink, de pe numărul scurt Ventora Systems, din pachetul de SMS al afacerii: mai ai {n}. Cel mult 160 de caractere pe SMS, fără diacritice.", "marketing.new.ch.note": "Primesc campanii doar contactele care au dat acordul pentru mesaje comerciale pe acel canal.", "marketing.new.aud.title": "Cui îi trimiți", "marketing.new.aud.lead": "O listă sau un segment. Numărul se recalculează chiar înainte de trimitere.", "marketing.new.aud.pick": "Lista sau segmentul", "marketing.new.aud.lists": "Liste", "marketing.new.aud.segments": "Segmente din ClientDesk", "marketing.new.aud.bounceTag": "multe adrese respinse", "marketing.new.aud.segHelp1": "Au venit în ultimele 6 luni · 1.506", "marketing.new.aud.seg": "Segmentul „Clienți activi”", "marketing.new.aud.smsSeg": "Segmentul „Clienți manichiură, ultimele 3 luni”", "marketing.new.aud.receive": "O primesc", "marketing.new.aud.receiveHint": "Estimare de acum", "marketing.new.aud.inSeg": "În segment", "marketing.new.aud.noConsent": "Fără acord pentru e-mailuri comerciale", "marketing.new.aud.noConsentSms": "Fără acord pentru SMS-uri comerciale", "marketing.new.aud.noConsentHelp": "Nu le cerem acordul din campanie.", "marketing.new.aud.suppressed": "Suprimați", "marketing.new.aud.suppressedHelp": "S-au dezabonat, adresa a fost respinsă sau au marcat ca spam.", "marketing.new.aud.suppressedHelpSms": "S-au dezabonat sau numărul nu mai există.", "marketing.new.aud.cap": "Plafonul de frecvență", "marketing.new.aud.capHelp": "Au primit deja 2 campanii în ultimele 7 zile.", "marketing.new.aud.note": "Vezi doar numere. Cine e exclus nu primește nimic din această campanie.", "marketing.new.em.title": "Ce primesc", "marketing.new.em.subject": "Subiect", "marketing.new.em.count": "{n} din {max} caractere", "marketing.new.em.pre": "Textul de după subiect", "marketing.new.em.preHelp": "Apare în căsuța de e-mail, lângă subiect.", "marketing.new.em.from": "Numele expeditorului", "marketing.new.em.fromHelp": "De la: noutati@salonaurora.ro (domeniul afacerii, verificat în ClientDesk).", "marketing.new.em.reply": "Răspunsurile ajung la", "marketing.new.em.replyHelp": "Adresa afacerii sau a unui membru.", "marketing.new.em.blocks": "{n} blocuri, plus antetul și subsolul legal", "marketing.new.em.template": "Pornit din șablonul „{name}”.", "marketing.new.em.edit": "Editează conținutul", "marketing.new.em.test": "Trimite-mi un test", "marketing.new.sms.title": "Textul SMS-ului", "marketing.new.sms.lead": "Fără diacritice, ca să încapă 160 de caractere într-un SMS.", "marketing.new.sms.text": "Mesajul", "marketing.new.sms.count": "{n} caractere + {u} adăugate automat (numele afacerii și dezabonarea) = {total} din 160 · 1 SMS. {prenume} se numără cu 10 caractere.", "marketing.new.sms.countUni": "{n} caractere, cu textele adăugate automat · Unicode, cel mult 70 pe SMS · {parts} SMS de persoană.", "marketing.new.sms.addVar": "Adaugă {prenume}", "marketing.new.sms.badgeGsm": "GSM-7", "marketing.new.sms.badgeUni": "Unicode", "marketing.new.sms.part": "1 SMS", "marketing.new.sms.parts": "{n} SMS", "marketing.new.sms.unsub": "Numele afacerii și dezabonarea, adăugate automat", "marketing.new.sms.unsubHelp": "Numărul scurt e comun, așa că mesajul începe cu „Salon Aurora:” (14 caractere). La final adăugăm „STOP pentru dezabonare” (23 de caractere): clientul răspunde STOP la același număr. Nu se pot scoate.", "marketing.new.sms.fallback": "Dacă lipsește prenumele", "marketing.new.sms.fallbackHelp": "Gol: scoatem {prenume} și virgula de după el.", "marketing.new.sms.fallbackPh": "De exemplu: Bună ziua", "marketing.new.sms.uniTitle": "Diacriticele fac din mesaj 2 SMS-uri de persoană", "marketing.new.sms.uniBody": "Cu ă, â, î, ș, ț mesajul pleacă în Unicode: cel mult 70 de caractere pe SMS. {n} persoane × {parts} = {total} SMS, iar pachetul mai are {left}.", "marketing.new.sms.strip": "Scoate diacriticele", "marketing.new.sms.buy": "Cumpără SMS", "marketing.new.sms.cost": "Cost estimat", "marketing.new.sms.costV": "{n} persoane × 1 SMS = {total} SMS, din pachetul afacerii", "marketing.new.sms.costUni": "{n} persoane × 2 SMS = {total} SMS", "marketing.new.sms.pack": "Din pachet", "marketing.new.sms.packV": "Mai ai {left}; după campanie rămân {after}.", "marketing.new.sms.packShort": "Mai ai {left}: nu ajunge.", "marketing.new.sms.note": "SMS-urile de campanie pleacă prin SMSLink, de pe numărul scurt comun Ventora Systems, din pachetul de SMS al afacerii. Nu pleacă de pe telefonul afacerii din EasyBook.", "marketing.new.sch.title": "Când pleacă", "marketing.new.sch.lead": "Ora României.", "marketing.new.sch.leadSms": "Ora României. SMS-urile pleacă doar între 9:00 și 20:00.", "marketing.new.sch.now": "Acum", "marketing.new.sch.nowHelp": "Imediat după aprobare.", "marketing.new.sch.at": "La o dată și oră", "marketing.new.sch.atHelp": "Pleacă toate la ora aleasă.", "marketing.new.sch.window": "Într-o fereastră orară", "marketing.new.sch.windowHelp": "Le împărțim între două ore, de exemplu 10:00–12:00.", "marketing.new.sch.windowHelpSms": "Le împărțim între două ore, în intervalul 9:00–20:00.", "marketing.new.sch.date": "Data", "marketing.new.sch.time": "Ora", "marketing.new.sch.tz": "Ora României.", "marketing.new.sch.smsErr": "SMS-urile pleacă doar între 9:00 și 20:00. Alege o oră din interval.", "marketing.new.sch.smsRule": "După 20:00 nu trimitem SMS-uri comerciale; nici în fereastra orară.", "marketing.new.sch.cap": "Cine primește deja 2 campanii în aceeași săptămână e sărit, ca să nu-i trimitem prea des.", "marketing.new.rv.title": "Verifică înainte să trimiți", "marketing.new.rv.leadMember": "Campania ajunge la {owner} pentru aprobare.", "marketing.new.rv.leadOwner": "O programezi direct; nu trece prin aprobare.", "marketing.new.rv.receiveV": "{n} persoane · {x} excluse", "marketing.new.rv.quota": "Din cota lunii", "marketing.new.rv.quotaV": "{n} e-mailuri din {left} rămase", "marketing.new.rv.c.subject": "Subiectul e completat", "marketing.new.rv.c.links": "Butoanele și linkurile au adresă", "marketing.new.rv.c.alt": "Imaginile au text alternativ", "marketing.new.rv.c.footer": "Subsolul legal, cu dezabonarea și datele firmei", "marketing.new.rv.c.test": "Nu ți-ai trimis un test (nu e obligatoriu)", "marketing.new.rv.toApproval": "Trimite la aprobare", "marketing.new.rv.schedule": "Programează", "marketing.new.rv.memberNote": "Primești o notificare când {owner} o aprobă sau o respinge. Până atunci o poți edita; editarea o scoate de la aprobare.", "marketing.new.rv.liveNote": "Se programează imediat. O poți pune pe pauză sau opri până pleacă.", "marketing.new.rv.offBody": "O poți salva ca ciornă și o poți testa pe adresa ta. Butonul „Programează” apare după avizul juridic.", "marketing.new.rv.sentTitle": "Am trimis campania la aprobare", "marketing.new.rv.sentDesc": "{owner} primește o notificare.", "marketing.ed.title": "Conținutul e-mailului", "marketing.ed.lead": "Adaugi și ordonezi blocuri. Antetul și subsolul legal sunt fixe.", "marketing.ed.templates": "Șabloane", "marketing.ed.preview": "Previzualizare", "marketing.ed.test": "Trimite-mi un test", "marketing.ed.done": "Gata", "marketing.ed.add": "Adaugă un bloc", "marketing.ed.b.title": "Titlu", "marketing.ed.b.text": "Text", "marketing.ed.b.image": "Imagine", "marketing.ed.b.button": "Buton", "marketing.ed.b.cols": "Două coloane", "marketing.ed.b.divider": "Separator", "marketing.ed.b.social": "Social", "marketing.ed.b.promo": "Cod promo", "marketing.ed.drag": "Trage ca să muți blocul", "marketing.ed.up": "Mută mai sus", "marketing.ed.down": "Mută mai jos", "marketing.ed.dup": "Duplică blocul", "marketing.ed.del": "Șterge blocul", "marketing.ed.noAlt": "Imagine fără text alternativ", "marketing.ed.promoLabel": "Codul dumneavoastră", "marketing.ed.fixed": "Fix", "marketing.ed.fixedFoot": "Subsol legal, fix", "marketing.ed.p.headTitle": "Antetul", "marketing.ed.p.footTitle": "Subsolul legal", "marketing.ed.p.locked": "Nu se poate edita sau șterge", "marketing.ed.p.headHelp": "Logo-ul și numele afacerii vin din profilul afacerii. Ventora Systems dă structura e-mailului.", "marketing.ed.p.footHelp": "Linkul de dezabonare și datele firmei (denumire, CUI, adresă) apar în fiecare campanie. Datele se schimbă din Hub › Datele de facturare.", "marketing.ed.p.headAction": "Schimbă logo-ul", "marketing.ed.p.footAction": "Datele firmei", "marketing.ed.p.btnText": "Textul butonului", "marketing.ed.p.btnLink": "Linkul", "marketing.ed.p.btnLinkHelp": "Pagina de programări EasyBook sau orice adresă https.", "marketing.ed.p.btnStyle": "Stil", "marketing.ed.p.fill": "Plin", "marketing.ed.p.line": "Contur", "marketing.ed.p.brand": "Culoarea butonului e culoarea afacerii; nu se alege per campanie.", "marketing.ed.p.text": "Textul", "marketing.ed.p.var": "Adaugă o variabilă", "marketing.ed.p.fallback": "Text de rezervă pentru {prenume}", "marketing.ed.p.fallbackHelp": "Îl folosim când contactul nu are prenume: tot salutul se înlocuiește.", "marketing.ed.p.sample": "Cu prenume", "marketing.ed.p.sampleNo": "Fără prenume", "marketing.ed.p.image": "Imaginea", "marketing.ed.p.imageHint": "PNG sau JPG, până la 1 MB. O micșorăm la 1200 px lățime.", "marketing.ed.p.alt": "Text alternativ", "marketing.ed.p.altHelp": "Îl citesc cititoarele de ecran și apare când imaginile sunt blocate.", "marketing.ed.p.imgLink": "Link la apăsare", "marketing.ed.p.styles": "Stilurile afacerii", "marketing.ed.p.stylesLead": "Alege un bloc ca să-l editezi.", "marketing.ed.p.logo": "Logo", "marketing.ed.p.color": "Culoare", "marketing.ed.p.colorV": "Culoarea din profilul afacerii", "marketing.ed.p.font": "Font", "marketing.ed.p.fontV": "Fontul sistemului, ca să arate la fel în orice program de e-mail", "marketing.ed.p.brandAction": "Profilul afacerii", "marketing.ed.p.stylesNote": "Toate campaniile folosesc aceleași stiluri, ca să arate ca afacerea ta.", "marketing.ed.pv.title": "Previzualizare", "marketing.ed.pv.sub": "Oferte de iarnă la Salon Aurora", "marketing.ed.pv.device": "Dispozitiv", "marketing.ed.pv.desk": "Desktop", "marketing.ed.pv.phone": "Telefon", "marketing.ed.pv.as": "Văzut de", "marketing.ed.pv.asV": "Ca {name}", "marketing.ed.pv.asNo": "Un contact fără prenume", "marketing.ed.pv.close": "Închide", "marketing.ed.pv.light": "E-mailurile se arată pe fundal deschis; unele programe de e-mail le inversează culorile în modul întunecat.", "marketing.ed.t.title": "Trimite-mi un test", "marketing.ed.t.lead": "Primești e-mailul exact cum îl vor primi clienții. Nu se numără în cota lunii.", "marketing.ed.t.to": "Către", "marketing.ed.t.toHelp": "Doar adresa ta sau a unui membru al echipei.", "marketing.ed.t.as": "Variabilele, ca pentru", "marketing.ed.t.note": "Testul are „[TEST]” în subiect. Linkul de dezabonare din test nu dezabonează pe nimeni.", "marketing.ed.t.submit": "Trimite testul", "marketing.ed.t.done": "Am trimis testul", "marketing.ed.t.doneDesc": "Verifică {email} în câteva minute.", "marketing.ed.chk.title": "Verificări înainte de trimitere", "marketing.ed.chk.sub": "{n} lucruri de rezolvat", "marketing.ed.chk.blockTitle": "{n} lucruri opresc campania", "marketing.ed.chk.blockBody": "Le rezolvi și poți merge mai departe. Nimic nu pleacă cu ele.", "marketing.ed.chk.subject": "Subiectul e gol", "marketing.ed.chk.subjectBody": "Fără subiect, multe programe de e-mail îl pun la spam.", "marketing.ed.chk.fix": "Completează", "marketing.ed.chk.link": "Butonul nu are link", "marketing.ed.chk.linkBody": "„Programați-vă online” nu duce nicăieri.", "marketing.ed.chk.goto": "Mergi la bloc", "marketing.ed.chk.alt": "O imagine nu are text alternativ", "marketing.ed.chk.altBody": "Cine are imaginile blocate sau folosește un cititor de ecran nu știe ce e în ea.", "marketing.ed.chk.footer": "Subsolul legal e la locul lui", "marketing.ed.chk.footerBody": "Dezabonarea și datele firmei.", "marketing.ed.chk.vars": "Variabilele au text de rezervă", "marketing.ed.chk.varsBody": "{prenume}: „Bună ziua!”.", "marketing.ed.chk.ok": "În regulă", "marketing.ed.chk.continue": "Continuă", "marketing.ed.g.title": "Șabloanele Ventora Systems", "marketing.ed.g.sub": "Pornești de la un șablon și schimbi textele și imaginile.", "marketing.ed.g.note": "Toate au antetul și subsolul legal fixe și culoarea afacerii tale.", "marketing.ed.g.use": "Folosește", "marketing.aud.lead": "Cui trimiți: liste pe care le alegi tu și segmente care se actualizează singure.", "marketing.aud.newList": "Listă nouă", "marketing.aud.newSeg": "Segment nou", "marketing.aud.search": "Caută o audiență", "marketing.aud.f.type": "Tip", "marketing.aud.f.all": "Toate · {n}", "marketing.aud.f.seg": "Segmente · {n}", "marketing.aud.f.list": "Liste · {n}", "marketing.aud.count": "Audiențe · {n}", "marketing.aud.countLead": "Numerele se recalculează la fiecare deschidere și chiar înainte de trimitere.", "marketing.aud.col.name": "Audiență", "marketing.aud.col.count": "Contacte", "marketing.aud.col.email": "Acord e-mail", "marketing.aud.col.sms": "Acord SMS", "marketing.aud.col.use": "Folosită în", "marketing.aud.type.seg": "Segment dinamic", "marketing.aud.type.list": "Listă statică", "marketing.aud.upd.today": "actualizat azi, 09:00", "marketing.aud.upd.list": "ultima modificare {date}", "marketing.aud.upd.import": "importată pe {date}", "marketing.aud.predefined": "Predefinit", "marketing.aud.bounces": "Multe respingeri", "marketing.aud.pre.new": "Clienți noi", "marketing.aud.pre.idle": "Inactivi 90 de zile", "marketing.aud.pre.bday": "Ziua de naștere luna aceasta", "marketing.aud.pre.click": "Cei care au dat click", "marketing.aud.pre.welcome": "Bun venit după abonare", "marketing.aud.pre.bdayAuto": "Ziua de naștere", "marketing.aud.use.n": "{n} campanii", "marketing.aud.use.auto": "Automatizarea „{name}”", "marketing.aud.use.none": "Nefolosită", "marketing.aud.use.list1": "Campania „Manichiură de iarnă” (ciornă)", "marketing.aud.use.list2": "Campaniile „Ne-a fost dor de dumneavoastră” și „Reamintire: programați-vă pentru sărbători”", "marketing.aud.act.open": "Deschide", "marketing.aud.act.duplicate": "Duplică", "marketing.aud.act.campaign": "Campanie către ea", "marketing.aud.act.delete": "Șterge", "marketing.aud.sensitive": "Nu poți filtra după date de sănătate, nota „Risc ridicat” din EasyBook sau clienții blocați: aceste date nu ajung în CampaignKit. Un client blocat în EasyBook nu e scos automat din campanii; dacă nu mai vrea mesaje, se dezabonează.", "marketing.aud.sensitiveShort": "Criteriile nu includ date de sănătate, nota „Risc ridicat” sau clienții blocați.", "marketing.aud.c.tag": "Tag", "marketing.aud.c.source": "Sursă", "marketing.aud.c.app": "Vine din aplicația", "marketing.aud.c.visit": "Ultima vizită în EasyBook", "marketing.aud.c.deal": "Deal câștigat în ClientDesk", "marketing.aud.c.opened": "A deschis o campanie", "marketing.aud.c.clicked": "A dat click într-o campanie", "marketing.aud.c.city": "Oraș", "marketing.aud.c.lang": "Limba", "marketing.aud.op.has": "are", "marketing.aud.op.hasNot": "nu are", "marketing.aud.op.is": "este", "marketing.aud.op.isNot": "nu este", "marketing.aud.op.over": "acum mai mult de", "marketing.aud.op.under": "în ultimele", "marketing.aud.op.within": "în ultimele", "marketing.aud.op.never": "niciodată în ultimele", "marketing.aud.op.notWithin": "nu în ultimele", "marketing.aud.u.days": "zile", "marketing.aud.v.form": "Formular", "marketing.aud.v.import": "Import", "marketing.aud.v.manual": "Adăugat manual", "marketing.aud.v.referral": "Recomandare", "marketing.aud.seg.sub": "Segment dinamic · se actualizează singur", "marketing.aud.seg.name": "Numele", "marketing.aud.seg.rules": "Cine intră", "marketing.aud.seg.rulesHelp": "Contactele care îndeplinesc toate condițiile. Cine nu le mai îndeplinește iese singur.", "marketing.aud.seg.save": "Salvează segmentul", "marketing.aud.seg.used": "Folosit în", "marketing.aud.seg.updated": "Actualizat", "marketing.aud.seg.updatedV": "Azi, 09:00 · se recalculează la trimitere", "marketing.aud.est.total": "Contacte", "marketing.aud.est.hint": "Estimare de acum", "marketing.aud.est.zeroHint": "Nimeni nu îndeplinește toate condițiile", "marketing.aud.est.email": "Cu acord pentru e-mail", "marketing.aud.est.emailHelp": "Primesc campaniile pe e-mail.", "marketing.aud.est.sms": "Cu acord pentru SMS", "marketing.aud.est.smsHelp": "Primesc campaniile prin SMS.", "marketing.aud.est.none": "Fără niciun acord", "marketing.aud.est.noneHelp": "Sunt în segment, dar nu primesc campanii.", "marketing.aud.zero.title": "Nu intră nimeni în segment", "marketing.aud.zero.body": "Scoate o condiție sau mărește intervalul. Îl poți salva și așa; se umple când cineva îndeplinește condițiile.", "marketing.aud.pre.sub": "Segment predefinit de Ventora Systems", "marketing.aud.pre.lockTitle": "Regulile nu se schimbă", "marketing.aud.pre.lockBody": "Segmentele predefinite sunt la fel pentru toate afacerile. Duplică-l ca să-ți faci varianta ta, de exemplu cu 60 de zile.", "marketing.aud.pre.duplicate": "Duplică segmentul", "marketing.aud.list.sub": "Listă statică · importată pe {date}", "marketing.aud.list.import": "Importă în listă", "marketing.aud.list.add": "Adaugă contacte", "marketing.aud.list.bounceTitle": "{n} din adrese au fost respinse", "marketing.aud.list.bounceBody": "Au trecut în lista de suprimare și nu mai primesc nimic. Verifică de unde vine lista; o listă cu multe respingeri strică livrarea pentru toate campaniile tale.", "marketing.aud.list.bounced": "Respinse", "marketing.aud.list.unsub": "Dezabonați", "marketing.aud.list.source": "Sursa", "marketing.aud.list.sourceV": "Fișier CSV de la Târgul de nunți Sibiu", "marketing.aud.list.basis": "Temeiul legal", "marketing.aud.list.basisV": "Consimțământ dat la standul de la târg (confirmat la import)", "marketing.aud.list.static": "O listă statică nu se schimbă singură: cine intră sau iese o alegi tu.", "marketing.aud.nl.title": "Listă nouă", "marketing.aud.nl.lead": "O listă statică: contactele le alegi tu.", "marketing.aud.nl.how": "Cum o umpli", "marketing.aud.nl.manual": "Aleg contactele din registru", "marketing.aud.nl.import": "Import dintr-un fișier", "marketing.aud.nl.fromSeg": "Copiez contactele unui segment, de azi", "marketing.aud.nl.note": "Pentru o audiență care se actualizează singură, fă un segment.", "marketing.aud.nl.submit": "Creează lista", "marketing.aud.iu.title": "„{name}” e folosit", "marketing.aud.iu.lead": "Un segment folosit într-o campanie sau automatizare nu se poate șterge. Scoate-l întâi de acolo.", "marketing.aud.iu.ok": "Am înțeles", "marketing.aud.iu.c1": "Campania „Oferte de iarnă la Salon Aurora” (în aprobare)", "marketing.aud.iu.c2": "Campania „Noutăți în noiembrie” (se trimite)", "marketing.aud.iu.c3": "Campania „Pachet mireasă 2027” (ciornă)", "marketing.ct.lead": "Registrul de marketing: cine primește campaniile tale și pe ce canal.", "marketing.ct.suppress": "Lista de suprimare", "marketing.ct.export": "Exportă", "marketing.ct.import": "Importă", "marketing.ct.add": "Adaugă contact", "marketing.ct.search": "Caută după nume, e-mail sau telefon", "marketing.ct.f.from": "De unde vine", "marketing.ct.f.allFrom": "Din orice sursă", "marketing.ct.f.consent": "Acord", "marketing.ct.f.allConsent": "Orice acord", "marketing.ct.f.email": "Cu acord pe e-mail", "marketing.ct.f.sms": "Cu acord pe SMS", "marketing.ct.f.none": "Fără acord", "marketing.ct.src.form": "Formular", "marketing.ct.src.import": "Import", "marketing.ct.count": "Contacte · {n}", "marketing.ct.countLead": "Contactele din ClientDesk și EasyBook apar aici singure; cele din formulare și importuri sunt doar ale CampaignKit.", "marketing.ct.col.name": "Contact", "marketing.ct.col.from": "De unde vine", "marketing.ct.col.consent": "Acord", "marketing.ct.col.last": "Ultima campanie primită", "marketing.ct.c.given": "da", "marketing.ct.c.withdrawn": "retras", "marketing.ct.c.unknown": "necunoscut", "marketing.ct.act.open": "Deschide", "marketing.ct.act.toList": "Adaugă într-o listă", "marketing.ct.act.suppress": "Trece în lista de suprimare", "marketing.ct.rule": "Acordul pe canal e același în ClientDesk și CampaignKit: dacă cineva se dezabonează dintr-o aplicație, nu mai primește mesaje comerciale din nicio aplicație.", "marketing.ct.empty.title": "Încă nu ai contacte de marketing", "marketing.ct.empty.body": "Contactele din ClientDesk și EasyBook apar aici când le activezi. Poți importa o listă sau pune un formular de abonare pe site.", "marketing.ct.empty.form": "Fă un formular de abonare", "marketing.ct.d.subLinked": "Legat de ClientDesk și EasyBook", "marketing.ct.d.subOwn": "Doar în CampaignKit", "marketing.ct.d.from": "Din {app}", "marketing.ct.d.name": "Numele", "marketing.ct.d.email": "E-mail", "marketing.ct.d.phone": "Telefon", "marketing.ct.d.city": "Oraș", "marketing.ct.d.lang": "Limba", "marketing.ct.d.tags": "Taguri", "marketing.ct.d.roTitle": "Datele de bază se schimbă în ClientDesk", "marketing.ct.d.roBody": "Numele, e-mailul și telefonul vin din fișa contactului; aici le vezi doar. Notele, dealurile și programările nu ajung în CampaignKit.", "marketing.ct.d.ownNote": "Contactul e doar în CampaignKit. Dacă activezi ClientDesk, apare acolo ca lead numai dacă îl adaugi tu.", "marketing.ct.d.consent": "Acordul pentru mesaje comerciale", "marketing.ct.d.consentLead": "Din serviciul comun de consimțământ: același în ClientDesk.", "marketing.ct.d.cTitle": "{ch}", "marketing.ct.d.cEb": "Bifa separată din rezervarea online EasyBook · 12 mar. 2025", "marketing.ct.d.cEbSms": "Dat la salon, înregistrat de Ioana Pavel · 2 apr. 2025", "marketing.ct.d.cFormEmail": "Formularul „Abonare la noutăți” · confirmat prin e-mail, 6 nov.", "marketing.ct.d.cNoSms": "Nu a bifat SMS în formular", "marketing.ct.d.withdraw": "Retrage acordul", "marketing.ct.d.record": "Înregistrează acordul", "marketing.ct.d.hist": "Campanii primite", "marketing.ct.d.in": "Este în", "marketing.ct.d.openCd": "Deschide în ClientDesk", "marketing.ct.d.delete": "Șterge contactul", "marketing.ct.d.save": "Salvează", "marketing.ct.h.sent": "E-mail: „{s}”", "marketing.ct.h.sms": "SMS: „{s}”", "marketing.ct.h.clicked": "Deschis, click pe „Programați-vă online”", "marketing.ct.h.opened": "Deschis", "marketing.ct.h.delivered": "Livrat", "marketing.ct.h.consent": "Acord pentru e-mail comercial", "marketing.ct.h.consentMeta": "Bifa din rezervarea online EasyBook", "marketing.ct.im.title": "Import contacte", "marketing.ct.im.lead": "Aceiași pași ca în ClientDesk: fișierul, coloanele, previzualizarea, confirmarea, rezultatul.", "marketing.ct.im.step": "Pasul {n} din {total} · {name}", "marketing.ct.im.s1": "Fișierul", "marketing.ct.im.s2": "Coloanele", "marketing.ct.im.s3": "Previzualizarea", "marketing.ct.im.s4": "Confirmarea", "marketing.ct.im.s5": "Rezultatul", "marketing.ct.im.file": "Fișierul", "marketing.ct.im.fileHelp": "CSV sau Excel, cu un rând de antet.", "marketing.ct.im.fileHint": "Până la 10.000 de rânduri sau 5 MB.", "marketing.ct.im.toList": "Le pui într-o listă", "marketing.ct.im.newList": "Listă nouă, cu numele fișierului", "marketing.ct.im.same": "Dacă un contact există deja (același e-mail sau telefon), îl completăm; nu facem dubluri.", "marketing.ct.im.k.file": "Fișier", "marketing.ct.im.k.new": "Contacte noi", "marketing.ct.im.k.update": "Completate", "marketing.ct.im.k.updateV": "{n} existau deja", "marketing.ct.im.k.suppressed": "Sărite", "marketing.ct.im.k.suppressedV": "{n} sunt în lista de suprimare", "marketing.ct.im.k.list": "Listă", "marketing.ct.im.legal.title": "Ai voie să le trimiți campanii?", "marketing.ct.im.legal.basis": "Temeiul legal", "marketing.ct.im.legal.consent": "Și-au dat acordul pentru mesaje comerciale", "marketing.ct.im.legal.client": "Sunt clienți și primesc oferte la servicii asemănătoare", "marketing.ct.im.legal.check": "Confirm că am acordul acestor persoane", "marketing.ct.im.legal.checkHelp": "Îl poți dovedi dacă ți se cere: formular, bifă la rezervare, înscriere la eveniment.", "marketing.ct.im.legal.channels": "Acordul e pentru e-mail; pentru SMS doar unde coloana „acord SMS” e „da”", "marketing.ct.im.legal.channelsHelp": "Fără coloana respectivă, nimeni nu primește SMS-uri.", "marketing.ct.im.legal.needed": "Fără cele două bife, importul nu pornește.", "marketing.ct.im.noBuy": "Nu importa liste cumpărate sau luate de pe internet: e interzis și strică livrarea pentru toate campaniile tale.", "marketing.ct.im.run": "Importă {n} contacte", "marketing.ct.ex.title": "Exportă contactele", "marketing.ct.ex.lead": "Un fișier cu numele, e-mailul, telefonul, sursa și acordul pe fiecare canal.", "marketing.ct.ex.what": "Ce exporți", "marketing.ct.ex.all": "Toate cele {n}", "marketing.ct.ex.seg": "O audiență", "marketing.ct.ex.filtered": "Doar ce e filtrat acum", "marketing.ct.ex.format": "Format", "marketing.ct.ex.consent": "Include data și sursa acordului", "marketing.ct.ex.consentHelp": "Ca să poți dovedi acordul și în afara Ventora Systems.", "marketing.ct.ex.log": "Exportul intră în jurnal, cu numele tău. Doar proprietarul și adminii pot exporta.", "marketing.ct.ex.submit": "Exportă", "marketing.ct.sp.title": "Lista de suprimare", "marketing.ct.sp.lead": "Adresele și numerele care nu mai primesc mesaje comerciale.", "marketing.ct.sp.add": "Adaugă o adresă", "marketing.ct.sp.sharedTitle": "Lista e comună cu ClientDesk", "marketing.ct.sp.sharedBody": "Cine se dezabonează dintr-un e-mail din ClientDesk sau dintr-o campanie CampaignKit ajunge aici și nu mai primește mesaje comerciale din nicio aplicație. Mesajele despre programări continuă.", "marketing.ct.sp.count": "Suprimate · {n}", "marketing.ct.sp.col.a": "Adresă sau telefon", "marketing.ct.sp.col.r": "Motiv", "marketing.ct.sp.col.from": "De unde", "marketing.ct.sp.col.at": "Când", "marketing.ct.sp.r.unsub": "S-a dezabonat", "marketing.ct.sp.r.bounce": "Adresă respinsă", "marketing.ct.sp.r.stop": "A răspuns STOP", "marketing.ct.sp.r.spam": "A marcat ca spam", "marketing.ct.sp.retry": "Încearcă din nou adresa", "marketing.ct.sp.note": "Pe cine s-a dezabonat nu-l poți scoate de aici; poate reveni doar abonându-se din nou, singur.", "marketing.fm.lead": "Formulare de abonare pentru site, Instagram sau un eveniment.", "marketing.fm.new": "Formular nou", "marketing.fm.w.site": "Pe site · salonaurora.ro", "marketing.fm.w.link": "Link în bio pe Instagram", "marketing.fm.w.none": "Nepublicat", "marketing.fm.count": "Formulare · {n}", "marketing.fm.countLead": "Trimiterile din ultimele 30 de zile.", "marketing.fm.col.name": "Formular", "marketing.fm.col.subs": "Trimiteri", "marketing.fm.col.new": "Contacte noi", "marketing.fm.col.dbl": "Dublu opt-in", "marketing.fm.col.state": "Stare", "marketing.fm.dblOn": "Cu confirmare", "marketing.fm.dblOff": "Fără confirmare", "marketing.fm.st.on": "Publicat", "marketing.fm.st.draft": "Ciornă", "marketing.fm.act.edit": "Editează", "marketing.fm.act.copy": "Duplică", "marketing.fm.act.subs": "Trimiterile", "marketing.fm.act.stop": "Oprește formularul", "marketing.fm.engine": "Același motor ca formularele din ClientDesk: câmpurile, publicarea, protecția anti-spam și limita lunară sunt aceleași. Formularele CampaignKit adaugă contacte de marketing.", "marketing.fm.empty.title": "Niciun formular de abonare", "marketing.fm.empty.body": "Pune unul pe site sau în bio-ul de Instagram: cine se abonează intră direct în contactele tale.", "marketing.fm.empty.action": "Fă primul formular", "marketing.fm.edLead": "Câmpurile și publicarea sunt ca în ClientDesk; aici alegi ce se întâmplă după trimitere și cum se cere acordul.", "marketing.fm.previewBtn": "Previzualizare", "marketing.fm.save": "Salvează", "marketing.fm.tabs": "Formularul", "marketing.fm.tab.fields": "Câmpuri", "marketing.fm.tab.after": "După trimitere", "marketing.fm.tab.consent": "Acord", "marketing.fm.tab.publish": "Publicare", "marketing.fm.previewTitle": "Cum îl văd clienții", "marketing.fm.af.creates": "Creează", "marketing.fm.af.createsV": "Un contact de marketing în CampaignKit (sau completează unul existent)", "marketing.fm.af.list": "Îl pune în lista", "marketing.fm.af.tag": "Cu tagul", "marketing.fm.af.lead": "Și lead în ClientDesk", "marketing.fm.af.leadHelp": "Apare în căsuța de leaduri, cu sursa „Formular · Abonare la noutăți”.", "marketing.fm.af.leadOff": "ClientDesk nu e activ pentru afacerea ta.", "marketing.fm.af.owner": "Cine preia leadul", "marketing.fm.af.ownerRot": "Pe rând, între membri", "marketing.fm.af.message": "Mesajul de după trimitere", "marketing.fm.af.noConsentNoMail": "Cine nu bifează acordul devine contact, dar nu primește campanii.", "marketing.fm.cs.double": "Dublu opt-in", "marketing.fm.cs.doubleHelp": "Trimitem un e-mail de confirmare; abonarea pornește doar după ce apasă butonul din el.", "marketing.fm.cs.channels": "Ce acord ceri", "marketing.fm.cs.email": "E-mail", "marketing.fm.cs.sms": "SMS", "marketing.fm.cs.textEmail": "Textul bifei pentru e-mail", "marketing.fm.cs.textHelp": "Numele afacerii apare în text.", "marketing.fm.cs.textSms": "Textul bifei pentru SMS", "marketing.fm.cs.lockTitle": "Bifele sunt separate și nebifate", "marketing.fm.cs.lockBody": "Câte una pentru fiecare canal, niciodată bifate de la început și niciodată obligatorii pentru trimitere.", "marketing.fm.fl.first": "Prenumele", "marketing.fm.fl.email": "E-mail", "marketing.fm.fl.phone": "Telefon", "marketing.fm.fl.phoneHelp": "Doar dacă vreți oferte prin SMS.", "marketing.fm.pub.title": "Oferte și noutăți de la Salon Aurora", "marketing.fm.pub.lead": "O dată sau de două ori pe lună: oferte, noutăți și invitații la evenimente.", "marketing.fm.pub.errTitle": "Verificați câmpul marcat", "marketing.fm.pub.errEmail": "Adresa de e-mail nu e completă, de exemplu nume@gmail.com.", "marketing.fm.pub.optional": "Bifele sunt opționale. Vă puteți dezabona oricând, din orice e-mail sau răspunzând STOP la SMS.", "marketing.fm.pub.submit": "Mă abonez", "marketing.fm.pub.privacy": "Salon Aurora folosește datele doar ca să vă trimită aceste mesaje. Politica de confidențialitate.", "marketing.fm.pub.checkTitle": "Verificați e-mailul", "marketing.fm.pub.checkBody": "V-am trimis un e-mail la {email}. Apăsați „Confirm abonarea” din el.", "marketing.fm.pub.checkHelp": "Nu-l găsiți? Uitați-vă și în Spam sau Promoții.", "marketing.fm.pub.resend": "Trimite din nou", "marketing.fm.pub.doneTitle": "Gata, v-ați abonat", "marketing.fm.pub.doneBody": "Primiți ofertele și noutățile Salon Aurora pe e-mail.", "marketing.fm.pub.doneHelp": "Vă puteți dezabona oricând, din linkul de la finalul fiecărui e-mail.", "marketing.fm.pub.foot": "Formular prin CampaignKit · Ventora Systems", "marketing.fm.conf.why": "Primiți acest e-mail pentru că adresa a fost scrisă în formularul de abonare al Salon Aurora.", "marketing.au.lead": "Mesaje care pleacă singure, la momentul potrivit, doar către cei cu acord.", "marketing.au.only.title": "Mesajele de marketing pleacă doar din CampaignKit", "marketing.au.only.body": "Cât timp CampaignKit e activ, ofertele și mesajele de marketing către clienți pleacă numai de aici (D-CK-12). „Ne-a fost dor de dumneavoastră” din ClientDesk s-a mutat aici; mesajele despre programări, avans și facturi rămân în EasyBook și ClientDesk.", "marketing.au.count": "Pornite · {n} din {total}", "marketing.au.countLead": "Rulează o dată pe zi, la ora aleasă, ora României.", "marketing.au.ch.email": "E-mail", "marketing.au.ch.sms": "SMS", "marketing.au.ch.both": "E-mail și SMS", "marketing.au.needPackages": "Necesită pachetele EasyBook", "marketing.au.a.welcome.title": "Bun venit după abonare", "marketing.au.a.welcome.does": "Un e-mail de bun venit imediat după ce cineva se abonează dintr-un formular.", "marketing.au.a.welcome.when": "La 5 minute după confirmarea abonării", "marketing.au.a.bday.title": "Ziua de naștere", "marketing.au.a.bday.does": "Un mesaj de „La mulți ani”, cu un cod de reducere opțional.", "marketing.au.a.bday.when": "În ziua de naștere, la 10:00", "marketing.au.a.back.title": "Reactivare", "marketing.au.a.back.does": "Un mesaj pentru cine n-a mai venit de un timp în EasyBook.", "marketing.au.a.back.when": "După 60 de zile fără vizită, la 11:00", "marketing.au.a.first.title": "După prima programare EasyBook", "marketing.au.a.first.does": "Un mesaj de mulțumire și ce mai oferă salonul, după prima vizită.", "marketing.au.a.first.when": "A doua zi după prima programare finalizată", "marketing.au.a.basket.title": "Coș abandonat la pachete", "marketing.au.a.basket.does": "Un mesaj pentru cine a început să cumpere un pachet online și nu a terminat.", "marketing.au.a.basket.when": "La 2 ore după ce a ieșit din pagina de plată", "marketing.au.lastRun": "Ultima rulare: {when} · {n} trimise în 30 de zile", "marketing.au.never": "Oprită", "marketing.au.settings": "Setări", "marketing.au.fixed": "Automatizările sunt predefinite de Ventora Systems: alegi momentul, canalul și șablonul, nu și pașii.", "marketing.au.onLabel": "Pornită", "marketing.au.onHelp": "Pleacă doar către contactele cu acord pe canalul ales.", "marketing.au.save": "Salvează", "marketing.au.history": "Istoricul rulărilor", "marketing.au.f.days": "După câte zile fără vizită", "marketing.au.f.daysHelp": "Numărăm de la ultima programare finalizată în EasyBook.", "marketing.au.f.daysUnit": "zile", "marketing.au.f.moment": "Când pleacă", "marketing.au.f.momentHelp": "Pentru contactele cu data nașterii completată.", "marketing.au.f.onDay": "În ziua de naștere", "marketing.au.f.before3": "Cu 3 zile înainte", "marketing.au.f.before7": "Cu o săptămână înainte", "marketing.au.f.channel": "Canal", "marketing.au.f.hour": "Ora", "marketing.au.f.hourHelp": "SMS-urile doar între 9:00 și 20:00.", "marketing.au.f.template": "Șablonul", "marketing.au.f.templateHelp": "Din șabloanele CampaignKit; îl editezi în editorul de e-mail.", "marketing.au.f.code": "Cod de reducere", "marketing.au.f.codeHelp": "Din codurile promoționale EasyBook; valabil 30 de zile.", "marketing.au.f.cap": "Respectă plafonul de frecvență", "marketing.au.f.capHelp": "Cine a primit deja 2 mesaje de marketing în ultimele 7 zile e sărit de data asta.", "marketing.au.f.consent": "Cine își retrage acordul sau se dezabonează iese imediat din automatizare.", "marketing.au.k.audience": "Cui", "marketing.au.k.audBack": "Cine n-a mai venit de 60 de zile în EasyBook, cu acord pe e-mail", "marketing.au.k.audBday": "Segmentul „Ziua de naștere luna aceasta”, în ziua lor", "marketing.au.k.last": "Ultima rulare", "marketing.au.last.back": "Ieri, 11:00 · 7 trimise", "marketing.au.last.bday": "Azi, 10:00 · 2 trimise", "marketing.au.k.runs": "Trimise în 30 de zile", "marketing.au.r.skip": "{consent} fără acord, {cap} peste plafon", "marketing.au.r.off": "Trimiterile reale erau oprite", "marketing.au.r.bounce": "{n} adresă respinsă", "marketing.au.h.title": "Istoricul rulărilor", "marketing.au.h.sent30": "Trimise în 30 de zile", "marketing.au.h.back": "S-au programat", "marketing.au.h.backHint": "în 14 zile de la mesaj", "marketing.au.h.skipped": "Sărite", "marketing.au.h.unsub": "Dezabonări", "marketing.au.h.col.at": "Rulare", "marketing.au.h.col.n": "Intrați", "marketing.au.h.col.sent": "Trimise", "marketing.au.h.col.skip": "Sărite", "marketing.au.h.col.st": "Rezultat", "marketing.au.h.st.done": "Rulată", "marketing.au.h.st.skipped": "Sărită", "marketing.au.h.st.failed": "Cu erori", "marketing.au.h.note": "Păstrăm istoricul 12 luni. Fără nume: vezi doar câte persoane au intrat și de ce au fost sărite.", "marketing.au.onDone": "Ai pornit „{name}”", "marketing.au.onDoneDesc": "Prima rulare e mâine; până la activarea trimiterilor, nu pleacă nimic.", "marketing.so.lead": "Postările pe Facebook și Instagram, planificate pe zile.", "marketing.so.accounts": "Conturi", "marketing.so.new": "Postare nouă", "marketing.so.prev": "Luna trecută", "marketing.so.next": "Luna viitoare", "marketing.so.today": "Azi", "marketing.so.month": "Noiembrie 2026", "marketing.so.weekOf": "9–15 noiembrie 2026", "marketing.so.view": "Vizualizare", "marketing.so.v.month": "Lună", "marketing.so.v.week": "Săptămână", "marketing.so.f.net": "Rețea", "marketing.so.f.allNets": "Toate rețelele", "marketing.so.net.fb": "Facebook", "marketing.so.net.ig": "Instagram", "marketing.so.netShort.fb": "FB", "marketing.so.netShort.ig": "IG", "marketing.so.dow.l": "Lun", "marketing.so.dow.ma": "Mar", "marketing.so.dow.mi": "Mie", "marketing.so.dow.j": "Joi", "marketing.so.dow.v": "Vin", "marketing.so.dow.s": "Sâm", "marketing.so.dow.d": "Dum", "marketing.so.agendaAt": "{d} nov., {t}", "marketing.so.st.draft": "Ciornă", "marketing.so.st.scheduled": "Programată", "marketing.so.st.published": "Publicată", "marketing.so.st.failed": "Eșuată", "marketing.so.pending.title": "Conectarea Meta nu e încă disponibilă", "marketing.so.pending.body": "Așteptăm ca Meta să aprobe aplicația Ventora Systems. Până atunci poți pregăti postări ca ciorne; nu se publică nimic.", "marketing.so.off.title": "Contul Meta nu e conectat", "marketing.so.off.body": "Conectează pagina de Facebook și contul de Instagram al afacerii ca postările programate să se publice singure.", "marketing.so.connect": "Conectează cu Meta", "marketing.so.c.title": "Postare nouă", "marketing.so.c.sub": "Pe Facebook și Instagram", "marketing.so.c.where": "Unde o publici", "marketing.so.c.fb": "Facebook · Salon Aurora", "marketing.so.c.fbHelp": "Pagina afacerii", "marketing.so.c.ig": "Instagram · @salonaurora", "marketing.so.c.igHelp": "Cont de business, legat de pagină", "marketing.so.c.text": "Textul", "marketing.so.c.count": "{n} caractere · Instagram acceptă până la 2.200, cu cel mult 30 de hashtaguri.", "marketing.so.c.images": "Imagini", "marketing.so.c.imagesHelp": "Până la 10. Pentru Instagram, raportul între 4:5 și 1,91:1.", "marketing.so.c.imagesHint": "PNG sau JPG, până la 8 MB fiecare.", "marketing.so.c.date": "Data", "marketing.so.c.time": "Ora", "marketing.so.c.delete": "Șterge", "marketing.so.c.draft": "Salvează ciorna", "marketing.so.c.schedule": "Programează", "marketing.so.c.noMeta": "Se poate programa după conectarea Meta", "marketing.so.sample": "Manichiura de iarnă e aici: nuanțe de roșu, auriu și bordo. 15% reducere până pe 31 decembrie, cu programare online. Link în bio. #salonaurora #sibiu", "marketing.so.pv.title": "Previzualizare", "marketing.so.pv.when": "Programată · 14 nov., 10:00", "marketing.so.pv.fbNote": "Pe Facebook linkul din text se poate apăsa.", "marketing.so.pv.igNote": "Pe Instagram linkurile din text nu se pot apăsa; folosește „link în bio”.", "marketing.so.fl.sub": "Eșuată · 12 nov., 19:00", "marketing.so.fl.title": "Instagram a respins postarea", "marketing.so.fl.body": "Imaginea are raportul 3:1; Instagram acceptă între 4:5 și 1,91:1. Taie imaginea și reîncearcă.", "marketing.so.fl.where": "Unde", "marketing.so.fl.when": "Programată pe", "marketing.so.fl.whenV": "Joi, 12 noiembrie · 19:00", "marketing.so.fl.tries": "Încercări", "marketing.so.fl.triesV": "3, la 19:00, 19:05 și 19:30", "marketing.so.fl.code": "Codul erorii", "marketing.so.fl.retry": "Editează și reîncearcă", "marketing.so.fl.note": "Primești o notificare în clopoțel când o postare eșuează. Pe Facebook a plecat; doar Instagram a respins-o.", "marketing.so.ac.title": "Conturile conectate", "marketing.so.ac.sub": "Rețelele pe care publică CampaignKit", "marketing.so.ac.onLead": "Conectat de {who}, pe {date}. Publicăm doar pe paginile bifate.", "marketing.so.ac.offLead": "Neconectat", "marketing.so.ac.pages": "Paginile și conturile", "marketing.so.ac.pagesHelp": "Le alegi în fereastra Meta; aici le poți scoate.", "marketing.so.ac.fbPage": "Pagină de Facebook", "marketing.so.ac.igBiz": "Cont de Instagram de business", "marketing.so.ac.reconnect": "Reconectează", "marketing.so.ac.disconnect": "Deconectează", "marketing.so.ac.s1": "Te autentifici în fereastra Meta, nu la noi; parola nu ajunge la Ventora Systems.", "marketing.so.ac.s2": "Alegi paginile de Facebook și conturile de Instagram pe care publicăm.", "marketing.so.ac.s3": "Ne dai voie doar să publicăm și să citim dacă postarea a apărut.", "marketing.so.ac.oauth": "Conexiunea expiră după 60 de zile de nefolosire; te anunțăm cu o săptămână înainte.", "marketing.so.ac.others": "Alte rețele", "marketing.so.soonBadge": "În curând", "marketing.so.soon.tiktok": "TikTok", "marketing.so.soon.linkedin": "LinkedIn", "marketing.so.soon.google": "Profilul de companie Google", "marketing.so.soon.x": "X", "marketing.so.dc.title": "Deconectezi contul Meta?", "marketing.so.dc.lead": "CampaignKit nu mai publică pe Facebook și Instagram până îl conectezi din nou.", "marketing.so.dc.submit": "Deconectează", "marketing.so.dc.warn": "{n} postări programate nu se mai publică", "marketing.so.dc.warnBody": "Rămân în calendar ca ciorne; le programezi din nou după reconectare.", "marketing.so.dc.note": "Postările deja publicate rămân pe Facebook și Instagram."}};
+/* S137 — shared by the CampaignKit screens (set 1): the shell and its Spine, the three-size board, helpers, sample campaigns. RO only for now; keys marketing.* in i18n/marketing.json. */
+const M = (k, v) => mkT(MK)("ro", "marketing." + k, v);
+const dlgCls = (mode) => mode === "mobile" ? "v-dialog--sheet" : undefined;
+const Info = ({ children, icon = "info" }) => h("p", { className: "x-line body-small" }, h(V.Icon, { name: icon, size: 16 }), children);
+const KVL = ({ rows }) => h("dl", { className: "kv" }, rows.filter(Boolean).map(([k, v]) => h(React.Fragment, { key: k }, h("dt", { className: "caption" }, k), h("dd", { className: "body-small" }, v))));
+const Pad = ({ mode, children }) => h("div", { className: mode === "mobile" ? "cd-pad" : undefined }, children);
+const Foot = ({ mode, left, children }) => h("div", { className: "cd-foot" + (mode === "mobile" ? " m" : "") }, left || null, h("span", { className: "cd-grow" }), children);
+const Dlg = ({ mode, title, description, footer, children }) => h(V.Dialog, { open: true, inline: true, className: dlgCls(mode), title, description, footer }, children);
+const Drw = ({ mode, title, subtitle, footer, children, width = 560 }) => h(V.Drawer, { open: true, contained: true, layout: mode === "mobile" ? "full" : "auto", width, onOpenChange: noop, title, subtitle, footer }, h("div", { className: "x-stack" }, children));
+function Board3({ title, notes, items, dH = 1200, tH = 1300, mH = 1500 }) {
+  return h("div", { className: "scr" },
+    h("p", { className: "heading" }, title),
+    notes ? h("p", { className: "caption muted" }, notes.join(" · ")) : null,
+    items.map(([lab, render, D = dH, Tt = tH, Mh = mH]) => h("div", { key: lab, className: "tfa-scrgroup" },
+      h("p", { className: "subheading tfa-grouplab" }, lab),
+      ["light", "dark"].map((th) => h("div", { className: "scr-row", key: th },
+        [["desktop", "Desktop · 1280", "scr-d", D], ["tablet", "Tabletă portret · 820", "scr-t", Tt], ["mobile", "Telefon · 390", "scr-m", Mh]].map(([m, l, cls, H]) => h("div", { key: m },
+          h("p", { className: "caption scr-lab" }, l, " · ", th === "light" ? "Light" : "Dark"),
+          h("div", { className: cls, "data-theme": th, style: { height: H, position: "relative", overflow: "hidden" } }, render(m, th)))))))));
+}
+
+/* ---- the CampaignKit shell ---- */
+const MK_NAV = [
+  { items: [{ id: "dash", label: M("nav.dash"), short: M("nav.dashShort"), icon: "house" }, { id: "campanii", label: M("nav.campaigns"), icon: "megaphone", badge: 1 }, { id: "audiente", label: M("nav.audiences"), icon: "filter" }, { id: "contacte", label: M("nav.contacts"), icon: "users" }, { id: "formulare", label: M("nav.forms"), icon: "file-check" }, { id: "auto", label: M("nav.automations"), icon: "refresh-cw" }, { id: "postari", label: M("nav.posts"), icon: "calendar-days" }] },
+  { label: M("nav.business"), items: [{ id: "rapoarte", label: M("nav.reports"), icon: "chart-column" }, { id: "setari", label: M("nav.settings"), icon: "settings" }] }
+];
+const MK_NOTIFS = [
+  { id: 1, title: M("notif.n1"), body: M("notif.n1Body"), app: "CampaignKit", time: M("notif.n1Time"), icon: "clock" },
+  { id: 2, title: M("notif.n2"), body: M("notif.n2Body"), app: "CampaignKit", time: M("notif.n2Time"), icon: "triangle-alert" },
+  { id: 3, title: M("notif.n3"), body: M("notif.n3Body"), app: "CampaignKit", time: M("notif.n3Time"), icon: "check", read: true }
+];
+const MEMBER = { name: "Ioana Pavel", email: "ioana@salonaurora.ro" };
+function MkPage({ mode, active, title, header, children, drawer, overlay, toast, toastDesc, toastTone, member, notifOpen, used = 12 }) {
+  const mob = mode === "mobile";
+  return h("div", { className: "frame-rel" },
+    h(V.AppShell, { height: "100%",
+      spine: h(V.Spine, { app: "marketing", sections: MK_NAV, activeId: active, onBackToHub: noop, bottomItems: ["dash", "campanii", "audiente", "rapoarte"],
+        footer: h(V.UsageMeter, { compact: true, label: M("usage.campaigns"), used, limit: 20 }) }),
+      contextBar: h(V.ContextBar, { title: title || "CampaignKit", org: h(V.OrgSwitcher, { orgs: ORGS, currentId: "aurora" }), onSearch: noop,
+        notifications: h(V.NotificationsPanel, { items: MK_NOTIFS }), account: h(V.AccountMenu, { user: member ? MEMBER : USER, orgs: ORGS, currentOrgId: "aurora", onCatalog: noop }) }) },
+      header ? h(V.PageHeader, header) : null,
+      h("div", { className: "x-body" + (mob ? " m" : "") }, children)),
+    drawer || null,
+    notifOpen ? h("div", { className: "cd-notif" + (mob ? " m" : "") }, h(V.NotificationsPanel, { inline: true, items: MK_NOTIFS })) : null,
+    overlay ? h(Overlay, { mode }, overlay) : null,
+    toast ? h(ToastAt, { mode, title: toast, description: toastDesc, tone: toastTone }) : null);
+}
+/* Real sending is off until the legal review: the send button says so */
+const SendOff = ({ block }) => h(V.Button, { variant: "primary", icon: "lock", disabled: true, block }, M("off.button"));
+const OffNotice = ({ mode }) => h(Pad, { mode }, h(V.Notice, { tone: "neutral", icon: "lock", title: M("off.title") }, M("off.body")));
+
+/* ---- campaigns ---- */
+const ST = { draft: ["neutral", "pencil"], review: ["attention", "clock"], scheduled: ["neutral", "calendar-clock"], sending: ["neutral", "send"], sent: ["done", "check"], paused: ["neutral", "timer"], stopped: ["neutral", "circle-x"] };
+const StPill = ({ s }) => h(V.StatusPill, { tone: ST[s][0], icon: ST[s][1] }, M("st." + s));
+const Chan = ({ c }) => h("span", { className: "x-row", style: { gap: "var(--space-1)" } }, h(V.Icon, { name: c === "sms" ? "message-square" : "mail", size: 16 }), h("span", { className: "body-small" }, M("ch." + c)));
+const CAMPAIGNS = [
+  { id: 1, n: "Oferte de iarnă la Salon Aurora", c: "email", aud: "Clienți activi · 1.284", st: "review", at: M("at.notYet"), by: "Ioana Pavel", res: null },
+  { id: 2, n: "Reamintire: programați-vă pentru sărbători", c: "sms", aud: "Au venit în ultimele 6 luni · 412", st: "scheduled", at: "18 nov., 10:00", res: null },
+  { id: 3, n: "Noutăți în noiembrie", c: "email", aud: "Toți abonații · 1.506", st: "sending", at: "10 nov., 09:30", res: M("res.sending", { n: "62%" }) },
+  { id: 4, n: "Ne-a fost dor de dumneavoastră", c: "email", aud: "Nu au mai venit de 90 de zile · 238", st: "sent", at: "3 nov., 11:00", res: M("res.sent", { d: "97%", c: "11,2%", u: "0,4%" }) },
+  { id: 5, n: "Black Friday la manichiură", c: "sms", aud: "Clienți manichiură · 186", st: "paused", at: "28 nov., 12:00", res: null },
+  { id: 6, n: "Pachet mireasă 2027", c: "email", aud: "Mirese 2027 · 34", st: "draft", at: M("at.notYet"), res: null },
+  { id: 7, n: "Ziua clientului", c: "sms", aud: "Toți cu SMS permis · 640", st: "stopped", at: "21 oct., 10:00", res: M("res.stopped", { n: 112 }) }
+];
+
+/* S137 · CampaignKit — Campanii (set 1): the list (name, channel, audience, state — draft, in approval, scheduled, sending, sent, paused, stopped —, scheduled for, short results), filters, actions (duplicate, pause, stop); the internal approval: the owner sees the campaign, approves or rejects with a reason. Real sending is off until the legal review. RO only for now; keys marketing.camp.* in i18n/marketing.json. */
+const CP = (k, v) => M("camp." + k, v);
+const acts = (r) => [
+  { label: r.st === "draft" || r.st === "review" ? CP("act.edit") : CP("act.open"), icon: r.st === "draft" ? "pencil" : "eye" },
+  { label: CP("act.duplicate"), icon: "copy" },
+  r.st === "scheduled" || r.st === "sending" ? { label: CP("act.pause"), icon: "timer" } : null,
+  r.st === "paused" ? { label: CP("act.resume"), icon: "refresh-cw" } : null,
+  ["scheduled", "sending", "paused", "review"].includes(r.st) ? { label: CP("act.stop"), icon: "circle-x", destructive: true } : null,
+  r.st === "draft" ? { separator: true } : null,
+  r.st === "draft" ? { label: CP("act.delete"), icon: "trash-2", destructive: true } : null
+].filter(Boolean);
+const COLS = [
+  { key: "n", header: CP("col.name"), primary: true, render: (r) => h("span", { className: "cd-namecol" }, h("span", { className: "body-strong" }, r.n), h("span", { className: "caption muted" }, M("ch." + r.c) + " · " + r.aud)) },
+  { key: "c", header: CP("col.channel"), optional: true, width: "96px", render: (r) => h(Chan, { c: r.c }) },
+  { key: "at", header: CP("col.at"), optional: true, width: "144px", render: (r) => h("span", { className: "body-small" + (r.at === M("at.notYet") ? " muted" : "") }, r.at) },
+  { key: "res", header: CP("col.results"), secondary: true, width: "232px", render: (r) => r.res ? h("span", { className: "body-small" }, r.res) : h("span", { className: "body-small muted" }, "—") },
+  { key: "st", header: CP("col.state"), trailing: true, width: "144px", render: (r) => h(StPill, { s: r.st }) },
+];
+function List({ mode, filter, none, drawer, overlay, toast, toastDesc, toastTone, member }) {
+  const mob = mode === "mobile";
+  const rows = none ? [] : filter ? CAMPAIGNS.filter((r) => r.st === filter) : CAMPAIGNS;
+  return h(MkPage, { mode, active: "campanii", title: M("nav.campaigns"), drawer, overlay, toast, toastDesc, toastTone, member,
+    header: { title: M("nav.campaigns"), description: mob ? undefined : CP("lead"), actions: mob ? undefined : h(V.Button, { variant: "primary", icon: "plus" }, M("camp.new")) } },
+    h(OffNotice, { mode }),
+    h("div", { className: "cd-tools" + (mob ? " m" : "") },
+      h("div", { style: { width: mob ? "100%" : 240 } }, h(V.Input, { size: "sm", icon: "search", placeholder: CP("search"), "aria-label": CP("search"), defaultValue: none ? "Crăciun" : "" })),
+      h("div", { style: { width: mob ? "100%" : 160 } }, h(V.Select, { size: "sm", "aria-label": CP("f.channel"), value: "all", options: [{ value: "all", label: CP("f.allChannels") }, { value: "email", label: M("ch.email") }, { value: "sms", label: M("ch.sms") }] })),
+      h("div", { style: { width: mob ? "100%" : 180 } }, h(V.Select, { size: "sm", "aria-label": CP("f.state"), value: filter || "all", options: [{ value: "all", label: CP("f.allStates") }, ...Object.keys(ST).map((s) => ({ value: s, label: M("st." + s) }))] })),
+      mob ? null : h("div", { style: { width: 180 } }, h(V.Select, { size: "sm", "aria-label": CP("f.period"), value: "90", options: [{ value: "30", label: CP("f.p30") }, { value: "90", label: CP("f.p90") }, { value: "all", label: CP("f.pAll") }] }))),
+    none ? h(V.Sheet, null, h(V.SheetSection, null, h(V.EmptyState, { size: "sm", icon: "search", title: CP("none.title", { q: "Crăciun" }), description: CP("none.body"), actions: h(V.Button, { variant: "secondary" }, CP("none.clear")) })))
+      : h(V.Sheet, null, h(V.SheetSection, { title: filter ? CP("countFiltered", { n: rows.length, state: M("st." + filter) }) : CP("count", { n: rows.length }) },
+        h(V.DataTable, { caption: M("nav.campaigns"), rows, columns: COLS, onRowClick: noop, rowActions: acts }))),
+    h(Pad, { mode }, h(Info, null, member ? CP("ruleMember") : CP("rule"))));
+}
+/* ---- pause, stop ---- */
+const PauseDlg = ({ mode }) => h(Dlg, { mode, title: CP("pause.title", { name: "Reamintire: programați-vă pentru sărbători" }), description: CP("pause.lead"),
+  footer: h(React.Fragment, null, h(V.Button, { variant: "quiet" }, CP("cancel")), h(V.Button, { variant: "primary", icon: "timer" }, CP("pause.submit"))) },
+  h(Info, null, CP("pause.note")));
+const StopDlg = ({ mode }) => h(Dlg, { mode, title: CP("stop.title", { name: "Noutăți în noiembrie" }), description: CP("stop.lead", { sent: 934, left: 572 }),
+  footer: h(React.Fragment, null, h(V.Button, { variant: "quiet" }, CP("cancel")), h(V.Button, { variant: "danger", icon: "circle-x" }, CP("stop.submit"))) },
+  h("div", { className: "x-stack" }, h(V.Notice, { tone: "attention", icon: "triangle-alert", title: CP("stop.warn") }, CP("stop.warnBody")), h(Info, null, CP("stop.note"))));
+/* ---- the internal approval (owner) ---- */
+const MINI = { fromLabel: CP("m.from"), from: "Salon Aurora", toLabel: CP("m.to"), to: "{e-mail}", subject: "Oferte de iarnă la Salon Aurora", pre: "15% la manichiură și pedichiură până pe 31 decembrie.",
+  head: h("span", { className: "cd-unsubbrand" }, h(V.Avatar, { name: "Salon Aurora", shape: "square", size: "sm" }), h("span", { className: "body-strong" }, "Salon Aurora")),
+  title: "Oferte de iarnă la Salon Aurora", greet: "Bună ziua, Cristina!", lead: "Până pe 31 decembrie aveți 15% reducere la manichiură și pedichiură. Folosiți codul IARNA15 când vă programați online.", cta: "Programați-vă online", why: CP("m.why"), foot: CP("m.foot") };
+function ReviewDrawer({ mode }) {
+  const mob = mode === "mobile";
+  return h(Drw, { mode, width: 640, title: "Oferte de iarnă la Salon Aurora", subtitle: CP("rv.sub", { who: "Ioana Pavel", when: "azi, 11:20" }),
+    footer: h(Foot, { mode, left: mob ? null : h(V.Button, { variant: "quiet", icon: "send" }, CP("rv.test")) }, h(V.Button, { variant: "secondary", icon: "circle-x" }, CP("rv.reject")), h(V.Button, { variant: "primary", icon: "check" }, CP("rv.approve"))) },
+    h(V.Notice, { tone: "attention", icon: "clock", title: CP("rv.title") }, CP("rv.body")),
+    h(KVL, { rows: [[CP("col.channel"), M("ch.email")], [CP("rv.audience"), CP("rv.audienceV")], [CP("rv.receive"), CP("rv.receiveV", { n: "1.284", x: 222 })], [CP("col.at"), CP("rv.atV")], [CP("rv.subject"), "Oferte de iarnă la Salon Aurora"], [CP("rv.checks"), CP("rv.checksV")]] }),
+    h("div", { className: "cd-mailwrap" }, h(Mail, { m: MINI, w: mob ? 340 : 520 })),
+    h(Info, { icon: "lock" }, CP("rv.after")));
+}
+const RejectDlg = ({ mode }) => h(Dlg, { mode, title: CP("rj.title", { name: "Oferte de iarnă la Salon Aurora" }), description: CP("rj.lead", { who: "Ioana Pavel" }),
+  footer: h(React.Fragment, null, h(V.Button, { variant: "quiet" }, CP("cancel")), h(V.Button, { variant: "primary", icon: "circle-x" }, CP("rj.submit"))) },
+  h("div", { className: "x-stack" },
+    h(V.FormField, { label: CP("rj.reason"), required: true, helper: CP("rj.reasonHelp") }, h(V.Textarea, { rows: 3, defaultValue: "Reducerea e 10%, nu 15%. Schimbă și data: până pe 24 decembrie." })),
+    h(Info, null, CP("rj.note"))));
+mount(h(Board3, { title: "CampaignKit — Campanii (S137, setul 1)", notes: ["Nume, canal, audiență, stare, programată pe, rezultate scurte", "Stări: ciornă, în aprobare, programată, se trimite, trimisă, pe pauză, oprită", "Filtre: canal, stare, perioadă", "Acțiuni: duplică, pune pe pauză, reia, oprește", "Aprobarea internă: proprietarul aprobă sau respinge cu motiv", "Datele din listă arată cum va fi după activarea trimiterilor", "Doar în română deocamdată; chei marketing.camp.* în i18n/marketing.json"], items: [
+  ["1 · Campaniile, cu filtrele", (m) => h(List, { mode: m }), 1040, 1030, 1280],
+  ["2 · Filtrate: în aprobare", (m) => h(List, { mode: m, filter: "review" }), 590, 640, 710],
+  ["3 · Duplicată", (m) => h(List, { mode: m, toast: CP("dup.done", { name: "Ne-a fost dor de dumneavoastră (copie)" }), toastDesc: CP("dup.doneDesc") }), 1040, 1030, 1280],
+  ["4 · Pui pe pauză o campanie programată", (m) => h(List, { mode: m, overlay: h(PauseDlg, { mode: m }) }), 1040, 1030, 1280],
+  ["5 · Oprești o campanie care se trimite", (m) => h(List, { mode: m, overlay: h(StopDlg, { mode: m }) }), 1040, 1030, 1280],
+  ["6 · Aprobarea: proprietarul vede campania", (m) => h(List, { mode: m, drawer: h(ReviewDrawer, { mode: m }) }), 1040, 1030, 1280],
+  ["7 · Respinsă, cu motiv", (m) => h(List, { mode: m, overlay: h(RejectDlg, { mode: m }) }), 1040, 1030, 1280],
+  ["8 · Aprobată", (m) => h(List, { mode: m, toast: CP("rv.done"), toastDesc: CP("rv.doneDesc", { who: "Ioana Pavel" }) }), 1040, 1030, 1280],
+  ["9 · Ce vede un membru: lista, fără „Aprobă”", (m) => h(List, { mode: m, member: true }), 1040, 1030, 1280],
+  ["10 · Nicio campanie găsită", (m) => h(List, { mode: m, none: true }), 650, 690, 770]] }));
+
+</script>
+</body>
+</html>

@@ -1,4 +1,4 @@
-<!-- @dsCard group="Founder" height=21700 width=2620 page -->
+<!-- @dsCard group="Founder" height=29868 width=2620 page -->
 <!doctype html>
 <html lang="ro">
 <head><meta charset="utf-8"><title>FounderNewBusiness — Ventora Systems</title>
@@ -788,7 +788,7 @@ function BillingForm({ p = PROFILE_PJ, errors, mob, reason }) {
     reason ? h(V.FormField, { label: t("founder.billingProfile.reason"), required: true, helper: t("founder.billingProfile.reasonHelp") }, h(V.Textarea, { rows: 2, defaultValue: "Sediul se mută de la 1 decembrie (VS-2026-0191)." })) : null);
 }
 
-function FNew({ mode, v = "a", errors }) {
+function FNew({ mode, v = "a", errors, countryOpen }) {
   const mob = mode === "mobile", c = NB[v], b = c.bundle && BUN(c.bundle), L = lines(c);
   const opts = [{ value: "", label: tf("founder.new.noBundle") }].concat(BUNDLES.filter((x) => x.status === "selling").map((x) => { const p = x.versions[0].p, ix = c.bill === "annual" ? (c.cur === "eur" ? 3 : 1) : (c.cur === "eur" ? 2 : 0);
     return { value: x.id, label: x.name + " · " + x.versions[0].v, description: tf(c.bill === "annual" ? "founder.new.perYear" : "founder.new.perMonth", { amount: money(p[ix], c.cur) }) }; }));
@@ -800,6 +800,7 @@ function FNew({ mode, v = "a", errors }) {
       h(V.Sheet, null,
         h(V.SheetSection, { title: "Afacerea" }, h("div", { className: "g2f" },
           h(V.FormField, { label: "Numele afacerii", required: true }, h(V.Input, { defaultValue: c.name })),
+          h(CountryField146, { value: v === "b" ? "DE" : "RO", open: !!countryOpen, query: countryOpen }),
           h(V.FormField, { label: "Oraș", required: true }, h(V.Input, { defaultValue: c.city })),
           h(V.FormField, { label: "Limba implicită", required: true, helper: "Fiecare om își poate schimba limba din contul lui." }, h(V.Select, { defaultValue: c.lang, options: [{ value: "ro", label: "Română" }, { value: "en", label: "English" }, { value: "fr", label: "Français" }, { value: "es", label: "Español" }, { value: "de", label: "Deutsch" }, { value: "it", label: "Italiano" }] })))),
         h(V.SheetSection, { title: T("founder.billingProfile.title"), description: T("founder.billingProfile.lead") }, h(BillingForm, { p: NBILL[v], mob, errors: errors })),
@@ -828,13 +829,36 @@ function FNew({ mode, v = "a", errors }) {
         mob ? null : h(V.Button, { variant: "primary", block: true, icon: "send" }, "Creează afacerea și trimite invitația")))),
     mob ? h("div", { className: "stickybar" }, h(V.Button, { variant: "quiet" }, "Renunță"), h(V.Button, { variant: "primary", icon: "send" }, "Creează și trimite")) : null);
 }
-mount(h("div", null,
+const FOX146 = {"ro": {"founder.country.label": "Țara", "founder.country.help": "Unde lucrează afacerea. Se vede în detaliul afacerii; din Hub nu se schimbă deocamdată.", "founder.country.search": "Caută o țară", "founder.country.empty": "Nicio țară nu se potrivește cu „{query}”", "founder.country.code": "Cod {code}", "founder.business.country": "Țara", "founder.business.timezone": "Fusul orar", "founder.business.countryNoHub": "Se schimbă doar din Founder"}, "en": {"founder.country.label": "Country", "founder.country.help": "Where the business operates. Shown in the business details; it can’t be changed from Hub for now.", "founder.country.search": "Search for a country", "founder.country.empty": "No country matches “{query}”", "founder.country.code": "Code {code}", "founder.business.country": "Country", "founder.business.timezone": "Time zone", "founder.business.countryNoHub": "Changed only from Founder"}, "fr": {"founder.country.label": "Pays", "founder.country.help": "Où l’entreprise exerce. Visible dans le détail de l’entreprise ; non modifiable depuis Hub pour l’instant.", "founder.country.search": "Rechercher un pays", "founder.country.empty": "Aucun pays ne correspond à « {query} »", "founder.country.code": "Code {code}", "founder.business.country": "Pays", "founder.business.timezone": "Fuseau horaire", "founder.business.countryNoHub": "Modifiable uniquement depuis Founder"}, "es": {"founder.country.label": "País", "founder.country.help": "Dónde trabaja el negocio. Se ve en el detalle del negocio; por ahora no se cambia desde Hub.", "founder.country.search": "Buscar un país", "founder.country.empty": "Ningún país coincide con «{query}»", "founder.country.code": "Código {code}", "founder.business.country": "País", "founder.business.timezone": "Zona horaria", "founder.business.countryNoHub": "Solo se cambia desde Founder"}, "de": {"founder.country.label": "Land", "founder.country.help": "Wo das Unternehmen tätig ist. Sichtbar in den Unternehmensdetails; vorerst nicht im Hub änderbar.", "founder.country.search": "Land suchen", "founder.country.empty": "Kein Land passt zu „{query}“", "founder.country.code": "Code {code}", "founder.business.country": "Land", "founder.business.timezone": "Zeitzone", "founder.business.countryNoHub": "Nur in Founder änderbar"}, "it": {"founder.country.label": "Paese", "founder.country.help": "Dove lavora l’attività. Si vede nel dettaglio dell’attività; per ora non si cambia da Hub.", "founder.country.search": "Cerca un paese", "founder.country.empty": "Nessun paese corrisponde a «{query}»", "founder.country.code": "Codice {code}", "founder.business.country": "Paese", "founder.business.timezone": "Fuso orario", "founder.business.countryNoHub": "Si cambia solo da Founder"}};
+/* S146 · 3 — the business's country (decision of 11 Nov.): Combobox with search, default România, ISO 3166-1 alpha-2 stored. Country names come from Intl.DisplayNames in the interface language. Keys founder.country.*, founder.business.country / .timezone in i18n/founder.json (6 languages). */
+const fx146 = (lang, k, v) => { let s = (FOX146[lang] && FOX146[lang][k]) || FOX146.ro[k] || k; if (v) for (const n in v) s = s.split("{" + n + "}").join(v[n]); return s; };
+const ISO146 = "RO MD DE AT IT FR ES HU BG GR NL BE PL CZ SK HR SI RS UA GB IE PT DK SE FI NO CH LU MT CY EE LV LT US CA".split(" ");
+const cname146 = (lang, code) => { try { return new Intl.DisplayNames([lang], { type: "region" }).of(code); } catch (e) { return code; } };
+const COUNTRY_OPTS146 = (lang) => ISO146.map((c) => ({ value: c, label: cname146(lang, c), description: fx146(lang, "founder.country.code", { code: c }) })).sort((a, b) => a.value === "RO" ? -1 : b.value === "RO" ? 1 : a.label.localeCompare(b.label, lang));
+const CountryField146 = ({ lang = "ro", value = "RO", open, query }) => React.createElement(V.FormField, { label: fx146(lang, "founder.country.label"), required: true, helper: fx146(lang, "founder.country.help") },
+  React.createElement(V.Combobox, { options: COUNTRY_OPTS146(lang), defaultValue: value, placeholder: fx146(lang, "founder.country.search"), defaultOpen: !!open, defaultQuery: query || "", emptyText: fx146(lang, "founder.country.empty", { query: query || "" }) }));
+const BizCard146 = ({ lang = "ro", code = "RO", tz = "Europe/Bucharest · UTC+2" }) => React.createElement("div", { className: "sheetlike fxcard" },
+  React.createElement("p", { className: "subheading" }, lang === "ro" ? "Afacerea" : cname146(lang, code) && fx146(lang, "founder.business.country") + " · " + fx146(lang, "founder.business.timezone")),
+  React.createElement("dl", { className: "kv" },
+    React.createElement("dt", { className: "caption" }, fx146(lang, "founder.business.country")), React.createElement("dd", { className: "body" }, cname146(lang, code) + " · " + code),
+    React.createElement("dt", { className: "caption" }, fx146(lang, "founder.business.timezone")), React.createElement("dd", { className: "body" }, tz)),
+  React.createElement("p", { className: "caption muted" }, fx146(lang, "founder.business.countryNoHub")));
+function Loc146({ items }) {
+  const h = React.createElement;
+  return h("div", { className: "scr" }, h("p", { className: "heading" }, "Câmpul „Țara” (S146): română, germană și italiană"),
+    h("div", { className: "scr-row" }, items.map(([lab, th, w, H, el]) => h("div", { key: lab }, h("p", { className: "caption scr-lab" }, lab),
+      h("div", { "data-theme": th, style: { width: w, height: H, position: "relative", background: "var(--canvas)", color: "var(--ink)", padding: "var(--space-4)", boxSizing: "border-box", border: "1px solid var(--line)", borderRadius: "var(--radius-md)" } }, el)))));
+}
+
+mount(h("div", null, h("div", null,
   h(Screens, { title: "Founder — Afacere nouă: bundle, aplicații la bucată, moneda, lunar sau anual (S117)", notes: ["Bundle, aplicații la bucată sau amândouă", "Aplicațiile din bundle nu se mai pot adăuga separat", "Implementarea se plătește o singură dată, la prima factură", "Invitația spune ce primește și cât plătește"], desktopH: 2020, tabletH: 2500, mobileH: 3220, render: (m) => h(FNew, { mode: m }) }),
   h(Board, { title: "Fără bundle: doar aplicații la bucată, în euro, cu plată anuală", notes: ["Prețurile în euro sunt cele introduse pe aplicații, fără conversie"], items: [
     ["1 · Euro · anual · trei aplicații la bucată · firmă din Germania (cod de TVA, fără regula CUI)", (m) => h(FNew, { mode: m, v: "b" }), 2100, 3600]] }),
   h(Board, { title: "Date de facturare: validarea (S121, D-3.6-1)", notes: ["CUI: format RO și cifra de control", "Nr. Reg. Com. ca în certificat", "Persoană fizică: fără CUI și fără CNP"], items: [
-    ["1 · Erori: cifra de control, Nr. Reg. Com., e-mail lipsă", (m) => h(FNew, { mode: m, errors: { cui: "check", reg: true, email: true } }), 2100, 3700]] })));
-
+    ["1 · Erori: cifra de control, Nr. Reg. Com., e-mail lipsă", (m) => h(FNew, { mode: m, errors: { cui: "check", reg: true, email: true } }), 2100, 3700]] })),
+  h(Board, { title: "Țara afacerii (S146, decizia din 11 nov.)", notes: ["„Țara”: Select cu căutare, implicit România; în spate, codul ISO din 2 litere", "Numele țărilor vin din Intl.DisplayNames, în limba interfeței", "Afișată și în FounderBusiness, lângă fusul orar; nu se editează din Hub"], items: [
+    ["1 · Afacere din Germania: „Țara” = Germania (DE); implicit România", (m) => h(FNew, { mode: m, v: "b" }), 2100, 3700]] }),
+  h(Loc146, { items: [["Română · Light · lista deschisă, căutare „ger”", "light", 420, 420, h(CountryField146, { lang: "ro", value: "DE", open: true, query: "ger" })], ["Română · Dark · nicio potrivire", "dark", 420, 300, h(CountryField146, { lang: "ro", open: true, query: "xyz" })], ["Deutsch · Light · Land", "light", 420, 420, h(V.LocaleProvider, { locale: "de" }, h(CountryField146, { lang: "de", value: "DE", open: true, query: "ös" }))], ["Italiano · Dark · Paese", "dark", 420, 420, h(V.LocaleProvider, { locale: "it" }, h(CountryField146, { lang: "it", value: "IT", open: true, query: "sviz" }))]] })));
 </script>
 </body>
 </html>

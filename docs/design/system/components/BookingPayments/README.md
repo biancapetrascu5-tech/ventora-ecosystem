@@ -13,3 +13,5 @@ EasyBook — Settings · "Plăți și avans" (S116 d): the salon's Stripe Connec
 **To confirm with the lawyer.** A non-refundable deposit option for consumers; it stays out until then.
 
 Shown at 1280 and 390, in light and dark, with a DE/IT test.
+
+**S127 (B.21).** Late-cancellation and no-show fees, and the card as guarantee, drawn in BookingMoney.

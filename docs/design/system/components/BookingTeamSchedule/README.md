@@ -25,3 +25,16 @@ Shown at 1280, 820 and 390, light and dark.
 - **Bookings in an exception, a leave, or after someone leaves.** Recommendation: never cancel them automatically; warn and link to them (drawn this way).
 - **Changing the business hours later.** Recommendation: members' intervals outside the new hours are cut to the new hours, and the owner sees which members were affected.
 - **Leave reason.** Recommendation: visible only to the owner and admins (drawn this way).
+
+**S129 (B.2b, D-B5-6) · the services each member does.** The members table has a "Servicii" column ("6 din 14", "Toate", "Niciunul"). The schedule Drawer has a "Servicii" section after "Program săptămânal" (subtitle "Program săptămânal, servicii, excepții și concedii"): "Toate serviciile" on top (including services added later; partly ticked shows the minus and "6 din 14"), then each category with its own tick ("Toate", "1 din 2", "Niciunul") and its services in two columns. The new booking and the public page show the member only for the services ticked. The same link is edited from the service side in BookingServices ("Cine îl face").
+- **A new member** does all services by default: a Notice on the list ("Elena Rusu a intrat în echipă și face toate serviciile", "Alege serviciile"), the row shows "Toate" with the badge "Nou", and the section has everything ticked with "Membrii noi fac implicit toate serviciile. Debifați ce nu face."
+- **Unticking the last member of a service:** a peach Notice "„Tratament cu keratină” rămâne fără nimeni care să-l facă" — it can't be booked online or from the calendar; the member's future bookings for it stay ("Ioana Pavel are 3 programări viitoare…"), "Vezi programările".
+- **A member who does no service:** "Radu Matei nu face niciun serviciu" — not offered in new bookings or online; stays in the calendar with the schedule.
+- Saved: "Am salvat serviciile pentru {name}". Keys `booking.team.col.services`, `booking.team.services.*`.
+
+**DE DECIS (S129).**
+- **A new member.** Recommendation: all services by default, with the Notice so the owner checks (drawn this way, as asked).
+- **"Toate serviciile".** Recommendation: it includes services added later; otherwise a new service starts with the members of its category (BookingServices).
+- **Future bookings when a member stops doing a service.** Recommendation: they stay, with the warning and the link (drawn this way); never moved or cancelled automatically.
+- **A member with no services.** Recommendation: allowed (e.g. reception), with the Notice.
+

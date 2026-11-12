@@ -15,3 +15,5 @@ Shown at 1280 (desktop), 820 (tablet portrait) and 390 (phone), in light and dar
 **Without Portal (S136, 5.1, D5-16).** A business without a Portal page doesn't see the `PortalPresence` card at all: the dock stands alone, the other apps move up, no empty space is left.
 
 **The day's sentence (S136, D5-17).** No data chips, except "programări azi" when EasyBook is active ("Azi ai 8 programări."). When no active app gives data, a plain sentence: "Aplicațiile tale sunt mai jos; deschide-o pe cea de care ai nevoie." (and the dock cards have no data line either). Two new boards: "Fără Portal" and "Nicio aplicație care dă date".
+
+**S140 (first start).** Recommended (not drawn): one line in the launcher with the EasyBook guide's progress ("Configurare EasyBook · 3 din 7") until it is done or hidden; the guide itself is in BookingOnboarding.

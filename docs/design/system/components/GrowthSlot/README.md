@@ -7,3 +7,5 @@ The container an app puts in a permitted place (the side column of "Azi", a sett
 **Never placed in:** forms being filled in, payments, errors, confirmations, sign-in, and the sensitive actions in MoneyDesk, TeamSpace and ContractDesk.
 
 **Props.** `children`, `label` (accessible name).
+
+**Texts (S136).** In `i18n/commercial.json`, in the 6 languages: `recommendation` (the accessible label). The library keeps its own copy in `S`; the file is what the apps load.

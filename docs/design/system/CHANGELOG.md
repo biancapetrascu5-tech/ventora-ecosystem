@@ -904,3 +904,374 @@ Decizia fondatoarei: numele vizibil e „Ventora Systems”, peste tot; „Vento
 ### Texte (`i18n/`)
 - `booking.json`: `booking.team.*`, `booking.resources.*`, doar în română deocamdată.
 
+## 2026-11-10 · S125 — EasyBook · trei goluri pentru pilot (B.11, B.7, B.8)
+
+### Componente noi (1.0.0)
+- **BookingClientManage** — pagina clientului pentru mutare / anulare, din linkul din e-mailul de confirmare, fără cont: rezumatul (cu și fără avans), mutarea cu ora ținută 10 minute și expirarea ei, anularea (gratuită, târzie cu avans, târzie cu taxă), stările (prea târziu online, deja anulată, link invalid, încheiată, rezervări online oprite), „Am mutat programarea” și „Am anulat programarea”.
+- **BookingClientPayments** — fila „Încasări” din fișa clientului: pe programare data, serviciul, suma, metoda, avans / rest / integral, rambursat sau reținut, cu totalul; starea goală; membrul nu o vede.
+- **BookingBlockedClients** — „Blochează clientul…” din fișă (ce înseamnă, motiv intern, eroare), fișa unui client blocat, lista „Blocați” cu „Deblochează”, starea goală, ce vede clientul blocat pe pagina de rezervare.
+- **BookingHealthAccessLog** — jurnalul citirilor informațiilor medicale: cine, când, de unde, filtrul pe perioadă, starea goală; doar proprietarul și adminii.
+
+### Componente schimbate
+- **BookingClientCard, BookingHealthFields, BookingClientEmails — 1.0.x+1:** README, cu trimitere la ecranele noi.
+
+### Texte (`i18n/`)
+- `booking.json`: `booking.manage.*`, `booking.client.pay.*`, `booking.block.*`, `booking.health.log.*`, doar în română deocamdată.
+
+## 2026-11-10 · S126 — EasyBook · programări complexe și locații (B.9, B.10)
+
+### Componente noi (1.0.0)
+- **BookingRecurring** — repetarea în programarea nouă (săptămânal, la 2 săptămâni, lunar; până la o dată sau de n ori), conflictele la creare cu ce facem pentru fiecare dată, seria în detaliu, „doar aceasta / aceasta și următoarele / toate” la modificare și anulare.
+- **BookingMultiService** — mai multe servicii la rând pentru același client: pași cu membru, pauze, durata totală, conflictul cu prima oră la care merg toate, părțile în calendar, detaliul.
+- **BookingWaitlist** — lista de așteptare: adăugare (zile, interval, serviciu), listă cu stări, loc eliberat, „Oferă locul” (valabilitate, SMS / e-mail), oferta expirată, pagina clientului, starea goală.
+- **BookingClasses** — sesiuni cu locuri în calendar, participanți și stări, plin cu listă de așteptare, anulare pe participant, sesiune nouă.
+- **BookingPackages** — pachetele salonului, pachet nou, vânzarea din fișă, ședințe folosite și rămase, „Din pachet” la programare, expirat, folosit.
+- **BookingLocations** — alegerea locației în calendar și în programarea nouă, Setări · Locații, o locație cu programul și cine lucrează aici, „Alegeți salonul” pe pagina publică.
+
+### Componente schimbate
+- **BookingNew, BookingDetail, BookingCalendar, BookingPublic, BookingSettings, BookingClientCard — 1.0.x+1:** README, cu trimitere la ecranele noi.
+
+### Texte (`i18n/`)
+- `booking.json`: `booking.cx.*`, `booking.recurring.*`, `booking.multi.*`, `booking.waitlist.*`, `booking.classes.*`, `booking.packages.*`, `booking.locations.*`, doar în română deocamdată.
+
+## 2026-11-10 · S127 — EasyBook · formulare, mesaje, încasări și promoții (B.12–B.16, B.21–B.23)
+
+### Componente noi (1.0.0)
+- **BookingCustomForms** — întrebările salonului, întrebarea nouă (cu variante), erorile, pe pagina publică (și răspuns obligatoriu lipsă), în detaliul programării.
+- **BookingMessageTemplates** — mesajele către clienți și echipă (canal, când pleacă, pornit / oprit), editorul cu variabile și previzualizare e-mail, variabilă greșită, cererea de recenzie pe SMS, SMS peste 160 de caractere, notificarea pentru echipă, salvat.
+- **BookingMoney** — plata în detaliul programării, „Încasează” (numerar parțial, link de plată), sold restant, achitat, rambursare pe card și în numerar, soldul în fișa clientului, taxele în Setări, „Nu a venit” cu taxa, cardul refuzat, cardul de garanție pe pagina publică.
+- **BookingPromoCodes** — codurile salonului, cod nou, erorile, codul pe pagina publică (gol, aplicat, nevalabil), reducerea în Hub, raportul unui cod.
+
+### Componente schimbate
+- **BookingPublic, BookingDetail, BookingNew, BookingPayments, BookingSettings, BookingClientPayments, BookingClientEmails — 1.0.x+1:** README, cu trimitere la ecranele noi.
+
+### Texte (`i18n/`)
+- `booking.json`: `booking.set.*`, `booking.forms.*`, `booking.msg.*`, `booking.money.*`, `booking.promo.*`, doar în română deocamdată.
+
+## 2026-11-10 · S128 — EasyBook · rapoarte, integrări, asistent, WhatsApp, casa de marcat
+
+### Componente noi (1.0.0)
+- **BookingReports** — ocupare (pe membru, pe zi), venituri, anulări și neprezentări, servicii, echipă; alt interval; exportul și exportul gata; perioadă fără programări.
+- **BookingIntegrations** — lista integrărilor cu starea lor, Google Calendar pe membri (sens, ce se vede), legarea de către membru, deconectarea, integrare din alt abonament.
+- **BookingAssistant** — rezumatul zilei, ore potrivite pentru lista de așteptare, propunere acceptată / respinsă, mesaj propus, „Întreabă asistentul”, setările.
+- **BookingWhatsApp** — conectarea (pași, verificare Meta), conectat cu șabloanele, șablon nou, șablon respins, canalul fiecărui mesaj, starea livrării.
+- **BookingFiscal** — EasyBook Punte (descărcare, așteptare), legarea casei de marcat, bonul de test, „Finalizează programarea” cu bon, bon emis, erorile (casa oprită, fără hârtie, puntea negăsită), „Bon de emis”.
+
+### Componente schimbate
+- **BookingSettings, BookingMessageTemplates, BookingMoney — 1.0.x+1:** README, cu trimitere la ecranele noi.
+
+### Texte (`i18n/`)
+- `booking.json`: `booking.set.tab.integrations`, `booking.reports.*`, `booking.integrations.*`, `booking.ai.*`, `booking.whatsapp.*`, `booking.fiscal.*`, doar în română deocamdată.
+
+## 2026-11-10 · S129 — EasyBook · cine face fiecare serviciu (B.2b, D-B5-6)
+
+### Componente schimbate
+- **BookingServices — 1.1.0:** coloana „Cine îl face”, starea „Nu se poate rezerva”, avertismentul pentru un serviciu pe care nu-l face nimeni, câmpul „Cine îl face” din formular (toată echipa sau membrii bifați); ecrane noi: toată echipa, nimeni, programarea nouă filtrată, serviciu fără nimeni în programarea nouă, „Alegeți cu cine” pe pagina publică.
+- **BookingTeamSchedule — 1.1.0:** coloana „Servicii”, secțiunea „Servicii” din programul membrului (bife pe categorii, „Toate serviciile”), membrul nou cu toate serviciile, serviciu rămas fără nimeni, membru fără servicii, salvat.
+- **BookingNew, BookingPublic — 1.0.x+1:** README, cu trimitere la efectul desenat în BookingServices.
+
+### Texte (`i18n/`)
+- `booking.json`: `booking.services.col.members`, `booking.services.members.*`, `booking.services.online.blocked`, `booking.services.noMember.*`, `booking.services.form.members*`, `booking.cx.new.membersHint`, `booking.cx.new.noMember.*`, `booking.team.col.services`, `booking.team.services.*`; `booking.team.drawer.subtitle` include acum „servicii”. Doar în română deocamdată.
+
+## 2026-11-10 · S130 — ClientDesk · primul set de ecrane (CR-UI.1–3)
+
+### Componente noi (1.0.0)
+- **ClientDeskHome** — shell-ul ClientDesk și pagina principală: KPI-urile, „Au nevoie de tine”, GrowthSlot; totul la zi; prima zi; ce vede un membru.
+- **ClientDeskContacts** — lista contactelor: filtre, coloane, selecție și acțiuni în bloc (etichetă, responsabil, îmbinare, export), fără rezultate, fără contacte, aproape de limită, limita atinsă, ce vede un membru.
+- **ClientDeskSegments** — salvează ca segment, lista segmentelor, „N-au mai venit de N zile”, editare, segment salvat, nimeni nu se potrivește.
+- **ClientDeskCompanies** — lista, fișa companiei, leagă un contact, companie nouă, fără companii.
+- **ClientDeskContact** — fișa contactului: istoricul, @mențiuni, atașament cu avertismentul, câmpurile afacerii, consimțământul (înregistrare, retragere), contactul din EasyBook (doar în citire, programări), ce vede un membru.
+
+### Componente schimbate
+- **BookingServices — 1.1.1:** preview; pe pagina publică (ecranul 20) alegerea „Ioana Pavel” apare și în frame-urile Light.
+
+### Texte (`i18n/`)
+- `crm.json` (nou): `crm.nav.*`, `crm.home.*`, `crm.contacts.*`, `crm.segments.*`, `crm.companies.*`, `crm.contact.*`, `crm.state.*`, `crm.src.*`, doar în română deocamdată.
+
+## 2026-11-10 · S131 — ClientDesk · leaduri, dealuri, activități (CR-UI.4–6)
+
+### Componente noi (1.0.0)
+- **ClientDeskLeads** — căsuța de leaduri, fișa leadului, conversia, duplicatul la conversie, convertit, descalificarea, leadul descalificat, căsuța goală.
+- **ClientDeskDeals** — pipeline-ul, Drawer-ul dealului (cu și fără EasyBook), dealul blocat, câștigat, pierdut, al doilea pipeline, limita de 2.
+- **ClientDeskActivities** — „Activitățile mele”, activitate nouă, calendarul pe zi și pe săptămână, apel și întâlnire înregistrate, notificarea la termen, sarcină făcută, nimic de făcut.
+
+### Componente schimbate
+- **ClientDeskHome, ClientDeskContacts, ClientDeskSegments, ClientDeskCompanies, ClientDeskContact — 1.0.1:** preview; clopoțelul din bara de sus are notificările ClientDesk (înainte folosea exemplele din EasyBook).
+- **CrmPipeline — 1.0.1:** README, cu trimitere la ClientDeskDeals.
+
+### Texte (`i18n/`)
+- `crm.json`: `crm.leads.*`, `crm.deals.*`, `crm.activities.*`, `crm.notif.*`, doar în română deocamdată.
+
+## 2026-11-10 · S132 — ClientDesk · duplicate, import și export, setări (CR-UI.7–9)
+
+### Componente noi (1.0.0)
+- **ClientDeskDuplicates** — perechile cu motivul, îmbinarea cu un contact din EasyBook, îmbinarea între două contacte ClientDesk, îmbinate, „Nu sunt duplicate”, niciun duplicat.
+- **ClientDeskImport** — fișierul (ales, necitibil), coloanele, previzualizarea și duplicatele, confirmarea cu temeiul legal, peste limită, progresul, raportul; exportul și exportul gata.
+- **ClientDeskSettings** — pipeline-uri și etape (ștergerea unei etape cu dealuri), câmpuri proprii (câmp nou), etichete și surse (unirea etichetelor), motive, scoring (pornit, oprit), legătura cu EasyBook (oprirea ei) și zilele.
+
+### Componente schimbate
+- **ClientDeskContacts — 1.0.2:** README, cu trimitere la import, export, duplicate și setări.
+
+### Texte (`i18n/`)
+- `crm.json`: `crm.dups.*`, `crm.import.*`, `crm.export.*`, `crm.settings.*`, doar în română deocamdată.
+
+## 2026-11-10 · S133 — ClientDesk · automatizări, șabloane, e-mail, consimțământ, secvențe (CR.13–15)
+
+### Componente noi (1.0.0)
+- **ClientDeskAutomations** — automatizările predefinite, setările (rotația, e-mailul de confirmare), istoricul rulărilor, pornită, niciuna pornită.
+- **ClientDeskTemplates** — lista, editorul cu părțile fixe și previzualizarea, variabilă necunoscută și contact fără prenume, șablon comercial, test trimis, versiuni.
+- **ClientDeskEmail** — compunerea, șablon comercial fără consimțământ, aproape de limită, limita atinsă, e-mailurile în istoric, căsuța neconectată, trimis, e-mailul primit.
+- **ClientDeskConsent** — consimțământul pe canal, înregistrarea (și fără dovadă), retragerea, pagina publică de dezabonare și confirmarea, lista de suprimare.
+- **ClientDeskSequences** — lista, pașii cu statistici, înscrierea în masă, contactele din secvență, contact deja în altă secvență, pauză, fără pași.
+
+### Componente schimbate
+- **ClientDeskContact, ClientDeskSettings — 1.0.x+1:** README, cu trimitere la ecranele noi.
+
+### Texte (`i18n/`)
+- `crm.json`: `crm.auto.*`, `crm.tpl.*`, `crm.mail.*`, `crm.consent.*`, `crm.seq.*`, doar în română deocamdată.
+
+## 2026-11-10 · S134 — ClientDesk · rapoarte și formulare publice (CR.16–17)
+
+### Componente noi (1.0.0)
+- **ClientDeskReports** — Vânzări, Leaduri, Activitate echipă, Contacte, E-mail; filtrele, exportul, ce vede un membru, perioadă fără activitate, fără date.
+- **ClientDeskForms** — lista, editorul (câmpuri, după trimitere, consimțământ, publicare), pagina publică (formular, erori, trimis, oprit), spam, limita, niciun formular.
+
+### Componente schimbate
+- **ClientDeskEmail — 1.1.0:** domeniul afacerii, opțional (înregistrările SPF/DKIM/DMARC, neverificat, verificat, eșuat); README.
+- **ClientDeskContact — 1.0.x+1:** decizia finală despre consimțământul din EasyBook (doar bifa separată, nebifată implicit); textul din fișă; README.
+
+### Texte (`i18n/`)
+- `crm.json`: `crm.reports.*`, `crm.forms.*`, `crm.mail.d.*`; `crm.contact.consent.ebMeta` schimbat. Doar în română deocamdată.
+
+## 2026-11-10 · S135 — Hub · chei API și webhook-uri (C.3)
+
+### Componente noi (1.0.0)
+- **HubApiKeys** — cheile, cheie nouă (și erorile), cheia arătată o dată, revocare, rotire și perioada de grație, limita de chei, jurnalul cererilor, nicio cheie, abonament fără API, membru fără drept.
+- **HubWebhooks** — webhook-urile, webhook nou (și URL fără https), secretul arătat o dată, testul, livrările și corpul unei livrări, dezactivarea automată, documentația, niciun webhook.
+
+### Hub
+- Spine-ul Hub are un grup nou, „Administrare”, cu „Integrări pentru dezvoltatori” (doar proprietar și admini).
+
+### Texte (`i18n/`)
+- `api.json` (nou): `api.keys.*`, `api.hooks.*`, doar în română deocamdată.
+
+## 2026-11-10 · S136 — Faza 5 · texte Growth, Traduceri, clopoțelul Founder, Analytics, launcher-ul fără Portal, „Recomandările mele”
+
+### Componente noi (1.0.0)
+- **FounderTranslations** — textele pe limbi cu starea lor, filtrele, editarea cu originalul alături, „Propune cu AI” (propunere, aprobată de un om), pornirea ofertei doar în limbile cu texte aprobate, aprobat, toate aprobate.
+- **FounderNotifications** — clopoțelul Founder, notificările necitite și toate, oprirea automată (ce s-a oprit și de ce), „Repornește” cu confirmare, repornită, nicio notificare.
+- **FounderAnalytics** — produsul (afaceri active, aplicații, retenție pe cohortă, adopția funcționalităților), activarea (funnel-ul), sloturile Growth, grupuri sub 5 afaceri, fără date.
+- **HubMyRecommendations** — recomandările membrului (în așteptare, activată, nu acum), din clopoțel, nicio recomandare.
+
+### Componente schimbate
+- **HubLauncher — 1.1.0:** starea „fără Portal” (PortalPresence lipsește, fără gol); fraza zilei fără chip-uri de date, doar „programări azi” cu EasyBook activ, altfel o propoziție simplă; două planșe noi; README.
+- **GrowthOffers, GrowthOfferEditor, GrowthCampaigns, GrowthCampaignEditor, GrowthAudiences, GrowthControl, GrowthResults — 1.0.x+1:** README (cheile în `founder-growth.json`).
+- **RecommendationCard, RecommendationLabel, CatalogRecommendation, GrowthSlot, CommercialStates, CommercialPreferences — 1.0.x+1:** README (cheile în `commercial.json`).
+
+### Founder
+- Spine-ul Founder are „Analytics” în primul grup și „Traduceri” sub Growth.
+
+### Texte (`i18n/`)
+- `founder-growth.json` (nou): `founder.growth.{common, offers, offerEditor, campaigns, campaignEditor, audiences, control, results}.*` și `founder.growth.translations.*`, doar în română.
+- `founder.json` (nou): `founder.nav.*`, `founder.notifications.*`, `founder.analytics.*`, doar în română.
+- `commercial.json`: textele componentelor comerciale, `states.*`, `prefs.*`, `mine.*`, în cele 6 limbi (cheile `billing.*` neschimbate).
+
+## 2026-11-10 · S137 — EasyBook · durată și preț pe membru; CampaignKit · setul 1
+
+### Componente noi (1.0.0)
+- **CampaignKitDashboard** — shell-ul CampaignKit și pagina principală: cotele lunii, ultimele rezultate, ce trebuie făcut, slotul Growth; aproape de limită, membru, gol.
+- **CampaignKitCampaigns** — campaniile (7 stări), filtrele, duplicare, pauză, oprire, aprobarea internă (aprobă / respinge cu motiv), membru, nimic găsit.
+- **CampaignKitNewCampaign** — campania nouă în 5 pași; audiența cu excluși și de ce; conținutul e-mail și SMS (GSM-7, Unicode, cost din pachet); programarea (SMS 9:00–20:00); verificarea pentru membru și proprietar; trimiterile reale oprite.
+- **CampaignKitEmailEditor** — editorul pe blocuri, ordonarea, stilurile din brand, variabilele cu text de rezervă, antetul și subsolul legal fixe, previzualizarea, testul, verificările, șabloanele.
+
+### Componente schimbate
+- **BookingServices — 1.1.0:** durată și preț pe membru în „Cine îl face”; „Diferă pe membru” în listă; prețul sub avans; efectul în programarea nouă și pe pagina publică (6 planșe noi); README.
+- **BookingNew, BookingPublic — 1.0.x+1:** README.
+
+### Texte (`i18n/`)
+- `booking.json`: `booking.services.member.*` (doar română), `booking.public.anyoneRange` (6 limbi).
+- `marketing.json` (nou): `marketing.*`, doar în română deocamdată.
+
+## 2026-11-10 · S138 — CampaignKit · setul 2; corectură EasyBook
+
+### Componente noi (1.0.0)
+- **CampaignKitAudiences** — segmente și liste, editorul de segment (RuleBuilder, estimarea, unde e folosit), segment predefinit, segment gol, listă statică, listă nouă, segment folosit.
+- **CampaignKitContacts** — registrul, contact legat (doar citire) și contact doar de marketing, importul cu temeiul legal, exportul, lista de suprimare comună, gol.
+- **CampaignKitForms** — formularele, după trimitere (cu și fără ClientDesk), acordul și dublu opt-in, formularul public, eroare, confirmarea din e-mail, e-mailul de confirmare, abonat, gol.
+- **CampaignKitAutomations** — cele 5 automatizări, setările (reactivare, ziua de naștere), istoricul rulărilor, pornită.
+- **CampaignKitSocial** — luna, săptămâna, compunerea cu previzualizare Facebook / Instagram, postare eșuată, conturile, deconectare, neconectat, Meta încă neaprobat.
+
+### Componente schimbate
+- **BookingServices — 1.2.0:** durata și prețul pe membru ca la serviciu (variabilă; „De la”, „Interval”); 6 planșe noi; README.
+- **CampaignKitNewCampaign — 1.1.0:** SMS prin SMSLink, de pe numărul scurt Ventora Systems (D-CK-5); textele și costul; README.
+- **CampaignKitDashboard, CampaignKitEmailEditor, BookingNew, BookingPublic — 1.0.x+1:** README.
+
+### Texte (`i18n/`)
+- `booking.json`: `booking.services.member.edit`, `boxTitle`, `reset`, `finalNote`, `holdMax` (română), `booking.public.priceFrom`, `booking.public.priceFinal` (6 limbi); `member.own`, `member.same`, `member.pickHint`, `member.lead` schimbate.
+- `marketing.json`: `marketing.aud.*`, `ct.*`, `fm.*`, `au.*`, `so.*`; `new.sms.*`, `new.ch.smsHelp`, `dash.q.smsHint` schimbate (D-CK-5). Doar în română.
+
+## 2026-11-10 · S139 — CampaignKit · setul 3; RuleBuilder; EasyBook B.7
+
+### Biblioteca (bundle.js)
+- **RuleBuilder — 1.1.0:** prop `subject` (`business` implicit, `contact`); textul nou `matchLabelContact` („Contactul trebuie să îndeplinească”), în 6 limbi; `index.d.ts` actualizat.
+
+### Componente noi (1.0.0)
+- **CampaignKitReports** — campaniile, o campanie (cu A/B, linkuri, dispozitive), SMS, automatizări, postări (și fără Meta), exportul, membrul.
+- **CampaignKitSettings** — trimiteri (comutatorul, plafonul și eroarea, orele, zilele, aprobarea), expeditorul și domeniul, pachetele și cumpărarea, rolurile, membrul.
+- **CampaignKitUnsubscribe** — preferințele, dezabonarea dintr-un clic, „Mai rar”, dezabonat de la toate, „M-am răzgândit”, link expirat, STOP la SMS.
+- **BookingClientMerge** — posibila dublură, alegerea, ce se păstrează, confirmarea, îmbinate, fișa arhivată.
+- **BookingBehaviorNote** — oprită implicit, pornirea cu confirmare, pornită cu regula.
+
+### Componente schimbate
+- **CampaignKitNewCampaign — 1.2.0:** testul A/B pe subiect sau conținut; README.
+- **CampaignKitAutomations — 1.1.0:** „Aniversarea primei vizite”, ziua de naștere și datele speciale; README.
+- **CampaignKitAudiences, ClientDeskSegments — 1.0.x+1:** `subject="contact"` pe RuleBuilder; README.
+- **BookingClientCard, BookingSettings — 1.0.x+1:** README.
+
+### Texte (`i18n/`)
+- `marketing.json`: `marketing.rp.*`, `new.ab.*`, `set.*`, `un.*`, `au.sp.*`, `au.a.anniv.*`. Doar în română.
+- `booking.json`: `booking.merge.*`, `booking.behavior.*`. Doar în română.
+
+## 2026-11-10 · S140 — Prima pornire: EasyBook + ClientDesk pentru un salon nou
+
+### Componente noi (1.0.0)
+- **BookingOnboarding** — ghidul de configurare pe „Azi”: cei 7 pași, fiecare pas, pasul sărit, „Felicitări”, după ghid.
+- **BookingClientImport** — importul la început: din telefon, Excel, altă aplicație; coloanele, previzualizarea, confirmarea, rezultatul.
+- **BookingDemo** — „Vezi cu date de exemplu”, Salon Demo cu bandă, ștergerea.
+- **ClientDeskWelcome** — prima intrare: ce e diferit, cei 3 pași, pipeline din șablon, legătura cu EasyBook, deal-uri de exemplu.
+- **AppHelp** — butonul „?”, panoul, un articol, turul în 3 pași.
+- **PilotFeedback** — banda perioadei de test, formularul de părere.
+
+### Componente schimbate
+- **ClientDeskImport, HubLauncher — 1.0.x+1:** README.
+
+### Texte (`i18n/`)
+- `onboarding.json` (nou): `onboarding.guide.*`, `imp.*`, `demo.*`, `cd.*`, `help.*`, `pilot.*`, doar în română.
+
+## 2026-11-10 · S141 — Traducerile ClientDesk
+
+### Texte (`i18n/`)
+- `crm.json`: cheile `crm.*` (1.684) traduse în en, fr, es, de, it, lângă ro; aceleași chei, aceiași parametri `{…}`. Termenii aleși și verificarea în DE / IT: registrul S141 din README.
+- Scurtat după verificarea pe telefon: IT `crm.contact.history` „Storico” (și „storico” în textele care îl pomenesc); DE / IT `crm.import.e.*`.
+
+### Componente
+- Niciuna schimbată: ecranele ClientDesk citesc deja `crm.*`; previzualizările rămân în română.
+
+## 2026-11-10 · S142 — Traducerile CampaignKit
+
+### Texte (`i18n/`)
+- `marketing.json`: cheile `marketing.*` (1.179) traduse în en, fr, es, de, it, lângă ro; aceleași chei, aceiași parametri `{…}`. Termenii aleși, regulile GSM-7 pentru SMS și verificarea în DE / IT: registrul S142 din README.
+- Scurtat după verificare: DE / IT `marketing.new.em.edit`, DE `marketing.new.em.test`.
+
+### Componente
+- Niciuna schimbată: ecranele CampaignKit citesc deja `marketing.*`; previzualizările rămân în română.
+
+## 2026-11-10 · S143 — Traduceri onboarding, API, Founder, booking
+
+- `onboarding.json` (356), `api.json` (199), `founder.json` (138), `founder-growth.json` (217): traduse în en, fr, es, de, it, lângă ro; aceleași chei, aceiași parametri `{…}`.
+- `booking.json`: cele 1.319 chei rămase doar în română (`booking.services.member.*`, `booking.merge.*`, `booking.behavior.*` și celelalte) traduse în cele 5 limbi; 1.587 de chei în fiecare limbă.
+- `crm.json`, `marketing.json`: IT „Rischio elevato” → „Rischio alto”, ca în `booking.json`.
+- HubApiKeys: DE „API” în bara de jos pe telefon (în loc de „Integrationen”, care nu încăpea). BookingOnboarding: nicio schimbare.
+- Termenii aleși și verificarea în DE / IT: registrul S143 din README.
+
+## 2026-11-10 · S144 — Conținutul ajutorului din aplicație
+
+- `help.json` (nou, doar română, 260 de chei): 56 de articole pentru 16 ecrane EasyBook și ClientDesk (`help.<ecran>.<articol>.title` / `.steps` / `.note` / `.min`), 10 întrebări frecvente (`help.faq.*`), etichetele panoului (`help.ui.*`).
+- **AppHelp**: articolele vin din `help.json`; vederea unui articol are întrebarea în corp, pașii numerotați, Notice „Bine de știut” și timpul de citire; secțiunea „Întrebări frecvente” în panou; frame-uri noi pentru „Cum mut o programare?” și „Cum cer avans la rezervarea online?”. Cheile vechi `onboarding.help.a1–a4` nu mai sunt folosite de preview.
+- Detaliile și DE DECIS: registrul S144 din README și README-ul AppHelp.
+
+## 2026-11-10 · S145 — Traducerile ajutorului din aplicație
+
+- `help.json`: cele 260 de chei traduse în en, fr, es, de, it, lângă ro; aceiași pași, aceleași note, `{n}` identic; butoanele și ecranele cu textele exacte din interfață.
+- **AppHelp**: verificat în DE și IT (panoul, două articole), fără depășiri; preview-ul publicat rămâne în română.
+- Termenii aleși și nepotrivirile găsite între articole și interfață: registrul S145 din README.
+
+## 2026-11-12 · S146 — Completări: Cere acces, Rezervări online, țara afacerii, pozele la întrebări, linkul clientului, CampaignKit §5.2
+
+### Componente noi (1.0.0)
+- **BookingOnlineSettings** — Setări › Rezervări online: pagina, serviciile online, avansul și garanția, mutarea și anularea, întrebările, clienții blocați și „Risc ridicat”, mesajul după rezervare; neconfigurat, pornit, oprit, doar citire.
+- **CampaignKitCalendar** — calendarul campaniilor (lună, săptămână; agendă pe telefon), vedere în Campanii.
+- **CampaignKitSeries** — campanii recurente și în mai mulți pași, seria pornită, oprirea.
+- **CampaignKitSending** — progresul trimiterii și mesajele eșuate cu motivul.
+- **CampaignKitMedia** — biblioteca media pentru postări și „Alege din bibliotecă”.
+
+### Componente schimbate
+- **HubEmpty** (1.1.0) — „Cere acces”: trimisă cu data, retrimiterea după 7 zile, se trimite, erori (rețea, afacere suspendată); ce vede proprietarul („Au nevoie de tine”, notificarea). Textele noi sunt chei (`team.json`, `notifications.json`).
+- **FounderNewBusiness** (1.1.0) — câmpul „Țara” (Combobox cu căutare, implicit România, ISO alpha-2).
+- **FounderBusiness** (1.1.0) — cardul „Afacerea”: țara lângă fusul orar.
+- **BookingCustomForms** (1.1.0) — Notice-ul permanent despre sănătate; „Clientul poate adăuga o poză”; încărcarea pozei pe pagina publică și erorile.
+- **BookingClientManage** (1.1.0) — programarea a început; linkul expirat la 30 de zile; linkul revocat.
+- **CampaignKitForms** (1.1.0) — fila „Publicare”: linkul, QR-ul, codul de încorporare, domeniul.
+- **CampaignKitNewCampaign** (1.1.0) — „Eșantion prea mic” sub 500 de contacte la testul A/B.
+- **BookingPublic, BookingSettings, CampaignKitCampaigns, CampaignKitSocial, CampaignKitSettings** (1.0.1) — doar README: unde sunt desenate completările.
+
+### Decizia MK.1 (11 nov.)
+- Setările campaniilor nu au câmp de semnătură. Am verificat CampaignKitSettings și CampaignKitNewCampaign: nu exista niciun câmp de semnătură, deci nu s-a scos nimic; subsolul legal al e-mailului rămâne fix.
+
+### `manifest.json`
+- Adăugate cele 5 componente noi (nume, grup, rezumat) și README-urile lor. Fișierul nu are câmp de versiune și e regenerat de pagina design system-ului la salvare; versiunile de mai sus sunt cele valabile.
+
+### Chei i18n noi (toate în cele 6 limbi; nicio cheie existentă schimbată)
+#### `i18n/team.json` — 22 chei noi
+
+- `hub.empty.*` (13): `hub.empty.title`, `hub.empty.desc`, `hub.empty.ask`, `hub.empty.write`, `hub.empty.sending`, `hub.empty.sent`, `hub.empty.sentDesc`, `hub.empty.resendOn`, `hub.empty.resendReady`, `hub.empty.resend`, `hub.empty.lastSent`, `hub.empty.meanwhile`, `hub.empty.retry`
+- `hub.empty.error.*` (3): `hub.empty.error.title`, `hub.empty.error.body`, `hub.empty.error.suspended`
+- `hub.attention.*` (1): `hub.attention.title`
+- `team.accessRequest.*` (5): `team.accessRequest.title`, `team.accessRequest.meta`, `team.accessRequest.open`, `team.accessRequest.again`, `team.accessRequest.badge`
+
+#### `i18n/notifications.json` — 3 chei noi
+
+- `notifications.access.request.*` (3): `notifications.access.request.title`, `notifications.access.request.body`, `notifications.access.request.action`
+
+#### `i18n/booking.json` — 99 chei noi
+
+- `booking.online.*` (2): `booking.online.lead`, `booking.online.saved`
+- `booking.online.st.*` (3): `booking.online.st.on`, `booking.online.st.off`, `booking.online.st.setup`
+- `booking.online.setup.*` (5): `booking.online.setup.title`, `booking.online.setup.body`, `booking.online.setup.action`, `booking.online.setup.done`, `booking.online.setup.todo`
+- `booking.online.page.*` (12): `booking.online.page.title`, `booking.online.page.toggle`, `booking.online.page.onHelp`, `booking.online.page.offHelp`, `booking.online.page.setupHelp`, `booking.online.page.offNotice`, `booking.online.page.link`, `booking.online.page.copy`, `booking.online.page.copied`, `booking.online.page.preview`, `booking.online.page.qr`, `booking.online.page.qrHelp`
+- `booking.online.svc.*` (12): `booking.online.svc.title`, `booking.online.svc.lead`, `booking.online.svc.count`, `booking.online.svc.col.service`, `booking.online.svc.col.who`, `booking.online.svc.col.online`, `booking.online.svc.hidden`, `booking.online.svc.hiddenWhy`, `booking.online.svc.fix`, `booking.online.svc.off`, `booking.online.svc.nobody`, `booking.online.svc.all`
+- `booking.online.dep.*` (13): `booking.online.dep.title`, `booking.online.dep.lead`, `booking.online.dep.services`, `booking.online.dep.servicesV`, `booking.online.dep.amount`, `booking.online.dep.amountV`, `booking.online.dep.card`, `booking.online.dep.cardV`, `booking.online.dep.fee`, `booking.online.dep.feeV`, `booking.online.dep.feeNever`, `booking.online.dep.edit`, `booking.online.dep.noStripe`
+- `booking.online.chg.*` (9): `booking.online.chg.title`, `booking.online.chg.lead`, `booking.online.chg.until`, `booking.online.chg.untilHelp`, `booking.online.chg.hours`, `booking.online.chg.moves`, `booking.online.chg.movesV`, `booking.online.chg.free`, `booking.online.chg.freeV`
+- `booking.online.q.*` (3): `booking.online.q.title`, `booking.online.q.lead`, `booking.online.q.open`
+- `booking.online.blk.*` (8): `booking.online.blk.title`, `booking.online.blk.blocked`, `booking.online.blk.blockedHelp`, `booking.online.blk.count`, `booking.online.blk.list`, `booking.online.blk.risk`, `booking.online.blk.riskHelp`, `booking.online.blk.riskOff`
+- `booking.online.msg.*` (6): `booking.online.msg.title`, `booking.online.msg.lead`, `booking.online.msg.label`, `booking.online.msg.help`, `booking.online.msg.sample`, `booking.online.msg.count`
+- `booking.online.ro.*` (2): `booking.online.ro.title`, `booking.online.ro.body`
+- `booking.forms.health.*` (3): `booking.forms.health.notice`, `booking.forms.health.link`, `booking.forms.health.off`
+- `booking.forms.photo.*` (4): `booking.forms.photo.label`, `booking.forms.photo.help`, `booking.forms.photo.badge`, `booking.forms.photo.detail`
+- `booking.public.photo.*` (11): `booking.public.photo.add`, `booking.public.photo.hint`, `booking.public.photo.uploading`, `booking.public.photo.done`, `booking.public.photo.remove`, `booking.public.photo.change`, `booking.public.photo.errType`, `booking.public.photo.errSize`, `booking.public.photo.errCount`, `booking.public.photo.retry`, `booking.public.photo.privacy`
+- `booking.manage.started.*` (2): `booking.manage.started.title`, `booking.manage.started.body`
+- `booking.manage.expired.*` (1): `booking.manage.expired.body`
+- `booking.manage.revoked.*` (1): `booking.manage.revoked.body`
+- `booking.manage.*` (2): `booking.manage.bookAgain`, `booking.manage.salonPhone`
+
+#### `i18n/founder.json` — 8 chei noi
+
+- `founder.country.*` (5): `founder.country.label`, `founder.country.help`, `founder.country.search`, `founder.country.empty`, `founder.country.code`
+- `founder.business.*` (3): `founder.business.country`, `founder.business.timezone`, `founder.business.countryNoHub`
+
+#### `i18n/marketing.json` — 135 chei noi
+
+- `marketing.camp.*` (1): `marketing.camp.view`
+- `marketing.camp.view.*` (2): `marketing.camp.view.list`, `marketing.camp.view.cal`
+- `marketing.cal.*` (12): `marketing.cal.lead`, `marketing.cal.month`, `marketing.cal.week`, `marketing.cal.prev`, `marketing.cal.next`, `marketing.cal.today`, `marketing.cal.more`, `marketing.cal.offDay`, `marketing.cal.series`, `marketing.cal.capWarn`, `marketing.cal.empty`, `marketing.cal.emptyBody`
+- `marketing.cal.legend.*` (2): `marketing.cal.legend.email`, `marketing.cal.legend.sms`
+- `marketing.ser.*` (22): `marketing.ser.type`, `marketing.ser.every`, `marketing.ser.weekly`, `marketing.ser.monthly`, `marketing.ser.day`, `marketing.ser.dayMonthly`, `marketing.ser.time`, `marketing.ser.ends`, `marketing.ser.audienceNote`, `marketing.ser.nextSends`, `marketing.ser.steps`, `marketing.ser.stepsLead`, `marketing.ser.step`, `marketing.ser.wait`, `marketing.ser.onlyIf`, `marketing.ser.addStep`, `marketing.ser.addWait`, `marketing.ser.maxSteps`, `marketing.ser.stopTitle`, `marketing.ser.inProgress`, `marketing.ser.pause`, `marketing.ser.stopSeries`
+- `marketing.ser.type.*` (6): `marketing.ser.type.once`, `marketing.ser.type.onceHelp`, `marketing.ser.type.recurring`, `marketing.ser.type.recurringHelp`, `marketing.ser.type.steps`, `marketing.ser.type.stepsHelp`
+- `marketing.ser.ends.*` (3): `marketing.ser.ends.date`, `marketing.ser.ends.count`, `marketing.ser.ends.never`
+- `marketing.ser.rule.*` (1): `marketing.ser.rule.weekly`
+- `marketing.ser.stop.*` (7): `marketing.ser.stop.booked`, `marketing.ser.stop.clicked`, `marketing.ser.stop.unsub`, `marketing.ser.stop.title`, `marketing.ser.stop.body`, `marketing.ser.stop.submit`, `marketing.ser.stop.note`
+- `marketing.ser.badge.*` (2): `marketing.ser.badge.recurring`, `marketing.ser.badge.steps`
+- `marketing.snd.*` (12): `marketing.snd.title`, `marketing.snd.progress`, `marketing.snd.started`, `marketing.snd.window`, `marketing.snd.skippedHelp`, `marketing.snd.done`, `marketing.snd.hard`, `marketing.snd.soft`, `marketing.snd.export`, `marketing.snd.openContact`, `marketing.snd.noFailed`, `marketing.snd.see`
+- `marketing.snd.k.*` (4): `marketing.snd.k.delivered`, `marketing.snd.k.pending`, `marketing.snd.k.failed`, `marketing.snd.k.skipped`
+- `marketing.snd.failed.*` (2): `marketing.snd.failed.title`, `marketing.snd.failed.lead`
+- `marketing.snd.col.*` (4): `marketing.snd.col.contact`, `marketing.snd.col.address`, `marketing.snd.col.reason`, `marketing.snd.col.when`
+- `marketing.snd.f.*` (2): `marketing.snd.f.reason`, `marketing.snd.f.all`
+- `marketing.snd.r.*` (5): `marketing.snd.r.noMailbox`, `marketing.snd.r.full`, `marketing.snd.r.spam`, `marketing.snd.r.noNumber`, `marketing.snd.r.off48`
+- `marketing.med.*` (15): `marketing.med.title`, `marketing.med.lead`, `marketing.med.tab`, `marketing.med.upload`, `marketing.med.uploadHint`, `marketing.med.search`, `marketing.med.usedIn`, `marketing.med.notUsed`, `marketing.med.storage`, `marketing.med.errType`, `marketing.med.errSize`, `marketing.med.none`, `marketing.med.pick`, `marketing.med.pickTitle`, `marketing.med.pickN`
+- `marketing.med.f.*` (3): `marketing.med.f.all`, `marketing.med.f.used`, `marketing.med.f.unused`
+- `marketing.med.d.*` (10): `marketing.med.d.name`, `marketing.med.d.alt`, `marketing.med.d.altHelp`, `marketing.med.d.info`, `marketing.med.d.where`, `marketing.med.d.post`, `marketing.med.d.campaign`, `marketing.med.d.delete`, `marketing.med.d.deleteBlocked`, `marketing.med.d.save`
+- `marketing.med.empty.*` (2): `marketing.med.empty.title`, `marketing.med.empty.body`
+- `marketing.fm.pb.*` (14): `marketing.fm.pb.state`, `marketing.fm.pb.link`, `marketing.fm.pb.linkHelp`, `marketing.fm.pb.copyLink`, `marketing.fm.pb.qr`, `marketing.fm.pb.embed`, `marketing.fm.pb.embedLead`, `marketing.fm.pb.code`, `marketing.fm.pb.copyCode`, `marketing.fm.pb.copied`, `marketing.fm.pb.preview`, `marketing.fm.pb.domain`, `marketing.fm.pb.domainHelp`, `marketing.fm.pb.draft`
+- `marketing.new.ab.*` (4): `marketing.new.ab.small.title`, `marketing.new.ab.small.body`, `marketing.new.ab.small.toggle`, `marketing.new.ab.small.change`
+
+Detaliile și DE DECIS: registrul S146 din README și README-urile componentelor.

@@ -9,3 +9,5 @@ One recommendation in a page, tied to what the business already does. Anatomy: t
 **Responsive.** Full width on phones; below 300px of its own width the action takes the full row.
 
 **Member's list.** After "Recomandă aplicația" the member sees the state of each recommendation (`status`): "În așteptare", "Activată" or "Nu acum". There is no notification when it is declined; the member is notified only when the app is turned on. The line under the action reads "Ajunge la {nume} (proprietar)."
+
+**Texts (S136).** In `i18n/commercial.json`, in the 6 languages: `recommendation`, `notInterested`, `remindLater`, `remindWeek`, `remindMonth`, `moreOptions`, `nothingLost`, `recommendSend`, `recommendSent`, `decides`, `priceLabel`, `setupCost`, `noneCost`, `gotIt`, `reject`. The library keeps its own copy in `S`; the file is what the apps load. The member's list of recommendations is the HubMyRecommendations screen (`mine.*`).

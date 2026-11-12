@@ -15,3 +15,5 @@ EasyBook — optional health fields with explicit consent (S116 e): the salon co
 **To confirm with the lawyer.** How long the answers are kept without a withdrawal (proposal: deleted 24 months after the last appointment).
 
 Shown at 1280 and 390, in light and dark, with a DE/IT test.
+
+**S125 (B.8).** The read log — who opened the health information, when, from where — on the client card, for the owner and admins (BookingHealthAccessLog). Romanian only for now.

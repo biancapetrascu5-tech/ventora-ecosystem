@@ -33,6 +33,7 @@
     "components/BookingLimit/README.md",
     "components/BookingList/README.md",
     "components/BookingNew/README.md",
+    "components/BookingOnlineSettings/README.md",
     "components/BookingPayments/README.md",
     "components/BookingPublic/README.md",
     "components/BookingSettings/README.md",
@@ -48,6 +49,10 @@
     "components/BookingToday/README.md",
     "components/BrandZone/README.md",
     "components/Button/README.md",
+    "components/CampaignKitCalendar/README.md",
+    "components/CampaignKitMedia/README.md",
+    "components/CampaignKitSending/README.md",
+    "components/CampaignKitSeries/README.md",
     "components/CatalogRecommendation/README.md",
     "components/Checkbox/README.md",
     "components/Combobox/README.md",
@@ -1111,6 +1116,36 @@
       "name": "SmsAppDownload",
       "group": "Ecrane Booking",
       "summary": "The public download page of the Ventora Systems phone app (SPEC_ECRANE_SMS §9), at app.ventora-hub.com/telefon — no account needed.",
+      "page": true
+    },
+    {
+      "name": "BookingOnlineSettings",
+      "group": "Ecrane Booking",
+      "summary": "EasyBook — Setări › Rezervări online: the page on / off and its link, services online, deposit and guarantee, moving and cancelling, questions, blocked clients and \"Risc ridicat\", the message after booking; not set up, on, off, read only.",
+      "page": true
+    },
+    {
+      "name": "CampaignKitCalendar",
+      "group": "Ecrane CampaignKit",
+      "summary": "CampaignKit — the marketing calendar of campaigns (month, week; an agenda on phones), a view of Campanii, separate from Calendar postări.",
+      "page": true
+    },
+    {
+      "name": "CampaignKitSeries",
+      "group": "Ecrane CampaignKit",
+      "summary": "CampaignKit — recurring and multi-step campaigns: the campaign type, the recurrence, up to 5 steps with pauses and stop rules, a running series with pause / stop.",
+      "page": true
+    },
+    {
+      "name": "CampaignKitSending",
+      "group": "Ecrane CampaignKit",
+      "summary": "CampaignKit — a campaign’s sending progress and the failed messages with the reason (permanent / temporary), filter and export.",
+      "page": true
+    },
+    {
+      "name": "CampaignKitMedia",
+      "group": "Ecrane CampaignKit",
+      "summary": "CampaignKit — the media library for posts: upload, search, \"Folosită în\", the image’s details, the picker in Postare nouă.",
       "page": true
     }
   ],
