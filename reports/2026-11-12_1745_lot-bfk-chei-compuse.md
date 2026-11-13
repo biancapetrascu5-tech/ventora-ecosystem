@@ -50,6 +50,15 @@ SELECT count(*) FROM booking.appointment a JOIN booking.client c ON c.id = a.cli
 
 ## Ce rămâne deschis
 
-- **Ordinea față de #197:** dacă #197 intră primul, ordinea rămâne `…000008`, apoi `…000009`.
-- **Dacă B.FK intră primul:** la rebase redenumesc migrarea #197 în `…000010`, ca să ruleze după `…000009` (SQL neschimbat). #197 adaugă FK-uri deja compuse, pe care testul de catalog le verifică automat.
+- **Ordinea față de #197:** rezolvată, #197 a intrat primul (vezi secțiunea de rebase).
 - **Următorul lot:** B.13.
+
+## Rebase pe main cu #197 (13.11, dimineața)
+
+- **Rebase:** pe `464720f` (main cu #197 și #196), fără conflicte. Ordinea migrărilor: `…000008` (B.9d2), apoi `…000009` (B.FK). Migrarea B.FK nu s-a schimbat.
+- **FK-urile adăugate de B.9d2** (`class_session_id` pe `waitlist_entry`, `waitlist_offer`, `public_hold`): erau deja compuse `(organization_id, class_session_id) → class_session (organization_id, id)`. Nu a fost nevoie să le includ în migrare. Inventarul refăcut din toate migrările nu găsește niciun FK simplu rămas în booking, iar testul de catalog le verifică automat.
+- **Testul:** cele 4 legături noi fără rând în fixture (sau cu CHECK-ul 23514 înaintea FK-ului) sunt trecute în `UNTRIED`: `public_hold.class_session_id`, `waitlist_entry.class_session_id` (de două ori), `waitlist_offer.class_session_id`. Fișier: `composite-fks.integration.test.ts`.
+- **Lanțul de verificări** după rebase: exit 0.
+- **`docker ps`**, separat, la 08:15: niciun container.
+- **Toată suita de integrare booking** (`FILES="integration"`): 27 de fișiere, **306/306**, exit 0.
+- **Push:** `--force-with-lease` (aprobat).
