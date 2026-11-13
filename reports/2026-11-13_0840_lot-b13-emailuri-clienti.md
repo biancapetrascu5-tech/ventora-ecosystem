@@ -59,3 +59,12 @@
   - testul B.1 cu lista tabelelor cu RLS: am adăugat `client_message` (`services.integration.test.ts`).
 - **După reparații:** `FILES="client-emails services.integration"` 41/41. Apoi toată suita: o rulare oprită de un crash Windows al worker-ului (`0xC0000409`, pe `staff-services`, fișier neatins de lot), iar rularea următoare: **27 de fișiere, 310/310**, exit 0, garda de drift „No difference detected”.
 - **După reparații**, pe booking: `format:check`, `lint`, `typecheck`, testele unitare (67/67), toate exit 0.
+
+## După rebase pe `2f012ab` (main cu #199 B.FK și #200)
+
+- **Rebase:** fără conflicte.
+- **Lanțul:** `format:check`, `lint`, `typecheck`, `test`, `i18n:check`, `guards:verify`, `build`: toate exit 0.
+- **`docker ps`:** am așteptat UI (09:37–09:42).
+- **Prima rulare a suitei:** 311/312. Testul B.FK pe rânduri a găsit legătura nouă `client_message.appointment_id`, fără rând în fixture. Am trecut-o în `UNTRIED` (`composite-fks.integration.test.ts`). Testul de catalog confirmă că FK-ul e compus.
+- **`FILES="composite-fks client-emails"`:** 8/8.
+- **Toată suita booking:** **28 de fișiere, 312/312**, exit 0, „No difference detected”.
