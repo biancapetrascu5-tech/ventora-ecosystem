@@ -1,0 +1,81 @@
+/* preview.html (BookingStates): .d, .stth, .stgrid, .stc, .stc-box, .d0, .r — 1:1 */
+.d {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: var(--space-4);
+  box-sizing: border-box;
+}
+.d > p {
+  margin: 0;
+}
+.stth {
+  background: var(--canvas);
+  color: var(--ink);
+  padding: var(--space-6);
+  border-radius: var(--radius-lg);
+}
+.grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--space-5) var(--space-4);
+  align-items: start;
+}
+@media (max-width: 1100px) {
+  .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 640px) {
+  .grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .grid > .stc {
+    grid-column: auto !important;
+  }
+}
+.stc {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-width: 0;
+}
+.stc > p {
+  margin: 0;
+}
+.box {
+  background: var(--sheet);
+  border: var(--border-width) solid var(--line);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+  min-width: 0;
+}
+/* .stc-box .v-toast / .v-dialog: the full width of the box, the dialog without its shadow */
+.full {
+  width: 100% !important;
+  max-width: none !important;
+  box-sizing: border-box;
+}
+.dlg > :global(*) {
+  width: 100% !important;
+  max-width: none !important;
+  box-shadow: none !important;
+}
+.d0 {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  min-width: 0;
+}
+.r {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  align-items: center;
+}
+.muted {
+  color: var(--ink-muted);
+}
+.dd {
+  margin: 0;
+}

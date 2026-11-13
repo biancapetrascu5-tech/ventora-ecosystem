@@ -77,7 +77,8 @@ export function actionsFor(
       return { footer: ['move', 'start'], menu: [...noShow, 'cancel'] };
     case 'in_progress':
       // decided 13.11.2026: no cancellation from „În desfășurare” (TRANSITIONS: only → completed;
-      // the BookingStatuses preview has it in the menu, to be corrected in Claude Design)
+      // S147 took it out of the preview). S147 puts „Corectează starea…” in this menu, but the
+      // correction is only for final states (S116-D9, correctAppointmentStatus): NECESITĂ DECIZIE
       return { footer: [c.canCollect ? 'collect' : 'complete'], menu: [] };
     case 'completed':
     case 'cancelled':

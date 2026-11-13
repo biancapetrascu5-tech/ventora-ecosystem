@@ -15,6 +15,7 @@ import {
 import type { ScreenMode } from '../services/BookingServicesView';
 import { useTableLabels } from '../services/texts';
 import { STATUS_LOOK, type DetailStatus } from '../detail/detail-format';
+import { ListEmptyFiltered } from '../states/BookingStates';
 import s from './list.module.css';
 
 /* BookingList (B.6b) — the part the detail stands on (Decision 7, screen 3): the page header, the
@@ -63,6 +64,12 @@ export type BookingListViewProps = {
   filterCount?: number;
   onFilters?: () => void;
   loading?: boolean;
+  /** BookingStates „Listă · goală, cu filtre”: „Șterge filtrele” when a filter differs from the default. */
+  onClearFilters?: () => void;
+  /** false: no filter bar (BookingLimit's list behind the dialog). */
+  filters?: boolean;
+  /** „Programare nouă” in the page header (BookingLimit). */
+  onNew?: () => void;
 };
 
 export function BookingListView(p: BookingListViewProps) {
@@ -182,7 +189,11 @@ export function BookingListView(p: BookingListViewProps) {
         title={t('list.title')}
         description={p.description && !mobile ? t('list.desc') : undefined}
         actions={
-          p.onExport && !mobile ? (
+          p.onNew && !mobile ? (
+            <Button variant="primary" icon="plus" onPress={p.onNew}>
+              {t('new.title')}
+            </Button>
+          ) : p.onExport && !mobile ? (
             <Button icon="download" onPress={p.onExport}>
               {t('list.export')}
             </Button>
@@ -197,10 +208,10 @@ export function BookingListView(p: BookingListViewProps) {
         activeRow={p.activeRow ?? undefined}
         rowActions={p.rowActions}
         onRowClick={p.onRowClick}
-        toolbar={toolbar}
+        toolbar={p.filters === false ? undefined : toolbar}
         loading={p.loading}
         labels={labels}
-        empty={<p className={`body-small ${s.muted} ${s.empty}`}>{t('list.empty')}</p>}
+        empty={<ListEmptyFiltered onClear={p.onClearFilters} />}
       />
     </>
   );

@@ -56,7 +56,7 @@
     "usedOf": "{used} di {limit}",
     "left": "Ne hai ancora {n}",
     "nearLimit": "Stai per raggiungere il limite del tuo abbonamento",
-    "atLimit": "Hai raggiunto il limite del tuo abbonamento",
+    "atLimit": "Ha raggiunto il limite dell’abbonamento",
     "atLimitHint": "Quello che hai già non andrà perso. Per aggiungerne altri, acquista un componente aggiuntivo o richiedi un altro abbonamento.",
     "upgrade": "Richiedi un altro abbonamento",
     "buyMore": "Acquista componente aggiuntivo",

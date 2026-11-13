@@ -19,6 +19,7 @@ import {
   type CalendarBlock,
   type CalendarView,
   type FirstFreeResult,
+  CalendarHint,
 } from '@ventora/booking/ui';
 import {
   readCalendarRange,
@@ -27,6 +28,9 @@ import {
   type CalendarRangeData,
 } from '@/server/booking-calendar-actions';
 import { useMode } from './useMode';
+import hs from './calendar-screen.module.css';
+
+const HINT_KEY = 'ventora.booking.calendarHint';
 
 /* Lot B.6a — EasyBook · Calendar (BookingCalendar): the state and the reads of the page. The screen
    is in modules/booking/src/ui (the same component as the gallery). A click on an appointment
@@ -52,6 +56,25 @@ export function CalendarScreen({ initial }: { initial: CalendarPageData }) {
   const [picking, setPicking] = useState(false);
   const [serviceId, setServiceId] = useState(initial.services[0]?.id);
   const [searching, setSearching] = useState(false);
+  // the first-use hint, until „Am înțeles” (per viewer, in this browser)
+  const [hint, setHint] = useState(false);
+  useEffect(() => {
+    queueMicrotask(() => {
+      try {
+        setHint(window.localStorage.getItem(HINT_KEY) !== '1');
+      } catch {
+        setHint(true);
+      }
+    });
+  }, []);
+  const dismissHint = () => {
+    setHint(false);
+    try {
+      window.localStorage.setItem(HINT_KEY, '1');
+    } catch {
+      // private window or blocked storage: the hint just comes back next time
+    }
+  };
   const [found, setFound] = useState<{
     serviceId: string;
     date: string;
@@ -221,6 +244,10 @@ export function CalendarScreen({ initial }: { initial: CalendarPageData }) {
   }
 
   let notice = null;
+  if (hint && !failed && shown !== 'week' && initial.staff.length > 0) {
+    // BookingStates „Calendar · indiciu la prima folosire”
+    notice = <CalendarHint className={hs.hint} onDismiss={dismissHint} />;
+  }
   if (failed) {
     notice = (
       <Notice

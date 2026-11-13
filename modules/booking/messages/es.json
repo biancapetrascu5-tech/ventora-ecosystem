@@ -499,7 +499,6 @@
     "attn": {
       "title": "Necesita su atención",
       "more": "Ver todo ({n})",
-      "empty": "Nada pendiente ahora.",
       "unconfirmed": "{client} no ha confirmado",
       "unconfirmedMeta": "Hoy a las {time} · {service} · {staff}",
       "confirm": "Confirmar",
@@ -520,8 +519,6 @@
       "EUR": "{amount} €"
     },
     "toast": {
-      "confirmed": "La cita de {client} está confirmada.",
-      "completed": "La cita de {client} está finalizada.",
       "undo": "Deshacer",
       "undone": "Se deshizo el cambio.",
       "failed": "No se guardó. Inténtelo de nuevo.",
@@ -726,8 +723,7 @@
     },
     "move": {
       "title": "Mover la cita",
-      "save": "Mover",
-      "done": "Hemos movido la cita al {day}, {time}."
+      "save": "Mover"
     },
     "correct": {
       "title": "Corregir el estado",
@@ -737,9 +733,7 @@
       "save": "Corregir"
     },
     "toast": {
-      "confirmed": "Hemos confirmado la cita · {client}",
       "started": "Hemos empezado la cita · {client}",
-      "completed": "Hemos terminado la cita · {client}",
       "cancelled": "Hemos cancelado la cita · {client}",
       "noShow": "Hemos marcado: no se presentó · {client}",
       "corrected": "Hemos corregido el estado.",
@@ -797,7 +791,65 @@
       "remind": "Enviar recordatorio"
     },
     "export": "Exportar",
-    "today": "Hoy, {time}",
-    "empty": "No hay citas en el periodo elegido."
+    "today": "Hoy, {time}"
+  },
+  "states": {
+    "emptyDay": {
+      "title": "Hoy no tienes ninguna cita",
+      "body": "Añade una o abre el calendario para ver el resto de la semana.",
+      "add": "Añadir una cita",
+      "calendar": "Abrir el calendario"
+    },
+    "nothing": "Nada que resolver ahora",
+    "loadError": {
+      "title": "No hemos podido cargar la agenda del día",
+      "body": "Comprueba tu conexión a internet e inténtalo de nuevo.",
+      "retry": "Reintentar"
+    },
+    "completed": "Cita terminada · {client}",
+    "confirmed": "Hemos confirmado la cita · {client}",
+    "hint": {
+      "text": "Toca un hueco libre para añadir una cita.",
+      "ok": "Entendido"
+    },
+    "listFiltered": {
+      "title": "No hay citas para los filtros elegidos"
+    },
+    "clearFilters": "Borrar filtros",
+    "listEmpty": {
+      "title": "Todavía no tienes ninguna cita",
+      "body": "Añade tu primera cita o activa las reservas online para que te encuentren los clientes."
+    },
+    "export": {
+      "title": "Hemos exportado {n} citas del {day}.",
+      "file": "El archivo se ha descargado."
+    },
+    "bulk": {
+      "title": "¿Cancelar {n} citas?",
+      "keep": "Mantenerlas",
+      "confirm": "Cancelar las citas",
+      "sms": "Los clientes reciben automáticamente un SMS de que la cita se ha cancelado."
+    },
+    "moved": "Hemos movido la cita al {day}, {time}.",
+    "settingsSaved": "Hemos guardado los ajustes.",
+    "unsaved": {
+      "title": "Tienes cambios sin guardar",
+      "leave": "Salir sin guardar",
+      "save": "Guardar"
+    },
+    "limitSent": "Hemos enviado la solicitud a {name}.",
+    "otherDays": {
+      "title": "Ningún resultado hoy para «{q}»",
+      "action": "{n, plural, one {# resultado en otros días} other {# resultados en otros días}}"
+    },
+    "firstFree": "Próximo hueco libre: {weekday}, {time}, con {staff}.",
+    "book": "Reservar",
+    "doneLine": "{client} · {service} · hoy, {time}",
+    "collect": "Cobrar"
+  },
+  "limit": {
+    "title": "Has alcanzado el límite de citas de {month}",
+    "desc": "Tus citas siguen en su sitio y puedes seguir cambiándolas. La cita que empezaste te espera: la guardamos en cuanto haya sitio.",
+    "kept": "Hemos guardado la cita que empezaste. Comprueba la hora y pulsa «Reservar»."
   }
 }

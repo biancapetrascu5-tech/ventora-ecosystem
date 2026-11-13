@@ -296,8 +296,8 @@ function Overview({ mode }: { mode: ScreenMode }) {
   );
 }
 
-// preview.html DET / TIME / HIST: the drawer of each state. Deviation (founder, 13.11.2026): the
-// state 4 menu has no „Anulează programarea” — TRANSITIONS allow only in_progress → completed.
+// preview.html DET / TIME / HIST: the drawer of each state (S147: state 4 without „Anulează
+// programarea”, with „Corectează starea…”).
 type Foot = [IconName, string, boolean?, Record<string, string>?];
 type Det = { row: number; foot: Foot[]; menu: string[]; final?: boolean };
 const DET: Record<DetailStatus, Det> = {
@@ -321,7 +321,7 @@ const DET: Record<DetailStatus, Det> = {
   in_progress: {
     row: 1,
     foot: [['wallet', 'action.collect', true, { amount: '300 lei' }]],
-    menu: [],
+    menu: ['action.correct'],
   },
   completed: {
     row: 4,
@@ -502,7 +502,10 @@ const ITEMS: Item[] = [
     '3 · Confirmată: „Începe”; „Nu a venit” și anularea în meniu',
     (m) => <Detail mode={m} s="confirmed" />,
   ],
-  ['4 · În desfășurare: „Încasează”', (m) => <Detail mode={m} s="in_progress" />],
+  [
+    '4 · În desfășurare: „Încasează” (→ Încheiată) și „Corectare”; fără anulare (S147)',
+    (m) => <Detail mode={m} s="in_progress" />,
+  ],
   ['5 · Încheiată (finală)', (m) => <Detail mode={m} s="completed" />],
   ['6 · Anulată (finală): cine și cu cât timp înainte', (m) => <Detail mode={m} s="cancelled" />],
   [

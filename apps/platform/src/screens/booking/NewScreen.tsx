@@ -23,7 +23,22 @@ import {
   type NewPageData,
   type NewSlotData,
 } from '@/server/booking-new-actions';
+import { readBookingShell } from '@/server/booking-services-actions';
+import { readPlan, tellOwner } from '@/server/plan-actions';
+import { LimitDialog } from '../plan/LimitDialog';
+import { useMoney } from '../plan/format';
 import { useMode } from './useMode';
+
+/** BookingLimit: the appointment being created, kept while the owner buys more (this tab only). */
+const DRAFT_KEY = 'ventora.booking.newDraft';
+const QUOTA = 'booking.appointments';
+type Limit = {
+  usage: { used: number; limit: number } | null;
+  currency: 'RON' | 'EUR';
+  packs: { id: string; title: string; priceMinor: number }[];
+  owner: boolean;
+  ownerName: string | null;
+};
 
 /* Lot B.6c — EasyBook · „Programare nouă” (BookingNew): the state and the actions of the page.
    The screen is in modules/booking/src/ui (the same component as the gallery). The free times
@@ -78,6 +93,49 @@ export function NewScreen({ initial, start }: { initial: NewPageData; start: New
   const [overlap, setOverlap] = useState<{ name: string; time: string } | null>(null);
   const [saving, setSaving] = useState(false);
   const [toast, setToast] = useState<{ id: string; description: string } | null>(null);
+  const [limit, setLimit] = useState<Limit | null>(null);
+  const [notice, setNotice] = useState<string | null>(null);
+  const nav = useTranslations('booking.nav');
+  const lt = useTranslations('booking.limit');
+  const st = useTranslations('booking.states');
+  const money = useMoney(limit?.currency ?? 'RON');
+
+  // BookingLimit: back from the plan page, the appointment started before is filled in again
+  useEffect(() => {
+    queueMicrotask(() => {
+      try {
+        const raw = window.sessionStorage.getItem(DRAFT_KEY);
+        if (!raw) return;
+        window.sessionStorage.removeItem(DRAFT_KEY);
+        const draft = JSON.parse(raw) as { form: NewForm; duration: number | null };
+        setForm(draft.form);
+        setDuration(draft.duration);
+        setNotice(lt('kept'));
+      } catch {
+        // no storage: the form starts empty
+      }
+    });
+  }, [lt]);
+  const keepDraft = () => {
+    try {
+      window.sessionStorage.setItem(DRAFT_KEY, JSON.stringify({ form, duration }));
+    } catch {
+      // private window: the form is lost, as before
+    }
+  };
+  const openLimit = async () => {
+    const [plan, shell] = await Promise.all([readPlan(), readBookingShell()]);
+    setLimit({
+      usage: shell?.usage ?? null,
+      currency: plan?.summary?.currency ?? plan?.catalog.currency ?? 'RON',
+      packs: (plan?.offers ?? [])
+        .filter((o) => o.quotaKey === QUOTA)
+        .sort((a, b) => a.priceMinor - b.priceMinor)
+        .map((o) => ({ id: o.id, title: o.name, priceMinor: o.priceMinor })),
+      owner: plan?.owner ?? false,
+      ownerName: plan?.ownerName ?? null,
+    });
+  };
   const id = useRef<string | null>(null);
   const query = useRef(0);
 
@@ -155,7 +213,8 @@ export function NewScreen({ initial, start }: { initial: NewPageData; start: New
           date: form.date!,
           durationMinutes: duration ?? undefined,
         }).then((x) => setSlots(x.ok ? x.slots : []));
-      } else setFailure(r.error);
+      } else if (r.error === 'limit') void openLimit();
+      else setFailure(r.error);
       return;
     }
     setToast({
@@ -175,6 +234,10 @@ export function NewScreen({ initial, start }: { initial: NewPageData; start: New
   };
 
   const cancel = () => router.back();
+  const month = new Intl.DateTimeFormat(locale, {
+    month: 'long',
+    timeZone: 'Europe/Bucharest',
+  }).format(new Date());
 
   return (
     <>
@@ -220,6 +283,41 @@ export function NewScreen({ initial, start }: { initial: NewPageData; start: New
           saving={saving}
           onSubmit={() => void submit()}
           onCancel={cancel}
+        />
+      )}
+      <LimitDialog
+        open={limit !== null}
+        title={lt('title', { month })}
+        description={lt('desc')}
+        usage={
+          limit?.usage
+            ? { label: nav('usage', { month }), used: limit.usage.used, limit: limit.usage.limit }
+            : null
+        }
+        packs={(limit?.packs ?? []).map((p) => ({ ...p, price: money.minor(p.priceMinor) }))}
+        owner={limit?.owner ?? false}
+        ownerName={limit?.ownerName ?? null}
+        onBuy={() => {
+          keepDraft();
+          router.push('/admin/plan');
+        }}
+        onPlan={() => {
+          keepDraft();
+          router.push('/catalog');
+        }}
+        onRecommend={async () => {
+          const r = await tellOwner('quota', QUOTA);
+          if (r.ok && limit?.ownerName) setNotice(st('limitSent', { name: limit.ownerName }));
+          return r.ok;
+        }}
+        onClose={() => setLimit(null)}
+      />
+      {notice && !toast && (
+        <SettingsToast
+          mode={mode}
+          title={notice}
+          onDismiss={() => setNotice(null)}
+          dismissLabel={ui('close')}
         />
       )}
       {toast && (

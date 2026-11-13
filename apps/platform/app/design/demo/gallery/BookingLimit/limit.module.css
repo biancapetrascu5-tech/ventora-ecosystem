@@ -1,0 +1,18 @@
+/* preview.html .modal-demo: the dialog over the frame, a bottom sheet on the phone */
+.modal {
+  position: absolute;
+  inset: 0;
+  background: var(--scrim);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-6);
+  z-index: var(--z-overlay);
+}
+.mobile {
+  align-items: flex-end;
+  padding: 0;
+}
+.modal > :global(*) {
+  max-height: none;
+}
