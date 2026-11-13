@@ -8,9 +8,10 @@
 -- New kinds, one row each (the unique dedupe key):
 --   cancellation:<appointment>  a confirmed appointment cancelled in the last 2 hours, still ahead;
 --                               of a series cancelled at once, only the first (one e-mail)
---   change:<history row>        a move by the business (not by the client on their page) in the
---                               last 2 hours, of a confirmed appointment still ahead; of a series
---                               moved at once, only the first; only the latest move of the appointment
+--   change:<history row>        a move in the last 2 hours (by the business; by the client on their
+--                               page: a short e-mail with the new time), of a confirmed appointment
+--                               still ahead; of a series moved at once, only the first; only the
+--                               latest move of the appointment
 --   thanks:<appointment>        a completed appointment (of a visit: its last step), 2 hours after
 --                               its end (at most 24 hours late)
 
@@ -90,7 +91,7 @@ AS $$
         FROM booking.appointment_history h
         JOIN booking.appointment a ON a.organization_id = h.organization_id AND a.id = h.appointment_id
         JOIN booking.client c ON c.organization_id = a.organization_id AND c.id = a.client_id
-       WHERE h.kind = 'moved' AND h.actor_type <> 'client'
+       WHERE h.kind = 'moved'
          AND h.created_at >= now() - interval '2 hours'
          AND a.status = 'confirmed' AND c.email IS NOT NULL AND c.erased_at IS NULL
          AND a.starts_at > now()

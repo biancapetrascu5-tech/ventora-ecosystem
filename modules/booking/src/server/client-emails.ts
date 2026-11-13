@@ -106,9 +106,10 @@ type Facts = {
   thanks_email: boolean;
   free_cancel_hours: number;
   expired: boolean;
-  /** change: the start written by the move, and the start before it. */
+  /** change: the start written by the move, the start before it, who moved it. */
   moved_to: Date | null;
   moved_from: Date | null;
+  moved_by: string | null;
 };
 
 /** The conditions shared by scheduling and by booking.client_messages_due (the migrations). */
@@ -159,14 +160,15 @@ async function schedule(client: PoolClient): Promise<number> {
            WHERE b.series_id = a.series_id AND b.status = 'cancelled'
              AND b.cancelled_at = a.cancelled_at AND b.starts_at < a.starts_at)
      ${ONCE}`,
-    // B.14: a move by the business (of a series moved at once: the first; only the latest move)
+    // B.14: a move (by the business, or by the client on their page: a short e-mail); of a series
+    // moved at once: the first; only the latest move
     `${INSERT}
      SELECT gen_random_uuid(), a.organization_id, a.id, 'change',
             'change:' || h.id::text, now(), a.starts_at
        FROM booking.appointment_history h
        JOIN booking.appointment a ON a.id = h.appointment_id
        ${CLIENT}
-        AND h.kind = 'moved' AND h.actor_type <> 'client'
+        AND h.kind = 'moved'
         AND h.created_at >= now() - interval '2 hours'
         AND a.status = 'confirmed' AND a.starts_at > now() AND COALESCE(a.visit_step, 1) = 1
         AND NOT EXISTS (
@@ -233,7 +235,7 @@ async function facts(client: PoolClient, m: Claimed): Promise<Facts | null> {
             COALESCE(s.thanks_email, true) AS thanks_email,
             COALESCE(s.free_cancel_hours, 24) AS free_cancel_hours,
             ($2::timestamptz <= now()) AS expired,
-            h.starts_at AS moved_to,
+            h.starts_at AS moved_to, h.actor_type AS moved_by,
             (SELECT p.starts_at FROM booking.appointment_history p
               WHERE p.appointment_id = a.id AND p.starts_at IS NOT NULL AND p.id < h.id
               ORDER BY p.id DESC LIMIT 1) AS moved_from
@@ -330,6 +332,8 @@ export type ClientEmailInput = {
   cancelledBy?: 'client' | 'business' | null;
   /** change: the start before the move. */
   movedFrom?: Date | null;
+  /** change: moved by the client on their page (a short e-mail). */
+  movedByClient?: boolean;
 };
 
 type Parts = {
@@ -402,6 +406,14 @@ export function renderClientEmail(input: ClientEmailInput): ClientEmail {
               button: rebook,
             };
       case 'change':
+        if (input.movedByClient)
+          return {
+            title: t.movedClient.title,
+            lead: fill(t.movedClient.lead, { when }),
+            rows: [`${t.k.service}: ${input.service}`, ...where],
+            after: [],
+            button: manage,
+          };
         return {
           title: t.moved.title,
           lead: fill(t.moved.lead, { business }),
@@ -517,6 +529,7 @@ async function sendOne(org: OrganizationCard, m: Claimed): Promise<Outcome> {
     freeCancelHours: f.free_cancel_hours,
     cancelledBy: f.cancelled_by,
     movedFrom: f.moved_from,
+    movedByClient: f.moved_by === 'client',
   });
   const result = await deliverEmail({
     to: email.to,

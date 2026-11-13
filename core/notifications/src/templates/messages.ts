@@ -113,6 +113,8 @@ export interface EmailMessages {
     cancelClient: { title: string; lead: string };
     cancelSalon: { title: string; lead: string; cta: string };
     moved: { title: string; lead: string; note: string };
+    /** Moved by the client on their page (B.11b): a short e-mail with the new time. */
+    movedClient: { title: string; lead: string };
     thanks: { title: string; lead: string; after: string };
   };
 }

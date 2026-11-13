@@ -210,6 +210,10 @@
         "lead": "{business} a mutat programarea. Noua oră e mai jos.",
         "note": "Dacă noua oră nu vă convine, o puteți schimba sau anula gratuit."
       },
+      "movedClient": {
+        "title": "Ați mutat programarea",
+        "lead": "Noua oră: {when}."
+      },
       "thanks": {
         "title": "Mulțumim, {name}!",
         "lead": "Mulțumim că ați venit la {business} pentru {service}.",

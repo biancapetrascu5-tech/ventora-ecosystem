@@ -210,6 +210,10 @@
         "lead": "{business} hat Ihren Termin verschoben. Die neue Uhrzeit steht unten.",
         "note": "Passt Ihnen die neue Uhrzeit nicht, können Sie sie kostenlos ändern oder stornieren."
       },
+      "movedClient": {
+        "title": "Sie haben Ihren Termin verschoben",
+        "lead": "Die neue Uhrzeit: {when}."
+      },
       "thanks": {
         "title": "Vielen Dank, {name}!",
         "lead": "Vielen Dank für Ihren Besuch bei {business} ({service}).",

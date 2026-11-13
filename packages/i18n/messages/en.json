@@ -210,6 +210,10 @@
         "lead": "{business} has moved your appointment. The new time is below.",
         "note": "If the new time doesn’t suit you, you can change or cancel it free of charge."
       },
+      "movedClient": {
+        "title": "You moved your appointment",
+        "lead": "The new time: {when}."
+      },
       "thanks": {
         "title": "Thank you, {name}!",
         "lead": "Thank you for visiting {business} for {service}.",

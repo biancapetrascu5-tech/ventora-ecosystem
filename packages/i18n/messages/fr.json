@@ -210,6 +210,10 @@
         "lead": "{business} a déplacé votre rendez-vous. Le nouvel horaire figure ci-dessous.",
         "note": "Si le nouvel horaire ne vous convient pas, vous pouvez le modifier ou l’annuler gratuitement."
       },
+      "movedClient": {
+        "title": "Vous avez déplacé votre rendez-vous",
+        "lead": "Le nouvel horaire : {when}."
+      },
       "thanks": {
         "title": "Merci, {name} !",
         "lead": "Merci de votre visite chez {business} pour {service}.",

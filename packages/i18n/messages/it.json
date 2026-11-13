@@ -210,6 +210,10 @@
         "lead": "{business} ha spostato l’appuntamento. Il nuovo orario è qui sotto.",
         "note": "Se il nuovo orario non Le va bene, può cambiarlo o annullarlo gratuitamente."
       },
+      "movedClient": {
+        "title": "Ha spostato l’appuntamento",
+        "lead": "Il nuovo orario: {when}."
+      },
       "thanks": {
         "title": "Grazie, {name}!",
         "lead": "Grazie della Sua visita da {business} per {service}.",

@@ -29,7 +29,8 @@ import { closeBookingPool } from '../server/db.js';
  *
  * Lot B.14: the cancellation (by the client / by the business) and the change always go and are not
  * counted; the thanks 2 hours after the visit can be turned off and is counted as scheduled; a series
- * cancelled at once gets one e-mail; a move by the client on their page gets none.
+ * cancelled at once gets one e-mail; a move by the client on their page gets a short e-mail with the
+ * new time (decision of the founder, 13.11).
  */
 
 const mailbox = new CaptureEmailAdapter();
@@ -537,7 +538,7 @@ describe('B.14: the cancellation by e-mail (always on, not counted)', () => {
 });
 
 describe('B.14: the change by e-mail (always on, not counted)', () => {
-  it('moved by the business: the new time and the time before, the client’s link; moved by the client: none', async () => {
+  it('moved by the business: the new time and the time before, the client’s link; moved by the client: a short e-mail', async () => {
     const b = await business();
     const c = await client(b, 'it');
     const a = await book(b, c.id, inHours(40));
@@ -570,8 +571,8 @@ describe('B.14: the change by e-mail (always on, not counted)', () => {
     expect(m).toMatchObject({ kind: 'change', state: 'sent' });
     expect(await reservation(m!.id)).toEqual([]);
 
-    // a move made by the client on their page (B.11b): no e-mail
-    await moveAppointment({
+    // a move made by the client on their page (B.11b): a short e-mail with the new time, not counted
+    const again = await moveAppointment({
       sessionToken: b.t,
       appointmentId: a.id,
       startsAt: inHours(46),
@@ -582,8 +583,23 @@ describe('B.14: the change by e-mail (always on, not counted)', () => {
                      WHERE appointment_id = $1 AND kind = 'moved' ORDER BY id DESC LIMIT 1)`,
       [a.id],
     );
-    await run(b);
-    expect(mailbox.to(c.email)).toHaveLength(1);
+    await Promise.all([run(b), run(b)]);
+    const all = mailbox.to(c.email);
+    expect(all).toHaveLength(2);
+    const short = all[1]!;
+    expect(short.subject).toBe(fill(t.subject, { title: t.movedClient.title, business: b.name }));
+    expect(short.text).toContain(
+      fill(t.movedClient.lead, { when: format(new Date(again.startsAt)) }),
+    );
+    expect(short.text).not.toContain(`${t.k.before}:`);
+    expect(short.text).not.toContain(t.moved.note);
+    expect(short.html).toContain(`/r/${b.slug}/m/`);
+    const rows = (await messages(a.id)).filter((x) => x.kind === 'change');
+    expect(rows).toHaveLength(2);
+    for (const r of rows) {
+      expect(r).toMatchObject({ state: 'sent' });
+      expect(await reservation(r.id)).toEqual([]);
+    }
   });
 
   it('moved again before it goes: the older change is not sent', async () => {

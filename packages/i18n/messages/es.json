@@ -210,6 +210,10 @@
         "lead": "{business} ha cambiado su cita. La nueva hora está abajo.",
         "note": "Si la nueva hora no le va bien, puede cambiarla o cancelarla gratis."
       },
+      "movedClient": {
+        "title": "Ha cambiado su cita",
+        "lead": "La nueva hora: {when}."
+      },
       "thanks": {
         "title": "¡Gracias, {name}!",
         "lead": "Gracias por su visita a {business} para {service}.",
