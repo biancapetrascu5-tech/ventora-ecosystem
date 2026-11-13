@@ -631,5 +631,173 @@
       "when": "{day}, {time}",
       "view": "Vezi programarea"
     }
+  },
+  "status": {
+    "unconfirmed": "Neconfirmată",
+    "confirmed": "Confirmată",
+    "inProgress": "În desfășurare",
+    "done": "Încheiată",
+    "cancelled": "Anulată",
+    "noShow": "Nu a venit",
+    "awaitingPayment": "Așteaptă plata",
+    "byClient": "Anulată de client · cu {time} înainte",
+    "bySalon": "Anulată de {name} · cu {time} înainte",
+    "late": "În afara anulării gratuite: avansul rămâne la salon.",
+    "inTime": "În termenul de anulare gratuită: avansul se rambursează.",
+    "final": "Stare finală. Proprietarul sau un admin o poate corecta în 24 de ore.",
+    "paymentUntil": "Avans {amount} · ora e păstrată până la {until}",
+    "depositPaid": "Avans plătit: {amount}"
+  },
+  "action": {
+    "confirm": "Confirmă",
+    "start": "Începe",
+    "collect": "Încasează {amount}",
+    "move": "Mută programarea",
+    "cancel": "Anulează programarea",
+    "noShow": "Marchează: nu a venit",
+    "rebook": "Programează din nou",
+    "resendPay": "Retrimite linkul de plată",
+    "correct": "Corectează starea…"
+  },
+  "detail": {
+    "online": "Rezervată online",
+    "kv": {
+      "when": "Când",
+      "service": "Serviciu",
+      "staff": "Angajat",
+      "client": "Client",
+      "with": "Cu cine"
+    },
+    "when": "{day} · {from}–{to}",
+    "min": "{n} min",
+    "visit": "{n, select, 1 {prima vizită} other {a {n}-a vizită}}",
+    "unconfirmed": {
+      "title": "Nu a confirmat încă",
+      "reminded": "I-am trimis reamintirea {when}. Poți suna sau retrimite.",
+      "call": "Poți suna clientul ca să confirme."
+    },
+    "resend": "Retrimite reamintirea",
+    "call": "Sună",
+    "notes": "Note pentru echipă",
+    "history": "Istoric",
+    "historyAll": "Vezi tot istoricul",
+    "historyLess": "Arată mai puțin",
+    "duplicate": "Duplică",
+    "more": "Mai multe acțiuni",
+    "complete": "Marchează ca încheiată",
+    "rebook": {
+      "title": "Programează din nou cu un clic",
+      "body": "Clientul, serviciul și angajatul sunt deja completate; alegi doar ziua și ora."
+    },
+    "at": {
+      "today": "Azi, {time}",
+      "day": "{day}, {time}"
+    },
+    "h": {
+      "createdOnline": "Rezervată din pagina de rezervări",
+      "createdBy": "Creată de {name}",
+      "created": "Creată",
+      "moved": "{name} a mutat-o de la {from} la {to}",
+      "movedSystem": "Mutată de la {from} la {to}",
+      "confirmed": "{name} a confirmat programarea",
+      "confirmedClient": "Confirmată de client",
+      "confirmedSystem": "Confirmată automat",
+      "started": "{name} a început programarea",
+      "startedSystem": "Începută",
+      "completed": "{name} a încheiat programarea",
+      "completedSystem": "Încheiată",
+      "cancelledClient": "Anulată de client",
+      "cancelled": "{name} a anulat programarea",
+      "cancelledSystem": "Anulată",
+      "noShow": "{name} a marcat: nu a venit",
+      "noShowSystem": "Marcată: nu a venit",
+      "corrected": "{name} a corectat starea: {status}",
+      "updated": "{name} a schimbat detaliile",
+      "updatedSystem": "Detalii schimbate",
+      "someone": "Cineva din echipă"
+    },
+    "cancel": {
+      "title": "Anulezi programarea?",
+      "what": "{client} · {day}, {time}.",
+      "keep": "Păstrează programarea",
+      "byClient": "Clientul a anulat",
+      "by": "Cine anulează",
+      "bySalon": "Salonul anulează"
+    },
+    "move": {
+      "title": "Mută programarea",
+      "save": "Mută",
+      "done": "Am mutat programarea pe {day}, {time}."
+    },
+    "correct": {
+      "title": "Corectează starea",
+      "to": "Starea corectă",
+      "reason": "Motivul",
+      "reasonHelp": "Intră în jurnalul afacerii. Între 10 și 500 de caractere.",
+      "save": "Corectează"
+    },
+    "toast": {
+      "confirmed": "Am confirmat programarea · {client}",
+      "started": "Am început programarea · {client}",
+      "completed": "Am încheiat programarea · {client}",
+      "cancelled": "Am anulat programarea · {client}",
+      "noShow": "Am marcat: nu a venit · {client}",
+      "corrected": "Am corectat starea.",
+      "noteSaved": "Am salvat nota.",
+      "undo": "Anulează"
+    },
+    "err": {
+      "failed": "Nu am putut salva. Încearcă din nou.",
+      "tooEarly": "„Nu a venit” se poate marca doar după ora de început.",
+      "window": "Au trecut cele 24 de ore în care se poate corecta starea.",
+      "reason": "Scrie un motiv de cel puțin 10 caractere.",
+      "overlap": "Ora aleasă nu mai e liberă. Alege alta.",
+      "final": "Programarea s-a schimbat între timp. Deschide-o din nou."
+    },
+    "notFound": "Programarea nu mai există sau nu e a acestei afaceri.",
+    "risk": {
+      "title": "Risc ridicat: nu a venit de {n} ori în ultimele {m} luni",
+      "body": "Proprietarul primește o alertă când un client ajunge la „Risc ridicat”."
+    },
+    "before": {
+      "m": "{n, plural, one {un minut} few {# minute} other {# de minute}}",
+      "h": "{n, plural, one {o oră} few {# ore} other {# de ore}}",
+      "d": "{n, plural, one {o zi} few {# zile} other {# de zile}}"
+    },
+    "finalBadge": "Finală"
+  },
+  "list": {
+    "title": "Programări",
+    "desc": "Toate programările, cu filtre și acțiuni pentru mai multe deodată.",
+    "search": "Caută client, telefon sau serviciu",
+    "searchLabel": "Caută",
+    "filters": "Filtre · {n}",
+    "period": "Perioadă",
+    "periods": {
+      "today": "Azi",
+      "week": "Săptămâna",
+      "month": "Luna"
+    },
+    "team": "Toată echipa",
+    "states": {
+      "active": "Active",
+      "unconfirmed": "Neconfirmate",
+      "cancelled": "Anulate"
+    },
+    "cols": {
+      "client": "Client",
+      "service": "Serviciu",
+      "staff": "Angajat",
+      "when": "Când",
+      "price": "Preț",
+      "status": "Stare"
+    },
+    "actions": {
+      "open": "Deschide",
+      "remind": "Trimite reamintire"
+    },
+    "export": "Exportă",
+    "today": "Azi, {time}",
+    "empty": "Nicio programare în perioada aleasă."
   }
 }

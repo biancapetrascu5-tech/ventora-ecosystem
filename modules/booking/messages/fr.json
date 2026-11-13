@@ -631,5 +631,173 @@
       "when": "{day}, {time}",
       "view": "Voir le rendez-vous"
     }
+  },
+  "status": {
+    "unconfirmed": "Non confirmé",
+    "confirmed": "Confirmé",
+    "inProgress": "En cours",
+    "done": "Terminé",
+    "cancelled": "Annulé",
+    "noShow": "Absent",
+    "awaitingPayment": "En attente de paiement",
+    "byClient": "Annulé par le client · {time} avant",
+    "bySalon": "Annulé par {name} · {time} avant",
+    "late": "Hors annulation gratuite : le salon garde l’acompte.",
+    "inTime": "Dans le délai d’annulation gratuite : l’acompte est remboursé.",
+    "final": "État final. Le propriétaire ou un admin peut le corriger sous 24 heures.",
+    "paymentUntil": "Acompte {amount} · horaire gardé jusqu’à {until}",
+    "depositPaid": "Acompte payé : {amount}"
+  },
+  "action": {
+    "confirm": "Confirmer",
+    "start": "Commencer",
+    "collect": "Encaisser {amount}",
+    "move": "Déplacer le rendez-vous",
+    "cancel": "Annuler le rendez-vous",
+    "noShow": "Marquer : absent",
+    "rebook": "Reprendre rendez-vous",
+    "resendPay": "Renvoyer le lien de paiement",
+    "correct": "Corriger l’état…"
+  },
+  "detail": {
+    "online": "Réservé en ligne",
+    "kv": {
+      "when": "Quand",
+      "service": "Prestation",
+      "staff": "Employé",
+      "client": "Client",
+      "with": "Avec"
+    },
+    "when": "{day} · {from}–{to}",
+    "min": "{n} min",
+    "visit": "{n, select, 1 {1re visite} other {{n}e visite}}",
+    "unconfirmed": {
+      "title": "N'a pas encore confirmé",
+      "reminded": "Nous avons envoyé le rappel {when}. Vous pouvez appeler ou le renvoyer.",
+      "call": "Vous pouvez appeler le client pour qu’il confirme."
+    },
+    "resend": "Renvoyer le rappel",
+    "call": "Appeler",
+    "notes": "Notes pour l'équipe",
+    "history": "Historique",
+    "historyAll": "Voir tout l'historique",
+    "historyLess": "Afficher moins",
+    "duplicate": "Dupliquer",
+    "more": "Plus d'actions",
+    "complete": "Marquer comme terminé",
+    "rebook": {
+      "title": "Reprenez rendez-vous en un clic",
+      "body": "Le client, la prestation et l'employé sont déjà remplis ; vous choisissez seulement le jour et l'heure."
+    },
+    "at": {
+      "today": "Aujourd'hui, {time}",
+      "day": "{day}, {time}"
+    },
+    "h": {
+      "createdOnline": "Réservé depuis la page de réservation",
+      "createdBy": "Créé par {name}",
+      "created": "Créé",
+      "moved": "{name} l'a déplacé de {from} à {to}",
+      "movedSystem": "Déplacé de {from} à {to}",
+      "confirmed": "{name} a confirmé le rendez-vous",
+      "confirmedClient": "Confirmé par le client",
+      "confirmedSystem": "Confirmé automatiquement",
+      "started": "{name} a commencé le rendez-vous",
+      "startedSystem": "Commencé",
+      "completed": "{name} a terminé le rendez-vous",
+      "completedSystem": "Terminé",
+      "cancelledClient": "Annulé par le client",
+      "cancelled": "{name} a annulé le rendez-vous",
+      "cancelledSystem": "Annulé",
+      "noShow": "{name} a marqué : absent",
+      "noShowSystem": "Marqué : absent",
+      "corrected": "{name} a corrigé l'état : {status}",
+      "updated": "{name} a modifié les détails",
+      "updatedSystem": "Détails modifiés",
+      "someone": "Quelqu'un de l'équipe"
+    },
+    "cancel": {
+      "title": "Annuler le rendez-vous ?",
+      "what": "{client} · {day}, {time}.",
+      "keep": "Garder le rendez-vous",
+      "byClient": "Le client a annulé",
+      "by": "Qui annule",
+      "bySalon": "Le salon annule"
+    },
+    "move": {
+      "title": "Déplacer le rendez-vous",
+      "save": "Déplacer",
+      "done": "Nous avons déplacé le rendez-vous au {day}, {time}."
+    },
+    "correct": {
+      "title": "Corriger l'état",
+      "to": "L'état correct",
+      "reason": "Motif",
+      "reasonHelp": "Inscrit au journal de l'entreprise. Entre 10 et 500 caractères.",
+      "save": "Corriger"
+    },
+    "toast": {
+      "confirmed": "Nous avons confirmé le rendez-vous · {client}",
+      "started": "Nous avons commencé le rendez-vous · {client}",
+      "completed": "Nous avons terminé le rendez-vous · {client}",
+      "cancelled": "Nous avons annulé le rendez-vous · {client}",
+      "noShow": "Nous avons marqué : absent · {client}",
+      "corrected": "Nous avons corrigé l'état.",
+      "noteSaved": "Nous avons enregistré la note.",
+      "undo": "Annuler"
+    },
+    "err": {
+      "failed": "Nous n'avons pas pu enregistrer. Réessayez.",
+      "tooEarly": "« Absent » ne peut être marqué qu’après l’heure de début.",
+      "window": "Les 24 heures pour corriger l'état sont passées.",
+      "reason": "Écrivez un motif d’au moins 10 caractères.",
+      "overlap": "L'heure choisie n'est plus libre. Choisissez-en une autre.",
+      "final": "Le rendez-vous a changé entre-temps. Rouvrez-le."
+    },
+    "notFound": "Le rendez-vous n'existe plus ou n'appartient pas à cette entreprise.",
+    "risk": {
+      "title": "Risque élevé : {n} absences ces {m} derniers mois",
+      "body": "Le propriétaire reçoit une alerte quand un client passe en « Risque élevé »."
+    },
+    "before": {
+      "m": "{n, plural, one {# minute} other {# minutes}}",
+      "h": "{n, plural, one {# heure} other {# heures}}",
+      "d": "{n, plural, one {# jour} other {# jours}}"
+    },
+    "finalBadge": "Finale"
+  },
+  "list": {
+    "title": "Rendez-vous",
+    "desc": "Tous les rendez-vous, avec des filtres et des actions groupées.",
+    "search": "Rechercher client, téléphone ou prestation",
+    "searchLabel": "Rechercher",
+    "filters": "Filtres · {n}",
+    "period": "Période",
+    "periods": {
+      "today": "Aujourd'hui",
+      "week": "Semaine",
+      "month": "Mois"
+    },
+    "team": "Toute l'équipe",
+    "states": {
+      "active": "Actifs",
+      "unconfirmed": "Non confirmés",
+      "cancelled": "Annulés"
+    },
+    "cols": {
+      "client": "Client",
+      "service": "Prestation",
+      "staff": "Employé",
+      "when": "Quand",
+      "price": "Prix",
+      "status": "État"
+    },
+    "actions": {
+      "open": "Ouvrir",
+      "remind": "Envoyer un rappel"
+    },
+    "export": "Exporter",
+    "today": "Aujourd'hui, {time}",
+    "empty": "Aucun rendez-vous sur la période choisie."
   }
 }

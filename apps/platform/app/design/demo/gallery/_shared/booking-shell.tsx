@@ -5,7 +5,8 @@ import { AppShell, Spine, UsageMeter, type NavSection } from '@ventora/ui';
 import { Bar, noop } from './shell';
 import { SPINE_RO, USAGE_RO } from './labels';
 
-/* The EasyBook shell of the S123/S124 Setări previews (BookingServices, BookingTeamSchedule):
+/* The EasyBook shell of the S123/S124 Setări previews (BookingServices, BookingTeamSchedule) and of
+   BookingStatuses (S116, „Programări”):
    the Spine with „Setări” active, the meter, the context bar. */
 
 // preview.html BK_SECTIONS (ro)
@@ -34,16 +35,29 @@ const BK_SECTIONS: NavSection[] = [
   },
 ];
 
-export function BookingApp({ children }: { children: ReactNode }) {
+export function BookingApp({
+  children,
+  active = 'setari',
+  title = 'Setări',
+  appName,
+}: {
+  children: ReactNode;
+  /** BookingStatuses: the Spine shows „EasyBook”. */
+  appName?: string;
+  /** BookingStatuses: „Programări” active, title „Programări”. */
+  active?: string;
+  title?: string;
+}) {
   return (
     <AppShell
       height="100%"
       spine={
         <Spine
           app="booking"
+          appName={appName}
           labels={SPINE_RO}
           sections={BK_SECTIONS}
-          activeId="setari"
+          activeId={active}
           onBackToHub={noop}
           bottomItems={['azi', 'calendar', 'programari', 'clienti']}
           footer={
@@ -57,7 +71,7 @@ export function BookingApp({ children }: { children: ReactNode }) {
           }
         />
       }
-      contextBar={<Bar title="Setări" hub />}
+      contextBar={<Bar title={title} hub />}
     >
       {children}
     </AppShell>

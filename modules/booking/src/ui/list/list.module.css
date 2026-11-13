@@ -1,0 +1,23 @@
+/* BookingList: the inline styles of preview.html BookingFilters / BK_COLS, as classes */
+.search {
+  flex: 1 1 220px;
+  min-width: 0;
+  max-width: var(--search-width);
+}
+.searchM {
+  max-width: none;
+}
+.sel {
+  width: 160px;
+}
+.client {
+  display: flex;
+  flex-direction: column;
+}
+.muted {
+  color: var(--ink-muted);
+}
+.empty {
+  margin: 0;
+  padding: var(--space-4);
+}

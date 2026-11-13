@@ -141,3 +141,35 @@ export {
   type NewPriceKind,
   type Terms,
 } from './new/new-format';
+// Lot B.6a / S116 f: BookingDetail + BookingStatuses (the drawer, the 7 states, the dialogs)
+export {
+  BookingDetailDrawer,
+  type BookingDetailDrawerProps,
+  type DetailButton,
+  type DetailMenuItem,
+} from './detail/BookingDetailDrawer';
+export {
+  CancelAppointmentDialog,
+  MoveAppointmentDialog,
+  CorrectStatusDialog,
+} from './detail/DetailDialogs';
+export {
+  STATUS_LOOK,
+  FINAL,
+  CORRECT_WINDOW_MS,
+  actionsFor,
+  correctTarget,
+  historyLine,
+  type ActionContext,
+  type DetailAction,
+  type DetailStatus,
+  type HistoryRow,
+} from './detail/detail-format';
+// the part of BookingList the detail stands on (the rest with screen 4)
+export {
+  BookingListView,
+  type BookingListViewProps,
+  type ListRow,
+  type ListPeriod,
+  type ListStateFilter,
+} from './list/BookingListView';

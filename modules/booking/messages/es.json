@@ -631,5 +631,173 @@
       "when": "{day}, {time}",
       "view": "Ver la cita"
     }
+  },
+  "status": {
+    "unconfirmed": "Sin confirmar",
+    "confirmed": "Confirmada",
+    "inProgress": "En curso",
+    "done": "Terminada",
+    "cancelled": "Cancelada",
+    "noShow": "No se presentó",
+    "awaitingPayment": "Pendiente de pago",
+    "byClient": "Cancelada por el cliente · {time} antes",
+    "bySalon": "Cancelada por {name} · {time} antes",
+    "late": "Fuera de la cancelación gratuita: el salón se queda la señal.",
+    "inTime": "Dentro de la cancelación gratuita: se devuelve la señal.",
+    "final": "Estado final. El propietario o un admin puede corregirlo en 24 horas.",
+    "paymentUntil": "Señal {amount} · hora reservada hasta las {until}",
+    "depositPaid": "Señal pagada: {amount}"
+  },
+  "action": {
+    "confirm": "Confirmar",
+    "start": "Empezar",
+    "collect": "Cobrar {amount}",
+    "move": "Mover la cita",
+    "cancel": "Cancelar la cita",
+    "noShow": "Marcar: no se presentó",
+    "rebook": "Volver a reservar",
+    "resendPay": "Reenviar el enlace de pago",
+    "correct": "Corregir el estado…"
+  },
+  "detail": {
+    "online": "Reservada online",
+    "kv": {
+      "when": "Cuándo",
+      "service": "Servicio",
+      "staff": "Empleado",
+      "client": "Cliente",
+      "with": "Con"
+    },
+    "when": "{day} · {from}–{to}",
+    "min": "{n} min",
+    "visit": "{n}.ª visita",
+    "unconfirmed": {
+      "title": "Aún no ha confirmado",
+      "reminded": "Enviamos el recordatorio {when}. Puedes llamar o reenviarlo.",
+      "call": "Puedes llamar al cliente para que confirme."
+    },
+    "resend": "Reenviar recordatorio",
+    "call": "Llamar",
+    "notes": "Notas para el equipo",
+    "history": "Historial",
+    "historyAll": "Ver todo el historial",
+    "historyLess": "Mostrar menos",
+    "duplicate": "Duplicar",
+    "more": "Más acciones",
+    "complete": "Marcar como terminada",
+    "rebook": {
+      "title": "Vuelve a reservar con un clic",
+      "body": "El cliente, el servicio y el empleado ya están rellenados; solo eliges el día y la hora."
+    },
+    "at": {
+      "today": "Hoy, {time}",
+      "day": "{day}, {time}"
+    },
+    "h": {
+      "createdOnline": "Reservada desde la página de reservas",
+      "createdBy": "Creada por {name}",
+      "created": "Creada",
+      "moved": "{name} la movió de {from} a {to}",
+      "movedSystem": "Movida de {from} a {to}",
+      "confirmed": "{name} confirmó la cita",
+      "confirmedClient": "Confirmada por el cliente",
+      "confirmedSystem": "Confirmada automáticamente",
+      "started": "{name} empezó la cita",
+      "startedSystem": "Empezada",
+      "completed": "{name} terminó la cita",
+      "completedSystem": "Terminada",
+      "cancelledClient": "Cancelada por el cliente",
+      "cancelled": "{name} canceló la cita",
+      "cancelledSystem": "Cancelada",
+      "noShow": "{name} marcó: no se presentó",
+      "noShowSystem": "Marcada: no se presentó",
+      "corrected": "{name} corrigió el estado: {status}",
+      "updated": "{name} cambió los detalles",
+      "updatedSystem": "Detalles cambiados",
+      "someone": "Alguien del equipo"
+    },
+    "cancel": {
+      "title": "¿Cancelar la cita?",
+      "what": "{client} · {day}, {time}.",
+      "keep": "Mantener la cita",
+      "byClient": "El cliente canceló",
+      "by": "Quién cancela",
+      "bySalon": "El salón cancela"
+    },
+    "move": {
+      "title": "Mover la cita",
+      "save": "Mover",
+      "done": "Hemos movido la cita al {day}, {time}."
+    },
+    "correct": {
+      "title": "Corregir el estado",
+      "to": "El estado correcto",
+      "reason": "Motivo",
+      "reasonHelp": "Queda en el registro del negocio. Entre 10 y 500 caracteres.",
+      "save": "Corregir"
+    },
+    "toast": {
+      "confirmed": "Hemos confirmado la cita · {client}",
+      "started": "Hemos empezado la cita · {client}",
+      "completed": "Hemos terminado la cita · {client}",
+      "cancelled": "Hemos cancelado la cita · {client}",
+      "noShow": "Hemos marcado: no se presentó · {client}",
+      "corrected": "Hemos corregido el estado.",
+      "noteSaved": "Hemos guardado la nota.",
+      "undo": "Deshacer"
+    },
+    "err": {
+      "failed": "No hemos podido guardar. Inténtalo de nuevo.",
+      "tooEarly": "«No se presentó» solo se puede marcar después de la hora de inicio.",
+      "window": "Han pasado las 24 horas para corregir el estado.",
+      "reason": "Escribe un motivo de al menos 10 caracteres.",
+      "overlap": "La hora elegida ya no está libre. Elige otra.",
+      "final": "La cita ha cambiado mientras tanto. Ábrela de nuevo."
+    },
+    "notFound": "La cita ya no existe o no es de este negocio.",
+    "risk": {
+      "title": "Riesgo alto: no se presentó {n} veces en los últimos {m} meses",
+      "body": "El propietario recibe una alerta cuando un cliente llega a «Riesgo alto»."
+    },
+    "before": {
+      "m": "{n, plural, one {# minuto} other {# minutos}}",
+      "h": "{n, plural, one {# hora} other {# horas}}",
+      "d": "{n, plural, one {# día} other {# días}}"
+    },
+    "finalBadge": "Final"
+  },
+  "list": {
+    "title": "Citas",
+    "desc": "Todas las citas, con filtros y acciones para varias a la vez.",
+    "search": "Buscar cliente, teléfono o servicio",
+    "searchLabel": "Buscar",
+    "filters": "Filtros · {n}",
+    "period": "Periodo",
+    "periods": {
+      "today": "Hoy",
+      "week": "Semana",
+      "month": "Mes"
+    },
+    "team": "Todo el equipo",
+    "states": {
+      "active": "Activas",
+      "unconfirmed": "Sin confirmar",
+      "cancelled": "Canceladas"
+    },
+    "cols": {
+      "client": "Cliente",
+      "service": "Servicio",
+      "staff": "Empleado",
+      "when": "Cuándo",
+      "price": "Precio",
+      "status": "Estado"
+    },
+    "actions": {
+      "open": "Abrir",
+      "remind": "Enviar recordatorio"
+    },
+    "export": "Exportar",
+    "today": "Hoy, {time}",
+    "empty": "No hay citas en el periodo elegido."
   }
 }

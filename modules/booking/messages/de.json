@@ -631,5 +631,173 @@
       "when": "{day}, {time}",
       "view": "Termin ansehen"
     }
+  },
+  "status": {
+    "unconfirmed": "Unbestätigt",
+    "confirmed": "Bestätigt",
+    "inProgress": "Läuft",
+    "done": "Erledigt",
+    "cancelled": "Abgesagt",
+    "noShow": "Nicht erschienen",
+    "awaitingPayment": "Wartet auf Zahlung",
+    "byClient": "Vom Kunden abgesagt · {time} vorher",
+    "bySalon": "Von {name} abgesagt · {time} vorher",
+    "late": "Außerhalb der kostenlosen Stornierung: Der Salon behält die Anzahlung.",
+    "inTime": "Innerhalb der kostenlosen Stornierung: Die Anzahlung wird erstattet.",
+    "final": "Endstatus. Inhaber oder Admin können ihn innerhalb von 24 Stunden korrigieren.",
+    "paymentUntil": "Anzahlung {amount} · reserviert bis {until} Uhr",
+    "depositPaid": "Anzahlung bezahlt: {amount}"
+  },
+  "action": {
+    "confirm": "Bestätigen",
+    "start": "Beginnen",
+    "collect": "{amount} kassieren",
+    "move": "Termin verschieben",
+    "cancel": "Termin absagen",
+    "noShow": "Als nicht erschienen markieren",
+    "rebook": "Erneut buchen",
+    "resendPay": "Zahlungslink erneut senden",
+    "correct": "Status korrigieren …"
+  },
+  "detail": {
+    "online": "Online gebucht",
+    "kv": {
+      "when": "Wann",
+      "service": "Leistung",
+      "staff": "Mitarbeiter",
+      "client": "Kunde",
+      "with": "Bei"
+    },
+    "when": "{day} · {from}–{to}",
+    "min": "{n} Min.",
+    "visit": "{n}. Besuch",
+    "unconfirmed": {
+      "title": "Noch nicht bestätigt",
+      "reminded": "Wir haben die Erinnerung {when} gesendet. Sie können anrufen oder sie erneut senden.",
+      "call": "Sie können den Kunden anrufen, damit er bestätigt."
+    },
+    "resend": "Erinnerung erneut senden",
+    "call": "Anrufen",
+    "notes": "Notizen für das Team",
+    "history": "Verlauf",
+    "historyAll": "Gesamten Verlauf anzeigen",
+    "historyLess": "Weniger anzeigen",
+    "duplicate": "Duplizieren",
+    "more": "Weitere Aktionen",
+    "complete": "Als erledigt markieren",
+    "rebook": {
+      "title": "Mit einem Klick erneut buchen",
+      "body": "Kunde, Leistung und Mitarbeiter sind schon ausgefüllt; Sie wählen nur Tag und Uhrzeit."
+    },
+    "at": {
+      "today": "Heute, {time}",
+      "day": "{day}, {time}"
+    },
+    "h": {
+      "createdOnline": "Über die Buchungsseite gebucht",
+      "createdBy": "Angelegt von {name}",
+      "created": "Angelegt",
+      "moved": "{name} hat den Termin von {from} auf {to} verschoben",
+      "movedSystem": "Von {from} auf {to} verschoben",
+      "confirmed": "{name} hat den Termin bestätigt",
+      "confirmedClient": "Vom Kunden bestätigt",
+      "confirmedSystem": "Automatisch bestätigt",
+      "started": "{name} hat den Termin begonnen",
+      "startedSystem": "Begonnen",
+      "completed": "{name} hat den Termin abgeschlossen",
+      "completedSystem": "Erledigt",
+      "cancelledClient": "Vom Kunden abgesagt",
+      "cancelled": "{name} hat den Termin abgesagt",
+      "cancelledSystem": "Abgesagt",
+      "noShow": "{name} hat markiert: nicht erschienen",
+      "noShowSystem": "Markiert: nicht erschienen",
+      "corrected": "{name} hat den Status korrigiert: {status}",
+      "updated": "{name} hat die Details geändert",
+      "updatedSystem": "Details geändert",
+      "someone": "Jemand aus dem Team"
+    },
+    "cancel": {
+      "title": "Termin absagen?",
+      "what": "{client} · {day}, {time}.",
+      "keep": "Termin behalten",
+      "byClient": "Der Kunde hat abgesagt",
+      "by": "Wer sagt ab",
+      "bySalon": "Der Salon sagt ab"
+    },
+    "move": {
+      "title": "Termin verschieben",
+      "save": "Verschieben",
+      "done": "Wir haben den Termin auf {day}, {time}, verschoben."
+    },
+    "correct": {
+      "title": "Status korrigieren",
+      "to": "Der richtige Status",
+      "reason": "Grund",
+      "reasonHelp": "Kommt ins Protokoll des Unternehmens. Zwischen 10 und 500 Zeichen.",
+      "save": "Korrigieren"
+    },
+    "toast": {
+      "confirmed": "Wir haben den Termin bestätigt · {client}",
+      "started": "Wir haben den Termin begonnen · {client}",
+      "completed": "Wir haben den Termin abgeschlossen · {client}",
+      "cancelled": "Wir haben den Termin abgesagt · {client}",
+      "noShow": "Markiert: nicht erschienen · {client}",
+      "corrected": "Wir haben den Status korrigiert.",
+      "noteSaved": "Wir haben die Notiz gespeichert.",
+      "undo": "Rückgängig"
+    },
+    "err": {
+      "failed": "Wir konnten nicht speichern. Versuchen Sie es erneut.",
+      "tooEarly": "„Nicht erschienen“ kann erst nach Beginn markiert werden.",
+      "window": "Die 24 Stunden zur Korrektur sind vorbei.",
+      "reason": "Schreiben Sie einen Grund mit mindestens 10 Zeichen.",
+      "overlap": "Die gewählte Uhrzeit ist nicht mehr frei. Wählen Sie eine andere.",
+      "final": "Der Termin hat sich inzwischen geändert. Öffnen Sie ihn erneut."
+    },
+    "notFound": "Der Termin existiert nicht mehr oder gehört nicht zu diesem Unternehmen.",
+    "risk": {
+      "title": "Hohes Risiko: {n}-mal nicht erschienen in den letzten {m} Monaten",
+      "body": "Der Inhaber erhält eine Meldung, wenn ein Kunde „Hohes Risiko“ erreicht."
+    },
+    "before": {
+      "m": "{n, plural, one {# Minute} other {# Minuten}}",
+      "h": "{n, plural, one {# Stunde} other {# Stunden}}",
+      "d": "{n, plural, one {# Tag} other {# Tagen}}"
+    },
+    "finalBadge": "Endstatus"
+  },
+  "list": {
+    "title": "Termine",
+    "desc": "Alle Termine, mit Filtern und Aktionen für mehrere gleichzeitig.",
+    "search": "Kunde, Telefon oder Leistung suchen",
+    "searchLabel": "Suchen",
+    "filters": "Filter · {n}",
+    "period": "Zeitraum",
+    "periods": {
+      "today": "Heute",
+      "week": "Woche",
+      "month": "Monat"
+    },
+    "team": "Ganzes Team",
+    "states": {
+      "active": "Aktiv",
+      "unconfirmed": "Unbestätigt",
+      "cancelled": "Abgesagt"
+    },
+    "cols": {
+      "client": "Kunde",
+      "service": "Leistung",
+      "staff": "Mitarbeiter",
+      "when": "Wann",
+      "price": "Preis",
+      "status": "Status"
+    },
+    "actions": {
+      "open": "Öffnen",
+      "remind": "Erinnerung senden"
+    },
+    "export": "Exportieren",
+    "today": "Heute, {time}",
+    "empty": "Keine Termine im gewählten Zeitraum."
   }
 }

@@ -631,5 +631,173 @@
       "when": "{day}, {time}",
       "view": "View appointment"
     }
+  },
+  "status": {
+    "unconfirmed": "Not confirmed",
+    "confirmed": "Confirmed",
+    "inProgress": "In progress",
+    "done": "Done",
+    "cancelled": "Cancelled",
+    "noShow": "No-show",
+    "awaitingPayment": "Awaiting payment",
+    "byClient": "Cancelled by the client · {time} before",
+    "bySalon": "Cancelled by {name} · {time} before",
+    "late": "Outside free cancellation: the salon keeps the deposit.",
+    "inTime": "Within free cancellation: the deposit is refunded.",
+    "final": "Final state. The owner or an admin can correct it within 24 hours.",
+    "paymentUntil": "Deposit {amount} · time held until {until}",
+    "depositPaid": "Deposit paid: {amount}"
+  },
+  "action": {
+    "confirm": "Confirm",
+    "start": "Start",
+    "collect": "Collect {amount}",
+    "move": "Move appointment",
+    "cancel": "Cancel appointment",
+    "noShow": "Mark as no-show",
+    "rebook": "Book again",
+    "resendPay": "Resend payment link",
+    "correct": "Correct the status…"
+  },
+  "detail": {
+    "online": "Booked online",
+    "kv": {
+      "when": "When",
+      "service": "Service",
+      "staff": "Staff member",
+      "client": "Client",
+      "with": "With"
+    },
+    "when": "{day} · {from}–{to}",
+    "min": "{n} min",
+    "visit": "{n, selectordinal, one {#st visit} two {#nd visit} few {#rd visit} other {#th visit}}",
+    "unconfirmed": {
+      "title": "Hasn't confirmed yet",
+      "reminded": "We sent the reminder {when}. You can call or resend it.",
+      "call": "You can call the client to confirm."
+    },
+    "resend": "Resend reminder",
+    "call": "Call",
+    "notes": "Notes for the team",
+    "history": "History",
+    "historyAll": "See the full history",
+    "historyLess": "Show less",
+    "duplicate": "Duplicate",
+    "more": "More actions",
+    "complete": "Mark as done",
+    "rebook": {
+      "title": "Book again in one click",
+      "body": "The client, service and staff member are already filled in; you only choose the day and time."
+    },
+    "at": {
+      "today": "Today, {time}",
+      "day": "{day}, {time}"
+    },
+    "h": {
+      "createdOnline": "Booked from the booking page",
+      "createdBy": "Created by {name}",
+      "created": "Created",
+      "moved": "{name} moved it from {from} to {to}",
+      "movedSystem": "Moved from {from} to {to}",
+      "confirmed": "{name} confirmed the appointment",
+      "confirmedClient": "Confirmed by the client",
+      "confirmedSystem": "Confirmed automatically",
+      "started": "{name} started the appointment",
+      "startedSystem": "Started",
+      "completed": "{name} marked it done",
+      "completedSystem": "Done",
+      "cancelledClient": "Cancelled by the client",
+      "cancelled": "{name} cancelled the appointment",
+      "cancelledSystem": "Cancelled",
+      "noShow": "{name} marked: no-show",
+      "noShowSystem": "Marked: no-show",
+      "corrected": "{name} corrected the status: {status}",
+      "updated": "{name} changed the details",
+      "updatedSystem": "Details changed",
+      "someone": "Someone in the team"
+    },
+    "cancel": {
+      "title": "Cancel the appointment?",
+      "what": "{client} · {day}, {time}.",
+      "keep": "Keep the appointment",
+      "byClient": "The client cancelled",
+      "by": "Who cancels",
+      "bySalon": "The salon cancels"
+    },
+    "move": {
+      "title": "Move appointment",
+      "save": "Move",
+      "done": "We moved the appointment to {day}, {time}."
+    },
+    "correct": {
+      "title": "Correct the status",
+      "to": "The correct status",
+      "reason": "Reason",
+      "reasonHelp": "Goes into the business log. Between 10 and 500 characters.",
+      "save": "Correct"
+    },
+    "toast": {
+      "confirmed": "We confirmed the appointment · {client}",
+      "started": "We started the appointment · {client}",
+      "completed": "We marked the appointment done · {client}",
+      "cancelled": "We cancelled the appointment · {client}",
+      "noShow": "We marked: no-show · {client}",
+      "corrected": "We corrected the status.",
+      "noteSaved": "We saved the note.",
+      "undo": "Undo"
+    },
+    "err": {
+      "failed": "We couldn't save. Try again.",
+      "tooEarly": "“No-show” can only be marked after the start time.",
+      "window": "The 24 hours to correct the status have passed.",
+      "reason": "Write a reason of at least 10 characters.",
+      "overlap": "The chosen time isn't free any more. Choose another.",
+      "final": "The appointment changed meanwhile. Open it again."
+    },
+    "notFound": "The appointment no longer exists or isn't this business's.",
+    "risk": {
+      "title": "High risk: {n} no-shows in the last {m} months",
+      "body": "The owner gets an alert when a client reaches “High risk”."
+    },
+    "before": {
+      "m": "{n, plural, one {# minute} other {# minutes}}",
+      "h": "{n, plural, one {# hour} other {# hours}}",
+      "d": "{n, plural, one {# day} other {# days}}"
+    },
+    "finalBadge": "Final"
+  },
+  "list": {
+    "title": "Appointments",
+    "desc": "All appointments, with filters and actions for several at once.",
+    "search": "Search client, phone or service",
+    "searchLabel": "Search",
+    "filters": "Filters · {n}",
+    "period": "Period",
+    "periods": {
+      "today": "Today",
+      "week": "Week",
+      "month": "Month"
+    },
+    "team": "Whole team",
+    "states": {
+      "active": "Active",
+      "unconfirmed": "Not confirmed",
+      "cancelled": "Cancelled"
+    },
+    "cols": {
+      "client": "Client",
+      "service": "Service",
+      "staff": "Staff member",
+      "when": "When",
+      "price": "Price",
+      "status": "Status"
+    },
+    "actions": {
+      "open": "Open",
+      "remind": "Send reminder"
+    },
+    "export": "Export",
+    "today": "Today, {time}",
+    "empty": "No appointments in the chosen period."
   }
 }
