@@ -846,5 +846,10 @@
     "book": "Reservar",
     "doneLine": "{client} · {service} · hoy, {time}",
     "collect": "Cobrar"
+  },
+  "limit": {
+    "title": "Has alcanzado el límite de citas de {month}",
+    "desc": "Tus citas siguen en su sitio y puedes seguir cambiándolas. La cita que empezaste te espera: la guardamos en cuanto haya sitio.",
+    "kept": "Hemos guardado la cita que empezaste. Comprueba la hora y pulsa «Reservar»."
   }
 }

@@ -846,5 +846,10 @@
     "book": "Prenota",
     "doneLine": "{client} · {service} · oggi, {time}",
     "collect": "Incassa"
+  },
+  "limit": {
+    "title": "Ha raggiunto il limite di appuntamenti di {month}",
+    "desc": "Gli appuntamenti esistenti restano al loro posto e può continuare a modificarli. L’appuntamento iniziato La aspetta: lo salviamo appena c’è posto.",
+    "kept": "Abbiamo conservato l’appuntamento iniziato. Controlli l’orario e prema «Prenota»."
   }
 }

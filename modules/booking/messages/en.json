@@ -846,5 +846,10 @@
     "book": "Book",
     "doneLine": "{client} · {service} · today, {time}",
     "collect": "Collect"
+  },
+  "limit": {
+    "title": "You've reached the appointment limit for {month}",
+    "desc": "Your existing appointments stay where they are and you can keep changing them. The appointment you started is waiting: we save it as soon as there is room.",
+    "kept": "We kept the appointment you started. Check the time and press “Book”."
   }
 }

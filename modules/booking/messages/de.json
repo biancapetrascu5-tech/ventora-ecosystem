@@ -846,5 +846,10 @@
     "book": "Buchen",
     "doneLine": "{client} · {service} · heute, {time}",
     "collect": "Kassieren"
+  },
+  "limit": {
+    "title": "Sie haben das Terminlimit für {month} erreicht",
+    "desc": "Ihre bestehenden Termine bleiben erhalten und Sie können sie weiterhin ändern. Der begonnene Termin wartet auf Sie: Wir speichern ihn, sobald wieder Platz ist.",
+    "kept": "Wir haben den begonnenen Termin aufbewahrt. Prüfen Sie die Uhrzeit und tippen Sie auf „Buchen“."
   }
 }

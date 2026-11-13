@@ -24,10 +24,13 @@ import { SPINE_RO, USAGE_RO } from './labels';
 export function RoApp({
   active,
   title,
+  meter = true,
   children,
 }: {
   active: string;
   title: string;
+  /** false: no usage meter in the Spine (BookingLimit: `footer: false`). */
+  meter?: boolean;
   children: ReactNode;
 }) {
   return (
@@ -43,13 +46,15 @@ export function RoApp({
           onBackToHub={noop}
           bottomItems={['azi', 'calendar', 'programari', 'clienti']}
           footer={
-            <UsageMeter
-              {...USAGE_RO}
-              compact
-              label="Programări în octombrie"
-              used={862}
-              limit={1000}
-            />
+            meter && (
+              <UsageMeter
+                {...USAGE_RO}
+                compact
+                label="Programări în octombrie"
+                used={862}
+                limit={1000}
+              />
+            )
           }
         />
       }
@@ -171,9 +176,11 @@ export function LxApp({
   active,
   title,
   user,
+  meter = true,
   children,
 }: {
   lang: 'de' | 'it';
+  meter?: boolean;
   active: string;
   title: string;
   /** The person in the AccountMenu, when the preview has another one (BookingToday: Bianca). */
@@ -210,17 +217,19 @@ export function LxApp({
             back: ui('back'),
           }}
           footer={
-            <UsageMeter
-              compact
-              label={x.usage}
-              used={862}
-              limit={1000}
-              locale={lang}
-              usedOfLabel={(a) => um('usedOf', a)}
-              leftLabel={(a) => um('left', a)}
-              nearLimitLabel={um('nearLimit')}
-              atLimitLabel={um('atLimit')}
-            />
+            meter && (
+              <UsageMeter
+                compact
+                label={x.usage}
+                used={862}
+                limit={1000}
+                locale={lang}
+                usedOfLabel={(a) => um('usedOf', a)}
+                leftLabel={(a) => um('left', a)}
+                nearLimitLabel={um('nearLimit')}
+                atLimitLabel={um('atLimit')}
+              />
+            )
           }
         />
       }

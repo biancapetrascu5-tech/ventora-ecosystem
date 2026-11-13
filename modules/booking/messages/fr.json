@@ -846,5 +846,10 @@
     "book": "Réserver",
     "doneLine": "{client} · {service} · aujourd'hui, {time}",
     "collect": "Encaisser"
+  },
+  "limit": {
+    "title": "Vous avez atteint la limite de rendez-vous de {month}",
+    "desc": "Vos rendez-vous existants restent en place et vous pouvez toujours les modifier. Le rendez-vous commencé vous attend : nous l’enregistrons dès qu’il y a de la place.",
+    "kept": "Nous avons gardé le rendez-vous commencé. Vérifiez l’heure et appuyez sur « Réserver »."
   }
 }

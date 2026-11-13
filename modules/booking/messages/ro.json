@@ -846,5 +846,10 @@
     "book": "Programează",
     "doneLine": "{client} · {service} · azi, {time}",
     "collect": "Încasează"
+  },
+  "limit": {
+    "title": "Ai atins limita de programări din {month}",
+    "desc": "Programările pe care le ai rămân la locul lor și le poți modifica în continuare. Programarea începută te așteaptă: o salvăm imediat ce ai loc.",
+    "kept": "Am păstrat programarea începută. Verifică ora și apasă „Programează”."
   }
 }
