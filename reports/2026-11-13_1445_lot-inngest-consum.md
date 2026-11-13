@@ -123,4 +123,6 @@ Fiecare job des începe cu o singură interogare pe o funcție `…_due` / `pend
 
 - **Fără Docker:** `format:check`, `lint`, `typecheck`, `test`, `i18n:check`, `guards:verify`, `build`, toate exit 0.
 - `@ventora/integrations` `jobs.test.ts`: 15/15.
-- **Integrarea (`@ventora/integrations`, filtrată):** vezi mai jos.
+- **Integrarea filtrată** (regula din 13.11: doar pachetele atinse; suita completă o face CI-ul):
+  - `@ventora/db-kit`: 10/10;
+  - `@ventora/integrations`: 14/14, după ce am actualizat o așteptare veche (forma `{ schemas, deferred }`).

@@ -143,7 +143,8 @@ run('Lot 4.2 — the outbox dispatcher as a scheduled job', () => {
 
     // the next tick finds nothing left
     expect(await runJob(runnable(job), { runId: 'run-2', attempt: 0 }, report)).toEqual({
-      [SCHEMA]: { delivered: 0, retried: 0, dead: 0, skipped: 0 },
+      schemas: { [SCHEMA]: { delivered: 0, retried: 0, dead: 0, skipped: 0 } },
+      deferred: [],
     });
   });
 
