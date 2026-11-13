@@ -1,0 +1,64 @@
+/* BookingDetail / BookingStatuses: the classes of preview.html (x-stack, r / x-row, kv, hist), 1:1.
+   The drawer body of BookingDetail stacks with the Drawer's own gap; BookingStatuses wraps it in
+   .x-stack (gap 3) — `.stack` is that wrapper. */
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+.stack p {
+  margin: 0;
+}
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  align-items: center;
+}
+.kv {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--space-2) var(--space-4);
+  margin: 0;
+}
+.kv dt {
+  color: var(--ink-muted);
+  padding-top: var(--space-0-5);
+}
+.kv dd {
+  margin: 0;
+  color: var(--ink);
+}
+.muted {
+  color: var(--ink-muted);
+}
+.notice {
+  margin: 0;
+}
+.histHead {
+  margin: 0 0 var(--space-2);
+}
+.hist {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  color: var(--ink-secondary);
+}
+.hist .muted {
+  margin-right: var(--space-2);
+}
+.more {
+  margin-top: var(--space-2);
+}
+
+.flat {
+  margin: 0;
+}
+
+/* inside the dense stack the heading keeps its space below (`.stack p` would reset it) */
+.stack .histHead {
+  margin: 0 0 var(--space-2);
+}

@@ -1,0 +1,118 @@
+/* preview.html (BookingStatuses): x-body, x-tr, x-field, x-ddnote, x-dd, x-row, x-stack, fxframe,
+   tfa-scrgroup / tfa-grouplab — the documentation around the states, 1:1 */
+.xbody {
+  padding: var(--space-6) 0 var(--space-8);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+.xbody.m {
+  padding: var(--space-6) 0 var(--space-8);
+  gap: var(--space-4);
+}
+.xbody.m > .pad {
+  margin: 0 var(--space-4);
+}
+.tr {
+  width: 100%;
+  border-collapse: collapse;
+}
+.tr th,
+.tr td {
+  text-align: left;
+  padding: var(--space-2) var(--space-3);
+  border-bottom: var(--border-width) solid var(--line);
+  vertical-align: top;
+}
+.tr th {
+  color: var(--ink-muted);
+}
+.muted {
+  color: var(--ink-muted);
+}
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+.stack p {
+  margin: 0;
+}
+.row {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+  flex-wrap: wrap;
+}
+.field {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border: var(--border-width) solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--canvas);
+}
+.field > div {
+  flex: 1;
+  min-width: 0;
+}
+.field p {
+  margin: 0;
+}
+.mt1 {
+  margin-top: var(--space-1) !important;
+}
+.ddnote {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  border: var(--border-width) dashed var(--line-strong);
+  border-radius: var(--radius-md);
+  background: var(--sheet);
+  color: var(--ink);
+}
+.ddnote p {
+  margin: 0;
+}
+.dd {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-0-5) var(--space-2);
+  border-radius: var(--radius-sm);
+  background: var(--attention-soft);
+  color: var(--attention-ink);
+  font-weight: 600;
+  flex-wrap: wrap;
+}
+.group {
+  display: flex;
+  flex-direction: column;
+}
+.grouplab {
+  margin: var(--space-6) 0 0;
+}
+.fx {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  border: var(--border-width) solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--canvas);
+  color: var(--ink);
+  margin-top: var(--space-3);
+}
+.fx :global(.caption) {
+  color: var(--ink-muted);
+}
+.lang {
+  width: 28px;
+}
+
+/* preview.html: .v-notice{margin-bottom:var(--space-2)} */
+.notice {
+  margin: 0 0 var(--space-2);
+}

@@ -23,6 +23,7 @@ import {
   Eye,
   EyeOff,
   Info,
+  Lightbulb,
   AlertTriangle,
   AlertCircle,
   CheckCircle,
@@ -273,6 +274,8 @@ export const ICON_REGISTRY = {
   'refresh-cw': RefreshCw,
   // S124: BookingTeamSchedule — „Adaugă un concediu” și „Concediu 16–20 nov.”, cu numele din bundle
   plane: Plane,
+  // S116: BookingStatuses — eticheta „DE DECIS” a notelor de design, cu numele din bundle
+  lightbulb: Lightbulb,
 } as const satisfies Record<string, LucideIcon>;
 
 export type IconName = keyof typeof ICON_REGISTRY;

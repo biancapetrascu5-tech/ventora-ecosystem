@@ -631,5 +631,173 @@
       "when": "{day}, {time}",
       "view": "Vedi l’appuntamento"
     }
+  },
+  "status": {
+    "unconfirmed": "Non confermato",
+    "confirmed": "Confermato",
+    "inProgress": "In corso",
+    "done": "Concluso",
+    "cancelled": "Annullato",
+    "noShow": "Non presentato",
+    "awaitingPayment": "In attesa di pagamento",
+    "byClient": "Annullato dal cliente · {time} prima",
+    "bySalon": "Annullato da {name} · {time} prima",
+    "late": "Fuori dalla cancellazione gratuita: il salone trattiene l’acconto.",
+    "inTime": "Entro la cancellazione gratuita: l’acconto viene rimborsato.",
+    "final": "Stato finale. Il titolare o un admin può correggerlo entro 24 ore.",
+    "paymentUntil": "Acconto {amount} · orario tenuto fino alle {until}",
+    "depositPaid": "Acconto pagato: {amount}"
+  },
+  "action": {
+    "confirm": "Conferma",
+    "start": "Inizia",
+    "collect": "Incassa {amount}",
+    "move": "Sposta l’appuntamento",
+    "cancel": "Annulla l’appuntamento",
+    "noShow": "Segna: non presentato",
+    "rebook": "Prenota di nuovo",
+    "resendPay": "Invia di nuovo il link di pagamento",
+    "correct": "Correggi lo stato…"
+  },
+  "detail": {
+    "online": "Prenotato online",
+    "kv": {
+      "when": "Quando",
+      "service": "Servizio",
+      "staff": "Dipendente",
+      "client": "Cliente",
+      "with": "Con"
+    },
+    "when": "{day} · {from}–{to}",
+    "min": "{n} min",
+    "visit": "{n}ª visita",
+    "unconfirmed": {
+      "title": "Non ha ancora confermato",
+      "reminded": "Abbiamo inviato il promemoria {when}. Può chiamare o inviarlo di nuovo.",
+      "call": "Può chiamare il cliente perché confermi."
+    },
+    "resend": "Invia di nuovo il promemoria",
+    "call": "Chiama",
+    "notes": "Note per il team",
+    "history": "Cronologia",
+    "historyAll": "Vedi tutta la cronologia",
+    "historyLess": "Mostra meno",
+    "duplicate": "Duplica",
+    "more": "Altre azioni",
+    "complete": "Segna come concluso",
+    "rebook": {
+      "title": "Prenoti di nuovo con un clic",
+      "body": "Cliente, servizio e dipendente sono già compilati; sceglie solo il giorno e l'ora."
+    },
+    "at": {
+      "today": "Oggi, {time}",
+      "day": "{day}, {time}"
+    },
+    "h": {
+      "createdOnline": "Prenotato dalla pagina di prenotazione",
+      "createdBy": "Creato da {name}",
+      "created": "Creato",
+      "moved": "{name} l’ha spostato dalle {from} alle {to}",
+      "movedSystem": "Spostato dalle {from} alle {to}",
+      "confirmed": "{name} ha confermato l’appuntamento",
+      "confirmedClient": "Confermato dal cliente",
+      "confirmedSystem": "Confermato automaticamente",
+      "started": "{name} ha iniziato l’appuntamento",
+      "startedSystem": "Iniziato",
+      "completed": "{name} ha concluso l’appuntamento",
+      "completedSystem": "Concluso",
+      "cancelledClient": "Annullato dal cliente",
+      "cancelled": "{name} ha annullato l’appuntamento",
+      "cancelledSystem": "Annullato",
+      "noShow": "{name} ha segnato: non presentato",
+      "noShowSystem": "Segnato: non presentato",
+      "corrected": "{name} ha corretto lo stato: {status}",
+      "updated": "{name} ha modificato i dettagli",
+      "updatedSystem": "Dettagli modificati",
+      "someone": "Qualcuno del team"
+    },
+    "cancel": {
+      "title": "Annullare l’appuntamento?",
+      "what": "{client} · {day}, {time}.",
+      "keep": "Mantieni l’appuntamento",
+      "byClient": "Il cliente ha annullato",
+      "by": "Chi annulla",
+      "bySalon": "Il salone annulla"
+    },
+    "move": {
+      "title": "Sposta l’appuntamento",
+      "save": "Sposta",
+      "done": "Abbiamo spostato l’appuntamento a {day} alle {time}."
+    },
+    "correct": {
+      "title": "Correggi lo stato",
+      "to": "Lo stato corretto",
+      "reason": "Motivo",
+      "reasonHelp": "Finisce nel registro dell'attività. Tra 10 e 500 caratteri.",
+      "save": "Correggi"
+    },
+    "toast": {
+      "confirmed": "Abbiamo confermato l’appuntamento · {client}",
+      "started": "Abbiamo iniziato l’appuntamento · {client}",
+      "completed": "Abbiamo concluso l’appuntamento · {client}",
+      "cancelled": "Abbiamo annullato l’appuntamento · {client}",
+      "noShow": "Segnato: non presentato · {client}",
+      "corrected": "Abbiamo corretto lo stato.",
+      "noteSaved": "Abbiamo salvato la nota.",
+      "undo": "Annulla"
+    },
+    "err": {
+      "failed": "Non siamo riusciti a salvare. Riprovi.",
+      "tooEarly": "«Non presentato» si può segnare solo dopo l’ora di inizio.",
+      "window": "Sono passate le 24 ore per correggere lo stato.",
+      "reason": "Scriva un motivo di almeno 10 caratteri.",
+      "overlap": "L'orario scelto non è più libero. Ne scelga un altro.",
+      "final": "L’appuntamento è cambiato nel frattempo. Lo riapra."
+    },
+    "notFound": "L’appuntamento non esiste più o non è di questa attività.",
+    "risk": {
+      "title": "Rischio alto: {n} volte non presentato negli ultimi {m} mesi",
+      "body": "Il titolare riceve un avviso quando un cliente arriva a «Rischio alto»."
+    },
+    "before": {
+      "m": "{n, plural, one {# minuto} other {# minuti}}",
+      "h": "{n, plural, one {# ora} other {# ore}}",
+      "d": "{n, plural, one {# giorno} other {# giorni}}"
+    },
+    "finalBadge": "Finale"
+  },
+  "list": {
+    "title": "Appuntamenti",
+    "desc": "Tutti gli appuntamenti, con filtri e azioni su più appuntamenti insieme.",
+    "search": "Cerca cliente, telefono o servizio",
+    "searchLabel": "Cerca",
+    "filters": "Filtri · {n}",
+    "period": "Periodo",
+    "periods": {
+      "today": "Oggi",
+      "week": "Settimana",
+      "month": "Mese"
+    },
+    "team": "Tutto il team",
+    "states": {
+      "active": "Attivi",
+      "unconfirmed": "Non confermati",
+      "cancelled": "Annullati"
+    },
+    "cols": {
+      "client": "Cliente",
+      "service": "Servizio",
+      "staff": "Dipendente",
+      "when": "Quando",
+      "price": "Prezzo",
+      "status": "Stato"
+    },
+    "actions": {
+      "open": "Apri",
+      "remind": "Invia promemoria"
+    },
+    "export": "Esporta",
+    "today": "Oggi, {time}",
+    "empty": "Nessun appuntamento nel periodo scelto."
   }
 }
