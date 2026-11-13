@@ -2,7 +2,13 @@
 'use client';
 
 import { NotificationsPanel, type NavSection, type NotificationData } from '@ventora/ui';
-import { FounderNotificationsView, type FounderNotifRow } from '@ventora/screens';
+import {
+  FounderAutoStopDrawer,
+  FounderNotificationsView,
+  FounderNotifToast,
+  FounderRestartConfirm,
+  type FounderNotifRow,
+} from '@ventora/screens';
 import { FounderShellDemo, FX_NAV } from '../_shared/founderShell';
 import c from '../_shared/founderCommercial.module.css';
 import { NOTIF_RO } from '../_shared/labels';
@@ -103,6 +109,7 @@ export function FounderNotificationsFrame({
   phone?: boolean;
 }) {
   const rows = board === 'empty' ? [] : board === 'all' ? ALL : ALL.filter((r) => r.unread);
+  const mode = phone ? 'mobile' : 'desktop';
   return (
     <div className={c.ssFrame}>
       <div className={c.ssBody}>
@@ -110,13 +117,14 @@ export function FounderNotificationsFrame({
           active="azi"
           title="Notificări"
           nav={FX_NAV2}
+          searchLabel={null}
           businessesBadge={false}
           notifications={FX_NOTIFS2}
           bottomItems={['afaceri', 'cereri', 'suport', 'azi']}
         >
           <FounderNotificationsView
             framed
-            mode={phone ? 'mobile' : 'desktop'}
+            mode={mode}
             rows={rows}
             unreadCount={4}
             tab={board === 'all' ? 'all' : 'unread'}
@@ -125,28 +133,46 @@ export function FounderNotificationsFrame({
             onKind={noop}
             onMarkAll={noop}
             onSee={noop}
-            detail={board === 'drawer' || board === 'restart' ? DETAIL : null}
-            onCloseDetail={noop}
-            onSeeCampaign={noop}
-            restartOpen={board === 'restart'}
-            restartDefaults={{
-              whatChanged:
-                'Am scos launcherul din sloturi și am scurtat textul; rămâne doar „Abonament și consum”.',
-            }}
-            onCancelRestart={noop}
-            onConfirmRestart={noop}
-            toast={
-              board === 'done'
-                ? {
-                    title: 'Am repornit „Marketing pentru saloane”',
-                    description: 'Prima afișare apare în următoarea oră.',
-                  }
-                : null
-            }
-            onCloseToast={noop}
           />
         </FounderShellDemo>
       </div>
+      {/* ca în preview.html (FxPage): Drawer-ul, confirmarea și Toast-ul peste cadru, în afara
+          AppShell (foaia din Drawer rămâne card și pe telefon) */}
+      {board === 'drawer' && (
+        <FounderAutoStopDrawer
+          mode={mode}
+          detail={DETAIL}
+          framed
+          onClose={noop}
+          onSeeCampaign={noop}
+          onRestart={noop}
+        />
+      )}
+      {board === 'restart' && (
+        <FounderRestartConfirm
+          mode={mode}
+          name={DETAIL.name}
+          framed
+          busy={false}
+          defaults={{
+            whatChanged:
+              'Am scos launcherul din sloturi și am scurtat textul; rămâne doar „Abonament și consum”.',
+          }}
+          onCancel={noop}
+          onConfirm={noop}
+        />
+      )}
+      {board === 'done' && (
+        <FounderNotifToast
+          mode={mode}
+          framed
+          toast={{
+            title: 'Am repornit „Marketing pentru saloane”',
+            description: 'Prima afișare apare în următoarea oră.',
+          }}
+          onClose={noop}
+        />
+      )}
       {board === 'bell' && (
         <div
           style={{

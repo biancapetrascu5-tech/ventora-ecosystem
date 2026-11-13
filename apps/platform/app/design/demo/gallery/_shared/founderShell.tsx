@@ -72,7 +72,8 @@ export function FounderShellDemo({
   children: ReactNode;
   /** S116 (FounderAutomations, FounderSupportInbox): alte intrări jos și altă căutare. */
   bottomItems?: string[];
-  searchLabel?: string;
+  /** null: eticheta implicită a ContextBar („Caută…”), ca în FxPage din S136. */
+  searchLabel?: string | null;
   notifications?: NotificationData[];
   /** S116: „Afaceri” fără badge în preview-urile noi (Suport, Prezentare, Automatizări). */
   businessesBadge?: boolean;
@@ -103,7 +104,7 @@ export function FounderShellDemo({
         <ContextBar
           title={title}
           onSearch={noop}
-          searchLabel={searchLabel}
+          searchLabel={searchLabel ?? undefined}
           notifications={<NotificationsPanel items={notifications} labels={NOTIF_RO} />}
           account={<AccountMenu user={FX_USER} labels={ACCOUNT_RO} />}
           labels={CONTEXTBAR_RO}

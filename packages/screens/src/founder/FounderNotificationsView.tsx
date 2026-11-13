@@ -119,7 +119,6 @@ export function FounderNotificationsView({
   framed?: boolean;
 }) {
   const t = useTranslations('founder.notifications');
-  const ui = useTranslations('ui');
   const mob = mode === 'mobile';
   const empty = rows.length === 0;
 
@@ -199,7 +198,8 @@ export function FounderNotificationsView({
           </SheetSection>
         </Sheet>
       </div>
-      {detail && (
+      {/* S136, planșa 5: confirmarea stă peste pagină; „Renunță” întoarce la Drawer */}
+      {detail && !restartOpen && (
         <AutoStopDrawer
           mode={mode}
           detail={detail}
@@ -220,22 +220,38 @@ export function FounderNotificationsView({
           onConfirm={onConfirmRestart}
         />
       )}
-      {toast && (
-        <div
-          className={[s.toast, mob ? s.toastMob : '', framed ? '' : s.toastFixed]
-            .filter(Boolean)
-            .join(' ')}
-        >
-          <Toast
-            tone="done"
-            title={toast.title}
-            description={toast.description}
-            onDismiss={onCloseToast}
-            dismissLabel={ui('close')}
-          />
-        </div>
-      )}
+      {toast && <NotifToast mode={mode} toast={toast} framed={framed} onClose={onCloseToast} />}
     </>
+  );
+}
+
+/** Toast-ul de după „Repornește” (în galerie, în colțul cadrului). */
+export function NotifToast({
+  mode,
+  toast,
+  framed,
+  onClose,
+}: {
+  mode: Mode;
+  toast: { title: string; description?: string };
+  framed: boolean;
+  onClose?: () => void;
+}) {
+  const ui = useTranslations('ui');
+  return (
+    <div
+      className={[s.toast, mode === 'mobile' ? s.toastMob : '', framed ? '' : s.toastFixed]
+        .filter(Boolean)
+        .join(' ')}
+    >
+      <Toast
+        tone="done"
+        title={toast.title}
+        description={toast.description}
+        onDismiss={onClose}
+        dismissLabel={ui('close')}
+      />
+    </div>
   );
 }
 
@@ -248,7 +264,7 @@ function Line({ children }: { children: ReactNode }) {
   );
 }
 
-function AutoStopDrawer({
+export function AutoStopDrawer({
   mode,
   detail,
   framed,
@@ -330,7 +346,7 @@ function AutoStopDrawer({
   );
 }
 
-function RestartConfirm({
+export function RestartConfirm({
   mode,
   name,
   framed,

@@ -283,7 +283,13 @@ export type {
 } from './founder/growth/GrowthCampaignEditorView';
 
 // FounderNotifications (S136, D4-29 a): clopoțelul Founder ca pagină, oprirea automată
-export { FOUNDER_NOTIF_ICON, FounderNotificationsView } from './founder/FounderNotificationsView';
+export {
+  AutoStopDrawer as FounderAutoStopDrawer,
+  FOUNDER_NOTIF_ICON,
+  FounderNotificationsView,
+  NotifToast as FounderNotifToast,
+  RestartConfirm as FounderRestartConfirm,
+} from './founder/FounderNotificationsView';
 export type {
   FounderAutoStopDetail,
   FounderNotifKind,
