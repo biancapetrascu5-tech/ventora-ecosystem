@@ -20,16 +20,23 @@
 pnpm format:check && pnpm lint && pnpm typecheck && pnpm test && pnpm build
 ```
 
-**Înainte de orice push care atinge `core/**`, `packages/**`, `modules/**` sau fișiere de migrație:**
+**Înainte de orice push care atinge `core/**`, `packages/**`, `modules/**` sau fișiere de migrație:** testele de integrare **doar ale pachetelor atinse** (regula fondatoarei, 13.11.2026). Suita completă o rulează CI-ul.
 
 ```
-pnpm test:integration
+pnpm --filter @ventora/<pachet> test:integration
 ```
 
-Dacă comanda reușește (exit 0) → poți face push.
+- Un pachet pe rând, pentru fiecare pachet atins de lot. De exemplu, pentru B.14: `@ventora/booking` și `@ventora/notifications`.
+- Baza de test e cea din `scripts/test-db-up.mjs`, cu aceleași variabile ca pașii pachetului în `scripts/test-integration.mjs`.
+- Garda de drift (`prisma migrate diff … --exit-code`) se rulează pentru schemele atinse.
+- **Înainte de pornire:** `docker ps`. Dacă rulează containerele altui worktree, aștept 5 minute și verific din nou.
+- **La final:** containerele worktree-ului se opresc (`pnpm test:db:down`).
+
+Dacă testele pachetelor atinse trec (exit 0) → poți face push.
 Dacă eșuează sau nu pot rula containerele Docker → mă opresc și raportez fondatoarei. **Nu fac push fără teste verzi.**
+Dacă CI-ul (suita completă) pică pe un pachet neatins, raportez și corectez înainte de merge.
 
-Scriptul face automat: pornește postgres:17 + pgbouncer, aplică toate migrațiile, verifică garda de drift pentru cele 3 scheme Prisma (identity, founder, organizations), rulează testele de integrare, și oprește containerele.
+`pnpm test:integration` (suita completă, local) rămâne disponibil. Scriptul face automat: pornește postgres:17 + pgbouncer, aplică toate migrațiile, verifică garda de drift pentru cele 3 scheme Prisma (identity, founder, organizations), rulează testele de integrare, și oprește containerele.
 
 **Baza de test e per worktree** (Lot 2.9, `scripts/test-db-config.mjs`): containerele, proiectul compose și porturile se derivă din numele folderului, ca doi agenți în worktree-uri diferite să poată rula `pnpm test:integration` în paralel.
 
