@@ -545,6 +545,8 @@ for (const migration of [
   'core/growth/prisma/migrations/20261110000002_growth_auto_stop/migration.sql',
   // Lot C.5: the shared consent (schema consent, role consent_rw), after audit
   'core/consent/prisma/migrations/20261111000001_consent_init/migration.sql',
+  // Lot 5.9e: „Recomandă aplicația” păstrat cu starea lui (commercial.team_recommendation)
+  'core/commercial/prisma/migrations/20261113000001_commercial_team_recommendation/migration.sql',
   // Aplicațiile (modules/*): găsite singure, după tot Core-ul (booking, crm și cele care vin).
   // Un lot de modul nu mai atinge acest fișier.
   ...moduleMigrations(),

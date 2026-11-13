@@ -61,6 +61,10 @@ export type { BillingKind, BillingTemplateId } from './model/billing';
 // Lot 3.7: „Recomandă” / „Anunță proprietarul”
 export { OWNER_NOTICE_TEMPLATES, ownerNoticeType } from './model/owner-notice';
 export { ACCESS_REQUEST_TEMPLATES, ACCESS_REQUEST_TYPE } from './model/access-request';
+export {
+  TEAM_RECOMMENDATION_ACTIVATED,
+  TEAM_RECOMMENDATION_TEMPLATES,
+} from './model/team-recommendation';
 export type { OwnerNoticeKind } from './model/owner-notice';
 export { sendNotification } from './model/send';
 export type { SendNotificationInput, SendNotificationResult } from './model/send';

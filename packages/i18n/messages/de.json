@@ -1499,6 +1499,13 @@
         "body": "Die Person hat die Rolle {role} in {business}, aber keine Apps. Sie wählen sie unter Team und Einladungen.",
         "action": "Team öffnen"
       }
+    },
+    "teamRecommendation": {
+      "activated": {
+        "title": "{owner} hat {app} aktiviert",
+        "body": "Ihre Empfehlung ist jetzt eine App des Teams.",
+        "action": "{app} öffnen"
+      }
     }
   },
   "pay": {
@@ -1655,7 +1662,8 @@
         "active": "{owner} hat {app} aktiviert",
         "activeBody": "Ihre Empfehlung ist jetzt eine App des Teams."
       }
-    }
+    },
+    "teamTitle": "{name} empfiehlt {app}"
   },
   "quota": {
     "platform_members": {

@@ -16,6 +16,7 @@ import {
 } from '@ventora/billing';
 import {
   ownerNotifiedConsumer,
+  teamRecommendationActivatedConsumer,
   runDunningGraceJob,
   runQuotaReconciliationJob,
   runTrialJob,
@@ -117,6 +118,8 @@ export const platformConsumers = new ConsumerRegistry()
   .register(billingDisputeAlertConsumer)
   // Lotul 3.7: „Recomandă” / „Anunță proprietarul” → notificarea owner-ului, în Hub
   .register(ownerNotifiedConsumer)
+  // Lotul 5.9e: aplicația a intrat în abonament → recomandările ei „Activată” + „{owner} a activat {app}”
+  .register(teamRecommendationActivatedConsumer)
   // Lotul 4.10: motorul de automatizări — evenimentul unui declanșator → execuția din jurnal
   .register(workflowsTriggerConsumer)
   // Lotul 4.6: „Răspuns nou la solicitarea ta” + E-7; avertizarea cu o zi înainte de închidere

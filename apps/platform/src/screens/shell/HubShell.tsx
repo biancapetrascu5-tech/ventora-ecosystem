@@ -15,6 +15,7 @@ import {
   type HubRecommendationData,
   OrgSwitcher,
   Spine,
+  Toast,
   type AppName,
   type NavSection,
   type NotificationData,
@@ -27,6 +28,12 @@ import { switchBusiness } from '@/server/shell-actions';
 import { keepLocale } from '@/server/locale-actions';
 import { markBellRead, openBellItem, readBell, type Bell } from '@/server/notification-actions';
 import { growthInteraction, readBellRecommendation } from '@/server/growth-actions';
+import {
+  readTeamRecommendations,
+  rejectRecommendation,
+  type TeamRecommendationView,
+} from '@/server/team-recommendation-actions';
+import shellStyles from './shell.module.css';
 import type { GrowthSlotView } from '@/server/growth-slot';
 import { useCostLine } from '@/screens/growth/cost';
 import { GrowthUpgrade } from '@/screens/growth/GrowthUpgrade';
@@ -59,6 +66,7 @@ function appNameOf(pathname: string): string | undefined {
 }
 
 const ROUTES: Route[] = [
+  { id: 'recomandari', href: '/account/recommendations' },
   { id: 'securitate', href: '/account' },
   { id: 'echipa', href: '/admin/team' },
   { id: 'roluri', href: '/admin/access' },
@@ -72,15 +80,29 @@ function activeFor(pathname: string): string | undefined {
   return ROUTES.find((r) => pathname === r.href || pathname.startsWith(r.href + '/'))?.id;
 }
 
-export function useHubNav(manager: boolean, supportBadge = 0): NavSection[] {
+export function useHubNav(manager: boolean, supportBadge = 0, canRecommend = false): NavSection[] {
   const nav = useTranslations('hub.nav');
   const account = useTranslations('account');
   const automations = useTranslations('automations');
   const ui = useTranslations('ui');
+  const mine = useTranslations('pay.mine');
   const sections: NavSection[] = [
     {
       label: account('title'),
       items: [
+        // Lotul 5.9e (HubMyRecommendations, S136): „Recomandările mele”, pentru cine poate
+        // recomanda (oricine în afară de owner, D3-8)
+        ...(canRecommend
+          ? [
+              {
+                id: 'recomandari',
+                label: mine('nav'),
+                short: mine('navShort'),
+                icon: 'lightbulb' as const,
+                href: '/account/recommendations',
+              },
+            ]
+          : []),
         { id: 'securitate', label: account('security.title'), icon: 'shield', href: '/account' },
       ],
     },
@@ -131,7 +153,7 @@ export function useHubNav(manager: boolean, supportBadge = 0): NavSection[] {
 }
 
 /** Clopoțelul: lista din core/notifications, cu ora (S110) și afacerea, când persoana are mai multe. */
-function useBell(initial: Bell, orgs: HubShellData['orgs']) {
+function useBell(initial: Bell, orgs: HubShellData['orgs'], manager: boolean) {
   const router = useRouter();
   const when = useWhen();
   const [bell, setBell] = useState(initial);
@@ -140,6 +162,10 @@ function useBell(initial: Bell, orgs: HubShellData['orgs']) {
   const [reco, setReco] = useState<GrowthSlotView | null>(null);
   const [upgrading, setUpgrading] = useState<GrowthSlotView | null>(null);
   const recoCost = useCostLine(reco);
+  // Lotul 5.9e (HubRecommendation): „Recomandare de la echipă”, doar pentru owner și admini
+  const [team, setTeam] = useState<TeamRecommendationView[]>([]);
+  const [rejected, setRejected] = useState<{ member: string } | null>(null);
+  const pay = useTranslations('pay');
   // o listă nouă de la server (navigare, router.refresh) o înlocuiește pe cea de aici
   const [fromServer, setFromServer] = useState(initial);
   if (fromServer !== initial) {
@@ -160,16 +186,27 @@ function useBell(initial: Bell, orgs: HubShellData['orgs']) {
     app: orgName(i.organizationId),
     time: when(new Date(i.createdAt)),
   }));
-  const recommendations: HubRecommendationData[] = reco
-    ? [
-        {
-          id: reco.contentId,
-          ...(reco.app ? { app: reco.app } : { icon: 'package' as const }),
-          title: reco.title,
-          body: reco.audience === 'member' || !recoCost ? reco.body : `${reco.body} ${recoCost}`,
-        },
-      ]
-    : [];
+  const recommendations: HubRecommendationData[] = [
+    ...(reco
+      ? [
+          {
+            id: reco.contentId,
+            ...(reco.app ? { app: reco.app } : { icon: 'package' as const }),
+            title: reco.title,
+            body: reco.audience === 'member' || !recoCost ? reco.body : `${reco.body} ${recoCost}`,
+          },
+        ]
+      : []),
+    ...team.map((r) => ({
+      id: `team:${r.id}`,
+      kind: 'team' as const,
+      app: r.app,
+      title: pay('teamTitle', { name: r.by, app: r.name }),
+      ...(r.note ? { note: r.note } : {}),
+    })),
+  ];
+  const teamOf = (r: HubRecommendationData) =>
+    team.find((t) => `team:${t.id}` === String(r.id)) ?? null;
   const interact = (kind: 'click' | 'dismiss') =>
     reco && void growthInteraction({ contentId: reco.contentId, kind, key: crypto.randomUUID() });
   const markRead = (pred: (id: string) => boolean) =>
@@ -184,6 +221,7 @@ function useBell(initial: Bell, orgs: HubShellData['orgs']) {
       if (o) {
         void readBell().then(setBell);
         void readBellRecommendation().then(setReco);
+        if (manager) void readTeamRecommendations().then(setTeam);
       }
     },
     recommendations,
@@ -204,6 +242,25 @@ function useBell(initial: Bell, orgs: HubShellData['orgs']) {
       interact('dismiss');
       setReco(null);
     },
+    // „Vezi aplicația”: pagina aplicației, unde doar owner-ul activează (D3-8)
+    onSeeApp: (r: HubRecommendationData) => {
+      const t = teamOf(r);
+      if (!t) return;
+      setOpen(false);
+      router.push(`/applications/${t.app}`);
+    },
+    // „Respinge”: „Nu acum”; membrul nu primește notificare (CommercialStates)
+    onRejectRecommendation: async (r: HubRecommendationData) => {
+      const t = teamOf(r);
+      if (!t) return;
+      const res = await rejectRecommendation(t.id);
+      if (!res.ok) return;
+      setTeam((list) => list.filter((x) => x.id !== t.id));
+      setRejected({ member: t.by });
+    },
+    rejected,
+    closeRejected: () => setRejected(null),
+    pay,
     onOpenItem: async (n: NotificationData) => {
       markRead((id) => id === String(n.id));
       setOpen(false);
@@ -238,13 +295,17 @@ export function HubShell({
   children: ReactNode;
 }) {
   const router = useRouter();
-  const bell = useBell(initialBell, data.orgs);
+  const bell = useBell(initialBell, data.orgs, data.manager);
   const pathname = usePathname();
   const locale = useLocale();
   const ui = useTranslations('ui');
   const themeChoice = useThemeChoice();
   const roles = useTranslations('roles');
-  const hubNav = useHubNav(data.manager, supportBadge);
+  const hubNav = useHubNav(
+    data.manager,
+    supportBadge,
+    data.orgs.find((o) => o.id === data.currentOrgId)?.role !== 'owner',
+  );
   // Lot B.1-UI: under /booking the shell is EasyBook's (Spine app=booking, BK_SECTIONS, the meter)
   const booking = pathname === '/booking' || pathname.startsWith('/booking/');
   const bookingNav = useBookingNav(booking);
@@ -341,6 +402,8 @@ export function HubShell({
                 recommendations={bell.recommendations}
                 onOpenRecommendation={bell.onOpenRecommendation}
                 onDismissRecommendation={bell.onDismissRecommendation}
+                onSeeApp={bell.onSeeApp}
+                onRejectRecommendation={bell.onRejectRecommendation}
                 countCategory="operational"
                 labels={{
                   notifications: ui('notifications'),
@@ -409,6 +472,17 @@ export function HubShell({
       }
     >
       {children}
+      {bell.rejected && (
+        <div className={shellStyles.toast}>
+          <Toast
+            tone="done"
+            title={bell.pay('states.rejected.title')}
+            description={bell.pay('states.rejected.body', { member: bell.rejected.member })}
+            onDismiss={bell.closeRejected}
+            dismissLabel={ui('close')}
+          />
+        </div>
+      )}
       {bell.upgrading && (
         <GrowthUpgrade
           view={bell.upgrading}

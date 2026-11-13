@@ -4,10 +4,15 @@ import { closeAuditPools } from '@ventora/audit';
 import {
   closeCommercialPools,
   getActivePacks,
+  listMyTeamRecommendations,
+  listPendingTeamRecommendations,
   notifyOwner,
   ownerNotifiedConsumer,
+  rejectTeamRecommendation,
+  teamRecommendationActivatedConsumer,
+  TeamRecommendationTooSoon,
 } from '@ventora/commercial';
-import { Forbidden, InvalidInput } from '@ventora/errors';
+import { Forbidden, InvalidInput, ResourceNotFound } from '@ventora/errors';
 import { ConsumerRegistry, dispatchOutbox } from '@ventora/integrations';
 import {
   closeBillingPools,
@@ -415,5 +420,181 @@ describe('Lot 3.7 — „Recomandă” / „Anunță proprietarul” (D3-8: only
       await client.query('ROLLBACK');
       client.release();
     }
+  });
+});
+
+describe('Lot 5.9e — „Recomandările mele” / „Recomandare de la echipă” (S136)', () => {
+  /** Every pending commercial event of the business, delivered with both consumers. */
+  async function dispatchAll(organizationId: string) {
+    await q(
+      `UPDATE commercial.outbox_events SET status = 'dispatched', dispatched_at = now()
+        WHERE status = 'pending' AND organization_id <> $1`,
+      [organizationId],
+    );
+    await dispatchOutbox({
+      pool: appPool,
+      source: { schema: 'commercial', moduleRole: 'commercial_rw' },
+      registry: new ConsumerRegistry()
+        .register(ownerNotifiedConsumer)
+        .register(teamRecommendationActivatedConsumer),
+      limit: 1000,
+    });
+    const left = await q(
+      `SELECT type, status, last_error FROM commercial.outbox_events
+        WHERE organization_id = $1 AND status <> 'dispatched'`,
+      [organizationId],
+    );
+    expect(left).toEqual([]);
+  }
+
+  it('the recommendation stays with its state: pending (once per person and app), the note optional and at most 300 characters', async () => {
+    const b = await business();
+    await notifyOwner(b.member, { targetType: 'application', targetId: 'crm' });
+    await notifyOwner(b.member, {
+      targetType: 'application',
+      targetId: 'crm',
+      note: 'încă o dată',
+    });
+    const mine = await listMyTeamRecommendations(b.member);
+    expect(mine).toHaveLength(1);
+    expect(mine[0]).toMatchObject({
+      applicationId: 'crm',
+      applicationName: 'ClientDesk',
+      status: 'pending',
+      note: null,
+      answer: null,
+      decidedAt: null,
+    });
+    // the owner and the admins see it in the bell; a member does not
+    expect((await listPendingTeamRecommendations(b.owner)).map((r) => r.id)).toEqual([mine[0]!.id]);
+    expect((await listPendingTeamRecommendations(b.admin)).map((r) => r.id)).toEqual([mine[0]!.id]);
+    await expect(listPendingTeamRecommendations(b.member)).rejects.toBeInstanceOf(Forbidden);
+    // only the person's own list
+    expect(await listMyTeamRecommendations(b.admin)).toEqual([]);
+
+    const c = await business();
+    await notifyOwner(c.admin, {
+      targetType: 'application',
+      targetId: 'crm',
+      note: '  Ne-ar ajuta.  ',
+    });
+    expect((await listMyTeamRecommendations(c.admin))[0]).toMatchObject({
+      note: 'Ne-ar ajuta.',
+      recommendedByRole: 'admin',
+    });
+    await expect(
+      notifyOwner(c.member, { targetType: 'application', targetId: 'crm', note: 'x'.repeat(301) }),
+    ).rejects.toBeInstanceOf(InvalidInput);
+    expect(await listMyTeamRecommendations(c.member)).toEqual([]);
+    // each business sees only its own (RLS)
+    expect(await listPendingTeamRecommendations(b.owner)).toHaveLength(1);
+    expect(await listPendingTeamRecommendations(c.owner)).toHaveLength(1);
+  });
+
+  it('„Respinge” (owner or admin): „Nu acum”, no notification to the member, once; sent again only after 30 days', async () => {
+    const b = await business();
+    await notifyOwner(b.member, { targetType: 'application', targetId: 'crm' });
+    const [r] = await listMyTeamRecommendations(b.member);
+    await expect(rejectTeamRecommendation(b.member, r!.id)).rejects.toBeInstanceOf(Forbidden);
+    await rejectTeamRecommendation(b.admin, r!.id);
+    await expect(rejectTeamRecommendation(b.owner, r!.id)).rejects.toBeInstanceOf(ResourceNotFound);
+    const [after] = await listMyTeamRecommendations(b.member);
+    expect(after).toMatchObject({ status: 'not_now', decidedByUserId: b.adminId });
+    expect(after!.decidedAt).toBeInstanceOf(Date);
+    expect(await listPendingTeamRecommendations(b.owner)).toEqual([]);
+
+    await expect(
+      notifyOwner(b.member, { targetType: 'application', targetId: 'crm' }),
+    ).rejects.toBeInstanceOf(TeamRecommendationTooSoon);
+
+    // 31 days later (the decision moved back by the admin connection, past the guard)
+    await q(`ALTER TABLE commercial.team_recommendation DISABLE TRIGGER team_recommendation_guard`);
+    try {
+      await q(
+        `UPDATE commercial.team_recommendation SET decided_at = now() - interval '31 days' WHERE id = $1`,
+        [r!.id],
+      );
+    } finally {
+      await q(
+        `ALTER TABLE commercial.team_recommendation ENABLE TRIGGER team_recommendation_guard`,
+      );
+    }
+    await notifyOwner(b.member, { targetType: 'application', targetId: 'crm' });
+    const list = await listMyTeamRecommendations(b.member);
+    expect(list.map((x) => x.status)).toEqual(['pending', 'not_now']);
+
+    await dispatchAll(b.organizationId);
+    const toMember = await q(
+      `SELECT type FROM notifications.notification WHERE organization_id = $1 AND recipient_user_id = $2`,
+      [b.organizationId, b.memberId],
+    );
+    expect(toMember).toEqual([]);
+  });
+
+  it('the app enters the subscription: „Activată” and „{owner} a activat {app}” to whoever recommended it, once', async () => {
+    const b = await business();
+    await notifyOwner(b.member, { targetType: 'application', targetId: 'crm' });
+    await notifyOwner(b.admin, { targetType: 'application', targetId: 'crm' });
+    await saveCard(b);
+    expect((await purchase(b.ctx, { kind: 'application', applicationId: 'crm' })).status).toBe(
+      'succeeded',
+    );
+    await dispatchAll(b.organizationId);
+    // delivered again (a retry): nothing more
+    await q(
+      `UPDATE commercial.outbox_events SET status = 'pending', dispatched_at = NULL
+        WHERE organization_id = $1 AND type = 'commercial.application.activated'`,
+      [b.organizationId],
+    );
+    await dispatchAll(b.organizationId);
+
+    for (const who of [b.member, b.admin]) {
+      const [r] = await listMyTeamRecommendations(who);
+      expect(r).toMatchObject({ status: 'active', decidedByUserId: null });
+    }
+    const rows = await q(
+      `SELECT recipient_user_id::text AS recipient, params, action_url
+         FROM notifications.notification
+        WHERE organization_id = $1 AND type = 'team_recommendation.activated'`,
+      [b.organizationId],
+    );
+    expect(rows.map((r) => r.recipient).sort()).toEqual([b.adminId, b.memberId].sort());
+    expect(rows[0]).toMatchObject({
+      params: { owner: 'Bianca Petrașcu', app: 'ClientDesk', appId: 'crm' },
+      action_url: '/applications/crm',
+    });
+    expect(await listPendingTeamRecommendations(b.owner)).toEqual([]);
+  });
+
+  it('the database: commercial_rw cannot delete or change what was recommended; decided once', async () => {
+    const b = await business();
+    await notifyOwner(b.member, { targetType: 'application', targetId: 'crm' });
+    const [r] = await listMyTeamRecommendations(b.member);
+    const c = await appPool.connect();
+    const inTenant = async (sql: string) => {
+      await c.query('BEGIN');
+      try {
+        await c.query('SET LOCAL ROLE commercial_rw');
+        await c.query(`SELECT set_config('app.organization_id', $1, true)`, [b.organizationId]);
+        await c.query(sql, [r!.id]);
+      } finally {
+        await c.query('ROLLBACK');
+      }
+    };
+    try {
+      await expect(
+        inTenant(`DELETE FROM commercial.team_recommendation WHERE id = $1`),
+      ).rejects.toMatchObject({ code: '42501' });
+      await expect(
+        inTenant(`UPDATE commercial.team_recommendation SET note = 'alt' WHERE id = $1`),
+      ).rejects.toMatchObject({ code: '42501' });
+    } finally {
+      c.release();
+    }
+    // decided once: after „Nu acum” nothing changes it back
+    await rejectTeamRecommendation(b.owner, r!.id);
+    await expect(
+      q(`UPDATE commercial.team_recommendation SET status = 'active' WHERE id = $1`, [r!.id]),
+    ).rejects.toMatchObject({ code: 'P0001' });
   });
 });

@@ -183,6 +183,19 @@ export {
 export { closeCommercialPools, type CommercialConnection } from './db';
 // Lot 3.7: „Recomandă” / „Anunță proprietarul” → the owner's notification
 export { ownerNotifiedConsumer, quotaResourceKey } from './notify';
+// Lot 5.9e: „Recomandă aplicația” păstrat cu starea lui (HubMyRecommendations, HubRecommendation)
+export {
+  listMyTeamRecommendations,
+  listPendingTeamRecommendations,
+  normalizeRecommendationNote,
+  rejectTeamRecommendation,
+  TEAM_RECOMMENDATION_NOTE_MAX,
+  TEAM_RECOMMENDATION_RESEND_DAYS,
+  TeamRecommendationTooSoon,
+  type TeamRecommendationRow,
+  type TeamRecommendationStatus,
+} from './team-recommendations';
+export { teamRecommendationActivatedConsumer } from './team-recommendation-activated';
 // Lot 3.8: the trial, non-payment, the requests with implementation
 export {
   startApplicationTrial,

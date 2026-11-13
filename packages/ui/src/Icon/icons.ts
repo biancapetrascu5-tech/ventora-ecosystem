@@ -131,6 +131,7 @@ import {
   CalendarOff,
   Timer,
   Plane,
+  Lightbulb,
 } from 'lucide-react';
 
 export const ICON_REGISTRY = {
@@ -190,6 +191,8 @@ export const ICON_REGISTRY = {
   unlock: Unlock,
   key: Key,
   shield: Shield,
+  // Lotul 5.9e (HubMyRecommendations, S136): „Recomandările mele”
+  lightbulb: Lightbulb,
   bell: Bell,
   'bell-off': BellOff,
   loader: Loader2,

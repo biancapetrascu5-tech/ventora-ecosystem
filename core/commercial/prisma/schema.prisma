@@ -19,14 +19,15 @@ model Application {
   createdAt      DateTime  @default(now()) @map("created_at") @db.Timestamptz
   updatedAt      DateTime  @default(now()) @map("updated_at") @db.Timestamptz
 
-  features      FeatureKey[]
-  quotas        QuotaKey[]
-  versionApps   PlanVersionApplication[]
-  trials        Trial[]
-  prices        ApplicationPrice[]
-  included      ApplicationQuota[]
-  lines         SubscriptionApplication[]
-  setupRequests SetupRequest[]
+  features        FeatureKey[]
+  quotas          QuotaKey[]
+  versionApps     PlanVersionApplication[]
+  trials          Trial[]
+  prices          ApplicationPrice[]
+  included        ApplicationQuota[]
+  lines           SubscriptionApplication[]
+  setupRequests   SetupRequest[]
+  recommendations TeamRecommendation[]
 
   @@map("application")
   @@schema("commercial")
@@ -674,5 +675,28 @@ model SetupRequest {
   @@index([organizationId], map: "setup_request_organization_id_idx")
   @@index([status, createdAt], map: "setup_request_status_created_at_idx")
   @@map("setup_request")
+  @@schema("commercial")
+}
+
+// ── Lot 5.9e · commercial_team_recommendation (HubMyRecommendations, S136) ────────────────────
+
+/// „Recomandă aplicația”: cine a recomandat, starea (pending → active / not_now), nota și răspunsul.
+model TeamRecommendation {
+  id                  String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  organizationId      String      @map("organization_id") @db.Uuid
+  applicationId       String      @map("application_id") @db.VarChar(64)
+  recommendedByUserId String      @map("recommended_by_user_id") @db.Uuid
+  recommendedByRole   String      @map("recommended_by_role") @db.VarChar(16)
+  note                String?
+  status              String      @default("pending") @db.VarChar(16)
+  recommendedAt       DateTime    @default(now()) @map("recommended_at") @db.Timestamptz
+  decidedAt           DateTime?   @map("decided_at") @db.Timestamptz
+  decidedByUserId     String?     @map("decided_by_user_id") @db.Uuid
+  answer              String?
+  application         Application @relation(fields: [applicationId], references: [id], map: "team_recommendation_application_fkey")
+
+  @@index([organizationId, status], map: "team_recommendation_organization_id_status_idx")
+  @@index([organizationId, recommendedByUserId, recommendedAt], map: "team_recommendation_recommended_by_idx")
+  @@map("team_recommendation")
   @@schema("commercial")
 }
