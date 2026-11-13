@@ -175,7 +175,8 @@
         "service": "Service",
         "member": "With",
         "when": "When",
-        "where": "Where"
+        "where": "Where",
+        "before": "Before"
       },
       "why": "You’re receiving this email because you booked an appointment at {business}.",
       "sentBy": "Sent by EasyBook, Ventora Systems",
@@ -193,6 +194,30 @@
       "reminder": {
         "title": "Your appointment is tomorrow",
         "lead": "A reminder of your appointment {when} at {business}."
+      },
+      "rebook": "Book a new appointment",
+      "cancelClient": {
+        "title": "Your appointment has been cancelled",
+        "lead": "You cancelled your appointment {when}."
+      },
+      "cancelSalon": {
+        "title": "{business} has cancelled your appointment",
+        "lead": "We’re sorry: your appointment {when} can no longer go ahead.",
+        "cta": "Choose another time"
+      },
+      "moved": {
+        "title": "Your appointment has moved",
+        "lead": "{business} has moved your appointment. The new time is below.",
+        "note": "If the new time doesn’t suit you, you can change or cancel it free of charge."
+      },
+      "movedClient": {
+        "title": "You moved your appointment",
+        "lead": "The new time: {when}."
+      },
+      "thanks": {
+        "title": "Thank you, {name}!",
+        "lead": "Thank you for visiting {business} for {service}.",
+        "after": "We look forward to seeing you next time."
       }
     }
   },

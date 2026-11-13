@@ -175,7 +175,8 @@
         "service": "Servicio",
         "member": "Con",
         "when": "Cuándo",
-        "where": "Dónde"
+        "where": "Dónde",
+        "before": "Antes"
       },
       "why": "Recibe este correo porque reservó una cita en {business}.",
       "sentBy": "Enviado con EasyBook, Ventora Systems",
@@ -193,6 +194,30 @@
       "reminder": {
         "title": "Mañana tiene cita",
         "lead": "Le recordamos su cita del {when} en {business}."
+      },
+      "rebook": "Reservar una cita nueva",
+      "cancelClient": {
+        "title": "Su cita se ha cancelado",
+        "lead": "Ha cancelado su cita del {when}."
+      },
+      "cancelSalon": {
+        "title": "{business} ha cancelado su cita",
+        "lead": "Lo sentimos: su cita del {when} no puede celebrarse.",
+        "cta": "Elegir otra hora"
+      },
+      "moved": {
+        "title": "Su cita ha cambiado",
+        "lead": "{business} ha cambiado su cita. La nueva hora está abajo.",
+        "note": "Si la nueva hora no le va bien, puede cambiarla o cancelarla gratis."
+      },
+      "movedClient": {
+        "title": "Ha cambiado su cita",
+        "lead": "La nueva hora: {when}."
+      },
+      "thanks": {
+        "title": "¡Gracias, {name}!",
+        "lead": "Gracias por su visita a {business} para {service}.",
+        "after": "Le esperamos con gusto la próxima vez."
       }
     }
   },

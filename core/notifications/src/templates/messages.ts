@@ -99,7 +99,7 @@ export interface EmailMessages {
     sender: string;
     subject: string;
     greet: string;
-    k: { service: string; member: string; when: string; where: string };
+    k: { service: string; member: string; when: string; where: string; before: string };
     why: string;
     sentBy: string;
     manage: string;
@@ -108,6 +108,14 @@ export interface EmailMessages {
     hours: { one: string; few: string; other: string };
     confirmed: { title: string; lead: string };
     reminder: { title: string; lead: string };
+    // Lot B.14: the cancellation (by the client / by the business), the change, the thanks
+    rebook: string;
+    cancelClient: { title: string; lead: string };
+    cancelSalon: { title: string; lead: string; cta: string };
+    moved: { title: string; lead: string; note: string };
+    /** Moved by the client on their page (B.11b): a short e-mail with the new time. */
+    movedClient: { title: string; lead: string };
+    thanks: { title: string; lead: string; after: string };
   };
 }
 

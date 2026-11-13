@@ -115,6 +115,8 @@ export type BookingSettings = {
   bufferMin: number;
   /** B.13: the reminder by e-mail 24 hours before (the confirmation always goes). */
   reminderEmail: boolean;
+  /** B.14: the thanks by e-mail 2 hours after the visit (cancellation and change always go). */
+  thanksEmail: boolean;
   updatedAt: Date | null;
 };
 
@@ -660,6 +662,7 @@ export const DEFAULT_BOOKING_SETTINGS: Omit<BookingSettings, 'updatedAt'> = {
   noticeMin: 0,
   bufferMin: 0,
   reminderEmail: true,
+  thanksEmail: true,
 };
 
 export async function readSettings(client: PoolClient): Promise<BookingSettings> {
@@ -669,9 +672,10 @@ export async function readSettings(client: PoolClient): Promise<BookingSettings>
     notice_min: number;
     buffer_min: number;
     reminder_email: boolean;
+    thanks_email: boolean;
     updated_at: Date;
   }>(`SELECT free_cancel_hours, confirmation_mode, notice_min, buffer_min, reminder_email,
-             updated_at
+             thanks_email, updated_at
         FROM booking.settings`);
   const r = rows[0];
   if (!r) return { ...DEFAULT_BOOKING_SETTINGS, updatedAt: null };
@@ -681,6 +685,7 @@ export async function readSettings(client: PoolClient): Promise<BookingSettings>
     noticeMin: r.notice_min,
     bufferMin: r.buffer_min,
     reminderEmail: r.reminder_email,
+    thanksEmail: r.thanks_email,
     updatedAt: r.updated_at,
   };
 }
@@ -711,6 +716,7 @@ export async function setBookingSettingsInOrg(
     noticeMin?: unknown;
     bufferMin?: unknown;
     reminderEmail?: unknown;
+    thanksEmail?: unknown;
   },
 ): Promise<BookingSettings> {
   hubOnly(ctx);
@@ -745,18 +751,27 @@ export async function setBookingSettingsInOrg(
             : (() => {
                 throw new InvalidInput('reminderEmail', 'invalid');
               })(),
+      thanksEmail:
+        input.thanksEmail === undefined
+          ? current.thanksEmail
+          : typeof input.thanksEmail === 'boolean'
+            ? input.thanksEmail
+            : (() => {
+                throw new InvalidInput('thanksEmail', 'invalid');
+              })(),
     };
     await client.query(
       `INSERT INTO booking.settings
          (organization_id, free_cancel_hours, confirmation_mode, notice_min, buffer_min,
-          reminder_email, updated_by_user_id)
-       VALUES ($1, $2, $3, $4, $5, $7, $6)
+          reminder_email, thanks_email, updated_by_user_id)
+       VALUES ($1, $2, $3, $4, $5, $7, $8, $6)
        ON CONFLICT (organization_id) DO UPDATE
          SET free_cancel_hours = EXCLUDED.free_cancel_hours,
              confirmation_mode = EXCLUDED.confirmation_mode,
              notice_min = EXCLUDED.notice_min,
              buffer_min = EXCLUDED.buffer_min,
              reminder_email = EXCLUDED.reminder_email,
+             thanks_email = EXCLUDED.thanks_email,
              updated_by_user_id = EXCLUDED.updated_by_user_id`,
       [
         ctx.organizationId,
@@ -766,6 +781,7 @@ export async function setBookingSettingsInOrg(
         next.bufferMin,
         ctx.userId,
         next.reminderEmail,
+        next.thanksEmail,
       ],
     );
     await audit(
