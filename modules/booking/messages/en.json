@@ -794,7 +794,45 @@
       "remind": "Send reminder"
     },
     "export": "Export",
-    "today": "Today, {time}"
+    "today": "Today, {time}",
+    "periodValue": {
+      "today": "today",
+      "week": "week",
+      "month": "month",
+      "all": "all days"
+    },
+    "stateValue": {
+      "active": "active",
+      "unconfirmed": "not confirmed",
+      "cancelled": "cancelled"
+    },
+    "pill": {
+      "period": "Period: {value}",
+      "state": "Status: {value}",
+      "staff": "Staff member: {value}",
+      "remove": "Remove the filter “{label}”"
+    },
+    "bulk": {
+      "confirm": "Confirm",
+      "remind": "Send reminder",
+      "cancel": "Cancel appointments",
+      "confirmed": "{n, plural, one {We confirmed one appointment.} other {We confirmed # appointments.}}",
+      "cancelled": "{n, plural, one {We cancelled one appointment.} other {We cancelled # appointments.}}",
+      "partial": "{done} of {total} changed. The others were no longer in the right status."
+    },
+    "none": {
+      "title": "No appointments {period, select, today {today} week {this week} month {this month} other {}} for “{q}”",
+      "found": "We found <link>{n, plural, one {# result on other days} other {# results on other days}}</link>."
+    },
+    "exported": {
+      "title": "{n, plural, one {We exported one appointment.} other {We exported # appointments.}}",
+      "filters": "The export uses the active filters: {filters}.",
+      "period": "period {value}",
+      "state": "status {value}",
+      "staff": "staff member {value}",
+      "open": "Open the file",
+      "failed": "The export didn’t work. Try again."
+    }
   },
   "states": {
     "emptyDay": {
@@ -939,5 +977,42 @@
     "resetDone": "The original text is back.",
     "prevFrom": "From",
     "prevTo": "To"
+  },
+  "client": {
+    "title": "Client profile",
+    "since": "Client since {date}",
+    "visits": "Visits",
+    "noShows": "No-shows",
+    "lateCancel": "Late cancellations",
+    "spent": "Collected in total",
+    "risk": "High risk",
+    "riskTitle": "High risk: {n} no-shows in the last {months} months",
+    "riskBody": "On {d1} and {d2}. Online, a deposit is required for every service.",
+    "riskWho": "The owner, admins and reception see this note. The client doesn’t.",
+    "riskClear": "Remove the note…",
+    "riskClearTitle": "Remove the “High risk” note for {name}?",
+    "riskClearBody": "A deposit will no longer be required online for every service. The reason goes into the business log.",
+    "reason": "Reason",
+    "riskCleared": "Note removed. It comes back automatically after another no-show.",
+    "history": "Appointments",
+    "col": {
+      "when": "When",
+      "service": "Service",
+      "member": "With",
+      "amount": "Amount",
+      "status": "Status"
+    },
+    "notes": "Notes for the team",
+    "newBooking": "New appointment",
+    "noAccess": "You only see your own appointments with this client. The owner, admins and reception see the full history and the note.",
+    "contact": "Contact",
+    "phone": "Phone",
+    "email": "Email",
+    "breadcrumb": "Clients",
+    "late": "Late",
+    "clearSubmit": "Remove the note",
+    "reasonShort": "Write the reason, at least 10 characters.",
+    "notFound": "This client no longer exists or was deleted.",
+    "failed": "We couldn’t save. Try again."
   }
 }

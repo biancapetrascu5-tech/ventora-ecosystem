@@ -8,6 +8,7 @@ import {
   completeAppointment,
   confirmAppointment,
   correctAppointmentStatus,
+  exportAppointmentsCsv,
   getAppointment,
   getClientCard,
   listAppointmentHistory,
@@ -33,7 +34,8 @@ import { reportActionError } from './report-error';
    D-B4-6 = a). The instants become local dates and „HH:MM” of the business's time zone (C.0)
    here; no Date objects reach the screen. */
 
-export type ListPeriod = 'today' | 'week' | 'month';
+/** 'all': the search over a year back and a year ahead („{n} rezultate în alte zile”). */
+export type ListPeriod = 'today' | 'week' | 'month' | 'all';
 export type ListState = 'active' | 'unconfirmed' | 'cancelled';
 
 export type AppointmentRowData = {
@@ -46,6 +48,7 @@ export type AppointmentRowData = {
   service: string;
   staffId: string;
   staff: string;
+  clientId: string;
   price: {
     kind: 'fixed' | 'from' | 'range';
     minor: number;
@@ -65,6 +68,10 @@ export type AppointmentsPageData = {
   myStaffId: string | null;
   /** The owner or an admin (S116-D9). */
   canCorrect: boolean;
+  /** booking:admin: „Exportă” (B.24). */
+  canExport: boolean;
+  /** A search with nothing in the period: how many it finds on other days (a year around). */
+  otherDays: number;
 };
 
 export type AppointmentsPage =
@@ -89,6 +96,7 @@ const STATES: Record<ListState, AppointmentStatus[]> = {
 
 function rangeOf(period: ListPeriod, today: string): { first: string; last: string } {
   if (period === 'today') return { first: today, last: today };
+  if (period === 'all') return { first: addDays(today, -365), last: addDays(today, 365) };
   if (period === 'week') {
     const monday = addDays(today, 1 - weekdayOf(today));
     return { first: monday, last: addDays(monday, 6) };
@@ -111,6 +119,7 @@ function rowOf(a: Appointment, timeZone: string): AppointmentRowData {
     service: a.serviceName,
     staffId: a.staffMemberId,
     staff: a.staffDisplayName,
+    clientId: a.clientId,
     price: a.price,
     status: a.status,
   };
@@ -169,6 +178,22 @@ export async function readAppointmentsPage(params: {
     .filter((r) => r.date >= first && r.date <= last)
     .sort((a, b) => (a.date + a.start).localeCompare(b.date + b.start));
   const mine = staff.members.find((m) => m.userId === ctx.userId) ?? null;
+  const query = params.query.trim();
+  let otherDays = 0;
+  if (query && rows.length === 0 && params.period !== 'all') {
+    const year = rangeOf('all', today);
+    const around = instantsAround(year.first, year.last);
+    const found = await listAppointments({
+      sessionToken: token,
+      from: around.from,
+      to: around.to,
+      status: STATES[params.state],
+      staffMemberId: params.staffId !== 'all' ? params.staffId : undefined,
+      query,
+      limit: 1,
+    });
+    otherDays = found.total;
+  }
   return {
     kind: 'ok',
     data: {
@@ -179,6 +204,8 @@ export async function readAppointmentsPage(params: {
       scope: admin ? 'all' : 'own',
       myStaffId: mine?.id ?? null,
       canCorrect: ctx.role === 'owner' || ctx.role === 'admin',
+      canExport: admin,
+      otherDays,
     },
   };
 }
@@ -392,4 +419,38 @@ export async function correctAppointmentAction(
   return run('booking.detail.correct', (sessionToken) =>
     correctAppointmentStatus({ sessionToken, appointmentId, status, reason }),
   );
+}
+
+/* BookingList „Exportă” (B.24, booking:admin): the CSV of the period, the person and the state of
+   the list (the search is not a filter of the export). A period over a year is not exported. */
+export type ExportResult =
+  { ok: true; filename: string; csv: string; rows: number } | { ok: false };
+
+export async function exportAppointmentsAction(params: {
+  period: ListPeriod;
+  staffId: string;
+  state: ListState;
+}): Promise<ExportResult> {
+  const token = await sessionToken();
+  if (!token || params.period === 'all') return { ok: false };
+  try {
+    const ctx = await authorize({
+      sessionToken: token,
+      applicationId: 'booking',
+      permission: 'booking:read',
+    });
+    const timeZone = await getOrganizationTimeZone({ organizationId: ctx.organizationId });
+    const { first, last } = rangeOf(params.period, localOf(new Date(), timeZone).date);
+    const out = await exportAppointmentsCsv({
+      sessionToken: token,
+      from: first,
+      to: addDays(last, 1),
+      staffMemberId: params.staffId !== 'all' ? params.staffId : undefined,
+      status: STATES[params.state],
+    });
+    return { ok: true, ...out };
+  } catch (err) {
+    reportActionError('booking.appointments.export', err, { quietIfExpected: true });
+    return { ok: false };
+  }
 }

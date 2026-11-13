@@ -250,7 +250,7 @@ export function NewScreen({ initial, start }: { initial: NewPageData; start: New
             ? {
                 name: data.fromClient.name,
                 href: `/booking/clients/${data.fromClient.id}`,
-                clientsHref: '/booking/clients',
+                clientsHref: '/booking/appointments',
               }
             : undefined
         }

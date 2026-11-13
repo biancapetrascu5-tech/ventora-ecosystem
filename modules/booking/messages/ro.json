@@ -794,7 +794,45 @@
       "remind": "Trimite reamintire"
     },
     "export": "Exportă",
-    "today": "Azi, {time}"
+    "today": "Azi, {time}",
+    "periodValue": {
+      "today": "azi",
+      "week": "săptămâna",
+      "month": "luna",
+      "all": "toate zilele"
+    },
+    "stateValue": {
+      "active": "active",
+      "unconfirmed": "neconfirmate",
+      "cancelled": "anulate"
+    },
+    "pill": {
+      "period": "Perioadă: {value}",
+      "state": "Stare: {value}",
+      "staff": "Angajat: {value}",
+      "remove": "Scoate filtrul „{label}”"
+    },
+    "bulk": {
+      "confirm": "Confirmă",
+      "remind": "Trimite reamintire",
+      "cancel": "Anulează programările",
+      "confirmed": "{n, plural, one {Am confirmat o programare.} few {Am confirmat # programări.} other {Am confirmat # de programări.}}",
+      "cancelled": "{n, plural, one {Am anulat o programare.} few {Am anulat # programări.} other {Am anulat # de programări.}}",
+      "partial": "{done} din {total} s-au schimbat. Celelalte nu mai erau în starea potrivită."
+    },
+    "none": {
+      "title": "Nicio programare {period, select, today {azi} week {săptămâna aceasta} month {luna aceasta} other {}} pentru „{q}”",
+      "found": "Am găsit <link>{n, plural, one {un rezultat în alte zile} few {# rezultate în alte zile} other {# de rezultate în alte zile}}</link>."
+    },
+    "exported": {
+      "title": "{n, plural, one {Am exportat o programare.} few {Am exportat # programări.} other {Am exportat # de programări.}}",
+      "filters": "Exportul folosește filtrele active: {filters}.",
+      "period": "perioadă {value}",
+      "state": "stare {value}",
+      "staff": "angajat {value}",
+      "open": "Deschide fișierul",
+      "failed": "Exportul nu a reușit. Încearcă din nou."
+    }
   },
   "states": {
     "emptyDay": {
@@ -939,5 +977,42 @@
     "resetDone": "Am pus înapoi textul inițial.",
     "prevFrom": "De la",
     "prevTo": "Către"
+  },
+  "client": {
+    "title": "Fișa clientului",
+    "since": "Client din {date}",
+    "visits": "Vizite",
+    "noShows": "Nu a venit",
+    "lateCancel": "Anulări târzii",
+    "spent": "Încasat în total",
+    "risk": "Risc ridicat",
+    "riskTitle": "Risc ridicat: nu a venit de {n} ori în ultimele {months} luni",
+    "riskBody": "Pe {d1} și pe {d2}. La rezervarea online i se cere avans la orice serviciu.",
+    "riskWho": "Nota o văd proprietarul, adminii și recepția. Clientul nu o vede.",
+    "riskClear": "Șterge nota…",
+    "riskClearTitle": "Ștergi nota „Risc ridicat” pentru {name}?",
+    "riskClearBody": "Online nu i se mai cere avans la orice serviciu. Motivul intră în jurnalul afacerii.",
+    "reason": "Motiv",
+    "riskCleared": "Am șters nota. Revine automat la încă o programare la care nu vine.",
+    "history": "Programări",
+    "col": {
+      "when": "Când",
+      "service": "Serviciu",
+      "member": "Cu cine",
+      "amount": "Sumă",
+      "status": "Stare"
+    },
+    "notes": "Note pentru echipă",
+    "newBooking": "Programare nouă",
+    "noAccess": "Vezi doar programările tale cu acest client. Istoricul complet și nota îl văd proprietarul, adminii și recepția.",
+    "contact": "Contact",
+    "phone": "Telefon",
+    "email": "E-mail",
+    "breadcrumb": "Clienți",
+    "late": "Târzie",
+    "clearSubmit": "Șterge nota",
+    "reasonShort": "Scrie motivul, cel puțin 10 caractere.",
+    "notFound": "Clientul nu mai există sau a fost șters.",
+    "failed": "Nu am putut salva. Încearcă din nou."
   }
 }
