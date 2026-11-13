@@ -237,6 +237,8 @@ model Settings {
   behaviorNoteSince   DateTime? @map("behavior_note_since") @db.Timestamptz
   /// B.13: the reminder by e-mail 24 hours before (the confirmation always goes)
   reminderEmail       Boolean   @default(true) @map("reminder_email")
+  // Lot B.14: the thanks after the visit (on by default, S127)
+  thanksEmail         Boolean   @default(true) @map("thanks_email")
   updatedByUserId  String   @map("updated_by_user_id") @db.Uuid
   createdAt        DateTime @default(now()) @map("created_at") @db.Timestamptz
   updatedAt        DateTime @default(now()) @map("updated_at") @db.Timestamptz

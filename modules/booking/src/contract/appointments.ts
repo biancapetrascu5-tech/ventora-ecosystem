@@ -142,6 +142,8 @@ export type SetBookingSettingsParams = Session & {
   noticeMin?: number;
   /** B.13: the reminder by e-mail 24 hours before. */
   reminderEmail?: boolean;
+  /** B.14: the thanks by e-mail 2 hours after the visit. */
+  thanksEmail?: boolean;
   bufferMin?: number;
 };
 
@@ -338,6 +340,7 @@ export async function setBookingSettings(
     confirmationMode: params.confirmationMode,
     noticeMin: params.noticeMin,
     reminderEmail: params.reminderEmail,
+    thanksEmail: params.thanksEmail,
     bufferMin: params.bufferMin,
   });
 }

@@ -5,14 +5,18 @@ import { closeAuditPools } from '@ventora/audit';
 import { CaptureEmailAdapter, emailMessages, fill, setEmailChannel } from '@ventora/notifications';
 import {
   cancelAppointment,
+  cancelSeries,
+  completeAppointment,
   createAppointment,
   createClient,
   createSeries,
   createService,
   listStaff,
+  moveAppointment,
   runClientEmailJob,
   setBookingSettings,
   setBusinessHours,
+  startAppointment,
 } from '../contract/index.js';
 import { closeBookingPool } from '../server/db.js';
 
@@ -22,6 +26,10 @@ import { closeBookingPool } from '../server/db.js';
  * runs twice at the same time (T6); an e-mail past its validity or for an appointment cancelled
  * since never goes; the reminder counts in messaging.email as scheduled, the confirmation does not.
  * The e-mails go to an in-memory mailbox.
+ *
+ * Lot B.14: the cancellation (by the client / by the business) and the change always go and are not
+ * counted; the thanks 2 hours after the visit can be turned off and is counted as scheduled; a series
+ * cancelled at once gets one e-mail; a move by the client on their page gets none.
  */
 
 const mailbox = new CaptureEmailAdapter();
@@ -359,9 +367,15 @@ describe('B.13: never sent when no longer valid; retried, then failed', () => {
     await cancelAppointment({ sessionToken: b.t, appointmentId: a.id, by: 'client' });
     await dueNow(m!.id);
     await run(b);
-    [m] = await messages(a.id);
+    m = (await messages(a.id)).find((x) => x.kind === 'reminder')!;
     expect(m).toMatchObject({ state: 'cancelled', reason: 'appointment_changed' });
-    expect(mailbox.to(c.email)).toEqual([]);
+    // only the cancellation (B.14) reaches the client
+    expect(mailbox.to(c.email).map((e) => e.subject)).toEqual([
+      fill(emailMessages('ro').booking.subject, {
+        title: emailMessages('ro').booking.cancelClient.title,
+        business: b.name,
+      }),
+    ]);
     // its quota unit is given back
     expect(
       (
@@ -407,5 +421,239 @@ describe('B.13: never sent when no longer valid; retried, then failed', () => {
     await dueNow(m!.id);
     await run(b);
     expect(mailbox.to(c.email)).toEqual([]);
+  });
+});
+
+/** The appointment of a business moved to the past and completed (the thanks after the visit). */
+async function completedHoursAgo(b: Biz, clientId: string, hoursAgo: number) {
+  const a = await book(b, clientId, inHours(48 + Math.random() * 24));
+  await bookedLongAgo(a.id);
+  await adminQuery(
+    `UPDATE booking.appointment
+        SET starts_at = date_trunc('minute', now()) - make_interval(mins => $2::int + 30),
+            ends_at = date_trunc('minute', now()) - make_interval(mins => $2::int)
+      WHERE id = $1`,
+    [a.id, Math.round(hoursAgo * 60)],
+  );
+  await startAppointment({ sessionToken: b.t, appointmentId: a.id });
+  await completeAppointment({ sessionToken: b.t, appointmentId: a.id });
+  return a;
+}
+
+const reservation = (operationId: string) =>
+  adminQuery<{ status: string; over_limit: boolean }>(
+    `SELECT status, over_limit FROM commercial.quota_reservation
+      WHERE quota_key = 'messaging.email' AND operation_id = $1`,
+    [operationId],
+  );
+
+describe('B.14: the cancellation by e-mail (always on, not counted)', () => {
+  it('by the business (DE) and by the client (RO): once each (T6), the booking page link, no quota', async () => {
+    const b = await business();
+    const de = await client(b, 'de');
+    const ro = await client(b);
+    const a1 = await book(b, de.id, inHours(40));
+    const a2 = await book(b, ro.id, inHours(42));
+    await bookedLongAgo(a1.id);
+    await bookedLongAgo(a2.id);
+    await cancelAppointment({ sessionToken: b.t, appointmentId: a1.id, by: 'business' });
+    await cancelAppointment({ sessionToken: b.t, appointmentId: a2.id, by: 'client' });
+    await Promise.all([run(b), run(b)]);
+    await run(b);
+
+    const tde = emailMessages('de').booking;
+    const [byBusiness] = mailbox.to(de.email);
+    expect(mailbox.to(de.email)).toHaveLength(1);
+    expect(byBusiness!.subject).toBe(
+      fill(tde.subject, {
+        title: fill(tde.cancelSalon.title, { business: b.name }),
+        business: b.name,
+      }),
+    );
+    expect(byBusiness!.text).toContain(tde.cancelSalon.cta);
+    expect(byBusiness!.html).toContain(`/r/${b.slug}`);
+    expect(byBusiness!.html).not.toContain(`/r/${b.slug}/m/`);
+
+    const tro = emailMessages('ro').booking;
+    const [byClient] = mailbox.to(ro.email);
+    expect(mailbox.to(ro.email)).toHaveLength(1);
+    expect(byClient!.subject).toBe(
+      fill(tro.subject, { title: tro.cancelClient.title, business: b.name }),
+    );
+    expect(byClient!.text).toContain(tro.rebook);
+
+    for (const a of [a1, a2]) {
+      const [m] = await messages(a.id);
+      expect(m).toMatchObject({ kind: 'cancellation', state: 'sent', attempts: 1 });
+      expect(await reservation(m!.id)).toEqual([]);
+    }
+  });
+
+  it('a series cancelled at once: one e-mail; an appointment never confirmed: none', async () => {
+    const b = await business();
+    const c = await client(b);
+    const [first] = await createSeries({
+      sessionToken: b.t,
+      id: uuid(),
+      staffMemberId: b.staff,
+      serviceId: b.svc,
+      clientId: c.id,
+      startsAt: inHours(30),
+      frequency: 'weekly',
+      until: { count: 3 },
+    } as never).then((r) => (r as { appointments: Array<{ id: string }> }).appointments);
+    await adminQuery(
+      `UPDATE booking.appointment
+          SET created_at = now() - interval '2 days', status_changed_at = now() - interval '2 days'
+        WHERE client_id = $1`,
+      [c.id],
+    );
+    await cancelSeries({
+      sessionToken: b.t,
+      appointmentId: first!.id,
+      mode: 'all',
+      by: 'business',
+    });
+    await run(b);
+    expect(mailbox.to(c.email)).toHaveLength(1);
+
+    // awaiting confirmation, then cancelled: the client was never told it was confirmed
+    const c2 = await client(b);
+    const a = await createAppointment({
+      sessionToken: b.t,
+      id: uuid(),
+      staffMemberId: b.staff,
+      serviceId: b.svc,
+      clientId: c2.id,
+      startsAt: inHours(60),
+      confirmed: false,
+    });
+    expect(a.status).toBe('unconfirmed');
+    await cancelAppointment({ sessionToken: b.t, appointmentId: a.id, by: 'business' });
+    await run(b);
+    expect(mailbox.to(c2.email)).toEqual([]);
+    expect(await messages(a.id)).toEqual([]);
+  });
+});
+
+describe('B.14: the change by e-mail (always on, not counted)', () => {
+  it('moved by the business: the new time and the time before, the client’s link; moved by the client: none', async () => {
+    const b = await business();
+    const c = await client(b, 'it');
+    const a = await book(b, c.id, inHours(40));
+    await bookedLongAgo(a.id);
+    const before = new Date(a.startsAt);
+    const moved = await moveAppointment({
+      sessionToken: b.t,
+      appointmentId: a.id,
+      startsAt: inHours(44),
+    } as never);
+    await Promise.all([run(b), run(b)]);
+    const got = mailbox.to(c.email);
+    expect(got).toHaveLength(1);
+    const t = emailMessages('it').booking;
+    expect(got[0]!.subject).toBe(fill(t.subject, { title: t.moved.title, business: b.name }));
+    const format = (d: Date) =>
+      new Intl.DateTimeFormat('it', {
+        timeZone: 'Europe/Bucharest',
+        weekday: 'long',
+        day: 'numeric',
+        month: 'long',
+        hour: '2-digit',
+        minute: '2-digit',
+      }).format(d);
+    expect(got[0]!.text).toContain(`${t.k.when}: ${format(new Date(moved.startsAt))}`);
+    expect(got[0]!.text).toContain(`${t.k.before}: ${format(before)}`);
+    expect(got[0]!.text).toContain(t.moved.note);
+    expect(got[0]!.html).toContain(`/r/${b.slug}/m/`);
+    const [m] = await messages(a.id);
+    expect(m).toMatchObject({ kind: 'change', state: 'sent' });
+    expect(await reservation(m!.id)).toEqual([]);
+
+    // a move made by the client on their page (B.11b): no e-mail
+    await moveAppointment({
+      sessionToken: b.t,
+      appointmentId: a.id,
+      startsAt: inHours(46),
+    } as never);
+    await adminQuery(
+      `UPDATE booking.appointment_history SET actor_type = 'client', actor_user_id = NULL
+        WHERE id = (SELECT id FROM booking.appointment_history
+                     WHERE appointment_id = $1 AND kind = 'moved' ORDER BY id DESC LIMIT 1)`,
+      [a.id],
+    );
+    await run(b);
+    expect(mailbox.to(c.email)).toHaveLength(1);
+  });
+
+  it('moved again before it goes: the older change is not sent', async () => {
+    const b = await business();
+    const c = await client(b);
+    const a = await book(b, c.id, inHours(40));
+    await bookedLongAgo(a.id);
+    await moveAppointment({
+      sessionToken: b.t,
+      appointmentId: a.id,
+      startsAt: inHours(44),
+    } as never);
+    mailbox.failWith = new Error('provider down');
+    await run(b);
+    mailbox.failWith = null;
+    const [first] = await messages(a.id);
+    expect(first).toMatchObject({ kind: 'change', state: 'pending' });
+    await moveAppointment({
+      sessionToken: b.t,
+      appointmentId: a.id,
+      startsAt: inHours(48),
+    } as never);
+    await dueNow(first!.id);
+    await run(b);
+    const rows = await adminQuery<{ state: string; reason: string | null }>(
+      `SELECT state, reason FROM booking.client_message WHERE appointment_id = $1 ORDER BY created_at`,
+      [a.id],
+    );
+    expect(rows).toEqual([
+      { state: 'cancelled', reason: 'appointment_changed' },
+      { state: 'sent', reason: null },
+    ]);
+    expect(mailbox.to(c.email)).toHaveLength(1);
+  });
+});
+
+describe('B.14: the thanks after the visit (can be turned off, counted as scheduled)', () => {
+  it('2 hours after a completed appointment, once, counted in messaging.email (over a limit of 0)', async () => {
+    const b = await business();
+    const c = await client(b, 'es');
+    const a = await completedHoursAgo(b, c.id, 3);
+    await Promise.all([run(b), run(b)]);
+    const got = mailbox.to(c.email);
+    expect(got).toHaveLength(1);
+    const t = emailMessages('es').booking;
+    const title = fill(t.thanks.title, { name: 'Client ' + c.email.split('-')[1] });
+    expect(got[0]!.subject).toBe(fill(t.subject, { title, business: b.name }));
+    expect(got[0]!.text).toContain(fill(t.thanks.lead, { business: b.name, service: 'Tuns' }));
+    expect(got[0]!.html).toContain(`/r/${b.slug}`);
+    const [m] = await messages(a.id);
+    expect(m).toMatchObject({ kind: 'thanks', state: 'sent' });
+    expect(await reservation(m!.id)).toEqual([{ status: 'committed', over_limit: true }]);
+  });
+
+  it('turned off in Setări: none; too early (1 hour after) or too late (30 hours after): none', async () => {
+    const b = await business();
+    await setBookingSettings({ sessionToken: b.t, thanksEmail: false });
+    const c = await client(b);
+    const off = await completedHoursAgo(b, c.id, 3);
+    await run(b);
+    expect(await messages(off.id)).toEqual([]);
+
+    await setBookingSettings({ sessionToken: b.t, thanksEmail: true });
+    const c2 = await client(b);
+    const early = await completedHoursAgo(b, c2.id, 1);
+    const late = await completedHoursAgo(b, c2.id, 30);
+    await run(b);
+    expect(await messages(early.id)).toEqual([]);
+    expect(await messages(late.id)).toEqual([]);
+    expect(mailbox.to(c.email)).toEqual([]);
+    expect(mailbox.to(c2.email)).toEqual([]);
   });
 });

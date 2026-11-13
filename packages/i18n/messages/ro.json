@@ -175,7 +175,8 @@
         "service": "Serviciu",
         "member": "Cu cine",
         "when": "Când",
-        "where": "Unde"
+        "where": "Unde",
+        "before": "Înainte"
       },
       "why": "Ați primit acest e-mail pentru că ați făcut o programare la {business}.",
       "sentBy": "Trimis prin EasyBook, Ventora Systems",
@@ -193,6 +194,26 @@
       "reminder": {
         "title": "Mâine aveți programare",
         "lead": "Vă reamintim de programarea de {when}, la {business}."
+      },
+      "rebook": "Faceți o programare nouă",
+      "cancelClient": {
+        "title": "Programarea a fost anulată",
+        "lead": "Ați anulat programarea de {when}."
+      },
+      "cancelSalon": {
+        "title": "{business} a anulat programarea",
+        "lead": "Ne pare rău: programarea de {when} nu mai poate avea loc.",
+        "cta": "Alegeți altă oră"
+      },
+      "moved": {
+        "title": "Programarea s-a mutat",
+        "lead": "{business} a mutat programarea. Noua oră e mai jos.",
+        "note": "Dacă noua oră nu vă convine, o puteți schimba sau anula gratuit."
+      },
+      "thanks": {
+        "title": "Mulțumim, {name}!",
+        "lead": "Mulțumim că ați venit la {business} pentru {service}.",
+        "after": "Vă așteptăm cu drag data viitoare."
       }
     }
   },

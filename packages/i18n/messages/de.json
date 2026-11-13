@@ -175,7 +175,8 @@
         "service": "Leistung",
         "member": "Bei",
         "when": "Wann",
-        "where": "Wo"
+        "where": "Wo",
+        "before": "Vorher"
       },
       "why": "Sie erhalten diese E-Mail, weil Sie einen Termin bei {business} gebucht haben.",
       "sentBy": "Gesendet mit EasyBook, Ventora Systems",
@@ -193,6 +194,26 @@
       "reminder": {
         "title": "Ihr Termin ist morgen",
         "lead": "Wir erinnern Sie an Ihren Termin {when} bei {business}."
+      },
+      "rebook": "Neuen Termin buchen",
+      "cancelClient": {
+        "title": "Ihr Termin wurde storniert",
+        "lead": "Sie haben Ihren Termin {when} storniert."
+      },
+      "cancelSalon": {
+        "title": "{business} hat Ihren Termin abgesagt",
+        "lead": "Es tut uns leid: Ihr Termin {when} kann nicht stattfinden.",
+        "cta": "Andere Uhrzeit wählen"
+      },
+      "moved": {
+        "title": "Ihr Termin wurde verschoben",
+        "lead": "{business} hat Ihren Termin verschoben. Die neue Uhrzeit steht unten.",
+        "note": "Passt Ihnen die neue Uhrzeit nicht, können Sie sie kostenlos ändern oder stornieren."
+      },
+      "thanks": {
+        "title": "Vielen Dank, {name}!",
+        "lead": "Vielen Dank für Ihren Besuch bei {business} ({service}).",
+        "after": "Wir freuen uns auf Ihren nächsten Besuch."
       }
     }
   },

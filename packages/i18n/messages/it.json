@@ -175,7 +175,8 @@
         "service": "Servizio",
         "member": "Con",
         "when": "Quando",
-        "where": "Dove"
+        "where": "Dove",
+        "before": "Prima"
       },
       "why": "Riceve questa e-mail perché ha prenotato un appuntamento da {business}.",
       "sentBy": "Inviato con EasyBook, Ventora Systems",
@@ -193,6 +194,26 @@
       "reminder": {
         "title": "Domani ha un appuntamento",
         "lead": "Le ricordiamo l’appuntamento di {when} da {business}."
+      },
+      "rebook": "Prenoti un nuovo appuntamento",
+      "cancelClient": {
+        "title": "L’appuntamento è stato annullato",
+        "lead": "Ha annullato l’appuntamento di {when}."
+      },
+      "cancelSalon": {
+        "title": "{business} ha annullato l’appuntamento",
+        "lead": "Ci dispiace: l’appuntamento di {when} non può avere luogo.",
+        "cta": "Scelga un altro orario"
+      },
+      "moved": {
+        "title": "L’appuntamento è stato spostato",
+        "lead": "{business} ha spostato l’appuntamento. Il nuovo orario è qui sotto.",
+        "note": "Se il nuovo orario non Le va bene, può cambiarlo o annullarlo gratuitamente."
+      },
+      "thanks": {
+        "title": "Grazie, {name}!",
+        "lead": "Grazie della Sua visita da {business} per {service}.",
+        "after": "La aspettiamo con piacere la prossima volta."
       }
     }
   },
