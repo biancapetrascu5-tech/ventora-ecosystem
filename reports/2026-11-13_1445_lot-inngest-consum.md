@@ -107,7 +107,12 @@ Fiecare job des începe cu o singură interogare pe o funcție `…_due` / `pend
 | Eșecul unei scheme nu blochează celelalte | `outbox-job.ts` (neschimbat aici) | „a failing source does not stop the others…” |
 | O rulare nu durează minute | `outbox-job.ts`, `dispatcher.ts` (`deadline`), `jobs.ts` (`statement_timeout`) | „out of time: the remaining sources wait for the next run (deferred)…” |
 
-## NECESITĂ DECIZIE
+## Deciziile fondatoarei (13.11)
+
+- **`retries: 0` pe cele 5 joburi pornite în fiecare minut:** acceptat.
+- **Cheia de evenimente Inngest în Founder:** o pune fondatoarea.
+
+## Contextul deciziilor
 
 - **Founder și portal nu au cheia de evenimente Inngest.** Evenimentele scrise acolo (de exemplu un răspuns la suport din Founder sau încasarea unui transfer) pleacă la cron-ul de siguranță, deci cu o întârziere de cel mult 15 minute. Variante:
   - cheia `INNGEST_EVENT_KEY` adăugată și pe aceste aplicații (decizia ta; n-am atins cheile);
