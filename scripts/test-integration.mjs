@@ -8,10 +8,63 @@
  *   4. Oprește DB-ul (indiferent de rezultat)
  *
  * Folosit de `pnpm test:integration`.
+ *
+ * Filtrul (regula fondatoarei, 13.11.2026: local, doar pachetele atinse; suita completă o face CI-ul):
+ *   pnpm test:integration -- --only booking,notifications
+ * Pregătirea rămâne neschimbată: migrările, garda de drift pe toate schemele și sincronizările
+ * (permisiuni, registrul comercial, sloturile Growth) rulează mereu. Se sar doar testele pachetelor
+ * din afara listei. `pricing` = testul prețurilor D3-1 (`@ventora/commercial` test:pricing).
  */
 import { execSync } from 'node:child_process';
 import { randomBytes } from 'node:crypto';
 import { ROOT, composeCmd } from './test-db-config.mjs';
+
+/** Pachetele cu teste de integrare, cu numele scurte acceptate de --only. */
+const KNOWN = [
+  'db-kit',
+  'audit',
+  'identity',
+  'organizations',
+  'integrations',
+  'access',
+  'notifications',
+  'files',
+  'support',
+  'commercial',
+  'booking',
+  'crm',
+  'marketing',
+  'billing',
+  'workflows',
+  'ai',
+  'growth',
+  'consent',
+  'pricing',
+];
+
+/** --only a,b (sau --only=a,b); null = toate. Verificat înainte de pornirea containerelor. */
+function parseOnly(argv) {
+  const i = argv.findIndex((a) => a === '--only' || a.startsWith('--only='));
+  if (i < 0) return null;
+  const raw = argv[i].startsWith('--only=') ? argv[i].slice('--only='.length) : argv[i + 1];
+  const names = (raw ?? '')
+    .split(',')
+    .map((n) => n.trim().replace(/^@ventora\//, ''))
+    .filter(Boolean);
+  const unknown = names.filter((n) => !KNOWN.includes(n));
+  if (!names.length || unknown.length) {
+    console.error(
+      `[test:integration] --only: ${unknown.length ? `necunoscut: ${unknown.join(', ')}` : 'lista e goală'}. ` +
+        `Pachetele: ${KNOWN.join(', ')}`,
+    );
+    process.exit(2);
+  }
+  return new Set(names);
+}
+
+const ONLY = parseOnly(process.argv.slice(2));
+if (ONLY)
+  console.log(`[test:integration] doar testele: ${[...ONLY].join(', ')} (pregătirea completă)`);
 
 // Pornire DB (import efectuează setup-ul complet)
 // Lot 2.9: containerul și porturile sunt ale acestui worktree (scripts/test-db-config.mjs)
@@ -27,6 +80,14 @@ function run(cmd, env = {}) {
 }
 
 function runPkg(filter, script, env = {}) {
+  // --only: the tests of the other packages are skipped; drift checks (exec …) always run
+  if (ONLY && (script === 'test:integration' || script === 'test:pricing')) {
+    const name = script === 'test:pricing' ? 'pricing' : filter.replace(/^@ventora\//, '');
+    if (!ONLY.has(name)) {
+      console.log(`[test:integration] sărit (--only): ${name}`);
+      return;
+    }
+  }
   run(`pnpm --filter ${filter} ${script}`, env);
 }
 
