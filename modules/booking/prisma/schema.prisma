@@ -1009,3 +1009,19 @@ model ClientMessage {
   @@map("client_message")
   @@schema("booking")
 }
+
+/// Lot B.14b (S127): the business's text of a client e-mail, per language; subject / body NULL = the Ventora text.
+model MessageTemplate {
+  organizationId  String   @map("organization_id") @db.Uuid
+  kind            String   @db.VarChar(20)
+  locale          String   @db.VarChar(5)
+  subject         String?  @db.VarChar(150)
+  body            String?
+  createdAt       DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt       DateTime @default(now()) @map("updated_at") @db.Timestamptz
+  updatedByUserId String?  @map("updated_by_user_id") @db.Uuid
+
+  @@id([organizationId, kind, locale], map: "message_template_pkey")
+  @@map("message_template")
+  @@schema("booking")
+}
