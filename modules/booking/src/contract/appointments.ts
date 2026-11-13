@@ -140,6 +140,8 @@ export type SetBookingSettingsParams = Session & {
   freeCancelHours?: number;
   confirmationMode?: 'auto' | 'manual';
   noticeMin?: number;
+  /** B.13: the reminder by e-mail 24 hours before. */
+  reminderEmail?: boolean;
   bufferMin?: number;
 };
 
@@ -335,6 +337,7 @@ export async function setBookingSettings(
     freeCancelHours: params.freeCancelHours,
     confirmationMode: params.confirmationMode,
     noticeMin: params.noticeMin,
+    reminderEmail: params.reminderEmail,
     bufferMin: params.bufferMin,
   });
 }

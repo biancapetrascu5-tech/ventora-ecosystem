@@ -166,6 +166,34 @@
       "next": "El reinicio es manual: revisa la oferta, la audiencia y los textos en Founder · Growth antes de volver a activarla.",
       "button": "Abrir Growth · Control",
       "why": "Recibes este correo porque tu dirección recibe las alertas del equipo de Ventora Systems."
+    },
+    "booking": {
+      "sender": "{business} vía EasyBook",
+      "subject": "{title} · {business}",
+      "greet": "Hola, {name}:",
+      "k": {
+        "service": "Servicio",
+        "member": "Con",
+        "when": "Cuándo",
+        "where": "Dónde"
+      },
+      "why": "Recibe este correo porque reservó una cita en {business}.",
+      "sentBy": "Enviado con EasyBook, Ventora Systems",
+      "manage": "Cambiar o cancelar la cita",
+      "policy": "Cancelación gratuita hasta {hours} antes.",
+      "hours": {
+        "one": "{n} hora",
+        "few": "{n} horas",
+        "other": "{n} horas"
+      },
+      "confirmed": {
+        "title": "Su cita está confirmada",
+        "lead": "Le esperamos {when}."
+      },
+      "reminder": {
+        "title": "Mañana tiene cita",
+        "lead": "Le recordamos su cita del {when} en {business}."
+      }
     }
   },
   "support": {

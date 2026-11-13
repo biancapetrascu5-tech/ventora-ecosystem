@@ -17,6 +17,11 @@ export function passwordResetLink(app: AuthApp, token: string): string {
   return `${baseUrl(app)}/reset-password?token=${encodeURIComponent(token)}`;
 }
 
+/** Lot B.13: a link of the platform (a language-neutral path, e.g. /r/<slug>/m/<token>). */
+export function platformLink(path: string): string {
+  return `${baseUrl('hub')}${path.startsWith('/') ? path : `/${path}`}`;
+}
+
 export function invitationLink(token: string): string {
   return `${baseUrl('hub')}/invite/${encodeURIComponent(token)}`;
 }

@@ -166,6 +166,34 @@
       "next": "Repornirea e manuală: verifică oferta, audiența și textele în Founder · Growth înainte să o pornești din nou.",
       "button": "Deschide Growth · Control",
       "why": "Primești acest e-mail pentru că adresa ta primește alertele echipei Ventora Systems."
+    },
+    "booking": {
+      "sender": "{business} prin EasyBook",
+      "subject": "{title} · {business}",
+      "greet": "Bună ziua, {name},",
+      "k": {
+        "service": "Serviciu",
+        "member": "Cu cine",
+        "when": "Când",
+        "where": "Unde"
+      },
+      "why": "Ați primit acest e-mail pentru că ați făcut o programare la {business}.",
+      "sentBy": "Trimis prin EasyBook, Ventora Systems",
+      "manage": "Modificați sau anulați programarea",
+      "policy": "Anulare gratuită cu cel puțin {hours} înainte.",
+      "hours": {
+        "one": "{n} oră",
+        "few": "{n} ore",
+        "other": "{n} de ore"
+      },
+      "confirmed": {
+        "title": "Programarea e confirmată",
+        "lead": "Vă așteptăm {when}."
+      },
+      "reminder": {
+        "title": "Mâine aveți programare",
+        "lead": "Vă reamintim de programarea de {when}, la {business}."
+      }
     }
   },
   "support": {

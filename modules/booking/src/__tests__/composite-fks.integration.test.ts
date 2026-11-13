@@ -305,6 +305,8 @@ const UNTRIED = [
   'appointment_answer.question_id',
   'appointment_payment.refund_of_payment_id (23514 first)',
   'client.merged_into_client_id (23514 first)',
+  // B.13: the fixture has no e-mail queued
+  'client_message.appointment_id',
   'client_note_removal.client_id',
   'manage_token.appointment_id',
   'medical_answer.client_id',

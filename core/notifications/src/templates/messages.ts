@@ -94,6 +94,21 @@ export interface EmailMessages {
     button: string;
     why: string;
   };
+  // Lot B.13 (BookingClientEmails, S116): the e-mails of a business to its clients (EasyBook)
+  booking: {
+    sender: string;
+    subject: string;
+    greet: string;
+    k: { service: string; member: string; when: string; where: string };
+    why: string;
+    sentBy: string;
+    manage: string;
+    policy: string;
+    /** The plural forms of „{n} hours” (Intl.PluralRules: one / few / other). */
+    hours: { one: string; few: string; other: string };
+    confirmed: { title: string; lead: string };
+    reminder: { title: string; lead: string };
+  };
 }
 
 type Catalog = { email?: EmailMessages };

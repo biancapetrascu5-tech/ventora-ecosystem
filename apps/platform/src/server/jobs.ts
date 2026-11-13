@@ -21,7 +21,11 @@ import {
   runTrialJob,
 } from '@ventora/commercial';
 import './billing-config';
-import { bookingQuotaRefundConsumer, runPublicHoldCleanupJob } from '@ventora/booking';
+import {
+  bookingQuotaRefundConsumer,
+  runClientEmailJob,
+  runPublicHoldCleanupJob,
+} from '@ventora/booking';
 import { runCrmBinJob, runCrmImportJob } from '@ventora/crm';
 import {
   growthConversionConsumer,
@@ -287,6 +291,25 @@ export const platformJobs = new JobRegistry()
         );
       }
       return { ...report, failed: 0 };
+    },
+  })
+  // Lot B.13: confirmarea și reminderul pe e-mail către clienții afacerilor (coada booking.client_message);
+  // fiecare afacere în contextul ei; un e-mail care nu pleacă se reîncearcă, unul expirat nu mai pleacă.
+  .register({
+    id: 'booking.client-emails',
+    owner: 'Lot B.13',
+    description: 'Confirmarea și reminderul pe e-mail către clienți, în limba lor',
+    trigger: { cron: '*/5 * * * *' },
+    run: async () => {
+      const report = await runClientEmailJob();
+      if (report.errors.length) {
+        throw new AggregateError(
+          report.errors.map((f) => f.error),
+          `[booking] client e-mails: ${report.errors.length} errors in ${report.businesses} businesses: ` +
+            report.errors.map((f) => f.organizationId).join(', '),
+        );
+      }
+      return { ...report, errors: 0 };
     },
   })
   // ClientDesk (decizia din 11.11.2026): un contact cu peste 30 de zile în coș se anonimizează, ca
