@@ -96,7 +96,35 @@ export async function writeOutboxEvent<TPayload>(
   ];
   if ('$executeRawUnsafe' in tx) await tx.$executeRawUnsafe(sql, ...values);
   else await tx.query(sql, values);
+  notifyOutboxWritten(schema);
   return envelope;
+}
+
+/*
+ * Lotul Inngest (13.11): după o scriere în outbox, aplicația care are serviciul de job-uri
+ * trezește dispecerul (platform, `onOutboxWritten` → evenimentul `platform/outbox.written`).
+ * Ascultătorul e al procesului (globalThis: același și când modulul e încărcat în două bundle-uri,
+ * de exemplu instrumentation și rutele Next). Se apelează în tranzacție, înainte de COMMIT, deci
+ * nu primește date și nu e așteptat: dispecerul pornește după un debounce, iar o trezire pierdută
+ * o acoperă cron-ul de siguranță. O eroare a ascultătorului nu atinge scrierea.
+ */
+type OutboxWrittenListener = (schema: string) => void;
+const LISTENER = Symbol.for('ventora.db-kit.outbox-written');
+type ListenerHolder = { [LISTENER]?: OutboxWrittenListener };
+
+/** Înlocuiește ascultătorul procesului (null îl scoate). */
+export function onOutboxWritten(listener: OutboxWrittenListener | null): void {
+  const holder = globalThis as ListenerHolder;
+  if (listener) holder[LISTENER] = listener;
+  else delete holder[LISTENER];
+}
+
+function notifyOutboxWritten(schema: string): void {
+  try {
+    (globalThis as ListenerHolder)[LISTENER]?.(schema);
+  } catch {
+    // the wake-up is best effort: the safety cron delivers the event anyway
+  }
 }
 
 /** Dead-letter după atâtea eșecuri ale aceluiași eveniment (D-INF-4, Lot 4.1). */

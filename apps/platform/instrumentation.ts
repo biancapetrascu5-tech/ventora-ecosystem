@@ -17,5 +17,10 @@ export async function register() {
       );
       process.exit(1);
     }
+    // Lotul Inngest (13.11): o scriere în outbox trezește dispecerul (evenimentul
+    // platform/outbox.written); fără serviciul de evenimente, cron-ul de siguranță livrează.
+    const { createJobsClient, wakeDispatcherOnOutboxWrite } = await import('@ventora/integrations');
+    const client = createJobsClient();
+    wakeDispatcherOnOutboxWrite((event) => client.send(event));
   }
 }

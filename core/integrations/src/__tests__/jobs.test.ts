@@ -1,12 +1,16 @@
 import { describe, expect, it, vi } from 'vitest';
 import { NonRetriableError } from 'inngest';
+import { writeOutboxEvent } from '@ventora/db-kit';
 import {
   createJobsClient,
+  cronEnvName,
+  cronFor,
   InvalidJobEnvelopeError,
   jobContext,
   JobRegistry,
   runJob,
   toInngestFunctions,
+  wakeDispatcherOnOutboxWrite,
   type JobDefinition,
   type JobErrorReport,
 } from '../index';
@@ -149,5 +153,114 @@ describe('toInngestFunctions: the shared route serves whatever the registry hold
       NonRetriableError,
     );
     expect(report).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe('the schedule from the environment (lotul Inngest, 13.11)', () => {
+  const job = cronJob({ trigger: { cron: '* * * * *', quietCron: '*/10 * * * *' } });
+
+  it('JOB_CRON_<ID> first, then JOBS_SCHEDULE=quiet, then the registry', () => {
+    expect(cronEnvName('platform.notification-delivery')).toBe(
+      'JOB_CRON_PLATFORM_NOTIFICATION_DELIVERY',
+    );
+    expect(cronFor(job, {})).toBe('* * * * *');
+    expect(cronFor(job, { JOBS_SCHEDULE: 'quiet' })).toBe('*/10 * * * *');
+    expect(cronFor(job, { JOBS_SCHEDULE: 'quiet', JOB_CRON_PLATFORM_TEST_CRON: '0 * * * *' })).toBe(
+      '0 * * * *',
+    );
+    // without a quiet schedule, quiet keeps the registry's
+    expect(cronFor(cronJob(), { JOBS_SCHEDULE: 'quiet' })).toBe('* * * * *');
+    expect(cronFor(eventJob(), { JOBS_SCHEDULE: 'quiet' })).toBeNull();
+  });
+
+  it('an invalid JOB_CRON_<ID> is ignored (logged), the route keeps serving', () => {
+    const error = vi.spyOn(console, 'error').mockImplementation(() => {});
+    expect(cronFor(job, { JOB_CRON_PLATFORM_TEST_CRON: 'every minute' })).toBe('* * * * *');
+    expect(error).toHaveBeenCalledWith(expect.stringContaining('JOB_CRON_PLATFORM_TEST_CRON'));
+    error.mockRestore();
+  });
+
+  it('the served function uses the resolved schedule; the registry checks quietCron and wake', () => {
+    const client = createJobsClient({ isDev: true });
+    const r = new JobRegistry().register(job);
+    const [fn] = toInngestFunctions(client, r, () => {}, { JOBS_SCHEDULE: 'quiet' });
+    expect(fn!.opts).toMatchObject({ triggers: [{ cron: '*/10 * * * *' }] });
+    expect(() =>
+      new JobRegistry().register(cronJob({ trigger: { cron: '* * * * *', quietCron: 'often' } })),
+    ).toThrow(/Cron invalid/);
+    expect(() =>
+      new JobRegistry().register(
+        eventJob({ wake: { event: 'platform/outbox.written', debounce: '10s', maxWait: '1m' } }),
+      ),
+    ).toThrow(/doar pentru un job programat/);
+    expect(() =>
+      new JobRegistry().register(
+        cronJob({ wake: { event: 'not an event', debounce: '10s', maxWait: '1m' } }),
+      ),
+    ).toThrow(/Eveniment invalid/);
+  });
+
+  it('the wake-up function runs the same logic as the cron, without an organization', async () => {
+    const run = vi.fn(async (ctx: { organizationId: string | null }) => ctx.organizationId);
+    const r = new JobRegistry().register(
+      cronJob({ run, wake: { event: 'platform/outbox.written', debounce: '10s', maxWait: '1m' } }),
+    );
+    const fns = toInngestFunctions(createJobsClient({ isDev: true }), r, () => {}, {});
+    expect(fns.map((f) => f.id())).toEqual(['platform.test-cron', 'platform.test-cron.wake']);
+    const handler = (fns[1] as unknown as { fn: (ctx: unknown) => Promise<unknown> }).fn;
+    await expect(handler({ event: { data: {} }, runId: 'w1', attempt: 0 })).resolves.toBeNull();
+    expect(run).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe('the dispatcher wake-up after an outbox write', () => {
+  const Widget = { type: 'widget.shipped', version: 1, parse: (p: unknown) => p };
+  const tx = { query: vi.fn(async () => ({})) };
+  const write = () =>
+    writeOutboxEvent(tx, 'jobs_wake', Widget, {
+      organizationId: '0193a4b0-7c1e-7b3a-9f00-1234567890ab',
+      sourceApp: 'test',
+      resourceId: '0193a4b0-7c1e-7b3a-9f00-1234567890ac',
+      payload: {},
+    });
+
+  it('a burst of writes sends one event; the next one after the interval', async () => {
+    let t = 1_000;
+    const send = vi.fn(async () => {});
+    const stop = wakeDispatcherOnOutboxWrite(send, { minIntervalMs: 5_000, now: () => t });
+    try {
+      await write();
+      await write();
+      t += 4_999;
+      await write();
+      expect(send).toHaveBeenCalledTimes(1);
+      expect(send).toHaveBeenCalledWith({ name: 'platform/outbox.written', data: {} });
+      t += 1;
+      await write();
+      expect(send).toHaveBeenCalledTimes(2);
+    } finally {
+      stop();
+    }
+    await write();
+    expect(send).toHaveBeenCalledTimes(2);
+  });
+
+  it('a failed send never breaks the write; logged once', async () => {
+    let t = 0;
+    const log = vi.fn();
+    const stop = wakeDispatcherOnOutboxWrite(async () => Promise.reject(new Error('no service')), {
+      minIntervalMs: 1,
+      now: () => (t += 10),
+      log,
+    });
+    try {
+      await expect(write()).resolves.toMatchObject({ type: 'widget.shipped' });
+      await expect(write()).resolves.toMatchObject({ type: 'widget.shipped' });
+      await new Promise((r) => setTimeout(r, 0));
+      expect(log).toHaveBeenCalledTimes(1);
+      expect(log.mock.calls[0]![0]).toContain('no service');
+    } finally {
+      stop();
+    }
   });
 });

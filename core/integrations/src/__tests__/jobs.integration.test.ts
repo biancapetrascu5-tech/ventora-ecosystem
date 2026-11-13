@@ -116,11 +116,18 @@ run('Lot 4.2 — the outbox dispatcher as a scheduled job', () => {
       consumers,
       catalog: CATALOG,
     });
-    expect(job).toMatchObject({ id: 'platform.outbox-dispatch', trigger: { cron: '* * * * *' } });
+    expect(job).toMatchObject({
+      id: 'platform.outbox-dispatch',
+      trigger: { cron: '*/15 * * * *' },
+      wake: { event: 'platform/outbox.written' },
+    });
 
     const report = vi.fn();
     const result = await runJob(runnable(job), { runId: 'run-1', attempt: 0 }, report);
-    expect(result).toEqual({ [SCHEMA]: { delivered: 2, retried: 0, dead: 0, skipped: 0 } });
+    expect(result).toEqual({
+      schemas: { [SCHEMA]: { delivered: 2, retried: 0, dead: 0, skipped: 0 } },
+      deferred: [],
+    });
     expect(report).not.toHaveBeenCalled();
 
     const rows = (
@@ -140,7 +147,7 @@ run('Lot 4.2 — the outbox dispatcher as a scheduled job', () => {
     });
   });
 
-  it('a failing source does not stop the others; the job is reported and thrown for a retry', async () => {
+  it('a failing source does not stop the others; the job is reported and thrown (Sentry)', async () => {
     const org = crypto.randomUUID();
     const ok = await emit(org);
     const job = outboxDispatchJob({
@@ -172,7 +179,31 @@ run('Lot 4.2 — the outbox dispatcher as a scheduled job', () => {
     expect(status).toEqual({ status: 'dispatched' });
   });
 
-  it('served through Inngest with the platform retry rule', () => {
+  it('out of time: the remaining sources wait for the next run (deferred), nothing is lost', async () => {
+    const org = crypto.randomUUID();
+    const waiting = await emit(org);
+    const job = outboxDispatchJob({
+      pool: app,
+      sources: [{ schema: SCHEMA, moduleRole: ROLE }],
+      consumers: new ConsumerRegistry().register({
+        name: 'jobs-t42.noop2',
+        handles: [{ type: 'widget.shipped', version: 1 }],
+        async handle() {},
+      }),
+      catalog: CATALOG,
+      seconds: 0,
+    });
+    const result = await runJob(runnable(job), { runId: 'run-4', attempt: 0 }, vi.fn());
+    expect(result).toEqual({ schemas: {}, deferred: [SCHEMA] });
+    const status = (
+      await admin.query(`SELECT status FROM ${SCHEMA}.outbox_events WHERE event_id = $1`, [
+        waiting.eventId,
+      ])
+    ).rows[0];
+    expect(status).toEqual({ status: 'pending' });
+  });
+
+  it('served through Inngest: the safety cron (15 min, no retries) and the wake-up on a write', () => {
     const registry = new JobRegistry().register(
       outboxDispatchJob({
         pool: app,
@@ -180,8 +211,19 @@ run('Lot 4.2 — the outbox dispatcher as a scheduled job', () => {
         consumers: new ConsumerRegistry(),
       }),
     );
-    const [fn] = toInngestFunctions(createJobsClient({ isDev: true }), registry, () => {});
+    const [fn, wake] = toInngestFunctions(
+      createJobsClient({ isDev: true }),
+      registry,
+      () => {},
+      {},
+    );
     expect(fn!.id()).toBe('platform.outbox-dispatch');
-    expect(fn!.opts).toMatchObject({ retries: 3, triggers: [{ cron: '* * * * *' }] });
+    expect(fn!.opts).toMatchObject({ retries: 0, triggers: [{ cron: '*/15 * * * *' }] });
+    expect(wake!.id()).toBe('platform.outbox-dispatch.wake');
+    expect(wake!.opts).toMatchObject({
+      retries: 0,
+      debounce: { period: '10s', timeout: '1m' },
+      triggers: [{ event: 'platform/outbox.written' }],
+    });
   });
 });

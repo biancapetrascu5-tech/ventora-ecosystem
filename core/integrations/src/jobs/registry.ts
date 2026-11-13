@@ -9,8 +9,22 @@
  * eșua până nu are logică.
  */
 
-/** Programat (expresie cron, UTC) sau la un eveniment (numele lui, `<domeniu>/<entitate>.<acțiune>`). */
-export type JobTrigger = { cron: string } | { event: string };
+/**
+ * Programat (expresie cron, UTC) sau la un eveniment (numele lui, `<domeniu>/<entitate>.<acțiune>`).
+ * `quietCron`: programul mai rar, folosit cu `JOBS_SCHEDULE=quiet` (staging, contul Hobby).
+ */
+export type JobTrigger = { cron: string; quietCron?: string } | { event: string };
+
+/**
+ * Un job programat care poate fi și trezit de un eveniment (dispecerul: la scrierea în outbox).
+ * Evenimentele dintr-o rafală se adună (debounce): o singură rulare după `debounce` de liniște,
+ * cel târziu după `maxWait`. Cron-ul rămâne plasa de siguranță.
+ */
+export interface JobWake {
+  event: string;
+  debounce: `${number}s` | `${number}m`;
+  maxWait: `${number}s` | `${number}m`;
+}
 
 export interface JobRunContext {
   jobId: string;
@@ -40,11 +54,16 @@ export interface JobDefinition {
   retries?: number;
   /** Logica; lipsește cât timp job-ul e doar declarat. */
   run?: JobRun;
+  /** Doar pentru un job programat: trezit și de un eveniment (vezi JobWake). */
+  wake?: JobWake;
 }
 
 const JOB_ID = /^[a-z][a-z0-9-]*(\.[a-z][a-z0-9-]*)+$/;
 const EVENT_NAME = /^[a-z][a-z0-9-]*\/[a-z][a-z0-9_]*(\.[a-z][a-z0-9_]*)+$/;
 const CRON = /^(\S+\s+){4}\S+$/;
+
+/** O expresie cron cu 5 câmpuri (validarea de formă a registrului). */
+export const isCron = (cron: string): boolean => CRON.test(cron.trim());
 
 export class JobRegistry {
   private readonly jobs = new Map<string, JobDefinition>();
@@ -57,9 +76,16 @@ export class JobRegistry {
       throw new Error(`[integrations] Job înregistrat de două ori: "${job.id}"`);
     }
     if ('cron' in job.trigger) {
-      if (!CRON.test(job.trigger.cron.trim())) {
-        throw new Error(`[integrations] Cron invalid pentru ${job.id}: "${job.trigger.cron}"`);
+      for (const cron of [job.trigger.cron, job.trigger.quietCron]) {
+        if (cron !== undefined && !isCron(cron)) {
+          throw new Error(`[integrations] Cron invalid pentru ${job.id}: "${cron}"`);
+        }
       }
+      if (job.wake && !EVENT_NAME.test(job.wake.event)) {
+        throw new Error(`[integrations] Eveniment invalid pentru ${job.id}: "${job.wake.event}"`);
+      }
+    } else if (job.wake) {
+      throw new Error(`[integrations] wake e doar pentru un job programat (${job.id})`);
     } else if (!EVENT_NAME.test(job.trigger.event)) {
       throw new Error(`[integrations] Eveniment invalid pentru ${job.id}: "${job.trigger.event}"`);
     }

@@ -53,6 +53,8 @@ export async function dispatchOutbox(params: {
   registry: ConsumerRegistry;
   catalog?: readonly EventDefinition[];
   limit?: number;
+  /** Date.now() după care nu se mai ia un eveniment nou (rămâne pentru rularea următoare). */
+  deadline?: number;
 }): Promise<DispatchReport> {
   const { pool, source, registry } = params;
   const catalog = params.catalog ?? EVENT_CATALOG;
@@ -68,6 +70,7 @@ export async function dispatchOutbox(params: {
     await client.query('COMMIT');
 
     for (const candidate of pending) {
+      if (params.deadline !== undefined && Date.now() >= params.deadline) break;
       const outcome = await dispatchOne(client, source, registry, catalog, candidate);
       report[outcome] += 1;
     }

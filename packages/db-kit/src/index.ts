@@ -11,7 +11,13 @@ export { withTenantContext } from './with-tenant-context';
 export { uuidv7, UUID_V7 } from './uuidv7';
 export { assertRuntimeRole, NotARuntimeRoleError } from './runtime-role';
 export type { OutboxEnvelope, OutboxEventType, OutboxWriter } from './outbox';
-export { writeOutboxEvent, outboxMigrationSql, sqlIdentifier, OUTBOX_MAX_ATTEMPTS } from './outbox';
+export {
+  writeOutboxEvent,
+  onOutboxWritten,
+  outboxMigrationSql,
+  sqlIdentifier,
+  OUTBOX_MAX_ATTEMPTS,
+} from './outbox';
 export type { OutboxSqlClient, DeadLetterEvent } from './outbox-store';
 export {
   enterTenantContext,
