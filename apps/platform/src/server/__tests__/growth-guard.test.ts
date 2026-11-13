@@ -49,13 +49,15 @@ describe('Growth: niciun slot în fluxurile critice', () => {
     expect(offenders).toEqual([]);
   });
 
-  it('slotul se citește doar pe server, din locurile v1 (launcher, abonament, catalog, clopoțelul)', () => {
+  // B.6b: + booking.today.aside, odată cu ecranul BookingToday (BOOKING.md §B.35)
+  it('slotul se citește doar pe server, din locurile v1 (launcher, abonament, catalog, clopoțelul, EasyBook · Azi)', () => {
     const readers = all
       .filter((p) => !rel(p).includes('/__tests__/'))
       .filter((p) => /\breadGrowthSlot\(/.test(readFileSync(p, 'utf8')))
       .map(rel)
       .sort();
     expect(readers).toEqual([
+      'src/server/booking-today-actions.ts',
       'src/server/catalog-actions.ts',
       'src/server/growth-actions.ts',
       'src/server/growth-slot.ts',

@@ -13,13 +13,23 @@ import {
   Textarea,
   Toggle,
 } from '@ventora/ui';
-import { parseAmount, type FormErrors, type ServiceForm } from './format';
+import {
+  lowDepositMember,
+  membersOf,
+  parseAmount,
+  type FormErrors,
+  type ServiceForm,
+  type TeamMember,
+} from './format';
+import { ServiceMembers } from './ServiceMembers';
 import { useServiceTexts } from './texts';
 import type { ScreenMode } from './BookingServicesView';
 import s from './services.module.css';
 
 /* BookingServices (S123): the service form in a Drawer (full screen on a phone). Controlled: the
-   page keeps the form and the errors; `framed` draws it inside a gallery frame (contained). */
+   page keeps the form and the errors; `framed` draws it inside a gallery frame (contained).
+   S129 / S137–S138: „Cine îl face” and each member's duration and price before „Se poate rezerva
+   online”; nobody → the toggle off and disabled; a member's price under the deposit → no saving. */
 
 export const NEW_CATEGORY = '__new__';
 const NONE = '__none__';
@@ -43,6 +53,14 @@ export type ServiceFormDrawerProps = {
   onArchive?: () => void;
   framed?: boolean;
   isOpen?: boolean;
+  /** S129: the members in the calendar. */
+  team: TeamMember[];
+  /** S129: the category whose members were pre-ticked („Am bifat cine face deja…”). */
+  fromCategory?: string;
+  /** S137: the service's deposit (B.22), when the business asks for one. */
+  depositMinor?: number | null;
+  openMember?: string | null;
+  onOpenMember?: (id: string | null) => void;
 };
 
 export function ServiceFormDrawer(p: ServiceFormDrawerProps) {
@@ -78,6 +96,8 @@ export function ServiceFormDrawer(p: ServiceFormDrawerProps) {
   ];
   const minutes = <span className="body-small muted">{t('form.minutes')}</span>;
   const fromAmount = parseAmount(f.price);
+  const nobody = membersOf(f.who, p.team).length === 0;
+  const blockSave = lowDepositMember(f, p.team, p.depositMinor) !== null;
 
   const form = (
     <div className={s.stack}>
@@ -251,10 +271,24 @@ export function ServiceFormDrawer(p: ServiceFormDrawerProps) {
           />
         </FormField>
       </div>
+      <ServiceMembers
+        mode={p.mode}
+        form={f}
+        onChange={p.onChange}
+        team={p.team}
+        fromCategory={p.fromCategory}
+        depositMinor={p.depositMinor}
+        openMember={p.openMember}
+        onOpenMember={p.onOpenMember}
+        invalidMember={
+          e.terms && 'staffId' in e.terms && e.terms.code === 'invalid' ? e.terms.staffId : null
+        }
+      />
       <Toggle
-        isSelected={f.bookableOnline}
+        isSelected={f.bookableOnline && !nobody}
+        isDisabled={nobody}
         onChange={(v) => set({ bookableOnline: v })}
-        description={t('form.onlineHelp')}
+        description={nobody ? t('form.membersNone.title') : t('form.onlineHelp')}
       >
         {t('form.online')}
       </Toggle>
@@ -272,7 +306,13 @@ export function ServiceFormDrawer(p: ServiceFormDrawerProps) {
       <Button variant="quiet" onPress={p.onCancel}>
         {t('form.cancel')}
       </Button>
-      <Button variant="primary" icon="check" onPress={p.onSubmit} isPending={p.busy}>
+      <Button
+        variant="primary"
+        icon="check"
+        onPress={p.onSubmit}
+        isPending={p.busy}
+        isDisabled={blockSave}
+      >
         {p.isNew ? t('form.create') : t('form.save')}
       </Button>
     </div>

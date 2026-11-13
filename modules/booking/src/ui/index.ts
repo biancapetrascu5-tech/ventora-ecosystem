@@ -36,10 +36,17 @@ export {
   findNameClash,
   matchesQuery,
   moveItem,
+  membersOf,
+  membersOfCategory,
+  termsForm,
+  type MemberTermsForm,
+  type MemberTermsInput,
   type ServiceForm,
   type FormErrors,
   type ServiceInput,
+  type TeamMember,
 } from './services/format';
+export { ServiceMembers, type ServiceMembersProps } from './services/ServiceMembers';
 export { default as servicesStyles } from './services/services.module.css';
 // Lot B.2-UI: EasyBook · Setări · „Programul echipei” (BookingTeamSchedule, S124)
 export {
@@ -73,3 +80,38 @@ export {
   type IntervalData,
   type WeekForm,
 } from './team/team-format';
+// Lot B.6a: BookingCalendar (day, week, resources)
+export {
+  BookingCalendarView,
+  type BookingCalendarViewProps,
+  type FirstFreeResult,
+  type StaffOption,
+} from './calendar/BookingCalendarView';
+export { FirstFreeDialog, type FirstFreeDialogProps } from './calendar/FirstFreeDialog';
+export { useCalendarTexts, type CalendarTexts } from './calendar/calendar-texts';
+export {
+  activeCount,
+  addDays,
+  dayColumn,
+  gridHours,
+  scheduleStatus,
+  stepDate,
+  toEvents,
+  weekDays,
+  weekdayOf,
+  weekStart,
+  type CalendarAppointment,
+  type CalendarAppointmentStatus,
+  type CalendarBlock,
+  type CalendarView,
+} from './calendar/calendar-format';
+// Lot B.6b: BookingToday („Azi”)
+export {
+  ATTENTION_MAX,
+  BookingTodayView,
+  type BookingTodayViewProps,
+  type TodayActions,
+  type TodayAttention,
+  type TodayCurrent,
+  type TodayNext,
+} from './today/BookingTodayView';

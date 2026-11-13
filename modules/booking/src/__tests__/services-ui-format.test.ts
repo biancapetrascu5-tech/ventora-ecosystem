@@ -73,6 +73,7 @@ describe('formularul unui serviciu', () => {
         capacity: 1,
         bookableOnline: true,
       },
+      terms: {},
     });
   });
 

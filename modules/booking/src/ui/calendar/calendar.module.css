@@ -1,0 +1,29 @@
+/* BookingCalendar — the rules of preview.html's <style> (.calbar, .calwrap, .staffpick). */
+.calbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+  margin-bottom: var(--space-3);
+}
+.nav {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  flex-wrap: nowrap;
+}
+.date {
+  margin-left: var(--space-2);
+  white-space: nowrap;
+}
+.mobile {
+  padding: 0 var(--space-4);
+}
+.staffpick {
+  margin-bottom: var(--space-3);
+  max-width: var(--search-width);
+}
+.notice {
+  margin-bottom: var(--space-3);
+}

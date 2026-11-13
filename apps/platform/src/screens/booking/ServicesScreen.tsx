@@ -17,7 +17,10 @@ import {
   findNameClash,
   formFromService,
   matchesQuery,
+  membersOf,
+  membersOfCategory,
   moveItem,
+  termsForm,
   validateServiceForm,
   type ArchivedCategoryRow,
   type ArchivedServiceRow,
@@ -25,6 +28,8 @@ import {
   type FormErrors,
   type OrderItem,
   type ServiceForm,
+  type ServiceRow,
+  type TeamMember,
 } from '@ventora/booking/ui';
 import {
   archiveCategoryAction,
@@ -36,13 +41,17 @@ import {
   saveCategory,
   saveService,
   type ActionError,
+  type MemberTermsWrite,
+  type ServiceData,
   type ServicesPageData,
 } from '@/server/booking-services-actions';
 import { useMode } from './useMode';
 
 /* Lot B.1-UI — EasyBook · Setări · „Servicii” (BookingServices, S123): the state and the actions
    of the page. The screen itself is in modules/booking/src/ui (the same components as the gallery);
-   every write goes through the server actions, which call the booking contracts. */
+   every write goes through the server actions, which call the booking contracts.
+   S129 / S137–S138: „Cine îl face” and the members' own duration and price (B.2b, B.2c). The
+   deposit check (S137) waits for the service's deposit (B.22): no deposit is passed yet. */
 
 type FormState = {
   id: string | null;
@@ -50,6 +59,10 @@ type FormState = {
   errors: FormErrors;
   duplicateCategory?: string;
   busy: boolean;
+  /** S129: the category whose members were pre-ticked (a new service). */
+  fromCategory?: string;
+  /** S138: the member whose duration and price are open. */
+  openMember?: string | null;
 };
 type CategoryState = {
   id: string | null;
@@ -86,6 +99,7 @@ export function ServicesScreen({
 }) {
   const t = useTranslations('booking.services');
   const ui = useTranslations('ui');
+  const roles = useTranslations('roles');
   const locale = useLocale();
   const router = useRouter();
   const pathname = usePathname();
@@ -117,7 +131,16 @@ export function ServicesScreen({
         .sort((a, b) => a.sortOrder - b.sortOrder || a.name.localeCompare(b.name, 'ro')),
     [data.categories],
   );
-  const activeServices = data.services.filter((s) => !s.archivedAt);
+  const team: TeamMember[] = data.team.map((m) => ({
+    id: m.id,
+    name: m.name,
+    role: roles.has(m.role) ? roles(m.role) : m.role,
+  }));
+  const rowOf = (x: ServiceData): ServiceData & ServiceRow => ({
+    ...x,
+    varies: Object.keys(x.terms).length > 0,
+  });
+  const activeServices = data.services.filter((x) => !x.archivedAt).map(rowOf);
   const activeIds = new Set(activeCats.map((c) => c.id));
   const groups: CategoryGroup[] = activeCats.map((c) => ({
     id: c.id,
@@ -133,6 +156,7 @@ export function ServicesScreen({
   });
   const archivedServices: ArchivedServiceRow[] = data.services
     .filter((s) => s.archivedAt)
+    .map(rowOf)
     .map((s) => {
       const cat = s.categoryId ? catById.get(s.categoryId) : undefined;
       return {
@@ -169,20 +193,28 @@ export function ServicesScreen({
   };
 
   // ── the service form ──────────────────────────────────────────────────────────────────────
-  const openNew = () =>
+  const openNew = () => {
+    const categoryId = activeCats[0]?.id ?? null;
+    const who = membersOfCategory(activeServices, categoryId, team);
     setFormState({
       id: null,
-      form: emptyServiceForm(data.currency, activeCats[0]?.id ?? null),
+      form: { ...emptyServiceForm(data.currency, categoryId), who },
       errors: {},
       busy: false,
+      fromCategory: who !== 'all' && who.length > 0 ? categoryName(categoryId) : undefined,
     });
+  };
   const openEdit = (id: string) => {
-    const s = data.services.find((x) => x.id === id);
-    if (s) setFormState({ id, form: formFromService(s), errors: {}, busy: false });
+    const x = data.services.find((y) => y.id === id);
+    if (!x) return;
+    const terms = Object.fromEntries(
+      Object.entries(x.terms).map(([staffId, tm]) => [staffId, termsForm(x, tm)]),
+    );
+    setFormState({ id, form: formFromService(x, x.doneBy, terms), errors: {}, busy: false });
   };
   const submitForm = async () => {
     if (!formState) return;
-    const checked = validateServiceForm(formState.form);
+    const checked = validateServiceForm(formState.form, team);
     const clash = findNameClash(activeServices, formState.form.name, formState.id ?? undefined);
     if (!checked.ok || clash) {
       const errors: FormErrors = checked.ok ? {} : checked.errors;
@@ -200,7 +232,19 @@ export function ServicesScreen({
         ? before.sortOrder
         : nextSortOrder(checked.input.categoryId);
     setFormState({ ...formState, busy: true });
-    const res = await saveService(formState.id, { ...checked.input, sortOrder });
+    // the members' terms that change: set or changed, or back to the service's (still ticked)
+    const ticked = new Set(membersOf(formState.form.who, team));
+    const termsWrite: Record<string, MemberTermsWrite> = {};
+    for (const [staffId, tm] of Object.entries(checked.terms)) termsWrite[staffId] = tm;
+    for (const staffId of Object.keys(before?.terms ?? {})) {
+      if (ticked.has(staffId) && !checked.terms[staffId]) termsWrite[staffId] = null;
+    }
+    const res = await saveService(
+      formState.id,
+      { ...checked.input, sortOrder },
+      formState.form.who,
+      termsWrite,
+    );
     if (!res.ok) {
       if (res.error === 'name_taken') {
         await reload();
@@ -382,6 +426,8 @@ export function ServicesScreen({
         archivedServices={archivedServices}
         archivedCategories={archivedCategories}
         empty={empty}
+        team={team}
+        onPickMembers={openEdit}
         onAdd={openNew}
         onAddCategory={() => openCategory(null)}
         onOrder={openOrder}
@@ -406,6 +452,10 @@ export function ServicesScreen({
           errors={formState.errors}
           duplicateCategory={formState.duplicateCategory}
           busy={formState.busy}
+          team={team}
+          fromCategory={formState.fromCategory}
+          openMember={formState.openMember}
+          onOpenMember={(openMember) => setFormState({ ...formState, openMember })}
           onSubmit={submitForm}
           onCancel={() => setFormState(null)}
           onArchive={() => formState.id && askArchive(formState.id)}

@@ -3,7 +3,7 @@
 import type { ReactNode } from 'react';
 import { AppShell, Spine, UsageMeter, type NavSection } from '@ventora/ui';
 import { Bar, noop } from './shell';
-import { SPINE_RO } from './labels';
+import { SPINE_RO, USAGE_RO } from './labels';
 
 /* The EasyBook shell of the S123/S124 Setări previews (BookingServices, BookingTeamSchedule):
    the Spine with „Setări” active, the meter, the context bar. */
@@ -46,7 +46,15 @@ export function BookingApp({ children }: { children: ReactNode }) {
           activeId="setari"
           onBackToHub={noop}
           bottomItems={['azi', 'calendar', 'programari', 'clienti']}
-          footer={<UsageMeter compact label="Programări în noiembrie" used={312} limit={1000} />}
+          footer={
+            <UsageMeter
+              {...USAGE_RO}
+              compact
+              label="Programări în noiembrie"
+              used={312}
+              limit={1000}
+            />
+          }
         />
       }
       contextBar={<Bar title="Setări" hub />}

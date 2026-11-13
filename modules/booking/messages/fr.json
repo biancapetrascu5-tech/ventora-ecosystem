@@ -60,11 +60,13 @@
       "capacity": "În același timp",
       "online": "Rezervare",
       "category": "Categorie",
-      "archivedAt": "Arhivat"
+      "archivedAt": "Arhivat",
+      "members": "Cine îl face"
     },
     "online": {
       "yes": "Online",
-      "no": "Doar de echipă"
+      "no": "Doar de echipă",
+      "blocked": "Nu se poate rezerva"
     },
     "capacity": {
       "one": "1 client",
@@ -132,7 +134,18 @@
       "save": "Salvează serviciul",
       "create": "Adaugă serviciul",
       "cancel": "Renunță",
-      "archive": "Arhivează serviciul"
+      "archive": "Arhivează serviciul",
+      "members": "Cine îl face",
+      "membersLead": "În programarea nouă și pe pagina publică apar doar membrii bifați.",
+      "membersAll": "Toată echipa",
+      "membersAllHelp": "Inclusiv cine intră de acum în echipă.",
+      "membersCount": "{n} din {total}",
+      "membersNone": {
+        "title": "Nimeni nu face acest serviciu",
+        "body": "Nu se poate rezerva online și nici din calendar. Bifați cel puțin un membru."
+      },
+      "membersFromCategory": "Am bifat cine face deja servicii din „{category}”.",
+      "membersSchedule": "Când lucrează fiecare se stabilește în „Programul echipei”."
     },
     "currency": {
       "ron": "RON (lei)",
@@ -195,6 +208,38 @@
     "money": {
       "RON": "{amount} lei",
       "EUR": "{amount} €"
+    },
+    "members": {
+      "one": "{n} membru",
+      "few": "{n} membri",
+      "many": "{n} de membri",
+      "all": "Toată echipa",
+      "none": "Nimeni"
+    },
+    "noMember": {
+      "title": "Nimeni din echipă nu face „{name}”",
+      "body": "Nu apare pe pagina publică și nu se poate programa din calendar până nu alegeți cine îl face.",
+      "action": "Alege cine îl face"
+    },
+    "member": {
+      "varies": "Diferă pe membru",
+      "lead": "Lângă fiecare membru poți pune altă durată sau alt preț. Gol = valorile serviciului ({d} · {p}).",
+      "duration": "Durata pentru {name}",
+      "price": "Prețul pentru {name}",
+      "own": "{d} · {p} (serviciul: {sd} · {sp})",
+      "same": "Ca serviciul: {d} · {p}",
+      "lowDeposit": {
+        "title": "Prețul pentru {name} ({p}) e mai mic decât avansul ({dep})",
+        "body": "Clientul ar plăti la rezervare mai mult decât costă serviciul. Mărește prețul sau micșorează avansul din „Rezervări online”."
+      },
+      "pickHint": "{name}: {d} · {p}.",
+      "anyHint": "Durata și prețul depind de cine e liber: {d} · {p}.",
+      "anyTime": "La 14:00 e liber {name}: {p}.",
+      "edit": "Durată și preț",
+      "boxTitle": "Durata și prețul pentru {name}",
+      "reset": "Folosește valorile serviciului",
+      "finalNote": "Prețul final îl stabilește {name} la salon, în intervalul de mai sus.",
+      "holdMax": "În calendar ocupă durata maximă, {n} min; se poate scurta pe programare."
     }
   },
   "team": {
@@ -317,5 +362,173 @@
       "7": "Dum"
     },
     "businessClosedDay": "{day} închis"
+  },
+  "calendar": {
+    "title": "Calendrier",
+    "summary": {
+      "appointmentsToday": "{count, plural, one {# rendez-vous aujourd’hui} other {# rendez-vous aujourd’hui}}",
+      "appointmentsDay": "{count, plural, one {# rendez-vous} other {# rendez-vous}}",
+      "staff": "{count, plural, one {# collaborateur} other {# collaborateurs}}",
+      "open": "ouvert {from}–{to}",
+      "closed": "fermé"
+    },
+    "prevDay": "Jour précédent",
+    "nextDay": "Jour suivant",
+    "prevWeek": "Semaine précédente",
+    "nextWeek": "Semaine suivante",
+    "today": "Aujourd’hui",
+    "firstFree": "Premier créneau libre",
+    "viewLabel": "Vue du calendrier",
+    "view": {
+      "day": "Jour",
+      "week": "Semaine",
+      "res": "Ressources"
+    },
+    "staffPick": "Collaborateur",
+    "daySub": "{role} · {count, plural, one {# rendez-vous} other {# rendez-vous}}",
+    "closedDay": "Fermé",
+    "date": {
+      "long": "{weekday} {day} {month}",
+      "short": "{weekday} {day} {month}",
+      "range": "{from}–{to} {month}",
+      "rangeMonths": "{from} {fromMonth} – {to} {month}",
+      "col": "{weekday} {day}"
+    },
+    "dayShort": {
+      "1": "lun.",
+      "2": "mar.",
+      "3": "mer.",
+      "4": "jeu.",
+      "5": "ven.",
+      "6": "sam.",
+      "7": "dim."
+    },
+    "dayCol": {
+      "1": "Lun.",
+      "2": "Mar.",
+      "3": "Mer.",
+      "4": "Jeu.",
+      "5": "Ven.",
+      "6": "Sam.",
+      "7": "Dim."
+    },
+    "monthShort": {
+      "1": "janv.",
+      "2": "févr.",
+      "3": "mars",
+      "4": "avr.",
+      "5": "mai",
+      "6": "juin",
+      "7": "juil.",
+      "8": "août",
+      "9": "sept.",
+      "10": "oct.",
+      "11": "nov.",
+      "12": "déc."
+    },
+    "status": {
+      "done": "Terminé",
+      "now": "En cours",
+      "confirmed": "Confirmé",
+      "unconfirmed": "Non confirmé",
+      "cancelled": "Annulé",
+      "noshow": "Absent",
+      "blocked": "Indisponible"
+    },
+    "block": {
+      "default": "Indisponible",
+      "leave": "Congé",
+      "off": "Jour de repos"
+    },
+    "ff": {
+      "desc": "Premier créneau libre pour {service} · à partir d’aujourd’hui",
+      "found": "Prochain créneau libre : {weekday}, {time}, avec {staff}.",
+      "for": "Pour {service} ({minutes} min).",
+      "othersBusy": "{names} n’ont pas de créneau {weekday}.",
+      "otherBusy": "{names} n’a pas de créneau {weekday}.",
+      "book": "Réserver ici",
+      "more": "Chercher plus loin",
+      "none": "Aucun créneau libre pour {service} dans les 30 prochains jours.",
+      "pickTitle": "Premier créneau libre",
+      "pickLabel": "Prestation",
+      "search": "Chercher",
+      "cancel": "Annuler"
+    },
+    "err": {
+      "load": "Le calendrier ne s’est pas chargé.",
+      "retry": "Réessayer"
+    },
+    "empty": "Personne dans le calendrier pour l’instant. Ajoutez les personnes dans Réglages · Horaires de l’équipe."
+  },
+  "today": {
+    "title": "Aujourd'hui",
+    "greeting": {
+      "morning": "Bonjour, {name}",
+      "day": "Bon après-midi, {name}",
+      "evening": "Bonsoir, {name}"
+    },
+    "sentence": {
+      "count": "Vous avez {count, plural, one {# rendez-vous} other {# rendez-vous}} aujourd'hui.",
+      "none": "Vous n'avez aucun rendez-vous aujourd'hui.",
+      "waiting": "{n, plural, one {Un attend la confirmation} =2 {Deux attendent la confirmation} other {# attendent la confirmation}}",
+      "free": "après {time}, il vous reste {hours, plural, one {# heure libre} other {# heures libres}}",
+      "both": "{waiting}, et {free}.",
+      "one": "{text}."
+    },
+    "next": {
+      "title": "Prochain rendez-vous",
+      "meta": "{service} · {staff} · {time}"
+    },
+    "in": {
+      "min": "dans {n} min",
+      "hours": "dans {n} h"
+    },
+    "current": {
+      "title": "En cours",
+      "now": "Maintenant",
+      "progress": "{from}–{to} · encore {n} min",
+      "complete": "Marquer comme terminé",
+      "collect": "Encaisser"
+    },
+    "agenda": {
+      "title": "Programme du jour",
+      "staff": "Employé",
+      "all": "Toute l'équipe",
+      "empty": "Aucun rendez-vous aujourd'hui."
+    },
+    "attn": {
+      "title": "Vous attend",
+      "more": "Tout voir ({n})",
+      "empty": "Rien à traiter pour le moment.",
+      "unconfirmed": "{client} n'a pas confirmé",
+      "unconfirmedMeta": "Aujourd'hui à {time} · {service} · {staff}",
+      "confirm": "Confirmer",
+      "resend": "Renvoyer le rappel",
+      "call": "Appeler",
+      "unpaid": "{client} doit encore {amount}",
+      "unpaidMeta": "De la visite du {date}",
+      "collect": "Encaisser",
+      "payLink": "Envoyer un lien de paiement",
+      "move": "{client} veut déplacer le rendez-vous",
+      "moveMeta": "Du {from} au {to} · demande en ligne",
+      "accept": "Accepter",
+      "propose": "Proposer un autre horaire",
+      "when": "{day}, {time}"
+    },
+    "money": {
+      "RON": "{amount} lei",
+      "EUR": "{amount} €"
+    },
+    "toast": {
+      "confirmed": "Le rendez-vous de {client} est confirmé.",
+      "completed": "Le rendez-vous de {client} est terminé.",
+      "undo": "Annuler",
+      "undone": "La modification a été annulée.",
+      "failed": "Ce n'a pas été enregistré. Réessayez.",
+      "close": "Fermer"
+    },
+    "err": {
+      "load": "La journée n'a pas pu être chargée."
+    }
   }
 }

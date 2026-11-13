@@ -59,9 +59,12 @@ export function SettingsToast({
   framed,
   onDismiss,
   dismissLabel,
+  action,
 }: {
   mode: ScreenMode;
   tone?: 'done' | 'danger';
+  /** A button in the Toast („Anulează” after a quick action, BookingToday). */
+  action?: { label: string; onClick: () => void };
   title: string;
   description?: string;
   framed?: boolean;
@@ -76,6 +79,7 @@ export function SettingsToast({
         description={description}
         onDismiss={onDismiss}
         dismissLabel={dismissLabel}
+        action={action}
       />
     </div>
   );

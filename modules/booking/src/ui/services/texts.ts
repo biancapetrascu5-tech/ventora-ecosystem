@@ -17,6 +17,10 @@ export type ServiceRow = {
   currency: Currency;
   capacity: number;
   bookableOnline: boolean;
+  /** S129 „Cine îl face”: „Toată echipa”, or the members (ids) who do it; [] = nobody. */
+  doneBy: 'all' | string[];
+  /** S137: some member has their own duration or price („Diferă pe membru”). */
+  varies: boolean;
 };
 
 /** The texts of the list (preview.html: PL, durTxt, priceTxt, capTxt, money). */
@@ -45,6 +49,8 @@ export function useServiceTexts() {
       }
       return money(s.priceMinor, s.currency);
     },
+    /** „2 membri” */
+    members: (n: number) => t(`members.${pluralForm(n)}`, { n }),
     capacity: (n: number) => {
       const form = capacityForm(n);
       return form === 'one' ? t('capacity.one') : t(`capacity.${form}`, { n });

@@ -1,4 +1,4 @@
-/* eslint-disable i18next/no-literal-string -- the example data and frame labels of preview.html (S123) */
+/* eslint-disable i18next/no-literal-string -- the example data and frame labels of preview.html (S123, S129, S137–S138) */
 'use client';
 
 import type { ReactNode } from 'react';
@@ -17,10 +17,13 @@ import {
   useServiceTexts,
   type ArchivedServiceRow,
   type CategoryGroup,
+  termsForm,
   type FormErrors,
+  type MemberTermsForm,
   type ScreenMode,
   type ServiceForm,
   type ServiceRow,
+  type TeamMember,
 } from '@ventora/booking/ui';
 import ro from '@ventora/i18n/messages/ro.json';
 import bookingRo from '@ventora/booking/messages/ro.json';
@@ -28,11 +31,48 @@ import { noop } from '../_shared/shell';
 import { BookingApp } from '../_shared/booking-shell';
 import f from '../_shared/frames.module.css';
 
-/* BookingServices (S123) in the gallery: the 15 frames of preview.html, each at 1280 / 820 / 390,
-   light and dark, with the same example data (Salon Aurora). The screen is the component of the
-   application (modules/booking/src/ui); only the data and the open dialogs are fixed here. */
+/* BookingServices in the gallery: the frames of preview.html that draw this screen (S123 1–15,
+   S129 16–17, S137–S138 21–24), each at 1280 / 820 / 390, light and dark, with the same example
+   data (Salon Aurora). Frames 18–20 and 25–32 draw the effect in BookingNew and BookingPublic and
+   come with those screens. The screen is the component of the application
+   (modules/booking/src/ui); only the data and the open dialogs are fixed here. */
 
 const MESSAGES = { ...ro, booking: bookingRo };
+
+// preview.html TEAM (S129)
+const TEAM: TeamMember[] = [
+  { id: 'ioana', name: 'Ioana Pavel', role: 'Stilist' },
+  { id: 'mara', name: 'Mara Enache', role: 'Manichiuristă' },
+  { id: 'radu', name: 'Radu Matei', role: 'Stilist' },
+  { id: 'diana', name: 'Diana Ilie', role: 'Cosmeticiană' },
+  { id: 'sorin', name: 'Sorin Vlad', role: 'Maseur' },
+];
+// preview.html WHO, by the services' order (s1 … s14)
+const WHO: Record<string, string[]> = {
+  s1: ['ioana', 'radu'],
+  s2: ['ioana', 'radu'],
+  s3: ['ioana', 'radu'],
+  s4: ['ioana', 'radu'],
+  s5: ['ioana'],
+  s6: ['mara'],
+  s7: ['mara'],
+  s8: ['mara'],
+  s9: ['diana'],
+  s10: ['diana', 'mara'],
+  s11: ['sorin'],
+  s12: ['sorin'],
+  s13: ['ioana', 'diana'],
+  s14: [],
+};
+// preview.html OVR (S137–S138): the members' own duration and price; prices in lei
+type Ovr = { d: number; dmax?: number; pk: ServiceRow['priceKind']; p: number; pmax?: number };
+const OVR: Record<string, Record<string, Ovr>> = {
+  s1: { ioana: { d: 60, pk: 'fixed', p: 150 } },
+  s3: { ioana: { d: 90, dmax: 120, pk: 'from', p: 260 } },
+  s4: { ioana: { d: 75, dmax: 120, pk: 'range', p: 200, pmax: 300 } },
+};
+// preview.html DEP: the deposit of „Tratament facial” (BookingDeposit), in bani
+const DEP: Record<string, number> = { s9: 10000 };
 
 // preview.html svc(id, name, d, dmax, pk, p, pmax, cur, cap, online) — prices in lei, here in bani
 let seq = 0;
@@ -50,8 +90,11 @@ function svc(
   description: string | null = null,
 ): ServiceRow {
   seq += 1;
+  const id = `s${seq}`;
   return {
-    id: `s${seq}`,
+    id,
+    doneBy: WHO[id] ?? [],
+    varies: !!OVR[id],
     name,
     categoryId,
     description,
@@ -65,6 +108,18 @@ function svc(
     bookableOnline: online,
   };
 }
+
+const termsOf = (s: ServiceRow, ovr: Record<string, Ovr>): Record<string, MemberTermsForm> =>
+  Object.fromEntries(
+    Object.entries(ovr).map(([id, o]) => [
+      id,
+      termsForm(s, {
+        durationMinutes: o.d,
+        durationMaxMinutes: o.dmax ?? o.d,
+        price: { kind: o.pk, minor: o.p * 100, maxMinor: o.pmax ? o.pmax * 100 : null },
+      }),
+    ]),
+  );
 
 const CATS: CategoryGroup[] = [
   {
@@ -143,7 +198,11 @@ const ARCH: ArchivedServiceRow[] = [
 const ACTIVE_N = CATS.reduce((n, c) => n + c.services.length, 0) + NOCAT.length;
 const CAT_OPTIONS = CATS.map((c) => ({ id: c.id, name: c.name }));
 
-const formOf = (s: ServiceRow): ServiceForm => ({
+const formOf = (
+  s: ServiceRow,
+  who: ServiceForm['who'] = s.doneBy,
+  ovr: Record<string, Ovr> = OVR[s.id] ?? {},
+): ServiceForm => ({
   name: s.name,
   categoryId: s.categoryId,
   description: s.description ?? '',
@@ -156,8 +215,10 @@ const formOf = (s: ServiceRow): ServiceForm => ({
   currency: s.currency,
   capacity: String(s.capacity),
   bookableOnline: s.bookableOnline,
+  who,
+  terms: termsOf(s, ovr),
 });
-// preview.html NEW_S
+// preview.html NEW_S (who: ioana, radu — the members who already do „Păr”)
 const NEW_FORM = formOf(
   svc(
     'Balayage',
@@ -172,6 +233,8 @@ const NEW_FORM = formOf(
     'par',
     'Decolorare în tehnica balayage, tonare și coafat.',
   ),
+  ['ioana', 'radu'],
+  {},
 );
 
 type PageProps = {
@@ -214,6 +277,7 @@ function Page(p: PageProps) {
           archivedServices={archivedServices}
           archivedCategories={archivedCategories}
           empty={p.empty}
+          team={TEAM}
         />
       </BookingApp>
       {p.drawer}
@@ -237,11 +301,17 @@ function Drawer({
   form,
   isNew,
   errors,
+  fromCategory,
+  open,
+  deposit,
 }: {
   mode: ScreenMode;
   form: ServiceForm;
   isNew?: boolean;
   errors?: FormErrors;
+  fromCategory?: string;
+  open?: string;
+  deposit?: number;
 }) {
   return (
     <ServiceFormDrawer
@@ -254,9 +324,15 @@ function Drawer({
       categories={CAT_OPTIONS}
       errors={errors}
       duplicateCategory="Păr"
+      team={TEAM}
+      fromCategory={fromCategory}
+      openMember={open}
+      depositMinor={deposit}
     />
   );
 }
+
+const svcAt = (cat: number, i: number) => CATS[cat]?.services[i] as ServiceRow;
 
 /** The frames whose texts come from the keys (toasts, the dialogs' examples). */
 function useFrames(): [string, (m: ScreenMode) => ReactNode, number, number, number][] {
@@ -281,48 +357,50 @@ function useFrames(): [string, (m: ScreenMode) => ReactNode, number, number, num
   ];
   return [
     [
-      '1 · Lista: categoriile în ordinea lor și „Fără categorie”',
+      '1 · Lista: categoriile, „Fără categorie”, cine face fiecare serviciu; un serviciu pe care nu-l face nimeni',
       (m) => <Page mode={m} />,
-      1660,
-      1730,
       1920,
+      1990,
+      2180,
     ],
     [
-      '2 · Serviciu nou: durată fixă, preț fix',
-      (m) => <Page mode={m} drawer={<Drawer mode={m} form={NEW_FORM} isNew />} />,
-      1100,
-      1100,
-      1400,
+      '2 · Serviciu nou: durată fixă, preț fix; bifați cine face deja servicii din categorie',
+      (m) => (
+        <Page mode={m} drawer={<Drawer mode={m} form={NEW_FORM} isNew fromCategory="Păr" />} />
+      ),
+      1920,
+      1990,
+      2180,
     ],
     [
       '3 · Editare: durată variabilă, preț „de la”, în euro, doar de echipă',
       (m) => <Page mode={m} drawer={<Drawer mode={m} form={bride} />} />,
-      1150,
-      1150,
-      1450,
+      1920,
+      1990,
+      2180,
     ],
     [
       '4 · Erori: nume duplicat, durată invalidă',
       (m) => <Page mode={m} drawer={<Drawer mode={m} form={errForm} errors={errors} />} />,
-      1250,
-      1250,
-      1550,
+      1920,
+      1990,
+      2180,
     ],
     [
       '5 · Salvat',
       (m) => <Page mode={m} toast={{ title: t('saved', { name: 'Masaj terapeutic' }) }} />,
-      1100,
-      1250,
-      1400,
+      1920,
+      1990,
+      2180,
     ],
     [
       '6 · Categorie nouă',
       (m) => (
         <Page mode={m} overlay={<CategoryDialog framed mode={m} name="" onNameChange={noop} />} />
       ),
-      1000,
-      1150,
-      1300,
+      1920,
+      1990,
+      2180,
     ],
     [
       '7 · Redenumește categoria',
@@ -334,9 +412,9 @@ function useFrames(): [string, (m: ScreenMode) => ReactNode, number, number, num
           }
         />
       ),
-      1000,
-      1150,
-      1300,
+      1920,
+      1990,
+      2180,
     ],
     [
       '8 · Categorie cu nume care există deja',
@@ -348,9 +426,9 @@ function useFrames(): [string, (m: ScreenMode) => ReactNode, number, number, num
           }
         />
       ),
-      1000,
-      1150,
-      1300,
+      1920,
+      1990,
+      2180,
     ],
     [
       '9 · Ordinea categoriilor („Masaj” mutată mai sus)',
@@ -368,9 +446,9 @@ function useFrames(): [string, (m: ScreenMode) => ReactNode, number, number, num
           }
         />
       ),
-      1000,
-      1150,
-      1300,
+      1920,
+      1990,
+      2180,
     ],
     [
       '10 · Arhivezi un serviciu',
@@ -380,9 +458,9 @@ function useFrames(): [string, (m: ScreenMode) => ReactNode, number, number, num
           overlay={<ArchiveServiceDialog framed mode={m} name="Vopsit rădăcină" futureCount={3} />}
         />
       ),
-      1000,
-      1150,
-      1300,
+      1920,
+      1990,
+      2180,
     ],
     [
       '11 · O categorie cu servicii active nu se poate arhiva',
@@ -392,11 +470,11 @@ function useFrames(): [string, (m: ScreenMode) => ReactNode, number, number, num
           overlay={<CategoryBlockedDialog framed mode={m} name="Păr" activeCount={5} />}
         />
       ),
-      1000,
-      1150,
-      1300,
+      1920,
+      1990,
+      2180,
     ],
-    ['12 · Filtrul „Arhivate”', (m) => <Page mode={m} archived />, 850, 900, 1050],
+    ['12 · Filtrul „Arhivate”', (m) => <Page mode={m} archived />, 760, 750, 840],
     [
       '13 · Restaurat: categoria lui e arhivată, merge în „Fără categorie”',
       (m) => (
@@ -410,12 +488,66 @@ function useFrames(): [string, (m: ScreenMode) => ReactNode, number, number, num
           }}
         />
       ),
-      850,
-      900,
-      1050,
+      710,
+      700,
+      770,
     ],
-    ['14 · „Arhivate” gol', (m) => <Page mode={m} archived emptyArchived />, 700, 800, 900],
-    ['15 · Starea goală: niciun serviciu', (m) => <Page mode={m} empty />, 700, 800, 900],
+    ['14 · „Arhivate” gol', (m) => <Page mode={m} archived emptyArchived />, 560, 560, 540],
+    ['15 · Starea goală: niciun serviciu', (m) => <Page mode={m} empty />, 560, 560, 580],
+    [
+      '16 · „Cine îl face”: toată echipa, inclusiv cine intră de acum',
+      (m) => <Page mode={m} drawer={<Drawer mode={m} form={formOf(svcAt(2, 1), 'all')} />} />,
+      1920,
+      1990,
+      2180,
+    ],
+    [
+      '17 · Nimeni nu face serviciul: nu se poate rezerva',
+      (m) => <Page mode={m} drawer={<Drawer mode={m} form={formOf(NOCAT[1] as ServiceRow)} />} />,
+      1920,
+      1990,
+      2180,
+    ],
+    [
+      '21 · Durată și preț pe membru (S137): Ioana Pavel 60 min · 150 lei, Radu Matei cu valorile serviciului (45 min · 120 lei)',
+      (m) => <Page mode={m} drawer={<Drawer mode={m} form={formOf(svcAt(0, 0))} open="ioana" />} />,
+      1920,
+      1990,
+      2180,
+    ],
+    [
+      '22 · Prețul unui membru e mai mic decât avansul: nu se poate salva',
+      (m) => (
+        <Page
+          mode={m}
+          drawer={
+            <Drawer
+              mode={m}
+              form={formOf(svcAt(2, 0), ['diana', 'mara'], { mara: { d: 60, pk: 'fixed', p: 90 } })}
+              open="mara"
+              deposit={DEP.s9}
+            />
+          }
+        />
+      ),
+      1920,
+      1990,
+      2180,
+    ],
+    [
+      '23 · Pe membru, ca la serviciu (S138): durată variabilă și preț „Interval” — Ioana Pavel 75–120 min · 200–300 lei la „Coafat de ocazie”',
+      (m) => <Page mode={m} drawer={<Drawer mode={m} form={formOf(svcAt(0, 3))} open="ioana" />} />,
+      1920,
+      1990,
+      2180,
+    ],
+    [
+      '24 · Pe membru: preț „De la” — Ioana Pavel 90–120 min · de la 260 lei la „Vopsit rădăcină”',
+      (m) => <Page mode={m} drawer={<Drawer mode={m} form={formOf(svcAt(0, 2))} open="ioana" />} />,
+      1920,
+      1990,
+      2180,
+    ],
   ];
 }
 
@@ -430,7 +562,10 @@ function Board() {
   const frames = useFrames();
   return (
     <div className={f.scrWrap}>
-      <p className="heading">EasyBook — Setări · Servicii: catalogul de servicii (S123)</p>
+      <p className="heading">
+        EasyBook — Setări · Servicii: catalogul de servicii (S123; cine îl face, S129; durată și
+        preț pe membru, S137–S138)
+      </p>
       {frames.map(([label, render, D, T, M]) => (
         <div key={label} className={f.scrGroup}>
           <p className="subheading">{label}</p>

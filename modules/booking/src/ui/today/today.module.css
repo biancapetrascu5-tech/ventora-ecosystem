@@ -1,0 +1,139 @@
+/* BookingToday: the classes of preview.html (today, greet, today-grid, today-main, today-side,
+   nowcard, nowcards, sec, sechead, sheetlike, r), 1:1 */
+.today {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+.greet {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+.greet h1,
+.greet p {
+  margin: 0;
+}
+.grid {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(320px, 1fr);
+  gap: var(--space-6);
+  align-items: start;
+}
+.main {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  min-width: 0;
+}
+.main section,
+.side {
+  min-width: 0;
+}
+.nowcards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--space-3);
+}
+.nowcard {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  background: var(--sheet);
+  border: var(--border-width) solid var(--line);
+  border-radius: var(--radius-lg);
+}
+.sec {
+  margin: 0 0 var(--space-3);
+}
+.sec :global(.v-badge) {
+  vertical-align: middle;
+  margin-left: var(--space-1);
+}
+.sechead {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-3);
+  flex-wrap: wrap;
+}
+.sechead h2 {
+  margin: 0;
+}
+.sheetlike {
+  background: var(--sheet);
+  border: var(--border-width) solid var(--line);
+  border-radius: var(--radius-lg);
+}
+.r {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  align-items: center;
+}
+.between {
+  justify-content: space-between;
+  flex-wrap: nowrap;
+  gap: var(--space-2);
+}
+.who {
+  gap: var(--space-3);
+  flex-wrap: nowrap;
+  min-width: 0;
+}
+.lines {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.tight {
+  gap: var(--space-2);
+}
+.more {
+  display: flex;
+  justify-content: flex-start;
+  padding: var(--space-2) var(--space-4) var(--space-3);
+}
+.empty {
+  padding: var(--space-4);
+  margin: 0;
+}
+
+/* tablet and phone: attention first, then in progress, then the agenda */
+.today.tablet .grid,
+.today.mobile .grid {
+  grid-template-columns: 1fr;
+}
+.today.tablet .side {
+  order: -1;
+}
+.today.mobile {
+  gap: var(--space-4);
+}
+.today.mobile .greet {
+  padding: 0 var(--space-4);
+}
+.today.mobile .sec,
+.today.mobile .sechead {
+  padding: 0 var(--space-4);
+}
+.today.mobile .sheetlike,
+.today.mobile .nowcard {
+  border-radius: 0;
+  border-left: 0;
+  border-right: 0;
+}
+.today.mobile .grid {
+  grid-template-columns: minmax(0, 1fr);
+}
+.today.mobile .main {
+  display: contents;
+}
+.today.mobile .main > section:first-child {
+  order: -2;
+}
+.today.mobile .side {
+  order: -1;
+}

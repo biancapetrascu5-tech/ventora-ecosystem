@@ -60,11 +60,13 @@
       "capacity": "În același timp",
       "online": "Rezervare",
       "category": "Categorie",
-      "archivedAt": "Arhivat"
+      "archivedAt": "Arhivat",
+      "members": "Cine îl face"
     },
     "online": {
       "yes": "Online",
-      "no": "Doar de echipă"
+      "no": "Doar de echipă",
+      "blocked": "Nu se poate rezerva"
     },
     "capacity": {
       "one": "1 client",
@@ -132,7 +134,18 @@
       "save": "Salvează serviciul",
       "create": "Adaugă serviciul",
       "cancel": "Renunță",
-      "archive": "Arhivează serviciul"
+      "archive": "Arhivează serviciul",
+      "members": "Cine îl face",
+      "membersLead": "În programarea nouă și pe pagina publică apar doar membrii bifați.",
+      "membersAll": "Toată echipa",
+      "membersAllHelp": "Inclusiv cine intră de acum în echipă.",
+      "membersCount": "{n} din {total}",
+      "membersNone": {
+        "title": "Nimeni nu face acest serviciu",
+        "body": "Nu se poate rezerva online și nici din calendar. Bifați cel puțin un membru."
+      },
+      "membersFromCategory": "Am bifat cine face deja servicii din „{category}”.",
+      "membersSchedule": "Când lucrează fiecare se stabilește în „Programul echipei”."
     },
     "currency": {
       "ron": "RON (lei)",
@@ -195,6 +208,38 @@
     "money": {
       "RON": "{amount} lei",
       "EUR": "{amount} €"
+    },
+    "members": {
+      "one": "{n} membru",
+      "few": "{n} membri",
+      "many": "{n} de membri",
+      "all": "Toată echipa",
+      "none": "Nimeni"
+    },
+    "noMember": {
+      "title": "Nimeni din echipă nu face „{name}”",
+      "body": "Nu apare pe pagina publică și nu se poate programa din calendar până nu alegeți cine îl face.",
+      "action": "Alege cine îl face"
+    },
+    "member": {
+      "varies": "Diferă pe membru",
+      "lead": "Lângă fiecare membru poți pune altă durată sau alt preț. Gol = valorile serviciului ({d} · {p}).",
+      "duration": "Durata pentru {name}",
+      "price": "Prețul pentru {name}",
+      "own": "{d} · {p} (serviciul: {sd} · {sp})",
+      "same": "Ca serviciul: {d} · {p}",
+      "lowDeposit": {
+        "title": "Prețul pentru {name} ({p}) e mai mic decât avansul ({dep})",
+        "body": "Clientul ar plăti la rezervare mai mult decât costă serviciul. Mărește prețul sau micșorează avansul din „Rezervări online”."
+      },
+      "pickHint": "{name}: {d} · {p}.",
+      "anyHint": "Durata și prețul depind de cine e liber: {d} · {p}.",
+      "anyTime": "La 14:00 e liber {name}: {p}.",
+      "edit": "Durată și preț",
+      "boxTitle": "Durata și prețul pentru {name}",
+      "reset": "Folosește valorile serviciului",
+      "finalNote": "Prețul final îl stabilește {name} la salon, în intervalul de mai sus.",
+      "holdMax": "În calendar ocupă durata maximă, {n} min; se poate scurta pe programare."
     }
   },
   "team": {
@@ -317,5 +362,173 @@
       "7": "Dum"
     },
     "businessClosedDay": "{day} închis"
+  },
+  "calendar": {
+    "title": "Calendar",
+    "summary": {
+      "appointmentsToday": "{count, plural, one {# programare azi} few {# programări azi} other {# de programări azi}}",
+      "appointmentsDay": "{count, plural, one {# programare} few {# programări} other {# de programări}}",
+      "staff": "{count, plural, one {# angajat} few {# angajați} other {# de angajați}}",
+      "open": "deschis {from}–{to}",
+      "closed": "închis"
+    },
+    "prevDay": "Ziua anterioară",
+    "nextDay": "Ziua următoare",
+    "prevWeek": "Săptămâna anterioară",
+    "nextWeek": "Săptămâna următoare",
+    "today": "Azi",
+    "firstFree": "Primul loc liber",
+    "viewLabel": "Cum arăt calendarul",
+    "view": {
+      "day": "Zi",
+      "week": "Săptămână",
+      "res": "Resurse"
+    },
+    "staffPick": "Angajatul",
+    "daySub": "{role} · {count, plural, one {# programare} few {# programări} other {# de programări}}",
+    "closedDay": "Închis",
+    "date": {
+      "long": "{weekday}, {day} {month}",
+      "short": "{weekday}, {day} {month}",
+      "range": "{from}–{to} {month}",
+      "rangeMonths": "{from} {fromMonth} – {to} {month}",
+      "col": "{weekday} {day}"
+    },
+    "dayShort": {
+      "1": "Lun",
+      "2": "Mar",
+      "3": "Mie",
+      "4": "Joi",
+      "5": "Vin",
+      "6": "Sâm",
+      "7": "Dum"
+    },
+    "dayCol": {
+      "1": "Lun",
+      "2": "Mar",
+      "3": "Mie",
+      "4": "Joi",
+      "5": "Vin",
+      "6": "Sâm",
+      "7": "Dum"
+    },
+    "monthShort": {
+      "1": "ian.",
+      "2": "feb.",
+      "3": "mar.",
+      "4": "apr.",
+      "5": "mai",
+      "6": "iun.",
+      "7": "iul.",
+      "8": "aug.",
+      "9": "sept.",
+      "10": "oct.",
+      "11": "nov.",
+      "12": "dec."
+    },
+    "status": {
+      "done": "Încheiată",
+      "now": "În desfășurare",
+      "confirmed": "Confirmată",
+      "unconfirmed": "Neconfirmată",
+      "cancelled": "Anulată",
+      "noshow": "Nu a venit",
+      "blocked": "Indisponibil"
+    },
+    "block": {
+      "default": "Indisponibil",
+      "leave": "Concediu",
+      "off": "Zi liberă"
+    },
+    "ff": {
+      "desc": "Primul loc liber pentru {service} · caută de azi înainte",
+      "found": "Următorul loc liber: {weekday}, {time}, la {staff}.",
+      "for": "Pentru {service} ({minutes} min).",
+      "othersBusy": "{names} nu au loc {weekday}.",
+      "otherBusy": "{names} nu are loc {weekday}.",
+      "book": "Programează aici",
+      "more": "Caută mai departe",
+      "none": "Nu e niciun loc liber pentru {service} în următoarele 30 de zile.",
+      "pickTitle": "Primul loc liber",
+      "pickLabel": "Serviciul",
+      "search": "Caută",
+      "cancel": "Renunță"
+    },
+    "err": {
+      "load": "Calendarul nu s-a încărcat.",
+      "retry": "Încearcă din nou"
+    },
+    "empty": "Nu e încă nimeni în calendar. Adaugă oamenii în Setări · Programul echipei."
+  },
+  "today": {
+    "title": "Azi",
+    "greeting": {
+      "morning": "Bună dimineața, {name}",
+      "day": "Bună ziua, {name}",
+      "evening": "Bună seara, {name}"
+    },
+    "sentence": {
+      "count": "Azi ai {count, plural, one {o programare} few {# programări} other {# de programări}}.",
+      "none": "Azi nu ai programări.",
+      "waiting": "{n, plural, one {Una așteaptă confirmarea} =2 {Două așteaptă confirmarea} few {# așteaptă confirmarea} other {# așteaptă confirmarea}}",
+      "free": "după {time} mai ai {hours, plural, one {o oră liberă} few {# ore libere} other {# de ore libere}}",
+      "both": "{waiting}, iar {free}.",
+      "one": "{text}."
+    },
+    "next": {
+      "title": "Următoarea programare",
+      "meta": "{service} · {staff} · {time}"
+    },
+    "in": {
+      "min": "peste {n} min",
+      "hours": "peste {n} h"
+    },
+    "current": {
+      "title": "În desfășurare",
+      "now": "Acum",
+      "progress": "{from}–{to} · mai sunt {n} min",
+      "complete": "Marchează ca încheiată",
+      "collect": "Încasează"
+    },
+    "agenda": {
+      "title": "Programul zilei",
+      "staff": "Angajat",
+      "all": "Toată echipa",
+      "empty": "Nicio programare azi."
+    },
+    "attn": {
+      "title": "Au nevoie de tine",
+      "more": "Vezi toate ({n})",
+      "empty": "Nimic de rezolvat acum.",
+      "unconfirmed": "{client} nu a confirmat",
+      "unconfirmedMeta": "Azi la {time} · {service} · {staff}",
+      "confirm": "Confirmă",
+      "resend": "Retrimite reamintirea",
+      "call": "Sună",
+      "unpaid": "{client} mai are de plătit {amount}",
+      "unpaidMeta": "De la vizita din {date}",
+      "collect": "Încasează",
+      "payLink": "Trimite link de plată",
+      "move": "{client} vrea să mute programarea",
+      "moveMeta": "De {from}, pe {to} · cerere online",
+      "accept": "Acceptă",
+      "propose": "Propune altă oră",
+      "when": "{day}, {time}"
+    },
+    "money": {
+      "RON": "{amount} lei",
+      "EUR": "{amount} €"
+    },
+    "toast": {
+      "confirmed": "Programarea lui {client} e confirmată.",
+      "completed": "Programarea lui {client} e încheiată.",
+      "undo": "Anulează",
+      "undone": "Am anulat schimbarea.",
+      "failed": "Nu s-a salvat. Încearcă din nou.",
+      "close": "Închide"
+    },
+    "err": {
+      "load": "Ziua nu s-a încărcat."
+    }
   }
 }

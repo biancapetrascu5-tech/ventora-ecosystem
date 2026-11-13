@@ -60,11 +60,13 @@
       "capacity": "În același timp",
       "online": "Rezervare",
       "category": "Categorie",
-      "archivedAt": "Arhivat"
+      "archivedAt": "Arhivat",
+      "members": "Cine îl face"
     },
     "online": {
       "yes": "Online",
-      "no": "Doar de echipă"
+      "no": "Doar de echipă",
+      "blocked": "Nu se poate rezerva"
     },
     "capacity": {
       "one": "1 client",
@@ -132,7 +134,18 @@
       "save": "Salvează serviciul",
       "create": "Adaugă serviciul",
       "cancel": "Renunță",
-      "archive": "Arhivează serviciul"
+      "archive": "Arhivează serviciul",
+      "members": "Cine îl face",
+      "membersLead": "În programarea nouă și pe pagina publică apar doar membrii bifați.",
+      "membersAll": "Toată echipa",
+      "membersAllHelp": "Inclusiv cine intră de acum în echipă.",
+      "membersCount": "{n} din {total}",
+      "membersNone": {
+        "title": "Nimeni nu face acest serviciu",
+        "body": "Nu se poate rezerva online și nici din calendar. Bifați cel puțin un membru."
+      },
+      "membersFromCategory": "Am bifat cine face deja servicii din „{category}”.",
+      "membersSchedule": "Când lucrează fiecare se stabilește în „Programul echipei”."
     },
     "currency": {
       "ron": "RON (lei)",
@@ -195,6 +208,38 @@
     "money": {
       "RON": "{amount} lei",
       "EUR": "{amount} €"
+    },
+    "members": {
+      "one": "{n} membru",
+      "few": "{n} membri",
+      "many": "{n} de membri",
+      "all": "Toată echipa",
+      "none": "Nimeni"
+    },
+    "noMember": {
+      "title": "Nimeni din echipă nu face „{name}”",
+      "body": "Nu apare pe pagina publică și nu se poate programa din calendar până nu alegeți cine îl face.",
+      "action": "Alege cine îl face"
+    },
+    "member": {
+      "varies": "Diferă pe membru",
+      "lead": "Lângă fiecare membru poți pune altă durată sau alt preț. Gol = valorile serviciului ({d} · {p}).",
+      "duration": "Durata pentru {name}",
+      "price": "Prețul pentru {name}",
+      "own": "{d} · {p} (serviciul: {sd} · {sp})",
+      "same": "Ca serviciul: {d} · {p}",
+      "lowDeposit": {
+        "title": "Prețul pentru {name} ({p}) e mai mic decât avansul ({dep})",
+        "body": "Clientul ar plăti la rezervare mai mult decât costă serviciul. Mărește prețul sau micșorează avansul din „Rezervări online”."
+      },
+      "pickHint": "{name}: {d} · {p}.",
+      "anyHint": "Durata și prețul depind de cine e liber: {d} · {p}.",
+      "anyTime": "La 14:00 e liber {name}: {p}.",
+      "edit": "Durată și preț",
+      "boxTitle": "Durata și prețul pentru {name}",
+      "reset": "Folosește valorile serviciului",
+      "finalNote": "Prețul final îl stabilește {name} la salon, în intervalul de mai sus.",
+      "holdMax": "În calendar ocupă durata maximă, {n} min; se poate scurta pe programare."
     }
   },
   "team": {
@@ -317,5 +362,173 @@
       "7": "Dum"
     },
     "businessClosedDay": "{day} închis"
+  },
+  "calendar": {
+    "title": "Calendario",
+    "summary": {
+      "appointmentsToday": "{count, plural, one {# cita hoy} other {# citas hoy}}",
+      "appointmentsDay": "{count, plural, one {# cita} other {# citas}}",
+      "staff": "{count, plural, one {# empleado} other {# empleados}}",
+      "open": "abierto {from}–{to}",
+      "closed": "cerrado"
+    },
+    "prevDay": "Día anterior",
+    "nextDay": "Día siguiente",
+    "prevWeek": "Semana anterior",
+    "nextWeek": "Semana siguiente",
+    "today": "Hoy",
+    "firstFree": "Primer hueco libre",
+    "viewLabel": "Vista del calendario",
+    "view": {
+      "day": "Día",
+      "week": "Semana",
+      "res": "Recursos"
+    },
+    "staffPick": "Empleado",
+    "daySub": "{role} · {count, plural, one {# cita} other {# citas}}",
+    "closedDay": "Cerrado",
+    "date": {
+      "long": "{weekday}, {day} de {month}",
+      "short": "{weekday}, {day} {month}",
+      "range": "{from}–{to} de {month}",
+      "rangeMonths": "{from} de {fromMonth} – {to} de {month}",
+      "col": "{weekday} {day}"
+    },
+    "dayShort": {
+      "1": "lun",
+      "2": "mar",
+      "3": "mié",
+      "4": "jue",
+      "5": "vie",
+      "6": "sáb",
+      "7": "dom"
+    },
+    "dayCol": {
+      "1": "Lun",
+      "2": "Mar",
+      "3": "Mié",
+      "4": "Jue",
+      "5": "Vie",
+      "6": "Sáb",
+      "7": "Dom"
+    },
+    "monthShort": {
+      "1": "ene",
+      "2": "feb",
+      "3": "mar",
+      "4": "abr",
+      "5": "may",
+      "6": "jun",
+      "7": "jul",
+      "8": "ago",
+      "9": "sept",
+      "10": "oct",
+      "11": "nov",
+      "12": "dic"
+    },
+    "status": {
+      "done": "Finalizada",
+      "now": "En curso",
+      "confirmed": "Confirmada",
+      "unconfirmed": "Sin confirmar",
+      "cancelled": "Cancelada",
+      "noshow": "No se presentó",
+      "blocked": "No disponible"
+    },
+    "block": {
+      "default": "No disponible",
+      "leave": "Vacaciones",
+      "off": "Día libre"
+    },
+    "ff": {
+      "desc": "Primer hueco libre para {service} · buscando desde hoy",
+      "found": "Próximo hueco libre: {weekday}, {time}, con {staff}.",
+      "for": "Para {service} ({minutes} min).",
+      "othersBusy": "{names} no tienen hueco el {weekday}.",
+      "otherBusy": "{names} no tiene hueco el {weekday}.",
+      "book": "Reservar aquí",
+      "more": "Buscar más adelante",
+      "none": "No hay huecos libres para {service} en los próximos 30 días.",
+      "pickTitle": "Primer hueco libre",
+      "pickLabel": "Servicio",
+      "search": "Buscar",
+      "cancel": "Cancelar"
+    },
+    "err": {
+      "load": "El calendario no se ha cargado.",
+      "retry": "Reintentar"
+    },
+    "empty": "Aún no hay nadie en el calendario. Añade a las personas en Ajustes · Horario del equipo."
+  },
+  "today": {
+    "title": "Hoy",
+    "greeting": {
+      "morning": "Buenos días, {name}",
+      "day": "Buenas tardes, {name}",
+      "evening": "Buenas noches, {name}"
+    },
+    "sentence": {
+      "count": "Hoy tiene {count, plural, one {# cita} other {# citas}}.",
+      "none": "Hoy no tiene citas.",
+      "waiting": "{n, plural, one {Una espera la confirmación} =2 {Dos esperan la confirmación} other {# esperan la confirmación}}",
+      "free": "después de las {time} aún tiene {hours, plural, one {# hora libre} other {# horas libres}}",
+      "both": "{waiting}, y {free}.",
+      "one": "{text}."
+    },
+    "next": {
+      "title": "Próxima cita",
+      "meta": "{service} · {staff} · {time}"
+    },
+    "in": {
+      "min": "en {n} min",
+      "hours": "en {n} h"
+    },
+    "current": {
+      "title": "En curso",
+      "now": "Ahora",
+      "progress": "{from}–{to} · quedan {n} min",
+      "complete": "Marcar como finalizada",
+      "collect": "Cobrar"
+    },
+    "agenda": {
+      "title": "Agenda del día",
+      "staff": "Empleado",
+      "all": "Todo el equipo",
+      "empty": "Ninguna cita hoy."
+    },
+    "attn": {
+      "title": "Necesita su atención",
+      "more": "Ver todo ({n})",
+      "empty": "Nada pendiente ahora.",
+      "unconfirmed": "{client} no ha confirmado",
+      "unconfirmedMeta": "Hoy a las {time} · {service} · {staff}",
+      "confirm": "Confirmar",
+      "resend": "Reenviar el recordatorio",
+      "call": "Llamar",
+      "unpaid": "{client} aún debe {amount}",
+      "unpaidMeta": "De la visita del {date}",
+      "collect": "Cobrar",
+      "payLink": "Enviar enlace de pago",
+      "move": "{client} quiere mover la cita",
+      "moveMeta": "Del {from} al {to} · solicitud en línea",
+      "accept": "Aceptar",
+      "propose": "Proponer otra hora",
+      "when": "{day}, {time}"
+    },
+    "money": {
+      "RON": "{amount} lei",
+      "EUR": "{amount} €"
+    },
+    "toast": {
+      "confirmed": "La cita de {client} está confirmada.",
+      "completed": "La cita de {client} está finalizada.",
+      "undo": "Deshacer",
+      "undone": "Se deshizo el cambio.",
+      "failed": "No se guardó. Inténtelo de nuevo.",
+      "close": "Cerrar"
+    },
+    "err": {
+      "load": "No se pudo cargar el día."
+    }
   }
 }
