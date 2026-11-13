@@ -140,10 +140,22 @@ const ALL_DAY = [1, 2, 3, 4, 5, 6, 7].map((weekday) => ({
   closesAtMin: 1440,
 }));
 
-/** `hours` from now, on a 5-minute step. */
+/** `hours` from now, on a 5-minute step. A 30-minute appointment cannot cross midnight in the
+   business's zone (Europe/Bucharest), so a start after 23:30 moves back to 23:30 (at most 25
+   minutes: the appointments of a test are at least an hour apart, so they still do not overlap). */
 function inHours(hours: number): string {
-  const t = Date.now() + hours * 3_600_000;
-  return new Date(Math.ceil(t / 300_000) * 300_000).toISOString();
+  const t = Math.ceil((Date.now() + hours * 3_600_000) / 300_000) * 300_000;
+  const [h, m] = new Intl.DateTimeFormat('en-GB', {
+    timeZone: 'Europe/Bucharest',
+    hour: '2-digit',
+    minute: '2-digit',
+    hourCycle: 'h23',
+  })
+    .format(new Date(t))
+    .split(':')
+    .map(Number) as [number, number];
+  const late = h * 60 + m - (23 * 60 + 30);
+  return new Date(late > 0 ? t - late * 60_000 : t).toISOString();
 }
 
 type Biz = { org: string; slug: string; name: string; t: string; staff: string; svc: string };
