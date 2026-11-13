@@ -1275,3 +1275,55 @@ Decizia fondatoarei: numele vizibil e „Ventora Systems”, peste tot; „Vento
 - `marketing.new.ab.*` (4): `marketing.new.ab.small.title`, `marketing.new.ab.small.body`, `marketing.new.ab.small.toggle`, `marketing.new.ab.small.change`
 
 Detaliile și DE DECIS: registrul S146 din README și README-urile componentelor.
+
+## 2026-11-13 · S147 — Launcher, selectorul de afacere, logo și poză de profil, recomandări, BookingStatuses
+
+### Biblioteca (bundle.js, bundle.css, index.d.ts)
+- **OrgSwitcher** (1.1.0) — fără pătratul cu inițiala: `Org.logo` → altfel `avatar` (poza persoanei, rotundă) → altfel nimic; numele și rolul aliniate la stânga, fără spațiu gol (`.v-org__logo`, `.v-org__photo`, `.no-mark`). Aceeași regulă pe rândurile listei.
+- **AccountMenu** (1.0.1) — dă `user.avatar` selectorului din meniu.
+- **AppDock** (1.1.0) — fișa de la hover se strânge pe conținut (fără înălțimea fixă de 196px); element neactiv (`access`): icon gri, fără rândul de azi, o singură acțiune — `viewer` proprietar / admin „Vezi în Catalog” (`onCatalog`), membru „Recomandă” (`onRecommend`), sau `action`. Activă: fără buton.
+- **AppTile** (1.2.0) — stări noi `suspended`, `soon`; prop `viewer`; acțiuni `onRequestActivation` („Solicită activarea”), `onRecommend`, `onSeePlan` („Vezi abonamentul”), `onNotify` („Anunță-mă”); la `notInPlan` și `soon`, descrierea aplicației ia locul explicației; explicațiile rescrise (texte noi în 6 limbi în bibliotecă).
+- **AccessBadge** (1.1.0) — „Disponibilă pentru activare”, „Acces la cerere”, „Oprită temporar” (nou), „În curând” (nou).
+- Tokeni: neschimbați.
+
+### Componente noi (1.0.0)
+- **HubBusinessProfile** — Afacerea › Profilul afacerii: numele (doar citire) și logo-ul: încărcare, înlocuire, ștergere cu confirmare, fișiere respinse (tip, mărime, prea mică), doar proprietar / admin; formatele și mărimea afișate.
+
+### Componente schimbate
+- **HubLauncher** (1.2.0) — textul nou sub salut; selectorul de afacere în 3 cazuri; fișa de la hover; descrierile noi; „Descoperă mai mult din Ventora” cu toate cazurile (proprietar, membru, afacere suspendată, în curând); test DE / IT.
+- **HubAccount** (1.1.0) — poza de profil: încărcare, înlocuire, ștergere, erori.
+- **HubMyRecommendations** (1.1.0) — nota opțională (max. 300 de caractere) la „Recomandă aplicația”; „{nume} recomandă {app}” la proprietar; motivul opțional la „Respinge”.
+- **BookingStatuses** (1.0.1) — „În desfășurare”: fără „Anulează programarea”; rămân „Încasează” (→ „Încheiată”) și „Corectează starea…”.
+- **HubEmpty** (1.1.1) — textul nou sub salut.
+- **HubCatalog, HubAppTexts** (1.0.1) — descrierile noi ale aplicațiilor.
+- **AppDock, AppTile, OrgSwitcher, AccessBadge** — previzualizările au o secțiune S147 (light / dark, desktop / telefon, DE / IT).
+- **Toate previzualizările** — „Alte aplicații Ventora Systems” → „Descoperă mai mult din Ventora”, textul de sub titlu, „Explorează toate aplicațiile” și descrierile vechi ale aplicațiilor, înlocuite peste tot unde apăreau.
+
+### `manifest.json`
+- Adăugată HubBusinessProfile (171 de componente) și README-ul ei. Fișierul nu are câmp de versiune; versiunile sunt cele de mai sus.
+
+### Chei i18n (toate în cele 6 limbi, aceleași chei și aceiași parametri `{…}`; 80 noi, 14 schimbate)
+#### `i18n/apps.json` — 25 chei noi, 14 schimbate
+
+- `apps.launcher.*` (1): `apps.launcher.lead`
+- `apps.launcher.other.*` (3): `apps.launcher.other.title`, `apps.launcher.other.lead`, `apps.launcher.other.all`
+- `apps.access.*` (6): `apps.access.available`, `apps.access.unavailable`, `apps.access.notInRole`, `apps.access.notInPlan`, `apps.access.suspended`, `apps.access.soon`
+- `apps.access.hint.*` (8): `apps.access.hint.unavailable`, `apps.access.hint.notInRole`, `apps.access.hint.notInRoleNoOne`, `apps.access.hint.notInPlan`, `apps.access.hint.notInPlanMember`, `apps.access.hint.notInPlanMemberNoOne`, `apps.access.hint.suspended`, `apps.access.hint.soon`
+- `apps.access.act.*` (7): `apps.access.act.requestActivation`, `apps.access.act.requestAccess`, `apps.access.act.recommend`, `apps.access.act.seeStatus`, `apps.access.act.seePlan`, `apps.access.act.notifyMe`, `apps.access.act.seeInCatalog`
+
+Schimbate (textul nou în toate cele 6 limbi): `apps.booking.short`, `apps.crm.short`, `apps.marketing.short`, `apps.hr.short`, `apps.shifts.short`, `apps.inventory.short`, `apps.assets.short`, `apps.events.short`, `apps.finance.short`, `apps.contracts.short`, `apps.documents.short`, `apps.projects.short`, `apps.analytics.short`, `apps.network.short`
+
+#### `i18n/team.json` — 38 chei noi
+
+- `hub.nav.*` (1): `hub.nav.businessProfile`
+- `hub.nav.businessProfile.*` (1): `hub.nav.businessProfile.short`
+- `hub.business.*` (5): `hub.business.lead`, `hub.business.name`, `hub.business.nameHelp`, `hub.business.preview`, `hub.business.cancel`
+- `hub.business.logo.*` (17): `hub.business.logo.title`, `hub.business.logo.lead`, `hub.business.logo.rules`, `hub.business.logo.upload`, `hub.business.logo.replace`, `hub.business.logo.remove`, `hub.business.logo.none`, `hub.business.logo.uploading`, `hub.business.logo.saved`, `hub.business.logo.errType`, `hub.business.logo.errSize`, `hub.business.logo.errSmall`, `hub.business.logo.uploadFailed`, `hub.business.logo.removeTitle`, `hub.business.logo.removeBody`, `hub.business.logo.removed`, `hub.business.logo.ownerOnly`
+- `hub.account.photo.*` (14): `hub.account.photo.title`, `hub.account.photo.lead`, `hub.account.photo.rules`, `hub.account.photo.upload`, `hub.account.photo.replace`, `hub.account.photo.remove`, `hub.account.photo.none`, `hub.account.photo.uploading`, `hub.account.photo.saved`, `hub.account.photo.errType`, `hub.account.photo.errSize`, `hub.account.photo.removeTitle`, `hub.account.photo.removeBody`, `hub.account.photo.removed`
+
+#### `i18n/commercial.json` — 17 chei noi
+
+- `recommendsApp` (1): `recommendsApp`
+- `reco.note.*` (9): `reco.note.title`, `reco.note.body`, `reco.note.label`, `reco.note.placeholder`, `reco.note.help`, `reco.note.count`, `reco.note.tooLong`, `reco.note.send`, `reco.note.from`
+- `reco.*` (1): `reco.cancel`
+- `reco.reject.*` (6): `reco.reject.title`, `reco.reject.body`, `reco.reject.reason`, `reco.reject.reasonHelp`, `reco.reject.placeholder`, `reco.reject.reasonShown`

@@ -9,3 +9,5 @@ ClientDesk — the shell and the home page (S130, CR-UI.1). Romanian only for no
 **States.** Everything up to date ("Totul e la zi"; the empty GrowthSlot renders nothing). First day: no contacts, "Adaugă un contact", "Importă din CSV", and the note that EasyBook clients appear on their own. A member: "Contactele mele" and their own numbers; "Vezi contactele atribuite ție și pe cele neatribuite."
 
 Shown at 1280, 820 and 390, light and dark. DE DECIS in ClientDeskContacts.
+
+**S131.** The bell shows ClientDesk's own notifications (due activities, new leads, mentions); nothing from EasyBook's "Risc ridicat", blocked clients or health data. Leads, deals and activities: ClientDeskLeads, ClientDeskDeals, ClientDeskActivities.

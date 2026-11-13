@@ -11,3 +11,5 @@ The launcher's "Aplicațiile tale": a row of app icons on one raised sheet; on h
 **Phones** (container under 560px): a 4-column grid of `dock-icon-phone` (56px) icons on the canvas, no sheet and no card; a tap opens the app.
 
 **Rules.** Only the apps the person can open. Portal is not in the dock — it is `PortalPresence`. Today's line is optional and comes from the app (one short fact, no promises). Never use the dock inside an app.
+
+**S147 · Fișa se strânge pe conținut (13.11).** Fișa deschisă nu mai are înălțime fixă (196px): se oprește sub ultimul rând (descriere, rândul de azi sau acțiune), fără gol. O aplicație activă nu are buton. Un element poate fi neactiv (`access` din DockApp): icon gri, fără rândul de azi, o singură acțiune — proprietar / admin „Vezi în Catalog” (`onCatalog(app)`), membru „Recomandă” (`onRecommend(app)`), după `viewer`; `action` înlocuiește acțiunea implicită. Pe telefon nu există fișă: iconul neactiv e gri.

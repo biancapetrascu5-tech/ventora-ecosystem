@@ -1345,3 +1345,21 @@ a.v-btn { box-sizing: border-box; }
 .v-spine__collapse { color: var(--ink-secondary); }
 @container shell (max-width: 1023px) { .v-spine:not(.v-spine--sheet) .v-spine__bottom { display: none; } }
 .v-spine.is-collapsed .v-spine__bottom { border-top: var(--border-width) solid var(--line); padding-top: var(--space-2); }
+
+/* S147 (13.11) — business switcher: logo, else the person's photo, else nothing */
+.v-org__logo { flex: none; width: var(--space-6); height: var(--space-6); box-sizing: border-box; padding: 1px; border: var(--border-width) solid var(--line); border-radius: var(--radius-xs); background: var(--sheet); object-fit: contain; }
+.v-org__photo { flex: none; width: var(--space-6); height: var(--space-6); border-radius: var(--radius-full); object-fit: cover; }
+.v-org.no-mark { padding-inline-start: var(--space-2); }
+.v-orgmenu__item .v-org__logo, .v-orgmenu__item .v-org__photo { width: var(--space-8); height: var(--space-8); }
+/* S147 — the dock card fits its content; a locked app has one action */
+.v-dock__act { position: absolute; left: var(--space-5); top: 106px; margin: 0; opacity: 0; visibility: hidden; transform: translateY(var(--space-2)); transition: opacity var(--duration-fast) var(--ease-standard), transform var(--duration-morph) var(--ease-spring), visibility 0s linear var(--duration-fast); pointer-events: none; }
+.v-dock__card { box-sizing: border-box; interpolate-size: allow-keywords; transition-property: left, top, width, height, padding, background-color, box-shadow; }
+.v-dock__item:is(:hover, .is-hover, :focus-within) .v-dock__card { height: auto; min-height: 120px; padding: 106px 0 var(--space-5); }
+.v-dock__item:is(:hover, .is-hover, :focus-within) :is(.v-dock__desc, .v-dock__live, .v-dock__act) { position: relative; left: auto; top: auto; bottom: auto; margin-left: var(--space-5); }
+.v-dock__item:is(:hover, .is-hover, :focus-within) .v-dock__live { margin-top: var(--space-3); }
+.v-dock__item:is(:hover, .is-hover, :focus-within) .v-dock__act { margin-top: var(--space-3); opacity: 1; visibility: visible; transform: none; pointer-events: auto; transition: opacity var(--duration-fast) var(--ease-standard) 80ms, transform var(--duration-morph) var(--ease-spring) 20ms, visibility 0s; }
+.v-dock__item.is-locked .v-apptile__name { color: var(--ink-secondary); }
+@container vdock (max-width: 560px) {
+  .v-dock__act { display: none; }
+  .v-dock__item:is(:hover, .is-hover, :focus-within) .v-dock__card { height: 100%; min-height: 0; padding: 0; }
+}

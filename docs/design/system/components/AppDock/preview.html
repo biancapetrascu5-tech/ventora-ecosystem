@@ -1,4 +1,4 @@
-<!-- @dsCard group="Hub" height=4488 width=1200 -->
+<!-- @dsCard group="Hub" height=8080 width=1200 -->
 <!doctype html>
 <html lang="ro">
 <head><meta charset="utf-8"><title>AppDock — Ventora Systems</title>
@@ -22,20 +22,20 @@ html,body{margin:0;overflow-x:hidden}
 const V = window.Ventora;
 const h = React.createElement;
 const APPS = [
-  { app: "booking", description: "Programări, calendar și reamintiri", badge: 3, live: { text: "Următoarea: 09:30 · Ana Popescu" } },
-  { app: "crm", description: "Clienți, istoric și oportunități", live: { text: "4 clienți noi săptămâna asta" } },
-  { app: "hr", description: "Echipă, prezență și concedii", badge: 1, live: { text: "1 cerere de aprobat", attention: true } },
-  { app: "finance", description: "Facturi, scadențe și restanțe", badge: 2, live: { text: "2 facturi scadente · 2.480 lei", attention: true } },
-  { app: "projects", description: "Proiecte, sarcini și termene", live: { text: "3 termene săptămâna asta" } },
-  { app: "shifts", description: "Ture și înlocuiri", live: { text: "Azi lucrează 4 colegi" } },
-  { app: "documents", description: "Documente și șabloane", live: { text: "Ultimul deschis: Contract Salon Aurora · ieri" } }
+  { app: "booking", description: "Programări, calendare și reamintiri, mereu organizate.", badge: 3, live: { text: "Următoarea: 09:30 · Ana Popescu" } },
+  { app: "crm", description: "Clienți, contacte și oportunități, într-un singur loc.", live: { text: "4 clienți noi săptămâna asta" } },
+  { app: "hr", description: "Angajați, concedii și informații de echipă, organizate.", badge: 1, live: { text: "1 cerere de aprobat", attention: true } },
+  { app: "finance", description: "Facturi, plăți și bugete, cu o imagine clară.", badge: 2, live: { text: "2 facturi scadente · 2.480 lei", attention: true } },
+  { app: "projects", description: "Proiecte, sarcini și termene, mereu în ordine.", live: { text: "3 termene săptămâna asta" } },
+  { app: "shifts", description: "Ture, programe și disponibilitate, fără complicații.", live: { text: "Azi lucrează 4 colegi" } },
+  { app: "documents", description: "Documente, fișiere și informații, simplu de gestionat.", live: { text: "Ultimul deschis: Contract Salon Aurora · ieri" } }
 ];
 const ALL13 = ["booking","crm","hr","finance","projects","shifts","documents","inventory","analytics","marketing","events","assets","contracts"].map((a) => ({ app: a, description: "" }));
 const DE = [
-  { app: "booking", description: "Termine, Kalender und Erinnerungen an einem Ort verwalten", badge: 3, live: { text: "Nächster Termin: 09:30 · Ana Popescu" } },
+  { app: "booking", description: "Termine, Kalender und Erinnerungen, immer organisiert. an einem Ort verwalten", badge: 3, live: { text: "Nächster Termin: 09:30 · Ana Popescu" } },
   { app: "crm", description: "Kunden, Verlauf und Verkaufschancen", live: { text: "4 neue Kunden diese Woche" } },
-  { app: "hr", description: "Team, Anwesenheit und Urlaub", badge: 1, live: { text: "1 Antrag wartet auf Freigabe", attention: true } },
-  { app: "finance", description: "Rechnungen, Fälligkeiten und Rückstände", live: { text: "2 fällige Rechnungen · 2.480 lei", attention: true } }
+  { app: "hr", description: "Mitarbeitende, Urlaub und Teaminfos, gut organisiert.", badge: 1, live: { text: "1 Antrag wartet auf Freigabe", attention: true } },
+  { app: "finance", description: "Rechnungen, Zahlungen und Budgets im klaren Überblick.", live: { text: "2 fällige Rechnungen · 2.480 lei", attention: true } }
 ];
 function Forced({ apps, hover, focus }) {
   const ref = React.useRef(null);
@@ -58,13 +58,39 @@ function Theme({ th }) {
         h("div", { className: "phone" }, h(V.AppDock, { apps: APPS })))));
 }
 const ITA = [
-  { app: "booking", description: "Appuntamenti, calendario e promemoria in un unico posto", badge: 3, live: { text: "Prossimo: 09:30 · Niccolò Lucà" } },
+  { app: "booking", description: "Appuntamenti, calendari e promemoria, sempre organizzati. in un unico posto", badge: 3, live: { text: "Prossimo: 09:30 · Niccolò Lucà" } },
   { app: "crm", description: "Clienti, cronologia e opportunità", live: { text: "4 nuovi clienti questa settimana" } },
-  { app: "hr", description: "Team, presenze e ferie", badge: 1, live: { text: "1 richiesta da approvare", attention: true } },
+  { app: "hr", description: "Dipendenti, ferie e informazioni del team, organizzati.", badge: 1, live: { text: "1 richiesta da approvare", attention: true } },
   { app: "finance", description: "Fatture, scadenze e pagamenti scaduti", badge: 2, live: { text: "2 fatture in scadenza · 2.480 lei", attention: true } },
   { app: "contracts", description: "Contratti, firme e rinnovi", live: { text: "1 rinnovo entro venerdì" } }
 ];
-mount(h("div", null,
+const S147_I18N = {"ro": {"apps.booking.short": "Programări, calendare și reamintiri, mereu organizate.", "apps.crm.short": "Clienți, contacte și oportunități, într-un singur loc.", "apps.documents.short": "Documente, fișiere și informații, simplu de gestionat.", "apps.contracts.short": "Contracte, termene și obligații, mereu la îndemână.", "apps.events.short": "Evenimente, participanți și organizare, într-un singur loc.", "apps.hr.short": "Angajați, concedii și informații de echipă, organizate.", "apps.inventory.short": "Stocuri, produse și mișcări de inventar, mereu la zi.", "apps.shifts.short": "Ture, programe și disponibilitate, fără complicații.", "apps.marketing.short": "Campanii, audiențe și rezultate, sub control.", "apps.analytics.short": "Rapoarte, indicatori și analize, pentru decizii informate.", "apps.assets.short": "Echipamente, active și mentenanță, atent monitorizate.", "apps.projects.short": "Proiecte, sarcini și termene, mereu în ordine.", "apps.finance.short": "Facturi, plăți și bugete, cu o imagine clară.", "apps.portal.short": "Pagina afacerii pentru clienți", "apps.network.short": "Conectează-ți echipa și colaborează mai eficient cu Ventora Network."}, "en": {"apps.booking.short": "Appointments, calendars and reminders, always organised.", "apps.crm.short": "Clients, contacts and opportunities, in one place.", "apps.documents.short": "Documents, files and information, easy to manage.", "apps.contracts.short": "Contracts, deadlines and obligations, always at hand.", "apps.events.short": "Events, attendees and planning, in one place.", "apps.hr.short": "Employees, leave and team information, organised.", "apps.inventory.short": "Stock, products and inventory movements, always up to date.", "apps.shifts.short": "Shifts, schedules and availability, without the hassle.", "apps.marketing.short": "Campaigns, audiences and results, under control.", "apps.analytics.short": "Reports, metrics and analysis, for informed decisions.", "apps.assets.short": "Equipment, assets and maintenance, closely tracked.", "apps.projects.short": "Projects, tasks and deadlines, always in order.", "apps.finance.short": "Invoices, payments and budgets, with a clear picture.", "apps.portal.short": "Your business’s page for clients", "apps.network.short": "Connect your team and collaborate more effectively with Ventora Network."}, "fr": {"apps.booking.short": "Rendez-vous, calendriers et rappels, toujours organisés.", "apps.crm.short": "Clients, contacts et opportunités, au même endroit.", "apps.documents.short": "Documents, fichiers et informations, simples à gérer.", "apps.contracts.short": "Contrats, échéances et obligations, toujours à portée de main.", "apps.events.short": "Événements, participants et organisation, au même endroit.", "apps.hr.short": "Employés, congés et informations d’équipe, organisés.", "apps.inventory.short": "Stocks, produits et mouvements d’inventaire, toujours à jour.", "apps.shifts.short": "Équipes, plannings et disponibilités, sans complications.", "apps.marketing.short": "Campagnes, audiences et résultats, sous contrôle.", "apps.analytics.short": "Rapports, indicateurs et analyses, pour des décisions éclairées.", "apps.assets.short": "Équipements, actifs et maintenance, suivis de près.", "apps.projects.short": "Projets, tâches et échéances, toujours en ordre.", "apps.finance.short": "Factures, paiements et budgets, en toute clarté.", "apps.portal.short": "La page de votre entreprise pour vos clients", "apps.network.short": "Connectez votre équipe et collaborez plus efficacement avec Ventora Network."}, "es": {"apps.booking.short": "Citas, calendarios y recordatorios, siempre organizados.", "apps.crm.short": "Clientes, contactos y oportunidades, en un solo lugar.", "apps.documents.short": "Documentos, archivos e información, fáciles de gestionar.", "apps.contracts.short": "Contratos, plazos y obligaciones, siempre a mano.", "apps.events.short": "Eventos, asistentes y organización, en un solo lugar.", "apps.hr.short": "Empleados, vacaciones e información del equipo, organizados.", "apps.inventory.short": "Existencias, productos y movimientos de inventario, siempre al día.", "apps.shifts.short": "Turnos, horarios y disponibilidad, sin complicaciones.", "apps.marketing.short": "Campañas, audiencias y resultados, bajo control.", "apps.analytics.short": "Informes, indicadores y análisis, para decisiones informadas.", "apps.assets.short": "Equipos, activos y mantenimiento, bien controlados.", "apps.projects.short": "Proyectos, tareas y plazos, siempre en orden.", "apps.finance.short": "Facturas, pagos y presupuestos, con una visión clara.", "apps.portal.short": "La página de tu negocio para clientes", "apps.network.short": "Conecta a tu equipo y colabora de forma más eficaz con Ventora Network."}, "de": {"apps.booking.short": "Termine, Kalender und Erinnerungen, immer organisiert.", "apps.crm.short": "Kunden, Kontakte und Chancen an einem Ort.", "apps.documents.short": "Dokumente, Dateien und Informationen, einfach verwaltet.", "apps.contracts.short": "Verträge, Fristen und Pflichten, immer griffbereit.", "apps.events.short": "Veranstaltungen, Teilnehmende und Organisation an einem Ort.", "apps.hr.short": "Mitarbeitende, Urlaub und Teaminfos, gut organisiert.", "apps.inventory.short": "Bestände, Produkte und Lagerbewegungen, immer aktuell.", "apps.shifts.short": "Schichten, Dienstpläne und Verfügbarkeit, ganz unkompliziert.", "apps.marketing.short": "Kampagnen, Zielgruppen und Ergebnisse im Griff.", "apps.analytics.short": "Berichte, Kennzahlen und Analysen für fundierte Entscheidungen.", "apps.assets.short": "Geräte, Anlagen und Wartung, sorgfältig überwacht.", "apps.projects.short": "Projekte, Aufgaben und Fristen, immer in Ordnung.", "apps.finance.short": "Rechnungen, Zahlungen und Budgets im klaren Überblick.", "apps.portal.short": "Die Seite Ihres Unternehmens für Kunden", "apps.network.short": "Vernetzen Sie Ihr Team und arbeiten Sie mit Ventora Network effizienter zusammen."}, "it": {"apps.booking.short": "Appuntamenti, calendari e promemoria, sempre organizzati.", "apps.crm.short": "Clienti, contatti e opportunità, in un unico posto.", "apps.documents.short": "Documenti, file e informazioni, semplici da gestire.", "apps.contracts.short": "Contratti, scadenze e obblighi, sempre a portata di mano.", "apps.events.short": "Eventi, partecipanti e organizzazione, in un unico posto.", "apps.hr.short": "Dipendenti, ferie e informazioni del team, organizzati.", "apps.inventory.short": "Scorte, prodotti e movimenti di magazzino, sempre aggiornati.", "apps.shifts.short": "Turni, orari e disponibilità, senza complicazioni.", "apps.marketing.short": "Campagne, pubblici e risultati, sotto controllo.", "apps.analytics.short": "Report, indicatori e analisi, per decisioni informate.", "apps.assets.short": "Attrezzature, beni e manutenzione, monitorati con cura.", "apps.projects.short": "Progetti, attività e scadenze, sempre in ordine.", "apps.finance.short": "Fatture, pagamenti e budget, con un quadro chiaro.", "apps.portal.short": "La pagina dell’attività per i clienti", "apps.network.short": "Connetta il Suo team e collabori in modo più efficace con Ventora Network."}};
+/* S147 (13.11): the new states, Light / Dark, desktop and phone, plus DE / IT. */
+const S147_PHOTO = "data:image/svg+xml;charset=utf-8," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" fill="#9DB7C9"/><circle cx="32" cy="26" r="12" fill="#F2D3BE"/><path d="M19 22c2-10 24-12 27 1-4-3-9-6-14-5-5 0-9 2-13 4z" fill="#4A3B33"/><path d="M8 64c2-14 12-20 24-20s22 6 24 20z" fill="#3E5A73"/></svg>');
+const S147_LOGO = "data:image/svg+xml;charset=utf-8," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="#F6E7DA"/><circle cx="32" cy="34" r="17" fill="none" stroke="#B4532A" stroke-width="5"/><path d="M14 34h36" stroke="#B4532A" stroke-width="5" stroke-linecap="round"/><circle cx="32" cy="17" r="5" fill="#E58A5B"/></svg>');
+const S147_T = (l, k, v) => { let s = (S147_I18N[l] && S147_I18N[l][k]) || S147_I18N.ro[k] || k; if (v) for (const p in v) s = s.split("{" + p + "}").join(v[p]); return s; };
+function S147Board({ title, note, render, frames }) {
+  const E = React.createElement;
+  const F = frames || [["Desktop · Light", "light", "ro", 1040], ["Desktop · Dark", "dark", "ro", 1040], ["Telefon · 390 · Light", "light", "ro", 390], ["Telefon · 390 · Dark", "dark", "ro", 390], ["Deutsch · Desktop · Light", "light", "de", 1040], ["Italiano · 390 · Dark", "dark", "it", 390]];
+  return E("div", { style: { display: "flex", flexDirection: "column", gap: "var(--space-4)", padding: "var(--space-6)", background: "var(--sheet)", color: "var(--ink)" }, "data-theme": "light" },
+    E("p", { className: "heading", style: { margin: 0 } }, title),
+    note ? E("p", { className: "caption", style: { margin: 0, color: "var(--ink-muted)" } }, note) : null,
+    F.map(([lab, th, lang, w]) => E("div", { key: lab },
+      E("p", { className: "caption", style: { margin: "0 0 var(--space-2)", color: "var(--ink-muted)" } }, lab),
+      E("div", { "data-theme": th, style: { width: w, maxWidth: "100%", boxSizing: "border-box", padding: "var(--space-5)", background: "var(--canvas)", color: "var(--ink)", border: "var(--border-width) solid var(--line-strong)", borderRadius: "var(--radius-lg)", containerType: "inline-size", containerName: "shell" } },
+        E(V.LocaleProvider, { locale: lang }, render(w < 600 ? "mobile" : "desktop", lang, th))))));
+}
+function S147Forced({ apps, hover, viewer }) {
+  const ref = React.useRef(null);
+  React.useEffect(() => { const it = ref.current.querySelectorAll(".v-dock__item")[hover]; if (it) it.classList.add("is-hover"); }, []);
+  return React.createElement("div", { ref, style: { padding: "var(--space-10) var(--space-2) var(--space-16)" } }, React.createElement(V.AppDock, { apps, viewer, onCatalog: () => {}, onRecommend: () => {} }));
+}
+const S147_DOCK = (l) => [["booking", null, 2], ["crm"], ["hr"], ["marketing", "notInPlan"], ["analytics", "notInRole"]].map(([a, acc, b]) => ({ app: a, description: S147_T(l, "apps." + a + ".short"), access: acc || undefined, badge: b }));
+const S147_EL = React.createElement("div", null,
+  React.createElement(S147Board, { title: "S147 · Fișa se strânge pe conținut; aplicație neactivă: o singură acțiune", note: "Activă: fără buton · neactivă: proprietar / admin „Vezi în Catalog”, membru „Recomandă” · pe telefon: icon gri, fără fișă",
+    render: (m, l) => m === "mobile" ? React.createElement(V.AppDock, { apps: S147_DOCK(l) }) : React.createElement("div", { style: { display: "flex", flexDirection: "column" } }, React.createElement(S147Forced, { apps: S147_DOCK(l), hover: 1 }), React.createElement(S147Forced, { apps: S147_DOCK(l), hover: 3, viewer: "owner" }), React.createElement(S147Forced, { apps: S147_DOCK(l), hover: 3, viewer: "member" })) }));
+
+mount(React.createElement("div", null, h("div", null,
   h(Theme, { th: "light" }), h(Theme, { th: "dark" }),
   h("div", { className: "d", "data-theme": "light" },
     h("p", { className: "heading" }, "Light · Deutsch"),
@@ -82,7 +108,7 @@ mount(h("div", null,
     h("p", { className: "heading" }, "Dark · Deutsch · Italiano"),
     h("div", { className: "row" },
       h(V.LocaleProvider, { locale: "de" }, h("div", { className: "stage band" }, h(Forced, { apps: DE, hover: 3 }))),
-      h(V.LocaleProvider, { locale: "it" }, h("div", { className: "phone" }, h(V.AppDock, { apps: ITA })))))));
+      h(V.LocaleProvider, { locale: "it" }, h("div", { className: "phone" }, h(V.AppDock, { apps: ITA })))))), S147_EL));
 </script>
 </body>
 </html>

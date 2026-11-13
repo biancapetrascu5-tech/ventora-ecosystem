@@ -1,6 +1,6 @@
 # AppHelp
 
-In-app help (S140, content S144). Romanian only for now. Panel chrome: keys `onboarding.help.*` in `i18n/onboarding.json`. Articles and FAQ: `i18n/help.json` (S144). Drawn in EasyBook; the same in every app.
+In-app help (S140, content S144, translations S145). The articles and FAQ are in 6 languages (S145); the panel chrome `onboarding.help.*` too (S143). Panel chrome: keys `onboarding.help.*` in `i18n/onboarding.json`. Articles and FAQ: `i18n/help.json` (S144; ro, en, fr, es, de, it since S145). In every language, button and screen names inside the steps are the exact texts of `booking.json`, `crm.json`, `team.json` and `api.json`; the tone follows the business UI of `booking.json` (EN neutral, FR "vous", ES "usted", DE "Sie", IT "Lei"). Drawn in EasyBook; the same in every app.
 
 **The "?" button** in the app bar, next to the bell (`circle-help`). **The panel** (Drawer): "Pentru ecranul „Calendar”", search, short articles for the current screen (reading time), "Întrebări frecvente" (3 shown + "Toate cele 10 întrebări"), short tours, "Ghidul de configurare" (with what is left), "Scrie-ne" — the existing support, with the current screen attached.
 
@@ -18,3 +18,4 @@ Shown at 1280, 820 and 390, light and dark: the panel for "Calendar", the articl
 - `calendar.views`: "Zi" / "Săptămână" and the colleague filter are assumed from the calendar previews.
 - `faq.cancel` and `faq.clientRights`: there is no self-serve cancellation or data-deletion flow; the answers send the owner to support. Replace when the flows exist.
 - Reading time is computed at 180 words per minute, so every article is 1 minute today; keep `.min` as a key so a longer article can say 2.
+- Checked in DE and IT at 390 / 820 / 1280 (S145): the "Calendar" panel and the two drawn articles, no overflow. The published preview stays in Romanian.
