@@ -472,10 +472,10 @@
     "App~20icons"
   ],
   "lastChange": {
-    "at": "2026-11-04T19:59:28Z",
+    "at": "2026-11-13T09:33:58Z",
     "by": "Bianca Petrașcu",
     "via": "Claude",
-    "note": "S121: datele de facturare (D-3.6-1), factura neemisă (D-3.6-4/5), cererile cu implementare (3.8, propus), textele agenților validate — 5 ecrane noi, FounderNewBusiness și FounderOverview schimbate"
+    "note": "S147: selectorul de afacere fără inițială (logo → poză → nimic), textul de sub salut, fișa de la hover pe conținut, descrierile noi ale aplicațiilor, „Descoperă mai mult din Ventora” cu toate cazurile; HubBusinessProfile (nou, logo), poza de profil în HubAccount; nota și motivul la recomandări; BookingStatuses fără anulare în „În desfășurare”; 80 de chei noi, 14 schimbate, în 6 limbi"
   },
   "layout": "files",
   "libraries": [

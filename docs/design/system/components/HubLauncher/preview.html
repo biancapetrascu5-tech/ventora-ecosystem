@@ -1,4 +1,4 @@
-<!-- @dsCard group="Ecrane Hub" height=11918 width=2620 page -->
+<!-- @dsCard group="Ecrane Hub" height=22178 width=2620 page -->
 <!doctype html>
 <html lang="ro">
 <head><meta charset="utf-8"><title>HubLauncher — Ventora Systems</title>
@@ -310,6 +310,16 @@ html,body{min-height:100%}
 .ph-frame{height:640px}
 .ph-band{display:block}
 .ph-col{display:flex;flex-direction:column}
+.lb-today{margin:0;color:var(--ink-secondary)}
+.lb.mobile .lb-today{font-size:15px;line-height:30px}
+.x147-col{display:flex;flex-direction:column;gap:var(--space-3)}
+.x147-bar{height:auto;border-radius:var(--radius-lg)}
+.x147-open{height:300px}
+.x147-ph{height:620px}
+.x147-wrap{flex-wrap:wrap;padding:var(--space-4);background:var(--canvas);color:var(--ink);border-radius:var(--radius-lg)}
+.x147-case{width:1220px}
+.x147-stage{padding:var(--space-10) var(--space-6) var(--space-16);height:300px;box-sizing:border-box;background:var(--canvas);border-radius:var(--radius-lg)}
+.x147-other .rows{border-radius:var(--radius-lg)}
 </style>
 </head>
 <body>
@@ -425,11 +435,11 @@ function Screens({ title, notes, render, desktopH = 860, tabletH = 1100, mobileH
   const sizes = [["desktop", "Desktop \xB7 1280", "scr-d", desktopH], ["tablet", "Tablet\u0103 portret \xB7 820", "scr-t", tabletH], ["mobile", "Telefon \xB7 390", "scr-m", mobileH]];
   return /* @__PURE__ */ React.createElement("div", { className: "scr" }, /* @__PURE__ */ React.createElement("p", { className: "heading" }, title), notes && /* @__PURE__ */ React.createElement("p", { className: "caption muted" }, notes.join(" \xB7 ")), ["light", "dark"].map((th) => /* @__PURE__ */ React.createElement("div", { className: "scr-row", key: th }, sizes.map(([m, lab, cls, h]) => /* @__PURE__ */ React.createElement("div", { key: m }, /* @__PURE__ */ React.createElement("p", { className: "caption scr-lab" }, lab, " \xB7 ", th === "light" ? "Light" : "Dark"), /* @__PURE__ */ React.createElement("div", { className: cls, "data-theme": th, style: { height: h } }, render(m, th)))))));
 }
-const MINE = [["booking", "Program\u0103ri, calendar \u0219i reamintiri", 3], ["crm", "Clien\u021Bi, istoric \u0219i oportunit\u0103\u021Bi"], ["hr", "Echip\u0103, prezen\u021B\u0103 \u0219i concedii", 1], ["finance", "Facturi, scaden\u021Be \u0219i restan\u021Be", 2], ["projects", "Proiecte, sarcini \u0219i termene"], ["shifts", "Ture \u0219i \xEEnlocuiri"], ["documents", "Documente \u0219i \u0219abloane"], ["portal", "Pagina afacerii pentru clien\u021Bi"]];
+const MINE = [["booking", "Program\u0103ri, calendare \u0219i reamintiri, mereu organizate.", 3], ["crm", "Clien\u021Bi, contacte \u0219i oportunit\u0103\u021Bi, \xEEntr-un singur loc."], ["hr", "Angaja\u021Bi, concedii \u0219i informa\u021Bii de echip\u0103, organizate.", 1], ["finance", "Facturi, pl\u0103\u021Bi \u0219i bugete, cu o imagine clar\u0103.", 2], ["projects", "Proiecte, sarcini \u0219i termene, mereu \xEEn ordine."], ["shifts", "Ture, programe \u0219i disponibilitate, f\u0103r\u0103 complica\u021Bii."], ["documents", "Documente, fi\u0219iere \u0219i informa\u021Bii, simplu de gestionat."], ["portal", "Pagina afacerii pentru clien\u021Bi"]];
 const RECO = { marketing: { reason: "Se potrive\u0219te cu EasyBook: trimite automat reamintiri \u0219i campanii clien\u021Bilor t\u0103i.", cost: "49 lei pe lun\u0103 \xB7 f\u0103r\u0103 cost de implementare" } };
 const VIEWER_ROLE = "owner";
 const RECO_FOR = (a) => (VIEWER_ROLE === "owner" || VIEWER_ROLE === "admin") && a === "marketing" ? RECO[a] : null;
-const OTHER = [["inventory", "unavailable"], ["analytics", "notInRole"], ["marketing", "notInPlan"], ["network", "notInPlan"]];
+const OTHER = [["marketing", "notInPlan"], ["network", "notInPlan"], ["inventory", "unavailable"], ["events", "soon"]];
 /* Direcția B (25 oct. 2026): the launcher's brand band and AppDock, Portal as its own card, AppLaunch v2. */
 const LIVE = {
   booking: ["Următoarea: 09:30 · Ana Popescu"],
@@ -464,17 +474,17 @@ function Launcher({ mode, empty, noPortal, noData }) {
         h("h1", { className: "display-hub" }, "Bună dimineața, Bianca"),
         empty
           ? h("p", { className: "lead lb-day" }, "Bine ai venit în Salon Aurora. Aplicațiile apar aici imediat ce primești acces.")
-          : noData ? h("p", { className: "lead lb-day" }, "Aplicațiile tale sunt mai jos; deschide-o pe cea de care ai nevoie.")
-          : h("p", { className: "lead lb-day" }, "Azi ai ", chip("booking", "8 programări"), ".")),
+          : noData ? h("p", { className: "lead lb-day" }, TX147("ro", "apps.launcher.lead"))
+          : h(React.Fragment, null, h("p", { className: "lead lb-day" }, TX147("ro", "apps.launcher.lead")), h("p", { className: "body lb-today" }, "Azi ai ", chip("booking", "8 programări"), "."))),
       mob ? null : h(Chevrons, { cls: "lb-chev" })),
     !empty && !mob ? sechead : null);
   const other = h("section", { className: "lb-other" },
-    h("h2", { className: "display-m sec" }, "Alte aplicații Ventora Systems"),
-    h("p", { className: "body lb-other__intro" }, "Nu le poți deschide acum. La fiecare scrie de ce și ce poți face."),
+    h("h2", { className: "display-m sec" }, "Descoperă mai mult din Ventora"),
+    h("p", { className: "body lb-other__intro" }, "Explorează aplicațiile disponibile pentru echipa ta."),
     h("div", { className: "rows" }, OTHER.map(([a, s]) => !noData && RECO_FOR(a)
       ? h(V.GrowthSlot, { key: a, label: "Recomandare" }, h(V.AppTile, { app: a, access: s, layout: "row", recommendation: RECO_FOR(a), onDetails: () => {}, onDismiss: () => {}, onRemindLater: () => {} }))
-      : h(V.AppTile, { key: a, app: a, access: s, layout: "row", grantedBy: "Bianca Petrașcu", onRequestAccess: () => {}, onWriteUs: () => {}, onSeeStatus: () => {} }))),
-    h("div", { style: { marginTop: "var(--space-4)" } }, h(V.Button, { variant: "quiet", icon: "layout-grid", iconEnd: "arrow-right" }, "Vezi toate aplicațiile Ventora Systems")));
+      : h(V.AppTile, { key: a, app: a, access: s, layout: "row", viewer: VIEWER_ROLE, grantedBy: "Bianca Petrașcu", description: TX147("ro", "apps." + a + ".short"), onRequestAccess: () => {}, onRequestActivation: () => {}, onRecommend: () => {}, onSeeStatus: () => {}, onSeePlan: () => {}, onNotify: () => {} }))),
+    h("div", { style: { marginTop: "var(--space-4)" } }, h(V.Button, { variant: "quiet", icon: "layout-grid", iconEnd: "arrow-right" }, "Explorează toate aplicațiile")));
   const body = empty
     ? [h("div", { key: "e", className: "sheetlike lb-empty" }, h(V.EmptyState, { icon: "layout-grid", title: "Nu ai încă acces la nicio aplicație", description: "Bianca Petrașcu (proprietar) alege ce aplicații folosește fiecare rol. Putem trimite noi cererea ta.", actions: h(React.Fragment, null, h(V.Button, { variant: "primary", icon: "send" }, "Cere acces"), h(V.Button, { variant: "quiet" }, "Scrie-ne")) }), h("p", { className: "body-small muted center", style: { paddingBottom: "var(--space-6)" } }, "Între timp, alege-ți fotografia și limba din ", h("a", { className: "v-link", href: "#" }, "Contul tău"), "."))]
     : [mob ? h("div", { key: "s" }, sechead) : null,
@@ -505,7 +515,108 @@ function PhoneHeader({ th, lang }) {
             account: h(V.AccountMenu, { defaultOpen: true, orgsInMenu: true, user: USER, orgs: de ? [{ id: 1, name: "Zahnarztpraxis Dr. M\u00fcller", role: "Empfang" }, { id: 2, name: "Salon Aurora", role: "Inhaberin" }] : ORGS, currentOrgId: de ? 1 : "aurora", onCatalog: () => {} })
           })))));
 }
-mount(React.createElement("div", null, /* @__PURE__ */ React.createElement(Screens, { title: "Launcher — treci cu mouse-ul peste o aplicație ca să vezi fișa ei; apasă ca s-o deschizi", notes: ["CampaignKit e un slot comercial: doar pentru proprietar și admin, cel mult unul, cu „Nu mă interesează” și „Amintește-mi mai târziu”, sub plafoanele globale", "Portal are cardul lui: pagina afacerii pentru clienți, nu o aplicație în care lucrezi"], desktopH: 1200, tabletH: 1560, mobileH: 1760, render: (m) => /* @__PURE__ */ React.createElement(Launcher, { mode: m }) }),
+const AX147 = {"ro": {"apps.booking.short": "Programări, calendare și reamintiri, mereu organizate.", "apps.crm.short": "Clienți, contacte și oportunități, într-un singur loc.", "apps.documents.short": "Documente, fișiere și informații, simplu de gestionat.", "apps.contracts.short": "Contracte, termene și obligații, mereu la îndemână.", "apps.events.short": "Evenimente, participanți și organizare, într-un singur loc.", "apps.hr.short": "Angajați, concedii și informații de echipă, organizate.", "apps.inventory.short": "Stocuri, produse și mișcări de inventar, mereu la zi.", "apps.shifts.short": "Ture, programe și disponibilitate, fără complicații.", "apps.marketing.short": "Campanii, audiențe și rezultate, sub control.", "apps.analytics.short": "Rapoarte, indicatori și analize, pentru decizii informate.", "apps.assets.short": "Echipamente, active și mentenanță, atent monitorizate.", "apps.projects.short": "Proiecte, sarcini și termene, mereu în ordine.", "apps.finance.short": "Facturi, plăți și bugete, cu o imagine clară.", "apps.portal.short": "Pagina afacerii pentru clienți", "apps.network.short": "Conectează-ți echipa și colaborează mai eficient cu Ventora Network.", "apps.launcher.lead": "Toate instrumentele echipei tale, într-un singur loc.", "apps.launcher.other.title": "Descoperă mai mult din Ventora", "apps.launcher.other.lead": "Explorează aplicațiile disponibile pentru echipa ta.", "apps.launcher.other.all": "Explorează toate aplicațiile"}, "en": {"apps.booking.short": "Appointments, calendars and reminders, always organised.", "apps.crm.short": "Clients, contacts and opportunities, in one place.", "apps.documents.short": "Documents, files and information, easy to manage.", "apps.contracts.short": "Contracts, deadlines and obligations, always at hand.", "apps.events.short": "Events, attendees and planning, in one place.", "apps.hr.short": "Employees, leave and team information, organised.", "apps.inventory.short": "Stock, products and inventory movements, always up to date.", "apps.shifts.short": "Shifts, schedules and availability, without the hassle.", "apps.marketing.short": "Campaigns, audiences and results, under control.", "apps.analytics.short": "Reports, metrics and analysis, for informed decisions.", "apps.assets.short": "Equipment, assets and maintenance, closely tracked.", "apps.projects.short": "Projects, tasks and deadlines, always in order.", "apps.finance.short": "Invoices, payments and budgets, with a clear picture.", "apps.portal.short": "Your business’s page for clients", "apps.network.short": "Connect your team and collaborate more effectively with Ventora Network.", "apps.launcher.lead": "All your team's tools, in one place.", "apps.launcher.other.title": "Discover more from Ventora", "apps.launcher.other.lead": "Explore the apps available for your team.", "apps.launcher.other.all": "Explore all apps"}, "fr": {"apps.booking.short": "Rendez-vous, calendriers et rappels, toujours organisés.", "apps.crm.short": "Clients, contacts et opportunités, au même endroit.", "apps.documents.short": "Documents, fichiers et informations, simples à gérer.", "apps.contracts.short": "Contrats, échéances et obligations, toujours à portée de main.", "apps.events.short": "Événements, participants et organisation, au même endroit.", "apps.hr.short": "Employés, congés et informations d’équipe, organisés.", "apps.inventory.short": "Stocks, produits et mouvements d’inventaire, toujours à jour.", "apps.shifts.short": "Équipes, plannings et disponibilités, sans complications.", "apps.marketing.short": "Campagnes, audiences et résultats, sous contrôle.", "apps.analytics.short": "Rapports, indicateurs et analyses, pour des décisions éclairées.", "apps.assets.short": "Équipements, actifs et maintenance, suivis de près.", "apps.projects.short": "Projets, tâches et échéances, toujours en ordre.", "apps.finance.short": "Factures, paiements et budgets, en toute clarté.", "apps.portal.short": "La page de votre entreprise pour vos clients", "apps.network.short": "Connectez votre équipe et collaborez plus efficacement avec Ventora Network.", "apps.launcher.lead": "Tous les outils de votre équipe, au même endroit.", "apps.launcher.other.title": "Découvrez plus de Ventora", "apps.launcher.other.lead": "Explorez les applications disponibles pour votre équipe.", "apps.launcher.other.all": "Explorer toutes les applications"}, "es": {"apps.booking.short": "Citas, calendarios y recordatorios, siempre organizados.", "apps.crm.short": "Clientes, contactos y oportunidades, en un solo lugar.", "apps.documents.short": "Documentos, archivos e información, fáciles de gestionar.", "apps.contracts.short": "Contratos, plazos y obligaciones, siempre a mano.", "apps.events.short": "Eventos, asistentes y organización, en un solo lugar.", "apps.hr.short": "Empleados, vacaciones e información del equipo, organizados.", "apps.inventory.short": "Existencias, productos y movimientos de inventario, siempre al día.", "apps.shifts.short": "Turnos, horarios y disponibilidad, sin complicaciones.", "apps.marketing.short": "Campañas, audiencias y resultados, bajo control.", "apps.analytics.short": "Informes, indicadores y análisis, para decisiones informadas.", "apps.assets.short": "Equipos, activos y mantenimiento, bien controlados.", "apps.projects.short": "Proyectos, tareas y plazos, siempre en orden.", "apps.finance.short": "Facturas, pagos y presupuestos, con una visión clara.", "apps.portal.short": "La página de tu negocio para clientes", "apps.network.short": "Conecta a tu equipo y colabora de forma más eficaz con Ventora Network.", "apps.launcher.lead": "Todas las herramientas de tu equipo, en un solo lugar.", "apps.launcher.other.title": "Descubre más de Ventora", "apps.launcher.other.lead": "Explora las aplicaciones disponibles para tu equipo.", "apps.launcher.other.all": "Explorar todas las aplicaciones"}, "de": {"apps.booking.short": "Termine, Kalender und Erinnerungen, immer organisiert.", "apps.crm.short": "Kunden, Kontakte und Chancen an einem Ort.", "apps.documents.short": "Dokumente, Dateien und Informationen, einfach verwaltet.", "apps.contracts.short": "Verträge, Fristen und Pflichten, immer griffbereit.", "apps.events.short": "Veranstaltungen, Teilnehmende und Organisation an einem Ort.", "apps.hr.short": "Mitarbeitende, Urlaub und Teaminfos, gut organisiert.", "apps.inventory.short": "Bestände, Produkte und Lagerbewegungen, immer aktuell.", "apps.shifts.short": "Schichten, Dienstpläne und Verfügbarkeit, ganz unkompliziert.", "apps.marketing.short": "Kampagnen, Zielgruppen und Ergebnisse im Griff.", "apps.analytics.short": "Berichte, Kennzahlen und Analysen für fundierte Entscheidungen.", "apps.assets.short": "Geräte, Anlagen und Wartung, sorgfältig überwacht.", "apps.projects.short": "Projekte, Aufgaben und Fristen, immer in Ordnung.", "apps.finance.short": "Rechnungen, Zahlungen und Budgets im klaren Überblick.", "apps.portal.short": "Die Seite Ihres Unternehmens für Kunden", "apps.network.short": "Vernetzen Sie Ihr Team und arbeiten Sie mit Ventora Network effizienter zusammen.", "apps.launcher.lead": "Alle Tools deines Teams an einem Ort.", "apps.launcher.other.title": "Mehr von Ventora entdecken", "apps.launcher.other.lead": "Entdecken Sie die Apps, die für Ihr Team verfügbar sind.", "apps.launcher.other.all": "Alle Apps entdecken"}, "it": {"apps.booking.short": "Appuntamenti, calendari e promemoria, sempre organizzati.", "apps.crm.short": "Clienti, contatti e opportunità, in un unico posto.", "apps.documents.short": "Documenti, file e informazioni, semplici da gestire.", "apps.contracts.short": "Contratti, scadenze e obblighi, sempre a portata di mano.", "apps.events.short": "Eventi, partecipanti e organizzazione, in un unico posto.", "apps.hr.short": "Dipendenti, ferie e informazioni del team, organizzati.", "apps.inventory.short": "Scorte, prodotti e movimenti di magazzino, sempre aggiornati.", "apps.shifts.short": "Turni, orari e disponibilità, senza complicazioni.", "apps.marketing.short": "Campagne, pubblici e risultati, sotto controllo.", "apps.analytics.short": "Report, indicatori e analisi, per decisioni informate.", "apps.assets.short": "Attrezzature, beni e manutenzione, monitorati con cura.", "apps.projects.short": "Progetti, attività e scadenze, sempre in ordine.", "apps.finance.short": "Fatture, pagamenti e budget, con un quadro chiaro.", "apps.portal.short": "La pagina dell’attività per i clienti", "apps.network.short": "Connetta il Suo team e collabori in modo più efficace con Ventora Network.", "apps.launcher.lead": "Tutti gli strumenti del tuo team, in un unico posto.", "apps.launcher.other.title": "Scopra di più su Ventora", "apps.launcher.other.lead": "Esplori le app disponibili per il Suo team.", "apps.launcher.other.all": "Esplora tutte le app"}};
+/* S147 (13.11) — business switcher (logo → photo → nothing), the dock card (fits its content; one action on a locked app), "Descoperă mai mult din Ventora" in every case. Texts: AX147 (keys from i18n/apps.json), 6 languages; DE / IT tests below. */
+const LOGO147 = "data:image/svg+xml;charset=utf-8," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="#F6E7DA"/><circle cx="32" cy="34" r="17" fill="none" stroke="#B4532A" stroke-width="5"/><path d="M14 34h36" stroke="#B4532A" stroke-width="5" stroke-linecap="round"/><circle cx="32" cy="17" r="5" fill="#E58A5B"/></svg>');
+const PHOTO147 = "data:image/svg+xml;charset=utf-8," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" fill="#9DB7C9"/><circle cx="32" cy="26" r="12" fill="#F2D3BE"/><path d="M19 22c2-10 24-12 27 1-4-3-9-6-14-5-5 0-9 2-13 4z" fill="#4A3B33"/><path d="M8 64c2-14 12-20 24-20s22 6 24 20z" fill="#3E5A73"/></svg>');
+const TX147 = (l, k, v) => { let s = (AX147[l] && AX147[l][k]) || AX147.ro[k] || k; if (v) for (const p in v) s = s.split("{" + p + "}").join(v[p]); return s; };
+const ORGS147 = { logo: [Object.assign({}, ORGS[0], { logo: LOGO147 }), ORGS[1], Object.assign({}, ORGS[2], { logo: LOGO147 })], plain: ORGS };
+const ORGS147_L = { de: [{ id: "aurora", name: "Salon Aurora", role: "Inhaberin" }, { id: "dentis", name: "Zahnarztpraxis Dentis", role: "Empfang" }], it: [{ id: "aurora", name: "Salon Aurora", role: "Titolare" }, { id: "dentis", name: "Studio dentistico Dentis", role: "Reception" }] };
+const USER147 = { photo: Object.assign({}, USER, { avatar: PHOTO147 }), none: USER };
+function Bar147({ kind, lang, open }) {
+  const h = React.createElement;
+  const orgs0 = ORGS147_L[lang] || ORGS147.plain;
+  const orgs = kind === "logo" ? orgs0.map((o, i) => i === 0 || i === 2 ? Object.assign({}, o, { logo: LOGO147 }) : o) : orgs0;
+  const user = kind === "photo" ? USER147.photo : USER147.none;
+  return h(V.BrandZone, null, h(V.ContextBar, {
+    leading: h("span", { style: { padding: "0 var(--space-2)", display: "inline-flex" } }, h(V.Logo, { size: 32, className: "v-cb-logo--full" }), h(V.Logo, { variant: "mark", size: 32, className: "v-cb-logo--mark" })),
+    org: h(V.OrgSwitcher, { orgs, currentId: "aurora", avatar: user.avatar, defaultOpen: !!open }),
+    onSearch: () => {}, notifications: h(V.NotificationsPanel, { items: [] }),
+    account: h(V.AccountMenu, { user, orgs, currentOrgId: "aurora", onCatalog: () => {} }) }));
+}
+function Phone147({ kind, lang }) {
+  const h = React.createElement;
+  const orgs0 = ORGS147_L[lang] || ORGS147.plain;
+  const orgs = kind === "logo" ? orgs0.map((o, i) => i === 0 ? Object.assign({}, o, { logo: LOGO147 }) : o) : orgs0;
+  const user = kind === "photo" ? USER147.photo : USER147.none;
+  return h(V.BrandZone, { className: "ph-band" }, h(V.ContextBar, {
+    leading: h("span", { style: { padding: "0 var(--space-2)", display: "inline-flex" } }, h(V.Logo, { variant: "mark", size: 32 })),
+    onSearch: () => {}, notifications: h(V.NotificationsPanel, { items: [] }),
+    account: h(V.AccountMenu, { defaultOpen: true, orgsInMenu: true, user, orgs, currentOrgId: "aurora", onCatalog: () => {} }) }));
+}
+const KIND147 = [["logo", "1 · Afacerea are logo: logo-ul"], ["photo", "2 · Fără logo, ai poză de profil: poza ta, rotundă"], ["none", "3 · Fără logo și fără poză: doar numele și rolul, aliniate la stânga"]];
+function Switcher147() {
+  const h = React.createElement;
+  return h("div", { className: "scr" },
+    h("p", { className: "heading" }, "Selectorul de afacere (S147): fără pătratul cu inițiala"),
+    h("p", { className: "caption muted" }, "Logo-ul afacerii (Profilul afacerii, doar proprietar / admin) → altfel poza ta de profil (Contul tău) → altfel nimic · pe telefon selectorul e în meniul contului"),
+    ["light", "dark"].map((th) => h(React.Fragment, { key: th }, h("div", { className: "scr-row" },
+      KIND147.map(([k, lab]) => h("div", { key: k, className: "x147-col" },
+        h("p", { className: "caption scr-lab" }, "Tabletă · 820 · " + (th === "light" ? "Light" : "Dark") + " · " + lab),
+        h("div", { className: "scr-d x147-bar", "data-theme": th, style: { width: 820, containerType: "inline-size", containerName: "shell" } }, h(Bar147, { kind: k }))))),
+      h("div", { className: "scr-row" }, h("div", null, h("p", { className: "caption scr-lab" }, "Desktop · lista deschisă: logo, poză sau nimic, pe fiecare rând"),
+        h("div", { className: "scr-d x147-open", "data-theme": th, style: { containerType: "inline-size", containerName: "shell" } }, h(Bar147, { kind: "logo", open: true }))),
+      h("div", null, h("p", { className: "caption scr-lab" }, "Telefon · 390 · " + (th === "light" ? "Light" : "Dark") + " · fără logo, cu poză"),
+        h("div", { className: "scr-m ph-frame x147-ph", "data-theme": th, style: { containerType: "inline-size", containerName: "shell" } }, h(Phone147, { kind: th === "light" ? "photo" : "none" })))))));
+}
+/* the dock card: forced hover on one item */
+function Dock147({ apps, hover, viewer, lang }) {
+  const ref = React.useRef(null);
+  React.useEffect(() => { const it = ref.current.querySelectorAll(".v-dock__item")[hover]; if (it) it.classList.add("is-hover"); }, []);
+  return React.createElement("div", { ref, className: "x147-stage" }, React.createElement(V.AppDock, { apps, viewer, onCatalog: () => {}, onRecommend: () => {} }));
+}
+const dockApps147 = (l) => [
+  { app: "booking", description: TX147(l, "apps.booking.short"), badge: 3, live: { text: l === "de" ? "Nächster Termin: 09:30 · Ana Popescu" : l === "it" ? "Prossimo: 09:30 · Ana Popescu" : "Următoarea: 09:30 · Ana Popescu" } },
+  { app: "crm", description: TX147(l, "apps.crm.short") },
+  { app: "hr", description: TX147(l, "apps.hr.short") },
+  { app: "marketing", description: TX147(l, "apps.marketing.short"), access: "notInPlan" },
+  { app: "analytics", description: TX147(l, "apps.analytics.short"), access: "notInRole" }];
+function DockBoard147() {
+  const h = React.createElement;
+  const cases = [["Activă (ClientDesk): fără buton, fișa se oprește sub descriere", 1, "owner"], ["Activă, cu rândul de azi (EasyBook)", 0, "owner"], ["Neactivă · proprietar sau admin: „Vezi în Catalog”", 3, "owner"], ["Neactivă · membru: „Recomandă”", 3, "member"]];
+  return h("div", { className: "scr" },
+    h("p", { className: "heading" }, "Fișa de la hover (S147): înălțimea se strânge pe conținut; o aplicație neactivă are o singură acțiune"),
+    h("p", { className: "caption muted" }, "Activă → fără buton · neactivă: proprietar / admin „Vezi în Catalog”, membru „Recomandă” · pe telefon nu există fișă: iconul neactiv e gri"),
+    ["light", "dark"].map((th) => h("div", { className: "scr-row x147-wrap", key: th, "data-theme": th },
+      cases.map(([lab, i, vw]) => h("div", { key: lab, className: "x147-case" }, h("p", { className: "caption scr-lab" }, (th === "light" ? "Light" : "Dark") + " · " + lab), h(Dock147, { apps: dockApps147("ro"), hover: i, viewer: vw }))),
+      h("div", { className: "x147-case" }, h("p", { className: "caption scr-lab" }, (th === "light" ? "Light" : "Dark") + " · Telefon · 390"), h("div", { className: "scr-m", style: { padding: "var(--space-4)", height: "auto" } }, h(V.AppDock, { apps: dockApps147("ro") }))))));
+}
+/* "Descoperă mai mult din Ventora": every case */
+function Other147({ lang = "ro", viewer, suspended, mode }) {
+  const h = React.createElement, T = (k, v) => TX147(lang, k, v);
+  const who = "Bianca Petrașcu";
+  const rows = suspended ? [["network", "suspended"], ["marketing", "suspended"]]
+    : viewer === "member" ? [["analytics", "notInRole"], ["network", "notInPlan"], ["inventory", "unavailable"], ["events", "soon"]]
+    : [["network", "notInPlan"], ["marketing", "notInPlan"], ["inventory", "unavailable"], ["events", "soon"]];
+  return h("section", { className: "lb-other x147-other " + mode },
+    h("h2", { className: "display-m sec" }, T("apps.launcher.other.title")),
+    h("p", { className: "body lb-other__intro" }, T("apps.launcher.other.lead")),
+    h("div", { className: "rows" }, rows.map(([a, s]) => h(V.AppTile, { key: a, app: a, access: s, layout: "row", viewer, grantedBy: who,
+      description: T("apps." + a + ".short"), onRequestAccess: () => {}, onRequestActivation: () => {}, onRecommend: () => {}, onSeeStatus: () => {}, onSeePlan: () => {}, onNotify: () => {} }))),
+    h("div", { style: { marginTop: "var(--space-4)" } }, h(V.Button, { variant: "quiet", icon: "layout-grid", iconEnd: "arrow-right" }, T("apps.launcher.other.all"))));
+}
+function OtherBoard147() {
+  const h = React.createElement;
+  const cases = [["Proprietar / admin: „Disponibilă pentru activare” + „Solicită activarea”; temporar indisponibilă; în curând", { viewer: "owner" }], ["Membru: „Acces la cerere” + „Cere acces”; neactivată + „Recomandă”; în curând", { viewer: "member" }], ["Afacere suspendată · proprietar: „Vezi abonamentul”", { viewer: "owner", suspended: true }], ["Afacere suspendată · membru: fără acțiune", { viewer: "member", suspended: true }]];
+  return h("div", { className: "scr" },
+    h("p", { className: "heading" }, "„Descoperă mai mult din Ventora” (S147): insigna, descrierea și butonul, pe fiecare caz"),
+    h("p", { className: "caption muted" }, "„Nu e în abonament” și „În curând” arată descrierea aplicației (apps.*.short); celelalte spun de ce și ce poți face · o singură acțiune pe rând"),
+    ["light", "dark"].map((th) => h(React.Fragment, { key: th }, cases.map(([lab, p]) => h("div", { className: "scr-row", key: lab },
+      [["desktop", "scr-d", "Desktop · 1280"], ["mobile", "scr-m", "Telefon · 390"]].map(([m, cls, ml]) => h("div", { key: m }, h("p", { className: "caption scr-lab" }, ml + " · " + (th === "light" ? "Light" : "Dark") + " · " + lab),
+        h("div", { className: cls + " lb " + m, "data-theme": th, style: { height: "auto", padding: m === "mobile" ? "var(--space-4)" : "var(--space-6) var(--space-8)" } }, h(Other147, Object.assign({ mode: m }, p))))))))));
+}
+function Loc147() {
+  const h = React.createElement;
+  const box = (lab, lang, th, cls, el) => h("div", { key: lab }, h("p", { className: "caption scr-lab" }, lab), h("div", { className: cls, "data-theme": th, style: { height: "auto", padding: cls === "scr-m" ? "var(--space-4)" : "var(--space-6) var(--space-8)", containerType: "inline-size", containerName: "shell" } }, h(V.LocaleProvider, { locale: lang }, el)));
+  return h("div", { className: "scr" }, h("p", { className: "heading" }, "Test cu etichete în germană și italiană (S147)"),
+    h("div", { className: "scr-row" },
+      box("Deutsch · 1280 · Light · Inhaberin", "de", "light", "scr-d lb desktop", h(React.Fragment, null, h("div", { style: { margin: "calc(var(--space-6) * -1) calc(var(--space-8) * -1) var(--space-6)" } }, h(Bar147, { kind: "logo", lang: "de" })), h("p", { className: "lead", style: { margin: "0 0 var(--space-4)" } }, TX147("de", "apps.launcher.lead")), h(Dock147, { apps: dockApps147("de"), hover: 3, viewer: "owner", lang: "de" }), h(Other147, { lang: "de", viewer: "owner", mode: "desktop" }))),
+      box("Italiano · 390 · Dark · membro", "it", "dark", "scr-m lb mobile", h(React.Fragment, null, h("p", { className: "lead", style: { margin: "0 0 var(--space-4)" } }, TX147("it", "apps.launcher.lead")), h(Other147, { lang: "it", viewer: "member", mode: "mobile" })))),
+    h("div", { className: "scr-row" },
+      box("Italiano · 1280 · Dark · membro, scheda", "it", "dark", "scr-d lb desktop", h(React.Fragment, null, h(Dock147, { apps: dockApps147("it"), hover: 3, viewer: "member", lang: "it" }), h(Other147, { lang: "it", viewer: "member", suspended: true, mode: "desktop" })))));
+}
+
+mount(React.createElement("div", null, React.createElement(Switcher147, null), React.createElement(DockBoard147, null), React.createElement(OtherBoard147, null), React.createElement(Loc147, null), /* @__PURE__ */ React.createElement(Screens, { title: "Launcher — treci cu mouse-ul peste o aplicație ca să vezi fișa ei; apasă ca s-o deschizi", notes: ["CampaignKit e un slot comercial: doar pentru proprietar și admin, cel mult unul, cu „Nu mă interesează” și „Amintește-mi mai târziu”, sub plafoanele globale", "Portal are cardul lui: pagina afacerii pentru clienți, nu o aplicație în care lucrezi"], desktopH: 1200, tabletH: 1560, mobileH: 1760, render: (m) => /* @__PURE__ */ React.createElement(Launcher, { mode: m }) }),
   React.createElement(Screens, { title: "Fără Portal (S136, 5.1, D5-16): afacerea nu are pagină în Portal — cardul Portal lipsește cu totul, aplicațiile urcă în locul lui, fără gol", notes: ["Fraza zilei: doar „programări azi”, pentru că EasyBook e activ; fără alte chip-uri de date"], desktopH: 1200, tabletH: 1560, mobileH: 1760, render: (m) => React.createElement(Launcher, { mode: m, noPortal: true }) }),
   React.createElement(Screens, { title: "Nicio aplicație care dă date (S136, D5-17): fraza zilei e o propoziție simplă, fără chip-uri", notes: ["Fără EasyBook activ nu apare nicio cifră în bandă; nici rândurile cu date din fișele aplicațiilor"], desktopH: 1200, tabletH: 1560, mobileH: 1760, render: (m) => React.createElement(Launcher, { mode: m, noData: true, noPortal: true }) }),
   React.createElement("div", { className: "scr" },

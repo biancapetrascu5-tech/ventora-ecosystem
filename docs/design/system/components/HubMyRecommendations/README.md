@@ -11,3 +11,5 @@ Hub — "Recomandările mele" for a member (S136, 5.9). In "Contul tău" in the 
 **States.** No recommendations ("Nicio recomandare", "Deschide Catalogul").
 
 Shown at 1280, 820 and 390, light and dark.
+
+**S147 · Nota și motivul (13.11).** Membrul: „Recomandă aplicația” deschide un dialog cu nota opțională pentru proprietar (cel mult 300 de caractere, cu contor și eroare peste limită). Proprietarul / adminul: notificarea și cardul „{nume} recomandă {app}” (cheia `recommendsApp`, 6 limbi) cu nota; „Respinge” are motivul opțional, pe care membrul îl vede sub „Nu acum”. Chei `reco.*`, `recommendsApp` în `i18n/commercial.json`. Test DE / IT.

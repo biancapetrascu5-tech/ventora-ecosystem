@@ -14,3 +14,5 @@ EasyBook — the 7 states of an appointment (D-B-11) with their StatusPill, and 
 The other EasyBook screens (BookingList, BookingToday, BookingDetail) still use the 5 earlier states; on import they take these 7.
 
 Shown at 1280 and 390, in light and dark, plus the pills in all 6 languages.
+
+**S147.** Din „În desfășurare” s-a scos „Anulează programarea”: rămân „Încasează” (duce la „Încheiată”) și „Corectează starea…”.

@@ -111,6 +111,7 @@
     "components/HubAppActivation/README.md",
     "components/HubAppTexts/README.md",
     "components/HubAutomations/README.md",
+    "components/HubBusinessProfile/README.md",
     "components/HubBusinessSuspended/README.md",
     "components/HubCatalog/README.md",
     "components/HubCatalogApp/README.md",
@@ -972,6 +973,12 @@
       "name": "HubAutomations",
       "group": "Ecrane Hub",
       "summary": "Hub · Afacerea · \"Automatizări\" (D4-23, D4-24): the business sees which automations it has, with the last sending, and the UsageMeter of automated messages; it…",
+      "page": true
+    },
+    {
+      "name": "HubBusinessProfile",
+      "group": "Ecrane Hub",
+      "summary": "Hub — Afacerea › Profilul afacerii: the business name (read only) and the logo — upload, replace, remove, rejected files, owner / admin only; the logo shows in the business switcher.",
       "page": true
     },
     {

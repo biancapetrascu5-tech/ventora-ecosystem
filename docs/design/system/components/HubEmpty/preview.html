@@ -307,6 +307,8 @@ html,body{min-height:100%}
 .sb.mobile .display-hub{font-size:32px;line-height:36px}
 @media (prefers-reduced-motion: reduce){.lb *,.sb *{transition:none!important}}
 
+.lb-today{margin:0;color:var(--ink-secondary)}
+.lb.mobile .lb-today{font-size:15px;line-height:30px}
 </style>
 </head>
 <body>
@@ -464,7 +466,7 @@ function Screens({ title, notes, render, desktopH = 860, tabletH = 1100, mobileH
   const sizes = [["desktop", "Desktop \xB7 1280", "scr-d", desktopH], ["tablet", "Tablet\u0103 portret \xB7 820", "scr-t", tabletH], ["mobile", "Telefon \xB7 390", "scr-m", mobileH]];
   return /* @__PURE__ */ React.createElement("div", { className: "scr" }, /* @__PURE__ */ React.createElement("p", { className: "heading" }, title), notes && /* @__PURE__ */ React.createElement("p", { className: "caption muted" }, notes.join(" \xB7 ")), ["light", "dark"].map((th) => /* @__PURE__ */ React.createElement("div", { className: "scr-row", key: th }, sizes.map(([m, lab, cls, h]) => /* @__PURE__ */ React.createElement("div", { key: m }, /* @__PURE__ */ React.createElement("p", { className: "caption scr-lab" }, lab, " \xB7 ", th === "light" ? "Light" : "Dark"), /* @__PURE__ */ React.createElement("div", { className: cls, "data-theme": th, style: { height: h } }, render(m, th)))))));
 }
-const MINE = [["booking", "Program\u0103ri, calendar \u0219i reamintiri", 3], ["crm", "Clien\u021Bi, istoric \u0219i oportunit\u0103\u021Bi"], ["hr", "Echip\u0103, prezen\u021B\u0103 \u0219i concedii", 1], ["finance", "Facturi, scaden\u021Be \u0219i restan\u021Be", 2], ["projects", "Proiecte, sarcini \u0219i termene"], ["shifts", "Ture \u0219i \xEEnlocuiri"], ["documents", "Documente \u0219i \u0219abloane"], ["portal", "Pagina afacerii pentru clien\u021Bi"]];
+const MINE = [["booking", "Program\u0103ri, calendare \u0219i reamintiri, mereu organizate.", 3], ["crm", "Clien\u021Bi, contacte \u0219i oportunit\u0103\u021Bi, \xEEntr-un singur loc."], ["hr", "Angaja\u021Bi, concedii \u0219i informa\u021Bii de echip\u0103, organizate.", 1], ["finance", "Facturi, pl\u0103\u021Bi \u0219i bugete, cu o imagine clar\u0103.", 2], ["projects", "Proiecte, sarcini \u0219i termene, mereu \xEEn ordine."], ["shifts", "Ture, programe \u0219i disponibilitate, f\u0103r\u0103 complica\u021Bii."], ["documents", "Documente, fi\u0219iere \u0219i informa\u021Bii, simplu de gestionat."], ["portal", "Pagina afacerii pentru clien\u021Bi"]];
 const RECO = { marketing: { reason: "Se potrive\u0219te cu EasyBook: trimite automat reamintiri \u0219i campanii clien\u021Bilor t\u0103i.", cost: "49 lei pe lun\u0103 \xB7 f\u0103r\u0103 cost de implementare" } };
 const VIEWER_ROLE = "owner";
 const RECO_FOR = (a) => (VIEWER_ROLE === "owner" || VIEWER_ROLE === "admin") && a === "marketing" ? RECO[a] : null;
@@ -509,16 +511,16 @@ function Launcher({ mode, empty, lang, requested, state, attention }) {
         h("h1", { className: "display-hub" }, T.hello),
         empty
           ? h("p", { className: "lead lb-day" }, T.welcome)
-          : h("p", { className: "lead lb-day" }, "Azi ai ", chip("booking", "8 programări"), ", ", chip("finance", "2 facturi scadente", true), " și ", chip("hr", "o cerere de concediu", true), " de aprobat.")),
+          : h(React.Fragment, null, h("p", { className: "lead lb-day" }, "Toate instrumentele echipei tale, într-un singur loc."), h("p", { className: "body lb-today" }, "Azi ai ", chip("booking", "8 programări"), ", ", chip("finance", "2 facturi scadente", true), " și ", chip("hr", "o cerere de concediu", true), " de aprobat."))),
       mob ? null : h(Chevrons, { cls: "lb-chev" })),
     !empty && !mob ? sechead : null);
   const other = h("section", { className: "lb-other" },
-    h("h2", { className: "display-m sec" }, "Alte aplicații Ventora Systems"),
-    h("p", { className: "body lb-other__intro" }, "Nu le poți deschide acum. La fiecare scrie de ce și ce poți face."),
+    h("h2", { className: "display-m sec" }, "Descoperă mai mult din Ventora"),
+    h("p", { className: "body lb-other__intro" }, "Explorează aplicațiile disponibile pentru echipa ta."),
     h("div", { className: "rows" }, OTHER.map(([a, s]) => RECO_FOR(a)
       ? h(V.GrowthSlot, { key: a, label: "Recomandare" }, h(V.AppTile, { app: a, access: s, layout: "row", recommendation: RECO_FOR(a), onDetails: () => {}, onDismiss: () => {}, onRemindLater: () => {} }))
       : h(V.AppTile, { key: a, app: a, access: s, layout: "row", grantedBy: "Bianca Petrașcu", onRequestAccess: () => {}, onWriteUs: () => {}, onSeeStatus: () => {} }))),
-    h("div", { style: { marginTop: "var(--space-4)" } }, h(V.Button, { variant: "quiet", icon: "layout-grid", iconEnd: "arrow-right" }, "Vezi toate aplicațiile Ventora Systems")));
+    h("div", { style: { marginTop: "var(--space-4)" } }, h(V.Button, { variant: "quiet", icon: "layout-grid", iconEnd: "arrow-right" }, "Explorează toate aplicațiile")));
   const body = empty && state ? EmptyBody146({ lang, state }) : empty
     ? [h("div", { key: "e", className: "sheetlike lb-empty" }, h(V.EmptyState, { icon: "layout-grid", title: T.title, description: requested ? T.descSent : T.desc, actions: h(React.Fragment, null, requested ? h(V.Button, { variant: "primary", icon: "check", disabled: true }, T.sent) : h(V.Button, { variant: "primary", icon: "send" }, T.ask), h(V.Button, { variant: "quiet" }, T.write)) }), h("p", { className: "body-small muted center", style: { paddingBottom: "var(--space-6)" } }, requested ? T.waitNote : T.meanwhile, h("a", { className: "v-link", href: "#" }, T.account), "."))]
     : [mob ? h("div", { key: "s" }, sechead) : null,

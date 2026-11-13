@@ -6,3 +6,5 @@ The avatar in the ContextBar: who is signed in, account, theme, language, suppor
 
 
 The menu opens in the theme of the place it opens from: in a Dark frame it is dark, even on a light page. The preview shows desktop and phone in Light and Dark, plus German and Italian.
+
+**S147.** Selectorul de afacere din meniu (pe telefon) primește `user.avatar`, așa că arată poza persoanei când afacerea nu are logo.
