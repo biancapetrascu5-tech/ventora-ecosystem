@@ -30,6 +30,9 @@ export {
 export { bookingQuotaRefundConsumer } from '../server/quota';
 // Review #164: the internal job that closes the expired public holds and clears the old hashes
 export { runPublicHoldCleanupJob } from '../server/public-cleanup';
+// Lot B.13: the confirmation and the reminder by e-mail (the job booking.client-emails)
+export { runClientEmailJob, renderClientEmail } from '../server/client-emails';
+export type { ClientEmailJobReport, ClientEmail, ClientMessageKind } from '../server/client-emails';
 export type { PublicHoldCleanupReport } from '../server/public-cleanup';
 export type { BookingOutboxConsumer } from '../server/quota';
 export type {

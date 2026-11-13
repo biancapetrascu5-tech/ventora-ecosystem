@@ -166,6 +166,34 @@
       "next": "Il riavvio è manuale: controlla l’offerta, il pubblico e i testi in Founder · Growth prima di riavviarla.",
       "button": "Apri Growth · Controllo",
       "why": "Ricevi questa e-mail perché il tuo indirizzo riceve gli avvisi del team di Ventora Systems."
+    },
+    "booking": {
+      "sender": "{business} tramite EasyBook",
+      "subject": "{title} · {business}",
+      "greet": "Buongiorno {name},",
+      "k": {
+        "service": "Servizio",
+        "member": "Con",
+        "when": "Quando",
+        "where": "Dove"
+      },
+      "why": "Riceve questa e-mail perché ha prenotato un appuntamento da {business}.",
+      "sentBy": "Inviato con EasyBook, Ventora Systems",
+      "manage": "Modifichi o annulli l’appuntamento",
+      "policy": "Cancellazione gratuita fino a {hours} prima.",
+      "hours": {
+        "one": "{n} ora",
+        "few": "{n} ore",
+        "other": "{n} ore"
+      },
+      "confirmed": {
+        "title": "L’appuntamento è confermato",
+        "lead": "La aspettiamo {when}."
+      },
+      "reminder": {
+        "title": "Domani ha un appuntamento",
+        "lead": "Le ricordiamo l’appuntamento di {when} da {business}."
+      }
     }
   },
   "support": {

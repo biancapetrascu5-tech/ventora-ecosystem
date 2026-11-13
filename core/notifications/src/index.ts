@@ -13,7 +13,13 @@ export { UnconfiguredEmailChannel } from './adapters/unconfigured';
 export { CaptureEmailAdapter } from './adapters/capture';
 export { makeEmailChannel, setEmailChannel, getEmailChannel, deliverEmail } from './channel';
 export type { DeliveryResult, EmailFailureReason } from './channel';
-export { passwordResetLink, invitationLink } from './links';
+export { passwordResetLink, invitationLink, platformLink } from './links';
+// Lot B.13: the S3 template and the shared e-mail texts, for the e-mails a module renders itself
+// (EasyBook to the clients of a business)
+export { renderOperationalEmail } from './templates/layout';
+export type { OperationalEmail } from './templates/layout';
+export { emailMessages, fill } from './templates/messages';
+export type { EmailMessages } from './templates/messages';
 export type { AuthApp } from './links';
 export {
   renderPasswordReset,

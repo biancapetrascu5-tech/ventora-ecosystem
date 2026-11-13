@@ -32,3 +32,41 @@ export async function findPublicOrganization(slug: unknown): Promise<PublicOrgan
     ? { organizationId: r.id, name: r.name, timeZone: r.time_zone, ownerUserId: r.owner_user_id }
     : null;
 }
+
+export type OrganizationCard = {
+  organizationId: string;
+  slug: string;
+  name: string;
+  timeZone: string;
+  /** false when the business is suspended: its modules send nothing to its clients. */
+  active: boolean;
+};
+
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+/**
+ * Lot B.13 — the business behind a module's job (server only, never from a request): the name,
+ * the slug of its public links and its time zone, for the e-mails EasyBook sends to its clients.
+ * Read in the business's own context (RLS); null for an unknown id.
+ */
+export async function getOrganizationCard(
+  organizationId: string,
+): Promise<OrganizationCard | null> {
+  if (!UUID_RE.test(organizationId)) return null;
+  const r = (await getOrgDb().$transaction(async (tx: any) => {
+    await tx.$executeRaw`SELECT set_config('app.organization_id', ${organizationId}, true)`;
+    return tx.organization.findUnique({
+      where: { id: organizationId },
+      select: { slug: true, name: true, timeZone: true, status: true },
+    });
+  })) as { slug: string; name: string; timeZone: string; status: string } | null;
+  return r
+    ? {
+        organizationId,
+        slug: r.slug,
+        name: r.name,
+        timeZone: r.timeZone,
+        active: r.status === 'active',
+      }
+    : null;
+}

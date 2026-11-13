@@ -235,6 +235,8 @@ model Settings {
   behaviorNoteNoShows Int       @default(2) @map("behavior_note_no_shows") @db.SmallInt
   behaviorNoteMonths  Int       @default(6) @map("behavior_note_months") @db.SmallInt
   behaviorNoteSince   DateTime? @map("behavior_note_since") @db.Timestamptz
+  /// B.13: the reminder by e-mail 24 hours before (the confirmation always goes)
+  reminderEmail       Boolean   @default(true) @map("reminder_email")
   updatedByUserId  String   @map("updated_by_user_id") @db.Uuid
   createdAt        DateTime @default(now()) @map("created_at") @db.Timestamptz
   updatedAt        DateTime @default(now()) @map("updated_at") @db.Timestamptz
@@ -356,6 +358,8 @@ model Appointment {
   waitlistEntries WaitlistEntry[]
   waitlistOffers  WaitlistOffer[]
   packageUses     PackageUse[]
+  /// B.13: the e-mails to the client (confirmation, reminder)
+  clientMessages  ClientMessage[]
 
   @@unique([organizationId, number], map: "appointment_organization_id_number_key")
   @@unique([organizationId, id], map: "appointment_organization_id_id_key")
@@ -976,5 +980,30 @@ model PackageUse {
 
   @@index([saleId], map: "package_use_sale_id_idx")
   @@map("package_use")
+  @@schema("booking")
+}
+
+// Lot B.13: the queue of the e-mails to the clients (BookingClientEmails, S116); no personal data
+model ClientMessage {
+  id             String    @id @db.Uuid
+  organizationId String    @map("organization_id") @db.Uuid
+  appointmentId  String    @map("appointment_id") @db.Uuid
+  kind           String    @db.VarChar(20)
+  dedupeKey      String    @map("dedupe_key") @db.VarChar(120)
+  sendAfter      DateTime  @map("send_after") @db.Timestamptz
+  validUntil     DateTime  @map("valid_until") @db.Timestamptz
+  state          String    @default("pending") @db.VarChar(10)
+  attempts       Int       @default(0) @db.SmallInt
+  reason         String?   @db.VarChar(40)
+  sentAt         DateTime? @map("sent_at") @db.Timestamptz
+  createdAt      DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt      DateTime  @default(now()) @map("updated_at") @db.Timestamptz
+
+  appointment Appointment @relation(fields: [organizationId, appointmentId], references: [organizationId, id], onDelete: Restrict, onUpdate: Restrict, map: "client_message_appointment_fkey")
+
+  @@unique([organizationId, dedupeKey], map: "client_message_organization_id_dedupe_key_key")
+  @@index([organizationId, state, sendAfter], map: "client_message_organization_id_state_send_idx")
+  @@index([appointmentId], map: "client_message_appointment_id_idx")
+  @@map("client_message")
   @@schema("booking")
 }

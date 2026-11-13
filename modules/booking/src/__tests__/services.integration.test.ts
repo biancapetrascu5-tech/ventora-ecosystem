@@ -760,6 +760,8 @@ describe('B.1 — the role and the grants (§2.3)', () => {
       'class_session',
       'client',
       'client_block',
+      // B.13: the confirmation and the reminder by e-mail
+      'client_message',
       'client_note_removal',
       // B.12: the salon's questions
       'form_question',
