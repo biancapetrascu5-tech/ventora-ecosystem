@@ -24,6 +24,7 @@ model ServiceCategory {
   services Service[]
 
   @@index([organizationId, sortOrder], map: "service_category_organization_id_sort_idx")
+  @@unique([organizationId, id], map: "service_category_organization_id_id_key")
   @@map("service_category")
   @@schema("booking")
 }
@@ -51,7 +52,7 @@ model Service {
   createdAt          DateTime  @default(now()) @map("created_at") @db.Timestamptz
   updatedAt          DateTime  @default(now()) @map("updated_at") @db.Timestamptz
 
-  category     ServiceCategory? @relation(fields: [categoryId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "service_category_id_fkey")
+  category     ServiceCategory? @relation(fields: [organizationId, categoryId], references: [organizationId, id], onDelete: Restrict, onUpdate: Restrict, map: "service_category_org_fkey")
   appointments Appointment[]
   series       AppointmentSeries[]
   waitlistEntries WaitlistEntry[]
@@ -65,6 +66,7 @@ model Service {
   packageSales  PackageSale[]
   @@index([organizationId, categoryId, sortOrder], map: "service_organization_id_category_sort_idx")
   @@index([categoryId], map: "service_category_id_idx")
+  @@unique([organizationId, id], map: "service_organization_id_id_key")
   @@map("service")
   @@schema("booking")
 }
@@ -117,6 +119,7 @@ model StaffMember {
 
   classSessions ClassSession[]
   @@index([organizationId, sortOrder], map: "staff_member_organization_id_sort_idx")
+  @@unique([organizationId, id], map: "staff_member_organization_id_id_key")
   @@map("staff_member")
   @@schema("booking")
 }
@@ -134,7 +137,7 @@ model StaffWeeklyHours {
   createdAt      DateTime @default(now()) @map("created_at") @db.Timestamptz
   updatedAt      DateTime @default(now()) @map("updated_at") @db.Timestamptz
 
-  staffMember StaffMember @relation(fields: [staffMemberId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "staff_weekly_hours_staff_member_id_fkey")
+  staffMember StaffMember @relation(fields: [organizationId, staffMemberId], references: [organizationId, id], onDelete: Restrict, onUpdate: Restrict, map: "staff_weekly_hours_staff_member_org_fkey")
 
   @@id([staffMemberId, weekday])
   @@index([organizationId], map: "staff_weekly_hours_organization_id_idx")
@@ -159,7 +162,7 @@ model StaffDayOverride {
   createdAt        DateTime  @default(now()) @map("created_at") @db.Timestamptz
   updatedAt        DateTime  @default(now()) @map("updated_at") @db.Timestamptz
 
-  staffMember StaffMember @relation(fields: [staffMemberId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "staff_day_override_staff_member_id_fkey")
+  staffMember StaffMember @relation(fields: [organizationId, staffMemberId], references: [organizationId, id], onDelete: Restrict, onUpdate: Restrict, map: "staff_day_override_staff_member_org_fkey")
 
   @@index([staffMemberId, onDate], map: "staff_day_override_staff_date_idx")
   @@map("staff_day_override")
@@ -180,7 +183,7 @@ model StaffTimeOff {
   createdAt        DateTime  @default(now()) @map("created_at") @db.Timestamptz
   updatedAt        DateTime  @default(now()) @map("updated_at") @db.Timestamptz
 
-  staffMember StaffMember @relation(fields: [staffMemberId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "staff_time_off_staff_member_id_fkey")
+  staffMember StaffMember @relation(fields: [organizationId, staffMemberId], references: [organizationId, id], onDelete: Restrict, onUpdate: Restrict, map: "staff_time_off_staff_member_org_fkey")
 
   @@index([staffMemberId, startsOn], map: "staff_time_off_staff_starts_idx")
   @@map("staff_time_off")
@@ -265,7 +268,7 @@ model Client {
   series       AppointmentSeries[]
   waitlistEntries WaitlistEntry[]
   packageSales PackageSale[]
-  mergedInto   Client?       @relation("ClientMerge", fields: [mergedIntoClientId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "client_merged_into_client_id_fkey")
+  mergedInto   Client?       @relation("ClientMerge", fields: [organizationId, mergedIntoClientId], references: [organizationId, id], onDelete: Restrict, onUpdate: Restrict, map: "client_merged_into_client_org_fkey")
   mergedFrom   Client[]      @relation("ClientMerge")
   blocks       ClientBlock[]
   noteRemovals ClientNoteRemoval[]
@@ -275,6 +278,7 @@ model Client {
 
   @@index([organizationId, name], map: "client_organization_id_name_idx")
   @@index([mergedIntoClientId], map: "client_merged_into_client_id_idx")
+  @@unique([organizationId, id], map: "client_organization_id_id_key")
   @@map("client")
   @@schema("booking")
 }
@@ -338,9 +342,9 @@ model Appointment {
   // Lot B.9d1: the class session of a participant
   classSessionId      String?   @map("class_session_id") @db.Uuid
 
-  staffMember StaffMember          @relation(fields: [staffMemberId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "appointment_staff_member_id_fkey")
-  service     Service              @relation(fields: [serviceId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "appointment_service_id_fkey")
-  client      Client               @relation(fields: [clientId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "appointment_client_id_fkey")
+  staffMember StaffMember          @relation(fields: [organizationId, staffMemberId], references: [organizationId, id], onDelete: Restrict, onUpdate: Restrict, map: "appointment_staff_member_org_fkey")
+  service     Service              @relation(fields: [organizationId, serviceId], references: [organizationId, id], onDelete: Restrict, onUpdate: Restrict, map: "appointment_service_org_fkey")
+  client      Client               @relation(fields: [organizationId, clientId], references: [organizationId, id], onDelete: Restrict, onUpdate: Restrict, map: "appointment_client_org_fkey")
   history     AppointmentHistory[]
   payments    AppointmentPayment[]
   resources   AppointmentResource[]
@@ -382,7 +386,7 @@ model AppointmentHistory {
   actorUserId    String?   @map("actor_user_id") @db.Uuid
   createdAt      DateTime  @default(now()) @map("created_at") @db.Timestamptz
 
-  appointment Appointment @relation(fields: [appointmentId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "appointment_history_appointment_id_fkey")
+  appointment Appointment @relation(fields: [organizationId, appointmentId], references: [organizationId, id], onDelete: Restrict, onUpdate: Restrict, map: "appointment_history_appointment_org_fkey")
 
   @@index([appointmentId, createdAt], map: "appointment_history_appointment_id_idx")
   @@map("appointment_history")
@@ -403,7 +407,7 @@ model TimeBlock {
   createdAt        DateTime  @default(now()) @map("created_at") @db.Timestamptz
   updatedAt        DateTime  @default(now()) @map("updated_at") @db.Timestamptz
 
-  staffMember StaffMember @relation(fields: [staffMemberId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "time_block_staff_member_id_fkey")
+  staffMember StaffMember @relation(fields: [organizationId, staffMemberId], references: [organizationId, id], onDelete: Restrict, onUpdate: Restrict, map: "time_block_staff_member_org_fkey")
 
   @@index([staffMemberId, startsAt], map: "time_block_staff_member_id_starts_idx")
   @@map("time_block")
@@ -431,6 +435,7 @@ model Resource {
 
   classSessions ClassSession[]
   @@index([organizationId, sortOrder], map: "resource_organization_id_sort_idx")
+  @@unique([organizationId, id], map: "resource_organization_id_id_key")
   @@map("resource")
   @@schema("booking")
 }
@@ -447,8 +452,8 @@ model ServiceResource {
   createdAt        DateTime  @default(now()) @map("created_at") @db.Timestamptz
   updatedAt        DateTime  @default(now()) @map("updated_at") @db.Timestamptz
 
-  service  Service  @relation(fields: [serviceId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "service_resource_service_id_fkey")
-  resource Resource @relation(fields: [resourceId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "service_resource_resource_id_fkey")
+  service  Service  @relation(fields: [organizationId, serviceId], references: [organizationId, id], onDelete: Restrict, onUpdate: Restrict, map: "service_resource_service_org_fkey")
+  resource Resource @relation(fields: [organizationId, resourceId], references: [organizationId, id], onDelete: Restrict, onUpdate: Restrict, map: "service_resource_resource_org_fkey")
 
   @@index([serviceId], map: "service_resource_service_id_idx")
   @@index([resourceId], map: "service_resource_resource_id_idx")
@@ -464,8 +469,8 @@ model AppointmentResource {
   resourceId     String   @map("resource_id") @db.Uuid
   createdAt      DateTime @default(now()) @map("created_at") @db.Timestamptz
 
-  appointment Appointment @relation(fields: [appointmentId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "appointment_resource_appointment_id_fkey")
-  resource    Resource    @relation(fields: [resourceId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "appointment_resource_resource_id_fkey")
+  appointment Appointment @relation(fields: [organizationId, appointmentId], references: [organizationId, id], onDelete: Restrict, onUpdate: Restrict, map: "appointment_resource_appointment_org_fkey")
+  resource    Resource    @relation(fields: [organizationId, resourceId], references: [organizationId, id], onDelete: Restrict, onUpdate: Restrict, map: "appointment_resource_resource_org_fkey")
 
   @@unique([appointmentId, resourceId], map: "appointment_resource_appointment_id_resource_id_key")
   @@index([resourceId], map: "appointment_resource_resource_id_idx")
@@ -485,8 +490,8 @@ model StaffService {
   createdAt        DateTime  @default(now()) @map("created_at") @db.Timestamptz
   updatedAt        DateTime  @default(now()) @map("updated_at") @db.Timestamptz
 
-  staffMember StaffMember @relation(fields: [staffMemberId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "staff_service_staff_member_id_fkey")
-  service     Service     @relation(fields: [serviceId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "staff_service_service_id_fkey")
+  staffMember StaffMember @relation(fields: [organizationId, staffMemberId], references: [organizationId, id], onDelete: Restrict, onUpdate: Restrict, map: "staff_service_staff_member_org_fkey")
+  service     Service     @relation(fields: [organizationId, serviceId], references: [organizationId, id], onDelete: Restrict, onUpdate: Restrict, map: "staff_service_service_org_fkey")
 
   @@index([staffMemberId], map: "staff_service_staff_member_id_idx")
   @@index([serviceId], map: "staff_service_service_id_idx")
@@ -511,8 +516,8 @@ model StaffServiceTerms {
   createdAt          DateTime  @default(now()) @map("created_at") @db.Timestamptz
   updatedAt          DateTime  @default(now()) @map("updated_at") @db.Timestamptz
 
-  staffMember StaffMember @relation(fields: [staffMemberId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "staff_service_terms_staff_member_id_fkey")
-  service     Service     @relation(fields: [serviceId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "staff_service_terms_service_id_fkey")
+  staffMember StaffMember @relation(fields: [organizationId, staffMemberId], references: [organizationId, id], onDelete: Restrict, onUpdate: Restrict, map: "staff_service_terms_staff_member_org_fkey")
+  service     Service     @relation(fields: [organizationId, serviceId], references: [organizationId, id], onDelete: Restrict, onUpdate: Restrict, map: "staff_service_terms_service_org_fkey")
 
   @@index([serviceId], map: "staff_service_terms_service_id_idx")
   @@map("staff_service_terms")
@@ -531,7 +536,7 @@ model ClientBlock {
   unblockedByUserId String?   @map("unblocked_by_user_id") @db.Uuid
   updatedAt         DateTime  @default(now()) @map("updated_at") @db.Timestamptz
 
-  client Client @relation(fields: [clientId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "client_block_client_id_fkey")
+  client Client @relation(fields: [organizationId, clientId], references: [organizationId, id], onDelete: Restrict, onUpdate: Restrict, map: "client_block_client_org_fkey")
 
   @@index([clientId], map: "client_block_client_id_idx")
   @@map("client_block")
@@ -547,7 +552,7 @@ model ClientNoteRemoval {
   removedAt       DateTime @default(now()) @map("removed_at") @db.Timestamptz
   removedByUserId String   @map("removed_by_user_id") @db.Uuid
 
-  client Client @relation(fields: [clientId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "client_note_removal_client_id_fkey")
+  client Client @relation(fields: [organizationId, clientId], references: [organizationId, id], onDelete: Restrict, onUpdate: Restrict, map: "client_note_removal_client_org_fkey")
 
   @@index([clientId, removedAt], map: "client_note_removal_client_id_idx")
   @@map("client_note_removal")
@@ -573,6 +578,7 @@ model MedicalField {
   answers MedicalAnswer[]
 
   @@index([organizationId, sortOrder], map: "medical_field_organization_id_sort_idx")
+  @@unique([organizationId, id], map: "medical_field_organization_id_id_key")
   @@map("medical_field")
   @@schema("booking")
 }
@@ -590,7 +596,7 @@ model MedicalConsent {
   withdrawnBy       String?   @map("withdrawn_by") @db.VarChar(8)
   withdrawnByUserId String?   @map("withdrawn_by_user_id") @db.Uuid
 
-  client Client @relation(fields: [clientId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "medical_consent_client_id_fkey")
+  client Client @relation(fields: [organizationId, clientId], references: [organizationId, id], onDelete: Restrict, onUpdate: Restrict, map: "medical_consent_client_org_fkey")
 
   @@index([clientId], map: "medical_consent_client_id_idx")
   @@map("medical_consent")
@@ -609,8 +615,8 @@ model MedicalAnswer {
   createdAt       DateTime  @default(now()) @map("created_at") @db.Timestamptz
   updatedAt       DateTime  @default(now()) @map("updated_at") @db.Timestamptz
 
-  client Client       @relation(fields: [clientId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "medical_answer_client_id_fkey")
-  field  MedicalField @relation(fields: [fieldId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "medical_answer_field_id_fkey")
+  client Client       @relation(fields: [organizationId, clientId], references: [organizationId, id], onDelete: Restrict, onUpdate: Restrict, map: "medical_answer_client_org_fkey")
+  field  MedicalField @relation(fields: [organizationId, fieldId], references: [organizationId, id], onDelete: Restrict, onUpdate: Restrict, map: "medical_answer_field_org_fkey")
 
   @@unique([clientId, fieldId], map: "medical_answer_client_id_field_id_key")
   @@map("medical_answer")
@@ -632,13 +638,14 @@ model AppointmentPayment {
   recordedAt        DateTime  @default(now()) @map("recorded_at") @db.Timestamptz
   recordedByUserId  String    @map("recorded_by_user_id") @db.Uuid
 
-  appointment Appointment          @relation(fields: [appointmentId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "appointment_payment_appointment_id_fkey")
-  client      Client               @relation(fields: [clientId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "appointment_payment_client_id_fkey")
-  refundOf    AppointmentPayment?  @relation("PaymentRefund", fields: [refundOfPaymentId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "appointment_payment_refund_of_fkey")
+  appointment Appointment          @relation(fields: [organizationId, appointmentId], references: [organizationId, id], onDelete: Restrict, onUpdate: Restrict, map: "appointment_payment_appointment_org_fkey")
+  client      Client               @relation(fields: [organizationId, clientId], references: [organizationId, id], onDelete: Restrict, onUpdate: Restrict, map: "appointment_payment_client_org_fkey")
+  refundOf    AppointmentPayment?  @relation("PaymentRefund", fields: [organizationId, refundOfPaymentId], references: [organizationId, id], onDelete: Restrict, onUpdate: Restrict, map: "appointment_payment_refund_of_payment_org_fkey")
   refunds     AppointmentPayment[] @relation("PaymentRefund")
 
   @@index([appointmentId, recordedAt], map: "appointment_payment_appointment_id_idx")
   @@index([clientId, recordedAt], map: "appointment_payment_client_id_idx")
+  @@unique([organizationId, id], map: "appointment_payment_organization_id_id_key")
   @@map("appointment_payment")
   @@schema("booking")
 }
@@ -681,8 +688,8 @@ model PublicHold {
   /// B.9d2: the online booking of a seat of this class session (the hold keeps the seat)
   classSessionId    String?   @map("class_session_id") @db.Uuid
 
-  staffMember     StaffMember  @relation(fields: [staffMemberId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "public_hold_staff_member_id_fkey")
-  service         Service      @relation(fields: [serviceId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "public_hold_service_id_fkey")
+  staffMember     StaffMember  @relation(fields: [organizationId, staffMemberId], references: [organizationId, id], onDelete: Restrict, onUpdate: Restrict, map: "public_hold_staff_member_org_fkey")
+  service         Service      @relation(fields: [organizationId, serviceId], references: [organizationId, id], onDelete: Restrict, onUpdate: Restrict, map: "public_hold_service_org_fkey")
   moveAppointment Appointment? @relation(fields: [organizationId, moveAppointmentId], references: [organizationId, id], onDelete: Restrict, onUpdate: Restrict, map: "public_hold_move_appointment_fkey")
   classSession    ClassSession? @relation(fields: [organizationId, classSessionId], references: [organizationId, id], onDelete: Restrict, onUpdate: Restrict, map: "public_hold_class_session_fkey")
 
@@ -779,9 +786,9 @@ model AppointmentSeries {
   createdByUserId String?   @map("created_by_user_id") @db.Uuid
   createdAt       DateTime  @default(now()) @map("created_at") @db.Timestamptz
 
-  client       Client        @relation(fields: [clientId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "appointment_series_client_id_fkey")
-  service      Service       @relation(fields: [serviceId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "appointment_series_service_id_fkey")
-  staffMember  StaffMember   @relation(fields: [staffMemberId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "appointment_series_staff_member_id_fkey")
+  client       Client        @relation(fields: [organizationId, clientId], references: [organizationId, id], onDelete: Restrict, onUpdate: Restrict, map: "appointment_series_client_org_fkey")
+  service      Service       @relation(fields: [organizationId, serviceId], references: [organizationId, id], onDelete: Restrict, onUpdate: Restrict, map: "appointment_series_service_org_fkey")
+  staffMember  StaffMember   @relation(fields: [organizationId, staffMemberId], references: [organizationId, id], onDelete: Restrict, onUpdate: Restrict, map: "appointment_series_staff_member_org_fkey")
   appointments Appointment[]
 
   @@unique([organizationId, id], map: "appointment_series_organization_id_id_key")
@@ -809,9 +816,9 @@ model ClassSession {
   createdAt         DateTime      @default(now()) @map("created_at") @db.Timestamptz
   updatedAt         DateTime      @default(now()) @map("updated_at") @db.Timestamptz
 
-  service      Service       @relation(fields: [serviceId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "class_session_service_id_fkey")
-  staffMember  StaffMember   @relation(fields: [staffMemberId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "class_session_staff_member_id_fkey")
-  resource     Resource?     @relation(fields: [resourceId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "class_session_resource_id_fkey")
+  service      Service       @relation(fields: [organizationId, serviceId], references: [organizationId, id], onDelete: Restrict, onUpdate: Restrict, map: "class_session_service_org_fkey")
+  staffMember  StaffMember   @relation(fields: [organizationId, staffMemberId], references: [organizationId, id], onDelete: Restrict, onUpdate: Restrict, map: "class_session_staff_member_org_fkey")
+  resource     Resource?     @relation(fields: [organizationId, resourceId], references: [organizationId, id], onDelete: Restrict, onUpdate: Restrict, map: "class_session_resource_org_fkey")
   participants Appointment[]
   /// B.9d2: the waiting list of the session, its offers and the online holds of its seats
   waitlistEntries WaitlistEntry[]
@@ -853,9 +860,9 @@ model WaitlistEntry {
   createdAt             DateTime  @default(now()) @map("created_at") @db.Timestamptz
   updatedAt             DateTime  @default(now()) @map("updated_at") @db.Timestamptz
 
-  client      Client          @relation(fields: [clientId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "waitlist_entry_client_id_fkey")
-  service     Service         @relation(fields: [serviceId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "waitlist_entry_service_id_fkey")
-  staffMember StaffMember?    @relation(fields: [staffMemberId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "waitlist_entry_staff_member_id_fkey")
+  client      Client          @relation(fields: [organizationId, clientId], references: [organizationId, id], onDelete: Restrict, onUpdate: Restrict, map: "waitlist_entry_client_org_fkey")
+  service     Service         @relation(fields: [organizationId, serviceId], references: [organizationId, id], onDelete: Restrict, onUpdate: Restrict, map: "waitlist_entry_service_org_fkey")
+  staffMember StaffMember?    @relation(fields: [organizationId, staffMemberId], references: [organizationId, id], onDelete: Restrict, onUpdate: Restrict, map: "waitlist_entry_staff_member_org_fkey")
   appointment Appointment?    @relation(fields: [organizationId, acceptedAppointmentId], references: [organizationId, id], onDelete: Restrict, onUpdate: Restrict, map: "waitlist_entry_appointment_fkey")
   classSession ClassSession?   @relation(fields: [organizationId, classSessionId], references: [organizationId, id], onDelete: Restrict, onUpdate: Restrict, map: "waitlist_entry_class_session_fkey")
   offers      WaitlistOffer[]
@@ -886,7 +893,7 @@ model WaitlistOffer {
   createdAt       DateTime  @default(now()) @map("created_at") @db.Timestamptz
 
   entry       WaitlistEntry @relation(fields: [organizationId, entryId], references: [organizationId, id], onDelete: Restrict, onUpdate: Restrict, map: "waitlist_offer_entry_fkey")
-  staffMember StaffMember   @relation(fields: [staffMemberId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "waitlist_offer_staff_member_id_fkey")
+  staffMember StaffMember   @relation(fields: [organizationId, staffMemberId], references: [organizationId, id], onDelete: Restrict, onUpdate: Restrict, map: "waitlist_offer_staff_member_org_fkey")
   appointment Appointment?  @relation(fields: [organizationId, appointmentId], references: [organizationId, id], onDelete: Restrict, onUpdate: Restrict, map: "waitlist_offer_appointment_fkey")
   classSession ClassSession? @relation(fields: [organizationId, classSessionId], references: [organizationId, id], onDelete: Restrict, onUpdate: Restrict, map: "waitlist_offer_class_session_fkey")
 
@@ -913,7 +920,7 @@ model Package {
   createdAt        DateTime  @default(now()) @map("created_at") @db.Timestamptz
   updatedAt        DateTime  @default(now()) @map("updated_at") @db.Timestamptz
 
-  service Service       @relation(fields: [serviceId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "package_service_id_fkey")
+  service Service       @relation(fields: [organizationId, serviceId], references: [organizationId, id], onDelete: Restrict, onUpdate: Restrict, map: "package_service_org_fkey")
   sales   PackageSale[]
 
   @@unique([organizationId, id], map: "package_organization_id_id_key")
@@ -943,8 +950,8 @@ model PackageSale {
   soldAt           DateTime  @default(now()) @map("sold_at") @db.Timestamptz
 
   package Package      @relation(fields: [organizationId, packageId], references: [organizationId, id], onDelete: Restrict, onUpdate: Restrict, map: "package_sale_package_fkey")
-  client  Client       @relation(fields: [clientId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "package_sale_client_id_fkey")
-  service Service      @relation(fields: [serviceId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "package_sale_service_id_fkey")
+  client  Client       @relation(fields: [organizationId, clientId], references: [organizationId, id], onDelete: Restrict, onUpdate: Restrict, map: "package_sale_client_org_fkey")
+  service Service      @relation(fields: [organizationId, serviceId], references: [organizationId, id], onDelete: Restrict, onUpdate: Restrict, map: "package_sale_service_org_fkey")
   uses    PackageUse[]
 
   @@unique([organizationId, id], map: "package_sale_organization_id_id_key")
