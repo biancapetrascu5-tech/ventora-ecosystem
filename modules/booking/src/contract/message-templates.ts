@@ -1,6 +1,6 @@
 import { authorize } from '@ventora/access';
 import type { TenantContext } from '@ventora/access';
-import type { ClientEmail } from '../server/client-emails';
+import type { ClientEmailParts } from '../server/client-emails';
 import { previewMessageTemplateInOrg } from '../server/message-preview';
 import {
   getMessageTemplateInOrg,
@@ -55,8 +55,10 @@ export async function resetMessageTemplate(params: MessageTemplateRef): Promise<
 }
 
 /** „Previzualizare”: the e-mail with the text being edited and an example booking; nothing sent. */
-export async function previewMessageTemplate(params: MessageTemplateInput): Promise<ClientEmail> {
+export async function previewMessageTemplate(
+  params: MessageTemplateInput,
+): Promise<ClientEmailParts> {
   return previewMessageTemplateInOrg(await settings(params), params);
 }
 
-export type { MessageTemplate, MessageTemplateSummary, TemplateKind };
+export type { ClientEmailParts, MessageTemplate, MessageTemplateSummary, TemplateKind };

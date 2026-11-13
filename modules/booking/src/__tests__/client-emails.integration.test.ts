@@ -855,10 +855,12 @@ describe('B.14b: the texts of the business (Setări · Mesaje, S127)', () => {
     expect(email.subject).toBe(
       fill(emailMessages('ro').booking.subject, { title: 'Mulțumim, Cristina!', business: b.name }),
     );
-    expect(email.text).toContain(
+    expect(email.opening.join(' ')).toContain(
       `Mulțumim că ai venit la ${b.name} pentru Vopsit rădăcină cu Ioana Pavel.`,
     );
-    expect(email.html).toContain(`/r/${b.slug}`);
+    expect(email.button.href).toContain(`/r/${b.slug}`);
+    expect(email.rows).toEqual([]);
+    expect(email.senderName).toContain(b.name);
     expect(mailbox.sent.length).toBe(before);
     expect(
       (await listMessageTemplates({ sessionToken: b.t })).every((x) => !x.customLocales.length),

@@ -443,6 +443,7 @@ export {
   saveMessageTemplate,
 } from './message-templates';
 export type {
+  ClientEmailParts,
   MessageTemplate,
   MessageTemplateInput,
   MessageTemplateRef,

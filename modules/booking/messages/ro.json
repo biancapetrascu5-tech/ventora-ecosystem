@@ -22,7 +22,10 @@
       "resources": "Resurse",
       "reminders": "Reamintiri",
       "sms": "Trimitere SMS",
-      "online": "Rezervări online"
+      "online": "Rezervări online",
+      "messages": "Mesaje",
+      "payments": "Plăți și avans",
+      "promo": "Promoții"
     }
   },
   "services": {
@@ -851,5 +854,90 @@
     "title": "Ai atins limita de programări din {month}",
     "desc": "Programările pe care le ai rămân la locul lor și le poți modifica în continuare. Programarea începută te așteaptă: o salvăm imediat ce ai loc.",
     "kept": "Am păstrat programarea începută. Verifică ora și apasă „Programează”."
+  },
+  "msg": {
+    "title": "Mesaje",
+    "lead": "Ce primesc clienții și echipa, și când. Textele le poți schimba; variabilele se completează singure.",
+    "toClients": "Către clienți",
+    "toTeam": "Către echipă",
+    "col": {
+      "message": "Mesaj",
+      "channel": "Canal",
+      "when": "Când pleacă",
+      "on": "Pornit"
+    },
+    "ch": {
+      "email": "E-mail",
+      "sms": "SMS",
+      "push": "Notificare în aplicație"
+    },
+    "t": {
+      "confirm": "Confirmarea programării",
+      "reminder": "Reamintire înainte de programare",
+      "changed": "Programarea s-a modificat",
+      "cancelled": "Programarea a fost anulată",
+      "followup": "Mulțumire după vizită",
+      "review": "Cerere de recenzie",
+      "teamNew": "Programare nouă",
+      "teamCancelled": "Programare anulată de client",
+      "teamMoved": "Programare mutată de client",
+      "teamDigest": "Programul zilei"
+    },
+    "when": {
+      "now": "Imediat",
+      "before": "Cu {n} ore înainte",
+      "after": "La {n} ore după vizită",
+      "nextDay": "A doua zi, la {time}",
+      "morning": "În fiecare dimineață, la {time}"
+    },
+    "edit": "Editează",
+    "editTitle": "Editează mesajul",
+    "channel": "Canal",
+    "subject": "Subiectul",
+    "body": "Textul",
+    "insert": "Inserează",
+    "v": {
+      "client": "prenumele clientului",
+      "service": "serviciul",
+      "date": "data",
+      "time": "ora",
+      "member": "cu cine",
+      "business": "salonul",
+      "link": "linkul de mutare sau anulare",
+      "review": "linkul de recenzie"
+    },
+    "whenTitle": "Când pleacă",
+    "hours": "ore",
+    "preview": "Previzualizare",
+    "previewWith": "Cu datele unei programări de exemplu",
+    "smsCount": "{chars} caractere · {n} SMS",
+    "smsOver": "Textul are peste 160 de caractere și pleacă în 2 SMS-uri.",
+    "smsNoDiacritics": "SMS-urile pleacă fără diacritice, ca să încapă în 160 de caractere.",
+    "reset": "Revino la textul inițial",
+    "save": "Salvează mesajul",
+    "err": {
+      "var": "Variabila {var} nu există. Alege una din listă.",
+      "subject": "Scrie subiectul.",
+      "body": "Scrie textul.",
+      "long": "Textul are peste {max} de caractere.",
+      "failed": "Nu am putut salva mesajul. Încearcă din nou."
+    },
+    "review": {
+      "link": "Linkul paginii de recenzii",
+      "linkHelp": "De exemplu, pagina salonului pe Google. Clientul ajunge direct acolo.",
+      "onlyDone": "Doar după programările încheiate",
+      "limit": "Cel mult o dată la {n} zile pentru același client"
+    },
+    "team": {
+      "who": "Cine primește",
+      "member": "Membrul programării",
+      "owner": "Proprietarul",
+      "reception": "Recepția"
+    },
+    "saved": "Am salvat mesajul. Pleacă așa de la următoarea programare.",
+    "locked": "Pleacă mereu; nu se poate opri.",
+    "resetDone": "Am pus înapoi textul inițial.",
+    "prevFrom": "De la",
+    "prevTo": "Către"
   }
 }

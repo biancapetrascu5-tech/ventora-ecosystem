@@ -4,7 +4,7 @@ import { getOrganizationCard, listLocations } from '@ventora/organizations';
 import { InvalidInput, ResourceNotFound } from '@ventora/errors';
 import { hubOnly } from './actor';
 import { getBookingSettingsInOrg, type ClientLocale } from './appointments';
-import { renderClientEmail, type ClientEmail } from './client-emails';
+import { clientEmailParts, type ClientEmailParts } from './client-emails';
 import {
   isTemplateKind,
   isTemplateLocale,
@@ -40,7 +40,7 @@ function exampleStart(timeZone: string, now = new Date()): Date {
 export async function previewMessageTemplateInOrg(
   ctx: TenantContext,
   input: { kind?: unknown; locale?: unknown; subject?: unknown; body?: unknown },
-): Promise<ClientEmail> {
+): Promise<ClientEmailParts> {
   hubOnly(ctx);
   if (!isTemplateKind(input.kind)) throw new InvalidInput('kind', 'invalid');
   if (!isTemplateLocale(input.locale)) throw new InvalidInput('locale', 'invalid');
@@ -51,7 +51,7 @@ export async function previewMessageTemplateInOrg(
   if (!org) throw new ResourceNotFound('organization');
   const where = (await listLocations({ organizationId: ctx.organizationId }))[0]?.address ?? null;
   const startsAt = exampleStart(org.timeZone);
-  return renderClientEmail({
+  return clientEmailParts({
     kind,
     locale,
     business: org.name,

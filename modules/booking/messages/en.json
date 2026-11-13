@@ -22,7 +22,10 @@
       "resources": "Resurse",
       "reminders": "Reamintiri",
       "sms": "Trimitere SMS",
-      "online": "Rezervări online"
+      "online": "Rezervări online",
+      "messages": "Messages",
+      "payments": "Payments and deposit",
+      "promo": "Promotions"
     }
   },
   "services": {
@@ -851,5 +854,90 @@
     "title": "You've reached the appointment limit for {month}",
     "desc": "Your existing appointments stay where they are and you can keep changing them. The appointment you started is waiting: we save it as soon as there is room.",
     "kept": "We kept the appointment you started. Check the time and press “Book”."
+  },
+  "msg": {
+    "title": "Messages",
+    "lead": "What clients and the team receive, and when. You can change the texts; the variables fill in by themselves.",
+    "toClients": "To clients",
+    "toTeam": "To the team",
+    "col": {
+      "message": "Message",
+      "channel": "Channel",
+      "when": "When it goes",
+      "on": "On"
+    },
+    "ch": {
+      "email": "Email",
+      "sms": "SMS",
+      "push": "In-app notification"
+    },
+    "t": {
+      "confirm": "Booking confirmation",
+      "reminder": "Reminder before the appointment",
+      "changed": "The appointment has changed",
+      "cancelled": "The appointment was cancelled",
+      "followup": "Thank-you after the visit",
+      "review": "Review request",
+      "teamNew": "New booking",
+      "teamCancelled": "Cancelled by the client",
+      "teamMoved": "Moved by the client",
+      "teamDigest": "The day’s schedule"
+    },
+    "when": {
+      "now": "Right away",
+      "before": "{n} hours before",
+      "after": "{n} hours after the visit",
+      "nextDay": "The next day, at {time}",
+      "morning": "Every morning, at {time}"
+    },
+    "edit": "Edit",
+    "editTitle": "Edit the message",
+    "channel": "Channel",
+    "subject": "Subject",
+    "body": "Text",
+    "insert": "Insert",
+    "v": {
+      "client": "the client’s first name",
+      "service": "the service",
+      "date": "the date",
+      "time": "the time",
+      "member": "with whom",
+      "business": "the salon",
+      "link": "the link to move or cancel",
+      "review": "the review link"
+    },
+    "whenTitle": "When it goes",
+    "hours": "hours",
+    "preview": "Preview",
+    "previewWith": "With the details of an example booking",
+    "smsCount": "{chars} characters · {n} SMS",
+    "smsOver": "The text is over 160 characters and goes as 2 SMS.",
+    "smsNoDiacritics": "SMS messages go without diacritics, to fit in 160 characters.",
+    "reset": "Go back to the original text",
+    "save": "Save the message",
+    "err": {
+      "var": "The variable {var} doesn’t exist. Pick one from the list.",
+      "subject": "Write the subject.",
+      "body": "Write the text.",
+      "long": "The text is over {max} characters.",
+      "failed": "We couldn’t save the message. Please try again."
+    },
+    "review": {
+      "link": "Link to the reviews page",
+      "linkHelp": "For example, the salon’s page on Google. The client goes straight there.",
+      "onlyDone": "Only after completed appointments",
+      "limit": "At most once every {n} days for the same client"
+    },
+    "team": {
+      "who": "Who receives it",
+      "member": "The booking’s team member",
+      "owner": "The owner",
+      "reception": "Reception"
+    },
+    "saved": "Message saved. It goes like this from the next booking.",
+    "locked": "Always sent; it can’t be turned off.",
+    "resetDone": "The original text is back.",
+    "prevFrom": "From",
+    "prevTo": "To"
   }
 }

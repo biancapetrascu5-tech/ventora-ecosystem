@@ -370,7 +370,52 @@ type Parts = {
 };
 
 /** The e-mail of one message, in the client's language (S3 template, texts email.booking.*). */
+/**
+ * B.14b: the parts of a client e-mail, as the editor's preview shows them (S127, the single template
+ * of BookingClientEmails); renderClientEmail turns the same parts into the HTML and the text.
+ */
+export type ClientEmailParts = {
+  /** The sender's name („Salon Aurora prin EasyBook”). */
+  senderName: string;
+  to: string;
+  subject: string;
+  preheader: string;
+  eyebrow: string;
+  title: string;
+  /** The opening paragraphs (the greeting and the text), then the appointment block. */
+  opening: string[];
+  rows: string[];
+  button: { label: string; href: string };
+  after: string[];
+  why: string;
+  company: string;
+  locale: ClientLocale;
+};
+
 export function renderClientEmail(input: ClientEmailInput): ClientEmail {
+  const p = clientEmailParts(input);
+  const rendered = renderOperationalEmail({
+    lang: p.locale,
+    subject: p.subject,
+    preheader: p.preheader,
+    eyebrow: p.eyebrow,
+    title: p.title,
+    lead: [...p.opening, ...p.rows],
+    button: p.button,
+    after: p.after,
+    signature: '',
+    why: p.why,
+    company: p.company,
+  });
+  return {
+    to: p.to,
+    from: `"${headerSafe(p.senderName)}" <${senderAddress()}>`,
+    ...rendered,
+    locale: p.locale,
+  };
+}
+
+export function clientEmailParts(input: ClientEmailInput): ClientEmailParts {
   const { locale, business } = input;
   const t = emailMessages(locale).booking;
   const format = (d: Date) =>
@@ -492,23 +537,19 @@ export function renderClientEmail(input: ClientEmailInput): ClientEmail {
     after = input.kind === 'confirmation' ? parts.after : [];
   }
 
-  const rendered = renderOperationalEmail({
-    lang: locale,
+  return {
+    senderName: fill(t.sender, { business }),
+    to: input.to,
     subject: fill(t.subject, { title, business }),
     preheader: opening[1] ?? opening[0] ?? title,
     eyebrow: business,
     title,
-    lead: [...opening, ...parts.rows],
+    opening,
+    rows: parts.rows,
     button: parts.button,
     after,
-    signature: '',
     why: fill(t.why, { business }),
     company: [business, input.where, t.sentBy].filter(Boolean).join(' · '),
-  });
-  return {
-    to: input.to,
-    from: `"${headerSafe(fill(t.sender, { business }))}" <${senderAddress()}>`,
-    ...rendered,
     locale,
   };
 }

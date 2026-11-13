@@ -22,7 +22,10 @@
       "resources": "Resurse",
       "reminders": "Reamintiri",
       "sms": "Trimitere SMS",
-      "online": "Rezervări online"
+      "online": "Rezervări online",
+      "messages": "Messages",
+      "payments": "Paiements et acompte",
+      "promo": "Promotions"
     }
   },
   "services": {
@@ -851,5 +854,90 @@
     "title": "Vous avez atteint la limite de rendez-vous de {month}",
     "desc": "Vos rendez-vous existants restent en place et vous pouvez toujours les modifier. Le rendez-vous commencé vous attend : nous l’enregistrons dès qu’il y a de la place.",
     "kept": "Nous avons gardé le rendez-vous commencé. Vérifiez l’heure et appuyez sur « Réserver »."
+  },
+  "msg": {
+    "title": "Messages",
+    "lead": "Ce que reçoivent les clients et l’équipe, et quand. Vous pouvez modifier les textes ; les variables se remplissent toutes seules.",
+    "toClients": "Aux clients",
+    "toTeam": "À l’équipe",
+    "col": {
+      "message": "Message",
+      "channel": "Canal",
+      "when": "Envoi",
+      "on": "Activé"
+    },
+    "ch": {
+      "email": "E-mail",
+      "sms": "SMS",
+      "push": "Notification dans l’application"
+    },
+    "t": {
+      "confirm": "Confirmation du rendez-vous",
+      "reminder": "Rappel avant le rendez-vous",
+      "changed": "Le rendez-vous a changé",
+      "cancelled": "Le rendez-vous a été annulé",
+      "followup": "Remerciement après la visite",
+      "review": "Demande d’avis",
+      "teamNew": "Nouveau rendez-vous",
+      "teamCancelled": "Annulé par le client",
+      "teamMoved": "Déplacé par le client",
+      "teamDigest": "Le programme du jour"
+    },
+    "when": {
+      "now": "Immédiatement",
+      "before": "{n} heures avant",
+      "after": "{n} heures après la visite",
+      "nextDay": "Le lendemain, à {time}",
+      "morning": "Chaque matin, à {time}"
+    },
+    "edit": "Modifier",
+    "editTitle": "Modifier le message",
+    "channel": "Canal",
+    "subject": "Objet",
+    "body": "Texte",
+    "insert": "Insérer",
+    "v": {
+      "client": "le prénom du client",
+      "service": "la prestation",
+      "date": "la date",
+      "time": "l’heure",
+      "member": "avec qui",
+      "business": "le salon",
+      "link": "le lien pour déplacer ou annuler",
+      "review": "le lien d’avis"
+    },
+    "whenTitle": "Envoi",
+    "hours": "heures",
+    "preview": "Aperçu",
+    "previewWith": "Avec les données d’un rendez-vous d’exemple",
+    "smsCount": "{chars} caractères · {n} SMS",
+    "smsOver": "Le texte dépasse 160 caractères et part en 2 SMS.",
+    "smsNoDiacritics": "Les SMS partent sans accents, pour tenir en 160 caractères.",
+    "reset": "Revenir au texte d’origine",
+    "save": "Enregistrer le message",
+    "err": {
+      "var": "La variable {var} n’existe pas. Choisissez-en une dans la liste.",
+      "subject": "Écrivez l’objet.",
+      "body": "Écrivez le texte.",
+      "long": "Le texte dépasse {max} caractères.",
+      "failed": "Impossible d’enregistrer le message. Réessayez."
+    },
+    "review": {
+      "link": "Lien vers la page d’avis",
+      "linkHelp": "Par exemple, la page du salon sur Google. Le client y arrive directement.",
+      "onlyDone": "Seulement après les rendez-vous terminés",
+      "limit": "Au plus une fois tous les {n} jours pour le même client"
+    },
+    "team": {
+      "who": "Qui le reçoit",
+      "member": "Le membre du rendez-vous",
+      "owner": "Le propriétaire",
+      "reception": "L’accueil"
+    },
+    "saved": "Message enregistré. Il part ainsi dès le prochain rendez-vous.",
+    "locked": "Toujours envoyé ; impossible de le désactiver.",
+    "resetDone": "Le texte d’origine est revenu.",
+    "prevFrom": "De",
+    "prevTo": "À"
   }
 }
