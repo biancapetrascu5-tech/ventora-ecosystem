@@ -6,6 +6,7 @@ import {
   APPS,
   AppIcon,
   Avatar,
+  Badge,
   Button,
   DataTable,
   PageHeader,
@@ -32,6 +33,8 @@ export type TeamMemberRow = {
   apps: AppName[] | null;
   stopped: boolean;
   owner: boolean;
+  /** 5.1c (S146): a cerut acces la aplicații și încă n-are niciuna. */
+  accessRequested?: boolean;
 };
 
 export type TeamInviteRow = {
@@ -75,6 +78,7 @@ export function TeamView({
   onCancel: (row: TeamInviteRow) => void;
 }) {
   const t = useTranslations('hub.team');
+  const requestT = useTranslations('team.accessRequest');
   const labels = useDataTableLabels();
 
   const memberCols: DataTableColumn<TeamMemberRow>[] = [
@@ -97,7 +101,9 @@ export function TeamView({
       key: 'apps',
       header: t('colApps'),
       render: (r) =>
-        r.apps ? (
+        r.accessRequested ? (
+          <Badge tone="attention">{requestT('badge')}</Badge>
+        ) : r.apps ? (
           <span className={s.apps}>
             {r.apps.slice(0, MAX_APPS).map((a) => (
               <AppIcon key={a} app={a} size={20} title={APPS[a]?.name} />

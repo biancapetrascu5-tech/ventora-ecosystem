@@ -9,6 +9,7 @@
 import { BILLING_TEMPLATES } from './billing';
 import { CLIENTDESK_TEMPLATES } from './clientdesk';
 import { OWNER_NOTICE_TEMPLATES } from './owner-notice';
+import { ACCESS_REQUEST_TEMPLATES } from './access-request';
 import { SUPPORT_TEMPLATES } from './support';
 import { isSecurityTopic, topicCategory, type NotificationTopic } from './topics';
 import type { NotificationParams, NotificationValueType } from './values';
@@ -90,6 +91,7 @@ export const NOTIFICATION_TEMPLATES: readonly NotificationTemplate[] = [
   ...BILLING_TEMPLATES,
   // Lot 3.7: „Recomandă” / „Anunță proprietarul” from the Hub, to the owner, in the app only
   ...OWNER_NOTICE_TEMPLATES,
+  ...ACCESS_REQUEST_TEMPLATES,
   // Lot 4.6: the support requests — „Răspuns nou” (E-7) and the automatic closing (S116-D18)
   ...SUPPORT_TEMPLATES,
   // Lot C.9: ClientDesk (mențiuni, remindere, atribuiri; subiectul clientdesk)

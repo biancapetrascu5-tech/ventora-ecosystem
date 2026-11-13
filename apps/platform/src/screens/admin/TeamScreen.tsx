@@ -103,6 +103,7 @@ export function TeamScreen({ initial }: { initial: TeamData }) {
     apps: m.applicationIds ? m.applicationIds.filter(isApp) : null,
     stopped: m.status === 'suspended',
     owner: m.role === 'owner',
+    accessRequested: m.accessRequested,
   }));
   const invites: TeamInviteRow[] = data.invites.map((i) => ({
     id: i.id,

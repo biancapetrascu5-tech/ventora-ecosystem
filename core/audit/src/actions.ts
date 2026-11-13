@@ -41,6 +41,7 @@ export const AuditActions = {
   membershipAccessStopped: 'membership.access_stopped', // Lot 2.9b — „Oprește accesul”
   membershipAccessRestored: 'membership.access_restored', // Lot 2.9b — „Redă accesul”
   membershipRemoved: 'membership.removed', // Lot 2.9b — „Elimină din afacere”
+  membershipAccessRequested: 'membership.access_requested', // Lot 5.1c — „Cere acces” (S146)
   applicationAccessUpdated: 'application_access.updated', // Lot 2.9b — „Acces la aplicații”
   // Lot C.1 — the business's locations (category organization, required, in the same
   // transaction). Metadata: the changed field names; never the address

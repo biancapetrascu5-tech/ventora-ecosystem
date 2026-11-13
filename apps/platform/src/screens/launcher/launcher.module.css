@@ -121,7 +121,36 @@
   margin-top: calc(-64px - var(--space-8));
   position: relative;
   z-index: 1;
-  padding: var(--space-6);
+  background: var(--sheet);
+  border: var(--border-width) solid var(--line);
+  border-radius: var(--radius-lg);
+}
+
+/* S146: Notice-ul de eroare deasupra EmptyState, în foaie */
+.emptyNotice {
+  padding: var(--space-4) var(--space-4) 0;
+}
+
+/* S146: „O poți trimite din nou după …” / „Ultima cerere: …”, sub butoane */
+.emptyNote {
+  margin: calc(-1 * var(--space-4)) 0 0;
+  padding-bottom: var(--space-6);
+  text-align: center;
+}
+
+.meanwhile {
+  margin: 0;
+  padding-bottom: var(--space-6);
+  text-align: center;
+}
+
+/* S146: „Au nevoie de tine” (owner / admin), sub aplicații */
+.attention {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin-bottom: var(--space-6);
+  padding: var(--space-4);
   background: var(--sheet);
   border: var(--border-width) solid var(--line);
   border-radius: var(--radius-lg);

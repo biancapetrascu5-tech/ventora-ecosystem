@@ -6,12 +6,22 @@ import {
   authorize,
   getMemberApplicationAccess,
   getTeamOwnerName,
+  listTeamMembers,
   PLATFORM_APPLICATION_ID,
 } from '@ventora/access';
 import { getEffectiveEntitlements, listTrials } from '@ventora/commercial';
-import { getOrganizationTimeZone } from '@ventora/organizations';
+import {
+  AccessRequestTooSoon,
+  getMyAccessRequest,
+  getOrganizationTimeZone,
+  listAccessRequests,
+  OrganizationSuspendedError,
+  requestApplicationAccess,
+  resolveOrgContext,
+} from '@ventora/organizations';
+import { supportEmail } from '@ventora/notifications';
 import { listAppointments } from '@ventora/booking';
-import { getSession } from '@ventora/identity';
+import { getSession, getUserById } from '@ventora/identity';
 import type { AppName } from '@ventora/ui';
 import { APP_GROUPS } from '@/screens/apps/content';
 import { reportActionError } from './report-error';
@@ -43,6 +53,26 @@ export interface LauncherData {
   recommendation: GrowthSlotView | null;
   /** 5.9d (CommercialStates): proba care se încheie în cel mult 3 zile; doar pentru owner / admin. */
   trialEnding: { app: AppName; endsAt: string } | null;
+  /** 5.1c (S146): cererea „Cere acces” a persoanei fără nicio aplicație; null: n-a cerut încă. */
+  accessRequest: AccessRequestView | null;
+  /** 5.1c: owner / admin — „Au nevoie de tine”: cine a cerut acces și încă n-are nicio aplicație. */
+  needsYou: NeedsYouItem[];
+  /** Adresa de suport, pentru eroarea „afacerea e suspendată” la trimitere. */
+  supportEmail: string;
+}
+
+export interface AccessRequestView {
+  requestedAt: string;
+  canResendAt: string;
+}
+
+export interface NeedsYouItem {
+  userId: string;
+  name: string;
+  role: string;
+  requestedAt: string;
+  /** A cerut din nou după 7 zile (requestCount > 1). */
+  again: boolean;
 }
 
 /** Ora 00:00 a zilei `date` (YYYY-MM-DD) în fusul `timeZone`, ca instant UTC. */
@@ -151,6 +181,30 @@ export async function readLauncher(): Promise<LauncherData | null> {
           )
         : null;
 
+    // 5.1c: cererea apare doar cât timp persoana n-are nicio aplicație; nu blochează launcher-ul
+    const empty = !apps.some((a) => a.state === 'available');
+    const implicit = ctx.role === 'owner' || ctx.role === 'admin';
+    const org = () =>
+      resolveOrgContext({ userId: session.userId, organizationId: ctx.organizationId });
+    const [mine, needsYou] = await Promise.all([
+      empty && !implicit
+        ? org()
+            .then(getMyAccessRequest)
+            .catch((err) => {
+              reportActionError('readLauncher.accessRequest', err);
+              return null;
+            })
+        : Promise.resolve(null),
+      implicit
+        ? org()
+            .then((o) => readNeedsYou(o, session.token))
+            .catch((err) => {
+              reportActionError('readLauncher.needsYou', err);
+              return [];
+            })
+        : Promise.resolve([]),
+    ]);
+
     return {
       apps,
       role: ctx.role,
@@ -159,9 +213,95 @@ export async function readLauncher(): Promise<LauncherData | null> {
       appointmentsToday,
       recommendation,
       trialEnding: ending ? { app: ending.app, endsAt: ending.endsAt.toISOString() } : null,
+      accessRequest: mine
+        ? {
+            requestedAt: mine.requestedAt.toISOString(),
+            canResendAt: mine.canResendAt.toISOString(),
+          }
+        : null,
+      needsYou,
+      supportEmail: supportEmail(),
     };
   } catch (err) {
     reportActionError('readLauncher', err);
     return null;
+  }
+}
+
+/**
+ * „Au nevoie de tine” (S146): cererile membrilor activi care încă n-au nicio aplicație (cererea
+ * dispare imediat ce persoana primește una). Numele și aplicațiile vin din echipă (core/access).
+ */
+async function readNeedsYou(
+  ctx: Parameters<typeof listAccessRequests>[0],
+  sessionToken: string,
+): Promise<NeedsYouItem[]> {
+  const requests = await listAccessRequests(ctx);
+  if (requests.length === 0) return [];
+  const members = new Map((await listTeamMembers({ sessionToken })).map((m) => [m.userId, m]));
+  return requests.flatMap((r) => {
+    const m = members.get(r.userId);
+    if (!m || m.status !== 'active' || !m.applicationIds || m.applicationIds.length > 0) return [];
+    return [
+      {
+        userId: r.userId,
+        name: m.name,
+        role: m.role,
+        requestedAt: r.requestedAt.toISOString(),
+        again: r.requestCount > 1,
+      },
+    ];
+  });
+}
+
+export type RequestAccessResult =
+  | { ok: true; request: AccessRequestView }
+  | { ok: false; error: 'failed' | 'suspended' }
+  | { ok: false; error: 'tooSoon'; canResendAt: string };
+
+/**
+ * 5.1c — „Cere acces” (S146). Doar o persoană care chiar n-are nicio aplicație (verificat aici, pe
+ * server, ca pe launcher); numele trimis owner-ului vine din contul ei, nu din client.
+ */
+export async function requestAccess(): Promise<RequestAccessResult> {
+  const session = await getSession(await headers());
+  if (!session) return { ok: false, error: 'failed' };
+  try {
+    const ctx = await authorize({
+      sessionToken: session.token,
+      applicationId: PLATFORM_APPLICATION_ID,
+    });
+    if (ctx.role === 'owner' || ctx.role === 'admin') return { ok: false, error: 'failed' };
+    const entitled = (await getEffectiveEntitlements(ctx.organizationId)).applications;
+    const access = await Promise.all(
+      LAUNCHER_APPS.filter((a) => entitled.includes(a)).map((a) =>
+        getMemberApplicationAccess(ctx, ctx.userId, a),
+      ),
+    );
+    if (access.some((a) => a.status === 'active' && a.hasAccess)) {
+      return { ok: false, error: 'failed' };
+    }
+    const user = await getUserById(session.userId);
+    const org = await resolveOrgContext({
+      userId: session.userId,
+      organizationId: ctx.organizationId,
+    });
+    const r = await requestApplicationAccess(org, {
+      requesterName: user?.name?.trim() || user?.email || '',
+    });
+    return {
+      ok: true,
+      request: {
+        requestedAt: r.requestedAt.toISOString(),
+        canResendAt: r.canResendAt.toISOString(),
+      },
+    };
+  } catch (err) {
+    if (err instanceof OrganizationSuspendedError) return { ok: false, error: 'suspended' };
+    if (err instanceof AccessRequestTooSoon) {
+      return { ok: false, error: 'tooSoon', canResendAt: err.canResendAt.toISOString() };
+    }
+    reportActionError('requestAccess', err);
+    return { ok: false, error: 'failed' };
   }
 }

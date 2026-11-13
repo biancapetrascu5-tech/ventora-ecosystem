@@ -20,6 +20,7 @@ import {
   type SeatsBreakdown,
 } from '@ventora/commercial';
 import { getSession } from '@ventora/identity';
+import { listAccessRequests, resolveOrgContext } from '@ventora/organizations';
 import { myMemberships } from './route';
 import { reportActionError } from './report-error';
 
@@ -41,6 +42,8 @@ export type TeamData = {
     role: string;
     status: 'active' | 'suspended';
     applicationIds: string[] | null;
+    /** 5.1c (S146): a cerut acces și încă n-are nicio aplicație → insigna „Cere acces”. */
+    accessRequested: boolean;
   }[];
   invites: {
     id: string;
@@ -68,6 +71,19 @@ export async function readTeam(): Promise<TeamData | null> {
     const entitled = session.activeOrganizationId
       ? (await getEffectiveEntitlements(session.activeOrganizationId)).applications
       : [];
+    const requested = await (
+      session.activeOrganizationId
+        ? resolveOrgContext({
+            userId: session.userId,
+            organizationId: session.activeOrganizationId,
+          }).then((ctx) => listAccessRequests(ctx))
+        : Promise.resolve([])
+    )
+      .then((rows) => new Set(rows.map((r) => r.userId)))
+      .catch((err) => {
+        reportActionError('readTeamAccessRequests', err);
+        return new Set<string>();
+      });
     const seats = session.activeOrganizationId
       ? await getSeatsBreakdown(session.activeOrganizationId).catch((err) => {
           reportActionError('readTeamSeats', err);
@@ -88,6 +104,8 @@ export async function readTeam(): Promise<TeamData | null> {
         role: m.role,
         status: m.status,
         applicationIds: m.applicationIds,
+        accessRequested:
+          requested.has(m.userId) && !!m.applicationIds && m.applicationIds.length === 0,
       })),
       invites: invites.map((i) => ({
         id: i.id,
