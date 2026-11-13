@@ -115,3 +115,29 @@ export {
   type TodayCurrent,
   type TodayNext,
 } from './today/BookingTodayView';
+// Lot B.6c: BookingNew („Programare nouă”)
+export {
+  BookingNewView,
+  BookingNewBar,
+  useNewTexts,
+  type BookingNewViewProps,
+  type NewClientOption,
+} from './new/BookingNewView';
+export {
+  validateNew,
+  hasErrors,
+  effectiveTerms,
+  serviceTerms,
+  spanOf,
+  differs,
+  durationFor,
+  dayText,
+  type NewForm,
+  type NewErrors,
+  type NewService,
+  type NewStaff,
+  type NewMemberTerms,
+  type NewCurrency,
+  type NewPriceKind,
+  type Terms,
+} from './new/new-format';

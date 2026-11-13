@@ -530,5 +530,106 @@
     "err": {
       "load": "No se pudo cargar el día."
     }
+  },
+  "new": {
+    "title": "Nueva cita",
+    "crumbs": {
+      "list": "Citas",
+      "clients": "Clientes"
+    },
+    "noCategory": "Sin categoría",
+    "sec": {
+      "service": "Servicio y empleado",
+      "when": "Cuándo",
+      "client": "Cliente",
+      "details": "Detalles"
+    },
+    "service": {
+      "label": "Servicio",
+      "placeholder": "Elige el servicio",
+      "nobody": "Nadie del equipo lo hace"
+    },
+    "staff": {
+      "label": "Empleado",
+      "placeholder": "Elige quién"
+    },
+    "any": "Cualquiera libre",
+    "anyWho": "Cualquiera libre · lo elegimos nosotros",
+    "date": "Fecha",
+    "duration": "Duración",
+    "minSuffix": "min",
+    "min": "{n} min",
+    "minRange": "{min}–{max} min",
+    "start": {
+      "label": "Hora de inicio",
+      "helpAny": "Mostramos las horas en que al menos una persona del equipo está libre.",
+      "helpMember": "Las horas tachadas ya están ocupadas para {name}.",
+      "none": "No hay horas libres ese día. Elige otro día u otro compañero."
+    },
+    "client": {
+      "label": "Cliente",
+      "help": "Busca por nombre o teléfono.",
+      "fromProfile": "Iniciada desde el perfil del cliente: el cliente ya está elegido.",
+      "placeholder": "Buscar por nombre o teléfono",
+      "recent": "Clientes recientes",
+      "found": "Resultados",
+      "visits": "{n, plural, one {# visita} other {# visitas}}",
+      "new": "Cliente nuevo",
+      "name": "Nombre del cliente",
+      "phone": "Teléfono",
+      "existing": "Elegir un cliente existente"
+    },
+    "notes": "Notas para el equipo",
+    "notesPlaceholder": "Ej.: piel sensible",
+    "notify": {
+      "confirm": "Enviar confirmación por SMS ahora",
+      "remind": "Enviar un recordatorio 24 horas antes"
+    },
+    "sum": {
+      "title": "Resumen",
+      "client": "Cliente",
+      "service": "Servicio",
+      "who": "Con quién",
+      "when": "Cuándo",
+      "price": "Precio",
+      "none": "—"
+    },
+    "book": "Reservar",
+    "bookAt": "Reservar · {time}",
+    "cancel": "Cancelar",
+    "money": {
+      "RON": "{amount} lei",
+      "EUR": "{amount} €"
+    },
+    "price": {
+      "from": "desde {amount}",
+      "range": "{min}–{max}"
+    },
+    "err": {
+      "service": "Elige el servicio.",
+      "staff": "Elige quién hace el servicio.",
+      "date": "Elige la fecha.",
+      "time": "Elige una hora libre.",
+      "client": "Elige el cliente.",
+      "clientName": "Escribe el nombre del cliente.",
+      "failed": "No hemos podido guardar la cita. Inténtalo de nuevo.",
+      "forbidden": "No puedes crear esta cita.",
+      "staffUnavailable": "La persona elegida no trabaja a esa hora.",
+      "notForService": "La persona elegida no hace este servicio.",
+      "resource": "La sala o el equipo que necesita el servicio no está libre a esa hora.",
+      "serviceArchived": "El servicio se ha archivado mientras tanto.",
+      "phoneTaken": "Ya existe un cliente con este teléfono. Búscalo en la lista.",
+      "limit": "Has alcanzado el límite de citas del mes.",
+      "anyTaken": "Ya no queda nadie libre a esa hora. Elige otra hora."
+    },
+    "overlap": {
+      "title": "{name} ya tiene una cita a las {time}",
+      "body": "Elige otra hora u otro compañero."
+    },
+    "saved": {
+      "title": "Hemos guardado la cita",
+      "when": "{day}, {time}",
+      "view": "Ver la cita"
+    }
   }
 }

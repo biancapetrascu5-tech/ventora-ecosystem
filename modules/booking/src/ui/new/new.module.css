@@ -1,0 +1,101 @@
+/* BookingNew: the classes of preview.html (newgrid, sumcard, kv, sumtotal, stickybar, g2f, d0), 1:1 */
+.newgrid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  gap: var(--space-6);
+  align-items: start;
+}
+.newgrid.tablet,
+.newgrid.mobile {
+  grid-template-columns: 1fr;
+}
+.newgrid.mobile {
+  padding-bottom: var(--space-16);
+}
+.col {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  min-width: 0;
+}
+.notice {
+  margin: 0;
+}
+.g2f {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(260px, 100%), 1fr));
+  gap: var(--space-4) var(--space-6);
+}
+.end {
+  display: flex;
+  align-items: flex-end;
+}
+.start {
+  margin-top: var(--space-4);
+}
+.checks {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-width: 0;
+  margin-top: var(--space-4);
+}
+.sumcard {
+  position: sticky;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-5);
+  background: var(--sheet);
+  border: var(--border-width) solid var(--line);
+  border-radius: var(--radius-lg);
+}
+.sumcard p {
+  margin: 0;
+}
+.newgrid.mobile .sumcard {
+  border-radius: 0;
+  border-left: 0;
+  border-right: 0;
+}
+.kv {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--space-2) var(--space-4);
+  margin: 0;
+}
+.kv dt {
+  color: var(--ink-muted);
+  padding-top: var(--space-0-5);
+}
+.kv dd {
+  margin: 0;
+  color: var(--ink);
+}
+.sumtotal {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding-top: var(--space-3);
+  border-top: var(--border-width) solid var(--line);
+}
+.stickybar {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: var(--bottomnav-height);
+  display: flex;
+  gap: var(--space-2);
+  justify-content: flex-end;
+  padding: var(--space-3) var(--space-4);
+  background: var(--sheet);
+  border-top: var(--border-width) solid var(--line);
+  z-index: var(--z-sticky);
+}
+.stickybar > :last-child {
+  flex: 1;
+}
+.fixed {
+  position: fixed;
+}
