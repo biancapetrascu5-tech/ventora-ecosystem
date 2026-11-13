@@ -13,3 +13,5 @@ Light only, as all e-mails; 600 and 390 wide; tests in DE, IT, EN, FR, ES.
 **S125 (B.11).** The link "Modificați sau anulați programarea" opens the client's page drawn in BookingClientManage.
 
 **S127 (B.13–B.15).** The texts can be edited in Setări · Mesaje, with variables and a preview (BookingMessageTemplates); the template itself doesn't change.
+
+**S148 · Brandul afacerii.** Cu brand: antetul cu logo-ul salonului, culoarea butonului, linia de accent, fontul și semnătura (din Hub › Brand, înainte de subsol). Fără brand: antetul cu numele salonului și butonul Ventora. Expeditorul, subsolul și structura nu se schimbă. Desenat: confirmarea și reminderul cu brand, confirmarea fără brand, telefon, DE și IT.

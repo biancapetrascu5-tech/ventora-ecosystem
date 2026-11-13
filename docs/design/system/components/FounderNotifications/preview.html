@@ -818,7 +818,7 @@ function FX_App({ active, title, children, bottom }) {
   return h(V.AppShell, {
     height: "100%",
     spine: h(V.Spine, { hub: true, appName: "Founder", sections: FX_NAV, activeId: active, onBackToHub: noop, bottomItems: bottom || ["afaceri", "cereri", "suport", "automatizari"] }),
-    contextBar: h(V.ContextBar, { title, onSearch: noop, searchLabel: "Caută o afacere, o solicitare sau o automatizare", notifications: h(V.NotificationsPanel, { items: FX_NOTIFS }), account: h(V.AccountMenu, { user: { name: "Bianca Petrașcu", email: "bianca@ventorasystems.com" } }) })
+    contextBar: h(V.ContextBar, { title, onSearch: noop, searchLabel: "Caută o afacere, o solicitare sau o automatizare", notifications: h(V.NotificationsPanel, { items: FX_NOTIFS, onSeeAll: () => {} }), account: h(V.AccountMenu, { user: { name: "Bianca Petrașcu", email: "bianca@ventorasystems.com" } }) })
   }, children);
 }
 const AX_Body = ({ mode, children }) => h("div", { className: "axb " + mode }, children);
@@ -912,7 +912,7 @@ function FxPage({ mode, active, title, header, children, drawer, overlay, toast,
   return h("div", { className: "frame-rel" },
     h(V.AppShell, { height: "100%",
       spine: h(V.Spine, { hub: true, appName: "Founder", sections: FX_NAV2, activeId: active, onBackToHub: noop, bottomItems: ["afaceri", "cereri", "suport", active] }),
-      contextBar: h(V.ContextBar, { title, onSearch: noop, notifications: h(V.NotificationsPanel, { items: FX_NOTIFS2 }), account: h(V.AccountMenu, { user: { name: "Bianca Petrașcu", email: "bianca@ventorasystems.com" } }) }) },
+      contextBar: h(V.ContextBar, { title, onSearch: noop, notifications: h(V.NotificationsPanel, { items: FX_NOTIFS2, onSeeAll: () => {} }), account: h(V.AccountMenu, { user: { name: "Bianca Petrașcu", email: "bianca@ventorasystems.com" } }) }) },
       header ? h(V.PageHeader, header) : null,
       h("div", { className: "x-body" + (mob ? " m" : "") }, children)),
     drawer || null,
@@ -936,7 +936,7 @@ function Page({ mode, unreadOnly, empty, drawer, overlay, toast, toastDesc, bell
   const mob = mode === "mobile";
   const rows = empty ? [] : unreadOnly ? ALL.filter((r) => r.unread) : ALL;
   return h(FxPage, { mode, active: "azi", title: NT("title"), drawer, overlay, toast, toastDesc,
-    notifOpen: bell ? h(V.NotificationsPanel, { inline: true, items: FX_NOTIFS2, onMarkAllRead: noop, onSettings: noop }) : null,
+    notifOpen: bell ? h(V.NotificationsPanel, { inline: true, items: FX_NOTIFS2, onSeeAll: () => {}, onMarkAllRead: noop, onSettings: noop }) : null,
     header: { title: NT("title"), description: mob ? undefined : NT("lead"), actions: mob ? undefined : h(V.Button, { variant: "quiet", icon: "check-check" }, NT("markAll")),
       tabs: h(V.Tabs, { label: NT("title"), value: unreadOnly ? "unread" : "all", items: [{ value: "unread", label: NT("tab.unread", { n: 4 }) }, { value: "all", label: NT("tab.all") }] }) } },
     h("div", { className: "cd-tools" + (mob ? " m" : "") }, h("div", { style: { width: mob ? "100%" : 220 } }, h(V.Select, { size: "sm", "aria-label": NT("type"), value: "all", options: ["all", "auto", "support", "invoice", "setup"].map((v) => ({ value: v, label: NT("type." + v) })) }))),
@@ -963,7 +963,7 @@ const RestartDlg = ({ mode }) => h(Dlg, { mode, title: NT("re.title", { name: "M
     h(V.Checkbox, { label: NT("re.watch"), description: NT("re.watchHelp"), defaultChecked: true }),
     h(Info, null, NT("re.log"))));
 mount(h(Board3, { title: "Founder — clopoțelul și oprirea automată (S136, P22, 5.8, D5-11)", notes: ["Growth Engine oprește singur o campanie sau o ofertă: deranj, plângeri, buget atins, eroare", "Notificarea: ce s-a oprit, de ce, „Vezi”, „Repornește” cu confirmare", "Clopoțelul Founder: opriri automate, solicitări de suport, facturi neemise, cereri de configurare", "Doar în română deocamdată; chei founder.notifications.* în i18n/founder.json"], items: [
-  ["1 · Clopoțelul Founder, deschis", (m) => h(Page, { mode: m, unreadOnly: true, bell: true }), 710, 720, 1000],
+  ["1 · Clopoțelul Founder, deschis · „Vezi toate” jos, spre pagina Notificări (S148)", (m) => h(Page, { mode: m, unreadOnly: true, bell: true }), 710, 720, 1000],
   ["2 · Notificările: necitite, cu filtre", (m) => h(Page, { mode: m, unreadOnly: true }), 710, 720, 1000],
   ["3 · Toate, citite și necitite", (m) => h(Page, { mode: m }), 970, 990, 1420],
   ["4 · Oprire automată: ce s-a oprit și de ce", (m) => h(Page, { mode: m, unreadOnly: true, drawer: h(AutoDrawer, { mode: m }) }), 810, 810, 1020],

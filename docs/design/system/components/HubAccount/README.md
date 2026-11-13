@@ -15,3 +15,5 @@ After the product review: on phones the page is a list of sections, each with it
 **Security e-mails (S83).** The "Parola contului tău a fost schimbată" e-mail can't be turned off. In Notificări it may appear at most as an informational row, without a toggle.
 
 **S147 · Poza de profil (13.11).** „Poza de profil” în Profil și preferințe: încărcare, înlocuire, ștergere (cu confirmare); PNG sau JPG, maximum 5 MB, decupată rotund; erori (tip, mărime); previzualizarea în selectorul de afacere. Poza apare în meniul contului și, când afacerea nu are logo, în selectorul de afacere. Chei `hub.account.photo.*` în `i18n/team.json`, 6 limbi. Test DE / IT.
+
+**S148.** Meniul Hub are „Brand” în locul „Profilului afacerii”; logo-ul afacerii se încarcă în HubBrand.

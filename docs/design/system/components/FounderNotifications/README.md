@@ -26,3 +26,5 @@ Shown at 1280, 820 and 390, light and dark.
 - **Analytics retention.** Recommendation: aggregated daily totals kept 24 months; raw server events 90 days.
 - **Launcher sentence.** Recommendation: only "programări azi" from EasyBook in v1 (drawn); other apps add a chip only after a product review.
 - **Member's recommendations.** Recommendation: visible only to the member and the owner; notification only on activation (drawn); "Nu acum" can be re-sent after 30 days.
+
+**S148.** Clopoțelul are jos „Vezi toate”, spre pagina Notificări (`onSeeAll` pe NotificationsPanel); la fel în toate ecranele Founder. Cheia `founder.notifications.seeAll` în `i18n/founder.json`, 6 limbi.

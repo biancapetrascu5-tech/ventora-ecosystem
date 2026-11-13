@@ -23,3 +23,5 @@ Shown at 1280 (desktop), 820 (tablet portrait) and 390 (phone), in light and dar
 **DE DECIS (S147).**
 - **Tonul textului de sub salut în DE și IT.** Textele primite folosesc „du” („deines Teams”) și „tu” („tuo team”); restul Hub-ului folosește „Sie” și „Lei”. Recomandare: „Alle Tools Ihres Teams an einem Ort.” și „Tutti gli strumenti del Suo team, in un unico posto.” Le-am pus cum au venit.
 - **Fraza zilei cu cifre.** Recomandare: rămâne sub textul nou, cum e desenat; dacă vrei banda doar cu salutul și textul, o scoatem.
+
+**S148.** Logo-ul din selectorul de afacere vine din Hub › Brand (HubBrand).

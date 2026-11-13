@@ -20,3 +20,7 @@ Shown at 1280, 820 and 390, light and dark.
 - **Review SMS cost.** Recommendation: counted against the business's SMS, like reminders.
 
 **S128.** WhatsApp as a channel, the order of channels per message and the delivery status, drawn in BookingWhatsApp; the assistant can propose texts (BookingAssistant).
+
+**S148 · Limba textului.** În editor, deasupra canalului: „Limba textului” (cele 6 limbi, cu „Limba principală”, „Scris” sau „Lipsește”) și insignele limbilor. Afacerea scrie textul pe limbă; clientul îl primește în limba lui, iar dacă lipsește, în limba principală, cu Notice-ul care spune asta și „Pornește de la textul în Română”. Notificările pentru echipă nu au selector. Chei `booking.msg.lang.*` în `i18n/booking.json`, 6 limbi.
+
+**DE DECIS (S148).** **Limba principală.** Recomandare: limba afacerii din Founder (română pentru afacerile din România), nu aleasă pe mesaj.

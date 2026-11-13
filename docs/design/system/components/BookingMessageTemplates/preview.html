@@ -1,4 +1,4 @@
-<!-- @dsCard group="Ecrane Booking" height=19546 width=2620 page -->
+<!-- @dsCard group="Ecrane Booking" height=28808 width=2620 page -->
 <!doctype html>
 <html lang="ro">
 <head><meta charset="utf-8"><title>BookingMessageTemplates — Ventora Systems</title>
@@ -683,7 +683,7 @@ function FX_App({ active, title, children, bottom }) {
   return h(V.AppShell, {
     height: "100%",
     spine: h(V.Spine, { hub: true, appName: "Founder", sections: FX_NAV, activeId: active, onBackToHub: noop, bottomItems: bottom || ["afaceri", "cereri", "suport", "automatizari"] }),
-    contextBar: h(V.ContextBar, { title, onSearch: noop, searchLabel: "Caută o afacere, o solicitare sau o automatizare", notifications: h(V.NotificationsPanel, { items: FX_NOTIFS }), account: h(V.AccountMenu, { user: { name: "Bianca Petrașcu", email: "bianca@ventorasystems.com" } }) })
+    contextBar: h(V.ContextBar, { title, onSearch: noop, searchLabel: "Caută o afacere, o solicitare sau o automatizare", notifications: h(V.NotificationsPanel, { items: FX_NOTIFS, onSeeAll: () => {} }), account: h(V.AccountMenu, { user: { name: "Bianca Petrașcu", email: "bianca@ventorasystems.com" } }) })
   }, children);
 }
 const AX_Body = ({ mode, children }) => h("div", { className: "axb " + mode }, children);
@@ -898,10 +898,12 @@ function EmailPreview() {
 }
 const SmsPreview = ({ long }) => h("div", { className: "mt-sms" }, h("div", { className: "mt-bubble body-small" }, long ? "Salon Aurora: Multumim pentru vizita de ieri, Cristina! Ne-ar ajuta mult sa ne spuneti cum a fost la Vopsit radacina cu Ioana Pavel. Ne lasati o parere pe Google? Dureaza un minut si ne ajuta sa ne facem cunoscuti: g.page/r/aurora" : "Salon Aurora: Multumim pentru vizita de ieri, Cristina! Ne lasati o parere? Dureaza un minut: g.page/r/aurora"),
   h("p", { className: "caption muted" }, long ? MS("smsCount", { chars: 214, n: 2 }) : MS("smsCount", { chars: 112, n: 1 })));
-function Editor({ mode, kind = "followup", err, long }) {
+function Editor({ mode, kind = "followup", err, long, tl = "ro" }) {
   const mob = mode === "mobile", sms = kind === "review", team = kind === "teamCancelled";
-  const t = long ? TEXT.reviewLong : TEXT[kind] || TEXT.followup;
+  const t0 = long ? TEXT.reviewLong : TEXT[kind] || TEXT.followup, missing148 = !team && !LANG148_DONE.includes(tl);
+  const t = tl === "en" && !team ? (TEXT_EN148[kind] || TEXT_EN148.followup) : missing148 ? { subject: "", body: "", sms: "" } : t0;
   const form = h("div", { className: "x-stack" },
+    team ? null : h(LangPick148, { tl, missing: missing148 }),
     h("div", { style: { alignSelf: "flex-start" } }, h(V.SegmentedControl, { size: "sm", label: MS("channel"), value: team ? "push" : sms ? "sms" : "email", options: team ? [{ value: "push", label: MS("ch.push") }, { value: "email", label: MS("ch.email") }] : [{ value: "email", label: MS("ch.email") }, { value: "sms", label: MS("ch.sms") }] })),
     sms || team ? null : h(V.FormField, { label: MS("subject"), required: true }, h(V.Input, { defaultValue: t.subject })),
     h(V.FormField, { label: MS("body"), required: true, error: err ? MS("err.var", { var: "{clinet}" }) : undefined, helper: sms && !err ? MS("smsNoDiacritics") : undefined },
@@ -923,7 +925,26 @@ function Editor({ mode, kind = "followup", err, long }) {
   return h(SideDrawer, { mode, width: mob ? 520 : 960, title: MS("editTitle"), subtitle: MS("t." + kind), footer: h(Foot, { mode }, h(V.Button, { variant: "quiet" }, X("cancel")), h(V.Button, { variant: "primary", icon: "check" }, MS("save"))) },
     h("div", { className: "mt-grid" + (mode !== "desktop" ? " m" : "") }, form, preview));
 }
+
+/* S148 (13.11): the language of the text. The business writes each message per language; a client gets it in their language, or in the main language when it is missing. Keys booking.msg.lang.* (6 languages). */
+const BKX148 = {"ro": {"booking.msg.lang.label": "Limba textului", "booking.msg.lang.help": "Scrii textul pentru fiecare limbă. Clientul îl primește în limba lui; dacă lipsește, în {default}.", "booking.msg.lang.written": "Scris", "booking.msg.lang.missing": "Lipsește", "booking.msg.lang.default": "Limba principală", "booking.msg.lang.missingNote": "Textul în {lang} lipsește. Clienții care au ales {lang} îl primesc în {default}.", "booking.msg.lang.copyFrom": "Pornește de la textul în {default}"}, "en": {"booking.msg.lang.label": "Text language", "booking.msg.lang.help": "Write the text for each language. Clients get it in their language; if it’s missing, in {default}.", "booking.msg.lang.written": "Written", "booking.msg.lang.missing": "Missing", "booking.msg.lang.default": "Main language", "booking.msg.lang.missingNote": "The {lang} text is missing. Clients who chose {lang} get it in {default}.", "booking.msg.lang.copyFrom": "Start from the {default} text"}, "fr": {"booking.msg.lang.label": "Langue du texte", "booking.msg.lang.help": "Rédigez le texte pour chaque langue. Le client le reçoit dans sa langue ; s’il manque, en {default}.", "booking.msg.lang.written": "Rédigé", "booking.msg.lang.missing": "Manquant", "booking.msg.lang.default": "Langue principale", "booking.msg.lang.missingNote": "Le texte en {lang} manque. Les clients qui ont choisi {lang} le reçoivent en {default}.", "booking.msg.lang.copyFrom": "Partir du texte en {default}"}, "es": {"booking.msg.lang.label": "Idioma del texto", "booking.msg.lang.help": "Escriba el texto para cada idioma. El cliente lo recibe en su idioma; si falta, en {default}.", "booking.msg.lang.written": "Escrito", "booking.msg.lang.missing": "Falta", "booking.msg.lang.default": "Idioma principal", "booking.msg.lang.missingNote": "Falta el texto en {lang}. Los clientes que eligieron {lang} lo reciben en {default}.", "booking.msg.lang.copyFrom": "Partir del texto en {default}"}, "de": {"booking.msg.lang.label": "Sprache des Textes", "booking.msg.lang.help": "Schreiben Sie den Text für jede Sprache. Kunden erhalten ihn in ihrer Sprache; fehlt er, auf {default}.", "booking.msg.lang.written": "Geschrieben", "booking.msg.lang.missing": "Fehlt", "booking.msg.lang.default": "Hauptsprache", "booking.msg.lang.missingNote": "Der Text auf {lang} fehlt. Kunden, die {lang} gewählt haben, erhalten ihn auf {default}.", "booking.msg.lang.copyFrom": "Mit dem Text auf {default} beginnen"}, "it": {"booking.msg.lang.label": "Lingua del testo", "booking.msg.lang.help": "Scriva il testo per ogni lingua. Il cliente lo riceve nella sua lingua; se manca, in {default}.", "booking.msg.lang.written": "Scritto", "booking.msg.lang.missing": "Manca", "booking.msg.lang.default": "Lingua principale", "booking.msg.lang.missingNote": "Manca il testo in {lang}. I clienti che hanno scelto {lang} lo ricevono in {default}.", "booking.msg.lang.copyFrom": "Parti dal testo in {default}"}};
+for (const l in BKX148) BK[l] = Object.assign(BK[l] || {}, BKX148[l]);
+const LANG148 = [["ro", "Română"], ["en", "English"], ["fr", "Français"], ["es", "Español"], ["de", "Deutsch"], ["it", "Italiano"]];
+const LANG148_DONE = ["ro", "en"];
+const TEXT_EN148 = { followup: { subject: "Thank you for visiting {business}", body: "Hi {client},\n\nThank you for coming to {business} today for {service}. We hope you love the result.\n\nSee you next time,\n{business}" }, review: { sms: "Thank you for visiting {business}! How was it? Leave us a review: {link}" } };
+function LangPick148({ tl, missing }) {
+  const nm = (c) => LANG148.find((x) => x[0] === c)[1];
+  return h("div", { className: "x-stack", style: { gap: "var(--space-2)", padding: "var(--space-3)", borderRadius: "var(--radius-md)", background: "var(--sunken)" } },
+    h(V.FormField, { label: MS("lang.label"), helper: MS("lang.help", { default: "Română" }) },
+      h(V.Select, { value: tl, options: LANG148.map(([c, n]) => ({ value: c, label: n + " · " + (c === "ro" ? MS("lang.default") : LANG148_DONE.includes(c) ? MS("lang.written") : MS("lang.missing")) })) })),
+    h("div", { className: "x-row", style: { flexWrap: "wrap", gap: "var(--space-1)" } }, LANG148.map(([c, n]) => h(V.StatusPill, { key: c, size: "sm", tone: LANG148_DONE.includes(c) ? "done" : "neutral", icon: LANG148_DONE.includes(c) ? "check" : "minus" }, c.toUpperCase()))),
+    missing ? h(V.Notice, { tone: "neutral", icon: "globe", actions: h(V.Button, { size: "sm", variant: "secondary", icon: "copy" }, MS("lang.copyFrom", { default: "Română" })) }, MS("lang.missingNote", { lang: nm(tl), default: "Română" })) : null);
+}
+
 mount(h(Board3, { title: "EasyBook — Mesaje: șabloane și automatizări predefinite (B.13–B.15, S127)", notes: ["Setări · Mesaje: către clienți și către echipă, pornit / oprit, când pleacă", "Editorul cu variabile și previzualizarea pe e-mail sau SMS", "Follow-up după vizită, cererea de recenzie, modificare / anulare, notificările pentru echipă", "Doar în română deocamdată; chei booking.msg.* în i18n/booking.json"], items: [
+  ["S148 · Limba textului: engleză, scris", (m) => h(List, { mode: m, drawer: h(Editor, { mode: m, tl: "en" }) }), 1080, 1300, 1480],
+  ["S148 · Limba textului: germană, lipsește (clienții primesc textul în română)", (m) => h(List, { mode: m, drawer: h(Editor, { mode: m, tl: "de" }) }), 1080, 1300, 1480],
+  ["S148 · SMS-ul de recenzie în engleză", (m) => h(List, { mode: m, drawer: h(Editor, { mode: m, kind: "review", tl: "en" }) }), 1080, 1300, 1480],
   ["1 · Mesajele salonului", (m) => h(List, { mode: m }), 960, 1180, 1310],
   ["2 · Mulțumire după vizită: e-mail, cu variabile și previzualizare", (m) => h(List, { mode: m, drawer: h(Editor, { mode: m }) }), 960, 1190, 1350],
   ["3 · Variabilă greșită", (m) => h(List, { mode: m, drawer: h(Editor, { mode: m, err: true }) }), 960, 1210, 1370],
@@ -931,7 +952,6 @@ mount(h(Board3, { title: "EasyBook — Mesaje: șabloane și automatizări prede
   ["5 · SMS peste 160 de caractere", (m) => h(List, { mode: m, drawer: h(Editor, { mode: m, kind: "review", long: true }) }), 960, 1180, 1310],
   ["6 · Notificare pentru echipă: cine o primește", (m) => h(List, { mode: m, drawer: h(Editor, { mode: m, kind: "teamCancelled" }) }), 960, 1180, 1310],
   ["7 · Salvat", (m) => h(List, { mode: m, toast: MS("saved") }), 960, 1180, 1310]] }));
-
 </script>
 </body>
 </html>
