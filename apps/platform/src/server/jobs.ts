@@ -67,6 +67,12 @@ import { safeErrorForSentry } from './report-error';
  * Registrul de job-uri al platformei (Lot 4.2, ARCHITECTURE §11.3). Aici își înregistrează
  * fiecare lot job-urile; ruta comună (`app/api/inngest/route.ts`) nu se schimbă.
  *
+ * Programul (lotul Inngest, 13.11): fiecare rulare Inngest se numără, chiar și una care iese
+ * imediat pentru că nu are de lucru. Cu `JOBS_SCHEDULE=quiet` (staging, contul Hobby) job-urile
+ * dese folosesc `quietCron`; `JOB_CRON_<ID>` (de ex. `JOB_CRON_PLATFORM_NOTIFICATION_DELIVERY`)
+ * suprascrie programul unui job. Inngest le citește la sincronizare: o schimbare cere un redeploy.
+ * Dispecerul pornește la scrierea în outbox, cu un cron de siguranță la 15 minute.
+ *
  * Job-urile rulează în fundal, nu în codul de request, și nu folosesc `withSystemContext`: un job
  * programat ia organizația din fiecare rând (dispecerul, din plicul evenimentului), iar unul
  * declanșat de eveniment o primește din plic (runJob).
@@ -99,6 +105,8 @@ const jobsPool: PoolLike = {
       connectionString: process.env.DATABASE_URL,
       max: 1,
       connectionTimeoutMillis: 10_000,
+      // lotul Inngest (13.11): o interogare blocată nu ține o rulare minute întregi
+      statement_timeout: 30_000,
     });
     return pool.connect();
   },
@@ -183,7 +191,7 @@ export const platformJobs = new JobRegistry()
     id: 'growth.auto-stop',
     owner: 'Lot 5.8',
     description: 'Oprirea automată a campaniilor Growth peste pragul de deranjare',
-    trigger: { cron: '*/15 * * * *' },
+    trigger: { cron: '*/15 * * * *', quietCron: '5 * * * *' },
     run: async () => failOnErrors('growth.auto-stop', await runGrowthAutoStopJob()),
   })
   // Lotul 3.3: rezervările rămase după 15 minute, fiecare în contextul organizației din rândul ei
@@ -192,7 +200,7 @@ export const platformJobs = new JobRegistry()
     id: 'platform.quota-reconcile',
     owner: 'Lot 3.3',
     description: 'Reconcilierea rezervărilor expirate de cote',
-    trigger: { cron: '*/5 * * * *' },
+    trigger: { cron: '*/5 * * * *', quietCron: '*/30 * * * *' },
     run: () => runQuotaReconciliationJob(),
   })
   // Lotul 4.3: livrarea notificărilor pe e-mail, cu reîncercări (1 și 5 minute), apoi „failed”;
@@ -201,7 +209,9 @@ export const platformJobs = new JobRegistry()
     id: 'platform.notification-delivery',
     owner: 'Lot 4.3',
     description: 'Livrarea notificărilor (e-mail), cu reîncercări',
-    trigger: { cron: '* * * * *' },
+    trigger: { cron: '* * * * *', quietCron: '*/10 * * * *' },
+    // the next minute is the retry (a failing run is not multiplied by 4)
+    retries: 0,
     run: () =>
       deliverPendingNotifications({
         pool: jobsPool,
@@ -216,7 +226,7 @@ export const platformJobs = new JobRegistry()
     id: 'billing.stripe-reconcile',
     owner: 'Lot 3.5',
     description: 'Abonamentele Stripe aliniate la modelul comercial',
-    trigger: { cron: '*/15 * * * *' },
+    trigger: { cron: '*/15 * * * *', quietCron: '20 * * * *' },
     run: async () => {
       const report = await runStripeReconcileJob();
       if (report.failed.length) {
@@ -237,7 +247,8 @@ export const platformJobs = new JobRegistry()
     id: 'workflows.run',
     owner: 'Lot 4.10',
     description: 'Execuțiile automatizărilor și eliberarea cotei după oprire',
-    trigger: { cron: '* * * * *' },
+    trigger: { cron: '* * * * *', quietCron: '*/10 * * * *' },
+    retries: 0,
     run: async () => {
       const runs = await runPendingExecutions();
       const freed = await freeStoppedQuota();
@@ -259,7 +270,7 @@ export const platformJobs = new JobRegistry()
     id: 'support.auto-close',
     owner: 'Lot 4.6',
     description: 'Închiderea automată a solicitărilor de suport (7 zile) și avertizarea',
-    trigger: { cron: '*/15 * * * *' },
+    trigger: { cron: '*/15 * * * *', quietCron: '40 * * * *' },
     run: async () => {
       const report = await runSupportAutoCloseJob();
       if (report.failed.length) {
@@ -280,7 +291,7 @@ export const platformJobs = new JobRegistry()
     id: 'booking.public-hold-cleanup',
     owner: 'Lot B.11a',
     description: 'Rezervările publice expirate și hash-urile mai vechi de 24 de ore',
-    trigger: { cron: '*/10 * * * *' },
+    trigger: { cron: '*/10 * * * *', quietCron: '*/30 * * * *' },
     run: async () => {
       const report = await runPublicHoldCleanupJob();
       if (report.failed.length) {
@@ -299,7 +310,7 @@ export const platformJobs = new JobRegistry()
     id: 'booking.client-emails',
     owner: 'Lot B.13',
     description: 'Confirmarea și reminderul pe e-mail către clienți, în limba lor',
-    trigger: { cron: '*/5 * * * *' },
+    trigger: { cron: '*/5 * * * *', quietCron: '*/15 * * * *' },
     run: async () => {
       const report = await runClientEmailJob();
       if (report.errors.length) {
@@ -337,7 +348,8 @@ export const platformJobs = new JobRegistry()
     id: 'crm.import',
     owner: 'CRM import',
     description: 'Importurile de contacte ClientDesk din CSV, pe rânduri, cu progres',
-    trigger: { cron: '* * * * *' },
+    trigger: { cron: '* * * * *', quietCron: '*/10 * * * *' },
+    retries: 0,
     run: async () => {
       const report = await runCrmImportJob();
       if (report.errors.length) {
@@ -404,7 +416,8 @@ export const platformJobs = new JobRegistry()
     id: 'commercial.invoice-retry',
     owner: 'Lot 3.6',
     description: 'Emiterea și reîncercarea facturilor SmartBill',
-    trigger: { cron: '* * * * *' },
+    trigger: { cron: '* * * * *', quietCron: '*/15 * * * *' },
+    retries: 0,
     run: async () => {
       const report = await runInvoiceIssueJob();
       if (report.errors.length) {
