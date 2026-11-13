@@ -3,10 +3,12 @@ name: CI
 on:
   push:
     branches: [main, develop]
-    paths-ignore: ['docs/**', '**/*.md', 'screenshots/**', 'reports/**']
+    # paths-ignore nu acceptă „!”: aceeași listă ca `paths`, plus docs/design/system/** (decizia din 13.11.2026)
+    paths: ['**', '!docs/**', '!**/*.md', '!screenshots/**', '!reports/**', 'docs/design/system/**']
   # Toate PR-urile, inclusiv cele în lanț (baza = ramura lotului anterior), decizia din 11.11.2026
   pull_request:
-    paths-ignore: ['docs/**', '**/*.md', 'screenshots/**', 'reports/**']
+    # paths-ignore nu acceptă „!”: aceeași listă ca `paths`, plus docs/design/system/** (decizia din 13.11.2026)
+    paths: ['**', '!docs/**', '!**/*.md', '!screenshots/**', '!reports/**', 'docs/design/system/**']
 
 # Un push nou pe același branch / PR anulează rularea veche (economie de minute).
 concurrency:
