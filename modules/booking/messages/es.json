@@ -22,7 +22,10 @@
       "resources": "Resurse",
       "reminders": "Reamintiri",
       "sms": "Trimitere SMS",
-      "online": "Rezervări online"
+      "online": "Rezervări online",
+      "messages": "Mensajes",
+      "payments": "Pagos y señal",
+      "promo": "Promociones"
     }
   },
   "services": {
@@ -851,5 +854,90 @@
     "title": "Has alcanzado el límite de citas de {month}",
     "desc": "Tus citas siguen en su sitio y puedes seguir cambiándolas. La cita que empezaste te espera: la guardamos en cuanto haya sitio.",
     "kept": "Hemos guardado la cita que empezaste. Comprueba la hora y pulsa «Reservar»."
+  },
+  "msg": {
+    "title": "Mensajes",
+    "lead": "Lo que reciben los clientes y el equipo, y cuándo. Puedes cambiar los textos; las variables se completan solas.",
+    "toClients": "A los clientes",
+    "toTeam": "Al equipo",
+    "col": {
+      "message": "Mensaje",
+      "channel": "Canal",
+      "when": "Cuándo se envía",
+      "on": "Activado"
+    },
+    "ch": {
+      "email": "Correo",
+      "sms": "SMS",
+      "push": "Notificación en la aplicación"
+    },
+    "t": {
+      "confirm": "Confirmación de la cita",
+      "reminder": "Recordatorio antes de la cita",
+      "changed": "La cita ha cambiado",
+      "cancelled": "La cita se ha cancelado",
+      "followup": "Agradecimiento después de la visita",
+      "review": "Solicitud de reseña",
+      "teamNew": "Nueva cita",
+      "teamCancelled": "Cancelada por el cliente",
+      "teamMoved": "Cambiada por el cliente",
+      "teamDigest": "La agenda del día"
+    },
+    "when": {
+      "now": "Al momento",
+      "before": "{n} horas antes",
+      "after": "{n} horas después de la visita",
+      "nextDay": "Al día siguiente, a las {time}",
+      "morning": "Cada mañana, a las {time}"
+    },
+    "edit": "Editar",
+    "editTitle": "Editar el mensaje",
+    "channel": "Canal",
+    "subject": "Asunto",
+    "body": "Texto",
+    "insert": "Insertar",
+    "v": {
+      "client": "el nombre del cliente",
+      "service": "el servicio",
+      "date": "la fecha",
+      "time": "la hora",
+      "member": "con quién",
+      "business": "el salón",
+      "link": "el enlace para cambiar o cancelar",
+      "review": "el enlace de reseña"
+    },
+    "whenTitle": "Cuándo se envía",
+    "hours": "horas",
+    "preview": "Vista previa",
+    "previewWith": "Con los datos de una cita de ejemplo",
+    "smsCount": "{chars} caracteres · {n} SMS",
+    "smsOver": "El texto supera los 160 caracteres y se envía en 2 SMS.",
+    "smsNoDiacritics": "Los SMS se envían sin tildes, para que quepan en 160 caracteres.",
+    "reset": "Volver al texto original",
+    "save": "Guardar el mensaje",
+    "err": {
+      "var": "La variable {var} no existe. Elige una de la lista.",
+      "subject": "Escribe el asunto.",
+      "body": "Escribe el texto.",
+      "long": "El texto supera los {max} caracteres.",
+      "failed": "No hemos podido guardar el mensaje. Inténtalo de nuevo."
+    },
+    "review": {
+      "link": "Enlace a la página de reseñas",
+      "linkHelp": "Por ejemplo, la página del salón en Google. El cliente llega directamente.",
+      "onlyDone": "Solo después de las citas completadas",
+      "limit": "Como máximo una vez cada {n} días para el mismo cliente"
+    },
+    "team": {
+      "who": "Quién lo recibe",
+      "member": "El miembro de la cita",
+      "owner": "El propietario",
+      "reception": "Recepción"
+    },
+    "saved": "Mensaje guardado. Se envía así desde la próxima cita.",
+    "locked": "Se envía siempre; no se puede desactivar.",
+    "resetDone": "Ha vuelto el texto original.",
+    "prevFrom": "De",
+    "prevTo": "Para"
   }
 }

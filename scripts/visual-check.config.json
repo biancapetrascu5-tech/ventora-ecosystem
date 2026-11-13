@@ -137,7 +137,8 @@
     "BookingDetail",
     "BookingStatuses",
     "BookingStates",
-    "BookingLimit"
+    "BookingLimit",
+    "BookingMessageTemplates"
   ],
   "exceptions": {
     "OrgSwitcher": "S147 — se aliniază în lotul F5 launcher+shell",

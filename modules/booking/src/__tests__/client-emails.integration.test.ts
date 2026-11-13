@@ -11,9 +11,14 @@ import {
   createClient,
   createSeries,
   createService,
+  getMessageTemplate,
+  listMessageTemplates,
   listStaff,
   moveAppointment,
+  previewMessageTemplate,
+  resetMessageTemplate,
   runClientEmailJob,
+  saveMessageTemplate,
   setBookingSettings,
   setBusinessHours,
   startAppointment,
@@ -135,10 +140,22 @@ const ALL_DAY = [1, 2, 3, 4, 5, 6, 7].map((weekday) => ({
   closesAtMin: 1440,
 }));
 
-/** `hours` from now, on a 5-minute step. */
+/** `hours` from now, on a 5-minute step. A 30-minute appointment cannot cross midnight in the
+   business's zone (Europe/Bucharest), so a start after 23:30 moves back to 23:30 (at most 25
+   minutes: the appointments of a test are at least an hour apart, so they still do not overlap). */
 function inHours(hours: number): string {
-  const t = Date.now() + hours * 3_600_000;
-  return new Date(Math.ceil(t / 300_000) * 300_000).toISOString();
+  const t = Math.ceil((Date.now() + hours * 3_600_000) / 300_000) * 300_000;
+  const [h, m] = new Intl.DateTimeFormat('en-GB', {
+    timeZone: 'Europe/Bucharest',
+    hour: '2-digit',
+    minute: '2-digit',
+    hourCycle: 'h23',
+  })
+    .format(new Date(t))
+    .split(':')
+    .map(Number) as [number, number];
+  const late = h * 60 + m - (23 * 60 + 30);
+  return new Date(late > 0 ? t - late * 60_000 : t).toISOString();
 }
 
 type Biz = { org: string; slug: string; name: string; t: string; staff: string; svc: string };
@@ -232,6 +249,7 @@ afterAll(async () => {
   setEmailChannel(null);
   for (const table of [
     'client_message',
+    'message_template',
     'manage_token',
     'appointment_history',
     'appointment',
@@ -672,5 +690,201 @@ describe('B.14: the thanks after the visit (can be turned off, counted as schedu
     expect(await messages(late.id)).toEqual([]);
     expect(mailbox.to(c.email)).toEqual([]);
     expect(mailbox.to(c2.email)).toEqual([]);
+  });
+});
+
+describe('B.14b: the texts of the business (Setări · Mesaje, S127)', () => {
+  const OWN = {
+    subject: 'Te așteptăm, {client}!',
+    body: 'Salut, {client}!\n\nTe așteptăm la {business} pe {date}, la {time}, pentru {service} cu {member}.\n\nLinkul tău: {link}',
+  };
+
+  it('Ventora’s text first; the business’s RO text goes to RO clients, a DE client keeps Ventora’s', async () => {
+    const b = await business();
+    const ventora = await getMessageTemplate({
+      sessionToken: b.t,
+      kind: 'confirmation',
+      locale: 'ro',
+    });
+    const t = emailMessages('ro').booking;
+    expect(ventora).toMatchObject({ custom: false, subject: t.confirmed.title, updatedAt: null });
+    expect(ventora.body).toContain('{client}');
+    expect(ventora.body).toContain('{date}, {time}');
+
+    const saved = await saveMessageTemplate({
+      sessionToken: b.t,
+      kind: 'confirmation',
+      locale: 'ro',
+      ...OWN,
+    });
+    expect(saved).toMatchObject({ custom: true, ...OWN });
+    const list = await listMessageTemplates({ sessionToken: b.t });
+    expect(list.find((x) => x.kind === 'confirmation')!.customLocales).toEqual(['ro']);
+    expect(list.find((x) => x.kind === 'thanks')!.customLocales).toEqual([]);
+
+    const ro = await client(b);
+    const de = await client(b, 'de');
+    await book(b, ro.id, inHours(48));
+    await book(b, de.id, inHours(50));
+    await run(b);
+
+    const [mine] = mailbox.to(ro.email);
+    expect(mailbox.to(ro.email)).toHaveLength(1);
+    // {client} is the first name; the subject keeps the „title · business” form of B.13
+    expect(mine!.subject).toBe(
+      fill(t.subject, { title: 'Te așteptăm, Client!', business: b.name }),
+    );
+    expect(mine!.text).toContain('Salut, Client!');
+    expect(mine!.text).toContain(`Te așteptăm la ${b.name} pe `);
+    expect(mine!.text).toContain('pentru Tuns cu ');
+    expect(mine!.text).toMatch(new RegExp(`Linkul tău: \\S*/r/${b.slug}/m/`));
+    expect(mine!.text).not.toContain('{');
+    // the appointment block and the policy line stay
+    expect(mine!.text).toContain(`${t.k.service}: Tuns`);
+    expect(mine!.text).toContain(t.policy.split('{')[0]!.trim());
+
+    const tde = emailMessages('de').booking;
+    expect(mailbox.to(de.email)[0]!.subject).toBe(
+      fill(tde.subject, { title: tde.confirmed.title, business: b.name }),
+    );
+  });
+
+  it('refused: an unknown variable, an empty subject, a subject on two lines, a wrong message', async () => {
+    const b = await business();
+    const save = (over: Record<string, unknown>) =>
+      saveMessageTemplate({
+        sessionToken: b.t,
+        kind: 'thanks',
+        locale: 'ro',
+        ...OWN,
+        ...over,
+      } as never);
+    await expect(save({ body: 'Bună, {clinet}!' })).rejects.toMatchObject({
+      field: 'body',
+      message: 'unknown_variable:clinet',
+    });
+    await expect(save({ subject: 'Mulțumim, {review}' })).rejects.toMatchObject({
+      field: 'subject',
+      message: 'unknown_variable:review',
+    });
+    await expect(save({ subject: '   ' })).rejects.toMatchObject({
+      field: 'subject',
+      message: 'required',
+    });
+    await expect(save({ subject: 'a\nb' })).rejects.toMatchObject({
+      field: 'subject',
+      message: 'invalid',
+    });
+    await expect(save({ body: 'x'.repeat(2001) })).rejects.toMatchObject({
+      field: 'body',
+      message: 'too_long',
+    });
+    await expect(save({ kind: 'review' })).rejects.toMatchObject({ field: 'kind' });
+    await expect(save({ locale: 'pt' })).rejects.toMatchObject({ field: 'locale' });
+    expect(
+      (await listMessageTemplates({ sessionToken: b.t })).every((x) => !x.customLocales.length),
+    ).toBe(true);
+  });
+
+  it('„Revino la textul inițial”: Ventora’s text again, also in the next e-mail', async () => {
+    const b = await business();
+    await saveMessageTemplate({ sessionToken: b.t, kind: 'confirmation', locale: 'ro', ...OWN });
+    const back = await resetMessageTemplate({
+      sessionToken: b.t,
+      kind: 'confirmation',
+      locale: 'ro',
+    });
+    expect(back.custom).toBe(false);
+    expect((await listMessageTemplates({ sessionToken: b.t }))[0]!.customLocales).toEqual([]);
+    const c = await client(b);
+    await book(b, c.id, inHours(48));
+    await run(b);
+    const t = emailMessages('ro').booking;
+    expect(mailbox.to(c.email)[0]!.subject).toBe(
+      fill(t.subject, { title: t.confirmed.title, business: b.name }),
+    );
+  });
+
+  it('the change and the cancellation: the business’s text for its own action, Ventora’s for the client’s', async () => {
+    const b = await business();
+    await saveMessageTemplate({
+      sessionToken: b.t,
+      kind: 'change',
+      locale: 'ro',
+      subject: 'Ora nouă, {client}',
+      body: 'Am mutat programarea pe {date}, la {time}.',
+    });
+    await saveMessageTemplate({
+      sessionToken: b.t,
+      kind: 'cancellation',
+      locale: 'ro',
+      subject: 'Anulat: {service}',
+      body: 'Ne pare rău, {client}. Te așteptăm altă dată.',
+    });
+    const t = emailMessages('ro').booking;
+    // moved by the business: its text, the time before stays in the block
+    const c1 = await client(b);
+    const a1 = await book(b, c1.id, inHours(40));
+    await bookedLongAgo(a1.id);
+    await moveAppointment({
+      sessionToken: b.t,
+      appointmentId: a1.id,
+      startsAt: inHours(44),
+    } as never);
+    await run(b);
+    const [moved] = mailbox.to(c1.email);
+    expect(moved!.subject).toBe(fill(t.subject, { title: 'Ora nouă, Client', business: b.name }));
+    expect(moved!.text).toContain(`${t.k.before}: `);
+    expect(moved!.text).not.toContain(t.moved.note);
+    // cancelled by the business: its text; by the client: Ventora's short one
+    const c2 = await client(b);
+    const a2 = await book(b, c2.id, inHours(60));
+    const c3 = await client(b);
+    const a3 = await book(b, c3.id, inHours(62));
+    await bookedLongAgo(a2.id);
+    await bookedLongAgo(a3.id);
+    await cancelAppointment({ sessionToken: b.t, appointmentId: a2.id, by: 'business' });
+    await cancelAppointment({ sessionToken: b.t, appointmentId: a3.id, by: 'client' });
+    await run(b);
+    expect(mailbox.to(c2.email)[0]!.subject).toBe(
+      fill(t.subject, { title: 'Anulat: Tuns', business: b.name }),
+    );
+    expect(mailbox.to(c3.email)[0]!.subject).toBe(
+      fill(t.subject, { title: t.cancelClient.title, business: b.name }),
+    );
+  });
+
+  it('the preview: the text being edited, the example booking, nothing saved or sent', async () => {
+    const b = await business();
+    const before = mailbox.sent.length;
+    const email = await previewMessageTemplate({
+      sessionToken: b.t,
+      kind: 'thanks',
+      locale: 'ro',
+      subject: 'Mulțumim, {client}!',
+      body: 'Mulțumim că ai venit la {business} pentru {service} cu {member}.',
+    });
+    expect(email.subject).toBe(
+      fill(emailMessages('ro').booking.subject, { title: 'Mulțumim, Cristina!', business: b.name }),
+    );
+    expect(email.opening.join(' ')).toContain(
+      `Mulțumim că ai venit la ${b.name} pentru Vopsit rădăcină cu Ioana Pavel.`,
+    );
+    expect(email.button.href).toContain(`/r/${b.slug}`);
+    expect(email.rows).toEqual([]);
+    expect(email.senderName).toContain(b.name);
+    expect(mailbox.sent.length).toBe(before);
+    expect(
+      (await listMessageTemplates({ sessionToken: b.t })).every((x) => !x.customLocales.length),
+    ).toBe(true);
+    await expect(
+      previewMessageTemplate({
+        sessionToken: b.t,
+        kind: 'thanks',
+        locale: 'ro',
+        subject: 'x',
+        body: '{clinet}',
+      }),
+    ).rejects.toMatchObject({ message: 'unknown_variable:clinet' });
   });
 });

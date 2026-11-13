@@ -22,7 +22,10 @@
       "resources": "Resurse",
       "reminders": "Reamintiri",
       "sms": "Trimitere SMS",
-      "online": "Rezervări online"
+      "online": "Rezervări online",
+      "messages": "Nachrichten",
+      "payments": "Zahlungen und Anzahlung",
+      "promo": "Aktionen"
     }
   },
   "services": {
@@ -851,5 +854,90 @@
     "title": "Sie haben das Terminlimit für {month} erreicht",
     "desc": "Ihre bestehenden Termine bleiben erhalten und Sie können sie weiterhin ändern. Der begonnene Termin wartet auf Sie: Wir speichern ihn, sobald wieder Platz ist.",
     "kept": "Wir haben den begonnenen Termin aufbewahrt. Prüfen Sie die Uhrzeit und tippen Sie auf „Buchen“."
+  },
+  "msg": {
+    "title": "Nachrichten",
+    "lead": "Was Kunden und Team erhalten, und wann. Die Texte kannst du ändern; die Variablen füllen sich von selbst.",
+    "toClients": "An Kunden",
+    "toTeam": "Ans Team",
+    "col": {
+      "message": "Nachricht",
+      "channel": "Kanal",
+      "when": "Wann sie geht",
+      "on": "An"
+    },
+    "ch": {
+      "email": "E-Mail",
+      "sms": "SMS",
+      "push": "Benachrichtigung in der App"
+    },
+    "t": {
+      "confirm": "Terminbestätigung",
+      "reminder": "Erinnerung vor dem Termin",
+      "changed": "Der Termin hat sich geändert",
+      "cancelled": "Der Termin wurde storniert",
+      "followup": "Dank nach dem Besuch",
+      "review": "Bitte um Bewertung",
+      "teamNew": "Neuer Termin",
+      "teamCancelled": "Vom Kunden storniert",
+      "teamMoved": "Vom Kunden verschoben",
+      "teamDigest": "Der Tagesplan"
+    },
+    "when": {
+      "now": "Sofort",
+      "before": "{n} Stunden vorher",
+      "after": "{n} Stunden nach dem Besuch",
+      "nextDay": "Am nächsten Tag um {time}",
+      "morning": "Jeden Morgen um {time}"
+    },
+    "edit": "Bearbeiten",
+    "editTitle": "Nachricht bearbeiten",
+    "channel": "Kanal",
+    "subject": "Betreff",
+    "body": "Text",
+    "insert": "Einfügen",
+    "v": {
+      "client": "der Vorname des Kunden",
+      "service": "die Leistung",
+      "date": "das Datum",
+      "time": "die Uhrzeit",
+      "member": "bei wem",
+      "business": "der Salon",
+      "link": "der Link zum Verschieben oder Stornieren",
+      "review": "der Bewertungslink"
+    },
+    "whenTitle": "Wann sie geht",
+    "hours": "Stunden",
+    "preview": "Vorschau",
+    "previewWith": "Mit den Daten eines Beispieltermins",
+    "smsCount": "{chars} Zeichen · {n} SMS",
+    "smsOver": "Der Text hat über 160 Zeichen und geht als 2 SMS.",
+    "smsNoDiacritics": "SMS gehen ohne Sonderzeichen, damit sie in 160 Zeichen passen.",
+    "reset": "Zum ursprünglichen Text zurück",
+    "save": "Nachricht speichern",
+    "err": {
+      "var": "Die Variable {var} gibt es nicht. Wähle eine aus der Liste.",
+      "subject": "Schreib den Betreff.",
+      "body": "Schreib den Text.",
+      "long": "Der Text hat über {max} Zeichen.",
+      "failed": "Die Nachricht konnte nicht gespeichert werden. Bitte versuch es erneut."
+    },
+    "review": {
+      "link": "Link zur Bewertungsseite",
+      "linkHelp": "Zum Beispiel die Seite des Salons bei Google. Der Kunde landet direkt dort.",
+      "onlyDone": "Nur nach abgeschlossenen Terminen",
+      "limit": "Höchstens einmal alle {n} Tage für denselben Kunden"
+    },
+    "team": {
+      "who": "Wer sie erhält",
+      "member": "Das Teammitglied des Termins",
+      "owner": "Der Inhaber",
+      "reception": "Der Empfang"
+    },
+    "saved": "Nachricht gespeichert. Sie geht ab dem nächsten Termin so.",
+    "locked": "Geht immer; lässt sich nicht ausschalten.",
+    "resetDone": "Der ursprüngliche Text ist zurück.",
+    "prevFrom": "Von",
+    "prevTo": "An"
   }
 }

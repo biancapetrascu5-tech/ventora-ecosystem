@@ -770,6 +770,8 @@ describe('B.1 — the role and the grants (§2.3)', () => {
       'medical_answer',
       'medical_consent',
       'medical_field',
+      // B.14b: the business's texts of the client e-mails
+      'message_template',
       'outbox_events',
       // B.9e: the packages of sessions
       'package',

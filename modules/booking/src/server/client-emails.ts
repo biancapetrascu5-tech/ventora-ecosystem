@@ -14,6 +14,13 @@ import { commitQuota, releaseQuota, reserveQuota } from '@ventora/quota';
 import { CLIENT_LOCALES, type ClientLocale } from './appointments';
 import { withBookingJobTx, withBookingTx } from './db';
 import { issueManageToken } from './manage-token';
+import {
+  customTemplateFor,
+  fillTemplate,
+  paragraphs,
+  type TemplateKind,
+  type TemplateText,
+} from './message-templates';
 
 /*
  * Lot B.13 — the confirmation and the reminder by e-mail, in the client's language (BOOKING.md
@@ -300,6 +307,9 @@ function senderAddress(): string {
   return (m ? m[1]! : from).trim();
 }
 
+/** {client} in the business's texts: the first name (S127, „prenumele clientului”). */
+export const firstName = (name: string) => name.trim().split(/\s+/)[0] ?? name;
+
 /** The name in the From header: no quotes, angle brackets or line breaks. */
 const headerSafe = (v: string) => v.replace(/["<>\r\n]/g, '').trim();
 
@@ -334,7 +344,22 @@ export type ClientEmailInput = {
   movedFrom?: Date | null;
   /** change: moved by the client on their page (a short e-mail). */
   movedByClient?: boolean;
+  /**
+   * B.14b: the business's text of this message in the client's language (subject + body, with the
+   * variables), or null for the Ventora text. The appointment block, the policy line, the button and
+   * the footer stay. Not used for the short e-mails of the client's own cancellation or move.
+   */
+  custom?: TemplateText | null;
 };
+
+/** B.14b: the e-mails that take the business's text (the client's own action keeps Ventora's). */
+export function takesCustomText(
+  input: Pick<ClientEmailInput, 'kind' | 'cancelledBy' | 'movedByClient'>,
+) {
+  if (input.kind === 'cancellation') return input.cancelledBy === 'business';
+  if (input.kind === 'change') return !input.movedByClient;
+  return true;
+}
 
 type Parts = {
   title: string;
@@ -345,7 +370,52 @@ type Parts = {
 };
 
 /** The e-mail of one message, in the client's language (S3 template, texts email.booking.*). */
+/**
+ * B.14b: the parts of a client e-mail, as the editor's preview shows them (S127, the single template
+ * of BookingClientEmails); renderClientEmail turns the same parts into the HTML and the text.
+ */
+export type ClientEmailParts = {
+  /** The sender's name („Salon Aurora prin EasyBook”). */
+  senderName: string;
+  to: string;
+  subject: string;
+  preheader: string;
+  eyebrow: string;
+  title: string;
+  /** The opening paragraphs (the greeting and the text), then the appointment block. */
+  opening: string[];
+  rows: string[];
+  button: { label: string; href: string };
+  after: string[];
+  why: string;
+  company: string;
+  locale: ClientLocale;
+};
+
 export function renderClientEmail(input: ClientEmailInput): ClientEmail {
+  const p = clientEmailParts(input);
+  const rendered = renderOperationalEmail({
+    lang: p.locale,
+    subject: p.subject,
+    preheader: p.preheader,
+    eyebrow: p.eyebrow,
+    title: p.title,
+    lead: [...p.opening, ...p.rows],
+    button: p.button,
+    after: p.after,
+    signature: '',
+    why: p.why,
+    company: p.company,
+  });
+  return {
+    to: p.to,
+    from: `"${headerSafe(p.senderName)}" <${senderAddress()}>`,
+    ...rendered,
+    locale: p.locale,
+  };
+}
+
+export function clientEmailParts(input: ClientEmailInput): ClientEmailParts {
   const { locale, business } = input;
   const t = emailMessages(locale).booking;
   const format = (d: Date) =>
@@ -439,23 +509,47 @@ export function renderClientEmail(input: ClientEmailInput): ClientEmail {
     }
   })();
 
-  const rendered = renderOperationalEmail({
-    lang: locale,
-    subject: fill(t.subject, { title: parts.title, business }),
-    preheader: parts.lead,
+  let title = parts.title;
+  let opening = [fill(t.greet, { name: input.clientName }), parts.lead];
+  let after = parts.after;
+  if (input.custom && takesCustomText(input)) {
+    const own = fillTemplate(input.custom, {
+      client: firstName(input.clientName),
+      service: input.service,
+      date: new Intl.DateTimeFormat(locale, {
+        timeZone: input.timeZone,
+        weekday: 'long',
+        day: 'numeric',
+        month: 'long',
+      }).format(input.startsAt),
+      time: new Intl.DateTimeFormat(locale, {
+        timeZone: input.timeZone,
+        hour: '2-digit',
+        minute: '2-digit',
+      }).format(input.startsAt),
+      member: input.member,
+      business,
+      link: parts.button.href,
+    });
+    title = own.subject;
+    opening = paragraphs(own.body);
+    // the policy line of the confirmation stays; the other closing lines are part of the text now
+    after = input.kind === 'confirmation' ? parts.after : [];
+  }
+
+  return {
+    senderName: fill(t.sender, { business }),
+    to: input.to,
+    subject: fill(t.subject, { title, business }),
+    preheader: opening[1] ?? opening[0] ?? title,
     eyebrow: business,
-    title: parts.title,
-    lead: [fill(t.greet, { name: input.clientName }), parts.lead, ...parts.rows],
+    title,
+    opening,
+    rows: parts.rows,
     button: parts.button,
-    after: parts.after,
-    signature: '',
+    after,
     why: fill(t.why, { business }),
     company: [business, input.where, t.sentBy].filter(Boolean).join(' · '),
-  });
-  return {
-    to: input.to,
-    from: `"${headerSafe(fill(t.sender, { business }))}" <${senderAddress()}>`,
-    ...rendered,
     locale,
   };
 }
@@ -513,9 +607,15 @@ async function sendOne(org: OrganizationCard, m: Claimed): Promise<Outcome> {
         issueManageToken(client, organizationId, m.appointment_id),
       )
     : null;
+  const locale = toLocale(f.locale);
+  const custom = await withBookingTx(
+    organizationId,
+    (client) => customTemplateFor(client, m.kind as TemplateKind, locale),
+    true,
+  );
   const email = renderClientEmail({
     kind: m.kind,
-    locale: toLocale(f.locale),
+    locale,
     business: org.name,
     timeZone: org.timeZone,
     clientName: f.client_name,
@@ -530,6 +630,7 @@ async function sendOne(org: OrganizationCard, m: Claimed): Promise<Outcome> {
     cancelledBy: f.cancelled_by,
     movedFrom: f.moved_from,
     movedByClient: f.moved_by === 'client',
+    custom,
   });
   const result = await deliverEmail({
     to: email.to,

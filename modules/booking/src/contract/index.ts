@@ -433,3 +433,20 @@ export type {
   PackagePaymentMethod,
   PackageValidityMonths,
 } from '../server/packages';
+
+// Lot B.14b: the texts of the client e-mails (Setări · Mesaje, S127)
+export {
+  getMessageTemplate,
+  listMessageTemplates,
+  previewMessageTemplate,
+  resetMessageTemplate,
+  saveMessageTemplate,
+} from './message-templates';
+export type {
+  ClientEmailParts,
+  MessageTemplate,
+  MessageTemplateInput,
+  MessageTemplateRef,
+  MessageTemplateSummary,
+  TemplateKind,
+} from './message-templates';

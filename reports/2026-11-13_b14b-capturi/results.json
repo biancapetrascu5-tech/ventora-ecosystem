@@ -1,0 +1,590 @@
+[
+  {
+    "frame": 1,
+    "width": 1280,
+    "theme": "light",
+    "pct": 0.11,
+    "size": "1280x960 vs 1280x960"
+  },
+  {
+    "frame": 2,
+    "width": 1280,
+    "theme": "light",
+    "pct": 0.02,
+    "size": "820x1180 vs 820x1180"
+  },
+  {
+    "frame": 3,
+    "width": 1280,
+    "theme": "light",
+    "pct": 0.04,
+    "size": "390x1310 vs 390x1310"
+  },
+  {
+    "frame": 4,
+    "width": 1280,
+    "theme": "light",
+    "pct": 0.11,
+    "size": "1280x960 vs 1280x960"
+  },
+  {
+    "frame": 5,
+    "width": 1280,
+    "theme": "light",
+    "pct": 0.01,
+    "size": "820x1190 vs 820x1190"
+  },
+  {
+    "frame": 6,
+    "width": 1280,
+    "theme": "light",
+    "pct": 0.01,
+    "size": "390x1350 vs 390x1350"
+  },
+  {
+    "frame": 7,
+    "width": 1280,
+    "theme": "light",
+    "pct": 0.34,
+    "size": "1280x960 vs 1280x960"
+  },
+  {
+    "frame": 8,
+    "width": 1280,
+    "theme": "light",
+    "pct": 0.01,
+    "size": "820x1210 vs 820x1210"
+  },
+  {
+    "frame": 9,
+    "width": 1280,
+    "theme": "light",
+    "pct": 0.01,
+    "size": "390x1370 vs 390x1370"
+  },
+  {
+    "frame": 10,
+    "width": 1280,
+    "theme": "light",
+    "pct": 0.41,
+    "size": "1280x960 vs 1280x960"
+  },
+  {
+    "frame": 11,
+    "width": 1280,
+    "theme": "light",
+    "pct": 0.16,
+    "size": "820x1180 vs 820x1180"
+  },
+  {
+    "frame": 12,
+    "width": 1280,
+    "theme": "light",
+    "pct": 0.14,
+    "size": "390x1310 vs 390x1310"
+  },
+  {
+    "frame": 13,
+    "width": 1280,
+    "theme": "light",
+    "pct": 0.41,
+    "size": "1280x960 vs 1280x960"
+  },
+  {
+    "frame": 14,
+    "width": 1280,
+    "theme": "light",
+    "pct": 0.17,
+    "size": "820x1180 vs 820x1180"
+  },
+  {
+    "frame": 15,
+    "width": 1280,
+    "theme": "light",
+    "pct": 0.15,
+    "size": "390x1310 vs 390x1310"
+  },
+  {
+    "frame": 16,
+    "width": 1280,
+    "theme": "light",
+    "pct": 0.33,
+    "size": "1280x960 vs 1280x960"
+  },
+  {
+    "frame": 17,
+    "width": 1280,
+    "theme": "light",
+    "pct": 0,
+    "size": "820x1180 vs 820x1180"
+  },
+  {
+    "frame": 18,
+    "width": 1280,
+    "theme": "light",
+    "pct": 0,
+    "size": "390x1310 vs 390x1310"
+  },
+  {
+    "frame": 19,
+    "width": 1280,
+    "theme": "light",
+    "pct": 0.33,
+    "size": "1280x960 vs 1280x960"
+  },
+  {
+    "frame": 20,
+    "width": 1280,
+    "theme": "light",
+    "pct": 0.02,
+    "size": "820x1180 vs 820x1180"
+  },
+  {
+    "frame": 21,
+    "width": 1280,
+    "theme": "light",
+    "pct": 0,
+    "size": "390x1310 vs 390x1310"
+  },
+  {
+    "frame": 1,
+    "width": 1280,
+    "theme": "dark",
+    "pct": 0.04,
+    "size": "1280x960 vs 1280x960"
+  },
+  {
+    "frame": 2,
+    "width": 1280,
+    "theme": "dark",
+    "pct": 0.02,
+    "size": "820x1180 vs 820x1180"
+  },
+  {
+    "frame": 3,
+    "width": 1280,
+    "theme": "dark",
+    "pct": 0.04,
+    "size": "390x1310 vs 390x1310"
+  },
+  {
+    "frame": 4,
+    "width": 1280,
+    "theme": "dark",
+    "pct": 0.04,
+    "size": "1280x960 vs 1280x960"
+  },
+  {
+    "frame": 5,
+    "width": 1280,
+    "theme": "dark",
+    "pct": 0.01,
+    "size": "820x1190 vs 820x1190"
+  },
+  {
+    "frame": 6,
+    "width": 1280,
+    "theme": "dark",
+    "pct": 0.01,
+    "size": "390x1350 vs 390x1350"
+  },
+  {
+    "frame": 7,
+    "width": 1280,
+    "theme": "dark",
+    "pct": 0.04,
+    "size": "1280x960 vs 1280x960"
+  },
+  {
+    "frame": 8,
+    "width": 1280,
+    "theme": "dark",
+    "pct": 0.01,
+    "size": "820x1210 vs 820x1210"
+  },
+  {
+    "frame": 9,
+    "width": 1280,
+    "theme": "dark",
+    "pct": 0.01,
+    "size": "390x1370 vs 390x1370"
+  },
+  {
+    "frame": 10,
+    "width": 1280,
+    "theme": "dark",
+    "pct": 0.39,
+    "size": "1280x960 vs 1280x960"
+  },
+  {
+    "frame": 11,
+    "width": 1280,
+    "theme": "dark",
+    "pct": 0.16,
+    "size": "820x1180 vs 820x1180"
+  },
+  {
+    "frame": 12,
+    "width": 1280,
+    "theme": "dark",
+    "pct": 0.15,
+    "size": "390x1310 vs 390x1310"
+  },
+  {
+    "frame": 13,
+    "width": 1280,
+    "theme": "dark",
+    "pct": 0.39,
+    "size": "1280x960 vs 1280x960"
+  },
+  {
+    "frame": 14,
+    "width": 1280,
+    "theme": "dark",
+    "pct": 0.17,
+    "size": "820x1180 vs 820x1180"
+  },
+  {
+    "frame": 15,
+    "width": 1280,
+    "theme": "dark",
+    "pct": 0.16,
+    "size": "390x1310 vs 390x1310"
+  },
+  {
+    "frame": 16,
+    "width": 1280,
+    "theme": "dark",
+    "pct": 0.31,
+    "size": "1280x960 vs 1280x960"
+  },
+  {
+    "frame": 17,
+    "width": 1280,
+    "theme": "dark",
+    "pct": 0,
+    "size": "820x1180 vs 820x1180"
+  },
+  {
+    "frame": 18,
+    "width": 1280,
+    "theme": "dark",
+    "pct": 0,
+    "size": "390x1310 vs 390x1310"
+  },
+  {
+    "frame": 19,
+    "width": 1280,
+    "theme": "dark",
+    "pct": 0.32,
+    "size": "1280x960 vs 1280x960"
+  },
+  {
+    "frame": 20,
+    "width": 1280,
+    "theme": "dark",
+    "pct": 0.02,
+    "size": "820x1180 vs 820x1180"
+  },
+  {
+    "frame": 21,
+    "width": 1280,
+    "theme": "dark",
+    "pct": 0,
+    "size": "390x1310 vs 390x1310"
+  },
+  {
+    "frame": 1,
+    "width": 390,
+    "theme": "light",
+    "pct": 0.36,
+    "size": "390x960 vs 390x960"
+  },
+  {
+    "frame": 2,
+    "width": 390,
+    "theme": "light",
+    "pct": 0.24,
+    "size": "390x1180 vs 390x1180"
+  },
+  {
+    "frame": 3,
+    "width": 390,
+    "theme": "light",
+    "pct": 0.2,
+    "size": "390x1310 vs 390x1310"
+  },
+  {
+    "frame": 4,
+    "width": 390,
+    "theme": "light",
+    "pct": 0.26,
+    "size": "390x960 vs 390x960"
+  },
+  {
+    "frame": 5,
+    "width": 390,
+    "theme": "light",
+    "pct": 0.21,
+    "size": "390x1190 vs 390x1190"
+  },
+  {
+    "frame": 6,
+    "width": 390,
+    "theme": "light",
+    "pct": 0.18,
+    "size": "390x1350 vs 390x1350"
+  },
+  {
+    "frame": 7,
+    "width": 390,
+    "theme": "light",
+    "pct": 0.26,
+    "size": "390x960 vs 390x960"
+  },
+  {
+    "frame": 8,
+    "width": 390,
+    "theme": "light",
+    "pct": 0.81,
+    "size": "390x1210 vs 390x1210"
+  },
+  {
+    "frame": 9,
+    "width": 390,
+    "theme": "light",
+    "pct": 0.71,
+    "size": "390x1370 vs 390x1370"
+  },
+  {
+    "frame": 10,
+    "width": 390,
+    "theme": "light",
+    "pct": 1.01,
+    "size": "390x960 vs 390x960"
+  },
+  {
+    "frame": 11,
+    "width": 390,
+    "theme": "light",
+    "pct": 0.99,
+    "size": "390x1180 vs 390x1180"
+  },
+  {
+    "frame": 12,
+    "width": 390,
+    "theme": "light",
+    "pct": 0.89,
+    "size": "390x1310 vs 390x1310"
+  },
+  {
+    "frame": 13,
+    "width": 390,
+    "theme": "light",
+    "pct": 1.01,
+    "size": "390x960 vs 390x960"
+  },
+  {
+    "frame": 14,
+    "width": 390,
+    "theme": "light",
+    "pct": 1,
+    "size": "390x1180 vs 390x1180"
+  },
+  {
+    "frame": 15,
+    "width": 390,
+    "theme": "light",
+    "pct": 0.9,
+    "size": "390x1310 vs 390x1310"
+  },
+  {
+    "frame": 16,
+    "width": 390,
+    "theme": "light",
+    "pct": 1.01,
+    "size": "390x960 vs 390x960"
+  },
+  {
+    "frame": 17,
+    "width": 390,
+    "theme": "light",
+    "pct": 0.82,
+    "size": "390x1180 vs 390x1180"
+  },
+  {
+    "frame": 18,
+    "width": 390,
+    "theme": "light",
+    "pct": 0.74,
+    "size": "390x1310 vs 390x1310"
+  },
+  {
+    "frame": 19,
+    "width": 390,
+    "theme": "light",
+    "pct": 0.92,
+    "size": "390x960 vs 390x960"
+  },
+  {
+    "frame": 20,
+    "width": 390,
+    "theme": "light",
+    "pct": 0.86,
+    "size": "390x1180 vs 390x1180"
+  },
+  {
+    "frame": 21,
+    "width": 390,
+    "theme": "light",
+    "pct": 0.73,
+    "size": "390x1310 vs 390x1310"
+  },
+  {
+    "frame": 1,
+    "width": 390,
+    "theme": "dark",
+    "pct": 0.14,
+    "size": "390x960 vs 390x960"
+  },
+  {
+    "frame": 2,
+    "width": 390,
+    "theme": "dark",
+    "pct": 0.05,
+    "size": "390x1180 vs 390x1180"
+  },
+  {
+    "frame": 3,
+    "width": 390,
+    "theme": "dark",
+    "pct": 0.06,
+    "size": "390x1310 vs 390x1310"
+  },
+  {
+    "frame": 4,
+    "width": 390,
+    "theme": "dark",
+    "pct": 0.22,
+    "size": "390x960 vs 390x960"
+  },
+  {
+    "frame": 5,
+    "width": 390,
+    "theme": "dark",
+    "pct": 0.18,
+    "size": "390x1190 vs 390x1190"
+  },
+  {
+    "frame": 6,
+    "width": 390,
+    "theme": "dark",
+    "pct": 0.15,
+    "size": "390x1350 vs 390x1350"
+  },
+  {
+    "frame": 7,
+    "width": 390,
+    "theme": "dark",
+    "pct": 0.22,
+    "size": "390x960 vs 390x960"
+  },
+  {
+    "frame": 8,
+    "width": 390,
+    "theme": "dark",
+    "pct": 0.79,
+    "size": "390x1210 vs 390x1210"
+  },
+  {
+    "frame": 9,
+    "width": 390,
+    "theme": "dark",
+    "pct": 0.69,
+    "size": "390x1370 vs 390x1370"
+  },
+  {
+    "frame": 10,
+    "width": 390,
+    "theme": "dark",
+    "pct": 0.98,
+    "size": "390x960 vs 390x960"
+  },
+  {
+    "frame": 11,
+    "width": 390,
+    "theme": "dark",
+    "pct": 0.97,
+    "size": "390x1180 vs 390x1180"
+  },
+  {
+    "frame": 12,
+    "width": 390,
+    "theme": "dark",
+    "pct": 0.87,
+    "size": "390x1310 vs 390x1310"
+  },
+  {
+    "frame": 13,
+    "width": 390,
+    "theme": "dark",
+    "pct": 0.98,
+    "size": "390x960 vs 390x960"
+  },
+  {
+    "frame": 14,
+    "width": 390,
+    "theme": "dark",
+    "pct": 0.98,
+    "size": "390x1180 vs 390x1180"
+  },
+  {
+    "frame": 15,
+    "width": 390,
+    "theme": "dark",
+    "pct": 0.88,
+    "size": "390x1310 vs 390x1310"
+  },
+  {
+    "frame": 16,
+    "width": 390,
+    "theme": "dark",
+    "pct": 0.98,
+    "size": "390x960 vs 390x960"
+  },
+  {
+    "frame": 17,
+    "width": 390,
+    "theme": "dark",
+    "pct": 0.8,
+    "size": "390x1180 vs 390x1180"
+  },
+  {
+    "frame": 18,
+    "width": 390,
+    "theme": "dark",
+    "pct": 0.72,
+    "size": "390x1310 vs 390x1310"
+  },
+  {
+    "frame": 19,
+    "width": 390,
+    "theme": "dark",
+    "pct": 0.92,
+    "size": "390x960 vs 390x960"
+  },
+  {
+    "frame": 20,
+    "width": 390,
+    "theme": "dark",
+    "pct": 0.83,
+    "size": "390x1180 vs 390x1180"
+  },
+  {
+    "frame": 21,
+    "width": 390,
+    "theme": "dark",
+    "pct": 0.7,
+    "size": "390x1310 vs 390x1310"
+  }
+]

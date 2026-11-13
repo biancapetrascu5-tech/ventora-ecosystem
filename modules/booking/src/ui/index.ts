@@ -185,3 +185,26 @@ export {
   BulkCancelDialog,
   UnsavedDialog,
 } from './states/BookingStates';
+// Lot B.14b: EasyBook · Setări · „Mesaje” (BookingMessageTemplates, S127)
+export {
+  BookingMessagesView,
+  type BookingMessagesViewProps,
+  type MessageChannel,
+  type MessageId,
+  type MessageRow,
+} from './messages/BookingMessagesView';
+export {
+  MessageEditorDrawer,
+  SmsPreview,
+  smsLength,
+  type MessageEditorDrawerProps,
+  type WhenOption,
+} from './messages/MessageEditorDrawer';
+export { EmailPreview, type EmailPreviewData } from './messages/EmailPreview';
+export { SETTINGS_TABS_S127 } from './services/BookingSettingsHeader';
+export {
+  TEMPLATE_LIMITS,
+  TEMPLATE_VARS,
+  unknownVariables,
+  type TemplateKind,
+} from '../server/template-text';
