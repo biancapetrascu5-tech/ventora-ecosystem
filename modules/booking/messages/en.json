@@ -499,7 +499,6 @@
     "attn": {
       "title": "Needs you",
       "more": "See all ({n})",
-      "empty": "Nothing to handle right now.",
       "unconfirmed": "{client} hasn’t confirmed",
       "unconfirmedMeta": "Today at {time} · {service} · {staff}",
       "confirm": "Confirm",
@@ -520,8 +519,6 @@
       "EUR": "€{amount}"
     },
     "toast": {
-      "confirmed": "{client}'s appointment is confirmed.",
-      "completed": "{client}'s appointment is completed.",
       "undo": "Undo",
       "undone": "The change was undone.",
       "failed": "It wasn't saved. Try again.",
@@ -726,8 +723,7 @@
     },
     "move": {
       "title": "Move appointment",
-      "save": "Move",
-      "done": "We moved the appointment to {day}, {time}."
+      "save": "Move"
     },
     "correct": {
       "title": "Correct the status",
@@ -737,9 +733,7 @@
       "save": "Correct"
     },
     "toast": {
-      "confirmed": "We confirmed the appointment · {client}",
       "started": "We started the appointment · {client}",
-      "completed": "We marked the appointment done · {client}",
       "cancelled": "We cancelled the appointment · {client}",
       "noShow": "We marked: no-show · {client}",
       "corrected": "We corrected the status.",
@@ -797,7 +791,60 @@
       "remind": "Send reminder"
     },
     "export": "Export",
-    "today": "Today, {time}",
-    "empty": "No appointments in the chosen period."
+    "today": "Today, {time}"
+  },
+  "states": {
+    "emptyDay": {
+      "title": "You have no appointments today",
+      "body": "Add one or open the calendar to see the rest of the week.",
+      "add": "Add an appointment",
+      "calendar": "Open the calendar"
+    },
+    "nothing": "Nothing to sort out now",
+    "loadError": {
+      "title": "We couldn't load the day's schedule",
+      "body": "Check your internet connection and try again.",
+      "retry": "Try again"
+    },
+    "completed": "Appointment done · {client}",
+    "confirmed": "We confirmed the appointment · {client}",
+    "hint": {
+      "text": "Tap a free slot to add an appointment.",
+      "ok": "Got it"
+    },
+    "listFiltered": {
+      "title": "No appointments for the chosen filters"
+    },
+    "clearFilters": "Clear filters",
+    "listEmpty": {
+      "title": "You don't have any appointments yet",
+      "body": "Add your first appointment or turn on online booking so clients can find you."
+    },
+    "export": {
+      "title": "We exported {n} appointments from {day}.",
+      "file": "The file has downloaded."
+    },
+    "bulk": {
+      "title": "Cancel {n} appointments?",
+      "keep": "Keep them",
+      "confirm": "Cancel appointments",
+      "sms": "Clients automatically get an SMS that the appointment was cancelled."
+    },
+    "moved": "We moved the appointment to {day}, {time}.",
+    "settingsSaved": "We saved the settings.",
+    "unsaved": {
+      "title": "You have unsaved changes",
+      "leave": "Leave without saving",
+      "save": "Save"
+    },
+    "limitSent": "We sent the request to {name}.",
+    "otherDays": {
+      "title": "No results today for “{q}”",
+      "action": "{n, plural, one {# result on other days} other {# results on other days}}"
+    },
+    "firstFree": "Next free slot: {weekday}, {time}, with {staff}.",
+    "book": "Book",
+    "doneLine": "{client} · {service} · today, {time}",
+    "collect": "Collect"
   }
 }

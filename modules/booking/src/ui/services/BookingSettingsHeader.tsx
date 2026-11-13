@@ -60,9 +60,14 @@ export function SettingsToast({
   onDismiss,
   dismissLabel,
   action,
+  onUndo,
+  undoLabel,
 }: {
   mode: ScreenMode;
-  tone?: 'done' | 'danger';
+  tone?: 'done' | 'danger' | 'neutral';
+  /** BookingStates: „↶ Anulează” after a quick action or a move. */
+  onUndo?: () => void;
+  undoLabel?: string;
   /** A button in the Toast („Anulează” after a quick action, BookingToday). */
   action?: { label: string; onClick: () => void };
   title: string;
@@ -80,6 +85,8 @@ export function SettingsToast({
         onDismiss={onDismiss}
         dismissLabel={dismissLabel}
         action={action}
+        onUndo={onUndo}
+        undoLabel={undoLabel}
       />
     </div>
   );

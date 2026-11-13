@@ -112,7 +112,11 @@ export function AppointmentsScreen({
   const [note, setNote] = useState('');
   const [dialog, setDialog] = useState<Dialog | null>(null);
   const [busy, setBusy] = useState(false);
-  const [toast, setToast] = useState<{ title: string; tone: 'done' | 'danger' } | null>(null);
+  const [toast, setToast] = useState<{
+    title: string;
+    tone: 'done' | 'danger';
+    undo?: () => void;
+  } | null>(null);
   // when the open appointment was read (the 24 h of „Corectează starea…”, „Nu a venit” after the start)
   const [readAt, setReadAt] = useState(0);
 
@@ -219,11 +223,20 @@ export function AppointmentsScreen({
     status: r.status,
   }));
 
+  const moveDay = (iso: string) => {
+    const days =
+      (Date.parse(`${iso}T12:00:00Z`) - Date.parse(`${data.today}T12:00:00Z`)) / 86_400_000;
+    return days >= 0 && days < 7
+      ? new Intl.DateTimeFormat(locale, { weekday: 'long', timeZone: 'UTC' }).format(
+          new Date(`${iso}T12:00:00Z`),
+        )
+      : dayText(iso, locale).toLocaleLowerCase(locale);
+  };
   const mine = (staffId: string) => data.scope === 'all' || staffId === data.myStaffId;
 
-  const done = (r: DetailActionResult, title: string) => {
+  const done = (r: DetailActionResult, title: string, undo?: () => void) => {
     if (r.ok) {
-      setToast({ tone: 'done', title });
+      setToast({ tone: 'done', title, undo });
       setDialog(null);
       if (openId) void loadDetail(openId, allHistory);
       reloadList(filters);
@@ -248,11 +261,11 @@ export function AppointmentsScreen({
     });
     switch (a) {
       case 'confirm':
-        return done(await confirmAppointmentAction(id), t('detail.toast.confirmed', { client }));
+        return done(await confirmAppointmentAction(id), t('states.confirmed', { client }));
       case 'start':
         return done(await startAppointmentAction(id), t('detail.toast.started', { client }));
       case 'complete':
-        return done(await completeAppointmentAction(id), t('detail.toast.completed', { client }));
+        return done(await completeAppointmentAction(id), t('states.completed', { client }));
       case 'noShow':
         return done(await noShowAppointmentAction(id), t('detail.toast.noShow', { client }));
       case 'cancel':
@@ -480,6 +493,14 @@ export function AppointmentsScreen({
         onState={(s) => filter({ state: s })}
         filterCount={(filters.period !== 'today' ? 1 : 0) + (filters.staffId !== 'all' ? 1 : 0) + 1}
         loading={loading}
+        onClearFilters={
+          filters.period !== 'today' ||
+          filters.staffId !== 'all' ||
+          filters.state !== 'active' ||
+          filters.query.trim()
+            ? () => filter({ period: 'today', staffId: 'all', state: 'active', query: '' })
+            : undefined
+        }
       />
       {openId && drawer()}
       {detail && (
@@ -527,13 +548,16 @@ export function AppointmentsScreen({
                     slotsFor(dialog.date);
                     return;
                   }
-                  done(
-                    r,
-                    t('detail.move.done', {
-                      day: dayText(dialog.date, locale).toLocaleLowerCase(locale),
-                      time: slot.time,
-                    }),
-                  );
+                  // BookingStates: „Am mutat programarea pe sâmbătă, 11:00.” with „Anulează” (back to
+                  // the time it had)
+                  const id = detail.row.id;
+                  const before = detail.startsAt;
+                  done(r, t('states.moved', { day: moveDay(dialog.date), time: slot.time }), () => {
+                    setToast(null);
+                    void moveAppointmentAction(id, before).then((x) =>
+                      done(x, t('today.toast.undone')),
+                    );
+                  });
                 }}
               />
             )}
@@ -572,6 +596,8 @@ export function AppointmentsScreen({
           title={toast.title}
           onDismiss={() => setToast(null)}
           dismissLabel={ui('close')}
+          onUndo={toast.undo}
+          undoLabel={t('today.toast.undo')}
         />
       )}
     </>

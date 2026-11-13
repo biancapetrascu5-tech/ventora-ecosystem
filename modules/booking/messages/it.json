@@ -499,7 +499,6 @@
     "attn": {
       "title": "In attesa di Lei",
       "more": "Vedi tutti ({n})",
-      "empty": "Niente da fare per ora.",
       "unconfirmed": "{client} non ha confermato",
       "unconfirmedMeta": "Oggi alle {time} · {service} · {staff}",
       "confirm": "Conferma",
@@ -520,8 +519,6 @@
       "EUR": "{amount} €"
     },
     "toast": {
-      "confirmed": "L’appuntamento di {client} è confermato.",
-      "completed": "L’appuntamento di {client} è completato.",
       "undo": "Annulla",
       "undone": "Modifica annullata.",
       "failed": "Non salvato. Riprova.",
@@ -726,8 +723,7 @@
     },
     "move": {
       "title": "Sposta l’appuntamento",
-      "save": "Sposta",
-      "done": "Abbiamo spostato l’appuntamento a {day} alle {time}."
+      "save": "Sposta"
     },
     "correct": {
       "title": "Correggi lo stato",
@@ -737,9 +733,7 @@
       "save": "Correggi"
     },
     "toast": {
-      "confirmed": "Abbiamo confermato l’appuntamento · {client}",
       "started": "Abbiamo iniziato l’appuntamento · {client}",
-      "completed": "Abbiamo concluso l’appuntamento · {client}",
       "cancelled": "Abbiamo annullato l’appuntamento · {client}",
       "noShow": "Segnato: non presentato · {client}",
       "corrected": "Abbiamo corretto lo stato.",
@@ -797,7 +791,60 @@
       "remind": "Invia promemoria"
     },
     "export": "Esporta",
-    "today": "Oggi, {time}",
-    "empty": "Nessun appuntamento nel periodo scelto."
+    "today": "Oggi, {time}"
+  },
+  "states": {
+    "emptyDay": {
+      "title": "Oggi non ha appuntamenti",
+      "body": "Ne aggiunga uno o apra il calendario per vedere il resto della settimana.",
+      "add": "Aggiungi un appuntamento",
+      "calendar": "Apri il calendario"
+    },
+    "nothing": "Niente da sistemare adesso",
+    "loadError": {
+      "title": "Non siamo riusciti a caricare il programma del giorno",
+      "body": "Controlli la connessione a internet e riprovi.",
+      "retry": "Riprova"
+    },
+    "completed": "Appuntamento concluso · {client}",
+    "confirmed": "Abbiamo confermato l’appuntamento · {client}",
+    "hint": {
+      "text": "Tocchi uno spazio libero per aggiungere un appuntamento.",
+      "ok": "Ho capito"
+    },
+    "listFiltered": {
+      "title": "Nessun appuntamento per i filtri scelti"
+    },
+    "clearFilters": "Cancella i filtri",
+    "listEmpty": {
+      "title": "Non ha ancora appuntamenti",
+      "body": "Aggiunga il primo appuntamento o attivi la prenotazione online perché i clienti La trovino."
+    },
+    "export": {
+      "title": "Abbiamo esportato {n} appuntamenti del {day}.",
+      "file": "Il file è stato scaricato."
+    },
+    "bulk": {
+      "title": "Annullare {n} appuntamenti?",
+      "keep": "Mantienili",
+      "confirm": "Annulla gli appuntamenti",
+      "sms": "I clienti ricevono automaticamente un SMS con l’annullamento dell’appuntamento."
+    },
+    "moved": "Abbiamo spostato l’appuntamento a {day} alle {time}.",
+    "settingsSaved": "Abbiamo salvato le impostazioni.",
+    "unsaved": {
+      "title": "Ha modifiche non salvate",
+      "leave": "Esci senza salvare",
+      "save": "Salva"
+    },
+    "limitSent": "Abbiamo inviato la richiesta a {name}.",
+    "otherDays": {
+      "title": "Nessun risultato oggi per «{q}»",
+      "action": "{n, plural, one {# risultato in altri giorni} other {# risultati in altri giorni}}"
+    },
+    "firstFree": "Prossimo posto libero: {weekday} alle {time}, con {staff}.",
+    "book": "Prenota",
+    "doneLine": "{client} · {service} · oggi, {time}",
+    "collect": "Incassa"
   }
 }

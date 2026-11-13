@@ -18,6 +18,7 @@ import { amountText } from '../services/format';
 import type { ScreenMode } from '../services/BookingServicesView';
 import { useCalendarTexts } from '../calendar/calendar-texts';
 import { addDays, dayDate } from '../calendar/calendar-format';
+import { EmptyDay, NothingToDo } from '../states/BookingStates';
 import s from './today.module.css';
 
 /* BookingToday (B.6b, preview.html of BookingToday): EasyBook · „Azi” — the greeting and the day's
@@ -106,6 +107,9 @@ export type BookingTodayViewProps = TodayActions & {
   attention: TodayAttention[];
   attentionTotal: number;
   onSeeAll?: () => void;
+  /** The empty day (BookingStates): „Adaugă o programare”, „Deschide calendarul”. */
+  onAdd?: () => void;
+  onCalendar?: () => void;
   agenda: (AgendaItem & { staffId: string })[];
   staff: { id: string; label: string }[];
   staffFilter: string;
@@ -319,6 +323,9 @@ export function BookingTodayView(p: BookingTodayViewProps) {
                   statusLabels={c.statusLabels()}
                   nowLabel={t('current.now')}
                 />
+              ) : p.agenda.length === 0 ? (
+                // BookingStates „Azi · zi goală”
+                <EmptyDay onAdd={p.onAdd} onCalendar={p.onCalendar} />
               ) : (
                 <p className={`body muted ${s.empty}`}>{t('agenda.empty')}</p>
               )}
@@ -331,10 +338,7 @@ export function BookingTodayView(p: BookingTodayViewProps) {
             {p.attentionTotal > 0 && <Badge tone="attention" count={p.attentionTotal} />}
           </h2>
           <div className={s.sheetlike}>
-            <AttentionList
-              items={items}
-              empty={<p className={`body muted ${s.empty}`}>{t('attn.empty')}</p>}
-            />
+            <AttentionList items={items} empty={<NothingToDo />} />
             {p.attentionTotal > ATTENTION_MAX && (
               <div className={s.more}>
                 <Button size="sm" variant="quiet" onPress={p.onSeeAll}>

@@ -499,7 +499,6 @@
     "attn": {
       "title": "Au nevoie de tine",
       "more": "Vezi toate ({n})",
-      "empty": "Nimic de rezolvat acum.",
       "unconfirmed": "{client} nu a confirmat",
       "unconfirmedMeta": "Azi la {time} · {service} · {staff}",
       "confirm": "Confirmă",
@@ -520,8 +519,6 @@
       "EUR": "{amount} €"
     },
     "toast": {
-      "confirmed": "Programarea lui {client} e confirmată.",
-      "completed": "Programarea lui {client} e încheiată.",
       "undo": "Anulează",
       "undone": "Am anulat schimbarea.",
       "failed": "Nu s-a salvat. Încearcă din nou.",
@@ -726,8 +723,7 @@
     },
     "move": {
       "title": "Mută programarea",
-      "save": "Mută",
-      "done": "Am mutat programarea pe {day}, {time}."
+      "save": "Mută"
     },
     "correct": {
       "title": "Corectează starea",
@@ -737,9 +733,7 @@
       "save": "Corectează"
     },
     "toast": {
-      "confirmed": "Am confirmat programarea · {client}",
       "started": "Am început programarea · {client}",
-      "completed": "Am încheiat programarea · {client}",
       "cancelled": "Am anulat programarea · {client}",
       "noShow": "Am marcat: nu a venit · {client}",
       "corrected": "Am corectat starea.",
@@ -797,7 +791,60 @@
       "remind": "Trimite reamintire"
     },
     "export": "Exportă",
-    "today": "Azi, {time}",
-    "empty": "Nicio programare în perioada aleasă."
+    "today": "Azi, {time}"
+  },
+  "states": {
+    "emptyDay": {
+      "title": "Azi nu ai nicio programare",
+      "body": "Adaugă una sau deschide calendarul ca să vezi restul săptămânii.",
+      "add": "Adaugă o programare",
+      "calendar": "Deschide calendarul"
+    },
+    "nothing": "Nimic de rezolvat acum",
+    "loadError": {
+      "title": "Nu am putut încărca programul zilei",
+      "body": "Verifică internetul și încearcă din nou.",
+      "retry": "Încearcă din nou"
+    },
+    "completed": "Programare încheiată · {client}",
+    "confirmed": "Am confirmat programarea · {client}",
+    "hint": {
+      "text": "Apasă pe un loc liber ca să adaugi o programare.",
+      "ok": "Am înțeles"
+    },
+    "listFiltered": {
+      "title": "Nicio programare pentru filtrele alese"
+    },
+    "clearFilters": "Șterge filtrele",
+    "listEmpty": {
+      "title": "Încă nu ai nicio programare",
+      "body": "Adaugă prima programare sau pornește rezervările online ca să te găsească clienții."
+    },
+    "export": {
+      "title": "Am exportat {n} programări din {day}.",
+      "file": "Fișierul s-a descărcat."
+    },
+    "bulk": {
+      "title": "Anulezi {n} programări?",
+      "keep": "Păstrează-le",
+      "confirm": "Anulează programările",
+      "sms": "Clienții primesc automat un SMS că programarea s-a anulat."
+    },
+    "moved": "Am mutat programarea pe {day}, {time}.",
+    "settingsSaved": "Am salvat setările.",
+    "unsaved": {
+      "title": "Ai schimbări nesalvate",
+      "leave": "Pleacă fără să salvezi",
+      "save": "Salvează"
+    },
+    "limitSent": "Am trimis cererea către {name}.",
+    "otherDays": {
+      "title": "Niciun rezultat azi pentru „{q}”",
+      "action": "{n, plural, one {un rezultat în alte zile} few {# rezultate în alte zile} other {# de rezultate în alte zile}}"
+    },
+    "firstFree": "Următorul loc liber: {weekday}, {time}, la {staff}.",
+    "book": "Programează",
+    "doneLine": "{client} · {service} · azi, {time}",
+    "collect": "Încasează"
   }
 }

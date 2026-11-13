@@ -42,6 +42,7 @@ export function TodayScreen({ initial, userName }: { initial: TodayPageData; use
   const router = useRouter();
   const mode = useMode();
   const t = useTranslations('booking.today');
+  const st = useTranslations('booking.states');
   // the page's data; router.refresh() brings it again after a change
   const data = initial;
   const [staffFilter, setStaffFilter] = useState('all');
@@ -143,7 +144,8 @@ export function TodayScreen({ initial, userName }: { initial: TodayPageData; use
     setToast({
       tone: 'done',
       undo: true,
-      title: t(p.kind === 'confirm' ? 'toast.confirmed' : 'toast.completed', { client: p.client }),
+      // BookingStates: „Am confirmat programarea · {client}” / „Programare încheiată · {client}”
+      title: st(p.kind === 'confirm' ? 'confirmed' : 'completed', { client: p.client }),
     });
     timer.current = window.setTimeout(() => {
       timer.current = null;
@@ -175,6 +177,8 @@ export function TodayScreen({ initial, userName }: { initial: TodayPageData; use
         attention={attention}
         attentionTotal={attention.length}
         onSeeAll={() => router.push('/booking/appointments')}
+        onAdd={data.canWrite ? () => router.push('/booking/new') : undefined}
+        onCalendar={() => router.push('/booking/calendar')}
         agenda={appointments.map((a) => ({
           id: a.id,
           staffId: a.staffId,
@@ -237,7 +241,8 @@ export function TodayScreen({ initial, userName }: { initial: TodayPageData; use
           title={toast.title}
           onDismiss={() => setToast(null)}
           dismissLabel={t('toast.close')}
-          action={toast.undo ? { label: t('toast.undo'), onClick: undo } : undefined}
+          onUndo={toast.undo ? undo : undefined}
+          undoLabel={t('toast.undo')}
         />
       )}
     </>

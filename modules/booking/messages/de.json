@@ -499,7 +499,6 @@
     "attn": {
       "title": "Wartet auf Sie",
       "more": "Alle ansehen ({n})",
-      "empty": "Im Moment ist nichts zu erledigen.",
       "unconfirmed": "{client} hat nicht bestätigt",
       "unconfirmedMeta": "Heute um {time} · {service} · {staff}",
       "confirm": "Bestätigen",
@@ -520,8 +519,6 @@
       "EUR": "{amount} €"
     },
     "toast": {
-      "confirmed": "Der Termin von {client} ist bestätigt.",
-      "completed": "Der Termin von {client} ist erledigt.",
       "undo": "Rückgängig",
       "undone": "Die Änderung wurde rückgängig gemacht.",
       "failed": "Nicht gespeichert. Bitte erneut versuchen.",
@@ -726,8 +723,7 @@
     },
     "move": {
       "title": "Termin verschieben",
-      "save": "Verschieben",
-      "done": "Wir haben den Termin auf {day}, {time}, verschoben."
+      "save": "Verschieben"
     },
     "correct": {
       "title": "Status korrigieren",
@@ -737,9 +733,7 @@
       "save": "Korrigieren"
     },
     "toast": {
-      "confirmed": "Wir haben den Termin bestätigt · {client}",
       "started": "Wir haben den Termin begonnen · {client}",
-      "completed": "Wir haben den Termin abgeschlossen · {client}",
       "cancelled": "Wir haben den Termin abgesagt · {client}",
       "noShow": "Markiert: nicht erschienen · {client}",
       "corrected": "Wir haben den Status korrigiert.",
@@ -797,7 +791,60 @@
       "remind": "Erinnerung senden"
     },
     "export": "Exportieren",
-    "today": "Heute, {time}",
-    "empty": "Keine Termine im gewählten Zeitraum."
+    "today": "Heute, {time}"
+  },
+  "states": {
+    "emptyDay": {
+      "title": "Sie haben heute keine Termine",
+      "body": "Fügen Sie einen hinzu oder öffnen Sie den Kalender, um den Rest der Woche zu sehen.",
+      "add": "Termin hinzufügen",
+      "calendar": "Kalender öffnen"
+    },
+    "nothing": "Gerade nichts zu erledigen",
+    "loadError": {
+      "title": "Wir konnten den Tagesplan nicht laden",
+      "body": "Prüfen Sie Ihre Internetverbindung und versuchen Sie es erneut.",
+      "retry": "Erneut versuchen"
+    },
+    "completed": "Termin erledigt · {client}",
+    "confirmed": "Wir haben den Termin bestätigt · {client}",
+    "hint": {
+      "text": "Tippen Sie auf eine freie Stelle, um einen Termin hinzuzufügen.",
+      "ok": "Verstanden"
+    },
+    "listFiltered": {
+      "title": "Keine Termine für die gewählten Filter"
+    },
+    "clearFilters": "Filter zurücksetzen",
+    "listEmpty": {
+      "title": "Sie haben noch keine Termine",
+      "body": "Fügen Sie den ersten Termin hinzu oder aktivieren Sie die Online-Buchung, damit Kunden Sie finden."
+    },
+    "export": {
+      "title": "Wir haben {n} Termine vom {day} exportiert.",
+      "file": "Die Datei wurde heruntergeladen."
+    },
+    "bulk": {
+      "title": "{n} Termine absagen?",
+      "keep": "Behalten",
+      "confirm": "Termine absagen",
+      "sms": "Die Kunden erhalten automatisch eine SMS, dass ihr Termin abgesagt wurde."
+    },
+    "moved": "Wir haben den Termin auf {day}, {time}, verschoben.",
+    "settingsSaved": "Wir haben die Einstellungen gespeichert.",
+    "unsaved": {
+      "title": "Sie haben ungespeicherte Änderungen",
+      "leave": "Ohne Speichern verlassen",
+      "save": "Speichern"
+    },
+    "limitSent": "Wir haben die Anfrage an {name} gesendet.",
+    "otherDays": {
+      "title": "Heute keine Treffer für „{q}“",
+      "action": "{n, plural, one {# Treffer an anderen Tagen} other {# Treffer an anderen Tagen}}"
+    },
+    "firstFree": "Nächster freier Termin: {weekday}, {time}, bei {staff}.",
+    "book": "Buchen",
+    "doneLine": "{client} · {service} · heute, {time}",
+    "collect": "Kassieren"
   }
 }

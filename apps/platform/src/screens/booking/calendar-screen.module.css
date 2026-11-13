@@ -1,0 +1,4 @@
+/* the first-use hint above the grid (BookingStates), with the same space below as the other notices */
+.hint {
+  margin-bottom: var(--space-4);
+}

@@ -499,7 +499,6 @@
     "attn": {
       "title": "Vous attend",
       "more": "Tout voir ({n})",
-      "empty": "Rien à traiter pour le moment.",
       "unconfirmed": "{client} n'a pas confirmé",
       "unconfirmedMeta": "Aujourd'hui à {time} · {service} · {staff}",
       "confirm": "Confirmer",
@@ -520,8 +519,6 @@
       "EUR": "{amount} €"
     },
     "toast": {
-      "confirmed": "Le rendez-vous de {client} est confirmé.",
-      "completed": "Le rendez-vous de {client} est terminé.",
       "undo": "Annuler",
       "undone": "La modification a été annulée.",
       "failed": "Ce n'a pas été enregistré. Réessayez.",
@@ -726,8 +723,7 @@
     },
     "move": {
       "title": "Déplacer le rendez-vous",
-      "save": "Déplacer",
-      "done": "Nous avons déplacé le rendez-vous au {day}, {time}."
+      "save": "Déplacer"
     },
     "correct": {
       "title": "Corriger l'état",
@@ -737,9 +733,7 @@
       "save": "Corriger"
     },
     "toast": {
-      "confirmed": "Nous avons confirmé le rendez-vous · {client}",
       "started": "Nous avons commencé le rendez-vous · {client}",
-      "completed": "Nous avons terminé le rendez-vous · {client}",
       "cancelled": "Nous avons annulé le rendez-vous · {client}",
       "noShow": "Nous avons marqué : absent · {client}",
       "corrected": "Nous avons corrigé l'état.",
@@ -797,7 +791,60 @@
       "remind": "Envoyer un rappel"
     },
     "export": "Exporter",
-    "today": "Aujourd'hui, {time}",
-    "empty": "Aucun rendez-vous sur la période choisie."
+    "today": "Aujourd'hui, {time}"
+  },
+  "states": {
+    "emptyDay": {
+      "title": "Vous n'avez aucun rendez-vous aujourd'hui",
+      "body": "Ajoutez-en un ou ouvrez le calendrier pour voir le reste de la semaine.",
+      "add": "Ajouter un rendez-vous",
+      "calendar": "Ouvrir le calendrier"
+    },
+    "nothing": "Rien à régler pour le moment",
+    "loadError": {
+      "title": "Nous n'avons pas pu charger le planning du jour",
+      "body": "Vérifiez votre connexion Internet et réessayez.",
+      "retry": "Réessayer"
+    },
+    "completed": "Rendez-vous terminé · {client}",
+    "confirmed": "Nous avons confirmé le rendez-vous · {client}",
+    "hint": {
+      "text": "Appuyez sur un créneau libre pour ajouter un rendez-vous.",
+      "ok": "J'ai compris"
+    },
+    "listFiltered": {
+      "title": "Aucun rendez-vous pour les filtres choisis"
+    },
+    "clearFilters": "Effacer les filtres",
+    "listEmpty": {
+      "title": "Vous n'avez encore aucun rendez-vous",
+      "body": "Ajoutez votre premier rendez-vous ou activez la réservation en ligne pour que les clients vous trouvent."
+    },
+    "export": {
+      "title": "Nous avons exporté {n} rendez-vous du {day}.",
+      "file": "Le fichier a été téléchargé."
+    },
+    "bulk": {
+      "title": "Annuler {n} rendez-vous ?",
+      "keep": "Les garder",
+      "confirm": "Annuler les rendez-vous",
+      "sms": "Les clients reçoivent automatiquement un SMS indiquant l'annulation."
+    },
+    "moved": "Nous avons déplacé le rendez-vous au {day}, {time}.",
+    "settingsSaved": "Nous avons enregistré les paramètres.",
+    "unsaved": {
+      "title": "Vous avez des modifications non enregistrées",
+      "leave": "Quitter sans enregistrer",
+      "save": "Enregistrer"
+    },
+    "limitSent": "Nous avons envoyé la demande à {name}.",
+    "otherDays": {
+      "title": "Aucun résultat aujourd'hui pour « {q} »",
+      "action": "{n, plural, one {# résultat d'autres jours} other {# résultats d'autres jours}}"
+    },
+    "firstFree": "Prochain créneau libre : {weekday}, {time}, avec {staff}.",
+    "book": "Réserver",
+    "doneLine": "{client} · {service} · aujourd'hui, {time}",
+    "collect": "Encaisser"
   }
 }

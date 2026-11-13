@@ -15,6 +15,7 @@ import {
 import type { ScreenMode } from '../services/BookingServicesView';
 import { useTableLabels } from '../services/texts';
 import { STATUS_LOOK, type DetailStatus } from '../detail/detail-format';
+import { ListEmptyFiltered } from '../states/BookingStates';
 import s from './list.module.css';
 
 /* BookingList (B.6b) — the part the detail stands on (Decision 7, screen 3): the page header, the
@@ -63,6 +64,8 @@ export type BookingListViewProps = {
   filterCount?: number;
   onFilters?: () => void;
   loading?: boolean;
+  /** BookingStates „Listă · goală, cu filtre”: „Șterge filtrele” when a filter differs from the default. */
+  onClearFilters?: () => void;
 };
 
 export function BookingListView(p: BookingListViewProps) {
@@ -200,7 +203,7 @@ export function BookingListView(p: BookingListViewProps) {
         toolbar={toolbar}
         loading={p.loading}
         labels={labels}
-        empty={<p className={`body-small ${s.muted} ${s.empty}`}>{t('list.empty')}</p>}
+        empty={<ListEmptyFiltered onClear={p.onClearFilters} />}
       />
     </>
   );
