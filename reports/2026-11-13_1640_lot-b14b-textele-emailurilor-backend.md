@@ -52,3 +52,11 @@
 - **Integrarea booking** (`b-files.mjs`): drift „No difference detected”, **323/323**.
 - `template-text.test.ts`: 3/3.
 - **Lanțul fără Docker:** `format:check`, `lint`, `typecheck`, `test`, `i18n:check`, `guards:verify`, `build`, toate exit 0.
+
+## Commit-uri
+
+- `923aa81` backend și contract (înainte de rebase: `1443240`)
+- `e0de3a8` ecranul Setări › Mesaje
+- `f4adf1c` testul B.13 fără programări peste miezul nopții
+
+Toate pushed pe `feat/b14b-booking-message-templates` (`git status -sb` fără „ahead”), rebase pe main `a28f5c3`. PR: vezi mai jos.

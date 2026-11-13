@@ -67,3 +67,11 @@
 - **Abatere, test B.13 dependent de oră:** prima rulare a picat pe testul T6 (B.13). Programările „acum + 48…53 de ore”, rulate pe la 19:50, treceau de miezul nopții în Europe/Bucharest, ceea ce o programare nu poate face (`staff_unavailable`). `inHours` din `client-emails.integration.test.ts` mută acum un început de după 23:30 la 23:30 (cel mult 25 de minute; programările unui test sunt la cel puțin o oră una de alta). Același eșec putea apărea în CI seara.
 - **Prima rulare a lanțului** a fost oprită de Claude Code pentru memorie puțină, după ce format:check picase pe `MessageEditorDrawer.tsx` (formatat) și pe copia locală `reports/tools/pairs.mjs` (scoasă din repo).
 - **Ce nu am verificat:** ecranul cu o sesiune reală în browser (salvarea, comutatoarele). Contractele și acțiunile le acoperă testele de integrare din partea 1 și typecheck-ul.
+
+## Commit-uri
+
+- `923aa81` backend și contract (înainte de rebase: `1443240`)
+- `e0de3a8` ecranul Setări › Mesaje
+- `f4adf1c` testul B.13 fără programări peste miezul nopții
+
+Toate pushed pe `feat/b14b-booking-message-templates` (`git status -sb` fără „ahead”), rebase pe main `a28f5c3`. PR: vezi mai jos.
