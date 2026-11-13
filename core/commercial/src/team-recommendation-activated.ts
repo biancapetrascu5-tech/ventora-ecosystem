@@ -1,5 +1,8 @@
 import type { PoolClient } from 'pg';
-import { CommercialApplicationActivatedV1 } from '@ventora/contracts';
+import {
+  CommercialApplicationActivatedV1,
+  CommercialSubscriptionChangedV1,
+} from '@ventora/contracts';
 import { getNotificationContactsInTx } from '@ventora/identity';
 import {
   sendNotification,
@@ -7,11 +10,16 @@ import {
   type SqlClient,
 } from '@ventora/notifications';
 import { listManagersInTx } from '@ventora/organizations';
-import { activateRecommendationsInTx } from './team-recommendations';
+import {
+  activateBundleRecommendationsInTx,
+  activateRecommendationsInTx,
+} from './team-recommendations';
 
 /*
  * Lot 5.9e — consumatorul lui `commercial.application.activated` (aplicația a intrat în
- * abonament: cumpărată, activată la cerere sau după probă): recomandările ei în așteptare devin
+ * abonament: cumpărată, activată la cerere sau după probă) și al lui `commercial.subscription.changed`
+ * (o mutare de bundle a intrat în vigoare: aplicațiile noi din bundle; job-ul
+ * commercial.subscription-changes): recomandările în așteptare devin
  * „Activată”, iar fiecare persoană care a recomandat-o primește „{owner} a activat {app}”
  * (decizia fondatoarei din 13.11.2026). Rulează în tranzacția dispecerului, în contextul
  * afacerii, ca commercial_rw. Livrat de două ori → o singură schimbare (doar cele în așteptare)
@@ -27,16 +35,30 @@ export const teamRecommendationActivatedConsumer = {
       type: CommercialApplicationActivatedV1.type,
       version: CommercialApplicationActivatedV1.version,
     },
+    {
+      type: CommercialSubscriptionChangedV1.type,
+      version: CommercialSubscriptionChangedV1.version,
+    },
   ],
-  async handle(envelope: Envelope, tx: SqlClient): Promise<void> {
-    const p = CommercialApplicationActivatedV1.parse(envelope.payload);
+  async handle(envelope: Envelope & { type?: string }, tx: SqlClient): Promise<void> {
     const organizationId = envelope.organizationId;
     // the dispatcher hands over its pg client (the entitlements read needs it)
-    const activated = await activateRecommendationsInTx(
-      tx as unknown as PoolClient,
-      organizationId,
-      p.applicationId,
-    );
+    const client = tx as unknown as PoolClient;
+    let activated: { id: string; applicationId: string; applicationName: string; userId: string }[];
+    if (envelope.type === CommercialSubscriptionChangedV1.type) {
+      const p = CommercialSubscriptionChangedV1.parse(envelope.payload);
+      activated = await activateBundleRecommendationsInTx(
+        client,
+        organizationId,
+        p.fromPlanVersionId,
+        p.toPlanVersionId,
+      );
+    } else {
+      const p = CommercialApplicationActivatedV1.parse(envelope.payload);
+      activated = (await activateRecommendationsInTx(client, organizationId, p.applicationId)).map(
+        (r) => ({ ...r, applicationId: p.applicationId }),
+      );
+    }
     if (activated.length === 0) return;
 
     const owners = (await listManagersInTx(tx, organizationId))
@@ -63,7 +85,7 @@ export const teamRecommendationActivatedConsumer = {
         recipientUserIds: [r.userId],
         ownerUserIds: owners.filter((o) => o === r.userId),
         idempotencyKey: `team_recommendation_activated:${r.id}`,
-        params: { owner, app: r.applicationName, appId: p.applicationId },
+        params: { owner, app: r.applicationName, appId: r.applicationId },
       });
     }
   },

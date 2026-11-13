@@ -19,6 +19,7 @@ import {
   teamRecommendationActivatedConsumer,
   runDunningGraceJob,
   runQuotaReconciliationJob,
+  runSubscriptionChangeJob,
   runTrialJob,
 } from '@ventora/commercial';
 import './billing-config';
@@ -357,6 +358,18 @@ export const platformJobs = new JobRegistry()
   // Lotul 3.8 (D3-5): proba unei aplicații se încheie la termen (datele rămân), cu reminderul cu
   // 3 zile înainte (commercial.trial.ending); proba pe tot abonamentul (N4): activ cu card sau
   // transfer, altfel doar citire. Din oră în oră, ca termenul (now() + 14 zile) să nu aștepte o zi.
+  // Lotul 5.9e: mutarea pe altă versiune de bundle, ajunsă la termen → `commercial.subscription.changed`
+  // (o singură dată), pentru recomandările „Activată” și Growth
+  .register({
+    id: 'commercial.subscription-changes',
+    owner: 'Lot 5.9e',
+    description: 'Mutările de bundle intrate în vigoare, anunțate',
+    trigger: { cron: '*/5 * * * *' },
+    run: async () => {
+      const r = failOnErrors('commercial.subscription-changes', await runSubscriptionChangeJob());
+      return { ...r, errors: 0 };
+    },
+  })
   .register({
     id: 'commercial.trial-end',
     owner: 'Lot 3.8',

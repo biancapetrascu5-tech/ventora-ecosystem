@@ -3,6 +3,7 @@ import { AuditActions, appendAuditEventInTx, pgExecutor } from '@ventora/audit';
 import { Forbidden, InvalidInput, ResourceNotFound } from '@ventora/errors';
 import { withOrganizationRead, withOrganizationWrite } from './db';
 import { computeEntitlementsInTx } from './entitlements';
+import { loadVersionTerms } from './terms';
 import type { RequestActor } from './requests';
 
 /*
@@ -227,4 +228,29 @@ export async function activateRecommendationsInTx(
   );
   const applicationName = app.rows[0]?.name ?? applicationId;
   return rows.map((r) => ({ id: r.id, applicationName, userId: r.recommended_by_user_id }));
+}
+
+/**
+ * Consumatorul lui `commercial.subscription.changed` (mutarea pe altă versiune de bundle a intrat
+ * în vigoare): aplicațiile noi din bundle (în versiunea nouă, nu și în cea veche) pe care afacerea
+ * le are acum — recomandările lor în așteptare devin „Activată”.
+ */
+export async function activateBundleRecommendationsInTx(
+  client: PoolClient,
+  organizationId: string,
+  fromVersionId: string | null,
+  toVersionId: string | null,
+): Promise<{ id: string; applicationId: string; applicationName: string; userId: string }[]> {
+  if (!toVersionId) return [];
+  const to = await loadVersionTerms(client, toVersionId);
+  const from = fromVersionId ? await loadVersionTerms(client, fromVersionId) : null;
+  const added = to.applications.filter((a) => !from?.applications.includes(a));
+  if (added.length === 0) return [];
+  const out: { id: string; applicationId: string; applicationName: string; userId: string }[] = [];
+  for (const applicationId of added) {
+    for (const r of await activateRecommendationsInTx(client, organizationId, applicationId)) {
+      out.push({ ...r, applicationId });
+    }
+  }
+  return out;
 }

@@ -9,6 +9,7 @@ import {
   notifyOwner,
   ownerNotifiedConsumer,
   rejectTeamRecommendation,
+  runSubscriptionChangeJob,
   teamRecommendationActivatedConsumer,
   TeamRecommendationTooSoon,
 } from '@ventora/commercial';
@@ -346,20 +347,12 @@ describe('Lot 3.7 — „Recomandă” / „Anunță proprietarul” (D3-8: only
          FROM notifications.notification WHERE organization_id = $1 ORDER BY created_at, type`,
       [b.organizationId],
     );
-    // the member asked twice for the same application the same day: one notification
-    expect(rows.map((r) => r.type).sort()).toEqual([
-      'owner_notice.addon',
-      'owner_notice.application',
-      'owner_notice.quota',
-    ]);
+    // Lot 5.9e: the application recommended reaches the owner only in the bell's „Recomandări”
+    // (commercial.team_recommendation), not in „Activitate”; the pack and the limit stay
+    expect(rows.map((r) => r.type).sort()).toEqual(['owner_notice.addon', 'owner_notice.quota']);
     expect(rows.every((r) => r.recipient === b.ownerId)).toBe(true);
     expect(rows.every((r) => r.display_group === 'activity')).toBe(true);
     const byType = Object.fromEntries(rows.map((r) => [r.type, r.params]));
-    expect(byType['owner_notice.application']).toMatchObject({
-      name: 'Mara Enache',
-      app: 'ClientDesk',
-      appId: 'crm',
-    });
     expect(byType['owner_notice.quota']).toMatchObject({
       name: 'Ioana Pavel',
       resource: { type: 'key', key: 'quota.messaging_sms.resource' },
@@ -392,7 +385,7 @@ describe('Lot 3.7 — „Recomandă” / „Anunță proprietarul” (D3-8: only
   it('T1/T2: a member of A names A in the event; the notification reaches only A’s owner', async () => {
     const a = await business();
     const b = await business();
-    await notifyOwner(a.member, { targetType: 'application', targetId: 'crm' });
+    await notifyOwner(a.member, { targetType: 'quota', targetId: 'messaging.sms' });
     await dispatchCommercial(a.organizationId);
     expect(
       await q(`SELECT 1 FROM notifications.notification WHERE organization_id = $1`, [
@@ -401,7 +394,7 @@ describe('Lot 3.7 — „Recomandă” / „Anunță proprietarul” (D3-8: only
     ).toEqual([]);
     const [row] = await q(
       `SELECT recipient_user_id::text AS r FROM notifications.notification
-        WHERE organization_id = $1 AND type = 'owner_notice.application'`,
+        WHERE organization_id = $1 AND type = 'owner_notice.quota'`,
       [a.organizationId],
     );
     expect(row!.r).toBe(a.ownerId);
@@ -564,6 +557,92 @@ describe('Lot 5.9e — „Recomandările mele” / „Recomandare de la echipă�
       action_url: '/applications/crm',
     });
     expect(await listPendingTeamRecommendations(b.owner)).toEqual([]);
+  });
+
+  it('a bundle move that takes effect: the new apps of the bundle become „Activată”, once (the job → commercial.subscription.changed)', async () => {
+    const b = await business();
+    await notifyOwner(b.member, { targetType: 'application', targetId: 'crm' });
+    await notifyOwner(b.member, { targetType: 'application', targetId: 'hr' });
+    // a published version 2 of the bundle, with ClientDesk added
+    const [v2] = await q(
+      `INSERT INTO commercial.plan_version (plan_id, version_number, created_by_founder_id)
+       SELECT plan_id, (SELECT max(version_number) + 1 FROM commercial.plan_version x
+                         WHERE x.plan_id = v.plan_id), $2
+         FROM commercial.plan_version v WHERE v.id = $1 RETURNING id`,
+      [versionId, founderId],
+    );
+    await q(
+      `INSERT INTO commercial.plan_version_price (plan_version_id, currency, kind, amount_minor)
+       VALUES ($1, 'RON', 'month', 30000)`,
+      [v2!.id],
+    );
+    await q(`INSERT INTO commercial.plan_version_application VALUES ($1, 'booking'), ($1, 'crm')`, [
+      v2!.id,
+    ]);
+    await q(
+      `UPDATE commercial.plan_version SET published_at = now(), published_by_founder_id = $2 WHERE id = $1`,
+      [v2!.id, founderId],
+    );
+    const [sub] = await q(`SELECT id FROM commercial.subscription WHERE organization_id = $1`, [
+      b.organizationId,
+    ]);
+    // scheduled for later: nothing yet
+    const [ch] = await q(
+      `INSERT INTO commercial.subscription_change
+         (subscription_id, organization_id, from_version_id, to_version_id, classification,
+          effective_at, created_by_founder_id)
+       VALUES ($1, $2, $3, $4, 'advantage', now() + interval '1 hour', $5) RETURNING id`,
+      [sub!.id, b.organizationId, versionId, v2!.id, founderId],
+    );
+    await runSubscriptionChangeJob({ limit: 500 });
+    await dispatchAll(b.organizationId);
+    expect((await listMyTeamRecommendations(b.member)).map((r) => r.status)).toEqual([
+      'pending',
+      'pending',
+    ]);
+
+    // it takes effect: announced once, ClientDesk „Activată”, TeamSpace still pending
+    // (moved by the admin connection, past the guard that only lets a move be canceled)
+    await q(`ALTER TABLE commercial.subscription_change DISABLE TRIGGER subscription_change_guard`);
+    try {
+      await q(
+        `UPDATE commercial.subscription_change SET effective_at = now() - interval '1 minute' WHERE id = $1`,
+        [ch!.id],
+      );
+    } finally {
+      await q(
+        `ALTER TABLE commercial.subscription_change ENABLE TRIGGER subscription_change_guard`,
+      );
+    }
+    const first = await runSubscriptionChangeJob({ limit: 500 });
+    expect(first.errors).toEqual([]);
+    await runSubscriptionChangeJob({ limit: 500 });
+    const events = await q(
+      `SELECT payload FROM commercial.outbox_events
+        WHERE organization_id = $1 AND type = 'commercial.subscription.changed'`,
+      [b.organizationId],
+    );
+    expect(events).toHaveLength(1);
+    expect(events[0]!.payload).toMatchObject({
+      subscriptionId: sub!.id,
+      fromPlanVersionId: versionId,
+      toPlanVersionId: v2!.id,
+    });
+    await dispatchAll(b.organizationId);
+    const byApp = Object.fromEntries(
+      (await listMyTeamRecommendations(b.member)).map((r) => [r.applicationId, r.status]),
+    );
+    expect(byApp).toEqual({ crm: 'active', hr: 'pending' });
+    const rows = await q(
+      `SELECT recipient_user_id::text AS recipient, params FROM notifications.notification
+        WHERE organization_id = $1 AND type = 'team_recommendation.activated'`,
+      [b.organizationId],
+    );
+    expect(rows).toHaveLength(1);
+    expect(rows[0]).toMatchObject({
+      recipient: b.memberId,
+      params: { owner: 'Bianca Petrașcu', app: 'ClientDesk', appId: 'crm' },
+    });
   });
 
   it('the database: commercial_rw cannot delete or change what was recommended; decided once', async () => {

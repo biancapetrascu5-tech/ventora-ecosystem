@@ -107,3 +107,60 @@ REVOKE ALL ON "commercial"."team_recommendation" FROM commercial_rw;
 GRANT SELECT, INSERT ON "commercial"."team_recommendation" TO commercial_rw;
 GRANT UPDATE ("status", "decided_at", "decided_by_user_id", "answer")
   ON "commercial"."team_recommendation" TO commercial_rw;
+
+-- ── Schimbarea de bundle care intră în vigoare (decizia fondatoarei din 13.11.2026) ──────────
+-- O mutare pe altă versiune (subscription_change) se programează și intră în vigoare la
+-- effective_at, fără niciun eveniment în acel moment. Job-ul commercial.subscription-changes
+-- anunță fiecare mutare ajunsă la termen, o singură dată, prin `commercial.subscription.changed`
+-- (evenimentul din catalog), pe care îl ascultă consumatorul recomandărilor (și Growth).
+--   subscription_change_announced → mutările deja anunțate (doar id-ul, afacerea și momentul)
+
+CREATE TABLE "commercial"."subscription_change_announced" (
+    "subscription_change_id" UUID NOT NULL,
+    "organization_id" UUID NOT NULL,
+    "announced_at" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "subscription_change_announced_pkey" PRIMARY KEY ("subscription_change_id"),
+    CONSTRAINT "subscription_change_announced_change_fkey" FOREIGN KEY ("subscription_change_id")
+      REFERENCES "commercial"."subscription_change"("id") ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+-- Mutările care au intrat deja în vigoare până acum nu se anunță la prima rulare a job-ului
+INSERT INTO "commercial"."subscription_change_announced" (subscription_change_id, organization_id)
+SELECT c.id, c.organization_id
+  FROM "commercial"."subscription_change" c
+ WHERE c.effective_at <= now() OR c.canceled_at IS NOT NULL;
+
+ALTER TABLE "commercial"."subscription_change_announced" ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY commercial_rw_subscription_change_announced
+  ON "commercial"."subscription_change_announced"
+  TO commercial_rw
+  USING (organization_id = NULLIF(current_setting('app.organization_id', true), '')::uuid)
+  WITH CHECK (organization_id = NULLIF(current_setting('app.organization_id', true), '')::uuid);
+
+REVOKE ALL ON "commercial"."subscription_change_announced" FROM PUBLIC;
+REVOKE ALL ON "commercial"."subscription_change_announced" FROM commercial_rw;
+GRANT SELECT, INSERT ON "commercial"."subscription_change_announced" TO commercial_rw;
+
+-- Job-ul: mutările ajunse la termen, neanulate și neanunțate — doar id-ul și afacerea
+CREATE OR REPLACE FUNCTION commercial.subscription_changes_due(p_limit INTEGER)
+RETURNS TABLE (id UUID, organization_id UUID)
+LANGUAGE sql
+STABLE
+SECURITY DEFINER
+SET search_path = pg_catalog, pg_temp
+AS $$
+  SELECT c.id, c.organization_id
+    FROM commercial.subscription_change c
+   WHERE c.canceled_at IS NULL
+     AND c.effective_at <= now()
+     AND NOT EXISTS (
+       SELECT 1 FROM commercial.subscription_change_announced a
+        WHERE a.subscription_change_id = c.id)
+   ORDER BY c.effective_at, c.id
+   LIMIT LEAST(GREATEST(COALESCE(p_limit, 1), 1), 500);
+$$;
+
+REVOKE ALL ON FUNCTION commercial.subscription_changes_due(INTEGER) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION commercial.subscription_changes_due(INTEGER) TO commercial_rw;

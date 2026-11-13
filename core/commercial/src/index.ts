@@ -196,6 +196,7 @@ export {
   type TeamRecommendationStatus,
 } from './team-recommendations';
 export { teamRecommendationActivatedConsumer } from './team-recommendation-activated';
+export { runSubscriptionChangeJob } from './subscription-changes';
 // Lot 3.8: the trial, non-payment, the requests with implementation
 export {
   startApplicationTrial,
