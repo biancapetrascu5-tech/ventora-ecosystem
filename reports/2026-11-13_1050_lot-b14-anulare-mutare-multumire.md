@@ -67,4 +67,8 @@
 
 - **Lanțul fără Docker:** `format:check`, `lint`, `typecheck`, `test`, `i18n:check`, `guards:verify`, `build`: toate exit 0.
 - **Testele `notifications`:** 135/135.
-- **Testele de integrare: NERULATE încă.** Fondatoarea a cerut să nu folosesc Docker local până termină UI și F5.
+- **Rebase pe main** (`ebf6555`, cu #202 intrat): typecheck a cerut o reinstalare din lockfile (`pnpm install --frozen-lockfile --offline`), fără pachete noi. Apoi lanțul fără Docker din nou: toate cu exit 0.
+- **Testele de integrare** (`b-files.mjs`, `FILES="integration"`, 14:25, după ce F5 a eliberat Docker):
+  - prima rulare: 312 trec și 1 pică, „turned off in Setări…”. Greșeala era în test: pornea setarea la loc pe aceeași afacere, iar programarea încheiată acum 3 ore primea atunci mulțumirea, cum e corect. Partea a doua a testului rulează acum pe o afacere separată;
+  - tot în prima rulare: un worker oprit de Windows (exit 3221226505) pe `class-waitlist.integration.test.ts`;
+  - rerulare a celor două fișiere (`client-emails`, `class-waitlist`, 14:32): **17/17 trec**.

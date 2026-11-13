@@ -662,11 +662,12 @@ describe('B.14: the thanks after the visit (can be turned off, counted as schedu
     await run(b);
     expect(await messages(off.id)).toEqual([]);
 
-    await setBookingSettings({ sessionToken: b.t, thanksEmail: true });
-    const c2 = await client(b);
-    const early = await completedHoursAgo(b, c2.id, 1);
-    const late = await completedHoursAgo(b, c2.id, 30);
-    await run(b);
+    // another business (turning it back on here would rightly thank the appointment above)
+    const b2 = await business();
+    const c2 = await client(b2);
+    const early = await completedHoursAgo(b2, c2.id, 1);
+    const late = await completedHoursAgo(b2, c2.id, 30);
+    await run(b2);
     expect(await messages(early.id)).toEqual([]);
     expect(await messages(late.id)).toEqual([]);
     expect(mailbox.to(c.email)).toEqual([]);
