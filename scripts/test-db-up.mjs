@@ -547,6 +547,10 @@ for (const migration of [
   'core/consent/prisma/migrations/20261111000001_consent_init/migration.sql',
   // Lot 5.9e: „Recomandă aplicația” păstrat cu starea lui (commercial.team_recommendation)
   'core/commercial/prisma/migrations/20261113000001_commercial_team_recommendation/migration.sql',
+  // FounderNotifications: clopoțelul Founder (rolul notifications_founder) și „Anunță-mă dacă se
+  // oprește din nou” pe campanie
+  'core/notifications/prisma/migrations/20261113000002_notifications_founder/migration.sql',
+  'core/growth/prisma/migrations/20261113000003_growth_notify_on_stop/migration.sql',
   // Aplicațiile (modules/*): găsite singure, după tot Core-ul (booking, crm și cele care vin).
   // Un lot de modul nu mai atinge acest fișier.
   ...moduleMigrations(),

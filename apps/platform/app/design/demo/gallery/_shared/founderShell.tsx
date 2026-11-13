@@ -65,6 +65,7 @@ export function FounderShellDemo({
   searchLabel = 'Caută o afacere, un bundle sau o campanie',
   notifications = FX_NOTIFS,
   businessesBadge = true,
+  nav = FX_NAV,
 }: {
   active?: string;
   title?: string;
@@ -75,10 +76,12 @@ export function FounderShellDemo({
   notifications?: NotificationData[];
   /** S116: „Afaceri” fără badge în preview-urile noi (Suport, Prezentare, Automatizări). */
   businessesBadge?: boolean;
+  /** S136: FX_NAV2 (cu „Traduceri” și „Analytics”). */
+  nav?: NavSection[];
 }) {
   const sections = businessesBadge
-    ? FX_NAV
-    : FX_NAV.map((sec) => ({
+    ? nav
+    : nav.map((sec) => ({
         ...sec,
         items: sec.items.map((i) => (i.id === 'afaceri' ? { ...i, badge: undefined } : i)),
       }));

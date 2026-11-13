@@ -777,6 +777,12 @@ describe('cererile cu implementare', () => {
     const { setupRequestId: id, created } = await requestSetup(b.owner, APP);
     expect(created).toBe(true);
     expect((await requestSetup(b.owner, APP)).created).toBe(false);
+    // FounderNotifications: „Cerere de configurare: …” în clopoțelul Founder, o singură dată
+    expect(
+      await q(`SELECT params FROM notifications.founder_notification WHERE dedup_key = $1`, [
+        `founder.setup.request_new:${id}`,
+      ]),
+    ).toEqual([{ params: { organizationId: b.org, applicationId: APP, setupRequestId: id } }]);
     const step = { ...founderParams(b.org), setupRequestId: id };
     const defaults = await getSetupOfferDefaults(step);
     expect(defaults).toEqual({ setupMinor: 150000, maintenanceMinor: 99000, interval: 'year' });

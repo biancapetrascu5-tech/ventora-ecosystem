@@ -21,6 +21,7 @@
     "@ventora/growth": "workspace:*",
     "@ventora/i18n": "workspace:*",
     "@ventora/identity": "workspace:*",
+    "@ventora/notifications": "workspace:*",
     "@ventora/screens": "workspace:*",
     "@ventora/support": "workspace:*",
     "@ventora/tokens": "workspace:*",

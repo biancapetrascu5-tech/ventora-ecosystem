@@ -964,7 +964,12 @@ export async function stopCampaign(
  * still does not see it for the cooldown (their suppression stays).
  */
 export async function restartCampaign(
-  params: FounderParams & { campaignId: string; whatChanged: string },
+  params: FounderParams & {
+    campaignId: string;
+    whatChanged: string;
+    /** „Anunță-mă dacă se oprește din nou” (bifat implicit): clopoțelul și e-mailul. */
+    notifyOnStop?: boolean;
+  },
 ): Promise<void> {
   const founder = await requireFounderSession(params.founderHeaders);
   const campaignId = uuid('campaignId', params.campaignId);
@@ -976,12 +981,16 @@ export async function restartCampaign(
         [campaignId],
       );
       if (!rows[0]) throw new Conflict('The campaign is not stopped');
-      await c.query(`UPDATE growth.campaign SET status = 'active' WHERE id = $1`, [campaignId]);
+      const notifyOnStop = params.notifyOnStop !== false;
+      await c.query(
+        `UPDATE growth.campaign SET status = 'active', notify_on_auto_stop = $2 WHERE id = $1`,
+        [campaignId, notifyOnStop],
+      );
       await audit({
         action: AuditActions.growthCampaignRestarted,
         targetType: 'growth_campaign',
         targetId: campaignId,
-        metadata: { whatChanged, previousStop: rows[0].stop_reason },
+        metadata: { whatChanged, previousStop: rows[0].stop_reason, notifyOnStop },
       });
     },
     founder.userId,

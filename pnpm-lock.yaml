@@ -229,6 +229,9 @@ importers:
       '@ventora/identity':
         specifier: workspace:*
         version: link:../../core/identity
+      '@ventora/notifications':
+        specifier: workspace:*
+        version: link:../../core/notifications
       '@ventora/screens':
         specifier: workspace:*
         version: link:../../packages/screens

@@ -1916,7 +1916,33 @@
         "log": "Afacerile care au spus „Nu mă interesează” nu o mai văd 30 de zile, oricum.",
         "submit": "Repornește",
         "done": "Am repornit „Marketing pentru saloane”",
-        "doneDesc": "Prima afișare apare în următoarea oră."
+        "doneDesc": "Prima afișare apare în următoarea oră.",
+        "changedMissing": "Scrie ce ai schimbat."
+      },
+      "types": {
+        "all": "Toate tipurile",
+        "auto": "Oprire automată",
+        "support": "Suport",
+        "invoice": "Facturi",
+        "setup": "Configurare"
+      },
+      "live": {
+        "auto": "Growth a oprit „{name}”",
+        "autoBody": "Prea multe „Nu mă interesează”: {rate} la {impressions} de afișări, peste pragul de {threshold}.",
+        "support": "Solicitare nouă de la {business}",
+        "supportBody": "{app} · {subject}",
+        "supportBodyBlocking": "{app} · {subject} · Mă blochează",
+        "invoice": "{n, plural, one {O factură nu s-a emis} few {# facturi nu s-au emis} other {# de facturi nu s-au emis}}",
+        "invoiceBody": "SmartBill a respins datele de facturare pentru {businesses}.",
+        "setup": "Cerere de configurare: {business}",
+        "setupBody": "{app} cu implementare · oferta e de trimis",
+        "reason": "„Nu mă interesează” la {rate} din afișări (prag: {threshold}), la {impressions} de afișări",
+        "stopped": "Campania „{name}” · oferta „{offer}” rămâne activă în alte campanii",
+        "stoppedNoOffer": "Campania „{name}”",
+        "subtitle": "{name} · {when}",
+        "done": "Am repornit „{name}”",
+        "error": "Nu am putut reporni campania. Încearcă din nou.",
+        "today": "Azi, {time}"
       }
     },
     "analytics": {

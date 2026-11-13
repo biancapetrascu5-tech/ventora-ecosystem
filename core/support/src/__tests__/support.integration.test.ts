@@ -257,6 +257,28 @@ describe('trimiterea din Hub', () => {
     }
   });
 
+  it('FounderNotifications: „Solicitare nouă de la …” în clopoțelul Founder, o dată', async () => {
+    const id = newSupportRequestId();
+    const { ref } = await newRequest(memberA, 'booking', { id });
+    const rows = await q(
+      `SELECT type, params, action_url FROM notifications.founder_notification WHERE dedup_key = $1`,
+      [`founder.support.request_new:${id}`],
+    );
+    expect(rows).toEqual([
+      {
+        type: 'founder.support.request_new',
+        params: {
+          organizationId: A,
+          applicationId: 'booking',
+          subject: 'Reamintirile SMS nu pleacă la clienții noi',
+          urgency: 'blocking',
+          requestRef: ref,
+        },
+        action_url: `/support/${ref}`,
+      },
+    ]);
+  });
+
   it('o aplicație necunoscută e refuzată', async () => {
     await expect(newRequest(memberA, 'nu-exista')).rejects.toBeInstanceOf(InvalidInput);
   });
