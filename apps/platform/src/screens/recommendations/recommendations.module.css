@@ -36,7 +36,7 @@
   grid-template-columns: var(--space-8) minmax(0, 1fr);
 }
 
-.rowMob > :global(.v-btn) {
+.rowMob > .open {
   grid-column: 2;
   justify-self: start;
 }

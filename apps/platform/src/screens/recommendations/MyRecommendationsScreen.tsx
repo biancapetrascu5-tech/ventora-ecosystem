@@ -109,6 +109,7 @@ export function MyRecommendationsScreen({
                         </div>
                         {r.status === 'active' && (
                           <Button
+                            className={s.open}
                             size="sm"
                             variant="secondary"
                             iconEnd="arrow-right"
