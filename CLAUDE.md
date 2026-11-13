@@ -20,16 +20,23 @@
 pnpm format:check && pnpm lint && pnpm typecheck && pnpm test && pnpm build
 ```
 
-**Înainte de orice push care atinge `core/**`, `packages/**`, `modules/**` sau fișiere de migrație:**
+**Înainte de orice push care atinge `core/**`, `packages/**`, `modules/**` sau fișiere de migrație:** testele de integrare **doar ale pachetelor atinse** (regula fondatoarei, 13.11.2026). Suita completă o rulează CI-ul.
 
 ```
-pnpm test:integration
+pnpm test:integration -- --only booking,notifications
 ```
 
-Dacă comanda reușește (exit 0) → poți face push.
+- `--only` primește numele scurte ale pachetelor atinse de lot, separate prin virgulă (de exemplu, pentru B.14: `booking,notifications`). `pricing` înseamnă testul prețurilor D3-1.
+- **Pregătirea rămâne completă:** baza de test cu toate migrațiile, garda de drift pe toate schemele și sincronizările (permisiuni, registrul comercial, sloturile Growth). Se sar doar testele celorlalte pachete.
+- Un nume necunoscut oprește scriptul înainte să pornească containerele.
+- **Înainte de pornire:** `docker ps`. Dacă rulează containerele altui worktree, aștept 5 minute și verific din nou.
+- **La final:** scriptul oprește singur containerele worktree-ului.
+
+Dacă testele pachetelor atinse trec (exit 0) → poți face push.
 Dacă eșuează sau nu pot rula containerele Docker → mă opresc și raportez fondatoarei. **Nu fac push fără teste verzi.**
+Dacă CI-ul (suita completă) pică pe un pachet neatins, raportez și corectez înainte de merge.
 
-Scriptul face automat: pornește postgres:17 + pgbouncer, aplică toate migrațiile, verifică garda de drift pentru cele 3 scheme Prisma (identity, founder, organizations), rulează testele de integrare, și oprește containerele.
+`pnpm test:integration` fără `--only` rulează suita completă, local. Scriptul face automat: pornește postgres:17 + pgbouncer, aplică toate migrațiile, verifică garda de drift pentru cele 3 scheme Prisma (identity, founder, organizations), rulează testele de integrare, și oprește containerele.
 
 **Baza de test e per worktree** (Lot 2.9, `scripts/test-db-config.mjs`): containerele, proiectul compose și porturile se derivă din numele folderului, ca doi agenți în worktree-uri diferite să poată rula `pnpm test:integration` în paralel.
 
