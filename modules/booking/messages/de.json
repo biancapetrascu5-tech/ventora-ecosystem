@@ -530,5 +530,106 @@
     "err": {
       "load": "Der Tag konnte nicht geladen werden."
     }
+  },
+  "new": {
+    "title": "Neuer Termin",
+    "crumbs": {
+      "list": "Termine",
+      "clients": "Kunden"
+    },
+    "noCategory": "Ohne Kategorie",
+    "sec": {
+      "service": "Leistung und Mitarbeiter",
+      "when": "Wann",
+      "client": "Kunde",
+      "details": "Details"
+    },
+    "service": {
+      "label": "Leistung",
+      "placeholder": "Leistung wählen",
+      "nobody": "Niemand im Team bietet sie an"
+    },
+    "staff": {
+      "label": "Mitarbeiter",
+      "placeholder": "Wer?"
+    },
+    "any": "Wer gerade frei ist",
+    "anyWho": "Wer gerade frei ist · wir wählen aus",
+    "date": "Datum",
+    "duration": "Dauer",
+    "minSuffix": "Min.",
+    "min": "{n} Min.",
+    "minRange": "{min}–{max} Min.",
+    "start": {
+      "label": "Startzeit",
+      "helpAny": "Wir zeigen die Zeiten, zu denen mindestens eine Person im Team frei ist.",
+      "helpMember": "Durchgestrichene Zeiten sind bei {name} bereits belegt.",
+      "none": "An diesem Tag ist keine Zeit frei. Wählen Sie einen anderen Tag oder Kollegen."
+    },
+    "client": {
+      "label": "Kunde",
+      "help": "Nach Name oder Telefon suchen.",
+      "fromProfile": "Aus dem Kundenprofil gestartet: Der Kunde ist bereits ausgewählt.",
+      "placeholder": "Nach Name oder Telefon suchen",
+      "recent": "Letzte Kunden",
+      "found": "Ergebnisse",
+      "visits": "{n, plural, one {# Besuch} other {# Besuche}}",
+      "new": "Neuer Kunde",
+      "name": "Name des Kunden",
+      "phone": "Telefon",
+      "existing": "Bestehenden Kunden wählen"
+    },
+    "notes": "Notizen für das Team",
+    "notesPlaceholder": "z. B. empfindliche Haut",
+    "notify": {
+      "confirm": "Bestätigung jetzt per SMS senden",
+      "remind": "Erinnerung 24 Stunden vorher senden"
+    },
+    "sum": {
+      "title": "Zusammenfassung",
+      "client": "Kunde",
+      "service": "Leistung",
+      "who": "Mit wem",
+      "when": "Wann",
+      "price": "Preis",
+      "none": "—"
+    },
+    "book": "Buchen",
+    "bookAt": "Buchen · {time}",
+    "cancel": "Abbrechen",
+    "money": {
+      "RON": "{amount} lei",
+      "EUR": "{amount} €"
+    },
+    "price": {
+      "from": "ab {amount}",
+      "range": "{min}–{max}"
+    },
+    "err": {
+      "service": "Wählen Sie die Leistung.",
+      "staff": "Wählen Sie, wer die Leistung erbringt.",
+      "date": "Wählen Sie das Datum.",
+      "time": "Wählen Sie eine freie Uhrzeit.",
+      "client": "Wählen Sie den Kunden.",
+      "clientName": "Geben Sie den Namen des Kunden ein.",
+      "failed": "Wir konnten den Termin nicht speichern. Versuchen Sie es erneut.",
+      "forbidden": "Sie können diesen Termin nicht anlegen.",
+      "staffUnavailable": "Die gewählte Person arbeitet zu dieser Uhrzeit nicht.",
+      "notForService": "Die gewählte Person bietet diese Leistung nicht an.",
+      "resource": "Der Raum oder das Gerät für diese Leistung ist zu dieser Uhrzeit nicht frei.",
+      "serviceArchived": "Die Leistung wurde inzwischen archiviert.",
+      "phoneTaken": "Es gibt bereits einen Kunden mit dieser Telefonnummer. Suchen Sie ihn in der Liste.",
+      "limit": "Sie haben das Terminlimit für diesen Monat erreicht.",
+      "anyTaken": "Zu dieser Uhrzeit ist niemand mehr frei. Wählen Sie eine andere Uhrzeit."
+    },
+    "overlap": {
+      "title": "{name} hat um {time} bereits einen Termin",
+      "body": "Wählen Sie eine andere Uhrzeit oder einen anderen Kollegen."
+    },
+    "saved": {
+      "title": "Wir haben den Termin gespeichert",
+      "when": "{day}, {time}",
+      "view": "Termin ansehen"
+    }
   }
 }

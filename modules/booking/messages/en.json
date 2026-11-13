@@ -530,5 +530,106 @@
     "err": {
       "load": "The day didn't load."
     }
+  },
+  "new": {
+    "title": "New appointment",
+    "crumbs": {
+      "list": "Appointments",
+      "clients": "Clients"
+    },
+    "noCategory": "No category",
+    "sec": {
+      "service": "Service and staff member",
+      "when": "When",
+      "client": "Client",
+      "details": "Details"
+    },
+    "service": {
+      "label": "Service",
+      "placeholder": "Choose the service",
+      "nobody": "Nobody in the team does it"
+    },
+    "staff": {
+      "label": "Staff member",
+      "placeholder": "Choose who"
+    },
+    "any": "Anyone free",
+    "anyWho": "Anyone free · we pick",
+    "date": "Date",
+    "duration": "Duration",
+    "minSuffix": "min",
+    "min": "{n} min",
+    "minRange": "{min}–{max} min",
+    "start": {
+      "label": "Start time",
+      "helpAny": "We show the times when at least one person in the team is free.",
+      "helpMember": "Struck-through times are already taken for {name}.",
+      "none": "No free time on the chosen day. Choose another day or colleague."
+    },
+    "client": {
+      "label": "Client",
+      "help": "Search by name or phone.",
+      "fromProfile": "Started from the client's profile: the client is already chosen.",
+      "placeholder": "Search by name or phone",
+      "recent": "Recent clients",
+      "found": "Results",
+      "visits": "{n, plural, one {# visit} other {# visits}}",
+      "new": "New client",
+      "name": "Client's name",
+      "phone": "Phone",
+      "existing": "Choose an existing client"
+    },
+    "notes": "Notes for the team",
+    "notesPlaceholder": "E.g. sensitive skin",
+    "notify": {
+      "confirm": "Send an SMS confirmation now",
+      "remind": "Send a reminder 24 hours before"
+    },
+    "sum": {
+      "title": "Summary",
+      "client": "Client",
+      "service": "Service",
+      "who": "With whom",
+      "when": "When",
+      "price": "Price",
+      "none": "—"
+    },
+    "book": "Book",
+    "bookAt": "Book · {time}",
+    "cancel": "Cancel",
+    "money": {
+      "RON": "{amount} lei",
+      "EUR": "€{amount}"
+    },
+    "price": {
+      "from": "from {amount}",
+      "range": "{min}–{max}"
+    },
+    "err": {
+      "service": "Choose the service.",
+      "staff": "Choose who does the service.",
+      "date": "Choose the date.",
+      "time": "Choose a free time.",
+      "client": "Choose the client.",
+      "clientName": "Enter the client's name.",
+      "failed": "We couldn't save the appointment. Try again.",
+      "forbidden": "You can't create this appointment.",
+      "staffUnavailable": "The chosen person doesn't work at the chosen time.",
+      "notForService": "The chosen person doesn't do this service.",
+      "resource": "The room or equipment the service needs isn't free at the chosen time.",
+      "serviceArchived": "The service was archived meanwhile.",
+      "phoneTaken": "A client with this phone already exists. Search for them in the list.",
+      "limit": "You've reached this month's appointment limit.",
+      "anyTaken": "Nobody is free at the chosen time any more. Choose another time."
+    },
+    "overlap": {
+      "title": "{name} already has an appointment at {time}",
+      "body": "Choose another time or colleague."
+    },
+    "saved": {
+      "title": "We saved the appointment",
+      "when": "{day}, {time}",
+      "view": "View appointment"
+    }
   }
 }

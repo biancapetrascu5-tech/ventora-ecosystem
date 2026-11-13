@@ -530,5 +530,106 @@
     "err": {
       "load": "La journée n'a pas pu être chargée."
     }
+  },
+  "new": {
+    "title": "Nouveau rendez-vous",
+    "crumbs": {
+      "list": "Rendez-vous",
+      "clients": "Clients"
+    },
+    "noCategory": "Sans catégorie",
+    "sec": {
+      "service": "Prestation et employé",
+      "when": "Quand",
+      "client": "Client",
+      "details": "Détails"
+    },
+    "service": {
+      "label": "Prestation",
+      "placeholder": "Choisissez la prestation",
+      "nobody": "Personne dans l'équipe ne la fait"
+    },
+    "staff": {
+      "label": "Employé",
+      "placeholder": "Choisissez qui"
+    },
+    "any": "Toute personne libre",
+    "anyWho": "Toute personne libre · nous choisissons",
+    "date": "Date",
+    "duration": "Durée",
+    "minSuffix": "min",
+    "min": "{n} min",
+    "minRange": "{min}–{max} min",
+    "start": {
+      "label": "Heure de début",
+      "helpAny": "Nous affichons les heures où au moins une personne de l'équipe est libre.",
+      "helpMember": "Les heures barrées sont déjà prises pour {name}.",
+      "none": "Aucune heure libre ce jour-là. Choisissez un autre jour ou un autre collègue."
+    },
+    "client": {
+      "label": "Client",
+      "help": "Recherchez par nom ou téléphone.",
+      "fromProfile": "Démarré depuis le profil du client : le client est déjà choisi.",
+      "placeholder": "Rechercher par nom ou téléphone",
+      "recent": "Clients récents",
+      "found": "Résultats",
+      "visits": "{n, plural, one {# visite} other {# visites}}",
+      "new": "Nouveau client",
+      "name": "Nom du client",
+      "phone": "Téléphone",
+      "existing": "Choisir un client existant"
+    },
+    "notes": "Notes pour l'équipe",
+    "notesPlaceholder": "Ex. : peau sensible",
+    "notify": {
+      "confirm": "Envoyer une confirmation par SMS maintenant",
+      "remind": "Envoyer un rappel 24 heures avant"
+    },
+    "sum": {
+      "title": "Récapitulatif",
+      "client": "Client",
+      "service": "Prestation",
+      "who": "Avec qui",
+      "when": "Quand",
+      "price": "Prix",
+      "none": "—"
+    },
+    "book": "Réserver",
+    "bookAt": "Réserver · {time}",
+    "cancel": "Annuler",
+    "money": {
+      "RON": "{amount} lei",
+      "EUR": "{amount} €"
+    },
+    "price": {
+      "from": "à partir de {amount}",
+      "range": "{min}–{max}"
+    },
+    "err": {
+      "service": "Choisissez la prestation.",
+      "staff": "Choisissez qui fait la prestation.",
+      "date": "Choisissez la date.",
+      "time": "Choisissez une heure libre.",
+      "client": "Choisissez le client.",
+      "clientName": "Saisissez le nom du client.",
+      "failed": "Nous n'avons pas pu enregistrer le rendez-vous. Réessayez.",
+      "forbidden": "Vous ne pouvez pas créer ce rendez-vous.",
+      "staffUnavailable": "La personne choisie ne travaille pas à cette heure.",
+      "notForService": "La personne choisie ne fait pas cette prestation.",
+      "resource": "La salle ou l'équipement nécessaire n'est pas libre à cette heure.",
+      "serviceArchived": "La prestation a été archivée entre-temps.",
+      "phoneTaken": "Un client avec ce téléphone existe déjà. Cherchez-le dans la liste.",
+      "limit": "Vous avez atteint la limite de rendez-vous du mois.",
+      "anyTaken": "Plus personne n'est libre à cette heure. Choisissez une autre heure."
+    },
+    "overlap": {
+      "title": "{name} a déjà un rendez-vous à {time}",
+      "body": "Choisissez une autre heure ou un autre collègue."
+    },
+    "saved": {
+      "title": "Nous avons enregistré le rendez-vous",
+      "when": "{day}, {time}",
+      "view": "Voir le rendez-vous"
+    }
   }
 }

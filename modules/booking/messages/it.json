@@ -530,5 +530,106 @@
     "err": {
       "load": "Impossibile caricare la giornata."
     }
+  },
+  "new": {
+    "title": "Nuovo appuntamento",
+    "crumbs": {
+      "list": "Appuntamenti",
+      "clients": "Clienti"
+    },
+    "noCategory": "Senza categoria",
+    "sec": {
+      "service": "Servizio e dipendente",
+      "when": "Quando",
+      "client": "Cliente",
+      "details": "Dettagli"
+    },
+    "service": {
+      "label": "Servizio",
+      "placeholder": "Scelga il servizio",
+      "nobody": "Nessuno del team lo esegue"
+    },
+    "staff": {
+      "label": "Dipendente",
+      "placeholder": "Scelga chi"
+    },
+    "any": "Chiunque sia libero",
+    "anyWho": "Chiunque sia libero · lo scegliamo noi",
+    "date": "Data",
+    "duration": "Durata",
+    "minSuffix": "min",
+    "min": "{n} min",
+    "minRange": "{min}–{max} min",
+    "start": {
+      "label": "Ora di inizio",
+      "helpAny": "Mostriamo gli orari in cui almeno una persona del team è libera.",
+      "helpMember": "Gli orari barrati sono già occupati per {name}.",
+      "none": "Nessun orario libero nel giorno scelto. Scelga un altro giorno o un altro collega."
+    },
+    "client": {
+      "label": "Cliente",
+      "help": "Cerchi per nome o telefono.",
+      "fromProfile": "Avviato dal profilo del cliente: il cliente è già scelto.",
+      "placeholder": "Cerca per nome o telefono",
+      "recent": "Clienti recenti",
+      "found": "Risultati",
+      "visits": "{n, plural, one {# visita} other {# visite}}",
+      "new": "Nuovo cliente",
+      "name": "Nome del cliente",
+      "phone": "Telefono",
+      "existing": "Scelga un cliente esistente"
+    },
+    "notes": "Note per il team",
+    "notesPlaceholder": "Es.: pelle sensibile",
+    "notify": {
+      "confirm": "Invia ora la conferma via SMS",
+      "remind": "Invia un promemoria 24 ore prima"
+    },
+    "sum": {
+      "title": "Riepilogo",
+      "client": "Cliente",
+      "service": "Servizio",
+      "who": "Con chi",
+      "when": "Quando",
+      "price": "Prezzo",
+      "none": "—"
+    },
+    "book": "Prenota",
+    "bookAt": "Prenota · {time}",
+    "cancel": "Annulla",
+    "money": {
+      "RON": "{amount} lei",
+      "EUR": "{amount} €"
+    },
+    "price": {
+      "from": "da {amount}",
+      "range": "{min}–{max}"
+    },
+    "err": {
+      "service": "Scelga il servizio.",
+      "staff": "Scelga chi esegue il servizio.",
+      "date": "Scelga la data.",
+      "time": "Scelga un orario libero.",
+      "client": "Scelga il cliente.",
+      "clientName": "Inserisca il nome del cliente.",
+      "failed": "Non siamo riusciti a salvare l'appuntamento. Riprovi.",
+      "forbidden": "Non può creare questo appuntamento.",
+      "staffUnavailable": "La persona scelta non lavora all'orario scelto.",
+      "notForService": "La persona scelta non esegue questo servizio.",
+      "resource": "Lo spazio o l'attrezzatura necessari non sono liberi all'orario scelto.",
+      "serviceArchived": "Il servizio è stato archiviato nel frattempo.",
+      "phoneTaken": "Esiste già un cliente con questo telefono. Lo cerchi nella lista.",
+      "limit": "Ha raggiunto il limite di appuntamenti del mese.",
+      "anyTaken": "All'orario scelto non è più libero nessuno. Scelga un altro orario."
+    },
+    "overlap": {
+      "title": "{name} ha già un appuntamento alle {time}",
+      "body": "Scelga un altro orario o un altro collega."
+    },
+    "saved": {
+      "title": "Abbiamo salvato l’appuntamento",
+      "when": "{day}, {time}",
+      "view": "Vedi l’appuntamento"
+    }
   }
 }

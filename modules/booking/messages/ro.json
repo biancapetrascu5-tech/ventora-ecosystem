@@ -530,5 +530,106 @@
     "err": {
       "load": "Ziua nu s-a încărcat."
     }
+  },
+  "new": {
+    "title": "Programare nouă",
+    "crumbs": {
+      "list": "Programări",
+      "clients": "Clienți"
+    },
+    "noCategory": "Fără categorie",
+    "sec": {
+      "service": "Serviciu și angajat",
+      "when": "Când",
+      "client": "Client",
+      "details": "Detalii"
+    },
+    "service": {
+      "label": "Serviciu",
+      "placeholder": "Alege serviciul",
+      "nobody": "Nu îl face nimeni din echipă"
+    },
+    "staff": {
+      "label": "Angajat",
+      "placeholder": "Alege cine"
+    },
+    "any": "Oricine e liber",
+    "anyWho": "Oricine e liber · îl alegem noi",
+    "date": "Data",
+    "duration": "Durată",
+    "minSuffix": "min",
+    "min": "{n} min",
+    "minRange": "{min}–{max} min",
+    "start": {
+      "label": "Ora de început",
+      "helpAny": "Arătăm orele în care e liber cel puțin un om din echipă.",
+      "helpMember": "Orele tăiate sunt deja ocupate la {name}.",
+      "none": "Nicio oră liberă în ziua aleasă. Alege altă zi sau alt coleg."
+    },
+    "client": {
+      "label": "Client",
+      "help": "Caută după nume sau telefon.",
+      "fromProfile": "Pornită din profilul clientului: clientul e deja ales.",
+      "placeholder": "Caută după nume sau telefon",
+      "recent": "Clienți recenți",
+      "found": "Rezultate",
+      "visits": "{n, plural, one {# vizită} few {# vizite} other {# de vizite}}",
+      "new": "Client nou",
+      "name": "Numele clientului",
+      "phone": "Telefon",
+      "existing": "Alege un client existent"
+    },
+    "notes": "Note pentru echipă",
+    "notesPlaceholder": "Ex.: ten sensibil",
+    "notify": {
+      "confirm": "Trimite confirmare prin SMS acum",
+      "remind": "Trimite reamintire cu 24 de ore înainte"
+    },
+    "sum": {
+      "title": "Rezumat",
+      "client": "Client",
+      "service": "Serviciu",
+      "who": "Cu cine",
+      "when": "Când",
+      "price": "Preț",
+      "none": "—"
+    },
+    "book": "Programează",
+    "bookAt": "Programează · {time}",
+    "cancel": "Renunță",
+    "money": {
+      "RON": "{amount} lei",
+      "EUR": "{amount} €"
+    },
+    "price": {
+      "from": "de la {amount}",
+      "range": "{min}–{max}"
+    },
+    "err": {
+      "service": "Alege serviciul.",
+      "staff": "Alege cine face serviciul.",
+      "date": "Alege data.",
+      "time": "Alege o oră liberă.",
+      "client": "Alege clientul.",
+      "clientName": "Scrie numele clientului.",
+      "failed": "Nu am putut salva programarea. Încearcă din nou.",
+      "forbidden": "Nu poți crea această programare.",
+      "staffUnavailable": "Persoana aleasă nu lucrează la ora aleasă.",
+      "notForService": "Persoana aleasă nu face acest serviciu.",
+      "resource": "Nu e liber spațiul sau echipamentul de care are nevoie serviciul la ora aleasă.",
+      "serviceArchived": "Serviciul a fost arhivat între timp.",
+      "phoneTaken": "Există deja un client cu acest telefon. Caută-l în listă.",
+      "limit": "Ai atins limita de programări a lunii.",
+      "anyTaken": "Nu mai e nimeni liber la ora aleasă. Alege altă oră."
+    },
+    "overlap": {
+      "title": "{name} are deja o programare la {time}",
+      "body": "Alege altă oră sau alt coleg."
+    },
+    "saved": {
+      "title": "Am salvat programarea",
+      "when": "{day}, {time}",
+      "view": "Vezi programarea"
+    }
   }
 }
