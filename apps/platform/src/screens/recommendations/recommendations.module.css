@@ -1,0 +1,73 @@
+/* HubMyRecommendations/preview.html (S136): .x-body, .fn-list, .fn-row, .cd-autobody, .x-row,
+   .x-line, .cd-pad */
+.body {
+  padding: 0 0 var(--space-8);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.bodyMob {
+  gap: var(--space-4);
+}
+
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: var(--space-8) minmax(0, 1fr) auto;
+  gap: var(--space-3);
+  align-items: center;
+  padding: var(--space-3) 0;
+  border-bottom: var(--border-width) solid var(--line);
+}
+
+.row:last-child {
+  border-bottom: 0;
+}
+
+.rowMob {
+  grid-template-columns: var(--space-8) minmax(0, 1fr);
+}
+
+.rowMob > .open {
+  grid-column: 2;
+  justify-self: start;
+}
+
+.main {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-width: 0;
+}
+
+.head {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.rule {
+  display: flex;
+  gap: var(--space-2);
+  align-items: flex-start;
+  margin: 0;
+  color: var(--ink-secondary);
+}
+
+.rule :global(.v-icon) {
+  flex: none;
+  margin-top: 2px;
+}
+
+.pad {
+  padding: 0 var(--space-4);
+}

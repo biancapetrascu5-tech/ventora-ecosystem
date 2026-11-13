@@ -19,14 +19,15 @@ model Application {
   createdAt      DateTime  @default(now()) @map("created_at") @db.Timestamptz
   updatedAt      DateTime  @default(now()) @map("updated_at") @db.Timestamptz
 
-  features      FeatureKey[]
-  quotas        QuotaKey[]
-  versionApps   PlanVersionApplication[]
-  trials        Trial[]
-  prices        ApplicationPrice[]
-  included      ApplicationQuota[]
-  lines         SubscriptionApplication[]
-  setupRequests SetupRequest[]
+  features        FeatureKey[]
+  quotas          QuotaKey[]
+  versionApps     PlanVersionApplication[]
+  trials          Trial[]
+  prices          ApplicationPrice[]
+  included        ApplicationQuota[]
+  lines           SubscriptionApplication[]
+  setupRequests   SetupRequest[]
+  recommendations TeamRecommendation[]
 
   @@map("application")
   @@schema("commercial")
@@ -268,19 +269,20 @@ model Subscription {
 
 /// Mutarea pe altă versiune (§8.5): avantaj imediat, dezavantaj cu cel puțin 30 de zile (D-COM-9).
 model SubscriptionChange {
-  id                 String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  subscriptionId     String       @map("subscription_id") @db.Uuid
-  organizationId     String       @map("organization_id") @db.Uuid
-  fromVersionId      String       @map("from_version_id") @db.Uuid
-  toVersionId        String       @map("to_version_id") @db.Uuid
-  classification     String       @db.VarChar(16)
-  effectiveAt        DateTime     @map("effective_at") @db.Timestamptz
-  canceledAt         DateTime?    @map("canceled_at") @db.Timestamptz
-  createdByFounderId String       @map("created_by_founder_id") @db.Uuid
-  createdAt          DateTime     @default(now()) @map("created_at") @db.Timestamptz
-  subscription       Subscription @relation(fields: [subscriptionId], references: [id])
-  fromVersion        PlanVersion  @relation("change_from", fields: [fromVersionId], references: [id])
-  toVersion          PlanVersion  @relation("change_to", fields: [toVersionId], references: [id])
+  id                 String                       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  subscriptionId     String                       @map("subscription_id") @db.Uuid
+  organizationId     String                       @map("organization_id") @db.Uuid
+  fromVersionId      String                       @map("from_version_id") @db.Uuid
+  toVersionId        String                       @map("to_version_id") @db.Uuid
+  classification     String                       @db.VarChar(16)
+  effectiveAt        DateTime                     @map("effective_at") @db.Timestamptz
+  canceledAt         DateTime?                    @map("canceled_at") @db.Timestamptz
+  createdByFounderId String                       @map("created_by_founder_id") @db.Uuid
+  createdAt          DateTime                     @default(now()) @map("created_at") @db.Timestamptz
+  subscription       Subscription                 @relation(fields: [subscriptionId], references: [id])
+  fromVersion        PlanVersion                  @relation("change_from", fields: [fromVersionId], references: [id])
+  toVersion          PlanVersion                  @relation("change_to", fields: [toVersionId], references: [id])
+  announced          SubscriptionChangeAnnounced?
 
   @@index([subscriptionId, effectiveAt], map: "subscription_change_subscription_id_effective_at_idx")
   @@map("subscription_change")
@@ -674,5 +676,39 @@ model SetupRequest {
   @@index([organizationId], map: "setup_request_organization_id_idx")
   @@index([status, createdAt], map: "setup_request_status_created_at_idx")
   @@map("setup_request")
+  @@schema("commercial")
+}
+
+// ── Lot 5.9e · commercial_team_recommendation (HubMyRecommendations, S136) ────────────────────
+
+/// „Recomandă aplicația”: cine a recomandat, starea (pending → active / not_now), nota și răspunsul.
+model TeamRecommendation {
+  id                  String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  organizationId      String      @map("organization_id") @db.Uuid
+  applicationId       String      @map("application_id") @db.VarChar(64)
+  recommendedByUserId String      @map("recommended_by_user_id") @db.Uuid
+  recommendedByRole   String      @map("recommended_by_role") @db.VarChar(16)
+  note                String?
+  status              String      @default("pending") @db.VarChar(16)
+  recommendedAt       DateTime    @default(now()) @map("recommended_at") @db.Timestamptz
+  decidedAt           DateTime?   @map("decided_at") @db.Timestamptz
+  decidedByUserId     String?     @map("decided_by_user_id") @db.Uuid
+  answer              String?
+  application         Application @relation(fields: [applicationId], references: [id], map: "team_recommendation_application_fkey")
+
+  @@index([organizationId, status], map: "team_recommendation_organization_id_status_idx")
+  @@index([organizationId, recommendedByUserId, recommendedAt], map: "team_recommendation_recommended_by_idx")
+  @@map("team_recommendation")
+  @@schema("commercial")
+}
+
+/// Lot 5.9e: mutările pe altă versiune deja anunțate (`commercial.subscription.changed`).
+model SubscriptionChangeAnnounced {
+  subscriptionChangeId String             @id @map("subscription_change_id") @db.Uuid
+  organizationId       String             @map("organization_id") @db.Uuid
+  announcedAt          DateTime           @default(now()) @map("announced_at") @db.Timestamptz
+  change               SubscriptionChange @relation(fields: [subscriptionChangeId], references: [id], onDelete: Cascade, map: "subscription_change_announced_change_fkey")
+
+  @@map("subscription_change_announced")
   @@schema("commercial")
 }

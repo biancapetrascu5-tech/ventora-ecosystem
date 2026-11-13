@@ -29,6 +29,10 @@ export const ownerNotifiedConsumer = {
   handles: [{ type: CommercialOwnerNotifiedV1.type, version: CommercialOwnerNotifiedV1.version }],
   async handle(envelope: Envelope, tx: SqlClient): Promise<void> {
     const p = CommercialOwnerNotifiedV1.parse(envelope.payload);
+    // Lot 5.9e (decizia fondatoarei din 13.11.2026): o aplicație recomandată ajunge la owner și la
+    // admini doar în secțiunea „Recomandări” a clopoțelului (commercial.team_recommendation), nu
+    // și în „Activitate”; pachetele și limitele rămân notificări
+    if (p.targetType === 'application') return;
     const organizationId = envelope.organizationId;
     const owners = (await listManagersInTx(tx, organizationId))
       .filter((m) => m.role === 'owner')
@@ -47,13 +51,7 @@ export const ownerNotifiedConsumer = {
     );
     const name = contacts.get(p.userId)?.name ?? '';
     const params: Record<string, NotificationParams[string]> = { name };
-    if (p.targetType === 'application') {
-      const { rows } = await tx.query(`SELECT name FROM commercial.application WHERE id = $1`, [
-        p.targetId,
-      ]);
-      params.app = (rows[0] as { name: string } | undefined)?.name ?? p.targetId;
-      params.appId = p.targetId;
-    } else if (p.targetType === 'addon') {
+    if (p.targetType === 'addon') {
       const { rows } = await tx.query(`SELECT name FROM commercial.addon WHERE id = $1::uuid`, [
         p.targetId,
       ]);

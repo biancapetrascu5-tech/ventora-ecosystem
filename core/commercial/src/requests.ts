@@ -6,6 +6,7 @@ import { writeOutboxEvent } from '@ventora/db-kit';
 import { requireFounderSession } from '@ventora/identity';
 import { withFounderRead, withFounderWrite, withOrganizationWrite } from './db';
 import { addonAvailableInTx, computeEntitlementsInTx, currentVersionInTx } from './entitlements';
+import { normalizeRecommendationNote, recordTeamRecommendationInTx } from './team-recommendations';
 
 /*
  * Lot 3.4: the requests from the Hub (FounderRequests, S111). „Cere activare” — an add-on on
@@ -278,7 +279,7 @@ export type OwnerNoticeTarget = 'application' | 'addon' | 'quota';
  */
 export async function notifyOwner(
   actor: RequestActor,
-  input: { targetType: OwnerNoticeTarget; targetId: string },
+  input: { targetType: OwnerNoticeTarget; targetId: string; note?: string | null },
 ): Promise<void> {
   const organizationId = uuid('organizationId', actor.organizationId);
   const userId = uuid('userId', actor.userId);
@@ -287,10 +288,16 @@ export async function notifyOwner(
   }
   const targetId = String(input.targetId ?? '').trim();
   if (!targetId || targetId.length > 128) throw new InvalidInput('targetId');
+  // Lot 5.9e: nota opțională a recomandării (câmpul nu e desenat încă: NECESITĂ DESIGN)
+  const note = normalizeRecommendationNote(input.note);
 
   await withOrganizationWrite(organizationId, async (client) => {
     if (input.targetType === 'application' || input.targetType === 'addon') {
       await checkTarget(client, organizationId, 'activation', input.targetType, targetId);
+      // Lot 5.9e: o aplicație recomandată rămâne în „Recomandările mele”, cu starea ei
+      if (input.targetType === 'application') {
+        await recordTeamRecommendationInTx(client, actor, targetId, note);
+      }
     } else if (input.targetType === 'quota') {
       // a limit the business has: limited (an unlimited one never reaches the owner) and above 0
       const { quotas } = await computeEntitlementsInTx(client, organizationId, null);

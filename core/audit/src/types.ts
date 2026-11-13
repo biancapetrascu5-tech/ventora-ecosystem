@@ -42,6 +42,8 @@ export type AuditTargetType =
   | 'discount'
   // Lot 3.4: the requests from the Hub
   | 'commercial_request'
+  // Lot 5.9e: „Recomandă aplicația” păstrat cu starea lui
+  | 'team_recommendation'
   // D3-24: the global settings of the commercial model
   | 'setting'
   // Lot 3.5: payments with the card (core/billing)
