@@ -68,3 +68,9 @@
 - **Prima rulare a suitei:** 311/312. Testul B.FK pe rânduri a găsit legătura nouă `client_message.appointment_id`, fără rând în fixture. Am trecut-o în `UNTRIED` (`composite-fks.integration.test.ts`). Testul de catalog confirmă că FK-ul e compus.
 - **`FILES="composite-fks client-emails"`:** 8/8.
 - **Toată suita booking:** **28 de fișiere, 312/312**, exit 0, „No difference detected”.
+
+## Commit-uri și PR
+
+- `6660b0c` feat(booking): B.13 confirmarea și reminderul pe e-mail (pushed)
+- `a3c78b7` test(booking): `client_message.appointment_id` în `UNTRIED`, raportul după rebase (pushed)
+- PR #202 „[SQL de revizuit] B.13 — confirmarea și reminderul pe e-mail”
