@@ -72,7 +72,7 @@ export type {
   ListedAppointment,
 } from './appointments';
 // Lot B.14c: when the reminder and the thanks leave
-export { SEND_TIMING_LIMITS, THANKS_WHEN } from './appointments';
+export { ONLINE_SETTINGS_LIMITS, SEND_TIMING_LIMITS, THANKS_WHEN } from './appointments';
 // Lot B.14c: „Trimite reamintire” by hand
 export { sendAppointmentReminders, MANUAL_REMINDER_LIMITS } from './appointments';
 export type {

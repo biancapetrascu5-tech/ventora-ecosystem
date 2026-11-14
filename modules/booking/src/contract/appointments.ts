@@ -157,6 +157,12 @@ export type SetBookingSettingsParams = Session & {
   thanksWhen?: ThanksWhen;
   thanksHours?: number;
   bufferMin?: number;
+  /** B.11d: the booking page on (true) or off (false); off refuses new online bookings. */
+  onlineEnabled?: boolean;
+  /** B.11d: the client moves / cancels from their link until N hours before (1–72). */
+  manageCutoffHours?: number;
+  /** B.11d: the message on the confirmation of the public page (≤ 300 characters); null = none. */
+  afterBookingMessage?: string | null;
 };
 
 function clientInput(p: Partial<ClientFields>): ClientInput {
@@ -357,6 +363,9 @@ export async function setBookingSettings(
     thanksWhen: params.thanksWhen,
     thanksHours: params.thanksHours,
     bufferMin: params.bufferMin,
+    onlineEnabled: params.onlineEnabled,
+    manageCutoffHours: params.manageCutoffHours,
+    afterBookingMessage: params.afterBookingMessage,
   });
 }
 
@@ -375,7 +384,7 @@ export type {
 };
 
 /** B.14c: the hours a business can choose for the reminder and the thanks. */
-export { SEND_TIMING_LIMITS, THANKS_WHEN } from '../server/appointments';
+export { ONLINE_SETTINGS_LIMITS, SEND_TIMING_LIMITS, THANKS_WHEN } from '../server/appointments';
 
 /** B.14c: „Trimite reamintire” by hand, for one or more appointments (at most 100). */
 export type SendAppointmentRemindersParams = Session & { appointmentIds: string[] };

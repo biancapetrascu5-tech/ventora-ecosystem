@@ -42,8 +42,9 @@ import { isUuid } from './validation';
  * not found. From the start of the booking on, the page shows only the details ('over').
  *
  * The rules of S125 (DE DECIS; the recommendations of the design, PROPUS until the founder decides):
- *   - changes online until 2 hours before; after that only by phone ('too_late');
- *   - cancelling between the free cancellation and those 2 hours is allowed, marked late;
+ *   - changes online until N hours before (B.11d: Setări › Rezervări online, 2 by default);
+ *     after that only by phone ('too_late');
+ *   - cancelling between the free cancellation and those N hours is allowed, marked late;
  *   - moving is free until the online cut-off, at most once online per booking ('moved_once');
  *   - a business with manual confirmation: no move online for now ('manual_confirmation'; the move
  *     as a request, with the old time kept until the salon confirms, is a later lot).
@@ -51,7 +52,7 @@ import { isUuid } from './validation';
  */
 
 export const MANAGE_LIMITS = {
-  /** S125: online changes until this many hours before the start. */
+  /** S125: online changes until this many hours before the start, by default (B.11d: the setting). */
   onlineCutoffHours: 2,
   /** S125: moves online per booking; the next one by phone. */
   onlineMoves: 1,
@@ -187,7 +188,11 @@ const HOUR = 3_600_000;
 
 function judge(
   b: BookingRow,
-  settings: { freeCancelHours: number; confirmationMode: 'auto' | 'manual' },
+  settings: {
+    freeCancelHours: number;
+    confirmationMode: 'auto' | 'manual';
+    manageCutoffHours: number;
+  },
 ) {
   const now = b.now.getTime();
   const start = b.starts_at.getTime();
@@ -196,7 +201,7 @@ function judge(
   else if (!['awaiting_payment', 'unconfirmed', 'confirmed'].includes(b.status)) state = 'over';
   // review #174: from the start on, the page shows only the details (no move, no cancel)
   else if (start <= now) state = 'over';
-  else if (start - now < MANAGE_LIMITS.onlineCutoffHours * HOUR) state = 'too_late';
+  else if (start - now < settings.manageCutoffHours * HOUR) state = 'too_late';
   // B.9a (D-9a-1, D-9a-2): a step of a visit is changed only by the team (by phone)
   else if (!b.online || b.in_visit) state = 'online_closed';
   else state = 'open';
@@ -260,8 +265,8 @@ export async function getManagedBooking(slug: unknown, token: unknown): Promise<
     policy: {
       freeCancelHours: settings.freeCancelHours,
       freeUntil: new Date(start - settings.freeCancelHours * HOUR),
-      onlineCutoffHours: MANAGE_LIMITS.onlineCutoffHours,
-      onlineUntil: new Date(start - MANAGE_LIMITS.onlineCutoffHours * HOUR),
+      onlineCutoffHours: settings.manageCutoffHours,
+      onlineUntil: new Date(start - settings.manageCutoffHours * HOUR),
     },
     ...judge(b, settings),
   };

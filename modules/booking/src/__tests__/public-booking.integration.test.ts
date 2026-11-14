@@ -10,6 +10,7 @@ import {
   createClient,
   createService,
   getPublicBookingPage,
+  getBookingSettings,
   getPublicFreeSlots,
   listStaff,
   resendPublicBookingCode,
@@ -627,5 +628,150 @@ describe('B.11c — the salon’s phone, today’s hours, the masked e-mail', ()
     });
     expect(done.emailMasked).toBe('cr***@gmail.com');
     expect(JSON.stringify(done)).not.toContain(who.email);
+  });
+});
+
+describe('B.11d — Setări › Rezervări online, applied on the public page', () => {
+  const reset = () =>
+    setBookingSettings({
+      sessionToken: A.owner.token,
+      onlineEnabled: true,
+      manageCutoffHours: 2,
+      afterBookingMessage: null,
+    });
+
+  it('the defaults: the page on, 2 hours, no message; the limits are checked', async () => {
+    const s = await getBookingSettings({ sessionToken: A.owner.token });
+    expect(s).toMatchObject({
+      onlineOffSince: null,
+      manageCutoffHours: 2,
+      afterBookingMessage: null,
+    });
+    for (const [params, why] of [
+      [{ manageCutoffHours: 0 }, 'manageCutoffHours:invalid'],
+      [{ manageCutoffHours: 73 }, 'manageCutoffHours:invalid'],
+      [{ manageCutoffHours: 2.5 }, 'manageCutoffHours:invalid'],
+      [{ afterBookingMessage: 'x'.repeat(301) }, 'afterBookingMessage:too_long'],
+      [{ afterBookingMessage: 5 }, 'afterBookingMessage:invalid'],
+      [{ onlineEnabled: 'no' }, 'onlineEnabled:invalid'],
+    ] as const) {
+      expect(
+        await refusal(setBookingSettings({ sessionToken: A.owner.token, ...(params as object) })),
+      ).toBe(why);
+    }
+    // trimmed; blank = none; exactly 300 characters (diacritics count as one) is allowed
+    const trimmed = await setBookingSettings({
+      sessionToken: A.owner.token,
+      afterBookingMessage: '  Vă așteptăm cu 5 minute mai devreme.\r\n  ',
+    });
+    expect(trimmed.afterBookingMessage).toBe('Vă așteptăm cu 5 minute mai devreme.');
+    expect(
+      (
+        await setBookingSettings({
+          sessionToken: A.owner.token,
+          afterBookingMessage: 'ă'.repeat(300),
+        })
+      ).afterBookingMessage,
+    ).toHaveLength(300);
+    expect(
+      (await setBookingSettings({ sessionToken: A.owner.token, afterBookingMessage: '   ' }))
+        .afterBookingMessage,
+    ).toBeNull();
+    // the audit keeps only whether a message is set, never its text
+    await setBookingSettings({
+      sessionToken: A.owner.token,
+      afterBookingMessage: 'Parcare-SECRET-Z',
+    });
+    const audits = await adminQuery<{ metadata: unknown }>(
+      `SELECT metadata FROM audit.audit_log
+        WHERE organization_id = $1 AND action = 'booking.settings_updated'
+        ORDER BY created_at DESC LIMIT 1`,
+      [A.org],
+    );
+    expect(JSON.stringify(audits)).not.toContain('Parcare-SECRET-Z');
+    expect(audits[0]!.metadata).toMatchObject({ afterBookingMessage: true, onlineEnabled: true });
+    await reset();
+  });
+
+  it('the page off: no services, no free times, no hold, no code; on again: bookable', async () => {
+    const before = await start(A.slug, 9, visitor(), {}, 30);
+    const off = await setBookingSettings({ sessionToken: A.owner.token, onlineEnabled: false });
+    expect(off.onlineOffSince).toBeInstanceOf(Date);
+    try {
+      // turning it off again keeps the first moment („oprite din {date}”)
+      const again = await setBookingSettings({ sessionToken: A.owner.token, onlineEnabled: false });
+      expect(again.onlineOffSince!.getTime()).toBe(off.onlineOffSince!.getTime());
+
+      const page = await getPublicBookingPage({ slug: A.slug });
+      expect(page).toMatchObject({ online: false, services: [], questions: [] });
+      const day = localDate(at(10));
+      expect(
+        await refusal(
+          getPublicFreeSlots({
+            slug: A.slug,
+            serviceId: svcA,
+            staffMemberId: staffA,
+            from: day,
+            to: nextDate(day),
+          }),
+        ),
+      ).toBe('online_off');
+      expect(await refusal(start(A.slug, 10, visitor(), {}, 30))).toBe('online_off');
+      // a time held before: the code and a new code are refused too, nothing is written
+      expect(
+        await refusal(
+          verifyPublicBooking({
+            slug: A.slug,
+            holdId: before.hold.holdId,
+            code: lastCode(before.who.email),
+          }),
+        ),
+      ).toBe('online_off');
+      expect(
+        await refusal(resendPublicBookingCode({ slug: A.slug, holdId: before.hold.holdId })),
+      ).toBe('online_off');
+      const [held] = await adminQuery<{ state: string; appointment_id: string | null }>(
+        `SELECT state, appointment_id FROM booking.public_hold WHERE id = $1`,
+        [before.hold.holdId],
+      );
+      expect(held).toEqual({ state: 'pending', appointment_id: null });
+      // B.11b stays: the page of a booking already made is not touched (manage-booking test)
+    } finally {
+      await reset();
+    }
+    const on = await getPublicBookingPage({ slug: A.slug });
+    expect(on.online).toBe(true);
+    expect(on.services.map((s) => s.id)).toContain(svcA);
+    const done = await verifyPublicBooking({
+      slug: A.slug,
+      holdId: before.hold.holdId,
+      code: lastCode(before.who.email),
+    });
+    expect(done.status).toBe('confirmed');
+  });
+
+  it('the message after booking comes with the confirmation; none: null', async () => {
+    const plain = await start(A.slug, 11, visitor(), {}, 30);
+    const none = await verifyPublicBooking({
+      slug: A.slug,
+      holdId: plain.hold.holdId,
+      code: lastCode(plain.who.email),
+    });
+    expect(none.afterBookingMessage).toBeNull();
+    await setBookingSettings({
+      sessionToken: A.owner.token,
+      afterBookingMessage: 'Parcarea din curtea din spate e gratuită.',
+    });
+    try {
+      const { hold, who } = await start(A.slug, 12, visitor(), {}, 30);
+      const done = await verifyPublicBooking({
+        slug: A.slug,
+        holdId: hold.holdId,
+        code: lastCode(who.email),
+      });
+      expect(done.afterBookingMessage).toBe('Parcarea din curtea din spate e gratuită.');
+    } finally {
+      await reset();
+    }
   });
 });

@@ -696,3 +696,56 @@ describe('B.11b — review #174', () => {
     expect((err2 as { code?: string }).code).toBe('23503');
   });
 });
+
+describe('B.11d — the client’s changes follow Setări › Rezervări online', () => {
+  it('until N hours before (the setting): later only by phone; the policy says N', async () => {
+    const done = await book(9);
+    await adminQuery(
+      `UPDATE booking.appointment
+          SET starts_at = now() + interval '4 hours', ends_at = now() + interval '270 minutes'
+        WHERE id = $1`,
+      [done.appointmentId],
+    );
+    // 2 hours by default: 4 hours before is still open
+    const open = await getManagedBooking({ slug: A.slug, token: done.manageToken });
+    expect(open).toMatchObject({ state: 'open', canCancel: true });
+    expect(open.policy.onlineCutoffHours).toBe(2);
+    await setBookingSettings({ sessionToken: A.owner.token, manageCutoffHours: 6 });
+    try {
+      const late = await getManagedBooking({ slug: A.slug, token: done.manageToken });
+      expect(late).toMatchObject({ state: 'too_late', canMove: false, canCancel: false });
+      expect(late.policy.onlineCutoffHours).toBe(6);
+      expect(late.policy.onlineUntil.getTime()).toBe(
+        new Date(late.appointment.startsAt).getTime() - 6 * 3_600_000,
+      );
+      expect(await refusal(cancelManagedBooking({ slug: A.slug, token: done.manageToken }))).toBe(
+        'too_late',
+      );
+      expect(
+        await refusal(
+          startManagedMove({
+            slug: A.slug,
+            token: done.manageToken,
+            startsAt: iso(at(14, 30)),
+            ip: '198.51.100.9',
+          }),
+        ),
+      ).toBe('too_late');
+    } finally {
+      await setBookingSettings({ sessionToken: A.owner.token, manageCutoffHours: 2 });
+    }
+  });
+
+  it('the booking page off does not touch the bookings already made: their page still works', async () => {
+    const done = await book(10);
+    await setBookingSettings({ sessionToken: A.owner.token, onlineEnabled: false });
+    try {
+      const page = await getManagedBooking({ slug: A.slug, token: done.manageToken });
+      expect(page).toMatchObject({ state: 'open', canCancel: true });
+      const res = await cancelManagedBooking({ slug: A.slug, token: done.manageToken });
+      expect(res.late).toBe(false);
+    } finally {
+      await setBookingSettings({ sessionToken: A.owner.token, onlineEnabled: true });
+    }
+  });
+});
