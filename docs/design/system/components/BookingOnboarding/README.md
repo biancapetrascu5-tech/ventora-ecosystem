@@ -9,3 +9,5 @@ EasyBook — the setup guide at first start (S140; the EasyBook + ClientDesk pac
 **Done.** "Felicitări, salonul e gata!" (Dialog with what's set and what was skipped); afterwards "Azi" has no checklist and a line points to "?" › "Ghidul de configurare".
 
 Shown at 1280, 820 and 390, light and dark.
+
+**S150 · Telefonul afacerii (1.1.0).** La pasul „Datele afacerii și programul”, „Telefon” e acum opțional (înainte era obligatoriu), cu prefixul țării. Placeholder-ul este `+40 7xx xxx xxx`, ajutorul „Cu prefixul țării. Apare pe pagina de rezervare.”, iar eroarea pentru un număr fără prefix: „Scrie numărul cu prefixul țării…”. Pasul se poate termina și fără telefon. Valoarea e aceeași cu cea din Hub › Brand › Datele afacerii. Cheile sunt `onboarding.guide.b.phoneHelp`, `.phonePh`, `.phoneErr`, în 6 limbi. Desenat la cadrele 2, 12 și 13, cu test DE / IT. Am reparat și rândurile programului, unde eticheta zilei se suprapunea peste ore.

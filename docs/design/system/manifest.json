@@ -28,6 +28,7 @@
     "components/BookingClientCard/README.md",
     "components/BookingClients/README.md",
     "components/BookingClientEmails/README.md",
+    "components/BookingClosures/README.md",
     "components/BookingDeposit/README.md",
     "components/BookingDetail/README.md",
     "components/BookingHealthFields/README.md",
@@ -200,6 +201,12 @@
     }
   ],
   "components": [
+    {
+      "name": "BookingClosures",
+      "group": "Ecrane Booking",
+      "summary": "EasyBook — days off for the business or a location (S150): Settings › General › Zile libere, interval and optional reason, no bookings on those days; the closed day on the public page.",
+      "page": true
+    },
     {
       "name": "Button",
       "group": "Actions",

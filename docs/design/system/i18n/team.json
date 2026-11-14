@@ -204,7 +204,14 @@
     "hub.brand.pv.cta": "Programați-vă",
     "hub.brand.pv.services": "Alegeți serviciul",
     "hub.brand.pv.emailTitle": "Programarea de mâine",
-    "hub.brand.pv.emailCta": "Vedeți programarea"
+    "hub.brand.pv.emailCta": "Vedeți programarea",
+    "hub.brand.contact.title": "Datele afacerii",
+    "hub.brand.contact.lead": "Apar pe pagina de rezervare și în mesajele către clienți.",
+    "hub.brand.phone": "Telefon",
+    "hub.brand.phoneHelp": "Cu prefixul țării. O locație poate avea telefonul ei, în EasyBook › Setări › Locații.",
+    "hub.brand.phonePh": "+40 7xx xxx xxx",
+    "hub.brand.phoneErr": "Scrie numărul cu prefixul țării, de exemplu +40 722 123 456.",
+    "hub.brand.phoneNone": "Fără telefon, pe pagina de rezervare nu apare niciun număr."
   },
   "en": {
     "hub.nav.account": "Your account",
@@ -411,7 +418,14 @@
     "hub.brand.pv.cta": "Book now",
     "hub.brand.pv.services": "Choose a service",
     "hub.brand.pv.emailTitle": "Tomorrow’s appointment",
-    "hub.brand.pv.emailCta": "View appointment"
+    "hub.brand.pv.emailCta": "View appointment",
+    "hub.brand.contact.title": "Business details",
+    "hub.brand.contact.lead": "Shown on the booking page and in messages to clients.",
+    "hub.brand.phone": "Phone",
+    "hub.brand.phoneHelp": "With the country code. A location can have its own phone in EasyBook › Settings › Locations.",
+    "hub.brand.phonePh": "+44 7xxx xxx xxx",
+    "hub.brand.phoneErr": "Enter the number with the country code, for example +40 722 123 456.",
+    "hub.brand.phoneNone": "Without a phone, no number appears on the booking page."
   },
   "fr": {
     "hub.nav.account": "Votre compte",
@@ -618,7 +632,14 @@
     "hub.brand.pv.cta": "Réserver",
     "hub.brand.pv.services": "Choisissez une prestation",
     "hub.brand.pv.emailTitle": "Votre rendez-vous de demain",
-    "hub.brand.pv.emailCta": "Voir le rendez-vous"
+    "hub.brand.pv.emailCta": "Voir le rendez-vous",
+    "hub.brand.contact.title": "Coordonnées de l’entreprise",
+    "hub.brand.contact.lead": "Affichées sur la page de réservation et dans les messages aux clients.",
+    "hub.brand.phone": "Téléphone",
+    "hub.brand.phoneHelp": "Avec l’indicatif du pays. Un établissement peut avoir son propre numéro dans EasyBook › Paramètres › Établissements.",
+    "hub.brand.phonePh": "+33 6 xx xx xx xx",
+    "hub.brand.phoneErr": "Saisissez le numéro avec l’indicatif du pays, par exemple +40 722 123 456.",
+    "hub.brand.phoneNone": "Sans téléphone, aucun numéro n’apparaît sur la page de réservation."
   },
   "es": {
     "hub.nav.account": "Tu cuenta",
@@ -825,7 +846,14 @@
     "hub.brand.pv.cta": "Reservar",
     "hub.brand.pv.services": "Elija el servicio",
     "hub.brand.pv.emailTitle": "Su cita de mañana",
-    "hub.brand.pv.emailCta": "Ver la cita"
+    "hub.brand.pv.emailCta": "Ver la cita",
+    "hub.brand.contact.title": "Datos del negocio",
+    "hub.brand.contact.lead": "Aparecen en la página de reservas y en los mensajes a tus clientes.",
+    "hub.brand.phone": "Teléfono",
+    "hub.brand.phoneHelp": "Con el prefijo del país. Un local puede tener su propio teléfono en EasyBook › Ajustes › Locales.",
+    "hub.brand.phonePh": "+34 6xx xxx xxx",
+    "hub.brand.phoneErr": "Escribe el número con el prefijo del país, por ejemplo +40 722 123 456.",
+    "hub.brand.phoneNone": "Sin teléfono, no aparece ningún número en la página de reservas."
   },
   "de": {
     "hub.nav.account": "Ihr Konto",
@@ -1032,7 +1060,14 @@
     "hub.brand.pv.cta": "Jetzt buchen",
     "hub.brand.pv.services": "Leistung wählen",
     "hub.brand.pv.emailTitle": "Ihr Termin morgen",
-    "hub.brand.pv.emailCta": "Termin ansehen"
+    "hub.brand.pv.emailCta": "Termin ansehen",
+    "hub.brand.contact.title": "Unternehmensdaten",
+    "hub.brand.contact.lead": "Erscheinen auf der Buchungsseite und in Nachrichten an Kunden.",
+    "hub.brand.phone": "Telefon",
+    "hub.brand.phoneHelp": "Mit Ländervorwahl. Ein Standort kann in EasyBook › Einstellungen › Standorte eine eigene Nummer haben.",
+    "hub.brand.phonePh": "+49 15x xxxxxxx",
+    "hub.brand.phoneErr": "Geben Sie die Nummer mit Ländervorwahl ein, zum Beispiel +40 722 123 456.",
+    "hub.brand.phoneNone": "Ohne Telefon erscheint auf der Buchungsseite keine Nummer."
   },
   "it": {
     "hub.nav.account": "Il Suo account",
@@ -1239,6 +1274,13 @@
     "hub.brand.pv.cta": "Prenota",
     "hub.brand.pv.services": "Scelga il servizio",
     "hub.brand.pv.emailTitle": "L’appuntamento di domani",
-    "hub.brand.pv.emailCta": "Vedi l’appuntamento"
+    "hub.brand.pv.emailCta": "Vedi l’appuntamento",
+    "hub.brand.contact.title": "Dati dell’attività",
+    "hub.brand.contact.lead": "Compaiono nella pagina di prenotazione e nei messaggi ai clienti.",
+    "hub.brand.phone": "Telefono",
+    "hub.brand.phoneHelp": "Con il prefisso internazionale. Una sede può avere il proprio numero in EasyBook › Impostazioni › Sedi.",
+    "hub.brand.phonePh": "+39 3xx xxx xxxx",
+    "hub.brand.phoneErr": "Scriva il numero con il prefisso internazionale, per esempio +40 722 123 456.",
+    "hub.brand.phoneNone": "Senza telefono, nella pagina di prenotazione non compare nessun numero."
   }
 }

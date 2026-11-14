@@ -281,7 +281,7 @@ const Cell = ({ label, children, style }) => h("div", { className: "pv-cell", st
 const FRAMES = [["light", "ro", "Light"], ["dark", "ro", "Dark"], ["light", "de", "Deutsch \u00b7 Light"], ["dark", "it", "Italiano \u00b7 Dark"]];
 const Frames = ({ Board, top }) => h("div", { className: "pv" }, top, FRAMES.map(([th, lang, lab], i) => h("section", { key: lab, className: "pv-frame", "data-theme": th }, h("p", { className: "heading" }, lab), h(V.LocaleProvider, { locale: lang }, h(Board, { lang, theme: th, first: i === 0 })))));
 const CR_T = {
-  ro: { l: ["Recomandare · fără cost de implementare", "Recomandare · cu cost de implementare", "Nu e în abonament, fără recomandare", "Aplicație deținută: recomandarea e ignorată", "Recomandare · rând (launcher, „Descoperă mai mult din Ventora”)", "Recomandare · rând, cu cost de implementare"],
+  ro: { l: ["Recomandare · fără cost de implementare", "Recomandare · cu cost de implementare", "Nu e în abonament, fără recomandare", "Aplicație deținută: recomandarea e ignorată", "Recomandare · rând (launcher, „Descoperă mai mult din Ventora Systems”)", "Recomandare · rând, cu cost de implementare"],
     r1: "Se potrivește cu EasyBook: trimite automat reamintiri și campanii clienților tăi.", c1: "49 lei pe lună · fără cost de implementare",
     r2: "Se potrivește cu ClientDesk: contractele cu firmele din pipeline, cu semnătură și reamintire înainte de expirare.", c2: "59 lei pe lună · 300 lei implementare",
     own: "Programări, calendare și reamintiri, mereu organizate..", ignored: "Nu apare: o aplicație deținută nu e niciodată recomandare.", c1s: "49 lei pe lună",

@@ -10,4 +10,4 @@ After the product review: after "Cere acces" the button becomes "Cerere trimisă
 
 **DE DECIS (S146).** **Where the owner sees the request.** Recommendation: the launcher's "Au nevoie de tine" (drawn) and a "Cere acces" badge on the person's row in Echipă și invitații (`team.accessRequest.badge`); the request disappears when the person gets at least one app. **Several requests.** Recommendation: one row per person; a request sent again after 7 days updates the date ("A cerut din nou · {data}"), it doesn't add a row.
 
-**S147.** Sub salut, textul nou „Toate instrumentele echipei tale, într-un singur loc.”; fraza zilei rămâne dedesubt. Secțiunea „Descoperă mai mult din Ventora” și stările rândurilor vin din AppTile.
+**S147.** Sub salut, textul nou „Toate instrumentele echipei tale, într-un singur loc.”; fraza zilei rămâne dedesubt. Secțiunea „Descoperă mai mult din Ventora Systems” și stările rândurilor vin din AppTile.

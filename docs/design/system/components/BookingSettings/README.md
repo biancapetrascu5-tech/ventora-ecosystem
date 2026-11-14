@@ -21,3 +21,5 @@ After the product review: a fixed bar "Ai schimbări nesalvate" with "Salvează 
 **S139 (B.7).** "General" holds the "Nota de comportament" switch, off by default (BookingBehaviorNote).
 
 **S146.** The "Rezervări online" tab is drawn in BookingOnlineSettings.
+
+**S150.** „General” are secțiunea „Zile libere” (BookingClosures). Tabul „Locații” permite programul pe locație, implicit cel al afacerii (BookingLocations).
