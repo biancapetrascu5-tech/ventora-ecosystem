@@ -46,4 +46,4 @@
 
 ## Commit-uri
 
-- `276cef3`: B.14c, pushed pe `feat/b14c-booking-send-timing` (`git status -sb` fără „ahead”).
+- `a3bd622`: B.14c, pushed pe `feat/b14c-booking-send-timing` (`git status -sb` fără „ahead”).
