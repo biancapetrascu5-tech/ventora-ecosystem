@@ -6,9 +6,15 @@ import { APPS, Button, Toast, type AppName, type IconName } from '@ventora/ui';
 import { useIsPhone } from '@ventora/screens';
 import type { AppsData } from '@/server/catalog-actions';
 import { requestApp, tellOwner } from '@/server/plan-actions';
+import {
+  rejectRecommendation,
+  type TeamRecommendationView,
+} from '@/server/team-recommendation-actions';
 import { useLimits } from '../catalog/useLimits';
 import { useMoney } from '../plan/format';
 import { PurchaseDialog, type PurchaseTarget } from '../plan/PurchaseDialog';
+import { RecommendNoteDialog, RejectRecommendationDialog } from '../growth/RecommendDialogs';
+import { TeamRecommendationCard } from '../growth/TeamRecommendationCard';
 import { AppView } from './AppView';
 import { APP_CONTENT } from './content';
 import s from './apps.module.css';
@@ -21,9 +27,18 @@ import s from './apps.module.css';
    - admin / membru: „Recomandă aplicația” și cine decide → notificarea owner-ului.
    Perioada de probă („Încearcă gratuit 14 zile”) vine în Lotul 3.8; aici nu apare. */
 
-type Toasted = { tone: 'done' | 'danger'; title: string; description?: string };
+type Toasted = { tone: 'done' | 'danger' | 'neutral'; title: string; description?: string };
 
-export function AppScreen({ data, app }: { data: AppsData; app: AppName }) {
+export function AppScreen({
+  data,
+  app,
+  teamRecommendation = null,
+}: {
+  data: AppsData;
+  app: AppName;
+  /** S147: recomandarea în așteptare a unui coleg pentru aplicația asta (doar owner / admin). */
+  teamRecommendation?: TeamRecommendationView | null;
+}) {
   const phone = useIsPhone();
   const t = useTranslations('hub.app');
   const apps = useTranslations('hub.apps');
@@ -65,37 +80,61 @@ export function AppScreen({ data, app }: { data: AppsData; app: AppName }) {
     });
   }
 
-  async function recommend() {
+  // S147: „Recomandă” deschide dialogul cu nota opțională pentru proprietar
+  const [noting, setNoting] = useState(false);
+  function recommend() {
+    setNoting(true);
+  }
+  async function sendRecommendation(note: string): Promise<boolean> {
     setBusy(true);
-    const res = await tellOwner('application', app);
+    const res = await tellOwner('application', app, note);
     setBusy(false);
     if (!res.ok) {
       setToast({ tone: 'danger', title: plan('sendFailed') });
-      return;
+      return false;
     }
     setDone(true);
     setToast({ tone: 'done', title: pay('recommendSent', { who: data.ownerName ?? '' }) });
+    return true;
   }
+
+  // S147 (cadrul 5): cardul cu nota colegului; „Respinge” cu motivul opțional (cadrele 6–8)
+  const [reco, setReco] = useState(owned ? null : teamRecommendation);
+  const [rejecting, setRejecting] = useState(false);
+  async function confirmReject(reason: string): Promise<boolean> {
+    if (!reco) return false;
+    const res = await rejectRecommendation(reco.id, reason);
+    if (!res.ok) {
+      setToast({ tone: 'danger', title: plan('sendFailed') });
+      return false;
+    }
+    setToast({
+      tone: 'neutral',
+      title: pay('states.rejected.title'),
+      description: pay('states.rejected.body', { member: reco.by }),
+    });
+    setReco(null);
+    return true;
+  }
+
+  function activate() {
+    setPurchase({
+      kind: 'application',
+      applicationId: app,
+      name: catalog('app.activateTitle', { app: APPS[app]?.name ?? app }),
+      description: catalog('app.activateDescAlc', { price: money.minor(monthMinor ?? 0) }),
+      icon: (APPS[app]?.icon ?? 'layout-grid') as IconName,
+      priceMinor: monthMinor ?? 0,
+      includes,
+    });
+  }
+  const activateLabel = catalog('app.activate', { price: money.minor(monthMinor ?? 0) });
 
   let actions = null;
   if (!owned && data.owner) {
     actions = direct ? (
-      <Button
-        variant="primary"
-        block
-        onPress={() =>
-          setPurchase({
-            kind: 'application',
-            applicationId: app,
-            name: catalog('app.activateTitle', { app: APPS[app]?.name ?? app }),
-            description: catalog('app.activateDescAlc', { price: money.minor(monthMinor ?? 0) }),
-            icon: (APPS[app]?.icon ?? 'layout-grid') as IconName,
-            priceMinor: monthMinor ?? 0,
-            includes,
-          })
-        }
-      >
-        {catalog('app.activate', { price: money.minor(monthMinor ?? 0) })}
+      <Button variant="primary" block onPress={activate}>
+        {activateLabel}
       </Button>
     ) : (
       <Button
@@ -118,7 +157,7 @@ export function AppScreen({ data, app }: { data: AppsData; app: AppName }) {
           icon="send"
           isPending={busy}
           isDisabled={done}
-          onPress={() => void recommend()}
+          onPress={recommend}
         >
           {t('recommend')}
         </Button>
@@ -175,7 +214,45 @@ export function AppScreen({ data, app }: { data: AppsData; app: AppName }) {
         }
         note={!owned && !direct && data.owner ? catalog('app.onRequestNote') : undefined}
         actions={actions}
+        banner={
+          reco ? (
+            <TeamRecommendationCard
+              app={app}
+              by={reco.by}
+              note={reco.note}
+              primary={
+                data.owner ? (
+                  direct ? (
+                    <Button variant="primary" size="sm" onPress={activate}>
+                      {activateLabel}
+                    </Button>
+                  ) : (
+                    <Button
+                      variant="primary"
+                      size="sm"
+                      icon="send"
+                      isPending={busy}
+                      isDisabled={done}
+                      onPress={() => void ask()}
+                    >
+                      {catalog('app.request')}
+                    </Button>
+                  )
+                ) : undefined
+              }
+              onReject={() => setRejecting(true)}
+            />
+          ) : undefined
+        }
       />
+      {reco && (
+        <RejectRecommendationDialog
+          member={reco.by}
+          open={rejecting}
+          onClose={() => setRejecting(false)}
+          onReject={confirmReject}
+        />
+      )}
 
       {purchase && (
         <PurchaseDialog
@@ -197,6 +274,13 @@ export function AppScreen({ data, app }: { data: AppsData; app: AppName }) {
         />
       )}
 
+      <RecommendNoteDialog
+        app={APPS[app]?.name ?? app}
+        owner={data.ownerName ?? ''}
+        open={noting}
+        onClose={() => setNoting(false)}
+        onSend={sendRecommendation}
+      />
       {toast && (
         <div className={s.toast}>
           <Toast

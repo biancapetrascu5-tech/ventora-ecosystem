@@ -263,8 +263,10 @@ export const CONTEXTBAR_RO: ContextBarLabels = {
 export const ACCESS_RO: AccessLabels = {
   available: 'Disponibilă',
   unavailable: 'Temporar indisponibilă',
-  notInRole: 'Nu e în rolul tău',
-  notInPlan: 'Nu e în abonament',
+  notInRole: 'Acces la cerere',
+  notInPlan: 'Disponibilă pentru activare',
+  suspended: 'Oprită temporar',
+  soon: 'În curând',
 };
 
 // S.moreOptions / S.remindLater / S.remindWeek / S.remindMonth / S.notInterested (RemindMenu)
@@ -292,13 +294,22 @@ export const RECO_RO: RecommendationCardLabels = {
 export const APPTILE_RO: AppTileLabels = {
   access: ACCESS_RO,
   hintUnavailable: 'Lucrăm la ea acum. Revine în curând.',
-  hintNotInRole: (who) => `Rolul tău nu include această aplicație. ${who} îți poate da acces.`,
-  hintNotInRoleNoOne:
-    'Rolul tău nu include această aplicație. Proprietarul afacerii îți poate da acces.',
-  hintNotInPlan: 'Nu e inclusă în abonamentul afacerii. Scrie-ne și o activăm.',
+  hintNotInRole: (who) => `Aplicația e activă în afacere. ${who} îți poate da acces.`,
+  hintNotInRoleNoOne: 'Aplicația e activă în afacere. Proprietarul îți poate da acces.',
+  hintNotInPlan: 'O activăm pentru echipa ta imediat ce ne trimiți cererea.',
+  hintNotInPlanMember: (who) =>
+    `${who} o poate activa pentru echipă. Recomand-o dacă vă e de folos.`,
+  hintNotInPlanMemberNoOne:
+    'Proprietarul o poate activa pentru echipă. Recomand-o dacă vă e de folos.',
+  hintSuspended: 'Accesul revine imediat ce afacerea e reactivată.',
+  hintSoon: 'O pregătim pentru echipa ta. Îți spunem când e gata.',
   requestAccess: 'Cere acces',
   writeUs: 'Scrie-ne',
   seeStatus: 'Vezi starea',
+  requestActivation: 'Solicită activarea',
+  recommend: 'Recomandă',
+  seePlan: 'Vezi abonamentul',
+  notifyMe: 'Anunță-mă',
   openApp: (app) => `Deschide ${app}`,
   unreadN: (n) => `${n} necitite`,
   seeDetails: 'Vezi detaliile',

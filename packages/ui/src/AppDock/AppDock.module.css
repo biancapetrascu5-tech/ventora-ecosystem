@@ -312,6 +312,73 @@
   }
 }
 
+/* S147 (13.11): fișa se strânge pe conținut; o aplicație neactivă are o singură acțiune */
+.act {
+  position: absolute;
+  left: var(--space-5);
+  top: 106px;
+  margin: 0;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(var(--space-2));
+  transition:
+    opacity var(--duration-fast) var(--ease-standard),
+    transform var(--duration-morph) var(--ease-spring),
+    visibility 0s linear var(--duration-fast);
+  pointer-events: none;
+}
+
+.card {
+  box-sizing: border-box;
+  interpolate-size: allow-keywords;
+  transition-property: left, top, width, height, padding, background-color, box-shadow;
+}
+
+.item:is(:hover, .isHover, :focus-within) .card {
+  height: auto;
+  min-height: 120px;
+  padding: 106px 0 var(--space-5);
+}
+
+.item:is(:hover, .isHover, :focus-within) :is(.desc, .live, .act) {
+  position: relative;
+  left: auto;
+  top: auto;
+  bottom: auto;
+  margin-left: var(--space-5);
+}
+
+.item:is(:hover, .isHover, :focus-within) .live {
+  margin-top: var(--space-3);
+}
+
+.item:is(:hover, .isHover, :focus-within) .act {
+  margin-top: var(--space-3);
+  opacity: 1;
+  visibility: visible;
+  transform: none;
+  pointer-events: auto;
+  transition:
+    opacity var(--duration-fast) var(--ease-standard) 80ms,
+    transform var(--duration-morph) var(--ease-spring) 20ms,
+    visibility 0s;
+}
+
+.dock .isLocked [data-apptile-name] {
+  color: var(--ink-secondary);
+}
+
+@container vdock (max-width: 560px) {
+  .act {
+    display: none;
+  }
+  .item:is(:hover, .isHover, :focus-within) .card {
+    height: 100%;
+    min-height: 0;
+    padding: 0;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .item {
     animation: none;

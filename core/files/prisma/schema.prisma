@@ -35,6 +35,25 @@ model File {
   @@schema("files")
 }
 
+/// S147: un fișier al unei persoane (poza de profil), fără afacere; RLS pe app.user_id (în migrare).
+model PersonalFile {
+  id              String    @id @db.Uuid
+  userId          String    @map("user_id") @db.Uuid
+  purpose         String    @db.VarChar(16)
+  contentType     String    @map("content_type") @db.VarChar(64)
+  sizeBytes       BigInt    @map("size_bytes")
+  storageKey      String    @unique(map: "personal_file_storage_key_key") @map("storage_key") @db.VarChar(512)
+  status          String    @default("pending") @db.VarChar(16)
+  uploadExpiresAt DateTime  @map("upload_expires_at") @db.Timestamptz
+  readyAt         DateTime? @map("ready_at") @db.Timestamptz
+  deletedAt       DateTime? @map("deleted_at") @db.Timestamptz
+  createdAt       DateTime  @default(now()) @map("created_at") @db.Timestamptz
+
+  @@index([userId, purpose], map: "personal_file_user_id_purpose_idx")
+  @@map("personal_file")
+  @@schema("files")
+}
+
 model OutboxEvent {
   eventId        String    @id @map("event_id") @db.Uuid
   type           String    @db.VarChar(128)

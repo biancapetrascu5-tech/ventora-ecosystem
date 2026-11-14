@@ -14,13 +14,16 @@ import {
   BrandZone,
   Button,
   Notice,
+  Toast,
   type AppName,
   type DockApp,
 } from '@ventora/ui';
 import { useDates } from '@ventora/screens';
 import { requestAccess, type LauncherData } from '@/server/launcher-actions';
+import { tellOwner } from '@/server/plan-actions';
 import type { GrowthSlotView } from '@/server/growth-slot';
 import { GrowthRecommendation } from '../growth/GrowthRecommendation';
+import { RecommendNoteDialog } from '../growth/RecommendDialogs';
 import { useAppTileLabels } from '../labels';
 import { HubEmptyBody } from './HubEmptyBody';
 import { requestStateOf, type AccessRequestState } from './access-request-state';
@@ -36,6 +39,11 @@ import styles from './launcher.module.css';
      aplicații” (ca în preview);
    - owner / admin: „Au nevoie de tine” (S146), sub aplicații — cine a cerut acces și încă n-are
      nicio aplicație, cu „Deschide Echipa”.
+   S147 (13.11, HubLauncher 1.2.1): sub salut „Toate instrumentele echipei tale, într-un singur
+   loc.”; fraza zilei rămâne dedesubt, mai mică, doar când EasyBook dă date; descrierile noi
+   (`hub.apps.desc.*` = `apps.*.short`); „Descoperă mai mult din Ventora Systems” — „Disponibilă pentru
+   activare” cu descrierea și „Solicită activarea” (proprietar / admin) sau „Recomandă” (membru,
+   la proprietar, ca în pagina aplicației), „Acces la cerere”, „Temporar indisponibilă”.
    Slotul Growth (5.9a, `hub.launcher.other`): pe rândul aplicației recomandate din „Alte aplicații”
    (AppTile cu recomandare) sau, pentru un pachet / abonament, un RecommendationCard deasupra
    rândurilor; gol = nimic desenat. */
@@ -87,6 +95,8 @@ export function LauncherScreen({
   const desc = useTranslations('hub.apps.desc');
   const labels = useAppTileLabels();
   const pay = useTranslations('pay');
+  const plan = useTranslations('plan');
+  const ui = useTranslations('ui');
   const team = useTranslations('team.accessRequest');
   const attentionT = useTranslations('hub.attention');
   const roles = useTranslations('roles');
@@ -95,6 +105,7 @@ export function LauncherScreen({
   const [reqState, setReqState] = useState<AccessRequestState>(
     requestState ?? requestStateOf(data.accessRequest, now),
   );
+  const [toast, setToast] = useState<{ tone: 'done' | 'danger'; title: string } | null>(null);
   const [launch, setLaunch] = useState<{
     app: AppName;
     name: string;
@@ -131,6 +142,19 @@ export function LauncherScreen({
   const openOptions = (v: GrowthSlotView) => router.push(continueHref(v));
   const empty = available.length === 0;
   const roleName = (r: string) => (roles.has(r) ? roles(r) : r);
+  const viewer = data.role === 'owner' || data.role === 'admin' ? 'owner' : 'member';
+
+  /** S147: membrul recomandă proprietarului o aplicație neactivată, cu nota opțională. */
+  const [noting, setNoting] = useState<AppName | null>(null);
+  async function sendRecommendation(app: AppName, note: string): Promise<boolean> {
+    const res = await tellOwner('application', app, note);
+    setToast(
+      res.ok
+        ? { tone: 'done', title: pay('recommendSent', { who: data.ownerName ?? '' }) }
+        : { tone: 'danger', title: plan('sendFailed') },
+    );
+    return res.ok;
+  }
 
   async function ask() {
     setReqState('sending');
@@ -147,10 +171,11 @@ export function LauncherScreen({
   }
   const dock: DockApp[] = available.map((a) => ({ app: a.app, description: desc(a.app) }));
 
-  const day = empty
-    ? t('empty.welcome', { business: businessName })
+  // S147: fraza zilei doar când EasyBook dă date; altfel, doar textul de sub salut
+  const today = empty
+    ? null
     : data.appointmentsToday === null
-      ? t('sentence.plain')
+      ? null
       : data.appointmentsToday === 0
         ? t('sentence.noAppointments')
         : t.rich('sentence.appointments', {
@@ -183,7 +208,10 @@ export function LauncherScreen({
               <h1 className="display-hub">
                 {t(`greeting.${greetingKey(hour)}`, { name: firstName })}
               </h1>
-              <p className={`lead ${styles.day}`}>{day}</p>
+              <p className={`lead ${styles.day}`}>
+                {empty ? t('empty.welcome', { business: businessName }) : t('lead')}
+              </p>
+              {today && <p className={`body ${styles.today}`}>{today}</p>}
             </div>
             <Chevrons />
           </div>
@@ -304,6 +332,8 @@ export function LauncherScreen({
                     className={styles.row}
                     layout="row"
                     access={a.state}
+                    description={desc(a.app)}
+                    viewer={viewer}
                     labels={labels}
                     grantedBy={data.ownerName ?? undefined}
                     reason={
@@ -316,10 +346,13 @@ export function LauncherScreen({
                         ? () => router.push(`/applications/${a.app}`)
                         : undefined
                     }
-                    onWriteUs={
+                    onRequestActivation={
                       a.state === 'notInPlan'
                         ? () => router.push(`/applications/${a.app}`)
                         : undefined
+                    }
+                    onRecommend={
+                      a.state === 'notInPlan' && data.ownerName ? () => setNoting(a.app) : undefined
                     }
                   />
                 ),
@@ -338,6 +371,26 @@ export function LauncherScreen({
           </section>
         )}
       </div>
+
+      {noting && (
+        <RecommendNoteDialog
+          app={APPS[noting]?.name ?? noting}
+          owner={data.ownerName ?? ''}
+          open
+          onClose={() => setNoting(null)}
+          onSend={(note) => sendRecommendation(noting, note)}
+        />
+      )}
+      {toast && (
+        <div className={styles.toast}>
+          <Toast
+            tone={toast.tone}
+            title={toast.title}
+            dismissLabel={ui('close')}
+            onDismiss={() => setToast(null)}
+          />
+        </div>
+      )}
 
       {launch && (
         <AppLaunch

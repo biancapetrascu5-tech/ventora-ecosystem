@@ -59,6 +59,33 @@ export async function setUserLocale(
   });
 }
 
+/**
+ * S147: the person's profile photo, kept in Better Auth's `users.image` as the platform path of
+ * their own file (`/account/photo/<files.personal_file id>`); null removes it. The caller passes
+ * the person from the session and a file it has just confirmed for that person (core/files).
+ */
+export async function setUserImage(userId: string, fileId: string | null): Promise<void> {
+  if (!UUID_RE.test(userId ?? '')) throw new InvalidInput('userId');
+  if (fileId !== null && !UUID_RE.test(fileId)) throw new InvalidInput('fileId');
+  await getIdentityDb().user.update({
+    where: { id: userId },
+    data: {
+      image: fileId ? `/account/photo/${fileId.toLowerCase()}` : null,
+      updatedAt: new Date(),
+    },
+  });
+}
+
+/** S147: the id of the person's current photo (from `users.image`), or null. */
+export async function getUserImageFileId(userId: string): Promise<string | null> {
+  const row = await getIdentityDb().user.findUnique({
+    where: { id: userId },
+    select: { image: true },
+  });
+  const m = /^\/account\/photo\/([0-9a-f-]{36})$/.exec(row?.image ?? '');
+  return m ? m[1]! : null;
+}
+
 export async function getUserLocale(userId: string): Promise<Locale | null> {
   const row = await getIdentityDb().userPreference.findUnique({
     where: { userId },

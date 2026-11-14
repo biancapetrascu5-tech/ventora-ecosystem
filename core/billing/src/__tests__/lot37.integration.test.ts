@@ -524,6 +524,37 @@ describe('Lot 5.9e — „Recomandările mele” / „Recomandare de la echipă�
     expect(toMember).toEqual([]);
   });
 
+  it('S147: „Respinge” with the optional reason — the member sees it; empty means none; over 300 characters refused', async () => {
+    const b = await business();
+    await notifyOwner(b.member, { targetType: 'application', targetId: 'crm' });
+    await notifyOwner(b.admin, { targetType: 'application', targetId: 'crm' });
+    const [byMember] = await listMyTeamRecommendations(b.member);
+    const [byAdmin] = await listMyTeamRecommendations(b.admin);
+    await expect(
+      rejectTeamRecommendation(b.owner, byMember!.id, 'x'.repeat(301)),
+    ).rejects.toBeInstanceOf(InvalidInput);
+    expect((await listMyTeamRecommendations(b.member))[0]).toMatchObject({ status: 'pending' });
+    await rejectTeamRecommendation(b.owner, byMember!.id, '  Revenim la ea în ianuarie.  ');
+    expect((await listMyTeamRecommendations(b.member))[0]).toMatchObject({
+      status: 'not_now',
+      answer: 'Revenim la ea în ianuarie.',
+    });
+    await rejectTeamRecommendation(b.owner, byAdmin!.id, '   ');
+    expect((await listMyTeamRecommendations(b.admin))[0]).toMatchObject({
+      status: 'not_now',
+      answer: null,
+    });
+    // the audit keeps only that a reason was given, never the text
+    const audit = (await q(
+      `SELECT metadata FROM audit.audit_log
+        WHERE organization_id = $1 AND action = 'commercial.team_recommendation_rejected'
+        ORDER BY created_at, id`,
+      [b.organizationId],
+    )) as Array<{ metadata: Record<string, unknown> }>;
+    expect(audit.map((a) => a.metadata.withReason)).toEqual([true, false]);
+    expect(JSON.stringify(audit)).not.toContain('ianuarie');
+  });
+
   it('the app enters the subscription: „Activată” and „{owner} a activat {app}” to whoever recommended it, once', async () => {
     const b = await business();
     await notifyOwner(b.member, { targetType: 'application', targetId: 'crm' });

@@ -636,7 +636,11 @@
       "roles": "Roles and access",
       "plan": "Plan and usage",
       "planShort": "Plan",
-      "help": "Help"
+      "help": "Help",
+      "brand": "Brand",
+      "brandShort": "Brand",
+      "profile": "Profile and preferences",
+      "profileShort": "Profile"
     },
     "team": {
       "title": "Team",
@@ -719,10 +723,10 @@
       },
       "yourApps": "Your apps",
       "others": {
-        "title": "Other Ventora Systems apps",
-        "lead": "You can’t open them right now. Each one says why and what you can do."
+        "title": "Discover more from Ventora Systems",
+        "lead": "Explore the apps available for your team."
       },
-      "seeAll": "See all Ventora Systems apps",
+      "seeAll": "Explore all apps",
       "launching": "Opening {app}",
       "empty": {
         "welcome": "Welcome to {business}. Your apps appear here as soon as you get access.",
@@ -730,7 +734,8 @@
         "body": "{owner} (owner) chooses which apps each role uses.",
         "bodyNoOwner": "The business owner chooses which apps each role uses."
       },
-      "trialEnded": "{app} has stopped. Your data stays; turn it on whenever you want to continue."
+      "trialEnded": "{app} has stopped. Your data stays; turn it on whenever you want to continue.",
+      "lead": "All your team's tools, in one place."
     },
     "plan": {
       "title": "Plan and usage",
@@ -790,21 +795,21 @@
         "community": "Community"
       },
       "desc": {
-        "booking": "Appointments, calendar and reminders",
-        "crm": "Clients, history and opportunities",
-        "marketing": "Campaigns and automatic reminders",
-        "portal": "Your business page for clients",
-        "hr": "Team, attendance and time off",
-        "shifts": "Shifts and cover",
-        "inventory": "Stock, orders and suppliers",
-        "assets": "Equipment, servicing and warranties",
-        "events": "Events, tickets and guests",
-        "finance": "Invoices, due dates and overdue payments",
-        "contracts": "Contracts, signatures and deadlines",
-        "documents": "Documents and templates",
-        "projects": "Projects, tasks and deadlines",
-        "analytics": "Your business’s numbers, by month and service",
-        "network": "The community of Ventora Systems businesses"
+        "booking": "Appointments, calendars and reminders, always organised.",
+        "crm": "Clients, contacts and opportunities, in one place.",
+        "marketing": "Campaigns, audiences and results, under control.",
+        "portal": "Your business’s page for clients",
+        "hr": "Employees, leave and team information, organised.",
+        "shifts": "Shifts, schedules and availability, without the hassle.",
+        "inventory": "Stock, products and inventory movements, always up to date.",
+        "assets": "Equipment, assets and maintenance, closely tracked.",
+        "events": "Events, attendees and planning, in one place.",
+        "finance": "Invoices, payments and budgets, with a clear picture.",
+        "contracts": "Contracts, deadlines and obligations, always at hand.",
+        "documents": "Documents, files and information, easy to manage.",
+        "projects": "Projects, tasks and deadlines, always in order.",
+        "analytics": "Reports, metrics and analysis, for informed decisions.",
+        "network": "Connect your team and collaborate more effectively with Ventora Network."
       }
     },
     "app": {
@@ -879,6 +884,116 @@
     },
     "attention": {
       "title": "Needs you"
+    },
+    "business": {
+      "logo": {
+        "upload": "Upload logo",
+        "replace": "Replace",
+        "remove": "Remove logo",
+        "uploading": "Uploading {name}…",
+        "errType": "{name} isn’t a PNG or JPG. Choose another file.",
+        "errSize": "{name} is {size}; the limit is 2 MB.",
+        "uploadFailed": "The upload stopped. Check your connection and try again.",
+        "removeTitle": "Remove the business logo?",
+        "removed": "Logo removed."
+      },
+      "name": "Business name",
+      "nameHelp": "To change the name, write to us.",
+      "preview": "How it looks in the business switcher",
+      "cancel": "Cancel"
+    },
+    "account": {
+      "photo": {
+        "title": "Profile photo",
+        "lead": "It appears in your account menu and, when the business has no logo, in the business switcher.",
+        "rules": "PNG or JPG · up to 5 MB · cropped to a circle",
+        "upload": "Upload a photo",
+        "replace": "Replace",
+        "remove": "Remove photo",
+        "none": "Without a photo, your initials are shown.",
+        "uploading": "Uploading {name}…",
+        "saved": "Photo saved.",
+        "errType": "{name} isn’t a PNG or JPG. Choose another file.",
+        "errSize": "{name} is {size}; the limit is 5 MB.",
+        "removeTitle": "Remove your profile photo?",
+        "removeBody": "Your initials appear instead. In the business switcher, without a logo, only the name remains.",
+        "removed": "Photo removed."
+      }
+    },
+    "brand": {
+      "lead": "The logo, colours, font and tone your business shows clients: on the booking page and in emails.",
+      "save": "Save brand",
+      "saved": "Brand saved. Clients see it from now on, on the booking page and in emails.",
+      "reset": "Back to the Ventora Systems look",
+      "default": "Without your own brand, clients see the Ventora Systems look: your business name with Ventora Systems’ colours and font.",
+      "ownerOnly": "Only the owner or an admin can change the brand.",
+      "logo": {
+        "title": "Logo",
+        "lead": "It appears on the booking page, in the email header and in your team’s business switcher.",
+        "light": "On a light background",
+        "dark": "On a dark background",
+        "darkHelp": "Optional. Without it, on dark backgrounds we use the light-background logo on a white plate.",
+        "rules": "PNG or JPG · up to 2 MB · at least 256 px on the short side",
+        "errSmall": "The image is {w} × {h} px. Use one of at least 256 px on the short side so it looks sharp.",
+        "removeBody": "The booking page and emails show the business name again, without a logo; the team switcher shows each person’s photo or just the name."
+      },
+      "color": {
+        "title": "Colours",
+        "lead": "The main colour is used for buttons and links; the accent for small details.",
+        "primary": "Main colour",
+        "accent": "Accent colour",
+        "ok": "Contrast {ratio}:1 with the button text · easy to read",
+        "lowTitle": "The button text can’t be read",
+        "low": "Contrast {ratio}:1; it needs at least 4.5:1. Choose a darker shade.",
+        "fix": "Use {hex}, darker",
+        "accentNote": "The accent has {ratio}:1 on white; we only use it for details, not for text.",
+        "default": "Ventora Systems default"
+      },
+      "font": {
+        "title": "Font",
+        "lead": "Used on the booking page and in emails. Each one in the list reads well on a phone.",
+        "sans": "Modern (Ventora Systems default)",
+        "display": "Expressive",
+        "serif": "Classic serif",
+        "rounded": "Rounded, friendly",
+        "sample": "Book online, any time."
+      },
+      "tone": {
+        "title": "Tone of voice",
+        "lead": "How automatic messages to clients sound: reminders, confirmations, thank-yous.",
+        "formal": "Formal",
+        "friendly": "Friendly",
+        "short": "Short",
+        "example": "Example: the reminder for tomorrow",
+        "formalEx": "Good afternoon, Ms {client}. This is a reminder of your appointment tomorrow, {when}, for {service}. We look forward to seeing you at {business}.",
+        "friendlyEx": "Hi {first}! See you tomorrow, {when}, for {service}. Looking forward to it at {business}!",
+        "shortEx": "{business}: tomorrow, {when}, {service}. To change: {phone}.",
+        "note": "The tone applies to default texts; messages you wrote yourself in Settings › Messages stay as they are.",
+        "sampleClient": "Smith",
+        "sampleFirst": "Anna",
+        "samplePhone": "0722 123 456",
+        "sampleService": "cut and style"
+      },
+      "sig": {
+        "title": "Email signature",
+        "lead": "It appears at the end of emails to clients, before the footer with the address.",
+        "label": "Signature text",
+        "help": "Up to 300 characters. No links or images; the logo is already in the header.",
+        "none": "Without a signature, the email ends with the business name."
+      },
+      "preview": {
+        "title": "Preview",
+        "page": "Booking page",
+        "email": "Email to a client",
+        "live": "Updates as you make changes.",
+        "show": "See preview"
+      },
+      "pv": {
+        "cta": "Book now",
+        "services": "Choose a service",
+        "emailTitle": "Tomorrow’s appointment",
+        "emailCta": "View appointment"
+      }
     }
   },
   "roles": {
@@ -1593,12 +1708,12 @@
     "addonIncludes": "Includes",
     "access_available": "Available",
     "access_unavailable": "Temporarily unavailable",
-    "access_notInRole": "Not in your role",
-    "access_notInPlan": "Not in your plan",
+    "access_notInRole": "Access on request",
+    "access_notInPlan": "Available to activate",
     "hint_unavailable": "We’re working on it. It’ll be back soon.",
-    "hint_notInRole": "Your role doesn’t include this app. {who} can give you access.",
-    "hint_notInRoleNoOne": "Your role doesn’t include this app. The business owner can give you access.",
-    "hint_notInPlan": "It isn’t included in your business’s plan. Write to us and we’ll turn it on.",
+    "hint_notInRole": "The app is active in your business. {who} can give you access.",
+    "hint_notInRoleNoOne": "The app is active in your business. The owner can give you access.",
+    "hint_notInPlan": "We’ll turn it on for your team as soon as you send the request.",
     "requestAccess": "Request access",
     "writeUs": "Write to us",
     "seeStatus": "See status",
@@ -1688,7 +1803,39 @@
         "activeBody": "Your recommendation is now one of the team’s apps."
       }
     },
-    "teamTitle": "{name} recommends {app}"
+    "teamTitle": "{name} recommends {app}",
+    "access_suspended": "Paused for now",
+    "access_soon": "Coming soon",
+    "hint_notInPlanMember": "{who} can turn it on for the team. Recommend it if it would help.",
+    "hint_notInPlanMemberNoOne": "The owner can turn it on for the team. Recommend it if it would help.",
+    "hint_suspended": "Access returns as soon as the business is reactivated.",
+    "hint_soon": "We’re getting it ready for your team. We’ll let you know when it’s ready.",
+    "seePlan": "See your plan",
+    "notifyMe": "Notify me",
+    "seeInCatalog": "See in Catalog",
+    "recommendsApp": "{name} recommends {app}",
+    "reco": {
+      "note": {
+        "title": "Recommend {app}?",
+        "body": "Your recommendation goes to {owner}, who decides.",
+        "label": "Note for {owner}",
+        "placeholder": "For example: It would help us with client reminders.",
+        "help": "Up to 300 characters. {owner} sees it with the recommendation.",
+        "count": "{n} / 300",
+        "tooLong": "The note has {n} characters. Shorten it to 300.",
+        "send": "Send recommendation",
+        "from": "Note from {member}"
+      },
+      "cancel": "Cancel",
+      "reject": {
+        "title": "Decline the recommendation?",
+        "body": "{member} sees “Not now” in “My recommendations”. No notification is sent.",
+        "reason": "Reason",
+        "reasonHelp": "If you add one, {member} sees it under “Not now”.",
+        "placeholder": "For example: Let’s look at it again in January.",
+        "reasonShown": "Your reason: {reason}"
+      }
+    }
   },
   "quota": {
     "platform_members": {

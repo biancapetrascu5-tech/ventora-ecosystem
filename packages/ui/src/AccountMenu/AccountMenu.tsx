@@ -93,6 +93,7 @@ export function AccountMenu({
                   orgs={orgs}
                   currentId={currentOrgId}
                   onChange={onOrgChange}
+                  avatar={user.avatar}
                   labels={labels.orgSwitcher}
                 />
               </div>

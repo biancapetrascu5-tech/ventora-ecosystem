@@ -636,7 +636,11 @@
       "roles": "Roluri și acces",
       "plan": "Abonament și consum",
       "planShort": "Abonament",
-      "help": "Ajutor"
+      "help": "Ajutor",
+      "brand": "Brand",
+      "brandShort": "Brand",
+      "profile": "Profil și preferințe",
+      "profileShort": "Profil"
     },
     "team": {
       "title": "Echipa",
@@ -719,10 +723,10 @@
       },
       "yourApps": "Aplicațiile tale",
       "others": {
-        "title": "Alte aplicații Ventora Systems",
-        "lead": "Nu le poți deschide acum. La fiecare scrie de ce și ce poți face."
+        "title": "Descoperă mai mult din Ventora Systems",
+        "lead": "Explorează aplicațiile disponibile pentru echipa ta."
       },
-      "seeAll": "Vezi toate aplicațiile Ventora Systems",
+      "seeAll": "Explorează toate aplicațiile",
       "launching": "Se deschide {app}",
       "empty": {
         "welcome": "Bine ai venit în {business}. Aplicațiile apar aici imediat ce primești acces.",
@@ -730,7 +734,8 @@
         "body": "{owner} (proprietar) alege ce aplicații folosește fiecare rol.",
         "bodyNoOwner": "Proprietarul afacerii alege ce aplicații folosește fiecare rol."
       },
-      "trialEnded": "{app} s-a oprit. Datele rămân; o activezi oricând vrei să continui."
+      "trialEnded": "{app} s-a oprit. Datele rămân; o activezi oricând vrei să continui.",
+      "lead": "Toate instrumentele echipei tale, într-un singur loc."
     },
     "plan": {
       "title": "Abonament și consum",
@@ -790,21 +795,21 @@
         "community": "Comunitate"
       },
       "desc": {
-        "booking": "Programări, calendar și reamintiri",
-        "crm": "Clienți, istoric și oportunități",
-        "marketing": "Campanii și reamintiri automate",
+        "booking": "Programări, calendare și reamintiri, mereu organizate.",
+        "crm": "Clienți, contacte și oportunități, într-un singur loc.",
+        "marketing": "Campanii, audiențe și rezultate, sub control.",
         "portal": "Pagina afacerii pentru clienți",
-        "hr": "Echipă, prezență și concedii",
-        "shifts": "Ture și înlocuiri",
-        "inventory": "Stoc, comenzi și furnizori",
-        "assets": "Echipamente, revizii și garanții",
-        "events": "Evenimente, bilete și invitați",
-        "finance": "Facturi, scadențe și restanțe",
-        "contracts": "Contracte, semnături și termene",
-        "documents": "Documente și șabloane",
-        "projects": "Proiecte, sarcini și termene",
-        "analytics": "Cifrele afacerii, pe luni și servicii",
-        "network": "Comunitatea afacerilor Ventora Systems"
+        "hr": "Angajați, concedii și informații de echipă, organizate.",
+        "shifts": "Ture, programe și disponibilitate, fără complicații.",
+        "inventory": "Stocuri, produse și mișcări de inventar, mereu la zi.",
+        "assets": "Echipamente, active și mentenanță, atent monitorizate.",
+        "events": "Evenimente, participanți și organizare, într-un singur loc.",
+        "finance": "Facturi, plăți și bugete, cu o imagine clară.",
+        "contracts": "Contracte, termene și obligații, mereu la îndemână.",
+        "documents": "Documente, fișiere și informații, simplu de gestionat.",
+        "projects": "Proiecte, sarcini și termene, mereu în ordine.",
+        "analytics": "Rapoarte, indicatori și analize, pentru decizii informate.",
+        "network": "Conectează-ți echipa și colaborează mai eficient cu Ventora Network."
       }
     },
     "app": {
@@ -879,6 +884,116 @@
     },
     "attention": {
       "title": "Au nevoie de tine"
+    },
+    "business": {
+      "logo": {
+        "upload": "Încarcă logo-ul",
+        "replace": "Înlocuiește",
+        "remove": "Șterge logo-ul",
+        "uploading": "Se încarcă {name}…",
+        "errType": "{name} nu e PNG sau JPG. Alege alt fișier.",
+        "errSize": "{name} are {size}; maximum 2 MB.",
+        "uploadFailed": "Încărcarea s-a oprit. Verifică conexiunea și încearcă din nou.",
+        "removeTitle": "Ștergi logo-ul afacerii?",
+        "removed": "Am șters logo-ul."
+      },
+      "name": "Numele afacerii",
+      "nameHelp": "Pentru alt nume, scrie-ne.",
+      "preview": "Așa apare în selectorul de afacere",
+      "cancel": "Renunță"
+    },
+    "account": {
+      "photo": {
+        "title": "Poza de profil",
+        "lead": "Apare în meniul contului și, când afacerea nu are logo, în selectorul de afacere.",
+        "rules": "PNG sau JPG · maximum 5 MB · se decupează rotund",
+        "upload": "Încarcă o poză",
+        "replace": "Înlocuiește",
+        "remove": "Șterge poza",
+        "none": "Fără poză, apar inițialele tale.",
+        "uploading": "Se încarcă {name}…",
+        "saved": "Am salvat poza.",
+        "errType": "{name} nu e PNG sau JPG. Alege alt fișier.",
+        "errSize": "{name} are {size}; maximum 5 MB.",
+        "removeTitle": "Ștergi poza de profil?",
+        "removeBody": "În locul ei apar inițialele tale. În selectorul de afacere, fără logo, rămâne doar numele.",
+        "removed": "Am șters poza."
+      }
+    },
+    "brand": {
+      "lead": "Logo-ul, culorile, fontul și tonul cu care afacerea ta apare la clienți: pe pagina de programări și în e-mailuri.",
+      "save": "Salvează brandul",
+      "saved": "Am salvat brandul. Clienții îl văd de acum pe pagina de programări și în e-mailuri.",
+      "reset": "Revino la aspectul Ventora Systems",
+      "default": "Fără brand propriu, clienții văd aspectul Ventora Systems: numele afacerii, cu culorile și fontul Ventora Systems.",
+      "ownerOnly": "Doar proprietarul sau un administrator poate schimba brandul.",
+      "logo": {
+        "title": "Logo-ul",
+        "lead": "Apare pe pagina de programări, în antetul e-mailurilor și în selectorul de afacere al echipei.",
+        "light": "Pe fundal deschis",
+        "dark": "Pe fundal închis",
+        "darkHelp": "Opțional. Fără el, pe fundal închis folosim logo-ul pentru fundal deschis, pe o placă albă.",
+        "rules": "PNG sau JPG · maximum 2 MB · cel puțin 256 px pe latura mică",
+        "errSmall": "Imaginea are {w} × {h} px. Folosește una de cel puțin 256 px pe latura mică, ca să arate clar.",
+        "removeBody": "Pe pagina de programări și în e-mailuri apare din nou numele afacerii, fără logo; în selectorul echipei, poza fiecăruia sau doar numele."
+      },
+      "color": {
+        "title": "Culorile",
+        "lead": "Culoarea principală colorează butoanele și linkurile; accentul, detaliile mici.",
+        "primary": "Culoarea principală",
+        "accent": "Culoarea de accent",
+        "ok": "Contrast {ratio}:1 cu textul de pe buton · se citește bine",
+        "lowTitle": "Textul de pe buton nu se citește",
+        "low": "Contrast {ratio}:1; e nevoie de cel puțin 4,5:1. Alege o nuanță mai închisă.",
+        "fix": "Folosește {hex}, mai închisă",
+        "accentNote": "Accentul are {ratio}:1 pe alb; îl folosim doar pentru detalii, nu pentru text.",
+        "default": "Implicit Ventora Systems"
+      },
+      "font": {
+        "title": "Fontul",
+        "lead": "Se folosește pe pagina de programări și în e-mailuri. Fiecare din listă se citește bine pe telefon.",
+        "sans": "Modern (implicit Ventora Systems)",
+        "display": "Expresiv",
+        "serif": "Clasic, cu serife",
+        "rounded": "Rotunjit, prietenos",
+        "sample": "Programați-vă online, oricând."
+      },
+      "tone": {
+        "title": "Tonul vocii",
+        "lead": "Cum sună mesajele automate către clienți: reamintiri, confirmări, mulțumiri.",
+        "formal": "Formal",
+        "friendly": "Prietenos",
+        "short": "Scurt",
+        "example": "Exemplu: reamintirea pentru mâine",
+        "formalEx": "Bună ziua, doamna {client}. Vă reamintim programarea de mâine, {when}, pentru {service}. Vă așteptăm la {business}.",
+        "friendlyEx": "Bună, {first}! Ne vedem mâine, {when}, pentru {service}. Te așteptăm cu drag la {business}!",
+        "shortEx": "{business}: mâine, {when}, {service}. Pentru schimbări: {phone}.",
+        "note": "Tonul se aplică textelor implicite; mesajele scrise de tine în Setări › Mesaje rămân cum sunt.",
+        "sampleClient": "Popescu",
+        "sampleFirst": "Ana",
+        "samplePhone": "0722 123 456",
+        "sampleService": "tuns și coafat"
+      },
+      "sig": {
+        "title": "Semnătura de e-mail",
+        "lead": "Apare la sfârșitul e-mailurilor către clienți, înainte de subsolul cu adresa.",
+        "label": "Textul semnăturii",
+        "help": "Cel mult 300 de caractere. Fără linkuri și fără imagini; logo-ul e deja în antet.",
+        "none": "Fără semnătură, e-mailul se încheie cu numele afacerii."
+      },
+      "preview": {
+        "title": "Previzualizare",
+        "page": "Pagina de programări",
+        "email": "E-mail către client",
+        "live": "Se actualizează pe măsură ce schimbi.",
+        "show": "Vezi previzualizarea"
+      },
+      "pv": {
+        "cta": "Programați-vă",
+        "services": "Alegeți serviciul",
+        "emailTitle": "Programarea de mâine",
+        "emailCta": "Vedeți programarea"
+      }
     }
   },
   "roles": {
@@ -1593,12 +1708,12 @@
     "addonIncludes": "Include",
     "access_available": "Disponibilă",
     "access_unavailable": "Temporar indisponibilă",
-    "access_notInRole": "Nu e în rolul tău",
-    "access_notInPlan": "Nu e în abonament",
+    "access_notInRole": "Acces la cerere",
+    "access_notInPlan": "Disponibilă pentru activare",
     "hint_unavailable": "Lucrăm la ea acum. Revine în curând.",
-    "hint_notInRole": "Rolul tău nu include această aplicație. {who} îți poate da acces.",
-    "hint_notInRoleNoOne": "Rolul tău nu include această aplicație. Proprietarul afacerii îți poate da acces.",
-    "hint_notInPlan": "Nu e inclusă în abonamentul afacerii. Scrie-ne și o activăm.",
+    "hint_notInRole": "Aplicația e activă în afacere. {who} îți poate da acces.",
+    "hint_notInRoleNoOne": "Aplicația e activă în afacere. Proprietarul îți poate da acces.",
+    "hint_notInPlan": "O activăm pentru echipa ta imediat ce ne trimiți cererea.",
     "requestAccess": "Cere acces",
     "writeUs": "Scrie-ne",
     "seeStatus": "Vezi starea",
@@ -1611,7 +1726,7 @@
     "remindMonth": "Peste o lună",
     "notInterested": "Nu mă interesează",
     "onRequestOnly": "Doar la cerere",
-    "requestActivation": "Cere activare",
+    "requestActivation": "Solicită activarea",
     "notifyOwner": "Anunță proprietarul",
     "seeApp": "Vezi aplicația",
     "seeHow": "Vezi cum funcționează",
@@ -1688,7 +1803,39 @@
         "activeBody": "Recomandarea ta e acum o aplicație a echipei."
       }
     },
-    "teamTitle": "{name} recomandă {app}"
+    "teamTitle": "{name} recomandă {app}",
+    "access_suspended": "Oprită temporar",
+    "access_soon": "În curând",
+    "hint_notInPlanMember": "{who} o poate activa pentru echipă. Recomand-o dacă vă e de folos.",
+    "hint_notInPlanMemberNoOne": "Proprietarul o poate activa pentru echipă. Recomand-o dacă vă e de folos.",
+    "hint_suspended": "Accesul revine imediat ce afacerea e reactivată.",
+    "hint_soon": "O pregătim pentru echipa ta. Îți spunem când e gata.",
+    "seePlan": "Vezi abonamentul",
+    "notifyMe": "Anunță-mă",
+    "seeInCatalog": "Vezi în Catalog",
+    "recommendsApp": "{name} recomandă {app}",
+    "reco": {
+      "note": {
+        "title": "Recomanzi {app}?",
+        "body": "Recomandarea ajunge la {owner}, care decide.",
+        "label": "Notă pentru {owner}",
+        "placeholder": "De exemplu: Ne-ar ajuta la reamintirile pentru clienți.",
+        "help": "Cel mult 300 de caractere. {owner} o vede lângă recomandare.",
+        "count": "{n} / 300",
+        "tooLong": "Nota are {n} caractere. Scurteaz-o la 300.",
+        "send": "Trimite recomandarea",
+        "from": "Nota de la {member}"
+      },
+      "cancel": "Renunță",
+      "reject": {
+        "title": "Respingi recomandarea?",
+        "body": "{member} vede „Nu acum” în „Recomandările mele”. Nu primește notificare.",
+        "reason": "Motiv",
+        "reasonHelp": "Dacă îl scrii, {member} îl vede sub „Nu acum”.",
+        "placeholder": "De exemplu: Revenim la ea în ianuarie.",
+        "reasonShown": "Motivul tău: {reason}"
+      }
+    }
   },
   "quota": {
     "platform_members": {

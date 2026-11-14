@@ -636,7 +636,11 @@
       "roles": "Rollen und Zugriff",
       "plan": "Abonnement und Verbrauch",
       "planShort": "Abonnement",
-      "help": "Hilfe"
+      "help": "Hilfe",
+      "brand": "Marke",
+      "brandShort": "Marke",
+      "profile": "Profil und Einstellungen",
+      "profileShort": "Profil"
     },
     "team": {
       "title": "Team",
@@ -719,10 +723,10 @@
       },
       "yourApps": "Ihre Apps",
       "others": {
-        "title": "Weitere Apps von Ventora Systems",
-        "lead": "Sie können sie gerade nicht öffnen. Bei jeder steht, warum und was Sie tun können."
+        "title": "Mehr von Ventora Systems entdecken",
+        "lead": "Entdecken Sie die Apps, die für Ihr Team verfügbar sind."
       },
-      "seeAll": "Alle Apps von Ventora Systems ansehen",
+      "seeAll": "Alle Apps entdecken",
       "launching": "{app} wird geöffnet",
       "empty": {
         "welcome": "Willkommen bei {business}. Ihre Apps erscheinen hier, sobald Sie Zugriff erhalten.",
@@ -730,7 +734,8 @@
         "body": "{owner} (Inhaber) wählt, welche Apps jede Rolle nutzt.",
         "bodyNoOwner": "Der Inhaber des Unternehmens wählt, welche Apps jede Rolle nutzt."
       },
-      "trialEnded": "{app} wurde angehalten. Ihre Daten bleiben erhalten; aktivieren Sie sie, wann immer Sie weitermachen möchten."
+      "trialEnded": "{app} wurde angehalten. Ihre Daten bleiben erhalten; aktivieren Sie sie, wann immer Sie weitermachen möchten.",
+      "lead": "Alle Tools Ihres Teams an einem Ort."
     },
     "plan": {
       "title": "Abonnement und Verbrauch",
@@ -790,21 +795,21 @@
         "community": "Community"
       },
       "desc": {
-        "booking": "Termine, Kalender und Erinnerungen",
-        "crm": "Kunden, Verlauf und Verkaufschancen",
-        "marketing": "Kampagnen und automatische Erinnerungen",
-        "portal": "Unternehmensseite für Kunden",
-        "hr": "Team, Anwesenheit und Urlaub",
-        "shifts": "Schichten und Vertretungen",
-        "inventory": "Bestand, Bestellungen und Lieferanten",
-        "assets": "Geräte, Wartungen und Garantien",
-        "events": "Veranstaltungen, Tickets und Gäste",
-        "finance": "Rechnungen, Fälligkeiten und Überfälliges",
-        "contracts": "Verträge, Unterschriften und Fristen",
-        "documents": "Dokumente und Vorlagen",
-        "projects": "Projekte, Aufgaben und Fristen",
-        "analytics": "Die Zahlen des Unternehmens, nach Monaten und Leistungen",
-        "network": "Die Community der Ventora-Systems-Unternehmen"
+        "booking": "Termine, Kalender und Erinnerungen, immer organisiert.",
+        "crm": "Kunden, Kontakte und Chancen an einem Ort.",
+        "marketing": "Kampagnen, Zielgruppen und Ergebnisse im Griff.",
+        "portal": "Die Seite Ihres Unternehmens für Kunden",
+        "hr": "Mitarbeitende, Urlaub und Teaminfos, gut organisiert.",
+        "shifts": "Schichten, Dienstpläne und Verfügbarkeit, ganz unkompliziert.",
+        "inventory": "Bestände, Produkte und Lagerbewegungen, immer aktuell.",
+        "assets": "Geräte, Anlagen und Wartung, sorgfältig überwacht.",
+        "events": "Veranstaltungen, Teilnehmende und Organisation an einem Ort.",
+        "finance": "Rechnungen, Zahlungen und Budgets im klaren Überblick.",
+        "contracts": "Verträge, Fristen und Pflichten, immer griffbereit.",
+        "documents": "Dokumente, Dateien und Informationen, einfach verwaltet.",
+        "projects": "Projekte, Aufgaben und Fristen, immer in Ordnung.",
+        "analytics": "Berichte, Kennzahlen und Analysen für fundierte Entscheidungen.",
+        "network": "Vernetzen Sie Ihr Team und arbeiten Sie mit Ventora Network effizienter zusammen."
       }
     },
     "app": {
@@ -879,6 +884,116 @@
     },
     "attention": {
       "title": "Wartet auf Sie"
+    },
+    "business": {
+      "logo": {
+        "upload": "Logo hochladen",
+        "replace": "Ersetzen",
+        "remove": "Logo entfernen",
+        "uploading": "{name} wird hochgeladen …",
+        "errType": "{name} ist keine PNG- oder JPG-Datei. Wählen Sie eine andere Datei.",
+        "errSize": "{name} ist {size} groß; höchstens 2 MB.",
+        "uploadFailed": "Der Upload wurde abgebrochen. Prüfen Sie die Verbindung und versuchen Sie es erneut.",
+        "removeTitle": "Unternehmenslogo entfernen?",
+        "removed": "Logo entfernt."
+      },
+      "name": "Name des Unternehmens",
+      "nameHelp": "Für einen anderen Namen schreiben Sie uns.",
+      "preview": "So sieht es in der Unternehmensauswahl aus",
+      "cancel": "Abbrechen"
+    },
+    "account": {
+      "photo": {
+        "title": "Profilfoto",
+        "lead": "Es erscheint im Kontomenü und, wenn das Unternehmen kein Logo hat, in der Unternehmensauswahl.",
+        "rules": "PNG oder JPG · höchstens 5 MB · wird rund zugeschnitten",
+        "upload": "Foto hochladen",
+        "replace": "Ersetzen",
+        "remove": "Foto entfernen",
+        "none": "Ohne Foto werden Ihre Initialen angezeigt.",
+        "uploading": "{name} wird hochgeladen …",
+        "saved": "Foto gespeichert.",
+        "errType": "{name} ist keine PNG- oder JPG-Datei. Wählen Sie eine andere Datei.",
+        "errSize": "{name} ist {size} groß; höchstens 5 MB.",
+        "removeTitle": "Profilfoto entfernen?",
+        "removeBody": "Stattdessen werden Ihre Initialen angezeigt. In der Unternehmensauswahl bleibt ohne Logo nur der Name.",
+        "removed": "Foto entfernt."
+      }
+    },
+    "brand": {
+      "lead": "Logo, Farben, Schrift und Tonfall, mit denen Ihr Unternehmen bei Kunden erscheint: auf der Buchungsseite und in E-Mails.",
+      "save": "Marke speichern",
+      "saved": "Marke gespeichert. Ihre Kunden sehen sie ab sofort auf der Buchungsseite und in E-Mails.",
+      "reset": "Zurück zum Ventora-Systems-Design",
+      "default": "Ohne eigene Marke sehen Ihre Kunden das Ventora-Systems-Design: den Namen Ihres Unternehmens mit den Farben und der Schrift von Ventora Systems.",
+      "ownerOnly": "Nur Inhaber oder Admins können die Marke ändern.",
+      "logo": {
+        "title": "Logo",
+        "lead": "Es erscheint auf der Buchungsseite, im Kopf der E-Mails und in der Unternehmensauswahl Ihres Teams.",
+        "light": "Auf hellem Hintergrund",
+        "dark": "Auf dunklem Hintergrund",
+        "darkHelp": "Optional. Ohne dieses verwenden wir auf dunklem Hintergrund das Logo für hellen Hintergrund auf einer weißen Fläche.",
+        "rules": "PNG oder JPG · höchstens 2 MB · mindestens 256 px an der kurzen Seite",
+        "errSmall": "Das Bild hat {w} × {h} px. Verwenden Sie mindestens 256 px an der kurzen Seite, damit es scharf aussieht.",
+        "removeBody": "Buchungsseite und E-Mails zeigen wieder den Namen des Unternehmens ohne Logo; die Teamauswahl zeigt das Foto jeder Person oder nur den Namen."
+      },
+      "color": {
+        "title": "Farben",
+        "lead": "Die Hauptfarbe gilt für Schaltflächen und Links, die Akzentfarbe für kleine Details.",
+        "primary": "Hauptfarbe",
+        "accent": "Akzentfarbe",
+        "ok": "Kontrast {ratio}:1 zum Schaltflächentext · gut lesbar",
+        "lowTitle": "Der Schaltflächentext ist nicht lesbar",
+        "low": "Kontrast {ratio}:1; nötig sind mindestens 4,5:1. Wählen Sie einen dunkleren Ton.",
+        "fix": "{hex} verwenden, dunkler",
+        "accentNote": "Der Akzent hat {ratio}:1 auf Weiß; wir verwenden ihn nur für Details, nicht für Text.",
+        "default": "Ventora-Systems-Standard"
+      },
+      "font": {
+        "title": "Schrift",
+        "lead": "Wird auf der Buchungsseite und in E-Mails verwendet. Jede in der Liste ist auf dem Handy gut lesbar.",
+        "sans": "Modern (Ventora-Systems-Standard)",
+        "display": "Ausdrucksstark",
+        "serif": "Klassisch, mit Serifen",
+        "rounded": "Abgerundet, freundlich",
+        "sample": "Buchen Sie online, jederzeit."
+      },
+      "tone": {
+        "title": "Tonalität",
+        "lead": "Wie automatische Nachrichten an Kunden klingen: Erinnerungen, Bestätigungen, Dankesnachrichten.",
+        "formal": "Förmlich",
+        "friendly": "Freundlich",
+        "short": "Kurz",
+        "example": "Beispiel: die Erinnerung für morgen",
+        "formalEx": "Guten Tag, Frau {client}. Wir erinnern Sie an Ihren Termin morgen, {when}, für {service}. Wir freuen uns auf Sie bei {business}.",
+        "friendlyEx": "Hallo {first}! Bis morgen, {when}, zu {service}. Wir freuen uns auf dich bei {business}!",
+        "shortEx": "{business}: morgen, {when}, {service}. Änderungen: {phone}.",
+        "note": "Der Tonfall gilt für die Standardtexte; Nachrichten, die Sie unter Einstellungen › Nachrichten selbst geschrieben haben, bleiben unverändert.",
+        "sampleClient": "Müller",
+        "sampleFirst": "Anna",
+        "samplePhone": "0722 123 456",
+        "sampleService": "Schneiden und Föhnen"
+      },
+      "sig": {
+        "title": "E-Mail-Signatur",
+        "lead": "Sie steht am Ende der E-Mails an Kunden, vor der Fußzeile mit der Adresse.",
+        "label": "Signaturtext",
+        "help": "Höchstens 300 Zeichen. Keine Links und Bilder; das Logo steht bereits im Kopf.",
+        "none": "Ohne Signatur endet die E-Mail mit dem Namen des Unternehmens."
+      },
+      "preview": {
+        "title": "Vorschau",
+        "page": "Buchungsseite",
+        "email": "E-Mail an Kunden",
+        "live": "Aktualisiert sich, während Sie Änderungen vornehmen.",
+        "show": "Vorschau ansehen"
+      },
+      "pv": {
+        "cta": "Jetzt buchen",
+        "services": "Leistung wählen",
+        "emailTitle": "Ihr Termin morgen",
+        "emailCta": "Termin ansehen"
+      }
     }
   },
   "roles": {
@@ -1593,12 +1708,12 @@
     "addonIncludes": "Enthalten",
     "access_available": "Verfügbar",
     "access_unavailable": "Vorübergehend nicht verfügbar",
-    "access_notInRole": "Nicht in Ihrer Rolle",
-    "access_notInPlan": "Nicht im Abonnement",
+    "access_notInRole": "Zugriff auf Anfrage",
+    "access_notInPlan": "Zur Aktivierung verfügbar",
     "hint_unavailable": "Wir arbeiten daran. Sie ist bald wieder da.",
-    "hint_notInRole": "Ihre Rolle umfasst diese App nicht. {who} kann Ihnen Zugriff geben.",
-    "hint_notInRoleNoOne": "Ihre Rolle umfasst diese App nicht. Der Inhaber des Unternehmens kann Ihnen Zugriff geben.",
-    "hint_notInPlan": "Sie ist nicht im Abonnement Ihres Unternehmens enthalten. Schreiben Sie uns, wir schalten sie frei.",
+    "hint_notInRole": "Die App ist in Ihrem Unternehmen aktiv. {who} kann Ihnen Zugriff geben.",
+    "hint_notInRoleNoOne": "Die App ist in Ihrem Unternehmen aktiv. Der Inhaber kann Ihnen Zugriff geben.",
+    "hint_notInPlan": "Wir aktivieren sie für Ihr Team, sobald Sie die Anfrage senden.",
     "requestAccess": "Zugriff anfordern",
     "writeUs": "Schreiben Sie uns",
     "seeStatus": "Status ansehen",
@@ -1688,7 +1803,39 @@
         "activeBody": "Ihre Empfehlung ist jetzt eine App des Teams."
       }
     },
-    "teamTitle": "{name} empfiehlt {app}"
+    "teamTitle": "{name} empfiehlt {app}",
+    "access_suspended": "Vorübergehend pausiert",
+    "access_soon": "Demnächst verfügbar",
+    "hint_notInPlanMember": "{who} kann sie für das Team aktivieren. Empfehlen Sie sie, wenn sie Ihnen hilft.",
+    "hint_notInPlanMemberNoOne": "Der Inhaber kann sie für das Team aktivieren. Empfehlen Sie sie, wenn sie Ihnen hilft.",
+    "hint_suspended": "Der Zugriff ist wieder da, sobald das Unternehmen reaktiviert ist.",
+    "hint_soon": "Wir bereiten sie für Ihr Team vor. Wir sagen Ihnen Bescheid, sobald sie bereit ist.",
+    "seePlan": "Abonnement ansehen",
+    "notifyMe": "Benachrichtigen",
+    "seeInCatalog": "Im Katalog ansehen",
+    "recommendsApp": "{name} empfiehlt {app}",
+    "reco": {
+      "note": {
+        "title": "{app} empfehlen?",
+        "body": "{owner} erhält Ihre Empfehlung und entscheidet.",
+        "label": "Notiz für {owner}",
+        "placeholder": "Zum Beispiel: Das würde uns bei Kundenerinnerungen helfen.",
+        "help": "Höchstens 300 Zeichen. {owner} sieht sie zusammen mit der Empfehlung.",
+        "count": "{n} / 300",
+        "tooLong": "Die Notiz hat {n} Zeichen. Kürzen Sie sie auf 300.",
+        "send": "Empfehlung senden",
+        "from": "Notiz von {member}"
+      },
+      "cancel": "Abbrechen",
+      "reject": {
+        "title": "Empfehlung ablehnen?",
+        "body": "{member} sieht „Nicht jetzt“ unter „Meine Empfehlungen“. Es gibt keine Benachrichtigung.",
+        "reason": "Grund",
+        "reasonHelp": "Wenn Sie einen angeben, sieht {member} ihn unter „Nicht jetzt“.",
+        "placeholder": "Zum Beispiel: Wir schauen uns das im Januar noch einmal an.",
+        "reasonShown": "Ihr Grund: {reason}"
+      }
+    }
   },
   "quota": {
     "platform_members": {

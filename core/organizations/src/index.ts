@@ -81,3 +81,22 @@ export {
   type AccessRequestRow,
   type MyAccessRequest,
 } from './access-request';
+// Brand Kit (S148): the business's look
+export {
+  BRAND_FONTS,
+  BRAND_TONES,
+  BRAND_SIGNATURE_MAX,
+  EMPTY_BRAND,
+  cleanSignature,
+  getOrganizationBrand,
+  saveOrganizationBrand,
+  resetOrganizationBrand,
+  findPublicBrand,
+  findBrandLogo,
+  listMyMembershipBrands,
+  type BrandFont,
+  type BrandTone,
+  type BrandPatch,
+  type OrganizationBrand,
+  type PublicBrand,
+} from './brand';

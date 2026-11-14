@@ -14,3 +14,48 @@
     bottom: var(--space-4);
   }
 }
+
+/* S147: cardul owner-ului cu nota colegului (HubMyRecommendations, cadrul 5). */
+.m0 {
+  margin: 0;
+}
+
+.recoCard {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.recoRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.recoMain {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+}
+
+.recoText {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.recoNote {
+  margin: 0;
+  padding-left: var(--space-3);
+  border-left: var(--marker-width) solid var(--line-strong);
+  color: var(--ink-secondary);
+}
+
+.recoActions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+}

@@ -25,6 +25,7 @@ import { authApi, useWhen } from '@ventora/screens';
 import { supportHref } from '@ventora/support/apps';
 import { rememberLocale } from '@/i18n/locale';
 import { switchBusiness } from '@/server/shell-actions';
+import { RejectRecommendationDialog } from '../growth/RecommendDialogs';
 import { keepLocale } from '@/server/locale-actions';
 import { markBellRead, openBellItem, readBell, type Bell } from '@/server/notification-actions';
 import { growthInteraction, readBellRecommendation } from '@/server/growth-actions';
@@ -47,9 +48,11 @@ import { BOOKING_BOTTOM, bookingActive, useBookingNav } from '@/screens/booking/
    doar operaționalele necitite (D4-5); deschiderea duce la acțiunea notificării. */
 
 export type HubShellData = {
-  user: { name: string; email: string };
-  /** Lot 2.9b (S112): o afacere suspendată apare oprită (lacăt, „Acces oprit”), nu se alege. */
-  orgs: { id: string; name: string; role: string; suspended?: boolean }[];
+  /** S147: `avatar` — poza persoanei (`/account/photo/<id>`), dacă are. */
+  user: { name: string; email: string; avatar?: string };
+  /** Lot 2.9b (S112): o afacere suspendată apare oprită (lacăt, „Acces oprit”), nu se alege.
+      S148: `logo` — logo-ul din Brand Kit (`/brand/logo/<id>`), dacă are. */
+  orgs: { id: string; name: string; role: string; suspended?: boolean; logo?: string }[];
   currentOrgId: string | null;
   /** owner sau admin în afacerea activă: vede „Afacerea”. */
   manager: boolean;
@@ -67,10 +70,12 @@ function appNameOf(pathname: string): string | undefined {
 
 const ROUTES: Route[] = [
   { id: 'recomandari', href: '/account/recommendations' },
+  { id: 'profil', href: '/account/profile' },
   { id: 'securitate', href: '/account' },
   { id: 'echipa', href: '/admin/team' },
   { id: 'roluri', href: '/admin/access' },
   { id: 'abonament', href: '/admin/plan' },
+  { id: 'brand', href: '/admin/brand' },
   { id: 'automatizari', href: '/admin/automations' },
   // Lotul 4.6: HubSupport, HubSupportThread
   { id: 'suport', href: '/support' },
@@ -103,14 +108,32 @@ export function useHubNav(manager: boolean, supportBadge = 0, canRecommend = fal
               },
             ]
           : []),
+        // S147: „Profil și preferințe”, deocamdată cu poza de profil
+        {
+          id: 'profil',
+          label: nav('profile'),
+          short: nav('profileShort'),
+          icon: 'circle-user',
+          href: '/account/profile',
+        },
         { id: 'securitate', label: account('security.title'), icon: 'shield', href: '/account' },
       ],
     },
   ];
+  // S148 (HubBrand): „Brand” e primul în „Afacerea”; membrii îl văd doar în citire
+  const brand = {
+    id: 'brand',
+    label: nav('brand'),
+    short: nav('brandShort'),
+    icon: 'store' as const,
+    href: '/admin/brand',
+  };
+  if (!manager) sections.push({ label: nav('business'), items: [brand] });
   if (manager) {
     sections.push({
       label: nav('business'),
       items: [
+        brand,
         {
           id: 'echipa',
           label: nav('team'),
@@ -165,6 +188,8 @@ function useBell(initial: Bell, orgs: HubShellData['orgs'], manager: boolean) {
   // Lotul 5.9e (HubRecommendation): „Recomandare de la echipă”, doar pentru owner și admini
   const [team, setTeam] = useState<TeamRecommendationView[]>([]);
   const [rejected, setRejected] = useState<{ member: string } | null>(null);
+  // S147: „Respinge” deschide întâi dialogul cu motivul opțional
+  const [rejecting, setRejecting] = useState<TeamRecommendationView | null>(null);
   const pay = useTranslations('pay');
   // o listă nouă de la server (navigare, router.refresh) o înlocuiește pe cea de aici
   const [fromServer, setFromServer] = useState(initial);
@@ -249,14 +274,24 @@ function useBell(initial: Bell, orgs: HubShellData['orgs'], manager: boolean) {
       setOpen(false);
       router.push(`/applications/${t.app}`);
     },
-    // „Respinge”: „Nu acum”; membrul nu primește notificare (CommercialStates)
-    onRejectRecommendation: async (r: HubRecommendationData) => {
+    // „Respinge”: dialogul cu motivul opțional (S147), apoi „Nu acum”; membrul nu primește
+    // notificare (CommercialStates), dar vede motivul în „Recomandările mele”
+    onRejectRecommendation: (r: HubRecommendationData) => {
       const t = teamOf(r);
       if (!t) return;
-      const res = await rejectRecommendation(t.id);
-      if (!res.ok) return;
+      setOpen(false);
+      setRejecting(t);
+    },
+    rejecting,
+    closeRejecting: () => setRejecting(null),
+    confirmReject: async (reason: string): Promise<boolean> => {
+      const t = rejecting;
+      if (!t) return false;
+      const res = await rejectRecommendation(t.id, reason);
+      if (!res.ok) return false;
       setTeam((list) => list.filter((x) => x.id !== t.id));
       setRejected({ member: t.by });
+      return true;
     },
     rejected,
     closeRejected: () => setRejected(null),
@@ -333,6 +368,7 @@ export function HubShell({
     name: o.name,
     role: roles.has(o.role) ? roles(o.role) : o.role,
     suspended: o.suspended,
+    logo: o.logo,
   }));
   const orgLabels = {
     switchBusiness: ui('switchBusiness'),
@@ -380,6 +416,7 @@ export function HubShell({
               orgs.length > 0 ? (
                 <OrgSwitcher
                   orgs={orgs}
+                  avatar={data.user.avatar}
                   currentId={data.currentOrgId ?? undefined}
                   onChange={change}
                   labels={orgLabels}
@@ -472,10 +509,18 @@ export function HubShell({
       }
     >
       {children}
+      {bell.rejecting && (
+        <RejectRecommendationDialog
+          member={bell.rejecting.by}
+          open
+          onClose={bell.closeRejecting}
+          onReject={bell.confirmReject}
+        />
+      )}
       {bell.rejected && (
         <div className={shellStyles.toast}>
           <Toast
-            tone="done"
+            tone="neutral"
             title={bell.pay('states.rejected.title')}
             description={bell.pay('states.rejected.body', { member: bell.rejected.member })}
             onDismiss={bell.closeRejected}
