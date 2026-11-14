@@ -5,7 +5,11 @@ import { commercialEntitlementProvider } from '@ventora/commercial';
 import { Conflict, InvalidInput, ResourceNotFound } from '@ventora/errors';
 import { guardBulkOp } from '@ventora/db-kit';
 import { deliverEmail } from '@ventora/notifications';
-import { findPublicOrganization, listLocations } from '@ventora/organizations';
+import {
+  findPublicOrganization,
+  getOrganizationPhone,
+  listLocations,
+} from '@ventora/organizations';
 import { makePublicContext } from './actor';
 import { confirmAnonymousUpload, listAnonymousFiles, requestAnonymousUpload } from '@ventora/files';
 import {
@@ -34,6 +38,7 @@ import { isHighRisk } from './behavior';
 import { joinClassSession, readSession, SESSION_SELECT, type SessionRow } from './classes';
 import { withBookingTx } from './db';
 import { locationFilter } from './locations';
+import { maskEmail, todayHours, type TodayHours } from './public-contact';
 import { issueManageToken } from './manage-token';
 import { requireLocalDate } from './schedule';
 import { isUuid } from './validation';
@@ -133,7 +138,21 @@ function newCode(): string {
 export type PublicBookingPage = {
   name: string;
   timeZone: string;
-  locations: Array<{ id: string; name: string; address: string | null }>;
+  /** B.11c: the business's phone (E.164) or null — „Sună la salon”, „Sunați la salon…”. */
+  phone: string | null;
+  /** B.11c: the business's hours today (one location, or none). */
+  today: TodayHours;
+  /**
+   * B.10 / B.11c: the locations; each with its phone (else the business's) and today's hours (the
+   * business's for now: per location in the lot after B.22).
+   */
+  locations: Array<{
+    id: string;
+    name: string;
+    address: string | null;
+    phone: string | null;
+    today: TodayHours;
+  }>;
   services: Array<{
     id: string;
     name: string;
@@ -224,10 +243,24 @@ export async function getPublicBookingPage(slug: unknown): Promise<PublicBooking
   )
     .filter((q) => q.serviceIds === null || q.serviceIds.some((id) => shown.has(id)))
     .map(toPublicQuestion);
+  const phone = await getOrganizationPhone({ organizationId: p.ctx.organizationId });
+  const today = await withBookingTx(
+    p.ctx.organizationId,
+    (client) => todayHours(client, p.timeZone),
+    true,
+  );
   return {
     name: p.name,
     timeZone: p.timeZone,
-    locations: locations.map((l) => ({ id: l.id, name: l.name, address: l.address })),
+    phone,
+    today,
+    locations: locations.map((l) => ({
+      id: l.id,
+      name: l.name,
+      address: l.address,
+      phone: l.phone ?? phone,
+      today,
+    })),
     services,
     questions,
   };
@@ -750,6 +783,8 @@ export type PublicBookingResult = {
    * SHA-256 is kept.
    */
   manageToken: string;
+  /** B.11c: „V-am trimis un e-mail la …” — the e-mail the client typed, masked (cr***@gmail.com). */
+  emailMasked: string;
 };
 
 export async function verifyPublicBooking(
@@ -880,6 +915,7 @@ export async function verifyPublicBooking(
     status: confirmed ? 'confirmed' : 'unconfirmed',
     startsAt: appointment.startsAt,
     manageToken,
+    emailMasked: maskEmail(hold.client_email ?? ''),
   };
 }
 

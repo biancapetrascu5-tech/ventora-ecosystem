@@ -287,6 +287,7 @@ export type {
   StartPublicBookingParams,
   CaptchaVerifier,
   PublicBookingPage,
+  TodayHours,
   PublicBookingResult,
   PublicClassSession,
   PublicHoldResult,

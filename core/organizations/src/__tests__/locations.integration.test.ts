@@ -15,6 +15,8 @@ import {
   LOCATIONS_QUOTA_KEY,
   type LocationQuota,
   type OrgContext,
+  getOrganizationPhone,
+  setOrganizationPhone,
 } from '../index.js';
 
 /*
@@ -321,5 +323,55 @@ describe('C.1 — T1: another business never sees or touches a location', () => 
         ),
       ),
     ).toBe('55000');
+  });
+});
+
+describe('B.11c — the salon’s phone: on the location, the business’s as fallback', () => {
+  it('a location keeps its phone (spaces dropped), cleared with null; a wrong one is refused', async () => {
+    const A = await team();
+    const q = fakeQuota(5);
+    const loc = await createLocation(
+      A.owner,
+      { name: 'Centru', phone: '+40 269 111 222' },
+      q.quota,
+    );
+    expect(loc.phone).toBe('+40269111222');
+    expect((await updateLocation(A.owner, loc.id, { phone: null })).phone).toBeNull();
+    expect((await updateLocation(A.admin, loc.id, { phone: '+40722000111' })).phone).toBe(
+      '+40722000111',
+    );
+    for (const bad of ['0722 123 456', '+0722123456', '+40-abc', '+4072']) {
+      await expect(updateLocation(A.owner, loc.id, { phone: bad }), bad).rejects.toBeInstanceOf(
+        InvalidInput,
+      );
+    }
+  });
+
+  it('the business’s phone: owner / admin set it, a member cannot; audited without the number', async () => {
+    const A = await team();
+    expect(await getOrganizationPhone({ organizationId: A.org })).toBeNull();
+    expect(await setOrganizationPhone(A.owner, '+40 722 123 456')).toBe('+40722123456');
+    expect(await getOrganizationPhone({ organizationId: A.org })).toBe('+40722123456');
+    await expect(setOrganizationPhone(A.member, null)).rejects.toBeInstanceOf(ForbiddenError);
+    await expect(setOrganizationPhone(A.admin, '0722')).rejects.toBeInstanceOf(InvalidInput);
+    expect(await setOrganizationPhone(A.admin, null)).toBeNull();
+    const audit = await adminQuery<{ metadata: unknown }>(
+      `SELECT metadata FROM audit.audit_log
+        WHERE organization_id = $1 AND action = 'org.updated' ORDER BY created_at, id`,
+      [A.org],
+    );
+    expect(audit).toHaveLength(2);
+    expect(JSON.stringify(audit)).not.toContain('722');
+  });
+
+  it('in the database: the CHECKs hold the format whoever writes', async () => {
+    const A = await team();
+    expect(
+      await pgCode(
+        asOrgRw(A.org, (c) =>
+          c.query(`UPDATE organizations.organization SET phone = '0722' WHERE id = $1`, [A.org]),
+        ),
+      ),
+    ).toBe('23514');
   });
 });

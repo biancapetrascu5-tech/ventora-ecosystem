@@ -564,3 +564,68 @@ describe('review #164 — the public context can call only the public steps', ()
 });
 
 void InvalidInput;
+
+describe('B.11c — the salon’s phone, today’s hours, the masked e-mail', () => {
+  const weekday = () =>
+    ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].indexOf(
+      new Intl.DateTimeFormat('en-US', { timeZone: 'Europe/Bucharest', weekday: 'short' }).format(
+        new Date(),
+      ),
+    ) + 1;
+
+  it('no phone: null; the business’s phone; a location’s own phone, else the business’s', async () => {
+    expect((await getPublicBookingPage({ slug: A.slug })).phone).toBeNull();
+    await adminQuery(`UPDATE organizations.organization SET phone = '+40722123456' WHERE id = $1`, [
+      A.org,
+    ]);
+    const own = uuid();
+    const shared = uuid();
+    for (const [id, name, phone] of [
+      [own, 'Centru', '+40269111222'],
+      [shared, 'Cartier', null],
+    ] as const) {
+      await adminQuery(
+        `INSERT INTO organizations.location (id, organization_id, name, phone, created_by_user_id, updated_at)
+         VALUES ($1, $2, $3, $4, $5, now())`,
+        [id, A.org, name, phone, A.owner.userId],
+      );
+    }
+    try {
+      const page = await getPublicBookingPage({ slug: A.slug });
+      expect(page.phone).toBe('+40722123456');
+      const phones = Object.fromEntries(page.locations.map((l) => [l.id, l.phone]));
+      expect(phones).toEqual({ [own]: '+40269111222', [shared]: '+40722123456' });
+    } finally {
+      await adminQuery(`DELETE FROM organizations.location WHERE id = ANY($1::uuid[])`, [
+        [own, shared],
+      ]);
+    }
+  });
+
+  it('today: the business’s hours of the day („Azi: 08:00–20:00”), or closed today', async () => {
+    const page = await getPublicBookingPage({ slug: A.slug });
+    expect(page.today).toEqual({ open: true, opensAt: '08:00', closesAt: '20:00' });
+    const today = weekday();
+    await setBusinessHours({
+      sessionToken: A.owner.token,
+      days: WEEK_OPEN.map((d) => (d.weekday === today ? { weekday: today, isOpen: false } : d)),
+    });
+    try {
+      expect((await getPublicBookingPage({ slug: A.slug })).today).toEqual({ open: false });
+    } finally {
+      await setBusinessHours({ sessionToken: A.owner.token, days: WEEK_OPEN });
+    }
+  });
+
+  it('the confirmation gives the client’s e-mail masked, never the whole address', async () => {
+    const who = { ...visitor(), email: `cristina.${uuid().slice(0, 6)}@gmail.com` };
+    const { hold } = await start(A.slug, 15, who);
+    const done = await verifyPublicBooking({
+      slug: A.slug,
+      holdId: hold.holdId,
+      code: lastCode(who.email),
+    });
+    expect(done.emailMasked).toBe('cr***@gmail.com');
+    expect(JSON.stringify(done)).not.toContain(who.email);
+  });
+});

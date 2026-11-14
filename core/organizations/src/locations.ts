@@ -45,6 +45,8 @@ export interface Location {
   name: string;
   address: string | null;
   timeZone: string;
+  /** Lot B.11c: the location's phone (E.164) or null; the public pages fall back on the business's. */
+  phone: string | null;
   archivedAt: string | null;
   createdAt: string;
 }
@@ -54,6 +56,7 @@ type LocationRow = {
   name: string;
   address: string | null;
   time_zone: string;
+  phone: string | null;
   archived_at: Date | null;
   created_at: Date;
 };
@@ -66,6 +69,7 @@ function toLocation(r: LocationRow): Location {
     name: r.name,
     address: r.address,
     timeZone: r.time_zone,
+    phone: r.phone,
     archivedAt: r.archived_at ? r.archived_at.toISOString() : null,
     createdAt: r.created_at.toISOString(),
   };
@@ -94,6 +98,16 @@ function cleanAddress(address: unknown): string | null {
   const v = address.trim();
   if (v.length === 0) return null;
   if (v.length > LOCATION_ADDRESS_MAX) throw new InvalidInput('address', 'address:invalid');
+  return v;
+}
+
+/** Lot B.11c: a phone in E.164 (+ and 7–15 digits; spaces, dots, dashes and brackets dropped). */
+export function cleanPhone(phone: unknown): string | null {
+  if (phone === undefined || phone === null) return null;
+  if (typeof phone !== 'string') throw new InvalidInput('phone', 'phone:invalid');
+  const v = phone.replace(/[\s().-]/g, '');
+  if (v.length === 0) return null;
+  if (!/^\+[1-9][0-9]{6,14}$/.test(v)) throw new InvalidInput('phone', 'phone:invalid');
   return v;
 }
 
@@ -160,7 +174,7 @@ export async function listLocations(
     ctx.organizationId,
     (tx) =>
       tx.$queryRaw`
-      SELECT id, name, address, time_zone, archived_at, created_at
+      SELECT id, name, address, time_zone, phone, archived_at, created_at
         FROM organizations.location
        WHERE organization_id = ${ctx.organizationId}::uuid
          AND (${opts.includeArchived === true} OR archived_at IS NULL)
@@ -179,7 +193,7 @@ export async function getActiveLocation(ctx: QuotaCtx, locationId: string): Prom
     ctx.organizationId,
     (tx) =>
       tx.$queryRaw`
-      SELECT id, name, address, time_zone, archived_at, created_at
+      SELECT id, name, address, time_zone, phone, archived_at, created_at
         FROM organizations.location
        WHERE id = ${locationId}::uuid AND organization_id = ${ctx.organizationId}::uuid
          AND archived_at IS NULL`,
@@ -201,7 +215,13 @@ export async function locationQuotaResolver(
   return rows.length > 0;
 }
 
-export type CreateLocationInput = { name: string; address?: string | null; timeZone?: string };
+export type CreateLocationInput = {
+  name: string;
+  address?: string | null;
+  timeZone?: string;
+  /** Lot B.11c: optional, E.164. */
+  phone?: string | null;
+};
 
 /** „Adaugă locație”: one unit of platform.locations (QuotaExceeded over the limit). */
 export async function createLocation(
@@ -213,6 +233,7 @@ export async function createLocation(
   const name = cleanName(input.name);
   const address = cleanAddress(input.address);
   const timeZone = cleanTimeZone(input.timeZone);
+  const phone = cleanPhone(input.phone);
   const id = crypto.randomUUID();
   const qctx = { organizationId: ctx.organizationId };
 
@@ -222,10 +243,10 @@ export async function createLocation(
     row = await inOrg(ctx.organizationId, async (tx) => {
       const rows = (await tx.$queryRaw`
         INSERT INTO organizations.location
-          (id, organization_id, name, address, time_zone, created_by_user_id, updated_at)
+          (id, organization_id, name, address, time_zone, phone, created_by_user_id, updated_at)
         VALUES (${id}::uuid, ${ctx.organizationId}::uuid, ${name}, ${address}, ${timeZone},
-                ${ctx.userId}::uuid, now())
-        RETURNING id, name, address, time_zone, archived_at, created_at`) as LocationRow[];
+                ${phone}, ${ctx.userId}::uuid, now())
+        RETURNING id, name, address, time_zone, phone, archived_at, created_at`) as LocationRow[];
       await appendAuditEventInTx(
         prismaTxExecutor(tx),
         audit(ctx, AuditActions.locationCreated, id, { timeZone }),
@@ -260,9 +281,11 @@ export type UpdateLocationInput = {
   name?: string;
   address?: string | null;
   timeZone?: string;
+  /** Lot B.11c: null clears it. */
+  phone?: string | null;
 };
 
-/** „Editează”: the name, the address, the time zone. An archived location → Conflict. */
+/** „Editează”: the name, the address, the time zone, the phone. An archived location → Conflict. */
 export async function updateLocation(
   ctx: OrgContext,
   locationId: string,
@@ -277,12 +300,14 @@ export async function updateLocation(
   if (patch.address !== undefined) fields.push('address');
   const timeZone = patch.timeZone !== undefined ? cleanTimeZone(patch.timeZone) : undefined;
   if (timeZone !== undefined) fields.push('timeZone');
+  const phone = patch.phone !== undefined ? cleanPhone(patch.phone) : undefined;
+  if (patch.phone !== undefined) fields.push('phone');
   if (fields.length === 0) throw new InvalidInput('patch', 'patch:empty');
 
   try {
     return await inOrg(ctx.organizationId, async (tx) => {
       const current = (await tx.$queryRaw`
-        SELECT id, name, address, time_zone, archived_at, created_at
+        SELECT id, name, address, time_zone, phone, archived_at, created_at
           FROM organizations.location
          WHERE id = ${locationId}::uuid AND organization_id = ${ctx.organizationId}::uuid
          FOR UPDATE`) as LocationRow[];
@@ -294,9 +319,10 @@ export async function updateLocation(
            SET name = ${name ?? c.name},
                address = ${patch.address !== undefined ? address : c.address},
                time_zone = ${timeZone ?? c.time_zone},
+               phone = ${patch.phone !== undefined ? phone : c.phone},
                updated_at = now()
          WHERE id = ${locationId}::uuid
-        RETURNING id, name, address, time_zone, archived_at, created_at`) as LocationRow[];
+        RETURNING id, name, address, time_zone, phone, archived_at, created_at`) as LocationRow[];
       await appendAuditEventInTx(
         prismaTxExecutor(tx),
         audit(ctx, AuditActions.locationUpdated, locationId, { fields }),
@@ -323,7 +349,7 @@ export async function archiveLocation(
   checkId(locationId);
   const location = await inOrg(ctx.organizationId, async (tx) => {
     const current = (await tx.$queryRaw`
-      SELECT id, name, address, time_zone, archived_at, created_at
+      SELECT id, name, address, time_zone, phone, archived_at, created_at
         FROM organizations.location
        WHERE id = ${locationId}::uuid AND organization_id = ${ctx.organizationId}::uuid
        FOR UPDATE`) as LocationRow[];
@@ -333,7 +359,7 @@ export async function archiveLocation(
     const rows = (await tx.$queryRaw`
       UPDATE organizations.location SET archived_at = now(), updated_at = now()
        WHERE id = ${locationId}::uuid
-      RETURNING id, name, address, time_zone, archived_at, created_at`) as LocationRow[];
+      RETURNING id, name, address, time_zone, phone, archived_at, created_at`) as LocationRow[];
     await appendAuditEventInTx(
       prismaTxExecutor(tx),
       audit(ctx, AuditActions.locationArchived, locationId),
@@ -347,4 +373,50 @@ export async function archiveLocation(
     `location-archived:${locationId}`,
   );
   return location;
+}
+
+// ── Lot B.11c: the business's phone ────────────────────────────────────────────────────────
+
+/**
+ * The business's phone (E.164) or null: the fallback of the locations' phones on the public pages
+ * of the modules (§6.4 b). Read in the business's own context (RLS).
+ */
+export async function getOrganizationPhone(ctx: QuotaCtx): Promise<string | null> {
+  const rows = (await inOrg(
+    ctx.organizationId,
+    (tx) =>
+      tx.$queryRaw`SELECT phone FROM organizations.organization WHERE id = ${ctx.organizationId}::uuid`,
+  )) as Array<{ phone: string | null }>;
+  return rows[0]?.phone ?? null;
+}
+
+/**
+ * The business's phone (owner / admin); null clears it. The field where it is written:
+ * NECESITĂ DESIGN (the „business” step of the onboarding guide). Audited without the number.
+ */
+export async function setOrganizationPhone(
+  ctx: OrgContext,
+  phone: string | null,
+): Promise<string | null> {
+  manager(ctx);
+  const value = cleanPhone(phone);
+  return inOrg(ctx.organizationId, async (tx) => {
+    const rows = (await tx.$queryRaw`
+      UPDATE organizations.organization SET phone = ${value}, updated_at = now()
+       WHERE id = ${ctx.organizationId}::uuid
+      RETURNING phone`) as Array<{ phone: string | null }>;
+    if (!rows[0]) throw new ResourceNotFound('Organization not found');
+    await appendAuditEventInTx(prismaTxExecutor(tx), {
+      category: 'organization',
+      action: AuditActions.organizationUpdated,
+      outcome: 'success',
+      actorType: 'user',
+      actorId: ctx.userId,
+      organizationId: ctx.organizationId,
+      targetType: 'organization',
+      targetId: ctx.organizationId,
+      metadata: { fields: ['phone'] },
+    });
+    return rows[0].phone;
+  });
 }
