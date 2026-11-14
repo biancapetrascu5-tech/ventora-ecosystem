@@ -216,3 +216,5 @@ export {
   type BookingClientCardViewProps,
   type ClientHistoryItem,
 } from './client/BookingClientCardView';
+// Lot B.14c: the limits of „Când pleacă” (pure, the same numbers as the server)
+export { SEND_TIMING_LIMITS, THANKS_WHEN, type ThanksWhen } from '../server/send-timing';

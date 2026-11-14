@@ -958,7 +958,8 @@
       "subject": "Écrivez l’objet.",
       "body": "Écrivez le texte.",
       "long": "Le texte dépasse {max} caractères.",
-      "failed": "Impossible d’enregistrer le message. Réessayez."
+      "failed": "Impossible d’enregistrer le message. Réessayez.",
+      "hours": "Choisissez entre {min} et {max} heures."
     },
     "review": {
       "link": "Lien vers la page d’avis",

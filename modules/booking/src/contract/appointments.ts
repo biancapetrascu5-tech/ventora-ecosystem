@@ -28,10 +28,17 @@ import {
   type BookingSettings,
   type Client,
   type ClientInput,
+  type ListedAppointment,
   type ClientLocale,
+  type ThanksWhen,
   type TimeBlock,
   type UpcomingAppointments,
 } from '../server/appointments';
+import {
+  sendRemindersInOrg,
+  type ManualReminderResult,
+  type ManualReminderSkip,
+} from '../server/manual-reminders';
 import { registerAppointmentsQuotaResolver } from '../server/quota';
 import { offerFreedClassSeatsAfter } from '../server/waitlist';
 
@@ -140,10 +147,15 @@ export type SetBookingSettingsParams = Session & {
   freeCancelHours?: number;
   confirmationMode?: 'auto' | 'manual';
   noticeMin?: number;
-  /** B.13: the reminder by e-mail 24 hours before. */
+  /** B.13: the reminder by e-mail before the visit. */
   reminderEmail?: boolean;
-  /** B.14: the thanks by e-mail 2 hours after the visit. */
+  /** B.14: the thanks by e-mail after the visit. */
   thanksEmail?: boolean;
+  /** B.14c: the reminder N hours before (2–72). */
+  reminderHours?: number;
+  /** B.14c: the thanks at the end ('now'), N hours after ('after', 1–48) or the next day at 10:00. */
+  thanksWhen?: ThanksWhen;
+  thanksHours?: number;
   bufferMin?: number;
 };
 
@@ -186,7 +198,7 @@ export async function listAppointmentHistory(
 /** BookingCalendar / BookingList / BookingToday: the appointments in [from, to), at most 62 days. */
 export async function listAppointments(
   params: ListAppointmentsParams,
-): Promise<{ items: Appointment[]; total: number }> {
+): Promise<{ items: ListedAppointment[]; total: number }> {
   return listAppointmentsInOrg(await read(params), {
     from: params.from,
     to: params.to,
@@ -341,6 +353,9 @@ export async function setBookingSettings(
     noticeMin: params.noticeMin,
     reminderEmail: params.reminderEmail,
     thanksEmail: params.thanksEmail,
+    reminderHours: params.reminderHours,
+    thanksWhen: params.thanksWhen,
+    thanksHours: params.thanksHours,
     bufferMin: params.bufferMin,
   });
 }
@@ -353,6 +368,24 @@ export type {
   BookingSettings,
   Client,
   ClientLocale,
+  ListedAppointment,
+  ThanksWhen,
   TimeBlock,
   UpcomingAppointments,
 };
+
+/** B.14c: the hours a business can choose for the reminder and the thanks. */
+export { SEND_TIMING_LIMITS, THANKS_WHEN } from '../server/appointments';
+
+/** B.14c: „Trimite reamintire” by hand, for one or more appointments (at most 100). */
+export type SendAppointmentRemindersParams = Session & { appointmentIds: string[] };
+
+export async function sendAppointmentReminders(
+  params: SendAppointmentRemindersParams,
+): Promise<ManualReminderResult> {
+  const { ctx, scope } = await write(params);
+  return sendRemindersInOrg(ctx, scope, params.appointmentIds);
+}
+
+export type { ManualReminderResult, ManualReminderSkip };
+export { MANUAL_REMINDER_LIMITS } from '../server/manual-reminders';

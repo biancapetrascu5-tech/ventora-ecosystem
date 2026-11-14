@@ -24,6 +24,7 @@ import { doesService, staffForService } from './staff-services';
 import { durationWithin, effectiveTermsFor, type EffectiveTerms } from './terms';
 import { staffDayIntervals, staffEligibility } from './staff';
 import { isUuid, LIMITS } from './validation';
+import { SEND_TIMING_LIMITS, THANKS_WHEN, type ThanksWhen } from './send-timing';
 
 /*
  * Lot B.4a — the appointments and their 7 states (BOOKING.md §3 B.4; plan
@@ -113,12 +114,19 @@ export type BookingSettings = {
   confirmationMode: 'auto' | 'manual';
   noticeMin: number;
   bufferMin: number;
-  /** B.13: the reminder by e-mail 24 hours before (the confirmation always goes). */
+  /** B.13: the reminder by e-mail before the visit (the confirmation always goes). */
   reminderEmail: boolean;
-  /** B.14: the thanks by e-mail 2 hours after the visit (cancellation and change always go). */
+  /** B.14: the thanks by e-mail after the visit (cancellation and change always go). */
   thanksEmail: boolean;
+  /** B.14c: the reminder leaves N hours before (2–72). */
+  reminderHours: number;
+  /** B.14c: the thanks at the end of the visit, N hours after it (1–48) or the next day at 10:00. */
+  thanksWhen: ThanksWhen;
+  thanksHours: number;
   updatedAt: Date | null;
 };
+
+export { SEND_TIMING_LIMITS, THANKS_WHEN, type ThanksWhen } from './send-timing';
 
 export type Client = {
   id: string;
@@ -663,6 +671,9 @@ export const DEFAULT_BOOKING_SETTINGS: Omit<BookingSettings, 'updatedAt'> = {
   bufferMin: 0,
   reminderEmail: true,
   thanksEmail: true,
+  reminderHours: 24,
+  thanksWhen: 'after',
+  thanksHours: 2,
 };
 
 export async function readSettings(client: PoolClient): Promise<BookingSettings> {
@@ -673,9 +684,12 @@ export async function readSettings(client: PoolClient): Promise<BookingSettings>
     buffer_min: number;
     reminder_email: boolean;
     thanks_email: boolean;
+    reminder_hours: number;
+    thanks_when: ThanksWhen;
+    thanks_hours: number;
     updated_at: Date;
   }>(`SELECT free_cancel_hours, confirmation_mode, notice_min, buffer_min, reminder_email,
-             thanks_email, updated_at
+             thanks_email, reminder_hours, thanks_when, thanks_hours, updated_at
         FROM booking.settings`);
   const r = rows[0];
   if (!r) return { ...DEFAULT_BOOKING_SETTINGS, updatedAt: null };
@@ -686,6 +700,9 @@ export async function readSettings(client: PoolClient): Promise<BookingSettings>
     bufferMin: r.buffer_min,
     reminderEmail: r.reminder_email,
     thanksEmail: r.thanks_email,
+    reminderHours: r.reminder_hours,
+    thanksWhen: r.thanks_when,
+    thanksHours: r.thanks_hours,
     updatedAt: r.updated_at,
   };
 }
@@ -717,6 +734,9 @@ export async function setBookingSettingsInOrg(
     bufferMin?: unknown;
     reminderEmail?: unknown;
     thanksEmail?: unknown;
+    reminderHours?: unknown;
+    thanksWhen?: unknown;
+    thanksHours?: unknown;
   },
 ): Promise<BookingSettings> {
   hubOnly(ctx);
@@ -759,12 +779,39 @@ export async function setBookingSettingsInOrg(
             : (() => {
                 throw new InvalidInput('thanksEmail', 'invalid');
               })(),
+      reminderHours:
+        input.reminderHours === undefined
+          ? current.reminderHours
+          : intIn(
+              'reminderHours',
+              input.reminderHours,
+              SEND_TIMING_LIMITS.reminderHours.min,
+              SEND_TIMING_LIMITS.reminderHours.max,
+            ),
+      thanksWhen:
+        input.thanksWhen === undefined
+          ? current.thanksWhen
+          : (THANKS_WHEN as readonly unknown[]).includes(input.thanksWhen)
+            ? (input.thanksWhen as ThanksWhen)
+            : (() => {
+                throw new InvalidInput('thanksWhen', 'invalid');
+              })(),
+      thanksHours:
+        input.thanksHours === undefined
+          ? current.thanksHours
+          : intIn(
+              'thanksHours',
+              input.thanksHours,
+              SEND_TIMING_LIMITS.thanksHours.min,
+              SEND_TIMING_LIMITS.thanksHours.max,
+            ),
     };
     await client.query(
       `INSERT INTO booking.settings
          (organization_id, free_cancel_hours, confirmation_mode, notice_min, buffer_min,
-          reminder_email, thanks_email, updated_by_user_id)
-       VALUES ($1, $2, $3, $4, $5, $7, $8, $6)
+          reminder_email, thanks_email, reminder_hours, thanks_when, thanks_hours,
+          updated_by_user_id)
+       VALUES ($1, $2, $3, $4, $5, $7, $8, $9, $10, $11, $6)
        ON CONFLICT (organization_id) DO UPDATE
          SET free_cancel_hours = EXCLUDED.free_cancel_hours,
              confirmation_mode = EXCLUDED.confirmation_mode,
@@ -772,6 +819,9 @@ export async function setBookingSettingsInOrg(
              buffer_min = EXCLUDED.buffer_min,
              reminder_email = EXCLUDED.reminder_email,
              thanks_email = EXCLUDED.thanks_email,
+             reminder_hours = EXCLUDED.reminder_hours,
+             thanks_when = EXCLUDED.thanks_when,
+             thanks_hours = EXCLUDED.thanks_hours,
              updated_by_user_id = EXCLUDED.updated_by_user_id`,
       [
         ctx.organizationId,
@@ -782,6 +832,9 @@ export async function setBookingSettingsInOrg(
         ctx.userId,
         next.reminderEmail,
         next.thanksEmail,
+        next.reminderHours,
+        next.thanksWhen,
+        next.thanksHours,
       ],
     );
     await audit(
@@ -1984,10 +2037,13 @@ function requireRange(fromRaw: unknown, toRaw: unknown): { from: Date; to: Date 
  * BookingToday: by member, state and search, by start then number, with paging. D-B4-6 = a: the
  * whole team reads the business's calendar.
  */
+/** B.14c: a row of BookingList, with the client's phone (the list shows it under the name). */
+export type ListedAppointment = Appointment & { clientPhone: string | null };
+
 export async function listAppointmentsInOrg(
   ctx: TenantContext,
   input: ListAppointmentsInput,
-): Promise<{ items: Appointment[]; total: number }> {
+): Promise<{ items: ListedAppointment[]; total: number }> {
   hubOnly(ctx);
   const { from, to } = requireRange(input.from, input.to);
   const staffMemberId = input.staffMemberId === undefined ? null : requireId(input.staffMemberId);
@@ -2014,8 +2070,12 @@ export async function listAppointmentsInOrg(
   return tx(
     ctx,
     async (client) => {
-      const { rows } = await client.query<AppointmentRow & { total: string }>(
-        `SELECT ${APPOINTMENT_COLUMNS}, count(*) OVER () AS total
+      const { rows } = await client.query<
+        AppointmentRow & { total: string; client_phone: string | null }
+      >(
+        `SELECT ${APPOINTMENT_COLUMNS}, count(*) OVER () AS total,
+                (SELECT c.phone FROM booking.client c
+                  WHERE c.id = appointment.client_id AND c.erased_at IS NULL) AS client_phone
            FROM booking.appointment
           WHERE starts_at < $2 AND ends_at > $1
             AND ($3::uuid IS NULL OR staff_member_id = $3)
@@ -2026,7 +2086,10 @@ export async function listAppointmentsInOrg(
           LIMIT $7 OFFSET $8`,
         [from, to, staffMemberId, statuses, like, numberQuery, limit, offset, locationId],
       );
-      return { items: rows.map(toAppointment), total: rows[0] ? Number(rows[0].total) : 0 };
+      return {
+        items: rows.map((r) => ({ ...toAppointment(r), clientPhone: r.client_phone })),
+        total: rows[0] ? Number(rows[0].total) : 0,
+      };
     },
     true,
   );

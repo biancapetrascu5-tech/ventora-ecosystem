@@ -958,7 +958,8 @@
       "subject": "Scrie subiectul.",
       "body": "Scrie textul.",
       "long": "Textul are peste {max} de caractere.",
-      "failed": "Nu am putut salva mesajul. Încearcă din nou."
+      "failed": "Nu am putut salva mesajul. Încearcă din nou.",
+      "hours": "Alege între {min} și {max} ore."
     },
     "review": {
       "link": "Linkul paginii de recenzii",

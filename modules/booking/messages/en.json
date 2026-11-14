@@ -958,7 +958,8 @@
       "subject": "Write the subject.",
       "body": "Write the text.",
       "long": "The text is over {max} characters.",
-      "failed": "We couldn’t save the message. Please try again."
+      "failed": "We couldn’t save the message. Please try again.",
+      "hours": "Choose between {min} and {max} hours."
     },
     "review": {
       "link": "Link to the reviews page",

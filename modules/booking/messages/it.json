@@ -958,7 +958,8 @@
       "subject": "Scrivi l’oggetto.",
       "body": "Scrivi il testo.",
       "long": "Il testo supera i {max} caratteri.",
-      "failed": "Non siamo riusciti a salvare il messaggio. Riprova."
+      "failed": "Non siamo riusciti a salvare il messaggio. Riprova.",
+      "hours": "Scegli tra {min} e {max} ore."
     },
     "review": {
       "link": "Link alla pagina delle recensioni",

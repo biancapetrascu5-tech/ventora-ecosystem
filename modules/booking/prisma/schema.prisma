@@ -239,6 +239,11 @@ model Settings {
   reminderEmail       Boolean   @default(true) @map("reminder_email")
   // Lot B.14: the thanks after the visit (on by default, S127)
   thanksEmail         Boolean   @default(true) @map("thanks_email")
+  // Lot B.14c: when they leave — the reminder N hours before (2–72); the thanks right at the end,
+  // N hours after it (1–48) or the next day at 10:00 in the business's zone
+  reminderHours       Int       @default(24) @map("reminder_hours") @db.SmallInt
+  thanksWhen          String    @default("after") @map("thanks_when") @db.VarChar(8)
+  thanksHours         Int       @default(2) @map("thanks_hours") @db.SmallInt
   updatedByUserId  String   @map("updated_by_user_id") @db.Uuid
   createdAt        DateTime @default(now()) @map("created_at") @db.Timestamptz
   updatedAt        DateTime @default(now()) @map("updated_at") @db.Timestamptz
