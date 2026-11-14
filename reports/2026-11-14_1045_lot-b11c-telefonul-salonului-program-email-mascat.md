@@ -1,6 +1,6 @@
 # Lot B.11c: telefonul salonului, programul de azi, e-mailul mascat (contractele publice)
 
-**Branch:** `feat/b11c-public-contact`, din `main` (`2e1a817`).
+**Branch:** `feat/b11c-public-contact`, rebazat pe `main` (`05ccd1a`, cu #215, #216, #217).
 **Status:** PROPUS. **Migrarea `core/organizations/.../20261114000001_organizations_phone`: SQL de revizuit.**
 
 ## Cererile și deciziile fondatoarei (14.11)
@@ -35,8 +35,10 @@
   - Prima rulare a picat pe `organizations` (42703, coloana lipsă): migrarea nu era în lista scrisă de mână din `scripts/test-db-up.mjs`. Am adăugat-o acolo și în CI.
 - **Lanțul fără Docker**, pe rând: `format:check` exit 0 (după formatarea `test-db-up.mjs`); `lint` 0 erori; `typecheck` 33/33; `test` 29/29 (booking 107/107); `i18n:check` complet; `guards:verify` „all guards confirmed”; `build` 7/7.
 
+- **După rebase:** integrarea organizations 67/67, booking 443/443; lanțul complet, cu build 7/7, trece din nou.
+
 ## Commit-uri
 
-- `d4146c4`: B.11c, pushed pe `feat/b11c-public-contact` (`git status -sb` fără „ahead”).
+- `52c4534`: B.11c (după rebase), pushed pe `feat/b11c-public-contact` (`git status -sb` fără „ahead”).
 
-**PR:** se deschide când se eliberează un loc (limita de 3: #215, #216, #217).
+**PR:** vezi mai jos.
