@@ -1,4 +1,4 @@
-<!-- @dsCard group="Ecrane Booking" height=75830 width=2620 page -->
+<!-- @dsCard group="Ecrane Booking" height=89638 width=2620 page -->
 <!doctype html>
 <html lang="ro">
 <head><meta charset="utf-8"><title>BookingPublic — Ventora Systems</title>
@@ -516,6 +516,8 @@ button.pb-sess:hover:not(:disabled){border-color:var(--line-strong)}
 button.pb-sess:focus-visible{outline:var(--focus-ring-width) solid var(--focus-ring);outline-offset:var(--focus-ring-offset)}
 button.pb-sess.full{cursor:not-allowed;opacity:.55}
 .pb-sess-t{display:flex;flex-direction:column;gap:var(--space-1);min-width:0}
+.pb-tel{display:inline-flex;align-items:center;gap:var(--space-1);color:var(--ink-secondary);text-decoration:none;margin-top:2px}
+.pb-tel:hover{color:var(--primary);text-decoration:underline}
 </style>
 </head>
 <body>
@@ -676,7 +678,7 @@ const BK = {"ro": {"booking.public.title": "Programare online", "booking.public.
 /* ---- the public booking page (client, phone first): shared by BookingPublic and BookingDeposit ---- */
 var TB = mkT(BK);
 const PUB = {
-  ro: { addr: "Str. Nicolae Bălcescu 12, Sibiu", phone: "0722 123 456", when: "vineri, 6 noiembrie, la 12:30", whenShort: "Vin, 6 nov. · 12:30", day: "vineri, 6 noiembrie", next: "luni, 9 noiembrie", nextShort: "luni, 9 nov.", left: "9:42", leftPay: "14:12", until: "12:07", email: "cristina.dobre@gmail.com", name: "Cristina Dobre", tel: "0742 220 118" },
+  ro: { addr: "Str. Nicolae Bălcescu 12, Sibiu", phone: "+40 722 123 456", when: "vineri, 6 noiembrie, la 12:30", whenShort: "Vin, 6 nov. · 12:30", day: "vineri, 6 noiembrie", next: "luni, 9 noiembrie", nextShort: "luni, 9 nov.", left: "9:42", leftPay: "14:12", until: "12:07", email: "cristina.dobre@gmail.com", name: "Cristina Dobre", tel: "0742 220 118" },
   en: { addr: "12 Nicolae Bălcescu St, Sibiu", phone: "+40 722 123 456", when: "on Friday 6 November at 12:30", whenShort: "Fri 6 Nov · 12:30", day: "Friday 6 November", next: "Monday 9 November", nextShort: "Mon 9 Nov", left: "9:42", leftPay: "14:12", until: "12:07", email: "cristina.dobre@gmail.com", name: "Cristina Dobre", tel: "+40 742 220 118" },
   fr: { addr: "12 rue Nicolae Bălcescu, Sibiu", phone: "+40 722 123 456", when: "vendredi 6 novembre à 12h30", whenShort: "ven. 6 nov. · 12:30", day: "vendredi 6 novembre", next: "lundi 9 novembre", nextShort: "lun. 9 nov.", left: "9:42", leftPay: "14:12", until: "12:07", email: "cristina.dobre@gmail.com", name: "Cristina Dobre", tel: "+40 742 220 118" },
   es: { addr: "C/ Nicolae Bălcescu 12, Sibiu", phone: "+40 722 123 456", when: "el viernes 6 de noviembre a las 12:30", whenShort: "vie 6 nov · 12:30", day: "viernes 6 de noviembre", next: "lunes 9 de noviembre", nextShort: "lun 9 nov", left: "9:42", leftPay: "14:12", until: "12:07", email: "cristina.dobre@gmail.com", name: "Cristina Dobre", tel: "+40 742 220 118" },
@@ -696,11 +698,12 @@ const mem = (lang) => MEMBERS[lang] || MEMBERS.ro;
 const lei = (n) => n + " lei";
 const P = (lang) => PUB[lang] || PUB.ro;
 function PubShell({ lang = "ro", mode, step, total = 4, title, aside, children, foot = true }) {
-  const mob = mode === "mobile", B8 = React.useContext(BrandCtx148);
+  const mob = mode === "mobile", B8 = React.useContext(BrandCtx148), C150 = React.useContext(PhoneCtx150), ph150 = C150.phone === undefined ? P(lang).phone : C150.phone;
   return h("div", { className: "pb" + (mob ? " m" : ""), lang, style: brandVars148(B8) },
     h("header", { className: "pb-head" },
       h("div", { className: "pb-brand" }, B8 && B8.logo ? h(BrandLogo148, { b: B8, mob }) : h(V.Avatar, { name: "Salon Aurora", shape: "square", size: mob ? "md" : "lg" }),
-        h("div", null, B8 && B8.logo ? null : h("p", { className: mob ? "subheading" : "heading" }, "Salon Aurora"), h("p", { className: "caption muted" }, P(lang).addr))),
+        h("div", null, B8 && B8.logo ? null : h("p", { className: mob ? "subheading" : "heading" }, "Salon Aurora" + (C150.place ? " · " + C150.place : "")), h("p", { className: "caption muted" }, C150.addr || P(lang).addr),
+          ph150 ? h("a", { className: "caption pb-tel", href: "tel:" + ph150.replace(/\s/g, ""), "aria-label": TB(lang, "booking.public.callBusiness", { name: "Salon Aurora", phone: ph150 }) }, h(V.Icon, { name: "phone", size: 12 }), ph150) : null)),
       h(V.LanguageSwitcher, { value: lang, variant: mob ? "icon" : "button" })),
     h("div", { className: "pb-main" + (aside && !mob ? " two" : "") },
       h("main", { className: "pb-card" },
@@ -748,12 +751,13 @@ function DayStrip({ lang, sel = 2, empty }) {
   return h("div", { className: "pb-days" }, (DAYS[lang] || DAYS.ro).map((d, i) => h(V.Button, { key: d, size: "sm", variant: i === sel ? "primary" : "secondary", disabled: i === 0 && !empty }, d)));
 }
 function StepTime({ lang, mob, state }) {
+  const noPh150 = React.useContext(PhoneCtx150).phone === null;
   const p = P(lang), m = mem(lang)[0][1];
   let body;
   if (state === "noday") body = h(V.EmptyState, { size: "sm", icon: "calendar-off", title: TB(lang, "booking.public.noSlotsTitle"), description: TB(lang, "booking.public.noSlotsBody", { member: m, date: p.next }),
     actions: h(React.Fragment, null, h(V.Button, { variant: "primary", icon: "calendar" }, TB(lang, "booking.public.noSlotsNext", { date: p.nextShort })), h(V.Button, { variant: "quiet" }, TB(lang, "booking.public.noSlotsAnyone"))) });
-  else if (state === "none") body = h(V.EmptyState, { size: "sm", icon: "calendar-off", title: TB(lang, "booking.public.noneTitle"), description: TB(lang, "booking.public.noneBody", { service: (SVC[lang] || SVC.ro)[1][1], phone: p.phone }),
-    actions: h(V.Button, { variant: "primary", icon: "phone" }, TB(lang, "booking.public.call")) });
+  else if (state === "none") body = h(V.EmptyState, { size: "sm", icon: "calendar-off", title: TB(lang, "booking.public.noneTitle"), description: noPh150 ? TB(lang, "booking.public.noneBodyNoPhone", { service: (SVC[lang] || SVC.ro)[1][1] }) : TB(lang, "booking.public.noneBody", { service: (SVC[lang] || SVC.ro)[1][1], phone: p.phone }),
+    actions: noPh150 ? undefined : h(V.Button, { variant: "primary", icon: "phone" }, TB(lang, "booking.public.call")) });
   else body = h(V.SlotPicker, { slots: SLOTS, value: "12:30", label: TB(lang, "booking.public.free") });
   return h(PubShell, { lang, mode: mob ? "mobile" : "desktop", step: 3, title: TB(lang, "booking.public.s.time"), aside: h(Summary, { lang, time: false }) },
     mob ? h(Summary, { lang, time: false, compact: true }) : null,
@@ -838,6 +842,7 @@ const BRAND148_BOARDS = h("div", null,
     ["Deutsch · 1280 · Light · mit Marke", "de", "desktop", "light", 1000, h(WithBrand148, { b: B148_FULL }, h(StepService, { lang: "de", mob: false }))],
     ["Italiano · 390 · Dark · con brand", "it", "mobile", "dark", 1240, h(WithBrand148, { b: B148_FULL }, h(StepService, { lang: "it", mob: true }))]] }));
 
+const BKX150 = {"ro": {"booking.public.callBusiness": "Sunați la {name}: {phone}", "booking.public.noneBodyNoPhone": "În următoarele 30 de zile nu mai e nimic liber online pentru {service}. Reveniți peste câteva zile sau alegeți alt serviciu."}, "en": {"booking.public.callBusiness": "Call {name}: {phone}", "booking.public.noneBodyNoPhone": "Nothing is free online for {service} in the next 30 days. Please check back in a few days or choose another service."}, "fr": {"booking.public.callBusiness": "Appeler {name} : {phone}", "booking.public.noneBodyNoPhone": "Aucun créneau en ligne pour {service} dans les 30 prochains jours. Revenez dans quelques jours ou choisissez une autre prestation."}, "es": {"booking.public.callBusiness": "Llamar a {name}: {phone}", "booking.public.noneBodyNoPhone": "No hay nada libre en línea para {service} en los próximos 30 días. Vuelva dentro de unos días o elija otro servicio."}, "de": {"booking.public.callBusiness": "{name} anrufen: {phone}", "booking.public.noneBodyNoPhone": "In den nächsten 30 Tagen ist für {service} online nichts frei. Schauen Sie in ein paar Tagen wieder vorbei oder wählen Sie eine andere Leistung."}, "it": {"booking.public.callBusiness": "Chiami {name}: {phone}", "booking.public.noneBodyNoPhone": "Nei prossimi 30 giorni non c’è nulla di libero online per {service}. Torni tra qualche giorno o scelga un altro servizio."}};
 const BKX149 = {"ro": {"booking.public.class.title": "Alegeți ziua și sesiunea", "booking.public.class.sessions": "Sesiuni", "booking.public.class.with": "cu {member} · {room}", "booking.public.class.spotsOne": "{n} loc", "booking.public.class.spotsFew": "{n} locuri", "booking.public.class.spotsMany": "{n} de locuri", "booking.public.class.full": "Plin", "booking.public.class.noneTitle": "Nicio sesiune în această zi", "booking.public.class.noneBody": "Următoarea sesiune este {date}.", "booking.public.class.allFullTitle": "Toate sesiunile din această zi sunt pline", "booking.public.class.allFullBody": "Alegeți altă zi sau intrați pe lista de așteptare.", "booking.public.class.waitlist": "Intrați pe lista de așteptare", "booking.public.class.takenTitle": "Locul s-a ocupat între timp", "booking.public.class.takenBody": "Sesiunea de la {time} s-a umplut cât completați. Alegeți altă sesiune; datele rămân."}, "en": {"booking.public.class.title": "Choose a day and session", "booking.public.class.sessions": "Sessions", "booking.public.class.with": "with {member} · {room}", "booking.public.class.spotsOne": "{n} spot", "booking.public.class.spotsFew": "{n} spots", "booking.public.class.spotsMany": "{n} spots", "booking.public.class.full": "Full", "booking.public.class.noneTitle": "No sessions on this day", "booking.public.class.noneBody": "The next session is {date}.", "booking.public.class.allFullTitle": "All sessions on this day are full", "booking.public.class.allFullBody": "Choose another day or join the waiting list.", "booking.public.class.waitlist": "Join the waiting list", "booking.public.class.takenTitle": "That spot was just taken", "booking.public.class.takenBody": "The {time} session filled up while you were booking. Choose another session; your details are kept."}, "fr": {"booking.public.class.title": "Choisissez le jour et la séance", "booking.public.class.sessions": "Séances", "booking.public.class.with": "avec {member} · {room}", "booking.public.class.spotsOne": "{n} place", "booking.public.class.spotsFew": "{n} places", "booking.public.class.spotsMany": "{n} places", "booking.public.class.full": "Complet", "booking.public.class.noneTitle": "Aucune séance ce jour-là", "booking.public.class.noneBody": "La prochaine séance a lieu {date}.", "booking.public.class.allFullTitle": "Toutes les séances de ce jour sont complètes", "booking.public.class.allFullBody": "Choisissez un autre jour ou inscrivez-vous sur la liste d’attente.", "booking.public.class.waitlist": "S’inscrire sur la liste d’attente", "booking.public.class.takenTitle": "Cette place vient d’être prise", "booking.public.class.takenBody": "La séance de {time} s’est remplie pendant votre réservation. Choisissez-en une autre ; vos informations sont conservées."}, "es": {"booking.public.class.title": "Elija el día y la sesión", "booking.public.class.sessions": "Sesiones", "booking.public.class.with": "con {member} · {room}", "booking.public.class.spotsOne": "{n} plaza", "booking.public.class.spotsFew": "{n} plazas", "booking.public.class.spotsMany": "{n} plazas", "booking.public.class.full": "Completa", "booking.public.class.noneTitle": "No hay sesiones este día", "booking.public.class.noneBody": "La próxima sesión es {date}.", "booking.public.class.allFullTitle": "Todas las sesiones de este día están completas", "booking.public.class.allFullBody": "Elija otro día o apúntese a la lista de espera.", "booking.public.class.waitlist": "Apuntarse a la lista de espera", "booking.public.class.takenTitle": "Esa plaza se acaba de ocupar", "booking.public.class.takenBody": "La sesión de las {time} se ha llenado mientras reservaba. Elija otra sesión; sus datos se conservan."}, "de": {"booking.public.class.title": "Tag und Kurstermin wählen", "booking.public.class.sessions": "Kurstermine", "booking.public.class.with": "mit {member} · {room}", "booking.public.class.spotsOne": "{n} Platz", "booking.public.class.spotsFew": "{n} Plätze", "booking.public.class.spotsMany": "{n} Plätze", "booking.public.class.full": "Ausgebucht", "booking.public.class.noneTitle": "An diesem Tag keine Kurstermine", "booking.public.class.noneBody": "Der nächste Kurstermin ist {date}.", "booking.public.class.allFullTitle": "Alle Kurstermine an diesem Tag sind ausgebucht", "booking.public.class.allFullBody": "Wählen Sie einen anderen Tag oder tragen Sie sich in die Warteliste ein.", "booking.public.class.waitlist": "Auf die Warteliste", "booking.public.class.takenTitle": "Dieser Platz wurde gerade vergeben", "booking.public.class.takenBody": "Der Kurstermin um {time} wurde während Ihrer Buchung voll. Wählen Sie einen anderen; Ihre Angaben bleiben erhalten."}, "it": {"booking.public.class.title": "Scelga il giorno e la sessione", "booking.public.class.sessions": "Sessioni", "booking.public.class.with": "con {member} · {room}", "booking.public.class.spotsOne": "{n} posto", "booking.public.class.spotsFew": "{n} posti", "booking.public.class.spotsMany": "{n} posti", "booking.public.class.full": "Al completo", "booking.public.class.noneTitle": "Nessuna sessione in questo giorno", "booking.public.class.noneBody": "La prossima sessione è {date}.", "booking.public.class.allFullTitle": "Tutte le sessioni di questo giorno sono al completo", "booking.public.class.allFullBody": "Scelga un altro giorno o si iscriva alla lista d’attesa.", "booking.public.class.waitlist": "Si iscriva alla lista d’attesa", "booking.public.class.takenTitle": "Il posto è stato appena occupato", "booking.public.class.takenBody": "La sessione delle {time} si è riempita mentre prenotava. Scelga un’altra sessione; i Suoi dati restano."}};
 /* S149 (14.11): a class at the time step — sessions with time, spots left or "Plin" (disabled); the "Cu cine" step is skipped (3 steps instead of 4) */
 for (const l in BKX149) BK[l] = Object.assign(BK[l] || {}, BKX149[l]);
@@ -890,6 +895,22 @@ const CLASS149_BOARDS = h("div", null,
     ["Deutsch · 1280 · Light · Kurstermine", "de", "desktop", "light", 1080, h(StepClass, { lang: "de", mob: false })],
     ["Italiano · 390 · Dark · tutto esaurito", "it", "mobile", "dark", 1320, h(StepClass, { lang: "it", mob: true, state: "allFull" })]] }));
 
+const PhoneCtx150 = React.createContext({});
+for (const l in BKX150) BK[l] = Object.assign(BK[l] || {}, BKX150[l]);
+/* S150 (14.11): the phone on the public page — the chosen location's, otherwise the business's; none at all = no number and no "call" button */
+const WithPh150 = ({ v, children }) => h(PhoneCtx150.Provider, { value: v }, children);
+const TURN150 = { place: "Turnișor", addr: "Str. Ștefan cel Mare 140, Sibiu", phone: "+40 269 210 330" };
+const CIS150 = { place: "Cisnădie", addr: "Piața Revoluției 5, Cisnădie" };
+const PH150_BOARDS = h("div", null,
+  h(Board, { title: "S150 · Telefonul salonului pe pagina publică", notes: ["În antet, sub adresă, ca link de apel", "Mai multe locații: telefonul locației alese; locația fără telefon → telefonul afacerii (Hub › Brand › Datele afacerii)", "Fără niciun telefon: nu apare niciun număr, iar „Nu mai sunt locuri libere online” nu are buton de apel", "Format internațional, ex. +40 722 123 456", "Texte: booking.public.callBusiness, booking.public.noneBodyNoPhone"], dH: 1000, mH: 1240, items: [
+    ["20 · O singură locație: telefonul afacerii", R((mob) => h(StepService, { lang: "ro", mob }))],
+    ["21 · Locația Turnișor, cu telefonul ei", R((mob) => h(WithPh150, { v: TURN150 }, h(StepService, { lang: "ro", mob })))],
+    ["22 · Locația Cisnădie, fără telefon: apare telefonul afacerii", R((mob) => h(WithPh150, { v: CIS150 }, h(StepService, { lang: "ro", mob })))],
+    ["23 · Fără niciun telefon: antet fără număr", R((mob) => h(WithPh150, { v: { phone: null } }, h(StepService, { lang: "ro", mob })))],
+    ["24 · Fără niciun telefon: „nimic liber în 30 de zile” fără buton de apel", R((mob) => h(WithPh150, { v: { phone: null } }, h(StepTime, { lang: "ro", mob, state: "none" }))), 900, 1000]] }),
+  h(LocTest, { title: "S150 · Telefonul — test DE / IT", items: [
+    ["Deutsch · 1280 · Light · Standort mit Telefon", "de", "desktop", "light", 1000, h(WithPh150, { v: TURN150 }, h(StepService, { lang: "de", mob: false }))],
+    ["Italiano · 390 · Dark · senza telefono", "it", "mobile", "dark", 1000, h(WithPh150, { v: { phone: null } }, h(StepTime, { lang: "it", mob: true, state: "none" }))]] }));
 mount(h("div", null, h("div", null,
   h(Board, { title: "EasyBook — Pagina publică de rezervare (S116 a)", notes: ["Clientul final, pe telefon întâi", "Serviciu → cu cine → ziua și ora → datele → codul din e-mail", "Captcha la date; programarea se confirmă doar după codul (sau linkul) din e-mail", "Ora e păstrată 10 minute cât confirmă", "Texte în 6 limbi: i18n/booking.json (booking.public.*)", "DE DECIS: codul vs. linkul, furnizorul captcha (vezi README)"], dH: 1000, mH: 1240, items: [
     ["1 · Serviciul (serviciul cu avans are eticheta lui)", R((mob) => h(StepService, { lang: "ro", mob }))],
@@ -915,7 +936,7 @@ mount(h("div", null, h("div", null,
   h(LocTest, { title: "Celelalte limbi: EN, FR, ES", items: [
     ["English · 390 · Light · service", "en", "mobile", "light", 1000, h(StepService, { lang: "en", mob: true })],
     ["Français · 390 · Light · créneau", "fr", "mobile", "light", 1240, h(StepTime, { lang: "fr", mob: true, state: "noday" })],
-    ["Español · 390 · Dark · confirmada", "es", "mobile", "dark", 1000, h(Done, { lang: "es", mob: true })]] })), BRAND148_BOARDS, CLASS149_BOARDS));
+    ["Español · 390 · Dark · confirmada", "es", "mobile", "dark", 1000, h(Done, { lang: "es", mob: true })]] })), BRAND148_BOARDS, CLASS149_BOARDS, PH150_BOARDS));
 </script>
 </body>
 </html>

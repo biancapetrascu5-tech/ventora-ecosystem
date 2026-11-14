@@ -515,7 +515,7 @@ function Launcher({ mode, empty, lang, requested, state, attention }) {
       mob ? null : h(Chevrons, { cls: "lb-chev" })),
     !empty && !mob ? sechead : null);
   const other = h("section", { className: "lb-other" },
-    h("h2", { className: "display-m sec" }, "Descoperă mai mult din Ventora"),
+    h("h2", { className: "display-m sec" }, "Descoperă mai mult din Ventora Systems"),
     h("p", { className: "body lb-other__intro" }, "Explorează aplicațiile disponibile pentru echipa ta."),
     h("div", { className: "rows" }, OTHER.map(([a, s]) => RECO_FOR(a)
       ? h(V.GrowthSlot, { key: a, label: "Recomandare" }, h(V.AppTile, { app: a, access: s, layout: "row", recommendation: RECO_FOR(a), onDetails: () => {}, onDismiss: () => {}, onRemindLater: () => {} }))

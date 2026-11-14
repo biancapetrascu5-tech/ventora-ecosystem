@@ -355,7 +355,10 @@
     "onboarding.cd.d.deal": "Deal",
     "onboarding.cd.d.stage": "Etapă",
     "onboarding.cd.d.owner": "Responsabil",
-    "onboarding.cd.d.value": "Valoare"
+    "onboarding.cd.d.value": "Valoare",
+    "onboarding.guide.b.phoneHelp": "Cu prefixul țării. Apare pe pagina de rezervare.",
+    "onboarding.guide.b.phonePh": "+40 7xx xxx xxx",
+    "onboarding.guide.b.phoneErr": "Scrie numărul cu prefixul țării, de exemplu +40 722 123 456."
   },
   "en": {
     "onboarding.pilot.text": "You’re using Ventora Systems during the trial period. Tell us what doesn’t work: we read everything.",
@@ -713,7 +716,10 @@
     "onboarding.cd.d.deal": "Deal",
     "onboarding.cd.d.stage": "Stage",
     "onboarding.cd.d.owner": "Owner",
-    "onboarding.cd.d.value": "Value"
+    "onboarding.cd.d.value": "Value",
+    "onboarding.guide.b.phoneHelp": "With the country code. Shown on the booking page.",
+    "onboarding.guide.b.phonePh": "+44 7xxx xxx xxx",
+    "onboarding.guide.b.phoneErr": "Enter the number with the country code, for example +40 722 123 456."
   },
   "fr": {
     "onboarding.pilot.text": "Vous utilisez Ventora Systems pendant la période de test. Dites-nous ce qui ne marche pas : nous lisons tout.",
@@ -1071,7 +1077,10 @@
     "onboarding.cd.d.deal": "Affaire",
     "onboarding.cd.d.stage": "Étape",
     "onboarding.cd.d.owner": "Responsable",
-    "onboarding.cd.d.value": "Valeur"
+    "onboarding.cd.d.value": "Valeur",
+    "onboarding.guide.b.phoneHelp": "Avec l’indicatif du pays. Affiché sur la page de réservation.",
+    "onboarding.guide.b.phonePh": "+33 6 xx xx xx xx",
+    "onboarding.guide.b.phoneErr": "Saisissez le numéro avec l’indicatif du pays, par exemple +40 722 123 456."
   },
   "es": {
     "onboarding.pilot.text": "Usa Ventora Systems durante el periodo de prueba. Díganos qué no funciona: lo leemos todo.",
@@ -1429,7 +1438,10 @@
     "onboarding.cd.d.deal": "Negocio",
     "onboarding.cd.d.stage": "Etapa",
     "onboarding.cd.d.owner": "Responsable",
-    "onboarding.cd.d.value": "Valor"
+    "onboarding.cd.d.value": "Valor",
+    "onboarding.guide.b.phoneHelp": "Con el prefijo del país. Aparece en la página de reservas.",
+    "onboarding.guide.b.phonePh": "+34 6xx xxx xxx",
+    "onboarding.guide.b.phoneErr": "Escriba el número con el prefijo del país, por ejemplo +40 722 123 456."
   },
   "de": {
     "onboarding.pilot.text": "Sie nutzen Ventora Systems in der Testphase. Sagen Sie uns, was nicht funktioniert: Wir lesen alles.",
@@ -1787,7 +1799,10 @@
     "onboarding.cd.d.deal": "Deal",
     "onboarding.cd.d.stage": "Phase",
     "onboarding.cd.d.owner": "Zuständig",
-    "onboarding.cd.d.value": "Wert"
+    "onboarding.cd.d.value": "Wert",
+    "onboarding.guide.b.phoneHelp": "Mit Ländervorwahl. Erscheint auf der Buchungsseite.",
+    "onboarding.guide.b.phonePh": "+49 15x xxxxxxx",
+    "onboarding.guide.b.phoneErr": "Geben Sie die Nummer mit Ländervorwahl ein, zum Beispiel +40 722 123 456."
   },
   "it": {
     "onboarding.pilot.text": "Sta usando Ventora Systems nel periodo di prova. Ci dica cosa non funziona: leggiamo tutto.",
@@ -2145,6 +2160,9 @@
     "onboarding.cd.d.deal": "Trattativa",
     "onboarding.cd.d.stage": "Fase",
     "onboarding.cd.d.owner": "Responsabile",
-    "onboarding.cd.d.value": "Valore"
+    "onboarding.cd.d.value": "Valore",
+    "onboarding.guide.b.phoneHelp": "Con il prefisso internazionale. Compare nella pagina di prenotazione.",
+    "onboarding.guide.b.phonePh": "+39 3xx xxx xxxx",
+    "onboarding.guide.b.phoneErr": "Scriva il numero con il prefisso internazionale, per esempio +40 722 123 456."
   }
 }

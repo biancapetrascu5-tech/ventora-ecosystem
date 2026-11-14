@@ -36,3 +36,5 @@ DE DECIS:
 - **Pragul pastilei calde.** Recomandare: 3 locuri sau mai puțin.
 - **Dacă arătăm numărul exact la locuri multe.** Recomandare: da; alternativa ar fi „Locuri disponibile” peste 10.
 - **Pluralul în RO.** Recomandare: „{n} de locuri” de la 20; celelalte limbi au o singură formă de plural.
+
+**S150 · Telefonul salonului (1.4.0).** În antet, sub adresă, apare telefonul ca link de apel („Sunați la Salon Aurora: …”). Cu mai multe locații, se arată telefonul locației alese, iar pentru o locație fără telefon, telefonul afacerii (Hub › Brand). Fără niciun telefon, nu apare niciun număr, iar „Nu mai sunt locuri libere online” nu mai are buton de apel (`booking.public.noneBodyNoPhone`). Numerele exemplu sunt acum în format internațional (`+40 722 123 456`). Desenat la cadrele 20–24, cu test DE / IT. Zilele libere pe pagina publică sunt desenate în BookingClosures; programul de azi la „Alegeți salonul”, în BookingLocations.

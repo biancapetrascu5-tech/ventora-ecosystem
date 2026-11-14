@@ -472,10 +472,10 @@
     "App~20icons"
   ],
   "lastChange": {
-    "at": "2026-11-14T08:27:47Z",
+    "at": "2026-11-14T10:42:25Z",
     "by": "Bianca Petrașcu",
     "via": "Claude",
-    "note": "S149: BookingClients (nou: lista de clienți /booking/clients, căutare, filtre, sortare, paginare, vedere de membru); sesiunile unei clase pe BookingPublic, fără pasul „Cu cine”; cele 8 taburi în BookingPayments; „Nu e relevant pentru mine” pe RecommendationCard (onReport, doar proprietarul); bugetul ofertei în GrowthOfferEditor; „Repornește” blocat 24 h în FounderNotifications; 81 de chei noi, în 6 limbi"
+    "note": "S150: telefonul salonului (opțional, format internațional) în Hub › Brand, în ghidul de pornire și pe fiecare locație, afișat pe pagina publică; programul pe locație (implicit al afacerii); BookingClosures (nou: zile libere ale afacerii sau ale unei locații, fără rezervări); „Azi: …” / „Închis azi” la alegerea salonului; „Descoperă mai mult din Ventora Systems” și Sie / Lei în launcher; 62 de chei noi, 2 schimbate, în 6 limbi"
   },
   "layout": "files",
   "libraries": [

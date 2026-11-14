@@ -1,5 +1,47 @@
 
 
+## 2026-11-14 · S150 — Telefonul salonului, programul pe locație și zilele libere, „Ventora Systems” și Sie / Lei în launcher
+
+### Biblioteca
+- Fără schimbări în bundle.js, bundle.css sau index.d.ts. Tokeni: neschimbați.
+
+### Componente noi (1.0.0)
+- **BookingClosures** — Setări › General › Zile libere: pentru toată afacerea sau pentru o locație, cu interval și motiv opțional (max. 60); avertisment pentru programările existente; erori (ordinea datelor, suprapunere, salvare); ștergere cu confirmare; stare goală; ziua liberă pe pagina publică.
+
+### Componente schimbate
+- **HubBrand** (1.1.0) — „Datele afacerii”: numele (doar citire) și telefonul afacerii, opțional, în format internațional; gol și eroare.
+- **BookingOnboarding** (1.1.0) — telefonul de la „Datele afacerii și programul” e opțional, cu prefixul țării; gol și eroare; rândurile programului reparate.
+- **BookingLocations** (1.1.0) — telefonul locației, opțional, în format internațional; „La fel ca programul afacerii” (implicit) sau program propriu; „Azi: …” / „Închis azi” la „Alegeți salonul”.
+- **BookingPublic** (1.4.0) — telefonul în antet: al locației alese, altfel al afacerii, altfel niciunul (și fără buton de apel).
+- **HubLauncher** (1.3.0) — „Descoperă mai mult din Ventora Systems”; textul de sub salut cu Sie / Lei.
+- **BookingSettings** (1.0.1) — README: Zile libere și programul pe locație.
+- Textul „Descoperă mai mult din Ventora Systems” e înlocuit și în copiile de chei din 82 de previzualizări (inclusiv README-urile AppTile și HubEmpty), fără alte schimbări de componentă.
+
+### `manifest.json`
+- Adăugată BookingClosures (173 de componente).
+
+### Chei i18n (6 limbi, aceleași chei și aceiași parametri `{…}`; 62 noi, 2 schimbate, 0 șterse)
+#### `i18n/booking.json` — 52 chei noi
+
+- `booking.locations.*` (9): `booking.locations.phoneHelp`, `booking.locations.phonePh`, `booking.locations.phoneErr`, `booking.locations.sameHours`, `booking.locations.sameHoursHelp`, `booking.locations.ownHours`, `booking.locations.bizHours`, `booking.locations.hoursErr`, `booking.locations.closed`
+- `booking.locations.pub.*` (1): `booking.locations.pub.closedToday`
+- `booking.public.*` (5): `booking.public.callBusiness`, `booking.public.closedTitle`, `booking.public.closedBody`, `booking.public.closedBodyNoReason`, `booking.public.noneBodyNoPhone`
+- `booking.closures.*` (34): `booking.closures.title`, `booking.closures.lead`, `booking.closures.add`, `booking.closures.upcoming`, `booking.closures.past`, `booking.closures.whereAll`, `booking.closures.daysOne`, `booking.closures.daysFew`, `booking.closures.daysMany`, `booking.closures.newTitle`, `booking.closures.editTitle`, `booking.closures.from`, `booking.closures.to`, `booking.closures.toHelp`, `booking.closures.where`, `booking.closures.reason`, `booking.closures.reasonPh`, `booking.closures.reasonHelp`, `booking.closures.save`, `booking.closures.remove`, `booking.closures.conflictTitle`, `booking.closures.conflictBody`, `booking.closures.conflictOpen`, `booking.closures.errOrder`, `booking.closures.errOverlap`, `booking.closures.emptyTitle`, `booking.closures.emptyBody`, `booking.closures.errorTitle`, `booking.closures.errorBody`, `booking.closures.saved`, `booking.closures.removeTitle`, `booking.closures.removeBody`, `booking.closures.closedDay`, `booking.closures.calNote`
+- `booking.closures.col.*` (3): `booking.closures.col.when`, `booking.closures.col.where`, `booking.closures.col.reason`
+
+#### `i18n/team.json` — 7 chei noi
+
+- `hub.brand.contact.*` (2): `hub.brand.contact.title`, `hub.brand.contact.lead`
+- `hub.brand.*` (5): `hub.brand.phone`, `hub.brand.phoneHelp`, `hub.brand.phonePh`, `hub.brand.phoneErr`, `hub.brand.phoneNone`
+
+#### `i18n/onboarding.json` — 3 chei noi
+
+- `onboarding.guide.b.*` (3): `onboarding.guide.b.phoneHelp`, `onboarding.guide.b.phonePh`, `onboarding.guide.b.phoneErr`
+
+#### `i18n/apps.json` — 2 schimbate
+
+Schimbate: `apps.launcher.other.title` (toate cele 6 limbi: „… Ventora Systems”), `apps.launcher.lead` (DE „Alle Tools Ihres Teams an einem Ort.”, IT „Tutti gli strumenti del Suo team, in un unico posto.”)
+
 ## 2026-11-14 · S149 — Lista de clienți EasyBook, clase pe pagina publică, taburile Setărilor, raportarea recomandărilor, bugetul ofertei, repornirea blocată
 
 ### Biblioteca (bundle.js, index.d.ts)

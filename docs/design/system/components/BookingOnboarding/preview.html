@@ -1,4 +1,4 @@
-<!-- @dsCard group="Ecrane Booking" height=36438 width=2620 page -->
+<!-- @dsCard group="Ecrane Booking" height=44140 width=2620 page -->
 <!doctype html>
 <html lang="ro">
 <head><meta charset="utf-8"><title>BookingOnboarding — Ventora Systems</title>
@@ -833,6 +833,7 @@ html,body{min-height:100%}
 <body>
 <div id="root"></div>
 <script>
+const ONBX150 = {"ro": {"onboarding.guide.b.name": "Numele afacerii", "onboarding.guide.b.phone": "Telefon", "onboarding.guide.b.address": "Adresa", "onboarding.guide.b.hours": "Programul de lucru", "onboarding.guide.b.hoursHelp": "Orele fiecărui coleg le alegi la pasul Echipa.", "onboarding.guide.b.phoneHelp": "Cu prefixul țării. Apare pe pagina de rezervare.", "onboarding.guide.b.phonePh": "+40 7xx xxx xxx", "onboarding.guide.b.phoneErr": "Scrie numărul cu prefixul țării, de exemplu +40 722 123 456."}, "en": {"onboarding.guide.b.name": "Business name", "onboarding.guide.b.phone": "Phone", "onboarding.guide.b.address": "Address", "onboarding.guide.b.hours": "Working hours", "onboarding.guide.b.hoursHelp": "Each colleague’s hours are set in the Team step.", "onboarding.guide.b.phoneHelp": "With the country code. Shown on the booking page.", "onboarding.guide.b.phonePh": "+44 7xxx xxx xxx", "onboarding.guide.b.phoneErr": "Enter the number with the country code, for example +40 722 123 456."}, "fr": {"onboarding.guide.b.name": "Nom de l’entreprise", "onboarding.guide.b.phone": "Téléphone", "onboarding.guide.b.address": "Adresse", "onboarding.guide.b.hours": "Horaires d’ouverture", "onboarding.guide.b.hoursHelp": "Les horaires de chaque collègue se choisissent à l’étape Équipe.", "onboarding.guide.b.phoneHelp": "Avec l’indicatif du pays. Affiché sur la page de réservation.", "onboarding.guide.b.phonePh": "+33 6 xx xx xx xx", "onboarding.guide.b.phoneErr": "Saisissez le numéro avec l’indicatif du pays, par exemple +40 722 123 456."}, "es": {"onboarding.guide.b.name": "Nombre del negocio", "onboarding.guide.b.phone": "Teléfono", "onboarding.guide.b.address": "Dirección", "onboarding.guide.b.hours": "Horario de trabajo", "onboarding.guide.b.hoursHelp": "El horario de cada compañero se elige en el paso Equipo.", "onboarding.guide.b.phoneHelp": "Con el prefijo del país. Aparece en la página de reservas.", "onboarding.guide.b.phonePh": "+34 6xx xxx xxx", "onboarding.guide.b.phoneErr": "Escriba el número con el prefijo del país, por ejemplo +40 722 123 456."}, "de": {"onboarding.guide.b.name": "Name des Unternehmens", "onboarding.guide.b.phone": "Telefon", "onboarding.guide.b.address": "Adresse", "onboarding.guide.b.hours": "Arbeitszeiten", "onboarding.guide.b.hoursHelp": "Die Zeiten jedes Kollegen legen Sie im Schritt Team fest.", "onboarding.guide.b.phoneHelp": "Mit Ländervorwahl. Erscheint auf der Buchungsseite.", "onboarding.guide.b.phonePh": "+49 15x xxxxxxx", "onboarding.guide.b.phoneErr": "Geben Sie die Nummer mit Ländervorwahl ein, zum Beispiel +40 722 123 456."}, "it": {"onboarding.guide.b.name": "Nome dell’attività", "onboarding.guide.b.phone": "Telefono", "onboarding.guide.b.address": "Indirizzo", "onboarding.guide.b.hours": "Orari di lavoro", "onboarding.guide.b.hoursHelp": "Gli orari di ogni collega si scelgono al passo Team.", "onboarding.guide.b.phoneHelp": "Con il prefisso internazionale. Compare nella pagina di prenotazione.", "onboarding.guide.b.phonePh": "+39 3xx xxx xxxx", "onboarding.guide.b.phoneErr": "Scriva il numero con il prefisso internazionale, per esempio +40 722 123 456."}};
 const V = window.Ventora;
 const { useState } = React;
 const h = React.createElement;
@@ -1029,7 +1030,9 @@ function EbPage({ mode, active = "azi", title, header, children, drawer, overlay
 }
 
 /* S140 · EasyBook — the setup guide (first start, EasyBook + ClientDesk pack for a new salon): a checklist on "Azi" with progress ("3 din 7"): the business's details and opening hours → services (templates per business type, editable) → the team (invitations) and who does what → the booking page (link, QR, Instagram / Google) → messages (what leaves automatically) → deposit and payments (optional) → a first test booking. Each step: what it is, why it matters, "Fă acum" / "Mai târziu"; skipped steps stay in the list; the guide closes with "Felicitări". RO only for now; keys onboarding.guide.* in i18n/onboarding.json. */
+for (const l in ONBX150) ONB[l] = Object.assign(ONB[l] || {}, ONBX150[l]);
 const G = (k, v) => O("guide." + k, v);
+const G150 = (lang, k, v) => mkT(ONB)(lang, "onboarding.guide." + k, v);
 const STEPS = ["business", "services", "team", "page", "messages", "deposit", "test"];
 const ICON = { business: "building-2", services: "boxes", team: "users", page: "globe", messages: "message-square", deposit: "credit-card", test: "calendar-check" };
 function Checklist({ mode, done = 3, skipped = [], on }) {
@@ -1065,10 +1068,10 @@ const StepDrawer = ({ mode, s, children, primary }) => h(Drw, { mode, width: 640
   h(V.Notice, { tone: "neutral", icon: ICON[s], title: G("why") }, G("s." + s + ".why")),
   children);
 const DAYS = ["l", "ma", "mi", "j", "v", "s", "d"];
-const BusinessStep = ({ mode }) => h(StepDrawer, { mode, s: "business" },
+const BusinessStep = ({ mode, phone = "set" }) => h(StepDrawer, { mode, s: "business" },
   h(V.FormField, { label: G("b.name"), required: true }, h(V.Input, { defaultValue: "Salon Aurora" })),
-  h("div", { className: "g2f" + (mode === "mobile" ? " m" : "") }, h(V.FormField, { label: G("b.phone"), required: true }, h(V.Input, { defaultValue: "0722 123 456" })), h(V.FormField, { label: G("b.address"), required: true }, h(V.Input, { defaultValue: "Str. Nicolae Bălcescu 12, Sibiu" }))),
-  h(V.FormField, { label: G("b.hours"), helper: G("b.hoursHelp") }, h("ul", { className: "fn-list" }, DAYS.map((d, i) => h("li", { key: d, className: "fn-row", style: { gridTemplateColumns: "var(--space-16) minmax(0,1fr)" } },
+  h("div", { className: "g2f" + (mode === "mobile" ? " m" : "") }, h(V.FormField, { label: G("b.phone"), optional: true, helper: phone === "error" ? undefined : G("b.phoneHelp"), error: phone === "error" ? G("b.phoneErr") : undefined }, h(V.Input, { type: "tel", inputMode: "tel", placeholder: G("b.phonePh"), defaultValue: phone === "empty" ? "" : phone === "error" ? "0722 123 456" : "+40 722 123 456", invalid: phone === "error" })), h(V.FormField, { label: G("b.address"), required: true }, h(V.Input, { defaultValue: "Str. Nicolae Bălcescu 12, Sibiu" }))),
+  h(V.FormField, { label: G("b.hours"), helper: G("b.hoursHelp") }, h("ul", { className: "fn-list" }, DAYS.map((d, i) => h("li", { key: d, className: "fn-row", style: { gridTemplateColumns: "calc(var(--space-16) * 2.2) minmax(0,1fr)" } },
     h(V.Toggle, { label: G("day." + d), checked: i < 6, onChange: noop }),
     i < 6 ? h("span", { className: "body-small v-num" }, i === 5 ? "09:00 – 14:00" : "09:00 – 19:00") : h("span", { className: "body-small muted" }, G("closed")))))));
 const TPLS = ["hair", "nails", "beauty", "barber", "massage"];
@@ -1110,7 +1113,13 @@ const TestStep = ({ mode }) => h(StepDrawer, { mode, s: "test", primary: h(V.But
 const FinDlg = ({ mode }) => h(Dlg, { mode, title: G("fin.title"), description: G("fin.body"),
   footer: h(React.Fragment, null, h(V.Button, { variant: "quiet" }, G("fin.close")), h(V.Button, { variant: "primary", icon: "calendar" }, G("fin.calendar"))) },
   h(KVL, { rows: [[G("fin.k1"), G("fin.v1")], [G("fin.k2"), G("fin.v2")], [G("fin.k3"), G("fin.v3")]] }), h(Info, null, G("fin.note")));
-mount(h(Board3, { title: "EasyBook — ghidul de configurare la prima pornire (S140)", notes: ["Checklist pe „Azi”, cu progres: 7 pași, avansul opțional", "Fiecare pas: ce e, de ce contează, „Fă acum” / „Mai târziu”; pașii săriți rămân în listă", "Șabloane de servicii pe tip de afacere, editabile", "Se închide când e gata, cu „Felicitări”", "Doar în română deocamdată; chei onboarding.guide.* în i18n/onboarding.json"], items: [
+
+/* S150 (14.11): the business phone in the setup guide is optional, international format */
+const PhoneBox150 = ({ lang, state }) => h("div", { className: "d0", style: { padding: "var(--space-5)", background: "var(--sheet)", color: "var(--ink)", height: "100%", boxSizing: "border-box" } },
+  h(V.FormField, { label: G150(lang, "b.name"), required: true }, h(V.Input, { defaultValue: "Salon Aurora" })),
+  h(V.FormField, { label: G150(lang, "b.phone"), optional: true, helper: state === "error" ? undefined : G150(lang, "b.phoneHelp"), error: state === "error" ? G150(lang, "b.phoneErr") : undefined }, h(V.Input, { type: "tel", placeholder: G150(lang, "b.phonePh"), defaultValue: state === "empty" ? "" : state === "error" ? "0151 2345678" : "+49 151 2345678", invalid: state === "error" })),
+  h(V.FormField, { label: G150(lang, "b.address"), required: true }, h(V.Input, { defaultValue: "Str. Nicolae Bălcescu 12, Sibiu" })));
+mount(h("div", null, h(Board3, { title: "EasyBook — ghidul de configurare la prima pornire (S140)", notes: ["Checklist pe „Azi”, cu progres: 7 pași, avansul opțional", "Fiecare pas: ce e, de ce contează, „Fă acum” / „Mai târziu”; pașii săriți rămân în listă", "Șabloane de servicii pe tip de afacere, editabile", "Se închide când e gata, cu „Felicitări”", "Ecranul în română; cheile onboarding.guide.* sunt în 6 limbi în i18n/onboarding.json", "S150: telefonul afacerii e opțional, cu prefixul țării; același câmp ca în Hub › Brand › Datele afacerii"], items: [
   ["1 · „Azi” cu ghidul: 3 din 7", (m) => h(Azi, { mode: m }), 1070, 1360, 1690],
   ["2 · Datele afacerii și programul", (m) => h(Azi, { mode: m, done: 0, drawer: h(BusinessStep, { mode: m }) }), 1070, 1360, 1720],
   ["3 · Serviciile, din șablonul „Salon de coafură”", (m) => h(Azi, { mode: m, done: 1, drawer: h(ServicesStep, { mode: m }) }), 1070, 1360, 1710],
@@ -1121,7 +1130,13 @@ mount(h(Board3, { title: "EasyBook — ghidul de configurare la prima pornire (S
   ["8 · Avansul sărit: rămâne în listă", (m) => h(Azi, { mode: m, done: 6, skipped: ["deposit"], on: "test" }), 1070, 1360, 1680],
   ["9 · Prima programare de test", (m) => h(Azi, { mode: m, done: 6, skipped: ["deposit"], drawer: h(TestStep, { mode: m }) }), 1070, 1360, 1680],
   ["10 · Felicitări", (m) => h(Azi, { mode: m, done: 7, overlay: h(FinDlg, { mode: m }) }), 1070, 1360, 1660],
-  ["11 · După ghid: „Azi” fără checklist", (m) => h(Azi, { mode: m, finished: true }), 560, 560, 520]] }));
+  ["11 · După ghid: „Azi” fără checklist", (m) => h(Azi, { mode: m, finished: true }), 560, 560, 520],
+  ["12 · S150 · Telefonul afacerii gol: e opțional, pasul se poate termina", (m) => h(Azi, { mode: m, done: 0, drawer: h(BusinessStep, { mode: m, phone: "empty" }) }), 1070, 1360, 1720],
+  ["13 · S150 · Eroare: telefon fără prefixul țării", (m) => h(Azi, { mode: m, done: 0, drawer: h(BusinessStep, { mode: m, phone: "error" }) }), 1070, 1360, 1740]] }),
+  h(LocTest, { title: "S150 · Telefonul afacerii — test DE / IT", items: [
+    ["Deutsch · 1280 · Light", "de", "desktop", "light", 360, h(PhoneBox150, { lang: "de" })],
+    ["Italiano · 390 · Dark · errore", "it", "mobile", "dark", 380, h(PhoneBox150, { lang: "it", state: "error" })],
+    ["Deutsch · 390 · Dark · leer", "de", "mobile", "dark", 380, h(PhoneBox150, { lang: "de", state: "empty" })]] })));
 
 </script>
 </body>
