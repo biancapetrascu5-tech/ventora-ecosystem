@@ -24,7 +24,9 @@ import s from './detail.module.css';
    its buttons, the team's note, the history (the last 3, then „Vezi tot istoricul”); the main
    action in the footer, the others in the „…” menu. What the footer and the menu offer comes from
    the caller (detail-format `actionsFor`: only the transitions allowed from the state); a button
-   without a handler is not drawn. Props only: the page and the gallery draw the same component. */
+   without a handler is not drawn. BookingMoney (screen 5) adds the pill after the state, „Plată”
+   after the notice, the quiet button at the start of the footer and the 560 px width; without a
+   history the section is not drawn. Props only: the page and the gallery draw the same component. */
 
 export type DetailButton = {
   id: string;
@@ -60,9 +62,18 @@ export type BookingDetailDrawerProps = {
   noticeButtons?: DetailButton[];
   /** The team's note; absent = not shown (BookingStatuses). */
   note?: { value: string; onChange?: (v: string) => void; onBlur?: () => void } | null;
-  history: [string, string][];
+  /** Absent: no history section (BookingMoney draws the payments instead). */
+  history?: [string, string][];
   /** „Vezi tot istoricul” (or „Arată mai puțin”), when there is more. */
   historyMore?: { label: string; onPress?: () => void } | null;
+  /** BookingMoney: the pill after the state („De încasat · 300 lei” / „Achitat”). */
+  pill?: ReactNode;
+  /** BookingMoney: „Plată” (MoneyBlock), after the notice. */
+  money?: ReactNode;
+  /** BookingMoney: the quiet button at the start of the footer („Nu a venit…”). */
+  footerStart?: DetailButton | null;
+  /** The panel's width (BookingMoney: 560). */
+  width?: number;
   footer: DetailButton[];
   menu: DetailMenuItem[];
   onMenu?: (id: string) => void;
@@ -84,6 +95,16 @@ export function BookingDetailDrawer(p: BookingDetailDrawerProps) {
     ...(m.separatorBefore ? [{ separator: true as const }] : []),
     { id: m.id, label: m.label, icon: m.icon, isDanger: m.destructive },
   ]);
+  const buttons = p.footer.map((b) => (
+    <Button
+      key={b.id}
+      icon={b.icon}
+      variant={b.primary ? 'primary' : 'secondary'}
+      onPress={b.onPress}
+    >
+      {b.label}
+    </Button>
+  ));
   return (
     <Drawer
       {...(p.contained === false
@@ -101,20 +122,20 @@ export function BookingDetailDrawer(p: BookingDetailDrawerProps) {
           </Menu>
         ) : null
       }
+      width={p.width}
       footer={
-        p.footer.length > 0 ? (
-          <>
-            {p.footer.map((b) => (
-              <Button
-                key={b.id}
-                icon={b.icon}
-                variant={b.primary ? 'primary' : 'secondary'}
-                onPress={b.onPress}
-              >
-                {b.label}
-              </Button>
-            ))}
-          </>
+        p.footerStart ? (
+          // BookingMoney: the quiet button at the start (sv-foot / sv-grow)
+          <div className={`${s.foot} ${mobile ? s.footM : ''}`}>
+            <Button variant="quiet" icon={p.footerStart.icon} onPress={p.footerStart.onPress}>
+              {p.footerStart.label}
+            </Button>
+            <span className={s.grow} />
+            {buttons}
+          </div>
+        ) : p.footer.length > 0 ? (
+          // the Drawer lays the buttons out itself (full width on a phone)
+          <>{buttons}</>
         ) : undefined
       }
     >
@@ -124,6 +145,7 @@ export function BookingDetailDrawer(p: BookingDetailDrawerProps) {
             {t(`status.${look.key}`)}
           </StatusPill>
           {p.badge && <Badge>{p.badge}</Badge>}
+          {p.pill}
         </div>
         {p.lines}
         <dl className={s.kv}>
@@ -155,6 +177,7 @@ export function BookingDetailDrawer(p: BookingDetailDrawerProps) {
             ))}
           </div>
         )}
+        {p.money}
         {p.note && (
           <FormField label={t('detail.notes')}>
             <Textarea
@@ -166,25 +189,27 @@ export function BookingDetailDrawer(p: BookingDetailDrawerProps) {
             />
           </FormField>
         )}
-        <div>
-          <p className={`subheading ${s.histHead}`}>{t('detail.history')}</p>
-          <ul className={`body-small ${s.hist}`}>
-            {p.history.map(([when, what], i) => (
-              <li key={i}>
-                <span className={s.muted}>{when}</span> {what}
-              </li>
-            ))}
-          </ul>
-          {p.historyMore && (
-            <button
-              type="button"
-              className={`v-link body-small ${s.more}`}
-              onClick={p.historyMore.onPress}
-            >
-              {p.historyMore.label}
-            </button>
-          )}
-        </div>
+        {p.history && (
+          <div>
+            <p className={`subheading ${s.histHead}`}>{t('detail.history')}</p>
+            <ul className={`body-small ${s.hist}`}>
+              {p.history.map(([when, what], i) => (
+                <li key={i}>
+                  <span className={s.muted}>{when}</span> {what}
+                </li>
+              ))}
+            </ul>
+            {p.historyMore && (
+              <button
+                type="button"
+                className={`v-link body-small ${s.more}`}
+                onClick={p.historyMore.onPress}
+              >
+                {p.historyMore.label}
+              </button>
+            )}
+          </div>
+        )}
       </Body>
     </Drawer>
   );

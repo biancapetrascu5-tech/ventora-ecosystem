@@ -1,0 +1,102 @@
+/* BookingPayments (S116 d): the classes of preview.html (x-body, x-stack, x-row, x-line, pb-sum c,
+   pb-rule, unsaved), 1:1. */
+.tabs {
+  padding: 0 var(--space-6);
+}
+.tabs.m {
+  padding: 0 var(--space-4);
+}
+.body {
+  padding: var(--space-4) 0 var(--space-8);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+.body.m {
+  gap: var(--space-4);
+}
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+.stack p {
+  margin: 0;
+}
+.row {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+  flex-wrap: wrap;
+}
+.start {
+  align-self: flex-start;
+}
+.short {
+  max-width: 200px;
+}
+.services {
+  padding-left: var(--space-6);
+}
+.line {
+  display: flex;
+  gap: var(--space-2);
+  align-items: flex-start;
+  color: var(--ink-secondary);
+  margin: 0;
+}
+.line > :first-child,
+.rule > :first-child {
+  flex: none;
+  margin-top: 2px;
+}
+.sum {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  background: var(--raised);
+  border-radius: var(--radius-md);
+}
+.sum p {
+  margin: 0;
+}
+.rule {
+  display: flex;
+  gap: var(--space-2);
+  align-items: flex-start;
+  margin: 0;
+}
+.rule > :first-child {
+  color: var(--ink-secondary);
+}
+/* preview.html: .v-notice { margin-bottom: 8px } */
+.notice {
+  margin: 0 0 var(--space-2);
+}
+.unsaved {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-6);
+  background: var(--raised);
+  border-top: var(--border-width) solid var(--line-strong);
+  box-shadow: var(--shadow-2);
+  z-index: var(--z-sticky);
+  flex-wrap: wrap;
+}
+.unsaved.desktop {
+  left: var(--spine-width);
+}
+.unsaved.tablet {
+  left: var(--spine-width-collapsed);
+}
+.unsaved.mobile {
+  bottom: var(--bottomnav-height);
+  padding: var(--space-3) var(--space-4);
+}
