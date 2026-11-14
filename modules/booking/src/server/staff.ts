@@ -382,7 +382,7 @@ export async function getBusinessHoursInOrg(ctx: TenantContext): Promise<Busines
   return withBookingTx(ctx.organizationId, (client) => readBusinessWeek(client), true);
 }
 
-async function readBusinessWeek(client: PoolClient): Promise<BusinessDay[]> {
+export async function readBusinessWeek(client: PoolClient): Promise<BusinessDay[]> {
   const { rows } = await client.query<{
     weekday: number;
     is_open: boolean;

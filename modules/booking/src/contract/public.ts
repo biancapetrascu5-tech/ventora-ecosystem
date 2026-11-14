@@ -15,6 +15,7 @@ import {
   type PublicHoldResult,
 } from '../server/public';
 import type { FreeSlots } from '../server/availability';
+import type { TodayHours } from '../server/public-contact';
 
 /*
  * Lot B.11a — the public contract of the booking page (app.ventora-hub.com/r/<slug>), without a
@@ -135,6 +136,7 @@ export type {
   CaptchaVerifier,
   PublicBookingPage,
   PublicBookingResult,
+  TodayHours,
   PublicClassSession,
   PublicHoldResult,
 };

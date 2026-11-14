@@ -343,6 +343,17 @@ describe('B.11b — the link', () => {
     expect(page).toMatchObject({ canMove: true, canCancel: true, cancelLate: false });
     expect(page.policy.freeUntil.getTime()).toBe(at(8).getTime() - 24 * 3_600_000);
     expect(page.policy.onlineUntil.getTime()).toBe(at(8).getTime() - 2 * 3_600_000);
+    // B.11c: no phone yet: null; then the business's („Sunați la salon”)
+    expect(page.business.phone).toBeNull();
+    await adminQuery(`UPDATE organizations.organization SET phone = '+40722123456' WHERE id = $1`, [
+      A.org,
+    ]);
+    try {
+      const again = await getManagedBooking({ slug: A.slug, token: done.manageToken });
+      expect(again.business.phone).toBe('+40722123456');
+    } finally {
+      await adminQuery(`UPDATE organizations.organization SET phone = NULL WHERE id = $1`, [A.org]);
+    }
   });
 
   it('unknown, malformed or another business’s token: not found (T1)', async () => {

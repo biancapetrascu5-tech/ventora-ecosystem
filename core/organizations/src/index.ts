@@ -54,6 +54,8 @@ export {
   type CreateLocationInput,
   type UpdateLocationInput,
 } from './locations';
+// Lot B.11c: the salon's phone (on the location, the business's as fallback)
+export { getOrganizationPhone, setOrganizationPhone, cleanPhone } from './locations';
 // Lot B.11a: the business behind a public booking link
 export {
   findPublicOrganization,

@@ -29,6 +29,7 @@ export const AuditActions = {
   organizationCreated: 'org.created', // E20
   organizationSuspended: 'org.suspended', // Lot 2.8 (D3-20 a) — Founder suspends a business
   organizationReactivated: 'org.reactivated', // Lot 2.8 — Founder reactivates it
+  organizationUpdated: 'org.updated', // Lot B.11c — the business's details (the phone); only the field names
   invitationCreated: 'invitation.created', // E21
   invitationResent: 'invitation.resent', // E22
   invitationRevoked: 'invitation.revoked', // E23

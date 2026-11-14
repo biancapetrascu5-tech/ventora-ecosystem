@@ -72,6 +72,9 @@ model Organization {
   // Lot 5.10c (decision 11.11.2026): ISO 3166-1 alpha-2, default RO; CHECK organization_country_check
   // (migration only) accepts two capital letters. Sent in organization.created v1
   country              String             @default("RO") @db.Char(2)
+  // Lot B.11c: the salon's phone, E.164 (CHECK organization_phone_check, migration only); the
+  // fallback of the locations' phones on the public pages
+  phone                String?            @db.VarChar(16)
   createdAt            DateTime           @default(now()) @map("created_at") @db.Timestamptz
   updatedAt            DateTime           @updatedAt @map("updated_at") @db.Timestamptz
 
@@ -194,6 +197,8 @@ model Location {
   name            String    @db.VarChar(120)
   address         String?   @db.VarChar(500)
   timeZone        String    @default("Europe/Bucharest") @map("time_zone") @db.VarChar(64)
+  // Lot B.11c: the location's phone, E.164 (CHECK location_phone_check); else the business's
+  phone           String?   @db.VarChar(16)
   archivedAt      DateTime? @map("archived_at") @db.Timestamptz
   createdByUserId String    @map("created_by_user_id") @db.Uuid
   createdAt       DateTime  @default(now()) @map("created_at") @db.Timestamptz

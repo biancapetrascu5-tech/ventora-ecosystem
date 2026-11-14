@@ -1,7 +1,7 @@
 import crypto from 'node:crypto';
 import type { PoolClient } from 'pg';
 import { Conflict, InvalidInput, ResourceNotFound } from '@ventora/errors';
-import { listLocations } from '@ventora/organizations';
+import { getOrganizationPhone, listLocations } from '@ventora/organizations';
 import {
   cancelAppointmentByClient,
   getBookingSettingsInOrg,
@@ -63,7 +63,11 @@ export type ManageState = 'open' | 'too_late' | 'cancelled' | 'over' | 'online_c
 export type MoveRefusal = 'moved_once' | 'manual_confirmation';
 
 export type ManagedBooking = {
-  business: { name: string; timeZone: string };
+  /**
+   * B.11c: the phone of the booking's location, else the business's, or null — „Sunați la salon”
+   * when it is too late to change online or online changes are closed.
+   */
+  business: { name: string; timeZone: string; phone: string | null };
   appointment: {
     number: number;
     status:
@@ -231,7 +235,12 @@ export async function getManagedBooking(slug: unknown, token: unknown): Promise<
   const paid = Number(b.paid) - Number(b.refunded);
   const start = b.starts_at.getTime();
   return {
-    business: { name: p.name, timeZone: p.timeZone },
+    business: {
+      name: p.name,
+      timeZone: p.timeZone,
+      phone:
+        location?.phone ?? (await getOrganizationPhone({ organizationId: p.ctx.organizationId })),
+    },
     appointment: {
       number: b.number,
       status: b.status,
