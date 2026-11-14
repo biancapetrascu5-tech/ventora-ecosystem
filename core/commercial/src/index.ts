@@ -180,6 +180,12 @@ export {
   type BillingTerms,
   type BillingDiscount,
 } from './purchases';
+export {
+  checkOfferTargets,
+  offerTargetKey,
+  type OfferTargetProblem,
+  type OfferTargetProblemCode,
+} from './offer-health';
 export { closeCommercialPools, type CommercialConnection } from './db';
 // Lot 3.7: „Recomandă” / „Anunță proprietarul” → the owner's notification
 export { ownerNotifiedConsumer, quotaResourceKey } from './notify';

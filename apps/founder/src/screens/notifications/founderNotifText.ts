@@ -26,6 +26,29 @@ const sameDay = (a: Date, b: Date) =>
 const str = (v: unknown) => (typeof v === 'string' ? v : '');
 const n = (v: unknown) => (typeof v === 'number' && Number.isFinite(v) ? v : 0);
 
+/** Lot 5.9f: the codes from core/commercial (checkOfferTargets) that have a text. */
+type ErrorCode =
+  | 'app_retired'
+  | 'app_no_price'
+  | 'feature_retired'
+  | 'addon_missing'
+  | 'addon_sales_stopped'
+  | 'addon_no_price'
+  | 'plan_missing'
+  | 'plan_not_on_sale'
+  | 'plan_no_price';
+const ERROR_CODES = new Set<string>([
+  'app_retired',
+  'app_no_price',
+  'feature_retired',
+  'addon_missing',
+  'addon_sales_stopped',
+  'addon_no_price',
+  'plan_missing',
+  'plan_not_on_sale',
+  'plan_no_price',
+]);
+
 export function useFounderNotifText() {
   const t = useTranslations('founder.notifications');
   const appName = useFounderAppName();
@@ -42,17 +65,44 @@ export function useFounderNotifText() {
     return day.format(d);
   };
 
+  /** The automatic stop, by reason (Lot 5.9f): the phrase under the title and in the Drawer. */
+  const autoBody = (p: FounderBellItem['params']): string => {
+    switch (p.reason) {
+      case 'complaints':
+        return t('live.complaintsBody', { n: n(p.complaints) });
+      case 'budget':
+        return p.offerType === 'trial'
+          ? t('live.budgetBodyTrial', { n: n(p.budget) })
+          : t('live.budgetBody', { n: n(p.budget) });
+      case 'error': {
+        const code = str(p.errorCode);
+        return ERROR_CODES.has(code)
+          ? t(`live.errorBody.${code as ErrorCode}`, { name: str(p.errorName) })
+          : t('live.errorBody.other');
+      }
+      default:
+        return t('live.autoBody', {
+          rate: pct.format(n(p.rate)),
+          impressions: num.format(n(p.impressions)),
+          threshold: pct.format(n(p.threshold)),
+        });
+    }
+  };
+
+  /** Complaints and budget stop the offer, with all its campaigns. */
+  const wholeOffer = (p: FounderBellItem['params']) =>
+    (p.reason === 'complaints' || p.reason === 'budget') && str(p.offer) !== '';
+
   const text = (i: FounderBellItem): { title: string; body: string } => {
     const p = i.params;
     switch (i.kind) {
       case 'auto':
         return {
-          title: t('live.auto', { name: str(p.campaign) }),
-          body: t('live.autoBody', {
-            rate: pct.format(n(p.rate)),
-            impressions: num.format(n(p.impressions)),
-            threshold: pct.format(n(p.threshold)),
-          }),
+          title:
+            p.reason === 'complaints' && str(p.offer)
+              ? t('live.autoOffer', { name: str(p.offer) })
+              : t('live.auto', { name: str(p.campaign) }),
+          body: autoBody(p),
         };
       case 'support': {
         const values = { app: appName(str(p.applicationId)), subject: str(p.subject) };
@@ -106,14 +156,19 @@ export function useFounderNotifText() {
         name,
         when: sameDay(d, now) ? t('t.today', { time: time.format(d) }) : day.format(d),
       }),
-      reason: t('live.reason', {
-        rate: pct.format(n(p.rate)),
-        threshold: pct.format(n(p.threshold)),
-        impressions: num.format(n(p.impressions)),
-      }),
-      stopped: str(p.offer)
-        ? t('live.stopped', { name, offer: str(p.offer) })
-        : t('live.stoppedNoOffer', { name }),
+      reason:
+        p.reason && p.reason !== 'disturbance'
+          ? autoBody(p)
+          : t('live.reason', {
+              rate: pct.format(n(p.rate)),
+              threshold: pct.format(n(p.threshold)),
+              impressions: num.format(n(p.impressions)),
+            }),
+      stopped: wholeOffer(p)
+        ? t('live.stoppedOffer', { offer: str(p.offer) })
+        : str(p.offer)
+          ? t('live.stopped', { name, offer: str(p.offer) })
+          : t('live.stoppedNoOffer', { name }),
       when: at,
       businesses: num.format(n(p.businesses)),
     };
