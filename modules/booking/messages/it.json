@@ -1305,5 +1305,132 @@
       "retry": "Riprova",
       "privacy": "La foto la vede solo il salone e viene cancellata 30 giorni dopo l’appuntamento."
     }
+  },
+  "manage": {
+    "title": "Il Suo appuntamento",
+    "k": {
+      "salon": "Salone",
+      "service": "Servizio",
+      "member": "Con",
+      "when": "Quando",
+      "price": "Prezzo",
+      "deposit": "Acconto pagato",
+      "rest": "Da pagare in salone"
+    },
+    "policyFree": "Può spostare o annullare gratuitamente fino al {date}, con almeno {hours} ore di anticipo.",
+    "policyLateDeposit": "Dopo, il salone può trattenere l’acconto di {amount}.",
+    "policyLateFee": "Dopo, il salone può trattenere una penale di {amount}.",
+    "policyOnline": "Online può fare modifiche fino a {hours} ore prima.",
+    "moveAction": "Sposta l’appuntamento",
+    "cancelAction": "Annulla l’appuntamento",
+    "back": "Indietro",
+    "call": "Chiama il salone",
+    "move": {
+      "title": "Scelga un altro giorno e orario",
+      "lead": "Stesso servizio, con {member}. Il vecchio orario resta Suo finché non conferma lo spostamento.",
+      "held": "Teniamo le {time} per Lei ancora {left}.",
+      "submit": "Sposta a {when}",
+      "expiredTitle": "Sono passati i 10 minuti",
+      "expiredBody": "Non teniamo più le {time}. Il Suo appuntamento del {old} resta invariato. Scelga di nuovo.",
+      "from": "Ora: {when}",
+      "depositKept": "L’acconto di {amount} passa al nuovo appuntamento."
+    },
+    "cancel": {
+      "title": "Annullare l’appuntamento?",
+      "lead": "{service} con {member}, {when}.",
+      "freeDeposit": "Annulla con più di {hours} ore di anticipo: l’acconto di {amount} Le viene restituito per intero, entro 5–10 giorni lavorativi.",
+      "free": "Annulla con più di {hours} ore di anticipo: l’annullamento è gratuito.",
+      "lateDeposit": "Mancano meno di {hours} ore all’appuntamento. Il salone può trattenere l’acconto di {amount}.",
+      "lateFee": "Mancano meno di {hours} ore all’appuntamento. Il salone può trattenere una penale di {amount}.",
+      "policy": "Regole del salone",
+      "submit": "Sì, annulla l’appuntamento",
+      "keep": "No, mantieni l’appuntamento"
+    },
+    "tooLate": {
+      "title": "Non può più fare modifiche online",
+      "body": "L’appuntamento è {when}, tra meno di {hours} ore. Per spostarlo o annullarlo, chiami il salone: {phone}."
+    },
+    "cancelled": {
+      "title": "L’appuntamento è stato annullato",
+      "bySelf": "L’ha annullato il {date}.",
+      "bySalon": "Il salone l’ha annullato il {date}."
+    },
+    "invalid": {
+      "title": "Il link non è più valido",
+      "body": "Forse proviene da un’e-mail precedente o è stato copiato in modo incompleto. Apra il link dell’e-mail di conferma più recente o chiami il salone."
+    },
+    "done": {
+      "title": "L’appuntamento si è svolto",
+      "body": "{service} con {member}, {when}. Grazie per essere venuto/a."
+    },
+    "closed": {
+      "title": "Il salone non accetta più modifiche online",
+      "body": "{business} ha fermato le prenotazioni online. Per spostare o annullare l’appuntamento, chiami il salone: {phone}."
+    },
+    "rebook": "Prenoti un nuovo appuntamento",
+    "moved": {
+      "title": "Appuntamento spostato",
+      "body": "La aspettiamo {when}. Il vecchio orario è stato liberato."
+    },
+    "cancelledDone": {
+      "title": "Appuntamento annullato",
+      "body": "L’appuntamento del {when} non ha più luogo."
+    },
+    "next": {
+      "email": "Le abbiamo inviato un’e-mail di conferma a {email}.",
+      "refund": "L’acconto di {amount} arriva sulla carta ···· {last4} entro 5–10 giorni lavorativi.",
+      "kept": "Il salone La avviserà se trattiene l’acconto."
+    },
+    "addCal": "Aggiungi al calendario",
+    "started": {
+      "title": "L’appuntamento è iniziato",
+      "body": "L’appuntamento è iniziato. Per modifiche, chiami il salone."
+    },
+    "expired": {
+      "body": "Il link per spostare o annullare scade 30 giorni dopo l’appuntamento. Per un nuovo appuntamento, usi il pulsante qui sotto o chiami il salone."
+    },
+    "revoked": {
+      "body": "Per un nuovo appuntamento, usi il pulsante qui sotto o chiami il salone."
+    },
+    "bookAgain": "Prenota di nuovo",
+    "salonPhone": "Telefono del salone: {phone}"
+  },
+  "classes": {
+    "badge": "Corso",
+    "left": {
+      "one": "1 posto libero",
+      "few": "{n} posti liberi",
+      "many": "{n} posti liberi"
+    },
+    "full": "Completo"
+  },
+  "locations": {
+    "pub": {
+      "title": "Scelga il salone",
+      "hours": "Oggi: {hours}"
+    }
+  },
+  "forms": {
+    "pub": {
+      "section": "Alcune domande del salone",
+      "required": "Risponda a questa domanda."
+    },
+    "yes": "Sì",
+    "no": "No"
+  },
+  "health": {
+    "f": {
+      "allergies": "Allergie note",
+      "skin": "Disturbi della pelle o del cuoio capelluto",
+      "pregnancy": "Gravidanza",
+      "meds": "Trattamenti che possono influire sul servizio"
+    },
+    "c": {
+      "section": "Informazioni sanitarie (facoltative)",
+      "lead": "Le vede solo chi svolge il servizio e il titolare del salone. Può lasciarli vuoti.",
+      "consent": "Acconsento che Salon Aurora conservi queste informazioni sanitarie per i miei appuntamenti.",
+      "consentHelp": "Obbligatorio solo se ha compilato un campo. Può revocarlo in qualsiasi momento, dall’e-mail di conferma o chiedendolo al salone.",
+      "err": "Ha inserito informazioni sanitarie. Spunti il consenso o svuoti i campi."
+    }
   }
 }

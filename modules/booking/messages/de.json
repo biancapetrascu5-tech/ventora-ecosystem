@@ -1305,5 +1305,132 @@
       "retry": "Erneut versuchen",
       "privacy": "Nur der Salon sieht das Foto; es wird 30 Tage nach dem Termin gelöscht."
     }
+  },
+  "manage": {
+    "title": "Ihr Termin",
+    "k": {
+      "salon": "Salon",
+      "service": "Leistung",
+      "member": "Bei",
+      "when": "Wann",
+      "price": "Preis",
+      "deposit": "Anzahlung bezahlt",
+      "rest": "Im Salon zu zahlen"
+    },
+    "policyFree": "Sie können bis {date} kostenlos verschieben oder absagen, mindestens {hours} Stunden vorher.",
+    "policyLateDeposit": "Danach kann der Salon die Anzahlung von {amount} einbehalten.",
+    "policyLateFee": "Danach kann der Salon eine Gebühr von {amount} erheben.",
+    "policyOnline": "Online können Sie bis {hours} Stunden vorher Änderungen vornehmen.",
+    "moveAction": "Termin verschieben",
+    "cancelAction": "Termin absagen",
+    "back": "Zurück",
+    "call": "Salon anrufen",
+    "move": {
+      "title": "Wählen Sie einen anderen Tag und eine andere Uhrzeit",
+      "lead": "Gleiche Leistung, bei {member}. Ihre alte Uhrzeit bleibt Ihnen, bis Sie die Verschiebung bestätigen.",
+      "held": "Wir halten {time} noch {left} für Sie frei.",
+      "submit": "Auf {when} verschieben",
+      "expiredTitle": "Die 10 Minuten sind abgelaufen",
+      "expiredBody": "Wir halten {time} nicht mehr frei. Ihr Termin am {old} bleibt unverändert. Wählen Sie erneut.",
+      "from": "Jetzt: {when}",
+      "depositKept": "Die Anzahlung von {amount} geht auf den neuen Termin über."
+    },
+    "cancel": {
+      "title": "Termin absagen?",
+      "lead": "{service} bei {member}, {when}.",
+      "freeDeposit": "Sie sagen mehr als {hours} Stunden vorher ab: Die Anzahlung von {amount} wird vollständig erstattet, innerhalb von 5–10 Werktagen.",
+      "free": "Sie sagen mehr als {hours} Stunden vorher ab: Die Absage ist kostenlos.",
+      "lateDeposit": "Bis zum Termin sind es weniger als {hours} Stunden. Der Salon kann die Anzahlung von {amount} einbehalten.",
+      "lateFee": "Bis zum Termin sind es weniger als {hours} Stunden. Der Salon kann eine Gebühr von {amount} erheben.",
+      "policy": "Regeln des Salons",
+      "submit": "Ja, Termin absagen",
+      "keep": "Nein, Termin behalten"
+    },
+    "tooLate": {
+      "title": "Online-Änderungen sind nicht mehr möglich",
+      "body": "Der Termin ist {when}, in weniger als {hours} Stunden. Zum Verschieben oder Absagen rufen Sie den Salon an: {phone}."
+    },
+    "cancelled": {
+      "title": "Der Termin wurde abgesagt",
+      "bySelf": "Sie haben ihn am {date} abgesagt.",
+      "bySalon": "Der Salon hat ihn am {date} abgesagt."
+    },
+    "invalid": {
+      "title": "Dieser Link ist nicht mehr gültig",
+      "body": "Er stammt vielleicht aus einer älteren E-Mail oder wurde unvollständig kopiert. Öffnen Sie den Link aus der neuesten Bestätigungs-E-Mail oder rufen Sie den Salon an."
+    },
+    "done": {
+      "title": "Der Termin hat stattgefunden",
+      "body": "{service} bei {member}, {when}. Danke für Ihren Besuch."
+    },
+    "closed": {
+      "title": "Der Salon nimmt keine Online-Änderungen mehr an",
+      "body": "{business} hat Online-Buchungen gestoppt. Zum Verschieben oder Absagen rufen Sie den Salon an: {phone}."
+    },
+    "rebook": "Neuen Termin buchen",
+    "moved": {
+      "title": "Termin verschoben",
+      "body": "Wir erwarten Sie {when}. Die alte Uhrzeit ist wieder frei."
+    },
+    "cancelledDone": {
+      "title": "Termin abgesagt",
+      "body": "Der Termin am {when} findet nicht mehr statt."
+    },
+    "next": {
+      "email": "Wir haben Ihnen eine Bestätigung an {email} gesendet.",
+      "refund": "Die Anzahlung von {amount} kommt innerhalb von 5–10 Werktagen auf die Karte ···· {last4}.",
+      "kept": "Der Salon informiert Sie, falls er die Anzahlung einbehält."
+    },
+    "addCal": "Zum Kalender hinzufügen",
+    "started": {
+      "title": "Der Termin hat begonnen",
+      "body": "Der Termin hat begonnen. Für Änderungen rufen Sie bitte den Salon an."
+    },
+    "expired": {
+      "body": "Der Link zum Verschieben oder Stornieren läuft 30 Tage nach dem Termin ab. Für einen neuen Termin nutzen Sie die Schaltfläche unten oder rufen Sie den Salon an."
+    },
+    "revoked": {
+      "body": "Für einen neuen Termin nutzen Sie die Schaltfläche unten oder rufen Sie den Salon an."
+    },
+    "bookAgain": "Erneut buchen",
+    "salonPhone": "Telefon des Salons: {phone}"
+  },
+  "classes": {
+    "badge": "Kurs",
+    "left": {
+      "one": "1 Platz frei",
+      "few": "{n} Plätze frei",
+      "many": "{n} Plätze frei"
+    },
+    "full": "Voll"
+  },
+  "locations": {
+    "pub": {
+      "title": "Wählen Sie den Salon",
+      "hours": "Heute: {hours}"
+    }
+  },
+  "forms": {
+    "pub": {
+      "section": "Ein paar Fragen des Salons",
+      "required": "Bitte beantworten Sie diese Frage."
+    },
+    "yes": "Ja",
+    "no": "Nein"
+  },
+  "health": {
+    "f": {
+      "allergies": "Bekannte Allergien",
+      "skin": "Haut- oder Kopfhauterkrankungen",
+      "pregnancy": "Schwangerschaft",
+      "meds": "Behandlungen, die die Leistung beeinflussen können"
+    },
+    "c": {
+      "section": "Gesundheitsangaben (optional)",
+      "lead": "Diese sehen nur die Person, die Ihre Leistung erbringt, und der Salon-Inhaber. Sie können sie leer lassen.",
+      "consent": "Ich willige ein, dass Salon Aurora diese Gesundheitsangaben für meine Termine speichert.",
+      "consentHelp": "Nur nötig, wenn Sie ein Feld ausgefüllt haben. Sie können sie jederzeit widerrufen, über die Bestätigungs-E-Mail oder beim Salon.",
+      "err": "Sie haben Gesundheitsangaben gemacht. Setzen Sie das Häkchen oder leeren Sie die Felder."
+    }
   }
 }

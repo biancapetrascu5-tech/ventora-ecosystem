@@ -1305,5 +1305,132 @@
       "retry": "Încearcă din nou",
       "privacy": "Poza o vede doar salonul și se șterge la 30 de zile după programare."
     }
+  },
+  "manage": {
+    "title": "Programarea dumneavoastră",
+    "k": {
+      "salon": "Salon",
+      "service": "Serviciu",
+      "member": "Cu cine",
+      "when": "Când",
+      "price": "Preț",
+      "deposit": "Avans plătit",
+      "rest": "De plătit la salon"
+    },
+    "policyFree": "Puteți muta sau anula gratuit până {date}, cu cel puțin {hours} de ore înainte.",
+    "policyLateDeposit": "După aceea, salonul poate reține avansul de {amount}.",
+    "policyLateFee": "După aceea, salonul poate reține o taxă de {amount}.",
+    "policyOnline": "Online puteți face schimbări până cu {hours} ore înainte.",
+    "moveAction": "Mută programarea",
+    "cancelAction": "Anulează programarea",
+    "back": "Înapoi",
+    "call": "Sună la salon",
+    "move": {
+      "title": "Alegeți altă zi și oră",
+      "lead": "Același serviciu, cu {member}. Ora veche rămâne a dumneavoastră până confirmați mutarea.",
+      "held": "Păstrăm ora {time} pentru dumneavoastră încă {left}.",
+      "submit": "Mută pe {when}",
+      "expiredTitle": "Au trecut cele 10 minute",
+      "expiredBody": "Nu mai păstrăm ora {time}. Programarea dumneavoastră de {old} rămâne neschimbată. Alegeți din nou.",
+      "from": "Acum: {when}",
+      "depositKept": "Avansul de {amount} se mută la noua programare."
+    },
+    "cancel": {
+      "title": "Anulați programarea?",
+      "lead": "{service} cu {member}, {when}.",
+      "freeDeposit": "Anulați cu mai mult de {hours} de ore înainte: avansul de {amount} vă revine integral, în 5–10 zile lucrătoare.",
+      "free": "Anulați cu mai mult de {hours} de ore înainte: anularea e gratuită.",
+      "lateDeposit": "Mai sunt mai puțin de {hours} de ore până la programare. Salonul poate reține avansul de {amount}.",
+      "lateFee": "Mai sunt mai puțin de {hours} de ore până la programare. Salonul poate reține o taxă de {amount}.",
+      "policy": "Politica salonului",
+      "submit": "Da, anulează programarea",
+      "keep": "Nu, păstrez programarea"
+    },
+    "tooLate": {
+      "title": "Nu mai puteți face schimbări online",
+      "body": "Programarea e {when}, peste mai puțin de {hours} ore. Pentru a o muta sau anula, sunați la salon: {phone}."
+    },
+    "cancelled": {
+      "title": "Programarea a fost anulată",
+      "bySelf": "Ați anulat-o pe {date}.",
+      "bySalon": "Salonul a anulat-o pe {date}."
+    },
+    "invalid": {
+      "title": "Linkul nu mai e valabil",
+      "body": "Poate e dintr-un e-mail mai vechi sau a fost copiat incomplet. Deschideți linkul din cel mai recent e-mail de confirmare sau sunați la salon."
+    },
+    "done": {
+      "title": "Programarea a avut loc",
+      "body": "{service} cu {member}, {when}. Mulțumim că ați venit."
+    },
+    "closed": {
+      "title": "Salonul nu mai primește schimbări online",
+      "body": "{business} a oprit programările online. Pentru a muta sau anula programarea, sunați la salon: {phone}."
+    },
+    "rebook": "Faceți o programare nouă",
+    "moved": {
+      "title": "Am mutat programarea",
+      "body": "Vă așteptăm {when}. Ora veche s-a eliberat."
+    },
+    "cancelledDone": {
+      "title": "Am anulat programarea",
+      "body": "Programarea de {when} nu mai are loc."
+    },
+    "next": {
+      "email": "V-am trimis un e-mail de confirmare la {email}.",
+      "refund": "Avansul de {amount} ajunge pe cardul ···· {last4} în 5–10 zile lucrătoare.",
+      "kept": "Salonul vă anunță dacă reține avansul."
+    },
+    "addCal": "Adaugă în calendar",
+    "started": {
+      "title": "Programarea a început",
+      "body": "Programarea a început. Pentru schimbări, sunați salonul."
+    },
+    "expired": {
+      "body": "Linkul pentru mutare și anulare expiră la 30 de zile după programare. Pentru o programare nouă, folosiți butonul de mai jos sau sunați salonul."
+    },
+    "revoked": {
+      "body": "Pentru o programare nouă, folosiți butonul de mai jos sau sunați salonul."
+    },
+    "bookAgain": "Programează din nou",
+    "salonPhone": "Telefonul salonului: {phone}"
+  },
+  "classes": {
+    "badge": "Clasă",
+    "left": {
+      "one": "1 loc liber",
+      "few": "{n} locuri libere",
+      "many": "{n} de locuri libere"
+    },
+    "full": "Plin"
+  },
+  "locations": {
+    "pub": {
+      "title": "Alegeți salonul",
+      "hours": "Azi: {hours}"
+    }
+  },
+  "forms": {
+    "pub": {
+      "section": "Câteva întrebări de la salon",
+      "required": "Răspundeți la această întrebare."
+    },
+    "yes": "Da",
+    "no": "Nu"
+  },
+  "health": {
+    "f": {
+      "allergies": "Alergii cunoscute",
+      "skin": "Afecțiuni ale pielii sau ale scalpului",
+      "pregnancy": "Sarcină",
+      "meds": "Tratamente care pot influența serviciul"
+    },
+    "c": {
+      "section": "Informații medicale (opțional)",
+      "lead": "Le vede doar cine vă face serviciul și proprietarul salonului. Puteți lăsa câmpurile goale.",
+      "consent": "Sunt de acord ca Salon Aurora să păstreze aceste informații medicale pentru programările mele.",
+      "consentHelp": "Obligatoriu doar dacă ați completat un câmp. Puteți retrage acordul oricând, din e-mailul de confirmare sau cerând salonului.",
+      "err": "Ați completat informații medicale. Bifați acordul sau goliți câmpurile."
+    }
   }
 }

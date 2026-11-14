@@ -1305,5 +1305,132 @@
       "retry": "Try again",
       "privacy": "Only the salon sees the photo; it’s deleted 30 days after the appointment."
     }
+  },
+  "manage": {
+    "title": "Your appointment",
+    "k": {
+      "salon": "Salon",
+      "service": "Service",
+      "member": "With",
+      "when": "When",
+      "price": "Price",
+      "deposit": "Deposit paid",
+      "rest": "To pay at the salon"
+    },
+    "policyFree": "You can move or cancel free of charge until {date}, at least {hours} hours before.",
+    "policyLateDeposit": "After that, the salon may keep the {amount} deposit.",
+    "policyLateFee": "After that, the salon may charge a fee of {amount}.",
+    "policyOnline": "Online, you can make changes up to {hours} hours before.",
+    "moveAction": "Move appointment",
+    "cancelAction": "Cancel appointment",
+    "back": "Back",
+    "call": "Call the salon",
+    "move": {
+      "title": "Choose another day and time",
+      "lead": "Same service, with {member}. Your old time stays yours until you confirm the move.",
+      "held": "We’re holding {time} for you for another {left}.",
+      "submit": "Move to {when}",
+      "expiredTitle": "The 10 minutes have passed",
+      "expiredBody": "We’re no longer holding {time}. Your appointment on {old} stays unchanged. Choose again.",
+      "from": "Now: {when}",
+      "depositKept": "The {amount} deposit moves to the new appointment."
+    },
+    "cancel": {
+      "title": "Cancel the appointment?",
+      "lead": "{service} with {member}, {when}.",
+      "freeDeposit": "You’re cancelling more than {hours} hours before: the {amount} deposit is refunded in full, within 5–10 working days.",
+      "free": "You’re cancelling more than {hours} hours before: cancellation is free.",
+      "lateDeposit": "There are less than {hours} hours to the appointment. The salon may keep the {amount} deposit.",
+      "lateFee": "There are less than {hours} hours to the appointment. The salon may charge a fee of {amount}.",
+      "policy": "Salon policy",
+      "submit": "Yes, cancel the appointment",
+      "keep": "No, keep the appointment"
+    },
+    "tooLate": {
+      "title": "You can no longer make changes online",
+      "body": "The appointment is {when}, in less than {hours} hours. To move or cancel it, call the salon: {phone}."
+    },
+    "cancelled": {
+      "title": "The appointment has been cancelled",
+      "bySelf": "You cancelled it on {date}.",
+      "bySalon": "The salon cancelled it on {date}."
+    },
+    "invalid": {
+      "title": "This link is no longer valid",
+      "body": "It may be from an older email or copied incompletely. Open the link in the most recent confirmation email or call the salon."
+    },
+    "done": {
+      "title": "The appointment has taken place",
+      "body": "{service} with {member}, {when}. Thank you for coming."
+    },
+    "closed": {
+      "title": "The salon no longer accepts online changes",
+      "body": "{business} has stopped online bookings. To move or cancel the appointment, call the salon: {phone}."
+    },
+    "rebook": "Make a new appointment",
+    "moved": {
+      "title": "Appointment moved",
+      "body": "We look forward to seeing you {when}. The old time has been freed."
+    },
+    "cancelledDone": {
+      "title": "Appointment cancelled",
+      "body": "The appointment on {when} no longer takes place."
+    },
+    "next": {
+      "email": "We’ve sent a confirmation email to {email}.",
+      "refund": "The {amount} deposit reaches card ···· {last4} within 5–10 working days.",
+      "kept": "The salon will let you know if it keeps the deposit."
+    },
+    "addCal": "Add to calendar",
+    "started": {
+      "title": "The appointment has started",
+      "body": "The appointment has started. For changes, please call the salon."
+    },
+    "expired": {
+      "body": "The link to move or cancel expires 30 days after the appointment. For a new appointment, use the button below or call the salon."
+    },
+    "revoked": {
+      "body": "For a new appointment, use the button below or call the salon."
+    },
+    "bookAgain": "Book again",
+    "salonPhone": "Salon phone: {phone}"
+  },
+  "classes": {
+    "badge": "Class",
+    "left": {
+      "one": "1 spot left",
+      "few": "{n} spots left",
+      "many": "{n} spots left"
+    },
+    "full": "Full"
+  },
+  "locations": {
+    "pub": {
+      "title": "Choose the salon",
+      "hours": "Today: {hours}"
+    }
+  },
+  "forms": {
+    "pub": {
+      "section": "A few questions from the salon",
+      "required": "Please answer this question."
+    },
+    "yes": "Yes",
+    "no": "No"
+  },
+  "health": {
+    "f": {
+      "allergies": "Known allergies",
+      "skin": "Skin or scalp conditions",
+      "pregnancy": "Pregnancy",
+      "meds": "Treatments that may affect the service"
+    },
+    "c": {
+      "section": "Health information (optional)",
+      "lead": "Only the person doing your service and the salon owner see them. You can leave them empty.",
+      "consent": "I agree that Salon Aurora may keep this health information for my appointments.",
+      "consentHelp": "Required only if you filled in a field. You can withdraw it any time, from the confirmation email or by asking the salon.",
+      "err": "You’ve filled in health information. Tick the consent box or clear the fields."
+    }
   }
 }

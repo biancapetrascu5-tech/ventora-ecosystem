@@ -1305,5 +1305,132 @@
       "retry": "Reintentar",
       "privacy": "Solo el salón ve la foto; se borra 30 días después de la cita."
     }
+  },
+  "manage": {
+    "title": "Su cita",
+    "k": {
+      "salon": "Salón",
+      "service": "Servicio",
+      "member": "Con",
+      "when": "Cuándo",
+      "price": "Precio",
+      "deposit": "Señal pagada",
+      "rest": "A pagar en el salón"
+    },
+    "policyFree": "Puede cambiar o cancelar gratis hasta el {date}, con al menos {hours} horas de antelación.",
+    "policyLateDeposit": "Después, el salón puede quedarse la señal de {amount}.",
+    "policyLateFee": "Después, el salón puede cobrar un cargo de {amount}.",
+    "policyOnline": "Online puede hacer cambios hasta {hours} horas antes.",
+    "moveAction": "Cambiar la cita",
+    "cancelAction": "Cancelar la cita",
+    "back": "Atrás",
+    "call": "Llamar al salón",
+    "move": {
+      "title": "Elija otro día y hora",
+      "lead": "El mismo servicio, con {member}. La hora anterior sigue siendo suya hasta que confirme el cambio.",
+      "held": "Le guardamos las {time} durante {left} más.",
+      "submit": "Cambiar a {when}",
+      "expiredTitle": "Han pasado los 10 minutos",
+      "expiredBody": "Ya no guardamos las {time}. Su cita del {old} sigue sin cambios. Elija de nuevo.",
+      "from": "Ahora: {when}",
+      "depositKept": "La señal de {amount} pasa a la nueva cita."
+    },
+    "cancel": {
+      "title": "¿Cancelar la cita?",
+      "lead": "{service} con {member}, {when}.",
+      "freeDeposit": "Cancela con más de {hours} horas de antelación: la señal de {amount} se le devuelve íntegra, en 5–10 días laborables.",
+      "free": "Cancela con más de {hours} horas de antelación: la cancelación es gratuita.",
+      "lateDeposit": "Quedan menos de {hours} horas para la cita. El salón puede quedarse la señal de {amount}.",
+      "lateFee": "Quedan menos de {hours} horas para la cita. El salón puede cobrar un cargo de {amount}.",
+      "policy": "Política del salón",
+      "submit": "Sí, cancelar la cita",
+      "keep": "No, mantener la cita"
+    },
+    "tooLate": {
+      "title": "Ya no puede hacer cambios online",
+      "body": "La cita es {when}, dentro de menos de {hours} horas. Para cambiarla o cancelarla, llame al salón: {phone}."
+    },
+    "cancelled": {
+      "title": "La cita se ha cancelado",
+      "bySelf": "La canceló el {date}.",
+      "bySalon": "El salón la canceló el {date}."
+    },
+    "invalid": {
+      "title": "El enlace ya no es válido",
+      "body": "Puede que sea de un correo antiguo o que se haya copiado incompleto. Abra el enlace del correo de confirmación más reciente o llame al salón."
+    },
+    "done": {
+      "title": "La cita ya tuvo lugar",
+      "body": "{service} con {member}, {when}. Gracias por venir."
+    },
+    "closed": {
+      "title": "El salón ya no acepta cambios online",
+      "body": "{business} ha detenido las reservas online. Para cambiar o cancelar la cita, llame al salón: {phone}."
+    },
+    "rebook": "Hacer una nueva cita",
+    "moved": {
+      "title": "Cita cambiada",
+      "body": "Le esperamos {when}. La hora anterior ha quedado libre."
+    },
+    "cancelledDone": {
+      "title": "Cita cancelada",
+      "body": "La cita del {when} ya no tiene lugar."
+    },
+    "next": {
+      "email": "Le hemos enviado un correo de confirmación a {email}.",
+      "refund": "La señal de {amount} llega a la tarjeta ···· {last4} en 5–10 días laborables.",
+      "kept": "El salón le avisará si se queda la señal."
+    },
+    "addCal": "Añadir al calendario",
+    "started": {
+      "title": "La cita ha empezado",
+      "body": "La cita ha empezado. Para cambios, llame al salón."
+    },
+    "expired": {
+      "body": "El enlace para cambiar o cancelar caduca 30 días después de la cita. Para una cita nueva, use el botón de abajo o llame al salón."
+    },
+    "revoked": {
+      "body": "Para una cita nueva, use el botón de abajo o llame al salón."
+    },
+    "bookAgain": "Volver a reservar",
+    "salonPhone": "Teléfono del salón: {phone}"
+  },
+  "classes": {
+    "badge": "Clase",
+    "left": {
+      "one": "1 plaza libre",
+      "few": "{n} plazas libres",
+      "many": "{n} plazas libres"
+    },
+    "full": "Completo"
+  },
+  "locations": {
+    "pub": {
+      "title": "Elija el salón",
+      "hours": "Hoy: {hours}"
+    }
+  },
+  "forms": {
+    "pub": {
+      "section": "Unas preguntas del salón",
+      "required": "Responda a esta pregunta."
+    },
+    "yes": "Sí",
+    "no": "No"
+  },
+  "health": {
+    "f": {
+      "allergies": "Alergias conocidas",
+      "skin": "Afecciones de la piel o del cuero cabelludo",
+      "pregnancy": "Embarazo",
+      "meds": "Tratamientos que pueden influir en el servicio"
+    },
+    "c": {
+      "section": "Información médica (opcional)",
+      "lead": "Solo las ven quien le atiende y el propietario del salón. Puede dejarlos vacíos.",
+      "consent": "Acepto que Salon Aurora guarde esta información médica para mis citas.",
+      "consentHelp": "Obligatorio solo si ha rellenado un campo. Puede retirarlo cuando quiera, desde el correo de confirmación o pidiéndolo al salón.",
+      "err": "Ha rellenado información médica. Marque el consentimiento o vacíe los campos."
+    }
   }
 }
