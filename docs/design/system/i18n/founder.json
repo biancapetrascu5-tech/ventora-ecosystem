@@ -145,7 +145,8 @@
     "founder.country.code": "Cod {code}",
     "founder.business.country": "Țara",
     "founder.business.timezone": "Fusul orar",
-    "founder.business.countryNoHub": "Se schimbă doar din Founder"
+    "founder.business.countryNoHub": "Se schimbă doar din Founder",
+    "founder.notifications.seeAll": "Vezi toate"
   },
   "en": {
     "founder.nav.translations": "Translations",
@@ -293,7 +294,8 @@
     "founder.country.code": "Code {code}",
     "founder.business.country": "Country",
     "founder.business.timezone": "Time zone",
-    "founder.business.countryNoHub": "Changed only from Founder"
+    "founder.business.countryNoHub": "Changed only from Founder",
+    "founder.notifications.seeAll": "See all"
   },
   "fr": {
     "founder.nav.translations": "Traductions",
@@ -441,7 +443,8 @@
     "founder.country.code": "Code {code}",
     "founder.business.country": "Pays",
     "founder.business.timezone": "Fuseau horaire",
-    "founder.business.countryNoHub": "Modifiable uniquement depuis Founder"
+    "founder.business.countryNoHub": "Modifiable uniquement depuis Founder",
+    "founder.notifications.seeAll": "Tout voir"
   },
   "es": {
     "founder.nav.translations": "Traducciones",
@@ -589,7 +592,8 @@
     "founder.country.code": "Código {code}",
     "founder.business.country": "País",
     "founder.business.timezone": "Zona horaria",
-    "founder.business.countryNoHub": "Solo se cambia desde Founder"
+    "founder.business.countryNoHub": "Solo se cambia desde Founder",
+    "founder.notifications.seeAll": "Ver todas"
   },
   "de": {
     "founder.nav.translations": "Übersetzungen",
@@ -737,7 +741,8 @@
     "founder.country.code": "Code {code}",
     "founder.business.country": "Land",
     "founder.business.timezone": "Zeitzone",
-    "founder.business.countryNoHub": "Nur in Founder änderbar"
+    "founder.business.countryNoHub": "Nur in Founder änderbar",
+    "founder.notifications.seeAll": "Alle ansehen"
   },
   "it": {
     "founder.nav.translations": "Traduzioni",
@@ -885,6 +890,7 @@
     "founder.country.code": "Codice {code}",
     "founder.business.country": "Paese",
     "founder.business.timezone": "Fuso orario",
-    "founder.business.countryNoHub": "Si cambia solo da Founder"
+    "founder.business.countryNoHub": "Si cambia solo da Founder",
+    "founder.notifications.seeAll": "Vedi tutte"
   }
 }

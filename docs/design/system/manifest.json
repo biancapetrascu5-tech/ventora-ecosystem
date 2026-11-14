@@ -111,7 +111,7 @@
     "components/HubAppActivation/README.md",
     "components/HubAppTexts/README.md",
     "components/HubAutomations/README.md",
-    "components/HubBusinessProfile/README.md",
+    "components/HubBrand/README.md",
     "components/HubBusinessSuspended/README.md",
     "components/HubCatalog/README.md",
     "components/HubCatalogApp/README.md",
@@ -976,9 +976,9 @@
       "page": true
     },
     {
-      "name": "HubBusinessProfile",
+      "name": "HubBrand",
       "group": "Ecrane Hub",
-      "summary": "Hub — Afacerea › Profilul afacerii: the business name (read only) and the logo — upload, replace, remove, rejected files, owner / admin only; the logo shows in the business switcher.",
+      "summary": "Hub — Setări › Brand (owner / admin): logo on light and dark, main and accent colour with a contrast check, font from a short list, tone of voice with an example, e-mail signature; a live preview of the EasyBook booking page and a client e-mail. Without a brand, the Ventora look.",
       "page": true
     },
     {

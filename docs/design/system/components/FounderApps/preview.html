@@ -662,7 +662,7 @@ function FX_App({ active, title, children }) {
       spine: /* @__PURE__ */ React.createElement(V.Spine, { hub: true, appName: "Founder", sections: FX_NAV, activeId: active, onBackToHub: () => {
       }, bottomItems: ["afaceri", "consum", "campanii", "control"] }),
       contextBar: /* @__PURE__ */ React.createElement(V.ContextBar, { title, onSearch: () => {
-      }, searchLabel: "Caut\u0103 o afacere, un bundle sau o campanie", notifications: /* @__PURE__ */ React.createElement(V.NotificationsPanel, { items: FX_NOTIFS }), account: /* @__PURE__ */ React.createElement(V.AccountMenu, { user: FX_USER }) })
+      }, searchLabel: "Caut\u0103 o afacere, un bundle sau o campanie", notifications: /* @__PURE__ */ React.createElement(V.NotificationsPanel, { items: FX_NOTIFS, onSeeAll: () => {} }), account: /* @__PURE__ */ React.createElement(V.AccountMenu, { user: FX_USER }) })
     },
     children
   );

@@ -1685,7 +1685,14 @@
     "booking.manage.expired.body": "Linkul pentru mutare și anulare expiră la 30 de zile după programare. Pentru o programare nouă, folosiți butonul de mai jos sau sunați salonul.",
     "booking.manage.revoked.body": "Pentru o programare nouă, folosiți butonul de mai jos sau sunați salonul.",
     "booking.manage.bookAgain": "Programează din nou",
-    "booking.manage.salonPhone": "Telefonul salonului: {phone}"
+    "booking.manage.salonPhone": "Telefonul salonului: {phone}",
+    "booking.msg.lang.label": "Limba textului",
+    "booking.msg.lang.help": "Scrii textul pentru fiecare limbă. Clientul îl primește în limba lui; dacă lipsește, în {default}.",
+    "booking.msg.lang.written": "Scris",
+    "booking.msg.lang.missing": "Lipsește",
+    "booking.msg.lang.default": "Limba principală",
+    "booking.msg.lang.missingNote": "Textul în {lang} lipsește. Clienții care au ales {lang} îl primesc în {default}.",
+    "booking.msg.lang.copyFrom": "Pornește de la textul în {default}"
   },
   "en": {
     "booking.public.title": "Book online",
@@ -3373,7 +3380,14 @@
     "booking.manage.expired.body": "The link to move or cancel expires 30 days after the appointment. For a new appointment, use the button below or call the salon.",
     "booking.manage.revoked.body": "For a new appointment, use the button below or call the salon.",
     "booking.manage.bookAgain": "Book again",
-    "booking.manage.salonPhone": "Salon phone: {phone}"
+    "booking.manage.salonPhone": "Salon phone: {phone}",
+    "booking.msg.lang.label": "Text language",
+    "booking.msg.lang.help": "Write the text for each language. Clients get it in their language; if it’s missing, in {default}.",
+    "booking.msg.lang.written": "Written",
+    "booking.msg.lang.missing": "Missing",
+    "booking.msg.lang.default": "Main language",
+    "booking.msg.lang.missingNote": "The {lang} text is missing. Clients who chose {lang} get it in {default}.",
+    "booking.msg.lang.copyFrom": "Start from the {default} text"
   },
   "fr": {
     "booking.public.title": "Réserver en ligne",
@@ -5061,7 +5075,14 @@
     "booking.manage.expired.body": "Le lien pour déplacer ou annuler expire 30 jours après le rendez-vous. Pour un nouveau rendez-vous, utilisez le bouton ci-dessous ou appelez le salon.",
     "booking.manage.revoked.body": "Pour un nouveau rendez-vous, utilisez le bouton ci-dessous ou appelez le salon.",
     "booking.manage.bookAgain": "Reprendre rendez-vous",
-    "booking.manage.salonPhone": "Téléphone du salon : {phone}"
+    "booking.manage.salonPhone": "Téléphone du salon : {phone}",
+    "booking.msg.lang.label": "Langue du texte",
+    "booking.msg.lang.help": "Rédigez le texte pour chaque langue. Le client le reçoit dans sa langue ; s’il manque, en {default}.",
+    "booking.msg.lang.written": "Rédigé",
+    "booking.msg.lang.missing": "Manquant",
+    "booking.msg.lang.default": "Langue principale",
+    "booking.msg.lang.missingNote": "Le texte en {lang} manque. Les clients qui ont choisi {lang} le reçoivent en {default}.",
+    "booking.msg.lang.copyFrom": "Partir du texte en {default}"
   },
   "es": {
     "booking.public.title": "Reserva online",
@@ -6749,7 +6770,14 @@
     "booking.manage.expired.body": "El enlace para cambiar o cancelar caduca 30 días después de la cita. Para una cita nueva, use el botón de abajo o llame al salón.",
     "booking.manage.revoked.body": "Para una cita nueva, use el botón de abajo o llame al salón.",
     "booking.manage.bookAgain": "Volver a reservar",
-    "booking.manage.salonPhone": "Teléfono del salón: {phone}"
+    "booking.manage.salonPhone": "Teléfono del salón: {phone}",
+    "booking.msg.lang.label": "Idioma del texto",
+    "booking.msg.lang.help": "Escriba el texto para cada idioma. El cliente lo recibe en su idioma; si falta, en {default}.",
+    "booking.msg.lang.written": "Escrito",
+    "booking.msg.lang.missing": "Falta",
+    "booking.msg.lang.default": "Idioma principal",
+    "booking.msg.lang.missingNote": "Falta el texto en {lang}. Los clientes que eligieron {lang} lo reciben en {default}.",
+    "booking.msg.lang.copyFrom": "Partir del texto en {default}"
   },
   "de": {
     "booking.public.title": "Online-Buchung",
@@ -8437,7 +8465,14 @@
     "booking.manage.expired.body": "Der Link zum Verschieben oder Stornieren läuft 30 Tage nach dem Termin ab. Für einen neuen Termin nutzen Sie die Schaltfläche unten oder rufen Sie den Salon an.",
     "booking.manage.revoked.body": "Für einen neuen Termin nutzen Sie die Schaltfläche unten oder rufen Sie den Salon an.",
     "booking.manage.bookAgain": "Erneut buchen",
-    "booking.manage.salonPhone": "Telefon des Salons: {phone}"
+    "booking.manage.salonPhone": "Telefon des Salons: {phone}",
+    "booking.msg.lang.label": "Sprache des Textes",
+    "booking.msg.lang.help": "Schreiben Sie den Text für jede Sprache. Kunden erhalten ihn in ihrer Sprache; fehlt er, auf {default}.",
+    "booking.msg.lang.written": "Geschrieben",
+    "booking.msg.lang.missing": "Fehlt",
+    "booking.msg.lang.default": "Hauptsprache",
+    "booking.msg.lang.missingNote": "Der Text auf {lang} fehlt. Kunden, die {lang} gewählt haben, erhalten ihn auf {default}.",
+    "booking.msg.lang.copyFrom": "Mit dem Text auf {default} beginnen"
   },
   "it": {
     "booking.public.title": "Prenotazione online",
@@ -10125,6 +10160,13 @@
     "booking.manage.expired.body": "Il link per spostare o annullare scade 30 giorni dopo l’appuntamento. Per un nuovo appuntamento, usi il pulsante qui sotto o chiami il salone.",
     "booking.manage.revoked.body": "Per un nuovo appuntamento, usi il pulsante qui sotto o chiami il salone.",
     "booking.manage.bookAgain": "Prenota di nuovo",
-    "booking.manage.salonPhone": "Telefono del salone: {phone}"
+    "booking.manage.salonPhone": "Telefono del salone: {phone}",
+    "booking.msg.lang.label": "Lingua del testo",
+    "booking.msg.lang.help": "Scriva il testo per ogni lingua. Il cliente lo riceve nella sua lingua; se manca, in {default}.",
+    "booking.msg.lang.written": "Scritto",
+    "booking.msg.lang.missing": "Manca",
+    "booking.msg.lang.default": "Lingua principale",
+    "booking.msg.lang.missingNote": "Manca il testo in {lang}. I clienti che hanno scelto {lang} lo ricevono in {default}.",
+    "booking.msg.lang.copyFrom": "Parti dal testo in {default}"
   }
 }

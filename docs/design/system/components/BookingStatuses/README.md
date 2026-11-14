@@ -16,3 +16,5 @@ The other EasyBook screens (BookingList, BookingToday, BookingDetail) still use 
 Shown at 1280 and 390, in light and dark, plus the pills in all 6 languages.
 
 **S147.** Din „În desfășurare” s-a scos „Anulează programarea”: rămân „Încasează” (duce la „Încheiată”) și „Corectează starea…”.
+
+**S148.** Din „În desfășurare” s-a scos și „Corectează starea…”: corectarea e doar pentru stările finale. Rămâne „Încasează” (→ „Încheiată”); meniul „Mai multe acțiuni” nu mai apare pentru această stare.

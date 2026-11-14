@@ -1,4 +1,4 @@
-<!-- @dsCard group="Ecrane Booking" height=4592 width=2900 page -->
+<!-- @dsCard group="Ecrane Booking" height=6440 width=2900 page -->
 <!doctype html>
 <html lang="ro">
 <head><meta charset="utf-8"><title>BookingClientEmails — Ventora Systems</title>
@@ -608,7 +608,7 @@ function FX_App({ active, title, children, bottom }) {
   return h(V.AppShell, {
     height: "100%",
     spine: h(V.Spine, { hub: true, appName: "Founder", sections: FX_NAV, activeId: active, onBackToHub: noop, bottomItems: bottom || ["afaceri", "cereri", "suport", "automatizari"] }),
-    contextBar: h(V.ContextBar, { title, onSearch: noop, searchLabel: "Caută o afacere, o solicitare sau o automatizare", notifications: h(V.NotificationsPanel, { items: FX_NOTIFS }), account: h(V.AccountMenu, { user: { name: "Bianca Petrașcu", email: "bianca@ventorasystems.com" } }) })
+    contextBar: h(V.ContextBar, { title, onSearch: noop, searchLabel: "Caută o afacere, o solicitare sau o automatizare", notifications: h(V.NotificationsPanel, { items: FX_NOTIFS, onSeeAll: () => {} }), account: h(V.AccountMenu, { user: { name: "Bianca Petrașcu", email: "bianca@ventorasystems.com" } }) })
   }, children);
 }
 const AX_Body = ({ mode, children }) => h("div", { className: "axb " + mode }, children);
@@ -645,8 +645,8 @@ function Mail({ m, w = 600 }) {
       h("p", { className: "body-strong em-subj" }, m.subject),
       h("p", { className: "body-small em-mute" }, m.pre)),
     h("div", { className: "em-canvas" },
-      h("div", { className: "em-card" },
-        h("div", { className: "em-head" }, m.head || h(V.Logo, { size: 24, title: "Ventora Systems" })),
+      h("div", { className: "em-card", style: brandVars148(m.brand) },
+        h("div", { className: "em-head" }, m.brand && m.brand.logo ? h("img", { src: m.brand.logo, alt: "Salon Aurora", style: { height: 32 } }) : (m.head || h(V.Logo, { size: 24, title: "Ventora Systems" }))),
         h("div", { className: "em-body" },
           m.eyebrow ? h("p", { className: "caption em-mute em-eyebrow" }, m.eyebrow) : null,
           h("h1", { className: "heading em-title" }, m.title),
@@ -655,9 +655,10 @@ function Mail({ m, w = 600 }) {
           m.lead ? h("p", { className: "body" }, m.lead) : null,
           m.kv ? h("dl", { className: "kv em-kv" }, m.kv.map(([k, v]) => h(React.Fragment, { key: k }, h("dt", { className: "caption" }, k), h("dd", { className: "body" }, v)))) : null,
           m.extra ? m.extra.map((x, i) => h("p", { key: i, className: "body" }, x)) : null,
-          m.cta ? h("a", { className: "em-btn body-strong", href: "#" }, m.cta) : null,
+          m.cta ? h("a", { className: "em-btn body-strong", href: "#", style: m.brand ? { background: m.brand.primary, color: "#FFFFFF" } : undefined }, m.cta) : null,
           m.cta2 ? h("a", { className: "v-link body-small", href: "#" }, m.cta2) : null,
-          m.after ? h("p", { className: "body-small em-mute" }, m.after) : null)),
+          m.after ? h("p", { className: "body-small em-mute" }, m.after) : null,
+          m.brand && m.brand.sig ? h("p", { className: "body-small", style: { whiteSpace: "pre-line", margin: 0 } }, m.brand.sig[m.lang] || m.brand.sig.ro) : null)),
       h("div", { className: "em-foot" },
         m.why ? h("p", { className: "caption em-mute" }, m.why) : null,
         h("p", { className: "caption em-mute" }, m.foot))));
@@ -675,7 +676,7 @@ const EV = {
   it: { name: "Sig.ra Greco", when: "venerdì 6 novembre alle 12:30", whenNew: "sabato 7 novembre alle 10:00", svc: "Colore · 90 min", member: "Chiara Bruno", addr: "Via Nicolae Bălcescu 12, Sibiu", phone: "+40 722 123 456" }
 };
 const BIZ = "Salon Aurora";
-function bkMail(id, lang = "ro") {
+function bkMail(id, lang = "ro", brand) {
   const e = EV[lang], t = (k, v) => TB(lang, "email.booking." + k, Object.assign({ business: BIZ, amount: "50 lei", when: e.when, last4: "4242" }, v || {}));
   const appt = [[t("k.service"), e.svc], [t("k.member"), e.member], [t("k.when"), e.when], [t("k.where"), e.addr]];
   const m = { fromLabel: t("from"), toLabel: t("to"), from: t("sender") + " <noreply@ventora-hub.com>", to: lang === "de" ? "Christina Bauer" : lang === "it" ? "Cristina Greco" : "Cristina Dobre",
@@ -691,7 +692,7 @@ function bkMail(id, lang = "ro") {
     paid: { title: t("paid.title"), lead: t("paid.lead"), kv: [[t("k.amount"), "50 lei"], [t("k.card"), "Visa ···· 4242"], [t("k.rest"), "300 lei"]], cta: t("paid.receipt"), cta2: t("manage") },
     refunded: { title: t("refunded.title"), lead: t("refunded.lead"), kv: [[t("k.amount"), "50 lei"], [t("k.card"), "Visa ···· 4242"]], cta: t("rebook") }
   }[id];
-  Object.assign(m, set);
+  Object.assign(m, set, { brand, lang });
   m.subject = t("subject", { title: m.title });
   m.pre = m.lead;
   if (id === "confirmed") m.after = t("healthLink");
@@ -699,7 +700,28 @@ function bkMail(id, lang = "ro") {
 }
 const IDS = [["code", "0 · Codul de verificare (pagina publică, S116 a)"], ["confirmed", "1 · Confirmarea"], ["reminder", "2 · Reminderul de dinainte (24 h, din Setări · Reamintiri)"], ["cancelClient", "3a · Anularea, de client (în termen: avansul se rambursează)"],
   ["cancelSalon", "3b · Anularea, de salon (cu motivul)"], ["moved", "4 · Modificarea"], ["paid", "5 · Avansul primit"], ["refunded", "6 · Avansul rambursat"]];
-mount(h("div", { className: "sms-states", "data-theme": "light" },
+/* S148 (13.11): the business brand (Setări › Brand, HubBrand) on client-facing pages: logo light / dark in the header, the main colour on buttons, the accent line, the font. Without a brand: the Ventora look, unchanged. */
+const BrandCtx148 = React.createContext(null);
+const B148_LOGO = "data:image/svg+xml;charset=utf-8," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 64"><circle cx="32" cy="32" r="22" fill="none" stroke="#7A2E4D" stroke-width="5"/><path d="M14 34h36" stroke="#7A2E4D" stroke-width="5" stroke-linecap="round"/><circle cx="32" cy="14" r="5" fill="#E9B872"/><text x="66" y="42" font-family="Georgia, serif" font-size="28" fill="#3B1626">Salon Aurora</text></svg>');
+const B148_LOGO_D = "data:image/svg+xml;charset=utf-8," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 64"><circle cx="32" cy="32" r="22" fill="none" stroke="#F3C9D9" stroke-width="5"/><path d="M14 34h36" stroke="#F3C9D9" stroke-width="5" stroke-linecap="round"/><circle cx="32" cy="14" r="5" fill="#E9B872"/><text x="66" y="42" font-family="Georgia, serif" font-size="28" fill="#FFF6F0">Salon Aurora</text></svg>');
+const B148_FULL = { logo: B148_LOGO, logoDark: B148_LOGO_D, primary: "#7A2E4D", accent: "#E9B872", font: "'Iowan Old Style', 'Palatino Linotype', Palatino, Georgia, 'Times New Roman', serif", sig: { ro: "Cu drag,\nEchipa Salon Aurora\n0722 123 456 · Str. Nicolae Bălcescu 12, Sibiu", de: "Herzliche Grüße\nIhr Team vom Salon Aurora\n0722 123 456 · Str. Nicolae Bălcescu 12, Sibiu", it: "Un caro saluto,\nIl team di Salon Aurora\n0722 123 456 · Str. Nicolae Bălcescu 12, Sibiu" } };
+const b148sh = (c, f) => "#" + [1, 3, 5].map((i) => Math.max(0, Math.min(255, Math.round(parseInt(c.substr(i, 2), 16) * f))).toString(16).padStart(2, "0")).join("");
+const brandVars148 = (b) => b ? { "--primary": b.primary, "--primary-hover": b148sh(b.primary, 0.9), "--primary-pressed": b148sh(b.primary, 0.8), "--on-primary": "#FFFFFF", "--font-sans": b.font, "--font-display": b.font, fontFamily: b.font, borderTop: "4px solid " + b.accent } : undefined;
+const BrandLogo148 = ({ b, mob }) => h("span", { className: "b148-logo" + (mob ? " m" : "") }, h("img", { src: b.logo, className: "b148-l", alt: "Salon Aurora" }), h("img", { src: b.logoDark || b.logo, className: "b148-d", alt: "" }));
+const WithBrand148 = ({ b, children }) => h(BrandCtx148.Provider, { value: b }, children);
+
+const BRAND148_BOARDS = h("div", { className: "sms-states", "data-theme": "light", style: { marginTop: "var(--space-8)" } },
+  h("p", { className: "heading" }, "S148 · E-mailurile în brandul afacerii"),
+  h("p", { className: "caption muted" }, "Din Hub · Setări › Brand: antetul cu logo-ul salonului, culoarea butonului, linia de accent, fontul și semnătura · fără brand: antetul cu numele salonului și butonul Ventora (de mai sus) · expeditorul și subsolul nu se schimbă"),
+  h("div", { className: "em-grid", style: { marginTop: "var(--space-4)" } },
+    h(Box, { label: "Cu brand · 1 · Confirmarea" }, h(Mail, { m: bkMail("confirmed", "ro", B148_FULL) })),
+    h(Box, { label: "Cu brand · 2 · Reminderul" }, h(Mail, { m: bkMail("reminder", "ro", B148_FULL) })),
+    h(Box, { label: "Fără brand · 1 · Confirmarea (aspectul Ventora)" }, h(Mail, { m: bkMail("confirmed", "ro") })),
+    h(Box, { label: "Cu brand · telefon 390 · reminder" }, h(Mail, { m: bkMail("reminder", "ro", B148_FULL), w: 390 })),
+    h(Box, { label: "Deutsch · mit Marke · Bestätigung" }, h(Mail, { m: bkMail("confirmed", "de", B148_FULL) })),
+    h(Box, { label: "Italiano · con brand · 390 · promemoria" }, h(Mail, { m: bkMail("reminder", "it", B148_FULL), w: 390 }))));
+
+mount(h("div", null, h("div", { className: "sms-states", "data-theme": "light" },
   h("p", { className: "heading" }, "EasyBook — E-mailurile către clienți (S116 g) · șablonul operațional unic (S3) · doar light"),
   h("p", { className: "caption muted" }, "De la „{afacere} prin EasyBook” <noreply@ventora-hub.com>; antetul poartă numele salonului, nu marca Ventora Systems · subiect = titlu · afacere · preheader = primul rând · „dumneavoastră” (DE Sie, IT Lei) · i18n/booking.json (email.booking.*) · DE DECIS: expeditorul (vezi README)"),
   h("div", { className: "em-grid", style: { marginTop: "var(--space-4)" } }, IDS.map(([id, lab]) => h(Box, { key: id, label: lab }, h(Mail, { m: bkMail(id) })))),
@@ -711,8 +733,7 @@ mount(h("div", { className: "sms-states", "data-theme": "light" },
     h(Box, { label: "Italiano · annullato dal salone · 390" }, h(Mail, { m: bkMail("cancelSalon", "it"), w: 390 })),
     h(Box, { label: "English · deposit refunded" }, h(Mail, { m: bkMail("refunded", "en") })),
     h(Box, { label: "Français · rendez-vous déplacé" }, h(Mail, { m: bkMail("moved", "fr") })),
-    h(Box, { label: "Español · código · 390" }, h(Mail, { m: bkMail("code", "es"), w: 390 })))));
-
+    h(Box, { label: "Español · código · 390" }, h(Mail, { m: bkMail("code", "es"), w: 390 })))), BRAND148_BOARDS));
 </script>
 </body>
 </html>

@@ -1363,3 +1363,7 @@ a.v-btn { box-sizing: border-box; }
   .v-dock__act { display: none; }
   .v-dock__item:is(:hover, .is-hover, :focus-within) .v-dock__card { height: 100%; min-height: 0; padding: 0; }
 }
+
+/* S148 — "Vezi toate" at the bottom of the bell */
+.v-notifs__foot { display: flex; justify-content: center; padding: var(--space-3) var(--space-4); border-top: var(--border-width) solid var(--line); }
+.v-notifs__foot .v-link { display: inline-flex; align-items: center; gap: var(--space-1); }

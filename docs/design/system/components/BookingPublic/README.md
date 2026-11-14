@@ -26,3 +26,5 @@ Shown at 1280 and 390, in light and dark, with DE/IT and EN/FR/ES tests.
 **S138.** Members can have a variable duration and a "de la" / interval price: "75–120 min · 200–300 lei", "de la 260 lei" (`booking.public.priceFrom`), with "Prețul final se stabilește la salon, în intervalul afișat." (`booking.public.priceFinal`), 6 languages (drawn in BookingServices).
 
 **S146.** The photo upload on a question ("Adăugați o poză", B.12) is drawn in BookingCustomForms, frames 10–15; the link states after the start, expired and revoked (B.11b) in BookingClientManage, frames 15–17.
+
+**S148 · Brandul afacerii.** Cu brand (Hub › Brand): logo-ul în antet (varianta pentru fundal închis în dark), culoarea principală pe butoane și selecții, linia de accent sus, fontul afacerii. Fără brand: aspectul Ventora, neschimbat. Textele rămân aceleași. Desenat în secțiunea „S148”, cu test DE / IT.

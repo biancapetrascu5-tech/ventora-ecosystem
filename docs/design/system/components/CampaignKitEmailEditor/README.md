@@ -30,3 +30,5 @@ The sample client e-mail uses "dumneavoastră". Shown at 1280, 820 and 390, ligh
 - **Campaign limit.** Recommendation: 20 active and scheduled campaigns in Business, drafts and sent ones not counted.
 - **Bounces.** Recommendation: a hard bounce goes to suppression at once; a list above 5% bounces gets a warning on the dashboard and in the audience step.
 - **Real sending.** Recommendation: keep the button disabled with "Trimiterile reale sunt oprite deocamdată" until the legal review (GDPR, Law 506/2004 on electronic communications), then turn it on per business.
+
+**S148.** Logo-ul, numele și culoarea din antetul și butonul campaniilor vin din Hub › Brand („Deschide Brand”); textele `marketing.ed.p.headHelp`, `.colorV`, `.brandAction` s-au schimbat în cele 6 limbi.

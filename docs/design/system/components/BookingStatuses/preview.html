@@ -608,7 +608,7 @@ function FX_App({ active, title, children, bottom }) {
   return h(V.AppShell, {
     height: "100%",
     spine: h(V.Spine, { hub: true, appName: "Founder", sections: FX_NAV, activeId: active, onBackToHub: noop, bottomItems: bottom || ["afaceri", "cereri", "suport", "automatizari"] }),
-    contextBar: h(V.ContextBar, { title, onSearch: noop, searchLabel: "Caută o afacere, o solicitare sau o automatizare", notifications: h(V.NotificationsPanel, { items: FX_NOTIFS }), account: h(V.AccountMenu, { user: { name: "Bianca Petrașcu", email: "bianca@ventorasystems.com" } }) })
+    contextBar: h(V.ContextBar, { title, onSearch: noop, searchLabel: "Caută o afacere, o solicitare sau o automatizare", notifications: h(V.NotificationsPanel, { items: FX_NOTIFS, onSeeAll: () => {} }), account: h(V.AccountMenu, { user: { name: "Bianca Petrașcu", email: "bianca@ventorasystems.com" } }) })
   }, children);
 }
 const AX_Body = ({ mode, children }) => h("div", { className: "axb " + mode }, children);
@@ -719,7 +719,7 @@ const DET = {
   awaitingPayment: { row: 2, extra: (l) => h("p", { className: "body-small muted" }, TB(l, "booking.status.paymentUntil", { amount: "50 lei", until: "12:07" })), foot: [["send", "booking.action.resendPay"]], menu: ["booking.action.cancel"] },
   unconfirmed: { row: 5, foot: [["calendar", "booking.action.move"], ["check", "booking.action.confirm", 1]], menu: ["booking.action.noShow", "booking.action.cancel"] },
   confirmed: { row: 6, extra: (l) => h("p", { className: "body-small muted" }, TB(l, "booking.status.depositPaid", { amount: "50 lei" })), foot: [["calendar", "booking.action.move"], ["circle-dot", "booking.action.start", 1]], menu: ["booking.action.noShow", "booking.action.cancel"] },
-  inProgress: { row: 1, foot: [["wallet", "booking.action.collect", 1, { amount: "300 lei" }]], menu: ["booking.action.correct"] },
+  inProgress: { row: 1, foot: [["wallet", "booking.action.collect", 1, { amount: "300 lei" }]], menu: [] },
   done: { row: 4, final: true, foot: [["calendar-check", "booking.action.rebook", 1]], menu: ["booking.action.correct"] },
   cancelled: { row: 7, final: true, extra: (l) => h(React.Fragment, null, h("p", { className: "body-small" }, TB(l, "booking.status.byClient", { time: l === "ro" ? "3 ore" : l === "de" ? "3 Stunden" : "3 ore" })), h("p", { className: "body-small muted" }, TB(l, "booking.status.late"))), foot: [["calendar-check", "booking.action.rebook", 1]], menu: ["booking.action.correct"] },
   noShow: { row: 3, final: true, extra: (l) => h(V.Notice, { tone: "attention", icon: "triangle-alert", title: TB(l, "booking.client.riskTitle") }, TB(l, "booking.client.alertOwner")), foot: [["calendar-check", "booking.action.rebook", 1]], menu: ["booking.action.correct"] }
@@ -731,7 +731,7 @@ function Detail({ mode, s, lang = "ro" }) {
   return h("div", { className: "frame-rel" },
     h(BookingApp, { active: "programari", title: "Programări", lang }, h(V.PageHeader, { title: "Programări" }), h(BkList, { lang, mode, active: d.row })),
     h(V.Drawer, { open: true, contained: true, layout: mob ? "full" : "auto", onOpenChange: noop, title: r.client, subtitle: r.service + " · " + r.when,
-      actions: h(V.Menu, { items: d.menu.map((k) => ({ label: TB(lang, k), icon: k.endsWith("cancel") ? "trash-2" : k.endsWith("noShow") ? "circle-x" : "pencil", destructive: k.endsWith("cancel") })), trigger: h(V.IconButton, { icon: "ellipsis-vertical", label: "Mai multe acțiuni" }) }),
+      actions: d.menu.length === 0 ? undefined : h(V.Menu, { items: d.menu.map((k) => ({ label: TB(lang, k), icon: k.endsWith("cancel") ? "trash-2" : k.endsWith("noShow") ? "circle-x" : "pencil", destructive: k.endsWith("cancel") })), trigger: h(V.IconButton, { icon: "ellipsis-vertical", label: "Mai multe acțiuni" }) }),
       footer: h(React.Fragment, null, d.foot.map(([ic, k, primary, vars]) => h(V.Button, { key: k, icon: ic, variant: primary ? "primary" : "secondary" }, TB(lang, k, vars))))
     }, h("div", { className: "x-stack" },
       h("div", { className: "x-row" }, h(Pill, { lang, s }), s === "awaitingPayment" || s === "unconfirmed" ? h(V.Badge, null, "Rezervată online") : null),
@@ -762,7 +762,7 @@ mount(h("div", null,
     ["1 · Așteaptă plata: „Retrimite linkul de plată”; anularea în meniu", (m) => h(Detail, { mode: m, s: "awaitingPayment" })],
     ["2 · Neconfirmată: „Confirmă”", (m) => h(Detail, { mode: m, s: "unconfirmed" })],
     ["3 · Confirmată: „Începe”; „Nu a venit” și anularea în meniu", (m) => h(Detail, { mode: m, s: "confirmed" })],
-    ["4 · În desfășurare: „Încasează” (→ Încheiată) și „Corectare”; fără anulare (S147)", (m) => h(Detail, { mode: m, s: "inProgress" })],
+    ["4 · În desfășurare: doar „Încasează” (→ Încheiată); fără anulare (S147) și fără corectare (S148: corectarea e doar pentru stările finale)", (m) => h(Detail, { mode: m, s: "inProgress" })],
     ["5 · Încheiată (finală)", (m) => h(Detail, { mode: m, s: "done" })],
     ["6 · Anulată (finală): cine și cu cât timp înainte", (m) => h(Detail, { mode: m, s: "cancelled" })],
     ["7 · Nu a venit (finală): clientul ajunge la „Risc ridicat”", (m) => h(Detail, { mode: m, s: "noShow" })]] }),

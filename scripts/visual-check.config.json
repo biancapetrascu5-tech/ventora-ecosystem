@@ -143,7 +143,8 @@
   "exceptions": {
     "OrgSwitcher": "S147 — se aliniază în lotul F5 launcher+shell",
     "AccessBadge": "S147 — se aliniază în lotul F5 launcher+shell",
-    "AppTile": "S147 — se aliniază în lotul F5 launcher+shell"
+    "AppTile": "S147 — se aliniază în lotul F5 launcher+shell",
+    "BookingMessageTemplates": "S148 — selectorul de limbă, lotul main"
   },
   "$comment_selectors": "designSelector: primul cadru cu data-theme din preview.html (clasele cadrelor diferă de la o componentă la alta: c3f, qf, al-frame…). Interiorul BrandZone (.v-brandzone__in, data-theme=\"dark\", display: contents) e parte din componentă, nu cadru, deci e sărit. implSelector: cadrul galeriei marcat cu data-gallery-frame. Ambele cadre trebuie să conțină exact aceleași exemple."
 }

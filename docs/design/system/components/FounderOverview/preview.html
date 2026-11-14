@@ -613,7 +613,7 @@ function FX_App({ active, title, children, bottom }) {
   return h(V.AppShell, {
     height: "100%",
     spine: h(V.Spine, { hub: true, appName: "Founder", sections: FX_NAV, activeId: active, onBackToHub: noop, bottomItems: bottom || ["afaceri", "cereri", "suport", "automatizari"] }),
-    contextBar: h(V.ContextBar, { title, onSearch: noop, searchLabel: "Caută o afacere, o solicitare sau o automatizare", notifications: h(V.NotificationsPanel, { items: FX_NOTIFS }), account: h(V.AccountMenu, { user: { name: "Bianca Petrașcu", email: "bianca@ventorasystems.com" } }) })
+    contextBar: h(V.ContextBar, { title, onSearch: noop, searchLabel: "Caută o afacere, o solicitare sau o automatizare", notifications: h(V.NotificationsPanel, { items: FX_NOTIFS, onSeeAll: () => {} }), account: h(V.AccountMenu, { user: { name: "Bianca Petrașcu", email: "bianca@ventorasystems.com" } }) })
   }, children);
 }
 const AX_Body = ({ mode, children }) => h("div", { className: "axb " + mode }, children);

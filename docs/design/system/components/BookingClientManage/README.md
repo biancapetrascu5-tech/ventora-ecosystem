@@ -22,3 +22,5 @@ Shown at 1280, 820 and 390, light and dark.
 - **The late fee without a deposit.** Recommendation: nothing is charged online; the fee is noted on the client card and asked at the next visit.
 
 **S146 · B.11b.** Three more states (keys `booking.manage.started.*`, `.expired.body`, `.revoked.body`, `.bookAgain`, `.salonPhone`, 6 languages): after the appointment started — only the details (the state "În desfășurare"), no "Mută" / "Anulează", "Programarea a început. Pentru schimbări, sunați salonul." and the salon's phone; 30 days after the appointment the link expires — "Linkul nu mai e valabil", what the booking was, the phone, "Programează din nou"; revoked after the client's data was deleted — the same screen without any detail. DE / IT test.
+
+**S148 · Brandul afacerii.** Rezumatul, „Mută programarea” și linkul expirat, cu brand complet (logo, culoare, accent, font); fără brand rămâne aspectul Ventora.

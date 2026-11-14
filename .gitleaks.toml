@@ -18,5 +18,9 @@ commits = [
   # only to sign the test's own events (fake Stripe, no account); the gitleaks:allow annotation
   # was added in the next commit.
   "289afbc4c9383891af9857d837353fa43ad219cc",
+  # 4dbb0f0f (S148 design sync): generic-api-key on the i18n key "marketing.aud.iu.c1" of the
+  # inline dictionary in docs/design/system/components/CampaignKit{Media,Calendar,Sending,Series}/
+  # preview.html (line 966, changed by S148); a translation key, not a credential.
+  "4dbb0f0f9df19ec45b416c0b69d5a59a4893533f",
 ]
 

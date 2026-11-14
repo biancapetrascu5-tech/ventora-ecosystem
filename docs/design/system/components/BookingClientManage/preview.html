@@ -1,4 +1,4 @@
-<!-- @dsCard group="Ecrane Booking" height=26944 width=2620 page -->
+<!-- @dsCard group="Ecrane Booking" height=32488 width=2620 page -->
 <!doctype html>
 <html lang="ro">
 <head><meta charset="utf-8"><title>BookingClientManage — Ventora Systems</title>
@@ -538,6 +538,8 @@ html,body{min-height:100%}
 .pb-done .pb-acts.m{align-self:stretch}
 .mg-pol p{margin:0}
 
+
+.b148-logo{display:inline-flex;align-items:center}.b148-logo img{height:44px;width:auto}.b148-logo.m img{height:32px}.b148-d{display:none}[data-theme=dark] .b148-l{display:none}[data-theme=dark] .b148-d{display:inline}
 </style>
 </head>
 <body>
@@ -639,7 +641,7 @@ function FX_App({ active, title, children, bottom }) {
   return h(V.AppShell, {
     height: "100%",
     spine: h(V.Spine, { hub: true, appName: "Founder", sections: FX_NAV, activeId: active, onBackToHub: noop, bottomItems: bottom || ["afaceri", "cereri", "suport", "automatizari"] }),
-    contextBar: h(V.ContextBar, { title, onSearch: noop, searchLabel: "Caută o afacere, o solicitare sau o automatizare", notifications: h(V.NotificationsPanel, { items: FX_NOTIFS }), account: h(V.AccountMenu, { user: { name: "Bianca Petrașcu", email: "bianca@ventorasystems.com" } }) })
+    contextBar: h(V.ContextBar, { title, onSearch: noop, searchLabel: "Caută o afacere, o solicitare sau o automatizare", notifications: h(V.NotificationsPanel, { items: FX_NOTIFS, onSeeAll: () => {} }), account: h(V.AccountMenu, { user: { name: "Bianca Petrașcu", email: "bianca@ventorasystems.com" } }) })
   }, children);
 }
 const AX_Body = ({ mode, children }) => h("div", { className: "axb " + mode }, children);
@@ -720,11 +722,11 @@ const mem = (lang) => MEMBERS[lang] || MEMBERS.ro;
 const lei = (n) => n + " lei";
 const P = (lang) => PUB[lang] || PUB.ro;
 function PubShell({ lang = "ro", mode, step, total = 4, title, aside, children, foot = true }) {
-  const mob = mode === "mobile";
-  return h("div", { className: "pb" + (mob ? " m" : ""), lang },
+  const mob = mode === "mobile", B8 = React.useContext(BrandCtx148);
+  return h("div", { className: "pb" + (mob ? " m" : ""), lang, style: brandVars148(B8) },
     h("header", { className: "pb-head" },
-      h("div", { className: "pb-brand" }, h(V.Avatar, { name: "Salon Aurora", shape: "square", size: mob ? "md" : "lg" }),
-        h("div", null, h("p", { className: mob ? "subheading" : "heading" }, "Salon Aurora"), h("p", { className: "caption muted" }, P(lang).addr))),
+      h("div", { className: "pb-brand" }, B8 && B8.logo ? h(BrandLogo148, { b: B8, mob }) : h(V.Avatar, { name: "Salon Aurora", shape: "square", size: mob ? "md" : "lg" }),
+        h("div", null, B8 && B8.logo ? null : h("p", { className: mob ? "subheading" : "heading" }, "Salon Aurora"), h("p", { className: "caption muted" }, P(lang).addr))),
       h(V.LanguageSwitcher, { value: lang, variant: mob ? "icon" : "button" })),
     h("div", { className: "pb-main" + (aside && !mob ? " two" : "") },
       h("main", { className: "pb-card" },
@@ -865,7 +867,22 @@ function Loc146({ items }) {
       h("div", { className: mode === "mobile" ? "scr-m" : "scr-d", "data-theme": th, style: { height: H, position: "relative", overflow: "hidden" } }, h(V.LocaleProvider, { locale: lang }, el))))));
 }
 
-mount(h("div", null, h(Board3, { title: "EasyBook — Pagina clientului: mută sau anulează programarea (B.11, S125)", notes: ["Se deschide din linkul din e-mailul de confirmare, fără cont", "Clientul e „dumneavoastră” (glosar)", "Mutarea ține ora aleasă 10 minute", "Anularea arată politica salonului: gratuit cu cel puțin 24 de ore înainte, apoi salonul poate reține avansul sau taxa", "Online, schimbări până cu 2 ore înainte (DE DECIS)", "Doar în română deocamdată; chei booking.manage.* în i18n/booking.json"], items: [
+/* S148 (13.11): the business brand (Setări › Brand, HubBrand) on client-facing pages: logo light / dark in the header, the main colour on buttons, the accent line, the font. Without a brand: the Ventora look, unchanged. */
+const BrandCtx148 = React.createContext(null);
+const B148_LOGO = "data:image/svg+xml;charset=utf-8," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 64"><circle cx="32" cy="32" r="22" fill="none" stroke="#7A2E4D" stroke-width="5"/><path d="M14 34h36" stroke="#7A2E4D" stroke-width="5" stroke-linecap="round"/><circle cx="32" cy="14" r="5" fill="#E9B872"/><text x="66" y="42" font-family="Georgia, serif" font-size="28" fill="#3B1626">Salon Aurora</text></svg>');
+const B148_LOGO_D = "data:image/svg+xml;charset=utf-8," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 64"><circle cx="32" cy="32" r="22" fill="none" stroke="#F3C9D9" stroke-width="5"/><path d="M14 34h36" stroke="#F3C9D9" stroke-width="5" stroke-linecap="round"/><circle cx="32" cy="14" r="5" fill="#E9B872"/><text x="66" y="42" font-family="Georgia, serif" font-size="28" fill="#FFF6F0">Salon Aurora</text></svg>');
+const B148_FULL = { logo: B148_LOGO, logoDark: B148_LOGO_D, primary: "#7A2E4D", accent: "#E9B872", font: "'Iowan Old Style', 'Palatino Linotype', Palatino, Georgia, 'Times New Roman', serif", sig: { ro: "Cu drag,\nEchipa Salon Aurora\n0722 123 456 · Str. Nicolae Bălcescu 12, Sibiu", de: "Herzliche Grüße\nIhr Team vom Salon Aurora\n0722 123 456 · Str. Nicolae Bălcescu 12, Sibiu", it: "Un caro saluto,\nIl team di Salon Aurora\n0722 123 456 · Str. Nicolae Bălcescu 12, Sibiu" } };
+const b148sh = (c, f) => "#" + [1, 3, 5].map((i) => Math.max(0, Math.min(255, Math.round(parseInt(c.substr(i, 2), 16) * f))).toString(16).padStart(2, "0")).join("");
+const brandVars148 = (b) => b ? { "--primary": b.primary, "--primary-hover": b148sh(b.primary, 0.9), "--primary-pressed": b148sh(b.primary, 0.8), "--on-primary": "#FFFFFF", "--font-sans": b.font, "--font-display": b.font, fontFamily: b.font, borderTop: "4px solid " + b.accent } : undefined;
+const BrandLogo148 = ({ b, mob }) => h("span", { className: "b148-logo" + (mob ? " m" : "") }, h("img", { src: b.logo, className: "b148-l", alt: "Salon Aurora" }), h("img", { src: b.logoDark || b.logo, className: "b148-d", alt: "" }));
+const WithBrand148 = ({ b, children }) => h(BrandCtx148.Provider, { value: b }, children);
+
+const BRAND148_BOARDS = h(Board3, { title: "EasyBook — Pagina clientului în brandul afacerii (S148)", notes: ["Logo, culoarea principală, accentul și fontul din Hub · Setări › Brand", "Fără brand: aspectul Ventora (ecranele de mai sus)"], items: [
+  ["S148 · 1 · Rezumatul programării, cu brand complet", (m) => h(WithBrand148, { b: B148_FULL }, h(Overview, { mode: m })), 760, 760, 840],
+  ["S148 · 2 · „Mută programarea”, cu brand complet", (m) => h(WithBrand148, { b: B148_FULL }, h(Move, { mode: m })), 890, 930, 710],
+  ["S148 · 3 · Linkul expirat, cu brand complet", (m) => h(WithBrand148, { b: B148_FULL }, h(Link146, { mode: m, kind: "expired" })), 640, 660, 760]] });
+
+mount(h("div", null, h("div", null, h(Board3, { title: "EasyBook — Pagina clientului: mută sau anulează programarea (B.11, S125)", notes: ["Se deschide din linkul din e-mailul de confirmare, fără cont", "Clientul e „dumneavoastră” (glosar)", "Mutarea ține ora aleasă 10 minute", "Anularea arată politica salonului: gratuit cu cel puțin 24 de ore înainte, apoi salonul poate reține avansul sau taxa", "Online, schimbări până cu 2 ore înainte (DE DECIS)", "Doar în română deocamdată; chei booking.manage.* în i18n/booking.json"], items: [
   ["1 · Rezumatul programării, cu avans", (m) => h(Overview, { mode: m }), 730, 730, 800],
   ["2 · Fără avans: politica cu taxa de anulare târzie", (m) => h(Overview, { mode: m, deposit: false }), 670, 670, 740],
   ["3 · „Mută programarea”: altă zi și oră, ora ținută 10 minute", (m) => h(Move, { mode: m }), 860, 900, 680],
@@ -886,7 +903,7 @@ mount(h("div", null, h(Board3, { title: "EasyBook — Pagina clientului: mută s
     ["17 · Linkul revocat după ștergerea datelor", (m) => h(Link146, { mode: m, kind: "revoked" }), 500, 500, 560]] }),
   h(Loc146, { items: [
     ["Deutsch · 1280 · Light · Termin begonnen", "de", "desktop", "light", 640, h(Link146, { mode: "desktop", lang: "de", kind: "started" })],
-    ["Italiano · 390 · Dark · link scaduto", "it", "mobile", "dark", 780, h(Link146, { mode: "mobile", lang: "it", kind: "expired" })]] })));
+    ["Italiano · 390 · Dark · link scaduto", "it", "mobile", "dark", 780, h(Link146, { mode: "mobile", lang: "it", kind: "expired" })]] })), BRAND148_BOARDS));
 </script>
 </body>
 </html>
