@@ -361,7 +361,8 @@ describe('B.11c — the salon’s phone: on the location, the business’s as fa
       [A.org],
     );
     expect(audit).toHaveLength(2);
-    expect(JSON.stringify(audit)).not.toContain('722');
+    // the whole number: „722” alone can be inside a generated id
+    expect(JSON.stringify(audit)).not.toContain('722123456');
   });
 
   it('in the database: the CHECKs hold the format whoever writes', async () => {
