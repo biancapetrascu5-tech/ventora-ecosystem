@@ -46,8 +46,8 @@ export function BookingSettingsHeader({
   tab?: SettingsTab;
   /** The tabs of the page's design (S127 for „Mesaje”). */
   tabs?: readonly SettingsTab[];
-  /** The lead of the tab (hidden on a phone); „Servicii” by default. */
-  description?: string;
+  /** The lead of the tab (hidden on a phone); „Servicii” by default; null: none (BookingMoney). */
+  description?: string | null;
   onTabChange?: (tab: SettingsTab) => void;
 }) {
   const t = useTranslations('booking.settings');
@@ -55,7 +55,9 @@ export function BookingSettingsHeader({
   return (
     <PageHeader
       title={t('title')}
-      description={mode === 'mobile' ? undefined : (description ?? services('lead'))}
+      description={
+        mode === 'mobile' || description === null ? undefined : (description ?? services('lead'))
+      }
       tabs={
         <Tabs
           label={t('tabs.label')}

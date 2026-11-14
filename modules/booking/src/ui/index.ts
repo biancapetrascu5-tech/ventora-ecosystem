@@ -218,3 +218,47 @@ export {
 } from './client/BookingClientCardView';
 // Lot B.14c: the limits of „Când pleacă” (pure, the same numbers as the server)
 export { SEND_TIMING_LIMITS, THANKS_WHEN, type ThanksWhen } from '../server/send-timing';
+// BookingMoney (B.21, S127; Decision 7, screen 5): „Plată” in the detail, „Încasează”, refunds
+export {
+  MoneyBlock,
+  MoneyPill,
+  MoneyInfo,
+  CollectDialog,
+  RefundDialog,
+  NoShowFeeDialog,
+  FeesSection,
+  ClientBalance,
+  type MoneyMethod,
+  type MoneyHistoryRow,
+  type FeeRule,
+  type ClientPaymentRow,
+} from './money/BookingMoney';
+// BookingPayments (S116 d): Setări · „Plăți și avans” (server: B.22)
+export {
+  BookingPaymentsView,
+  DisconnectStripeDialog,
+  type BookingPaymentsViewProps,
+  type DepositForm,
+  type PaymentsTab,
+  type StripeState,
+} from './payments/BookingPaymentsView';
+// The public booking page and BookingDeposit (S116 b; server: B.11, B.22)
+export {
+  PublicShell,
+  PublicSummary,
+  PublicActions,
+  type PublicBusiness,
+} from './public/PublicShell';
+export {
+  DepositPayStep,
+  DepositResultView,
+  type DepositPayState,
+  type DepositResult,
+} from './public/BookingDepositView';
+export {
+  minorOf,
+  amountInput,
+  refundMax,
+  checkCollect,
+  type CollectCheck,
+} from './money/money-format';

@@ -1,0 +1,200 @@
+/* The public booking page (BookingPublic / BookingDeposit, phone first): the classes of
+   preview.html (pb, pb-head, pb-brand, pb-main, pb-card, pb-aside, pb-step, pb-sum, pb-acts,
+   pb-pay, pb-rule, pb-held, pb-done, pb-foot, kv em-kv), 1:1. */
+.pb {
+  min-height: 100%;
+  background: var(--canvas);
+  color: var(--ink);
+  display: flex;
+  flex-direction: column;
+}
+.head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: var(--space-4) var(--space-8);
+  border-bottom: var(--border-width) solid var(--line);
+  background: var(--sheet);
+}
+.m .head {
+  padding: var(--space-3) var(--space-4);
+}
+.brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-width: 0;
+}
+.brand p {
+  margin: 0;
+}
+.main {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-8);
+  padding: var(--space-8) var(--space-8) var(--space-6);
+  align-items: flex-start;
+}
+.m .main {
+  padding: var(--space-4) 0;
+}
+.card {
+  width: 100%;
+  max-width: 560px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  background: var(--sheet);
+  border: var(--border-width) solid var(--line);
+  border-radius: var(--radius-lg);
+  padding: var(--space-6);
+  box-sizing: border-box;
+}
+.m .card {
+  max-width: none;
+  border-radius: 0;
+  border-left: 0;
+  border-right: 0;
+  padding: var(--space-4);
+}
+.aside {
+  width: 320px;
+  flex: none;
+  position: sticky;
+  top: var(--space-6);
+}
+.title {
+  margin: 0;
+}
+.step {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+.step p {
+  margin: 0;
+}
+.sum {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-5);
+  border: var(--border-width) solid var(--line);
+  border-radius: var(--radius-lg);
+  background: var(--sheet);
+}
+.sum p {
+  margin: 0;
+}
+.sum.c {
+  padding: var(--space-3) var(--space-4);
+  background: var(--raised);
+  border-radius: var(--radius-md);
+}
+.kv {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--space-2) var(--space-4);
+  margin: 0;
+}
+.kv dt {
+  color: var(--ink-muted);
+  padding-top: var(--space-0-5);
+}
+.kv dd {
+  margin: 0;
+  color: var(--ink);
+}
+.kv.box {
+  background: var(--sheet);
+  border-radius: var(--radius-md);
+  padding: var(--space-3) var(--space-4);
+}
+.num {
+  font-variant-numeric: tabular-nums;
+}
+.muted {
+  color: var(--ink-muted);
+}
+.acts {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-3);
+  align-items: center;
+  margin-top: var(--space-2);
+}
+.acts > :only-child {
+  margin-left: auto;
+}
+.acts.m {
+  flex-direction: column-reverse;
+  align-items: stretch;
+}
+.acts.m > :only-child {
+  margin-left: 0;
+}
+.pay {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+.pay p {
+  margin: 0;
+}
+.rule {
+  display: flex;
+  gap: var(--space-2);
+  align-items: flex-start;
+  margin: 0;
+}
+.rule > :first-child {
+  flex: none;
+  margin-top: 2px;
+  color: var(--ink-secondary);
+}
+.held {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--ink-secondary);
+}
+/* preview.html: .v-notice { margin-bottom: 8px } */
+.notice {
+  margin: 0 0 var(--space-2);
+}
+.done {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  align-items: flex-start;
+}
+.done h1,
+.done p {
+  margin: 0;
+}
+.doneIcon {
+  display: inline-flex;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  align-items: center;
+  justify-content: center;
+  background: var(--done-soft);
+  color: var(--done-ink);
+}
+.doneIcon.p {
+  background: var(--raised);
+  color: var(--ink-secondary);
+}
+.doneSum {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  align-self: stretch;
+}
+.foot {
+  text-align: center;
+  margin: auto 0 var(--space-4);
+  padding: var(--space-4) var(--space-4) 0;
+}

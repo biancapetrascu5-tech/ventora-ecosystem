@@ -1,0 +1,101 @@
+/* BookingMoney (B.21, S127): the classes of preview.html (mo-sum, x-stack, x-line, g2f, sv-narrow,
+   x-body, cx-pad, mo-ind), 1:1. */
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+.stack p {
+  margin: 0;
+}
+.sum {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-3);
+  margin: 0;
+}
+.sum > div {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding: var(--space-3);
+  border: var(--border-width) solid var(--line);
+  border-radius: var(--radius-md);
+}
+.sum > div.due {
+  background: var(--attention-soft, var(--raised));
+  border-color: transparent;
+}
+.sum dt {
+  color: var(--ink-muted);
+}
+.sum dd {
+  margin: 0;
+}
+.amount {
+  font-variant-numeric: tabular-nums;
+}
+.line {
+  display: flex;
+  gap: var(--space-2);
+  align-items: flex-start;
+  color: var(--ink-secondary);
+  margin: 0;
+}
+.line > :first-child {
+  flex: none;
+  margin-top: 2px;
+}
+/* preview.html: the later .g2f wins (two equal columns, also on a phone) */
+.grid2 {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-4);
+}
+.narrow {
+  max-width: calc(var(--search-width) / 1.5);
+}
+.indent {
+  padding-left: var(--space-10);
+}
+.row {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+  flex-wrap: wrap;
+}
+.foot {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  width: 100%;
+  flex-wrap: wrap;
+}
+.grow {
+  flex: 1 1 auto;
+}
+.foot.m {
+  flex-direction: column-reverse;
+  align-items: stretch;
+}
+.foot.m .grow {
+  display: none;
+}
+/* preview.html: .v-notice { margin-bottom: 8px } */
+.notice {
+  margin: 0 0 var(--space-2);
+}
+
+/* the client card with a balance (frame 8) */
+.body {
+  padding: 0 0 var(--space-8);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+.body.m {
+  gap: var(--space-4);
+}
+.pad {
+  padding: 0 var(--space-4);
+}

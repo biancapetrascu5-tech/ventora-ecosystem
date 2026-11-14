@@ -52,6 +52,7 @@ import {
 } from '@/server/booking-appointments-actions';
 import { readNewSlots, type NewSlotData } from '@/server/booking-new-actions';
 import { useMode } from './useMode';
+import { useAppointmentMoney } from './useAppointmentMoney';
 
 /* Lot B.6a / B.6b — EasyBook · „Programări” (BookingList, Decision 7, screen 4) and the detail of
    an appointment (BookingDetail + BookingStatuses, screen 3). The list: filters with removable
@@ -199,12 +200,20 @@ export function AppointmentsScreen({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // BookingMoney (screen 5): „Plată” in the drawer, „Încasează”, refunds
+  const pay = useAppointmentMoney({
+    mode,
+    onToast: (x) => setToast(x),
+    onChanged: () => reloadList(filters),
+  });
+
   const loadDetail = (id: string, all: boolean) =>
     readAppointmentDetail(id, all).then((r) => {
       if (r.ok) {
         setDetail(r.data);
         setNote(r.data.note);
         setReadAt(Date.now());
+        void pay.load(id);
       } else {
         setToast({
           tone: 'danger',
@@ -223,6 +232,7 @@ export function AppointmentsScreen({
         setDetail(r.data);
         setNote(r.data.note);
         setReadAt(Date.now());
+        void pay.load(openId);
       } else {
         setToast({
           tone: 'danger',
@@ -238,6 +248,7 @@ export function AppointmentsScreen({
 
   const open = (id: string) => {
     setDetail(null);
+    pay.clear();
     setAllHistory(false);
     setOpenId(id);
     window.history.replaceState(null, '', `/booking/appointments/${id}`);
@@ -246,6 +257,7 @@ export function AppointmentsScreen({
     setOpenId(null);
     setDetail(null);
     setDialog(null);
+    pay.clear();
     window.history.replaceState(null, '', '/booking/appointments');
   };
 
@@ -357,6 +369,8 @@ export function AppointmentsScreen({
       case 'rebook':
       case 'duplicate':
         return router.push(`/booking/new?${p.toString()}`);
+      case 'collect':
+        return pay.view(detail, data.canWrite && mine(detail.row.staffId)).collect?.open();
       default:
         return undefined;
     }
@@ -391,18 +405,32 @@ export function AppointmentsScreen({
     const final = FINAL.has(r.status);
     const canWrite = data.canWrite && mine(r.staffId);
     const changed = Date.parse(detail.statusChangedAt);
-    const { footer, menu } = actionsFor(r.status, {
+    const mv = pay.view(detail, canWrite);
+    const allowed = actionsFor(r.status, {
       canWrite,
       canCorrect: data.canCorrect,
       started: readAt >= Date.parse(detail.startsAt),
       correctable: readAt - changed < CORRECT_WINDOW_MS,
+      canCollect: !!mv.collect,
     });
+    // „Încasează” in the footer (screen 5): „În desfășurare” keeps „Marchează ca încheiată” in the
+    // menu (a balance can stay for the next visit); a finished appointment with something still
+    // due offers it next to „Programează din nou”
+    const footer: DetailAction[] =
+      mv.collect && (r.status === 'completed' || r.status === 'no_show')
+        ? ['collect', ...allowed.footer]
+        : allowed.footer;
+    const menu: DetailAction[] = allowed.footer.includes('collect')
+      ? ['complete', ...allowed.menu]
+      : allowed.menu;
     const label = (a: DetailAction) =>
       a === 'complete'
         ? t('detail.complete')
         : a === 'duplicate'
           ? t('detail.duplicate')
-          : t(`action.${a}` as 'action.move', a === 'collect' ? { amount: priceOf(r) } : undefined);
+          : a === 'collect'
+            ? (mv.collect?.label ?? '')
+            : t(`action.${a}` as 'action.move');
     const menuItems: DetailMenuItem[] = [
       ...(canWrite ? [{ id: 'duplicate', label: label('duplicate'), icon: ICON.duplicate }] : []),
       ...menu.map((a, i) => ({
@@ -541,6 +569,8 @@ export function AppointmentsScreen({
               }
             : null
         }
+        pill={mv.pill}
+        money={mv.block}
         history={history}
         historyMore={more}
         footer={footer.map((a) => ({
@@ -854,6 +884,7 @@ export function AppointmentsScreen({
           </>
         </DialogTrigger>
       )}
+      {detail && pay.dialogs(detail)}
       <DialogTrigger
         isOpen={dialog?.kind === 'bulkCancel'}
         onOpenChange={(o) => !o && setDialog(null)}

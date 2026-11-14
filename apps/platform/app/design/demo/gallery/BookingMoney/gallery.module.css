@@ -1,0 +1,35 @@
+/* BookingMoney gallery: preview.html .frame-rel / .ss-overlay / .tfa-scrgroup / .sv-body */
+.frame {
+  position: relative;
+  height: 100%;
+}
+.overlay {
+  position: absolute;
+  inset: 0;
+  background: var(--scrim);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-6);
+  z-index: var(--z-overlay);
+}
+.overlayM {
+  align-items: flex-end;
+  padding: 0;
+}
+.overlay :global(.v-dialog) {
+  max-height: none;
+}
+.group {
+  display: flex;
+  flex-direction: column;
+}
+.groupLab {
+  margin: var(--space-6) 0 0;
+}
+.svBody {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  min-width: 0;
+}
