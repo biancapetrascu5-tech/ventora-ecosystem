@@ -138,7 +138,8 @@ describe('MK.2 — create, update, archive', () => {
     });
     const rows = await auditRows(c.id);
     expect(rows.map((r) => r.action)).toEqual(['marketing.contact_created']);
-    expect(JSON.stringify(rows)).not.toMatch(/ana|722|example/i);
+    // whole values: „722” alone can be inside a generated id (main red, 14.11)
+    expect(JSON.stringify(rows)).not.toMatch(/ana.pop|722123456|example\.ro/i);
   });
 
   it('refuses a contact without e-mail and phone, a bad address, a bad custom field', async () => {

@@ -236,7 +236,10 @@ describe('CR.2 — the contacts', () => {
     const [row] = await audits(b.org, c.id);
     expect(row!.action).toBe('crm.contact_created');
     // no personal data in the audit
-    expect(JSON.stringify(row!.metadata)).not.toMatch(/Ioana|722|exemplu|1990|prietena/);
+    // whole values: „722” or „1990” alone can be inside a generated id (main red, 14.11)
+    expect(JSON.stringify(row!.metadata)).not.toMatch(
+      /Ioana|722123456|exemplu|1990-05-17|prietena/,
+    );
     expect(await events(b.org, c.id)).toEqual([
       {
         type: 'crm.contact.created',

@@ -1211,7 +1211,17 @@ describe('D3-21 — discounts', () => {
       duration: { duration: 'once' },
       reason: REASON,
     });
-    const at = (months: number) => dayBefore(nextAfter(first, months));
+    // Seen before invoice `months`, but never in the past: on the day before the first invoice,
+    // after 12:00 (Bucharest), dayBefore() is already behind us, and a discount ended a moment ago
+    // still counted as active then (main red on 14.11 from 12:13). Then: halfway from now to it.
+    const at = (months: number) => {
+      const invoice = nextAfter(first, months);
+      const seen = dayBefore(invoice);
+      const now = Date.now();
+      return seen.getTime() > now
+        ? seen
+        : new Date(now + (startOfDay(invoice).getTime() - now) / 2);
+    };
     expect((await getSubscriptionSummary(org, at(0)))!.nextInvoice.discountMinor).toBe(100);
     expect((await getSubscriptionSummary(org, at(1)))!.nextInvoice.discountMinor).toBe(0);
     await endDiscount({ founderHeaders: founderHeaders(), organizationId: org, discountId: once });
