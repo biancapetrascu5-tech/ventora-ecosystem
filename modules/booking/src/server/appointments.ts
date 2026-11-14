@@ -123,6 +123,15 @@ export type BookingSettings = {
   /** B.14c: the thanks at the end of the visit, N hours after it (1–48) or the next day at 10:00. */
   thanksWhen: ThanksWhen;
   thanksHours: number;
+  /**
+   * B.11d: the booking page is on (null) or off since this moment; off, the public page refuses new
+   * bookings (the bookings already made and their page stay).
+   */
+  onlineOffSince: Date | null;
+  /** B.11d: the client moves / cancels from their link until this many hours before (1–72). */
+  manageCutoffHours: number;
+  /** B.11d: shown on the confirmation of the public page (at most 300 characters), or null. */
+  afterBookingMessage: string | null;
   updatedAt: Date | null;
 };
 
@@ -674,7 +683,16 @@ export const DEFAULT_BOOKING_SETTINGS: Omit<BookingSettings, 'updatedAt'> = {
   reminderHours: 24,
   thanksWhen: 'after',
   thanksHours: 2,
+  onlineOffSince: null,
+  manageCutoffHours: 2,
+  afterBookingMessage: null,
 };
+
+/** B.11d: the limits of Setări › Rezervări online. */
+export const ONLINE_SETTINGS_LIMITS = {
+  manageCutoffHours: { min: 1, max: 72 },
+  afterBookingMessageMax: 300,
+} as const;
 
 export async function readSettings(client: PoolClient): Promise<BookingSettings> {
   const { rows } = await client.query<{
@@ -687,9 +705,13 @@ export async function readSettings(client: PoolClient): Promise<BookingSettings>
     reminder_hours: number;
     thanks_when: ThanksWhen;
     thanks_hours: number;
+    online_off_since: Date | null;
+    manage_cutoff_hours: number;
+    after_booking_message: string | null;
     updated_at: Date;
   }>(`SELECT free_cancel_hours, confirmation_mode, notice_min, buffer_min, reminder_email,
-             thanks_email, reminder_hours, thanks_when, thanks_hours, updated_at
+             thanks_email, reminder_hours, thanks_when, thanks_hours, online_off_since,
+             manage_cutoff_hours, after_booking_message, updated_at
         FROM booking.settings`);
   const r = rows[0];
   if (!r) return { ...DEFAULT_BOOKING_SETTINGS, updatedAt: null };
@@ -703,6 +725,9 @@ export async function readSettings(client: PoolClient): Promise<BookingSettings>
     reminderHours: r.reminder_hours,
     thanksWhen: r.thanks_when,
     thanksHours: r.thanks_hours,
+    onlineOffSince: r.online_off_since,
+    manageCutoffHours: r.manage_cutoff_hours,
+    afterBookingMessage: r.after_booking_message,
     updatedAt: r.updated_at,
   };
 }
@@ -724,6 +749,18 @@ function intIn(field: string, value: unknown, min: number, max: number, step = 1
   return value;
 }
 
+/** B.11d: the message after booking — trimmed, at most 300 characters; empty = none. */
+function afterBookingMessage(value: unknown): string | null {
+  if (value === null || value === '') return null;
+  if (typeof value !== 'string') throw new InvalidInput('afterBookingMessage', 'invalid');
+  const text = value.replace(/\r\n?/g, '\n').trim();
+  if (text === '') return null;
+  if ([...text].length > ONLINE_SETTINGS_LIMITS.afterBookingMessageMax) {
+    throw new InvalidInput('afterBookingMessage', 'too_long');
+  }
+  return text;
+}
+
 /** BookingSettings · the rules (screen in B.6d); a field left out keeps its value. */
 export async function setBookingSettingsInOrg(
   ctx: TenantContext,
@@ -737,6 +774,11 @@ export async function setBookingSettingsInOrg(
     reminderHours?: unknown;
     thanksWhen?: unknown;
     thanksHours?: unknown;
+    /** B.11d: true turns the booking page on, false off (the moment is kept). */
+    onlineEnabled?: unknown;
+    manageCutoffHours?: unknown;
+    /** B.11d: a text, or null / '' for none. */
+    afterBookingMessage?: unknown;
   },
 ): Promise<BookingSettings> {
   hubOnly(ctx);
@@ -805,13 +847,36 @@ export async function setBookingSettingsInOrg(
               SEND_TIMING_LIMITS.thanksHours.min,
               SEND_TIMING_LIMITS.thanksHours.max,
             ),
+      onlineOffSince:
+        input.onlineEnabled === undefined
+          ? current.onlineOffSince
+          : typeof input.onlineEnabled !== 'boolean'
+            ? (() => {
+                throw new InvalidInput('onlineEnabled', 'invalid');
+              })()
+            : input.onlineEnabled
+              ? null
+              : (current.onlineOffSince ?? new Date()),
+      manageCutoffHours:
+        input.manageCutoffHours === undefined
+          ? current.manageCutoffHours
+          : intIn(
+              'manageCutoffHours',
+              input.manageCutoffHours,
+              ONLINE_SETTINGS_LIMITS.manageCutoffHours.min,
+              ONLINE_SETTINGS_LIMITS.manageCutoffHours.max,
+            ),
+      afterBookingMessage:
+        input.afterBookingMessage === undefined
+          ? current.afterBookingMessage
+          : afterBookingMessage(input.afterBookingMessage),
     };
     await client.query(
       `INSERT INTO booking.settings
          (organization_id, free_cancel_hours, confirmation_mode, notice_min, buffer_min,
           reminder_email, thanks_email, reminder_hours, thanks_when, thanks_hours,
-          updated_by_user_id)
-       VALUES ($1, $2, $3, $4, $5, $7, $8, $9, $10, $11, $6)
+          online_off_since, manage_cutoff_hours, after_booking_message, updated_by_user_id)
+       VALUES ($1, $2, $3, $4, $5, $7, $8, $9, $10, $11, $12, $13, $14, $6)
        ON CONFLICT (organization_id) DO UPDATE
          SET free_cancel_hours = EXCLUDED.free_cancel_hours,
              confirmation_mode = EXCLUDED.confirmation_mode,
@@ -822,6 +887,9 @@ export async function setBookingSettingsInOrg(
              reminder_hours = EXCLUDED.reminder_hours,
              thanks_when = EXCLUDED.thanks_when,
              thanks_hours = EXCLUDED.thanks_hours,
+             online_off_since = EXCLUDED.online_off_since,
+             manage_cutoff_hours = EXCLUDED.manage_cutoff_hours,
+             after_booking_message = EXCLUDED.after_booking_message,
              updated_by_user_id = EXCLUDED.updated_by_user_id`,
       [
         ctx.organizationId,
@@ -835,8 +903,13 @@ export async function setBookingSettingsInOrg(
         next.reminderHours,
         next.thanksWhen,
         next.thanksHours,
+        next.onlineOffSince,
+        next.manageCutoffHours,
+        next.afterBookingMessage,
       ],
     );
+    // the message is the business's own text: the audit keeps only whether it is set
+    const { afterBookingMessage: message, onlineOffSince, ...rules } = next;
     await audit(
       exec,
       ctx,
@@ -844,7 +917,9 @@ export async function setBookingSettingsInOrg(
       'booking_settings',
       ctx.organizationId,
       {
-        ...next,
+        ...rules,
+        onlineEnabled: onlineOffSince === null,
+        afterBookingMessage: message !== null,
       },
     );
     return readSettings(client);

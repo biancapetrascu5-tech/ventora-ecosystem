@@ -175,10 +175,28 @@ export type PublicBookingPage = {
    * details step only those of the chosen service (serviceIds null = every service).
    */
   questions: PublicFormQuestion[];
+  /**
+   * B.11d: false when the business turned the booking page off: no services and no questions,
+   * the page tells the client to call the salon (phone).
+   */
+  online: boolean;
 };
+
+/**
+ * B.11d: the booking page turned off in Setări › Rezervări online refuses every new online booking
+ * (the free times, the sessions, the hold, the code, a new code): Conflict('online_off'). The
+ * bookings already made and their page (B.11b) stay.
+ */
+async function requireOnline(ctx: TenantContext) {
+  const settings = await getBookingSettingsInOrg(ctx);
+  if (settings.onlineOffSince !== null) throw new Conflict('online_off');
+  return settings;
+}
 
 export async function getPublicBookingPage(slug: unknown): Promise<PublicBookingPage> {
   const p = await place(slug);
+  const settings = await getBookingSettingsInOrg(p.ctx);
+  const online = settings.onlineOffSince === null;
   const locations = (await listLocations({ organizationId: p.ctx.organizationId })).filter(
     (l) => l.timeZone === p.timeZone,
   );
@@ -261,8 +279,9 @@ export async function getPublicBookingPage(slug: unknown): Promise<PublicBooking
       phone: l.phone ?? phone,
       today,
     })),
-    services,
-    questions,
+    services: online ? services : [],
+    questions: online ? questions : [],
+    online,
   };
 }
 
@@ -276,6 +295,7 @@ export type PublicSlotQuery = {
 
 export async function getPublicFreeSlots(slug: unknown, q: PublicSlotQuery): Promise<FreeSlots> {
   const { ctx } = await place(slug);
+  await requireOnline(ctx);
   return getFreeSlotsInOrg(ctx, {
     serviceId: q.serviceId,
     staffMemberId: q.staffMemberId,
@@ -317,6 +337,7 @@ export async function getPublicClassSessions(
   q: { serviceId: unknown; from: unknown; to: unknown; locationId?: unknown },
 ): Promise<PublicClassSession[]> {
   const p = await place(slug);
+  await requireOnline(p.ctx);
   if (!isUuid(q.serviceId)) throw new InvalidInput('serviceId', 'invalid');
   const from = requireLocalDate('from', q.from);
   const to = requireLocalDate('to', q.to);
@@ -569,6 +590,7 @@ export async function startPublicBooking(
 ): Promise<PublicHoldResult> {
   const p = await place(slug);
   const { ctx } = p;
+  await requireOnline(ctx);
   // D-B-6: no valid check, nothing at all (not even a lookup)
   if (typeof input.captchaToken !== 'string' || !(await captcha(input.captchaToken, input.ip))) {
     throw new InvalidInput('captcha', 'invalid');
@@ -785,6 +807,8 @@ export type PublicBookingResult = {
   manageToken: string;
   /** B.11c: „V-am trimis un e-mail la …” — the e-mail the client typed, masked (cr***@gmail.com). */
   emailMasked: string;
+  /** B.11d: the business's message after booking (Setări › Rezervări online), or null. */
+  afterBookingMessage: string | null;
 };
 
 export async function verifyPublicBooking(
@@ -792,6 +816,7 @@ export async function verifyPublicBooking(
   input: { holdId: unknown; code: unknown },
 ): Promise<PublicBookingResult> {
   const { ctx } = await place(slug);
+  await requireOnline(ctx);
   const holdId = requireHoldId(input.holdId);
   if (typeof input.code !== 'string' || !/^\d{6}$/.test(input.code)) {
     throw new InvalidInput('code', 'invalid');
@@ -916,6 +941,7 @@ export async function verifyPublicBooking(
     startsAt: appointment.startsAt,
     manageToken,
     emailMasked: maskEmail(hold.client_email ?? ''),
+    afterBookingMessage: settings.afterBookingMessage,
   };
 }
 
@@ -924,6 +950,7 @@ export async function resendPublicBookingCode(
   input: { holdId: unknown },
 ): Promise<{ expiresAt: Date }> {
   const p = await place(slug);
+  await requireOnline(p.ctx);
   const holdId = requireHoldId(input.holdId);
   const code = newCode();
   const result = await withBookingTx(p.ctx.organizationId, async (client) => {

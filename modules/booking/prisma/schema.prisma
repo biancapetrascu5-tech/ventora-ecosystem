@@ -244,6 +244,11 @@ model Settings {
   reminderHours       Int       @default(24) @map("reminder_hours") @db.SmallInt
   thanksWhen          String    @default("after") @map("thanks_when") @db.VarChar(8)
   thanksHours         Int       @default(2) @map("thanks_hours") @db.SmallInt
+  // Lot B.11d: the booking page off since (NULL = on), until how many hours before the client
+  // moves / cancels online (1–72), the message after booking (at most 300 characters)
+  onlineOffSince      DateTime? @map("online_off_since") @db.Timestamptz
+  manageCutoffHours   Int       @default(2) @map("manage_cutoff_hours") @db.SmallInt
+  afterBookingMessage String?   @map("after_booking_message") @db.VarChar(300)
   updatedByUserId  String   @map("updated_by_user_id") @db.Uuid
   createdAt        DateTime @default(now()) @map("created_at") @db.Timestamptz
   updatedAt        DateTime @default(now()) @map("updated_at") @db.Timestamptz
