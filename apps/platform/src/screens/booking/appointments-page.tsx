@@ -12,7 +12,7 @@ import { AppointmentsScreen } from '@/screens/booking/AppointmentsScreen';
    application active for the business, its page in the catalog. */
 type Search = Record<string, string | string[] | undefined>;
 const one = (v: string | string[] | undefined) => (typeof v === 'string' ? v : undefined);
-const PERIODS: ListPeriod[] = ['today', 'week', 'month'];
+const PERIODS: ListPeriod[] = ['today', 'week', 'month', 'all'];
 const STATES: ListState[] = ['active', 'unconfirmed', 'cancelled'];
 
 export async function renderAppointments(q: Search, openId: string | null) {

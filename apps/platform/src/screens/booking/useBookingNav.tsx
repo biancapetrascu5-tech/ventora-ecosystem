@@ -14,7 +14,9 @@ export const BOOKING_ROUTES: { id: string; href: string }[] = [
   { id: 'azi', href: '/booking/today' },
   { id: 'calendar', href: '/booking/calendar' },
   { id: 'programari', href: '/booking/appointments' },
-  { id: 'clienti', href: '/booking/clients' },
+  // the clients list needs a design (NECESITĂ DESIGN, 13.11): until then „Clienți” opens the
+  // appointments; a client's card is /booking/clients/{id}
+  { id: 'clienti', href: '/booking/appointments' },
   { id: 'servicii', href: '/booking/settings/services' },
   // B.2-UI (decision 2): „Echipa” opens Setări · „Programul echipei”
   { id: 'angajati', href: '/booking/settings/team' },
@@ -29,6 +31,7 @@ const hrefOf = (id: string) => BOOKING_ROUTES.find((r) => r.id === id)?.href;
 export function bookingActive(pathname: string): string | undefined {
   if (pathname === '/booking/settings' || pathname.startsWith('/booking/settings/'))
     return 'setari';
+  if (pathname.startsWith('/booking/clients/')) return 'clienti';
   return BOOKING_ROUTES.find((r) => pathname === r.href || pathname.startsWith(`${r.href}/`))?.id;
 }
 

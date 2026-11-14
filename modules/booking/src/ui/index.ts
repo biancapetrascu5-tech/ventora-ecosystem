@@ -165,7 +165,7 @@ export {
   type DetailStatus,
   type HistoryRow,
 } from './detail/detail-format';
-// the part of BookingList the detail stands on (the rest with screen 4)
+// BookingList (Decision 7, screen 4)
 export {
   BookingListView,
   type BookingListViewProps,
@@ -208,3 +208,11 @@ export {
   unknownVariables,
   type TemplateKind,
 } from '../server/template-text';
+// BookingClientCard (Decision 7, screen 4): the client card
+export {
+  BookingClientCardView,
+  ClearRiskDialog,
+  HealthLocked,
+  type BookingClientCardViewProps,
+  type ClientHistoryItem,
+} from './client/BookingClientCardView';

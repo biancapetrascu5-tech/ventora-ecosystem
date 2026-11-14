@@ -794,7 +794,45 @@
       "remind": "Envoyer un rappel"
     },
     "export": "Exporter",
-    "today": "Aujourd'hui, {time}"
+    "today": "Aujourd'hui, {time}",
+    "periodValue": {
+      "today": "aujourd’hui",
+      "week": "semaine",
+      "month": "mois",
+      "all": "tous les jours"
+    },
+    "stateValue": {
+      "active": "actifs",
+      "unconfirmed": "non confirmés",
+      "cancelled": "annulés"
+    },
+    "pill": {
+      "period": "Période : {value}",
+      "state": "Statut : {value}",
+      "staff": "Employé : {value}",
+      "remove": "Retirer le filtre « {label} »"
+    },
+    "bulk": {
+      "confirm": "Confirmer",
+      "remind": "Envoyer un rappel",
+      "cancel": "Annuler les rendez-vous",
+      "confirmed": "{n, plural, one {Nous avons confirmé un rendez-vous.} other {Nous avons confirmé # rendez-vous.}}",
+      "cancelled": "{n, plural, one {Nous avons annulé un rendez-vous.} other {Nous avons annulé # rendez-vous.}}",
+      "partial": "{done} sur {total} ont changé. Les autres n’étaient plus dans le bon statut."
+    },
+    "none": {
+      "title": "Aucun rendez-vous {period, select, today {aujourd’hui} week {cette semaine} month {ce mois-ci} other {}} pour « {q} »",
+      "found": "Nous avons trouvé <link>{n, plural, one {# résultat d’autres jours} other {# résultats d’autres jours}}</link>."
+    },
+    "exported": {
+      "title": "{n, plural, one {Nous avons exporté un rendez-vous.} other {Nous avons exporté # rendez-vous.}}",
+      "filters": "L’export utilise les filtres actifs : {filters}.",
+      "period": "période {value}",
+      "state": "statut {value}",
+      "staff": "employé {value}",
+      "open": "Ouvrir le fichier",
+      "failed": "L’export n’a pas abouti. Réessayez."
+    }
   },
   "states": {
     "emptyDay": {
@@ -939,5 +977,42 @@
     "resetDone": "Le texte d’origine est revenu.",
     "prevFrom": "De",
     "prevTo": "À"
+  },
+  "client": {
+    "title": "Fiche client",
+    "since": "Client depuis {date}",
+    "visits": "Visites",
+    "noShows": "Absences",
+    "lateCancel": "Annulations tardives",
+    "spent": "Encaissé au total",
+    "risk": "Risque élevé",
+    "riskTitle": "Risque élevé : {n} absences ces {months} derniers mois",
+    "riskBody": "Le {d1} et le {d2}. En ligne, un acompte lui est demandé pour toute prestation.",
+    "riskWho": "Le propriétaire, les admins et l’accueil voient cette note. Le client ne la voit pas.",
+    "riskClear": "Supprimer la note…",
+    "riskClearTitle": "Supprimer la note « Risque élevé » de {name} ?",
+    "riskClearBody": "L’acompte ne sera plus exigé en ligne pour toute prestation. Le motif est inscrit au journal de l’entreprise.",
+    "reason": "Motif",
+    "riskCleared": "Note supprimée. Elle revient automatiquement à la prochaine absence.",
+    "history": "Rendez-vous",
+    "col": {
+      "when": "Quand",
+      "service": "Prestation",
+      "member": "Avec",
+      "amount": "Montant",
+      "status": "État"
+    },
+    "notes": "Notes pour l’équipe",
+    "newBooking": "Nouveau rendez-vous",
+    "noAccess": "Vous ne voyez que vos rendez-vous avec ce client. Le propriétaire, les admins et l’accueil voient tout l’historique et la note.",
+    "contact": "Contact",
+    "phone": "Téléphone",
+    "email": "E-mail",
+    "breadcrumb": "Clients",
+    "late": "Tardive",
+    "clearSubmit": "Supprimer la note",
+    "reasonShort": "Indiquez le motif, au moins 10 caractères.",
+    "notFound": "Ce client n’existe plus ou a été supprimé.",
+    "failed": "Nous n’avons pas pu enregistrer. Réessayez."
   }
 }

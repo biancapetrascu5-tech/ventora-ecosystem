@@ -233,7 +233,7 @@ export function DataTable<R extends DataTableRow = DataTableRow>({
             icon="x"
             label={labels.clearSelection}
             size="sm"
-            variant="secondary"
+            variant="quiet"
             onPress={() => onSelectedChange?.([])}
           />
         </div>

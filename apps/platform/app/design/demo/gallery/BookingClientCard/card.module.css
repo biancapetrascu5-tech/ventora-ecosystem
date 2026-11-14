@@ -1,0 +1,54 @@
+/* BookingClientCard gallery: preview.html .frame-rel / .ss-overlay / .tfa-scrgroup / .kv */
+.frame {
+  position: relative;
+  height: 100%;
+}
+.overlay {
+  position: absolute;
+  inset: 0;
+  background: var(--scrim);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-6);
+  z-index: var(--z-overlay);
+}
+.overlayM {
+  align-items: flex-end;
+  padding: 0;
+}
+.overlay :global(.v-dialog) {
+  max-height: none;
+}
+.group {
+  display: flex;
+  flex-direction: column;
+}
+.groupLab {
+  margin: var(--space-6) 0 0;
+}
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+.stack p {
+  margin: 0;
+}
+.muted {
+  color: var(--ink-muted);
+}
+.kv {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--space-2) var(--space-4);
+  margin: 0;
+}
+.kv dt {
+  color: var(--ink-muted);
+  padding-top: var(--space-0-5);
+}
+.kv dd {
+  margin: 0;
+  color: var(--ink);
+}

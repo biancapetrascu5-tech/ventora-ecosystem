@@ -69,5 +69,12 @@ export function useTableLabels(): DataTableLabels {
     sortAsc: t('sortAsc'),
     sortDesc: t('sortDesc'),
     rowActions: t('rowActions'),
+    pagination: {
+      range: (from, to, total) => t('rangeOf', { from, to, total }),
+      pageOf: (n, total) => t('pageOf', { n, total }),
+      rowsPerPage: t('rowsPerPage'),
+      prevPage: t('prevPage'),
+      nextPage: t('nextPage'),
+    },
   };
 }

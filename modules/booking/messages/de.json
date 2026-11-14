@@ -794,7 +794,45 @@
       "remind": "Erinnerung senden"
     },
     "export": "Exportieren",
-    "today": "Heute, {time}"
+    "today": "Heute, {time}",
+    "periodValue": {
+      "today": "heute",
+      "week": "Woche",
+      "month": "Monat",
+      "all": "alle Tage"
+    },
+    "stateValue": {
+      "active": "aktiv",
+      "unconfirmed": "unbestätigt",
+      "cancelled": "abgesagt"
+    },
+    "pill": {
+      "period": "Zeitraum: {value}",
+      "state": "Status: {value}",
+      "staff": "Mitarbeiter: {value}",
+      "remove": "Filter „{label}“ entfernen"
+    },
+    "bulk": {
+      "confirm": "Bestätigen",
+      "remind": "Erinnerung senden",
+      "cancel": "Termine absagen",
+      "confirmed": "{n, plural, one {Wir haben einen Termin bestätigt.} other {Wir haben # Termine bestätigt.}}",
+      "cancelled": "{n, plural, one {Wir haben einen Termin abgesagt.} other {Wir haben # Termine abgesagt.}}",
+      "partial": "{done} von {total} wurden geändert. Die anderen hatten nicht mehr den passenden Status."
+    },
+    "none": {
+      "title": "Keine Termine {period, select, today {heute} week {diese Woche} month {diesen Monat} other {}} für „{q}“",
+      "found": "Wir haben <link>{n, plural, one {# Treffer an anderen Tagen} other {# Treffer an anderen Tagen}}</link> gefunden."
+    },
+    "exported": {
+      "title": "{n, plural, one {Wir haben einen Termin exportiert.} other {Wir haben # Termine exportiert.}}",
+      "filters": "Der Export verwendet die aktiven Filter: {filters}.",
+      "period": "Zeitraum {value}",
+      "state": "Status {value}",
+      "staff": "Mitarbeiter {value}",
+      "open": "Datei öffnen",
+      "failed": "Der Export hat nicht geklappt. Bitte versuchen Sie es erneut."
+    }
   },
   "states": {
     "emptyDay": {
@@ -939,5 +977,42 @@
     "resetDone": "Der ursprüngliche Text ist zurück.",
     "prevFrom": "Von",
     "prevTo": "An"
+  },
+  "client": {
+    "title": "Kundenkarte",
+    "since": "Kunde seit {date}",
+    "visits": "Besuche",
+    "noShows": "Nicht erschienen",
+    "lateCancel": "Späte Absagen",
+    "spent": "Insgesamt kassiert",
+    "risk": "Hohes Risiko",
+    "riskTitle": "Hohes Risiko: {n}-mal nicht erschienen in den letzten {months} Monaten",
+    "riskBody": "Am {d1} und am {d2}. Online wird für jede Leistung eine Anzahlung verlangt.",
+    "riskWho": "Diese Notiz sehen Inhaber, Admins und Empfang. Der Kunde sieht sie nicht.",
+    "riskClear": "Notiz entfernen …",
+    "riskClearTitle": "Notiz „Hohes Risiko“ für {name} entfernen?",
+    "riskClearBody": "Online wird nicht mehr für jede Leistung eine Anzahlung verlangt. Der Grund kommt ins Protokoll des Unternehmens.",
+    "reason": "Grund",
+    "riskCleared": "Notiz entfernt. Sie erscheint automatisch wieder beim nächsten Nichterscheinen.",
+    "history": "Termine",
+    "col": {
+      "when": "Wann",
+      "service": "Leistung",
+      "member": "Bei",
+      "amount": "Betrag",
+      "status": "Status"
+    },
+    "notes": "Notizen fürs Team",
+    "newBooking": "Neuer Termin",
+    "noAccess": "Sie sehen nur Ihre eigenen Termine mit diesem Kunden. Den ganzen Verlauf und die Notiz sehen Inhaber, Admins und Empfang.",
+    "contact": "Kontakt",
+    "phone": "Telefon",
+    "email": "E-Mail",
+    "breadcrumb": "Kunden",
+    "late": "Kurzfristig",
+    "clearSubmit": "Notiz löschen",
+    "reasonShort": "Geben Sie den Grund an, mindestens 10 Zeichen.",
+    "notFound": "Diesen Kunden gibt es nicht mehr oder er wurde gelöscht.",
+    "failed": "Wir konnten nicht speichern. Bitte versuchen Sie es erneut."
   }
 }

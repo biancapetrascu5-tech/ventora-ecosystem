@@ -21,3 +21,24 @@
   margin: 0;
   padding: var(--space-4);
 }
+.selWide {
+  width: 180px;
+}
+/* preview.html: the pills and „Șterge filtrele” on their own row (.r, gap space-2, width 100%) */
+.pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  align-items: center;
+  width: 100%;
+}
+.pill {
+  all: unset;
+  display: inline-flex;
+  cursor: pointer;
+  border-radius: var(--radius-full);
+}
+.pill:focus-visible {
+  outline: var(--focus-ring-width) solid var(--focus-ring);
+  outline-offset: var(--focus-ring-offset);
+}

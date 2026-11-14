@@ -1,12 +1,18 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
-import { DialogTrigger, type DataTableAction } from '@ventora/ui';
+import {
+  DialogTrigger,
+  type DataTableAction,
+  type DataTableKey,
+  type DataTableSort,
+} from '@ventora/ui';
 import {
   BookingDetailDrawer,
   BookingListView,
+  BulkCancelDialog,
   CancelAppointmentDialog,
   CorrectStatusDialog,
   MoveAppointmentDialog,
@@ -31,6 +37,7 @@ import {
   completeAppointmentAction,
   confirmAppointmentAction,
   correctAppointmentAction,
+  exportAppointmentsAction,
   moveAppointmentAction,
   noShowAppointmentAction,
   readAppointmentDetail,
@@ -46,9 +53,12 @@ import {
 import { readNewSlots, type NewSlotData } from '@/server/booking-new-actions';
 import { useMode } from './useMode';
 
-/* Lot B.6a / B.6b — EasyBook · „Programări” and the detail of an appointment (BookingDetail +
-   BookingStatuses; Decision 7, screen 3). The list is the part of BookingList the detail stands
-   on (selection, bulk bar, pills, export, pagination come with screen 4). The drawer's footer and
+/* Lot B.6a / B.6b — EasyBook · „Programări” (BookingList, Decision 7, screen 4) and the detail of
+   an appointment (BookingDetail + BookingStatuses, screen 3). The list: filters with removable
+   pills, remembered per person in this browser; sorting and pagination of the period's rows;
+   selection with „Confirmă” / „Anulează programările” (one call per appointment, each checked by
+   the contract); the row menu; „Exportă” (booking:admin, the CSV of B.24 with the active filters);
+   a search with nothing in the period offers its results on other days. The drawer's footer and
    „…” menu offer only the transitions allowed from the state (detail-format `actionsFor`, the same
    map as TRANSITIONS); „Programează din nou” and „Duplică” open „Programare nouă” with the client,
    the service and the person filled in. Every change reads the appointment and the list again. */
@@ -69,7 +79,12 @@ type Dialog =
       slots: NewSlotData[] | null;
       error: string | null;
     }
-  | { kind: 'correct'; reason: string; error: string | null };
+  | { kind: 'correct'; reason: string; error: string | null }
+  | { kind: 'bulkCancel'; ids: string[] };
+
+const PAGE_SIZE = 20;
+const DEFAULT_FILTERS = { period: 'today', staffId: 'all', state: 'active', query: '' } as const;
+const memoryKey = (who: string | null) => `ventora.booking.listFilters.${who ?? 'me'}`;
 
 /** The latest list read; an older answer that arrives later is dropped. */
 let listReads = 0;
@@ -116,7 +131,15 @@ export function AppointmentsScreen({
     title: string;
     tone: 'done' | 'danger';
     undo?: () => void;
+    description?: string;
+    action?: { label: string; onClick: () => void };
   } | null>(null);
+  const [sort, setSort] = useState<DataTableSort | null>({ key: 'when', dir: 'asc' });
+  const [selected, setSelected] = useState<DataTableKey[]>([]);
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(PAGE_SIZE);
+  // a row action that needs the drawer's data (move, cancel): run once the detail is read
+  const pending = useRef<DetailAction | null>(null);
   // when the open appointment was read (the 24 h of „Corectează starea…”, „Nu a venit” after the start)
   const [readAt, setReadAt] = useState(0);
 
@@ -137,8 +160,44 @@ export function AppointmentsScreen({
   const filter = (patch: Partial<AppointmentsFilters>) => {
     const f = { ...filters, ...patch };
     setFilters(f);
+    setSelected([]);
+    setPage(1);
     reloadList(f);
+    try {
+      const { query: _q, ...kept } = f;
+      window.localStorage.setItem(memoryKey(data.myStaffId), JSON.stringify(kept));
+    } catch {
+      // no storage (private window): the filters are simply not remembered
+    }
   };
+
+  // the filters this person used last time, when the address has none (BookingList README)
+  useEffect(() => {
+    if (window.location.search) return;
+    try {
+      const raw = window.localStorage.getItem(memoryKey(initial.myStaffId));
+      if (!raw) return;
+      const m = JSON.parse(raw) as Partial<AppointmentsFilters>;
+      const f = {
+        period: m.period === 'week' || m.period === 'month' ? m.period : 'today',
+        staffId:
+          typeof m.staffId === 'string' && initial.staff.some((x) => x.id === m.staffId)
+            ? m.staffId
+            : 'all',
+        state: m.state === 'unconfirmed' || m.state === 'cancelled' ? m.state : 'active',
+        query: '',
+      } satisfies AppointmentsFilters;
+      if (f.period === 'today' && f.staffId === 'all' && f.state === 'active') return;
+      void Promise.resolve().then(() => {
+        setFilters(f);
+        reloadList(f);
+      });
+    } catch {
+      // nothing remembered
+    }
+    // once, on the first render
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const loadDetail = (id: string, all: boolean) =>
     readAppointmentDetail(id, all).then((r) => {
@@ -211,7 +270,26 @@ export function AppointmentsScreen({
       },
       r.price.currency,
     );
-  const rows: ListRow[] = data.rows.map((r) => ({
+  const byId = new Map(data.rows.map((r) => [r.id, r] as const));
+  const sortValue = (r: AppointmentRowData, key: string): string | number =>
+    key === 'client'
+      ? r.client.toLocaleLowerCase(locale)
+      : key === 'staff'
+        ? r.staff.toLocaleLowerCase(locale)
+        : key === 'price'
+          ? r.price.minor
+          : `${r.date} ${r.start}`;
+  const sorted = [...data.rows].sort((a, b) => {
+    if (!sort) return 0;
+    const x = sortValue(a, sort.key);
+    const y = sortValue(b, sort.key);
+    const c = typeof x === 'number' ? x - (y as number) : x.localeCompare(y as string, locale);
+    return sort.dir === 'asc' ? c : -c;
+  });
+  const pages = Math.max(1, Math.ceil(sorted.length / pageSize));
+  const current = Math.min(page, pages);
+  const shown = sorted.slice((current - 1) * pageSize, current * pageSize);
+  const rows: ListRow[] = shown.map((r) => ({
     id: r.id,
     client: r.client,
     phone: null,
@@ -297,6 +375,15 @@ export function AppointmentsScreen({
       ),
     );
   };
+
+  useEffect(() => {
+    if (!detail || !pending.current) return;
+    const a = pending.current;
+    pending.current = null;
+    void act(a);
+    // act reads the current detail; it runs once per pending action
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [detail]);
 
   const drawer = () => {
     if (!detail) return null;
@@ -472,16 +559,170 @@ export function AppointmentsScreen({
 
   const target = detail ? correctTarget(detail.row.status) : null;
 
+  // the filter pills (desktop) and „Filtre · n” (phone)
+  const periodValue = t(`list.periodValue.${filters.period}`);
+  const stateValue = t(`list.stateValue.${filters.state}`);
+  const staffName = data.staff.find((x) => x.id === filters.staffId)?.name ?? null;
+  const pills = [
+    {
+      id: 'period',
+      label: t('list.pill.period', { value: periodValue }),
+      onRemove: () => filter({ period: 'today' }),
+    },
+    ...(staffName
+      ? [
+          {
+            id: 'staff',
+            label: t('list.pill.staff', { value: staffName }),
+            onRemove: () => filter({ staffId: 'all' }),
+          },
+        ]
+      : []),
+    {
+      id: 'state',
+      label: t('list.pill.state', { value: stateValue }),
+      onRemove: () => filter({ state: 'active' }),
+    },
+  ];
+  const changed =
+    filters.period !== 'today' ||
+    filters.staffId !== 'all' ||
+    filters.state !== 'active' ||
+    !!filters.query.trim();
+
+  const canChange = (r: AppointmentRowData) => data.canWrite && mine(r.staffId);
+  const rowActions = (row: ListRow): DataTableAction[] => {
+    const r = byId.get(row.id);
+    const acts: DataTableAction[] = [
+      { label: t('list.actions.open'), icon: 'external-link', onClick: () => open(row.id) },
+    ];
+    if (!r || !canChange(r) || FINAL.has(r.status)) return acts;
+    if (r.status === 'unconfirmed')
+      acts.push({
+        label: t('action.confirm'),
+        icon: 'check',
+        onClick: () =>
+          void confirmAppointmentAction(r.id).then((x) =>
+            done(x, t('states.confirmed', { client: r.client })),
+          ),
+      });
+    if (r.status !== 'in_progress')
+      acts.push({
+        label: t('action.move'),
+        icon: 'calendar',
+        onClick: () => {
+          pending.current = 'move';
+          open(r.id);
+        },
+      });
+    if (r.status === 'confirmed' || r.status === 'in_progress')
+      acts.push({
+        label: t('action.noShow'),
+        icon: 'circle-x',
+        onClick: () =>
+          void noShowAppointmentAction(r.id).then((x) =>
+            done(x, t('detail.toast.noShow', { client: r.client })),
+          ),
+      });
+    if (r.status !== 'in_progress')
+      acts.push(
+        { separator: true },
+        {
+          label: t('action.cancel'),
+          icon: 'trash-2',
+          destructive: true,
+          onClick: () => {
+            pending.current = 'cancel';
+            open(r.id);
+          },
+        },
+      );
+    return acts;
+  };
+
+  // the bulk bar: only the appointments this person can change, in a state that allows it
+  const picked = selected
+    .map((k) => byId.get(String(k)))
+    .filter((r): r is AppointmentRowData => !!r && canChange(r));
+  const bulk = async (
+    ids: string[],
+    call: (id: string) => Promise<DetailActionResult>,
+    key: 'list.bulk.confirmed' | 'list.bulk.cancelled',
+  ) => {
+    setBusy(true);
+    const results = await Promise.all(ids.map((id) => call(id)));
+    setBusy(false);
+    const ok = results.filter((x) => x.ok).length;
+    setDialog(null);
+    setSelected([]);
+    reloadList(filters);
+    setToast(
+      ok === ids.length
+        ? { tone: 'done', title: t(key, { n: ok }) }
+        : { tone: 'danger', title: t('list.bulk.partial', { done: ok, total: ids.length }) },
+    );
+  };
+  const bulkActions: DataTableAction[] = [
+    {
+      label: t('list.bulk.confirm'),
+      icon: 'check',
+      onClick: () => {
+        const ids = picked.filter((r) => r.status === 'unconfirmed').map((r) => r.id);
+        if (ids.length) void bulk(ids, confirmAppointmentAction, 'list.bulk.confirmed');
+      },
+    },
+    {
+      label: t('list.bulk.cancel'),
+      icon: 'trash-2',
+      destructive: true,
+      onClick: () => {
+        const ids = picked
+          .filter((r) => !FINAL.has(r.status) && r.status !== 'in_progress')
+          .map((r) => r.id);
+        if (ids.length) setDialog({ kind: 'bulkCancel', ids });
+      },
+    },
+  ];
+
+  const exportList = async () => {
+    const r = await exportAppointmentsAction({
+      period: filters.period,
+      staffId: filters.staffId,
+      state: filters.state,
+    });
+    if (!r.ok) {
+      setToast({ tone: 'danger', title: t('list.exported.failed') });
+      return;
+    }
+    const url = URL.createObjectURL(new Blob([r.csv], { type: 'text/csv;charset=utf-8' }));
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = r.filename;
+    a.click();
+    const used = [
+      t('list.exported.period', { value: periodValue }),
+      ...(staffName ? [t('list.exported.staff', { value: staffName })] : []),
+      t('list.exported.state', { value: stateValue }),
+    ].join(', ');
+    setToast({
+      tone: 'done',
+      title: t('list.exported.title', { n: r.rows }),
+      description: t('list.exported.filters', { filters: used }),
+      action: { label: t('list.exported.open'), onClick: () => window.open(url, '_blank') },
+    });
+  };
+
   return (
     <>
       <BookingListView
         mode={mode}
+        description
+        wide={locale !== 'ro'}
+        onExport={data.canExport && filters.period !== 'all' ? () => void exportList() : undefined}
         rows={rows}
         activeRow={openId}
         onRowClick={(r) => open(r.id)}
-        rowActions={(r): DataTableAction[] => [
-          { label: t('list.actions.open'), icon: 'external-link', onClick: () => open(r.id) },
-        ]}
+        rowActions={rowActions}
         query={filters.query}
         onQuery={(q) => filter({ query: q })}
         period={filters.period}
@@ -491,20 +732,44 @@ export function AppointmentsScreen({
         onStaffFilter={(id) => filter({ staffId: id })}
         state={filters.state}
         onState={(s) => filter({ state: s })}
-        filterCount={(filters.period !== 'today' ? 1 : 0) + (filters.staffId !== 'all' ? 1 : 0) + 1}
+        filterCount={pills.length}
+        pills={pills}
         loading={loading}
-        onClearFilters={
-          filters.period !== 'today' ||
-          filters.staffId !== 'all' ||
-          filters.state !== 'active' ||
-          filters.query.trim()
-            ? () => filter({ period: 'today', staffId: 'all', state: 'active', query: '' })
+        onClearFilters={changed ? () => filter({ ...DEFAULT_FILTERS }) : undefined}
+        sort={sort}
+        onSortChange={(x) => {
+          setSort(x);
+          setPage(1);
+        }}
+        selected={data.canWrite ? selected : undefined}
+        onSelectedChange={data.canWrite ? setSelected : undefined}
+        bulkActions={bulkActions}
+        pagination={
+          sorted.length > PAGE_SIZE
+            ? {
+                page: current,
+                pageSize,
+                total: sorted.length,
+                onPageChange: setPage,
+                onPageSizeChange: (n) => {
+                  setPageSize(n);
+                  setPage(1);
+                },
+              }
             : undefined
+        }
+        otherDays={
+          data.otherDays > 0
+            ? { count: data.otherDays, onShow: () => filter({ period: 'all' }) }
+            : null
         }
       />
       {openId && drawer()}
       {detail && (
-        <DialogTrigger isOpen={!!dialog} onOpenChange={(o) => !o && setDialog(null)}>
+        <DialogTrigger
+          isOpen={!!dialog && dialog.kind !== 'bulkCancel'}
+          onOpenChange={(o) => !o && setDialog(null)}
+        >
           <>
             {dialog?.kind === 'cancel' && (
               <CancelAppointmentDialog
@@ -589,6 +854,28 @@ export function AppointmentsScreen({
           </>
         </DialogTrigger>
       )}
+      <DialogTrigger
+        isOpen={dialog?.kind === 'bulkCancel'}
+        onOpenChange={(o) => !o && setDialog(null)}
+      >
+        <>
+          {dialog?.kind === 'bulkCancel' && (
+            <BulkCancelDialog
+              mode={mode}
+              count={dialog.ids.length}
+              busy={busy}
+              onClose={() => setDialog(null)}
+              onConfirm={() =>
+                void bulk(
+                  dialog.ids,
+                  (id) => cancelAppointmentAction(id, 'business'),
+                  'list.bulk.cancelled',
+                )
+              }
+            />
+          )}
+        </>
+      </DialogTrigger>
       {toast && (
         <SettingsToast
           mode={mode}
@@ -598,6 +885,8 @@ export function AppointmentsScreen({
           dismissLabel={ui('close')}
           onUndo={toast.undo}
           undoLabel={t('today.toast.undo')}
+          description={toast.description}
+          action={toast.action}
         />
       )}
     </>

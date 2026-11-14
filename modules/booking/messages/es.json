@@ -794,7 +794,45 @@
       "remind": "Enviar recordatorio"
     },
     "export": "Exportar",
-    "today": "Hoy, {time}"
+    "today": "Hoy, {time}",
+    "periodValue": {
+      "today": "hoy",
+      "week": "semana",
+      "month": "mes",
+      "all": "todos los días"
+    },
+    "stateValue": {
+      "active": "activas",
+      "unconfirmed": "sin confirmar",
+      "cancelled": "canceladas"
+    },
+    "pill": {
+      "period": "Periodo: {value}",
+      "state": "Estado: {value}",
+      "staff": "Empleado: {value}",
+      "remove": "Quitar el filtro «{label}»"
+    },
+    "bulk": {
+      "confirm": "Confirmar",
+      "remind": "Enviar recordatorio",
+      "cancel": "Cancelar las citas",
+      "confirmed": "{n, plural, one {Hemos confirmado una cita.} other {Hemos confirmado # citas.}}",
+      "cancelled": "{n, plural, one {Hemos cancelado una cita.} other {Hemos cancelado # citas.}}",
+      "partial": "Han cambiado {done} de {total}. Las demás ya no estaban en el estado adecuado."
+    },
+    "none": {
+      "title": "Ninguna cita {period, select, today {hoy} week {esta semana} month {este mes} other {}} para «{q}»",
+      "found": "Hemos encontrado <link>{n, plural, one {# resultado en otros días} other {# resultados en otros días}}</link>."
+    },
+    "exported": {
+      "title": "{n, plural, one {Hemos exportado una cita.} other {Hemos exportado # citas.}}",
+      "filters": "La exportación usa los filtros activos: {filters}.",
+      "period": "periodo {value}",
+      "state": "estado {value}",
+      "staff": "empleado {value}",
+      "open": "Abrir el archivo",
+      "failed": "La exportación no ha funcionado. Inténtalo de nuevo."
+    }
   },
   "states": {
     "emptyDay": {
@@ -939,5 +977,42 @@
     "resetDone": "Ha vuelto el texto original.",
     "prevFrom": "De",
     "prevTo": "Para"
+  },
+  "client": {
+    "title": "Ficha del cliente",
+    "since": "Cliente desde {date}",
+    "visits": "Visitas",
+    "noShows": "No se presentó",
+    "lateCancel": "Cancelaciones tardías",
+    "spent": "Cobrado en total",
+    "risk": "Riesgo alto",
+    "riskTitle": "Riesgo alto: no se presentó {n} veces en los últimos {months} meses",
+    "riskBody": "El {d1} y el {d2}. En la reserva online se le pide señal para cualquier servicio.",
+    "riskWho": "La nota la ven el propietario, los admins y recepción. El cliente no la ve.",
+    "riskClear": "Quitar la nota…",
+    "riskClearTitle": "¿Quitar la nota «Riesgo alto» de {name}?",
+    "riskClearBody": "Ya no se le pedirá señal online para cualquier servicio. El motivo queda en el registro del negocio.",
+    "reason": "Motivo",
+    "riskCleared": "Nota quitada. Vuelve automáticamente si no se presenta otra vez.",
+    "history": "Citas",
+    "col": {
+      "when": "Cuándo",
+      "service": "Servicio",
+      "member": "Con",
+      "amount": "Importe",
+      "status": "Estado"
+    },
+    "notes": "Notas para el equipo",
+    "newBooking": "Nueva cita",
+    "noAccess": "Solo ves tus citas con este cliente. El historial completo y la nota los ven el propietario, los admins y recepción.",
+    "contact": "Contacto",
+    "phone": "Teléfono",
+    "email": "Correo electrónico",
+    "breadcrumb": "Clientes",
+    "late": "Tardía",
+    "clearSubmit": "Borrar la nota",
+    "reasonShort": "Escribe el motivo, al menos 10 caracteres.",
+    "notFound": "Este cliente ya no existe o se ha eliminado.",
+    "failed": "No hemos podido guardar. Inténtalo de nuevo."
   }
 }

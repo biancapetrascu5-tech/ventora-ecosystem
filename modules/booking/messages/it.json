@@ -794,7 +794,45 @@
       "remind": "Invia promemoria"
     },
     "export": "Esporta",
-    "today": "Oggi, {time}"
+    "today": "Oggi, {time}",
+    "periodValue": {
+      "today": "oggi",
+      "week": "settimana",
+      "month": "mese",
+      "all": "tutti i giorni"
+    },
+    "stateValue": {
+      "active": "attivi",
+      "unconfirmed": "non confermati",
+      "cancelled": "annullati"
+    },
+    "pill": {
+      "period": "Periodo: {value}",
+      "state": "Stato: {value}",
+      "staff": "Dipendente: {value}",
+      "remove": "Rimuovi il filtro «{label}»"
+    },
+    "bulk": {
+      "confirm": "Conferma",
+      "remind": "Invia promemoria",
+      "cancel": "Annulla gli appuntamenti",
+      "confirmed": "{n, plural, one {Abbiamo confermato un appuntamento.} other {Abbiamo confermato # appuntamenti.}}",
+      "cancelled": "{n, plural, one {Abbiamo annullato un appuntamento.} other {Abbiamo annullato # appuntamenti.}}",
+      "partial": "{done} su {total} sono cambiati. Gli altri non erano più nello stato giusto."
+    },
+    "none": {
+      "title": "Nessun appuntamento {period, select, today {oggi} week {questa settimana} month {questo mese} other {}} per «{q}»",
+      "found": "Abbiamo trovato <link>{n, plural, one {# risultato in altri giorni} other {# risultati in altri giorni}}</link>."
+    },
+    "exported": {
+      "title": "{n, plural, one {Abbiamo esportato un appuntamento.} other {Abbiamo esportato # appuntamenti.}}",
+      "filters": "L’esportazione usa i filtri attivi: {filters}.",
+      "period": "periodo {value}",
+      "state": "stato {value}",
+      "staff": "dipendente {value}",
+      "open": "Apri il file",
+      "failed": "L’esportazione non è riuscita. Riprovi."
+    }
   },
   "states": {
     "emptyDay": {
@@ -939,5 +977,42 @@
     "resetDone": "È tornato il testo iniziale.",
     "prevFrom": "Da",
     "prevTo": "A"
+  },
+  "client": {
+    "title": "Scheda cliente",
+    "since": "Cliente dal {date}",
+    "visits": "Visite",
+    "noShows": "Non presentato",
+    "lateCancel": "Annullamenti tardivi",
+    "spent": "Incassato in totale",
+    "risk": "Rischio alto",
+    "riskTitle": "Rischio alto: {n} volte non presentato negli ultimi {months} mesi",
+    "riskBody": "Il {d1} e il {d2}. Online gli viene chiesto un acconto per ogni servizio.",
+    "riskWho": "La nota la vedono il titolare, gli admin e la reception. Il cliente non la vede.",
+    "riskClear": "Rimuovi la nota…",
+    "riskClearTitle": "Rimuovere la nota «Rischio alto» per {name}?",
+    "riskClearBody": "Online non gli verrà più chiesto un acconto per ogni servizio. Il motivo finisce nel registro dell’attività.",
+    "reason": "Motivo",
+    "riskCleared": "Nota rimossa. Torna automaticamente al prossimo mancato arrivo.",
+    "history": "Appuntamenti",
+    "col": {
+      "when": "Quando",
+      "service": "Servizio",
+      "member": "Con",
+      "amount": "Importo",
+      "status": "Stato"
+    },
+    "notes": "Note per il team",
+    "newBooking": "Nuovo appuntamento",
+    "noAccess": "Vede solo i Suoi appuntamenti con questo cliente. Lo storico completo e la nota li vedono il titolare, gli admin e la reception.",
+    "contact": "Contatto",
+    "phone": "Telefono",
+    "email": "E-mail",
+    "breadcrumb": "Clienti",
+    "late": "Tardiva",
+    "clearSubmit": "Elimina la nota",
+    "reasonShort": "Scriva il motivo, almeno 10 caratteri.",
+    "notFound": "Questo cliente non esiste più o è stato eliminato.",
+    "failed": "Non siamo riusciti a salvare. Riprovi."
   }
 }
