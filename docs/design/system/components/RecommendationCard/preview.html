@@ -1,4 +1,4 @@
-<!-- @dsCard group="Comercial" height=3934 width=1200 -->
+<!-- @dsCard group="Comercial" height=8043 width=1200 -->
 <!doctype html>
 <html lang="ro">
 <head><meta charset="utf-8"><title>RecommendationCard — Ventora Systems</title>
@@ -253,6 +253,13 @@ html,body{min-height:100%}
 .thf{display:flex;flex-direction:column;gap:var(--space-4);padding:var(--space-5);background:var(--canvas);color:var(--ink);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg);min-width:0;box-sizing:border-box}
 .thg{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(420px,100%),1fr));gap:var(--space-4);align-items:start}
 .thstack{display:flex;flex-direction:column;gap:var(--space-4)}
+.rp-row{display:flex;flex-wrap:wrap;gap:var(--space-4);align-items:flex-start}
+.rp-cell{display:flex;flex-direction:column;gap:var(--space-2);min-width:0}
+.rp-cell.d{width:640px}.rp-cell.m{width:390px}
+.rp-frame{display:flex;flex-direction:column;gap:var(--space-4);padding:var(--space-5);background:var(--canvas);color:var(--ink);border:var(--border-width) solid var(--line);border-radius:var(--radius-lg);box-sizing:border-box;min-height:calc(var(--space-16) * 4)}
+.rp-frame.m{padding:var(--space-4)}
+.rp-menu{display:flex;justify-content:flex-end;align-items:flex-start;min-height:calc(var(--space-16) * 3)}
+.rp-toast{display:block}
 </style>
 </head>
 <body>
@@ -321,7 +328,58 @@ const It = () => E("div", { className: "d0" },
   E(V.RecommendationCard, { proactive: false, role: "member", app: "marketing", title: "CampaignKit", cost: "49 lei al mese", decider: "Bianca Petrașcu (titolare)", recommended: true, status: "pending" }),
   E(V.RecommendationCard, { proactive: false, role: "member", app: "crm", title: "ClientDesk", cost: "69 lei al mese", decider: "Bianca Petrașcu (titolare)", recommended: true, status: "activated" }),
   E(V.RecommendationCard, { proactive: false, role: "member", app: "contracts", title: "ContractDesk", cost: "59 lei al mese", decider: "Bianca Petrașcu (titolare)", recommended: true, status: "declined" }));
-mount(E("div", null, ORIG, E(Extra, { States, De, It })));
+const CMX149 = {"ro": {"reco.report.menu": "Nu e relevant pentru mine", "reco.report.title": "Nu e relevant pentru tine?", "reco.report.body": "Nu mai vezi recomandarea. Raportul ajunge la echipa Ventora și ne ajută să-ți arătăm mai puține lucruri care nu te interesează.", "reco.report.reason": "Motivul", "reco.report.placeholder": "De exemplu: Nu lucrăm cu campanii.", "reco.report.help": "Cel mult 200 de caractere.", "reco.report.count": "{n} / 200", "reco.report.tooLong": "Motivul are {n} caractere. Scurtează-l la 200.", "reco.report.submit": "Raportează", "reco.report.thanks": "Mulțumim! Nu mai vezi această recomandare.", "reco.report.thanksBody": "Raportul a ajuns la echipa Ventora.", "reco.report.error": "Nu am putut trimite raportul. Verifică conexiunea și încearcă din nou.", "reco.cancel": "Renunță"}, "en": {"reco.report.menu": "Not relevant to me", "reco.report.title": "Not relevant to you?", "reco.report.body": "You won’t see this recommendation again. The report goes to the Ventora team and helps us show you fewer things you don’t need.", "reco.report.reason": "Reason", "reco.report.placeholder": "For example: We don’t run campaigns.", "reco.report.help": "Up to 200 characters.", "reco.report.count": "{n} / 200", "reco.report.tooLong": "The reason has {n} characters. Shorten it to 200.", "reco.report.submit": "Report", "reco.report.thanks": "Thank you! You won’t see this recommendation again.", "reco.report.thanksBody": "Your report has reached the Ventora team.", "reco.report.error": "We couldn’t send the report. Check your connection and try again.", "reco.cancel": "Cancel"}, "fr": {"reco.report.menu": "Pas pertinent pour moi", "reco.report.title": "Pas pertinent pour vous ?", "reco.report.body": "Vous ne verrez plus cette recommandation. Le signalement est transmis à l’équipe Ventora et nous aide à vous montrer moins de choses inutiles.", "reco.report.reason": "Motif", "reco.report.placeholder": "Par exemple : nous ne faisons pas de campagnes.", "reco.report.help": "200 caractères maximum.", "reco.report.count": "{n} / 200", "reco.report.tooLong": "Le motif fait {n} caractères. Réduisez-le à 200.", "reco.report.submit": "Signaler", "reco.report.thanks": "Merci ! Vous ne verrez plus cette recommandation.", "reco.report.thanksBody": "Votre signalement a été transmis à l’équipe Ventora.", "reco.report.error": "Impossible d’envoyer le signalement. Vérifiez votre connexion et réessayez.", "reco.cancel": "Annuler"}, "es": {"reco.report.menu": "No es relevante para mí", "reco.report.title": "¿No es relevante para ti?", "reco.report.body": "Dejarás de ver esta recomendación. El aviso llega al equipo de Ventora y nos ayuda a mostrarte menos cosas que no te interesan.", "reco.report.reason": "Motivo", "reco.report.placeholder": "Por ejemplo: No hacemos campañas.", "reco.report.help": "Máximo 200 caracteres.", "reco.report.count": "{n} / 200", "reco.report.tooLong": "El motivo tiene {n} caracteres. Acórtalo a 200.", "reco.report.submit": "Reportar", "reco.report.thanks": "¡Gracias! Ya no verás esta recomendación.", "reco.report.thanksBody": "Tu aviso ha llegado al equipo de Ventora.", "reco.report.error": "No hemos podido enviar el aviso. Revisa la conexión e inténtalo de nuevo.", "reco.cancel": "Cancelar"}, "de": {"reco.report.menu": "Für mich nicht relevant", "reco.report.title": "Für Sie nicht relevant?", "reco.report.body": "Sie sehen diese Empfehlung nicht mehr. Die Meldung geht an das Ventora-Team und hilft uns, Ihnen weniger Unpassendes zu zeigen.", "reco.report.reason": "Grund", "reco.report.placeholder": "Zum Beispiel: Wir machen keine Kampagnen.", "reco.report.help": "Höchstens 200 Zeichen.", "reco.report.count": "{n} / 200", "reco.report.tooLong": "Der Grund hat {n} Zeichen. Kürzen Sie ihn auf 200.", "reco.report.submit": "Melden", "reco.report.thanks": "Danke! Sie sehen diese Empfehlung nicht mehr.", "reco.report.thanksBody": "Ihre Meldung ist beim Ventora-Team angekommen.", "reco.report.error": "Die Meldung konnte nicht gesendet werden. Prüfen Sie die Verbindung und versuchen Sie es erneut.", "reco.cancel": "Abbrechen"}, "it": {"reco.report.menu": "Non è pertinente per me", "reco.report.title": "Non è pertinente per Lei?", "reco.report.body": "Non vedrà più questa raccomandazione. La segnalazione arriva al team Ventora e ci aiuta a mostrarLe meno cose che non Le servono.", "reco.report.reason": "Motivo", "reco.report.placeholder": "Per esempio: non facciamo campagne.", "reco.report.help": "Massimo 200 caratteri.", "reco.report.count": "{n} / 200", "reco.report.tooLong": "Il motivo ha {n} caratteri. Lo accorci a 200.", "reco.report.submit": "Segnala", "reco.report.thanks": "Grazie! Non vedrà più questa raccomandazione.", "reco.report.thanksBody": "La Sua segnalazione è arrivata al team Ventora.", "reco.report.error": "Non siamo riusciti a inviare la segnalazione. Controlli la connessione e riprovi.", "reco.cancel": "Annulla"}};
+/* S149 (14.11) · 4 — "Nu e relevant pentru mine / Raportează" on a Growth recommendation, owner only */
+const RT = (lang, k, v) => { let s = (CMX149[lang] && CMX149[lang][k]) || CMX149.ro[k] || k; if (v) for (const x in v) s = s.split("{" + x + "}").join(v[x]); return s; };
+const RC149 = {
+  ro: { title: "Vezi ce aduce fiecare serviciu", benefit: "DataView îți arată venitul pe servicii și pe angajați, din programările pe care le ai deja.", cost: "Gratuit 14 zile. Apoi 79 lei pe lună, doar dacă alegi să continui.", action: "Încearcă gratuit 14 zile", reason: "Avem un singur angajat, nu ne trebuie rapoarte pe angajați.", long: "Avem un singur angajat și nu ne trebuie rapoarte pe angajați. Venitul pe servicii îl vedem deja în EasyBook, la Rapoarte, și îl trimitem lunar contabilei. Nu ne interesează nici perioada de probă, nici altă aplicație de rapoarte pentru moment." },
+  de: { title: "Sehen Sie, was jede Dienstleistung einbringt", benefit: "DataView zeigt Ihnen den Umsatz pro Dienstleistung und pro Mitarbeiter – aus den Terminen, die Sie bereits haben.", cost: "14 Tage kostenlos. Danach 79 lei pro Monat, nur wenn Sie fortfahren.", action: "14 Tage kostenlos testen", reason: "Wir haben nur eine Mitarbeiterin.", long: "Wir haben nur eine Mitarbeiterin und brauchen keine Berichte pro Mitarbeiter. Den Umsatz pro Dienstleistung sehen wir bereits in EasyBook unter Berichte und schicken ihn monatlich an die Buchhaltung. Eine Testphase brauchen wir derzeit nicht." },
+  it: { title: "Scopra quanto rende ogni servizio", benefit: "DataView Le mostra il fatturato per servizio e per dipendente, dagli appuntamenti che ha già.", cost: "Gratis per 14 giorni. Poi 79 lei al mese, solo se sceglie di continuare.", action: "Provi gratis per 14 giorni", reason: "Abbiamo una sola dipendente.", long: "Abbiamo una sola dipendente e non ci servono report per dipendente. Il fatturato per servizio lo vediamo già in EasyBook, in Report, e lo mandiamo ogni mese alla commercialista. Per ora non ci interessa nessuna prova gratuita." }
+};
+const rc149 = (lang) => RC149[lang] || RC149.ro;
+const OwnerCard149 = ({ lang = "ro" }) => { const c = rc149(lang); return E(V.RecommendationCard, { app: "analytics", title: c.title, benefit: c.benefit, cost: c.cost, actionLabel: c.action, onAction: noop, onRemindLater: noop, onReport: noop }); };
+function OpenMenu149() {
+  const t = V.useT(), [open, setOpen] = React.useState(false);
+  React.useEffect(() => { const id = setTimeout(() => setOpen(true), 600); return () => clearTimeout(id); }, []);
+  return E("div", { className: "rp-menu" }, E(V.Menu, { open, onOpenChange: noop, label: t("moreOptions"), header: t("remindLater"), items: [{ label: t("remindWeek"), icon: "clock" }, { label: t("remindMonth"), icon: "calendar" }, { separator: true }, { label: t("reportIrrelevant"), icon: "eye-off" }],
+    trigger: E("button", { type: "button", className: "v-iconbtn v-btn--quiet v-iconbtn--sm", "aria-label": t("moreOptions") }, E(V.Icon, { name: "ellipsis", size: 16 })) }));
+}
+function ReportDlg149({ lang = "ro", mob, state }) {
+  const c = rc149(lang), val = state === "long" ? c.long : state === "empty" ? "" : c.reason, n = val.length;
+  return E(V.Dialog, { open: true, inline: true, size: "sm", className: mob ? "v-dialog--sheet" : undefined, icon: "eye-off", title: RT(lang, "reco.report.title"), description: RT(lang, "reco.report.body"),
+    footer: E(React.Fragment, null, E(V.Button, { variant: "quiet" }, RT(lang, "reco.cancel")), E(V.Button, { variant: "primary", loading: state === "sending", disabled: state === "long" }, RT(lang, "reco.report.submit"))) },
+    state === "error" ? E(V.Notice, { tone: "danger", icon: "circle-alert" }, RT(lang, "reco.report.error")) : null,
+    E(V.FormField, { label: RT(lang, "reco.report.reason"), optional: true, helper: RT(lang, "reco.report.help"), counter: RT(lang, "reco.report.count", { n }), error: state === "long" ? RT(lang, "reco.report.tooLong", { n }) : undefined },
+      E(V.Textarea, { rows: 3, defaultValue: val, placeholder: RT(lang, "reco.report.placeholder"), invalid: state === "long" })));
+}
+const Thanks149 = ({ lang = "ro" }) => E(V.Toast, { tone: "done", title: RT(lang, "reco.report.thanks"), description: RT(lang, "reco.report.thanksBody"), onDismiss: noop });
+const After149 = ({ lang = "ro" }) => E("div", { className: "d0" },
+  E(V.RecommendationCard, { icon: "package", title: "500 SMS în plus pentru octombrie", benefit: "Ai folosit 862 din 1.000 de SMS-uri, iar reamintirile pentru săptămâna viitoare mai au nevoie de aproximativ 300.", cost: "49 lei · valabil luna aceasta", actionLabel: "Cumpără · 49 lei", onAction: noop, onRemindLater: noop, onReport: noop }),
+  E("div", { className: "rp-toast" }, E(Thanks149, { lang })));
+const Member149 = () => E(V.RecommendationCard, { proactive: false, role: "member", app: "marketing", title: "CampaignKit", benefit: "Trimite automat reamintiri și campanii clienților din EasyBook.", cost: "49 lei pe lună", actionLabel: "Recomandă aplicația", decider: "Bianca Petrașcu (proprietar)", onRecommend: noop, onReport: noop });
+const RP_ITEMS = [
+  ["1 · Proprietar: meniul ⋯ are „Nu e relevant pentru mine”", (mob) => E("div", { className: "d0" }, E(OwnerCard149), E(OpenMenu149))],
+  ["2 · Confirmarea, cu motiv opțional (cel mult 200 de caractere)", (mob) => E(ReportDlg149, { mob })],
+  ["3 · Fără motiv: se poate trimite oricum", (mob) => E(ReportDlg149, { mob, state: "empty" })],
+  ["4 · Eroare: motivul e prea lung", (mob) => E(ReportDlg149, { mob, state: "long" })],
+  ["5 · Eroare la trimitere: dialogul rămâne deschis, cu textul păstrat", (mob) => E(ReportDlg149, { mob, state: "error" })],
+  ["6 · După trimitere: recomandarea dispare, apare mulțumirea", (mob) => E(After149)],
+  ["7 · Membru: fără opțiune (onReport e ignorat pentru alt rol decât proprietar)", (mob) => E(Member149)]
+];
+const RP_Board = () => E("div", { className: "d" },
+  E("p", { className: "heading" }, "S149 · Raportează o recomandare Growth (doar proprietarul)"),
+  E("p", { className: "caption muted" }, "Prop nou onReport pe RecommendationCard · textul din meniu e în bundle (reportIrrelevant) · dialogul și mulțumirea: i18n/commercial.json (reco.report.*) · raportul ajunge la Founder, nu la alți membri"),
+  RP_ITEMS.map(([lab, render]) => E("div", { key: lab, className: "d0" }, E("p", { className: "subheading" }, lab),
+    E("div", { className: "rp-row" }, ["light", "dark"].map((th) => [["d", "1280"], ["m", "390"]].map(([m, w]) => E("div", { key: th + m, className: "rp-cell " + m },
+      E("p", { className: "caption muted" }, (m === "d" ? "Desktop · 1280" : "Telefon · 390") + " · " + (th === "light" ? "Light" : "Dark")),
+      E("div", { className: "rp-frame " + m, "data-theme": th }, render(m === "m")))))))),
+  E("p", { className: "heading" }, "Test DE / IT · raportare"),
+  E("div", { className: "rp-row" },
+    [["de", "light", "d", "Deutsch · 1280 · Light"], ["it", "dark", "m", "Italiano · 390 · Dark"], ["de", "dark", "m", "Deutsch · 390 · Dark · Fehler"], ["it", "light", "d", "Italiano · 1280 · Light · grazie"]].map(([lang, th, m, lab], i) => E("div", { key: lab, className: "rp-cell " + m },
+      E("p", { className: "caption muted" }, lab),
+      E("div", { className: "rp-frame " + m, "data-theme": th, lang }, E(V.LocaleProvider, { locale: lang }, i === 0 ? E("div", { className: "d0" }, E(OwnerCard149, { lang }), E(OpenMenu149)) : i === 3 ? E("div", { className: "rp-toast" }, E(Thanks149, { lang })) : E(ReportDlg149, { lang, mob: m === "m", state: i === 2 ? "long" : undefined })))))));
+
+mount(E("div", null, ORIG, E(Extra, { States, De, It }), E(RP_Board)));
 </script>
 </body>
 </html>

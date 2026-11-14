@@ -26,6 +26,7 @@
     "components/BillingNotifications/README.md",
     "components/BookingCalendar/README.md",
     "components/BookingClientCard/README.md",
+    "components/BookingClients/README.md",
     "components/BookingClientEmails/README.md",
     "components/BookingDeposit/README.md",
     "components/BookingDetail/README.md",
@@ -585,6 +586,12 @@
       "name": "BookingClientCard",
       "group": "Ecrane Booking",
       "summary": "EasyBook — the client card in the Hub (S116 c): the appointment history with each status, the behaviour note \"Risc ridicat\" after repeated no-shows, and who se…",
+      "page": true
+    },
+    {
+      "name": "BookingClients",
+      "group": "Ecrane Booking",
+      "summary": "EasyBook — the client list /booking/clients (S149): search, filters with counts, sorting, pagination; last visit, next appointment, visits, risk note; row → client card; member sees only own clients.",
       "page": true
     },
     {

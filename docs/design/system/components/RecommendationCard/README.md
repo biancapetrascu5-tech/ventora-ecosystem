@@ -11,3 +11,11 @@ One recommendation in a page, tied to what the business already does. Anatomy: t
 **Member's list.** After "Recomandă aplicația" the member sees the state of each recommendation (`status`): "În așteptare", "Activată" or "Nu acum". There is no notification when it is declined; the member is notified only when the app is turned on. The line under the action reads "Ajunge la {nume} (proprietar)."
 
 **Texts (S136).** In `i18n/commercial.json`, in the 6 languages: `recommendation`, `notInterested`, `remindLater`, `remindWeek`, `remindMonth`, `moreOptions`, `nothingLost`, `recommendSend`, `recommendSent`, `decides`, `priceLabel`, `setupCost`, `noneCost`, `gotIt`, `reject`. The library keeps its own copy in `S`; the file is what the apps load. The member's list of recommendations is the HubMyRecommendations screen (`mine.*`).
+
+**S149 · „Nu e relevant pentru mine” (1.1.0).** Prop nou `onReport`, doar pentru proprietar: meniul ⋯ al unei recomandări proactive are, după „Amintește-mi mai târziu”, opțiunea „Nu e relevant pentru mine” (textul e în bundle, `reportIrrelevant`, în 6 limbi). Opțiunea deschide o confirmare („Nu e relevant pentru tine?”) cu un motiv opțional, scurt, de cel mult 200 de caractere, cu contor. După „Raportează”, recomandarea dispare din slot și apare Toast-ul „Mulțumim! Nu mai vezi această recomandare.” Raportul ajunge în Founder (Growth › Control / Rezultate), nu la alți membri. Pentru alt rol decât proprietar, `onReport` e ignorat. Stări: meniul deschis, dialogul cu motiv și fără, motivul prea lung, eroarea la trimitere (dialogul rămâne deschis, textul se păstrează), mulțumirea, membrul fără opțiune. Cheile dialogului sunt `reco.report.*` în `i18n/commercial.json`. Test DE / IT.
+
+DE DECIS:
+
+- **Dacă raportul se numără la oprirea automată a campaniei** (la fel ca „Nu mă interesează”). Recomandare: da, cu greutate dublă.
+- **Dacă motivul se arată în Founder cu numele afacerii.** Recomandare: da, doar în Founder.
+- **Dacă adminul poate raporta.** Recomandare: nu, doar proprietarul (cum ai cerut).

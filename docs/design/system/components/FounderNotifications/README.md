@@ -28,3 +28,19 @@ Shown at 1280, 820 and 390, light and dark.
 - **Member's recommendations.** Recommendation: visible only to the member and the owner; notification only on activation (drawn); "Nu acum" can be re-sent after 30 days.
 
 **S148.** Clopoțelul are jos „Vezi toate”, spre pagina Notificări (`onSeeAll` pe NotificationsPanel); la fel în toate ecranele Founder. Cheia `founder.notifications.seeAll` în `i18n/founder.json`, 6 limbi.
+
+**S149 · „Repornește” blocat (1.2.0).** După a doua oprire automată în 7 zile, „Repornește” din panoul opririi e dezactivat 24 de ore. Panoul arată:
+
+- pastila „Blocată 24 h”;
+- Notice-ul „Repornirea e blocată până la {time}”, cu motivul (cele două date ale opririlor);
+- rândul „Motivul opririi”;
+- textul „Poți reporni după {time}”, lângă buton (pe telefon, deasupra) și în Tooltip;
+- „Între timp poți schimba textele sau audiența; modificările se aplică la repornire.”
+
+Cheile sunt `founder.notifications.restartBlocked.*` în `i18n/founder.json`, în 6 limbi; ecranul Founder rămâne în română. Desenat la cadrul 8, cu test DE / IT.
+
+DE DECIS:
+
+- **Durata blocării.** Recomandare: 24 de ore.
+- **Dacă proprietara poate debloca înainte, cu motiv în jurnal.** Recomandare: nu în v1.
+- **A treia oprire în 30 de zile.** Recomandare: campania trece în „În revizuire” și cere editare.
