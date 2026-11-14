@@ -5,6 +5,7 @@ import {
   InvalidInput,
   NotAuthenticated,
   NotMember,
+  OrganizationSuspended,
   ResourceNotFound,
 } from '@ventora/errors';
 import {
@@ -638,8 +639,10 @@ export async function getSupportSessionBanner(params: {
   if (!organizationId) throw new NotMember();
   try {
     await resolveOrgContext({ userId: session.userId, organizationId });
-  } catch {
-    throw new NotMember();
+  } catch (err) {
+    // the banner of a suspended business is not shown either; an error of the database stays itself
+    if (err instanceof OrganizationSuspended) throw new NotMember();
+    throw err;
   }
   const sessions = await readOpenSessions(organizationId);
   return sessions.map((s) => ({ id: s.id, founderName: s.founderName, expiresAt: s.expiresAt }));

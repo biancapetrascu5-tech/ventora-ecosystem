@@ -6,7 +6,6 @@ import {
   Forbidden,
   ResourceNotFound,
   TwoFactorRequired,
-  OrganizationSuspended,
 } from '@ventora/errors';
 import type { EntitlementProvider } from '@ventora/contracts';
 import {
@@ -110,15 +109,10 @@ export async function authorize(params: AuthorizeParams): Promise<TenantContext>
   const organizationId = session.activeOrganizationId;
   if (!organizationId) throw new NotMember();
 
-  // Step 2: verify active membership (re-checked on every request, never cached)
-  let orgCtx: Awaited<ReturnType<typeof resolveOrgContext>>;
-  try {
-    orgCtx = await resolveOrgContext({ userId: session.userId, organizationId });
-  } catch (err) {
-    // Lot 2.8 (D3-20 a): a suspended organization refuses every request, for every role
-    if (err instanceof OrganizationSuspended) throw err;
-    throw new NotMember();
-  }
+  // Step 2: verify active membership (re-checked on every request, never cached). It refuses with
+  // NotMember, or OrganizationSuspended (Lot 2.8, D3-20 a: for every role). Any other error (the
+  // database, the pool) stays itself: a 500 to retry, never a refusal of access (14.11.2026).
+  const orgCtx = await resolveOrgContext({ userId: session.userId, organizationId });
 
   const role = orgCtx.role as MembershipRole;
   const membershipId = orgCtx.membershipId;
@@ -364,15 +358,12 @@ export async function getMemberApplicationAccess(
   applicationId: string,
 ): Promise<MemberApplicationAccess> {
   assertUuid(userId, 'userId');
-  // the caller's own membership, re-checked: the OrgContext of its business (RLS on it)
-  let orgCtx: Awaited<ReturnType<typeof resolveOrgContext>>;
-  try {
-    orgCtx = await resolveOrgContext({ userId: ctx.userId, organizationId: ctx.organizationId });
-  } catch (err) {
-    // as authorize(): a suspended organization stays itself, anything else is NotMember
-    if (err instanceof OrganizationSuspended) throw err;
-    throw new NotMember();
-  }
+  // the caller's own membership, re-checked: the OrgContext of its business (RLS on it); as in
+  // authorize(), NotMember / OrganizationSuspended, and any other error stays itself
+  const orgCtx = await resolveOrgContext({
+    userId: ctx.userId,
+    organizationId: ctx.organizationId,
+  });
   const membership = (await getMembership(orgCtx, userId)) as {
     role: MembershipRole;
     status: 'active' | 'suspended';
