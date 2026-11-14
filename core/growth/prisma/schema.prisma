@@ -40,6 +40,8 @@ model Offer {
   addonCode          String?  @map("addon_code") @db.VarChar(64)
   featureKey         String?  @map("feature_key") @db.VarChar(128)
   trialDays          Int?     @map("trial_days")
+  /// Bugetul ofertei (Lot 5.9f): perioade de probă sau reduceri, comun campaniilor; gol = fără buget
+  budgetConversions  Int?     @map("budget_conversions")
   status             String   @default("draft") @db.VarChar(16)
   createdByFounderId String   @map("created_by_founder_id") @db.Uuid
   createdAt          DateTime @default(now()) @map("created_at") @db.Timestamptz
@@ -123,10 +125,25 @@ model Campaign {
   slots       CampaignSlot[]
   impressions Impression[]
   conversions Conversion[]
+  autoStops   CampaignAutoStop[]
 
   @@index([offerId], map: "campaign_offer_id_idx")
   @@index([status, mode], map: "campaign_status_idx")
   @@map("campaign")
+  @@schema("growth")
+}
+
+/// Istoricul opririlor automate (Lot 5.9f): blocarea repornirii 24 h după a doua oprire în 7 zile.
+model CampaignAutoStop {
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  campaignId String   @map("campaign_id") @db.Uuid
+  reason     String   @db.VarChar(32)
+  stoppedAt  DateTime @default(now()) @map("stopped_at") @db.Timestamptz
+
+  campaign Campaign @relation(fields: [campaignId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "campaign_auto_stop_campaign_id_fkey")
+
+  @@index([campaignId, stoppedAt], map: "campaign_auto_stop_campaign_id_stopped_at_idx")
+  @@map("campaign_auto_stop")
   @@schema("growth")
 }
 
@@ -257,6 +274,7 @@ model Conversion {
   click    Interaction @relation(fields: [clickInteractionId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "conversion_click_interaction_id_fkey")
 
   @@index([campaignId, convertedAt], map: "conversion_campaign_id_converted_at_idx")
+  @@index([offerId], map: "conversion_offer_id_idx")
   @@map("conversion")
   @@schema("growth")
 }

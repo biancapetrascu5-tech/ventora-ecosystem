@@ -18,6 +18,7 @@ import {
   type GrowthRole,
   type PersonState,
 } from './decide';
+import { resolveOrgContext } from '@ventora/organizations';
 import { commercialPorts, type GrowthPorts } from './ports';
 
 /*
@@ -37,7 +38,8 @@ export function clearGrowthCache(): void {
   cached = null;
 }
 
-function targetOf(row: Record<string, unknown>): GrowthOfferTarget {
+/** The commercial target of an offer row (growth.offer). */
+export function targetOf(row: Record<string, unknown>): GrowthOfferTarget {
   switch (row.type) {
     case 'app_activation':
       return { type: 'app_activation', applicationId: row.application_id as string };
@@ -271,7 +273,7 @@ export async function getSlotContent(
   }
 }
 
-export type InteractionKind = 'click' | 'dismiss' | 'snooze' | 'recommend' | 'undo';
+export type InteractionKind = 'click' | 'dismiss' | 'snooze' | 'recommend' | 'undo' | 'complaint';
 
 export interface InteractionRequest {
   organizationId: string;
@@ -291,7 +293,10 @@ const SNOOZE_DAYS: Record<GrowthSnoozePeriod, number> = { week: 7, month: 30 };
  *   dismiss → the offer is hidden from her for the cooldown (30 days by default, at least 14);
  *   snooze  → hidden for a week or a month;
  *   undo    → „Anulează” in the Toast: the offer may show again;
- *   click / recommend → recorded (the conversion and the owner's notice build on them).
+ *   click / recommend → recorded (the conversion and the owner's notice build on them);
+ *   complaint → Lot 5.9f: only from the owner (the role comes from core/organizations, not from
+ *               the caller); hides the offer from her like „Nu mă interesează”, and 3 businesses
+ *               in 24 h stop the offer (runGrowthAutoStopJob). The button: NECESITĂ DESIGN.
  * The impression must be hers, in this business (RLS and the database guard). Returns whether it
  * was recorded now (false: the same key was already recorded).
  */
@@ -305,6 +310,12 @@ export async function recordInteraction(req: InteractionRequest): Promise<{ reco
   }
   if (!/^[A-Za-z0-9:_-]{8,128}$/.test(req.idempotencyKey)) throw new Error('[growth] invalid key');
   if (req.kind === 'snooze' && !req.snooze) throw new Error('[growth] snooze needs a period');
+  if (req.kind === 'complaint') {
+    const ctx = await resolveOrgContext({ userId: req.userId, organizationId: req.organizationId });
+    if ((ctx as unknown as { role: string }).role !== 'owner') {
+      throw new Error('[growth] only the owner can complain about a recommendation');
+    }
+  }
   const snapshot = await loadCatalog();
 
   return withAppTx(req.organizationId, async (c) => {
@@ -335,7 +346,7 @@ export async function recordInteraction(req: InteractionRequest): Promise<{ reco
     if (inserted.rowCount === 0) return { recorded: false };
 
     const until =
-      req.kind === 'dismiss'
+      req.kind === 'dismiss' || req.kind === 'complaint'
         ? new Date(now + snapshot.control.dismissCooldownDays * DAY_MS)
         : req.kind === 'snooze'
           ? snoozeUntil
@@ -343,7 +354,7 @@ export async function recordInteraction(req: InteractionRequest): Promise<{ reco
             ? new Date(now)
             : null;
     if (until) {
-      const reason = req.kind === 'undo' ? null : req.kind;
+      const reason = req.kind === 'undo' ? null : req.kind === 'complaint' ? 'dismiss' : req.kind;
       await c.query(
         `INSERT INTO growth.suppression (organization_id, user_id, offer_id, reason, until)
          VALUES ($1, $2, $3, COALESCE($4, 'dismiss'), $5)

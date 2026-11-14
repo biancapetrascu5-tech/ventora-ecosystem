@@ -52,7 +52,11 @@ function text(field: string, value: unknown, max: number, min = 1): string {
 
 /** Postgres refusals (CHECKs and guards) as the errors the screens know. */
 function mapDbError(err: unknown, field: string): never {
-  const e = err as { code?: string; message?: string };
+  const e = err as { code?: string; message?: string; hint?: string };
+  // Lot 5.9f: the guard says why a restart is refused (HINT); the screen knows these two
+  if (e.code === 'P0001' && (e.hint === 'restart_blocked' || e.hint === 'budget_reached')) {
+    throw new Conflict(e.hint);
+  }
   if (e.code === '23514' || e.code === 'P0001') throw new InvalidInput(field, e.message);
   if (e.code === '23505') throw new Conflict(e.message ?? 'duplicate');
   if (e.code === '23503') throw new InvalidInput(field, e.message);
@@ -652,6 +656,43 @@ export async function publishOffer(params: FounderParams & { offerId: string }):
     },
     founder.userId,
     'texts',
+  );
+}
+
+/**
+ * Lot 5.9f: the offer's budget (trials or discounts, across all its campaigns); null removes it.
+ * When it is reached, Growth stops the offer's campaigns, and a restart is refused until the
+ * budget is raised or removed. The field in GrowthOfferEditor: NECESITĂ DESIGN.
+ */
+export async function setOfferBudget(
+  params: FounderParams & { offerId: string; budget: number | null },
+): Promise<void> {
+  const founder = await requireFounderSession(params.founderHeaders);
+  const offerId = uuid('offerId', params.offerId);
+  const budget = params.budget;
+  if (budget !== null && (!Number.isInteger(budget) || budget < 1 || budget > 1_000_000)) {
+    throw new InvalidInput('budget');
+  }
+  await write(
+    async (c, audit) => {
+      const { rows } = await c.query<{ budget_conversions: number | null }>(
+        `SELECT budget_conversions FROM growth.offer WHERE id = $1 FOR UPDATE`,
+        [offerId],
+      );
+      if (!rows[0]) throw new ResourceNotFound('offer');
+      await c.query(`UPDATE growth.offer SET budget_conversions = $2 WHERE id = $1`, [
+        offerId,
+        budget,
+      ]);
+      await audit({
+        action: AuditActions.growthOfferUpdated,
+        targetType: 'growth_offer',
+        targetId: offerId,
+        metadata: { budget, previousBudget: rows[0].budget_conversions },
+      });
+    },
+    founder.userId,
+    'budget',
   );
 }
 

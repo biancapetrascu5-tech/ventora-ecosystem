@@ -561,6 +561,8 @@ for (const migration of [
   // oprește din nou” pe campanie
   'core/notifications/prisma/migrations/20261113000002_notifications_founder/migration.sql',
   'core/growth/prisma/migrations/20261113000003_growth_notify_on_stop/migration.sql',
+  // Lot 5.9f: oprirea automată și la plângeri, buget atins și eroare; blocarea de 24 h
+  'core/growth/prisma/migrations/20261114000002_growth_autostop_reasons/migration.sql',
   // Aplicațiile (modules/*): găsite singure, după tot Core-ul (booking, crm și cele care vin).
   // Un lot de modul nu mai atinge acest fișier.
   ...moduleMigrations(),

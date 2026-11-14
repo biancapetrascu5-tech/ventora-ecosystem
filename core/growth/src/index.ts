@@ -63,6 +63,7 @@ export {
   publishCampaign,
   publishOffer,
   restartCampaign,
+  setOfferBudget,
   saveOfferText,
   setGrowthCaps,
   setGrowthPaused,
@@ -80,10 +81,14 @@ export {
   type GrowthPlacementView,
 } from './founder';
 export {
+  GROWTH_AUTO_STOP_COMPLAINTS,
   recordOptOut,
   runGrowthAutoStopJob,
+  runGrowthOfferCheckJob,
+  type AutoStopReason,
   type AutoStopReport,
   type AutoStopped,
   type GrowthStopAlert,
+  type OfferTargetCheck,
 } from './autostop';
 export { withAppJobTx } from './db';
