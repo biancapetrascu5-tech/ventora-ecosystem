@@ -146,7 +146,13 @@
     "founder.business.country": "Țara",
     "founder.business.timezone": "Fusul orar",
     "founder.business.countryNoHub": "Se schimbă doar din Founder",
-    "founder.notifications.seeAll": "Vezi toate"
+    "founder.notifications.seeAll": "Vezi toate",
+    "founder.notifications.restartBlocked.title": "Repornirea e blocată până la {time}",
+    "founder.notifications.restartBlocked.body": "S-a oprit automat a doua oară în 7 zile ({first} și {second}). Ca să nu deranjăm din nou aceleași afaceri, poți reporni după 24 de ore.",
+    "founder.notifications.restartBlocked.until": "Poți reporni după {time}",
+    "founder.notifications.restartBlocked.reason": "Motivul opririi",
+    "founder.notifications.restartBlocked.meanwhile": "Între timp poți schimba textele sau audiența; modificările se aplică la repornire.",
+    "founder.notifications.restartBlocked.badge": "Blocată 24 h"
   },
   "en": {
     "founder.nav.translations": "Translations",
@@ -295,7 +301,13 @@
     "founder.business.country": "Country",
     "founder.business.timezone": "Time zone",
     "founder.business.countryNoHub": "Changed only from Founder",
-    "founder.notifications.seeAll": "See all"
+    "founder.notifications.seeAll": "See all",
+    "founder.notifications.restartBlocked.title": "Restart is blocked until {time}",
+    "founder.notifications.restartBlocked.body": "It stopped automatically for the second time in 7 days ({first} and {second}). So we don’t bother the same businesses again, you can restart it after 24 hours.",
+    "founder.notifications.restartBlocked.until": "You can restart after {time}",
+    "founder.notifications.restartBlocked.reason": "Why it stopped",
+    "founder.notifications.restartBlocked.meanwhile": "Meanwhile you can change the texts or the audience; changes apply when you restart.",
+    "founder.notifications.restartBlocked.badge": "Blocked 24 h"
   },
   "fr": {
     "founder.nav.translations": "Traductions",
@@ -444,7 +456,13 @@
     "founder.business.country": "Pays",
     "founder.business.timezone": "Fuseau horaire",
     "founder.business.countryNoHub": "Modifiable uniquement depuis Founder",
-    "founder.notifications.seeAll": "Tout voir"
+    "founder.notifications.seeAll": "Tout voir",
+    "founder.notifications.restartBlocked.title": "Le redémarrage est bloqué jusqu’à {time}",
+    "founder.notifications.restartBlocked.body": "Elle s’est arrêtée automatiquement pour la deuxième fois en 7 jours ({first} et {second}). Pour ne pas déranger à nouveau les mêmes entreprises, vous pourrez la relancer après 24 heures.",
+    "founder.notifications.restartBlocked.until": "Vous pourrez relancer après {time}",
+    "founder.notifications.restartBlocked.reason": "Motif de l’arrêt",
+    "founder.notifications.restartBlocked.meanwhile": "En attendant, vous pouvez modifier les textes ou l’audience ; les modifications s’appliquent au redémarrage.",
+    "founder.notifications.restartBlocked.badge": "Bloquée 24 h"
   },
   "es": {
     "founder.nav.translations": "Traducciones",
@@ -593,7 +611,13 @@
     "founder.business.country": "País",
     "founder.business.timezone": "Zona horaria",
     "founder.business.countryNoHub": "Solo se cambia desde Founder",
-    "founder.notifications.seeAll": "Ver todas"
+    "founder.notifications.seeAll": "Ver todas",
+    "founder.notifications.restartBlocked.title": "El reinicio está bloqueado hasta {time}",
+    "founder.notifications.restartBlocked.body": "Se ha detenido automáticamente por segunda vez en 7 días ({first} y {second}). Para no molestar de nuevo a los mismos negocios, podrás reiniciarla pasadas 24 horas.",
+    "founder.notifications.restartBlocked.until": "Podrás reiniciar después de {time}",
+    "founder.notifications.restartBlocked.reason": "Motivo de la parada",
+    "founder.notifications.restartBlocked.meanwhile": "Mientras tanto puedes cambiar los textos o la audiencia; los cambios se aplican al reiniciar.",
+    "founder.notifications.restartBlocked.badge": "Bloqueada 24 h"
   },
   "de": {
     "founder.nav.translations": "Übersetzungen",
@@ -742,7 +766,13 @@
     "founder.business.country": "Land",
     "founder.business.timezone": "Zeitzone",
     "founder.business.countryNoHub": "Nur in Founder änderbar",
-    "founder.notifications.seeAll": "Alle ansehen"
+    "founder.notifications.seeAll": "Alle ansehen",
+    "founder.notifications.restartBlocked.title": "Neustart gesperrt bis {time}",
+    "founder.notifications.restartBlocked.body": "Es wurde innerhalb von 7 Tagen zum zweiten Mal automatisch gestoppt ({first} und {second}). Damit dieselben Unternehmen nicht erneut gestört werden, können Sie nach 24 Stunden neu starten.",
+    "founder.notifications.restartBlocked.until": "Neustart möglich nach {time}",
+    "founder.notifications.restartBlocked.reason": "Grund für den Stopp",
+    "founder.notifications.restartBlocked.meanwhile": "In der Zwischenzeit können Sie Texte oder Zielgruppe ändern; die Änderungen gelten beim Neustart.",
+    "founder.notifications.restartBlocked.badge": "24 h gesperrt"
   },
   "it": {
     "founder.nav.translations": "Traduzioni",
@@ -891,6 +921,12 @@
     "founder.business.country": "Paese",
     "founder.business.timezone": "Fuso orario",
     "founder.business.countryNoHub": "Si cambia solo da Founder",
-    "founder.notifications.seeAll": "Vedi tutte"
+    "founder.notifications.seeAll": "Vedi tutte",
+    "founder.notifications.restartBlocked.title": "Il riavvio è bloccato fino a {time}",
+    "founder.notifications.restartBlocked.body": "Si è fermata automaticamente per la seconda volta in 7 giorni ({first} e {second}). Per non disturbare di nuovo le stesse attività, potrà riavviarla dopo 24 ore.",
+    "founder.notifications.restartBlocked.until": "Potrà riavviare dopo {time}",
+    "founder.notifications.restartBlocked.reason": "Motivo dell’arresto",
+    "founder.notifications.restartBlocked.meanwhile": "Nel frattempo può modificare i testi o il pubblico; le modifiche si applicano al riavvio.",
+    "founder.notifications.restartBlocked.badge": "Bloccata 24 h"
   }
 }

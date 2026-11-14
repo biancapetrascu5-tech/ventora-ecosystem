@@ -1,4 +1,4 @@
-<!-- @dsCard group="Ecrane Booking" height=64230 width=2620 page -->
+<!-- @dsCard group="Ecrane Booking" height=75830 width=2620 page -->
 <!doctype html>
 <html lang="ro">
 <head><meta charset="utf-8"><title>BookingPublic — Ventora Systems</title>
@@ -509,6 +509,13 @@ html,body{min-height:100%}
 
 
 .b148-logo{display:inline-flex;align-items:center}.b148-logo img{height:44px;width:auto}.b148-logo.m img{height:32px}.b148-d{display:none}[data-theme=dark] .b148-l{display:none}[data-theme=dark] .b148-d{display:inline}
+.pb-sesslist{display:flex;flex-direction:column;gap:var(--space-2)}
+.pb-sesslist>p{margin:0}
+button.pb-sess{width:100%;text-align:start;font:inherit;color:inherit;cursor:pointer;justify-content:space-between}
+button.pb-sess:hover:not(:disabled){border-color:var(--line-strong)}
+button.pb-sess:focus-visible{outline:var(--focus-ring-width) solid var(--focus-ring);outline-offset:var(--focus-ring-offset)}
+button.pb-sess.full{cursor:not-allowed;opacity:.55}
+.pb-sess-t{display:flex;flex-direction:column;gap:var(--space-1);min-width:0}
 </style>
 </head>
 <body>
@@ -831,6 +838,58 @@ const BRAND148_BOARDS = h("div", null,
     ["Deutsch · 1280 · Light · mit Marke", "de", "desktop", "light", 1000, h(WithBrand148, { b: B148_FULL }, h(StepService, { lang: "de", mob: false }))],
     ["Italiano · 390 · Dark · con brand", "it", "mobile", "dark", 1240, h(WithBrand148, { b: B148_FULL }, h(StepService, { lang: "it", mob: true }))]] }));
 
+const BKX149 = {"ro": {"booking.public.class.title": "Alegeți ziua și sesiunea", "booking.public.class.sessions": "Sesiuni", "booking.public.class.with": "cu {member} · {room}", "booking.public.class.spotsOne": "{n} loc", "booking.public.class.spotsFew": "{n} locuri", "booking.public.class.spotsMany": "{n} de locuri", "booking.public.class.full": "Plin", "booking.public.class.noneTitle": "Nicio sesiune în această zi", "booking.public.class.noneBody": "Următoarea sesiune este {date}.", "booking.public.class.allFullTitle": "Toate sesiunile din această zi sunt pline", "booking.public.class.allFullBody": "Alegeți altă zi sau intrați pe lista de așteptare.", "booking.public.class.waitlist": "Intrați pe lista de așteptare", "booking.public.class.takenTitle": "Locul s-a ocupat între timp", "booking.public.class.takenBody": "Sesiunea de la {time} s-a umplut cât completați. Alegeți altă sesiune; datele rămân."}, "en": {"booking.public.class.title": "Choose a day and session", "booking.public.class.sessions": "Sessions", "booking.public.class.with": "with {member} · {room}", "booking.public.class.spotsOne": "{n} spot", "booking.public.class.spotsFew": "{n} spots", "booking.public.class.spotsMany": "{n} spots", "booking.public.class.full": "Full", "booking.public.class.noneTitle": "No sessions on this day", "booking.public.class.noneBody": "The next session is {date}.", "booking.public.class.allFullTitle": "All sessions on this day are full", "booking.public.class.allFullBody": "Choose another day or join the waiting list.", "booking.public.class.waitlist": "Join the waiting list", "booking.public.class.takenTitle": "That spot was just taken", "booking.public.class.takenBody": "The {time} session filled up while you were booking. Choose another session; your details are kept."}, "fr": {"booking.public.class.title": "Choisissez le jour et la séance", "booking.public.class.sessions": "Séances", "booking.public.class.with": "avec {member} · {room}", "booking.public.class.spotsOne": "{n} place", "booking.public.class.spotsFew": "{n} places", "booking.public.class.spotsMany": "{n} places", "booking.public.class.full": "Complet", "booking.public.class.noneTitle": "Aucune séance ce jour-là", "booking.public.class.noneBody": "La prochaine séance a lieu {date}.", "booking.public.class.allFullTitle": "Toutes les séances de ce jour sont complètes", "booking.public.class.allFullBody": "Choisissez un autre jour ou inscrivez-vous sur la liste d’attente.", "booking.public.class.waitlist": "S’inscrire sur la liste d’attente", "booking.public.class.takenTitle": "Cette place vient d’être prise", "booking.public.class.takenBody": "La séance de {time} s’est remplie pendant votre réservation. Choisissez-en une autre ; vos informations sont conservées."}, "es": {"booking.public.class.title": "Elija el día y la sesión", "booking.public.class.sessions": "Sesiones", "booking.public.class.with": "con {member} · {room}", "booking.public.class.spotsOne": "{n} plaza", "booking.public.class.spotsFew": "{n} plazas", "booking.public.class.spotsMany": "{n} plazas", "booking.public.class.full": "Completa", "booking.public.class.noneTitle": "No hay sesiones este día", "booking.public.class.noneBody": "La próxima sesión es {date}.", "booking.public.class.allFullTitle": "Todas las sesiones de este día están completas", "booking.public.class.allFullBody": "Elija otro día o apúntese a la lista de espera.", "booking.public.class.waitlist": "Apuntarse a la lista de espera", "booking.public.class.takenTitle": "Esa plaza se acaba de ocupar", "booking.public.class.takenBody": "La sesión de las {time} se ha llenado mientras reservaba. Elija otra sesión; sus datos se conservan."}, "de": {"booking.public.class.title": "Tag und Kurstermin wählen", "booking.public.class.sessions": "Kurstermine", "booking.public.class.with": "mit {member} · {room}", "booking.public.class.spotsOne": "{n} Platz", "booking.public.class.spotsFew": "{n} Plätze", "booking.public.class.spotsMany": "{n} Plätze", "booking.public.class.full": "Ausgebucht", "booking.public.class.noneTitle": "An diesem Tag keine Kurstermine", "booking.public.class.noneBody": "Der nächste Kurstermin ist {date}.", "booking.public.class.allFullTitle": "Alle Kurstermine an diesem Tag sind ausgebucht", "booking.public.class.allFullBody": "Wählen Sie einen anderen Tag oder tragen Sie sich in die Warteliste ein.", "booking.public.class.waitlist": "Auf die Warteliste", "booking.public.class.takenTitle": "Dieser Platz wurde gerade vergeben", "booking.public.class.takenBody": "Der Kurstermin um {time} wurde während Ihrer Buchung voll. Wählen Sie einen anderen; Ihre Angaben bleiben erhalten."}, "it": {"booking.public.class.title": "Scelga il giorno e la sessione", "booking.public.class.sessions": "Sessioni", "booking.public.class.with": "con {member} · {room}", "booking.public.class.spotsOne": "{n} posto", "booking.public.class.spotsFew": "{n} posti", "booking.public.class.spotsMany": "{n} posti", "booking.public.class.full": "Al completo", "booking.public.class.noneTitle": "Nessuna sessione in questo giorno", "booking.public.class.noneBody": "La prossima sessione è {date}.", "booking.public.class.allFullTitle": "Tutte le sessioni di questo giorno sono al completo", "booking.public.class.allFullBody": "Scelga un altro giorno o si iscriva alla lista d’attesa.", "booking.public.class.waitlist": "Si iscriva alla lista d’attesa", "booking.public.class.takenTitle": "Il posto è stato appena occupato", "booking.public.class.takenBody": "La sessione delle {time} si è riempita mentre prenotava. Scelga un’altra sessione; i Suoi dati restano."}};
+/* S149 (14.11): a class at the time step — sessions with time, spots left or "Plin" (disabled); the "Cu cine" step is skipped (3 steps instead of 4) */
+for (const l in BKX149) BK[l] = Object.assign(BK[l] || {}, BKX149[l]);
+const CLS149 = { ro: ["Pilates de grup", "Sala de grup"], en: ["Group Pilates", "Group room"], fr: ["Pilates en groupe", "Salle de groupe"], es: ["Pilates en grupo", "Sala de grupo"], de: ["Gruppen-Pilates", "Gruppenraum"], it: ["Pilates di gruppo", "Sala di gruppo"] };
+const SESS149 = [["08:00", 0, 3], ["10:00", 1, 0], ["12:30", 0, 1], ["18:00", 1, 8], ["19:30", 2, 24]];
+const spots149 = (lang, n) => TB(lang, n === 1 ? "booking.public.class.spotsOne" : lang === "ro" && n >= 20 ? "booking.public.class.spotsMany" : "booking.public.class.spotsFew", { n });
+function SessionRow({ lang, time, member, room, left, sel }) {
+  const full = left === 0;
+  return h("button", { type: "button", className: "pb-opt pb-sess" + (sel ? " on" : "") + (full ? " full" : ""), disabled: full, "aria-pressed": sel ? "true" : "false" },
+    h("span", { className: "pb-sess-t" }, h("span", { className: "heading" }, time), h("span", { className: "caption muted" }, TB(lang, "booking.public.class.with", { member, room }))),
+    full ? h(V.Badge, null, TB(lang, "booking.public.class.full")) : h(V.StatusPill, { tone: left <= 3 ? "attention" : "neutral" }, spots149(lang, left)));
+}
+function SumClass({ lang, time, compact }) {
+  const c = CLS149[lang] || CLS149.ro;
+  const rows = [[TB(lang, "booking.public.k.service"), c[0] + " · " + TB(lang, "booking.public.minutes", { n: 55 })]];
+  if (time) rows.push([TB(lang, "booking.public.k.when"), P(lang).day + " · " + time]);
+  rows.push([TB(lang, "booking.public.k.price"), lei(70)]);
+  return h("div", { className: "pb-sum" + (compact ? " c" : "") },
+    compact ? null : h("p", { className: "subheading" }, TB(lang, "booking.public.summary")),
+    h("dl", { className: "kv" }, rows.map(([k, v]) => h(React.Fragment, { key: k }, h("dt", { className: "caption" }, k), h("dd", { className: "body" }, v)))),
+    compact ? null : h("p", { className: "caption muted" }, TB(lang, "booking.public.policy")));
+}
+function StepClass({ lang = "ro", mob, state }) {
+  const p = P(lang), M = mem(lang), room = (CLS149[lang] || CLS149.ro)[1];
+  let sess = SESS149.map(([t, mi, left]) => [t, M[mi][1], left]);
+  if (state === "allFull") sess = sess.map(([t, m]) => [t, m, 0]);
+  if (state === "taken") sess = sess.map(([t, m, l]) => [t, m, t === "12:30" ? 0 : l]);
+  const sel = state === "taken" || state === "allFull" || state === "none" ? null : "12:30";
+  let body;
+  if (state === "none") body = h(V.EmptyState, { size: "sm", icon: "calendar-off", title: TB(lang, "booking.public.class.noneTitle"), description: TB(lang, "booking.public.class.noneBody", { date: p.next }),
+    actions: h(V.Button, { variant: "primary", icon: "calendar" }, TB(lang, "booking.public.noSlotsNext", { date: p.nextShort })) });
+  else body = h("div", { className: "pb-sesslist", role: "group", "aria-label": TB(lang, "booking.public.class.sessions") },
+    h("p", { className: "subheading" }, TB(lang, "booking.public.class.sessions")),
+    state === "taken" ? h(V.Notice, { tone: "danger", icon: "circle-alert", title: TB(lang, "booking.public.class.takenTitle") }, TB(lang, "booking.public.class.takenBody", { time: "12:30" })) : null,
+    state === "allFull" ? h(V.Notice, { tone: "neutral", icon: "users", title: TB(lang, "booking.public.class.allFullTitle"), actions: h(V.Button, { size: "sm", icon: "bell" }, TB(lang, "booking.public.class.waitlist")) }, TB(lang, "booking.public.class.allFullBody")) : null,
+    sess.map(([t, m, l]) => h(SessionRow, { key: t, lang, time: t, member: m, room, left: l, sel: sel === t })));
+  return h(PubShell, { lang, mode: mob ? "mobile" : "desktop", step: 2, total: 3, title: TB(lang, "booking.public.class.title"), aside: h(SumClass, { lang, time: sel }) },
+    mob ? h(SumClass, { lang, time: sel, compact: true }) : null,
+    mob ? h(DayStrip, { lang, sel: state === "none" ? 3 : 2, empty: true }) : h("div", { className: "pb-cal" }, h(V.Calendar, { value: new Date(2026, 10, state === "none" ? 7 : 6), today: new Date(2026, 10, 4), initialMonth: new Date(2026, 10, 1), isDisabled: (d) => d < new Date(2026, 10, 4) || d.getDay() === 0, onChange: noop })),
+    body,
+    h(Actions, { mob }, h(V.Button, { variant: "quiet", icon: "arrow-left" }, TB(lang, "booking.public.back")), h(V.Button, { variant: "primary", block: mob, iconEnd: "arrow-right", disabled: !sel }, TB(lang, "booking.public.continue"))));
+}
+const CLASS149_BOARDS = h("div", null,
+  h(Board, { title: "EasyBook — Clasă pe pagina publică: sesiunile la pasul de timp (S149 · 2)", notes: ["La o clasă se sare pasul „Cu cine”: Serviciu → Ziua și sesiunea → Datele (Pasul 2 din 3)", "Fiecare sesiune: ora, cine o ține și sala, locurile rămase; „Plin” = dezactivată", "Pastila e caldă la 3 locuri sau mai puțin (DE DECIS: pragul)", "Texte: i18n/booking.json (booking.public.class.*)"], dH: 1080, mH: 1120, items: [
+    ["16 · Sesiunile zilei: 3 locuri, Plin (dezactivată), 1 loc, 8 locuri, 24 de locuri", R((mob) => h(StepClass, { lang: "ro", mob }))],
+    ["17 · Stare goală: nicio sesiune în ziua aleasă → următoarea dată", R((mob) => h(StepClass, { lang: "ro", mob, state: "none" })), 980, 1000],
+    ["18 · Toate sesiunile zilei sunt pline: altă zi sau lista de așteptare", R((mob) => h(StepClass, { lang: "ro", mob, state: "allFull" })), 1240, 1320],
+    ["19 · Eroare: ultimul loc s-a ocupat între timp; sesiunea devine „Plin”, datele rămân", R((mob) => h(StepClass, { lang: "ro", mob, state: "taken" })), 1240, 1320]] }),
+  h(LocTest, { title: "Clasă — test DE / IT", items: [
+    ["Deutsch · 1280 · Light · Kurstermine", "de", "desktop", "light", 1080, h(StepClass, { lang: "de", mob: false })],
+    ["Italiano · 390 · Dark · tutto esaurito", "it", "mobile", "dark", 1320, h(StepClass, { lang: "it", mob: true, state: "allFull" })]] }));
+
 mount(h("div", null, h("div", null,
   h(Board, { title: "EasyBook — Pagina publică de rezervare (S116 a)", notes: ["Clientul final, pe telefon întâi", "Serviciu → cu cine → ziua și ora → datele → codul din e-mail", "Captcha la date; programarea se confirmă doar după codul (sau linkul) din e-mail", "Ora e păstrată 10 minute cât confirmă", "Texte în 6 limbi: i18n/booking.json (booking.public.*)", "DE DECIS: codul vs. linkul, furnizorul captcha (vezi README)"], dH: 1000, mH: 1240, items: [
     ["1 · Serviciul (serviciul cu avans are eticheta lui)", R((mob) => h(StepService, { lang: "ro", mob }))],
@@ -856,7 +915,7 @@ mount(h("div", null, h("div", null,
   h(LocTest, { title: "Celelalte limbi: EN, FR, ES", items: [
     ["English · 390 · Light · service", "en", "mobile", "light", 1000, h(StepService, { lang: "en", mob: true })],
     ["Français · 390 · Light · créneau", "fr", "mobile", "light", 1240, h(StepTime, { lang: "fr", mob: true, state: "noday" })],
-    ["Español · 390 · Dark · confirmada", "es", "mobile", "dark", 1000, h(Done, { lang: "es", mob: true })]] })), BRAND148_BOARDS));
+    ["Español · 390 · Dark · confirmada", "es", "mobile", "dark", 1000, h(Done, { lang: "es", mob: true })]] })), BRAND148_BOARDS, CLASS149_BOARDS));
 </script>
 </body>
 </html>

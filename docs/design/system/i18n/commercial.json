@@ -140,7 +140,19 @@
     "reco.reject.reason": "Motiv",
     "reco.reject.reasonHelp": "Dacă îl scrii, {member} îl vede sub „Nu acum”.",
     "reco.reject.placeholder": "De exemplu: Revenim la ea în ianuarie.",
-    "reco.reject.reasonShown": "Motivul tău: {reason}"
+    "reco.reject.reasonShown": "Motivul tău: {reason}",
+    "reco.report.menu": "Nu e relevant pentru mine",
+    "reco.report.title": "Nu e relevant pentru tine?",
+    "reco.report.body": "Nu mai vezi recomandarea. Raportul ajunge la echipa Ventora și ne ajută să-ți arătăm mai puține lucruri care nu te interesează.",
+    "reco.report.reason": "Motivul",
+    "reco.report.placeholder": "De exemplu: Nu lucrăm cu campanii.",
+    "reco.report.help": "Cel mult 200 de caractere.",
+    "reco.report.count": "{n} / 200",
+    "reco.report.tooLong": "Motivul are {n} caractere. Scurtează-l la 200.",
+    "reco.report.submit": "Raportează",
+    "reco.report.thanks": "Mulțumim! Nu mai vezi această recomandare.",
+    "reco.report.thanksBody": "Raportul a ajuns la echipa Ventora.",
+    "reco.report.error": "Nu am putut trimite raportul. Verifică conexiunea și încearcă din nou."
   },
   "en": {
     "billing.purchase.successPending": "The pack is active and your limit is already higher.",
@@ -283,7 +295,19 @@
     "reco.reject.reason": "Reason",
     "reco.reject.reasonHelp": "If you add one, {member} sees it under “Not now”.",
     "reco.reject.placeholder": "For example: Let’s look at it again in January.",
-    "reco.reject.reasonShown": "Your reason: {reason}"
+    "reco.reject.reasonShown": "Your reason: {reason}",
+    "reco.report.menu": "Not relevant to me",
+    "reco.report.title": "Not relevant to you?",
+    "reco.report.body": "You won’t see this recommendation again. The report goes to the Ventora team and helps us show you fewer things you don’t need.",
+    "reco.report.reason": "Reason",
+    "reco.report.placeholder": "For example: We don’t run campaigns.",
+    "reco.report.help": "Up to 200 characters.",
+    "reco.report.count": "{n} / 200",
+    "reco.report.tooLong": "The reason has {n} characters. Shorten it to 200.",
+    "reco.report.submit": "Report",
+    "reco.report.thanks": "Thank you! You won’t see this recommendation again.",
+    "reco.report.thanksBody": "Your report has reached the Ventora team.",
+    "reco.report.error": "We couldn’t send the report. Check your connection and try again."
   },
   "fr": {
     "billing.purchase.successPending": "Le pack est actif et votre limite a déjà augmenté.",
@@ -426,7 +450,19 @@
     "reco.reject.reason": "Motif",
     "reco.reject.reasonHelp": "Si vous en indiquez un, {member} le voit sous « Pas maintenant ».",
     "reco.reject.placeholder": "Par exemple : on en reparle en janvier.",
-    "reco.reject.reasonShown": "Votre motif : {reason}"
+    "reco.reject.reasonShown": "Votre motif : {reason}",
+    "reco.report.menu": "Pas pertinent pour moi",
+    "reco.report.title": "Pas pertinent pour vous ?",
+    "reco.report.body": "Vous ne verrez plus cette recommandation. Le signalement est transmis à l’équipe Ventora et nous aide à vous montrer moins de choses inutiles.",
+    "reco.report.reason": "Motif",
+    "reco.report.placeholder": "Par exemple : nous ne faisons pas de campagnes.",
+    "reco.report.help": "200 caractères maximum.",
+    "reco.report.count": "{n} / 200",
+    "reco.report.tooLong": "Le motif fait {n} caractères. Réduisez-le à 200.",
+    "reco.report.submit": "Signaler",
+    "reco.report.thanks": "Merci ! Vous ne verrez plus cette recommandation.",
+    "reco.report.thanksBody": "Votre signalement a été transmis à l’équipe Ventora.",
+    "reco.report.error": "Impossible d’envoyer le signalement. Vérifiez votre connexion et réessayez."
   },
   "es": {
     "billing.purchase.successPending": "El paquete está activo y tu límite ya ha aumentado.",
@@ -569,7 +605,19 @@
     "reco.reject.reason": "Motivo",
     "reco.reject.reasonHelp": "Si lo escribes, {member} lo verá bajo «Ahora no».",
     "reco.reject.placeholder": "Por ejemplo: Lo vemos de nuevo en enero.",
-    "reco.reject.reasonShown": "Tu motivo: {reason}"
+    "reco.reject.reasonShown": "Tu motivo: {reason}",
+    "reco.report.menu": "No es relevante para mí",
+    "reco.report.title": "¿No es relevante para ti?",
+    "reco.report.body": "Dejarás de ver esta recomendación. El aviso llega al equipo de Ventora y nos ayuda a mostrarte menos cosas que no te interesan.",
+    "reco.report.reason": "Motivo",
+    "reco.report.placeholder": "Por ejemplo: No hacemos campañas.",
+    "reco.report.help": "Máximo 200 caracteres.",
+    "reco.report.count": "{n} / 200",
+    "reco.report.tooLong": "El motivo tiene {n} caracteres. Acórtalo a 200.",
+    "reco.report.submit": "Reportar",
+    "reco.report.thanks": "¡Gracias! Ya no verás esta recomendación.",
+    "reco.report.thanksBody": "Tu aviso ha llegado al equipo de Ventora.",
+    "reco.report.error": "No hemos podido enviar el aviso. Revisa la conexión e inténtalo de nuevo."
   },
   "de": {
     "billing.purchase.successPending": "Das Paket ist aktiv und Ihr Limit ist bereits erhöht.",
@@ -712,7 +760,19 @@
     "reco.reject.reason": "Grund",
     "reco.reject.reasonHelp": "Wenn Sie einen angeben, sieht {member} ihn unter „Nicht jetzt“.",
     "reco.reject.placeholder": "Zum Beispiel: Wir schauen uns das im Januar noch einmal an.",
-    "reco.reject.reasonShown": "Ihr Grund: {reason}"
+    "reco.reject.reasonShown": "Ihr Grund: {reason}",
+    "reco.report.menu": "Für mich nicht relevant",
+    "reco.report.title": "Für Sie nicht relevant?",
+    "reco.report.body": "Sie sehen diese Empfehlung nicht mehr. Die Meldung geht an das Ventora-Team und hilft uns, Ihnen weniger Unpassendes zu zeigen.",
+    "reco.report.reason": "Grund",
+    "reco.report.placeholder": "Zum Beispiel: Wir machen keine Kampagnen.",
+    "reco.report.help": "Höchstens 200 Zeichen.",
+    "reco.report.count": "{n} / 200",
+    "reco.report.tooLong": "Der Grund hat {n} Zeichen. Kürzen Sie ihn auf 200.",
+    "reco.report.submit": "Melden",
+    "reco.report.thanks": "Danke! Sie sehen diese Empfehlung nicht mehr.",
+    "reco.report.thanksBody": "Ihre Meldung ist beim Ventora-Team angekommen.",
+    "reco.report.error": "Die Meldung konnte nicht gesendet werden. Prüfen Sie die Verbindung und versuchen Sie es erneut."
   },
   "it": {
     "billing.purchase.successPending": "Il pacchetto è attivo e il limite è già aumentato.",
@@ -855,6 +915,18 @@
     "reco.reject.reason": "Motivo",
     "reco.reject.reasonHelp": "Se lo scrive, {member} lo vede sotto «Non ora».",
     "reco.reject.placeholder": "Per esempio: ne riparliamo a gennaio.",
-    "reco.reject.reasonShown": "Il Suo motivo: {reason}"
+    "reco.reject.reasonShown": "Il Suo motivo: {reason}",
+    "reco.report.menu": "Non è pertinente per me",
+    "reco.report.title": "Non è pertinente per Lei?",
+    "reco.report.body": "Non vedrà più questa raccomandazione. La segnalazione arriva al team Ventora e ci aiuta a mostrarLe meno cose che non Le servono.",
+    "reco.report.reason": "Motivo",
+    "reco.report.placeholder": "Per esempio: non facciamo campagne.",
+    "reco.report.help": "Massimo 200 caratteri.",
+    "reco.report.count": "{n} / 200",
+    "reco.report.tooLong": "Il motivo ha {n} caratteri. Lo accorci a 200.",
+    "reco.report.submit": "Segnala",
+    "reco.report.thanks": "Grazie! Non vedrà più questa raccomandazione.",
+    "reco.report.thanksBody": "La Sua segnalazione è arrivata al team Ventora.",
+    "reco.report.error": "Non siamo riusciti a inviare la segnalazione. Controlli la connessione e riprovi."
   }
 }

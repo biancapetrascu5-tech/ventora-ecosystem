@@ -729,13 +729,13 @@ function DepositBox({ lang, st, kind = "fixed", mob }) {
     off ? null : h(V.SheetSection, { title: TB(lang, "booking.payments.preview") }, h("div", { className: "pb-sum c" },
       [["calendar-check", TB(lang, "booking.deposit.policy.inTime", { hours: 24 })], ["calendar-off", TB(lang, "booking.deposit.policy.late")], ["rotate-ccw", TB(lang, "booking.deposit.policy.salon")]].map(([ic, t]) => h("p", { key: ic, className: "pb-rule body-small" }, h(V.Icon, { name: ic, size: 16 }), t)))));
 }
-const TABS = { ro: ["Program", "Reguli", "Resurse", "Reamintiri", "Plăți și avans"], de: ["Öffnungszeiten", "Regeln", "Ressourcen", "Erinnerungen", "Zahlungen und Anzahlung"], it: ["Orari", "Regole", "Risorse", "Promemoria", "Pagamenti e acconto"] };
+const TABS = {"ro": ["General", "Servicii", "Programul echipei", "Resurse", "Mesaje", "Rezervări online", "Plăți și avans", "Promoții"], "de": ["Allgemein", "Leistungen", "Teamplan", "Ressourcen", "Nachrichten", "Online-Buchung", "Zahlungen und Anzahlung", "Aktionen"], "it": ["Generale", "Servizi", "Orari del team", "Risorse", "Messaggi", "Prenotazioni online", "Pagamenti e acconto", "Promozioni"]}; /* S148b (14.11): the 8 tabs of the EasyBook settings (S127), keys booking.set.tab.* */;
 function Settings({ mode, lang = "ro", st, kind, unsaved, overlay }) {
   const mob = mode === "mobile", tb = TABS[lang] || TABS.ro;
   return h("div", { className: "frame-rel" },
     h(BookingApp, { active: "setari", title: lang === "ro" ? "Setări" : lang === "de" ? "Einstellungen" : "Impostazioni", lang },
       h(V.PageHeader, { title: lang === "ro" ? "Setări" : lang === "de" ? "Einstellungen" : "Impostazioni" }),
-      h("div", { style: { padding: mob ? "0 var(--space-4)" : "0 var(--space-6)" } }, h(V.Tabs, { label: "Setări", value: "plati", items: tb.map((x, i) => ({ value: ["program", "reguli", "resurse", "reamintiri", "plati"][i], label: x })) })),
+      h("div", { style: { padding: mob ? "0 var(--space-4)" : "0 var(--space-6)" } }, h(V.Tabs, { label: "Setări", value: "payments", items: tb.map((x, i) => ({ value: ["general", "services", "team", "resources", "messages", "online", "payments", "promo"][i], label: x })) })),
       h("div", { className: "x-body" + (mob ? " m" : ""), style: { paddingTop: "var(--space-4)" } }, h(StripeBox, { lang, st, mob }), h(DepositBox, { lang, st, kind, mob }))),
     unsaved ? h("div", { className: "unsaved" }, h("span", { className: "body-strong" }, TB(lang, "booking.payments.unsaved")), h(V.Button, { variant: "primary", icon: "check" }, TB(lang, "booking.payments.save"))) : null,
     overlay ? h(Overlay, { mode }, overlay) : null);

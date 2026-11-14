@@ -22,3 +22,5 @@ Shown at 1280 and 390, in light and dark, with a DE/IT test.
 **S126 (B.9).** "Pachete": sessions used and left, "Vinde un pachet…" (BookingPackages).
 
 **S139 (B.7).** "Îmbină cu alt client" (BookingClientMerge). The behaviour note "Risc ridicat" appears only when "Nota de comportament" is on in Setări › General — off by default (BookingBehaviorNote).
+
+**S149.** Lista din care se deschide fișa e BookingClients (`/booking/clients`); breadcrumbul „Clienți” duce înapoi la ea.

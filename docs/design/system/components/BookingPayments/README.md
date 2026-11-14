@@ -15,3 +15,5 @@ EasyBook — Settings · "Plăți și avans" (S116 d): the salon's Stripe Connec
 Shown at 1280 and 390, in light and dark, with a DE/IT test.
 
 **S127 (B.21).** Late-cancellation and no-show fees, and the card as guarantee, drawn in BookingMoney.
+
+**S149 · Taburile Setărilor (1.1.0).** Bara de taburi folosește acum cele 8 taburi din S127 (`booking.set.tab.*`): General, Servicii, Echipă, Resurse, Mesaje, Rezervări online, Plăți și avans (activ), Promoții. Înainte desena taburile vechi. Conținutul nu se schimbă.

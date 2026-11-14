@@ -472,10 +472,10 @@
     "App~20icons"
   ],
   "lastChange": {
-    "at": "2026-11-13T16:14:04Z",
+    "at": "2026-11-14T08:27:47Z",
     "by": "Bianca Petrașcu",
     "via": "Claude",
-    "note": "S148: brand kit — HubBrand (nou: logo deschis / închis, culori cu verificarea contrastului, font, ton, semnătură, previzualizare live), aplicat pe BookingPublic, BookingClientManage, e-mailurile către clienți și CampaignKit; HubBusinessProfile scoasă (un singur loc pentru logo); BookingStatuses fără corectare în „În desfășurare”; limba textului în BookingMessageTemplates; „Vezi toate” în clopoțelul Founder; 65 de chei noi, 3 schimbate, 11 șterse, în 6 limbi"
+    "note": "S149: BookingClients (nou: lista de clienți /booking/clients, căutare, filtre, sortare, paginare, vedere de membru); sesiunile unei clase pe BookingPublic, fără pasul „Cu cine”; cele 8 taburi în BookingPayments; „Nu e relevant pentru mine” pe RecommendationCard (onReport, doar proprietarul); bugetul ofertei în GrowthOfferEditor; „Repornește” blocat 24 h în FounderNotifications; 81 de chei noi, în 6 limbi"
   },
   "layout": "files",
   "libraries": [

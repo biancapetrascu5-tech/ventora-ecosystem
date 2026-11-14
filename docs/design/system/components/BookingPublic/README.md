@@ -28,3 +28,11 @@ Shown at 1280 and 390, in light and dark, with DE/IT and EN/FR/ES tests.
 **S146.** The photo upload on a question ("Adăugați o poză", B.12) is drawn in BookingCustomForms, frames 10–15; the link states after the start, expired and revoked (B.11b) in BookingClientManage, frames 15–17.
 
 **S148 · Brandul afacerii.** Cu brand (Hub › Brand): logo-ul în antet (varianta pentru fundal închis în dark), culoarea principală pe butoane și selecții, linia de accent sus, fontul afacerii. Fără brand: aspectul Ventora, neschimbat. Textele rămân aceleași. Desenat în secțiunea „S148”, cu test DE / IT.
+
+**S149 · Clasă: sesiunile la pasul de timp (1.3.0).** Când serviciul ales e o clasă (BookingClasses), pasul „Cu cine” se sare: Serviciu → Ziua și sesiunea → Datele, adică „Pasul 2 din 3”. Sub calendar (sau sub banda de zile, pe telefon) vine lista „Sesiuni”. Fiecare sesiune e un rând cu ora, „cu {member} · {room}” și locurile rămase („1 loc”, „3 locuri”, „24 de locuri”) sau „Plin”. O sesiune plină e dezactivată și nu poate fi aleasă. Pastila e caldă la 3 locuri sau mai puțin. Rezumatul arată clasa, ziua cu ora și prețul, fără „Cu cine”. Stări: nicio sesiune în ziua aleasă (următoarea dată), toate pline (altă zi sau „Intrați pe lista de așteptare”, BookingWaitlist), locul ocupat între timp (sesiunea devine „Plin”, datele rămân). Cheile sunt `booking.public.class.*`, în 6 limbi, cu „dumneavoastră” (FR vous, ES usted, DE Sie, IT Lei). Desenat la cadrele 16–19, cu test DE / IT.
+
+DE DECIS:
+
+- **Pragul pastilei calde.** Recomandare: 3 locuri sau mai puțin.
+- **Dacă arătăm numărul exact la locuri multe.** Recomandare: da; alternativa ar fi „Locuri disponibile” peste 10.
+- **Pluralul în RO.** Recomandare: „{n} de locuri” de la 20; celelalte limbi au o singură formă de plural.
