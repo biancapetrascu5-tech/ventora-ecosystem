@@ -54,6 +54,12 @@
   max-width: 780px;
 }
 
+/* S147: fraza zilei (cu cifre), sub textul de sub salut, mai mică (.lb-today) */
+.today {
+  margin: 0;
+  color: var(--ink-secondary);
+}
+
 .chip {
   display: inline-flex;
   align-items: center;
@@ -241,7 +247,8 @@
     line-height: 36px;
   }
 
-  .day {
+  .day,
+  .today {
     font-size: 15px;
     line-height: 30px;
   }
@@ -295,4 +302,13 @@
 .trial {
   position: relative;
   z-index: 1;
+}
+
+/* S147: confirmarea „Recomandă” (ca în pagina aplicației) */
+.toast {
+  position: fixed;
+  right: var(--space-6);
+  bottom: var(--space-6);
+  z-index: var(--z-overlay);
+  max-width: 420px;
 }

@@ -40,6 +40,8 @@ export type AppViewProps = {
   includes?: { title: string; items: string[] };
   note?: string;
   actions?: ReactNode;
+  /** S147: cardul recomandării din echipă (owner / admin), sub titlu. */
+  banner?: ReactNode;
 };
 
 export function AppView({
@@ -58,6 +60,7 @@ export function AppView({
   includes,
   note,
   actions,
+  banner,
 }: AppViewProps) {
   const t = useTranslations('hub.app');
   const tile = useAppTileLabels();
@@ -68,6 +71,7 @@ export function AppView({
         title={name}
         breadcrumbs={phone ? undefined : [{ label: allLabel, href: allHref }, { label: name }]}
       />
+      {banner}
       <div className={s.appdet}>
         <div className={`${s.main} ${s.sheetlike}`}>
           <div className={s.head}>

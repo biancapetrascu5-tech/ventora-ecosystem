@@ -34,6 +34,71 @@ export const ANONYMOUS_FILES_PER_OWNER = 1;
 /** …and 5 per key (a public hold). */
 export const ANONYMOUS_FILES_PER_KEY = 5;
 
+/**
+ * Brand Kit (S148, the founder 14.11.2026): the business's logo, `organizations` / `brand_logo` /
+ * `light` | `dark`. Only PNG or JPEG (no SVG: e-mail clients do not show it and it can carry a
+ * script), at least 256 px on the short side, checked from the stored bytes at the confirmation.
+ */
+export const BRAND_LOGO_OWNER = { module: 'organizations', resourceType: 'brand_logo' } as const;
+export const BRAND_LOGO_CONTENT_TYPES = ['image/png', 'image/jpeg'] as const;
+export const BRAND_LOGO_MIN_SIDE = 256;
+/** HubBrand: „maximum 2 MB” for a logo (the general limit stays 10 MB). */
+export const BRAND_LOGO_MAX_BYTES = 2 * 1024 * 1024;
+
+export function isBrandLogoOwner(owner: { module: string; resourceType: string }): boolean {
+  return (
+    owner.module === BRAND_LOGO_OWNER.module && owner.resourceType === BRAND_LOGO_OWNER.resourceType
+  );
+}
+
+/** S147: the profile photo (files.personal_file): PNG or JPEG, at most 5 MB. */
+export const PERSONAL_CONTENT_TYPES = ['image/png', 'image/jpeg'] as const;
+export type PersonalContentType = (typeof PERSONAL_CONTENT_TYPES)[number];
+export const MAX_PERSONAL_FILE_BYTES = 5 * 1024 * 1024;
+
+/**
+ * The pixel size of a PNG (IHDR) or a JPEG (the first SOF marker), from its bytes; null when the
+ * bytes do not say it. No package: both headers are a few fixed fields.
+ */
+export function imageSize(bytes: Uint8Array): { width: number; height: number } | null {
+  const u16 = (i: number) => (bytes[i]! << 8) | bytes[i + 1]!;
+  const u32 = (i: number) => ((bytes[i]! << 24) >>> 0) + (bytes[i + 1]! << 16) + u16(i + 2);
+  if (sniffContentType(bytes.subarray(0, 16)) === 'image/png') {
+    // signature (8), IHDR length (4), "IHDR" (4), width (4), height (4)
+    if (bytes.length < 24 || u32(12) !== 0x49484452) return null;
+    return { width: u32(16), height: u32(20) };
+  }
+  if (bytes[0] === 0xff && bytes[1] === 0xd8) {
+    let i = 2;
+    while (i + 9 < bytes.length) {
+      if (bytes[i] !== 0xff) return null;
+      const marker = bytes[i + 1]!;
+      // fill bytes, then the standalone markers (no length)
+      if (marker === 0xff) {
+        i += 1;
+        continue;
+      }
+      if (marker === 0xd8 || marker === 0x01 || (marker >= 0xd0 && marker <= 0xd7)) {
+        i += 2;
+        continue;
+      }
+      // SOF0–SOF15, except DHT (C4), JPG (C8) and DAC (CC)
+      if (
+        marker >= 0xc0 &&
+        marker <= 0xcf &&
+        marker !== 0xc4 &&
+        marker !== 0xc8 &&
+        marker !== 0xcc
+      ) {
+        return { height: u16(i + 5), width: u16(i + 7) };
+      }
+      if (marker === 0xd9 || marker === 0xda) return null;
+      i += 2 + u16(i + 2);
+    }
+  }
+  return null;
+}
+
 /** 10 MB (FileUpload: „Maximum 10 MB per fișier”). */
 export const MAX_FILE_BYTES = 10 * 1024 * 1024;
 
@@ -69,6 +134,16 @@ export function checkDeclaredFile(input: {
   }
   if (input.contentType === 'text/csv' && !(input.owner && mayKeepCsv(input.owner))) {
     throw new InvalidInput('contentType', 'A CSV is accepted only for the ClientDesk import');
+  }
+  if (
+    input.owner &&
+    isBrandLogoOwner(input.owner) &&
+    !(BRAND_LOGO_CONTENT_TYPES as readonly string[]).includes(input.contentType)
+  ) {
+    throw new InvalidInput('contentType', 'A logo is a PNG or JPG');
+  }
+  if (input.owner && isBrandLogoOwner(input.owner) && input.sizeBytes > BRAND_LOGO_MAX_BYTES) {
+    throw new InvalidInput('sizeBytes', 'At most 2 MB for a logo');
   }
   if (!Number.isSafeInteger(input.sizeBytes) || input.sizeBytes <= 0) {
     throw new InvalidInput('sizeBytes');

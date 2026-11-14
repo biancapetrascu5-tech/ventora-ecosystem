@@ -34,19 +34,29 @@
   background: transparent;
 }
 
-.mark {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+.logo {
   flex: none;
   width: var(--space-6);
   height: var(--space-6);
+  box-sizing: border-box;
+  padding: 1px;
+  border: var(--border-width) solid var(--line);
   border-radius: var(--radius-xs);
-  background: var(--neutral-soft);
-  color: var(--ink);
-  font-size: calc(var(--space-6) * 0.42);
-  font-weight: 700;
-  box-shadow: inset 0 0 0 var(--border-width) var(--line-strong);
+  background: var(--sheet);
+  object-fit: contain;
+}
+
+.photo {
+  flex: none;
+  width: var(--space-6);
+  height: var(--space-6);
+  border-radius: var(--radius-full);
+  object-fit: cover;
+}
+
+/* S147: fără logo și fără poză, numele și rolul se aliniază la stânga */
+.noMark {
+  padding-inline-start: var(--space-2);
 }
 
 .text {
@@ -127,6 +137,12 @@
 
 .item.item {
   min-height: var(--control-lg);
+}
+
+.item .logo,
+.item .photo {
+  width: var(--space-8);
+  height: var(--space-8);
 }
 
 @media (pointer: coarse), (max-width: 767px) {

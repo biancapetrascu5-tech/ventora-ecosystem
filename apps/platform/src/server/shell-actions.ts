@@ -2,6 +2,7 @@
 
 import { headers } from 'next/headers';
 import { getSession, getUserById } from '@ventora/identity';
+import { listMyMembershipBrands } from '@ventora/organizations';
 import type { HubShellData } from '@/screens/shell/HubShell';
 import { myMemberships, openInSession } from './route';
 import { reportActionError } from './report-error';
@@ -13,22 +14,35 @@ import { reportActionError } from './report-error';
 export async function readHubShell(): Promise<HubShellData | null> {
   const session = await getSession(await headers());
   if (!session) return null;
-  const [user, memberships] = await Promise.all([
+  const [user, memberships, brands] = await Promise.all([
     getUserById(session.userId),
     myMemberships(session.userId),
+    // Brand Kit (S148): the logos in the switcher; never blocks the shell (no logo = no mark)
+    listMyMembershipBrands(session.userId).catch((err) => {
+      reportActionError('readHubShell.brands', err);
+      return [];
+    }),
   ]);
+  const logoOf = new Map(
+    brands
+      .filter((b) => b.logoLightFileId)
+      .map((b) => [b.organizationId, `/brand/logo/${b.logoLightFileId}`]),
+  );
   if (!user) return null;
   // the active business is never a suspended one (S112): a session left on it has none
   const current = memberships.find(
     (m) => m.organization_id === session.activeOrganizationId && m.organization_status === 'active',
   );
   return {
-    user: { name: user.name, email: user.email },
+    // S147: the photo, then nothing (the switcher has no initials square any more)
+    user: { name: user.name, email: user.email, avatar: user.image ?? undefined },
     orgs: memberships.map((m) => ({
       id: m.organization_id,
       name: m.organization_name,
       role: m.role,
       suspended: m.organization_status === 'suspended',
+      // a suspended business's logo is not served (/brand/logo → 404): no mark
+      logo: m.organization_status === 'suspended' ? undefined : logoOf.get(m.organization_id),
     })),
     currentOrgId: current?.organization_id ?? null,
     manager: current?.role === 'owner' || current?.role === 'admin',

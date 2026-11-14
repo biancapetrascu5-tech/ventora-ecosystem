@@ -16,6 +16,11 @@ export {
   requestAnonymousUpload,
   confirmAnonymousUpload,
   listAnonymousFiles,
+  // S147: the profile photo (files.personal_file)
+  requestPersonalUpload,
+  confirmPersonalUpload,
+  readPersonalFile,
+  deletePersonalFile,
 } from './files';
 export type {
   FilesContext,
@@ -25,6 +30,8 @@ export type {
   FileStatus,
   AnonymousFilesContext,
   AnonymousFileInfo,
+  PersonalFileInfo,
+  PersonalFilePurpose,
 } from './files';
 export {
   ALLOWED_CONTENT_TYPES,
@@ -41,6 +48,15 @@ export {
   checkDeclaredFile,
   sniffContentType,
   cleanFileName,
+  // Brand Kit (S148) and the profile photo (S147)
+  BRAND_LOGO_OWNER,
+  BRAND_LOGO_CONTENT_TYPES,
+  BRAND_LOGO_MIN_SIDE,
+  BRAND_LOGO_MAX_BYTES,
+  isBrandLogoOwner,
+  imageSize,
+  PERSONAL_CONTENT_TYPES,
+  MAX_PERSONAL_FILE_BYTES,
 } from './policy';
 export type { AllowedContentType } from './policy';
 export { FileLinkRefused, signDownloadToken, verifyDownloadToken } from './links';

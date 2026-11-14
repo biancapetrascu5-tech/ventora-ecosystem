@@ -3,9 +3,14 @@ import { cn } from '../lib/cn';
 import pill from '../StatusPill/StatusPill.module.css';
 import styles from './AccessBadge.module.css';
 
-export type AccessState = 'available' | 'unavailable' | 'notInRole' | 'notInPlan';
+/**
+ * S147 (13.11): `suspended` („Oprită temporar”, afacerea e suspendată) și `soon` („În curând”);
+ * `notInRole` se citește „Acces la cerere”, `notInPlan` „Disponibilă pentru activare”.
+ */
+export type AccessState =
+  'available' | 'unavailable' | 'notInRole' | 'notInPlan' | 'suspended' | 'soon';
 
-/** S.access_available, S.access_unavailable, S.access_notInRole, S.access_notInPlan. */
+/** S.access_available … S.access_soon. */
 export type AccessLabels = Record<AccessState, string>;
 
 export const ACCESS_ICON: Record<AccessState, IconName> = {
@@ -13,6 +18,8 @@ export const ACCESS_ICON: Record<AccessState, IconName> = {
   unavailable: 'wrench',
   notInRole: 'lock',
   notInPlan: 'package',
+  suspended: 'circle-alert',
+  soon: 'clock',
 };
 
 export interface AccessBadgeProps {

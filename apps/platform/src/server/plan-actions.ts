@@ -228,15 +228,21 @@ export async function requestApp(applicationId: string): Promise<{ ok: boolean }
 /**
  * „Recomandă” (o aplicație) / „Anunță proprietarul” (un pachet, o limită): adminul sau membrul
  * îi trimite owner-ului o notificare. Owner-ul nu se anunță pe sine (refuzat în core/commercial).
+ * S147: `note` — nota opțională la o aplicație recomandată (cel mult 300 de caractere).
  */
 export async function tellOwner(
   targetType: OwnerNoticeTarget,
   targetId: string,
+  note?: string,
 ): Promise<{ ok: boolean }> {
   try {
     const c = await context();
     if (!c) return { ok: false };
-    await notifyOwner(c.ctx, { targetType, targetId });
+    await notifyOwner(c.ctx, {
+      targetType,
+      targetId,
+      note: targetType === 'application' ? (note ?? null) : null,
+    });
     return { ok: true };
   } catch (err) {
     reportActionError('tellOwner', err);

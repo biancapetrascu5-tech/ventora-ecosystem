@@ -113,8 +113,8 @@ export async function readTeamRecommendations(): Promise<TeamRecommendationView[
   }
 }
 
-/** „Respinge” din clopoțel: „Nu acum” (fără notificare pentru membru). */
-export async function rejectRecommendation(id: string): Promise<{ ok: boolean }> {
+/** „Respinge” din clopoțel: „Nu acum” (fără notificare pentru membru); S147: motivul opțional. */
+export async function rejectRecommendation(id: string, reason?: string): Promise<{ ok: boolean }> {
   const session = await getSession(await headers());
   if (!session) return { ok: false };
   try {
@@ -122,7 +122,7 @@ export async function rejectRecommendation(id: string): Promise<{ ok: boolean }>
       sessionToken: session.token,
       applicationId: PLATFORM_APPLICATION_ID,
     });
-    await rejectTeamRecommendation(ctx, id);
+    await rejectTeamRecommendation(ctx, id, reason ?? null);
     return { ok: true };
   } catch (err) {
     reportActionError('rejectRecommendation', err);

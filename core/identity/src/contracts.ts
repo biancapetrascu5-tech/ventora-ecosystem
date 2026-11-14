@@ -21,6 +21,8 @@ export type HubUser = {
   name: string;
   email: string;
   emailVerified: boolean;
+  /** S147: the profile photo (`/account/photo/<id>`), or null. */
+  image: string | null;
 };
 
 export async function getSession(headers: Headers): Promise<HubSession | null> {
@@ -64,6 +66,7 @@ export async function getUserById(userId: string): Promise<HubUser | null> {
     name: user.name,
     email: user.email,
     emailVerified: user.emailVerified,
+    image: user.image ?? null,
   };
 }
 

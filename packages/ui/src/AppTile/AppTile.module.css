@@ -224,3 +224,9 @@
     transform: none;
   }
 }
+
+/* S116 punctul 5 / S147: acțiunea liniștită a stării, lângă „Vezi detaliile” (fără recomandare) */
+.row .act2 {
+  flex: none;
+  align-self: center;
+}

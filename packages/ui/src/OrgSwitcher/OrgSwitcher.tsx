@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useId, useRef, useState } from 'react';
-import { initials } from '../Avatar/Avatar';
 import { Icon } from '../Icon/Icon';
 import { cn } from '../lib/cn';
 import { ThemedPortal, useAnchor, useOutside } from '../lib/popover';
@@ -18,6 +17,11 @@ export interface Org {
    * lacăt, e dezactivat și nu se poate alege. Afacerea curentă nu e niciodată una suspendată.
    */
   suspended?: boolean;
+  /**
+   * S147 (13.11): logo-ul afacerii (URL; S148: din Hub › Brand). Fără el, poza persoanei
+   * (`avatar`); fără niciuna, nimic — numele și rolul se aliniază la stânga.
+   */
+  logo?: string;
 }
 
 export interface OrgSwitcherLabels {
@@ -37,18 +41,28 @@ export interface OrgSwitcherProps {
   orgs: Org[];
   currentId?: Org['id'];
   onChange?: (id: Org['id']) => void;
-  /** Doar inițialele, fără nume și rol. */
+  /** S147: poza persoanei conectate, rotundă, când afacerea nu are logo (AccountMenu: user.avatar). */
+  avatar?: string;
+  /** Doar semnul (logo-ul sau poza), fără nume și rol. */
   compact?: boolean;
   defaultOpen?: boolean;
   labels: OrgSwitcherLabels;
   className?: string;
 }
 
-/* OrgSwitcher din bundle.js: marca cu inițiale + numele și rolul; cu o singură afacere e static. */
+/** S147 (orgMark din bundle.js): logo-ul afacerii → poza persoanei, rotundă → nimic. */
+function orgMark(o: Partial<Org>, avatar: string | undefined) {
+  if (o.logo) return <img className={styles.logo} src={o.logo} alt="" aria-hidden="true" />;
+  if (avatar) return <img className={styles.photo} src={avatar} alt="" aria-hidden="true" />;
+  return null;
+}
+
+/* OrgSwitcher din bundle.js: semnul (S147) + numele și rolul; cu o singură afacere e static. */
 export function OrgSwitcher({
   orgs,
   currentId,
   onChange,
+  avatar,
   compact,
   defaultOpen = false,
   labels,
@@ -76,11 +90,10 @@ export function OrgSwitcher({
     ? orgs.filter((o) => o.name.toLocaleLowerCase().includes(q.toLocaleLowerCase()))
     : orgs;
   const single = orgs.length <= 1;
+  const mark = orgMark(cur, avatar);
   const inner = (
     <>
-      <span className={styles.mark} aria-hidden="true">
-        {initials(cur.name)}
-      </span>
+      {mark}
       {!compact && (
         <span className={styles.text}>
           <span className={cn('body-strong', styles.truncate)}>{cur.name}</span>
@@ -93,14 +106,19 @@ export function OrgSwitcher({
     </>
   );
 
-  if (single) return <span className={cn(styles.org, styles.isStatic, className)}>{inner}</span>;
+  if (single)
+    return (
+      <span className={cn(styles.org, styles.isStatic, !mark && styles.noMark, className)}>
+        {inner}
+      </span>
+    );
 
   return (
     <>
       <button
         ref={btn}
         type="button"
-        className={cn(styles.org, open && styles.isOpen, className)}
+        className={cn(styles.org, open && styles.isOpen, !mark && styles.noMark, className)}
         aria-haspopup="listbox"
         aria-expanded={open}
         aria-controls={open ? listId : undefined}
@@ -155,9 +173,7 @@ export function OrgSwitcher({
                     onChange?.(o.id);
                   }}
                 >
-                  <span className={styles.mark} aria-hidden="true">
-                    {initials(o.name)}
-                  </span>
+                  {orgMark(o, avatar)}
                   <span className={list.optionText}>
                     <span className="body">{o.name}</span>
                     <span className={cn(list.optionDesc, 'body-small')}>

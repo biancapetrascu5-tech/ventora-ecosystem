@@ -353,6 +353,14 @@ psqlFile(
     'core/organizations/prisma/migrations/20261114000001_organizations_phone/migration.sql',
   ),
 );
+console.log('[test:db:up] Aplic migrarea organizations #14 (Brand Kit, S148)...');
+psqlFile(
+  TEST_DB.orgDb,
+  join(
+    ROOT,
+    'core/organizations/prisma/migrations/20261114000002_organizations_brand/migration.sql',
+  ),
+);
 
 console.log('[test:db:up] Aplic migrarea notifications (Lot 4.3, organizations DB)...');
 psqlFile(
@@ -497,6 +505,8 @@ for (const migration of [
   'core/organizations/prisma/migrations/20261112000001_organizations_access_request/migration.sql',
   // Lot B.11c: the salon's phone (organization.phone, location.phone)
   'core/organizations/prisma/migrations/20261114000001_organizations_phone/migration.sql',
+  // Brand Kit (S148): organization_brand și cele 3 funcții publice
+  'core/organizations/prisma/migrations/20261114000002_organizations_brand/migration.sql',
   // Lot 3.1: registrul comercial (commercial_rw → app_runtime, SELECT → founder_runtime)
   'core/commercial/prisma/migrations/20261101000001_commercial_init/migration.sql',
   // Lot 3.2: planuri, abonament, excepții (commercial_founder → founder_runtime)
@@ -533,6 +543,8 @@ for (const migration of [
   'core/files/prisma/migrations/20261111000010_files_csv_import/migration.sql',
   // Lot C.4g: the anonymous upload (the client's photo on the public booking page, S127)
   'core/files/prisma/migrations/20261111000020_files_anonymous_upload/migration.sql',
+  // S147: poza de profil (files.personal_file, RLS pe persoană)
+  'core/files/prisma/migrations/20261114000030_files_personal_file/migration.sql',
   // Lot 3.5: core/billing (schema billing, rolul billing_rw, outbox)
   'core/billing/prisma/migrations/20261101000013_billing_init/migration.sql',
   // Lot 3.6: facturile (invoice), termenul disputei, citirile Founder (founder_runtime)

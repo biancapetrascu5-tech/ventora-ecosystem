@@ -5,6 +5,7 @@ import { AccessBadge } from '../src/AccessBadge/AccessBadge';
 import { AppDock } from '../src/AppDock/AppDock';
 import { AppLaunch } from '../src/AppLaunch/AppLaunch';
 import { AppTile, type AppTileLabels } from '../src/AppTile/AppTile';
+import { OrgSwitcher } from '../src/OrgSwitcher/OrgSwitcher';
 import { AuthLayout } from '../src/AuthLayout/AuthLayout';
 import { DiscoveryTooltip } from '../src/DiscoveryTooltip/DiscoveryTooltip';
 import { GrowthSlot } from '../src/GrowthSlot/GrowthSlot';
@@ -15,8 +16,10 @@ import { RuleBuilder } from '../src/RuleBuilder/RuleBuilder';
 const ACCESS = {
   available: 'Disponibilă',
   unavailable: 'Temporar indisponibilă',
-  notInRole: 'Nu e în rolul tău',
-  notInPlan: 'Nu e în abonament',
+  notInRole: 'Acces la cerere',
+  notInPlan: 'Disponibilă pentru activare',
+  suspended: 'Oprită temporar',
+  soon: 'În curând',
 };
 const REMIND = {
   moreOptions: 'Mai multe opțiuni',
@@ -31,9 +34,17 @@ const TILE: AppTileLabels = {
   hintNotInRole: (who) => `${who} îți poate da acces.`,
   hintNotInRoleNoOne: 'Proprietarul îți poate da acces.',
   hintNotInPlan: 'Nu e inclusă în abonament.',
+  hintNotInPlanMember: (who) => `${who} o poate activa.`,
+  hintNotInPlanMemberNoOne: 'Proprietarul o poate activa.',
+  hintSuspended: 'Accesul revine la reactivare.',
+  hintSoon: 'O pregătim.',
   requestAccess: 'Cere acces',
   writeUs: 'Scrie-ne',
   seeStatus: 'Vezi starea',
+  requestActivation: 'Solicită activarea',
+  recommend: 'Recomandă',
+  seePlan: 'Vezi abonamentul',
+  notifyMe: 'Anunță-mă',
   openApp: (app) => `Deschide ${app}`,
   unreadN: (n) => `${n} necitite`,
   seeDetails: 'Vezi detaliile',
@@ -54,7 +65,7 @@ const RECO = {
 describe('AccessBadge și AppTile', () => {
   it('AccessBadge arată textul stării', () => {
     render(<AccessBadge state="notInPlan" labels={ACCESS} />);
-    expect(screen.getByText('Nu e în abonament')).toBeDefined();
+    expect(screen.getByText('Disponibilă pentru activare')).toBeDefined();
   });
 
   it('o aplicație disponibilă se deschide cu numele ei', async () => {
@@ -80,6 +91,110 @@ describe('AccessBadge și AppTile', () => {
     expect(screen.getByText('Bianca îți poate da acces.')).toBeDefined();
     await userEvent.click(screen.getByRole('button', { name: 'Cere acces' }));
     expect(onRequestAccess).toHaveBeenCalled();
+  });
+
+  it('S147: disponibilă pentru activare — proprietarul solicită, membrul recomandă, cu descrierea', async () => {
+    const onRequestActivation = vi.fn();
+    const onRecommend = vi.fn();
+    const { unmount } = render(
+      <AppTile
+        app="marketing"
+        layout="row"
+        access="notInPlan"
+        description="Campanii, audiențe și rezultate, sub control."
+        onRequestActivation={onRequestActivation}
+        onRecommend={onRecommend}
+        labels={TILE}
+      />,
+    );
+    expect(screen.getByText('Campanii, audiențe și rezultate, sub control.')).toBeDefined();
+    await userEvent.click(screen.getByRole('button', { name: 'Solicită activarea' }));
+    expect(onRequestActivation).toHaveBeenCalled();
+    expect(screen.queryByRole('button', { name: 'Recomandă' })).toBeNull();
+    unmount();
+    render(
+      <AppTile
+        app="marketing"
+        layout="row"
+        access="notInPlan"
+        viewer="member"
+        onRequestActivation={onRequestActivation}
+        onRecommend={onRecommend}
+        labels={TILE}
+      />,
+    );
+    expect(screen.getByText('Proprietarul o poate activa.')).toBeDefined();
+    await userEvent.click(screen.getByRole('button', { name: 'Recomandă' }));
+    expect(onRecommend).toHaveBeenCalled();
+    expect(screen.queryByRole('button', { name: 'Solicită activarea' })).toBeNull();
+  });
+
+  it('S147: oprită temporar — „Vezi abonamentul” doar pentru proprietar; în curând — „Anunță-mă”', async () => {
+    const onSeePlan = vi.fn();
+    const onNotify = vi.fn();
+    const { unmount } = render(
+      <AppTile app="hr" layout="row" access="suspended" onSeePlan={onSeePlan} labels={TILE} />,
+    );
+    expect(screen.getByText('Oprită temporar')).toBeDefined();
+    expect(screen.getByText('Accesul revine la reactivare.')).toBeDefined();
+    await userEvent.click(screen.getByRole('button', { name: 'Vezi abonamentul' }));
+    expect(onSeePlan).toHaveBeenCalled();
+    unmount();
+    const { unmount: u2 } = render(
+      <AppTile
+        app="hr"
+        layout="row"
+        access="suspended"
+        viewer="member"
+        onSeePlan={onSeePlan}
+        labels={TILE}
+      />,
+    );
+    expect(screen.queryByRole('button', { name: 'Vezi abonamentul' })).toBeNull();
+    u2();
+    render(<AppTile app="events" layout="row" access="soon" onNotify={onNotify} labels={TILE} />);
+    expect(screen.getByText('În curând')).toBeDefined();
+    await userEvent.click(screen.getByRole('button', { name: 'Anunță-mă' }));
+    expect(onNotify).toHaveBeenCalled();
+  });
+
+  it('„Vezi detaliile” pe orice aplicație blocată; acțiunea stării rămâne lângă el', () => {
+    render(
+      <AppTile
+        app="analytics"
+        layout="row"
+        access="notInRole"
+        onDetails={() => {}}
+        onRequestAccess={() => {}}
+        labels={TILE}
+      />,
+    );
+    expect(screen.getByRole('button', { name: 'Vezi detaliile' })).toBeDefined();
+    expect(screen.getByRole('button', { name: 'Cere acces' })).toBeDefined();
+  });
+});
+
+describe('OrgSwitcher (S147)', () => {
+  const LABELS = {
+    switchBusiness: 'Schimbă afacerea',
+    yourBusinesses: 'Afacerile tale',
+    findBusiness: 'Caută o afacere',
+    noResultsFor: (q: string) => `Niciun rezultat pentru „${q}”`,
+  };
+  const markOf = (c: HTMLElement) => c.querySelector('img');
+
+  it('logo-ul afacerii, apoi poza persoanei, apoi nimic — fără pătratul cu inițiala', () => {
+    const one = (org: { id: string; name: string; logo?: string }, avatar?: string) =>
+      render(<OrgSwitcher orgs={[org]} currentId={org.id} avatar={avatar} labels={LABELS} />);
+    let r = one({ id: 'a', name: 'Salon Aurora', logo: '/brand/logo/l1' }, '/account/photo/p1');
+    expect(markOf(r.container)?.getAttribute('src')).toBe('/brand/logo/l1');
+    r.unmount();
+    r = one({ id: 'a', name: 'Salon Aurora' }, '/account/photo/p1');
+    expect(markOf(r.container)?.getAttribute('src')).toBe('/account/photo/p1');
+    r.unmount();
+    r = one({ id: 'a', name: 'Salon Aurora' });
+    expect(markOf(r.container)).toBeNull();
+    expect(r.container.textContent).not.toContain('SA');
   });
 });
 

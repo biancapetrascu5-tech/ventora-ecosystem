@@ -19,9 +19,20 @@ export interface AppTileLabels {
   hintNotInRole: (who: string) => string;
   hintNotInRoleNoOne: string;
   hintNotInPlan: string;
+  /** S147: membrul la „Disponibilă pentru activare” — cine o poate activa; fără nume, proprietarul. */
+  hintNotInPlanMember: (who: string) => string;
+  hintNotInPlanMemberNoOne: string;
+  /** S147: afacerea suspendată și „În curând”. */
+  hintSuspended: string;
+  hintSoon: string;
   requestAccess: string;
   writeUs: string;
   seeStatus: string;
+  /** S147: „Solicită activarea” (proprietar), „Recomandă” (membru), „Vezi abonamentul”, „Anunță-mă”. */
+  requestActivation: string;
+  recommend: string;
+  seePlan: string;
+  notifyMe: string;
   /** S.openApp, ex. (app) => `Deschide ${app}`. */
   openApp: (app: string) => string;
   /** S.unreadN — numele insignei cu necitite. */
@@ -46,11 +57,21 @@ export interface AppTileProps {
   access?: AccessState;
   /** Explicația stării blocate, în locul textului implicit. */
   reason?: ReactNode;
-  /** Cine poate da acces (la notInRole). */
+  /** Cine poate da acces (la notInRole) sau activa aplicația (membru, la notInPlan). */
   grantedBy?: string;
+  /**
+   * S147: cine se uită — proprietarul / adminul („Solicită activarea”, „Vezi abonamentul”) sau un
+   * membru („Recomandă”). Implicit `owner`.
+   */
+  viewer?: 'owner' | 'member';
   onOpen?: (e: MouseEvent<HTMLButtonElement>, name: string) => void;
   onRequestAccess?: () => void;
+  /** Vechiul „Scrie-ne”; S147: același lucru cu `onRequestActivation`. */
   onWriteUs?: () => void;
+  onRequestActivation?: () => void;
+  onRecommend?: () => void;
+  onSeePlan?: () => void;
+  onNotify?: () => void;
   onSeeStatus?: () => void;
   /** Necitite (doar la aplicațiile disponibile). */
   badge?: number;
@@ -76,9 +97,14 @@ export function AppTile({
   access = 'available',
   reason,
   grantedBy,
+  viewer = 'owner',
   onOpen,
   onRequestAccess,
   onWriteUs,
+  onRequestActivation,
+  onRecommend,
+  onSeePlan,
+  onNotify,
   onSeeStatus,
   badge,
   layout = 'tile',
@@ -92,8 +118,13 @@ export function AppTile({
 }: AppTileProps) {
   const nm = name ?? APPS[app]?.name ?? app;
   const ok = access === 'available';
+  const member = viewer === 'member';
+  // S147: la „Disponibilă pentru activare” și „În curând” rândul arată descrierea aplicației
+  const pitch =
+    !ok && description && (access === 'notInPlan' || access === 'soon') ? description : null;
   const hint =
     reason ??
+    pitch ??
     (access === 'unavailable'
       ? labels.hintUnavailable
       : access === 'notInRole'
@@ -101,25 +132,37 @@ export function AppTile({
           ? labels.hintNotInRole(grantedBy)
           : labels.hintNotInRoleNoOne
         : access === 'notInPlan'
-          ? labels.hintNotInPlan
-          : null);
+          ? member
+            ? grantedBy
+              ? labels.hintNotInPlanMember(grantedBy)
+              : labels.hintNotInPlanMemberNoOne
+            : labels.hintNotInPlan
+          : access === 'suspended'
+            ? labels.hintSuspended
+            : access === 'soon'
+              ? labels.hintSoon
+              : null);
+  const activate = onRequestActivation ?? onWriteUs;
   const act = ok
     ? null
     : access === 'notInRole' && onRequestAccess
       ? { label: labels.requestAccess, fn: onRequestAccess }
-      : access === 'notInPlan' && onWriteUs
-        ? { label: labels.writeUs, fn: onWriteUs }
-        : access === 'unavailable' && onSeeStatus
-          ? { label: labels.seeStatus, fn: onSeeStatus }
-          : null;
+      : access === 'notInPlan' && member && onRecommend
+        ? { label: labels.recommend, fn: onRecommend }
+        : access === 'notInPlan' && !member && activate
+          ? { label: labels.requestActivation, fn: activate }
+          : access === 'unavailable' && onSeeStatus
+            ? { label: labels.seeStatus, fn: onSeeStatus }
+            : access === 'suspended' && !member && onSeePlan
+              ? { label: labels.seePlan, fn: onSeePlan }
+              : access === 'soon' && onNotify
+                ? { label: labels.notifyMe, fn: onNotify }
+                : null;
   const reco = !ok && recommendation ? recommendation : null;
-  // Lotul 3.7 (NECESITĂ DECIZIE, raportul 3.7): fără Growth (S111) nu există recomandări, iar
-  // pagina aplicației (HubCatalogApp) trebuie să se poată deschide; „Vezi detaliile” apare și
-  // fără recomandare, la „Nu e în abonament”, doar când apelantul dă `onDetails`.
-  const act2 =
-    onDetails && (reco || access === 'notInPlan')
-      ? { label: labels.seeDetails, fn: onDetails }
-      : null;
+  // „Vezi detaliile” (bundle S147): pe orice aplicație blocată, când apelantul dă `onDetails`;
+  // fără recomandare, acțiunea stării rămâne lângă el, liniștită (act3, S116 punctul 5).
+  const act2 = !ok && onDetails ? { label: labels.seeDetails, fn: onDetails } : null;
+  const act3 = !reco && act2 && act ? act : null;
   const action = act2 ?? act;
   const lockedName = `${nm} — ${labels.access[access]}`;
   const badgeEl =
@@ -139,6 +182,15 @@ export function AppTile({
       onClick={action.fn}
     >
       <span className={cn(btn.label, 'body-strong')}>{action.label}</span>
+    </button>
+  );
+  const act3Btn = act3 && (
+    <button
+      type="button"
+      className={cn(btn.root, btn.quiet, btn.sm, styles.act2)}
+      onClick={act3.fn}
+    >
+      <span className={cn(btn.label, 'body-strong')}>{act3.label}</span>
     </button>
   );
 
@@ -197,6 +249,7 @@ export function AppTile({
         {badgeEl}
         {ok && <Icon icon="chevron-right" size={16} className={styles.chev} />}
         {actBtn}
+        {act3Btn}
         {reco && (onDismiss || onRemindLater) && (
           <span className={styles.rowmore}>
             <RemindMenu
@@ -259,6 +312,7 @@ export function AppTile({
       {action && (
         <span className={styles.acts}>
           {actBtn}
+          {act3Btn}
           {reco && onDismiss && (
             <button type="button" className={cn(btn.root, btn.quiet, btn.sm)} onClick={onDismiss}>
               <span className={cn(btn.label, 'body-strong')}>{labels.remind.notInterested}</span>

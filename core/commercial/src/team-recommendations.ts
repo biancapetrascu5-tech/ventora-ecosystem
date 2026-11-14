@@ -93,6 +93,14 @@ export function normalizeRecommendationNote(note: string | null | undefined): st
   return v;
 }
 
+/** S147: motivul respingerii — gol devine null; peste 300 de caractere, refuzat (ca nota). */
+export function normalizeRecommendationAnswer(reason: string | null | undefined): string | null {
+  const v = (reason ?? '').trim();
+  if (!v) return null;
+  if (v.length > TEAM_RECOMMENDATION_NOTE_MAX) throw new InvalidInput('reason');
+  return v;
+}
+
 /**
  * În tranzacția lui notifyOwner (aplicația e deja verificată: există și afacerea n-o are): o
  * recomandare în așteptare a aceleiași persoane rămâne cum e (notificarea către owner merge tot o
@@ -171,22 +179,28 @@ export async function listPendingTeamRecommendations(
   });
 }
 
-/** „Respinge” din clopoțel (owner sau admin): „Nu acum”, fără notificare pentru membru. */
+/**
+ * „Respinge” din clopoțel sau din cardul recomandării (owner sau admin): „Nu acum”, fără notificare
+ * pentru membru. S147: motivul opțional (cel mult 300 de caractere), pe care membrul îl vede sub
+ * „Nu acum” în „Recomandările mele”; nu intră în jurnal (e text liber), doar faptul că există.
+ */
 export async function rejectTeamRecommendation(
   actor: RequestActor,
   recommendationId: string,
+  reason?: string | null,
 ): Promise<void> {
   if (actor.actor !== 'user' || (actor.role !== 'owner' && actor.role !== 'admin')) {
     throw new Forbidden('The owner or an admin answers a recommendation');
   }
   if (!UUID_RE.test(recommendationId ?? '')) throw new InvalidInput('recommendationId');
+  const answer = normalizeRecommendationAnswer(reason);
   await withOrganizationWrite(actor.organizationId, async (client) => {
     const { rows } = await client.query<{ id: string; application_id: string }>(
       `UPDATE commercial.team_recommendation
-          SET status = 'not_now', decided_by_user_id = $3
+          SET status = 'not_now', decided_by_user_id = $3, answer = $4
         WHERE id = $1::uuid AND organization_id = $2 AND status = 'pending'
         RETURNING id, application_id`,
-      [recommendationId, actor.organizationId, actor.userId],
+      [recommendationId, actor.organizationId, actor.userId, answer],
     );
     if (!rows[0]) throw new ResourceNotFound('team_recommendation');
     await appendAuditEventInTx(pgExecutor(client), {
@@ -198,7 +212,7 @@ export async function rejectTeamRecommendation(
       organizationId: actor.organizationId,
       targetType: 'team_recommendation',
       targetId: rows[0].id,
-      metadata: { applicationId: rows[0].application_id },
+      metadata: { applicationId: rows[0].application_id, withReason: answer !== null },
     });
   });
 }

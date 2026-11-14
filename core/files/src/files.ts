@@ -7,6 +7,7 @@ import {
   ANONYMOUS_CONTENT_TYPES,
   ANONYMOUS_FILES_PER_KEY,
   ANONYMOUS_FILES_PER_OWNER,
+  BRAND_LOGO_MIN_SIDE,
   DOWNLOAD_LINK_SECONDS,
   MAX_FILE_BYTES,
   STORAGE_URL_SECONDS,
@@ -15,6 +16,11 @@ import {
   checkOwner,
   checkStoredFile,
   cleanFileName,
+  imageSize,
+  isBrandLogoOwner,
+  MAX_PERSONAL_FILE_BYTES,
+  PERSONAL_CONTENT_TYPES,
+  sniffContentType,
   type AllowedContentType,
 } from './policy';
 import { platformUrl, signDownloadToken, verifyDownloadToken, FileLinkRefused } from './links';
@@ -273,13 +279,22 @@ async function confirmRow(
     if (!isAuthor(row)) throw new ResourceNotFound('File not found');
     if (row.status === 'ready') return { ok: true as const, row };
     if (row.status !== 'pending') throw new Conflict(`The file is ${row.status}`);
-    const reason =
+    let reason =
       row.upload_expires_at <= new Date()
         ? 'upload_expired'
         : checkStoredFile(
             { contentType: row.content_type, sizeBytes: Number(row.size_bytes) },
             (await storage.stat(row.storage_key)) ?? { sizeBytes: 0, head: new Uint8Array() },
           );
+    // Brand Kit (S148): a logo is at least 256 px on the short side, read from the stored bytes
+    if (
+      !reason &&
+      isBrandLogoOwner({ module: row.owner_module, resourceType: row.owner_resource_type })
+    ) {
+      const bytes = await storage.read(row.storage_key, MAX_FILE_BYTES);
+      const size = bytes ? imageSize(bytes) : null;
+      if (!size || Math.min(size.width, size.height) < BRAND_LOGO_MIN_SIDE) reason = 'too_small';
+    }
     if (reason) {
       await client.query(`UPDATE files.file SET status = 'rejected' WHERE id = $1`, [row.id]);
       return { ok: false as const, row, reason };
@@ -419,6 +434,8 @@ const OWNER_AUDIT_CATEGORY: Readonly<Record<string, AuditCategory>> = {
   crm: 'crm',
   support: 'support',
   booking: 'booking',
+  // Brand Kit (S148): the replaced logo (system deletion) and the public /brand/logo/<id> (read)
+  organizations: 'organization',
 };
 
 const REASON_RE = /^[a-z][a-z0-9_]{2,47}$/;
@@ -669,4 +686,197 @@ export async function listAnonymousFiles(ctx: AnonymousFilesContext): Promise<An
     );
     return rows.map(toAnonymousInfo);
   });
+}
+
+// ── S147: the profile photo (files.personal_file) ─────────────────────────────────────────────
+//
+// A person's file, without a business: files.file needs organization_id, so the photo has its
+// own table in the same schema, with the same role (files_rw), in the person's context
+// (app.user_id, from the session — the caller passes the id it got from authorize / getSession,
+// never one from the client). RLS keeps each person to their own files. The current photo is kept
+// in identity.users.image by the caller; here only the files. No outbox, no audit (a photo is the
+// person's own), no DELETE: a replaced photo becomes `deleted` and leaves the storage.
+
+export type PersonalFilePurpose = 'avatar';
+
+export interface PersonalFileInfo {
+  id: string;
+  purpose: PersonalFilePurpose;
+  contentType: 'image/png' | 'image/jpeg';
+  sizeBytes: number;
+  readyAt: Date | null;
+}
+
+type PersonalRow = {
+  id: string;
+  purpose: PersonalFilePurpose;
+  content_type: 'image/png' | 'image/jpeg';
+  size_bytes: string;
+  storage_key: string;
+  status: FileStatus;
+  upload_expires_at: Date;
+  ready_at: Date | null;
+};
+
+const PERSONAL_COLUMNS = `id::text, purpose, content_type, size_bytes::text, storage_key, status,
+  upload_expires_at, ready_at`;
+
+const toPersonalInfo = (r: PersonalRow): PersonalFileInfo => ({
+  id: r.id,
+  purpose: r.purpose,
+  contentType: r.content_type,
+  sizeBytes: Number(r.size_bytes),
+  readyAt: r.ready_at,
+});
+
+/** A transaction as files_rw in one person's context (app.user_id); no business. */
+async function asPerson<T>(userId: string, fn: (client: PoolClient) => Promise<T>): Promise<T> {
+  if (!UUID.test(userId ?? '')) throw new InvalidInput('userId');
+  const client = await pool('app').connect();
+  try {
+    await client.query('BEGIN');
+    await client.query('SET LOCAL ROLE files_rw');
+    await client.query(`SELECT set_config('app.user_id', $1, true)`, [userId]);
+    const result = await fn(client);
+    await client.query('COMMIT');
+    return result;
+  } catch (err) {
+    await client.query('ROLLBACK').catch(() => {});
+    throw err;
+  } finally {
+    client.release();
+  }
+}
+
+async function findPersonalRow(
+  client: PoolClient,
+  fileId: string,
+  lock = false,
+): Promise<PersonalRow> {
+  if (!UUID.test(fileId ?? '')) throw new InvalidInput('fileId');
+  const { rows } = await client.query<PersonalRow>(
+    `SELECT ${PERSONAL_COLUMNS} FROM files.personal_file WHERE id = $1::uuid${lock ? ' FOR UPDATE' : ''}`,
+    [fileId],
+  );
+  // another person's file is invisible here (RLS): the same answer as a missing one
+  if (!rows[0]) throw new ResourceNotFound('File not found');
+  return rows[0];
+}
+
+/** The upload link for a new photo: PNG or JPEG, at most 5 MB. */
+export async function requestPersonalUpload(
+  userId: string,
+  input: { purpose: PersonalFilePurpose; contentType: string; sizeBytes: number },
+): Promise<{ fileId: string; uploadUrl: string; expiresAt: Date }> {
+  if (input.purpose !== 'avatar') throw new InvalidInput('purpose');
+  if (!(PERSONAL_CONTENT_TYPES as readonly string[]).includes(input.contentType)) {
+    throw new InvalidInput('contentType', 'A photo is a PNG or JPG');
+  }
+  if (
+    !Number.isSafeInteger(input.sizeBytes) ||
+    input.sizeBytes <= 0 ||
+    input.sizeBytes > MAX_PERSONAL_FILE_BYTES
+  ) {
+    throw new InvalidInput('sizeBytes', 'At most 5 MB');
+  }
+  const storage = await getStorageAdapter();
+  const fileId = uuidv7();
+  const key = `personal/${userId}/${fileId}`;
+  const expiresAt = new Date(Date.now() + UPLOAD_WINDOW_SECONDS * 1000);
+  return asPerson(userId, async (client) => {
+    await client.query(
+      `INSERT INTO files.personal_file
+         (id, user_id, purpose, content_type, size_bytes, storage_key, status, upload_expires_at)
+       VALUES ($1, $2, $3, $4, $5, $6, 'pending', $7)`,
+      [fileId, userId, input.purpose, input.contentType, input.sizeBytes, key, expiresAt],
+    );
+    const { url } = await storage.signUpload(key, input.contentType);
+    return { fileId, uploadUrl: url, expiresAt };
+  });
+}
+
+/**
+ * After the upload: ready only if what is stored is what was declared (size and real type);
+ * then the person's earlier photos (same purpose) become `deleted` and leave the storage.
+ */
+export async function confirmPersonalUpload(
+  userId: string,
+  fileId: string,
+): Promise<PersonalFileInfo> {
+  const storage = await getStorageAdapter();
+  const outcome = await asPerson(userId, async (client) => {
+    const row = await findPersonalRow(client, fileId, true);
+    if (row.status === 'ready') return { ok: true as const, row, replaced: [] as string[] };
+    if (row.status !== 'pending') throw new Conflict(`The file is ${row.status}`);
+    const stored = (await storage.stat(row.storage_key)) ?? {
+      sizeBytes: 0,
+      head: new Uint8Array(),
+    };
+    const reason =
+      row.upload_expires_at <= new Date()
+        ? 'upload_expired'
+        : stored.sizeBytes <= 0
+          ? 'missing'
+          : stored.sizeBytes !== Number(row.size_bytes)
+            ? 'size_mismatch'
+            : sniffContentType(stored.head) !== row.content_type
+              ? 'type_mismatch'
+              : null;
+    if (reason) {
+      await client.query(`UPDATE files.personal_file SET status = 'rejected' WHERE id = $1`, [
+        row.id,
+      ]);
+      return { ok: false as const, row, reason };
+    }
+    const { rows } = await client.query<PersonalRow>(
+      `UPDATE files.personal_file SET status = 'ready', ready_at = now() WHERE id = $1
+       RETURNING ${PERSONAL_COLUMNS}`,
+      [row.id],
+    );
+    const { rows: old } = await client.query<{ storage_key: string }>(
+      `UPDATE files.personal_file SET status = 'deleted', deleted_at = now()
+        WHERE purpose = $1 AND id <> $2 AND status = 'ready'
+       RETURNING storage_key`,
+      [row.purpose, row.id],
+    );
+    return { ok: true as const, row: rows[0]!, replaced: old.map((o) => o.storage_key) };
+  });
+  if (!outcome.ok) {
+    await storage.remove(outcome.row.storage_key);
+    throw new InvalidInput('file', `The uploaded file was refused: ${outcome.reason}`);
+  }
+  for (const key of outcome.replaced) await storage.remove(key);
+  return toPersonalInfo(outcome.row);
+}
+
+/** The bytes of one of the person's ready files (for /account/photo/<id>). */
+export async function readPersonalFile(
+  userId: string,
+  fileId: string,
+): Promise<{ info: PersonalFileInfo; bytes: Uint8Array }> {
+  const row = await asPerson(userId, (client) => findPersonalRow(client, fileId));
+  if (row.status !== 'ready') throw new ResourceNotFound('File not found');
+  const storage = await getStorageAdapter();
+  const bytes = await storage.read(row.storage_key, MAX_PERSONAL_FILE_BYTES);
+  if (!bytes || bytes.length !== Number(row.size_bytes)) {
+    throw new Conflict('The stored file is not the one that was uploaded');
+  }
+  return { info: toPersonalInfo(row), bytes };
+}
+
+/** „Șterge poza”: the person's file becomes `deleted` and leaves the storage; false if it was. */
+export async function deletePersonalFile(userId: string, fileId: string): Promise<boolean> {
+  const storage = await getStorageAdapter();
+  const key = await asPerson(userId, async (client) => {
+    const row = await findPersonalRow(client, fileId, true);
+    if (row.status === 'deleted') return null;
+    await client.query(
+      `UPDATE files.personal_file SET status = 'deleted', deleted_at = now() WHERE id = $1`,
+      [row.id],
+    );
+    return row.storage_key;
+  });
+  if (key === null) return false;
+  await storage.remove(key);
+  return true;
 }
