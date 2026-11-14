@@ -643,6 +643,8 @@ model AppointmentPayment {
   refundOfPaymentId String?   @map("refund_of_payment_id") @db.Uuid
   recordedAt        DateTime  @default(now()) @map("recorded_at") @db.Timestamptz
   recordedByUserId  String    @map("recorded_by_user_id") @db.Uuid
+  /// B.21b: „Data încasării” — the day of the payment (today or up to 30 days back)
+  paidOn            DateTime  @map("paid_on") @db.Date
 
   appointment Appointment          @relation(fields: [organizationId, appointmentId], references: [organizationId, id], onDelete: Restrict, onUpdate: Restrict, map: "appointment_payment_appointment_org_fkey")
   client      Client               @relation(fields: [organizationId, clientId], references: [organizationId, id], onDelete: Restrict, onUpdate: Restrict, map: "appointment_payment_client_org_fkey")

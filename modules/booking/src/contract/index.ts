@@ -251,6 +251,8 @@ export type {
   ClientPaymentTotalsParams,
 } from './payments';
 export type { AppointmentBalance, AppointmentPayment, PaymentMethod } from '../server/payments';
+// Lot B.21b: „Data încasării” — how far back a payment can be dated
+export { PAYMENT_DATE_LIMITS } from '../server/payments';
 // Lot B.24: the operational reports and the CSV export (Excel: exceljs, a proposal)
 export { getBookingReport, exportAppointmentsCsv } from './reports';
 export type { BookingReportParams, ExportAppointmentsParams } from './reports';

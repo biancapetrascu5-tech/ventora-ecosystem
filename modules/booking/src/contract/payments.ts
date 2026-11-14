@@ -15,7 +15,8 @@ import {
  * with booking:read; „Încasează” with booking:write (a member only on their own appointments,
  * D-B4-6 = a); a refund with booking:admin.
  *
- * Errors: InvalidInput (amountMinor, method, note, refundOfPaymentId); Conflict
+ * Errors: InvalidInput (amountMinor, method, note, refundOfPaymentId, paidOn: invalid | future |
+ * too_old); Conflict
  * (appointment_cancelled, refund_exceeds_paid); ResourceNotFound; Forbidden; AppNotEnabled.
  */
 
@@ -29,6 +30,8 @@ export type RecordPaymentParams = Session & {
   amountMinor: number;
   method: PaymentMethod;
   note?: string | null;
+  /** B.21b: „Data încasării”, YYYY-MM-DD; today by default, up to 30 days back, never ahead. */
+  paidOn?: string | null;
 };
 export type RecordRefundParams = RecordPaymentParams & { refundOfPaymentId?: string | null };
 export type AppointmentPaymentsParams = Session & { appointmentId: string };
@@ -46,6 +49,7 @@ export async function recordPayment(
     amountMinor: params.amountMinor,
     method: params.method,
     note: params.note,
+    paidOn: params.paidOn,
   });
 }
 
@@ -59,6 +63,7 @@ export async function recordRefund(
     method: params.method,
     note: params.note,
     refundOfPaymentId: params.refundOfPaymentId,
+    paidOn: params.paidOn,
   });
 }
 

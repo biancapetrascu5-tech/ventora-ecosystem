@@ -475,3 +475,81 @@ describe('B.21 — Finance, the client card, the erasure', () => {
     ).toBe('23514');
   });
 });
+
+describe('B.21b — „Data încasării”: today by default, up to 30 days back, never ahead', () => {
+  const day = (offset: number) => {
+    const today = new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Bucharest' }).format(
+      new Date(),
+    );
+    const d = new Date(`${today}T12:00:00Z`);
+    d.setUTCDate(d.getUTCDate() + offset);
+    return d.toISOString().slice(0, 10);
+  };
+
+  it('without a date: today (the business’s); with one: that day, kept in the history', async () => {
+    const a = await appointment(svcFixed);
+    const now = await recordPayment({
+      sessionToken: A.owner.token,
+      appointmentId: a,
+      amountMinor: 1000,
+      method: 'cash',
+    });
+    expect(now.payment.paidOn).toBe(day(0));
+    const back = await recordPayment({
+      sessionToken: A.owner.token,
+      appointmentId: a,
+      amountMinor: 1000,
+      method: 'card',
+      paidOn: day(-30),
+    });
+    expect(back.payment.paidOn).toBe(day(-30));
+    const refund = await recordRefund({
+      sessionToken: A.owner.token,
+      appointmentId: a,
+      amountMinor: 500,
+      method: 'cash',
+      paidOn: day(-1),
+    });
+    expect(refund.payment.paidOn).toBe(day(-1));
+    const h = await getAppointmentPayments({ sessionToken: A.owner.token, appointmentId: a });
+    expect(h.payments.map((p) => p.paidOn)).toEqual([day(0), day(-30), day(-1)]);
+  });
+
+  it('refused: tomorrow, 31 days back, a day that does not exist, not a date', async () => {
+    const a = await appointment(svcFixed);
+    for (const [paidOn, why] of [
+      [day(1), 'future'],
+      [day(-31), 'too_old'],
+      ['2026-02-30', 'invalid'],
+      ['14.11.2026', 'invalid'],
+    ] as const) {
+      const err = await recordPayment({
+        sessionToken: A.owner.token,
+        appointmentId: a,
+        amountMinor: 1000,
+        method: 'cash',
+        paidOn,
+      }).catch((e: unknown) => e);
+      expect(err, paidOn).toBeInstanceOf(InvalidInput);
+      expect(err).toMatchObject({ field: 'paidOn', message: why });
+    }
+    expect(
+      (await getAppointmentPayments({ sessionToken: A.owner.token, appointmentId: a })).payments,
+    ).toEqual([]);
+  });
+
+  it('in the database: a day outside the outer bound is refused whoever writes', async () => {
+    const a = await appointment(svcFixed);
+    expect(
+      await pgCode(
+        asBookingRw(A.org, (c) =>
+          c.query(
+            `INSERT INTO booking.appointment_payment (id, organization_id, appointment_id, client_id, kind, amount_minor, currency, method, recorded_by_user_id, paid_on)
+             VALUES ($1, $2, $3, $4, 'payment', 100, 'RON', 'cash', $5, current_date + 5)`,
+            [uuid(), A.org, a, clientA, A.owner.userId],
+          ),
+        ),
+      ),
+    ).toBe('23514');
+  });
+});
