@@ -15,7 +15,7 @@
 | --- | --- | --- |
 | Gateway Connect separat în `core/billing` (singurul loc care vorbește cu Stripe pentru conturile saloanelor): creare cont, link la formular (onboarding / update), citire stare, verificarea semnăturii notificărilor v2 | `core/billing/src/stripe-connect.ts`, `core/billing/src/index.ts` | `core/billing/src/__tests__/stripe-connect.test.ts` (stările din contul v2, 3/3) |
 | Starea afișată: onboarding / in_review / active / problems, din `card_payments.status` plus cerințele `awaiting_action_from: 'user'` | idem (`connectStatusOf`) | idem |
-| Tabelul `booking.stripe_account`: un rând pe afacere, RLS cu USING și WITH CHECK, UPDATE doar pe coloane, fără DELETE; funcția `SECURITY DEFINER` `organization_of_stripe_account` pentru webhook | `modules/booking/prisma/migrations/20261114000004_booking_stripe_connect/migration.sql`, `schema.prisma` | `stripe-connect.integration.test.ts` (T1 / fără DELETE); `services.integration.test.ts` (RLS pe toate tabelele booking, lista completată) |
+| Tabelul `booking.stripe_account`: un rând pe afacere, RLS cu USING și WITH CHECK, UPDATE doar pe coloane, fără DELETE; funcția `SECURITY DEFINER` `organization_of_stripe_account` pentru webhook | `modules/booking/prisma/migrations/20261114000005_booking_stripe_connect/migration.sql`, `schema.prisma` | `stripe-connect.integration.test.ts` (T1 / fără DELETE); `services.integration.test.ts` (RLS pe toate tabelele booking, lista completată) |
 | Doar proprietarul conectează, reconectează și deconectează; cei cu `booking:settings` văd starea | `modules/booking/src/server/stripe-connect.ts`, `src/contract/stripe-connect.ts` | „only the owner connects or disconnects” |
 | Contul se creează o singură dată (cheie de idempotență pe afacere); reconectarea refolosește același cont | idem | „the account is created once”, „connecting again reuses the same account” |
 | Starea se recitește de la Stripe la întoarcerea din formular, la deschiderea paginii (cel mult o dată pe minut) și la notificări; după ce a fost activ, cerințe noi înseamnă „problems”, iar linkul e de tip update | idem | „the status follows Stripe …” |
@@ -65,3 +65,9 @@ Toate pe `a20aea0`, în `C:\Projects\ventora-b22`.
 - `de7c52a`: codul, migrarea, testele
 - commit-ul acestui raport (următorul)
 - pushed: da (vezi `git status -sb` din PR)
+
+## După aprobarea SQL (14.11 seara): rebase și redenumire
+
+- **Rebase pe `main` `9de72e1`** (cu #223 și #226), fără conflicte.
+- **Migrarea redenumită** în `20261114000005_booking_stripe_connect`, pentru că `000004` e ocupat de #226 (`booking_online_settings`). SQL-ul e neschimbat.
+- **Lanțul complet, refăcut:** format, lint, typecheck, test, i18n, gărzi, brand și build, toate verzi. Integrarea `--only booking,billing`: **booking 460/460, billing 84/84** (3 sărite).
