@@ -25,8 +25,15 @@ const RAW_METHODS = new Set<PropertyKey>([
 
 export function makeOrgClient(connectionString: string): OrgBaseClient {
   const safeRole = validateRole('org_rw');
+  // One connection per instance (ARCHITECTURE §6.2, 04.11.2026). Every operation is an interactive
+  // transaction (SET LOCAL ROLE): with Prisma's default maxWait of 2 s, parallel requests of one
+  // instance queued past it (P2028) and authorize() refused a member (14.11.2026, 50 parallel
+  // bookings). They wait as long as the pg pools of the other modules (connectionTimeoutMillis).
   const pool = new Pool({ connectionString, max: 1, connectionTimeoutMillis: 10_000 });
-  const base = new OrgBaseClient({ adapter: new PrismaPg(pool) });
+  const base = new OrgBaseClient({
+    adapter: new PrismaPg(pool),
+    transactionOptions: { maxWait: 10_000 },
+  });
   const extended = base.$extends({
     query: {
       $allModels: {

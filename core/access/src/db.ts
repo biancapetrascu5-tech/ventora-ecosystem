@@ -17,8 +17,13 @@ const RAW_METHODS = new Set<PropertyKey>([
 
 export function makeAccessClient(connectionString: string): AccessBaseClient {
   const safeRole = 'access_rw';
+  // One connection per instance (ARCHITECTURE §6.2): the interactive transactions wait for it as
+  // long as the pg pools do, not Prisma's default 2 s (P2028 under parallel requests, 14.11.2026).
   const pool = new Pool({ connectionString, max: 1, connectionTimeoutMillis: 10_000 });
-  const base = new AccessBaseClient({ adapter: new PrismaPg(pool) });
+  const base = new AccessBaseClient({
+    adapter: new PrismaPg(pool),
+    transactionOptions: { maxWait: 10_000 },
+  });
   // Model operations outside a transaction run under access_rw too, like the other modules.
   const extended = base.$extends({
     query: {
