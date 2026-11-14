@@ -57,8 +57,11 @@ Toate pe `a20aea0`, în `C:\Projects\ventora-b22`.
 | `pnpm brand:check` | verde |
 | `pnpm build` | verde, 7/7 |
 | `pnpm test:integration -- --only booking,billing`, prima rulare | 6 picate (vezi corecturile) |
-| idem, a doua rulare | REZULTAT_INT2 |
+| idem, a doua rulare | **booking 455/455 verde**; billing 1 picat: `lot38`, „dunning cannot start in the future” (cod neatins de B.22a: `Date.now()` din Node față de `now()` din container) |
+| `pnpm test:integration -- --only billing`, rerulare | **verde, 84/84** (3 sărite). DE VALIDAT TEHNIC: `lot38` e sensibil la ceasul containerului față de cel al gazdei |
 
 ## SHA-uri
 
-REZULTAT_SHA
+- `de7c52a`: codul, migrarea, testele
+- commit-ul acestui raport (următorul)
+- pushed: da (vezi `git status -sb` din PR)
