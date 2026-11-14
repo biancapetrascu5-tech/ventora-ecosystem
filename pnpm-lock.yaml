@@ -1072,6 +1072,9 @@ importers:
       '@ventora/audit':
         specifier: workspace:*
         version: link:../../core/audit
+      '@ventora/billing':
+        specifier: workspace:*
+        version: link:../../core/billing
       '@ventora/commercial':
         specifier: workspace:*
         version: link:../../core/commercial

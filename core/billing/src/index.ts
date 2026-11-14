@@ -150,3 +150,15 @@ export {
 } from './lifecycle';
 export { profileBuyerInTx } from './invoices';
 export type { RecordPaymentInput } from './invoice-provider';
+// Lot B.22a: Stripe Connect — the businesses' own accounts (direct charges, Accounts v2)
+export {
+  getConnectGateway,
+  setConnectGatewayForTests,
+  parseConnectNotification,
+  connectStatusOf,
+  ConnectNotificationSignatureError,
+  type ConnectGateway,
+  type ConnectAccountState,
+  type ConnectAccountStatus,
+  type ConnectAccountNotification,
+} from './stripe-connect';
