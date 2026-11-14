@@ -958,7 +958,8 @@
       "subject": "Escribe el asunto.",
       "body": "Escribe el texto.",
       "long": "El texto supera los {max} caracteres.",
-      "failed": "No hemos podido guardar el mensaje. Inténtalo de nuevo."
+      "failed": "No hemos podido guardar el mensaje. Inténtalo de nuevo.",
+      "hours": "Elige entre {min} y {max} horas."
     },
     "review": {
       "link": "Enlace a la página de reseñas",

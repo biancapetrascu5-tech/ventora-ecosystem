@@ -15,6 +15,7 @@ import {
   type ClientLocale,
   type MessageTemplate,
   type TemplateKind,
+  type ThanksWhen,
 } from '@ventora/booking';
 import { getSession } from '@ventora/identity';
 import { reportActionError } from './report-error';
@@ -27,9 +28,19 @@ export type MessagesPageData = {
   /** B.13 / B.14: the reminder and the thanks can be turned off; the rest always go. */
   reminderEmail: boolean;
   thanksEmail: boolean;
+  /** B.14c: when the reminder (hours before) and the thanks leave. */
+  timing: MessageTiming;
   /** The languages in which the business wrote its own text, per message. */
   custom: Record<TemplateKind, ClientLocale[]>;
 };
+
+export type MessageTiming = { reminderHours: number; thanksWhen: ThanksWhen; thanksHours: number };
+
+const timingOf = (s: MessageTiming): MessageTiming => ({
+  reminderHours: s.reminderHours,
+  thanksWhen: s.thanksWhen,
+  thanksHours: s.thanksHours,
+});
 
 export type MessagesPage =
   | { kind: 'ok'; data: MessagesPageData }
@@ -80,6 +91,7 @@ export async function readMessagesPage(): Promise<MessagesPage> {
     data: {
       reminderEmail: settings.reminderEmail,
       thanksEmail: settings.thanksEmail,
+      timing: timingOf(settings),
       custom: Object.fromEntries(list.map((x) => [x.kind, x.customLocales])) as Record<
         TemplateKind,
         ClientLocale[]
@@ -161,4 +173,13 @@ export async function setMessageOn(
     });
     return { reminderEmail: s.reminderEmail, thanksEmail: s.thanksEmail };
   });
+}
+
+/** B.14c: when the reminder and the thanks leave (the hours are checked by the contract). */
+export async function setMessageTiming(
+  timing: Partial<MessageTiming>,
+): Promise<MessagesActionResult<MessageTiming>> {
+  return run('booking.messages.timing', async (sessionToken) =>
+    timingOf(await setBookingSettings({ sessionToken, ...timing })),
+  );
 }

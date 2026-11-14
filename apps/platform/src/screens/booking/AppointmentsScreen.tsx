@@ -292,7 +292,7 @@ export function AppointmentsScreen({
   const rows: ListRow[] = shown.map((r) => ({
     id: r.id,
     client: r.client,
-    phone: null,
+    phone: r.phone,
     service: r.service,
     staff: r.staff.split(' ')[0] ?? r.staff,
     when: at(r.date, r.start),

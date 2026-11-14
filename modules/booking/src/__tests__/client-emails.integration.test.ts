@@ -2,6 +2,7 @@ import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { Pool } from 'pg';
 import { configureAccess } from '@ventora/access';
 import { closeAuditPools } from '@ventora/audit';
+import { InvalidInput } from '@ventora/errors';
 import { CaptureEmailAdapter, emailMessages, fill, setEmailChannel } from '@ventora/notifications';
 import {
   cancelAppointment,
@@ -11,7 +12,9 @@ import {
   createClient,
   createSeries,
   createService,
+  getBookingSettings,
   getMessageTemplate,
+  listAppointments,
   listMessageTemplates,
   listStaff,
   moveAppointment,
@@ -19,6 +22,7 @@ import {
   resetMessageTemplate,
   runClientEmailJob,
   saveMessageTemplate,
+  sendAppointmentReminders,
   setBookingSettings,
   setBusinessHours,
   startAppointment,
@@ -686,10 +690,202 @@ describe('B.14: the thanks after the visit (can be turned off, counted as schedu
     const early = await completedHoursAgo(b2, c2.id, 1);
     const late = await completedHoursAgo(b2, c2.id, 30);
     await run(b2);
-    expect(await messages(early.id)).toEqual([]);
-    expect(await messages(late.id)).toEqual([]);
+    // B.14c: queued at once with its time (2 hours after the end), not sent before it
+    expect(await messages(early.id)).toMatchObject([{ kind: 'thanks', state: 'pending' }]);
+    // its time passed more than 24 hours ago: dropped as expired, never sent
+    expect(await messages(late.id)).toMatchObject([
+      { kind: 'thanks', state: 'cancelled', reason: 'expired' },
+    ]);
     expect(mailbox.to(c.email)).toEqual([]);
     expect(mailbox.to(c2.email)).toEqual([]);
+  });
+});
+
+const sendAfter = async (appointmentId: string, kind: string) =>
+  (
+    await adminQuery<{ send_after: Date; valid_until: Date }>(
+      `SELECT send_after, valid_until FROM booking.client_message
+        WHERE appointment_id = $1 AND kind = $2`,
+      [appointmentId, kind],
+    )
+  )[0];
+
+const endsAt = async (appointmentId: string) =>
+  (
+    await adminQuery<{ ends_at: Date }>(`SELECT ends_at FROM booking.appointment WHERE id = $1`, [
+      appointmentId,
+    ])
+  )[0]!.ends_at;
+
+describe('B.14c: when the reminder and the thanks leave (Setări · Mesaje, „Când pleacă”)', () => {
+  it('the reminder N hours before: 48 → an appointment in 40 hours gets it; 24 by default → not', async () => {
+    const b = await business();
+    await setBookingSettings({ sessionToken: b.t, reminderHours: 48 });
+    const c = await client(b);
+    const a = await book(b, c.id, inHours(40));
+    await bookedLongAgo(a.id);
+    await run(b);
+    expect((await messages(a.id)).map((m) => [m.kind, m.state])).toEqual([['reminder', 'sent']]);
+
+    const b2 = await business();
+    expect((await getBookingSettings({ sessionToken: b2.t })).reminderHours).toBe(24);
+    const c2 = await client(b2);
+    const a2 = await book(b2, c2.id, inHours(40));
+    await bookedLongAgo(a2.id);
+    await run(b2);
+    expect(await messages(a2.id)).toEqual([]);
+  });
+
+  it('the reminder of an appointment booked less than N hours before does not go', async () => {
+    const b = await business();
+    await setBookingSettings({ sessionToken: b.t, reminderHours: 48 });
+    const c = await client(b);
+    const a = await book(b, c.id, inHours(40));
+    // booked 30 hours before its start: under 48
+    await adminQuery(
+      `UPDATE booking.appointment
+          SET created_at = starts_at - interval '30 hours', status_changed_at = now() - interval '1 day'
+        WHERE id = $1`,
+      [a.id],
+    );
+    await run(b);
+    expect(await messages(a.id)).toEqual([]);
+  });
+
+  it('the thanks: at the end, N hours after, or the next day at 10:00 in the business’s zone', async () => {
+    const b = await business();
+    const c = await client(b);
+    await setBookingSettings({ sessionToken: b.t, thanksWhen: 'now' });
+    const now = await completedHoursAgo(b, c.id, 0.5);
+    await run(b);
+    expect((await messages(now.id)).map((m) => m.state)).toEqual(['sent']);
+
+    await setBookingSettings({ sessionToken: b.t, thanksWhen: 'after', thanksHours: 5 });
+    const after = await completedHoursAgo(b, c.id, 1);
+    await run(b);
+    const atAfter = await sendAfter(after.id, 'thanks');
+    expect(atAfter!.send_after.getTime()).toBe((await endsAt(after.id)).getTime() + 5 * 3_600_000);
+    expect(atAfter!.valid_until.getTime() - atAfter!.send_after.getTime()).toBe(24 * 3_600_000);
+
+    await setBookingSettings({ sessionToken: b.t, thanksWhen: 'next_day' });
+    const next = await completedHoursAgo(b, c.id, 1.5);
+    await run(b);
+    const atNext = (await sendAfter(next.id, 'thanks'))!.send_after;
+    const local = (d: Date, o: Intl.DateTimeFormatOptions) =>
+      new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Bucharest', ...o }).format(d);
+    const hm = { hour: '2-digit', minute: '2-digit', hourCycle: 'h23' } as const;
+    expect(local(atNext, hm)).toBe('10:00');
+    const endDay = new Date(`${local(await endsAt(next.id), {})}T12:00:00Z`);
+    endDay.setUTCDate(endDay.getUTCDate() + 1);
+    expect(local(atNext, {})).toBe(endDay.toISOString().slice(0, 10));
+    expect(mailbox.to(c.email)).toHaveLength(1);
+  });
+
+  it('refused: the hours outside 2–72 / 1–48, an unknown moment', async () => {
+    const b = await business();
+    for (const bad of [
+      { reminderHours: 1 },
+      { reminderHours: 73 },
+      { reminderHours: 2.5 },
+      { thanksHours: 0 },
+      { thanksHours: 49 },
+      { thanksWhen: 'later' },
+    ]) {
+      const err = await setBookingSettings({ sessionToken: b.t, ...(bad as object) }).catch(
+        (e: unknown) => e,
+      );
+      expect(err, JSON.stringify(bad)).toBeInstanceOf(InvalidInput);
+    }
+    expect(await getBookingSettings({ sessionToken: b.t })).toMatchObject({
+      reminderHours: 24,
+      thanksWhen: 'after',
+      thanksHours: 2,
+    });
+  });
+});
+
+describe('B.14c: „Trimite reamintire” by hand', () => {
+  it('goes within the job’s run, once a day per appointment, even with the reminder off; unconfirmed too', async () => {
+    const b = await business();
+    await setBookingSettings({ sessionToken: b.t, reminderEmail: false });
+    const c = await client(b);
+    const a = await book(b, c.id, inHours(30));
+    await bookedLongAgo(a.id);
+    const unconfirmed = await createAppointment({
+      sessionToken: b.t,
+      id: uuid(),
+      staffMemberId: b.staff,
+      serviceId: b.svc,
+      clientId: c.id,
+      startsAt: inHours(50),
+      confirmed: false,
+    });
+    const r = await sendAppointmentReminders({
+      sessionToken: b.t,
+      appointmentIds: [a.id, unconfirmed.id],
+    });
+    expect(r).toEqual({ queued: [a.id, unconfirmed.id], skipped: [] });
+    await run(b);
+    const t = emailMessages('ro').booking;
+    const reminders = mailbox
+      .to(c.email)
+      .filter((e) => e.subject === fill(t.subject, { title: t.reminder.title, business: b.name }));
+    expect(reminders).toHaveLength(2);
+    // a second time the same day: skipped, nothing more sent
+    const again = await sendAppointmentReminders({ sessionToken: b.t, appointmentIds: [a.id] });
+    expect(again).toEqual({
+      queued: [],
+      skipped: [{ appointmentId: a.id, reason: 'already_today' }],
+    });
+    // counted in messaging.email, as the automatic reminder
+    const [m] = (await messages(a.id)).filter((x) => x.kind === 'reminder');
+    expect(m).toMatchObject({ state: 'sent' });
+    expect(await reservation(m!.id)).toEqual([{ status: 'committed', over_limit: true }]);
+  });
+
+  it('skipped: no e-mail, past, cancelled, another business; a wrong list is refused', async () => {
+    const b = await business();
+    const quiet = await client(b, 'ro', false);
+    const c = await client(b);
+    const noEmail = await book(b, quiet.id, inHours(30));
+    const cancelled = await book(b, c.id, inHours(32));
+    await cancelAppointment({ sessionToken: b.t, appointmentId: cancelled.id, by: 'business' });
+    const past = await completedHoursAgo(b, c.id, 3);
+    const other = await business();
+    const elsewhere = await book(other, (await client(other)).id, inHours(30));
+    const r = await sendAppointmentReminders({
+      sessionToken: b.t,
+      appointmentIds: [noEmail.id, cancelled.id, past.id, elsewhere.id],
+    });
+    expect(r.queued).toEqual([]);
+    expect(Object.fromEntries(r.skipped.map((s) => [s.appointmentId, s.reason]))).toEqual({
+      [noEmail.id]: 'no_email',
+      [cancelled.id]: 'not_open',
+      [past.id]: 'not_open',
+      [elsewhere.id]: 'not_found',
+    });
+    for (const bad of [[], ['x'], Array.from({ length: 101 }, () => uuid())]) {
+      const err = await sendAppointmentReminders({
+        sessionToken: b.t,
+        appointmentIds: bad,
+      }).catch((e: unknown) => e);
+      expect(err).toBeInstanceOf(InvalidInput);
+    }
+  });
+});
+
+describe('B.14c: the client’s phone in the list of appointments', () => {
+  it('each row has the client’s phone (none for a client without one)', async () => {
+    const b = await business();
+    const c = await client(b);
+    const a = await book(b, c.id, inHours(30));
+    const { items } = await listAppointments({
+      sessionToken: b.t,
+      from: inHours(29),
+      to: inHours(31),
+    });
+    const row = items.find((x) => x.id === a.id)!;
+    expect(row.clientPhone).toMatch(/^\+4076\d{7}$/);
   });
 });
 

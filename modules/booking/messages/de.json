@@ -958,7 +958,8 @@
       "subject": "Schreib den Betreff.",
       "body": "Schreib den Text.",
       "long": "Der Text hat über {max} Zeichen.",
-      "failed": "Die Nachricht konnte nicht gespeichert werden. Bitte versuch es erneut."
+      "failed": "Die Nachricht konnte nicht gespeichert werden. Bitte versuch es erneut.",
+      "hours": "Wähle zwischen {min} und {max} Stunden."
     },
     "review": {
       "link": "Link zur Bewertungsseite",

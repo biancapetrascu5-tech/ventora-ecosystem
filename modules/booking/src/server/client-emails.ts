@@ -14,6 +14,7 @@ import { commitQuota, releaseQuota, reserveQuota } from '@ventora/quota';
 import { CLIENT_LOCALES, type ClientLocale } from './appointments';
 import { withBookingJobTx, withBookingTx } from './db';
 import { issueManageToken } from './manage-token';
+import { isManualReminder } from './manual-reminders';
 import {
   customTemplateFor,
   fillTemplate,
@@ -130,8 +131,22 @@ const INSERT = `INSERT INTO booking.client_message
        (id, organization_id, appointment_id, kind, dedupe_key, send_after, valid_until)`;
 const ONCE = `ON CONFLICT (organization_id, dedupe_key) DO NOTHING`;
 
+/** B.14c: the hours of the reminder, from the settings (24 without a row). */
+const REMINDER_HOURS = `make_interval(hours => COALESCE((SELECT s.reminder_hours FROM booking.settings s), 24))`;
+
+/**
+ * B.14c: when the thanks of a completed appointment `a` leaves, in the business's zone ($1): at
+ * the end ('now'), N hours after it ('after') or the next day at 10:00 ('next_day').
+ */
+const THANKS_AT = `(SELECT CASE COALESCE(s.thanks_when, 'after')
+            WHEN 'now' THEN a.ends_at
+            WHEN 'next_day' THEN ((a.ends_at AT TIME ZONE $1)::date + 1 + time '10:00') AT TIME ZONE $1
+            ELSE a.ends_at + make_interval(hours => COALESCE(s.thanks_hours, 2))
+          END
+     FROM (SELECT 1) one LEFT JOIN booking.settings s ON true)`;
+
 /** 1. the e-mails to schedule (each once: the unique dedupe key). */
-async function schedule(client: PoolClient): Promise<number> {
+async function schedule(client: PoolClient, timeZone: string): Promise<number> {
   const inserts = [
     `${INSERT}
      SELECT gen_random_uuid(), a.organization_id, a.id, 'confirmation',
@@ -145,9 +160,9 @@ async function schedule(client: PoolClient): Promise<number> {
             'reminder:' || a.id::text || ':' || extract(epoch FROM a.starts_at)::bigint::text,
             now(), a.starts_at
      ${BASE}
-       AND a.starts_at <= now() + interval '24 hours'
+       AND a.starts_at <= now() + ${REMINDER_HOURS}
        AND a.starts_at > now() + interval '1 hour'
-       AND a.created_at < a.starts_at - interval '24 hours'
+       AND a.created_at < a.starts_at - ${REMINDER_HOURS}
        AND COALESCE((SELECT s.reminder_email FROM booking.settings s), true)
      ${ONCE}`,
     // B.14: a confirmed appointment cancelled (of a series cancelled at once: the first)
@@ -187,21 +202,26 @@ async function schedule(client: PoolClient): Promise<number> {
            WHERE h2.kind = 'moved' AND h2.created_at = h.created_at
              AND b.series_id = a.series_id AND b.starts_at < a.starts_at)
      ${ONCE}`,
-    // B.14: the thanks, 2 hours after a completed appointment (of a visit: its last step)
+    // B.14: the thanks of a completed appointment (of a visit: its last step), queued at once with
+    // its time (B.14c) and valid 24 hours after it; one whose time passed long ago is dropped as
+    // expired when it comes due
     `${INSERT}
-     SELECT gen_random_uuid(), a.organization_id, a.id, 'thanks',
-            'thanks:' || a.id::text, now(), a.ends_at + interval '26 hours'
+     SELECT gen_random_uuid(), x.organization_id, x.id, 'thanks', 'thanks:' || x.id::text,
+            x.at, x.at + interval '24 hours'
+       FROM (SELECT a.organization_id, a.id, ${THANKS_AT} AS at
        FROM booking.appointment a
        ${CLIENT}
         AND a.status = 'completed'
-        AND a.ends_at <= now() - interval '2 hours'
-        AND a.ends_at > now() - interval '26 hours'
+        AND a.ends_at > now() - interval '72 hours'
         AND COALESCE(a.visit_step, 1) = COALESCE(a.visit_steps, 1)
-        AND COALESCE((SELECT s.thanks_email FROM booking.settings s), true)
+        AND COALESCE((SELECT s.thanks_email FROM booking.settings s), true)) x
      ${ONCE}`,
   ];
   let scheduled = 0;
-  for (const sql of inserts) scheduled += (await client.query(sql)).rowCount ?? 0;
+  for (const sql of inserts) {
+    const params = sql.includes('$1') ? [timeZone] : [];
+    scheduled += (await client.query(sql, params)).rowCount ?? 0;
+  }
   return scheduled;
 }
 
@@ -266,10 +286,13 @@ function stale(m: Claimed, f: Facts | null): string | null {
       if (f.status !== 'confirmed') return 'appointment_changed';
       break;
     case 'reminder': {
-      if (f.status !== 'confirmed') return 'appointment_changed';
+      // B.14c: one sent by hand goes for an unconfirmed appointment too, and with the reminder off
+      const manual = isManualReminder(m.dedupe_key);
+      const open = manual ? ['confirmed', 'unconfirmed'] : ['confirmed'];
+      if (!open.includes(f.status)) return 'appointment_changed';
       const epoch = String(Math.floor(f.starts_at.getTime() / 1000));
       if (m.dedupe_key.split(':')[2] !== epoch) return 'appointment_changed';
-      if (!f.reminder_email) return 'reminder_off';
+      if (!manual && !f.reminder_email) return 'reminder_off';
       break;
     }
     case 'cancellation':
@@ -687,7 +710,7 @@ export async function runClientEmailJob(): Promise<ClientEmailJobReport> {
       const org = await getOrganizationCard(organizationId);
       if (!org || !org.active) continue;
       const claimed = await withBookingTx(organizationId, async (client) => {
-        report.scheduled += await schedule(client);
+        report.scheduled += await schedule(client, org.timeZone);
         return claim(client);
       });
       for (const m of claimed) {

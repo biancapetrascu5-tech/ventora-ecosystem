@@ -16,11 +16,13 @@ import {
   listStaff,
   markNoShow,
   moveAppointment,
+  sendAppointmentReminders,
   startAppointment,
   updateAppointmentNote,
   type Appointment,
   type AppointmentHistoryItem,
   type AppointmentStatus,
+  type ManualReminderResult,
 } from '@ventora/booking';
 import { getSession } from '@ventora/identity';
 import { getOrganizationTimeZone } from '@ventora/organizations';
@@ -45,6 +47,8 @@ export type AppointmentRowData = {
   end: string;
   minutes: number;
   client: string;
+  /** B.14c: the client's phone, under the name in the list (null without one or in the detail). */
+  phone: string | null;
   service: string;
   staffId: string;
   staff: string;
@@ -106,7 +110,10 @@ function rangeOf(period: ListPeriod, today: string): { first: string; last: stri
   return { first, last: addDays(next.toISOString().slice(0, 10), -1) };
 }
 
-function rowOf(a: Appointment, timeZone: string): AppointmentRowData {
+function rowOf(
+  a: Appointment & { clientPhone?: string | null },
+  timeZone: string,
+): AppointmentRowData {
   const s = localOf(a.startsAt, timeZone);
   const e = localOf(a.endsAt, timeZone);
   return {
@@ -116,6 +123,7 @@ function rowOf(a: Appointment, timeZone: string): AppointmentRowData {
     end: e.date === s.date ? e.time : '24:00',
     minutes: a.durationMinutes,
     client: a.clientName,
+    phone: a.clientPhone ?? null,
     service: a.serviceName,
     staffId: a.staffMemberId,
     staff: a.staffDisplayName,
@@ -452,5 +460,26 @@ export async function exportAppointmentsAction(params: {
   } catch (err) {
     reportActionError('booking.appointments.export', err, { quietIfExpected: true });
     return { ok: false };
+  }
+}
+
+/**
+ * B.14c: „Trimite reamintire” (the list's bulk bar) and „Retrimite reamintirea” (the detail): the
+ * reminder e-mail leaves within minutes; at most one per appointment and day. The result says
+ * which were queued and why the others were skipped (no e-mail, past, already sent today…).
+ */
+export async function sendRemindersAction(
+  appointmentIds: string[],
+): Promise<{ ok: true; value: ManualReminderResult } | { ok: false; error: DetailActionError }> {
+  const token = await sessionToken();
+  if (!token) return { ok: false, error: 'forbidden' };
+  try {
+    return {
+      ok: true,
+      value: await sendAppointmentReminders({ sessionToken: token, appointmentIds }),
+    };
+  } catch (err) {
+    reportActionError('booking.appointments.remind', err, { quietIfExpected: true });
+    return { ok: false, error: errorOf(err) };
   }
 }

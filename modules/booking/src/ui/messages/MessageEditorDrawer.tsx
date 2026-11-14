@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, type ReactNode } from 'react';
+import { useRef, type ChangeEvent, type ReactNode } from 'react';
 import { useTranslations } from 'next-intl';
 import {
   Button,
@@ -22,8 +22,9 @@ import s from './messages.module.css';
    with the channel, the subject (e-mail), the text, „Inserează” with the variables, when it leaves,
    „Revino la textul inițial”, and the preview next to it. Controlled: the page keeps the text and the
    error. The SMS (B.17), the review request (B.16) and the team notice (B.15) are drawn here as in the
-   design; the application opens only the e-mails to clients. When it leaves is shown, fixed, until
-   B.14c (`whenDisabled`). */
+   design; the application opens only the e-mails to clients. When it leaves (B.14c): the reminder's
+   hours and the thanks' moment are chosen here; the confirmation, the change and the cancellation
+   leave at once (`whenDisabled`). */
 
 export type WhenOption = { value: string; label: string };
 
@@ -45,8 +46,13 @@ export type MessageEditorDrawerProps = {
   /** SMS: under the text („SMS-urile pleacă fără diacritice…”), and the 2-SMS notice. */
   smsOver?: boolean;
   /** When it leaves: the options, the chosen one, and the hours (not for the SMS). */
-  when?: { options: WhenOption[]; value: string; hours?: number | null };
+  when?: { options: WhenOption[]; value: string; hours?: number | string | null };
+  /** Fixed (the confirmation, the change and the cancellation leave at once). */
   whenDisabled?: boolean;
+  /** B.14c: the reminder and the thanks — the option and the hours, and an error under the hours. */
+  onWhenChange?: (value: string) => void;
+  onHoursChange?: (value: string) => void;
+  hoursError?: string | null;
   /** The review request (B.16): the link and the two rules. */
   review?: { link: string; onlyDone: boolean; limitDays: number };
   /** The team notice (B.15): who receives it. */
@@ -151,14 +157,27 @@ export function MessageEditorDrawer(p: MessageEditorDrawerProps) {
       ) : p.when ? (
         <div className={sv.g2f}>
           <FormField label={t('whenTitle')}>
-            <Select value={p.when.value} isDisabled={p.whenDisabled} options={p.when.options} />
+            <Select
+              value={p.when.value}
+              isDisabled={p.whenDisabled || p.when.options.length < 2}
+              options={p.when.options}
+              onChange={p.onWhenChange}
+            />
           </FormField>
           {p.when.hours != null ? (
-            <FormField label={t('hours')}>
+            <FormField label={t('hours')} error={p.hoursError ?? undefined}>
               <Input
                 type="number"
-                defaultValue={String(p.when.hours)}
+                inputMode="numeric"
+                {...(p.onHoursChange
+                  ? {
+                      value: String(p.when.hours),
+                      onChange: (e: ChangeEvent<HTMLInputElement>) =>
+                        p.onHoursChange?.(e.target.value),
+                    }
+                  : { defaultValue: String(p.when.hours) })}
                 disabled={p.whenDisabled}
+                isInvalid={!!p.hoursError}
                 suffix={<span className="body-small muted">{t('hours')}</span>}
               />
             </FormField>
