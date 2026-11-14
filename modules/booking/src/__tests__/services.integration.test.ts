@@ -791,6 +791,8 @@ describe('B.1 — the role and the grants (§2.3)', () => {
       'staff_service_terms',
       'staff_time_off',
       'staff_weekly_hours',
+      // B.22a: the salon's Stripe account
+      'stripe_account',
       'time_block',
       // B.9c: the waiting list
       'waitlist_entry',

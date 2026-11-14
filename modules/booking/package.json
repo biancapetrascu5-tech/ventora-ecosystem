@@ -20,6 +20,7 @@
   "dependencies": {
     "@ventora/access": "workspace:*",
     "@ventora/audit": "workspace:*",
+    "@ventora/billing": "workspace:*",
     "@ventora/commercial": "workspace:*",
     "@ventora/contracts": "workspace:*",
     "@ventora/db-kit": "workspace:*",

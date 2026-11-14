@@ -1037,3 +1037,20 @@ model MessageTemplate {
   @@map("message_template")
   @@schema("booking")
 }
+
+/// Lot B.22a: the salon's Stripe account (direct charges, Accounts v2); one per business.
+model StripeAccount {
+  organizationId    String    @id @map("organization_id") @db.Uuid
+  stripeAccountId   String    @unique(map: "stripe_account_stripe_account_id_key") @map("stripe_account_id") @db.VarChar(64)
+  status            String    @default("onboarding") @db.VarChar(12)
+  displayName       String?   @map("display_name") @db.VarChar(255)
+  everActive        Boolean   @default(false) @map("ever_active")
+  statusCheckedAt   DateTime  @default(now()) @map("status_checked_at") @db.Timestamptz
+  connectedByUserId String    @map("connected_by_user_id") @db.Uuid
+  disconnectedAt    DateTime? @map("disconnected_at") @db.Timestamptz
+  createdAt         DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt         DateTime  @default(now()) @map("updated_at") @db.Timestamptz
+
+  @@map("stripe_account")
+  @@schema("booking")
+}

@@ -464,3 +464,13 @@ export type {
   MessageTemplateSummary,
   TemplateKind,
 } from './message-templates';
+// Lot B.22a: the salon's Stripe account (direct charges on its own account)
+export {
+  getStripeConnection,
+  refreshStripeConnection,
+  startStripeConnection,
+  disconnectStripe,
+  refreshStripeAccountFromNotification,
+  STRIPE_CONNECT_PATHS,
+} from './stripe-connect';
+export type { StripeConnection, StripeConnectionStatus } from './stripe-connect';
