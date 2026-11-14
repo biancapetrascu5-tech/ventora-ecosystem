@@ -29,4 +29,4 @@
 
 ## Commit-uri
 
-Vezi PR-ul (commit-ul lotului, pushed pe `feat/b21b-payment-date`).
+- `d2d3d21`: B.21b, pushed pe `feat/b21b-payment-date` (`git status -sb` fără „ahead”).
