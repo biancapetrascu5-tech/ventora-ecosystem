@@ -198,3 +198,169 @@
   margin: auto 0 var(--space-4);
   padding: var(--space-4) var(--space-4) 0;
 }
+
+/* BookingPublic (S116 a): the steps — pb-list, pb-opt, pb-days, pb-cal, pb-captcha, tfa-code */
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+.opt {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border: var(--border-width) solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--canvas);
+}
+.opt.on {
+  border-color: var(--primary);
+  background: var(--selected);
+}
+.optRadio {
+  flex: 1;
+  min-width: 0;
+}
+.days {
+  display: flex;
+  gap: var(--space-2);
+  overflow: hidden;
+}
+.cal {
+  align-self: flex-start;
+}
+.captcha {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border: var(--border-width) dashed var(--line-strong);
+  border-radius: var(--radius-md);
+  background: var(--raised);
+  color: var(--ink-secondary);
+}
+.captcha.err {
+  border-style: solid;
+  border-color: var(--danger);
+}
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+.form p {
+  margin: 0;
+}
+.code {
+  max-width: 240px;
+}
+.code input {
+  letter-spacing: 0.12em;
+}
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  align-items: center;
+}
+.doneIcon.bad {
+  background: var(--danger-soft);
+  color: var(--danger-ink);
+}
+
+/* BookingClientManage (S125): mg-pol, x-line */
+.pol {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  background: var(--raised);
+  border-radius: var(--radius-md);
+}
+.pol p {
+  margin: 0;
+}
+.line {
+  display: flex;
+  gap: var(--space-2);
+  align-items: flex-start;
+  color: var(--ink-secondary);
+  margin: 0;
+}
+.line > :first-child {
+  flex: none;
+  margin-top: 2px;
+}
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+.stack p {
+  margin: 0;
+}
+
+/* S148: the business's logo in the header (light / dark variant) */
+.logo {
+  display: inline-flex;
+  align-items: center;
+}
+.logo img {
+  height: 44px;
+  width: auto;
+}
+.logo.m img {
+  height: 32px;
+}
+.logoDark {
+  display: none;
+}
+:global([data-theme='dark']) .logoLight {
+  display: none;
+}
+:global([data-theme='dark']) .logoDark {
+  display: inline;
+}
+
+/* BookingCustomForms (S127): „Câteva întrebări de la salon” — pb-health */
+.questions {
+  border: var(--border-width) solid var(--line);
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  min-width: 0;
+}
+.questions legend {
+  padding: 0 var(--space-1);
+}
+.questions p {
+  margin: 0;
+}
+.photo {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+.photoThumb {
+  width: 64px;
+  height: 64px;
+  border-radius: var(--radius-md);
+  background: linear-gradient(135deg, var(--raised), var(--line));
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.photoText {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+/* BookingClientManage: .pb-done .pb-acts.m { align-self: stretch } */
+.stretch {
+  align-self: stretch;
+}

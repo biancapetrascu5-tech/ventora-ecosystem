@@ -143,7 +143,9 @@
     "BookingClientCard",
     "BookingMoney",
     "BookingPayments",
-    "BookingDeposit"
+    "BookingDeposit",
+    "BookingPublic",
+    "BookingClientManage"
   ],
   "exceptions": {
     "OrgSwitcher": "S147 — se aliniază în lotul F5 launcher+shell",

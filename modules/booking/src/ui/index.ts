@@ -262,3 +262,45 @@ export {
   checkCollect,
   type CollectCheck,
 } from './money/money-format';
+// BookingPublic (S116 a) and BookingClientManage (B.11 / B.11b, S125, S146): the public pages
+export {
+  PublicServiceStep,
+  PublicMemberStep,
+  PublicTimeStep,
+  PublicDetailsStep,
+  PublicVerifyStep,
+  PublicDone,
+  PublicDayPicker,
+  PublicCaptcha,
+  type PublicFrame,
+  type PublicServiceOption,
+  type PublicMemberOption,
+  type PublicDay,
+  type PublicDetailsForm,
+  type PublicDetailsErrors,
+} from './public/BookingPublicView';
+export {
+  ManageOverview,
+  ManageMove,
+  ManageCancel,
+  ManageStop,
+  ManageFinal,
+  ManageLink,
+  ManageSummary,
+  type ManagePolicy,
+  type ManageStopKind,
+} from './public/BookingClientManageView';
+export { brandStyle, shade, type PublicBrand } from './public/brand';
+export {
+  PublicQuestions,
+  PublicLocationStep,
+  PublicSessions,
+  PublicHealthFields,
+  seatsKey,
+  type PublicHealthField,
+  type PublicQuestion,
+  type PublicAnswer,
+  type PublicPhoto,
+  type PublicLocation,
+  type PublicSession,
+} from './public/PublicExtras';
