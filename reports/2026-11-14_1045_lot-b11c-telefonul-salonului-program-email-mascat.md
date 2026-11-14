@@ -37,6 +37,6 @@
 
 ## Commit-uri
 
-(se completează)
+- `d4146c4`: B.11c, pushed pe `feat/b11c-public-contact` (`git status -sb` fără „ahead”).
 
 **PR:** se deschide când se eliberează un loc (limita de 3: #215, #216, #217).
