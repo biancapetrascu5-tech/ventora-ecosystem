@@ -4,6 +4,7 @@ import type { TenantContext } from '@ventora/access';
 import { BookingPaymentRecordedV1 } from '@ventora/contracts';
 import { uuidv7, writeOutboxEvent } from '@ventora/db-kit';
 import { Conflict, Forbidden, InvalidInput, ResourceNotFound } from '@ventora/errors';
+import { getOrganizationTimeZone } from '@ventora/organizations';
 import { withBookingTx } from './db';
 import { isUuid } from './validation';
 import { hubOnly } from './actor';
@@ -34,7 +35,12 @@ export type AppointmentPayment = {
   refundOfPaymentId: string | null;
   recordedAt: Date;
   recordedByUserId: string;
+  /** B.21b: „Data încasării”, YYYY-MM-DD in the business's zone (today or up to 30 days back). */
+  paidOn: string;
 };
+
+/** B.21b (the founder, 14.11): how far back a payment can be dated. */
+export const PAYMENT_DATE_LIMITS = { maxDaysBack: 30 } as const;
 
 export type AppointmentBalance = {
   appointmentId: string;
@@ -64,10 +70,12 @@ type PaymentRow = {
   refund_of_payment_id: string | null;
   recorded_at: Date;
   recorded_by_user_id: string;
+  paid_on: string;
 };
 
+// paid_on as text: pg turns a DATE into a Date at local midnight, which shifts the day
 const PAYMENT_COLUMNS = `id, appointment_id, kind, amount_minor, currency, method, note,
-  refund_of_payment_id, recorded_at, recorded_by_user_id`;
+  refund_of_payment_id, recorded_at, recorded_by_user_id, to_char(paid_on, 'YYYY-MM-DD') AS paid_on`;
 
 function toPayment(r: PaymentRow): AppointmentPayment {
   return {
@@ -81,6 +89,7 @@ function toPayment(r: PaymentRow): AppointmentPayment {
     refundOfPaymentId: r.refund_of_payment_id,
     recordedAt: r.recorded_at,
     recordedByUserId: r.recorded_by_user_id,
+    paidOn: r.paid_on,
   };
 }
 
@@ -164,6 +173,36 @@ function optionalNote(value: unknown): string | null {
   return note.length ? note : null;
 }
 
+/** A day YYYY-MM-DD plus `days`. */
+function addDays(day: string, days: number): string {
+  const d = new Date(`${day}T12:00:00Z`);
+  d.setUTCDate(d.getUTCDate() + days);
+  return d.toISOString().slice(0, 10);
+}
+
+/**
+ * B.21b: „Data încasării” — today by default; a day in the past up to 30 days back, never in the
+ * future (InvalidInput('paidOn', 'future' | 'too_old' | 'invalid')). Today is the business's.
+ */
+async function paymentDay(ctx: TenantContext, value: unknown): Promise<string> {
+  const today = new Intl.DateTimeFormat('en-CA', {
+    timeZone: await getOrganizationTimeZone(ctx),
+  }).format(new Date());
+  if (value === undefined || value === null) return today;
+  if (
+    typeof value !== 'string' ||
+    !/^\d{4}-\d{2}-\d{2}$/.test(value) ||
+    addDays(value, 0) !== value
+  ) {
+    throw new InvalidInput('paidOn', 'invalid');
+  }
+  if (value > today) throw new InvalidInput('paidOn', 'future');
+  if (value < addDays(today, -PAYMENT_DATE_LIMITS.maxDaysBack)) {
+    throw new InvalidInput('paidOn', 'too_old');
+  }
+  return value;
+}
+
 function translate(err: unknown): never {
   const e = err as { code?: string; hint?: string };
   if (e?.code === '23514' && e.hint === 'refund_exceeds_paid')
@@ -182,14 +221,15 @@ async function insertMovement(
     method: PaymentMethod;
     note: string | null;
     refundOf: string | null;
+    paidOn: string;
   },
 ): Promise<AppointmentPayment> {
   const id = uuidv7();
   const { rows } = await client.query<PaymentRow>(
     `INSERT INTO booking.appointment_payment
        (id, organization_id, appointment_id, client_id, kind, amount_minor, currency, method, note,
-        refund_of_payment_id, recorded_by_user_id)
-     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+        refund_of_payment_id, recorded_by_user_id, paid_on)
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12::date)
      RETURNING ${PAYMENT_COLUMNS}`,
     [
       id,
@@ -203,6 +243,7 @@ async function insertMovement(
       m.note,
       m.refundOf,
       ctx.userId,
+      m.paidOn,
     ],
   );
   const row = rows[0]!;
@@ -245,13 +286,20 @@ async function insertMovement(
 export async function recordPaymentInOrg(
   ctx: TenantContext,
   scope: 'all' | 'own',
-  params: { appointmentId: unknown; amountMinor: unknown; method: unknown; note?: unknown },
+  params: {
+    appointmentId: unknown;
+    amountMinor: unknown;
+    method: unknown;
+    note?: unknown;
+    paidOn?: unknown;
+  },
 ): Promise<{ payment: AppointmentPayment; balance: AppointmentBalance }> {
   hubOnly(ctx);
   const appointmentId = requireId(params.appointmentId);
   const amount = requireAmount(params.amountMinor);
   const method = requireMethod(params.method);
   const note = optionalNote(params.note);
+  const paidOn = await paymentDay(ctx, params.paidOn);
   try {
     return await withBookingTx(ctx.organizationId, async (client, exec) => {
       const a = await readAppointment(client, appointmentId);
@@ -263,6 +311,7 @@ export async function recordPaymentInOrg(
         method,
         note,
         refundOf: null,
+        paidOn,
       });
       return { payment, balance: await balanceOf(client, a) };
     });
@@ -280,6 +329,7 @@ export async function recordRefundInOrg(
     method: unknown;
     note?: unknown;
     refundOfPaymentId?: unknown;
+    paidOn?: unknown;
   },
 ): Promise<{ payment: AppointmentPayment; balance: AppointmentBalance }> {
   hubOnly(ctx);
@@ -287,6 +337,7 @@ export async function recordRefundInOrg(
   const amount = requireAmount(params.amountMinor);
   const method = requireMethod(params.method);
   const note = optionalNote(params.note);
+  const paidOn = await paymentDay(ctx, params.paidOn);
   const refundOf =
     params.refundOfPaymentId === undefined || params.refundOfPaymentId === null
       ? null
@@ -311,6 +362,7 @@ export async function recordRefundInOrg(
         method,
         note,
         refundOf,
+        paidOn,
       });
       return { payment, balance: await balanceOf(client, a) };
     });
