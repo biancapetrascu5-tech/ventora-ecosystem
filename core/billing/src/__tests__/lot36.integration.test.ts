@@ -414,6 +414,22 @@ describe('Lot 3.6 — the invoice of every payment', () => {
     const row = await invoiceOf(paymentId);
     expect(row).toMatchObject({ status: 'failed', attempts: 1 });
     expect(row!.failed_at).not.toBeNull();
+    // FounderNotifications: „O factură nu s-a emis” în clopoțelul Founder, cu afacerea ei
+    const bell = await q(
+      `SELECT params, action_url FROM notifications.founder_notification WHERE dedup_key = $1`,
+      [`founder.billing.invoice_not_issued:${id}`],
+    );
+    expect(bell).toEqual([
+      {
+        params: {
+          n: 1,
+          organizationIds: [b.organizationId],
+          kind: 'invoice',
+          errorKind: 'ambiguous',
+        },
+        action_url: `/businesses/${b.organizationId}`,
+      },
+    ]);
     const calls = provider.calls;
     await runInvoiceIssueJob({ limit: 100 });
     expect(await issueInvoice(b.organizationId, id)).toBe('skipped');

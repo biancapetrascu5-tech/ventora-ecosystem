@@ -4,6 +4,7 @@ import { getBillingTerms } from '@ventora/commercial';
 import { BillingInvoiceIssuedV1, BillingPaymentSucceededV1 } from '@ventora/contracts';
 import { uuidv7, writeOutboxEvent, type OutboxSqlClient } from '@ventora/db-kit';
 import { InvalidInput } from '@ventora/errors';
+import { FOUNDER_NOTIFICATION_TYPES, sendFounderNotification } from '@ventora/notifications';
 import { organizationNameInTx } from '@ventora/organizations';
 import { withBillingModule, withBillingRead, withBillingWrite } from './db';
 import {
@@ -347,6 +348,14 @@ async function markFailedInTx(
     targetType: 'invoice',
     targetId: row.id,
     metadata: { kind: row.kind, errorKind: kind, attempts: row.attempts },
+  });
+  // FounderNotifications: „Facturi care nu s-au emis” în clopoțelul Founder, în aceeași
+  // tranzacție; câte una pe factură (n = 1), cu afacerea ei
+  await sendFounderNotification(client, {
+    type: FOUNDER_NOTIFICATION_TYPES.invoice,
+    params: { n: 1, organizationIds: [row.organization_id], kind: row.kind, errorKind: kind },
+    idempotencyKey: row.id,
+    actionPath: `/businesses/${row.organization_id}`,
   });
 }
 

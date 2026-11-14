@@ -69,3 +69,35 @@ model NotificationPreference {
   @@map("notification_preference")
   @@schema("notifications")
 }
+
+/// Lotul FounderNotifications (D4-29 a): inboxul echipei Ventora, fără afacere; câte una pe
+/// eveniment, cu dedup. Scrisă de notifications_rw (doar INSERT), citită de notifications_founder.
+model FounderNotification {
+  id        String   @id @db.Uuid
+  type      String   @db.VarChar(64)
+  version   Int
+  params    Json     @default("{}")
+  actionUrl String?  @map("action_url") @db.VarChar(500)
+  dedupKey  String   @unique @map("dedup_key") @db.VarChar(255)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  reads FounderNotificationRead[]
+
+  @@index([createdAt])
+  @@map("founder_notification")
+  @@schema("notifications")
+}
+
+/// Cine din echipă a citit ce (pe fiecare om).
+model FounderNotificationRead {
+  founderId      String   @map("founder_id") @db.VarChar(64)
+  notificationId String   @map("notification_id") @db.Uuid
+  readAt         DateTime @default(now()) @map("read_at") @db.Timestamptz
+
+  notification FounderNotification @relation(fields: [notificationId], references: [id], onDelete: Cascade, map: "founder_notification_read_notification_fkey")
+
+  @@id([founderId, notificationId])
+  @@index([notificationId])
+  @@map("founder_notification_read")
+  @@schema("notifications")
+}

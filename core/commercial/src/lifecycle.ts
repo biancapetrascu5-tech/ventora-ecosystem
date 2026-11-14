@@ -14,6 +14,7 @@ import {
 } from '@ventora/audit';
 import { writeOutboxEvent } from '@ventora/db-kit';
 import { requireFounderSession } from '@ventora/identity';
+import { FOUNDER_NOTIFICATION_TYPES, sendFounderNotification } from '@ventora/notifications';
 import {
   withFounderModuleRead,
   withFounderRead,
@@ -810,6 +811,13 @@ export async function requestSetup(
     await setupEventInTx(client, pgExecutor(client), row, AuditActions.commercialSetupRequested, {
       actorType: 'user',
       id: actor.userId,
+    });
+    // FounderNotifications: „Cerere de configurare: …” în clopoțelul Founder, în aceeași tranzacție
+    await sendFounderNotification(client, {
+      type: FOUNDER_NOTIFICATION_TYPES.setup,
+      params: { organizationId, applicationId: appId, setupRequestId: row.id },
+      idempotencyKey: row.id,
+      actionPath: '/requests',
     });
     return { setupRequestId: row.id, created: true };
   });

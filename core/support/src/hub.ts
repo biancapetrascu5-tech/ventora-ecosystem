@@ -1,6 +1,7 @@
 import { Forbidden, InvalidInput, NotAuthenticated, ResourceNotFound } from '@ventora/errors';
 import { AuditActions, appendAuditEventInTx, type AuditSqlExecutor } from '@ventora/audit';
 import { uuidv7 } from '@ventora/db-kit';
+import { FOUNDER_NOTIFICATION_TYPES, sendFounderNotification } from '@ventora/notifications';
 import { getNotificationContactsInTx, getSession } from '@ventora/identity';
 import { resolveOrgContext } from '@ventora/organizations';
 import {
@@ -160,6 +161,19 @@ export async function createSupportRequest(
         urgency,
         attachments: files.length,
       },
+    });
+    // FounderNotifications: „Solicitare nouă de la …” în clopoțelul Founder, în aceeași tranzacție
+    await sendFounderNotification(client, {
+      type: FOUNDER_NOTIFICATION_TYPES.support,
+      params: {
+        organizationId,
+        applicationId: input.applicationId,
+        subject,
+        urgency,
+        requestRef: rows[0]!.ref,
+      },
+      idempotencyKey: id,
+      actionPath: `/support/${rows[0]!.ref}`,
     });
     return { id, ref: rows[0]!.ref };
   });

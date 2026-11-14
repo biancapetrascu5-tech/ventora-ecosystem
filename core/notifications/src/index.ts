@@ -35,6 +35,23 @@ export type { RenderedEmail, MembershipRoleName } from './templates/index';
 export { sendOwnerRecoveryNotice } from './owner-recovery';
 export { sendSupportSessionNotice } from './support-session';
 export { sendFounderDisputeAlert, sendFounderGrowthStopAlert } from './founder-alerts';
+// FounderNotifications (D4-29 a): clopoțelul Founder
+export {
+  closeFounderNotificationsPool,
+  FOUNDER_INBOX_DAYS,
+  FOUNDER_NOTIFICATION_TYPES,
+  listFounderNotifications,
+  markAllFounderNotificationsRead,
+  markFounderNotificationRead,
+  sendFounderNotification,
+} from './founder-inbox';
+export type {
+  FounderInbox,
+  FounderNotificationKind,
+  FounderNotificationParams,
+  FounderNotificationRow,
+  FounderNotificationType,
+} from './founder-inbox';
 // Lot 4.3: the notification model, the templates, sending and delivery
 export { NotificationCatalog, NOTIFICATION_TEMPLATES, defaultCatalog } from './model/catalog';
 export type {

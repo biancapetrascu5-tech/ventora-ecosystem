@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, type ReactNode } from 'react';
+import { useCallback, useEffect, useState, type ReactNode } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import {
@@ -15,6 +15,13 @@ import {
 } from '@ventora/ui';
 import { authApi } from '@ventora/screens';
 import { readSupportOpenCount } from '@/server/support-inbox-actions';
+import {
+  markAllFounderRead,
+  markFounderRead,
+  readFounderNotifications,
+  type FounderBellItem,
+} from '@/server/notifications-actions';
+import { useFounderNotifText } from '../notifications/founderNotifText';
 
 /* Shell-ul Founder Control Center (FX_App din preview-urile Founder): Spine cu navigația Founder,
    ContextBar cu notificările și contul. Spine-ul arată doar intrările care au ecran: Lotul 2.8
@@ -92,11 +99,49 @@ export function useFounderNav(requestsBadge?: number, supportBadge?: number): Na
   ];
 }
 
+/** FounderNotifications (D4-29 a): clopoțelul își citește singur notificările, la deschidere. */
+function useFounderBell(enabled: boolean) {
+  const router = useRouter();
+  const text = useFounderNotifText();
+  const [items, setItems] = useState<FounderBellItem[]>([]);
+  const load = useCallback(async () => {
+    const d = await readFounderNotifications({});
+    if (d) setItems(d.items);
+  }, []);
+  useEffect(() => {
+    if (!enabled) return;
+    let live = true;
+    void readFounderNotifications({}).then((d) => {
+      if (live && d) setItems(d.items);
+    });
+    return () => {
+      live = false;
+    };
+  }, [enabled]);
+  return {
+    items: items.map((i) => text.bell(i)),
+    onOpenChange: (o: boolean) => {
+      if (o && enabled) void load();
+    },
+    onOpenItem: (n: NotificationData) => {
+      const item = items.find((i) => i.id === String(n.id));
+      if (!item) return;
+      void markFounderRead(item.id).then(load);
+      if (item.kind === 'auto') router.push(`/notifications?open=${item.id}`);
+      else if (item.actionPath) router.push(item.actionPath);
+    },
+    onMarkAllRead: async () => {
+      const r = await markAllFounderRead();
+      if (r.ok) await load();
+    },
+  };
+}
+
 export function FounderShell({
   active,
   title,
   user,
-  notifications = [],
+  notifications,
   businessesBadge,
   requestsBadge,
   supportBadge,
@@ -105,6 +150,7 @@ export function FounderShell({
   active?: string;
   title?: string;
   user: { name: string; email?: string };
+  /** Fără ea, clopoțelul citește notificările Founder (core/notifications). */
   notifications?: NotificationData[];
   businessesBadge?: number;
   /** „Cereri · {n}”: cererile noi din Hub. */
@@ -116,6 +162,7 @@ export function FounderShell({
   const router = useRouter();
   const ui = useTranslations('ui');
   const themeChoice = useThemeChoice();
+  const bell = useFounderBell(notifications === undefined);
   const [fetchedSupport, setFetchedSupport] = useState(0);
   useEffect(() => {
     if (supportBadge !== undefined) return;
@@ -175,7 +222,12 @@ export function FounderShell({
           }}
           notifications={
             <NotificationsPanel
-              items={notifications}
+              items={notifications ?? bell.items}
+              countCategory="operational"
+              onOpenChange={bell.onOpenChange}
+              {...(notifications === undefined
+                ? { onOpenItem: bell.onOpenItem, onMarkAllRead: bell.onMarkAllRead }
+                : {})}
               labels={{
                 notifications: ui('notifications'),
                 unreadN: (n) => ui('unreadN', { n }),

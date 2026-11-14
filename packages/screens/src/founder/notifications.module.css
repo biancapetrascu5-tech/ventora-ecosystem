@@ -1,0 +1,211 @@
+/* FounderNotifications/preview.html (S136): .x-body, .cd-tools, .fn-list, .fn-row, .cd-fic,
+   .cd-autobody, .x-row, .kv, .cx-rows, .x-line, .x-stack, .cd-foot, .ss-overlay, .ss-toast */
+.body {
+  padding: 0 0 var(--space-8);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.bodyMob {
+  gap: var(--space-4);
+}
+
+.tools {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2) var(--space-3);
+}
+
+.toolsMob {
+  padding: 0 var(--space-4);
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.type {
+  width: calc(var(--space-16) * 3 + var(--space-6) + var(--space-1));
+}
+
+.toolsMob .type {
+  width: 100%;
+}
+
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: var(--space-8) minmax(0, 1fr) auto;
+  gap: var(--space-3);
+  align-items: center;
+  padding: var(--space-3) 0;
+  border-bottom: var(--border-width) solid var(--line);
+}
+
+.row:last-child {
+  border-bottom: 0;
+}
+
+.rowMob {
+  grid-template-columns: var(--space-8) minmax(0, 1fr);
+}
+
+.rowMob > .see {
+  grid-column: 2;
+  justify-self: start;
+}
+
+.unread :global(.body-strong) {
+  color: var(--ink);
+}
+
+.ic {
+  width: var(--space-8);
+  height: var(--space-8);
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--sunken);
+  color: var(--ink-secondary);
+}
+
+.main {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-width: 0;
+}
+
+.head {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.kv {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--space-2) var(--space-4);
+  margin: var(--space-2) 0 0;
+}
+
+.kv dt {
+  color: var(--ink-muted);
+  padding-top: var(--space-0-5);
+}
+
+.kv dd {
+  margin: 0;
+  color: var(--ink);
+}
+
+.reasons {
+  display: flex;
+  flex-direction: column;
+  border: var(--border-width) solid var(--line);
+  border-radius: var(--radius-md);
+  margin: 0;
+  padding: 0;
+}
+
+.reasons > li {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: var(--space-3) var(--space-4);
+  border-bottom: var(--border-width) solid var(--line);
+}
+
+.reasons > li:last-child {
+  border-bottom: 0;
+}
+
+.line {
+  display: flex;
+  gap: var(--space-2);
+  align-items: flex-start;
+  margin: 0;
+  color: var(--ink-secondary);
+}
+
+.line :global(.v-icon) {
+  flex: none;
+  margin-top: 2px;
+}
+
+.foot {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  width: 100%;
+  flex-wrap: wrap;
+}
+
+.footMob {
+  flex-direction: column-reverse;
+  align-items: stretch;
+}
+
+.grow {
+  flex: 1 1 auto;
+}
+
+.footMob .grow {
+  display: none;
+}
+
+/* the gallery frames: the Dialog over the page, the Toast in its corner */
+.overlay {
+  position: absolute;
+  inset: 0;
+  background: var(--scrim);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-6);
+  z-index: var(--z-overlay);
+}
+
+.overlayMob {
+  align-items: flex-end;
+  padding: 0;
+}
+
+.overlay :global(.v-dialog) {
+  max-height: none;
+}
+
+.toast {
+  position: absolute;
+  right: var(--space-6);
+  bottom: var(--space-6);
+  width: var(--panel-width);
+  z-index: var(--z-toast);
+}
+
+.toastMob {
+  left: var(--space-4);
+  right: var(--space-4);
+  bottom: var(--space-4);
+  width: auto;
+}
+
+.toastFixed {
+  position: fixed;
+}

@@ -65,20 +65,24 @@ export function FounderShellDemo({
   searchLabel = 'Caută o afacere, un bundle sau o campanie',
   notifications = FX_NOTIFS,
   businessesBadge = true,
+  nav = FX_NAV,
 }: {
   active?: string;
   title?: string;
   children: ReactNode;
   /** S116 (FounderAutomations, FounderSupportInbox): alte intrări jos și altă căutare. */
   bottomItems?: string[];
-  searchLabel?: string;
+  /** null: eticheta implicită a ContextBar („Caută…”), ca în FxPage din S136. */
+  searchLabel?: string | null;
   notifications?: NotificationData[];
   /** S116: „Afaceri” fără badge în preview-urile noi (Suport, Prezentare, Automatizări). */
   businessesBadge?: boolean;
+  /** S136: FX_NAV2 (cu „Traduceri” și „Analytics”). */
+  nav?: NavSection[];
 }) {
   const sections = businessesBadge
-    ? FX_NAV
-    : FX_NAV.map((sec) => ({
+    ? nav
+    : nav.map((sec) => ({
         ...sec,
         items: sec.items.map((i) => (i.id === 'afaceri' ? { ...i, badge: undefined } : i)),
       }));
@@ -100,7 +104,7 @@ export function FounderShellDemo({
         <ContextBar
           title={title}
           onSearch={noop}
-          searchLabel={searchLabel}
+          searchLabel={searchLabel ?? undefined}
           notifications={<NotificationsPanel items={notifications} labels={NOTIF_RO} />}
           account={<AccountMenu user={FX_USER} labels={ACCOUNT_RO} />}
           labels={CONTEXTBAR_RO}
